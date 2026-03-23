@@ -31,7 +31,8 @@ correct size. The reason for taking an extra vector is that after isolating the 
 the affine span is formed as the span of the difference of the rest of the vector set. -/
 theorem correlatedAgreement_affine_spaces {k : ℕ} [NeZero k] 
     {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
-    (hδ : δ ≤ 1 - ReedSolomonCode.sqrtRate deg domain) :
+    (hδ : 0 < δ)
+    (hδ : δ < 1 - ReedSolomonCode.sqrtRate deg domain) :
     δ_ε_correlatedAgreementAffineSpaces (k := k) (A := F) (F := F) (ι := ι)
       (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
   sorry

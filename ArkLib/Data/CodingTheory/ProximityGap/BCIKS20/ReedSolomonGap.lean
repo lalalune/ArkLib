@@ -26,7 +26,8 @@ a Reed-Solomon code, where `(δ, ε)` are the proximity and error parameters def
 Johnson bound. -/
 theorem proximity_gap_RSCodes {k t : ℕ} [NeZero k] [NeZero t] {deg : ℕ} {domain : ι ↪ F}
     (C : Fin t → (Fin k → (ι → F))) {δ : ℝ≥0}
-    (hδ : δ ≤ 1 - ReedSolomonCode.sqrtRate deg domain) :
+    (hδPos : 0 < δ)
+    (hδ : δ < 1 - ReedSolomonCode.sqrtRate deg domain) :
     δ_ε_proximityGap
       (ReedSolomonCode.toFinset domain deg)
       (Affine.AffSpanFinsetCollection C)
