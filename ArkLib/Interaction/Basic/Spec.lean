@@ -34,9 +34,9 @@ is mathematically forced in protocols like sumcheck and FRI.
 - `Basic/` — spec, node contexts, decoration, generic shapes, strategy,
   composition (this layer)
 - `Concurrent/` — binary structural parallelism, frontiers, residuals,
-  finite traces, per-party observation profiles, scheduler/control ownership,
-  current local frontier views, and structural independence / commuting
-  residuals
+  finite traces and execution summaries, per-party observation profiles,
+  scheduler/control ownership, current local frontier views, and structural
+  independence / commuting residuals / interleaving equivalence
 - `TwoParty/` — sender/receiver roles, `withRoles`, `Counterpart`
 - `Reduction.lean` — prover, verifier, reduction
 - `Oracle/` — oracle decoration, path-dependent oracle access

@@ -14,7 +14,9 @@ ArkLib/
   ToMathlib/          local additions not upstreamed to Mathlib
   ToVCVio/            bridge layer to VCV-io
   Interaction/        `Spec` (W-type protocols), concurrent specs/frontiers/traces/
-                      profiles/control/current-view/independence, generic syntax/execution, two-party roles, native multiparty
+                      execution/profiles/control/current-view/independence/interleaving,
+                      generic syntax/execution,
+                      two-party roles, native multiparty
                       local views and profiles (`Basic/`, `Concurrent/`, `TwoParty/`,
                       `Multiparty/`)
 blueprint/src/        blueprint sources and references.bib

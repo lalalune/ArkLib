@@ -3,6 +3,8 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Quang Dao
 -/
+import ArkLib.Interaction.Concurrent.Execution
+import ArkLib.Interaction.Concurrent.Interleaving
 import ArkLib.Interaction.Concurrent.Independence
 
 /-!
@@ -17,6 +19,8 @@ The examples are intentionally focused on:
 * per-party observation profiles over concurrently live components.
 * scheduler ownership versus atomic payload ownership;
 * the combined current local view of the next frontier event.
+* execution traces, controller paths, and observed local traces.
+* interleaving equivalence under commuting independent steps.
 
 They are meant to exercise the current expressivity surface before later layers
 such as fairness or richer execution semantics are added.
@@ -171,6 +175,93 @@ example :
 example :
     Current.observe Party.adv afterDelivery afterDeliveryProfile (.right (.move false)) =
       PUnit.unit := rfl
+
+/-- A concrete trace where the adversary schedules delivery first and the
+remaining acknowledgement second. -/
+def deliveryThenAck : Trace inFlight :=
+  .step (.left (.move (7, true)))
+    (.step (.right (.move false)) (Trace.doneOfNotLive rfl))
+
+example :
+    Trace.currentControllers inFlightControl deliveryThenAck = [some .adv, some .bob] := rfl
+
+example :
+    Trace.schedulers inFlightControl deliveryThenAck = [some .adv, none] := rfl
+
+example :
+    Trace.controllerPaths inFlightControl deliveryThenAck = [[.adv, .alice], [.bob]] := rfl
+
+example :
+    ObservedTrace.ofTrace Party.adv inFlightControl inFlightProfile deliveryThenAck =
+      .step (Front.left (.move (7, true)))
+        (.step (show Current.ObsType Party.adv afterDelivery afterDeliveryProfile from PUnit.unit)
+          .done) := rfl
+
+example :
+    ObservedTrace.ofTrace Party.alice inFlightControl inFlightProfile deliveryThenAck =
+      .step (show PLift (Sum (Nat × Bool) PUnit) from ⟨Sum.inl (7, true)⟩)
+        (.step (show Current.ObsType Party.alice afterDelivery afterDeliveryProfile from PUnit.unit)
+          .done) := rfl
+
+example :
+    ObservedTrace.ofTrace Party.bob inFlightControl inFlightProfile deliveryThenAck =
+      .step (show PLift (Sum (Nat × Bool) Bool) from ⟨Sum.inl (7, true)⟩)
+        (.step (Front.right (.move false)) .done) := rfl
+
+example :
+    (ObservedTrace.ofTrace Party.bob inFlightControl inFlightProfile deliveryThenAck).length =
+      2 := rfl
+
+/-- A concrete trace where the adversary schedules the acknowledgement before
+the delivery event. -/
+def ackThenDelivery : Trace inFlight :=
+  .step (.right (.move true))
+    (.step (.left (.move (9, false))) (Trace.doneOfNotLive rfl))
+
+def afterAck : Control Party (.par delivery .done) :=
+  Control.residual inFlightControl (.right (.move true))
+
+def afterAckProfile : Profile Party (.par delivery .done) :=
+  Profile.residual inFlightProfile (.right (.move true))
+
+example :
+    Trace.currentControllers inFlightControl ackThenDelivery = [some .adv, some .alice] := rfl
+
+example :
+    Trace.schedulers inFlightControl ackThenDelivery = [some .adv, none] := rfl
+
+example :
+    Trace.controllerPaths inFlightControl ackThenDelivery = [[.adv, .bob], [.alice]] := rfl
+
+example :
+    ObservedTrace.ofTrace Party.adv inFlightControl inFlightProfile ackThenDelivery =
+      .step (Front.right (.move true))
+        (.step (show Current.ObsType Party.adv afterAck afterAckProfile from ⟨(9 : Nat)⟩)
+          .done) := rfl
+
+def deliveryEvent : Front inFlight :=
+  .left (.move (4, true))
+
+def ackEvent : Front inFlight :=
+  .right (.move false)
+
+def leftThenRight : Trace inFlight :=
+  .step deliveryEvent
+    (.step (Independent.afterLeft (Independent.left_right (.move (4, true)) (.move false)))
+      (Trace.doneOfNotLive rfl))
+
+def rightThenLeft : Trace inFlight :=
+  .step ackEvent
+    (.step (Independent.afterRight (Independent.left_right (.move (4, true)) (.move false)))
+      (Trace.doneOfNotLive rfl))
+
+example : Trace.Equiv leftThenRight rightThenLeft :=
+  .swap (Independent.left_right (.move (4, true)) (.move false)) (Trace.doneOfNotLive rfl)
+
+example :
+    Trace.Equiv.length_eq
+      (.swap (Independent.left_right (.move (4, true)) (.move false)) (Trace.doneOfNotLive rfl) :
+        Trace.Equiv leftThenRight rightThenLeft) = rfl := rfl
 
 /-- A three-way concurrent system used to illustrate recursive independence
 inside one branch of a larger parallel spec. -/

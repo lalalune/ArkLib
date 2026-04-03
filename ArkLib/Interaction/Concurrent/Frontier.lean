@@ -75,6 +75,31 @@ def residual : {S : Spec} → Front S → Spec
   | .par _ right, .left event => .par (residual event) right
   | .par left _, .right event => .par left (residual event)
 
+/--
+If a concurrent spec is not live, then its frontier type is empty.
+
+This packages the structural fact that `Spec.isLive` exactly decides whether a
+concurrent spec still exposes enabled frontier events.
+-/
+def isEmptyOfNotLive : {S : Spec} → S.isLive = false → Front S → False
+  | .done, _, event => nomatch event
+  | .node _ _, h, _ => by cases h
+  | .par left right, h, event => by
+      match hLeft : left.isLive with
+      | true =>
+          match hRight : right.isLive with
+          | true => simp [Spec.isLive, hLeft, hRight] at h
+          | false => simp [Spec.isLive, hLeft, hRight] at h
+      | false =>
+          match hRight : right.isLive with
+          | true => simp [Spec.isLive, hLeft, hRight] at h
+          | false =>
+              let leftEmpty : Front left → False := isEmptyOfNotLive hLeft
+              let rightEmpty : Front right → False := isEmptyOfNotLive hRight
+              exact match event with
+              | .left event => leftEmpty event
+              | .right event => rightEmpty event
+
 @[simp, grind =]
 theorem residual_move {Moves : Type u} {rest : Moves → Spec} (x : Moves) :
     residual (Front.move (rest := rest) x) = rest x := rfl

@@ -19,7 +19,7 @@ scheduler linearization**:
 
 * choose one frontier event of `S`;
 * continue with the residual spec after that event;
-* repeat until reaching `done`.
+* repeat until reaching a quiescent residual with no enabled frontier events.
 
 So `Trace` is the finite interleaving-level execution object associated to the
 concurrent core. If a later true-concurrency layer adds independence or partial-
@@ -36,7 +36,8 @@ namespace Concurrent
 `Trace S` is a finite execution trace of the concurrent spec `S`.
 
 It records one scheduler-chosen linearization of frontier events, ending when
-the residual concurrent spec reaches `done`.
+the residual concurrent spec becomes quiescent, meaning its frontier type is
+empty.
 
 This should be read as the concurrent analogue of a sequential transcript, but
 with one crucial difference:
@@ -44,21 +45,31 @@ the constructors record **frontier choices** rather than the moves of a
 single always-current node.
 -/
 inductive Trace : Spec → Type (u + 1) where
-  | /-- The unique finished trace of a terminated concurrent spec. -/
-    done : Trace .done
+  | /-- A finished trace of a quiescent concurrent spec with no enabled
+    frontier events. This covers not only `.done` itself, but also dead
+    residual shapes such as `.par .done .done`. -/
+    done {S : Spec} (h : Front S → False) : Trace S
   | /-- Extend a trace by one frontier event and a trace of the residual spec
     that remains after performing that event. -/
     step {S : Spec} (event : Front S) : Trace (residual event) → Trace S
 
 namespace Trace
 
+/--
+Construct the finished trace of a concurrent spec that is known to be
+quiescent.
+-/
+def doneOfNotLive {S : Spec} (h : S.isLive = false) : Trace S :=
+  .done (isEmptyOfNotLive h)
+
 /-- The number of frontier events in a finite concurrent trace. -/
 def length : {S : Spec} → Trace S → Nat
-  | .done, .done => 0
+  | _, .done _ => 0
   | _, .step _ tail => tail.length.succ
 
 @[simp, grind =]
-theorem length_done : length Trace.done = 0 := rfl
+theorem length_done {S : Spec} (h : Front S → False) :
+    length (Trace.done h) = 0 := rfl
 
 @[simp, grind =]
 theorem length_step {S : Spec} (event : Front S) (tail : Trace (residual event)) :

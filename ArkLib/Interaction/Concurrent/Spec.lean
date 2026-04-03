@@ -68,6 +68,24 @@ inductive Spec : Type (u + 1) where
 namespace Spec
 
 /--
+`isLive S` decides whether the concurrent spec `S` still exposes any enabled
+frontier event.
+
+This is the structural liveness test for the concurrent source syntax:
+* `done` is not live;
+* an atomic `node` is live;
+* a parallel spec is live iff either side is live.
+
+Unlike syntactic equality with `.done`, this detects quiescent residuals such
+as `.par .done .done`, which expose no frontier events even though they are not
+literally the terminal constructor.
+-/
+def isLive : Concurrent.Spec → Bool
+  | .done => false
+  | .node _ _ => true
+  | .par left right => left.isLive || right.isLive
+
+/--
 Embed a sequential `Interaction.Spec` into the concurrent syntax as the
 one-thread fragment with no use of `par`.
 
@@ -84,6 +102,13 @@ theorem ofSequential_done : ofSequential Interaction.Spec.done = .done := rfl
 @[simp, grind =]
 theorem ofSequential_node (Moves : Type u) (rest : Moves → Interaction.Spec) :
     ofSequential (.node Moves rest) = .node Moves (fun x => ofSequential (rest x)) := rfl
+
+@[simp, grind =]
+theorem isLive_done : isLive .done = false := rfl
+
+@[simp, grind =]
+theorem isLive_node (Moves : Type u) (rest : Moves → Concurrent.Spec) :
+    isLive (.node Moves rest) = true := rfl
 
 end Spec
 end Concurrent
