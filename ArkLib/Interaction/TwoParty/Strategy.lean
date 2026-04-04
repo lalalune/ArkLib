@@ -767,10 +767,9 @@ private theorem pairedMonadicSyntax_family_focal :
         (agent := PUnit.unit)
         (ctxs := RoleDecoration.withPairedMonads roles stratDeco cptDeco)
         (Out := Output)]
-      simpa [Strategy.withRolesAndMonads] using
-        (RoleDecoration.withPairedMonads_map_fst
-          (spec := spec) (roles := roles)
-          (stratDeco := stratDeco) (cptDeco := cptDeco))
+      rw [RoleDecoration.withPairedMonads_map_fst
+        (spec := spec) (roles := roles)
+        (stratDeco := stratDeco) (cptDeco := cptDeco)]
 
 private theorem pairedMonadicSyntax_family_counterpart :
     {spec : Spec} → {roles : RoleDecoration spec} →
@@ -789,10 +788,9 @@ private theorem pairedMonadicSyntax_family_counterpart :
         (agent := PUnit.unit)
         (ctxs := RoleDecoration.withPairedMonads roles stratDeco cptDeco)
         (Out := Output)]
-      simpa [Counterpart.withMonads] using
-        (RoleDecoration.withPairedMonads_map_snd
-          (spec := spec) (roles := roles)
-          (stratDeco := stratDeco) (cptDeco := cptDeco))
+      rw [RoleDecoration.withPairedMonads_map_snd
+        (spec := spec) (roles := roles)
+        (stratDeco := stratDeco) (cptDeco := cptDeco)]
 
 private def pairedMonadicProfile {spec : Spec} {roles : RoleDecoration spec}
     {stratDeco cptDeco : MonadDecoration spec}

@@ -960,7 +960,7 @@ theorem IsSound.bound_terminalProb
           _ = ⨆ x, (next x).maxPathError := by simp
       have hrun :
           Spec.Strategy.runWithRoles _ _ prover (randomChallenger sample _ _) = mx >>= my := by
-        simp [mx, my, randomChallenger, Spec.Strategy.runWithRoles_sender, bind_assoc]
+        simp [mx, my, randomChallenger, Spec.Strategy.runWithRoles_sender]
       simpa [ClaimTree.maxPathError, hrun]
         using hbind
   | @receiver _ X rest rRest good error NextClaim next advance ih =>
@@ -1045,7 +1045,7 @@ theorem IsSound.bound_terminalProb
       have hrun :
           Spec.Strategy.runWithRoles _ _ prover (randomChallenger sample _ _) =
             sample _ >>= my := by
-        simp [my, randomChallenger, Spec.Strategy.runWithRoles_receiver, bind_assoc]
+        simp [my, randomChallenger, Spec.Strategy.runWithRoles_receiver]
       simpa [ClaimTree.maxPathError, hrun] using hbind
 
 end ClaimTree
