@@ -60,11 +60,34 @@ private abbrev finalQueryOD :
     (finalFoldOD (F := F) (d := d))
     (fun _ => queryRoundOD (n := n) (s := s) (l := l))
 
-private def terminalPhase {ι : Type} {oSpec : OracleSpec ι}
+private noncomputable def queryRoundSuffixReduction {ι : Type} {oSpec : OracleSpec ι}
+    (h_domain : totalShift s ≤ n)
+    (sampleQueries : OracleComp oSpec (QueryBatch (n := n) s l)) :
+    OracleReduction.{0} oSpec
+      PUnit
+      (fun _ => queryRoundSpec (n := n) (s := s) (l := l))
+      (fun _ => queryRoundRoles (n := n) (s := s) (l := l))
+      (fun _ => queryRoundOD (n := n) (s := s) (l := l))
+      (fun _ => FinalStatement (F := F) (k := k) (d := d))
+      (fun _ => FoldCodewordOracleFamily (F := F) (n := n) D x s)
+      (fun _ => PUnit)
+      (fun _ _ => QueryResult)
+      (fun _ _ => EmptyOracleFamily)
+      (fun _ _ => PUnit) :=
+  queryRoundContinuation
+    (F := F) (D := D) (n := n) (x := x) (s := s) (d := d) (l := l)
+    (SharedIn := PUnit)
+    (StatementIn := fun _ => FinalStatement (F := F) (k := k) (d := d))
+    (ι := ι) (oSpec := oSpec)
+    h_domain
+    (fun _ stmt => stmt)
+    (fun _ => sampleQueries)
+
+private noncomputable def terminalPhase {ι : Type} {oSpec : OracleSpec ι}
     (h_domain : totalShift s ≤ n)
     (sampleFinalChallenge : OracleComp oSpec F)
     (sampleQueries : OracleComp oSpec (QueryBatch (n := n) s l)) :
-    OracleReduction oSpec
+    OracleReduction.{0} oSpec
       PUnit
       (fun _ => finalQueryContext (F := F) (n := n) (s := s) (d := d) (l := l))
       (fun _ => finalQueryRoles (F := F) (n := n) (s := s) (d := d) (l := l))
@@ -94,14 +117,14 @@ private def terminalPhase {ι : Type} {oSpec : OracleSpec ι}
   OracleReduction.comp
     (StmtMid := fun _ _ => FinalStatement (F := F) (k := k) (d := d))
     (ιₛₘ := fun _ _ => Fin (k + 1))
-    (OStmtMid := fun _ _ => FoldCodewordOracleFamily (F := F) (n := n) D x s)
+    (OStatementMid := fun _ _ => FoldCodewordOracleFamily (F := F) (n := n) D x s)
     (WitMid := fun _ _ => PUnit)
     (ctx₂ := fun _ _ => queryRoundSpec (n := n) (s := s) (l := l))
     (roles₂ := fun _ _ => queryRoundRoles (n := n) (s := s) (l := l))
     (oracleDeco₂ := fun _ _ => queryRoundOD (n := n) (s := s) (l := l))
     (StmtOut := fun _ _ _ => QueryResult)
     (ιₛₒ := fun _ _ _ => PEmpty)
-    (OStmtOut := fun _ _ _ i => EmptyOracleFamily i)
+    (OStatementOut := fun _ _ _ i => EmptyOracleFamily i)
     (WitOut := fun _ _ _ => PUnit)
     (finalFoldContinuation
       (F := F) (D := D) (n := n) (x := x) (s := s) (d := d)
@@ -110,19 +133,78 @@ private def terminalPhase {ι : Type} {oSpec : OracleSpec ι}
       (ι := ι) (oSpec := oSpec)
       (fun _ stmt => stmt)
       (fun _ => sampleFinalChallenge))
-    (fun _ _ =>
-      queryRoundContinuation
-        (F := F) (D := D) (n := n) (x := x) (s := s) (d := d) (l := l)
-        (SharedIn := PUnit)
-        (StatementIn := fun _ => FinalStatement (F := F) (k := k) (d := d))
-        (ι := ι) (oSpec := oSpec)
-        h_domain
-        (fun _ stmt => stmt)
-        (fun _ => sampleQueries))
+    { prover := fun st sWithOracles w => do
+        let input' :
+            StatementWithOracles
+              (fun _ => FinalStatement (F := F) (k := k) (d := d))
+              (fun _ => FoldCodewordOracleFamily (F := F) (n := n) D x s) PUnit.unit :=
+          ⟨sWithOracles.stmt, sWithOracles.oracleStmt⟩
+        let remapOutput :
+            (tr : Spec.Transcript (queryRoundSpec (n := n) (s := s) (l := l))) →
+            HonestProverOutput
+              (StatementWithOracles (fun _ => QueryResult) (fun _ i => EmptyOracleFamily i)
+                PUnit.unit)
+              PUnit →
+            HonestProverOutput
+              (StatementWithOracles (fun _ => QueryResult) (fun _ i => EmptyOracleFamily i) st)
+              PUnit
+          | _, ⟨stmtOut, witOut⟩ => ⟨⟨stmtOut.stmt, stmtOut.oracleStmt⟩, witOut⟩
+        let strat ←
+          (queryRoundSuffixReduction
+            (F := F) (D := D) (n := n) (x := x) (s := s) (d := d) (l := l)
+            (ι := ι) (oSpec := oSpec)
+            h_domain sampleQueries).prover PUnit.unit input' w
+        pure <| Spec.Strategy.mapOutputWithRoles remapOutput strat
+      verifier := fun _ {_} accSpec stmt =>
+        (queryRoundSuffixReduction
+          (F := F) (D := D) (n := n) (x := x) (s := s) (d := d) (l := l)
+          (ι := ι) (oSpec := oSpec)
+          h_domain sampleQueries).verifier PUnit.unit accSpec stmt
+      simulate := fun _ tr =>
+        (queryRoundSuffixReduction
+          (F := F) (D := D) (n := n) (x := x) (s := s) (d := d) (l := l)
+          (ι := ι) (oSpec := oSpec)
+          h_domain sampleQueries).simulate PUnit.unit tr }
+
+private noncomputable def terminalPhaseReduction {ι : Type} {oSpec : OracleSpec ι}
+    (h_domain : totalShift s ≤ n)
+    (sampleFinalChallenge : OracleComp oSpec F)
+    (sampleQueries : OracleComp oSpec (QueryBatch (n := n) s l)) :
+    OracleReduction.{0} oSpec
+      PUnit
+      (fun _ => finalQueryContext (F := F) (n := n) (s := s) (d := d) (l := l))
+      (fun _ => finalQueryRoles (F := F) (n := n) (s := s) (d := d) (l := l))
+      (fun _ => finalQueryOD (F := F) (n := n) (s := s) (d := d) (l := l))
+      (fun _ => FoldChallenges (F := F) (k := k))
+      (fun _ => FoldCodewordOracleFamily (F := F) (n := n) D x s)
+      (fun _ => HonestPoly (F := F) s d k)
+      (fun _ tr =>
+        Spec.Transcript.liftAppend
+          (finalFoldSpec (F := F) (d := d))
+          (fun _ => queryRoundSpec (n := n) (s := s) (l := l))
+          (fun _ _ => QueryResult)
+          tr)
+      (fun _ tr =>
+        liftAppendOracleFamily
+          (finalFoldSpec (F := F) (d := d))
+          (fun _ => queryRoundSpec (n := n) (s := s) (l := l))
+          (fun _ _ => PEmpty)
+          (fun _ _ i => EmptyOracleFamily i)
+          tr)
+      (fun _ tr =>
+        Spec.Transcript.liftAppend
+          (finalFoldSpec (F := F) (d := d))
+          (fun _ => queryRoundSpec (n := n) (s := s) (l := l))
+          (fun _ _ => PUnit)
+          tr) :=
+  terminalPhase
+    (F := F) (D := D) (n := n) (x := x) (s := s) (d := d) (l := l)
+    (ι := ι) (oSpec := oSpec)
+    h_domain sampleFinalChallenge sampleQueries
 
 /-- The full continuation-native FRI protocol. It is assembled by composing the
 non-final fold phase with the terminal fold-plus-query continuation. -/
-def friContinuation {ι : Type} {oSpec : OracleSpec ι}
+noncomputable def friContinuation {ι : Type} {oSpec : OracleSpec ι}
     (h_domain : totalShift s ≤ n)
     (sampleFoldChallenge : (i : Fin k) → OracleComp oSpec F)
     (sampleFinalChallenge : OracleComp oSpec F)
@@ -130,7 +212,7 @@ def friContinuation {ι : Type} {oSpec : OracleSpec ι}
   OracleReduction.comp
     (StmtMid := fun _ _ => FoldChallenges (F := F) (k := k))
     (ιₛₘ := fun _ _ => Fin (k + 1))
-    (OStmtMid := fun _ _ => FoldCodewordOracleFamily (F := F) (n := n) D x s)
+    (OStatementMid := fun _ _ => FoldCodewordOracleFamily (F := F) (n := n) D x s)
     (WitMid := fun _ _ => HonestPoly (F := F) s d k)
     (ctx₂ := fun _ _ => finalQueryContext (F := F) (n := n) (s := s) (d := d) (l := l))
     (roles₂ := fun _ _ => finalQueryRoles (F := F) (n := n) (s := s) (d := d) (l := l))
@@ -147,7 +229,7 @@ def friContinuation {ι : Type} {oSpec : OracleSpec ι}
         (fun _ => queryRoundSpec (n := n) (s := s) (l := l))
         (fun _ _ => PEmpty)
         tr)
-    (OStmtOut := fun _ _ tr =>
+    (OStatementOut := fun _ _ tr =>
       liftAppendOracleFamily
         (finalFoldSpec (F := F) (d := d))
         (fun _ => queryRoundSpec (n := n) (s := s) (l := l))
@@ -164,14 +246,72 @@ def friContinuation {ι : Type} {oSpec : OracleSpec ι}
       (F := F) (D := D) (n := n) (x := x) (s := s) (d := d)
       (ι := ι) (oSpec := oSpec)
       sampleFoldChallenge)
-    (fun _ _ =>
-      terminalPhase
-        (F := F) (D := D) (n := n) (x := x) (s := s) (d := d) (l := l)
-        (ι := ι) (oSpec := oSpec)
-        h_domain sampleFinalChallenge sampleQueries)
+    { prover := fun st sWithOracles w => do
+        let input' :
+            StatementWithOracles
+              (fun _ => FoldChallenges (F := F) (k := k))
+              (fun _ => FoldCodewordOracleFamily (F := F) (n := n) D x s) PUnit.unit :=
+          ⟨sWithOracles.stmt, sWithOracles.oracleStmt⟩
+        let remapOutput :
+            (tr :
+              Spec.Transcript
+                (finalQueryContext (F := F) (n := n) (s := s) (d := d) (l := l))) →
+            HonestProverOutput
+              (StatementWithOracles
+                (fun _ => Spec.Transcript.liftAppend
+                  (finalFoldSpec (F := F) (d := d))
+                  (fun _ => queryRoundSpec (n := n) (s := s) (l := l))
+                  (fun _ _ => QueryResult) tr)
+                (fun _ =>
+                  liftAppendOracleFamily
+                    (finalFoldSpec (F := F) (d := d))
+                    (fun _ => queryRoundSpec (n := n) (s := s) (l := l))
+                    (fun _ _ => PEmpty)
+                    (fun _ _ i => EmptyOracleFamily i)
+                    tr)
+                PUnit.unit)
+              (Spec.Transcript.liftAppend
+                (finalFoldSpec (F := F) (d := d))
+                (fun _ => queryRoundSpec (n := n) (s := s) (l := l))
+                (fun _ _ => PUnit) tr) →
+            HonestProverOutput
+              (StatementWithOracles
+                (fun _ => Spec.Transcript.liftAppend
+                  (finalFoldSpec (F := F) (d := d))
+                  (fun _ => queryRoundSpec (n := n) (s := s) (l := l))
+                  (fun _ _ => QueryResult) tr)
+                (fun _ =>
+                  liftAppendOracleFamily
+                    (finalFoldSpec (F := F) (d := d))
+                    (fun _ => queryRoundSpec (n := n) (s := s) (l := l))
+                    (fun _ _ => PEmpty)
+                    (fun _ _ i => EmptyOracleFamily i)
+                    tr)
+                st)
+              (Spec.Transcript.liftAppend
+                (finalFoldSpec (F := F) (d := d))
+                (fun _ => queryRoundSpec (n := n) (s := s) (l := l))
+                (fun _ _ => PUnit) tr)
+          | _, ⟨stmtOut, witOut⟩ => ⟨⟨stmtOut.stmt, stmtOut.oracleStmt⟩, witOut⟩
+        let strat ←
+          (terminalPhaseReduction
+            (F := F) (D := D) (n := n) (x := x) (s := s) (d := d) (l := l)
+            (ι := ι) (oSpec := oSpec)
+            h_domain sampleFinalChallenge sampleQueries).prover PUnit.unit input' w
+        pure <| Spec.Strategy.mapOutputWithRoles remapOutput strat
+      verifier := fun _ {_} accSpec stmt =>
+        (terminalPhaseReduction
+          (F := F) (D := D) (n := n) (x := x) (s := s) (d := d) (l := l)
+          (ι := ι) (oSpec := oSpec)
+          h_domain sampleFinalChallenge sampleQueries).verifier PUnit.unit accSpec stmt
+      simulate := fun _ tr =>
+        (terminalPhaseReduction
+          (F := F) (D := D) (n := n) (x := x) (s := s) (d := d) (l := l)
+          (ι := ι) (oSpec := oSpec)
+          h_domain sampleFinalChallenge sampleQueries).simulate PUnit.unit tr }
 
 /-- The full FRI protocol as an oracle reduction with fixed shared input. -/
-def friReduction {ι : Type} {oSpec : OracleSpec ι}
+noncomputable def friReduction {ι : Type} {oSpec : OracleSpec ι}
     (h_domain : totalShift s ≤ n)
     (sampleFoldChallenge : (i : Fin k) → OracleComp oSpec F)
     (sampleFinalChallenge : OracleComp oSpec F)

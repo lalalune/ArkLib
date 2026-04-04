@@ -155,22 +155,55 @@ private noncomputable def tailContinuation
         OracleReduction.comp
           (StmtMid := fun _ _ => Option (RoundClaim R))
           (ιₛₘ := fun _ _ => Unit)
-          (OStmtMid := fun _ _ => Sumcheck.PolyFamily R deg n)
+          (OStatementMid := fun _ _ => Sumcheck.PolyFamily R deg n)
           (WitMid := fun _ _ => PUnit)
           (ctx₂ := fun _ _ => Sumcheck.fullSpec R deg remaining)
           (roles₂ := fun _ _ => Sumcheck.fullRoles R deg remaining)
           (oracleDeco₂ := fun _ _ => fullOD remaining)
           (StmtOut := fun _ _ _ => Option (RoundClaim R))
           (ιₛₒ := fun _ _ _ => Unit)
-          (OStmtOut := fun _ _ _ => Sumcheck.PolyFamily R deg n)
+          (OStatementOut := fun _ _ _ => Sumcheck.PolyFamily R deg n)
           (WitOut := fun _ _ _ => PUnit)
           (roundContinuationOption
             (R := R) (deg := deg) D
             (n := n) (prefixLen := prefixLen) hRound prefixTr sampleChallenge)
-          (fun _ tr =>
-            tailContinuation D n sampleChallenge
-              remaining (prefixLen + 1) hTail
-              (snocRoundTranscript (R := R) (deg := deg) prefixLen prefixTr tr))
+          { prover := fun st sWithOracles w => do
+              let tail :=
+                tailContinuation D n sampleChallenge
+                  remaining (prefixLen + 1) hTail
+                  (snocRoundTranscript (R := R) (deg := deg) prefixLen prefixTr st.2)
+              let input' :
+                  StatementWithOracles
+                    (fun _ => Option (RoundClaim R))
+                    (fun _ => Sumcheck.PolyFamily R deg n) PUnit.unit :=
+                ⟨sWithOracles.stmt, sWithOracles.oracleStmt⟩
+              let remapOutput :
+                  (tr : Spec.Transcript (Sumcheck.fullSpec R deg remaining)) →
+                  HonestProverOutput
+                    (StatementWithOracles
+                      (fun _ => Option (RoundClaim R))
+                      (fun _ => Sumcheck.PolyFamily R deg n) PUnit.unit)
+                    PUnit →
+                  HonestProverOutput
+                    (StatementWithOracles
+                      (fun _ => Option (RoundClaim R))
+                      (fun _ => Sumcheck.PolyFamily R deg n) st)
+                    PUnit
+                | _, ⟨stmtOut, witOut⟩ => ⟨⟨stmtOut.stmt, stmtOut.oracleStmt⟩, witOut⟩
+              let strat ← tail.prover PUnit.unit input' w
+              pure <| Spec.Strategy.mapOutputWithRoles remapOutput strat
+            verifier := fun st {_} accSpec stmt =>
+              let tail :=
+                tailContinuation D n sampleChallenge
+                  remaining (prefixLen + 1) hTail
+                  (snocRoundTranscript (R := R) (deg := deg) prefixLen prefixTr st.2)
+              tail.verifier PUnit.unit accSpec stmt
+            simulate := fun st tr =>
+              let tail :=
+                tailContinuation D n sampleChallenge
+                  remaining (prefixLen + 1) hTail
+                  (snocRoundTranscript (R := R) (deg := deg) prefixLen prefixTr st.2)
+              tail.simulate PUnit.unit tr }
       simpa [Sumcheck.fullSpec, Sumcheck.fullRoles, fullOD, Spec.replicate_succ] using cont
 
 /-- Tail continuation for the remaining `remaining` rounds when the honest prover
@@ -221,20 +254,46 @@ private noncomputable def tailContinuationStateful
         OracleReduction.comp
           (StmtMid := fun _ _ => Option (RoundClaim R))
           (ιₛₘ := fun _ _ => Unit)
-          (OStmtMid := fun _ _ => Sumcheck.PolyFamily R deg n)
+          (OStatementMid := fun _ _ => Sumcheck.PolyFamily R deg n)
           (WitMid := fun _ _ => Sumcheck.PolyStmt R deg remaining)
           (ctx₂ := fun _ _ => Sumcheck.fullSpec R deg remaining)
           (roles₂ := fun _ _ => Sumcheck.fullRoles R deg remaining)
           (oracleDeco₂ := fun _ _ => fullOD remaining)
           (StmtOut := fun _ _ _ => Option (RoundClaim R))
           (ιₛₒ := fun _ _ _ => Unit)
-          (OStmtOut := fun _ _ _ => Sumcheck.PolyFamily R deg n)
+          (OStatementOut := fun _ _ _ => Sumcheck.PolyFamily R deg n)
           (WitOut := fun _ _ _ => Sumcheck.PolyStmt R deg 0)
           (roundContinuationOptionStateful
             (R := R) (deg := deg) D
             (totalVars := n) remaining sampleChallenge)
-          (fun _ _ =>
-            tailContinuationStateful D n sampleChallenge remaining)
+          { prover := fun st sWithOracles w => do
+              let tail := tailContinuationStateful D n sampleChallenge remaining
+              let input' :
+                  StatementWithOracles
+                    (fun _ => Option (RoundClaim R))
+                    (fun _ => Sumcheck.PolyFamily R deg n) PUnit.unit :=
+                ⟨sWithOracles.stmt, sWithOracles.oracleStmt⟩
+              let remapOutput :
+                  (tr : Spec.Transcript (Sumcheck.fullSpec R deg remaining)) →
+                  HonestProverOutput
+                    (StatementWithOracles
+                      (fun _ => Option (RoundClaim R))
+                      (fun _ => Sumcheck.PolyFamily R deg n) PUnit.unit)
+                    (Sumcheck.PolyStmt R deg 0) →
+                  HonestProverOutput
+                    (StatementWithOracles
+                      (fun _ => Option (RoundClaim R))
+                      (fun _ => Sumcheck.PolyFamily R deg n) st)
+                    (Sumcheck.PolyStmt R deg 0)
+                | _, ⟨stmtOut, witOut⟩ => ⟨⟨stmtOut.stmt, stmtOut.oracleStmt⟩, witOut⟩
+              let strat ← tail.prover PUnit.unit input' w
+              pure <| Spec.Strategy.mapOutputWithRoles remapOutput strat
+            verifier := fun _ {_} accSpec stmt =>
+              (tailContinuationStateful D n sampleChallenge remaining).verifier
+                PUnit.unit accSpec stmt
+            simulate := fun _ tr =>
+              (tailContinuationStateful D n sampleChallenge remaining).simulate
+                PUnit.unit tr }
       simpa [Sumcheck.fullSpec, Sumcheck.fullRoles, fullOD, Spec.replicate_succ] using cont
 
 /-- The full continuation-native sum-check protocol over the fixed original
@@ -290,14 +349,14 @@ private noncomputable def sumcheckContinuation
         OracleReduction.comp
           (StmtMid := fun _ _ => Option (RoundClaim R))
           (ιₛₘ := fun _ _ => Unit)
-          (OStmtMid := fun _ _ => Sumcheck.PolyFamily R deg (n + 1))
+          (OStatementMid := fun _ _ => Sumcheck.PolyFamily R deg (n + 1))
           (WitMid := fun _ _ => PUnit)
           (ctx₂ := fun _ _ => Sumcheck.fullSpec R deg n)
           (roles₂ := fun _ _ => Sumcheck.fullRoles R deg n)
           (oracleDeco₂ := fun _ _ => fullOD n)
           (StmtOut := fun _ _ _ => Option (RoundClaim R))
           (ιₛₒ := fun _ _ _ => Unit)
-          (OStmtOut := fun _ _ _ => Sumcheck.PolyFamily R deg (n + 1))
+          (OStatementOut := fun _ _ _ => Sumcheck.PolyFamily R deg (n + 1))
           (WitOut := fun _ _ _ => PUnit)
           (roundContinuation
             (R := R) (deg := deg) D
@@ -305,10 +364,43 @@ private noncomputable def sumcheckContinuation
             (Nat.succ_pos n)
             prefix0
             sampleChallenge)
-          (fun _ tr =>
-            tailContinuation D (n + 1) sampleChallenge
-              n 1 (by omega)
-              (snocRoundTranscript (R := R) (deg := deg) 0 prefix0 tr))
+          { prover := fun st sWithOracles w => do
+              let tail :=
+                tailContinuation D (n + 1) sampleChallenge
+                  n 1 (by omega)
+                  (snocRoundTranscript (R := R) (deg := deg) 0 prefix0 st.2)
+              let input' :
+                  StatementWithOracles
+                    (fun _ => Option (RoundClaim R))
+                    (fun _ => Sumcheck.PolyFamily R deg (n + 1)) PUnit.unit :=
+                ⟨sWithOracles.stmt, sWithOracles.oracleStmt⟩
+              let remapOutput :
+                  (tr : Spec.Transcript (Sumcheck.fullSpec R deg n)) →
+                  HonestProverOutput
+                    (StatementWithOracles
+                      (fun _ => Option (RoundClaim R))
+                      (fun _ => Sumcheck.PolyFamily R deg (n + 1)) PUnit.unit)
+                    PUnit →
+                  HonestProverOutput
+                    (StatementWithOracles
+                      (fun _ => Option (RoundClaim R))
+                      (fun _ => Sumcheck.PolyFamily R deg (n + 1)) st)
+                    PUnit
+                | _, ⟨stmtOut, witOut⟩ => ⟨⟨stmtOut.stmt, stmtOut.oracleStmt⟩, witOut⟩
+              let strat ← tail.prover PUnit.unit input' w
+              pure <| Spec.Strategy.mapOutputWithRoles remapOutput strat
+            verifier := fun st {_} accSpec stmt =>
+              let tail :=
+                tailContinuation D (n + 1) sampleChallenge
+                  n 1 (by omega)
+                  (snocRoundTranscript (R := R) (deg := deg) 0 prefix0 st.2)
+              tail.verifier PUnit.unit accSpec stmt
+            simulate := fun st tr =>
+              let tail :=
+                tailContinuation D (n + 1) sampleChallenge
+                  n 1 (by omega)
+                  (snocRoundTranscript (R := R) (deg := deg) 0 prefix0 st.2)
+              tail.simulate PUnit.unit tr }
       simpa [Sumcheck.fullSpec, Sumcheck.fullRoles, fullOD, Spec.replicate_succ] using cont
 
 /-- The full continuation-native sum-check protocol with a private residual
@@ -362,20 +454,46 @@ private noncomputable def sumcheckContinuationStateful
         OracleReduction.comp
           (StmtMid := fun _ _ => Option (RoundClaim R))
           (ιₛₘ := fun _ _ => Unit)
-          (OStmtMid := fun _ _ => Sumcheck.PolyFamily R deg (n + 1))
+          (OStatementMid := fun _ _ => Sumcheck.PolyFamily R deg (n + 1))
           (WitMid := fun _ _ => Sumcheck.PolyStmt R deg n)
           (ctx₂ := fun _ _ => Sumcheck.fullSpec R deg n)
           (roles₂ := fun _ _ => Sumcheck.fullRoles R deg n)
           (oracleDeco₂ := fun _ _ => fullOD n)
           (StmtOut := fun _ _ _ => Option (RoundClaim R))
           (ιₛₒ := fun _ _ _ => Unit)
-          (OStmtOut := fun _ _ _ => Sumcheck.PolyFamily R deg (n + 1))
+          (OStatementOut := fun _ _ _ => Sumcheck.PolyFamily R deg (n + 1))
           (WitOut := fun _ _ _ => Sumcheck.PolyStmt R deg 0)
           (roundContinuationStateful
             (R := R) (deg := deg) D
             (totalVars := n + 1) n sampleChallenge)
-          (fun _ _ =>
-            tailContinuationStateful D (n + 1) sampleChallenge n)
+          { prover := fun st sWithOracles w => do
+              let tail := tailContinuationStateful D (n + 1) sampleChallenge n
+              let input' :
+                  StatementWithOracles
+                    (fun _ => Option (RoundClaim R))
+                    (fun _ => Sumcheck.PolyFamily R deg (n + 1)) PUnit.unit :=
+                ⟨sWithOracles.stmt, sWithOracles.oracleStmt⟩
+              let remapOutput :
+                  (tr : Spec.Transcript (Sumcheck.fullSpec R deg n)) →
+                  HonestProverOutput
+                    (StatementWithOracles
+                      (fun _ => Option (RoundClaim R))
+                      (fun _ => Sumcheck.PolyFamily R deg (n + 1)) PUnit.unit)
+                    (Sumcheck.PolyStmt R deg 0) →
+                  HonestProverOutput
+                    (StatementWithOracles
+                      (fun _ => Option (RoundClaim R))
+                      (fun _ => Sumcheck.PolyFamily R deg (n + 1)) st)
+                    (Sumcheck.PolyStmt R deg 0)
+                | _, ⟨stmtOut, witOut⟩ => ⟨⟨stmtOut.stmt, stmtOut.oracleStmt⟩, witOut⟩
+              let strat ← tail.prover PUnit.unit input' w
+              pure <| Spec.Strategy.mapOutputWithRoles remapOutput strat
+            verifier := fun _ {_} accSpec stmt =>
+              (tailContinuationStateful D (n + 1) sampleChallenge n).verifier
+                PUnit.unit accSpec stmt
+            simulate := fun _ tr =>
+              (tailContinuationStateful D (n + 1) sampleChallenge n).simulate
+                PUnit.unit tr }
       simpa [Sumcheck.fullSpec, Sumcheck.fullRoles, fullOD, Spec.replicate_succ] using cont
 
 /-- The canonical `n`-round oracle-native sum-check protocol.
