@@ -280,8 +280,10 @@ theorem currentControllers_eq_of_relByController {Party : Type u}
           have hHead' :
               (left.step _).currentController? trL = (right.step _).currentController? trR := by
             simpa [TranscriptRel.byController] using hHead
-          change (left.step _).currentController? trL :: tailL.currentControllers =
-            (right.step _).currentController? trR :: tailR.currentControllers
+          change (left.step _).currentController? trL ::
+              Process.Prefix.currentControllers tailL =
+            (right.step _).currentController? trR ::
+              Process.Prefix.currentControllers tailR
           simp [hHead', ih hTail']
 
 /-- Matching by controller-path equality preserves the extracted controller
@@ -312,8 +314,10 @@ theorem controllerPaths_eq_of_relByPath {Party : Type u}
           have hHead' :
               (left.step _).controllerPath trL = (right.step _).controllerPath trR := by
             simpa [TranscriptRel.byPath] using hHead
-          change (left.step _).controllerPath trL :: tailL.controllerPaths =
-            (right.step _).controllerPath trR :: tailR.controllerPaths
+          change (left.step _).controllerPath trL ::
+              Process.Prefix.controllerPaths tailL =
+            (right.step _).controllerPath trR ::
+              Process.Prefix.controllerPaths tailR
           simp [hHead', ih hTail']
 
 /-- Matching by stable event equality preserves the extracted event sequence of

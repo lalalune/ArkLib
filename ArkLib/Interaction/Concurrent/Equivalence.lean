@@ -106,8 +106,8 @@ theorem currentControllersUpTo_eq {Party : Type u}
     (run : Process.Run left.toProcess)
     {pRight : right.Proc}
     (hrel : equiv.forth.stateRel run.initial pRight) (n : Nat) :
-    run.currentControllersUpTo n =
-      (equiv.forth.mapRun run hrel).currentControllersUpTo n :=
+    Process.Run.currentControllersUpTo run n =
+      Process.Run.currentControllersUpTo (equiv.forth.mapRun run hrel) n :=
   equiv.forth.currentControllersUpTo_mapRun run hrel n
 
 end Controller
@@ -124,8 +124,8 @@ theorem controllerPathsUpTo_eq {Party : Type u}
     (run : Process.Run left.toProcess)
     {pRight : right.Proc}
     (hrel : equiv.forth.stateRel run.initial pRight) (n : Nat) :
-    run.controllerPathsUpTo n =
-      (equiv.forth.mapRun run hrel).controllerPathsUpTo n :=
+    Process.Run.controllerPathsUpTo run n =
+      Process.Run.controllerPathsUpTo (equiv.forth.mapRun run hrel) n :=
   equiv.forth.controllerPathsUpTo_mapRun run hrel n
 
 end ControllerPath
@@ -144,8 +144,8 @@ theorem eventsUpTo_eq {Party : Type u} {Event : Type w}
     (run : Process.Run left.toProcess)
     {pRight : right.Proc}
     (hrel : equiv.forth.stateRel run.initial pRight) (n : Nat) :
-    run.eventsUpTo eventLeft n =
-      (equiv.forth.mapRun run hrel).eventsUpTo eventRight n :=
+    Process.Run.eventsUpTo eventLeft run n =
+      Process.Run.eventsUpTo eventRight (equiv.forth.mapRun run hrel) n :=
   equiv.forth.eventsUpTo_mapRun run hrel n
 
 end Trace
@@ -164,8 +164,8 @@ theorem ticketsUpTo_eq {Party : Type u} {TicketTy : Type w}
     (run : Process.Run left.toProcess)
     {pRight : right.Proc}
     (hrel : equiv.forth.stateRel run.initial pRight) (n : Nat) :
-    run.ticketsUpTo ticketLeft n =
-      (equiv.forth.mapRun run hrel).ticketsUpTo ticketRight n :=
+    Process.Run.ticketsUpTo ticketLeft run n =
+      Process.Run.ticketsUpTo ticketRight (equiv.forth.mapRun run hrel) n :=
   equiv.forth.ticketsUpTo_mapRun run hrel n
 
 end Ticket

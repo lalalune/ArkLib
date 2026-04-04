@@ -30,7 +30,7 @@ concurrent frontend and rich enough to support observational reasoning, not
 just state-reachability arguments.
 -/
 
-universe u v w
+universe u v w w₂ w₃
 
 namespace Interaction
 namespace Concurrent
@@ -57,11 +57,14 @@ simulation preserves at each step. Choosing different transcript relations
 recovers event-preserving, ticket-preserving, controller-preserving, or
 observation-preserving refinements.
 -/
-structure ForwardSimulation {Party : Type u}
-    (impl spec : Process.System Party)
+structure ForwardSimulation
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Δ : Interaction.Spec.Node.Context.{w, w₃}}
+    (impl : ProcessOver.System Γ)
+    (spec : ProcessOver.System Δ)
     (matchStep :
-      Observation.Process.TranscriptRel impl.toProcess spec.toProcess :=
-        Observation.Process.TranscriptRel.top) where
+      ProcessOver.TranscriptRel impl.toProcess spec.toProcess :=
+        ProcessOver.TranscriptRel.top) where
   stateRel : impl.Proc → spec.Proc → Prop
   init :
     ∀ pImpl, impl.init pImpl →
@@ -87,10 +90,12 @@ Choose the matching specification transcript for one implementation transcript.
 This is the specification-side step selected by the simulation for the given
 implementation step.
 -/
-noncomputable def matchTranscript {Party : Type u}
-    {impl spec : Process.System Party}
+noncomputable def matchTranscript
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Δ : Interaction.Spec.Node.Context.{w, w₃}}
+    {impl : ProcessOver.System Γ} {spec : ProcessOver.System Δ}
     {matchStep :
-      Observation.Process.TranscriptRel impl.toProcess spec.toProcess}
+      ProcessOver.TranscriptRel impl.toProcess spec.toProcess}
     (sim : ForwardSimulation impl spec matchStep)
     {pImpl pSpec : _}
     (hrel : sim.stateRel pImpl pSpec)
@@ -102,10 +107,12 @@ noncomputable def matchTranscript {Party : Type u}
 The chosen matching transcript satisfies `matchStep` and preserves the state
 relation to the next residual states.
 -/
-theorem matchTranscript_spec {Party : Type u}
-    {impl spec : Process.System Party}
+theorem matchTranscript_spec
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Δ : Interaction.Spec.Node.Context.{w, w₃}}
+    {impl : ProcessOver.System Γ} {spec : ProcessOver.System Δ}
     {matchStep :
-      Observation.Process.TranscriptRel impl.toProcess spec.toProcess}
+      ProcessOver.TranscriptRel impl.toProcess spec.toProcess}
     (sim : ForwardSimulation impl spec matchStep)
     {pImpl pSpec : _}
     (hrel : sim.stateRel pImpl pSpec)
@@ -124,16 +131,18 @@ This is the fundamental state-transport construction behind run-level
 refinement: it recursively follows the implementation run while using the
 simulation to pick matching specification transcripts.
 -/
-noncomputable def matchedState {Party : Type u}
-    {impl spec : Process.System Party}
+noncomputable def matchedState
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Δ : Interaction.Spec.Node.Context.{w, w₃}}
+    {impl : ProcessOver.System Γ} {spec : ProcessOver.System Δ}
     {matchStep :
-      Observation.Process.TranscriptRel impl.toProcess spec.toProcess}
+      ProcessOver.TranscriptRel impl.toProcess spec.toProcess}
     (sim : ForwardSimulation impl spec matchStep)
-    (run : Process.Run impl.toProcess)
+    (run : ProcessOver.Run impl.toProcess)
     {pSpec : spec.Proc}
     (hrel : sim.stateRel run.initial pSpec) :
     (n : Nat) → {qSpec : spec.Proc // sim.stateRel (run.state n) qSpec}
-  | 0 => ⟨pSpec, by simpa [Process.Run.initial] using hrel⟩
+  | 0 => ⟨pSpec, by simpa [ProcessOver.Run.initial] using hrel⟩
   | n + 1 =>
       let prev := sim.matchedState run hrel n
       let trSpec := sim.matchTranscript prev.2 (run.transcript n)
@@ -150,12 +159,14 @@ the run `run`, relative to the initial related specification state witnessed by
 
 This is the stepwise witness used to build the whole matched specification run.
 -/
-noncomputable def matchedTranscript {Party : Type u}
-    {impl spec : Process.System Party}
+noncomputable def matchedTranscript
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Δ : Interaction.Spec.Node.Context.{w, w₃}}
+    {impl : ProcessOver.System Γ} {spec : ProcessOver.System Δ}
     {matchStep :
-      Observation.Process.TranscriptRel impl.toProcess spec.toProcess}
+      ProcessOver.TranscriptRel impl.toProcess spec.toProcess}
     (sim : ForwardSimulation impl spec matchStep)
-    (run : Process.Run impl.toProcess)
+    (run : ProcessOver.Run impl.toProcess)
     {pSpec : spec.Proc}
     (hrel : sim.stateRel run.initial pSpec)
     (n : Nat) :
@@ -170,15 +181,17 @@ specification state witnessed by `hrel`.
 So `mapRun` turns a forward simulation into an execution-level translation from
 implementation runs to matching specification runs.
 -/
-noncomputable def mapRun {Party : Type u}
-    {impl spec : Process.System Party}
+noncomputable def mapRun
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Δ : Interaction.Spec.Node.Context.{w, w₃}}
+    {impl : ProcessOver.System Γ} {spec : ProcessOver.System Δ}
     {matchStep :
-      Observation.Process.TranscriptRel impl.toProcess spec.toProcess}
+      ProcessOver.TranscriptRel impl.toProcess spec.toProcess}
     (sim : ForwardSimulation impl spec matchStep)
-    (run : Process.Run impl.toProcess)
+    (run : ProcessOver.Run impl.toProcess)
     {pSpec : spec.Proc}
     (hrel : sim.stateRel run.initial pSpec) :
-    Process.Run spec.toProcess where
+    ProcessOver.Run spec.toProcess where
   state n := (sim.matchedState run hrel n).1
   transcript n := sim.matchedTranscript run hrel n
   next_state n := by
@@ -188,12 +201,14 @@ noncomputable def mapRun {Party : Type u}
 At every step index `n`, the mapped specification run remains related to the
 implementation run by `stateRel`.
 -/
-theorem stateRel_mapRun {Party : Type u}
-    {impl spec : Process.System Party}
+theorem stateRel_mapRun
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Δ : Interaction.Spec.Node.Context.{w, w₃}}
+    {impl : ProcessOver.System Γ} {spec : ProcessOver.System Δ}
     {matchStep :
-      Observation.Process.TranscriptRel impl.toProcess spec.toProcess}
+      ProcessOver.TranscriptRel impl.toProcess spec.toProcess}
     (sim : ForwardSimulation impl spec matchStep)
-    (run : Process.Run impl.toProcess)
+    (run : ProcessOver.Run impl.toProcess)
     {pSpec : spec.Proc}
     (hrel : sim.stateRel run.initial pSpec) :
     ∀ n, sim.stateRel (run.state n) ((sim.mapRun run hrel).state n)
@@ -205,12 +220,14 @@ implementation transcript by `matchStep`.
 
 This is the run-level form of the step-matching guarantee.
 -/
-theorem match_mapRun {Party : Type u}
-    {impl spec : Process.System Party}
+theorem match_mapRun
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Δ : Interaction.Spec.Node.Context.{w, w₃}}
+    {impl : ProcessOver.System Γ} {spec : ProcessOver.System Δ}
     {matchStep :
-      Observation.Process.TranscriptRel impl.toProcess spec.toProcess}
+      ProcessOver.TranscriptRel impl.toProcess spec.toProcess}
     (sim : ForwardSimulation impl spec matchStep)
-    (run : Process.Run impl.toProcess)
+    (run : ProcessOver.Run impl.toProcess)
     {pSpec : spec.Proc}
     (hrel : sim.stateRel run.initial pSpec) :
     ∀ n,
@@ -223,12 +240,14 @@ along the implementation run is safe.
 
 This is the basic safety-transport principle of forward simulation.
 -/
-theorem safe_of_mapRun {Party : Type u}
-    {impl spec : Process.System Party}
+theorem safe_of_mapRun
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Δ : Interaction.Spec.Node.Context.{w, w₃}}
+    {impl : ProcessOver.System Γ} {spec : ProcessOver.System Δ}
     {matchStep :
-      Observation.Process.TranscriptRel impl.toProcess spec.toProcess}
+      ProcessOver.TranscriptRel impl.toProcess spec.toProcess}
     (sim : ForwardSimulation impl spec matchStep)
-    (run : Process.Run impl.toProcess)
+    (run : ProcessOver.Run impl.toProcess)
     {pSpec : spec.Proc}
     (hrel : sim.stateRel run.initial pSpec)
     (hsafe :
@@ -243,46 +262,51 @@ also admissible.
 So ambient assumptions are preserved along the run translation induced by the
 simulation.
 -/
-theorem admissible_mapRun {Party : Type u}
-    {impl spec : Process.System Party}
+theorem admissible_mapRun
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Δ : Interaction.Spec.Node.Context.{w, w₃}}
+    {impl : ProcessOver.System Γ} {spec : ProcessOver.System Δ}
     {matchStep :
-      Observation.Process.TranscriptRel impl.toProcess spec.toProcess}
+      ProcessOver.TranscriptRel impl.toProcess spec.toProcess}
     (sim : ForwardSimulation impl spec matchStep)
-    (run : Process.Run impl.toProcess)
+    (run : ProcessOver.Run impl.toProcess)
     {pSpec : spec.Proc}
     (hrel : sim.stateRel run.initial pSpec)
-    (hadm : Process.System.Admissible impl run) :
-    Process.System.Admissible spec (sim.mapRun run hrel) := by
+    (hadm : ProcessOver.System.Admissible impl run) :
+    ProcessOver.System.Admissible spec (sim.mapRun run hrel) := by
   intro n
   exact sim.assumptions (sim.stateRel_mapRun run hrel n) (hadm n)
 
 /-- The first `n` steps of the mapped specification run match the first `n`
 implementation steps according to `matchStep`. -/
-theorem prefixRel_mapRun {Party : Type u}
-    {impl spec : Process.System Party}
+theorem prefixRel_mapRun
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Δ : Interaction.Spec.Node.Context.{w, w₃}}
+    {impl : ProcessOver.System Γ} {spec : ProcessOver.System Δ}
     {matchStep :
-      Observation.Process.TranscriptRel impl.toProcess spec.toProcess}
+      ProcessOver.TranscriptRel impl.toProcess spec.toProcess}
     (sim : ForwardSimulation impl spec matchStep)
-    (run : Process.Run impl.toProcess)
+    (run : ProcessOver.Run impl.toProcess)
     {pSpec : spec.Proc}
     (hrel : sim.stateRel run.initial pSpec) :
-    ∀ n,
-      Observation.Process.Run.RelUpTo matchStep run (sim.mapRun run hrel) n :=
-  Observation.Process.Run.relUpTo_of_pointwise matchStep run (sim.mapRun run hrel)
+    ∀ n, ProcessOver.Run.RelUpTo matchStep run (sim.mapRun run hrel) n :=
+  ProcessOver.Run.relUpTo_of_pointwise matchStep run (sim.mapRun run hrel)
     (sim.match_mapRun run hrel)
 
 /-- The mapped specification run matches the implementation run at every finite
 prefix according to `matchStep`. -/
-theorem runRel_mapRun {Party : Type u}
-    {impl spec : Process.System Party}
+theorem runRel_mapRun
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Δ : Interaction.Spec.Node.Context.{w, w₃}}
+    {impl : ProcessOver.System Γ} {spec : ProcessOver.System Δ}
     {matchStep :
-      Observation.Process.TranscriptRel impl.toProcess spec.toProcess}
+      ProcessOver.TranscriptRel impl.toProcess spec.toProcess}
     (sim : ForwardSimulation impl spec matchStep)
-    (run : Process.Run impl.toProcess)
+    (run : ProcessOver.Run impl.toProcess)
     {pSpec : spec.Proc}
     (hrel : sim.stateRel run.initial pSpec) :
-    Observation.Process.Run.Rel matchStep run (sim.mapRun run hrel) :=
-  Observation.Process.Run.rel_of_pointwise matchStep run (sim.mapRun run hrel)
+    ProcessOver.Run.Rel matchStep run (sim.mapRun run hrel) :=
+  ProcessOver.Run.rel_of_pointwise matchStep run (sim.mapRun run hrel)
     (sim.match_mapRun run hrel)
 
 /-- A controller-preserving simulation preserves the current controller sequence
@@ -293,9 +317,16 @@ theorem currentControllersUpTo_mapRun {Party : Type u}
     (run : Process.Run impl.toProcess)
     {pSpec : spec.Proc}
     (hrel : sim.stateRel run.initial pSpec) (n : Nat) :
-    run.currentControllersUpTo n = (sim.mapRun run hrel).currentControllersUpTo n :=
-  Observation.Process.Run.currentControllersUpTo_eq_of_relUpTo_byController run
-    (sim.mapRun run hrel) (sim.prefixRel_mapRun run hrel n)
+    Process.Run.currentControllersUpTo run n =
+      Process.Run.currentControllersUpTo (sim.mapRun run hrel) n := by
+  have hprefix :
+      Observation.Process.Run.RelUpTo Observation.Process.TranscriptRel.byController
+        run (sim.mapRun run hrel) n := by
+    exact Observation.Process.Run.relUpTo_of_pointwise
+      Observation.Process.TranscriptRel.byController
+      run (sim.mapRun run hrel) (sim.match_mapRun run hrel) n
+  exact Observation.Process.Run.currentControllersUpTo_eq_of_relUpTo_byController
+    run (sim.mapRun run hrel) hprefix
 
 /-- A controller-path-preserving simulation preserves the controller-path
 sequence of every finite run prefix. -/
@@ -305,9 +336,16 @@ theorem controllerPathsUpTo_mapRun {Party : Type u}
     (run : Process.Run impl.toProcess)
     {pSpec : spec.Proc}
     (hrel : sim.stateRel run.initial pSpec) (n : Nat) :
-    run.controllerPathsUpTo n = (sim.mapRun run hrel).controllerPathsUpTo n :=
-  Observation.Process.Run.controllerPathsUpTo_eq_of_relUpTo_byPath run
-    (sim.mapRun run hrel) (sim.prefixRel_mapRun run hrel n)
+    Process.Run.controllerPathsUpTo run n =
+      Process.Run.controllerPathsUpTo (sim.mapRun run hrel) n := by
+  have hprefix :
+      Observation.Process.Run.RelUpTo Observation.Process.TranscriptRel.byPath
+        run (sim.mapRun run hrel) n := by
+    exact Observation.Process.Run.relUpTo_of_pointwise
+      Observation.Process.TranscriptRel.byPath
+      run (sim.mapRun run hrel) (sim.match_mapRun run hrel) n
+  exact Observation.Process.Run.controllerPathsUpTo_eq_of_relUpTo_byPath
+    run (sim.mapRun run hrel) hprefix
 
 /-- An event-preserving simulation preserves the stable event sequence of every
 finite run prefix. -/
@@ -320,9 +358,17 @@ theorem eventsUpTo_mapRun {Party : Type u}
     (run : Process.Run impl.toProcess)
     {pSpec : spec.Proc}
     (hrel : sim.stateRel run.initial pSpec) (n : Nat) :
-    run.eventsUpTo eventImpl n = (sim.mapRun run hrel).eventsUpTo eventSpec n :=
-  Observation.Process.Run.eventsUpTo_eq_of_relUpTo_byEvent eventImpl eventSpec run
-    (sim.mapRun run hrel) (sim.prefixRel_mapRun run hrel n)
+    Process.Run.eventsUpTo eventImpl run n =
+      Process.Run.eventsUpTo eventSpec (sim.mapRun run hrel) n := by
+  have hprefix :
+      Observation.Process.Run.RelUpTo
+        (Observation.Process.TranscriptRel.byEvent eventImpl eventSpec)
+        run (sim.mapRun run hrel) n := by
+    exact Observation.Process.Run.relUpTo_of_pointwise
+      (Observation.Process.TranscriptRel.byEvent eventImpl eventSpec)
+      run (sim.mapRun run hrel) (sim.match_mapRun run hrel) n
+  exact Observation.Process.Run.eventsUpTo_eq_of_relUpTo_byEvent
+    eventImpl eventSpec run (sim.mapRun run hrel) hprefix
 
 /-- A ticket-preserving simulation preserves the stable ticket sequence of every
 finite run prefix. -/
@@ -335,9 +381,17 @@ theorem ticketsUpTo_mapRun {Party : Type u}
     (run : Process.Run impl.toProcess)
     {pSpec : spec.Proc}
     (hrel : sim.stateRel run.initial pSpec) (n : Nat) :
-    run.ticketsUpTo ticketImpl n = (sim.mapRun run hrel).ticketsUpTo ticketSpec n :=
-  Observation.Process.Run.ticketsUpTo_eq_of_relUpTo_byTicket ticketImpl ticketSpec run
-    (sim.mapRun run hrel) (sim.prefixRel_mapRun run hrel n)
+    Process.Run.ticketsUpTo ticketImpl run n =
+      Process.Run.ticketsUpTo ticketSpec (sim.mapRun run hrel) n := by
+  have hprefix :
+      Observation.Process.Run.RelUpTo
+        (Observation.Process.TranscriptRel.byTicket ticketImpl ticketSpec)
+        run (sim.mapRun run hrel) n := by
+    exact Observation.Process.Run.relUpTo_of_pointwise
+      (Observation.Process.TranscriptRel.byTicket ticketImpl ticketSpec)
+      run (sim.mapRun run hrel) (sim.match_mapRun run hrel) n
+  exact Observation.Process.Run.ticketsUpTo_eq_of_relUpTo_byTicket
+    ticketImpl ticketSpec run (sim.mapRun run hrel) hprefix
 
 /-- An observation-preserving simulation preserves one party's packed
 observations of every finite run prefix. -/
@@ -350,9 +404,16 @@ theorem observationsUpTo_mapRun {Party : Type u} [DecidableEq Party]
     {pSpec : spec.Proc}
     (hrel : sim.stateRel run.initial pSpec) (n : Nat) :
     Observation.Process.Run.observationsUpTo me run n =
-      Observation.Process.Run.observationsUpTo me (sim.mapRun run hrel) n :=
-  Observation.Process.Run.observationsUpTo_eq_of_relUpTo_byObservation me run
-    (sim.mapRun run hrel) (sim.prefixRel_mapRun run hrel n)
+      Observation.Process.Run.observationsUpTo me (sim.mapRun run hrel) n := by
+  have hprefix :
+      Observation.Process.Run.RelUpTo
+        (Observation.Process.TranscriptRel.byObservation me)
+        run (sim.mapRun run hrel) n := by
+    exact Observation.Process.Run.relUpTo_of_pointwise
+      (Observation.Process.TranscriptRel.byObservation me)
+      run (sim.mapRun run hrel) (sim.match_mapRun run hrel) n
+  exact Observation.Process.Run.observationsUpTo_eq_of_relUpTo_byObservation
+    me run (sim.mapRun run hrel) hprefix
 
 /--
 If the specification system satisfies safety under some fairness assumption,
@@ -363,24 +424,26 @@ This is the top-level preservation theorem: once fairness is known to transfer,
 forward simulation lets one discharge implementation-side safety obligations by
 proving them on the specification side.
 -/
-theorem safe_of_satisfies {Party : Type u}
-    {impl spec : Process.System Party}
+theorem safe_of_satisfies
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Δ : Interaction.Spec.Node.Context.{w, w₃}}
+    {impl : ProcessOver.System Γ} {spec : ProcessOver.System Δ}
     {matchStep :
-      Observation.Process.TranscriptRel impl.toProcess spec.toProcess}
+      ProcessOver.TranscriptRel impl.toProcess spec.toProcess}
     (sim : ForwardSimulation impl spec matchStep)
-    (fairImpl : Process.Run.Pred impl.toProcess)
-    (fairSpec : Process.Run.Pred spec.toProcess)
+    (fairImpl : ProcessOver.Run.Pred impl.toProcess)
+    (fairSpec : ProcessOver.Run.Pred spec.toProcess)
     (hfair :
-      ∀ (run : Process.Run impl.toProcess) {pSpec : spec.Proc},
+      ∀ (run : ProcessOver.Run impl.toProcess) {pSpec : spec.Proc},
         (hrel : sim.stateRel run.initial pSpec) →
           fairImpl run → fairSpec (sim.mapRun run hrel))
-    (hspec : Process.System.Satisfies spec fairSpec (Process.System.Safe spec)) :
-    Process.System.Satisfies impl fairImpl (Process.System.Safe impl) := by
+    (hspec : ProcessOver.System.Satisfies spec fairSpec (ProcessOver.System.Safe spec)) :
+    ProcessOver.System.Satisfies impl fairImpl (ProcessOver.System.Safe impl) := by
   intro run hInit hAdm hFair
   rcases sim.init run.initial hInit with ⟨pSpec, hInitSpec, hrel⟩
-  have hAdmSpec : Process.System.Admissible spec (sim.mapRun run hrel) :=
+  have hAdmSpec : ProcessOver.System.Admissible spec (sim.mapRun run hrel) :=
     sim.admissible_mapRun run hrel hAdm
-  have hSafeSpec : Process.System.Safe spec (sim.mapRun run hrel) :=
+  have hSafeSpec : ProcessOver.System.Safe spec (sim.mapRun run hrel) :=
     hspec (sim.mapRun run hrel) hInitSpec hAdmSpec (hfair run hrel hFair)
   exact sim.safe_of_mapRun run hrel hSafeSpec
 

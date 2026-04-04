@@ -29,31 +29,10 @@ This keeps the equivalence layer aligned with the existing process-centered
 refinement API rather than introducing a second semantic style.
 -/
 
-universe u v w
+universe u v w w₂ w₃
 
 namespace Interaction
 namespace Concurrent
-
-namespace Observation
-namespace Process
-namespace TranscriptRel
-
-/--
-Reverse a transcript-matching relation by flipping its two transcript
-arguments.
-
-This is the basic step needed to reinterpret a forward step-matching condition
-as a backward one.
--/
-def reverse {Party : Type u}
-    {left right : Process Party}
-    (rel : TranscriptRel left right) :
-    TranscriptRel right left :=
-  fun trR trL => rel trL trR
-
-end TranscriptRel
-end Process
-end Observation
 
 namespace Refinement
 
@@ -63,11 +42,12 @@ namespace Refinement
 
 This is the canonical witness that every system refines itself.
 -/
-def ForwardSimulation.refl {Party : Type u}
-    (system : Process.System Party)
+def ForwardSimulation.refl
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    (system : ProcessOver.System Γ)
     (matchStep :
-      Observation.Process.TranscriptRel system.toProcess system.toProcess :=
-        Observation.Process.TranscriptRel.top)
+      ProcessOver.TranscriptRel system.toProcess system.toProcess :=
+        ProcessOver.TranscriptRel.top)
     (hmatch :
       ∀ {p : system.Proc} (tr : (system.step p).spec.Transcript),
         matchStep tr tr) :
@@ -88,12 +68,15 @@ def ForwardSimulation.refl {Party : Type u}
 So "backward simulation" is only a change of viewpoint, not a second primitive
 notion.
 -/
-abbrev BackwardSimulation {Party : Type u}
-    (impl spec : Process.System Party)
+abbrev BackwardSimulation
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Δ : Interaction.Spec.Node.Context.{w, w₃}}
+    (impl : ProcessOver.System Γ)
+    (spec : ProcessOver.System Δ)
     (matchStep :
-      Observation.Process.TranscriptRel impl.toProcess spec.toProcess :=
-        Observation.Process.TranscriptRel.top) :=
-  ForwardSimulation spec impl (Observation.Process.TranscriptRel.reverse matchStep)
+      ProcessOver.TranscriptRel impl.toProcess spec.toProcess :=
+        ProcessOver.TranscriptRel.top) :=
+  ForwardSimulation spec impl (ProcessOver.TranscriptRel.reverse matchStep)
 
 /--
 `Bisimulation left right matchForth matchBack` packages one forward simulation
@@ -105,14 +88,17 @@ forward one.
 This is the library's main process-level equivalence witness: each side can
 match the other's executions while preserving the chosen step relation.
 -/
-structure Bisimulation {Party : Type u}
-    (left right : Process.System Party)
+structure Bisimulation
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Δ : Interaction.Spec.Node.Context.{w, w₃}}
+    (left : ProcessOver.System Γ)
+    (right : ProcessOver.System Δ)
     (matchForth :
-      Observation.Process.TranscriptRel left.toProcess right.toProcess :=
-        Observation.Process.TranscriptRel.top)
+      ProcessOver.TranscriptRel left.toProcess right.toProcess :=
+        ProcessOver.TranscriptRel.top)
     (matchBack :
-      Observation.Process.TranscriptRel right.toProcess left.toProcess :=
-        Observation.Process.TranscriptRel.reverse matchForth) where
+      ProcessOver.TranscriptRel right.toProcess left.toProcess :=
+        ProcessOver.TranscriptRel.reverse matchForth) where
   forth : ForwardSimulation left right matchForth
   back : ForwardSimulation right left matchBack
 
@@ -123,12 +109,14 @@ Swap the two sides of a bisimulation.
 
 This is the symmetry principle for the packaged equivalence witness itself.
 -/
-def symm {Party : Type u}
-    {left right : Process.System Party}
+def symm
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Δ : Interaction.Spec.Node.Context.{w, w₃}}
+    {left : ProcessOver.System Γ} {right : ProcessOver.System Δ}
     {matchForth :
-      Observation.Process.TranscriptRel left.toProcess right.toProcess}
+      ProcessOver.TranscriptRel left.toProcess right.toProcess}
     {matchBack :
-      Observation.Process.TranscriptRel right.toProcess left.toProcess}
+      ProcessOver.TranscriptRel right.toProcess left.toProcess}
     (bisim : Bisimulation left right matchForth matchBack) :
     Bisimulation right left matchBack matchForth where
   forth := bisim.back
@@ -140,14 +128,15 @@ relate every transcript to itself.
 
 This is the reflexivity principle for the packaged equivalence witness.
 -/
-def refl {Party : Type u}
-    (system : Process.System Party)
+def refl
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    (system : ProcessOver.System Γ)
     (matchForth :
-      Observation.Process.TranscriptRel system.toProcess system.toProcess :=
-        Observation.Process.TranscriptRel.top)
+      ProcessOver.TranscriptRel system.toProcess system.toProcess :=
+        ProcessOver.TranscriptRel.top)
     (matchBack :
-      Observation.Process.TranscriptRel system.toProcess system.toProcess :=
-        Observation.Process.TranscriptRel.reverse matchForth)
+      ProcessOver.TranscriptRel system.toProcess system.toProcess :=
+        ProcessOver.TranscriptRel.reverse matchForth)
     (hForth :
       ∀ {p : system.Proc} (tr : (system.step p).spec.Transcript),
         matchForth tr tr)
@@ -164,21 +153,23 @@ assuming the chosen fairness predicates transfer along the forward direction.
 
 This is the "use the right-hand system as the proof-oriented model" direction.
 -/
-theorem left_safe_of_satisfies {Party : Type u}
-    {left right : Process.System Party}
+theorem left_safe_of_satisfies
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Δ : Interaction.Spec.Node.Context.{w, w₃}}
+    {left : ProcessOver.System Γ} {right : ProcessOver.System Δ}
     {matchForth :
-      Observation.Process.TranscriptRel left.toProcess right.toProcess}
+      ProcessOver.TranscriptRel left.toProcess right.toProcess}
     {matchBack :
-      Observation.Process.TranscriptRel right.toProcess left.toProcess}
+      ProcessOver.TranscriptRel right.toProcess left.toProcess}
     (bisim : Bisimulation left right matchForth matchBack)
-    (fairLeft : Process.Run.Pred left.toProcess)
-    (fairRight : Process.Run.Pred right.toProcess)
+    (fairLeft : ProcessOver.Run.Pred left.toProcess)
+    (fairRight : ProcessOver.Run.Pred right.toProcess)
     (hfair :
-      ∀ (run : Process.Run left.toProcess) {pRight : right.Proc},
+      ∀ (run : ProcessOver.Run left.toProcess) {pRight : right.Proc},
         (hrel : bisim.forth.stateRel run.initial pRight) →
           fairLeft run → fairRight (bisim.forth.mapRun run hrel))
-    (hright : Process.System.Satisfies right fairRight (Process.System.Safe right)) :
-    Process.System.Satisfies left fairLeft (Process.System.Safe left) :=
+    (hright : ProcessOver.System.Satisfies right fairRight (ProcessOver.System.Safe right)) :
+    ProcessOver.System.Satisfies left fairLeft (ProcessOver.System.Safe left) :=
   bisim.forth.safe_of_satisfies fairLeft fairRight hfair hright
 
 /--
@@ -187,21 +178,23 @@ assuming the chosen fairness predicates transfer along the backward direction.
 
 This is the same transport principle in the opposite direction.
 -/
-theorem right_safe_of_satisfies {Party : Type u}
-    {left right : Process.System Party}
+theorem right_safe_of_satisfies
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Δ : Interaction.Spec.Node.Context.{w, w₃}}
+    {left : ProcessOver.System Γ} {right : ProcessOver.System Δ}
     {matchForth :
-      Observation.Process.TranscriptRel left.toProcess right.toProcess}
+      ProcessOver.TranscriptRel left.toProcess right.toProcess}
     {matchBack :
-      Observation.Process.TranscriptRel right.toProcess left.toProcess}
+      ProcessOver.TranscriptRel right.toProcess left.toProcess}
     (bisim : Bisimulation left right matchForth matchBack)
-    (fairLeft : Process.Run.Pred left.toProcess)
-    (fairRight : Process.Run.Pred right.toProcess)
+    (fairLeft : ProcessOver.Run.Pred left.toProcess)
+    (fairRight : ProcessOver.Run.Pred right.toProcess)
     (hfair :
-      ∀ (run : Process.Run right.toProcess) {pLeft : left.Proc},
+      ∀ (run : ProcessOver.Run right.toProcess) {pLeft : left.Proc},
         (hrel : bisim.back.stateRel run.initial pLeft) →
           fairRight run → fairLeft (bisim.back.mapRun run hrel))
-    (hleft : Process.System.Satisfies left fairLeft (Process.System.Safe left)) :
-    Process.System.Satisfies right fairRight (Process.System.Safe right) :=
+    (hleft : ProcessOver.System.Satisfies left fairLeft (ProcessOver.System.Safe left)) :
+    ProcessOver.System.Satisfies right fairRight (ProcessOver.System.Safe right) :=
   bisim.back.safe_of_satisfies fairRight fairLeft hfair hleft
 
 /--
@@ -211,25 +204,27 @@ fairness assumptions themselves transfer in both directions.
 So once fairness transport is established, either side of a bisimulation may be
 used as the proof-oriented presentation of the protocol.
 -/
-theorem safe_iff_of_satisfies {Party : Type u}
-    {left right : Process.System Party}
+theorem safe_iff_of_satisfies
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Δ : Interaction.Spec.Node.Context.{w, w₃}}
+    {left : ProcessOver.System Γ} {right : ProcessOver.System Δ}
     {matchForth :
-      Observation.Process.TranscriptRel left.toProcess right.toProcess}
+      ProcessOver.TranscriptRel left.toProcess right.toProcess}
     {matchBack :
-      Observation.Process.TranscriptRel right.toProcess left.toProcess}
+      ProcessOver.TranscriptRel right.toProcess left.toProcess}
     (bisim : Bisimulation left right matchForth matchBack)
-    (fairLeft : Process.Run.Pred left.toProcess)
-    (fairRight : Process.Run.Pred right.toProcess)
+    (fairLeft : ProcessOver.Run.Pred left.toProcess)
+    (fairRight : ProcessOver.Run.Pred right.toProcess)
     (hfairLeft :
-      ∀ (run : Process.Run left.toProcess) {pRight : right.Proc},
+      ∀ (run : ProcessOver.Run left.toProcess) {pRight : right.Proc},
         (hrel : bisim.forth.stateRel run.initial pRight) →
           fairLeft run → fairRight (bisim.forth.mapRun run hrel))
     (hfairRight :
-      ∀ (run : Process.Run right.toProcess) {pLeft : left.Proc},
+      ∀ (run : ProcessOver.Run right.toProcess) {pLeft : left.Proc},
         (hrel : bisim.back.stateRel run.initial pLeft) →
           fairRight run → fairLeft (bisim.back.mapRun run hrel)) :
-    Process.System.Satisfies left fairLeft (Process.System.Safe left) ↔
-      Process.System.Satisfies right fairRight (Process.System.Safe right) := by
+    ProcessOver.System.Satisfies left fairLeft (ProcessOver.System.Safe left) ↔
+      ProcessOver.System.Satisfies right fairRight (ProcessOver.System.Safe right) := by
   constructor
   · exact bisim.right_safe_of_satisfies fairLeft fairRight hfairRight
   · exact bisim.left_safe_of_satisfies fairLeft fairRight hfairLeft

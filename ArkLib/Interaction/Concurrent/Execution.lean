@@ -8,8 +8,8 @@ import ArkLib.Interaction.Concurrent.Process
 /-!
 # Finite executions of dynamic concurrent processes
 
-This file explains what it means to execute a `Concurrent.Process` for finitely
-many steps.
+This file explains what it means to execute a `Concurrent.ProcessOver` for
+finitely many steps.
 
 The important point is that one process step is itself a finite sequential
 interaction episode. So a finite concurrent execution is not just a list of
@@ -19,16 +19,17 @@ selected by that transcript.
 
 This file therefore provides two parallel views of finite execution:
 
-* `Process.Trace`, the exact global execution history; and
-* `Step.Observed` / `Process.ObservedTrace`, the local observations that one
-  fixed party extracts from that history.
+* `ProcessOver.Trace`, the exact global execution history for any realized
+  node context; and
+* `Step.Observed` / `ProcessOver.ObservedTrace`, the local observations that
+  one fixed party extracts from that history once the node context is
+  projected into `StepContext`.
 
-Because the API is phrased over `Concurrent.Process`, it applies uniformly to
-all frontends that compile into the process core, including structural
-concurrent syntax and state-indexed machines.
+The closed-world `Process` API is recovered as a specialization of these
+generic definitions.
 -/
 
-universe u v w
+universe u v w w₂ w₃
 
 namespace Interaction
 namespace Concurrent
@@ -130,7 +131,42 @@ abbrev observe {Party : Type u} [DecidableEq Party] (me : Party)
 
 end Step
 
-namespace Process
+namespace StepOver
+
+/--
+`ObservedTranscript me resolve step tr` is the local observation sequence seen
+by `me` when the generic step `step` is interpreted through the context
+projection `resolve : Γ → StepContext Party`.
+-/
+abbrev ObservedTranscript
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Party : Type u} [DecidableEq Party]
+    (me : Party)
+    (resolve : Interaction.Spec.Node.ContextHom Γ (StepContext Party))
+    {P : Type v}
+    (step : StepOver Γ P)
+    (tr : Interaction.Spec.Transcript step.spec) :=
+  Step.ObservedTranscript me (step.mapContext resolve) tr
+
+/--
+`observe me resolve step tr` is the canonical observed sequential transcript of
+`step` along `tr`, after projecting the generic step context into
+`StepContext`.
+-/
+abbrev observe
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Party : Type u} [DecidableEq Party]
+    (me : Party)
+    (resolve : Interaction.Spec.Node.ContextHom Γ (StepContext Party))
+    {P : Type v}
+    (step : StepOver Γ P)
+    (tr : Interaction.Spec.Transcript step.spec) :
+    ObservedTranscript me resolve step tr :=
+  Step.observe me (step.mapContext resolve) tr
+
+end StepOver
+
+namespace ProcessOver
 
 /--
 `Trace process p` is a finite execution trace of the residual process state
@@ -142,11 +178,13 @@ transcript. The `done` constructor is available only when the current step has
 no complete transcripts at all, so a `Trace` represents a genuinely terminated
 finite execution.
 
-`Process.Trace` is therefore the global finite-history object for the dynamic
-concurrent core: one element per process step, where each element remembers the
-entire internal interaction episode that realized that step.
+`ProcessOver.Trace` is therefore the generic finite-history object for the
+dynamic concurrent core: one element per process step, where each element
+remembers the entire internal interaction episode that realized that step.
 -/
-inductive Trace {Party : Type u} (process : Process Party) :
+inductive Trace
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    (process : ProcessOver Γ) :
     process.Proc → Sort _ where
   | /-- A finished execution of a residual process state whose current step has
     no complete transcripts. -/
@@ -162,53 +200,56 @@ inductive Trace {Party : Type u} (process : Process Party) :
 
 namespace Trace
 
-/--
-The number of process steps recorded by a finite execution trace.
--/
-def length {Party : Type u} {process : Process Party} :
-    {p : process.Proc} → Process.Trace process p → Nat
+/-- The number of process steps recorded by a finite execution trace. -/
+def length
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {process : ProcessOver Γ} :
+    {p : process.Proc} → Trace process p → Nat
   | _, .done _ => 0
   | _, .step _ tail => tail.length.succ
 
 /--
-`currentControllers trace` records the current controlling party of each
-executed process step.
-
-This sequence is computed from the concrete step transcripts themselves via
-`Step.currentController?`, so it answers the operational question "who was in
-charge of this step as it actually occurred?" rather than merely recording a
-static owner of the process state.
+`currentControllers resolve trace` records the current controlling party of
+each executed process step after projecting the generic step context into
+`StepContext`.
 -/
-def currentControllers {Party : Type u} {process : Process Party} :
-    {p : process.Proc} → Process.Trace process p → List (Option Party)
+def currentControllers
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Party : Type u}
+    {process : ProcessOver Γ}
+    (resolve : Interaction.Spec.Node.ContextHom Γ (StepContext Party)) :
+    {p : process.Proc} → Trace process p → List (Option Party)
   | _, .done _ => []
   | p, .step tr tail =>
-      (process.step p).currentController? tr ::
-        currentControllers tail
+      ((process.step p).mapContext resolve).currentController? tr ::
+        currentControllers resolve tail
 
 /--
-`controllerPaths trace` records the full controller path of each executed step
-transcript.
-
-Each list element explains the whole control stack that led to the chosen
-transcript of that step, not just the final active controller.
+`controllerPaths resolve trace` records the full controller path of each
+executed process step after projecting the generic step context into
+`StepContext`.
 -/
-def controllerPaths {Party : Type u} {process : Process Party} :
-    {p : process.Proc} → Process.Trace process p → List (List Party)
+def controllerPaths
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Party : Type u}
+    {process : ProcessOver Γ}
+    (resolve : Interaction.Spec.Node.ContextHom Γ (StepContext Party)) :
+    {p : process.Proc} → Trace process p → List (List Party)
   | _, .done _ => []
   | p, .step tr tail =>
-      (process.step p).controllerPath tr ::
-        controllerPaths tail
+      ((process.step p).mapContext resolve).controllerPath tr ::
+        controllerPaths resolve tail
 
 /--
 `events eventMap trace` records the external event label attached to each
 process step transcript by the stable event map `eventMap`.
-
-This is the finite event trace exposed by a labeled process.
 -/
-def events {Party : Type u} {process : Process Party} {Event : Type w}
+def events
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {process : ProcessOver Γ}
+    {Event : Type w₃}
     (eventMap : process.EventMap Event) :
-    {p : process.Proc} → Process.Trace process p → List Event
+    {p : process.Proc} → Trace process p → List Event
   | _, .done _ => []
   | p, .step tr tail =>
       eventMap p tr :: events eventMap tail
@@ -216,116 +257,264 @@ def events {Party : Type u} {process : Process Party} {Event : Type w}
 /--
 `tickets ticketMap trace` records the stable tickets attached to each process
 step transcript by `ticketMap`.
-
-These tickets are the stable obligation identifiers later used by fairness and
-liveness statements.
 -/
-def tickets {Party : Type u} {process : Process Party} {Ticket : Type w}
+def tickets
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {process : ProcessOver Γ}
+    {Ticket : Type w₃}
     (ticketMap : process.Tickets Ticket) :
-    {p : process.Proc} → Process.Trace process p → List Ticket
+    {p : process.Proc} → Trace process p → List Ticket
   | _, .done _ => []
   | p, .step tr tail =>
       ticketMap p tr :: tickets ticketMap tail
 
 @[simp, grind =]
+theorem length_done
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {process : ProcessOver Γ}
+    {p : process.Proc}
+    (h : (process.step p).spec.Transcript → False) :
+    length (.done h : Trace process p) = 0 := rfl
+
+@[simp, grind =]
+theorem length_step
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {process : ProcessOver Γ}
+    {p : process.Proc}
+    (tr : (process.step p).spec.Transcript)
+    (tail : Trace process ((process.step p).next tr)) :
+    length (.step tr tail : Trace process p) = tail.length.succ := rfl
+
+end Trace
+
+/--
+`ObservedTrace me resolve process trace` is the exact typed sequence of local
+observations available to `me` along the concrete process execution `trace`,
+after interpreting the generic node context through `resolve`.
+-/
+inductive ObservedTrace
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Party : Type u} [DecidableEq Party]
+    (me : Party)
+    (resolve : Interaction.Spec.Node.ContextHom Γ (StepContext Party))
+    (process : ProcessOver Γ) :
+    {p : process.Proc} → Trace process p → Sort _ where
+  | /-- The unique observed trace of a finished quiescent execution. -/
+    done {p : process.Proc}
+      {h : (process.step p).spec.Transcript → False} :
+      ObservedTrace me resolve process (.done h : Trace process p)
+  | /-- Extend an observed trace by the observed sequential transcript of the
+    current step. -/
+    step {p : process.Proc}
+      {tr : (process.step p).spec.Transcript}
+      {tail : Trace process ((process.step p).next tr)}
+      (obs : StepOver.ObservedTranscript me resolve (process.step p) tr)
+      (rest : ObservedTrace me resolve process tail) :
+      ObservedTrace me resolve process (.step tr tail : Trace process p)
+
+namespace ObservedTrace
+
+/-- The number of process steps recorded by an observed trace. -/
+def length
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Party : Type u} [DecidableEq Party]
+    {me : Party} {resolve : Interaction.Spec.Node.ContextHom Γ (StepContext Party)}
+    {process : ProcessOver Γ} :
+    {p : process.Proc} → {trace : Trace process p} →
+      ObservedTrace me resolve process trace →
+      Nat
+  | _, _, ObservedTrace.done => 0
+  | _, _, ObservedTrace.step _ rest => rest.length.succ
+
+/--
+`ofTrace me resolve process trace` is the canonical observed process trace
+induced by the concrete execution trace `trace`.
+-/
+def ofTrace
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Party : Type u} [DecidableEq Party]
+    (me : Party)
+    (resolve : Interaction.Spec.Node.ContextHom Γ (StepContext Party))
+    (process : ProcessOver Γ) :
+    {p : process.Proc} → (trace : Trace process p) →
+      ObservedTrace me resolve process trace
+  | _, .done _ => .done
+  | p, .step tr tail =>
+      .step
+        (StepOver.observe me resolve (process.step p) tr)
+        (ofTrace me resolve process tail)
+
+@[simp, grind =]
+theorem length_done
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Party : Type u} [DecidableEq Party]
+    {me : Party} {resolve : Interaction.Spec.Node.ContextHom Γ (StepContext Party)}
+    {process : ProcessOver Γ} {p : process.Proc}
+    {h : (process.step p).spec.Transcript → False} :
+    length (ObservedTrace.done
+      (me := me) (resolve := resolve) (process := process) (p := p) (h := h)) = 0 := by
+  rfl
+
+@[simp, grind =]
+theorem length_step
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Party : Type u} [DecidableEq Party]
+    {me : Party} {resolve : Interaction.Spec.Node.ContextHom Γ (StepContext Party)}
+    {process : ProcessOver Γ} {p : process.Proc}
+    {tr : (process.step p).spec.Transcript}
+    {tail : Trace process ((process.step p).next tr)}
+    (obs : StepOver.ObservedTranscript me resolve (process.step p) tr)
+    (rest : ObservedTrace me resolve process tail) :
+    length (.step obs rest : ObservedTrace me resolve process
+      (.step tr tail : Trace process p)) = rest.length.succ := by
+  rfl
+
+/--
+The canonical observed process trace has the same number of process steps as
+the underlying execution trace.
+-/
+theorem length_ofTrace
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Party : Type u} [DecidableEq Party]
+    {me : Party}
+    (resolve : Interaction.Spec.Node.ContextHom Γ (StepContext Party))
+    (process : ProcessOver Γ) :
+    {p : process.Proc} → (trace : Trace process p) →
+      (ofTrace me resolve process trace).length = trace.length
+  | _, .done _ => rfl
+  | _, .step _ tail => by
+      simpa [ObservedTrace.ofTrace, ObservedTrace.length, Trace.length] using
+        congrArg Nat.succ (length_ofTrace (me := me) resolve process tail)
+
+end ObservedTrace
+
+end ProcessOver
+
+namespace Process
+
+/-- The closed-world specialization of `ProcessOver.Trace`. -/
+abbrev Trace {Party : Type u} (process : Process Party) :=
+  ProcessOver.Trace process
+
+namespace Trace
+
+/-- The number of process steps recorded by a finite closed-world execution
+trace. -/
+abbrev length {Party : Type u} {process : Process Party} :
+    {p : process.Proc} → Process.Trace process p → Nat :=
+  ProcessOver.Trace.length
+
+/-- The current controlling party of each executed step of a closed-world
+trace. -/
+def currentControllers {Party : Type u} {process : Process Party} :
+    {p : process.Proc} → Process.Trace process p → List (Option Party)
+  | _, .done _ => []
+  | p, .step tr tail =>
+      (process.step p).currentController? tr :: currentControllers tail
+
+/-- The full controller path of each executed step of a closed-world trace. -/
+def controllerPaths {Party : Type u} {process : Process Party} :
+    {p : process.Proc} → Process.Trace process p → List (List Party)
+  | _, .done _ => []
+  | p, .step tr tail =>
+      (process.step p).controllerPath tr :: controllerPaths tail
+
+/-- The stable event labels attached to the executed steps of a closed-world
+trace. -/
+abbrev events {Party : Type u} {process : Process Party} {Event : Type w₃}
+    (eventMap : process.EventMap Event) :
+    {p : process.Proc} → Process.Trace process p → List Event :=
+  ProcessOver.Trace.events eventMap
+
+/-- The stable tickets attached to the executed steps of a closed-world trace. -/
+abbrev tickets {Party : Type u} {process : Process Party} {Ticket : Type w₃}
+    (ticketMap : process.Tickets Ticket) :
+    {p : process.Proc} → Process.Trace process p → List Ticket :=
+  ProcessOver.Trace.tickets ticketMap
+
+@[simp, grind =]
 theorem length_done {Party : Type u} {process : Process Party}
     {p : process.Proc} (h : (process.step p).spec.Transcript → False) :
-    length (.done h : Process.Trace process p) = 0 := rfl
+    length (.done h : Process.Trace process p) = 0 :=
+  ProcessOver.Trace.length_done h
 
 @[simp, grind =]
 theorem length_step {Party : Type u} {process : Process Party}
     {p : process.Proc}
     (tr : (process.step p).spec.Transcript)
     (tail : Process.Trace process ((process.step p).next tr)) :
-    length (.step tr tail : Process.Trace process p) = tail.length.succ := rfl
+    length (.step tr tail : Process.Trace process p) = tail.length.succ :=
+  ProcessOver.Trace.length_step tr tail
 
 end Trace
 
-/--
-`ObservedTrace me process trace` is the exact typed sequence of local
-observations available to the fixed party `me` along the concrete process
-execution trace `trace`.
-
-At each process step, the head constructor stores the observed sequential
-transcript induced by that step's global transcript, and the tail continues
-with the residual process state. So `ObservedTrace` is the party-local view of
-the global finite execution `trace`.
--/
-inductive ObservedTrace {Party : Type u} [DecidableEq Party]
+/-- The closed-world specialization of `ProcessOver.ObservedTrace`. -/
+abbrev ObservedTrace {Party : Type u} [DecidableEq Party]
     (me : Party) (process : Process Party) :
-    {p : process.Proc} → Process.Trace process p → Sort _ where
-  | /-- The unique observed trace of a finished quiescent execution. -/
-    done {p : process.Proc}
-      {h : (process.step p).spec.Transcript → False} :
-      ObservedTrace me process (.done h : Process.Trace process p)
-  | /-- Extend an observed trace by the observed sequential transcript of the
-    current step. -/
-    step {p : process.Proc}
-      {tr : (process.step p).spec.Transcript}
-      {tail : Process.Trace process ((process.step p).next tr)}
-      (obs : Step.ObservedTranscript me (process.step p) tr)
-      (rest : ObservedTrace me process tail) :
-      ObservedTrace me process (.step tr tail : Process.Trace process p)
+    {p : process.Proc} → Process.Trace process p → Sort _ :=
+  ProcessOver.ObservedTrace me
+    (Interaction.Spec.Node.ContextHom.id (StepContext Party))
+    process
 
 namespace ObservedTrace
 
-/--
-The number of process steps recorded by an observed trace.
-
-This agrees with the length of the underlying global trace.
--/
-def length {Party : Type u} [DecidableEq Party]
+/-- The number of process steps recorded by an observed closed-world trace. -/
+abbrev length {Party : Type u} [DecidableEq Party]
     {me : Party} {process : Process Party} :
     {p : process.Proc} → {trace : Process.Trace process p} →
       ObservedTrace me process trace →
-      Nat
-  | _, .done _, .done => 0
-  | _, .step _ _, .step _ rest => rest.length.succ
+      Nat :=
+  ProcessOver.ObservedTrace.length
 
 /--
-`ofTrace me process trace` is the canonical observed process trace induced by
-the concrete execution trace `trace`.
-
-It is obtained by projecting each executed process step to the local
-observations available to `me`.
+`ofTrace me process trace` is the canonical observed closed-world process trace
+induced by the concrete execution trace `trace`.
 -/
-def ofTrace {Party : Type u} [DecidableEq Party]
+abbrev ofTrace {Party : Type u} [DecidableEq Party]
     (me : Party) (process : Process Party) :
-    {p : process.Proc} → (trace : Process.Trace process p) → ObservedTrace me process trace
-  | _, .done _ => .done
-  | p, .step tr tail =>
-      .step
-        (Step.observe me (process.step p) tr)
-        (ofTrace me process tail)
+    {p : process.Proc} → (trace : Process.Trace process p) →
+      ObservedTrace me process trace :=
+  ProcessOver.ObservedTrace.ofTrace me
+    (Interaction.Spec.Node.ContextHom.id (StepContext Party))
+    process
 
 @[simp, grind =]
 theorem length_done {Party : Type u} [DecidableEq Party]
     {me : Party} {process : Process Party} {p : process.Proc}
     {h : (process.step p).spec.Transcript → False} :
-    length (ObservedTrace.done (me := me) (process := process) (p := p) (h := h)) = 0 := rfl
+    length (ProcessOver.ObservedTrace.done
+      (me := me)
+      (resolve := Interaction.Spec.Node.ContextHom.id (StepContext Party))
+      (process := process)
+      (p := p)
+      (h := h)) = 0 := by
+  rfl
 
 @[simp, grind =]
 theorem length_step {Party : Type u} [DecidableEq Party]
     {me : Party} {process : Process Party} {p : process.Proc}
     {tr : (process.step p).spec.Transcript}
     {tail : Process.Trace process ((process.step p).next tr)}
-    (obs : Step.ObservedTranscript me (process.step p) tr)
+    (obs : StepOver.ObservedTranscript me
+      (Interaction.Spec.Node.ContextHom.id (StepContext Party))
+      (process.step p) tr)
     (rest : ObservedTrace me process tail) :
     length (.step obs rest : ObservedTrace me process
-      (.step tr tail : Process.Trace process p)) = rest.length.succ := rfl
+      (.step tr tail : Process.Trace process p)) = rest.length.succ := by
+  rfl
 
 /--
-The canonical observed process trace has the same number of process steps as
-the underlying execution trace.
+The canonical observed closed-world trace has the same number of process steps
+as the underlying execution trace.
 -/
 theorem length_ofTrace {Party : Type u} [DecidableEq Party]
     {me : Party} (process : Process Party) :
     {p : process.Proc} → (trace : Process.Trace process p) →
-      (ofTrace me process trace).length = trace.length
-  | _, .done _ => rfl
-  | _, .step _ tail => by
-      simpa [ObservedTrace.ofTrace, ObservedTrace.length, Trace.length] using
-        congrArg Nat.succ (length_ofTrace (me := me) process tail)
+      (ofTrace me process trace).length = trace.length :=
+  ProcessOver.ObservedTrace.length_ofTrace
+    (me := me)
+    (resolve := Interaction.Spec.Node.ContextHom.id (StepContext Party))
+    process
 
 end ObservedTrace
 

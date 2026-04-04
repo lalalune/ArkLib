@@ -107,6 +107,26 @@ structure StepOver (Γ : Interaction.Spec.Node.Context.{w, w₂}) (P : Type v) w
   semantics : Interaction.Spec.Decoration Γ spec
   next : Interaction.Spec.Transcript spec → P
 
+namespace StepOver
+
+/--
+Map the node-local context carried by a step along a realized context morphism.
+
+This changes only the metadata decorating the step protocol. The underlying
+sequential interaction tree and the continuation `next` are left unchanged.
+-/
+def mapContext
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Δ : Interaction.Spec.Node.Context.{w, w₃}}
+    {P : Type v}
+    (f : Interaction.Spec.Node.ContextHom Γ Δ)
+    (step : StepOver Γ P) : StepOver Δ P where
+  spec := step.spec
+  semantics := Interaction.Spec.Decoration.map f step.spec step.semantics
+  next := step.next
+
+end StepOver
+
 /--
 `ProcessOver Γ` is a continuation-based concurrent process whose current step
 episodes are decorated by realized context `Γ`.
@@ -130,6 +150,21 @@ structure ProcessOver (Γ : Interaction.Spec.Node.Context.{w, w₂}) where
 namespace ProcessOver
 
 /--
+Map the node-local context carried by a process along a realized context
+morphism.
+
+This changes only the metadata exposed at each step. The residual state space
+and transition structure are preserved.
+-/
+def mapContext
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Δ : Interaction.Spec.Node.Context.{w, w₃}}
+    (f : Interaction.Spec.Node.ContextHom Γ Δ)
+    (process : ProcessOver Γ) : ProcessOver Δ where
+  Proc := process.Proc
+  step p := (process.step p).mapContext f
+
+/--
 A stable external label for each complete step transcript of a process.
 
 The point of an `EventMap` is to attach one comparison-friendly label to a
@@ -150,6 +185,87 @@ semantic layers can talk about these stable identifiers.
 abbrev Tickets {Γ : Interaction.Spec.Node.Context.{w, w₂}}
     (process : ProcessOver.{v, w, w₂} Γ) (Ticket : Type w₃) :=
   (p : process.Proc) → Interaction.Spec.Transcript (process.step p).spec → Ticket
+
+/--
+`TranscriptRel left right` is a relation between one complete step transcript
+of `left` and one complete step transcript of `right`.
+
+This is the generic step-matching interface consumed by refinement and
+bisimulation. No controller or observation structure is assumed here; those
+become special cases once the surrounding contexts are projected into
+`StepContext`.
+-/
+abbrev TranscriptRel
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Δ : Interaction.Spec.Node.Context.{w, w₃}}
+    (left : ProcessOver Γ) (right : ProcessOver Δ) :=
+  {pL : left.Proc} → {pR : right.Proc} →
+    Interaction.Spec.Transcript (left.step pL).spec →
+    Interaction.Spec.Transcript (right.step pR).spec →
+    Prop
+
+namespace TranscriptRel
+
+/-- The permissive step relation that accepts every pair of complete step
+transcripts. -/
+def top
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Δ : Interaction.Spec.Node.Context.{w, w₃}}
+    {left : ProcessOver Γ} {right : ProcessOver Δ} :
+    TranscriptRel left right :=
+  fun _ _ => True
+
+/-- Reverse a step-matching relation by flipping its two transcript
+arguments. -/
+def reverse
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Δ : Interaction.Spec.Node.Context.{w, w₃}}
+    {left : ProcessOver Γ} {right : ProcessOver Δ}
+    (rel : TranscriptRel left right) :
+    TranscriptRel right left :=
+  fun trR trL => rel trL trR
+
+/-- Conjunction of step-matching relations. -/
+def inter
+    {Γ : Interaction.Spec.Node.Context.{w, w₂}}
+    {Δ : Interaction.Spec.Node.Context.{w, w₃}}
+    {left : ProcessOver Γ} {right : ProcessOver Δ}
+    (first second : TranscriptRel left right) :
+    TranscriptRel left right :=
+  fun trL trR => first trL trR ∧ second trL trR
+
+end TranscriptRel
+
+/--
+`ProcessOver.Labeled` is a process equipped with a stable external event label
+for each complete step transcript.
+-/
+structure Labeled (Γ : Interaction.Spec.Node.Context.{w, w₂}) where
+  toProcess : ProcessOver Γ
+  Event : Type w₃
+  event : toProcess.EventMap Event
+
+/--
+`ProcessOver.Ticketed` is a process equipped with a stable ticket for each
+complete step transcript.
+
+These tickets are the obligation identifiers used by the fairness and liveness
+layers.
+-/
+structure Ticketed (Γ : Interaction.Spec.Node.Context.{w, w₂}) where
+  toProcess : ProcessOver Γ
+  Ticket : Type w₃
+  ticket : toProcess.Tickets Ticket
+
+/--
+`ProcessOver.System Γ` augments a process over context `Γ` by the standard
+verification predicates used throughout ArkLib.
+-/
+structure System (Γ : Interaction.Spec.Node.Context.{w, w₂}) extends toProcess : ProcessOver Γ where
+  init : Proc → Prop
+  assumptions : Proc → Prop := fun _ => True
+  safe : Proc → Prop := fun _ => True
+  inv : Proc → Prop := fun _ => True
 
 end ProcessOver
 
@@ -243,22 +359,27 @@ namespace Process
 A stable external label for each complete closed-world process step.
 -/
 abbrev EventMap {Party : Type u} (process : Process Party) (Event : Type w₂) :=
-  (p : process.Proc) → Interaction.Spec.Transcript (process.step p).spec → Event
+  ProcessOver.EventMap process Event
 
 /--
 A stable ticket for each complete closed-world process step.
 -/
 abbrev Tickets {Party : Type u} (process : Process Party) (Ticket : Type w₂) :=
-  (p : process.Proc) → Interaction.Spec.Transcript (process.step p).spec → Ticket
+  ProcessOver.Tickets process Ticket
+
+/--
+The closed-world specialization of `ProcessOver.TranscriptRel`.
+-/
+abbrev TranscriptRel {Party : Type u}
+    (left right : Process Party) :=
+  ProcessOver.TranscriptRel left right
 
 /--
 `Process.Labeled` is a closed-world process together with a stable event label
 for each complete step transcript.
 -/
-structure Labeled (Party : Type u) where
-  toProcess : Process Party
-  Event : Type w₂
-  event : toProcess.EventMap Event
+abbrev Labeled (Party : Type u) :=
+  ProcessOver.Labeled (StepContext Party)
 
 /--
 `Process.Ticketed` is a closed-world process together with a stable ticket for
@@ -267,10 +388,8 @@ each complete step transcript.
 These tickets are the obligation identifiers used later by the fairness and
 liveness layers.
 -/
-structure Ticketed (Party : Type u) where
-  toProcess : Process Party
-  Ticket : Type w₂
-  ticket : toProcess.Tickets Ticket
+abbrev Ticketed (Party : Type u) :=
+  ProcessOver.Ticketed (StepContext Party)
 
 /--
 `Process.System` augments a closed-world process by the standard verification
@@ -287,11 +406,8 @@ verification metadata on top of that semantics:
 This keeps the semantic object and the proof obligations separate while still
 bundling them in one place for refinement and liveness statements.
 -/
-structure System (Party : Type u) extends toProcess : ProcessOver (StepContext Party) where
-  init : Proc → Prop
-  assumptions : Proc → Prop := fun _ => True
-  safe : Proc → Prop := fun _ => True
-  inv : Proc → Prop := fun _ => True
+abbrev System (Party : Type u) :=
+  ProcessOver.System (StepContext Party)
 
 end Process
 end Concurrent

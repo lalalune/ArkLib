@@ -417,9 +417,10 @@ def trueRun : Process.Run loopProcess where
 example : Process.Run.initial trueRun = PUnit.unit := rfl
 
 example :
-    Process.Prefix.tickets loopTicketed.ticket (trueRun.take 3) = [true, true, true] := by
-  simp only [Process.Run.take_succ, Process.Run.take_zero, cast_eq, Process.Prefix.tickets]
-  simp [loopTicketed, trueRun, Process.Run.initial, Process.Run.head, Process.Run.tail]
+    Process.Run.ticketsUpTo loopTicketed.ticket trueRun 3 = [true, true, true] := by
+  simp only [ProcessOver.Run.ticketsUpTo_succ, ProcessOver.Run.ticketsUpTo_zero,
+    List.cons.injEq, and_true]
+  exact ⟨rfl, ⟨rfl, rfl⟩⟩
 
 example :
     (Observation.Process.Run.observationsUpTo Party.adv trueRun 2).length = 2 := rfl
@@ -429,7 +430,7 @@ example :
 
 example :
     Process.Ticketed.firedAt loopTicketed trueRun true 5 := by
-  simp [Process.Ticketed.firedAt, loopTicketed, trueRun]
+  simp [ProcessOver.Ticketed.firedAt, loopTicketed, trueRun]
 
 example :
     Process.Ticketed.enabledAt loopTicketed trueRun true 7 := by
@@ -442,13 +443,13 @@ example :
     Process.Ticketed.WeakFairOn loopTicketed trueRun true := by
   intro _
   refine ⟨0, ?_⟩
-  simp [Process.Ticketed.firedAt, loopTicketed, trueRun]
+  simp [ProcessOver.Ticketed.firedAt, loopTicketed, trueRun]
 
 example :
     Process.Ticketed.StrongFairOn loopTicketed trueRun true := by
   intro _ N
   refine ⟨N, Nat.le_refl _, ?_⟩
-  simp [Process.Ticketed.firedAt, loopTicketed, trueRun]
+  simp [ProcessOver.Ticketed.firedAt, loopTicketed, trueRun]
 
 /-- A trivial system wrapper around `loopProcess`. -/
 def loopSystem : Process.System Party where
@@ -535,8 +536,8 @@ example :
     trivial
 
 example :
-    trueRun.ticketsUpTo loopTicketed.ticket 4 =
-      loopMappedRun.ticketsUpTo loopTicketed.ticket 4 := by
+    Process.Run.ticketsUpTo loopTicketed.ticket trueRun 4 =
+      Process.Run.ticketsUpTo loopTicketed.ticket loopMappedRun 4 := by
   exact loopSim.ticketsUpTo_mapRun (pSpec := PUnit.unit) trueRun trivial 4
 
 example :
@@ -549,12 +550,15 @@ example :
     Observation.Process.Run.Rel
       (Observation.Process.TranscriptRel.byTicket loopTicketed.ticket loopTicketed.ticket)
       trueRun loopMappedRun := by
-  exact loopSim.runRel_mapRun (pSpec := PUnit.unit) trueRun trivial
+  exact Observation.Process.Run.rel_of_pointwise
+    (Observation.Process.TranscriptRel.byTicket loopTicketed.ticket loopTicketed.ticket)
+    trueRun loopMappedRun
+    (loopSim.match_mapRun (pSpec := PUnit.unit) trueRun trivial)
 
 example :
-    trueRun.ticketsUpTo loopTicketed.ticket 5 =
-      (loopTicketBisim.forth.mapRun trueRun (pSpec := PUnit.unit) trivial).ticketsUpTo
-        loopTicketed.ticket 5 := by
+    Process.Run.ticketsUpTo loopTicketed.ticket trueRun 5 =
+      Process.Run.ticketsUpTo loopTicketed.ticket
+        (loopTicketBisim.forth.mapRun trueRun (pSpec := PUnit.unit) trivial) 5 := by
   exact Equivalence.Ticket.ticketsUpTo_eq loopTicketBisim trueRun
     (pRight := PUnit.unit) trivial 5
 
