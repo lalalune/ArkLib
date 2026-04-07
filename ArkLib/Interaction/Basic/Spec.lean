@@ -35,7 +35,8 @@ is mathematically forced in protocols like sumcheck and FRI.
   composition (this layer)
 - `Concurrent/` — structural concurrent source syntax, frontiers and residuals,
   typed interfaces and directed open boundaries,
-  operations-first open-composition theory,
+  operations-first open-composition theory and its first final-tagless free
+  lawful model,
   structural frontier traces and true-concurrency refinements, dynamic
   `Process` / `Machine` / `Tree` frontends, generic process executions and
   policies, finite prefixes and infinite runs, observation extraction,
