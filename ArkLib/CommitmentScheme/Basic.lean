@@ -6,23 +6,30 @@ Authors: Quang Dao
 
 import VCVio
 import ArkLib.OracleReduction.Security.Basic
+import ArkLib.Interaction.Reduction
 
 /-!
-  # Commitment Schemes with Oracle Openings
+# Commitment Schemes with Oracle Openings
 
-  A commitment scheme, relative to an oracle `oSpec : OracleSpec ι`, and for a given function
-  `oracle : Data → Query → Response` transforming underlying data `Data` into an oracle `Query →
-  Response`, is a tuple of two operations:
+A commitment scheme, relative to an oracle `oSpec : OracleSpec ι`, and for a given function
+`oracle : Data → Query → Response` transforming underlying data `Data` into an oracle `Query →
+Response`, is a tuple of two operations:
 
-  - Commit, which is a function `commit : Data → Randomness → OracleComp oSpec Commitment`
-  - Open, which is (roughly) an interactive proof (relative to `oSpec`) for the following relation:
-    - `StmtIn := (cm : Commitment) × (x : Query) × (y : Response)`
-    - `WitIn := (d : Data) × (r : Randomness)`
-    - `rel : StmtIn → WitIn → Prop := fun ⟨cm, x, y⟩ ⟨d, r⟩ => commit d r = cm ∧ oracle d x = y`
+- Commit, which is a function `commit : Data → Randomness → OracleComp oSpec Commitment`
+- Open, which is (roughly) an interactive proof (relative to `oSpec`) for the following relation:
+  - `StmtIn := (cm : Commitment) × (x : Query) × (y : Response)`
+  - `WitIn := (d : Data) × (r : Randomness)`
+  - `rel : StmtIn → WitIn → Prop := fun ⟨cm, x, y⟩ ⟨d, r⟩ => commit d r = cm ∧ oracle d x = y`
 
-  There is one inaccuracy about the relation above: `commit` is an oracle computation, and not a
-  deterministic function; hence the relation is not literally true as described. This is why
-  security definitions for commitment schemes have to be stated differently than those for IOPs.
+There is one inaccuracy about the relation above: `commit` is an oracle computation, and not a
+deterministic function; hence the relation is not literally true as described. This is why
+security definitions for commitment schemes have to be stated differently than those for IOPs.
+
+## Frameworks
+
+This file contains both the legacy (`ProtocolSpec`-based) and new (`Interaction`-based) versions
+of the commitment scheme structures. The new `Interaction`-based versions are in the
+`Commitment.Interaction` namespace and will eventually supersede the legacy versions.
 -/
 
 -- Note: remove this once we properly define the security definitions for commitment schemes
@@ -41,11 +48,6 @@ variable [O : OracleInterface Data] {n : ℕ} (pSpec : ProtocolSpec n)
 
 structure Opening where
   opening : Proof oSpec (Commitment × (q : O.Query) × O.Response q) (Data × Randomness) pSpec
-
--- abbrev Statement (Data Commitment : Type) [O : OracleInterface Data] :=
---  Commitment × O.Query × O.Response
-
--- abbrev Witness (Data Randomness : Type) := Data × Randomness
 
 structure Scheme extends
     Commit oSpec Data Randomness Commitment,
@@ -171,5 +173,101 @@ def hiding' (scheme : Scheme oSpec Data Randomness Commitment pSpec) : Prop := s
 end
 
 end Security
+
+/-! ## Interaction-based commitment scheme
+
+Modular commitment scheme built on the `Interaction` framework. The scheme
+is decomposed into two independently reusable components:
+
+- `Interaction.Commit`: the commitment phase (`Interaction.Reduction`).
+- `Interaction.Opening`: the opening phase (`Interaction.Proof`).
+- `Interaction.CommitmentScheme`: the product of `Commit` and `Opening`.
+
+All structures abstract over the monad `m : Type → Type`, decoupling from
+`OracleComp`. Instantiate with `m := OracleComp oSpec` to recover the concrete
+oracle computation setting. -/
+
+namespace Interaction
+
+/-- The commitment phase of a commitment scheme, modeled as an
+`Interaction.Reduction`. The prover starts with `Data`, the verifier with
+no input. After interacting according to `spec`, the prover outputs
+`CommType × WitnessType` while the verifier outputs `CommType`. -/
+structure Commit (m : Type → Type)
+    (Data : Type) (CommType : Type) (WitnessType : Type) where
+  spec : _root_.Interaction.Spec.{0}
+  roles : _root_.Interaction.RoleDecoration spec
+  reduction : _root_.Interaction.Reduction m Unit
+    (fun _ => spec) (fun _ => roles)
+    (fun _ => Unit) (fun _ => Data)
+    (fun _ _ => CommType) (fun _ _ => WitnessType)
+
+/-- The opening phase of a commitment scheme, modeled as an
+`Interaction.Proof`. Given a commitment, query, and claimed response, the
+prover (holding `WitnessType`) convinces the verifier to accept or reject. -/
+structure Opening (m : Type → Type)
+    (Data : Type) (CommType : Type) (WitnessType : Type)
+    [oi : OracleInterface Data] where
+  spec : _root_.Interaction.Spec.{0}
+  roles : _root_.Interaction.RoleDecoration spec
+  proof : _root_.Interaction.Proof m Unit
+    (fun _ => spec) (fun _ => roles)
+    (fun _ => CommType × (q : oi.Query) × oi.Response q)
+    (fun _ => WitnessType)
+    (fun _ _ => Bool)
+
+/-- A full commitment scheme: the product of a commitment phase and an
+opening phase. Fix a `Commit` and vary the `Opening` to get different
+schemes over the same commitment mechanism. -/
+structure CommitmentScheme (m : Type → Type)
+    (Data : Type) (CommType : Type) (WitnessType : Type)
+    [oi : OracleInterface Data] where
+  commit : Commit m Data CommType WitnessType
+  opening : Opening m Data CommType WitnessType
+
+namespace Commit
+
+variable {m : Type → Type} {Data CommType WitnessType : Type}
+
+/-- Build a `Commit` from a non-interactive commitment function. The
+resulting protocol has a single sender round: the prover computes the
+commitment, sends `CommType` to the verifier, and retains `WitnessType`. -/
+def ofFunction [Monad m] (f : Data → m (CommType × WitnessType)) :
+    Commit m Data CommType WitnessType where
+  spec := .node CommType (fun _ => .done)
+  roles := ⟨.sender, fun _ => ⟨⟩⟩
+  reduction := {
+    prover := fun () () data =>
+      pure (do
+        let ⟨cm, wit⟩ ← f data
+        pure ⟨cm, (cm, wit)⟩)
+    verifier := fun () () =>
+      fun cm => pure cm
+  }
+
+end Commit
+
+namespace Opening
+
+variable {m : Type → Type} {Data CommType WitnessType : Type}
+
+/-- Build an `Opening` from a reveal-and-check function. The resulting protocol
+has a single sender round: the prover sends `WitnessType` to the verifier,
+which checks it against the statement. -/
+def ofRevealCheck [Monad m] [oi : OracleInterface Data]
+    (check : CommType × (q : oi.Query) × oi.Response q → WitnessType → Bool) :
+    Opening m Data CommType WitnessType where
+  spec := .node WitnessType (fun _ => .done)
+  roles := ⟨.sender, fun _ => ⟨⟩⟩
+  proof := {
+    prover := fun () stmt wit =>
+      pure (pure ⟨wit, (check stmt wit, ⟨⟩)⟩)
+    verifier := fun () stmt =>
+      fun w => pure (check stmt w)
+  }
+
+end Opening
+
+end Interaction
 
 end Commitment

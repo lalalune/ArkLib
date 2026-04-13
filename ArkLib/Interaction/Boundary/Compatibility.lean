@@ -29,7 +29,7 @@ private abbrev ConcreteInput
 1. invalid outer inputs project to invalid inner inputs, and
 2. invalid inner outputs lift to invalid outer outputs, assuming the caller's
    compatibility predicate. -/
-class Statement.IsSound
+structure Statement.IsSound
     {OuterStmtIn InnerStmtIn : Type}
     {InnerSpec : InnerStmtIn → Spec}
     {projection : StatementProjection OuterStmtIn InnerStmtIn InnerSpec}
@@ -67,7 +67,7 @@ class Statement.IsSound
 1. valid outer inputs project to valid inner inputs, and
 2. valid inner outputs lift to valid outer outputs, assuming the caller's
    compatibility predicate. -/
-class Context.IsComplete
+structure Context.IsComplete
     {OuterStmtIn InnerStmtIn : Type}
     {OuterWitIn InnerWitIn : Type}
     {InnerSpec : InnerStmtIn → Spec}

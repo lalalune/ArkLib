@@ -5,6 +5,27 @@ Authors: Quang Dao
 -/
 import ArkLib.Interaction.Oracle.Core
 
+/-!
+# Oracle Reduction Execution
+
+Concrete execution of oracle-decorated reductions. The oracle decoration adds
+per-sender-node oracle interfaces that grow the ambient `OracleSpec` as the
+protocol progresses. This module provides:
+
+- `simulateQ` lemmas for splitting, appending, and casting oracle query handlers
+- `run` / `execute`: running an `OracleVerifier` or `OracleReduction` against
+  an oracle-aware prover, reducing to `OracleComp` computations
+- `mapExecuteWitness` / `forgetExecuteWitness`: post-processing the witness
+  output of an executed oracle reduction
+- equivalence lemmas between running against concrete oracle implementations
+  and running via `simulateQ`-based composition
+
+## See also
+
+- `Oracle/Core.lean` — oracle decoration definitions and query handle algebra
+- `Oracle/Continuation.lean` — chained (multi-stage) oracle composition
+-/
+
 open OracleComp OracleSpec
 
 namespace Interaction

@@ -3,8 +3,9 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Quang Dao
 -/
+
 import ArkLib.Interaction.Reduction
-import VCVio
+import VCVio.OracleComp.ProbComp
 
 /-!
 # Security Definitions for Interactive Reductions
@@ -44,6 +45,18 @@ semantics, except `randomChallenger` which explicitly uses `ProbComp`.
   backward extraction for round-by-round knowledge soundness.
 - `ClaimTree.IsSound.bound_terminalProb` bounds the probability of reaching a
   good terminal claim from a bad root.
+
+## Quantifier conventions
+
+Knowledge soundness uses `∃ extractor, ∀ prover`: one fixed extractor works
+for all adversarial provers simultaneously. This is the standard "universal
+straightline extractor" notion for IOPs and SNARKs, which is stronger than the non-black-box
+convention `∀ prover, ∃ extractor`.
+
+The `Extractor.Straightline` is a pure deterministic function of the public
+transcript and both terminal outputs. It does not receive the prover's internal
+randomness, which is appropriate for the public-coin IOP setting where the
+transcript contains all prover messages.
 
 ## See also
 
@@ -1213,10 +1226,41 @@ def maxPathError {spec : Spec} {roles : RoleDecoration spec} {Claim : Type u}
     (tree : KnowledgeClaimTree spec roles Claim) : ℝ≥0∞ :=
   tree.toClaimTree.maxPathError
 
-/-- Knowledge-soundness condition. At sender nodes: backward — if the child
-claim is good, then extracting back gives a good parent claim. At receiver
-nodes: forward — a bad parent claim leads to a good child with probability
-at most `error`. -/
+/-- Extract backward from a terminal claim to a root claim, composing the
+per-node `extractMid` functions along the transcript path. -/
+def extractBack {spec : Spec} {roles : RoleDecoration spec} {Claim : Type u}
+    (tree : KnowledgeClaimTree spec roles Claim)
+    (tr : Spec.Transcript spec) : tree.Terminal tr → Claim :=
+  match spec, roles, tree, tr with
+  | .done, _, .done _, _ => id
+  | .node _ _, ⟨.sender, _⟩, .sender _ _ next _ extractMid _, ⟨x, trRest⟩ =>
+      fun terminal => extractMid x ((next x).extractBack trRest terminal)
+  | .node _ _, ⟨.receiver, _⟩, .receiver _ _ _ next _ extractMid _, ⟨x, trRest⟩ =>
+      fun terminal => extractMid x ((next x).extractBack trRest terminal)
+
+/-- Backward extraction is a left-inverse of forward advancement: extracting
+back from `follow tr claim` always recovers the original `claim`. -/
+theorem extractBack_follow : {spec : Spec} → {roles : RoleDecoration spec} → {Claim : Type u} →
+    (tree : KnowledgeClaimTree spec roles Claim) →
+    (tr : Spec.Transcript spec) → (claim : Claim) →
+    tree.extractBack tr (tree.follow tr claim) = claim
+  | .done, _, _, .done _, _, _ => rfl
+  | .node _ _, ⟨.sender, _⟩, _, .sender _ _ next advance extractMid extractAdvance,
+      ⟨x, trRest⟩, claim => by
+      change extractMid x ((next x).extractBack trRest
+        ((next x).follow trRest (advance claim x))) = claim
+      rw [extractBack_follow (next x) trRest, extractAdvance]
+  | .node _ _, ⟨.receiver, _⟩, _, .receiver _ _ _ next advance extractMid extractAdvance,
+      ⟨x, trRest⟩, claim => by
+      change extractMid x ((next x).extractBack trRest
+        ((next x).follow trRest (advance claim x))) = claim
+      rw [extractBack_follow (next x) trRest, extractAdvance]
+
+/-- Knowledge-soundness condition. At both sender and receiver nodes, the
+backward condition holds: if the child claim is good, extracting back gives
+a good parent claim. At receiver nodes, the forward probabilistic condition
+also holds: a bad parent claim leads to a good child with probability at
+most `error`. -/
 def IsKnowledgeSound {m : Type u → Type u} [Monad m] [HasEvalSPMF m]
     (sample : (T : Type u) → m T) {spec : Spec}
     {roles : RoleDecoration spec} {Claim : Type u}
@@ -1226,7 +1270,8 @@ def IsKnowledgeSound {m : Type u → Type u} [Monad m] [HasEvalSPMF m]
   | .sender good _ next _advance extractMid _extractAdvance =>
       (∀ x (nc : _), (next x).good nc → good (extractMid x nc)) ∧
       (∀ x, (next x).IsKnowledgeSound sample)
-  | .receiver good error _ next advance _extractMid _extractAdvance =>
+  | .receiver good error _ next advance extractMid _extractAdvance =>
+      (∀ x (nc : _), (next x).good nc → good (extractMid x nc)) ∧
       (∀ claim, ¬ good claim →
         Pr[fun x => (next x).good (advance claim x) | sample _] ≤ error) ∧
       (∀ x, (next x).IsKnowledgeSound sample)
@@ -1257,10 +1302,31 @@ theorem isKnowledgeSound_implies_isSound
       · intro x
         exact ih x (hChildren x)
   | @receiver _ X rest rRest good error NextClaim next advance extractMid extractAdvance ih =>
-      rcases h with ⟨hStep, hChildren⟩
+      rcases h with ⟨_, hStep, hChildren⟩
       refine ⟨?_, fun x => ih x (hChildren x)⟩
       intro claim hBad
       simpa using hStep claim hBad
+
+/-- If a knowledge claim tree is knowledge-sound and a terminal claim is good,
+then backward extraction yields a good root claim. This is the key property
+that enables transcript-dependent witness extraction. -/
+theorem IsKnowledgeSound.good_extractBack
+    {m : Type u → Type u} [Monad m] [HasEvalSPMF m]
+    {sample : (T : Type u) → m T}
+    {spec : Spec} {roles : RoleDecoration spec} {Claim : Type u}
+    {tree : KnowledgeClaimTree spec roles Claim}
+    (hSound : tree.IsKnowledgeSound sample)
+    (tr : Spec.Transcript spec) (terminal : tree.Terminal tr)
+    (hGood : tree.terminalGood tr terminal) :
+    tree.good (tree.extractBack tr terminal) := by
+  cases tree with
+  | done _ => exact hGood
+  | sender good NextClaim next advance extractMid extractAdvance =>
+      obtain ⟨x, trRest⟩ := tr
+      exact hSound.1 _ _ (good_extractBack (hSound.2 x) trRest terminal hGood)
+  | receiver good error NextClaim next advance extractMid extractAdvance =>
+      obtain ⟨x, trRest⟩ := tr
+      exact hSound.1 _ _ (good_extractBack (hSound.2.2 x) trRest terminal hGood)
 
 /-- Bound on the terminal probability for knowledge claim trees, via the
 underlying `ClaimTree.IsSound.bound_terminalProb`. -/
@@ -1298,7 +1364,11 @@ such that:
 2. The worst-case cumulative error is at most `ε shared stmt`.
 3. Root boundary: good root claim is equivalent to the extracted witness being
    in `relIn`.
-4. Terminal boundary: valid output in `relOut` implies terminal goodness. -/
+4. Forward terminal boundary: valid output in `relOut` implies the root claim's
+   forward path reaches a good terminal (for soundness via `maxPathError`).
+5. Backward terminal boundary: valid output maps to a good terminal claim
+   via `terminalOf` (for transcript-dependent knowledge extraction via
+   `extractBack`). -/
 def rbrKnowledgeSoundness
     {SharedIn : Type v}
     {pSpec : SharedIn → Spec} {roles : (shared : SharedIn) → RoleDecoration (pSpec shared)}
@@ -1315,12 +1385,17 @@ def rbrKnowledgeSoundness
       KnowledgeClaimTree (pSpec shared) (roles shared) (Claim shared stmt))
     (root : ∀ (shared : SharedIn) (stmt : StatementIn shared), Claim shared stmt)
     (extract : ∀ (shared : SharedIn) (stmt : StatementIn shared),
-      Claim shared stmt → WitnessIn shared),
+      Claim shared stmt → WitnessIn shared)
+    (terminalOf : ∀ (shared : SharedIn) (stmt : StatementIn shared)
+      (tr : Spec.Transcript (pSpec shared)),
+      WitnessOut shared tr → (tree shared stmt).Terminal tr),
   (∀ shared stmt, (tree shared stmt).IsKnowledgeSound sample) ∧
   (∀ shared stmt, (tree shared stmt).maxPathError ≤ ε shared stmt) ∧
   (∀ shared stmt c, (tree shared stmt).good c ↔ (stmt, extract shared stmt c) ∈ relIn shared) ∧
-  (∀ shared stmt tr pOut, pOut ∈ relOut shared tr →
-    (tree shared stmt).terminalGood tr ((tree shared stmt).follow tr (root shared stmt)))
+  (∀ shared stmt tr sOut wOut, (sOut, wOut) ∈ relOut shared tr →
+    (tree shared stmt).terminalGood tr ((tree shared stmt).follow tr (root shared stmt))) ∧
+  (∀ shared stmt tr sOut wOut, (sOut, wOut) ∈ relOut shared tr →
+    (tree shared stmt).terminalGood tr (terminalOf shared stmt tr wOut))
 
 /-- Round-by-round knowledge soundness implies round-by-round soundness. -/
 theorem rbrKnowledgeSoundness_implies_rbrSoundness
@@ -1340,7 +1415,7 @@ theorem rbrKnowledgeSoundness_implies_rbrSoundness
     (langOut : ∀ shared, Spec.Transcript (pSpec shared) → Prop)
     (hLangOut : ∀ shared tr, langOut shared tr → ∃ pOut, pOut ∈ relOut shared tr) :
     Verifier.rbrSoundness (roles := roles) sample langIn langOut ε := by
-  rcases h with ⟨Claim, tree, root, extract, hSound, hErr, hRoot, hTerm⟩
+  rcases h with ⟨Claim, tree, root, extract, _, hSound, hErr, hRoot, hTermFwd, _⟩
   refine ⟨Claim, fun shared stmt => (tree shared stmt).toClaimTree, root, ?_⟩
   refine ⟨?_, ?_, ?_, ?_⟩
   · intro shared stmt
@@ -1353,11 +1428,14 @@ theorem rbrKnowledgeSoundness_implies_rbrSoundness
   · intro shared stmt
     exact hErr shared stmt
   · intro shared stmt tr hLangOut'
-    rcases hLangOut shared tr hLangOut' with ⟨pOut, hpOut⟩
-    exact hTerm shared stmt tr pOut hpOut
+    rcases hLangOut shared tr hLangOut' with ⟨⟨sOut, wOut⟩, hpOut⟩
+    exact hTermFwd shared stmt tr sOut wOut hpOut
 
-/-- Round-by-round knowledge soundness implies plain knowledge soundness
-(for a fixed protocol spec). -/
+/-- Round-by-round knowledge soundness implies plain knowledge soundness.
+The extractor uses backward extraction through the claim tree: given a valid
+output `(sOut, wOut) ∈ relOut`, `terminalOf` identifies a good terminal claim,
+`extractBack` propagates it backward to a good root claim, and `extract`
+converts it to a valid input witness. -/
 theorem rbrKnowledgeSoundness_implies_knowledgeSoundness
     {SharedIn : Type v}
     {pSpec : SharedIn → Spec} {roles : (shared : SharedIn) → RoleDecoration (pSpec shared)}
@@ -1369,8 +1447,7 @@ theorem rbrKnowledgeSoundness_implies_knowledgeSoundness
       Set (PUnit.{1} × WitnessOut shared tr)}
     {ε : ∀ shared, StatementIn shared → ℝ≥0∞}
     (h : Verifier.rbrKnowledgeSoundness (pSpec := pSpec) (roles := roles)
-      sample relIn relOut ε)
-    {εMax : ℝ≥0∞} (hε : ∀ shared stmt, ε shared stmt ≤ εMax) :
+      sample relIn relOut ε) :
     Verifier.knowledgeSoundness
       (SharedIn := SharedIn)
       (Context := pSpec)
@@ -1382,44 +1459,27 @@ theorem rbrKnowledgeSoundness_implies_knowledgeSoundness
       (fun shared _ => randomChallenger sample (pSpec shared) (roles shared))
       relIn
       relOut
-      εMax := by
-  rcases h with ⟨Claim, tree, root, extract, hSound, hErr, hRoot, hTerm⟩
-  refine ⟨{ toFun := fun shared stmt _ _ _ => extract shared stmt (root shared stmt) }, ?_⟩
+      0 := by
+  rcases h with ⟨Claim, tree, root, extract, terminalOf,
+    hSound, _hErr, hRoot, _hTermFwd, hTermBwd⟩
+  let extractor : Extractor.Straightline SharedIn StatementIn WitnessIn pSpec
+      (fun _ _ => PUnit.{1}) WitnessOut :=
+    ⟨fun shared stmt tr _sOut wOut =>
+      extract shared stmt
+        ((tree shared stmt).extractBack tr (terminalOf shared stmt tr wOut))⟩
+  refine ⟨extractor, ?_⟩
   intro shared stmt prover
-  by_cases hIn : (stmt, extract shared stmt (root shared stmt)) ∈ relIn shared
-  · have hZero :
-        Pr[fun z =>
-          (z.2.2, z.2.1) ∈ relOut shared z.1 ∧
-            (stmt, extract shared stmt (root shared stmt)) ∉ relIn shared
-          | Spec.Strategy.runWithRoles (pSpec shared) (roles shared) prover
-              (randomChallenger sample (pSpec shared) (roles shared))] = 0 := by
-        rw [probEvent_eq_zero_iff]
-        intro z _ hz
-        exact hz.2 hIn
-    exact hZero.le.trans bot_le
-  · have hBadRoot : ¬ (tree shared stmt).good (root shared stmt) := by
-      intro hGood
-      exact hIn ((hRoot shared stmt (root shared stmt)).mp hGood)
-    have hmono :
-        Pr[fun z =>
-          (z.2.2, z.2.1) ∈ relOut shared z.1 ∧
-            (stmt, extract shared stmt (root shared stmt)) ∉ relIn shared
-          | Spec.Strategy.runWithRoles (pSpec shared) (roles shared) prover
-              (randomChallenger sample (pSpec shared) (roles shared))] ≤
-          Pr[fun z =>
-            (tree shared stmt).terminalGood z.1
-              ((tree shared stmt).follow z.1 (root shared stmt))
-            | Spec.Strategy.runWithRoles (pSpec shared) (roles shared) prover
-                (randomChallenger sample (pSpec shared) (roles shared))] := by
-      refine probEvent_mono ?_
-      intro z _ hz
-      exact hTerm shared stmt z.1 ⟨z.2.2, z.2.1⟩ hz.1
-    exact le_trans hmono <|
-      le_trans
-        (KnowledgeClaimTree.IsKnowledgeSound.bound_terminalProb sample (tree shared stmt)
-          (hSound shared stmt) prover
-          (claim := root shared stmt) hBadRoot)
-        (le_trans (hErr shared stmt) (hε shared stmt))
+  suffices h : Pr[fun z =>
+      (z.2.2, z.2.1) ∈ relOut shared z.1 ∧
+        (stmt, extractor shared stmt z.1 z.2.2 z.2.1) ∉ relIn shared
+      | Verifier.run (fun shared _ => randomChallenger sample (pSpec shared) (roles shared))
+          shared stmt prover] = 0 from h ▸ le_refl _
+  rw [probEvent_eq_zero_iff]
+  intro z _ ⟨hRelOut, hNotRelIn⟩
+  have hTermGood := hTermBwd shared stmt z.1 z.2.2 z.2.1 hRelOut
+  have hGoodRoot := KnowledgeClaimTree.IsKnowledgeSound.good_extractBack
+    (hSound shared stmt) z.1 (terminalOf shared stmt z.1 z.2.1) hTermGood
+  exact hNotRelIn ((hRoot shared stmt _).mp hGoodRoot)
 
 end Verifier
 

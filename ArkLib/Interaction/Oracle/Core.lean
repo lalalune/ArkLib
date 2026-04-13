@@ -368,30 +368,6 @@ def liftAppendRightQuery :
         (Spec.Transcript.append spec₁ spec₂ tr₁ tr₂))
         (OracleDecoration.QueryHandle.appendRight spec₁ spec₂ roles₁ roles₂ od₁ od₂ tr₁ tr₂ q)
 
-/-- Lift first-phase transcript-message queries into the appended transcript's
-query context. -/
-def liftAppendLeftQueries :
-    QueryImpl (OracleDecoration.toOracleSpec spec₁ roles₁ od₁ tr₁)
-      (OracleComp
-        (OracleDecoration.toOracleSpec (spec₁.append spec₂)
-          (Spec.Decoration.append roles₁ roles₂)
-          (Role.Refine.append od₁ od₂) (Spec.Transcript.append spec₁ spec₂ tr₁ tr₂))) :=
-  liftAppendLeftQuery (spec₁ := spec₁) (spec₂ := spec₂)
-    (roles₁ := roles₁) (roles₂ := roles₂)
-    (od₁ := od₁) (od₂ := od₂) tr₁ tr₂
-
-/-- Lift second-phase transcript-message queries into the appended transcript's
-query context. -/
-def liftAppendRightQueries :
-    QueryImpl (OracleDecoration.toOracleSpec (spec₂ tr₁) (roles₂ tr₁) (od₂ tr₁) tr₂)
-      (OracleComp
-        (OracleDecoration.toOracleSpec (spec₁.append spec₂)
-          (Spec.Decoration.append roles₁ roles₂)
-          (Role.Refine.append od₁ od₂) (Spec.Transcript.append spec₁ spec₂ tr₁ tr₂))) :=
-  liftAppendRightQuery (spec₁ := spec₁) (spec₂ := spec₂)
-    (roles₁ := roles₁) (roles₂ := roles₂)
-    (od₁ := od₁) (od₂ := od₂) tr₁ tr₂
-
 variable {ιₛ : Type} {OStmt : ιₛ → Type}
 variable [∀ i, OracleInterface (OStmt i)]
 
@@ -434,33 +410,17 @@ def liftAppendRightContext :
         (od₁ := od₁) (od₂ := od₂) tr₁ tr₂ q
 
 theorem simulateQ_ext
-    {ι : Type u} {spec : OracleSpec.{u, v} ι} {r : Type v → Type}
+    {ι : Type _} {spec : OracleSpec ι} {r : Type _ → Type _}
     [Monad r] [LawfulMonad r]
     {impl₁ impl₂ : QueryImpl spec r}
     (himpl : ∀ q, impl₁ q = impl₂ q) :
-    ∀ {α : Type v} (oa : OracleComp spec α), simulateQ impl₁ oa = simulateQ impl₂ oa := by
+    ∀ {α : Type _} (oa : OracleComp spec α), simulateQ impl₁ oa = simulateQ impl₂ oa := by
   intro α oa
   induction oa using OracleComp.inductionOn with
   | pure x =>
       simp
   | query_bind t oa ih =>
       simp [himpl t, ih]
-
-theorem simulateQ_compose_lambda
-    {ι : Type} {spec : OracleSpec ι}
-    {ι' : Type} {spec' : OracleSpec ι'}
-    {r : Type → Type}
-    [Monad r] [LawfulMonad r]
-    (so' : QueryImpl spec' r)
-    (so : QueryImpl spec (OracleComp spec')) :
-    ∀ {α : Type} (oa : OracleComp spec α),
-      simulateQ (fun q => simulateQ so' (so q)) oa = simulateQ so' (simulateQ so oa) := by
-  intro α oa
-  induction oa using OracleComp.inductionOn with
-  | pure x =>
-      simp
-  | query_bind t oa ih =>
-      simp [ih]
 
 theorem simulateQ_cast_query
     {ι : Type u} {spec : OracleSpec.{u, v} ι} {r : Type v → Type}

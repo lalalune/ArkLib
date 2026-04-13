@@ -104,14 +104,14 @@ theorem probAccept_pullback_le
         (tr : Spec.Transcript (InnerSpec (projection.proj outer))) →
         InnerStmtOut (projection.proj outer) tr →
         Prop)
-    [boundarySound :
+    (boundarySound :
       Statement.IsSound
         boundary
         outerLangIn
         innerLangIn
         outerLangOut
         innerLangOut
-        compat]
+        compat)
     (compatOfAccept :
       ∀ outer tr innerStmtOut,
         boundary.lift outer tr innerStmtOut ∈ outerLangOut outer tr →

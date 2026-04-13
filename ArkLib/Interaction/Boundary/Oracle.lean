@@ -53,27 +53,17 @@ namespace Boundary
 
 open OracleComp OracleSpec
 
-/-! ### Generic Simulation Lemmas -/
+/-! ### Generic Simulation Lemmas
 
-/-- Pointwise-equal query handlers induce pointwise-equal simulated oracle
-computations. -/
-theorem simulateQ_ext
-    {ι : Type _} {spec : OracleSpec ι}
-    {r : Type _ → Type _}
-    [Monad r] [LawfulMonad r]
-    {impl₁ impl₂ : QueryImpl spec r}
-    (himpl : ∀ q, impl₁ q = impl₂ q) :
-    ∀ {α : Type _} (oa : OracleComp spec α),
-      simulateQ impl₁ oa = simulateQ impl₂ oa := by
-  intro α oa
-  induction oa using OracleComp.inductionOn with
-  | pure x =>
-      simp
-  | query_bind t oa ih =>
-      simp [himpl t, ih]
+`simulateQ_ext` is defined once in `Oracle/Core.lean` (namespace `Interaction`)
+and reused here via parent-namespace resolution. `simulateQ_map` is available
+from VCVio as a `@[simp]` lemma. `simulateQ_compose` is a convenience
+restatement of VCVio's `QueryImpl.simulateQ_compose` with the equality
+oriented for rewriting. -/
 
 /-- Simulating through one handler and then another is the same as simulating
-once through their composed handler. -/
+once through their composed handler. Universe-polymorphic version of
+`QueryImpl.simulateQ_compose` (reversed direction). -/
 theorem simulateQ_compose
     {ι : Type _} {spec : OracleSpec ι}
     {ι' : Type _} {spec' : OracleSpec ι'}
@@ -86,27 +76,8 @@ theorem simulateQ_compose
         simulateQ (fun q => simulateQ impl' (impl q)) oa := by
   intro α oa
   induction oa using OracleComp.inductionOn with
-  | pure x =>
-      simp
-  | query_bind t oa ih =>
-      simp [ih]
-
-/-- `simulateQ` commutes with mapping the result of the simulated oracle
-computation. -/
-theorem simulateQ_map
-    {ι : Type _} {spec : OracleSpec ι}
-    {r : Type _ → Type _}
-    [Monad r] [LawfulMonad r]
-    {α β : Type _}
-    (impl : QueryImpl spec r)
-    (f : α → β)
-    (oa : OracleComp spec α) :
-    simulateQ impl (f <$> oa) = f <$> simulateQ impl oa := by
-  induction oa using OracleComp.inductionOn with
-  | pure x =>
-      simp
-  | query_bind t oa ih =>
-      simp [ih]
+  | pure x => simp
+  | query_bind t oa ih => simp [ih]
 
 /-- Lifting an `Id`-valued handler into a larger oracle computation commutes
 with `simulateQ`. -/

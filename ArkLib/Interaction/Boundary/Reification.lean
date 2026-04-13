@@ -589,6 +589,57 @@ structure OracleContext
         (access outer)
         (reification outer)
 
+/-- Forget witness transport and extract the underlying `OracleStatement` from an
+`OracleContext`. -/
+def OracleContext.toOracleStatement
+    {OuterStmtIn InnerStmtIn : Type}
+    {OuterWitIn InnerWitIn : Type}
+    {InnerSpec : InnerStmtIn → Spec}
+    {projection : StatementProjection OuterStmtIn InnerStmtIn InnerSpec}
+    {InnerStmtOut :
+      (s : InnerStmtIn) → Spec.Transcript (InnerSpec s) → Type}
+    {OuterStmtOut :
+      (outer : OuterStmtIn) →
+        Spec.Transcript (InnerSpec (projection.proj outer)) → Type}
+    {InnerWitOut :
+      (s : InnerStmtIn) → Spec.Transcript (InnerSpec s) → Type}
+    {OuterWitOut :
+      (outer : OuterStmtIn) →
+        Spec.Transcript (InnerSpec (projection.proj outer)) → Type}
+    {toContext :
+      Context projection
+        OuterWitIn InnerWitIn
+        InnerStmtOut OuterStmtOut
+        InnerWitOut OuterWitOut}
+    {Outerιₛᵢ : OuterStmtIn → Type}
+    {OuterOStmtIn : (outer : OuterStmtIn) → Outerιₛᵢ outer → Type}
+    {Innerιₛᵢ : InnerStmtIn → Type}
+    {InnerOStmtIn : (inner : InnerStmtIn) → Innerιₛᵢ inner → Type}
+    [∀ outer i, OracleInterface (OuterOStmtIn outer i)]
+    [∀ inner i, OracleInterface (InnerOStmtIn inner i)]
+    {Innerιₛₒ :
+      (s : InnerStmtIn) → (tr : Spec.Transcript (InnerSpec s)) → Type}
+    {InnerOStmtOut :
+      (s : InnerStmtIn) →
+      (tr : Spec.Transcript (InnerSpec s)) →
+      Innerιₛₒ s tr → Type}
+    {Outerιₛₒ :
+      (outer : OuterStmtIn) →
+      (tr : Spec.Transcript (InnerSpec (projection.proj outer))) → Type}
+    {OuterOStmtOut :
+      (outer : OuterStmtIn) →
+      (tr : Spec.Transcript (InnerSpec (projection.proj outer))) →
+      Outerιₛₒ outer tr → Type}
+    [∀ s tr i, OracleInterface (InnerOStmtOut s tr i)]
+    [∀ outer tr i, OracleInterface (OuterOStmtOut outer tr i)]
+    (oc : OracleContext toContext
+      OuterOStmtIn InnerOStmtIn InnerOStmtOut OuterOStmtOut) :
+    OracleStatement toContext.stmt
+      OuterOStmtIn InnerOStmtIn InnerOStmtOut OuterOStmtOut where
+  access := oc.access
+  reification := oc.reification
+  coherent := oc.coherent
+
 end Boundary
 
 namespace OracleDecoration
