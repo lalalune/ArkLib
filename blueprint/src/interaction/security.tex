@@ -105,24 +105,80 @@ Analogous theorems hold for perfect completeness and soundness.
   \uses{int:claim-tree}
 \end{theorem}
 
-\subsection{Oracle security}
+\subsection{Oracle security}\label{subsec:oracle-security}
 
-At the oracle level, verifier-side acceptance is phrased via \emph{existence}
-of concrete output oracle data:
+Security definitions for oracle reductions involve three layers.
+An \emph{input implementation} is a deterministic query implementation
+$\mathit{InputImpl} := \mathsf{QueryImpl}\;[\mathit{OStmtIn}]_o\;\mathsf{Id}$,
+concretizing the input oracles.
+An \emph{output implementation} (or \emph{simulate}) is a monadic query
+implementation $\mathsf{QueryImpl}\;[\mathit{OStmtOut}]_o\;(\mathsf{OracleComp}\;\ldots)$
+that the verifier exposes for its output oracles, without committing to
+concrete underlying data.
+$\mathsf{OutputRealizes}$ connects the two: it asserts query-level agreement
+between a simulate function and a concrete output oracle family
+$\mathit{oStmtOut}$, relative to a deterministic input implementation
+and the transcript.
 
-\begin{definition}[Oracle Completeness]
-  \label{int:oracle-completeness}
-  Honest execution produces concrete output oracle data that realizes the
-  verifier's simulation, and the output passes the acceptance predicate.
-  \lean{Interaction.OracleDecoration.OracleReduction.completeness}
-  \uses{int:oracle-reduction, int:completeness}
+\begin{definition}[Oracle input/output relation]
+  \label{int:oracle-relation}
+  An \emph{input relation} takes $(\mathit{shared}, \mathit{stmt},
+  \mathit{inputImpl}, \mathit{witIn})$ and returns $\mathsf{Prop}$.
+  An \emph{output relation} takes $(\mathit{shared}, \mathit{inputImpl},
+  \mathit{pt}, \mathit{stmtOut}, \mathit{outputImpl}, \mathit{witOut})$
+  and returns $\mathsf{Prop}$.
+  An \emph{input/output language} is the witness-free variant.
+  \lean{Interaction.Oracle.Reduction.InputRelation,
+        Interaction.Oracle.Reduction.OutputRelation}
 \end{definition}
 
-\begin{definition}[Oracle Soundness]
+\begin{definition}[Oracle completeness]
+  \label{int:oracle-completeness}
+  An oracle reduction satisfies \emph{completeness with error $\varepsilon$}
+  if, for every valid input $(\mathit{shared}, s, w)$ with $\mathit{relIn}$
+  satisfied, honest execution produces output satisfying three conditions
+  with probability at least $1 - \varepsilon$:
+  \begin{enumerate}
+    \item The prover's output statement agrees with the verifier's.
+    \item $\mathsf{OutputRealizes}$ holds: the verifier's simulate function
+      agrees with the prover's concrete output oracle data
+      $\mathit{oStmtOut}$.
+    \item $\mathit{relOut}$ holds for the output.
+  \end{enumerate}
+  \lean{Interaction.Oracle.Reduction.completeness}
+  \uses{int:oracle-relation}
+\end{definition}
+
+\begin{definition}[Oracle knowledge soundness]
+  \label{int:oracle-knowledge-soundness}
+  A verifier satisfies \emph{knowledge soundness with error $\varepsilon$}
+  if there exists a straightline extractor~$E$ such that for every malicious
+  prover, the following holds.
+  The adversarial prover is required to output both concrete output oracle
+  data $\mathit{oStmtOut}$ and an output witness $\mathit{witOut}$.
+  The event of interest is:
+  $\mathsf{OutputRealizes}(\mathit{simulate}, \mathit{oStmtOut})$
+  $\wedge$ $\mathit{relOut}(\ldots, \mathit{simulate}, \mathit{witOut})$
+  $\wedge$ $\neg\,\mathit{relIn}(\ldots,
+    E(\ldots, \mathit{oStmtOut}, \mathit{simulate}, \mathit{witOut}))$.
+  The probability of this event is at most~$\varepsilon$.
+
+  The extractor sees the transcript, input statement, input implementation,
+  output statement, concrete $\mathit{oStmtOut}$, simulate, and
+  $\mathit{witOut}$, and produces a candidate $\mathit{witIn}$.
+  \lean{Interaction.Oracle.Verifier.knowledgeSoundness}
+  \uses{int:oracle-relation, int:oracle-completeness}
+\end{definition}
+
+\begin{definition}[Oracle soundness]
   \label{int:oracle-soundness}
-  For any malicious prover, the probability that there exists a concrete output
-  oracle family realizing the verifier's simulation \emph{and} the resulting
-  output passes acceptance is at most~$\varepsilon$.
-  \lean{Interaction.OracleDecoration.OracleReduction.soundness}
-  \uses{int:oracle-reduction, int:soundness}
+  A verifier satisfies \emph{soundness with error $\varepsilon$} if for
+  every input outside the input language and every malicious prover, the
+  probability that the verifier's output falls in the output language is at
+  most~$\varepsilon$.
+  Soundness follows from knowledge soundness under standard hypotheses (the
+  input language is the witness-free projection of the input relation, and
+  the output language is implied by the output relation for any witness).
+  \lean{Interaction.Oracle.Verifier.soundness}
+  \uses{int:oracle-knowledge-soundness}
 \end{definition}

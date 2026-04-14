@@ -102,6 +102,7 @@ import ArkLib.Interaction.Oracle.Composition
 import ArkLib.Interaction.Oracle.Continuation
 import ArkLib.Interaction.Oracle.Core
 import ArkLib.Interaction.Oracle.Execution
+import ArkLib.Interaction.Oracle.Security
 import ArkLib.Interaction.Oracle.Spec
 import ArkLib.Interaction.Oracle.StateChain
 import ArkLib.Interaction.OracleReification

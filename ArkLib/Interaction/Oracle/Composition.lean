@@ -53,7 +53,7 @@ def Reduction.id
   prover _ sWithOracles w :=
     pure ⟨⟨sWithOracles.stmt, sWithOracles.oracleStmt⟩, w⟩
   verifier := {
-    toFun := fun _ {_} _accSpec stmt => stmt
+    toFun := fun _ stmt => stmt
     simulate := fun _ _ q => liftM <| query (spec := [OStatementIn _]ₒ) q
   }
 
@@ -112,8 +112,8 @@ def Reduction.freezeSharedToPUnit
     let strat ← reduction.prover shared input' w
     pure <| Interaction.Spec.Strategy.mapOutputWithRoles remapOutput strat
   verifier := {
-    toFun := fun _ {_} accSpec stmt =>
-      reduction.verifier.toFun shared accSpec stmt
+    toFun := fun _ stmt =>
+      reduction.verifier.toFun shared stmt
     simulate := fun _ pt =>
       reduction.verifier.simulate shared pt
   }
@@ -173,8 +173,8 @@ def Reduction.pullbackShared
     let strat ← reduction.prover (f shared) input' w
     pure <| Interaction.Spec.Strategy.mapOutputWithRoles remapOutput strat
   verifier := {
-    toFun := fun shared {_} accSpec stmt =>
-      reduction.verifier.toFun (f shared) accSpec stmt
+    toFun := fun shared stmt =>
+      reduction.verifier.toFun (f shared) stmt
     simulate := fun shared pt =>
       reduction.verifier.simulate (f shared) pt
   }
@@ -310,6 +310,47 @@ private def compVerifierAux
           accSpec
           (OutType := fun pt₁ pt₂ => OutType ⟨x, pt₁⟩ pt₂) cptRest
           (fun accSpec' tr₁ mid => cont accSpec' ⟨x, tr₁⟩ mid)⟩) <$> cpt
+
+/-- Lift a counterpart's accumulated oracle spec from `accSpec₁` to `accSpec₂`
+by routing oracle queries. At receiver nodes, `oSpec` and `OStmtIn` queries
+pass through; `accSpec₁` queries are rerouted via `routeAcc`. At `.oracle`
+nodes, both sides grow by the same oracle interface spec.
+
+When `accSpec₁ = []ₒ`, the routing is trivially `PEmpty.elim`, since no
+queries to the empty spec can exist. -/
+def liftCounterpartAcc
+    {ι : Type} {oSpec : OracleSpec.{0, 0} ι}
+    {ιₛᵢ : Type} {OStmtIn : ιₛᵢ → Type} [∀ i, OracleInterface (OStmtIn i)] :
+    (s : Oracle.Spec) → (roles : Spec.RoleDeco s) → (od : Spec.OracleDeco s) →
+    {ιₐ₁ : Type} → (accSpec₁ : OracleSpec.{0, 0} ιₐ₁) →
+    {ιₐ₂ : Type} → (accSpec₂ : OracleSpec.{0, 0} ιₐ₂) →
+    (routeAcc : QueryImpl accSpec₁ (OracleComp ((oSpec + [OStmtIn]ₒ) + accSpec₂))) →
+    {Output : Interaction.Spec.Transcript s.toInteractionSpec → Type} →
+    Interaction.Spec.Counterpart.withMonads s.toInteractionSpec
+      (s.toSpecRoles roles) (s.toMonadDecoration oSpec OStmtIn roles od accSpec₁) Output →
+    Interaction.Spec.Counterpart.withMonads s.toInteractionSpec
+      (s.toSpecRoles roles) (s.toMonadDecoration oSpec OStmtIn roles od accSpec₂) Output
+  | .done, _, _, _, _, _, _, _, _, cpt => cpt
+  | .oracle _ rest, _, ⟨oi, odRest⟩, _, accSpec₁, _, accSpec₂, routeAcc, _, cpt =>
+      let oiSpec := @OracleInterface.spec _ oi
+      let grownRoute : QueryImpl (accSpec₁ + oiSpec)
+          (OracleComp ((oSpec + [OStmtIn]ₒ) + (accSpec₂ + oiSpec))) :=
+        QueryImpl.add (fun q => (routeAcc q).liftComp _) (fun q => liftM (query q))
+      fun x => liftCounterpartAcc rest _ odRest
+        (accSpec₁ + oiSpec) (accSpec₂ + oiSpec) grownRoute (cpt x)
+  | .«public» _ rest, ⟨.sender, rRest⟩, odRest, _, accSpec₁, _, accSpec₂, routeAcc,
+      _, cpt =>
+      fun x => liftCounterpartAcc (rest x) (rRest x) (odRest x)
+        accSpec₁ accSpec₂ routeAcc (cpt x)
+  | .«public» _ rest, ⟨.receiver, rRest⟩, odRest, _, accSpec₁, _, accSpec₂, routeAcc,
+      _, cpt =>
+      let route : QueryImpl ((oSpec + [OStmtIn]ₒ) + accSpec₁)
+          (OracleComp ((oSpec + [OStmtIn]ₒ) + accSpec₂)) :=
+        QueryImpl.addLift (QueryImpl.id _) routeAcc
+      simulateQ route <| do
+        let ⟨x, cptRest⟩ ← cpt
+        pure ⟨x, liftCounterpartAcc (rest x) (rRest x) (odRest x)
+          accSpec₁ accSpec₂ routeAcc cptRest⟩
 
 /-- Retarget the oracle statement monad of a counterpart from `OStmtMid` to
 `OStmtIn`, using a simulate function and a query answerer.
@@ -479,21 +520,24 @@ def Reduction.comp
                 (WitnessOut shared pt₁
                   ((Context₂ shared pt₁).projectPublic tr₂)))) strat₂
   verifier := {
-    toFun := fun shared {_ιₐ} accSpec stmtIn =>
+    toFun := fun shared stmtIn =>
       compVerifierAux (OStmtIn := OStatementIn shared)
         (Context₁ shared) (Context₂ shared)
         (Roles₁ shared) (Roles₂ shared) (OracleDeco₁ shared) (OracleDeco₂ shared)
-        accSpec
+        []ₒ
         (OutType := fun pt₁ pt₂ => StatementOut shared pt₁ pt₂)
-        (r₁.verifier.toFun shared accSpec stmtIn)
+        (r₁.verifier.toFun shared stmtIn)
         (fun accSpec' tr₁ midStmt =>
           let pt₁ := (Context₁ shared).projectPublic tr₁
-          retargetVerifierMonads
-            (r₁.verifier.simulate shared pt₁)
-            (Spec.answerQuery (Context₁ shared) (OracleDeco₁ shared) tr₁)
+          liftCounterpartAcc
             (Context₂ shared pt₁) (Roles₂ shared pt₁) (OracleDeco₂ shared pt₁)
-            accSpec'
-            ((r₂ shared pt₁).verifier.toFun PUnit.unit accSpec' midStmt))
+            []ₒ accSpec' (fun q => nomatch q)
+            (retargetVerifierMonads
+              (r₁.verifier.simulate shared pt₁)
+              (Spec.answerQuery (Context₁ shared) (OracleDeco₁ shared) tr₁)
+              (Context₂ shared pt₁) (Roles₂ shared pt₁) (OracleDeco₂ shared pt₁)
+              []ₒ
+              ((r₂ shared pt₁).verifier.toFun PUnit.unit midStmt)))
     simulate := fun shared pt =>
       let pt₁ := (Spec.PublicTranscript.split
         (Context₁ shared) (Context₂ shared) pt).1

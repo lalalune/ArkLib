@@ -1428,10 +1428,57 @@ def Reduction.executeConcrete
     Spec.runWithOracleCounterpart
       (OracleInterface.simOracle0 (OStatementIn shared) s.oracleStmt)
       (Context shared) (Roles shared) (OracleDeco shared) []ₒ (fun q => q.elim)
-      strategy (reduction.verifier.toFun shared []ₒ s.stmt)
+      strategy (reduction.verifier.toFun shared s.stmt)
   pure ⟨tr, proverOut,
     ⟨stmtOutV,
      reduction.verifier.simulate shared ((Context shared).projectPublic tr)⟩⟩
+
+/-- Run an arbitrary prover strategy against an `Oracle.Verifier`, producing the
+full transcript, prover output, and the verifier's statement output paired with
+its output oracle simulation. This is the `Oracle.Spec` analog of
+`OracleVerifier.run`. -/
+def Verifier.run
+    {ι : Type} {oSpec : OracleSpec.{0, 0} ι}
+    {SharedIn : Type}
+    {Context : SharedIn → Spec}
+    {Roles : (shared : SharedIn) → Spec.RoleDeco (Context shared)}
+    {OracleDeco : (shared : SharedIn) → Spec.OracleDeco (Context shared)}
+    {StatementIn : SharedIn → Type}
+    {ιₛᵢ : SharedIn → Type}
+    {OStatementIn : (shared : SharedIn) → ιₛᵢ shared → Type}
+    [∀ shared i, OracleInterface (OStatementIn shared i)]
+    {StatementOut :
+      (shared : SharedIn) → Spec.PublicTranscript (Context shared) → Type}
+    {ιₛₒ : (shared : SharedIn) → Spec.PublicTranscript (Context shared) → Type}
+    {OStatementOut :
+      (shared : SharedIn) → (pt : Spec.PublicTranscript (Context shared)) →
+        ιₛₒ shared pt → Type}
+    [∀ shared pt i, OracleInterface (OStatementOut shared pt i)]
+    (verifier : Oracle.Verifier oSpec SharedIn Context Roles OracleDeco StatementIn
+      OStatementIn StatementOut OStatementOut)
+    (shared : SharedIn)
+    (stmt : StatementIn shared)
+    (inputImpl : QueryImpl [OStatementIn shared]ₒ Id)
+    {OutputP : Interaction.Spec.Transcript (Context shared).toInteractionSpec → Type}
+    (prover : Interaction.Spec.Strategy.withRoles (OracleComp oSpec)
+      (Context shared).toInteractionSpec
+      ((Context shared).toSpecRoles (Roles shared)) OutputP) :
+    OracleComp oSpec
+      ((tr : Interaction.Spec.Transcript (Context shared).toInteractionSpec) ×
+       OutputP tr ×
+       (StatementOut shared ((Context shared).projectPublic tr) ×
+        QueryImpl [OStatementOut shared ((Context shared).projectPublic tr)]ₒ
+          (OracleComp
+            ([OStatementIn shared]ₒ +
+              (Context shared).toOracleSpec (OracleDeco shared)
+                ((Context shared).projectPublic tr))))) := do
+  let ⟨tr, outP, stmtOutV⟩ ←
+    Spec.runWithOracleCounterpart inputImpl
+      (Context shared) (Roles shared) (OracleDeco shared) []ₒ (fun q => q.elim)
+      prover (verifier.toFun shared stmt)
+  pure ⟨tr, outP,
+    ⟨stmtOutV,
+     verifier.simulate shared ((Context shared).projectPublic tr)⟩⟩
 
 end Oracle
 

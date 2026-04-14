@@ -1086,7 +1086,10 @@ abbrev Prover {ι : Type} (oSpec : OracleSpec.{0, 0} ι)
 output-oracle simulation (`simulate`), both on the same `Oracle.Spec`.
 
 The verifier uses `Counterpart.withMonads` with `toMonadDecoration`, giving
-`Id` monad at sender/oracle nodes and `OracleComp` at receiver nodes.
+`Id` monad at sender/oracle nodes and `OracleComp` at receiver nodes. The
+accumulated oracle spec starts at `[]ₒ` and grows as `.oracle` nodes are
+traversed, so the verifier's oracle access is fully determined by the
+protocol structure.
 
 The `simulate` field provides query-level access to output oracle statements,
 indexed by `PublicTranscript` (so it is definitionally independent of oracle
@@ -1107,13 +1110,13 @@ structure Verifier {ι : Type} (oSpec : OracleSpec.{0, 0} ι)
       (shared : SharedIn) → (pt : Spec.PublicTranscript (Context shared)) →
         ιₛₒ shared pt → Type)
     [∀ shared pt i, OracleInterface (OStatementOut shared pt i)] where
-  toFun : (shared : SharedIn) → {ιₐ : Type} → (accSpec : OracleSpec.{0, 0} ιₐ) →
+  toFun : (shared : SharedIn) →
     StatementIn shared →
       Interaction.Spec.Counterpart.withMonads
         (Context shared).toInteractionSpec
         ((Context shared).toSpecRoles (Roles shared))
         ((Context shared).toMonadDecoration oSpec (OStatementIn shared)
-          (Roles shared) (OracleDeco shared) accSpec)
+          (Roles shared) (OracleDeco shared) []ₒ)
         (fun tr => StatementOut shared ((Context shared).projectPublic tr))
   simulate : (shared : SharedIn) →
     (pt : Spec.PublicTranscript (Context shared)) →
