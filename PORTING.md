@@ -202,15 +202,15 @@ through queries), yielding cast-free `PublicTranscript` indexing.
 | `Oracle/Spec.lean` | Complete | `Oracle.Spec`, `RoleDeco`, `OracleDeco`, `PublicTranscript`, `toOracleSpec`, `toMonadDecoration`, `append`, `split` |
 | `Oracle/Core.lean` | Complete | `Oracle.Prover`, `Oracle.Verifier` (with `toFun` starting at `[]ₒ`), `Oracle.Reduction`, plus legacy `OracleDecoration` API (coexists) |
 | `Oracle/Execution.lean` | Complete | `Spec.runWithOracleCounterpart`, `Reduction.executeConcrete`, `Verifier.run` for `Oracle.Spec` layer |
-| `Oracle/Composition.lean` | Complete, no sorry | `Reduction.comp`, `liftCounterpartAcc`, `retargetVerifierMonads` |
-| `Oracle/Security.lean` | 1 sorry | `OutputRealizes`, `completeness`/`soundness`/`knowledgeSoundness`, `knowledgeSoundness_implies_soundness` (sorry) |
+| `Oracle/Composition.lean` | Complete, no sorry | `Reduction.comp`, `Counterpart.liftAcc`, `Verifier.retargetMonads` |
+| `Oracle/Security.lean` | Complete, no sorry | `OutputRealizes`, `completeness`/`soundness`/`knowledgeSoundness`, `knowledgeSoundness_implies_soundness` |
 | `Oracle/BCS.lean` | Complete, no sorry | `CommitDeco`, `bcsSpec`, prover wrapping, `PublicQueryVerifier`, Phase 1/2 helpers, `answerCommittedQueries` |
 | `Oracle/Bridge.lean` | Spec-level only | `ofInteractionSpec`, `ofRoleDecoration`, `ofOracleDecoration`. Verifier/reduction conversion deferred. |
 
 ### Key design decisions
 
 - `Oracle.Verifier.toFun` starts with `accSpec = []ₒ` (hardcoded). Composition
-  uses `liftCounterpartAcc` to bridge the empty accumulated spec to the
+  uses `Counterpart.liftAcc` to bridge the empty accumulated spec to the
   dynamically growing one.
 - Security definitions use `OutputRealizes` to bridge behavioral simulation and
   concrete oracle data. Completeness checks `OutputRealizes` as a conjunct.
@@ -236,9 +236,9 @@ through queries), yielding cast-free `PublicTranscript` indexing.
 
 ## Immediate deferred todos
 
-- [ ] Prove `knowledgeSoundness_implies_soundness` in `Oracle/Security.lean`.
-  Requires `Spec.runWithOracleCounterpart_mapOutputWithRoles` lemma for the
-  `Oracle.Spec` execution layer, plus probability monotonicity.
+- [x] Prove `knowledgeSoundness_implies_soundness` in `Oracle/Security.lean`.
+  Uses `Spec.runWithOracleCounterpart_mapOutputWithRoles` (proved in
+  `Execution.lean`) plus `probEvent_mono` / `probEvent_map`.
 - [ ] State `Reduction.completeness_comp` for `Oracle.Spec` composition
   (very verbose due to oracle statement handling).
 - [ ] Port `Sumcheck/Interaction/Oracle.lean` to native `Oracle.Spec`
@@ -297,11 +297,11 @@ through queries), yielding cast-free `PublicTranscript` indexing.
   quantify directly over first-phase transcripts without encoding the second
   reduction awkwardly inside the theorem statement.
 
-- **Knowledge soundness implies soundness** (PARTIALLY RESOLVED): the new
-  `Oracle.Spec` version in `Oracle/Security.lean` has `hLangOut` strengthened
-  to include `OutputRealizes`. The proof is sorry'd pending
-  `runWithOracleCounterpart_mapOutputWithRoles` for the `Oracle.Spec`
-  execution layer.
+- **Knowledge soundness implies soundness** (RESOLVED): the new `Oracle.Spec`
+  version in `Oracle/Security.lean` takes explicit `acceptOStmt` and
+  `acceptWitness` parameters (matching the legacy `acceptWitness` pattern) and
+  proves soundness from knowledge soundness via `probEvent_mono` and
+  `Spec.runWithOracleCounterpart_mapOutputWithRoles`.
 
 - **Verifier-indexed RBR semantics**: `ClaimTree` / `rbrSoundness` currently
   talk about transcript predicates and `randomChallenger`, not the full

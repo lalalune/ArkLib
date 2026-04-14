@@ -98,6 +98,7 @@ import ArkLib.Interaction.FiatShamir.DuplexSponge
 import ArkLib.Interaction.FiatShamir.Transform
 import ArkLib.Interaction.Oracle.BCS
 import ArkLib.Interaction.Oracle.Bridge
+import ArkLib.Interaction.Oracle.Chain
 import ArkLib.Interaction.Oracle.Composition
 import ArkLib.Interaction.Oracle.Continuation
 import ArkLib.Interaction.Oracle.Core
