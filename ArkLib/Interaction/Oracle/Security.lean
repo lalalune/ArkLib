@@ -36,9 +36,15 @@ are definitionally independent of oracle message values.
 
 ### Verifier security
 - `Oracle.Verifier.soundness` — oracle soundness.
-- `Oracle.Verifier.knowledgeSoundness` — oracle knowledge soundness
-  (adversarial prover outputs concrete `oStmtOut`; extractor sees it).
-- `Oracle.Verifier.knowledgeSoundness_implies_soundness` — KS implies soundness.
+- `Oracle.Verifier.knowledgeSoundness` — oracle knowledge soundness. The
+  adversarial prover outputs only a witness `witOut`; the extractor sees the
+  input statement and oracle, the full transcript, the verifier's output
+  statement, the verifier's output-oracle simulator, and `witOut`, and must
+  produce a valid input witness. The verifier's output oracle is defined by
+  `simulate`, so the prover is **not** asked to produce concrete output oracle
+  data.
+- `Oracle.Verifier.knowledgeSoundness_implies_soundness` — KS implies soundness
+  under a transcript-indexed `acceptWitness` and `hLangOut : langOut ⟹ relOut`.
 -/
 
 noncomputable section
@@ -161,6 +167,26 @@ abbrev OutputRelation
 
 namespace Extractor
 
+/-- A straightline extractor for an oracle reduction. The extractor is a
+deterministic function of:
+
+- the shared context `shared` and input statement `stmt`,
+- the deterministic input oracle implementation `inputImpl`,
+- the **full transcript** `tr` (including the concrete prover oracle message
+  values, which are needed to answer queries under `outputImpl` via
+  `Spec.answerQuery`),
+- the verifier's output statement `stmtOut` (indexed by `projectPublic tr`),
+- the verifier's output oracle simulator `outputImpl` (a `QueryImpl` that
+  defines the output oracle semantics relative to `inputImpl` and the full
+  transcript),
+- the adversarial prover's witness output `witOut`.
+
+It reconstructs an input witness. Note that the extractor does *not* receive
+concrete output oracle data: the output oracle's semantics are fully captured
+by `outputImpl`, which the verifier defines. Access to the full transcript is
+what lets the extractor actually evaluate `outputImpl` at any query, since
+`outputImpl`'s underlying query spec uses `Spec.answerQuery` on `tr` to respond
+to oracle-message queries. -/
 structure Straightline
     (SharedIn : Type _)
     (Context : SharedIn → Spec)
@@ -182,12 +208,11 @@ structure Straightline
   toFun : ∀ (shared : SharedIn)
       (_stmt : StatementIn shared)
       (_inputImpl : InputImpl OStatementIn shared)
-      (pt : Spec.PublicTranscript (Context shared))
-      (_stmtOut : StatementOut shared pt)
-      (_oStmtOut : OracleStatement (OStatementOut shared pt)),
+      (tr : Interaction.Spec.Transcript (Context shared).toInteractionSpec)
+      (_stmtOut : StatementOut shared ((Context shared).projectPublic tr)),
       OutputImpl (Context := Context) (OracleDeco := OracleDeco)
-          OStatementIn OStatementOut shared pt →
-        WitnessOut shared pt → WitnessIn shared
+          OStatementIn OStatementOut shared ((Context shared).projectPublic tr) →
+        WitnessOut shared ((Context shared).projectPublic tr) → WitnessIn shared
 
 instance
     {SharedIn : Type _}
@@ -216,12 +241,13 @@ instance
       (fun _ => ∀ (shared : SharedIn)
         (_stmt : StatementIn shared)
         (_inputImpl : InputImpl OStatementIn shared)
-        (pt : Spec.PublicTranscript (Context shared))
-        (_stmtOut : StatementOut shared pt)
-        (_oStmtOut : OracleStatement (OStatementOut shared pt)),
+        (tr : Interaction.Spec.Transcript (Context shared).toInteractionSpec)
+        (_stmtOut : StatementOut shared ((Context shared).projectPublic tr)),
         OutputImpl (Context := Context) (OracleDeco := OracleDeco)
-            OStatementIn OStatementOut shared pt →
-          WitnessOut shared pt → WitnessIn shared) where
+            OStatementIn OStatementOut shared
+            ((Context shared).projectPublic tr) →
+          WitnessOut shared ((Context shared).projectPublic tr) →
+            WitnessIn shared) where
   coe E := E.toFun
 
 end Extractor
@@ -390,11 +416,18 @@ def soundness
             (verifier.simulate shared pt)
           | verifier.run shared stmt inputImpl prover] ≤ ε
 
-/-- Knowledge soundness for an `Oracle.Verifier`. The adversarial prover is
-required to output both concrete output oracle data `oStmtOut` and a witness
-`witOut`. The extractor sees both, and must produce a valid input witness.
+/-- Knowledge soundness for an `Oracle.Verifier`. The adversarial prover outputs
+only a witness `witOut`; the extractor receives the input statement, input
+oracle implementation, the **full transcript** `tr` (public transcript plus
+concrete prover oracle messages), the verifier's output statement, the
+verifier's output-oracle simulator, and `witOut`, and must produce a valid
+input witness.
 
-The bound is: Pr[OutputRealizes ∧ relOut ∧ ¬relIn(extractor)] ≤ ε. -/
+The bound is: `Pr[relOut(simulate, witOut) ∧ ¬ relIn(extractor …)] ≤ ε`.
+
+The prover does **not** output concrete output oracle data: the output oracle's
+semantics are defined by the verifier via `simulate`, not asserted by the
+prover. See `Oracle/Security.lean`'s design notes for context. -/
 def knowledgeSoundness
     {ι : Type _} {oSpec : OracleSpec ι} [HasEvalSPMF (OracleComp oSpec)]
     {SharedIn : Type _}
@@ -434,73 +467,54 @@ def knowledgeSoundness
       (prover : Interaction.Spec.Strategy.withRoles (OracleComp oSpec)
         (Context shared).toInteractionSpec
         ((Context shared).toSpecRoles (Roles shared))
-        (fun tr =>
-          OracleStatement
-            (OStatementOut shared ((Context shared).projectPublic tr)) ×
-          WitnessOut shared ((Context shared).projectPublic tr))),
+        (fun tr => WitnessOut shared ((Context shared).projectPublic tr))),
       Pr[fun z =>
         let pt := (Context shared).projectPublic z.1
-        let oStmtOut := z.2.1.1
-        let witOut := z.2.1.2
-        OutputRealizes shared inputImpl z.1
-          (verifier.simulate shared pt) oStmtOut ∧
+        let witOut := z.2.1
         relOut shared inputImpl pt z.2.2.1
           (verifier.simulate shared pt) witOut ∧
           ¬ relIn shared stmt inputImpl
-            (extractor shared stmt inputImpl pt z.2.2.1 oStmtOut
+            (extractor shared stmt inputImpl z.1 z.2.2.1
               (verifier.simulate shared pt) witOut)
         | verifier.run shared stmt inputImpl prover] ≤ ε
 
-/-- Knowledge soundness implies soundness under two compatibility conditions:
+/-- Knowledge soundness implies soundness, under a transcript-indexed choice
+of accepting witness.
 
-1. `hLang`: outside the input language, no witness satisfies the input relation.
-2. `hLangOut`: acceptance implies the existence of concrete oracle data that
-   realizes the output oracle behavior and satisfies the output relation.
+The caller supplies:
+- `acceptWitness`: for every transcript `tr`, a candidate output witness at
+  `projectPublic tr`.
+- `hLang`: outside the input language, no witness satisfies the input relation
+  (this makes `hLang` applicable to the extractor's output).
+- `hLangOut`: whenever the verifier's output is in `langOut`, the output
+  relation holds for `acceptWitness` at that transcript.
 
-**Why this is hard.** The natural proof constructs a KS-compatible adversary
-from the soundness adversary by mapping its output (via `mapOutputWithRoles`)
-to include oracle data and a witness. The `mapOutputWithRoles` lemma
-(`Spec.runWithOracleCounterpart_mapOutputWithRoles`) shows this does not change
-the transcript distribution. The difficulty is the monotonicity step: the KS
-event includes `OutputRealizes(oStmtOut)`, which requires the prover to produce
-concrete oracle data that matches the verifier's output-oracle simulation.
-The prover's output mapping is a function of the transcript alone, but the
-"correct" oracle data depends on the verifier's leaf output (`stmtOut`), which
-the prover does not see during the interaction.
-
-**Prior incorrect approaches.** Both the legacy `OracleSecurity.lean` and an
-earlier version of this file tried to work around this by adding explicit
-`acceptOStmt`/`acceptWitness` parameters (deterministic functions producing
-oracle data and witnesses at every transcript). This is circular: it asks the
-caller to supply concrete oracle realizations unconditionally, which is exactly
-the "knowledge" that KS is supposed to extract from the prover.
-
-A correct proof likely requires either (a) a way to extract the verifier's
-deterministic leaf output from the transcript (a `Counterpart.leafOutput`
-function), enabling the prover mapping to use `hLangOut` via classical choice,
-or (b) a reformulation of the KS/soundness definitions that avoids the need
-for the prover to produce oracle data. -/
+The proof constructs a KS adversary from the soundness adversary by mapping
+its output through `acceptWitness`. Since `acceptWitness` depends only on the
+full transcript, this is a valid `Strategy.mapOutputWithRoles` map. The
+`Spec.runWithOracleCounterpart_mapOutputWithRoles` lemma guarantees this does
+not change the transcript or verifier-side output distribution. -/
 theorem knowledgeSoundness_implies_soundness
-    {ι : Type _} {oSpec : OracleSpec ι}
+    {ι : Type} {oSpec : OracleSpec.{0, 0} ι}
     [LawfulMonad (OracleComp oSpec)] [HasEvalSPMF (OracleComp oSpec)]
-    {SharedIn : Type _}
+    {SharedIn : Type}
     {Context : SharedIn → Spec}
     {Roles : (shared : SharedIn) → Spec.RoleDeco (Context shared)}
     {OracleDeco : (shared : SharedIn) → Spec.OracleDeco (Context shared)}
-    {StatementIn : SharedIn → Type _}
-    {ιₛᵢ : SharedIn → Type _}
-    {OStatementIn : (shared : SharedIn) → ιₛᵢ shared → Type _}
+    {StatementIn : SharedIn → Type}
+    {ιₛᵢ : SharedIn → Type}
+    {OStatementIn : (shared : SharedIn) → ιₛᵢ shared → Type}
     [∀ shared i, OracleInterface (OStatementIn shared i)]
-    {WitnessIn : SharedIn → Type _}
+    {WitnessIn : SharedIn → Type}
     {StatementOut :
-      (shared : SharedIn) → Spec.PublicTranscript (Context shared) → Type _}
-    {ιₛₒ : (shared : SharedIn) → Spec.PublicTranscript (Context shared) → Type _}
+      (shared : SharedIn) → Spec.PublicTranscript (Context shared) → Type}
+    {ιₛₒ : (shared : SharedIn) → Spec.PublicTranscript (Context shared) → Type}
     {OStatementOut :
       (shared : SharedIn) → (pt : Spec.PublicTranscript (Context shared)) →
-        ιₛₒ shared pt → Type _}
+        ιₛₒ shared pt → Type}
     [∀ shared pt i, OracleInterface (OStatementOut shared pt i)]
     {WitnessOut :
-      (shared : SharedIn) → Spec.PublicTranscript (Context shared) → Type _}
+      (shared : SharedIn) → Spec.PublicTranscript (Context shared) → Type}
     {verifier : Oracle.Verifier oSpec SharedIn Context Roles OracleDeco
       StatementIn OStatementIn StatementOut OStatementOut}
     {relIn :
@@ -523,23 +537,46 @@ theorem knowledgeSoundness_implies_soundness
       OutputLanguage (Context := Context) (OracleDeco := OracleDeco)
         (StatementOut := StatementOut)
         (OStatementIn := OStatementIn) (OStatementOut := OStatementOut))
+    (acceptWitness :
+      ∀ (shared : SharedIn)
+        (tr : Interaction.Spec.Transcript (Context shared).toInteractionSpec),
+        WitnessOut shared ((Context shared).projectPublic tr))
     (hLangOut :
       ∀ shared inputImpl
         (tr : Interaction.Spec.Transcript (Context shared).toInteractionSpec)
         (stmtOut : StatementOut shared ((Context shared).projectPublic tr)),
         langOut shared inputImpl ((Context shared).projectPublic tr) stmtOut
           (verifier.simulate shared ((Context shared).projectPublic tr)) →
-          ∃ (oStmtOut : OracleStatement
-              (OStatementOut shared ((Context shared).projectPublic tr)))
-            (witOut : WitnessOut shared ((Context shared).projectPublic tr)),
-            OutputRealizes shared inputImpl tr
-              (verifier.simulate shared ((Context shared).projectPublic tr))
-              oStmtOut ∧
-            relOut shared inputImpl ((Context shared).projectPublic tr) stmtOut
-              (verifier.simulate shared ((Context shared).projectPublic tr))
-              witOut) :
+        relOut shared inputImpl ((Context shared).projectPublic tr) stmtOut
+          (verifier.simulate shared ((Context shared).projectPublic tr))
+          (acceptWitness shared tr)) :
     soundness verifier langIn langOut ε := by
-  sorry
+  rcases hKS with ⟨extractor, hKS⟩
+  intro shared stmt inputImpl OutputP prover hs
+  let proverKS :
+      Interaction.Spec.Strategy.withRoles (OracleComp oSpec)
+        (Context shared).toInteractionSpec
+        ((Context shared).toSpecRoles (Roles shared))
+        (fun tr => WitnessOut shared ((Context shared).projectPublic tr)) :=
+    Interaction.Spec.Strategy.mapOutputWithRoles
+      (fun tr _ => acceptWitness shared tr) prover
+  have hrun :
+      verifier.run shared stmt inputImpl proverKS =
+        (fun z => ⟨z.1, acceptWitness shared z.1, z.2.2⟩) <$>
+          verifier.run shared stmt inputImpl prover := by
+    simp only [Verifier.run, proverKS]
+    rw [Spec.runWithOracleCounterpart_mapOutputWithRoles]
+    simp [Functor.map_map]
+  have hKS' := hKS shared stmt inputImpl proverKS
+  rw [hrun, probEvent_map] at hKS'
+  refine le_trans ?_ hKS'
+  refine probEvent_mono ?_
+  intro z _ hz
+  refine ⟨hLangOut shared inputImpl z.1 z.2.2.1 hz, ?_⟩
+  exact hLang shared stmt inputImpl hs
+    (extractor shared stmt inputImpl z.1 z.2.2.1
+      (verifier.simulate shared ((Context shared).projectPublic z.1))
+      (acceptWitness shared z.1))
 
 end Verifier
 
