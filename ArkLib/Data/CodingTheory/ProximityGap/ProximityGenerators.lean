@@ -14,6 +14,7 @@ import Mathlib.Data.Rat.Star
 import Mathlib.Order.CompletePartialOrder
 import Mathlib.Probability.Distributions.Uniform
 import Mathlib.RingTheory.SimpleRing.Principal
+import Mathlib.LinearAlgebra.TensorProduct.Defs
 
 
 /-!
@@ -32,6 +33,8 @@ probability of obtaining a zero output from a non-zero vector is bounded above b
 function is a generator matrix for an MDS code
 - `MCA generator`: A generator has mutual correlated agreement (MCA) with error `ε_mca` if the
 probability that the generator satisfies the MCA condition is bounded above by `ε_mca`.
+- `tensor product of generators`: given two generators over a field `F` of output sizes `ℓ` and `ℓ'`
+respectively, we can define their tensor product componentwise. This is a generator on `F^ℓ ⊗ 𝔽^ℓ'`
 
 ## References
 
@@ -105,6 +108,15 @@ def IsMCAGenerator {S : Type} [Nonempty S] [Fintype S] (G : Generator S ℓ F) (
   (LC : LinearCode ι F) : Prop :=
   ∀ U : ℓ → (ι → F), ∀ γ : I,
     Pr_{let x ←$ᵖ S}[(IsMCA G LC x U γ)] ≤ ENNReal.ofReal (ε_mca γ)
+
+/-- Let `G : S →F^ℓ` and `G′: S′→F^ℓ` be two generators. Their tensor product is the generator
+`G ⊗ G′: S × S′→ F^ℓ ⊗F^ℓ′` defined by `(x,x′) ↦ G(x) ⊗ G′(x′)`.
+Definition 4.3 [BSGM25]. -/
+def TensorGenerator (ℓ ℓ' F : Type) (S : Set (ℓ → F)) (S' : Set (ℓ' → F)) [Fintype ℓ] [Fintype ℓ']
+[Field F] (G : Generator S ℓ F) (G' : Generator S' ℓ' F)
+  : (S × S') → TensorProduct F (ℓ → F) (ℓ' → F)
+| (x, x') => TensorProduct.tmul F (G x) (G' x')
+
 
 end CoreDefinitions
 
