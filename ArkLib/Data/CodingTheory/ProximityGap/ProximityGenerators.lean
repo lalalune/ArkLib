@@ -5,17 +5,7 @@ Authors: Katerina Hristova
 -/
 
 import ArkLib.Data.CodingTheory.Basic.LinearCode
-import ArkLib.Data.CodingTheory.Prelims
-import ArkLib.Data.Probability.Notation
-import ArkLib.Data.MvPolynomial.Degrees
 import ArkLib.Data.MvPolynomial.SchwartzZippelCounting
-import Mathlib.Algebra.MvPolynomial.SchwartzZippel
-import Mathlib.Data.Rat.Star
-import Mathlib.Order.CompletePartialOrder
-import Mathlib.Probability.Distributions.Uniform
-import Mathlib.RingTheory.SimpleRing.Principal
-import Mathlib.LinearAlgebra.TensorProduct.Defs
-
 
 /-!
 # Proximity Generators fundamental definitions
@@ -156,7 +146,7 @@ lemma minSeedCard_le {F : Type} {s : ℕ} (S : Fin s → Set F)
 
 noncomputable instance {F : Type} [Fintype F] {S : Set F} : Fintype S := Fintype.ofFinite ↑S
 
-set_option linter.unusedDecidableInType false
+set_option linter.unusedDecidableInType false in
 /-- If `G` is a polynomial generator, then `G` is zero-evading with error the maximum of the total
 degrees of the individual polynomials divided by the size of the smallest evaluation sets `S i`.
 Remark 3.20 [BSGM25]. -/

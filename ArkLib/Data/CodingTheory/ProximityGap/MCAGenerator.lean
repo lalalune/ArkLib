@@ -74,7 +74,7 @@ lemma pseudoinverseGen [DecidableEq ℓ'] [Nonempty S] (G : Generator S ℓ F) (
         (fun i => B j i) (fun i => hj i) using 1
       ext k
       simp [matrixMulCodewords, ← Matrix.mul_apply, ← Matrix.mul_assoc, hB]
-  exact le_trans (prob_mono _ _ fun x h => isMCA_generatorByRightMul_of_isMCA x h)
+  exact le_trans (Pr_le_Pr_of_implies ($ᵖ S) _ _ fun x h => isMCA_generatorByRightMul_of_isMCA x h)
     (hGMCA (matrixMulCodewords A U) γ)
 
 open Classical in
