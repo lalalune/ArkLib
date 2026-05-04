@@ -57,7 +57,7 @@ variable {ι : Type} [Fintype ι]
 /-- The type of generators, where a generator `G` over a field `F` with output size `ℓ` is a
 function that maps a seed `x` in a set `S` to a coefficient vector in `F^ℓ`.
 Definition 3.10 [BSGM25]. -/
-def Generator (S ℓ F : Type) : Type := S → (ℓ → F)
+abbrev Generator (S ℓ F : Type) : Type := S → (ℓ → F)
 
 /-- A generator `G` is zero-evading with a zero-evading error `ε_ze` if the probability of obtaining
 a zero output from a non-zero vector is bounded above by `ε_ze`.
@@ -112,10 +112,9 @@ def IsMCAGenerator {S : Type} [Nonempty S] [Fintype S] (G : Generator S ℓ F) (
 /-- Let `G : S →F^ℓ` and `G′: S′→F^ℓ` be two generators. Their tensor product is the generator
 `G ⊗ G′: S × S′→ F^ℓ ⊗F^ℓ′` defined by `(x,x′) ↦ G(x) ⊗ G′(x′)`.
 Definition 4.3 [BSGM25]. -/
-def TensorGenerator (ℓ' : Type) (S : Set (ℓ → F)) (S' : Set (ℓ' → F)) [Fintype ℓ']
+def TensorGenerator {ℓ' : Type} [Fintype ℓ'] (S : Set (ℓ → F)) (S' : Set (ℓ' → F))
   (G : Generator S ℓ F) (G' : Generator S' ℓ' F) : (S × S') → TensorProduct F (ℓ → F) (ℓ' → F)
 | (x, x') => TensorProduct.tmul F (G x) (G' x')
-
 
 end CoreDefinitions
 
