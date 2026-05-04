@@ -36,15 +36,15 @@ variable {ι : Type} [Fintype ι]
 /-- Let `G : S → 𝔽^ℓ` be a generator and let `A` be an `ℓ × ℓ'` matrix. Then `G' : S → 𝔽^ℓ'` is a
 generator defined by `x ↦ G(x) · A`.
 This is the generator `G'` inside Lemma 4.1 [BSGM25]. -/
-def generatorByRightMul [DecidableEq ℓ'] (G : Generator S ℓ F) (A : Matrix ℓ ℓ' F) :
-  Generator S ℓ' F := fun x ↦ Matrix.vecMul (G x) A
+def generatorByRightMul (G : Generator S ℓ F) (A : Matrix ℓ ℓ' F) : Generator S ℓ' F :=
+    fun x ↦ Matrix.vecMul (G x) A
 
 /-- Let `G : S → 𝔽^ℓ` be a generator and `κ` a subset of `ℓ`. Define a new generator
 `G' : S → 𝔽^κ`, which we call a projected generator, by restricting the output of `G` to the indices
 given by `κ`.
 This is the generator `G'` inside Corollary 4.2 [BSGM25] -/
-def projectedGenerator (G : Generator S ℓ F) (κ : Set ℓ) :
-  Generator S κ F := fun x ↦ Set.restrict κ (G x)
+def projectedGenerator (G : Generator S ℓ F) (κ : Set ℓ) : Generator S κ F :=
+    fun x ↦ Set.restrict κ (G x)
 
 /-- Let `U : ℓ' → (ι → F)` be a family of `ℓ'` codewords over `𝔽^ι`. Obtain a family of `ℓ`
 codewords by acting on `U` by left multiplication with an `ℓ × ℓ'` matrix `A`. -/
@@ -60,9 +60,7 @@ lemma pseudoinverseGen [DecidableEq ℓ'] [Nonempty S] (G : Generator S ℓ F) (
   (A : Matrix ℓ ℓ' F) (hA : hasLeftPseudoInverse A) :
     IsMCAGenerator (generatorByRightMul G A) ε_mca LC := by
   intro U γ
-  have isMCA_generatorByRightMul_of_isMCA [DecidableEq ℓ'] (LC : LinearCode ι F) [Nonempty S]
-  (G : Generator S ℓ F) (A : Matrix ℓ ℓ' F) (hA : hasLeftPseudoInverse A) (U : ℓ' → (ι → F))
-  (γ : I) (x : S) :
+  have isMCA_generatorByRightMul_of_isMCA (x : S) :
     IsMCA (generatorByRightMul G A) LC x U γ → IsMCA G LC x (matrixMulCodewords A U) γ := by
     obtain ⟨B, hB⟩ := hA
     rintro ⟨T, hT_card, hT_proj, j, hj⟩
@@ -76,7 +74,7 @@ lemma pseudoinverseGen [DecidableEq ℓ'] [Nonempty S] (G : Generator S ℓ F) (
         (fun i => B j i) (fun i => hj i) using 1
       ext k
       simp [matrixMulCodewords, ← Matrix.mul_apply, ← Matrix.mul_assoc, hB]
-  exact le_trans (prob_mono _ _ fun x h => isMCA_generatorByRightMul_of_isMCA LC G A hA U γ x h)
+  exact le_trans (prob_mono _ _ fun x h => isMCA_generatorByRightMul_of_isMCA x h)
     (hGMCA (matrixMulCodewords A U) γ)
 
 open Classical in
