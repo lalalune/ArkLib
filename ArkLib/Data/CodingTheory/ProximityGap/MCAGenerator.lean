@@ -110,7 +110,8 @@ lemma generatorSubset [Nonempty S] (G : Generator S ℓ F) (ε_mca : I → I) (L
 (hGMCA : IsMCAGenerator G ε_mca LC) (κ : Set ℓ) :
   IsMCAGenerator (projectedGenerator G κ) ε_mca LC := by
   intro U γ
-  exact le_trans (prob_mono _ _ fun x h => isMCA_projectedGenerator_of_isMCA LC G κ U γ x h)
+  exact le_trans (Pr_le_Pr_of_implies ($ᵖ S) _ _
+          fun x h => isMCA_projectedGenerator_of_isMCA LC G κ U γ x h)
     (hGMCA (zeroExtend κ U) γ)
 
 end LinearTransformations
