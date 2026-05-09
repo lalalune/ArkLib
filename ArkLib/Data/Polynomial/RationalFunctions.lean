@@ -344,6 +344,22 @@ lemma H_tilde_equiv_H_tilde' (H : F[X][Y]) : (H_tilde' H).map univPolyHom = H_ti
             Polynomial.X ^ H.natDegree := by
               rw [add_comm]
 
+section FieldIrreducibility
+
+variable {F : Type} [Field F]
+
+/-- The integral monicized polynomial `H_tilde'` is irreducible whenever `H` is irreducible and has
+positive degree in `Y`. -/
+lemma irreducibleHTilde'OfIrreducible {H : F[X][Y]} (hHdeg : 0 < H.natDegree)
+    (hH : Irreducible H) :
+    Irreducible (H_tilde' H) := by
+  have hmap : Irreducible ((H_tilde' H).map (univPolyHom (F := F))) := by
+    simpa [H_tilde_equiv_H_tilde'] using
+      irreducibleHTildeOfIrreducible_of_natDegree_pos hHdeg hH
+  exact (H_tilde'_monic H hHdeg).isPrimitive.irreducible_of_irreducible_map_of_injective
+    (univPolyHom_injective (F := F)) hmap
+
+end FieldIrreducibility
 
 /-- The ring of regular elements `𝒪` from Appendix A.1 of [BCIKS20]. -/
 abbrev 𝒪 (H : F[X][Y]) : Type :=
@@ -365,6 +381,60 @@ noncomputable def embeddingOf𝒪Into𝕃 (H : F[X][Y]) : 𝒪 H →+* 𝕃 H :=
           rw [show bivPolyHom (H_tilde' H) = (H_tilde' H).map univPolyHom from rfl,
               H_tilde_equiv_H_tilde']
           exact Ideal.subset_span rfl)
+
+section FieldEmbedding
+
+variable {F : Type} [Field F]
+
+private lemma H_tilde'_dvd_of_map_dvd_H_tilde {H p : F[X][Y]} (hHdeg : 0 < H.natDegree)
+    (hp : H_tilde H ∣ p.map (univPolyHom (F := F))) :
+    H_tilde' H ∣ p := by
+  let q : F[X][Y] := H_tilde' H
+  have hqmonic : q.Monic := H_tilde'_monic H hHdeg
+  rw [← Polynomial.modByMonic_eq_zero_iff_dvd hqmonic]
+  rw [← Polynomial.map_eq_zero_iff (univPolyHom_injective (F := F))]
+  have hqmap_dvd_p : q.map (univPolyHom (F := F)) ∣ p.map (univPolyHom (F := F)) := by
+    simpa [q, H_tilde_equiv_H_tilde'] using hp
+  have hqmap_dvd_rem :
+      q.map (univPolyHom (F := F)) ∣
+        (p %ₘ q).map (univPolyHom (F := F)) := by
+    have hrem :
+        (p %ₘ q).map (univPolyHom (F := F)) =
+          p.map (univPolyHom (F := F)) -
+            q.map (univPolyHom (F := F)) * (p /ₘ q).map (univPolyHom (F := F)) := by
+      have h := congrArg (fun r : F[X][Y] => r.map (univPolyHom (F := F)))
+        (Polynomial.modByMonic_add_div p q)
+      simp only [Polynomial.map_add, Polynomial.map_mul] at h
+      rw [← h]
+      ring
+    rw [hrem]
+    exact dvd_sub hqmap_dvd_p (dvd_mul_right _ _)
+  have hdegree :
+      ((p %ₘ q).map (univPolyHom (F := F))).degree <
+        (q.map (univPolyHom (F := F))).degree := by
+    rw [Polynomial.degree_map_eq_of_injective (univPolyHom_injective (F := F))]
+    rw [Polynomial.degree_map_eq_of_injective (univPolyHom_injective (F := F))]
+    exact Polynomial.degree_modByMonic_lt p hqmonic
+  exact Polynomial.eq_zero_of_dvd_of_degree_lt hqmap_dvd_rem hdegree
+
+private lemma mem_span_H_tilde'_of_bivPolyHom_mem_span_H_tilde {H p : F[X][Y]}
+    (hHdeg : 0 < H.natDegree)
+    (hp : bivPolyHom p ∈ Ideal.span {H_tilde H}) :
+    p ∈ Ideal.span {H_tilde' H} := by
+  rw [Ideal.mem_span_singleton] at hp ⊢
+  exact H_tilde'_dvd_of_map_dvd_H_tilde hHdeg (by
+    simpa [show bivPolyHom p = p.map (univPolyHom (F := F)) from rfl] using hp)
+
+/-- The regular quotient embeds injectively into the function-field quotient when `H` has positive
+degree in `Y`. -/
+lemma embeddingOf𝒪Into𝕃_injective {H : F[X][Y]} (hHdeg : 0 < H.natDegree) :
+    Function.Injective (embeddingOf𝒪Into𝕃 H) := by
+  unfold embeddingOf𝒪Into𝕃
+  apply Ideal.quotientMap_injective'
+  intro p hp
+  exact mem_span_H_tilde'_of_bivPolyHom_mem_span_H_tilde hHdeg hp
+
+end FieldEmbedding
 
 /-- The set of regular elements inside `𝕃 H`, i.e. the set of elements of `𝕃 H`
 that in fact lie in `𝒪 H`. -/
@@ -565,7 +635,8 @@ noncomputable def S_β {H : F[X][Y]} (β : 𝒪 H) : Set F :=
   {z : F | ∃ root : rationalRoot (H_tilde' H) z, (π_z z root) β = 0}
 
 /-- The statement of Lemma A.1 in Appendix A.3 of [BCIKS20]. -/
-lemma Lemma_A_1 {H : F[X][Y]} (hH : 0 < H.natDegree) (β : 𝒪 H) (D : ℕ)
+lemma Lemma_A_1 {H : F[X][Y]} [hHirreducible : Fact (Irreducible H)]
+    (hH : 0 < H.natDegree) (β : 𝒪 H) (D : ℕ)
     (hD : D ≥ Bivariate.totalDegree H)
     (S_β_card : Set.ncard (S_β β) > (weight_Λ_over_𝒪 hH β D) * H.natDegree) :
   embeddingOf𝒪Into𝕃 _ β = 0 := by sorry
