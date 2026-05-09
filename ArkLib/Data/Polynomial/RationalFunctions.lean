@@ -492,6 +492,21 @@ lemma regularElms_set_pow {H : F[X][Y]} {a : 𝕃 H}
   | succ n ih =>
       simpa [pow_succ] using regularElms_set_mul ih ha
 
+/-- The regular elements are closed under finite sums. -/
+lemma regularElms_set_sum {ι : Type} {H : F[X][Y]} (s : Finset ι) {f : ι → 𝕃 H}
+    (hf : ∀ i ∈ s, f i ∈ regularElms_set H) :
+    (∑ i ∈ s, f i) ∈ regularElms_set H := by
+  classical
+  revert hf
+  refine Finset.induction_on s ?_ ?_
+  · intro _hf
+    simp
+  · intro a s ha ih hf
+    rw [Finset.sum_insert ha]
+    exact regularElms_set_add
+      (hf a (by simp [ha]))
+      (ih fun i hi => hf i (by simp [hi]))
+
 /-- Given an element `z ∈ F`, `t_z ∈ F` is a rational root of a bivariate polynomial if the pair
 `(z, t_z)` is a root of the bivariate polynomial. -/
 def rationalRoot (H : F[X][Y]) (z : F) : Type :=
@@ -739,6 +754,27 @@ lemma regularElms_set_liftToFunctionField_div_leadingCoeff_of_dvd {F : Type} [Fi
     (Polynomial.leadingCoeff_ne_zero.mpr (Polynomial.ne_zero_of_natDegree_gt H_natDegree_pos.out))
     hdiv
 
+private lemma mul_pow_mul_div_pow_eq_lower {K : Type} [Field K] {W T a : K}
+    (hW : W ≠ 0) {k i : ℕ} (hi : i ≤ k) :
+    W ^ k * (a * (T / W) ^ i) = a * (T ^ i * W ^ (k - i)) := by
+  rw [div_pow]
+  have hk : k = k - i + i := (Nat.sub_add_cancel hi).symm
+  calc
+    W ^ k * (a * (T ^ i / W ^ i)) = a * (T ^ i * (W ^ k / W ^ i)) := by
+      ring
+    _ = a * (T ^ i * W ^ (k - i)) := by
+      rw [hk, pow_add]
+      field_simp [hW]
+      have hsub : k - i + i - i = k - i := by omega
+      rw [hsub]
+
+private lemma mul_pow_mul_div_pow_succ_eq_top {K : Type} [Field K] {W T a : K}
+    (hW : W ≠ 0) (k : ℕ) :
+    W ^ k * (a * (T / W) ^ (k + 1)) = (a / W) * T ^ (k + 1) := by
+  rw [div_pow, pow_succ]
+  field_simp [hW]
+  ring
+
 /-- The bivariate variable maps to the function-field variable `T`. -/
 @[simp]
 lemma liftBivariate_X {H : F[X][Y]} :
@@ -773,6 +809,48 @@ lemma regularElms_set_eval₂_linear_of_coeff_one_dvd {F : Type} [Field F] {H : 
       (regularElms_set_liftToFunctionField_div_leadingCoeff_of_dvd hdiv)
       (regularElms_set_functionFieldT H))
     (regularElms_set_liftToFunctionField H (P.coeff 0))
+
+/-- Clearing denominators in `P(T / W)`: if `P` has degree at most `k + 1` and its top
+coefficient is divisible by `W = H.leadingCoeff`, then `W^k * P(T/W)` is regular. -/
+lemma regularElms_set_mul_pow_eval₂_div_of_natDegree_le_succ_of_coeff_succ_dvd
+    {F : Type} [Field F] {H : F[X][Y]}
+    [H_irreducible : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)]
+    {P : F[X][Y]} {k : ℕ} (hP : P.natDegree ≤ k + 1)
+    (hdiv : H.leadingCoeff ∣ P.coeff (k + 1)) :
+    liftToFunctionField (H := H) H.leadingCoeff ^ k *
+      Polynomial.eval₂ liftToFunctionField
+        (functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff) P ∈
+      regularElms_set H := by
+  let W : 𝕃 H := liftToFunctionField (H := H) H.leadingCoeff
+  let T : 𝕃 H := functionFieldT (H := H)
+  have hW : W ≠ 0 := by
+    simpa [W] using (liftToFunctionField_leadingCoeff_ne_zero (H := H))
+  have hP_lt : P.natDegree < k + 2 := by omega
+  change W ^ k * Polynomial.eval₂ liftToFunctionField (T / W) P ∈ regularElms_set H
+  rw [Polynomial.eval₂_eq_sum_range' liftToFunctionField hP_lt (T / W)]
+  rw [Finset.mul_sum]
+  rw [show k + 2 = k + 1 + 1 by omega, Finset.sum_range_succ]
+  refine regularElms_set_add ?_ ?_
+  · refine regularElms_set_sum (Finset.range (k + 1)) ?_
+    intro i hi
+    have hi_lt : i < k + 1 := Finset.mem_range.mp hi
+    have hi_le : i ≤ k := by omega
+    rw [mul_pow_mul_div_pow_eq_lower (W := W) (T := T)
+      (a := liftToFunctionField (H := H) (P.coeff i)) hW hi_le]
+    exact regularElms_set_mul
+      (regularElms_set_liftToFunctionField H (P.coeff i))
+      (regularElms_set_mul
+        (by simpa [T] using regularElms_set_pow (regularElms_set_functionFieldT H) i)
+        (by
+          simpa [W] using
+            regularElms_set_pow (regularElms_set_liftToFunctionField H H.leadingCoeff) (k - i)))
+  · rw [mul_pow_mul_div_pow_succ_eq_top (W := W) (T := T)
+      (a := liftToFunctionField (H := H) (P.coeff (k + 1))) hW k]
+    exact regularElms_set_mul
+      (by
+        simpa [W] using
+          regularElms_set_liftToFunctionField_div_leadingCoeff_of_dvd (H := H) hdiv)
+      (by simpa [T] using regularElms_set_pow (regularElms_set_functionFieldT H) (k + 1))
 
 /-- Constant bivariate polynomials map through the coefficient embedding. -/
 @[simp]
@@ -966,7 +1044,30 @@ lemma ξ_regular (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [H_irreducible : Fact
   · exact ξ_regular_of_natDegree_le_one x₀ R H hRle
   by_cases hRtwo : R.natDegree = 2
   · exact ξ_regular_of_natDegree_eq_two x₀ R H hHyp hRtwo
-  sorry
+  let P : F[X][Y] := Bivariate.evalX (Polynomial.C x₀) R.derivative
+  let k : ℕ := R.natDegree - 2
+  have hP : P.natDegree ≤ k + 1 := by
+    calc
+      P.natDegree ≤ R.derivative.natDegree := evalX_natDegree_le (Polynomial.C x₀) R.derivative
+      _ ≤ R.natDegree - 1 := Polynomial.natDegree_derivative_le R
+      _ = k + 1 := by
+        dsimp [k]
+        omega
+  have hk_succ : k + 1 = R.natDegree - 1 := by
+    dsimp [k]
+    omega
+  have hdiv : H.leadingCoeff ∣ P.coeff (k + 1) := by
+    simpa [P, hk_succ] using leadingCoeff_dvd_evalX_derivative_coeff_pred hHyp
+  have hreg :
+      liftToFunctionField (H := H) H.leadingCoeff ^ k *
+        Polynomial.eval₂ liftToFunctionField
+          (functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff) P ∈
+        regularElms_set H :=
+    regularElms_set_mul_pow_eval₂_div_of_natDegree_le_succ_of_coeff_succ_dvd
+      (H := H) hP hdiv
+  rcases hreg with ⟨pre, hpre⟩
+  refine ⟨pre, ?_⟩
+  simpa [ζ, P, k] using hpre.symm
 
 /-- The elements `ξ = W(Z)^(d-2) * ζ` as defined in Claim A.2 of Appendix A.4 of [BCIKS20]. -/
 def ξ (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [φ : Fact (Irreducible H)]
