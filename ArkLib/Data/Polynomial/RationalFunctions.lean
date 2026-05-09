@@ -801,6 +801,63 @@ lemma weight_Λ_sum_le {ι : Type} (s : Finset ι) (f : ι → F[X][Y]) (H : F[X
       rw [Finset.sum_insert ha, Finset.sup_insert]
       exact (weight_Λ_add_le _ _ _ _).trans (max_le_max le_rfl ih)
 
+omit [IsDomain F] in
+/-- Sub-additivity for `C c · Y^k · f`: given `Λ(f) ≤ b`, multiplying by `C c · Y^k` adds
+`k · m + c.natDegree` to the weight. -/
+lemma weight_Λ_C_mul_X_pow_mul_le {c : F[X]} {k : ℕ} {f H : F[X][Y]} {D b : ℕ}
+    (hf : weight_Λ f H D ≤ (WithBot.some b : WithBot ℕ)) :
+    weight_Λ (Polynomial.C c * Polynomial.X ^ k * f) H D ≤
+      (WithBot.some (k * (D + 1 - Bivariate.natDegreeY H) + c.natDegree + b) :
+        WithBot ℕ) := by
+  classical
+  rw [weight_Λ_le_iff]
+  rw [weight_Λ_le_iff] at hf
+  intro n hn
+  have hcoeff_ne : (Polynomial.C c * Polynomial.X ^ k * f : F[X][Y]).coeff n ≠ 0 :=
+    Polynomial.mem_support_iff.mp hn
+  have hcoeff_eq :
+      (Polynomial.C c * Polynomial.X ^ k * f : F[X][Y]).coeff n =
+        (if k ≤ n then c * f.coeff (n - k) else 0) := by
+    rw [show (Polynomial.C c * Polynomial.X ^ k * f : F[X][Y]) =
+           Polynomial.C c * (f * Polynomial.X ^ k) by ring]
+    rw [Polynomial.coeff_C_mul, Polynomial.coeff_mul_X_pow']
+    split <;> simp
+  by_cases hkn : k ≤ n
+  · rw [hcoeff_eq, if_pos hkn] at hcoeff_ne
+    have hf_ne : f.coeff (n - k) ≠ 0 := by
+      intro h0
+      apply hcoeff_ne
+      rw [h0, mul_zero]
+    have hn_k_in : n - k ∈ f.support := Polynomial.mem_support_iff.mpr hf_ne
+    have hf_bound := hf (n - k) hn_k_in
+    rw [hcoeff_eq, if_pos hkn]
+    have hdeg : (c * f.coeff (n - k)).natDegree ≤ c.natDegree + (f.coeff (n - k)).natDegree :=
+      Polynomial.natDegree_mul_le
+    have hsplit : n = k + (n - k) := (Nat.add_sub_cancel' hkn).symm
+    have hgoal :
+        n * (D + 1 - Bivariate.natDegreeY H) + (c * f.coeff (n - k)).natDegree ≤
+          k * (D + 1 - Bivariate.natDegreeY H) + c.natDegree + b := by
+      have h1 :
+          n * (D + 1 - Bivariate.natDegreeY H) + (c * f.coeff (n - k)).natDegree ≤
+            n * (D + 1 - Bivariate.natDegreeY H) +
+              (c.natDegree + (f.coeff (n - k)).natDegree) :=
+        Nat.add_le_add_left hdeg _
+      have h2 :
+          n * (D + 1 - Bivariate.natDegreeY H) +
+              (c.natDegree + (f.coeff (n - k)).natDegree) =
+            k * (D + 1 - Bivariate.natDegreeY H) + c.natDegree +
+              ((n - k) * (D + 1 - Bivariate.natDegreeY H) +
+                (f.coeff (n - k)).natDegree) := by
+        have hnk : k + (n - k) = n := Nat.add_sub_cancel' hkn
+        conv_lhs => rw [hsplit, Nat.add_mul]
+        rw [show k + (n - k) - k = n - k from by omega]
+        ring
+      rw [h2] at h1
+      exact h1.trans (Nat.add_le_add_left hf_bound _)
+    exact hgoal
+  · rw [hcoeff_eq, if_neg hkn] at hcoeff_ne
+    exact (hcoeff_ne rfl).elim
+
 /-- The set `S_β` from the statement of Lemma A.1 in Appendix A of [BCIKS20].
 Note: Here `F[X][Y]` is `F[Z][T]`. -/
 noncomputable def S_β {H : F[X][Y]} (β : 𝒪 H) : Set F :=
