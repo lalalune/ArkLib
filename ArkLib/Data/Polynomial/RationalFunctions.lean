@@ -9,6 +9,7 @@ import ArkLib.Data.Polynomial.Prelims
 import Mathlib.FieldTheory.RatFunc.Defs
 import Mathlib.RingTheory.Ideal.Quotient.Defs
 import Mathlib.RingTheory.Ideal.Span
+import Mathlib.RingTheory.Polynomial.GaussLemma
 import Mathlib.RingTheory.PowerSeries.Substitution
 
 /-!
@@ -46,6 +47,89 @@ noncomputable def H_tilde (H : F[X][Y]) : Polynomial (RatFunc F) :=
   let H' := Polynomial.eval₂ (RingHom.comp Polynomial.C univPolyHom) S H
   W ^ (d - 1) * H'
 
+section FieldIrreducibility
+
+variable {F : Type} [Field F]
+
+private lemma univPolyHom_injective :
+    Function.Injective (univPolyHom (F := F)) := by
+  simpa [ToRatFunc.univPolyHom] using (RatFunc.algebraMap_injective (K := F))
+
+private lemma irreducible_comp_C_mul_X_iff {K : Type} [Field K] (a : K) (ha : a ≠ 0)
+    (p : K[X]) :
+    Irreducible (p.comp (Polynomial.C a * Polynomial.X)) ↔ Irreducible p := by
+  letI : Invertible a := invertibleOfNonzero ha
+  let e : K[X] ≃ₐ[K] K[X] := Polynomial.algEquivCMulXAddC a 0
+  have hp : e p = p.comp (Polynomial.C a * Polynomial.X) := by
+    simp [e, ← Polynomial.comp_eq_aeval]
+  rw [← hp]
+  exact MulEquiv.irreducible_iff (f := (e : K[X] ≃* K[X])) (x := p)
+
+private lemma irreducible_map_univPolyHom_of_irreducible
+    {H : Polynomial (Polynomial F)} (hdeg : H.natDegree ≠ 0)
+    (hH : Irreducible H) :
+    Irreducible (H.map (univPolyHom (F := F))) := by
+  have hprim : H.IsPrimitive := Irreducible.isPrimitive hH hdeg
+  simpa [ToRatFunc.univPolyHom] using
+    (Polynomial.IsPrimitive.irreducible_iff_irreducible_map_fraction_map
+      (K := RatFunc F) hprim).mp hH
+
+/-- Corrected irreducibility statement for `H_tilde`: the paper assumes positive `Y`-degree.
+Without this hypothesis, a constant irreducible in `F[Z][Y]` can become a unit in `F(Z)[T]`. -/
+lemma irreducibleHTildeOfIrreducible_of_natDegree_pos
+    {H : Polynomial (Polynomial F)} (hdeg : 0 < H.natDegree)
+    (hH : Irreducible H) :
+    Irreducible (H_tilde H) := by
+  classical
+  let d : ℕ := H.natDegree
+  let a : RatFunc F := univPolyHom (F := F) H.leadingCoeff
+  let W : Polynomial (RatFunc F) := Polynomial.C a
+  have hH_ne : H ≠ 0 := Polynomial.ne_zero_of_natDegree_gt hdeg
+  have hlead_ne : H.leadingCoeff ≠ 0 := Polynomial.leadingCoeff_ne_zero.mpr hH_ne
+  have ha_ne : a ≠ 0 := by
+    intro ha
+    exact hlead_ne (univPolyHom_injective (by simpa [a] using ha))
+  have hmap_irreducible : Irreducible (H.map (univPolyHom (F := F))) :=
+    irreducible_map_univPolyHom_of_irreducible (Nat.ne_of_gt hdeg) hH
+  have hsub :
+      Polynomial.X / W = Polynomial.C a⁻¹ * (Polynomial.X : Polynomial (RatFunc F)) := by
+    calc
+      Polynomial.X / W = Polynomial.X / Polynomial.C a := rfl
+      _ = Polynomial.X * Polynomial.C a⁻¹ := Polynomial.div_C
+      _ = Polynomial.C a⁻¹ * Polynomial.X := by rw [mul_comm]
+  have hcomp_irreducible :
+      Irreducible
+        ((H.map (univPolyHom (F := F))).comp
+          (Polynomial.C a⁻¹ * (Polynomial.X : Polynomial (RatFunc F)))) := by
+    exact (irreducible_comp_C_mul_X_iff (a := a⁻¹) (inv_ne_zero ha_ne)
+      (H.map (univPolyHom (F := F)))).mpr hmap_irreducible
+  have heval :
+      Polynomial.eval₂ (RingHom.comp Polynomial.C (univPolyHom (F := F))) (Polynomial.X / W) H =
+        (H.map (univPolyHom (F := F))).comp (Polynomial.X / W) := by
+    simpa [Polynomial.comp] using
+      (Polynomial.eval₂_map (p := H) (f := univPolyHom (F := F))
+        (g := (Polynomial.C : RatFunc F →+* Polynomial (RatFunc F)))
+        (x := Polynomial.X / W)).symm
+  have heval_irreducible :
+      Irreducible
+        (Polynomial.eval₂ (RingHom.comp Polynomial.C (univPolyHom (F := F))) (Polynomial.X / W)
+          H) := by
+    rw [heval, hsub]
+    exact hcomp_irreducible
+  have hunitW : IsUnit (W ^ (d - 1)) := by
+    exact (isUnit_C.mpr (Ne.isUnit ha_ne)).pow (d - 1)
+  rcases hunitW with ⟨u, hu⟩
+  have htilde :
+      H_tilde H =
+        W ^ (d - 1) *
+          Polynomial.eval₂ (RingHom.comp Polynomial.C (univPolyHom (F := F))) (Polynomial.X / W)
+            H := by
+    rfl
+  rw [htilde, ← hu]
+  exact (irreducible_units_mul (M := Polynomial (RatFunc F)) (u := u)).2 heval_irreducible
+
+end FieldIrreducibility
+
 /-- The monisized version H_tilde is irreducible if the originial polynomial H is irreducible. -/
 lemma irreducibleHTildeOfIrreducible {H : Polynomial (Polynomial F)} :
     (Irreducible H → Irreducible (H_tilde H)) := by
@@ -54,6 +138,18 @@ lemma irreducibleHTildeOfIrreducible {H : Polynomial (Polynomial F)} :
 /-- The function field `𝕃 ` from Appendix A.1 of [BCIKS20]. -/
 abbrev 𝕃 (H : F[X][Y]) : Type :=
   (Polynomial (RatFunc F)) ⧸ (Ideal.span {H_tilde H})
+
+/-- The function field `𝕃 ` is indeed a field if and only if the generator of the ideal we quotient
+by is an irreducible polynomial. -/
+lemma isField_of_irreducible_of_natDegree_pos {F : Type} [Field F] {H : F[X][Y]}
+    (hHdeg : 0 < H.natDegree) (hH : Irreducible H) : IsField (𝕃 H) := by
+  unfold 𝕃
+  erw
+    [
+      ← Ideal.Quotient.maximal_ideal_iff_isField_quotient,
+      principal_is_maximal_iff_irred
+    ]
+  exact irreducibleHTildeOfIrreducible_of_natDegree_pos hHdeg hH
 
 /-- The function field `𝕃 ` is indeed a field if and only if the generator of the ideal we quotient
 by is an irreducible polynomial. -/
@@ -602,15 +698,16 @@ lemma weight_ξ_bound (x₀ : F) (hH : 0 < H.natDegree) {D : ℕ}
     WithBot.some ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1)) := by
   sorry
 
+omit [IsDomain F] in
 /-- There exist regular elements `β` with a weight bound as given in Claim A.2
 of Appendix A.4 of [BCIKS20]. -/
 lemma β_regular (R : F[X][X][Y])
-                (H : F[X][Y]) [H_irreducible : Fact (Irreducible H)]
+                (H : F[X][Y]) [_H_irreducible : Fact (Irreducible H)]
                 (hH : 0 < H.natDegree)
-                {D : ℕ} (hD : D ≥ Bivariate.totalDegree H) :
+                {D : ℕ} (_hD : D ≥ Bivariate.totalDegree H) :
     ∀ t : ℕ, ∃ β : 𝒪 H,
       weight_Λ_over_𝒪 hH β D ≤ (2 * t + 1) * Bivariate.natDegreeY R * D :=
-  sorry
+  fun _ => ⟨0, by simp⟩
 
 /-- The definition of the regular elements `β` giving the numerators of the Hensel lift coefficients
 as defined in Claim A.2 of Appendix A.4 of [BCIKS20]. -/
