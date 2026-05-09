@@ -644,6 +644,163 @@ lemma weight_Λ_over_𝒪_mk_eq_self_of_degree_lt {H : F[X][Y]} (hH : 0 < H.natD
       weight_Λ p H D := by
   simp [weight_Λ_over_𝒪, canonicalRepOf𝒪_mk_eq_self_of_degree_lt hH hp]
 
+/-! ### Λ-weight calculus
+
+Algebraic identities for the bivariate `Λ`-weight from Appendix A.2 of [BCIKS20]. The weight
+`m := D + 1 − natDegreeY H` is the per-Y-power contribution; constants in `F[X]` contribute their
+`natDegree`. -/
+
+omit [IsDomain F] in
+/-- A monomial `n` in `f`'s support contributes a lower bound on `Λ(f)`. -/
+lemma le_weight_Λ_of_mem_support {f H : F[X][Y]} {D : ℕ} {n : ℕ} (hn : n ∈ f.support) :
+    (WithBot.some (n * (D + 1 - Bivariate.natDegreeY H) + (f.coeff n).natDegree) :
+      WithBot ℕ) ≤ weight_Λ f H D := by
+  classical
+  exact Finset.le_sup (f := fun deg =>
+    (WithBot.some (deg * (D + 1 - Bivariate.natDegreeY H) + (f.coeff deg).natDegree) :
+      WithBot ℕ)) hn
+
+omit [IsDomain F] in
+/-- Characterization: `Λ(f) ≤ b` iff every monomial in `f`'s support contributes at most `b`. -/
+lemma weight_Λ_le_iff {f H : F[X][Y]} {D b : ℕ} :
+    weight_Λ f H D ≤ (WithBot.some b : WithBot ℕ) ↔
+      ∀ n ∈ f.support,
+        n * (D + 1 - Bivariate.natDegreeY H) + (f.coeff n).natDegree ≤ b := by
+  classical
+  refine ⟨fun h n hn => ?_, fun h => ?_⟩
+  · have := (le_weight_Λ_of_mem_support hn).trans h
+    exact_mod_cast this
+  · refine Finset.sup_le (fun n hn => ?_)
+    exact_mod_cast (h n hn)
+
+omit [IsDomain F] in
+/-- `Λ(C c) ≤ c.natDegree`. -/
+lemma weight_Λ_C_le (H : F[X][Y]) (D : ℕ) (c : F[X]) :
+    weight_Λ (Polynomial.C c) H D ≤ (WithBot.some c.natDegree : WithBot ℕ) := by
+  classical
+  rw [weight_Λ_le_iff]
+  intro n hn
+  have : (Polynomial.C c : F[X][Y]).coeff n ≠ 0 := Polynomial.mem_support_iff.mp hn
+  have hn0 : n = 0 := by
+    by_contra h
+    simp [Polynomial.coeff_C, h] at this
+  subst hn0
+  simp [Polynomial.coeff_C]
+
+omit [IsDomain F] in
+/-- `Λ(Y^k) ≤ k · m`. -/
+lemma weight_Λ_X_pow_le (H : F[X][Y]) (D k : ℕ) :
+    weight_Λ ((Polynomial.X : F[X][Y]) ^ k) H D ≤
+      (WithBot.some (k * (D + 1 - Bivariate.natDegreeY H)) : WithBot ℕ) := by
+  classical
+  rw [weight_Λ_le_iff]
+  intro n hn
+  have : ((Polynomial.X : F[X][Y]) ^ k).coeff n ≠ 0 := Polynomial.mem_support_iff.mp hn
+  have hnk : n = k := by
+    by_contra h
+    simp [Polynomial.coeff_X_pow, h] at this
+  subst hnk
+  simp [Polynomial.coeff_X_pow]
+
+omit [IsDomain F] in
+/-- `Λ(C c · Y^k) ≤ k · m + c.natDegree`. -/
+lemma weight_Λ_C_mul_X_pow_le (H : F[X][Y]) (D : ℕ) (c : F[X]) (k : ℕ) :
+    weight_Λ (Polynomial.C c * Polynomial.X ^ k) H D ≤
+      (WithBot.some (k * (D + 1 - Bivariate.natDegreeY H) + c.natDegree) : WithBot ℕ) := by
+  classical
+  rw [weight_Λ_le_iff]
+  intro n hn
+  have : (Polynomial.C c * Polynomial.X ^ k : F[X][Y]).coeff n ≠ 0 :=
+    Polynomial.mem_support_iff.mp hn
+  have hnk : n = k := by
+    by_contra h
+    simp [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, h] at this
+  subst hnk
+  simp [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow]
+
+omit [IsDomain F] in
+/-- The `Λ`-weight is invariant under negation. -/
+@[simp]
+lemma weight_Λ_neg (f H : F[X][Y]) (D : ℕ) : weight_Λ (-f) H D = weight_Λ f H D := by
+  classical
+  unfold weight_Λ
+  rw [Polynomial.support_neg]
+  refine Finset.sup_congr rfl (fun n _ => ?_)
+  simp [Polynomial.coeff_neg]
+
+omit [IsDomain F] in
+/-- `Λ(f + g) ≤ max(Λ(f), Λ(g))`. -/
+lemma weight_Λ_add_le (f g H : F[X][Y]) (D : ℕ) :
+    weight_Λ (f + g) H D ≤ max (weight_Λ f H D) (weight_Λ g H D) := by
+  classical
+  refine Finset.sup_le (fun n hn => ?_)
+  -- The contribution at `n` to weight_Λ (f + g) is bounded by f's or g's contribution.
+  have hcoeff : (f + g).coeff n = f.coeff n + g.coeff n := Polynomial.coeff_add _ _ _
+  have hsum_ne : f.coeff n + g.coeff n ≠ 0 := by
+    rw [← hcoeff]; exact Polynomial.mem_support_iff.mp hn
+  by_cases hf : f.coeff n = 0
+  · -- f.coeff n = 0, so g.coeff n ≠ 0
+    have hg : g.coeff n ≠ 0 := by simpa [hf] using hsum_ne
+    have hng : n ∈ g.support := Polynomial.mem_support_iff.mpr hg
+    have heq : (f + g).coeff n = g.coeff n := by simp [hcoeff, hf]
+    show (WithBot.some _ : WithBot ℕ) ≤ _
+    rw [heq]
+    exact (le_weight_Λ_of_mem_support hng).trans (le_max_right _ _)
+  · have hnf : n ∈ f.support := Polynomial.mem_support_iff.mpr hf
+    by_cases hg : g.coeff n = 0
+    · have heq : (f + g).coeff n = f.coeff n := by simp [hcoeff, hg]
+      show (WithBot.some _ : WithBot ℕ) ≤ _
+      rw [heq]
+      exact (le_weight_Λ_of_mem_support hnf).trans (le_max_left _ _)
+    · have hng : n ∈ g.support := Polynomial.mem_support_iff.mpr hg
+      have hdeg : ((f + g).coeff n).natDegree ≤
+          max (f.coeff n).natDegree (g.coeff n).natDegree := by
+        rw [hcoeff]; exact Polynomial.natDegree_add_le _ _
+      rcases le_total (f.coeff n).natDegree (g.coeff n).natDegree with h | h
+      · -- bound by g's contribution
+        have hbound : ((f + g).coeff n).natDegree ≤ (g.coeff n).natDegree :=
+          hdeg.trans_eq (max_eq_right h)
+        have hle : n * (D + 1 - Bivariate.natDegreeY H) + ((f + g).coeff n).natDegree ≤
+            n * (D + 1 - Bivariate.natDegreeY H) + (g.coeff n).natDegree :=
+          Nat.add_le_add_left hbound _
+        calc (WithBot.some
+                (n * (D + 1 - Bivariate.natDegreeY H) + ((f + g).coeff n).natDegree) :
+                WithBot ℕ)
+            ≤ WithBot.some (n * (D + 1 - Bivariate.natDegreeY H) + (g.coeff n).natDegree) :=
+              by exact_mod_cast hle
+          _ ≤ weight_Λ g H D := le_weight_Λ_of_mem_support hng
+          _ ≤ max (weight_Λ f H D) (weight_Λ g H D) := le_max_right _ _
+      · have hbound : ((f + g).coeff n).natDegree ≤ (f.coeff n).natDegree :=
+          hdeg.trans_eq (max_eq_left h)
+        have hle : n * (D + 1 - Bivariate.natDegreeY H) + ((f + g).coeff n).natDegree ≤
+            n * (D + 1 - Bivariate.natDegreeY H) + (f.coeff n).natDegree :=
+          Nat.add_le_add_left hbound _
+        calc (WithBot.some
+                (n * (D + 1 - Bivariate.natDegreeY H) + ((f + g).coeff n).natDegree) :
+                WithBot ℕ)
+            ≤ WithBot.some (n * (D + 1 - Bivariate.natDegreeY H) + (f.coeff n).natDegree) :=
+              by exact_mod_cast hle
+          _ ≤ weight_Λ f H D := le_weight_Λ_of_mem_support hnf
+          _ ≤ max (weight_Λ f H D) (weight_Λ g H D) := le_max_left _ _
+
+omit [IsDomain F] in
+/-- `Λ(f − g) ≤ max(Λ(f), Λ(g))`. -/
+lemma weight_Λ_sub_le (f g H : F[X][Y]) (D : ℕ) :
+    weight_Λ (f - g) H D ≤ max (weight_Λ f H D) (weight_Λ g H D) := by
+  rw [sub_eq_add_neg]
+  exact (weight_Λ_add_le f (-g) H D).trans_eq (by rw [weight_Λ_neg])
+
+omit [IsDomain F] in
+/-- `Λ` of a finite sum is bounded by the max of the summands' weights. -/
+lemma weight_Λ_sum_le {ι : Type} (s : Finset ι) (f : ι → F[X][Y]) (H : F[X][Y]) (D : ℕ) :
+    weight_Λ (∑ i ∈ s, f i) H D ≤ s.sup (fun i => weight_Λ (f i) H D) := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert a s ha ih =>
+      rw [Finset.sum_insert ha, Finset.sup_insert]
+      exact (weight_Λ_add_le _ _ _ _).trans (max_le_max le_rfl ih)
+
 /-- The set `S_β` from the statement of Lemma A.1 in Appendix A of [BCIKS20].
 Note: Here `F[X][Y]` is `F[Z][T]`. -/
 noncomputable def S_β {H : F[X][Y]} (β : 𝒪 H) : Set F :=
