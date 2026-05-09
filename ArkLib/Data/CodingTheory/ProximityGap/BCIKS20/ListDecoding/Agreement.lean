@@ -51,6 +51,12 @@ noncomputable def H (δ : ℚ) (x₀ : F) (h_gs : ModifiedGuruswami m n k ωs Q 
 lemma irreducible_H (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) : Irreducible (H k δ x₀ h_gs) :=
   (exists_factors_with_large_common_root_set k δ x₀ h_gs).choose_spec.choose_spec.2.1
 
+/-- The factor `H` extracted from Claim 5.7 has positive degree in the `Y` variable, matching the
+Appendix A hypotheses needed for the function field construction. -/
+lemma natDegree_H_pos (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
+    0 < (H k δ x₀ h_gs).natDegree := by
+  sorry
+
 open BCIKS20AppendixA.ClaimA2 in
 /-- Claim 5.8 from [BCIKS20].
 States that the approximate solution is actually a solution. This version of the claim is stated in
@@ -62,6 +68,7 @@ lemma approximate_solution_is_exact_solution_coeffs
       x₀
       (R k δ x₀ h_gs)
       (irreducible_H k h_gs)
+      (natDegree_H_pos k h_gs)
       t
     =
     (0 : BCIKS20AppendixA.𝕃 (H k δ x₀ h_gs))
@@ -75,7 +82,7 @@ This version is in terms of polynomials.
 lemma approximate_solution_is_exact_solution_coeffs'
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
     :
-    γ' x₀ (R k δ x₀ h_gs) (irreducible_H k h_gs) =
+    γ' x₀ (R k δ x₀ h_gs) (irreducible_H k h_gs) (natDegree_H_pos k h_gs) =
         PowerSeries.mk (fun t =>
           if t ≥ k
           then (0 : BCIKS20AppendixA.𝕃 (H k δ x₀ h_gs))
@@ -83,7 +90,8 @@ lemma approximate_solution_is_exact_solution_coeffs'
             (γ'
               x₀
               (R k (x₀ := x₀) (δ := δ) h_gs)
-              (irreducible_H k h_gs))) := by
+              (irreducible_H k h_gs)
+              (natDegree_H_pos k h_gs))) := by
    sorry
 
 open BCIKS20AppendixA.ClaimA2 in
@@ -93,7 +101,8 @@ lemma solution_gamma_is_linear_in_Z
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
     :
   ∃ (v₀ v₁ : F[X]),
-    γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs) =
+    γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
+      (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs) =
         BCIKS20AppendixA.polyToPowerSeries𝕃 _
           (
             (Polynomial.map Polynomial.C v₀) +
@@ -113,7 +122,8 @@ noncomputable def P (δ : ℚ) (x₀ : F) (h_gs : ModifiedGuruswami m n k ωs Q 
 open BCIKS20AppendixA.ClaimA2 in
 /-- The extracted `P` from Claim 5.9 equals `γ`. -/
 lemma gamma_eq_P (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
-  γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs) =
+  γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
+    (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs) =
   BCIKS20AppendixA.polyToPowerSeries𝕃 _
     (P k δ x₀ h_gs) :=
   Classical.choose_spec

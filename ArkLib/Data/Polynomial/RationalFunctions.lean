@@ -130,10 +130,12 @@ lemma irreducibleHTildeOfIrreducible_of_natDegree_pos
 
 end FieldIrreducibility
 
-/-- The monisized version H_tilde is irreducible if the originial polynomial H is irreducible. -/
-lemma irreducibleHTildeOfIrreducible {H : Polynomial (Polynomial F)} :
-    (Irreducible H → Irreducible (H_tilde H)) := by
-  sorry
+/-- The monisized version `H_tilde` is irreducible if the original polynomial `H` is irreducible
+and has positive degree in `Y`, as assumed in Appendix A.1 of [BCIKS20]. -/
+lemma irreducibleHTildeOfIrreducible {F : Type} [Field F] {H : Polynomial (Polynomial F)}
+    (hHdeg : 0 < H.natDegree) :
+    Irreducible H → Irreducible (H_tilde H) :=
+  irreducibleHTildeOfIrreducible_of_natDegree_pos hHdeg
 
 /-- The function field `𝕃 ` from Appendix A.1 of [BCIKS20]. -/
 abbrev 𝕃 (H : F[X][Y]) : Type :=
@@ -151,21 +153,23 @@ lemma isField_of_irreducible_of_natDegree_pos {F : Type} [Field F] {H : F[X][Y]}
     ]
   exact irreducibleHTildeOfIrreducible_of_natDegree_pos hHdeg hH
 
-/-- The function field `𝕃 ` is indeed a field if and only if the generator of the ideal we quotient
-by is an irreducible polynomial. -/
-lemma isField_of_irreducible {H : F[X][Y]} : Irreducible H → IsField (𝕃 H) := by
+/-- The function field `𝕃 ` is indeed a field when the generator of the ideal we quotient by is
+irreducible and has positive degree in `Y`. -/
+lemma isField_of_irreducible {F : Type} [Field F] {H : F[X][Y]} (hHdeg : 0 < H.natDegree) :
+    Irreducible H → IsField (𝕃 H) := by
   intros h
   unfold 𝕃
   erw
     [
-      ←Ideal.Quotient.maximal_ideal_iff_isField_quotient,
+      ← Ideal.Quotient.maximal_ideal_iff_isField_quotient,
       principal_is_maximal_iff_irred
     ]
-  exact irreducibleHTildeOfIrreducible h
+  exact irreducibleHTildeOfIrreducible hHdeg h
 
 /-- The function field `𝕃` as defined above is a field. -/
-noncomputable instance {H : F[X][Y]} [inst : Fact (Irreducible H)] : Field (𝕃 H) :=
-  IsField.toField (isField_of_irreducible inst.out)
+noncomputable instance {F : Type} [Field F] {H : F[X][Y]} [hHdeg : Fact (0 < H.natDegree)]
+    [inst : Fact (Irreducible H)] : Field (𝕃 H) :=
+  IsField.toField (isField_of_irreducible hHdeg.out inst.out)
 
 /-- The monisized polynomial `H_tilde` is in fact an element of `F[X][Y]`. -/
 noncomputable def H_tilde' (H : F[X][Y]) : F[X][Y] :=
@@ -642,12 +646,14 @@ noncomputable section
 
 namespace ClaimA2
 
-variable {F : Type} [CommRing F] [IsDomain F]
+variable {F : Type} [Field F]
          {R : F[X][X][X]}
          {H : F[X][Y]} [H_irreducible : Fact (Irreducible H)]
+         [H_natDegree_pos : Fact (0 < H.natDegree)]
 
 /-- The definition of `ζ` given in Appendix A.4 of [BCIKS20]. -/
-def ζ (R : F[X][X][Y]) (x₀ : F) (H : F[X][Y]) [H_irreducible : Fact (Irreducible H)] : 𝕃 H :=
+def ζ (R : F[X][X][Y]) (x₀ : F) (H : F[X][Y]) [H_irreducible : Fact (Irreducible H)]
+    [H_natDegree_pos : Fact (0 < H.natDegree)] : 𝕃 H :=
   let W  : 𝕃 H := liftToFunctionField (H.leadingCoeff);
   let T : 𝕃 H := functionFieldT (H := H);
     Polynomial.eval₂ liftToFunctionField (T / W)
@@ -656,7 +662,7 @@ def ζ (R : F[X][X][Y]) (x₀ : F) (H : F[X][Y]) [H_irreducible : Fact (Irreduci
 /-- If the derivative specialization is constant in the function-field variable, then `ζ` is
 regular. -/
 lemma ζ_regular_of_derivative_evalX_eq_C (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
-    [H_irreducible : Fact (Irreducible H)] {p : F[X]}
+    [H_irreducible : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)] {p : F[X]}
     (hp : Bivariate.evalX (Polynomial.C x₀) R.derivative = Polynomial.C p) :
     ζ R x₀ H ∈ regularElms_set H := by
   rw [ζ, hp]
@@ -666,6 +672,7 @@ lemma ζ_regular_of_derivative_evalX_eq_C (x₀ : F) (R : F[X][X][Y]) (H : F[X][
 /-- In the constant-derivative, low-`Y`-degree case, the `ξ` regularity witness is explicit. -/
 lemma ξ_regular_of_derivative_evalX_eq_C_of_natDegree_le_one
     (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [H_irreducible : Fact (Irreducible H)]
+    [H_natDegree_pos : Fact (0 < H.natDegree)]
     {p : F[X]} (hp : Bivariate.evalX (Polynomial.C x₀) R.derivative = Polynomial.C p)
     (hR : R.natDegree ≤ 1) :
     ∃ pre : 𝒪 H,
@@ -679,7 +686,8 @@ lemma ξ_regular_of_derivative_evalX_eq_C_of_natDegree_le_one
 
 /-- There exist regular elements `ξ = W(Z)^(d-2) * ζ` as defined in Claim A.2 of Appendix A.4
 of [BCIKS20]. -/
-lemma ξ_regular (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [H_irreducible : Fact (Irreducible H)] :
+lemma ξ_regular (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [H_irreducible : Fact (Irreducible H)]
+    [H_natDegree_pos : Fact (0 < H.natDegree)] :
     ∃ pre : 𝒪 H,
     let d := R.natDegree
     let W : 𝕃 H := liftToFunctionField (H.leadingCoeff);
@@ -687,7 +695,8 @@ lemma ξ_regular (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [H_irreducible : Fact
   sorry
 
 /-- The elements `ξ = W(Z)^(d-2) * ζ` as defined in Claim A.2 of Appendix A.4 of [BCIKS20]. -/
-def ξ (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [φ : Fact (Irreducible H)] : 𝒪 H :=
+def ξ (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [φ : Fact (Irreducible H)]
+    [H_natDegree_pos : Fact (0 < H.natDegree)] : 𝒪 H :=
   (ξ_regular x₀ R H).choose
 
 /-- The bound of the weight `Λ` of the elements `ζ` as stated in Claim A.2 of Appendix A.4
@@ -698,11 +707,11 @@ lemma weight_ξ_bound (x₀ : F) (hH : 0 < H.natDegree) {D : ℕ}
     WithBot.some ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1)) := by
   sorry
 
-omit [IsDomain F] in
 /-- There exist regular elements `β` with a weight bound as given in Claim A.2
 of Appendix A.4 of [BCIKS20]. -/
 lemma β_regular (R : F[X][X][Y])
                 (H : F[X][Y]) [_H_irreducible : Fact (Irreducible H)]
+                [_H_natDegree_pos : Fact (0 < H.natDegree)]
                 (hH : 0 < H.natDegree)
                 {D : ℕ} (_hD : D ≥ Bivariate.totalDegree H) :
     ∀ t : ℕ, ∃ β : 𝒪 H,
@@ -719,17 +728,20 @@ def β (R : F[X][X][Y]) (t : ℕ) : 𝒪 H :=
 
 /-- The Hensel lift coefficients `α` are of the form as given in Claim A.2 of Appendix A.4
 of [BCIKS20]. -/
-def α (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [φ : Fact (Irreducible H)] (t : ℕ) : 𝕃 H :=
+def α (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [φ : Fact (Irreducible H)]
+    [H_natDegree_pos : Fact (0 < H.natDegree)] (t : ℕ) : 𝕃 H :=
   let W : 𝕃 H := liftToFunctionField (H.leadingCoeff)
   embeddingOf𝒪Into𝕃 _ (β R t) /
     (W ^ (t + 1) * (embeddingOf𝒪Into𝕃 _ (ξ x₀ R H)) ^ (2*t - 1))
 
-def α' (x₀ : F) (R : F[X][X][Y]) (H_irreducible : Irreducible H) (t : ℕ) : 𝕃 H :=
-  α x₀ R _ (φ := ⟨H_irreducible⟩) t
+def α' (x₀ : F) (R : F[X][X][Y]) (H_irreducible : Irreducible H)
+    (hHdeg : 0 < H.natDegree) (t : ℕ) : 𝕃 H :=
+  α x₀ R _ (φ := ⟨H_irreducible⟩) (H_natDegree_pos := ⟨hHdeg⟩) t
 
 /-- The power series `γ = ∑ α^t (X - x₀)^t ∈ 𝕃 [[X - x₀]]` as defined in Appendix A.4
 of [BCIKS20]. -/
-def γ (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [φ : Fact (Irreducible H)] : PowerSeries (𝕃 H) :=
+def γ (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [φ : Fact (Irreducible H)]
+    [H_natDegree_pos : Fact (0 < H.natDegree)] : PowerSeries (𝕃 H) :=
   let subst (t : ℕ) : 𝕃 H :=
     match t with
     | 0 => fieldTo𝕃 (-x₀)
@@ -737,8 +749,9 @@ def γ (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [φ : Fact (Irreducible H)] : P
     | _ => 0
   PowerSeries.subst (PowerSeries.mk subst) (PowerSeries.mk (α x₀ R H))
 
-def γ' (x₀ : F) (R : F[X][X][Y]) (H_irreducible : Irreducible H) : PowerSeries (𝕃 H) :=
-  γ x₀ R H (φ := ⟨H_irreducible⟩)
+def γ' (x₀ : F) (R : F[X][X][Y]) (H_irreducible : Irreducible H)
+    (hHdeg : 0 < H.natDegree) : PowerSeries (𝕃 H) :=
+  γ x₀ R H (φ := ⟨H_irreducible⟩) (H_natDegree_pos := ⟨hHdeg⟩)
 
 end ClaimA2
 end
