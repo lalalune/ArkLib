@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Quang Dao
 -/
 
+import ArkLib.OracleReduction.ProtocolSpec.SeqCompose
 
 /-!
-# OracleReduction.Basic — Conceptual Overview
+### OracleReduction.Basic — Conceptual Overview
 
 ## What is an Oracle Reduction?
 
@@ -22,7 +23,7 @@ This is the information-theoretic core of most modern SNARKs (FRI, PLONK, STARK,
 The `BCS transform` later replaces each oracle message with a Merkle commitment,
 turning an IOR into a non-interactive argument.
 
-## File Scope
+### File Scope
 
 `OracleReduction/Basic.lean` defines the **primitive building blocks** from which
 all concrete protocol specifications in this library are assembled:
@@ -199,8 +200,6 @@ If you extend this file, please:
 - Reference this module docstring when writing protocol-specific documentation.
 -/
 
-
-import ArkLib.OracleReduction.ProtocolSpec.SeqCompose
 
 /-!
 # Interactive (Oracle) Reductions
