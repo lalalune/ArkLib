@@ -69,11 +69,17 @@ The conclusion's proximity radius `1 - √(1 - δ + η)` is the "Johnson lift" o
 regime via Corollary 3.3; for random RS codes (which list-decode to capacity by
 Theorem 3.6) it implies MCA for random RS up to the Johnson bound.
 
+**Implicit hypothesis `η ≤ δ`.** For the conclusion's proximity radius
+`1 - √(1 - δ + η)` to be a valid relative distance in `[0, 1]` we need
+`1 - δ + η ≤ 1`, i.e. `η ≤ δ`. The paper's `δ, η ∈ (0, 1)` regime does not force
+this; without it `(1 - √…).toNNReal` would silently truncate to `0` and the
+statement would collapse. We add `η ≤ δ` explicitly to match the paper's intent.
+
 Admitted as an external result. -/
 theorem linear_listSize_to_epsMCA_gcxk25
     (C : Submodule F (ι → F)) (L : ℕ) (δ η : ℝ)
     (_hδ_pos : 0 < δ) (_hδ_lt : δ < 1)
-    (_hη_pos : 0 < η) (_hη_lt : η < 1)
+    (_hη_pos : 0 < η) (_hη_lt : η < 1) (_hη_le_δ : η ≤ δ)
     (_hΛ : Lambda ((C : Set (ι → F))) δ ≤ (L : ℕ∞)) :
     epsMCA (F := F) (A := F) ((C : Set (ι → F)))
         ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal) ≤

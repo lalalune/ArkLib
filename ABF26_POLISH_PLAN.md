@@ -130,7 +130,7 @@ trusted blindly.
 
 | ID | Lean name | Status | Known issues / things to check |
 | --- | --- | --- | --- |
-| T5.1 | `CodingTheory.linear_listSize_to_epsMCA_gcxk25` | ⚠ | `(1 − √(1 − δ + η)).toNNReal` truncates if `1 − δ + η > 1` (i.e., `η > δ`). Tighten hypothesis or add a precondition `η ≤ δ`. |
+| T5.1 | `CodingTheory.linear_listSize_to_epsMCA_gcxk25` | 🔧 | **Added `η ≤ δ` hypothesis** so `1 − δ + η ≤ 1` and the sqrt-proximity radius stays in `[0, 1]`. Docstring spells out the implicit requirement. |
 | T5.2 | `CodingTheory.rs_epsCA_small_implies_lambda_lt_F_bchks25` | ⏳ | `(δ + 2 / Fintype.card ι).toNNReal` — when `δ < 1 - ρ` and `n ≥ 1`, the sum is positive so `toNNReal` doesn't truncate. ✓ |
 | T5.3 | `CodingTheory.rs_epsCA_implies_lambda_extended_cs25` | ⚠ | RHS `(ENNReal.ofReal (... * ε_ca.toReal)).toNNReal` is doubly wrapped — ENNReal then NNReal then ENNReal. Simplify. Also: `⌈ |F|/(1-η) · ε_ca ⌉` in paper is an integer ceiling; my version uses `ENNReal.ofReal` of a real, losing the ceiling. Either use `Nat.ceil` or document the slack. |
 | T5.4 | `CodingTheory.rs_epsCA_separation_bgks20` | ⏳ | `Fintype.card F = Fintype.card ι` plus injectivity of `domain` makes it a bijection by pigeonhole. Paper's "evaluation domain is the entire `F`" — confirm we want this stronger than `domain : ι ↪ F` with type-cardinality match. |
@@ -202,7 +202,7 @@ Resolve every `⚠` and `❌` in §1. One commit per concern, smallest reversibl
 2. **A2.** ✅ Fix Nat-subtraction in L3.7 and T3.9 exponents (cast to ℝ before subtracting; preserves paper's floor in T3.9).
 3. **A3.** ✅ Document `qEntropy` boundary at `q ≤ 1` (no precondition; downstream already guards).
 4. **A4.** ✅ Document `irsCode` rounding convention (Nat truncated division; downstream guards with `s ∣ k`).
-5. **A5.** Tighten T5.1 hypotheses to ensure `1 − δ + η ≤ 1` (or document `.toNNReal` truncation).
+5. **A5.** ✅ Tighten T5.1 hypotheses with `η ≤ δ`.
 6. **A6.** Tighten T4.11.1 denominator positivity assumptions.
 7. **A7.** Align `frsCode` (D2.15) to `Polynomial.degreeLT` style.
 
