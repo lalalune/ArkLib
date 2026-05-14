@@ -71,20 +71,25 @@ Companion documents:
 
 ## 2. Branch and PR strategy
 
-- **Default**: small PRs to `main`, one per work package below. Each PR is
-  expected to keep validation green and to have a commit message referencing
-  the `ABF26-*` item IDs it closes.
-- **Exception**: the Phase 1 ε-error interface migration uses a single
-  longer-lived feature branch (`feat/abf26-eps-interface`). Rebase daily.
-  Other downstream PRs cannot land that depend on the new ε signatures until
-  the migration lands.
-- **Sorry hygiene**: new `sorry`s must (a) be listed in §6 of this plan and
-  (b) carry a `-- ABF26 <Item-ID>: external/conjectural, see <source>`
+- **Single branch (user-confirmed 2026-05-14)**: all phases of this effort
+  accumulate on `feat/abf26-plan`. The "Phase N PR M" numbering in §8 below
+  is now a commit-level breakdown rather than a per-PR branch breakdown;
+  each numbered work package is one logical commit (or a small cluster) on
+  this branch. The original plan called for small PRs to `main` and a
+  separate long-lived `feat/abf26-eps-interface` branch for Phase 1; that
+  is overridden in favour of a single accumulating branch.
+- **Commit hygiene**: each commit message references the `ABF26-*` item
+  IDs it closes and uses the conventional-commits prefixes the repo
+  already follows (`feat(...)`, `fix(...)`, `docs(...)`, etc.).
+- **Sorry hygiene**: new `sorry`s must (a) be listed in §6 of this plan
+  and (b) carry a `-- ABF26 <Item-ID>: external/conjectural, see <source>`
   comment.
-- **Validation gate**: every PR runs `./scripts/validate.sh`; ε-interface PRs
-  also run `./scripts/validate.sh --docs`.
-- **Audit doc gate**: every item-level PR updates the corresponding row in
-  the audit doc in the same commit.
+- **Validation gate**: every commit that touches Lean runs
+  `./scripts/validate.sh`; ε-interface commits also run
+  `./scripts/validate.sh --docs`.
+- **Audit doc gate**: every item-closing commit updates the corresponding
+  row in `docs/kb/audits/open-problems-list-decoding-and-correlated-agreement.md`
+  in the same commit.
 
 ---
 
@@ -157,6 +162,7 @@ The overall effort is "done" when:
 | D6 | `Smooth` typeclass placement | decided: keep on `ι ↪ F` | Existing WHIR usage non-trivial. |
 | D7 | Where do paper-style notation aliases live? | pending; recommend `ArkLib/Data/CodingTheory/ABF26Notation.lean` | Phase 9. |
 | D8 | Computable vs noncomputable defaults for ε's? | pending; recommend noncomputable | Matches `distFromCode`. |
+| D9 | One branch for the whole effort vs many PRs to `main`? | **decided 2026-05-14**: single branch `feat/abf26-plan` | User preference. Each "PR" in §8 becomes a commit (or small cluster) on this branch. |
 
 ### Conjecture / external-result ledger
 
@@ -1255,7 +1261,10 @@ convenience.
 - **Phase 2 PR 2**: `BCIKS20/Curves.lean` (3 sorries).
 - **Phase 2 PR 3**: `BCIKS20/ListDecoding/Agreement.lean` (8),
   `Extraction.lean` (2), `Guruswami.lean` (2). One PR if helpers shared,
-  otherwise split.
+  otherwise split. **Soft prereq**: PR #497 (`feat: proofs for rational
+  function lemmas`) is open against `main` and adds the rational-function
+  machinery these `sorry`s need. If #497 has not merged when Phase 2
+  PR 3 begins, plan to either rebase on top of it or absorb its content.
 - **Phase 2 PR 4**: `BCIKS20/WeightedAgreement.lean` (6 sorries).
 - **Phase 2 PR 5**: `DG25/MainResults.lean` (2 sorries). Touches L4.19
   underpinnings.
