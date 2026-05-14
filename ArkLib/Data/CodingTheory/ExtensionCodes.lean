@@ -104,7 +104,16 @@ vector `v : ι → F` by
 i.e. each of the `e` coordinate-projections of `v` lies in `C_B`. We express the
 codeword set; the underlying `Submodule F (ι → F)` structure follows by closure of
 `C_B` under linear combinations, but we keep the `Set`-level definition for direct
-comparison with the paper's encoder shape. -/
+comparison with the paper's encoder shape.
+
+**Linearity caveat.** The paper states `C_F` is an `F`-linear code, which means
+`extensionCode P C_B` is `F`-closed under addition and scalar multiplication. This
+requires `C_B` to be `B`-closed (assumed by the paper) plus the `B`-linearity of each
+coordinate-projection `P.coord j`. The structure `P` does **not** yet certify
+`B`-linearity of `P.coord j` — only invertibility of `φ`. A separate
+`extensionCode_isSubmodule` lemma (gated on a `[Module B F]` instance and a
+`B`-linearity witness for `P.φ`) would promote `extensionCode P C_B` to
+`Submodule F (ι → F)`; tracked as a polish-plan follow-up. -/
 def extensionCode {ι : Type} [Fintype ι]
     {B F : Type} [Field B] [Field F]
     (P : ExtensionFieldPresentation B F)

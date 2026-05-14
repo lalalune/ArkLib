@@ -161,12 +161,12 @@ theorem rs_epsCA_implies_lambda_extended_cs25
             ((ReedSolomon.code domain k : Set (ι → F)))
             δ.toNNReal δ.toNNReal).toReal ≤
           η * (1 / k - Fintype.card ι / (k * Fintype.card F))) :
-    (Lambda ((ReedSolomon.code domain (k + 1) : Set (ι → F))) δ : ENNReal) ≤
-      ENNReal.ofReal
-        (((Fintype.card F : ℝ) / (1 - η))
+    Lambda ((ReedSolomon.code domain (k + 1) : Set (ι → F))) δ ≤
+      (Nat.ceil
+        ((Fintype.card F : ℝ) / (1 - η)
           * (epsCA (F := F) (A := F)
                 ((ReedSolomon.code domain k : Set (ι → F)))
-                δ.toNNReal δ.toNNReal).toReal).toNNReal := by
+                δ.toNNReal δ.toNNReal).toReal) : ℕ∞) := by
   sorry -- ABF26-T5.3; external admit [CS25 Thm 2].
 
 end CAImpliesList

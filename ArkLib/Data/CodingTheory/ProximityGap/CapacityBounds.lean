@@ -286,18 +286,28 @@ theorem rs_epsCA_breakdown_cs25
 
 /-- **ABF26 Theorem 4.18 [BCHKS25 Cor 1.7].** CA jump at the Johnson bound. Fix `ε > 0`,
 let `δ := 15/16`. Then for all `F` of characteristic 2 there exists a Reed-Solomon code
-`C := RS[F, L, k]` with `n = |F|^{(1+ε)/2}` and `δ_min(C) = 15/16` such that:
+`C := RS[F, L, k]` with `n ≈ |F|^{(1+ε)/2}` and `δ_min(C) = 15/16` such that:
 
   `ε_ca(C, J(δ_min(C)), J(δ_min(C)) + 1/8 + 1/n) ≥ n^{2(1-ε)} / |F|`
 
 where `J(δ) := 1 - √(1 - δ)` is the Johnson radius. Witnesses a sharp jump in CA
-error precisely at the Johnson bound. Admitted as an external result. -/
+error precisely at the Johnson bound.
+
+**Note on `n ≈ |F|^{(1+ε)/2}`.** Paper writes equality but `|F|^{(1+ε)/2}` is generally
+not a natural number; the intended reading is "for `n` of this order of magnitude". We
+encode this as a two-sided bound `n ≥ |F|^{(1+ε)/2} - 1 ∧ n ≤ |F|^{(1+ε)/2} + 1`,
+which allows witness `n = ⌊|F|^{(1+ε)/2}⌋` or `⌈|F|^{(1+ε)/2}⌉` as appropriate.
+
+Admitted as an external result. -/
 theorem rs_epsCA_johnson_jump_bchks25
     (ε : ℝ≥0) (_hε : 0 < ε) :
     ∃ (ιC : Type) (_ : Fintype ιC) (_ : Nonempty ιC) (_ : DecidableEq ιC)
       (FC : Type) (_ : Field FC) (_ : Fintype FC) (_ : DecidableEq FC),
       CharP FC 2 ∧ ∃ (domain : ιC ↪ FC) (k : ℕ),
-      (Fintype.card ιC : ℝ) = (Fintype.card FC : ℝ) ^ (((1 : ℝ) + ε) / 2) ∧
+      ((Fintype.card FC : ℝ) ^ (((1 : ℝ) + ε) / 2) - 1
+          ≤ (Fintype.card ιC : ℝ)) ∧
+      ((Fintype.card ιC : ℝ)
+          ≤ (Fintype.card FC : ℝ) ^ (((1 : ℝ) + ε) / 2) + 1) ∧
       (Code.minDist ((ReedSolomon.code domain k : Set (ιC → FC))) : ℝ)
           / Fintype.card ιC = (15 : ℝ) / 16 ∧
       epsCA (F := FC) (A := FC) ((ReedSolomon.code domain k : Set (ιC → FC)))
@@ -372,12 +382,11 @@ theorem frs_epsMCA_capacity_gg25
     (_hs_gt : (s : ℝ) > 16 / η ^ 2) :
     let n : ℝ := Fintype.card ι
     let ρ : ℝ := k / n
-    ∃ C : Submodule F (ι → Fin s → F),
-      (C : Set (ι → Fin s → F)) = ReedSolomon.Folded.frsCode domain k s ω ∧
-      epsMCA (F := F) (A := Fin s → F) ((C : Set (ι → Fin s → F)))
-          ((1 - ρ - η).toNNReal) ≤
-        ENNReal.ofReal (2 * n / (η * Fintype.card F)
-          + 24 / (η ^ 3 * Fintype.card F)) := by
+    epsMCA (F := F) (A := Fin s → F)
+        (ReedSolomon.Folded.frsCode domain k s ω)
+        ((1 - ρ - η).toNNReal) ≤
+      ENNReal.ofReal (2 * n / (η * Fintype.card F)
+        + 24 / (η ^ 3 * Fintype.card F)) := by
   sorry -- ABF26-T4.14; external admit [GG25 Cor 4.10].
 
 end SubspaceDesignFRS

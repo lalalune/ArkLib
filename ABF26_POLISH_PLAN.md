@@ -70,7 +70,7 @@ trusted blindly.
 | --- | --- | --- | --- |
 | D2.19 | `CodingTheory.ExtensionFieldPresentation` | ⏳ | Structure stores `φ : F → Fin e → B` + explicit `φ_inv` + inverse witnesses. Verify this is enough to recover B-linearity (currently only used via coordinate projections — B-linearity is a *separate* claim). |
 | D2.19 | `CodingTheory.ExtensionFieldPresentation.IsSystematic` | ⏳ | Uses `i.val = 0`; equivalent to `i = ⟨0, _⟩`. OK. Confirm `P.e ≥ 1` is implicit elsewhere. |
-| D2.20 | `CodingTheory.extensionCode` | 🔧 | Added `extensionCode_iff_coord_in_base` definitional iff lemma. Full encoder-image equivalence is a downstream corollary of `φ`-bijectivity; current bridge suffices for paper-faithful statements. |
+| D2.20 | `CodingTheory.extensionCode` | 🔧 | Added `extensionCode_iff_coord_in_base` definitional iff lemma. Full encoder-image equivalence is a downstream corollary of `φ`-bijectivity; current bridge suffices for paper-faithful statements. **B-linearity caveat documented** in the docstring: `C_F` being F-linear requires B-linearity of `P.coord j`, which `P` does not yet certify; gated as a polish-plan follow-up. |
 | L2.21 | `CodingTheory.lambda_extensionCode_eq_lambda_interleaved` | ⏳ | Uses `Code.interleavedCodeSet`; confirm paper's `C_B^≡e` matches with `κ = Fin e`. |
 
 ### §3 — List Decoding
@@ -118,10 +118,10 @@ trusted blindly.
 | R4.10 | `CodingTheory.rs_epsCA_small_loss_r4_10` | ⏳ | Same precedence concerns as T4.9.2. Also: paper's `γ ∈ (0, 1)` is on `γ` as the slack `δ_int − δ_fld = γ/n`. Confirm I'm using `γ` not `γ/n` as the bound parameter. |
 | T4.12 | `CodingTheory.rs_epsMCA_johnson_range_bchks25` | ⏳ | Heavy formula with ⌈⌉, √, ^{3/2}. Verify all `Real.rpow` vs `HPow.hPow` are correct. `m := max ⌈...⌉ 3` uses `Int.ceil`-returning-ℤ; my code does `max ⌈...⌉ 3` with `3 : ℝ` — types may mismatch. |
 | T4.13 | `CodingTheory.subspaceDesign_epsMCA_gg25` | ⏳ | τ profile assumed at `t + 1`; verify against paper's `r = t + 1` substitution. |
-| T4.14 | `CodingTheory.frs_epsMCA_capacity_gg25` | ⏳ | Existential `∃ C, C = frsCode ∧ ε_mca ≤ ...`. Could be simpler as `epsMCA (frsCode ...) ... ≤ ...` directly. Refactor candidate. |
+| T4.14 | `CodingTheory.frs_epsMCA_capacity_gg25` | 🔧 | **Refactored.** Dropped the existential wrap — `epsMCA` takes a `Set` and `frsCode` returns a `Set`, so we call directly: `epsMCA (frsCode …) … ≤ ENNReal.ofReal (…)`. |
 | T4.16 | `CodingTheory.rs_epsCA_lower_capacity_bchks25_kk25` | ⏳ | "Power-of-two `n`" condition not stated as a hypothesis; paper requires it. Add `n.IsPowerOfTwo` clause. Also "|F| = poly(n)" deferred to docstring. |
 | T4.17 | `CodingTheory.rs_epsCA_breakdown_cs25` | ⏳ | `qEntropy q δ - δ` can be negative; sqrt of negative via `Real.rpow ((1:ℝ)/2)` returns 0 (Real.rpow of negative is 0 for non-integer exponents). Check paper's regime ensures positivity. |
-| T4.18 | `CodingTheory.rs_epsCA_johnson_jump_bchks25` | ⏳ | `(Fintype.card ι : ℝ) = (Fintype.card FC : ℝ) ^ ((1 + ε) / 2)` — exact equality on reals is brittle. Paper says `n = |F|^{(1+ε)/2}` but only meaningfully when RHS is a natural number; cast issue. Maybe `≤` + `≥` instead. |
+| T4.18 | `CodingTheory.rs_epsCA_johnson_jump_bchks25` | 🔧 | **Relaxed exact-equality to a two-sided bound** `|F|^{(1+ε)/2} - 1 ≤ n ≤ |F|^{(1+ε)/2} + 1`, which is the natural reading of paper's `n = |F|^{(1+ε)/2}` when the RHS is generally non-integral. Docstring spells out the choice. |
 | L4.19 | `CodingTheory.linear_epsCA_ge_sampling_dg25` | ⏳ | `(δ' : ENNReal) = ⨆ u, δᵣ(u, ↑C)` — supremum over `ι → F` of a relative-distance-to-code. ENNReal-valued. Verify `δᵣ(u, C) : ENNReal` (not `ℚ≥0`) per the existing API. |
 
 ### §5 — Connections
@@ -132,7 +132,7 @@ trusted blindly.
 | --- | --- | --- | --- |
 | T5.1 | `CodingTheory.linear_listSize_to_epsMCA_gcxk25` | 🔧 | **Added `η ≤ δ` hypothesis** so `1 − δ + η ≤ 1` and the sqrt-proximity radius stays in `[0, 1]`. Docstring spells out the implicit requirement. |
 | T5.2 | `CodingTheory.rs_epsCA_small_implies_lambda_lt_F_bchks25` | ⏳ | `(δ + 2 / Fintype.card ι).toNNReal` — when `δ < 1 - ρ` and `n ≥ 1`, the sum is positive so `toNNReal` doesn't truncate. ✓ |
-| T5.3 | `CodingTheory.rs_epsCA_implies_lambda_extended_cs25` | ⚠ | RHS `(ENNReal.ofReal (... * ε_ca.toReal)).toNNReal` is doubly wrapped — ENNReal then NNReal then ENNReal. Simplify. Also: `⌈ |F|/(1-η) · ε_ca ⌉` in paper is an integer ceiling; my version uses `ENNReal.ofReal` of a real, losing the ceiling. Either use `Nat.ceil` or document the slack. |
+| T5.3 | `CodingTheory.rs_epsCA_implies_lambda_extended_cs25` | 🔧 | **Refactored.** Replaced double-wrap with direct `Nat.ceil (…) : ℕ∞` comparison against `Lambda`. Restored the paper's integer ceiling so we don't overstate (`Lambda ≤ x` would be strictly stronger than paper's `Lambda ≤ ⌈x⌉`). |
 | T5.4 | `CodingTheory.rs_epsCA_separation_bgks20` | ⏳ | `Fintype.card F = Fintype.card ι` plus injectivity of `domain` makes it a bijection by pigeonhole. Paper's "evaluation domain is the entire `F`" — confirm we want this stronger than `domain : ι ↪ F` with type-cardinality match. |
 
 ## 2. Integration review (per axis)
