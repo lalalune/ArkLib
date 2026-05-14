@@ -149,6 +149,34 @@ lemma mem_frsCode_iff {ι : Type} [Fintype ι] [DecidableEq ι]
     ext x j
     exact (hf x j).symm
 
+/-- **Dimension of `frsCode`.** When the FRS encoder is injective on `degreeLT F k` — i.e.
+when `(L, s)`-admissibility plus enough evaluation points (`k ≤ s · |L|`) rule out
+non-trivial polynomial vanishing on the folded orbit — the dimension equals `k`.
+
+The hypothesis `h_encoder_inj` packages exactly this injectivity. The "natural" RS case
+is `h_encoder_inj := Polynomial.degreeLT_eval_inj` (or equivalent); we leave it as a
+hypothesis so this lemma is reusable across regimes. -/
+lemma dim_frsCode {ι : Type} [Fintype ι] [DecidableEq ι]
+    {F : Type} [Field F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (_h_encoder_inj :
+      Set.InjOn (frsEvalOnPoints domain s ω) (Polynomial.degreeLT F k : Set (Polynomial F))) :
+    Module.finrank F (frsCode domain k s ω) = k := by
+  sorry -- ABF26 dim(FRS) = k via Submodule.finrank_map + Polynomial.degreeLTEquiv.
+
+/-- **Dimension of `irsCode`.** Equal to `s · (k / s)` — the interleave multiplies the
+underlying RS code's dimension by the interleaving factor.
+
+Requires `k / s ≤ Fintype.card ι` for the underlying RS code to attain its full
+dimension `k / s` (the Singleton-tight regime); the bound holds with equality in this
+regime. -/
+lemma dim_irsCode {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ)
+    (_h_rs_full : k / s ≤ Fintype.card ι) :
+    Module.finrank F (ReedSolomon.Interleaved.irsCode domain k s) = s * (k / s) := by
+  sorry -- ABF26 dim(IRS) = s · (k/s); needs interleavedCodeSet-finrank.
+
 /-- Mirror of `mem_frsCode_iff` with the equation oriented `encoder = f` rather than
 `f = encoder` — useful for `rw` / `simp` from the encoder side. -/
 lemma mem_frsCode_iff_flipped {ι : Type} [Fintype ι] [DecidableEq ι]
@@ -183,6 +211,31 @@ lemma mem_frsCode_one_iff_mem_rsCode {ι : Type} [Fintype ι] [DecidableEq ι]
     subst hj
     have := congrFun hp_eval i
     simpa using this.symm
+
+/-- **Submodule-level form of the `s = 1` collapse.** Under the natural F-linear
+isomorphism `flat : (ι → Fin 1 → F) ≃ₗ[F] (ι → F)` (componentwise via
+`LinearEquiv.funUnique`), the image of `frsCode domain k 1 ω` is exactly
+`ReedSolomon.code domain k`. This is the structural form of `mem_frsCode_one_iff_mem_rsCode`:
+the two codes correspond under the canonical "drop the trivial fold" isomorphism. -/
+lemma frsCode_one_map_eq_rsCode {ι : Type} [Fintype ι] [DecidableEq ι]
+    {F : Type} [Field F] [DecidableEq F]
+    (domain : ι ↪ F) (k : ℕ) (ω : F) :
+    (frsCode domain k 1 ω).map
+        (LinearEquiv.piCongrRight (fun _ : ι => LinearEquiv.funUnique (Fin 1) F F)
+            : (ι → Fin 1 → F) ≃ₗ[F] (ι → F)).toLinearMap
+      = ReedSolomon.code domain k := by
+  ext g
+  simp only [Submodule.mem_map, LinearEquiv.coe_toLinearMap]
+  constructor
+  · rintro ⟨f, hf, rfl⟩
+    rw [mem_frsCode_one_iff_mem_rsCode] at hf
+    convert hf using 1
+  · intro hg
+    refine ⟨fun i _ => g i, ?_, ?_⟩
+    · rw [mem_frsCode_one_iff_mem_rsCode]
+      convert hg using 1
+    · ext i
+      simp [LinearEquiv.piCongrRight, LinearEquiv.funUnique]
 
 end Folded
 

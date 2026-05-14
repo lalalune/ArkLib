@@ -96,12 +96,16 @@ where `δ_min(C) = minDist(C) / n` is the relative minimum distance and `J_{q,�
 is the paper's q-ary ℓ-radius Johnson function. An existing in-tree proof of
 the Johnson bound in absolute-distance form lives in
 [`JohnsonBound/Basic.lean`](Basic.lean) (`johnson_bound`, `johnson_bound_alphabet_free`);
-porting it to this ABF26-style `Lambda`-based form is tracked in `ABF26_PLAN.md`. -/
+porting it to this ABF26-style `Lambda`-based form is tracked in `ABF26_PLAN.md`.
+
+**Alphabet generality.** Stated over an arbitrary alphabet `α` (not necessarily a
+field), matching the paper's `Σ`. The Johnson bound is a purely combinatorial fact
+about Hamming distance — it does not need field structure. -/
 theorem johnson_bound_lambda_le_ell
     {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
-    {F : Type} [Field F] [Fintype F] [DecidableEq F]
-    (C : Set (ι → F)) (ℓ : ℕ) (_hℓ_ge : 2 ≤ ℓ) :
-    let q : ℚ := Fintype.card F
+    {α : Type} [Fintype α] [DecidableEq α]
+    (C : Set (ι → α)) (ℓ : ℕ) (_hℓ_ge : 2 ≤ ℓ) :
+    let q : ℚ := Fintype.card α
     let δ_min : ℚ := Code.minDist C / Fintype.card ι
     Lambda C (Jqℓ q ℓ δ_min) ≤ (ℓ : ℕ∞) := by
   sorry -- ABF26-T3.2; statement only. Port from JohnsonBound.johnson_bound.
