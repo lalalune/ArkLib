@@ -875,17 +875,16 @@ diff.
 
 - **Paper location**: §4.2.1 page 18, Theorem 4.8 [AHIV17].
 - **Statement**: For linear `C` and `δ ≤ δ_min(C)/3`: `ε_mca(C,δ) = ε_ca(C,δ) ≤ (n·δ + 1)/|F|`.
-- **Status**: missing (related AHIV22 file exists with sorries).
+- **Status**: missing as a paper-shaped statement. As of `05a010e3`, the underlying AHIV22 result is sorry-free in ArkLib (PR #385); only the paper-shaped restatement is missing.
 - **Target Lean name**: `ABF26.ahiv17_epsCA_bound`.
 - **Target file**: `ArkLib/Data/CodingTheory/ProximityGap/AHIV22.lean` (extend).
 - **Direct dependencies (paper)**: D4.1, D4.3, L4.6.
 - **Reverse dependencies**: §6.
 - **Target PR**: Phase 5 PR 1.
 - **Sub-tasks**:
-  1. Close existing sorries in AHIV22 (Phase 2 prereq).
-  2. Restate AHIV22 result in ε_ca form.
-  3. Combine with L4.6 to get the ε_mca form.
-  4. Update audit doc.
+  1. Restate the existing sorry-free AHIV22 result in `ε_ca` form on top of the new numeric interface.
+  2. Combine with L4.6 to get the `ε_mca = ε_ca` form below `δ_min(C)/3`.
+  3. Update audit doc.
 
 #### ABF26-T4.9.1 — RS unique-decoding Item 1 [BCIKS20 Thm 1.4]
 
@@ -1239,15 +1238,28 @@ does it close? The §7 ledger is authoritative; this section is a
 convenience.
 
 - **Phase 0 PR 1**: audit refresh. No item closures; updates audit rows.
+  Findings landed: `AHIV22.lean`, `BCIKS20/ReedSolomonGap.lean`, and
+  `BCIKS20/AffineSpaces.lean` are now sorry-free (closed by PRs #385, #463,
+  #6389c0ee). New residual `sorry`s discovered in `BCIKS20/ListDecoding/*`,
+  `BCIKS20/WeightedAgreement.lean`, and `DG25/MainResults.lean`. Phase 2 PR
+  list below is re-scoped accordingly.
 - **Phase 1 PR 1**: D2.8 (Lambda), D4.1, D4.3, R4.2, R4.4, F4.5.
 - **Phase 1 PR 2**: L4.6, L4.7.
-- **Phase 1 PR 3**: bridging lemmas + WHIR re-expression.
-- **Phase 2 PR 1**: AHIV22 sorries.
-- **Phase 2 PR 2**: BCIKS20/AffineLines/Main.lean sorry.
-- **Phase 2 PR 3**: BCIKS20/ReedSolomonGap.lean sorries.
-- **Phase 2 PR 4**: BCIKS20/Curves.lean sorries.
-- **Phase 2 PR 5**: BCIKS20/AffineSpaces.lean sorries.
-- **Phase 2 PR 6**: GuruswamiSudan/GuruswamiSudan.lean sorries.
+- **Phase 1 PR 3**: bridging lemmas + WHIR re-expression (does not touch the
+  3 non-conjectural sorries in `Whir/MutualCorrAgreement.lean`, which stay
+  during the interface migration).
+- **Phase 2 PR 1**: `BCIKS20/AffineLines/Main.lean` line-40 sorry
+  (`RS_correlatedAgreement_affineLines` non-unique-decoding branch). Closes
+  T4.9.1 to fully `present`.
+- **Phase 2 PR 2**: `BCIKS20/Curves.lean` (3 sorries).
+- **Phase 2 PR 3**: `BCIKS20/ListDecoding/Agreement.lean` (8),
+  `Extraction.lean` (2), `Guruswami.lean` (2). One PR if helpers shared,
+  otherwise split.
+- **Phase 2 PR 4**: `BCIKS20/WeightedAgreement.lean` (6 sorries).
+- **Phase 2 PR 5**: `DG25/MainResults.lean` (2 sorries). Touches L4.19
+  underpinnings.
+- **Phase 2 PR 6**: `GuruswamiSudan/GuruswamiSudan.lean` (3 sorries).
+  Required before §3 results that cite GS decoding.
 - **Phase 3 PR 1**: D2.13.
 - **Phase 3 PR 2**: D2.14, D2.15.
 - **Phase 3 PR 3**: DA.6, DA.7 (UM and formal derivative).
