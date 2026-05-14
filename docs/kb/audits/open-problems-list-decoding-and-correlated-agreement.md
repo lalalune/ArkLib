@@ -96,9 +96,9 @@ migration and the still-open non-unique-decoding branch:
 | `D2.16` | τ-subspace-design code | present | [ABF26CodeFamilies.lean](../../../ArkLib/Data/CodingTheory/ABF26CodeFamilies.lean) | `CodingTheory.IsSubspaceDesign` | GX13 definition; uses `LinearMap.proj` for `A_i`. |
 | `L2.17` | `min τ(r) ≥ ρ − 1/n` | stated (external admit) | [ABF26CodeFamilies.lean](../../../ArkLib/Data/CodingTheory/ABF26CodeFamilies.lean) | `CodingTheory.subspaceDesign_tau_lower` | GG25 lemma; tagged sorry. |
 | `T2.18` | FRS and UM are subspace-design | stated (external admit; FRS half only) | [ABF26CodeFamilies.lean](../../../ArkLib/Data/CodingTheory/ABF26CodeFamilies.lean) | `CodingTheory.frs_is_subspaceDesign_gk16` | GK16 theorem; tagged sorry. UM half deferred pending D2.19. |
-| `D2.19` | Extension field presentation `(B,F,e,ψ,φ)` | missing | none | `CodingTheory.ExtensionFieldPresentation` | New structure. |
-| `D2.20` | Extension code `C_F` | missing | none | `CodingTheory.extensionCode` | Distance equality `δ_min(C_F) = δ_min(C_B)` from DP25. |
-| `L2.21` | `\|Λ(C_F,δ)\| = \|Λ(C_B^e,δ)\|` | missing | none | `CodingTheory.lambda_extensionCode_eq` | BCFW25 Lemma D.3. |
+| `D2.19` | Extension field presentation `(B,F,e,ψ,φ)` | present | [ExtensionCodes.lean](../../../ArkLib/Data/CodingTheory/ExtensionCodes.lean) | `CodingTheory.ExtensionFieldPresentation` (structure), plus `IsSystematic` for the systematic variant. | `φ : F → Fin e → B` plus `φ_inv` for invertibility. Univariate-multiplicity code (D2.19's paper namesake DA.7) is a *different* item, despite sharing a number. |
+| `D2.20` | Extension code `C_F` | present | [ExtensionCodes.lean](../../../ArkLib/Data/CodingTheory/ExtensionCodes.lean) | `CodingTheory.extensionCode` | Set-level definition; uses coordinate-projections `P.coord j` of D2.19. Distance equality `δ_min(C_F) = δ_min(C_B)` from DP25 not formalised. |
+| `L2.21` | `\|Λ(C_F,δ)\| = \|Λ(C_B^e,δ)\|` | stated (external admit) | [ExtensionCodes.lean](../../../ArkLib/Data/CodingTheory/ExtensionCodes.lean) | `CodingTheory.lambda_extensionCode_eq_lambda_interleaved` | BCFW25 Lemma D.3; tagged sorry. |
 
 ## Section 3 — List Decoding
 
