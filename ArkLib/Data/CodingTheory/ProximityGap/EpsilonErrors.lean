@@ -317,6 +317,46 @@ theorem epsCA_eq_of_floor_eq (C : Set (ι → A)) (δ_fld δ_int δ_int' : ℝ�
   · rw [if_pos hjp, if_pos (h_iff.mp hjp)]
   · rw [if_neg hjp, if_neg (mt h_iff.mpr hjp)]
 
+/-! ## Bridging the predicate-style API in `Basic.lean` to the numeric API here
+
+These iff-lemmas let downstream code that was written against `δ_ε_correlatedAgreement*`
+predicates migrate to the numeric `eps*` form (or vice versa) without rewriting proofs. -/
+
+/-- **Bridge.** The predicate `δ_ε_correlatedAgreementAffineLines C δ ε` (from `Basic.lean`)
+is equivalent to the numeric inequality `epsCA C δ δ ≤ ε`.
+
+Forward: assume the predicate. For each `u`, the `epsCA` body is either `0` (when
+`jointProximity`) or `Pr_γ[line δ-close]`; in the latter case `¬jointAgreement`, so the
+predicate's contrapositive gives `Pr ≤ ε`. `iSup_le` concludes.
+
+Backward: assume `epsCA ≤ ε`. For any `u` with `Pr > ε`, the contribution `body u` is at most
+`epsCA ≤ ε`. If `¬jointProximity`, `body u = Pr > ε` is a contradiction; so
+`jointProximity`, hence `jointAgreement` via the existing equivalence. -/
+theorem δ_ε_correlatedAgreementAffineLines_iff_epsCA_le
+    (C : Set (ι → A)) (δ ε : ℝ≥0) :
+    δ_ε_correlatedAgreementAffineLines (F := F) C δ ε ↔
+    epsCA (F := F) C δ δ ≤ (ε : ENNReal) := by
+  classical
+  constructor
+  · intro h_pred
+    refine iSup_le fun u => ?_
+    by_cases hjp : jointProximity (C := C) (u := u) δ
+    · rw [if_pos hjp]; exact zero_le _
+    · rw [if_neg hjp]
+      have h_not_ja : ¬ jointAgreement (C := C) (W := u) δ := by
+        rw [jointAgreement_iff_jointProximity]; exact hjp
+      by_contra h_gt
+      push Not at h_gt
+      exact h_not_ja (h_pred u h_gt)
+  · intro h_eps u h_pr
+    unfold epsCA at h_eps
+    -- `iSup_le_iff` turns `⨆ u, body u ≤ ε` into `∀ u, body u ≤ ε`, then specialize at `u`.
+    have h_term_le := iSup_le_iff.mp h_eps u
+    by_cases hjp : jointProximity (C := C) (u := u) δ
+    · rw [jointAgreement_iff_jointProximity]; exact hjp
+    · rw [if_neg hjp] at h_term_le
+      exact absurd h_pr (not_lt.mpr h_term_le)
+
 end
 
 end ProximityGap
