@@ -197,7 +197,7 @@ The paper's full statement gives a `1 - q^{-Ω(n)}` probability over the choice 
 we existentially package this as "there exists a witness code" since ArkLib does not
 yet have a probability distribution over linear codes. -/
 theorem random_linear_lambda_lower_glmrsw22
-    (q : ℕ) (_hq_prime : Nat.Prime q)
+    (q : ℕ) (_hq_pp : IsPrimePow q)
     (δ : ℝ) (_hδ_pos : 0 < δ) (_hδ_lt : δ < 1 - 1 / q)
     (ε : ℝ) (_hε_pos : 0 < ε) (_hε_lt : ε < 1) :
     ∃ γ : ℝ, 0 < γ ∧
@@ -229,7 +229,7 @@ theorem rs_lambda_superpoly_extension_bkr06
       ∀ i : ℕ,
         ∀ {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
           {F : Type} [Field F] [Fintype F] [DecidableEq F],
-          Nat.Prime (qs i) → Fintype.card F = qs i → Fintype.card ι = qs i →
+          IsPrimePow (qs i) → Fintype.card F = qs i → Fintype.card ι = qs i →
           ∃ (domain : ι ↪ F) (w : ι → F),
             let q : ℕ := qs i
             let k : ℕ := Nat.floor ((q : ℝ) ^ α)
@@ -248,7 +248,7 @@ fields. Fix `0 < α, β < 1`. For all sufficiently large primes `p`, there exist
 Admitted as an external result. -/
 theorem rs_lambda_large_prime_ghsz02
     (α β : ℝ) (_hα_pos : 0 < α) (_hα_lt : α < 1) (_hβ_pos : 0 < β) (_hβ_lt : β < 1) :
-    ∃ p₀ : ℕ,
+    ∃ (c : ℝ) (_ : 0 < c) (p₀ : ℕ),
       ∀ p : ℕ, Nat.Prime p → p₀ ≤ p →
         ∀ {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
           {F : Type} [Field F] [Fintype F] [DecidableEq F],
@@ -258,7 +258,7 @@ theorem rs_lambda_large_prime_ghsz02
             let δ : ℝ := 1 - ((1 - β) / α) * (p : ℝ) ^ (α - 1)
             let C := ReedSolomon.code domain k
             ((Lambda_at ((C : Set (ι → F))) δ w).ncard : ℝ) >
-              (p : ℝ) ^ ((p : ℝ) ^ α * β / 2) := by
+              c * (p : ℝ) ^ ((p : ℝ) ^ α * β / 2) := by
   sorry -- ABF26-T3.13; external admit [GHSZ02 Cor 20].
 
 /-- **ABF26 Theorem 3.14 [JH01 Thm 2].** Large-rate Reed-Solomon lower bound. Fix an
@@ -276,7 +276,7 @@ theorem rs_lambda_high_rate_jh01
       ∀ i : ℕ,
         ∀ {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
           {F : Type} [Field F] [Fintype F] [DecidableEq F],
-          Nat.Prime (qs i) → qs i % (j + 1) = 1 →
+          IsPrimePow (qs i) → qs i % (j + 1) = 1 →
           Fintype.card F = qs i → Fintype.card ι = j + 1 →
           ∃ (domain : ι ↪ F) (k : ℕ) (w : ι → F),
             let C := ReedSolomon.code domain k
@@ -325,9 +325,8 @@ theorem frs_list_decoding_capacity_cz25
     let ρ : ℝ := k / n
     let δ : ℝ := 1 - ρ * s / (s - 1 / η + 1) - η
     let bound : ℝ := (s * (1 - ρ) + 1 - 1 / η) / (η * (s + 1 - 1 / η))
-    ∀ y : ι → Fin s → F,
-      ((closeCodewordsRel (ReedSolomon.Folded.frsCode domain k s ω) y δ).ncard : ℝ) ≤
-        bound := by
+    (Lambda (ReedSolomon.Folded.frsCode domain k s ω) δ : ENNReal) ≤
+      ENNReal.ofReal bound := by
   sorry -- ABF26-C3.5; external admit [CZ25 Cor 2.21].
 
 end SubspaceDesignUpperBounds

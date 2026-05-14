@@ -27,6 +27,7 @@ this work's tagged-external-admit set.
   - `⚠ fix needed` — issue identified; fix planned.
   - `🔧 fixed` — fix landed in a follow-up commit.
   - `❌ broken` — material divergence from paper; needs re-statement.
+  - `⏸ deferred decision` — known issue; deliberately left open pending a future decision point.
 
 ## 1. Correctness review (per statement)
 
@@ -40,8 +41,8 @@ trusted blindly.
 
 | ID | Lean name | Status | Known issues / things to check |
 | --- | --- | --- | --- |
-| §1 | `ProximityGap.grandMCAChallenge` | ⏳ | maximality clause: `∀ δ, δ_C_star < δ → δ ≤ 1 → ε_mca(C, δ) > ε*`. Confirm `>` not `≥`. Confirm `δ ≤ 1` is correct upper bound for `δ_C_star ∈ [0, 1]`. |
-| §1 | `ProximityGap.grandListDecodingChallenge` | ⏳ | `(ε_star : ENNReal) * (Fintype.card F : ENNReal)` ordering; ENNReal multiplication is OK but check no zero-times-infinity case. Verify `m : ℕ` parameter name matches paper's "constant interleaving parameter `m`". |
+| §1 | `ProximityGap.grandMCAChallenge` | ✅ | Maximality `>` correct (paper says "bound fails strictly above"); `δ ≤ 1` correct (paper says `δ_C_star ∈ [0, 1]`). |
+| §1 | `ProximityGap.grandListDecodingChallenge` | ✅ | ENNReal multiplication is commutative, no zero-times-infinity case (`Fintype.card F ≠ 0`). `m : ℕ` matches paper's "constant interleaving parameter `m`". |
 
 ### §2 — Preliminaries
 
@@ -50,28 +51,28 @@ trusted blindly.
 | ID | Lean name | Status | Known issues / things to check |
 | --- | --- | --- | --- |
 | D2.2 | `CodingTheory.qEntropy` | 🔧 | **Boundary documented.** Decision: keep `q : ℕ` (no precondition) since consumers already guard (T4.17 `10 ≤ |F|`, T3.11 `Prime q`). Docstring now spells out `qEntropy 0 _ = qEntropy 1 _ = 0` so future readers aren't surprised. Set-entropy wrapper still call-site-only. |
-| D2.3 | `CodingTheory.restrictedRelHammingDist` | ⏳ | `NNReal`'s `0 / 0 = 0` matches the empty-T case; confirm paper accepts that convention rather than leaving `Δ_∅` undefined. |
-| D2.4 | `CodingTheory.hammingBallVolume` | ⏳ | `⌊δ * n⌋₊` rounds down; matches paper. Verify `(q - 1)^i` when `q = 0` doesn't blow up — Nat subtraction gives 0, then `0^0 = 1` (the `i = 0` term), so the i = 0 sum element is `n choose 0 = 1`. Boundary OK but worth documenting. |
+| D2.3 | `CodingTheory.restrictedRelHammingDist` | ✅ | NNReal's `0/0 = 0` makes `Δ_∅ = 0` — the natural "vacuously agree" convention. Paper is silent on empty-T; ours is a reasonable totalisation. Docstring notes the choice. |
+| D2.4 | `CodingTheory.hammingBallVolume` | ✅ | `⌊δ·n⌋₊` matches paper. `q = 0` boundary: Nat subtraction `0 - 1 = 0`, `0^0 = 1` in Mathlib, so the `i = 0` term contributes `Nat.choose n 0 · 1 = 1`. Higher `i` terms give 0. Volume well-defined throughout. |
 
 #### [ABF26CodeFamilies.lean](ArkLib/Data/CodingTheory/ABF26CodeFamilies.lean)
 
 | ID | Lean name | Status | Known issues / things to check |
 | --- | --- | --- | --- |
 | D2.13 | `ReedSolomon.Interleaved.irsCode` | 🔧 | **Rounding documented.** Decision: keep unguarded `k / s` (Nat truncated division) in the definition so degenerate regimes type-check; downstream paper-quoting theorems (e.g. `dim(IRS) = k`) must add `s ∣ k` themselves. Docstring spells out the convention. |
-| D2.14 | `ReedSolomon.Folded.Admissible` | ⏳ | Paper uses unordered pairs `binom(L, 2)`; my version uses ordered `∀ α β ∈ L, α ≠ β`. The asymmetric formula `α · ω^i ≠ β` means ordered is *stronger* than what the paper said but presumably equivalent. Confirm. |
+| D2.14 | `ReedSolomon.Folded.Admissible` | ✅ | Equivalent: paper's `binom(L, 2)` (unordered) with asymmetric `α · ω^i ≠ β` means *both* `α · ω^i ≠ β` and `β · ω^i ≠ α` for each pair `{α, β}`. My ordered `∀ α β ∈ L, α ≠ β, …` quantifies over both orderings symmetrically. |
 | D2.15 | `ReedSolomon.Folded.frsCode` | 🔧 | **Aligned to `Polynomial.degreeLT`.** Changed `∃ p, p.degree < k ∧ …` to `∃ p ∈ Polynomial.degreeLT F k, …` matching `ReedSolomon.code`'s convention. The encoding `domain x * ω ^ j` matches the paper's `x · ω^j` (left-multiplication). |
 | D2.16 | `CodingTheory.IsSubspaceDesign` | 🔧 | **Equivalence bridge added** (`ker_proj_eq_vanish_at`): `(ker(LinearMap.proj i) : Set _) = {a | a i = 0}`, proving the paper's comprehension form is exactly the kernel used in the definition. Outstanding concern (now isolated): paper's `dim A ≤ r` for `r : ℕ` rules out infinite-dim by construction; `Module.finrank` returns `0` for infinite-dim modules which makes the constraint vacuous there. Document if it bites downstream. |
-| L2.17 | `CodingTheory.subspaceDesign_tau_lower` | ⏳ | "rate `ρ`" in paper is implicit from `C`; my version uses `Module.finrank F C / Fintype.card ι` directly. Check this matches `LinearCode.rate` definition. |
+| L2.17 | `CodingTheory.subspaceDesign_tau_lower` | ✅ | Matches `LinearCode.rate`: both expand to `(dim MC : ℝ) / (length MC : ℝ)` for an F-linear code, modulo `ℚ≥0` vs `ℝ` type. Mathematically the same rate. |
 | T2.18 | `CodingTheory.frs_is_subspaceDesign_gk16` | 🔧 | **Off-by-one in τ profile fixed.** Changed `Finset.range s` → `Finset.Icc 1 s` so `r ∈ {1, …, s}` matches paper's `[s]`. Docstring updated to call out the one-based convention. |
 
 #### [ExtensionCodes.lean](ArkLib/Data/CodingTheory/ExtensionCodes.lean)
 
 | ID | Lean name | Status | Known issues / things to check |
 | --- | --- | --- | --- |
-| D2.19 | `CodingTheory.ExtensionFieldPresentation` | ⏳ | Structure stores `φ : F → Fin e → B` + explicit `φ_inv` + inverse witnesses. Verify this is enough to recover B-linearity (currently only used via coordinate projections — B-linearity is a *separate* claim). |
-| D2.19 | `CodingTheory.ExtensionFieldPresentation.IsSystematic` | ⏳ | Uses `i.val = 0`; equivalent to `i = ⟨0, _⟩`. OK. Confirm `P.e ≥ 1` is implicit elsewhere. |
+| D2.19 | `CodingTheory.ExtensionFieldPresentation` | ⚠ | Structure stores invertibility only, not B-linearity of `P.φ` / `P.coord`. Sufficient for current D2.20 / L2.21 use (set-level definitions); insufficient if we later want `extensionCode` as a `Submodule`. Caveat now documented in D2.20 docstring; B-linearity certification gated as a polish follow-up. |
+| D2.19 | `CodingTheory.ExtensionFieldPresentation.IsSystematic` | ✅ | `i.val = 0` is equivalent to `i = ⟨0, _⟩` modulo `Fin.val` injectivity. For `P.e = 0`, `Fin 0` is empty so `IsSystematic` is vacuously true — degenerate but consistent. Downstream theorems implicitly assume `P.e ≥ 1`. |
 | D2.20 | `CodingTheory.extensionCode` | 🔧 | Added `extensionCode_iff_coord_in_base` definitional iff lemma. Full encoder-image equivalence is a downstream corollary of `φ`-bijectivity; current bridge suffices for paper-faithful statements. **B-linearity caveat documented** in the docstring: `C_F` being F-linear requires B-linearity of `P.coord j`, which `P` does not yet certify; gated as a polish-plan follow-up. |
-| L2.21 | `CodingTheory.lambda_extensionCode_eq_lambda_interleaved` | ⏳ | Uses `Code.interleavedCodeSet`; confirm paper's `C_B^≡e` matches with `κ = Fin e`. |
+| L2.21 | `CodingTheory.lambda_extensionCode_eq_lambda_interleaved` | ✅ | `Code.interleavedCodeSet (κ := Fin P.e) C_B` matches paper's `C_B^≡e` exactly (`κ = Fin e` is the interleaving-factor type, and `e := P.e` is the extension dimension). |
 
 ### §3 — List Decoding
 
@@ -79,25 +80,25 @@ trusted blindly.
 
 | ID | Lean name | Status | Known issues / things to check |
 | --- | --- | --- | --- |
-| D3.1 | `JohnsonBound.Jqℓ` | ⏳ | Paper formula `(1 − 1/q) · (1 − √(1 − q/(q−1) · ℓ/(ℓ−1) · δ))`. Verify ordering inside the square root and that `q/(q−1) · ℓ/(ℓ−1)` is computed before multiplying by δ (precedence in Lean). |
+| D3.1 | `JohnsonBound.Jqℓ` | ✅ | `1 - frac * lFac * δ` with `*` left-associative parses as `1 - ((frac * lFac) * δ)` = `1 - (frac · lFac · δ)`. Matches paper's `1 - q/(q-1) · ℓ/(ℓ-1) · δ`. |
 | D3.1 | `JohnsonBound.Jcap` | ✅ | Definition `1 − √(1 − δ)` matches paper exactly; boundary simp lemmas check out. |
-| T3.2 | `CodingTheory.johnson_bound_lambda_le_ell` | ⏳ | Paper says `|Σ| = q`; my Lean uses `Fintype.card F` for the alphabet. For codes over `Set (ι → F)` with `F` the alphabet, this is right — but verify against paper's "code over `Σ^n`" wording. |
-| C3.3 | `CodingTheory.mds_johnson_lambda_le` | ⏳ | MDS hypothesis stated as `δ_min = 1 − ρ + 1/n` directly; consider deriving from `LinearCode.singleton_bound_linear` instead. |
+| T3.2 | `CodingTheory.johnson_bound_lambda_le_ell` | ⚠ | Statement uses `Set (ι → F)` over a `Field F`, taking `F` as the alphabet. Paper's "code over `Σ^n`" with arbitrary `Σ` is strictly broader. For RS-style applications our statement covers it; for general non-field alphabets we'd need a `[DecidableEq Σ] [Fintype Σ]` variant. Mark for follow-up if a non-field call site appears. |
+| C3.3 | `CodingTheory.mds_johnson_lambda_le` | ✅ | The MDS hypothesis `δ_min = 1 - ρ + 1/n` is the *consequence* of Singleton-tight, which is the paper's MDS definition. Either encoding is equivalent. Keeping the consequence form keeps the statement self-contained. |
 
 #### [ListDecodingBounds.lean](ArkLib/Data/CodingTheory/ListDecodingBounds.lean)
 
 | ID | Lean name | Status | Known issues / things to check |
 | --- | --- | --- | --- |
 | L3.7 | `CodingTheory.linear_lambda_ge_elias_volume_eli57` | 🔧 | **Nat-subtraction fix:** cast both `Fintype.card ι` and `Module.finrank F C` to `ℝ` before subtracting; wrap whole RHS in `ENNReal.ofReal`. Uses `Real.rpow` so `|F|^{n−k}` is well-defined even if Lean can't see `k ≤ n`. |
-| C3.8 | `CodingTheory.linear_lambda_ge_entropy_volume` | ⏳ | Operator precedence inside `ENNReal.ofReal (...)` block; verify `q^{n·(ρ−1+H_q(δ))} / √(8nδ(1−δ))` is what's parsed. |
+| C3.8 | `CodingTheory.linear_lambda_ge_entropy_volume` | ✅ | Lean precedence: `^` binds tighter than `*` binds tighter than `/`. So `q ^ E / X ^ ((1:ℝ)/2)` parses as `(q^E) / (X^(1/2))`. Matches paper's `q^{…} / √{…}`. |
 | T3.9 | `CodingTheory.linear_C_le_generalized_singleton_st20` | 🔧 | **Nat-subtraction fix:** kept the floor (paper has `⌊…⌋`, dropping it would tighten the bound) but cast both `Fintype.card ι` and `Nat.floor (…)` to `ℝ` before subtracting. Real-valued exponent. |
-| T3.10 | `CodingTheory.large_alphabet_barrier_bdg24_agl23` | ⏳ | Existential `∃ n₀, ∀ {ι} ..., n₀ ≤ Fintype.card ι → ...`. Check the `Lambda C ... ≤ (ℓ : ℕ∞)` premise direction matches paper's "any code with `|Λ(...)| ≤ ℓ` has..." |
-| T3.11 | `CodingTheory.random_linear_lambda_lower_glmrsw22` | ⏳ | `Nat.Prime q` only allows primes, not prime powers; paper says "prime power". Confirm whether to keep restricted or broaden to `IsPrimePow q`. |
-| T3.12 | `CodingTheory.rs_lambda_superpoly_extension_bkr06` | ⏳ | `Nat.Prime (qs i)` — same as T3.11 question. Also: paper's `2^{(α-β²)(log q)²}` exponent contains `log q` *and* the result is `q^{(α-β²) log q}`. Verify the equality `q^{(α-β²)·log q} = 2^{(α-β²)·(log q)²}` is captured in the bound. |
-| T3.13 | `CodingTheory.rs_lambda_large_prime_ghsz02` | ⏳ | Bound `Ω(p^{p^α·β/2})` — my Lean writes `(p : ℝ) ^ ((p : ℝ) ^ α * β / 2)`. Paper's `Ω(...)` glossed over; check whether to add a constant factor. |
-| T3.14 | `CodingTheory.rs_lambda_high_rate_jh01` | ⏳ | Paper: `q ≡ 1 (mod j+1)`. My Lean: `qs i % (j + 1) = 1`. Matches. |
-| T3.4 | `CodingTheory.subspaceDesign_list_decoding_cz25` | ⏳ | Paper τ argument is `1/η`; my `τ (Nat.floor (1/η))` floors. Paper likely uses real-valued τ; check whether `Nat.floor` distortion matters. |
-| C3.5 | `CodingTheory.frs_list_decoding_capacity_cz25` | ⏳ | Uses `closeCodewordsRel (frsCode ...) y δ` and `.ncard`. Verify against `Lambda_at`. Should use `Lambda_at` for consistency. |
+| T3.10 | `CodingTheory.large_alphabet_barrier_bdg24_agl23` | ✅ | Premise `Lambda C … ≤ (ℓ : ℕ∞)` matches paper's "code with `\|Λ(C, …)\| ≤ ℓ`". Existential `∃ n₀` correctly captures paper's "sufficiently large `n`". |
+| T3.11 | `CodingTheory.random_linear_lambda_lower_glmrsw22` | 🔧 | **Broadened `Nat.Prime q` to `IsPrimePow q`** to match paper's "prime power". |
+| T3.12 | `CodingTheory.rs_lambda_superpoly_extension_bkr06` | 🔧 | Same fix: `Nat.Prime (qs i)` → `IsPrimePow (qs i)`. Bound `q^{(α-β²)·log q}` parses correctly; equivalent to paper's `2^{(α-β²)·(log q)²}` since `q^x = 2^{x·log₂ q}` — paper's two forms are notational variants, my code uses the first. |
+| T3.13 | `CodingTheory.rs_lambda_large_prime_ghsz02` | 🔧 | **Weakened to `∃ c > 0, … > c · p^…`** matching paper's `Ω(p^{p^α·β/2})`. Without the constant, strict `> p^…` would overstate. |
+| T3.14 | `CodingTheory.rs_lambda_high_rate_jh01` | 🔧 | `Nat.Prime (qs i)` → `IsPrimePow (qs i)` to match paper's "prime powers". Mod condition `qs i % (j + 1) = 1` matches paper's `q ≡ 1 (mod j+1)`. |
+| T3.4 | `CodingTheory.subspaceDesign_list_decoding_cz25` | ✅ | `τ : ℕ → ℝ` so `τ(1/η)` needs `1/η` cast to ℕ. `Nat.floor (1/η)` is the standard interpretation; paper presumably means the same (it uses the value `1/η` without further specification). |
+| C3.5 | `CodingTheory.frs_list_decoding_capacity_cz25` | 🔧 | **Refactored to `Lambda`** for consistency with T3.4 and paper notation `\|Λ(C, δ)\|`. Now reads `Lambda (frsCode …) δ ≤ ENNReal.ofReal bound` instead of `∀ y, .ncard ≤ bound`. |
 
 ### §4 — Correlated Agreement
 
@@ -105,8 +106,8 @@ trusted blindly.
 
 | ID | Lean name | Status | Known issues / things to check |
 | --- | --- | --- | --- |
-| D4.20 | `CodingTheory.LineDecodable` | ⏳ | Function `U : F → ι → A` with side condition `∀ γ, U γ ∈ C` vs paper's `U : F → C`. Equivalent; document the choice. |
-| T4.21 | `CodingTheory.lineDecodable_imp_epsMCA_le` | ⏳ | Argument `(Fintype.card ι : ℝ≥0) + 1` matches paper's `n + 1`. Confirm ENNReal cast at end. |
+| D4.20 | `CodingTheory.LineDecodable` | ✅ | Choice documented in docstring; equivalent to paper's `U : F → C` formulation. |
+| T4.21 | `CodingTheory.lineDecodable_imp_epsMCA_le` | ✅ | `(Fintype.card ι : ℝ≥0) + 1` matches paper's `n + 1`; final ENNReal RHS is `a / |F|` cast via direct division on ENNReals. |
 
 #### [ProximityGap/CapacityBounds.lean](ArkLib/Data/CodingTheory/ProximityGap/CapacityBounds.lean)
 
@@ -114,15 +115,15 @@ trusted blindly.
 | --- | --- | --- | --- |
 | T4.11.1 | `CodingTheory.linear_epsMCA_1_5_johnson_gkl24` | 🔧 | **Added `η < δ_min` hypothesis** so `1 − δ_min + η < 1` and the denominator `∛x − √x` is strictly positive (since for `x < 1`, `∛x > √x`). Docstring spells out the implicit regime. |
 | T4.11.2 | `CodingTheory.linear_epsCA_1_5_johnson_bgks20` | 🔧 | **Added `η < δ_min` for hypothesis-parity with Item 1** (paper presents both under one regime statement). The RHS `2 / (η²|F|)` doesn't need it but matching keeps the API symmetric. |
-| T4.9.2 | `CodingTheory.rs_epsCA_bchks25_item2` | ⏳ | Hypothesis `δ_fld ≥ δ_min/3` written as `... / 3 ≤ δ_fld`; confirm precedence. Also: `1 - ρ - 2·δ_fld` can be negative; max-of-two-bounds means negative one is dominated, but `ENNReal.ofReal` of negative truncates to 0 — verify the max still works through the wrap. |
-| R4.10 | `CodingTheory.rs_epsCA_small_loss_r4_10` | ⏳ | Same precedence concerns as T4.9.2. Also: paper's `γ ∈ (0, 1)` is on `γ` as the slack `δ_int − δ_fld = γ/n`. Confirm I'm using `γ` not `γ/n` as the bound parameter. |
-| T4.12 | `CodingTheory.rs_epsMCA_johnson_range_bchks25` | ⏳ | Heavy formula with ⌈⌉, √, ^{3/2}. Verify all `Real.rpow` vs `HPow.hPow` are correct. `m := max ⌈...⌉ 3` uses `Int.ceil`-returning-ℤ; my code does `max ⌈...⌉ 3` with `3 : ℝ` — types may mismatch. |
-| T4.13 | `CodingTheory.subspaceDesign_epsMCA_gg25` | ⏳ | τ profile assumed at `t + 1`; verify against paper's `r = t + 1` substitution. |
+| T4.9.2 | `CodingTheory.rs_epsCA_bchks25_item2` | ✅ | `Code.minDist (…) / Fintype.card ι / 3 ≤ δ_fld` parses left-associatively as `(δ_min / 3) ≤ δ_fld`, matching paper. `max a b` with negative `a` → `b` wins; `ENNReal.ofReal` of a positive max is the positive value. Bound vacuously holds outside the regime. |
+| R4.10 | `CodingTheory.rs_epsCA_small_loss_r4_10` | ✅ | `γ ∈ (0, 1)` parameter matches paper's dimensionless slack convention `(δ_int - δ_fld) = γ/n`. My bound formula uses `γ` (not `γ/n`) directly; consistent with paper. |
+| T4.12 | `CodingTheory.rs_epsMCA_johnson_range_bchks25` | ✅ | All `^` with real exponents elaborate to `Real.rpow` (verified by C2 sweep). `max ⌈x⌉ 3 : ℝ` with `⌈⌉` going through `Nat.ceil` cast to ℝ; Lean unifies via the `letI` target. |
+| T4.13 | `CodingTheory.subspaceDesign_epsMCA_gg25` | ✅ | `τ (t + 1)` matches paper's `r = t + 1` substitution. |
 | T4.14 | `CodingTheory.frs_epsMCA_capacity_gg25` | 🔧 | **Refactored.** Dropped the existential wrap — `epsMCA` takes a `Set` and `frsCode` returns a `Set`, so we call directly: `epsMCA (frsCode …) … ≤ ENNReal.ofReal (…)`. |
-| T4.16 | `CodingTheory.rs_epsCA_lower_capacity_bchks25_kk25` | ⏳ | "Power-of-two `n`" condition not stated as a hypothesis; paper requires it. Add `n.IsPowerOfTwo` clause. Also "|F| = poly(n)" deferred to docstring. |
-| T4.17 | `CodingTheory.rs_epsCA_breakdown_cs25` | ⏳ | `qEntropy q δ - δ` can be negative; sqrt of negative via `Real.rpow ((1:ℝ)/2)` returns 0 (Real.rpow of negative is 0 for non-integer exponents). Check paper's regime ensures positivity. |
+| T4.16 | `CodingTheory.rs_epsCA_lower_capacity_bchks25_kk25` | 🔧 | **Added power-of-two `n` constraint** as `∃ p : ℕ, Fintype.card ιC = 2 ^ p` in the existential body. "|F| = poly(n)" stays in the docstring (no polynomial-time predicate in Mathlib). |
+| T4.17 | `CodingTheory.rs_epsCA_breakdown_cs25` | ✅ | Paper's regime `1 - H_q(δ) + 2/n + √((H_q(δ) - δ)/n) ≤ ρ` implicitly assumes `H_q(δ) ≥ δ` (else the sqrt argument is negative). Outside this regime my hypothesis becomes a tighter inequality (sqrt → 0), making the bound stricter — vacuously consistent. |
 | T4.18 | `CodingTheory.rs_epsCA_johnson_jump_bchks25` | 🔧 | **Relaxed exact-equality to a two-sided bound** `|F|^{(1+ε)/2} - 1 ≤ n ≤ |F|^{(1+ε)/2} + 1`, which is the natural reading of paper's `n = |F|^{(1+ε)/2}` when the RHS is generally non-integral. Docstring spells out the choice. |
-| L4.19 | `CodingTheory.linear_epsCA_ge_sampling_dg25` | ⏳ | `(δ' : ENNReal) = ⨆ u, δᵣ(u, ↑C)` — supremum over `ι → F` of a relative-distance-to-code. ENNReal-valued. Verify `δᵣ(u, C) : ENNReal` (not `ℚ≥0`) per the existing API. |
+| L4.19 | `CodingTheory.linear_epsCA_ge_sampling_dg25` | ✅ | `relDistFromCode : (ι → F) → Set (ι → F) → ENNReal` per `Basic/RelativeDistance.lean:47`. My `⨆ u, δᵣ(u, ↑C) : ENNReal` types check. |
 
 ### §5 — Connections
 
@@ -131,9 +132,9 @@ trusted blindly.
 | ID | Lean name | Status | Known issues / things to check |
 | --- | --- | --- | --- |
 | T5.1 | `CodingTheory.linear_listSize_to_epsMCA_gcxk25` | 🔧 | **Added `η ≤ δ` hypothesis** so `1 − δ + η ≤ 1` and the sqrt-proximity radius stays in `[0, 1]`. Docstring spells out the implicit requirement. |
-| T5.2 | `CodingTheory.rs_epsCA_small_implies_lambda_lt_F_bchks25` | ⏳ | `(δ + 2 / Fintype.card ι).toNNReal` — when `δ < 1 - ρ` and `n ≥ 1`, the sum is positive so `toNNReal` doesn't truncate. ✓ |
+| T5.2 | `CodingTheory.rs_epsCA_small_implies_lambda_lt_F_bchks25` | ✅ | `(δ + 2 / Fintype.card ι).toNNReal` non-truncating: `δ > 0` and `2/n > 0` for `n ≥ 1`. |
 | T5.3 | `CodingTheory.rs_epsCA_implies_lambda_extended_cs25` | 🔧 | **Refactored.** Replaced double-wrap with direct `Nat.ceil (…) : ℕ∞` comparison against `Lambda`. Restored the paper's integer ceiling so we don't overstate (`Lambda ≤ x` would be strictly stronger than paper's `Lambda ≤ ⌈x⌉`). |
-| T5.4 | `CodingTheory.rs_epsCA_separation_bgks20` | ⏳ | `Fintype.card F = Fintype.card ι` plus injectivity of `domain` makes it a bijection by pigeonhole. Paper's "evaluation domain is the entire `F`" — confirm we want this stronger than `domain : ι ↪ F` with type-cardinality match. |
+| T5.4 | `CodingTheory.rs_epsCA_separation_bgks20` | ✅ | Paper's "evaluation domain is the entire `F`" matches `Fintype.card F = Fintype.card ι` + `domain : ι ↪ F` (injective + same cardinality ⇒ bijective by pigeonhole). Standard encoding. |
 
 ## 2. Integration review (per axis)
 
@@ -143,8 +144,8 @@ Each axis below is a sweep across all files committed in this session.
 
 | Concern | Status | Files affected | Notes |
 | --- | --- | --- | --- |
-| Distance return type: `ℚ≥0` vs `ℝ≥0` vs `ℝ` | ⏳ | `ABF26Prelims.lean` (`restrictedRelHammingDist : ℝ≥0`); `Basic/RelativeDistance.lean` (`relHammingDist : ℚ≥0`). | Pick one — likely `ℚ≥0` to align with existing `relHammingDist`, or migrate everything to `ℝ≥0`. |
-| Probability bounds: `ENNReal` vs `ℝ≥0` | ⏳ | All ε-bounds files. | `ENNReal` is the established convention in `EpsilonErrors.lean`; new files mostly comply. Spot-check. |
+| Distance return type: `ℚ≥0` vs `ℝ≥0` vs `ℝ` | ✅ | `ABF26Prelims.lean` (`restrictedRelHammingDist : ℝ≥0`); `Basic/RelativeDistance.lean` (`relHammingDist : ℚ≥0`). | **Bridged via B1** (`restrictedRelHammingDist_univ`). Mixed return types are acceptable because the bridge lemma lets callers convert freely; forcing one type system-wide would be a bigger refactor than the benefit warrants. |
+| Probability bounds: `ENNReal` vs `ℝ≥0` | ✅ | All ε-bounds files. | Spot-checked: `EpsilonErrors.lean` uses `ENNReal` for `epsCA` / `epsMCA` / `epsPG`; new files consume them at the same type. No mixed conventions. |
 | `ENNReal.ofReal` vs `(x : ENNReal)` direct cast | ✅ | `CapacityBounds.lean`, `ListDecodingBounds.lean`, `Connections.lean`. | **Verified.** Convention now documented in the file docstrings of `CapacityBounds.lean` and `Connections.lean`; `ListDecodingBounds.lean` uses `ENNReal.ofReal` exclusively (no `.toNNReal`). Rule held throughout: `ENNReal.ofReal` for ℝ-valued sources, direct cast for `ℝ≥0` / `ℕ` sources. |
 | Nat subtraction silently truncating | ⚠ | `linear_lambda_ge_elias_volume_eli57` (L3.7), `linear_C_le_generalized_singleton_st20` (T3.9), possibly T4.11.x denominators. | Cast to ℤ or ℝ before subtracting; or add positivity hypothesis. |
 | `Real.rpow` vs `HPow.hPow` for non-integer exponents | ✅ | Anywhere `^ ((1 : ℝ) / 2)` or `^ ((1 : ℝ) / 3)` appears. | **Verified.** Every `^` whose exponent has type `ℝ` elaborates to `Real.rpow` (build clean). Small-integer powers like `β ^ 2` use `Monoid.npow` (mathematically identical to `Real.rpow β 2`). No accidental Nat exponent picks. |
@@ -156,11 +157,11 @@ Each axis below is a sweep across all files committed in this session.
 | --- | --- | --- | --- |
 | `CodingTheory.restrictedRelHammingDist` | `Code.relHammingDist`, `Code.relDistFromCode` in `Basic/RelativeDistance.lean` | 🔧 | Added `restrictedRelHammingDist_univ : restrictedRelHammingDist Finset.univ f g = (Code.relHammingDist f g : ℝ≥0)`. Lets downstream theorems convert freely between paper's `Δ_T` and existing `δᵣ(u, v)`. Bridge proved (not admitted). |
 | `CodingTheory.hammingBallVolume` | `ListDecodable.hammingBall` in `ListDecodability.lean` | 🔧 | Added `hammingBallVolume_eq_ncard_hammingBall`: bridge to `.ncard` of `hammingBall y ⌊δ·n⌋`. Tagged-sorry — standard combinatorial identity, will be discharged alongside L3.7. |
-| `CodingTheory.qEntropy` | `Real.negMulLog`, Mathlib's binary-entropy lemmas | ⏳ | Confirm Mathlib has no q-ary entropy. If so, keep ours; if it grows one, alias. |
-| `JohnsonBound.Jcap` vs existing `J` (= paper's `J_q`) | `JohnsonBound.J` | ⏳ | Naming clash is documented in docstring. Option A: keep both with prominent docstring. Option B: rename existing `J` → `Jq`, then `J := Jcap` matches paper. Option B is a breaking change; defer decision. |
-| `CodingTheory.ExtensionFieldPresentation` | `Algebra B F`, `Module.Finite`, `Basis` (Mathlib) | ⏳ | Verify whether we can derive `(ψ, e, φ)` from `Algebra B F + FiniteDimensional B F + chooseBasis`. If yes, refactor to a thin wrapper, halving the structure size. |
+| `CodingTheory.qEntropy` | `Real.negMulLog`, Mathlib's binary-entropy lemmas | ✅ | Mathlib has `Real.binEntropy` (binary entropy) but no q-ary variant. Keep ours; revisit if Mathlib adds one. |
+| `JohnsonBound.Jcap` vs existing `J` (= paper's `J_q`) | `JohnsonBound.J` | ✅ | **Decision: keep both** with prominent docstring (Option A). Renaming existing `J → Jq` would break callers throughout `JohnsonBound/Basic.lean` and downstream — not worth the paper-name alignment given the docstring already disambiguates. |
+| `CodingTheory.ExtensionFieldPresentation` | `Algebra B F`, `Module.Finite`, `Basis` (Mathlib) | ⚠ | **Refactor candidate (B5).** Could derive `(ψ, e, φ)` from `Algebra B F + FiniteDimensional B F + Basis B F`. Deferred — significant structural change, useful but not blocking. Tracked here as a follow-up. |
 | `CodingTheory.IsSubspaceDesign` formulation | `LinearMap.proj` vs comprehension | 🔧 | Added `ker_proj_eq_vanish_at`: a `Set`-level equality showing `(ker (LinearMap.proj i) : Set _) = {a | a i = 0}`. Proves the paper's comprehension form is exactly the kernel used in the definition. Lemma proved (one-line `ext` + `simp`). |
-| `ReedSolomon.Interleaved.irsCode` | `interleavedCodeSet`, `^⋈` notation | ⏳ | One-liner; consider `abbrev` instead of `noncomputable def`. Or drop entirely and inline at call sites if not pulling weight. |
+| `ReedSolomon.Interleaved.irsCode` | `interleavedCodeSet`, `^⋈` notation | ✅ | Keep as `noncomputable def` — `ReedSolomon.code` it builds on is itself `noncomputable`, so `abbrev` would not help. The named definition serves as the paper-IDed anchor for D2.13. Inlining at call sites would obscure the paper reference. |
 | `ReedSolomon.Folded.frsCode` | `ReedSolomon.code` using `Polynomial.degreeLT` | ⚠ | My version uses `p.degree < k`; align to `Polynomial.degreeLT F k.map evalOnPoints`-style for consistency. |
 | `CodingTheory.extensionCode` | encoder-image vs set-of-codewords | 🔧 | Added `extensionCode_iff_coord_in_base`: makes the "each coordinate-projection is in `C_B`" view explicit. The full encoder-image equivalence (`v = φ_inv(c^{(1)}, …, c^{(e)})`) is a corollary of `φ`-bijectivity; downstream users can build it from this iff plus `φ`'s inverse. Lemma is definitional (`rfl`). |
 | `CodingTheory.Lambda` (extended earlier in session) | `closeCodewordsRel`, `listDecodable` | ✅ | Already integrated; no action. |
@@ -169,18 +170,18 @@ Each axis below is a sweep across all files committed in this session.
 
 | Concern | Status | Action |
 | --- | --- | --- |
-| `CodingTheory.*` vs `ProximityGap.*` vs `ABF26.*` | ⏳ | Most new statements live in `CodingTheory.*`; ε-functions in `ProximityGap.*`. Document the split in `ABF26_PLAN.md` §6 D2 follow-up. |
-| `ABF26Prelims.lean` filename prefix | ⏳ | "ABF26" prefix is paper-ledger naming; topical names like `Entropy.lean`, `HammingBallVolume.lean` would be more discoverable. Defer rename until polish complete. |
-| `ABF26CodeFamilies.lean` vs split per family | ⏳ | Three families (IRS, FRS, Subspace) in one file. Consider splitting to `CodeFamilies/Interleaved.lean`, `CodeFamilies/Folded.lean`, `CodeFamilies/Subspace.lean` if the file grows beyond ~300 lines. |
-| `Connections.lean`, `LineDecoding.lean`, `ExtensionCodes.lean` | ⏳ | 1–4 statements each; each is topically coherent. Keep separate. |
+| `CodingTheory.*` vs `ProximityGap.*` vs `ABF26.*` | ✅ | Established split: `ProximityGap.*` for ε-functions (`epsCA`, `epsMCA`, `epsPG`); `CodingTheory.*` for all paper-statement theorems. `ABF26.*` namespace not introduced — names are descriptive (per plan D2). |
+| `ABF26Prelims.lean` filename prefix | ⏸ | **Deferred decision.** Topical names (`Entropy.lean`, etc.) more discoverable, but renaming touches imports across multiple files; not worth doing until paper-statement set stabilises. Re-evaluate after first tagged-sorry discharge. |
+| `ABF26CodeFamilies.lean` vs split per family | ✅ | Current size ~200 lines, well under the ~300-line threshold. Single file remains preferable for now. Revisit if file grows. |
+| `Connections.lean`, `LineDecoding.lean`, `ExtensionCodes.lean` | ✅ | 1–4 statements each; each is topically coherent. Keep separate. |
 
 ### 2d. Notation alignment
 
 | Concern | Status | Action |
 | --- | --- | --- |
-| Paper-style `RS[F, L, k]`, `IRS[F, L, k, s]`, `FRS[F, L, k, s, ω]` | ⏳ | Deferred per plan D2 (descriptive names). Reconsider once polish pass is otherwise done — concrete call sites now exist. |
-| `^⋈` for interleaved code usage | ⏳ | Use it everywhere `interleavedCodeSet` appears, or nowhere. Standardise per-file. |
-| `Δ_T(f, g)`, `Λ(C, δ, f)`, `δ_min` paper notation | ⏳ | Decide all-or-nothing at the end of polish, when statement set is stable. |
+| Paper-style `RS[F, L, k]`, `IRS[F, L, k, s]`, `FRS[F, L, k, s, ω]` | ⏸ | **Deferred decision per plan D2 (descriptive names preferred).** Concrete call sites exist; revisit after first downstream proof discharges a tagged sorry — that will surface notation pain (or its absence). |
+| `^⋈` for interleaved code usage | ⏸ | **Deferred decision.** Some files use `^⋈` (e.g. `GrandChallenges.lean`), others call `Code.interleavedCodeSet` directly. Both work. Standardise when the call-site count grows. |
+| `Δ_T(f, g)`, `Λ(C, δ, f)`, `δ_min` paper notation | ⏸ | **Deferred decision.** All-or-nothing call; defer until statement set is stable. Existing notation (`Δ₀`, `δᵣ`) already covers the closest equivalents. |
 
 ### 2e. Tagged-sorry hygiene
 
@@ -188,7 +189,7 @@ Each axis below is a sweep across all files committed in this session.
 | --- | --- | --- |
 | Comment-line style for tagged sorries | 🔧 | **Canonical shape:** `sorry -- ABF26-X.Y; <classification> [Citation].` where classification ∈ {external admit, bridge, derived, in-tree admit}. Swept all 29 tagged sorries: one outlier (T4.21) used "external admit; see [...]" instead of "external admit [...]"; normalised. Remaining variations (bridge / derived qualifiers) carry genuine information and are kept. |
 | `ABF26-X.Y` tag matches paper ID and audit row | ✅ | Swept all 29 tagged sorries; each tag matches the audit-doc row and the paper-section ID it cites. |
-| Paper-page reference in docstring | ⏳ | Most statements cite paper section but not page. Add page numbers to docstrings for fast paper lookup. |
+| Paper-page reference in docstring | ⏸ | **Deferred (cosmetic).** Most statements cite a paper theorem ID (e.g. `[GG25 Cor 4.10]`) which is the stable lookup key. Page numbers help but aren't blocking; defer until first paper revision creates a need to standardise. |
 
 ## 3. Execution plan
 

@@ -259,6 +259,8 @@ theorem rs_epsCA_lower_capacity_bchks25_kk25
     ∃ (ιC : Type) (_ : Fintype ιC) (_ : Nonempty ιC) (_ : DecidableEq ιC)
       (FC : Type) (_ : Field FC) (_ : Fintype FC) (_ : DecidableEq FC)
       (domain : ιC ↪ FC) (k : ℕ) (slack : ℝ≥0),
+      -- Power-of-two `n` (paper requires it for smooth-domain construction):
+      (∃ p : ℕ, Fintype.card ιC = 2 ^ p) ∧
       (k : ℝ) / Fintype.card ιC = ρ ∧
       epsCA (F := FC) (A := FC) ((ReedSolomon.code domain k : Set (ιC → FC)))
           (1 - ρ - slack) (1 - ρ - slack) ≥
