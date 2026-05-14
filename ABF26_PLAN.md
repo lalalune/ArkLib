@@ -828,9 +828,8 @@ diff.
 - **Target PR**: Phase 1 PR 1.
 - **Sub-tasks**:
   1. ✅ Define `epsMCA` plus helper preds `pairJointAgreesOn` and `mcaEvent` (commit `10245caf`). Existential over `S` is expressed directly as a `Prop` inside `Pr_{...}[...]`; `open Classical in` makes the resulting decidability work.
-  2. **Pending**: re-express `MutualCorrAgreement.hasMutualCorrAgreement` as a specialization of `epsMCA`.
-  3. **Pending**: bridge lemma `δ_ε_correlatedAgreement* ↔ epsMCA ≤ ε`.
-  4. ✅ Update audit doc.
+  2. **Pending (one-way bridge, not iff)**: bridge `(∀ δ in range, epsMCA C δ ≤ errStar δ) → hasMutualCorrAgreement (affineLineGen) BStar errStar`. The original plan text described this as "re-express WHIR's `hasMutualCorrAgreement` as a specialization of `epsMCA`", but on review **the two notions are not equivalent**: WHIR's `proximityCondition` third clause `∃ i, ∀ u' ∈ C, ∃ s ∈ S, u' s ≠ f i s` (per-row "no codeword matches") is strictly stronger than the ABF26 `mcaEvent` third clause `¬ ∃ joint pair agreeing on S`. Hence `{r : WHIR-event} ⊆ {r : ABF26-event}` and `Pr_r[WHIR-event] ≤ Pr_r[ABF26-event]`, so `epsMCA C δ ≤ errStar δ` implies the WHIR bound but not vice versa. The bridge is therefore a one-way arrow `ABF26 ⇒ WHIR`; documenting the asymmetry is part of the deliverable.
+  3. ✅ Update audit doc.
 - **Open questions**: `mcaEvent` is currently `Fin 2`-only; generalization to `Fin ℓ` interleavings is future work. Helpers `pairJointAgreesOn`/`mcaEvent` are currently public — flag for later if they should be `private`.
 
 #### ABF26-R4.4 — No MCA-with-proximity-loss
@@ -1287,9 +1286,17 @@ convenience.
   `Pr_exists_Fin_le_sum` helper `70d49126`).
 - **Phase 1 PR 3**: ✅ bridges for all three predicate variants — AffineLines
   (`39cd9a67`), Curves (`3467a90b`), AffineSpaces (`f6a72e00`); ✅ monotonicity
-  (`cbb08f5c`); WHIR `hasMutualCorrAgreement` re-expression still pending
-  (does not touch the 3 non-conjectural sorries in
-  `Whir/MutualCorrAgreement.lean`, which stay during the interface migration).
+  (`cbb08f5c`); WHIR `hasMutualCorrAgreement` re-expression **deferred**:
+  on review the WHIR `proximityCondition` (per-row "no codeword matches")
+  is **strictly stronger** than the ABF26 `mcaEvent` (joint "no codeword
+  pair matches"), so the two are not equivalent. A useful one-way bridge
+  `epsMCA C δ ≤ errStar δ → hasMutualCorrAgreement (affineLineGen) BStar errStar`
+  exists but requires constructing the affine-line `ProximityGenerator`
+  (whose `proximity` field is itself a BCIKS20-style bound, separately
+  proved in `BCIKS20/`). Tracked as a Phase 1 follow-up; downstream WHIR
+  proofs can already cite the predicate-level `mcaEvent → proximityCondition`
+  step once the affine-line generator instance exists. Does not touch
+  the 3 non-conjectural sorries in `Whir/MutualCorrAgreement.lean`.
 - **Phase 2 PR 1**: `BCIKS20/AffineLines/Main.lean` line-40 sorry
   (`RS_correlatedAgreement_affineLines` non-unique-decoding branch). Closes
   T4.9.1 to fully `present`.
