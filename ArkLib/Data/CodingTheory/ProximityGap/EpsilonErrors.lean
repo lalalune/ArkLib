@@ -294,8 +294,8 @@ theorem epsPG_le_epsCA_le_epsMCA (MC : Submodule F (ι → A)) (δ : ℝ≥0) :
 
 /-- **ABF26 Remark 4.2 (level-set form).** Because relative Hamming distance only takes
 values in `{0, 1/n, ..., 1}`, the predicate `jointProximity C u δ_int` (which is
-`δᵣ(⋈|u, C^⋈ 2) ≤ δ_int`) depends on `δ_int` only through `⌊δ_int · n⌋`. Hence `epsCA C δ_fld δ_int`
-is constant on every "level set" `[k/n, (k+1)/n)` of `δ_int`.
+`δᵣ(⋈|u, C^⋈ 2) ≤ δ_int`) depends on `δ_int` only through `⌊δ_int · n⌋`. Hence
+`epsCA C δ_fld δ_int` is constant on every "level set" `[k/n, (k+1)/n)` of `δ_int`.
 
 The paper states this with a "shift by `β, β' ∈ [0, 1/n)`" idiom (`ε_ca(C, δ, δ + β) =
 ε_ca(C, δ, δ + β')`); that form follows from this lemma whenever the interval
@@ -307,8 +307,9 @@ theorem epsCA_eq_of_floor_eq (C : Set (ι → A)) (δ_fld δ_int δ_int' : ℝ�
   unfold epsCA
   apply iSup_congr
   intro u
-  -- jointProximity is determined by `Δ₀ ≤ ⌊δ · n⌋` via `relDistFromCode_le_iff_distFromCode_le`,
-  -- so it agrees on `δ_int` and `δ_int'` whenever the floors agree.
+  -- `jointProximity` is determined by `Δ₀ ≤ ⌊δ · n⌋` via
+  -- `relDistFromCode_le_iff_distFromCode_le`, so it agrees on `δ_int` and `δ_int'`
+  -- whenever the floors agree.
   have h_iff : jointProximity (C := C) (u := u) δ_int ↔
                jointProximity (C := C) (u := u) δ_int' := by
     unfold jointProximity
@@ -350,7 +351,8 @@ theorem δ_ε_correlatedAgreementAffineLines_iff_epsCA_le
       exact h_not_ja (h_pred u h_gt)
   · intro h_eps u h_pr
     unfold epsCA at h_eps
-    -- `iSup_le_iff` turns `⨆ u, body u ≤ ε` into `∀ u, body u ≤ ε`, then specialize at `u`.
+    -- `iSup_le_iff` turns `⨆ u, body u ≤ ε` into `∀ u, body u ≤ ε`,
+    -- then we specialize at this `u`.
     have h_term_le := iSup_le_iff.mp h_eps u
     by_cases hjp : jointProximity (C := C) (u := u) δ
     · rw [jointAgreement_iff_jointProximity]; exact hjp
