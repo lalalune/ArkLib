@@ -193,6 +193,7 @@ ArkLib's scope. These are the only `sorry`s the plan permits.
 | `ABF26-T5.4` | BGKS20 Lem 3.3 | 7 | external; admit |
 | `mca_johnson_bound_CONJECTURE` | existing | 1 | already conjectural |
 | `mca_capacity_bound_CONJECTURE` | existing | 1 | already conjectural |
+| `ABF26-L4.6` | ACFY25 Lemma 4.10 | 2 | external. Stated in `epsMCA_eq_epsCA_below_udr` with a tagged `sorry`. Not the obvious "δ < δ_min/2 ⇒ unique close codeword" argument — `mcaEvent` can hold at specific γ-values even with `jointProximity` (line agrees with `v₀ + γ v₁` on `S_pair ∪ {i*}`); the equality only follows from a dominance argument over `u`. Formalising the ACFY25 proof is out of scope for Phase 1. |
 
 `sorry`s in this ledger must carry a Lean comment of the form
 `-- ABF26 <Item-ID>: external result from <source>`.
@@ -865,16 +866,23 @@ diff.
 #### ABF26-L4.6 — ε_mca = ε_ca below `δ_min/2`
 
 - **Paper location**: §4.1 page 18, Lemma 4.6 [ACFY25 Lemma 4.10].
-- **Status**: missing.
+- **Status**: ✅ stated; admitted as external (see §6 ledger).
 - **Target Lean name**: `ProximityGap.epsMCA_eq_epsCA_below_udr`.
 - **Target file**: same as D4.1.
 - **Direct dependencies (paper)**: D4.1, D4.3, D2.5.
 - **Reverse dependencies**: T4.9.1.
 - **Target PR**: Phase 1 PR 2.
 - **Sub-tasks**:
-  1. State `δ < δ_min(C)/2 → epsMCA C δ = epsCA C δ δ`.
-  2. Prove via uniqueness of the close codeword (the witness `S` is fixed once you fix the codeword).
-  3. Update audit doc.
+  1. ✅ State `δ < δ_min(C)/2 → epsMCA C δ = epsCA C δ δ` (using the integer-arithmetic
+    form `2 · δ · n < ‖C‖₀` to avoid fractional NNReal arithmetic).
+  2. ❌ Closed as **external admit** — see plan §6 conjecture ledger and the docstring of
+    `epsMCA_eq_epsCA_below_udr`. The proof outline I originally sketched
+    ("Prove via uniqueness of the close codeword (the witness `S` is fixed once you fix
+    the codeword)") was wrong: `mcaEvent` *can* hold at specific γ-values even when
+    `jointProximity` holds, so the equality only follows from a dominance argument
+    over `u`, which is in [ACFY25 Lemma 4.10]. Formalising that argument is out of scope
+    for Phase 1.
+  3. ✅ Update audit doc.
 
 #### ABF26-L4.7 — Interleaving degrades MCA by at most `t`
 

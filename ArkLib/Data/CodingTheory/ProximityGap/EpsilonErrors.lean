@@ -507,6 +507,27 @@ theorem Pr_exists_Fin_le_sum {α : Type} (D : PMF α) {t : ℕ} (f : Fin t → �
   · rw [if_neg h]
     exact zero_le _
 
+/-- **ABF26 Lemma 4.6.** In the unique-decoding regime `δ < δ_min(C)/2`, `ε_mca` and `ε_ca`
+coincide: `ε_mca(C, δ) = ε_ca(C, δ)`.
+
+The unique-decoding hypothesis is expressed as `2 · δ · n < δ_min(C) · n = ‖C‖₀` to avoid
+fractional arithmetic in ℕ — equivalent to the paper's `δ < δ_min(C)/2`.
+
+**Status: external admit.** Proof is in [ACFY25, Lemma 4.10] (footnote 6 in ABF26 notes
+the proof is for linear codes but generalises to F-additive codes). The argument is not
+the obvious case-split: `mcaEvent` *can* hold at specific `γ`-values when `jointProximity`
+holds (line agrees with the unique close codeword `v₀ + γ v₁` on `S_pair ∪ {i*}` for an
+extra position `i*`, requiring `γ` to satisfy a specific equation per `i*`), and the
+equality only follows from a dominance argument over the choice of `u`. Formalising
+this in Lean is out of scope for Phase 1; tracked in `ABF26_PLAN.md` §6 conjecture ledger. -/
+theorem epsMCA_eq_epsCA_below_udr
+    (C : Submodule F (ι → A)) (δ : ℝ≥0)
+    (_h_udr : 2 * δ * (Fintype.card ι : ℝ≥0) <
+              (Code.dist ((C : Set (ι → A))) : ℝ≥0)) :
+    epsMCA (F := F) (A := A) ((C : Set (ι → A))) δ =
+    epsCA (F := F) (A := A) ((C : Set (ι → A))) δ δ := by
+  sorry -- ABF26 L4.6: external result from ACFY25 Lemma 4.10
+
 /-- Row-extraction: the `k`-th row of a `Fin t → A`-valued word, as an `A`-valued word. -/
 private def row_of {ι : Type} {A : Type} {t : ℕ}
     (w : ι → (Fin t → A)) (k : Fin t) : ι → A :=
