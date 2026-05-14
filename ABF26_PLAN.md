@@ -1071,32 +1071,33 @@ diff.
 
 - **Paper location**: §4.4 page 22, Definition 4.20 [GG25 Def 3.1].
 - **Statement**: `C` is `(δ,a,b)`-line-decodable iff for every `f₁,f₂ ∈ Σ^n` and every `U : F → C`, if `Pr_γ[Δ(f₁+γ·f₂, U(γ)) ≤ δ] ≥ a/|F|`, then `∃ u₁,u₂ ∈ C` with `Pr_γ[U(γ) = u₁ + γ·u₂] ≥ b/|F|`.
-- **Status**: missing.
-- **Target Lean name**: `CodingTheory.LineDecodable (C : Submodule F (ι → A)) (δ a b : ℝ) : Prop`.
-- **Target file**: new `ArkLib/Data/CodingTheory/LineDecoding.lean`.
+- **Status**: ✅ present (closed by the LineDecoding commit).
+- **Existing in ArkLib**: `CodingTheory.LineDecodable` in `ArkLib/Data/CodingTheory/LineDecoding.lean`.
+- **Target Lean name**: `CodingTheory.LineDecodable (C : Set (ι → A)) (δ a b : ℝ≥0) : Prop` — uses `ℝ≥0` thresholds and a function `U : F → ι → A` plus an `∀ γ, U γ ∈ C` side condition (cleaner than the subtype form).
+- **Target file**: `ArkLib/Data/CodingTheory/LineDecoding.lean`.
 - **Direct dependencies (paper)**: D2.7.
 - **Reverse dependencies**: T4.21.
-- **Target PR**: Phase 6 PR 1.
+- **Target PR**: Phase 6 PR 1 ✅ committed.
 - **Sub-tasks**:
-  1. Create file.
-  2. State definition.
-  3. Add notation if desired.
-  4. Update audit doc.
+  1. ✅ Create file.
+  2. ✅ State definition.
+  3. ⏳ Add notation if desired (deferred — no call sites yet).
+  4. ✅ Update audit doc.
 
 #### ABF26-T4.21 — Line-decoding implies MCA
 
 - **Paper location**: §4.4 page 22, Theorem 4.21 [GG25 Thm 3.5].
 - **Statement**: `LineDecodable C δ a (n+1) → ε_mca(C,δ) ≤ a/|F|`.
-- **Status**: missing.
-- **Target Lean name**: `ABF26.lineDecodable_implies_epsMCA`.
-- **Target file**: same as D4.20.
+- **Status**: ✅ stated; admitted as external (proof tracked in §6 ledger).
+- **Target Lean name**: `CodingTheory.lineDecodable_imp_epsMCA_le`.
+- **Target file**: `ArkLib/Data/CodingTheory/LineDecoding.lean`.
 - **Direct dependencies (paper)**: D4.3, D4.20.
 - **Reverse dependencies**: §6.
-- **Target PR**: Phase 6 PR 1.
+- **Target PR**: Phase 6 PR 1 ✅ statement committed.
 - **Sub-tasks**:
-  1. State.
-  2. Prove or admit.
-  3. Update audit doc.
+  1. ✅ State.
+  2. ❌ Closed as **external admit** [GG25 Thm 3.5] — proof requires the GG25 alignment argument; tagged `sorry` in the file body.
+  3. ✅ Update audit doc.
 
 ### Section 5 — Connections
 

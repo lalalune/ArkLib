@@ -144,8 +144,8 @@ migration and the still-open non-unique-decoding branch:
 | `T4.17` | Complete CA breakdown | missing | none | `ABF26.epsCA_breakdown` (external) | CS25 Cor 1. |
 | `T4.18` | CA jump at Johnson bound | missing | none | `ABF26.epsCA_johnson_jump` (external) | BCHKS25 Cor 1.7. |
 | `L4.19` | CA bounded below by sampling probability | missing | related DG25 work in [DG25/MainResults.lean](../../../ArkLib/Data/CodingTheory/ProximityGap/DG25/MainResults.lean) (contains 2 sorries) | `ABF26.epsCA_ge_sampling` | DG25 Thm 2.5. |
-| `D4.20` | Line-decoding | missing | none | `CodingTheory.LineDecodable` in `LineDecoding.lean` (new) | GG25 Def 3.1. |
-| `T4.21` | Line-decoding implies MCA | missing | none | `ABF26.lineDecodable_implies_epsMCA` | GG25 Thm 3.5. |
+| `D4.20` | Line-decoding | present | [LineDecoding.lean](../../../ArkLib/Data/CodingTheory/LineDecoding.lean) | `CodingTheory.LineDecodable` | GG25 Def 3.1. |
+| `T4.21` | Line-decoding implies MCA | stated (external admit) | [LineDecoding.lean](../../../ArkLib/Data/CodingTheory/LineDecoding.lean) | `CodingTheory.lineDecodable_imp_epsMCA_le` | GG25 Thm 3.5. Proof admitted as external; tagged sorry. |
 
 ## Section 5 — Connections Between List Decoding and Correlated Agreement
 
