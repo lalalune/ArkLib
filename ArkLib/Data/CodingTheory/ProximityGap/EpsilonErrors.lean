@@ -188,6 +188,29 @@ theorem jointProximity_imp_line_close
   · obtain ⟨h0, h1⟩ := h_agree j hj_in
     exact hne (by simp [Pi.add_apply, Pi.smul_apply, h0, h1])
 
+/-- **ABF26 Fact 4.5, first inequality.** `ε_pg ≤ ε_ca` for a `Submodule F (ι → A)`.
+
+Pointwise on `u : WordStack A (Fin 2) ι`:
+
+- If `jointProximity` holds, every `γ` gives a δ-close line (by
+  `jointProximity_imp_line_close`), so the `epsPG` contribution is 0; `epsCA`'s contribution
+  is also 0 (its `if jointProximity` branch).
+- Otherwise both contributions collapse to the same `Pr_γ[line δ-close]` because the inner
+  expression is syntactically identical and the bad-set conditions both fail or both hold. -/
+theorem epsPG_le_epsCA (MC : Submodule F (ι → A)) (δ : ℝ≥0) :
+    epsPG (F := F) (MC : Set (ι → A)) δ ≤ epsCA (F := F) (MC : Set (ι → A)) δ δ := by
+  unfold epsPG epsCA
+  apply iSup_mono
+  intro u
+  by_cases hjp : jointProximity (C := (MC : Set (ι → A))) (u := u) δ
+  · have h_all : ∀ γ : F, δᵣ(u 0 + γ • u 1, (MC : Set (ι → A))) ≤ δ :=
+      jointProximity_imp_line_close MC u δ hjp
+    rw [if_pos h_all, if_pos hjp]
+  · by_cases h_all : ∀ γ : F, δᵣ(u 0 + γ • u 1, (MC : Set (ι → A))) ≤ δ
+    · rw [if_pos h_all, if_neg hjp]
+      exact zero_le _
+    · rw [if_neg h_all, if_neg hjp]
+
 end
 
 end ProximityGap
