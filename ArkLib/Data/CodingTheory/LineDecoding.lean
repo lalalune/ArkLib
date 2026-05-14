@@ -93,7 +93,7 @@ theorem lineDecodable_imp_epsMCA_le
             ((Fintype.card ι : ℝ≥0) + 1)) :
     epsMCA (F := F) (A := A) ((C : Set (ι → A))) δ
         ≤ (a : ENNReal) / (Fintype.card F : ENNReal) := by
-  sorry -- ABF26-T4.21 external admit; see [GG25 Thm 3.5].
+  sorry -- ABF26-T4.21; external admit [GG25 Thm 3.5].
 
 end
 

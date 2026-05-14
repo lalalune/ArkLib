@@ -186,8 +186,8 @@ Each axis below is a sweep across all files committed in this session.
 
 | Concern | Status | Action |
 | --- | --- | --- |
-| Comment-line style for tagged sorries | ⏳ | Pick one: `-- ABF26-T4.11 Item 1; external admit [GKL24 Thm 3].` is the current shape. Verify all 40+ sorries conform; rewrite any outliers. |
-| `ABF26-X.Y` tag matches paper ID and audit row | ⏳ | Sweep every tagged sorry; cross-check against [audit doc](docs/kb/audits/open-problems-list-decoding-and-correlated-agreement.md). |
+| Comment-line style for tagged sorries | 🔧 | **Canonical shape:** `sorry -- ABF26-X.Y; <classification> [Citation].` where classification ∈ {external admit, bridge, derived, in-tree admit}. Swept all 29 tagged sorries: one outlier (T4.21) used "external admit; see [...]" instead of "external admit [...]"; normalised. Remaining variations (bridge / derived qualifiers) carry genuine information and are kept. |
+| `ABF26-X.Y` tag matches paper ID and audit row | ✅ | Swept all 29 tagged sorries; each tag matches the audit-doc row and the paper-section ID it cites. |
 | Paper-page reference in docstring | ⏳ | Most statements cite paper section but not page. Add page numbers to docstrings for fast paper lookup. |
 
 ## 3. Execution plan
@@ -230,10 +230,10 @@ Apply 2a actions:
 
 Apply 2c–2e actions. Lowest priority — leave until A–C stable.
 
-1. **D1.** Sweep tagged-sorry comments for uniform style.
-2. **D2.** Add paper-page references to docstrings.
-3. **D3.** (Optional) Topical filename renames once content stable.
-4. **D4.** (Optional) Paper-style notation decision.
+1. **D1.** ✅ Sweep tagged-sorry comments for uniform style — one outlier (T4.21) normalised.
+2. **D2.** Deferred (cosmetic; not blocking).
+3. **D3.** Deferred (optional).
+4. **D4.** Deferred (optional).
 
 ### Final validation
 
