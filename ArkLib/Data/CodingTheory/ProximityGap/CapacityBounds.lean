@@ -147,6 +147,55 @@ section ReedSolomon
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
+/-- **ABF26 Theorem 4.9 Item 2 [BCHKS25 Theorem 1.3].** Reed-Solomon CA bound in the
+`δ_min/3`-to-Johnson regime. Let `C := RS[F, L, k]` with rate `ρ`. For
+`δ_min(C)/3 ≤ δ_fld < δ_int`:
+
+  `ε_ca(C, δ_fld, δ_int) ≤`
+  `  max{ (1-ρ-δ_fld) / (δ_fld·(1-ρ-2·δ_fld)·|F|), δ_int / ((δ_int-δ_fld)·|F|) }`
+
+Tighter than T4.8 (AHIV17) in the regime `δ_fld ≥ δ_min/3`. Admitted as an external
+result. -/
+theorem rs_epsCA_bchks25_item2
+    (domain : ι ↪ F) (k : ℕ) (δ_fld δ_int : ℝ≥0)
+    (_h_dmin : (Code.minDist ((ReedSolomon.code domain k : Set (ι → F))) : ℝ)
+                / Fintype.card ι / 3 ≤ δ_fld)
+    (_h_lt : δ_fld < δ_int) :
+    let n : ℝ := Fintype.card ι
+    let ρ : ℝ := k / n
+    let bound : ℝ :=
+      max ((1 - ρ - δ_fld) / (δ_fld * (1 - ρ - 2 * δ_fld) * Fintype.card F))
+          ((δ_int : ℝ) / ((δ_int - δ_fld) * Fintype.card F))
+    epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F))) δ_fld δ_int ≤
+      ENNReal.ofReal bound := by
+  sorry -- ABF26-T4.9.2; external admit [BCHKS25 Thm 1.3].
+
+/-- **ABF26 Remark 4.10.** Small-proximity-loss simplification of T4.9.2 via R4.2.
+For `δ_int - δ_fld = γ/n` with `γ ∈ (0, 1)` (so that `R4.2` collapses `ε_ca` to its
+`δ_int := δ_fld` value):
+
+  `ε_mca(C, δ_fld) = ε_ca(C, δ_fld) = ε_ca(C, δ_fld, δ_fld + γ/n) ≤`
+  `  max{ (1-ρ-δ_fld) / (δ_fld·(1-ρ-2·δ_fld)·|F|), (n·δ_fld + γ) / (γ·|F|) }`
+
+The `(n·δ_fld + γ) / γ` term dominates the original `δ_int / (δ_int - δ_fld)` term
+once `δ_int - δ_fld` is below `1/n`. We state the resulting bound on
+`ε_ca(C, δ_fld, δ_fld)`; the equality with `ε_mca` follows from L4.6 in the
+unique-decoding regime, which is itself an external admit. Admitted as a derived
+result from R4.2 + T4.9.2. -/
+theorem rs_epsCA_small_loss_r4_10
+    (domain : ι ↪ F) (k : ℕ) (δ_fld : ℝ≥0) (γ : ℝ≥0)
+    (_h_dmin : (Code.minDist ((ReedSolomon.code domain k : Set (ι → F))) : ℝ)
+                / Fintype.card ι / 3 ≤ δ_fld)
+    (_hγ_pos : 0 < γ) (_hγ_lt : (γ : ℝ) < 1) :
+    let n : ℝ := Fintype.card ι
+    let ρ : ℝ := k / n
+    let bound : ℝ :=
+      max ((1 - ρ - δ_fld) / (δ_fld * (1 - ρ - 2 * δ_fld) * Fintype.card F))
+          ((n * δ_fld + γ) / (γ * Fintype.card F))
+    epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F))) δ_fld δ_fld ≤
+      ENNReal.ofReal bound := by
+  sorry -- ABF26-R4.10; derived from R4.2 + T4.9.2 (both external/admitted).
+
 /-- **ABF26 Theorem 4.12 [BCHKS25 Thm 4.6].** For `C := RS[F, L, k]` with rate `ρ` and
 `η > 0`, letting `ρ_plus := ρ + 1/n` and `m := max(⌈√ρ_plus/(2η)⌉, 3)`, for
 `δ < 1 - √ρ_plus - η`:
