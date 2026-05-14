@@ -104,9 +104,9 @@ migration and the still-open non-unique-decoding branch:
 
 | ABF26 ID | Paper item | Status | Lean refs | Lean target | Notes |
 | --- | --- | --- | --- | --- | --- |
-| `D3.1` | Johnson functions `J_{q,ℓ}`, `J_q`, `J` | present-but-different | `J` in [JohnsonBound/Basic.lean](../../../ArkLib/Data/CodingTheory/JohnsonBound/Basic.lean) | `JohnsonBound.Jqℓ`, `JohnsonBound.Jq`, existing `J` | Only the limit `J` is present. |
-| `T3.2` | Johnson bound (Joh62) | present-but-different | `johnson_bound`, `johnson_bound_alphabet_free` in [JohnsonBound/Basic.lean](../../../ArkLib/Data/CodingTheory/JohnsonBound/Basic.lean) | `ABF26.johnson_bound` (alias using `Lambda`) | Need restatement in terms of the paper's `|Λ(C,δ)| ≤ ℓ` form. |
-| `C3.3` | MDS coarse Johnson | missing | related ingredients only | `ABF26.mds_johnson` | Derivable from L2.6 + T3.2. |
+| `D3.1` | Johnson functions `J_{q,ℓ}`, `J_q`, `J` | present | existing `J` in [JohnsonBound/Basic.lean](../../../ArkLib/Data/CodingTheory/JohnsonBound/Basic.lean) (which matches paper's `J_q`); new `JohnsonBound.Jqℓ` and `JohnsonBound.Jcap` in [JohnsonBound/ABF26.lean](../../../ArkLib/Data/CodingTheory/JohnsonBound/ABF26.lean) | `JohnsonBound.Jqℓ`, `JohnsonBound.J` (= paper `J_q`), `JohnsonBound.Jcap` | All three functions present. Limit relationships documented in docstrings; not formalised (paper does not prove them either). |
+| `T3.2` | Johnson bound (Joh62) | stated (external admit; in-tree proof available) | absolute-distance form `johnson_bound`, `johnson_bound_alphabet_free` in [JohnsonBound/Basic.lean](../../../ArkLib/Data/CodingTheory/JohnsonBound/Basic.lean); paper-shaped `johnson_bound_lambda_le_ell` in [JohnsonBound/ABF26.lean](../../../ArkLib/Data/CodingTheory/JohnsonBound/ABF26.lean) | `CodingTheory.johnson_bound_lambda_le_ell` | Statement closed; porting the existing absolute-distance proof to `Lambda`-form is tracked separately. |
+| `C3.3` | MDS coarse Johnson | stated (external admit) | [JohnsonBound/ABF26.lean](../../../ArkLib/Data/CodingTheory/JohnsonBound/ABF26.lean) | `CodingTheory.mds_johnson_lambda_le` | Derivable from L2.6 + T3.2 via `Jcap` form. |
 | `T3.4` | τ-subspace-design list decoding | missing | none | `ABF26.subspaceDesign_list_decoding` (external) | CZ25 Thm B.5. |
 | `C3.5` | Folded RS up to capacity | missing | none | `ABF26.frs_list_decoding_capacity` | Derives from T3.4 + T2.18. |
 | `T3.6` | Random RS near capacity | missing | none | `ABF26.random_rs_list_decoding` (external) | AGL24 Thm 1.1. |

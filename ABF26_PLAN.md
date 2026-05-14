@@ -630,49 +630,41 @@ diff.
 #### ABF26-D3.1 — Johnson function family `J_{q,ℓ}`, `J_q`, `J`
 
 - **Paper location**: §3.1 page 12, Definition 3.1.
-- **Status**: present-but-different (only `J` present).
-- **Existing in ArkLib**: `J` in `ArkLib/Data/CodingTheory/JohnsonBound/Basic.lean`.
-- **Target Lean name**: extend with `JohnsonBound.Jqℓ (q ℓ : ℕ) (δ : ℝ)` and `JohnsonBound.Jq (q : ℕ) (δ : ℝ)`.
-- **Target file**: existing.
+- **Status**: ✅ present.
+- **Existing in ArkLib**: `JohnsonBound.J q δ` in `ArkLib/Data/CodingTheory/JohnsonBound/Basic.lean` (matches paper's `J_q`); `JohnsonBound.Jqℓ q ℓ δ` and `JohnsonBound.Jcap δ` in `ArkLib/Data/CodingTheory/JohnsonBound/ABF26.lean`.
+- **Target Lean name**: `JohnsonBound.Jqℓ`, existing `JohnsonBound.J` (= paper `J_q`), `JohnsonBound.Jcap`.
+- **Target file**: existing JohnsonBound/Basic.lean and new JohnsonBound/ABF26.lean.
 - **Direct dependencies (paper)**: none.
 - **Reverse dependencies**: T3.2, C3.3.
-- **Target PR**: Phase 4 PR 1.
+- **Target PR**: Phase 4 PR 1 ✅ committed.
 - **Sub-tasks**:
-  1. Define `Jqℓ` and `Jq`.
-  2. Prove `J = lim_{q→∞} Jq` (in the limit sense ArkLib can handle, likely a uniform bound).
-  3. Prove `Jq = lim_{ℓ→∞} Jqℓ`.
-  4. Update audit doc.
-- **Acceptance**: all three functions present, limit relationships proved or stated as conjectures (paper does not prove these limits explicitly).
+  1. ✅ Define `Jqℓ` and add `Jcap` (asymptotic).
+  2. ⏳ Prove `J = lim_{q→∞} Jq` (limit relationship; documented but not formalised; paper does not prove either).
+  3. ⏳ Prove `Jq = lim_{ℓ→∞} Jqℓ` (same).
+  4. ✅ Update audit doc.
 
 #### ABF26-T3.2 — Johnson bound
 
 - **Paper location**: §3.1 page 12, Theorem 3.2 [Joh62].
-- **Status**: present-but-different.
-- **Existing in ArkLib**: `johnson_bound`, `johnson_bound_alphabet_free`.
-- **Target Lean name**: `ABF26.johnson_bound` aliasing existing form.
-- **Target file**: existing.
+- **Status**: ✅ stated (external admit); in-tree proof available in absolute-distance form.
+- **Existing in ArkLib**: `johnson_bound`, `johnson_bound_alphabet_free` (absolute-distance form, in `JohnsonBound/Basic.lean`); paper-shaped `CodingTheory.johnson_bound_lambda_le_ell` in `JohnsonBound/ABF26.lean` (admitted; port from existing).
+- **Target Lean name**: `CodingTheory.johnson_bound_lambda_le_ell`.
+- **Target file**: `JohnsonBound/ABF26.lean`.
 - **Direct dependencies (paper)**: D3.1.
 - **Reverse dependencies**: C3.3.
-- **Target PR**: Phase 4 PR 1.
-- **Sub-tasks**:
-  1. Restate using `Lambda` (paper form `|Λ(C, J_{q,ℓ}(δ_min(C)))| ≤ ℓ`).
-  2. Prove from existing.
-  3. Update audit doc.
+- **Target PR**: Phase 4 PR 1 ✅ statement committed.
 
 #### ABF26-C3.3 — MDS coarse Johnson corollary
 
 - **Paper location**: §3.1 page 12, Corollary 3.3.
 - **Statement**: For every MDS code `C` with rate `ρ` and η > 0: `|Λ(C, 1 - √ρ - η)| ≤ 1/(2·η·ρ)`.
-- **Status**: missing.
-- **Target Lean name**: `ABF26.mds_johnson`.
-- **Target file**: `ArkLib/Data/CodingTheory/JohnsonBound/Basic.lean`.
+- **Status**: ✅ stated; admitted as external (derivable from L2.6 + T3.2 via `Jcap` form).
+- **Existing in ArkLib**: `CodingTheory.mds_johnson_lambda_le` in `JohnsonBound/ABF26.lean`.
+- **Target Lean name**: `CodingTheory.mds_johnson_lambda_le`.
+- **Target file**: `JohnsonBound/ABF26.lean`.
 - **Direct dependencies (paper)**: L2.6, T3.2.
 - **Reverse dependencies**: §6.3.1 instantiations.
-- **Target PR**: Phase 4 PR 1.
-- **Sub-tasks**:
-  1. State.
-  2. Prove from T3.2 + MDS rate-distance relation.
-  3. Update audit doc.
+- **Target PR**: Phase 4 PR 1 ✅ statement committed.
 
 #### ABF26-T3.4 — List decoding for τ-subspace-design codes
 
