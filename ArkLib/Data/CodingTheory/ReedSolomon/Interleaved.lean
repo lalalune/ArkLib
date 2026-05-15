@@ -84,7 +84,7 @@ lemma dim_irsCode {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
   -- Constructing (1) requires picking the right `LinearEquiv` between the
   -- interleavedCodeSet Submodule and the Pi-of-Submodule. This is mechanical
   -- but tedious. Admitted with sketch.
-  sorry -- ABF26 dim(IRS) = s · (k/s); LinearEquiv to Fin s → (RS code) + Pi finrank.
+  sorry -- in-tree; LinearEquiv `irsCode ≃ₗ[F] (Fin s → RS code)` + `Module.finrank_pi`.
 
 end Interleaved
 end ReedSolomon

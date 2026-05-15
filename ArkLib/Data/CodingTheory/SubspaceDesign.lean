@@ -64,9 +64,9 @@ def IsSubspaceDesign {ι : Type} [Fintype ι]
     (∑ i : ι,
         (Module.finrank F (↥(A ⊓
             (LinearMap.ker
-              (LinearMap.proj (R := F) (φ := fun _ : ι => Fin s → F) i))
-            : Submodule F (ι → Fin s → F))) : ℝ))
-        / Fintype.card ι ≤
+              (LinearMap.proj (R := F) (φ := fun _ : ι => Fin s → F) i)) :
+            Submodule F (ι → Fin s → F))) : ℝ)) /
+        Fintype.card ι ≤
       Module.finrank F A * τ r
 
 /-- **Bridge: kernel of the `i`-th projection equals the comprehension `{a | a i = 0}`.**
@@ -78,9 +78,9 @@ this lets downstream proofs rewrite freely between the technical `ker(proj i)` f
 in the `IsSubspaceDesign` definition for type-class reasons) and the paper's
 comprehension form. -/
 lemma ker_proj_eq_vanish_at {ι : Type*} {F : Type*} [Semiring F] {s : ℕ} (i : ι) :
-    (LinearMap.ker (LinearMap.proj (R := F) (φ := fun _ : ι => Fin s → F) i)
-        : Set (ι → Fin s → F))
-      = {a | a i = 0} := by
+    (LinearMap.ker (LinearMap.proj (R := F) (φ := fun _ : ι => Fin s → F) i) :
+        Set (ι → Fin s → F)) =
+      {a | a i = 0} := by
   ext a
   simp [LinearMap.mem_ker, LinearMap.proj_apply]
 

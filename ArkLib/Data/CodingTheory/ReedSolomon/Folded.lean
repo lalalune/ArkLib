@@ -161,9 +161,9 @@ lemma frsCode_one_map_eq_rsCode {ι : Type} [Fintype ι] [DecidableEq ι]
     {F : Type} [Field F] [DecidableEq F]
     (domain : ι ↪ F) (k : ℕ) (ω : F) :
     (frsCode domain k 1 ω).map
-        (LinearEquiv.piCongrRight (fun _ : ι => LinearEquiv.funUnique (Fin 1) F F)
-            : (ι → Fin 1 → F) ≃ₗ[F] (ι → F)).toLinearMap
-      = ReedSolomon.code domain k := by
+        (LinearEquiv.piCongrRight (fun _ : ι => LinearEquiv.funUnique (Fin 1) F F) :
+            (ι → Fin 1 → F) ≃ₗ[F] (ι → F)).toLinearMap =
+      ReedSolomon.code domain k := by
   ext g
   simp only [Submodule.mem_map, LinearEquiv.coe_toLinearMap]
   constructor
