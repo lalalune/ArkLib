@@ -36,7 +36,8 @@ and the list size of the corresponding interleaved base code.
 - [BCFW25] Bordage-Chiesa-Fenzi-Wahby. Lemma D.3.
 
 (The distance equality `δ_min(C_F) = δ_min(C_B)`, referenced in the L2.21 paragraph
-context, is from a separate paper not formalised in this file.)
+context, is from Dao-Petrov 2025 (Theorem 3.2 in their paper). The knowledge-base
+citation key for this paper is not yet registered, so we mention it in prose only.)
 -/
 
 set_option linter.unusedFintypeInType false

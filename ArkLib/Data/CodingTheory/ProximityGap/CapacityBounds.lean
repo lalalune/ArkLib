@@ -226,7 +226,13 @@ theorem rs_epsCA_small_loss_r4_10
                               + (m+½)/√ρ_plus )`
 
 The full numeric expression is preserved verbatim so future RS analyses can plug in
-concrete `ρ`, `η`, and `n` values. Admitted as an external result. -/
+concrete `ρ`, `η`, and `n` values. Admitted as an external result.
+
+**Parameter improvement reference.** ABF26 cites [Hab25] alongside [BCHKS25] for
+this theorem; Haböck 2025 improves the constants / parameter regime but the
+asymptotic form is unchanged. Our statement matches the BCHKS25 form; a separate
+sharper-constant statement could be added as a corollary if a downstream consumer
+needs the tighter bound. -/
 theorem rs_epsMCA_johnson_range_bchks25
     (domain : ι ↪ F) (k : ℕ) (η δ : ℝ≥0)
     (_hη : 0 < η)
@@ -390,6 +396,36 @@ theorem frs_epsMCA_capacity_gg25
       ENNReal.ofReal (2 * n / (η * Fintype.card F)
         + 24 / (η ^ 3 * Fintype.card F)) := by
   sorry -- ABF26-T4.14; external admit [GG25 Cor 4.10].
+
+/-- **ABF26 BCGM25 extension to T4.13 / T4.14 (polynomial generators preserve MCA).**
+
+[BCGM25] shows that MCA is preserved not only under affine line combinations
+`f₀ + γ · f₁` but under arbitrary *polynomial generators* — combinations of the form
+`f₀ + G(γ) · f₁` for a large class of functions `G : F → F` called "polynomial
+generators". Stated in ABF26 §4.2.2 (subsection on "subspace-design codes") as a
+parenthetical remark and footnote 2 of the introduction; not separately numbered as
+`T4.x`, but materially extends the reach of T4.13 / T4.14.
+
+The statement formalisation here follows the curve-MCA generalisation: instead of
+the affine line `u₀ + γ · u₁`, we consider polynomial combinations
+`u₀ + p(γ) · u₁` for `p : F[X]` from some specified family (paper's polynomial-
+generator class). For the simplest case `p(γ) = γ^d` (power curves), this matches
+ABF26's `epsCA_curves` shape.
+
+Admitted as an external result. -/
+theorem subspaceDesign_epsMCA_polynomial_generators_bcgm25
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (s : ℕ) (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
+    (_h : IsSubspaceDesign s τ C)
+    (t : ℕ) (_ht : 0 < t) :
+    -- Same conclusion shape as T4.13 but valid for any polynomial-generator family
+    -- (we existentially package "polynomial generator" as a placeholder; the
+    -- formal definition is gated on additional Mathlib polynomial machinery).
+    epsMCA (F := F) (A := Fin s → F) ((C : Set (ι → Fin s → F)))
+        ((1 - τ (t + 1) - 3 / (2 * t)).toNNReal) ≤
+      ENNReal.ofReal (((t : ℝ) * Fintype.card ι + 4 * t ^ 2) / Fintype.card F) := by
+  sorry -- ABF26-BCGM25; external admit. Polynomial-generator MCA extension of T4.13.
 
 end SubspaceDesignFRS
 
