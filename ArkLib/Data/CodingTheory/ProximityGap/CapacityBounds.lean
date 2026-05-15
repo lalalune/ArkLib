@@ -309,10 +309,10 @@ which allows witness `n = ⌊|F|^{(1+ε)/2}⌋` or `⌈|F|^{(1+ε)/2}⌉` as app
 
 Admitted as an external result. -/
 theorem rs_epsCA_johnson_jump_bchks25
+    {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC] [CharP FC 2]
     (ε : ℝ≥0) (_hε : 0 < ε) :
     ∃ (ιC : Type) (_ : Fintype ιC) (_ : Nonempty ιC) (_ : DecidableEq ιC)
-      (FC : Type) (_ : Field FC) (_ : Fintype FC) (_ : DecidableEq FC),
-      CharP FC 2 ∧ ∃ (domain : ιC ↪ FC) (k : ℕ),
+      (domain : ιC ↪ FC) (k : ℕ),
       ((Fintype.card FC : ℝ) ^ (((1 : ℝ) + ε) / 2) - 1
           ≤ (Fintype.card ιC : ℝ)) ∧
       ((Fintype.card ιC : ℝ)
