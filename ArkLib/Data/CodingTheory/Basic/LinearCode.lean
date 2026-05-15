@@ -490,6 +490,24 @@ def moduleCodeDist' {F A} {ι} [Fintype ι] [Semiring F] [Fintype A] [DecidableE
 
 end Computable
 
+/-- **MDS (Maximum Distance Separable) predicate.** A linear code `C ⊆ F^n` with
+rate `ρ` is MDS iff it attains the Singleton bound:
+`δ_min(C) = 1 - ρ + 1/n`, equivalently `Code.minDist C = n - k + 1` where `k`
+is the dimension.
+
+This is the rate-distance Singleton-tight condition from ABF26 Lemma 2.6 used
+by several MDS-conditional theorems (e.g. C3.3 MDS coarse Johnson). Lives in
+`Basic/LinearCode.lean` rather than `JohnsonBound/` because it's a property
+of any linear code, not specifically a Johnson-bound concept.
+
+The relation to `LinearCode.singleton_bound_linear` (which proves `≤`) and a
+Singleton-tight predicate could be made via a bridging lemma
+`IsMDS_iff_singleton_bound_tight` (not yet provided). -/
+def IsMDS {ι : Type} [Fintype ι] {F : Type} [Field F] [DecidableEq F]
+    (C : Submodule F (ι → F)) (ρ : ℝ) : Prop :=
+  (Code.minDist ((C : Set (ι → F))) : ℝ) / Fintype.card ι
+    = 1 - ρ + 1 / Fintype.card ι
+
 end LinearCode
 
 lemma poly_eq_zero_of_dist_lt {n k : ℕ} {F : Type*} [DecidableEq F] [CommRing F] [IsDomain F]

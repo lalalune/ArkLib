@@ -75,6 +75,12 @@ noncomputable def restrictedRelHammingDist
     (T : Finset ι) (f g : ι → α) : ℝ≥0 :=
   ((T.filter (fun i => f i ≠ g i)).card : ℝ≥0) / (T.card : ℝ≥0)
 
+/-- Paper-style notation `Δ[T](f, g)` for `restrictedRelHammingDist T f g`. The
+square-bracketed `T` distinguishes from the existing `Δ₀(u, v)` (absolute Hamming
+distance) and `δᵣ(u, v)` (whole-domain relative Hamming distance) in
+`Basic/RelativeDistance.lean`. -/
+scoped notation "Δ[" T "](" f ", " g ")" => restrictedRelHammingDist T f g
+
 @[simp]
 lemma restrictedRelHammingDist_self
     {ι : Type*} [DecidableEq ι] {α : Type*} [DecidableEq α]

@@ -110,16 +110,6 @@ theorem johnson_bound_lambda_le_ell
     Lambda C (Jqℓ q ℓ δ_min) ≤ (ℓ : ℕ∞) := by
   sorry -- ABF26-T3.2; statement only. Port from JohnsonBound.johnson_bound.
 
-/-- **MDS code predicate.** A linear code `C ⊆ F^n` is MDS (Maximum Distance Separable)
-at rate `ρ` iff it attains the Singleton bound: `δ_min(C) = 1 - ρ + 1/n`. Equivalent to
-the paper's L2.6 (Singleton bound) being tight. Used as a hypothesis form in C3.3 and
-elsewhere. -/
-def IsMDS {ι : Type} [Fintype ι]
-    {F : Type} [Field F] [DecidableEq F]
-    (C : Submodule F (ι → F)) (ρ : ℝ) : Prop :=
-  (Code.minDist ((C : Set (ι → F))) : ℝ) / Fintype.card ι
-    = 1 - ρ + 1 / Fintype.card ι
-
 /-- **ABF26 Corollary 3.3.** MDS coarse Johnson corollary. For every MDS code `C` with
 rate `ρ` and `η > 0`:
 
@@ -134,7 +124,7 @@ theorem mds_johnson_lambda_le
     {F : Type} [Field F] [Fintype F] [DecidableEq F]
     (C : Submodule F (ι → F)) (ρ η : ℝ)
     (_hρ_pos : 0 < ρ) (_hρ_lt : ρ < 1) (_hη_pos : 0 < η)
-    (_h_mds : IsMDS C ρ) :
+    (_h_mds : LinearCode.IsMDS C ρ) :
     (Lambda ((C : Set (ι → F))) (1 - ρ ^ ((1 : ℝ) / 2) - η) : ENNReal) ≤
       ENNReal.ofReal (1 / (2 * η * ρ)) := by
   sorry -- ABF26-C3.3; derivable from L2.6 + Jcap form of T3.2.

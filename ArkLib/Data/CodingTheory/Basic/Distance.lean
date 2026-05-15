@@ -38,6 +38,29 @@ import CompPoly.Data.Nat.Bitwise
     - We usually prove the equality as a bridge from the suffixed definitions into the
       non-suffixed definitions (e.g. `distFromCode'_eq_distFromCode`, ...)
 
+  ## Type conventions
+
+  Distance quantities span several numeric types depending on the use case:
+
+  - Hamming distance (absolute, pairwise): `ℕ` — `hammingDist`, `Δ₀(u, v)`.
+  - Min distance of a code (absolute): `ℕ` — `Code.minDist`, `‖C‖₀`.
+  - Distance to a code (absolute, may be `⊤`): `ℕ∞` — `distFromCode`, `Δ₀(u, C)`.
+  - Relative Hamming distance (pairwise): `ℚ≥0` — `relHammingDist`, `δᵣ(u, v)`.
+  - Relative distance to a code: `ENNReal` — `relDistFromCode`, `δᵣ(u, C)`.
+  - Restricted relative Hamming distance: `ℝ≥0` — `restrictedRelHammingDist`
+    (ABF26 `Δ_T(f, g)`).
+  - Code rate: `ℚ≥0` — `LinearCode.rate`, `ρ C`.
+  - Computable variants: `ℚ≥0` — `δᵣ'`, `Δ₀'`, …
+
+  See `docs/wiki/coding-theory-conventions.md` for the broader set of
+  conventions (theorem naming, notation, ε-error types).
+
+  Bridges between these realms are spelled out in the "Switching between different
+  distance realms" subsection below (`relDistFromCode_eq_distFromCode_div`,
+  `distFromCode_le_iff_relDistFromCode_le`, etc.). Downstream consumers should
+  prefer the generic forms (`Δ₀`, `δᵣ`) and only switch to computable forms when
+  the proof actually needs evaluation.
+
   ## Main Definitions
   1. Distance between two words:
     - `hammingDist u v (Δ₀(u, v))`: The Hamming distance between two words `u` and `v`
