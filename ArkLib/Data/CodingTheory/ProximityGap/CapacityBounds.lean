@@ -265,9 +265,11 @@ theorem rs_epsCA_lower_capacity_bchks25_kk25
     (c : ℝ≥0) (_hc : 0 < c) (ρ : ℝ≥0) (_hρ_pos : 0 < ρ) (_hρ_lt : ρ < (1 / 2 : ℝ≥0)) :
     ∃ (ιC : Type) (_ : Fintype ιC) (_ : Nonempty ιC) (_ : DecidableEq ιC)
       (FC : Type) (_ : Field FC) (_ : Fintype FC) (_ : DecidableEq FC)
-      (domain : ιC ↪ FC) (k : ℕ) (slack : ℝ≥0),
-      -- Power-of-two `n` (paper requires it for smooth-domain construction):
-      (∃ p : ℕ, Fintype.card ιC = 2 ^ p) ∧
+      (domain : ιC ↪ FC) (_ : ReedSolomon.Smooth domain) (k : ℕ) (slack : ℝ≥0),
+      -- `F` is a prime field (paper's "prime field" claim):
+      (∃ p : ℕ, p.Prime ∧ CharP FC p ∧ Fintype.card FC = p) ∧
+      -- `|F| = poly(n)` — polynomially bounded in `n = |L|`:
+      (∃ a b : ℕ, Fintype.card FC ≤ a * (Fintype.card ιC) ^ b) ∧
       (k : ℝ) / Fintype.card ιC = ρ ∧
       epsCA (F := FC) (A := FC) ((ReedSolomon.code domain k : Set (ιC → FC)))
           (1 - ρ - slack) (1 - ρ - slack) ≥
