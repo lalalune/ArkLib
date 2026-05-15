@@ -60,6 +60,7 @@ def proximityCondition (f : parℓ → ι → F) (δ : ℝ≥0) (r : parℓ → 
     ∃ u ∈ C, ∀ s ∈ S, u s = ∑ j : parℓ, r j * f j s ∧
     ∃ i : parℓ, ∀ u' ∈ C, ∃ s ∈ S, u' s ≠ f i s
 
+omit [Fintype F] [DecidableEq F] in
 /-- **One-way bridge: WHIR `proximityCondition` ⟹ ABF26 `mcaEvent` (affine-line case).**
 
 When `parℓ = Fin 2` and `r = (1, γ)` (the affine-line generator: `r 0 = 1`, `r 1 = γ`),
@@ -99,7 +100,7 @@ lemma proximityCondition_imp_mcaEvent_affineLine
     intro s hs
     obtain ⟨hu_eq, _⟩ := h_inner s hs
     simp [Fin.sum_univ_two, smul_eq_mul] at hu_eq ⊢
-    linear_combination hu_eq
+    exact hu_eq
   · -- Clause (iii): no joint pair, because row `i` is unmatched.
     rintro ⟨v₀, hv₀, v₁, hv₁, hagree⟩
     have := h_unmatched (if i = 0 then v₀ else v₁)
@@ -114,6 +115,28 @@ lemma proximityCondition_imp_mcaEvent_affineLine
       have hi1 : i = 1 := by omega
       rw [hi1] at hne
       exact hne hag.2
+
+/-- **Probability-level corollary of the predicate bridge.** For any pair `(f 0, f 1)`,
+the probability over `γ ←$ᵖ F` of WHIR's `proximityCondition` (with affine-line `r =
+(1, γ)`) is bounded by ABF26's `epsMCA C δ`. Direct consequence of
+`proximityCondition_imp_mcaEvent_affineLine` (predicate-level inclusion) plus the
+`iSup`-definition of `epsMCA`.
+
+Lets downstream WHIR proofs cite an ABF26-style `epsMCA C δ ≤ ε_target` bound to
+discharge the WHIR `Pr_{r ←$ᵖ Gen.Gen}[proximityCondition ...] ≤ errStar δ` obligation
+for the affine-line generator (where `Gen.Gen` is uniformly distributed over `F`). -/
+lemma Pr_proximityCondition_le_epsMCA
+    {C : LinearCode ι F} {δ : ℝ≥0} (hδ : δ < 1)
+    (f : Fin 2 → ι → F) :
+    Pr_{let γ ←$ᵖ F}[proximityCondition (parℓ := Fin 2) f δ
+        (fun j => if j = 0 then 1 else γ) C]
+      ≤ ProximityGap.epsMCA (F := F) (A := F) ((C : Set (ι → F))) δ := by
+  refine le_trans ?_ (le_iSup
+    (fun u : Code.WordStack F (Fin 2) ι =>
+      Pr_{let γ ←$ᵖ F}[ProximityGap.mcaEvent (F := F) (A := F)
+        ((C : Set (ι → F))) δ (u 0) (u 1) γ]) f)
+  exact Pr_le_Pr_of_implies _ _ _
+    (fun γ h => proximityCondition_imp_mcaEvent_affineLine hδ f γ h)
 
 /-- Definition 4.9
   Let `C` be a linear code, then Gen is a proximity generator with mutual correlated agreement,

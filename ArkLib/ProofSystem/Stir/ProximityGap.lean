@@ -32,13 +32,20 @@ namespace STIR
   then ∃ S ⊆ ι, |S| ≥ (1 - δ) * |ι| and
   ∀ i : m, ∃ u : C, u(S) = fᵢ(S)
 
-  **ABF26 mapping.** This is the predicate-style "joint correlated agreement" form
-  underlying ABF26's `ε_pg` (`ProximityGap.epsPG` in
-  `ArkLib/Data/CodingTheory/ProximityGap/Errors.lean`). The contrapositive — "if no
-  large agreement set exists, then the probability is at most `err'`" — is exactly
-  `epsPG C δ ≤ err'(...)` for `C = RS[F, ι, degree]`. A future bridge lemma
-  `proximity_gap_iff_epsPG_le` would make this iff explicit; left deferred until the
-  call-site refactor in Phase 4 of `ABF26_INTEGRATION_PLAN.md`. -/
+  **ABF26 mapping.** Predicate-style "joint correlated agreement" form of the
+  proximity-gap bound. ABF26's numeric counterparts:
+
+  - `ProximityGap.epsCA C δ_fld δ_int` (Def 4.1, in
+    `ArkLib/Data/CodingTheory/ProximityGap/Errors.lean`) bounds the same "line δ-close
+    but stack not jointly close" probability for **m = 2** (affine lines).
+  - For **general m**, the analogue is `epsCA_curves C (m-1) δ_fld δ_int` (the
+    polynomial-curve variant) or the BCIKS20-specific RS bound stated here.
+
+  This BCIKS20 lemma is the *witness-extraction* form: high `Pr[close]` forces the
+  existence of a large agreement set. The contrapositive bounds `Pr[close]` by
+  `err'(...)` when no such set exists — that is the bound `epsCA_curves C δ δ ≤
+  err'(...)` for `C = RS[F, ι, degree]`. A future bridge `proximity_gap_iff_epsCA_le`
+  would make this iff explicit; deferred per Phase 4 of `ABF26_INTEGRATION_PLAN.md`. -/
 lemma proximity_gap
   {F : Type} [Field F] [Fintype F] [DecidableEq F]
   {ι : Type} [Fintype ι] [Nonempty ι] {φ : ι ↪ F}

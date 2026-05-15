@@ -257,10 +257,11 @@ theorem folding_listdecoding_if_genMutualCorrAgreement
     `Λᵣ(0,k,f,S_0,C)` denotes Λᵣ at f : ι → F for code C and
     `Λᵣ(1,k,fold_k(f,(fun _ : Fin 1 => α)),S_1,C')` denotes Λᵣ at fold_k : ι^2 → F for code C'.
 
-  **ABF26 mapping.** Specialization of ABF26 T3.4 (τ-subspace-design list decoding)
-  to folded RS: ListDecoding bound for FRS instantiates the abstract τ-subspace-design
-  bound. See `CodingTheory.subspaceDesign_list_decoding_cz25` in
-  `ArkLib/Data/CodingTheory/ListDecoding/Bounds.lean`. -/
+  **ABF26 mapping.** Probabilistic correctness of folded-RS list decoding. The
+  `errStar` accounting comes from MCA bounds (ABF26 Def 4.3 `epsMCA`). The underlying
+  list-size bound for FRS specializes ABF26 T3.4 (`subspaceDesign_list_decoding_cz25`
+  in `ArkLib/Data/CodingTheory/ListDecoding/Bounds.lean`) via the folded-RS
+  τ-subspace-design property (T2.18). -/
 lemma folding_preserves_listdecoding_base
   [Fintype F] {S : Finset ι} {k m : ℕ} (hm : 1 ≤ m) {φ : ι ↪ F}
   [Fintype ι] [DecidableEq ι] [Smooth φ] {δ : ℝ≥0}
