@@ -144,6 +144,80 @@ def reduction :
   prover := prover (ι := ι) (F := F) (k := k)
   verifier := verifier (k := k)
 
+/-! ### Oracle-flavour prover, verifier, reduction
+
+Parallel to the C6.2 oracle flavour in `Spec/General.lean`, exposing
+the codewords `(f₁, f₂)` as separate oracle inputs (rather than
+bundled into `StmtIn`). Same `OracleProver` / `OracleVerifier` /
+`OracleReduction` idiom as FRI's `foldOracleReduction`. -/
+
+/-- OracleProver for Construction 6.9. Identical to `prover` modulo
+bundling the output statement with the (singleton) output oracle. -/
+def oracleProver :
+    OracleProver []ₒ
+      (Statement (F := F) k) (OracleStatement ι F) (Witness (F := F) k)
+      (OutputStatement (F := F) k) (OutputOracleStatement ι F) (OutputWitness (F := F) k)
+      (pSpec (F := F)) where
+  PrvState
+  | ⟨0, _⟩ =>
+      (Statement (F := F) k × (∀ i, OracleStatement ι F i)) × Witness (F := F) k
+  | _ =>
+      F × (Statement (F := F) k × (∀ i, OracleStatement ι F i)) × Witness (F := F) k
+
+  input := id
+
+  receiveChallenge
+  | ⟨0, _⟩ => fun st ↦ pure <| fun (γ : F) ↦ (γ, st)
+
+  sendMessage
+  | ⟨0, h⟩ => nomatch h
+
+  output := fun ⟨γ, ⟨stmt, oStmt⟩, M⟩ ↦ pure <|
+    ⟨⟨(stmt.1, stmt.2.1 + γ * stmt.2.2),
+       fun _ ↦ fun j ↦ oStmt 0 j + γ * oStmt 1 j⟩,
+      fun j ↦ M 0 j + γ * M 1 j⟩
+
+/-- OracleVerifier for Construction 6.9.
+
+Unlike C6.2, this verifier has *no `guard`*: it simply produces the
+new statement `(v, μ₁ + γ·μ₂)`. The combined-codeword output
+`f_new := f₁ + γ·f₂` is *embedded* via `OracleVerifier.embed` — the
+output oracle (a single index `0 : Fin 1`) is mapped back through
+the `embed` field, telling the framework that `OutputOracleStatement 0`
+should be computed from the input oracle statements and (vacuously) the
+prover messages.
+
+The `embed`'s codomain `ιₛᵢ ⊕ pSpec.MessageIdx` allows pointing the
+output oracle at one of `OStmtIn 0`, `OStmtIn 1`, or the (empty)
+message set. Since `f_new` is a *combination* `f₁ + γ·f₂`, the embed
+can only really point at one of them — the actual `f_new` is materialised
+by `OracleVerifier.toVerifier` via the `simOracle` machinery (which
+runs the oracle queries through the verify body's `OracleComp`).
+
+For a strictly faithful encoding we'd need a more elaborate `simOStmt`
+field (currently commented out in `OracleReduction/Basic.lean`); for
+now we point at `OStmtIn 0` as a placeholder — the non-oracle
+`reduction` already captures the full semantics. -/
+def oracleVerifier :
+    OracleVerifier []ₒ
+      (Statement (F := F) k) (OracleStatement ι F)
+      (OutputStatement (F := F) k) (OutputOracleStatement ι F)
+      (pSpec (F := F)) where
+  verify := fun stmt challenges ↦ do
+    let γ : F := challenges ⟨⟨0, by decide⟩, by rfl⟩
+    pure (stmt.1, stmt.2.1 + γ * stmt.2.2)
+  embed := ⟨fun _ ↦ Sum.inl 0, fun a b _ ↦ Subsingleton.elim a b⟩
+  hEq := fun _ ↦ rfl
+
+/-- Honest oracle reduction for Construction 6.9. -/
+def oracleReduction :
+    OracleReduction []ₒ
+      (Statement (F := F) k) (OracleStatement ι F) (Witness (F := F) k)
+      (OutputStatement (F := F) k) (OutputOracleStatement ι F) (OutputWitness (F := F) k)
+      (pSpec (F := F)) where
+  prover := oracleProver (ι := ι) (F := F) (k := k)
+  verifier := oracleVerifier (ι := ι) (F := F) (k := k)
+
 omit [DecidableEq ι] [Fintype F] [DecidableEq F] in
 /-- **Lemma 6.10 of [ABF26]** (knowledge soundness of Construction 6.9).
 
