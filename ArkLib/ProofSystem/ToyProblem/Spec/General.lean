@@ -163,6 +163,85 @@ def outputRelation (C : Set (ι → F)) (δ : ℝ≥0) :
     ToyProblem.relaxedRelation (k := k) (ℓ := 2) C δ input.1.1.1
       ![input.1.1.2.1, input.1.1.2.2] input.1.2
 
+/-! ### Honest prover, verifier, and reduction
+
+This section mirrors the `foldProver` / `foldVerifier` / `foldOracleReduction`
+pattern in [`Fri/Spec/SingleRound.lean`](../../../Fri/Spec/SingleRound.lean).
+Because `OracleStatement ι F i = ι → F` is a plain function (not an
+oracle that needs the `OracleQuery` machinery), we use the **non-oracle**
+`Prover` / `Verifier` / `Reduction` triple with the oracle codewords
+threaded through the bundled input `StmtIn = Statement × (∀ i, OracleStatement i)`.
+This is sound — it's the same shape produced by
+`OracleReduction.toReduction` — and avoids the `embed` / `hEq`
+plumbing. An `OracleProver` / `OracleVerifier` flavour is a follow-up.
+-/
+
+/-- Honest prover for Construction 6.2. After receiving the combination
+randomness `γ`, the prover sends `g := M 0 + γ · M 1` (point-wise on
+`Fin k`). The spot-check positions `xs` are not used by the prover —
+they only feed the verifier's spot-check at the end.
+
+State machine (`PrvState : Fin 4 → Type`):
+  * `PrvState 0` — initial: the bundled `(stmt, oStmt) × witness`.
+  * `PrvState 1, 2, 3` — same plus the combination randomness `γ`. -/
+def prover :
+    Prover []ₒ
+      (Statement (F := F) k × (∀ i, OracleStatement ι F i)) (Witness (F := F) k)
+      OutputStatement OutputWitness
+      (pSpec (ι := ι) (F := F) k t) where
+  PrvState
+  | ⟨0, _⟩ =>
+      (Statement (F := F) k × (∀ i, OracleStatement ι F i)) × Witness (F := F) k
+  | _ =>
+      F × (Statement (F := F) k × (∀ i, OracleStatement ι F i)) × Witness (F := F) k
+
+  input := id
+
+  receiveChallenge
+  | ⟨0, _⟩ => fun st ↦ pure <| fun (γ : F) ↦ (γ, st)
+  | ⟨1, h⟩ => nomatch h
+  | ⟨2, _⟩ => fun ⟨γ, st⟩ ↦ pure <| fun (_ : Fin t → ι) ↦ (γ, st)
+
+  sendMessage
+  | ⟨0, h⟩ => nomatch h
+  | ⟨1, _⟩ => fun ⟨γ, ⟨stmt, oStmt⟩, M⟩ ↦
+      pure ((fun j ↦ M 0 j + γ * M 1 j), (γ, ⟨stmt, oStmt⟩, M))
+  | ⟨2, h⟩ => nomatch h
+
+  output := fun _ ↦ pure ((), ())
+
+/-- Honest verifier for Construction 6.2. Takes the bundled input
+`(stmt, oStmt) = ((v, μ₁, μ₂), (f₁, f₂))` and the full transcript
+`(γ, g, xs)`; accepts iff `accepts` holds for the supplied encoding. -/
+noncomputable def verifier (encode : (Fin k → F) → (ι → F)) :
+    Verifier []ₒ
+      (Statement (F := F) k × (∀ i, OracleStatement ι F i))
+      OutputStatement
+      (pSpec (ι := ι) (F := F) k t) where
+  verify := fun ⟨stmt, oStmt⟩ tr ↦ do
+    let γ : F := tr ⟨0, by decide⟩
+    let g : Fin k → F := tr ⟨1, by decide⟩
+    let xs : Fin t → ι := tr ⟨2, by decide⟩
+    -- `accepts` is a finite conjunction of equalities in `F` and a
+    -- per-`Fin t` quantifier over the same. The conjunction is decidable
+    -- in principle, but the syntactic `Decidable` instance has to be
+    -- summoned classically here (we won't run this code; the verifier
+    -- object is consumed by soundness proofs, not by execution).
+    have : Decidable (accepts (k := k) (t := t) encode stmt oStmt γ g xs) :=
+      Classical.dec _
+    if accepts (k := k) (t := t) encode stmt oStmt γ g xs
+    then pure () else failure
+
+/-- Honest reduction for Construction 6.2: the package
+`{prover, verifier}` over the bundled-input `Reduction` type. -/
+noncomputable def reduction (encode : (Fin k → F) → (ι → F)) :
+    Reduction []ₒ
+      (Statement (F := F) k × (∀ i, OracleStatement ι F i)) (Witness (F := F) k)
+      OutputStatement OutputWitness
+      (pSpec (ι := ι) (F := F) k t) where
+  prover := prover (ι := ι) (F := F) (k := k) (t := t)
+  verifier := verifier (k := k) (t := t) encode
+
 omit [Fintype ι] [DecidableEq ι] [Fintype F] [DecidableEq F] in
 /-- Honest completeness for ABF26 Construction 6.2, point form: if
 `((v, μ₁, μ₂), (f₁, f₂))` lies in `inputRelation` with the underlying
