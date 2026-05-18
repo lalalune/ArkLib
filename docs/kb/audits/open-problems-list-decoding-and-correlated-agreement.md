@@ -204,7 +204,7 @@ framework gaps being closed. Plan Phase 8 holds these.
 | `A.4` | Knowledge state function | present | [Security/RoundByRound.lean](../../../ArkLib/OracleReduction/Security/RoundByRound.lean) | existing | Aligned with paper. |
 | `A.5` | Round-by-round knowledge soundness | present-but-different | `Verifier.rbrKnowledgeSoundnessOneShot`, `Verifier.rbrKnowledgeSoundness` in [Security/RoundByRound.lean](../../../ArkLib/OracleReduction/Security/RoundByRound.lean) | alias `ABF26.IOR.rbrKnowledgeSoundness` | Abstract transcript/state-function framework. |
 | `A.6` | Formal derivative `f^(s)` | present-but-different | Mathlib `Polynomial.derivative` | alias `ABF26.formalDerivative` and iterated `^[s]` | Iterated derivative wrapped in `ReedSolomon/Multiplicity.lean` (new). |
-| `A.7` | Univariate multiplicity code `UM[F,L,k,s]` | missing | none | `ReedSolomon.Multiplicity.umCode` in `ReedSolomon/Multiplicity.lean` (new) | GW13, KSY14. |
+| `A.7` | Univariate multiplicity code `UM[F,L,k,s]` | present | `ReedSolomon.Multiplicity.umEvalOnPoints`, `ReedSolomon.Multiplicity.umCode` in [ReedSolomon/Multiplicity.lean](../../../ArkLib/Data/CodingTheory/ReedSolomon/Multiplicity.lean) | same | Submodule form `(Polynomial.degreeLT F k).map (umEvalOnPoints domain s)`, mirroring `ReedSolomon.code` and `ReedSolomon.Folded.frsCode`. Encoder packages `s` formal-derivative evaluations per domain point. |
 
 ## Appendix B
 
