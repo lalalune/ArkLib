@@ -70,17 +70,24 @@ DOCSTRING_CLOSE_RE = re.compile(r"-/\s*$")
 
 
 def _docstring_head(text: str) -> str:
-    """Strip Lean doc-comment delimiters and return the first non-blank line."""
+    """Strip Lean doc-comment delimiters and return up to ~600 chars of body.
+
+    Captures more than just the first line so that dedup-finder's Jaccard
+    similarity sees the whole "what does this declaration do" description,
+    not just the first sentence. Two declarations whose first lines happen to
+    match (a common artefact of copy-pasted preambles like "Prover's function
+    for processing the next round...") used to score Jaccard 1.00 even when
+    their bodies clearly distinguish them; capturing more of the body fixes
+    those false positives.
+    """
     body = text.strip()
     if body.startswith("/--"):
         body = body[3:]
     if body.endswith("-/"):
         body = body[:-2]
-    for line in body.splitlines():
-        line = line.strip()
-        if line:
-            return line[:140]
-    return ""
+    # Join lines, collapse whitespace, take up to a soft cap.
+    joined = " ".join(line.strip() for line in body.splitlines() if line.strip())
+    return joined[:600]
 
 
 def parse_file(path: Path) -> list[dict]:
