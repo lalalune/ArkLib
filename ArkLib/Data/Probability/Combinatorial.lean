@@ -24,6 +24,58 @@ namespace Probability
 
 open Finset NNReal ENNReal ProbabilityTheory
 
+/-! ## Colliding-pair helpers (ABF26 Appendix B counting)
+
+Helper definitions and the central Cauchy-Schwarz-on-fibers lemma used
+by `exists_large_image_of_pairwise_collision_bound` (Claim B.1). -/
+
+section CollidingPairs
+
+variable {S T : Type} [Fintype S] [DecidableEq S] [DecidableEq T]
+
+/-- Number of *ordered* pairs `(x, y) : S × S` with `x ≠ y` and `φ x = φ y`.
+
+This equals twice the number of distinct (unordered) colliding pairs;
+working ordered avoids needing a `LinearOrder S` to canonicalise unordered
+pairs. Paper's `|C_φ|` is `numCollsOrdered φ / 2`. -/
+def numCollsOrdered (φ : S → T) : ℕ :=
+  (Finset.univ.filter (fun p : S × S => p.1 ≠ p.2 ∧ φ p.1 = φ p.2)).card
+
+/-- Sum of squared fiber-cardinalities = `|S| + numCollsOrdered`.
+
+Each ordered pair `(x, y)` with `φ x = φ y` is counted once on the LHS
+(via its common image μ); the `|S|` diagonal pairs `(x, x)` and the
+`numCollsOrdered` off-diagonal pairs partition them.
+
+**Tagged sorry — bounded follow-up.** Proof chains: `|fiber μ|² =
+|fiber μ × fiber μ|` (via `Finset.card_product`); sum-over-image
+collects to `#{(x, y) : φ x = φ y}` (via `Finset.card_biUnion` with
+disjointness); split diagonal vs. off-diagonal (via
+`Finset.card_union_of_disjoint`); diagonal-count = `|S|` (via the
+`fun x ↦ (x, x)` bijection from `S` to the diagonal filter). ~40-60
+lines. -/
+lemma sum_fiber_sq_eq (φ : S → T) :
+    ∑ μ ∈ Finset.univ.image φ,
+        ((Finset.univ.filter (fun x : S => φ x = μ)).card)^2 =
+      Fintype.card S + numCollsOrdered φ := by
+  sorry
+
+/-- Cauchy-Schwarz applied to fiber cardinalities.
+
+Equivalent to `Finset.sq_sum_le_card_mul_sum_sq` over the image of `φ`,
+combined with `sum_fiber_sq_eq` to rewrite the squared-sum side and
+with `Finset.card_eq_sum_card_image` (or an explicit fiber count) to
+identify `Σ μ ∈ image, |fiber μ| = |S|`.
+
+**Tagged sorry — bounded follow-up.** ~10-20 lines through the named
+Mathlib lemmas listed. -/
+lemma cauchy_schwarz_fiber (φ : S → T) :
+    (Fintype.card S)^2 ≤
+      (Finset.univ.image φ).card * (Fintype.card S + numCollsOrdered φ) := by
+  sorry
+
+end CollidingPairs
+
 /-- **Claim B.1 of [ABF26]** ("Omitted claim for Lemma 6.12").
 
 Suppose `S, T` are finite sets and `Φ` is a distribution on functions `S → T`
@@ -52,13 +104,11 @@ colliding pairs under `φ`.
 3. **Cauchy–Schwarz on fibers.**
    `(Σ_μ |φ⁻¹(μ)|)² ≤ (Σ_μ 1²) · (Σ_μ |φ⁻¹(μ)|²) = |φ(S)| · Σ_μ |φ⁻¹(μ)|²`,
    hence `|φ(S)| · (2 |C_φ| + |S|) ≥ |S|²` and thus
-   `|φ(S)| ≥ |S|² / (2 |C_φ| + |S|)`.
+   `|φ(S)| ≥ |S|² / (2 |C_φ| + |S|)`. Captured by `cauchy_schwarz_fiber`.
 
-4. **Jensen.** The function `x ↦ |S|² / (2 x + |S|)` is convex on `x ≥ 0`
-   (`f''(x) = 8 |S|² / (2 x + |S|)^3 > 0`), so taking expectations,
-   `E_{Φ}[|φ(S)|] ≥ |S|² / (2 E_{Φ}[|C_φ|] + |S|)
-                  ≥ |S|² / (2 · (|S| choose 2) · ε + |S|)
-                  = |S| / (1 + (|S| − 1) · ε)`.
+4. **Contradiction-form.** Rather than Jensen on convex `x ↦ |S|²/(2x+|S|)`,
+   we negate the goal and derive `numCollsOrdered > |S|·(|S|−1)·ε` for every
+   `φ ∈ support`, then sum to contradict the hypothesis.
 
 5. **Existence by averaging.** Some `φ` in the support of `Φ` achieves at
    least the expectation, hence the claimed bound. -/
