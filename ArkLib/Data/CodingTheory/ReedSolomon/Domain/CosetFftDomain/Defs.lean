@@ -186,10 +186,10 @@ namespace CosetFftDomain
 
 variable {D : Type} [FunLike D ι F] [CosetFftDomainClass D ι F]
 
+set_option linter.unusedSectionVars false in
 omit [DecidableEq ι] [DecidableEq F] [Fintype ι] in
 @[ext]
-theorem ext {ω₁ ω₂ : D} (h : ∀ i, ω₁ i = ω₂ i) :
-  ω₁ = ω₂ := by sorry
+theorem ext {ω₁ ω₂ : D} (h : ∀ i, ω₁ i = ω₂ i) : ω₁ = ω₂ := DFunLike.ext _ _ h
 
 end CosetFftDomain
 

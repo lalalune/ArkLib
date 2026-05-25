@@ -147,7 +147,7 @@ structure FftDomain (ι : Type) [AddCommGroup ι]
 namespace FftDomain
 
 omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
-lemma eq_iff_domains_eq {φ₁ φ₂ : FftDomain ι F} :
+private lemma eq_iff_domains_eq {φ₁ φ₂ : FftDomain ι F} :
   φ₁ = φ₂ ↔ φ₁.domain = φ₂.domain := by
   rcases φ₁ with ⟨f₁, h₁⟩
   aesop
