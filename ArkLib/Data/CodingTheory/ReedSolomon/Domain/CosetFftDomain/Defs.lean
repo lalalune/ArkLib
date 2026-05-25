@@ -40,6 +40,7 @@ namespace CosetFftDomainClass
 variable {D : Type} [FunLike D ι F] [CosetFftDomainClass D ι F]
 
 omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
+@[simp]
 lemma ne_zero (ω : D) (i : ι) : ω i ≠ 0 := fun h ↦ by
   have h0 : IsUnit (ω 0) := map_zero_unit ω
   have h_add := map_add ω i (-i)
@@ -192,5 +193,20 @@ omit [DecidableEq ι] [DecidableEq F] [Fintype ι] in
 theorem ext {ω₁ ω₂ : D} (h : ∀ i, ω₁ i = ω₂ i) : ω₁ = ω₂ := DFunLike.ext _ _ h
 
 end CosetFftDomain
+
+namespace CosetFftDomain
+
+omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
+lemma injective {ω : CosetFftDomain ι F} :
+  Injective ω := CosetFftDomainClass.injective _
+
+omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
+lemma injOn {ω : CosetFftDomain ι F} {s : Set ι} :
+  Set.InjOn ω s := fun _ _ _ _ h ↦ injective h
+
+end CosetFftDomain
+
+abbrev SmoothCosetFftDomain (n : ℕ) (F : Type) [Field F] : Type :=
+  CosetFftDomain (Fin (2 ^ n)) F
 
 end ReedSolomon

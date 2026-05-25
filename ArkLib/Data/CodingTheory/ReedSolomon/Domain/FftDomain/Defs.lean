@@ -61,7 +61,54 @@ instance : CosetFftDomainClass (FftDomain ι F) ι F where
     have : (i + j : ι) = (Multiplicative.ofAdd i) * (Multiplicative.ofAdd j) := by rfl
     aesop 
       (add simp [FftDomain.eval_fft_domain_eq_eval_domain])
-  map_neg ω i := by sorry
-  injective ω x y h := sorry
+  map_neg ω i := by 
+    have : (0 : ι) = (1 : Multiplicative ι) := by rfl
+    have : (-i) = (Multiplicative.ofAdd i)⁻¹ := by rfl
+    aesop 
+      (add simp [FftDomain.eval_fft_domain_eq_eval_domain,
+                 Multiplicative.ofAdd])
+      (add safe (by field_simp))
+  injective ω x y h := ω.subgroupDomain_inj <| by aesop 
+
+class FftDomainClass.{u, v}
+  (D : Type u) (ι : outParam (Type v)) [AddCommGroup ι]
+  (F : outParam (Type v)) [Field F] [FunLike D ι F] extends
+  CosetFftDomainClass D ι F where
+  generator_eq_one (ω : D) : ω 0 = 1
+
+instance : FftDomainClass (FftDomain ι F) ι F where
+  generator_eq_one ω := by 
+    have : (0 : ι) = (1 : Multiplicative ι) := by rfl
+    aesop 
+      (add simp [FftDomain.eval_fft_domain_eq_eval_domain])
+
+namespace FftDomain 
+
+omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
+lemma eval_fft_domain_eq_eval_coset_fft_domain
+  {ω : FftDomain ι F} {i : ι} :
+  ω i = ω.toCosetFftDomain i := by
+  simp [eval_fft_domain_eq_eval_domain,
+      CosetFftDomain.eval_coset_fft_domain_eq_eval_generator_mul_domain,
+      ω.cosetGenerator_one]
+
+end FftDomain
+
+namespace FftDomain
+
+omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
+lemma injective {ω : FftDomain ι F} :
+  Function.Injective ω := CosetFftDomainClass.injective _
+
+omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
+lemma injOn {ω : FftDomain ι F} {s : Set ι} :
+  Set.InjOn ω s := fun _ _ _ _ h ↦ injective h
+
+end FftDomain
+
+
+abbrev SmoothFftDomain (n : ℕ) (F : Type) [Field F] : Type :=
+  FftDomain (Fin (2 ^ n)) F
+
 
 end ReedSolomon

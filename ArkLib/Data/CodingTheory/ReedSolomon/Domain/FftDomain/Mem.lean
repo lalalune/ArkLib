@@ -28,36 +28,38 @@ open CosetFftDomain
 variable {ω : FftDomain ι F} {x : F}
 
 omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
-lemma mem_def : x ∈ (ω : CosetFftDomain ι F) ↔ ∃ i, x = ω i := by aesop (add simp [Membership.mem])
-
-omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
-lemma mem_iff_exists_mul : 
-  x ∈ ω ↔ ∃ i, x = ω.cosetGenerator * ω.subgroupDomain i := by
+lemma mem_iff_exists :
+  x ∈ ω ↔ ∃ i, x = ω.subgroupDomain i := by
   aesop (add simp [Membership.mem])
 
-omit [DecidableEq ι] in
-lemma mem_toFinset_iff_exists_mul : 
-  x ∈ ω.toFinset ↔ ∃ i, x = ω.cosetGenerator * ω.subgroupDomain i := by
-  aesop (add simp [toFinset])
-
 omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
-@[simp]
-lemma mem_coset_domain_self {i : ι} :
-  ω i ∈ ω := by simp [mem_def]
+lemma mem_iff_mem_toCosetFftDomain :
+  x ∈ ω ↔ x ∈ ω.toCosetFftDomain := by
+  simp [mem_iff_exists, mem_iff_exists_mul, ω.cosetGenerator_one]
+
+omit [DecidableEq ι] in
+lemma mem_toFinset_iff_exists : 
+  x ∈ ω.toFinset ↔ ∃ i, x = ω.subgroupDomain i := by
+  rw [CosetFftDomain.mem_toFinset_iff_exists_mul, 
+      ω.cosetGenerator_one]
+  aesop 
 
 omit [DecidableEq ι] in
 @[simp]
 lemma mem_toFinset_iff_mem :
-  x ∈ ω.toFinset ↔ x ∈ ω := by simp [mem_toFinset_iff_exists_mul, mem_iff_exists_mul]
+  x ∈ ω.toFinset ↔ x ∈ ω := by 
+  rw [CosetFftDomain.mem_toFinset_iff_mem,
+      mem_iff_mem_toCosetFftDomain]
 
 omit [DecidableEq ι] in
 @[simp high]
 lemma mem_toFinset_self {i : ι} :
-  ω i ∈ ω.toFinset := by simp [mem_toFinset_iff_mem]
+  ω i ∈ ω.toFinset := by 
+  simp [CosetFftDomain.mem_toFinset_iff_mem, ←mem_iff_mem_toCosetFftDomain]
 
-end CosetFftDomain
+end FftDomain
 
-instance {x : F} {ω : CosetFftDomain ι F} : Decidable (x ∈ ω) :=
-  decidable_of_iff _ CosetFftDomain.mem_toFinset_iff_mem
+instance {x : F} {ω : FftDomain ι F} : Decidable (x ∈ ω) :=
+  decidable_of_iff _ FftDomain.mem_toFinset_iff_mem
 
 end ReedSolomon
