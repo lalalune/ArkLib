@@ -67,6 +67,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.DG25.ReedSolomon
 import ArkLib.Data.CodingTheory.ProximityGap.Folding
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGenerators
 import ArkLib.Data.CodingTheory.ReedSolomon
+import ArkLib.Data.CodingTheory.ReedSolomon.Domain.CosetFftDomain.Defs
+import ArkLib.Data.CodingTheory.ReedSolomon.Domain.CosetFftDomain.Mem
+import ArkLib.Data.CodingTheory.ReedSolomon.Domain.Log
 import ArkLib.Data.CodingTheory.ReedSolomon.FftDomain
 import ArkLib.Data.CodingTheory.ReedSolomon.Multilinear
 import ArkLib.Data.EllipticCurve.BN254
@@ -192,6 +195,7 @@ import ArkLib.ToCompPoly.Univariate.Basic
 import ArkLib.ToCompPoly.Univariate.Lagrange
 import ArkLib.ToMathlib.BigOperators.Fin
 import ArkLib.ToMathlib.Finset.Basic
+import ArkLib.ToMathlib.Finset.ToListWithProof
 import ArkLib.ToMathlib.List.Basic
 import ArkLib.ToMathlib.Polynomial.DegreeLT
 import ArkLib.ToMathlib.Polynomial.EvalExt
