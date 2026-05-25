@@ -79,6 +79,8 @@ private lemma even_add_odd_eq_of_not_charp_2
   even_add_odd_eq_of_2_ne_0 _ _ _ hz <| fun contra ↦ hchar <|
     ringChar.of_eq (CharP.ringChar_of_prime_eq_zero Nat.prime_two contra)
 
+/-- An explicit formula to compute `foldWordAux` when `k = 2`
+  not involving Lagrange interpolation. -/
 lemma foldWordAux_of_k_2
   [NeZero n]
   {i : Fin (2 ^ (n - 1))} :
@@ -223,7 +225,8 @@ lemma foldValue_pow_x_k {i : Fin (2 ^ n)} :
 @[simp]
 lemma foldValue_zero {k : ℕ} :
   foldValue domain 0 k = 0 := by aesop (add simp [foldValue, foldWordAux])
-
+ 
+/-- An explicit formula for `foldValue` when `k = 1`. -/
 lemma foldValue_k_1 [NeZero n] {i : Fin (2 ^ (n - 1))} {α : F} :
   foldValue domain f 1 α (domain.subdomainNatReversed 1 i) = 
     let x : domain := CosetFftDomain.twoNthRoot (i := 1)
@@ -246,7 +249,9 @@ noncomputable def foldWord (domain : SmoothCosetFftDomain n F)
 lemma foldWord_zero {k : ℕ} :
   foldWord domain 0 k = 0 := by aesop (add simp [foldWord])
 
-lemma foldWord_k_1 [NeZero n] {i : Fin (2 ^ (n - 1))} {α : F} :
+/-- An explicit formula for `foldWord` when `k = 1` that
+  does not use Lagrange interpolation. -/
+theorem foldWord_k_1 [NeZero n] {i : Fin (2 ^ (n - 1))} {α : F} :
   foldWord domain f 1 α i = 
     let x : domain := CosetFftDomain.twoNthRoot (i := 1)
         ⟨domain.subdomainNatReversed 1 i, by simp⟩
