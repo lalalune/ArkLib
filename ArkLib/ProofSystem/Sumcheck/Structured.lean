@@ -144,4 +144,19 @@ def sumcheckConsistencyProp {k : ℕ} (sumcheckTarget : L) (H : L⦃≤ 2⦄[X F
 
 end ConsistencyProp
 
+section Witness
+
+/-- Witness for the structured sumcheck at round `i`:
+- `t'` — the original multilinear polynomial (the "data" being committed); same across rounds.
+- `H`  — the projected round polynomial `H_i(X_i, …, X_{ℓ-1})`, equal to the multiquadratic
+  product `m · t'` with the first `i` variables fixed to the verifier's previous challenges.
+
+Lifted from `Binius.RingSwitching.SumcheckWitness`. Generic in shape; PR 2b's per-round
+prover/verifier consume this witness uniformly across all structured-sumcheck instantiations. -/
+structure SumcheckWitness (L : Type) [CommSemiring L] (ℓ : ℕ) (i : Fin (ℓ + 1)) where
+  t' : MultilinearPoly L ℓ
+  H : L⦃≤ 2⦄[X Fin (ℓ - i)]
+
+end Witness
+
 end Sumcheck.Structured

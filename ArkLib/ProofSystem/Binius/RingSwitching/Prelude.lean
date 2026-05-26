@@ -216,10 +216,12 @@ structure RingSwitchingBaseContext extends (SumcheckBaseContext L ℓ) where
   s_hat : TensorAlgebra K L  -- ŝ
   r_batching : Fin κ → L     -- r''
 
-structure SumcheckWitness (i : Fin (ℓ' + 1)) where
-  t' : MultilinearPoly L ℓ' -- the packed polynomial
-  -- `h(X_0, ..., X_{ℓ'-1}) := A(X_0, ..., X_{ℓ'-1}) ⋅ t'(X_0, ..., X_{ℓ'-1})`
-  H : L⦃≤ 2⦄[X Fin (ℓ' - i)]
+-- `SumcheckWitness` was lifted to `ArkLib.ProofSystem.Sumcheck.Structured` (the data
+-- shape is generic; only the per-round prover/verifier in `SumcheckPhase.lean`
+-- consume it). Re-exported under `Binius.RingSwitching` for backwards compatibility.
+-- The packed polynomial `t'` and round polynomial `H = m · t'` (after fixing previous
+-- challenges) live in the same structure.
+export Sumcheck.Structured (SumcheckWitness)
 
 section MLIOPCS
 -- Define the specific Stmt/Wit types Π' expects.

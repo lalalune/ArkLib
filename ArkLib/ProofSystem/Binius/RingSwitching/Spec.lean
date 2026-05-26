@@ -34,8 +34,10 @@ def pSpecBatching : ProtocolSpec 2 :=
   ⟨![Direction.P_to_V, Direction.V_to_P],
    ![TensorAlgebra K L, Fin κ → L]⟩
 
-@[reducible]
-def pSpecSumcheckRound : ProtocolSpec 2 := ⟨![Direction.P_to_V, Direction.V_to_P], ![L⦃≤ 2⦄[X], L]⟩
+-- `pSpecSumcheckRound` was lifted to `ArkLib.ProofSystem.Sumcheck.Structured.SingleRound`
+-- (it's reachable here via `import` chain through `Binius.RingSwitching.Prelude`).
+-- Re-exported under `Binius.RingSwitching` so existing references resolve unchanged.
+export Sumcheck.Structured (pSpecSumcheckRound)
 
 def pSpecSumcheckLoop := ProtocolSpec.seqCompose (fun (_: Fin ℓ') => pSpecSumcheckRound L)
 
@@ -59,9 +61,9 @@ instance : ∀ j, OracleInterface ((pSpecBatching κ L K).Message j)
   | ⟨0, _⟩ => OracleInterface.instDefault -- ŝ ∈ A
   | ⟨1, _⟩ => OracleInterface.instDefault -- r'' ∈ L^κ
 
-instance : ∀ j, OracleInterface ((pSpecSumcheckRound (L:=L)).Message j)
-  | ⟨0, _⟩ => OracleInterface.instDefault -- h_i(X) polynomial
-  | ⟨1, _⟩ => OracleInterface.instDefault -- challenge r'_i
+-- The `OracleInterface` instance for `pSpecSumcheckRound.Message` was lifted to
+-- `ArkLib.ProofSystem.Sumcheck.Structured.SingleRound` along with the spec itself.
+-- Anonymous instances are looked up globally regardless of namespace, so no shim is needed.
 
 instance : ∀ j, OracleInterface ((pSpecSumcheckLoop (L:=L) ℓ').Message j)
   := instOracleInterfaceMessageSeqCompose
@@ -88,11 +90,9 @@ instance : ∀ j, SampleableType ((pSpecBatching κ L K).Challenge j)
     simp only [Challenge, Fin.isValue, Matrix.cons_val_one, Matrix.cons_val_fin_one]
     exact instSampleableTypeFinFunc (α := L)
 
-instance : ∀ j, SampleableType ((pSpecSumcheckRound (L:=L)).Challenge j)
-  | ⟨0, h0⟩ => by nomatch h0
-  | ⟨1, _⟩ => by
-    simp only [Challenge, Fin.isValue, Matrix.cons_val_one, Matrix.cons_val_fin_one]
-    infer_instance
+-- The `SampleableType` instance for `pSpecSumcheckRound.Challenge` was lifted to
+-- `ArkLib.ProofSystem.Sumcheck.Structured.SingleRound`. Anonymous instances are looked up
+-- globally, so no shim is needed.
 
 instance : ∀ j, SampleableType ((pSpecSumcheckLoop (L:=L) ℓ').Challenge j)
   := instSampleableTypeChallengeSeqCompose

@@ -11,6 +11,7 @@ import ArkLib.Data.MvPolynomial.Multilinear
 import ArkLib.Data.MvPolynomial.RestrictDegree
 import CompPoly.Data.Vector.Basic
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRound
+import ArkLib.ProofSystem.Sumcheck.Structured.SingleRound
 
 namespace Binius.BinaryBasefold
 
@@ -75,41 +76,15 @@ variable {L : Type} [CommRing L] (ℓ : ℕ) [NeZero ℓ]
 variable (𝓑 : Fin 2 ↪ L)
 
 -- `fixFirstVariablesOfMQP` and `fixFirstVariablesOfMQP_degreeLE` (plus three private
--- helper lemmas) were lifted to `ArkLib.Data.MvPolynomial.RestrictDegree` so the
--- structured sumcheck (`ArkLib.ProofSystem.Sumcheck.Structured`) and any future
+-- helper lemmas) were lifted to `ArkLib.Data.MvPolynomial.RestrictDegree`, and
+-- `getSumcheckRoundPoly` was lifted to `ArkLib.ProofSystem.Sumcheck.Structured.SingleRound`,
+-- so the structured sumcheck (`ArkLib.ProofSystem.Sumcheck.Structured`) and any future
 -- ring-switching protocol can use them without depending on `Binius.BinaryBasefold`.
--- They are accessible here unqualified via `open MvPolynomial` above; we also export
--- them under the `Binius.BinaryBasefold` namespace for any fully-qualified callers.
+-- They are accessible here unqualified via `open MvPolynomial` / `open Sumcheck.Structured`
+-- above; we also export them under the `Binius.BinaryBasefold` namespace for any
+-- fully-qualified callers.
 export MvPolynomial (fixFirstVariablesOfMQP fixFirstVariablesOfMQP_degreeLE)
-
-/- `H_i(X_i, ..., X_{ℓ-1})` -> `g_i(X)` derivation -/
-noncomputable def getSumcheckRoundPoly (i : Fin ℓ) (h : ↥L⦃≤ 2⦄[X Fin (ℓ - ↑i.castSucc)])
-    : L⦃≤ 2⦄[X] := by
-  have h_i_lt_ℓ : ℓ - ↑i.castSucc > 0 := by
-    have hi := i.2
-    exact Nat.zero_lt_sub_of_lt hi
-  have h_count_eq : ℓ - ↑i.castSucc - 1 + 1 = ℓ - ↑i.castSucc := by
-    omega
-  let challenges : Fin 0 → L := fun (j : Fin 0) => j.elim0
-  let curH_cast : L[X Fin ((ℓ - ↑i.castSucc - 1) + 1)] := by
-    convert h.val
-  let g := ∑ x ∈ (univ.map 𝓑) ^ᶠ (ℓ - ↑i.castSucc - 1), curH_cast ⸨X ⦃0⦄, challenges, x⸩' (by omega)
-  exact ⟨g, by
-    have h_deg_le_2 : g ∈ L⦃≤ 2⦄[X] := by
-      simp only [g]
-      let hDegIn := Sumcheck.Spec.SingleRound.sumcheck_roundPoly_degreeLE
-        (R := L) (D := 𝓑) (n := ℓ - ↑i.castSucc - 1) (deg := 2) (i := ⟨0, by omega⟩)
-        (challenges := fun j => j.elim0) (poly := curH_cast)
-      have h_in_degLE : curH_cast ∈ L⦃≤ 2⦄[X Fin (ℓ - ↑i.castSucc - 1 + 1)] := by
-        rw! (castMode := .all) [h_count_eq]
-        dsimp only [Fin.coe_castSucc, eq_mpr_eq_cast, curH_cast]
-        rw [eqRec_eq_cast, cast_cast, cast_eq]
-        exact h.property
-      let res := hDegIn h_in_degLE
-      exact res
-    rw [mem_degreeLE] at h_deg_le_2 ⊢
-    exact h_deg_le_2
-  ⟩
+export Sumcheck.Structured (getSumcheckRoundPoly)
 
 end Preliminaries
 
