@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Sutherland, Ilia Vlasov, Aristotle (Harmonic)
 -/
 
+import Mathlib.Tactic.CancelDenoms.Core
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.Algebra.Group.Fin.Basic
 import Mathlib.Algebra.Group.TypeTags.Basic
@@ -122,10 +123,91 @@ lemma mem_subdomain_n_iff_eq_pow_generator :
     , CosetFftDomain.eval_coset_fft_domain_eq_eval_generator_mul_domain])
 
 omit [DecidableEq F] in
-lemma pow_mem_of_mem {n} {ω : SmoothCosetFftDomain n F}
-  {i j : ℕ} (hsum : j + i ≤ n) {x : F}
-  (h : x ∈ (subdomain ω j)) :
-  x ^ (2 ^ i) ∈ (subdomain ω (j + i)) := by sorry
+private lemma mkSubgroupUnit_pow (ω : D) (a : Fin (2 ^ n)) (k : ℕ) :
+    (mkSubgroupUnit ω a : F) ^ k = mkSubgroupUnit ω (k • a) := by
+  induction k 
+  · aesop (add simp [pow_zero, zero_nsmul, mkSubgroupUnit])
+  · have := CosetFftDomainClass.map_add ω (‹_› • a) a
+    aesop 
+      (add simp 
+        [pow_succ', 
+         add_smul, 
+         mkSubgroupUnit, 
+         mul_add, 
+         add_mul, 
+         mul_assoc, 
+         mul_comm, 
+         mul_left_comm])
+
+private lemma nat_mul_pow_mod {i j m n : ℕ} (hsum : j + i ≤ n) :
+  (2 ^ i * (2 ^ j * m)) % 2 ^ n = (2 ^ (j + i) * (m % 2 ^ (n - (j + i)))) % 2 ^ n := by
+  rw [←Nat.mod_add_div m (2 ^ (n - (j + i)))] 
+  ring_nf 
+  simp [mul_assoc, ←pow_add, add_tsub_cancel_of_le (by linarith : i + j ≤ n)]
+
+private lemma fin_nsmul_val {m : ℕ} (k : ℕ) (a : Fin (2 ^ m)) :
+  (k • a).val = (k * a.val) % 2 ^ m := by
+  induction k <;> simp [Nat.succ_mul]
+  simp_all [add_smul, Fin.val_add]
+
+private lemma subdomain_embed_val {i : ℕ} (hi : i < n) (k : Fin (2 ^ (n - i))) :
+  (subdomain_embed (n := n) i k).val = 2 ^ i * k.val := by grind +locals
+
+omit [DecidableEq F] in
+theorem pow_mem_of_mem {i j : ℕ} (hsum : j + i ≤ n) (h : x ∈ subdomain ω j) :
+  x ^ 2 ^ i ∈ subdomain ω (j + i) := by
+  obtain ⟨k, hk⟩ : 
+    ∃ k : Fin (2 ^ (n - j)), x = (mkSubgroupUnit ω (subdomain_embed j k) : F) * (ω 0) ^ 2 ^ j := by
+    obtain ⟨k, rfl⟩ := h
+    exact ⟨k, mul_comm _ _⟩
+  have hx_pow : 
+    x ^ 2 ^ i = ((ω 0) ^ 2 ^ (j + i)) * (mkSubgroupUnit ω (2 ^ i • subdomain_embed j k) : F) := by
+    convert congr_arg (· ^ 2 ^ i) hk using 1 
+    ring_nf
+    simp [←mkSubgroupUnit_pow]
+  have h_mod : 
+    (2 ^ i • subdomain_embed j k).val = (2 ^ (j + i) * (k.val % 2 ^ (n - (j + i)))) % 2 ^ n := by
+    have h_mod : 
+      (2 ^ i • subdomain_embed j k).val = (2 ^ i * (subdomain_embed j k).val) % 2 ^ n := by 
+      convert fin_nsmul_val _ _
+    by_cases hj : j < n 
+    · simp_all only [subdomain_embed, ge_iff_le, smul_dite, nsmul_zero]
+      split_ifs 
+      · simp_all only [Fin.coe_ofNat_eq_mod, Nat.zero_mod, mul_zero]
+        linarith
+      · simp_all only [↓reduceDIte, pow_add, mul_assoc]
+        convert nat_mul_pow_mod (show j + i ≤ n from hsum) using 1 
+        ring_nf
+    · have : n = j := by linarith
+      aesop 
+        (add simp [subdomain_embed, Nat.mod_one])
+  have h_subdomain : (subdomain_embed (n := n) (j + i) ⟨k.val % 2 ^ (n - (j + i)),
+    Nat.mod_lt _ (by positivity)⟩).val = 2 ^ (j + i) * (k.val % 2 ^ (n - (j + i))) := by
+    by_cases hi : j + i ≥ n 
+      <;> aesop 
+            (add simp [subdomain_embed, Nat.mod_one]) 
+            (add safe (by grind))
+  generalize_proofs at *
+  have h_eq : 
+    2 ^ i • subdomain_embed j k = 
+      subdomain_embed (j + i) ⟨k.val % 2 ^ (n - (j + i)), by assumption⟩ := Fin.ext <| by 
+      simpa [Nat.mod_eq_of_lt (show 2 ^ (j + i) * (k.val % 2 ^ (n - (j + i))) < 
+        2 ^ n from lt_of_lt_of_le 
+          (Nat.mul_lt_mul_of_pos_left ‹_› (pow_pos (by decide) _)) 
+          (by rw [← pow_add, Nat.add_sub_of_le hsum]))] 
+      using h_mod.trans <| h_subdomain.symm ▸ 
+        Nat.mod_eq_of_lt 
+          (show 2 ^ (j + i) * (k.val % 2 ^ (n - (j + i))) < 2 ^ n from 
+            lt_of_lt_of_le 
+              (Nat.mul_lt_mul_of_pos_left ‹_› (pow_pos (by decide) _)) 
+              (by rw [← pow_add, Nat.add_sub_of_le hsum]))
+  generalize_proofs at *
+  use Multiplicative.ofAdd ⟨k.val % 2 ^ (n - (j + i)), by assumption⟩
+  generalize_proofs at *
+  convert hx_pow.symm using 1
+  exact Eq.symm 
+    (Mathlib.Tactic.CancelDenoms.derive_trans₂ 
+      rfl (congrArg Units.val (congrArg (mkSubgroupUnit ω) h_eq)) rfl)
 
 private lemma subdomain_embed_of_le (i j : ℕ) (h : j ≤ i)
   (k : Fin (2 ^ (n - i))) :
