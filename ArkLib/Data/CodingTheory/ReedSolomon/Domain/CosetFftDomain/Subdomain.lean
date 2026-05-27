@@ -389,4 +389,68 @@ lemma square_roots_explicit {i : ℕ} (hi : i < n) {y : F}
 
 end CosetFftDomainClass
 
+namespace CosetFftDomain 
+
+abbrev subdomain {n : ℕ} (ω : SmoothCosetFftDomain n F) (i : ℕ) : 
+  SmoothCosetFftDomain (n - i) F := CosetFftDomainClass.subdomain ω i
+
+def twoNthRootAux (n i : ℕ) (ω : SmoothCosetFftDomain n F)
+  (x : F) (fuel : ℕ) : ω :=
+  match fuel with
+  | 0 => default
+  | fuel + 1 => 
+    if h : fuel < 2 ^ n then
+      if (ω ⟨fuel, h⟩) ^ 2 ^ i = x  
+      then ⟨ω ⟨fuel, h⟩, by simp⟩
+      else twoNthRootAux n i ω x fuel 
+    else default
+
+/-- Finds a `2 ^ n`th root of `x`. -/
+def twoNthRoot {n i : ℕ} {ω : SmoothCosetFftDomain n F}
+  (x : ω.subdomain i) : ω :=
+  twoNthRootAux n i ω x.1 (2 ^ n)
+
+private lemma twoNthRootAux_correct {n i : ℕ} {ω : SmoothCosetFftDomain n F}
+  (x : F) (fuel : ℕ) (hfuel : fuel ≤ 2 ^ n)
+  (hexists : ∃ j : Fin (2 ^ n), j.val < fuel ∧ (ω j) ^ 2 ^ i = x) :
+  (twoNthRootAux n i ω x fuel).val ^ 2 ^ i = x := by
+  obtain ⟨j, hj₁, hj₂⟩ := hexists
+  induction fuel generalizing j with
+  | zero => contradiction
+  | succ fuel ih => 
+    aesop 
+      (add simp [twoNthRootAux]) 
+      (add safe (by grind))
+
+open CosetFftDomainClass
+
+lemma twoNthRoot_correct {n i : ℕ} {ω : SmoothCosetFftDomain n F}
+  (hi : i ≤ n)
+  {x : ω.subdomain i} :
+  (twoNthRoot x).val ^ 2 ^ i = x := by
+  unfold twoNthRoot
+  have hx_mem : x.val ∈ ω.subdomain (0 + i) := by
+    rw [Nat.zero_add, ←mem_toFinset_iff_mem]
+    exact x.property
+  have hex := root_exists (by omega) hx_mem
+  obtain ⟨y, hy_mem, hy_pow⟩ := hex
+  rw [mem_subdomain_0_iff_mem, mem_def] at hy_mem
+  obtain ⟨j, rfl⟩ := hy_mem
+  exact twoNthRootAux_correct _ _ le_rfl ⟨j, j.isLt, hy_pow⟩
+
+@[simp]
+lemma twoNthRoot_correct_one {n : ℕ} {ω : SmoothCosetFftDomain n F}
+  [nz : NeZero n]
+  {x : ω.subdomain 1} :
+  (twoNthRoot x).val ^ 2 = x := by
+  have hi : 1 ≤ n := by 
+    have hn : n ≠ 0 := NeZero.ne _
+    omega
+  conv_lhs =>
+    rhs 
+    rw [←pow_one 2]
+  rw [twoNthRoot_correct hi]
+
+end CosetFftDomain
+
 end ReedSolomon
