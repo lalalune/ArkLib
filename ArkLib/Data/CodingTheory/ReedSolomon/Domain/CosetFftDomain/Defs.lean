@@ -178,13 +178,20 @@ lemma toCosetFftDomain_of_CosetFftDomain {ω : CosetFftDomain ι F} :
     aesop 
       (add simp [CosetFftDomain.eval_coset_fft_domain_eq_eval_generator_mul_domain, mkSubgroupUnit])
 
+omit [DecidableEq ι] [DecidableEq F] [Fintype ι] in
+lemma toCosetFftDomain_apply_self {ω : CosetFftDomain ι F} {i : ι} :
+  toCosetFftDomain ω i = ω i := by
+  rw [CosetFftDomain.eval_coset_fft_domain_eq_eval_generator_mul_domain]
+  aesop 
+    (add simp [toCosetFftDomain, mkSubgroupUnit])
+
 end CosetFftDomainClass
 
 instance {D : Type} [FunLike D ι F] [CosetFftDomainClass D ι F] : 
   CoeOut D (ι ↪ F) where
   coe ω := ⟨ω, fun _ _ h ↦ CosetFftDomainClass.injective ω h⟩
 
-namespace CosetFftDomain
+namespace CosetFftDomainClass
 
 variable {D : Type} [FunLike D ι F] [CosetFftDomainClass D ι F]
 
@@ -193,9 +200,15 @@ omit [DecidableEq ι] [DecidableEq F] [Fintype ι] in
 @[ext]
 theorem ext {ω₁ ω₂ : D} (h : ∀ i, ω₁ i = ω₂ i) : ω₁ = ω₂ := DFunLike.ext _ _ h
 
-end CosetFftDomain
+end CosetFftDomainClass
 
 namespace CosetFftDomain
+
+omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
+lemma map_0_eq_coset_generator {ω : CosetFftDomain ι F} :
+  ω 0 = ω.cosetGenerator := by
+  simp [eval_coset_fft_domain_eq_eval_generator_mul_domain,
+        show (0 : ι) = (1 : Multiplicative ι) by rfl]
 
 omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
 lemma injective {ω : CosetFftDomain ι F} :

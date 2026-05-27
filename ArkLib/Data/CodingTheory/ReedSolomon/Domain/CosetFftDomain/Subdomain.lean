@@ -9,6 +9,8 @@ import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.Algebra.Group.Fin.Basic
 import Mathlib.Algebra.Group.TypeTags.Basic
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Data.Fintype.Card
+import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
@@ -224,8 +226,7 @@ private lemma subdomain_embed_of_le (i j : ℕ) (h : j ≤ i)
       rw [←mul_assoc, ←pow_add, Nat.add_sub_of_le h]
 
 omit [DecidableEq F] in
-lemma mem_subdomain_of_le_of_mem_subdomain (i j : ℕ) (h : j ≤ i)
-  (hx : x ∈ subdomain ω i) :
+lemma mem_subdomain_of_le_of_mem_subdomain {i j : ℕ} (h : j ≤ i) (hx : x ∈ subdomain ω i) :
   ω 0 ^ 2 ^ j * (ω 0)⁻¹ ^ 2 ^ i * x ∈ subdomain ω j := by
   simp only [subdomain, inv_pow, mem_def] at hx
   obtain ⟨k, hx⟩ := hx
@@ -235,6 +236,142 @@ lemma mem_subdomain_of_le_of_mem_subdomain (i j : ℕ) (h : j ≤ i)
   rw [hl] at hx
   rw [hx, ←mul_assoc, mul_assoc (ω 0 ^ 2 ^ j)]
   aesop (add simp [CosetFftDomain.mem_iff_exists_mul])
+
+omit [DecidableEq F] in
+private lemma subdomain_eval_pow' {i j : ℕ} (hij : i + j ≤ n)
+    (k : Fin (2 ^ (n - i))) :
+    ((subdomain ω i) k) ^ (2 ^ j) =
+      (subdomain ω (i + j)) ⟨k.val % 2 ^ (n - (i + j)), Nat.mod_lt _ (Nat.two_pow_pos _)⟩ := by
+  have h_subdomain_embedding : 
+    2 ^ j • (subdomain_embed (n := n) i k) =
+      subdomain_embed (n := n) (i + j) ⟨k.val % 2 ^ (n - (i + j)), 
+    Nat.mod_lt _ (by positivity)⟩ := by
+    all_goals generalize_proofs at *
+    have h_subdomain_embedding : 
+      (2 ^ j • (subdomain_embed (n := n) i k)).val =
+        (2 ^ (i + j) * (k.val % 2 ^ (n - (i + j)))) % 2 ^ n := by
+      rw [fin_nsmul_val]
+      by_cases hi : i < n 
+      · simp_all only [subdomain_embed, ge_iff_le]
+        grind +suggestions
+      · simp_all only [not_lt, subdomain_embed, ge_iff_le, ↓reduceDIte,
+        Fin.coe_ofNat_eq_mod, Nat.zero_mod, mul_zero]
+        norm_num [show i = n by linarith, show j = 0 by linarith]
+    rw [←Fin.val_inj] 
+    simp_all only 
+      [subdomain_embed, ge_iff_le, smul_dite, nsmul_zero]
+    split_ifs <;> simp_all +decide only [Nat.sub_eq_zero_of_le, pow_zero, Order.lt_one_iff,
+      mul_zero, Order.lt_two_iff, pow_pos, Nat.mod_eq_of_lt, Fin.val_eq_zero_iff, dite_eq_left_iff,
+      not_le, Fin.coe_ofNat_eq_mod]
+    rw [Nat.mod_eq_of_lt]
+    exact lt_of_lt_of_le 
+      (Nat.mul_lt_mul_of_pos_left ‹_› (pow_pos (by decide) _)) 
+      (by rw [←pow_add, Nat.add_sub_of_le (by linarith)])
+  generalize_proofs at *;
+  unfold subdomain
+  simp_all only [inv_pow, pow_add] 
+  convert congr_arg 
+    (fun x : Fin (2 ^ n) => mkSubgroupUnit ω x) 
+    h_subdomain_embedding using 1
+  simp only [CosetFftDomain.eval_coset_fft_domain_eq_eval_generator_mul_domain, MonoidHom.coe_mk,
+    OneHom.coe_mk, mul_pow, mkSubgroupUnit_pow, pow_mul, mul_eq_mul_left_iff, ne_eq,
+    Nat.pow_eq_zero, OfNat.ofNat_ne_zero, false_and, not_false_eq_true, pow_eq_zero_iff, ne_zero,
+    or_false, ← Units.val_inj]
+  convert Iff.rfl
+
+private lemma card_fin_filter_mod_eq {a j : ℕ} (hj : j ≤ a) (c : ℕ) (hc : c < 2 ^ (a - j)) :
+  (Finset.univ.filter (fun k : Fin (2 ^ a) => k.val % 2 ^ (a - j) = c)).card = 2 ^ j := by 
+  have h_bijection : 
+    Finset.filter (fun k : ℕ ↦ k % 2 ^ (a - j) = c) (Finset.range (2 ^ a)) =
+      Finset.image (fun m ↦ c + m * 2 ^ (a - j)) (Finset.range (2 ^ j)) := by
+    ext x
+    constructor
+    · simp only [Finset.mem_filter, Finset.mem_range, Finset.mem_image, and_imp] at *
+      exact fun hx hx' => ⟨x / 2 ^ ( a - j), 
+        by nlinarith [Nat.mod_add_div x (2 ^ (a - j)), 
+          pow_pos (zero_lt_two' ℕ) j, pow_pos (zero_lt_two' ℕ) (a - j), 
+          show 2 ^ a = 2 ^ (a - j) * 2 ^ j by 
+            rw [← pow_add, Nat.sub_add_cancel hj]], by linarith [Nat.mod_add_div x (2 ^ (a - j))]⟩
+    · simp only [Finset.mem_image, Finset.mem_range, Finset.mem_filter, forall_exists_index,
+      and_imp] at *
+      rintro k hk rfl
+      refine ⟨?_, ?_⟩ 
+      · rw [←Nat.sub_add_cancel hj] at * 
+        simp_all only [le_add_iff_nonneg_left, zero_le, add_tsub_cancel_right, pow_add]
+        nlinarith
+      · rw [←Nat.sub_add_cancel hj] at * 
+        simp_all +decide only [le_add_iff_nonneg_left, zero_le, add_tsub_cancel_right,
+          Nat.add_mul_mod_self_right]
+        exact Nat.mod_eq_of_lt hc
+  convert congr_arg Finset.card h_bijection using 1
+  · rw [Finset.card_filter, Finset.card_filter]
+    rw [Finset.sum_range]
+  · rw [Finset.card_image_of_injective] <;> norm_num [Function.Injective, hc.ne']
+
+lemma card_roots {i j : ℕ} (hij : i + j ≤ n) (h : x ∈ subdomain ω (i + j)) :
+  Finset.card {y ∈ (subdomain ω i).toFinset | y ^ (2 ^ j) = x} = 2 ^ j := by
+  have hinj : Function.Injective (subdomain ω i) := CosetFftDomainClass.injective _
+  simp only [CosetFftDomain.toFinset]
+  obtain ⟨m, hm⟩ := h
+  have hinj2 : Function.Injective (subdomain ω (i + j)) := CosetFftDomainClass.injective _
+  have hfilter_eq : (Finset.univ.filter (fun k : Fin (2 ^ (n - i)) =>
+      ((subdomain ω i) k) ^ 2 ^ j = x)) = 
+        Finset.univ.filter (fun k : Fin (2 ^ (n - i)) =>
+        k.val % 2 ^ (n - (i + j)) = m.val) := by
+    ext k
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+    rw [subdomain_eval_pow' hij k, ← hm]
+    constructor
+    · intro heq
+      have := hinj2 heq
+      simp only [Fin.ext_iff] at this
+      exact this
+    · intro heq
+      congr 1
+      exact Fin.ext heq
+  have : 
+    {y ∈ toFinset (subdomain ω i) | y ^ 2 ^ j = x} = 
+      Finset.image (subdomain ω i) (Finset.univ.filter (fun k : Fin (2 ^ (n - i)) =>
+      ((subdomain ω i) k) ^ 2 ^ j = x)) := by
+    ext u
+    simp
+    aesop (add simp [mem_def])
+  rw [this, Finset.card_image_of_injective _ hinj, hfilter_eq]
+  simp only [show n - (i + j) = n - i - j from by omega]
+  have hsub : n - (i + j) = n - i - j := by omega
+  exact card_fin_filter_mod_eq (by omega) m.val (hsub ▸ m.isLt)
+
+set_option linter.unusedDecidableInType false in
+lemma root_exists {i j : ℕ} (hij : i + j ≤ n) (h : x ∈ subdomain ω (i + j)) :
+  ∃ y ∈ subdomain ω i, y ^ (2 ^ j) = x := by
+  have h' : Finset.Nonempty { y ∈ (subdomain ω i).toFinset | y ^ 2 ^ j = x} := by
+    have := card_roots hij h
+    aesop (add unsafe (by rw [←Finset.card_ne_zero]))
+  aesop (add simp [Finset.Nonempty, Finset.mem_filter])
+
+set_option linter.unusedDecidableInType false in
+lemma sq_root_mem_subdomain {i : ℕ} (hi : i < n) {y : F}
+  (hx : x ∈ subdomain ω (i + 1))
+  (hy : y ^ 2 = x) :
+  y ∈ subdomain ω i := by
+  have : NeZero (n - i) := ⟨by omega⟩
+  obtain ⟨y', hy'_mem, hy'_pow⟩ := root_exists (by omega) hx
+  rw [pow_one] at hy'_pow
+  have hsq : y ^ 2 = y' ^ 2 := by rw [hy, hy'_pow]
+  rcases eq_or_eq_neg_of_sq_eq_sq _ _ hsq with rfl | rfl
+  · exact hy'_mem
+  · simpa using hy'_mem 
+
+lemma square_roots_explicit {i : ℕ} (hi : i < n) {y : F}
+  (hx : x ∈ subdomain ω (i + 1)) (hy : y ^ 2 = x) :
+  {y ∈ (subdomain ω i).toFinset | y ^ 2 = x} = {y, -y} := by 
+  have : NeZero (n - i) := ⟨by omega⟩
+  apply Finset.Subset.antisymm
+  · intro z hz
+    simp_all only [Finset.mem_filter, Finset.mem_insert, Finset.mem_singleton] 
+    exact eq_or_eq_neg_of_sq_eq_sq _ _ <| by rw [hz.2, hy]
+  · have hy_mem : y ∈ subdomain ω i := sq_root_mem_subdomain hi hx hy
+    simp_all [Finset.subset_iff]
 
 end CosetFftDomainClass
 

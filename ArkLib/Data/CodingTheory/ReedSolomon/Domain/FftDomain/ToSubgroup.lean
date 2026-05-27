@@ -61,4 +61,13 @@ lemma mem_subgroup_iff_mem_domain {ω : D} {x : Fˣ} :
 
 end FftDomainClass
 
+namespace FftDomain
+
+variable {ι : Type} [Fintype ι] [AddCommGroup ι]
+variable {F : Type} [Field F] [DecidableEq F]
+
+abbrev toSubgroup (ω : FftDomain ι F) : Subgroup Fˣ := FftDomainClass.toSubgroup ω
+
+end FftDomain
+
 end ReedSolomon

@@ -31,6 +31,15 @@ def toFftDomain (ω : D) : FftDomain ι F where
   cosetGenerator := 1
   cosetGenerator_one := by rfl
 
+lemma eval_toFftDomain {ω : D} {i : ι} :
+  toFftDomain ω i = (ω 0)⁻¹ * ω i := by
+  aesop (add
+    simp [
+      toFftDomain,
+      FftDomain.eval_fft_domain_eq_eval_coset_fft_domain,
+      CosetFftDomain.eval_coset_fft_domain_eq_eval_generator_mul_domain,
+      toCosetFftDomain, mkSubgroupUnit])
+
 lemma mem_toFftDomain_iff_mul_mem {ω : D} {x : F} :
   x ∈ toFftDomain ω ↔ ω 0 * x ∈ ω := by
   unfold toFftDomain
@@ -59,6 +68,13 @@ lemma mul_mem_of_mem_toFftDomain_of_mem {ω : D} {x y : F}
   field_simp
   rfl
 
+lemma mul_mem_of_mem_of_mem_toFftDomain {ω : D} {x y : F}
+  (hx : x ∈ ω)
+  (hy : y ∈ toFftDomain ω) :
+  x * y ∈ ω := by
+  rw [mul_comm]
+  exact mul_mem_of_mem_toFftDomain_of_mem hy hx
+  
 @[simp]
 lemma toFinset_image_toFftDomain_eq_toFinset [Fintype ι] [DecidableEq F] {ω : D} :
   Finset.image (fun (w : F) ↦ ω 0 * w) (toFftDomain ω).toFinset = 

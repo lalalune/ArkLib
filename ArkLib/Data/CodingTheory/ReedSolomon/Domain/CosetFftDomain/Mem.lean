@@ -36,12 +36,6 @@ instance
 
 end CosetFftDomain
 
-instance {ω : CosetFftDomain ι F} : Inhabited ω.toFinset where
-  default := ⟨ω 0, by simp [CosetFftDomainClass.toFinset]⟩
-
-instance {ω : CosetFftDomain ι F} : Inhabited ω where
-  default := ⟨ω 0, by simp [CosetFftDomainClass.toFinset]⟩
-
 namespace CosetFftDomainClass
 
 variable {D : Type} [FunLike D ι F] [CosetFftDomainClass D ι F] {ω : D}
@@ -51,7 +45,7 @@ omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
 lemma mem_def : x ∈ ω ↔ ∃ i, x = ω i := by aesop (add simp [Membership.mem])
 
 omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
-@[simp]
+@[simp high]
 lemma mem_self {i : ι} :
   ω i ∈ ω := by simp [mem_def]
 
@@ -84,6 +78,13 @@ lemma not_zero_mem :
   exact CosetFftDomainClass.ne_zero ω i (by simp_all)
 
 end CosetFftDomainClass
+
+instance {ω : CosetFftDomain ι F} : Inhabited ω.toFinset where
+  default := ⟨ω 0, by simp [CosetFftDomainClass.toFinset]⟩
+
+instance {ω : CosetFftDomain ι F} : Inhabited ω where
+  default := ⟨ω 0, by simp [CosetFftDomainClass.toFinset]⟩
+
 
 namespace CosetFftDomain
 
