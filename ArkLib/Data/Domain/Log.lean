@@ -7,7 +7,7 @@ Authors: Ilia Vlasov, Aristotle (Harmonic)
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Data.Fintype.Defs
 
-namespace ReedSolomon
+namespace Domain
 
 namespace Log
 
@@ -60,4 +60,4 @@ lemma injOn {ω : ι ↪ F} {s : Set F} (hs : ∀ x ∈ s, ∃ i, ω i = x) :
 
 end Log
 
-end ReedSolomon
+end Domain

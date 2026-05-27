@@ -12,9 +12,9 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Field
 
-import ArkLib.Data.CodingTheory.ReedSolomon.Domain.CosetFftDomain.Defs
+import ArkLib.Data.Domain.CosetFftDomain.Defs
 
-namespace ReedSolomon 
+namespace Domain 
 
 variable {ι : Type} [Fintype ι] [AddCommGroup ι] [DecidableEq ι]
 variable {F : Type} [Field F] [DecidableEq F]
@@ -116,4 +116,4 @@ abbrev toFinset (ω : FftDomain ι F) : Finset F :=
 
 end FftDomain
 
-end ReedSolomon
+end Domain

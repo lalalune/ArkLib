@@ -13,9 +13,9 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Field
 
-import ArkLib.Data.CodingTheory.ReedSolomon.Domain.FftDomain.Mem
+import ArkLib.Data.Domain.FftDomain.Mem
 
-namespace ReedSolomon
+namespace Domain
 
 variable {ι : Type} [Fintype ι] [AddCommGroup ι]
 variable {F : Type} [Field F] [DecidableEq F]
@@ -70,4 +70,4 @@ abbrev toSubgroup (ω : FftDomain ι F) : Subgroup Fˣ := FftDomainClass.toSubgr
 
 end FftDomain
 
-end ReedSolomon
+end Domain

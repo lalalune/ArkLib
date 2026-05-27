@@ -16,10 +16,10 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Field
 
-import ArkLib.Data.CodingTheory.ReedSolomon.Domain.CosetFftDomain.Ops
-import ArkLib.Data.CodingTheory.ReedSolomon.Domain.FftDomain.Ops
+import ArkLib.Data.Domain.CosetFftDomain.Ops
+import ArkLib.Data.Domain.FftDomain.Ops
 
-namespace ReedSolomon
+namespace Domain
 
 variable {F : Type} [Field F] [DecidableEq F]
 
@@ -453,4 +453,4 @@ lemma twoNthRoot_correct_one {n : ℕ} {ω : SmoothCosetFftDomain n F}
 
 end CosetFftDomain
 
-end ReedSolomon
+end Domain

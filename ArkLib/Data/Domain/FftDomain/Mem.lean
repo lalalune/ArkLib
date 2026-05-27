@@ -12,11 +12,11 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Field
  
-import ArkLib.Data.CodingTheory.ReedSolomon.Domain.CosetFftDomain.Mem
-import ArkLib.Data.CodingTheory.ReedSolomon.Domain.FftDomain.Defs
+import ArkLib.Data.Domain.CosetFftDomain.Mem
+import ArkLib.Data.Domain.FftDomain.Defs
 import ArkLib.ToMathlib.Finset.ToListWithProof
 
-namespace ReedSolomon
+namespace Domain
 
 variable {ι : Type} [Fintype ι] [AddCommGroup ι] [DecidableEq ι]
 variable {F : Type} [Field F] [DecidableEq F]
@@ -67,4 +67,4 @@ end FftDomain
 instance {x : F} {ω : FftDomain ι F} : Decidable (x ∈ ω) :=
   decidable_of_iff _ FftDomain.mem_toFinset_iff_mem
 
-end ReedSolomon
+end Domain

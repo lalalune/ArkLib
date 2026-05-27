@@ -12,7 +12,7 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Field
  
-namespace ReedSolomon
+namespace Domain
 
 open Function
 
@@ -245,4 +245,4 @@ abbrev toFinset (ω : CosetFftDomain ι F) : Finset F :=
  
 end CosetFftDomain
 
-end ReedSolomon
+end Domain

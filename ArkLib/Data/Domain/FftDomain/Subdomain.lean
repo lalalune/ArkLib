@@ -13,11 +13,11 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Field
 
-import ArkLib.Data.CodingTheory.ReedSolomon.Domain.CosetFftDomain.Subdomain
-import ArkLib.Data.CodingTheory.ReedSolomon.Domain.FftDomain.Ops
-import ArkLib.Data.CodingTheory.ReedSolomon.Domain.FftDomain.ToSubgroup
+import ArkLib.Data.Domain.CosetFftDomain.Subdomain
+import ArkLib.Data.Domain.FftDomain.Ops
+import ArkLib.Data.Domain.FftDomain.ToSubgroup
 
-namespace ReedSolomon
+namespace Domain
 
 variable {F : Type} [Field F]
 
@@ -124,4 +124,4 @@ abbrev subdomain {n : ℕ} (ω : SmoothFftDomain n F) (i : ℕ) : SmoothFftDomai
 
 end FftDomain
 
-end ReedSolomon
+end Domain

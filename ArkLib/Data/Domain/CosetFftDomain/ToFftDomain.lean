@@ -13,10 +13,10 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Field
 
-import ArkLib.Data.CodingTheory.ReedSolomon.Domain.CosetFftDomain.Mem
-import ArkLib.Data.CodingTheory.ReedSolomon.Domain.FftDomain.Mem
+import ArkLib.Data.Domain.CosetFftDomain.Mem
+import ArkLib.Data.Domain.FftDomain.Mem
 
-namespace ReedSolomon
+namespace Domain
 
 variable {ι : Type} [AddCommGroup ι]
 variable {F : Type} [Field F]
@@ -134,4 +134,4 @@ lemma toFffDomain_eq_self {ω : FftDomain ι F} :
 
 end FftDomain
 
-end ReedSolomon
+end Domain

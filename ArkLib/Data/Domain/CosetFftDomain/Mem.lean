@@ -12,10 +12,10 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Field
  
-import ArkLib.Data.CodingTheory.ReedSolomon.Domain.CosetFftDomain.Defs
+import ArkLib.Data.Domain.CosetFftDomain.Defs
 import ArkLib.ToMathlib.Finset.ToListWithProof
 
-namespace ReedSolomon
+namespace Domain
 
 open Function
 
@@ -115,4 +115,4 @@ end CosetFftDomain
 instance {x : F} {ω : CosetFftDomain ι F} : Decidable (x ∈ ω) :=
   decidable_of_iff _ CosetFftDomain.mem_toFinset_iff_mem
 
-end ReedSolomon
+end Domain

@@ -13,10 +13,10 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Field
 
-import ArkLib.Data.CodingTheory.ReedSolomon.Domain.CosetFftDomain.Mem
-import ArkLib.Data.CodingTheory.ReedSolomon.Domain.FftDomain.Mem
+import ArkLib.Data.Domain.CosetFftDomain.Mem
+import ArkLib.Data.Domain.FftDomain.Mem
 
-namespace ReedSolomon
+namespace Domain
 
 variable {ι : Type} [Fintype ι] [AddCommGroup ι]
 variable {F : Type} [Field F] [DecidableEq F]
@@ -48,4 +48,4 @@ noncomputable abbrev toList (ω : FftDomain ι F) : List ω.toFinset :=
 
 end FftDomain
 
-end ReedSolomon
+end Domain
