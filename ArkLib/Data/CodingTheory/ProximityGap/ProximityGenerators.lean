@@ -42,19 +42,13 @@ open NNReal ENNReal unitInterval LinearCode
 open scoped ProbabilityTheory
 
 variable {ι : Type} [Fintype ι]
-         {F : Type} [Field F] [Fintype F]
+         {F : Type} [Field F]
          {ℓ : Type} [Fintype ℓ]
 
 /-- The type of generators, where a generator `G` over a field `F` with output size `ℓ` is a
 function that maps a seed `x` in a set `S` to a coefficient vector in `F^ℓ`.
 Definition 3.10 [BCGM25]. -/
 abbrev Generator (S ℓ F : Type) : Type := S → (ℓ → F)
-
-abbrev AffineLineGenerator (F : Type) [Field F] : Generator F (Fin 2) F :=
-  fun x => ![1, x]
-
-abbrev AffineSpaceGenerator (F : Type) [Field F] (ℓ : ℕ) : Generator (Fin ℓ → F) (Fin (ℓ + 1)) F :=
-  fun x => Fin.cons 1 x
 
 /-- A generator `G` is zero-evading with a zero-evading error `ε_ze` if the probability of obtaining
 a zero output from a non-zero vector is bounded above by `ε_ze`.
@@ -118,6 +112,25 @@ def TensorGenerator_Explicit {ℓ' : Type} [Fintype ℓ'] {S S' : Type}
     (G : Generator S ℓ F) (G' : Generator S' ℓ' F) :
     Generator (S × S') (ℓ × ℓ') F
   | (x, x'), (i, j) => G x i * G' x' j
+
+/-- The canonical linear isomorphism between the tensor product of function spaces
+and the function space on the product type. -/
+noncomputable def tensorProductPiFunEquiv (F : Type) [Field F] (ℓ ℓ' : Type)
+    [Fintype ℓ] [DecidableEq ℓ] [Fintype ℓ'] [DecidableEq ℓ'] :
+    TensorProduct F (ℓ → F) (ℓ' → F) ≃ₗ[F] (ℓ × ℓ' → F) :=
+  ((Pi.basisFun F ℓ).tensorProduct (Pi.basisFun F ℓ')).equivFun
+
+/-- The tensor product generator `TensorGenerator` and the explicit componentwise generator
+`TensorGenerator_Explicit` agree under the canonical isomorphism between `TensorProduct F (ℓ → F) (ℓ' → F)` and `(ℓ × ℓ') → F`. -/
+theorem TensorGenerator_eq_TensorGenerator_Explicit {ℓ' : Type} [Fintype ℓ'] [DecidableEq ℓ]
+  [DecidableEq ℓ'] {S S' : Type} (G : Generator S ℓ F) (G' : Generator S' ℓ' F) (p : S × S') :
+    tensorProductPiFunEquiv F ℓ ℓ' (TensorGenerator G G' p) = TensorGenerator_Explicit G G' p := by
+  unfold tensorProductPiFunEquiv TensorGenerator TensorGenerator_Explicit
+  convert (Pi.basisFun F ℓ).tensorProduct (Pi.basisFun F ℓ') |> fun b =>
+                                                     b.equivFun_apply ( G p.1 ⊗ₜ[F] G' p.2 ) using 1
+  ext ⟨i, j⟩
+  simp only [Module.Basis.tensorProduct_repr_tmul_apply, Pi.basisFun_repr, smul_eq_mul]
+  ring
 
 end CoreDefinitions
 
