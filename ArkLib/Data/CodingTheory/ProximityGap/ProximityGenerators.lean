@@ -101,13 +101,16 @@ def IsMCAGenerator {S : Type} [Nonempty S] [Fintype S] (G : Generator S ℓ F) (
     Pr_{let x ←$ᵖ S}[(IsMCA G LC x U γ)] ≤ ENNReal.ofReal (ε_mca γ)
 
 /-- Let `G : S →F^ℓ` and `G′: S′→F^ℓ` be two generators. Their tensor product is the generator
-`G ⊗ G′: S × S′→ F^ℓ ⊗F^ℓ′` defined by `(x,x′) ↦ G(x) ⊗ G′(x′)`.
+`G ⊗ G′: S × S′→ F^ℓ ⊗ F^ℓ′` defined by `(x,x′) ↦ G(x) ⊗ G′(x′)`.
 Definition 4.3 [BCGM25]. -/
 def TensorGenerator {ℓ' : Type} [Fintype ℓ'] {S S' : Type}
   (G : Generator S ℓ F) (G' : Generator S' ℓ' F) :
   (S × S') → TensorProduct F (ℓ → F) (ℓ' → F)
 | (x, x') => TensorProduct.tmul F (G x) (G' x')
 
+/-- Explicit construction of the tensor generator. The output type here is a generator
+`G ⊗ G′: S × S′→ F^(ℓ * ℓ')`.
+Definition 4.3 [BCGM25]. -/
 def TensorGenerator_Explicit {ℓ' : Type} [Fintype ℓ'] {S S' : Type}
     (G : Generator S ℓ F) (G' : Generator S' ℓ' F) :
     Generator (S × S') (ℓ × ℓ') F
@@ -121,7 +124,8 @@ noncomputable def tensorProductPiFunEquiv (F : Type) [Field F] (ℓ ℓ' : Type)
   ((Pi.basisFun F ℓ).tensorProduct (Pi.basisFun F ℓ')).equivFun
 
 /-- The tensor product generator `TensorGenerator` and the explicit componentwise generator
-`TensorGenerator_Explicit` agree under the canonical isomorphism between `TensorProduct F (ℓ → F) (ℓ' → F)` and `(ℓ × ℓ') → F`. -/
+`TensorGenerator_Explicit` agree under the canonical isomorphism between
+`F^ℓ ⊗ F^ℓ′` and `(ℓ × ℓ') → F`. -/
 theorem TensorGenerator_eq_TensorGenerator_Explicit {ℓ' : Type} [Fintype ℓ'] [DecidableEq ℓ]
   [DecidableEq ℓ'] {S S' : Type} (G : Generator S ℓ F) (G' : Generator S' ℓ' F) (p : S × S') :
     tensorProductPiFunEquiv F ℓ ℓ' (TensorGenerator G G' p) = TensorGenerator_Explicit G G' p := by
