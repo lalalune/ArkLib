@@ -61,6 +61,13 @@ Boolean coords). `MultilinearPoly L ℓ = PrismalinearPoly L (fun _ : Fin ℓ =>
 abbrev PrismalinearPoly (L : Type) [CommSemiring L] {ℓ : ℕ} (b : Fin ℓ → ℕ) :=
   ↥(MvPolynomial.restrictDegreeVar (Fin ℓ) L b)
 
+/-- Belt-and-braces: lock in the `rfl` claim from the `PrismalinearPoly` docstring. The multilinear
+case is *definitionally* the constant-1 prismalinear case, so existing multilinear consumers
+(`SumcheckMultiplierParam`) compose with the prismalinear surface (`PrismalinearSumcheckMultiplierParam`
+below, when `multpolyBound = fun _ => 1`) without any coercion. -/
+example {L : Type} [CommSemiring L] {ℓ : ℕ} :
+    MultilinearPoly L ℓ = PrismalinearPoly L (fun _ : Fin ℓ => 1) := rfl
+
 /-- Parameters describing how the round polynomial `H` is built from the witness `t`:
 `H = P · Q(t)`, where `P` is a public multilinear multiplier and `Q` is a public univariate
 *combinator* applied to the (multilinear) witness. The round polynomial then has degree
@@ -87,26 +94,9 @@ structure SumcheckMultiplierParam (L : Type) [CommRing L] (ℓ : ℕ) (Context :
   over a trivial ring — unlike `natDegree_X`, which needs `Nontrivial`). -/
   combinator_natDegree_le : ∀ ctx, (combinator ctx).natDegree ≤ degCombinator
 
-/-- Prismalinear analog of `SumcheckMultiplierParam` for SWIRL-style sumchecks (Gruen 2024): the
-multiplier `P` respects a *per-variable* degree bound `multpolyBound : Fin ℓ → ℕ` (e.g.
-`prismalinearBound ℓ' k` = degree `2^ℓ' − 1` in the univariate-skip coordinate, `≤ 1` in the
-remaining Boolean coords) rather than the uniform multilinear bound.
-
-For `multpolyBound = fun _ => 1`, `PrismalinearPoly L (fun _ => 1) = MultilinearPoly L ℓ` by
-`rfl` (`restrictDegreeVar_const`), so this structure specializes to `SumcheckMultiplierParam` in
-the multilinear case. The hyperprism-aware round-polynomial builder (a per-variable analog of
-`computeRoundPoly`) will live alongside this structure once the protocol is wired up. -/
-structure PrismalinearSumcheckMultiplierParam (L : Type) [CommRing L] {ℓ : ℕ} (Context : Type)
-    (multpolyBound : Fin ℓ → ℕ) where
-  /-- Public *prismalinear* multiplier `P` — per-variable degree in coord `i` is `≤ multpolyBound i`. -/
-  multpoly : (ctx : Context) → PrismalinearPoly L multpolyBound
-  /-- Public univariate combinator `Q`, applied to the witness: `H = P · Q(t)`. -/
-  combinator : (ctx : Context) → Polynomial L
-  /-- Uniform degree bound on `combinator`; the round polynomial in coord `i` has degree
-  `≤ multpolyBound i + degCombinator`. -/
-  degCombinator : ℕ
-  /-- `combinator` respects its degree bound. -/
-  combinator_natDegree_le : ∀ ctx, (combinator ctx).natDegree ≤ degCombinator
+-- The prismalinear specialization (SWIRL hyperprism — per-variable multpoly degree bound) lives
+-- in `Sumcheck.Structured.Prismalinear`, with `SumcheckMultiplierParam` and `computeRoundPoly`
+-- mirroring the multilinear surface in this file. See `Structured/Prismalinear.lean`.
 
 -- The variable block matches the original `Binius.BinaryBasefold.Basic`'s line-19 block
 -- (`ℓ` explicit + `[NeZero ℓ]` instance) so that positional callers like
@@ -153,6 +143,10 @@ def computeRoundPoly {Context : Type} (param : SumcheckMultiplierParam L ℓ Con
           exact MvPolynomial.degreeOf_aeval_le i (param.combinator ctx) t.val ht
       _ ≤ 1 + param.degCombinator := by gcongr; exact param.combinator_natDegree_le ctx
       _ = param.degCombinator + 1 := by ring⟩
+
+-- The prismalinear analog `computeRoundPoly` (per-variable degree bound on the multiplier and the
+-- resulting round polynomial) lives in `Sumcheck.Structured.Prismalinear`. See
+-- `Structured/Prismalinear.lean`.
 
 /-- `Hᵢ(Xᵢ, ..., X_{ℓ-1}) = ∑ ω ∈ 𝓑ᵢ, H₀(ω₀, …, ω_{i-1}, Xᵢ, …, X_{ℓ-1}) (where H₀=h)` -/
 def projectToMidSumcheckPoly (t : MultilinearPoly L ℓ)

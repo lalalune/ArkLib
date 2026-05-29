@@ -184,6 +184,9 @@ import ArkLib.ProofSystem.Sumcheck.Domain
 import ArkLib.ProofSystem.Sumcheck.Impl.Basic
 import ArkLib.ProofSystem.Sumcheck.Spec.General
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRound
+import ArkLib.ProofSystem.Sumcheck.Structured
+import ArkLib.ProofSystem.Sumcheck.Structured.Prismalinear
+import ArkLib.ProofSystem.Sumcheck.Structured.SingleRound
 import ArkLib.ProofSystem.Whir.BlockRelDistance
 import ArkLib.ProofSystem.Whir.Folding
 import ArkLib.ProofSystem.Whir.MutualCorrAgreement
