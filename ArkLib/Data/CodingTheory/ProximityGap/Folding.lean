@@ -14,7 +14,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Basic
 import ArkLib.Data.Finset.PickSubset
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
 import ArkLib.Data.Domain.CosetFftDomain.Subdomain
-import ArkLib.Data.Domain.Log
+import ArkLib.Data.Domain.CosetFftDomain.Log
 import ArkLib.Data.Polynomial.Indicator
 import ArkLib.ToMathlib.Polynomial.EvalExt
 import ArkLib.ToMathlib.Polynomial.NatDegreeOfSum
@@ -89,8 +89,8 @@ lemma foldWordAux_of_k_2
   foldWordAux domain f 2 (domain.subdomain 1 i) = 
     let x : domain := CosetFftDomain.twoNthRoot (i := 1)
       ⟨domain.subdomain 1 i, by simp⟩
-    let i := Log.logD (domain : Fin (2 ^ n) ↪ F) x 0
-    let i' := Log.logD (domain : Fin (2 ^ n) ↪ F) (-x.1) 0
+    let i := domain.log x
+    let i' := domain.log ⟨-x.1, by obtain ⟨x, hx⟩ := x; simpa using hx⟩    
     C ((f i + f i') / 2) + Polynomial.X * C ((f i - f i') / (2 * x)) := by
   unfold foldWordAux 
   have hn : n ≠ 0 := NeZero.ne _
@@ -103,51 +103,7 @@ lemma foldWordAux_of_k_2
       (x := (CosetFftDomain.subdomain domain 1) i)
       (by simp) (by simp [y])
     have hpre : Finset.preimage {y.1, -y.1} domain (by simp) = {j, j'} := by 
-      simp [Finset.preimage, Set.preimage]
-      ext u
-      constructor <;> intro hu
-      · simp_all
-        rcases hu with hu | hu
-        · left
-          simp [j]
-          rw [←hu]
-          conv_lhs =>
-            rw [←Log.logD_left (ω := (domain : Fin (2 ^ n) ↪ F)) (default := 0)
-                (i := u)]
-          simp
-        · right
-          simp [j']
-          rw [←hu]
-          conv_lhs =>
-            rw [←Log.logD_left (ω := (domain : Fin (2 ^ n) ↪ F)) (default := 0)
-                (i := u)]
-          simp
-      · simp at *
-        rcases hu with rfl | rfl
-        · left
-          simp [j]
-          have := Log.logD_right_of_exists (x := ↑y) 
-            (ω := (domain : Fin (2 ^ n) ↪ F)) (default := 0)
-            (by {
-              obtain ⟨y, hy⟩ := y
-              simp only [CosetFftDomainClass.mem_toFinset_iff_mem,
-                CosetFftDomainClass.mem_def] at hy
-              aesop (add simp [CosetFftDomainClass.mem_def]) })
-          conv_rhs =>
-            rw [←this]
-          rfl
-        · right 
-          have := Log.logD_right_of_exists (x := -↑y) 
-            (ω := (domain : Fin (2 ^ n) ↪ F)) (default := 0)
-            (by {
-              obtain ⟨y, hy⟩ := y
-              simp only [CosetFftDomainClass.mem_toFinset_iff_mem] at hy
-              rw [←CosetFftDomainClass.neg_mem_domain_iff_mem] at hy
-              simp only [CosetFftDomainClass.mem_def] at hy
-              aesop (add simp [CosetFftDomainClass.mem_def]) })
-          conv_rhs =>
-            rw [←this]
-          rfl
+      aesop (add unsafe (by apply CosetFftDomain.injective (ω := domain)))
     ext u 
     simp only [mem_filter, mem_univ, true_and, ←hpre, ←h, Nat.sub_zero, mem_preimage,
        iff_and_self]
@@ -186,71 +142,11 @@ lemma foldWordAux_of_k_2
           (WithBot.add_lt_add_right (by simp) Polynomial.degree_C_lt) (by rfl)
   · conv_rhs => 
       rw [←hcard] 
-    exact Finset.card_le_card_of_injOn 
-      (s := {j, j'}) (t := {↑y, -↑y}) (f := domain)
-      (fun x hx ↦ by {
-        simp only [coe_insert, coe_singleton, Set.mem_insert_iff, Set.mem_singleton_iff] at hx
-        rcases hx with rfl | rfl
-        · simp only [coe_insert, coe_singleton, Set.mem_insert_iff, Set.mem_singleton_iff] 
-          left
-          simp only [j]
-          have := Log.logD_right_of_exists (x := ↑y) 
-            (ω := (domain : Fin (2 ^ n) ↪ F)) (default := 0)
-            (by {
-              obtain ⟨y, hy⟩ := y
-              simp only [CosetFftDomainClass.mem_toFinset_iff_mem,
-                CosetFftDomainClass.mem_def] at hy
-              aesop (add simp [CosetFftDomainClass.mem_def]) })
-          conv_rhs =>
-            rw [←this]
-          rfl
-        · simp only [coe_insert, coe_singleton, Set.mem_insert_iff, Set.mem_singleton_iff]
-          right
-          simp only [j']
-          have := Log.logD_right_of_exists (x := -↑y) 
-            (ω := (domain : Fin (2 ^ n) ↪ F)) (default := 0)
-            (by {
-              obtain ⟨y, hy⟩ := y
-              simp only [CosetFftDomainClass.mem_toFinset_iff_mem] at hy
-              rw [←CosetFftDomainClass.neg_mem_domain_iff_mem] at hy
-              simp only [CosetFftDomainClass.mem_def] at hy
-              aesop (add simp [CosetFftDomainClass.mem_def]) })
-          conv_rhs =>
-            rw [←this]
-          rfl
-  }) CosetFftDomain.injOn
+    exact Finset.card_le_card_of_injOn (f := domain)
+      (fun x hx ↦ by aesop) CosetFftDomain.injOn  
   · intro x hx
     have hx : (x = domain j ∧ y.1 = domain j) ∨ 
-              (x = domain j' ∧ y.1 = -domain j') := by 
-      simp only [mem_insert, mem_singleton] at hx
-      rcases hx with rfl | rfl
-      · left
-        simp only [and_self, j] 
-        conv_lhs =>
-          rw [←Log.logD_right_of_exists (x := ↑y) 
-              (ω := (domain : Fin (2 ^ n) ↪ F)) (default := 0)
-              (by {
-              obtain ⟨y, hy⟩ := y
-              simp only [CosetFftDomainClass.mem_toFinset_iff_mem,
-                CosetFftDomainClass.mem_def] at hy
-              aesop (add simp [CosetFftDomainClass.mem_def]) })]
-        rfl
-      · right 
-        simp only [j'] 
-        have := Log.logD_right_of_exists (x := -↑y) 
-          (ω := (domain : Fin (2 ^ n) ↪ F)) (default := 0)
-          (by {
-            obtain ⟨y, hy⟩ := y
-            simp only [CosetFftDomainClass.mem_toFinset_iff_mem] at hy
-            rw [←CosetFftDomainClass.neg_mem_domain_iff_mem] at hy
-            simp only [CosetFftDomainClass.mem_def] at hy
-            aesop (add simp [CosetFftDomainClass.mem_def]) })
-        conv_lhs =>
-          lhs
-          rw [←this]
-        constructor
-        · simp 
-        · aesop 
+              (x = domain j' ∧ y.1 = -domain j') := by aesop 
     have hj := even_add_odd_eq_of_not_charp_2 (f j) (f j') (domain j) (by simp)
       (CosetFftDomainClass.domain_implies_char_ne_2 domain)
     have hj' := even_add_odd_eq_of_not_charp_2 (f j') (f j) (domain j') (by simp)
@@ -337,8 +233,8 @@ lemma foldValue_k_1 [NeZero n] {i : Fin (2 ^ (n - 1))} {α : F} :
   foldValue domain f 1 α (domain.subdomain 1 i) = 
     let x : domain := CosetFftDomain.twoNthRoot (i := 1)
         ⟨domain.subdomain 1 i, by simp⟩
-    let i := Log.logD (domain : Fin (2 ^ n) ↪ F) x 0
-    let i' := Log.logD (domain : Fin (2 ^ n) ↪ F) (-x.1) 0
+    let i := domain.log x
+    let i' := domain.log ⟨-x.1, by obtain ⟨x, hx⟩ := x; simpa using hx⟩    
     ((f i + f i') / 2) + α * ((f i - f i') / (2 * x)) := by 
   aesop 
     (add simp [foldValue, foldWordAux_of_k_2])
@@ -361,8 +257,8 @@ theorem foldWord_k_1 [NeZero n] {i : Fin (2 ^ (n - 1))} {α : F} :
   foldWord domain f 1 α i = 
     let x : domain := CosetFftDomain.twoNthRoot (i := 1)
         ⟨domain.subdomain 1 i, by simp⟩
-    let i := Log.logD (domain : Fin (2 ^ n) ↪ F) x 0
-    let i' := Log.logD (domain : Fin (2 ^ n) ↪ F) (-x.1) 0
+    let i := domain.log x
+    let i' := domain.log ⟨-x.1, by obtain ⟨x, hx⟩ := x; simpa using hx⟩    
     ((f i + f i') / 2) + α * ((f i - f i') / (2 * x)) := by 
   simp [foldWord, foldValue_k_1]
 

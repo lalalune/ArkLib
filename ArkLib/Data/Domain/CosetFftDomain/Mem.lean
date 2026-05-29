@@ -26,15 +26,12 @@ instance {D : Type}
   [FunLike D ι F] [CosetFftDomainClass D ι F] : Membership F D where
   mem φ x := ∃ i, φ i = x
 
-namespace CosetFftDomain
-
 instance
     {ι : Type} [AddCommGroup ι] [Fintype ι] [DecidableEq ι]
-    {F : Type} [Field F] [DecidableEq F] :
-  CoeSort (CosetFftDomain ι F) Type where
-    coe d := toFinset d
-
-end CosetFftDomain
+    {F : Type} [Field F] [DecidableEq F]
+    {D : Type} [FunLike D ι F] [CosetFftDomainClass D ι F] :
+  CoeSort D Type where
+    coe d := CosetFftDomainClass.toFinset d
 
 namespace CosetFftDomainClass
 

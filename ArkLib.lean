@@ -74,12 +74,12 @@ import ArkLib.Data.Domain.CosetFftDomain.Ops
 import ArkLib.Data.Domain.CosetFftDomain.Subdomain
 import ArkLib.Data.Domain.CosetFftDomain.ToFftDomain
 import ArkLib.Data.Domain.CosetFftDomain.ToList
+import ArkLib.Data.Domain.CosetFftDomain.Log
 import ArkLib.Data.Domain.FftDomain.Defs
 import ArkLib.Data.Domain.FftDomain.Mem
 import ArkLib.Data.Domain.FftDomain.Ops
 import ArkLib.Data.Domain.FftDomain.Subdomain
 import ArkLib.Data.Domain.FftDomain.ToSubgroup
-import ArkLib.Data.Domain.Log
 import ArkLib.Data.EllipticCurve.BN254
 import ArkLib.Data.Fin.Basic
 import ArkLib.Data.Fin.Fold

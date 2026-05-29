@@ -132,24 +132,25 @@ noncomputable def fin_equiv_coset (s₀ : evalDomainSigma s ω ↑i)
   unfold Function.Bijective
   apply And.intro
   · intros a b h
-    simp only [Nat.succ_eq_add_one, finRangeTo.eq_1, Fin.ofNat_eq_cast, Fin.val_natCast,
-      Set.mem_setOf_eq, FftDomain.subdomain, Subtype.mk.injEq,
-      mul_eq_mul_left_iff] at h
+    simp only [finRangeTo.eq_1, Subtype.mk.injEq] at h 
+    have h := congr_arg Subtype.val h
+    simp only [mul_eq_mul_left_iff] at h
     rcases h with h | h
     · have h := FftDomain.injective h
       aesop
     · rcases s₀ with ⟨s₀, hs₀⟩
       subst h
-      simp only [Nat.succ_eq_add_one, finRangeTo.eq_1, Fin.ofNat_eq_cast, Fin.val_natCast,
-        evalDomainSigma] at hs₀
-      rw [CosetFftDomain.mem_toFinset_iff_mem] at hs₀ 
+      simp only [finRangeTo.eq_1, evalDomainSigma] at hs₀
+      rw [CosetFftDomainClass.mem_toFinset_iff_mem] at hs₀ 
       have hs₀ := CosetFftDomainClass.not_zero_mem hs₀
       simp at hs₀
   · rintro ⟨⟨y, h'⟩, h⟩
     simp only [finRangeTo.eq_1, Subtype.mk.injEq]
     simp only [cosetG, k_le_n, ↓reduceDIte] at h
     obtain ⟨a, -, ha⟩ := Finset.mem_image.mp h
-    exact ⟨a, congr_arg Subtype.val ha⟩
+    have ha := congr_arg Subtype.val ha
+    simp only [finRangeTo.eq_1, cosetEnum] at ha
+    exact ⟨a, by aesop⟩
 
 def invertibleDomain (s₀ : evalDomainSigma s ω ↑i) : Invertible (VDM n s s₀) := by
   haveI : NeZero (VDM n s s₀).det := by
