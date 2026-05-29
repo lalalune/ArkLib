@@ -69,12 +69,12 @@ import ArkLib.Data.CodingTheory.ProximityGap.ProximityGenerators
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.CodingTheory.ReedSolomon.Multilinear
 import ArkLib.Data.Domain.CosetFftDomain.Defs
+import ArkLib.Data.Domain.CosetFftDomain.Log
 import ArkLib.Data.Domain.CosetFftDomain.Mem
 import ArkLib.Data.Domain.CosetFftDomain.Ops
 import ArkLib.Data.Domain.CosetFftDomain.Subdomain
 import ArkLib.Data.Domain.CosetFftDomain.ToFftDomain
 import ArkLib.Data.Domain.CosetFftDomain.ToList
-import ArkLib.Data.Domain.CosetFftDomain.Log
 import ArkLib.Data.Domain.FftDomain.Defs
 import ArkLib.Data.Domain.FftDomain.Mem
 import ArkLib.Data.Domain.FftDomain.Ops
