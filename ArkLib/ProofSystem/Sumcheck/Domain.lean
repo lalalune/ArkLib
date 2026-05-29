@@ -137,7 +137,7 @@ def drop (D : SumcheckDomain R k) (j : ℕ) : SumcheckDomain R (k - j) where
 /-- Coordinate `i` has exactly `size i` evaluation points. -/
 @[simp] lemma card_points (D : SumcheckDomain R k) (i : Fin k) :
     (D.points i).card = D.size i := by
-  rw [points, Finset.card_map, Finset.card_univ, Fintype.card_fin]
+  simp [points]
 
 /-- The cube has `∏ᵢ (size i)` points — the size of the heterogeneous evaluation product. Used for
 the Schwartz–Zippel soundness bound `d / ∏ᵢ (size i)`. -/
@@ -153,8 +153,8 @@ theorem sum_cube_succ {M : Type*} [AddCommMonoid M] (D : SumcheckDomain R (k + 1
   rw [← Finset.sum_product']
   have hcube : D.cube
       = (D.points 0 ×ˢ D.tail.cube).map (Fin.consEquiv (fun _ : Fin (k + 1) => R)).toEmbedding := by
-    have := Finset.filter_piFinset_eq_map_consEquiv (S := D.points) (fun _ => True)
-    simpa [cube, tail, points] using this
+    simpa [cube, tail, points] using
+      Finset.filter_piFinset_eq_map_consEquiv (S := D.points) (fun _ => True)
   rw [hcube, Finset.sum_map]
   rfl
 
@@ -164,14 +164,10 @@ end SumcheckDomain
 `R` is nontrivial. -/
 def boolEmbedding (R : Type u) [CommSemiring R] [Nontrivial R] : Fin 2 ↪ R where
   toFun := ![0, 1]
-  inj' := by
+  inj' a b hab := by
     have h01 : (0 : R) ≠ 1 := zero_ne_one
-    intro a b hab
     fin_cases a <;> fin_cases b <;>
-      first
-        | rfl
-        | exact (h01 hab).elim
-        | exact (h01 hab.symm).elim
+      first | rfl | exact (h01 hab).elim | exact (h01 hab.symm).elim
 
 @[simp] lemma boolEmbedding_zero (R : Type u) [CommSemiring R] [Nontrivial R] :
     boolEmbedding R 0 = (0 : R) := rfl

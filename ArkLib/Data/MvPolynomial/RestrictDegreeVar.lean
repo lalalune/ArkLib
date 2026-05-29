@@ -21,6 +21,11 @@ plain multilinear case is `b = fun _ => 1`. The degree machinery (`degreeOf`) is
 per-coordinate, so the characterisation `mem_restrictDegreeVar_iff_degreeOf_le` is immediate.
 -/
 
+-- The `sumToIter_monomial_aux` lemma below + the two helper lemmas mirror the (private) uniform
+-- proofs in `RestrictDegree.lean`. The `multiGoal` linter fires on a `congr! 2` split inside
+-- `sumToIter_monomial_aux`; scope-suppress it file-wide.
+set_option linter.style.multiGoal false
+
 namespace MvPolynomial
 
 variable {σ : Type*} {R : Type*} [CommSemiring R]
@@ -84,16 +89,17 @@ lemma sumToIter_monomial_aux {R : Type*} [CommSemiring R]
     MvPolynomial.sumToIter R S₁ S₂ (MvPolynomial.monomial m c) =
       MvPolynomial.monomial (m.comapDomain Sum.inl Sum.inl_injective.injOn)
         (MvPolynomial.monomial (m.comapDomain Sum.inr Sum.inr_injective.injOn) c) := by
-  simp +decide only [MvPolynomial.sumToIter, MvPolynomial.eval₂Hom_monomial]
-  simp +decide [Finsupp.prod, Finsupp.comapDomain]
+  simp only [sumToIter, eval₂Hom_monomial]
+  simp only [RingHom.coe_comp, Function.comp_apply, Finsupp.prod, Finsupp.comapDomain,
+    Finset.preimage_inl, Finset.preimage_inr]
   convert congr_arg₂ (· * ·) rfl ?_ using 1
   rotate_left
   exact ∏ x ∈ m.support,
     Sum.rec (fun a => MvPolynomial.X a)
       (fun b => MvPolynomial.C (MvPolynomial.X b)) x ^ m x
   · rfl
-  · simp +decide [MvPolynomial.monomial_eq, Finset.prod_ite]
-    simp +decide [mul_assoc, Finsupp.prod]
+  · simp only [monomial_eq, C_mul]
+    simp only [Finsupp.prod, Finsupp.coe_mk, map_prod, C_pow, mul_assoc]
     rw [← Finset.prod_filter_mul_prod_filter_not m.support (fun x => x.isRight)]
     congr! 2
     · exact Finset.prod_bij (fun x hx => Sum.inr x) (by aesop) (by aesop)
@@ -109,11 +115,10 @@ lemma rename_equiv_mem_restrictDegreeVar {R : Type*} [CommSemiring R]
     MvPolynomial.rename e p ∈ restrictDegreeVar τ R (b ∘ e.symm) := by
   intro m hm
   obtain ⟨n', hn', hm_eq⟩ : ∃ n' ∈ p.support, m = n'.mapDomain e := by
-    simp +zetaDelta at *
+    simp only [SetLike.mem_coe, Finsupp.mem_support_iff, ne_eq, mem_support_iff] at *
     rw [MvPolynomial.rename_eq] at hm
     contrapose! hm
-    rw [Finsupp.mapDomain]
-    rw [Finsupp.sum, Finsupp.finset_sum_apply]
+    rw [Finsupp.mapDomain, Finsupp.sum, Finsupp.finset_sum_apply]
     exact Finset.sum_eq_zero fun x hx =>
       Finsupp.single_eq_of_ne (hm x (by aesop))
   intro i
@@ -140,7 +145,7 @@ lemma sumAlgEquiv_mem_restrictDegreeVar {R : Type*} [CommSemiring R]
       rw [map_sum]
       exact Finset.sum_congr rfl fun _ _ => sumToIter_monomial_aux _ _
     contrapose! hs
-    simp +decide [h_sum]
+    simp only [h_sum, SetLike.mem_coe, Finsupp.mem_support_iff, ne_eq, not_not]
     erw [Finsupp.finset_sum_apply]
     refine Finset.sum_eq_zero fun x hx => ?_
     erw [AddMonoidAlgebra.lsingle_apply, AddMonoidAlgebra.lsingle_apply]; aesop

@@ -20,10 +20,17 @@ that the structured (witness-mode) sumcheck — see
 import them without depending on `Binius.BinaryBasefold.*`.
 -/
 
+-- The private uniform helpers below use `simp +decide` / `simp +zetaDelta at *` patterns. These
+-- pre-date the per-round / prismalinear arc and are inherited by the per-variable helpers in
+-- `RestrictDegreeVar.lean`. Scope-suppress the `linter.flexible` warning per-decl; a stylistic
+-- cleanup (`simp +decide [...]` → `simp only [...]` per the linter's `simp?` suggestion) is left
+-- as a follow-up.
+
 namespace MvPolynomial
 
 open Finset
 
+set_option linter.flexible false in
 private lemma sumAlgEquiv_mem_restrictDegree {R : Type*} [CommSemiring R]
     {S₁ S₂ : Type*}
     (p : MvPolynomial (S₁ ⊕ S₂) R) (n : ℕ)
@@ -48,6 +55,7 @@ private lemma sumAlgEquiv_mem_restrictDegree {R : Type*} [CommSemiring R]
     erw [AddMonoidAlgebra.lsingle_apply, AddMonoidAlgebra.lsingle_apply]; aesop
   aesop
 
+set_option linter.flexible false in
 private lemma rename_equiv_mem_restrictDegree {R : Type*} [CommSemiring R]
     {σ τ : Type*}
     (e : σ ≃ τ) (p : MvPolynomial σ R) (n : ℕ)
@@ -140,10 +148,8 @@ theorem fixFirstVariablesOfMQP_degreeVarLE
       H_grouped ∈ restrictDegreeVar (Fin (ℓ - v)) (L[X Fin ↑v]) ((b ∘ e.symm) ∘ Sum.inl) :=
     sumAlgEquiv_mem_restrictDegreeVar H_sum
       (rename_equiv_mem_restrictDegreeVar e poly hp)
-  have h_term_in_Hgrouped_support : term ∈ H_grouped.support := by
-    have h_support_map_subset : ((MvPolynomial.map eval_map) H_grouped).support
-      ⊆ H_grouped.support := MvPolynomial.support_map_subset _ _
-    exact h_support_map_subset h_term_in_support
+  have h_term_in_Hgrouped_support : term ∈ H_grouped.support :=
+    MvPolynomial.support_map_subset _ _ h_term_in_support
   have h_bound : term i ≤ (b ∘ e.symm) (Sum.inl i) :=
     (MvPolynomial.mem_restrictDegreeVar H_grouped).mp h_Hgrouped_degreeVarLE
       term h_term_in_Hgrouped_support i

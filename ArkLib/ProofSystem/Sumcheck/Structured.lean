@@ -63,8 +63,9 @@ abbrev PrismalinearPoly (L : Type) [CommSemiring L] {ℓ : ℕ} (b : Fin ℓ →
 
 /-- Belt-and-braces: lock in the `rfl` claim from the `PrismalinearPoly` docstring. The multilinear
 case is *definitionally* the constant-1 prismalinear case, so existing multilinear consumers
-(`SumcheckMultiplierParam`) compose with the prismalinear surface (`PrismalinearSumcheckMultiplierParam`
-below, when `multpolyBound = fun _ => 1`) without any coercion. -/
+(`SumcheckMultiplierParam`) compose with the prismalinear surface
+(`Sumcheck.Structured.Prismalinear.SumcheckMultiplierParam` in `Structured/Prismalinear.lean`, when
+`multpolyBound = fun _ => 1`) without any coercion. -/
 example {L : Type} [CommSemiring L] {ℓ : ℕ} :
     MultilinearPoly L ℓ = PrismalinearPoly L (fun _ : Fin ℓ => 1) := rfl
 
@@ -77,8 +78,8 @@ No instantiation is privileged: every consumer specifies its own `combinator`, `
 and degree proof. The plain degree-2 case `H = P · t` (Binary Basefold, ring-switching) takes
 `combinator := X`, `degCombinator := 1`; Hachi's range/smallness check uses `Q := ∏ⱼ (X − j)` of
 degree `2b`, giving a degree-`(2b+1)` round polynomial. For the SWIRL hyperprism (where `P` is
-*prismalinear* rather than multilinear), use the parallel `PrismalinearSumcheckMultiplierParam`
-shape — to be added in a follow-up.
+*prismalinear* rather than multilinear), use the parallel
+`Sumcheck.Structured.Prismalinear.SumcheckMultiplierParam` shape in `Structured/Prismalinear.lean`.
 
 For example, in Binary Basefold `multpoly` is `eqTilde(r₀, .., r_{ℓ-1}, X₀, .., X_{ℓ-1})`. -/
 structure SumcheckMultiplierParam (L : Type) [CommRing L] (ℓ : ℕ) (Context : Type) where

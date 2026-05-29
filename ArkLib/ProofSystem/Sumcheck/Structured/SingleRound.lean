@@ -52,10 +52,8 @@ theorem roundPoly_degreeLE_finset {R : Type*} [CommSemiring R] {n deg : ℕ} (i 
     {challenges : Fin i.castSucc → R} {poly : R[X Fin (n + 1)]}
     (hp : poly ∈ R⦃≤ deg⦄[X Fin (n + 1)]) (S : Finset (Fin (n - i) → R)) :
     ∑ x ∈ S, poly ⸨X ⦃i⦄, challenges, x⸩' (by simp; omega) ∈ R⦃≤ deg⦄[X] := by
-  refine mem_degreeLE.mpr (le_trans (degree_sum_le S _) ?_)
-  simp only [Finset.sup_le_iff]
-  intro x _
-  refine le_trans degree_map_le (natDegree_le_iff_degree_le.mp ?_)
+  refine mem_degreeLE.mpr ((degree_sum_le S _).trans (Finset.sup_le fun x _ => ?_))
+  refine degree_map_le.trans (natDegree_le_iff_degree_le.mp ?_)
   rw [natDegree_finSuccEquivNth]
   exact degreeOf_le_iff.mpr fun m a ↦ hp a i
 
