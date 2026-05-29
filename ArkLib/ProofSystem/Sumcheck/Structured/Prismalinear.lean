@@ -37,7 +37,7 @@ namespace Sumcheck.Structured.Prismalinear
 
 open Finset MvPolynomial
 
-variable {L : Type} [CommRing L] (ℓ : ℕ) [NeZero ℓ]
+variable {L : Type} [CommSemiring L] (ℓ : ℕ) [NeZero ℓ]
 
 /-- Parameters describing how a *prismalinear* round polynomial `H = P · Q(t)` is built from the
 witness `t`: `P` respects a per-variable degree bound `multpolyBound : Fin ℓ → ℕ` (e.g.
@@ -47,7 +47,7 @@ in the remaining Boolean coords). The round polynomial then has degree
 
 The multilinear analog is `Sumcheck.Structured.SumcheckMultiplierParam`; with
 `multpolyBound = fun _ => 1`, the two specialize to the same shape via `restrictDegreeVar_const`. -/
-structure SumcheckMultiplierParam (L : Type) [CommRing L] {ℓ : ℕ} (Context : Type)
+structure SumcheckMultiplierParam (L : Type) [CommSemiring L] {ℓ : ℕ} (Context : Type)
     (multpolyBound : Fin ℓ → ℕ) where
   /-- Public *prismalinear* multiplier `P` — per-variable degree in coord `i` is `≤ multpolyBound i`. -/
   multpoly : (ctx : Context) → PrismalinearPoly L multpolyBound

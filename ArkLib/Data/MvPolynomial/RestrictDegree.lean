@@ -20,57 +20,9 @@ that the structured (witness-mode) sumcheck — see
 import them without depending on `Binius.BinaryBasefold.*`.
 -/
 
--- The private uniform helpers below use `simp +decide` / `simp +zetaDelta at *` patterns. These
--- pre-date the per-round / prismalinear arc and are inherited by the per-variable helpers in
--- `RestrictDegreeVar.lean`. Scope-suppress the `linter.flexible` warning per-decl; a stylistic
--- cleanup (`simp +decide [...]` → `simp only [...]` per the linter's `simp?` suggestion) is left
--- as a follow-up.
-
 namespace MvPolynomial
 
 open Finset
-
-set_option linter.flexible false in
-private lemma sumAlgEquiv_mem_restrictDegree {R : Type*} [CommSemiring R]
-    {S₁ S₂ : Type*}
-    (p : MvPolynomial (S₁ ⊕ S₂) R) (n : ℕ)
-    (hp : p ∈ MvPolynomial.restrictDegree (S₁ ⊕ S₂) R n) :
-    (MvPolynomial.sumAlgEquiv R S₁ S₂) p ∈
-      MvPolynomial.restrictDegree S₁ (MvPolynomial S₂ R) n := by
-  intro s hs
-  obtain ⟨m, hm⟩ : ∃ m : (S₁ ⊕ S₂) →₀ ℕ,
-      m ∈ p.support ∧ s = m.comapDomain Sum.inl Sum.inl_injective.injOn := by
-    have h_sum : (MvPolynomial.sumAlgEquiv R S₁ S₂) p =
-        ∑ m ∈ p.support,
-          (MvPolynomial.monomial (m.comapDomain Sum.inl Sum.inl_injective.injOn))
-            (MvPolynomial.monomial (m.comapDomain Sum.inr Sum.inr_injective.injOn)
-              (p.coeff m)) := by
-      conv_lhs => rw [p.as_sum]
-      rw [map_sum]
-      exact Finset.sum_congr rfl fun _ _ => sumToIter_monomial_aux _ _
-    contrapose! hs
-    simp +decide [h_sum]
-    erw [Finsupp.finset_sum_apply]
-    refine Finset.sum_eq_zero fun x hx => ?_
-    erw [AddMonoidAlgebra.lsingle_apply, AddMonoidAlgebra.lsingle_apply]; aesop
-  aesop
-
-set_option linter.flexible false in
-private lemma rename_equiv_mem_restrictDegree {R : Type*} [CommSemiring R]
-    {σ τ : Type*}
-    (e : σ ≃ τ) (p : MvPolynomial σ R) (n : ℕ)
-    (hp : p ∈ MvPolynomial.restrictDegree σ R n) :
-    (MvPolynomial.rename e p) ∈ MvPolynomial.restrictDegree τ R n := by
-  intro m hm
-  obtain ⟨n', hn', hm_eq⟩ : ∃ n' ∈ p.support, m = n'.mapDomain e := by
-    simp +zetaDelta at *
-    rw [MvPolynomial.rename_eq] at hm
-    contrapose! hm
-    rw [Finsupp.mapDomain]
-    rw [Finsupp.sum, Finsupp.finset_sum_apply]
-    exact Finset.sum_eq_zero fun x hx =>
-      Finsupp.single_eq_of_ne (hm x (by aesop))
-  aesop
 
 variable {L : Type*} [CommSemiring L] (ℓ : ℕ)
 
@@ -92,42 +44,12 @@ noncomputable def fixFirstVariablesOfMQP (v : Fin (ℓ + 1))
   let eval_map : L[X Fin ↑v] →+* L := (eval challenges : MvPolynomial (Fin v) L →+* L)
   MvPolynomial.map (f := eval_map) (σ := Fin (ℓ - v)) H_forward
 
-/-- Auxiliary lemma for proving that the polynomial sent by the honest prover is of degree at most
-`deg` -/
-theorem fixFirstVariablesOfMQP_degreeLE {deg : ℕ} (v : Fin (ℓ + 1)) {challenges : Fin v → L}
-    {poly : L[X Fin ℓ]} (hp : poly ∈ L⦃≤ deg⦄[X Fin ℓ]) :
-    fixFirstVariablesOfMQP ℓ v poly challenges ∈ L⦃≤ deg⦄[X Fin (ℓ - v)] := by
-  -- The goal is to prove the totalDegree of the result is ≤ deg.
-  rw [MvPolynomial.mem_restrictDegree]
-  unfold fixFirstVariablesOfMQP
-  dsimp only
-  intro term h_term_in_support i
-  -- ⊢ term i ≤ deg
-  have h_l_eq : ℓ = (ℓ - v) + v := (Nat.sub_add_cancel v.is_le).symm
-  set finEquiv := finSumFinEquiv (m := ℓ - v) (n := v).symm
-  set H_sum := MvPolynomial.rename (f := (finCongr h_l_eq).trans finEquiv) poly
-  set H_grouped : L[X Fin ↑v][X Fin (ℓ - ↑v)] := (sumAlgEquiv L (Fin (ℓ - v)) (Fin v)) H_sum
-  set eval_map : L[X Fin ↑v] →+* L := (eval challenges : MvPolynomial (Fin v) L →+* L)
-  have h_Hgrouped_degreeLE : H_grouped ∈ (L[X Fin ↑v])⦃≤ deg⦄[X Fin (ℓ - ↑v)] := by
-    exact sumAlgEquiv_mem_restrictDegree H_sum deg
-      (rename_equiv_mem_restrictDegree
-        ((finCongr h_l_eq).trans finEquiv) poly deg hp)
-  have h_mem_support_max_deg_LE := MvPolynomial.mem_restrictDegree (R := L[X Fin ↑v]) (n := deg)
-    (σ := Fin (ℓ - ↑v)) (p := H_grouped).mp (h_Hgrouped_degreeLE)
-  have h_term_in_Hgrouped_support : term ∈ H_grouped.support := by
-    have h_support_map_subset : ((MvPolynomial.map eval_map) H_grouped).support
-      ⊆ H_grouped.support := by apply MvPolynomial.support_map_subset
-    exact (h_support_map_subset) h_term_in_support
-  -- h_Hgrouped_degreeLE
-  let res : term i ≤ deg := h_mem_support_max_deg_LE term h_term_in_Hgrouped_support i
-  exact res
-
-/-- Prismalinear version of `fixFirstVariablesOfMQP_degreeLE`: if the original polynomial respects
-a per-variable degree bound `b : Fin ℓ → ℕ`, then fixing the last `v` variables to scalars produces
-a polynomial whose surviving `Fin (ℓ-v)` variables respect `b` restricted to their original indices
-(via `Fin.castLE (Nat.sub_le ℓ v) : Fin (ℓ-v) ↪ Fin ℓ`). This is the prismalinear analog needed for
-SWIRL-style sumchecks where the multiplier has degree `|D|-1` in the skip coord and `≤ 1` in the
-remaining Boolean coords. -/
+/-- The per-variable / prismalinear degree-survival lemma: if a polynomial respects a per-variable
+degree bound `b : Fin ℓ → ℕ`, then fixing the last `v` variables to scalars produces a polynomial
+whose surviving `Fin (ℓ-v)` variables respect `b` restricted to their original indices via
+`Fin.castLE (Nat.sub_le ℓ v) : Fin (ℓ-v) ↪ Fin ℓ`. Needed for SWIRL-style sumchecks where the
+multiplier has degree `|D|-1` in the skip coord and `≤ 1` in the remaining Boolean coords. The
+uniform `fixFirstVariablesOfMQP_degreeLE` below is the constant-`b` corollary. -/
 theorem fixFirstVariablesOfMQP_degreeVarLE
     {b : Fin ℓ → ℕ} (v : Fin (ℓ + 1)) {challenges : Fin v → L}
     {poly : MvPolynomial (Fin ℓ) L}
@@ -160,6 +82,14 @@ theorem fixFirstVariablesOfMQP_degreeVarLE
   change term i ≤ b (Fin.castLE (Nat.sub_le ℓ v) i)
   rw [← h_eq]
   exact h_bound
+
+/-- Uniform corollary of `fixFirstVariablesOfMQP_degreeVarLE`: the constant per-variable case
+`b = fun _ => deg`, where `restrictDegreeVar` collapses to `restrictDegree` definitionally via
+`restrictDegreeVar_const`. Used by the structured sumcheck to bound the round polynomial. -/
+theorem fixFirstVariablesOfMQP_degreeLE {deg : ℕ} (v : Fin (ℓ + 1)) {challenges : Fin v → L}
+    {poly : L[X Fin ℓ]} (hp : poly ∈ L⦃≤ deg⦄[X Fin ℓ]) :
+    fixFirstVariablesOfMQP ℓ v poly challenges ∈ L⦃≤ deg⦄[X Fin (ℓ - v)] :=
+  fixFirstVariablesOfMQP_degreeVarLE ℓ (b := fun _ => deg) v hp
 
 /-- For a multilinear `t` (each variable has `degreeOf ≤ 1`), substituting `t` into a univariate
 `Q : L[X]` via `Polynomial.aeval` yields a multivariate polynomial whose degree in each variable is
