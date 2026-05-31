@@ -426,12 +426,30 @@ honest prover's message `g = M₀ + γ M₁` makes `accepts` hold, so the
 verifier's `if accepts then pure () else failure` never fails.
 
 **Status: statement complete, proof admitted (tagged sorry).** The
-point-form fact (`accepts_of_inputRelation`) is closed; lifting it
-through `OracleReduction.toReduction`'s probabilistic-computation
-plumbing is the remaining step. The intended proof route is the
-per-round `OracleReduction.append_perfectCompleteness` composition used
-by `Sumcheck/Spec/SingleRound.lean :: oracleReduction_perfectCompleteness`
-(whose own proof is likewise still admitted at the leaf rounds). -/
+point-form mathematical content (`accepts_of_inputRelation`) is fully
+closed; only the probabilistic/monadic plumbing of
+`OracleReduction.toReduction`'s run remains, and it is blocked on two
+*missing framework lemmas* (not protocol-specific work):
+
+  1. **`simulateQ_forIn`.** After `simulateQ`, the verifier's spot-check
+     step is `forIn (List.finRange t) … (fun j _ ↦ queryF 0 _ >>= queryF 1 _
+     >>= guard …)`. With `t` a free variable this needs an induction
+     principle collapsing a simulated *guarded* `forIn` to `pure ()` under
+     a per-element predicate (here the `∀ j` conjunct of `accepts`). No
+     in-tree protocol has a verifier loop, so there is no precedent
+     (Sumcheck's completeness proof is loopless).
+  2. **A `simulateQ`/`OptionT`/`SubSpec` query-resolution simp set.** The
+     `queryG`/`queryF` double-`liftM` wraps each query in nested
+     `simulateQ`/`SubSpec` layers that the current `simulateQ_*` simp
+     lemmas do not fire through; resolving them needs the fragile manual
+     `erw [simulateQ_bind, StateT.run_bind, …]` peeling that
+     `Sumcheck/Spec/SingleRound.lean :: reduction_perfectCompleteness` runs
+     for ~210 lines (and which is itself still admitted).
+
+The clean `oracleVerifier.toVerifier = verifier` equivalence shortcut is
+*not* available here: `toVerifier`'s output type is `Unit × (Fin 0 → _)`,
+not the non-oracle `verifier`'s `Unit`. Closing this is best done by first
+landing the two general lemmas above in `OracleReduction/`. -/
 theorem oracleReduction_perfectCompleteness
     [SampleableType F] [SampleableType ι]
     {σ : Type} (init : ProbComp σ)
