@@ -40,7 +40,7 @@ exposes only the no-loss `ε_mca(C, δ)`.
 
 ## Open follow-ups
 
-The following items from ABF26 Section 4 are tracked in `ABF26_PLAN.md` §7 and remain to be
+The following items from ABF26 Section 4 are tracked in `docs/kb/ABF26_PLAN.md` §7 and remain to be
 added on top of this file's definitions. Each is in scope for Phase 1 of the plan:
 
 - **Monotonicity / antitonicity of `epsCA`** (ABF26-D4.1 sub-tasks 4–5). `epsCA` is
@@ -529,7 +529,8 @@ the obvious case-split: `mcaEvent` *can* hold at specific `γ`-values when `join
 holds (line agrees with the unique close codeword `v₀ + γ v₁` on `S_pair ∪ {i*}` for an
 extra position `i*`, requiring `γ` to satisfy a specific equation per `i*`), and the
 equality only follows from a dominance argument over the choice of `u`. Formalising
-this in Lean is out of scope for Phase 1; tracked in `ABF26_PLAN.md` §6 conjecture ledger. -/
+this in Lean is out of scope for Phase 1; tracked in `docs/kb/ABF26_PLAN.md` §6
+conjecture ledger. -/
 theorem epsMCA_eq_epsCA_below_udr
     (C : Submodule F (ι → A)) (δ : ℝ≥0)
     (_h_udr : 2 * δ * (Fintype.card ι : ℝ≥0) <

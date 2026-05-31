@@ -45,7 +45,7 @@ namespace STIR
   existence of a large agreement set. The contrapositive bounds `Pr[close]` by
   `err'(...)` when no such set exists — that is the bound `epsCA_curves C δ δ ≤
   err'(...)` for `C = RS[F, ι, degree]`. A future bridge `proximity_gap_iff_epsCA_le`
-  would make this iff explicit; deferred per Phase 4 of `ABF26_INTEGRATION_PLAN.md`. -/
+  would make this iff explicit; deferred per Phase 4 of `docs/kb/ABF26_INTEGRATION_PLAN.md`. -/
 lemma proximity_gap
   {F : Type} [Field F] [Fintype F] [DecidableEq F]
   {ι : Type} [Fintype ι] [Nonempty ι] {φ : ι ↪ F}

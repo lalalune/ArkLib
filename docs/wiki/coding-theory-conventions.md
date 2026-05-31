@@ -168,7 +168,7 @@ row.
 
 ## File and namespace layout (target after Phase 2 of the integration plan)
 
-See [`../../ABF26_INTEGRATION_PLAN.md`](../../ABF26_INTEGRATION_PLAN.md) §3 for
+See [`../kb/ABF26_INTEGRATION_PLAN.md`](../kb/ABF26_INTEGRATION_PLAN.md) §3 for
 the full proposed tree. Briefly:
 
 - `CodingTheory.*` for non-RS-specific definitions and predicates
