@@ -74,7 +74,7 @@ codes, and "sufficiently large `n`". We capture these uniformly as follows:
 - ABF26 T3.6 [AGL24 Thm 1.1] — random Reed-Solomon list decoding near capacity; blocked
   on a uniform distribution over size-`n` subsets of `F` (same blocker as T4.15).
 - ABF26 T3.15 [CW07] — algorithmic hardness barrier (discrete-log reduction). Out of
-  scope per `ABF26_PLAN.md` §7 D2 (we formalise combinatorial statements only).
+  scope per `docs/kb/ABF26_PLAN.md` §7 D2 (we formalise combinatorial statements only).
 
 ## References
 
@@ -254,7 +254,7 @@ theorem rs_lambda_superpoly_extension_bkr06
             let k : ℕ := Nat.floor ((q : ℝ) ^ α)
             let δ : ℝ := 1 - (q : ℝ) ^ (β - 1)
             let C := ReedSolomon.code domain k
-            ((Lambda_at ((C : Set (ι → F))) δ w).ncard : ℝ) ≥
+            ((closeCodewordsRel ((C : Set (ι → F))) w δ).ncard : ℝ) ≥
               (q : ℝ) ^ ((α - β ^ 2) * Real.log q) := by
   sorry -- ABF26-T3.12; external admit [BKR06 Cor 2.2].
 
@@ -276,7 +276,7 @@ theorem rs_lambda_large_prime_ghsz02
             let k : ℕ := Nat.floor ((p : ℝ) ^ α)
             let δ : ℝ := 1 - ((1 - β) / α) * (p : ℝ) ^ (α - 1)
             let C := ReedSolomon.code domain k
-            ((Lambda_at ((C : Set (ι → F))) δ w).ncard : ℝ) >
+            ((closeCodewordsRel ((C : Set (ι → F))) w δ).ncard : ℝ) >
               c * (p : ℝ) ^ ((p : ℝ) ^ α * β / 2) := by
   sorry -- ABF26-T3.13; external admit [GHSZ02 Cor 20].
 
@@ -307,7 +307,7 @@ theorem rs_lambda_high_rate_jh01
             -- external admit's eventual proof should pin `(k, q)` to make
             -- this exactly satisfiable.
             Set.ncard ((C : Set (ι → F))) = j + 1 ∧
-            (j : ℕ∞) < (Lambda_at ((C : Set (ι → F))) (1 / (j + 1 : ℝ)) w).ncard := by
+            (j : ℕ∞) < (closeCodewordsRel ((C : Set (ι → F))) w (1 / (j + 1 : ℝ))).ncard := by
   sorry -- ABF26-T3.14; external admit [JH01 Thm 2].
 
 end ReedSolomonBounds
