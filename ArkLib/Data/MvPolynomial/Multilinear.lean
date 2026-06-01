@@ -416,6 +416,7 @@ lemma even_and_odd_formula {n : ℕ} [Field R] [NeZero n]
     {p : R⦃≤ 1⦄[X (Fin n)]} :
   (even p).1 + (MvPolynomial.X 0) * (odd p).1 = p.1 := by
   exact formula_generic hchar p.1 p.2
+
 end MvPolynomial
 
 end
