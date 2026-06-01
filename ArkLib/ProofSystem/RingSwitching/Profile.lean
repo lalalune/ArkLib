@@ -59,9 +59,14 @@ structure RingSwitchingProfile (B L : Type) (κ : ℕ)
   φ₀ : L →+* A
   /-- row embedding `L → A`; Binius `α ↦ 1 ⊗ α`, Hachi the automorphism `σ₋₁`. -/
   φ₁ : L →+* A
-  /-- `L`-coordinates of an `A`-element via the φ₁-side rank-`2^κ` `L`-module structure on `A`. -/
+  /-- The `2^κ` `L`-valued "row" coordinates of an `A`-element (Binius: `β.baseChange L`-coords of
+  `ŝ ∈ L ⊗_K L`; used in step 5 / `compute_s0`). The precise algebraic law relating it to `φ₀`/`φ₁`
+  and `A`'s multiplication is deferred — see the module docstring and `decomposeColumns`. -/
   decomposeRows : A → (Fin κ → Fin 2) → L
-  /-- `L`-coordinates of an `A`-element via the φ₀-side rank-`2^κ` `L`-module structure on `A`. -/
+  /-- The `2^κ` `L`-valued "column" coordinates of an `A`-element (Binius: `baseChangeRight`-coords;
+  used in step 2 / `performCheckOriginalEvaluation`). NOTE: in the Binius instance this uses the
+  *right* `L`-module structure on `A`, distinct from `algLA` (the left/`φ₀` action) — when the
+  connecting law is added (Step 3) the profile will need to carry that right-side structure too. -/
   decomposeColumns : A → (Fin κ → Fin 2) → L
 
 attribute [instance] RingSwitchingProfile.commRingA RingSwitchingProfile.algLA
@@ -69,8 +74,12 @@ attribute [instance] RingSwitchingProfile.commRingA RingSwitchingProfile.algLA
 /-- The Binius (binary-tower) instantiation of `RingSwitchingProfile`, built from the existing
 tensor-algebra definitions in `Prelude.lean`. This is the compile-level validation that the profile
 shape fits the real Binius data: `A := L ⊗[K] L`, embeddings `φ₀ = · ⊗ 1` / `φ₁ = 1 ⊗ ·`, and the
-decompositions are the `K`-basis coordinates via the left/right `L`-module structures. -/
-def binaryTowerProfile (κ : ℕ) [NeZero κ] (K L : Type)
+decompositions are the `K`-basis coordinates via the left/right `L`-module structures.
+
+Marked `@[reducible]` so that, once the protocol code is rewired through the profile, references to
+`(binaryTowerProfile …).A` unfold to `L ⊗[K] L` at reducible transparency — preserving the existing
+`rfl`/instance-driven Binius proofs (and the byte-identical `#print axioms`). -/
+@[reducible] def binaryTowerProfile (κ : ℕ) [NeZero κ] (K L : Type)
     [Field K] [Field L] [Algebra K L] (β : Basis (Fin κ → Fin 2) K L) :
     RingSwitchingProfile K L κ where
   basis := β
