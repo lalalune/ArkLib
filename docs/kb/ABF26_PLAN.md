@@ -309,7 +309,7 @@ diff.
   2. ⏳ Prove `restrictedRelHammingDist Finset.univ f g = relDistFromCode_pairwise f g` (deferred — only needed when a downstream proof requires the bridge).
   3. ⏳ Define `restrictedRelHammingDist_set T f C : ℝ≥0 := min over c ∈ C` (deferred — set variant needed for D4.1 use site).
   4. ⏳ Prove monotonicity in `T`: `T₁ ⊆ T₂ → ...` (deferred — add when downstream needs it).
-  5. ⏳ Add notation `Δ[T](f, g)` (deferred — wait for use sites to confirm desired shape).
+  5. ⏳ Add notation `Δ_T(f, g)` (deferred — wait for use sites to confirm desired shape).
   6. ✅ Update audit doc row.
   7. ✅ `@[simp] restrictedRelHammingDist_self : Δ_T(f, f) = 0`.
 - **Acceptance**: ✅ core def + self-zero simp lemma compile; downstream bridges deferred to dependent items.
@@ -1139,7 +1139,7 @@ closed. They are tracked here so we don't lose them.
 
 #### ABF26-L6.5 — Every additive code supports erasure correction
 
-- **Paper location**: §6.2 page 26, Lemma 6.5 [GRS12].
+- **Paper location**: §6.2 page 26, Lemma 6.5 [GRS25].
 - **Status**: deferred.
 
 #### ABF26-L6.6 — Knowledge soundness of Construction 6.2

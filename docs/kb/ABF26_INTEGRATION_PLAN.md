@@ -108,7 +108,7 @@ layer):**
   - C6.2 protocol `T[C, t] = (P, V)` (an IOR)
   - D6.3 relaxed relation `R̃_C,δ^ℓ`
   - D6.4 erasure correction predicate `ecor_C`
-  - L6.5 [GRS12] every additive code supports erasure correction
+  - L6.5 [GRS25] every additive code supports erasure correction
   - L6.6 knowledge soundness of C6.2 (uses MCA)
   - R6.7 remark on why MCA (not CA) is needed
   - L6.8 round-by-round knowledge soundness
@@ -321,7 +321,7 @@ Recommended new file layout:
 CodingTheory/ToyProblem/
 ├── Definitions.lean        — D6.1 R_C^ℓ, D6.3 R̃_C,δ^ℓ, D6.4 ecor
 ├── Protocol.lean           — C6.2 protocol as IOR
-├── Soundness.lean          — L6.5 [GRS12], L6.6, R6.7, L6.8
+├── Soundness.lean          — L6.5 [GRS25], L6.6, R6.7, L6.8
 └── Parametrizations.lean   — §6.3.1 IRS, §6.3.2 FRS, §6.4 attacks
 ```
 
@@ -649,7 +649,7 @@ Full statement-layer status for all ABF26 items, grouped by source paper:
 | [GHSZ02] | T3.13 | stated |
 | [JH01] | T3.14 | stated |
 | [BS08] (BS-Sudan) | (background only) | n/a |
-| [GRS12] | L6.5 (deferred) | not yet stated |
+| [GRS25] | L6.5 (deferred) | not yet stated |
 | [GX13] | D2.16 subspace-design | present |
 | [GK16] | T2.18 FRS half | stated |
 | [GCXK25] | T5.1 | stated |

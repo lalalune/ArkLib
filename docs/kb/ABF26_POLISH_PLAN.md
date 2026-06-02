@@ -53,7 +53,7 @@ split or renamed (see `ABF26_INTEGRATION_PLAN.md` §5 Phase 2):
 
 The content under each heading is otherwise still accurate.
 
-### §1 — Grand Challenges ([GrandChallenges.lean](ArkLib/Data/CodingTheory/ProximityGap/GrandChallenges.lean))
+### §1 — Grand Challenges ([GrandChallenges.lean](../../ArkLib/Data/CodingTheory/ProximityGap/GrandChallenges.lean))
 
 | ID | Lean name | Status | Known issues / things to check |
 | --- | --- | --- | --- |
@@ -62,7 +62,7 @@ The content under each heading is otherwise still accurate.
 
 ### §2 — Preliminaries
 
-#### [ABF26Prelims.lean](ArkLib/Data/CodingTheory/ABF26Prelims.lean)
+#### `ABF26Prelims.lean` (split — see file-path note above)
 
 | ID | Lean name | Status | Known issues / things to check |
 | --- | --- | --- | --- |
@@ -70,7 +70,7 @@ The content under each heading is otherwise still accurate.
 | D2.3 | `CodingTheory.restrictedRelHammingDist` | ✅ | NNReal's `0/0 = 0` makes `Δ_∅ = 0` — the natural "vacuously agree" convention. Paper is silent on empty-T; ours is a reasonable totalisation. Docstring notes the choice. |
 | D2.4 | `CodingTheory.hammingBallVolume` | ✅ | `⌊δ·n⌋₊` matches paper. `q = 0` boundary: Nat subtraction `0 - 1 = 0`, `0^0 = 1` in Mathlib, so the `i = 0` term contributes `Nat.choose n 0 · 1 = 1`. Higher `i` terms give 0. Volume well-defined throughout. |
 
-#### [ABF26CodeFamilies.lean](ArkLib/Data/CodingTheory/ABF26CodeFamilies.lean)
+#### `ABF26CodeFamilies.lean` (split — see file-path note above)
 
 | ID | Lean name | Status | Known issues / things to check |
 | --- | --- | --- | --- |
@@ -81,7 +81,7 @@ The content under each heading is otherwise still accurate.
 | L2.17 | `CodingTheory.subspaceDesign_tau_lower` | ✅ | Matches `LinearCode.rate`: both expand to `(dim MC : ℝ) / (length MC : ℝ)` for an F-linear code, modulo `ℚ≥0` vs `ℝ` type. Mathematically the same rate. |
 | T2.18 | `CodingTheory.frs_is_subspaceDesign_gk16` | 🔧 | **Off-by-one in τ profile fixed.** Changed `Finset.range s` → `Finset.Icc 1 s` so `r ∈ {1, …, s}` matches paper's `[s]`. Docstring updated to call out the one-based convention. |
 
-#### [ExtensionCodes.lean](ArkLib/Data/CodingTheory/ExtensionCodes.lean)
+#### [ExtensionCodes.lean](../../ArkLib/Data/CodingTheory/ExtensionCodes.lean)
 
 | ID | Lean name | Status | Known issues / things to check |
 | --- | --- | --- | --- |
@@ -92,7 +92,7 @@ The content under each heading is otherwise still accurate.
 
 ### §3 — List Decoding
 
-#### [JohnsonBound/ABF26.lean](ArkLib/Data/CodingTheory/JohnsonBound/ABF26.lean)
+#### [JohnsonBound/Family.lean](../../ArkLib/Data/CodingTheory/JohnsonBound/Family.lean)
 
 | ID | Lean name | Status | Known issues / things to check |
 | --- | --- | --- | --- |
@@ -101,7 +101,7 @@ The content under each heading is otherwise still accurate.
 | T3.2 | `CodingTheory.johnson_bound_lambda_le_ell` | ⚠ | Statement uses `Set (ι → F)` over a `Field F`, taking `F` as the alphabet. Paper's "code over `Σ^n`" with arbitrary `Σ` is strictly broader. For RS-style applications our statement covers it; for general non-field alphabets we'd need a `[DecidableEq Σ] [Fintype Σ]` variant. Mark for follow-up if a non-field call site appears. |
 | C3.3 | `CodingTheory.mds_johnson_lambda_le` | ✅ | The MDS hypothesis `δ_min = 1 - ρ + 1/n` is the *consequence* of Singleton-tight, which is the paper's MDS definition. Either encoding is equivalent. Keeping the consequence form keeps the statement self-contained. |
 
-#### [ListDecodingBounds.lean](ArkLib/Data/CodingTheory/ListDecodingBounds.lean)
+#### [ListDecoding/Bounds.lean](../../ArkLib/Data/CodingTheory/ListDecoding/Bounds.lean)
 
 | ID | Lean name | Status | Known issues / things to check |
 | --- | --- | --- | --- |
@@ -118,14 +118,14 @@ The content under each heading is otherwise still accurate.
 
 ### §4 — Correlated Agreement
 
-#### [LineDecoding.lean](ArkLib/Data/CodingTheory/LineDecoding.lean)
+#### [LineDecoding.lean](../../ArkLib/Data/CodingTheory/ProximityGap/LineDecoding.lean)
 
 | ID | Lean name | Status | Known issues / things to check |
 | --- | --- | --- | --- |
 | D4.20 | `CodingTheory.LineDecodable` | ✅ | Choice documented in docstring; equivalent to paper's `U : F → C` formulation. |
 | T4.21 | `CodingTheory.lineDecodable_imp_epsMCA_le` | ✅ | `(Fintype.card ι : ℝ≥0) + 1` matches paper's `n + 1`; final ENNReal RHS is `a / |F|` cast via direct division on ENNReals. |
 
-#### [ProximityGap/CapacityBounds.lean](ArkLib/Data/CodingTheory/ProximityGap/CapacityBounds.lean)
+#### [ProximityGap/CapacityBounds.lean](../../ArkLib/Data/CodingTheory/ProximityGap/CapacityBounds.lean)
 
 | ID | Lean name | Status | Known issues / things to check |
 | --- | --- | --- | --- |
@@ -143,7 +143,7 @@ The content under each heading is otherwise still accurate.
 
 ### §5 — Connections
 
-#### [Connections.lean](ArkLib/Data/CodingTheory/Connections.lean)
+#### [Connections/ListDecodingAndCA.lean](../../ArkLib/Data/CodingTheory/Connections/ListDecodingAndCA.lean)
 
 | ID | Lean name | Status | Known issues / things to check |
 | --- | --- | --- | --- |
@@ -335,7 +335,7 @@ ArkLib defs / notations / conventions?":
 
 - This file (`ABF26_POLISH_PLAN.md`) updated as each item is addressed.
 - A new section in [`ABF26_PLAN.md`](ABF26_PLAN.md) §6 noting which polish passes have landed.
-- Audit doc rows ([open-problems-list-decoding-and-correlated-agreement.md](docs/kb/audits/open-problems-list-decoding-and-correlated-agreement.md)) updated where status descriptions change.
+- Audit doc rows ([open-problems-list-decoding-and-correlated-agreement.md](audits/open-problems-list-decoding-and-correlated-agreement.md)) updated where status descriptions change.
 
 ## 5. Out of scope for this polish pass
 

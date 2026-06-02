@@ -462,9 +462,13 @@ theorem oracleReduction_perfectCompleteness
       (inputRelation k C)
       (Set.univ : Set (((OutputStatement × ∀ i, OutputOracleStatement i)) ×
         OutputWitness)) := by
-  -- ABF26-C6.2 completeness; reduces to `accepts_of_inputRelation` after
-  -- unfolding `OracleReduction.perfectCompleteness` through `toReduction`
-  -- and discharging the per-challenge probability bookkeeping.
+  -- ABF26-C6.2 completeness; paper-proof-owed (framework-blocked). The math
+  -- core (`accepts_of_inputRelation`) is proved; this reduces to it after
+  -- unfolding `OracleReduction.perfectCompleteness` through `toReduction` and
+  -- discharging the per-challenge probability bookkeeping. BLOCKED on two
+  -- general VCVio lemmas (`simulateQ_forIn` over `List.finRange t` + a
+  -- `simulateQ`/`OptionT`/`SubSpec` query-resolution simp set) that go UPSTREAM
+  -- to ~/VCV-io/ and would also unblock FRI/Sumcheck completeness.
   sorry
 
 /-- **Lemma 6.6 of [ABF26]** (knowledge soundness of Construction 6.2).
@@ -494,12 +498,13 @@ the list-decoding cardinality bound (cf. Remark 6.7).
 
 Tagged sorry. -/
 theorem protocol62_knowledgeSound
-    [SampleableType F] [SampleableType ι]
+    [SampleableType F] [SampleableType ι] [Nonempty ι]
     {σ : Type} (init : ProbComp σ)
     (impl : QueryImpl []ₒ (StateT σ ProbComp))
     (C : Set (ι → F)) (δ : ℝ≥0)
     (encode : (Fin k → F) → (ι → F))
-    (_hδ_pos : 0 < δ) :
+    (_hδ_pos : 0 < δ)
+    (_hδ_lt_min : δ < (minRelHammingDistCode C : ℝ≥0)) :
       (verifier (k := k) (t := t) encode).knowledgeSoundness (WitOut := OutputWitness)
         init impl (outputRelation k C δ)
         (Set.univ : Set (OutputStatement × OutputWitness))
@@ -507,8 +512,12 @@ theorem protocol62_knowledgeSound
                 ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
                   / (Fintype.card F : ℝ≥0))
              ((1 - δ) ^ t)) := by
-  -- ABF26-L6.6; external admit [ABF26 Lemma 6.6]. The knowledge error is the
-  -- concrete paper bound `max (ε_mca(C,δ) + |Λ(C^{≡2},δ)|/|F|) ((1-δ)^t)`.
+  -- ABF26-L6.6; paper-proof-owed [ABF26 Lemma 6.6, §6.2]. This is the paper's
+  -- OWN result (it proves it in full in §6.2), not an imported external result;
+  -- we owe a Lean proof. The knowledge error is the concrete paper bound
+  -- `max (ε_mca(C,δ) + |Λ(C^{≡2},δ)|/|F|) ((1-δ)^t)`. The `δ < δ_min(C)`
+  -- hypothesis is load-bearing: the proof uses it to force `g = f₁ + γ·f₂`
+  -- from agreement on `> (1 - δ_min)·n` points (see paper eq. (3)).
   sorry
 
 /-- **Remark 6.7 of [ABF26]**: the L6.6 soundness argument depends on
@@ -533,12 +542,13 @@ errors
 The `KnowledgeStateFunction` tracks the largest current agreement set;
 the extractor erasure-decodes against it. Tagged sorry. -/
 theorem protocol62_rbrKnowledgeSound
-    [SampleableType F] [SampleableType ι]
+    [SampleableType F] [SampleableType ι] [Nonempty ι]
     {σ : Type} (init : ProbComp σ)
     (impl : QueryImpl []ₒ (StateT σ ProbComp))
     (C : Set (ι → F)) (δ : ℝ≥0)
     (encode : (Fin k → F) → (ι → F))
-    (_hδ_pos : 0 < δ) :
+    (_hδ_pos : 0 < δ)
+    (_hδ_lt_min : δ < (minRelHammingDistCode C : ℝ≥0)) :
       (verifier (k := k) (t := t) encode).rbrKnowledgeSoundness (WitOut := OutputWitness)
         init impl (outputRelation k C δ)
         (Set.univ : Set (OutputStatement × OutputWitness))
@@ -550,7 +560,9 @@ theorem protocol62_rbrKnowledgeSound
               ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
                 / (Fintype.card F : ℝ≥0)
           else (1 - δ) ^ t) := by
-  -- ABF26-L6.8; external admit [ABF26 Lemma 6.8].
+  -- ABF26-L6.8; paper-proof-owed [ABF26 Lemma 6.8, §6.2]. Paper's OWN result
+  -- (proved in full via a KnowledgeStateFunction in §6.2), not an external
+  -- import. `δ < δ_min(C)` is load-bearing (same forcing step as L6.6).
   sorry
 
 end Protocol

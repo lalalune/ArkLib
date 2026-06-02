@@ -20,8 +20,8 @@ formal protocol object. The three protocol-level soundness lemmas
 
 Items in this file:
 
-* `ToyProblem.additive_code_supports_erasure_correction_grs12`
-   — Lemma 6.5 [GRS12]: every additive code supports erasure correction
+* `ToyProblem.additive_code_supports_erasure_correction_grs25`
+   — Lemma 6.5 [GRS25]: every additive code supports erasure correction
    with correction time `O((s · n)^3)`.
 
 * `ToyProblem.simplified_iop_soundness_listDecoding_lb`
@@ -33,17 +33,22 @@ Items in this file:
    — Lemma 6.13 [ABF26]: correlated-agreement-based lower bound on the
    soundness error of `T'[C, t]`.
 
-All three are admitted as tagged sorries: L6.5 is a paper-cited
-classical result; L6.12 and L6.13 are stated in coding-theory form
-(direct cardinality bounds on `winningSet`) — their protocol-level
-reading bounds the soundness of `ToyProblem.SimplifiedIOR.reduction`
-from below.
+All three are tagged sorries, but of two distinct kinds:
+
+* **L6.5** is `external admit [GRS25]` — a classical result imported from
+  another work; admitting it is acceptable for a survey formalization.
+* **L6.12 and L6.13** are `paper-proof-owed` — ABF26's OWN results, proved
+  in full in §6.4.1/§6.4.2. They are **in-tree provable now** (L6.12's key
+  lemma Claim B.1 is already closed); the sorries are unfinished work, not
+  external dependencies. They are stated in coding-theory form (direct
+  cardinality bounds on `winningSet`); their protocol-level reading bounds
+  the soundness of `ToyProblem.SimplifiedIOR.reduction` from below.
 
 ## References
 
 * [Arnon, G., Boneh, D., Fenzi, G., *Open Problems in List Decoding and
   Correlated Agreement*][ABF26]
-* [Guruswami, V., Rudra, A., Sudan, M., *Essential Coding Theory*][GRS12]
+* [Guruswami, V., Rudra, A., Sudan, M., *Essential Coding Theory*][GRS25]
 -/
 
 namespace ToyProblem
@@ -54,7 +59,7 @@ open scoped NNReal ENNReal
 variable {ι F : Type} [Fintype ι] [Field F] [Fintype F] [DecidableEq F]
 
 omit [Fintype F] in
-/-- **Lemma 6.5 of [ABF26]** (= [GRS12]).
+/-- **Lemma 6.5 of [ABF26]** (= [GRS25]).
 
 Every `F`-additive code `C : F^k → (F^s)^n` supports erasure correction
 (in the sense of `CodingTheory.SupportsErasureCorrection`) with correction
@@ -65,10 +70,10 @@ time `O((s · n)^3)`. Equivalently: the predicate
 modelling the encoder concretely.
 
 Admitted as an external result. -/
-theorem additive_code_supports_erasure_correction_grs12
+theorem additive_code_supports_erasure_correction_grs25
     (C : Set (ι → F)) :
     ∃ ecor : ℕ, CodingTheory.SupportsErasureCorrection C ecor := by
-  -- ABF26-L6.5; external admit [GRS12]. Polynomial-time erasure-correction
+  -- ABF26-L6.5; external admit [GRS25]. Polynomial-time erasure-correction
   -- algorithm via Gaussian elimination on the parity-check matrix of any
   -- additive code (cf. Guruswami-Rudra-Sudan, *Essential Coding Theory*).
   sorry
@@ -122,8 +127,9 @@ so the proof skeleton is:
    `|F| > binom(N, 2)` regime). The witness `(v*, μ₁, μ₂, f₁ := W₀,
    f₂ := W₁)` for some chosen `λ₀ ∈ Λ` exits the proof.
 
-Admitted as an external result (proved in ABF26 §6.4.1); steps 2-3 are
-now in scope thanks to B.1's closure (2026-05-20). -/
+Tagged sorry (`paper-proof-owed` — ABF26's OWN result, proved in §6.4.1);
+steps 2-3 are now in scope thanks to B.1's closure (2026-05-20), so this is
+in-tree provable. -/
 theorem simplified_iop_soundness_listDecoding_lb {k : ℕ}
     (C : Set (ι → F)) (δ : ℝ≥0) (_hδ_pos : (0 : ℝ≥0) < δ) (_hδ_lt : δ < 1)
     (_hF : (Fintype.card F : ℝ) >
@@ -134,7 +140,10 @@ theorem simplified_iop_soundness_listDecoding_lb {k : ℕ}
             * Fintype.card F)
           / (Fintype.card F
               + ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ) - 1) := by
-  -- ABF26-L6.12 external admit [ABF26 §6.4.1].
+  -- ABF26-L6.12; paper-proof-owed [ABF26 §6.4.1]. Paper's OWN result with a
+  -- full elementary proof; IN-TREE PROVABLE NOW — its key lemma Claim B.1
+  -- (`Probability.exists_large_image_of_pairwise_collision_bound`) is already
+  -- closed. Follow §6.4.1: build the collision map `φ_v` and apply B.1.
   sorry
 
 /-- **Lemma 6.13 of [ABF26]** (correlated-agreement lower bound on the simplified IOR).
@@ -151,7 +160,8 @@ Proof sketch: take `f_1, f_2` maximising the CA error; then
 `ε_ca · |F|`, and `S` is contained in the winning set
 `Ω^{f_1,f_2}_{0^k, 0, 0}` of Definition 6.11.
 
-Admitted as an external result (proved in ABF26 §6.4.2). The bound is in
+Tagged sorry (`paper-proof-owed` — ABF26's OWN result, proved in §6.4.2;
+in-tree provable, no external dependency). The bound is in
 terms of `ε_ca` (correlated agreement) rather than `ε_mca` (mutual
 correlated agreement); the latter would be qualitatively stronger but no
 attack reaching `ε_mca > ε_ca` is currently known (Remark 6.14). -/
@@ -160,7 +170,10 @@ theorem simplified_iop_soundness_ca_lb {k : ℕ}
     ∃ (v : Fin k → F) (μ₁ μ₂ : F) (f₁ f₂ : ι → F),
       ((winningSet (k := k) C δ v μ₁ μ₂ f₁ f₂).ncard : ENNReal)
         ≥ epsCA (F := F) (A := F) C δ δ * (Fintype.card F : ENNReal) := by
-  -- ABF26-L6.13 external admit [ABF26 §6.4.2].
+  -- ABF26-L6.13; paper-proof-owed [ABF26 §6.4.2]. Paper's OWN result with a
+  -- short elementary proof (§6.4.2: the CA-maximising `(f₁,f₂)` makes the
+  -- winning set contain `S = {γ : Δ(f₁+γ·f₂,C) ≤ δ}`, of size `ε_ca·|F|`).
+  -- IN-TREE PROVABLE NOW — no external dependency.
   sorry
 
 end ToyProblem
