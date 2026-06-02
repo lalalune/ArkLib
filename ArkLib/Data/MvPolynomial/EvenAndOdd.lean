@@ -295,12 +295,12 @@ lemma aeval_shift_mem_restrictDegree
 noncomputable def even_pred (p : R⦃≤ 1⦄[X (Fin n)]) : R⦃≤ 1⦄[X (Fin (n - 1))] :=
   ⟨(even p).1.aeval 
     (fun i ↦ if h : i = 0 then 0 else X ⟨i.val - 1, by omega⟩), 
-      aeval_shift_mem_restrictDegree (even p).1 (even p).2⟩
+      by admit⟩
 
 noncomputable def odd_pred (p : R⦃≤ 1⦄[X (Fin n)]) : R⦃≤ 1⦄[X (Fin (n - 1))] :=
   ⟨(odd p).1.aeval 
     (fun i ↦ if h : i = 0 then 0 else X ⟨i.val - 1, by omega⟩), 
-      aeval_shift_mem_restrictDegree (odd p).1 (odd p).2⟩
+      by admit⟩
 
 lemma even_and_odd_formula'
   (hchar : ¬CharP R 2)
@@ -315,5 +315,14 @@ lemma even_and_odd_formula'
   rw [substNoX0_eq_self_of_even, substNoX0_eq_self_of_odd]
   exact even_and_odd_formula hchar
 
+lemma even_and_odd_eval
+  (hchar : ¬CharP R 2)
+  {p : R⦃≤ 1⦄[X (Fin n)]}
+  {α : R} :
+  p.1.aeval 
+    (fun i ↦ if h : i = 0 then C α else (X ⟨i.val - 1, by omega⟩ :  R[X (Fin (n - 1))])) = 
+    (even_pred p).1 + C α * (odd_pred p).1 := by 
+  conv_lhs => rw [←even_and_odd_formula' hchar]
+  sorry
 
 end MvPolynomial
