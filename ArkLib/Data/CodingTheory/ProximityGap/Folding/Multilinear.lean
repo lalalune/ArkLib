@@ -41,7 +41,10 @@ lemma multilinear_folding [NeZero n] {i : Fin (2 ^ (n - 1))} {α : F}
           if h : i = 0 
           then C α 
           else MvPolynomial.X (⟨i.val - 1, by omega⟩ : Fin (n - 1))))) := by 
-  rw [even_and_odd_eval]
+  ext u
+  rw [even_and_odd_eval, foldWord_k_1]
+  extract_lets x j j'
+  rw [hf]
   simp
 
 end ProximityGap
