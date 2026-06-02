@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024-2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Ilia Vlasov, Aristotle (Harmonic)
+Authors: František Silváši, Ilia Vlasov, Aristotle (Harmonic)
 -/
 
 import Mathlib.Algebra.MvPolynomial.Monad
@@ -294,13 +294,14 @@ lemma aeval_shift_mem_restrictDegree
 
 noncomputable def even_pred (p : R⦃≤ 1⦄[X (Fin n)]) : R⦃≤ 1⦄[X (Fin (n - 1))] :=
   ⟨(even p).1.aeval 
-    (fun i ↦ if h : i = 0 then 0 else X ⟨i.val - 1, by omega⟩), 
-      by admit⟩
+    (fun i ↦ if h : i = 0 then 0 else X (σ := Fin (n - 1)) ⟨i.val - 1, by omega⟩), 
+      by exact aeval_shift_mem_restrictDegree (even p).1 (even p).2
+  ⟩
 
 noncomputable def odd_pred (p : R⦃≤ 1⦄[X (Fin n)]) : R⦃≤ 1⦄[X (Fin (n - 1))] :=
   ⟨(odd p).1.aeval 
-    (fun i ↦ if h : i = 0 then 0 else X ⟨i.val - 1, by omega⟩), 
-      by admit⟩
+    (fun i ↦ if h : i = 0 then 0 else X (σ := Fin (n - 1)) ⟨i.val - 1, by omega⟩), 
+      by exact aeval_shift_mem_restrictDegree (odd p).1 (odd p).2⟩
 
 lemma even_and_odd_formula'
   (hchar : ¬CharP R 2)
@@ -323,6 +324,7 @@ lemma even_and_odd_eval
     (fun i ↦ if h : i = 0 then C α else (X ⟨i.val - 1, by omega⟩ :  R[X (Fin (n - 1))])) = 
     (even_pred p).1 + C α * (odd_pred p).1 := by 
   conv_lhs => rw [←even_and_odd_formula' hchar]
-  sorry
+  aesop 
+    (add safe [(by erw [MvPolynomial.aeval_bind₁])])
 
 end MvPolynomial
