@@ -10,6 +10,7 @@ import Mathlib.Algebra.CharP.Basic
 
 import CompPoly.Data.MvPolynomial.Notation
 import ArkLib.Data.MvPolynomial.Interpolation
+import ArkLib.Data.MvPolynomial.LinearMvExtension
 
 namespace MvPolynomial
 
@@ -326,5 +327,51 @@ lemma even_and_odd_eval
   conv_lhs => rw [←even_and_odd_formula' hchar]
   aesop 
     (add safe [(by erw [MvPolynomial.aeval_bind₁])])
+
+noncomputable def shiftedPowAlgHom :
+    MvPolynomial (Fin (n - 1)) R →ₐ[R] Polynomial R :=
+  MvPolynomial.aeval fun j : Fin (n - 1) => Polynomial.X ^ (2 ^ (j.val + 1))
+
+omit [NeZero n] in
+open LinearMvExtension in
+lemma shiftedPowAlgHom_eq_powAlgHom_comp_sq_x
+  {p : MvPolynomial (Fin (n - 1)) R} :
+  shiftedPowAlgHom p = (powAlgHom p).comp (Polynomial.X ^ 2) := by
+  induction p using MvPolynomial.induction_on 
+    <;> aesop 
+      (add simp [shiftedPowAlgHom, powAlgHom])
+      (add unsafe (by ring_nf))
+
+omit [NeZero n] in
+open LinearMvExtension in
+private lemma powAlgHom_aeval_shift (q : MvPolynomial (Fin (n - 1)) R) :
+  powAlgHom (q.aeval (fun i : Fin (n - 1) ↦
+    (X (⟨i.val + 1, by omega⟩ : Fin n) : MvPolynomial (Fin n) R))) =
+  shiftedPowAlgHom q := by
+  induction q using MvPolynomial.induction_on 
+    <;> aesop (add simp [powAlgHom, shiftedPowAlgHom])
+
+open LinearMvExtension in
+lemma powAlgHom_eq_even_add_odd
+  (hchar : ¬CharP R 2)
+  {p : R⦃≤ 1⦄[X (Fin n)]} :
+  powAlgHom p.1 =
+    shiftedPowAlgHom (even_pred p).1 +
+    Polynomial.X * shiftedPowAlgHom (odd_pred p).1 := by
+  conv_lhs => rw [←even_and_odd_formula' hchar]
+  aesop 
+    (erase aeval_eq_bind₁)
+    (add simp [powAlgHom_aeval_shift, powAlgHom_aeval_shift])
+    (add unsafe (by rw [powAlgHom]))
+
+open LinearMvExtension in
+lemma powAlgHom_eq_even_add_odd_powAlgHom
+  (hchar : ¬CharP R 2)
+  {p : R⦃≤ 1⦄[X (Fin n)]} :
+  powAlgHom p.1 =
+    (powAlgHom (even_pred p).1).comp (Polynomial.X ^ 2) +
+    Polynomial.X * (powAlgHom (odd_pred p).1).comp (Polynomial.X ^ 2) := by
+  conv_lhs => rw [powAlgHom_eq_even_add_odd hchar]
+  simp [shiftedPowAlgHom_eq_powAlgHom_comp_sq_x]
 
 end MvPolynomial

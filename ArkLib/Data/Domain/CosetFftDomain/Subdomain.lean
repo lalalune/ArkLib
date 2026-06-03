@@ -18,6 +18,7 @@ import Mathlib.Tactic.Field
 
 import ArkLib.Data.Domain.CosetFftDomain.Ops
 import ArkLib.Data.Domain.FftDomain.Ops
+import ArkLib.Data.CodingTheory.ReedSolomon
 
 namespace Domain
 
@@ -40,6 +41,33 @@ protected def subdomain_embed (i : ℕ) (k : Fin (2 ^ (n - i))) :
               Nat.mul_lt_mul_of_pos_left hk (by positivity)
           _ = 2 ^ n := by rw [←pow_add, Nat.add_sub_of_le (by omega)]⟩
 
+protected def subdomain_embed_inverse (i : ℕ) (k : Fin (2 ^ n)) :
+  Fin (2 ^ (n - i)) := ⟨k.val / 2 ^ i, by
+  apply Nat.div_lt_of_lt_mul
+  by_cases hi : i ≤ n
+  · calc k.val < 2 ^ n := k.isLt
+      _ = 2 ^ i * 2 ^ (n - i) := by rw [← pow_add, Nat.add_sub_cancel' hi]
+  · simp only [not_le] at hi
+    have : n ≤ i := by omega
+    simp only [Nat.sub_eq_zero_of_le this, pow_zero, mul_one]
+    calc k.val < 2 ^ n := k.isLt
+      _ ≤ 2 ^ i := Nat.pow_le_pow_right (by norm_num) this⟩
+
+@[simp]
+protected lemma subdomain_embed_inverse_subdomain_embed {i : ℕ} {k : Fin (2 ^ (n - i))} :
+  CosetFftDomainClass.subdomain_embed_inverse i
+    (CosetFftDomainClass.subdomain_embed i k) = k := by
+  aesop 
+    (add safe cases Fin)
+    (add simp 
+      [CosetFftDomainClass.subdomain_embed_inverse, 
+       CosetFftDomainClass.subdomain_embed, 
+       Fin.ext_iff])
+
+protected lemma subdomain_embed_has_left_inverse (i : ℕ) (n : ℕ) :
+  Function.HasLeftInverse (CosetFftDomainClass.subdomain_embed (n := n) i) := 
+  ⟨CosetFftDomainClass.subdomain_embed_inverse i, fun _ ↦ by simp⟩
+
 protected lemma subdomain_embed_add (i : ℕ) (a b : Fin (2 ^ (n - i))) :
   CosetFftDomainClass.subdomain_embed i (a + b) = 
     CosetFftDomainClass.subdomain_embed i a + CosetFftDomainClass.subdomain_embed i b := by
@@ -55,19 +83,12 @@ protected lemma subdomain_embed_add (i : ℕ) (a b : Fin (2 ^ (n - i))) :
 
 protected lemma subdomain_embed_zero (i : ℕ) : 
   CosetFftDomainClass.subdomain_embed i 0 = (0 : Fin (2 ^ n)) := by
-  unfold CosetFftDomainClass.subdomain_embed
-  aesop
+  aesop (add simp [CosetFftDomainClass.subdomain_embed])
 
 protected lemma subdomain_embed_injective (i : ℕ) :
-  Function.Injective (CosetFftDomainClass.subdomain_embed (n := n) i) := fun a b h ↦ by
-  by_cases hi : n ≤ i
-  · obtain ⟨a, ha⟩ := a
-    obtain ⟨b, hb⟩ := b
-    have : n - i = 0 := by omega
-    rw [this] at ha
-    rw [this] at hb
-    simp_all
-  · simp_all [Fin.ext_iff, CosetFftDomainClass.subdomain_embed]
+  Function.Injective (CosetFftDomainClass.subdomain_embed (n := n) i) := by
+    simp [Function.injective_iff_hasLeftInverse,
+          CosetFftDomainClass.subdomain_embed_has_left_inverse]
 
 /-- Given a smooth coset FFT domain `ω` of log-order `n`
   this function returns its subdomain of log-order `n - i`.
@@ -400,6 +421,11 @@ lemma square_roots_explicit {i : ℕ} (hi : i < n) {y : F}
     exact eq_or_eq_neg_of_sq_eq_sq _ _ <| by rw [hz.2, hy]
   · have hy_mem : y ∈ subdomain ω i := sq_root_mem_subdomain hi hx hy
     simp_all [Finset.subset_iff]
+
+lemma evalDomain_sq_root [NeZero n] {p : Polynomial F} :
+  ReedSolomon.evalOnPoints (ω : Fin (2 ^ n) ↪ F) (p.comp (Polynomial.X ^ 2)) =
+    ReedSolomon.evalOnPoints (subdomain ω 1 : Fin (2 ^ (n - 1)) ↪ F) p := by
+    sorry
 
 end CosetFftDomainClass
 

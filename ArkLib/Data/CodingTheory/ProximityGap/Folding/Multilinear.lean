@@ -45,6 +45,8 @@ lemma multilinear_folding [NeZero n] {i : Fin (2 ^ (n - 1))} {α : F}
   rw [even_and_odd_eval, foldWord_k_1]
   extract_lets x j j'
   rw [hf]
+  conv_lhs => 
+    rw [powAlgHom_eq_even_add_odd_powAlgHom (CosetFftDomainClass.domain_implies_char_ne_2 domain)]
   simp
 
 end ProximityGap
