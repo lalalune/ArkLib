@@ -21,6 +21,9 @@ For reusable cross-cutting workflows that are not tied to one repo area, see
 - [`../kb/audits/open-problems-list-decoding-and-correlated-agreement.md`](../kb/audits/open-problems-list-decoding-and-correlated-agreement.md)
   - paper-to-ArkLib matrix for *Open Problems in List Decoding and Correlated Agreement*, with
     status labels, Lean references, and a follow-up roadmap.
+- [`proximity-prize-leaderboard.md`](proximity-prize-leaderboard.md) - the machine-checked
+  "bits of security" leaderboard for the ABF26 §6 toy protocol: how to submit a provable
+  lower/upper bound, how `securityGap` is computed, and the current 64/116 anchors.
 
 ## Maintenance Contract
 
@@ -32,6 +35,7 @@ For reusable cross-cutting workflows that are not tied to one repo area, see
   - `blueprint-and-citations.md` for blueprint workflow, references, and citation updates.
   - `knowledge-base.md` for when and how agents should use `docs/kb/`.
   - `coding-theory-conventions.md` for naming/notation/type conventions in `CodingTheory/`.
+  - `proximity-prize-leaderboard.md` for the ABF26 §6 bits-of-security leaderboard contract.
 - Add new pages when a recurring topic no longer fits cleanly in an existing guide.
 - If a PR changes commands, repo structure, generated-file behavior, or the paper workflow,
   update the matching page in the same PR, or add a new page when that is the cleaner split.
