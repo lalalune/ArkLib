@@ -532,7 +532,9 @@ theorem finalSumcheckOracleVerifier_rbrKnowledgeSoundness [Fintype L] {σ : Type
   use finalSumcheckRbrExtractor κ L K β ℓ ℓ' h_l aOStmtIn
   use finalSumcheckKnowledgeStateFunction κ L K β ℓ ℓ' h_l aOStmtIn init impl
   intro stmtIn witIn prover j
-  sorry
+  -- `pSpecFinalSumcheck L` has a single `P_to_V` message and no challenges, so the
+  -- challenge index `j` is vacuous: its defining proof `j.2 : dir j.1 = V_to_P` is absurd.
+  exact absurd j.2 (by simp [pSpecFinalSumcheck])
 
 end FinalSumcheckStep
 
