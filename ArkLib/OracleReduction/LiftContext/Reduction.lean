@@ -6,6 +6,7 @@ Authors: Quang Dao
 
 import ArkLib.OracleReduction.LiftContext.Lens
 import ArkLib.OracleReduction.Security.RoundByRound
+import ArkLib.ToVCVio.EvalDist.Instances.OptionT
 -- import ArkLib.OracleReduction.Security.StateRestoration
 
 /-!

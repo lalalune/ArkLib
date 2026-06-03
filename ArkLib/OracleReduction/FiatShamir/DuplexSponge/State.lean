@@ -103,9 +103,27 @@ pub fn absorb(&mut self, input: &[U]) -> Result<(), DomainSeparatorMismatch>
 ```
 -/
 def absorb (state : HashStateWithInstructions U H) (input : Array U) :
-    Except DomainSeparatorMismatch (HashStateWithInstructions U H) := do
-  -- TODO: Fix implementation with proper interface calls and array bounds checking
-  sorry
+    Except DomainSeparatorMismatch (HashStateWithInstructions U H) :=
+  -- The next expected operation (front of the FIFO stack) must be an `Absorb count`, and the
+  -- requested number of units `input.size` must not exceed the remaining `count`. We then absorb
+  -- the units into the underlying duplex sponge and update the front op accordingly: if all of the
+  -- expected count is consumed we pop the op, otherwise we decrement its count.
+  -- Mirrors `spongefish`'s `HashStateWithInstructions::absorb`.
+  match state.stack[0]? with
+  | some (DomainSeparator.Op.Absorb count) =>
+    if input.size ≤ count then
+      let newDs := DuplexSpongeInterface.absorbUnchecked (state.ds, input)
+      let newStack :=
+        if input.size = count then
+          state.stack.extract 1
+        else
+          state.stack.set! 0 (DomainSeparator.Op.Absorb (count - input.size))
+      .ok { ds := newDs, stack := newStack }
+    else
+      .error { message :=
+        s!"Not enough absorb operations: expected at most {count}, got {input.size}" }
+  | _ =>
+    .error { message := "Invalid tag: expected an Absorb operation" }
 
 /-- Perform a secure squeeze operation.
 
@@ -115,9 +133,29 @@ pub fn squeeze(&mut self, output: &mut [U]) -> Result<(), DomainSeparatorMismatc
 ```
 -/
 def squeeze (state : HashStateWithInstructions U H) (outputSize : Nat) :
-    Except DomainSeparatorMismatch (HashStateWithInstructions U H × Array U) := do
-  -- TODO: Fix implementation with proper interface calls and array bounds checking
-  sorry
+    Except DomainSeparatorMismatch (HashStateWithInstructions U H × Array U) :=
+  -- The next expected operation (front of the FIFO stack) must be a `Squeeze count`, and the
+  -- requested number of output units `outputSize` must not exceed the remaining `count`. We squeeze
+  -- the units out of the underlying duplex sponge (squeezing into a zero-initialized buffer of the
+  -- requested size) and update the front op accordingly: if all of the expected count is consumed
+  -- we pop the op, otherwise we decrement its count.
+  -- Mirrors `spongefish`'s `HashStateWithInstructions::squeeze`.
+  match state.stack[0]? with
+  | some (DomainSeparator.Op.Squeeze count) =>
+    if outputSize ≤ count then
+      let (newDs, output) :=
+        DuplexSpongeInterface.squeezeUnchecked (state.ds, (Array.replicate outputSize (0 : U)))
+      let newStack :=
+        if outputSize = count then
+          state.stack.extract 1
+        else
+          state.stack.set! 0 (DomainSeparator.Op.Squeeze (count - outputSize))
+      .ok ({ ds := newDs, stack := newStack }, output)
+    else
+      .error { message :=
+        s!"Not enough squeeze operations: expected at most {count}, got {outputSize}" }
+  | _ =>
+    .error { message := "Invalid tag: expected a Squeeze operation" }
 
 /-- Process a hint operation.
 
@@ -127,9 +165,15 @@ pub fn hint(&mut self) -> Result<(), DomainSeparatorMismatch>
 ```
 -/
 def hint (state : HashStateWithInstructions U H) :
-    Except DomainSeparatorMismatch (HashStateWithInstructions U H) := do
-  -- TODO: Fix implementation with proper array bounds checking
-  sorry
+    Except DomainSeparatorMismatch (HashStateWithInstructions U H) :=
+  -- The next expected operation (front of the FIFO stack) must be a `Hint`.
+  -- A hint is processed out-of-band, so it does not touch the underlying sponge; we simply
+  -- pop the `Hint` op off the stack. Mirrors `spongefish`'s `HashStateWithInstructions::hint`.
+  match state.stack[0]? with
+  | some DomainSeparator.Op.Hint =>
+    .ok { state with stack := state.stack.extract 1 }
+  | _ =>
+    .error { message := "Invalid tag: expected a Hint operation" }
 
 /-- Perform a ratchet operation.
 
@@ -139,9 +183,16 @@ pub fn ratchet(&mut self) -> Result<(), DomainSeparatorMismatch>
 ```
 -/
 def ratchet (state : HashStateWithInstructions U H) :
-    Except DomainSeparatorMismatch (HashStateWithInstructions U H) := do
-  -- TODO: Fix implementation with proper interface calls and array bounds checking
-  sorry
+    Except DomainSeparatorMismatch (HashStateWithInstructions U H) :=
+  -- The next expected operation (front of the FIFO stack) must be a `Ratchet`.
+  -- We pop it off the stack and ratchet the underlying duplex sponge.
+  -- Mirrors `spongefish`'s `HashStateWithInstructions::ratchet`.
+  match state.stack[0]? with
+  | some DomainSeparator.Op.Ratchet =>
+    .ok { ds := DuplexSpongeInterface.ratchetUnchecked (U := U) state.ds,
+          stack := state.stack.extract 1 }
+  | _ =>
+    .error { message := "Invalid tag: expected a Ratchet operation" }
 
 end HashStateWithInstructions
 

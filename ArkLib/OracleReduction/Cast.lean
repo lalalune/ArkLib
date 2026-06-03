@@ -114,18 +114,51 @@ namespace OracleVerifier
 variable [Oₘ₁ : ∀ i, OracleInterface (pSpec₁.Message i)]
   [Oₘ₂ : ∀ i, OracleInterface (pSpec₂.Message i)]
 
+/-- Transport a query to the message oracle `[pSpec₁.Message]ₒ` into an `OracleComp` over the
+casted spec, given that the underlying oracle interface `O₁` agrees with the casted message
+interface `Oₘ₂ i₂` up to the type equality `hMsg`. This is the per-query body used to assemble
+`castMessageImpl`. -/
+private def castMessageQuery
+    {T₁ : Type} (O₁ : OracleInterface T₁)
+    (i₂ : pSpec₂.MessageIdx) (hMsg : pSpec₂.Message i₂ = T₁)
+    (hO : O₁ = _root_.cast (congrArg OracleInterface hMsg) (Oₘ₂ i₂))
+    (q : O₁.Query) :
+    OracleComp (oSpec + ([OStmtIn]ₒ + [pSpec₂.Message]ₒ)) (O₁.Response q) := by
+  subst hMsg
+  subst hO
+  -- now `O₁ = Oₘ₂ i₂`, so the query to the message oracle at `i₂` has the right response type
+  exact query (spec := oSpec + ([OStmtIn]ₒ + [pSpec₂.Message]ₒ)) (Sum.inr (Sum.inr ⟨i₂, q⟩))
+
+/-- The translation of a query to the prover messages `[pSpec₁.Message]ₒ` into a query to the
+casted prover messages `[pSpec₂.Message]ₒ`. Given a query `⟨i, q⟩` to message `i`, we cast the
+message index to `pSpec₂` via `MessageIdx.cast`, transport the query along the equality of oracle
+interfaces `hOₘ`, query the corresponding `pSpec₂` message, and transport the response back. -/
+def castMessageImpl
+    (hOₘ : ∀ i, Oₘ₁ i = dcast (Message.cast_idx hSpec) (Oₘ₂ (i.cast hn hSpec))) :
+    QueryImpl [pSpec₁.Message]ₒ (OracleComp (oSpec + ([OStmtIn]ₒ + [pSpec₂.Message]ₒ))) :=
+  fun q =>
+    castMessageQuery (oSpec := oSpec) (OStmtIn := OStmtIn) (Oₘ₂ := Oₘ₂)
+      (Oₘ₁ q.1) (q.1.cast hn hSpec) (Message.cast_idx hSpec)
+      (by rw [hOₘ q.1, dcast_eq_root_cast]) q.2
+
 open Function in
 /-- Casting the oracle verifier of a non-oracle reduction across an equality of `ProtocolSpec`s.
 
-TODO: need a cast of the oracle interfaces as well (i.e. the oracle interface instance is not
-necessarily unique for every type) -/
+The oracle queries that the underlying verifier makes to the prover messages of `pSpec₁` are
+translated, via `castMessageImpl`, into queries to the prover messages of `pSpec₂`. -/
 protected def cast
     (hOₘ : ∀ i, Oₘ₁ i = dcast (Message.cast_idx hSpec) (Oₘ₂ (i.cast hn hSpec)))
     (V : OracleVerifier oSpec StmtIn OStmtIn StmtOut OStmtOut pSpec₁) :
     OracleVerifier oSpec StmtIn OStmtIn StmtOut OStmtOut pSpec₂ where
   verify := fun stmt challenges =>
     let impl : QueryImpl (oSpec + ([OStmtIn]ₒ + [pSpec₁.Message]ₒ))
-      (OracleComp (oSpec + ([OStmtIn]ₒ + [pSpec₂.Message]ₒ))) := sorry
+      (OracleComp (oSpec + ([OStmtIn]ₒ + [pSpec₂.Message]ₒ))) :=
+      fun q => match q with
+        | Sum.inl t =>
+            query (spec := oSpec + ([OStmtIn]ₒ + [pSpec₂.Message]ₒ)) (Sum.inl t)
+        | Sum.inr (Sum.inl t) =>
+            query (spec := oSpec + ([OStmtIn]ₒ + [pSpec₂.Message]ₒ)) (Sum.inr (Sum.inl t))
+        | Sum.inr (Sum.inr t) => castMessageImpl hn hSpec hOₘ t
     simulateQ impl (V.verify stmt (dcast₂ hn.symm (dcast_symm hn hSpec) challenges))
   embed := V.embed.trans
     (Embedding.sumMap

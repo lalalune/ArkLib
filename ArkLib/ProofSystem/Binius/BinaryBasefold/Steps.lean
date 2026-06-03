@@ -759,7 +759,41 @@ def relayKnowledgeStateFunction (i : Fin ℓ) (hNCR : ¬ isCommitmentRound ℓ �
     rw [hRight]
     sorry
   toFun_next := fun m hDir (stmtIn, oStmtIn) tr msg witMid => by exact fun a ↦ a
-  toFun_full := fun (stmtIn, oStmtIn) tr witOut=> by sorry
+  toFun_full := fun (stmtIn, oStmtIn) tr witOut=> by
+    intro h
+    rw [gt_iff_lt, probEvent_pos_iff] at h
+    obtain ⟨x, hx, hrel⟩ := h
+    -- The relay verifier deterministically outputs `(stmtIn, mapOStmtOutRelayStep ... oStmtIn)`.
+    have hrun : Verifier.run (stmtIn, oStmtIn) tr (relayOracleVerifier 𝔽q β
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR).toVerifier =
+        (pure (stmtIn, mapOStmtOutRelayStep 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR oStmtIn)
+          : OptionT (OracleComp []ₒ) _) := by
+      simp only [Verifier.run, OracleVerifier.toVerifier, relayOracleVerifier]
+      erw [simulateQ_pure]
+      rfl
+    rw [hrun] at hx
+    rw [OptionT.mem_support_iff] at hx
+    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+    obtain ⟨s, _, hx⟩ := hx
+    have key : (simulateQ impl (pure (stmtIn,
+        mapOStmtOutRelayStep 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR oStmtIn) :
+          OptionT (OracleComp []ₒ) _)).run' s =
+        pure (some (stmtIn,
+          mapOStmtOutRelayStep 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR oStmtIn)) := by
+      change (simulateQ impl (pure (some (stmtIn,
+        mapOStmtOutRelayStep 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR oStmtIn)) :
+          OracleComp []ₒ _)).run' s = _
+      rw [simulateQ_pure]
+      change Prod.fst <$> (pure (some (stmtIn,
+        mapOStmtOutRelayStep 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR oStmtIn)) :
+          StateT σ ProbComp _).run s = _
+      rw [StateT.run_pure]; simp [map_pure]
+    rw [key] at hx
+    simp only [support_pure, Set.mem_singleton_iff] at hx
+    cases hx
+    -- Now `hrel : ((stmtIn, mapOStmtOutRelayStep ...), witOut) ∈ roundRelation i.succ`,
+    -- which is definitionally `relayKStateProp 𝔽q β i hNCR stmtIn witOut oStmtIn`.
+    exact hrel
 
 /-- RBR knowledge soundness for a single round oracle verifier -/
 theorem relayOracleVerifier_rbrKnowledgeSoundness (i : Fin ℓ)

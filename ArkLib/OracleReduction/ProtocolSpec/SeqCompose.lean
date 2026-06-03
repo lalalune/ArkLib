@@ -117,21 +117,27 @@ variable {k : Fin (m + n + 1)}
 
 This is defined to be the full transcript for the first half if `k ≥ m`. -/
 def fst (T : (pSpec₁ ++ₚ pSpec₂).Transcript k) : pSpec₁.Transcript ⟨min k m, by omega⟩ :=
-  if hk : k ≤ m then
-    fun i => by
-    dsimp [take]; have := T ⟨i, lt_of_lt_of_le i.isLt (inf_le_left)⟩; simp at this; sorry
-    -- dcast (by sorry) (T ⟨i, lt_of_lt_of_le i.isLt (inf_le_left)⟩)
-  else
-    fun i => sorry
-    -- dcast (by sorry) (T ⟨i, by omega⟩)
+  fun i =>
+    have hi : i.val < m := by have := i.isLt; simp only [Fin.val_mk] at this; omega
+    cast (by
+      show Fin.vappend pSpec₁.Type pSpec₂.Type ⟨i.val, by omega⟩ = pSpec₁.Type ⟨i.val, hi⟩
+      rw [Fin.vappend_left_of_lt _ _ _ hi])
+      (T ⟨i, by have := i.isLt; simp only [Fin.val_mk] at this; omega⟩)
 
 /-- The second half of a partial transcript for a concatenated protocol. -/
 def snd (T : (pSpec₁ ++ₚ pSpec₂).Transcript k) : pSpec₂.Transcript ⟨k - m, by omega⟩ :=
   if hk : k ≤ m then
     fun i => Fin.elim0 (by simpa [hk] using i)
   else
-    fun i => sorry
-    -- dcast (by sorry) (T ⟨m + i, by simp_all; dsimp at i; have := i.isLt; omega⟩)
+    fun i =>
+    have hi : i.val < k.val - m := by have := i.isLt; simp only [Fin.val_mk] at this; omega
+    have hlt : ¬ (m + i.val) < m := by omega
+    cast (by
+      show Fin.vappend pSpec₁.Type pSpec₂.Type ⟨m + i.val, by omega⟩ = pSpec₂.Type ⟨i.val, by omega⟩
+      rw [Fin.vappend_right_of_not_lt _ _ _ hlt]
+      congr 1
+      simp)
+      (T ⟨m + i.val, by have := i.isLt; simp only [Fin.val_mk] at this; omega⟩)
 
 end Transcript
 
@@ -186,7 +192,8 @@ theorem rtake_append_right (T : FullTranscript pSpec₁) (T' : FullTranscript pS
   simp [rtake, Fin.rtake, append, Fin.cast, FullTranscript.cast, Transcript.cast]
   have : ⟨m + n - n + i.val, by omega⟩ = Fin.natAdd m i := by ext; simp
   rw! (castMode := .all) [this, Fin.happend_right]
-  sorry
+  apply eq_of_heq
+  refine HEq.trans (eqRec_heq _ _) (HEq.trans (cast_heq _ _) (cast_heq _ _).symm)
 
 /-- The first half of a transcript for a concatenated protocol -/
 def fst (T : FullTranscript (pSpec₁ ++ₚ pSpec₂)) : FullTranscript pSpec₁ :=
@@ -469,8 +476,13 @@ def seqComposeChallengeEquiv {m : ℕ} {n : Fin m → ℕ} (pSpec : ∀ i, Proto
   toFun := fun ⟨i, j⟩ => sigmaChallengeIdxToSeqCompose i j
   invFun := seqComposeChallengeIdxToSigma
   left_inv := by
-    intro ⟨_, _⟩; simp [seqComposeChallengeIdxToSigma, sigmaChallengeIdxToSeqCompose]
-    sorry
+    rintro ⟨i, ⟨j, hj⟩⟩
+    simp only [seqComposeChallengeIdxToSigma, sigmaChallengeIdxToSeqCompose]
+    have h := Fin.splitSum_embedSum (n := n) i j
+    have hf : (i.embedSum j).splitSum.fst = i := congrArg Sigma.fst h
+    refine Sigma.ext hf ?_
+    rw [Subtype.heq_iff_coe_heq (by rw [hf]) (by rw [hf])]
+    exact (Sigma.ext_iff.mp h).2
   right_inv := by intro; simp [seqComposeChallengeIdxToSigma, sigmaChallengeIdxToSeqCompose]
 
 def sigmaMessageIdxToSeqCompose {m : ℕ} {n : Fin m → ℕ} {pSpec : ∀ i, ProtocolSpec (n i)}
@@ -493,8 +505,13 @@ def seqComposeMessageEquiv {m : ℕ} {n : Fin m → ℕ} {pSpec : ∀ i, Protoco
   toFun := fun ⟨i, msgIdx⟩ => sigmaMessageIdxToSeqCompose i msgIdx
   invFun := seqComposeMessageIdxToSigma
   left_inv := by
-    intro ⟨i, ⟨j, h⟩⟩ ; simp [seqComposeMessageIdxToSigma, sigmaMessageIdxToSeqCompose]
-    sorry
+    rintro ⟨i, ⟨j, hj⟩⟩
+    simp only [seqComposeMessageIdxToSigma, sigmaMessageIdxToSeqCompose]
+    have h := Fin.splitSum_embedSum (n := n) i j
+    have hf : (i.embedSum j).splitSum.fst = i := congrArg Sigma.fst h
+    refine Sigma.ext hf ?_
+    rw [Subtype.heq_iff_coe_heq (by rw [hf]) (by rw [hf])]
+    exact (Sigma.ext_iff.mp h).2
   right_inv := by intro; simp [seqComposeMessageIdxToSigma, sigmaMessageIdxToSeqCompose]
 
 instance {m : ℕ} {n : Fin m → ℕ} {pSpec : ∀ i, ProtocolSpec (n i)}

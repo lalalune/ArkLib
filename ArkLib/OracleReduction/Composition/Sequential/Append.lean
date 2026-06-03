@@ -320,8 +320,41 @@ variable {P₁ : Prover oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁}
 
 -- theorem append_runToRound
 
-instance : [(pSpec₁).Challenge]ₒ ⊂ₒ [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ := sorry
-instance : [(pSpec₂).Challenge]ₒ ⊂ₒ [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ := sorry
+/-- The challenge type at index `i` of the left protocol coincides with the challenge type at the
+  embedded index `ChallengeIdx.inl i` of the appended protocol. This is the response-type equality
+  underlying the `SubSpec` inclusion of the left challenge oracle into the appended one. -/
+private theorem range_challenge_append_inl (i : pSpec₁.ChallengeIdx) :
+    [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ.Range ⟨ChallengeIdx.inl i, ()⟩
+      = [pSpec₁.Challenge]ₒ.Range ⟨i, ()⟩ := by
+  show (pSpec₁ ++ₚ pSpec₂).Challenge (ChallengeIdx.inl i) = pSpec₁.Challenge i
+  simp [ChallengeIdx.inl, ProtocolSpec.append]
+
+/-- The challenge type at index `i` of the right protocol coincides with the challenge type at the
+  embedded index `ChallengeIdx.inr i` of the appended protocol. This is the response-type equality
+  underlying the `SubSpec` inclusion of the right challenge oracle into the appended one. -/
+private theorem range_challenge_append_inr (i : pSpec₂.ChallengeIdx) :
+    [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ.Range ⟨ChallengeIdx.inr i, ()⟩
+      = [pSpec₂.Challenge]ₒ.Range ⟨i, ()⟩ := by
+  show (pSpec₁ ++ₚ pSpec₂).Challenge (ChallengeIdx.inr i) = pSpec₂.Challenge i
+  simp [ChallengeIdx.inr, ProtocolSpec.append]
+
+/-- The left protocol's challenge oracle is a sub-spec of the appended protocol's challenge oracle:
+  a query to challenge round `i` of `pSpec₁` is forwarded to round `ChallengeIdx.inl i` of
+  `pSpec₁ ++ₚ pSpec₂`, with responses transported back along `range_challenge_append_inl`. -/
+instance : [(pSpec₁).Challenge]ₒ ⊂ₒ [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ where
+  monadLift := fun q => ⟨⟨ChallengeIdx.inl q.input.1, ()⟩,
+    q.cont ∘ (fun r => (range_challenge_append_inl q.input.1) ▸ r)⟩
+  onQuery := fun t => ⟨ChallengeIdx.inl t.1, ()⟩
+  onResponse := fun t r => (range_challenge_append_inl t.1) ▸ r
+
+/-- The right protocol's challenge oracle is a sub-spec of the appended protocol's challenge oracle:
+  a query to challenge round `i` of `pSpec₂` is forwarded to round `ChallengeIdx.inr i` of
+  `pSpec₁ ++ₚ pSpec₂`, with responses transported back along `range_challenge_append_inr`. -/
+instance : [(pSpec₂).Challenge]ₒ ⊂ₒ [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ where
+  monadLift := fun q => ⟨⟨ChallengeIdx.inr q.input.1, ()⟩,
+    q.cont ∘ (fun r => (range_challenge_append_inr q.input.1) ▸ r)⟩
+  onQuery := fun t => ⟨ChallengeIdx.inr t.1, ()⟩
+  onResponse := fun t r => (range_challenge_append_inr t.1) ▸ r
 
 /--
 States that running an appended prover `P₁.append P₂` with an initial statement `stmt₁` and

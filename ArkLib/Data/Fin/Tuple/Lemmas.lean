@@ -1093,15 +1093,35 @@ theorem happend_assoc {α : Fin m → Sort u} {β : Fin n → Sort u} {p : ℕ} 
     (u : (i : Fin m) → α i) (v : (i : Fin n) → β i) (w : (i : Fin p) → γ i) :
     happend (happend u v) w =
       fun i => cast (by simp [vappend_assoc])
-        (happend u (happend v w) (i.cast (by omega))) := by sorry
-  -- induction p with
-  -- | zero => simp [append]
-  -- | succ p ih =>
-  --   simp [append, ih, concat_last]
-  --   ext i
-  --   simp [Fin.castSucc, Fin.last, concat_eq_fin_snoc, Fin.snoc]
-  --   by_cases h : i.val < m + n + p
-  --   · simp [h]
+        (happend u (happend v w) (i.cast (by omega))) := by
+  funext i
+  -- The goal is an equality `happend (happend u v) w i = cast _ (...)` in the fixed type
+  -- `vappend (vappend α β) γ i`. We resolve it by reducing both sides to a single base value
+  -- (`u`, `v`, or `w`) under a chain of casts, then matching the casts via `HEq`.
+  -- First peel the outer `cast` on the RHS into `HEq` form, removing the `i`-dependent proof
+  -- so that subsequent index rewrites have type-correct motives.
+  apply eq_of_heq
+  rw [heq_cast_iff_heq]
+  by_cases h₁ : i.val < m
+  · -- i lands in the `u` block on both sides
+    have hl : i = castAdd p (castAdd n ⟨i.val, h₁⟩) := by ext; simp
+    have hr : Fin.cast (Nat.add_assoc m n p) (castAdd p (castAdd n ⟨i.val, h₁⟩)) =
+        castAdd (n + p) ⟨i.val, h₁⟩ := by ext; simp
+    rw [hl, hr]
+    simp only [happend_left, cast_heq, heq_cast_iff_heq, cast_heq_iff_heq]
+  · by_cases h₂ : i.val < m + n
+    · -- i lands in the `v` block
+      have hl : i = castAdd p (natAdd m ⟨i.val - m, by omega⟩) := by ext; simp; omega
+      have hr : Fin.cast (Nat.add_assoc m n p) (castAdd p (natAdd m ⟨i.val - m, by omega⟩)) =
+          natAdd m (castAdd p ⟨i.val - m, by omega⟩) := by ext; simp
+      rw [hl, hr]
+      simp only [happend_right, happend_left, cast_heq, heq_cast_iff_heq, cast_heq_iff_heq]
+    · -- i lands in the `w` block
+      have hl : i = natAdd (m + n) ⟨i.val - (m + n), by omega⟩ := by ext; simp; omega
+      have hr : Fin.cast (Nat.add_assoc m n p) (natAdd (m + n) ⟨i.val - (m + n), by omega⟩) =
+          natAdd m (natAdd n ⟨i.val - (m + n), by omega⟩) := by ext; simp; omega
+      rw [hl, hr]
+      simp only [happend_right, cast_heq, heq_cast_iff_heq]
 
 -- Relationship with cons/concat
 theorem happend_hcons {β : Fin m → Sort u} {γ : Fin n → Sort u}

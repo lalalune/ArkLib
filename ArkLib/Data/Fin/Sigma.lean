@@ -131,14 +131,38 @@ theorem embedSum_splitSum {m : ℕ} {n : Fin m → ℕ} (k : Fin (vsum n)) :
     embedSum (splitSum k).1 (splitSum k).2 = k := by
   induction m with
   | zero => exact Fin.elim0 k
-  | succ m ih => sorry
+  | succ m ih =>
+    induction k using Fin.addCases with
+    | left j =>
+      rw [splitSum_succ]
+      erw [dappend_left]
+      rw [embedSum_succ_zero]
+    | right j =>
+      rw [splitSum_succ]
+      erw [dappend_right]
+      rw [embedSum_succ_succ]
+      congr 1
+      exact ih (n := n ∘ Fin.succ) j
 
 @[simp]
 theorem splitSum_embedSum {m : ℕ} {n : Fin m → ℕ} (i : Fin m) (j : Fin (n i)) :
     splitSum (embedSum i j) = ⟨i, j⟩ := by
   induction m with
   | zero => exact Fin.elim0 i
-  | succ m ih => sorry
+  | succ m ih =>
+    induction i using Fin.cases with
+    | zero =>
+      rw [embedSum_succ_zero, splitSum_succ, dappend_left]
+    | succ i =>
+      have key : (embedSum i j).splitSum = (⟨i, j⟩ : (a : Fin m) × Fin ((n ∘ Fin.succ) a)) :=
+        ih (n := n ∘ Fin.succ) i j
+      rw [embedSum_succ_succ, splitSum_succ]
+      erw [dappend_right]
+      have hfst := congrArg Sigma.fst key
+      have hsnd := (Sigma.ext_iff.mp key).2
+      refine Sigma.ext ?_ ?_
+      · simpa using congrArg Fin.succ hfst
+      · simpa using hsnd
 
 def finSum'FinEquiv' {m : ℕ} {n : Fin m → ℕ} : (i : Fin m) × Fin (n i) ≃ Fin (vsum n) where
   toFun := fun ij => embedSum ij.1 ij.2
@@ -206,7 +230,16 @@ theorem dflatten_splitSum {m : ℕ} {n : Fin m → ℕ} {motive : (k : Fin (vsum
   induction m with
   | zero => exact Fin.elim0 k
   | succ m ih =>
-    sorry
+    rw [dflatten_succ]
+    induction k using Fin.addCases with
+    | left j =>
+      beta_reduce
+      rw [dappend_left]
+      rfl
+    | right j =>
+      beta_reduce
+      erw [dappend_right]
+      exact ih (motive := fun j => motive (natAdd (n 0) j)) (fun j => v (natAdd (n 0) j)) j
 
 @[simp]
 theorem dflatten_embedSum {m : ℕ} {n : Fin m → ℕ} {motive : (k : Fin (vsum n)) → Sort*}
@@ -305,14 +338,37 @@ theorem fflatten_splitSum {A : Sort u} {F : A → Sort v} {m : ℕ} {n : Fin m �
     {α : (i : Fin (vsum n)) → A}
     (v : (k : Fin (vsum n)) → F (α k)) (k : Fin (vsum n)) :
     fflatten (fun i j => v (embedSum i j)) k = cast (by simp) (v k) := by
-  sorry
+  rw [eq_cast_iff_heq]
+  induction m with
+  | zero => exact Fin.elim0 k
+  | succ m ih =>
+    rw [fflatten_succ]
+    induction k using Fin.addCases with
+    | left j =>
+      exact (heq_of_eq (fappend_left _ (fflatten fun i j => v (embedSum i.succ j)) j)).trans
+        (cast_heq _ _)
+    | right j =>
+      refine (heq_of_eq (fappend_right (fun j => v (embedSum 0 j))
+        (fflatten fun i j => v (embedSum i.succ j)) j)).trans ((cast_heq _ _).trans ?_)
+      exact ih (α := fun k => α (natAdd (n 0) k)) (fun k => v (natAdd (n 0) k)) j
 
 @[simp]
 theorem fflatten_embedSum {A : Sort u} {F : A → Sort v} {m : ℕ} {n : Fin m → ℕ}
     {α : (i : Fin m) → (j : Fin (n i)) → A}
     (v : (i : Fin m) → (j : Fin (n i)) → F (α i j)) (i : Fin m) (j : Fin (n i)) :
     fflatten v (embedSum i j) = cast (by simp) (v i j) := by
-  sorry
+  rw [eq_cast_iff_heq]
+  induction m with
+  | zero => exact Fin.elim0 i
+  | succ m ih =>
+    induction i using Fin.cases with
+    | zero =>
+      rw [embedSum_succ_zero, fflatten_succ]
+      exact (heq_of_eq (fappend_left (v 0) (fflatten fun i => v i.succ) j)).trans (cast_heq _ _)
+    | succ i =>
+      rw [embedSum_succ_succ, fflatten_succ]
+      exact (heq_of_eq (fappend_right (v 0) (fflatten fun i => v i.succ) (embedSum i j))).trans
+        ((cast_heq _ _).trans (ih (fun i => v i.succ) i j))
 
 /-- Functorial flatten with two arguments: flattens two nested heterogeneous tuple
 `(i : Fin m) → (j : Fin (n i)) → F (α i j)` into a single heterogeneous tuple with type
@@ -356,20 +412,34 @@ theorem fflatten₂_two_eq_append {A : Sort u} {B : Sort v} {F : A → B → Sor
     fflatten₂ v = fappend₂ (F := F) (v 0) (v 1) := rfl
 
 @[simp]
-theorem fflatten₂_splitSum {A : Sort u} {B : Sort v} {F : A → B → Sort w} {m : ℕ} {n : Fin m → ℕ}
-    {α : (i : Fin m) → (j : Fin (n i)) → A}
-    {β : (i : Fin m) → (j : Fin (n i)) → B}
-    (v : (k : Fin (vsum n)) → F (vflatten α k) (vflatten β k)) (k : Fin (vsum n)) :
-    fflatten₂ (fun i j => v (embedSum i j)) k = cast (by simp) (v k) := by
-  sorry
-
-@[simp]
 theorem fflatten₂_embedSum {A : Sort u} {B : Sort v} {F : A → B → Sort w} {m : ℕ} {n : Fin m → ℕ}
     {α : (i : Fin m) → (j : Fin (n i)) → A}
     {β : (i : Fin m) → (j : Fin (n i)) → B}
     (v : (i : Fin m) → (j : Fin (n i)) → F (α i j) (β i j)) (i : Fin m) (j : Fin (n i)) :
     fflatten₂ v (embedSum i j) = cast (by simp) (v i j) := by
-  sorry
+  rw [eq_cast_iff_heq]
+  induction m with
+  | zero => exact Fin.elim0 i
+  | succ m ih =>
+    induction i using Fin.cases with
+    | zero =>
+      rw [embedSum_succ_zero, fflatten₂_succ]
+      exact (heq_of_eq (fappend₂_left (v 0) (fflatten₂ fun i => v i.succ) j)).trans (cast_heq _ _)
+    | succ i =>
+      rw [embedSum_succ_succ, fflatten₂_succ]
+      exact (heq_of_eq (fappend₂_right (v 0) (fflatten₂ fun i => v i.succ) (embedSum i j))).trans
+        ((cast_heq _ _).trans (ih (fun i => v i.succ) i j))
+
+@[simp]
+theorem fflatten₂_splitSum {A : Sort u} {B : Sort v} {F : A → B → Sort w} {m : ℕ} {n : Fin m → ℕ}
+    {α : (i : Fin m) → (j : Fin (n i)) → A}
+    {β : (i : Fin m) → (j : Fin (n i)) → B}
+    (v : (k : Fin (vsum n)) → F (vflatten α k) (vflatten β k)) (k : Fin (vsum n)) :
+    fflatten₂ (fun i j => v (embedSum i j)) k = cast (by simp) (v k) := by
+  obtain ⟨i', j', rfl⟩ : ∃ i' j', k = embedSum i' j' :=
+    ⟨(splitSum k).1, (splitSum k).2, (embedSum_splitSum k).symm⟩
+  rw [eq_cast_iff_heq]
+  exact (heq_of_eq (fflatten₂_embedSum (fun i j => v (embedSum i j)) i' j')).trans (cast_heq _ _)
 
 /-- Heterogeneous flatten: flattens a nested heterogeneous tuple
 `(i : Fin m) → (j : Fin (n i)) → α i j` into a single heterogeneous tuple with type
