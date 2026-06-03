@@ -66,31 +66,41 @@ def CoordEq {ℓ : ℕ} (i : Fin ℓ) (x y : Fin ℓ → S) : Prop :=
   x i ≠ y i ∧ ∀ j, j ≠ i → x j = y j
 
 /-- A family of `ℓ·(k-1)+1` coordinate-vectors `c` is **coordinate-wise special sound**, i.e. lies
-  in `SS(S, ℓ, k)`, if there is a *central* index `e` such that for every coordinate `i ∈ Fin ℓ`
-  there are `k-1` other indices whose vectors agree with `c e` off coordinate `i` (and differ on
-  it).
+  in `SS(S, ℓ, k)`, if
 
-  This is the precise rendering of the set `SS(S, ℓ, k)` from FMN Def. 2.9 / Hachi §2.3. The
-  branching arity `ℓ·(k-1)+1` is built into the index type. -/
+  - the `ℓ·(k-1)+1` vectors are pairwise distinct (`Function.Injective c`), and
+  - there is a *central* index `e` such that for every coordinate `i ∈ Fin ℓ` there are `k-1` other
+    indices whose vectors agree with `c e` off coordinate `i` (and differ on it).
+
+  This is the precise rendering of the set `SS(S, ℓ, k)` from FMN Def. 2.9 / Hachi §2.3. In the
+  paper `SS(S, ℓ, k)` is a *set* `{x₁, …, x_K}` of `K := ℓ·(k-1)+1` **distinct** vectors; the
+  `Function.Injective c` clause is what encodes that distinctness. It is load-bearing: since the
+  `k-1` siblings of a coordinate `i` agree with `c e` off coordinate `i`, distinctness of the
+  vectors forces them to be pairwise distinct *in coordinate `i`*, giving the `k` distinct values
+  per coordinate that extraction relies on. (Without it, the siblings could collapse to a single
+  value, leaving only `2` distinct values in a coordinate.) The branching arity `ℓ·(k-1)+1` is
+  built into the index type. -/
 def IsSpecialSoundFamily (ℓ k : ℕ) (c : Fin (ℓ * (k - 1) + 1) → (Fin ℓ → S)) : Prop :=
+  Function.Injective c ∧
   ∃ e : Fin (ℓ * (k - 1) + 1),
     ∀ i : Fin ℓ, ∃ J : Finset (Fin (ℓ * (k - 1) + 1)),
       e ∉ J ∧ J.card = k - 1 ∧ ∀ j ∈ J, CoordEq i (c e) (c j)
 
-/-- For `ℓ = 1`, coordinate-wise special soundness is ordinary `k`-special soundness: there is a
-  central vector together with `k - 1` siblings, all differing in the single coordinate, i.e. `k`
-  pairwise-distinct challenge values. -/
+/-- For `ℓ = 1`, coordinate-wise special soundness is ordinary `k`-special soundness: the challenge
+  values are distinct, and there is a central vector together with `k - 1` siblings differing in the
+  single coordinate — i.e. `k` pairwise-distinct challenge values. -/
 theorem isSpecialSoundFamily_one {k : ℕ} (c : Fin (1 * (k - 1) + 1) → (Fin 1 → S)) :
     IsSpecialSoundFamily 1 k c ↔
+      Function.Injective c ∧
       ∃ e, ∃ J : Finset (Fin (1 * (k - 1) + 1)),
         e ∉ J ∧ J.card = k - 1 ∧ ∀ j ∈ J, c e 0 ≠ c j 0 := by
   unfold IsSpecialSoundFamily CoordEq
   constructor
-  · rintro ⟨e, h⟩
+  · rintro ⟨hinj, e, h⟩
     obtain ⟨J, hJ⟩ := h 0
-    exact ⟨e, J, hJ.1, hJ.2.1, fun j hj => (hJ.2.2 j hj).1⟩
-  · rintro ⟨e, J, heJ, hcard, hdiff⟩
-    refine ⟨e, fun i => ?_⟩
+    exact ⟨hinj, e, J, hJ.1, hJ.2.1, fun j hj => (hJ.2.2 j hj).1⟩
+  · rintro ⟨hinj, e, J, heJ, hcard, hdiff⟩
+    refine ⟨hinj, e, fun i => ?_⟩
     have hi : i = 0 := Subsingleton.elim _ _
     subst hi
     refine ⟨J, heJ, hcard, fun j hj => ⟨hdiff j hj, fun j' hj' => ?_⟩⟩
