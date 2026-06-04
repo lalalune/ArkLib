@@ -1321,12 +1321,72 @@ lemma eval_resultant_eq_zero_of_mem_S_β {H : F[X][Y]} (hH : 0 < H.natDegree) (�
 
 end LemmaA1
 
+section LemmaA1Final
+
+variable {F : Type} [Field F]
+
+/-- A nonzero polynomial has at most `natDegree`-many roots, as a `Set.ncard` bound. -/
+private lemma ncard_setOf_isRoot_le {K : Type} [Field K] {R : K[X]} (hR : R ≠ 0) :
+    {z : K | R.IsRoot z}.ncard ≤ R.natDegree := by
+  classical
+  calc {z : K | R.IsRoot z}.ncard
+      = (R.roots.toFinset : Set K).ncard := by
+        congr 1; ext x; simp only [Set.mem_setOf_eq, Multiset.mem_toFinset,
+          Polynomial.mem_roots, hR, ne_eq, not_false_eq_true, Finset.mem_coe]
+    _ = R.roots.toFinset.card := Set.ncard_coe_finset _
+    _ ≤ Multiset.card R.roots := R.roots.toFinset_card_le
+    _ ≤ R.natDegree := Polynomial.card_roots' R
+
+/-- **Lemma A.1** of [BCIKS20], Appendix A.3 (resultant / specialization-point counting).
+
+The `Z`-degree bound on the resultant `Res_Y(r, H̃')` of the canonical representative `r` of the
+regular element `β` and the defining relation `H̃'`. This is the analytic heart of the lemma: a
+weighted-degree count on the Sylvester determinant. -/
+lemma natDegree_resultant_canonicalRep_le {H : F[X][Y]} {D : ℕ}
+    (hD : Bivariate.totalDegree H ≤ D) (hH : 0 < H.natDegree) (β : 𝒪 H) :
+    (↑(Polynomial.resultant (canonicalRepOf𝒪 hH β) (H_tilde' H) H.natDegree H.natDegree).natDegree
+        : WithBot ℕ)
+      ≤ weight_Λ_over_𝒪 hH β D * H.natDegree := by
+  sorry
+
 /-- The statement of Lemma A.1 in Appendix A.3 of [BCIKS20]. -/
 lemma Lemma_A_1 {H : F[X][Y]} [hHirreducible : Fact (Irreducible H)]
     (hH : 0 < H.natDegree) (β : 𝒪 H) (D : ℕ)
     (hD : D ≥ Bivariate.totalDegree H)
     (S_β_card : Set.ncard (S_β β) > (weight_Λ_over_𝒪 hH β D) * H.natDegree) :
-  embeddingOf𝒪Into𝕃 _ β = 0 := by sorry
+  embeddingOf𝒪Into𝕃 _ β = 0 := by
+  classical
+  -- The embedding is injective, so it suffices to prove `β = 0`.
+  rw [show (0 : 𝕃 H) = embeddingOf𝒪Into𝕃 H 0 by simp]
+  rw [(embeddingOf𝒪Into𝕃_injective hH).eq_iff]
+  by_contra hβ
+  -- Set up the canonical representative `r` and the resultant `R`.
+  set r := canonicalRepOf𝒪 hH β with hr_def
+  set R := Polynomial.resultant r (H_tilde' H) H.natDegree H.natDegree with hR_def
+  -- `R ≠ 0` by the coprimality step.
+  have hR_ne : R ≠ 0 := resultant_canonicalRep_H_tilde'_ne_zero hH hβ
+  -- `S_β β` is contained in the (finite) root set of `R`.
+  have hsubset : S_β β ⊆ {z : F | R.IsRoot z} := by
+    intro z hz
+    have := eval_resultant_eq_zero_of_mem_S_β hH β hz
+    rw [← hr_def, ← hR_def] at this
+    exact this
+  have hfin : {z : F | R.IsRoot z}.Finite := Polynomial.finite_setOf_isRoot hR_ne
+  -- Counting: `|S_β β| ≤ #roots(R) ≤ deg R ≤ Λ(β)·d`.
+  have hcard_le : Set.ncard (S_β β) ≤ R.natDegree :=
+    (Set.ncard_le_ncard hsubset hfin).trans (ncard_setOf_isRoot_le hR_ne)
+  have hdeg_bound :
+      (↑R.natDegree : WithBot ℕ) ≤ weight_Λ_over_𝒪 hH β D * H.natDegree := by
+    rw [hR_def, hr_def]
+    exact natDegree_resultant_canonicalRep_le hD hH β
+  -- Chain the inequalities in `WithBot ℕ` to contradict the hypothesis.
+  have h1 : (↑(Set.ncard (S_β β)) : WithBot ℕ) ≤ ↑R.natDegree := by
+    exact_mod_cast hcard_le
+  have h2 : (↑(Set.ncard (S_β β)) : WithBot ℕ) ≤ weight_Λ_over_𝒪 hH β D * H.natDegree :=
+    h1.trans hdeg_bound
+  exact absurd S_β_card (not_lt.2 h2)
+
+end LemmaA1Final
 
 /-- The embeddining of the coefficients of a bivarite polynomial into the bivariate polynomial ring
 with rational coefficients. -/
