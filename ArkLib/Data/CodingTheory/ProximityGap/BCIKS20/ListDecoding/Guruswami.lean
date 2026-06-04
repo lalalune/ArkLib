@@ -902,6 +902,102 @@ lemma exists_nonzero_triSolution (n m k : ℕ) (ωs : Fin n ↪ F) (u₀ u₁ : 
   exact LinearMap.ker_eq_bot.mp (eq_bot_iff.mpr fun x hx ↦
     by_contra fun hx' ↦ h_inj x hx' <| by simpa using hx)
 
+/-! ### Box degree facts and the multiplicity bridge -/
+
+open GuruswamiSudan in
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- For a box index `(i,j,t)`: `i + k·j ≤ Dpg`. -/
+lemma gsBox_weighted_le {n m k : ℕ} {p : ℕ × ℕ × ℕ} (hk : 0 < k) (hp : p ∈ gsBox n m k) :
+    1 * p.1 + k * p.2.1 ≤ gsDpg n m k := by
+  rw [mem_gsBox] at hp
+  have hw := hp.1
+  unfold weigthBoundIndices at hw
+  rw [Finset.mem_filter] at hw
+  have := hw.2
+  simp only [Nat.add_sub_cancel] at this
+  omega
+
+open GuruswamiSudan in
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- For a box index `(i,j,t)`: `j ≤ Dpg`. -/
+lemma gsBox_Y_le {n m k : ℕ} {p : ℕ × ℕ × ℕ} (hk : 0 < k) (hp : p ∈ gsBox n m k) :
+    0 * p.1 + 1 * p.2.1 ≤ gsDpg n m k := by
+  have := gsBox_weighted_le hk hp
+  have hk1 : 1 ≤ k := hk
+  nlinarith [this]
+
+open GuruswamiSudan in
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- For a box index `(i,j,t)`: `i ≤ Dpg`. -/
+lemma gsBox_X_le {n m k : ℕ} {p : ℕ × ℕ × ℕ} (hk : 0 < k) (hp : p ∈ gsBox n m k) :
+    1 * p.1 + 0 * p.2.1 ≤ gsDpg n m k := by
+  have := gsBox_weighted_le hk hp
+  omega
+
+open GuruswamiSudan in
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- For a box index `(i,j,t)`: `t ≤ zCap`. -/
+lemma gsBox_Z_le {n m k : ℕ} {p : ℕ × ℕ × ℕ} (hp : p ∈ gsBox n m k) :
+    p.2.2 ≤ gsZCap n m k := by
+  rw [mem_gsBox] at hp; exact hp.2
+
+open GuruswamiSudan Polynomial.Bivariate in
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- The `Y`-degree of the box-assembled `Q` is at most `Dpg`. -/
+lemma natDegree_gsQ_le {n m k : ℕ} (hk : 0 < k) (c : (gsBox n m k) → F) :
+    (triCoeffsToPoly (gsBox n m k) c).natDegree ≤ gsDpg n m k := by
+  have h := natWeightedDegree_triCoeffsToPoly_le (gsBox n m k) c 0 1 (gsDpg n m k)
+    (fun p hp ↦ gsBox_Y_le hk hp)
+  rwa [← degreeY_as_weighted_deg, natDegreeY] at h
+
+open GuruswamiSudan Polynomial.Bivariate in
+omit [DecidableEq (RatFunc F)] in
+/-- **Multiplicity bridge.**  If `c` lies in the kernel of the constraint map, the assembled
+nonzero `Q` has root multiplicity `≥ m` at every curve point `(C ωᵢ, u₀ᵢ + Z·u₁ᵢ)`.
+
+The kernel forces every `Z`-coefficient (up to `zMax`) of each order-`< m` shifted coefficient to
+vanish; combined with the `Z`-degree budget (`ZdegLE_shift` + the box bound), the whole `F[Z]`
+coefficient vanishes, and `triv_rootMultiplicity_ge_of_shift_zero` yields multiplicity `≥ m`. -/
+lemma gsQ_multiplicity {n m k : ℕ} (hk : 0 < k) (ωs : Fin n ↪ F) (u₀ u₁ : Fin n → F)
+    (c : (gsBox n m k) → F) (hc : c ≠ 0)
+    (hker : triConstraintMap (gsBox n m k) m (gsZMax n m k) ωs u₀ u₁ c = 0) (i : Fin n) :
+    (m : ℕ) ≤ rootMultiplicity (triCoeffsToPoly (gsBox n m k) c)
+        (Polynomial.C (ωs i)) (Polynomial.C (u₀ i) + Polynomial.X * Polynomial.C (u₁ i)) := by
+  classical
+  set Q := triCoeffsToPoly (gsBox n m k) c with hQdef
+  set x := Polynomial.C (ωs i) with hx
+  set y := Polynomial.C (u₀ i) + Polynomial.X * Polynomial.C (u₁ i) with hy
+  -- Q ≠ 0
+  have hQne : Q ≠ 0 := triCoeffsToPoly_ne_zero (gsBox n m k) c hc
+  -- Q has Z-degree ≤ zCap and Y-degree ≤ Dpg
+  have hQz : ZdegLE Q (gsZCap n m k) :=
+    ZdegLE_triCoeffsToPoly (gsBox n m k) c (gsZCap n m k) (fun p hp ↦ gsBox_Z_le hp)
+  have hQy : Q.natDegree ≤ gsDpg n m k := natDegree_gsQ_le hk c
+  -- the shifted constraint output has Z-degree ≤ zMax
+  have hshiftZ : ZdegLE (shift Q x y) (gsZMax n m k) := by
+    refine (ZdegLE_shift hQz (ωs i) (u₀ i) (u₁ i)).mono ?_
+    rw [gsZMax]; exact Nat.add_le_add_left hQy _
+  -- apply the order-of-vanishing criterion
+  refine triv_rootMultiplicity_ge_of_shift_zero hQne (fun s t hst ↦ ?_)
+  -- every Z-coefficient up to zMax vanishes, and Z-degree ≤ zMax ⟹ the F[Z] coeff is 0
+  apply Polynomial.ext
+  intro z
+  rw [Polynomial.coeff_zero]
+  by_cases hz : z ≤ gsZMax n m k
+  · -- use the kernel: the (i, (s,t), z) coordinate is 0
+    have hst' : (s, t) ∈ constraintIndices m := by
+      unfold constraintIndices
+      rw [Finset.mem_filter, Finset.product_eq_sprod, Finset.mem_product, Finset.mem_range,
+        Finset.mem_range]
+      exact ⟨⟨by omega, by omega⟩, hst⟩
+    have hcoord := congr_fun hker (i, ⟨(s, t), hst'⟩, ⟨z, Nat.lt_succ_of_le hz⟩)
+    simp only [triConstraintMap, LinearMap.coe_comp, Function.comp_apply, LinearMap.pi_apply,
+      triEvalConstraint, LinearMap.coe_mk, AddHom.coe_mk, Pi.zero_apply] at hcoord
+    rw [triCoeffsToPolyₗ_apply] at hcoord
+    exact hcoord
+  · -- beyond the Z-degree budget: the coefficient is 0 by the degree bound
+    exact Polynomial.coeff_eq_zero_of_natDegree_lt (lt_of_le_of_lt (hshiftZ s t) (by omega))
+
 end ModifiedGuruswamiHelpers
 
 
