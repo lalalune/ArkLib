@@ -8,6 +8,7 @@ Authors: Quang Dao, Katerina Hristova, František Silváši, Julian Sutherland,
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ErrorBound
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.UniqueDecoding
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.WeightedAgreement
+import ArkLib.Data.CodingTheory.DivergenceOfSets
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.ToMathlib.Polynomial.EvalExt
 
@@ -109,6 +110,112 @@ lemma goodCoeffsCurve_card_bounds_of_prob_threshold {k deg : ℕ}
   constructor
   · exact finset_card_gt_of_natCast_le_ennreal_lt hsmall hx
   · exact finset_card_ge_of_pred_natCast_le_ennreal_lt hlarge hx
+
+omit [DecidableEq ι] [DecidableEq F] in
+/-- The easy threshold side condition follows from the standard lower bound
+`|ι| / |F| ≤ errorBound`. -/
+lemma prob_threshold_small_of_errorBound_ge_const {k deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0}
+    (_hk : 0 < k)
+    (hε :
+      (Fintype.card ι : ℝ≥0) / (Fintype.card F : ℝ≥0) ≤
+        errorBound δ deg domain) :
+    (k : ENNReal) ≤
+      ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+        (Fintype.card F : ENNReal) := by
+  have hq0 : (Fintype.card F : ℝ≥0) ≠ 0 := by
+    simp [Fintype.card_ne_zero]
+  have hq0E : (Fintype.card F : ENNReal) ≠ 0 := by
+    exact_mod_cast hq0
+  have hqtop : (Fintype.card F : ENNReal) ≠ ∞ := ENNReal.coe_ne_top
+  have hεE :
+      (((Fintype.card ι : ℝ≥0) / (Fintype.card F : ℝ≥0) : ℝ≥0) :
+          ENNReal) ≤ (errorBound δ deg domain : ENNReal) := by
+    exact_mod_cast hε
+  have hn_le :
+      (Fintype.card ι : ENNReal) ≤
+        (errorBound δ deg domain : ENNReal) * (Fintype.card F : ENNReal) := by
+    calc
+      (Fintype.card ι : ENNReal)
+          = (((Fintype.card ι : ℝ≥0) / (Fintype.card F : ℝ≥0) : ℝ≥0) :
+              ENNReal) * (Fintype.card F : ENNReal) := by
+            simp [ENNReal.coe_div hq0, ENNReal.div_mul_cancel hq0E hqtop]
+      _ ≤ (errorBound δ deg domain : ENNReal) * (Fintype.card F : ENNReal) :=
+            mul_le_mul_left hεE _
+  have hone_le_n : (1 : ENNReal) ≤ (Fintype.card ι : ENNReal) := by
+    exact_mod_cast (Nat.succ_le_of_lt (Fintype.card_pos (α := ι)))
+  calc
+    (k : ENNReal) = (k : ENNReal) * 1 := by simp
+    _ ≤ (k : ENNReal) * (Fintype.card ι : ENNReal) := by
+      exact mul_le_mul_right hone_le_n _
+    _ ≤ (k : ENNReal) *
+          ((errorBound δ deg domain : ENNReal) * (Fintype.card F : ENNReal)) := by
+      exact mul_le_mul_right hn_le _
+    _ = ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+          (Fintype.card F : ENNReal) := by
+      rw [mul_assoc]
+
+omit [DecidableEq ι] [DecidableEq F] in
+/-- Strict Johnson-radius hypotheses imply the easy threshold side condition. -/
+lemma prob_threshold_small_of_strict_johnson {k deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0}
+    (hk : 0 < k)
+    (hdeg : 0 < deg)
+    (hδ : δ < 1 - ReedSolomon.sqrtRate deg domain) :
+    (k : ENNReal) ≤
+      ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+        (Fintype.card F : ENNReal) := by
+  exact prob_threshold_small_of_errorBound_ge_const (deg := deg) (domain := domain)
+    (δ := δ) hk (DivergenceOfSets.errorBound_ge_const (deg := deg) (domain := domain) hdeg hδ)
+
+omit [Nonempty ι] [DecidableEq ι] [DecidableEq F] in
+/-- The large threshold side condition follows from the stronger lower bound
+`(|ι| + 1) / |F| ≤ errorBound`. -/
+lemma prob_threshold_large_of_errorBound_ge_succ_const {k deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0}
+    (hε :
+      ((Fintype.card ι + 1 : ℕ) : ℝ≥0) / (Fintype.card F : ℝ≥0) ≤
+        errorBound δ deg domain) :
+    ((((Fintype.card ι + 1) * k : ℕ) - 1 : ℕ) : ENNReal) ≤
+      ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+        (Fintype.card F : ENNReal) := by
+  have hq0 : (Fintype.card F : ℝ≥0) ≠ 0 := by
+    simp [Fintype.card_ne_zero]
+  have hq0E : (Fintype.card F : ENNReal) ≠ 0 := by
+    exact_mod_cast hq0
+  have hqtop : (Fintype.card F : ENNReal) ≠ ∞ := ENNReal.coe_ne_top
+  have hεE :
+      ((((Fintype.card ι + 1 : ℕ) : ℝ≥0) / (Fintype.card F : ℝ≥0) : ℝ≥0) :
+          ENNReal) ≤ (errorBound δ deg domain : ENNReal) := by
+    exact_mod_cast hε
+  have hn_le :
+      ((Fintype.card ι + 1 : ℕ) : ENNReal) ≤
+        (errorBound δ deg domain : ENNReal) * (Fintype.card F : ENNReal) := by
+    calc
+      ((Fintype.card ι + 1 : ℕ) : ENNReal)
+          = ((((Fintype.card ι + 1 : ℕ) : ℝ≥0) /
+              (Fintype.card F : ℝ≥0) : ℝ≥0) : ENNReal) *
+              (Fintype.card F : ENNReal) := by
+            simp [ENNReal.coe_div hq0, ENNReal.div_mul_cancel hq0E hqtop]
+      _ ≤ (errorBound δ deg domain : ENNReal) * (Fintype.card F : ENNReal) :=
+            mul_le_mul_left hεE _
+  have hpred :
+      ((((Fintype.card ι + 1) * k : ℕ) - 1 : ℕ) : ENNReal) ≤
+        (k : ENNReal) * ((Fintype.card ι + 1 : ℕ) : ENNReal) := by
+    have hnat : ((Fintype.card ι + 1) * k : ℕ) - 1 ≤
+        k * (Fintype.card ι + 1) := by
+      simpa [Nat.mul_comm] using
+        (Nat.sub_le (k * (Fintype.card ι + 1)) 1)
+    exact_mod_cast hnat
+  calc
+    ((((Fintype.card ι + 1) * k : ℕ) - 1 : ℕ) : ENNReal)
+        ≤ (k : ENNReal) * ((Fintype.card ι + 1 : ℕ) : ENNReal) := hpred
+    _ ≤ (k : ENNReal) *
+          ((errorBound δ deg domain : ENNReal) * (Fintype.card F : ENNReal)) := by
+      exact mul_le_mul_right hn_le _
+    _ = ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+          (Fintype.card F : ENNReal) := by
+      rw [mul_assoc]
 
 omit [DecidableEq ι] [Fintype F] in
 /-- Integral-weight list agreement on a sufficiently large set of curve parameters
@@ -878,6 +985,43 @@ theorem RS_jointAgreement_of_prob_gt_and_coeff_polys
         (u := u) (η := (k : ℝ≥0) * errorBound δ deg domain) hprob
   exact goodCoeffsCurve_coeff_polys_implies_jointAgreement_of_prob_threshold_core
     (deg := deg) (domain := domain) (δ := δ) hk hS_card hsmall hlarge hcoeffPoly
+
+omit [DecidableEq ι] in
+/-- List-branch front door with the probability-threshold lower bounds stated
+as lower bounds on `errorBound` itself. This removes the ENNReal/cardinality
+arithmetic from the final list-decoding call. -/
+theorem RS_jointAgreement_of_prob_gt_and_errorBound_lower_bounds
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hk : 0 < k)
+    (u : WordStack F (Fin (k + 1)) ι)
+    (hprob :
+      Pr_{let z ← $ᵖ F}[
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            ReedSolomon.code domain deg) ≤ δ] >
+        ((k : ENNReal) * (errorBound δ deg domain : ENNReal)))
+    (hεsmall :
+      (Fintype.card ι : ℝ≥0) / (Fintype.card F : ℝ≥0) ≤
+        errorBound δ deg domain)
+    (hεlarge :
+      ((Fintype.card ι + 1 : ℕ) : ℝ≥0) / (Fintype.card F : ℝ≥0) ≤
+        errorBound δ deg domain)
+    (hcoeffPoly : ∀ P : F → Polynomial F,
+      (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+        ∃ B : ℕ → Polynomial F,
+          (∀ j < deg, (B j).natDegree < k + 1) ∧
+            ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              ∀ j < deg, (P z).coeff j = (B j).eval z) :
+    jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u) := by
+  exact RS_jointAgreement_of_prob_gt_and_coeff_polys
+    (deg := deg) (domain := domain) (δ := δ) hk u hprob
+    (prob_threshold_small_of_errorBound_ge_const
+      (deg := deg) (domain := domain) (δ := δ) hk hεsmall)
+    (prob_threshold_large_of_errorBound_ge_succ_const
+      (deg := deg) (domain := domain) (δ := δ) hεlarge)
+    hcoeffPoly
 
 omit [DecidableEq ι] in
 /-- Theorem 1.5 (Correlated agreement for low-degree parameterised curves) in [BCIKS20].
