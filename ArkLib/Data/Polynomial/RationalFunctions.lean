@@ -1141,6 +1141,103 @@ lemma evalEval_eq_eval_map (z y : F) (p : F[X][Y]) :
     Polynomial.evalEval z y p = (p.map (Polynomial.evalRingHom z)).eval y := by
   rw [Polynomial.map_evalRingHom_eval]
 
+/-- The monicized polynomial `H_tilde H` is monic, as the image of the monic `H_tilde' H`. -/
+lemma H_tilde_monic {H : F[X][Y]} (hH : 0 < H.natDegree) : (H_tilde H).Monic := by
+  have h := (H_tilde'_monic H hH).map (univPolyHom (F := F))
+  rwa [H_tilde_equiv_H_tilde' H] at h
+
+/-- The resultant (in `Y`) of the canonical representative of a nonzero regular element `β` and the
+defining relation `H_tilde' H` is a nonzero element of `F[X]`. This is the algebraic heart of the
+"not coprime forces `β = 0`" step: since `H_tilde H` is irreducible over `F(X)` and the
+representative has strictly smaller `Y`-degree, they are coprime, so the resultant is nonzero. -/
+lemma resultant_canonicalRep_H_tilde'_ne_zero {H : F[X][Y]} [Fact (Irreducible H)]
+    (hH : 0 < H.natDegree) {β : 𝒪 H} (hβ : β ≠ 0) :
+    Polynomial.resultant (canonicalRepOf𝒪 hH β) (H_tilde' H) H.natDegree H.natDegree ≠ 0 := by
+  classical
+  set r := canonicalRepOf𝒪 hH β with hr_def
+  -- The canonical representative is nonzero.
+  have hr_ne : r ≠ 0 := by
+    intro h0
+    apply hβ
+    have := mk_canonicalRepOf𝒪 hH β
+    rw [hr_def] at h0
+    rw [h0] at this
+    simpa using this.symm
+  -- Degrees: `H_tilde' H` is monic of degree `d`, the representative has `Y`-degree `< d`.
+  have hd : (H_tilde' H).natDegree = H.natDegree := natDegree_H_tilde' hH
+  have hr_deg : r.natDegree < H.natDegree := by
+    have hlt := canonicalRepOf𝒪_degree_lt hH β
+    rw [← hr_def] at hlt
+    have : r.degree < (H_tilde' H).degree := hlt
+    rw [Polynomial.degree_eq_natDegree hr_ne,
+        Polynomial.degree_eq_natDegree (H_tilde'_monic H hH).ne_zero] at this
+    rw [hd] at this
+    exact_mod_cast this
+  -- Map everything to the field `RatFunc F` via `univPolyHom`.
+  have hinj : Function.Injective (univPolyHom (F := F)) := univPolyHom_injective
+  -- Work with the explicit image `Ht := (H_tilde' H).map univPolyHom` to avoid unfolding `H_tilde`.
+  set Ht : Polynomial (RatFunc F) := (H_tilde' H).map univPolyHom with hHt_def
+  set rmap : Polynomial (RatFunc F) := r.map univPolyHom with hrmap_def
+  have hmap_eq : Ht = H_tilde H := H_tilde_equiv_H_tilde' H
+  have hHt_irr : Irreducible Ht := by
+    rw [hmap_eq]; exact irreducibleHTildeOfIrreducible_of_natDegree_pos hH Fact.out
+  have hHt_monic : Ht.Monic := (H_tilde'_monic H hH).map _
+  -- `natDegree` facts proved via the (injective, degree-preserving) map; no `H_tilde` unfolding.
+  have hHt_natDeg : Ht.natDegree = H.natDegree := by
+    rw [hHt_def, Polynomial.natDegree_map_eq_of_injective hinj, hd]
+  have hrmap_natDeg : rmap.natDegree = r.natDegree :=
+    Polynomial.natDegree_map_eq_of_injective hinj r
+  -- The image of the representative is nonzero with `Y`-degree `< d`.
+  have hrmap_ne : rmap ≠ 0 :=
+    fun h => hr_ne (Polynomial.map_eq_zero_iff hinj |>.1 h)
+  have hrmap_deg : rmap.natDegree < Ht.natDegree := by
+    rw [hrmap_natDeg, hHt_natDeg]; exact hr_deg
+  -- Coprimality over the field: an irreducible polynomial is coprime to anything of strictly
+  -- smaller degree (which it cannot divide).
+  have hcoprime : IsCoprime Ht rmap :=
+    hHt_irr.coprime_iff_not_dvd.2 (hHt_monic.not_dvd_of_natDegree_lt hrmap_ne hrmap_deg)
+  -- Hence the resultant over the field, using the natural degrees, is nonzero.
+  have hres_field :
+      Polynomial.resultant rmap Ht r.natDegree H.natDegree ≠ 0 := by
+    have h := Polynomial.resultant_ne_zero rmap Ht hcoprime.symm
+    rwa [hrmap_natDeg, hHt_natDeg] at h
+  -- Transport along `univPolyHom` (injective): the resultant over `F[X]` with the same degrees
+  -- `(r.natDegree, H.natDegree)` is nonzero.
+  have hres_base :
+      Polynomial.resultant r (H_tilde' H) r.natDegree H.natDegree ≠ 0 := by
+    intro hzero
+    apply hres_field
+    have hmap_res :
+        Polynomial.resultant rmap Ht r.natDegree H.natDegree
+          = univPolyHom (Polynomial.resultant r (H_tilde' H) r.natDegree H.natDegree) := by
+      rw [hHt_def, hrmap_def]
+      exact Polynomial.resultant_map_map r (H_tilde' H) r.natDegree H.natDegree univPolyHom
+    rw [hmap_res, hzero, map_zero]
+  -- Pad the first-argument degree from `r.natDegree` up to `H.natDegree`; since `H_tilde' H` is
+  -- monic the padding factor is a sign (`±1`), hence does not affect nonvanishing.
+  intro hzero
+  apply hres_base
+  have hk : r.natDegree + (H.natDegree - r.natDegree) = H.natDegree := by omega
+  have hpad := Polynomial.resultant_add_left_deg r (H_tilde' H) r.natDegree
+    H.natDegree (H.natDegree - r.natDegree) (le_refl r.natDegree)
+  rw [hk] at hpad
+  -- `(H_tilde' H).coeff H.natDegree = leadingCoeff = 1`.
+  have hlead : (H_tilde' H).coeff H.natDegree = 1 := by
+    have := (H_tilde'_monic H hH)
+    rw [Polynomial.Monic, Polynomial.leadingCoeff, hd] at this
+    exact this
+  rw [hlead, one_pow, mul_one] at hpad
+  -- `resultant r H̃' d d = (-1)^(d·k) · resultant r H̃' r.natDeg d`.
+  have : Polynomial.resultant r (H_tilde' H) r.natDegree H.natDegree = 0 := by
+    have hsign : ((-1 : F[X]) ^ (H.natDegree * (H.natDegree - r.natDegree))) ≠ 0 := by
+      exact pow_ne_zero _ (by simp)
+    have hzero' :
+        (-1 : F[X]) ^ (H.natDegree * (H.natDegree - r.natDegree)) *
+          Polynomial.resultant r (H_tilde' H) r.natDegree H.natDegree = 0 := by
+      rw [← hpad]; exact hzero
+    exact (mul_eq_zero.1 hzero').resolve_left hsign
+  exact this
+
 end LemmaA1
 
 /-- The statement of Lemma A.1 in Appendix A.3 of [BCIKS20]. -/
