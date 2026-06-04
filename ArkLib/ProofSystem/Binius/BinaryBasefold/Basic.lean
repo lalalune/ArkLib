@@ -784,6 +784,40 @@ def oracleFoldingConsistencyProp (i : Fin (ℓ + 1)) (challenges : Fin i → L)
       (challenges := getFoldingChallenges (r := r) (𝓡 := 𝓡) i challenges (k := j.val * ϑ)
         (h := h_k_next_le_i))
 
+omit [CharP L 2] in
+lemma oracleFoldingConsistencyProp_relay_preserved (i : Fin ℓ)
+    (hNCR : ¬ isCommitmentRound ℓ ϑ i) (challenges : Fin i.succ → L)
+    (oStmt : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j) :
+    oracleFoldingConsistencyProp 𝔽q β i.castSucc (Fin.init challenges) oStmt ↔
+    oracleFoldingConsistencyProp 𝔽q β i.succ challenges
+      (mapOStmtOutRelayStep 𝔽q β i hNCR oStmt) := by
+  have h_oracle_size_eq: toOutCodewordsCount ℓ ϑ i.castSucc =
+      toOutCodewordsCount ℓ ϑ i.succ := by
+    simp only [toOutCodewordsCount_succ_eq ℓ ϑ i, hNCR, ↓reduceIte]
+  constructor
+  · intro h j hj
+    let j' : Fin (toOutCodewordsCount ℓ ϑ i.castSucc) := ⟨j.val, by
+      rw [h_oracle_size_eq]
+      exact j.isLt⟩
+    have hj' : j'.val + 1 < toOutCodewordsCount ℓ ϑ i.castSucc := by
+      change j.val + 1 < toOutCodewordsCount ℓ ϑ i.castSucc
+      rw [h_oracle_size_eq]
+      exact hj
+    have h' := h j' hj'
+    simpa [oracleFoldingConsistencyProp, mapOStmtOutRelayStep, j', h_oracle_size_eq,
+      getFoldingChallenges_init_succ_eq] using h'
+  · intro h j hj
+    let j' : Fin (toOutCodewordsCount ℓ ϑ i.succ) := ⟨j.val, by
+      rw [← h_oracle_size_eq]
+      exact j.isLt⟩
+    have hj' : j'.val + 1 < toOutCodewordsCount ℓ ϑ i.succ := by
+      change j.val + 1 < toOutCodewordsCount ℓ ϑ i.succ
+      rw [← h_oracle_size_eq]
+      exact hj
+    have h' := h j' hj'
+    simpa [oracleFoldingConsistencyProp, mapOStmtOutRelayStep, j', h_oracle_size_eq,
+      getFoldingChallenges_init_succ_eq] using h'
+
 def BBF_eq_multiplier (r : Fin ℓ → L) : MultilinearPoly L ℓ :=
   ⟨MvPolynomial.eqPolynomial r, by simp only [eqPolynomial_mem_restrictDegree]⟩
 
@@ -906,6 +940,7 @@ def oracleWitnessConsistency
   witnessStructuralInvariant ∧ sumCheckConsistency ∧ firstOracleConsistency ∧
     oracleFoldingConsistency
 
+omit [CharP L 2] in
 lemma oracleWitnessConsistency_relay_preserved
     (i : Fin ℓ) (hNCR : ¬ isCommitmentRound ℓ ϑ i)
     (stmt : Statement (L := L) Context i.succ)
@@ -916,7 +951,16 @@ lemma oracleWitnessConsistency_relay_preserved
     oracleWitnessConsistency (mp := mp) 𝔽q β i.succ i.succ (by rfl) stmt wit
       (mapOStmtOutRelayStep 𝔽q β i hNCR oStmt) := by
   unfold oracleWitnessConsistency
-  sorry
+  simp only [Fin.val_succ, Fin.coe_castSucc, Fin.take_eq_init, Fin.take_eq_self]
+  rw [firstOracleWitnessConsistencyProp_relay_preserved (ϑ := ϑ) 𝔽q β i hNCR wit oStmt]
+  apply propext
+  constructor
+  · intro h
+    exact ⟨h.1, h.2.1, h.2.2.1,
+      (oracleFoldingConsistencyProp_relay_preserved 𝔽q β i hNCR stmt.challenges oStmt).1 h.2.2.2⟩
+  · intro h
+    exact ⟨h.1, h.2.1, h.2.2.1,
+      (oracleFoldingConsistencyProp_relay_preserved 𝔽q β i hNCR stmt.challenges oStmt).2 h.2.2.2⟩
 
 /-- Before V's challenge of the `i-th` foldStep, we ignore the bad-folding-event
 of the `i-th` oracle if any and enable it after the next V's challenge, i.e. one
