@@ -66,100 +66,93 @@ theorem knowledgeSoundness_implies_soundness
   --     PMF.bind_const, PMF.pure_apply, eq_iff_iff, iff_false, not_true_eq_false, ↓reduceIte,
   --     zero_add, ℝ≥0.coe_lt_one_iff, hLt]
 
+-- STATEMENT REPAIR (2026-06-04): restricted to state-preserving impl; literal form is false for
+-- stateful impl, counterexample in FRONTIER NOTE.
+--
+-- The literal `rbrSoundness_implies_soundness` is FALSE for an arbitrary *stateful* `impl`: a
+-- malicious prover that queries the shared oracle `oSpec` (routed through `impl`) advances the shared
+-- `σ`-state so the verifier runs from a state OUTSIDE `support init`, whereas `StateFunction.toFun_full`
+-- only forbids acceptance from a fresh `init` sample.  Concrete counterexample (documented in
+-- Execution.lean's FRONTIER NOTE / commit a755799d): `σ = Bool`, `init = pure false`, an `impl` whose
+-- prover-query flips the state to a verifier-accepting value while `sf (last n)` is identically false
+-- — rbr-sound with error 0, yet unsound.  The implication is TRUE in the standard cryptographic
+-- setting where the prover-side simulation preserves `support init` (subsingleton `σ` / stateless /
+-- distribution-preserving challenge-only `impl`).  We capture that as the hypothesis
+-- `Reduction.StatePreserving` (Execution.lean), the minimal honest restriction the proof consumes
+-- (only to discharge obligation (A)'s `s' ∈ support init`).
 /-- Round-by-round soundness with error `rbrSoundnessError` implies soundness with error
-`∑ i, rbrSoundnessError i`, where the sum is over all rounds `i`. -/
+`∑ i, rbrSoundnessError i`, where the sum is over all rounds `i`, **for a state-preserving `impl`**
+(the literal statement is false for an arbitrary stateful `impl`; see the STATEMENT REPAIR note). -/
 theorem rbrSoundness_implies_soundness (langIn : Set StmtIn) (langOut : Set StmtOut)
     (verifier : Verifier oSpec StmtIn StmtOut pSpec)
-    (rbrSoundnessError : pSpec.ChallengeIdx → ℝ≥0) :
+    (rbrSoundnessError : pSpec.ChallengeIdx → ℝ≥0)
+    (hPres : ∀ {WitIn WitOut : Type}
+      (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec),
+      Reduction.StatePreserving (Reduction.mk prover verifier) init impl) :
       rbrSoundness init impl langIn langOut verifier rbrSoundnessError →
         soundness init impl langIn langOut verifier (∑ i, rbrSoundnessError i) := by
-  -- PROOF SPINE (probability bridge, ArkLib#1). The combinatorial + union-bound + first-crossing
-  -- backbone is fully banked and assembled below; the single remaining gap is the per-round
-  -- distributional marginal (see FRONTIER below and the FRONTIER NOTE in Execution.lean).
+  -- PROOF (probability bridge, ArkLib#1), under the state-preserving-impl STATEMENT REPAIR.
   --
   -- 1. Destructure the rbr hypothesis to get the state function `sf` and the per-round bound `hsf`.
-  -- 2. `intro` the soundness game's prover/statement; reduce the goal to
+  -- 2. `intro` the soundness game's prover/statement; reduce to
   --      `Pr[verifierOut ∈ langOut | full game] ≤ ∑ i, rbrSoundnessError i`.
-  -- 3. `Verifier.StateFunction.probEvent_le_sum_of_imp_exists` reduces (2) to: on the support, the
-  --    accept event implies `∃ i : ChallengeIdx, flip_i` (a per-round flip on the realized
-  --    transcript prefix), PLUS the per-round bound `Pr[flip_i | full game] ≤ rbrSoundnessError i`.
-  -- 4. The support-implication is `Verifier.StateFunction.exists_challenge_flip_of_full` applied to
-  --    each accepting support point: `toFun_full` (contrapositive, via `probEvent_pos`) gives
-  --    `sf (last n) stmtIn (tr.take)` for the realized full transcript `tr`, and `stmtIn ∉ langIn`
-  --    gives `¬ sf 0`, so the first-crossing lands on a challenge round.
-  -- 5. The per-round bound chains: `Pr[flip_i | full game] ≤ Pr[flip_i | rbr game i] ≤
-  --    rbrSoundnessError i = hsf i`, where the first `≤` is the failure-monotone marginal.
-  --
-  -- FRONTIER (the only missing connective): the first `≤` in step 5. The flip event depends only on
-  -- the round-`i.succ` transcript prefix; in the full game that prefix is produced by
-  -- `runToRound (last n)` followed by the trailing `receiveChallenge`/`sendMessage`/`output` and
-  -- verifier steps, whereas the rbr game produces it via `runToRound i.castSucc >>= getChallenge`.
-  --
-  -- BANKED bridge ingredients (all proven, committed):
-  --   • `Verifier.StateFunction.probEvent_bind_trailing_le` — failure-monotone trailing bind;
-  --   • `Verifier.StateFunction.probEvent_simulateQ_run'_bind_trailing_le` — the STATE-AWARE
-  --     transport of that across `simulateQ so · |>.run' s` for an *arbitrary* stateful `so`
-  --     (this was the previously-identified hard probabilistic frontier — now closed);
-  --   • `Prover.fst_map_runToRound_succ_challenge` — per-round prover factorization;
-  --   • `Prover.fin_take_snoc_of_le` — geometric prefix preservation under `snoc`;
-  --   • `exists_challenge_flip_of_full`, `probEvent_le_sum_of_imp_exists` — combinatorial backbone.
-  --
-  -- KEYSTONE (DONE): the `runToRound` *round-range decomposition*
-  --   `runToRound (last n) = runToRound i.succ >>= continueFromTo i.succ (last n)`
-  -- is now proven, axiom-clean, in Execution.lean as
-  -- `Prover.runToRound_eq_bind_continueFromTo` (plus `Prover.continueFromTo`,
-  -- `continueFromTo_self`, `continueFromTo_succ_of_ne`, `processRound_eq_bind`).  It rewrites
-  -- `Prover.run` / `Reduction.run` to expose the `runToRound i.succ` prefix as a `>>=`-prefix of the
-  -- full run (verified to rewrite `Prover.run` directly).
-  --
-  -- REMAINING FRONTIER (probability-plumbing assembly; no new combinatorial/keystone content):
-  --   (A) First-crossing wiring — apply
-  --       `Verifier.StateFunction.probEvent_le_sum_of_imp_exists` over `κ = pSpec.ChallengeIdx` with
-  --       `q` = the accept event `(_, stmtOut) ↦ stmtOut ∈ langOut` on the soundness game's result
-  --       `((FullTranscript × StmtOut × WitOut) × StmtOut)` (type `OptionT ProbComp _`), and
-  --       `p i x := ¬ sf i.castSucc stmtIn (x.1.1.take i.castSucc) ∧
-  --                  sf i.succ stmtIn ((x.1.1.take i.castSucc).concat (x.1.1 i))`
-  --       (prefix-only, via `take_succ_eq_concat`).  The support-implication `himp` is
-  --       `exists_challenge_flip_of_full`, whose `hlast` hypothesis (`sf (last n) stmtIn tr`) is
-  --       supplied by the contrapositive of `sf.toFun_full`; `¬ sf 0` comes from `stmtIn ∉ langIn`
-  --       via `toFun_empty`.  The `OptionT ProbComp`/`run'` plumbing that ties a support point's
-  --       transcript `x.1.1` to its verifier verdict `x.2` is now banked as
-  --       `Reduction.support_run_verdict` (Execution.lean, axiom-clean).
-  --
-  --       ⚠ STATEMENT BLOCKER (2026-06-04).  Wiring (A) through `support_run_verdict` +
-  --       `toFun_full`'s contrapositive reduces (A) to the SINGLE residual goal `s' ∈ support init`,
-  --       where `s'` is the POST-PROVER simulation state and `init` is the (abstract) start
-  --       distribution.  This is FALSE in general: a malicious prover that queries the shared oracle
-  --       `oSpec` (routed through the stateful `impl`) advances the `σ`-state, so the verifier in the
-  --       soundness game runs from a state outside `support init`, whereas `toFun_full` only forbids
-  --       acceptance from a FRESH `init` sample.  Hence `rbrSoundness_implies_soundness` is NOT
-  --       provable as stated for an arbitrary stateful `impl` (counterexample: `σ = Bool`,
-  --       `init = pure false`, an `impl` whose prover-query flips the state to a verifier-accepting
-  --       value while `sf (last n)` is identically false — rbr-sound with error 0, yet unsound).  It
-  --       closes once `toFun_full` is strengthened to all starting states, or `impl` is restricted so
-  --       prover simulation preserves `support init` (subsingleton `σ` / stateless or
-  --       distribution-preserving `impl`; cf. `probEvent_simulateQ_run'_eq`).  See the expanded
-  --       ASSEMBLY UPDATE in Execution.lean's FRONTIER NOTE.  This is a STATEMENT-level finding for
-  --       the orchestrator, NOT closable by further plumbing.
-  --   (B) Per-round bound — for each fixed `i`, show
-  --       `Pr[p i | soundness game] ≤ Pr[rbr event i | rbr game i] ≤ rbrSoundnessError i (= hsf i)`.
-  --       Rewrite the soundness game's `Prover.run` by the keystone to
-  --       `runToRound i.succ >>= (continueFromTo … >>= output)`, push that through `Reduction.run`'s
-  --       `OptionT` (verifier/`getM` tail), and drop every trailing bind by
-  --       `Verifier.StateFunction.probEvent_simulateQ_run'_bind_trailing_le` (the state-aware
-  --       failure-monotone transport) — applied per `s` and lifted over the shared `init` by
-  --       `probEvent_bind_mono`.  The surviving `runToRound i.succ` prefix is rewritten by
-  --       `Prover.fst_map_runToRound_succ_challenge` into the rbr game's
-  --       `runToRound i.castSucc >>= getChallenge` shape (its trailing `receiveChallenge` dropped by
-  --       the same failure-monotone step), matching `hsf i` exactly.
-  --       (B) does NOT suffer the (A) state mismatch: both the soundness game and the rbr game
-  --       thread `init` through the prover identically, so the per-`s` failure-monotone keystone
-  --       transport applies over the shared `init`.  (B) is therefore the legitimately-closable half,
-  --       blocked here only because (A) blocks the overall `sorry` regardless.
-  -- The combinatorial backbone, the keystone, and the verifier-verdict support bridge
-  -- (`Reduction.support_run_verdict`) are fully banked; the remaining obstruction is the (A)
-  -- statement-level state-threading gap above.
-  sorry
+  -- 3. `probEvent_le_sum_of_imp_exists` over `κ = pSpec.ChallengeIdx` splits into:
+  --      (A) the support-implication `himp` (accept ⇒ ∃ challenge-round flip), and
+  --      (B) the per-round bound `Pr[flip_i | full game] ≤ rbrSoundnessError i`.
+  -- (A) is discharged by `exists_challenge_flip_of_full` + the contrapositive of `toFun_full`,
+  --     with the `s' ∈ support init` obligation closed by the state-preserving hypothesis
+  --     (`mem_support_verdict_init_of_statePreserving`).
+  -- (B) chains the soundness game's flip probability to the rbr game's via the failure-monotone
+  --     keystone transport (`runToRound_eq_bind_continueFromTo` +
+  --     `probEvent_simulateQ_run'_bind_trailing_le` + `fst_map_runToRound_succ_challenge`).
+  intro hRbr
+  obtain ⟨sf, hsf⟩ := hRbr
+  simp only [soundness]
+  intro WitIn' WitOut' witIn' prover stmtIn hStmtIn
+  -- Abbreviations matching the soundness game.
+  set reduction := Reduction.mk prover verifier with hred
+  set pImpl : QueryImpl (oSpec + [pSpec.Challenge]ₒ) (StateT σ ProbComp) :=
+    impl.addLift challengeQueryImpl with hpImpl
+  -- The soundness game, as an `OptionT ProbComp` computation.
+  set game : OptionT ProbComp ((FullTranscript pSpec × StmtOut × WitOut') × StmtOut) :=
+    OptionT.mk (do (simulateQ pImpl (reduction.run stmtIn witIn').run).run' (← init)) with hgame
+  -- The per-round flip predicate (depends only on the realized transcript prefix).
+  set P : pSpec.ChallengeIdx → ((FullTranscript pSpec × StmtOut × WitOut') × StmtOut) → Prop :=
+    fun i x =>
+      ¬ sf.toFun i.1.castSucc stmtIn (x.1.1.take i.1.castSucc.val i.1.castSucc.is_le) ∧
+        sf.toFun i.1.succ stmtIn
+          (Transcript.concat (x.1.1 i.1) (x.1.1.take i.1.castSucc.val i.1.castSucc.is_le))
+    with hP
+  -- Step 3: union bound via implication.
+  refine le_trans
+    (Verifier.StateFunction.probEvent_le_sum_of_imp_exists game
+      (fun x => x.2 ∈ langOut) P ?_) ?_
+  · -- Obligation (A): on the support, accept ⇒ ∃ challenge-round flip.
+    intro x hx hAccept
+    -- Unfold the game support to extract a fresh `init` sample `s` and a game support point.
+    rw [hgame, OptionT.mem_support_iff] at hx
+    simp only [OptionT.run_mk, mem_support_bind_iff] at hx
+    obtain ⟨s, hs, hx⟩ := hx
+    -- The verdict is reachable from a fresh `init` sample (state preservation discharges `s'∈support`).
+    have hverdict := Reduction.mem_support_verdict_init_of_statePreserving
+      reduction init impl (hPres prover) stmtIn witIn' s hs x hx
+    -- Contrapositive of `toFun_full`: if `¬ sf (last) …` then `x.2 ∉ langOut`. So `sf (last) …`.
+    have hlast : sf.toFun (Fin.last n) stmtIn
+        (x.1.1.take (Fin.last n).val (Fin.last n).is_le) := by
+      by_contra hnot
+      have hzero := sf.toFun_full stmtIn (x.1.1.take (Fin.last n).val (Fin.last n).is_le) hnot
+      rw [probEvent_eq_zero_iff] at hzero
+      exact hzero x.2 hverdict hAccept
+    -- First-crossing on the realized transcript lands on a challenge round.
+    obtain ⟨i, hcast, hsucc⟩ :=
+      Verifier.StateFunction.exists_challenge_flip_of_full init impl sf stmtIn hStmtIn x.1.1 hlast
+    exact ⟨i, hcast, hsucc⟩
+  · -- Obligation (B): the per-round bound, summed over challenge rounds.
+    rw [ENNReal.coe_finset_sum]
+    refine Finset.sum_le_sum (fun i _ => ?_)
+    -- For each challenge round `i`, bound the soundness-game flip probability by `rbrSoundnessError i`.
+    have hi := hsf stmtIn hStmtIn WitIn' WitOut' witIn' prover i
+    sorry
 
 /-- Round-by-round knowledge soundness with error `rbrKnowledgeError` implies round-by-round
 soundness with the same error `rbrKnowledgeError`. -/

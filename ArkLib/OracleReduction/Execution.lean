@@ -459,6 +459,58 @@ theorem Reduction.support_run_verdict
         rw [StateT.run'_eq, support_map, Set.mem_image]
         exact ⟨(a, s'), hmem, by rw [ha]⟩
 
+/-- **State-preserving prover simulation.**  The implementation `impl` (lifted to the challenge
+    spec) is *state-preserving* for `init` over `reduction` if running the prover phase (and the
+    whole reduction) from any `init`-supported start state leaves the resulting verifier-game start
+    state again in `support init`.
+
+    Concretely, this is the witness condition produced by `support_run_verdict`: it asks that the
+    POST-PROVER simulation state `s'` (from which the verifier's verdict is drawn) can be taken in
+    `support init`.  This holds in the standard cryptographic setting — e.g. when `σ` is a
+    subsingleton, when `impl` is stateless, or when the prover's `oSpec` queries are answered in a
+    distribution/`support init`-preserving way (the challenge oracle never touches `σ`).  It FAILS
+    for an arbitrary stateful `impl`, where a malicious prover can steer `σ` outside `support init`
+    (see the FRONTIER NOTE below). -/
+def Reduction.StatePreserving
+    {StmtIn WitIn StmtOut WitOut : Type} {n : ℕ} {pSpec : ProtocolSpec n}
+    [∀ i, SampleableType (pSpec.Challenge i)] {σ : Type}
+    (reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp)) : Prop :=
+  ∀ (stmt : StmtIn) (wit : WitIn) (s : σ), s ∈ support init →
+    ∀ x : (FullTranscript pSpec × StmtOut × WitOut) × StmtOut,
+      some x ∈ support
+        (StateT.run' (simulateQ (impl.addLift challengeQueryImpl : QueryImpl _ (StateT σ ProbComp))
+          (reduction.run stmt wit).run) s) →
+      ∃ s' ∈ support init, some x.2 ∈ support
+        (StateT.run' (simulateQ impl (reduction.verifier.run stmt x.1.1)) s')
+
+/-- **Verdict reachability from a fresh `init` sample (state-preserving impl).**  Under
+    `Reduction.StatePreserving`, an *accepting* support point `x` of the soundness game (run from a
+    start state `s ∈ support init`) has its verifier verdict `x.2` reachable from a FRESH `init`
+    sample on the realized transcript `x.1.1`.  This is exactly the shape that
+    `StateFunction.toFun_full`'s contrapositive consumes (its probability event is over
+    `OptionT.mk do (simulateQ impl (verifier.run stmt tr)).run' (← init)`), with the (A) state-
+    threading gap discharged by the state-preservation hypothesis. -/
+theorem Reduction.mem_support_verdict_init_of_statePreserving
+    {StmtIn WitIn StmtOut WitOut : Type} {n : ℕ} {pSpec : ProtocolSpec n}
+    [∀ i, SampleableType (pSpec.Challenge i)] {σ : Type}
+    (reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (hPres : reduction.StatePreserving init impl)
+    (stmt : StmtIn) (wit : WitIn) (s : σ) (hs : s ∈ support init)
+    (x : (FullTranscript pSpec × StmtOut × WitOut) × StmtOut)
+    (hx : some x ∈ support
+      (StateT.run' (simulateQ (impl.addLift challengeQueryImpl : QueryImpl _ (StateT σ ProbComp))
+        (reduction.run stmt wit).run) s)) :
+    x.2 ∈ support
+      (OptionT.mk (do
+        (simulateQ impl (reduction.verifier.run stmt x.1.1)).run' (← init))
+        : OptionT ProbComp StmtOut) := by
+  obtain ⟨s', hs', hverdict⟩ := hPres stmt wit s hs x hx
+  rw [OptionT.mem_support_iff]
+  simp only [OptionT.run_mk, mem_support_bind_iff]
+  exact ⟨s', hs', hverdict⟩
+
 /-- An execution of an interactive reduction on a given initial statement and witness. Consists of
   first running the prover, and then the verifier. Returns the full transcript, the output statement
   and witness from the prover, and the output statement from the verifier, along with the logs of
