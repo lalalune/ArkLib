@@ -961,6 +961,22 @@ lemma nonDoomedFoldingProp_relay_preserved (i : Fin ℓ) (hNCR : ¬ isCommitment
     nonDoomedFoldingProp 𝔽q β i.succ challenges (mapOStmtOutRelayStep 𝔽q β i hNCR oStmt) := by
   have h_oracle_size_eq: toOutCodewordsCount ℓ ϑ i.castSucc = toOutCodewordsCount ℓ ϑ i.succ := by
     simp only [toOutCodewordsCount_succ_eq ℓ ϑ i, hNCR, ↓reduceIte]
+  -- RESIDUAL (boundary-block obstruction, NOT clean reindexing). After `unfold nonDoomedFoldingProp`
+  -- the goal is
+  --   (oracleFoldingConsistencyProp i.castSucc (Fin.init challenges) oStmt ∨
+  --      ∃ j, foldingBadEventAtBlock i.castSucc i.castSucc oStmt (Fin.init challenges) j)  ↔
+  --   (oracleFoldingConsistencyProp i.succ challenges (mapped oStmt) ∨
+  --      ∃ j, foldingBadEventAtBlock i.succ i.succ (mapped oStmt) challenges j).
+  -- The fold disjunct transports by `oracleFoldingConsistencyProp_relay_preserved` (proven above).
+  -- The bad-event disjunct does NOT transport by a uniform reindexing: `foldingBadEventAtBlock` is
+  -- guarded by `j * ϑ + ϑ ≤ stmtIdx`, with `stmtIdx = i` on the left and `stmtIdx = i + 1` on the
+  -- right. A valid block index `j ≤ i / ϑ` hits the boundary `j * ϑ + ϑ = i + 1` exactly when
+  -- `ϑ ∣ (i + 1)`, which under `hNCR` forces `i + 1 = ℓ` (the last round). At that boundary block the
+  -- left guard is FALSE (vacuous `True`) while the right guard is TRUE (the *actual* `foldingBadEvent`
+  -- predicate), so the two `∃`-disjuncts are genuinely inequivalent block-by-block and the
+  -- equivalence at `i + 1 = ℓ` is the semantic fold/bad-event interplay (a real boundary bad event
+  -- corresponds to fold-inconsistency), not index bookkeeping. Out of scope for the reindexing
+  -- toolkit; the `¬ ϑ ∣ (i + 1)` case alone IS a clean reindexing but does not close the lemma.
   sorry
 
 def oracleWitnessConsistency
@@ -1003,9 +1019,9 @@ lemma oracleWitnessConsistency_relay_preserved
   -- `Fin.take` slice appearing in the goal; they agree pointwise (same underlying values).
   have h_take : Fin.init stmt.challenges =
       Fin.take (m := (i.castSucc : Fin (ℓ+1)).val) (n := (i.succ : Fin (ℓ+1)).val)
-        (by simp only [Fin.coe_castSucc, Fin.val_succ]; omega) stmt.challenges := by
+        (by simp only [Fin.val_castSucc, Fin.val_succ]; omega) stmt.challenges := by
     funext k
-    simp only [Fin.init, Fin.take, Fin.castLE, Fin.castSucc, Fin.castAdd, Fin.castLT]
+    simp only [Fin.init, Fin.take, Fin.castLE, Fin.castSucc, Fin.castAdd]
     congr 1
   rw [h_take] at h_fold
   rw [h_first, h_fold]
@@ -1014,7 +1030,7 @@ lemma oracleWitnessConsistency_relay_preserved
   have h_take_all : Fin.take (m := (i.succ : Fin (ℓ+1)).val) (n := (i.succ : Fin (ℓ+1)).val)
       (le_refl _) stmt.challenges = stmt.challenges := by
     funext k
-    simp only [Fin.take, Fin.castLE, Fin.castLT]
+    simp only [Fin.take, Fin.castLE]
   rw [h_take_all]
 
 /-- Before V's challenge of the `i-th` foldStep, we ignore the bad-folding-event
