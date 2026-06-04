@@ -473,6 +473,60 @@ lemma triCoeffsToPoly_ne_zero (box : Finset (ℕ × ℕ × ℕ)) (c : box → F)
   rw [← coeff_triCoeffsToPoly box c p, hQ]
   simp
 
+/-! ### The trivariate Guruswami–Sudan linear system
+
+Mirroring the bivariate `GuruswamiSudan.{coeffsToPoly, evalConstraint, constraintMap}`, we build
+the F-linear system whose nonzero kernel elements give multiplicity-`m` solutions `Q`.  The
+trivariate twist: each multiplicity constraint `((shift Q x y).coeff t).coeff s = 0` is an equation
+in the coefficient ring `S = F[Z]`, so we extract every `Z`-coefficient up to a budget `zMax`,
+turning each `(s, t)` constraint into `zMax + 1` scalar `F`-constraints. -/
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- `a · X^i Y^j Z^t = a • (X^i Y^j Z^t)` (carrying the scalar inside the nested monomials equals
+the `F`-scalar action). -/
+lemma triMonC_eq_smul (i j t : ℕ) (a : F) :
+    triMonC (F := F) i j t a = a • triMonomial (F := F) i j t := by
+  unfold triMonC triMonomial
+  rw [Polynomial.smul_monomial, Polynomial.smul_monomial, Polynomial.smul_monomial, smul_eq_mul,
+    mul_one]
+
+/-- Linear assembly of a trivariate polynomial from box-indexed coefficients, as an `F`-linear map.
+This is the linear version of `triCoeffsToPoly`; the two agree (`triCoeffsToPolyₗ_apply`). -/
+noncomputable def triCoeffsToPolyₗ (box : Finset (ℕ × ℕ × ℕ)) : (box → F) →ₗ[F] F[Z][X][Y] :=
+  Finsupp.linearCombination F (fun p : box ↦ triMonomial (F := F) p.1.1 p.1.2.1 p.1.2.2) ∘ₗ
+    (Finsupp.linearEquivFunOnFinite F F box).symm.toLinearMap
+
+omit [DecidableEq (RatFunc F)] in
+/-- The linear assembly `triCoeffsToPolyₗ` agrees with `triCoeffsToPoly`. -/
+lemma triCoeffsToPolyₗ_apply (box : Finset (ℕ × ℕ × ℕ)) (c : box → F) :
+    triCoeffsToPolyₗ box c = triCoeffsToPoly box c := by
+  classical
+  unfold triCoeffsToPolyₗ triCoeffsToPoly
+  simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+    Finsupp.linearCombination_apply]
+  rw [Finsupp.sum_fintype]
+  · refine Finset.sum_congr rfl (fun p _ ↦ ?_)
+    rw [triMonC_eq_smul]
+    congr 1
+  · intro p; simp
+
+/-- The `F`-linear functional extracting the `z`-th `Z`-coefficient of the `(s, t)`-shifted
+coefficient `((shift f x y).coeff t).coeff s` at the curve point `(x, y) ∈ F[Z] × F[Z]`. -/
+noncomputable def triEvalConstraint (x y : Polynomial F) (s t z : ℕ) : F[Z][X][Y] →ₗ[F] F where
+  toFun f := (((Polynomial.Bivariate.shift f x y).coeff t).coeff s).coeff z
+  map_add' f g := by simp [Polynomial.Bivariate.shift]
+  map_smul' a f := by simp [Polynomial.Bivariate.shift]
+
+/-- The trivariate Guruswami–Sudan constraint map: sends a box-indexed coefficient vector to the
+`Z`-coefficients (up to budget `zMax`) of the multiplicity constraints at all `n` curve points.
+A nonzero kernel element gives a `Q` with multiplicity `≥ m` at each point. -/
+noncomputable def triConstraintMap (box : Finset (ℕ × ℕ × ℕ)) (m zMax : ℕ)
+    (ωs : Fin n ↪ F) (u₀ u₁ : Fin n → F) :
+    (box → F) →ₗ[F] (Fin n × GuruswamiSudan.constraintIndices m × Fin (zMax + 1) → F) :=
+  (LinearMap.pi fun i ↦ triEvalConstraint (Polynomial.C (ωs i.1))
+      (Polynomial.C (u₀ i.1) + Polynomial.X * Polynomial.C (u₁ i.1))
+      i.2.1.1.1 i.2.1.1.2 i.2.2.1) ∘ₗ triCoeffsToPolyₗ box
+
 end ModifiedGuruswamiHelpers
 
 omit [DecidableEq (RatFunc F)] in
