@@ -19,6 +19,13 @@ noncomputable def emb (w : ι → α) : ι × α → ℝ :=
 noncomputable def codeInner (u v : ι → α) : ℝ := ∑ p : ι × α, emb u p * emb v p
 def agree (u v : ι → α) : ℕ := (Finset.univ.filter (fun i => u i = v i)).card
 
+/-- Agreement and Hamming distance partition the coordinate set. -/
+theorem agree_add_hammingDist (u v : ι → α) :
+    agree u v + hammingDist u v = Fintype.card ι := by
+  classical
+  simpa [agree, hammingDist] using
+    (Finset.card_filter_add_card_filter_not (s := Finset.univ) (p := fun i => u i = v i))
+
 omit [Fintype ι] [DecidableEq ι] in
 /-- Per-coordinate inner-product identity. -/
 private lemma row_identity (u v : ι → α) (i : ι) (hq : 0 < Fintype.card α) :
@@ -62,6 +69,21 @@ theorem codeInner_eq_agree_sub (u v : ι → α) (hq : 0 < Fintype.card α) :
   rw [agree, Finset.card_filter, Nat.cast_sum, ← div_eq_mul_inv]
   congr 1
   apply Finset.sum_congr rfl; intro i _; by_cases h : u i = v i <;> simp [h]
+
+/-- Simplex inner products are constant norm minus Hamming distance. -/
+theorem codeInner_eq_card_mul_sub_hammingDist (u v : ι → α) (hq : 0 < Fintype.card α) :
+    codeInner u v =
+      (Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ)) -
+        (hammingDist u v : ℝ) := by
+  have hdist_le : hammingDist u v ≤ Fintype.card ι := hammingDist_le_card_fintype
+  have hagree :
+      (agree u v : ℝ) = (Fintype.card ι : ℝ) - (hammingDist u v : ℝ) := by
+    have hsum := agree_add_hammingDist u v
+    have hsub : agree u v = Fintype.card ι - hammingDist u v := by omega
+    rw [hsub]
+    exact Nat.cast_sub hdist_le
+  rw [codeInner_eq_agree_sub u v hq, hagree]
+  ring
 
 /-- **Constant norm.** `⟨x_w, x_w⟩ = n(1 − 1/q)` (every coordinate agrees with
 itself). -/

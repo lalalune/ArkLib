@@ -917,6 +917,64 @@ lemma natDegree_H_graph_pos
     hx0 hsep hS_nonempty A hA hcount hlarge).choose_spec.choose_spec.2.2.2.1
 
 omit [DecidableEq (RatFunc F)] in
+instance fact_irreducible_H_graph
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hx0 : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        Bivariate.evalX (Polynomial.C x₀) R ≠ 0)
+    (hsep : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        (Bivariate.evalX (Polynomial.C x₀) R).Separable)
+    (hS_nonempty :
+      (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).Nonempty)
+    (A : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ → Finset (Fin n))
+    (hA : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      ∀ i ∈ A z, (u₀ + z.1 • u₁) i =
+        (Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2).eval
+          (ωs i))
+    (hcount : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z.1) 1 k < m * (A z).card)
+    (hlarge :
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q) :
+    Fact (Irreducible (H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+      hx0 hsep hS_nonempty A hA hcount hlarge)) :=
+  ⟨irreducible_H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+    hx0 hsep hS_nonempty A hA hcount hlarge⟩
+
+omit [DecidableEq (RatFunc F)] in
+instance fact_natDegree_H_graph_pos
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hx0 : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        Bivariate.evalX (Polynomial.C x₀) R ≠ 0)
+    (hsep : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        (Bivariate.evalX (Polynomial.C x₀) R).Separable)
+    (hS_nonempty :
+      (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).Nonempty)
+    (A : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ → Finset (Fin n))
+    (hA : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      ∀ i ∈ A z, (u₀ + z.1 • u₁) i =
+        (Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2).eval
+          (ωs i))
+    (hcount : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z.1) 1 k < m * (A z).card)
+    (hlarge :
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q) :
+    Fact (0 < (H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+      hx0 hsep hS_nonempty A hA hcount hlarge).natDegree) :=
+  ⟨natDegree_H_graph_pos (F := F) (m := m) (n := n) k δ x₀ h_gs
+    hx0 hsep hS_nonempty A hA hcount hlarge⟩
+
+omit [DecidableEq (RatFunc F)] in
 lemma H_graph_dvd_evalX_R_graph
     [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)

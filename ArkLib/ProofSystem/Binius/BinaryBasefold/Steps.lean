@@ -729,6 +729,23 @@ def relayKStateProp (i : Fin ℓ) (hNCR : ¬ isCommitmentRound ℓ ϑ i)
       𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR oStmtIn)
     (localChecks := True)
 
+lemma foldStepRelOut_relay_iff_roundRelation (i : Fin ℓ)
+    (hNCR : ¬ isCommitmentRound ℓ ϑ i)
+    (stmt : Statement (L := L) Context i.succ)
+    (wit : Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ)
+    (oStmt : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j) :
+    ⟨⟨stmt, oStmt⟩, wit⟩ ∈ foldStepRelOut (mp := mp) 𝔽q β
+      (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i ↔
+    ⟨⟨stmt, mapOStmtOutRelayStep 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR oStmt⟩, wit⟩ ∈
+      roundRelation (mp := mp) 𝔽q β
+        (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ := by
+  simp only [foldStepRelOut, roundRelation, Set.mem_setOf_eq, foldStepRelOutProp,
+    roundRelationProp, masterKStateProp, hNCR, ↓reduceIte, true_and]
+  rw [badEventExistsProp_relay_preserved 𝔽q β i hNCR stmt.challenges oStmt]
+  rw [oracleWitnessConsistency_relay_preserved 𝔽q β i hNCR stmt wit oStmt]
+  simp [Fin.take_eq_self]
+
 /-- Knowledge state function (KState) for single round -/
 def relayKnowledgeStateFunction (i : Fin ℓ) (hNCR : ¬ isCommitmentRound ℓ ϑ i) :
     (relayOracleVerifier 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
