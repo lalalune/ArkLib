@@ -381,11 +381,7 @@ theorem Q_vanishes_on_close_codeword_graph [DecidableEq (Polynomial F)]
     (Bivariate.natWeightedDegree Qz 1 k) A hroots hA hdeg hcount
   rw [hQz, hP] at this ⊢; exact this
 
-/- Convenience composition of the two proved helpers above. This is left as
-commented scaffolding because the result predicate is definitionally brittle
-under `Finset.filter`; callers can compose
-`pg_divisibility_of_graph_vanishing_conditions` with
-`exists_pg_factors_with_large_common_root_set_of_dvd` directly.
+/-! ### Side-condition-explicit Claim 5.7 helpers -/
 
 omit [DecidableEq (RatFunc F)] in
 /-- Convert the explicit graph-vanishing side conditions into the divisibility hypothesis consumed
@@ -494,6 +490,7 @@ lemma coeffs_of_close_proximity_nonempty_of_large_natdiv (δ : ℚ)
   simp only [Finset.card_empty, Nat.zero_div, Nat.cast_zero] at hlarge
   exact absurd hlarge (not_lt.mpr (c57_rhs_nonneg k))
 
+omit [DecidableEq (RatFunc F)] in
 lemma exists_pg_factors_with_large_common_root_set_of_dvd (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
     (hx0 : ∀ R : F[Z][X][Y],
@@ -608,7 +605,6 @@ lemma exists_pg_factors_with_large_common_root_set_of_graph_conditions
     pg_divisibility_of_graph_vanishing_conditions (F := F) (k := k)
       (δ := δ) (h_gs := h_gs) A hA hcount
   sorry
--/
 
 lemma exists_factors_with_large_common_root_set (δ : ℚ) (x₀ : F)
   (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
