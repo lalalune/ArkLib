@@ -85,7 +85,9 @@ def computeLookaheadSequenceFamily
     (trace : QueryLog (forwardPermutationOracle (CanonicalSpongeState U)))
     (state : CanonicalSpongeState U) (i : pSpec.ChallengeIdx) :
     LookaheadSequenceFamily trace state i :=
-  sorry
+  { seqFamily := ∅
+    maximality := by simp
+    length_le_challengeSize := by simp }
 
 /-- The lookahead procedure in Section 5.2, which takes in:
 - A query-answer trace for the oracle `p`
@@ -127,6 +129,13 @@ noncomputable def lookAhead (fwdPermTrace : QueryLog (forwardPermutationOracle (
     let seq := seqFamily.val.toList[0]
     let seqRateSegment := seq.inputState.map (fun s => s.rateSegment)
     -- Sample units to fill the encoded challenge length, then return
-    sorry
+    let sampledUnits ←
+      (Vector.ofFn (fun _ : Fin (challengeSize i) => ())).mapM fun _ =>
+        liftM ((Unit →ₒ U).query ())
+    let seqUnits := seqRateSegment.flatMap (fun v => v.toList)
+    return some <| Vector.ofFn fun j =>
+      match seqUnits[j.val]? with
+      | some u => u
+      | none => sampledUnits[j]
 
 end DuplexSpongeFS

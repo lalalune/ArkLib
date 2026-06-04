@@ -316,12 +316,47 @@ variable {P₁ : Prover oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁}
 --     (verifyQueryLog : Set (Stmt₂ × Wit₂)) :
 --       (P₁.append P₂).processRound roundIdx stmt wit transcript proveQueryLog verifyQueryLog =
 --         (P₁.processRound roundIdx stmt wit transcript proveQueryLog verifyQueryLog) ∧
---         (P₂.processRound roundIdx stmt wit transcript proveQueryLog verifyQueryLog) := sorry
+--         (P₂.processRound roundIdx stmt wit transcript proveQueryLog verifyQueryLog)
 
 -- theorem append_runToRound
 
-instance : [(pSpec₁).Challenge]ₒ ⊂ₒ [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ := sorry
-instance : [(pSpec₂).Challenge]ₒ ⊂ₒ [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ := sorry
+instance : [(pSpec₁).Challenge]ₒ ⊂ₒ [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ where
+  monadLift q := by
+    refine ⟨⟨@ChallengeIdx.inl m n pSpec₁ pSpec₂ q.input.1, ()⟩, ?_⟩
+    intro r
+    exact q.cont (cast (by
+      obtain ⟨idx, u⟩ := q.input
+      cases u
+      change (pSpec₁ ++ₚ pSpec₂).Challenge
+        (@ChallengeIdx.inl m n pSpec₁ pSpec₂ idx) = pSpec₁.Challenge idx
+      simp [ProtocolSpec.Challenge, ChallengeIdx.inl, ProtocolSpec.append]) r)
+  onQuery q := ⟨@ChallengeIdx.inl m n pSpec₁ pSpec₂ q.1, ()⟩
+  onResponse q r := cast (by
+    obtain ⟨idx, u⟩ := q
+    cases u
+    change (pSpec₁ ++ₚ pSpec₂).Challenge
+      (@ChallengeIdx.inl m n pSpec₁ pSpec₂ idx) = pSpec₁.Challenge idx
+    simp [ProtocolSpec.Challenge, ChallengeIdx.inl, ProtocolSpec.append]) r
+  liftM_eq_lift := by intro β q; rfl
+
+instance : [(pSpec₂).Challenge]ₒ ⊂ₒ [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ where
+  monadLift q := by
+    refine ⟨⟨@ChallengeIdx.inr m n pSpec₁ pSpec₂ q.input.1, ()⟩, ?_⟩
+    intro r
+    exact q.cont (cast (by
+      obtain ⟨idx, u⟩ := q.input
+      cases u
+      change (pSpec₁ ++ₚ pSpec₂).Challenge
+        (@ChallengeIdx.inr m n pSpec₁ pSpec₂ idx) = pSpec₂.Challenge idx
+      simp [ProtocolSpec.Challenge, ChallengeIdx.inr, ProtocolSpec.append]) r)
+  onQuery q := ⟨@ChallengeIdx.inr m n pSpec₁ pSpec₂ q.1, ()⟩
+  onResponse q r := cast (by
+    obtain ⟨idx, u⟩ := q
+    cases u
+    change (pSpec₁ ++ₚ pSpec₂).Challenge
+      (@ChallengeIdx.inr m n pSpec₁ pSpec₂ idx) = pSpec₂.Challenge idx
+    simp [ProtocolSpec.Challenge, ChallengeIdx.inr, ProtocolSpec.append]) r
+  liftM_eq_lift := by intro β q; rfl
 
 /--
 States that running an appended prover `P₁.append P₂` with an initial statement `stmt₁` and
@@ -384,7 +419,6 @@ commutative monoid, etc.). -/
 --           return ⟨ctx₂, stmt₃, transcript₁ ++ₜ transcript₂⟩).runM interp := by
 --   unfold run append
 --   simp [Prover.append_run, Verifier.append_run]
---   sorry
 
 end Reduction
 
@@ -455,7 +489,7 @@ variable {R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁}
 -- Synthesization issues...
 -- So maybe no synthesization but simp is fine? Maybe not...
 -- instance [R₁.IsComplete rel₁ rel₂] [R₂.IsComplete rel₂ rel₃] :
---     (R₁.append R₂).IsComplete rel₁ rel₃ := by sorry
+--     (R₁.append R₂).IsComplete rel₁ rel₃
 
 end Reduction
 
