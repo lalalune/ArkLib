@@ -80,6 +80,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCAGenerator
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGenerators
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.CodingTheory.ReedSolomon.FftDomain
+import ArkLib.Data.CodingTheory.ReedSolomon.FftDomain
+import ArkLib.Data.CodingTheory.ReedSolomon.FftDomain
 import ArkLib.Data.CodingTheory.ReedSolomon.Multilinear
 import ArkLib.Data.EllipticCurve.BN254
 import ArkLib.Data.Fin.Basic
@@ -194,6 +196,12 @@ import ArkLib.ProofSystem.Fri.RoundConsistency
 import ArkLib.ProofSystem.Fri.Spec.General
 import ArkLib.ProofSystem.Fri.Spec.SingleRound
 import ArkLib.ProofSystem.Fri.Spec.Soundness
+import ArkLib.ProofSystem.Logup.Common
+import ArkLib.ProofSystem.Logup.Protocol
+import ArkLib.ProofSystem.Logup.Security.Completeness
+import ArkLib.ProofSystem.Logup.Security.Soundness
+import ArkLib.ProofSystem.Logup.Sumcheck.SumcheckBridge
+import ArkLib.ProofSystem.Logup.Sumcheck.SumcheckPolynomial
 import ArkLib.ProofSystem.Plonk.Basic
 import ArkLib.ProofSystem.Plonk.PermutationCheck
 import ArkLib.ProofSystem.RingSwitching.BatchingPhase
