@@ -99,4 +99,79 @@ theorem exists_ne_zero_BWvec (da za db zb : ℕ) (hzb : zb = za + 1)
     (Matrix.mulVecLin (BWMatrix' da za db zb domain u₀ u₁)) hfr
   exact ⟨v, hv0, by simpa [Matrix.mulVecLin_apply] using hker⟩
 
+/-- Package the `A`-block of a coefficient vector as a bivariate polynomial. -/
+noncomputable def toPolyA {da za db zb : ℕ} (v : BWIdx da za db zb → F) : F[X][Y] :=
+  ∑ j : Fin za, Polynomial.monomial (j : ℕ)
+    (∑ i : Fin da, Polynomial.C (v (Sum.inl (i, j))) * Polynomial.X ^ (i : ℕ))
+
+/-- Package the `B`-block of a coefficient vector as a bivariate polynomial. -/
+noncomputable def toPolyB {da za db zb : ℕ} (v : BWIdx da za db zb → F) : F[X][Y] :=
+  ∑ j : Fin zb, Polynomial.monomial (j : ℕ)
+    (∑ i : Fin db, Polynomial.C (v (Sum.inr (i, j))) * Polynomial.X ^ (i : ℕ))
+
+/-- The `Y`-coefficients of the packaged polynomial, evaluated in `X`: inside
+the index range it is the coefficient-weighted power sum; beyond it, zero. -/
+private lemma coeff_evalX_toPolyB {da za db zb : ℕ} (v : BWIdx da za db zb → F)
+    (a : F) (j : ℕ) :
+    (evalX a (toPolyB v)).coeff j
+      = if h : j < zb then ∑ i : Fin db, v (Sum.inr (i, ⟨j, h⟩)) * a ^ (i : ℕ) else 0 := by
+  classical
+  have hcoeff : (toPolyB v).coeff j
+      = if h : j < zb then
+          (∑ i : Fin db, Polynomial.C (v (Sum.inr (i, ⟨j, h⟩))) * Polynomial.X ^ (i : ℕ))
+        else 0 := by
+    simp only [toPolyB, Polynomial.finset_sum_coeff, Polynomial.coeff_monomial]
+    by_cases h : j < zb
+    · rw [dif_pos h, Finset.sum_eq_single (⟨j, h⟩ : Fin zb)]
+      · simp
+      · intro b _ hb
+        have hne : ((j : ℕ) : ℕ) ≠ ((b : Fin _) : ℕ) := fun heq => hb (Fin.ext heq.symm)
+        simp [hne, hne.symm]
+      · intro habs
+        exact absurd (Finset.mem_univ _) habs
+    · rw [dif_neg h]
+      refine Finset.sum_eq_zero fun b _ => ?_
+      have hne : (j : ℕ) ≠ ((b : Fin _) : ℕ) := fun heq => h (heq ▸ b.isLt)
+      simp [hne, hne.symm]
+  have : (evalX a (toPolyB v)).coeff j = ((toPolyB v).coeff j).eval a := by
+    simp [evalX, Polynomial.coeff]
+  rw [this, hcoeff]
+  by_cases h : j < zb
+  · rw [dif_pos h, dif_pos h]
+    simp [Polynomial.eval_finset_sum]
+  · rw [dif_neg h, dif_neg h]
+    simp
+
+/-- Same for the `A`-block. -/
+private lemma coeff_evalX_toPolyA {da za db zb : ℕ} (v : BWIdx da za db zb → F)
+    (a : F) (j : ℕ) :
+    (evalX a (toPolyA v)).coeff j
+      = if h : j < za then ∑ i : Fin da, v (Sum.inl (i, ⟨j, h⟩)) * a ^ (i : ℕ) else 0 := by
+  classical
+  have hcoeff : (toPolyA v).coeff j
+      = if h : j < za then
+          (∑ i : Fin da, Polynomial.C (v (Sum.inl (i, ⟨j, h⟩))) * Polynomial.X ^ (i : ℕ))
+        else 0 := by
+    simp only [toPolyA, Polynomial.finset_sum_coeff, Polynomial.coeff_monomial]
+    by_cases h : j < za
+    · rw [dif_pos h, Finset.sum_eq_single (⟨j, h⟩ : Fin za)]
+      · simp
+      · intro b _ hb
+        have hne : ((j : ℕ) : ℕ) ≠ ((b : Fin _) : ℕ) := fun heq => hb (Fin.ext heq.symm)
+        simp [hne, hne.symm]
+      · intro habs
+        exact absurd (Finset.mem_univ _) habs
+    · rw [dif_neg h]
+      refine Finset.sum_eq_zero fun b _ => ?_
+      have hne : (j : ℕ) ≠ ((b : Fin _) : ℕ) := fun heq => h (heq ▸ b.isLt)
+      simp [hne, hne.symm]
+  have : (evalX a (toPolyA v)).coeff j = ((toPolyA v).coeff j).eval a := by
+    simp [evalX, Polynomial.coeff]
+  rw [this, hcoeff]
+  by_cases h : j < za
+  · rw [dif_pos h, dif_pos h]
+    simp [Polynomial.eval_finset_sum]
+  · rw [dif_neg h, dif_neg h]
+    simp
+
 end BCKHS25
