@@ -154,7 +154,7 @@ There are two independent blockers; the first is fatal on its own.
 
 Given Gap A alone makes `#S'` unbounded-below for the `opaque` predicate, the conjunction is
 unprovable; the `sorry` is retained.  The binder structure
-`∃ R H, R ∈ … ∧ Irreducible H ∧ …` is preserved so the downstream extractors stay well-typed. -/
+`∃ R H, R ∈ … ∧ Irreducible H ∧ …` is preserved so the downstream extractors stay well-typed.
 
 GAP (blocked — see the §5 GAP ANALYSIS block above). The conjuncts producing `R`, `H`, its
 irreducibility, positive degree, the divisibility `H ∣ R(x₀,·)` and separability of `R(x₀,·)`
