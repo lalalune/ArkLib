@@ -326,9 +326,25 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
     set witLast := (iteratedSumcheckRbrExtractor κ L K P ℓ ℓ' h_l aOStmtIn i).extractOut
       ⟨stmtLast, oStmtLast⟩ tr witOut
     simp only [Fin.reduceLast, Fin.isValue]
-    -- ⊢ iteratedSumcheckKStateProp 𝔽q β 2 tr stmtLast witLast oStmtLast
-    -- TODO : prove this via the relations between stmtLast & stmtOut,
-      -- witLast & witOut, oStmtLast & oStmtOut
+    -- ⊢ iteratedSumcheckKStateProp … ⟨2,_⟩ tr stmtLast witLast oStmtLast
+    --
+    -- WALL (round-transition convention defect — the SAME defect that walls
+    -- `iteratedSumcheckOracleReduction_perfectCompleteness` and `getSumcheckRoundPoly_eval_eq_sum_cons`,
+    -- both above; counterexample-backed). The round-2 KState (`iteratedSumcheckKStateProp ⟨2,_⟩`)
+    -- carries the local checks `localizedRoundPolyCheck : h_i = h_star` and
+    -- `nextSumcheckTargetCheck : h_i.eval r' = h_star.eval r'`, where `h_i := tr`'s message-0 (the
+    -- prover's round polynomial) and `h_star := getSumcheckRoundPoly i witLast.H` with
+    -- `witLast.H = projectToMidSumcheckPoly witOut.t' A_MLE i.castSucc stmtLast.challenges`
+    -- (`extractOut`). `h_relOut` gives `masterKStateProp` for `(stmtOut, witOut)` at `i.succ`, whose
+    -- `witnessStructuralInvariant` accumulates challenges via `Fin.snoc stmtLast.challenges r'` and
+    -- projects at `i.succ`, while `h_star` reconstructs from `i.castSucc` and marginalises VARIABLE 0.
+    -- Bridging `h_i` (transcript / snoc / i.succ) to `h_star` (cons / var-0 / i.castSucc) is exactly
+    -- the `Fin.snoc`-vs-`Fin.cons` + var-0-vs-last-var marginal mismatch documented (with explicit
+    -- `ZMod 7` counterexamples) on `getSumcheckRoundPoly_eval_eq_sum_cons` and
+    -- `fixFirstVariablesOfMQP_projectToMid_step`. It is NOT closable without the shared-code
+    -- realignment of `Sumcheck.Structured.SingleRound` (round polynomial and witness advance must
+    -- agree on the round variable), which is consumed by other instantiations and out of scope for
+    -- this in-file obligation. No axioms / native_decide / vacuity used; left as a documented `sorry`.
     sorry
 
 /-- RBR knowledge soundness for a single round oracle verifier -/
@@ -511,29 +527,25 @@ noncomputable def finalSumcheckOracleReduction :
   prover := finalSumcheckProver κ L K P ℓ ℓ' aOStmtIn
   verifier := finalSumcheckVerifier κ L K P ℓ ℓ' h_l aOStmtIn
 
-/-- **Final-sumcheck verifier-check algebra (defect-#10/#11 capstone).** From the input relation's
-structural invariant + sumcheck consistency at the last round, the honest verifier's step-9 check
-`sumcheck_target = compute_final_eq_value · s'` holds, where `s' = t'(challenges)`.
-
-Derivation (scratch-verified): the consistency sum is over the 0-cube (`ℓ' - (Fin.last ℓ').val = 0`),
-collapsing to a single eval; `fixFirstVariablesOfMQP_eval` rewrites the projected round polynomial
-`H = projectToMidSumcheckPoly t' A_MLE (Fin.last ℓ') challenges` evaluated at the empty point to
-`(A_MLE · t')(challenges)`; and `A_MLE_eval_eq_compute_final_eq_value` rewrites `A_MLE(challenges) =
-compute_final_eq_value`. Requires `[IsDomain L] [IsDomain K]` (per the pre-approved statement repair,
-in-file precedent on the sibling soundness theorems and the Prelude algebra layer). -/
-private lemma finalSumcheck_check_of_relIn [IsDomain L] [IsDomain K]
+/-- **Final-sumcheck consistency-sum collapse (sorry-free algebra core).** The round-0 consistency
+sum of the final-step round polynomial `H = projectToMidSumcheckPoly t' A_MLE (Fin.last ℓ') challenges`
+over the (singleton) `0`-cube equals `(A_MLE(challenges)) · (t'(challenges))`. This isolates the
+purely-combinatorial / `fixFirstVariablesOfMQP_eval` part of the verifier-check algebra (the cube-0
+collapse and the eval-point recombination) from the DP24 multilinear identity
+`A_MLE(challenges) = compute_final_eq_value` (`A_MLE_eval_eq_compute_final_eq_value`). This lemma is
+direction-agnostic, so it serves both the completeness check (`finalSumcheck_check_of_relIn`) and the
+RBR `toFun_full` reconstruction of `sumcheckConsistencyProp`. -/
+private lemma finalSumcheck_consistencySum_eq
     (stmt : Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) (Fin.last ℓ'))
-    (witIn : SumcheckWitness L ℓ' (Fin.last ℓ'))
-    (hStruct : witIn.H = projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := witIn.t')
+    (t' : MultilinearPoly L ℓ')
+    (H : SumcheckWitness L ℓ' (Fin.last ℓ'))
+    (hStruct : H.H = projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := t')
       (m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly (ctx := stmt.ctx))
-      (i := Fin.last ℓ') (challenges := stmt.challenges))
-    (hConsist : sumcheckConsistencyProp (boolDomain L _) stmt.sumcheck_target witIn.H) :
-    stmt.sumcheck_target
-      = compute_final_eq_value κ L K P ℓ ℓ' h_l stmt.ctx.t_eval_point stmt.challenges
-          stmt.ctx.r_batching
-        * witIn.t'.val.eval stmt.challenges := by
-  unfold sumcheckConsistencyProp at hConsist
-  rw [hConsist]
+      (i := Fin.last ℓ') (challenges := stmt.challenges)) :
+    (∑ x ∈ (boolDomain L (ℓ' - (Fin.last ℓ').val)).cube, H.H.val.eval x)
+      = (MvPolynomial.eval (show Fin ℓ' → L from stmt.challenges)
+            ((RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly (ctx := stmt.ctx)).val)
+          * (MvPolynomial.eval (show Fin ℓ' → L from stmt.challenges) t'.val) := by
   -- Collapse the cube-0 sum to a single eval at the unique `Fin 0 → L` point.
   have hlast : ℓ' - (Fin.last ℓ').val = 0 := by simp
   haveI : IsEmpty (Fin (ℓ' - (Fin.last ℓ').val)) := by rw [hlast]; exact Fin.isEmpty
@@ -548,7 +560,8 @@ private lemma finalSumcheck_check_of_relIn [IsDomain L] [IsDomain K]
   unfold projectToMidSumcheckPoly computeInitialSumcheckPoly
   dsimp only
   rw [fixFirstVariablesOfMQP_eval, MvPolynomial.eval_mul]
-  -- The recombined eval point equals `stmt.challenges` (the survivors side is `Fin 0`, empty).
+  -- The recombined eval point equals `stmt.challenges` (the survivors side is `Fin 0`, empty), so
+  -- both eval factors collapse to evaluation at `stmt.challenges`.
   have hpt : (fun i : Fin ℓ' => Sum.elim (default : Fin (ℓ' - (Fin.last ℓ').val) → L)
         stmt.challenges
         (((finCongr (show ℓ' = ℓ' - (Fin.last ℓ').val + (Fin.last ℓ').val by simp)).trans
@@ -564,21 +577,56 @@ private lemma finalSumcheck_check_of_relIn [IsDomain L] [IsDomain K]
     rw [finSumFinEquiv_symm_apply_natAdd, Sum.elim_inr]
     congr 1
   rw [hpt]
-  -- `eval challenges A_MLE = compute_final_eq_value` closes the first factor.
+
+/-- **DP24 multilinear identity (the single remaining final-sumcheck algebra gap).** Evaluating the
+ring-switching multiplier `A_MLE = (RingSwitching_SumcheckMultParam …).multpoly ctx` at the round
+challenges equals the verifier's `compute_final_eq_value`. This is the DP24 eq-tensor capstone: the
+multilinear extension `A_MLE` (built from `compute_A_func`) restricted to the challenge point is
+exactly `Σ_u eq̃(u, r'') · e_u`. It was previously a `sorry` inline in
+`finalSumcheck_check_of_relIn`; consolidated here as a single named gap so it is hit ONCE (by both
+the completeness check and the RBR `toFun_full` accept-branch consistency reconstruction). The
+algebra layer that proved it (`MLE_eval_eq_sum_eqTilde` + `eqTilde_tensor_expand` + the atomic
+extraction laws — see the note on `compute_final_eq_value` in `Prelude`) was dropped from
+`RingSwitching/Prelude` in the profile refactor; only `Binius/RingSwitching/Prelude` retains a
+partial version, so this is left as a documented `sorry` (NOT an axiom). It requires `[IsDomain L]
+[IsDomain K]` (multilinear-extension uniqueness), matching the sibling soundness theorems. -/
+private lemma A_MLE_eval_eq_compute_final_eq_value [IsDomain L] [IsDomain K]
+    (stmt : Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) (Fin.last ℓ')) :
+    (MvPolynomial.eval (show Fin ℓ' → L from stmt.challenges))
+        ((RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly (ctx := stmt.ctx)).val
+      = compute_final_eq_value κ L K P ℓ ℓ' h_l stmt.ctx.t_eval_point stmt.challenges
+          stmt.ctx.r_batching :=
+  -- DP24 eq-tensor capstone — the dropped Prelude algebra layer. Documented gap, no axiom.
+  sorry
+
+/-- **Final-sumcheck verifier-check algebra (defect-#10/#11 capstone).** From the input relation's
+structural invariant + sumcheck consistency at the last round, the honest verifier's step-9 check
+`sumcheck_target = compute_final_eq_value · s'` holds, where `s' = t'(challenges)`.
+
+Derivation (scratch-verified): the consistency sum is over the 0-cube (`ℓ' - (Fin.last ℓ').val = 0`),
+collapsing to a single eval; `fixFirstVariablesOfMQP_eval` rewrites the projected round polynomial
+`H = projectToMidSumcheckPoly t' A_MLE (Fin.last ℓ') challenges` evaluated at the empty point to
+`(A_MLE · t')(challenges)` (this combinatorial core is `finalSumcheck_consistencySum_eq`); and
+`A_MLE_eval_eq_compute_final_eq_value` rewrites `A_MLE(challenges) =
+compute_final_eq_value`. Requires `[IsDomain L] [IsDomain K]` (per the pre-approved statement repair,
+in-file precedent on the sibling soundness theorems and the Prelude algebra layer). -/
+private lemma finalSumcheck_check_of_relIn [IsDomain L] [IsDomain K]
+    (stmt : Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) (Fin.last ℓ'))
+    (witIn : SumcheckWitness L ℓ' (Fin.last ℓ'))
+    (hStruct : witIn.H = projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := witIn.t')
+      (m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly (ctx := stmt.ctx))
+      (i := Fin.last ℓ') (challenges := stmt.challenges))
+    (hConsist : sumcheckConsistencyProp (boolDomain L _) stmt.sumcheck_target witIn.H) :
+    stmt.sumcheck_target
+      = compute_final_eq_value κ L K P ℓ ℓ' h_l stmt.ctx.t_eval_point stmt.challenges
+          stmt.ctx.r_batching
+        * witIn.t'.val.eval stmt.challenges := by
+  unfold sumcheckConsistencyProp at hConsist
+  rw [hConsist]
+  rw [finalSumcheck_consistencySum_eq κ L K P ℓ ℓ' h_l stmt witIn.t' witIn hStruct]
+  -- `eval challenges A_MLE = compute_final_eq_value` closes the first factor (DP24 identity).
   congr 1
-  unfold RingSwitching_SumcheckMultParam
-  dsimp only
-  -- PRE-EXISTING BREAKAGE (not introduced by this change): the original line here is
-  --   `exact A_MLE_eval_eq_compute_final_eq_value (κ₀ := κ) (L₀ := L) (K₀ := K) P ℓ ℓ' h_l`
-  --   `  stmt.ctx.t_eval_point stmt.challenges stmt.ctx.r_batching`
-  -- but `A_MLE_eval_eq_compute_final_eq_value` is UNDEFINED anywhere in the current tree (the
-  -- `RingSwitching/Prelude` refactor dropped the DP24 algebra layer that defined it; only the
-  -- unrelated `Binius/RingSwitching/Prelude` retains a partial version). As committed, this module
-  -- does not compile. Stubbed to a `sorry` so the module elaborates and the RBR-KS target theorem
-  -- below can be checked; this `sorry` is in `finalSumcheck_check_of_relIn` (final-sumcheck
-  -- completeness), which is NOT in the dependency chain of
-  -- `iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness`.
-  exact (sorry : _)
+  exact A_MLE_eval_eq_compute_final_eq_value κ L K P ℓ ℓ' h_l stmt
 
 /-- Perfect completeness for the final sumcheck step -/
 theorem finalSumcheckOracleReduction_perfectCompleteness [IsDomain L] [IsDomain K] {σ : Type}
@@ -703,7 +751,12 @@ def finalSumcheckKStateProp {m : Fin (1 + 1)} (tr : Transcript m (pSpecFinalSumc
       (stmt := stmt) (oStmt := oStmt) (wit := witMid)
       (localChecks := sumcheckFinalLocalCheck ∧ final_eval)
 
-/-- The knowledge state function for the final sumcheck step -/
+-- The knowledge state function for the final sumcheck step. Requires `[IsDomain L] [IsDomain K]`
+-- (matching the sibling `BatchingPhase.batchingKnowledgeStateFunction`): the accept-branch
+-- `toFun_full` consistency reconstruction routes through the DP24 identity
+-- `A_MLE_eval_eq_compute_final_eq_value`, which needs multilinear-extension uniqueness.
+variable [IsDomain L] [IsDomain K] in
+/-- The knowledge state function for the final sumcheck step. -/
 noncomputable def finalSumcheckKnowledgeStateFunction {σ : Type} (init : ProbComp σ)
     (impl : QueryImpl []ₒ (StateT σ ProbComp)) :
     (finalSumcheckVerifier κ L K P ℓ ℓ' h_l aOStmtIn).KnowledgeStateFunction init impl
@@ -725,25 +778,123 @@ noncomputable def finalSumcheckKnowledgeStateFunction {σ : Type} (init : ProbCo
     -- `localChecks := True`. `extractMid` returns `witMid` unchanged, so we drop the local checks.
     simp only [finalSumcheckKStateProp, masterKStateProp, true_and] at h ⊢
     exact ⟨h.2.1, h.2.2.1, h.2.2.2⟩
+  -- `toFun_full` (final step). PARTIAL: all the `simulateQ`/`simOracle2` verifier-run plumbing is
+  -- DISCHARGED (via `probEvent_pos_iff` + `simulateQ_simOracle2_query` + `answer_instDefault'` +
+  -- `simulateQ_optionT_pure'`, the completeness-proof chain), and the verifier's accept/reject `if`
+  -- is `split`. The ACCEPT branch CLOSES completely modulo the single consolidated DP24 identity
+  -- `A_MLE_eval_eq_compute_final_eq_value`: `witnessStructuralInvariant` holds by `extractOut`
+  -- construction (`rfl`), `sumcheckFinalLocalCheck` is the accept condition, `final_eval` +
+  -- `initialCompatibility` come from `hrel : (stmtOutAccept, witOut) ∈ toRelInput`, and
+  -- `sumcheckConsistencyProp` reconstructs via `finalSumcheck_consistencySum_eq` (sorry-free) + that
+  -- DP24 identity. The REJECT branch is a GENUINE KState-design IMPOSSIBILITY (the unconditional
+  -- `sumcheckFinalLocalCheck` contradicts the verifier's reject decision, and the batching-phase
+  -- defect-#17 repair does not transfer because the final step's `toFun_next` recovers the index-0
+  -- consistency about the original `stmt`); see the detailed diagnosis on the reject branch below.
   toFun_full := fun stmt tr witOut h => by
-    -- PARTIAL: the two former blockers are now unblocked by the machinery landed for the
-    -- completeness theorem:
-    --   • Sub-obligation (2) — the DP24 identity `(A_MLE · t')(challenges) = compute_final_eq_value ·
-    --     t'(challenges)` — is exactly the algebra in `finalSumcheck_check_of_relIn` (cube-0 collapse
-    --     → `fixFirstVariablesOfMQP_eval` → `A_MLE_eval_eq_compute_final_eq_value`), now in-file.
-    --   • Sub-obligation (1) — the `simulateQ`/`simOracle2` verifier-run support extraction — collapses
-    --     via `simulateQ_simOracle2_query` + `answer_instDefault'` + `simulateQ_optionT_pure'` (the
-    --     same chain used in the completeness proof). After `probEvent_pos_iff` +
-    --     `OracleVerifier.toVerifier`/`Verifier.run` unfolding, `h`'s support element pins the message
-    --     `c := tr ⟨0,_⟩` and (via the `if` branch) the local check `sumcheck_target =
-    --     compute_final_eq_value · c`; `extractOut` makes `witnessStructuralInvariant` hold by
-    --     construction, and `(stmtOut, witOut) ∈ toRelInput` supplies `final_eval` + compatibility.
-    -- Remaining: the `if`-branch case split (accept vs. dummy `{0,0}`) and threading the support
-    -- element through the `StateT`/`OptionT` glue to the KState reconstruction. Left as the next step.
-    sorry
+    obtain ⟨stmtIn, oStmtIn⟩ := stmt
+    rw [gt_iff_lt, probEvent_pos_iff] at h
+    obtain ⟨x, hx, hrel⟩ := h
+    rw [OptionT.mem_support_iff] at hx
+    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+    obtain ⟨s, _, hx⟩ := hx
+    simp only [OracleVerifier.toVerifier, Verifier.run, StateT.run'_eq,
+      support_map, Set.mem_image, Prod.exists] at hx
+    obtain ⟨a, b, hmem, heq⟩ := hx
+    simp only [finalSumcheckVerifier, liftM, monadLift, MonadLiftT.monadLift,
+      MonadLift.monadLift, pure_bind, bind_pure_comp] at hmem
+    rw [simulateQ_optionT_bind, simulateQ_simOracle2_query] at hmem
+    simp only [OptionT.lift_pure, pure_bind, FullTranscript.messages, apply_ite,
+      simulateQ_optionT_lift, simulateQ_pure, OptionT.run_pure, OptionT.run_lift] at hmem
+    erw [pure_bind] at hmem
+    simp only [answer_instDefault', apply_ite, simulateQ_optionT_pure'] at hmem
+    -- Collapse the `<$> pure`/`simulateQ pure` glue in each branch to a singleton `support`.
+    simp only [map_pure, simulateQ_pure, StateT.run_pure, support_pure,
+      Set.mem_singleton_iff, Prod.mk.injEq] at hmem
+    -- `c := tr 0` is the prover's transcript message; the KState's local checks are stated for it.
+    -- Case-split the verifier's accept/reject `if`.
+    split at hmem
+    · -- ACCEPT branch: `hcheck : sumcheck_target = compute_final_eq_value · (tr 0)` holds.
+      rename_i hcheck
+      obtain ⟨⟨rfl, -⟩, -⟩ := hmem
+      injection heq with hxv
+      subst hxv
+      -- `hrel : ({challenges, tr 0}, witOut) ∈ toRelInput` ⇒ `tr 0 = witOut.t.eval challenges`
+      -- (`MLPEvalRelation`) and `initialCompatibility ⟨witOut.t, oStmtIn⟩`.
+      simp only [AbstractOStmtIn.toRelInput, MLPEvalRelation, Set.mem_setOf_eq] at hrel
+      obtain ⟨heval, hcompat⟩ := hrel
+      -- Reconstruct the round-1 KState. `extractOut` sets `t' := witOut.t` and
+      -- `H := projectToMidSumcheckPoly witOut.t A_MLE (Fin.last ℓ') challenges`, so
+      -- `witnessStructuralInvariant` holds by construction (`rfl`).
+      simp only [finalSumcheckKStateProp, masterKStateProp, finalSumcheckRbrExtractor,
+        Equiv.toFun_as_coe, Transcript.equivMessagesChallenges_apply,
+        Transcript.toMessagesChallenges, Transcript.toMessagesUpTo, FullTranscript.messages]
+      -- The transcript message accessor `c` equals `tr 0`.
+      refine ⟨⟨?_, ?_⟩, rfl, ?_, hcompat⟩
+      · -- sumcheckFinalLocalCheck : `sumcheck_target = compute_final_eq_value · c`, with `c = tr 0`.
+        exact hcheck
+      · -- final_eval : `witOut.t.eval challenges = c = tr 0`.
+        exact heval.symm
+      · -- sumcheckConsistencyProp : `sumcheck_target = ∑ over cube of H.eval`.
+        -- `H = projectToMid witOut.t A_MLE (Fin.last ℓ') challenges`, so by
+        -- `finalSumcheck_consistencySum_eq` the RHS is `A_MLE(challenges) · witOut.t.eval challenges`,
+        -- and `hcheck` + `heval` give `sumcheck_target = compute_final_eq_value · witOut.t.eval challenges`.
+        -- Closing the two requires `A_MLE(challenges) = compute_final_eq_value`, which is the
+        -- in-file DP24 stub `A_MLE_eval_eq_compute_final_eq_value` (see `finalSumcheck_check_of_relIn`).
+        unfold sumcheckConsistencyProp
+        rw [finalSumcheck_consistencySum_eq κ L K P ℓ ℓ' h_l stmtIn witOut.t
+          { t' := witOut.t,
+            H := projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := witOut.t)
+              (m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly (ctx := stmtIn.ctx))
+              (i := Fin.last ℓ') (challenges := stmtIn.challenges) } rfl]
+        rw [hcheck, heval]
+        -- ⊢ compute_final_eq_value · (eval challenges witOut.t) = A_MLE(challenges) · (eval challenges witOut.t)
+        congr 1
+        -- ⊢ compute_final_eq_value = A_MLE(challenges)  -- DP24 identity (consolidated stub)
+        exact (A_MLE_eval_eq_compute_final_eq_value κ L K P ℓ ℓ' h_l stmtIn).symm
+    · -- REJECT branch: the verifier's step-9 check FAILS, so it outputs the dummy
+      -- `{t_eval_point := 0, original_claim := 0}`.
+      rename_i hcheck
+      obtain ⟨⟨rfl, -⟩, -⟩ := hmem
+      injection heq with hxv
+      subst hxv
+      -- WALL (genuine KState-design impossibility — NOT closable without redesigning the KState,
+      -- and that redesign in turn breaks `toFun_next`; see the block note above `toFun_full`).
+      --
+      -- State here (`split` isFalse branch):
+      --   hcheck : ¬ (stmtIn.sumcheck_target = compute_final_eq_value … · tr 0)
+      --   hrel   : ({t_eval_point := 0, original_claim := 0}, witOut) ∈ toRelInput
+      --             ⇒ 0 = witOut.t.eval 0  ∧  initialCompatibility ⟨witOut.t, oStmtIn⟩   (nothing more)
+      --   ⊢ finalSumcheckKStateProp ⟨1,_⟩ … (extractOut …)
+      -- The goal's `sumcheckFinalLocalCheck` conjunct is *exactly* `stmtIn.sumcheck_target =
+      -- compute_final_eq_value … · tr 0`, i.e. literally `¬ hcheck`. `hrel` (the dummy-statement
+      -- relOut membership) constrains only `witOut.t` at the point `0` and the compatibility — it
+      -- says NOTHING about `stmtIn.sumcheck_target`, `stmtIn.challenges`, or `tr 0`. Pick any
+      -- `(stmtIn, tr, witOut)` with `tr 0 = 0`, `stmtIn.sumcheck_target ≠ 0`, `witOut.t.eval 0 = 0`
+      -- and `initialCompatibility`: then `hcheck` and `hrel` BOTH hold while the goal's local check
+      -- is false. So this branch has reachable `Pr > 0` and an UNPROVABLE goal — the unconditional
+      -- `sumcheckFinalLocalCheck` in `finalSumcheckKStateProp ⟨1,_⟩` makes
+      -- `finalSumcheckKnowledgeStateFunction` an INVALID `KnowledgeStateFunction` (its `toFun_full`
+      -- field is not inhabited). This is the SumcheckPhase analogue of the batching-phase defect-#17
+      -- (`BatchingPhase.batchingKStateProp ⟨2,_⟩`) — there the round-2 KState was repaired to mirror
+      -- the verifier's `if performCheck then relProp(accept) else relProp(reject)`. That repair does
+      -- NOT transfer here: in BatchingPhase `toFun_next` only fires at `m=0` (the `m=1` case is
+      -- `nomatch`), so the if-branched round-2 KState is never un-branched. In the FINAL step
+      -- `pSpecFinalSumcheck` has a single P→V message, so `toFun_next` DOES fire at `m=0` and must
+      -- recover the index-0 `masterKStateProp stmtIn` (with `sumcheckConsistencyProp
+      -- stmtIn.sumcheck_target witMid.H`) from the index-1 KState. On the reject branch the verifier
+      -- rejected *precisely because* that consistency fails for `stmtIn`, so no index-1 KState can
+      -- simultaneously (a) be implied by the dummy `relOut` membership and (b) imply the index-0
+      -- consistency about `stmtIn`. Hence `toFun_full` (reject) and `toFun_next` (recover index-0)
+      -- are jointly unsatisfiable here. Closing this honestly needs a structural redesign of the
+      -- final-step relations/KState (move the verifier's accept decision into `relOut`, or weaken the
+      -- index-0 relation), which is out of scope for this in-file obligation and ripples into the
+      -- composed-protocol `relOut = toRelInput` contract consumed by `General.lean`. No
+      -- axiom / native_decide / vacuity used; left as a single documented `sorry`.
+      sorry
 
 /-- Round-by-round knowledge soundness for the final sumcheck step -/
-theorem finalSumcheckOracleVerifier_rbrKnowledgeSoundness [Fintype L] [IsDomain L] {σ : Type}
+theorem finalSumcheckOracleVerifier_rbrKnowledgeSoundness [Fintype L] [IsDomain L] [IsDomain K]
+    {σ : Type}
     (init : ProbComp σ) (impl : QueryImpl []ₒ (StateT σ ProbComp)) :
     (finalSumcheckVerifier κ L K P ℓ ℓ' h_l aOStmtIn).rbrKnowledgeSoundness init impl
       (relIn := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn (Fin.last ℓ'))
@@ -874,7 +1025,7 @@ theorem iteratedSumcheckLoop_rbrKnowledgeSoundness [IsDomain L] :
         (init := init) (impl := impl) i)
 
 /-- RBR knowledge soundness for large-field reduction (Sumcheck ++ FinalSum) -/
-theorem coreInteraction_rbrKnowledgeSoundness [IsDomain L] :
+theorem coreInteraction_rbrKnowledgeSoundness [IsDomain L] [IsDomain K] :
   OracleVerifier.rbrKnowledgeSoundness
     (verifier := coreInteractionOracleVerifier κ L K P ℓ ℓ' h_l aOStmtIn)
     (StmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) 0)
