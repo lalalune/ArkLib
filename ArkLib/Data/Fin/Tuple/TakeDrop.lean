@@ -231,7 +231,7 @@ theorem drop_update_of_ge (m : ℕ) (h : m ≤ n) (v : (i : Fin n) → α i) (i 
   next h_1 =>
     subst h_1
     simp_all only [add_tsub_cancel_right, Fin.eta, ↓reduceDIte]
-    sorry
+    rw [eqRec_eq_cast, dcast_eq_root_cast, _root_.cast_cast, _root_.cast_eq]
   next h_1 =>
     simp_all only [right_eq_dite_iff]
     intro h_2
