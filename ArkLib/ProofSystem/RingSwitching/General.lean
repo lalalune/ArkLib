@@ -103,7 +103,10 @@ section SecurityProperties
 variable {σ : Type} (init : ProbComp σ) {impl : QueryImpl []ₒ (StateT σ ProbComp)}
 
 omit [(i : mlIOPCS.pSpec.ChallengeIdx) → SampleableType (mlIOPCS.pSpec.Challenge i)] in
-lemma batchingCore_perfectCompleteness :
+-- `[IsDomain L] [IsDomain K]` are needed by the core-interaction (final-sumcheck) completeness,
+-- which invokes the DP24 capstone `A_MLE_eval_eq_compute_final_eq_value` (an `IsDomain` algebra
+-- lemma). They hold in every real instantiation (`binaryTowerProfile` builds from fields `K`, `L`).
+lemma batchingCore_perfectCompleteness [IsDomain L] [IsDomain K] :
   (batchingCoreReduction κ L K P ℓ ℓ' h_l mlIOPCS).perfectCompleteness
   (pSpec := pSpecLargeFieldReduction κ L K P ℓ')
   (relIn := BatchingPhase.batchingInputRelation κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn)
@@ -116,7 +119,7 @@ lemma batchingCore_perfectCompleteness :
       κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn (impl:=impl)
 
 omit [(i : mlIOPCS.pSpec.ChallengeIdx) → SampleableType (mlIOPCS.pSpec.Challenge i)] in
-theorem fullOracleReduction_perfectCompleteness :
+theorem fullOracleReduction_perfectCompleteness [IsDomain L] [IsDomain K] :
   (fullOracleReduction κ L K P ℓ ℓ' h_l mlIOPCS).perfectCompleteness
     (relIn := BatchingPhase.batchingInputRelation κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn)
     (relOut := acceptRejectOracleRel)
