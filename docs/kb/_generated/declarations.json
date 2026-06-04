@@ -10286,6 +10286,24 @@
           "namespace": "ProximityGap",
           "short_name": "_anon_class_1175",
           "signature": "class classical"
+        },
+        {
+          "doc": "Degree-`d` generalization of `BW_homMatrix_entry_natDegree_le_one` (the curves case of [BCIKS20] \u00a76.1: matrix entries are polynomials of `z`-degree at most `k` instead of affine). Entries of the Berlekamp\u2013Welch matrix built over `F[X]`-constants `\u03c9s` and arbitrary words `g` of degree \u2264 `d` have degree \u2264 `d`. The line case is `d = 1`, `g i = C (f0 i) + X * C (f1 i)`.",
+          "kind": "theorem",
+          "line": 1389,
+          "name": "ProximityGap.BW_homMatrix_entry_natDegree_le_of_natDegree_le",
+          "namespace": "ProximityGap",
+          "short_name": "BW_homMatrix_entry_natDegree_le_of_natDegree_le",
+          "signature": "theorem BW_homMatrix_entry_natDegree_le_of_natDegree_le {F : Type} [Field F]"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 1393,
+          "name": "ProximityGap._anon_class_1393",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_1393",
+          "signature": "class classical"
         }
       ]
     },
@@ -48963,7 +48981,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5316,
+      "declarations": 5318,
       "files": 282
     }
   }
