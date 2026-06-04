@@ -41827,7 +41827,7 @@
         {
           "doc": "Fact 4.10 Geometric series formula in a field, for a unit `r : F`.",
           "kind": "lemma",
-          "line": 36,
+          "line": 37,
           "name": "Combine.geometric_sum_units",
           "namespace": "Combine",
           "short_name": "geometric_sum_units",
@@ -41836,7 +41836,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 47,
+          "line": 48,
           "name": "Combine.ri",
           "namespace": "Combine",
           "short_name": "ri",
@@ -41845,7 +41845,7 @@
         {
           "doc": "Definition 4.11.1 Combine(d*, r, (f_0, d_0), \u2026, (f_{m-1}, d_{m-1}))(x) := sum_{i < m} r_i * f_i(x) * ( sum_{l < (d* - d_i + 1)} (r * \u03c6(x))^l )",
           "kind": "def",
-          "line": 54,
+          "line": 55,
           "name": "Combine.combine",
           "namespace": "Combine",
           "short_name": "combine",
@@ -41854,7 +41854,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 60,
+          "line": 61,
           "name": "Combine.combine_dstar_zero",
           "namespace": "Combine",
           "short_name": "combine_dstar_zero",
@@ -41863,7 +41863,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 65,
+          "line": 66,
           "name": "Combine.geom_sum_cases",
           "namespace": "Combine",
           "short_name": "geom_sum_cases",
@@ -41872,7 +41872,7 @@
         {
           "doc": "Definition 4.11.2 Combine(d*, r, (f_0, d_0), \u2026, (f_{m-1}, d_{m-1}))(x) := if (r * \u03c6(x)) = 1 then sum_{i < m} r_i * f_i(x) * (dstar - degree + 1) else sum_{i < m} r_i * f_i(x) * (1 - r * \u03c6(x)^(dstar - degree + 1)) / (1 - r * \u03c6(x))",
           "kind": "lemma",
-          "line": 78,
+          "line": 79,
           "name": "Combine.combine_eq_cases",
           "namespace": "Combine",
           "short_name": "combine_eq_cases",
@@ -41881,7 +41881,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 98,
+          "line": 99,
           "name": "Combine.blockSize",
           "namespace": "Combine",
           "short_name": "blockSize",
@@ -41890,7 +41890,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 99,
+          "line": 100,
           "name": "Combine.blockStart",
           "namespace": "Combine",
           "short_name": "blockStart",
@@ -41899,7 +41899,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 101,
+          "line": 102,
           "name": "Combine.totalTerms",
           "namespace": "Combine",
           "short_name": "totalTerms",
@@ -41908,7 +41908,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 103,
+          "line": 104,
           "name": "Combine.blockStart_monotone",
           "namespace": "Combine",
           "short_name": "blockStart_monotone",
@@ -41917,7 +41917,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 111,
+          "line": 112,
           "name": "Combine.blockStart_zero",
           "namespace": "Combine",
           "short_name": "blockStart_zero",
@@ -41926,7 +41926,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 115,
+          "line": 116,
           "name": "Combine.blockStart_filter_nonempty",
           "namespace": "Combine",
           "short_name": "blockStart_filter_nonempty",
@@ -41935,7 +41935,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 121,
+          "line": 122,
           "name": "Combine.block_idx_eq_max",
           "namespace": "Combine",
           "short_name": "block_idx_eq_max",
@@ -41944,7 +41944,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 148,
+          "line": 149,
           "name": "Combine.combine_eq_flat",
           "namespace": "Combine",
           "short_name": "combine_eq_flat",
@@ -41953,7 +41953,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 302,
+          "line": 303,
           "name": "Combine.combine_eq_flat_aux1",
           "namespace": "Combine",
           "short_name": "combine_eq_flat_aux1",
@@ -41962,7 +41962,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 322,
+          "line": 323,
           "name": "Combine.combine_eq_flat_aux2",
           "namespace": "Combine",
           "short_name": "combine_eq_flat_aux2",
@@ -41971,7 +41971,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 336,
+          "line": 337,
           "name": "Combine.combine_eq_flat_aux3",
           "namespace": "Combine",
           "short_name": "combine_eq_flat_aux3",
@@ -41980,7 +41980,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 380,
+          "line": 381,
           "name": "Combine.combine_eq_flat_final",
           "namespace": "Combine",
           "short_name": "combine_eq_flat_final",
@@ -41989,7 +41989,7 @@
         {
           "doc": "Definition 4.12.1 DegCor(d*, r, f, degree)(x) := f(x) * ( sum_{ l < d* - d + 1 } (r * \u03c6(x))^l )",
           "kind": "def",
-          "line": 403,
+          "line": 404,
           "name": "Combine.degCor",
           "namespace": "Combine",
           "short_name": "degCor",
@@ -41998,7 +41998,7 @@
         {
           "doc": "Definition 4.12.2 DegCor(d*, r, f, d)(x) := f(x) * conditionalExp(x)",
           "kind": "lemma",
-          "line": 409,
+          "line": 410,
           "name": "Combine.degreeCor_eq",
           "namespace": "Combine",
           "short_name": "degreeCor_eq",
@@ -42007,7 +42007,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 424,
+          "line": 425,
           "name": "Combine.rate_add_inv_card_lt_one_sub_delta",
           "namespace": "Combine",
           "short_name": "rate_add_inv_card_lt_one_sub_delta",
@@ -42016,7 +42016,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 435,
+          "line": 436,
           "name": "Combine.succ_lt_one_sub_delta_mul_card",
           "namespace": "Combine",
           "short_name": "succ_lt_one_sub_delta_mul_card",
@@ -42025,7 +42025,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 448,
+          "line": 449,
           "name": "Combine.exists_agreement_set_of_combine",
           "namespace": "Combine",
           "short_name": "exists_agreement_set_of_combine",
@@ -42034,7 +42034,7 @@
         {
           "doc": "Lemma 4.13 Let `dstar` be the target degree, `f\u2081,...,f_{m-1} : \u03b9 \u2192 F`, `0 < degs\u2081,...,degs_{m-1} < dstar` be degrees and `\u03b4 \u2208 (0, min{(1-BStar(\u03c1)), (1-\u03c1-1/|\u03b9|)})` be a distance parameter, then Pr_{r \u2190 F} [\u03b4\u1d63(Combine(dstar,r,(f\u2081,degs\u2081),...,(f\u2098,degs\u2098)))] > err' (dstar, \u03c1, \u03b4, m * (dstar + 1) - \u2211 i degs\u1d62)",
           "kind": "theorem",
-          "line": 550,
+          "line": 551,
           "name": "Combine.combine_theorem",
           "namespace": "Combine",
           "short_name": "combine_theorem",
