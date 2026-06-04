@@ -1409,6 +1409,42 @@ theorem BW_homMatrix_entry_natDegree_le_of_natDegree_le {F : Type} [Field F]
       _ = 0 := by simp [Polynomial.natDegree_C]
       _ ≤ d := Nat.zero_le d
 
+
+open Polynomial in
+/-- Degree-`d` generalization of `RS_natDegree_det_le_of_entry_natDegree_le_one`
+(the curves case of [BCIKS20] §6.1): the determinant of an `n × n` matrix of
+polynomials with entries of degree ≤ `d` has degree ≤ `d * n`. The line case
+is `d = 1`. -/
+theorem RS_natDegree_det_le_of_entry_natDegree_le (n d : ℕ)
+    (A : Matrix (Fin n) (Fin n) F[X])
+    (hdeg : ∀ i j, (A i j).natDegree ≤ d) :
+    (Matrix.det A).natDegree ≤ d * n := by
+  classical
+  rw [Matrix.det_apply]
+  refine Polynomial.natDegree_sum_le_of_forall_le (s := (Finset.univ : Finset (Equiv.Perm (Fin n))))
+    (f := fun σ : Equiv.Perm (Fin n) => (Equiv.Perm.sign σ : Units ℤ) • (∏ i : Fin n, A (σ i) i)) ?_
+  intro σ hσ
+  have hsign :
+      ((Equiv.Perm.sign σ : Units ℤ) • (∏ i : Fin n, A (σ i) i)).natDegree
+        ≤ (∏ i : Fin n, A (σ i) i).natDegree := by
+    rcases Int.units_eq_one_or (Equiv.Perm.sign σ) with hs | hs
+    · simp [hs]
+    · simp [hs]
+  have hprod : (∏ i : Fin n, A (σ i) i).natDegree ≤ d * n := by
+    have h1 : (∏ i : Fin n, A (σ i) i).natDegree ≤ ∑ i : Fin n, (A (σ i) i).natDegree := by
+      simpa using
+        (Polynomial.natDegree_prod_le (s := (Finset.univ : Finset (Fin n)))
+          (f := fun i : Fin n => A (σ i) i))
+    have h2 : (∑ i : Fin n, (A (σ i) i).natDegree) ≤ d * n := by
+      have hsum' : (∑ i ∈ (Finset.univ : Finset (Fin n)), (A (σ i) i).natDegree)
+          ≤ (Finset.univ : Finset (Fin n)).card • (d : ℕ) :=
+        Finset.sum_le_card_nsmul (s := (Finset.univ : Finset (Fin n)))
+          (f := fun i : Fin n => (A (σ i) i).natDegree) (n := d)
+          (fun i _ => hdeg (σ i) i)
+      simpa [Finset.card_univ, Fintype.card_fin, smul_eq_mul, mul_comm] using hsum'
+    exact le_trans h1 h2
+  exact le_trans hsign hprod
+
 end CoreResults
 
 end ProximityGap
