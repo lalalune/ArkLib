@@ -11865,7 +11865,7 @@
         {
           "doc": "*(Defect-7, core.)* The second cardinality conjunct of `exists_factors_with_large_common_root_set` is **false** whenever `S := coeffs_of_close_proximity` is empty: its left-hand side `(#S : \u211d)/(D_Y Q)` collapses to `0`, while its right-hand side is `\u2265 0` (`c57_rhs_nonneg`), so the strict inequality cannot hold.  Together with `coeffs_of_close_proximity_eq_empty_of_neg` (which makes `S` empty for `\u03b4 < 0`), this proves the conjunct is not derivable from `ModifiedGuruswami` alone: in [BCIKS20] it is a hypothesis (`S` large, the list-decoding regime), not a conclusion.",
           "kind": "lemma",
-          "line": 1313,
+          "line": 1314,
           "name": "ProximityGap.c57_second_conjunct_unsat_of_S_empty",
           "namespace": "ProximityGap",
           "short_name": "c57_second_conjunct_unsat_of_S_empty",
