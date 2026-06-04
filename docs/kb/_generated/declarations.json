@@ -35293,6 +35293,212 @@
         }
       ]
     },
+    "ArkLib/ProofSystem/ConstraintSystem/Basic.lean": {
+      "declarations": [
+        {
+          "doc": "A **constraint system** packages a family of indexed relations into a single bundle. For each `i : Index` there is a `Stmt i` (the in-the-clear statement), an `OStmt i` (the committed/oracle-accessible statement data; use `PUnit` if absent), and a `Wit i` (the private witness). The predicate `satisfies i s o w` asserts that the triple `(s, o, w)` is a valid instance at index `i`.",
+          "kind": "structure",
+          "line": 49,
+          "name": "ConstraintSystem",
+          "namespace": "",
+          "short_name": "ConstraintSystem",
+          "signature": "structure ConstraintSystem : Type (max (u + 1) (v + 1) (w + 1)) where"
+        },
+        {
+          "doc": "The underlying set-theoretic relation at a given index.",
+          "kind": "def",
+          "line": 68,
+          "name": "ConstraintSystem.relation",
+          "namespace": "ConstraintSystem",
+          "short_name": "relation",
+          "signature": "def relation (i : C.Index) : Set (C.Stmt i \u00d7 C.OStmt i \u00d7 C.Wit i) :="
+        },
+        {
+          "doc": "Existence of valid oracle data and witness for a given in-the-clear statement.",
+          "kind": "def",
+          "line": 72,
+          "name": "ConstraintSystem.IsSatisfiable",
+          "namespace": "ConstraintSystem",
+          "short_name": "IsSatisfiable",
+          "signature": "def IsSatisfiable (i : C.Index) (s : C.Stmt i) : Prop :="
+        },
+        {
+          "doc": "Build a constraint system from a plain indexed relation (no oracle statement slot).",
+          "kind": "def",
+          "line": 76,
+          "name": "ConstraintSystem.ofRelation",
+          "namespace": "ConstraintSystem",
+          "short_name": "ofRelation",
+          "signature": "def ofRelation"
+        },
+        {
+          "doc": "Build a witness-free constraint system (assertions purely over the public and oracle parts of the statement).",
+          "kind": "def",
+          "line": 87,
+          "name": "ConstraintSystem.ofWitnessFree",
+          "namespace": "ConstraintSystem",
+          "short_name": "ofWitnessFree",
+          "signature": "def ofWitnessFree"
+        },
+        {
+          "doc": "",
+          "kind": "instance",
+          "line": 102,
+          "name": "_anon_instance_102",
+          "namespace": "",
+          "short_name": "_anon_instance_102",
+          "signature": "instance instances of another. It consists of:"
+        },
+        {
+          "doc": "A completeness-preserving morphism between constraint systems.",
+          "kind": "structure",
+          "line": 123,
+          "name": "ConstraintSystem.Hom",
+          "namespace": "ConstraintSystem",
+          "short_name": "Hom",
+          "signature": "structure Hom (C D : ConstraintSystem.{u, v, w}) where"
+        },
+        {
+          "doc": "The identity morphism on a constraint system.",
+          "kind": "def",
+          "line": 141,
+          "name": "ConstraintSystem.Hom.id",
+          "namespace": "ConstraintSystem.Hom",
+          "short_name": "id",
+          "signature": "def id (C : ConstraintSystem.{u, v, w}) : Hom C C where"
+        },
+        {
+          "doc": "Composition of two morphisms. Reads right-to-left as usual.",
+          "kind": "def",
+          "line": 149,
+          "name": "ConstraintSystem.Hom.comp",
+          "namespace": "ConstraintSystem.Hom",
+          "short_name": "comp",
+          "signature": "def comp {C D E : ConstraintSystem.{u, v, w}} (g : Hom D E) (f : Hom C D) : Hom C E where"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 159,
+          "name": "ConstraintSystem.Hom.id_comp",
+          "namespace": "ConstraintSystem.Hom",
+          "short_name": "id_comp",
+          "signature": "theorem id_comp (f : Hom C D) : (id D).comp f = f := rfl"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 161,
+          "name": "ConstraintSystem.Hom.comp_id",
+          "namespace": "ConstraintSystem.Hom",
+          "short_name": "comp_id",
+          "signature": "theorem comp_id (f : Hom C D) : f.comp (id C) = f := rfl"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 163,
+          "name": "ConstraintSystem.Hom.comp_assoc",
+          "namespace": "ConstraintSystem.Hom",
+          "short_name": "comp_assoc",
+          "signature": "theorem comp_assoc (h : Hom E F) (g : Hom D E) (f : Hom C D) :"
+        },
+        {
+          "doc": "Morphisms preserve satisfiability.",
+          "kind": "theorem",
+          "line": 169,
+          "name": "ConstraintSystem.Hom.isSatisfiable_map",
+          "namespace": "ConstraintSystem",
+          "short_name": "Hom.isSatisfiable_map",
+          "signature": "theorem Hom.isSatisfiable_map {C D : ConstraintSystem.{u, v, w}} (f : Hom C D)"
+        },
+        {
+          "doc": "A behavioural contract for a constraint system at a fixed index, consisting of an `Assumptions` precondition on the in-the-clear statement and a `Spec` postcondition relating statement and witness, together with soundness and completeness proofs tying the contract to the underlying satisfiability relation.",
+          "kind": "structure",
+          "line": 197,
+          "name": "ConstraintSystem.BehavioralContract",
+          "namespace": "ConstraintSystem",
+          "short_name": "BehavioralContract",
+          "signature": "structure BehavioralContract (C : ConstraintSystem.{u, v, w}) (i : C.Index) where"
+        },
+        {
+          "doc": "Under the assumptions, the constraint system is satisfiable at `i` for every statement. This is the most immediately useful corollary of `completeness`.",
+          "kind": "theorem",
+          "line": 215,
+          "name": "ConstraintSystem.BehavioralContract.isSatisfiable_of_assumptions",
+          "namespace": "ConstraintSystem.BehavioralContract",
+          "short_name": "isSatisfiable_of_assumptions",
+          "signature": "theorem isSatisfiable_of_assumptions {s : C.Stmt i} (hs : B.Assumptions s) :"
+        }
+      ]
+    },
+    "ArkLib/ProofSystem/ConstraintSystem/Examples.lean": {
+      "declarations": [
+        {
+          "doc": "R1CS of every size over a fixed commutative semiring, packaged as a universal `ConstraintSystem`. The in-the-clear statement holds the public inputs, the oracle statement holds the three constraint matrices `A, B, C`, and the witness holds the private witness variables.",
+          "kind": "def",
+          "line": 32,
+          "name": "R1CS.toConstraintSystem",
+          "namespace": "",
+          "short_name": "R1CS.toConstraintSystem",
+          "signature": "def R1CS.toConstraintSystem (R : Type*) [CommSemiring R] : ConstraintSystem where"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 39,
+          "name": "R1CS.toConstraintSystem_satisfies",
+          "namespace": "",
+          "short_name": "R1CS.toConstraintSystem_satisfies",
+          "signature": "theorem R1CS.toConstraintSystem_satisfies"
+        },
+        {
+          "doc": "The index data for the Plonkish constraint system: the number of wires, the number of gates, and the number of public inputs `\u2113 \u2264 numWires`.",
+          "kind": "structure",
+          "line": 50,
+          "name": "Plonk.Shape",
+          "namespace": "",
+          "short_name": "Plonk.Shape",
+          "signature": "structure Plonk.Shape where"
+        },
+        {
+          "doc": "",
+          "kind": "instance",
+          "line": 60,
+          "name": "_anon_instance_60",
+          "namespace": "",
+          "short_name": "_anon_instance_60",
+          "signature": "instance instance : Inhabited Plonk.Shape where"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 61,
+          "name": "_anon_def_61",
+          "namespace": "",
+          "short_name": "_anon_def_61",
+          "signature": "def default := \u27e80, 0, 0, Nat.le_refl _\u27e9"
+        },
+        {
+          "doc": "The Plonkish relation of every shape over a fixed commutative ring, packaged as a universal `ConstraintSystem`. The in-the-clear statement holds the public inputs, the oracle statement holds the full gate layout (a `Plonk.ConstraintSystem` value), and the witness holds the private wire values.",
+          "kind": "def",
+          "line": 67,
+          "name": "Plonk.toConstraintSystem",
+          "namespace": "",
+          "short_name": "Plonk.toConstraintSystem",
+          "signature": "def Plonk.toConstraintSystem (\ud835\udce1 : Type) [CommRing \ud835\udce1] : ConstraintSystem where"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 74,
+          "name": "Plonk.toConstraintSystem_satisfies",
+          "namespace": "",
+          "short_name": "Plonk.toConstraintSystem_satisfies",
+          "signature": "theorem Plonk.toConstraintSystem_satisfies"
+        }
+      ]
+    },
     "ArkLib/ProofSystem/ConstraintSystem/Lookup.lean": {
       "declarations": [
         {
@@ -35583,9 +35789,9 @@
           "signature": "theorem eq_accepts (i : Fin numWires) (c : \ud835\udce1) (x : Fin numWires \u2192 \ud835\udce1) :"
         },
         {
-          "doc": "A Plonk constraint system is a vector of `numGates` gates, each parametrized by the underlying ring `\ud835\udce1` and `numWires`, the number of wires.",
+          "doc": "A Plonk constraint system is a vector of `numGates` gates, each parametrized by the underlying ring `\ud835\udce1` and `numWires`, the number of wires. Marked `protected` so that bare `ConstraintSystem` inside `namespace Plonk` refers to the universal `ConstraintSystem` in `ArkLib.ProofSystem.ConstraintSystem.Basic`. Users access this definition as `Plonk.ConstraintSystem`.",
           "kind": "def",
-          "line": 112,
+          "line": 116,
           "name": "Plonk.ConstraintSystem",
           "namespace": "Plonk",
           "short_name": "ConstraintSystem",
@@ -35594,7 +35800,7 @@
         {
           "doc": "A constraint system accepts an input vector `x` if all of its gates accept `x`.",
           "kind": "def",
-          "line": 125,
+          "line": 129,
           "name": "Plonk.ConstraintSystem.accepts",
           "namespace": "Plonk.ConstraintSystem",
           "short_name": "accepts",
@@ -35603,25 +35809,25 @@
         {
           "doc": "The partition induced by a constraint system as defined in the Plonk paper. For `i \u2208 [numWires]`, let `T_i \u2286 [3*numGates]` be the set of indices `j` such that `V_j = i`, where `V` is the flattened vector of all wire indices `(a,b,c)` from all gates. This creates a partition of `[3 * numGates]` based on which gates use each wire index.",
           "kind": "def",
-          "line": 134,
+          "line": 138,
           "name": "Plonk.ConstraintSystem.partition",
           "namespace": "Plonk.ConstraintSystem",
           "short_name": "partition",
-          "signature": "def partition (cs : ConstraintSystem \ud835\udce1 numWires numGates) :"
+          "signature": "def partition (cs : Plonk.ConstraintSystem \ud835\udce1 numWires numGates) :"
         },
         {
           "doc": "The permutation corresponding to the partition induced by a constraint system. For each wire index `i`, the positions in `Fin (3 * numGates)` referencing wire `i` form a partition block. The permutation cycles through each block (sorted by position), ensuring that copy constraints can be enforced: all positions in the same block must carry the same wire value.",
           "kind": "def",
-          "line": 150,
+          "line": 154,
           "name": "Plonk.ConstraintSystem.perm",
           "namespace": "Plonk.ConstraintSystem",
           "short_name": "perm",
-          "signature": "def perm (cs : ConstraintSystem \ud835\udce1 numWires numGates) : Equiv.Perm (Fin (3 * numGates)) :="
+          "signature": "def perm (cs : Plonk.ConstraintSystem \ud835\udce1 numWires numGates) : Equiv.Perm (Fin (3 * numGates)) :="
         },
         {
           "doc": "A constraint system is prepared for `\u2113` public inputs, for some `\u2113 \u2264 numGates, numWires`, if for all `i \u2208 [\u2113]`, the `i`-th gate constrains the `i`-th wire to be some public value.",
           "kind": "def",
-          "line": 156,
+          "line": 160,
           "name": "Plonk.ConstraintSystem.isPreparedFor",
           "namespace": "Plonk.ConstraintSystem",
           "short_name": "isPreparedFor",
@@ -35630,7 +35836,7 @@
         {
           "doc": "Copy constraints are satisfied when the wire assignment is constant on orbits of the permutation: every position that references the same wire carries the same value.",
           "kind": "def",
-          "line": 168,
+          "line": 172,
           "name": "Plonk.CopyConstraintsSatisfied",
           "namespace": "Plonk",
           "short_name": "CopyConstraintsSatisfied",
@@ -35639,7 +35845,7 @@
         {
           "doc": "The grand product identity: when copy constraints hold, the product with permuted indices equals the product with identity indices. This is the completeness direction of the Plonk permutation argument \u2014 the honest prover's accumulator telescopes to 1.",
           "kind": "theorem",
-          "line": 174,
+          "line": 178,
           "name": "Plonk.prod_eq_of_copyConstraints",
           "namespace": "Plonk",
           "short_name": "prod_eq_of_copyConstraints",
@@ -35648,11 +35854,11 @@
         {
           "doc": "To define a relation based on the constraint system, we extend it with: - A natural number `\u2113 \u2264 m` representing the number of public inputs - A subset `\u2110 \u2282 [m]` of \"public inputs\" (assumed to be `{1,...,\u2113}` without loss of generality)",
           "kind": "def",
-          "line": 189,
+          "line": 193,
           "name": "Plonk.relation",
           "namespace": "Plonk",
           "short_name": "relation",
-          "signature": "def relation (cs : ConstraintSystem \ud835\udce1 numWires numGates) (\u2113 : \u2115) (h\u2113 : \u2113 \u2264 numWires) :"
+          "signature": "def relation (cs : Plonk.ConstraintSystem \ud835\udce1 numWires numGates) (\u2113 : \u2115) (h\u2113 : \u2113 \u2264 numWires) :"
         }
       ]
     },
@@ -36378,7 +36584,7 @@
           "name": "Plonk.acceptsDecidable",
           "namespace": "Plonk",
           "short_name": "acceptsDecidable",
-          "signature": "instance acceptsDecidable (cs : ConstraintSystem \ud835\udce1 numWires numGates) (w : Fin numWires \u2192 \ud835\udce1) :"
+          "signature": "instance acceptsDecidable (cs : Plonk.ConstraintSystem \ud835\udce1 numWires numGates) (w : Fin numWires \u2192 \ud835\udce1) :"
         },
         {
           "doc": "",
@@ -36436,7 +36642,7 @@
           "name": "Plonk.wireOfPosition",
           "namespace": "Plonk",
           "short_name": "wireOfPosition",
-          "signature": "def wireOfPosition (cs : ConstraintSystem \ud835\udce1 numWires numGates)"
+          "signature": "def wireOfPosition (cs : Plonk.ConstraintSystem \ud835\udce1 numWires numGates)"
         },
         {
           "doc": "Extends a wire assignment to the full position domain using the constraint system's wire routing: position `j` gets value `w (wireOfPosition cs j)`.",
@@ -36445,7 +36651,7 @@
           "name": "Plonk.extendWireAssignment",
           "namespace": "Plonk",
           "short_name": "extendWireAssignment",
-          "signature": "def extendWireAssignment (cs : ConstraintSystem \ud835\udce1 numWires numGates)"
+          "signature": "def extendWireAssignment (cs : Plonk.ConstraintSystem \ud835\udce1 numWires numGates)"
         },
         {
           "doc": "",
@@ -40764,8 +40970,8 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 4425,
-      "files": 237
+      "declarations": 4447,
+      "files": 239
     }
   }
 }

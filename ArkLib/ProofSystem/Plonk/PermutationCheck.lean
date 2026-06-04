@@ -44,7 +44,7 @@ variable (𝓡 : Type) [CommRing 𝓡] (numWires numGates : ℕ)
 
 /-- Maps a position in `Fin (3 * numGates)` to the wire index it references.
 Position `(k, g)` via `finProdFinEquiv` references wire `a`/`b`/`c` of gate `g`. -/
-def wireOfPosition (cs : ConstraintSystem 𝓡 numWires numGates)
+def wireOfPosition (cs : Plonk.ConstraintSystem 𝓡 numWires numGates)
     (j : Fin (3 * numGates)) : Fin numWires :=
   let p := finProdFinEquiv.symm j
   if p.1 = 0 then (cs p.2).a
@@ -53,7 +53,7 @@ def wireOfPosition (cs : ConstraintSystem 𝓡 numWires numGates)
 
 /-- Extends a wire assignment to the full position domain using the constraint system's
 wire routing: position `j` gets value `w (wireOfPosition cs j)`. -/
-def extendWireAssignment (cs : ConstraintSystem 𝓡 numWires numGates)
+def extendWireAssignment (cs : Plonk.ConstraintSystem 𝓡 numWires numGates)
     (w : Fin numWires → 𝓡) : Fin (3 * numGates) → 𝓡 :=
   w ∘ wireOfPosition 𝓡 numWires numGates cs
 
@@ -81,12 +81,12 @@ variable {𝓡} {numWires} {numGates}
 @[inline, specialize]
 def permCheckProver :
     Prover []ₒ
-      (ConstraintSystem 𝓡 numWires numGates) (Fin (3 * numGates) → 𝓡)
-      (ConstraintSystem 𝓡 numWires numGates × (Fin (3 * numGates) → 𝓡)) Unit
+      (Plonk.ConstraintSystem 𝓡 numWires numGates) (Fin (3 * numGates) → 𝓡)
+      (Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin (3 * numGates) → 𝓡)) Unit
       (permCheckPSpec 𝓡 numGates) where
   PrvState
-  | 0 => ConstraintSystem 𝓡 numWires numGates × (Fin (3 * numGates) → 𝓡)
-  | 1 => ConstraintSystem 𝓡 numWires numGates × (Fin (3 * numGates) → 𝓡)
+  | 0 => Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin (3 * numGates) → 𝓡)
+  | 1 => Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin (3 * numGates) → 𝓡)
   input := id
   sendMessage | ⟨0, _⟩ => fun ⟨cs, f⟩ => pure (f, ⟨cs, f⟩)
   receiveChallenge | ⟨0, h⟩ => nomatch h
@@ -102,8 +102,8 @@ instance copyConstraintsDecidable (f : Fin (3 * numGates) → 𝓡)
 @[inline, specialize]
 def permCheckVerifier :
     Verifier []ₒ
-      (ConstraintSystem 𝓡 numWires numGates)
-      (ConstraintSystem 𝓡 numWires numGates × (Fin (3 * numGates) → 𝓡))
+      (Plonk.ConstraintSystem 𝓡 numWires numGates)
+      (Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin (3 * numGates) → 𝓡))
       (permCheckPSpec 𝓡 numGates) where
   verify := fun cs transcript => do
     let f : Fin (3 * numGates) → 𝓡 := transcript 0
@@ -113,20 +113,20 @@ def permCheckVerifier :
 @[inline, specialize]
 def permCheckReduction :
     Reduction []ₒ
-      (ConstraintSystem 𝓡 numWires numGates) (Fin (3 * numGates) → 𝓡)
-      (ConstraintSystem 𝓡 numWires numGates × (Fin (3 * numGates) → 𝓡)) Unit
+      (Plonk.ConstraintSystem 𝓡 numWires numGates) (Fin (3 * numGates) → 𝓡)
+      (Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin (3 * numGates) → 𝓡)) Unit
       (permCheckPSpec 𝓡 numGates) where
   prover := permCheckProver
   verifier := permCheckVerifier
 
 @[reducible, simp]
 def permCheckRelIn :
-    Set (ConstraintSystem 𝓡 numWires numGates × (Fin (3 * numGates) → 𝓡)) :=
+    Set (Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin (3 * numGates) → 𝓡)) :=
   { p | CopyConstraintsSatisfied p.2 p.1.perm }
 
 @[reducible, simp]
 def permCheckRelOut :
-    Set ((ConstraintSystem 𝓡 numWires numGates × (Fin (3 * numGates) → 𝓡)) × Unit) :=
+    Set ((Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin (3 * numGates) → 𝓡)) × Unit) :=
   Prod.fst ⁻¹' permCheckRelIn
 
 variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl []ₒ (StateT σ ProbComp))

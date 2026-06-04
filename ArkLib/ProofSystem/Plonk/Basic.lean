@@ -62,12 +62,12 @@ variable {𝓡} {numWires} {numGates}
 @[inline, specialize]
 def gateCheckProver :
     Prover []ₒ
-      (ConstraintSystem 𝓡 numWires numGates) (Fin numWires → 𝓡)
-      (ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)) Unit
+      (Plonk.ConstraintSystem 𝓡 numWires numGates) (Fin numWires → 𝓡)
+      (Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)) Unit
       (gateCheckPSpec 𝓡 numWires) where
   PrvState
-  | 0 => ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)
-  | 1 => ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)
+  | 0 => Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)
+  | 1 => Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)
   input := id
   sendMessage | ⟨0, _⟩ => fun ⟨cs, w⟩ => pure (w, ⟨cs, w⟩)
   receiveChallenge | ⟨0, h⟩ => nomatch h
@@ -75,15 +75,15 @@ def gateCheckProver :
 
 variable [DecidableEq 𝓡]
 
-instance acceptsDecidable (cs : ConstraintSystem 𝓡 numWires numGates) (w : Fin numWires → 𝓡) :
+instance acceptsDecidable (cs : Plonk.ConstraintSystem 𝓡 numWires numGates) (w : Fin numWires → 𝓡) :
     Decidable (cs.accepts w) :=
   inferInstanceAs (Decidable (∀ i : Fin numGates, (cs i).eval w = 0))
 
 @[inline, specialize]
 def gateCheckVerifier :
     Verifier []ₒ
-      (ConstraintSystem 𝓡 numWires numGates)
-      (ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡))
+      (Plonk.ConstraintSystem 𝓡 numWires numGates)
+      (Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡))
       (gateCheckPSpec 𝓡 numWires) where
   verify := fun cs transcript => do
     let w : Fin numWires → 𝓡 := transcript 0
@@ -93,20 +93,20 @@ def gateCheckVerifier :
 @[inline, specialize]
 def gateCheckReduction :
     Reduction []ₒ
-      (ConstraintSystem 𝓡 numWires numGates) (Fin numWires → 𝓡)
-      (ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)) Unit
+      (Plonk.ConstraintSystem 𝓡 numWires numGates) (Fin numWires → 𝓡)
+      (Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)) Unit
       (gateCheckPSpec 𝓡 numWires) where
   prover := gateCheckProver
   verifier := gateCheckVerifier
 
 @[reducible, simp]
 def gateCheckRelIn :
-    Set (ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)) :=
+    Set (Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)) :=
   { p | p.1.accepts p.2 }
 
 @[reducible, simp]
 def gateCheckRelOut :
-    Set ((ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)) × Unit) :=
+    Set ((Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)) × Unit) :=
   Prod.fst ⁻¹' gateCheckRelIn
 
 variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl []ₒ (StateT σ ProbComp))
