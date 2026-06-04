@@ -9,6 +9,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Basic
 import ArkLib.Data.CodingTheory.GuruswamiSudan.Basic
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GuruswamiSudan
 import ArkLib.Data.Polynomial.Trivariate
+import Mathlib.Combinatorics.Pigeonhole
 
 namespace ProximityGap
 
@@ -1192,11 +1193,55 @@ lemma exists_Pz_of_coeffs_of_close_proximity
 noncomputable def Pz {k : ℕ} {z : F} (hS : z ∈ coeffs_of_close_proximity k ωs δ u₀ u₁) : F[X] :=
   (exists_Pz_of_coeffs_of_close_proximity (n := n) (k := k) hS).choose
 
+/-- *Tagged-fiber pigeonhole* (self-contained combinatorial core of [BCIKS20] Prop 5.5).
+
+If every element of a finite index set `S : Finset ι` carries a `tag x` lying in a finite tag
+set `T : Finset τ` (`hmaps`), and `T` is nonempty, then some tag class `y ∈ T` is shared by at
+least `#S / #T` (nat division = `⌊#S/#T⌋`, the floor of the average fiber size) elements of `S`.
+
+This is the abstract pigeonhole behind Prop 5.5: there the index set is `S =
+coeffs_of_close_proximity` and the (still-to-be-built, see the OBSTRUCTION on
+`exists_a_set_and_a_matching_polynomial`) tag would be the irreducible `Y`-factor of `Q` whose
+graph passes through `(z, Pz)`, of which there are at most `D_Y Q`.  Specialized with `#T ≤ D_Y Q`
+this yields a fiber of size `≥ #S / D_Y Q`; whether that exceeds the strict target
+`#S / (2 · D_Y Q)` is *not* a free consequence (nat division: `#S/(2M) < #S/M` fails for small
+`#S`, e.g. `#S = 1, M = 2`), but holds in the paper's regime where `#S` is large relative to
+`D_Y Q` (i.e. `δ` below the list-decoding radius). -/
+lemma tagged_fiber_pigeonhole {ι τ : Type} [DecidableEq τ] (S : Finset ι) (tag : ι → τ)
+    (T : Finset τ) (hmaps : ∀ x ∈ S, tag x ∈ T) (hT : T.Nonempty) :
+    ∃ y ∈ T, #S / #T ≤ #{x ∈ S | tag x = y} := by
+  classical
+  refine exists_le_card_fiber_of_mul_le_card_of_maps_to hmaps hT ?_
+  rw [Nat.mul_comm]
+  exact Nat.div_mul_le_self (#S) (#T)
+
 open Trivariate
 omit [DecidableEq (RatFunc F)] in
 /-- Proposition 5.5 from [BCIKS20].
 There exists a subset `S'` of the set `S` and a bivariate polynomial `P(X, Z)` that matches `Pz` on
-that set. -/
+that set.
+
+OBSTRUCTION (residual paper keystone — missing trivariate vanishing bridge; `sorry` retained).
+This proposition is *not* a self-contained combinatorial statement: its proof in [BCIKS20] is a
+pigeonhole over the irreducible `Y`-factors of the Guruswami–Sudan solution `Q`, and the binding
+of each `z ∈ S = coeffs_of_close_proximity` to a factor requires, for that `z`, the *vanishing*
+`(eval_on_Z Q z).eval Pz = 0` — i.e. "`Q` vanishes on the graph `(X, Pz(X))` of the `δ`-close
+codeword indexed by `z`".  That vanishing is the trivariate analogue of the bivariate
+`GuruswamiSudan` graph-vanishing lemmas (`witness_candidate_set_witness_vanishes` and the
+order-`m` machinery in `GuruswamiSudan/GuruswamiSudan.lean`); it must be derived from the
+`ModifiedGuruswami` field `Q_multiplicity` (order-`≥ m` root multiplicity over `F[Z]` at each curve
+point `(C ωᵢ, C(u₀ᵢ) + X · C(u₁ᵢ))`) together with the `δ`-closeness of `Pz`.  **No lemma in
+`Guruswami.lean` / `Extraction.lean` currently connects `Q_multiplicity` to this evaluation-zero
+fact**, so the tag function cannot yet be constructed; this is exactly the residual "Gap B"
+flagged on `exists_factors_with_large_common_root_set` (Claim 5.7) in `Agreement.lean`.
+
+Once that bridge exists, the rest is mechanical: the at-most-`D_Y Q` factors give a tag set `T`
+with `#T ≤ D_Y Q`; `tagged_fiber_pigeonhole` (above) extracts a class `S'` of size `≥ #S / #T`,
+which in the paper's regime (`#S` large, `δ` below the list-decoding radius) exceeds the strict
+target `#S / (2 · D_Y Q)`; and the shared factor, read as a bivariate polynomial linear in `Z`
+(`degreeX P ≤ 1`) of `X`-degree `≤ k`, is the matching `P` with `Pz = P.map (evalRingHom z)`.
+The self-contained pigeonhole core is discharged by `tagged_fiber_pigeonhole`; only the
+`Q_multiplicity`-driven vanishing bridge remains. -/
 lemma exists_a_set_and_a_matching_polynomial
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
     ∃ S', ∃ (h_sub : S' ⊆ coeffs_of_close_proximity k ωs δ u₀ u₁), ∃ P : F[Z][X],
