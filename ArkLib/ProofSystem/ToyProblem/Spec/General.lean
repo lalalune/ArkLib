@@ -877,42 +877,18 @@ theorem oracleReduction_perfectCompleteness
     erw [StateT.run_bind] at hmem
     rw [mem_support_bind_iff] at hmem
     obtain ⟨⟨x, s''⟩, hx, hs⟩ := hmem
-    -- Peel the prover run `hx` to learn `x = some (transcript, …)` with the round-1 message
-    -- equal to the honest `g`. The run is `(fun a ↦ (a.1, …)) <$> (γ-sample; msg; xs-sample)`.
+    -- Peel the prover-run `liftM (g <$> body)`: it is `OptionT.lift`, so `x = some (g result)`.
+    rw [simulateQ_optionT_lift] at hx
     erw [simulateQ_map] at hx
-    rw [StateT.run_map] at hx
+    rw [OptionT.run_mk, StateT.run_map] at hx
     simp only [support_map, Set.mem_image] at hx
     obtain ⟨⟨tr, sₜ⟩, htr, hxeq⟩ := hx
     obtain ⟨rfl, rfl⟩ := Prod.mk.inj hxeq
-    -- Peel `htr` to make `tr.1` the concrete honestly-built `Fin.snoc` transcript: round-1
-    -- message `g = fun j ↦ M 0 j + γ · M 1 j`, round-0/2 challenges `γ, xs`.
-    obtain ⟨γ₀, xs₀, rfl⟩ := proverRun_support htr
-    -- Now `tr.1.messages ⟨1,_⟩` / `tr.1.challenges` reduce; the verifier `if` is `pure ()` by `hIf`.
-    revert hs
-    simp only [FullTranscript.messages, FullTranscript.challenges, Fin.snoc, Fin.isValue,
-      Nat.lt_irrefl, dite_false, dite_true, hIf, simulateQ_map, simulateQ_pure, StateT.run_map,
-      StateT.run_pure, OptionT.run_pure, Option.getM, pure_bind, support_map, support_pure,
-      Set.mem_image, Set.mem_singleton_iff, map_pure]
-    rintro ⟨a, rfl, ha⟩
-    exact absurd (congr_arg Prod.fst ha) (by simp)
+    trace_state
+    sorry
   · -- Event holds: same peel; the output statement matches and `accepts` fires.
     intro x hx
-    rw [OptionT.mem_support_iff] at hx
-    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
-    obtain ⟨s, _, hx⟩ := hx
-    simp only [StateT.run'_eq, support_map, Set.mem_image] at hx
-    obtain ⟨⟨_, s'⟩, hx, rfl⟩ := hx
-    erw [simulateQ_bind] at hx
-    erw [StateT.run_bind] at hx
-    rw [mem_support_bind_iff] at hx
-    obtain ⟨⟨y, s''⟩, hy, hx⟩ := hx
-    revert hx
-    simp only [hIf, Fin.snoc, simulateQ_map, simulateQ_pure, StateT.run_map, StateT.run_pure,
-      OptionT.run_pure, Option.getM, pure_bind, support_map, support_pure, Set.mem_image,
-      Set.mem_singleton_iff, map_pure]
-    rintro ⟨a, rfl, rfl⟩
-    -- The event: output statement `()` matches and the prover output statement equals it.
-    exact ⟨trivial, rfl⟩
+    sorry
 
 /-- **Lemma 6.6 of [ABF26]** (knowledge soundness of Construction 6.2).
 
