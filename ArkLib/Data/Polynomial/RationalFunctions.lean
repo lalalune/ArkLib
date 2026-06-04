@@ -13,6 +13,7 @@ import Mathlib.RingTheory.Polynomial.GaussLemma
 import Mathlib.RingTheory.PowerSeries.Substitution
 import Mathlib.RingTheory.Polynomial.GaussLemma
 import Mathlib.RingTheory.Polynomial.Content
+import Mathlib.RingTheory.Polynomial.Resultant.Basic
 
 /-!
 # Definitions and Theorems about Function Fields and Rings of Regular Functions
@@ -1121,6 +1122,26 @@ lemma weight_Λ_over_𝒪_le_of_mk_eq {H : F[X][Y]} {D : ℕ}
 Note: Here `F[X][Y]` is `F[Z][T]`. -/
 noncomputable def S_β {H : F[X][Y]} (β : 𝒪 H) : Set F :=
   {z : F | ∃ root : rationalRoot (H_tilde' H) z, (π_z z root) β = 0}
+
+section LemmaA1
+
+variable {F : Type} [Field F]
+
+/-- Applying the specialization `π_z` to a quotient constructor evaluates the representative at the
+point `(z, t_z)`. -/
+lemma π_z_mk {H : F[X][Y]} (z : F) (root : rationalRoot (H_tilde' H) z) (p : F[X][Y]) :
+    π_z z root (Ideal.Quotient.mk (Ideal.span {H_tilde' H}) p) =
+      Polynomial.evalEval z root.1 p := by
+  rw [π_z, Ideal.Quotient.lift_mk]
+  rfl
+
+/-- The bivariate polynomial `p` evaluated at `(z, y)` agrees with the univariate specialization
+`p.map (evalRingHom z)` evaluated at `y`. -/
+lemma evalEval_eq_eval_map (z y : F) (p : F[X][Y]) :
+    Polynomial.evalEval z y p = (p.map (Polynomial.evalRingHom z)).eval y := by
+  rw [Polynomial.map_evalRingHom_eval]
+
+end LemmaA1
 
 /-- The statement of Lemma A.1 in Appendix A.3 of [BCIKS20]. -/
 lemma Lemma_A_1 {H : F[X][Y]} [hHirreducible : Fact (Irreducible H)]
