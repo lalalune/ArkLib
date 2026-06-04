@@ -12067,7 +12067,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 666,
+          "line": 667,
           "name": "ProximityGap.ZdegLE.mul",
           "namespace": "ProximityGap",
           "short_name": "ZdegLE.mul",
@@ -12076,16 +12076,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 668,
-          "name": "ProximityGap._anon_class_668",
+          "line": 669,
+          "name": "ProximityGap._anon_class_669",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_668",
+          "short_name": "_anon_class_669",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 678,
+          "line": 679,
           "name": "ProximityGap.ZdegLE_one",
           "namespace": "ProximityGap",
           "short_name": "ZdegLE_one",
@@ -12094,7 +12094,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 690,
+          "line": 691,
           "name": "ProximityGap.ZdegLE.pow",
           "namespace": "ProximityGap",
           "short_name": "ZdegLE.pow",
@@ -12103,7 +12103,7 @@
         {
           "doc": "`ZdegLE (C P) d` whenever every `X`-coefficient of `P : F[Z][X]` has `Z`-degree `\u2264 d`.",
           "kind": "lemma",
-          "line": 700,
+          "line": 701,
           "name": "ProximityGap.ZdegLE_C",
           "namespace": "ProximityGap",
           "short_name": "ZdegLE_C",
@@ -12112,7 +12112,7 @@
         {
           "doc": "The double-constant `C (C s)` (constant in `X` and `Y`) has `Z`-degree `s.natDegree`.",
           "kind": "lemma",
-          "line": 710,
+          "line": 711,
           "name": "ProximityGap.ZdegLE_CC",
           "namespace": "ProximityGap",
           "short_name": "ZdegLE_CC",
@@ -12121,7 +12121,7 @@
         {
           "doc": "The outer variable `Y` has `Z`-degree `0`.",
           "kind": "lemma",
-          "line": 719,
+          "line": 720,
           "name": "ProximityGap.ZdegLE_Y",
           "namespace": "ProximityGap",
           "short_name": "ZdegLE_Y",
@@ -12130,7 +12130,7 @@
         {
           "doc": "`comp`-closure for the outer `Y`-substitution: substituting `Y \u21a6 Y + c` raises the `Z`-degree by at most `(Y-degree of f) \u00b7 (Z-degree of c)`.",
           "kind": "lemma",
-          "line": 729,
+          "line": 730,
           "name": "ProximityGap.ZdegLE.comp_addYC",
           "namespace": "ProximityGap",
           "short_name": "ZdegLE.comp_addYC",
@@ -12139,16 +12139,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 731,
-          "name": "ProximityGap._anon_class_731",
+          "line": 732,
+          "name": "ProximityGap._anon_class_732",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_731",
+          "short_name": "_anon_class_732",
           "signature": "class classical"
         },
         {
           "doc": "`ZdegLE1 p d`: every `X`-coefficient of `p : F[Z][X]` is an `F[Z]`-polynomial of degree `\u2264 d`. The middle-variable analogue of `ZdegLE`, used to push a `Z`-degree bound through the inner `X \u21a6 X + C(C \u03c9)` substitution.",
           "kind": "def",
-          "line": 746,
+          "line": 747,
           "name": "ProximityGap.ZdegLE1",
           "namespace": "ProximityGap",
           "short_name": "ZdegLE1",
@@ -12157,7 +12157,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 749,
+          "line": 750,
           "name": "ProximityGap.ZdegLE1_zero",
           "namespace": "ProximityGap",
           "short_name": "ZdegLE1_zero",
@@ -12166,7 +12166,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 752,
+          "line": 753,
           "name": "ProximityGap.ZdegLE1.add",
           "namespace": "ProximityGap",
           "short_name": "ZdegLE1.add",
@@ -12175,7 +12175,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 758,
+          "line": 759,
           "name": "ProximityGap.ZdegLE1.mono",
           "namespace": "ProximityGap",
           "short_name": "ZdegLE1.mono",
@@ -12184,7 +12184,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 762,
+          "line": 763,
           "name": "ProximityGap.ZdegLE1_sum",
           "namespace": "ProximityGap",
           "short_name": "ZdegLE1_sum",
@@ -12193,16 +12193,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 764,
-          "name": "ProximityGap._anon_class_764",
+          "line": 765,
+          "name": "ProximityGap._anon_class_765",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_764",
+          "short_name": "_anon_class_765",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 773,
+          "line": 774,
           "name": "ProximityGap.ZdegLE1.mul",
           "namespace": "ProximityGap",
           "short_name": "ZdegLE1.mul",
@@ -12211,16 +12211,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 775,
-          "name": "ProximityGap._anon_class_775",
+          "line": 776,
+          "name": "ProximityGap._anon_class_776",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_775",
+          "short_name": "_anon_class_776",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 781,
+          "line": 782,
           "name": "ProximityGap.ZdegLE1_one",
           "namespace": "ProximityGap",
           "short_name": "ZdegLE1_one",
@@ -12229,7 +12229,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 788,
+          "line": 789,
           "name": "ProximityGap.ZdegLE1.pow",
           "namespace": "ProximityGap",
           "short_name": "ZdegLE1.pow",
@@ -12238,7 +12238,7 @@
         {
           "doc": "`X` has `Z`-degree `0` at the middle level.",
           "kind": "lemma",
-          "line": 795,
+          "line": 796,
           "name": "ProximityGap.ZdegLE1_X",
           "namespace": "ProximityGap",
           "short_name": "ZdegLE1_X",
@@ -12247,7 +12247,7 @@
         {
           "doc": "`C (C \u03c9)` (constant in `X`, scalar in `Z`) has `Z`-degree `0`.",
           "kind": "lemma",
-          "line": 803,
+          "line": 804,
           "name": "ProximityGap.ZdegLE1_CC",
           "namespace": "ProximityGap",
           "short_name": "ZdegLE1_CC",
@@ -12256,7 +12256,7 @@
         {
           "doc": "Pushing a middle-level `Z`-degree bound through the substitution `X \u21a6 X + C(C \u03c9)` (which is `Z`-degree `0`): the bound is preserved.",
           "kind": "lemma",
-          "line": 812,
+          "line": 813,
           "name": "ProximityGap.ZdegLE1.comp_addXCC",
           "namespace": "ProximityGap",
           "short_name": "ZdegLE1.comp_addXCC",
@@ -12265,16 +12265,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 814,
-          "name": "ProximityGap._anon_class_814",
+          "line": 815,
+          "name": "ProximityGap._anon_class_815",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_814",
+          "short_name": "_anon_class_815",
           "signature": "class classical"
         },
         {
           "doc": "Pushing the `Z`-degree bound through the outer map `X \u21a6 X + C(C \u03c9)` of `shift`.",
           "kind": "lemma",
-          "line": 828,
+          "line": 829,
           "name": "ProximityGap.ZdegLE.map_compX",
           "namespace": "ProximityGap",
           "short_name": "ZdegLE.map_compX",
@@ -12283,7 +12283,7 @@
         {
           "doc": "`s = u\u2080 + Z\u00b7u\u2081 : F[Z]` has `Z`-degree at most `1`.",
           "kind": "lemma",
-          "line": 836,
+          "line": 837,
           "name": "ProximityGap.natDegree_u0_add_Z_u1",
           "namespace": "ProximityGap",
           "short_name": "natDegree_u0_add_Z_u1",
@@ -12292,7 +12292,7 @@
         {
           "doc": "**Master `Z`-degree bound for the shift.**  At the Claim-5.4 curve point `(x, y) = (C \u03c9, u\u2080 + Z\u00b7u\u2081)`, shifting raises the `Z`-degree by at most the `Y`-degree of `Q` (since only `y` carries positive `Z`-degree, `\u2264 1`).  Hence every constraint output `((shift Q x y).coeff t).coeff s` is an `F[Z]`-polynomial of degree `\u2264 d + natDegreeY Q`.",
           "kind": "lemma",
-          "line": 848,
+          "line": 849,
           "name": "ProximityGap.ZdegLE_shift",
           "namespace": "ProximityGap",
           "short_name": "ZdegLE_shift",
@@ -12301,7 +12301,7 @@
         {
           "doc": "The monomial `a \u00b7 X^i Y^j Z^t` has `Z`-degree `\u2264 t`.",
           "kind": "lemma",
-          "line": 865,
+          "line": 866,
           "name": "ProximityGap.ZdegLE_triMonC",
           "namespace": "ProximityGap",
           "short_name": "ZdegLE_triMonC",
@@ -12310,7 +12310,7 @@
         {
           "doc": "If every box index has `Z`-degree `t \u2264 zCap`, the assembled `Q` has `Z`-degree `\u2264 zCap`.",
           "kind": "lemma",
-          "line": 878,
+          "line": 879,
           "name": "ProximityGap.ZdegLE_triCoeffsToPoly",
           "namespace": "ProximityGap",
           "short_name": "ZdegLE_triCoeffsToPoly",
@@ -12319,16 +12319,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 881,
-          "name": "ProximityGap._anon_class_881",
+          "line": 882,
+          "name": "ProximityGap._anon_class_882",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_881",
+          "short_name": "_anon_class_882",
           "signature": "class classical"
         },
         {
           "doc": "There is a nonzero box-coefficient vector in the kernel of the trivariate constraint map.",
           "kind": "lemma",
-          "line": 893,
+          "line": 894,
           "name": "ProximityGap.exists_nonzero_triSolution",
           "namespace": "ProximityGap",
           "short_name": "exists_nonzero_triSolution",
@@ -12337,25 +12337,25 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 896,
-          "name": "ProximityGap._anon_class_896",
+          "line": 897,
+          "name": "ProximityGap._anon_class_897",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_896",
+          "short_name": "_anon_class_897",
           "signature": "class classical"
         },
         {
           "doc": "For a box index `(i,j,t)`: `i + k\u00b7j \u2264 Dpg`.",
           "kind": "lemma",
-          "line": 919,
+          "line": 920,
           "name": "ProximityGap.gsBox_weighted_le",
           "namespace": "ProximityGap",
           "short_name": "gsBox_weighted_le",
-          "signature": "lemma gsBox_weighted_le {n m k : \u2115} {p : \u2115 \u00d7 \u2115 \u00d7 \u2115} (hk : 0 < k) (hp : p \u2208 gsBox n m k) :"
+          "signature": "lemma gsBox_weighted_le {n m k : \u2115} {p : \u2115 \u00d7 \u2115 \u00d7 \u2115} (_hk : 0 < k) (hp : p \u2208 gsBox n m k) :"
         },
         {
           "doc": "For a box index `(i,j,t)`: `j \u2264 Dpg`.",
           "kind": "lemma",
-          "line": 932,
+          "line": 933,
           "name": "ProximityGap.gsBox_Y_le",
           "namespace": "ProximityGap",
           "short_name": "gsBox_Y_le",
@@ -12364,7 +12364,7 @@
         {
           "doc": "For a box index `(i,j,t)`: `i \u2264 Dpg`.",
           "kind": "lemma",
-          "line": 941,
+          "line": 942,
           "name": "ProximityGap.gsBox_X_le",
           "namespace": "ProximityGap",
           "short_name": "gsBox_X_le",
@@ -12373,7 +12373,7 @@
         {
           "doc": "For a box index `(i,j,t)`: `t \u2264 zCap`.",
           "kind": "lemma",
-          "line": 949,
+          "line": 950,
           "name": "ProximityGap.gsBox_Z_le",
           "namespace": "ProximityGap",
           "short_name": "gsBox_Z_le",
@@ -12382,7 +12382,7 @@
         {
           "doc": "The `Y`-degree of the box-assembled `Q` is at most `Dpg`.",
           "kind": "lemma",
-          "line": 956,
+          "line": 957,
           "name": "ProximityGap.natDegree_gsQ_le",
           "namespace": "ProximityGap",
           "short_name": "natDegree_gsQ_le",
@@ -12391,7 +12391,7 @@
         {
           "doc": "**Multiplicity bridge.**  If `c` lies in the kernel of the constraint map, the assembled nonzero `Q` has root multiplicity `\u2265 m` at every curve point `(C \u03c9\u1d62, u\u2080\u1d62 + Z\u00b7u\u2081\u1d62)`. The kernel forces every `Z`-coefficient (up to `zMax`) of each order-`< m` shifted coefficient to vanish; combined with the `Z`-degree budget (`ZdegLE_shift` + the box bound), the whole `F[Z]` coefficient vanishes, and `triv_rootMultiplicity_ge_of_shift_zero` yields multiplicity `\u2265 m`.",
           "kind": "lemma",
-          "line": 970,
+          "line": 971,
           "name": "ProximityGap.gsQ_multiplicity",
           "namespace": "ProximityGap",
           "short_name": "gsQ_multiplicity",
@@ -12400,16 +12400,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 975,
-          "name": "ProximityGap._anon_class_975",
+          "line": 976,
+          "name": "ProximityGap._anon_class_976",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_975",
+          "short_name": "_anon_class_976",
           "signature": "class classical"
         },
         {
           "doc": "Claim 5.4 from [BCIKS20]. It essentially claims that there exists a solution to the Guruswami-Sudan constraints above. NOTE: As currently formalized this lemma is **false** for `n = 0` or `k = 0` (see `modified_guruswami_unsat_of_n_zero` / `modified_guruswami_unsat_of_k_zero`): the degree bound `D_X` collapses to `0` and the strict degree constraints become unsatisfiable.  The statement below therefore carries the proven-necessary side conditions `0 < n` and `0 < k` (the paper's non-degenerate regime is `k + 1 \u2264 n`, `1 \u2264 m`; the eventual dimension-counting proof \u2014 the trivariate analogue of `G",
           "kind": "lemma",
-          "line": 1024,
+          "line": 1025,
           "name": "ProximityGap.modified_guruswami_has_a_solution",
           "namespace": "ProximityGap",
           "short_name": "modified_guruswami_has_a_solution",
@@ -12418,16 +12418,16 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 1034,
-          "name": "ProximityGap._anon_instance_1034",
+          "line": 1035,
+          "name": "ProximityGap._anon_instance_1035",
           "namespace": "ProximityGap",
-          "short_name": "_anon_instance_1034",
+          "short_name": "_anon_instance_1035",
           "signature": "instance noncomputable instance {\u03b1 : Type} (s : Set \u03b1) [inst : Finite s] : Fintype s := Fintype.ofFinite _"
         },
         {
           "doc": "The set `S` (equation 5.2 of [BCIKS20]).",
           "kind": "def",
-          "line": 1037,
+          "line": 1038,
           "name": "ProximityGap.coeffs_of_close_proximity",
           "namespace": "ProximityGap",
           "short_name": "coeffs_of_close_proximity",
@@ -12436,7 +12436,7 @@
         {
           "doc": "There exists a `\u03b4`-close polynomial `P_z` for each `z` from the set `S`.",
           "kind": "lemma",
-          "line": 1044,
+          "line": 1045,
           "name": "ProximityGap.exists_Pz_of_coeffs_of_close_proximity",
           "namespace": "ProximityGap",
           "short_name": "exists_Pz_of_coeffs_of_close_proximity",
@@ -12445,7 +12445,7 @@
         {
           "doc": "The `\u03b4`-close polynomial `Pz` for each `z` from the set `S` (`coeffs_of_close_proximity`).",
           "kind": "def",
-          "line": 1063,
+          "line": 1064,
           "name": "ProximityGap.Pz",
           "namespace": "ProximityGap",
           "short_name": "Pz",
@@ -12454,7 +12454,7 @@
         {
           "doc": "Proposition 5.5 from [BCIKS20]. There exists a subset `S'` of the set `S` and a bivariate polynomial `P(X, Z)` that matches `Pz` on that set.",
           "kind": "lemma",
-          "line": 1071,
+          "line": 1072,
           "name": "ProximityGap.exists_a_set_and_a_matching_polynomial",
           "namespace": "ProximityGap",
           "short_name": "exists_a_set_and_a_matching_polynomial",
@@ -12463,7 +12463,7 @@
         {
           "doc": "The subset `S'` extracted from Proprosition 5.5 [BCIKS20].",
           "kind": "def",
-          "line": 1081,
+          "line": 1082,
           "name": "ProximityGap.matching_set",
           "namespace": "ProximityGap",
           "short_name": "matching_set",
@@ -12472,7 +12472,7 @@
         {
           "doc": "`S'` is indeed a subset of `S`",
           "kind": "lemma",
-          "line": 1087,
+          "line": 1088,
           "name": "ProximityGap.matching_set_is_a_sub_of_coeffs_of_close_proximity",
           "namespace": "ProximityGap",
           "short_name": "matching_set_is_a_sub_of_coeffs_of_close_proximity",
