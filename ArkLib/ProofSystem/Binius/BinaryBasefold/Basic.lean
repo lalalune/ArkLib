@@ -1151,7 +1151,7 @@ def foldStepRelOutProp (i : Fin ℓ)
   let oStmt := input.1.2
   let wit := input.2
   let oracleWitnessConsistency : Prop :=
-    oracleWitnessConsistency (mp := mp) (𝓑 := 𝓑) 𝔽q β
+    oracleWitnessConsistency (mp := mp) 𝔽q β
       (stmtIdx := i.succ) (oracleIdx := i.castSucc)
       (h_le := Nat.le_of_lt (Fin.castSucc_lt_succ)) stmt wit oStmt
   let badEventExists : Prop :=
@@ -1221,7 +1221,8 @@ def foldStepRelOut (i : Fin ℓ) :
     Set ((Statement (L := L) Context i.succ ×
       (∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)) ×
       Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ) :=
-  { input | foldStepRelOutProp (mp := mp) 𝔽q β i input}
+  { input | foldStepRelOutProp (L := L) (𝔽q := 𝔽q) (β := β)
+      (Context := Context) (mp := mp) i input}
 
 /-- Relation at step `i` of the CoreInteraction. `∀ i < ℓ, R_i` must hold at the
 beginning of ITERATION `i`. `R_ℓ` must hold after the last iteration and before sending

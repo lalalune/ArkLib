@@ -381,9 +381,45 @@ theorem Q_vanishes_on_close_codeword_graph [DecidableEq (Polynomial F)]
     (Bivariate.natWeightedDegree Qz 1 k) A hroots hA hdeg hcount
   rw [hQz, hP] at this ⊢; exact this
 
-open Trivariate in
-open Bivariate in
-/-- Claim 5.7 of [BCIKS20].
+omit [DecidableEq (RatFunc F)] in
+/-- Convert the explicit graph-vanishing side conditions into the divisibility hypothesis consumed
+by `pg_exists_common_candidate_pair_of_dvd_card_natDegreeY`.
+
+If the specialization `Q(z, X, Y)` is zero, divisibility is immediate.  Otherwise
+`Q_vanishes_on_close_codeword_graph` gives `(Q(z, X, Y)).eval Pz = 0`, which is equivalent to
+divisibility by `Y - Pz(X)`. -/
+lemma pg_divisibility_of_graph_vanishing_conditions [DecidableEq (Polynomial F)]
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (A : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ → Finset (Fin n))
+    (hA : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      ∀ i ∈ A z, (u₀ + z.1 • u₁) i =
+        (Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2).eval
+          (ωs i))
+    (hcount : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z.1) 1 k < m * (A z).card) :
+    ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      let P : F[X] := Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2
+      Polynomial.X - Polynomial.C P ∣ (pg_eval_on_Z (F := F) Q z.1) := by
+  classical
+  intro z
+  let P : F[X] := Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2
+  by_cases hQz : Trivariate.eval_on_Z Q z.1 = 0
+  · rw [← c57_eval_on_Z_eq_pg (F := F) Q z.1, hQz]
+    exact dvd_zero _
+  · have hvanish :
+        (Trivariate.eval_on_Z Q z.1).eval P = 0 := by
+      simpa [P] using
+        Q_vanishes_on_close_codeword_graph (F := F) (k := k) (z := z.1)
+          (h_gs := h_gs) z.2 hQz (A z) (hA z) (hcount z)
+    have hroot : (pg_eval_on_Z (F := F) Q z.1).eval P = 0 := by
+      simpa [P, ← c57_eval_on_Z_eq_pg (F := F) Q z.1] using hvanish
+    exact Polynomial.dvd_iff_isRoot.mpr hroot
+
+open Trivariate
+open Bivariate
+
+omit [DecidableEq (RatFunc F)] in
+/- Claim 5.7 of [BCIKS20].
 
 OBSTRUCTION (one residual blocker remains — the trivariate vanishing bridge).
 
@@ -432,6 +468,128 @@ With Gap A resolved, the proof obligation is retained pending the Gap-B vanishin
 needs the absent `δ ≤ δ₀` hypothesis), the false-off-regime second conjunct, and the upstream
 Prop 5.5.  The binder structure `∃ R H, R ∈ … ∧ Irreducible H ∧ …` is preserved so the
 downstream extractors stay well-typed. -/
+/-- Proved, side-condition-explicit form of the Claim 5.7 candidate-pair extraction.
+
+This packages the already-proved `pg_exists_common_candidate_pair_of_dvd_card_natDegreeY` into the
+factor-properties shape used by the §5 agreement chain, but it intentionally targets `pg_Rset`
+rather than the stronger Eq. 5.12 factorization list.  The missing work for the original
+free-parameter Claim 5.7 is now isolated in the hypotheses here: nonvanishing/separability of the
+`x₀` specialization, nonempty close set, graph divisibility for every close `z`, and the large-set
+Johnson-regime inequality. -/
+lemma exists_pg_factors_with_large_common_root_set_of_dvd (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hx0 : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        Bivariate.evalX (Polynomial.C x₀) R ≠ 0)
+    (hsep : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        (Bivariate.evalX (Polynomial.C x₀) R).Separable)
+    (hS_nonempty :
+      (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).Nonempty)
+    (hdiv : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      let P : F[X] := Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2
+      Polynomial.X - Polynomial.C P ∣ (pg_eval_on_Z (F := F) Q z.1))
+    (hlarge :
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q) :
+    ∃ R H,
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs ∧
+      Irreducible R ∧
+      Irreducible H ∧
+      0 < H.natDegree ∧
+      H ∣ (Bivariate.evalX (Polynomial.C x₀) R) ∧
+      (Bivariate.evalX (Polynomial.C x₀) R).Separable ∧
+      #(Finset.univ.filter
+          (fun z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ =>
+            have P : F[X] :=
+              Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2
+            (Trivariate.eval_on_Z R z.1).eval P = 0 ∧
+              (Bivariate.evalX z.1 H).eval (P.eval x₀) = 0))
+        ≥ #(Finset.univ : Finset (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁)) /
+          Bivariate.natDegreeY Q ∧
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q := by
+  classical
+  obtain ⟨R, H, hmem, hcard_pg⟩ :=
+    pg_exists_common_candidate_pair_of_dvd_card_natDegreeY (F := F) (k := k)
+      (δ := δ) (x₀ := x₀) (h_gs := h_gs) hx0 hsep hS_nonempty hdiv
+  have hpair :
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs ∧
+        H ∈
+          UniqueFactorizationMonoid.normalizedFactors
+            (Bivariate.evalX (Polynomial.C x₀) R) := by
+    simpa [pg_candidatePairs] using hmem
+  refine ⟨R, H, hpair.1, ?_, ?_, ?_, ?_, hsep R hpair.1, ?_, hlarge⟩
+  · exact pg_Rset_irreducible (F := F) (k := k) h_gs R hpair.1
+  · exact UniqueFactorizationMonoid.irreducible_of_normalized_factor
+      (a := Bivariate.evalX (Polynomial.C x₀) R) H hpair.2
+  · exact pg_candidatePairs_snd_natDegree_pos (F := F) (k := k) (x₀ := x₀)
+      (h_gs := h_gs) hsep hmem
+  · exact UniqueFactorizationMonoid.dvd_of_mem_normalizedFactors hpair.2
+  · simpa [c57_eval_on_Z_eq_pg] using hcard_pg
+
+omit [DecidableEq (RatFunc F)] in
+/-- Candidate-pair extraction directly from the graph agreement/count hypotheses used by
+`Q_vanishes_on_close_codeword_graph`.
+
+This is the proved side-condition-heavy replacement for the first half of Claim 5.7: the only
+remaining inputs are the list-decoding regime inequalities and the per-`z` agreement sets that make
+the graph-vanishing theorem applicable. -/
+lemma exists_pg_factors_with_large_common_root_set_of_graph_conditions
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hx0 : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        Bivariate.evalX (Polynomial.C x₀) R ≠ 0)
+    (hsep : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        (Bivariate.evalX (Polynomial.C x₀) R).Separable)
+    (hS_nonempty :
+      (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).Nonempty)
+    (A : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ → Finset (Fin n))
+    (hA : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      ∀ i ∈ A z, (u₀ + z.1 • u₁) i =
+        (Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2).eval
+          (ωs i))
+    (hcount : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z.1) 1 k < m * (A z).card)
+    (hlarge :
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q) :
+    ∃ R H,
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs ∧
+      Irreducible R ∧
+      Irreducible H ∧
+      0 < H.natDegree ∧
+      H ∣ (Bivariate.evalX (Polynomial.C x₀) R) ∧
+      (Bivariate.evalX (Polynomial.C x₀) R).Separable ∧
+      #(Finset.univ.filter
+          (fun z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ =>
+            have P : F[X] :=
+              Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2
+            (Trivariate.eval_on_Z R z.1).eval P = 0 ∧
+              (Bivariate.evalX z.1 H).eval (P.eval x₀) = 0))
+        ≥ #(Finset.univ : Finset (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁)) /
+          Bivariate.natDegreeY Q ∧
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q := by
+  classical
+  have hdiv :
+      ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+        let P : F[X] := Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2
+        Polynomial.X - Polynomial.C P ∣ (pg_eval_on_Z (F := F) Q z.1) :=
+    pg_divisibility_of_graph_vanishing_conditions (F := F) (k := k)
+      (δ := δ) (h_gs := h_gs) A hA hcount
+  exact exists_pg_factors_with_large_common_root_set_of_dvd (F := F) (k := k)
+    (δ := δ) (x₀ := x₀) (h_gs := h_gs) hx0 hsep hS_nonempty hdiv hlarge
+
 lemma exists_factors_with_large_common_root_set (δ : ℚ) (x₀ : F)
   (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
   ∃ R H, R ∈ (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose ∧

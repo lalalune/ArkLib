@@ -824,6 +824,15 @@ noncomputable def queryKnowledgeStateFunction {σ : Type} (init : ProbComp σ)
     --      the fold-semantics facts. This index/cast bookkeeping is the genuine remaining content.
     sorry
 
+/-- Placeholder RBR knowledge error for the query phase.
+
+The intended bound is the proximity-testing error described in the proof scaffold below. The theorem
+still carries the corresponding `sorry`, so this definition only restores the missing interface term
+without discharging that research proof obligation. -/
+noncomputable def queryRbrKnowledgeError
+    (_ : (pSpecQuery 𝔽q β γ_repetitions
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).ChallengeIdx) : ℝ≥0 := 0
+
 /-- Round-by-round knowledge soundness for the oracle verifier (query phase) -/
 theorem queryOracleVerifier_rbrKnowledgeSoundness [Fintype L] {σ : Type} (init : ProbComp σ)
     (impl : QueryImpl []ₒ (StateT σ ProbComp)) :

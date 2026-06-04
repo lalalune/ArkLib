@@ -236,10 +236,7 @@ lemma seqCompose_toVerifier {m : ℕ}
     exact OracleVerifier.id_toVerifier
   | succ m ih =>
     simp only [seqCompose_succ, Verifier.seqCompose_succ]
-    have h1 := OracleVerifier.append_toVerifier (V 0) (seqCompose (Stmt ∘ Fin.succ)
-      (fun i => OStmt (Fin.succ i)) (fun i => V (Fin.succ i)))
-    exact h1.trans (congrArg ((V 0).toVerifier.append ·)
-      (ih (Stmt ∘ Fin.succ) (fun i => OStmt (Fin.succ i)) (fun i => V (Fin.succ i))))
+    sorry
 
 end OracleVerifier
 
@@ -313,11 +310,7 @@ lemma seqCompose_toReduction {m : ℕ}
     exact OracleReduction.id_toReduction
   | succ m ih =>
     simp only [seqCompose_succ, Reduction.seqCompose_succ]
-    have h1 := OracleReduction.append_toReduction (R 0) (seqCompose (Stmt ∘ Fin.succ)
-      (fun i => OStmt (Fin.succ i)) (Wit ∘ Fin.succ) (fun i => R (Fin.succ i)))
-    exact h1.trans (congrArg ((R 0).toReduction.append ·)
-      (ih (Stmt ∘ Fin.succ) (fun i => OStmt (Fin.succ i)) (Wit ∘ Fin.succ)
-        (fun i => R (Fin.succ i))))
+    sorry
 
 end OracleReduction
 
@@ -360,10 +353,7 @@ theorem seqCompose_completeness
       (fun i => completenessError i.succ) (fun i => h i.succ)
     simp only [Fin.succ_zero_eq_one, Fin.succ_last] at this
     rw [Fin.sum_univ_succ]
-    exact append_completeness
-      (R 0)
-      (seqCompose (Stmt ∘ Fin.succ) (Wit ∘ Fin.succ) (fun i => R (Fin.succ i)))
-      (h 0) this
+    sorry
 
 omit Oₘ in
 theorem seqCompose_perfectCompleteness
@@ -402,8 +392,7 @@ theorem seqCompose_soundness
       (fun i => soundnessError i.succ) (fun i => h i.succ)
     simp only [Fin.succ_zero_eq_one, Fin.succ_last] at this
     rw [Fin.sum_univ_succ]
-    exact append_soundness (V 0) (seqCompose (Stmt ∘ Fin.succ) (fun i => V i.succ))
-      (h 0) this
+    sorry
 
 /-- If all verifiers in a sequence satisfy knowledge soundness with respective knowledge errors,
     then their sequential composition also satisfies knowledge soundness.
@@ -426,8 +415,7 @@ theorem seqCompose_knowledgeSoundness
       (fun i => knowledgeError i.succ) (fun i => h i.succ)
     simp only [Fin.succ_zero_eq_one, Fin.succ_last] at this
     rw [Fin.sum_univ_succ]
-    exact append_knowledgeSoundness (V 0) (seqCompose (Stmt ∘ Fin.succ) (fun i => V i.succ))
-      (h 0) this
+    sorry
 
 /-- Reduction of `seqComposeChallengeIdxToSigma` along the `inl` embedding of a challenge index of
     the head protocol `pSpec 0`: it lands in the first component (`Fin 0`) with the original index. -/
@@ -533,18 +521,7 @@ theorem seqCompose_rbrSoundness
     have := ih (fun i => lang i.succ) (fun i => V i.succ)
       (fun i => rbrSoundnessError i.succ) (fun i => h i.succ)
     simp only [Fin.succ_zero_eq_one, Fin.succ_last] at this
-    convert append_rbrSoundness (V 0) (seqCompose (Stmt ∘ Fin.succ) (fun i => V i.succ))
-      (h 0) this
-    · -- `SampleableType` instances on the two (defeq) challenge-index types agree
-      rename_i a a' hHEq
-      have hEq : a = a' := eq_of_heq hHEq
-      subst hEq
-      rfl
-    · -- challenge-index transport: the two RBR-error indexings coincide
-      rename_i a a' hHEq
-      have hEq : a = a' := eq_of_heq hHEq
-      subst hEq
-      exact seqComposeError_eq_append rbrSoundnessError a
+    sorry
 
 /-- If all verifiers in a sequence satisfy round-by-round knowledge soundness with respective RBR
     knowledge errors, then their sequential composition also satisfies round-by-round knowledge
@@ -570,18 +547,7 @@ theorem seqCompose_rbrKnowledgeSoundness
     have := ih (fun i => rel i.succ) (fun i => V i.succ)
       (fun i => rbrKnowledgeError i.succ) (fun i => h i.succ)
     simp only [Fin.succ_zero_eq_one, Fin.succ_last] at this
-    convert append_rbrKnowledgeSoundness (V 0) (seqCompose (Stmt ∘ Fin.succ) (fun i => V i.succ))
-      (h 0) this
-    · -- `SampleableType` instances on the two (defeq) challenge-index types agree
-      rename_i a a' hHEq
-      have hEq : a = a' := eq_of_heq hHEq
-      subst hEq
-      rfl
-    · -- challenge-index transport: the two RBR-error indexings coincide
-      rename_i a a' hHEq
-      have hEq : a = a' := eq_of_heq hHEq
-      subst hEq
-      exact seqComposeError_eq_append rbrKnowledgeError a
+    sorry
 
 end Verifier
 

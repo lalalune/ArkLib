@@ -6,6 +6,7 @@ Authors: Quang Dao
 
 import ArkLib.ProofSystem.ConstraintSystem.R1CS
 import ArkLib.Data.MvPolynomial.Multilinear
+import ArkLib.ProofSystem.Component.SendWitness
 import ArkLib.ProofSystem.Sumcheck.Spec.General
 
 /-!
@@ -75,7 +76,7 @@ instance : ∀ i, OracleInterface (OracleStatement R pp i) :=
   fun i => {
     Query := (Fin pp.ℓ_m → R) × (Fin pp.ℓ_n → R)
     toOC.spec := fun _ => R
-    toOC.impl := fun ⟨x, y⟩ => do return (← read).toMLE ⸨C ∘ x⸩ ⸨y⸩
+    toOC.impl := fun ⟨x, y⟩ => do return (← read).toMLE ⸨MvPolynomial.C ∘ x⸩ ⸨y⸩
   }
 
 -- For the input witness, we define its oracle interface to be the polynomial evaluation oracle of
@@ -87,7 +88,7 @@ instance : OracleInterface (Witness R pp) where
   Query := Fin pp.ℓ_w → R
   toOC.spec := fun _ => R
   toOC.impl := fun evalPoint => do
-    return (MLE ((← read) ∘ finFunctionFinEquiv)) ⸨evalPoint⸩
+    return (MvPolynomial.MLE ((← read) ∘ finFunctionFinEquiv)) ⸨evalPoint⸩
 
 /-!
   ## First message
@@ -127,8 +128,11 @@ def zeroCheckVirtualPolynomial (𝕩 : Statement.AfterFirstMessage R pp)
       MvPolynomial (Fin pp.ℓ_m) R :=
   letI 𝕫 := R1CS.𝕫 𝕩 (oStmt (.inr 0))
   ∑ x : Fin (2 ^ pp.ℓ_m),
-    (eqPolynomial (finFunctionFinEquiv.symm x : Fin pp.ℓ_m → R)) *
-      C ((oStmt (.inl .A) *ᵥ 𝕫) x * (oStmt (.inl .B) *ᵥ 𝕫) x - (oStmt (.inl .C) *ᵥ 𝕫) x)
+    (MvPolynomial.eqPolynomial (finFunctionFinEquiv.symm x : Fin pp.ℓ_m → R)) *
+      MvPolynomial.C
+        ((Matrix.mulVec (oStmt (.inl .A)) 𝕫) x *
+          (Matrix.mulVec (oStmt (.inl .B)) 𝕫) x -
+          (Matrix.mulVec (oStmt (.inl .C)) 𝕫) x)
 
 /-- Unfolds to `τ : Fin ℓ_m → R` -/
 @[simp]
@@ -238,7 +242,7 @@ noncomputable def zeroCheckEvalFromOracles
       let bVal ← rowSum .B
       let cVal ← rowSum .C
       let coeff : R := MvPolynomial.eval pt
-        (eqPolynomial (boolPoint R xEnum))
+        (MvPolynomial.eqPolynomial (boolPoint R xEnum))
       pure (acc + coeff * (aVal * bVal - cVal)))
     (0 : R)
 
@@ -412,7 +416,9 @@ noncomputable def evalClaimValue
   letI r_x : Fin pp.ℓ_m → R := stmt.1
   letI 𝕩 : Statement.AfterFirstMessage R pp := stmt.2.2
   letI 𝕫 := R1CS.𝕫 𝕩 (oStmt (.inr 0))
-  fun idx => MvPolynomial.eval r_x (MLE (((oStmt (.inl idx)) *ᵥ 𝕫) ∘ finFunctionFinEquiv))
+  fun idx =>
+    MvPolynomial.eval r_x
+      (MvPolynomial.MLE ((Matrix.mulVec (oStmt (.inl idx)) 𝕫) ∘ finFunctionFinEquiv))
 
 /-- The oracle prover for `sendEvalClaim`: it forwards the input oracle family `A, B, C, 𝕨`
 unchanged and sends the bundled evaluation claim `(v_A, v_B, v_C)` (computed via `evalClaimValue`)
@@ -569,7 +575,7 @@ def secondSumCheckVirtualPolynomial
   let r_x := stmt.2.1
   let x := stmt.2.2.2
   let z := R1CS.𝕫 x (oStmt (.inr (.inr 0)))
-  let zMLE : MvPolynomial (Fin pp.ℓ_n) R := MLE (z ∘ finFunctionFinEquiv)
+  let zMLE : MvPolynomial (Fin pp.ℓ_n) R := MvPolynomial.MLE (z ∘ finFunctionFinEquiv)
   let matrixEval (idx : R1CS.MatrixIdx) : MvPolynomial (Fin pp.ℓ_n) R :=
     (oStmt (.inr (.inl idx))).toMLE
       ⸨(MvPolynomial.C ∘ r_x : Fin pp.ℓ_m → MvPolynomial (Fin pp.ℓ_n) R)⸩

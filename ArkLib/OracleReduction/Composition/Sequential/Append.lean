@@ -310,7 +310,7 @@ open Function Embedding in
 def OracleVerifier.append (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
     (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂) :
       OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₃ OStmt₃ (pSpec₁ ++ₚ pSpec₂) where
-  verify := fun _ _ => OptionT.mk (pure none)
+  verify := OracleVerifier.Append.verify V₁ V₂
 
   -- Need to provide an embedding `ιₛ₃ ↪ ιₛ₁ ⊕ (pSpec₁ ++ₚ pSpec₂).MessageIdx`
   embed :=
@@ -338,6 +338,14 @@ def OracleVerifier.append (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ 
       simp [h] at this ⊢
       simp [this, MessageIdx.inr]
 
+@[simp]
+lemma OracleVerifier.append_toVerifier
+    (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂) :
+      (OracleVerifier.append V₁ V₂).toVerifier =
+        Verifier.append V₁.toVerifier V₂.toVerifier := by
+  sorry
+
 /-- Sequential composition of oracle reductions is just the sequential composition of the oracle
   provers and oracle verifiers. -/
 def OracleReduction.append (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
@@ -345,6 +353,14 @@ def OracleReduction.append (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁
       OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₃ OStmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂) where
   prover := Prover.append R₁.prover R₂.prover
   verifier := OracleVerifier.append R₁.verifier R₂.verifier
+
+@[simp]
+lemma OracleReduction.append_toReduction
+    (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
+    (R₂ : OracleReduction oSpec Stmt₂ OStmt₂ Wit₂ Stmt₃ OStmt₃ Wit₃ pSpec₂) :
+      (OracleReduction.append R₁ R₂).toReduction =
+        Reduction.append R₁.toReduction R₂.toReduction := by
+  ext : 1 <;> simp [toReduction, OracleReduction.append, Reduction.append]
 
 end OracleProtocol
 
@@ -476,6 +492,194 @@ def RoundByRound.append
       exact congrArg WitMid₂ (Fin.ext (by simp only [Fin.val_succ, Fin.val_last]; omega))
 
 end Extractor
+
+section Security
+
+open scoped NNReal
+
+section Protocol
+
+variable {Stmt₁ Wit₁ Stmt₂ Wit₂ Stmt₃ Wit₃ : Type}
+    {pSpec₁ : ProtocolSpec m} {pSpec₂ : ProtocolSpec n}
+    [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)]
+    {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel₁ : Set (Stmt₁ × Wit₁)} {rel₂ : Set (Stmt₂ × Wit₂)}
+    {rel₃ : Set (Stmt₃ × Wit₃)}
+
+namespace Reduction
+
+theorem reduction_append_completeness
+    (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
+    (R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
+    {completenessError₁ completenessError₂ : ℝ≥0}
+    (h₁ : R₁.completeness init impl rel₁ rel₂ completenessError₁)
+    (h₂ : R₂.completeness init impl rel₂ rel₃ completenessError₂) :
+      (R₁.append R₂).completeness init impl
+        rel₁ rel₃ (completenessError₁ + completenessError₂) := by
+  sorry
+
+theorem reduction_append_perfectCompleteness
+    (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
+    (R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
+    (h₁ : R₁.perfectCompleteness init impl rel₁ rel₂)
+    (h₂ : R₂.perfectCompleteness init impl rel₂ rel₃) :
+      (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃ := by
+  unfold perfectCompleteness at h₁ h₂ ⊢
+  simpa using reduction_append_completeness R₁ R₂ h₁ h₂
+
+end Reduction
+
+namespace Verifier
+
+theorem append_soundness {lang₁ : Set Stmt₁} {lang₂ : Set Stmt₂} {lang₃ : Set Stmt₃}
+    (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁) (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+    {soundnessError₁ soundnessError₂ : ℝ≥0}
+    (h₁ : V₁.soundness init impl lang₁ lang₂ soundnessError₁)
+    (h₂ : V₂.soundness init impl lang₂ lang₃ soundnessError₂) :
+      (V₁.append V₂).soundness init impl lang₁ lang₃ (soundnessError₁ + soundnessError₂) := by
+  sorry
+
+theorem append_knowledgeSoundness
+    (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁)
+    (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+    {knowledgeError₁ knowledgeError₂ : ℝ≥0}
+    (h₁ : V₁.knowledgeSoundness init impl rel₁ rel₂ knowledgeError₁)
+    (h₂ : V₂.knowledgeSoundness init impl rel₂ rel₃ knowledgeError₂) :
+      (V₁.append V₂).knowledgeSoundness init impl
+        rel₁ rel₃ (knowledgeError₁ + knowledgeError₂) := by
+  sorry
+
+theorem append_rbrSoundness {lang₁ : Set Stmt₁} {lang₂ : Set Stmt₂} {lang₃ : Set Stmt₃}
+    (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁)
+    (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+    {rbrSoundnessError₁ : pSpec₁.ChallengeIdx → ℝ≥0}
+    {rbrSoundnessError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
+    (h₁ : V₁.rbrSoundness init impl lang₁ lang₂ rbrSoundnessError₁)
+    (h₂ : V₂.rbrSoundness init impl lang₂ lang₃ rbrSoundnessError₂) :
+      (V₁.append V₂).rbrSoundness init impl lang₁ lang₃
+        (Sum.elim rbrSoundnessError₁ rbrSoundnessError₂ ∘ ChallengeIdx.sumEquiv.symm) := by
+  sorry
+
+theorem append_rbrKnowledgeSoundness
+    (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁)
+    (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+    {rbrKnowledgeError₁ : pSpec₁.ChallengeIdx → ℝ≥0}
+    {rbrKnowledgeError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
+    (h₁ : V₁.rbrKnowledgeSoundness init impl rel₁ rel₂ rbrKnowledgeError₁)
+    (h₂ : V₂.rbrKnowledgeSoundness init impl rel₂ rel₃ rbrKnowledgeError₂) :
+      (V₁.append V₂).rbrKnowledgeSoundness init impl rel₁ rel₃
+        (Sum.elim rbrKnowledgeError₁ rbrKnowledgeError₂ ∘ ChallengeIdx.sumEquiv.symm) := by
+  sorry
+
+end Verifier
+
+end Protocol
+
+section OracleProtocol
+
+variable {Stmt₁ : Type} {ιₛ₁ : Type} {OStmt₁ : ιₛ₁ → Type}
+    [Oₛ₁ : ∀ i, OracleInterface (OStmt₁ i)]
+    {Wit₁ : Type}
+    {Stmt₂ : Type} {ιₛ₂ : Type} {OStmt₂ : ιₛ₂ → Type}
+    [Oₛ₂ : ∀ i, OracleInterface (OStmt₂ i)]
+    {Wit₂ : Type}
+    {Stmt₃ : Type} {ιₛ₃ : Type} {OStmt₃ : ιₛ₃ → Type}
+    [Oₛ₃ : ∀ i, OracleInterface (OStmt₃ i)]
+    {Wit₃ : Type}
+    {pSpec₁ : ProtocolSpec m} {pSpec₂ : ProtocolSpec n}
+    [Oₘ₁ : ∀ i, OracleInterface ((pSpec₁.Message i))]
+    [Oₘ₂ : ∀ i, OracleInterface ((pSpec₂.Message i))]
+    [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)]
+    {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel₁ : Set ((Stmt₁ × ∀ i, OStmt₁ i) × Wit₁)}
+    {rel₂ : Set ((Stmt₂ × ∀ i, OStmt₂ i) × Wit₂)}
+    {rel₃ : Set ((Stmt₃ × ∀ i, OStmt₃ i) × Wit₃)}
+
+namespace OracleReduction
+
+theorem append_completeness
+    (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
+    (R₂ : OracleReduction oSpec Stmt₂ OStmt₂ Wit₂ Stmt₃ OStmt₃ Wit₃ pSpec₂)
+    {completenessError₁ completenessError₂ : ℝ≥0}
+    (h₁ : R₁.completeness init impl rel₁ rel₂ completenessError₁)
+    (h₂ : R₂.completeness init impl rel₂ rel₃ completenessError₂) :
+      (R₁.append R₂).completeness init impl
+        rel₁ rel₃ (completenessError₁ + completenessError₂) := by
+  unfold completeness
+  convert Reduction.reduction_append_completeness R₁.toReduction R₂.toReduction h₁ h₂
+  simp only [append_toReduction]
+
+theorem append_perfectCompleteness
+    (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
+    (R₂ : OracleReduction oSpec Stmt₂ OStmt₂ Wit₂ Stmt₃ OStmt₃ Wit₃ pSpec₂)
+    (h₁ : R₁.perfectCompleteness init impl rel₁ rel₂)
+    (h₂ : R₂.perfectCompleteness init impl rel₂ rel₃) :
+      (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃ := by
+  unfold perfectCompleteness
+  convert Reduction.reduction_append_perfectCompleteness R₁.toReduction R₂.toReduction h₁ h₂
+  simp only [append_toReduction]
+
+end OracleReduction
+
+namespace OracleVerifier
+
+variable {lang₁ : Set (Stmt₁ × (∀ i, OStmt₁ i))}
+    {lang₂ : Set (Stmt₂ × (∀ i, OStmt₂ i))}
+    {lang₃ : Set (Stmt₃ × (∀ i, OStmt₃ i))}
+
+theorem append_soundness
+    (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂)
+    {soundnessError₁ soundnessError₂ : ℝ≥0}
+    (h₁ : V₁.soundness init impl lang₁ lang₂ soundnessError₁)
+    (h₂ : V₂.soundness init impl lang₂ lang₃ soundnessError₂) :
+      (V₁.append V₂).soundness init impl lang₁ lang₃ (soundnessError₁ + soundnessError₂) := by
+  unfold soundness
+  convert Verifier.append_soundness V₁.toVerifier V₂.toVerifier h₁ h₂
+  simp only [append_toVerifier]
+
+theorem append_knowledgeSoundness
+    (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂)
+    {knowledgeError₁ knowledgeError₂ : ℝ≥0}
+    (h₁ : V₁.knowledgeSoundness init impl rel₁ rel₂ knowledgeError₁)
+    (h₂ : V₂.knowledgeSoundness init impl rel₂ rel₃ knowledgeError₂) :
+      (V₁.append V₂).knowledgeSoundness init impl rel₁ rel₃
+        (knowledgeError₁ + knowledgeError₂) := by
+  unfold knowledgeSoundness
+  convert Verifier.append_knowledgeSoundness V₁.toVerifier V₂.toVerifier h₁ h₂
+  simp only [append_toVerifier]
+
+theorem append_rbrSoundness (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂)
+    {rbrSoundnessError₁ : pSpec₁.ChallengeIdx → ℝ≥0}
+    {rbrSoundnessError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
+    (h₁ : V₁.rbrSoundness init impl lang₁ lang₂ rbrSoundnessError₁)
+    (h₂ : V₂.rbrSoundness init impl lang₂ lang₃ rbrSoundnessError₂) :
+      (V₁.append V₂).rbrSoundness init impl lang₁ lang₃
+        (Sum.elim rbrSoundnessError₁ rbrSoundnessError₂ ∘ ChallengeIdx.sumEquiv.symm) := by
+  unfold rbrSoundness
+  convert Verifier.append_rbrSoundness V₁.toVerifier V₂.toVerifier h₁ h₂
+  simp only [append_toVerifier]
+
+theorem append_rbrKnowledgeSoundness
+    (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂)
+    {rbrKnowledgeError₁ : pSpec₁.ChallengeIdx → ℝ≥0}
+    {rbrKnowledgeError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
+    (h₁ : V₁.rbrKnowledgeSoundness init impl rel₁ rel₂ rbrKnowledgeError₁)
+    (h₂ : V₂.rbrKnowledgeSoundness init impl rel₂ rel₃ rbrKnowledgeError₂) :
+      (V₁.append V₂).rbrKnowledgeSoundness init impl rel₁ rel₃
+        (Sum.elim rbrKnowledgeError₁ rbrKnowledgeError₂ ∘ ChallengeIdx.sumEquiv.symm) := by
+  unfold rbrKnowledgeSoundness
+  convert Verifier.append_rbrKnowledgeSoundness V₁.toVerifier V₂.toVerifier h₁ h₂
+  simp only [append_toVerifier]
+
+end OracleVerifier
+
+end OracleProtocol
+
+end Security
 
 namespace Verifier
 

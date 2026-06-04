@@ -37,18 +37,16 @@ theorem RS_correlatedAgreement_affineLines {deg : ℕ} {domain : ι ↪ F} {δ :
   -- Do casing analysis on `hδ`
   by_cases hδ_uniqueDecodingRegime :
     δ ≤ Code.relativeUniqueDecodingRadius (ι := ι) (F := F) (C := ReedSolomon.code domain deg)
-  then
-    RS_correlatedAgreement_affineLines_uniqueDecodingRegime (hδ := hδ_uniqueDecodingRegime)
-  else
-    by
-      classical
-      have hcurves := correlatedAgreement_affine_curves (k := 1) (deg := deg)
-        (domain := domain) (δ := δ) hδ
-      unfold δ_ε_correlatedAgreementAffineLines
-      intro u hprob
-      unfold δ_ε_correlatedAgreementCurves at hcurves
-      exact hcurves u (by
-        simpa [one_mul, Fin.sum_univ_two] using hprob)
+  ·
+    exact RS_correlatedAgreement_affineLines_uniqueDecodingRegime (hδ := hδ_uniqueDecodingRegime)
+  · classical
+    have hcurves := correlatedAgreement_affine_curves (k := 1) (deg := deg)
+      (domain := domain) (δ := δ) hδ
+    unfold δ_ε_correlatedAgreementAffineLines
+    intro u hprob
+    unfold δ_ε_correlatedAgreementCurves at hcurves
+    exact hcurves u (by
+      simpa [one_mul, Fin.sum_univ_two] using hprob)
 
 end CoreResults
 

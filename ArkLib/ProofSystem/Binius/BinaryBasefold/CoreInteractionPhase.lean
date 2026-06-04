@@ -5,6 +5,7 @@ Authors: Chung Thai Nguyen, Quang Dao
 -/
 
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Steps
+import ArkLib.OracleReduction.Composition.Sequential.Append
 
 /-!
 ## Binary Basefold Core Interaction Phase

@@ -132,20 +132,18 @@ def batchedFRIOracleLens [DecidableEq F] :
     match q with
     | ⟨j, v⟩ => ReaderT.mk fun stmtIn => do
         have hv : v.1 ∈ ω.toFinset := by
-          rw [ReedSolomon.CosetFftDomain.mem_coset_finset_iff_mem_coset_domain]
+          rw [CosetFftDomainClass.mem_toFinset_iff_mem]
           rcases j with ⟨j, h⟩
           have : j = 0 := by simpa using h
-          simp only [Nat.succ_eq_add_one, Fin.coe_ofNat_eq_mod, Nat.zero_mod, Nat.reduceAdd,
-            Fin.ofNat_eq_cast, Fin.val_natCast] at v
+          simp only [Fin.coe_ofNat_eq_mod, Nat.zero_mod, Nat.reduceAdd] at v
           rcases v with ⟨v, h'⟩
           simp only
           subst this
           simp only [finRangeTo.eq_1, List.take_zero, List.toFinset_nil, Finset.sum_empty,
-            Nat.sub_zero, ReedSolomon.CosetFftDomain.subdomainNatReversed,
-            ReedSolomon.CosetFftDomain.subdomainNat, Nat.succ_eq_add_one, Fin.ofNat_eq_cast] at h'
-          rw [ReedSolomon.CosetFftDomain.mem_coset_finset_iff_mem_coset_domain] at h'
-          rw [←ReedSolomon.CosetFftDomain.subdomain_n']
-          exact (ReedSolomon.CosetFftDomain.mem_subdomain_of_eq_vals (by simp)).1 h'
+            Nat.sub_zero] at h'
+          rw [CosetFftDomainClass.mem_toFinset_iff_mem] at h'
+          rw [←CosetFftDomainClass.mem_subdomain_0_iff_mem]
+          exact h'
         let cs := stmtIn.1
         let pt : ω.toFinset := ⟨v.1, hv⟩
         let base : F ← (query (spec := [OracleStatement m ω]ₒ)
@@ -181,13 +179,13 @@ def batchedFRIOracleLens [DecidableEq F] :
       simp only [Function.Embedding.sumMap, Function.Embedding.coeFn_mk, Sum.map_inl] at hV ⊢
       rw [hV]
       -- `OracleStatement m ω (castLE 0) = OracleStatement m ω 0 = ω.toFinset → F`; and
-      -- `Fri.Spec.OracleStatement s ω 0 0 = (ω.subdomainNatReversed 0).toFinset → F`, with
-      -- `(ω.subdomainNatReversed 0).toFinset = ω.toFinset`, so the two oracle families agree.
-      have hdom : (ω.subdomainNatReversed 0).toFinset = ω.toFinset := by
+      -- `Fri.Spec.OracleStatement s ω 0 0 = (ω.subdomain 0).toFinset → F`, with
+      -- `(ω.subdomain 0).toFinset = ω.toFinset`, so the two oracle families agree.
+      have hdom : (ω.subdomain 0).toFinset = ω.toFinset := by
         ext x
-        rw [ReedSolomon.CosetFftDomain.mem_coset_finset_iff_mem_coset_domain,
-          ReedSolomon.CosetFftDomain.subdomainNatReversed_zero,
-          ← ReedSolomon.CosetFftDomain.mem_coset_finset_iff_mem_coset_domain]
+        rw [CosetFftDomainClass.mem_toFinset_iff_mem,
+          CosetFftDomainClass.mem_subdomain_0_iff_mem,
+          ← CosetFftDomainClass.mem_toFinset_iff_mem]
       show Fri.Spec.OracleStatement s ω 0 0 = OracleStatement m ω (Fin.castLE (Nat.le_add_left 1 m) 0)
       have hcast : (Fin.castLE (Nat.le_add_left 1 m) (0 : Fin (0 + 1))) = (0 : Fin (m + 1)) :=
         Fin.ext (by simp only [Fin.val_castLE, Fin.val_zero])
