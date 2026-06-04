@@ -13704,6 +13704,73 @@
         }
       ]
     },
+    "ArkLib/Data/CodingTheory/ProximityGap/BCKHS25/Interpolation.lean": {
+      "declarations": [
+        {
+          "doc": "A bivariate polynomial of `X`-degree less than the number of points at which its `X`-evaluation vanishes is zero (coefficient-wise root counting). The `A \u2260 0` upgrade of [BCKHS25] Lemma 2.1 and the \u00a73 interpolant both reduce to this.",
+          "kind": "theorem",
+          "line": 36,
+          "name": "BCKHS25.eq_zero_of_degreeX_lt_card_of_evalX_eq_zero",
+          "namespace": "BCKHS25",
+          "short_name": "eq_zero_of_degreeX_lt_card_of_evalX_eq_zero",
+          "signature": "theorem eq_zero_of_degreeX_lt_card_of_evalX_eq_zero {f : F[X][Y]}"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 39,
+          "name": "BCKHS25._anon_class_39",
+          "namespace": "BCKHS25",
+          "short_name": "_anon_class_39",
+          "signature": "class classical"
+        },
+        {
+          "doc": "Abstract underdetermined-system existence: a linear map between finite-dimensional spaces with strictly larger domain has a nonzero kernel vector.",
+          "kind": "theorem",
+          "line": 60,
+          "name": "BCKHS25.exists_ne_zero_map_eq_zero",
+          "namespace": "BCKHS25",
+          "short_name": "exists_ne_zero_map_eq_zero",
+          "signature": "theorem exists_ne_zero_map_eq_zero {K V W : Type*} [Field K]"
+        },
+        {
+          "doc": "Unknown index type for the (A, B) coefficient vector: `A` has `X`-degree `< da` and `Z`-degree `< za`; `B` has `X`-degree `< db` and `Z`-degree `< zb`.",
+          "kind": "abbrev",
+          "line": 71,
+          "name": "BCKHS25.BWIdx",
+          "namespace": "BCKHS25",
+          "short_name": "BWIdx",
+          "signature": "abbrev BWIdx (da za db zb : \u2115) := (Fin da \u00d7 Fin za) \u2295 (Fin db \u00d7 Fin zb)"
+        },
+        {
+          "doc": "The Berlekamp\u2013Welch constraint matrix over the line word `u\u2080 + Z\u00b7u\u2081`: row `(x, j)` is the `Z^j`-coefficient of `B(\u03c9_x, Z) \u2212 (u\u2080 x + Z\u00b7u\u2081 x)\u00b7A(\u03c9_x, Z)`.",
+          "kind": "def",
+          "line": 75,
+          "name": "BCKHS25.BWMatrix'",
+          "namespace": "BCKHS25",
+          "short_name": "BWMatrix'",
+          "signature": "def BWMatrix' (da za db zb : \u2115) (domain : \u03b9 \u21aa F) (u\u2080 u\u2081 : \u03b9 \u2192 F) :"
+        },
+        {
+          "doc": "The dimension count: with `zb = za + 1` (B one Z-degree higher) and `da\u00b7za + db\u00b7(za+1) > n\u00b7(za+1)`, the constraint system has a nontrivial solution.",
+          "kind": "theorem",
+          "line": 89,
+          "name": "BCKHS25.exists_ne_zero_BWvec",
+          "namespace": "BCKHS25",
+          "short_name": "exists_ne_zero_BWvec",
+          "signature": "theorem exists_ne_zero_BWvec (da za db zb : \u2115) (hzb : zb = za + 1)"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 94,
+          "name": "BCKHS25._anon_class_94",
+          "namespace": "BCKHS25",
+          "short_name": "_anon_class_94",
+          "signature": "class classical"
+        }
+      ]
+    },
     "ArkLib/Data/CodingTheory/ProximityGap/Basic.lean": {
       "declarations": [
         {
@@ -49708,8 +49775,8 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5397,
-      "files": 286
+      "declarations": 5404,
+      "files": 287
     }
   }
 }
