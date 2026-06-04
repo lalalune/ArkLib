@@ -1432,8 +1432,7 @@ theorem common_roots_force_lift_zero
       exact _root_.BCIKS20AppendixA.elimPoly_eval_eq_zero_of_mem_S_β hH β hz
     exact (Finset.finite_toSet _).subset hsubroot
   have hTcard : T.card ≤ Set.ncard (_root_.BCIKS20AppendixA.S_β β) := by
-    rw [← Set.ncard_coe_finset T]
-    exact Set.ncard_le_ncard hsub hSfinite
+    rw [← Set.ncard_coe_finset T]; exact Set.ncard_le_ncard hsub hSfinite
   have hTcard' :
       (T.card : WithBot ℕ) ≤
         (Set.ncard (_root_.BCIKS20AppendixA.S_β β) : WithBot ℕ) := by
