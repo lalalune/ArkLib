@@ -1379,6 +1379,36 @@ theorem RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one (e
   intro t
   simpa using hdeg_a t
 
+
+open Polynomial in
+/-- Degree-`d` generalization of `BW_homMatrix_entry_natDegree_le_one` (the
+curves case of [BCIKS20] §6.1: matrix entries are polynomials of `z`-degree at
+most `k` instead of affine). Entries of the Berlekamp–Welch matrix built over
+`F[X]`-constants `ωs` and arbitrary words `g` of degree ≤ `d` have degree ≤ `d`.
+The line case is `d = 1`, `g i = C (f0 i) + X * C (f1 i)`. -/
+theorem BW_homMatrix_entry_natDegree_le_of_natDegree_le {F : Type} [Field F]
+    {ι : Type} [Fintype ι] (e k : ℕ) (ωs : ι → F) (g : ι → F[X]) (d : ℕ)
+    (hd : ∀ i, (g i).natDegree ≤ d) (i : ι) (j : Fin ((e + 1) + (e + k))) :
+    (BW_homMatrix (ι := ι) e k (fun i => (Polynomial.C (ωs i) : F[X])) g i j).natDegree ≤ d := by
+  classical
+  by_cases hjlt : (j.1 < e + 1)
+  · -- evaluation block: g i * C(ωs i)^j — degree ≤ deg (g i) + 0
+    simp only [BW_homMatrix, Matrix.of_apply, hjlt, ↓reduceIte]
+    calc ((g i) * (Polynomial.C (ωs i)) ^ j.1).natDegree
+        ≤ (g i).natDegree + ((Polynomial.C (ωs i)) ^ j.1).natDegree :=
+          Polynomial.natDegree_mul_le
+      _ ≤ d + 0 := by
+          refine Nat.add_le_add (hd i) ?_
+          simpa using Polynomial.natDegree_pow_le_of_le j.1
+            (le_of_eq (Polynomial.natDegree_C (ωs i)))
+      _ = d := Nat.add_zero d
+  · -- constraint block: -C(ωs i)^(j-(e+1)) — degree 0
+    simp only [BW_homMatrix, Matrix.of_apply, hjlt, ↓reduceIte, Polynomial.natDegree_neg]
+    calc ((Polynomial.C (ωs i)) ^ (j.1 - (e + 1))).natDegree
+        ≤ (j.1 - (e + 1)) * (Polynomial.C (ωs i)).natDegree := Polynomial.natDegree_pow_le
+      _ = 0 := by simp [Polynomial.natDegree_C]
+      _ ≤ d := Nat.zero_le d
+
 end CoreResults
 
 end ProximityGap
