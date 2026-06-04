@@ -422,6 +422,53 @@ instance t {ι₁ ι₂ ι₃}
   (OracleQuery (spec₁ + (spec₂ + spec₃))) := by
   infer_instance
 
+set_option maxHeartbeats 1000000 in
+/-- The honest simple prover threads its input polynomial unchanged: any output statement in the
+support of its run has output oracle statement equal to the input polynomial, and new target equal
+to that polynomial evaluated at the sampled challenge. -/
+private lemma prover_run_output (stmt : StmtIn R × (∀ i, OStmtIn R deg i))
+    (out : (pSpec R deg).FullTranscript × (StmtOut R × ((i : Unit) → OStmtOut R deg i)) × Unit)
+    (hout : out ∈ support ((prover R deg oSpec).run stmt ())) :
+    out.2.1.2 () = stmt.2 () ∧
+      out.2.1.1.1 = Polynomial.eval out.2.1.1.2 (stmt.2 ()).val := by
+  simp only [prover, Prover.run, Prover.runToRound, Fin.induction_two, Prover.processRound,
+    pSpec, bind_pure_comp] at hout
+  -- Resolve round 0 direction (P_to_V): the match reduces to the P_to_V branch
+  split at hout <;> rename_i hDir0
+  · exact absurd hDir0 (by decide)
+  -- Resolve round 1 direction (V_to_P)
+  split at hout <;> rename_i hDir1
+  swap
+  · exact absurd hDir1 (by decide)
+  -- Collapse all `pure`/`liftM`/`map` glue so only the challenge sampling remains a genuine bind
+  simp only [liftM_pure, liftComp_pure, map_pure, pure_bind, bind_pure_comp,
+    Functor.map_map, Function.comp_def, map_map] at hout
+  -- Peel the outer bind: `out` is the (pure) prover output as a function of the round result
+  -- `challenge`; `hchal` records that `challenge` arises from the two-round computation.
+  rw [mem_support_bind_iff] at hout
+  obtain ⟨challenge, hchal, hout⟩ := hout
+  -- Peel the round-0 (send poly) bind inside `hchal` to learn `challenge.2.1 = stmt.2 ()`
+  erw [support_bind] at hchal
+  rw [Set.mem_iUnion] at hchal
+  obtain ⟨r0, hchal⟩ := hchal
+  rw [Set.mem_iUnion] at hchal
+  obtain ⟨hr0, hchal⟩ := hchal
+  -- Round 0: `r0 = (concat (stmt.2 ()) default, stmt.2 ())`, so `r0.2 = stmt.2 ()`
+  erw [support_map, support_pure] at hr0
+  simp only [Set.image_singleton, Set.mem_singleton_iff] at hr0
+  subst hr0
+  -- Round 1: `challenge = (concat sampled r0.1, r0.2, sampled)`, so `challenge.2.1 = stmt.2 ()`
+  erw [support_map] at hchal
+  rw [Set.mem_image] at hchal
+  obtain ⟨c, _hc, rfl⟩ := hchal
+  -- Resolve the outer pure to determine `out`
+  erw [support_map] at hout
+  rw [Set.mem_image] at hout
+  obtain ⟨w, hw, rfl⟩ := hout
+  simp only [liftM_pure, support_pure, Set.mem_singleton_iff] at hw
+  subst hw
+  exact ⟨rfl, rfl⟩
+
 open Function in
 def oracleVerifier : OracleVerifier oSpec (StmtIn R) (OStmtIn R deg) (StmtOut R) (OStmtOut R deg)
     (pSpec R deg) where
