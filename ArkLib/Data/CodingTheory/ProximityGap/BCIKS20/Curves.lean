@@ -7,6 +7,7 @@ Authors: Quang Dao, Katerina Hristova, František Silváši, Julian Sutherland,
 
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ErrorBound
 import ArkLib.Data.CodingTheory.ReedSolomon
+import ArkLib.ToMathlib.Polynomial.EvalExt
 
 namespace ProximityGap
 
@@ -48,6 +49,40 @@ noncomputable def coeffs_of_close_proximity_curve {l : ℕ}
   have : Fintype { z | δᵣ(Curve.polynomialCurveEval (F := F) (A := F) u z, V) ≤ δ } := by
     infer_instance
   @Set.toFinset _ { z | δᵣ(Curve.polynomialCurveEval (F := F) (A := F) u z, V) ≤ δ } this
+
+/-- Propagation brick for the §6.1 argument: two polynomial curves of degree `< l`
+that agree in coordinate `x` on at least `l` parameter values agree in that
+coordinate everywhere. -/
+private lemma polynomialCurveEval_coord_eq_of_agree {n l : ℕ} {F : Type} [Field F]
+    [DecidableEq F] {u v : Fin l → Fin n → F} {x : Fin n}
+    {Zs : Finset F} (hZ : l ≤ Zs.card)
+    (h : ∀ z ∈ Zs, Curve.polynomialCurveEval (F := F) (A := F) u z x
+      = Curve.polynomialCurveEval (F := F) (A := F) v z x) :
+    ∀ z : F, Curve.polynomialCurveEval (F := F) (A := F) u z x
+      = Curve.polynomialCurveEval (F := F) (A := F) v z x := by
+  -- coordinate-wise polynomial packaging
+  have hEval : ∀ (a : Fin l → Fin n → F) (w : F),
+      (∑ i : Fin l, Polynomial.C (a i x) * Polynomial.X ^ (i : ℕ)).eval w
+        = Curve.polynomialCurveEval (F := F) (A := F) a w x := by
+    intro a w
+    rw [Polynomial.eval_finset_sum]
+    simp only [Polynomial.eval_mul, Polynomial.eval_C, Polynomial.eval_pow, Polynomial.eval_X,
+      Curve.polynomialCurveEval, Finset.sum_apply, Pi.smul_apply, smul_eq_mul]
+    exact Finset.sum_congr rfl fun i _ => mul_comm _ _
+  have hdeg : ∀ (a : Fin l → Fin n → F),
+      (∑ i : Fin l, Polynomial.C (a i x) * Polynomial.X ^ (i : ℕ)).degree < ((l : ℕ) : WithBot ℕ) := by
+    intro a
+    apply lt_of_le_of_lt (Polynomial.degree_sum_le _ _)
+    rw [Finset.sup_lt_iff (by exact_mod_cast WithBot.bot_lt_coe l)]
+    intro i _
+    exact lt_of_le_of_lt (Polynomial.degree_C_mul_X_pow_le _ _) (by exact_mod_cast i.isLt)
+  have hPQ := Polynomial.eq_of_eval_eq_degree (n := l) (hdeg u) (hdeg v) Zs hZ
+    (fun w hw => by rw [hEval u, hEval v]; exact h w hw)
+  intro z
+  calc Curve.polynomialCurveEval (F := F) (A := F) u z x
+      = (∑ i : Fin l, Polynomial.C (u i x) * Polynomial.X ^ (i : ℕ)).eval z := (hEval u z).symm
+    _ = (∑ i : Fin l, Polynomial.C (v i x) * Polynomial.X ^ (i : ℕ)).eval z := by rw [hPQ]
+    _ = Curve.polynomialCurveEval (F := F) (A := F) v z x := hEval v z
 
 /-- Unique decoding brick for the §6.1 argument: two codewords of a code with
 minimum distance `d` that are both within distance summing below `d` of a common
