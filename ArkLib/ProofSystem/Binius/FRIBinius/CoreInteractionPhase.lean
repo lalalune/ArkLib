@@ -71,6 +71,41 @@ def sumcheckFoldStmtLens : OracleStatement.Lens
 
   toFunB := fun ⟨_, _⟩ ⟨innerStmtOut, innerOStmtOut⟩ => ⟨innerStmtOut, innerOStmtOut⟩
 
+/-- Oracle-routing lens for sumcheck fold lifting, instantiating the new
+`OracleStatement.OracleLens` API (#433).
+
+The sumcheck-fold lift is identity on both the non-oracle statement and the oracle statements (the
+input and output oracle families coincide — only the witness changes via `sumcheckFoldCtxLens.wit`).
+So the routing data is the trivial / identity routing, mirroring `OracleStatement.OracleLens.id`:
+
+- `toLens := sumcheckFoldStmtLens` (the identity value-level oracle-statement lens).
+- `projStmt := id`, `liftStmt := fun _ s => s` — matching `sumcheckFoldStmtLens`'s identity
+  `toFunA`/`toFunB` on the statement component.
+- `simOStmt` routes each inner input-oracle query to the identically-indexed outer input oracle.
+- `embedOStmt := .inl`, `hEqOStmt := rfl` — the output oracles are the (unchanged) input oracles. -/
+def sumcheckFoldOracleLens : OracleStatement.OracleLens ([]ₒ)
+    (OuterStmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ) 0)
+    (OuterStmtOut := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ) (Fin.last ℓ'))
+    (InnerStmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ) 0)
+    (InnerStmtOut := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ) (Fin.last ℓ'))
+    (OuterOStmtIn := BinaryBasefold.OracleStatement K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ 0)
+    (OuterOStmtOut := BinaryBasefold.OracleStatement K β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ (Fin.last ℓ'))
+    (InnerOStmtIn := BinaryBasefold.OracleStatement K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ 0)
+    (InnerOStmtOut := BinaryBasefold.OracleStatement K β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ (Fin.last ℓ'))
+    (pSpec := BinaryBasefold.pSpecSumcheckFold K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) where
+  toLens := sumcheckFoldStmtLens κ L K β ℓ ℓ' 𝓡 ϑ (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+  projStmt := id
+  liftStmt := fun _ s => s
+  simOStmt := fun q => ReaderT.mk fun _ =>
+    (OracleComp.lift <| OracleSpec.query
+      (spec := [BinaryBasefold.OracleStatement K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ 0]ₒ) q :
+      OracleComp (([]ₒ) +
+        [BinaryBasefold.OracleStatement K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ 0]ₒ) _)
+  embedOStmt := Function.Embedding.inl
+  hEqOStmt := fun _ => rfl
+
 /-- Oracle context lens for sumcheck fold lifting -/
 def sumcheckFoldCtxLens : OracleContext.Lens
     (OuterStmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ) 0)
@@ -130,17 +165,22 @@ def sumcheckFoldExtractorLens : Extractor.Lens
       exact outerWitIn
   }
 
--- The lifted oracle verifier
+-- The lifted oracle verifier.
+-- Migrated to the new `OracleStatement.OracleLens` API (#433): the identity oracle-routing lens
+-- `sumcheckFoldOracleLens` supplies the `simOStmt`/`embedOStmt` data.
 def sumcheckFoldOracleVerifier :=
   (BinaryBasefold.CoreInteraction.sumcheckFoldOracleVerifier K β (ϑ:=ϑ)
     (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).liftContext
-      (lens := sumcheckFoldStmtLens κ L K β ℓ ℓ' 𝓡 ϑ (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+      (lens := sumcheckFoldOracleLens κ L K β ℓ ℓ' 𝓡 ϑ (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
 
--- The lifted oracle reduction
+-- The lifted oracle reduction.
+-- Migrated to the new `OracleReduction.liftContext` signature (#433): the value-level context lens
+-- is threaded alongside the oracle-routing `stmtLens := sumcheckFoldOracleLens`.
 def sumcheckFoldOracleReduction :=
   (BinaryBasefold.CoreInteraction.sumcheckFoldOracleReduction K β (ϑ:=ϑ)
     (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)).liftContext
       (lens := sumcheckFoldCtxLens κ L K β ℓ ℓ' 𝓡 ϑ (h_ℓ_add_R_rate := h_ℓ_add_R_rate) h_l)
+      (stmtLens := sumcheckFoldOracleLens κ L K β ℓ ℓ' 𝓡 ϑ (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
 
 -- Security properties for the lifted oracle reduction
 
@@ -168,6 +208,20 @@ theorem badEventExistsProp_zero
 section Security
 
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
+
+/-- The sumcheck-fold oracle-routing lens is **coherent** (#433): converting the lifted oracle
+verifier to a plain verifier agrees with lifting the converted inner verifier along the value-level
+lens. This holds because `sumcheckFoldOracleLens` is the *identity* oracle routing — `simOStmt`
+routes each inner input-oracle query to the identically-indexed outer input oracle, and `projStmt` /
+`liftStmt` are the identity on the (coinciding) inner/outer statement types — so both sides answer
+the inner verifier's queries from the same oracles. -/
+instance sumcheckFoldOracleLens_coherent :
+    OracleVerifier.LiftContextCoherent
+      (sumcheckFoldOracleLens κ L K β ℓ ℓ' 𝓡 ϑ (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+      (BinaryBasefold.CoreInteraction.sumcheckFoldOracleVerifier K β (ϑ:=ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) where
+  toVerifier_comm := by
+    rfl
 
 -- Completeness instance for the context lens
 instance sumcheckFoldCtxLens_complete :
@@ -281,8 +335,10 @@ theorem sumcheckFoldOracleReduction_perfectCompleteness :
       (β := booleanHypercubeBasis κ L K β) ℓ ℓ' h_l) K β (ϑ:=ϑ)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑:=𝓑) (Fin.last ℓ'))
     (lens := sumcheckFoldCtxLens κ L K β ℓ ℓ' 𝓡 ϑ (h_ℓ_add_R_rate := h_ℓ_add_R_rate) h_l)
+    (stmtLens := sumcheckFoldOracleLens κ L K β ℓ ℓ' 𝓡 ϑ (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
     (lensComplete := sumcheckFoldCtxLens_complete κ L K β ℓ ℓ' 𝓡 ϑ
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) h_l)
+    (hStmt := rfl)
     (init := init)
     (impl := impl)
     (h := BinaryBasefold.CoreInteraction.sumcheckFoldOracleReduction_perfectCompleteness
@@ -433,7 +489,7 @@ theorem sumcheckFoldOracleVerifier_rbrKnowledgeSoundness [Fintype L] :
     (pSpec := BinaryBasefold.pSpecSumcheckFold K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
     (V := BinaryBasefold.CoreInteraction.sumcheckFoldOracleVerifier K β (ϑ:=ϑ)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
-    (stmtLens := sumcheckFoldStmtLens κ L K β ℓ ℓ' 𝓡 ϑ
+    (stmtLens := sumcheckFoldOracleLens κ L K β ℓ ℓ' 𝓡 ϑ
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
     (witLens := (sumcheckFoldExtractorLens κ L K β ℓ ℓ' 𝓡 ϑ
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).wit)
