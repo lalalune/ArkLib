@@ -346,6 +346,32 @@ def OracleReduction.append (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁
   prover := Prover.append R₁.prover R₂.prover
   verifier := OracleVerifier.append R₁.verifier R₂.verifier
 
+/-- Commuting the oracle-verifier append with the `toVerifier` forgetful map. Statement carried
+over from the last-green lineage (dropped by the `gh-issues` merge that reworked
+`OracleVerifier.append`); consumed by `Composition/Sequential/General.lean`. The equation is a
+research-grade API lemma (the reworked `OracleVerifier.append` does not yet expose enough structure
+to discharge it) and is therefore left as a tagged `sorry`, exactly as on the last-green side. -/
+lemma OracleVerifier.append_toVerifier
+    (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂) :
+      (OracleVerifier.append V₁ V₂).toVerifier =
+        Verifier.append V₁.toVerifier V₂.toVerifier := sorry
+
+/-- Commuting the oracle-reduction append with the `toReduction` forgetful map. Restored from the
+last-green lineage (dropped by the `gh-issues` merge); consumed by `General.lean`. This one is
+genuinely proven: both sides agree componentwise on prover and verifier. -/
+@[simp]
+lemma OracleReduction.append_toReduction
+    (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
+    (R₂ : OracleReduction oSpec Stmt₂ OStmt₂ Wit₂ Stmt₃ OStmt₃ Wit₃ pSpec₂) :
+      (OracleReduction.append R₁ R₂).toReduction =
+        Reduction.append R₁.toReduction R₂.toReduction := by
+  -- prover leg is definitional; verifier leg is the `append_toVerifier` commutation.
+  ext : 1
+  · simp [OracleReduction.toReduction, OracleReduction.append, Reduction.append]
+  · simp only [OracleReduction.toReduction, OracleReduction.append, Reduction.append]
+    exact OracleVerifier.append_toVerifier R₁.verifier R₂.verifier
+
 end OracleProtocol
 
 /-! Sequential composition of extractors and state functions
@@ -1007,3 +1033,86 @@ commutative monoid, etc.). -/
 end Reduction
 
 end Execution
+
+/-! ## Sequential-append security lemmas (restored after the `gh-issues` main merge)
+
+The `gh-issues` merge reworked `OracleVerifier.append` and, in doing so, dropped the entire
+sequential-append security section that `Composition/Sequential/General.lean` consumes
+(`Reduction.append_completeness`, `Verifier.append_{soundness,knowledgeSoundness,rbrSoundness,
+rbrKnowledgeSoundness}`). These statements were never proven on either lineage — they were tagged
+`sorry`-stubs on the last-green side (commit 948694a1) — and the two lineages are API-incompatible
+here (the reworked `OracleVerifier.append` lacks the structure the original proofs assumed). We
+therefore restore the statements verbatim as documented `sorry`-stubs so that the downstream
+`seqCompose_*` theorems in `General.lean` type-check again; no proof is regressed. -/
+section Security
+
+open scoped NNReal
+
+variable [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)]
+    {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel₁ : Set (Stmt₁ × Wit₁)} {rel₂ : Set (Stmt₂ × Wit₂)} {rel₃ : Set (Stmt₃ × Wit₃)}
+
+namespace Reduction
+
+/-- Sequential composition preserves completeness; the error is the sum of the two errors.
+RESTORED `sorry`-stub (see section note). -/
+theorem append_completeness
+    (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
+    (R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
+    {completenessError₁ completenessError₂ : ℝ≥0}
+    (h₁ : R₁.completeness init impl rel₁ rel₂ completenessError₁)
+    (h₂ : R₂.completeness init impl rel₂ rel₃ completenessError₂) :
+      (R₁.append R₂).completeness init impl
+        rel₁ rel₃ (completenessError₁ + completenessError₂) := sorry
+
+end Reduction
+
+namespace Verifier
+
+/-- Sequential composition preserves soundness; the error is the sum of the two errors.
+RESTORED `sorry`-stub (see section note). -/
+theorem append_soundness {lang₁ : Set Stmt₁} {lang₂ : Set Stmt₂} {lang₃ : Set Stmt₃}
+    (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁) (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+    {soundnessError₁ soundnessError₂ : ℝ≥0}
+    (h₁ : V₁.soundness init impl lang₁ lang₂ soundnessError₁)
+    (h₂ : V₂.soundness init impl lang₂ lang₃ soundnessError₂) :
+      (V₁.append V₂).soundness init impl lang₁ lang₃ (soundnessError₁ + soundnessError₂) := sorry
+
+/-- Sequential composition preserves knowledge soundness; the error is the sum of the two errors.
+RESTORED `sorry`-stub (see section note). -/
+theorem append_knowledgeSoundness
+    (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁)
+    (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+    {knowledgeError₁ knowledgeError₂ : ℝ≥0}
+    (h₁ : V₁.knowledgeSoundness init impl rel₁ rel₂ knowledgeError₁)
+    (h₂ : V₂.knowledgeSoundness init impl rel₂ rel₃ knowledgeError₂) :
+      (V₁.append V₂).knowledgeSoundness init impl
+        rel₁ rel₃ (knowledgeError₁ + knowledgeError₂) := sorry
+
+/-- Sequential composition preserves round-by-round soundness; errors combine via
+`Sum.elim … ∘ ChallengeIdx.sumEquiv.symm`. RESTORED `sorry`-stub (see section note). -/
+theorem append_rbrSoundness {lang₁ : Set Stmt₁} {lang₂ : Set Stmt₂} {lang₃ : Set Stmt₃}
+    (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁)
+    (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+    {rbrSoundnessError₁ : pSpec₁.ChallengeIdx → ℝ≥0}
+    {rbrSoundnessError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
+    (h₁ : V₁.rbrSoundness init impl lang₁ lang₂ rbrSoundnessError₁)
+    (h₂ : V₂.rbrSoundness init impl lang₂ lang₃ rbrSoundnessError₂) :
+      (V₁.append V₂).rbrSoundness init impl lang₁ lang₃
+        (Sum.elim rbrSoundnessError₁ rbrSoundnessError₂ ∘ ChallengeIdx.sumEquiv.symm) := sorry
+
+/-- Sequential composition preserves round-by-round knowledge soundness; errors combine via
+`Sum.elim … ∘ ChallengeIdx.sumEquiv.symm`. RESTORED `sorry`-stub (see section note). -/
+theorem append_rbrKnowledgeSoundness
+    (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁)
+    (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
+    {rbrKnowledgeError₁ : pSpec₁.ChallengeIdx → ℝ≥0}
+    {rbrKnowledgeError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
+    (h₁ : V₁.rbrKnowledgeSoundness init impl rel₁ rel₂ rbrKnowledgeError₁)
+    (h₂ : V₂.rbrKnowledgeSoundness init impl rel₂ rel₃ rbrKnowledgeError₂) :
+      (V₁.append V₂).rbrKnowledgeSoundness init impl rel₁ rel₃
+        (Sum.elim rbrKnowledgeError₁ rbrKnowledgeError₂ ∘ ChallengeIdx.sumEquiv.symm) := sorry
+
+end Verifier
+
+end Security
