@@ -569,6 +569,31 @@ lemma RingSwitchingProfile.decomposeRows_sum {ι : Type*} [Fintype ι] [Decidabl
     P.decomposeRows (∑ i, f i) u = ∑ i, P.decomposeRows (f i) u :=
   P.decomposeRows_finsetSum Finset.univ f u
 
+/-- Column coordinates of `0` vanish: the column dual of `decomposeRows_zero`, from
+`decomposeColumns_add` by cancellation. -/
+lemma RingSwitchingProfile.decomposeColumns_zero (v : Fin κ → Fin 2) :
+    P.decomposeColumns 0 v = 0 := by
+  have h := P.decomposeColumns_add 0 0 v
+  rw [add_zero] at h
+  exact (add_left_cancel (a := P.decomposeColumns 0 v)
+    (by rw [add_zero]; exact h)).symm
+
+/-- Column coordinates are additive over finite sums: the column dual of `decomposeRows_finsetSum`,
+by induction from `decomposeColumns_add` (with `decomposeColumns_zero` as base case). -/
+lemma RingSwitchingProfile.decomposeColumns_finsetSum {ι : Type*} [DecidableEq ι] (s : Finset ι)
+    (f : ι → P.A) (v : Fin κ → Fin 2) :
+    P.decomposeColumns (∑ i ∈ s, f i) v = ∑ i ∈ s, P.decomposeColumns (f i) v := by
+  induction s using Finset.induction with
+  | empty => simp [P.decomposeColumns_zero]
+  | insert a s ha ih =>
+    rw [Finset.sum_insert ha, Finset.sum_insert ha, P.decomposeColumns_add, ih]
+
+/-- `Fintype` corollary of `decomposeColumns_finsetSum` for sums over `univ`. -/
+lemma RingSwitchingProfile.decomposeColumns_sum {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (f : ι → P.A) (v : Fin κ → Fin 2) :
+    P.decomposeColumns (∑ i, f i) v = ∑ i, P.decomposeColumns (f i) v :=
+  P.decomposeColumns_finsetSum Finset.univ f v
+
 end GenericRowExtraction
 
 
@@ -1045,6 +1070,62 @@ lemma eqTilde_tensor_expand {ℓ_ : ℕ} (g h : Fin ℓ_ → L₀) :
     unfold MvPolynomial.toEvalsZeroOne
     rw [hcoe, eqTilde, eqPolynomial_symm]
 
+omit [IsDomain L₀] [Fintype L₀] [DecidableEq L₀] [CharP L₀ 2]
+  [IsDomain K₀] [Fintype K₀] [DecidableEq K₀] in
+/-- **`eqTilde` symmetry.** `eq̃(r, r') = eq̃(r', r)`: a direct corollary of `eqPolynomial_symm`
+(`eval r' (eqPolynomial r) = eval r (eqPolynomial r')`). -/
+lemma eqTilde_comm {ℓ_ : ℕ} (r r' : Fin ℓ_ → L₀) : eqTilde r r' = eqTilde r' r := by
+  unfold eqTilde
+  exact eqPolynomial_symm r r'
+
+omit [CharP L₀ 2] [Fintype K₀] [DecidableEq K₀] in
+/-- **DP24 §2.5 `A_MLE` final-evaluation identity (defect #10, column form).** The multilinear
+extension `A_MLE` of `compute_A_func` — the sumcheck multiplier `(RingSwitching_SumcheckMultParam
+…).multpoly` — evaluated at the (arbitrary, non-Boolean) sumcheck challenges equals the verifier's
+`compute_final_eq_value`, which reads the **column** components of the final eq-tensor
+`e := eq̃(φ₀ ∘ r_suffix, φ₁ ∘ challenges)`.
+
+Term-by-term derivation: the LHS expands by `MLE_eval_eq_sum_eqTilde` into a sum over the Boolean
+hypercube of `eq̃(x, challenges) · A_func(x)`, with `A_func(x) = ∑_u β.repr(eq̃(suffix, x))_u •
+eq̃(u, r'')`. The RHS expands by `eqTilde_tensor_expand` (e = ∑_w φ₀(eq̃(w, suffix))·φ₁(eq̃(w,
+challenges))) followed by column additivity (`decomposeColumns_sum`) and the column atomic
+extraction law (`decomposeColumns_φ₀_mul_φ₁`: columns of `φ₀ a · φ₁ b` are `β.repr a • b`), giving
+`∑_u eq̃(u, r'') · ∑_w β.repr(eq̃(w, suffix))_u • eq̃(w, challenges)`. After `eqTilde` symmetry
+(`eq̃(suffix, x) = eq̃(x, suffix)`) the two double sums agree summand-wise (`Finset.sum_comm` +
+`smul`/`mul` commutation), so the column orientation is the one that makes the identity TRUE — the
+row orientation yields the transposed pairing and is false. -/
+lemma A_MLE_eval_eq_compute_final_eq_value (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ']
+    (h_l : ℓ = ℓ' + κ₀) (r_eval : Fin ℓ → L₀) (challenges : Fin ℓ' → L₀)
+    (r''_batching : Fin κ₀ → L₀) :
+    (compute_A_MLE κ₀ L₀ K₀ P ℓ'
+        (getEvaluationPointSuffix κ₀ L₀ ℓ ℓ' h_l r_eval) r''_batching).val.eval challenges
+      = compute_final_eq_value κ₀ L₀ K₀ P ℓ ℓ' h_l r_eval challenges r''_batching := by
+  -- LHS: unfold to `eval challenges (MLE (compute_A_func suffix r''))` and expand by MLE formula.
+  unfold compute_A_MLE compute_final_eq_value compute_final_eq_tensor compute_A_func
+    getEvaluationPointSuffix
+  simp only []
+  rw [MLE_eval_eq_sum_eqTilde]
+  -- RHS: expand the eq-tensor and push `decomposeColumns` through the sum + atomic extraction.
+  rw [eqTilde_tensor_expand P (fun j => r_eval ⟨j.val + κ₀, by rw [h_l]; omega⟩) challenges]
+  -- Push `decomposeColumns` through the hypercube sum + atomic extraction (under the ∑_u binder).
+  simp only [P.decomposeColumns_sum, P.decomposeColumns_φ₀_mul_φ₁]
+  -- Distribute the scalar prefix into the inner hypercube sum on both sides:
+  -- `∑ x, c_x * ∑ y, d_{x,y} = ∑ x, ∑ y, c_x * d_{x,y}`.
+  simp only [Finset.mul_sum]
+  -- Both sides are now double sums over the Boolean hypercube. Reindex the RHS (swap the two
+  -- sum binders) so its outer index pairs with the LHS inner index, then match summand-wise.
+  rw [Finset.sum_comm]
+  apply Finset.sum_congr rfl
+  intro x _
+  apply Finset.sum_congr rfl
+  intro u _
+  -- After `sum_comm` the summand is, with `c := β.repr(eq̃(u,suffix)) x`,
+  --   `eq̃(u,ch) * (c • eq̃(x,r''))  =  eq̃(x,r'') * (c • eq̃(u,ch))`.
+  -- Align the `repr` arguments by `eqTilde` symmetry, then commute `•` past `*`.
+  rw [eqTilde_comm (fun j => r_eval ⟨j.val + κ₀, by rw [h_l]; omega⟩)
+      (fun i => (if u i == 1 then (1 : L₀) else 0))]
+  rw [mul_smul_comm, mul_smul_comm, mul_comm]
+
 end RingSwitchingAlgebra
 
 section RingSwitchingAlgebraBinius
@@ -1365,5 +1446,54 @@ lemma simulateQ_simOracle2_query {ι : Type} {oSpec : OracleSpec ι}
   rfl
 
 end SimOracle2MessageQuery
+
+/-! ## `fixFirstVariablesOfMQP` evaluation bridge
+
+The final sumcheck step's completeness needs to evaluate the round polynomial
+`H = projectToMidSumcheckPoly t' m (Fin.last ℓ') challenges` (= `fixFirstVariablesOfMQP` of
+`m · t'` at *all* `ℓ'` variables) at the 0-variate point and recognise it as `(m · t')(challenges)`.
+The two lemmas below provide that bridge generically. -/
+section FixVarsEval
+open MvPolynomial
+
+/-- **`sumAlgEquiv` evaluation.** Evaluating the curried polynomial `sumAlgEquiv p` by `eval x` on
+the outer (`S₁`) variables and `eval challenges` on the inner (`S₂`) coefficient ring equals
+evaluating `p` directly at the combined point `Sum.elim x challenges`. Proven by `induction_on`,
+using `sumToIter` (`= sumAlgEquiv` by `rfl`) on the generators. -/
+theorem sumAlgEquiv_eval₂ {L : Type} [CommRing L] {S₁ S₂ : Type} [Fintype S₁]
+    (x : S₁ → L) (challenges : S₂ → L) (p : MvPolynomial (S₁ ⊕ S₂) L) :
+    eval₂ (eval challenges) x ((sumAlgEquiv L S₁ S₂) p) = eval (Sum.elim x challenges) p := by
+  induction p using MvPolynomial.induction_on with
+  | C a =>
+    rw [show ((sumAlgEquiv L S₁ S₂) (C a)) = sumToIter L S₁ S₂ (C a) from rfl, sumToIter_C,
+      MvPolynomial.eval₂_C, MvPolynomial.eval_C, MvPolynomial.eval_C]
+  | add p q hp hq =>
+    simp only [map_add, MvPolynomial.eval₂_add, MvPolynomial.eval_add, hp, hq]
+  | mul_X p s hp =>
+    simp only [map_mul, MvPolynomial.eval₂_mul, MvPolynomial.eval_mul, hp]
+    congr 1
+    cases s with
+    | inl a => rw [show ((sumAlgEquiv L S₁ S₂) (X (Sum.inl a))) = sumToIter L S₁ S₂ (X (Sum.inl a))
+        from rfl, sumToIter_Xl, MvPolynomial.eval₂_X, MvPolynomial.eval_X, Sum.elim_inl]
+    | inr b => rw [show ((sumAlgEquiv L S₁ S₂) (X (Sum.inr b))) = sumToIter L S₁ S₂ (X (Sum.inr b))
+        from rfl, sumToIter_Xr, MvPolynomial.eval₂_C, MvPolynomial.eval_X, MvPolynomial.eval_X,
+        Sum.elim_inr]
+
+/-- **`fixFirstVariablesOfMQP` evaluation.** Evaluating the polynomial obtained by fixing the last
+`v` variables of `poly` to `challenges` (then `eval x` on the survivors) equals evaluating `poly`
+directly at the recombined point (survivors from `x`, fixed coords from `challenges`, via the same
+`finCongr`/`finSumFinEquiv` reindexing used in `fixFirstVariablesOfMQP`). -/
+theorem fixFirstVariablesOfMQP_eval {L : Type} [CommRing L] (ℓ : ℕ) (v : Fin (ℓ+1))
+    (poly : MvPolynomial (Fin ℓ) L) (challenges : Fin v → L) (x : Fin (ℓ - v) → L) :
+    eval x (fixFirstVariablesOfMQP ℓ v poly challenges)
+      = eval (fun i => Sum.elim x challenges
+          (((finCongr (by rw [Nat.add_comm]; exact (Nat.add_sub_of_le v.is_le).symm)).trans
+            (finSumFinEquiv (m := ℓ - v) (n := v).symm)) i)) poly := by
+  unfold fixFirstVariablesOfMQP
+  dsimp only
+  rw [MvPolynomial.eval_map, sumAlgEquiv_eval₂, eval_rename]
+  rfl
+
+end FixVarsEval
 
 end RingSwitching

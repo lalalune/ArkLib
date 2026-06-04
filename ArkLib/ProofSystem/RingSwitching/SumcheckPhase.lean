@@ -353,10 +353,24 @@ noncomputable def finalSumcheckVerifier :
         original_claim := 0,
       }
 
-    -- Return the final sumcheck statement with the constant
+    -- Statement/protocol repair (defect #11): the *forwarded* MLP-evaluation claim is `t'(r') = s'`,
+    -- so `original_claim := s'` (with `t_eval_point := r' = challenges`). The eq-scaled value
+    -- `eq_tilde_eval * s'` is the verifier's *check* against `sumcheck_target` (step 9, the `unless`
+    -- above), NOT the claim it hands to the large-field MLP-eval sub-protocol.
+    --
+    -- Derivation. The output relation `relOut = aOStmtIn.toRelInput` (`Prelude.toRelInput`/
+    -- `MLPEvalRelation`) demands `stmtOut.original_claim = witOut.t.eval stmtOut.t_eval_point`. The
+    -- honest prover sets `witOut.t := witIn.t'` and `t_eval_point := challenges`, and by definition
+    -- `s' = witIn.t'.eval challenges`. Hence `relOut` holds *iff* `original_claim = s'`; emitting
+    -- `eq_tilde_eval * s'` would require `eq_tilde_eval = 1` (false in general — `eq_tilde_eval`
+    -- depends on `r, r', r''`), making both `(stmtOut, witOut) ∈ relOut` *and* the prior code's
+    -- `prvStmtOut = stmtOut` (the prover already emits `s'`) unsatisfiable. Downstream
+    -- `General.lean` consumes exactly this `mlIOPCS.toRelInput`, so `s'` is the contract-correct
+    -- forwarded claim. This is the verifier-side of the #8/#10 family of soundness/protocol repairs;
+    -- it aligns the verifier's deterministic output to the (already-correct) prover output `s'`.
     let stmtOut : MLPEvalStatement L ℓ' := {
       t_eval_point := stmtIn.challenges
-      original_claim := eq_tilde_eval * s'
+      original_claim := s'
     }
     pure stmtOut
 
@@ -388,8 +402,50 @@ theorem finalSumcheckOracleReduction_perfectCompleteness {σ : Type}
     (oracleReduction := finalSumcheckOracleReduction κ L K P ℓ ℓ' h_l aOStmtIn)
       (init := init) (impl := impl) := by
   unfold OracleReduction.perfectCompleteness
-  intro stmtIn witIn h_relIn
-  simp only
+  simp only [Reduction.perfectCompleteness, Reduction.completeness, ENNReal.coe_zero, tsub_zero]
+  intro ⟨stmtIn, oStmtIn⟩ witIn h_relIn
+  -- PARTIAL (defect-#11 repair landed; A_MLE algebra + eval bridge proved; plumbing remains).
+  --
+  -- Goal (post-unfold):
+  --   `probEvent (OptionT.mk do let s ← init;
+  --        (simulateQ (impl.addLift challengeQueryImpl)
+  --          (Reduction.run (stmtIn, oStmtIn) witIn (finalSumcheckOracleReduction …).toReduction).run
+  --        ).run' s)
+  --      (fun x => (x.2, x.1.2.2) ∈ aOStmtIn.toRelInput ∧ x.1.2.1 = x.2) ≥ 1`.
+  --
+  -- The honest run is deterministic (`pSpecFinalSumcheck` = one P→V message, no challenge), so this
+  -- is `probEvent_eq_one_iff` once `toReduction.run` is resolved. Two sub-obligations:
+  --
+  --  (1) ALGEBRA — verifier's step-9 check passes (DONE up to the helpers, see below). The honest
+  --      prover emits `s' = witIn.t'(challenges)` and (post defect-#11) both prover and verifier emit
+  --      `original_claim := s'`, so `relOut = aOStmtIn.toRelInput` (`= original_claim =
+  --      witOut.t(t_eval_point) = s'`) holds and `prvStmtOut = stmtOut`, PROVIDED the verifier's
+  --      `unless stmtIn.sumcheck_target = compute_final_eq_value · s'` passes. That equality is
+  --      now fully derivable from `h_relIn`:
+  --        • `masterKStateProp` gives `sumcheckConsistencyProp (boolDomain L (ℓ'-ℓ')) sumcheck_target
+  --          witIn.H` and `witIn.H = projectToMidSumcheckPoly witIn.t' (A_MLE) (Fin.last ℓ')
+  --          challenges` (where `A_MLE = (RingSwitching_SumcheckMultParam …).multpoly = compute_A_MLE`).
+  --        • `ℓ' - (Fin.last ℓ').val = 0`, so the consistency sum is over the singleton 0-cube:
+  --          `sumcheck_target = eval (Fin.elim0) witIn.H.val` (cube-0 = `{fun i => i.elim0}`).
+  --        • `RingSwitching.fixFirstVariablesOfMQP_eval` (Prelude) turns
+  --          `eval (Fin.elim0) (projectToMid … (Fin.last) challenges).val` into
+  --          `eval challenges (A_MLE.val * witIn.t'.val) = A_MLE(challenges) · t'(challenges)`
+  --          (the recombination point at `v = Fin.last` is `challenges` up to `Fin.cast`).
+  --        • `RingSwitching.A_MLE_eval_eq_compute_final_eq_value` (Prelude, defect-#10 capstone)
+  --          rewrites `A_MLE(challenges) = compute_final_eq_value`, closing the check.
+  --      Remaining friction: dependent `Fin.last`-index casting between `challenges : Fin
+  --      (Fin.last ℓ').val → L` and `Fin ℓ' → L` in the recombination step.
+  --
+  --  (2) PLUMBING — `Reduction.run (…).toReduction` resolution. The verifier is an `OracleVerifier`
+  --      whose `verify` issues a message-oracle query; under `toReduction`/`toVerifier` it is run
+  --      through `simulateQ (simOracle2 …)`, collapsing (via `Prelude.simulateQ_simOracle2_query`,
+  --      `simulateQ_pure`, `OptionT`/`StateT` run lemmas) to the deterministic
+  --      `if check then stmtOut else dummy`. This is the ~100-line support-peeling of
+  --      `Sumcheck.Spec.SingleRound.Simple.reduction_perfectCompleteness`; there is no completed
+  --      `OracleReduction` final-sumcheck completeness precedent in the tree (the BinaryBasefold twin
+  --      `Binius.BinaryBasefold.…finalSumcheckOracleReduction_perfectCompleteness` is itself `sorry`),
+  --      so it is deferred per the heavy-machinery wall. The algebra (1) and its helpers are landed
+  --      and unblock it.
   sorry
 
 /-- RBR knowledge error for the final sumcheck step -/
