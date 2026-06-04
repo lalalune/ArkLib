@@ -172,7 +172,16 @@ def getRoundProverFinalOutput (i : Fin ℓ)
   let stmtOut : Statement (L := L) (ℓ := ℓ) Context i.succ := {
     ctx := stmtIn.ctx,
     sumcheck_target := newSumcheckTarget,
-    challenges := Fin.snoc stmtIn.challenges r_i'
+    -- CONS (not SNOC): the fresh round challenge `r'_i` is placed at index `0`, the previously
+    -- accumulated challenges shift to `1..i`. This is forced by the proven cons-form
+    -- round-transition lemma `RingSwitching.fixFirstVariablesOfMQP_projectToMid_step`: fixing the
+    -- new survivor variable
+    -- to `r'_i` advances `projectToMidSumcheckPoly … i.castSucc challenges` to
+    -- `projectToMidSumcheckPoly … i.succ (Fin.cons r'_i challenges)`. The SNOC form
+    -- `Fin.snoc challenges r'_i` is FALSE (counterexample on record: ZMod 7, ℓ=3, i=1,
+    -- X0+2X1+4X2, ![5], 3), which is exactly why the witness-structural-invariant advance could not
+    -- be discharged before. The only consumer of this machinery is `RingSwitching.SumcheckPhase`.
+    challenges := Fin.cons r_i' stmtIn.challenges
   }
   let challenges : Fin 1 → L := fun _ => r_i'
   let witOut : SumcheckWitness L ℓ i.succ d := by
@@ -252,7 +261,7 @@ def roundOracleVerifier (i : Fin ℓ) :
       let dummyStmt : Statement (L := L) (ℓ := ℓ) Context i.succ := {
         ctx := stmtIn.ctx,
         sumcheck_target := 0,
-        challenges := Fin.snoc stmtIn.challenges 0
+        challenges := Fin.cons (0 : L) stmtIn.challenges
       }
       return dummyStmt
     -- Message 1: V samples r'_i and sends it to P.
@@ -260,7 +269,10 @@ def roundOracleVerifier (i : Fin ℓ) :
     let stmtOut : Statement (L := L) (ℓ := ℓ) Context i.succ := {
       ctx := stmtIn.ctx,
       sumcheck_target := h_i.val.eval r_i',
-      challenges := Fin.snoc stmtIn.challenges r_i'
+      -- CONS (not SNOC): see the matching note in `getRoundProverFinalOutput`. The verifier must
+      -- accumulate the fresh challenge `r'_i` at index `0` so that its `stmtOut.challenges` agrees
+      -- with the prover's, and so that the cons-form witness-structural-invariant advance holds.
+      challenges := Fin.cons r_i' stmtIn.challenges
     }
     pure stmtOut
   embed := ⟨fun j => Sum.inl j, fun a b h => by cases h; rfl⟩
