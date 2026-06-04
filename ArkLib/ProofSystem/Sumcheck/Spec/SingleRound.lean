@@ -949,13 +949,24 @@ theorem reduction_perfectCompleteness :
     (lensComplete := by simp; sorry)
     (Simple.reduction_perfectCompleteness R deg D oSpec)
 
+local instance : Inhabited R := ⟨0⟩
+
+local instance : Inhabited (Simple.StmtOut R × ((i : Unit) → Simple.OStmtOut R deg i)) :=
+  inferInstance
+
+set_option maxHeartbeats 800000 in
 theorem verifier_rbrKnowledgeSoundness [Fintype R] :
     (verifier R n deg D oSpec i).rbrKnowledgeSoundness init impl
     (relationRound R n deg D i.castSucc) (relationRound R n deg D i.succ)
-    (fun _ => (deg : ℝ≥0) / Fintype.card R) := sorry
-  -- Verifier.liftContext_rbrKnowledgeSoundness (lens := (oCtxLens R n deg D i).toContext)
-  --   (lensKS := extractorLens_rbr_knowledge_soundness i)
-  --   (Simple.verifier_rbrKnowledgeSoundness R deg D oSpec i)
+    (fun _ => (deg : ℝ≥0) / Fintype.card R) := by
+  unfold verifier
+  rw [← Simple.oracleVerifier_eq_verifier (R := R) (deg := deg) (D := D) (oSpec := oSpec)]
+  exact Verifier.liftContext_rbr_knowledgeSoundness
+    (stmtLens := oStmtLens R n deg D i)
+    (witLens := Witness.InvLens.trivial)
+    (Simple.oracleVerifier R deg D oSpec).toVerifier
+    (lensKS := extractorLens_rbr_knowledge_soundness i)
+    (Simple.oracleVerifier_rbrKnowledgeSoundness R deg D oSpec)
 
 /-- Completeness theorem for single-round of sum-check, obtained by transporting the completeness
 proof for the simplified version -/
@@ -966,9 +977,6 @@ theorem oracleReduction_perfectCompleteness :
     (lens := oCtxLens R n deg D i)
     (lensComplete := oCtxLens_complete i)
     (Simple.oracleReduction_perfectCompleteness R deg D oSpec)
-
-
-local instance : Inhabited R := ⟨0⟩
 
 /-- Round-by-round knowledge soundness theorem for single-round of sum-check, obtained by
   transporting the knowledge soundness proof for the simplified version -/

@@ -358,7 +358,22 @@ def oracleReduction.linearCombination :
 def secondSumCheckVirtualPolynomial
     (stmt : Statement.AfterLinearCombination R pp)
     (oStmt : ∀ i, OracleStatement.AfterLinearCombination R pp i) :
-      MvPolynomial (Fin pp.ℓ_n) R := sorry
+      MvPolynomial (Fin pp.ℓ_n) R :=
+  let linComb := stmt.1
+  let r_x := stmt.2.1
+  let 𝕫 := R1CS.𝕫 stmt.2.2.2 (oStmt (Sum.inr (Sum.inr 0)))
+  let mle𝕫 : MvPolynomial (Fin pp.ℓ_n) R := MLE (𝕫 ∘ finFunctionFinEquiv)
+  let mleA : MvPolynomial (Fin pp.ℓ_m) (MvPolynomial (Fin pp.ℓ_n) R) :=
+    (oStmt (Sum.inr (Sum.inl R1CS.MatrixIdx.A))).toMLE
+  let mleB : MvPolynomial (Fin pp.ℓ_m) (MvPolynomial (Fin pp.ℓ_n) R) :=
+    (oStmt (Sum.inr (Sum.inl R1CS.MatrixIdx.B))).toMLE
+  let mleC : MvPolynomial (Fin pp.ℓ_m) (MvPolynomial (Fin pp.ℓ_n) R) :=
+    (oStmt (Sum.inr (Sum.inl R1CS.MatrixIdx.C))).toMLE
+  let r_x' : Fin pp.ℓ_m → MvPolynomial (Fin pp.ℓ_n) R := fun i => C (r_x i)
+  (C (linComb .A) * MvPolynomial.eval r_x' mleA +
+    C (linComb .B) * MvPolynomial.eval r_x' mleB +
+    C (linComb .C) * MvPolynomial.eval r_x' mleC) *
+    mle𝕫
 
 @[simp]
 abbrev SecondSumcheckChallenge : Type := Fin pp.ℓ_n → R
