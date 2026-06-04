@@ -627,6 +627,7 @@ section PSApplication
 variable {F : Type} [Field F] [DecidableEq F]
 variable {ι : Type} [Fintype ι] [DecidableEq ι] [Nonempty ι]
 
+-- The Polishchuk–Spielman composition elaborates a large bivariate factorization term.
 set_option maxHeartbeats 3200000 in
 /-- **[BCKHS25] Claim 2.3 (joint proximate).** If every `z ∈ S` admits a
 degree-`k` proximate within Hamming distance `e` of the line combination, and
@@ -763,7 +764,7 @@ theorem exists_joint_proximate (k e h DZ : ℕ)
       exact Finset.mem_image.mpr ⟨x, Finset.mem_filter.mpr ⟨Finset.mem_univ x, ha⟩, rfl⟩
   have hsplit : (Finset.univ.filter (fun x => domain x ∈ Qx)).card
       + (Finset.univ.filter (fun x => domain x ∉ Qx)).card = Fintype.card ι := by
-    rw [Finset.filter_card_add_filter_neg_card_eq_card]
+    rw [Finset.card_filter_add_card_filter_not]
     simp
   have hQge : (Fintype.card ι : ℕ) - (e + h) ≤ Qx.card := by
     have := hQx_card
