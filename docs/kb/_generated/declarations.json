@@ -11588,27 +11588,81 @@
           "signature": "structure ModifiedGuruswami"
         },
         {
-          "doc": "Claim 5.4 from [BCIKS20]. It essentially claims that there exists a solution to the Guruswami-Sudan constraints above.",
+          "doc": "The `X`-degree of the trivariate constant `1` is `0`.",
           "kind": "lemma",
-          "line": 89,
+          "line": 97,
+          "name": "ProximityGap.degreeX_one_triv",
+          "namespace": "ProximityGap",
+          "short_name": "degreeX_one_triv",
+          "signature": "lemma degreeX_one_triv : degreeX (1 : F[Z][X][Y]) = 0 := by"
+        },
+        {
+          "doc": "The `Y`-degree of the trivariate constant `1` is `0`.",
+          "kind": "lemma",
+          "line": 109,
+          "name": "ProximityGap.natDegreeY_one_triv",
+          "namespace": "ProximityGap",
+          "short_name": "natDegreeY_one_triv",
+          "signature": "lemma natDegreeY_one_triv : natDegreeY (1 : F[Z][X][Y]) = 0 := by"
+        },
+        {
+          "doc": "The `(u, v)`-weighted degree of the trivariate constant `1` is `0`.",
+          "kind": "lemma",
+          "line": 115,
+          "name": "ProximityGap.natWeightedDegree_one_triv",
+          "namespace": "ProximityGap",
+          "short_name": "natWeightedDegree_one_triv",
+          "signature": "lemma natWeightedDegree_one_triv (u v : \u2115) :"
+        },
+        {
+          "doc": "The root multiplicity of the trivariate constant `1` at any point `(x, y)` is `0`. Here the coefficient ring is `F[Z] = Polynomial (Polynomial F)`.",
+          "kind": "lemma",
+          "line": 129,
+          "name": "ProximityGap.rootMultiplicity_one_triv",
+          "namespace": "ProximityGap",
+          "short_name": "rootMultiplicity_one_triv",
+          "signature": "lemma rootMultiplicity_one_triv (x y : Polynomial F) :"
+        },
+        {
+          "doc": "For `n = 0`, no `Q` can satisfy `ModifiedGuruswami`: the `X`-degree bound `D_X \u03c1 0 m = 0` forces `(degreeX Q : \u211d) < 0`, which is impossible.",
+          "kind": "lemma",
+          "line": 163,
+          "name": "ProximityGap.modified_guruswami_unsat_of_n_zero",
+          "namespace": "ProximityGap",
+          "short_name": "modified_guruswami_unsat_of_n_zero",
+          "signature": "lemma modified_guruswami_unsat_of_n_zero {m k : \u2115} {\u03c9s : Fin 0 \u21aa F} {Q : F[Z][X][Y]}"
+        },
+        {
+          "doc": "For `k = 0`, no `Q` can satisfy `ModifiedGuruswami`: the `Y`-degree bound `D_X \u03c1 n m / 0 = 0` forces `(D_Y Q : \u211d) < 0`, which is impossible.",
+          "kind": "lemma",
+          "line": 173,
+          "name": "ProximityGap.modified_guruswami_unsat_of_k_zero",
+          "namespace": "ProximityGap",
+          "short_name": "modified_guruswami_unsat_of_k_zero",
+          "signature": "lemma modified_guruswami_unsat_of_k_zero {m n : \u2115} {\u03c9s : Fin n \u21aa F} {Q : F[Z][X][Y]}"
+        },
+        {
+          "doc": "Claim 5.4 from [BCIKS20]. It essentially claims that there exists a solution to the Guruswami-Sudan constraints above. NOTE: As currently formalized this lemma is **false** for `n = 0` or `k = 0` (see `modified_guruswami_unsat_of_n_zero` / `modified_guruswami_unsat_of_k_zero`): the degree bound `D_X` collapses to `0` and the strict degree constraints become unsatisfiable.  The statement below therefore carries the proven-necessary side conditions `0 < n` and `0 < k` (the paper's non-degenerate regime is `k + 1 \u2264 n`, `1 \u2264 m`; the eventual dimension-counting proof \u2014 the trivariate analogue of `G",
+          "kind": "lemma",
+          "line": 192,
           "name": "ProximityGap.modified_guruswami_has_a_solution",
           "namespace": "ProximityGap",
           "short_name": "modified_guruswami_has_a_solution",
-          "signature": "lemma modified_guruswami_has_a_solution {m n k : \u2115} {\u03c9s : Fin n \u21aa F} {u\u2080 u\u2081 : Fin n \u2192 F} :"
+          "signature": "lemma modified_guruswami_has_a_solution {m n k : \u2115} (hn : 0 < n) (hk : 0 < k)"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 98,
-          "name": "ProximityGap._anon_instance_98",
+          "line": 202,
+          "name": "ProximityGap._anon_instance_202",
           "namespace": "ProximityGap",
-          "short_name": "_anon_instance_98",
+          "short_name": "_anon_instance_202",
           "signature": "instance noncomputable instance {\u03b1 : Type} (s : Set \u03b1) [inst : Finite s] : Fintype s := Fintype.ofFinite _"
         },
         {
           "doc": "The set `S` (equation 5.2 of [BCIKS20]).",
           "kind": "def",
-          "line": 101,
+          "line": 205,
           "name": "ProximityGap.coeffs_of_close_proximity",
           "namespace": "ProximityGap",
           "short_name": "coeffs_of_close_proximity",
@@ -11617,7 +11671,7 @@
         {
           "doc": "There exists a `\u03b4`-close polynomial `P_z` for each `z` from the set `S`.",
           "kind": "lemma",
-          "line": 108,
+          "line": 212,
           "name": "ProximityGap.exists_Pz_of_coeffs_of_close_proximity",
           "namespace": "ProximityGap",
           "short_name": "exists_Pz_of_coeffs_of_close_proximity",
@@ -11626,7 +11680,7 @@
         {
           "doc": "The `\u03b4`-close polynomial `Pz` for each `z` from the set `S` (`coeffs_of_close_proximity`).",
           "kind": "def",
-          "line": 127,
+          "line": 231,
           "name": "ProximityGap.Pz",
           "namespace": "ProximityGap",
           "short_name": "Pz",
@@ -11635,7 +11689,7 @@
         {
           "doc": "Proposition 5.5 from [BCIKS20]. There exists a subset `S'` of the set `S` and a bivariate polynomial `P(X, Z)` that matches `Pz` on that set.",
           "kind": "lemma",
-          "line": 135,
+          "line": 239,
           "name": "ProximityGap.exists_a_set_and_a_matching_polynomial",
           "namespace": "ProximityGap",
           "short_name": "exists_a_set_and_a_matching_polynomial",
@@ -11644,7 +11698,7 @@
         {
           "doc": "The subset `S'` extracted from Proprosition 5.5 [BCIKS20].",
           "kind": "def",
-          "line": 145,
+          "line": 249,
           "name": "ProximityGap.matching_set",
           "namespace": "ProximityGap",
           "short_name": "matching_set",
@@ -11653,7 +11707,7 @@
         {
           "doc": "`S'` is indeed a subset of `S`",
           "kind": "lemma",
-          "line": 151,
+          "line": 255,
           "name": "ProximityGap.matching_set_is_a_sub_of_coeffs_of_close_proximity",
           "namespace": "ProximityGap",
           "short_name": "matching_set_is_a_sub_of_coeffs_of_close_proximity",
@@ -46587,7 +46641,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5052,
+      "declarations": 5058,
       "files": 282
     }
   }
