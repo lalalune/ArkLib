@@ -24,14 +24,8 @@ variable {m : ℕ} (k : ℕ) {δ : ℚ} {x₀ : F} {u₀ u₁ : Fin n → F} {Q 
          [Finite F]
 
 omit [DecidableEq (RatFunc F)] [Finite F] in
-/-- *Cartesian cross-term blowup* witnessing the indexing defect in the factorization
-conjunct of `irreducible_factorization_of_gs_solution` (= [BCIKS20, Eq. 5.12] as currently
-formalized). For two distinct factors `a, b` the *intended* Eq-5.12 witnesses
-`R = [a, b]`, `f = [1, 1]`, `e = [1, 2]` (which should encode `a¹ · b²`) instead make the
-displayed triple product over the three `toFinset`s evaluate to `a³ · b³`: each factor is
-raised to `∑ (eᵢ ∈ {1,2}) = 3` and is copied across `f.toFinset = {1}`. Hence the
-Cartesian-product form cannot represent a factorization with non-uniform multiplicities,
-confirming the product is mis-indexed relative to the paper's single index `∏ᵢ`. -/
+/-- The current Eq. 5.12 Cartesian product form turns `[a, b]`, `[1, 1]`, `[1, 2]`
+into `a³ * b³`, exposing the product-indexing defect. -/
 lemma eq512_cartesian_product_blowup (a b : F[Z][X][Y]) (hab : a ≠ b) :
     (∏ (Rᵢ ∈ ([a, b]).toFinset) (fᵢ ∈ ([1, 1] : List ℕ).toFinset)
         (eᵢ ∈ ([1, 2] : List ℕ).toFinset),
@@ -52,25 +46,8 @@ lemma eq512_cartesian_product_blowup (a b : F[Z][X][Y]) (hab : a ≠ b) :
   ring
 
 omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
-/-- *Strong-separability is unsatisfiable for genuinely-arising factors* — the separability
-conjunct of `irreducible_factorization_of_gs_solution` is stronger than the paper statement.
-
-The conjunct `∀ Rᵢ ∈ R, Rᵢ.Separable` uses `Polynomial.Separable` over the **coefficient ring**
-`F[Z][X]`, which is *not a field*. By `separable_def`, `Rᵢ.Separable` unfolds to a Bézout
-identity `a · Rᵢ + b · Rᵢ.derivative = 1` with `a, b : F[Z][X][Y]` — i.e. coprimality *in the
-polynomial ring* `F[Z][X][Y]`, an extremely strong condition. It is **not** the paper's intended
-separability of `Rᵢ` over the fraction field `F(Z,X)` (equivalently, nonvanishing of `discr_y`,
-the form actually consumed by Claim 5.6 `discr_of_irred_components_nonzero`).
-
-Concretely the factor `r = Y² − X` (here `X = C (C X) : F[Z][X][Y]`, a *prime* element of the
-coefficient ring) is exactly the kind of irreducible factor a `ModifiedGuruswami` solution
-produces: it is irreducible over `F[Z][X]`, squarefree, and **separable over the fraction field**
-`F(Z,X)` (its two roots `±√X` are distinct in char ≠ 2). Yet it is **not** `Separable` over
-`F[Z][X]`: separability is preserved by every coefficient ring hom (`Separable.map`), so mapping
-the coefficient ring `F[Z][X] →+* F` by `Z, X ↦ 0` would send `r` to `Y²`, which is not even
-squarefree. Hence no choice of witnesses can satisfy the strong conjunct together with
-irreducibility once a factor of `Y`-degree ≥ 2 over a non-square coefficient appears — and the
-`ModifiedGuruswami` `Y`-degree budget `D_Y Q < D_X / k` permits exactly such factors. -/
+/-- Mapping `Y² - X` by any coefficient hom sending `X` to `0` shows the current
+ring-level `Separable` conjunct is stronger than the paper's fraction-field separability. -/
 lemma eq512_strong_separable_unsat
     (g : F[Z][X] →+* F) (hgX : g (Polynomial.C (Polynomial.X : Polynomial F) : F[Z][X]) = 0) :
     ¬ (((Polynomial.X : F[Z][X][Y]) ^ 2
@@ -95,24 +72,7 @@ lemma eq512_strong_separable_unsat
   exact (Polynomial.prime_X (R := F)).not_unit hunit
 
 omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
-/-- *Separable contraction over the fraction field* — the field-side core of the proof of
-`irreducible_factorization_of_gs_solution` (= [BCIKS20, Eq. 5.12]).
-
-For every positive-`Y`-degree irreducible factor `g : F[Z][X][Y]` of a `ModifiedGuruswami`
-solution `Q`, its image over the fraction field `K := FractionRing (F[Z][X]) = F(Z,X)` has a
-*separable contraction*: there is a separable `sK : K[Y]` and an exponent `m` with
-`expand K (q^m) sK = g.map (algebraMap …)`, where `q` is the exponential characteristic.
-Equivalently (`expand_eq_comp_X_pow`), `sK.comp (Y^(q^m))` equals the `K`-image of `g`.
-
-This is the step that genuinely needs a *field*: it composes the exponential-characteristic
-transfer `F → F(Z,X)` (`expChar_of_injective_algebraMap` along the injective fraction-field map),
-Gauss's lemma for irreducibility over
-the fraction field (`IsPrimitive.irreducible_iff_irreducible_map_fraction_map`, the idiom of
-`RationalFunctions.lean`), and Mathlib's separable contraction over a field
-(`Irreducible.hasSeparableContraction`). The remaining open content of Eq. 5.12 is the *descent*
-of this `K`-side contraction back to a primitive separable factor over `F[Z][X]` (a Gauss /
-`integerNormalization` content argument with no direct Mathlib transfer lemma), plus the
-multiplicity bookkeeping that assembles the factors into the zipped `(R, f, e)` lists. -/
+/-- Fraction-field separable contraction for an irreducible positive-`Y`-degree factor. -/
 lemma eq512_separable_contraction_over_fraction_field
     (g : F[Z][X][Y]) (hg : Irreducible g) (hdeg : g.natDegree ≠ 0) :
     ∃ (sK : Polynomial (FractionRing (F[Z][X]))) (m : ℕ),
@@ -1484,20 +1444,10 @@ theorem common_roots_force_lift_zero
     lt_of_lt_of_le (by simpa [β] using hcard) hTcard'
   simpa [β] using _root_.BCIKS20AppendixA.Lemma_A_1 hH β D hD hSβ_card
 
-/-! ### Statement Analysis for Claim 5.7
-
-`exists_factors_with_large_common_root_set` (Claim 5.7, `Agreement.lean`) carries a second
-cardinality conjunct
-`(#S : ℝ)/(D_Y Q) > 2·D_Y Q²·D_X·D_YZ Q`,
-with `S = coeffs_of_close_proximity k ωs δ u₀ u₁`.  This is a *lower bound on `#S`* and is
-**not** derivable from `ModifiedGuruswami`: in [BCIKS20] it is a *hypothesis* (the set of close
-codeword-coefficients is large — the list-decoding regime), mis-placed into the conclusion.  The
-three lemmas below verify this defect concretely. -/
+/-! ### Statement Analysis for Claim 5.7 -/
 
 omit [DecidableEq (RatFunc F)] in
-/-- *(Defect-7, part 1.)* For `δ < 0` and a non-empty point set, `coeffs_of_close_proximity` is
-empty: membership needs a codeword within relative Hamming distance `≤ δ < 0`, impossible since
-the relative Hamming distance is non-negative. -/
+/-- For `δ < 0`, the close-proximity coefficient set is empty. -/
 lemma coeffs_of_close_proximity_eq_empty_of_neg [NeZero n] (hδ : δ < 0) :
     coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ = ∅ := by
   classical
@@ -1509,9 +1459,7 @@ lemma coeffs_of_close_proximity_eq_empty_of_neg [NeZero n] (hδ : δ < 0) :
   linarith
 
 omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
-/-- *(Defect-7, part 2.)* The right-hand side of the second cardinality conjunct of Claim 5.7 is
-non-negative (`D_X` is non-negative on `ρ = (k+1)/n ≥ 0`, and the remaining factors are casts of
-naturals). -/
+/-- The right-hand side of the second cardinality conjunct of Claim 5.7 is non-negative. -/
 lemma c57_rhs_nonneg :
     (0 : ℝ) ≤ 2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q := by
   have hD : (0 : ℝ) ≤ D_X ((k + 1 : ℚ) / n) n m := by
@@ -1519,13 +1467,7 @@ lemma c57_rhs_nonneg :
   positivity
 
 omit [DecidableEq (RatFunc F)] in
-/-- *(Defect-7, core.)* The second cardinality conjunct of
-`exists_factors_with_large_common_root_set` is **false** whenever `S := coeffs_of_close_proximity`
-is empty: its left-hand side `(#S : ℝ)/(D_Y Q)` collapses to `0`, while its right-hand side is
-`≥ 0` (`c57_rhs_nonneg`), so the strict inequality cannot hold.  Together with
-`coeffs_of_close_proximity_eq_empty_of_neg` (which makes `S` empty for `δ < 0`), this proves the
-conjunct is not derivable from `ModifiedGuruswami` alone: in [BCIKS20] it is a hypothesis (`S`
-large, the list-decoding regime), not a conclusion. -/
+/-- The second cardinality conjunct is false whenever the close-proximity set is empty. -/
 lemma c57_second_conjunct_unsat_of_S_empty
     (hSempty : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ = ∅)
     (hconj2 :
