@@ -4,7 +4,7 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 282 files, 5240 declarations
+- `ArkLib` — 282 files, 5269 declarations
 
 ## Same short-name across multiple files (143 groups)
 
@@ -737,12 +737,12 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `guruswami_sudan_for_proximity_gap_existence` (2 declarations, 2 files)
 
 - `lemma GuruswamiSudan.guruswami_sudan_for_proximity_gap_existence` [ArkLib/Data/CodingTheory/GuruswamiSudan/GuruswamiSudan.lean:889](../../../ArkLib/Data/CodingTheory/GuruswamiSudan/GuruswamiSudan.lean#L889) — Constructive witness extraction for the Guruswami–Sudan system. When the computable `hasWitnessC` ch
-- `lemma ProximityGap.guruswami_sudan_for_proximity_gap_existence` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Guruswami.lean:188](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Guruswami.lean#L188) — The first part of Lemma 5.3 from [BCIKS20]. Given `D_X` (`proximity_gap_degree_bound`) and `δ₀` (`pr
+- `lemma ProximityGap.guruswami_sudan_for_proximity_gap_existence` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Guruswami.lean:189](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Guruswami.lean#L189) — The first part of Lemma 5.3 from [BCIKS20]. Given `D_X` (`proximity_gap_degree_bound`) and `δ₀` (`pr
 
 ### `guruswami_sudan_for_proximity_gap_property` (2 declarations, 2 files)
 
 - `lemma GuruswamiSudan.guruswami_sudan_for_proximity_gap_property` [ArkLib/Data/CodingTheory/GuruswamiSudan/GuruswamiSudan.lean:928](../../../ArkLib/Data/CodingTheory/GuruswamiSudan/GuruswamiSudan.lean#L928) — Constructive witness property for the Guruswami–Sudan system. When `m > 0` and the codeword polynomi
-- `lemma ProximityGap.guruswami_sudan_for_proximity_gap_property` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Guruswami.lean:200](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Guruswami.lean#L200) — The second part of Lemma 5.3 from [BCIKS20]. For any solution `Q` of the Guruswami-Sudan system, and
+- `lemma ProximityGap.guruswami_sudan_for_proximity_gap_property` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Guruswami.lean:201](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Guruswami.lean#L201) — The second part of Lemma 5.3 from [BCIKS20]. For any solution `Q` of the Guruswami-Sudan system, and
 
 ### `hint` (2 declarations, 2 files)
 
@@ -797,7 +797,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `masterKStateProp` (2 declarations, 2 files)
 
 - `def Binius.BinaryBasefold.masterKStateProp` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:926](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L926) — Before V's challenge of the `i-th` foldStep, we ignore the bad-folding-event of the `i-th` oracle if
-- `def RingSwitching.masterKStateProp` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:436](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L436) — (no docstring)
+- `def RingSwitching.masterKStateProp` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:442](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L442) — (no docstring)
 
 ### `ofFinCoeff` (2 declarations, 2 files)
 
@@ -867,7 +867,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `run` (2 declarations, 2 files)
 
 - `def AGM.Adversary.run` [ArkLib/AGM/Basic.lean:165](../../../ArkLib/AGM/Basic.lean#L165) — Running the adversary on a given table, returning the list of group elements it is supposed to outpu
-- `def Prover.run` [ArkLib/OracleReduction/Execution.lean:153](../../../ArkLib/OracleReduction/Execution.lean#L153) — Run the prover in an interactive reduction. Returns the output statement and witness, and the transc
+- `def Prover.run` [ArkLib/OracleReduction/Execution.lean:140](../../../ArkLib/OracleReduction/Execution.lean#L140) — Run the prover in an interactive reduction. Returns the output statement and witness, and the transc
 
 ### `sumcheckFoldOracleReduction` (2 declarations, 2 files)
 
@@ -902,7 +902,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `witnessStructuralInvariant` (2 declarations, 2 files)
 
 - `def Binius.BinaryBasefold.witnessStructuralInvariant` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:818](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L818) — This condition ensures that the witness polynomial `H` has the correct structure `eq(...) * t(...)`
-- `def RingSwitching.witnessStructuralInvariant` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:429](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L429) — This condition ensures that the witness polynomial `H` has the correct structure `A(...) * t'(...)`
+- `def RingSwitching.witnessStructuralInvariant` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:435](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L435) — This condition ensures that the witness polynomial `H` has the correct structure `A(...) * t'(...)`
 
 ### `OracleInterface` (3 declarations, 2 files)
 
@@ -1009,7 +1009,7 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **1.00** `Binius.BinaryBasefold.FullBinaryBasefold.fullOracleVerifier` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:44](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L44) vs `RingSwitching.FullRingSwitching.fullOracleVerifier` [ArkLib/ProofSystem/RingSwitching/General.lean:51](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L51)
     - a: The oracle verifier for the full Binary Basefold protocol
     - b: The oracle verifier for the full Binary Basefold protocol
-- **1.00** `Binius.BinaryBasefold.witnessStructuralInvariant` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:818](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L818) vs `RingSwitching.witnessStructuralInvariant` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:429](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L429)
+- **1.00** `Binius.BinaryBasefold.witnessStructuralInvariant` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:818](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L818) vs `RingSwitching.witnessStructuralInvariant` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:435](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L435)
     - a: This condition ensures that the witness polynomial `H` has the correct structure `eq(...) * t(...)`
     - b: This condition ensures that the witness polynomial `H` has the correct structure `A(...) * t'(...)`
 - **1.00** `Binius.FRIBinius.CoreInteractionPhase.biniusProfile` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:56](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L56) vs `Binius.FRIBinius.FullFRIBinius.biniusProfile` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:51](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L51)
@@ -1117,7 +1117,7 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **0.86** `Verifier.id_knowledgeSoundness` [ArkLib/OracleReduction/Security/Basic.lean:591](../../../ArkLib/OracleReduction/Security/Basic.lean#L591) vs `Verifier.id_rbrKnowledgeSoundness` [ArkLib/OracleReduction/Security/RoundByRound.lean:581](../../../ArkLib/OracleReduction/Security/RoundByRound.lean#L581)
     - a: The identity / trivial verifier is perfectly knowledge sound.
     - b: The identity / trivial verifier is perfectly round-by-round knowledge sound.
-- **0.86** `proximity_gap_degree_bound` [ArkLib/Data/CodingTheory/GuruswamiSudan/Basic.lean:28](../../../ArkLib/Data/CodingTheory/GuruswamiSudan/Basic.lean#L28) vs `ProximityGap.D_X` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Guruswami.lean:182](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Guruswami.lean#L182)
+- **0.86** `proximity_gap_degree_bound` [ArkLib/Data/CodingTheory/GuruswamiSudan/Basic.lean:28](../../../ArkLib/Data/CodingTheory/GuruswamiSudan/Basic.lean#L28) vs `ProximityGap.D_X` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Guruswami.lean:183](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Guruswami.lean#L183)
     - a: The degree bound (i.e. `D_X(m) = (m + 1/2) * √ρ * n`) for instantiation of Guruswami-Sudan in Lemma 
     - b: The degree bound (a.k.a. `D_X`) for instantiation of Guruswami-Sudan in Lemma 5.3 of [BCIKS20]. `D_X
 
