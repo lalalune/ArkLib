@@ -45739,522 +45739,9 @@
           "signature": "instance instSampleableTypeChallengePSpec [SampleableType R] :"
         },
         {
-          "doc": "",
-          "kind": "def",
-          "line": 239,
-          "name": "Sumcheck.Spec.SingleRound.Simpler.StmtIn",
-          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
-          "short_name": "StmtIn",
-          "signature": "def StmtIn : Type := R"
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 240,
-          "name": "Sumcheck.Spec.SingleRound.Simpler.OStmtIn",
-          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
-          "short_name": "OStmtIn",
-          "signature": "def OStmtIn : Unit \u2192 Type := fun _ => R\u2983\u2264 deg\u2984[X]"
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 242,
-          "name": "Sumcheck.Spec.SingleRound.Simpler.inputRelation",
-          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
-          "short_name": "inputRelation",
-          "signature": "def inputRelation : Set (((StmtIn R) \u00d7 (\u2200 i, OStmtIn R deg i)) \u00d7 Unit) :="
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 245,
-          "name": "Sumcheck.Spec.SingleRound.Simpler.StmtAfterSendClaim",
-          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
-          "short_name": "StmtAfterSendClaim",
-          "signature": "def StmtAfterSendClaim : Type := R"
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 246,
-          "name": "Sumcheck.Spec.SingleRound.Simpler.OStmtAfterSendClaim",
-          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
-          "short_name": "OStmtAfterSendClaim",
-          "signature": "def OStmtAfterSendClaim : Unit \u2295 Unit \u2192 Type := fun _ => R\u2983\u2264 deg\u2984[X]"
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 248,
-          "name": "Sumcheck.Spec.SingleRound.Simpler.relationAfterSendClaim",
-          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
-          "short_name": "relationAfterSendClaim",
-          "signature": "def relationAfterSendClaim :"
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 254,
-          "name": "Sumcheck.Spec.SingleRound.Simpler.StmtAfterCheckClaim",
-          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
-          "short_name": "StmtAfterCheckClaim",
-          "signature": "def StmtAfterCheckClaim : Type := R"
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 255,
-          "name": "Sumcheck.Spec.SingleRound.Simpler.OStmtAfterCheckClaim",
-          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
-          "short_name": "OStmtAfterCheckClaim",
-          "signature": "def OStmtAfterCheckClaim : Unit \u2295 Unit \u2192 Type := fun _ => R\u2983\u2264 deg\u2984[X]"
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 257,
-          "name": "Sumcheck.Spec.SingleRound.Simpler.relationAfterCheckClaim",
-          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
-          "short_name": "relationAfterCheckClaim",
-          "signature": "def relationAfterCheckClaim :"
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 261,
-          "name": "Sumcheck.Spec.SingleRound.Simpler.StmtAfterRandomQuery",
-          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
-          "short_name": "StmtAfterRandomQuery",
-          "signature": "def StmtAfterRandomQuery : Type := R"
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 262,
-          "name": "Sumcheck.Spec.SingleRound.Simpler.OStmtAfterRandomQuery",
-          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
-          "short_name": "OStmtAfterRandomQuery",
-          "signature": "def OStmtAfterRandomQuery : Unit \u2295 Unit \u2192 Type := fun _ => R\u2983\u2264 deg\u2984[X]"
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 264,
-          "name": "Sumcheck.Spec.SingleRound.Simpler.relationAfterRandomQuery",
-          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
-          "short_name": "relationAfterRandomQuery",
-          "signature": "def relationAfterRandomQuery :"
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 268,
-          "name": "Sumcheck.Spec.SingleRound.Simpler.StmtOut",
-          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
-          "short_name": "StmtOut",
-          "signature": "def StmtOut : Type := R \u00d7 R"
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 269,
-          "name": "Sumcheck.Spec.SingleRound.Simpler.OStmtOut",
-          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
-          "short_name": "OStmtOut",
-          "signature": "def OStmtOut : Unit \u2192 Type := fun _ => R\u2983\u2264 deg\u2984[X]"
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 271,
-          "name": "Sumcheck.Spec.SingleRound.Simpler.outputRelation",
-          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
-          "short_name": "outputRelation",
-          "signature": "def outputRelation :"
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 277,
-          "name": "Sumcheck.Spec.SingleRound.Simpler.oracleReduction.sendClaim",
-          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
-          "short_name": "oracleReduction.sendClaim",
-          "signature": "def oracleReduction.sendClaim : OracleReduction oSpec (StmtIn R) (OStmtIn R deg) Unit"
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 283,
-          "name": "Sumcheck.Spec.SingleRound.Simpler.oracleReduction.checkClaim",
-          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
-          "short_name": "oracleReduction.checkClaim",
-          "signature": "def oracleReduction.checkClaim : OracleReduction oSpec"
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 288,
-          "name": "Sumcheck.Spec.SingleRound.Simpler.oracleReduction.randomQuery",
-          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
-          "short_name": "oracleReduction.randomQuery",
-          "signature": "def oracleReduction.randomQuery : OracleReduction oSpec"
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 293,
-          "name": "Sumcheck.Spec.SingleRound.Simpler.oracleReduction.reduceClaim",
-          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
-          "short_name": "oracleReduction.reduceClaim",
-          "signature": "def oracleReduction.reduceClaim : OracleReduction oSpec"
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 300,
-          "name": "Sumcheck.Spec.SingleRound.Simpler.oracleReduction",
-          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
-          "short_name": "oracleReduction",
-          "signature": "def oracleReduction : OracleReduction oSpec (StmtIn R) (OStmtIn R deg) Unit"
-        },
-        {
-          "doc": "",
-          "kind": "theorem",
-          "line": 312,
-          "name": "Sumcheck.Spec.SingleRound.Simpler.oracleReduction_perfectCompleteness",
-          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
-          "short_name": "oracleReduction_perfectCompleteness",
-          "signature": "theorem oracleReduction_perfectCompleteness :"
-        },
-        {
-          "doc": "",
-          "kind": "theorem",
-          "line": 338,
-          "name": "Sumcheck.Spec.SingleRound.Simpler.oracleVerifier_rbrKnowledgeSoundness",
-          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
-          "short_name": "oracleVerifier_rbrKnowledgeSoundness",
-          "signature": "theorem oracleVerifier_rbrKnowledgeSoundness [Fintype R] :"
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 356,
-          "name": "Sumcheck.Spec.SingleRound.Simple.StmtIn",
-          "namespace": "Sumcheck.Spec.SingleRound.Simple",
-          "short_name": "StmtIn",
-          "signature": "def StmtIn : Type := R"
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 359,
-          "name": "Sumcheck.Spec.SingleRound.Simple.StmtOut",
-          "namespace": "Sumcheck.Spec.SingleRound.Simple",
-          "short_name": "StmtOut",
-          "signature": "def StmtOut : Type := R \u00d7 R"
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 362,
-          "name": "Sumcheck.Spec.SingleRound.Simple.OStmtIn",
-          "namespace": "Sumcheck.Spec.SingleRound.Simple",
-          "short_name": "OStmtIn",
-          "signature": "def OStmtIn : Unit \u2192 Type := fun _ => R\u2983\u2264 deg\u2984[X]"
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 365,
-          "name": "Sumcheck.Spec.SingleRound.Simple.OStmtOut",
-          "namespace": "Sumcheck.Spec.SingleRound.Simple",
-          "short_name": "OStmtOut",
-          "signature": "def OStmtOut : Unit \u2192 Type := fun _ => R\u2983\u2264 deg\u2984[X]"
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 367,
-          "name": "Sumcheck.Spec.SingleRound.Simple.inputRelation",
-          "namespace": "Sumcheck.Spec.SingleRound.Simple",
-          "short_name": "inputRelation",
-          "signature": "def inputRelation : Set ((StmtIn R \u00d7 (\u2200 i, OStmtIn R deg i)) \u00d7 Unit) :="
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 370,
-          "name": "Sumcheck.Spec.SingleRound.Simple.outputRelation",
-          "namespace": "Sumcheck.Spec.SingleRound.Simple",
-          "short_name": "outputRelation",
-          "signature": "def outputRelation : Set ((StmtOut R \u00d7 (\u2200 i, OStmtOut R deg i)) \u00d7 Unit) :="
-        },
-        {
-          "doc": "The prover in the simple description of a single round of sum-check. Takes in input `target : R` and `poly : R\u2983\u2264 deg\u2984[X]`, and: - Sends a message `poly' := poly` to the verifier - Receive `chal` from the verifier - Outputs `(newTarget, chal) : R \u00d7 R`, where `newTarget := poly.eval chal`",
-          "kind": "def",
-          "line": 382,
-          "name": "Sumcheck.Spec.SingleRound.Simple.prover",
-          "namespace": "Sumcheck.Spec.SingleRound.Simple",
-          "short_name": "prover",
-          "signature": "def prover : OracleProver oSpec (StmtIn R) (OStmtIn R deg) Unit (StmtOut R) (OStmtOut R deg) Unit"
-        },
-        {
-          "doc": "The verifier for the simple description of a single round of sum-check",
-          "kind": "def",
-          "line": 404,
-          "name": "Sumcheck.Spec.SingleRound.Simple.verifier",
-          "namespace": "Sumcheck.Spec.SingleRound.Simple",
-          "short_name": "verifier",
-          "signature": "def verifier : Verifier oSpec (StmtIn R \u00d7 (\u2200 i, OStmtIn R deg i))"
-        },
-        {
-          "doc": "The reduction for the simple description of a single round of sum-check",
-          "kind": "def",
-          "line": 413,
-          "name": "Sumcheck.Spec.SingleRound.Simple.reduction",
-          "namespace": "Sumcheck.Spec.SingleRound.Simple",
-          "short_name": "reduction",
-          "signature": "def reduction : Reduction oSpec (StmtIn R \u00d7 (\u2200 i, OStmtIn R deg i)) Unit"
-        },
-        {
-          "doc": "",
-          "kind": "instance",
-          "line": 419,
-          "name": "Sumcheck.Spec.SingleRound.Simple.t",
-          "namespace": "Sumcheck.Spec.SingleRound.Simple",
-          "short_name": "t",
-          "signature": "instance t {\u03b9\u2081 \u03b9\u2082 \u03b9\u2083}"
-        },
-        {
-          "doc": "The honest simple prover threads its input polynomial unchanged: any output statement in the support of its run has output oracle statement equal to the input polynomial, and new target equal to that polynomial evaluated at the sampled challenge.",
-          "kind": "lemma",
-          "line": 429,
-          "name": "Sumcheck.Spec.SingleRound.Simple.prover_run_output",
-          "namespace": "Sumcheck.Spec.SingleRound.Simple",
-          "short_name": "prover_run_output",
-          "signature": "lemma prover_run_output (stmt : StmtIn R \u00d7 (\u2200 i, OStmtIn R deg i))"
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 473,
-          "name": "Sumcheck.Spec.SingleRound.Simple.oracleVerifier",
-          "namespace": "Sumcheck.Spec.SingleRound.Simple",
-          "short_name": "oracleVerifier",
-          "signature": "def oracleVerifier : OracleVerifier oSpec (StmtIn R) (OStmtIn R deg) (StmtOut R) (OStmtOut R deg)"
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 492,
-          "name": "Sumcheck.Spec.SingleRound.Simple.oracleReduction",
-          "namespace": "Sumcheck.Spec.SingleRound.Simple",
-          "short_name": "oracleReduction",
-          "signature": "def oracleReduction : OracleReduction oSpec (StmtIn R) (OStmtIn R deg) Unit"
-        },
-        {
-          "doc": "",
-          "kind": "theorem",
-          "line": 511,
-          "name": "Sumcheck.Spec.SingleRound.Simple.oracleVerifier_eq_verifier",
-          "namespace": "Sumcheck.Spec.SingleRound.Simple",
-          "short_name": "oracleVerifier_eq_verifier",
-          "signature": "theorem oracleVerifier_eq_verifier :"
-        },
-        {
-          "doc": "The oracle reduction is equivalent to the non-oracle reduction",
-          "kind": "theorem",
-          "line": 585,
-          "name": "Sumcheck.Spec.SingleRound.Simple.oracleReduction_eq_reduction",
-          "namespace": "Sumcheck.Spec.SingleRound.Simple",
-          "short_name": "oracleReduction_eq_reduction",
-          "signature": "theorem oracleReduction_eq_reduction :"
-        },
-        {
-          "doc": "Perfect completeness for the (non-oracle) reduction",
-          "kind": "theorem",
-          "line": 593,
-          "name": "Sumcheck.Spec.SingleRound.Simple.reduction_perfectCompleteness",
-          "namespace": "Sumcheck.Spec.SingleRound.Simple",
-          "short_name": "reduction_perfectCompleteness",
-          "signature": "theorem reduction_perfectCompleteness :"
-        },
-        {
-          "doc": "Any successful run of the simple single-round reduction has the prover's output oracle statement equal to the input polynomial, and its output target equal to that polynomial evaluated at the challenge. This captures the honest prover's behavior: it forwards the input polynomial and reports its evaluation at the verifier's challenge.",
-          "kind": "theorem",
-          "line": 814,
-          "name": "Sumcheck.Spec.SingleRound.Simple.reduction_run_prover_output",
-          "namespace": "Sumcheck.Spec.SingleRound.Simple",
-          "short_name": "reduction_run_prover_output",
-          "signature": "theorem reduction_run_prover_output (target : R) (oStmt : \u2200 i, OStmtIn R deg i)"
-        },
-        {
-          "doc": "Perfect completeness for the oracle reduction",
-          "kind": "theorem",
-          "line": 873,
-          "name": "Sumcheck.Spec.SingleRound.Simple.oracleReduction_perfectCompleteness",
-          "namespace": "Sumcheck.Spec.SingleRound.Simple",
-          "short_name": "oracleReduction_perfectCompleteness",
-          "signature": "theorem oracleReduction_perfectCompleteness :"
-        },
-        {
-          "doc": "Round-by-round knowledge soundness for the verifier",
-          "kind": "theorem",
-          "line": 881,
-          "name": "Sumcheck.Spec.SingleRound.Simple.verifier_rbrKnowledgeSoundness",
-          "namespace": "Sumcheck.Spec.SingleRound.Simple",
-          "short_name": "verifier_rbrKnowledgeSoundness",
-          "signature": "theorem verifier_rbrKnowledgeSoundness [Fintype R] :"
-        },
-        {
-          "doc": "Round-by-round knowledge soundness for the oracle verifier",
-          "kind": "theorem",
-          "line": 887,
-          "name": "Sumcheck.Spec.SingleRound.Simple.oracleVerifier_rbrKnowledgeSoundness",
-          "namespace": "Sumcheck.Spec.SingleRound.Simple",
-          "short_name": "oracleVerifier_rbrKnowledgeSoundness",
-          "signature": "theorem oracleVerifier_rbrKnowledgeSoundness [Fintype R] :"
-        },
-        {
-          "doc": "Auxiliary lemma for proving that the polynomial sent by the honest prover is of degree at most `deg`",
-          "kind": "theorem",
-          "line": 898,
-          "name": "Sumcheck.Spec.SingleRound.sumcheck_roundPoly_degreeLE",
-          "namespace": "Sumcheck.Spec.SingleRound",
-          "short_name": "sumcheck_roundPoly_degreeLE",
-          "signature": "theorem sumcheck_roundPoly_degreeLE (i : Fin (n + 1)) {challenges : Fin i.castSucc \u2192 R}"
-        },
-        {
-          "doc": "The oracle statement lens that connect the simple to the full single-round sum-check protocol For `n = 0`, since `poly : R[X Fin 0]` is just a constant, we need to embed it as a constant poly. For other `n := n + 1`, we proceed with the sum `\u2211 x \u2208 D ^ (n - i), poly \u2e28challenges, X, x\u2e29`",
-          "kind": "def",
-          "line": 914,
-          "name": "Sumcheck.Spec.SingleRound.oStmtLens",
-          "namespace": "Sumcheck.Spec.SingleRound",
-          "short_name": "oStmtLens",
-          "signature": "def oStmtLens (i : Fin n) : OracleStatement.Lens"
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 932,
-          "name": "Sumcheck.Spec.SingleRound.oCtxLens",
-          "namespace": "Sumcheck.Spec.SingleRound",
-          "short_name": "oCtxLens",
-          "signature": "def oCtxLens (i : Fin n) : OracleContext.Lens"
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 941,
-          "name": "Sumcheck.Spec.SingleRound.extractorLens",
-          "namespace": "Sumcheck.Spec.SingleRound",
-          "short_name": "extractorLens",
-          "signature": "def extractorLens (i : Fin n) : Extractor.Lens"
-        },
-        {
-          "doc": "The verifier for the `i`-th round of the sum-check protocol",
-          "kind": "def",
-          "line": 953,
-          "name": "Sumcheck.Spec.SingleRound.verifier",
-          "namespace": "Sumcheck.Spec.SingleRound",
-          "short_name": "verifier",
-          "signature": "def verifier (i : Fin n) : Verifier oSpec"
-        },
-        {
-          "doc": "The oracle verifier for the `i`-th round of the sum-check protocol",
-          "kind": "def",
-          "line": 959,
-          "name": "Sumcheck.Spec.SingleRound.oracleVerifier",
-          "namespace": "Sumcheck.Spec.SingleRound",
-          "short_name": "oracleVerifier",
-          "signature": "def oracleVerifier (i : Fin n) : OracleVerifier oSpec (StatementRound R n i.castSucc)"
-        },
-        {
-          "doc": "The sum-check reduction for the `i`-th round of the sum-check protocol",
-          "kind": "def",
-          "line": 964,
-          "name": "Sumcheck.Spec.SingleRound.reduction",
-          "namespace": "Sumcheck.Spec.SingleRound",
-          "short_name": "reduction",
-          "signature": "def reduction (i : Fin n) : Reduction oSpec"
-        },
-        {
-          "doc": "The sum-check oracle reduction for the `i`-th round of the sum-check protocol",
-          "kind": "def",
-          "line": 970,
-          "name": "Sumcheck.Spec.SingleRound.oracleReduction",
-          "namespace": "Sumcheck.Spec.SingleRound",
-          "short_name": "oracleReduction",
-          "signature": "def oracleReduction (i : Fin n) : OracleReduction oSpec"
-        },
-        {
-          "doc": "",
-          "kind": "lemma",
-          "line": 977,
-          "name": "Sumcheck.Spec.SingleRound.reduction_verifier_eq_verifier",
-          "namespace": "Sumcheck.Spec.SingleRound",
-          "short_name": "reduction_verifier_eq_verifier",
-          "signature": "lemma reduction_verifier_eq_verifier {i : Fin n} :"
-        },
-        {
-          "doc": "",
-          "kind": "lemma",
-          "line": 983,
-          "name": "Sumcheck.Spec.SingleRound.oracleReduction_verifier_eq_verifier",
-          "namespace": "Sumcheck.Spec.SingleRound",
-          "short_name": "oracleReduction_verifier_eq_verifier",
-          "signature": "lemma oracleReduction_verifier_eq_verifier {i : Fin n} :"
-        },
-        {
-          "doc": "Keystone `Fin`-plumbing identity for the sum-check round split: inserting `a` at position `i` into `append c y \u2218 cast` agrees with appending the cons-extended tuple `cons a y` to `c`.",
-          "kind": "lemma",
-          "line": 1000,
-          "name": "Sumcheck.Spec.SingleRound.append_cons_eq_insertNth",
-          "namespace": "Sumcheck.Spec.SingleRound",
-          "short_name": "append_cons_eq_insertNth",
-          "signature": "lemma append_cons_eq_insertNth {n' : \u2115} {\u03b1 : Type} (i : Fin (n' + 1)) (a : \u03b1)"
-        },
-        {
-          "doc": "The sum-check round split: the `(n'+1-i)`-fold sum factors as a sum over the first coordinate of a sum over the remaining `(n'-i)` coordinates, with the inserted-variable evaluation.",
-          "kind": "lemma",
-          "line": 1043,
-          "name": "Sumcheck.Spec.SingleRound.sumcheck_round_split",
-          "namespace": "Sumcheck.Spec.SingleRound",
-          "short_name": "sumcheck_round_split",
-          "signature": "lemma sumcheck_round_split {n' : \u2115} {m' : \u2115} (D' : Fin m' \u21aa R) (i : Fin (n' + 1))"
-        },
-        {
-          "doc": "Pointwise `Fin`-plumbing identity for the single-point round split: appending `a` via `snoc` to `c` and then `w` agrees with inserting `a` at position `i` into `append c w'`.",
-          "kind": "lemma",
-          "line": 1099,
-          "name": "Sumcheck.Spec.SingleRound.append_snoc_eq_insertNth",
-          "namespace": "Sumcheck.Spec.SingleRound",
-          "short_name": "append_snoc_eq_insertNth",
-          "signature": "lemma append_snoc_eq_insertNth {n' : \u2115} {\u03b1 : Type} (i : Fin (n' + 1)) (a : \u03b1)"
-        },
-        {
-          "doc": "The single-point sum-check round split: specializing the inserted variable at a fixed value `a` (rather than summing over the domain). The `(n'+1-i.succ)`-fold sum with `a` snoc-appended to `c` agrees with the `(n'-i)`-fold sum that inserts `a` at position `i`. This realizes the round-i claim update used in the lens completeness `lift`.",
-          "kind": "lemma",
-          "line": 1140,
-          "name": "Sumcheck.Spec.SingleRound.sumcheck_round_split_point",
-          "namespace": "Sumcheck.Spec.SingleRound",
-          "short_name": "sumcheck_round_split_point",
-          "signature": "lemma sumcheck_round_split_point {n' : \u2115} {m' : \u2115} (D' : Fin m' \u21aa R) (i : Fin (n' + 1))"
-        },
-        {
-          "doc": "",
-          "kind": "instance",
-          "line": 1162,
-          "name": "Sumcheck.Spec.SingleRound.oCtxLens_complete",
-          "namespace": "Sumcheck.Spec.SingleRound",
-          "short_name": "oCtxLens_complete",
-          "signature": "instance oCtxLens_complete :"
-        },
-        {
           "doc": "`simulateQ` of a query lifted from the middle summand of `spec\u2080 + (spec\u2081 + spec\u2082)` is the implementation applied at the routed index.",
           "kind": "lemma",
-          "line": 1226,
+          "line": 182,
           "name": "Sumcheck.Spec.SingleRound.simulateQ_double_lift_query",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "simulateQ_double_lift_query",
@@ -46263,7 +45750,7 @@
         {
           "doc": "`Vector.mapM` over a pushed vector factors as mapM of the prefix, then the last element. (Extracted from the proof of `Vector.support_mapM_index`.)",
           "kind": "lemma",
-          "line": 1241,
+          "line": 197,
           "name": "Sumcheck.Spec.SingleRound.vector_mapM_push",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "vector_mapM_push",
@@ -46272,7 +45759,7 @@
         {
           "doc": "`Vector.mapM` on the empty vector is `pure`.",
           "kind": "lemma",
-          "line": 1253,
+          "line": 209,
           "name": "Sumcheck.Spec.SingleRound.vector_mapM_empty",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "vector_mapM_empty",
@@ -46281,7 +45768,7 @@
         {
           "doc": "`simulateQ` (into `OracleComp`) commutes with `Vector.mapM` of `OptionT` computations. The `OptionT` ascriptions are load-bearing: without them `mapM` elaborates at the carrier.",
           "kind": "lemma",
-          "line": 1261,
+          "line": 217,
           "name": "Sumcheck.Spec.SingleRound.simulateQ_optionT_vector_mapM",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "simulateQ_optionT_vector_mapM",
@@ -46290,7 +45777,7 @@
         {
           "doc": "`Vector.mapM` of pure computations collapses to `pure` of the map.",
           "kind": "lemma",
-          "line": 1290,
+          "line": 246,
           "name": "Sumcheck.Spec.SingleRound.vector_mapM_pure_comp",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "vector_mapM_pure_comp",
@@ -46298,8 +45785,530 @@
         },
         {
           "doc": "",
+          "kind": "def",
+          "line": 323,
+          "name": "Sumcheck.Spec.SingleRound.Simpler.StmtIn",
+          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
+          "short_name": "StmtIn",
+          "signature": "def StmtIn : Type := R"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 324,
+          "name": "Sumcheck.Spec.SingleRound.Simpler.OStmtIn",
+          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
+          "short_name": "OStmtIn",
+          "signature": "def OStmtIn : Unit \u2192 Type := fun _ => R\u2983\u2264 deg\u2984[X]"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 326,
+          "name": "Sumcheck.Spec.SingleRound.Simpler.inputRelation",
+          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
+          "short_name": "inputRelation",
+          "signature": "def inputRelation : Set (((StmtIn R) \u00d7 (\u2200 i, OStmtIn R deg i)) \u00d7 Unit) :="
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 329,
+          "name": "Sumcheck.Spec.SingleRound.Simpler.StmtAfterSendClaim",
+          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
+          "short_name": "StmtAfterSendClaim",
+          "signature": "def StmtAfterSendClaim : Type := R"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 330,
+          "name": "Sumcheck.Spec.SingleRound.Simpler.OStmtAfterSendClaim",
+          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
+          "short_name": "OStmtAfterSendClaim",
+          "signature": "def OStmtAfterSendClaim : Unit \u2295 Unit \u2192 Type := fun _ => R\u2983\u2264 deg\u2984[X]"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 332,
+          "name": "Sumcheck.Spec.SingleRound.Simpler.relationAfterSendClaim",
+          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
+          "short_name": "relationAfterSendClaim",
+          "signature": "def relationAfterSendClaim :"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 338,
+          "name": "Sumcheck.Spec.SingleRound.Simpler.StmtAfterCheckClaim",
+          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
+          "short_name": "StmtAfterCheckClaim",
+          "signature": "def StmtAfterCheckClaim : Type := R"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 339,
+          "name": "Sumcheck.Spec.SingleRound.Simpler.OStmtAfterCheckClaim",
+          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
+          "short_name": "OStmtAfterCheckClaim",
+          "signature": "def OStmtAfterCheckClaim : Unit \u2295 Unit \u2192 Type := fun _ => R\u2983\u2264 deg\u2984[X]"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 341,
+          "name": "Sumcheck.Spec.SingleRound.Simpler.relationAfterCheckClaim",
+          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
+          "short_name": "relationAfterCheckClaim",
+          "signature": "def relationAfterCheckClaim :"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 345,
+          "name": "Sumcheck.Spec.SingleRound.Simpler.StmtAfterRandomQuery",
+          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
+          "short_name": "StmtAfterRandomQuery",
+          "signature": "def StmtAfterRandomQuery : Type := R"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 346,
+          "name": "Sumcheck.Spec.SingleRound.Simpler.OStmtAfterRandomQuery",
+          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
+          "short_name": "OStmtAfterRandomQuery",
+          "signature": "def OStmtAfterRandomQuery : Unit \u2295 Unit \u2192 Type := fun _ => R\u2983\u2264 deg\u2984[X]"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 348,
+          "name": "Sumcheck.Spec.SingleRound.Simpler.relationAfterRandomQuery",
+          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
+          "short_name": "relationAfterRandomQuery",
+          "signature": "def relationAfterRandomQuery :"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 352,
+          "name": "Sumcheck.Spec.SingleRound.Simpler.StmtOut",
+          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
+          "short_name": "StmtOut",
+          "signature": "def StmtOut : Type := R \u00d7 R"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 353,
+          "name": "Sumcheck.Spec.SingleRound.Simpler.OStmtOut",
+          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
+          "short_name": "OStmtOut",
+          "signature": "def OStmtOut : Unit \u2192 Type := fun _ => R\u2983\u2264 deg\u2984[X]"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 355,
+          "name": "Sumcheck.Spec.SingleRound.Simpler.outputRelation",
+          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
+          "short_name": "outputRelation",
+          "signature": "def outputRelation :"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 361,
+          "name": "Sumcheck.Spec.SingleRound.Simpler.oracleReduction.sendClaim",
+          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
+          "short_name": "oracleReduction.sendClaim",
+          "signature": "def oracleReduction.sendClaim : OracleReduction oSpec (StmtIn R) (OStmtIn R deg) Unit"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 367,
+          "name": "Sumcheck.Spec.SingleRound.Simpler.oracleReduction.checkClaim",
+          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
+          "short_name": "oracleReduction.checkClaim",
+          "signature": "def oracleReduction.checkClaim : OracleReduction oSpec"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 372,
+          "name": "Sumcheck.Spec.SingleRound.Simpler.oracleReduction.randomQuery",
+          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
+          "short_name": "oracleReduction.randomQuery",
+          "signature": "def oracleReduction.randomQuery : OracleReduction oSpec"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 377,
+          "name": "Sumcheck.Spec.SingleRound.Simpler.oracleReduction.reduceClaim",
+          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
+          "short_name": "oracleReduction.reduceClaim",
+          "signature": "def oracleReduction.reduceClaim : OracleReduction oSpec"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 384,
+          "name": "Sumcheck.Spec.SingleRound.Simpler.oracleReduction",
+          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
+          "short_name": "oracleReduction",
+          "signature": "def oracleReduction : OracleReduction oSpec (StmtIn R) (OStmtIn R deg) Unit"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 396,
+          "name": "Sumcheck.Spec.SingleRound.Simpler.oracleReduction_perfectCompleteness",
+          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
+          "short_name": "oracleReduction_perfectCompleteness",
+          "signature": "theorem oracleReduction_perfectCompleteness :"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 422,
+          "name": "Sumcheck.Spec.SingleRound.Simpler.oracleVerifier_rbrKnowledgeSoundness",
+          "namespace": "Sumcheck.Spec.SingleRound.Simpler",
+          "short_name": "oracleVerifier_rbrKnowledgeSoundness",
+          "signature": "theorem oracleVerifier_rbrKnowledgeSoundness [Fintype R] :"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 440,
+          "name": "Sumcheck.Spec.SingleRound.Simple.StmtIn",
+          "namespace": "Sumcheck.Spec.SingleRound.Simple",
+          "short_name": "StmtIn",
+          "signature": "def StmtIn : Type := R"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 443,
+          "name": "Sumcheck.Spec.SingleRound.Simple.StmtOut",
+          "namespace": "Sumcheck.Spec.SingleRound.Simple",
+          "short_name": "StmtOut",
+          "signature": "def StmtOut : Type := R \u00d7 R"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 446,
+          "name": "Sumcheck.Spec.SingleRound.Simple.OStmtIn",
+          "namespace": "Sumcheck.Spec.SingleRound.Simple",
+          "short_name": "OStmtIn",
+          "signature": "def OStmtIn : Unit \u2192 Type := fun _ => R\u2983\u2264 deg\u2984[X]"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 449,
+          "name": "Sumcheck.Spec.SingleRound.Simple.OStmtOut",
+          "namespace": "Sumcheck.Spec.SingleRound.Simple",
+          "short_name": "OStmtOut",
+          "signature": "def OStmtOut : Unit \u2192 Type := fun _ => R\u2983\u2264 deg\u2984[X]"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 451,
+          "name": "Sumcheck.Spec.SingleRound.Simple.inputRelation",
+          "namespace": "Sumcheck.Spec.SingleRound.Simple",
+          "short_name": "inputRelation",
+          "signature": "def inputRelation : Set ((StmtIn R \u00d7 (\u2200 i, OStmtIn R deg i)) \u00d7 Unit) :="
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 454,
+          "name": "Sumcheck.Spec.SingleRound.Simple.outputRelation",
+          "namespace": "Sumcheck.Spec.SingleRound.Simple",
+          "short_name": "outputRelation",
+          "signature": "def outputRelation : Set ((StmtOut R \u00d7 (\u2200 i, OStmtOut R deg i)) \u00d7 Unit) :="
+        },
+        {
+          "doc": "The prover in the simple description of a single round of sum-check. Takes in input `target : R` and `poly : R\u2983\u2264 deg\u2984[X]`, and: - Sends a message `poly' := poly` to the verifier - Receive `chal` from the verifier - Outputs `(newTarget, chal) : R \u00d7 R`, where `newTarget := poly.eval chal`",
+          "kind": "def",
+          "line": 466,
+          "name": "Sumcheck.Spec.SingleRound.Simple.prover",
+          "namespace": "Sumcheck.Spec.SingleRound.Simple",
+          "short_name": "prover",
+          "signature": "def prover : OracleProver oSpec (StmtIn R) (OStmtIn R deg) Unit (StmtOut R) (OStmtOut R deg) Unit"
+        },
+        {
+          "doc": "The verifier for the simple description of a single round of sum-check",
+          "kind": "def",
+          "line": 488,
+          "name": "Sumcheck.Spec.SingleRound.Simple.verifier",
+          "namespace": "Sumcheck.Spec.SingleRound.Simple",
+          "short_name": "verifier",
+          "signature": "def verifier : Verifier oSpec (StmtIn R \u00d7 (\u2200 i, OStmtIn R deg i))"
+        },
+        {
+          "doc": "The reduction for the simple description of a single round of sum-check",
+          "kind": "def",
+          "line": 497,
+          "name": "Sumcheck.Spec.SingleRound.Simple.reduction",
+          "namespace": "Sumcheck.Spec.SingleRound.Simple",
+          "short_name": "reduction",
+          "signature": "def reduction : Reduction oSpec (StmtIn R \u00d7 (\u2200 i, OStmtIn R deg i)) Unit"
+        },
+        {
+          "doc": "",
           "kind": "instance",
-          "line": 1308,
+          "line": 503,
+          "name": "Sumcheck.Spec.SingleRound.Simple.t",
+          "namespace": "Sumcheck.Spec.SingleRound.Simple",
+          "short_name": "t",
+          "signature": "instance t {\u03b9\u2081 \u03b9\u2082 \u03b9\u2083}"
+        },
+        {
+          "doc": "The honest simple prover threads its input polynomial unchanged: any output statement in the support of its run has output oracle statement equal to the input polynomial, and new target equal to that polynomial evaluated at the sampled challenge.",
+          "kind": "lemma",
+          "line": 513,
+          "name": "Sumcheck.Spec.SingleRound.Simple.prover_run_output",
+          "namespace": "Sumcheck.Spec.SingleRound.Simple",
+          "short_name": "prover_run_output",
+          "signature": "lemma prover_run_output (stmt : StmtIn R \u00d7 (\u2200 i, OStmtIn R deg i))"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 557,
+          "name": "Sumcheck.Spec.SingleRound.Simple.oracleVerifier",
+          "namespace": "Sumcheck.Spec.SingleRound.Simple",
+          "short_name": "oracleVerifier",
+          "signature": "def oracleVerifier : OracleVerifier oSpec (StmtIn R) (OStmtIn R deg) (StmtOut R) (OStmtOut R deg)"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 576,
+          "name": "Sumcheck.Spec.SingleRound.Simple.oracleReduction",
+          "namespace": "Sumcheck.Spec.SingleRound.Simple",
+          "short_name": "oracleReduction",
+          "signature": "def oracleReduction : OracleReduction oSpec (StmtIn R) (OStmtIn R deg) Unit"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 595,
+          "name": "Sumcheck.Spec.SingleRound.Simple.oracleVerifier_eq_verifier",
+          "namespace": "Sumcheck.Spec.SingleRound.Simple",
+          "short_name": "oracleVerifier_eq_verifier",
+          "signature": "theorem oracleVerifier_eq_verifier :"
+        },
+        {
+          "doc": "The oracle reduction is equivalent to the non-oracle reduction",
+          "kind": "theorem",
+          "line": 669,
+          "name": "Sumcheck.Spec.SingleRound.Simple.oracleReduction_eq_reduction",
+          "namespace": "Sumcheck.Spec.SingleRound.Simple",
+          "short_name": "oracleReduction_eq_reduction",
+          "signature": "theorem oracleReduction_eq_reduction :"
+        },
+        {
+          "doc": "Perfect completeness for the (non-oracle) reduction",
+          "kind": "theorem",
+          "line": 677,
+          "name": "Sumcheck.Spec.SingleRound.Simple.reduction_perfectCompleteness",
+          "namespace": "Sumcheck.Spec.SingleRound.Simple",
+          "short_name": "reduction_perfectCompleteness",
+          "signature": "theorem reduction_perfectCompleteness :"
+        },
+        {
+          "doc": "Any successful run of the simple single-round reduction has the prover's output oracle statement equal to the input polynomial, and its output target equal to that polynomial evaluated at the challenge. This captures the honest prover's behavior: it forwards the input polynomial and reports its evaluation at the verifier's challenge.",
+          "kind": "theorem",
+          "line": 898,
+          "name": "Sumcheck.Spec.SingleRound.Simple.reduction_run_prover_output",
+          "namespace": "Sumcheck.Spec.SingleRound.Simple",
+          "short_name": "reduction_run_prover_output",
+          "signature": "theorem reduction_run_prover_output (target : R) (oStmt : \u2200 i, OStmtIn R deg i)"
+        },
+        {
+          "doc": "Perfect completeness for the oracle reduction",
+          "kind": "theorem",
+          "line": 957,
+          "name": "Sumcheck.Spec.SingleRound.Simple.oracleReduction_perfectCompleteness",
+          "namespace": "Sumcheck.Spec.SingleRound.Simple",
+          "short_name": "oracleReduction_perfectCompleteness",
+          "signature": "theorem oracleReduction_perfectCompleteness :"
+        },
+        {
+          "doc": "Closed form of the simulated oracle-verifier `verify`: the inner `simOracle2` simulation collapses to a guard on the ORACLE's `D`-sum followed by the oracle's evaluation at the challenge.",
+          "kind": "lemma",
+          "line": 967,
+          "name": "Sumcheck.Spec.SingleRound.Simple.simulateQ_oracleVerify_eq",
+          "namespace": "Sumcheck.Spec.SingleRound.Simple",
+          "short_name": "simulateQ_oracleVerify_eq",
+          "signature": "lemma simulateQ_oracleVerify_eq"
+        },
+        {
+          "doc": "Round-by-round knowledge soundness for the verifier",
+          "kind": "theorem",
+          "line": 1016,
+          "name": "Sumcheck.Spec.SingleRound.Simple.verifier_rbrKnowledgeSoundness",
+          "namespace": "Sumcheck.Spec.SingleRound.Simple",
+          "short_name": "verifier_rbrKnowledgeSoundness",
+          "signature": "theorem verifier_rbrKnowledgeSoundness [Fintype R] :"
+        },
+        {
+          "doc": "Round-by-round knowledge soundness for the oracle verifier",
+          "kind": "theorem",
+          "line": 1022,
+          "name": "Sumcheck.Spec.SingleRound.Simple.oracleVerifier_rbrKnowledgeSoundness",
+          "namespace": "Sumcheck.Spec.SingleRound.Simple",
+          "short_name": "oracleVerifier_rbrKnowledgeSoundness",
+          "signature": "theorem oracleVerifier_rbrKnowledgeSoundness [Fintype R] :"
+        },
+        {
+          "doc": "Auxiliary lemma for proving that the polynomial sent by the honest prover is of degree at most `deg`",
+          "kind": "theorem",
+          "line": 1033,
+          "name": "Sumcheck.Spec.SingleRound.sumcheck_roundPoly_degreeLE",
+          "namespace": "Sumcheck.Spec.SingleRound",
+          "short_name": "sumcheck_roundPoly_degreeLE",
+          "signature": "theorem sumcheck_roundPoly_degreeLE (i : Fin (n + 1)) {challenges : Fin i.castSucc \u2192 R}"
+        },
+        {
+          "doc": "The oracle statement lens that connect the simple to the full single-round sum-check protocol For `n = 0`, since `poly : R[X Fin 0]` is just a constant, we need to embed it as a constant poly. For other `n := n + 1`, we proceed with the sum `\u2211 x \u2208 D ^ (n - i), poly \u2e28challenges, X, x\u2e29`",
+          "kind": "def",
+          "line": 1049,
+          "name": "Sumcheck.Spec.SingleRound.oStmtLens",
+          "namespace": "Sumcheck.Spec.SingleRound",
+          "short_name": "oStmtLens",
+          "signature": "def oStmtLens (i : Fin n) : OracleStatement.Lens"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 1067,
+          "name": "Sumcheck.Spec.SingleRound.oCtxLens",
+          "namespace": "Sumcheck.Spec.SingleRound",
+          "short_name": "oCtxLens",
+          "signature": "def oCtxLens (i : Fin n) : OracleContext.Lens"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 1076,
+          "name": "Sumcheck.Spec.SingleRound.extractorLens",
+          "namespace": "Sumcheck.Spec.SingleRound",
+          "short_name": "extractorLens",
+          "signature": "def extractorLens (i : Fin n) : Extractor.Lens"
+        },
+        {
+          "doc": "The verifier for the `i`-th round of the sum-check protocol",
+          "kind": "def",
+          "line": 1088,
+          "name": "Sumcheck.Spec.SingleRound.verifier",
+          "namespace": "Sumcheck.Spec.SingleRound",
+          "short_name": "verifier",
+          "signature": "def verifier (i : Fin n) : Verifier oSpec"
+        },
+        {
+          "doc": "The oracle verifier for the `i`-th round of the sum-check protocol",
+          "kind": "def",
+          "line": 1094,
+          "name": "Sumcheck.Spec.SingleRound.oracleVerifier",
+          "namespace": "Sumcheck.Spec.SingleRound",
+          "short_name": "oracleVerifier",
+          "signature": "def oracleVerifier (i : Fin n) : OracleVerifier oSpec (StatementRound R n i.castSucc)"
+        },
+        {
+          "doc": "The sum-check reduction for the `i`-th round of the sum-check protocol",
+          "kind": "def",
+          "line": 1099,
+          "name": "Sumcheck.Spec.SingleRound.reduction",
+          "namespace": "Sumcheck.Spec.SingleRound",
+          "short_name": "reduction",
+          "signature": "def reduction (i : Fin n) : Reduction oSpec"
+        },
+        {
+          "doc": "The sum-check oracle reduction for the `i`-th round of the sum-check protocol",
+          "kind": "def",
+          "line": 1105,
+          "name": "Sumcheck.Spec.SingleRound.oracleReduction",
+          "namespace": "Sumcheck.Spec.SingleRound",
+          "short_name": "oracleReduction",
+          "signature": "def oracleReduction (i : Fin n) : OracleReduction oSpec"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 1112,
+          "name": "Sumcheck.Spec.SingleRound.reduction_verifier_eq_verifier",
+          "namespace": "Sumcheck.Spec.SingleRound",
+          "short_name": "reduction_verifier_eq_verifier",
+          "signature": "lemma reduction_verifier_eq_verifier {i : Fin n} :"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 1118,
+          "name": "Sumcheck.Spec.SingleRound.oracleReduction_verifier_eq_verifier",
+          "namespace": "Sumcheck.Spec.SingleRound",
+          "short_name": "oracleReduction_verifier_eq_verifier",
+          "signature": "lemma oracleReduction_verifier_eq_verifier {i : Fin n} :"
+        },
+        {
+          "doc": "Keystone `Fin`-plumbing identity for the sum-check round split: inserting `a` at position `i` into `append c y \u2218 cast` agrees with appending the cons-extended tuple `cons a y` to `c`.",
+          "kind": "lemma",
+          "line": 1135,
+          "name": "Sumcheck.Spec.SingleRound.append_cons_eq_insertNth",
+          "namespace": "Sumcheck.Spec.SingleRound",
+          "short_name": "append_cons_eq_insertNth",
+          "signature": "lemma append_cons_eq_insertNth {n' : \u2115} {\u03b1 : Type} (i : Fin (n' + 1)) (a : \u03b1)"
+        },
+        {
+          "doc": "The sum-check round split: the `(n'+1-i)`-fold sum factors as a sum over the first coordinate of a sum over the remaining `(n'-i)` coordinates, with the inserted-variable evaluation.",
+          "kind": "lemma",
+          "line": 1178,
+          "name": "Sumcheck.Spec.SingleRound.sumcheck_round_split",
+          "namespace": "Sumcheck.Spec.SingleRound",
+          "short_name": "sumcheck_round_split",
+          "signature": "lemma sumcheck_round_split {n' : \u2115} {m' : \u2115} (D' : Fin m' \u21aa R) (i : Fin (n' + 1))"
+        },
+        {
+          "doc": "Pointwise `Fin`-plumbing identity for the single-point round split: appending `a` via `snoc` to `c` and then `w` agrees with inserting `a` at position `i` into `append c w'`.",
+          "kind": "lemma",
+          "line": 1234,
+          "name": "Sumcheck.Spec.SingleRound.append_snoc_eq_insertNth",
+          "namespace": "Sumcheck.Spec.SingleRound",
+          "short_name": "append_snoc_eq_insertNth",
+          "signature": "lemma append_snoc_eq_insertNth {n' : \u2115} {\u03b1 : Type} (i : Fin (n' + 1)) (a : \u03b1)"
+        },
+        {
+          "doc": "The single-point sum-check round split: specializing the inserted variable at a fixed value `a` (rather than summing over the domain). The `(n'+1-i.succ)`-fold sum with `a` snoc-appended to `c` agrees with the `(n'-i)`-fold sum that inserts `a` at position `i`. This realizes the round-i claim update used in the lens completeness `lift`.",
+          "kind": "lemma",
+          "line": 1275,
+          "name": "Sumcheck.Spec.SingleRound.sumcheck_round_split_point",
+          "namespace": "Sumcheck.Spec.SingleRound",
+          "short_name": "sumcheck_round_split_point",
+          "signature": "lemma sumcheck_round_split_point {n' : \u2115} {m' : \u2115} (D' : Fin m' \u21aa R) (i : Fin (n' + 1))"
+        },
+        {
+          "doc": "",
+          "kind": "instance",
+          "line": 1297,
+          "name": "Sumcheck.Spec.SingleRound.oCtxLens_complete",
+          "namespace": "Sumcheck.Spec.SingleRound",
+          "short_name": "oCtxLens_complete",
+          "signature": "instance oCtxLens_complete :"
+        },
+        {
+          "doc": "",
+          "kind": "instance",
+          "line": 1359,
           "name": "Sumcheck.Spec.SingleRound.extractorLens_rbr_knowledge_soundness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "extractorLens_rbr_knowledge_soundness",
@@ -46308,7 +46317,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 1369,
+          "line": 1420,
           "name": "Sumcheck.Spec.SingleRound.reduction_perfectCompleteness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "reduction_perfectCompleteness",
@@ -46317,7 +46326,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 1377,
+          "line": 1428,
           "name": "Sumcheck.Spec.SingleRound.verifier_rbrKnowledgeSoundness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "verifier_rbrKnowledgeSoundness",
@@ -46326,7 +46335,7 @@
         {
           "doc": "Completeness theorem for single-round of sum-check, obtained by transporting the completeness proof for the simplified version",
           "kind": "theorem",
-          "line": 1387,
+          "line": 1438,
           "name": "Sumcheck.Spec.SingleRound.oracleReduction_perfectCompleteness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oracleReduction_perfectCompleteness",
@@ -46335,7 +46344,7 @@
         {
           "doc": "Round-by-round knowledge soundness theorem for single-round of sum-check, obtained by transporting the knowledge soundness proof for the simplified version",
           "kind": "theorem",
-          "line": 1400,
+          "line": 1451,
           "name": "Sumcheck.Spec.SingleRound.oracleVerifier_rbrKnowledgeSoundness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oracleVerifier_rbrKnowledgeSoundness",
@@ -46344,7 +46353,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 1460,
+          "line": 1511,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.proverState",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "proverState",
@@ -46353,7 +46362,7 @@
         {
           "doc": "Prover input for the `i`-th round of the sum-check protocol, where `i < n`",
           "kind": "def",
-          "line": 1467,
+          "line": 1518,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.proverInput",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "proverInput",
@@ -46362,7 +46371,7 @@
         {
           "doc": "Prover interaction for the `i`-th round of the sum-check protocol, where `i < n`.",
           "kind": "def",
-          "line": 1473,
+          "line": 1524,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.proverRound",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "proverRound",
@@ -46371,7 +46380,7 @@
         {
           "doc": "Since there is no witness, the prover's output for each round `i < n` of the sum-check protocol is trivial",
           "kind": "def",
-          "line": 1498,
+          "line": 1549,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.proverOutput",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "proverOutput",
@@ -46380,7 +46389,7 @@
         {
           "doc": "The overall prover for the `i`-th round of the sum-check protocol, where `i < n`. This is only well-defined for `n > 0`, since when `n = 0` there is no protocol.",
           "kind": "def",
-          "line": 1505,
+          "line": 1556,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.prover",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "prover",
@@ -46389,7 +46398,7 @@
         {
           "doc": "The (non-oracle) verifier of the sum-check protocol for the `i`-th round, where `i < n + 1`",
           "kind": "def",
-          "line": 1515,
+          "line": 1566,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.verifier",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "verifier",
@@ -48819,7 +48828,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5300,
+      "declarations": 5301,
       "files": 282
     }
   }

@@ -4,7 +4,7 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 282 files, 5300 declarations
+- `ArkLib` — 282 files, 5301 declarations
 
 ## Same short-name across multiple files (143 groups)
 
@@ -20,8 +20,8 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def SendWitness.reduction` [ArkLib/ProofSystem/Component/SendWitness.lean:61](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L61) — (no docstring)
 - `def Fri.Spec.reduction` [ArkLib/ProofSystem/Fri/Spec/General.lean:98](../../../ArkLib/ProofSystem/Fri/Spec/General.lean#L98) — (no docstring)
 - `def Sumcheck.Spec.reduction` [ArkLib/ProofSystem/Sumcheck/Spec/General.lean:168](../../../ArkLib/ProofSystem/Sumcheck/Spec/General.lean#L168) — The sum-check protocol as a reduction
-- `def Sumcheck.Spec.SingleRound.Simple.reduction` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:413](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L413) — The reduction for the simple description of a single round of sum-check
-- `def Sumcheck.Spec.SingleRound.reduction` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:964](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L964) — The sum-check reduction for the `i`-th round of the sum-check protocol
+- `def Sumcheck.Spec.SingleRound.Simple.reduction` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:497](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L497) — The reduction for the simple description of a single round of sum-check
+- `def Sumcheck.Spec.SingleRound.reduction` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:1099](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L1099) — The sum-check reduction for the `i`-th round of the sum-check protocol
 - `def ToyProblem.Spec.reduction` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:271](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L271) — Honest reduction for Construction 6.2: the package `{prover, verifier}` over the bundled-input `Redu
 - `def ToyProblem.SimplifiedIOR.reduction` [ArkLib/ProofSystem/ToyProblem/Spec/SimplifiedIOR.lean:165](../../../ArkLib/ProofSystem/ToyProblem/Spec/SimplifiedIOR.lean#L165) — Honest reduction for Construction 6.9.
 
@@ -35,8 +35,8 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def SendSingleWitness.oracleVerifier` [ArkLib/ProofSystem/Component/SendWitness.lean:237](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L237) — The oracle verifier for the `SendSingleWitness` oracle reduction. The verifier receives the input st
 - `def RingSwitching.BatchingPhase.oracleVerifier` [ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean:143](../../../ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean#L143) — (no docstring)
 - `def Sumcheck.Spec.oracleVerifier` [ArkLib/ProofSystem/Sumcheck/Spec/General.lean:158](../../../ArkLib/ProofSystem/Sumcheck/Spec/General.lean#L158) — The oracle verifier for the (full) sum-check protocol
-- `def Sumcheck.Spec.SingleRound.Simple.oracleVerifier` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:473](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L473) — (no docstring)
-- `def Sumcheck.Spec.SingleRound.oracleVerifier` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:959](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L959) — The oracle verifier for the `i`-th round of the sum-check protocol
+- `def Sumcheck.Spec.SingleRound.Simple.oracleVerifier` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:557](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L557) — (no docstring)
+- `def Sumcheck.Spec.SingleRound.oracleVerifier` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:1094](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L1094) — The oracle verifier for the `i`-th round of the sum-check protocol
 - `def ToyProblem.Spec.oracleVerifier` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:348](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L348) — Oracle verifier for Construction 6.2. Queries the prover's message `g` once and the two oracle codew
 
 ### `oracleReduction` (11 declarations, 9 files)
@@ -48,9 +48,9 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def SendClaim.oracleReduction` [ArkLib/ProofSystem/Component/SendClaim.lean:92](../../../ArkLib/ProofSystem/Component/SendClaim.lean#L92) — Combine the prover and verifier into an oracle reduction. The input has no statement or witness, but
 - `def SendSingleWitness.oracleReduction` [ArkLib/ProofSystem/Component/SendWitness.lean:250](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L250) — (no docstring)
 - `def Sumcheck.Spec.oracleReduction` [ArkLib/ProofSystem/Sumcheck/Spec/General.lean:180](../../../ArkLib/ProofSystem/Sumcheck/Spec/General.lean#L180) — The sum-check protocol as an oracle reduction
-- `def Sumcheck.Spec.SingleRound.Simpler.oracleReduction` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:300](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L300) — (no docstring)
-- `def Sumcheck.Spec.SingleRound.Simple.oracleReduction` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:492](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L492) — (no docstring)
-- `def Sumcheck.Spec.SingleRound.oracleReduction` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:970](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L970) — The sum-check oracle reduction for the `i`-th round of the sum-check protocol
+- `def Sumcheck.Spec.SingleRound.Simpler.oracleReduction` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:384](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L384) — (no docstring)
+- `def Sumcheck.Spec.SingleRound.Simple.oracleReduction` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:576](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L576) — (no docstring)
+- `def Sumcheck.Spec.SingleRound.oracleReduction` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:1105](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L1105) — The sum-check oracle reduction for the `i`-th round of the sum-check protocol
 - `def ToyProblem.Spec.oracleReduction` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:368](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L368) — Honest oracle reduction for Construction 6.2: the `OracleProver` / `OracleVerifier` pair packaged as
 
 ### `pSpec` (11 declarations, 9 files)
@@ -75,9 +75,9 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def ReduceClaim.verifier` [ArkLib/ProofSystem/Component/ReduceClaim.lean:52](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L52) — The verifier for the `ReduceClaim` reduction.
 - `def SendWitness.verifier` [ArkLib/ProofSystem/Component/SendWitness.lean:57](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L57) — (no docstring)
 - `def Sumcheck.Spec.verifier` [ArkLib/ProofSystem/Sumcheck/Spec/General.lean:149](../../../ArkLib/ProofSystem/Sumcheck/Spec/General.lean#L149) — The verifier for the (full) sum-check protocol
-- `def Sumcheck.Spec.SingleRound.Simple.verifier` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:404](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L404) — The verifier for the simple description of a single round of sum-check
-- `def Sumcheck.Spec.SingleRound.verifier` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:953](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L953) — The verifier for the `i`-th round of the sum-check protocol
-- `def Sumcheck.Spec.SingleRound.Unfolded.verifier` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:1515](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L1515) — The (non-oracle) verifier of the sum-check protocol for the `i`-th round, where `i < n + 1`
+- `def Sumcheck.Spec.SingleRound.Simple.verifier` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:488](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L488) — The verifier for the simple description of a single round of sum-check
+- `def Sumcheck.Spec.SingleRound.verifier` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:1088](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L1088) — The verifier for the `i`-th round of the sum-check protocol
+- `def Sumcheck.Spec.SingleRound.Unfolded.verifier` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:1566](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L1566) — The (non-oracle) verifier of the sum-check protocol for the `i`-th round, where `i < n + 1`
 - `def ToyProblem.Spec.verifier` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:257](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L257) — Honest verifier for Construction 6.2. Takes the bundled input `(stmt, oStmt) = ((v, μ₁, μ₂), (f₁, f₂
 - `def ToyProblem.SimplifiedIOR.verifier` [ArkLib/ProofSystem/ToyProblem/Spec/SimplifiedIOR.lean:154](../../../ArkLib/ProofSystem/ToyProblem/Spec/SimplifiedIOR.lean#L154) — Honest verifier for Construction 6.9. Reads `γ` from the transcript and produces the new statement `
 
@@ -112,8 +112,8 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def NoInteraction.prover` [ArkLib/ProofSystem/Component/NoInteraction.lean:43](../../../ArkLib/ProofSystem/Component/NoInteraction.lean#L43) — The prover in a no-interaction reduction can be specified by a tuple of functions: - `mapStmt : Stmt
 - `def ReduceClaim.prover` [ArkLib/ProofSystem/Component/ReduceClaim.lean:44](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L44) — The prover for the `ReduceClaim` reduction.
 - `def SendWitness.prover` [ArkLib/ProofSystem/Component/SendWitness.lean:47](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L47) — (no docstring)
-- `def Sumcheck.Spec.SingleRound.Simple.prover` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:382](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L382) — The prover in the simple description of a single round of sum-check. Takes in input `target : R` and
-- `def Sumcheck.Spec.SingleRound.Unfolded.prover` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:1505](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L1505) — The overall prover for the `i`-th round of the sum-check protocol, where `i < n`. This is only well-
+- `def Sumcheck.Spec.SingleRound.Simple.prover` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:466](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L466) — The prover in the simple description of a single round of sum-check. Takes in input `target : R` and
+- `def Sumcheck.Spec.SingleRound.Unfolded.prover` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:1556](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L1556) — The overall prover for the `i`-th round of the sum-check protocol, where `i < n`. This is only well-
 - `def ToyProblem.Spec.prover` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:213](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L213) — Honest prover for Construction 6.2. After receiving the combination randomness `γ`, the prover sends
 - `def ToyProblem.SimplifiedIOR.prover` [ArkLib/ProofSystem/ToyProblem/Spec/SimplifiedIOR.lean:123](../../../ArkLib/ProofSystem/ToyProblem/Spec/SimplifiedIOR.lean#L123) — Honest prover for Construction 6.9. After receiving `γ`, sets the new witness `M_new := M₀ + γ·M₁` a
 
@@ -138,8 +138,8 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def Fri.Spec.FinalFoldPhase.inputRelation` [ArkLib/ProofSystem/Fri/Spec/SingleRound.lean:521](../../../ArkLib/ProofSystem/Fri/Spec/SingleRound.lean#L521) — Input relation for the final folding round, with proximity parameter `0 < δ`. The round-`k` codeword
 - `def Fri.Spec.QueryRound.inputRelation` [ArkLib/ProofSystem/Fri/Spec/SingleRound.lean:736](../../../ArkLib/ProofSystem/Fri/Spec/SingleRound.lean#L736) — (no docstring)
 - `def Logup.inputRelation` [ArkLib/ProofSystem/Logup/Common.lean:162](../../../ArkLib/ProofSystem/Logup/Common.lean#L162) — Semantic input relation for Protocol 2: every lookup-column value occurs in the table range.
-- `def Sumcheck.Spec.SingleRound.Simpler.inputRelation` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:242](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L242) — (no docstring)
-- `def Sumcheck.Spec.SingleRound.Simple.inputRelation` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:367](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L367) — (no docstring)
+- `def Sumcheck.Spec.SingleRound.Simpler.inputRelation` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:326](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L326) — (no docstring)
+- `def Sumcheck.Spec.SingleRound.Simple.inputRelation` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:451](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L451) — (no docstring)
 - `def ToyProblem.Spec.inputRelation` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:165](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L165) — The IOR-shaped input relation derived from `ToyProblem.relation` (Definition 6.1). `((v, μ₁, μ₂), (f
 
 ### `outputRelation` (10 declarations, 7 files)
@@ -150,8 +150,8 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def Fri.Spec.FinalFoldPhase.outputRelation` [ArkLib/ProofSystem/Fri/Spec/SingleRound.lean:550](../../../ArkLib/ProofSystem/Fri/Spec/SingleRound.lean#L550) — Output relation for the final folding round. After the final round the prover sends a polynomial in 
 - `def Fri.Spec.QueryRound.outputRelation` [ArkLib/ProofSystem/Fri/Spec/SingleRound.lean:744](../../../ArkLib/ProofSystem/Fri/Spec/SingleRound.lean#L744) — (no docstring)
 - `def Logup.outputRelation` [ArkLib/ProofSystem/Logup/Common.lean:189](../../../ArkLib/ProofSystem/Logup/Common.lean#L189) — The full protocol has a trivial final relation: successful verification returns `Unit`.
-- `def Sumcheck.Spec.SingleRound.Simpler.outputRelation` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:271](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L271) — (no docstring)
-- `def Sumcheck.Spec.SingleRound.Simple.outputRelation` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:370](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L370) — (no docstring)
+- `def Sumcheck.Spec.SingleRound.Simpler.outputRelation` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:355](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L355) — (no docstring)
+- `def Sumcheck.Spec.SingleRound.Simple.outputRelation` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:454](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L454) — (no docstring)
 - `def ToyProblem.Spec.outputRelation` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:176](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L176) — The IOR-shaped *relaxed* output relation derived from `ToyProblem.relaxedRelation` (Definition 6.3).
 - `def ToyProblem.SimplifiedIOR.outputRelation` [ArkLib/ProofSystem/ToyProblem/Spec/SimplifiedIOR.lean:92](../../../ArkLib/ProofSystem/ToyProblem/Spec/SimplifiedIOR.lean#L92) — The 1-arity relaxed relation `R̃¹_{C,δ}` — the output relation of Construction 6.9. Bundles the post
 
@@ -170,9 +170,9 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem RandomQuery.oracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Component/RandomQuery.lean:275](../../../ArkLib/ProofSystem/Component/RandomQuery.lean#L275) — The `RandomQuery` oracle reduction is round-by-round knowledge sound. The key fact governing the sou
 - `theorem ReduceClaim.oracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Component/ReduceClaim.lean:331](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L331) — The `ReduceClaim` oracle reduction satisfies perfect round-by-round knowledge soundness. Note that s
 - `theorem Sumcheck.Spec.oracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Sumcheck/Spec/General.lean:218](../../../ArkLib/ProofSystem/Sumcheck/Spec/General.lean#L218) — Round-by-round knowledge soundness with error `deg / \|R\|` per challenge for the (full) sum-check pro
-- `theorem Sumcheck.Spec.SingleRound.Simpler.oracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:338](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L338) — (no docstring)
-- `theorem Sumcheck.Spec.SingleRound.Simple.oracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:887](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L887) — Round-by-round knowledge soundness for the oracle verifier
-- `theorem Sumcheck.Spec.SingleRound.oracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:1400](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L1400) — Round-by-round knowledge soundness theorem for single-round of sum-check, obtained by transporting t
+- `theorem Sumcheck.Spec.SingleRound.Simpler.oracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:422](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L422) — (no docstring)
+- `theorem Sumcheck.Spec.SingleRound.Simple.oracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:1022](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L1022) — Round-by-round knowledge soundness for the oracle verifier
+- `theorem Sumcheck.Spec.SingleRound.oracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:1451](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L1451) — Round-by-round knowledge soundness theorem for single-round of sum-check, obtained by transporting t
 
 ### `Statement` (5 declarations, 5 files)
 
@@ -187,8 +187,8 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def RandomQuery.StmtIn` [ArkLib/ProofSystem/Component/RandomQuery.lean:30](../../../ArkLib/ProofSystem/Component/RandomQuery.lean#L30) — (no docstring)
 - `structure Logup.StmtIn` [ArkLib/ProofSystem/Logup/Common.lean:131](../../../ArkLib/ProofSystem/Logup/Common.lean#L131) — Public parameter assumptions for Protocol 2. The paper fixes a finite field with characteristic larg
 - `def Sumcheck.Spec.StmtIn` [ArkLib/ProofSystem/Sumcheck/Spec/General.lean:137](../../../ArkLib/ProofSystem/Sumcheck/Spec/General.lean#L137) — The input statement for the (full) sum-check protocol, which contains only the target sum value
-- `def Sumcheck.Spec.SingleRound.Simpler.StmtIn` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:239](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L239) — (no docstring)
-- `def Sumcheck.Spec.SingleRound.Simple.StmtIn` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:356](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L356) — (no docstring)
+- `def Sumcheck.Spec.SingleRound.Simpler.StmtIn` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:323](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L323) — (no docstring)
+- `def Sumcheck.Spec.SingleRound.Simple.StmtIn` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:440](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L440) — (no docstring)
 
 ### `disagreementSet` (4 declarations, 4 files)
 
@@ -207,9 +207,9 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `oracleReduction_perfectCompleteness` (5 declarations, 3 files)
 
 - `theorem DoNothing.oracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Component/DoNothing.lean:92](../../../ArkLib/ProofSystem/Component/DoNothing.lean#L92) — The `DoNothing` oracle reduction satisfies perfect completeness for any relation.
-- `theorem Sumcheck.Spec.SingleRound.Simpler.oracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:312](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L312) — (no docstring)
-- `theorem Sumcheck.Spec.SingleRound.Simple.oracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:873](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L873) — Perfect completeness for the oracle reduction
-- `theorem Sumcheck.Spec.SingleRound.oracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:1387](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L1387) — Completeness theorem for single-round of sum-check, obtained by transporting the completeness proof 
+- `theorem Sumcheck.Spec.SingleRound.Simpler.oracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:396](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L396) — (no docstring)
+- `theorem Sumcheck.Spec.SingleRound.Simple.oracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:957](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L957) — Perfect completeness for the oracle reduction
+- `theorem Sumcheck.Spec.SingleRound.oracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:1438](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L1438) — Completeness theorem for single-round of sum-check, obtained by transporting the completeness proof 
 - `theorem ToyProblem.Spec.oracleReduction_perfectCompleteness` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:471](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L471) — **Honest completeness for Construction 6.2** (protocol-level form). The honest oracle reduction is p
 
 ### `ratchet` (5 declarations, 3 files)
@@ -231,22 +231,22 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `def RandomQuery.OStmtIn` [ArkLib/ProofSystem/Component/RandomQuery.lean:33](../../../ArkLib/ProofSystem/Component/RandomQuery.lean#L33) — (no docstring)
 - `def Logup.OStmtIn` [ArkLib/ProofSystem/Logup/Common.lean:139](../../../ArkLib/ProofSystem/Logup/Common.lean#L139) — Input oracle statements: the table `t` and lookup columns `fᵢ`, as multilinear oracles.
-- `def Sumcheck.Spec.SingleRound.Simpler.OStmtIn` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:240](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L240) — (no docstring)
-- `def Sumcheck.Spec.SingleRound.Simple.OStmtIn` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:362](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L362) — (no docstring)
+- `def Sumcheck.Spec.SingleRound.Simpler.OStmtIn` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:324](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L324) — (no docstring)
+- `def Sumcheck.Spec.SingleRound.Simple.OStmtIn` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:446](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L446) — (no docstring)
 
 ### `OStmtOut` (4 declarations, 3 files)
 
 - `def RandomQuery.OStmtOut` [ArkLib/ProofSystem/Component/RandomQuery.lean:34](../../../ArkLib/ProofSystem/Component/RandomQuery.lean#L34) — (no docstring)
 - `def Logup.OStmtOut` [ArkLib/ProofSystem/Logup/Common.lean:180](../../../ArkLib/ProofSystem/Logup/Common.lean#L180) — Output oracle statements for the full LogUp protocol.
-- `def Sumcheck.Spec.SingleRound.Simpler.OStmtOut` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:269](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L269) — (no docstring)
-- `def Sumcheck.Spec.SingleRound.Simple.OStmtOut` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:365](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L365) — (no docstring)
+- `def Sumcheck.Spec.SingleRound.Simpler.OStmtOut` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:353](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L353) — (no docstring)
+- `def Sumcheck.Spec.SingleRound.Simple.OStmtOut` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:449](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L449) — (no docstring)
 
 ### `StmtOut` (4 declarations, 3 files)
 
 - `def RandomQuery.StmtOut` [ArkLib/ProofSystem/Component/RandomQuery.lean:31](../../../ArkLib/ProofSystem/Component/RandomQuery.lean#L31) — (no docstring)
 - `def Logup.StmtOut` [ArkLib/ProofSystem/Logup/Common.lean:170](../../../ArkLib/ProofSystem/Logup/Common.lean#L170) — The full LogUp protocol returns no additional public data on success.
-- `def Sumcheck.Spec.SingleRound.Simpler.StmtOut` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:268](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L268) — (no docstring)
-- `def Sumcheck.Spec.SingleRound.Simple.StmtOut` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:359](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L359) — (no docstring)
+- `def Sumcheck.Spec.SingleRound.Simpler.StmtOut` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:352](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L352) — (no docstring)
+- `def Sumcheck.Spec.SingleRound.Simple.StmtOut` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:443](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L443) — (no docstring)
 
 ### `drop` (4 declarations, 3 files)
 
@@ -259,8 +259,8 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem DoNothing.reduction_perfectCompleteness` [ArkLib/ProofSystem/Component/DoNothing.lean:51](../../../ArkLib/ProofSystem/Component/DoNothing.lean#L51) — The `DoNothing` reduction satisfies perfect completeness for any relation.
 - `theorem Sumcheck.Spec.reduction_perfectCompleteness` [ArkLib/ProofSystem/Sumcheck/Spec/General.lean:208](../../../ArkLib/ProofSystem/Sumcheck/Spec/General.lean#L208) — Perfect completeness for the (full) sum-check protocol
-- `theorem Sumcheck.Spec.SingleRound.Simple.reduction_perfectCompleteness` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:593](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L593) — Perfect completeness for the (non-oracle) reduction
-- `theorem Sumcheck.Spec.SingleRound.reduction_perfectCompleteness` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:1369](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L1369) — (no docstring)
+- `theorem Sumcheck.Spec.SingleRound.Simple.reduction_perfectCompleteness` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:677](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L677) — Perfect completeness for the (non-oracle) reduction
+- `theorem Sumcheck.Spec.SingleRound.reduction_perfectCompleteness` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:1420](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L1420) — (no docstring)
 
 ### `toFinset` (4 declarations, 3 files)
 
@@ -273,8 +273,8 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem DoNothing.verifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Component/DoNothing.lean:57](../../../ArkLib/ProofSystem/Component/DoNothing.lean#L57) — The `DoNothing` verifier is perfectly round-by-round knowledge sound.
 - `theorem ReduceClaim.verifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Component/ReduceClaim.lean:169](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L169) — The `ReduceClaim` oracle reduction satisfies perfect round-by-round knowledge soundness. Note that s
-- `theorem Sumcheck.Spec.SingleRound.Simple.verifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:881](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L881) — Round-by-round knowledge soundness for the verifier
-- `theorem Sumcheck.Spec.SingleRound.verifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:1377](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L1377) — (no docstring)
+- `theorem Sumcheck.Spec.SingleRound.Simple.verifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:1016](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L1016) — Round-by-round knowledge soundness for the verifier
+- `theorem Sumcheck.Spec.SingleRound.verifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:1428](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L1428) — (no docstring)
 
 ### `Message` (3 declarations, 3 files)
 
@@ -847,7 +847,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `reduction_verifier_eq_verifier` (2 declarations, 2 files)
 
 - `lemma Sumcheck.Spec.reduction_verifier_eq_verifier` [ArkLib/ProofSystem/Sumcheck/Spec/General.lean:193](../../../ArkLib/ProofSystem/Sumcheck/Spec/General.lean#L193) — (no docstring)
-- `lemma Sumcheck.Spec.SingleRound.reduction_verifier_eq_verifier` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:977](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L977) — (no docstring)
+- `lemma Sumcheck.Spec.SingleRound.reduction_verifier_eq_verifier` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:1112](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L1112) — (no docstring)
 
 ### `relIn` (2 declarations, 2 files)
 
