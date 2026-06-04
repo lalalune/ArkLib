@@ -11,6 +11,11 @@ import ArkLib.ToMathlib.Polynomial.EvalExt
 
 namespace ProximityGap
 
+-- Decidability instances are threaded through the sections for the §6 machinery;
+-- several statement-level bricks do not mention them directly.
+set_option linter.unusedDecidableInType false
+set_option linter.unusedSectionVars false
+
 open NNReal Finset Function ProbabilityTheory
 open scoped BigOperators LinearCode ProbabilityTheory
 open Code
