@@ -69,6 +69,80 @@ lemma finite_iSup_eq_apply {α : Type*} [Finite α] [Nonempty α] {β : Type*}
   obtain ⟨a, ha⟩ := Finite.exists_max g
   exact ⟨a, le_antisymm (ciSup_le ha) (le_ciSup (Set.Finite.bddAbove (Set.finite_range g)) a)⟩
 
+/-- **Linear-functional collision bound** (ABF26 §6.4.1, Step 2 kernel count).
+
+For a nonzero coefficient vector `w : Fin k → F` over a finite field, the
+linear functional `v ↦ ∑ j, w j * v j : (Fin k → F) → F` is surjective, so
+each of its fibers has cardinality `|F|^k / |F| = |F|^{k-1}`. Hence a
+uniformly random `v` lands in the zero-fiber (the kernel hyperplane) with
+probability exactly `1 / |F|`. This is the per-pair collision bound fed to
+Claim B.1 in the proof of `simplified_iop_soundness_listDecoding_lb`. -/
+lemma linearForm_collision_prob {k : ℕ} (w : Fin k → F) (hw : w ≠ 0) :
+    Pr_{ let v ← $ᵖ (Fin k → F) }[(∑ j, w j * v j) = 0]
+      = (1 : ENNReal) / (Fintype.card F : ENNReal) := by
+  classical
+  -- The functional as an additive hom `L : (Fin k → F) →+ F`.
+  let L : (Fin k → F) →+ F :=
+    { toFun := fun v => ∑ j, w j * v j
+      map_zero' := by simp
+      map_add' := fun x y => by simp [mul_add, Finset.sum_add_distrib] }
+  -- `L` is surjective: some `w j₀ ≠ 0`, and `L (Pi.single j₀ (c / w j₀)) = c`.
+  obtain ⟨j₀, hj₀⟩ : ∃ j, w j ≠ 0 := by
+    by_contra h; push_neg at h; exact hw (funext fun j => by simpa using h j)
+  have hLsurj : Function.Surjective L := by
+    intro c
+    refine ⟨(Pi.single j₀ (c / w j₀) : Fin k → F), ?_⟩
+    show ∑ j, w j * (Pi.single j₀ (c / w j₀) : Fin k → F) j = c
+    rw [Finset.sum_eq_single j₀]
+    · rw [Pi.single_eq_same]; field_simp
+    · intro j _ hj; rw [Pi.single_eq_of_ne hj, mul_zero]
+    · intro h; exact absurd (Finset.mem_univ j₀) h
+  -- Every fiber of `L` has the same cardinality; in particular the zero-fiber.
+  -- `Pr[L v = 0] = |{v | L v = 0}| / |(Fin k → F)|`.
+  rw [prob_uniform_eq_card_filter_div_card (F := (Fin k → F))
+    (P := fun v => (∑ j, w j * v j) = 0)]
+  -- Identify the filtered set as the zero-fiber of `L`.
+  have hfilter : (Finset.univ.filter (fun v : Fin k → F => (∑ j, w j * v j) = 0))
+      = (Finset.univ.filter (fun v : Fin k → F => L v = 0)) := rfl
+  rw [hfilter]
+  -- All fibers of the surjective hom `L` are equinumerous; sum over `F` of fiber
+  -- cards is `|Fin k → F|`, so each (in particular zero) is `|Fin k → F| / |F|`.
+  have hfib_const : ∀ x : F,
+      (Finset.univ.filter (fun v : Fin k → F => L v = x)).card
+        = (Finset.univ.filter (fun v : Fin k → F => L v = (0 : F))).card := by
+    intro x
+    exact AddMonoidHom.card_fiber_eq_of_mem_range L (hLsurj x) (hLsurj 0)
+  -- `∑ x : F, |fiber x| = |Fin k → F|` (partition of the domain by `L`).
+  have hpart : (Finset.univ : Finset (Fin k → F)).card
+      = ∑ x : F, (Finset.univ.filter (fun v : Fin k → F => L v = x)).card :=
+    Finset.card_eq_sum_card_fiberwise (fun v _ => Finset.mem_univ (L v))
+  have hsum : Fintype.card F *
+      (Finset.univ.filter (fun v : Fin k → F => L v = (0:F))).card
+      = Fintype.card (Fin k → F) := by
+    rw [← Finset.card_univ (α := Fin k → F), hpart,
+      Finset.sum_congr rfl (fun x _ => hfib_const x), Finset.sum_const,
+      Finset.card_univ, smul_eq_mul]
+  -- From `|F| * |zeroFiber| = |Fin k → F|`, get `|zeroFiber| / |Fin k → F| = 1/|F|`.
+  set Z : ℕ := (Finset.univ.filter (fun v : Fin k → F => L v = (0:F))).card with hZ
+  have hcardF_pos : 0 < Fintype.card F := Fintype.card_pos
+  have hcardF_ne : (Fintype.card F : ℝ≥0) ≠ 0 := by exact_mod_cast hcardF_pos.ne'
+  have hdom_ne : (Fintype.card (Fin k → F) : ℝ≥0) ≠ 0 := by
+    have : 0 < Fintype.card (Fin k → F) := Fintype.card_pos
+    exact_mod_cast this.ne'
+  -- `Z / |dom| = 1/|F|` in ℝ≥0, then cast to ENNReal.
+  have hkey : ((Z : ℝ≥0) / (Fintype.card (Fin k → F) : ℝ≥0))
+      = (1 : ℝ≥0) / (Fintype.card F : ℝ≥0) := by
+    rw [div_eq_div_iff (by positivity) (by positivity), one_mul]
+    have : (Fintype.card F : ℝ≥0) * (Z : ℝ≥0) = (Fintype.card (Fin k → F) : ℝ≥0) := by
+      rw [hZ]; exact_mod_cast hsum
+    rw [mul_comm] at this; rw [this]
+  -- Convert the ℝ≥0 equality to the ENNReal goal.
+  have hkeyE : (((Z : ℝ≥0) / (Fintype.card (Fin k → F) : ℝ≥0) : ℝ≥0) : ENNReal)
+      = (1 : ENNReal) / (Fintype.card F : ENNReal) := by
+    rw [hkey, ENNReal.coe_div hcardF_ne, ENNReal.coe_one, ENNReal.coe_natCast]
+  rw [← hkeyE]
+  norm_cast
+
 omit [Field F] [Fintype F] in
 /-- **Lemma 6.5 of [ABF26]** (= [GRS25]).
 
