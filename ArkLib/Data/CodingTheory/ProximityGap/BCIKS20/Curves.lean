@@ -84,6 +84,45 @@ private lemma polynomialCurveEval_coord_eq_of_agree {n l : ℕ} {F : Type} [Fiel
     _ = (∑ i : Fin l, Polynomial.C (v i x) * Polynomial.X ^ (i : ℕ)).eval z := by rw [hPQ]
     _ = Curve.polynomialCurveEval (F := F) (A := F) v z x := hEval v z
 
+/-- Counting brick for the §6.1 argument (generic double counting): if every
+`z ∈ S` has a bad-set of size at most `m`, then the number of coordinates that
+are bad for at least `t` elements of `S` is bounded: `t · #poor ≤ m · #S`. -/
+private lemma card_heavyCoords_mul_le {α β : Type} [Fintype α] [DecidableEq α]
+    [DecidableEq β] {S : Finset β} {B : β → Finset α} {m : ℕ}
+    (hB : ∀ z ∈ S, (B z).card ≤ m) (t : ℕ) :
+    ((Finset.univ : Finset α).filter
+      (fun x => t ≤ (S.filter (fun z => x ∈ B z)).card)).card * t
+      ≤ m * S.card := by
+  classical
+  -- double counting: Σ_x #{z ∈ S : x ∈ B z} = Σ_{z ∈ S} #(B z)
+  have hswap : ∑ x : α, (S.filter (fun z => x ∈ B z)).card
+      = ∑ z ∈ S, (B z).card := by
+    have h1 : ∀ x : α, (S.filter (fun z => x ∈ B z)).card
+        = ∑ z ∈ S, if x ∈ B z then 1 else 0 := fun x => Finset.card_filter _ _
+    have h2 : ∀ z : β, (B z).card = ∑ x : α, if x ∈ B z then 1 else 0 := by
+      intro z
+      rw [← Finset.card_filter, Finset.filter_univ_mem]
+    simp only [h1, h2]
+    exact Finset.sum_comm
+  have hbound : ∑ z ∈ S, (B z).card ≤ m * S.card := by
+    calc ∑ z ∈ S, (B z).card ≤ ∑ _z ∈ S, m := Finset.sum_le_sum hB
+      _ = m * S.card := by rw [Finset.sum_const, smul_eq_mul, mul_comm]
+  have hfilter : ((Finset.univ : Finset α).filter
+      (fun x => t ≤ (S.filter (fun z => x ∈ B z)).card)).card * t
+      ≤ ∑ x : α, (S.filter (fun z => x ∈ B z)).card := by
+    calc ((Finset.univ : Finset α).filter
+        (fun x => t ≤ (S.filter (fun z => x ∈ B z)).card)).card * t
+        = ∑ _x ∈ (Finset.univ : Finset α).filter
+            (fun x => t ≤ (S.filter (fun z => x ∈ B z)).card), t := by
+          rw [Finset.sum_const, smul_eq_mul]
+      _ ≤ ∑ x ∈ (Finset.univ : Finset α).filter
+            (fun x => t ≤ (S.filter (fun z => x ∈ B z)).card),
+            (S.filter (fun z => x ∈ B z)).card :=
+          Finset.sum_le_sum fun x hx => (Finset.mem_filter.mp hx).2
+      _ ≤ ∑ x : α, (S.filter (fun z => x ∈ B z)).card :=
+          Finset.sum_le_sum_of_subset (Finset.filter_subset _ _)
+  exact le_trans hfilter (hswap ▸ hbound)
+
 /-- Interpolation brick for the §6.1 argument: through any `l` distinct parameter
 values and arbitrary target vectors there is a polynomial curve of degree `< l`. -/
 private lemma exists_polynomialCurve_through {n l : ℕ} {F : Type} [Field F]
