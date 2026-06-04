@@ -1024,6 +1024,69 @@ theorem RS_jointAgreement_of_prob_gt_and_errorBound_lower_bounds
     hcoeffPoly
 
 omit [DecidableEq ι] in
+/-- Strict Johnson-range front door with the standard `|ι| / |F|`
+lower bound discharged from `errorBound_ge_const`. The remaining hypotheses are
+exactly the stronger successor threshold and the §5 coefficient-polynomial
+extraction witness. -/
+theorem RS_jointAgreement_of_prob_gt_strict_johnson_and_succ_bound_and_coeff_polys
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hk : 0 < k)
+    (u : WordStack F (Fin (k + 1)) ι)
+    (hprob :
+      Pr_{let z ← $ᵖ F}[
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            ReedSolomon.code domain deg) ≤ δ] >
+        ((k : ENNReal) * (errorBound δ deg domain : ENNReal)))
+    (hδ : δ < 1 - ReedSolomon.sqrtRate deg domain)
+    (hεlarge :
+      ((Fintype.card ι + 1 : ℕ) : ℝ≥0) / (Fintype.card F : ℝ≥0) ≤
+        errorBound δ deg domain)
+    (hcoeffPoly : ∀ P : F → Polynomial F,
+      (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+        ∃ B : ℕ → Polynomial F,
+          (∀ j < deg, (B j).natDegree < k + 1) ∧
+            ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              ∀ j < deg, (P z).coeff j = (B j).eval z) :
+    jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u) := by
+  exact RS_jointAgreement_of_prob_gt_and_errorBound_lower_bounds
+    (deg := deg) (domain := domain) (δ := δ) hk u hprob
+    (DivergenceOfSets.errorBound_ge_const (deg := deg) (domain := domain)
+      (Nat.pos_of_neZero deg) hδ)
+    hεlarge hcoeffPoly
+
+omit [DecidableEq ι] [Fintype F] in
+/-- For Reed-Solomon codes, the rate-half radius is the relative unique-decoding
+radius in the non-full-code case, and is `0` in the full-code case. This lets
+the final curve theorem route the closed `errorBound` branch through the
+unique-decoding proof even when it is phrased using the rate expression. -/
+lemma RS_le_relativeUniqueDecodingRadius_of_le_rate_half {deg : ℕ} {domain : ι ↪ F}
+    {δ : ℝ≥0} [NeZero deg]
+    (hδ : δ ≤ (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2) :
+    δ ≤ Code.relativeUniqueDecodingRadius (ι := ι) (F := F)
+      (C := ReedSolomon.code domain deg) := by
+  classical
+  by_cases hdeg : deg ≤ Fintype.card ι
+  · have hrate_eq : (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0) =
+        (deg : ℝ≥0) / (Fintype.card ι : ℝ≥0) := by
+      have hdim := ReedSolomon.dim_eq_deg_of_le' (α := domain) (n := deg) hdeg
+      simp [LinearCode.rate, hdim, LinearCode.length]
+    rw [ReedSolomon.relativeUniqueDecodingRadius_RS_eq' (α := domain) (n := deg) hdeg]
+    simpa [hrate_eq] using hδ
+  · push Not at hdeg
+    have hrate_eq : (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0) = 1 := by
+      rw [ReedSolomon.rateOfLinearCode_eq_min_div]
+      have hcard_ne : (Fintype.card ι : ℚ≥0) ≠ 0 := by
+        exact_mod_cast (Fintype.card_ne_zero (α := ι))
+      have hmin : min deg (Fintype.card ι) = Fintype.card ι := by omega
+      simp [hmin, hcard_ne]
+    have hδ0 : δ ≤ 0 := by
+      simpa [hrate_eq] using hδ
+    exact le_trans hδ0 (zero_le _)
+
+omit [DecidableEq ι] in
 /-- Theorem 1.5 (Correlated agreement for low-degree parameterised curves) in [BCIKS20].
 
 Take a Reed-Solomon code of length `ι` and degree `deg`, a proximity-error parameter
@@ -1049,10 +1112,18 @@ theorem correlatedAgreement_affine_curves {k : ℕ}
     · -- List-decoding regime: Theorem 6.2 ([BCIKS20] §6.2 / §5 chain).
       unfold δ_ε_correlatedAgreementCurves
       intro u hprob
-      -- The final call is `RS_jointAgreement_of_prob_gt_and_coeff_polys`;
-      -- the remaining list-decoding work is to supply its two threshold lower
-      -- bounds and coefficient-polynomial extraction witness.
-      sorry
+      by_cases hJ :
+          (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ
+      · -- The final call is `RS_jointAgreement_of_prob_gt_and_coeff_polys`;
+        -- the remaining list-decoding work is to supply its two threshold lower
+        -- bounds and coefficient-polynomial extraction witness.
+        sorry
+      · -- Closed rate-half branch: for Reed-Solomon codes this is still inside
+        -- the relative unique-decoding radius, contradicting the outer split.
+        push Not at hJ
+        exact False.elim (hUDR
+          (RS_le_relativeUniqueDecodingRadius_of_le_rate_half
+            (deg := deg) (domain := domain) (δ := δ) hJ))
 
 end CoreResults
 
