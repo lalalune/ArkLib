@@ -562,6 +562,221 @@ theorem mcaEvent_imp_relCloseToCode
   · -- contradiction: if `j ∈ S` then `w` agrees with the line at `j`
     exact hne (by simpa [Pi.add_apply, Pi.smul_apply] using (hw_eq j hj).symm)
 
+/-- **Provable per-stack dominance on the non-jointly-close branch (no UDR needed).** For a
+fixed stack `u` that is *not* jointly `δ`-close, the `epsMCA` body `Pr_γ[mcaEvent]` is bounded
+by the `epsCA` body `Pr_γ[line δ-close]`. This is the pointwise probability monotonicity that
+follows directly from `mcaEvent_imp_relCloseToCode` (every `mcaEvent` at `γ` makes the line
+`δ`-close), with no unique-decoding hypothesis.
+
+This isolates exactly the half of ABF26 Lemma 4.6's hard direction that *is* a pointwise
+`iSup`-monotonicity. The complementary `jointProximity` branch — where the `epsCA` body collapses
+to `0` while `Pr_γ[mcaEvent]` may stay positive — is the genuine obstruction (see
+`epsMCA_eq_epsCA_below_udr`), and is exactly what this lemma's hypothesis excludes. -/
+theorem epsMCA_body_le_epsCA_body_of_not_jointProximity
+    (C : Set (ι → A)) (δ : ℝ≥0) (u : WordStack A (Fin 2) ι)
+    (_hjp : ¬ jointProximity (C := C) (u := u) δ) :
+    Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ] ≤
+      Pr_{let γ ← $ᵖ F}[δᵣ(u 0 + γ • u 1, C) ≤ δ] := by
+  classical
+  exact Pr_le_Pr_of_implies _ _ _ fun γ hγ ↦ mcaEvent_imp_relCloseToCode C δ (u 0) (u 1) γ hγ
+
+open Classical in
+/-- **Restricted MCA error: the fully-provable slice of ABF26 Lemma 4.6 (no UDR needed).**
+
+`epsMCA` is `⨆ u, Pr_γ[mcaEvent]`. If we *restrict the supremum to the non-jointly-close
+stacks* — i.e. zero out every `u` for which `jointProximity C u δ` already holds — then the
+resulting error is `≤ ε_ca(C, δ, δ)`, unconditionally (for any `Set`-code `C`).
+
+Pointwise: on a non-jointly-close `u`, the `epsCA` body is the line-close probability and
+`epsMCA_body_le_epsCA_body_of_not_jointProximity` gives the bound; on a jointly-close `u`, the
+restricted body is `0`. So this is genuine `iSup`-monotonicity and needs no rearrangement.
+
+The gap between this restricted error and the full `ε_mca` is *exactly* the contribution of the
+jointly-close stacks, which is the open part of L4.6 (see `epsMCA_eq_epsCA_below_udr`). -/
+theorem epsMCA_restricted_le_epsCA (C : Set (ι → A)) (δ : ℝ≥0) :
+    (⨆ u : WordStack A (Fin 2) ι,
+      if jointProximity (C := C) (u := u) δ then (0 : ENNReal)
+      else Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ]) ≤
+    epsCA (F := F) C δ δ := by
+  unfold epsCA
+  apply iSup_mono
+  intro u
+  by_cases hjp : jointProximity (C := C) (u := u) δ
+  · rw [if_pos hjp, if_pos hjp]
+  · rw [if_neg hjp, if_neg hjp]
+    exact epsMCA_body_le_epsCA_body_of_not_jointProximity C δ u hjp
+
+/-- **Where Approach A (pointwise event-implication) fails for ABF26 Lemma 4.6 — even in the
+unique-decoding regime.** *(Formalization note for the UDR case of WHIR Conjecture 1, cf. WHIR
+§4.2 [ACFY24] and the Haböck note [Hab25]; the beyond-UDR case is the open prize territory.)*
+
+A natural attempt at the hard direction `ε_mca ≤ ε_ca` is to prove the *pointwise* event
+implication `mcaEvent C δ u₀ u₁ γ → caEvent`, i.e. `mcaEvent γ → ¬ jointProximity C u δ`, which
+would give `Pr_γ[mcaEvent] ≤ Pr_γ[line δ-close]` and hence `iSup`-monotonicity. **This implication
+is false, even under the UDR hypothesis `2·δ·n < δ_min(C)`**, for the following reason.
+
+Suppose both `mcaEvent` (witness set `S`, codeword `w = u₀ + γ·u₁` on `S`, *no* joint pair on `S`)
+and `jointProximity` (witness set `S'`, codewords `p₀, p₁ ∈ C` with `p₀ = u₀`, `p₁ = u₁` on `S'`)
+hold. Both `S, S'` have size `≥ (1-δ)·n`, so `|S ∩ S'| ≥ n - 2·δ·n`, whose complement has size
+`< δ_min(C)` under UDR. On `S ∩ S'` we have `w = u₀ + γ·u₁ = p₀ + γ·p₁`; both `w` and `p₀ + γ·p₁`
+are codewords agreeing off a set smaller than `δ_min(C)`, so `w = p₀ + γ·p₁` **everywhere**.
+
+The trap is at the *extra* positions `i ∈ S \ S'`. There `mcaEvent` only gives the **combined**
+equation `(u₀ - p₀) i + γ · (u₁ - p₁) i = 0` (from `w i = u₀ i + γ·u₁ i` and `w i = p₀ i + γ·p₁ i`).
+This does **not** force `u₀ i = p₀ i` and `u₁ i = p₁ i` individually. Hence `(p₀, p₁)` need not
+agree with `(u₀, u₁)` on all of `S`; and since `S ∩ S'` already pins any agreeing codeword pair to
+`(p₀, p₁)` (two codewords agreeing on `≥ n - δ_min(C)` positions coincide), there is *no* joint
+pair on `S` — i.e. `mcaEvent` co-occurs with `jointProximity`. The `γ` for which this happens are
+exactly the solutions of the per-position linear equations `(u₀ - p₀) i = -γ·(u₁ - p₁) i`, a small
+but generally **non-empty** `γ`-set, so `Pr_γ[mcaEvent]` stays positive while the `epsCA` body for
+this `u` is `0`.
+
+Consequently the pointwise body inequality `epsMCA_body u ≤ epsCA_body u` is false on
+jointly-close stacks `u`, and the true bound only holds after the global
+dominance/rearrangement of [ACFY24]/[Hab25] (Guruswami–Sudan list-decoder analysis bounding the
+exceptional-`γ` set). The provable residue — dominance off the jointly-close stacks — is
+`epsMCA_restricted_le_epsCA` above; the structural half `mcaEvent → δᵣ(line, C) ≤ δ` is
+`mcaEvent_imp_relCloseToCode`. The full statement remains the documented external admit in
+`epsMCA_eq_epsCA_below_udr`.
+
+The single positive UDR fact that the analysis *does* establish — and that any correct proof of
+the hard direction relies on — is the codeword-forcing step: under `2·δ·n < δ_min(C)`, two
+codewords within relative distance `δ` coincide. That is the kernel-checked content of
+`eq_of_relDist_le_of_two_mul_lt_dist` below. -/
+theorem eq_of_relDist_le_of_two_mul_lt_dist
+    (C : Set (ι → A)) {w₁ w₂ : ι → A} {δ : ℝ≥0}
+    (hw₁ : w₁ ∈ C) (hw₂ : w₂ ∈ C)
+    (h_close : δᵣ(w₁, w₂) ≤ δ)
+    (h_udr : 2 * δ * (Fintype.card ι : ℝ≥0) < (Code.dist C : ℝ≥0)) :
+    w₁ = w₂ := by
+  classical
+  -- `δᵣ(w₁, w₂) ≤ δ` gives the absolute bound `Δ₀(w₁, w₂) ≤ ⌊δ·n⌋ ≤ δ·n`.
+  have h_abs : (Δ₀(w₁, w₂)) ≤ Nat.floor (δ * Fintype.card ι) :=
+    (pairRelDist_le_iff_pairDist_le (u := w₁) (v := w₂) δ).mp h_close
+  have h_floor_le : (Nat.floor (δ * (Fintype.card ι : ℝ≥0)) : ℝ≥0) ≤ δ * Fintype.card ι :=
+    Nat.floor_le (zero_le _)
+  -- `δ·n ≤ 2·δ·n < d`, so `Δ₀(w₁, w₂) < d` and `eq_of_lt_dist` closes it.
+  have h_dn_lt : δ * (Fintype.card ι : ℝ≥0) < (Code.dist C : ℝ≥0) := by
+    have h_le : δ * (Fintype.card ι : ℝ≥0) ≤ 2 * δ * (Fintype.card ι : ℝ≥0) := by
+      have : δ ≤ 2 * δ := by
+        have : (1 : ℝ≥0) * δ ≤ 2 * δ := by gcongr; norm_num
+        simpa using this
+      gcongr
+    exact lt_of_le_of_lt h_le h_udr
+  have h_lt : Δ₀(w₁, w₂) < Code.dist C := by
+    have h1 : (Δ₀(w₁, w₂) : ℝ≥0) ≤ δ * Fintype.card ι :=
+      le_trans (by exact_mod_cast h_abs) h_floor_le
+    have h2 : (Δ₀(w₁, w₂) : ℝ≥0) < (Code.dist C : ℝ≥0) := lt_of_le_of_lt h1 h_dn_lt
+    exact_mod_cast h2
+  exact eq_of_lt_dist hw₁ hw₂ h_lt
+
+open Classical in
+/-- **Kernel-checked core of the obstruction: in UDR the `mcaEvent` witness is forced.**
+
+Concretely substantiating the prose analysis above. Assume the UDR hypothesis `2·δ·n < δ_min(C)`,
+a stack `u` for which `jointProximity C u δ` holds (so `jointAgreement` provides a codeword pair
+`p₀, p₁ ∈ C` agreeing with `(u 0, u 1)` on a set `S'` of size `≥ (1-δ)·n`), and an `mcaEvent` at
+`γ` with witness set `S` and codeword `w ∈ C`. Then **`w = p₀ + γ·p₁`** — the line's `mcaEvent`
+witness coincides with the unique close combined codeword.
+
+Proof: `w = u 0 + γ·(u 1)` on `S` and `p₀ + γ·p₁ = u 0 + γ·(u 1)` on `S'` (because `p₀ = u 0`,
+`p₁ = u 1` there). On `S ∩ S'` both codewords equal the line, hence agree; the complement of
+`S ∩ S'` is contained in the union of the two `≤ ⌊δ·n⌋`-sized disagreement sets, so
+`Δ₀(w, p₀ + γ·p₁) ≤ 2·⌊δ·n⌋ ≤ 2·δ·n < δ_min(C)`, and `eq_of_lt_dist` forces equality.
+
+This is the step common to every correct proof of L4.6's hard direction; what it does *not*
+give — and where Approach A dies — is that `(p₀, p₁)` agrees with `(u 0, u 1)` on the *extra*
+positions `S \ S'`, since there only the combined equation `w = p₀ + γ·p₁ = u 0 + γ·(u 1)` is
+available, not the separate ones. -/
+theorem mcaEvent_witness_eq_combined_of_jointProximity_udr
+    (C : Submodule F (ι → A)) (δ : ℝ≥0) (u : WordStack A (Fin 2) ι) (γ : F)
+    (h_udr : 2 * δ * (Fintype.card ι : ℝ≥0) < (Code.dist ((C : Set (ι → A))) : ℝ≥0))
+    (h_jp : jointProximity (C := (C : Set (ι → A))) (u := u) δ)
+    {S : Finset ι} {w : ι → A}
+    (hw_mem : w ∈ (C : Set (ι → A)))
+    (hS_card : (S.card : ℝ≥0) ≥ (1 - δ) * Fintype.card ι)
+    (hw_line : ∀ i ∈ S, w i = u 0 i + γ • u 1 i) :
+    ∃ p₀ ∈ (C : Set (ι → A)), ∃ p₁ ∈ (C : Set (ι → A)),
+      (∀ i ∈ S, w i = u 0 i + γ • u 1 i) ∧ w = p₀ + γ • p₁ := by
+  classical
+  -- Extract the jointAgreement witnesses `p₀, p₁` on a set `S'`.
+  rw [← jointAgreement_iff_jointProximity] at h_jp
+  obtain ⟨S', hS'_card, p, hp⟩ := h_jp
+  set p₀ := p 0
+  set p₁ := p 1
+  have hp₀_mem : p₀ ∈ (C : Set (ι → A)) := (hp 0).1
+  have hp₁_mem : p₁ ∈ (C : Set (ι → A)) := (hp 1).1
+  -- `p₀ = u 0` and `p₁ = u 1` on `S'`.
+  have h_agree_S' : ∀ j ∈ S', p₀ j = u 0 j ∧ p₁ j = u 1 j := by
+    intro j hj
+    refine ⟨?_, ?_⟩
+    · have : j ∈ Finset.filter (fun k ↦ p 0 k = u 0 k) Finset.univ := (hp 0).2 hj
+      exact (Finset.mem_filter.mp this).2
+    · have : j ∈ Finset.filter (fun k ↦ p 1 k = u 1 k) Finset.univ := (hp 1).2 hj
+      exact (Finset.mem_filter.mp this).2
+  refine ⟨p₀, hp₀_mem, p₁, hp₁_mem, hw_line, ?_⟩
+  -- `p₀ + γ • p₁ ∈ C` (submodule closure).
+  have hcomb_mem : (p₀ + γ • p₁) ∈ (C : Set (ι → A)) := C.add_mem hp₀_mem (C.smul_mem γ hp₁_mem)
+  -- Show `w` and `p₀ + γ • p₁` agree on `S ∩ S'`; bound the disagreement set by `2·⌊δ·n⌋`.
+  set e : ℕ := Nat.floor (δ * (Fintype.card ι : ℝ≥0)) with he
+  -- The complement of `S` has card `≤ e` and likewise for `S'`.
+  have hScompl : (Finset.univ \ S).card ≤ e := by
+    have hsub : Fintype.card ι - e ≤ S.card := by
+      have := (Code.relDist_floor_bound_iff_complement_bound (Fintype.card ι) S.card δ).mpr hS_card
+      simpa [he] using this
+    have hle : S.card ≤ Fintype.card ι := Finset.card_le_univ S
+    rw [← Finset.compl_eq_univ_sdiff, Finset.card_compl]
+    omega
+  have hS'compl : (Finset.univ \ S').card ≤ e := by
+    have hsub : Fintype.card ι - e ≤ S'.card := by
+      have := (Code.relDist_floor_bound_iff_complement_bound (Fintype.card ι) S'.card δ).mpr
+        hS'_card
+      simpa [he] using this
+    have hle : S'.card ≤ Fintype.card ι := Finset.card_le_univ S'
+    rw [← Finset.compl_eq_univ_sdiff, Finset.card_compl]
+    omega
+  -- Disagreement positions of `w` vs `p₀ + γ • p₁` are contained in `(univ\S) ∪ (univ\S')`.
+  have h_dis_sub :
+      Finset.univ.filter (fun i ↦ w i ≠ (p₀ + γ • p₁) i) ⊆
+        (Finset.univ \ S) ∪ (Finset.univ \ S') := by
+    intro i hi
+    rw [Finset.mem_filter] at hi
+    by_contra hni
+    rw [Finset.mem_union] at hni
+    push Not at hni
+    obtain ⟨hiS, hiS'⟩ := hni
+    have hiS_mem : i ∈ S := by
+      by_contra h; exact hiS (Finset.mem_sdiff.mpr ⟨Finset.mem_univ i, h⟩)
+    have hiS'_mem : i ∈ S' := by
+      by_contra h; exact hiS' (Finset.mem_sdiff.mpr ⟨Finset.mem_univ i, h⟩)
+    -- On `S ∩ S'`: `w i = u 0 i + γ • u 1 i = p₀ i + γ • p₁ i`.
+    obtain ⟨hp0i, hp1i⟩ := h_agree_S' i hiS'_mem
+    have : w i = (p₀ + γ • p₁) i := by
+      rw [hw_line i hiS_mem]
+      simp [Pi.add_apply, Pi.smul_apply, hp0i, hp1i]
+    exact hi.2 this
+  -- Hence `Δ₀(w, p₀ + γ • p₁) ≤ 2·e`.
+  have h_ham_le : Δ₀(w, p₀ + γ • p₁) ≤ 2 * e := by
+    have h1 : Δ₀(w, p₀ + γ • p₁) ≤ ((Finset.univ \ S) ∪ (Finset.univ \ S')).card := by
+      unfold hammingDist
+      exact le_trans (Finset.card_le_card h_dis_sub) (le_refl _)
+    have h2 : ((Finset.univ \ S) ∪ (Finset.univ \ S')).card ≤ 2 * e := by
+      refine le_trans (Finset.card_union_le _ _) ?_
+      omega
+    exact le_trans h1 h2
+  -- `2·e ≤ 2·δ·n < d`, so `Δ₀ < d` and `eq_of_lt_dist` concludes.
+  have h_lt : Δ₀(w, p₀ + γ • p₁) < Code.dist (C : Set (ι → A)) := by
+    have he_le : (e : ℝ≥0) ≤ δ * (Fintype.card ι : ℝ≥0) := by
+      rw [he]; exact Nat.floor_le (zero_le _)
+    have h2e : (2 * e : ℝ≥0) ≤ 2 * δ * (Fintype.card ι : ℝ≥0) := by
+      have : (2 : ℝ≥0) * (e : ℝ≥0) ≤ 2 * (δ * (Fintype.card ι : ℝ≥0)) := by gcongr
+      simpa [mul_assoc] using this
+    have h2e' : ((Δ₀(w, p₀ + γ • p₁) : ℕ) : ℝ≥0) < (Code.dist (C : Set (ι → A)) : ℝ≥0) := by
+      have hcast : ((Δ₀(w, p₀ + γ • p₁) : ℕ) : ℝ≥0) ≤ (2 * e : ℝ≥0) := by exact_mod_cast h_ham_le
+      exact lt_of_le_of_lt (le_trans hcast h2e) h_udr
+    exact_mod_cast h2e'
+  exact eq_of_lt_dist hw_mem hcomb_mem h_lt
+
 /-- **ABF26 Lemma 4.6.** In the unique-decoding regime `δ < δ_min(C)/2`, `ε_mca` and `ε_ca`
 coincide: `ε_mca(C, δ) = ε_ca(C, δ)`.
 
