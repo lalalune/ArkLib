@@ -279,6 +279,11 @@ theorem linear_C_le_generalized_singleton_st20
     (C : Submodule F (ι → F)) (ℓ : ℕ) (δ : ℝ)
     (_hℓ_pos : 0 < ℓ) (_hℓ_lt : ℓ < Fintype.card F)
     (_hδ_pos : 0 < δ) (_hδ_lt : δ < 1)
+    -- Finding 18 repair: without the ST20 regime guard δ ≤ ℓ/(ℓ+1) the real
+    -- exponent below goes negative and the statement is FALSE (kernel-verified
+    -- counterexample: F = ZMod 5, C = ⊥, ℓ = 1, δ = 9/10 — see
+    -- research/formal/arklib-patches/upstream-issues.md).
+    (_hδ_regime : δ ≤ (ℓ : ℝ) / (ℓ + 1))
     (_hΛ : Lambda ((C : Set (ι → F))) δ ≤ (ℓ : ℕ∞)) :
     (Set.ncard ((C : Set (ι → F))) : ℝ)
       ≤ (Fintype.card F : ℝ) ^

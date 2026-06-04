@@ -334,12 +334,6 @@ private theorem gapB_vanish_of_orderM_and_count
   exact hne (GuruswamiSudan.roots_le_degree_of_deg_lt_roots (ωs := ωs) (Qz.eval P) M A hRoot
     (lt_of_le_of_lt hdeg hcount))
 
-/- Convenience composition of the two proved helpers above. This is left as
-commented scaffolding because the result predicate is definitionally brittle
-under `Finset.filter`; callers can compose
-`pg_divisibility_of_graph_vanishing_conditions` with
-`exists_pg_factors_with_large_common_root_set_of_dvd` directly.
-
 omit [DecidableEq (RatFunc F)] in
 /-- **Gap-B keystone: the trivariate graph-vanishing bridge** ([BCIKS20] §5, the residual keystone
 of Claim 5.7 / Prop 5.5).  Given a `ModifiedGuruswami` solution `Q`, a coefficient `z` in the
@@ -556,6 +550,12 @@ lemma exists_pg_factors_with_large_common_root_set_of_dvd (δ : ℚ) (x₀ : F)
       (h_gs := h_gs) hsep hmem
   · exact UniqueFactorizationMonoid.dvd_of_mem_normalizedFactors hpair.2
   · simpa [c57_eval_on_Z_eq_pg] using hcard_pg
+
+/- Convenience composition of the two proved helpers above. This is left as
+commented scaffolding because the result predicate is definitionally brittle
+under `Finset.filter`; callers can compose
+`pg_divisibility_of_graph_vanishing_conditions` with
+`exists_pg_factors_with_large_common_root_set_of_dvd` directly.
 
 omit [DecidableEq (RatFunc F)] in
 /-- Candidate-pair extraction directly from the graph agreement/count hypotheses used by
