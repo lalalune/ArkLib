@@ -68,10 +68,25 @@ def redundantEntryDS (log : QueryLog (duplexSpongeChallengeOracle StmtIn U))
 def NoRedundantEntryDS (log : QueryLog (duplexSpongeChallengeOracle StmtIn U)) : Prop :=
   ∀ idx : Fin log.length, ¬ log.redundantEntryDS idx
 
-/-- Procedure to remove all redundant queries from the duplex sponge query-answer trace -/
-def removeRedundantEntryDS (log : QueryLog (duplexSpongeChallengeOracle StmtIn U)) :
+/-- Procedure to remove all redundant queries from the duplex sponge query-answer trace.
+
+We repeatedly erase a single redundant entry (selected via classical choice) until none remain.
+Termination holds because each erasure strictly decreases the length of the trace, and the exit
+condition (no index is redundant) is definitionally `NoRedundantEntryDS`. -/
+noncomputable def removeRedundantEntryDS (log : QueryLog (duplexSpongeChallengeOracle StmtIn U)) :
     {log : QueryLog (duplexSpongeChallengeOracle StmtIn U) | log.NoRedundantEntryDS} :=
-  sorry
+  letI : Decidable (∃ idx : Fin log.length, log.redundantEntryDS idx) := Classical.propDecidable _
+  if h : ∃ idx : Fin log.length, log.redundantEntryDS idx then
+    removeRedundantEntryDS (log.eraseIdx (Classical.choose h).val)
+  else
+    ⟨log, fun idx => not_exists.mp h idx⟩
+termination_by log.length
+decreasing_by
+  exact (by
+    have hlt : (Classical.choose h).val < log.length := (Classical.choose h).isLt
+    have heq : (log.eraseIdx (Classical.choose h).val).length + 1 = log.length :=
+      List.length_eraseIdx_add_one hlt
+    omega)
 
 namespace BadEventDS
 

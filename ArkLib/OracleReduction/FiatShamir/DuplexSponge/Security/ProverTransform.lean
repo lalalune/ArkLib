@@ -39,7 +39,12 @@ def duplexSpongeToBasicFSAlgo
     (P : OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U)
     (StmtIn × pSpec.Messages)) :
     OracleComp (oSpec + fsChallengeOracle StmtIn pSpec) (StmtIn × pSpec.Messages) :=
-  sorry
+  simulateQ
+    (QueryImpl.addLift (QueryImpl.id oSpec)
+      (duplexSpongeToBasicFSQueryImpl :
+        QueryImpl (duplexSpongeChallengeOracle StmtIn U)
+          (OracleComp (fsChallengeOracle StmtIn pSpec))))
+    P
 
 alias d2SAlgo := duplexSpongeToBasicFSAlgo
 

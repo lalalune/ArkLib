@@ -68,13 +68,38 @@ structure BacktrackSequence (trace : QueryLog (duplexSpongeChallengeOracle StmtI
     inputState[i].capacitySegment ≠ outputState[i].capacitySegment
 
 /-- The associated indices (first occurrences in the trace) for a backtracking sequence -/
-def BacktrackSequence.Index (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+noncomputable def BacktrackSequence.Index (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (state : CanonicalSpongeState U) (seq : BacktrackSequence trace state) :
-    Fin trace.length × (Fin seq.inputState.length → Fin trace.length) :=
-  -- TODO: define `List.findFinIdx` that returns `Fin (l.length + 1)` and `List.findFinIdxIfTrue`
-  -- that returns `Fin l.length` given the fact that the predicate is true for at least one element
-  -- of the list
-  (⟨trace.findIdx sorry, sorry⟩, sorry)
+    Fin trace.length × (Fin seq.inputState.length → Fin trace.length) := by
+  classical
+  have hinput_pos : 0 < seq.inputState.length := by
+    rw [seq.inputState_length_eq_outputState_length_succ]
+    omega
+  let Entry := (t : (duplexSpongeChallengeOracle StmtIn U).Domain) ×
+    (duplexSpongeChallengeOracle StmtIn U).Range t
+  let hashEntry : Entry := ⟨.inl seq.stmt,
+    (Vector.drop (seq.inputState[0]'hinput_pos) SpongeSize.R)⟩
+  let hashIdx : Fin trace.length :=
+    ⟨trace.findIdx (fun entry => decide (entry = hashEntry)), by
+      have hashEntry_mem : hashEntry ∈ trace := by
+        simpa [hashEntry] using seq.hash_in_trace
+      exact List.findIdx_lt_length_of_exists ⟨hashEntry, hashEntry_mem, by simp⟩⟩
+  exact (hashIdx, fun i =>
+    if hi : i.val = 0 then
+      hashIdx
+    else
+      let j : Fin seq.outputState.length := ⟨i.val - 1, by
+        have hlt : i.val < seq.outputState.length + 1 := by
+          simpa [seq.inputState_length_eq_outputState_length_succ] using i.isLt
+        omega⟩
+      let fwdEntry : Entry := ⟨.inr (.inl seq.inputState[j]), seq.outputState[j]⟩
+      let bwdEntry : Entry := ⟨.inr (.inr seq.outputState[j]), seq.inputState[j]⟩
+      ⟨trace.findIdx (fun entry =>
+        decide (entry = fwdEntry ∨ entry = bwdEntry)), by
+        apply List.findIdx_lt_length_of_exists
+        rcases seq.permute_or_inv_in_trace j with h | h
+        · exact ⟨fwdEntry, by simpa [fwdEntry] using h, by simp⟩
+        · exact ⟨bwdEntry, by simpa [bwdEntry] using h, by simp⟩⟩)
 
 /-- A family of backtrack sequences, defined as a finite set of backtrack sequences such that
 no two sequences are strict subsets of each other -/

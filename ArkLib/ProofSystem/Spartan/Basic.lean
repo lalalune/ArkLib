@@ -358,7 +358,19 @@ def oracleReduction.linearCombination :
 def secondSumCheckVirtualPolynomial
     (stmt : Statement.AfterLinearCombination R pp)
     (oStmt : ∀ i, OracleStatement.AfterLinearCombination R pp i) :
-      MvPolynomial (Fin pp.ℓ_n) R := sorry
+      MvPolynomial (Fin pp.ℓ_n) R :=
+  let r := stmt.1
+  let r_x := stmt.2.1
+  let x := stmt.2.2.2
+  let z := R1CS.𝕫 x (oStmt (.inr (.inr 0)))
+  let zMLE : MvPolynomial (Fin pp.ℓ_n) R := MLE (z ∘ finFunctionFinEquiv)
+  let matrixEval (idx : R1CS.MatrixIdx) : MvPolynomial (Fin pp.ℓ_n) R :=
+    (oStmt (.inr (.inl idx))).toMLE
+      ⸨(MvPolynomial.C ∘ r_x : Fin pp.ℓ_m → MvPolynomial (Fin pp.ℓ_n) R)⸩
+  let scalar (a : R) : MvPolynomial (Fin pp.ℓ_n) R := MvPolynomial.C a
+  scalar (r .A) * matrixEval .A * zMLE +
+  scalar (r .B) * matrixEval .B * zMLE +
+  scalar (r .C) * matrixEval .C * zMLE
 
 @[simp]
 abbrev SecondSumcheckChallenge : Type := Fin pp.ℓ_n → R

@@ -584,8 +584,13 @@ theorem coreInteraction_perfectCompleteness :
       (P:=P) (ℓ:=ℓ) (ℓ':=ℓ') (h_l:=h_l) (aOStmtIn:=aOStmtIn) (init:=init) (impl:=impl)
 
 /-- standard sumcheck error -/
-def coreInteractionRbrKnowledgeError (_ : (pSpecCoreInteraction L ℓ').ChallengeIdx) : ℝ≥0 :=
-  (2 : ℝ≥0) / (Fintype.card L)
+def coreInteractionRbrKnowledgeError (j : (pSpecCoreInteraction L ℓ').ChallengeIdx) : ℝ≥0 :=
+  Sum.elim
+    (f := fun i =>
+      letI ij := seqComposeChallengeIdxToSigma i
+      iteratedSumcheckRoundKnowledgeError L ℓ' ij.1)
+    (g := fun _ => finalSumcheckRbrKnowledgeError (L := L))
+    (ChallengeIdx.sumEquiv.symm j)
 
 -- TODO: iteratedSumcheckLoop_rbrKnowledgeSoundness
 
@@ -604,7 +609,31 @@ theorem coreInteraction_rbrKnowledgeSoundness [IsDomain L] :
     (relIn := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn 0)
     (relOut := aOStmtIn.toRelInput)
     (rbrKnowledgeError := coreInteractionRbrKnowledgeError (L:=L) (ℓ':=ℓ')) := by
-  sorry
+  apply OracleVerifier.append_rbrKnowledgeSoundness
+    (init := init) (impl := impl)
+    (rel₁ := sumcheckRoundRelation κ L K β ℓ ℓ' h_l (𝓑:=𝓑) aOStmtIn 0)
+    (rel₂ := sumcheckRoundRelation κ L K β ℓ ℓ' h_l (𝓑:=𝓑) aOStmtIn (Fin.last ℓ'))
+    (rel₃ := aOStmtIn.toRelInput)
+    (V₁ := sumcheckLoopOracleVerifier κ L K ℓ ℓ' aOStmtIn)
+    (V₂ := finalSumcheckVerifier κ L K β ℓ ℓ' h_l aOStmtIn)
+    (Oₛ₃ := by exact fun _ => OracleInterface.instDefault)
+    (rbrKnowledgeError₁ := fun i =>
+      letI ij := seqComposeChallengeIdxToSigma i
+      iteratedSumcheckRoundKnowledgeError L ℓ' ij.1)
+    (rbrKnowledgeError₂ := fun _ => finalSumcheckRbrKnowledgeError (L := L))
+    (h₁ := by
+      apply OracleVerifier.seqCompose_rbrKnowledgeSoundness
+        (rel := fun i => sumcheckRoundRelation κ L K β ℓ ℓ' h_l (𝓑:=𝓑) aOStmtIn i)
+        (V := fun i => iteratedSumcheckOracleVerifier κ L K ℓ ℓ' aOStmtIn i)
+        (rbrKnowledgeError := fun i _ => iteratedSumcheckRoundKnowledgeError L ℓ' i)
+        (h := fun i =>
+          iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness (κ:=κ) (L:=L) (K:=K)
+            (β:=β) (ℓ:=ℓ) (ℓ':=ℓ') (h_l:=h_l) (aOStmtIn:=aOStmtIn)
+            (init:=init) (impl:=impl) i))
+    (h₂ := by
+      apply finalSumcheckOracleVerifier_rbrKnowledgeSoundness (κ:=κ) (L:=L) (K:=K)
+        (β:=β) (ℓ:=ℓ) (ℓ':=ℓ') (h_l:=h_l) (aOStmtIn:=aOStmtIn)
+        (init:=init) (impl:=impl))
 
 end LargeFieldReduction
 end

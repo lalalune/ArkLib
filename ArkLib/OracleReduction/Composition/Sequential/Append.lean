@@ -154,7 +154,9 @@ def OracleVerifier.append (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ 
       OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₃ OStmt₃ (pSpec₁ ++ₚ pSpec₂) where
   verify := fun stmt challenges => by
     -- First, invoke the first oracle verifier, handling queries as necessary
-    have := V₁.verify stmt (fun chal => sorry)
+    have := V₁.verify stmt (fun chal =>
+      by
+        simpa [ChallengeIdx.inl, ProtocolSpec.append] using challenges (ChallengeIdx.inl chal))
     simp at this
     -- Then, invoke the second oracle verifier, handling queries as necessary
     -- Return the final output statement
@@ -255,7 +257,8 @@ def RoundByRound.append
     dsimp [Fin.append, Fin.addCases, Fin.tail, Fin.castLT, Fin.cast] at h ⊢
     by_cases hi : idx < m
     · simp [hi] at h
-      sorry
+      have hiSucc : (idx : ℕ) < m + 1 := by omega
+      simpa [hiSucc] using E₁.extractMid ⟨idx, hi⟩ stmt₁ (by simpa [hi] using tr.fst) h
     -- do casing
     sorry
   extractOut := fun stmt₁ tr wit₃ => by
