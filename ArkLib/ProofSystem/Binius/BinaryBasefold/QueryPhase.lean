@@ -267,30 +267,30 @@ noncomputable def queryOracleVerifier :
             (j := k_th_oracleIdx) (point := x_point)
         )
 
-        have h_f_i_on_fiber_length: f_i_on_fiber.length = 2 ^ ϑ := by
-          sorry
+        if h_f_i_on_fiber_length: f_i_on_fiber.length = 2 ^ ϑ then
+          if i > 0 then
+            -- cᵢ ?= f^(i)(vᵢ, ..., v_{ℓ+R-1})
+            let oracle_point_idx := extractMiddleFinMask 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+              (v:=v) (i:=⟨i, by exact h_i_lt_ℓ⟩) (steps:=ϑ)
 
-        if i > 0 then
-          -- cᵢ ?= f^(i)(vᵢ, ..., v_{ℓ+R-1})
-          let oracle_point_idx := extractMiddleFinMask 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-            (v:=v) (i:=⟨i, by exact h_i_lt_ℓ⟩) (steps:=ϑ)
+            let f_i_val := f_i_on_fiber.get ⟨oracle_point_idx.val, by
+              rw [h_f_i_on_fiber_length]; exact oracle_point_idx.isLt⟩
+            unless c_cur = f_i_val do
+              return false
 
-          let f_i_val := f_i_on_fiber.get ⟨oracle_point_idx.val, by
-            rw [h_f_i_on_fiber_length]; exact oracle_point_idx.isLt⟩
-          unless c_cur = f_i_val do
-            return false
+          let cur_challenge_batch : Fin ϑ → L := fun j => stmt.challenges ⟨i +
+          j.val, by rw [Fin.val_last]; omega⟩
 
-        let cur_challenge_batch : Fin ϑ → L := fun j => stmt.challenges ⟨i +
-        j.val, by rw [Fin.val_last]; omega⟩
+          let c_next := localized_fold_matrix_form 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+            (i:=⟨i, by omega⟩) (steps:=ϑ) (h_i_add_steps:=by simp only; omega)
+            (r_challenges:=cur_challenge_batch) (y:=next_suffix_of_v)
+            (fiber_eval_mapping:=fun idx => f_i_on_fiber.get ⟨idx, by
+              rw [h_f_i_on_fiber_length]; omega⟩)
 
-        let c_next := localized_fold_matrix_form 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-          (i:=⟨i, by omega⟩) (steps:=ϑ) (h_i_add_steps:=by simp only; omega)
-          (r_challenges:=cur_challenge_batch) (y:=next_suffix_of_v)
-          (fiber_eval_mapping:=fun idx => f_i_on_fiber.get ⟨idx, by
-            rw [h_f_i_on_fiber_length]; omega⟩)
-
-        -- Update c_prev_iter for the next loop iteration's check.
-        c_cur := c_next
+          -- Update c_prev_iter for the next loop iteration's check.
+          c_cur := c_next
+        else
+          return false
 
       -- Final check after all folding: `c_ℓ ?= c`.
       unless c_cur = c do
