@@ -266,6 +266,19 @@ lemma sum_filter_sum_eq (S' : Finset F) (R : ι → F → Prop)
   refine Finset.sum_congr rfl (fun x _ => ?_)
   rw [Finset.sum_ite, Finset.sum_const_zero, add_zero, Finset.sum_const, nsmul_eq_mul, mul_comm]
 
+omit [Nonempty ι] in
+/-- With integral weights (each `μ i` a multiple of `1/M`), the `μ`-measure `mu_set μ s` is a
+multiple of `1 / (M * card ι)`: explicitly `(∑_{i ∈ s} n i) / (M * card ι)`, where
+`μ i = n i / M`. -/
+lemma mu_set_eq_div (μ : ι → Set.Icc (0 : ℚ) 1) {M : ℕ}
+    (n : ι → ℤ) (hn : ∀ i, (μ i).1 = (n i : ℚ) / (M : ℚ)) (s : Finset ι) :
+    mu_set μ s = ((∑ i ∈ s, n i : ℤ) : ℝ) / ((M : ℝ) * (Fintype.card ι : ℝ)) := by
+  have hsum : (∑ i ∈ s, (μ i).1) = ((∑ i ∈ s, n i : ℤ) : ℚ) / (M : ℚ) := by
+    rw [Finset.sum_congr rfl (fun i _ => hn i), ← Finset.sum_div]; push_cast; rfl
+  unfold mu_set
+  rw [hsum]; push_cast
+  rw [div_mul_eq_div_div_swap]; ring
+
 /-- Lemma 7.5 in [BCIKS20].
 This is the "list agreement on a curve implies correlated agreement" lemma.
 
@@ -448,7 +461,113 @@ lemma sufficiently_large_list_agreement_on_curve_implies_correlated_agreement
     letI wtilde (x : ι) (z : F) : F := Curve.polynomialCurveEval (F := F) (A := F) v z x
     (hS'_agree : ∀ z ∈ S', agree μ (w · z) (wtilde · z) ≥ α) →
     mu_set μ { x : ι | ∀ i, u i x = v i x } ≥ α := by
-  sorry
+  intro hS'_agree
+  classical
+  choose n hn using hμ
+  set N := Fintype.card ι with hN_def
+  have hN_pos : 0 < N := Fintype.card_pos
+  set G : Finset ι := { x : ι | ∀ i, u i x = v i x } with hG_def
+  -- Case M = 0 : every weight is zero, so every measure is zero and α = 0.
+  rcases Nat.eq_zero_or_pos M with hM0 | hMpos
+  · have hzero : ∀ s : Finset ι, mu_set μ s = 0 := by
+      intro s; rw [mu_set_eq_div μ n hn s, hM0]; simp
+    have hαle : (α : ℝ) ≤ 0 := by
+      obtain ⟨z, hz⟩ : S'.Nonempty := by rw [← Finset.card_pos]; omega
+      have h1 := hS'_agree z hz
+      rw [ge_iff_le, agree_eq_mu_set_filter, hzero] at h1
+      exact h1
+    rw [hG_def, hzero]
+    rw [le_antisymm hαle (by positivity)]
+  · -- Main case M ≥ 1.  Let K = M * N > 0.
+    have hMR_pos : (0 : ℝ) < (M : ℝ) := by exact_mod_cast hMpos
+    have hNR_pos : (0 : ℝ) < (N : ℝ) := by exact_mod_cast hN_pos
+    set K : ℝ := (M : ℝ) * (N : ℝ) with hK_def
+    have hK_pos : 0 < K := by rw [hK_def]; positivity
+    -- Grid value: the smallest multiple of 1/K that is ≥ α.
+    set j : ℤ := ⌈(α : ℝ) * K⌉ with hj_def
+    have hj_nonneg : 0 ≤ j := by
+      rw [hj_def]; apply Int.ceil_nonneg; positivity
+    -- β = j / K is on the grid, ≥ α.
+    set β : ℝ := (j : ℝ) / K with hβ_def
+    have hβ_ge : (α : ℝ) ≤ β := by
+      rw [hβ_def, le_div_iff₀ hK_pos]
+      exact Int.le_ceil _
+    have hβ_nonneg : 0 ≤ β := le_trans (by positivity) hβ_ge
+    -- Each agreement value, being a multiple of 1/K and ≥ α, is ≥ β.
+    have hagreeβ : ∀ z ∈ S', (β : ℝ) ≤
+        mu_set μ (univ.filter (fun i =>
+          Curve.polynomialCurveEval (F := F) (A := F) u z i
+            = Curve.polynomialCurveEval (F := F) (A := F) v z i)) := by
+      intro z hz
+      have h1 := hS'_agree z hz
+      rw [ge_iff_le, agree_eq_mu_set_filter] at h1
+      -- h1 : ↑α ≤ mu_set μ (filter ...)
+      set s := univ.filter (fun i =>
+        Curve.polynomialCurveEval (F := F) (A := F) u z i
+          = Curve.polynomialCurveEval (F := F) (A := F) v z i) with hs_def
+      rw [mu_set_eq_div μ n hn s] at h1 ⊢
+      -- h1 : ↑α ≤ (∑ n)/K ;  goal : β ≤ (∑ n)/K
+      rw [← hK_def] at h1 ⊢
+      rw [hβ_def, div_le_div_iff_of_pos_right hK_pos]
+      -- goal : j ≤ ∑ n   (over ℝ, but both integers)
+      have hαK : (α : ℝ) * K ≤ ((∑ i ∈ s, n i : ℤ) : ℝ) := by
+        rw [le_div_iff₀ hK_pos] at h1; exact h1
+      rw [hj_def]
+      have : ⌈(α : ℝ) * K⌉ ≤ (∑ i ∈ s, n i : ℤ) := by
+        rw [Int.ceil_le]; exact_mod_cast hαK
+      exact_mod_cast this
+    -- Apply Lemma 7.5 with the grid value β (as an ℝ≥0).
+    have hβ_eq : (β.toNNReal : ℝ) = β := Real.coe_toNNReal β hβ_nonneg
+    have h75 := list_agreement_on_curve_implies_correlated_agreement_bound
+      (k := k) (u := u) (deg := deg) (domain := domain) (μ := μ) (α := β.toNNReal)
+      hv (S' := S') hS'_card
+      (by
+        intro z hz
+        rw [ge_iff_le, agree_eq_mu_set_filter, hβ_eq]
+        exact hagreeβ z hz)
+    rw [hβ_eq] at h75
+    -- h75 : mu_set μ {x | ...} > β - (l+1)/(S'.card - (l+1))
+    -- Bound the loss term by 1/K.
+    have hScard_pos : (0 : ℝ) < (S'.card : ℝ) := by
+      have : 0 < S'.card := by omega
+      exact_mod_cast this
+    have hden_pos : (0 : ℝ) < (S'.card : ℝ) - ((l : ℝ) + 1) := by
+      have hlt : l + 1 < S'.card := hS'_card
+      have : (l : ℝ) + 1 < (S'.card : ℝ) := by exact_mod_cast hlt
+      linarith
+    have hden_ge : (S'.card : ℝ) - ((l : ℝ) + 1) ≥ K * ((l : ℝ) + 1) := by
+      -- S'.card ≥ (M*N+1)(l+1) = (K+1)(l+1) ⟹ S'.card - (l+1) ≥ K(l+1)
+      have hc : ((M * N + 1) * (l + 1) : ℕ) ≤ S'.card := hS'_card₁
+      have hc' : ((M : ℝ) * (N : ℝ) + 1) * ((l : ℝ) + 1) ≤ (S'.card : ℝ) := by
+        have := hc; push_cast at this ⊢; exact_mod_cast this
+      rw [hK_def]; nlinarith [hc']
+    have hloss_le : ((l : ℝ) + 1) / ((S'.card : ℝ) - ((l : ℝ) + 1)) ≤ 1 / K := by
+      rw [div_le_div_iff₀ hden_pos hK_pos]
+      have hl1_pos : (0 : ℝ) < (l : ℝ) + 1 := by positivity
+      nlinarith [hden_ge, hl1_pos, hK_pos]
+    have hG_gt : mu_set μ G > β - 1 / K := by
+      have : mu_set μ G > β - ((l : ℝ) + 1) / ((S'.card : ℝ) - ((l : ℝ) + 1)) := h75
+      linarith [hloss_le]
+    -- mu_set μ G is on the grid: = c / K for some integer c.
+    obtain ⟨c, hc⟩ : ∃ c : ℤ, mu_set μ G = (c : ℝ) / K := by
+      refine ⟨∑ i ∈ G, n i, ?_⟩
+      rw [mu_set_eq_div μ n hn G, hK_def]
+    -- From c/K > β - 1/K = (j-1)/K, deduce c ≥ j, hence mu_set μ G ≥ β ≥ α.
+    rw [hc] at hG_gt ⊢
+    have hβ1 : β - 1 / K = ((j : ℝ) - 1) / K := by rw [hβ_def]; ring
+    rw [hβ1, gt_iff_lt, div_lt_div_iff_of_pos_right hK_pos] at hG_gt
+    -- hG_gt : (j:ℝ) - 1 < c
+    have hcj : j ≤ c := by
+      have hjc : (j : ℝ) - 1 < (c : ℝ) := hG_gt
+      have hjcZ : ((j - 1 : ℤ) : ℝ) < ((c : ℤ) : ℝ) := by push_cast; linarith
+      have : j - 1 < c := by exact_mod_cast hjcZ
+      omega
+    -- Conclude α ≤ β = j/K ≤ c/K.
+    calc (α : ℝ) ≤ β := hβ_ge
+      _ = (j : ℝ) / K := hβ_def
+      _ ≤ (c : ℝ) / K := by
+          have hjcR : (j : ℝ) ≤ (c : ℝ) := by exact_mod_cast hcj
+          gcongr
 
 end ListAgreementLemmas
 
