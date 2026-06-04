@@ -13,6 +13,9 @@ import Mathlib.RingTheory.PowerSeries.Substitution
 import Mathlib.RingTheory.Polynomial.GaussLemma
 import Mathlib.RingTheory.Polynomial.Content
 import Mathlib.RingTheory.Polynomial.Resultant.Basic
+import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+import Mathlib.Algebra.Polynomial.BigOperators
+import Mathlib.Algebra.Polynomial.Degree.Lemmas
 
 /-!
 # Definitions and Theorems about Function Fields and Rings of Regular Functions
@@ -672,6 +675,32 @@ lemma exists_common_root_of_mem_S_β {H : F[X][Y]} (hH : 0 < H.natDegree) (β : 
   rw [← π_z_eq_evalEval_canonicalRep hH β z root]
   exact hroot
 
+/-! ### A graded degree bound for determinants of polynomial matrices -/
+
+/-- A weighted (graded) degree bound for the determinant of a polynomial matrix. If we can assign
+row weights `r` and column weights `c` such that every nonzero entry `M i j` satisfies
+`natDegree (M i j) + r i ≤ c j`, then `natDegree (det M) ≤ (∑ c) - (∑ r)`. The `+`/`-` arithmetic is
+over `ℕ`; the bound is vacuous-safe since zero entries make the corresponding product vanish. -/
+lemma natDegree_det_le_sub {R : Type*} [CommRing R] {ι : Type*}
+    [DecidableEq ι] [Fintype ι] (M : Matrix ι ι R[X]) (r c : ι → ℕ)
+    (h : ∀ i j, M i j ≠ 0 → (M i j).natDegree + r i ≤ c j) :
+    (M.det).natDegree ≤ (∑ j, c j) - ∑ i, r i := by
+  classical
+  rw [Matrix.det_apply]
+  refine Polynomial.natDegree_sum_le_of_forall_le _ _ (fun σ _ => ?_)
+  refine le_trans (Polynomial.natDegree_smul_le _ _) ?_
+  by_cases hzero : ∃ i, M (σ i) i = 0
+  · obtain ⟨i, hi⟩ := hzero
+    have hp0 : ∏ i, M (σ i) i = 0 := Finset.prod_eq_zero (Finset.mem_univ i) hi
+    simp [hp0]
+  · push_neg at hzero
+    have hprod : (∏ i, M (σ i) i).natDegree ≤ ∑ i, (M (σ i) i).natDegree :=
+      Polynomial.natDegree_prod_le _ _
+    have hkey : (∑ i, (M (σ i) i).natDegree) + ∑ i, r i ≤ ∑ j, c j := by
+      rw [show ∑ i, r i = ∑ i, r (σ i) from (Equiv.sum_comp σ r).symm, ← Finset.sum_add_distrib]
+      exact Finset.sum_le_sum (fun i _ => h (σ i) i (hzero i))
+    omega
+
 /-- The `X`-elimination polynomial of Lemma A.1: the `Y`-resultant of `H_tilde' H` with the
 canonical representative of `β`, an element of `F[X]`. Its roots contain `S_β`. -/
 noncomputable def elimPoly {H : F[X][Y]} (hH : 0 < H.natDegree) (β : 𝒪 H) : F[X] :=
@@ -801,6 +830,38 @@ lemma ncard_S_β_le_natDegree_elimPoly {H : F[X][Y]} [Fact (Irreducible H)] (hH 
     _ ≤ Multiset.card (elimPoly hH β).roots := Multiset.toFinset_card_le _
     _ ≤ (elimPoly hH β).natDegree := Polynomial.card_roots' _
 
+/-- If the canonical representative is nonzero, its `Λ`-weight is not `⊥` (the support is
+nonempty, so the defining `Finset.sup` of `WithBot.some` values is itself a `WithBot.some`). -/
+lemma weight_Λ_over_𝒪_ne_bot {H : F[X][Y]} (hH : 0 < H.natDegree) (β : 𝒪 H) (D : ℕ)
+    (hP : canonicalRepOf𝒪 hH β ≠ 0) :
+    weight_Λ_over_𝒪 hH β D ≠ ⊥ := by
+  rw [weight_Λ_over_𝒪, weight_Λ, Ne, Finset.sup_eq_bot_iff]
+  intro hbot
+  have hne : (canonicalRepOf𝒪 hH β).support.Nonempty := Polynomial.support_nonempty.mpr hP
+  obtain ⟨k, hk⟩ := hne
+  exact WithBot.coe_ne_bot (hbot k hk)
+
+/-- The degree bound of Lemma A.1: the elimination polynomial `Res_Y(H_tilde' H, P)` has
+`X`-degree at most `weight_Λ(P) · H.natDegree`, where `P` is the canonical representative of `β`.
+
+PROOF OBLIGATION (the graded Sylvester-resultant degree bound — the analytic core of BCIKS20
+Lemma A.1). With `N := H.natDegree`, `M := P.natDegree`, `s := D + 1 - natDegreeY H`, and
+`W := weight_Λ_over_𝒪 hH β D`, the Sylvester matrix `sylvester (H_tilde' H) P N M` admits the
+weighting (for the graded bound `natDegree_det_le_sub`):
+  • column `inl j₁` (a `P`-column, `j₁ < N`): weight `c = W + j₁ · s`;
+  • column `inr j₁` (a `Q`-column, `j₁ < M`): weight `c = (M - j₁) · s + (something on D)`;
+  • row `i`: weight `r = i · s`.
+Each nonzero entry `P.coeff (i - j₁)` has `natDegree ≤ W - (i - j₁) · s` (from the definition of
+`weight_Λ`), and each `Q.coeff (i - j₁)` is similarly controlled using `D ≥ totalDegree H` and the
+explicit form of `H_tilde'`. Summing column weights minus row weights telescopes to `W · N`.
+This bookkeeping (entry-degree bounds for both `P` and the monicized `H_tilde'` against the weight,
+plus the telescoping sum) is the remaining gap; mathlib provides the resultant API and the graded
+determinant bound `natDegree_det_le_sub` above, but not this specific weighting. -/
+lemma natDegree_elimPoly_le {H : F[X][Y]} [Fact (Irreducible H)] (hH : 0 < H.natDegree) (β : 𝒪 H)
+    (D : ℕ) (hD : D ≥ Bivariate.totalDegree H) (hP : canonicalRepOf𝒪 hH β ≠ 0) :
+    (↑(elimPoly hH β).natDegree : WithBot ℕ) ≤ weight_Λ_over_𝒪 hH β D * (H.natDegree : WithBot ℕ) :=
+  sorry
+
 /-- The statement of Lemma A.1 in Appendix A.3 of [BCIKS20].
 
 Statement repair (necessary, documented for upstream): the section context provides only
@@ -814,7 +875,24 @@ non-breaking; all use sites in BCIKS20 §A take `H` irreducible. -/
 lemma Lemma_A_1 {H : F[X][Y]} [Fact (Irreducible H)] (hH : 0 < H.natDegree) (β : 𝒪 H) (D : ℕ)
     (hD : D ≥ Bivariate.totalDegree H)
     (S_β_card : Set.ncard (S_β β) > (weight_Λ_over_𝒪 hH β D) * H.natDegree) :
-  embeddingOf𝒪Into𝕃 _ β = 0 := by sorry
+  embeddingOf𝒪Into𝕃 _ β = 0 := by
+  -- It suffices to show the canonical representative of `β` is zero (Stage-1 bridge).
+  rcases eq_or_ne (canonicalRepOf𝒪 hH β) 0 with hP | hP
+  · exact embeddingOf𝒪Into𝕃_eq_zero_of_canonicalRep_eq_zero hH β hP
+  -- Otherwise we derive a contradiction from the counting hypothesis.
+  exfalso
+  -- The counting chain: ncard S_β ≤ deg(elimPoly) ≤ weight · n, contradicting the hypothesis.
+  have hcard : Set.ncard (S_β β) ≤ (elimPoly hH β).natDegree :=
+    ncard_S_β_le_natDegree_elimPoly hH β hP
+  have hdeg : (↑(elimPoly hH β).natDegree : WithBot ℕ) ≤
+      weight_Λ_over_𝒪 hH β D * (H.natDegree : WithBot ℕ) :=
+    natDegree_elimPoly_le hH β D hD hP
+  -- Cast the cardinality bound into `WithBot ℕ`.
+  have hcard' : (↑(Set.ncard (S_β β)) : WithBot ℕ) ≤ (↑(elimPoly hH β).natDegree : WithBot ℕ) := by
+    exact_mod_cast hcard
+  have hchain : (↑(Set.ncard (S_β β)) : WithBot ℕ) ≤
+      weight_Λ_over_𝒪 hH β D * (H.natDegree : WithBot ℕ) := le_trans hcard' hdeg
+  exact absurd hchain (not_le.mpr S_β_card)
 
 end
 
