@@ -692,5 +692,51 @@ def multiConstrainedCode
       ∃ (h : f ∈ smoothCode domain m),
         ∀ i : Fin t, weightConstraint (mVdecode (⟨f, h⟩ : smoothCode domain m)) (w i) (σ i)}
 
+/-- Decoded multilinear polynomials of smooth codewords are degreewise linear. -/
+lemma mVdecode_mem_restrictDegree (u : smoothCode domain m) :
+    mVdecode u ∈ MvPolynomial.restrictDegree (Fin m) F 1 := by
+  rw [MvPolynomial.mem_restrictDegree_iff_degreeOf_le]
+  intro i
+  exact linearMvExtension_degreeOf_lt (p := decodeLT u)
+
+omit [DecidableEq F] in
+/-- For a degreewise-linear polynomial `p`, the weight constraint with the out-of-domain
+evaluation weight `Z · eq(r, X)` — value variable at index `0`, matching
+`toWeightAssignment` — holds iff `p(r) = σ`: by the multilinear-extension identity,
+`∑ b ∈ {0,1}^m, p(b) · eq(r, b) = p(r)`. -/
+lemma weightConstraint_eqPolynomial_iff
+    (p : MvPolynomial (Fin m) F) (hp : p ∈ MvPolynomial.restrictDegree (Fin m) F 1)
+    (r : Fin m → F) (σ : F) :
+    weightConstraint p
+      (MvPolynomial.X 0 * MvPolynomial.rename Fin.succ (MvPolynomial.eqPolynomial r)) σ
+      ↔ MvPolynomial.eval r p = σ := by
+  unfold weightConstraint
+  have hterm : ∀ b : Fin m → Fin 2,
+      MvPolynomial.eval (toWeightAssignment p b)
+        (MvPolynomial.X 0 * MvPolynomial.rename Fin.succ (MvPolynomial.eqPolynomial r))
+      = MvPolynomial.eval ((b : Fin m → F)) p
+          * MvPolynomial.eval r (MvPolynomial.eqPolynomial ((b : Fin m → F))) := by
+    intro b
+    rw [MvPolynomial.eval_mul, MvPolynomial.eval_X, MvPolynomial.eval_rename,
+      MvPolynomial.eqPolynomial_symm]
+    have h0 : toWeightAssignment p b 0 = MvPolynomial.eval ((b : Fin m → F)) p := by
+      simp only [toWeightAssignment, Fin.cases_zero]
+    have hsucc : toWeightAssignment p b ∘ Fin.succ = ((b : Fin m → F)) := by
+      funext j
+      simp only [Function.comp_apply, toWeightAssignment, Fin.cases_succ]
+    rw [h0, hsucc]
+  have hsum : (∑ b : Fin m → Fin 2,
+      MvPolynomial.eval (toWeightAssignment p b)
+        (MvPolynomial.X 0 * MvPolynomial.rename Fin.succ (MvPolynomial.eqPolynomial r)))
+      = MvPolynomial.eval r p := by
+    rw [Finset.sum_congr rfl (fun b _ => hterm b)]
+    conv_rhs => rw [← MvPolynomial.is_multilinear_iff_eq_evals_zeroOne.mp hp]
+    rw [MvPolynomial.MLE, map_sum]
+    refine Finset.sum_congr rfl fun b _ => ?_
+    rw [map_mul, MvPolynomial.eval_C]
+    unfold MvPolynomial.toEvalsZeroOne
+    ring
+  rw [hsum]
+
 end
 end ReedSolomon
