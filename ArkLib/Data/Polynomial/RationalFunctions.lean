@@ -1003,6 +1003,60 @@ lemma weight_Λ_sub_leadingCoeff_mul_H_tilde'_le {p H : F[X][Y]} {D : ℕ}
       rw [← Nat.add_mul, hsum]
     linarith [hadd_mul]
 
+/-- Complete reduction modulo `H_tilde' H` never increases the `Λ`-weight (Appendix A.2 of
+[BCIKS20]): `Λ(p %ₘ H_tilde' H) ≤ Λ(p)`. Proved by well-founded recursion mirroring the
+`modByMonic` reduction, using `weight_Λ_sub_leadingCoeff_mul_H_tilde'_le` for the single step. -/
+lemma weight_Λ_modByMonic_le {H : F[X][Y]} {D : ℕ}
+    (hD : Bivariate.totalDegree H ≤ D) (hH : 0 < H.natDegree) :
+    ∀ p : F[X][Y], weight_Λ (p %ₘ H_tilde' H) H D ≤ weight_Λ p H D
+  | p => by
+    classical
+    set q : F[X][Y] := H_tilde' H with hq_def
+    have hqmonic : q.Monic := H_tilde'_monic H hH
+    have hq_natDeg : q.natDegree = H.natDegree := natDegree_H_tilde' hH
+    by_cases hstep : H.natDegree ≤ p.natDegree ∧ p ≠ 0
+    · -- A reduction step happens: `p %ₘ q = (p - C(lc) * X^(deg) * q) %ₘ q`.
+      obtain ⟨hp_deg, hp_ne⟩ := hstep
+      set z : F[X][Y] :=
+        Polynomial.C p.leadingCoeff * Polynomial.X ^ (p.natDegree - H.natDegree) with hz_def
+      -- The reduced polynomial has strictly smaller degree (well-founded recursion).
+      have hdeg_lt : (p - q * z).degree < p.degree := by
+        have hcond : q.degree ≤ p.degree ∧ p ≠ 0 := by
+          refine ⟨?_, hp_ne⟩
+          rw [Polynomial.degree_eq_natDegree hqmonic.ne_zero,
+              Polynomial.degree_eq_natDegree hp_ne, Nat.cast_le, hq_natDeg]
+          exact hp_deg
+        have := Polynomial.div_wf_lemma hcond hqmonic
+        rwa [hq_natDeg, ← hz_def] at this
+      have hmod_eq : p %ₘ q = (p - q * z) %ₘ q := by
+        rw [Polynomial.sub_modByMonic, Polynomial.self_mul_modByMonic hqmonic, sub_zero]
+      have hcomm : q * z = Polynomial.C p.leadingCoeff *
+          Polynomial.X ^ (p.natDegree - H.natDegree) * q := by rw [hz_def]; ring
+      have ih := weight_Λ_modByMonic_le hD hH (p - q * z)
+      calc weight_Λ (p %ₘ q) H D
+          = weight_Λ ((p - q * z) %ₘ q) H D := by rw [hmod_eq]
+        _ ≤ weight_Λ (p - q * z) H D := ih
+        _ = weight_Λ (p - Polynomial.C p.leadingCoeff *
+              Polynomial.X ^ (p.natDegree - H.natDegree) * q) H D := by rw [hcomm]
+        _ ≤ weight_Λ p H D := by
+              rw [hq_def]; exact weight_Λ_sub_leadingCoeff_mul_H_tilde'_le hD hH hp_deg
+    · -- No reduction: `p %ₘ q = p`.
+      rw [not_and_or, not_le, not_not] at hstep
+      have hself : p %ₘ q = p := by
+        rcases hstep with hlt | hp0
+        · rw [Polynomial.modByMonic_eq_self_iff hqmonic]
+          rcases eq_or_ne p 0 with rfl | hp_ne
+          · rw [Polynomial.degree_zero]
+            exact Ne.bot_lt fun h =>
+              hqmonic.ne_zero (Polynomial.degree_eq_bot.mp h)
+          · rw [Polynomial.degree_eq_natDegree hp_ne,
+                Polynomial.degree_eq_natDegree hqmonic.ne_zero, Nat.cast_lt, hq_natDeg]
+            exact hlt
+        · rw [hp0, Polynomial.zero_modByMonic]
+      rw [hself]
+  termination_by p => p.degree
+  decreasing_by exact hdeg_lt
+
 /-- The set `S_β` from the statement of Lemma A.1 in Appendix A of [BCIKS20].
 Note: Here `F[X][Y]` is `F[Z][T]`. -/
 noncomputable def S_β {H : F[X][Y]} (β : 𝒪 H) : Set F :=
