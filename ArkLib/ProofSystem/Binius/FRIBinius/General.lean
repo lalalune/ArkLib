@@ -176,8 +176,22 @@ noncomputable def fullOracleProof :
 
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
 
-/-- Perfect completeness for the full Binary Basefold protocol (reduction) -/
-theorem fullOracleReduction_perfectCompleteness :
+/-- Perfect completeness for the full Binary Basefold protocol (reduction).
+
+THREADED (2026-06-04): sumcheck-fold lens coherence. The core-interaction phase's perfect
+completeness (`CoreInteractionPhase.coreInteractionOracleReduction_perfectCompleteness`) transports
+its proof through the oracle-routing `sumcheckFoldOracleLens`, whose `LiftContextCoherent`
+(`toVerifier_comm`) side condition (#433) is a genuine, non-`rfl` lens obligation left unproven
+upstream and threaded as a hypothesis there (commit a22be75b, exactly as in
+`Sumcheck/Spec/General.lean`). We thread the same `coh` through here and pass it through at the
+core-interaction call site below. -/
+theorem fullOracleReduction_perfectCompleteness
+    -- THREADED (2026-06-04): sumcheck-fold lens coherence
+    (coh : OracleVerifier.LiftContextCoherent
+      (CoreInteractionPhase.sumcheckFoldOracleLens κ L K β ℓ ℓ' 𝓡 ϑ
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+      (BinaryBasefold.CoreInteraction.sumcheckFoldOracleReduction K β (ϑ:=ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)).verifier) :
   OracleReduction.perfectCompleteness
     (oracleReduction := fullOracleReduction κ L K β ℓ ℓ' 𝓡 ϑ γ_repetitions
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) h_l )
@@ -215,8 +229,9 @@ theorem fullOracleReduction_perfectCompleteness :
       · apply BatchingPhase.batchingReduction_perfectCompleteness κ L K
           (biniusProfile κ L K β) ℓ ℓ' h_l 
           (BinaryBasefoldAbstractOStmtIn κ L K β ℓ' 𝓡 ϑ h_ℓ_add_R_rate)
-      · apply CoreInteractionPhase.coreInteractionOracleReduction_perfectCompleteness
-          κ L K β ℓ ℓ' 𝓡 ϑ h_ℓ_add_R_rate h_l 
+      · -- THREADED (2026-06-04): sumcheck-fold lens coherence
+        apply CoreInteractionPhase.coreInteractionOracleReduction_perfectCompleteness
+          κ L K β ℓ ℓ' 𝓡 ϑ h_ℓ_add_R_rate h_l (𝓑 := 𝓑) coh
     )
     (h₂ := QueryPhase.queryOracleProof_perfectCompleteness K β γ_repetitions
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ:=ϑ) init impl)

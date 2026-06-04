@@ -180,6 +180,59 @@ variable (hOₘ : ∀ i, Oₘ₁ i = dcast (Message.cast_idx hSpec) (Oₘ₂ (i.
 --   dcast₂ := OracleVerifier.cast
 --   dcast₂_id := OracleVerifier.cast_id
 
+@[simp]
+theorem cast_toVerifier (V : OracleVerifier oSpec StmtIn OStmtIn StmtOut OStmtOut pSpec₁) :
+    (OracleVerifier.cast hn hSpec hOₘ V).toVerifier = Verifier.cast hn hSpec V.toVerifier := by
+  subst hn
+  subst hSpec
+  -- The casted message oracle interface coincides with the original (the `rfl`-cast is the
+  -- identity on indices and the `dcast` is trivial), so we may identify the two instances.
+  have hOₘ' : Oₘ₁ = Oₘ₂ := by
+    funext i
+    have := hOₘ i
+    simp only [MessageIdx.cast_id, id_eq, dcast_eq] at this
+    exact this
+  subst hOₘ'
+  simp only [OracleVerifier.cast, OracleVerifier.toVerifier, Verifier.cast,
+    dcast_eq, dcast₂_eq, FullTranscript.cast_eq_dcast₂]
+  congr 1
+  funext stmt transcript
+  -- Split the produced-statement computation from the output-oracle-statement assembly.
+  congr 1
+  · -- The inner message routing re-emits every query unchanged, hence is the identity query
+    -- implementation; the inner `simulateQ` therefore disappears, leaving identical computations.
+    -- Isolate the inner `simulateQ ROUTING X`, rewrite the target `X` as `simulateQ id' X`, and
+    -- match the implementations per query.
+    congr 1
+    refine Eq.trans ?_ (simulateQ_id' _)
+    refine congrFun (congrArg (fun s => simulateQ s) ?_) _
+    funext q
+    rcases q with t | t | ⟨i, q⟩
+    · rfl
+    · rfl
+    · simp only [castMessageImpl, castMessageQuery, MessageIdx.cast_id, id_eq]; rfl
+  · -- The output-oracle-statement assembly: the embed through `id.sumMap id` is `V.embed` itself,
+    -- so both continuations select the same oracle statement.  We case on `V.embed i`; in each
+    -- branch the `id`-sumMap leaves the chosen index unchanged.
+    funext stmtOut
+    refine congrArg pure (Prod.ext rfl (funext fun i => ?_))
+    -- Both dependent matches select the same branch: the `(refl).sumMap id` embed and the bare
+    -- `V.embed` agree, and the payload casts are definitionally equal.  We eliminate on the shared
+    -- typing witness `V.hEq i` together with `V.embed i` so the split is type-correct.
+    simp only [Function.Embedding.trans_apply, Function.Embedding.coe_sumMap,
+      Equiv.coe_toEmbedding, Equiv.coe_refl, Function.Embedding.coeFn_mk, MessageIdx.cast_id]
+    split <;> rename_i j heq <;> split <;> rename_i j' heq' <;>
+      rw [heq'] at heq <;>
+      simp_all only [Sum.map_inl, Sum.map_inr, Sum.inl.injEq, Sum.inr.injEq, reduceCtorEq, id_eq] <;>
+      subst_vars <;>
+      -- The two payloads are transports of the same value along proof-irrelevant equalities (and
+      -- the `rfl`-cast transcript), hence equal up to `HEq`.  Rewrite each `▸` as a `cast` and
+      -- strip it via `cast_heq`.
+      (apply eq_of_heq
+       simp only [eqRec_eq_cast]
+       refine (cast_heq _ _).trans ((cast_heq _ _).trans (HEq.symm ?_))
+       exact (cast_heq _ _).trans ((cast_heq _ _).trans HEq.rfl))
+
 end OracleVerifier
 
 namespace Reduction

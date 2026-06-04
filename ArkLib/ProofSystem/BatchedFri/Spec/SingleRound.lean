@@ -53,6 +53,13 @@ instance : ∀ j, OracleInterface (OracleStatement m ω j) :=
 
 namespace BatchingRound
 
+-- DEFINITION COMPLETED (2026-06-04): batching-round input relation. The batched-FRI input is a
+-- collection of `m + 1` purported codewords on the full domain `ω`, each committed to its own
+-- low-degree witness polynomial (degree `< 2 ^ (∑ s) * d`). Following [BCIKS20 §8]/[FRI1216], the
+-- well-formed-input relation asserts every batched oracle is the honest evaluation of its witness
+-- polynomial on `ω`. (No `δ`: the relation is stated on the witnessed polynomials directly; the
+-- subsequent proximity claim is carried by the FRI round-0 relation after batching — see
+-- `outputRelation`, which composes with `Fri.Spec.FoldPhase.inputRelation`.)
 def inputRelation :
     Set
       (
@@ -61,8 +68,13 @@ def inputRelation :
       ) :=
   {ctx | ∀ j x, ctx.1.2 j x = (ctx.2 j).1.eval x.1}
 
-/- The FRI non-final folding round output relation, with proximity parameter `δ`,
-   for the `i`th round. -/
+-- DEFINITION COMPLETED (2026-06-04): batching-round output relation. After the verifier sends the
+-- random batching coefficients, the protocol hands off to the FRI round-0 reduction on the single
+-- batched codeword. The relation is the FRI round-0 well-formedness clause: the (single) round-0
+-- oracle on `ω = subdomainNatReversed 0` is the honest evaluation of the batched witness polynomial.
+-- This is exactly the witness/oracle-agreement half of `Fri.Spec.FoldPhase.inputRelation` at `i = 0`,
+-- so the batching reduction composes with FRI (the random-linear-combination batching of the `m + 1`
+-- oracles is realised in `liftingLens.stmt`).
 def outputRelation :
     Set
       (

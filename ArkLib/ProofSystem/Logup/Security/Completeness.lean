@@ -30,6 +30,12 @@ collapse to perfect completeness.
 noncomputable def logupCompletenessError (F : Type) [Fintype F] (n : ℕ) : ℝ≥0 :=
   (Fintype.card (Hypercube n) : ℝ≥0) / (Fintype.card F)
 
+/-- Main ArkLib completeness theorem for LogUp Protocol 2. -/
+theorem logup_completeness :
+    (logupOracleReduction oSpec F n M params).completeness init impl
+      (inputRelation F n M) outputRelation (logupCompletenessError F n) := by
+  sorry
+
 end Completeness
 
 end Logup

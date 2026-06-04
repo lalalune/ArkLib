@@ -254,24 +254,77 @@ noncomputable def logupSumcheckContextLens :
     ⟨fun _ => (),
       fun _ _ => ()⟩
 
+/-- Oracle-routing lens from LogUp's retained outer state to ArkLib's generic Sumcheck state,
+instantiating the new `OracleStatement.OracleLens` API (#433).
+
+The LogUp embedded sumcheck is a *virtual* oracle reduction: the inner generic-Sumcheck oracle is
+the single batched polynomial `Q` (indexed by `Unit`), whereas the outer oracle family
+`OStmtAfterOuter` is the LogUp lookup oracles (table, columns, multiplicity, helpers). The
+value-level transport is exactly `logupSumcheckContextLens.stmt` (reused verbatim via `toLens`, so
+all soundness / completeness machinery keeps applying), and the routing data is:
+
+- `projStmt` / `liftStmt`: the non-oracle projection (enter the sumcheck with the zero-sum claim and
+  no prior challenges) and lift (the top-level LogUp protocol returns only `Unit`), matching
+  `logupSumcheckContextLens.stmt`'s statement shape.
+- `simOStmt`: answers each inner `Q`-evaluation query at a point `r : Fin n → F` by honestly
+  querying the *outer* LogUp oracles at `r` (the table, columns, multiplicity, and helper oracles),
+  assembling their point evaluations into `PointEvaluations`, and returning
+  `qAtPoint … r …` — the verifier's final check value `Q(L_H(r,z), m(r), φᵢ(r), hₖ(r))` from paper
+  equation (19). This is the value the honest `Q` polynomial takes (cf. `LogupSumcheckBridge.finalEval`),
+  reading `x, z, λ` from the outer non-oracle statement via `ReaderT`.
+- `embedOStmt` / `hEqOStmt`: the full LogUp protocol leaves no output oracle statements
+  (`OutputOracleIdx = Fin 0`), so the output-side embedding is the (vacuous) empty embedding. -/
+noncomputable def logupSumcheckOracleLens [Fintype F] [DecidableEq F] [SampleableType F] :
+    OracleStatement.OracleLens oSpec
+      (StmtAfterOuter F n M params) StmtOut
+      (LogupSumcheckStmtIn F n M params) (LogupSumcheckStmtOut F n M params)
+      (OStmtAfterOuter F n M params) OStmtOut
+      (LogupSumcheckOracleStatement F n M params)
+      (LogupSumcheckOracleStatement F n M params)
+      (logupSumcheckPSpec F n M params) where
+  toLens := (logupSumcheckContextLens F n M params).stmt
+  projStmt := fun _ => logupInitialSumcheckStatement F n M params
+  liftStmt := fun _ _ => ()
+  simOStmt := fun q =>
+    match q with
+    | ⟨(), r⟩ => ReaderT.mk fun stmt => do
+        let m : F ← query (spec := [OStmtAfterOuter F n M params]ₒ)
+          (⟨.multiplicity, r⟩ : [OStmtAfterOuter F n M params]ₒ.Domain)
+        let t : F ← query (spec := [OStmtAfterOuter F n M params]ₒ)
+          (⟨.input .table, r⟩ : [OStmtAfterOuter F n M params]ₒ.Domain)
+        let colList : List F ← (List.finRange M).mapM (fun i =>
+          (query (spec := [OStmtAfterOuter F n M params]ₒ)
+            (⟨.input (.column i), r⟩ : [OStmtAfterOuter F n M params]ₒ.Domain) :
+            OracleComp (oSpec + [OStmtAfterOuter F n M params]ₒ) F))
+        let helperList : List F ← (List.finRange params.numGroups).mapM
+          (fun (k : Fin params.numGroups) =>
+            (query (spec := [OStmtAfterOuter F n M params]ₒ)
+              (show [OStmtAfterOuter F n M params]ₒ.Domain from ⟨.helpers, ⟨k, r⟩⟩) :
+              OracleComp (oSpec + [OStmtAfterOuter F n M params]ₒ) F))
+        let evals : PointEvaluations F M params.numGroups :=
+          { multiplicity := m
+            table := t
+            columns := fun i => colList.getD i.val 0
+            helpers := fun k => helperList.getD k.val 0 }
+        pure (show F from qAtPoint (canonicalGroups params) stmt.xChallenge stmt.zChallenge r
+          stmt.batchingScalars evals)
+  embedOStmt := Function.Embedding.ofIsEmpty
+  hEqOStmt := fun i => Fin.elim0 i
+
 /-- The embedded LogUp sumcheck phase, obtained by lifting ArkLib's generic Sumcheck reduction
-through the LogUp-to-Sumcheck context lens. -/
+through the LogUp-to-Sumcheck context lens.
+
+Migrated to the new `OracleReduction.liftContext` signature (#433): the value-level context lens
+`logupSumcheckContextLens` drives the prover, threaded alongside the oracle-routing
+`stmtLens := logupSumcheckOracleLens` (carrying the `simOStmt` / `embedOStmt` data). -/
 noncomputable def sumcheckOracleReduction [SampleableType F] :
     OracleReduction oSpec (StmtAfterOuter F n M params) (OStmtAfterOuter F n M params) Unit
       (StmtOut) (OStmtOut) Unit
       (logupSumcheckPSpec F n M params) :=
-  let lens :
-      OracleContext.Lens.{0, 0, 0, 0}
-        (StmtAfterOuter F n M params) StmtOut
-        (LogupSumcheckStmtIn F n M params) (LogupSumcheckStmtOut F n M params)
-        (OStmtAfterOuter F n M params) OStmtOut
-        (LogupSumcheckOracleStatement F n M params)
-        (LogupSumcheckOracleStatement F n M params)
-        Unit Unit Unit Unit :=
-    logupSumcheckContextLens F n M params
   (logupConcreteSumcheckOracleReduction oSpec F n M params
       (Fact.out : (-1 : F) ≠ 1)).liftContext
-    lens
+    (logupSumcheckContextLens.{0} F n M params)
+    (logupSumcheckOracleLens.{0} oSpec F n M params)
 
 end SumcheckLift
 

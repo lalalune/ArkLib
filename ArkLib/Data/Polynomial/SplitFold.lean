@@ -357,6 +357,22 @@ lemma eval_eq_sum_splitNth {n : ℕ} [NeZero n] (f : 𝔽[X]) (x : 𝔽) :
   refine Finset.sum_congr rfl (fun i _ => ?_)
   rw [eval_mul, eval_pow, eval_X, splitNth_eval_comp_pow]
 
+omit [NoZeroDivisors 𝔽] in
+/--
+Degree bound for the `n`-way fold: `(foldNth n f α).natDegree ≤ f.natDegree / n`.
+
+This is the degree-halving statement (at `n = 2`) used to track membership of a folded
+codeword in a code of half the degree bound: if `f.natDegree < 2^d` then
+`(foldNth 2 f α).natDegree ≤ f.natDegree / 2 < 2^(d-1)` (for `d ≥ 1`).
+It follows directly from `splitNth_degree_le` (each component has degree `≤ f.natDegree / n`)
+and the fact that scaling by `C (α^i)` and summing does not increase the degree bound.
+-/
+lemma foldNth_natDegree_le {n : ℕ} [NeZero n] (f : 𝔽[X]) (α : 𝔽) :
+    (foldNth n f α).natDegree ≤ f.natDegree / n := by
+  unfold foldNth
+  refine natDegree_sum_le_of_forall_le _ _ (fun i _ => ?_)
+  exact le_trans (natDegree_C_mul_le _ _) splitNth_degree_le
+
 end Polynomial
 
 namespace Polynomial

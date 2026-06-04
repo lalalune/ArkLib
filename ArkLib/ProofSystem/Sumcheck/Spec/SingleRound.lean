@@ -368,6 +368,46 @@ def outputRelation :
 
 variable {ι : Type} (oSpec : OracleSpec ι)
 
+/-- The oracle prover for `sendClaim`. It reads the honest oracle polynomial `p` (index `()`), sends
+it as the protocol message, and outputs the carried target together with both oracles `(p, q)`
+(indexed by `Unit ⊕ Unit`, with `q` the just-sent message). Direct construction (mirrors
+`SendClaim.oracleProver`, adapted to the carried-`R` statement). -/
+def sendClaim.oracleProver : OracleProver oSpec
+    (StmtIn R) (OStmtIn R deg) Unit
+    (StmtAfterSendClaim R) (OStmtAfterSendClaim R deg) Unit ⟨!v[.P_to_V], !v[R⦃≤ deg⦄[X]]⟩ where
+  PrvState
+  | 0 => StmtIn R × R⦃≤ deg⦄[X]
+  | 1 => StmtIn R × R⦃≤ deg⦄[X]
+  input := fun ⟨⟨target, oStmt⟩, _⟩ => (target, oStmt ())
+  sendMessage | ⟨0, _⟩ => fun ⟨target, p⟩ => pure (p, (target, p))
+  receiveChallenge | ⟨0, h⟩ => nomatch h
+  output := fun ⟨target, p⟩ => pure
+    ((target, fun x => match x with | .inl _ => p | .inr _ => p), ())
+
+/-- The oracle verifier for `sendClaim`: it carries the input target `a` as the output statement and
+performs no oracle checks. The output oracles are the input oracle `p` (index `inl ()`, `embed` to
+`Sum.inl ()`) and the prover's message `q` (index `inr ()`, `embed` to `Sum.inr ⟨0, _⟩`). -/
+def sendClaim.oracleVerifier : OracleVerifier oSpec
+    (StmtIn R) (OStmtIn R deg)
+    (StmtAfterSendClaim R) (OStmtAfterSendClaim R deg) ⟨!v[.P_to_V], !v[R⦃≤ deg⦄[X]]⟩ where
+  verify := fun target _ => pure target
+  embed := {
+    toFun := fun
+      | .inl _ => .inl ()
+      | .inr _ => .inr ⟨0, by simp⟩
+    inj' := by
+      intro a b h
+      match a, b with
+      | .inl _, .inl _ => rfl
+      | .inl _, .inr _ => simp at h
+      | .inr _, .inl _ => simp at h
+      | .inr _, .inr _ => rfl }
+  hEq := by
+    intro i
+    match i with
+    | .inl _ => rfl
+    | .inr _ => rfl
+
 def oracleReduction.sendClaim : OracleReduction oSpec (StmtIn R) (OStmtIn R deg) Unit
     (StmtAfterSendClaim R) (OStmtAfterSendClaim R deg) Unit ⟨!v[.P_to_V], !v[R⦃≤ deg⦄[X]]⟩ :=
   {
@@ -1161,16 +1201,72 @@ def extractorLens (i : Fin n) : Extractor.Lens
 
 variable {ι : Type} (oSpec : OracleSpec ι) [DecidableEq R] [SampleableType R]
 
+/-- The full `Fin n`-evaluation point that the virtual oracle-routing lens `simOStmt` uses to answer
+an inner univariate evaluation query at `pt`, summing the outer multivariate polynomial over the
+remaining coordinates.
+
+We insert the queried point `pt` at coordinate `i` and fill the other `n - 1` coordinates with the
+prior `challenges` (for the `j < i` slots) and the summation index `y` (for the rest). This mirrors
+the `∑ x ∈ (univ.map D) ^ᶠ (n - i), poly ⸨X ⦃i⦄, challenges, x⸩` shape of `oStmtLens.toFunA`, so the
+routing answers the inner univariate query exactly by the value `toFunA` would expose. -/
+def sumPoint (i : Fin n) (pt : R) (stmtIn : StatementRound R n i.castSucc)
+    (y : Fin (n - 1) → R) : Fin n → R :=
+  let h : n = n - 1 + 1 := by have := i.isLt; omega
+  ((Fin.cast h i).insertNth pt
+    (fun k => if hk : (k : ℕ) < (i : ℕ) then stmtIn.challenges ⟨k, by simpa using hk⟩ else y k))
+    ∘ Fin.cast h
+
+/-- The concrete sum-check **oracle-routing lens** instantiating the new `OracleStatement.OracleLens`
+API (#433). The value layer reuses the existing value-level lens `oStmtLens` verbatim (so all the
+soundness / completeness machinery still applies via `toLens`). The routing data is:
+
+- `projStmt`/`liftStmt`: the non-oracle projection (drop to the round `target`) and lift (snoc the new
+  challenge onto the running challenge vector), matching `oStmtLens.toFunB`'s statement shape.
+- `simOStmt`: answers each inner univariate evaluation query `⟨(), pt⟩` against the *outer*
+  multivariate oracle by `∑ y ∈ (univ.map D) ^ᶠ (n - 1), outerPoly.eval (sumPoint i pt stmtIn y)` —
+  the virtual `|D|^(n-1)`-fold summation, reading the prior `challenges` from the outer statement via
+  `ReaderT`.
+- `embedOStmt`/`hEqOStmt`: the single output oracle is the (unchanged) input oracle, so we draw it
+  from the input side (`.inl`) with definitional type coherence. -/
+noncomputable def sumcheckOracleLens (i : Fin n) :
+    OracleStatement.OracleLens oSpec
+      (StatementRound R n i.castSucc) (StatementRound R n i.succ)
+      (Simple.StmtIn R) (Simple.StmtOut R)
+      (OracleStatement R n deg) (OracleStatement R n deg)
+      (Simple.OStmtIn R deg) (Simple.OStmtOut R deg)
+      (pSpec R deg) where
+  toLens := oStmtLens R n deg D i
+  projStmt := fun stmtIn => stmtIn.target
+  liftStmt := fun outerStmtIn innerStmtOut =>
+    { target := innerStmtOut.1, challenges := Fin.snoc outerStmtIn.challenges innerStmtOut.2 }
+  simOStmt := fun q =>
+    match q with
+    | ⟨(), pt⟩ => ReaderT.mk fun stmtIn =>
+      (((univ.map D) ^ᶠ (n - 1)).toList).foldlM
+        (fun (acc : R) y => do
+          let resp ← (OracleComp.lift <| OracleSpec.query
+            (spec := [OracleStatement R n deg]ₒ)
+            (show [OracleStatement R n deg]ₒ.Domain from ⟨(), sumPoint R n i pt stmtIn y⟩) :
+            OracleComp (oSpec + [OracleStatement R n deg]ₒ) R)
+          pure (acc + resp))
+        (0 : R)
+  embedOStmt := Function.Embedding.inl
+  hEqOStmt := fun _ => rfl
+
 /-- The verifier for the `i`-th round of the sum-check protocol -/
 def verifier (i : Fin n) : Verifier oSpec
     (StatementRound R n i.castSucc × (∀ i, OracleStatement R n deg i))
     (StatementRound R n i.succ × (∀ i, OracleStatement R n deg i)) (pSpec R deg) :=
   (Simple.verifier R deg D oSpec).liftContext (oStmtLens R n deg D i)
 
-/-- The oracle verifier for the `i`-th round of the sum-check protocol -/
+/-- The oracle verifier for the `i`-th round of the sum-check protocol.
+
+Migrated to the new `OracleStatement.OracleLens` API (#433): the oracle-routing lens
+`sumcheckOracleLens` supplies the `simOStmt`/`embedOStmt` data that the value-level `oStmtLens`
+cannot express. -/
 def oracleVerifier (i : Fin n) : OracleVerifier oSpec (StatementRound R n i.castSucc)
     (OracleStatement R n deg) (StatementRound R n i.succ) (OracleStatement R n deg) (pSpec R deg) :=
-  (Simple.oracleVerifier R deg D oSpec).liftContext (oStmtLens R n deg D i)
+  (Simple.oracleVerifier R deg D oSpec).liftContext (sumcheckOracleLens R n deg D oSpec i)
 
 /-- The sum-check reduction for the `i`-th round of the sum-check protocol -/
 def reduction (i : Fin n) : Reduction oSpec
@@ -1178,11 +1274,16 @@ def reduction (i : Fin n) : Reduction oSpec
     ((StatementRound R n i.succ) × (∀ i, OracleStatement R n deg i)) Unit (pSpec R deg) :=
   (Simple.reduction R deg D oSpec).liftContext (oCtxLens R n deg D i).toContext
 
-/-- The sum-check oracle reduction for the `i`-th round of the sum-check protocol -/
+/-- The sum-check oracle reduction for the `i`-th round of the sum-check protocol.
+
+Migrated to the new `OracleReduction.liftContext` signature (#433), which takes the separate
+oracle-routing `stmtLens := sumcheckOracleLens` (carrying `simOStmt`/`embedOStmt`) alongside the
+value-level context lens. -/
 def oracleReduction (i : Fin n) : OracleReduction oSpec
     (StatementRound R n i.castSucc) (OracleStatement R n deg) Unit
     (StatementRound R n i.succ) (OracleStatement R n deg) Unit (pSpec R deg) :=
   (Simple.oracleReduction R deg D oSpec).liftContext (oCtxLens R n deg D i)
+    (sumcheckOracleLens R n deg D oSpec i)
 
 omit [SampleableType R] in
 @[simp]
