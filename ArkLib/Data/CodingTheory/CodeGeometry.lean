@@ -124,6 +124,30 @@ theorem sum_sum_codeInner_nonneg {L : ℕ} (c : Fin L → ι → α) :
   exact Finset.sum_nonneg fun p _ => sq_nonneg _
 
 omit [DecidableEq ι] in
+/-- Ordered-pair Plotkin upper bound for a finite indexed family, in total-distance
+form. This is the simplex-embedding step needed before translating to the
+Johnson-bound average-distance notation. -/
+theorem sum_sum_hammingDist_le {L : ℕ} (c : Fin L → ι → α)
+    (hq : 0 < Fintype.card α) :
+    (∑ i : Fin L, ∑ j : Fin L, (hammingDist (c i) (c j) : ℝ)) ≤
+      (L : ℝ) * (L : ℝ) * ((Fintype.card ι : ℝ) *
+        (1 - 1 / (Fintype.card α : ℝ))) := by
+  classical
+  have hpsd := sum_sum_codeInner_nonneg (ι := ι) (α := α) c
+  have hrewrite :
+      (∑ i : Fin L, ∑ j : Fin L, codeInner (c i) (c j)) =
+        ∑ i : Fin L, ∑ j : Fin L,
+          ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ)) -
+            (hammingDist (c i) (c j) : ℝ)) := by
+    refine Finset.sum_congr rfl fun i _ => ?_
+    refine Finset.sum_congr rfl fun j _ => ?_
+    exact codeInner_eq_card_mul_sub_hammingDist (c i) (c j) hq
+  rw [hrewrite] at hpsd
+  simp only [Finset.sum_sub_distrib, Finset.sum_const, Finset.card_univ, Fintype.card_fin,
+    nsmul_eq_mul] at hpsd
+  nlinarith
+
+omit [DecidableEq ι] in
 /-- **Shifted PSD.** The Gram-sum of the center-shifted embeddings
 `y_i = x_{c i} − β·x_g` is nonnegative — the form of the Plotkin inequality
 actually used in Johnson list-size arguments. -/
