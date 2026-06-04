@@ -46261,9 +46261,45 @@
           "signature": "lemma simulateQ_double_lift_query {\u03b9\u2080 \u03b9\u2081 \u03b9\u2082 : Type} {spec\u2080 : OracleSpec \u03b9\u2080}"
         },
         {
+          "doc": "`Vector.mapM` over a pushed vector factors as mapM of the prefix, then the last element. (Extracted from the proof of `Vector.support_mapM_index`.)",
+          "kind": "lemma",
+          "line": 1241,
+          "name": "Sumcheck.Spec.SingleRound.vector_mapM_push",
+          "namespace": "Sumcheck.Spec.SingleRound",
+          "short_name": "vector_mapM_push",
+          "signature": "lemma vector_mapM_push {m : Type \u2192 Type uM} [Monad m] [LawfulMonad m]"
+        },
+        {
+          "doc": "`Vector.mapM` on the empty vector is `pure`.",
+          "kind": "lemma",
+          "line": 1253,
+          "name": "Sumcheck.Spec.SingleRound.vector_mapM_empty",
+          "namespace": "Sumcheck.Spec.SingleRound",
+          "short_name": "vector_mapM_empty",
+          "signature": "lemma vector_mapM_empty {m : Type \u2192 Type uM} [Monad m] [LawfulMonad m]"
+        },
+        {
+          "doc": "`simulateQ` (into `OracleComp`) commutes with `Vector.mapM` of `OptionT` computations. The `OptionT` ascriptions are load-bearing: without them `mapM` elaborates at the carrier.",
+          "kind": "lemma",
+          "line": 1261,
+          "name": "Sumcheck.Spec.SingleRound.simulateQ_optionT_vector_mapM",
+          "namespace": "Sumcheck.Spec.SingleRound",
+          "short_name": "simulateQ_optionT_vector_mapM",
+          "signature": "lemma simulateQ_optionT_vector_mapM {\u03b9\u2081 \u03b9\u2082 : Type} {spec\u2081 : OracleSpec \u03b9\u2081}"
+        },
+        {
+          "doc": "`Vector.mapM` of pure computations collapses to `pure` of the map.",
+          "kind": "lemma",
+          "line": 1290,
+          "name": "Sumcheck.Spec.SingleRound.vector_mapM_pure_comp",
+          "namespace": "Sumcheck.Spec.SingleRound",
+          "short_name": "vector_mapM_pure_comp",
+          "signature": "lemma vector_mapM_pure_comp {m : Type \u2192 Type uM} [Monad m] [LawfulMonad m]"
+        },
+        {
           "doc": "",
           "kind": "instance",
-          "line": 1235,
+          "line": 1308,
           "name": "Sumcheck.Spec.SingleRound.extractorLens_rbr_knowledge_soundness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "extractorLens_rbr_knowledge_soundness",
@@ -46272,7 +46308,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 1296,
+          "line": 1369,
           "name": "Sumcheck.Spec.SingleRound.reduction_perfectCompleteness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "reduction_perfectCompleteness",
@@ -46281,7 +46317,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 1304,
+          "line": 1377,
           "name": "Sumcheck.Spec.SingleRound.verifier_rbrKnowledgeSoundness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "verifier_rbrKnowledgeSoundness",
@@ -46290,7 +46326,7 @@
         {
           "doc": "Completeness theorem for single-round of sum-check, obtained by transporting the completeness proof for the simplified version",
           "kind": "theorem",
-          "line": 1314,
+          "line": 1387,
           "name": "Sumcheck.Spec.SingleRound.oracleReduction_perfectCompleteness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oracleReduction_perfectCompleteness",
@@ -46299,7 +46335,7 @@
         {
           "doc": "Round-by-round knowledge soundness theorem for single-round of sum-check, obtained by transporting the knowledge soundness proof for the simplified version",
           "kind": "theorem",
-          "line": 1327,
+          "line": 1400,
           "name": "Sumcheck.Spec.SingleRound.oracleVerifier_rbrKnowledgeSoundness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oracleVerifier_rbrKnowledgeSoundness",
@@ -46308,7 +46344,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 1387,
+          "line": 1460,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.proverState",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "proverState",
@@ -46317,7 +46353,7 @@
         {
           "doc": "Prover input for the `i`-th round of the sum-check protocol, where `i < n`",
           "kind": "def",
-          "line": 1394,
+          "line": 1467,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.proverInput",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "proverInput",
@@ -46326,7 +46362,7 @@
         {
           "doc": "Prover interaction for the `i`-th round of the sum-check protocol, where `i < n`.",
           "kind": "def",
-          "line": 1400,
+          "line": 1473,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.proverRound",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "proverRound",
@@ -46335,7 +46371,7 @@
         {
           "doc": "Since there is no witness, the prover's output for each round `i < n` of the sum-check protocol is trivial",
           "kind": "def",
-          "line": 1425,
+          "line": 1498,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.proverOutput",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "proverOutput",
@@ -46344,7 +46380,7 @@
         {
           "doc": "The overall prover for the `i`-th round of the sum-check protocol, where `i < n`. This is only well-defined for `n > 0`, since when `n = 0` there is no protocol.",
           "kind": "def",
-          "line": 1432,
+          "line": 1505,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.prover",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "prover",
@@ -46353,7 +46389,7 @@
         {
           "doc": "The (non-oracle) verifier of the sum-check protocol for the `i`-th round, where `i < n + 1`",
           "kind": "def",
-          "line": 1442,
+          "line": 1515,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.verifier",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "verifier",
@@ -48783,7 +48819,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5296,
+      "declarations": 5300,
       "files": 282
     }
   }
