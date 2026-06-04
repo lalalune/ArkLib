@@ -11,6 +11,12 @@ namespace ProximityGap
 
 namespace WeightedAgreement
 
+-- Decidability instances are threaded through the sections for the agreement machinery;
+-- several statement-level lemmas do not mention them directly.
+set_option linter.unusedDecidableInType false
+set_option linter.unusedSectionVars false
+set_option linter.unusedFintypeInType false
+
 open NNReal Finset Function ProbabilityTheory ReedSolomon Uniform
 open scoped BigOperators Pointwise ProbabilityTheory
 
