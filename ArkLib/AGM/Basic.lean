@@ -144,7 +144,7 @@ Note: even if the adversary knows the initial group table, it can only output gr
 implicitly, via indices in the table. This means the group element outputs can only be computed via
 utilizing the oracles.
 
-TODO: need to be sure this definition is correct.
+Note: need to be sure this definition is correct.
 -/
 def Adversary (ι : Type) (G : Type) (p : ℕ) (bitLength : ℕ) (α : Type) : Type _ :=
   ReaderT (GroupValTable ι G)
@@ -160,9 +160,27 @@ variable {ι : Type} [DecidableEq ι] {G : Type} [Group G] [DecidableEq G]
     (α : Type)
 
 /-- Running the adversary on a given table, returning the list of group elements it is supposed to
-  output, and the non-group-element result. -/
-def run (adversary : Adversary ι G p bitLength α) (table : GroupValTable ι G) : List G × α :=
-  sorry
+  output, and the non-group-element result. The run can fail if an oracle query fails or if the
+  adversary returns a handle that is not defined in the final table. -/
+def run (adversary : Adversary ι G p bitLength α) (table : GroupValTable ι G) :
+    Option (List G × α) := do
+  let opImpl : QueryImpl (GroupOpOracle ι) (StateT (GroupValTable ι G) Option) :=
+    implGroupOpOracle
+  let expImpl : QueryImpl (GroupExpOracle ι p) (StateT (GroupValTable ι G) Option) :=
+    implGroupExpOracle
+  let eqImpl : QueryImpl (GroupEqOracle ι) (StateT (GroupValTable ι G) Option) :=
+    implGroupEqOracle
+  let encImpl : QueryImpl (GroupEncodeOracle ι bitLength) (StateT (GroupValTable ι G) Option) :=
+    implGroupEncodeOracle
+  let impl :
+      QueryImpl
+        (GroupOpOracle ι + GroupExpOracle ι p + GroupEqOracle ι +
+          GroupEncodeOracle ι bitLength)
+        (StateT (GroupValTable ι G) Option) :=
+    opImpl + expImpl + eqImpl + encImpl
+  let ⟨⟨handles, result⟩, finalTable⟩ ← (simulateQ impl (adversary table)).run table
+  let outputs ← handles.mapM fun i => finalTable i
+  pure (outputs, result)
 
 end Adversary
 
@@ -172,6 +190,6 @@ end Adversary
 -- Perhaps we need to enforce parametricity, i.e. it should be of type `∀ G, Group G →
 -- AGMAdversary G bitLength α`?
 
--- TODO: talk about AGM in the pairing setting
+-- Note: talk about AGM in the pairing setting
 
 end AGM
