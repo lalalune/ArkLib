@@ -373,12 +373,32 @@ def oracleReduction.randomQuery : OracleReduction oSpec
     (StmtAfterRandomQuery R) (OStmtAfterRandomQuery R deg) Unit ⟨!v[.V_to_P], !v[R]⟩ :=
   sorry
 
+/-- The oracle-aware statement map for `reduceClaim`: the verifier reads the *claimed* polynomial
+`q` (oracle index `inr ()`) at the challenge `chal`, returning the new context statement
+`(q.eval chal, chal)`. This is the canonical sum-check next-round target `b := q.eval r`. -/
+def reduceClaim.mapStmtO (chal : StmtAfterRandomQuery R) :
+    OracleComp (oSpec + ([OStmtAfterRandomQuery R deg]ₒ + [(!p[] : ProtocolSpec 0).Message]ₒ))
+      (StmtOut R) := do
+  let resp ← (OracleComp.lift <| OracleSpec.query
+    (spec := [OStmtAfterRandomQuery R deg]ₒ)
+    (show [OStmtAfterRandomQuery R deg]ₒ.Domain from ⟨Sum.inr (), chal⟩) :
+    OracleComp (oSpec + ([OStmtAfterRandomQuery R deg]ₒ + [(!p[] : ProtocolSpec 0).Message]ₒ)) R)
+  pure (resp, chal)
+
+/-- The pure specification of `reduceClaim.mapStmtO`: directly evaluate the claimed polynomial. -/
+@[reducible, simp]
+def reduceClaim.mapStmtO_spec (chal : StmtAfterRandomQuery R)
+    (oStmt : ∀ i, OStmtAfterRandomQuery R deg i) : StmtOut R :=
+  ((oStmt (Sum.inr ())).1.eval chal, chal)
+
 def oracleReduction.reduceClaim : OracleReduction oSpec
     (StmtAfterRandomQuery R) (OStmtAfterRandomQuery R deg) Unit
-    (StmtOut R) (OStmtOut R deg) Unit !p[] := by
-  refine ReduceClaim.oracleReduction oSpec
-    ?_ (fun _ _ => ()) (Function.Embedding.inl) (by simp)
-  · simp; sorry
+    (StmtOut R) (OStmtOut R deg) Unit !p[] :=
+  ReduceClaim.oracleReductionO (oSpec := oSpec)
+    (mapStmtO := reduceClaim.mapStmtO R deg oSpec)
+    (mapStmtO_spec := reduceClaim.mapStmtO_spec R deg)
+    (mapWit := fun _ _ => ())
+    (embedIdx := Function.Embedding.inl) (hEq := by simp)
 
 def oracleReduction : OracleReduction oSpec (StmtIn R) (OStmtIn R deg) Unit
     (StmtOut R) (OStmtOut R deg) Unit (pSpec R deg) :=
@@ -414,8 +434,7 @@ theorem oracleReduction_perfectCompleteness :
       · sorry
       · sorry
     · sorry
-  · simp [oracleReduction.reduceClaim]
-    refine ReduceClaim.oracleReduction_completeness _ _ ?_
+  · -- `reduceClaim` is the oracle-aware variant; use `oracleReductionO_completeness`.
     sorry
 
 theorem oracleVerifier_rbrKnowledgeSoundness [Fintype R] :
