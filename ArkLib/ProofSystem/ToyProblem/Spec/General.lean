@@ -857,11 +857,12 @@ theorem oracleReduction_perfectCompleteness
   -- The honest prover writes `proverResult.1.messages ⟨1,_⟩ = fun j ↦ M 0 j + γ · M 1 j`
   -- (round-1 `Transcript.concat` of the honest message) and the two challenge accessors are
   -- the sampled `γ, xs`. Reduce the accessors so the `if` condition matches `hAcc`.
-  have hIf : ∀ (γc : F) (xsc : Fin t → ι),
-      (if accepts (k := k) (t := t) (encode := (encode : (Fin k → F) → (ι → F)))
-            stmt oStmt γc (fun j ↦ M 0 j + γc * M 1 j) xsc
-        then (pure () : OptionT (OracleComp []ₒ) Unit) else failure) = pure () :=
-    fun γc xsc => if_pos (hAcc γc xsc)
+  -- NOTE (main-merge drift): the original scaffold introduced a local `hIf` (the honest-`accepts`
+  -- `if`-collapse fact) for use in the two support-membership peels below. Those peels broke on
+  -- the merge's `liftM`/`addLift` term-representation change and are now stubbed (`sorry`), leaving
+  -- `hIf` unused — and, being unused, its `OptionT (OracleComp []ₒ) Unit` type left `OracleComp`'s
+  -- universes unconstrained ("failed to infer universe levels"). It is dropped; the underlying
+  -- fact remains available as `hAcc` for whoever completes the two peels.
   refine ⟨?_, ?_⟩
   · -- No failure: peel the challenge / message samples; the `if` collapses to `pure ()`.
     rw [OptionT.probFailure_eq, OptionT.run_mk]
@@ -878,13 +879,16 @@ theorem oracleReduction_perfectCompleteness
     rw [mem_support_bind_iff] at hmem
     obtain ⟨⟨x, s''⟩, hx, hs⟩ := hmem
     -- Peel the prover-run `liftM (g <$> body)`: it is `OptionT.lift`, so `x = some (g result)`.
-    rw [simulateQ_optionT_lift] at hx
-    erw [simulateQ_map] at hx
-    rw [OptionT.run_mk, StateT.run_map] at hx
-    simp only [support_map, Set.mem_image] at hx
-    obtain ⟨⟨tr, sₜ⟩, htr, hxeq⟩ := hx
-    obtain ⟨rfl, rfl⟩ := Prod.mk.inj hxeq
-    trace_state
+    -- NOTE (main-merge drift): upstream changes brought in by the merge now elaborate the
+    -- prover-run as `simulateQ (impl.addLift challengeQueryImpl) (liftM …)` rather than
+    -- `simulateQ impl (OptionT.lift …)`. `liftM` over `OptionT` is `OptionT.lift`, so we first
+    -- normalise it before applying the `simulateQ_optionT_lift` peel.
+    simp only [liftM, monadLift, MonadLift.monadLift, simulateQ_optionT_lift] at hx
+    -- After the `OptionT.lift` peel the term shape (`StateT.run (OptionT.lift …)`) no longer
+    -- matches the original `OptionT.run_mk`/`StateT.run_map` chain — another knock-on of the
+    -- merge's `liftM`/`addLift` representation change. This `no-failure` support-membership peel
+    -- was already incomplete (it terminated in `sorry`), so the remainder is the same single
+    -- `sorry`; the file's sorry count is unchanged.
     sorry
   · -- Event holds: same peel; the output statement matches and `accepts` fires.
     intro x hx
