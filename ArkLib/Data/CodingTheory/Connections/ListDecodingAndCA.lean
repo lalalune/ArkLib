@@ -108,6 +108,15 @@ theorem linear_listSize_to_epsMCA_gcxk25
       ENNReal.ofReal
         (((L : ℝ) ^ 2 * δ * Fintype.card ι + 1 / η) / Fintype.card F) := by
   sorry -- ABF26-T5.1; external admit [GCXK25 Thm 3].
+  -- Missing ingredient: the GCXK25 list-decoding→MCA amplification. Concretely, a
+  -- second-moment (pair-counting) bound on `epsMCA`'s bad event: for each `γ`, an
+  -- mcaEvent witness at radius `1-√(1-δ+η)` forces ≥2 distinct codewords in the
+  -- δ-list `closeCodewordsRel C (line) δ` agreeing on a (1-δ+η)-fraction; bounding the
+  -- number of such "colliding γ" by `L²·δ·n` (Johnson pair count, |Λ|≤L) and dividing by
+  -- |F| gives the RHS. In-tree this needs: (i) Λ(C,δ)≤L ⇒ the per-γ collision set has
+  -- size ≤ L²·δ·n, and (ii) the 1/η additive slack term from the η-margin. Neither the
+  -- pair-collision counting nor the η-slack accounting is in-tree (Johnson pair counting
+  -- exists in JohnsonBound/ but in a non-Λ formulation). Genuinely external.
 
 end ListImpliesMCA
 
@@ -142,6 +151,13 @@ theorem rs_epsCA_small_implies_lambda_lt_F_bchks25
           ENNReal.ofReal (1 / (2 * Fintype.card ι))) :
     Lambda ((ReedSolomon.code domain k : Set (ι → F))) δ < (Fintype.card F : ℕ∞) := by
   sorry -- ABF26-T5.2; external admit [BCHKS25 Thm 1.9].
+  -- Missing ingredient: BCHKS25's CA→list contrapositive for RS. The proof negates
+  -- `|Λ(C,δ)| ≥ |F|`: if ≥|F| codewords are δ-close to some `w`, an averaging/interpolation
+  -- argument over the |F| affine shifts produces a line `w + γ·v` that is δ_fld-close on a
+  -- (1-δ_fld)-fraction for ≥ 1/(2n)·|F| values of γ while the pair fails δ_int-joint-proximity,
+  -- forcing `epsCA(δ_fld=δ+2/n, δ_int=1-ρ-1/n) ≥ 1/(2n)`. This requires the RS-specific
+  -- interpolation lemma (BCKHS25/Interpolation.lean has the collinear-proximates engine but
+  -- not the |F|-codewords⇒bad-line counting). Genuinely external.
 
 /-- **ABF26 Theorem 5.3 [CS25 Theorem 2].** CA error converts to list size for related RS.
 
@@ -176,6 +192,13 @@ theorem rs_epsCA_implies_lambda_extended_cs25
                 ((ReedSolomon.code domain k : Set (ι → F)))
                 δ.toNNReal δ.toNNReal).toReal) : ℕ∞) := by
   sorry -- ABF26-T5.3; external admit [CS25 Thm 2].
+  -- Missing ingredient: CS25's degree-lift list-size formula. The bound on Λ(C⁺,δ) for
+  -- C⁺ = RS[F,L,k+1] in terms of ε_ca(C,δ) uses that a codeword of C⁺ δ-close to `w`
+  -- restricts (mod the degree-k subcode C) to a near-codeword whose multiplicity is
+  -- controlled by the CA error of C; the ⌈|F|/(1-η)·ε_ca⌉ count is the number of degree-(k+1)
+  -- extensions surviving the η-margin. Needs: the RS degree-filtration C ⊂ C⁺ list map and
+  -- the CS25 multiplicity bound (not in-tree; ReedSolomon.lean has the code but not the
+  -- degree-lift list correspondence). Genuinely external.
 
 end CAImpliesList
 
@@ -221,6 +244,13 @@ theorem rs_epsCA_separation_bgks20
         ((1 - ρ ^ ((2 : ℝ) / 3)).toNNReal)) ≥
       ENNReal.ofReal (1 - 1 / Fintype.card F) := by
   sorry -- ABF26-T5.4; external admit [BGKS20 Lem 3.3].
+  -- Missing ingredient: BGKS20's char-2 full-domain RS separation construction. The
+  -- ε_ca ≥ 1-1/|F| LOWER bound at radius 1-ρ^{1/3} (ρ=1/8) requires exhibiting a stack
+  -- (f₀,f₁) such that for all but one γ∈F the line f₀+γ·f₁ is (1-ρ^{1/3})-close to RS while
+  -- (f₀,f₁) is NOT jointly close — i.e. a near-certain proximity-gap failure. The witness
+  -- uses the char-2 Frobenius/subfield structure of RS[F,F,|F|/8] (BGKS20 §3.3). This is a
+  -- code-CONSTRUCTION lower bound (the trivial `epsCA ≤ 1` gives the wrong direction); no
+  -- in-tree machinery manufactures the bad stack. Genuinely external.
 
 end ListVsCAseparation
 
