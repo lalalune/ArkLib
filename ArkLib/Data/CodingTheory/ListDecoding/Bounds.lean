@@ -398,7 +398,16 @@ rate `ρ`. For any `η > 0` with `1/η < s`:
   `|Λ(C, 1 - ρ·s/(s - 1/η + 1) - η)| ≤ (s·(1-ρ) + 1 - 1/η) / (η·(s + 1 - 1/η))`
 
 When `η ≥ √(3/s)`, the bound simplifies to `|Λ(C, 1 - ρ - η)| ≤ 1/η`. Derives from
-T3.4 + T2.18 (FRS is τ-subspace-design). Admitted as an external result. -/
+T3.4 + T2.18 (FRS is τ-subspace-design). Admitted as an external result.
+
+**STATUS: NEEDS_CLASSICAL.** [CZ25 Cor 2.21] is the *corrected, provable* folded-RS
+capacity list-decodability result via subspace designs — NOT the disproven up-to-capacity
+conjecture for plain Reed-Solomon proximity gaps / DEEP-FRI list-decodability (those are
+FALSE per eprint.iacr.org/2025/2046 and live elsewhere). Folded RS attains capacity by the
+subspace-design argument (arXiv 2601.10047). It is unformalized: mathlib has no folded-RS /
+subspace-design / list-decoding API, so the `sorry` is a ground-up formalization task, not
+a port, and follows once T3.4 + T2.18 are formalized.
+See `research/formal/arklib-proof-research-2026-06.md`. -/
 theorem frs_list_decoding_capacity_cz25
     {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
     {F : Type} [Field F] [Fintype F] [DecidableEq F]
