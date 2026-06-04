@@ -81,7 +81,9 @@ def myAttack : SecurityUpperBound koalaIRS where
     sorry
 ```
 
-- `bits : ℝ` (not `ℕ`), so fractional bits like `116.5` are representable.
+- `bits : ℝ` (not `ℕ`) because the security level *is* `-log₂(soundness error)`,
+  a real for any error in `(0,1)` — and ABF26's own §6.3 figures are fractional
+  (the attack is `2^(-116.49)`, the MCA branch `≈ 2^(-71.5)`).
 - `(2 : ℝ≥0) ^ (-bits)` is `NNReal.rpow` (real exponent).
 - A better lower-bound submission *raises* `X`; a better attack *lowers* `Y`.
 

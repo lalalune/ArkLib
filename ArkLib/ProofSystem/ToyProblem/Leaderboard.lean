@@ -331,7 +331,10 @@ submission is an *inhabitant*. -/
 and a proof that the simplified-IOR soundness error is `≤ 2^(-bits)` — i.e. "we
 can *prove* at least `bits` bits of security." The intended proof route is
 `soundnessError ≤ toySoundnessError ≤ 2^(-bits)` via [ABF26] Lemmas 6.10 / 6.6.
-`bits : ℝ` so fractional bits (e.g. `116.5`) are representable. -/
+`bits : ℝ` because the security level *is* `bitsOfSecurity e = -log₂ e`, a real for
+any soundness error `e ∈ (0,1)` (almost never an integer); the §6.3 figures the
+anchors quote are themselves fractional (the attack is `2^(-116.49)`, the C6.9 MCA
+branch `≈ 2^(-71.5)`, the spot-check `(1-δ)^128 ≈ 2^(-65.9)`). -/
 structure SecurityLowerBound (p : ToyParams) where
   /-- The provable security level, in bits. -/
   bits : ℝ
