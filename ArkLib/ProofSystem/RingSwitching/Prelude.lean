@@ -1447,4 +1447,53 @@ lemma simulateQ_simOracle2_query {ι : Type} {oSpec : OracleSpec ι}
 
 end SimOracle2MessageQuery
 
+/-! ## `fixFirstVariablesOfMQP` evaluation bridge
+
+The final sumcheck step's completeness needs to evaluate the round polynomial
+`H = projectToMidSumcheckPoly t' m (Fin.last ℓ') challenges` (= `fixFirstVariablesOfMQP` of
+`m · t'` at *all* `ℓ'` variables) at the 0-variate point and recognise it as `(m · t')(challenges)`.
+The two lemmas below provide that bridge generically. -/
+section FixVarsEval
+open MvPolynomial
+
+/-- **`sumAlgEquiv` evaluation.** Evaluating the curried polynomial `sumAlgEquiv p` by `eval x` on
+the outer (`S₁`) variables and `eval challenges` on the inner (`S₂`) coefficient ring equals
+evaluating `p` directly at the combined point `Sum.elim x challenges`. Proven by `induction_on`,
+using `sumToIter` (`= sumAlgEquiv` by `rfl`) on the generators. -/
+theorem sumAlgEquiv_eval₂ {L : Type} [CommRing L] {S₁ S₂ : Type} [Fintype S₁]
+    (x : S₁ → L) (challenges : S₂ → L) (p : MvPolynomial (S₁ ⊕ S₂) L) :
+    eval₂ (eval challenges) x ((sumAlgEquiv L S₁ S₂) p) = eval (Sum.elim x challenges) p := by
+  induction p using MvPolynomial.induction_on with
+  | C a =>
+    rw [show ((sumAlgEquiv L S₁ S₂) (C a)) = sumToIter L S₁ S₂ (C a) from rfl, sumToIter_C,
+      MvPolynomial.eval₂_C, MvPolynomial.eval_C, MvPolynomial.eval_C]
+  | add p q hp hq =>
+    simp only [map_add, MvPolynomial.eval₂_add, MvPolynomial.eval_add, hp, hq]
+  | mul_X p s hp =>
+    simp only [map_mul, MvPolynomial.eval₂_mul, MvPolynomial.eval_mul, hp]
+    congr 1
+    cases s with
+    | inl a => rw [show ((sumAlgEquiv L S₁ S₂) (X (Sum.inl a))) = sumToIter L S₁ S₂ (X (Sum.inl a))
+        from rfl, sumToIter_Xl, MvPolynomial.eval₂_X, MvPolynomial.eval_X, Sum.elim_inl]
+    | inr b => rw [show ((sumAlgEquiv L S₁ S₂) (X (Sum.inr b))) = sumToIter L S₁ S₂ (X (Sum.inr b))
+        from rfl, sumToIter_Xr, MvPolynomial.eval₂_C, MvPolynomial.eval_X, MvPolynomial.eval_X,
+        Sum.elim_inr]
+
+/-- **`fixFirstVariablesOfMQP` evaluation.** Evaluating the polynomial obtained by fixing the last
+`v` variables of `poly` to `challenges` (then `eval x` on the survivors) equals evaluating `poly`
+directly at the recombined point (survivors from `x`, fixed coords from `challenges`, via the same
+`finCongr`/`finSumFinEquiv` reindexing used in `fixFirstVariablesOfMQP`). -/
+theorem fixFirstVariablesOfMQP_eval {L : Type} [CommRing L] (ℓ : ℕ) (v : Fin (ℓ+1))
+    (poly : MvPolynomial (Fin ℓ) L) (challenges : Fin v → L) (x : Fin (ℓ - v) → L) :
+    eval x (fixFirstVariablesOfMQP ℓ v poly challenges)
+      = eval (fun i => Sum.elim x challenges
+          (((finCongr (by rw [Nat.add_comm]; exact (Nat.add_sub_of_le v.is_le).symm)).trans
+            (finSumFinEquiv (m := ℓ - v) (n := v).symm)) i)) poly := by
+  unfold fixFirstVariablesOfMQP
+  dsimp only
+  rw [MvPolynomial.eval_map, sumAlgEquiv_eval₂, eval_rename]
+  rfl
+
+end FixVarsEval
+
 end RingSwitching
