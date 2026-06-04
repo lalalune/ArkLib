@@ -1681,6 +1681,78 @@ theorem correlatedAgreement_affine_curves_of_strict_eval_polys {k : ℕ}
     exact False.elim (hnot hδ)
 
 omit [DecidableEq ι] in
+/-- Final curve theorem assuming the strict Johnson branch supplies
+coefficient-polynomial dependence, the native output shape of the §5
+list-decoding chain. The non-strict square-root boundary remains explicit. -/
+theorem correlatedAgreement_affine_curves_of_strict_coeff_polys_and_boundary {k : ℕ}
+    {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    [NeZero deg]
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hStrictCoeff : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      δ < 1 - ReedSolomon.sqrtRate deg domain →
+      ∀ P : F → Polynomial F,
+        (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+          (P z).natDegree < deg ∧
+            δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+              (P z).eval ∘ domain) ≤ δ) →
+          ∃ B : ℕ → Polynomial F,
+            (∀ j < deg, (B j).natDegree < k + 1) ∧
+              ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+                ∀ j < deg, (P z).coeff j = (B j).eval z)
+    (hBoundary : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      ¬δ < 1 - ReedSolomon.sqrtRate deg domain →
+      jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u)) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  refine correlatedAgreement_affine_curves_of_list_decoding_obligations
+    (deg := deg) (domain := domain) (δ := δ) hδ ?_ hBoundary
+  intro hk u hprob hJ hsqrt
+  exact RS_jointAgreement_of_prob_gt_strict_johnson_and_coeff_polys
+    (deg := deg) (domain := domain) (δ := δ) hk u hprob hJ hsqrt
+    (hStrictCoeff hk u hprob hJ hsqrt)
+
+omit [DecidableEq ι] in
+/-- Strict square-root-radius capstone phrased in the coefficient-polynomial
+language of §5. In the strict range, the closed-boundary branch is impossible. -/
+theorem correlatedAgreement_affine_curves_of_strict_coeff_polys {k : ℕ}
+    {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    [NeZero deg]
+    (hδ : δ < 1 - ReedSolomon.sqrtRate deg domain)
+    (hStrictCoeff : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      ∀ P : F → Polynomial F,
+        (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+          (P z).natDegree < deg ∧
+            δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+              (P z).eval ∘ domain) ≤ δ) →
+          ∃ B : ℕ → Polynomial F,
+            (∀ j < deg, (B j).natDegree < k + 1) ∧
+              ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+                ∀ j < deg, (P z).coeff j = (B j).eval z) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  refine correlatedAgreement_affine_curves_of_strict_coeff_polys_and_boundary
+    (deg := deg) (domain := domain) (δ := δ) (le_of_lt hδ) ?_ ?_
+  · intro hk u hprob hJ _hsqrt P hP
+    exact hStrictCoeff hk u hprob hJ P hP
+  · intro _hk _u _hprob _hJ hnot
+    exact False.elim (hnot hδ)
+
+omit [DecidableEq ι] in
 /-- Theorem 1.5 (Correlated agreement for low-degree parameterised curves) in [BCIKS20].
 
 Take a Reed-Solomon code of length `ι` and degree `deg`, a proximity-error parameter
