@@ -109,15 +109,67 @@ of `S_{γ₀}`, i.e. for **every** `i ∈ S_{γ₀}` a *second* aligned-mcaEvent
 `i ∈ S_γ` (two zeros of the affine `g_i(γ) := (u₁-f₁) i + γ·(u₂-f₂) i` pin `u₁ i = f₁ i`,
 `u₂ i = f₂ i`). Note `pairJointAgreesOn` is **antitone** in `S`, so the easy 2-γ argument —
 which only yields agreement on the *intersection* `S_γ ∩ S_{γ'} ⊆ S_{γ₀}` — does **not**
-contradict `¬ pairJointAgreesOn` on the larger `S_{γ₀}` (wrong direction). The genuine GG25
-content is the counting that `> n` aligned points force per-position double-coverage of
-`S_{γ₀}` (each `S_γ` misses `≤ δn` positions; the `n+1`-point budget closes the cover). This
-coupling of the line-decode alignment set `G` with the per-γ `mcaEvent` witness sets is the
-external [GG25 Thm 3.5] combinatorics and is the sole residual admit (the unique-decoding
-restriction does not shortcut it: under UDR the close codeword is unique, forcing
-`u₁+γ·u₂ = w_γ`, but the antitone-`S` obstruction above is unchanged).
+contradict `¬ pairJointAgreesOn` on the larger `S_{γ₀}` (wrong direction).
 
-Admitted residual: the GG25 multi-γ coverage count; the U-construction reduction above is
+## WALL (2026-06-04): the counting reduction is mathematically FALSE; only the
+## Guruswami–Sudan bivariate route closes it, and that route is unavailable for a black-box `a`.
+
+Exact residual goal (via `extract_goal`): `False`, with the hypotheses
+`hgt : a/|F| < Pr_γ[mcaEvent C δ f₁ f₂ γ]`, the U-construction facts (`hU_mem`, `hU_close`,
+`hPr_close`), and the line-decoder output `u₁ u₂ ∈ C`,
+`hPr_align : (n+1)/|F| ≤ Pr_γ[U γ = u₁ + γ·u₂]`.
+
+The reduction of this `False` to a **pure-Nat double-coverage count** is:
+let `H := {γ ∈ G : mcaEvent fires}` (`|H| ≥ n+1` after clearing the `|F|` denominators),
+each `S_γ` (`γ ∈ H`) missing `≤ m := ⌊δ·n⌋` positions of `T := S_{γ₀}`; the target is
+`∀ i ∈ T, 2 ≤ |{γ ∈ H : i ∈ S_γ}|` (per-position double coverage of the *full* `T`).
+**This target is false whenever `m ≥ 1`** (i.e. `δ ≥ 1/n`, the only non-degenerate regime):
+take every `γ ∈ H` to miss the **same** position `i₀ ∈ T` and cover `T \ {i₀}` — each then
+misses exactly `1 ≤ m` position of `T`, `|H|` may be arbitrarily large, yet `i₀` is covered
+`0 < 2` times, so the affine `g_{i₀}` gets only one equation and `(u₁ u₂)` is unpinned at `i₀`.
+A kernel-checked counterexample to the reduction target lives at
+`ArkLib/Data/CodingTheory/ProximityGap/LineDecodingCounting.lean`
+(`double_coverage_counterexample`, axioms `[propext, Classical.choice, Quot.sound]`;
+the constant-`S` fiber is beta-reduced before `decide`, since a free `γ` blocks the kernel
+decision procedure — the earlier `intro γ _; decide` form did *not* compile).
+Equivalently: the docstring's earlier claim that "the `n+1`-point budget closes the cover"
+is **wrong** — the per-position miss is *not* bounded by the per-γ total miss `δn`, so the
+`n+1`-budget bounds the *average* coverage, never the *minimum*. Averaging gives double
+coverage of *most* of `T`, but `pairJointAgreesOn` is antitone and needs *all* of `T`.
+
+Five genuinely-different skeletons, all dying at the same one-linear-equation obstruction:
+  S1 (per-position counting on `T`): false, see counterexample above.
+  S2 (global probability count): `|mcaEvent set| > a` and `|H| ≥ n+1` are facts about
+     distinct overlapping γ-sets with no structural link; no contradiction.
+  S3 (single-γ codeword-forcing / UDR): under `2δn < d_min`, `mcaEvent` at `γ` forces the
+     witness `w_γ = combined`, but only the *combined* equation on `S_γ \ S'` (cf. the
+     letter-exact analysis at `Errors.lean` L609–645,
+     `mcaEvent_witness_eq_combined_of_jointProximity_udr`); the per-coordinate split is
+     exactly what is missing — UDR does not shortcut it.
+  S4 (aligned∩mcaEvent direct at a single γ): for `γ ∈ H` with `mcaEvent`, `(u₁,u₂)` is a
+     joint-pair candidate but agrees with `(f₁,f₂)` on `S_γ` only via the combined equation
+     `u₁+γu₂ = f₁+γf₂`; identical obstruction to S3.
+  S5 (re-instantiate line-decodability at a perturbed `(f₁',f₂')`): no second instance
+     produces the missing per-coordinate datum.
+
+The genuine [GG25 Thm 2 / eprint 2025/2110; BCIKS20 Thm 5.1] proof routes through the
+Guruswami–Sudan list decoder of `f₀ + Z·f₁` over the rational-function field `F(Z)`: the
+aligned γ's are the roots of a single bivariate interpolation polynomial `Q(X,Y)` whose
+`Y`-degree `ℓ` is the list size, and `a = |E| ≤ ℓ⁷·(ρn)²/3` is *defined by* that polynomial.
+That is the in-tree `WeightedAgreement.list_agreement_on_curve_implies_correlated_agreement_bound`
+machinery (the `badCoord_match_card_le` degree-`l+1` fiber bound, `sum_filter_sum_eq`
+double-counting). Importing it here would require `a` to carry the GS degree structure; the
+present statement abstracts `a` as a *free* `ℝ≥0`, severing that link. Closing this `sorry`
+faithfully therefore requires **strengthening the statement** to expose the GS interpolation
+(an `a := ℓ⁷(ρn)²/3`-shaped hypothesis with a `ReedSolomon.code`/Johnson-bound side condition),
+i.e. a documented statement REPAIR, *not* a leaf proof of the present black-box form. Until
+that repair lands (it touches `LineDecodable`'s signature and the downstream MCA call sites),
+the multi-γ coverage count stays the sole admit and the U-construction reduction above is
+machine-checked.
+
+Admitted residual: the GG25 multi-γ coverage count (precisely characterized as a wall above;
+the counting reduction is refuted by `LineDecodingCounting.double_coverage_counterexample`,
+the faithful route needs the GS-degree statement repair). The U-construction reduction is
 machine-checked. -/
 theorem lineDecodable_imp_epsMCA_le
     (C : ModuleCode ι F A) (δ : ℝ≥0) (a : ℝ≥0)

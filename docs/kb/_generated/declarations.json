@@ -15968,7 +15968,7 @@
         {
           "doc": "**ABF26 Theorem 4.21 [GG25 Thm 3.5].** If `C` is `(\u03b4, a, n+1)`-line-decodable, then its mutual correlated agreement error is bounded by `a / |F|`: `LineDecodable (F := F) C \u03b4 a (n+1) \u2192 \u03b5_mca(C, \u03b4) \u2264 a / |F|` where `n = |\u03b9|`. The proof in [GG25] proceeds by taking the line-decoder's witness pair `(u\u2081, u\u2082)` and showing that the `\u0394_S = 0` witness set of the MCA event must coincide with the `\u03b3`-set on which `U \u03b3 = u\u2081 + \u03b3 \u2022 u\u2082`, which has measure `\u2265 (n+1)/|F|`. Because that pair has at most `n` exceptional positions on every fold, the alignment lifts to a joint-pair witness, contradicting the `\u00ac pa",
           "kind": "theorem",
-          "line": 122,
+          "line": 174,
           "name": "CodingTheory.lineDecodable_imp_epsMCA_le",
           "namespace": "CodingTheory",
           "short_name": "lineDecodable_imp_epsMCA_le",
@@ -15977,11 +15977,24 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 128,
-          "name": "CodingTheory._anon_class_128",
+          "line": 180,
+          "name": "CodingTheory._anon_class_180",
           "namespace": "CodingTheory",
-          "short_name": "_anon_class_128",
+          "short_name": "_anon_class_180",
           "signature": "class classical"
+        }
+      ]
+    },
+    "ArkLib/Data/CodingTheory/ProximityGap/LineDecodingCounting.lean": {
+      "declarations": [
+        {
+          "doc": "**The double-coverage counting reduction of GG25 / ABF26 Thm 4.21 is false for `m \u2265 1`.** There exist a finite index type `\u03a6` (the field-element / `\u03b3` index), a finite domain `\u03b9`, an index finset `H \u2286 \u03a6`, per-index witness sets `S : \u03a6 \u2192 Finset \u03b9`, a target set `T \u2286 \u03b9`, a position `i\u2080 \u2208 T`, and a miss budget `m \u2265 1`, such that: * every `\u03b3 \u2208 H` misses at most `m` positions of `T` (`((univ \\ S \u03b3) \u2229 T).card \u2264 m`); * the index budget is met, `n + 1 \u2264 |H|` (here even with room to spare, `|H| = 5 \u2265 3`); * `i\u2080 \u2208 T`; yet `i\u2080` is **not** double-covered: `|{\u03b3 \u2208 H : i\u2080 \u2208 S \u03b3}| < 2`. Witnesses: `\u03a6 = Fin 5`",
+          "kind": "theorem",
+          "line": 55,
+          "name": "CodingTheory.ProximityGap.LineDecodingCounting.double_coverage_counterexample",
+          "namespace": "CodingTheory.ProximityGap.LineDecodingCounting",
+          "short_name": "double_coverage_counterexample",
+          "signature": "theorem double_coverage_counterexample :"
         }
       ]
     },
@@ -50468,8 +50481,8 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5481,
-      "files": 287
+      "declarations": 5482,
+      "files": 288
     }
   }
 }
