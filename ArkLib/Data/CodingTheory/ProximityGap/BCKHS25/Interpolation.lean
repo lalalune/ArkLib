@@ -194,7 +194,7 @@ private lemma coeff_coeff_toPolyA {da za db zb : ℕ} (v : BWIdx da za db zb →
     · simp
     · intro b _ hb
       have hne : ((j : Fin za) : ℕ) ≠ ((b : Fin za) : ℕ) := fun heq => hb (Fin.ext heq.symm)
-      simp [hne, hne.symm]
+      simp [hne.symm]
     · intro habs
       exact absurd (Finset.mem_univ _) habs
   rw [hYcoeff, Polynomial.finset_sum_coeff]
@@ -202,7 +202,7 @@ private lemma coeff_coeff_toPolyA {da za db zb : ℕ} (v : BWIdx da za db zb →
   · simp
   · intro b _ hb
     have hne : ((i : Fin da) : ℕ) ≠ ((b : Fin da) : ℕ) := fun heq => hb (Fin.ext heq.symm)
-    simp [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, hne, hne.symm]
+    simp [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, hne]
   · intro habs
     exact absurd (Finset.mem_univ _) habs
 
@@ -217,7 +217,7 @@ private lemma coeff_coeff_toPolyB {da za db zb : ℕ} (v : BWIdx da za db zb →
     · simp
     · intro b _ hb
       have hne : ((j : Fin zb) : ℕ) ≠ ((b : Fin zb) : ℕ) := fun heq => hb (Fin.ext heq.symm)
-      simp [hne, hne.symm]
+      simp [hne.symm]
     · intro habs
       exact absurd (Finset.mem_univ _) habs
   rw [hYcoeff, Polynomial.finset_sum_coeff]
@@ -225,7 +225,7 @@ private lemma coeff_coeff_toPolyB {da za db zb : ℕ} (v : BWIdx da za db zb →
   · simp
   · intro b _ hb
     have hne : ((i : Fin db) : ℕ) ≠ ((b : Fin db) : ℕ) := fun heq => hb (Fin.ext heq.symm)
-    simp [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, hne, hne.symm]
+    simp [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, hne]
   · intro habs
     exact absurd (Finset.mem_univ _) habs
 
@@ -278,7 +278,7 @@ private lemma identity_of_mulVec_eq_zero {da za db zb : ℕ} (hzb : zb = za + 1)
           rw [Finset.sum_comm]
           rw [Finset.sum_eq_single (⟨j, h⟩ : Fin za)]
           · refine Finset.sum_congr rfl fun i _ => ?_
-            simp [mul_comm, mul_assoc, mul_left_comm]
+            simp [mul_comm, mul_left_comm]
           · intro b _ hb
             have hne : ((b : Fin za) : ℕ) ≠ j := fun heq => hb (Fin.ext heq)
             refine Finset.sum_eq_zero fun i _ => ?_
@@ -296,13 +296,13 @@ private lemma identity_of_mulVec_eq_zero {da za db zb : ℕ} (hzb : zb = za + 1)
           rw [Finset.sum_eq_single (⟨j - 1, h.1⟩ : Fin za)]
           · refine Finset.sum_congr rfl fun i _ => ?_
             have hcond : (j - 1) + 1 = j := Nat.succ_pred_eq_of_pos h.2
-            simp [hcond, mul_comm, mul_assoc, mul_left_comm]
+            simp [hcond, mul_comm, mul_left_comm]
           · intro b _ hb
             have hne : ¬(((b : Fin za) : ℕ) + 1 = j) := by
               intro heq
               apply hb
               apply Fin.ext
-              show ((b : Fin za) : ℕ) = j - 1
+              change ((b : Fin za) : ℕ) = j - 1
               omega
             refine Finset.sum_eq_zero fun i _ => ?_
             simp [hne]
