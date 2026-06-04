@@ -45493,7 +45493,7 @@
         {
           "doc": "Unconditional UDR-restricted variant of `combine_theorem` ([STIR] Lemma 4.13): with `\u03b4` below the unique-decoding radius, the conclusion holds with NO dependence on the sorried full-range keystone \u2014 it cites the PROVEN `RS_correlatedAgreement_curves_uniqueDecodingRegime` / `\u2026_k_zero` instead.",
           "kind": "theorem",
-          "line": 731,
+          "line": 741,
           "name": "Combine.combine_theorem_uniqueDecodingRegime",
           "namespace": "Combine",
           "short_name": "combine_theorem_uniqueDecodingRegime",
@@ -45502,7 +45502,7 @@
         {
           "doc": "Clean single-hypothesis form of `combine_theorem_uniqueDecodingRegime`: below the unique-decoding radius, the `1 \u2212 \u221a\u03c1` bound follows from the regime-nesting comparison (`relativeUniqueDecodingRadius_lt_one_sub_sqrtRate`), so only the UDR bound and the rate-margin bound need to be assumed.",
           "kind": "theorem",
-          "line": 967,
+          "line": 977,
           "name": "Combine.combine_theorem_uniqueDecodingRegime'",
           "namespace": "Combine",
           "short_name": "combine_theorem_uniqueDecodingRegime'",
