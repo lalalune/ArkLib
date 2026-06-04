@@ -777,6 +777,321 @@ theorem mcaEvent_witness_eq_combined_of_jointProximity_udr
     exact_mod_cast h2e'
   exact eq_of_lt_dist hw_mem hcomb_mem h_lt
 
+open Classical in
+/-- **The difference stack of a jointly-proximate stack has a uniformly close line.**
+
+If `jointProximity C u δ` holds (so a codeword pair `p₀, p₁ ∈ C` agrees with `(u 0, u 1)` on a
+set `S'` of size `≥ (1-δ)·n`), then the *fixed, `γ`-independent* difference stack
+`d := (u 0 - p₀, u 1 - p₁)` has the property that for **every** `γ`, the difference line
+`d 0 + γ·d 1 = (u 0 - p₀) + γ·(u 1 - p₁)` is `δ`-close to `C` — in fact close to the zero
+codeword.
+
+Proof: on `S'` (size `≥ (1-δ)·n`) we have `p₀ = u 0` and `p₁ = u 1`, so the difference line
+vanishes there; `0 ∈ C` and `S'` is large, hence `δᵣ(diff-line, C) ≤ δ`.
+
+This is the structural fact behind the ACFY25/[Hab25] reduction: the codeword pair `(p₀, p₁)`
+realizing `jointProximity` is `γ`-independent, so the exceptional `γ` of the `mcaEvent` on a
+jointly-close `u` all live inside the (already-`δ`-close) line family of one *fixed* difference
+stack. Concretely it shows the difference stack `d` is itself jointly `δ`-close to `C` (witnessed
+by the pair `(0,0)` on `S'`), which is exactly *why* the pointwise CA body for `d` collapses to
+`0` and the count of exceptional `γ` cannot be read off without the global list-decoding
+(GS/PS) machinery — see `epsMCA_le_epsCA_add_jointlyProximateContribution`. -/
+theorem jointProximity_diffStack_line_close
+    (C : Submodule F (ι → A)) (δ : ℝ≥0) (u : WordStack A (Fin 2) ι)
+    (h_jp : jointProximity (C := (C : Set (ι → A))) (u := u) δ) :
+    ∃ p₀ ∈ (C : Set (ι → A)), ∃ p₁ ∈ (C : Set (ι → A)),
+      ∀ γ : F, δᵣ((u 0 - p₀) + γ • (u 1 - p₁), (C : Set (ι → A))) ≤ δ := by
+  classical
+  -- Extract the `γ`-independent jointAgreement witnesses `p₀, p₁` on `S'`.
+  rw [← jointAgreement_iff_jointProximity] at h_jp
+  obtain ⟨S', hS'_card, p, hp⟩ := h_jp
+  set p₀ := p 0 with hp₀_def
+  set p₁ := p 1 with hp₁_def
+  have hp₀_mem : p₀ ∈ (C : Set (ι → A)) := (hp 0).1
+  have hp₁_mem : p₁ ∈ (C : Set (ι → A)) := (hp 1).1
+  refine ⟨p₀, hp₀_mem, p₁, hp₁_mem, ?_⟩
+  intro γ
+  -- On `S'` (size ≥(1-δ)n): `p₀ = u 0`, `p₁ = u 1`, so the difference line vanishes there,
+  -- and `0 ∈ C`, giving `δᵣ(diff-line, C) ≤ δ`.
+  have h_agree_S' : ∀ j ∈ S', p₀ j = u 0 j ∧ p₁ j = u 1 j := by
+    intro j hj
+    refine ⟨?_, ?_⟩
+    · have : j ∈ Finset.filter (fun k ↦ p 0 k = u 0 k) Finset.univ := (hp 0).2 hj
+      exact (Finset.mem_filter.mp this).2
+    · have : j ∈ Finset.filter (fun k ↦ p 1 k = u 1 k) Finset.univ := (hp 1).2 hj
+      exact (Finset.mem_filter.mp this).2
+  -- The difference line vanishes on `S'`.
+  have h_zero_S' : ∀ j ∈ S', ((u 0 - p₀) + γ • (u 1 - p₁)) j = (0 : ι → A) j := by
+    intro j hj
+    obtain ⟨h0, h1⟩ := h_agree_S' j hj
+    simp only [Pi.add_apply, Pi.sub_apply, Pi.smul_apply, Pi.zero_apply]
+    rw [h0, h1]
+    simp
+  -- `0 ∈ C` and `S'` is large, so `δᵣ(diff-line, C) ≤ δ`.
+  rw [relCloseToCode_iff_relCloseToCodeword_of_minDist]
+  refine ⟨0, C.zero_mem, ?_⟩
+  rw [relCloseToWord_iff_exists_agreementCols]
+  refine ⟨S', (relDist_floor_bound_iff_complement_bound _ _ _).mpr hS'_card, ?_⟩
+  intro j
+  refine ⟨fun hj ↦ (h_zero_S' j hj), fun hne hj ↦ hne (h_zero_S' j hj)⟩
+
+open Classical in
+/-- **Normalization step: jointly-proximate `mcaEvent` reduces to a difference-stack `mcaEvent`
+(kernel-checked, UDR).**
+
+For a jointly-`δ`-close stack `u` under UDR there is a *fixed, `γ`-independent* codeword pair
+`(p₀, p₁) ∈ C²` (the `jointProximity` witnesses) such that for **every** `γ`,
+
+  `mcaEvent C δ (u 0) (u 1) γ → mcaEvent C δ (u 0 - p₀) (u 1 - p₁) γ`.
+
+i.e. the `mcaEvent` of `u` transfers verbatim to the *difference stack* `d := (u 0 - p₀,
+u 1 - p₁)`, which is "close to `0`" (it vanishes on the `jointProximity` set `S'`).
+
+Proof, given an `mcaEvent` at `γ` with witness `S`, codeword `w`:
+* **Forcing** (`mcaEvent_witness_eq_combined_of_jointProximity_udr`, needs UDR): `w = p₀ + γ·p₁`
+  everywhere. On `S` also `w = u 0 + γ·u 1`, so the difference line
+  `d 0 + γ·d 1 = (u 0 + γ·u 1) - (p₀ + γ·p₁) = w - w = 0` on `S`. The zero codeword `0 ∈ C`
+  therefore witnesses the line clause for `d` on the *same* `S`.
+* **No joint pair for `d` on `S`**: if some `(c₀, c₁) ∈ C²` agreed with `(d 0, d 1)` on `S`, then
+  `(p₀ + c₀, p₁ + c₁) ∈ C²` (submodule closure) would agree with `(u 0, u 1)` on `S`
+  (`u i = p i + d i = p i + c i` there), contradicting the no-joint-pair clause of the original
+  `mcaEvent`.
+
+This is the ACFY25/[Hab25] *normalization* (subtract the unique close codeword pair): it shows
+the entire jointly-proximate `mcaEvent` mass is carried by difference stacks `d` whose line
+`d 0 + γ·d 1` *vanishes* on a size-`≥ (1-δ)·n` set while `d` is **not** the zero pair there.
+Bounding the `γ` for which a nonzero-on-`S` difference line vanishes on `S` is exactly the
+list-decoding (Guruswami–Sudan / [Hab25]) root count — the step still missing from the tree, and
+the reason the residual `jointlyProximateContribution ≤ ε_ca` cannot yet be closed in-file. -/
+theorem jointProximity_mcaEvent_imp_diffStack_mcaEvent_udr
+    (C : Submodule F (ι → A)) (δ : ℝ≥0) (u : WordStack A (Fin 2) ι)
+    (h_udr : 2 * δ * (Fintype.card ι : ℝ≥0) < (Code.dist ((C : Set (ι → A))) : ℝ≥0))
+    (h_jp : jointProximity (C := (C : Set (ι → A))) (u := u) δ) :
+    ∃ p₀ ∈ (C : Set (ι → A)), ∃ p₁ ∈ (C : Set (ι → A)),
+      ∀ γ : F, mcaEvent (C : Set (ι → A)) δ (u 0) (u 1) γ →
+        mcaEvent (C : Set (ι → A)) δ (u 0 - p₀) (u 1 - p₁) γ := by
+  classical
+  -- Re-extract the `γ`-independent jointAgreement witnesses `p₀, p₁` on `S'`.
+  have h_jp' := h_jp
+  rw [← jointAgreement_iff_jointProximity] at h_jp'
+  obtain ⟨S', hS'_card, p, hp⟩ := h_jp'
+  set p₀ := p 0 with hp₀_def
+  set p₁ := p 1 with hp₁_def
+  have hp₀_mem : p₀ ∈ (C : Set (ι → A)) := (hp 0).1
+  have hp₁_mem : p₁ ∈ (C : Set (ι → A)) := (hp 1).1
+  -- Pointwise agreement of `p` with `u` on `S'`.
+  have h_agree_S' : ∀ j ∈ S', p₀ j = u 0 j ∧ p₁ j = u 1 j := by
+    intro j hj
+    refine ⟨?_, ?_⟩
+    · have : j ∈ Finset.filter (fun k ↦ p 0 k = u 0 k) Finset.univ := (hp 0).2 hj
+      exact (Finset.mem_filter.mp this).2
+    · have : j ∈ Finset.filter (fun k ↦ p 1 k = u 1 k) Finset.univ := (hp 1).2 hj
+      exact (Finset.mem_filter.mp this).2
+  refine ⟨p₀, hp₀_mem, p₁, hp₁_mem, ?_⟩
+  intro γ h_event
+  obtain ⟨S, hS_card, ⟨w, hw_mem, hw_line⟩, hno_pair⟩ := h_event
+  -- Forcing for *this* `p`: `w = p₀ + γ•p₁`. Replicate the `eq_of_lt_dist` argument (the content
+  -- of `mcaEvent_witness_eq_combined_of_jointProximity_udr`) directly with the `p` witnesses, so
+  -- we avoid any `q = p` identification.
+  have hcomb_mem : (p₀ + γ • p₁) ∈ (C : Set (ι → A)) := C.add_mem hp₀_mem (C.smul_mem γ hp₁_mem)
+  set e : ℕ := Nat.floor (δ * (Fintype.card ι : ℝ≥0)) with he
+  have hScompl : (Finset.univ \ S).card ≤ e := by
+    have hsub : Fintype.card ι - e ≤ S.card := by
+      have := (Code.relDist_floor_bound_iff_complement_bound (Fintype.card ι) S.card δ).mpr hS_card
+      simpa [he] using this
+    have hle : S.card ≤ Fintype.card ι := Finset.card_le_univ S
+    rw [← Finset.compl_eq_univ_sdiff, Finset.card_compl]
+    omega
+  have hS'compl : (Finset.univ \ S').card ≤ e := by
+    have hsub : Fintype.card ι - e ≤ S'.card := by
+      have := (Code.relDist_floor_bound_iff_complement_bound (Fintype.card ι) S'.card δ).mpr
+        hS'_card
+      simpa [he] using this
+    have hle : S'.card ≤ Fintype.card ι := Finset.card_le_univ S'
+    rw [← Finset.compl_eq_univ_sdiff, Finset.card_compl]
+    omega
+  have h_dis_sub :
+      Finset.univ.filter (fun i ↦ w i ≠ (p₀ + γ • p₁) i) ⊆
+        (Finset.univ \ S) ∪ (Finset.univ \ S') := by
+    intro i hi
+    rw [Finset.mem_filter] at hi
+    by_contra hni
+    rw [Finset.mem_union] at hni
+    push Not at hni
+    obtain ⟨hiS, hiS'⟩ := hni
+    have hiS_mem : i ∈ S := by
+      by_contra h; exact hiS (Finset.mem_sdiff.mpr ⟨Finset.mem_univ i, h⟩)
+    have hiS'_mem : i ∈ S' := by
+      by_contra h; exact hiS' (Finset.mem_sdiff.mpr ⟨Finset.mem_univ i, h⟩)
+    obtain ⟨hp0i, hp1i⟩ := h_agree_S' i hiS'_mem
+    have : w i = (p₀ + γ • p₁) i := by
+      rw [hw_line i hiS_mem]
+      simp [Pi.add_apply, Pi.smul_apply, hp0i, hp1i]
+    exact hi.2 this
+  have h_ham_le : Δ₀(w, p₀ + γ • p₁) ≤ 2 * e := by
+    have h1 : Δ₀(w, p₀ + γ • p₁) ≤ ((Finset.univ \ S) ∪ (Finset.univ \ S')).card := by
+      unfold hammingDist
+      exact le_trans (Finset.card_le_card h_dis_sub) (le_refl _)
+    have h2 : ((Finset.univ \ S) ∪ (Finset.univ \ S')).card ≤ 2 * e := by
+      refine le_trans (Finset.card_union_le _ _) ?_
+      omega
+    exact le_trans h1 h2
+  have h_lt : Δ₀(w, p₀ + γ • p₁) < Code.dist (C : Set (ι → A)) := by
+    have he_le : (e : ℝ≥0) ≤ δ * (Fintype.card ι : ℝ≥0) := by
+      rw [he]; exact Nat.floor_le (zero_le _)
+    have h2e : (2 * e : ℝ≥0) ≤ 2 * δ * (Fintype.card ι : ℝ≥0) := by
+      have : (2 : ℝ≥0) * (e : ℝ≥0) ≤ 2 * (δ * (Fintype.card ι : ℝ≥0)) := by gcongr
+      simpa [mul_assoc] using this
+    have h2e' : ((Δ₀(w, p₀ + γ • p₁) : ℕ) : ℝ≥0) < (Code.dist (C : Set (ι → A)) : ℝ≥0) := by
+      have hcast : ((Δ₀(w, p₀ + γ • p₁) : ℕ) : ℝ≥0) ≤ (2 * e : ℝ≥0) := by exact_mod_cast h_ham_le
+      exact lt_of_le_of_lt (le_trans hcast h2e) h_udr
+    exact_mod_cast h2e'
+  have hpw : w = p₀ + γ • p₁ := eq_of_lt_dist hw_mem hcomb_mem h_lt
+  -- For `d`, build the `mcaEvent`: witness `S`, codeword `0`, no joint pair.
+  refine ⟨S, hS_card, ⟨0, C.zero_mem, ?_⟩, ?_⟩
+  · -- `0 = (u0-p₀) + γ•(u1-p₁)` on `S`: from `w = u0+γu1` on `S` and `w = p₀+γ•p₁` globally.
+    intro i hi
+    have hwi : w i = u 0 i + γ • u 1 i := hw_line i hi
+    have hwi' : w i = p₀ i + γ • p₁ i := by rw [hpw]; simp [Pi.add_apply, Pi.smul_apply]
+    have heq : u 0 i + γ • u 1 i = p₀ i + γ • p₁ i := by rw [← hwi, hwi']
+    simp only [Pi.zero_apply, Pi.sub_apply]
+    rw [smul_sub]
+    -- goal: `0 = (u0 i - p₀ i) + (γ•u1 i - γ•p₁ i)`; rearrange to a difference and use `heq`.
+    have hrearr : u 0 i - p₀ i + (γ • u 1 i - γ • p₁ i)
+        = (u 0 i + γ • u 1 i) - (p₀ i + γ • p₁ i) := by abel
+    rw [hrearr, heq, sub_self]
+  · -- No joint pair for `d` on `S`: transfer to a joint pair for `u`, contradicting `hno_pair`.
+    intro h_pair_d
+    apply hno_pair
+    obtain ⟨c₀, hc₀_mem, c₁, hc₁_mem, h_agree_d⟩ := h_pair_d
+    refine ⟨p₀ + c₀, C.add_mem hp₀_mem hc₀_mem, p₁ + c₁, C.add_mem hp₁_mem hc₁_mem, ?_⟩
+    intro i hi
+    obtain ⟨hd0, hd1⟩ := h_agree_d i hi
+    -- `(p₀+c₀) i = p₀ i + c₀ i = p₀ i + (u0-p₀) i = u0 i` ; likewise for index 1.
+    refine ⟨?_, ?_⟩
+    · have hc : c₀ i = u 0 i - p₀ i := by simpa [Pi.sub_apply] using hd0
+      simp only [Pi.add_apply]
+      rw [hc]; abel
+    · have hc : c₁ i = u 1 i - p₁ i := by simpa [Pi.sub_apply] using hd1
+      simp only [Pi.add_apply]
+      rw [hc]; abel
+
+open Classical in
+/-- **The jointly-proximate contribution to `ε_mca`.** Explicit name for the part of the `ε_mca`
+supremum that the in-tree machinery cannot bound against `ε_ca`: the worst-case `mcaEvent`
+probability over the stacks `u` that *are* jointly `δ`-close to `C` (where the `ε_ca` body is
+`0`). On the non-jointly-close stacks the bound `Pr_γ[mcaEvent] ≤ Pr_γ[line δ-close] ≤ ε_ca`
+is already proved (`epsMCA_restricted_le_epsCA`); this term isolates exactly the residue.
+
+By `epsMCA_le_epsCA_add_jointlyProximateContribution`,
+`ε_mca(C, δ) ≤ ε_ca(C, δ, δ) + jointlyProximateContribution C δ`. ABF26 Lemma 4.6 is the
+statement that this contribution is itself `≤ ε_ca` in the UDR (so that the sum collapses back to
+`ε_ca`); proving that requires the global Guruswami–Sudan/[Hab25] list-decoding bound on the
+exceptional-`γ` set of the fixed difference stack `(u 0 - p₀, u 1 - p₁)` (see
+`jointProximity_diffStack_line_close`), which is not yet available in-tree. -/
+noncomputable def jointlyProximateContribution (C : Set (ι → A)) (δ : ℝ≥0) : ENNReal :=
+  ⨆ u : WordStack A (Fin 2) ι,
+    if jointProximity (C := C) (u := u) δ then
+      Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ]
+    else (0 : ENNReal)
+
+open Classical in
+/-- **Decomposition of `ε_mca` (audited intermediate toward ABF26 Lemma 4.6).**
+
+`ε_mca(C, δ) ≤ ε_ca(C, δ, δ) + jointlyProximateContribution C δ`.
+
+This shrinks the remaining gap of Lemma 4.6 to *exactly* the contribution of the
+jointly-`δ`-close stacks, with that contribution given an explicit name. The proof splits the
+`ε_mca` supremum body `Pr_γ[mcaEvent]` pointwise into its `jointProximity` and
+`¬jointProximity` parts (one of the two is `0`), then applies `iSup_add_le` and bounds the
+non-jointly-close part by `ε_ca` via the already-proven `epsMCA_restricted_le_epsCA`.
+
+What remains for the full equality `ε_mca = ε_ca` (in the UDR) is `jointlyProximateContribution
+C δ ≤ ε_ca`. The kernel-checked obstruction shows this is *not* a pointwise body bound (on a
+jointly-close `u` the `ε_ca` body is `0` while `Pr_γ[mcaEvent]` may be positive); the genuine
+content needed is the list-decoding count of the exceptional `γ` of the fixed difference stack
+of `jointProximity_diffStack_line_close`, the GS/PS machinery absent from the tree. -/
+theorem epsMCA_le_epsCA_add_jointlyProximateContribution (C : Set (ι → A)) (δ : ℝ≥0) :
+    epsMCA (F := F) C δ ≤
+      epsCA (F := F) C δ δ + jointlyProximateContribution (F := F) C δ := by
+  classical
+  -- Abbreviations for the two gated suprema.
+  set notjpSup : ENNReal :=
+    (⨆ u : WordStack A (Fin 2) ι,
+      if jointProximity (C := C) (u := u) δ then (0 : ENNReal)
+      else Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ]) with h_notjpSup
+  have h_notjp_le : notjpSup ≤ epsCA (F := F) C δ δ := epsMCA_restricted_le_epsCA C δ
+  unfold epsMCA jointlyProximateContribution
+  -- Bound the `ε_mca` supremum body-by-body; each body splits as one of the two gated suprema.
+  apply iSup_le
+  intro u
+  by_cases hjp : jointProximity (C := C) (u := u) δ
+  · -- jointly-close: body `≤ contribution ≤ ε_ca + contribution`.
+    refine le_trans ?_ (le_add_left (le_refl _))
+    refine le_trans ?_ (le_iSup (fun u : WordStack A (Fin 2) ι ↦
+      if jointProximity (C := C) (u := u) δ then
+        Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ]
+      else (0 : ENNReal)) u)
+    rw [if_pos hjp]
+  · -- non-jointly-close: body `≤ notjpSup ≤ ε_ca ≤ ε_ca + contribution`.
+    refine le_trans ?_ (le_add_right h_notjp_le)
+    rw [h_notjpSup]
+    refine le_trans ?_ (le_iSup (fun u : WordStack A (Fin 2) ι ↦
+      if jointProximity (C := C) (u := u) δ then (0 : ENNReal)
+      else Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ]) u)
+    rw [if_neg hjp]
+
+open Classical in
+/-- **Tight (max-form) decomposition of `ε_mca` (audited intermediate toward ABF26 Lemma 4.6).**
+
+`ε_mca(C, δ) ≤ max (ε_ca(C, δ, δ)) (jointlyProximateContribution C δ)`.
+
+Sharper than the additive `epsMCA_le_epsCA_add_jointlyProximateContribution`: because each
+`ε_mca` supremum body is *either* the non-jointly-close gated body (`≤ ε_ca`) *or* the
+jointly-close gated body (`≤ jointlyProximateContribution`) — never both at once — the two
+contributions combine by `max`, not by `+`. The proof bounds each body by the `max` of the two
+gated suprema and uses `iSup_le`.
+
+This is the decomposition that makes ABF26 Lemma 4.6 collapse: the *only* remaining fact is
+`jointlyProximateContribution C δ ≤ ε_ca(C, δ, δ)` (in the UDR), after which
+`max (ε_ca) (jointlyProximateContribution) = ε_ca` and `ε_mca ≤ ε_ca` follows. That single
+remaining inequality is the ACFY25/[Hab25] list-decoding bound on the exceptional `γ` of the
+fixed difference stack (`jointProximity_diffStack_line_close`); it is the content not yet
+available in-tree. -/
+theorem epsMCA_le_max_epsCA_jointlyProximateContribution (C : Set (ι → A)) (δ : ℝ≥0) :
+    epsMCA (F := F) C δ ≤
+      max (epsCA (F := F) C δ δ) (jointlyProximateContribution (F := F) C δ) := by
+  classical
+  set notjpSup : ENNReal :=
+    (⨆ u : WordStack A (Fin 2) ι,
+      if jointProximity (C := C) (u := u) δ then (0 : ENNReal)
+      else Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ]) with h_notjpSup
+  have h_notjp_le : notjpSup ≤ epsCA (F := F) C δ δ := epsMCA_restricted_le_epsCA C δ
+  unfold epsMCA
+  apply iSup_le
+  intro u
+  by_cases hjp : jointProximity (C := C) (u := u) δ
+  · -- jointly-close body `≤ jointlyProximateContribution ≤ max …`.
+    refine le_trans ?_ (le_max_right _ _)
+    have h_body_le :
+        Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ] ≤
+          jointlyProximateContribution (F := F) C δ := by
+      unfold jointlyProximateContribution
+      refine le_trans ?_ (le_iSup (fun u : WordStack A (Fin 2) ι ↦
+        if jointProximity (C := C) (u := u) δ then
+          Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ]
+        else (0 : ENNReal)) u)
+      rw [if_pos hjp]
+    exact h_body_le
+  · -- non-jointly-close body `≤ notjpSup ≤ ε_ca ≤ max …`.
+    refine le_trans ?_ (le_max_left _ _)
+    refine le_trans ?_ h_notjp_le
+    rw [h_notjpSup]
+    refine le_trans ?_ (le_iSup (fun u : WordStack A (Fin 2) ι ↦
+      if jointProximity (C := C) (u := u) δ then (0 : ENNReal)
+      else Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ]) u)
+    rw [if_neg hjp]
+
 /-- **ABF26 Lemma 4.6.** In the unique-decoding regime `δ < δ_min(C)/2`, `ε_mca` and `ε_ca`
 coincide: `ε_mca(C, δ) = ε_ca(C, δ)`.
 
@@ -787,18 +1102,28 @@ The proof is reduced here to **one** inequality. The direction `ε_ca ≤ ε_mca
 `epsCA_le_epsMCA` (no UDR needed). What remains, `ε_mca ≤ ε_ca`, is the genuinely hard
 direction:
 
-**Status of the remaining direction: external admit** ([ACFY25, Lemma 4.10]; footnote 6 in
-ABF26 notes the proof is for linear codes but generalises to F-additive codes). It is **not**
-a pointwise `iSup`-monotonicity: for a fixed stack `u`, when `jointProximity C u δ` holds the
-`epsCA` body collapses to `0` while `Pr_γ[mcaEvent]` can still be **positive** — under UDR the
-line can agree with the unique close codeword `v₀ + γ·v₁` on `S_pair ∪ {i*}` for an extra
-position `i*`, which happens exactly when `γ` solves a per-`i*` linear equation, a non-empty
-`γ`-set. So `epsMCA_body u ≤ epsCA_body u` is false in general; the inequality only holds after
-the global dominance/rearrangement argument of ACFY25 (matching each such `u` against a
-non-jointly-close `u'` realising the same probability). Formalising that argument is out of
-scope for Phase 1; tracked in `docs/kb/ABF26_PLAN.md` §6 conjecture ledger. The provable
-structural half `mcaEvent → δᵣ(line, C) ≤ δ` is recorded above as
-`mcaEvent_imp_relCloseToCode`. -/
+**Status of the remaining direction: shrunk to ONE explicit inequality.** Via the audited
+max-form decomposition `epsMCA_le_max_epsCA_jointlyProximateContribution`,
+`ε_mca ≤ max (ε_ca) (jointlyProximateContribution C δ)`. So the whole hard direction now
+follows from the *single* residual
+
+  `jointlyProximateContribution C δ ≤ ε_ca(C, δ, δ)`     (the `sorry` below),
+
+after which `max (ε_ca) (jointlyProximateContribution) = ε_ca`. This is strictly less than the
+former opaque `ε_mca ≤ ε_ca` admit: the residual is now explicitly the worst-case `mcaEvent`
+mass over the *jointly-`δ`-close* stacks only (the `¬jointProximity` part is already discharged
+by `epsMCA_restricted_le_epsCA`).
+
+Why even this residual is **not** a pointwise `iSup`-monotonicity ([ACFY25, Lemma 4.10];
+footnote 6 in ABF26 notes the proof is for linear codes but generalises to F-additive codes):
+for a fixed jointly-close stack `u` the `epsCA` body collapses to `0` while `Pr_γ[mcaEvent]`
+can still be **positive** — under UDR the line agrees with the unique close codeword
+`p₀ + γ·p₁` on the witness set for the exact `γ` solving the per-position linear equations of
+the *fixed difference stack* `(u 0 - p₀, u 1 - p₁)` (see `jointProximity_diffStack_line_close`),
+a non-empty `γ`-set. So the bound only holds after the global dominance/rearrangement of ACFY25
+(equivalently: the Guruswami–Sudan/[Hab25] list-decoding count of those exceptional `γ`),
+machinery not yet in-tree. Tracked in `docs/kb/ABF26_PLAN.md` §6 conjecture ledger. The provable
+structural half `mcaEvent → δᵣ(line, C) ≤ δ` is recorded above as `mcaEvent_imp_relCloseToCode`. -/
 theorem epsMCA_eq_epsCA_below_udr
     (C : Submodule F (ι → A)) (δ : ℝ≥0)
     (_h_udr : 2 * δ * (Fintype.card ι : ℝ≥0) <
@@ -806,8 +1131,15 @@ theorem epsMCA_eq_epsCA_below_udr
     epsMCA (F := F) (A := A) ((C : Set (ι → A))) δ =
     epsCA (F := F) (A := A) ((C : Set (ι → A))) δ δ := by
   refine le_antisymm ?_ (epsCA_le_epsMCA C δ)
-  -- Remaining hard direction `ε_mca ≤ ε_ca` (ACFY25 Lemma 4.10): see docstring.
-  sorry -- ABF26 L4.6 (ε_mca ≤ ε_ca only): external result from ACFY25 Lemma 4.10
+  -- Reduce the hard direction to the single residual `jointlyProximateContribution ≤ ε_ca`
+  -- via the audited max-form decomposition.
+  refine le_trans (epsMCA_le_max_epsCA_jointlyProximateContribution
+    (F := F) (C := (C : Set (ι → A))) δ) ?_
+  rw [max_le_iff]
+  refine ⟨le_refl _, ?_⟩
+  -- Remaining: `jointlyProximateContribution C δ ≤ ε_ca` — the ACFY25 Lemma 4.10 list-decoding
+  -- count of the exceptional `γ` of the fixed difference stack; see docstring.
+  sorry -- ABF26 L4.6 residual: jointlyProximateContribution ≤ ε_ca (ACFY25 Lemma 4.10)
 
 /-- Row-extraction: the `k`-th row of a `Fin t → A`-valued word, as an `A`-valued word. -/
 private def row_of {ι : Type} {A : Type} {t : ℕ}
