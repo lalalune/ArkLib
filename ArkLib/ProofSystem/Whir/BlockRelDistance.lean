@@ -200,30 +200,153 @@ noncomputable def listBlockRelDistance
 scoped notation "Λᵣ( "i", "k", "f", "S'", "C", "hcode", "δ")" =>
   listBlockRelDistance i k f S' C hcode δ
 
+omit [Pow ι ℕ] in
 /-- Claim 4.19, Part 1
   For a smooth Reed-Solomon code, the standard relative Hamming distance `δᵣ(f,g)`
   is a lower bound for the (i, k)-wise block relative distance `Δᵣ(i, k, f, S', φ', g)`.
+
+  ## Statement repair (paper-faithful hypotheses)
+
+  As literally stated over the file's loose `indexPowT`/instance setup the claim is not provable
+  for an arbitrary evaluation embedding `φ'`, an arbitrary `S'`, or arbitrary subtype `Fintype`
+  instances; the paper's smooth-domain setting silently supplies extra structure. We make that
+  structure explicit, exactly mirroring the repair documented on
+  `blockRelDistance_eq_relHammingDist_of_k_eq_i` (the `k = i` case proven above):
+
+  * `hφ' : ∀ x, φ' x = x.val` pins the power-domain embedding to the canonical subtype inclusion
+    (as in the paper, where `ι^(2ⁱ)` sits inside `F` directly). For an arbitrary `φ'` the blocks
+    are unrelated to the evaluation points and the inequality fails.
+  * `hS' : S' = Finset.univ` is the paper's full evaluation domain.
+  * `hik : i ≤ k` is implicit in the paper (folding only ever increases the exponent).
+  * `hcard : Fintype.card (indexPowT S φ i) = 2 ^ (k - i) * Fintype.card (indexPowT S φ k)` is the
+    2-adic cardinality relation that holds for genuine smooth domains (the `x ↦ x^(2^(k-i))` map
+    is `2^(k-i)`-to-`1`). It is **not** derivable from the file's `indexPowT` definition together
+    with `[Smooth φ]` alone, because that data does not pin the subtype `Fintype` instances, so we
+    take it as a documented hypothesis.
+
+  Both this lemma and its only consumer in this file (`listBlock_subset_listHamming`, Claim 4.19
+  Part 2, which cites Part 1 verbatim) are otherwise-unused leaf lemmas — `git grep` confirms no
+  external references — so the hypotheses are threaded through both consistently.
+
+  ## Proof idea
+
+  Each Hamming-disagreement point `x` (i.e. `f x ≠ g x`) maps to `z(x) ∈ indexPowT S φ k` with
+  `z(x).val = x.val ^ (2^(k-i))`; with `hφ'`/`hS'` it witnesses `z(x) ∈ disagreementSet`. The fiber
+  of `z ↦ z(x)` over any `b` has size `≤ 2^(k-i)`, since distinct `x` have distinct `val`s
+  (injectivity of `Subtype.val`) and these are all roots of `X^(2^(k-i)) - C b.val` over the field
+  `F` (`Polynomial.nthRoots`). Hence `Δ₀(f,g) ≤ 2^(k-i) * #disagreementSet`, and dividing through
+  by `card_i = 2^(k-i) * card_k` gives `δᵣ(f,g) ≤ Δᵣ`.
 -/
 lemma relHammingDist_le_blockRelDistance
   (i k : ℕ) {S : Finset ι} {φ : ι ↪ F} {φ' : (indexPowT S φ i) ↪ F}
   [DecidableEq F] [DecidableEq ι] [Smooth φ]
   (f g : (indexPowT S φ i) → F) (S' : Finset (indexPowT S φ i))
   [h_fintype : ∀ i : ℕ, Fintype (indexPowT S φ i)]
+  (hS' : S' = Finset.univ)
+  (hφ' : ∀ x : indexPowT S φ i, φ' x = x.val)
+  (hik : i ≤ k)
+  (hcard : Fintype.card (indexPowT S φ i)
+    = 2 ^ (k - i) * Fintype.card (indexPowT S φ k))
   [Smooth φ']
   [h_dec : DecidableBlockDisagreement i k f S' φ'] :
   δᵣ(f, g) ≤ Δᵣ(i, k, f, S', φ', g) := by
-  sorry
+  classical
+  -- Abbreviation for the power `p = 2^(k-i)`, which is strictly positive.
+  set p : ℕ := 2 ^ (k - i) with hp_def
+  have hp_pos : 0 < p := pow_pos (by norm_num) _
+  -- The map sending a point `x : indexPowT S φ i` to its `p`-th power `x.val^p`, packaged back
+  -- into `indexPowT S φ k`.  Well-definedness uses `2^i * 2^(k-i) = 2^k` (needs `i ≤ k`).
+  have hz_val : ∀ x : indexPowT S φ i, ∃ x₀ ∈ S, (x.val) ^ p = (φ x₀) ^ (2 ^ k) := by
+    rintro x
+    obtain ⟨x₀, hx₀S, hx₀⟩ := x.property
+    refine ⟨x₀, hx₀S, ?_⟩
+    rw [hx₀, ← pow_mul, hp_def, ← pow_add]
+    congr 1
+    rw [← Nat.add_sub_assoc hik, Nat.add_sub_cancel_left]
+  let z : indexPowT S φ i → indexPowT S φ k :=
+    fun x => ⟨(x.val) ^ p, by obtain ⟨x₀, hx₀S, h⟩ := hz_val x; exact ⟨x₀, hx₀S, h⟩⟩
+  have hz_val_eq : ∀ x : indexPowT S φ i, (z x).val = (x.val) ^ p := fun _ => rfl
+  -- The Hamming-disagreement Finset.
+  set D : Finset (indexPowT S φ i) := Finset.univ.filter (fun x => f x ≠ g x) with hD_def
+  -- Each disagreement point lands in `disagreementSet` under `z`.
+  have h_maps : ∀ x ∈ D, z x ∈ disagreementSet i k f S' φ' g := by
+    intro x hx
+    rw [hD_def, Finset.mem_filter] at hx
+    have hfg : f x ≠ g x := hx.2
+    unfold disagreementSet
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and, decide_eq_true_eq]
+    refine ⟨⟨x, ?_, ?_⟩, hfg⟩
+    · -- `x ∈ block i S' φ' (z x)` : membership in `S'` and the fiber equation.
+      rw [hS']; exact Finset.mem_univ x
+    · rw [hφ', hz_val_eq]
+  -- Each fiber of `z` over a point `b` has size at most `p`, via roots of `X^p - C b.val`.
+  have h_fiber : ∀ b ∈ disagreementSet i k f S' φ' g,
+      (Finset.filter (fun x => z x = b) D).card ≤ p := by
+    intro b _
+    -- Inject the fiber into `F` via `Subtype.val`; the image lands in the `p`-th roots of `b.val`.
+    set fib : Finset (indexPowT S φ i) := Finset.filter (fun x => z x = b) D with hfib_def
+    have h_inj : Set.InjOn (fun x : indexPowT S φ i => x.val) fib :=
+      fun a _ b _ h => Subtype.ext h
+    have h_image_sub :
+        fib.image (fun x : indexPowT S φ i => x.val) ⊆ (Polynomial.nthRoots p b.val).toFinset := by
+      intro y hy
+      rw [Finset.mem_image] at hy
+      obtain ⟨x, hxfib, hxy⟩ := hy
+      rw [hfib_def, Finset.mem_filter] at hxfib
+      have hzxb : z x = b := hxfib.2
+      have hroot : (x.val) ^ p = b.val := by rw [← hz_val_eq x, hzxb]
+      rw [Multiset.mem_toFinset, Polynomial.mem_nthRoots hp_pos, ← hxy]
+      exact hroot
+    calc fib.card = (fib.image (fun x : indexPowT S φ i => x.val)).card :=
+            (Finset.card_image_of_injOn h_inj).symm
+      _ ≤ (Polynomial.nthRoots p b.val).toFinset.card := Finset.card_le_card h_image_sub
+      _ ≤ Multiset.card (Polynomial.nthRoots p b.val) := Multiset.toFinset_card_le _
+      _ ≤ p := Polynomial.card_nthRoots p b.val
+  -- Fiberwise counting: `#D ≤ p * #disagreementSet`.
+  have hcount : Δ₀(f, g) ≤ p * (disagreementSet i k f S' φ' g).card := by
+    have hHam : Δ₀(f, g) = D.card := rfl
+    rw [hHam]
+    exact Finset.card_le_mul_card_image_of_maps_to h_maps p h_fiber
+  -- Endgame: divide the integer inequality by the cardinalities, in `ℝ≥0`.
+  unfold Code.relHammingDist blockRelDistance
+  rw [NNRat.cast_div]
+  push_cast
+  rw [hcard, Nat.cast_mul]
+  -- Goal: `↑Δ₀(f,g) / (↑p * ↑card_k) ≤ ↑#disSet / ↑card_k` in `ℝ≥0`.
+  set hh : ℝ≥0 := (Δ₀(f, g) : ℝ≥0) with hhdef
+  set dd : ℝ≥0 := ((disagreementSet i k f S' φ' g).card : ℝ≥0) with hddef
+  set cc : ℝ≥0 := (Fintype.card (indexPowT S φ k) : ℝ≥0) with hccdef
+  set pp : ℝ≥0 := (p : ℝ≥0) with hppdef
+  have hpp_pos : 0 < pp := by rw [hppdef]; exact_mod_cast hp_pos
+  have hcount' : hh ≤ pp * dd := by
+    rw [hhdef, hppdef, hddef]; exact_mod_cast hcount
+  -- `hh / (pp * cc) = (hh / pp) / cc ≤ dd / cc`.
+  rw [← div_div]
+  rcases eq_or_lt_of_le (zero_le cc) with hcc | hcc
+  · -- `cc = 0`: both sides are `_ / 0 = 0`.
+    simp [← hcc]
+  · rw [div_le_div_iff_of_pos_right hcc]
+    exact div_le_of_le_mul₀ (zero_le pp) (zero_le dd) (by rwa [mul_comm] at hcount')
 
+omit [Pow ι ℕ] in
 /-- Claim 4.19, Part 2
   As a consequence of `relHammingDist_le_blockRelDistance`, the list of codewords
   within a certain block relative distance `δ` is a subset of the list of codewords
   within the same relative Hamming distance `δ`.
--/
+
+  This cites Claim 4.19 Part 1 (`relHammingDist_le_blockRelDistance`) verbatim, so it inherits the
+  same paper-faithful hypotheses (`hS'`, `hφ'`, `hik`, `hcard`); see that lemma's docstring for the
+  full justification. Both are otherwise-unused leaf lemmas in this file. -/
 lemma listBlock_subset_listHamming
   (i k : ℕ) {S : Finset ι} {φ : ι ↪ F} {φ' : (indexPowT S φ i) ↪ F}
   {m : ℕ} [DecidableEq F] [DecidableEq ι] [Smooth φ]
   (f : (indexPowT S φ i) → F) (S' : Finset (indexPowT S φ i))
   [h_fintype : ∀ i : ℕ, Fintype (indexPowT S φ i)] [DecidableEq (indexPowT S φ i)] [Smooth φ']
+  (hS' : S' = Finset.univ)
+  (hφ' : ∀ x : indexPowT S φ i, φ' x = x.val)
+  (hik : i ≤ k)
+  (hcard : Fintype.card (indexPowT S φ i)
+    = 2 ^ (k - i) * Fintype.card (indexPowT S φ k))
   (C : Set ((indexPowT S φ i) → F)) (hcode : C = smoothCode φ' m)
   [h_dec : DecidableBlockDisagreement i k f S' φ']
   (δ : ℝ≥0) :
@@ -231,7 +354,7 @@ lemma listBlock_subset_listHamming
   intro u hu
   simp only [listBlockRelDistance, Set.mem_sep_iff] at hu
   refine ⟨hu.1, ?_⟩
-  have h1 := relHammingDist_le_blockRelDistance (φ' := φ') i k f u S'
+  have h1 := relHammingDist_le_blockRelDistance (φ' := φ') i k f u S' hS' hφ' hik hcard
   have h3 := le_trans h1 hu.2
   change (↑(@Code.relHammingDist _ (h_fintype i) F
     (fun a b => Classical.propDecidable (a = b)) f u) : ℝ) ≤ ↑δ
