@@ -50,6 +50,11 @@ lemma proximity_gap
   {F : Type} [Field F] [Fintype F] [DecidableEq F]
   {ι : Type} [Fintype ι] [Nonempty ι] {φ : ι ↪ F}
   {degree m : ℕ} {δ : ℝ≥0} {f : Fin m → ι → F} {GenFun : F → Fin m → F}
+  -- Statement repair (verified defect): for an *arbitrary* `GenFun` the statement is FALSE —
+  -- `GenFun r j = 0` makes the combined word `0 ∈ code` (a Submodule), so the probability
+  -- hypothesis holds with probability 1 while the agreement conclusion fails for `f` far
+  -- from the code. BCIKS20 Theorem 4.1 is about the power generator; pin `GenFun r j = r^j`.
+  (hGen : ∀ r j, GenFun r j = r ^ (j : ℕ))
   (hδPos : 0 < δ)
   (hδLt : δ < 1 - Bstar (LinearCode.rate (code φ degree)))
   (hProb :
