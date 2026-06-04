@@ -830,6 +830,78 @@ lemma ncard_S_β_le_natDegree_elimPoly {H : F[X][Y]} [Fact (Irreducible H)] (hH 
     _ ≤ Multiset.card (elimPoly hH β).roots := Multiset.toFinset_card_le _
     _ ≤ (elimPoly hH β).natDegree := Polynomial.card_roots' _
 
+/-- Coefficient formula for the monicization below the leading term: for `k < H.natDegree`,
+`(H_tilde' H).coeff k = H.coeff k * (H.coeff N)^(N - 1 - k)`. -/
+private lemma coeff_H_tilde'_of_lt (H : F[X][Y]) (hH : 0 < H.natDegree) (k : ℕ)
+    (hk : k < H.natDegree) :
+    (H_tilde' H).coeff k = H.coeff k * (H.coeff H.natDegree) ^ (H.natDegree - 1 - k) := by
+  classical
+  have hne : H.natDegree ≠ 0 := Nat.ne_of_gt hH
+  rw [H_tilde', if_neg hne]
+  simp only [Polynomial.coeff_add]
+  rw [Polynomial.coeff_X_pow, if_neg (by omega), zero_add, Polynomial.finset_sum_coeff,
+      Finset.sum_eq_single k]
+  · rw [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, if_pos rfl, mul_one]
+  · intro b _ _
+    rw [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, if_neg (by omega), mul_zero]
+  · intro hk'; exact absurd (Finset.mem_range.mpr hk) hk'
+
+/-- Arithmetic core of the `Q`-coefficient degree bound. -/
+private lemma natDegree_coeff_H_tilde'_arith (k N T D : ℕ) (hkN : k < N) (hNT : N ≤ T)
+    (hTD : T ≤ D) :
+    (T - k) + (N - 1 - k) * (T - N) ≤ (N - k) * (D + 1 - N) := by
+  have hstep1 : (T - k) + (N - 1 - k) * (T - N) ≤ (D - k) + (N - 1 - k) * (D - N) :=
+    Nat.add_le_add (by omega) (Nat.mul_le_mul_left _ (by omega))
+  have hid : (D - k) + (N - 1 - k) * (D - N) = (N - k) * (D + 1 - N) := by
+    have hNk : N - k = (N - 1 - k) + 1 := by omega
+    have hDN : D + 1 - N = (D - N) + 1 := by omega
+    rw [hNk, hDN]; ring_nf; omega
+  omega
+
+/-- Each coefficient of the monicization satisfies the graded `X`-degree bound
+`((H_tilde' H).coeff k).natDegree ≤ (N - k) * (D + 1 - N)` with `N = H.natDegree`, for
+`D ≥ totalDegree H`. (`Q`-side input to the resultant degree bound.) -/
+lemma natDegree_coeff_H_tilde'_le (H : F[X][Y]) (hH : 0 < H.natDegree) (D : ℕ)
+    (hD : D ≥ Bivariate.totalDegree H) (k : ℕ) :
+    ((H_tilde' H).coeff k).natDegree ≤ (H.natDegree - k) * (D + 1 - H.natDegree) := by
+  classical
+  set N := H.natDegree with hN
+  set T := Bivariate.totalDegree H with hT
+  have hHne : H ≠ 0 := by
+    intro h0
+    rw [hN, h0, Polynomial.natDegree_zero] at hH
+    exact absurd hH (by omega)
+  have hN_supp : N ∈ H.support := by
+    rw [hN, Polynomial.mem_support_iff, ← Polynomial.leadingCoeff]
+    exact Polynomial.leadingCoeff_ne_zero.mpr hHne
+  have hWdeg : (H.coeff N).natDegree + N ≤ T := Bivariate.coeff_totalDegree_le H hN_supp
+  rcases lt_trichotomy k N with hk | hk | hk
+  · rw [coeff_H_tilde'_of_lt H hH k hk]
+    have hbound : (H.coeff k * (H.coeff N) ^ (N - 1 - k)).natDegree ≤
+        (H.coeff k).natDegree + (N - 1 - k) * (H.coeff N).natDegree :=
+      le_trans Polynomial.natDegree_mul_le (Nat.add_le_add_left Polynomial.natDegree_pow_le _)
+    rcases Bivariate.coeff_totalDegree_le' H k with hck | hck
+    · have h1 : (H.coeff k).natDegree ≤ T - k := by omega
+      have h2 : (H.coeff N).natDegree ≤ T - N := by omega
+      calc (H.coeff k * (H.coeff N) ^ (N - 1 - k)).natDegree
+          ≤ (H.coeff k).natDegree + (N - 1 - k) * (H.coeff N).natDegree := hbound
+        _ ≤ (T - k) + (N - 1 - k) * (T - N) :=
+              Nat.add_le_add h1 (Nat.mul_le_mul_left _ h2)
+        _ ≤ (N - k) * (D + 1 - N) := natDegree_coeff_H_tilde'_arith k N T D hk (by omega) hD
+    · rw [hck]; simp
+  · subst hk
+    rw [H_tilde', if_neg (Nat.ne_of_gt hH)]
+    simp only [Polynomial.coeff_add]
+    rw [Polynomial.coeff_X_pow, if_pos rfl]
+    have hsum0 : (∑ i ∈ Finset.range N, Polynomial.C (H.coeff i * (H.coeff N) ^ (N - 1 - i)) *
+        Polynomial.X ^ i).coeff N = 0 := by
+      rw [Polynomial.finset_sum_coeff]
+      exact Finset.sum_eq_zero (fun i hi => by
+        rw [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow,
+            if_neg (by rw [Finset.mem_range] at hi; omega), mul_zero])
+    rw [hsum0, add_zero]; simp
+  · rw [Polynomial.coeff_eq_zero_of_natDegree_lt (by rw [natDegree_H_tilde' hH]; omega)]; simp
+
 /-- If the canonical representative is nonzero, its `Λ`-weight is not `⊥` (the support is
 nonempty, so the defining `Finset.sup` of `WithBot.some` values is itself a `WithBot.some`). -/
 lemma weight_Λ_over_𝒪_ne_bot {H : F[X][Y]} (hH : 0 < H.natDegree) (β : 𝒪 H) (D : ℕ)
@@ -840,6 +912,25 @@ lemma weight_Λ_over_𝒪_ne_bot {H : F[X][Y]} (hH : 0 < H.natDegree) (β : 𝒪
   have hne : (canonicalRepOf𝒪 hH β).support.Nonempty := Polynomial.support_nonempty.mpr hP
   obtain ⟨k, hk⟩ := hne
   exact WithBot.coe_ne_bot (hbot k hk)
+
+/-- The `P`-side weight bound: for the canonical representative `P` of `β`, each nonzero
+coefficient satisfies `(P.coeff k).natDegree + k·s ≤ weight` (as a natural number), where
+`s = D + 1 - natDegreeY H` and `weight` is the (non-`⊥`) `Λ`-weight of `β`. -/
+lemma natDegree_coeff_canonicalRep_le {H : F[X][Y]} (hH : 0 < H.natDegree) (β : 𝒪 H) (D : ℕ)
+    (hP : canonicalRepOf𝒪 hH β ≠ 0) (k : ℕ)
+    (hk : (canonicalRepOf𝒪 hH β).coeff k ≠ 0) :
+    ((canonicalRepOf𝒪 hH β).coeff k).natDegree + k * (D + 1 - Bivariate.natDegreeY H) ≤
+      (weight_Λ_over_𝒪 hH β D).unbot (weight_Λ_over_𝒪_ne_bot hH β D hP) := by
+  classical
+  set P := canonicalRepOf𝒪 hH β with hPdef
+  have hmem : k ∈ P.support := Polynomial.mem_support_iff.mpr hk
+  have hle : (WithBot.some (k * (D + 1 - Bivariate.natDegreeY H) + (P.coeff k).natDegree) :
+      WithBot ℕ) ≤ weight_Λ_over_𝒪 hH β D := by
+    rw [weight_Λ_over_𝒪, weight_Λ]
+    exact Finset.le_sup (f := fun deg => WithBot.some
+      (deg * (D + 1 - Bivariate.natDegreeY H) + (P.coeff deg).natDegree)) hmem
+  have := (WithBot.le_unbot_iff (weight_Λ_over_𝒪_ne_bot hH β D hP)).mpr hle
+  omega
 
 /-- The degree bound of Lemma A.1: the elimination polynomial `Res_Y(H_tilde' H, P)` has
 `X`-degree at most `weight_Λ(P) · H.natDegree`, where `P` is the canonical representative of `β`.
