@@ -25,6 +25,12 @@ component is nonzero" in both constructions.
 
 namespace BCKHS25
 
+-- Decidability/Fintype instances are threaded through the section; several
+-- statement-level lemmas do not mention them directly.
+set_option linter.unusedDecidableInType false
+set_option linter.unusedSectionVars false
+set_option linter.unusedFintypeInType false
+
 open Polynomial Polynomial.Bivariate
 
 open Module
@@ -89,7 +95,7 @@ def BWMatrix' (da za db zb : ℕ) (domain : ι ↪ F) (u₀ u₁ : ι → F) :
 /-- The dimension count: with `zb = za + 1` (B one Z-degree higher) and
 `da·za + db·(za+1) > n·(za+1)`, the constraint system has a nontrivial
 solution. -/
-theorem exists_ne_zero_BWvec (da za db zb : ℕ) (hzb : zb = za + 1)
+theorem exists_ne_zero_BWvec (da za db zb : ℕ) (_hzb : zb = za + 1)
     (domain : ι ↪ F) (u₀ u₁ : ι → F)
     (hcount : Fintype.card ι * zb < da * za + db * zb) :
     ∃ v : BWIdx da za db zb → F, v ≠ 0 ∧
@@ -129,13 +135,13 @@ lemma coeff_evalX_toPolyB {da za db zb : ℕ} (v : BWIdx da za db zb → F)
       · simp
       · intro b _ hb
         have hne : ((j : ℕ) : ℕ) ≠ ((b : Fin _) : ℕ) := fun heq => hb (Fin.ext heq.symm)
-        simp [hne, hne.symm]
+        simp [hne.symm]
       · intro habs
         exact absurd (Finset.mem_univ _) habs
     · rw [dif_neg h]
       refine Finset.sum_eq_zero fun b _ => ?_
       have hne : (j : ℕ) ≠ ((b : Fin _) : ℕ) := fun heq => h (heq ▸ b.isLt)
-      simp [hne, hne.symm]
+      simp [hne.symm]
   have : (evalX a (toPolyB v)).coeff j = ((toPolyB v).coeff j).eval a := by
     simp [evalX, Polynomial.coeff]
   rw [this, hcoeff]
@@ -161,13 +167,13 @@ lemma coeff_evalX_toPolyA {da za db zb : ℕ} (v : BWIdx da za db zb → F)
       · simp
       · intro b _ hb
         have hne : ((j : ℕ) : ℕ) ≠ ((b : Fin _) : ℕ) := fun heq => hb (Fin.ext heq.symm)
-        simp [hne, hne.symm]
+        simp [hne.symm]
       · intro habs
         exact absurd (Finset.mem_univ _) habs
     · rw [dif_neg h]
       refine Finset.sum_eq_zero fun b _ => ?_
       have hne : (j : ℕ) ≠ ((b : Fin _) : ℕ) := fun heq => h (heq ▸ b.isLt)
-      simp [hne, hne.symm]
+      simp [hne.symm]
   have : (evalX a (toPolyA v)).coeff j = ((toPolyA v).coeff j).eval a := by
     simp [evalX, Polynomial.coeff]
   rw [this, hcoeff]
@@ -191,7 +197,7 @@ lemma coeff_coeff_toPolyA {da za db zb : ℕ} (v : BWIdx da za db zb → F)
     · simp
     · intro b _ hb
       have hne : ((j : Fin za) : ℕ) ≠ ((b : Fin za) : ℕ) := fun heq => hb (Fin.ext heq.symm)
-      simp [hne, hne.symm]
+      simp [hne.symm]
     · intro habs
       exact absurd (Finset.mem_univ _) habs
   rw [hYcoeff, Polynomial.finset_sum_coeff]
@@ -199,7 +205,7 @@ lemma coeff_coeff_toPolyA {da za db zb : ℕ} (v : BWIdx da za db zb → F)
   · simp
   · intro b _ hb
     have hne : ((i : Fin da) : ℕ) ≠ ((b : Fin da) : ℕ) := fun heq => hb (Fin.ext heq.symm)
-    simp [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, hne, hne.symm]
+    simp [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, hne]
   · intro habs
     exact absurd (Finset.mem_univ _) habs
 
@@ -214,7 +220,7 @@ lemma coeff_coeff_toPolyB {da za db zb : ℕ} (v : BWIdx da za db zb → F)
     · simp
     · intro b _ hb
       have hne : ((j : Fin zb) : ℕ) ≠ ((b : Fin zb) : ℕ) := fun heq => hb (Fin.ext heq.symm)
-      simp [hne, hne.symm]
+      simp [hne.symm]
     · intro habs
       exact absurd (Finset.mem_univ _) habs
   rw [hYcoeff, Polynomial.finset_sum_coeff]
@@ -222,7 +228,7 @@ lemma coeff_coeff_toPolyB {da za db zb : ℕ} (v : BWIdx da za db zb → F)
   · simp
   · intro b _ hb
     have hne : ((i : Fin db) : ℕ) ≠ ((b : Fin db) : ℕ) := fun heq => hb (Fin.ext heq.symm)
-    simp [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, hne, hne.symm]
+    simp [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, hne]
   · intro habs
     exact absurd (Finset.mem_univ _) habs
 
@@ -275,7 +281,7 @@ lemma identity_of_mulVec_eq_zero {da za db zb : ℕ} (hzb : zb = za + 1)
           rw [Finset.sum_comm]
           rw [Finset.sum_eq_single (⟨j, h⟩ : Fin za)]
           · refine Finset.sum_congr rfl fun i _ => ?_
-            simp [mul_comm, mul_assoc, mul_left_comm]
+            simp [mul_comm, mul_left_comm]
           · intro b _ hb
             have hne : ((b : Fin za) : ℕ) ≠ j := fun heq => hb (Fin.ext heq)
             refine Finset.sum_eq_zero fun i _ => ?_
@@ -293,13 +299,13 @@ lemma identity_of_mulVec_eq_zero {da za db zb : ℕ} (hzb : zb = za + 1)
           rw [Finset.sum_eq_single (⟨j - 1, h.1⟩ : Fin za)]
           · refine Finset.sum_congr rfl fun i _ => ?_
             have hcond : (j - 1) + 1 = j := Nat.succ_pred_eq_of_pos h.2
-            simp [hcond, mul_comm, mul_assoc, mul_left_comm]
+            simp [hcond, mul_comm, mul_left_comm]
           · intro b _ hb
             have hne : ¬(((b : Fin za) : ℕ) + 1 = j) := by
               intro heq
               apply hb
               apply Fin.ext
-              show ((b : Fin za) : ℕ) = j - 1
+              change ((b : Fin za) : ℕ) = j - 1
               omega
             refine Finset.sum_eq_zero fun i _ => ?_
             simp [hne]
@@ -379,8 +385,7 @@ private lemma coeff_toPolyA {da za db zb : ℕ} (v : BWIdx da za db zb → F)
   · simp
   · intro b _ hb
     have hne : (((⟨j, hjza⟩ : Fin za)) : ℕ) ≠ ((b : Fin za) : ℕ) := fun heq => hb (Fin.ext heq.symm)
-    simp only [Fin.val_mk] at hne ⊢
-    simp [hne, hne.symm]
+    simp [hne.symm]
   · intro habs
     exact absurd (Finset.mem_univ _) habs
 
@@ -394,8 +399,7 @@ private lemma coeff_toPolyB {da za db zb : ℕ} (v : BWIdx da za db zb → F)
   · simp
   · intro b _ hb
     have hne : (((⟨j, hjzb⟩ : Fin zb)) : ℕ) ≠ ((b : Fin zb) : ℕ) := fun heq => hb (Fin.ext heq.symm)
-    simp only [Fin.val_mk] at hne ⊢
-    simp [hne, hne.symm]
+    simp [hne.symm]
   · intro habs
     exact absurd (Finset.mem_univ _) habs
 
@@ -406,7 +410,7 @@ private lemma coeff_toPolyA_eq_zero {da za db zb : ℕ} (v : BWIdx da za db zb �
   simp only [toPolyA, Polynomial.finset_sum_coeff, Polynomial.coeff_monomial]
   refine Finset.sum_eq_zero fun b _ => ?_
   have hne : (j : ℕ) ≠ ((b : Fin za) : ℕ) := fun heq => hjza (heq ▸ b.isLt)
-  simp [hne, hne.symm]
+  simp [hne.symm]
 
 private lemma coeff_toPolyB_eq_zero {da za db zb : ℕ} (v : BWIdx da za db zb → F)
     {j : ℕ} (hjzb : ¬ j < zb) : (toPolyB v).coeff j = 0 := by
@@ -414,7 +418,7 @@ private lemma coeff_toPolyB_eq_zero {da za db zb : ℕ} (v : BWIdx da za db zb �
   simp only [toPolyB, Polynomial.finset_sum_coeff, Polynomial.coeff_monomial]
   refine Finset.sum_eq_zero fun b _ => ?_
   have hne : (j : ℕ) ≠ ((b : Fin zb) : ℕ) := fun heq => hjzb (heq ▸ b.isLt)
-  simp [hne, hne.symm]
+  simp [hne.symm]
 
 /-- Each in-range coefficient has X-degree < da (power-sum shape). -/
 private lemma natDegree_coeff_toPolyA_lt {da za db zb : ℕ} (hda : 0 < da)
@@ -591,7 +595,7 @@ lemma evalY_eq_proximate_mul {k e h : ℕ}
   have hAgr_card : k + e + h + 1 ≤ Agr.card := by
     have hsplit : Agr.card + (Finset.univ.filter
         (fun x => p.eval (domain x) ≠ u₀ x + u₁ x * z)).card = Fintype.card ι := by
-      rw [hAgr, Finset.filter_card_add_filter_neg_card_eq_card]
+      rw [hAgr, Finset.card_filter_add_card_filter_not]
       · simp
     omega
   -- both sides have degree < k + e + h + 1 and agree on the embedded agreement set
@@ -625,6 +629,7 @@ variable {F : Type} [Field F] [DecidableEq F]
 variable {ι : Type} [Fintype ι] [DecidableEq ι] [Nonempty ι]
 
 set_option maxHeartbeats 3200000 in
+-- The Polishchuk–Spielman composition elaborates a large bivariate factorization term.
 /-- **[BCKHS25] Claim 2.3 (joint proximate).** If every `z ∈ S` admits a
 degree-`k` proximate within Hamming distance `e` of the line combination, and
 `S` is large enough relative to the Polishchuk–Spielman ratio, then there is a
@@ -760,7 +765,7 @@ theorem exists_joint_proximate (k e h DZ : ℕ)
       exact Finset.mem_image.mpr ⟨x, Finset.mem_filter.mpr ⟨Finset.mem_univ x, ha⟩, rfl⟩
   have hsplit : (Finset.univ.filter (fun x => domain x ∈ Qx)).card
       + (Finset.univ.filter (fun x => domain x ∉ Qx)).card = Fintype.card ι := by
-    rw [Finset.filter_card_add_filter_neg_card_eq_card]
+    rw [Finset.card_filter_add_card_filter_not]
     simp
   have hQge : (Fintype.card ι : ℕ) - (e + h) ≤ Qx.card := by
     have := hQx_card

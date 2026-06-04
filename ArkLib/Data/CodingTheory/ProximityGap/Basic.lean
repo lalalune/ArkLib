@@ -31,7 +31,11 @@ module codes over (scalar) rings.
 
 ## Extensions
 - weighted correlated agreement
-- mutual correlated agreement
+- mutual correlated agreement: a numeric `ε_mca(C, δ)` (ABF26 Definition 4.3) is now
+  available in `Errors.lean`. The WHIR proximity-generator version
+  (`hasMutualCorrAgreement`) in `ProofSystem/Whir/MutualCorrAgreement.lean` has a
+  predicate-level one-way bridge `proximityCondition_imp_mcaEvent_affineLine`; the
+  full numeric re-expression remains open (tracked as ABF26-D4.3 follow-up).
 - generalize the CA definitions using proximity generator?
 
 ## References

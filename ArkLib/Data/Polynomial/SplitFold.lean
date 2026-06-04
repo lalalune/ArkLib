@@ -18,8 +18,9 @@ This file defines n-way splitting and folding operations on polynomials.
   where `splitNth f n i` extracts coefficients at positions `j ≡ i (mod n)`.
 
 * `Polynomial.foldNth n f α`: Recombines the n-way split of `f` using powers of `α`,
-  computing `∑ i : Fin n, α^i * splitNth f n i`. This is the core operation in
-  FRI-style polynomial commitment schemes.
+  computing `∑ i : Fin n, C (α^i) * splitNth f n i`. This is the core operation in
+  FRI-style polynomial commitment schemes, and agrees with `FoldingPolynomial.polyFold`
+  (see `polyFold_eq_foldNth`).
 
 ## Implementation notes
 
@@ -163,7 +164,7 @@ lemma splitNth_def (n : ℕ) (f : 𝔽[X]) [inst : NeZero n] :
       rw [←Nat.div_add_mod' e n, ←Nat.div_add_mod' b n] at h₁ h₂
       by_cases h' : e % n ≥ b % n
       · have : e / n * n + e % n - (b / n * n + b % n) =
-                ((e / n - b / n) * n) + (e % n - b % n) := by
+               ((e / n - b / n) * n) + (e % n - b % n) := by
           have : e / n * n + e % n - (b / n * n + b % n) =
                   e / n * n + e % n - b / n * n - b % n := by
             omega
@@ -326,5 +327,117 @@ lemma splitNth_eval_comp_pow {n : ℕ} [NeZero n] (f : 𝔽[X]) (x : 𝔽) (i : 
   ext e a
   rw [← eval]
   simp
+
+/--
+Recombines the `n`-way split of `f` using powers of `α`, computing
+`∑ i : Fin n, C (α ^ i) * splitNth f n i`. This realizes the semantics documented
+for `Polynomial.foldNth` and is the core operation in FRI-style polynomial commitment
+schemes. The argument order `n f α` matches the module docstring.
+-/
+noncomputable def foldNth (n : ℕ) (f : 𝔽[X]) (α : 𝔽) [NeZero n] : 𝔽[X] :=
+  ∑ i : Fin n, C (α ^ i.val) * splitNth f n i
+
+/--
+`FoldingPolynomial.polyFold` agrees with `foldNth`: both recombine the `n`-way split
+of `f` using powers of `r`. This ties the new `foldNth` definition to the existing API.
+-/
+lemma polyFold_eq_foldNth {𝔽 : Type} [Field 𝔽] {f : 𝔽[X]} {n : ℕ} {r : 𝔽} [NeZero n] :
+    FoldingPolynomial.polyFold f n r = foldNth n f r := by
+  rw [polyFold_eq_sum_of_splitNth, foldNth]
+
+omit [NoZeroDivisors 𝔽] in
+/--
+Evaluation-level form of `splitNth_def`: evaluating `f` at `x` decomposes as a weighted
+sum of the split components evaluated at `x ^ n`, with weights `x ^ i`.
+-/
+lemma eval_eq_sum_splitNth {n : ℕ} [NeZero n] (f : 𝔽[X]) (x : 𝔽) :
+    f.eval x = ∑ i : Fin n, x ^ i.val * (splitNth f n i).eval (x ^ n) := by
+  conv_lhs => rw [splitNth_def n f]
+  rw [Polynomial.eval_finset_sum]
+  refine Finset.sum_congr rfl (fun i _ => ?_)
+  rw [eval_mul, eval_pow, eval_X, splitNth_eval_comp_pow]
+
+omit [NoZeroDivisors 𝔽] in
+/--
+Degree bound for the `n`-way fold: `(foldNth n f α).natDegree ≤ f.natDegree / n`.
+
+This is the degree-halving statement (at `n = 2`) used to track membership of a folded
+codeword in a code of half the degree bound: if `f.natDegree < 2^d` then
+`(foldNth 2 f α).natDegree ≤ f.natDegree / 2 < 2^(d-1)` (for `d ≥ 1`).
+It follows directly from `splitNth_degree_le` (each component has degree `≤ f.natDegree / n`)
+and the fact that scaling by `C (α^i)` and summing does not increase the degree bound.
+-/
+lemma foldNth_natDegree_le {n : ℕ} [NeZero n] (f : 𝔽[X]) (α : 𝔽) :
+    (foldNth n f α).natDegree ≤ f.natDegree / n := by
+  unfold foldNth
+  refine natDegree_sum_le_of_forall_le _ _ (fun i _ => ?_)
+  exact le_trans (natDegree_C_mul_le _ _) splitNth_degree_le
+
+end Polynomial
+
+namespace Polynomial
+
+/-!
+## Even/odd (`n = 2`) evaluation identities
+
+These specialise the general decomposition to `n = 2`, recovering the classical
+even/odd splitting used in FRI. They require a `CommRing` (resp. `Field`) because
+`(-x) ^ 2 = x ^ 2` and division by `2` and `x` are used; this is a strictly stronger
+typeclass than the single carrier `𝔽` of the surrounding development, where a
+`CommSemiring` suffices.
+-/
+
+section EvenOdd
+
+variable {𝔽 : Type}
+
+/--
+Even part of `f` at `x`: `f x + f (-x) = 2 · (splitNth f 2 0)(x²)`.
+Here `splitNth f 2 0` collects the even-degree coefficients of `f`.
+Requires `[CommRing 𝔽]` (uses `(-x) ^ 2 = x ^ 2`), stronger than the `CommSemiring`
+of the ambient `splitNth` development.
+-/
+lemma splitNth_two_eval_add [CommRing 𝔽] (f : 𝔽[X]) (x : 𝔽) :
+    f.eval x + f.eval (-x) = 2 * (splitNth f 2 0).eval (x ^ 2) := by
+  rw [eval_eq_sum_splitNth (n := 2) f x, eval_eq_sum_splitNth (n := 2) f (-x)]
+  have hsq : (-x) ^ 2 = x ^ 2 := neg_sq x
+  rw [hsq]
+  simp only [Fin.sum_univ_two, Fin.val_zero, Fin.val_one, pow_zero, pow_one, one_mul]
+  ring
+
+/--
+Odd part of `f` at `x`: `f x - f (-x) = 2 · x · (splitNth f 2 1)(x²)`.
+Here `splitNth f 2 1` collects the odd-degree coefficients of `f`.
+Requires `[CommRing 𝔽]` (uses `(-x) ^ 2 = x ^ 2`), stronger than the `CommSemiring`
+of the ambient `splitNth` development.
+-/
+lemma splitNth_two_eval_sub [CommRing 𝔽] (f : 𝔽[X]) (x : 𝔽) :
+    f.eval x - f.eval (-x) = 2 * x * (splitNth f 2 1).eval (x ^ 2) := by
+  rw [eval_eq_sum_splitNth (n := 2) f x, eval_eq_sum_splitNth (n := 2) f (-x)]
+  have hsq : (-x) ^ 2 = x ^ 2 := neg_sq x
+  rw [hsq]
+  simp only [Fin.sum_univ_two, Fin.val_zero, Fin.val_one, pow_zero, pow_one, one_mul]
+  ring
+
+/--
+Folding `f` with parameter `β` at `n = 2`, expressed via the even/odd evaluations of `f`:
+`(foldNth 2 f β)(x²) = (f x + f (-x) + β · (f x − f (-x)) · x⁻¹) · 2⁻¹`.
+Requires `[Field 𝔽]` and `x ≠ 0`, `(2 : 𝔽) ≠ 0` (division by `x` and `2`); this is the
+form used to reconstruct the folded value from two queries `f x`, `f (-x)`.
+-/
+lemma foldNth_two_eval [Field 𝔽] (f : 𝔽[X]) (x β : 𝔽) (hx : x ≠ 0) (h2 : (2 : 𝔽) ≠ 0) :
+    (foldNth 2 f β).eval (x ^ 2)
+      = (f.eval x + f.eval (-x) + β * (f.eval x - f.eval (-x)) * x⁻¹) * (2 : 𝔽)⁻¹ := by
+  have hE : (splitNth f 2 0).eval (x ^ 2) = (f.eval x + f.eval (-x)) * (2 : 𝔽)⁻¹ := by
+    rw [splitNth_two_eval_add]; field_simp
+  have hO : (splitNth f 2 1).eval (x ^ 2) = (f.eval x - f.eval (-x)) * (2 * x)⁻¹ := by
+    rw [splitNth_two_eval_sub]; field_simp
+  rw [foldNth]
+  simp only [Fin.sum_univ_two, Fin.val_zero, Fin.val_one, pow_zero, pow_one, map_one, one_mul,
+    eval_add, eval_mul, eval_C]
+  rw [hE, hO]
+  field_simp
+
+end EvenOdd
 
 end Polynomial

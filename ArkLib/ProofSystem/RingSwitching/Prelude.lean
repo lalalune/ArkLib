@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chung Thai Nguyen, Quang Dao
 -/
 
-import CompPoly.Fields.Binary.AdditiveNTT.AdditiveNTT
 import ArkLib.Data.MvPolynomial.Multilinear
 import ArkLib.OracleReduction.Basic
 import ArkLib.OracleReduction.Security.RoundByRound
 import CompPoly.Fields.Binary.Tower.TensorAlgebra
-import ArkLib.ProofSystem.Binius.BinaryBasefold.Basic
+import ArkLib.ProofSystem.RingSwitching.Profile
+import ArkLib.ProofSystem.Sumcheck.Structured
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Matrix.Basic
 
@@ -30,18 +30,18 @@ between small field K and large field L, including embeddings `φ₀ : L → L �
 
 noncomputable section
 
-namespace Binius.RingSwitching
-open Binius.BinaryBasefold
+namespace RingSwitching
 
-open OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Polynomial MvPolynomial TensorProduct
+open OracleSpec OracleComp ProtocolSpec Finset Polynomial MvPolynomial TensorProduct
 open scoped NNReal
+open Sumcheck.Structured
 
 /- This section defines generic preliminaries for the ring-switching protocol. -/
 section Preliminaries
 
 variable (κ : ℕ) [NeZero κ]
-variable (L : Type) [Field L] [Fintype L] [DecidableEq L] [CharP L 2]
-variable (K : Type) [Field K] [Fintype K] [DecidableEq K]
+variable (L : Type) [CommRing L] [Fintype L] [DecidableEq L]
+variable (K : Type) [CommRing K] [Fintype K] [DecidableEq K]
 variable [Algebra K L]
 variable (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ']
 variable (h_l : ℓ = ℓ' + κ)
@@ -57,13 +57,13 @@ Based on the tensor algebra theory from Section 2.1.
 /-- Tensor Algebra A = L ⊗_K L. Based on the spec,
 it's viewed as (2^κ)x(2^κ) arrays of K-elements.
 The imported TensorAlgebra file provides the leftAlgebra instances. -/
-abbrev TensorAlgebra (K L : Type*) [Field K] [Field L] [Algebra K L] := L ⊗[K] L
+abbrev TensorAlgebra (K L : Type*) [CommRing K] [CommRing L] [Algebra K L] := L ⊗[K] L
 
 /--
 Column embedding φ₀: L → A as a ring homomorphism.
 φ₀(α) = α ⊗ 1, operates on columns.
 -/
-def φ₀ (L K : Type*) [Field K] [Field L] [Algebra K L] : L →+* TensorAlgebra K L where
+def φ₀ (L K : Type*) [CommRing K] [CommRing L] [Algebra K L] : L →+* TensorAlgebra K L where
   toFun α := α ⊗ₜ[K] (1 : L)
   map_one' := rfl
   map_mul' α β := by simp only [Algebra.TensorProduct.tmul_mul_tmul, mul_one]
@@ -74,7 +74,7 @@ def φ₀ (L K : Type*) [Field K] [Field L] [Algebra K L] : L →+* TensorAlgebr
 Row embedding φ₁: L → A as a ring homomorphism.
 φ₁(α) = 1 ⊗ α, operates on rows.
 -/
-def φ₁ (L K : Type*) [Field K] [Field L] [Algebra K L] : L →+* TensorAlgebra K L where
+def φ₁ (L K : Type*) [CommRing K] [CommRing L] [Algebra K L] : L →+* TensorAlgebra K L where
   toFun α := (1 : L) ⊗ₜ[K] α
   map_one' := by rfl
   map_mul' α β := by
@@ -165,19 +165,19 @@ Takes a polynomial `t'` with coefficients in `L` and embeds it into a polynomial
 with coefficients in the tensor algebra `A` by applying `φ₁` to each coefficient.
 This is achieved by using `MvPolynomial.map`.
 -/
-def componentWise_φ₁_embed_MLE (t' : MultilinearPoly L ℓ') :
-    MultilinearPoly (TensorAlgebra K L) ℓ' :=
-  ⟨MvPolynomial.map (R:=L) (S₁ := TensorAlgebra K L) (f:=φ₁ L K) (t'.val), by
+def componentWise_embed_MLE {A' : Type} [CommRing A'] (φ : L →+* A')
+    (t' : MultilinearPoly L ℓ') : MultilinearPoly A' ℓ' :=
+  ⟨MvPolynomial.map (R:=L) (S₁ := A') (f:=φ) (t'.val), by
     rw [MvPolynomial.mem_restrictDegree_iff_degreeOf_le]
     intro i -- for any specific variable Xᵢ,
       -- we prove its max individual degree is at most 1 in ANY monomial terms
     calc
-      MvPolynomial.degreeOf i (MvPolynomial.map (φ₁ L K) t'.val)
+      MvPolynomial.degreeOf i (MvPolynomial.map φ t'.val)
       _ ≤ MvPolynomial.degreeOf i t'.val := by
         refine degreeOf_le_iff.mpr ?_
         intro m hm_support_mapped_t' -- consider any specific monomial term
         have hm_in_support_t' : m ∈ t'.val.support := by
-          apply MvPolynomial.support_map_subset (f:=φ₁ L K)
+          apply MvPolynomial.support_map_subset (f:=φ)
           exact hm_support_mapped_t'
         exact monomial_le_degreeOf i hm_in_support_t'
       _ ≤ 1 := by
@@ -185,6 +185,11 @@ def componentWise_φ₁_embed_MLE (t' : MultilinearPoly L ℓ') :
         simp only [MvPolynomial.mem_restrictDegree_iff_degreeOf_le] at h_og_t'
         exact h_og_t' i
   ⟩
+
+/-- Binius-named alias: component-wise `φ₁` embedding into the tensor algebra `L ⊗[K] L`. -/
+def componentWise_φ₁_embed_MLE (t' : MultilinearPoly L ℓ') :
+    MultilinearPoly (TensorAlgebra K L) ℓ' :=
+  componentWise_embed_MLE L ℓ' (A' := TensorAlgebra K L) (φ₁ L K) t'
 
 end TensorAlgebraOps
 
@@ -196,9 +201,12 @@ We define the Statement and Witness types at the boundaries of each phase
 following the enhanced specification.
 -/
 
--- Initial Input (Input to Batching Phase)
-abbrev MLPEvalStatement :=
-  Binius.BinaryBasefold.InitialStatement (L := L) (ℓ := ℓ)
+/-- Initial input (input to the Batching Phase): a polynomial-evaluation claim `s = t(r)`. -/
+structure MLPEvalStatement where
+  /-- The evaluation point `r = (r₀, …, r_{ℓ-1})` — shared input. -/
+  t_eval_point : Fin ℓ → L
+  /-- The claimed evaluation `s = t(r)`. -/
+  original_claim : L
 
 structure WitMLP where
   t : MultilinearPoly K ℓ
@@ -208,18 +216,23 @@ structure BatchingWitIn where
   t' : MultilinearPoly L ℓ'
 
 structure BatchingStmtIn where
-  t_eval_point : Fin ℓ → L         -- r = (r_0, ..., r_{ℓ-1}) => shared input
-  original_claim : L               -- s = t(r) => the original claim to verify
+  t_eval_point : Fin ℓ → L -- r = (r_0, ..., r_{ℓ-1}) => shared input
+  original_claim : L -- s = t(r) => the original claim to verify
 
-structure RingSwitchingBaseContext extends (SumcheckBaseContext L ℓ) where
+structure RingSwitchingBaseContext (P : RingSwitchingProfile K L κ)
+    extends (SumcheckBaseContext L ℓ) where
   -- context from batching phase
-  s_hat : TensorAlgebra K L  -- ŝ
-  r_batching : Fin κ → L     -- r''
+  s_hat : P.A -- ŝ
+  r_batching : Fin κ → L -- r''
 
-structure SumcheckWitness (i : Fin (ℓ' + 1)) where
-  t' : MultilinearPoly L ℓ' -- the packed polynomial
-  -- `h(X_0, ..., X_{ℓ'-1}) := A(X_0, ..., X_{ℓ'-1}) ⋅ t'(X_0, ..., X_{ℓ'-1})`
-  H : L⦃≤ 2⦄[X Fin (ℓ' - i)]
+-- `SumcheckWitness` was lifted to `ArkLib.ProofSystem.Sumcheck.Structured` (the data shape is
+-- generic and degree-neutral; only the per-round prover/verifier in `SumcheckPhase.lean` consume
+-- it). Binius ring-switching is the degree-2 case `H = m · t'`, so this Binius-local abbrev pins
+-- `d := 2`. Other instantiations (e.g. Hachi at `d := 2b+1`) pin their own degree — no
+-- instantiation is privileged by a default on the generic type. The packed polynomial `t'` and
+-- round polynomial `H` (after fixing previous challenges) live in the same structure.
+abbrev SumcheckWitness (L : Type) [CommSemiring L] (ℓ : ℕ) (i : Fin (ℓ + 1)) :=
+  Sumcheck.Structured.SumcheckWitness L ℓ i 2
 
 section MLIOPCS
 -- Define the specific Stmt/Wit types Π' expects.
@@ -298,44 +311,42 @@ end Preliminaries
 the basis of L over K has rank `2^κ` instead of `κ` as in the Preliminaries section.
 -/
 section Relations
-open Module Binius.BinaryBasefold
+open Module
 
 variable (κ : ℕ) [NeZero κ]
-variable (L : Type) [Field L] [Fintype L] [DecidableEq L] [CharP L 2]
+variable (L : Type) [CommRing L] [Nontrivial L] [Fintype L] [DecidableEq L]
   [SampleableType L]
-variable (K : Type) [Field K] [Fintype K] [DecidableEq K]
+variable (K : Type) [CommRing K] [Fintype K] [DecidableEq K]
 variable [Algebra K L]
-variable (β : Basis (Fin κ → Fin 2) K L)
+variable (P : RingSwitchingProfile K L κ)
 variable (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ']
 variable (h_l : ℓ = ℓ' + κ)
-variable {𝓑 : Fin 2 ↪ L}
 
 /-- Compute the tensor value ŝ := φ₁(t')(φ₀(r_κ), ..., φ₀(r_{ℓ-1})) -/
 def embedded_MLP_eval (t' : MultilinearPoly L ℓ') (r : Fin ℓ → L) :
-  TensorAlgebra K L :=
+  P.A :=
   -- This implements the identity:
   -- ŝ = Σ_{w ∈ {0,1}^ℓ'} eq̃(r_suffix, w) ⊗ t'(w)
   let r_suffix : Fin ℓ' → L :=
     fun i => r ⟨i.val + κ, by { rw [h_l]; omega }⟩
-  let φ₁_mapped_t': MultilinearPoly (TensorAlgebra K L) ℓ' := componentWise_φ₁_embed_MLE L K ℓ' t'
-  let φ₀_mapped_r: Fin ℓ' → (TensorAlgebra K L) := fun i => φ₀ L K (r_suffix i)
+  let φ₁_mapped_t': MultilinearPoly P.A ℓ' := componentWise_embed_MLE L ℓ' P.φ₁ t'
+  let φ₀_mapped_r: Fin ℓ' → P.A := fun i => P.φ₀ (r_suffix i)
   φ₁_mapped_t'.val.eval φ₀_mapped_r
 
 /-- Step 2 (V): Check 1: s ?= Σ_{v ∈ {0,1}^κ} eqTilde(v, r_{0..κ-1}) ⋅ ŝ_v.
 
 Note (soundness fix): the decomposition here must read the **row** components of `ŝ`
-(`decompose_tensor_algebra_rows`), which carry the `φ₁`/`t'` tensor factor: by
+(`P.decomposeRows`), which carry the `φ₁`/`t'` tensor factor: by
 `decompose_rows_packMLE`, `(rows ŝ)_u = Σ_w t(u,w)·eq̃(w, r_suffix)`, so the
 `eq̃(·, r_prefix)`-weighted sum reconstructs `t(r)`. The previous version used
-`decompose_tensor_algebra_columns`, which extracts the `φ₀`/`eq` factor instead
+the column decomposition, which extracts the `φ₀`/`eq` factor instead
 (`(columns (a ⊗ b))_v = β.repr a v • b`); with it the check does **not** imply
 `s = t(r)` (failing term at `κ = 1`, `t(0,w) = 1`, `t(1,w) = 0`). -/
-def performCheckOriginalEvaluation (s : L) (r : Fin ℓ → L) (s_hat : TensorAlgebra K L) : Bool :=
+def performCheckOriginalEvaluation (s : L) (r : Fin ℓ → L) (s_hat : P.A) : Bool :=
   let r_prefix : Fin κ → L := fun i => r ⟨i.val, by omega⟩
   let check_sum := Finset.sum Finset.univ fun (v : Fin κ → Fin 2) =>
     let v_as_L : Fin κ → L := fun i => if (v i == 1) then 1 else 0
-    (eqTilde v_as_L r_prefix) * (decompose_tensor_algebra_rows (L:=L)
-      (K:=K) (β:=β) s_hat v)
+    (eqTilde v_as_L r_prefix) * (P.decomposeRows s_hat v)
   decide (s = check_sum)
 
 /-- Step 4a: For each `w ∈ {0,1}^{ℓ'}`, P decompose `eq̃(r_κ, ..., r_{ℓ-1}, w_0, ..., w_{ℓ'-1})`
@@ -351,7 +362,7 @@ def compute_A_func (original_r_eval_suffix : Fin ℓ' → L)
     let w_as_L : Fin ℓ' → L := fun i => if w i == 1 then 1 else 0
     -- `eq̃(r_κ, ..., r_{ℓ-1}, w_0, ..., w_{ℓ'-1})`
     let eq_w: L := eqTilde original_r_eval_suffix w_as_L
-    let coords_A_w_u: (Fin κ → Fin 2) →₀ K := β.repr eq_w
+    let coords_A_w_u: (Fin κ → Fin 2) →₀ K := P.basis.repr eq_w
     -- Compute A(w) = Σ_{u ∈ {0,1}^κ} eq̃(u, r'') ⋅ A_{w,u}
     Finset.sum Finset.univ fun (u : Fin κ → Fin 2) =>
       let A_w_u : K := coords_A_w_u u
@@ -364,7 +375,7 @@ def compute_A_func (original_r_eval_suffix : Fin ℓ' → L)
 def compute_A_MLE
   (original_r_eval_suffix : Fin ℓ' → L) (r''_batching : Fin κ → L) :
   MultilinearPoly L ℓ' :=
-  let A_func := compute_A_func κ L K β ℓ' original_r_eval_suffix r''_batching
+  let A_func := compute_A_func κ L K P ℓ' original_r_eval_suffix r''_batching
   let A_MLE: MultilinearPoly L ℓ' := ⟨MvPolynomial.MLE A_func, MLE_mem_restrictDegree A_func⟩
   A_MLE
 
@@ -373,26 +384,30 @@ def getEvaluationPointSuffix (r : Fin ℓ → L) : Fin ℓ' → L :=
 
 /-- Ring-Switching multiplier parameter for sumcheck, using `A_MLE` as the multiplier. -/
 def RingSwitching_SumcheckMultParam :
-  SumcheckMultiplierParam L ℓ' (RingSwitchingBaseContext κ L K ℓ) :=
+  SumcheckMultiplierParam L ℓ' (RingSwitchingBaseContext κ L K ℓ P) :=
 { multpoly := fun ctx => -- This is supposed to be (r_κ, …, r_{ℓ-1})
-    compute_A_MLE κ L K β ℓ' (original_r_eval_suffix :=
+    compute_A_MLE κ L K P ℓ' (original_r_eval_suffix :=
       getEvaluationPointSuffix κ L ℓ ℓ' h_l (r := ctx.t_eval_point))
       (r''_batching := ctx.r_batching)
+  -- Ring-switching is the plain degree-2 case `H = P · t'`: combinator `Q := X`, degree 1.
+  combinator := fun _ => Polynomial.X
+  degCombinator := 1
+  combinator_natDegree_le := by intro _; exact Polynomial.natDegree_X_le
 }
 
 /-- Step 5 (V): Compute `s₀ := Σ_{u ∈ {0,1}^κ} eqTilde(u, r'') ⋅ ŝ_u`,
 where ŝ_u is the row components of ŝ. -/
-def compute_s0 (s_hat : TensorAlgebra K L) (r''_batching : Fin κ → L) : L :=
+def compute_s0 (s_hat : P.A) (r''_batching : Fin κ → L) : L :=
   Finset.sum Finset.univ fun (u : Fin κ → Fin 2) =>
     let u_as_L : Fin κ → L := fun i => if (u i == 1) then 1 else 0
     (eqTilde u_as_L r''_batching)
-      * (decompose_tensor_algebra_rows (L:=L) (K:=K) (β:=β) s_hat u)
+      * (P.decomposeRows s_hat u)
 
 /-- Compute the tensor `e := eq̃(φ₀(r_κ), ..., φ₀(r_{ℓ-1}), φ₁(r'_0), ..., φ₁(r'_{ℓ'-1}))` -/
-def compute_final_eq_tensor (r : Fin ℓ → L) (r' : Fin ℓ' → L) : TensorAlgebra K L :=
-  let φ₀_mapped_r_suffix : Fin ℓ' → TensorAlgebra K L := fun i =>
-    φ₀ L K (r ⟨i.val + κ, by { rw [h_l]; omega }⟩)
-  let φ₁_mapped_r': Fin ℓ' → (TensorAlgebra K L) := fun i => φ₁ L K (r' i)
+def compute_final_eq_tensor (r : Fin ℓ → L) (r' : Fin ℓ' → L) : P.A :=
+  let φ₀_mapped_r_suffix : Fin ℓ' → P.A := fun i =>
+    P.φ₀ (r ⟨i.val + κ, by { rw [h_l]; omega }⟩)
+  let φ₁_mapped_r': Fin ℓ' → P.A := fun i => P.φ₁ (r' i)
   eqTilde φ₀_mapped_r_suffix φ₁_mapped_r'
 
 /-- Decompose the final eq tensor `e := Σ_{u ∈ {0,1}^κ} eq̃(u, r'') ⨂ e_u`,
@@ -401,8 +416,14 @@ Then compute `Σ_{u ∈ {0,1}^κ} eq̃(u_0, ..., u_{κ-1}, r''_0, ..., r''_{κ-1
 -/
 def compute_final_eq_value (r_eval : Fin ℓ → L)
     (r'_challenges : Fin ℓ' → L) (r''_batching : Fin κ → L) : L :=
-  let e_tensor := compute_final_eq_tensor κ L K ℓ ℓ' h_l r_eval r'_challenges
-  let e_u : (Fin κ → Fin 2) → L := decompose_tensor_algebra_rows (L:=L) (K:=K) (β:=β) e_tensor
+  let e_tensor := compute_final_eq_tensor κ L K P ℓ ℓ' h_l r_eval r'_challenges
+  -- Soundness fix (defect #10, dual of the #8 performCheck fix): the final eq-value must read
+  -- the COLUMN components of the eq-tensor. Term-by-term derivation (via
+  -- `MLE_eval_eq_sum_eqTilde` + `eqTilde_tensor_expand` + the atomic extraction laws):
+  -- `decomposeColumns (eqTilde(φ₀∘r_suf, φ₁∘ch)) v = Σ_w β.repr(eqTilde(w,r_suf)) v • eqTilde(w,ch)`,
+  -- which matches `A_MLE.eval ch` after eqTilde symmetry; the rows form yields the transposed
+  -- bilinear pairing, which is NOT symmetric — the A_MLE identity is false for rows.
+  let e_u : (Fin κ → Fin 2) → L := P.decomposeColumns e_tensor
   Finset.sum Finset.univ fun (u : Fin κ → Fin 2) =>
     let u_as_L : Fin κ → L := fun i => if u i == 1 then 1 else 0
     let eq_u_r_batching : L := -- `eq̃(u_0, ..., u_{κ-1}, r''_0, ..., r''_{κ-1})`
@@ -412,36 +433,169 @@ def compute_final_eq_value (r_eval : Fin ℓ → L)
 /-- This condition ensures that the witness polynomial `H` has the
 correct structure `A(...) * t'(...)` -/
 def witnessStructuralInvariant {i : Fin (ℓ' + 1)}
-    (stmt : Statement (L := L) (RingSwitchingBaseContext κ L K ℓ) i)
+    (stmt : Statement (L := L) (RingSwitchingBaseContext κ L K ℓ P) i)
     (wit : SumcheckWitness L ℓ' i) : Prop :=
   wit.H = projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := wit.t') (m :=
-    (RingSwitching_SumcheckMultParam κ L K β ℓ ℓ' h_l).multpoly stmt.ctx)
+    (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly stmt.ctx)
     (i := i) (challenges := stmt.challenges)
 
 def masterKStateProp (aOStmtIn : AbstractOStmtIn L ℓ') (stmtIdx : Fin (ℓ' + 1))
-    (stmt : Statement (L := L) (RingSwitchingBaseContext κ L K ℓ) stmtIdx)
+    (stmt : Statement (L := L) (RingSwitchingBaseContext κ L K ℓ P) stmtIdx)
     (oStmt : ∀ j, aOStmtIn.OStmtIn j)
     (wit : SumcheckWitness L ℓ' stmtIdx)
     (localChecks : Prop := True) : Prop :=
   localChecks
-  ∧ witnessStructuralInvariant κ L K β ℓ ℓ' h_l stmt wit
-  ∧ sumcheckConsistencyProp (𝓑:=𝓑) stmt.sumcheck_target wit.H
+  ∧ witnessStructuralInvariant κ L K P ℓ ℓ' h_l stmt wit
+  ∧ sumcheckConsistencyProp (boolDomain L _) stmt.sumcheck_target wit.H
   ∧ aOStmtIn.initialCompatibility ⟨wit.t', oStmt⟩
 
 def sumcheckRoundRelationProp (aOStmtIn : AbstractOStmtIn L ℓ') (i : Fin (ℓ' + 1))
-    (stmt : Statement (L := L) (RingSwitchingBaseContext κ L K ℓ) i)
+    (stmt : Statement (L := L) (RingSwitchingBaseContext κ L K ℓ P) i)
     (oStmt : ∀ j, aOStmtIn.OStmtIn j)
     (wit : SumcheckWitness L ℓ' i) : Prop :=
-  masterKStateProp κ L K β ℓ ℓ' h_l (𝓑:=𝓑) aOStmtIn i stmt oStmt wit
+  masterKStateProp κ L K P ℓ ℓ' h_l aOStmtIn i stmt oStmt wit
 
 /-- Input relation for single round: proper sumcheck statement -/
 def sumcheckRoundRelation (aOStmtIn : AbstractOStmtIn L ℓ') (i : Fin (ℓ' + 1)) :
-  Set (((Statement (L := L) (RingSwitchingBaseContext κ L K ℓ) i) ×
+  Set (((Statement (L := L) (RingSwitchingBaseContext κ L K ℓ P) i) ×
     (∀ j, aOStmtIn.OStmtIn j)) × SumcheckWitness L ℓ' i) :=
-  { ((stmt, oStmt), wit) | sumcheckRoundRelationProp κ L K β ℓ ℓ' h_l (𝓑:=𝓑)
+  { ((stmt, oStmt), wit) | sumcheckRoundRelationProp κ L K P ℓ ℓ' h_l
     aOStmtIn i stmt oStmt wit }
 
 end Relations
+
+open Module in
+/-- The Binius (binary-tower) instantiation of `RingSwitchingProfile`, built from the tensor-algebra
+definitions above: `A := L ⊗[K] L`, embeddings `φ₀ = · ⊗ 1` / `φ₁ = 1 ⊗ ·`, and the decompositions
+are the `K`-basis coordinates via the left/right `L`-module structures.
+
+Marked `@[reducible]` so that, once the protocol code is rewired through the profile, references to
+`(binaryTowerProfile …).A` (etc.) unfold to `L ⊗[K] L` at reducible transparency — preserving the
+existing `rfl`/instance-driven Binius proofs (and the byte-identical `#print axioms`). -/
+@[reducible] def binaryTowerProfile (κ : ℕ) [NeZero κ] (K L : Type)
+    [Field K] [Field L] [Algebra K L] (β : Module.Basis (Fin κ → Fin 2) K L) :
+    RingSwitchingProfile K L κ where
+  basis := β
+  A := TensorAlgebra K L
+  commRingA := inferInstanceAs (CommRing (L ⊗[K] L))
+  algLA := Algebra.TensorProduct.leftAlgebra
+  φ₀ := φ₀ L K
+  φ₁ := φ₁ L K
+  decomposeRows := fun s => decompose_tensor_algebra_rows (L := L) (K := K) (β := β) s
+  decomposeColumns := fun s => decompose_tensor_algebra_columns (L := L) (K := K) (β := β) s
+  decomposeRows_spec := fun z => by
+    conv_lhs => rw [← (β.baseChange L).sum_repr z]
+    refine Finset.sum_congr rfl fun u _ => ?_
+    unfold decompose_tensor_algebra_rows
+    rw [Basis.baseChange_apply, smul_tmul']
+    show _ = (φ₀ L K) _ * (φ₁ L K) _
+    unfold φ₀ φ₁
+    simp [Algebra.TensorProduct.tmul_mul_tmul]
+  decomposeColumns_spec := fun z => by
+    letI rightAlgebra : Algebra L (L ⊗[K] L) := Algebra.TensorProduct.rightAlgebra
+    letI rightModule : Module L (L ⊗[K] L) := rightAlgebra.toModule
+    conv_lhs => rw [← (Basis.baseChangeRight (b := β) (Right := L)).sum_repr z]
+    refine Finset.sum_congr rfl fun v _ => ?_
+    unfold decompose_tensor_algebra_columns
+    rw [Basis.baseChangeRight_apply, Algebra.smul_def]
+    show algebraMap L (L ⊗[K] L) _ * _ = (φ₁ L K) _ * (φ₀ L K) _
+    rw [show (algebraMap L (L ⊗[K] L)) =
+      (Algebra.TensorProduct.includeRight).toRingHom.comp (algebraMap L L) by rfl]
+    unfold φ₀ φ₁
+    simp [Algebra.TensorProduct.tmul_mul_tmul]
+  decomposeRows_add := fun z w u => by
+    unfold decompose_tensor_algebra_rows
+    simp [map_add]
+  decomposeRows_φ₀_mul_φ₁ := fun a b u => by
+    have h : φ₀ L K a * φ₁ L K b = a ⊗ₜ[K] b := by
+      simp only [φ₀, φ₁, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
+        Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
+    show decompose_tensor_algebra_rows (L := L) (K := K) (β := β) _ u = _
+    rw [h]
+    unfold decompose_tensor_algebra_rows
+    rw [Basis.baseChange_repr_tmul]
+  decomposeColumns_add := fun z w v => by
+    unfold decompose_tensor_algebra_columns
+    simp [map_add]
+  decomposeColumns_φ₀_mul_φ₁ := fun a b v => by
+    have h : φ₀ L K a * φ₁ L K b = a ⊗ₜ[K] b := by
+      simp only [φ₀, φ₁, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
+        Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
+    show decompose_tensor_algebra_columns (L := L) (K := K) (β := β) _ v = _
+    rw [h]
+    unfold decompose_tensor_algebra_columns
+    simp only [Basis.baseChangeRight_repr_tmul]
+
+
+/-! ## Generic row-extraction helpers over an abstract `RingSwitchingProfile`
+
+These are profile-level consequences of the two extraction laws `decomposeRows_add` /
+`decomposeRows_φ₀_mul_φ₁`, derived once for *every* `P : RingSwitchingProfile B L κ`:
+* `decomposeRows_zero` : row coordinates of `0` vanish (from `decomposeRows_add` by cancellation);
+* `decomposeRows_finsetSum` : row coordinates are additive over finite sums (induction from the
+  binary additivity law and the zero law).
+The DP24 capstone below is then stated and proved over an abstract `P`, with `binaryTowerProfile`
+recovering the concrete Binius statements by reducibility. -/
+section GenericRowExtraction
+open Module
+
+variable {B L : Type*} {κ : ℕ} [CommRing B] [CommRing L] [Algebra B L]
+variable (P : RingSwitchingProfile B L κ)
+
+/-- Row coordinates of `0` vanish: a profile-level consequence of `decomposeRows_add` (apply it to
+`z = w = 0` and cancel). -/
+lemma RingSwitchingProfile.decomposeRows_zero (u : Fin κ → Fin 2) :
+    P.decomposeRows 0 u = 0 := by
+  have h := P.decomposeRows_add 0 0 u
+  rw [add_zero] at h
+  -- `h : P.decomposeRows 0 u = P.decomposeRows 0 u + P.decomposeRows 0 u`
+  -- cancel `P.decomposeRows 0 u` on the left of `… + 0 = … + …`
+  exact (add_left_cancel (a := P.decomposeRows 0 u)
+    (by rw [add_zero]; exact h)).symm
+
+/-- Row coordinates are additive over finite sums: induction from the binary additivity law
+`decomposeRows_add` (with `decomposeRows_zero` as the base case). -/
+lemma RingSwitchingProfile.decomposeRows_finsetSum {ι : Type*} [DecidableEq ι] (s : Finset ι)
+    (f : ι → P.A) (u : Fin κ → Fin 2) :
+    P.decomposeRows (∑ i ∈ s, f i) u = ∑ i ∈ s, P.decomposeRows (f i) u := by
+  induction s using Finset.induction with
+  | empty => simp [P.decomposeRows_zero]
+  | insert a s ha ih =>
+    rw [Finset.sum_insert ha, Finset.sum_insert ha, P.decomposeRows_add, ih]
+
+/-- `Fintype` corollary of `decomposeRows_finsetSum` for sums over `univ`. -/
+lemma RingSwitchingProfile.decomposeRows_sum {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (f : ι → P.A) (u : Fin κ → Fin 2) :
+    P.decomposeRows (∑ i, f i) u = ∑ i, P.decomposeRows (f i) u :=
+  P.decomposeRows_finsetSum Finset.univ f u
+
+/-- Column coordinates of `0` vanish: the column dual of `decomposeRows_zero`, from
+`decomposeColumns_add` by cancellation. -/
+lemma RingSwitchingProfile.decomposeColumns_zero (v : Fin κ → Fin 2) :
+    P.decomposeColumns 0 v = 0 := by
+  have h := P.decomposeColumns_add 0 0 v
+  rw [add_zero] at h
+  exact (add_left_cancel (a := P.decomposeColumns 0 v)
+    (by rw [add_zero]; exact h)).symm
+
+/-- Column coordinates are additive over finite sums: the column dual of `decomposeRows_finsetSum`,
+by induction from `decomposeColumns_add` (with `decomposeColumns_zero` as base case). -/
+lemma RingSwitchingProfile.decomposeColumns_finsetSum {ι : Type*} [DecidableEq ι] (s : Finset ι)
+    (f : ι → P.A) (v : Fin κ → Fin 2) :
+    P.decomposeColumns (∑ i ∈ s, f i) v = ∑ i ∈ s, P.decomposeColumns (f i) v := by
+  induction s using Finset.induction with
+  | empty => simp [P.decomposeColumns_zero]
+  | insert a s ha ih =>
+    rw [Finset.sum_insert ha, Finset.sum_insert ha, P.decomposeColumns_add, ih]
+
+/-- `Fintype` corollary of `decomposeColumns_finsetSum` for sums over `univ`. -/
+lemma RingSwitchingProfile.decomposeColumns_sum {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (f : ι → P.A) (v : Fin κ → Fin 2) :
+    P.decomposeColumns (∑ i, f i) v = ∑ i, P.decomposeColumns (f i) v :=
+  P.decomposeColumns_finsetSum Finset.univ f v
+
+end GenericRowExtraction
+
 
 /-! ## DP24 Ring-Switching Algebra Layer
 
@@ -468,11 +622,11 @@ tensor factor (`decompose_columns (a ⊗ b) v = β.repr a v • b`). Hence
 report for the explicit failing term.
 -/
 section RingSwitchingAlgebra
-open Module Binius.BinaryBasefold
+open Module
 
 variable {κ₀ : ℕ} [NeZero κ₀]
-variable {L₀ : Type} [Field L₀] [Fintype L₀] [DecidableEq L₀] [CharP L₀ 2]
-variable {K₀ : Type} [Field K₀] [Fintype K₀] [DecidableEq K₀]
+variable {L₀ : Type} [CommRing L₀] [IsDomain L₀] [Fintype L₀] [DecidableEq L₀] [CharP L₀ 2]
+variable {K₀ : Type} [CommRing K₀] [IsDomain K₀] [Fintype K₀] [DecidableEq K₀]
 variable [Algebra K₀ L₀]
 
 omit [Fintype L₀] [DecidableEq L₀] [CharP L₀ 2] [Fintype K₀] [DecidableEq K₀] in
@@ -506,37 +660,6 @@ private lemma eqPoly_collapse {ℓ_suf : ℕ} (g : Fin ℓ_suf → L₀) (w : Fi
   intro i _
   rw [MvPolynomial.coe_eval₂Hom]
   exact singleEq_collapse g w i
-
-omit [Fintype K₀] [DecidableEq K₀] in
-/-- **DP24 packing expansion.** The prover's tensor
-`ŝ := φ₁(t')(φ₀(r_κ), …, φ₀(r_{ℓ-1}))` expands over the suffix hypercube as
-`ŝ = Σ_{w ∈ {0,1}^ℓ'} φ₀(eq̃(w, r_suffix)) · φ₁(t'(w))`, i.e. `Σ_w eq̃(r_suffix, w) ⊗ t'(w)`. -/
-lemma embedded_MLP_eval_eq_sum (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ'] (h_l : ℓ = ℓ' + κ₀)
-    (t' : MultilinearPoly L₀ ℓ') (r : Fin ℓ → L₀) :
-    embedded_MLP_eval κ₀ L₀ K₀ ℓ ℓ' h_l t' r =
-      ∑ w : Fin ℓ' → Fin 2,
-        (φ₀ L₀ K₀ (eqTilde (fun i => (if w i == 1 then (1 : L₀) else 0))
-            (getEvaluationPointSuffix κ₀ L₀ ℓ ℓ' h_l r)))
-          * (φ₁ L₀ K₀ (eval (fun i => (if w i == 1 then (1 : L₀) else 0)) t'.val)) := by
-  unfold embedded_MLP_eval componentWise_φ₁_embed_MLE getEvaluationPointSuffix
-  simp only []
-  rw [← MvPolynomial.eval₂_eq_eval_map]
-  conv_lhs => rw [← MvPolynomial.is_multilinear_iff_eq_evals_zeroOne.mp t'.property]
-  unfold MvPolynomial.MLE
-  rw [← MvPolynomial.coe_eval₂Hom, map_sum]
-  apply Finset.sum_congr rfl
-  intro w _
-  rw [map_mul, MvPolynomial.coe_eval₂Hom, MvPolynomial.eval₂_C]
-  congr 1
-  · have hcoe : (fun i => ((w i : Fin 2) : L₀))
-        = (fun i => (if w i == 1 then (1 : L₀) else 0)) := by
-      funext i; rcases Fin.exists_fin_two.mp ⟨w i, rfl⟩ with h | h <;> rw [h] <;> simp
-    rw [hcoe]
-    exact eqPoly_collapse (fun i => r ⟨i.val + κ₀, by rw [h_l]; omega⟩) w
-  · unfold MvPolynomial.toEvalsZeroOne
-    have hpt : (fun i => ((w i : Fin 2) : L₀)) = (fun i => (if w i == 1 then (1 : L₀) else 0)) := by
-      funext i; rcases Fin.exists_fin_two.mp ⟨w i, rfl⟩ with h | h <;> rw [h] <;> simp
-    rw [show ((w : Fin ℓ' → L₀)) = (fun i => ((w i : Fin 2) : L₀)) from rfl, hpt]
 
 omit [Fintype L₀] [DecidableEq L₀] [CharP L₀ 2] [Fintype K₀] [DecidableEq K₀] in
 /-- `decompose_tensor_algebra_rows` is additive over finite sums of tensors. -/
@@ -578,30 +701,6 @@ lemma packMLE_repr_eval (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ'] (h_l : ℓ =
   · rw [MvPolynomial.MLE_eval_zeroOne, ← Basis.equivFun_apply, LinearEquiv.apply_symm_apply]
   · funext i; rcases Fin.exists_fin_two.mp ⟨w i, rfl⟩ with h | h <;> rw [h] <;> simp
 
-/-- **Row recovery of `t`-evaluations.** The row components of the prover's tensor
-`ŝ = embedded_MLP_eval (packMLE β t) r` carry the suffix-`eq`-weighted evaluations of `t`:
-`(decompose_rows ŝ)_u = Σ_{w ∈ {0,1}^ℓ'} t(u, w) · eq̃(w, r_suffix)`.
-
-This is the load-bearing identity for reconstructing `t(r)` from `ŝ`. It uses the *row*
-decomposition (which represents the `t'`/`φ₁` factor); the verifier's
-`performCheckOriginalEvaluation` instead uses the *column* decomposition — see the module
-note above. -/
-lemma decompose_rows_packMLE (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ'] (h_l : ℓ = ℓ' + κ₀)
-    (β : Basis (Fin κ₀ → Fin 2) K₀ L₀) (t : MultilinearPoly K₀ ℓ) (r : Fin ℓ → L₀)
-    (u : Fin κ₀ → Fin 2) :
-    decompose_tensor_algebra_rows (L := L₀) (K := K₀) (β := β)
-        (embedded_MLP_eval κ₀ L₀ K₀ ℓ ℓ' h_l (packMLE κ₀ L₀ K₀ ℓ ℓ' h_l β t) r) u
-      = ∑ w : Fin ℓ' → Fin 2,
-          (MvPolynomial.eval (fun i =>
-              ((if h : i.val < κ₀ then u ⟨i.val, h⟩ else w ⟨i.val - κ₀, by omega⟩ : Fin 2) : K₀))
-              t.val)
-            • (eqTilde (fun i => (if w i == 1 then (1 : L₀) else 0))
-                (getEvaluationPointSuffix κ₀ L₀ ℓ ℓ' h_l r)) := by
-  rw [embedded_MLP_eval_eq_sum, decompose_rows_sum]
-  apply Finset.sum_congr rfl
-  intro w _
-  rw [decompose_rows_φ₀φ₁, packMLE_repr_eval]
-
 omit [Fintype L₀] [DecidableEq L₀] [CharP L₀ 2] [Fintype K₀] [DecidableEq K₀] in
 /-- `eqTilde` written as a product over coordinates of the symmetric Boolean factor. -/
 lemma eqTilde_prod {ℓ_ : ℕ} (r r' : Fin ℓ_ → L₀) :
@@ -624,8 +723,7 @@ lemma prod_concat_split {M : Type*} [CommMonoid M] (ℓ' : ℕ)
   let e : Fin κ₀ ⊕ Fin ℓ' ≃ Fin (ℓ' + κ₀) :=
     finSumFinEquiv.trans (finCongr (by omega))
   rw [← Equiv.prod_comp e
-    (fun i : Fin (ℓ' + κ₀) =>
-      if h : i.val < κ₀ then Fp ⟨i.val, h⟩ else Fs ⟨i.val - κ₀, by omega⟩),
+    (fun i : Fin (ℓ' + κ₀) => if h : i.val < κ₀ then Fp ⟨i.val, h⟩ else Fs ⟨i.val - κ₀, by omega⟩),
     Fintype.prod_sum_type]
   have he_inl : ∀ i : Fin κ₀, (e (Sum.inl i)).val = i.val := by
     intro i
@@ -654,8 +752,7 @@ omit [Fintype L₀] [DecidableEq L₀] [CharP L₀ 2] [Fintype K₀] [DecidableE
 /-- `eqTilde` of concatenated Boolean / point data factors along the κ/ℓ' split:
 `eqTilde (concat fp fs) (concat gp gs) = eqTilde fp gp * eqTilde fs gs`. -/
 lemma eqTilde_concat_split (ℓ' : ℕ)
-    (fp : Fin κ₀ → L₀) (fs : Fin ℓ' → L₀) (gp : Fin κ₀ → L₀)
-    (gs : Fin ℓ' → L₀) :
+    (fp : Fin κ₀ → L₀) (fs : Fin ℓ' → L₀) (gp : Fin κ₀ → L₀) (gs : Fin ℓ' → L₀) :
     eqTilde (fun i : Fin (ℓ' + κ₀) => if h : i.val < κ₀ then fp ⟨i.val, h⟩
           else fs ⟨i.val - κ₀, by omega⟩)
         (fun i : Fin (ℓ' + κ₀) => if h : i.val < κ₀ then gp ⟨i.val, h⟩
@@ -684,7 +781,7 @@ lemma aeval_eqPolynomial_zeroOne {ℓ_ : ℕ} (x : Fin ℓ_ → Fin 2) (r : Fin 
       MvPolynomial.aeval_C, MvPolynomial.aeval_X, map_zero, sub_zero, mul_zero, zero_mul,
       add_zero, one_mul, mul_one]
 
-omit [Fintype K₀] [DecidableEq K₀] in
+omit [CharP L₀ 2] [Fintype K₀] [DecidableEq K₀] in
 /-- **MLE evaluation identity (through the algebra map).** For a multilinear `t` over `K₀`,
 its `L₀`-evaluation at `r` equals the suffix-`eq`-weighted sum of its Boolean evaluations:
 `aeval r t = ∑_{b ∈ {0,1}^ℓ} algebraMap(t(b)) · eq̃(b, r)`. -/
@@ -705,8 +802,7 @@ lemma aeval_eq_sum_eqTilde {ℓ_ : ℕ} (t : MultilinearPoly K₀ ℓ_) (r : Fin
 otherwise — matching `packMLE` / `decompose_rows_packMLE`. Packaged as an `Equiv`. -/
 def hypercubeSplitEquiv (ℓ ℓ' : ℕ) (h_l : ℓ = ℓ' + κ₀) :
     (Fin κ₀ → Fin 2) × (Fin ℓ' → Fin 2) ≃ (Fin ℓ → Fin 2) where
-  toFun := fun p => fun i =>
-    if h : i.val < κ₀ then p.1 ⟨i.val, h⟩ else p.2 ⟨i.val - κ₀, by omega⟩
+  toFun := fun p => fun i => if h : i.val < κ₀ then p.1 ⟨i.val, h⟩ else p.2 ⟨i.val - κ₀, by omega⟩
   invFun := fun b => (fun i => b ⟨i.val, by omega⟩, fun j => b ⟨j.val + κ₀, by omega⟩)
   left_inv := fun ⟨v, w⟩ => by
     apply Prod.ext
@@ -724,25 +820,400 @@ def hypercubeSplitEquiv (ℓ ℓ' : ℕ) (h_l : ℓ = ℓ' + κ₀) :
       congr 1
       apply Fin.ext; simp only []; omega
 
+/-! ### Generic DP24 capstone over an abstract `RingSwitchingProfile`
+
+The lemmas above are stated for the concrete `binaryTowerProfile`; here we lift them to an abstract
+`P : RingSwitchingProfile K₀ L₀ κ₀`, using only the structure's embeddings (`P.φ₀`, `P.φ₁`), basis
+(`P.basis`), row decomposition (`P.decomposeRows`), and its extraction laws (`decomposeRows_add` /
+`decomposeRows_φ₀_mul_φ₁`, via the generic helper `decomposeRows_sum`). The Boolean-literal collapse
+of the `eq`-factor (`singleEq_collapse'` / `eqPoly_collapse'`) holds for *any* pair of ring homs
+because both agree on `{0, 1}`. These need only `CommRing + IsDomain` (not `Field`), so they apply in
+the batching phase. Each reduces to its concrete counterpart at `P := binaryTowerProfile β`. -/
+
+variable (P : RingSwitchingProfile K₀ L₀ κ₀)
+
+omit [Fintype L₀] [DecidableEq L₀] [CharP L₀ 2] [Fintype K₀] [DecidableEq K₀] in
+/-- Generic `singleEq_collapse`: a single `eqPolynomial` factor evaluated through the mixed
+embedding `eval₂ P.φ₁ (P.φ₀ ∘ g)` at a Boolean coefficient collapses to `P.φ₀` of its ordinary
+evaluation, since `P.φ₀` and `P.φ₁` agree on the Boolean literals `{0, 1}` (both are ring homs). -/
+private lemma singleEq_collapse' {ℓ_suf : ℕ} (g : Fin ℓ_suf → L₀) (w : Fin ℓ_suf → Fin 2)
+    (i : Fin ℓ_suf) :
+    MvPolynomial.eval₂ P.φ₁ (fun j => P.φ₀ (g j))
+      (singleEqPolynomial ((if w i == 1 then (1 : L₀) else 0)) (X i))
+    = P.φ₀ (eval g (singleEqPolynomial ((if w i == 1 then (1 : L₀) else 0)) (X i))) := by
+  unfold singleEqPolynomial
+  rcases Fin.exists_fin_two.mp ⟨w i, rfl⟩ with h | h <;> rw [h] <;>
+    simp only [Fin.isValue, beq_iff_eq, reduceIte, zero_ne_one,
+      MvPolynomial.eval₂_add, MvPolynomial.eval₂_mul, MvPolynomial.eval₂_sub,
+      MvPolynomial.eval₂_one, MvPolynomial.eval₂_X,
+      MvPolynomial.eval_add, MvPolynomial.eval_mul, MvPolynomial.eval_sub, MvPolynomial.eval_X,
+      map_add, map_mul, map_sub, map_one, map_zero, sub_zero, mul_zero, zero_mul, add_zero,
+      one_mul, mul_one]
+
+omit [Fintype L₀] [DecidableEq L₀] [CharP L₀ 2] [Fintype K₀] [DecidableEq K₀] in
+/-- Generic `eqPoly_collapse`: the full `eqPolynomial` collapses through the mixed embedding to
+`P.φ₀` of its ordinary evaluation, by multiplying the `singleEq_collapse'` factors. -/
+private lemma eqPoly_collapse' {ℓ_suf : ℕ} (g : Fin ℓ_suf → L₀) (w : Fin ℓ_suf → Fin 2) :
+    MvPolynomial.eval₂ P.φ₁ (fun j => P.φ₀ (g j))
+      (eqPolynomial (fun i => (if w i == 1 then (1 : L₀) else 0)))
+    = P.φ₀ (eval g (eqPolynomial (fun i => (if w i == 1 then (1 : L₀) else 0)))) := by
+  unfold eqPolynomial
+  rw [← MvPolynomial.coe_eval₂Hom, map_prod, MvPolynomial.eval_prod, map_prod]
+  apply Finset.prod_congr rfl
+  intro i _
+  rw [MvPolynomial.coe_eval₂Hom]
+  exact singleEq_collapse' P g w i
+
+omit [CharP L₀ 2] in
+/-- **Generic DP24 packing expansion** over an abstract `P`. The prover's tensor
+`ŝ := P.φ₁(t')(P.φ₀(r_κ), …, P.φ₀(r_{ℓ-1}))` expands over the suffix hypercube as
+`ŝ = Σ_{w ∈ {0,1}^ℓ'} P.φ₀(eq̃(w, r_suffix)) · P.φ₁(t'(w))`. -/
+lemma embedded_MLP_eval_eq_sum' (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ'] (h_l : ℓ = ℓ' + κ₀)
+    (t' : MultilinearPoly L₀ ℓ') (r : Fin ℓ → L₀) :
+    embedded_MLP_eval κ₀ L₀ K₀ P ℓ ℓ' h_l t' r =
+      ∑ w : Fin ℓ' → Fin 2,
+        (P.φ₀ (eqTilde (fun i => (if w i == 1 then (1 : L₀) else 0))
+            (getEvaluationPointSuffix κ₀ L₀ ℓ ℓ' h_l r)))
+          * (P.φ₁ (eval (fun i => (if w i == 1 then (1 : L₀) else 0)) t'.val)) := by
+  unfold embedded_MLP_eval componentWise_embed_MLE getEvaluationPointSuffix
+  simp only []
+  rw [← MvPolynomial.eval₂_eq_eval_map]
+  conv_lhs => rw [← MvPolynomial.is_multilinear_iff_eq_evals_zeroOne.mp t'.property]
+  unfold MvPolynomial.MLE
+  rw [← MvPolynomial.coe_eval₂Hom, map_sum]
+  apply Finset.sum_congr rfl
+  intro w _
+  rw [map_mul, MvPolynomial.coe_eval₂Hom, MvPolynomial.eval₂_C]
+  congr 1
+  · have hcoe : (fun i => ((w i : Fin 2) : L₀))
+        = (fun i => (if w i == 1 then (1 : L₀) else 0)) := by
+      funext i; rcases Fin.exists_fin_two.mp ⟨w i, rfl⟩ with h | h <;> rw [h] <;> simp
+    rw [hcoe]
+    exact eqPoly_collapse' P (fun i => r ⟨i.val + κ₀, by rw [h_l]; omega⟩) w
+  · unfold MvPolynomial.toEvalsZeroOne
+    have hpt : (fun i => ((w i : Fin 2) : L₀)) = (fun i => (if w i == 1 then (1 : L₀) else 0)) := by
+      funext i; rcases Fin.exists_fin_two.mp ⟨w i, rfl⟩ with h | h <;> rw [h] <;> simp
+    rw [show ((w : Fin ℓ' → L₀)) = (fun i => ((w i : Fin 2) : L₀)) from rfl, hpt]
+
+omit [CharP L₀ 2] in
+/-- **Generic row recovery of `t`-evaluations** over an abstract `P` whose basis is `P.basis`.
+The row components of `ŝ = embedded_MLP_eval (packMLE P.basis t) r` carry the suffix-`eq`-weighted
+evaluations of `t`. Routes through `embedded_MLP_eval_eq_sum'`, the generic row additivity
+`P.decomposeRows_sum`, the atomic extraction law `P.decomposeRows_φ₀_mul_φ₁`, and the
+profile-independent `packMLE_repr_eval`. -/
+lemma decompose_rows_packMLE' (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ'] (h_l : ℓ = ℓ' + κ₀)
+    (t : MultilinearPoly K₀ ℓ) (r : Fin ℓ → L₀) (u : Fin κ₀ → Fin 2) :
+    P.decomposeRows
+        (embedded_MLP_eval κ₀ L₀ K₀ P ℓ ℓ' h_l
+          (packMLE κ₀ L₀ K₀ ℓ ℓ' h_l P.basis t) r) u
+      = ∑ w : Fin ℓ' → Fin 2,
+          (MvPolynomial.eval (fun i =>
+              ((if h : i.val < κ₀ then u ⟨i.val, h⟩ else w ⟨i.val - κ₀, by omega⟩ : Fin 2) : K₀))
+              t.val)
+            • (eqTilde (fun i => (if w i == 1 then (1 : L₀) else 0))
+                (getEvaluationPointSuffix κ₀ L₀ ℓ ℓ' h_l r)) := by
+  rw [embedded_MLP_eval_eq_sum', P.decomposeRows_sum]
+  apply Finset.sum_congr rfl
+  intro w _
+  rw [P.decomposeRows_φ₀_mul_φ₁, packMLE_repr_eval]
+
+omit [CharP L₀ 2] in
+/-- **Generic DP24 ring-switching capstone (sum form)** over an abstract `P`. The verifier's
+row-decomposition check sum, applied to the honest tensor `ŝ = embedded_MLP_eval (packMLE P.basis t)
+r`, reconstructs exactly `t(r) = aeval r t`. -/
+lemma check_rows_sum_eq_aeval' (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ'] (h_l : ℓ = ℓ' + κ₀)
+    (t : MultilinearPoly K₀ ℓ) (r : Fin ℓ → L₀) :
+    (∑ v : Fin κ₀ → Fin 2,
+        eqTilde (fun i => (if v i == 1 then (1 : L₀) else 0)) (fun i => r ⟨i.val, by omega⟩)
+          * P.decomposeRows
+              (embedded_MLP_eval κ₀ L₀ K₀ P ℓ ℓ' h_l
+                (packMLE κ₀ L₀ K₀ ℓ ℓ' h_l P.basis t) r) v)
+      = (MvPolynomial.aeval r) t.val := by
+  subst h_l
+  rw [aeval_eq_sum_eqTilde]
+  rw [← Equiv.sum_comp (hypercubeSplitEquiv (κ₀ := κ₀) (ℓ' + κ₀) ℓ' rfl), Fintype.sum_prod_type]
+  apply Finset.sum_congr rfl
+  intro v _
+  rw [decompose_rows_packMLE', Finset.mul_sum]
+  apply Finset.sum_congr rfl
+  intro w _
+  rw [Algebra.smul_def]
+  rw [show (fun i => ((hypercubeSplitEquiv (κ₀ := κ₀) (ℓ' + κ₀) ℓ' rfl (v, w) i : Fin 2) : K₀))
+      = (fun i => ((if h : i.val < κ₀ then v ⟨i.val, h⟩ else w ⟨i.val - κ₀, by omega⟩ : Fin 2) : K₀))
+      from by funext i; rfl]
+  rw [show (getEvaluationPointSuffix κ₀ L₀ (ℓ' + κ₀) ℓ' rfl r)
+      = (fun i => r ⟨i.val + κ₀, by omega⟩) from by funext i; rfl]
+  have hfuse :
+      eqTilde (fun i => (if v i == 1 then (1 : L₀) else 0)) (fun i => r ⟨i.val, by omega⟩)
+        * eqTilde (fun i => (if w i == 1 then (1 : L₀) else 0)) (fun i => r ⟨i.val + κ₀, by omega⟩)
+      = eqTilde
+          (fun i => (if hypercubeSplitEquiv (κ₀ := κ₀) (ℓ' + κ₀) ℓ' rfl (v, w) i == 1 then
+            (1 : L₀) else 0)) r := by
+    rw [← eqTilde_concat_split (κ₀ := κ₀) ℓ'
+        (fun i => (if v i == 1 then (1 : L₀) else 0))
+        (fun i => (if w i == 1 then (1 : L₀) else 0))
+        (fun i => r ⟨i.val, by omega⟩)
+        (fun i => r ⟨i.val + κ₀, by omega⟩)]
+    congr 1
+    · funext i
+      by_cases h : i.val < κ₀
+      · simp only [hypercubeSplitEquiv, Equiv.coe_fn_mk, h, dif_pos]
+      · simp only [hypercubeSplitEquiv, Equiv.coe_fn_mk, h, dif_neg, not_false_iff]
+    · funext i
+      by_cases h : i.val < κ₀
+      · rw [dif_pos h]
+      · rw [dif_neg h]
+        congr 1
+        apply Fin.ext
+        simp only []
+        omega
+  rw [← hfuse]
+  ring
+
+omit [CharP L₀ 2] in
+/-- **Generic DP24 ring-switching capstone (decision form)** over an abstract `P`. The verifier's
+Step-2 check on the honest tensor `ŝ = embedded_MLP_eval (packMLE P.basis t) r` accepts exactly when
+the original claim equals `t(r) = aeval r t`. This is the soundness/completeness pivot consumed by
+the batching phase for an arbitrary profile. -/
+lemma performCheckOriginalEvaluation_packMLE_iff' (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ']
+    (h_l : ℓ = ℓ' + κ₀) (s : L₀)
+    (t : MultilinearPoly K₀ ℓ) (r : Fin ℓ → L₀) :
+    performCheckOriginalEvaluation κ₀ L₀ K₀ P ℓ ℓ' h_l s r
+        (embedded_MLP_eval κ₀ L₀ K₀ P ℓ ℓ' h_l
+          (packMLE κ₀ L₀ K₀ ℓ ℓ' h_l P.basis t) r) = true
+      ↔ s = (MvPolynomial.aeval r) t.val := by
+  unfold performCheckOriginalEvaluation
+  simp only [decide_eq_true_eq]
+  rw [check_rows_sum_eq_aeval']
+
+/-! ### DP24 §2.5 `A_MLE` final-evaluation identity
+
+The final sumcheck step's verifier check compares the carried sumcheck target against
+`compute_final_eq_value · s'`, where `s' = t'(challenges)`. The sumcheck target, in turn, equals the
+round polynomial `H = A_MLE · t'` evaluated at all `ℓ'` challenges, i.e. `A_MLE(challenges) ·
+t'(challenges)`. Completeness therefore hinges on the algebraic identity
+`A_MLE(challenges) = compute_final_eq_value`, i.e. the multilinear extension `A_MLE` of
+`compute_A_func` evaluated at the (arbitrary, non-Boolean) challenge point equals the
+row-decomposition value of the final eq-tensor `e := eq̃(φ₀(r_suffix), φ₁(challenges))`.
+
+The two helper lemmas below (MLE evaluation as an `eq̃`-weighted sum over the Boolean hypercube, and
+the `φ₀/φ₁`-tensor expansion of `e`) reduce the identity to the row-extraction laws
+`P.decomposeRows_φ₀_mul_φ₁` / `P.decomposeRows_sum`, exactly as in
+`decompose_rows_packMLE'`. -/
+
+omit [IsDomain L₀] [CharP L₀ 2] [IsDomain K₀] [Fintype K₀] [DecidableEq K₀] in
+/-- **MLE evaluation as an `eq̃`-weighted hypercube sum.** Evaluating the multilinear extension
+`MLE f` at an arbitrary (not necessarily Boolean) point `r` equals the `eq̃`-weighted sum of the
+hypercube values `f x`, with weight `eq̃(x, r)`. This is the standard multilinear-extension
+evaluation formula, here phrased with the Boolean-literal embedding `x ↦ (if x = 1 then 1 else 0)`
+used throughout the ring-switching algebra layer. -/
+lemma MLE_eval_eq_sum_eqTilde {ℓ_ : ℕ} (f : (Fin ℓ_ → Fin 2) → L₀) (r : Fin ℓ_ → L₀) :
+    MvPolynomial.eval r (MvPolynomial.MLE f)
+      = ∑ x : Fin ℓ_ → Fin 2,
+          eqTilde (fun i => (if x i == 1 then (1 : L₀) else 0)) r * f x := by
+  rw [MvPolynomial.MLE, map_sum]
+  apply Finset.sum_congr rfl
+  intro x _
+  rw [map_mul, MvPolynomial.eval_C]
+  congr 1
+  -- `eval r (eqPolynomial (x : Fin ℓ_ → L₀)) = eqTilde (boolEmbed x) r`
+  rw [show ((x : Fin ℓ_ → L₀)) = (fun i => ((x i : Fin 2) : L₀)) from rfl]
+  rw [show (fun i => ((x i : Fin 2) : L₀)) = (fun i => (if x i == 1 then (1 : L₀) else 0))
+      from by funext i; rcases Fin.exists_fin_two.mp ⟨x i, rfl⟩ with h | h <;> rw [h] <;> simp]
+  rw [eqTilde]
+
+omit [CharP L₀ 2] [Fintype K₀] [DecidableEq K₀] in
+/-- **`φ₀/φ₁`-tensor expansion of an eq-tensor.** The mixed eq-tensor
+`eq̃(φ₀ ∘ g, φ₁ ∘ h) ∈ P.A` expands over the Boolean hypercube as
+`∑_w φ₀(eq̃(w, g)) · φ₁(eq̃(w, h))`. Proven by collapsing each `eqPolynomial` factor through the
+`eval₂ φ₁ (φ₀ ∘ ·)` mixed embedding (the same Boolean-literal-agreement argument as
+`embedded_MLP_eval_eq_sum'`, instantiated with the multilinear `eqPolynomial h`). -/
+lemma eqTilde_tensor_expand {ℓ_ : ℕ} (g h : Fin ℓ_ → L₀) :
+    eqTilde (fun i => P.φ₀ (g i)) (fun i => P.φ₁ (h i))
+      = ∑ w : Fin ℓ_ → Fin 2,
+          P.φ₀ (eqTilde (fun i => (if w i == 1 then (1 : L₀) else 0)) g)
+            * P.φ₁ (eqTilde (fun i => (if w i == 1 then (1 : L₀) else 0)) h) := by
+  -- LHS: `eval (φ₁ ∘ h) (eqPolynomial (φ₀ ∘ g))`. Rewrite `eqPolynomial (φ₀ ∘ g)` as the
+  -- `φ₀`-image of `eqPolynomial g`, then as the multilinear MLE of its Boolean evaluations, and
+  -- push through `eval₂`.
+  rw [eqTilde, eqPolynomial_symm]
+  -- now LHS = eval (φ₀ ∘ g) (eqPolynomial (φ₁ ∘ h))
+  -- View eqPolynomial (φ₁ ∘ h) as map φ₁ of the multilinear eqPolynomial h, evaluated at φ₀ ∘ g.
+  have hmap : (eqPolynomial (fun i => P.φ₁ (h i)) : MvPolynomial (Fin ℓ_) P.A)
+      = MvPolynomial.map (P.φ₁) (eqPolynomial h) := by
+    unfold eqPolynomial singleEqPolynomial
+    rw [map_prod]
+    apply Finset.prod_congr rfl
+    intro i _
+    simp only [map_add, map_mul, map_sub, map_one, MvPolynomial.map_C, MvPolynomial.map_X]
+  rw [hmap, ← MvPolynomial.eval₂_eq_eval_map]
+  -- Expand the multilinear `eqPolynomial h` as `MLE` of its Boolean evaluations.
+  conv_lhs => rw [show (eqPolynomial h : MvPolynomial (Fin ℓ_) L₀)
+      = MvPolynomial.MLE (eqPolynomial h).toEvalsZeroOne from
+        (MvPolynomial.is_multilinear_iff_eq_evals_zeroOne.mp
+          (eqPolynomial_mem_restrictDegree h)).symm]
+  unfold MvPolynomial.MLE
+  rw [← MvPolynomial.coe_eval₂Hom, map_sum]
+  apply Finset.sum_congr rfl
+  intro w _
+  rw [map_mul, MvPolynomial.coe_eval₂Hom, MvPolynomial.eval₂_C]
+  have hcoe : (fun i => (((w i : Fin 2) : L₀))) = (fun i => (if w i == 1 then (1 : L₀) else 0)) := by
+    funext i; rcases Fin.exists_fin_two.mp ⟨w i, rfl⟩ with hh | hh <;> rw [hh] <;> simp
+  congr 1
+  · -- φ₀ factor: collapse eqPolynomial through the mixed embedding eval₂ φ₁ (φ₀ ∘ g)
+    rw [show (fun i => ((w i : Fin 2) : L₀)) = (fun i => (if w i == 1 then (1 : L₀) else 0))
+        from hcoe]
+    rw [eqPoly_collapse' P g w]
+    rfl
+  · -- φ₁ factor: the Boolean evaluation of eqPolynomial h is eqTilde (boolEmbed w) h
+    congr 1
+    unfold MvPolynomial.toEvalsZeroOne
+    rw [hcoe, eqTilde, eqPolynomial_symm]
+
+omit [IsDomain L₀] [Fintype L₀] [DecidableEq L₀] [CharP L₀ 2]
+  [IsDomain K₀] [Fintype K₀] [DecidableEq K₀] in
+/-- **`eqTilde` symmetry.** `eq̃(r, r') = eq̃(r', r)`: a direct corollary of `eqPolynomial_symm`
+(`eval r' (eqPolynomial r) = eval r (eqPolynomial r')`). -/
+lemma eqTilde_comm {ℓ_ : ℕ} (r r' : Fin ℓ_ → L₀) : eqTilde r r' = eqTilde r' r := by
+  unfold eqTilde
+  exact eqPolynomial_symm r r'
+
+omit [CharP L₀ 2] [Fintype K₀] [DecidableEq K₀] in
+/-- **DP24 §2.5 `A_MLE` final-evaluation identity (defect #10, column form).** The multilinear
+extension `A_MLE` of `compute_A_func` — the sumcheck multiplier `(RingSwitching_SumcheckMultParam
+…).multpoly` — evaluated at the (arbitrary, non-Boolean) sumcheck challenges equals the verifier's
+`compute_final_eq_value`, which reads the **column** components of the final eq-tensor
+`e := eq̃(φ₀ ∘ r_suffix, φ₁ ∘ challenges)`.
+
+Term-by-term derivation: the LHS expands by `MLE_eval_eq_sum_eqTilde` into a sum over the Boolean
+hypercube of `eq̃(x, challenges) · A_func(x)`, with `A_func(x) = ∑_u β.repr(eq̃(suffix, x))_u •
+eq̃(u, r'')`. The RHS expands by `eqTilde_tensor_expand` (e = ∑_w φ₀(eq̃(w, suffix))·φ₁(eq̃(w,
+challenges))) followed by column additivity (`decomposeColumns_sum`) and the column atomic
+extraction law (`decomposeColumns_φ₀_mul_φ₁`: columns of `φ₀ a · φ₁ b` are `β.repr a • b`), giving
+`∑_u eq̃(u, r'') · ∑_w β.repr(eq̃(w, suffix))_u • eq̃(w, challenges)`. After `eqTilde` symmetry
+(`eq̃(suffix, x) = eq̃(x, suffix)`) the two double sums agree summand-wise (`Finset.sum_comm` +
+`smul`/`mul` commutation), so the column orientation is the one that makes the identity TRUE — the
+row orientation yields the transposed pairing and is false. -/
+lemma A_MLE_eval_eq_compute_final_eq_value (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ']
+    (h_l : ℓ = ℓ' + κ₀) (r_eval : Fin ℓ → L₀) (challenges : Fin ℓ' → L₀)
+    (r''_batching : Fin κ₀ → L₀) :
+    (compute_A_MLE κ₀ L₀ K₀ P ℓ'
+        (getEvaluationPointSuffix κ₀ L₀ ℓ ℓ' h_l r_eval) r''_batching).val.eval challenges
+      = compute_final_eq_value κ₀ L₀ K₀ P ℓ ℓ' h_l r_eval challenges r''_batching := by
+  -- LHS: unfold to `eval challenges (MLE (compute_A_func suffix r''))` and expand by MLE formula.
+  unfold compute_A_MLE compute_final_eq_value compute_final_eq_tensor compute_A_func
+    getEvaluationPointSuffix
+  simp only []
+  rw [MLE_eval_eq_sum_eqTilde]
+  -- RHS: expand the eq-tensor and push `decomposeColumns` through the sum + atomic extraction.
+  rw [eqTilde_tensor_expand P (fun j => r_eval ⟨j.val + κ₀, by rw [h_l]; omega⟩) challenges]
+  -- Push `decomposeColumns` through the hypercube sum + atomic extraction (under the ∑_u binder).
+  simp only [P.decomposeColumns_sum, P.decomposeColumns_φ₀_mul_φ₁]
+  -- Distribute the scalar prefix into the inner hypercube sum on both sides:
+  -- `∑ x, c_x * ∑ y, d_{x,y} = ∑ x, ∑ y, c_x * d_{x,y}`.
+  simp only [Finset.mul_sum]
+  -- Both sides are now double sums over the Boolean hypercube. Reindex the RHS (swap the two
+  -- sum binders) so its outer index pairs with the LHS inner index, then match summand-wise.
+  rw [Finset.sum_comm]
+  apply Finset.sum_congr rfl
+  intro x _
+  apply Finset.sum_congr rfl
+  intro u _
+  -- After `sum_comm` the summand is, with `c := β.repr(eq̃(u,suffix)) x`,
+  --   `eq̃(u,ch) * (c • eq̃(x,r''))  =  eq̃(x,r'') * (c • eq̃(u,ch))`.
+  -- Align the `repr` arguments by `eqTilde` symmetry, then commute `•` past `*`.
+  rw [eqTilde_comm (fun j => r_eval ⟨j.val + κ₀, by rw [h_l]; omega⟩)
+      (fun i => (if u i == 1 then (1 : L₀) else 0))]
+  rw [mul_smul_comm, mul_smul_comm, mul_comm]
+
+end RingSwitchingAlgebra
+
+section RingSwitchingAlgebraBinius
+-- Concrete Binius (`binaryTowerProfile`) specializations of the DP24 capstone chain. These need
+-- `Field K₀`/`Field L₀` to *build* the profile (its `decompose*`/`φ` fields and `rfl`/instance
+-- proofs), so they live in this `Field` section, separate from the `CommRing + IsDomain` generic
+-- chain above (which is what the batching phase consumes). Each reuses the profile-independent
+-- helpers above; the abstract-`P` chain specializes to these at `P := binaryTowerProfile β`.
+open Module
+
+variable {κ₀ : ℕ} [NeZero κ₀]
+variable {L₀ : Type} [Field L₀] [Fintype L₀] [DecidableEq L₀] [CharP L₀ 2]
+variable {K₀ : Type} [Field K₀] [Fintype K₀] [DecidableEq K₀]
+variable [Algebra K₀ L₀]
+
+omit [Fintype K₀] [DecidableEq K₀] in
+/-- **DP24 packing expansion.** The prover's tensor
+`ŝ := φ₁(t')(φ₀(r_κ), …, φ₀(r_{ℓ-1}))` expands over the suffix hypercube as
+`ŝ = Σ_{w ∈ {0,1}^ℓ'} φ₀(eq̃(w, r_suffix)) · φ₁(t'(w))`, i.e. `Σ_w eq̃(r_suffix, w) ⊗ t'(w)`. -/
+lemma embedded_MLP_eval_eq_sum (β : Module.Basis (Fin κ₀ → Fin 2) K₀ L₀)
+    (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ'] (h_l : ℓ = ℓ' + κ₀)
+    (t' : MultilinearPoly L₀ ℓ') (r : Fin ℓ → L₀) :
+    embedded_MLP_eval κ₀ L₀ K₀ (binaryTowerProfile κ₀ K₀ L₀ β) ℓ ℓ' h_l t' r =
+      ∑ w : Fin ℓ' → Fin 2,
+        (φ₀ L₀ K₀ (eqTilde (fun i => (if w i == 1 then (1 : L₀) else 0))
+            (getEvaluationPointSuffix κ₀ L₀ ℓ ℓ' h_l r)))
+          * (φ₁ L₀ K₀ (eval (fun i => (if w i == 1 then (1 : L₀) else 0)) t'.val)) := by
+  unfold embedded_MLP_eval componentWise_embed_MLE getEvaluationPointSuffix
+  simp only []
+  rw [← MvPolynomial.eval₂_eq_eval_map]
+  conv_lhs => rw [← MvPolynomial.is_multilinear_iff_eq_evals_zeroOne.mp t'.property]
+  unfold MvPolynomial.MLE
+  rw [← MvPolynomial.coe_eval₂Hom, map_sum]
+  apply Finset.sum_congr rfl
+  intro w _
+  rw [map_mul, MvPolynomial.coe_eval₂Hom, MvPolynomial.eval₂_C]
+  congr 1
+  · have hcoe : (fun i => ((w i : Fin 2) : L₀))
+        = (fun i => (if w i == 1 then (1 : L₀) else 0)) := by
+      funext i; rcases Fin.exists_fin_two.mp ⟨w i, rfl⟩ with h | h <;> rw [h] <;> simp
+    rw [hcoe]
+    exact eqPoly_collapse (fun i => r ⟨i.val + κ₀, by rw [h_l]; omega⟩) w
+  · unfold MvPolynomial.toEvalsZeroOne
+    have hpt : (fun i => ((w i : Fin 2) : L₀)) = (fun i => (if w i == 1 then (1 : L₀) else 0)) := by
+      funext i; rcases Fin.exists_fin_two.mp ⟨w i, rfl⟩ with h | h <;> rw [h] <;> simp
+    rw [show ((w : Fin ℓ' → L₀)) = (fun i => ((w i : Fin 2) : L₀)) from rfl, hpt]
+
+/-- **Row recovery of `t`-evaluations.** The row components of the prover's tensor
+`ŝ = embedded_MLP_eval (packMLE β t) r` carry the suffix-`eq`-weighted evaluations of `t`:
+`(decompose_rows ŝ)_u = Σ_{w ∈ {0,1}^ℓ'} t(u, w) · eq̃(w, r_suffix)`.
+
+This is the load-bearing identity for reconstructing `t(r)` from `ŝ`. It uses the *row*
+decomposition (which represents the `t'`/`φ₁` factor); the verifier's
+`performCheckOriginalEvaluation` instead uses the *column* decomposition — see the module
+note above. -/
+lemma decompose_rows_packMLE (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ'] (h_l : ℓ = ℓ' + κ₀)
+    (β : Basis (Fin κ₀ → Fin 2) K₀ L₀) (t : MultilinearPoly K₀ ℓ) (r : Fin ℓ → L₀)
+    (u : Fin κ₀ → Fin 2) :
+    decompose_tensor_algebra_rows (L := L₀) (K := K₀) (β := β)
+        (embedded_MLP_eval κ₀ L₀ K₀ (binaryTowerProfile κ₀ K₀ L₀ β) ℓ ℓ' h_l
+          (packMLE κ₀ L₀ K₀ ℓ ℓ' h_l β t) r) u
+      = ∑ w : Fin ℓ' → Fin 2,
+          (MvPolynomial.eval (fun i =>
+              ((if h : i.val < κ₀ then u ⟨i.val, h⟩ else w ⟨i.val - κ₀, by omega⟩ : Fin 2) : K₀))
+              t.val)
+            • (eqTilde (fun i => (if w i == 1 then (1 : L₀) else 0))
+                (getEvaluationPointSuffix κ₀ L₀ ℓ ℓ' h_l r)) := by
+  rw [embedded_MLP_eval_eq_sum, decompose_rows_sum]
+  apply Finset.sum_congr rfl
+  intro w _
+  rw [decompose_rows_φ₀φ₁, packMLE_repr_eval]
+
 /-- **DP24 ring-switching capstone (sum form).** The verifier's row-decomposition check sum,
 applied to the prover's honest tensor `ŝ = embedded_MLP_eval (packMLE β t) r`, reconstructs
 exactly `t(r) = aeval r t`:
 `∑_v eq̃(v, r_prefix) · (rows ŝ)_v = aeval r t`. -/
 lemma check_rows_sum_eq_aeval (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ'] (h_l : ℓ = ℓ' + κ₀)
-    (β : Basis (Fin κ₀ → Fin 2) K₀ L₀) (t : MultilinearPoly K₀ ℓ)
-    (r : Fin ℓ → L₀) :
+    (β : Basis (Fin κ₀ → Fin 2) K₀ L₀) (t : MultilinearPoly K₀ ℓ) (r : Fin ℓ → L₀) :
     (∑ v : Fin κ₀ → Fin 2,
-        eqTilde (fun i => (if v i == 1 then (1 : L₀) else 0))
-            (fun i => r ⟨i.val, by omega⟩)
+        eqTilde (fun i => (if v i == 1 then (1 : L₀) else 0)) (fun i => r ⟨i.val, by omega⟩)
           * decompose_tensor_algebra_rows (L := L₀) (K := K₀) (β := β)
-              (embedded_MLP_eval κ₀ L₀ K₀ ℓ ℓ' h_l
+              (embedded_MLP_eval κ₀ L₀ K₀ (binaryTowerProfile κ₀ K₀ L₀ β) ℓ ℓ' h_l
                 (packMLE κ₀ L₀ K₀ ℓ ℓ' h_l β t) r) v)
       = (MvPolynomial.aeval r) t.val := by
   subst h_l
   rw [aeval_eq_sum_eqTilde]
   -- reindex `∑_b` over `Fin (ℓ'+κ₀)` to `∑_{(v,w)}`, then `Fintype.sum_prod_type`
-  rw [← Equiv.sum_comp (hypercubeSplitEquiv (κ₀ := κ₀) (ℓ' + κ₀) ℓ' rfl),
-    Fintype.sum_prod_type]
+  rw [← Equiv.sum_comp (hypercubeSplitEquiv (κ₀ := κ₀) (ℓ' + κ₀) ℓ' rfl), Fintype.sum_prod_type]
   apply Finset.sum_congr rfl
   intro v _
   -- expand the row component and distribute the prefix `eq̃`
@@ -752,23 +1223,18 @@ lemma check_rows_sum_eq_aeval (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ'] (h_l :
   -- `•` → `algebraMap * `
   rw [Algebra.smul_def]
   -- the `t`-evaluation point on both sides is `split (v, w)` (definitional)
-  rw [show (fun i =>
-        ((hypercubeSplitEquiv (κ₀ := κ₀) (ℓ' + κ₀) ℓ' rfl (v, w) i : Fin 2) : K₀))
-      = (fun i =>
-        ((if h : i.val < κ₀ then v ⟨i.val, h⟩
-            else w ⟨i.val - κ₀, by omega⟩ : Fin 2) : K₀))
+  rw [show (fun i => ((hypercubeSplitEquiv (κ₀ := κ₀) (ℓ' + κ₀) ℓ' rfl (v, w) i : Fin 2) : K₀))
+      = (fun i => ((if h : i.val < κ₀ then v ⟨i.val, h⟩ else w ⟨i.val - κ₀, by omega⟩ : Fin 2) : K₀))
       from by funext i; rfl]
   rw [show (getEvaluationPointSuffix κ₀ L₀ (ℓ' + κ₀) ℓ' rfl r)
       = (fun i => r ⟨i.val + κ₀, by omega⟩) from by funext i; rfl]
   -- the two `eq̃` factors fuse along the κ/ℓ' split into `eq̃(split(v,w)_as_L, r)`
   have hfuse :
-      eqTilde (fun i => (if v i == 1 then (1 : L₀) else 0))
-          (fun i => r ⟨i.val, by omega⟩)
-        * eqTilde (fun i => (if w i == 1 then (1 : L₀) else 0))
-          (fun i => r ⟨i.val + κ₀, by omega⟩)
+      eqTilde (fun i => (if v i == 1 then (1 : L₀) else 0)) (fun i => r ⟨i.val, by omega⟩)
+        * eqTilde (fun i => (if w i == 1 then (1 : L₀) else 0)) (fun i => r ⟨i.val + κ₀, by omega⟩)
       = eqTilde
-          (fun i => (if hypercubeSplitEquiv (κ₀ := κ₀) (ℓ' + κ₀) ℓ' rfl (v, w) i == 1
-            then (1 : L₀) else 0)) r := by
+          (fun i => (if hypercubeSplitEquiv (κ₀ := κ₀) (ℓ' + κ₀) ℓ' rfl (v, w) i == 1 then
+            (1 : L₀) else 0)) r := by
     rw [← eqTilde_concat_split (κ₀ := κ₀) ℓ'
         (fun i => (if v i == 1 then (1 : L₀) else 0))
         (fun i => (if w i == 1 then (1 : L₀) else 0))
@@ -796,15 +1262,16 @@ equals `t(r) = aeval r t`. This is the soundness/completeness pivot for the batc
 lemma performCheckOriginalEvaluation_packMLE_iff (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ']
     (h_l : ℓ = ℓ' + κ₀) (β : Basis (Fin κ₀ → Fin 2) K₀ L₀) (s : L₀)
     (t : MultilinearPoly K₀ ℓ) (r : Fin ℓ → L₀) :
-    performCheckOriginalEvaluation κ₀ L₀ K₀ β ℓ ℓ' h_l s r
-        (embedded_MLP_eval κ₀ L₀ K₀ ℓ ℓ' h_l
+    performCheckOriginalEvaluation κ₀ L₀ K₀ (binaryTowerProfile κ₀ K₀ L₀ β) ℓ ℓ' h_l s r
+        (embedded_MLP_eval κ₀ L₀ K₀ (binaryTowerProfile κ₀ K₀ L₀ β) ℓ ℓ' h_l
           (packMLE κ₀ L₀ K₀ ℓ ℓ' h_l β t) r) = true
       ↔ s = (MvPolynomial.aeval r) t.val := by
   unfold performCheckOriginalEvaluation
   simp only [decide_eq_true_eq]
   rw [check_rows_sum_eq_aeval]
 
-end RingSwitchingAlgebra
+end RingSwitchingAlgebraBinius
+
 
 /-! ## DP24 Batching-Phase Sumcheck Orientation (gap analysis)
 
@@ -829,7 +1296,7 @@ domains with different element sums. Consequently the round-2
 Boolean embedding or reorienting `compute_s0`/`sumcheckConsistencyProp` — both of which would
 alter the existing free declarations. See the module report. -/
 section SumcheckOrientation
-open Module Binius.BinaryBasefold
+open Module Finset
 
 variable {L₀ : Type} [Field L₀] [Fintype L₀] [DecidableEq L₀] [CharP L₀ 2]
 
@@ -920,6 +1387,7 @@ lemma boolHypercube_sum_pinned (𝓑 : Fin 2 ↪ L₀)
 
 end SumcheckOrientation
 
+
 /-! ## `simOracle2` message-query support
 
 These lemmas reduce `simulateQ (OracleInterface.simOracle2 oSpec t₁ t₂) (…)` applied to a single
@@ -979,4 +1447,53 @@ lemma simulateQ_simOracle2_query {ι : Type} {oSpec : OracleSpec ι}
 
 end SimOracle2MessageQuery
 
-end Binius.RingSwitching
+/-! ## `fixFirstVariablesOfMQP` evaluation bridge
+
+The final sumcheck step's completeness needs to evaluate the round polynomial
+`H = projectToMidSumcheckPoly t' m (Fin.last ℓ') challenges` (= `fixFirstVariablesOfMQP` of
+`m · t'` at *all* `ℓ'` variables) at the 0-variate point and recognise it as `(m · t')(challenges)`.
+The two lemmas below provide that bridge generically. -/
+section FixVarsEval
+open MvPolynomial
+
+/-- **`sumAlgEquiv` evaluation.** Evaluating the curried polynomial `sumAlgEquiv p` by `eval x` on
+the outer (`S₁`) variables and `eval challenges` on the inner (`S₂`) coefficient ring equals
+evaluating `p` directly at the combined point `Sum.elim x challenges`. Proven by `induction_on`,
+using `sumToIter` (`= sumAlgEquiv` by `rfl`) on the generators. -/
+theorem sumAlgEquiv_eval₂ {L : Type} [CommRing L] {S₁ S₂ : Type} [Fintype S₁]
+    (x : S₁ → L) (challenges : S₂ → L) (p : MvPolynomial (S₁ ⊕ S₂) L) :
+    eval₂ (eval challenges) x ((sumAlgEquiv L S₁ S₂) p) = eval (Sum.elim x challenges) p := by
+  induction p using MvPolynomial.induction_on with
+  | C a =>
+    rw [show ((sumAlgEquiv L S₁ S₂) (C a)) = sumToIter L S₁ S₂ (C a) from rfl, sumToIter_C,
+      MvPolynomial.eval₂_C, MvPolynomial.eval_C, MvPolynomial.eval_C]
+  | add p q hp hq =>
+    simp only [map_add, MvPolynomial.eval₂_add, MvPolynomial.eval_add, hp, hq]
+  | mul_X p s hp =>
+    simp only [map_mul, MvPolynomial.eval₂_mul, MvPolynomial.eval_mul, hp]
+    congr 1
+    cases s with
+    | inl a => rw [show ((sumAlgEquiv L S₁ S₂) (X (Sum.inl a))) = sumToIter L S₁ S₂ (X (Sum.inl a))
+        from rfl, sumToIter_Xl, MvPolynomial.eval₂_X, MvPolynomial.eval_X, Sum.elim_inl]
+    | inr b => rw [show ((sumAlgEquiv L S₁ S₂) (X (Sum.inr b))) = sumToIter L S₁ S₂ (X (Sum.inr b))
+        from rfl, sumToIter_Xr, MvPolynomial.eval₂_C, MvPolynomial.eval_X, MvPolynomial.eval_X,
+        Sum.elim_inr]
+
+/-- **`fixFirstVariablesOfMQP` evaluation.** Evaluating the polynomial obtained by fixing the last
+`v` variables of `poly` to `challenges` (then `eval x` on the survivors) equals evaluating `poly`
+directly at the recombined point (survivors from `x`, fixed coords from `challenges`, via the same
+`finCongr`/`finSumFinEquiv` reindexing used in `fixFirstVariablesOfMQP`). -/
+theorem fixFirstVariablesOfMQP_eval {L : Type} [CommRing L] (ℓ : ℕ) (v : Fin (ℓ+1))
+    (poly : MvPolynomial (Fin ℓ) L) (challenges : Fin v → L) (x : Fin (ℓ - v) → L) :
+    eval x (fixFirstVariablesOfMQP ℓ v poly challenges)
+      = eval (fun i => Sum.elim x challenges
+          (((finCongr (by rw [Nat.add_comm]; exact (Nat.add_sub_of_le v.is_le).symm)).trans
+            (finSumFinEquiv (m := ℓ - v) (n := v).symm)) i)) poly := by
+  unfold fixFirstVariablesOfMQP
+  dsimp only
+  rw [MvPolynomial.eval_map, sumAlgEquiv_eval₂, eval_rename]
+  rfl
+
+end FixVarsEval
+
+end RingSwitching

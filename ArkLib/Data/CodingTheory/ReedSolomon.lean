@@ -18,7 +18,7 @@ import Mathlib.Data.NNReal.Basic -- for instFloorSemiring of ℝ≥0
 /-!
 # Reed-Solomon Codes
 
-- The lemmas with suffix `'` (e.g. dim_eq_deg_of_le', minDist', ...) are generalizations of
+- The lemmas with suffix `'` (e.g. `dim_eq_deg_of_le'`, `minDist_eq'`, ...) are generalizations of
   their corresponding non-suffixed versions from `Fin m` index to arbitrary finite index type `ι`.
 
 ## References
@@ -392,8 +392,9 @@ end
 
 open Finset in
 /-- The minimal code distance of an RS code of length `ι` and dimension `deg` is `ι - deg + 1`. -/
-theorem minDist [Field F] [DecidableEq F] (inj : Function.Injective α) [NeZero n] (h : n ≤ m) :
-    minDist ((ReedSolomon.code ⟨α, inj⟩ n) : Set (Fin m → F)) = m - n + 1 := by
+theorem minDist_eq [Field F] [DecidableEq F]
+    (inj : Function.Injective α) [NeZero n] (h : n ≤ m) :
+    Code.minDist ((ReedSolomon.code ⟨α, inj⟩ n) : Set (Fin m → F)) = m - n + 1 := by
   have : NeZero m := by constructor; aesop
   refine le_antisymm ?p₁ ?p₂
   case p₁ =>
@@ -425,7 +426,7 @@ theorem minDist [Field F] [DecidableEq F] (inj : Function.Injective α) [NeZero 
     omega
 
 /-- Generalized minimal code distance for RS code with arbitrary finite index type `ι`. -/
-theorem minDist' {ι : Type*} [Fintype ι] {F : Type*} [Field F] [DecidableEq F]
+theorem minDist_eq' {ι : Type*} [Fintype ι] {F : Type*} [Field F] [DecidableEq F]
     {α : ι ↪ F} [NeZero n] (h : n ≤ Fintype.card ι) :
   Code.minDist ((ReedSolomon.code α n) : Set (ι → F)) = Fintype.card ι - n + 1 := by
   classical
@@ -472,20 +473,20 @@ lemma isMDS_code {ι : Type} [Fintype ι] {F : Type*} [Field F] [DecidableEq F]
   classical
   unfold IsMDS
   rw [length_eq_domain_card', dim_eq_deg_of_le' h, Code.dist_eq_minDist]
-  exact minDist' h
+  exact minDist_eq' h
 
 /-- Generalized distance equality for RS code with arbitrary finite index type `ι`. -/
 theorem dist_eq' {ι : Type*} [Fintype ι] {F : Type*} {n : ℕ} {α : ι ↪ F}
     [Field F] [DecidableEq F] [NeZero n] (h : n ≤ Fintype.card ι) :
     Code.dist (R := F) ((ReedSolomon.code α n) : Set (ι → F)) = Fintype.card ι - n + 1 := by
   simp_rw [dist_eq_minDist]
-  rw [ReedSolomon.minDist' h]
+  rw [ReedSolomon.minDist_eq' h]
 
 theorem dist_eq {F : Type*} {m n : ℕ} {α : Fin m → F} [Field F] [DecidableEq F]
     (inj : Function.Injective α) [NeZero n] (h : n ≤ m) :
     Code.dist (R := F) ((ReedSolomon.code ⟨α, inj⟩ n) : Set (Fin m → F)) = m - n + 1 := by
   simp_rw [dist_eq_minDist]
-  rw [ReedSolomon.minDist inj h]
+  rw [ReedSolomon.minDist_eq inj h]
 
 /-- Generalized unique decoding radius for RS code with arbitrary finite index type `ι`. -/
 theorem uniqueDecodingRadius_RS_eq' {ι : Type*} [Fintype ι]
@@ -495,7 +496,7 @@ theorem uniqueDecodingRadius_RS_eq' {ι : Type*} [Fintype ι]
     (Fintype.card ι - n) / 2 := by
   simp only [uniqueDecodingRadius]
   rw [dist_eq_minDist]
-  rw [ReedSolomon.minDist' h]
+  rw [ReedSolomon.minDist_eq' h]
   simp [add_tsub_cancel_right]
 
 open NNReal in

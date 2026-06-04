@@ -25,6 +25,16 @@ variable {ι : Type} {oSpec : OracleSpec ι} {StmtIn : Type}
 
 -- def stdTrace
 
+private def basicToDuplexSpongeFSTraceAux
+    (log : QueryLog (oSpec + fsChallengeOracle StmtIn pSpec)) :
+    QueryLog (oSpec + duplexSpongeChallengeOracle StmtIn U) :=
+  log.foldr
+    (fun entry acc =>
+      match entry with
+      | ⟨.inl query, answer⟩ => ⟨.inl query, answer⟩ :: acc
+      | ⟨.inr _, _⟩ => acc)
+    []
+
 /-- The transformation of basic Fiat-Shamir query-answer traces (from both prover and verifier)
 to duplex-sponge Fiat-Shamir query-answer traces (from both prover and verifier)
 
@@ -34,7 +44,7 @@ def basicToDuplexSpongeFSTrace
     (verifyQueryLog : QueryLog (oSpec + fsChallengeOracle StmtIn pSpec)) :
       QueryLog (oSpec + duplexSpongeChallengeOracle StmtIn U) ×
       QueryLog (oSpec + duplexSpongeChallengeOracle StmtIn U) :=
-  ([], [])
+  (basicToDuplexSpongeFSTraceAux proveQueryLog, basicToDuplexSpongeFSTraceAux verifyQueryLog)
 
 alias d2STrace := basicToDuplexSpongeFSTrace
 

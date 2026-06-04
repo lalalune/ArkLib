@@ -81,7 +81,7 @@ theorem cast_id : MessageIdx.cast (Eq.refl n₁) rfl = (id : pSpec₁.MessageIdx
 
 theorem cast_injective : Function.Injective (MessageIdx.cast hn hSpec) := by
   intro i j h'
-  simp [MessageIdx.cast] at h'
+  simp only [MessageIdx, MessageIdx.cast, Subtype.mk.injEq, Fin.cast_inj] at h'
   ext : 1
   exact h'
 
@@ -89,7 +89,7 @@ instance instDCast₂ : DCast₂ Nat ProtocolSpec (fun _ pSpec => MessageIdx pSp
   dcast₂ h := MessageIdx.cast h
   dcast₂_id := cast_id
 
-theorem cast_eq_dcast₂ {hn} {hSpec : pSpec₁.cast hn = pSpec₂} {i : MessageIdx pSpec₁}:
+theorem cast_eq_dcast₂ {hn} {hSpec : pSpec₁.cast hn = pSpec₂} {i : MessageIdx pSpec₁} :
     i.cast hn hSpec = dcast₂ hn hSpec i := rfl
 
 end MessageIdx
@@ -120,7 +120,7 @@ theorem cast_id : ChallengeIdx.cast (Eq.refl n₁) rfl = (id : pSpec₁.Challeng
 
 theorem cast_injective : Function.Injective (ChallengeIdx.cast hn hSpec) := by
   intro i j h'
-  simp [ChallengeIdx.cast] at h'
+  simp only [ChallengeIdx, ChallengeIdx.cast, Subtype.mk.injEq, Fin.cast_inj] at h'
   ext : 1
   exact h'
 
@@ -128,7 +128,7 @@ instance instDCast₂ : DCast₂ Nat ProtocolSpec (fun _ pSpec => ChallengeIdx p
   dcast₂ h := ChallengeIdx.cast h
   dcast₂_id := cast_id
 
-theorem cast_eq_dcast₂ {hn} {hSpec : pSpec₁.cast hn = pSpec₂} {i : ChallengeIdx pSpec₁}:
+theorem cast_eq_dcast₂ {hn} {hSpec : pSpec₁.cast hn = pSpec₂} {i : ChallengeIdx pSpec₁} :
     i.cast hn hSpec = dcast₂ hn hSpec i := rfl
 
 end ChallengeIdx
@@ -168,7 +168,7 @@ instance instDCast₃ : DCast₃ Nat (fun n => Fin (n + 1)) (fun n _ => Protocol
     (fun _ k pSpec => pSpec.Transcript k) where
   dcast₃ h h' h'' T := Transcript.cast h
     (by simp only [dcast] at h'; rw [← h']; subst h; rfl)
-    (by simp [ProtocolSpec.cast_eq_dcast, dcast_eq_root_cast]; exact h'')
+    (by simp only [ProtocolSpec.cast_eq_dcast, dcast_eq_root_cast]; exact h'')
     T
   dcast₃_id := cast_id
 

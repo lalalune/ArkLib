@@ -6,6 +6,8 @@ Authors: Mirco Richter, Poulami Das (Least Authority)
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.CodingTheory.ListDecodability
 import CompPoly.Data.MvPolynomial.Notation
+import CompPoly.Univariate.Lagrange
+import CompPoly.Univariate.ToPoly.Impl
 
 open Polynomial NNReal ReedSolomon ListDecodable Code
 
@@ -93,7 +95,17 @@ noncomputable def polyQuotient (S : Finset F) (fPoly : F[X]) : F[X] :=
 
 /-- We define the set disagreementSet(f,ι,S,Ans) as the set of all points x ∈ ι that lie in S
 such that the Ans' disagrees with f, we have
-disagreementSet := { x ∈ ι ∩ S ∧ AnsPoly x ≠ f x }. -/
+disagreementSet := { x ∈ ι ∩ S ∧ AnsPoly x ≠ f x }.
+
+Quotienting-specific shape — *not* a direct specialisation of
+`Code.disagreementCols` (which compares two `ι → R` words pointwise).
+Here the comparison is between `f x` and the *polynomial extension*
+`(ansPoly S Ans).eval x` of a finite assignment `Ans : S → F`, and is
+restricted to `x` whose image lies in the answer-set `S`. The
+canonical-base relationship is therefore: it is the
+`Code.disagreementCols`-like disagreement of `(f, ansPoly ∘ eval)`
+restricted to the preimage of `S` and then `image`d through
+`Subtype.val`. -/
 noncomputable def disagreementSet (f : ι → F) (S : Finset F) (Ans : S → F) : Finset F :=
   Set.toFinset ({x : ι | x.val ∈ S ∧ (ansPoly S Ans).eval x.val ≠ f x}.image Subtype.val)
 
@@ -277,5 +289,78 @@ lemma quotienting {degree : ℕ} {domain : ι ↪ F} [Nonempty ι]
     decodeLT_evalOnPoints hdeg_le hUmem _ (fun x => rfl)
   rw [hdecode, Polynomial.eval_add, Polynomial.eval_mul,
     vanishingPoly_eval_eq_zero a.2, mul_zero, zero_add, ansPoly_eval Ans a.2]
+
+/-- Computable version of `ansPoly`: the unique interpolating polynomial of degree `< |S|`
+agreeing with `Ans` on `S`. Built on CompPoly's `CLagrange.interpolate`. -/
+def cpolyAnsPoly (S : Finset F) (Ans : S → F) : CompPoly.CPolynomial F :=
+  CompPoly.CPolynomial.CLagrange.interpolate S.attach (fun i => (i : F)) Ans
+
+/-- Bridge lemma: `cpolyAnsPoly` and `ansPoly` agree under `toPoly`. -/
+@[simp]
+lemma cpolyAnsPoly_toPoly (S : Finset F) (Ans : S → F) :
+    (cpolyAnsPoly S Ans).toPoly = ansPoly S Ans := by
+  unfold cpolyAnsPoly ansPoly
+  exact CompPoly.CPolynomial.CLagrange.cinterpolate_eq_interpolate
+
+/-- Computable version of `vanishingPoly`: `∏ s ∈ S, (X - C s)`, built on CompPoly's
+`CPolynomial`. -/
+def cpolyVanishingPoly (S : Finset F) : CompPoly.CPolynomial F :=
+  ∏ s ∈ S, (CompPoly.CPolynomial.X - CompPoly.CPolynomial.C s)
+
+/-- Bridge lemma: `cpolyVanishingPoly` and `vanishingPoly` agree under `toPoly`. -/
+@[simp]
+lemma cpolyVanishingPoly_toPoly (S : Finset F) :
+    (cpolyVanishingPoly S).toPoly = vanishingPoly S := by
+  unfold cpolyVanishingPoly vanishingPoly
+  rw [CompPoly.CPolynomial.toPoly_prod]
+  refine Finset.prod_congr rfl ?_
+  intro s _
+  rw [CompPoly.CPolynomial.toPoly_sub, CompPoly.CPolynomial.X_toPoly,
+      CompPoly.CPolynomial.C_toPoly]
+
+/-- Computable version of `funcQuotient`. Uses the cpoly versions of `ansPoly` and
+`vanishingPoly` for the off-`S` branch; the on-`S` branch is identical to the Mathlib spec. -/
+def cpolyFuncQuotient (f : ι → F) (S : Finset F) (Ans Fill : S → F) : ι → F :=
+  fun x =>
+    if hx : x.val ∈ S then Fill ⟨x.val, hx⟩
+    else (f x - (cpolyAnsPoly S Ans).eval x.val) / (cpolyVanishingPoly S).eval x.val
+
+/-- Function equality: `cpolyFuncQuotient` agrees with `funcQuotient`. -/
+@[simp]
+lemma cpolyFuncQuotient_eq_funcQuotient
+    (f : ι → F) (S : Finset F) (Ans Fill : S → F) :
+    cpolyFuncQuotient f S Ans Fill = funcQuotient f S Ans Fill := by
+  funext x
+  unfold cpolyFuncQuotient funcQuotient
+  by_cases hx : x.val ∈ S
+  · simp [hx]
+  · simp only [hx, dif_neg, not_false_eq_true]
+    rw [CompPoly.CPolynomial.eval_toPoly, cpolyAnsPoly_toPoly,
+        CompPoly.CPolynomial.eval_toPoly, cpolyVanishingPoly_toPoly]
+
+/-- Computable version of `disagreementSet`: the set of `x ∈ ι ∩ S` at which the answer
+polynomial `cpolyAnsPoly` disagrees with `f`. Uses `Finset.filter` over the decidable predicate
+in place of the noncomputable `Set.toFinset`. -/
+def cpolyDisagreementSet (f : ι → F) (S : Finset F) (Ans : S → F) : Finset F :=
+  (ι.attach.filter
+    (fun x => x.val ∈ S ∧ (cpolyAnsPoly S Ans).eval x.val ≠ f x)).image Subtype.val
+
+/-- Set equality: `cpolyDisagreementSet` and `disagreementSet` describe the same `Finset F`. -/
+@[simp]
+lemma cpolyDisagreementSet_eq_disagreementSet
+    (f : ι → F) (S : Finset F) (Ans : S → F) :
+    cpolyDisagreementSet f S Ans = disagreementSet f S Ans := by
+  ext y
+  simp only [cpolyDisagreementSet, disagreementSet,
+    Finset.mem_image, Finset.mem_filter, Finset.mem_attach, true_and,
+    Set.mem_toFinset, Set.mem_image, Set.mem_setOf_eq]
+  constructor
+  · rintro ⟨x, ⟨hxS, hxDis⟩, hxy⟩
+    refine ⟨x, ⟨hxS, ?_⟩, hxy⟩
+    rwa [CompPoly.CPolynomial.eval_toPoly, cpolyAnsPoly_toPoly] at hxDis
+  · rintro ⟨x, ⟨hxS, hxDis⟩, hxy⟩
+    refine ⟨x, ⟨hxS, ?_⟩, hxy⟩
+    rw [CompPoly.CPolynomial.eval_toPoly, cpolyAnsPoly_toPoly]
+    exact hxDis
 
 end Quotienting

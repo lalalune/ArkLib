@@ -442,33 +442,35 @@ lemma Pr_congr {α : Type} {D : PMF α} {P Q : α → Prop}
   congr 2; funext x;
   congr 1; exact propext (h x)
 
-/-- **Schwartz-Zippel Lemma** (Probability Form):
-For a non-zero multivariate polynomial `P` of total degree at most `d` over a finite field `L`,
-the probability that `P(r)` evaluates to 0 for a uniformly random `r` is at most `d / |L|`. -/
-lemma prob_schwartz_zippel_mv_polynomial {R : Type} [CommRing R] [IsDomain R] [Fintype R]
-    {n : ℕ}
-    (P : MvPolynomial (Fin n) R) (h_nonzero : P ≠ 0) (h_deg : P.totalDegree ≤ n) :
+/-- **Schwartz-Zippel Lemma** (Probability Form, parameterised by a degree bound `d`):
+For a non-zero `n`-variate polynomial `P` with `P.totalDegree ≤ d` over a finite domain `R`,
+the probability that `P(r)` evaluates to `0` for `r ←$ R^n` uniformly is at most `d / |R|`.
+
+The legacy specialisation (`d := n`) is `prob_schwartz_zippel_mv_polynomial`. -/
+lemma prob_schwartz_zippel_mv_polynomial_of_totalDegree_le
+    {R : Type} [CommRing R] [IsDomain R] [Fintype R]
+    {n d : ℕ}
+    (P : MvPolynomial (Fin n) R) (h_nonzero : P ≠ 0) (h_deg : P.totalDegree ≤ d) :
     Pr_{ let r ←$ᵖ (Fin n → R) }[ MvPolynomial.eval r P = 0 ] ≤
-      (n : ℝ≥0) / (Fintype.card R : ℝ≥0) := by
+      (d : ℝ≥0) / (Fintype.card R : ℝ≥0) := by
   classical
   rw [prob_uniform_eq_card_filter_div_card]
   push_cast
   have sz_bound := MvPolynomial.schwartz_zippel_totalDegree (R := R) (n := n)
     (p := P) (hp := h_nonzero) (S := Finset.univ)
   simp only [Fintype.piFinset_univ, card_univ] at sz_bound
-  have sz_bound_le_n_div_card_R : ((#{f | (MvPolynomial.eval f) P = 0}) : ℚ≥0)
-    / ((Fintype.card R ^ n)) ≤ (n : ℚ≥0) / ((#(Finset.univ : Finset R)) : ℚ≥0) := by
+  have sz_bound_le_d_div_card_R : ((#{f | (MvPolynomial.eval f) P = 0}) : ℚ≥0)
+    / ((Fintype.card R ^ n)) ≤ (d : ℚ≥0) / ((#(Finset.univ : Finset R)) : ℚ≥0) := by
     calc
       _ ≤ (P.totalDegree : ℚ≥0) / ((#(Finset.univ : Finset R)) : ℚ≥0) := sz_bound
       _ ≤ _ := by
         simp only [card_univ]
         apply div_le_of_le_mul₀ (hb := by simp only [zero_le]) (hc := by simp only [zero_le])
-        -- ⊢ ↑P.totalDegree ≤ ↑n / ↑(Fintype.card R) * ↑(Fintype.card R)
         rw [div_mul_cancel₀ (h := by simp only [ne_eq, Nat.cast_eq_zero, Fintype.card_ne_zero,
           not_false_eq_true])]
         exact Nat.cast_le.mpr h_deg
   have sz_bound_ENNReal : ((#{f | (MvPolynomial.eval f) P = 0}) : ENNReal)
-    / ((Fintype.card R ^ n) : ℕ) ≤ (n : ENNReal) / (Fintype.card R : ENNReal) := by
+    / ((Fintype.card R ^ n) : ℕ) ≤ (d : ENNReal) / (Fintype.card R : ENNReal) := by
     simp_rw [ENNReal.coe_Nat_coe_NNRat]
     conv_lhs => rw [ENNReal.coe_div_of_NNRat (hb := by
       simp only [Nat.cast_pow, ne_eq, pow_eq_zero_iff', Nat.cast_eq_zero, Fintype.card_ne_zero,
@@ -477,10 +479,68 @@ lemma prob_schwartz_zippel_mv_polynomial {R : Type} [CommRing R] [IsDomain R] [F
       Fintype.card_ne_zero, not_false_eq_true])]
     rw [ENNReal.coe_le_of_NNRat]
     simp only [Nat.cast_pow]
-    exact sz_bound_le_n_div_card_R
+    exact sz_bound_le_d_div_card_R
   simp only [Fintype.card_pi, prod_const, card_univ, Fintype.card_fin, Nat.cast_pow, ge_iff_le]
   rw [Nat.cast_pow] at sz_bound_ENNReal
   exact sz_bound_ENNReal
+
+/-- **Schwartz-Zippel Lemma** (Probability Form):
+For a non-zero multivariate polynomial `P` of total degree at most `n` over a finite field `R`,
+the probability that `P(r)` evaluates to 0 for a uniformly random `r` is at most `n / |R|`.
+
+`d := n` specialisation of `prob_schwartz_zippel_mv_polynomial_of_totalDegree_le`. -/
+lemma prob_schwartz_zippel_mv_polynomial {R : Type} [CommRing R] [IsDomain R] [Fintype R]
+    {n : ℕ}
+    (P : MvPolynomial (Fin n) R) (h_nonzero : P ≠ 0) (h_deg : P.totalDegree ≤ n) :
+    Pr_{ let r ←$ᵖ (Fin n → R) }[ MvPolynomial.eval r P = 0 ] ≤
+      (n : ℝ≥0) / (Fintype.card R : ℝ≥0) :=
+  prob_schwartz_zippel_mv_polynomial_of_totalDegree_le P h_nonzero h_deg
+
+/-- **Helper for the individual-degree-bounded Schwartz-Zippel.**
+If every variable's degree in `P` is `< d`, then `P.totalDegree ≤ m * (d - 1)`.
+
+(Mathlib-extension candidate; lives here while `prob_polynomial_identity_le` is the
+only consumer. Would belong in `Mathlib/Algebra/MvPolynomial/Degrees.lean` alongside
+`degreeOf_le_totalDegree`, which is the converse direction.) -/
+lemma MvPolynomial.totalDegree_le_of_degreeOf_lt
+    {R : Type*} [CommSemiring R] {m d : ℕ}
+    (P : MvPolynomial (Fin m) R)
+    (h_indiv_deg : ∀ i, P.degreeOf i < d) :
+    P.totalDegree ≤ m * (d - 1) := by
+  classical
+  unfold MvPolynomial.totalDegree
+  refine Finset.sup_le fun s hs ↦ ?_
+  rw [Finsupp.sum]
+  calc s.support.sum (fun i ↦ s i)
+      ≤ ∑ i : Fin m, s i :=
+        Finset.sum_le_sum_of_subset_of_nonneg
+          (Finset.subset_univ _) (fun _ _ _ ↦ Nat.zero_le _)
+    _ ≤ ∑ _ : Fin m, (d - 1) := by
+        refine Finset.sum_le_sum fun i _ ↦ ?_
+        have h_le : s i ≤ P.degreeOf i := MvPolynomial.monomial_le_degreeOf i hs
+        exact h_le.trans (Nat.le_sub_one_of_lt (h_indiv_deg i))
+    _ = m * (d - 1) := by
+        rw [Finset.sum_const, Finset.card_univ, Fintype.card_fin, smul_eq_mul]
+
+/-- **Polynomial identity lemma in paper-individual-degree shape** (ABF26 L2.1).
+
+For a non-zero `m`-variate polynomial `P` of *individual* degree `< d` in each variable
+(so `P ∈ F^<d[X_1, …, X_m]`):
+
+  `Pr_{r ←$ᵖ F^m} [P(r) = 0] ≤ m · (d - 1) / |F|`.
+
+Wrapper around `prob_schwartz_zippel_mv_polynomial_of_totalDegree_le` via the
+`totalDegree_le_of_degreeOf_lt` helper above. The `d = 0` case is vacuous —
+`h_indiv_deg : ∀ i, P.degreeOf i < 0` is unsatisfiable in `ℕ`; if `m = 0`,
+the bound `m * (d - 1) = 0` and `Pr` is also `0`. -/
+lemma prob_polynomial_identity_le {R : Type} [CommRing R] [IsDomain R] [Fintype R]
+    {m d : ℕ} (P : MvPolynomial (Fin m) R)
+    (h_nonzero : P ≠ 0) (h_indiv_deg : ∀ i, P.degreeOf i < d) :
+    Pr_{ let r ←$ᵖ (Fin m → R) }[ MvPolynomial.eval r P = 0 ] ≤
+      ((m * (d - 1) : ℕ) : ℝ≥0) / (Fintype.card R : ℝ≥0) := by
+  have h_total_deg : P.totalDegree ≤ m * (d - 1) :=
+    MvPolynomial.totalDegree_le_of_degreeOf_lt P h_indiv_deg
+  exact prob_schwartz_zippel_mv_polynomial_of_totalDegree_le P h_nonzero h_total_deg
 
 /-- Pushforward of `PMF.uniformOfFintype α` under a map `f : α → β` whose fibers
 over the image all have the same cardinality `k > 0` is the uniform distribution

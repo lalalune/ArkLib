@@ -61,4 +61,59 @@ def uniqueDecodable (C : Code ι F) (r : ℝ) : Prop :=
 
 end
 
+/-! ## ABF26 Definition 2.8 — list around a word `Λ(C, δ, f)` and `|Λ(C, δ)|`
+
+The paper writes `Λ(C, δ, f)` for the set of codewords of `C` whose relative Hamming distance
+from `f` is at most `δ`, and `|Λ(C, δ)| = max_f |Λ(C, δ, f)|` for the maximised list size.
+The point list `Λ(C, δ, f)` is already provided by `closeCodewordsRel C f δ` (see above); we
+do *not* introduce a paper-named alias for it. The new content here is `Lambda`, the maximised
+form used by Section 4's `ε_mca` (ABF26 Definition 4.3) and Section 3's list-decoding bounds.
+
+The basic algebra here (monotonicity, codeword-set bound) covers what is needed to state
+`ε_mca` in `ProximityGap.Errors.lean`. The full theory of `Lambda` — Johnson bound
+restatement, the interleaved-code list-size bound (ABF26 Lemma 2.10), generalized Singleton,
+volume-based lower bounds — is the subject of ABF26 §3 and is tracked under Phase 4 of
+`docs/kb/ABF26_PLAN.md`.
+-/
+
+section Lambda
+
+variable {ι : Type*} [Fintype ι] {F : Type*}
+
+/-- **ABF26 Definition 2.8 (maximised list size).** The maximum over words `f` of
+`|Λ(C, δ, f)| = |closeCodewordsRel C f δ|`. Named to match the paper's `|Λ(C, δ)|`. -/
+noncomputable def Lambda (C : Code ι F) (δ : ℝ) : ℕ∞ :=
+  ⨆ f : ι → F, ((closeCodewordsRel C f δ).ncard : ℕ∞)
+
+/-- The point list `Λ(C, δ, f) = closeCodewordsRel C f δ` is monotone in the radius. -/
+lemma closeCodewordsRel_subset_of_le {C : Code ι F} {δ₁ δ₂ : ℝ}
+    (h : δ₁ ≤ δ₂) (f : ι → F) :
+    closeCodewordsRel C f δ₁ ⊆ closeCodewordsRel C f δ₂ := by
+  intro c hc
+  exact ⟨hc.1, le_trans hc.2 h⟩
+
+/-- `Lambda` is monotone in the radius. -/
+lemma Lambda_mono {C : Code ι F} {δ₁ δ₂ : ℝ} [Finite F] (h : δ₁ ≤ δ₂) :
+    Lambda C δ₁ ≤ Lambda C δ₂ := by
+  refine iSup_mono fun f => ?_
+  have hfin : (closeCodewordsRel C f δ₂).Finite := Set.toFinite _
+  exact_mod_cast Set.ncard_le_ncard (closeCodewordsRel_subset_of_le h f) hfin
+
+/-- Any element of `Λ(C, δ, f) = closeCodewordsRel C f δ` is a codeword of `C`. -/
+lemma closeCodewordsRel_subset_code {C : Code ι F} (δ : ℝ) (f : ι → F) :
+    closeCodewordsRel C f δ ⊆ C := fun _ hc => hc.1
+
+/-- `|Λ(C, δ, f)| ≤ |C|` for finite `C`. -/
+lemma ncard_closeCodewordsRel_le_ncard {C : Code ι F} (δ : ℝ) (f : ι → F) (hC : C.Finite) :
+    (closeCodewordsRel C f δ).ncard ≤ C.ncard :=
+  Set.ncard_le_ncard (closeCodewordsRel_subset_code δ f) hC
+
+/-- `|Λ(C, δ)| ≤ |C|` for finite `C`. -/
+lemma Lambda_le_ncard {C : Code ι F} (δ : ℝ) (hC : C.Finite) :
+    Lambda C δ ≤ (C.ncard : ℕ∞) := by
+  refine iSup_le fun f => ?_
+  exact_mod_cast ncard_closeCodewordsRel_le_ncard δ f hC
+
+end Lambda
+
 end ListDecodable

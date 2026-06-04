@@ -36,7 +36,6 @@ variable (β : Fin r → L) [hβ_lin_indep : Fact (LinearIndependent 𝔽q β)]
   [h_β₀_eq_1 : Fact (β 0 = 1)]
 variable {ℓ 𝓡 ϑ : ℕ} (γ_repetitions : ℕ) [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] -- Should we allow ℓ = 0?
 variable {h_ℓ_add_R_rate : ℓ + 𝓡 < r} -- ℓ ∈ {1, ..., r-1}
-variable {𝓑 : Fin 2 ↪ L}
 variable [hdiv : Fact (ϑ ∣ ℓ)]
 
 open scoped NNReal
@@ -644,6 +643,213 @@ noncomputable def queryOracleProof : OracleProof
     (Witness := Unit)
     (pSpec := pSpecQuery 𝔽q β γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) :=
   queryOracleReduction 𝔽q β (ϑ:=ϑ) γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+
+/-- Perfect completeness for the final query round (using the oracle queryProof). -/
+theorem queryOracleProof_perfectCompleteness {σ : Type}
+  (init : ProbComp σ)
+  (impl : QueryImpl []ₒ (StateT σ ProbComp)) :
+  OracleProof.perfectCompleteness
+    (pSpec := pSpecQuery 𝔽q β γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+    (relation := finalSumcheckRelOut 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+    (oracleProof := queryOracleProof 𝔽q β (ϑ:=ϑ) γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+    (init := init)
+    (impl := impl) := by
+  unfold OracleProof.perfectCompleteness
+  intro stmtIn witIn h_relIn
+  -- RESIDUAL (protocol-specific honest-acceptance, NOT a missing primitive). Perfect completeness
+  -- asks for `Pr[honest run accepts] = 1`. The forIn-with-early-exit support/transport theory that
+  -- this once needed NOW EXISTS in the `ForInSupport` section above: `simulateQ_optionT_forIn`
+  -- pushes `simulateQ` through the doubly-nested `forIn`, `simulateQ_optionT_listVector_mmap`
+  -- collapses the inner `2^ϑ`-query `List.Vector.mmap`, and `forIn_yield_pure_eq_foldl` collapses an
+  -- all-pass (all-`yield`) loop to a deterministic `pure` of a fold. What remains is genuinely
+  -- protocol-specific and research-tier: one must prove the HONEST RUN's per-iteration checks all
+  -- pass — i.e. `c_cur = f^(i)(v_i,…)` at every fold level and `c_cur = c` at the end — from
+  -- `finalSumcheckRelOut` (= `finalNonDoomedFoldingProp`). That is the BaseFold fold/oracle
+  -- correctness argument (`localized_fold_matrix_form` equals the next-level codeword value on the
+  -- honest oracles), not loop plumbing; only once it is in hand does `forIn_yield_pure_eq_foldl`
+  -- finish the `= 1` via the no-early-exit collapse. Out of scope for this file's loop-theory remit.
+  sorry
+
+open scoped NNReal
+
+/-- The round-by-round extractor for the query phase.
+Since f^(0) is always available, we can invoke the extractMLP function directly. -/
+noncomputable def queryRbrExtractor :
+  Extractor.RoundByRound []ₒ
+    (StmtIn := (FinalSumcheckStatementOut (L:=L) (ℓ:=ℓ))
+      × (∀ j, OracleStatement 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Fin.last ℓ) j))
+    (WitIn := Unit)
+    Unit
+    (pSpec := pSpecQuery 𝔽q β γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+    (fun _ => Unit) where
+  eqIn := rfl
+  extractMid := fun _ _ _ witMidSucc => witMidSucc
+  extractOut := fun _ _ _ => ()
+
+def queryKStateProp {m : Fin (1 + 1)}
+  (tr : ProtocolSpec.Transcript m
+    (pSpecQuery 𝔽q β γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate)))
+  (stmt : FinalSumcheckStatementOut (L := L) (ℓ := ℓ))
+  (witMid : Unit)
+  (oStmt : ∀ j, OracleStatement 𝔽q β (ϑ := ϑ)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Fin.last ℓ) j) : Prop :=
+if h0 : m.val = 0 then
+  -- Same as last Kstate of finalSumcheck reduction
+  Binius.BinaryBasefold.finalSumcheckRelOutProp 𝔽q β (input:=⟨⟨stmt, oStmt⟩, witMid⟩)
+else
+    let r := stmt.ctx.t_eval_point
+    let s := stmt.ctx.original_claim
+    let challenges : Fin ℓ → L := stmt.challenges
+    let tr_so_far := (pSpecQuery 𝔽q β γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).take m m.is_le
+    let chalIdx : tr_so_far.ChallengeIdx := ⟨⟨0,
+      Nat.lt_of_succ_le (by omega)⟩, by simp only [Nat.reduceAdd]; rfl⟩
+    let γ_challenges : Fin γ_repetitions → sDomain 𝔽q
+      β h_ℓ_add_R_rate ⟨0, by omega⟩ := ((ProtocolSpec.Transcript.equivMessagesChallenges (k:=m)
+        (pSpec:=pSpecQuery 𝔽q β γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+        tr).2 chalIdx)
+    let fold_challenges := stmt.challenges
+    -- Checks available after message 1 (V -> P: γ challenges)
+    let proximityTestsCheck : Prop :=
+      proximityChecksSpec 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (ϑ:=ϑ) γ_repetitions γ_challenges oStmt fold_challenges stmt.final_constant
+    proximityTestsCheck
+
+/-- The knowledge state function for the query phase -/
+noncomputable def queryKnowledgeStateFunction {σ : Type} (init : ProbComp σ)
+    (impl : QueryImpl []ₒ (StateT σ ProbComp)) :
+  (queryOracleVerifier 𝔽q β (ϑ:=ϑ) γ_repetitions).KnowledgeStateFunction init impl
+  (relIn := finalSumcheckRelOut 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+  (relOut := acceptRejectOracleRel)
+  (extractor := queryRbrExtractor 𝔽q β (ϑ:=ϑ) γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) where
+  toFun := fun m ⟨stmt, oStmt⟩ tr witMid =>
+    queryKStateProp 𝔽q β (ϑ:=ϑ) (γ_repetitions:=γ_repetitions)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (m:=m) (tr:=tr) (stmt:=stmt) (witMid:=witMid) (oStmt:=oStmt)
+  toFun_empty := fun stmt witMid => by simp only; rfl
+  toFun_next := fun m hDir stmt tr msg witMid h => by
+    fin_cases m; simp [pSpecQuery] at hDir
+  toFun_full := fun stmt tr witOut h => by
+    -- Mechanical reduction (verified to reach the wedge below): unfold the positive-probability
+    -- hypothesis to a membership in the support of the simulated verifier run.
+    rw [gt_iff_lt, probEvent_pos_iff] at h
+    obtain ⟨x, hx, hrel⟩ := h
+    rw [OptionT.mem_support_iff] at hx
+    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+    obtain ⟨s, _, hx⟩ := hx
+    simp only [OracleVerifier.toVerifier, Verifier.run, StateT.run'_eq,
+      support_map, Set.mem_image, Prod.exists] at hx
+    obtain ⟨a, b, hx, hab⟩ := hx
+    -- Expose the loop structure: `simp [queryOracleVerifier, simulateQ_optionT_bind]` rewrites the
+    -- `simulateQ (simOracle2 …) (verify …)` into the explicit DOUBLY-NESTED `forIn` over
+    -- `MProd (Option Bool) _` accumulators (the `do`-notation early-return desugaring), with the inner
+    -- `(List.Vector.ofFn id).mmap` of `2^ϑ` oracle queries and the `unless … do return false` exits
+    -- rendered as `ForInStep.yield ⟨none, …⟩` / `ForInStep.done ⟨some false, …⟩`.
+    simp only [queryOracleVerifier, simulateQ_optionT_bind] at hx
+    -- GOAL REDUCTION (verified to land): the accept witness `hrel` collapses to `x = (true, _)`, the
+    -- last-round extractor is the identity on `()`, and `queryKStateProp` at `m = .last 1` (value `1`,
+    -- so the `m.val = 0` `dite` is false) is exactly `proximityChecksSpec` on the round-1 challenges.
+    obtain ⟨stmt1, oStmt⟩ := stmt
+    rw [acceptRejectOracleRel] at hrel
+    simp only [Set.mem_singleton_iff, Prod.mk.injEq] at hrel
+    obtain ⟨hx_eq, -⟩ := hrel
+    simp only [queryRbrExtractor]
+    unfold queryKStateProp
+    simp only [Fin.val_last, one_ne_zero, ↓reduceDIte]
+    -- ⊢ proximityChecksSpec 𝔽q β γ_repetitions
+    --     ((Transcript.equivMessagesChallenges tr).2 ⟨⟨0,_⟩,_⟩) oStmt
+    --     stmt1.challenges stmt1.final_constant
+    --
+    -- VERIFIED VERIFIER-RUN QUERY COLLAPSE (this whole `simp only` block compiles): push both
+    -- `simulateQ` layers through the doubly-nested `forIn` and the inner `2^ϑ`-query
+    -- `List.Vector.mmap`, collapsing EVERY oracle-statement query to `pure (oStmt …)` via the
+    -- in-file `queryCodeword_collapse` (a `rfl`). After this, `hx` is membership in the support of a
+    -- fully QUERY-FREE doubly-nested `forIn` over `StateT σ ProbComp`'s `OptionT` (no `unifSpec`
+    -- sampling, no `[]ₒ`/oracle-statement queries remain inside the loop bodies).
+    simp only [ForInSupport.simulateQ_optionT_forIn,
+      ForInSupport.simulateQ_optionT_listVector_mmap,
+      simulateQ_optionT_bind, ForInSupport.simulateQ_optionT_pure,
+      queryCodeword_collapse, simulateQ_optionT_lift, simulateQ_pure,
+      apply_ite, bind_pure_comp, map_pure, pure_bind] at hx
+    -- SHARPENED RESIDUAL (query plumbing DONE; what remains is transformer-stack support + the
+    -- no-early-exit invariant + the BaseFold cast alignment — NOT any missing query/loop primitive).
+    -- After the collapse above, `hx` reads (schematically):
+    --   (a, b) ∈ support (StateT.run ((·, oStmtOut) <$>
+    --     (do let r ← forIn (finRange γ) ⟨none,()⟩ (fun rep acc =>
+    --            do let r' ← forIn (finRange (ℓ/ϑ)) ⟨none,0⟩ (fun k c =>
+    --                 do let fib ← (ofFn id).mmap (fun u => OptionT.lift (pure (oStmt ⟨k,_⟩ …)));
+    --                    if k*ϑ>0 then (if c.snd = fib.get (extractMiddleFinMask …)
+    --                                   then pure (.yield ⟨none, localized_fold_matrix_form … fib.get⟩)
+    --                                   else pure (.done ⟨some false, c.snd⟩))
+    --                    else pure (.yield ⟨none, localized_fold_matrix_form … fib.get⟩));
+    --               simulateQ impl (simulateQ (simOracle2 …)
+    --                 (match r'.fst with | none => if r'.snd = final_constant then .yield ⟨none,()⟩
+    --                                              else .done ⟨some false,()⟩
+    --                                   | some a => .done ⟨some a,()⟩)));
+    --         simulateQ impl (simulateQ (simOracle2 …)
+    --           (match r.fst with | none => pure true | some a => pure a))) s)
+    -- VERIFIED ADVANCE (landed): peel the outer `OptionT (StateT σ ProbComp)` functor map to an
+    -- `OptionT` bind, exposing `hx` as membership in the support of the `StateT.run … s`-evaluation of
+    -- `outerLoop >>= finalContinuation`. (`StateT.run_map` does NOT fire here: the map is the OptionT
+    -- functor map, not a `StateT`-level map — confirmed by `pp.explicit`.)
+    rw [show (∀ {X Y} (f : X → Y) (x : OptionT (StateT σ ProbComp) X),
+          f <$> x = x >>= (pure ∘ f)) from fun f x => map_eq_pure_bind f x] at hx
+    -- SHARPENED RESIDUAL (corrected: the prior note claimed the loop-support machinery for steps 1-2
+    -- was "in hand"; it was NOT — `ForInSupport.forIn_support_invariant` needs `[HasEvalSet m]` for the
+    -- loop monad, but `HasEvalSet (StateT σ ProbComp)` does NOT exist, so it does not apply to this
+    -- `OptionT (StateT σ ProbComp)` loop as-is. The genuinely missing primitive — a
+    -- `StateT.run`-evaluated `forIn` support transport, landing the loop at the `ProbComp` level where
+    -- `support` IS defined — is now PROVEN above: `ForInSupport.stateT_run_forIn_cons_mem` (cons-step
+    -- membership via `List.forIn_cons` + the monad-instance unfolds + `mem_support_bind_iff`) and
+    -- `ForInSupport.stateT_run_forIn_support_invariant` (the induction-free `Inv`-rule, the
+    -- `OptionT (StateT σ ProbComp)` analogue of `forIn_support_invariant`). The remaining work, now
+    -- resting on a REAL primitive rather than a missing one:
+    --  (1) OUTER NO-EARLY-EXIT. Split `hx` at the outer `>>= finalContinuation` (one `StateT.run`/
+    --      `OptionT`-bind step), exposing the outer-loop result `r : MProd (Option Bool) PUnit` in
+    --      `support (StateT.run outerLoop s')`. Apply `stateT_run_forIn_support_invariant` with
+    --      `Inv acc := acc.fst = none`; the per-rep step obligation (the inner `match acc.fst`
+    --      continuation only ever writes `done ⟨some false,_⟩` on a FAILED check and `yield ⟨none,_⟩`
+    --      otherwise) discharges by `cases acc.fst` (which ι-reduces the content-addressed verifier
+    --      matcher `queryOracleVerifier.match_1`, after which each branch is a `pure` collapsed by
+    --      `simulateQ_optionT_pure`). With `hab/hx_eq` forcing `r = some (true,_)`, conclude
+    --      `r.fst = none`, so every per-rep `unless` and the final `unless c_cur = c` held.
+    --  (2) PER-REP INNER INVARIANT. Same `stateT_run_forIn_support_invariant` on the inner
+    --      `forIn (finRange (ℓ/ϑ))` loop, `Inv c := c.fst = none`, transports each fold-level
+    --      consistency check `c_cur = f^(i)(v_i,…)` out of the inner support.
+    --  (3) CAST ALIGNMENT (the heavy, BaseFold-specific remainder, unchanged). Match the loop's
+    --      `f_i_on_fiber`/`c_cur`/`c_next` (`localized_fold_matrix_form`, `extractMiddleFinMask`,
+    --      `next_suffix_of_v`, with their `Fin`/`Nat.joinBits` casts) against the identically-shaped
+    --      `proximityChecksSpec` terms, reconciling the ONE-ITERATION SHIFT (verifier checks level `i`
+    --      at the START of iteration `i+ϑ`). Lemma 4.9 `iterated_fold_eq_matrix_form` +
+    --      `localized_fold_eval_succ`/`_zero` + `foldMatrixNat_succ_apply` (proven in Prelude) supply
+    --      the fold-semantics facts. This index/cast bookkeeping is the genuine remaining content.
+    sorry
+
+/-- Round-by-round knowledge soundness for the oracle verifier (query phase) -/
+theorem queryOracleVerifier_rbrKnowledgeSoundness [Fintype L] {σ : Type} (init : ProbComp σ)
+    (impl : QueryImpl []ₒ (StateT σ ProbComp)) :
+    (queryOracleVerifier 𝔽q β (ϑ:=ϑ) γ_repetitions).rbrKnowledgeSoundness init impl
+    (relIn := finalSumcheckRelOut 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+    (relOut := acceptRejectOracleRel)
+    (rbrKnowledgeError := queryRbrKnowledgeError 𝔽q β γ_repetitions
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) := by
+  use fun _ => Unit
+  use queryRbrExtractor 𝔽q β (ϑ:=ϑ) γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+  use queryKnowledgeStateFunction 𝔽q β (ϑ:=ϑ) γ_repetitions init impl
+  intro stmtIn witIn prover j
+  -- RESIDUAL (research-tier; the loop-support primitive is no longer the blocker). The dominant
+  -- obstruction is intrinsic: the target error `(1/2 + 2^-(𝓡+1))^γ` is the proximity-gap bound, whose
+  -- proof needs the Binius/BaseFold list-decoding proximity argument (per-repetition soundness
+  -- `1/2 + 2^-(𝓡+1)`, independence across the `γ` repetitions) — genuine research-tier content not
+  -- yet formalized in this development. The structural step (bounding the probability the
+  -- `forIn`-loop verifier accepts a state failing `queryKStateProp`) now HAS its loop-support
+  -- machinery available — the `ForInSupport` section above supplies both the `simulateQ`-transport
+  -- (`simulateQ_optionT_forIn`, `simulateQ_optionT_listVector_mmap`) AND the
+  -- `StateT.run`-evaluated loop-support transport (`stateT_run_forIn_cons_mem`,
+  -- `stateT_run_forIn_support_invariant`) that `forIn_support_invariant` could NOT provide for this
+  -- `OptionT (StateT σ ProbComp)` loop (no `HasEvalSet (StateT σ ProbComp)`) — but it bottoms out in
+  -- the same proximity bound. Not closable in this single file under the honest-proof constraints
+  -- (no axioms, no weakening of the bound, no assume-the-conclusion).
+  sorry
 
 end FinalQueryRoundIOR
 end

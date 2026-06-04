@@ -18,6 +18,12 @@ coefficients have `Y`-degrees `k·e` / `k·(e+1)` (the line case is `k = 1`).
 
 namespace ProximityGap
 
+-- Decidability/Fintype instances are threaded through the section; several
+-- statement-level lemmas do not mention them directly.
+set_option linter.unusedDecidableInType false
+set_option linter.unusedSectionVars false
+set_option linter.unusedFintypeInType false
+
 open NNReal Finset Function ProbabilityTheory Code
 open scoped BigOperators LinearCode
 
@@ -37,7 +43,8 @@ theorem RS_exists_bivariate_AB_of_goodCoeffsCurve_card_gt
     (hδ : δ ≤ relativeUniqueDecodingRadius (ι := ι) (F := F)
       (C := ReedSolomon.code domain deg))
     (u : WordStack F (Fin (k + 1)) ι)
-    (hS : (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k * Fintype.card ι) :
+    (hS : (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k *
+      Fintype.card ι) :
     ∃ A B : F[X][Y],
       A ≠ 0 ∧
       Polynomial.Bivariate.degreeX A ≤ Nat.floor (δ * Fintype.card ι) ∧
@@ -62,7 +69,8 @@ theorem RS_exists_bivariate_AB_of_goodCoeffsCurve_card_gt
                       (fun i => ∑ t : Fin (k + 1), Polynomial.C (u t i) * Polynomial.X ^ (t : ℕ)))
                     (Fin.append a b) = 0 := by
     simpa [e] using
-      (RS_exists_kernelVec_BW_homMatrix_of_goodCoeffsCurve_card_gt (k := k) (deg := deg) (domain := domain)
+      (RS_exists_kernelVec_BW_homMatrix_of_goodCoeffsCurve_card_gt (k := k) (deg := deg) (domain
+        := domain)
         (δ := δ) u hdeg hδ hS)
   rcases hker with ⟨a, b, ha_ne, ha_deg, hb_deg, hMul⟩
   let A0 : F[X][Y] := ∑ t : Fin (e + 1), Polynomial.monomial t.1 (a t)
@@ -236,11 +244,13 @@ open Polynomial in
 open Polynomial.Bivariate in
 open BerlekampWelch in
 omit [DecidableEq ι] in
-theorem RS_jointAgreement_of_goodCoeffsCurve_card_gt {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg] (hk : 0 < k)
+theorem RS_jointAgreement_of_goodCoeffsCurve_card_gt {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+  [NeZero deg] (hk : 0 < k)
     (hδ : δ ≤ relativeUniqueDecodingRadius (ι := ι) (F := F)
       (C := ReedSolomon.code domain deg))
     (u : WordStack F (Fin (k + 1)) ι)
-    (hS : (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k * Fintype.card ι) :
+    (hS : (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k *
+      Fintype.card ι) :
     jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u) := by
   classical
   set n : ℕ := Fintype.card ι
@@ -304,7 +314,8 @@ theorem RS_jointAgreement_of_goodCoeffsCurve_card_gt {k deg : ℕ} {domain : ι 
               simp [Polynomial.Bivariate.evalY]
     obtain ⟨A, B, hA0, hA_degX, hA_degY, hB_degX, hB_degY, hAB⟩ :=
       RS_exists_bivariate_AB_of_goodCoeffsCurve_card_gt
-        (k := k) (deg := deg) (domain := domain) (δ := δ) hdeg_le hδ u (by simpa [good, n] using hgood_card)
+        (k := k) (deg := deg) (domain := domain) (δ := δ) hdeg_le hδ u (by simpa [good, n] using
+          hgood_card)
     let quot_x : F → F[X] := fun z =>
       if hz : z ∈ good then
         Classical.choose (RS_exists_Pz_of_mem_goodCoeffsCurve (k := k)
@@ -451,7 +462,7 @@ theorem RS_jointAgreement_of_goodCoeffsCurve_card_gt {k deg : ℕ} {domain : ι 
           div_lt_div_of_pos_left hnum_pos hknq_pos hng
         have h2 : (((k * (e + 1) : ℕ) : ℚ) / ((k * n : ℕ) : ℚ))
             = (((e + 1 : ℕ) : ℚ) / ((⟨n, hn_pos⟩ : ℕ+) : ℚ)) := by
-          show (((k * (e + 1) : ℕ) : ℚ) / ((k * n : ℕ) : ℚ))
+          change (((k * (e + 1) : ℕ) : ℚ) / ((k * n : ℕ) : ℚ))
             = (((e + 1 : ℕ) : ℚ) / ((n : ℕ) : ℚ))
           push_cast
           rw [mul_div_mul_left _ _ (by exact_mod_cast hk.ne' : (k : ℚ) ≠ 0)]

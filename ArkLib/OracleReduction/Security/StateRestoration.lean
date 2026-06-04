@@ -144,7 +144,9 @@ def knowledgeSoundness
     (srKnowledgeSoundnessError : ENNReal) : Prop :=
   ∃ srExtractor : Extractor.StateRestoration oSpec StmtIn WitIn WitOut pSpec,
   ∀ srProver : Prover.StateRestoration.KnowledgeSoundness oSpec StmtIn WitOut pSpec,
-    Pr[ fun | ⟨stmtIn, witIn, some stmtOut, witOut⟩ => (stmtOut, witOut) ∈ relOut ∧ (stmtIn, witIn) ∉ relIn | _ => False
+    Pr[ fun | ⟨stmtIn, witIn, some stmtOut, witOut⟩ =>
+              (stmtOut, witOut) ∈ relOut ∧ (stmtIn, witIn) ∉ relIn
+            | _ => False
     | do
       (simulateQ (impl.addLift srChallengeQueryImpl' : QueryImpl _ (StateT _ ProbComp))
           <| (do

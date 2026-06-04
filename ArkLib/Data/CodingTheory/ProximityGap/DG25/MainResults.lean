@@ -52,7 +52,14 @@ def R_star (U₀ U₁ : InterleavedWord A (Fin m) ι) : Finset F :=
   ) Finset.univ
 
 open Classical in
-/-- The set D = Δ^{2m}(U, V), columns where U₀≠V₀ or U₁≠V₁. -/
+/-- The set D = Δ^{2m}(U, V), columns where U₀≠V₀ or U₁≠V₁.
+
+Specialisation of the canonical `Code.disagreementCols` (in
+[Basic/Distance.lean](../../Basic/Distance.lean)) to the two-stack
+DG25 setting: a column belongs to D if *either* the first stack or
+the second stack disagrees there. Equivalently,
+`disagreementSet U₀ U₁ V₀ V₁ = Code.disagreementCols U₀ V₀ ∪
+Code.disagreementCols U₁ V₁`. -/
 def disagreementSet (U₀ U₁ V₀ V₁ : InterleavedWord A (κ := κ) (ι := ι)) : Finset ι :=
   Finset.filter (fun colIdx => (U₀ colIdx ≠ V₀ colIdx) ∨ (U₁ colIdx ≠ V₁ colIdx)) Finset.univ
 

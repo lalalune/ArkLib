@@ -75,8 +75,8 @@ open scoped Polynomial MvPolynomial NNReal
 --   prover_first' := by simp [pSpec]
 --   verifier_last' := by simp [pSpec, Neg.neg]
 
--- /-- Recognize that the (only) message from the prover to the verifier has type `Vector R (2 ^ n)`,
---   and hence can be turned into an oracle for evaluating the polynomial -/
+-- /-- Recognize that the (only) message from the prover to the verifier has type
+--   `Vector R (2 ^ n)`, and hence can be turned into an oracle for evaluating the polynomial -/
 -- instance instOracleInterfaceMessagePSpec : OracleInterface ((pSpec R n).Message default) := by
 --   simp [pSpec, default, Message, getType]
 --   exact instOracleInterfaceVector

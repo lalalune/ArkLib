@@ -8,6 +8,15 @@ Authors: Quang Dao, Katerina Hristova, František Silváši, Julian Sutherland,
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Prelude
 import ArkLib.Data.CodingTheory.ReedSolomon
 
+
+set_option linter.style.longFile 2000
+
+-- Decidability/Fintype instances are threaded through the sections; several
+-- statement-level engine lemmas do not mention them directly.
+set_option linter.unusedDecidableInType false
+set_option linter.unusedSectionVars false
+set_option linter.unusedFintypeInType false
+
 namespace ProximityGap
 
 open NNReal Finset Function ProbabilityTheory Code
@@ -1399,7 +1408,7 @@ theorem BW_homMatrix_entry_natDegree_le_of_natDegree_le {F : Type} [Field F]
           Polynomial.natDegree_mul_le
       _ ≤ d + 0 := by
           refine Nat.add_le_add (hd i) ?_
-          simpa using Polynomial.natDegree_pow_le_of_le j.1
+          exact Polynomial.natDegree_pow_le_of_le j.1
             (le_of_eq (Polynomial.natDegree_C (ωs i)))
       _ = d := Nat.add_zero d
   · -- constraint block: -C(ωs i)^(j-(e+1)) — degree 0
@@ -1484,7 +1493,7 @@ theorem BW_homMatrix_det_submatrix_natDegree_le_of_natDegree_le {F : Type} [Fiel
             Polynomial.natDegree_mul_le
         _ ≤ d + 0 := by
             refine Nat.add_le_add (hd _) ?_
-            simpa using Polynomial.natDegree_pow_le_of_le j.1
+            exact Polynomial.natDegree_pow_le_of_le j.1
               (le_of_eq (Polynomial.natDegree_C (ωs (r (σ j)))))
         _ = d := Nat.add_zero d
     · simp only [hA, Matrix.submatrix_apply, id, BW_homMatrix, Matrix.of_apply, hj, ↓reduceIte,
@@ -1527,7 +1536,7 @@ theorem BW_homMatrix_entry_natDegree_le_of_branch {F : Type} [Field F]
           Polynomial.natDegree_mul_le
       _ ≤ d + 0 := by
           refine Nat.add_le_add (hd i) ?_
-          simpa using Polynomial.natDegree_pow_le_of_le j.1
+          exact Polynomial.natDegree_pow_le_of_le j.1
             (le_of_eq (Polynomial.natDegree_C (ωs i)))
       _ = d := Nat.add_zero d
   · simp only [BW_homMatrix, Matrix.of_apply, hj, ↓reduceIte, Polynomial.natDegree_neg]
@@ -1584,7 +1593,7 @@ theorem BW_homMatrix_det_updateCol_natDegree_le_of_natDegree_le_of_ge {F : Type}
     by_cases hje : j' = j
     · subst hje
       have : ¬ (j'.1 < e + 1) := not_lt.mpr hj
-      simp only [Matrix.updateCol_apply, if_pos rfl, this, ↓reduceIte]
+      simp only [Matrix.updateCol_apply, this, ↓reduceIte]
       rcases eq_or_ne i' i0 with h | h <;> simp [Pi.single, Function.update, h]
     · simp only [Matrix.updateCol_apply, if_neg hje, Matrix.submatrix_apply, id]
       exact BW_homMatrix_entry_natDegree_le_of_branch e k ωs g d hd (r i') j'
@@ -1620,7 +1629,7 @@ theorem BW_homMatrix_det_updateCol_natDegree_le_of_natDegree_le_of_lt {F : Type}
     intro i' j'
     by_cases hje : j' = j
     · subst hje
-      simp only [Matrix.updateCol_apply, if_pos rfl]
+      simp only [Matrix.updateCol_apply]
       have : ¬ (j'.1 ≤ e ∧ j' ≠ j') := by simp
       rw [if_neg this]
       rcases eq_or_ne i' i0 with h | h <;> simp [Pi.single, Function.update, h]

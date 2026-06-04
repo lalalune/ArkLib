@@ -21,6 +21,12 @@ the separate §5 chain.
 
 namespace ProximityGap
 
+-- Decidability/Fintype instances are threaded through the section; the
+-- statement-level theorem does not mention them directly.
+set_option linter.unusedDecidableInType false
+set_option linter.unusedSectionVars false
+set_option linter.unusedFintypeInType false
+
 open NNReal Finset Function ProbabilityTheory Code
 open scoped BigOperators LinearCode
 
@@ -69,7 +75,9 @@ omit [DecidableEq ι] in
 uniform word `u 0`, so any positive probability of closeness gives the plain
 closeness fact, and joint agreement follows from unique decoding. -/
 theorem RS_correlatedAgreement_curves_k_zero {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
-    [NeZero deg] :
+    [NeZero deg]
+    (_hδ : δ ≤ relativeUniqueDecodingRadius (ι := ι) (F := F)
+      (C := ReedSolomon.code domain deg)) :
     δ_ε_correlatedAgreementCurves (k := 0) (A := F) (F := F) (ι := ι)
       (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
   classical
@@ -112,7 +120,65 @@ theorem RS_correlatedAgreement_curves_k_zero {deg : ℕ} {domain : ι ↪ F} {δ
     intro j hj
     have := (hT_agree j).1 hj
     have ht0 : t = 0 := Fin.fin_one_eq_zero t
-    simpa only [ht0, Finset.mem_filter, Finset.mem_univ, true_and] using this.symm
+    subst ht0; simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+    exact this.symm
+
+/-- **Formal BCIKS20 Theorem 1.2, unique-decoding regime, witness-extraction form**
+— the machine-verified UDR rung of the proximity-prize ladder (cf. research dossier).
+
+This is the witness-extraction specialization of the proximity gap, pinned to the
+monomial / power generator `r ↦ (i ↦ rⁱ)` (curve `∑ᵢ rⁱ • fᵢ`), in the unique-decoding
+regime `δ ≤ relativeUniqueDecodingRadius`. If a random point on the degree-`k` curve
+through `f₀, …, f_k` is `δ`-close to the Reed–Solomon code with probability exceeding
+`k · errorBound`, then there is a large coordinate set `S` (`|S| ≥ (1−δ)·n`) on which
+every `fᵢ` is explained by a codeword of `code domain deg`.
+
+The error is stated against the **native** in-tree bound `errorBound δ deg domain`
+(which in this regime equals `n/q`, by `errorBound_eq_n_div_q_of_le_relUDR`), the exact
+quantity the keystone `RS_correlatedAgreement_curves_uniqueDecodingRegime` consumes; no
+cross-paper bridge is invented. The STIR-side `proximityError`-form of this statement
+(`STIR.proximity_gap`) additionally requires the `proximityError ↔ (m−1)·errorBound`
+bridge and the √ρ-radius (list-decoding) regime, both of which remain residual.
+
+Proof: instantiate the curves keystone (`RS_correlatedAgreement_curves_*`, which is the
+proven UDR branch of `correlatedAgreement_affine_curves`) with the supplied word stack;
+this is exactly the call shape `Stir/Combine.lean:589+` uses to consume the keystone. The
+resulting `jointAgreement` is then destructured into the witness-extraction form, with the
+agreement-column subset relation `S ⊆ filter (v i · = f i ·)` read off pointwise. -/
+theorem proximity_gap_uniqueDecodingRegime {k deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hδ : δ ≤ relativeUniqueDecodingRadius (ι := ι) (F := F)
+      (C := ReedSolomon.code domain deg))
+    (f : Fin (k + 1) → ι → F)
+    (hProb :
+      Pr_{
+        let r ← $ᵖ F}[δᵣ(∑ i : Fin (k + 1), (r ^ (i : ℕ)) • f i,
+          (ReedSolomon.code domain deg : Set (ι → F))) ≤ δ]
+        > (k : ℝ≥0) * errorBound δ deg domain) :
+    ∃ S : Finset ι,
+      S.card ≥ (1 - δ) * (Fintype.card ι) ∧
+      ∀ i : Fin (k + 1), ∃ u : ι → F,
+        u ∈ (ReedSolomon.code domain deg : Set (ι → F)) ∧ ∀ x ∈ S, f i x = u x := by
+  classical
+  -- Instantiate the curves keystone (proven UDR branch of `correlatedAgreement_affine_curves`):
+  -- the `k = 0` corner and the `k > 0` case both land in the unique-decoding regime here.
+  have keystone : δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+    rcases Nat.eq_zero_or_pos k with hk0 | hkpos
+    · subst hk0; exact RS_correlatedAgreement_curves_k_zero hδ
+    · exact RS_correlatedAgreement_curves_uniqueDecodingRegime hkpos hδ
+  -- Feed the probability hypothesis through the keystone (same shape as Combine.lean:599+).
+  simp only [δ_ε_correlatedAgreementCurves] at keystone
+  have hja := keystone f (by exact_mod_cast hProb)
+  -- Destructure `jointAgreement` into the witness-extraction form.
+  simp only [jointAgreement, ge_iff_le, SetLike.mem_coe] at hja
+  obtain ⟨S, hS_card, v, hv⟩ := hja
+  refine ⟨S, hS_card, fun i => ?_⟩
+  refine ⟨v i, (hv i).1, fun x hx => ?_⟩
+  -- The agreement column subset gives `v i x = f i x`; the witness form wants the symmetric eq.
+  have hmem : x ∈ Finset.filter (fun j => v i j = f i j) Finset.univ :=
+    (hv i).2 hx
+  simpa using ((Finset.mem_filter.mp hmem).2).symm
 
 
 -- Placed here to avoid invalidating the ReedSolomon.lean olean cascade;

@@ -20,6 +20,12 @@ close-codeword extraction. The line case is `k = 1`
 
 namespace ProximityGap
 
+-- Decidability/Fintype instances are threaded through the section; several
+-- statement-level extraction lemmas do not mention them directly.
+set_option linter.unusedDecidableInType false
+set_option linter.unusedSectionVars false
+set_option linter.unusedFintypeInType false
+
 open NNReal Finset Function ProbabilityTheory Code
 open scoped BigOperators LinearCode
 
@@ -90,7 +96,8 @@ theorem RS_exists_kernelVec_BW_homMatrix_eval_of_mem_goodCoeffsCurve
   set e : ℕ := Nat.floor (δ * Fintype.card ι) with he
   -- Get the close polynomial `Pz`
   obtain ⟨Pz, hPzdeg, hdist⟩ :=
-    RS_exists_Pz_of_mem_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) (δ := δ) u (z := z) hz
+    RS_exists_Pz_of_mem_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) (δ := δ) u (z :=
+      z) hz
   have hdist' : Δ₀(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t, Pz.eval ∘ domain) ≤ e := by
     simpa [he] using hdist
   -- Extract a small set of disagreement coordinates
@@ -216,7 +223,7 @@ theorem BW_homMatrix_map_evalRingHom_poly {e k : ℕ} (ωs : ι → F) (g : ι �
       = BW_homMatrix (ι := ι) e k ωs (fun i => (g i).eval z) := by
   ext i j
   by_cases hj : (j.1 ≤ e) <;>
-    simp [BW_homMatrix, Matrix.map_apply, hj, Nat.lt_succ_iff]
+    simp [BW_homMatrix, Matrix.map_apply, hj]
 
 open scoped BigOperators in
 open Polynomial in
@@ -345,7 +352,8 @@ theorem RS_BW_homMatrix_det_submatrix_eq_zero_of_goodCoeffsCurve_card_gt_fun
     (hdeg : deg ≤ Fintype.card ι)
     (hδ : δ ≤ relativeUniqueDecodingRadius (ι := ι) (F := F)
       (C := ReedSolomon.code domain deg))
-    (hS : (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k * Fintype.card ι) :
+    (hS : (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k *
+      Fintype.card ι) :
     let e : ℕ := Nat.floor (δ * Fintype.card ι)
     let N : ℕ := (e + 1) + (e + deg)
     ∀ r : Fin N → ι,
@@ -407,7 +415,8 @@ theorem RS_exists_nonzero_kernelVec_BW_homMatrix_of_goodCoeffsCurve_card_gt
     (u : WordStack F (Fin (k + 1)) ι)
     (hdeg : deg ≤ Fintype.card ι)
     (hδ : δ ≤ relativeUniqueDecodingRadius (ι := ι) (F := F) (C := ReedSolomon.code domain deg))
-    (hS : (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k * Fintype.card ι) :
+    (hS : (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k *
+      Fintype.card ι) :
     let e : ℕ := Nat.floor (δ * Fintype.card ι)
     ∃ a : Fin (e + 1) → F[X],
       ∃ b : Fin (e + deg) → F[X],
@@ -507,7 +516,8 @@ theorem RS_exists_nonzero_kernelVec_BW_homMatrix_of_goodCoeffsCurve_card_gt
     simpa [K0, Matrix.submatrix_sub, Matrix.submatrix_mul, Matrix.submatrix_submatrix,
       Matrix.mul_assoc, Function.comp, L, R] using hdetSchur
   have hg : ∀ i : ι,
-      ((∑ t : Fin (k + 1), Polynomial.C (u t i) * Polynomial.X ^ (t : ℕ) : F[X])).natDegree ≤ k := by
+      ((∑ t : Fin (k + 1), Polynomial.C (u t i) * Polynomial.X ^ (t : ℕ) : F[X])).natDegree ≤ k
+        := by
     intro i
     refine Polynomial.natDegree_sum_le_of_forall_le _ _ ?_
     intro t _
@@ -667,9 +677,11 @@ omit [Nonempty ι] in
 theorem card_RS_goodCoeffsCurve_gt_of_prob_gt_kn_div_q
     {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} (u : WordStack F (Fin (k + 1)) ι)
     (hprob :
-      Pr_{ let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t, ReedSolomon.code domain deg) ≤ δ]
+      Pr_{ let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t, ReedSolomon.code domain deg)
+        ≤ δ]
         > (k * Fintype.card ι : ℝ≥0) / (Fintype.card F : ℝ≥0)) :
-    (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k * Fintype.card ι := by
+    (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k * Fintype.card ι
+      := by
   classical
   -- predicate defining the good coefficients
   let P : F → Prop := fun z : F =>

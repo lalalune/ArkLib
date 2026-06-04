@@ -277,7 +277,7 @@ theorem vflatten_eq_vappend_last {m : ℕ} {n : Fin (m + 1) → ℕ}
   | succ m ih =>
     rw [vflatten_succ, ih, vflatten_succ]
     ext i
-    simp [vappend_eq_append]
+    simp only [vappend_eq_append, Function.comp_apply]
     symm
     let u := v 0
     let vv := vflatten fun i => v i.castSucc.succ

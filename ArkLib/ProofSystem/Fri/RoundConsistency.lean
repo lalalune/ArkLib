@@ -73,7 +73,6 @@ lemma generalised_round_consistency_completeness
     ext i
     rw [eval_mul]
     simp
-
   apply Eq.trans (b := eval γ <| ∑ i : Fin n, X ^ (↑i : ℕ) * C (eval (s₀ ^ n) (f.splitNth n i)))
   · rw [Lagrange.eq_interpolate (ι := Fin n)
         (v := fun i => ω i * s₀)

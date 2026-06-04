@@ -14,6 +14,11 @@ import ArkLib.ToMathlib.Polynomial.EvalExt
 
 namespace ProximityGap
 
+-- Decidability instances are threaded through the sections for the §6 machinery;
+-- several statement-level bricks do not mention them directly.
+set_option linter.unusedDecidableInType false
+set_option linter.unusedSectionVars false
+
 open NNReal Finset Function ProbabilityTheory
 open scoped BigOperators LinearCode ProbabilityTheory ENNReal
 open Code
@@ -1324,8 +1329,8 @@ private lemma polynomialCurveEval_coord_eq_of_agree {n l : ℕ} {F : Type} [Fiel
       Curve.polynomialCurveEval, Finset.sum_apply, Pi.smul_apply, smul_eq_mul]
     exact Finset.sum_congr rfl fun i _ => mul_comm _ _
   have hdeg : ∀ (a : Fin l → Fin n → F),
-      (∑ i : Fin l, Polynomial.C (a i x) * Polynomial.X ^ (i : ℕ)).degree
-        < ((l : ℕ) : WithBot ℕ) := by
+      (∑ i : Fin l, Polynomial.C (a i x) * Polynomial.X ^ (i : ℕ)).degree < ((l : ℕ) : WithBot ℕ)
+        := by
     intro a
     apply lt_of_le_of_lt (Polynomial.degree_sum_le _ _)
     rw [Finset.sup_lt_iff (by exact_mod_cast WithBot.bot_lt_coe l)]

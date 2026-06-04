@@ -162,6 +162,102 @@ def whirRelation
     : Set ((Unit × ∀ i, (OracleStatement ι F i)) × Unit) :=
   { ⟨⟨_, oracle⟩, _⟩ | δᵣ(oracle (), smoothCode φ varCount) ≤ err }
 
+/-- Theorem 5.2: **Round-by-round soundness of the WHIR Vector IOPP**
+
+  **ABF26 mapping.** This is the top-level WHIR soundness theorem; its proof composes
+  (a) the BCIKS20/CapacityBounds-style ε_ca / ε_mca bounds (ABF26 §4.2.2 / §4.3)
+  with (b) the folding-preserves-list-decoding lemmas in `Whir/Folding.lean`
+  (L4.21–L4.23, corresponding to ABF26 T3.4 specialized to FRS). The `errStar` and
+  `ε_fold` rate-distance ingredients line up with ABF26's `epsMCA` (Def 4.3); the
+  per-round shifting/folding error budget is the WHIR-side accounting of those
+  abstract bounds. -/
+theorem whir_rbr_soundness
+    [SampleableType F] {d dstar : ℕ}
+  -- P : set of M + 1 parameters including foldingParamᵢ, varCountᵢ, φᵢ, repeatParamᵢ,
+  -- where foldingParamᵢ > 0
+    {P : Params ι F} {S : ∀ i : Fin (M + 1), Finset (ι i)}
+  -- hParams : a set of conditions that parameters in P must satisfy
+  -- h : a set of smooth ReedSolomon codes C_ij bundled with its proximity generators
+  -- and condition for list decodeability
+    {hParams : ParamConditions ι P} {h : GenMutualCorrParams ι P S}
+    {m_0 : ℕ} (hm_0 : m_0 = P.varCount 0) {σ₀ : F}
+    {wPoly₀ : MvPolynomial (Fin (m_0 + 1)) F} {δ : ℝ≥0}
+    [Smooth (P.φ 0)] [Nonempty (ι 0)]
+    (ε_fold : (i : Fin (M + 1)) → Fin (P.foldingParam i) → ℝ≥0) (ε_out : Fin (M + 1) → ℝ≥0)
+    (ε_shift : Fin M → ℝ≥0) (ε_fin : ℝ≥0) :
+    ∃ n : ℕ,
+    -- There exists an `n`-message vector IOPP,
+    ∃ vPSpec : ProtocolSpec.VectorSpec n,
+    -- such that there are `2 * M + 2` challenges from the verifier to the prover,
+    Fintype.card (vPSpec.ChallengeIdx) = 2 * M + 2 ∧
+    -- ∃ a Vector IOPP π with Statement = Unit, Witness = Unit, OracleStatement = (ι₀ F)
+      ∃ π :
+        VectorIOP Unit (OracleStatement (ι 0) F) Unit vPSpec F,
+        let max_ε_folds : (i : Fin (M + 1)) → ℝ≥0 :=
+          fun i => (univ : Finset (Fin (P.foldingParam i))).sup (ε_fold i)
+        let ε_rbr : vPSpec.ChallengeIdx → ℝ≥0 :=
+          fun _ => (univ.image max_ε_folds ∪ {ε_fin} ∪ univ.image ε_out ∪ univ.image ε_shift).max'
+            (by simp)
+        (IsSecureWithGap (whirRelation m_0 (P.φ 0) 0)
+                         (whirRelation m_0 (P.φ 0) (h.δ 0))
+                          ε_rbr π) ∧
+
+        let maxDeg := (Finset.univ : Finset (Fin m_0)).sup (fun i => wPoly₀.degreeOf (Fin.succ i))
+      -- dstar = (1 + deg_Z(wPoly₀) + max_{i < m_0} deg_X(wPoly₀))
+        let dstar := 1 + (wPoly₀.degreeOf 0) + maxDeg
+        let d := max dstar 3
+
+        -- necessary typeclasses for Gen_0j stating finiteness and non-emptiness of underlying ι₀^2ʲ
+        let _ : ∀ j : Fin ((P.foldingParam 0) + 1),
+          Fintype (indexPowT (S 0) (P.φ 0) j) := h.inst1 0
+        let _ : ∀ j : Fin ((P.foldingParam 0) + 1),
+          Nonempty (indexPowT (S 0) (P.φ 0) j) := h.inst2 0
+
+        -- ε_fold(0,j+1) ≤ dstar * dist(0,j) / |F| + errStar(C_0{j+1}, 2, δ₀),
+        -- Note here that `j : Fin (P.foldingParam 0)`,
+        -- so we need to cast into `Fin ((P.foldingParam 0) + 1)` for indexing of `h.dist`
+        -- To get `j`, we use `.castSucc`, whereas to get `j + 1`, we use `.succ`.
+        ∀ j : Fin ((P.foldingParam 0) + 1),
+          let errStar_0 j := h.errStar 0 j (h.C 0 j) (h.Gen_α 0 j).parℓ (h.δ 0)
+        ∀ j : Fin (P.foldingParam 0),
+          ε_fold 0 j ≤ ((dstar * (h.dist 0 j.castSucc)) / Fintype.card F) + (errStar_0 j.succ)
+        ∧
+        -- ε_out(i) ≤ 2^(varCountᵢ) * dist(i,0)^2 / 2 * |F|
+        ∀ i : Fin (M + 1),
+          ε_out i ≤
+            2^(P.varCount i) * (h.dist i 0)^2 / (2 * Fintype.card F)
+        ∧
+        -- ε_shift(i+1) ≤ (1 - δ_{i})^(repeatParam_{i})
+        --                + (dist(i+1,0) * (repeatParam_{i} + 1)) / |F|
+        -- Note here that `i : Fin M`, so we need to cast into `Fin (M + 1)` for indexing of
+        -- `h.δ`, `h.dist` and `P.repeatParam`.
+        -- To get `i`, we use `.castSucc`, whereas to get `i + 1`, we use `.succ`.
+        ∀ i : Fin M,
+          ε_shift i ≤ (1 - (h.δ i.castSucc))^(P.repeatParam i.castSucc)
+            + ((h.dist i.succ 0) * (P.repeatParam i.castSucc) + 1) / Fintype.card F
+        ∧
+
+        -- necessary typeclasses for Gen_ij stating finiteness and non-emptiness of underlying ιᵢ^2ʲ
+        let _ : ∀ i : Fin (M + 1), ∀ j : Fin ((P.foldingParam i) + 1),
+          Fintype (indexPowT (S i) (P.φ i) j) :=
+            h.inst1
+        let _ : ∀ i : Fin (M + 1), ∀ j : Fin ((P.foldingParam i) + 1),
+          Nonempty (indexPowT (S i) (P.φ i) j) :=
+            h.inst2
+
+        -- ε_fold(i,j+1) ≤ d * dist(i,j) / |F| + errStar(C_i{j+1},2,δᵢ)
+        -- Note here that `j : Fin (P.foldingParam 0)`,
+        -- so we need to cast into `Fin ((P.foldingParam 0) + 1)` for indexing of `h.dist`
+        -- To get `j`, we use `.castSucc`, whereas to get `j + 1`, we use `.succ`.
+        ∀ i : Fin (M + 1), ∀ j : Fin ((P.foldingParam i) + 1),
+          let errStar i j := h.errStar i j (h.C i j) (h.Gen_α i j).parℓ (h.δ i)
+        ∀ i : Fin (M + 1), ∀ j : Fin (P.foldingParam i),
+          ε_fold i j ≤ d * (h.dist i j.castSucc) / Fintype.card F + errStar i j.succ
+        ∧
+        -- ε_fin ≤ (1 - δ_{M})^(repeatParam_{M})
+        ε_fin ≤ (1 - h.δ (Fin.last M))^(P.repeatParam (Fin.last M))
+    := by sorry
+
 end RBR
 
 end WhirIOP

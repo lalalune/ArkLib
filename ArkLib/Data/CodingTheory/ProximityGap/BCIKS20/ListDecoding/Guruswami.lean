@@ -13,6 +13,12 @@ import Mathlib.Combinatorics.Pigeonhole
 
 namespace ProximityGap
 
+-- Decidability/Fintype instances are threaded through the sections for the §5 machinery;
+-- several statement-level lemmas do not mention them directly.
+set_option linter.unusedDecidableInType false
+set_option linter.unusedSectionVars false
+set_option linter.unusedFintypeInType false
+
 open NNReal Finset Function ProbabilityTheory Code
 open scoped BigOperators LinearCode
 
@@ -41,7 +47,8 @@ private lemma triv_comp_add_C_eq_zero_iff (p : S[X]) (a : S) :
   · exfalso; have := congrArg (fun q => Polynomial.coeff q 1) h2; simp at this
 
 private lemma triv_compRingHom_addC_injective (a : S) :
-    Function.Injective (Polynomial.compRingHom (Polynomial.X + Polynomial.C a) : S[X] →+* S[X]) := by
+    Function.Injective
+      (Polynomial.compRingHom (Polynomial.X + Polynomial.C a) : S[X] →+* S[X]) := by
   rw [injective_iff_map_eq_zero]; intro r hr
   rw [Polynomial.coe_compRingHom] at hr; exact (triv_comp_add_C_eq_zero_iff r a).mp hr
 
@@ -533,7 +540,8 @@ noncomputable def triConstraintMap (box : Finset (ℕ × ℕ × ℕ)) (m zMax : 
 We instantiate the linear system with a concrete box of `(i, j, t)` triples and a `Z`-budget large
 enough that the number of unknowns strictly exceeds the number of constraints.  The `(i, j)` part is
 the bivariate Guruswami–Sudan box `weigthBoundIndices (k+1) Dpg` (so its size is the proven
-`numVars (k+1) Dpg`); the `Z`-index `t` ranges over `0 … zCap`.  Choosing `zCap = (#constraints)·Dpg`
+`numVars (k+1) Dpg`); the `Z`-index `t` ranges over `0 … zCap`.  Choosing `zCap =
+(#constraints)·Dpg`
 makes the strict bivariate gap `numVars > numConstraints` dominate the extra `Z`-degree the shift
 introduces, giving `#box > #constraints`. -/
 
@@ -546,7 +554,8 @@ cannot overturn the strict bivariate counting gap. -/
 noncomputable def gsZCap (n m k : ℕ) : ℕ := GuruswamiSudan.numConstraints n m * gsDpg n m k
 
 /-- The number of `Z`-coefficients the constraints can occupy: the box `Z`-budget plus the maximal
-`Y`-degree `≤ Dpg` (the shift `Y ← Y + (u₀ + Z·u₁)` raises the `Z`-degree by at most the `Y`-degree).
+`Y`-degree `≤ Dpg` (the shift `Y ← Y + (u₀ + Z·u₁)` raises the `Z`-degree by at most the
+`Y`-degree).
 -/
 noncomputable def gsZMax (n m k : ℕ) : ℕ := gsZCap n m k + gsDpg n m k
 
@@ -652,7 +661,8 @@ lemma ZdegLE_sum {ι : Type*} (s : Finset ι) (g : ι → F[Z][X][Y]) (d : ℕ)
   | empty => simpa using ZdegLE_zero d
   | insert a s ha ih =>
       rw [Finset.sum_insert ha]
-      exact (h a (Finset.mem_insert_self a s)).add (ih (fun i hi ↦ h i (Finset.mem_insert_of_mem hi)))
+      exact (h a (Finset.mem_insert_self a s)).add (ih (fun i hi ↦ h i (Finset.mem_insert_of_mem
+        hi)))
 
 omit [DecidableEq F] [DecidableEq (RatFunc F)] in
 lemma ZdegLE.mul {f g : F[Z][X][Y]} {d e : ℕ} (hf : ZdegLE f d) (hg : ZdegLE g e) :
@@ -908,7 +918,7 @@ lemma exists_nonzero_triSolution (n m k : ℕ) (ωs : Fin n ↪ F) (u₀ u₁ : 
 open GuruswamiSudan in
 omit [DecidableEq F] [DecidableEq (RatFunc F)] in
 /-- For a box index `(i,j,t)`: `i + k·j ≤ Dpg`. -/
-lemma gsBox_weighted_le {n m k : ℕ} {p : ℕ × ℕ × ℕ} (hk : 0 < k) (hp : p ∈ gsBox n m k) :
+lemma gsBox_weighted_le {n m k : ℕ} {p : ℕ × ℕ × ℕ} (_hk : 0 < k) (hp : p ∈ gsBox n m k) :
     1 * p.1 + k * p.2.1 ≤ gsDpg n m k := by
   rw [mem_gsBox] at hp
   have hw := hp.1
@@ -1007,7 +1017,7 @@ omit [DecidableEq (RatFunc F)] in
 lemma natWeightedDegree_gsQ_1k_le {n m k : ℕ} (hk : 0 < k) (c : (gsBox n m k) → F) :
     natWeightedDegree (triCoeffsToPoly (gsBox n m k) c) 1 k ≤ gsDpg n m k :=
   natWeightedDegree_triCoeffsToPoly_le (gsBox n m k) c 1 k (gsDpg n m k)
-    (fun p hp ↦ gsBox_weighted_le hk hp)
+    (fun _p hp ↦ gsBox_weighted_le hk hp)
 
 open GuruswamiSudan Polynomial.Bivariate in
 omit [DecidableEq (RatFunc F)] in
@@ -1110,7 +1120,7 @@ parameter inequalities (no per-`Q` assumption — the `Q`-specific bounds are *p
   quantitative bivariate counting gap `numVars − numConstraints ≥ g`; with the structural gap
   `g = 1` the minimal feasible `gsZCap` is exactly `#constraints · gsDpg`, so this side condition is
   the faithful regime statement for the present infrastructure.) -/
-lemma modified_guruswami_has_a_solution {m n k : ℕ} (hn : 0 < n) (hk : 0 < k)
+lemma modified_guruswami_has_a_solution {m n k : ℕ} (_hn : 0 < n) (hk : 0 < k)
     {ωs : Fin n ↪ F} {u₀ u₁ : Fin n → F}
     (hDx : ((gsDpg n m k : ℕ) : ℝ) < D_X ((k + 1) / (n : ℚ)) n m)
     (hYZ : ((gsDpg n m k + gsZCap n m k : ℕ) : ℝ) ≤

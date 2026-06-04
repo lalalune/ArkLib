@@ -93,7 +93,14 @@ class DecidableBlockDisagreement
 
   Below, we define a disagreementSet(i,k,f,S',φ') as a map (g → Finset (indexPow S φ k))
   using the class DecidableBlockDisagreement, to filter a finite subset of the Finset
-  (indexPow S φ k), as per {z ∈ ι ^ 2^k : ∃ y ∈ Block(i,k,S',φ',z) f(y) ≠ g(y)} for a given g. -/
+  (indexPow S φ k), as per {z ∈ ι ^ 2^k : ∃ y ∈ Block(i,k,S',φ',z) f(y) ≠ g(y)} for a given g.
+
+  *Block-wise* variant of the canonical `Code.disagreementCols` (in
+  `ArkLib/Data/CodingTheory/Basic/Distance.lean`): rather than reporting
+  disagreement at each *coordinate*, this collects the *blocks* `z` for
+  which at least one fiber-point `y ∈ Block z` disagrees. The
+  base-case relationship: at `k = 0`, every block is a singleton and
+  the two coincide. -/
 noncomputable def disagreementSet
   (i k : ℕ) {S : Finset ι} {φ : ι ↪ F}
   [DecidableEq F] [DecidableEq ι] [Smooth φ]

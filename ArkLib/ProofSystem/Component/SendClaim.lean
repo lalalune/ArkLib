@@ -82,7 +82,7 @@ def oracleVerifier : OracleVerifier oSpec Statement OStatement Unit (OStatement 
     intro i
     match i with
     | .inl _ => rfl
-    | .inr j => simp [ProtocolSpec.Message]; exact congrArg OStatement (Unique.uniq _ j)
+    | .inr j => simp only [ProtocolSpec.Message]; exact congrArg OStatement (Unique.uniq _ j)
 
 /--
 Combine the prover and verifier into an oracle reduction.
