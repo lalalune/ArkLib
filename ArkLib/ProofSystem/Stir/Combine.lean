@@ -707,9 +707,13 @@ theorem combine_theorem
       have exists_agreement_set_of_combine :=
         @exists_agreement_set_of_combine _ _ _ _ hempty
           _ _ _ _ hdegs _
-          hδLt _ (by aesop) (v := v) (fs := fs)
-        (by aesop)
-        (by aesop)
+          hδLt _ hS_card (v := v) (fs := fs)
+        (by
+          intro i j
+          exact (hv i j).1)
+        (by
+          intro i j x hx
+          exact (hv i j).2 x hx)
       exists S
       simp only [ge_iff_le, hS_card, true_and]
       have hf : ∀ i, 0 < blockSize dstar degs i := by simp [blockSize]
@@ -732,6 +736,7 @@ theorem combine_theorem
         simp only [pow_zero, one_mul] at hv
         exact hv
 
+set_option maxHeartbeats 0 in
 open LinearCode Classical ProbabilityTheory ReedSolomon STIR in
 /-- Unconditional UDR-restricted variant of `combine_theorem` ([STIR] Lemma 4.13):
 with `δ` below the unique-decoding radius, the conclusion holds with NO dependence
@@ -778,7 +783,7 @@ theorem combine_theorem_uniqueDecodingRegime [Nonempty ι]
           (ε := ProximityGap.errorBound δ dstar φ) := by
         rcases Nat.eq_zero_or_pos (totalTerms dstar degs - 1) with hk0 | hkpos
         · exact hk0 ▸ ProximityGap.RS_correlatedAgreement_curves_k_zero (deg := dstar)
-            (domain := φ) (δ := δ) hδUDR
+            (domain := φ) (δ := δ)
         · exact ProximityGap.RS_correlatedAgreement_curves_uniqueDecodingRegime
             (deg := dstar) (domain := φ) (δ := δ) hkpos hδUDR
       simp only [ProximityGap.δ_ε_correlatedAgreementCurves] at proximity_gap
@@ -893,9 +898,13 @@ theorem combine_theorem_uniqueDecodingRegime [Nonempty ι]
       have exists_agreement_set_of_combine :=
         @exists_agreement_set_of_combine _ _ _ _ hempty
           _ _ _ _ hdegs _
-          hδLt _ (by aesop) (v := v) (fs := fs)
-        (by aesop)
-        (by aesop)
+          hδLt _ hS_card (v := v) (fs := fs)
+        (by
+          intro i j
+          exact (hv i j).1)
+        (by
+          intro i j x hx
+          exact (hv i j).2 x hx)
       exists S
       simp only [ge_iff_le, hS_card, true_and]
       have hf : ∀ i, 0 < blockSize dstar degs i := by simp [blockSize]
