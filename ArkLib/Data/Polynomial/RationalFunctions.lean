@@ -30,7 +30,7 @@ We define the notions of Appendix A of [BCIKS20].
 
 -/
 
-set_option linter.style.longFile 1700
+set_option linter.style.longFile 1900
 
 open Polynomial Polynomial.Bivariate ToRatFunc Ideal
 
@@ -788,6 +788,74 @@ lemma weight_Λ_sum_le {ι : Type} (s : Finset ι) (f : ι → F[X][Y]) (H : F[X
       rw [Finset.sum_insert ha, Finset.sup_insert]
       exact (weight_Λ_add_le _ _ _ _).trans (max_le_max le_rfl ih)
 
+/-- For a monomial `n` in the support of `f * g`, there is a splitting `n = i + j` with both
+coefficients nonzero and `((f * g).coeff n).natDegree ≤ (f.coeff i).natDegree +
+(g.coeff j).natDegree`. -/
+lemma exists_split_natDegree_coeff_mul_le {f g : F[X][Y]} {n : ℕ}
+    (hn : n ∈ (f * g).support) :
+    ∃ i j : ℕ, i + j = n ∧ f.coeff i ≠ 0 ∧ g.coeff j ≠ 0 ∧
+      ((f * g).coeff n).natDegree ≤ (f.coeff i).natDegree + (g.coeff j).natDegree := by
+  classical
+  -- The support of nonzero product terms over the antidiagonal of `n`.
+  set s : Finset (ℕ × ℕ) :=
+    (Finset.antidiagonal n).filter (fun p => f.coeff p.1 * g.coeff p.2 ≠ 0) with hs_def
+  have hcoeff : (f * g).coeff n = ∑ p ∈ s, f.coeff p.1 * g.coeff p.2 := by
+    rw [Polynomial.coeff_mul]
+    rw [hs_def, Finset.sum_filter]
+    refine Finset.sum_congr rfl (fun p _ => ?_)
+    by_cases hp : f.coeff p.1 * g.coeff p.2 = 0 <;> simp [hp]
+  have hne : (f * g).coeff n ≠ 0 := Polynomial.mem_support_iff.mp hn
+  have hs_nonempty : s.Nonempty := by
+    by_contra h
+    rw [Finset.not_nonempty_iff_eq_empty] at h
+    rw [hcoeff, h, Finset.sum_empty] at hne
+    exact hne rfl
+  -- Pick the pair maximizing the product's `natDegree`.
+  obtain ⟨p, hp_mem, hp_eq⟩ :=
+    Finset.exists_mem_eq_sup s hs_nonempty
+      (fun p => (f.coeff p.1 * g.coeff p.2).natDegree)
+  have hp_filter := Finset.mem_filter.mp hp_mem
+  have hp_anti : p.1 + p.2 = n := Finset.mem_antidiagonal.mp hp_filter.1
+  have hp_prod_ne : f.coeff p.1 * g.coeff p.2 ≠ 0 := hp_filter.2
+  have hf_ne : f.coeff p.1 ≠ 0 := fun h => hp_prod_ne (by rw [h, zero_mul])
+  have hg_ne : g.coeff p.2 ≠ 0 := fun h => hp_prod_ne (by rw [h, mul_zero])
+  refine ⟨p.1, p.2, hp_anti, hf_ne, hg_ne, ?_⟩
+  -- The sum's `natDegree` is at most the maximal term's, which is at most the factors' sum.
+  have hsum_le : ((f * g).coeff n).natDegree ≤
+      (f.coeff p.1 * g.coeff p.2).natDegree := by
+    rw [hcoeff]
+    refine Polynomial.natDegree_sum_le_of_forall_le
+      (n := (f.coeff p.1 * g.coeff p.2).natDegree)
+      (s := s) (fun q : ℕ × ℕ => f.coeff q.1 * g.coeff q.2) (fun q hq => ?_)
+    exact (Finset.le_sup (f := fun q : ℕ × ℕ => (f.coeff q.1 * g.coeff q.2).natDegree) hq).trans_eq
+      hp_eq
+  exact hsum_le.trans Polynomial.natDegree_mul_le
+
+/-- Sub-multiplicativity of the bivariate `Λ`-weight: `Λ(f · g) ≤ Λ(f) + Λ(g)`. The per-`Y`-power
+weight `m` is additive across the product, and coefficient `natDegree`s are sub-additive. -/
+lemma weight_Λ_mul_le (f g H : F[X][Y]) (D : ℕ) :
+    weight_Λ (f * g) H D ≤ weight_Λ f H D + weight_Λ g H D := by
+  classical
+  set m : ℕ := D + 1 - Bivariate.natDegreeY H with hm_def
+  refine Finset.sup_le (fun n hn => ?_)
+  obtain ⟨i, j, hij, hf_ne, hg_ne, hdeg⟩ := exists_split_natDegree_coeff_mul_le hn
+  have hi_mem : i ∈ f.support := Polynomial.mem_support_iff.mpr hf_ne
+  have hj_mem : j ∈ g.support := Polynomial.mem_support_iff.mpr hg_ne
+  have hf_le : (WithBot.some (i * m + (f.coeff i).natDegree) : WithBot ℕ) ≤ weight_Λ f H D :=
+    le_weight_Λ_of_mem_support hi_mem
+  have hg_le : (WithBot.some (j * m + (g.coeff j).natDegree) : WithBot ℕ) ≤ weight_Λ g H D :=
+    le_weight_Λ_of_mem_support hj_mem
+  have hnum : n * m + ((f * g).coeff n).natDegree ≤
+      (i * m + (f.coeff i).natDegree) + (j * m + (g.coeff j).natDegree) := by
+    have hnm : n * m = i * m + j * m := by rw [← hij, Nat.add_mul]
+    omega
+  calc (WithBot.some (n * m + ((f * g).coeff n).natDegree) : WithBot ℕ)
+      ≤ WithBot.some ((i * m + (f.coeff i).natDegree) +
+          (j * m + (g.coeff j).natDegree)) := by exact_mod_cast hnum
+    _ = WithBot.some (i * m + (f.coeff i).natDegree) +
+          WithBot.some (j * m + (g.coeff j).natDegree) := by rw [WithBot.coe_add]
+    _ ≤ weight_Λ f H D + weight_Λ g H D := add_le_add hf_le hg_le
+
 /-- Bound on the `X`-degree of a coefficient of `H` from a `totalDegree` bound. -/
 lemma natDegree_coeff_le_of_totalDegree_le (f : F[X][Y]) {D : ℕ}
     (hD : Bivariate.totalDegree f ≤ D) (i : ℕ) :
@@ -1038,6 +1106,17 @@ lemma weight_Λ_modByMonic_le {H : F[X][Y]} {D : ℕ}
   termination_by p => p.degree
   decreasing_by exact hdeg_lt
 
+/-- Any polynomial representative bounds the `𝒪`-weight of the element it represents: if
+`⟦r⟧ = a` then `weight_Λ_over_𝒪 hH a D ≤ weight_Λ r H D`. This combines the canonical-representative
+identity with `weight_Λ_modByMonic_le`, and is the workhorse for bounding weights of regular
+elements by any convenient (non-reduced) representative. -/
+lemma weight_Λ_over_𝒪_le_of_mk_eq {H : F[X][Y]} {D : ℕ}
+    (hD : Bivariate.totalDegree H ≤ D) (hH : 0 < H.natDegree) {r : F[X][Y]} {a : 𝒪 H}
+    (hr : (Ideal.Quotient.mk (Ideal.span {H_tilde' H}) r : 𝒪 H) = a) :
+    weight_Λ_over_𝒪 hH a D ≤ weight_Λ r H D := by
+  rw [← hr, weight_Λ_over_𝒪_mk]
+  exact weight_Λ_modByMonic_le hD hH r
+
 /-- The set `S_β` from the statement of Lemma A.1 in Appendix A of [BCIKS20].
 Note: Here `F[X][Y]` is `F[Z][T]`. -/
 noncomputable def S_β {H : F[X][Y]} (β : 𝒪 H) : Set F :=
@@ -1121,6 +1200,103 @@ lemma liftToFunctionField_leadingCoeff_ne_zero {F : Type} [Field F] {H : F[X][Y]
     liftToFunctionField (H := H) H.leadingCoeff ≠ 0 := by
   exact liftToFunctionField_ne_zero
     (Polynomial.leadingCoeff_ne_zero.mpr (Polynomial.ne_zero_of_natDegree_gt H_natDegree_pos.out))
+
+/-- The coefficient embedding into the function field is the bivariate lift of the constant. -/
+lemma coeffAsRatFunc_eq_C {F : Type} [Field F] (c : F[X]) :
+    coeffAsRatFunc c = Polynomial.C (univPolyHom (F := F) c) := by
+  simp only [coeffAsRatFunc, RingHom.comp_apply, ToRatFunc.bivPolyHom,
+    Polynomial.coe_mapRingHom, Polynomial.map_C]
+
+/-- The image of the rational substitution `X / W` under the quotient map is `T / W`. -/
+lemma mk_X_div_eq_functionFieldT_div_W {F : Type} [Field F] {H : F[X][Y]}
+    [H_irreducible : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)] :
+    (Ideal.Quotient.mk (Ideal.span {H_tilde H})
+        (Polynomial.X / Polynomial.C (univPolyHom (F := F) H.leadingCoeff))) =
+      functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff := by
+  have hW_ne : liftToFunctionField (H := H) H.leadingCoeff ≠ 0 :=
+    liftToFunctionField_leadingCoeff_ne_zero (H := H)
+  set W_rat : Polynomial (RatFunc F) :=
+    Polynomial.C (univPolyHom (F := F) H.leadingCoeff) with hW_rat_def
+  have hmk_W : Ideal.Quotient.mk (Ideal.span {H_tilde H}) W_rat =
+      liftToFunctionField (H := H) H.leadingCoeff := by
+    rw [hW_rat_def, ← coeffAsRatFunc_eq_C]; rfl
+  have hmk_X : Ideal.Quotient.mk (Ideal.span {H_tilde H}) (Polynomial.X : Polynomial (RatFunc F)) =
+      functionFieldT (H := H) := rfl
+  have ha_ne : univPolyHom (F := F) H.leadingCoeff ≠ 0 := by
+    intro h
+    exact (Polynomial.leadingCoeff_ne_zero.mpr
+      (Polynomial.ne_zero_of_natDegree_gt H_natDegree_pos.out))
+      (univPolyHom_injective (F := F) (by simpa using h))
+  -- In `(RatFunc F)[X]`, division by the constant `W_rat = C a` is `X * C a⁻¹`.
+  have hmul : (Polynomial.X / W_rat) * W_rat = (Polynomial.X : Polynomial (RatFunc F)) := by
+    rw [hW_rat_def, Polynomial.div_C, mul_assoc, ← Polynomial.C_mul,
+      inv_mul_cancel₀ ha_ne, Polynomial.C_1, mul_one]
+  rw [eq_div_iff hW_ne, ← hmk_W, ← map_mul, hmul, hmk_X]
+
+/-- The element `α₀ = T / W` is a root of `H` in the function field: evaluating `H` at `T / W`
+via the coefficient embedding gives `0`. This is the algebraic heart of the Hensel lift in
+Appendix A.4 of [BCIKS20]: `H̃` is the monicization of `H` at the root `α₀`, and `H̃(T) = 0`
+in `𝕃`. -/
+lemma eval₂_liftToFunctionField_div_leadingCoeff_H_eq_zero {F : Type} [Field F] {H : F[X][Y]}
+    [H_irreducible : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)] :
+    Polynomial.eval₂ liftToFunctionField
+        (functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff) H = 0 := by
+  let W_rat : Polynomial (RatFunc F) := Polynomial.C (univPolyHom (F := F) H.leadingCoeff)
+  -- `H_tilde H = W_rat^(d-1) * eval₂ (C∘univ) (X / W_rat) H`.
+  have hHt : H_tilde H =
+      W_rat ^ (H.natDegree - 1) *
+        Polynomial.eval₂ (RingHom.comp Polynomial.C (univPolyHom (F := F))) (Polynomial.X / W_rat)
+          H := rfl
+  -- `mk (H_tilde H) = 0` since the generator lies in the ideal.
+  have hmk_zero : Ideal.Quotient.mk (Ideal.span {H_tilde H}) (H_tilde H) = 0 :=
+    Ideal.Quotient.eq_zero_iff_mem.mpr (Ideal.mem_span_singleton_self _)
+  -- Push `mk` through the eval₂ via `hom_eval₂`.
+  have hcomp_eq :
+      RingHom.comp (Ideal.Quotient.mk (Ideal.span {H_tilde H}))
+          (RingHom.comp Polynomial.C (univPolyHom (F := F))) =
+        (liftToFunctionField (H := H) : F[X] →+* 𝕃 H) := by
+    refine RingHom.ext (fun c => ?_)
+    simp only [RingHom.comp_apply]
+    rw [show (Polynomial.C (univPolyHom (F := F) c)) = coeffAsRatFunc c from
+      (coeffAsRatFunc_eq_C c).symm]
+    rfl
+  have hpush :
+      Ideal.Quotient.mk (Ideal.span {H_tilde H})
+          (Polynomial.eval₂ (RingHom.comp Polynomial.C (univPolyHom (F := F)))
+            (Polynomial.X / W_rat) H) =
+        Polynomial.eval₂ liftToFunctionField
+          (functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff) H := by
+    rw [Polynomial.hom_eval₂, hcomp_eq, mk_X_div_eq_functionFieldT_div_W (H := H)]
+  -- `mk (W_rat) = W ≠ 0`, so the eval₂ factor must vanish.
+  have hmk_W_ne : Ideal.Quotient.mk (Ideal.span {H_tilde H}) W_rat ≠ 0 := by
+    change Ideal.Quotient.mk (Ideal.span {H_tilde H})
+        (Polynomial.C (univPolyHom (F := F) H.leadingCoeff)) ≠ 0
+    rw [show Polynomial.C (univPolyHom (F := F) H.leadingCoeff) =
+        coeffAsRatFunc H.leadingCoeff from (coeffAsRatFunc_eq_C _).symm]
+    exact liftToFunctionField_leadingCoeff_ne_zero (H := H)
+  have hmk_factored : Ideal.Quotient.mk (Ideal.span {H_tilde H}) (H_tilde H) =
+      Ideal.Quotient.mk (Ideal.span {H_tilde H}) W_rat ^ (H.natDegree - 1) *
+        Polynomial.eval₂ liftToFunctionField
+          (functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff) H := by
+    calc Ideal.Quotient.mk (Ideal.span {H_tilde H}) (H_tilde H)
+        = Ideal.Quotient.mk (Ideal.span {H_tilde H})
+            (W_rat ^ (H.natDegree - 1) *
+              Polynomial.eval₂ (RingHom.comp Polynomial.C (univPolyHom (F := F)))
+                (Polynomial.X / W_rat) H) :=
+          congrArg (Ideal.Quotient.mk (Ideal.span {H_tilde H})) hHt
+      _ = Ideal.Quotient.mk (Ideal.span {H_tilde H}) W_rat ^ (H.natDegree - 1) *
+            Polynomial.eval₂ liftToFunctionField
+              (functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff) H := by
+          rw [map_mul, map_pow, hpush]
+  have hzero_factored :
+      (0 : 𝕃 H) =
+        Ideal.Quotient.mk (Ideal.span {H_tilde H}) W_rat ^ (H.natDegree - 1) *
+          Polynomial.eval₂ liftToFunctionField
+            (functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff) H :=
+    hmk_zero.symm.trans hmk_factored
+  have hpow_ne : Ideal.Quotient.mk (Ideal.span {H_tilde H}) W_rat ^ (H.natDegree - 1) ≠ 0 :=
+    pow_ne_zero _ hmk_W_ne
+  exact (mul_eq_zero.mp hzero_factored.symm).resolve_left hpow_ne
 
 /-- If `q ∣ p` in `F[X]`, then `p / q` is regular after embedding into `𝕃`. -/
 lemma regularElms_set_liftToFunctionField_div_of_dvd {F : Type} [Field F] {H : F[X][Y]}
@@ -1383,6 +1559,38 @@ def ζ (R : F[X][X][Y]) (x₀ : F) (H : F[X][Y]) [H_irreducible : Fact (Irreduci
   let T : 𝕃 H := functionFieldT (H := H);
     Polynomial.eval₂ liftToFunctionField (T / W)
       (Bivariate.evalX (Polynomial.C x₀) R.derivative)
+
+/-- The `X`-specialization commutes with the `Y`-derivative. -/
+lemma evalX_derivative_comm (x₀ : F) (p : F[X][X][Y]) :
+    Bivariate.evalX (Polynomial.C x₀) p.derivative =
+      (Bivariate.evalX (Polynomial.C x₀) p).derivative := by
+  rw [Bivariate.evalX_eq_map, Bivariate.evalX_eq_map, Polynomial.derivative_map]
+
+/-- The product-rule factorization of `ζ` at the root `α₀ = T/W`: writing `Q = R(x₀,·) = H · g`
+with `g` the cofactor of the factor `H`, the Y-derivative product rule evaluated at `α₀` gives
+`ζ = H'_Y(α₀) · g(α₀)`, since the `H(α₀) · g'_Y(α₀)` term vanishes (`H(α₀) = 0`).
+This is the structural identity of Claim A.2 in Appendix A.4 of [BCIKS20]. -/
+lemma ζ_eq_evalα₀_derivative_mul (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
+    [H_irreducible : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)]
+    {g : F[X][Y]} (hg : Bivariate.evalX (Polynomial.C x₀) R = H * g) :
+    ζ R x₀ H =
+      Polynomial.eval₂ liftToFunctionField
+          (functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff) H.derivative *
+        Polynomial.eval₂ liftToFunctionField
+          (functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff) g := by
+  set α₀ : 𝕃 H := functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff with hα₀
+  -- `eval₂` at `α₀` is the ring hom `evalα₀`.
+  let evalα₀ : F[X][Y] →+* 𝕃 H := Polynomial.eval₂RingHom liftToFunctionField α₀
+  have heval (p : F[X][Y]) : Polynomial.eval₂ liftToFunctionField α₀ p = evalα₀ p := rfl
+  -- `ζ = evalα₀ (Q.derivative)` with `Q = H * g`.
+  have hζ : ζ R x₀ H = evalα₀ (Bivariate.evalX (Polynomial.C x₀) R).derivative := by
+    rw [ζ, ← evalX_derivative_comm, ← hα₀, heval]
+  rw [hζ, hg, Polynomial.derivative_mul, map_add, map_mul, map_mul]
+  -- The `H(α₀)` factor vanishes by the root lemma.
+  have hH0 : evalα₀ H = 0 := by
+    rw [← heval, hα₀]
+    exact eval₂_liftToFunctionField_div_leadingCoeff_H_eq_zero (H := H)
+  rw [hH0, zero_mul, add_zero, heval, heval]
 
 /-- If the derivative specialization is constant in the function-field variable, then `ζ` is
 regular. -/
