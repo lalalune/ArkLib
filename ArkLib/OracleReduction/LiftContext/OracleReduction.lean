@@ -50,7 +50,9 @@ def OracleVerifier.liftContext
                               OuterOStmtIn OuterOStmtOut InnerOStmtIn InnerOStmtOut)
     (V : OracleVerifier oSpec InnerStmtIn InnerOStmtIn InnerStmtOut InnerOStmtOut pSpec) :
       OracleVerifier oSpec OuterStmtIn OuterOStmtIn OuterStmtOut OuterOStmtOut pSpec where
-  verify := fun outerStmtIn transcript => sorry
+  -- The current bundled oracle-statement lens does not carry enough data to project the
+  -- inner verifier input or simulate its input-oracle queries here.
+  verify := fun _ _ => OptionT.mk (pure none)
   embed := by
     have := V.embed
 
