@@ -152,6 +152,63 @@ lemma H_tilde'_monic (H : F[X][Y]) (hH : 0 < H.natDegree) :
       exact (Polynomial.degree_C_mul_X_pow_le i _).trans_lt
         (WithBot.coe_lt_coe.2 (Finset.mem_range.mp hi))
 
+/-- Evaluation of `H_tilde'` is monicization of evaluation of `H`. -/
+lemma evalEval_H_tilde' (H : F[X][Y]) (hH : 0 < H.natDegree) (z y : F) :
+    Polynomial.evalEval z ((H.coeff H.natDegree).eval z * y) (H_tilde' H) =
+      ((H.coeff H.natDegree).eval z) ^ (H.natDegree - 1) * Polynomial.evalEval z y H := by
+  classical
+  set d := H.natDegree with hd
+  set W : F[X] := H.coeff d with hW
+  set w : F := W.eval z with hw
+  have hdne : d ≠ 0 := by omega
+  have hwd : Polynomial.eval z (H.coeff d) = w := by rw [← hW, hw]
+  have hEvalH : Polynomial.evalEval z y H =
+      ∑ i ∈ Finset.range (H.natDegree + 1), (H.coeff i).eval z * y ^ i := by
+    rw [Polynomial.evalEval]
+    rw [show Polynomial.eval (Polynomial.C y) H =
+        ∑ i ∈ Finset.range (H.natDegree + 1), H.coeff i * (Polynomial.C y) ^ i by
+      exact Polynomial.eval_eq_sum_range (x := Polynomial.C y)]
+    simp only [Polynomial.eval_finset_sum, Polynomial.eval_mul, Polynomial.eval_pow, Polynomial.eval_C]
+  rw [H_tilde', if_neg (by simpa [hd] using hdne)]
+  simp only [Polynomial.evalEval_add, Polynomial.evalEval_pow, Polynomial.evalEval_X,
+    Polynomial.evalEval_finset_sum, Polynomial.evalEval_mul, Polynomial.evalEval_C,
+    Polynomial.eval_mul, Polynomial.eval_pow]
+  rw [hEvalH]
+  simp only [hd]
+  rw [Finset.sum_range_succ]
+  simp only [← hd]
+  rw [mul_add]
+  have hsum_lower :
+      (∑ x ∈ Finset.range d, Polynomial.eval z (H.coeff x) *
+          Polynomial.eval z (H.coeff d) ^ (d - 1 - x) * (w * y) ^ x) =
+        w ^ (d - 1) * ∑ x ∈ Finset.range d, Polynomial.eval z (H.coeff x) * y ^ x := by
+    rw [Finset.mul_sum]
+    refine Finset.sum_congr rfl ?_
+    intro i hi
+    have hid : d - 1 - i + i = d - 1 := by
+      have : i < d := Finset.mem_range.mp hi
+      omega
+    rw [hwd, mul_pow]
+    calc
+      Polynomial.eval z (H.coeff i) * w ^ (d - 1 - i) * (w ^ i * y ^ i)
+          = Polynomial.eval z (H.coeff i) * ((w ^ (d - 1 - i) * w ^ i) * y ^ i) := by ring
+      _ = Polynomial.eval z (H.coeff i) * (w ^ (d - 1) * y ^ i) := by rw [← pow_add, hid]
+      _ = w ^ (d - 1) * (Polynomial.eval z (H.coeff i) * y ^ i) := by ring
+  have hlead : (w * y) ^ d = w ^ (d - 1) * (Polynomial.eval z (H.coeff d) * y ^ d) := by
+    rw [hwd, mul_pow]
+    have hpow : w ^ d = w ^ (d - 1) * w := by
+      have hds : d = (d - 1) + 1 := by omega
+      calc
+        w ^ d = w ^ ((d - 1) + 1) := congrArg (fun n : ℕ => w ^ n) hds
+        _ = w ^ (d - 1) * w := by rw [pow_succ]
+    rw [hpow]; ring
+  rw [hsum_lower, hlead, add_comm]
+
+lemma evalEval_H_tilde'_eq_zero_of_evalEval_eq_zero (H : F[X][Y]) (hH : 0 < H.natDegree)
+    {z y : F} (hroot : Polynomial.evalEval z y H = 0) :
+    Polynomial.evalEval z ((H.coeff H.natDegree).eval z * y) (H_tilde' H) = 0 := by
+  rw [evalEval_H_tilde' H hH z y, hroot, mul_zero]
+
 private lemma monicize_term {K : Type} [Field K] (a b : K) (i d : ℕ)
     (ha : a ≠ 0) (hi : i < d) :
     (Polynomial.C a ^ (d - 1)) * (Polynomial.C b * (Polynomial.X / Polynomial.C a) ^ i) =
