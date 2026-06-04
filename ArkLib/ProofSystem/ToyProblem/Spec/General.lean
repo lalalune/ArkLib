@@ -877,8 +877,24 @@ theorem oracleReduction_perfectCompleteness
     erw [StateT.run_bind] at hmem
     rw [mem_support_bind_iff] at hmem
     obtain ⟨⟨x, s''⟩, hx, hs⟩ := hmem
-    trace_state
-    sorry
+    -- Peel the prover run `hx` to learn `x = some (transcript, …)` with the round-1 message
+    -- equal to the honest `g`. The run is `(fun a ↦ (a.1, …)) <$> (γ-sample; msg; xs-sample)`.
+    erw [simulateQ_map] at hx
+    rw [StateT.run_map] at hx
+    simp only [support_map, Set.mem_image] at hx
+    obtain ⟨⟨tr, sₜ⟩, htr, hxeq⟩ := hx
+    obtain ⟨rfl, rfl⟩ := Prod.mk.inj hxeq
+    -- Peel `htr` to make `tr.1` the concrete honestly-built `Fin.snoc` transcript: round-1
+    -- message `g = fun j ↦ M 0 j + γ · M 1 j`, round-0/2 challenges `γ, xs`.
+    obtain ⟨γ₀, xs₀, rfl⟩ := proverRun_support htr
+    -- Now `tr.1.messages ⟨1,_⟩` / `tr.1.challenges` reduce; the verifier `if` is `pure ()` by `hIf`.
+    revert hs
+    simp only [FullTranscript.messages, FullTranscript.challenges, Fin.snoc, Fin.isValue,
+      Nat.lt_irrefl, dite_false, dite_true, hIf, simulateQ_map, simulateQ_pure, StateT.run_map,
+      StateT.run_pure, OptionT.run_pure, Option.getM, pure_bind, support_map, support_pure,
+      Set.mem_image, Set.mem_singleton_iff, map_pure]
+    rintro ⟨a, rfl, ha⟩
+    exact absurd (congr_arg Prod.fst ha) (by simp)
   · -- Event holds: same peel; the output statement matches and `accepts` fires.
     intro x hx
     rw [OptionT.mem_support_iff] at hx
