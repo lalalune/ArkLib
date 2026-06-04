@@ -1243,6 +1243,56 @@ theorem pg_card_candidatePairs_le_natDegreeY (x₀ : F) (h_gs : ModifiedGuruswam
   -- Put everything together.
   exact (hcard_biUnion.trans (hsum.trans hsum_Rset_le))
 
+/-! ### Verified statement defect of Claim 5.7 (the 7th in this tree)
+
+`exists_factors_with_large_common_root_set` (Claim 5.7, `Agreement.lean`) carries a second
+cardinality conjunct
+`(#S : ℝ)/(D_Y Q) > 2·D_Y Q²·D_X·D_YZ Q`,
+with `S = coeffs_of_close_proximity k ωs δ u₀ u₁`.  This is a *lower bound on `#S`* and is **not**
+derivable from `ModifiedGuruswami`: in [BCIKS20] it is a *hypothesis* (the set of close
+codeword-coefficients is large — the list-decoding regime), mis-placed into the conclusion.  The
+three lemmas below verify this defect concretely. -/
+
+omit [DecidableEq (RatFunc F)] in
+/-- *(Defect-7, part 1.)* For `δ < 0` and a non-empty point set, `coeffs_of_close_proximity` is
+empty: membership needs a codeword within relative Hamming distance `≤ δ < 0`, impossible since
+the relative Hamming distance is non-negative. -/
+lemma coeffs_of_close_proximity_eq_empty_of_neg [NeZero n] (hδ : δ < 0) :
+    coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ = ∅ := by
+  classical
+  rw [coeffs_of_close_proximity, Set.toFinset_eq_empty]
+  ext z
+  simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false, not_exists]
+  intro v hle
+  have hnn : (0 : ℚ) ≤ ↑(δᵣ(u₀ + z • u₁, (v : Fin n → F))) := by positivity
+  linarith
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+/-- *(Defect-7, part 2.)* The right-hand side of the second cardinality conjunct of Claim 5.7 is
+non-negative (`D_X` is non-negative on `ρ = (k+1)/n ≥ 0`, and the remaining factors are casts of
+naturals). -/
+lemma c57_rhs_nonneg :
+    (0 : ℝ) ≤ 2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q := by
+  have hD : (0 : ℝ) ≤ D_X ((k + 1 : ℚ) / n) n m := by
+    unfold D_X; positivity
+  positivity
+
+omit [DecidableEq (RatFunc F)] in
+/-- *(Defect-7, core.)* The second cardinality conjunct of `exists_factors_with_large_common_root_set`
+is **false** whenever `S := coeffs_of_close_proximity` is empty: its left-hand side
+`(#S : ℝ)/(D_Y Q)` collapses to `0`, while its right-hand side is `≥ 0` (`c57_rhs_nonneg`), so the
+strict inequality cannot hold.  Together with `coeffs_of_close_proximity_eq_empty_of_neg` (which
+makes `S` empty for `δ < 0`), this proves the conjunct is not derivable from `ModifiedGuruswami`
+alone: in [BCIKS20] it is a hypothesis (`S` large, the list-decoding regime), not a conclusion. -/
+lemma c57_second_conjunct_unsat_of_S_empty
+    (hSempty : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ = ∅)
+    (hconj2 : (#(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) : ℝ) / (Bivariate.natDegreeY Q : ℝ)
+        > 2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q) :
+    False := by
+  rw [hSempty] at hconj2
+  simp only [Finset.card_empty, Nat.cast_zero, zero_div] at hconj2
+  exact absurd hconj2 (not_lt.mpr (c57_rhs_nonneg k))
+
 end BCIKS20ProximityGapSection5
 
 end ProximityGap
