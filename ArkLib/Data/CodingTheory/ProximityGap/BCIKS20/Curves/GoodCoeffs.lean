@@ -352,7 +352,8 @@ theorem RS_BW_homMatrix_det_submatrix_eq_zero_of_goodCoeffsCurve_card_gt_fun
     (hdeg : deg ≤ Fintype.card ι)
     (hδ : δ ≤ relativeUniqueDecodingRadius (ι := ι) (F := F)
       (C := ReedSolomon.code domain deg))
-    (hS : (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k * Fintype.card ι) :
+    (hS : (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k *
+      Fintype.card ι) :
     let e : ℕ := Nat.floor (δ * Fintype.card ι)
     let N : ℕ := (e + 1) + (e + deg)
     ∀ r : Fin N → ι,
@@ -414,7 +415,8 @@ theorem RS_exists_nonzero_kernelVec_BW_homMatrix_of_goodCoeffsCurve_card_gt
     (u : WordStack F (Fin (k + 1)) ι)
     (hdeg : deg ≤ Fintype.card ι)
     (hδ : δ ≤ relativeUniqueDecodingRadius (ι := ι) (F := F) (C := ReedSolomon.code domain deg))
-    (hS : (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k * Fintype.card ι) :
+    (hS : (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k *
+      Fintype.card ι) :
     let e : ℕ := Nat.floor (δ * Fintype.card ι)
     ∃ a : Fin (e + 1) → F[X],
       ∃ b : Fin (e + deg) → F[X],
@@ -514,7 +516,8 @@ theorem RS_exists_nonzero_kernelVec_BW_homMatrix_of_goodCoeffsCurve_card_gt
     simpa [K0, Matrix.submatrix_sub, Matrix.submatrix_mul, Matrix.submatrix_submatrix,
       Matrix.mul_assoc, Function.comp, L, R] using hdetSchur
   have hg : ∀ i : ι,
-      ((∑ t : Fin (k + 1), Polynomial.C (u t i) * Polynomial.X ^ (t : ℕ) : F[X])).natDegree ≤ k := by
+      ((∑ t : Fin (k + 1), Polynomial.C (u t i) * Polynomial.X ^ (t : ℕ) : F[X])).natDegree ≤ k
+        := by
     intro i
     refine Polynomial.natDegree_sum_le_of_forall_le _ _ ?_
     intro t _
@@ -674,9 +677,11 @@ omit [Nonempty ι] in
 theorem card_RS_goodCoeffsCurve_gt_of_prob_gt_kn_div_q
     {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} (u : WordStack F (Fin (k + 1)) ι)
     (hprob :
-      Pr_{ let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t, ReedSolomon.code domain deg) ≤ δ]
+      Pr_{ let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t, ReedSolomon.code domain deg)
+        ≤ δ]
         > (k * Fintype.card ι : ℝ≥0) / (Fintype.card F : ℝ≥0)) :
-    (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k * Fintype.card ι := by
+    (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k * Fintype.card ι
+      := by
   classical
   -- predicate defining the good coefficients
   let P : F → Prop := fun z : F =>
