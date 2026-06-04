@@ -269,7 +269,64 @@ lemma fri_round_consistency_completeness
       (⟨fun x => x, by simp⟩ : (evalDomainSigma s ω (i.1 + 1)).toFinset ↪ 𝔽)
       (2 ^ (n - (∑ j' ∈ finRangeTo _ (i.1 + 1), (s j' : ℕ))))
     ).carrier
-  := by sorry
+  := by
+  obtain ⟨P, hPdeg, hPeval⟩ :=
+    (ReedSolomon.mem_code_iff_exists_polynomial).mp f.property
+  refine ReedSolomon.mem_code_of_polynomial_of_degree_lt_of_eval
+    (Polynomial.FoldingPolynomial.polyFold P (2 ^ (s i).1) z) ?_ ?_
+  · -- Degree bound: `polyFold` divides the degree by `2 ^ (s i)`.
+    by_cases hP0 : P = 0
+    · simp only [hP0, Polynomial.FoldingPolynomial.polyFold_zero_eq_zero,
+        Polynomial.degree_zero]
+      exact WithBot.bot_lt_coe _
+    by_cases hfold0 : Polynomial.FoldingPolynomial.polyFold P (2 ^ (s i).1) z = 0
+    · rw [hfold0, Polynomial.degree_zero]; exact WithBot.bot_lt_coe _
+    rw [Polynomial.degree_eq_natDegree hfold0]
+    rw [Polynomial.degree_eq_natDegree hP0] at hPdeg
+    norm_cast at hPdeg ⊢
+    have hpos : 0 < (2 : ℕ) ^ (s i).1 := pow_pos (by norm_num) _
+    apply lt_of_le_of_lt Polynomial.FoldingPolynomial.polyFold_natDegree_le
+    -- `P.natDegree < 2 ^ (n - sum_i)`, so `P.natDegree / 2^(s i) < 2 ^ (n - sum_i - s i)`.
+    have hsum_le : ∑ j' ∈ finRangeTo (k + 1) i.1, (s j' : ℕ) ≤ n - (s i : ℕ) :=
+      sum_finRangeTo_le_sub_of_le (s := s) (i := i) k_le_n
+    have hsi_le_n : (s i : ℕ) ≤ n := by
+      have hsingle : (s i : ℕ) ≤ ∑ j, (s j : ℕ) :=
+        Finset.single_le_sum (f := fun j => (s j : ℕ))
+          (fun j _ => Nat.zero_le _) (Finset.mem_univ i)
+      omega
+    have hsum_add : ∑ j' ∈ finRangeTo (k + 1) (i.1 + 1), (s j' : ℕ)
+        = (∑ j' ∈ finRangeTo (k + 1) i.1, (s j' : ℕ)) + (s i : ℕ) :=
+      sum_finRangeTo_add_one (i := i) (f := fun j => (s j : ℕ))
+    rw [hsum_add]
+    have hsum_si_le : (∑ j' ∈ finRangeTo (k + 1) i.1, (s j' : ℕ)) + (s i : ℕ) ≤ n := by
+      omega
+    -- Abbreviate the inner sum so the arithmetic is a clean `omega`/`Nat` computation.
+    set S : ℕ := ∑ j' ∈ finRangeTo (k + 1) i.1, (s j' : ℕ) with hS
+    have hexp : n - S = (n - (S + (s i : ℕ))) + (s i : ℕ) := by omega
+    have key : P.natDegree / (2 : ℕ) ^ (s i).1 < 2 ^ (n - (S + (s i : ℕ))) := by
+      rw [Nat.div_lt_iff_lt_mul hpos]
+      refine lt_of_lt_of_le hPdeg ?_
+      rw [hexp, pow_add]
+      exact le_refl _
+    exact key
+  · -- Evaluation identity: `f_succ'` (the matrix/Vandermonde-inverse fold) agrees with the
+    -- algebraic `polyFold P z` at every point of the next domain.
+    --
+    -- This is the core round-consistency identity of Claim 8.1 still to be discharged.
+    -- `f_succ' … x` chooses a preimage `s₀` with `s₀ ^ (2 ^ (s i)) = x.1`, builds the Vandermonde
+    -- inverse `VDMInv` over the coset `cosetG s₀ = {s₀ · r}`, and returns
+    -- `(pows z *ᵥ VDMInv *ᵥ (f restricted to the coset)) ()`.
+    -- Since `↑f = P.eval ∘ domain` (`hPeval`), `VDMInv *ᵥ restrict f` is the coefficient vector of
+    -- the unique degree-`< 2 ^ (s i)` interpolant `Q` of `P` over the coset, and
+    -- `pows z *ᵥ coeffs = Q.eval z`. The remaining algebraic fact is the matrix form of
+    -- `RoundConsistency.generalised_round_consistency_completeness`:
+    --   `Q.eval z = (Polynomial.FoldingPolynomial.polyFold P (2 ^ (s i)) z).eval (s₀ ^ (2 ^ (s i)))`,
+    -- i.e. interpolating `P` over the coset and evaluating at `z` equals the fold evaluated at
+    -- `s₀ ^ (2 ^ (s i)) = x.1`.
+    -- This needs new foundation lemmas: (1) `Matrix.vandermonde` inverse solves the interpolation
+    -- system (`VDM *ᵥ c = v ↔ c = coeffs of interpolant`), and (2) bridging that interpolant's
+    -- evaluation to `polyFold` via `polyFold_eq_sum_of_splitNth`.
+    sorry
 
 end Completeness
 
