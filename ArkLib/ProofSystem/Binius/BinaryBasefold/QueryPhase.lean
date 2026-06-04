@@ -139,6 +139,42 @@ theorem forIn_yield_pure_eq_foldl (l : List α) (g : α → γ → γ) :
     rw [ih (g a init)]
     rfl
 
+/-! ### `simulateQ`-transport for `forIn` (OptionT (OracleComp …)) -/
+
+variable {ι : Type} {spec : OracleSpec ι} {n : Type → Type} [Monad n] [LawfulMonad n]
+
+/-- `simulateQ` commutes with `OptionT.pure`. -/
+theorem simulateQ_optionT_pure (impl : QueryImpl spec n) (b : γ) :
+    simulateQ impl (pure b : OptionT (OracleComp spec) γ) = (pure b : OptionT n γ) := by
+  rw [show (pure b : OptionT (OracleComp spec) γ) = OptionT.lift (pure b)
+        from (OptionT.lift_pure b).symm]
+  rw [simulateQ_optionT_lift, simulateQ_pure, OptionT.lift_pure]
+
+/-- `simulateQ` commutes with `forIn` over a list in the `OptionT (OracleComp …)` monad: simulating a
+loop equals the loop whose body is the simulated body (packaged as `g` with `hg : g = simulateQ ∘ f`,
+which sidesteps the elaboration ambiguity between the base- and `OptionT`-lifted `simulateQ`). This is
+the structural bridge that lets the `simulateQ`-image of a loop-based `OracleVerifier.verify` body be
+analyzed with the support lemmas above — it is exactly the missing `simulateQ_forIn`. -/
+theorem simulateQ_optionT_forIn (impl : QueryImpl spec n)
+    (l : List α) (f : α → γ → OptionT (OracleComp spec) (ForInStep γ))
+    (g : α → γ → OptionT n (ForInStep γ))
+    (hg : ∀ a b, g a b = simulateQ impl (f a b)) :
+    ∀ init : γ,
+      simulateQ impl (forIn l init f : OptionT (OracleComp spec) γ)
+        = (forIn l init g : OptionT n γ) := by
+  induction l with
+  | nil =>
+    intro init
+    rw [List.forIn_nil, List.forIn_nil, simulateQ_optionT_pure]
+  | cons a l ih =>
+    intro init
+    rw [List.forIn_cons, List.forIn_cons, simulateQ_optionT_bind, hg]
+    refine bind_congr ?_
+    intro step
+    cases step with
+    | done b => exact simulateQ_optionT_pure impl b
+    | yield b => exact ih b
+
 end ForInSupport
 
 /-!
