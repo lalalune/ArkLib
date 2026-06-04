@@ -28,7 +28,7 @@ We define the notions of Appendix A of [BCIKS20].
 
 -/
 
-set_option linter.style.longFile 1700
+set_option linter.style.longFile 1900
 
 open Polynomial Polynomial.Bivariate ToRatFunc Ideal
 
@@ -804,6 +804,76 @@ lemma weight_Λ_sum_le {ι : Type} (s : Finset ι) (f : ι → F[X][Y]) (H : F[X
       exact (weight_Λ_add_le _ _ _ _).trans (max_le_max le_rfl ih)
 
 omit [IsDomain F] in
+/-- For a monomial `n` in the support of `f * g`, there is a splitting `n = i + j` with both
+coefficients nonzero and `((f * g).coeff n).natDegree ≤ (f.coeff i).natDegree + (g.coeff j).natDegree`.
+-/
+lemma exists_split_natDegree_coeff_mul_le {f g : F[X][Y]} {n : ℕ}
+    (hn : n ∈ (f * g).support) :
+    ∃ i j : ℕ, i + j = n ∧ f.coeff i ≠ 0 ∧ g.coeff j ≠ 0 ∧
+      ((f * g).coeff n).natDegree ≤ (f.coeff i).natDegree + (g.coeff j).natDegree := by
+  classical
+  -- The support of nonzero product terms over the antidiagonal of `n`.
+  set s : Finset (ℕ × ℕ) :=
+    (Finset.antidiagonal n).filter (fun p => f.coeff p.1 * g.coeff p.2 ≠ 0) with hs_def
+  have hcoeff : (f * g).coeff n = ∑ p ∈ s, f.coeff p.1 * g.coeff p.2 := by
+    rw [Polynomial.coeff_mul]
+    rw [hs_def, Finset.sum_filter]
+    refine Finset.sum_congr rfl (fun p _ => ?_)
+    by_cases hp : f.coeff p.1 * g.coeff p.2 = 0 <;> simp [hp]
+  have hne : (f * g).coeff n ≠ 0 := Polynomial.mem_support_iff.mp hn
+  have hs_nonempty : s.Nonempty := by
+    by_contra h
+    rw [Finset.not_nonempty_iff_eq_empty] at h
+    rw [hcoeff, h, Finset.sum_empty] at hne
+    exact hne rfl
+  -- Pick the pair maximizing the product's `natDegree`.
+  obtain ⟨p, hp_mem, hp_eq⟩ :=
+    Finset.exists_mem_eq_sup s hs_nonempty
+      (fun p => (f.coeff p.1 * g.coeff p.2).natDegree)
+  have hp_filter := Finset.mem_filter.mp hp_mem
+  have hp_anti : p.1 + p.2 = n := Finset.mem_antidiagonal.mp hp_filter.1
+  have hp_prod_ne : f.coeff p.1 * g.coeff p.2 ≠ 0 := hp_filter.2
+  have hf_ne : f.coeff p.1 ≠ 0 := fun h => hp_prod_ne (by rw [h, zero_mul])
+  have hg_ne : g.coeff p.2 ≠ 0 := fun h => hp_prod_ne (by rw [h, mul_zero])
+  refine ⟨p.1, p.2, hp_anti, hf_ne, hg_ne, ?_⟩
+  -- The sum's `natDegree` is at most the maximal term's, which is at most the factors' sum.
+  have hsum_le : ((f * g).coeff n).natDegree ≤
+      (f.coeff p.1 * g.coeff p.2).natDegree := by
+    rw [hcoeff]
+    refine Polynomial.natDegree_sum_le_of_forall_le
+      (n := (f.coeff p.1 * g.coeff p.2).natDegree)
+      (s := s) (fun q : ℕ × ℕ => f.coeff q.1 * g.coeff q.2) (fun q hq => ?_)
+    exact (Finset.le_sup (f := fun q : ℕ × ℕ => (f.coeff q.1 * g.coeff q.2).natDegree) hq).trans_eq
+      hp_eq
+  exact hsum_le.trans Polynomial.natDegree_mul_le
+
+omit [IsDomain F] in
+/-- Sub-multiplicativity of the bivariate `Λ`-weight: `Λ(f · g) ≤ Λ(f) + Λ(g)`. The per-`Y`-power
+weight `m` is additive across the product, and coefficient `natDegree`s are sub-additive. -/
+lemma weight_Λ_mul_le (f g H : F[X][Y]) (D : ℕ) :
+    weight_Λ (f * g) H D ≤ weight_Λ f H D + weight_Λ g H D := by
+  classical
+  set m : ℕ := D + 1 - Bivariate.natDegreeY H with hm_def
+  refine Finset.sup_le (fun n hn => ?_)
+  obtain ⟨i, j, hij, hf_ne, hg_ne, hdeg⟩ := exists_split_natDegree_coeff_mul_le hn
+  have hi_mem : i ∈ f.support := Polynomial.mem_support_iff.mpr hf_ne
+  have hj_mem : j ∈ g.support := Polynomial.mem_support_iff.mpr hg_ne
+  have hf_le : (WithBot.some (i * m + (f.coeff i).natDegree) : WithBot ℕ) ≤ weight_Λ f H D :=
+    le_weight_Λ_of_mem_support hi_mem
+  have hg_le : (WithBot.some (j * m + (g.coeff j).natDegree) : WithBot ℕ) ≤ weight_Λ g H D :=
+    le_weight_Λ_of_mem_support hj_mem
+  have hnum : n * m + ((f * g).coeff n).natDegree ≤
+      (i * m + (f.coeff i).natDegree) + (j * m + (g.coeff j).natDegree) := by
+    have hnm : n * m = i * m + j * m := by rw [← hij, Nat.add_mul]
+    omega
+  calc (WithBot.some (n * m + ((f * g).coeff n).natDegree) : WithBot ℕ)
+      ≤ WithBot.some ((i * m + (f.coeff i).natDegree) +
+          (j * m + (g.coeff j).natDegree)) := by exact_mod_cast hnum
+    _ = WithBot.some (i * m + (f.coeff i).natDegree) +
+          WithBot.some (j * m + (g.coeff j).natDegree) := by rw [WithBot.coe_add]
+    _ ≤ weight_Λ f H D + weight_Λ g H D := add_le_add hf_le hg_le
+
+omit [IsDomain F] in
 /-- Bound on the `X`-degree of a coefficient of `H` from a `totalDegree` bound. -/
 lemma natDegree_coeff_le_of_totalDegree_le (f : F[X][Y]) {D : ℕ}
     (hD : Bivariate.totalDegree f ≤ D) (i : ℕ) :
@@ -1056,6 +1126,17 @@ lemma weight_Λ_modByMonic_le {H : F[X][Y]} {D : ℕ}
       rw [hself]
   termination_by p => p.degree
   decreasing_by exact hdeg_lt
+
+/-- Any polynomial representative bounds the `𝒪`-weight of the element it represents: if
+`⟦r⟧ = a` then `weight_Λ_over_𝒪 hH a D ≤ weight_Λ r H D`. This combines the canonical-representative
+identity with `weight_Λ_modByMonic_le`, and is the workhorse for bounding weights of regular
+elements by any convenient (non-reduced) representative. -/
+lemma weight_Λ_over_𝒪_le_of_mk_eq {H : F[X][Y]} {D : ℕ}
+    (hD : Bivariate.totalDegree H ≤ D) (hH : 0 < H.natDegree) {r : F[X][Y]} {a : 𝒪 H}
+    (hr : (Ideal.Quotient.mk (Ideal.span {H_tilde' H}) r : 𝒪 H) = a) :
+    weight_Λ_over_𝒪 hH a D ≤ weight_Λ r H D := by
+  rw [← hr, weight_Λ_over_𝒪_mk]
+  exact weight_Λ_modByMonic_le hD hH r
 
 /-- The set `S_β` from the statement of Lemma A.1 in Appendix A of [BCIKS20].
 Note: Here `F[X][Y]` is `F[Z][T]`. -/
