@@ -602,6 +602,195 @@ lemma decompose_rows_packMLE (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ'] (h_l : 
   intro w _
   rw [decompose_rows_φ₀φ₁, packMLE_repr_eval]
 
+omit [Fintype L₀] [DecidableEq L₀] [CharP L₀ 2] [Fintype K₀] [DecidableEq K₀] in
+/-- `eqTilde` written as a product over coordinates of the symmetric Boolean factor. -/
+lemma eqTilde_prod {ℓ_ : ℕ} (r r' : Fin ℓ_ → L₀) :
+    eqTilde r r' = ∏ i, ((1 - r i) * (1 - r' i) + r i * r' i) := by
+  unfold eqTilde eqPolynomial singleEqPolynomial
+  rw [MvPolynomial.eval_prod]
+  apply Finset.prod_congr rfl
+  intro i _
+  simp only [map_add, map_mul, map_sub, map_one, MvPolynomial.eval_C, MvPolynomial.eval_X]
+
+omit [Fintype L₀] [DecidableEq L₀] [CharP L₀ 2] [Fintype K₀] [DecidableEq K₀] in
+/-- A product over `Fin (ℓ' + κ₀)` of a function defined by the κ/ℓ'-dichotomy splits as the
+product of the κ-prefix and ℓ'-suffix products. -/
+lemma prod_concat_split {M : Type*} [CommMonoid M] (ℓ' : ℕ)
+    (Fp : Fin κ₀ → M) (Fs : Fin ℓ' → M) :
+    (∏ i : Fin (ℓ' + κ₀), if h : i.val < κ₀ then Fp ⟨i.val, h⟩
+        else Fs ⟨i.val - κ₀, by omega⟩)
+      = (∏ i, Fp i) * ∏ j, Fs j := by
+  -- the index equiv `Fin κ₀ ⊕ Fin ℓ' ≃ Fin (ℓ' + κ₀)`, κ-block first
+  let e : Fin κ₀ ⊕ Fin ℓ' ≃ Fin (ℓ' + κ₀) :=
+    finSumFinEquiv.trans (finCongr (by omega))
+  rw [← Equiv.prod_comp e
+    (fun i : Fin (ℓ' + κ₀) => if h : i.val < κ₀ then Fp ⟨i.val, h⟩ else Fs ⟨i.val - κ₀, by omega⟩),
+    Fintype.prod_sum_type]
+  have he_inl : ∀ i : Fin κ₀, (e (Sum.inl i)).val = i.val := by
+    intro i
+    simp only [e, Equiv.trans_apply, finSumFinEquiv_apply_left, finCongr_apply, Fin.val_cast,
+      Fin.val_castAdd]
+  have he_inr : ∀ j : Fin ℓ', (e (Sum.inr j)).val = κ₀ + j.val := by
+    intro j
+    simp only [e, Equiv.trans_apply, finSumFinEquiv_apply_right, finCongr_apply, Fin.val_cast,
+      Fin.val_natAdd]
+  congr 1
+  · apply Finset.prod_congr rfl
+    intro i _
+    have hlt : (e (Sum.inl i)).val < κ₀ := by rw [he_inl]; exact i.is_lt
+    simp only [dif_pos hlt]
+    congr 1
+  · apply Finset.prod_congr rfl
+    intro j _
+    have hge : ¬ (e (Sum.inr j)).val < κ₀ := by rw [he_inr]; omega
+    simp only [dif_neg hge]
+    congr 1
+    apply Fin.ext
+    show (e (Sum.inr j)).val - κ₀ = j.val
+    rw [he_inr]; omega
+
+omit [Fintype L₀] [DecidableEq L₀] [CharP L₀ 2] [Fintype K₀] [DecidableEq K₀] in
+/-- `eqTilde` of concatenated Boolean / point data factors along the κ/ℓ' split:
+`eqTilde (concat fp fs) (concat gp gs) = eqTilde fp gp * eqTilde fs gs`. -/
+lemma eqTilde_concat_split (ℓ' : ℕ)
+    (fp : Fin κ₀ → L₀) (fs : Fin ℓ' → L₀) (gp : Fin κ₀ → L₀) (gs : Fin ℓ' → L₀) :
+    eqTilde (fun i : Fin (ℓ' + κ₀) => if h : i.val < κ₀ then fp ⟨i.val, h⟩
+          else fs ⟨i.val - κ₀, by omega⟩)
+        (fun i : Fin (ℓ' + κ₀) => if h : i.val < κ₀ then gp ⟨i.val, h⟩
+          else gs ⟨i.val - κ₀, by omega⟩)
+      = eqTilde fp gp * eqTilde fs gs := by
+  rw [eqTilde_prod, eqTilde_prod, eqTilde_prod]
+  rw [← prod_concat_split (κ₀ := κ₀) ℓ'
+    (fun i => (1 - fp i) * (1 - gp i) + fp i * gp i)
+    (fun j => (1 - fs j) * (1 - gs j) + fs j * gs j)]
+  apply Finset.prod_congr rfl
+  intro i _
+  by_cases h : i.val < κ₀ <;> simp only [h, dif_pos, dif_neg, not_false_iff]
+
+omit [Fintype L₀] [DecidableEq L₀] [CharP L₀ 2] [Fintype K₀] [DecidableEq K₀] in
+/-- `aeval` of `eqPolynomial` at a Boolean coefficient vector lands in `L₀` as `eqTilde`. -/
+lemma aeval_eqPolynomial_zeroOne {ℓ_ : ℕ} (x : Fin ℓ_ → Fin 2) (r : Fin ℓ_ → L₀) :
+    (MvPolynomial.aeval r) (eqPolynomial (fun i => ((x i : Fin 2) : K₀)))
+      = eqTilde (fun i => (if x i == 1 then (1 : L₀) else 0)) r := by
+  rw [eqTilde_prod, eqPolynomial, map_prod]
+  apply Finset.prod_congr rfl
+  intro i _
+  unfold singleEqPolynomial
+  rcases Fin.exists_fin_two.mp ⟨x i, rfl⟩ with h | h <;> rw [h] <;>
+    simp only [Fin.isValue, Fin.val_zero, Fin.val_one, Nat.cast_zero, Nat.cast_one,
+      beq_iff_eq, zero_ne_one, reduceIte, one_ne_zero, map_add, map_mul, map_sub, map_one,
+      MvPolynomial.aeval_C, MvPolynomial.aeval_X, map_zero, sub_zero, mul_zero, zero_mul,
+      add_zero, one_mul, mul_one]
+
+omit [Fintype K₀] [DecidableEq K₀] in
+/-- **MLE evaluation identity (through the algebra map).** For a multilinear `t` over `K₀`,
+its `L₀`-evaluation at `r` equals the suffix-`eq`-weighted sum of its Boolean evaluations:
+`aeval r t = ∑_{b ∈ {0,1}^ℓ} algebraMap(t(b)) · eq̃(b, r)`. -/
+lemma aeval_eq_sum_eqTilde {ℓ_ : ℕ} (t : MultilinearPoly K₀ ℓ_) (r : Fin ℓ_ → L₀) :
+    (MvPolynomial.aeval r) t.val
+      = ∑ b : Fin ℓ_ → Fin 2,
+          (algebraMap K₀ L₀) (MvPolynomial.eval (fun i => ((b i : Fin 2) : K₀)) t.val)
+            * eqTilde (fun i => (if b i == 1 then (1 : L₀) else 0)) r := by
+  conv_lhs => rw [← MvPolynomial.is_multilinear_iff_eq_evals_zeroOne.mp t.property]
+  rw [MvPolynomial.MLE, map_sum]
+  apply Finset.sum_congr rfl
+  intro b _
+  rw [map_mul, MvPolynomial.aeval_C, aeval_eqPolynomial_zeroOne]
+  rw [mul_comm]
+  congr 1
+
+/-- The κ-then-ℓ' hypercube concatenation `concatBit v w i = v i` for `i < κ`, `= w (i - κ)`
+otherwise — matching `packMLE` / `decompose_rows_packMLE`. Packaged as an `Equiv`. -/
+def hypercubeSplitEquiv (ℓ ℓ' : ℕ) (h_l : ℓ = ℓ' + κ₀) :
+    (Fin κ₀ → Fin 2) × (Fin ℓ' → Fin 2) ≃ (Fin ℓ → Fin 2) where
+  toFun := fun p => fun i => if h : i.val < κ₀ then p.1 ⟨i.val, h⟩ else p.2 ⟨i.val - κ₀, by omega⟩
+  invFun := fun b => (fun i => b ⟨i.val, by omega⟩, fun j => b ⟨j.val + κ₀, by omega⟩)
+  left_inv := fun ⟨v, w⟩ => by
+    apply Prod.ext
+    · funext i; simp only [Fin.is_lt, dif_pos]
+    · funext j
+      have : ¬ (j.val + κ₀ < κ₀) := by omega
+      simp only [this, dif_neg, not_false_iff]
+      congr 1
+      apply Fin.ext; simp
+  right_inv := fun b => by
+    funext i
+    by_cases h : i.val < κ₀
+    · simp only [h, dif_pos]
+    · simp only [h, dif_neg, not_false_iff]
+      congr 1
+      apply Fin.ext; simp only []; omega
+
+/-- **DP24 ring-switching capstone (sum form).** The verifier's row-decomposition check sum,
+applied to the prover's honest tensor `ŝ = embedded_MLP_eval (packMLE β t) r`, reconstructs
+exactly `t(r) = aeval r t`:
+`∑_v eq̃(v, r_prefix) · (rows ŝ)_v = aeval r t`. -/
+lemma check_rows_sum_eq_aeval (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ'] (h_l : ℓ = ℓ' + κ₀)
+    (β : Basis (Fin κ₀ → Fin 2) K₀ L₀) (t : MultilinearPoly K₀ ℓ) (r : Fin ℓ → L₀) :
+    (∑ v : Fin κ₀ → Fin 2,
+        eqTilde (fun i => (if v i == 1 then (1 : L₀) else 0)) (fun i => r ⟨i.val, by omega⟩)
+          * decompose_tensor_algebra_rows (L := L₀) (K := K₀) (β := β)
+              (embedded_MLP_eval κ₀ L₀ K₀ ℓ ℓ' h_l (packMLE κ₀ L₀ K₀ ℓ ℓ' h_l β t) r) v)
+      = (MvPolynomial.aeval r) t.val := by
+  subst h_l
+  rw [aeval_eq_sum_eqTilde]
+  -- reindex `∑_b` over `Fin (ℓ'+κ₀)` to `∑_{(v,w)}`, then `Fintype.sum_prod_type`
+  rw [← Equiv.sum_comp (hypercubeSplitEquiv (κ₀ := κ₀) (ℓ' + κ₀) ℓ' rfl), Fintype.sum_prod_type]
+  apply Finset.sum_congr rfl
+  intro v _
+  -- expand the row component and distribute the prefix `eq̃`
+  rw [decompose_rows_packMLE, Finset.mul_sum]
+  apply Finset.sum_congr rfl
+  intro w _
+  -- `•` → `algebraMap * `
+  rw [Algebra.smul_def]
+  -- the `t`-evaluation point on both sides is `split (v, w)` (definitional)
+  rw [show (fun i => ((hypercubeSplitEquiv (κ₀ := κ₀) (ℓ' + κ₀) ℓ' rfl (v, w) i : Fin 2) : K₀))
+      = (fun i => ((if h : i.val < κ₀ then v ⟨i.val, h⟩ else w ⟨i.val - κ₀, by omega⟩ : Fin 2) : K₀))
+      from by funext i; rfl]
+  rw [show (getEvaluationPointSuffix κ₀ L₀ (ℓ' + κ₀) ℓ' rfl r)
+      = (fun i => r ⟨i.val + κ₀, by omega⟩) from by funext i; rfl]
+  -- the two `eq̃` factors fuse along the κ/ℓ' split into `eq̃(split(v,w)_as_L, r)`
+  have hfuse :
+      eqTilde (fun i => (if v i == 1 then (1 : L₀) else 0)) (fun i => r ⟨i.val, by omega⟩)
+        * eqTilde (fun i => (if w i == 1 then (1 : L₀) else 0)) (fun i => r ⟨i.val + κ₀, by omega⟩)
+      = eqTilde
+          (fun i => (if hypercubeSplitEquiv (κ₀ := κ₀) (ℓ' + κ₀) ℓ' rfl (v, w) i == 1 then
+            (1 : L₀) else 0)) r := by
+    rw [← eqTilde_concat_split (κ₀ := κ₀) ℓ'
+        (fun i => (if v i == 1 then (1 : L₀) else 0))
+        (fun i => (if w i == 1 then (1 : L₀) else 0))
+        (fun i => r ⟨i.val, by omega⟩)
+        (fun i => r ⟨i.val + κ₀, by omega⟩)]
+    congr 1
+    · funext i
+      by_cases h : i.val < κ₀
+      · simp only [hypercubeSplitEquiv, Equiv.coe_fn_mk, h, dif_pos]
+      · simp only [hypercubeSplitEquiv, Equiv.coe_fn_mk, h, dif_neg, not_false_iff]
+    · funext i
+      by_cases h : i.val < κ₀
+      · rw [dif_pos h]
+      · rw [dif_neg h]
+        congr 1
+        apply Fin.ext
+        simp only []
+        omega
+  rw [← hfuse]
+  ring
+
+/-- **DP24 ring-switching capstone (decision form).** The verifier's Step-2 check on the prover's
+honest tensor `ŝ = embedded_MLP_eval (packMLE β t) r` accepts exactly when the original claim
+equals `t(r) = aeval r t`. This is the soundness/completeness pivot for the batching phase. -/
+lemma performCheckOriginalEvaluation_packMLE_iff (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ']
+    (h_l : ℓ = ℓ' + κ₀) (β : Basis (Fin κ₀ → Fin 2) K₀ L₀) (s : L₀)
+    (t : MultilinearPoly K₀ ℓ) (r : Fin ℓ → L₀) :
+    performCheckOriginalEvaluation κ₀ L₀ K₀ β ℓ ℓ' h_l s r
+        (embedded_MLP_eval κ₀ L₀ K₀ ℓ ℓ' h_l (packMLE κ₀ L₀ K₀ ℓ ℓ' h_l β t) r) = true
+      ↔ s = (MvPolynomial.aeval r) t.val := by
+  unfold performCheckOriginalEvaluation
+  simp only [decide_eq_true_eq]
+  rw [check_rows_sum_eq_aeval]
+
 end RingSwitchingAlgebra
 
 end Binius.RingSwitching
