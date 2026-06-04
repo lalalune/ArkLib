@@ -57,6 +57,10 @@ theorem large_agreement_set_on_curve_implies_correlated_agreement {l : ℕ}
     {rho : ℚ≥0}
     {δ : ℚ≥0}
     {V : Finset (Fin n → F)}
+    -- Finding 15 repair: `V` must be a code of rate `rho` (min relative distance ≥ 1 − rho);
+    -- with `rho` free and `V` arbitrary the statement is false (counterexample in
+    -- research/formal/arklib-patches/upstream-issues.md, Finding 15).
+    (hV : ∀ w ∈ V, ∀ w' ∈ V, w ≠ w' → (1 - rho) * n ≤ (Δ₀(w, w') : ℚ≥0))
     (hδ : δ ≤ (1 - rho) / 2)
     {u : Fin l → Fin n → F}
     (hS : n * l < (coeffs_of_close_proximity_curve (F := F) δ u V).card) :
@@ -82,6 +86,8 @@ theorem large_agreement_set_on_curve_implies_correlated_agreement' {l : ℕ}
     {δ : ℚ≥0}
     (hm : 3 ≤ m)
     {V : Finset (Fin n → F)}
+    -- Finding 15 repair (same defect as the unique-decoding lemma above).
+    (hV : ∀ w ∈ V, ∀ w' ∈ V, w ≠ w' → (1 - rho) * n ≤ (Δ₀(w, w') : ℚ≥0))
     (hδ : δ ≤ δ₀ rho m)
     {u : Fin l → Fin n → F}
     (hS : ((1 + 1 / (2 * m)) ^ 7 * m ^ 7) / (3 * (Real.rpow rho (3 / 2 : ℚ)))
