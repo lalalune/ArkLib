@@ -1291,6 +1291,29 @@ theorem sum_fin_pow_succ_split {M : Type*} [AddCommMonoid M] (n : ℕ)
     have hc : idx.val / 2 ^ n * 2 ^ n = 2 ^ n * (idx.val / 2 ^ n) := Nat.mul_comm _ _
     omega
 
+set_option maxHeartbeats 2000000 in
+seal sDomain qMap_total_fiber normalizedW intermediateEvaluationPoly in
+/-- `localized_fold_eval` as an explicit double sum over the challenge tensor and fold matrix. -/
+theorem localized_fold_eval_eq_sum (i : Fin ℓ) (steps : ℕ) (h_i_add_steps : i.val + steps ≤ ℓ)
+    (f : (sDomain 𝔽q β h_ℓ_add_R_rate) ⟨i, by omega⟩ → L)
+    (r_challenges : Fin steps → L)
+    (y : (sDomain 𝔽q β h_ℓ_add_R_rate) ⟨↑i + steps, by omega⟩) :
+    localized_fold_eval 𝔽q β i (steps := steps) (h_i_add_steps := h_i_add_steps) f r_challenges y =
+      ∑ a : Fin (2 ^ steps),
+        (challengeTensorProduct (L := L) (ℓ := ℓ) (𝓡 := 𝓡) (r := r) steps r_challenges).get a *
+          ∑ b : Fin (2 ^ steps),
+            foldMatrixNat 𝔽q β ⟨i, by omega⟩ steps
+              (by simp only; exact fin_ℓ_steps_lt_ℓ_add_R i steps h_i_add_steps) y a b *
+              f (qMap_total_fiber 𝔽q β (i := ⟨i, by omega⟩) (steps := steps)
+                (h_i_add_steps := by simp only; exact fin_ℓ_steps_lt_ℓ_add_R i steps h_i_add_steps)
+                (y := y) b) := by
+  unfold localized_fold_eval localized_fold_matrix_form fiberEvaluationMapping foldMatrix
+  simp only
+  rw [Vector.dotProduct_eq_root_dotProduct]
+  unfold _root_.dotProduct
+  simp only [Vector.get_ofFn]
+  rfl
+
 /-- **Lemma 4.9.** The iterated fold equals the localized fold evaluation via matmul form -/
 theorem iterated_fold_eq_matrix_form (i : Fin ℓ) (steps : ℕ) (h_i_add_steps : i + steps ≤ ℓ)
     (f : (sDomain 𝔽q β h_ℓ_add_R_rate) ⟨i, by omega⟩ → L)
