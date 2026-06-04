@@ -878,6 +878,81 @@ lemma firstOracleWitnessConsistencyProp_relay_preserved (i : Fin ℓ)
     firstOracleWitnessConsistencyProp 𝔽q β wit.t
       (getFirstOracle 𝔽q β (mapOStmtOutRelayStep 𝔽q β i hNCR oStmt)) := by congr
 
+/-- **Relay-step transport for `oracleFoldingConsistencyProp`.** A non-commitment ("relay") round
+advances the statement/witness index from `i.castSucc` to `i.succ` but leaves the oracle family
+unchanged up to the index reindexing `mapOStmtOutRelayStep` (the oracle count is preserved because
+`¬ isCommitmentRound`, so `toOutCodewordsCount ℓ ϑ i.castSucc = toOutCodewordsCount ℓ ϑ i.succ`).
+The per-block compliance check `isCompliant` of `oracleFoldingConsistencyProp` only reads
+`oStmt j`, `getNextOracle … j` and the challenge slice `getFoldingChallenges … (j * ϑ)` with
+`j * ϑ + ϑ ≤ oracleIdx`; under the relay map all of these are the *same data* viewed at the
+reindexed `j`, and the folding challenges used live strictly below index `i` (since
+`j * ϑ + ϑ ≤ i`), where `Fin.take ↑i.castSucc` and `Fin.take ↑i.succ` of the SAME challenge vector
+agree. Hence the predicate is preserved. -/
+lemma oracleFoldingConsistencyProp_relay_preserved (i : Fin ℓ)
+    (hNCR : ¬ isCommitmentRound ℓ ϑ i)
+    (challenges : Fin i.succ → L)
+    (oStmt : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j) :
+    oracleFoldingConsistencyProp 𝔽q β i.castSucc (Fin.init challenges) oStmt =
+    oracleFoldingConsistencyProp 𝔽q β i.succ challenges
+      (mapOStmtOutRelayStep 𝔽q β i hNCR oStmt) := by
+  have h_oracle_size_eq: toOutCodewordsCount ℓ ϑ i.castSucc = toOutCodewordsCount ℓ ϑ i.succ := by
+    simp only [toOutCodewordsCount_succ_eq ℓ ϑ i, hNCR, ↓reduceIte]
+  -- Per-instance equality of the `isCompliant` check, for a fixed block `j` (and its reindexed copy
+  -- `j' := ⟨j.val, …⟩`). The relay map only reindexes the oracle family, and the folding challenges
+  -- below index `i` are read from the same challenge vector, so each compliance check is the SAME
+  -- proposition on both sides.
+  have key : ∀ (j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc))
+      (hj : j.val + 1 < toOutCodewordsCount ℓ ϑ i.castSucc),
+      letI j' : Fin (toOutCodewordsCount ℓ ϑ i.succ) :=
+        ⟨j.val, Nat.lt_of_lt_of_le j.isLt (le_of_eq h_oracle_size_eq)⟩
+      letI hj' : j'.val + 1 < toOutCodewordsCount ℓ ϑ i.succ :=
+        Nat.lt_of_lt_of_le hj (le_of_eq h_oracle_size_eq)
+      (have h_k_bound := oracle_block_k_bound (ℓ := ℓ) (ϑ := ϑ) (i := i.castSucc) (j := j)
+       have h_k_next_le_i := oracle_block_k_next_le (ℓ := ℓ) (ϑ := ϑ) (i := i.castSucc)
+         (j := j) (hj := hj)
+       isCompliant 𝔽q β ⟨j.val * ϑ, h_k_bound⟩ ϑ
+         (by calc j.val * ϑ + ϑ ≤ (i.castSucc : Fin (ℓ+1)).val := h_k_next_le_i
+               _ ≤ ℓ := Fin.is_le _)
+         (oStmt ⟨j.val, j.isLt⟩) (getNextOracle 𝔽q β i.castSucc oStmt j hj)
+         (getFoldingChallenges (r := r) (𝓡 := 𝓡) i.castSucc (Fin.init challenges) (j.val * ϑ)
+           h_k_next_le_i)) =
+      (have h_k_bound := oracle_block_k_bound (ℓ := ℓ) (ϑ := ϑ) (i := i.succ) (j := j')
+       have h_k_next_le_i := oracle_block_k_next_le (ℓ := ℓ) (ϑ := ϑ) (i := i.succ)
+         (j := j') (hj := hj')
+       isCompliant 𝔽q β ⟨j'.val * ϑ, h_k_bound⟩ ϑ
+         (by calc j'.val * ϑ + ϑ ≤ (i.succ : Fin (ℓ+1)).val := h_k_next_le_i
+               _ ≤ ℓ := Fin.is_le _)
+         (mapOStmtOutRelayStep 𝔽q β i hNCR oStmt ⟨j'.val, j'.isLt⟩)
+         (getNextOracle 𝔽q β i.succ (mapOStmtOutRelayStep 𝔽q β i hNCR oStmt) j' hj')
+         (getFoldingChallenges (r := r) (𝓡 := 𝓡) i.succ challenges (j'.val * ϑ)
+           h_k_next_le_i)) := by
+    intro j hj
+    -- the oracle data, next-oracle, and folding challenges all agree (relay reindexing);
+    -- `isCompliant` depends on its `<`/`≤` proof args only proof-irrelevantly, and the
+    -- folding-challenge slice agrees definitionally (`Fin.init challenges ⟨k+cId⟩ = challenges …`).
+    congr 1
+  unfold oracleFoldingConsistencyProp
+  apply propext
+  constructor
+  · intro h j' hj'
+    letI j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc) :=
+      ⟨j'.val, Nat.lt_of_lt_of_le j'.isLt (le_of_eq h_oracle_size_eq.symm)⟩
+    have hj : j.val + 1 < toOutCodewordsCount ℓ ϑ i.castSucc :=
+      Nat.lt_of_lt_of_le hj' (le_of_eq h_oracle_size_eq.symm)
+    have hcompat := key j hj
+    have hres := h j hj
+    rw [hcompat] at hres
+    convert hres using 2
+  · intro h j hj
+    letI j' : Fin (toOutCodewordsCount ℓ ϑ i.succ) :=
+      ⟨j.val, Nat.lt_of_lt_of_le j.isLt (le_of_eq h_oracle_size_eq)⟩
+    have hj' : j'.val + 1 < toOutCodewordsCount ℓ ϑ i.succ :=
+      Nat.lt_of_lt_of_le hj (le_of_eq h_oracle_size_eq)
+    have hcompat := key j hj
+    have hres := h j' hj'
+    rw [← hcompat] at hres
+    convert hres using 2
+
 lemma nonDoomedFoldingProp_relay_preserved (i : Fin ℓ) (hNCR : ¬ isCommitmentRound ℓ ϑ i)
     (challenges : Fin i.succ → L)
     (oStmt : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)
@@ -916,7 +991,31 @@ lemma oracleWitnessConsistency_relay_preserved
     oracleWitnessConsistency (mp := mp) 𝔽q β i.succ i.succ (by rfl) stmt wit
       (mapOStmtOutRelayStep 𝔽q β i hNCR oStmt) := by
   unfold oracleWitnessConsistency
-  sorry
+  -- conjuncts 1,2 (`witnessStructuralInvariant`, `sumcheckConsistencyProp`) depend only on the
+  -- (unchanged) `stmt`/`wit`/`stmtIdx = i.succ`, so they match syntactically. Conjunct 3 transports
+  -- by `firstOracleWitnessConsistencyProp_relay_preserved`; conjunct 4 by
+  -- `oracleFoldingConsistencyProp_relay_preserved`, taking `challenges := Fin.take ↑i.succ …` and
+  -- noting `Fin.init (Fin.take ↑i.succ stmt.challenges) = Fin.take ↑i.castSucc stmt.challenges`.
+  have h_first := firstOracleWitnessConsistencyProp_relay_preserved 𝔽q β i hNCR wit oStmt
+  have h_fold := oracleFoldingConsistencyProp_relay_preserved 𝔽q β i hNCR
+    (challenges := stmt.challenges) oStmt
+  -- `Fin.init stmt.challenges` (the first `↑i.castSucc` entries) is exactly the level-`i.castSucc`
+  -- `Fin.take` slice appearing in the goal; they agree pointwise (same underlying values).
+  have h_take : Fin.init stmt.challenges =
+      Fin.take (m := (i.castSucc : Fin (ℓ+1)).val) (n := (i.succ : Fin (ℓ+1)).val)
+        (by simp only [Fin.coe_castSucc, Fin.val_succ]; omega) stmt.challenges := by
+    funext k
+    simp only [Fin.init, Fin.take, Fin.castLE, Fin.castSucc, Fin.castAdd, Fin.castLT]
+    congr 1
+  rw [h_take] at h_fold
+  rw [h_first, h_fold]
+  -- the RHS `oracleFoldingConsistency` reads `Fin.take ↑i.succ stmt.challenges = stmt.challenges`
+  -- (taking all `↑i.succ` entries), so both sides now coincide.
+  have h_take_all : Fin.take (m := (i.succ : Fin (ℓ+1)).val) (n := (i.succ : Fin (ℓ+1)).val)
+      (le_refl _) stmt.challenges = stmt.challenges := by
+    funext k
+    simp only [Fin.take, Fin.castLE, Fin.castLT]
+  rw [h_take_all]
 
 /-- Before V's challenge of the `i-th` foldStep, we ignore the bad-folding-event
 of the `i-th` oracle if any and enable it after the next V's challenge, i.e. one
