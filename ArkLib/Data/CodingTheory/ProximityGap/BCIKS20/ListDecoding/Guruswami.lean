@@ -83,9 +83,111 @@ structure ModifiedGuruswami
   Q_D_YZ :
     D_YZ Q ≤ n * (m + 1/(2 : ℚ))^3 / (6 * Real.sqrt ((k + 1) / n))
 
+section ModifiedGuruswamiHelpers
+
+/-! ### Degree facts for the trivariate constant `1`
+
+The constant polynomial `1 : F[Z][X][Y]` has all (bivariate-over-`F[Z]`) degree measures equal
+to `0` and root multiplicity `0` at every curve point. These are the base facts used when
+building/reasoning about candidate solutions `Q` of `ModifiedGuruswami` and, in particular, they
+pin down the value of each `ModifiedGuruswami` constraint on the simplest nonzero witness. -/
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- The `X`-degree of the trivariate constant `1` is `0`. -/
+lemma degreeX_one_triv : degreeX (1 : F[Z][X][Y]) = 0 := by
+  unfold Polynomial.Bivariate.degreeX
+  apply le_antisymm _ (Nat.zero_le _)
+  apply Finset.sup_le
+  intro i hi
+  rw [Polynomial.mem_support_iff] at hi
+  rcases eq_or_ne i 0 with h | h
+  · subst h; simp
+  · simp [Polynomial.coeff_one, h] at hi
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- The `Y`-degree of the trivariate constant `1` is `0`. -/
+lemma natDegreeY_one_triv : natDegreeY (1 : F[Z][X][Y]) = 0 := by
+  unfold Polynomial.Bivariate.natDegreeY
+  simp
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- The `(u, v)`-weighted degree of the trivariate constant `1` is `0`. -/
+lemma natWeightedDegree_one_triv (u v : ℕ) :
+    natWeightedDegree (1 : F[Z][X][Y]) u v = 0 := by
+  unfold Polynomial.Bivariate.natWeightedDegree
+  apply le_antisymm _ (Nat.zero_le _)
+  apply Finset.sup_le
+  intro i hi
+  rw [Polynomial.mem_support_iff] at hi
+  rcases eq_or_ne i 0 with h | h
+  · subst h; simp
+  · simp [Polynomial.coeff_one, h] at hi
+
+omit [DecidableEq (RatFunc F)] in
+/-- The root multiplicity of the trivariate constant `1` at any point `(x, y)` is `0`.
+Here the coefficient ring is `F[Z] = Polynomial (Polynomial F)`. -/
+lemma rootMultiplicity_one_triv (x y : Polynomial F) :
+    rootMultiplicity (1 : F[Z][X][Y]) x y = some 0 := by
+  unfold Polynomial.Bivariate.rootMultiplicity
+  rw [show Polynomial.Bivariate.shift (1 : F[Z][X][Y]) x y = 1 from by
+    unfold Polynomial.Bivariate.shift; simp]
+  unfold Polynomial.Bivariate.rootMultiplicity₀
+  have hw : weightedDegree (1 : F[Z][X][Y]) 1 1 = some 0 := by
+    unfold Polynomial.Bivariate.weightedDegree
+    simp [Polynomial.natDegree_one]
+  rw [hw]
+  simp only [Nat.succ_eq_add_one, Nat.zero_add, List.range_one]
+  have hp : ([0].product [0]) = [((0 : ℕ), (0 : ℕ))] := rfl
+  rw [hp]
+  simp only [List.filterMap_cons, List.filterMap_nil]
+  have hc : coeff (1 : F[Z][X][Y]) 0 0 = 1 := by
+    simp [Polynomial.Bivariate.coeff, Polynomial.coeff_one]
+  rw [hc, if_neg one_ne_zero]
+  simp
+
+/-! ### Necessity of `0 < n` and `0 < k`
+
+The statement of Claim 5.4 below quantifies over **all** `n, k, m`.  As formalized this is
+**unsatisfiable** when `n = 0` or `k = 0`: the degree bound `D_X ρ n m` collapses to `0`, while
+the `X`-degree (resp. `Y`-degree) of any polynomial is a natural number `≥ 0`, so the strict
+constraints `degreeX Q < D_X …` (resp. `D_Y Q < D_X … / k`) cannot hold.
+
+The two lemmas below record this precisely: any solution forces a contradiction.  Hence a faithful
+restatement of Claim 5.4 must assume `0 < n` and `0 < k` (matching the non-degenerate Reed–Solomon
+regime `k + 1 ≤ n` of [BCIKS20], and the `1 < k`, `n ≠ 0` hypotheses of the bivariate analogue
+`GuruswamiSudan.gs_existence`). -/
+
+omit [DecidableEq (RatFunc F)] in
+/-- For `n = 0`, no `Q` can satisfy `ModifiedGuruswami`: the `X`-degree bound `D_X ρ 0 m = 0`
+forces `(degreeX Q : ℝ) < 0`, which is impossible. -/
+lemma modified_guruswami_unsat_of_n_zero {m k : ℕ} {ωs : Fin 0 ↪ F} {Q : F[Z][X][Y]}
+    {u₀ u₁ : Fin 0 → F} (h : ModifiedGuruswami m 0 k ωs Q u₀ u₁) : False := by
+  have hX := h.Q_deg_X
+  unfold D_X at hX
+  simp only [mul_zero, CharP.cast_eq_zero] at hX
+  exact absurd hX (not_lt.mpr (Nat.cast_nonneg _))
+
+omit [DecidableEq (RatFunc F)] in
+/-- For `k = 0`, no `Q` can satisfy `ModifiedGuruswami`: the `Y`-degree bound `D_X ρ n m / 0 = 0`
+forces `(D_Y Q : ℝ) < 0`, which is impossible. -/
+lemma modified_guruswami_unsat_of_k_zero {m n : ℕ} {ωs : Fin n ↪ F} {Q : F[Z][X][Y]}
+    {u₀ u₁ : Fin n → F} (h : ModifiedGuruswami m n 0 ωs Q u₀ u₁) : False := by
+  have hY := h.Q_D_Y
+  simp only [Nat.cast_zero, div_zero] at hY
+  exact absurd hY (not_lt.mpr (Nat.cast_nonneg _))
+
+end ModifiedGuruswamiHelpers
+
 omit [DecidableEq (RatFunc F)] in
 /-- Claim 5.4 from [BCIKS20].
-It essentially claims that there exists a solution to the Guruswami-Sudan constraints above. -/
+It essentially claims that there exists a solution to the Guruswami-Sudan constraints above.
+
+NOTE: As currently formalized this lemma is **false** for `n = 0` or `k = 0` (see
+`modified_guruswami_unsat_of_n_zero` / `modified_guruswami_unsat_of_k_zero`): the degree bound
+`D_X` collapses to `0` and the strict degree constraints become unsatisfiable.  A faithful
+restatement requires `0 < n` and `0 < k` (paper regime `k + 1 ≤ n`, `1 ≤ m`). The existence proof
+in that regime is the trivariate dimension-counting argument (BCIKS20 Claim 5.4), analogous to
+`GuruswamiSudan.gs_existence`. -/
 lemma modified_guruswami_has_a_solution {m n k : ℕ} {ωs : Fin n ↪ F} {u₀ u₁ : Fin n → F} :
     ∃ Q : F[Z][X][Y], ModifiedGuruswami m n k ωs Q u₀ u₁ := by
   sorry
