@@ -935,23 +935,89 @@ lemma natDegree_coeff_canonicalRep_le {H : F[X][Y]} (hH : 0 < H.natDegree) (β :
 /-- The degree bound of Lemma A.1: the elimination polynomial `Res_Y(H_tilde' H, P)` has
 `X`-degree at most `weight_Λ(P) · H.natDegree`, where `P` is the canonical representative of `β`.
 
-PROOF OBLIGATION (the graded Sylvester-resultant degree bound — the analytic core of BCIKS20
-Lemma A.1). With `N := H.natDegree`, `M := P.natDegree`, `s := D + 1 - natDegreeY H`, and
-`W := weight_Λ_over_𝒪 hH β D`, the Sylvester matrix `sylvester (H_tilde' H) P N M` admits the
-weighting (for the graded bound `natDegree_det_le_sub`):
-  • column `inl j₁` (a `P`-column, `j₁ < N`): weight `c = W + j₁ · s`;
-  • column `inr j₁` (a `Q`-column, `j₁ < M`): weight `c = (M - j₁) · s + (something on D)`;
-  • row `i`: weight `r = i · s`.
-Each nonzero entry `P.coeff (i - j₁)` has `natDegree ≤ W - (i - j₁) · s` (from the definition of
-`weight_Λ`), and each `Q.coeff (i - j₁)` is similarly controlled using `D ≥ totalDegree H` and the
-explicit form of `H_tilde'`. Summing column weights minus row weights telescopes to `W · N`.
-This bookkeeping (entry-degree bounds for both `P` and the monicized `H_tilde'` against the weight,
-plus the telescoping sum) is the remaining gap; mathlib provides the resultant API and the graded
-determinant bound `natDegree_det_le_sub` above, but not this specific weighting. -/
+This is the graded Sylvester-resultant degree bound (the analytic core of BCIKS20 Lemma A.1). With
+`N := H.natDegree`, `M := P.natDegree`, `s := D + 1 - natDegreeY H`, and `w := unbot (weight_Λ P)`,
+the Sylvester matrix `sylvester (H_tilde' H) P N M` is graded by the row weights `r i = i · s` and
+column weights `c j = j · s + (w on the N `P`-columns, 0 on the M `Q`-columns)`. Every nonzero entry
+`P.coeff (i - j₁)` obeys `natDegree + (i - j₁)·s ≤ w` (definition of `weight_Λ`), and every
+`Q.coeff (i - j₁)` obeys `natDegree ≤ (N - (i - j₁))·s` (`natDegree_coeff_H_tilde'_le`, using
+`D ≥ totalDegree H`). The graded determinant bound `natDegree_det_le_sub` then gives
+`natDegree (det) ≤ (∑ c) - (∑ r)`, and the difference telescopes to `N · w`. -/
 lemma natDegree_elimPoly_le {H : F[X][Y]} [Fact (Irreducible H)] (hH : 0 < H.natDegree) (β : 𝒪 H)
     (D : ℕ) (hD : D ≥ Bivariate.totalDegree H) (hP : canonicalRepOf𝒪 hH β ≠ 0) :
-    (↑(elimPoly hH β).natDegree : WithBot ℕ) ≤ weight_Λ_over_𝒪 hH β D * (H.natDegree : WithBot ℕ) :=
-  sorry
+    (↑(elimPoly hH β).natDegree : WithBot ℕ) ≤
+      weight_Λ_over_𝒪 hH β D * (H.natDegree : WithBot ℕ) := by
+  classical
+  set s := D + 1 - Bivariate.natDegreeY H with hs
+  set w := (weight_Λ_over_𝒪 hH β D).unbot (weight_Λ_over_𝒪_ne_bot hH β D hP) with hw
+  set Q := H_tilde' H with hQ
+  set P := canonicalRepOf𝒪 hH β with hPdef
+  set Nq := Q.natDegree with hNq
+  set M := P.natDegree with hM
+  have hQdeg : Nq = H.natDegree := by rw [hNq, hQ, natDegree_H_tilde' hH]
+  set r : Fin (Nq + M) → ℕ := fun i => (i : ℕ) * s with hr
+  set c : Fin (Nq + M) → ℕ := fun j => (j : ℕ) * s + (if (j : ℕ) < Nq then w else 0) with hc
+  have helim : elimPoly hH β = (Polynomial.sylvester Q P Nq M).det := by
+    rw [elimPoly, Polynomial.resultant]
+  have hentry : ∀ i j, (Polynomial.sylvester Q P Nq M) i j ≠ 0 →
+      ((Polynomial.sylvester Q P Nq M) i j).natDegree + r i ≤ c j := by
+    intro i j hne
+    rw [Polynomial.sylvester, Matrix.of_apply] at hne ⊢
+    induction j using Fin.addCases with
+    | left j₁ =>
+      simp only [Fin.addCases_left] at hne ⊢
+      have hcond : (i : ℕ) ∈ Set.Icc (j₁ : ℕ) ((j₁ : ℕ) + M) := by
+        by_contra hc'; rw [if_neg hc'] at hne; exact hne rfl
+      rw [if_pos hcond] at hne ⊢
+      rw [Set.mem_Icc] at hcond
+      have hPbound := natDegree_coeff_canonicalRep_le hH β D hP ((i : ℕ) - (j₁ : ℕ)) hne
+      have hcj : c (Fin.castAdd M j₁) = (j₁ : ℕ) * s + w := by
+        rw [hc]; simp only [Fin.coe_castAdd]; rw [if_pos j₁.isLt]
+      rw [hcj, hr]; simp only
+      have hPw : (P.coeff ((i:ℕ)-(j₁:ℕ))).natDegree + ((i:ℕ)-(j₁:ℕ)) * s ≤ w := by
+        rw [hw, hs]; exact hPbound
+      have hsplit : (i : ℕ) * s = ((i:ℕ)-(j₁:ℕ)) * s + (j₁:ℕ) * s := by
+        rw [← Nat.add_mul]; congr 1; omega
+      rw [hsplit]; omega
+    | right j₁ =>
+      simp only [Fin.addCases_right] at hne ⊢
+      have hcond : (i : ℕ) ∈ Set.Icc (j₁ : ℕ) ((j₁ : ℕ) + Nq) := by
+        by_contra hc'; rw [if_neg hc'] at hne; exact hne rfl
+      rw [if_pos hcond] at hne ⊢
+      rw [Set.mem_Icc] at hcond
+      have hcj : c (Fin.natAdd Nq j₁) = (Nq + (j₁ : ℕ)) * s := by
+        rw [hc]; simp only [Fin.coe_natAdd]; rw [if_neg (by omega), add_zero]
+      rw [hcj, hr]; simp only
+      -- Work with the nat index `a := i - j₁` to avoid rewriting `Nq` inside `i`'s type.
+      have hQb : ∀ a : ℕ, (Q.coeff a).natDegree ≤ (Nq - a) * s := by
+        intro a
+        have hQbound := natDegree_coeff_H_tilde'_le H hH D hD a
+        have hsNq : s = D + 1 - Nq := by rw [hs, hQdeg]; rfl
+        rw [hsNq, hQ, show Nq = H.natDegree from hQdeg]
+        exact hQbound
+      have hkle : (Nq - ((i:ℕ) - (j₁:ℕ))) + (i:ℕ) = Nq + (j₁:ℕ) := by omega
+      calc (Q.coeff ((i:ℕ)-(j₁:ℕ))).natDegree + (i:ℕ) * s
+          ≤ (Nq - ((i:ℕ)-(j₁:ℕ))) * s + (i:ℕ) * s := Nat.add_le_add_right (hQb _) _
+        _ = ((Nq - ((i:ℕ)-(j₁:ℕ))) + (i:ℕ)) * s := by ring
+        _ = (Nq + (j₁:ℕ)) * s := by rw [hkle]
+  have hdet := natDegree_det_le_sub (Polynomial.sylvester Q P Nq M) r c hentry
+  have hsumc : (∑ j, c j) = (∑ j : Fin (Nq+M), (j:ℕ)*s) + Nq * w := by
+    rw [hc, Finset.sum_add_distrib]
+    congr 1
+    rw [Fin.sum_univ_eq_sum_range (fun j => if j < Nq then w else 0) (Nq + M),
+        Finset.sum_ite, Finset.sum_const_zero, add_zero, Finset.sum_const, smul_eq_mul]
+    have hfilter : {x ∈ Finset.range (Nq + M) | x < Nq} = Finset.range Nq := by
+      ext x; simp only [Finset.mem_filter, Finset.mem_range]; omega
+    rw [hfilter, Finset.card_range, mul_comm]
+  have hsumr : (∑ i, r i) = (∑ i : Fin (Nq+M), (i:ℕ)*s) := by rw [hr]
+  have hsub : (∑ j, c j) - ∑ i, r i = Nq * w := by rw [hsumc, hsumr]; omega
+  rw [hsub] at hdet
+  have hcast : (↑(elimPoly hH β).natDegree : WithBot ℕ) ≤ (↑(Nq * w) : WithBot ℕ) := by
+    rw [helim]; exact_mod_cast hdet
+  refine le_trans hcast ?_
+  have hweq : (weight_Λ_over_𝒪 hH β D) = (↑w : WithBot ℕ) := by
+    rw [hw]; exact (WithBot.coe_unbot _ _).symm
+  rw [hweq, ← hQdeg]; push_cast; rw [mul_comm]
 
 /-- The statement of Lemma A.1 in Appendix A.3 of [BCIKS20].
 
