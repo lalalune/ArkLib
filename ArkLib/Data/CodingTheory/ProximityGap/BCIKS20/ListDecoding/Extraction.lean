@@ -1312,7 +1312,8 @@ makes `S` empty for `δ < 0`), this proves the conjunct is not derivable from `M
 alone: in [BCIKS20] it is a hypothesis (`S` large, the list-decoding regime), not a conclusion. -/
 lemma c57_second_conjunct_unsat_of_S_empty
     (hSempty : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ = ∅)
-    (hconj2 : (#(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) : ℝ) / (Bivariate.natDegreeY Q : ℝ)
+    (hconj2 : (#(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) : ℝ) / (Bivariate.natDegreeY Q
+      : ℝ)
         > 2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q) :
     False := by
   rw [hSempty] at hconj2

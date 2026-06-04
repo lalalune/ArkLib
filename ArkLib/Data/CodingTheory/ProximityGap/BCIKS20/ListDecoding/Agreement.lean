@@ -181,7 +181,8 @@ OBSTRUCTION (one residual blocker remains — the trivariate vanishing bridge).
   `Guruswami.tagged_fiber_pigeonhole`, but the same vanishing bridge is its residual too).  Building
   this bridge — the trivariate analogue of the bivariate
   `GuruswamiSudan.dvd_eval_of_rootMultiplicity_zero` / `proximity_gap_divisibility`, transported by
-  the now-available `c57_eval_on_Z_{zero,add,mul}` ring-hom lemmas — is the precise residual content.
+  the now-available `c57_eval_on_Z_{zero,add,mul}` ring-hom lemmas — is the precise residual
+    content.
 
 With Gap A resolved, the proof obligation is retained pending the Gap-B vanishing bridge and the
 upstream Prop 5.5.  The binder structure `∃ R H, R ∈ … ∧ Irreducible H ∧ …` is preserved so the
