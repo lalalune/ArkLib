@@ -8,6 +8,9 @@ Authors: Quang Dao, Katerina Hristova, František Silváši, Julian Sutherland,
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Prelude
 import ArkLib.Data.CodingTheory.ReedSolomon
 
+
+set_option linter.style.longFile 1700
+
 namespace ProximityGap
 
 open NNReal Finset Function ProbabilityTheory Code
@@ -1484,7 +1487,7 @@ theorem BW_homMatrix_det_submatrix_natDegree_le_of_natDegree_le {F : Type} [Fiel
             Polynomial.natDegree_mul_le
         _ ≤ d + 0 := by
             refine Nat.add_le_add (hd _) ?_
-            simpa using Polynomial.natDegree_pow_le_of_le j.1
+            exact Polynomial.natDegree_pow_le_of_le j.1
               (le_of_eq (Polynomial.natDegree_C (ωs (r (σ j)))))
         _ = d := Nat.add_zero d
     · simp only [hA, Matrix.submatrix_apply, id, BW_homMatrix, Matrix.of_apply, hj, ↓reduceIte,
