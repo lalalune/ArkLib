@@ -56,19 +56,33 @@ After the scoping repair the lemma remains **unprovable as written** for a gener
   separability and irreducibility conjuncts reproduces a general factored `Q` (e.g.
   `g · h²` with `g ≠ h` distinct separable irreducibles).
 
-* *Separable contraction over a non-field.* Even with corrected indexing, the per-factor
-  shape `Rᵢ.comp (X^fᵢ)` with `Rᵢ.Separable` is the separable-contraction normal form,
-  which Mathlib provides (`Polynomial.exists_separable_of_irreducible`,
-  `Irreducible.hasSeparableContraction`) **only over a field**. Here the `Y`-coefficient
-  ring is `F[Z][X] = Polynomial (Polynomial F)`, which is *not* a field, so the
-  contraction must be transferred from the fraction field `F(Z,X)` by a Gauss/primitivity
-  argument; Mathlib has no such transfer lemma in this direction.
+* *Separability over the wrong ring (VERIFIED defect, bug #18 — see
+  `eq512_strong_separable_unsat`).* The original conjunct `∀ Rᵢ ∈ R, Rᵢ.Separable` applied
+  `Polynomial.Separable` to `Rᵢ : F[Z][X][Y]` over the **coefficient ring** `F[Z][X]`, which
+  is *not a field*. By `separable_def`, this unfolds to a Bézout identity
+  `a · Rᵢ + b · Rᵢ.derivative = 1` with `a, b : F[Z][X][Y]` — coprimality *in the polynomial
+  ring* — which is **unsatisfiable** for genuinely-arising irreducible factors: the companion
+  witness `eq512_strong_separable_unsat` proves that `Y² − X` (an irreducible, squarefree,
+  fraction-field-separable factor of the shape a `ModifiedGuruswami` solution produces, since
+  `D_Y Q < D_X / k` permits `Y`-degree ≥ 2) is **not** `Separable` over `F[Z][X]`, because
+  `Separable.map` would force its `Z, X ↦ 0` image `Y²` to be squarefree. The paper means
+  separability of `Rᵢ` over the *fraction field* `F(Z,X)`, equivalently nonvanishing of
+  `discr_y` — precisely the form consumed by Claim 5.6 (`discr_of_irred_components_nonzero`,
+  which evaluates `Bivariate.discr_y R`). This is the **repaired** conjunct below:
+  `(Rᵢ.map (algebraMap (F[Z][X]) (FractionRing (F[Z][X])))).Separable`. The binder structure
+  `(C, R, f, e)` and conjunct count are unchanged, so all `.choose`/`.choose_spec.choose`
+  consumers (Claim 5.6, Claim 5.7 in `Agreement.lean`) are unaffected.
 
-The factorization conjunct now uses the **zipped** indexed product
+The factorization conjunct uses the **zipped** indexed product
 `∏ i ∈ Finset.range R.length, (Rᵢ.comp X^fᵢ)^eᵢ` (paper-faithful), repairing the earlier
-Cartesian-product mis-indexing witnessed by `eq512_cartesian_product_blowup`. The remaining
-open content is the proof itself, whose separable-contraction step must be transported
-through `Frac (F[Z][X])` (no such mathlib transfer exists yet); the `sorry` is honest. -/
+Cartesian-product mis-indexing witnessed by `eq512_cartesian_product_blowup`. The separability
+conjunct now reads over `FractionRing (F[Z][X])`, repairing the non-field-separability defect
+witnessed by `eq512_strong_separable_unsat`. The remaining open content is the proof itself: the
+separable-contraction step is now available over the field `K := FractionRing (F[Z][X])`
+(`Irreducible.hasSeparableContraction`), and the per-factor irreducibility/primitivity descends
+via Gauss (`IsPrimitive.irreducible_iff_irreducible_map_fraction_map`, as in
+`RationalFunctions.lean`); the residual bookkeeping (collecting UFD factors with multiplicities
+into the zipped lists and folding the unit into `C`) remains `sorry`. -/
 lemma irreducible_factorization_of_gs_solution
     {k : ℕ}
   (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
@@ -76,7 +90,8 @@ lemma irreducible_factorization_of_gs_solution
     R.length = f.length ∧
     f.length = e.length ∧
     (∀ eᵢ ∈ e, 1 ≤ eᵢ) ∧
-    (∀ Rᵢ ∈ R, Rᵢ.Separable) ∧
+    (∀ Rᵢ ∈ R,
+        (Rᵢ.map (algebraMap (F[Z][X]) (FractionRing (F[Z][X])))).Separable) ∧
     (∀ Rᵢ ∈ R, Irreducible Rᵢ) ∧
     Q = (Polynomial.C C) *
         ∏ i ∈ Finset.range R.length,
@@ -110,6 +125,49 @@ lemma eq512_cartesian_product_blowup (a b : F[Z][X][Y]) (hab : a ≠ b) :
       Finset.prod_pair (show (1 : ℕ) ≠ 2 by decide)]
   simp only [pow_one, comp_X]
   ring
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+/-- *Strong-separability is unsatisfiable for genuinely-arising factors* — the verified
+defect (bug #18) in the separability conjunct of `irreducible_factorization_of_gs_solution`.
+
+The conjunct `∀ Rᵢ ∈ R, Rᵢ.Separable` uses `Polynomial.Separable` over the **coefficient ring**
+`F[Z][X]`, which is *not a field*. By `separable_def`, `Rᵢ.Separable` unfolds to a Bézout
+identity `a · Rᵢ + b · Rᵢ.derivative = 1` with `a, b : F[Z][X][Y]` — i.e. coprimality *in the
+polynomial ring* `F[Z][X][Y]`, an extremely strong condition. It is **not** the paper's intended
+separability of `Rᵢ` over the fraction field `F(Z,X)` (equivalently, nonvanishing of `discr_y`,
+the form actually consumed by Claim 5.6 `discr_of_irred_components_nonzero`).
+
+Concretely the factor `r = Y² − X` (here `X = C (C X) : F[Z][X][Y]`, a *prime* element of the
+coefficient ring) is exactly the kind of irreducible factor a `ModifiedGuruswami` solution
+produces: it is irreducible over `F[Z][X]`, squarefree, and **separable over the fraction field**
+`F(Z,X)` (its two roots `±√X` are distinct in char ≠ 2). Yet it is **not** `Separable` over
+`F[Z][X]`: separability is preserved by every coefficient ring hom (`Separable.map`), so mapping
+the coefficient ring `F[Z][X] →+* F` by `Z, X ↦ 0` would send `r` to `Y²`, which is not even
+squarefree. Hence no choice of witnesses can satisfy the strong conjunct together with
+irreducibility once a factor of `Y`-degree ≥ 2 over a non-square coefficient appears — and the
+`ModifiedGuruswami` `Y`-degree budget `D_Y Q < D_X / k` permits exactly such factors. -/
+lemma eq512_strong_separable_unsat
+    (g : F[Z][X] →+* F) (hgX : g (Polynomial.C (Polynomial.X : Polynomial F) : F[Z][X]) = 0) :
+    ¬ (((Polynomial.X : F[Z][X][Y]) ^ 2
+        - Polynomial.C (Polynomial.C (Polynomial.X : Polynomial F) : F[Z][X])).Separable) := by
+  classical
+  intro hsep
+  -- separability transfers along the coefficient ring hom `g : F[Z][X] →+* F`.
+  have hmap := hsep.map (f := g)
+  -- the image is `Y² - C (g (C X)) = Y² - C 0 = Y²`.
+  have himg :
+      (((Polynomial.X : F[Z][X][Y]) ^ 2
+          - Polynomial.C (Polynomial.C (Polynomial.X : Polynomial F) : F[Z][X])).map g)
+        = (Polynomial.X : F[X]) ^ 2 := by
+    rw [Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_X, Polynomial.map_C, hgX,
+      Polynomial.C_0, sub_zero]
+  rw [himg] at hmap
+  -- but `Y²` is not squarefree, contradicting `Separable.squarefree`.
+  have hsq : Squarefree ((Polynomial.X : F[X]) ^ 2) := hmap.squarefree
+  have hYY : (Polynomial.X : F[X]) * (Polynomial.X : F[X]) ∣ (Polynomial.X : F[X]) ^ 2 := by
+    rw [pow_two]
+  have hunit : IsUnit (Polynomial.X : F[X]) := hsq _ hYY
+  exact (Polynomial.prime_X (R := F)).not_unit hunit
 
 omit [DecidableEq (RatFunc F)] in
 /-- Claim 5.6 of [BCIKS20]. -/
