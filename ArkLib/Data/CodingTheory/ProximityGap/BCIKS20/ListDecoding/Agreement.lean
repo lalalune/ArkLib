@@ -1043,6 +1043,12 @@ noncomputable def H (δ : ℚ) (x₀ : F) (h_gs : ModifiedGuruswami m n k ωs Q 
 lemma irreducible_H (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) : Irreducible (H k δ x₀ h_gs) :=
   (exists_factors_with_large_common_root_set k δ x₀ h_gs).choose_spec.choose_spec.2.1
 
+/-- The `Fact` form of `irreducible_H`, for Appendix-A declarations with typeclass
+hypotheses. -/
+instance fact_irreducible_H (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
+    Fact (Irreducible (H k δ x₀ h_gs)) :=
+  ⟨irreducible_H k h_gs⟩
+
 /-- The factor `H` extracted from Claim 5.7 has positive degree in the `Y` variable, matching the
 Appendix A hypotheses needed for the function field construction. -/
 lemma natDegree_H_pos (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
@@ -1079,6 +1085,44 @@ lemma powerSeries_eq_truncate_of_coeff_zero_ge
   by_cases ht : t ≥ k
   · simp [ht, hzero t ht]
   · simp [ht]
+
+open BCIKS20AppendixA.ClaimA2 in
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+lemma alpha'_eq_zero_of_embedding_beta_eq_zero
+    {R : F[Z][X][Y]} {H : F[Z][X]}
+    [Fact (Irreducible H)] [Fact (0 < H.natDegree)]
+    (H_irreducible : Irreducible H) (hHdeg : 0 < H.natDegree)
+    (hHyp : Hypotheses x₀ R H) {t : ℕ}
+    (hemb :
+      BCIKS20AppendixA.embeddingOf𝒪Into𝕃 H
+        (β (H := H) R t) = 0) :
+    α' x₀ R H_irreducible hHdeg hHyp t = 0 := by
+  simp [α', α, hemb]
+
+open BCIKS20AppendixA.ClaimA2 in
+lemma approximate_solution_is_exact_solution_coeffs_of_beta_embedding_zero
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    (hemb : ∀ t ≥ k,
+      BCIKS20AppendixA.embeddingOf𝒪Into𝕃 (H k δ x₀ h_gs)
+        (β (H := H k δ x₀ h_gs) (R k δ x₀ h_gs) t) = 0) :
+    ∀ t ≥ k,
+    α'
+      x₀
+      (R k δ x₀ h_gs)
+      (irreducible_H k h_gs)
+      (natDegree_H_pos k h_gs)
+      (claimA2_hypotheses k h_gs)
+      t
+    =
+    (0 : BCIKS20AppendixA.𝕃 (H k δ x₀ h_gs)) := by
+  intro t ht
+  exact alpha'_eq_zero_of_embedding_beta_eq_zero
+    (F := F) (x₀ := x₀)
+    (irreducible_H k h_gs)
+    (natDegree_H_pos k h_gs)
+    (claimA2_hypotheses k h_gs)
+    (hemb t ht)
 
 open BCIKS20AppendixA.ClaimA2 in
 /-- Claim 5.8 from [BCIKS20].
