@@ -40,44 +40,73 @@ lemma c57_pg_eval_on_Z_body (p : F[Z][X][Y]) (z : F) :
     pg_eval_on_Z (F := F) p z = p.map (Polynomial.mapRingHom (Polynomial.evalRingHom z)) :=
   rfl
 
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+/-- *De-sealed `eval_on_Z` agrees with its accessible twin* (Gap-A resolution, cf. the obstruction
+note on `exists_factors_with_large_common_root_set`). `Trivariate.eval_on_Z` is no longer `opaque`
+(it is a transparent `def` with equation lemma `eval_on_Z_eq`), so its body
+`p.map (mapRingHom (evalRingHom z))` is now definitionally exposed; in particular it is *equal* to
+the accessible twin `pg_eval_on_Z`. Under the old `opaque` declaration this equality failed `rfl`
+despite identical bodies — that is precisely the (now-resolved) Gap A. -/
+lemma c57_eval_on_Z_eq_pg (p : F[Z][X][Y]) (z : F) :
+    Trivariate.eval_on_Z p z = pg_eval_on_Z (F := F) p z := by
+  rw [Trivariate.eval_on_Z_eq]; rfl
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+/-- `eval_on_Z` sends `0` to `0` (now provable — was inaccessible under the old `opaque`). -/
+lemma c57_eval_on_Z_zero (z : F) : Trivariate.eval_on_Z (0 : F[Z][X][Y]) z = 0 := by
+  rw [Trivariate.eval_on_Z_eq]; simp
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+/-- `eval_on_Z` is additive (now provable — was inaccessible under the old `opaque`). -/
+lemma c57_eval_on_Z_add (p q : F[Z][X][Y]) (z : F) :
+    Trivariate.eval_on_Z (p + q) z = Trivariate.eval_on_Z p z + Trivariate.eval_on_Z q z := by
+  rw [Trivariate.eval_on_Z_eq, Trivariate.eval_on_Z_eq, Trivariate.eval_on_Z_eq,
+    Polynomial.map_add]
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+/-- `eval_on_Z` is multiplicative (now provable — was inaccessible under the old `opaque`).
+Together with `c57_eval_on_Z_zero`/`c57_eval_on_Z_add` this is the divisibility-transport
+ingredient the residual GS-multiplicity → graph-vanishing bridge (Gap B) will consume. -/
+lemma c57_eval_on_Z_mul (p q : F[Z][X][Y]) (z : F) :
+    Trivariate.eval_on_Z (p * q) z = Trivariate.eval_on_Z p z * Trivariate.eval_on_Z q z := by
+  rw [Trivariate.eval_on_Z_eq, Trivariate.eval_on_Z_eq, Trivariate.eval_on_Z_eq,
+    Polynomial.map_mul]
+
 open Trivariate in
 open Bivariate in
 /-- Claim 5.7 of [BCIKS20].
 
-OBSTRUCTION (statement unprovable as formalized — verified defect, the 6th in this tree).
-There are two independent blockers; the first is fatal on its own.
+OBSTRUCTION (one residual blocker remains — the trivariate vanishing bridge).
 
-* *Sealed `eval_on_Z` (Gap A — verified, see `c57_pg_eval_on_Z_body`).*  The first cardinality
-  conjunct lower-bounds `#S'`, where `S'` is the subset of `S = coeffs_of_close_proximity` cut out
-  by the predicate `(Trivariate.eval_on_Z R z.1).eval Pz = 0 ∧ …`.  But `Trivariate.eval_on_Z`
-  (`Trivariate.lean`) is declared `opaque`, so **no** property of `eval_on_Z R z.1` is derivable:
-  one cannot prove `eval_on_Z 0 z = 0`, nor additivity, nor `eval_on_Z p z = pg_eval_on_Z p z`
-  (the last fails `rfl` *despite identical definitional bodies* — `opaque` blocks delta-reduction).
-  Consequently the membership predicate of `S'` can be established for **no** `z`, so `#S'` cannot be
-  bounded below.  Meanwhile every proven ingredient of the argument
-  (`pg_exists_pair_for_z`, `pg_card_candidatePairs_le_natDegreeY`,
-  `pg_card_normalizedFactors_toFinset_le_natDegree`) is phrased for the accessible twin
-  `pg_eval_on_Z`, whose body is `c57_pg_eval_on_Z_body`.  The faithful, binder-preserving repair is
-  to replace `Trivariate.eval_on_Z` by `pg_eval_on_Z` in the `S'` predicate (the
-  `R`/`H`/`Irreducible H` consumers — `R`, `H`, `irreducible_H`, Claims 5.8–5.11 — read only
-  `.choose`, `.choose_spec.choose`, and `.choose_spec.choose_spec.2.1`, so they are unaffected); or,
-  upstream, to de-seal `eval_on_Z` (drop `opaque`, or expose an `eval_on_Z_def` equation lemma).
+* *Sealed `eval_on_Z` (Gap A — NOW RESOLVED).*  Previously `Trivariate.eval_on_Z` was declared
+  `opaque`, so **no** property of `eval_on_Z R z.1` (which appears in the `S'`-membership predicate
+  `(Trivariate.eval_on_Z R z.1).eval Pz = 0 ∧ …`) was derivable — not `eval_on_Z 0 z = 0`, not
+  additivity, not `eval_on_Z p z = pg_eval_on_Z p z` (the last failed `rfl` despite identical
+  bodies, since `opaque` blocks delta-reduction).  `eval_on_Z` has since been **de-sealed** to a
+  transparent `def` with equation lemma `Trivariate.eval_on_Z_eq` (`Trivariate.lean`).  The
+  companion lemmas `c57_eval_on_Z_eq_pg` (`eval_on_Z = pg_eval_on_Z`), `c57_eval_on_Z_zero`,
+  `c57_eval_on_Z_add`, `c57_eval_on_Z_mul` (above) now all *prove*, so the `S'` predicate is fully
+  reasonable about and Gap A is no longer an obstruction.  (The statement is left referencing
+  `Trivariate.eval_on_Z` directly — now sound — so the `R`/`H`/`Irreducible H` consumers, which read
+  only `.choose`, `.choose_spec.choose`, `.choose_spec.choose_spec.2.1`, are unaffected.)
 
-* *Missing GS-multiplicity → close-codeword-graph vanishing (Gap B — residual).*  Even after the
-  Gap-A repair, the pigeonhole needs, for each `z ∈ S`, the vanishing
-  `(pg_eval_on_Z Q z.1).eval (Pz z.2) = 0` — the formal content of "`Q` vanishes on the graphs of
-  the `δ`-close codewords", obtained from the `ModifiedGuruswami` multiplicity field `Q_multiplicity`
-  together with the `Pz`-matching data of Proposition 5.5.  No lemma in `Guruswami.lean` /
-  `Extraction.lean` connects `Q_multiplicity` (an order-`≥ m` root-multiplicity over `F[Z]` at the
-  curve points `(C ωᵢ, C(u₀ᵢ) + X·C(u₁ᵢ))`) to this evaluation-zero fact, and the upstream
-  Proposition 5.5 (`exists_a_set_and_a_matching_polynomial`, which supplies the matching `P`/`Pz`
-  data) is itself still `sorry`.  Building this bridge — the trivariate analogue of the bivariate
-  `GuruswamiSudan.dvd_eval_of_rootMultiplicity_zero` / `proximity_gap_divisibility` — is the precise
-  residual mathematical content once Gap A is unsealed.
+* *Missing GS-multiplicity → close-codeword-graph vanishing (Gap B — the residual keystone).*  The
+  pigeonhole needs, for each `z ∈ S`, the vanishing `(eval_on_Z Q z.1).eval (Pz z.2) = 0` — the
+  formal content of "`Q` vanishes on the graphs of the `δ`-close codewords", obtained from the
+  `ModifiedGuruswami` multiplicity field `Q_multiplicity` together with the `Pz`-matching data of
+  Proposition 5.5.  No lemma in `Guruswami.lean` / `Extraction.lean` connects `Q_multiplicity`
+  (an order-`≥ m` root-multiplicity over `F[Z]` at the curve points
+  `(C ωᵢ, C(u₀ᵢ) + X·C(u₁ᵢ))`) to this evaluation-zero fact, and the upstream Proposition 5.5
+  (`exists_a_set_and_a_matching_polynomial`, which supplies the matching `P`/`Pz` data) is itself
+  still unproved (its self-contained pigeonhole core is now discharged by
+  `Guruswami.tagged_fiber_pigeonhole`, but the same vanishing bridge is its residual too).  Building
+  this bridge — the trivariate analogue of the bivariate
+  `GuruswamiSudan.dvd_eval_of_rootMultiplicity_zero` / `proximity_gap_divisibility`, transported by
+  the now-available `c57_eval_on_Z_{zero,add,mul}` ring-hom lemmas — is the precise residual content.
 
-Given Gap A alone makes `#S'` unbounded-below for the `opaque` predicate, the conjunction is
-unprovable; the `sorry` is retained.  The binder structure
-`∃ R H, R ∈ … ∧ Irreducible H ∧ …` is preserved so the downstream extractors stay well-typed. -/
+With Gap A resolved, the proof obligation is retained pending the Gap-B vanishing bridge and the
+upstream Prop 5.5.  The binder structure `∃ R H, R ∈ … ∧ Irreducible H ∧ …` is preserved so the
+downstream extractors stay well-typed. -/
 lemma exists_factors_with_large_common_root_set (δ : ℚ) (x₀ : F)
   (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
   ∃ R H, R ∈ (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose ∧
