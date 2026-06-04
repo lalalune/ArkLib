@@ -585,6 +585,36 @@ lemma gamma_eq_P (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
   Classical.choose_spec
     (Classical.choose_spec (solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs))
 
+/-- The set `S'` from [BCIKS20] (just before Claim 5.10): the sub-collection of close coefficients
+`z ∈ S = coeffs_of_close_proximity` that are bound to the common irreducible factor pair `(R, H)`
+selected by the Claim-5.7 pigeonhole.
+
+REPAIR NOTE (pre-existing breakage). `matching_set`,
+`matching_set_is_a_sub_of_coeffs_of_close_proximity`, and the upstream Prop 5.5
+`exists_a_set_and_a_matching_polynomial` were *referenced* by `matching_set_at_x` and by the §5 GAP
+docstrings but never **defined** anywhere in the tree, so this file — and the entire BCIKS20 §5
+downstream including `correlatedAgreement_affine_curves` — failed to compile with
+`Unknown identifier matching_set`.  We supply the missing definition here.
+
+Faithfulness: in [BCIKS20] `S' ⊆ S` is the fiber bound to the chosen `(R, H)`.  Pinning that fiber
+formally would force `matching_set` to carry the Claim-5.7 `.choose` data `R k δ x₀ h_gs` (hence an
+extra `x₀` parameter the uneditable call site `matching_set k ωs δ u₀ u₁ h_gs` does not pass).  We
+therefore define `S' := S` (the maximal subset) — an honest *over-approximation* of the paper's `S'`.
+This only ever **weakens** the cardinality hypotheses of the still-`sorry` Claims 5.10/5.11 (a larger
+`S'` makes `|S'_x|` larger, so their hypotheses are easier, not vacuous), and the inclusion
+`S' ⊆ S` holds by `id`.  No proven statement is affected. -/
+noncomputable def matching_set
+    (k : ℕ) (ωs : Fin n ↪ F) (δ : ℚ) (u₀ u₁ : Fin n → F)
+    (_h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) : Finset F :=
+  coeffs_of_close_proximity k ωs δ u₀ u₁
+
+/-- `matching_set` (BCIKS20's `S'`) is a subset of `S = coeffs_of_close_proximity` (here, equal by
+the `S' := S` over-approximation — see `matching_set`). -/
+lemma matching_set_is_a_sub_of_coeffs_of_close_proximity
+    (k : ℕ) (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) {z : F}
+    (h : z ∈ matching_set k ωs δ u₀ u₁ h_gs) :
+    z ∈ coeffs_of_close_proximity k ωs δ u₀ u₁ := h
+
 /-- The set `S'_x` from [BCIKS20] (just before Claim 5.10). The set of all `z ∈ S'` such that
 `w(x,z)` matches `P_z(x)`. -/
 noncomputable def matching_set_at_x

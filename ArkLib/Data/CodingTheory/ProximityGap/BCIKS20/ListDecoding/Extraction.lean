@@ -8,6 +8,8 @@ Authors: Quang Dao, Katerina Hristova, František Silváši, Julian Sutherland,
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Guruswami
 import ArkLib.Data.Polynomial.RationalFunctions
 
+set_option linter.style.longFile 1700
+
 namespace ProximityGap
 
 open Polynomial Polynomial.Bivariate NNReal Finset Function ProbabilityTheory Code Trivariate
@@ -1415,34 +1417,42 @@ theorem common_roots_force_lift_zero
       (Ideal.Quotient.mk (Ideal.span {_root_.BCIKS20AppendixA.H_tilde' H}) P :
         _root_.BCIKS20AppendixA.𝒪 H) = 0 := by
   classical
-  let β : _root_.BCIKS20AppendixA.𝒪 H :=
-    Ideal.Quotient.mk (Ideal.span {_root_.BCIKS20AppendixA.H_tilde' H}) P
+  set β : _root_.BCIKS20AppendixA.𝒪 H :=
+    Ideal.Quotient.mk (Ideal.span {_root_.BCIKS20AppendixA.H_tilde' H}) P with hβ_def
   have hsub : (T : Set F) ⊆ _root_.BCIKS20AppendixA.S_β β := by
     simpa [β] using (common_roots_subset_S_β_mk (H := H) (P := P) (T := T) hroot)
-  rcases eq_or_ne (_root_.BCIKS20AppendixA.canonicalRepOf𝒪 hH β) 0 with hβ | hβ
-  · simpa [β] using
-      (_root_.BCIKS20AppendixA.embeddingOf𝒪Into𝕃_eq_zero_of_canonicalRep_eq_zero
-        hH β hβ)
-  have hSfinite : (_root_.BCIKS20AppendixA.S_β β).Finite := by
-    have hsubroot :
-        _root_.BCIKS20AppendixA.S_β β ⊆
-          ↑((_root_.BCIKS20AppendixA.elimPoly hH β).roots.toFinset) := by
+  -- REPAIR (pre-existing breakage): the original proof referenced
+  -- `BCIKS20AppendixA.{embeddingOf𝒪Into𝕃_eq_zero_of_canonicalRep_eq_zero, elimPoly,
+  --  elimPoly_ne_zero, elimPoly_eval_eq_zero_of_mem_S_β}`, none of which are defined in
+  -- `RationalFunctions.lean` (out of editing scope here). We reproduce the only thing actually
+  -- needed — finiteness of `S_β β` and the cardinality bound — using the *defined* resultant
+  -- machinery (exactly the path `Lemma_A_1` itself uses internally), then close by `Lemma_A_1`.
+  rcases eq_or_ne β 0 with hβ0 | hβ0
+  · rw [hβ0, map_zero]
+  · -- `β ≠ 0`: `S_β β` lies in the (finite) root set of the resultant `Res_Y(r, H̃')`.
+    set r := _root_.BCIKS20AppendixA.canonicalRepOf𝒪 hH β with hr_def
+    set R := Polynomial.resultant r (_root_.BCIKS20AppendixA.H_tilde' H)
+      H.natDegree H.natDegree with hR_def
+    have hR_ne : R ≠ 0 :=
+      _root_.BCIKS20AppendixA.resultant_canonicalRep_H_tilde'_ne_zero hH hβ0
+    have hsubset : _root_.BCIKS20AppendixA.S_β β ⊆ {z : F | R.IsRoot z} := by
       intro z hz
-      rw [Finset.mem_coe, Multiset.mem_toFinset,
-        Polynomial.mem_roots (_root_.BCIKS20AppendixA.elimPoly_ne_zero hH β hβ)]
-      exact _root_.BCIKS20AppendixA.elimPoly_eval_eq_zero_of_mem_S_β hH β hz
-    exact (Finset.finite_toSet _).subset hsubroot
-  have hTcard : T.card ≤ Set.ncard (_root_.BCIKS20AppendixA.S_β β) := by
-    rw [← Set.ncard_coe_finset T]; exact Set.ncard_le_ncard hsub hSfinite
-  have hTcard' :
-      (T.card : WithBot ℕ) ≤
-        (Set.ncard (_root_.BCIKS20AppendixA.S_β β) : WithBot ℕ) := by
-    exact_mod_cast hTcard
-  have hSβ_card :
-      (Set.ncard (_root_.BCIKS20AppendixA.S_β β) : WithBot ℕ) >
-        _root_.BCIKS20AppendixA.weight_Λ_over_𝒪 hH β D * (H.natDegree : WithBot ℕ) :=
-    lt_of_lt_of_le (by simpa [β] using hcard) hTcard'
-  simpa [β] using _root_.BCIKS20AppendixA.Lemma_A_1 hH β D hD hSβ_card
+      have := _root_.BCIKS20AppendixA.eval_resultant_eq_zero_of_mem_S_β hH β hz
+      rw [← hr_def, ← hR_def] at this
+      exact this
+    have hfin : {z : F | R.IsRoot z}.Finite := Polynomial.finite_setOf_isRoot hR_ne
+    have hSfinite : (_root_.BCIKS20AppendixA.S_β β).Finite := hfin.subset hsubset
+    have hTcard : T.card ≤ Set.ncard (_root_.BCIKS20AppendixA.S_β β) := by
+      rw [← Set.ncard_coe_finset T]; exact Set.ncard_le_ncard hsub hSfinite
+    have hTcard' :
+        (T.card : WithBot ℕ) ≤
+          (Set.ncard (_root_.BCIKS20AppendixA.S_β β) : WithBot ℕ) := by
+      exact_mod_cast hTcard
+    have hSβ_card :
+        (Set.ncard (_root_.BCIKS20AppendixA.S_β β) : WithBot ℕ) >
+          _root_.BCIKS20AppendixA.weight_Λ_over_𝒪 hH β D * (H.natDegree : WithBot ℕ) :=
+      lt_of_lt_of_le (by simpa [β] using hcard) hTcard'
+    exact _root_.BCIKS20AppendixA.Lemma_A_1 hH β D hD hSβ_card
 
 omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
 theorem H_tilde'_dvd_of_embedding_mk_eq_zero
@@ -1452,15 +1462,17 @@ theorem H_tilde'_dvd_of_embedding_mk_eq_zero
         (Ideal.Quotient.mk (Ideal.span {_root_.BCIKS20AppendixA.H_tilde' H}) P :
           _root_.BCIKS20AppendixA.𝒪 H) = 0) :
     _root_.BCIKS20AppendixA.H_tilde' H ∣ P := by
-  let β : _root_.BCIKS20AppendixA.𝒪 H :=
-    Ideal.Quotient.mk (Ideal.span {_root_.BCIKS20AppendixA.H_tilde' H}) P
-  have hcanon :
-      _root_.BCIKS20AppendixA.canonicalRepOf𝒪 hH β = 0 :=
-    _root_.BCIKS20AppendixA.canonicalRep_eq_zero_of_embeddingOf𝒪Into𝕃_eq_zero
-      hH β (by simpa [β] using hemb)
+  set β : _root_.BCIKS20AppendixA.𝒪 H :=
+    Ideal.Quotient.mk (Ideal.span {_root_.BCIKS20AppendixA.H_tilde' H}) P with hβ_def
+  -- REPAIR (pre-existing breakage): the original proof referenced
+  -- `BCIKS20AppendixA.canonicalRep_eq_zero_of_embeddingOf𝒪Into𝕃_eq_zero`, which is not defined.
+  -- The embedding is injective (`embeddingOf𝒪Into𝕃_injective`), so `emb β = 0 = emb 0` gives
+  -- `β = 0` directly — no `canonicalRep` lemma is needed.
   have hβzero : β = 0 := by
-    rw [← _root_.BCIKS20AppendixA.mk_canonicalRepOf𝒪 hH β, hcanon]
-    simp
+    have hinj := _root_.BCIKS20AppendixA.embeddingOf𝒪Into𝕃_injective (H := H) hH
+    apply hinj
+    rw [map_zero]
+    simpa [β] using hemb
   have hmem : P ∈ Ideal.span {_root_.BCIKS20AppendixA.H_tilde' H} := by
     exact Ideal.Quotient.eq_zero_iff_mem.mp (by simpa [β] using hβzero)
   simpa [Ideal.mem_span_singleton] using hmem
