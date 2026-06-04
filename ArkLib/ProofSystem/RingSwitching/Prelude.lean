@@ -417,7 +417,13 @@ Then compute `Σ_{u ∈ {0,1}^κ} eq̃(u_0, ..., u_{κ-1}, r''_0, ..., r''_{κ-1
 def compute_final_eq_value (r_eval : Fin ℓ → L)
     (r'_challenges : Fin ℓ' → L) (r''_batching : Fin κ → L) : L :=
   let e_tensor := compute_final_eq_tensor κ L K P ℓ ℓ' h_l r_eval r'_challenges
-  let e_u : (Fin κ → Fin 2) → L := P.decomposeRows e_tensor
+  -- Soundness fix (defect #10, dual of the #8 performCheck fix): the final eq-value must read
+  -- the COLUMN components of the eq-tensor. Term-by-term derivation (via
+  -- `MLE_eval_eq_sum_eqTilde` + `eqTilde_tensor_expand` + the atomic extraction laws):
+  -- `decomposeColumns (eqTilde(φ₀∘r_suf, φ₁∘ch)) v = Σ_w β.repr(eqTilde(w,r_suf)) v • eqTilde(w,ch)`,
+  -- which matches `A_MLE.eval ch` after eqTilde symmetry; the rows form yields the transposed
+  -- bilinear pairing, which is NOT symmetric — the A_MLE identity is false for rows.
+  let e_u : (Fin κ → Fin 2) → L := P.decomposeColumns e_tensor
   Finset.sum Finset.univ fun (u : Fin κ → Fin 2) =>
     let u_as_L : Fin κ → L := fun i => if u i == 1 then 1 else 0
     let eq_u_r_batching : L := -- `eq̃(u_0, ..., u_{κ-1}, r''_0, ..., r''_{κ-1})`
@@ -508,6 +514,17 @@ existing `rfl`/instance-driven Binius proofs (and the byte-identical `#print axi
     rw [h]
     unfold decompose_tensor_algebra_rows
     rw [Basis.baseChange_repr_tmul]
+  decomposeColumns_add := fun z w v => by
+    unfold decompose_tensor_algebra_columns
+    simp [map_add]
+  decomposeColumns_φ₀_mul_φ₁ := fun a b v => by
+    have h : φ₀ L K a * φ₁ L K b = a ⊗ₜ[K] b := by
+      simp only [φ₀, φ₁, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
+        Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
+    show decompose_tensor_algebra_columns (L := L) (K := K) (β := β) _ v = _
+    rw [h]
+    unfold decompose_tensor_algebra_columns
+    simp only [Basis.baseChangeRight_repr_tmul]
 
 
 /-! ## Generic row-extraction helpers over an abstract `RingSwitchingProfile`

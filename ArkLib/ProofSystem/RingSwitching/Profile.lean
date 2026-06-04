@@ -97,6 +97,14 @@ structure RingSwitchingProfile (B L : Type*) (κ : ℕ)
   basis coordinates of `b` scaled into `a`. Binius: `Basis.baseChange_repr_tmul`. -/
   decomposeRows_φ₀_mul_φ₁ : ∀ (a b : L) (u : Fin κ → Fin 2),
     decomposeRows (φ₀ a * φ₁ b) u = basis.repr b u • a
+  /-- **Column additivity**: the column-side dual of `decomposeRows_add`. -/
+  decomposeColumns_add : ∀ z w : A, ∀ v,
+    decomposeColumns (z + w) v = decomposeColumns z v + decomposeColumns w v
+  /-- **Column atomic extraction**: the column coordinates of a pure `φ₀ a * φ₁ b` element are
+  the basis coordinates of `a` scaled into `b` — the dual of `decomposeRows_φ₀_mul_φ₁`.
+  Binius: `Basis.baseChangeRight_repr_tmul`. -/
+  decomposeColumns_φ₀_mul_φ₁ : ∀ (a b : L) (v : Fin κ → Fin 2),
+    decomposeColumns (φ₀ a * φ₁ b) v = basis.repr a v • b
 
 attribute [instance] RingSwitchingProfile.commRingA RingSwitchingProfile.algLA
 
