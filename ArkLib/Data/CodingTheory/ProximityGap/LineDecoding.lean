@@ -86,14 +86,30 @@ that pair has at most `n` exceptional positions on every fold, the alignment lif
 joint-pair witness, contradicting the `¬ pairJointAgreesOn` clause of `mcaEvent` when the
 fraction of γ-aligned points exceeds `n/|F|`.
 
-Admitted as an external result; formalising the GG25 argument is tracked separately. -/
+The statement is reduced here, via `iSup_le`, to the **per-stack** bound
+`Pr_γ[mcaEvent C δ (u 0) (u 1) γ] ≤ a / |F|` for every word stack `u`. This is exactly the
+core of [GG25 Thm 3.5]: fix `f₁ := u 0`, `f₂ := u 1` and, on the `γ`-set where `mcaEvent`
+fires, let `U γ` be the codeword `w_γ` that the event provides agreeing with the line on a
+size-`≥(1-δ)n` set (so `δᵣ(f₁ + γ·f₂, U γ) ≤ δ` there; cf.
+`ProximityGap.mcaEvent_imp_relCloseToCode`). If `Pr_γ[mcaEvent] > a/|F|` then the line-close
+probability exceeds `a/|F|`, so line-decodability yields a single affine pair `(u₁, u₂)` with
+`Pr_γ[U γ = u₁ + γ·u₂] ≥ (n+1)/|F|`; picking two distinct aligned `γ` whose witness sets
+overlap in `> n` positions forces `u₁`/`u₂` to agree with `f₁`/`f₂` on that overlap, a
+`pairJointAgreesOn` witness contradicting `mcaEvent`'s `¬ pairJointAgreesOn` clause. This
+counting/extraction step is the external [GG25] content.
+
+Admitted as an external result; formalising the GG25 per-stack argument is tracked separately. -/
 theorem lineDecodable_imp_epsMCA_le
     (C : ModuleCode ι F A) (δ : ℝ≥0) (a : ℝ≥0)
     (_h : LineDecodable (F := F) ((C : Set (ι → A))) δ a
             ((Fintype.card ι : ℝ≥0) + 1)) :
     epsMCA (F := F) (A := A) ((C : Set (ι → A))) δ
         ≤ (a : ENNReal) / (Fintype.card F : ENNReal) := by
-  sorry -- ABF26-T4.21; external admit [GG25 Thm 3.5].
+  -- Reduce to the per-stack bound `Pr_γ[mcaEvent] ≤ a/|F|` (the GG25 core).
+  unfold epsMCA
+  refine iSup_le fun u ↦ ?_
+  -- Per-stack `γ`-probability bound from line-decodability (external [GG25 Thm 3.5]).
+  sorry -- ABF26-T4.21 (per-stack `Pr_γ[mcaEvent] ≤ a/|F|`); external admit [GG25 Thm 3.5].
 
 end
 
