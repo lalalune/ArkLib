@@ -152,7 +152,16 @@ theorem rbrSoundness_implies_soundness (langIn : Set StmtIn) (langOut : Set Stmt
     refine Finset.sum_le_sum (fun i _ => ?_)
     -- For each challenge round `i`, bound the soundness-game flip probability by `rbrSoundnessError i`.
     have hi := hsf stmtIn hStmtIn WitIn' WitOut' witIn' prover i
-    sorry
+    classical
+    refine le_trans ?_ hi
+    -- (B.1) Characterize the `OptionT` flip event as a *success-conjunction* on the underlying run:
+    -- the flip must hold on a genuine (non-failing) verifier accept (failure does not count).
+    rw [hgame, Verifier.StateFunction.probEvent_optionT_mk_eq_elim, OptionT.run_mk]
+    -- (B.2) Both games thread `init` identically; reduce to a per-state `ProbComp` bound.
+    refine Verifier.StateFunction.probEvent_bind_mono_heteroEvent (fun s hs => ?_)
+    -- Per-state goal (fixed `s ∈ support init`): soundness-game flip prob ≤ rbr-game flip prob,
+    -- discharged by the failure-monotone keystone transport.
+    exact Reduction.probEvent_run_run'_flip_le_rbr sf i stmtIn prover s
 
 /-- Round-by-round knowledge soundness with error `rbrKnowledgeError` implies round-by-round
 soundness with the same error `rbrKnowledgeError`. -/

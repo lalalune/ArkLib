@@ -280,6 +280,48 @@ theorem probEvent_bind_trailing_le {m : Type → Type*} [Monad m] [LawfulMonad m
         gcongr; exact tsub_le_self
     _ = Pr[p | (pure (h x) : m β)] := one_mul _
 
+/-- **`OptionT` probEvent as a success-conjunction on the underlying computation.**  An
+`OptionT ProbComp` event probability equals the probability, on the underlying `ProbComp (Option α)`,
+of *succeeding with* a value satisfying `p` (failure `none` does NOT count toward the event).  This
+is the characterization the `rbrSoundness → soundness` per-round bound consumes: the soundness game's
+flip event must hold on a genuine (non-failing) verifier accept, so failure mass introduced by
+trailing computations only *lowers* the event probability (the failure-monotone direction). -/
+theorem probEvent_optionT_mk_eq_elim {α : Type}
+    (ma : ProbComp (Option α)) (p : α → Prop) :
+    Pr[p | (OptionT.mk ma : OptionT ProbComp α)] = Pr[fun o => o.elim False p | ma] := by
+  classical
+  have hdiff : Pr[fun o => Option.all (fun b => decide (p b)) o = true | ma]
+      = Pr[fun o => o.elim False p | ma] + Pr[= none | ma] := by
+    rw [probEvent_eq_tsum_indicator, probEvent_eq_tsum_indicator,
+        tsum_option _ ENNReal.summable, tsum_option _ ENNReal.summable]
+    have e1 : ({x : Option α | Option.all (fun b => decide (p b)) x = true}.indicator
+        (fun x => Pr[= x | ma]) none) = Pr[= none | ma] := by simp
+    have e2 : ({x : Option α | x.elim False p}.indicator (fun x => Pr[= x | ma]) none)
+        = 0 := by simp
+    rw [e1, e2, zero_add, add_comm]
+    refine congrArg (· + Pr[= none | ma]) (tsum_congr (fun x => ?_))
+    by_cases hx : p x <;> simp [hx]
+  have h := OptionT.probEvent_eq (OptionT.mk ma : OptionT ProbComp α) p
+  simp only [OptionT.run_mk] at h
+  rw [hdiff] at h
+  exact WithTop.add_right_cancel probOutput_ne_top h
+
+/-- **Heterogeneous bind-monotone over a shared prefix.**  A `probEvent_bind_mono` variant that
+allows the post-bind events to differ (different result types `β`, `β'` and predicates `q`, `q'`): if
+on the support of the shared prefix `mx` each per-element event probability of `q` under `my x` is
+bounded by that of `q'` under `oc x`, then so are the bound probabilities.  Used to chain the
+soundness game's flip event (on the `Option`-wrapped full result) to the round-by-round game's flip
+event (on the `(transcript, challenge)` pair), both threaded over the shared `init` sample. -/
+theorem probEvent_bind_mono_heteroEvent {m : Type → Type*} [Monad m] [HasEvalSPMF m]
+    {α β β' : Type} {mx : m α} {my : α → m β} {oc : α → m β'} {q : β → Prop} {q' : β' → Prop}
+    (h : ∀ x ∈ support mx, Pr[q | my x] ≤ Pr[q' | oc x]) :
+    Pr[q | mx >>= my] ≤ Pr[q' | mx >>= oc] := by
+  rw [probEvent_bind_eq_tsum, probEvent_bind_eq_tsum]
+  refine ENNReal.tsum_le_tsum (fun x => ?_)
+  by_cases hx : x ∈ support mx
+  · exact mul_le_mul' le_rfl (h x hx)
+  · simp [probOutput_eq_zero_of_not_mem_support hx]
+
 section StateTTransport
 
 variable {ι : Type} {spec : OracleSpec ι} {σ : Type}

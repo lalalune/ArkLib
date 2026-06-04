@@ -865,6 +865,87 @@ theorem runToRound_eq_bind_continueFromTo
       refine bind_congr (fun rk => ?_)
       rw [← processRound_eq_bind]
 
+/-- **`processRound` only `snoc`s: the `castSucc`-prefix is preserved.**  Every support point of
+`processRound j cur` has its round-`j.succ` transcript's `j.castSucc`-prefix equal to the
+corresponding `j.castSucc`-prefix of its `cur`-predecessor.  The single-step geometric core of
+`continueFromTo`'s prefix stability (both branches `snoc` a new entry onto the running transcript). -/
+theorem take_castSucc_processRound (j : Fin n)
+    (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (cur : OracleComp (oSpec + [pSpec.Challenge]ₒ)
+      (pSpec.Transcript j.castSucc × prover.PrvState j.castSucc))
+    (r : pSpec.Transcript j.succ × prover.PrvState j.succ)
+    (hr : r ∈ support (prover.processRound j cur)) :
+    ∃ rprev ∈ support cur,
+      Fin.take j.castSucc.val (by simp) r.1 = rprev.1 := by
+  unfold processRound at hr
+  rw [mem_support_bind_iff] at hr
+  obtain ⟨rprev, hprev, hr⟩ := hr
+  refine ⟨rprev, hprev, ?_⟩
+  obtain ⟨tprev, sprev⟩ := rprev
+  simp only at hr ⊢
+  -- Both round directions `snoc` a new entry onto `tprev`; the `j.castSucc`-prefix is unchanged.
+  have hsnoc : ∃ msg : pSpec.«Type» j, r.1 = Transcript.concat msg tprev := by
+    split at hr
+    · rename_i hDir
+      simp only [bind_pure_comp, mem_support_bind_iff, support_map, Set.mem_image] at hr
+      obtain ⟨ch, _, ⟨st, _, hr⟩⟩ := hr
+      exact ⟨ch, by rw [← hr]⟩
+    · rename_i hDir
+      simp only [bind_pure_comp, support_map, Set.mem_image] at hr
+      obtain ⟨⟨msg, st⟩, _, hr⟩ := hr
+      exact ⟨msg, by rw [← hr]⟩
+  obtain ⟨msg, hmsg⟩ := hsnoc
+  rw [hmsg]
+  -- `Fin.take j.val (Fin.snoc tprev msg) = tprev` (taking below the appended entry).
+  funext k
+  have hkv : k.val < j.val := by have h := k.isLt; simp only [Fin.val_castSucc] at h; exact h
+  simp only [Transcript.concat, Fin.take_apply, Fin.snoc, Fin.val_castLE]
+  rw [dif_pos hkv]
+  apply cast_eq_iff_heq.mpr
+  congr 1
+
+/-- **`continueFromTo` preserves the round-`k` transcript prefix.**  Any support point of
+`continueFromTo k j rk` (with `k ≤ j`) has its round-`j` transcript's round-`k` prefix equal to the
+start transcript `rk.1`: the continuation only appends later-round entries (`processRound` `snoc`s),
+never altering the round-`k` prefix.  This is the geometric fact (paired with the monadic keystone
+`runToRound_eq_bind_continueFromTo`) that lets the soundness game's full-run transcript prefix at
+round `k = i.succ` be read off `runToRound i.succ`, feeding the round-by-round game. -/
+theorem take_continueFromTo (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (stmt : StmtIn) (wit : WitIn) (k : Fin (n + 1)) :
+    ∀ (j : Fin (n + 1)) (hkj : k ≤ j) (rk : pSpec.Transcript k × prover.PrvState k)
+      (r : pSpec.Transcript j × prover.PrvState j),
+      r ∈ support (continueFromTo prover stmt wit k j rk) →
+        Fin.take k.val (by exact (Fin.val_le_of_le hkj)) r.1 = rk.1 := by
+  intro j
+  induction j using Fin.induction with
+  | zero =>
+      intro hkj rk r hr
+      have hk0 : k = 0 := le_antisymm hkj (Fin.zero_le _)
+      subst hk0
+      rw [continueFromTo_self] at hr
+      rw [mem_support_pure_iff] at hr
+      subst hr
+      -- `Fin.take 0` of any transcript is the (subsingleton) empty round-0 transcript.
+      funext i; exact absurd i.isLt (by simp)
+  | succ m ih =>
+      intro hkj rk r hr
+      rcases eq_or_lt_of_le hkj with heq | hlt
+      · subst heq
+        rw [continueFromTo_self, mem_support_pure_iff] at hr
+        subst hr
+        -- `Fin.take k.val` of the round-`k` transcript `rk.1` is `rk.1` itself.
+        exact Fin.take_eq_self _
+      · have hkm : k ≤ m.castSucc := by rw [Fin.le_castSucc_iff]; exact hlt
+        have hne : (k : Fin (n + 1)) ≠ m.succ := ne_of_lt hlt
+        rw [continueFromTo_succ_of_ne prover stmt wit k m hne rk] at hr
+        obtain ⟨rprev, hprev, htake⟩ := take_castSucc_processRound m prover _ r hr
+        have hih := ih hkm rk rprev hprev
+        rw [← hih, ← htake]
+        -- `take k (take m.castSucc v) = take k v` (nested takes collapse), position-wise.
+        funext idx
+        rw [Fin.take_apply, Fin.take_apply, Fin.take_apply]
+        congr 1
+
 -- FRONTIER NOTE (rbrSoundness → soundness, probability bridge; ArkLib#1).
 --
 -- KEYSTONE STATUS: the round-range decomposition `runToRound_eq_bind_continueFromTo` (and its
