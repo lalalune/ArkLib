@@ -463,6 +463,12 @@ def oracleReduction.randomQuery : OracleReduction oSpec
   prover := randomQuery.oracleProver R deg oSpec
   verifier := randomQuery.oracleVerifier R deg oSpec
 
+-- NOTE (2026-06-04): A completeness lemma for `oracleReduction.randomQuery` (and the matching
+-- branch of `oracleReduction_perfectCompleteness`) is staged — it is a faithful port of
+-- `RandomQuery.oracleReduction_completeness`, but the final relation step diverges because the
+-- output relation here is stated via the polynomial `OracleInterface` (`(oStmt _).1.eval`)
+-- rather than the abstract `answer`. Left for follow-up.
+
 /-- The oracle-aware statement map for `reduceClaim`: the verifier reads the *claimed* polynomial
 `q` (oracle index `inr ()`) at the challenge `chal`, returning the new context statement
 `(q.eval chal, chal)`. This is the canonical sum-check next-round target `b := q.eval r`. -/
