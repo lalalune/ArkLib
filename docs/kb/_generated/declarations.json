@@ -11640,7 +11640,7 @@
         {
           "doc": "**Correlated agreement for low-degree parameterized curves, unique-decoding regime** ([BCIKS20] Theorem 6.1 / the UDR case of Theorem 1.5): curves analogue of `RS_correlatedAgreement_affineLines_uniqueDecodingRegime`.",
           "kind": "theorem",
-          "line": 34,
+          "line": 40,
           "name": "ProximityGap.RS_correlatedAgreement_curves_uniqueDecodingRegime",
           "namespace": "ProximityGap",
           "short_name": "RS_correlatedAgreement_curves_uniqueDecodingRegime",
@@ -11649,10 +11649,10 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 40,
-          "name": "ProximityGap._anon_class_40",
+          "line": 46,
+          "name": "ProximityGap._anon_class_46",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_40",
+          "short_name": "_anon_class_46",
           "signature": "class classical"
         }
       ]
