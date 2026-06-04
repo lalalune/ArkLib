@@ -520,7 +520,8 @@ lemma embedded_MLP_eval_eq_sum (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ'] (h_l 
   intro w _
   rw [map_mul, MvPolynomial.coe_eval₂Hom, MvPolynomial.eval₂_C]
   congr 1
-  · have hcoe : (fun i => ((w i : Fin 2) : L₀)) = (fun i => (if w i == 1 then (1 : L₀) else 0)) := by
+  · have hcoe : (fun i => ((w i : Fin 2) : L₀))
+        = (fun i => (if w i == 1 then (1 : L₀) else 0)) := by
       funext i; rcases Fin.exists_fin_two.mp ⟨w i, rfl⟩ with h | h <;> rw [h] <;> simp
     rw [hcoe]
     exact eqPoly_collapse (fun i => r ⟨i.val + κ₀, by rw [h_l]; omega⟩) w
@@ -560,7 +561,8 @@ lemma packMLE_repr_eval (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ'] (h_l : ℓ =
     (β.repr (eval (fun i => (if w i == 1 then (1 : L₀) else 0))
         (packMLE κ₀ L₀ K₀ ℓ ℓ' h_l β t).val)) u
       = MvPolynomial.eval (fun i =>
-          ((if h : i.val < κ₀ then u ⟨i.val, h⟩ else w ⟨i.val - κ₀, by omega⟩ : Fin 2) : K₀)) t.val := by
+          ((if h : i.val < κ₀ then u ⟨i.val, h⟩ else w ⟨i.val - κ₀, by omega⟩ : Fin 2) : K₀))
+          t.val := by
   unfold packMLE
   simp only []
   rw [show (fun i => (if w i == 1 then (1 : L₀) else 0)) = ((w : Fin ℓ' → Fin 2) : Fin ℓ' → L₀)
@@ -583,7 +585,8 @@ lemma decompose_rows_packMLE (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ'] (h_l : 
         (embedded_MLP_eval κ₀ L₀ K₀ ℓ ℓ' h_l (packMLE κ₀ L₀ K₀ ℓ ℓ' h_l β t) r) u
       = ∑ w : Fin ℓ' → Fin 2,
           (MvPolynomial.eval (fun i =>
-              ((if h : i.val < κ₀ then u ⟨i.val, h⟩ else w ⟨i.val - κ₀, by omega⟩ : Fin 2) : K₀)) t.val)
+              ((if h : i.val < κ₀ then u ⟨i.val, h⟩ else w ⟨i.val - κ₀, by omega⟩ : Fin 2) : K₀))
+              t.val)
             • (eqTilde (fun i => (if w i == 1 then (1 : L₀) else 0))
                 (getEvaluationPointSuffix κ₀ L₀ ℓ ℓ' h_l r)) := by
   rw [embedded_MLP_eval_eq_sum, decompose_rows_sum]
