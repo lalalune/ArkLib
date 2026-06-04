@@ -6,6 +6,7 @@ Authors: Alexander Hicks
 
 import ArkLib.Data.CodingTheory.JohnsonBound.Basic
 import ArkLib.Data.CodingTheory.ListDecodability
+import ArkLib.Data.CodingTheory.CodeGeometry
 
 /-!
 # ABF26 §3.1 — Johnson family `J_{q,ℓ}, J_q, J` and Theorem 3.2 / Corollary 3.3
@@ -50,6 +51,7 @@ set_option linter.unusedDecidableInType false
 namespace JohnsonBound
 
 open Real
+open Finset
 
 /-- **ABF26 Definition 3.1, `J_{q,ℓ}`.** Paper's q-ary ℓ-radius Johnson function:
 
@@ -79,6 +81,69 @@ lemma Jcap_zero : Jcap 0 = 0 := by simp [Jcap]
 
 @[simp]
 lemma Jcap_one : Jcap 1 = 1 := by simp [Jcap]
+
+/-- Indexed q-ary Plotkin average-distance upper bound, with the same ordered-pair
+normalisation as `JohnsonBound.d`.
+
+This packages the simplex-embedding PSD bound from `CodeGeometry` into the
+Johnson-bound denominator shape:
+`2 * choose_2 M = M * (M - 1)`.
+
+The statement is intentionally indexed by `Fin M`; the separate translation to
+`Finset` images is the mechanical bridge needed by `johnson_bound_lambda_le_ell`. -/
+theorem indexed_averageDist_le_plotkin
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    {α : Type} [Fintype α] [DecidableEq α]
+    {M : ℕ} (c : Fin M → ι → α) (hM : 1 < M) (hq : 0 < Fintype.card α) :
+    (1 : ℝ) / (2 * ((choose_2 (M : ℚ)) : ℝ)) *
+        (∑ i : Fin M, ∑ j ∈ Finset.univ.erase i,
+          (hammingDist (c i) (c j) : ℝ)) ≤
+      (M : ℝ) / ((M : ℝ) - 1) *
+        (Fintype.card ι : ℝ) *
+          (1 - 1 / (Fintype.card α : ℝ)) := by
+  classical
+  let C0 : ℝ :=
+    (Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ))
+  have htotal := CodeGeometry.sum_sum_hammingDist_le (ι := ι) (α := α) c hq
+  have hoff_le_total :
+      (∑ i : Fin M, ∑ j ∈ Finset.univ.erase i,
+          (hammingDist (c i) (c j) : ℝ)) ≤
+        (∑ i : Fin M, ∑ j : Fin M,
+          (hammingDist (c i) (c j) : ℝ)) := by
+    refine Finset.sum_le_sum fun i _ => ?_
+    refine Finset.sum_le_sum_of_subset_of_nonneg ?_ ?_
+    · intro j hj
+      exact Finset.mem_univ j
+    · intro j _ _
+      exact_mod_cast Nat.zero_le (hammingDist (c i) (c j))
+  have hoff_bound :
+      (∑ i : Fin M, ∑ j ∈ Finset.univ.erase i,
+          (hammingDist (c i) (c j) : ℝ)) ≤ (M : ℝ) * (M : ℝ) * C0 :=
+    le_trans hoff_le_total htotal
+  have hden :
+      2 * (((choose_2 (M : ℚ)) : ℚ) : ℝ) = (M : ℝ) * ((M : ℝ) - 1) := by
+    norm_num [choose_2]
+    ring
+  have hMpos : 0 < (M : ℝ) := by
+    exact_mod_cast Nat.zero_lt_of_lt hM
+  have hMsub_pos : 0 < (M : ℝ) - 1 := by
+    exact sub_pos.mpr (by exact_mod_cast hM)
+  have hden_nonneg : 0 ≤ 1 / ((M : ℝ) * ((M : ℝ) - 1)) := by
+    positivity
+  rw [hden]
+  calc
+    (1 : ℝ) / ((M : ℝ) * ((M : ℝ) - 1)) *
+        (∑ i : Fin M, ∑ j ∈ Finset.univ.erase i,
+          (hammingDist (c i) (c j) : ℝ))
+        ≤ (1 : ℝ) / ((M : ℝ) * ((M : ℝ) - 1)) *
+            ((M : ℝ) * (M : ℝ) * C0) :=
+          mul_le_mul_of_nonneg_left hoff_bound hden_nonneg
+    _ = (M : ℝ) / ((M : ℝ) - 1) * C0 := by
+          field_simp [hMpos.ne', hMsub_pos.ne']
+    _ = (M : ℝ) / ((M : ℝ) - 1) *
+        (Fintype.card ι : ℝ) *
+          (1 - 1 / (Fintype.card α : ℝ)) := by
+          simp [C0, mul_assoc]
 
 end JohnsonBound
 
