@@ -233,7 +233,7 @@ theorem RS_BW_homMatrix_det_submatrix_eq_zero_of_goodCoeffsCurve_card_gt
     (hδ : δ ≤ relativeUniqueDecodingRadius (ι := ι) (F := F)
       (C := ReedSolomon.code domain deg))
     (hS : (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card
-      > k * Fintype.card ι + 1) :
+      > k * Fintype.card ι) :
     let e : ℕ := Nat.floor (δ * Fintype.card ι)
     let N : ℕ := (e + 1) + (e + deg)
     ∀ r : Fin N ↪ ι,
@@ -272,10 +272,10 @@ theorem RS_BW_homMatrix_det_submatrix_eq_zero_of_goodCoeffsCurve_card_gt
       (RS_floor_mul_card_ι_add_one_le_card_ι_of_le_relUDR (deg := deg) (domain := domain)
         (δ := δ) (hdeg := hdeg) (hδ := hδ))
   have hk_le : k * (e + 1) ≤ k * Fintype.card ι := Nat.mul_le_mul_left k he1_le
-  have hS' : k * Fintype.card ι + 1 < S.card := by
+  have hS' : k * Fintype.card ι < S.card := by
     simpa [S] using hS
   have hdeg_lt : (Matrix.det A).natDegree < S.card :=
-    lt_of_le_of_lt (le_trans hdeg_det hk_le) (lt_of_le_of_lt (Nat.le_succ _) hS')
+    lt_of_le_of_lt (le_trans hdeg_det hk_le) hS'
   -- det(A) vanishes at every good parameter
   have heval : ∀ z ∈ S, (Matrix.det A).eval z = 0 := by
     intro z hz
@@ -345,7 +345,7 @@ theorem RS_BW_homMatrix_det_submatrix_eq_zero_of_goodCoeffsCurve_card_gt_fun
     (hdeg : deg ≤ Fintype.card ι)
     (hδ : δ ≤ relativeUniqueDecodingRadius (ι := ι) (F := F)
       (C := ReedSolomon.code domain deg))
-    (hS : (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k * Fintype.card ι + 1) :
+    (hS : (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k * Fintype.card ι) :
     let e : ℕ := Nat.floor (δ * Fintype.card ι)
     let N : ℕ := (e + 1) + (e + deg)
     ∀ r : Fin N → ι,
@@ -407,7 +407,7 @@ theorem RS_exists_nonzero_kernelVec_BW_homMatrix_of_goodCoeffsCurve_card_gt
     (u : WordStack F (Fin (k + 1)) ι)
     (hdeg : deg ≤ Fintype.card ι)
     (hδ : δ ≤ relativeUniqueDecodingRadius (ι := ι) (F := F) (C := ReedSolomon.code domain deg))
-    (hS : (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k * Fintype.card ι + 1) :
+    (hS : (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k * Fintype.card ι) :
     let e : ℕ := Nat.floor (δ * Fintype.card ι)
     ∃ a : Fin (e + 1) → F[X],
       ∃ b : Fin (e + deg) → F[X],
@@ -662,6 +662,86 @@ theorem RS_exists_nonzero_kernelVec_BW_homMatrix_of_goodCoeffsCurve_card_gt
     change Matrix.mulVec M (Fin.append a b) = 0
     rw [hsplit]
     exact hLR
+
+omit [Nonempty ι] in
+theorem card_RS_goodCoeffsCurve_gt_of_prob_gt_kn_div_q
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} (u : WordStack F (Fin (k + 1)) ι)
+    (hprob :
+      Pr_{ let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t, ReedSolomon.code domain deg) ≤ δ]
+        > (k * Fintype.card ι : ℝ≥0) / (Fintype.card F : ℝ≥0)) :
+    (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k * Fintype.card ι := by
+  classical
+  -- predicate defining the good coefficients
+  let P : F → Prop := fun z : F =>
+    δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t, ReedSolomon.code domain deg) ≤ δ
+  -- uniform probability equals (card of filter) / (card of the field)
+  have hPr :
+      Pr_{ let z ← $ᵖ F }[ P z ] =
+        ((Finset.filter (α := F) P Finset.univ).card : ℝ≥0) / (Fintype.card F : ℝ≥0) := by
+    classical
+    -- Expand the probability mass at `True`
+    simp only [Bind.bind, PMF.bind, PMF.uniformOfFintype_apply, pure, PMF.pure_apply, eq_iff_iff,
+      mul_ite, mul_one, mul_zero, ENNReal.coe_natCast]
+    simp only [DFunLike.coe, true_iff]
+    -- Reduce the infinite sum to the finite support
+    rw [
+      tsum_eq_sum (α := ENNReal) (β := F)
+        (f := fun a => if P a then (↑(Fintype.card F))⁻¹ else 0)
+        (s := Finset.filter P Finset.univ)
+        (hf := fun b => by
+          simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+          intro hb
+          simp only [hb, if_false])
+    ]
+    -- Evaluate the resulting finite sum
+    rw [Finset.sum_ite]
+    simp only [Finset.sum_const_zero, add_zero]
+    rw [Finset.sum_const]
+    rw [nsmul_eq_mul']
+    rw [mul_comm]
+    conv_lhs =>
+      rw [← div_eq_mul_inv]
+    -- Filtering twice is the same as filtering once
+    have h_card_eq : {x ∈ filter P univ | P x} = filter P univ := by
+      ext x
+      simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+      rw [and_self_iff]
+    rw [h_card_eq]
+  -- restate the hypothesis using `P`
+  have hprobP :
+      Pr_{ let z ← $ᵖ F }[ P z ]
+        > ((k * Fintype.card ι : ℕ) : ℝ≥0) / (Fintype.card F : ℝ≥0) := by
+    simpa [P, Nat.cast_mul] using hprob
+  -- rewrite the probability lower bound as a ratio comparison
+  have hprobQ := hprobP
+  rw [hPr] at hprobQ
+  -- switch to `<` form
+  have hlt :
+      (((k * Fintype.card ι : ℕ) : ℝ≥0) / (Fintype.card F : ℝ≥0) : ENNReal)
+        <
+          (((Finset.filter (α := F) P Finset.univ).card : ℝ≥0) /
+            (Fintype.card F : ℝ≥0) : ENNReal) :=
+    (gt_iff_lt).1 hprobQ
+  have hq0 : (Fintype.card F : ENNReal) ≠ 0 := by
+    simp [Fintype.card_ne_zero]
+  have hqtop : (Fintype.card F : ENNReal) ≠ ⊤ := by
+    exact ENNReal.natCast_ne_top (Fintype.card F)
+  have hcard_cast :
+      ((k * Fintype.card ι : ℕ) : ENNReal) <
+        ((Finset.filter (α := F) P Finset.univ).card : ENNReal) := by
+    -- rewrite both sides of `hlt` as ENNReal divisions and cancel
+    have hlt' :
+        ((k * Fintype.card ι : ℕ) : ENNReal) / (Fintype.card F : ENNReal)
+          < ((Finset.filter (α := F) P Finset.univ).card : ENNReal) /
+              (Fintype.card F : ENNReal) := by
+      have hq0' : (Fintype.card F : ℝ≥0) ≠ 0 := by
+        simp [Fintype.card_ne_zero]
+      simpa [ENNReal.coe_div (r := (Fintype.card F : ℝ≥0)) hq0', ENNReal.coe_natCast] using hlt
+    exact (ENNReal.div_lt_div_iff_left (hc₀ := hq0) (hc := hqtop)).1 hlt'
+  have hcard_nat : k * Fintype.card ι < (Finset.filter (α := F) P Finset.univ).card := by
+    exact Nat.cast_lt.mp hcard_cast
+  -- identify the filtered finset with `RS_goodCoeffs`
+  simpa [RS_goodCoeffsCurve, P, gt_iff_lt] using hcard_nat
 
 end CoreResults
 
