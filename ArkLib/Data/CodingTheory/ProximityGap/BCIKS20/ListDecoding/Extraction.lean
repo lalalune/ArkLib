@@ -211,6 +211,124 @@ lemma eq512_separable_contraction_over_fraction_field
   obtain ⟨sK, hsep, m, hexp⟩ := hgK_irr.hasSeparableContraction q
   exact ⟨sK, m, hsep, hexp⟩
 
+/-- *Content is invariant under `expand`* (for `n ≥ 1`): the coefficients of `expand R n r`
+are exactly those of `r`, spread out at multiples of `n` and padded with zeros, so the gcd of
+the coefficients (the `content`) is unchanged. A small UFD helper used in the Eq-5.12 descent. -/
+theorem eq512_content_expand {R : Type*} [CommRing R] [IsDomain R] [NormalizedGCDMonoid R]
+    {r : R[X]} {n : ℕ} (hn : 0 < n) :
+    (Polynomial.expand R n r).content = r.content := by
+  classical
+  have key : ∀ s : R, Polynomial.C s ∣ (Polynomial.expand R n r) ↔ Polynomial.C s ∣ r := by
+    intro s
+    constructor
+    · intro hdvd
+      rw [Polynomial.C_dvd_iff_dvd_coeff] at hdvd ⊢
+      intro i
+      have := hdvd (n * i)
+      rwa [Polynomial.coeff_expand_mul' hn] at this
+    · intro hdvd
+      rw [Polynomial.C_dvd_iff_dvd_coeff] at hdvd ⊢
+      intro i
+      rw [Polynomial.coeff_expand hn]
+      split_ifs with h
+      · exact hdvd _
+      · exact dvd_zero _
+  have h1 : (Polynomial.expand R n r).content ∣ r.content :=
+    (Polynomial.dvd_content_iff_C_dvd).mpr ((key _).mp (Polynomial.C_content_dvd _))
+  have h2 : r.content ∣ (Polynomial.expand R n r).content :=
+    (Polynomial.dvd_content_iff_C_dvd).mpr ((key _).mpr (Polynomial.C_content_dvd _))
+  calc (Polynomial.expand R n r).content
+      = normalize (Polynomial.expand R n r).content := (Polynomial.normalize_content).symm
+    _ = normalize r.content := (normalize_eq_normalize_iff).mpr ⟨h1, h2⟩
+    _ = r.content := Polynomial.normalize_content
+
+/-- `expand` preserves primitivity (for `n ≥ 1`): immediate from `eq512_content_expand`. -/
+theorem eq512_isPrimitive_expand {R : Type*} [CommRing R] [IsDomain R] [NormalizedGCDMonoid R]
+    {r : R[X]} (hr : r.IsPrimitive) {n : ℕ} (hn : 0 < n) :
+    (Polynomial.expand R n r).IsPrimitive := by
+  rw [Polynomial.isPrimitive_iff_content_eq_one] at hr ⊢
+  rw [eq512_content_expand hn, hr]
+
+/-- *Descent of the field-side separable contraction back to the UFD `R[X]`* — the first of the
+two pieces of [BCIKS20, Eq. 5.12] flagged as remaining. Given an irreducible primitive `g : R[X]`
+(`R` a UFD with fraction field `K`) and a `K`-side separable contraction
+`expand K n sK = g.map (algebraMap R K)` (`n ≥ 1`, e.g. `n = q^m` from
+`eq512_separable_contraction_over_fraction_field`), there is a primitive irreducible `r : R[X]`
+whose `K`-image is separable, and an `R`-unit `u`, with `g = C u * expand R n r`.
+
+The witness is `r := (integerNormalization R⁰ sK).primPart`. Clearing denominators
+(`IsLocalization.integerNormalization_spec`) and splitting off the content
+(`eq_C_content_mul_primPart`) shows `r.map (algebraMap R K) = C c * sK` with `c` a `K`-unit; this
+gives separability of the `K`-image (`Separable.unit_mul`). Applying `expand K n` and using
+`map_expand` yields `(expand R n r).map = C c * g.map`, so the primitive polynomials `expand R n r`
+and `g` have associated `K`-images, hence are associated in `R[X]` (Gauss's
+`IsPrimitive.dvd_iff_fraction_map_dvd_fraction_map`, both directions). The associating unit is `C u`
+with `u` an `R`-unit (`Polynomial.isUnit_iff`), and `r` is irreducible because `expand R n r` is
+(its associate `g` is) and `expand` reflects irreducibility (`Polynomial.of_irreducible_expand`). -/
+theorem eq512_descent_of_fraction_field_contraction
+    {R : Type*} [CommRing R] [IsDomain R] [NormalizedGCDMonoid R]
+    {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
+    (g : R[X]) (hg : Irreducible g) (hgprim : g.IsPrimitive)
+    (sK : K[X]) (n : ℕ) (hn : 0 < n)
+    (hsep : sK.Separable)
+    (hexp : Polynomial.expand K n sK = g.map (algebraMap R K)) :
+    ∃ (r : R[X]) (u : R), Irreducible r ∧ (r.map (algebraMap R K)).Separable ∧
+      IsUnit u ∧ g = Polynomial.C u * (Polynomial.expand R n r) := by
+  classical
+  set φ := algebraMap R K with hφ
+  have hsK0 : sK ≠ 0 := hsep.ne_zero
+  obtain ⟨b, hb, hbspec⟩ := IsLocalization.integerNormalization_spec (nonZeroDivisors R) sK
+  set N := IsLocalization.integerNormalization (nonZeroDivisors R) sK with hN
+  set r := N.primPart with hr
+  have hrprim : r.IsPrimitive := N.isPrimitive_primPart
+  have hNfact : N = Polynomial.C N.content * r := N.eq_C_content_mul_primPart
+  have hmap : N.map φ = Polynomial.C (φ N.content) * r.map φ := by
+    conv_lhs => rw [hNfact]
+    rw [Polynomial.map_mul, Polynomial.map_C]
+  have hbsmul : N.map φ = Polynomial.C (φ b) * sK := by
+    rw [hbspec, Algebra.smul_def, Polynomial.C_eq_algebraMap]; rfl
+  have hb0 : b ≠ 0 := nonZeroDivisors.ne_zero hb
+  have hNne : N ≠ 0 := by
+    rw [hN, Ne,
+      IsLocalization.integerNormalization_eq_zero_iff (M := nonZeroDivisors R) (le_refl _)]
+    exact hsK0
+  have hcontent0 : N.content ≠ 0 := by rwa [Ne, Polynomial.content_eq_zero_iff]
+  have hφc : φ N.content ≠ 0 :=
+    fun h => hcontent0 (IsFractionRing.injective R K (by rwa [map_zero]))
+  have hφb : φ b ≠ 0 := fun h => hb0 (IsFractionRing.injective R K (by rwa [map_zero]))
+  have heq : Polynomial.C (φ N.content) * r.map φ = Polynomial.C (φ b) * sK := hmap.symm.trans hbsmul
+  set c := φ b * (φ N.content)⁻¹ with hc
+  have hcunit : IsUnit c := IsUnit.mul (Ne.isUnit hφb) (IsUnit.inv (Ne.isUnit hφc))
+  have hrmap : r.map φ = Polynomial.C c * sK := by
+    rw [hc, show (Polynomial.C (φ b * (φ N.content)⁻¹) : K[X])
+          = Polynomial.C (φ b) * Polynomial.C ((φ N.content)⁻¹) by
+          rw [← Polynomial.C_mul], mul_assoc]
+    have hstep : r.map φ = Polynomial.C ((φ N.content)⁻¹) * (Polynomial.C (φ b) * sK) := by
+      rw [← heq, ← mul_assoc, ← Polynomial.C_mul, inv_mul_cancel₀ hφc, Polynomial.C_1, one_mul]
+    rw [hstep]; ring
+  have hrmap_sep : (r.map φ).Separable := by
+    rw [hrmap]; exact hsep.unit_mul (Polynomial.isUnit_C.mpr hcunit)
+  have hexpand_map : (Polynomial.expand R n r).map φ = Polynomial.C c * (g.map φ) := by
+    rw [Polynomial.map_expand, hrmap, map_mul, Polynomial.expand_C, hexp]
+  have hEprim : (Polynomial.expand R n r).IsPrimitive := eq512_isPrimitive_expand hrprim hn
+  have hdvd1 : (Polynomial.expand R n r).map φ ∣ g.map φ := by
+    rw [hexpand_map]
+    exact (associated_unit_mul_left _ _ (Polynomial.isUnit_C.mpr hcunit)).dvd
+  have hdvd2 : g.map φ ∣ (Polynomial.expand R n r).map φ := by
+    rw [hexpand_map]; exact Dvd.intro_left _ rfl
+  have hd1R : (Polynomial.expand R n r) ∣ g :=
+    (hEprim.dvd_iff_fraction_map_dvd_fraction_map (K := K) hgprim).mpr hdvd1
+  have hd2R : g ∣ (Polynomial.expand R n r) :=
+    (hgprim.dvd_iff_fraction_map_dvd_fraction_map (K := K) hEprim).mpr hdvd2
+  have hassoc : Associated (Polynomial.expand R n r) g := associated_of_dvd_dvd hd1R hd2R
+  have hE_irr : Irreducible (Polynomial.expand R n r) := hassoc.symm.irreducible hg
+  have hr_irr : Irreducible r := Polynomial.of_irreducible_expand hn.ne' hE_irr
+  obtain ⟨w, hw⟩ := hassoc
+  have hwunit : IsUnit (↑w : R[X]) := w.isUnit
+  rw [Polynomial.isUnit_iff] at hwunit
+  obtain ⟨u, hu_unit, hu_eq⟩ := hwunit
+  exact ⟨r, u, hr_irr, hrmap_sep, hu_unit, by rw [← hw, hu_eq, mul_comm]⟩
+
 omit [DecidableEq (RatFunc F)] in
 /-- Claim 5.6 of [BCIKS20]. -/
 lemma discr_of_irred_components_nonzero (_h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
