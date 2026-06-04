@@ -11,6 +11,12 @@ import ArkLib.Data.CodingTheory.ReedSolomon
 
 set_option linter.style.longFile 1700
 
+-- Decidability/Fintype instances are threaded through the sections; several
+-- statement-level engine lemmas do not mention them directly.
+set_option linter.unusedDecidableInType false
+set_option linter.unusedSectionVars false
+set_option linter.unusedFintypeInType false
+
 namespace ProximityGap
 
 open NNReal Finset Function ProbabilityTheory Code
