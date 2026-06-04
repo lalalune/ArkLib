@@ -165,7 +165,7 @@ private lemma offdiag_sum_eq_product {M : ℕ} (f : Fin M → Fin M → ℝ) :
 
 /-- Transports an indexed off-diagonal sum along `Finset.equivFin`. -/
 private lemma offdiag_sum_equivFin
-    {n : ℕ} {α : Type} [DecidableEq α] (B : Finset (Fin n → α)) :
+    {ι : Type} [Fintype ι] {α : Type} [DecidableEq α] (B : Finset (ι → α)) :
     (∑ i : Fin B.card, ∑ j ∈ (Finset.univ : Finset (Fin B.card)).erase i,
       (hammingDist ((Finset.equivFin B).symm i).1 ((Finset.equivFin B).symm j).1 : ℝ)) =
     ∑ x ∈ B ×ˢ B with x.1 ≠ x.2, (hammingDist x.1 x.2 : ℝ) := by
@@ -173,7 +173,7 @@ private lemma offdiag_sum_equivFin
   let e : Fin B.card ≃ B := (Finset.equivFin B).symm
   let s : Finset (Fin B.card × Fin B.card) :=
     (Finset.univ : Finset (Fin B.card × Fin B.card)).filter (fun p => p.1 ≠ p.2)
-  let t : Finset ((Fin n → α) × (Fin n → α)) := (B ×ˢ B).filter (fun x => x.1 ≠ x.2)
+  let t : Finset ((ι → α) × (ι → α)) := (B ×ˢ B).filter (fun x => x.1 ≠ x.2)
   change (∑ p ∈ s, (hammingDist (e p.1).1 (e p.2).1 : ℝ)) =
     ∑ x ∈ t, (hammingDist x.1 x.2 : ℝ)
   refine Finset.sum_bij (fun p _hp => ((e p.1).1, (e p.2).1)) ?_ ?_ ?_ ?_
@@ -207,6 +207,36 @@ private lemma offdiag_sum_equivFin
     · simp [e, a, b]
   · intro p _hp
     rfl
+
+/-- Ordered-pair average distance for a finite family over an arbitrary finite index type.
+
+This is `JohnsonBound.d` without the historical `Fin n` restriction. -/
+noncomputable def averageDistOn
+    {ι : Type} [Fintype ι] {α : Type} [DecidableEq α] (B : Finset (ι → α)) : ℚ :=
+  (1 : ℚ) / (2 * choose_2 B.card) *
+    ∑ x ∈ B ×ˢ B with x.1 ≠ x.2, Δ₀(x.1, x.2)
+
+/-- Arbitrary-index q-ary Plotkin average-distance upper bound. -/
+theorem averageDistOn_le_plotkin
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    {α : Type} [Fintype α] [DecidableEq α]
+    (B : Finset (ι → α)) (hB : 2 ≤ B.card) (hq : 0 < Fintype.card α) :
+    ((averageDistOn B : ℚ) : ℝ) ≤
+      (B.card : ℝ) / ((B.card : ℝ) - 1) * (Fintype.card ι : ℝ) *
+        (1 - 1 / (Fintype.card α : ℝ)) := by
+  let e : Fin B.card ≃ B := (Finset.equivFin B).symm
+  let c : Fin B.card → ι → α := fun i => (e i).1
+  have hM : 1 < B.card := by omega
+  have hplot := indexed_averageDist_le_plotkin (ι := ι) (α := α)
+    (M := B.card) c hM hq
+  have hsum :
+      (∑ i : Fin B.card, ∑ j ∈ (Finset.univ : Finset (Fin B.card)).erase i,
+        (hammingDist (c i) (c j) : ℝ)) =
+      ∑ x ∈ B ×ˢ B with x.1 ≠ x.2, (hammingDist x.1 x.2 : ℝ) := by
+    simpa [c, e] using offdiag_sum_equivFin B
+  rw [hsum] at hplot
+  unfold averageDistOn
+  simpa [Nat.cast_sum] using hplot
 
 /-- Finset form of the q-ary Plotkin average-distance upper bound for
 `JohnsonBound.d`.
