@@ -9,6 +9,7 @@ import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.LinearCombination'
 
+import ArkLib.Data.Fin.Sigma
 import ArkLib.Data.CodingTheory.ProximityGap.Basic
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.UniqueDecoding
@@ -16,7 +17,6 @@ import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.Probability.Notation
 import ArkLib.ProofSystem.Stir.ProximityBound
 import ArkLib.ToMathlib.Polynomial.EvalExt
-
 
 /-! Section 4.5 from STIR [ACFY24stir]
 

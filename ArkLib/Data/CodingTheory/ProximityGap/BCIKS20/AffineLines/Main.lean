@@ -33,9 +33,9 @@ theorem RS_correlatedAgreement_affineLines {deg : ℕ} {domain : ι ↪ F} {δ :
     [NeZero deg]
     (hδ : δ ≤ 1 - (ReedSolomon.sqrtRate deg domain)) :
   δ_ε_correlatedAgreementAffineLines (A := F) (F := F) (ι := ι)
-    (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
+    (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
   -- Do casing analysis on `hδ`
-  if hδ_uniqueDecodingRegime :
+  by_cases hδ_uniqueDecodingRegime :
     δ ≤ Code.relativeUniqueDecodingRadius (ι := ι) (F := F) (C := ReedSolomon.code domain deg)
   then
     RS_correlatedAgreement_affineLines_uniqueDecodingRegime (hδ := hδ_uniqueDecodingRegime)

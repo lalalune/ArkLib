@@ -800,7 +800,28 @@ def coreInteractionRbrKnowledgeError (j : (pSpecCoreInteraction L ℓ').Challeng
     (g := fun _ => finalSumcheckRbrKnowledgeError (L := L))
     (ChallengeIdx.sumEquiv.symm j)
 
--- TODO: iteratedSumcheckLoop_rbrKnowledgeSoundness
+/-- RBR knowledge soundness for the iterated sumcheck loop. -/
+theorem iteratedSumcheckLoop_rbrKnowledgeSoundness [IsDomain L] :
+  OracleVerifier.rbrKnowledgeSoundness
+    (verifier := sumcheckLoopOracleVerifier κ L K P ℓ ℓ' aOStmtIn)
+    (StmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) 0)
+    (OStmtIn := aOStmtIn.OStmtIn)
+    (StmtOut := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) (Fin.last ℓ'))
+    (OStmtOut := aOStmtIn.OStmtIn)
+    (init := init)
+    (impl := impl)
+    (relIn := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn 0)
+    (relOut := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn (Fin.last ℓ'))
+    (rbrKnowledgeError := fun i =>
+      let ij := seqComposeChallengeIdxToSigma i
+      roundKnowledgeError L ℓ' ij.1) := by
+  exact OracleVerifier.seqCompose_rbrKnowledgeSoundness
+    (rel := fun i => sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i)
+    (V := fun i => iteratedSumcheckOracleVerifier κ L K P ℓ ℓ' aOStmtIn i)
+    (h := fun i =>
+      iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness (κ := κ) (L := L) (K := K)
+        (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn)
+        (init := init) (impl := impl) i)
 
 /-- RBR knowledge soundness for large-field reduction (Sumcheck ++ FinalSum) -/
 theorem coreInteraction_rbrKnowledgeSoundness [IsDomain L] :
