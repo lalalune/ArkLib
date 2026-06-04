@@ -71,6 +71,7 @@ theorem codeInner_eq_agree_sub (u v : ι → α) (hq : 0 < Fintype.card α) :
   congr 1
   apply Finset.sum_congr rfl; intro i _; by_cases h : u i = v i <;> simp [h]
 
+omit [DecidableEq ι] in
 /-- Simplex inner products are constant norm minus Hamming distance. -/
 theorem codeInner_eq_card_mul_sub_hammingDist (u v : ι → α) (hq : 0 < Fintype.card α) :
     codeInner u v =
