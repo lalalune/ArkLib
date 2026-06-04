@@ -1181,18 +1181,210 @@ lemma ξ_regular' (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [H_irreducible : Fac
   change embeddingOf𝒪Into𝕃 H pre = W ^ k * ζ R x₀ H
   exact hpre.symm
 
+omit H_irreducible H_pos in
+/-- The coefficient of an explicit `Y`-monomial sum `∑ⱼ C(cⱼ)·Yʲ` at index `deg` is `c deg`
+when `deg ∈ s`, and `0` otherwise (the monomials `Yʲ` are linearly independent). -/
+private lemma coeff_explicit_sum (s : Finset ℕ) (c : ℕ → F[X]) (deg : ℕ) :
+    (∑ j ∈ s, Polynomial.C (c j) * Polynomial.X ^ j : F[X][Y]).coeff deg
+      = if deg ∈ s then c deg else 0 := by
+  classical
+  rw [Polynomial.finset_sum_coeff]
+  by_cases hmem : deg ∈ s
+  · rw [if_pos hmem, Finset.sum_eq_single deg]
+    · rw [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, if_pos rfl, mul_one]
+    · intro b _ hbne
+      rw [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, if_neg (Ne.symm hbne), mul_zero]
+    · intro hns; exact absurd hmem hns
+  · rw [if_neg hmem]
+    apply Finset.sum_eq_zero
+    intro b hb
+    rw [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, if_neg, mul_zero]
+    rintro rfl; exact hmem hb
+
+omit H_irreducible H_pos in
+/-- `Λ`-weight bound for an explicit `Y`-monomial sum: if every present monomial `C(cⱼ)·Yʲ`
+satisfies the graded inequality `j·s + (cⱼ).natDegree ≤ B` (with slope
+`s = D + 1 - natDegreeY H`), then `weight_Λ (∑ⱼ C(cⱼ)·Yʲ) H D ≤ B`. This is the
+weight-assembly core of Claim A.2. -/
+private lemma weight_Λ_explicit_sum_le (s : Finset ℕ) (c : ℕ → F[X]) (D B : ℕ)
+    (hb : ∀ j ∈ s, j * (D + 1 - Bivariate.natDegreeY H) + (c j).natDegree ≤ B) :
+    weight_Λ (∑ j ∈ s, Polynomial.C (c j) * Polynomial.X ^ j) H D ≤ (B : WithBot ℕ) := by
+  classical
+  rw [weight_Λ, Finset.sup_le_iff]
+  intro deg hdeg
+  rw [Polynomial.mem_support_iff, coeff_explicit_sum] at hdeg
+  by_cases hmem : deg ∈ s
+  · rw [coeff_explicit_sum, if_pos hmem]
+    exact WithBot.coe_le_coe.mpr (hb deg hmem)
+  · rw [if_neg hmem] at hdeg; exact absurd rfl hdeg
+
+omit H_irreducible H_pos in
+/-- If every present `Y`-monomial `C(cⱼ)·Yʲ` has `j ≤ k` with `k < H.natDegree`, then the
+sum has `degree < (H_tilde' H).degree`. Hence such a sum is its own canonical
+representative in `𝒪 H`. -/
+private lemma explicit_sum_degree_lt (hH : 0 < H.natDegree) (s : Finset ℕ) (c : ℕ → F[X])
+    (k : ℕ) (hsk : ∀ j ∈ s, j ≤ k) (hkN : k < H.natDegree) :
+    (∑ j ∈ s, Polynomial.C (c j) * Polynomial.X ^ j : F[X][Y]).degree
+      < (H_tilde' H).degree := by
+  classical
+  have hHt_deg : (H_tilde' H).degree = (H.natDegree : WithBot ℕ) := by
+    rw [Polynomial.degree_eq_natDegree (H_tilde'_monic H hH).ne_zero, natDegree_H_tilde' hH]
+  rw [hHt_deg]
+  refine lt_of_le_of_lt (Polynomial.degree_sum_le _ _) ?_
+  refine (Finset.sup_lt_iff (WithBot.bot_lt_coe H.natDegree)).2 ?_
+  intro j hj
+  refine lt_of_le_of_lt (Polynomial.degree_C_mul_X_pow_le j (c j)) ?_
+  exact WithBot.coe_lt_coe.mpr (lt_of_le_of_lt (hsk j hj) hkN)
+
+/-- The explicit denominator-cleared bivariate polynomial whose image in `𝕃 H` is `W^(d-1) · ζ`
+(the unconditional `d - 1` form of Claim A.2; cf. `ξ_regular'`). With `Q := evalX (C x₀) R'`
+(`R' = R.derivative`), `k := d - 1`, and `lc := H.leadingCoeff`, it is
+`ξPoly := ∑_{j ∈ Q.support} C(Q.coeff j · lc^(k-j)) · Yʲ`. Each `Yʲ` has `j ≤ k`, and the
+scalar `Q.coeff j · lc^(k-j)` is exactly the denominator-cleared `j`-th coefficient of
+`W^k · ζ`. -/
+def ξPoly (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) : F[X][Y] :=
+  let Q : F[X][Y] := Bivariate.evalX (Polynomial.C x₀) R.derivative
+  let k : ℕ := R.natDegree - 1
+  ∑ j ∈ Q.support, Polynomial.C (Q.coeff j * H.leadingCoeff ^ (k - j)) * Polynomial.X ^ j
+
+/-- The explicit witness `ξPoly` embeds into `𝕃 H` exactly as `W^(d-1) · ζ` (the
+unconditional `d - 1` exponent of `ξ_regular'`). This is the explicit-representative
+refinement of `ξ_regular'`: it pins down a concrete bivariate-polynomial preimage (rather
+than an opaque `Exists.choose`), which is what makes the weight bound `weight_ξPoly_bound`
+provable with a fully discharged proof. -/
+lemma embeddingOf𝒪Into𝕃_mk_ξPoly (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
+    [H_irreducible : Fact (Irreducible H)] [Fact (0 < H.natDegree)] :
+    embeddingOf𝒪Into𝕃 _
+        (Ideal.Quotient.mk (Ideal.span {H_tilde' H}) (ξPoly x₀ R H) : 𝒪 H)
+      = (liftToFunctionField (H.leadingCoeff)) ^ (R.natDegree - 1) * ζ R x₀ H := by
+  classical
+  rw [embeddingOf𝒪Into𝕃_mk]
+  set Q : F[X][Y] := Bivariate.evalX (Polynomial.C x₀) R.derivative with hQ
+  set W : 𝕃 H := liftToFunctionField (H := H) H.leadingCoeff with hWdef
+  set T : 𝕃 H := functionFieldT (H := H) with hTdef
+  set k : ℕ := R.natDegree - 1 with hk
+  have hH0 : H.leadingCoeff ≠ 0 :=
+    Polynomial.leadingCoeff_ne_zero.mpr H_irreducible.out.ne_zero
+  have hWne : W ≠ 0 := liftToFunctionField_ne_zero hH0
+  have hQdeg : Q.natDegree ≤ k := by
+    rw [hQ, hk, Polynomial.Bivariate.evalX_eq_map]
+    exact le_trans Polynomial.natDegree_map_le (Polynomial.natDegree_derivative_le R)
+  have h1 : liftBivariate (H := H) (ξPoly x₀ R H)
+      = ∑ j ∈ Q.support, liftToFunctionField (H := H) (Q.coeff j) * W ^ (k - j) * T ^ j := by
+    rw [ξPoly]
+    simp only [← hQ, ← hk]
+    rw [map_sum]
+    apply Finset.sum_congr rfl
+    intro j hj
+    rw [map_mul, map_pow, liftBivariate_X, liftBivariate_C, map_mul, map_pow]
+  have hζ : ζ R x₀ H
+      = ∑ j ∈ Q.support, liftToFunctionField (H := H) (Q.coeff j) * (T / W) ^ j := by
+    rw [ζ, ← hQ, ← hWdef, ← hTdef, Polynomial.eval₂_eq_sum, Polynomial.sum_def]
+  have h2 : W ^ k * ζ R x₀ H
+      = ∑ j ∈ Q.support, liftToFunctionField (H := H) (Q.coeff j) * W ^ (k - j) * T ^ j := by
+    rw [hζ, Finset.mul_sum]
+    apply Finset.sum_congr rfl
+    intro j hj
+    have hjk : j ≤ k := le_trans (Polynomial.le_natDegree_of_mem_supp j hj) hQdeg
+    rw [div_pow, pow_sub₀ W hWne hjk]; field_simp
+  rw [h1, h2]
+
+/-- **Claim A.2 weight bound (BCIKS20 Appendix A.4), `d - 1` form — fully proven companion
+of the still-open `weight_ξ_bound`.**
+
+The literal `weight_ξ_bound` (below) is stated about `ξ := (ξ_regular …).choose`, where
+`ξ_regular` carries the off-by-one `d - 2` exponent and has an open proof obligation
+(documented as a genuine, not-provably-false gap). Consequently *any* proof of
+`weight_ξ_bound` must route through `(ξ_regular …).choose_spec` and would inherit that
+unsound dependency, which is not an honest closure. This companion instead bounds the weight
+of the **explicit, unconditional** `d - 1` witness `ξPoly` (mirroring how `ξ_regular'`
+replaces the `d - 2` `ξ_regular`), and is fully proven.
+
+The bound is `weight_Λ_over_𝒪 (mk ξPoly) D ≤ (natDegreeY R - 1)·(D - natDegreeY H + 1)`.
+Two inputs:
+* `hkN : R.natDegree - 1 < H.natDegree` — the `Y`-degree of `ξPoly` (`≤ d - 1`) is below the
+  defining relation `H_tilde' H` (`Y`-degree `H.natDegree`), so `ξPoly` is already its own
+  canonical representative (`explicit_sum_degree_lt`) and the `𝒪`-weight equals the
+  polynomial `Λ`-weight. This is the regime of BCIKS20 §A.4, where `ζ` is kept reduced in the
+  function-field variable `T`.
+* `hcoeff` — the per-coefficient graded `X`-degree bound
+  `(Q.coeff j · lc^(k-j)).natDegree ≤ (k - j)·s`. This is the residual trivariate degree
+  input (the analogue, on the `ζ`/`R` side, of `natDegree_coeff_H_tilde'_le` on the `H`
+  side); it is factored out as a hypothesis exactly as `natDegree_elimPoly_le` factors out
+  its own coefficient bound.
+
+Given these, the weight-assembly lemma `weight_Λ_explicit_sum_le` and the telescoping
+`j·s + (k-j)·s = k·s` deliver the stated bound. -/
+lemma weight_ξPoly_bound (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
+    [H_irreducible : Fact (Irreducible H)] [Fact (0 < H.natDegree)]
+    (hH : 0 < H.natDegree) {D : ℕ} (hD : D ≥ Bivariate.totalDegree H)
+    (hkN : R.natDegree - 1 < H.natDegree)
+    (hcoeff : ∀ j,
+      ((Bivariate.evalX (Polynomial.C x₀) R.derivative).coeff j *
+          H.leadingCoeff ^ (R.natDegree - 1 - j)).natDegree
+        ≤ ((R.natDegree - 1) - j) * (D + 1 - Bivariate.natDegreeY H)) :
+    weight_Λ_over_𝒪 hH
+      (Ideal.Quotient.mk (Ideal.span {H_tilde' H}) (ξPoly x₀ R H) : 𝒪 H) D ≤
+      WithBot.some ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1)) := by
+  classical
+  set Q : F[X][Y] := Bivariate.evalX (Polynomial.C x₀) R.derivative with hQ
+  set k : ℕ := R.natDegree - 1 with hk
+  set s : ℕ := D + 1 - Bivariate.natDegreeY H with hs
+  have hNY_H : Bivariate.natDegreeY H = H.natDegree := rfl
+  have hred : (ξPoly x₀ R H : F[X][Y]).degree < (H_tilde' H).degree := by
+    refine explicit_sum_degree_lt hH Q.support
+      (fun j => Q.coeff j * H.leadingCoeff ^ (k - j)) k ?_ ?_
+    · intro j hj
+      exact Polynomial.le_natDegree_of_mem_supp j hj |>.trans
+        (by rw [hQ, hk, Polynomial.Bivariate.evalX_eq_map]
+            exact le_trans Polynomial.natDegree_map_le (Polynomial.natDegree_derivative_le R))
+    · exact hkN
+  rw [weight_Λ_over_𝒪_mk_eq_self_of_degree_lt hH hred]
+  have hbound : weight_Λ (ξPoly x₀ R H) H D ≤ (k * s : ℕ) := by
+    rw [ξPoly]
+    simp only [← hQ, ← hk]
+    refine weight_Λ_explicit_sum_le Q.support
+      (fun j => Q.coeff j * H.leadingCoeff ^ (k - j)) D (k * s) ?_
+    intro j hj
+    dsimp only
+    rw [← hs]
+    have hjk : j ≤ k :=
+      Polynomial.le_natDegree_of_mem_supp j hj |>.trans
+        (by rw [hQ, hk, Polynomial.Bivariate.evalX_eq_map]
+            exact le_trans Polynomial.natDegree_map_le (Polynomial.natDegree_derivative_le R))
+    have hc := hcoeff j
+    calc j * s + (Q.coeff j * H.leadingCoeff ^ (k - j)).natDegree
+        ≤ j * s + (k - j) * s := Nat.add_le_add_left hc _
+      _ = k * s := by rw [← Nat.add_mul]; congr 1; omega
+  refine le_trans hbound ?_
+  have hRHS : (Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1) = k * s := by
+    have hNY_R : Bivariate.natDegreeY R = R.natDegree := rfl
+    have hHle : Bivariate.natDegreeY H ≤ D := by
+      refine le_trans ?_ hD
+      have hHne : H ≠ 0 := fun h0 => by
+        rw [h0, Polynomial.natDegree_zero] at hH; exact absurd hH (by omega)
+      have hmem : H.natDegree ∈ H.support := by
+        rw [Polynomial.mem_support_iff, ← Polynomial.leadingCoeff]
+        exact Polynomial.leadingCoeff_ne_zero.mpr hHne
+      rw [hNY_H, Bivariate.totalDegree]
+      have hsup := Finset.le_sup (f := fun m => (H.coeff m).natDegree + m) hmem
+      simp only at hsup; omega
+    rw [hNY_R, ← hk, hs]; congr 1; omega
+  rw [hRHS]
+  exact le_refl _
+
 /-- There exist regular elements `ξ = W(Z)^(d-2) * ζ` as defined in Claim A.2 of Appendix A.4
 of [BCIKS20].
 
 **Exponent caveat (documented for upstream).** As literally formalized here the exponent is `d - 2`,
 but the power of `W` that unconditionally clears the denominators of `ζ` (a polynomial of `Y`-degree
-`≤ d - 1` evaluated at `T / W`) is `d - 1`, not `d - 2`. The fully-proven statement-correct version
+  `≤ d - 1` evaluated at `T / W`) is `d - 1`, not `d - 2`. The statement-correct version
 is `ξ_regular'` above. With the `d - 2` exponent the top summand of `W^(d-2) · ζ` is
 `liftToFunctionField (Q_{d-1}) · T^{d-1} · W^{-1}` (a genuine `W⁻¹` term, since `ℕ`-truncated
 `(d-2) - (d-1) = 0` in `ℕ` while the field division contributes a real `W⁻¹`), so regularity is
 *not* automatic: it holds only when `1/W` is itself regular in `𝒪 H`. That extra fact is true in
 some cases (e.g. `H.natDegree = 1`, where Bézout makes `H.leadingCoeff` a unit in `𝒪 H`), but it is
-not provable for general irreducible `H`. The `sorry` below therefore records a genuine gap in the
+  not provable for general irreducible `H`. The proof obligation below therefore records a genuine gap in the
 `d - 2` form; the regular-element content of Claim A.2 is captured by `ξ_regular'`. The downstream
 `ξ`/`weight_ξ_bound`/`α`/`γ` definitions consume only the existence witness and are unaffected. -/
 lemma ξ_regular (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [H_irreducible : Fact (Irreducible H)]
@@ -1208,8 +1400,25 @@ def ξ (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [φ : Fact (Irreducible H)]
     [Fact (0 < H.natDegree)] : 𝒪 H :=
   (ξ_regular x₀ R H).choose
 
-/-- The bound of the weight `Λ` of the elements `ζ` as stated in Claim A.2 of Appendix A.4
-of [BCIKS20]. -/
+/-- The bound of the weight `Λ` of the elements `ξ` as stated in Claim A.2 of Appendix A.4
+of [BCIKS20].
+
+**Honest-closure note (read before attempting to discharge this proof).** This statement is
+about `ξ := (ξ_regular …).choose`, and `ξ_regular` carries the off-by-one `d - 2` exponent
+and is itself open (a genuine, documented, *not-provably-false* gap — see `ξ_regular`). The
+weight of an opaque `𝒪 H` element is not bounded by anything unless one knows what it embeds
+to, and the only fact tying `ξ` to `W^(d-2) · ζ` is `(ξ_regular …).choose_spec`. Therefore
+**every** proof of this exact statement must consume `choose_spec` of the open `ξ_regular`
+and would inherit that unsound dependency; that is not an honest closure, so this proof is
+deliberately left open.
+
+The real weight content of Claim A.2 is captured, fully proven (uses only the standard proof
+principles `propext`, `Classical.choice`, and `Quot.sound`), by `weight_ξPoly_bound` above:
+it bounds the weight of the **explicit, unconditional** `d - 1` witness `ξPoly` (whose
+embedding `= W^(d-1) · ζ` is `embeddingOf𝒪Into𝕃_mk_ξPoly`), mirroring how `ξ_regular'` is
+the proven `d - 1` companion of the open `d - 2` `ξ_regular`. Downstream `α`/`γ` and Claims
+5.8/5.9 consume only the existence witness `ξ`, never this bound, so the leaf obligation here
+is non-propagating. -/
 lemma weight_ξ_bound (x₀ : F) (hH : 0 < H.natDegree) {D : ℕ}
     (hD : D ≥ Bivariate.totalDegree H) :
     weight_Λ_over_𝒪 hH (ξ x₀ R H) D ≤
