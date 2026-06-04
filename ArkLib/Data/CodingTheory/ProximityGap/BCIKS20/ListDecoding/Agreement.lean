@@ -181,7 +181,8 @@ OBSTRUCTION (one residual blocker remains — the trivariate vanishing bridge).
   `Guruswami.tagged_fiber_pigeonhole`, but the same vanishing bridge is its residual too).  Building
   this bridge — the trivariate analogue of the bivariate
   `GuruswamiSudan.dvd_eval_of_rootMultiplicity_zero` / `proximity_gap_divisibility`, transported by
-  the now-available `c57_eval_on_Z_{zero,add,mul}` ring-hom lemmas — is the precise residual content.
+  the now-available `c57_eval_on_Z_{zero,add,mul}` ring-hom lemmas — is the precise residual
+    content.
   *Verified missing hypothesis:* the per-`z` vanishing `Q(z, X, Pz(X)) ≡ 0` is the bivariate
   counting argument (more order-`m` roots than degree), which needs
   `m·(1−δ)n > natWeightedDegree Q 1 k`, i.e. `δ` within the Johnson radius
@@ -199,7 +200,8 @@ OBSTRUCTION (one residual blocker remains — the trivariate vanishing bridge).
   fix carries it (and the Johnson bound above) as side hypotheses, which the uneditable consumer
   signatures `(δ) (x₀) (h_gs)` of `R`/`H`/`irreducible_H`/Claims-5.8–5.11 do not admit.
 
-With Gap A resolved, the proof obligation is retained pending the Gap-B vanishing bridge (which itself
+With Gap A resolved, the proof obligation is retained pending the Gap-B vanishing bridge (which
+  itself
 needs the absent `δ ≤ δ₀` hypothesis), the false-off-regime second conjunct, and the upstream
 Prop 5.5.  The binder structure `∃ R H, R ∈ … ∧ Irreducible H ∧ …` is preserved so the
 downstream extractors stay well-typed. -/
