@@ -367,6 +367,60 @@ theorem probEvent_simulateQ_run'_bind_trailing_le {α β γ : Type}
         gcongr; exact tsub_le_self
     _ = Pr[(p ∘ fun x => x.1) | (pure (h a, s') : ProbComp (β × σ))] := one_mul _
 
+/-- **Failure-monotone trailing `Option.elimM` drop, transported across `simulateQ … |>.run'`.**
+A specialization of the trailing-bind transport to the `OptionT`/`Option.elimM` shape of
+`Reduction.run`: after producing `some a` from `ma`, the soundness game runs a trailing
+(possibly-failing, possibly-`none`-returning) `Option.elimM`-continuation whose result is the final
+output, but the flip event reads only `h a` (a function of the *prefix* `a`).  Replacing the entire
+continuation by `pure (some (h a))` (always success) can only *raise* the event probability of an
+event that is `False` on `none`: every failure / `none` outcome of the continuation makes the event
+`False`, so dropping it only adds success mass.  This is the `Option`-level analogue of
+`probEvent_simulateQ_run'_bind_trailing_le`, used to peel the verifier/`getM`/later-round tail off
+the soundness game while keeping the shared `impl`/state thread. -/
+theorem probEvent_simulateQ_run'_elimM_trailing_le {α β γ : Type}
+    (so : QueryImpl spec (StateT σ ProbComp)) (s : σ)
+    (ma : OracleComp spec (Option α)) (k : α → OracleComp spec (Option γ))
+    (h : α → β) (p : β → Prop) :
+    Pr[fun o => o.elim False p |
+        (simulateQ so (ma >>= fun oa => Option.elimM (pure oa) (pure none)
+          (fun a => k a >>= fun _ => pure (some (h a))))).run' s]
+      ≤ Pr[fun o => o.elim False p |
+          (simulateQ so (ma >>= fun oa => pure (Option.map h oa))).run' s] := by
+  simp only [simulateQ_bind]
+  rw [StateT.run'_eq, StateT.run'_eq, StateT.run_bind, StateT.run_bind, probEvent_map,
+    probEvent_map]
+  refine probEvent_bind_mono (fun pr _ => ?_)
+  obtain ⟨oa, s'⟩ := pr
+  cases oa with
+  | none =>
+      simp only [Option.elimM, Option.elim_none, simulateQ_pure, StateT.run_pure,
+        pure_bind, Option.map_none, le_refl]
+  | some a =>
+      simp only [Option.elimM, Option.elim_some, simulateQ_bind, simulateQ_pure, StateT.run_pure,
+        StateT.run_bind, pure_bind, Option.map_some]
+      -- LHS: run `k a`, discard, return `some (h a)`. RHS: `pure (some (h a))`.
+      -- The event `(·.elim False p ∘ fst)` reads `h a` (constant in `k a`'s output), so the
+      -- trailing `k a`-run only adds failure mass.
+      have hconst : Pr[(fun o => Option.elim o False p) ∘ (fun x => x.1) |
+            (simulateQ so (k a)).run s' >>= fun q => (pure (some (h a), q.2) : ProbComp (Option β × σ))]
+          = (1 - Pr[⊥ | (simulateQ so (k a)).run s'])
+            * Pr[(fun o => Option.elim o False p) ∘ (fun x => x.1) |
+                (pure (some (h a), s') : ProbComp (Option β × σ))] :=
+        probEvent_bind_of_const _ (fun q _ => by
+          rw [probEvent_pure_eq_indicator, probEvent_pure_eq_indicator]
+          simp only [Set.indicator, Set.mem_setOf_eq, Function.comp]
+          rfl)
+      calc Pr[(fun o => Option.elim o False p) ∘ (fun x => x.1) |
+              (simulateQ so (k a)).run s' >>= fun q => (pure (some (h a), q.2) : ProbComp (Option β × σ))]
+          = (1 - Pr[⊥ | (simulateQ so (k a)).run s'])
+              * Pr[(fun o => Option.elim o False p) ∘ (fun x => x.1) |
+                  (pure (some (h a), s') : ProbComp (Option β × σ))] := hconst
+        _ ≤ 1 * Pr[(fun o => Option.elim o False p) ∘ (fun x => x.1) |
+                  (pure (some (h a), s') : ProbComp (Option β × σ))] := by
+              gcongr; exact tsub_le_self
+        _ = Pr[(fun o => Option.elim o False p) ∘ (fun x => x.1) |
+                  (pure (some (h a), s') : ProbComp (Option β × σ))] := one_mul _
+
 end StateTTransport
 
 omit [∀ i, SampleableType (pSpec.Challenge i)] init impl in
