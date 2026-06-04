@@ -509,12 +509,6 @@ Note: Here `F[X][Y]` is `F[Z][T]`. -/
 noncomputable def S_β {H : F[X][Y]} (β : 𝒪 H) : Set F :=
   {z : F | ∃ root : rationalRoot (H_tilde' H) z, (π_z z root) β = 0}
 
-/-- The statement of Lemma A.1 in Appendix A.3 of [BCIKS20]. -/
-lemma Lemma_A_1 {H : F[X][Y]} (hH : 0 < H.natDegree) (β : 𝒪 H) (D : ℕ)
-    (hD : D ≥ Bivariate.totalDegree H)
-    (S_β_card : Set.ncard (S_β β) > (weight_Λ_over_𝒪 hH β D) * H.natDegree) :
-  embeddingOf𝒪Into𝕃 _ β = 0 := by sorry
-
 /-- The embeddining of the coefficients of a bivarite polynomial into the bivariate polynomial ring
 with rational coefficients. -/
 noncomputable def coeffAsRatFunc : F[X] →+* Polynomial (RatFunc F) :=
@@ -584,6 +578,93 @@ noncomputable def fieldTo𝕃 {H : F[X][Y]} : F →+* 𝕃 H :=
 noncomputable def polyToPowerSeries𝕃 (H : F[X][Y]) (P : F[X][Y]) : PowerSeries (𝕃 H) :=
   PowerSeries.mk <| fun n => liftToFunctionField (P.coeff n)
 
+/-! ### Lemma A.1 (BCIKS20 Appendix A.3) -/
+
+/-- The bivariate-lift hom `liftBivariate` sends a representative to zero in `𝕃` exactly when
+`H_tilde H` divides its image in `(RatFunc F)[Y]`. -/
+lemma liftBivariate_eq_zero_iff_dvd {H : F[X][Y]} (p : F[X][Y]) :
+    liftBivariate (H := H) p = 0 ↔ H_tilde H ∣ p.map univPolyHom := by
+  rw [liftBivariate, RingHom.comp_apply, Ideal.Quotient.eq_zero_iff_mem,
+      Ideal.mem_span_singleton]
+  exact Iff.rfl
+
+/-- `H_tilde' H` has `Y`-degree equal to `H.natDegree` when `H` has positive `Y`-degree
+(it is monic of that degree). -/
+lemma natDegree_H_tilde' {H : F[X][Y]} (hH : 0 < H.natDegree) :
+    (H_tilde' H).natDegree = H.natDegree := by
+  classical
+  have hdeg : H.natDegree ≠ 0 := Nat.ne_of_gt hH
+  rw [H_tilde', if_neg hdeg]
+  refine Polynomial.natDegree_eq_of_degree_eq_some ?_
+  rw [Polynomial.degree_add_eq_left_of_degree_lt]
+  · simp
+  · refine lt_of_le_of_lt (Polynomial.degree_sum_le _ _) ?_
+    rw [Polynomial.degree_X_pow]
+    refine (Finset.sup_lt_iff (WithBot.bot_lt_coe H.natDegree)).2 ?_
+    intro i hi
+    exact (Polynomial.degree_C_mul_X_pow_le i _).trans_lt
+      (WithBot.coe_lt_coe.2 (Finset.mem_range.mp hi))
+
+/-- The monicization `H_tilde H` over `RatFunc F` has `Y`-degree equal to `H.natDegree`. -/
+lemma natDegree_H_tilde {H : F[X][Y]} (hH : 0 < H.natDegree) :
+    (H_tilde H).natDegree = H.natDegree := by
+  have hinj : Function.Injective (univPolyHom : F[X] →+* RatFunc F) := by
+    rw [univPolyHom]; exact IsFractionRing.injective _ _
+  rw [← H_tilde_equiv_H_tilde', Polynomial.natDegree_map_eq_of_injective hinj,
+      natDegree_H_tilde' hH]
+
+/-- The degree of `H_tilde H` (over `RatFunc F`) equals the degree of `H_tilde' H` (over `F[X]`). -/
+lemma degree_H_tilde_eq {H : F[X][Y]} (hH : 0 < H.natDegree) :
+    (H_tilde H).degree = (H_tilde' H).degree := by
+  rw [← H_tilde_equiv_H_tilde', (H_tilde'_monic H hH).degree_map univPolyHom]
+
+/-- The bridge: if the canonical representative of `β` is zero, then `β` embeds to `0` in `𝕃`. -/
+lemma embeddingOf𝒪Into𝕃_eq_zero_of_canonicalRep_eq_zero {H : F[X][Y]} (hH : 0 < H.natDegree)
+    (β : 𝒪 H) (hP : canonicalRepOf𝒪 hH β = 0) :
+    embeddingOf𝒪Into𝕃 _ β = 0 := by
+  conv_lhs => rw [← mk_canonicalRepOf𝒪 hH β, embeddingOf𝒪Into𝕃_mk]
+  rw [hP, liftBivariate_eq_zero_iff_dvd]
+  simp
+
+/-- The converse direction of the bridge: if `β` embeds to `0`, its canonical representative is
+`0`. This uses that `H_tilde H` is monic of degree `H.natDegree`, strictly above the degree of
+any canonical representative. -/
+lemma canonicalRep_eq_zero_of_embeddingOf𝒪Into𝕃_eq_zero {H : F[X][Y]} (hH : 0 < H.natDegree)
+    (β : 𝒪 H) (hemb : embeddingOf𝒪Into𝕃 _ β = 0) :
+    canonicalRepOf𝒪 hH β = 0 := by
+  set P := canonicalRepOf𝒪 hH β with hP_def
+  have hmk : Ideal.Quotient.mk (Ideal.span {H_tilde' H}) P = β := mk_canonicalRepOf𝒪 hH β
+  have hzero : liftBivariate (H := H) P = 0 := by
+    have : embeddingOf𝒪Into𝕃 _ β = liftBivariate (H := H) P := by
+      conv_lhs => rw [← hmk, embeddingOf𝒪Into𝕃_mk]
+    rw [← this]; exact hemb
+  rw [liftBivariate_eq_zero_iff_dvd] at hzero
+  have hdeg_lt : (P.map univPolyHom).degree < (H_tilde H).degree := by
+    refine lt_of_le_of_lt Polynomial.degree_map_le ?_
+    rw [degree_H_tilde_eq hH]
+    exact canonicalRepOf𝒪_degree_lt hH β
+  have hmap_zero : P.map univPolyHom = 0 :=
+    Polynomial.eq_zero_of_dvd_of_degree_lt hzero hdeg_lt
+  have hinj : Function.Injective (Polynomial.map (univPolyHom : F[X] →+* RatFunc F)) := by
+    apply Polynomial.map_injective
+    rw [univPolyHom]
+    exact IsFractionRing.injective _ _
+  exact hinj (by simpa using hmap_zero)
+
+/-- The statement of Lemma A.1 in Appendix A.3 of [BCIKS20].
+
+Statement repair (necessary, documented for upstream): the section context provides only
+`[Field F]`; this lemma additionally requires `[Fact (Irreducible H)]`. The argument eliminates
+the `Y` variable via the resultant `R(X) := Res_Y(H_tilde' H, canonicalRep)`; ruling out the
+degenerate case `R = 0` requires `H_tilde H` to be irreducible over `RatFunc F` (which follows
+from `Irreducible H`), since otherwise a nonzero canonical representative of lower `Y`-degree could
+share a factor with a reducible `H_tilde H` while still embedding to a nonzero element of `𝕃`,
+falsifying the conclusion. `Lemma_A_1` has no consumers in ArkLib, so adding the hypothesis is
+non-breaking; all use sites in BCIKS20 §A take `H` irreducible. -/
+lemma Lemma_A_1 {H : F[X][Y]} [Fact (Irreducible H)] (hH : 0 < H.natDegree) (β : 𝒪 H) (D : ℕ)
+    (hD : D ≥ Bivariate.totalDegree H)
+    (S_β_card : Set.ncard (S_β β) > (weight_Λ_over_𝒪 hH β D) * H.natDegree) :
+  embeddingOf𝒪Into𝕃 _ β = 0 := by sorry
 
 end
 
