@@ -1029,6 +1029,179 @@ theorem iterated_fold_succ_last (i : Fin ℓ) (n : ℕ)
   rw [Fin.dfoldl_succ_last]
   rfl
 
+set_option maxHeartbeats 1000000 in
+seal sDomain qMap_total_fiber normalizedW intermediateEvaluationPoly in
+/-- Generic peel of the **last** fold step from `iterated_fold`, for a general start
+index `i : Fin r` (the `Fin ℓ`-restricted `iterated_fold_succ_last` is the `Fin ℓ`
+specialization). Folding `n + 1` steps equals one single-step `fold` (at level `i + n`,
+with the last challenge `r_challenges (last n)`) applied to the `n`-step iterated fold
+over the truncated challenges. This is the structural `Fin.dfoldl_succ_last` peel. -/
+theorem iterated_fold_succ_last_gen (i : Fin r) (n : ℕ)
+    (h_steps : n + 1 < ℓ + 1)
+    (h_i_add_steps : i.val + (n + 1) < ℓ + 𝓡)
+    (f : sDomain 𝔽q β h_ℓ_add_R_rate (i := i) → L)
+    (r_challenges : Fin (n + 1) → L)
+    (y : sDomain 𝔽q β h_ℓ_add_R_rate
+      (i := ⟨i.val + (n + 1), Nat.lt_trans h_i_add_steps h_ℓ_add_R_rate⟩)) :
+    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
+      (steps := ⟨n + 1, h_steps⟩) h_i_add_steps f r_challenges y =
+    fold 𝔽q β (i := ⟨i.val + n, by omega⟩)
+      (h_i := by simp only; omega)
+      (f := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
+        (steps := ⟨n, by omega⟩)
+        (by simp only; omega) f
+        (fun j => r_challenges j.castSucc))
+      (r_chal := r_challenges (Fin.last n))
+      ⟨y.val, by have hy := y.property; simpa only [Nat.add_assoc] using hy⟩ := by
+  unfold iterated_fold
+  rw [Fin.dfoldl_succ_last]
+  rfl
+
+set_option maxHeartbeats 1000000 in
+seal sDomain qMap_total_fiber normalizedW intermediateEvaluationPoly in
+/-- Congruence for `fold` across a propositional start-index equality: aligning the two
+applications by `Fin.ext`/`Subtype.ext` (proof-irrelevant `Fin`/membership components). -/
+theorem fold_congr (i₁ i₂ : Fin r) (hidx : i₁.val = i₂.val)
+    (h₁ : i₁.val + 1 < ℓ + 𝓡) (h₂ : i₂.val + 1 < ℓ + 𝓡)
+    (f₁ : sDomain 𝔽q β h_ℓ_add_R_rate (i := i₁) → L)
+    (f₂ : sDomain 𝔽q β h_ℓ_add_R_rate (i := i₂) → L)
+    (hf : ∀ (x₁ : sDomain 𝔽q β h_ℓ_add_R_rate (i := i₁))
+            (x₂ : sDomain 𝔽q β h_ℓ_add_R_rate (i := i₂)),
+            x₁.val = x₂.val → f₁ x₁ = f₂ x₂)
+    (c : L)
+    (y₁ : sDomain 𝔽q β h_ℓ_add_R_rate (i := ⟨i₁.val + 1, by omega⟩))
+    (y₂ : sDomain 𝔽q β h_ℓ_add_R_rate (i := ⟨i₂.val + 1, by omega⟩))
+    (hy : y₁.val = y₂.val) :
+    fold 𝔽q β (i := i₁) (h_i := h₁) f₁ c y₁ =
+      fold 𝔽q β (i := i₂) (h_i := h₂) f₂ c y₂ := by
+  have hi : i₁ = i₂ := Fin.ext hidx
+  subst hi
+  have hyeq : y₁ = y₂ := Subtype.ext hy
+  subst hyeq
+  have hfeq : f₁ = f₂ := by funext x; exact hf x x rfl
+  subst hfeq
+  rfl
+
+set_option maxHeartbeats 1000000 in
+seal sDomain qMap_total_fiber normalizedW intermediateEvaluationPoly in
+/-- Apply a `cast` of an `sDomain`-indexed function to a point at the (equal-`.val`) other
+index: the cast on the function type is absorbed into lifting the argument's underlying value. -/
+theorem sDomain_fn_cast_apply (a b : ℕ) (ha : a < r) (hb : b < r) (h : a = b)
+    {hcast : (sDomain 𝔽q β h_ℓ_add_R_rate (i := ⟨a, ha⟩) → L)
+           = (sDomain 𝔽q β h_ℓ_add_R_rate (i := ⟨b, hb⟩) → L)}
+    (g : sDomain 𝔽q β h_ℓ_add_R_rate (i := ⟨a, ha⟩) → L)
+    (y : sDomain 𝔽q β h_ℓ_add_R_rate (i := ⟨b, hb⟩))
+    (z : sDomain 𝔽q β h_ℓ_add_R_rate (i := ⟨a, ha⟩))
+    (hz : z.val = y.val) :
+    cast hcast g y = g z := by
+  subst h
+  have : y = z := Subtype.ext hz.symm
+  subst this
+  simp only [cast_eq]
+
+set_option maxHeartbeats 4000000 in
+seal sDomain qMap_total_fiber normalizedW intermediateEvaluationPoly in
+/-- Cast-free core of `iterated_fold_transitivity`: both folds land in the **same** index
+type `⟨i + s₁ + s₂, _⟩`, compared pointwise at a `y` whose underlying value matches. The
+`Fin.dfoldl` append/split law, by induction on the second segment `s2`. -/
+lemma iterated_fold_transitivity_castfree
+    (i : Fin r) (s1 s2 : ℕ)
+    (hs1 : s1 < ℓ + 1) (hs2 : s2 < ℓ + 1) (hs12 : s1 + s2 < ℓ + 1)
+    (h_bounds : i.val + s1 + s2 ≤ ℓ)
+    (f : sDomain 𝔽q β h_ℓ_add_R_rate (i := i) → L)
+    (r_challenges₁ : Fin s1 → L) (r_challenges₂ : Fin s2 → L)
+    (y : sDomain 𝔽q β h_ℓ_add_R_rate (i := ⟨i.val + s1 + s2, by omega⟩)) :
+    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := ⟨i.val + s1, by omega⟩) (steps := ⟨s2, hs2⟩)
+      (h_i_add_steps := by simp only; have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡); omega)
+      (iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := ⟨s1, hs1⟩)
+        (h_i_add_steps := by simp only; have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡); omega) f r_challenges₁) r_challenges₂ y =
+    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
+      (steps := ⟨s1 + s2, hs12⟩)
+      (h_i_add_steps := by simp only; have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡); omega)
+      f (Fin.append r_challenges₁ r_challenges₂)
+      ⟨y.val, by have hy := y.property; simpa only [Nat.add_assoc] using hy⟩ := by
+  induction s2 with
+  | zero =>
+    -- LHS: the outer 0-step fold collapses to its init.
+    conv_lhs => unfold iterated_fold; rw [Fin.dfoldl_zero]
+    -- Both sides become `Fin.dfoldl s1 …` over the same motive (`s1 + 0 ≡ s1` defeq); the
+    -- challenge functions agree since `Fin.append r₁ r₂ j = r₁ j` for `j : Fin (s1 + 0)`.
+    conv_rhs => unfold iterated_fold
+    have happ : (Fin.append r_challenges₁ r_challenges₂ : Fin (s1 + 0) → L) = r_challenges₁ := by
+      funext j
+      rw [Fin.append_right_nil r_challenges₁ r_challenges₂ rfl]
+      rfl
+    rw [happ]
+    rfl
+  | succ n ih =>
+    -- Peel the last step of the LHS via the generic `Fin r` peel.
+    rw [iterated_fold_succ_last_gen 𝔽q β (i := ⟨i.val + s1, by
+          apply Nat.lt_of_le_of_lt (m := ℓ) (by omega) (ℓ_lt_r (h_ℓ_add_R_rate := h_ℓ_add_R_rate))⟩)
+        (n := n)
+        (h_steps := by omega)
+        (h_i_add_steps := by simp only; have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡); omega)]
+    -- Peel the RHS, viewing `⟨s1+(n+1)⟩` as `⟨(s1+n)+1⟩` (defeq via `Nat.add_succ`). The
+    -- equation's LHS is stated as the goal's RHS term verbatim so `rw [hrhs]` matches; the
+    -- `iterated_fold_succ_last_gen` proof goes through by defeq (`s1+(n+1) ≡ (s1+n)+1`).
+    have hrhs :
+        iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
+          (steps := ⟨s1 + (n + 1), hs12⟩)
+          (by simp only; have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡); omega)
+          f (Fin.append r_challenges₁ r_challenges₂)
+          ⟨y.val, by have hy := y.property; simpa only [Nat.add_assoc] using hy⟩ =
+        fold 𝔽q β (i := ⟨i.val + (s1 + n), by omega⟩)
+          (h_i := by simp only; have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡); omega)
+          (f := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
+            (steps := ⟨s1 + n, by omega⟩)
+            (by simp only; have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡); omega) f
+            (fun j => (Fin.append r_challenges₁ r_challenges₂) j.castSucc))
+          (r_chal := (Fin.append r_challenges₁ r_challenges₂) (Fin.last (s1 + n)))
+          ⟨y.val, by have hy := y.property; simpa only [Nat.add_assoc] using hy⟩ :=
+      iterated_fold_succ_last_gen 𝔽q β (i := i) (n := s1 + n)
+        (h_steps := by omega)
+        (h_i_add_steps := by have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡); omega)
+        (f := f)
+        (r_challenges := (Fin.append r_challenges₁ r_challenges₂ : Fin (s1 + (n + 1)) → L))
+        (y := ⟨y.val, by have hy := y.property; simpa only [Nat.add_assoc] using hy⟩)
+    rw [hrhs]
+    -- The two `fold`s are at the same level (`(i+s1)+n ≡ i+(s1+n)`). Reconcile the last
+    -- challenge `r₂ (last n) = (append r₁ r₂) (last (s1+n))` and the inner fold (via the IH).
+    have happ_last :
+        (Fin.append r_challenges₁ r_challenges₂ : Fin (s1 + (n + 1)) → L) (Fin.last (s1 + n)) =
+          r_challenges₂ (Fin.last n) := by
+      have h := Fin.append_right r_challenges₁ r_challenges₂ (Fin.last n)
+      rw [← h]
+      rfl
+    -- Truncation of the appended challenge agrees with appending the truncated tail.
+    have happ_trunc :
+        (fun j : Fin (s1 + n) =>
+            (Fin.append r_challenges₁ r_challenges₂ : Fin (s1 + (n + 1)) → L) j.castSucc) =
+          Fin.append r_challenges₁ (fun j => r_challenges₂ j.castSucc) := by
+      funext j
+      refine Fin.addCases (fun l => ?_) (fun rr => ?_) j
+      · rw [Fin.append_left]
+        rw [show (Fin.castAdd n l : Fin (s1 + n)).castSucc
+              = (Fin.castAdd (n + 1) l : Fin (s1 + (n + 1))) from by apply Fin.ext; simp]
+        rw [Fin.append_left]
+      · rw [Fin.append_right]
+        rw [show (Fin.natAdd s1 rr : Fin (s1 + n)).castSucc
+              = (Fin.natAdd s1 rr.castSucc : Fin (s1 + (n + 1))) from by apply Fin.ext; simp]
+        rw [Fin.append_right]
+    rw [happ_last, happ_trunc]
+    apply fold_congr 𝔽q β (hidx := by simp only; omega)
+    · -- hf: pointwise inner-fold equality via the IH
+      intro x₁ x₂ hx
+      rw [ih (by omega) (by omega) (by omega) (fun j => r_challenges₂ j.castSucc)
+        ⟨x₁.val, by have := x₁.property; simpa only [Nat.add_assoc] using this⟩]
+      congr 1
+      apply Subtype.ext
+      simpa only using hx
+    · -- hy
+      rfl
+
+set_option maxHeartbeats 4000000 in
+seal sDomain qMap_total_fiber normalizedW intermediateEvaluationPoly in
 /--
 Transitivity of iterated_fold : folding for `steps₁` and then for `steps₂`
 equals folding for `steps₁ + steps₂` with concatenated challenges.
@@ -1064,18 +1237,23 @@ lemma iterated_fold_transitivity
     lhs = by
       simp only [←Nat.add_assoc] at ⊢ rhs
       exact rhs := by
-  -- PROOF APPROACH (documented; not yet closed). After `simp only`, the goal is the
-  -- `Fin.dfoldl` append/split law:
-  --   `iterated_fold (i+s₁) s₂ (iterated_fold i s₁ f r₁) r₂`
-  --     = cast (iterated_fold i (s₁+s₂) f (Fin.append r₁ r₂)).
-  -- Induct on `s₂ := steps₂.val` (via `obtain ⟨s2, hs2⟩ := steps₂`). The base case needs
-  -- `Fin.dfoldl_zero` (LHS) + `Fin.append` of an empty tail + the `⟨s₁+0,_⟩ ≃ steps₁` cast.
-  -- The succ case peels the last step on BOTH sides and consumes the IH on the truncated
-  -- `Fin.append r₁ (r₂ ∘ castSucc)`; the heavy part is the dependent-cast/`Fin.append`
-  -- index bookkeeping under the `Fin (ℓ+1)` packaging. NOTE: unlike Lemma 4.9, the start
-  -- index here is a general `i : Fin r` (not `Fin ℓ`), so `iterated_fold_succ_last` (which
-  -- requires `Fin ℓ`) does NOT directly apply — a generic `Fin.dfoldl`-level peel is needed.
-  sorry
+  simp only
+  funext y
+  -- Reduce the LHS to the cast-free core (`iterated_fold_transitivity_castfree`).
+  rw [iterated_fold_transitivity_castfree 𝔽q β i steps₁.val steps₂.val steps₁.isLt steps₂.isLt
+    (by apply Nat.lt_succ_of_le; rw [Nat.add_assoc] at h_bounds;
+        exact Nat.le_of_add_left_le h_bounds)
+    h_bounds f r_challenges₁ r_challenges₂ y]
+  -- The RHS still carries the `id (h.mp …)` transport on the function type. Normalize
+  -- `id (Eq.mp h ·)` to `cast h ·` with a *targeted* `conv` (avoids traversing the heavy
+  -- fold term, which a full `simp only` would do), then discharge the `cast` pointwise.
+  conv_rhs => rw [id_eq, eq_mp_eq_cast]
+  exact Eq.symm (sDomain_fn_cast_apply 𝔽q β
+    (a := i.val + (steps₁.val + steps₂.val))
+    (b := i.val + steps₁.val + steps₂.val)
+    (ha := by omega) (hb := by omega) (h := by omega) (g := _) (y := _)
+    (z := ⟨y.val, by have := y.property; simpa only [Nat.add_assoc] using this⟩)
+    (hz := rfl))
 
 /-- Tensor product of challenge vectors : for a local fold length `steps`,
 ⨂_{j=0}^{steps-1}(1-r_j, r_j). -/
