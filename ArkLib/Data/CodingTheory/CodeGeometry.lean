@@ -19,6 +19,7 @@ noncomputable def emb (w : ι → α) : ι × α → ℝ :=
 noncomputable def codeInner (u v : ι → α) : ℝ := ∑ p : ι × α, emb u p * emb v p
 def agree (u v : ι → α) : ℕ := (Finset.univ.filter (fun i => u i = v i)).card
 
+omit [Fintype ι] [DecidableEq ι] in
 /-- Per-coordinate inner-product identity. -/
 private lemma row_identity (u v : ι → α) (i : ι) (hq : 0 < Fintype.card α) :
     (∑ a : α, ((if u i = a then (1:ℝ) else 0) - 1/(Fintype.card α:ℝ))
@@ -42,14 +43,15 @@ private lemma row_identity (u v : ι → α) (i : ι) (hq : 0 < Fintype.card α)
     · intro b _ hb; simp [Ne.symm hb]
     · intro h; exact absurd (Finset.mem_univ _) h
   have h2 : (∑ a : α, (1/q) * (if u i = a then (1:ℝ) else 0)) = 1/q := by
-    rw [← Finset.mul_sum]; simp [Finset.sum_ite_eq']
+    rw [← Finset.mul_sum]; simp
   have h3 : (∑ a : α, (1/q) * (if v i = a then (1:ℝ) else 0)) = 1/q := by
-    rw [← Finset.mul_sum]; simp [Finset.sum_ite_eq']
+    rw [← Finset.mul_sum]; simp
   have h4 : (∑ _a : α, (1/q)*(1/q)) = 1/q := by
     rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul, ← hqdef]
     field_simp
   rw [h1, h2, h3, h4]; ring
 
+omit [DecidableEq ι] in
 theorem codeInner_eq_agree_sub (u v : ι → α) (hq : 0 < Fintype.card α) :
     codeInner u v = (agree u v : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ) := by
   classical
@@ -61,6 +63,7 @@ theorem codeInner_eq_agree_sub (u v : ι → α) (hq : 0 < Fintype.card α) :
   congr 1
   apply Finset.sum_congr rfl; intro i _; by_cases h : u i = v i <;> simp [h]
 
+omit [DecidableEq ι] in
 /-- **Constant norm.** `⟨x_w, x_w⟩ = n(1 − 1/q)` (every coordinate agrees with
 itself). -/
 theorem codeInner_self (w : ι → α) (hq : 0 < Fintype.card α) :
@@ -72,6 +75,7 @@ theorem codeInner_self (w : ι → α) (hq : 0 < Fintype.card α) :
   have hqne : (Fintype.card α : ℝ) ≠ 0 := by positivity
   field_simp
 
+omit [DecidableEq ι] in
 /-- **The Plotkin / positive-semidefiniteness inequality.** For any finite
 family of words, the Gram-sum of their simplex embeddings is nonnegative:
 `∑ i ∑ j ⟨x_{c i}, x_{c j}⟩ = ‖∑ i x_{c i}‖² ≥ 0`. This is the engine of the
@@ -93,6 +97,7 @@ theorem sum_sum_codeInner_nonneg {L : ℕ} (c : Fin L → ι → α) :
   rw [hswap]
   exact Finset.sum_nonneg fun p _ => sq_nonneg _
 
+omit [DecidableEq ι] in
 /-- **Shifted PSD.** The Gram-sum of the center-shifted embeddings
 `y_i = x_{c i} − β·x_g` is nonnegative — the form of the Plotkin inequality
 actually used in Johnson list-size arguments. -/
@@ -175,6 +180,7 @@ theorem card_le_of_gram_bounds {L : ℕ} (hL : 0 < L) (S : Fin L → Fin L → �
       _ ≤ (L : ℝ) * Dd + (L : ℝ) * ((L : ℝ) - 1) * Do := add_le_add hdiag_sum hoff_sum
   -- rearrange: L(L−1)(−Do) ≤ L·Dd, divide by L > 0
   have hLpos : (0 : ℝ) < (L : ℝ) := by exact_mod_cast hL
-  nlinarith [hfull, hLpos]
+  have hDo_le : Do ≤ 0 := le_of_lt hDo
+  nlinarith [hfull, hLpos, hDo_le]
 
 end CodeGeometry

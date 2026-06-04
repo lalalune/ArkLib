@@ -65,19 +65,46 @@ def biniusProfile : RingSwitching.RingSwitchingProfile K L κ :=
     decomposeColumns := RingSwitching.decompose_tensor_algebra_columns (β := βH)
     decomposeRows_spec := by
       intro z
-      sorry
+      calc
+        z = ∑ u, ((βH.baseChange L).repr z) u • (βH.baseChange L) u := by
+          exact ((βH.baseChange L).sum_repr z).symm
+        _ = ∑ u, RingSwitching.φ₀ L K
+              (RingSwitching.decompose_tensor_algebra_rows (L := L) (K := K) (β := βH) z u)
+            * RingSwitching.φ₁ L K (βH u) := by
+          apply Finset.sum_congr rfl
+          intro u _
+          unfold RingSwitching.decompose_tensor_algebra_rows RingSwitching.φ₀ RingSwitching.φ₁
+          rw [Basis.baseChange_apply]
+          simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
+            Algebra.TensorProduct.tmul_mul_tmul, one_mul]
+          change (((βH.baseChange L).repr z) u • (1 : L)) ⊗ₜ[K] βH u =
+            (((βH.baseChange L).repr z) u * 1) ⊗ₜ[K] βH u
+          rw [smul_eq_mul]
     decomposeColumns_spec := by
       intro z
       sorry
     decomposeRows_add := by
       intro z w u
-      sorry
+      unfold RingSwitching.decompose_tensor_algebra_rows
+      rw [map_add]
+      rfl
     decomposeRows_φ₀_mul_φ₁ := by
       intro a b u
-      sorry
+      have h : RingSwitching.φ₀ L K a * RingSwitching.φ₁ L K b = a ⊗ₜ[K] b := by
+        simp only [RingSwitching.φ₀, RingSwitching.φ₁, RingHom.coe_mk, MonoidHom.coe_mk,
+          OneHom.coe_mk, Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
+      rw [h]
+      unfold RingSwitching.decompose_tensor_algebra_rows
+      rw [Basis.baseChange_repr_tmul]
     decomposeColumns_add := by
       intro z w v
-      sorry
+      unfold RingSwitching.decompose_tensor_algebra_columns
+      letI rightAlgebra : Algebra L (L ⊗[K] L) := Algebra.TensorProduct.rightAlgebra
+      letI rightModule : Module L (L ⊗[K] L) := rightAlgebra.toModule
+      let b := Basis.baseChangeRight (b := βH) (Right := L)
+      change b.repr (z + w) v = b.repr z v + b.repr w v
+      rw [map_add]
+      rfl
     decomposeColumns_φ₀_mul_φ₁ := by
       intro a b v
       have h : RingSwitching.φ₀ L K a * RingSwitching.φ₁ L K b = a ⊗ₜ[K] b := by

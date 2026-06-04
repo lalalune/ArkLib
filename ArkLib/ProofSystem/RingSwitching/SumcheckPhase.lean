@@ -807,9 +807,15 @@ theorem coreInteraction_perfectCompleteness [IsDomain L] [IsDomain K] :
     (relOut := aOStmtIn.toRelInput)
     (init := init)
     (impl := impl) := by
-  -- Stale composition proof: the old `OracleReduction.append_perfectCompleteness` wrapper was
-  -- removed from the current append API. The component completeness proofs above still elaborate.
-  sorry
+  apply OracleReduction.append_perfectCompleteness
+  · apply OracleReduction.seqCompose_perfectCompleteness
+    intro i
+    exact iteratedSumcheckOracleReduction_perfectCompleteness (κ := κ) (L := L) (K := K)
+      (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn)
+      (init := init) (impl := impl) i
+  · exact finalSumcheckOracleReduction_perfectCompleteness (κ := κ) (L := L) (K := K)
+      (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn)
+      (init := init) (impl := impl)
 
 /-- Per-round knowledge error for the iterated sumcheck rounds. -/
 def iteratedSumcheckRoundKnowledgeError (_ : Fin ℓ') : ℝ≥0 := (2 : ℝ≥0) / (Fintype.card L)

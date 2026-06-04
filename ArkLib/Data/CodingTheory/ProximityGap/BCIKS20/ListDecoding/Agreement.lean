@@ -821,6 +821,15 @@ lemma claimA2_hypotheses (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
     Hypotheses x₀ (R k δ x₀ h_gs) (H k δ x₀ h_gs) :=
   ⟨H_dvd_evalX_R k h_gs, evalX_R_separable k h_gs⟩
 
+lemma powerSeries_eq_truncate_of_coeff_zero_ge
+    {R : Type} [Semiring R] (f : PowerSeries R) {k : ℕ}
+    (hzero : ∀ t, t ≥ k → PowerSeries.coeff t f = 0) :
+    f = PowerSeries.mk (fun t => if t ≥ k then 0 else PowerSeries.coeff t f) := by
+  ext t
+  by_cases ht : t ≥ k
+  · simp [ht, hzero t ht]
+  · simp [ht]
+
 open BCIKS20AppendixA.ClaimA2 in
 /-- Claim 5.8 from [BCIKS20].
 States that the approximate solution is actually a solution. This version of the claim is stated in
