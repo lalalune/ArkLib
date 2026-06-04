@@ -84,6 +84,40 @@ private lemma polynomialCurveEval_coord_eq_of_agree {n l : ℕ} {F : Type} [Fiel
     _ = (∑ i : Fin l, Polynomial.C (v i x) * Polynomial.X ^ (i : ℕ)).eval z := by rw [hPQ]
     _ = Curve.polynomialCurveEval (F := F) (A := F) v z x := hEval v z
 
+/-- Interpolation brick for the §6.1 argument: through any `l` distinct parameter
+values and arbitrary target vectors there is a polynomial curve of degree `< l`. -/
+private lemma exists_polynomialCurve_through {n l : ℕ} {F : Type} [Field F]
+    [DecidableEq F] (zs : Fin l → F) (hinj : Function.Injective zs)
+    (w : Fin l → Fin n → F) :
+    ∃ v : Fin l → Fin n → F,
+      ∀ j, Curve.polynomialCurveEval (F := F) (A := F) v (zs j) = w j := by
+  -- per-coordinate Lagrange interpolant
+  classical
+  set P : Fin n → Polynomial F :=
+    fun x => Lagrange.interpolate Finset.univ zs (fun j => w j x) with hP
+  have hdeg : ∀ x, (P x).degree < (l : WithBot ℕ) := by
+    intro x
+    simpa using Lagrange.degree_interpolate_lt (s := (Finset.univ : Finset (Fin l)))
+      (v := zs) (r := fun j => w j x) (fun a _ b _ hab => hinj hab)
+  refine ⟨fun i x => (P x).coeff i, ?_⟩
+  intro j
+  funext x
+  have hnat : (P x).natDegree < l := by
+    rcases eq_or_ne (P x) 0 with h0 | h0
+    · simpa [h0] using j.pos
+    · exact (Polynomial.natDegree_lt_iff_degree_lt h0).mpr (by exact_mod_cast hdeg x)
+  have heval : (P x).eval (zs j) = w j x :=
+    Lagrange.eval_interpolate_at_node (s := (Finset.univ : Finset (Fin l)))
+      (v := zs) (r := fun j => w j x) (fun a _ b _ hab => hinj hab) (Finset.mem_univ j)
+  calc Curve.polynomialCurveEval (F := F) (A := F) (fun i x => (P x).coeff i) (zs j) x
+      = ∑ i : Fin l, (zs j) ^ (i : ℕ) * (P x).coeff i := by
+        simp [Curve.polynomialCurveEval, Finset.sum_apply, Pi.smul_apply, smul_eq_mul]
+    _ = ∑ i ∈ Finset.range l, (P x).coeff i * (zs j) ^ i := by
+        rw [← Fin.sum_univ_eq_sum_range (fun i => (P x).coeff i * (zs j) ^ i)]
+        exact Finset.sum_congr rfl fun i _ => mul_comm _ _
+    _ = (P x).eval (zs j) := (Polynomial.eval_eq_sum_range' hnat _).symm
+    _ = w j x := heval
+
 /-- Unique decoding brick for the §6.1 argument: two codewords of a code with
 minimum distance `d` that are both within distance summing below `d` of a common
 word are equal (triangle inequality). -/
