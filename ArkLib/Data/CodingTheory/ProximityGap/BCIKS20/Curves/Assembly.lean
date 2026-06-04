@@ -103,6 +103,51 @@ section CurveAssemblyBridge
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
+omit [Fintype ι] [Nonempty ι] [DecidableEq ι] [Field F] [Fintype F] [DecidableEq F] in
+/-- Convert an ENNReal lower bound on a finite set cardinality into a natural
+number strict cardinality bound. -/
+theorem finset_card_gt_of_natCast_le_ennreal_lt {α : Type} {S : Finset α}
+    {m : ℕ} {x : ENNReal}
+    (hm : (m : ENNReal) ≤ x) (hx : x < (S.card : ENNReal)) :
+    S.card > m := by
+  exact Nat.cast_lt.mp (lt_of_le_of_lt hm hx)
+
+omit [Fintype ι] [Nonempty ι] [DecidableEq ι] [Field F] [Fintype F] [DecidableEq F] in
+/-- Convert an ENNReal lower bound on a finite set cardinality into a natural
+number weak cardinality bound. The predecessor is convenient because strict
+ENNReal comparison against `S.card` only directly yields a strict natural
+inequality. -/
+theorem finset_card_ge_of_pred_natCast_le_ennreal_lt {α : Type} {S : Finset α}
+    {m : ℕ} {x : ENNReal}
+    (hm : (m - 1 : ENNReal) ≤ x) (hx : x < (S.card : ENNReal)) :
+    S.card ≥ m := by
+  rcases m with _ | m
+  · exact Nat.zero_le S.card
+  · have hm' : (m : ENNReal) ≤ x := by
+      simpa using hm
+    exact Nat.succ_le_of_lt (finset_card_gt_of_natCast_le_ennreal_lt hm' hx)
+
+omit [Nonempty ι] [DecidableEq ι] in
+/-- Package an ENNReal lower bound on the full good curve set into the two
+natural-number cardinality hypotheses used by the coefficient-polynomial
+assembly bridge. -/
+theorem goodCoeffsCurve_card_bounds_of_ennreal_threshold {l deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0}
+    (u : Fin (l + 2) → ι → F) {x : ENNReal}
+    (hx :
+      x <
+        ((RS_goodCoeffsCurve (k := l + 1) (deg := deg) (domain := domain) u δ).card :
+          ENNReal))
+    (hsmall : (l + 1 : ENNReal) ≤ x)
+    (hlarge : ((Fintype.card ι + 1) * (l + 1) - 1 : ENNReal) ≤ x) :
+    (RS_goodCoeffsCurve (k := l + 1) (deg := deg) (domain := domain) u δ).card >
+        l + 1 ∧
+      (RS_goodCoeffsCurve (k := l + 1) (deg := deg) (domain := domain) u δ).card ≥
+        (Fintype.card ι + 1) * (l + 1) := by
+  constructor
+  · exact finset_card_gt_of_natCast_le_ennreal_lt hsmall hx
+  · exact finset_card_ge_of_pred_natCast_le_ennreal_lt hlarge hx
+
 omit [Fintype ι] [Nonempty ι] [DecidableEq ι] [Fintype F] [DecidableEq F] in
 /-- Reindex a finite sum of curve coefficient words. This is the algebraic
 part of changing the coefficient index type in `RS_goodCoeffsCurve`. -/
