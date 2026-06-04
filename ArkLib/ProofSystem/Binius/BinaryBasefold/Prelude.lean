@@ -1247,6 +1247,50 @@ def localized_fold_eval (i : Fin ℓ) (steps : ℕ) (h_i_add_steps : i + steps �
     exact localized_fold_matrix_form 𝔽q β (i := i) steps h_i_add_steps r_challenges y
       fiber_eval_mapping
 
+/-- Split a sum over `Fin (2^(n+1))` into the high bit `c ∈ Fin 2` and the low `n` bits
+`b ∈ Fin (2^n)`, where `idx = c * 2^n + b`. -/
+theorem sum_fin_pow_succ_split {M : Type*} [AddCommMonoid M] (n : ℕ)
+    (g : Fin (2 ^ (n + 1)) → M) :
+    ∑ idx : Fin (2 ^ (n + 1)), g idx =
+      ∑ c : Fin 2, ∑ b : Fin (2 ^ n),
+        g ⟨c.val * 2 ^ n + b.val, by
+          have h2 : 2 ^ (n + 1) = 2 ^ n * 2 := by rw [pow_succ]
+          have hc : c.val < 2 := c.isLt
+          have hb : b.val < 2 ^ n := b.isLt
+          rw [h2]; nlinarith [Nat.mul_le_mul_right (2 ^ n) (Nat.le_pred_of_lt hc)]⟩ := by
+  have h2 : 2 ^ (n + 1) = 2 ^ n * 2 := by rw [pow_succ]
+  rw [← Finset.sum_product']
+  refine Finset.sum_nbij'
+    (i := fun idx => (⟨idx.val / 2 ^ n, by
+        have : idx.val < 2 ^ n * 2 := by rw [← h2]; exact idx.isLt
+        exact Nat.div_lt_of_lt_mul (by omega)⟩,
+      ⟨idx.val % 2 ^ n, Nat.mod_lt _ (Nat.two_pow_pos n)⟩))
+    (j := fun p => ⟨p.1.val * 2 ^ n + p.2.val, by
+        have hc : p.1.val < 2 := p.1.isLt
+        have hb : p.2.val < 2 ^ n := p.2.isLt
+        rw [h2]; nlinarith [Nat.mul_le_mul_right (2 ^ n) (Nat.le_pred_of_lt hc)]⟩)
+    ?_ ?_ ?_ ?_ ?_
+  · intro idx _; exact Finset.mem_univ _
+  · intro p _; exact Finset.mem_univ _
+  · intro idx _
+    apply Fin.ext; simp only
+    have hdm := Nat.div_add_mod idx.val (2 ^ n)
+    have hc : idx.val / 2 ^ n * 2 ^ n = 2 ^ n * (idx.val / 2 ^ n) := Nat.mul_comm _ _
+    omega
+  · intro p _
+    apply Prod.ext
+    · apply Fin.ext; simp only
+      rw [Nat.add_comm, Nat.add_mul_div_right _ _ (Nat.two_pow_pos n),
+        Nat.div_eq_of_lt p.2.isLt, Nat.zero_add]
+    · apply Fin.ext; simp only
+      rw [Nat.add_comm, Nat.add_mul_mod_self_right, Nat.mod_eq_of_lt p.2.isLt]
+  · intro idx _
+    congr 1
+    apply Fin.ext; simp only
+    have hdm := Nat.div_add_mod idx.val (2 ^ n)
+    have hc : idx.val / 2 ^ n * 2 ^ n = 2 ^ n * (idx.val / 2 ^ n) := Nat.mul_comm _ _
+    omega
+
 /-- **Lemma 4.9.** The iterated fold equals the localized fold evaluation via matmul form -/
 theorem iterated_fold_eq_matrix_form (i : Fin ℓ) (steps : ℕ) (h_i_add_steps : i + steps ≤ ℓ)
     (f : (sDomain 𝔽q β h_ℓ_add_R_rate) ⟨i, by omega⟩ → L)
