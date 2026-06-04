@@ -16554,6 +16554,15 @@
           "namespace": "Domain.CosetFftDomain",
           "short_name": "twoNthRoot_correct_one",
           "signature": "lemma twoNthRoot_correct_one {n : \u2115} {\u03c9 : SmoothCosetFftDomain n F}"
+        },
+        {
+          "doc": "Compatibility form of the smooth-coset domain size: the `toFinset` of a `SmoothCosetFftDomain n F` has exactly `2 ^ n` elements.",
+          "kind": "lemma",
+          "line": 474,
+          "name": "Domain.size_of_smooth_coset_domain_eq_pow_of_2",
+          "namespace": "Domain",
+          "short_name": "size_of_smooth_coset_domain_eq_pow_of_2",
+          "signature": "lemma size_of_smooth_coset_domain_eq_pow_of_2 {F : Type} [Field F] [DecidableEq F]"
         }
       ]
     },
@@ -36031,7 +36040,7 @@
         {
           "doc": "Affine space: {g | \u2203 x : Fin t.succ \u2192 \ud835\udd3d, x 0 = 1 \u2227 g = \u2211 i, x i \u2022 f i  }",
           "kind": "def",
-          "line": 305,
+          "line": 304,
           "name": "Fri.F\u209b",
           "namespace": "Fri",
           "short_name": "F\u209b",
@@ -36040,7 +36049,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 308,
+          "line": 307,
           "name": "Fri.correlated_agreement_density",
           "namespace": "Fri",
           "short_name": "correlated_agreement_density",
@@ -36049,7 +36058,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 319,
+          "line": 318,
           "name": "Fri.oracleImpl",
           "namespace": "Fri",
           "short_name": "oracleImpl",
@@ -36058,34 +36067,34 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 358,
-          "name": "Fri._anon_instance_358",
+          "line": 357,
+          "name": "Fri._anon_instance_357",
           "namespace": "Fri",
-          "short_name": "_anon_instance_358",
+          "short_name": "_anon_instance_357",
           "signature": "instance instance {l : \u2115} : ([(Spec.QueryRound.pSpec l (\u03c9 := \u03c9)).Message]\u2092).Inhabited where"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 366,
-          "name": "Fri._anon_instance_366",
+          "line": 365,
+          "name": "Fri._anon_instance_365",
           "namespace": "Fri",
-          "short_name": "_anon_instance_366",
+          "short_name": "_anon_instance_365",
           "signature": "instance instance {l : \u2115} : ([(Spec.QueryRound.pSpec l (\u03c9 := \u03c9)).Message]\u2092).Fintype where"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 375,
-          "name": "Fri._anon_def_375",
+          "line": 374,
+          "name": "Fri._anon_def_374",
           "namespace": "Fri",
-          "short_name": "_anon_def_375",
+          "short_name": "_anon_def_374",
           "signature": "def noncomputable def \u03b5C"
         },
         {
           "doc": "",
           "kind": "abbrev",
-          "line": 382,
+          "line": 381,
           "name": "Fri.fullChallengeProtocol",
           "namespace": "Fri",
           "short_name": "fullChallengeProtocol",
@@ -36094,115 +36103,115 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 386,
-          "name": "Fri._anon_instance_386",
+          "line": 385,
+          "name": "Fri._anon_instance_385",
           "namespace": "Fri",
-          "short_name": "_anon_instance_386",
+          "short_name": "_anon_instance_385",
           "signature": "instance noncomputable instance {t l : \u2115} {\u03c9 : SmoothCosetFftDomain n \ud835\udd3d} :"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 459,
-          "name": "Fri._anon_instance_459",
+          "line": 458,
+          "name": "Fri._anon_instance_458",
           "namespace": "Fri",
-          "short_name": "_anon_instance_459",
+          "short_name": "_anon_instance_458",
           "signature": "instance noncomputable instance {t l : \u2115} {\u03c9 : SmoothCosetFftDomain n \ud835\udd3d} :"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 532,
-          "name": "Fri._anon_instance_532",
+          "line": 531,
+          "name": "Fri._anon_instance_531",
           "namespace": "Fri",
-          "short_name": "_anon_instance_532",
+          "short_name": "_anon_instance_531",
           "signature": "instance noncomputable instance {t l : \u2115} {\u03c9 : SmoothCosetFftDomain n \ud835\udd3d} :"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 543,
-          "name": "Fri._anon_instance_543",
+          "line": 542,
+          "name": "Fri._anon_instance_542",
           "namespace": "Fri",
-          "short_name": "_anon_instance_543",
+          "short_name": "_anon_instance_542",
           "signature": "instance noncomputable instance {t l : \u2115} {\u03c9 : SmoothCosetFftDomain n \ud835\udd3d} :"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 554,
-          "name": "Fri._anon_instance_554",
+          "line": 553,
+          "name": "Fri._anon_instance_553",
           "namespace": "Fri",
-          "short_name": "_anon_instance_554",
+          "short_name": "_anon_instance_553",
           "signature": "instance noncomputable instance {t l : \u2115} {\u03c9 : SmoothCosetFftDomain n \ud835\udd3d} :"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 567,
-          "name": "Fri._anon_instance_567",
+          "line": 566,
+          "name": "Fri._anon_instance_566",
           "namespace": "Fri",
-          "short_name": "_anon_instance_567",
+          "short_name": "_anon_instance_566",
           "signature": "instance noncomputable instance {t l : \u2115} {\u03c9 : SmoothCosetFftDomain n \ud835\udd3d} :"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 580,
-          "name": "Fri._anon_instance_580",
+          "line": 579,
+          "name": "Fri._anon_instance_579",
           "namespace": "Fri",
-          "short_name": "_anon_instance_580",
+          "short_name": "_anon_instance_579",
           "signature": "instance noncomputable instance {t l : \u2115} {\u03c9 : SmoothCosetFftDomain n \ud835\udd3d} :"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 587,
-          "name": "Fri._anon_instance_587",
+          "line": 586,
+          "name": "Fri._anon_instance_586",
           "namespace": "Fri",
-          "short_name": "_anon_instance_587",
+          "short_name": "_anon_instance_586",
           "signature": "instance noncomputable instance {t l : \u2115} {\u03c9 : SmoothCosetFftDomain n \ud835\udd3d} :"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 594,
-          "name": "Fri._anon_instance_594",
+          "line": 593,
+          "name": "Fri._anon_instance_593",
           "namespace": "Fri",
-          "short_name": "_anon_instance_594",
+          "short_name": "_anon_instance_593",
           "signature": "instance noncomputable instance {t l : \u2115} {\u03c9 : SmoothCosetFftDomain n \ud835\udd3d} :"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 613,
-          "name": "Fri._anon_instance_613",
+          "line": 612,
+          "name": "Fri._anon_instance_612",
           "namespace": "Fri",
-          "short_name": "_anon_instance_613",
+          "short_name": "_anon_instance_612",
           "signature": "instance noncomputable instance {t l : \u2115} {\u03c9 : SmoothCosetFftDomain n \ud835\udd3d} :"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 632,
-          "name": "Fri._anon_instance_632",
+          "line": 631,
+          "name": "Fri._anon_instance_631",
           "namespace": "Fri",
-          "short_name": "_anon_instance_632",
+          "short_name": "_anon_instance_631",
           "signature": "instance noncomputable instance {t l : \u2115} {\u03c9 : SmoothCosetFftDomain n \ud835\udd3d} :"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 648,
-          "name": "Fri._anon_instance_648",
+          "line": 647,
+          "name": "Fri._anon_instance_647",
           "namespace": "Fri",
-          "short_name": "_anon_instance_648",
+          "short_name": "_anon_instance_647",
           "signature": "instance noncomputable instance {t l : \u2115} {\u03c9 : SmoothCosetFftDomain n \ud835\udd3d} :"
         },
         {
           "doc": "Corresponds to Claim 8.2 of [BCIKS20]",
           "kind": "lemma",
-          "line": 661,
+          "line": 660,
           "name": "Fri.fri_query_soundness",
           "namespace": "Fri",
           "short_name": "fri_query_soundness",
@@ -36211,7 +36220,7 @@
         {
           "doc": "Corresponds to Claim 8.3 of [BCIKS20]",
           "kind": "lemma",
-          "line": 785,
+          "line": 784,
           "name": "Fri.fri_soundness",
           "namespace": "Fri",
           "short_name": "fri_soundness",
@@ -44067,9 +44076,18 @@
           "signature": "theorem coreInteraction_perfectCompleteness :"
         },
         {
-          "doc": "standard sumcheck error",
+          "doc": "Per-round knowledge error for the iterated sumcheck rounds.",
           "kind": "def",
           "line": 587,
+          "name": "RingSwitching.SumcheckPhase.iteratedSumcheckRoundKnowledgeError",
+          "namespace": "RingSwitching.SumcheckPhase",
+          "short_name": "iteratedSumcheckRoundKnowledgeError",
+          "signature": "def iteratedSumcheckRoundKnowledgeError (_ : Fin \u2113') : \u211d\u22650 := (2 : \u211d\u22650) / (Fintype.card L)"
+        },
+        {
+          "doc": "standard sumcheck error",
+          "kind": "def",
+          "line": 590,
           "name": "RingSwitching.SumcheckPhase.coreInteractionRbrKnowledgeError",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteractionRbrKnowledgeError",
@@ -44078,7 +44096,7 @@
         {
           "doc": "RBR knowledge soundness for large-field reduction (Sumcheck ++ FinalSum)",
           "kind": "theorem",
-          "line": 598,
+          "line": 601,
           "name": "RingSwitching.SumcheckPhase.coreInteraction_rbrKnowledgeSoundness",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteraction_rbrKnowledgeSoundness",
@@ -48612,7 +48630,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5277,
+      "declarations": 5279,
       "files": 282
     }
   }
