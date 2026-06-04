@@ -176,8 +176,12 @@ def batchedFRIOracleLens [DecidableEq F] :
       have hV :=
         (Fri.Spec.reduction (F := F) (n := n) (ω := ω) k s d dom_size_cond l).verifier.hEq i
       rw [hemb] at hV
-      -- `j : Fin (0 + 1)` is `Fin 1`, hence `j = 0`.
-      have hj : j = 0 := Fin.ext (by have := j.isLt; omega)
+      -- `j : Fin (↑0 + 1)` is `Fin 1`, hence `j = 0`.
+      have hj : j = 0 := by
+        apply Fin.ext
+        have h := j.isLt
+        simp only [Fin.val_zero, Nat.zero_add, Nat.lt_one_iff] at h ⊢
+        exact h
       subst hj
       simp only [Function.Embedding.sumMap, Function.Embedding.coeFn_mk, Sum.map_inl] at hV ⊢
       rw [hV]
@@ -195,7 +199,7 @@ def batchedFRIOracleLens [DecidableEq F] :
       rw [hcast]
       simp only [Fri.Spec.OracleStatement, finRangeTo.eq_1, List.take_zero, List.toFinset_nil,
         Finset.sum_empty, Fin.val_zero, OracleStatement]
-      rw [hdom]
+      exact congrArg (fun (S : Finset F) => (↥S → F)) hdom
     · have hV :=
         (Fri.Spec.reduction (F := F) (n := n) (ω := ω) k s d dom_size_cond l).verifier.hEq i
       rw [hemb] at hV
