@@ -45,35 +45,9 @@ variable (h_ℓ_add_R_rate : ℓ' + 𝓡 < 2 ^ κ)
 variable (h_l : ℓ = ℓ' + κ)
 variable [hdiv : Fact (ϑ ∣ ℓ')]
 
-/-- The Binius ring-switching profile, built from the boolean-hypercube basis derived from `β`. -/
-def biniusProfile : RingSwitching.RingSwitchingProfile K L κ :=
-  let βH := booleanHypercubeBasis κ L K β
-  {
-    basis := βH
-    A := RingSwitching.TensorAlgebra K L
-    φ₀ := RingSwitching.φ₀ L K
-    φ₁ := RingSwitching.φ₁ L K
-    decomposeRows := RingSwitching.decompose_tensor_algebra_rows (β := βH)
-    decomposeColumns := RingSwitching.decompose_tensor_algebra_columns (β := βH)
-    decomposeRows_spec := by
-      intro z
-      sorry
-    decomposeColumns_spec := by
-      intro z
-      sorry
-    decomposeRows_add := by
-      intro z w u
-      sorry
-    decomposeRows_φ₀_mul_φ₁ := by
-      intro a b u
-      sorry
-    decomposeColumns_add := by
-      intro z w v
-      sorry
-    decomposeColumns_φ₀_mul_φ₁ := by
-      intro a b v
-      sorry
-  }
+/-- The Binius ring-switching profile used by the full FRIBinius composition. -/
+abbrev biniusProfile : RingSwitching.RingSwitchingProfile K L κ :=
+  CoreInteractionPhase.biniusProfile κ L K β
 
 section Pspec
 
