@@ -74,3 +74,49 @@ lemma liftContextStmt_verify
 -- ported lemmas in .)
 
 end OracleVerifier
+
+namespace OracleVerifier
+
+variable {Inner_ιₛₒ : Type} {InnerOStmtOut : Inner_ιₛₒ → Type}
+  [∀ i, OracleInterface (InnerOStmtOut i)]
+
+/-- The output-oracle-reselecting lift of an oracle verifier: in addition to a
+non-oracle statement lens, the outer output oracle statements are a reindexing
+(`oₒ`, injective) of the inner ones, with matching types (`hOO`). The input
+oracle statements are shared. This strictly generalises `liftContextStmt`
+(which is the `oₒ = id` case) and covers the realistic protocol-composition
+scenario where a lift never adds input oracles but may drop/reselect outputs.
+Fully implementable: `embed` composes `oₒ` with the inner embedding, `hEq`
+chains the type equalities. -/
+def liftContextReselect
+    (lens : Statement.Lens OuterStmtIn OuterStmtOut InnerStmtIn InnerStmtOut)
+    (oₒ : ιₛₒ ↪ Inner_ιₛₒ)
+    (hOO : ∀ i, OStmtOut i = InnerOStmtOut (oₒ i))
+    (V : OracleVerifier oSpec InnerStmtIn OStmtIn InnerStmtOut InnerOStmtOut pSpec) :
+    OracleVerifier oSpec OuterStmtIn OStmtIn OuterStmtOut OStmtOut pSpec where
+  verify := fun outerStmtIn challenges =>
+    (fun innerStmtOut => lens.lift outerStmtIn innerStmtOut) <$>
+      V.verify (lens.proj outerStmtIn) challenges
+  embed := oₒ.trans V.embed
+  hEq := fun i => by
+    rw [hOO i]
+    exact V.hEq (oₒ i)
+
+@[simp]
+lemma liftContextReselect_embed
+    (lens : Statement.Lens OuterStmtIn OuterStmtOut InnerStmtIn InnerStmtOut)
+    (oₒ : ιₛₒ ↪ Inner_ιₛₒ) (hOO : ∀ i, OStmtOut i = InnerOStmtOut (oₒ i))
+    (V : OracleVerifier oSpec InnerStmtIn OStmtIn InnerStmtOut InnerOStmtOut pSpec) :
+    (V.liftContextReselect lens oₒ hOO).embed = oₒ.trans V.embed := rfl
+
+@[simp]
+lemma liftContextReselect_verify
+    (lens : Statement.Lens OuterStmtIn OuterStmtOut InnerStmtIn InnerStmtOut)
+    (oₒ : ιₛₒ ↪ Inner_ιₛₒ) (hOO : ∀ i, OStmtOut i = InnerOStmtOut (oₒ i))
+    (V : OracleVerifier oSpec InnerStmtIn OStmtIn InnerStmtOut InnerOStmtOut pSpec)
+    (outerStmtIn : OuterStmtIn) (challenges : pSpec.Challenges) :
+    (V.liftContextReselect lens oₒ hOO).verify outerStmtIn challenges
+      = (fun s => lens.lift outerStmtIn s) <$> V.verify (lens.proj outerStmtIn) challenges :=
+  rfl
+
+end OracleVerifier
