@@ -1274,8 +1274,8 @@ theorem pg_card_candidatePairs_le_natDegreeY (x₀ : F) (h_gs : ModifiedGuruswam
 `exists_factors_with_large_common_root_set` (Claim 5.7, `Agreement.lean`) carries a second
 cardinality conjunct
 `(#S : ℝ)/(D_Y Q) > 2·D_Y Q²·D_X·D_YZ Q`,
-with `S = coeffs_of_close_proximity k ωs δ u₀ u₁`.  This is a *lower bound on `#S`* and is **not**
-derivable from `ModifiedGuruswami`: in [BCIKS20] it is a *hypothesis* (the set of close
+with `S = coeffs_of_close_proximity k ωs δ u₀ u₁`.  This is a *lower bound on `#S`* and is
+**not** derivable from `ModifiedGuruswami`: in [BCIKS20] it is a *hypothesis* (the set of close
 codeword-coefficients is large — the list-decoding regime), mis-placed into the conclusion.  The
 three lemmas below verify this defect concretely. -/
 
@@ -1305,16 +1305,17 @@ lemma c57_rhs_nonneg :
 
 omit [DecidableEq (RatFunc F)] in
 /-- *(Defect-7, core.)* The second cardinality conjunct of
-  `exists_factors_with_large_common_root_set`
-is **false** whenever `S := coeffs_of_close_proximity` is empty: its left-hand side
-`(#S : ℝ)/(D_Y Q)` collapses to `0`, while its right-hand side is `≥ 0` (`c57_rhs_nonneg`), so the
-strict inequality cannot hold.  Together with `coeffs_of_close_proximity_eq_empty_of_neg` (which
-makes `S` empty for `δ < 0`), this proves the conjunct is not derivable from `ModifiedGuruswami`
-alone: in [BCIKS20] it is a hypothesis (`S` large, the list-decoding regime), not a conclusion. -/
+`exists_factors_with_large_common_root_set` is **false** whenever `S := coeffs_of_close_proximity`
+is empty: its left-hand side `(#S : ℝ)/(D_Y Q)` collapses to `0`, while its right-hand side is
+`≥ 0` (`c57_rhs_nonneg`), so the strict inequality cannot hold.  Together with
+`coeffs_of_close_proximity_eq_empty_of_neg` (which makes `S` empty for `δ < 0`), this proves the
+conjunct is not derivable from `ModifiedGuruswami` alone: in [BCIKS20] it is a hypothesis (`S`
+large, the list-decoding regime), not a conclusion. -/
 lemma c57_second_conjunct_unsat_of_S_empty
     (hSempty : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ = ∅)
-    (hconj2 : (#(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) : ℝ) / (Bivariate.natDegreeY Q
-      : ℝ)
+    (hconj2 :
+      (#(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) : ℝ)
+          / (Bivariate.natDegreeY Q : ℝ)
         > 2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q) :
     False := by
   rw [hSempty] at hconj2

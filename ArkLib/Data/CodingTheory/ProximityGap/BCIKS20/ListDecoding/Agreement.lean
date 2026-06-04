@@ -181,11 +181,27 @@ OBSTRUCTION (one residual blocker remains — the trivariate vanishing bridge).
   `Guruswami.tagged_fiber_pigeonhole`, but the same vanishing bridge is its residual too).  Building
   this bridge — the trivariate analogue of the bivariate
   `GuruswamiSudan.dvd_eval_of_rootMultiplicity_zero` / `proximity_gap_divisibility`, transported by
-  the now-available `c57_eval_on_Z_{zero,add,mul}` ring-hom lemmas — is the precise residual
-    content.
+  the now-available `c57_eval_on_Z_{zero,add,mul}` ring-hom lemmas — is the precise residual content.
+  *Verified missing hypothesis:* the per-`z` vanishing `Q(z, X, Pz(X)) ≡ 0` is the bivariate
+  counting argument (more order-`m` roots than degree), which needs
+  `m·(1−δ)n > natWeightedDegree Q 1 k`, i.e. `δ` within the Johnson radius
+  `proximity_gap_johnson`.  But `δ` is a *free* parameter of this lemma (no `δ ≤ δ₀` hypothesis),
+  so for `δ` near `1` the vanishing fails — the bridge therefore also needs the Johnson-radius side
+  hypothesis, absent from the current binder.
 
-With Gap A resolved, the proof obligation is retained pending the Gap-B vanishing bridge and the
-upstream Prop 5.5.  The binder structure `∃ R H, R ∈ … ∧ Irreducible H ∧ …` is preserved so the
+* *Second cardinality conjunct is false off the list-decoding regime (VERIFIED defect, the 7th in
+  this tree).*  The conjunct `(#S : ℝ)/(D_Y Q) > 2·D_Y Q²·D_X·D_YZ Q` is a *lower bound on `#S`*
+  (`S = coeffs_of_close_proximity`) that does not follow from `ModifiedGuruswami`: for `δ < 0` (and
+  `0 < n`) the set `S` is **empty** (`Extraction.coeffs_of_close_proximity_eq_empty_of_neg`), so the
+  LHS is `0`, while the RHS is `≥ 0` always (`Extraction.c57_rhs_nonneg`); hence `0 > (≥0)` is
+  false (`Extraction.c57_second_conjunct_unsat_of_S_empty`).  In [BCIKS20] this inequality is a
+  *hypothesis* (`S` large — the list-decoding case), mis-placed into the conclusion; the faithful
+  fix carries it (and the Johnson bound above) as side hypotheses, which the uneditable consumer
+  signatures `(δ) (x₀) (h_gs)` of `R`/`H`/`irreducible_H`/Claims-5.8–5.11 do not admit.
+
+With Gap A resolved, the proof obligation is retained pending the Gap-B vanishing bridge (which itself
+needs the absent `δ ≤ δ₀` hypothesis), the false-off-regime second conjunct, and the upstream
+Prop 5.5.  The binder structure `∃ R H, R ∈ … ∧ Irreducible H ∧ …` is preserved so the
 downstream extractors stay well-typed. -/
 lemma exists_factors_with_large_common_root_set (δ : ℚ) (x₀ : F)
   (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
