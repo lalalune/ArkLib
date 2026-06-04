@@ -37400,7 +37400,7 @@
         {
           "doc": "The round-by-round extractor is trivial since the output witness is `Unit`.",
           "kind": "def",
-          "line": 228,
+          "line": 223,
           "name": "RandomQuery.rbrExtractor",
           "namespace": "RandomQuery",
           "short_name": "rbrExtractor",
@@ -37409,7 +37409,7 @@
         {
           "doc": "The knowledge state function for the `RandomQuery` oracle reduction.",
           "kind": "def",
-          "line": 235,
+          "line": 230,
           "name": "RandomQuery.knowledgeStateFunction",
           "namespace": "RandomQuery",
           "short_name": "knowledgeStateFunction",
@@ -37418,20 +37418,29 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 266,
-          "name": "RandomQuery._anon_instance_266",
+          "line": 263,
+          "name": "RandomQuery._anon_instance_263",
           "namespace": "RandomQuery",
-          "short_name": "_anon_instance_266",
+          "short_name": "_anon_instance_263",
           "signature": "instance instance : Fintype ((pSpec OStatement).Challenge \u27e80, by simp\u27e9) := by"
         },
         {
           "doc": "The `RandomQuery` oracle reduction is round-by-round knowledge sound. The key fact governing the soundness of this reduction is a property of the form `\u2200 a b : OStatement, a \u2260 b \u2192 #{q | oracle a q = oracle b q} \u2264 d`. In other words, the oracle instance has distance at most `d`.",
           "kind": "theorem",
-          "line": 278,
+          "line": 275,
           "name": "RandomQuery.oracleVerifier_rbrKnowledgeSoundness",
           "namespace": "RandomQuery",
           "short_name": "oracleVerifier_rbrKnowledgeSoundness",
           "signature": "theorem oracleVerifier_rbrKnowledgeSoundness [Nonempty (Query OStatement)]"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 298,
+          "name": "RandomQuery._anon_class_298",
+          "namespace": "RandomQuery",
+          "short_name": "_anon_class_298",
+          "signature": "class classical"
         }
       ]
     },
@@ -46119,7 +46128,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5000,
+      "declarations": 5001,
       "files": 282
     }
   }
