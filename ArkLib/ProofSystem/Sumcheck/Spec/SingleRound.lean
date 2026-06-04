@@ -835,6 +835,7 @@ where
       --          = ∑ z ∈ D^(n+1-i), eval (append c z ∘ cast) p
       -- Needs: (1) insertNth i a (append c y ∘ cast) = append c (cons a y) ∘ cast
       --        (2) piFinset cons decomposition for D^(n+1-i) ↔ D × D^(n-i)
+      trace_state
       sorry
   lift_complete := by
     simp [relationRound]

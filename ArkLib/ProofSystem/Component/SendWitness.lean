@@ -40,6 +40,9 @@ def pSpec : ProtocolSpec 1 := ⟨!v[.P_to_V], !v[Witness]⟩
 
 instance : ∀ i, VCVCompatible ((pSpec Witness).Challenge i) | ⟨0, h⟩ => nomatch h
 
+instance : ProverOnly (pSpec Witness) where
+  prover_first' := by simp
+
 @[inline, specialize]
 def prover : Prover oSpec Statement Witness (Statement × Witness) Unit (pSpec Witness) where
   PrvState
@@ -67,14 +70,36 @@ variable {Statement} {Witness}
 def toRelOut : Set ((Statement × Witness) × Unit) :=
   Prod.fst ⁻¹' relIn
 
+/-- Running the `SendWitness` reduction deterministically sends the witness and returns the
+  unchanged statement-witness pair. -/
+theorem reduction_run (stmtIn : Statement) (witIn : Witness) :
+    (reduction oSpec Statement Witness).run stmtIn witIn =
+      (pure ((fun i => match i with | ⟨0, _⟩ => witIn, (stmtIn, witIn), ()),
+        (stmtIn, witIn)) : OptionT (OracleComp _) _) := by
+  rw [Reduction.run_of_prover_first]
+  simp only [reduction, prover, verifier, id_eq]
+  rfl
+
 open Classical in
 /-- The `SendWitness` reduction satisfies perfect completeness. -/
 @[simp]
 theorem reduction_completeness :
     (reduction oSpec Statement Witness).perfectCompleteness init impl relIn (toRelOut relIn) := by
-  unfold Reduction.perfectCompleteness Reduction.completeness
+  simp only [Reduction.perfectCompleteness, Reduction.completeness, ENNReal.coe_zero, tsub_zero]
   intro stmtIn witIn hIn
-  sorry
+  rw [reduction_run]
+  simp only [OptionT.run_pure, simulateQ_pure, StateT.run'_eq, StateT.run_pure, map_pure]
+  rw [ge_iff_le, one_le_probEvent_iff, probEvent_eq_one_iff]
+  refine ⟨?_, ?_⟩
+  · rw [OptionT.probFailure_eq, OptionT.run_mk]
+    simp
+  · intro x hx
+    rw [OptionT.mem_support_iff, OptionT.run_mk] at hx
+    simp only [support_bind, support_pure, Set.mem_iUnion, Set.mem_singleton_iff] at hx
+    obtain ⟨s, _, hx⟩ := hx
+    cases hx
+    refine ⟨?_, rfl⟩
+    simpa [toRelOut] using hIn
 
 theorem reduction_rbr_knowledge_soundness : True := trivial
 
@@ -244,11 +269,17 @@ theorem oracleVerifier_toVerifier_run {stmt : Statement} {oStmt : ∀ i, OStatem
     {tr : (oraclePSpec Witness).FullTranscript} :
     (oracleVerifier oSpec Statement OStatement Witness).toVerifier.run ⟨stmt, oStmt⟩ tr =
       pure ⟨stmt, Sum.rec oStmt (fun i => match i with | 0 => tr 0)⟩ := by
-  simp [Verifier.run, OracleVerifier.toVerifier, oracleVerifier]
-  sorry
-  -- stop
-  -- ext i; rcases i <;> simp
-  -- split; simp
+  simp only [Verifier.run, OracleVerifier.toVerifier, oracleVerifier]
+  erw [simulateQ_pure, pure_bind]
+  congr 1
+  refine Prod.ext rfl ?_
+  funext i
+  rcases i with j | j
+  · simp only [Embedding.sumMap, Function.Embedding.coeFn_mk, Sum.map_inl,
+      Embedding.refl_apply]
+  · fin_cases j
+    simp only [Embedding.sumMap, Function.Embedding.coeFn_mk, Sum.map_inr]
+    rfl
 
 variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
   (oRelIn : Set ((Statement × (∀ i, OStatement i)) × Witness))
