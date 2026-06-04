@@ -1581,6 +1581,38 @@ def ζ (R : F[X][X][Y]) (x₀ : F) (H : F[X][Y]) [H_irreducible : Fact (Irreduci
     Polynomial.eval₂ liftToFunctionField (T / W)
       (Bivariate.evalX (Polynomial.C x₀) R.derivative)
 
+/-- The `X`-specialization commutes with the `Y`-derivative. -/
+lemma evalX_derivative_comm (x₀ : F) (p : F[X][X][Y]) :
+    Bivariate.evalX (Polynomial.C x₀) p.derivative =
+      (Bivariate.evalX (Polynomial.C x₀) p).derivative := by
+  rw [Bivariate.evalX_eq_map, Bivariate.evalX_eq_map, Polynomial.derivative_map]
+
+/-- The product-rule factorization of `ζ` at the root `α₀ = T/W`: writing `Q = R(x₀,·) = H · g`
+with `g` the cofactor of the factor `H`, the Y-derivative product rule evaluated at `α₀` gives
+`ζ = H'_Y(α₀) · g(α₀)`, since the `H(α₀) · g'_Y(α₀)` term vanishes (`H(α₀) = 0`).
+This is the structural identity of Claim A.2 in Appendix A.4 of [BCIKS20]. -/
+lemma ζ_eq_evalα₀_derivative_mul (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
+    [H_irreducible : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)]
+    {g : F[X][Y]} (hg : Bivariate.evalX (Polynomial.C x₀) R = H * g) :
+    ζ R x₀ H =
+      Polynomial.eval₂ liftToFunctionField
+          (functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff) H.derivative *
+        Polynomial.eval₂ liftToFunctionField
+          (functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff) g := by
+  set α₀ : 𝕃 H := functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff with hα₀
+  -- `eval₂` at `α₀` is the ring hom `evalα₀`.
+  let evalα₀ : F[X][Y] →+* 𝕃 H := Polynomial.eval₂RingHom liftToFunctionField α₀
+  have heval (p : F[X][Y]) : Polynomial.eval₂ liftToFunctionField α₀ p = evalα₀ p := rfl
+  -- `ζ = evalα₀ (Q.derivative)` with `Q = H * g`.
+  have hζ : ζ R x₀ H = evalα₀ (Bivariate.evalX (Polynomial.C x₀) R).derivative := by
+    rw [ζ, ← evalX_derivative_comm, ← hα₀, heval]
+  rw [hζ, hg, Polynomial.derivative_mul, map_add, map_mul, map_mul]
+  -- The `H(α₀)` factor vanishes by the root lemma.
+  have hH0 : evalα₀ H = 0 := by
+    rw [← heval, hα₀]
+    exact eval₂_liftToFunctionField_div_leadingCoeff_H_eq_zero (H := H)
+  rw [hH0, zero_mul, add_zero, heval, heval]
+
 /-- If the derivative specialization is constant in the function-field variable, then `ζ` is
 regular. -/
 lemma ζ_regular_of_derivative_evalX_eq_C (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
