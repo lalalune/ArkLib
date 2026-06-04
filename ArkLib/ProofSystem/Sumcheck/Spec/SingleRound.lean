@@ -1387,6 +1387,71 @@ where
     rw [hpoT]
     exact sumcheck_round_eval_snoc D i challenges chal _ (by omega) (by omega)
 
+/-- Variant of `oCtxLens_complete` for the PLAIN `Simple.reduction`'s compatibility
+relation (used by the lifted completeness without the false `oracleReduction_eq_reduction`). -/
+instance oCtxLens_complete' :
+    (oCtxLens R n deg D i).toContext.IsComplete
+      (relationRound R n deg D i.castSucc) (Simple.inputRelation R deg D)
+      (relationRound R n deg D i.succ) (Simple.outputRelation R deg)
+      ((Simple.reduction R deg D oSpec).compatContext
+        (oCtxLens R n deg D i).toContext)
+where
+  proj_complete := by
+    simp [relationRound, Simple.inputRelation]
+    unfold oStmtLens
+    induction n with
+    | zero => exact Fin.elim0 i
+    | succ n ih =>
+      intro stmt oStmt hRelIn
+      simp [← hRelIn]
+      simp_rw [Polynomial.eval_finset_sum]
+      simp_rw [← eval_eq_eval_mv_eval_finSuccEquivNth]
+      -- Round split: ∑ a ∈ D, ∑ y ∈ D^(n-i), eval (insertNth i a (append c y ∘ cast)) p
+      --            = ∑ z ∈ D^(n+1-i), eval (append c z ∘ cast) p
+      exact sumcheck_round_split D i _ _ (by omega) (by omega) (by omega)
+  lift_complete := by
+    induction n with
+    | zero => exact Fin.elim0 i
+    | succ n' _ih =>
+    rintro ⟨⟨target, challenges⟩, oStmt⟩ _ ⟨⟨newTarget, chal⟩, oStmt'⟩ _ hCompat hRelIn hRelOut'
+    simp only [Simple.outputRelation, Set.mem_setOf_eq] at hRelOut'
+    -- From `hCompat`: the inner output context is the honest reduction's prover output.
+    -- Plain-reduction compat variant: the prover is literally `Simple.prover`,
+    -- and only the prover side is used below.
+    rw [Reduction.compatContext] at hCompat
+    simp only [Simple.reduction, Set.mem_image, Function.comp_apply] at hCompat
+    obtain ⟨out, hout, heq⟩ := hCompat
+    -- The reduction run's first component is the prover run; extract it.
+    simp only [Reduction.run, OptionT.run_bind, Option.elimM] at hout
+    rw [mem_support_bind_iff] at hout
+    obtain ⟨proverResOpt, hprover, _hout⟩ := hout
+    -- `out.1 = proverResOpt`, and `heq` pins `out.1.2`, so `proverResOpt.2.1 = ((newTarget, chal), oStmt')`
+    have hout1 : out.1 = proverResOpt := by
+      simp only [support_bind, Set.mem_iUnion] at _hout
+      obtain ⟨_, _, _hout⟩ := _hout
+      obtain ⟨_, _, _hout⟩ := _hout
+      rw [support_pure, Set.mem_singleton_iff] at _hout
+      exact congrArg Prod.fst _hout
+    rw [hout1] at heq
+    -- Characterize the prover output via `prover_run_output`.
+    have hprover' : proverResOpt ∈
+        support ((Simple.prover R deg oSpec).run
+          (Statement.Lens.proj (oCtxLens R (n' + 1) deg D i).stmt
+            ({ target := target, challenges := challenges }, oStmt)) ()) := by
+      rw [OptionT.support_liftM] at hprover
+      simpa using hprover
+    have hpo := Simple.prover_run_output R deg oSpec _ proverResOpt hprover'
+    -- `heq : proverResOpt.2 = (((newTarget, chal), oStmt'), innerWitOut)`
+    obtain ⟨hpoO, hpoT⟩ := hpo
+    rw [heq] at hpoO hpoT
+    -- Now `hpoT : newTarget = eval chal roundPoly`; assemble the round update.
+    dsimp only at hpoT ⊢
+    dsimp only [Statement.Lens.proj, Statement.Lens.lift, OracleContext.Lens.toContext,
+      oCtxLens, oStmtLens, Witness.Lens.trivial] at hpoT ⊢
+    simp only [relationRound, Set.mem_setOf_eq]
+    rw [hpoT]
+    exact sumcheck_round_eval_snoc D i challenges chal _ (by omega) (by omega)
+
 instance extractorLens_rbr_knowledge_soundness :
     Extractor.Lens.IsKnowledgeSound
       (relationRound R n deg D i.castSucc) (Simple.inputRelation R deg D)
@@ -1453,9 +1518,7 @@ theorem reduction_perfectCompleteness :
     (relationRound R n deg D i.castSucc) (relationRound R n deg D i.succ) :=
   Reduction.liftContext_perfectCompleteness
     (lens := (oCtxLens R n deg D i).toContext)
-    (lensComplete := by
-      rw [← Simple.oracleReduction_eq_reduction R deg D oSpec]
-      infer_instance)
+    (lensComplete := inferInstance)
     (Simple.reduction_perfectCompleteness R deg D oSpec)
 
 theorem verifier_rbrKnowledgeSoundness [Fintype R] :
