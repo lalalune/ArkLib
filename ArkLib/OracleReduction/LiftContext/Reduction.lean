@@ -237,6 +237,19 @@ theorem mem_support_simulateQ_run'_subset
       simp only [support_bind, support_query, Set.mem_iUnion]
       exact ⟨u, by simp, hxmx⟩
 
+/-- Folding an output post-map `g` over an `OptionT ProbComp` computation of the form
+  `OptionT.mk ((fun p => Option.map g p.1) <$> base)` into the event predicate: its `probEvent`
+  of `P` equals the `probEvent` of `P ∘ g` over the unmapped `OptionT.mk ((fun p => p.1) <$> base)`.
+
+  Used to relate the lifted reduction run (which post-composes the inner run with the output lens
+  map) to the inner run. -/
+theorem probEvent_optionT_mk_map_fst_map {α β γ : Type}
+    (base : ProbComp (Option α × γ)) (g : α → β) (P : β → Prop) :
+    Pr[P | (OptionT.mk ((fun p => Option.map g p.1) <$> base) : OptionT ProbComp β)] =
+      Pr[P ∘ g | (OptionT.mk ((fun p => p.1) <$> base) : OptionT ProbComp α)] :=
+  OptionT.probEvent_eq_of_run_map_eq _ _ g P
+    (by simp only [OptionT.run_map, OptionT.run_mk, Functor.map_map, Function.comp_apply])
+
 namespace Prover
 
 /- Breaking down the intertwining of liftContext and prover execution -/
@@ -384,7 +397,42 @@ variable
 theorem liftContext_completeness
     (h : R.completeness init impl innerRelIn innerRelOut completenessError) :
       (R.liftContext lens).completeness init impl outerRelIn outerRelOut completenessError := by
-  sorry
+  unfold completeness at h ⊢
+  intro outerStmtIn outerWitIn hRelIn
+  have hR := h (lens.stmt.proj outerStmtIn) (lens.wit.proj (outerStmtIn, outerWitIn))
+    (lensComplete.proj_complete _ _ hRelIn)
+  rw [Reduction.liftContext_run]
+  refine le_trans hR ?_
+  -- Normalise both computations to maps of the common `init`-then-simulate base computation.
+  -- The LHS is then `Pr[P_inner | (fun p => p.1) <$> base]` and the RHS is
+  -- `Pr[P_outer | (fun p => Option.map f p.1) <$> base]`, where `f` is the output lens map.
+  simp only [Function.uncurry, Context.Lens.proj, bind_pure_comp, OptionT.run_map, simulateQ_map,
+    StateT.run'_eq, StateT.run_map, map_bind, Functor.map_map, ← map_bind]
+  -- Fold the output lens map `f` into the RHS predicate.
+  rw [probEvent_optionT_mk_map_fst_map]
+  -- Both `probEvent`s are now over the same computation; reduce to a support-aware pointwise
+  -- implication and discharge it with the lens completeness law.
+  refine _root_.probEvent_mono ?_
+  rintro ⟨⟨innerTr, innerStmtPrv, innerWit⟩, innerStmtVer⟩ hSupport ⟨hRelOut, hVer⟩
+  -- `hVer : innerStmtPrv = innerStmtVer`: the prover & verifier output statements agree.
+  simp only [Function.comp_apply] at hVer ⊢
+  subst hVer
+  refine ⟨?_, rfl⟩
+  -- Goal: the lifted output context satisfies `outerRelOut`.  Apply the lens completeness law.
+  refine lensComplete.lift_complete outerStmtIn outerWitIn innerStmtPrv innerWit ?_ hRelIn hRelOut
+  -- Compatibility witness: the inner output context is reachable by the inner reduction run.
+  simp only [OptionT.mem_support_iff, OptionT.run_mk, mem_support_bind_iff, support_map,
+    Set.mem_image] at hSupport
+  obtain ⟨x, ⟨s, _hs, hmem⟩, hx1⟩ := hSupport
+  have hsub := mem_support_simulateQ_run'_subset (impl.addLift challengeQueryImpl) s
+    (Reduction.run (lens.stmt.proj outerStmtIn)
+      (lens.wit.proj (outerStmtIn, outerWitIn)) R).run x.1
+    (by simp only [StateT.run'_eq, support_map, Set.mem_image]; exact ⟨x, hmem, rfl⟩)
+  rw [hx1] at hsub
+  rw [Reduction.compatContext]
+  simp only [Set.mem_image, Function.comp_apply]
+  refine ⟨((innerTr, innerStmtPrv, innerWit), innerStmtPrv), ?_, rfl⟩
+  rwa [← OptionT.mem_support_iff] at hsub
 
 theorem liftContext_perfectCompleteness
     (h : R.perfectCompleteness init impl innerRelIn innerRelOut) :
