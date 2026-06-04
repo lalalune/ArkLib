@@ -129,33 +129,30 @@ def batchedFRIOracleLens [DecidableEq F] :
   projStmt := fun stmtIn => stmtIn.2
   liftStmt := fun _ innerStmtOut => innerStmtOut
   simOStmt := fun q =>
-    match q with
-    | ⟨j, v⟩ => ReaderT.mk fun stmtIn => do
-        have hv : v.1 ∈ ω.toFinset := by
-          rw [ReedSolomon.CosetFftDomain.mem_coset_finset_iff_mem_coset_domain]
-          rcases j with ⟨j, h⟩
-          have : j = 0 := by simpa using h
-          simp only [Nat.succ_eq_add_one, Fin.coe_ofNat_eq_mod, Nat.zero_mod, Nat.reduceAdd,
-            Fin.ofNat_eq_cast, Fin.val_natCast] at v
-          rcases v with ⟨v, h'⟩
-          simp only
-          subst this
-          simp only [finRangeTo.eq_1, List.take_zero, List.toFinset_nil, Finset.sum_empty,
-            Nat.sub_zero, ReedSolomon.CosetFftDomain.subdomainNatReversed,
-            ReedSolomon.CosetFftDomain.subdomainNat, Nat.succ_eq_add_one, Fin.ofNat_eq_cast] at h'
-          rw [ReedSolomon.CosetFftDomain.mem_coset_finset_iff_mem_coset_domain] at h'
-          rw [←ReedSolomon.CosetFftDomain.subdomain_n']
-          exact (ReedSolomon.CosetFftDomain.mem_subdomain_of_eq_vals (by simp)).1 h'
-        let cs := stmtIn.1
-        let pt : ω.toFinset := ⟨v.1, hv⟩
-        let base : F ← (query (spec := [OracleStatement m ω]ₒ)
-          (⟨0, pt⟩ : [OracleStatement m ω]ₒ.Domain) :
-          OracleComp (([]ₒ) + [OracleStatement m ω]ₒ) F)
-        let restList : List F ← (List.finRange m).mapM (fun j =>
-          (query (spec := [OracleStatement m ω]ₒ)
-            (⟨j.succ, pt⟩ : [OracleStatement m ω]ₒ.Domain) :
-            OracleComp (([]ₒ) + [OracleStatement m ω]ₒ) F))
-        pure (base + ∑ j : Fin m, cs j * restList.getD j.val 0)
+      match q with
+      | ⟨j, v⟩ => ReaderT.mk fun stmtIn => do
+          have hv : v.1 ∈ ω.toFinset := by
+            simp only [CosetFftDomainClass.mem_toFinset_iff_mem]
+            rcases j with ⟨j, h⟩
+            have : j = 0 := by simpa using h
+            simp only [Fin.coe_ofNat_eq_mod, Nat.zero_mod, Nat.reduceAdd] at v
+            rcases v with ⟨v, h'⟩
+            simp only
+            subst this
+            simp only [finRangeTo.eq_1, List.take_zero, List.toFinset_nil, Finset.sum_empty,
+              Nat.sub_zero, CosetFftDomainClass.mem_toFinset_iff_mem] at h'
+            rw [←CosetFftDomainClass.mem_subdomain_0_iff_mem]
+            exact h'
+          let cs := stmtIn.1
+          let pt : ω.toFinset := ⟨v.1, hv⟩
+          let base : F ← (query (spec := [OracleStatement m ω]ₒ)
+            (⟨0, pt⟩ : [OracleStatement m ω]ₒ.Domain) :
+            OracleComp (([]ₒ) + [OracleStatement m ω]ₒ) F)
+          let restList : List F ← (List.finRange m).mapM (fun j =>
+            (query (spec := [OracleStatement m ω]ₒ)
+              (⟨j.succ, pt⟩ : [OracleStatement m ω]ₒ.Domain) :
+              OracleComp (([]ₒ) + [OracleStatement m ω]ₒ) F))
+          pure (base + ∑ j : Fin m, cs j * restList.getD j.val 0)
   embedOStmt :=
     (Fri.Spec.reduction k s d dom_size_cond l).verifier.embed.trans
       (Function.Embedding.sumMap
@@ -183,11 +180,11 @@ def batchedFRIOracleLens [DecidableEq F] :
       -- `OracleStatement m ω (castLE 0) = OracleStatement m ω 0 = ω.toFinset → F`; and
       -- `Fri.Spec.OracleStatement s ω 0 0 = (ω.subdomainNatReversed 0).toFinset → F`, with
       -- `(ω.subdomainNatReversed 0).toFinset = ω.toFinset`, so the two oracle families agree.
-      have hdom : (ω.subdomainNatReversed 0).toFinset = ω.toFinset := by
+      have hdom : (ω.subdomain 0).toFinset = ω.toFinset := by
         ext x
-        rw [ReedSolomon.CosetFftDomain.mem_coset_finset_iff_mem_coset_domain,
-          ReedSolomon.CosetFftDomain.subdomainNatReversed_zero,
-          ← ReedSolomon.CosetFftDomain.mem_coset_finset_iff_mem_coset_domain]
+        rw [CosetFftDomainClass.mem_toFinset_iff_mem,
+          CosetFftDomainClass.mem_subdomain_0_iff_mem,
+          ← CosetFftDomainClass.mem_toFinset_iff_mem]
       show Fri.Spec.OracleStatement s ω 0 0 = OracleStatement m ω (Fin.castLE (Nat.le_add_left 1 m) 0)
       have hcast : (Fin.castLE (Nat.le_add_left 1 m) (0 : Fin (0 + 1))) = (0 : Fin (m + 1)) :=
         Fin.ext (by simp only [Fin.val_castLE, Fin.val_zero])

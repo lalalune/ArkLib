@@ -260,12 +260,6 @@ variable (F : Type) [Field F] [Fintype F] [DecidableEq F] [Fact ((-1 : F) ≠ 1)
   [SampleableType F] (n M : ℕ)
 variable (params : ProtocolParams M)
 
-/-- The full LogUp verifier, obtained by composing the outer verifier with the embedded sumcheck
-verifier. -/
-local instance instAppendCoherent_outerVerifier :
-    OracleVerifier.Append.AppendCoherent (outerVerifier oSpec F n M params) := by
-  sorry
-
 noncomputable def logupVerifier :
     OracleVerifier oSpec (StmtIn F n M) (OStmtIn F n M)
       (StmtOut) (OStmtOut)

@@ -6,6 +6,7 @@ Authors: Quang Dao
 
 import ArkLib.ProofSystem.ConstraintSystem.R1CS
 import ArkLib.Data.MvPolynomial.Multilinear
+import ArkLib.ProofSystem.Component.SendWitness
 import ArkLib.ProofSystem.Sumcheck.Spec.General
 
 /-!
@@ -19,6 +20,8 @@ without asserting protocol-security theorems.
 namespace Spartan
 
 noncomputable section
+
+open MvPolynomial
 
 /-- The public parameters of the (padded) Spartan protocol. Consists of the number of bits of the
   R1CS dimensions, and the number of bits of the witness variables. -/
@@ -128,7 +131,8 @@ def zeroCheckVirtualPolynomial (𝕩 : Statement.AfterFirstMessage R pp)
   letI 𝕫 := R1CS.𝕫 𝕩 (oStmt (.inr 0))
   ∑ x : Fin (2 ^ pp.ℓ_m),
     (eqPolynomial (finFunctionFinEquiv.symm x : Fin pp.ℓ_m → R)) *
-      C ((oStmt (.inl .A) *ᵥ 𝕫) x * (oStmt (.inl .B) *ᵥ 𝕫) x - (oStmt (.inl .C) *ᵥ 𝕫) x)
+      C (((oStmt (.inl .A)).mulVec 𝕫) x * ((oStmt (.inl .B)).mulVec 𝕫) x -
+        ((oStmt (.inl .C)).mulVec 𝕫) x)
 
 /-- Unfolds to `τ : Fin ℓ_m → R` -/
 @[simp]
@@ -412,7 +416,7 @@ noncomputable def evalClaimValue
   letI r_x : Fin pp.ℓ_m → R := stmt.1
   letI 𝕩 : Statement.AfterFirstMessage R pp := stmt.2.2
   letI 𝕫 := R1CS.𝕫 𝕩 (oStmt (.inr 0))
-  fun idx => MvPolynomial.eval r_x (MLE (((oStmt (.inl idx)) *ᵥ 𝕫) ∘ finFunctionFinEquiv))
+  fun idx => MvPolynomial.eval r_x (MLE (((oStmt (.inl idx)).mulVec 𝕫) ∘ finFunctionFinEquiv))
 
 /-- The oracle prover for `sendEvalClaim`: it forwards the input oracle family `A, B, C, 𝕨`
 unchanged and sends the bundled evaluation claim `(v_A, v_B, v_C)` (computed via `evalClaimValue`)

@@ -1420,18 +1420,23 @@ theorem common_roots_force_lift_zero
   have hsub : (T : Set F) ⊆ _root_.BCIKS20AppendixA.S_β β := by
     simpa [β] using (common_roots_subset_S_β_mk (H := H) (P := P) (T := T) hroot)
   rcases eq_or_ne (_root_.BCIKS20AppendixA.canonicalRepOf𝒪 hH β) 0 with hβ | hβ
-  · simpa [β] using
-      (_root_.BCIKS20AppendixA.embeddingOf𝒪Into𝕃_eq_zero_of_canonicalRep_eq_zero
-        hH β hβ)
+  · have hβzero : β = 0 := by
+      rw [← _root_.BCIKS20AppendixA.mk_canonicalRepOf𝒪 hH β, hβ]
+      simp
+    simpa [β, hβzero]
   have hSfinite : (_root_.BCIKS20AppendixA.S_β β).Finite := by
-    have hsubroot :
-        _root_.BCIKS20AppendixA.S_β β ⊆
-          ↑((_root_.BCIKS20AppendixA.elimPoly hH β).roots.toFinset) := by
+    let R := Polynomial.resultant (_root_.BCIKS20AppendixA.canonicalRepOf𝒪 hH β)
+      (_root_.BCIKS20AppendixA.H_tilde' H) H.natDegree H.natDegree
+    have hβ_ne : β ≠ 0 := by
+      intro hβzero
+      apply hβ
+      rw [hβzero, _root_.BCIKS20AppendixA.canonicalRepOf𝒪_zero]
+    have hR_ne : R ≠ 0 :=
+      _root_.BCIKS20AppendixA.resultant_canonicalRep_H_tilde'_ne_zero hH hβ_ne
+    have hsubroot : _root_.BCIKS20AppendixA.S_β β ⊆ {z : F | R.IsRoot z} := by
       intro z hz
-      rw [Finset.mem_coe, Multiset.mem_toFinset,
-        Polynomial.mem_roots (_root_.BCIKS20AppendixA.elimPoly_ne_zero hH β hβ)]
-      exact _root_.BCIKS20AppendixA.elimPoly_eval_eq_zero_of_mem_S_β hH β hz
-    exact (Finset.finite_toSet _).subset hsubroot
+      exact _root_.BCIKS20AppendixA.eval_resultant_eq_zero_of_mem_S_β hH β hz
+    exact (Polynomial.finite_setOf_isRoot hR_ne).subset hsubroot
   have hTcard : T.card ≤ Set.ncard (_root_.BCIKS20AppendixA.S_β β) := by
     rw [← Set.ncard_coe_finset T]; exact Set.ncard_le_ncard hsub hSfinite
   have hTcard' :
@@ -1456,8 +1461,11 @@ theorem H_tilde'_dvd_of_embedding_mk_eq_zero
     Ideal.Quotient.mk (Ideal.span {_root_.BCIKS20AppendixA.H_tilde' H}) P
   have hcanon :
       _root_.BCIKS20AppendixA.canonicalRepOf𝒪 hH β = 0 :=
-    _root_.BCIKS20AppendixA.canonicalRep_eq_zero_of_embeddingOf𝒪Into𝕃_eq_zero
-      hH β (by simpa [β] using hemb)
+    by
+      have hβzero : β = 0 := by
+        apply _root_.BCIKS20AppendixA.embeddingOf𝒪Into𝕃_injective hH
+        simpa [β] using hemb
+      rw [hβzero, _root_.BCIKS20AppendixA.canonicalRepOf𝒪_zero]
   have hβzero : β = 0 := by
     rw [← _root_.BCIKS20AppendixA.mk_canonicalRepOf𝒪 hH β, hcanon]
     simp

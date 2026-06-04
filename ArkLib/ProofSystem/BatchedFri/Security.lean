@@ -751,10 +751,10 @@ lemma fri_soundness
         Pr[fun _ => True |
             OracleReduction.run () f ()
               ⟨
-                prov,
-                (BatchedFri.Spec.batchedFRIreduction
-                  (ω := ω) (n := n) k s d l t).verifier
-              ⟩
+                  prov,
+                  (BatchedFri.Spec.batchedFRIreduction
+                    (ω := ω) (n := n) k s d domain_size_cond l t).verifier
+                ⟩
           ] > εC 𝔽 n s m ρ_sqrt + α ^ l) →
       Code.jointAgreement
         (F := 𝔽)

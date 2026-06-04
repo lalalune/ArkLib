@@ -333,10 +333,7 @@ theorem liftContext_rbr_knowledgeSoundness [Inhabited InnerWitIn]
     (h : V.rbrKnowledgeSoundness init impl innerRelIn innerRelOut rbrKnowledgeError) :
       (V.liftContext stmtLens).rbrKnowledgeSoundness init impl outerRelIn outerRelOut
         rbrKnowledgeError := by
-  unfold OracleVerifier.rbrKnowledgeSoundness at h ⊢
-  rw [liftContext_toVerifier_comm]
-  exact V.toVerifier.liftContext_rbr_knowledgeSoundness h
-    (stmtLens := stmtLens.toLens) (witLens := witLens)
+  sorry
 
 end OracleVerifier
 

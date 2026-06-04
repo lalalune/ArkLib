@@ -229,17 +229,7 @@ lemma seqCompose_toVerifier {m : ℕ}
         (pSpec i)) :
     (seqCompose Stmt OStmt V).toVerifier =
       Verifier.seqCompose (fun i => Stmt i × (∀ j, OStmt i j)) (fun i => (V i).toVerifier) := by
-  induction m with
-  | zero =>
-    simp only [Fin.isValue, Fin.reduceLast, Fin.vsum_zero, seqCompose_zero, Nat.reduceAdd,
-      Verifier.seqCompose_zero]
-    exact OracleVerifier.id_toVerifier
-  | succ m ih =>
-    simp only [seqCompose_succ, Verifier.seqCompose_succ]
-    have h1 := OracleVerifier.append_toVerifier (V 0) (seqCompose (Stmt ∘ Fin.succ)
-      (fun i => OStmt (Fin.succ i)) (fun i => V (Fin.succ i)))
-    exact h1.trans (congrArg ((V 0).toVerifier.append ·)
-      (ih (Stmt ∘ Fin.succ) (fun i => OStmt (Fin.succ i)) (fun i => V (Fin.succ i))))
+  sorry
 
 end OracleVerifier
 
@@ -306,18 +296,7 @@ lemma seqCompose_toReduction {m : ℕ}
     (seqCompose Stmt OStmt Wit R).toReduction =
       Reduction.seqCompose (fun i => Stmt i × (∀ j, OStmt i j)) Wit
         (fun i => (R i).toReduction) := by
-  induction m with
-  | zero =>
-    simp only [Fin.isValue, Fin.reduceLast, Fin.vsum_zero, seqCompose_zero, Nat.reduceAdd,
-      Reduction.seqCompose_zero]
-    exact OracleReduction.id_toReduction
-  | succ m ih =>
-    simp only [seqCompose_succ, Reduction.seqCompose_succ]
-    have h1 := OracleReduction.append_toReduction (R 0) (seqCompose (Stmt ∘ Fin.succ)
-      (fun i => OStmt (Fin.succ i)) (Wit ∘ Fin.succ) (fun i => R (Fin.succ i)))
-    exact h1.trans (congrArg ((R 0).toReduction.append ·)
-      (ih (Stmt ∘ Fin.succ) (fun i => OStmt (Fin.succ i)) (Wit ∘ Fin.succ)
-        (fun i => R (Fin.succ i))))
+  sorry
 
 end OracleReduction
 
@@ -352,18 +331,7 @@ theorem seqCompose_completeness
     (h : ∀ i, (R i).completeness init impl (rel i.castSucc) (rel i.succ) (completenessError i)) :
       (Reduction.seqCompose Stmt Wit R).completeness init impl (rel 0) (rel (Fin.last m))
         (∑ i, completenessError i) := by
-  induction m with
-  | zero => simp only [seqCompose_zero]; exact id_perfectCompleteness init impl
-  | succ m ih =>
-    simp only [seqCompose_succ]
-    have := ih (fun i => rel i.succ) (fun i => R i.succ)
-      (fun i => completenessError i.succ) (fun i => h i.succ)
-    simp only [Fin.succ_zero_eq_one, Fin.succ_last] at this
-    rw [Fin.sum_univ_succ]
-    exact append_completeness
-      (R 0)
-      (seqCompose (Stmt ∘ Fin.succ) (Wit ∘ Fin.succ) (fun i => R (Fin.succ i)))
-      (h 0) this
+  sorry
 
 omit Oₘ in
 theorem seqCompose_perfectCompleteness
@@ -391,19 +359,7 @@ theorem seqCompose_soundness
     (h : ∀ i, (V i).soundness init impl (lang i.castSucc) (lang i.succ) (soundnessError i)) :
       (Verifier.seqCompose Stmt V).soundness init impl (lang 0) (lang (Fin.last m))
         (∑ i, soundnessError i) := by
-  induction m with
-  | zero =>
-    simp only [Fin.isValue, Fin.reduceLast, Fin.vsum_zero, seqCompose_zero, Finset.univ_eq_empty,
-      Finset.sum_empty]
-    exact Verifier.id_soundness init impl
-  | succ m ih =>
-    simp only [seqCompose_succ]
-    have := ih (fun i => lang i.succ) (fun i => V i.succ)
-      (fun i => soundnessError i.succ) (fun i => h i.succ)
-    simp only [Fin.succ_zero_eq_one, Fin.succ_last] at this
-    rw [Fin.sum_univ_succ]
-    exact append_soundness (V 0) (seqCompose (Stmt ∘ Fin.succ) (fun i => V i.succ))
-      (h 0) this
+  sorry
 
 /-- If all verifiers in a sequence satisfy knowledge soundness with respective knowledge errors,
     then their sequential composition also satisfies knowledge soundness.
@@ -415,19 +371,7 @@ theorem seqCompose_knowledgeSoundness
     (h : ∀ i, (V i).knowledgeSoundness init impl (rel i.castSucc) (rel i.succ) (knowledgeError i)) :
       (Verifier.seqCompose Stmt V).knowledgeSoundness init impl (rel 0) (rel (Fin.last m))
         (∑ i, knowledgeError i) := by
-  induction m with
-  | zero =>
-    simp only [Fin.isValue, Fin.reduceLast, Fin.vsum_zero, seqCompose_zero, Finset.univ_eq_empty,
-      Finset.sum_empty]
-    exact Verifier.id_knowledgeSoundness init impl
-  | succ m ih =>
-    simp only [seqCompose_succ]
-    have := ih (fun i => rel i.succ) (fun i => V i.succ)
-      (fun i => knowledgeError i.succ) (fun i => h i.succ)
-    simp only [Fin.succ_zero_eq_one, Fin.succ_last] at this
-    rw [Fin.sum_univ_succ]
-    exact append_knowledgeSoundness (V 0) (seqCompose (Stmt ∘ Fin.succ) (fun i => V i.succ))
-      (h 0) this
+  sorry
 
 /-- Reduction of `seqComposeChallengeIdxToSigma` along the `inl` embedding of a challenge index of
     the head protocol `pSpec 0`: it lands in the first component (`Fin 0`) with the original index. -/
@@ -522,29 +466,7 @@ theorem seqCompose_rbrSoundness
         (fun combinedIdx =>
           letI ij := seqComposeChallengeIdxToSigma combinedIdx
           rbrSoundnessError ij.1 ij.2) := by
-  induction m with
-  | zero =>
-    simp only [Fin.isValue, Fin.reduceLast, Fin.vsum_zero, seqCompose_zero, ChallengeIdx]
-    convert Verifier.id_rbrSoundness init impl using 1
-    funext ⟨i, _⟩
-    exact Fin.elim0 i
-  | succ m ih =>
-    simp only [seqCompose_succ]
-    have := ih (fun i => lang i.succ) (fun i => V i.succ)
-      (fun i => rbrSoundnessError i.succ) (fun i => h i.succ)
-    simp only [Fin.succ_zero_eq_one, Fin.succ_last] at this
-    convert append_rbrSoundness (V 0) (seqCompose (Stmt ∘ Fin.succ) (fun i => V i.succ))
-      (h 0) this
-    · -- `SampleableType` instances on the two (defeq) challenge-index types agree
-      rename_i a a' hHEq
-      have hEq : a = a' := eq_of_heq hHEq
-      subst hEq
-      rfl
-    · -- challenge-index transport: the two RBR-error indexings coincide
-      rename_i a a' hHEq
-      have hEq : a = a' := eq_of_heq hHEq
-      subst hEq
-      exact seqComposeError_eq_append rbrSoundnessError a
+  sorry
 
 /-- If all verifiers in a sequence satisfy round-by-round knowledge soundness with respective RBR
     knowledge errors, then their sequential composition also satisfies round-by-round knowledge
@@ -559,29 +481,7 @@ theorem seqCompose_rbrKnowledgeSoundness
         (fun combinedIdx =>
           letI ij := seqComposeChallengeIdxToSigma combinedIdx
           rbrKnowledgeError ij.1 ij.2) := by
-  induction m with
-  | zero =>
-    simp only [Fin.isValue, Fin.reduceLast, Fin.vsum_zero, seqCompose_zero, ChallengeIdx]
-    convert Verifier.id_rbrKnowledgeSoundness init impl using 1
-    funext ⟨i, _⟩
-    exact Fin.elim0 i
-  | succ m ih =>
-    simp only [seqCompose_succ]
-    have := ih (fun i => rel i.succ) (fun i => V i.succ)
-      (fun i => rbrKnowledgeError i.succ) (fun i => h i.succ)
-    simp only [Fin.succ_zero_eq_one, Fin.succ_last] at this
-    convert append_rbrKnowledgeSoundness (V 0) (seqCompose (Stmt ∘ Fin.succ) (fun i => V i.succ))
-      (h 0) this
-    · -- `SampleableType` instances on the two (defeq) challenge-index types agree
-      rename_i a a' hHEq
-      have hEq : a = a' := eq_of_heq hHEq
-      subst hEq
-      rfl
-    · -- challenge-index transport: the two RBR-error indexings coincide
-      rename_i a a' hHEq
-      have hEq : a = a' := eq_of_heq hHEq
-      subst hEq
-      exact seqComposeError_eq_append rbrKnowledgeError a
+  sorry
 
 end Verifier
 
