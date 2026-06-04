@@ -1116,3 +1116,113 @@ theorem append_rbrKnowledgeSoundness
 end Verifier
 
 end Security
+
+/-! ## Oracle-protocol sequential-append security lemmas (restored after the main merge)
+
+The oracle-namespace counterparts of the lemmas above, consumed by `General.lean` and
+`ProofSystem/RingSwitching/SumcheckPhase.lean`. Unlike the plain versions these are genuinely
+PROVEN: each reduces to its plain counterpart through the `append_toVerifier` / `append_toReduction`
+commutations. Restored after the `gh-issues` merge dropped them along with the rest of the append
+security section. -/
+section OracleSecurity
+
+open scoped NNReal
+
+variable {ιₛ₁ : Type} {OStmt₁ : ιₛ₁ → Type} [Oₛ₁ : ∀ i, OracleInterface (OStmt₁ i)]
+    {ιₛ₂ : Type} {OStmt₂ : ιₛ₂ → Type} [Oₛ₂ : ∀ i, OracleInterface (OStmt₂ i)]
+    {ιₛ₃ : Type} {OStmt₃ : ιₛ₃ → Type} [Oₛ₃ : ∀ i, OracleInterface (OStmt₃ i)]
+    [Oₘ₁ : ∀ i, OracleInterface ((pSpec₁.Message i))]
+    [Oₘ₂ : ∀ i, OracleInterface ((pSpec₂.Message i))]
+    [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)]
+    {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel₁ : Set ((Stmt₁ × ∀ i, OStmt₁ i) × Wit₁)}
+    {rel₂ : Set ((Stmt₂ × ∀ i, OStmt₂ i) × Wit₂)}
+    {rel₃ : Set ((Stmt₃ × ∀ i, OStmt₃ i) × Wit₃)}
+
+namespace OracleReduction
+
+/-- Sequential composition of oracle reductions preserves completeness. -/
+theorem append_completeness
+    (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
+    (R₂ : OracleReduction oSpec Stmt₂ OStmt₂ Wit₂ Stmt₃ OStmt₃ Wit₃ pSpec₂)
+    {completenessError₁ completenessError₂ : ℝ≥0}
+    (h₁ : R₁.completeness init impl rel₁ rel₂ completenessError₁)
+    (h₂ : R₂.completeness init impl rel₂ rel₃ completenessError₂) :
+      (R₁.append R₂).completeness init impl
+        rel₁ rel₃ (completenessError₁ + completenessError₂) := by
+  unfold OracleReduction.completeness
+  convert Reduction.append_completeness R₁.toReduction R₂.toReduction h₁ h₂
+  simp only [append_toReduction]
+
+/-- Sequential composition of oracle reductions preserves perfect completeness. -/
+theorem append_perfectCompleteness
+    (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
+    (R₂ : OracleReduction oSpec Stmt₂ OStmt₂ Wit₂ Stmt₃ OStmt₃ Wit₃ pSpec₂)
+    (h₁ : R₁.perfectCompleteness init impl rel₁ rel₂)
+    (h₂ : R₂.perfectCompleteness init impl rel₂ rel₃) :
+      (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃ := by
+  unfold OracleReduction.perfectCompleteness Reduction.perfectCompleteness
+  convert OracleReduction.append_completeness R₁ R₂ h₁ h₂
+  simp
+
+end OracleReduction
+
+namespace OracleVerifier
+
+variable {lang₁ : Set (Stmt₁ × (∀ i, OStmt₁ i))} {lang₂ : Set (Stmt₂ × (∀ i, OStmt₂ i))}
+    {lang₃ : Set (Stmt₃ × (∀ i, OStmt₃ i))}
+
+/-- Sequential composition of oracle verifiers preserves soundness. -/
+theorem append_soundness
+    (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂)
+    {soundnessError₁ soundnessError₂ : ℝ≥0}
+    (h₁ : V₁.soundness init impl lang₁ lang₂ soundnessError₁)
+    (h₂ : V₂.soundness init impl lang₂ lang₃ soundnessError₂) :
+      (V₁.append V₂).soundness init impl lang₁ lang₃ (soundnessError₁ + soundnessError₂) := by
+  unfold OracleVerifier.soundness
+  convert Verifier.append_soundness V₁.toVerifier V₂.toVerifier h₁ h₂
+  simp only [append_toVerifier]
+
+/-- Sequential composition of oracle verifiers preserves knowledge soundness. -/
+theorem append_knowledgeSoundness
+    (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂)
+    {knowledgeError₁ knowledgeError₂ : ℝ≥0}
+    (h₁ : V₁.knowledgeSoundness init impl rel₁ rel₂ knowledgeError₁)
+    (h₂ : V₂.knowledgeSoundness init impl rel₂ rel₃ knowledgeError₂) :
+      (V₁.append V₂).knowledgeSoundness init impl rel₁ rel₃
+        (knowledgeError₁ + knowledgeError₂) := by
+  unfold OracleVerifier.knowledgeSoundness
+  convert Verifier.append_knowledgeSoundness V₁.toVerifier V₂.toVerifier h₁ h₂
+  simp only [append_toVerifier]
+
+/-- Sequential composition of oracle verifiers preserves round-by-round soundness. -/
+theorem append_rbrSoundness (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂)
+    {rbrSoundnessError₁ : pSpec₁.ChallengeIdx → ℝ≥0}
+    {rbrSoundnessError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
+    (h₁ : V₁.rbrSoundness init impl lang₁ lang₂ rbrSoundnessError₁)
+    (h₂ : V₂.rbrSoundness init impl lang₂ lang₃ rbrSoundnessError₂) :
+      (V₁.append V₂).rbrSoundness init impl lang₁ lang₃
+        (Sum.elim rbrSoundnessError₁ rbrSoundnessError₂ ∘ ChallengeIdx.sumEquiv.symm) := by
+  unfold OracleVerifier.rbrSoundness
+  convert Verifier.append_rbrSoundness V₁.toVerifier V₂.toVerifier h₁ h₂
+  simp only [append_toVerifier]
+
+/-- Sequential composition of oracle verifiers preserves round-by-round knowledge soundness. -/
+theorem append_rbrKnowledgeSoundness (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂)
+    {rbrKnowledgeError₁ : pSpec₁.ChallengeIdx → ℝ≥0}
+    {rbrKnowledgeError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
+    (h₁ : V₁.rbrKnowledgeSoundness init impl rel₁ rel₂ rbrKnowledgeError₁)
+    (h₂ : V₂.rbrKnowledgeSoundness init impl rel₂ rel₃ rbrKnowledgeError₂) :
+      (V₁.append V₂).rbrKnowledgeSoundness init impl rel₁ rel₃
+        (Sum.elim rbrKnowledgeError₁ rbrKnowledgeError₂ ∘ ChallengeIdx.sumEquiv.symm) := by
+  unfold OracleVerifier.rbrKnowledgeSoundness
+  convert Verifier.append_rbrKnowledgeSoundness V₁.toVerifier V₂.toVerifier h₁ h₂
+  simp only [append_toVerifier]
+
+end OracleVerifier
+
+end OracleSecurity
