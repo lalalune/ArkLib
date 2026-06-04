@@ -5,6 +5,7 @@ Authors: Quang Dao, František Silváši, Julian Sutherland, Ilia Vlasov
 -/
 
 import ArkLib.ProofSystem.Fri.Spec.General
+import ArkLib.Data.Domain.CosetFftDomain.Subdomain
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ReedSolomonGap
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ErrorBound
 import ArkLib.OracleReduction.Security.Basic
@@ -26,7 +27,7 @@ composition infrastructure needed for the full soundness proof.
 
 namespace Fri
 
-open Polynomial OracleSpec OracleComp ProtocolSpec Finset NNReal ProximityGap
+open Polynomial OracleSpec OracleComp ProtocolSpec Finset NNReal ProximityGap Domain
 
 namespace Spec
 
@@ -35,14 +36,14 @@ variable {n : ℕ}
 variable (k : ℕ) (s : Fin (k + 1) → ℕ+) (d : ℕ+)
 variable (dom_size_cond : (2 ^ (∑ i, (s i).1)) * d ≤ 2 ^ n)
 variable (l : ℕ) [NeZero l]
-variable {ω : ReedSolomon.SmoothCosetFftDomain n F}
+variable {ω : SmoothCosetFftDomain n F}
 
 /-- Candidate per-round proximity-gap error for the `i`-th FRI folding round,
     following the BCIKS20 error bound for the round-`i` Reed-Solomon code.
     Pending a soundness proof linking this to actual failure probability. -/
 noncomputable def roundError (δ : ℝ≥0) (i : Fin k) : ℝ≥0 :=
   let N := ∑ j' ∈ finRangeTo (k + 1) (Fin.last i.castSucc.val).val, (s j').1
-  let dom : ReedSolomon.SmoothCosetFftDomain (n - N) F := ω.subdomainNatReversed N
+  let dom : SmoothCosetFftDomain (n - N) F := ω.subdomain N
   let degBound := 2 ^ ((∑ j', (s j').1) - N) * d.1
   errorBound δ degBound (↑dom : Fin (2 ^ (n - N)) ↪ F)
 
@@ -52,7 +53,7 @@ noncomputable def roundError (δ : ℝ≥0) (i : Fin k) : ℝ≥0 :=
     query verifier's failure probability via a proven lemma. -/
 noncomputable def queryRoundError (i : Fin (k + 1)) : ℝ≥0 :=
   let N := ∑ j' ∈ finRangeTo (k + 1) i.val, (s j').1
-  let _dom : ReedSolomon.SmoothCosetFftDomain (n - N) F := ω.subdomainNatReversed N
+  let _dom : SmoothCosetFftDomain (n - N) F := ω.subdomain N
   let domSize : ℕ := Fintype.card (Fin (2 ^ (n - N)))
   let degBound := 2 ^ ((∑ j', (s j').1) - N) * d.1
   ((degBound : ℝ≥0) / (domSize : ℝ≥0)) ^ l
