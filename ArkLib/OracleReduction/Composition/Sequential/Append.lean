@@ -722,6 +722,11 @@ lemma OracleVerifier.append_toVerifier
   funext ⟨stmt, oStmt⟩ tr
   simp only [OracleVerifier.append, OracleVerifier.toVerifier, Verifier.append,
     OracleVerifier.Append.verify]
+  -- Push the outer `simulateQ (simOracle2 oStmt tr.messages)` through the inner `OptionT`-bind, then
+  -- fuse each leg with its router via `simulateQ_compose` + the two leg lemmas.
+  simp only [bind_pure_comp, simulateQ_optionT_bind, ← QueryImpl.simulateQ_compose,
+    OracleVerifier.Append.simOracle2_comp_router₁ (pSpec₂ := pSpec₂),
+    OracleVerifier.Append.simOracle2_comp_router₂]
   trace_state
   sorry
 

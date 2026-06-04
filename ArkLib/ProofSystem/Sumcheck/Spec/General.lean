@@ -144,6 +144,19 @@ def StmtIn := R
 
 variable [DecidableEq R] [SampleableType R]
 
+-- THREADED (2026-06-04): AppendCoherent family for `seqCompose`. Each single-round oracle verifier
+-- keeps its one (Unit-indexed) output oracle statement equal to its routed input oracle statement
+-- (`embed = .inl`, uniform `OracleStatement R n deg` interface), so the agreement is `HEq.rfl`.
+instance instAppendCoherent_singleRound (i : Fin n) :
+    OracleVerifier.Append.AppendCoherent (SingleRound.oracleVerifier R n deg D oSpec i) :=
+  OracleVerifier.Append.instAppendCoherent_of_eq _ (fun _ => HEq.rfl)
+
+-- THREADED (2026-06-04): same coherence on the reduction's verifier projection (defeq to
+-- `SingleRound.oracleVerifier i`), required by the reduction-level `seqCompose`.
+instance instAppendCoherent_singleRound_reduction (i : Fin n) :
+    OracleVerifier.Append.AppendCoherent (SingleRound.oracleReduction R n deg D oSpec i).verifier :=
+  OracleVerifier.Append.instAppendCoherent_of_eq _ (fun _ => HEq.rfl)
+
 /-- The verifier for the (full) sum-check protocol -/
 @[reducible]
 def verifier : Verifier oSpec (StatementRound R n 0 × (∀ i, OracleStatement R n deg i))

@@ -79,6 +79,20 @@ instance :
         (((pSpecFold k (ω := ω) s ++ₚ FinalFoldPhase.pSpec F ++ₚ QueryRound.pSpec (ω := ω) l)).Challenge j) :=
   ProtocolSpec.challengeOracleInterface
 
+-- THREADED (2026-06-04): AppendCoherent family for the folding-round `seqCompose`.
+instance instAppendCoherent_foldOracleReduction (i : Fin k) :
+    OracleVerifier.Append.AppendCoherent
+      (FoldPhase.foldOracleReduction s (ω := ω) d i).verifier :=
+  OracleVerifier.Append.instAppendCoherent_of_eq _ (fun j => by
+    simp only [OracleVerifier.Append.instOStmt₂Src, OracleVerifier.Append.srcInst,
+      FoldPhase.foldOracleReduction, FoldPhase.foldVerifier, Function.Embedding.coeFn_mk]
+    split
+    · rfl
+    · next h =>
+        -- the message-routed output oracle statement: interface agrees with the message interface
+        simp only [instOracleInterfaceOracleStatement, FoldPhase.instOracleInterfaceMessagePSpec,
+          FoldPhase.OracleStatement, FoldPhase.pSpec, h])
+
 /- Oracle reduction for all folding rounds of the FRI protocol -/
 @[reducible]
 def reductionFold :

@@ -59,6 +59,41 @@ variable {Context : Type} {mp : SumcheckMultiplierParam L ℓ Context} -- Sumche
 
 section FoldRelayRound -- foldRound + relay
 
+-- THREADED (2026-06-04): AppendCoherent. `foldOracleVerifier`/`relayOracleVerifier` route every
+-- output oracle statement through `embed = .inl` into an input oracle statement carrying the same
+-- uniform `instOracleStatementBinaryBasefold` interface (its `Query` depends only on the codeword
+-- index `j.val`, not on the round), so the interface agreement is `HEq.rfl`.
+instance instAppendCoherent_foldOracleVerifier (i : Fin ℓ) :
+    OracleVerifier.Append.AppendCoherent
+      (Oₛ₂ := instOracleStatementBinaryBasefold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := i.castSucc))
+      (foldOracleVerifier (Context := Context) 𝔽q β (ϑ := ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) :=
+  OracleVerifier.Append.instAppendCoherent_of_eq _ (fun j => by
+    -- `foldOracleVerifier.embed j = .inl ⟨j.val, _⟩` into the *same* `OStmtIn` index type, so the
+    -- routed source interface is `Oₛ₁ ⟨j.val, _⟩ = Oₛ₂ j` (interface depends only on `j.val`).
+    have hemb : (foldOracleVerifier (Context := Context) 𝔽q β (ϑ := ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i).embed j = Sum.inl j := by
+      simp only [foldOracleVerifier, Function.Embedding.coeFn_mk, dif_pos j.isLt, Fin.eta]
+    -- `srcInst (.inl j) = Oₛ₁ j = Oₛ₂ j` definitionally (same uniform interface); transport along
+    -- `hemb` by generalizing the (dependent) routed index so `Sum.rec` reduces.
+    show HEq (instOracleStatementBinaryBasefold 𝔽q β (i := i.castSucc) j)
+      (OracleVerifier.Append.srcInst ((foldOracleVerifier (Context := Context) 𝔽q β (ϑ := ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i).embed j))
+    exact hemb ▸ HEq.rfl)
+
+-- THREADED (2026-06-04): AppendCoherent on `(foldOracleReduction i).verifier`, used by the
+-- reduction-level `OracleReduction.append`. The verifier projection is defeq to `foldOracleVerifier`.
+instance instAppendCoherent_foldOracleReduction_verifier (i : Fin ℓ) :
+    OracleVerifier.Append.AppendCoherent
+      (Oₛ₂ := instOracleStatementBinaryBasefold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := i.castSucc))
+      (foldOracleReduction (Context := Context) 𝔽q β (ϑ := ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑) i).verifier :=
+  inferInstanceAs (OracleVerifier.Append.AppendCoherent
+    (foldOracleVerifier (Context := Context) 𝔽q β (ϑ := ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i))
+
 @[reducible]
 def foldRelayOracleVerifier (i : Fin ℓ)
     (hNCR : ¬ isCommitmentRound ℓ ϑ i) :

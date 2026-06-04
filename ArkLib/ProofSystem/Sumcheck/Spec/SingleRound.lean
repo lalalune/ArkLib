@@ -536,28 +536,29 @@ open NNReal
 variable [SampleableType R]
   {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
 
+set_option maxHeartbeats 1000000 in
+theorem sendCheck_perfectCompleteness :
+    ((oracleReduction.sendClaim R deg oSpec).append
+        (oracleReduction.checkClaim R deg D oSpec)).perfectCompleteness init impl
+      (inputRelation R deg D) (relationAfterCheckClaim R deg) := by
+  refine OracleReduction.append_perfectCompleteness
+    (rel₂ := relationAfterSendClaim R deg D)
+    (oracleReduction.sendClaim R deg oSpec)
+    (oracleReduction.checkClaim R deg D oSpec) ?_ ?_
+  all_goals sorry
+
+set_option maxHeartbeats 4000000 in
 theorem oracleReduction_perfectCompleteness :
-    (oracleReduction R deg D oSpec).perfectCompleteness init impl
+    (oracleReduction R deg oSpec).perfectCompleteness init impl
       (inputRelation R deg D) (outputRelation R deg) := by
-  simp [oracleReduction]
+  unfold oracleReduction
   refine OracleReduction.append_perfectCompleteness
     (rel₂ := relationAfterRandomQuery R deg)
     ((((oracleReduction.sendClaim R deg oSpec).append
         (oracleReduction.checkClaim R deg D oSpec)).append
         (oracleReduction.randomQuery R deg oSpec)))
     (oracleReduction.reduceClaim R deg oSpec) ?_ ?_
-  · refine OracleReduction.append_perfectCompleteness
-      (rel₂ := relationAfterCheckClaim R deg)
-      ((oracleReduction.sendClaim R deg oSpec).append
-        (oracleReduction.checkClaim R deg D oSpec))
-      (oracleReduction.randomQuery R deg oSpec) ?_ ?_
-    · refine OracleReduction.append_perfectCompleteness
-        (rel₂ := relationAfterSendClaim R deg D)
-        (oracleReduction.sendClaim R deg oSpec)
-        (oracleReduction.checkClaim R deg D oSpec) ?_ ?_
-      · sorry
-      · sorry
-    · sorry
+  · sorry
   · -- `reduceClaim` is the oracle-aware variant; use `oracleReductionO_completeness`.
     refine ReduceClaim.oracleReductionO_completeness
       (mapStmtO := reduceClaim.mapStmtO R deg oSpec)
@@ -574,7 +575,7 @@ theorem oracleReduction_perfectCompleteness :
     exact hIn.symm
 
 theorem oracleVerifier_rbrKnowledgeSoundness [Fintype R] :
-    (oracleReduction R deg D oSpec).verifier.rbrKnowledgeSoundness init impl
+    (oracleReduction R deg oSpec).verifier.rbrKnowledgeSoundness init impl
       (inputRelation R deg D) (outputRelation R deg)
         (fun _ => (deg : ℝ≥0) / (Fintype.card R)) := by
   sorry
