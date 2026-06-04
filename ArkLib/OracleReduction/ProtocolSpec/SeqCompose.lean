@@ -157,8 +157,6 @@ def concat {pSpec : ProtocolSpec n} {NextMessage : Type}
         FullTranscript (pSpec ++ₚ ⟨!v[dir], !v[NextMessage]⟩) :=
   Fin.hconcat T msg
 
--- TODO: fill
-
 -- @[simp]
 -- theorem append_cast_left {n m : ℕ} {pSpec₁ pSpec₂ : ProtocolSpec n} {pSpec' : ProtocolSpec m}
 --     {T₁ : FullTranscript pSpec₁} {T₂ : FullTranscript pSpec'} (n' : ℕ)
@@ -281,7 +279,7 @@ Defined for definitional equality, so that:
 - `seqCompose !v[pSpec₁, pSpec₂, pSpec₃] = pSpec₁ ++ₚ (pSpec₂ ++ₚ pSpec₃)`
 - and so on.
 
-TODO: add notation `∑ i, pSpec i` for `seqCompose` -/
+Notation candidate: `∑ i, pSpec i` for `seqCompose`. -/
 @[inline]
 def seqCompose {m : ℕ} {n : Fin m → ℕ} (pSpec : ∀ i, ProtocolSpec (n i)) :
     ProtocolSpec (Fin.vsum n) where
@@ -339,7 +337,7 @@ Defined for definitional equality, so that the following holds definitionally:
 - `seqCompose !h[T₁, T₂, T₃] = T₁ ++ₜ (T₂ ++ₜ T₃)`
 - and so on.
 
-TODO: add notation `∑ i, T i` for `seqCompose` -/
+Notation candidate: `∑ i, T i` for `seqCompose`. -/
 @[inline]
 def seqCompose {m : ℕ} {n : Fin m → ℕ} {pSpec : ∀ i, ProtocolSpec (n i)}
     (T : ∀ i, FullTranscript (pSpec i)) : FullTranscript (seqCompose pSpec) :=
@@ -479,7 +477,7 @@ def seqComposeChallengeIdxToSigma {m : ℕ} {n : Fin m → ℕ} {pSpec : ∀ i, 
     indices of the sequential composition. -/
 def seqComposeChallengeEquiv {m : ℕ} {n : Fin m → ℕ} (pSpec : ∀ i, ProtocolSpec (n i)) :
     (i : Fin m) × (pSpec i).ChallengeIdx ≃ (seqCompose pSpec).ChallengeIdx where
-  -- TODO: write lemmas about `finSigmaFinEquiv` in mathlib with the one defined via `Fin.dfoldl`
+  -- Note: write lemmas about `finSigmaFinEquiv` in mathlib with the one defined via `Fin.dfoldl`
   toFun := fun ⟨i, j⟩ => sigmaChallengeIdxToSeqCompose i j
   invFun := seqComposeChallengeIdxToSigma
   left_inv := by

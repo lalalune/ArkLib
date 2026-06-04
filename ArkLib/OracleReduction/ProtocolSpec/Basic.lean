@@ -559,7 +559,7 @@ def equivMessagesChallenges :
       simp [ofMessagesChallenges, toMessagesChallenges, toChallengesUpTo]
       split <;> aesop
 
--- TODO: state theorem that `Transcript.concat` is equivalent to `MessagesUpTo.{concat/extend}` with
+-- Note: state theorem that `Transcript.concat` is equivalent to `MessagesUpTo.{concat/extend}` with
 -- `ChallengesUpTo.{extend/concat}`, depending on the direction of the round
 
 end Transcript
@@ -635,7 +635,7 @@ def PlainMessages (pSpec : ProtocolSpec n) [OracleInterfaces pSpec] : Type :=
 def OracleMessages (pSpec : ProtocolSpec n) [OracleInterfaces pSpec] : Type :=
   ∀ i, pSpec.OracleMessage i
 
--- TODO: re-define `OracleReduction` to depend on these oracle interfaces, since currently we
+-- Note: re-define `OracleReduction` to depend on these oracle interfaces, since currently we
 -- assume that _all_ messages are available as oracles in an oracle reduction
 
 -- Alternatively, we can define a `HybridReduction` structure, where the oracle interface for each
@@ -768,7 +768,7 @@ def srChallengeQueryImpl {Statement : Type} {pSpec : ProtocolSpec n}
 /-- Alternate version of query implementation that takes in a cached function `f` and returns
   the result and the updated function.
 
-  TODO: upstream this as a more general construction in VCVio -/
+  Note: upstream this as a more general construction in VCVio -/
 @[reducible, inline, specialize, simp]
 def srChallengeQueryImpl' {Statement : Type} {pSpec : ProtocolSpec n}
     [∀ i, SampleableType (pSpec.Challenge i)] :

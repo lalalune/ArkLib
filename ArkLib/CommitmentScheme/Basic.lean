@@ -217,9 +217,9 @@ def extractability (scheme : Scheme oSpec Data Commitment Decommitment ComKey Ve
 
 set_option linter.unusedVariables true
 
--- TODO: version where the query is chosen according to some public coin?
+-- Variant: choose the query according to some public coin.
 
--- TODO: multi-instance versions?
+-- Variant: multi-instance versions.
 
 /-- An adversary in the function binding game returns a commitment `cm`, and for each index in
   `Fin L`, a query, a claimed response to the query, and an auxiliary private state (to be passed

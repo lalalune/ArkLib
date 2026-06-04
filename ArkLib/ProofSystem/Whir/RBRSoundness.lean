@@ -36,7 +36,7 @@ introduced in the Section 5 [ACFY24].
   we use M + 1 iterations instead of M, for ease of representation in Lean
 
 ## Tags
-Todo: should we aim to add tags?
+Open question: should we aim to add tags?
 -/
 namespace WhirIOP
 

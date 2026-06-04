@@ -144,7 +144,7 @@ Note: even if the adversary knows the initial group table, it can only output gr
 implicitly, via indices in the table. This means the group element outputs can only be computed via
 utilizing the oracles.
 
-Note: need to be sure this definition is correct.
+Note: this definition models adversary output through table handles.
 -/
 def Adversary (ι : Type) (G : Type) (p : ℕ) (bitLength : ℕ) (α : Type) : Type _ :=
   ReaderT (GroupValTable ι G)

@@ -71,42 +71,6 @@ structure Conditions (D : ℕ) (ωs : Fin n ↪ F) (f : Fin n → F) (Q : F[X][Y
   /-- Multiplicity of the roots is at least `m`. -/
   Q_multiplicity : ∀ i, m ≤ rootMultiplicity Q (ωs i) (f i)
 
-/-- Specification-level Guruswami-Sudan decoder. -/
-opaque decoder (k r D e : ℕ) (ωs : Fin n ↪ F) (f : Fin n → F) : List F[X] := sorry
-
-/-- Each decoded codeword has to be `e`-close to the received message. -/
-theorem decoder_mem_impl_dist
-    {k r D e : ℕ}
-    (h_e : e ≤ n - Real.sqrt (k * n))
-    {ωs : Fin n ↪ F}
-    {f : Fin n → F}
-    {p : F[X]}
-    (h_in : p ∈ decoder k r D e ωs f) :
-    Δ₀(f, p.eval ∘ ωs) ≤ e := by
-  sorry
-
-/-- Alias for the specification decoder distance guarantee. -/
-theorem decoder_output_dist_le
-    {k r D e : ℕ}
-    (h_e : e ≤ n - Real.sqrt (k * n))
-    {ωs : Fin n ↪ F}
-    {f : Fin n → F}
-    {p : F[X]}
-    (h_in : p ∈ decoder k r D e ωs f) :
-    Δ₀(f, p.eval ∘ ωs) ≤ e :=
-  decoder_mem_impl_dist (k := k) (r := r) (D := D) (e := e) h_e h_in
-
-/-- If a codeword is `e`-close to the received message, it appears in the decoder output. -/
-theorem decoder_dist_impl_mem
-    {k r D e : ℕ}
-    (h_e : e ≤ n - Real.sqrt (k * n))
-    {ωs : Fin n ↪ F}
-    {f : Fin n → F}
-    {p : F[X]}
-    (h_dist : Δ₀(f, p.eval ∘ ωs) ≤ e) :
-    p ∈ decoder k r D e ωs f := by
-  sorry
-
 /-- Recover a polynomial from its first `k` coefficients when its degree is below `k`. -/
 private lemma polynomial_of_coeffs_coeffs_of_polynomial_of_degree_lt
     {F : Type} [CommSemiring F] [DecidableEq F] {k : ℕ} {p : F[X]}
@@ -139,6 +103,56 @@ lemma mem_polynomials_degree_lt
     exact degree_polynomialOfCoeffs_deg_lt_deg
   · intro h
     exact ⟨coeffsOfPolynomial p, polynomial_of_coeffs_coeffs_of_polynomial_of_degree_lt h⟩
+
+/-- Specification-level Guruswami-Sudan decoder.
+
+This finite-field specification enumerates all degree-`< k` polynomials and keeps exactly the
+candidates within the requested distance bound. The constructive GS witness-based candidate
+generator below is a more algorithmic source of candidates; this definition is the transparent
+list-decoding contract used by the basic membership theorems. -/
+noncomputable def decoder [Fintype F] (k _r _D e : ℕ) (ωs : Fin n ↪ F) (f : Fin n → F) :
+    List F[X] :=
+  ((polynomialsDegreeLt F k).filter fun p => decide (Δ₀(f, p.eval ∘ ωs) ≤ e)).toList
+
+/-- Each decoded codeword has to be `e`-close to the received message. -/
+theorem decoder_mem_impl_dist
+    [Fintype F]
+    {k r D e : ℕ}
+    (_h_e : e ≤ n - Real.sqrt (k * n))
+    {ωs : Fin n ↪ F}
+    {f : Fin n → F}
+    {p : F[X]}
+    (h_in : p ∈ decoder k r D e ωs f) :
+    Δ₀(f, p.eval ∘ ωs) ≤ e := by
+  have hmem : p ∈ polynomialsDegreeLt F k ∧ Δ₀(f, p.eval ∘ ωs) ≤ e := by
+    simpa [decoder] using h_in
+  exact hmem.2
+
+/-- Alias for the specification decoder distance guarantee. -/
+theorem decoder_output_dist_le
+    [Fintype F]
+    {k r D e : ℕ}
+    (h_e : e ≤ n - Real.sqrt (k * n))
+    {ωs : Fin n ↪ F}
+    {f : Fin n → F}
+    {p : F[X]}
+    (h_in : p ∈ decoder k r D e ωs f) :
+    Δ₀(f, p.eval ∘ ωs) ≤ e :=
+  decoder_mem_impl_dist (k := k) (r := r) (D := D) (e := e) h_e h_in
+
+/-- If a degree-bounded codeword is `e`-close to the received message, it appears in the decoder
+output. -/
+theorem decoder_dist_impl_mem
+    [Fintype F]
+    {k r D e : ℕ}
+    (_h_e : e ≤ n - Real.sqrt (k * n))
+    {ωs : Fin n ↪ F}
+    {f : Fin n → F}
+    {p : F[X]}
+    (h_degree : p.degree < k)
+    (h_dist : Δ₀(f, p.eval ∘ ωs) ≤ e) :
+    p ∈ decoder k r D e ωs f := by
+  simp [decoder, mem_polynomials_degree_lt.mpr h_degree, h_dist]
 
 /-! ### CompPoly-based interpolation candidate
 

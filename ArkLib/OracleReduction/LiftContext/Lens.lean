@@ -60,7 +60,7 @@ end Statement.Lens
 /-- A lens for transporting input and output statements (both oracle and non-oracle) for the
   oracle verifier of an oracle reduction.
 
-  TODO: figure out the right way to define this -/
+  This is currently a statement lens over paired non-oracle and oracle statements. -/
 @[inline, reducible]
 def OracleStatement.Lens (OuterStmtIn OuterStmtOut InnerStmtIn InnerStmtOut : Type)
     {Outer_ιₛᵢ : Type} (OuterOStmtIn : Outer_ιₛᵢ → Type) [∀ i, OracleInterface (OuterOStmtIn i)]
@@ -70,7 +70,7 @@ def OracleStatement.Lens (OuterStmtIn OuterStmtOut InnerStmtIn InnerStmtOut : Ty
   :=
     Statement.Lens (OuterStmtIn × ∀ i, OuterOStmtIn i) (OuterStmtOut × ∀ i, OuterOStmtOut i)
                   (InnerStmtIn × ∀ i, InnerOStmtIn i) (InnerStmtOut × ∀ i, InnerOStmtOut i)
-  -- TODO: fill in the extra conditions
+  -- Extra conditions belong here once oracle-statement lenses carry query simulation data.
   /- Basically, as we model the output oracle statement as a subset of the input oracle statement +
   the prover's messages, we need to make sure that this subset relation is satisfied in the
   statement lens mapping.
@@ -104,7 +104,7 @@ variable {OuterStmtIn OuterStmtOut InnerStmtIn InnerStmtOut : Type}
                 OuterOStmtIn OuterOStmtOut InnerOStmtIn InnerOStmtOut)
 /-- Transport input statements from the outer context to the inner context
 
-TODO: refactor etc. -/
+This is the projection component of the oracle-statement lens. -/
 @[inline, reducible]
 def proj : OuterStmtIn × (∀ i, OuterOStmtIn i) → InnerStmtIn × (∀ i, InnerOStmtIn i) :=
   lens.toFunA
@@ -112,7 +112,7 @@ def proj : OuterStmtIn × (∀ i, OuterOStmtIn i) → InnerStmtIn × (∀ i, Inn
 /-- Transport output statements from the inner context to the outer context,
   additionally relying on the input statements of the outer context.
 
-  TODO: refactor etc. -/
+  This is the lifting component of the oracle-statement lens. -/
 @[inline, reducible]
 def lift : OuterStmtIn × (∀ i, OuterOStmtIn i) → InnerStmtOut × (∀ i, InnerOStmtOut i) →
     OuterStmtOut × (∀ i, OuterOStmtOut i) :=
@@ -504,8 +504,7 @@ end Statement.Lens
 
 namespace OracleStatement.Lens
 
--- TODO: replace with new definitions when we figure out the right definition for oracle statements
--- lens
+-- Oracle-statement lens utilities.
 
 /-- The identity lens for the statement, which acts as identity on the input and output. -/
 @[inline, reducible]

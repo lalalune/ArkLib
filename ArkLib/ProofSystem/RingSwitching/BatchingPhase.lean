@@ -403,7 +403,7 @@ noncomputable def batchingKnowledgeStateFunction :
     --     is `(failureState, witOut) ∈ relOut`, exactly the repaired else-branch goal.
     -- The sumcheck-consistency conjunct lives inside `sumcheckRoundRelationProp`/`relOut` under the
     -- SAME free `𝓑`, so it transports verbatim — NO `𝓑` pinning needed here (pinning is only
-    -- required by `batchingReduction_perfectCompleteness`, which must establish consistency from
+    -- required by the batching-phase completeness argument, which must establish consistency from
     -- scratch on the honest run).
     --
     -- VERIFIER-RUN QUERY SIMULATION (resolved). To consume `h_relOut` we resolve

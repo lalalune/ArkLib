@@ -335,14 +335,6 @@ variable {m : ℕ}
 
 -- section Execution
 
--- -- Executing .
--- theorem Reduction.run_seqCompose
---     (stmt : Stmt 0) (wit : Wit 0)
---     (R : ∀ i, Reduction oSpec (Stmt i.castSucc) (Wit i.castSucc) (Stmt i.succ) (Wit i.succ)
---       (pSpec i)) :
---       (Reduction.seqCompose R).run stmt wit := by
---   placeholder
-
 -- end Execution
 
 section Security

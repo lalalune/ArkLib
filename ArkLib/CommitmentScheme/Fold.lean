@@ -98,24 +98,10 @@ open scoped Polynomial MvPolynomial NNReal
 --   let oddSupp := p.support.filter (fun i => Odd i)
 --   (∑ i ∈ evenSupp, p.coeff i • (Polynomial.X ^ i), ∑ i ∈ oddSupp, p.coeff i • (Polynomial.X ^ i))
 
--- theorem splitEvenOdd_even_le_half_natDegree (p : R[X]) :
---   (splitEvenOdd p).1.natDegree ≤ p.natDegree / 2 := by
---   placeholder
-
--- theorem splitEvenOdd_odd_le_half_natDegree (p : R[X]) :
---   (splitEvenOdd p).2.natDegree ≤ p.natDegree / 2 := by
---   placeholder
-
 -- /-- Alternative version that returns a bivariate polynomial q(x,y) that is linear in x
 --     such that p(x) = q(x, x²) -/
 -- noncomputable def splitEvenOddBivariate (p : R[X]) : R[X][X] :=
 --   let (pEven, pOdd) := splitEvenOdd p
 --   Polynomial.C pEven + pOdd • Polynomial.X
-
--- noncomputable def splitEvenOdd' (p : R⦃< 2 * n⦄[X]) : R⦃< n⦄[X] × R⦃< n⦄[X] :=
---   let ⟨pEven, pOdd⟩ := splitEvenOdd p
---   -- have hEven : pEven ∈ R⦃< deg⦄[X] := by placeholder
---   -- have hOdd : pOdd ∈ R⦃< deg⦄[X] := by placeholder
---   (⟨pEven, placeholder⟩, ⟨pOdd, placeholder⟩)
 
 -- end FRI

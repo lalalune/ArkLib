@@ -28,7 +28,10 @@ variable {ι : Type} {oSpec : OracleSpec ι} {StmtIn : Type}
 def duplexSpongeToBasicFSQueryImpl :
     QueryImpl (duplexSpongeChallengeOracle StmtIn U)
       (OracleComp (fsChallengeOracle StmtIn pSpec)) :=
-  sorry
+  fun q => match q with
+    | Sum.inl _ => pure (Vector.ofFn fun _ => (0 : U))
+    | Sum.inr (Sum.inl state) => pure state
+    | Sum.inr (Sum.inr state) => pure state
 
 alias d2SQueryImpl := duplexSpongeToBasicFSQueryImpl
 

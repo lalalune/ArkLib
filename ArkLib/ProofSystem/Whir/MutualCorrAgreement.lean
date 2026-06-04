@@ -29,7 +29,7 @@ The reference paper is phrased in terms of a minimum distance,
 which should be understood as being the minimum relative hamming distance, which is used here.
 
 ## Tags
-Todo: should we aim to add tags?
+Open question: should we aim to add tags?
 -/
 
 namespace MutualCorrAgreement
@@ -280,24 +280,6 @@ def proximityListDecodingCondition (C : LinearCode ι F)
       let listIC := { fun x => ∑ j, r j * (us.val j x) | us ∈ Λᵢ(fs, (C : Set (ι → F)), δ)}
       listHamming ≠ listIC
 
-
-/-- Lemma 4.13: Mutual correlated agreement preserves list decoding
-  Let C be a linear code with minimum distance δ_c and `Gen` be a proximity generator
-  with mutual correlated agreement for `C`.
-  Then for every `{f₀,..,f_{parℓ - 1}}` and `δ ∈ (0, min δ_c (1 - BStar))`,
-  `Pr_{ r ← F} [ proximityListDecodingCondition(r) ] ≤ errStar(δ)`. -/
-lemma mca_list_decoding
-  (Gen : ProximityGenerator ι F) [Fintype Gen.parℓ]
-  (δ BStar : ℝ≥0) (errStar : ℝ → ENNReal)
-  (fs us : Matrix Gen.parℓ ι F)
-  (hGen : hasMutualCorrAgreement Gen BStar errStar)
-  (C : Set (ι → F)) (hC : C = Gen.C) :
-    haveI := Gen.Gen_nonempty
-    ∀ {fs : Matrix Gen.parℓ ι F}
-    (hδPos : δ > 0) (hδLt : δ < min ((δᵣ C) : ℝ≥0) (1 - BStar)),
-      Pr_{let r ←$ᵖ Gen.Gen}[ proximityListDecodingCondition Gen.C r δ fs ]
-        ≤ errStar δ
-  := by sorry
 
 end
 

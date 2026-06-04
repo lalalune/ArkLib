@@ -266,7 +266,7 @@ theorem foldWord_k_1 [NeZero n] {i : Fin (2 ^ (n - 1))} {α : F} :
   simp [foldWord, foldValue_k_1]
 
 omit [DecidableEq F] in
-/-- TODO: this will go once this https://github.com/Verified-zkEVM/CompPoly/pull/203
+/-- Note: this will go once this https://github.com/Verified-zkEVM/CompPoly/pull/203
   is merged. -/
 private lemma eval_comm {f : Polynomial (Polynomial F)} {a x : F} :
   (f.eval (Polynomial.C a)).eval x = (Polynomial.map (evalRingHom x) f).eval a := by
@@ -844,20 +844,20 @@ theorem folding_preserves_distance
     have h_k_le_n : k ≤ n := by
       rw [←Nat.pow_le_pow_iff_right (a := 2) (by simp)]
       omega
-    have bound_tighter : 
-      (↑δ) ≤ 1 - ReedSolomon.sqrtRate (d / (2 ^ k)) 
-        (domain.subdomain k : Fin (2 ^ (n - k)) ↪ F) := 
+    have bound_tighter :
+      (↑δ) ≤ 1 - ReedSolomon.sqrtRate (d / (2 ^ k))
+        (domain.subdomain k : Fin (2 ^ (n - k)) ↪ F) :=
       le_of_lt <| by
-        aesop 
+        aesop
           (add safe [(by rw [folded_sqrtRate_eq])])
           (add safe [(by grind)])
           (add safe (by norm_cast at *))
     haveI : NeZero (d / 2 ^ k) :=
       ⟨Nat.ne_of_gt (Nat.div_pos (Nat.le_of_dvd hd0 k_div_d) (by positivity))⟩
     have correlated_agreement :=
-      @correlatedAgreement_affine_curves (Fin (2 ^ (n - k))) _ _ F _ _ _ 
-        (2 ^ k - 1) (d / (2 ^ k)) _ 
-        (domain := domain.subdomain k) (δ := δ) 
+      @correlatedAgreement_affine_curves (Fin (2 ^ (n - k))) _ _ F _ _ _
+        (2 ^ k - 1) (d / (2 ^ k)) _
+        (domain := domain.subdomain k) (δ := δ)
         (hδ := bound_tighter)
     unfold foldWord δ_ε_correlatedAgreementCurves at *
     by_contra contra

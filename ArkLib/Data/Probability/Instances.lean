@@ -29,15 +29,6 @@ instance [IsEmpty α] : IsEmpty (PMF α) := by
   have one_eq_zero := HasSum.unique h (hasSum_fintype f)
   aesop
 
--- @[simp]
--- theorem PMF.eq_pure_iff_ge_one {α : Type*} {p : PMF α} {a : α} : p = pure a ↔ p a ≥ 1 := by
---   constructor <;> intro h
---   · placeholder
---   · ext b
---     simp only [pure, PMF.pure_apply]
---     by_cases hb : b = a
---     · simp [hb]; exact le_antisymm (PMF.coe_le_one p a) h
---     · simp [hb]; placeholder
 end
 
 section ProbabilityTools

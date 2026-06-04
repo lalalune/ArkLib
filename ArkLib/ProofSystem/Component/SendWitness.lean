@@ -176,26 +176,6 @@ def oracleProver : OracleProver oSpec
 --   fun ⟨stmt, oStmtAndWit⟩ _ =>
 --     oRelIn ⟨stmt, fun i => oStmtAndWit (Sum.inl i)⟩ (fun i => oStmtAndWit (Sum.inr i))
 
--- /-- Running the oracle prover returns the expected result: `(stmt, Sum.rec oStmt wit)`. -/
--- theorem oracleProver_run {stmt : Statement} {oStmt : ∀ i, OStatement i} {wit : ∀ i, Witness i} :
---     (oracleProver oSpec Statement OStatement Witness).run ⟨stmt, oStmt⟩ wit =
---       pure ((stmt, Sum.rec oStmt wit), (), fun i => wit (FinEnum.equiv.symm i)) := by
---   simp [Prover.run, Prover.runToRound, Prover.processRound, oracleProver]
---   placeholder
-
--- /-- The `SendWitness` oracle reduction satisfies perfect completeness. -/
--- @[simp]
--- theorem oracleReduction_completeness :
---     (oracleReduction oSpec Statement OStatement Witness).perfectCompleteness oRelIn
---     (toORelOut oRelIn) := by
---   simp [OracleReduction.perfectCompleteness, OracleReduction.toReduction,
---     OracleVerifier.toVerifier]
---   intro stmt oStmt wit hRelIn
---   unfold Reduction.run
---   placeholder
-
--- theorem oracleReduction_rbr_knowledge_soundness : True := placeholder
-
 end OracleReduction
 
 end SendWitness

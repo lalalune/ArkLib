@@ -1291,7 +1291,7 @@ it to the Boolean embedding `𝓑 0 = 0, 𝓑 1 = 1`).
 The two lemmas below make this concrete: the consistency sum of the linear polynomial `X 0`
 equals `𝓑 0 + 𝓑 1`, so no single `𝓑`-free target can satisfy consistency simultaneously for two
 domains with different element sums. Consequently the round-2
-`batchingKStateProp`/`batchingReduction_perfectCompleteness` sumcheck-consistency obligation is
+`batchingKStateProp` sumcheck-consistency obligation is
 **not satisfiable for a free `𝓑`**; honestly closing it requires either pinning `𝓑` to the
 Boolean embedding or reorienting `compute_s0`/`sumcheckConsistencyProp` — both of which would
 alter the existing free declarations. See the module report. -/
@@ -1340,7 +1340,7 @@ unsatisfiable for a *free* `𝓑`. The lemmas below pin `𝓑` to the Boolean em
 hypercube sum `∑ x ∈ (univ.map 𝓑) ^ᶠ k, f x` as the canonical Boolean hypercube sum over
 `Fin k → Fin 2`. This is the bridge that turns the `𝓑`-dependent right-hand side of
 `sumcheckConsistencyProp` into a `𝓑`-free form matching `compute_s0`, and is the load-bearing
-reindexing step for closing `batchingReduction_perfectCompleteness` once `𝓑` is pinned. -/
+reindexing step for closing the batching-phase consistency proof once `𝓑` is pinned. -/
 
 /-- The Boolean hypercube embedding `(Fin k → Fin 2) ↪ (Fin k → L₀)` induced by a 2-element
 domain embedding `𝓑`, sending `b ↦ (j ↦ 𝓑 (b j))`. -/

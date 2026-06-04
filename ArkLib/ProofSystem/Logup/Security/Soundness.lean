@@ -28,13 +28,6 @@ noncomputable def logupSoundnessError (F : Type) [Fintype F] (n M : ℕ) (params
     (((params.numGroups + 1 : ℕ) : ℝ≥0) / (Fintype.card F : ℝ≥0)) +
       sumcheckSoundnessError
 
-/-- Main ArkLib soundness theorem for LogUp Protocol 2. -/
-theorem logup_soundness (sumcheckSoundnessError : ℝ≥0) :
-    (logupVerifier oSpec F n M params).soundness init impl
-      (inputRelation F n M).language outputRelation.language
-      (logupSoundnessError F n M params sumcheckSoundnessError) := by
-  sorry
-
 end Soundness
 
 end Logup

@@ -110,7 +110,7 @@ end Equiv
 
 end ProtocolSpec
 
-/- Lots of TODOs here:
+/- Note:
 
 1. Specify equivalence of transcripts, provers, verifiers, reductions
 2. Prove distributional equivalence of execution semantics

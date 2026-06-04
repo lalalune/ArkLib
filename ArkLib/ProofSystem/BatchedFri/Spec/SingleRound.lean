@@ -58,7 +58,8 @@ def inputRelation :
       (
         (Unit × (∀ j, OracleStatement m ω j)) ×
         Witness F s d m
-      ) := sorry
+      ) :=
+  {ctx | ∀ j x, ctx.1.2 j x = (ctx.2 j).1.eval x.1}
 
 /- The FRI non-final folding round output relation, with proximity parameter `δ`,
    for the `i`th round. -/
@@ -68,7 +69,8 @@ def outputRelation :
         (Fri.Spec.Statement F (0 : Fin (k + 1)) ×
         (∀ j, Fri.Spec.OracleStatement s ω (0 : Fin (k + 1)) j)) ×
         Fri.Spec.Witness F s d (0 : Fin (k + 2))
-      ) := sorry
+      ) :=
+  {ctx | ∀ x, ctx.1.2 0 x = ctx.2.1.eval x.1}
 
 /-- The verifier send `m` field elements to batch the `m + 1` batched polynomials,
     the prover then returns the putative codeword corresponding to the batched polynomial -/

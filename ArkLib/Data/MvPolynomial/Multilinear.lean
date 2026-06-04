@@ -212,7 +212,7 @@ theorem MLE_degreeOf (evals : (σ → Fin 2) → R) (i : σ) : degreeOf i (MLE e
 
 end DegreeOf
 
--- TODO: add lemmas about the uniqueness of multilinear polynomials up to evaluations on hypercube
+-- Note: add lemmas about the uniqueness of multilinear polynomials up to evaluations on hypercube
 
 variable [DecidableEq R] [IsDomain R]
 

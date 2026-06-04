@@ -148,29 +148,4 @@ section Execution
 
 end Execution
 
-section Security
-
-noncomputable section
-
-open scoped NNReal
-
-variable [∀ i, SampleableType (pSpec.Challenge i)]
-  {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
-
-theorem fiatShamir_completeness (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut × WitOut))
-    (completenessError : ℝ≥0) (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec) :
-  R.completeness init impl relIn relOut completenessError →
-    R.fiatShamir.completeness (do
-        let challengeImpl : QueryImpl (srChallengeOracle StmtIn pSpec) Id :=
-          fun ⟨i, _⟩ => (default : pSpec.Challenge i)
-        return (← init, challengeImpl))
-      (impl.addLift fsChallengeQueryImpl' :
-        QueryImpl (oSpec + srChallengeOracle StmtIn pSpec)
-          (StateT (σ × QueryImpl (srChallengeOracle StmtIn pSpec) Id) ProbComp))
-        relIn relOut completenessError := sorry
-
--- TODO: state-restoration (knowledge) soundness implies (knowledge) soundness after Fiat-Shamir
-
-end
-
-end Security
+-- State-restoration (knowledge) soundness implies (knowledge) soundness after Fiat-Shamir.

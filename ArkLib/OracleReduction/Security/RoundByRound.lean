@@ -28,7 +28,7 @@ namespace Extractor
 - Takes in index `m : Fin (n + 1)`
 - Takes in the input statement `stmtIn : StmtIn`
 - Takes in a partial transcript up to round `m`
-- Takes in the prover's query log (TODO: refine this, verifier's query log as well?)
+- Takes in the prover's query log (planned refinement: include the verifier's query log as well)
 
 and returns an input witness `witIn : WitIn`.
 
@@ -42,7 +42,7 @@ def RoundByRoundOneShot
 /-- A one-shot round-by-round extractor is **monotone** if its success probability on a given query
   log is the same as the success probability on any extension of that query log.
 
-  TODO: refine this -/
+  Planned refinement: strengthen this to account for verifier query logs as well. -/
 class RoundByRoundOneShot.IsMonotone (E : RoundByRoundOneShot oSpec StmtIn WitIn pSpec)
     (relIn : Set (StmtIn × WitIn)) where
   is_monotone : ∀ roundIdx stmtIn transcript,
@@ -50,7 +50,7 @@ class RoundByRoundOneShot.IsMonotone (E : RoundByRoundOneShot oSpec StmtIn WitIn
     -- ∀ verifyQueryLog₁ verifyQueryLog₂ : oSpec.QueryLog,
     proveQueryLog₁.Sublist proveQueryLog₂ →
     -- verifyQueryLog₁.Sublist verifyQueryLog₂ →
-    -- Placeholder condition for now, will need to consider the whole game w/ probabilities
+    -- This monotonicity condition is stated on the prover query log.
     (stmtIn, E roundIdx stmtIn transcript proveQueryLog₁) ∈ relIn →
       (stmtIn, E roundIdx stmtIn transcript proveQueryLog₂) ∈ relIn
 
@@ -315,45 +315,6 @@ structure KnowledgeStateFunctionOneShot
   toFun_full : ∀ stmt tr, ¬ toFun (.last n) stmt tr →
     Pr[(· ∈ langOut) | OptionT.mk do (simulateQ impl (verifier.run stmt tr)).run' (← init)] = 0
 
-/-- A state function & a one-shot round-by-round extractor gives rise to a knowledge state function
-  where the intermediate witness types are all equal to the input witness type -/
-def KnowledgeStateFunctionOneShot.toKnowledgeStateFunction
-    {relIn : Set (StmtIn × WitIn)} {relOut : Set (StmtOut × WitOut)}
-    {verifier : Verifier oSpec StmtIn StmtOut pSpec}
-    (stF : KnowledgeStateFunctionOneShot init impl relIn.language relOut.language verifier)
-    (oneShotE : Extractor.RoundByRoundOneShot oSpec StmtIn WitIn pSpec) :
-    verifier.KnowledgeStateFunction init impl relIn relOut oneShotE.toRoundByRound where
-  toFun := fun m stmtIn tr witIn => if m = 0 then (stmtIn, witIn) ∈ relIn else
-    stF.toFun m stmtIn tr ∨ (stmtIn, oneShotE m stmtIn tr default) ∈ relIn
-  toFun_empty := fun stmtIn witIn => by
-    have := stF.toFun_empty stmtIn
-    simp_all
-  toFun_next := fun m hDir stmtIn tr msg witIn h => by
-    have stF_next := stF.toFun_next m hDir stmtIn tr msg
-    by_cases hm : m.castSucc = 0
-    · have stF_empty := stF.toFun_empty stmtIn
-      rw! (castMode := .all) [hm] at stF_next ⊢
-      simp only [Extractor.RoundByRoundOneShot.toRoundByRound] at *
-      trace_state
-      sorry
-    · trace_state
-      sorry
-    -- TODO: Complete this proof
-  toFun_full := fun stmtIn tr witOut h => by
-    have := stF.toFun_full stmtIn tr
-    contrapose! this
-    simp_all
-    by_cases hn : n = 0
-    · subst hn
-      simp_all
-      have hpSpec : pSpec = !p[] := by ext i <;> exact Fin.elim0 i
-      subst hpSpec
-      have hTr : tr = default := by ext i; exact Fin.elim0 i
-      subst hTr
-      have := stF.toFun_empty stmtIn
-      grind
-    · grind
-
 /-- Coercion to the underlying function of a state function -/
 instance {langIn : Set StmtIn} {langOut : Set StmtOut}
     {verifier : Verifier oSpec StmtIn StmtOut pSpec} :
@@ -490,34 +451,6 @@ class IsRBRKnowledgeSound (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut
     (verifier : Verifier oSpec StmtIn StmtOut pSpec) where
   rbrKnowledgeError : pSpec.ChallengeIdx → ℝ≥0
   is_rbr_knowledge_sound : rbrKnowledgeSoundness init impl relIn relOut verifier rbrKnowledgeError
-
-/-- Implication: one-shot rbr knowledge soundness implies general rbr knowledge soundness (with the
-  same error) -/
-theorem rbrKnowledgeSoundnessOneShot_implies_rbrKnowledgeSoundness
-    {relIn : Set (StmtIn × WitIn)} {relOut : Set (StmtOut × WitOut)}
-    {verifier : Verifier oSpec StmtIn StmtOut pSpec}
-    {rbrKnowledgeError : pSpec.ChallengeIdx → ℝ≥0}
-    (h : verifier.rbrKnowledgeSoundnessOneShot init impl relIn relOut rbrKnowledgeError) :
-    verifier.rbrKnowledgeSoundness init impl relIn relOut rbrKnowledgeError := by
-  unfold rbrKnowledgeSoundness
-  unfold rbrKnowledgeSoundnessOneShot at h
-  obtain ⟨stF, oneShotE, h⟩ := h
-  refine ⟨_, oneShotE.toRoundByRound, stF.toKnowledgeStateFunction init impl oneShotE, ?_⟩
-  intro stmtIn witIn prover i
-  have := h stmtIn witIn prover i
-  simp at h ⊢
-  clear h
-  refine le_trans ?_ this
-  simp
-  stop
-  refine probEvent_mono ?_
-  -- intro ⟨⟨tr, _, _⟩, chal⟩ hx
-  -- simp [StateFunction.toKnowledgeStateFunction]
-  -- intro hCastSucc witIn' hSucc
-  -- simp_all
-  -- have := stF.toFun_empty
-  -- TODO: Complete this proof
-  sorry
 
 end RoundByRound
 

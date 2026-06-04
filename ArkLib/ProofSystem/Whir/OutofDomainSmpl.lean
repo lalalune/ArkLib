@@ -31,7 +31,7 @@ variable {F : Type} [Field F] [DecidableEq F]
   the codeword value `p(b)` to variable index `0` and the point `b` to indices `1..m`, matching
   the paper's `ŵ(Z, X₁, …, X_m)`. The weights here are accordingly
   `X 0 * rename Fin.succ (eqPolynomial (r i))` (the original statement read the value variable
-  at `Fin.last m` while the assignment provides it at `0`, making the claim unprovable). -/
+  at `Fin.last m` while the assignment provides it at `0`). -/
 lemma crs_equiv_rs_random_point_agreement
   {f : ι → F} {m s : ℕ} {φ : ι ↪ F} [Smooth φ] :
   ∀ (r : Fin s → Fin m → F) (δ : ℝ≥0) (_hδLe : δ ≤ 1),

@@ -8,6 +8,7 @@ Authors: Quang Dao, Katerina Hristova, František Silváši, Julian Sutherland,
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Prelude
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ErrorBound
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.UniqueDecoding
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
 
 namespace ProximityGap
 
@@ -27,6 +28,9 @@ pair `(δ, ε)` and two words `u₀` and `u₁`, such that the probability that 
 line passing through `u₀` and `u₁` is `δ`-close to Reed-Solomon code is at most `ε`.
 Then, the words `u₀` and `u₁` have correlated agreement. -/
 theorem RS_correlatedAgreement_affineLines {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    -- Match the curves theorem: at `deg = 0`, the Johnson-branch error bound
+    -- can make the list-decoding branch too weak for this statement.
+    [NeZero deg]
     (hδ : δ ≤ 1 - (ReedSolomon.sqrtRate deg domain)) :
   δ_ε_correlatedAgreementAffineLines (A := F) (F := F) (ι := ι)
     (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
@@ -36,8 +40,15 @@ theorem RS_correlatedAgreement_affineLines {deg : ℕ} {domain : ι ↪ F} {δ :
   then
     RS_correlatedAgreement_affineLines_uniqueDecodingRegime (hδ := hδ_uniqueDecodingRegime)
   else
-    -- Blocked: theorem 5.1 for the list-decoding regime is not available in this import graph.
-    sorry
+    by
+      classical
+      have hcurves := correlatedAgreement_affine_curves (k := 1) (deg := deg)
+        (domain := domain) (δ := δ) hδ
+      unfold δ_ε_correlatedAgreementAffineLines
+      intro u hprob
+      unfold δ_ε_correlatedAgreementCurves at hcurves
+      exact hcurves u (by
+        simpa [one_mul, Fin.sum_univ_two] using hprob)
 
 end CoreResults
 

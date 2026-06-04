@@ -26,15 +26,12 @@ namespace Extractor
 
 section Rewinding
 
-/-! TODO: under development -/
+/-! Rewinding extractor interface. -/
 
 /-- The oracle interface to call the prover as a black box -/
 def OracleSpec.proverOracle (StmtIn : Type) {n : ℕ} (pSpec : ProtocolSpec n) :
     OracleSpec ((i : pSpec.MessageIdx) × StmtIn × pSpec.Transcript i.val.castSucc) :=
   fun q => pSpec.Message q.1
-
--- def SimOracle.proverImpl (P : Prover pSpec oSpec StmtIn WitIn StmtOut WitOut) :
---     SimOracle.Stateless (OracleSpec.proverOracle pSpec StmtIn) oSpec := placeholder
 
 structure Rewinding (oSpec : OracleSpec ι)
     (StmtIn StmtOut WitIn WitOut : Type) {n : ℕ} (pSpec : ProtocolSpec n) where
@@ -51,11 +48,6 @@ structure Rewinding (oSpec : OracleSpec ι)
 
 -- Challenge: need environment to update & maintain the prover's states after each extractor query
 -- This will hopefully go away after the refactor of prover's type to be an iterated monad
-
--- def Rewinding.run
---     (P : Prover.Adaptive pSpec oSpec StmtIn WitIn StmtOut WitOut)
---     (E : Extractor.Rewinding pSpec oSpec StmtIn StmtOut WitIn WitOut) :
---     OracleComp oSpec WitIn := placeholder
 
 end Rewinding
 

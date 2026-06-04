@@ -35,7 +35,7 @@ introduced in Section 4 of [ACFY24].
 -- these lemmas refer to the specific case when k set to 1, so it's safe to use the hypothesis 1 ≤ m
 
 ## Tags
-Todo: should we aim to add tags?
+Open question: should we aim to add tags?
 -/
 
 namespace Fold
