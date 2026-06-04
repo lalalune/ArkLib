@@ -11104,9 +11104,45 @@
           "signature": "lemma polynomialCurveEval_coord_eq_of_agree {n l : \u2115} {F : Type} [Field F]"
         },
         {
-          "doc": "Unique decoding brick for the \u00a76.1 argument: two codewords of a code with minimum distance `d` that are both within distance summing below `d` of a common word are equal (triangle inequality).",
+          "doc": "Counting brick for the \u00a76.1 argument (generic double counting): if every `z \u2208 S` has a bad-set of size at most `m`, then the number of coordinates that are bad for at least `t` elements of `S` is bounded: `t \u00b7 #poor \u2264 m \u00b7 #S`.",
           "kind": "lemma",
           "line": 96,
+          "name": "ProximityGap.card_heavyCoords_mul_le",
+          "namespace": "ProximityGap",
+          "short_name": "card_heavyCoords_mul_le",
+          "signature": "lemma card_heavyCoords_mul_le {\u03b1 \u03b2 : Type} [Fintype \u03b1] [DecidableEq \u03b1]"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 102,
+          "name": "ProximityGap._anon_class_102",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_102",
+          "signature": "class classical"
+        },
+        {
+          "doc": "Interpolation brick for the \u00a76.1 argument: through any `l` distinct parameter values and arbitrary target vectors there is a polynomial curve of degree `< l`.",
+          "kind": "lemma",
+          "line": 134,
+          "name": "ProximityGap.exists_polynomialCurve_through",
+          "namespace": "ProximityGap",
+          "short_name": "exists_polynomialCurve_through",
+          "signature": "lemma exists_polynomialCurve_through {n l : \u2115} {F : Type} [Field F]"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 140,
+          "name": "ProximityGap._anon_class_140",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_140",
+          "signature": "class classical"
+        },
+        {
+          "doc": "Unique decoding brick for the \u00a76.1 argument: two codewords of a code with minimum distance `d` that are both within distance summing below `d` of a common word are equal (triangle inequality).",
+          "kind": "lemma",
+          "line": 169,
           "name": "ProximityGap.eq_of_both_close_lt_minDist",
           "namespace": "ProximityGap",
           "short_name": "eq_of_both_close_lt_minDist",
@@ -11115,7 +11151,7 @@
         {
           "doc": "If the set of points `\u03b4`-close to the code `V` has at least `n * l + 1` points, then there exists a curve defined by vectors `v` from `V` such that the points of `curve u` and `curve v` are `\u03b4`-close with the same parameters. Moreover, `u` and `v` differ at at most `\u03b4 * n` positions.",
           "kind": "theorem",
-          "line": 110,
+          "line": 183,
           "name": "ProximityGap.large_agreement_set_on_curve_implies_correlated_agreement",
           "namespace": "ProximityGap",
           "short_name": "large_agreement_set_on_curve_implies_correlated_agreement",
@@ -11124,16 +11160,16 @@
         {
           "doc": "The distance bound from [BCIKS20].",
           "kind": "def",
-          "line": 130,
-          "name": "ProximityGap._anon_def_130",
+          "line": 206,
+          "name": "ProximityGap._anon_def_206",
           "namespace": "ProximityGap",
-          "short_name": "_anon_def_130",
+          "short_name": "_anon_def_206",
           "signature": "def noncomputable def \u03b4\u2080 (rho : \u211a) (m : \u2115) : \u211d :="
         },
         {
           "doc": "If the set of points on the curve defined by `u` close to `V` has at least `((1 + 1 / (2 * m)) ^ 7 * m ^ 7) / (3 * (Real.rpow rho (3 / 2 : \u211a))) * n ^ 2 * l + 1` points, then there exist vectors `v` from `V` that are `(1 - \u03b4) * n` close to `u`.",
           "kind": "theorem",
-          "line": 136,
+          "line": 212,
           "name": "ProximityGap.large_agreement_set_on_curve_implies_correlated_agreement'",
           "namespace": "ProximityGap",
           "short_name": "large_agreement_set_on_curve_implies_correlated_agreement'",
@@ -44918,7 +44954,7 @@
         {
           "doc": "Lemma 5.4: Round-by-round soundness of the STIR IOPP Consider parameters: `\u03b9 = {\u03b9\u1d62}_{i = 0, ..., M}` be smooth evaluation domains `P : Params \u03b9 F` containing required protocol parameters - initial degree, folding parameters `foldingParam\u1d62`, embedding `\u03c6\u1d62`, repetition parameters `repeatParam\u1d62` `hParams : ParamConditions \u03b9 P`, stating conditions that parameters of P must satisfy `degree\u1d62 = deg / \u220f j<i foldingParam\u2c7c`, where `deg = degree\u2080` `rate\u1d62 = degree\u1d62 / |\u03b9\u1d62|` `Codes : CodeParams \u03b9 degree P Dist`, containing smooth ReedSolomon codes `RS[F, \u03b9\u1d62, degree\u1d62]` where `RS[F, \u03b9\u1d62, degree\u1d62]` is `(\u03b4\u1d62,l\u1d62)`",
           "kind": "theorem",
-          "line": 166,
+          "line": 179,
           "name": "StirIOP.stir_rbr_soundness",
           "namespace": "StirIOP",
           "short_name": "stir_rbr_soundness",
@@ -45063,9 +45099,9 @@
     "ArkLib/ProofSystem/Stir/ProximityGap.lean": {
       "declarations": [
         {
-          "doc": "Theorem 4.1[BCIKS20] from [ACFY24stir] Let `C = RS[F, \u03b9, degree]` be a ReedSolomon code with rate `degree / |\u03b9|` and let Bstar(\u03c1) = \u221a\u03c1. For all `\u03b4 \u2208 (0, 1 - Bstar(\u03c1))`, `f\u2081,...,f\u2098 : \u03b9 \u2192 F`, if `Pr_{r \u2190 F} [ \u03b4\u1d63(r\u2c7c * f\u2c7c, C) \u2264 \u03b4] > err'(degree, \u03c1, \u03b4, m)` then \u2203 S \u2286 \u03b9, |S| \u2265 (1 - \u03b4) * |\u03b9| and \u2200 i : m, \u2203 u : C, u(S) = f\u1d62(S) **ABF26 mapping.** Predicate-style \"joint correlated agreement\" form of the proximity-gap bound. ABF26's numeric counterparts: - `ProximityGap.epsCA C \u03b4_fld \u03b4_int` (Def 4.1, in `ArkLib/Data/CodingTheory/ProximityGap/Errors.lean`) bounds the same \"line \u03b4-close but stack not joint",
+          "doc": "",
           "kind": "lemma",
-          "line": 49,
+          "line": 82,
           "name": "STIR.proximity_gap",
           "namespace": "STIR",
           "short_name": "proximity_gap",
@@ -48918,7 +48954,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5311,
+      "declarations": 5315,
       "files": 282
     }
   }

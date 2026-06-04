@@ -32,20 +32,36 @@ namespace STIR
   then ∃ S ⊆ ι, |S| ≥ (1 - δ) * |ι| and
   ∀ i : m, ∃ u : C, u(S) = fᵢ(S)
 
-  **ABF26 mapping.** Predicate-style "joint correlated agreement" form of the
-  proximity-gap bound. ABF26's numeric counterparts:
+  STATUS (audit 2026-06-04, branch arklib-sorry-fixes). Open proof. Two independent,
+  machine-checked blockers — this is a documented statement-vs-source mismatch, not a closure:
 
-  - `ProximityGap.epsCA C δ_fld δ_int` (Def 4.1, in
-    `ArkLib/Data/CodingTheory/ProximityGap/Errors.lean`) bounds the same "line δ-close
-    but stack not jointly close" probability for **m = 2** (affine lines).
-  - For **general m**, the analogue is `epsCA_curves C (m-1) δ_fld δ_int` (the
-    polynomial-curve variant) or the BCIKS20-specific RS bound stated here.
+  1. STATEMENT DEFECT (free `GenFun`). As written, `GenFun : F → Fin m → F` is universally
+     quantified with no constraint, so the statement is FALSE: instantiate `GenFun r j = 0`,
+     then the combination `∑ⱼ GenFun r j * f j x ≡ 0 ∈ C`, so the hypothesis `Pr[… ≤ δ] = 1 >
+     err'` holds for every `f`, yet arbitrary `fᵢ` need not agree with any codeword on a large
+     set. The intended instance is the monomial / Vandermonde generator `GenFun r j = r^j`
+     (cf. `RSGenerator.genRSC`, ProofSystem/Whir/ProximityGen.lean: `Gen = {r ↦ (j ↦ r^(exp j))}`,
+     and `Generator.ProximityGenerator.proximity`, which is this exact statement specialised to
+     that generator — itself still open). A faithful repair fixes `GenFun r j = r^j` (or adds
+     a `ProximityGenerator`-style hypothesis on `GenFun`). This file has no consumers
+     (`grep STIR.proximity_gap` ⇒ only its own definition), so the statement is currently inert.
 
-  This BCIKS20 lemma is the *witness-extraction* form: high `Pr[close]` forces the
-  existence of a large agreement set. The contrapositive bounds `Pr[close]` by
-  `err'(...)` when no such set exists — that is the bound `epsCA_curves C δ δ ≤
-  err'(...)` for `C = RS[F, ι, degree]`. A future bridge `proximity_gap_iff_epsCA_le`
-  would make this iff explicit; deferred per Phase 4 of `docs/kb/ABF26_INTEGRATION_PLAN.md`. -/
+  2. SOURCE open proof (Johnson/√ρ regime). Even the monomial instance reduces to BCIKS20 Thm 1.5,
+     `ProximityGap.correlatedAgreement_affine_curves` (Data/.../BCIKS20/Curves.lean), via
+     `proximityError F degree ρ δ m = (m-1) * errorBound δ degree domain` and the degree-`(m-1)`
+     curve `∑ᵢ rⁱ • fᵢ`. But `correlatedAgreement_affine_curves` is a flat `sorry`, and the whole
+     BCIKS20 CA tree (lines → spaces → curves) is proven ONLY in the unique-decoding regime
+     `δ ≤ relUDR`: the affine-lines base `RS_correlatedAgreement_affineLines`
+     (Data/.../BCIKS20/AffineLines/Main.lean:40) is open in the list-decoding regime
+     `relUDR < δ < 1 - √ρ`. `#print axioms` confirms `correlatedAgreement_affine_spaces`,
+     `correlatedAgreement_affine_curves`, `proximity_gap_RSCodes` and `Combine.combine_theorem`
+     all carry `sorryAx`; only `RS_correlatedAgreement_affineLines_uniqueDecodingRegime` is clean
+     (axioms ⊆ {propext, Classical.choice, Quot.sound}). The √ρ-radius hypothesis here
+     (`δ < 1 - Bstar ρ`, with `Bstar ρ = √ρ = sqrtRate`) hits exactly the unproven LDR branch.
+
+  Honest residual: close `AffineLines/Main.lean:40` (Thm 5.1, list-decoding regime), which
+  lifts `correlatedAgreement_affine_curves`; then `proximity_gap` (monomial form) follows from
+  the curves CA. No clean intermediate path exists today. -/
 lemma proximity_gap
   {F : Type} [Field F] [Fintype F] [DecidableEq F]
   {ι : Type} [Fintype ι] [Nonempty ι] {φ : ι ↪ F}

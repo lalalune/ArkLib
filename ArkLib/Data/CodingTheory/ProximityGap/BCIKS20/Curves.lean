@@ -90,6 +90,79 @@ private lemma polynomialCurveEval_coord_eq_of_agree {n l : ℕ} {F : Type} [Fiel
     _ = (∑ i : Fin l, Polynomial.C (v i x) * Polynomial.X ^ (i : ℕ)).eval z := by rw [hPQ]
     _ = Curve.polynomialCurveEval (F := F) (A := F) v z x := hEval v z
 
+/-- Counting brick for the §6.1 argument (generic double counting): if every
+`z ∈ S` has a bad-set of size at most `m`, then the number of coordinates that
+are bad for at least `t` elements of `S` is bounded: `t · #poor ≤ m · #S`. -/
+private lemma card_heavyCoords_mul_le {α β : Type} [Fintype α] [DecidableEq α]
+    [DecidableEq β] {S : Finset β} {B : β → Finset α} {m : ℕ}
+    (hB : ∀ z ∈ S, (B z).card ≤ m) (t : ℕ) :
+    ((Finset.univ : Finset α).filter
+      (fun x => t ≤ (S.filter (fun z => x ∈ B z)).card)).card * t
+      ≤ m * S.card := by
+  classical
+  -- double counting: Σ_x #{z ∈ S : x ∈ B z} = Σ_{z ∈ S} #(B z)
+  have hswap : ∑ x : α, (S.filter (fun z => x ∈ B z)).card
+      = ∑ z ∈ S, (B z).card := by
+    have h1 : ∀ x : α, (S.filter (fun z => x ∈ B z)).card
+        = ∑ z ∈ S, if x ∈ B z then 1 else 0 := fun x => Finset.card_filter _ _
+    have h2 : ∀ z : β, (B z).card = ∑ x : α, if x ∈ B z then 1 else 0 := by
+      intro z
+      rw [← Finset.card_filter, Finset.filter_univ_mem]
+    simp only [h1, h2]
+    exact Finset.sum_comm
+  have hbound : ∑ z ∈ S, (B z).card ≤ m * S.card := by
+    calc ∑ z ∈ S, (B z).card ≤ ∑ _z ∈ S, m := Finset.sum_le_sum hB
+      _ = m * S.card := by rw [Finset.sum_const, smul_eq_mul, mul_comm]
+  have hfilter : ((Finset.univ : Finset α).filter
+      (fun x => t ≤ (S.filter (fun z => x ∈ B z)).card)).card * t
+      ≤ ∑ x : α, (S.filter (fun z => x ∈ B z)).card := by
+    calc ((Finset.univ : Finset α).filter
+        (fun x => t ≤ (S.filter (fun z => x ∈ B z)).card)).card * t
+        = ∑ _x ∈ (Finset.univ : Finset α).filter
+            (fun x => t ≤ (S.filter (fun z => x ∈ B z)).card), t := by
+          rw [Finset.sum_const, smul_eq_mul]
+      _ ≤ ∑ x ∈ (Finset.univ : Finset α).filter
+            (fun x => t ≤ (S.filter (fun z => x ∈ B z)).card),
+            (S.filter (fun z => x ∈ B z)).card :=
+          Finset.sum_le_sum fun x hx => (Finset.mem_filter.mp hx).2
+      _ ≤ ∑ x : α, (S.filter (fun z => x ∈ B z)).card :=
+          Finset.sum_le_sum_of_subset (Finset.filter_subset _ _)
+  exact le_trans hfilter (hswap ▸ hbound)
+
+/-- Interpolation brick for the §6.1 argument: through any `l` distinct parameter
+values and arbitrary target vectors there is a polynomial curve of degree `< l`. -/
+private lemma exists_polynomialCurve_through {n l : ℕ} {F : Type} [Field F]
+    [DecidableEq F] (zs : Fin l → F) (hinj : Function.Injective zs)
+    (w : Fin l → Fin n → F) :
+    ∃ v : Fin l → Fin n → F,
+      ∀ j, Curve.polynomialCurveEval (F := F) (A := F) v (zs j) = w j := by
+  -- per-coordinate Lagrange interpolant
+  classical
+  set P : Fin n → Polynomial F :=
+    fun x => Lagrange.interpolate Finset.univ zs (fun j => w j x) with hP
+  have hdeg : ∀ x, (P x).degree < (l : WithBot ℕ) := by
+    intro x
+    simpa using Lagrange.degree_interpolate_lt (s := (Finset.univ : Finset (Fin l)))
+      (v := zs) (r := fun j => w j x) (fun a _ b _ hab => hinj hab)
+  refine ⟨fun i x => (P x).coeff i, ?_⟩
+  intro j
+  funext x
+  have hnat : (P x).natDegree < l := by
+    rcases eq_or_ne (P x) 0 with h0 | h0
+    · simpa [h0] using j.pos
+    · exact (Polynomial.natDegree_lt_iff_degree_lt h0).mpr (by exact_mod_cast hdeg x)
+  have heval : (P x).eval (zs j) = w j x :=
+    Lagrange.eval_interpolate_at_node (s := (Finset.univ : Finset (Fin l)))
+      (v := zs) (r := fun j => w j x) (fun a _ b _ hab => hinj hab) (Finset.mem_univ j)
+  calc Curve.polynomialCurveEval (F := F) (A := F) (fun i x => (P x).coeff i) (zs j) x
+      = ∑ i : Fin l, (zs j) ^ (i : ℕ) * (P x).coeff i := by
+        simp [Curve.polynomialCurveEval, Finset.sum_apply, Pi.smul_apply, smul_eq_mul]
+    _ = ∑ i ∈ Finset.range l, (P x).coeff i * (zs j) ^ i := by
+        rw [← Fin.sum_univ_eq_sum_range (fun i => (P x).coeff i * (zs j) ^ i)]
+        exact Finset.sum_congr rfl fun i _ => mul_comm _ _
+    _ = (P x).eval (zs j) := (Polynomial.eval_eq_sum_range' hnat _).symm
+    _ = w j x := heval
+
 /-- Unique decoding brick for the §6.1 argument: two codewords of a code with
 minimum distance `d` that are both within distance summing below `d` of a common
 word are equal (triangle inequality). -/
@@ -120,6 +193,9 @@ theorem large_agreement_set_on_curve_implies_correlated_agreement {l : ℕ}
     (hS : n * l < (coeffs_of_close_proximity_curve (F := F) δ u V).card) :
     coeffs_of_close_proximity_curve (F := F) δ u V = Finset.univ ∧
       ∃ v : Fin l → Fin n → F,
+        -- Finding 15b repair: the witness curve must pass through codewords —
+        -- without `∀ i, v i ∈ V` the existential is satisfied by `v := u` (vacuous).
+        (∀ i, v i ∈ V) ∧
         ∀ z,
           δᵣ(Curve.polynomialCurveEval (F := F) (A := F) u z,
             Curve.polynomialCurveEval (F := F) (A := F) v z) ≤ δ ∧
