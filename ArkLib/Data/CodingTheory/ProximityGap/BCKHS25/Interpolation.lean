@@ -92,7 +92,7 @@ def BWMatrix' (da za db zb : ℕ) (domain : ι ↪ F) (u₀ u₁ : ι → F) :
 /-- The dimension count: with `zb = za + 1` (B one Z-degree higher) and
 `da·za + db·(za+1) > n·(za+1)`, the constraint system has a nontrivial
 solution. -/
-theorem exists_ne_zero_BWvec (da za db zb : ℕ) (hzb : zb = za + 1)
+theorem exists_ne_zero_BWvec (da za db zb : ℕ) (_hzb : zb = za + 1)
     (domain : ι ↪ F) (u₀ u₁ : ι → F)
     (hcount : Fintype.card ι * zb < da * za + db * zb) :
     ∃ v : BWIdx da za db zb → F, v ≠ 0 ∧
