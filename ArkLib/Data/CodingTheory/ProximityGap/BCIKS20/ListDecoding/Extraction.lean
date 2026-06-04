@@ -1309,7 +1309,6 @@ theorem pg_card_candidatePairs_le_natDegreeY (x₀ : F) (h_gs : ModifiedGuruswam
   exact (hcard_biUnion.trans (hsum.trans hsum_Rset_le))
 
 omit [DecidableEq (RatFunc F)] in
-/-- Divisibility-facing common-pair extraction with denominator `D_Y Q`. -/
 theorem pg_exists_common_candidate_pair_of_dvd_card_natDegreeY (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
     (hx0 : ∀ R : F[Z][X][Y],
@@ -1358,7 +1357,6 @@ theorem pg_exists_common_candidate_pair_of_dvd_card_natDegreeY (δ : ℚ) (x₀ 
   exact hden.trans (by simpa [T] using hfiber)
 
 omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
-/-- Common-root fibers are contained in the appendix set `S_β`. -/
 theorem common_roots_subset_S_β_mk
     {H P : F[X][Y]} {T : Finset F}
     (hroot : ∀ z ∈ T, ∃ t : F,
@@ -1375,7 +1373,6 @@ theorem common_roots_subset_S_β_mk
   exact hPt
 
 omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
-/-- A large finite common-root fiber triggers Appendix A.1 for the quotient class of `P`. -/
 theorem common_roots_force_lift_zero
     {H P : F[X][Y]} [Fact (Irreducible H)]
     (hH : 0 < H.natDegree) (D : ℕ) (hD : D ≥ Bivariate.totalDegree H)
@@ -1458,6 +1455,14 @@ theorem H_tilde'_dvd_of_large_common_roots
     _root_.BCIKS20AppendixA.H_tilde' H ∣ P := by
   exact H_tilde'_dvd_of_embedding_mk_eq_zero hH
     (common_roots_force_lift_zero hH D hD hroot hcard)
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+theorem exists_H_tilde'_root_of_evalX_root
+    {H : F[X][Y]} (hH : 0 < H.natDegree) {z t : F}
+    (hroot : (Bivariate.evalX z H).eval t = 0) :
+    ∃ t' : F, Polynomial.evalEval z t' (_root_.BCIKS20AppendixA.H_tilde' H) = 0 := by
+  exact ⟨(H.coeff H.natDegree).eval z * t,
+    _root_.BCIKS20AppendixA.evalEval_H_tilde'_eq_zero_of_evalX_eq_zero H hH hroot⟩
 omit [DecidableEq (RatFunc F)] in
 lemma coeffs_of_close_proximity_eq_empty_of_neg [NeZero n] (hδ : δ < 0) :
     coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ = ∅ := by
