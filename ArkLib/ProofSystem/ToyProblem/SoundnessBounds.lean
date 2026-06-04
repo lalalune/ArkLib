@@ -78,6 +78,7 @@ lemma finite_iSup_eq_apply {α : Type*} [Finite α] [Nonempty α] {β : Type*}
   obtain ⟨a, ha⟩ := Finite.exists_max g
   exact ⟨a, le_antisymm (ciSup_le ha) (le_ciSup (Set.Finite.bddAbove (Set.finite_range g)) a)⟩
 
+omit [DecidableEq F] in
 /-- **Linear-functional collision bound** (ABF26 §6.4.1, Step 2 kernel count).
 
 For a nonzero coefficient vector `w : Fin k → F` over a finite field, the
@@ -97,11 +98,11 @@ lemma linearForm_collision_prob {k : ℕ} (w : Fin k → F) (hw : w ≠ 0) :
       map_add' := fun x y => by simp [mul_add, Finset.sum_add_distrib] }
   -- `L` is surjective: some `w j₀ ≠ 0`, and `L (Pi.single j₀ (c / w j₀)) = c`.
   obtain ⟨j₀, hj₀⟩ : ∃ j, w j ≠ 0 := by
-    by_contra h; push_neg at h; exact hw (funext fun j => by simpa using h j)
+    by_contra h; push Not at h; exact hw (funext fun j => by simpa using h j)
   have hLsurj : Function.Surjective L := by
     intro c
     refine ⟨(Pi.single j₀ (c / w j₀) : Fin k → F), ?_⟩
-    show ∑ j, w j * (Pi.single j₀ (c / w j₀) : Fin k → F) j = c
+    change ∑ j, w j * (Pi.single j₀ (c / w j₀) : Fin k → F) j = c
     rw [Finset.sum_eq_single j₀]
     · rw [Pi.single_eq_same]; field_simp
     · intro j _ hj; rw [Pi.single_eq_of_ne hj, mul_zero]
