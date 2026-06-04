@@ -1023,4 +1023,31 @@ theorem combine_theorem_uniqueDecodingRegime [Nonempty ι]
         simp at hv
         exact hv
 
+
+open LinearCode Classical ProbabilityTheory ReedSolomon STIR in
+/-- Clean single-hypothesis form of `combine_theorem_uniqueDecodingRegime`:
+below the unique-decoding radius, the `1 − √ρ` bound follows from the
+regime-nesting comparison (`relativeUniqueDecodingRadius_lt_one_sub_sqrtRate`),
+so only the UDR bound and the rate-margin bound need to be assumed. -/
+theorem combine_theorem_uniqueDecodingRegime' [Nonempty ι]
+  {φ : ι ↪ F} {dstar m : ℕ} [NeZero dstar]
+  (hcard : dstar ≤ Fintype.card ι)
+  (fs : Fin m → ι → F) (degs : Fin m → ℕ) (hdegs : ∀ i, degs i ≤ dstar)
+  (δ : ℝ≥0) (hδPos : δ > 0)
+  (hδUDR : δ ≤ Code.relativeUniqueDecodingRadius (ι := ι) (F := F)
+    (C := ReedSolomon.code φ dstar))
+  (hδ2 : δ < 1 - (rate (code φ dstar)) - 1 / Fintype.card ι)
+  (hProb : Pr_{ let r ← $ᵖ F}[δᵣ((combine φ dstar r fs degs), (code φ dstar)) ≤ δ] >
+    (m * (dstar + 1) - ∑ i, degs i - 1) * ProximityGap.errorBound δ dstar φ) :
+    ∃ S : Finset ι, S.card ≥ (1 - δ) * (Fintype.card ι) ∧
+      ∃ v : Fin m → ι → F, ∀ i, v i ∈ (code φ (degs i)) ∧
+        S ⊆ Finset.filter (fun j => v i j = fs i j) Finset.univ := by
+  have hpos : 0 < Code.relativeUniqueDecodingRadius (ι := ι) (F := F)
+      (C := ReedSolomon.code φ dstar) := lt_of_lt_of_le hδPos hδUDR
+  have h1 : δ < 1 - ReedSolomon.sqrtRate dstar φ :=
+    lt_of_le_of_lt hδUDR
+      (ProximityGap.relativeUniqueDecodingRadius_lt_one_sub_sqrtRate hcard hpos)
+  exact combine_theorem_uniqueDecodingRegime fs degs hdegs δ hδPos
+    (lt_min h1 hδ2) hδUDR hProb
+
 end Combine
