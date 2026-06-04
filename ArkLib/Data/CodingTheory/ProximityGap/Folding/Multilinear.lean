@@ -49,7 +49,7 @@ lemma multilinear_folding [NeZero n] {i : Fin (2 ^ (n - 1))} {α : F}
     rw [powAlgHom_eq_even_add_odd_powAlgHom (CosetFftDomainClass.domain_implies_char_ne_2 domain)]
   simp [evalOnPoints_sq_eq_evalOnPoints_subdomain]
   rw [show domain j = x by aesop, show domain j' = -x by aesop]
-  norm_num
+  simp
 
 
 
