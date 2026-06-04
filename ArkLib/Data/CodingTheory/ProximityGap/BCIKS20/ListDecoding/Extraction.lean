@@ -64,10 +64,11 @@ After the scoping repair the lemma remains **unprovable as written** for a gener
   contraction must be transferred from the fraction field `F(Z,X)` by a Gauss/primitivity
   argument; Mathlib has no such transfer lemma in this direction.
 
-A faithful restatement (zipped `List.zipWith`/`Finset.range` product, with the
-contraction transported through `Frac (F[Z][X])`) is required before this lemma carries
-its intended content; the present statement is left with `sorry` rather than discharged
-by a degenerate witness that would re-introduce vacuity. -/
+The factorization conjunct now uses the **zipped** indexed product
+`∏ i ∈ Finset.range R.length, (Rᵢ.comp X^fᵢ)^eᵢ` (paper-faithful), repairing the earlier
+Cartesian-product mis-indexing witnessed by `eq512_cartesian_product_blowup`. The remaining
+open content is the proof itself, whose separable-contraction step must be transported
+through `Frac (F[Z][X])` (no such mathlib transfer exists yet); the `sorry` is honest. -/
 lemma irreducible_factorization_of_gs_solution
     {k : ℕ}
   (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
@@ -78,8 +79,8 @@ lemma irreducible_factorization_of_gs_solution
     (∀ Rᵢ ∈ R, Rᵢ.Separable) ∧
     (∀ Rᵢ ∈ R, Irreducible Rᵢ) ∧
     Q = (Polynomial.C C) *
-        ∏ (Rᵢ ∈ R.toFinset) (fᵢ ∈ f.toFinset) (eᵢ ∈ e.toFinset),
-          (Rᵢ.comp ((Polynomial.X : F[Z][X][Y]) ^ fᵢ))^eᵢ
+        ∏ i ∈ Finset.range R.length,
+          ((R.getD i 1).comp ((Polynomial.X : F[Z][X][Y]) ^ f.getD i 0)) ^ e.getD i 0
     := sorry
 
 omit [DecidableEq (RatFunc F)] [Finite F] in
