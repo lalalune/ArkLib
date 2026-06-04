@@ -784,9 +784,9 @@ theorem relayOracleReduction_perfectCompleteness (i : Fin ℓ)
     -- (`oracleWitnessConsistency_relay_preserved`) and their bad-event disjunct
     -- (`badEventExistsProp_relay_preserved`).
     simp only [hsOut, Set.mem_setOf_eq, roundRelation, roundRelationProp, masterKStateProp]
-    have hIn : foldStepRelOutProp (mp := mp) (𝓑 := 𝓑) 𝔽q β i ((stmt, oStmt), witIn) := h_relIn
+    have hIn : foldStepRelOutProp (mp := mp) 𝔽q β i ((stmt, oStmt), witIn) := h_relIn
     simp only [foldStepRelOutProp, if_neg hNCR] at hIn
-    rw [oracleWitnessConsistency_relay_preserved (mp := mp) (𝓑 := 𝓑) 𝔽q β i hNCR stmt witIn oStmt,
+    rw [oracleWitnessConsistency_relay_preserved (mp := mp) 𝔽q β i hNCR stmt witIn oStmt,
       badEventExistsProp_relay_preserved 𝔽q β i hNCR stmt.challenges oStmt] at hIn
     simp only [Fin.take_eq_self, true_and]
     exact hIn
