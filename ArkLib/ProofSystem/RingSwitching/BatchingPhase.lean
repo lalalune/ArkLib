@@ -287,6 +287,13 @@ def batchingKStateProp {m : Fin (2 + 1)}
         stmt.t_eval_point s_hat -- local V check
       ∧ aOStmtIn.initialCompatibility ⟨witMid.t', oStmt⟩
 
+-- The round-0 knowledge-state conjunct is discharged via the DP24 capstone
+-- `performCheckOriginalEvaluation_packMLE_iff'`, whose soundness (multilinear-extension
+-- uniqueness) requires both carriers to be integral domains. This holds in every real
+-- instantiation (e.g. `binaryTowerProfile` builds from `Field K`/`Field L`), and integrality of
+-- the small/large carrier is a genuine precondition for the reduction to be sound. Scoped to the
+-- knowledge-soundness pipeline only (completeness needs no such hypothesis).
+variable [IsDomain L] [IsDomain K] in
 /-- Knowledge state function for the batching phase. -/
 noncomputable def batchingKnowledgeStateFunction :
   (oracleVerifier κ L K P ℓ ℓ' h_l (aOStmtIn:=aOStmtIn)).KnowledgeStateFunction init impl
@@ -323,11 +330,14 @@ noncomputable def batchingKnowledgeStateFunction :
       --   `performCheckOriginalEvaluation original_claim r
       --      (embedded_MLP_eval (packMLE β witMid.t) r) = true`,
       -- which the capstone turns into exactly `original_claim = aeval r witMid.t`.
-      -- PORTING NOTE: the worker's closure applies the DP24 capstone
-      -- `performCheckOriginalEvaluation_packMLE_iff`, proven for the concrete
-      -- `binaryTowerProfile`. This file's `P` is an abstract `RingSwitchingProfile`;
-      -- the generic version should route through `P.decomposeRows_spec`.
-      sorry
+      -- The capstone `performCheckOriginalEvaluation_packMLE_iff'` is the abstract-`P` form
+      -- (over any `CommRing + IsDomain` carriers), proved from `P`'s extraction laws
+      -- (`decomposeRows_add` / `decomposeRows_φ₀_mul_φ₁`, the constructive content of
+      -- `decomposeRows_spec`); it specializes to the concrete `binaryTowerProfile` lemma.
+      have hcheck := hSuccTrue.2.2.1
+      rw [← hSuccTrue.2.1, hSuccTrue.1] at hcheck
+      exact (performCheckOriginalEvaluation_packMLE_iff' P ℓ ℓ' h_l
+        stmtIn.1.original_claim witMid.t stmtIn.1.t_eval_point).mp hcheck
     | ⟨1, h⟩ => nomatch h
   toFun_full := fun ⟨stmtLast, oStmtLast⟩ tr witOut => by sorry
 
@@ -345,8 +355,10 @@ theorem batchingReduction_perfectCompleteness :
   unfold OracleReduction.perfectCompleteness
   sorry
 
-/-- RBR knowledge soundness for the batching phase oracle verifier. -/
-theorem batchingOracleVerifier_rbrKnowledgeSoundness [IsDomain L] :
+/-- RBR knowledge soundness for the batching phase oracle verifier. `IsDomain K` (alongside the
+existing `IsDomain L`) is required by the round-0 knowledge-state conjunct's DP24 capstone; it
+holds in every real instantiation (e.g. `binaryTowerProfile` builds from a field `K`). -/
+theorem batchingOracleVerifier_rbrKnowledgeSoundness [IsDomain L] [IsDomain K] :
   OracleVerifier.rbrKnowledgeSoundness
     (verifier := oracleVerifier κ L K P ℓ ℓ' h_l (aOStmtIn:=aOStmtIn))
     (init := init) (impl := impl)
