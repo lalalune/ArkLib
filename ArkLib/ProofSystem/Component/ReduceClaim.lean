@@ -127,8 +127,11 @@ lemma support_liftM (m : Type _ → Type _) [Monad m] [HasEvalSet m]
 lemma support_mk (m : Type _ → Type _) [Monad m] [HasEvalSet m]
     {α} (mx : m (Option α)) :
     support (OptionT.mk mx) = {x | some x ∈ support mx} := by
+  -- `OptionT.mk` packages an `m (Option α)` into `OptionT m α`; the standalone instance gives
+  -- `support (OptionT.mk mx) = some ⁻¹' support (OptionT.run (OptionT.mk mx)) = some ⁻¹' support mx`,
+  -- which is exactly the set described by the RHS.
   rw [OptionT.support_def]
-  rfl
+  ext x; simp
 
 /-- The knowledge state function for the `ReduceClaim` reduction. -/
 def knowledgeStateFunction (hRel : ∀ stmtIn witOut,
@@ -138,17 +141,16 @@ def knowledgeStateFunction (hRel : ∀ stmtIn witOut,
   toFun | ⟨0, _⟩ => fun stmtIn _ witIn => ⟨stmtIn, witIn⟩ ∈ relIn
   toFun_empty := fun stmtIn witIn => by simp
   toFun_next := fun m => Fin.elim0 m
-  toFun_full := fun stmtIn tr witOut h => by
-    -- `verifier.run stmtIn tr = pure (mapStmt stmtIn)`, so the event has positive probability
-    -- exactly when `(mapStmt stmtIn, witOut) ∈ relOut`, which by `hRel` gives the conclusion.
-    simp only [verifier, Verifier.run] at h
+  toFun_full := fun stmtIn _ witOut h => by
+    -- Verifier deterministically returns `mapStmt stmtIn`; from positive probability we extract
+    -- `(mapStmt stmtIn, witOut) ∈ relOut`, then invoke `hRel` to land in `relIn`.
+    simp only [Verifier.run, verifier] at h
     rw [gt_iff_lt, probEvent_pos_iff] at h
     obtain ⟨x, hx, hrel⟩ := h
     rw [OptionT.mem_support_iff] at hx
     simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
     obtain ⟨s, _, hx⟩ := hx
-    have key : (simulateQ impl
-        (pure (mapStmt stmtIn) : OptionT (OracleComp oSpec) StmtOut)).run' s =
+    have key : (simulateQ impl (pure (mapStmt stmtIn) : OptionT (OracleComp oSpec) StmtOut)).run' s =
         pure (some (mapStmt stmtIn)) := by
       change (simulateQ impl
         (pure (some (mapStmt stmtIn)) : OracleComp oSpec (Option StmtOut))).run' s = _
@@ -158,7 +160,6 @@ def knowledgeStateFunction (hRel : ∀ stmtIn witOut,
     rw [key] at hx
     simp only [support_pure, Set.mem_singleton_iff] at hx
     cases (Option.some.inj hx)
-    -- `extractor.extractOut stmtIn tr witOut = mapWitInv stmtIn witOut`
     exact hRel stmtIn witOut hrel
 
 /-- The `ReduceClaim` oracle reduction satisfies perfect round-by-round knowledge soundness.
@@ -222,19 +223,11 @@ variable {oSpec} {mapStmt} {mapWit} {embedIdx} {hEq}
   (relIn : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn))
   (relOut : Set ((StmtOut × (∀ i, OStmtOut i)) × WitOut))
 
-/-- Running the `ReduceClaim` oracle reduction deterministically returns the mapped statement,
-  oracle statements and witness. -/
-theorem oracleReduction_run (stmtIn : StmtIn) (oStmtIn : ∀ i, OStmtIn i) (witIn : WitIn) :
-    (oracleReduction oSpec mapStmt mapWit embedIdx hEq).toReduction.run ⟨stmtIn, oStmtIn⟩ witIn =
-      (pure ((default, ((mapStmt stmtIn, mapOStmt embedIdx hEq oStmtIn), mapWit stmtIn witIn)),
-        (mapStmt stmtIn, mapOStmt embedIdx hEq oStmtIn)) : OptionT (OracleComp _) _) := by
-  simp [OracleReduction.toReduction, oracleReduction, Reduction.run,
-    oracleProver, oracleVerifier, OracleVerifier.toVerifier,
-    Prover.run, Verifier.run, Prover.runToRound]
-  erw [simulateQ_pure]
-  rfl
+/-- The `ReduceClaim` oracle reduction satisfies perfect completeness for any relation.
 
-/-- The `ReduceClaim` oracle reduction satisfies perfect completeness for any relation. -/
+  Proof strategy mirrors the non-oracle `reduction_completeness`: the prover deterministically
+  returns the mapped output, the verifier deterministically computes `mapStmt`, and the
+  positive-probability output is exactly the mapped element which lies in `relOut` by `hRel`. -/
 @[simp]
 theorem oracleReduction_completeness
     (hRel : ∀ stmtIn oStmtIn witIn,
@@ -245,7 +238,17 @@ theorem oracleReduction_completeness
   simp only [OracleReduction.perfectCompleteness, Reduction.perfectCompleteness,
     Reduction.completeness, ENNReal.coe_zero, tsub_zero]
   intro ⟨stmtIn, oStmtIn⟩ witIn hIn
-  simp only [oracleReduction_run]
+  -- Reduce the run to a deterministic `pure` of the expected output.
+  have hrun : (oracleReduction oSpec mapStmt mapWit embedIdx hEq).toReduction.run
+      ⟨stmtIn, oStmtIn⟩ witIn =
+      (pure ((default,
+          ((mapStmt stmtIn, mapOStmt embedIdx hEq oStmtIn), mapWit stmtIn witIn)),
+          (mapStmt stmtIn, mapOStmt embedIdx hEq oStmtIn)) :
+        OptionT (OracleComp _) _) := by
+    simp only [oracleReduction, OracleReduction.toReduction, Reduction.run, oracleProver,
+      oracleVerifier, OracleVerifier.toVerifier, Prover.run, Verifier.run, Prover.runToRound]
+    rfl
+  rw [hrun]
   rw [ge_iff_le, one_le_probEvent_iff, probEvent_eq_one_iff]
   refine ⟨?_, ?_⟩
   · rw [OptionT.probFailure_eq, OptionT.run_mk]
@@ -261,7 +264,8 @@ theorem oracleReduction_completeness
     change none ∈ support
       (Prod.fst <$> (pure (some ((default,
         ((mapStmt stmtIn, mapOStmt embedIdx hEq oStmtIn), mapWit stmtIn witIn)),
-        (mapStmt stmtIn, mapOStmt embedIdx hEq oStmtIn))) : StateT σ ProbComp _).run s) at hmem
+        (mapStmt stmtIn, mapOStmt embedIdx hEq oStmtIn))) :
+          StateT σ ProbComp _).run s) at hmem
     rw [StateT.run_pure] at hmem
     simp [map_pure] at hmem
   · intro x hx
@@ -276,11 +280,30 @@ theorem oracleReduction_completeness
     change some x ∈ support
       (Prod.fst <$> (pure (some ((default,
         ((mapStmt stmtIn, mapOStmt embedIdx hEq oStmtIn), mapWit stmtIn witIn)),
-        (mapStmt stmtIn, mapOStmt embedIdx hEq oStmtIn))) : StateT σ ProbComp _).run s) at hx
+        (mapStmt stmtIn, mapOStmt embedIdx hEq oStmtIn))) :
+          StateT σ ProbComp _).run s) at hx
     rw [StateT.run_pure] at hx
     simp [map_pure, support_pure] at hx
     cases hx
     exact ⟨hRel stmtIn oStmtIn witIn hIn, rfl⟩
+  -- -- TODO: clean up this proof
+  -- simp only [OracleReduction.perfectCompleteness, oracleReduction, OracleReduction.toReduction,
+  --   OracleVerifier.toVerifier,
+  --   Reduction.perfectCompleteness_eq_prob_one, ProtocolSpec.ChallengeIdx, StateT.run'_eq,
+  --   OracleComp.probEvent_eq_one_iff, OracleComp.probFailure_eq_zero_iff,
+  --   OracleComp.neverFails_bind_iff, h, OracleComp.neverFails_map_iff, true_and,
+  --   OracleComp.support_bind, OracleComp.support_map, Set.mem_iUnion, Set.mem_image, Prod.exists,
+  --   exists_and_right, exists_eq_right, exists_prop, forall_exists_index, and_imp, Prod.forall,
+  --   Fin.forall_fin_zero_pi, Prod.mk.injEq]
+  -- simp only [Reduction.run, Prover.run, Verifier.run, oracleProver, oracleVerifier]
+  -- simp only [ProtocolSpec.ChallengeIdx, Fin.reduceLast, Nat.reduceAdd, ProtocolSpec.MessageIdx,
+  --   ProtocolSpec.Message, ProtocolSpec.Challenge, Prover.runToRound_zero_of_prover_first,
+  --   Fin.isValue, id_eq, bind_pure_comp, map_pure, OracleComp.simulateQ_pure,
+  --   Function.Embedding.trans_apply, Function.Embedding.inl_apply, eq_mpr_eq_cast,
+  --   OracleComp.liftM_eq_liftComp, OracleComp.liftComp_pure, StateT.run_pure,
+  --   OracleComp.neverFails_pure, implies_true, OracleComp.support_pure, Set.mem_singleton_iff,
+  --   Prod.mk.injEq, and_imp, true_and]
+  -- aesop
 
 variable {mapWitInv : (StmtIn × (∀ i, OStmtIn i)) → WitOut → WitIn}
 
@@ -297,30 +320,25 @@ def oracleKnowledgeStateFunction (hRel : ∀ stmtIn oStmtIn witOut,
     -- Bind `h` via `intro` (not as a lambda parameter) to avoid an expensive `isDefEq` check
     -- against the heavy `verifier.run` field type.
     intro h
-    -- The verifier deterministically outputs `(mapStmt stmtIn, mapOStmt embedIdx hEq oStmtIn)`,
-    -- so positivity of the event means `((mapStmt stmtIn, mapOStmt embedIdx hEq oStmtIn), witOut)`
-    -- is in `relOut`; then `hRel` gives the conclusion.
-    rw [oracleVerifier_toVerifier_run] at h
+    simp only [Verifier.run, oracleVerifier, OracleVerifier.toVerifier] at h
+    change ((stmtIn, oStmtIn), mapWitInv (stmtIn, oStmtIn) witOut) ∈ relIn
     rw [gt_iff_lt, probEvent_pos_iff] at h
     obtain ⟨x, hx, hrel⟩ := h
     rw [OptionT.mem_support_iff] at hx
     simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
     obtain ⟨s, _, hx⟩ := hx
-    have key : (simulateQ impl
-        (pure (mapStmt stmtIn, mapOStmt embedIdx hEq oStmtIn) :
-          OptionT (OracleComp oSpec) (StmtOut × (∀ i, OStmtOut i)))).run' s =
-        pure (some (mapStmt stmtIn, mapOStmt embedIdx hEq oStmtIn)) := by
-      change (simulateQ impl
+    -- The oracle verifier deterministically returns the pair
+    -- `(mapStmt stmtIn, mapOStmt embedIdx hEq oStmtIn)`, so the simulated run is definitionally
+    -- `pure (some ...)` and positive probability forces `x` to equal that pair.
+    have hxc : some x ∈ support ((simulateQ impl
         (pure (some (mapStmt stmtIn, mapOStmt embedIdx hEq oStmtIn)) :
-          OracleComp oSpec (Option (StmtOut × (∀ i, OStmtOut i))))).run' s = _
-      rw [simulateQ_pure]
-      change Prod.fst <$>
-        (pure (some (mapStmt stmtIn, mapOStmt embedIdx hEq oStmtIn)) :
-          StateT σ ProbComp _).run s = _
-      rw [StateT.run_pure]; simp [map_pure]
-    rw [key] at hx
-    simp only [support_pure, Set.mem_singleton_iff] at hx
-    cases (Option.some.inj hx)
+          OracleComp oSpec (Option (StmtOut × (∀ i, OStmtOut i))))).run' s) := hx
+    rw [simulateQ_pure] at hxc
+    change some x ∈ support (Prod.fst <$> (pure
+      (some (mapStmt stmtIn, mapOStmt embedIdx hEq oStmtIn)) : StateT σ ProbComp _).run s) at hxc
+    rw [StateT.run_pure] at hxc
+    simp only [map_pure, support_pure, Set.mem_singleton_iff] at hxc
+    cases (Option.some.inj hxc)
     exact hRel stmtIn oStmtIn witOut hrel
 
 /-- The `ReduceClaim` oracle reduction satisfies perfect round-by-round knowledge soundness.
@@ -333,8 +351,8 @@ theorem oracleVerifier_rbrKnowledgeSoundness (hRel : ∀ stmtIn oStmtIn witOut,
       ((stmtIn, oStmtIn), mapWitInv (stmtIn, oStmtIn) witOut) ∈ relIn) :
     (oracleVerifier oSpec mapStmt embedIdx hEq).rbrKnowledgeSoundness init impl relIn relOut 0 := by
   refine ⟨_, _, oracleKnowledgeStateFunction relIn relOut hRel, ?_⟩
-  simp only [ProtocolSpec.ChallengeIdx]
-  exact fun _ _ _ i => Fin.elim0 i.1
+  intro stmtIn witIn prover i
+  exact Fin.elim0 i.1
 
 end OracleReduction
 

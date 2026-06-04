@@ -142,6 +142,11 @@ theorem linear_epsMCA_1_5_johnson_gkl24
                 - (1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 2)))
          ) / (Fintype.card F : ℝ)) := by
   sorry -- ABF26-T4.11 Item 1; external admit [GKL24 Thm 3].
+  -- Missing ingredient: GKL24's 1.5-Johnson MCA bound for general linear codes. Needs the
+  -- ∛-radius list-decoding count (a higher-order Johnson argument giving ≤ ((n+6)/η + …)
+  -- agreeing codewords at radius 1-∛(1-δ_min+η)) converted to an epsMCA bound. The cubic-root
+  -- Johnson list count is not in-tree (JohnsonBound/ proves only the √-radius / 2nd-moment
+  -- form). Genuinely external.
 
 /-- **ABF26 Theorem 4.11, Item 2 [BGKS20 Lem 3.2].** For any linear error-correcting code
 `C ⊆ F^n`, parameter `η > 0`, and `δ ≤ 1 - ∛(1 - δ_min(C) + η)`:
@@ -162,6 +167,10 @@ theorem linear_epsCA_1_5_johnson_bgks20
     epsCA (F := F) (A := A) ((C : Set (ι → A))) δ (δ + η) ≤
       ((2 : ENNReal) / ((η : ENNReal) ^ 2 * (Fintype.card F : ENNReal))) := by
   sorry -- ABF26-T4.11 Item 2; external admit [BGKS20 Lem 3.2].
+  -- Missing ingredient: BGKS20's CA-with-proximity-loss bound 2/(η²|F|) in the same
+  -- 1.5-Johnson regime. The 1/η² shape comes from a two-step (fold then interleave) union
+  -- bound over the η-margin; needs the in-tree epsCA-with-(δ,δ+η) proximity-loss decomposition
+  -- specialised to the ∛-radius regime, which is not present. Genuinely external.
 
 end General
 
@@ -192,6 +201,11 @@ theorem rs_epsCA_bchks25_item2
     epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F))) δ_fld δ_int ≤
       ENNReal.ofReal bound := by
   sorry -- ABF26-T4.9.2; external admit [BCHKS25 Thm 1.3].
+  -- Missing ingredient: BCHKS25's RS CA bound in the δ_min/3-to-Johnson regime. The max{…}
+  -- RHS is a two-regime analysis (interpolation term + proximity-loss term) resting on the
+  -- BCHKS25 RS interpolation/multiplicity lemmas. BCKHS25/Interpolation.lean supplies the
+  -- collinear-proximates engine but not the closed-form (1-ρ-δ)/(δ(1-ρ-2δ)) RS error count.
+  -- Genuinely external.
 
 /-- **ABF26 Remark 4.10.** Small-proximity-loss simplification of T4.9.2 via R4.2.
 For `δ_int - δ_fld = γ/n` with `γ ∈ (0, 1)` (so that `R4.2` collapses `ε_ca` to its
@@ -218,6 +232,12 @@ theorem rs_epsCA_small_loss_r4_10
     epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F))) δ_fld δ_fld ≤
       ENNReal.ofReal bound := by
   sorry -- ABF26-R4.10; derived from R4.2 + T4.9.2 (both external/admitted).
+  -- Missing ingredient: this is a COROLLARY of T4.9.2 (above) via R4.2 (the
+  -- floor-collapse epsCA_eq_of_floor_eq, which IS in-tree in Errors.lean). Once T4.9.2 is
+  -- proven, R4.10 closes by: (i) epsCA_eq_of_floor_eq to push δ_int=δ_fld+γ/n down to
+  -- δ_int=δ_fld (γ<1 ⇒ same floor), (ii) substitute the small-loss term (n·δ_fld+γ)/γ for
+  -- δ_int/(δ_int-δ_fld). So R4.10 is blocked SOLELY on T4.9.2 — no independent external
+  -- content. Re-attempt immediately after T4.9.2 lands.
 
 /-- **ABF26 Theorem 4.12 [BCHKS25 Thm 4.6].** For `C := RS[F, L, k]` with rate `ρ` and
 `η > 0`, letting `ρ_plus := ρ + 1/n` and `m := max(⌈√ρ_plus/(2η)⌉, 3)`, for
@@ -251,6 +271,10 @@ theorem rs_epsMCA_johnson_range_bchks25
           + (m + 1/2) / ρ_plus ^ ((1 : ℝ) / 2))
            / (Fintype.card F : ℝ)) := by
   sorry -- ABF26-T4.12; external admit [BCHKS25 Thm 4.6].
+  -- Missing ingredient: BCHKS25 Thm 4.6's explicit RS MCA bound in the Johnson range
+  -- δ<1-√ρ₊-η. The (m+½)⁵ / ρ₊^{3/2} polynomial in the multiplicity parameter
+  -- m=max(⌈√ρ₊/(2η)⌉,3) comes from the BCHKS25 multiplicity-coded RS list-decoder analysis;
+  -- needs the m-multiplicity RS interpolation bound (not in-tree). Genuinely external.
 
 /-- **ABF26 Theorem 4.16 [BCHKS25, KK25].** Existence: for every `c > 0` and rate
 `ρ ∈ (0, 1/2)` there exists a power-of-two `n ∈ ℕ` and a Reed-Solomon code
@@ -275,6 +299,12 @@ theorem rs_epsCA_lower_capacity_bchks25_kk25
           (1 - ρ - slack) (1 - ρ - slack) ≥
         ((Fintype.card ιC : ENNReal) ^ (c : ℝ)) / (Fintype.card FC : ENNReal) := by
   sorry -- ABF26-T4.16; external admit [BCHKS25, KK25].
+  -- Missing ingredient: a CONSTRUCTION of RS codes near capacity with ε_ca ≥ n^c/|F|
+  -- (LOWER bound). Requires building, for each c and ρ∈(0,1/2), a prime-field smooth-domain
+  -- RS code whose 1-ρ-Θ(1/log n) proximity gap fails on an n^c-fraction of lines (KK25
+  -- subset-sum / BCHKS25 capacity-regime bad-code construction). The trivial epsCA≤1 is the
+  -- wrong direction; no in-tree generator manufactures the witness code/stack. Genuinely
+  -- external (also needs a smooth-domain existence witness for the ∃-binder).
 
 /-- **ABF26 Theorem 4.17 [CS25 Cor 1].** Complete CA breakdown for Reed-Solomon codes.
 Let `C := RS[F, L, k]` with `q = |F| ≥ 10`, rate `ρ`, and `δ` satisfying:
@@ -294,6 +324,13 @@ theorem rs_epsCA_breakdown_cs25
     (_hδ_hi : (k : ℝ) / Fintype.card ι ≤ 1 - (δ : ℝ) - 2 / (Fintype.card ι : ℝ)) :
     epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F))) δ δ = 1 := by
   sorry -- ABF26-T4.17; external admit [CS25 Cor 1].
+  -- Missing ingredient: CS25's complete-CA-breakdown EQUALITY epsCA=1. The `≤1` half is now
+  -- trivial (epsCA is a sup of probabilities; cf. the epsCA_le_one pattern). The hard half is
+  -- the `≥1` LOWER bound in the entropy band 1-H_q(δ)+2/n+√(...)≤ρ≤1-δ-2/n: CS25 shows
+  -- almost every line is δ-close while almost no pair is jointly close, via a counting
+  -- argument tying H_q(δ) to the number of RS codewords in a δ-ball. Needs the qEntropy↔
+  -- RS-ball-count bridge (absent; qEntropy is defined but unconnected to hammingBallVolume /
+  -- RS code counts). Genuinely external.
 
 /-- **ABF26 Theorem 4.18 [BCHKS25 Cor 1.7].** CA jump at the Johnson bound. Fix `ε > 0`,
 let `δ := 15/16`. Then for all `F` of characteristic 2 there exists a Reed-Solomon code
@@ -328,6 +365,12 @@ theorem rs_epsCA_johnson_jump_bchks25
         ((Fintype.card ιC : ENNReal) ^ (2 * ((1 : ℝ) - ε)))
           / (Fintype.card FC : ENNReal) := by
   sorry -- ABF26-T4.18; external admit [BCHKS25 Cor 1.7].
+  -- Missing ingredient: BCHKS25's char-2 CA-jump CONSTRUCTION at the Johnson bound. LOWER
+  -- bound ε_ca ≥ n^{2(1-ε)}/|F| at the Johnson radius J(15/16)=3/4, witnessed by a char-2 RS
+  -- code with n≈|F|^{(1+ε)/2} and δ_min=15/16. Requires the char-2 subfield construction
+  -- exhibiting the sharp proximity-gap discontinuity at J(δ_min). Code-construction lower
+  -- bound; trivial epsCA≤1 is the wrong direction; no in-tree witness generator. Genuinely
+  -- external.
 
 end ReedSolomon
 
@@ -354,6 +397,12 @@ theorem linear_epsCA_ge_sampling_dg25
         * Pr_{let u ← $ᵖ (ι → F)}[δᵣ(u, (C : Set (ι → F))) ≤ δ] ≤
       epsCA (F := F) (A := F) ((C : Set (ι → F))) δ δ := by
   sorry -- ABF26-L4.19; external admit [DG25 Thm 2.5].
+  -- Missing ingredient: DG25's covering-radius sampling LOWER bound. Shows
+  -- ε_ca(C,δ) ≥ ((q-1)/q)·Pr_u[Δ(u,C)≤δ] by averaging the line-proximity event over a
+  -- random base word u and a random nonzero shift; the (q-1)/q factor is the probability
+  -- the shift is nonzero. Needs: (i) wiring the uniform-word covering probability Pr_u[…]
+  -- into the epsCA sup (the DG25/ files prove a different BCIKS-style gap, not this
+  -- covering-radius sampling identity), (ii) the nonzero-shift averaging. Genuinely external.
 
 end Sampling
 
@@ -376,6 +425,11 @@ theorem subspaceDesign_epsMCA_gg25
         ((1 - τ (t + 1) - 3 / (2 * t)).toNNReal) ≤
       ENNReal.ofReal (((t : ℝ) * Fintype.card ι + 4 * t ^ 2) / Fintype.card F) := by
   sorry -- ABF26-T4.13; external admit [GG25 Cor 4.9].
+  -- Missing ingredient: GG25 Cor 4.9's subspace-design MCA bound. The (t·n+4t²)/|F| count
+  -- follows from the IsSubspaceDesign predicate (in-tree, D2.16) PLUS GG25's MCA-up-to-capacity
+  -- analysis, which itself rests on L2.17 (subspaceDesign_tau_lower — STILL an external admit
+  -- in SubspaceDesign.lean). Blocked transitively on L2.17 and the GG25 design→MCA error
+  -- conversion (absent). Genuinely external until L2.17 lands.
 
 /-- **ABF26 Theorem 4.14 [GG25 Corollary 4.10].** Folded Reed-Solomon codes have MCA
 up to capacity. Let `η ∈ (0, 1)` and `C := FRS[F, L, k, s, ω]` be a folded RS code
@@ -399,6 +453,11 @@ theorem frs_epsMCA_capacity_gg25
       ENNReal.ofReal (2 * n / (η * Fintype.card F)
         + 24 / (η ^ 3 * Fintype.card F)) := by
   sorry -- ABF26-T4.14; external admit [GG25 Cor 4.10].
+  -- Missing ingredient: this is a COROLLARY of T4.13 via T2.18 (frs_is_subspaceDesign_gk16:
+  -- FRS is τ-subspace-design with τ(r)=sρ/(s-r+1)). Once T4.13 and T2.18 are proven, T4.14
+  -- closes by instantiating T4.13 at the FRS τ and choosing t≈1/η (s>16/η² makes the design
+  -- bound collapse to 2n/(η|F|)+24/(η³|F|)). Blocked on T4.13 (above) + T2.18 (external admit
+  -- in SubspaceDesign.lean). No independent external content beyond those two.
 
 /-- **ABF26 BCGM25 extension to T4.13 / T4.14 (polynomial generators preserve
 correlated agreement).**
@@ -438,6 +497,12 @@ theorem subspaceDesign_epsCA_curves_polynomial_generators_bcgm25
         ((1 - τ (t + 1) - 3 / (2 * t)).toNNReal) ≤
       ENNReal.ofReal (((t : ℝ) * Fintype.card ι + 4 * t ^ 2) / Fintype.card F) := by
   sorry -- ABF26-BCGM25; external admit. Polynomial-generator (curve) CA extension of T4.13.
+  -- Missing ingredient: BCGM25's polynomial-generator MCA preservation for subspace-design
+  -- codes. This bounds the CURVE error epsCA_curves (∑ γ^i·uᵢ), not the affine epsCA of
+  -- T4.13, so it is NOT a copy. The genuine framework (IsMCAGenerator) is being built in
+  -- ProximityGap/MCAGenerator.lean + ProximityGenerators.lean by PR #489; per the docstring
+  -- this admit should be RESTATED in terms of IsMCAGenerator once #489 lands (do not prove the
+  -- shadow). Blocked on #489 + T4.13. Genuinely external.
 
 end SubspaceDesignFRS
 

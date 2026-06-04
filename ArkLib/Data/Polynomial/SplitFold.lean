@@ -164,7 +164,7 @@ lemma splitNth_def (n : ℕ) (f : 𝔽[X]) [inst : NeZero n] :
       rw [←Nat.div_add_mod' e n, ←Nat.div_add_mod' b n] at h₁ h₂
       by_cases h' : e % n ≥ b % n
       · have : e / n * n + e % n - (b / n * n + b % n) =
-                ((e / n - b / n) * n) + (e % n - b % n) := by
+               ((e / n - b / n) * n) + (e % n - b % n) := by
           have : e / n * n + e % n - (b / n * n + b % n) =
                   e / n * n + e % n - b / n * n - b % n := by
             omega

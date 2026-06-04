@@ -600,7 +600,7 @@ noncomputable def queryOracleVerifier :
             return false
 
         let cur_challenge_batch : Fin ϑ → L := fun j => stmt.challenges ⟨i +
-        j.val, by rw [Fin.val_last]; omega⟩
+          j.val, by rw [Fin.val_last]; omega⟩
 
         let c_next := localized_fold_matrix_form 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
           (i:=⟨i, by omega⟩) (steps:=ϑ) (h_i_add_steps:=by simp only; omega)

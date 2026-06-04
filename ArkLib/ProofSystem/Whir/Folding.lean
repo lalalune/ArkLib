@@ -7,6 +7,7 @@ Authors: Poulami Das, Miguel Quaresma (Least Authority), Alexander Hicks
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.MvPolynomial.LinearMvExtension
 import ArkLib.Data.Polynomial.SplitFold
+import ArkLib.Data.Probability.Instances
 import ArkLib.ProofSystem.Whir.BlockRelDistance
 import ArkLib.ProofSystem.Whir.MutualCorrAgreement
 
@@ -791,7 +792,7 @@ lemma folding_preserves_listdecoding_base
   (C' : Set ((indexPowT S φ 1) → F)) (hcode' : C' = smoothCode φ_1 (m-1))
   {BStar : (Set (indexPowT S φ 1 → F)) → ℕ → ℝ≥0}
   {errStar : (Set (indexPowT S φ 1 → F)) → ℕ → ℝ≥0 → ℝ≥0} :
-    ∀ (f : (indexPowT S φ 0) → F) (hδ : 0 < δ ∧ δ < 1 - (BStar C' 2)),
+    ∀ (f : (indexPowT S φ 0) → F) (_hδ : 0 < δ ∧ δ < 1 - (BStar C' 2)),
       Pr_{let α ←$ᵖ F}[
           let listBlock : Set ((indexPowT S φ 0) → F) := Λᵣ(0, k, f, S_0, C, hcode, δ)
           let vec_α : Fin 1 → F := (fun _ : Fin 1 => α)
@@ -861,7 +862,7 @@ lemma folding_preserves_listdecoding_base_ne_subset
   (C' : Set ((indexPowT S φ 1) → F)) (hcode' : C' = smoothCode φ_1 (m-1))
   {BStar : (Set (indexPowT S φ 1 → F)) → ℕ → ℝ≥0}
   {errStar : (Set (indexPowT S φ 1 → F)) → ℕ → ℝ≥0 → ℝ≥0} :
-    ∀ (f : (indexPowT S φ 0) → F) (hδ : 0 < δ ∧ δ < 1 - (BStar C' 2)),
+    ∀ (f : (indexPowT S φ 0) → F) (_hδ : 0 < δ ∧ δ < 1 - (BStar C' 2)),
       Pr_{let α ←$ᵖ F}[
           let listBlock : Set ((indexPowT S φ 0) → F) := Λᵣ(0, k, f, S_0, C, hcode, δ)
           let vec_α : Fin 1 → F := (fun _ : Fin 1 => α)
@@ -871,7 +872,38 @@ lemma folding_preserves_listdecoding_base_ne_subset
             Λᵣ(1, k, fold, S_1, C', hcode', δ)
           ¬ (listBlock' ⊆ foldSet)
         ] < errStar C' 2 δ
-  := by sorry
+  := by
+    intro f hδ
+    let D : PMF F := PMF.uniformOfFintype F
+    have hne := folding_preserves_listdecoding_base (S := S) (k := k) (m := m) hm
+      (φ := φ) (S_0 := S_0) (S_1 := S_1) (φ_0 := φ_0) (φ_1 := φ_1)
+      (C := C) hcode C' hcode' (BStar := BStar) (errStar := errStar) f hδ
+    have hmono :
+        Pr_{let α ← D}[
+          let listBlock : Set ((indexPowT S φ 0) → F) := Λᵣ(0, k, f, S_0, C, hcode, δ)
+          let vec_α : Fin 1 → F := (fun _ : Fin 1 => α)
+          let foldSet := fold_k_set listBlock vec_α hm
+          let fold := fold_k f vec_α hm
+          let listBlock' : Set ((indexPowT S φ 1) → F) :=
+            Λᵣ(1, k, fold, S_1, C', hcode', δ)
+          ¬ (listBlock' ⊆ foldSet)
+        ] ≤
+        Pr_{let α ← D}[
+          let listBlock : Set ((indexPowT S φ 0) → F) := Λᵣ(0, k, f, S_0, C, hcode, δ)
+          let vec_α : Fin 1 → F := (fun _ : Fin 1 => α)
+          let foldSet := fold_k_set listBlock vec_α hm
+          let fold := fold_k f vec_α hm
+          let listBlock' : Set ((indexPowT S φ 1) → F) :=
+            Λᵣ(1, k, fold, S_1, C', hcode', δ)
+          foldSet ≠ listBlock'
+        ] := by
+      refine Pr_le_Pr_of_implies D _ _ ?_
+      intro α hnot
+      dsimp only
+      intro heq
+      apply hnot
+      rw [← heq]
+    exact lt_of_le_of_lt hmono hne
 
 end FoldingLemmas
 
