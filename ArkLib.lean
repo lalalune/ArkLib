@@ -242,6 +242,7 @@ import ArkLib.ProofSystem.RingSwitching.BatchingPhase
 import ArkLib.ProofSystem.RingSwitching.General
 import ArkLib.ProofSystem.RingSwitching.Prelude
 import ArkLib.ProofSystem.RingSwitching.Profile
+import ArkLib.ProofSystem.RingSwitching.Scratch
 import ArkLib.ProofSystem.RingSwitching.Spec
 import ArkLib.ProofSystem.RingSwitching.SumcheckPhase
 import ArkLib.ProofSystem.Spartan.Basic
