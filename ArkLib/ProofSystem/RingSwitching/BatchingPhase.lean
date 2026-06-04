@@ -426,7 +426,7 @@ noncomputable def batchingKnowledgeStateFunction :
       -- `performCheckOriginalEvaluation_packMLE_iff` (ported, Profile-abstract) turns this into
       -- exactly `original_claim = aeval r witMid.t.val` (= the goal `… = witMid.t.val.aeval r`).
       exact (performCheckOriginalEvaluation_packMLE_iff P ℓ ℓ' h_l
-        stmt.original_claim witMid.t stmt.t_eval_point).mp hcheck
+        stmtIn.1.original_claim witMid.t stmtIn.1.t_eval_point).mp hcheck
     | ⟨1, h⟩ => nomatch h
   toFun_full := fun ⟨stmtLast, oStmtLast⟩ tr witOut => by
     -- Spec repair (#17) APPLIED: the round-2 `batchingKStateProp` (the `⟨2,_⟩` case above) now
