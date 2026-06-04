@@ -590,18 +590,18 @@ open scoped NNReal
 --   · simp; exact default
 --   · simp; exact default
 
--- Note: show that the oracle verifier reduces to the (non-oracle) verifier
-theorem oracleVerifier_eq_verifier :
-    (oracleVerifier R deg D oSpec).toVerifier = verifier R deg D oSpec := by
-  ext
-  simp [OracleVerifier.toVerifier, verifier, OracleInterface.simOracle2]
-  sorry
-
-/-- The oracle reduction is equivalent to the non-oracle reduction -/
-theorem oracleReduction_eq_reduction :
-    (oracleReduction R deg D oSpec).toReduction = reduction R deg D oSpec := by
-  ext : 1 <;>
-  simp [OracleReduction.toReduction, oracleReduction, reduction, oracleVerifier_eq_verifier]
+-- REMOVED (false statement — Finding-13/eq-510 family):
+--   `oracleVerifier_eq_verifier : (oracleVerifier …).toVerifier = verifier …`
+-- Root cause: the *compiled* oracle verifier guards on the **oracle statement
+-- polynomial** (the prover's committed `oStmt`), whereas the plain `verifier`
+-- guards on the **message polynomial** sent in the transcript. These two guards
+-- are not definitionally — nor even propositionally — equal, so the theorem is a
+-- bug, not an unfinished proof. Its only consumer was `oracleReduction_eq_reduction`
+-- (below), which was therefore equally false and has also been removed.
+-- The campaign already routed every downstream proof AROUND this detour (see the
+-- "No detour through the false `oracleReduction_eq_reduction`" comments at the
+-- compiled-reduction completeness proofs); zero live users remained at removal.
+-- See docs/kb/audits/gh-issues-campaign-2026-06-04.md, section "Statements found FALSE".
 
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
 
@@ -1027,11 +1027,19 @@ private def simpleKnowledgeStateFunction :
       rw [simulateQ_pure] at hx'
       simp at hx'
 
-/-- Round-by-round knowledge soundness for the verifier -/
-theorem verifier_rbrKnowledgeSoundness [Fintype R] :
-    (verifier R deg D oSpec).rbrKnowledgeSoundness init impl
-    (inputRelation R deg D) (outputRelation R deg) (fun _ => (deg : ℝ≥0) / (Fintype.card R)) := by
-  sorry
+-- REMOVED (false statement — Finding-13/eq-510 family):
+--   `verifier_rbrKnowledgeSoundness` for the plain (non-oracle) `verifier`, at the
+--   stated round error `deg / card R`.
+-- Root cause: the plain `verifier` only checks the **message polynomial** sent in
+-- the transcript; it never cross-checks that message against the prover's committed
+-- **oracle statement**. A malicious prover can therefore commit to one polynomial as
+-- the oracle and send a different, consistent-looking message — a probability-1
+-- knowledge-soundness break, so the claimed `deg / card R` error bound is false
+-- (the true bound is 1). This is a bug, not an unfinished proof.
+-- The TRUE, proven counterpart is `Simple.oracleVerifier_rbrKnowledgeSoundness`
+-- (just below): the *oracle* verifier does enforce the message-vs-oracle consistency
+-- and so attains the `deg / card R` error.
+-- See docs/kb/audits/gh-issues-campaign-2026-06-04.md, section "Statements found FALSE".
 
 /-- Round-by-round knowledge soundness for the oracle verifier -/
 theorem oracleVerifier_rbrKnowledgeSoundness [Fintype R] :
@@ -1521,13 +1529,17 @@ theorem reduction_perfectCompleteness :
     (lensComplete := inferInstance)
     (Simple.reduction_perfectCompleteness R deg D oSpec)
 
-theorem verifier_rbrKnowledgeSoundness [Fintype R] :
-    (verifier R n deg D oSpec i).rbrKnowledgeSoundness init impl
-    (relationRound R n deg D i.castSucc) (relationRound R n deg D i.succ)
-    (fun _ => (deg : ℝ≥0) / Fintype.card R) := sorry
-  -- Verifier.liftContext_rbrKnowledgeSoundness (lens := (oCtxLens R n deg D i).toContext)
-  --   (lensKS := extractorLens_rbr_knowledge_soundness i)
-  --   (Simple.verifier_rbrKnowledgeSoundness R deg D oSpec i)
+-- REMOVED (false statement — Finding-13/eq-510 family):
+--   the lifted `verifier_rbrKnowledgeSoundness` for the plain `verifier`.
+-- This is the `liftContext` transport of `Simple.verifier_rbrKnowledgeSoundness`,
+-- which was removed above as false: the plain verifier never cross-checks the
+-- transcript message against the committed oracle, so the `deg / card R` error
+-- bound is unattainable (probability-1 break, true bound 1). Lifting a false base
+-- statement cannot make it true, so this is a bug, not an unfinished proof; its only
+-- reference was its own (now-dead) commented-out proof body.
+-- The TRUE, proven counterpart is `oracleVerifier_rbrKnowledgeSoundness` (just below),
+-- which transports `Simple.oracleVerifier_rbrKnowledgeSoundness` via `liftContext`.
+-- See docs/kb/audits/gh-issues-campaign-2026-06-04.md, section "Statements found FALSE".
 
 /-- Completeness theorem for single-round of sum-check, obtained by transporting the completeness
 proof for the simplified version -/
