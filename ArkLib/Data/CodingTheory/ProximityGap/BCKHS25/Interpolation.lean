@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 
 import CompPoly.ToMathlib.Polynomial.BivariateDegree
 import ArkLib.Data.CodingTheory.PolishchukSpielman
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Guruswami
 import ArkLib.ToMathlib.Polynomial.EvalExt
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
@@ -768,5 +769,24 @@ theorem exists_joint_proximate (k e h DZ : ℕ)
   omega
 
 end PSApplication
+
+/-- **[BCKHS25] Lemma 3.1, integer-cap wrapper.** The improved
+Guruswami-Sudan interpolation step used by the BCKHS25 route is already proved
+in the BCIKS20 list-decoding development as
+`ProximityGap.modified_guruswami_has_a_solution`. This wrapper exposes that
+proved theorem under the BCKHS25 file, with the honest integer-side conditions
+currently required by the shared GS box. The remaining paper-to-Lean work is
+the real-parameter arithmetic that discharges `hDx` and `hYZ` from the
+BCKHS25 constants; the interpolation object itself is no longer an open
+construction. -/
+theorem exists_modified_guruswami_interpolant {K : Type} [Field K] [DecidableEq K]
+    [DecidableEq (RatFunc K)] {m n k : ℕ} (hn : 0 < n) (hk : 0 < k)
+    {ωs : Fin n ↪ K} {u₀ u₁ : Fin n → K}
+    (hDx : ((ProximityGap.gsDpg n m k : ℕ) : ℝ) <
+      ProximityGap.D_X ((k + 1) / (n : ℚ)) n m)
+    (hYZ : ((ProximityGap.gsDpg n m k + ProximityGap.gsZCap n m k : ℕ) : ℝ) ≤
+      n * (m + 1 / (2 : ℚ)) ^ 3 / (6 * Real.sqrt ((k + 1) / n))) :
+    ∃ Q, ProximityGap.ModifiedGuruswami (F := K) m n k ωs Q u₀ u₁ := by
+  exact ProximityGap.modified_guruswami_has_a_solution (F := K) hn hk hDx hYZ
 
 end BCKHS25
