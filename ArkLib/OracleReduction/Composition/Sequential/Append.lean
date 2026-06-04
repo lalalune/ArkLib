@@ -456,6 +456,36 @@ def OracleVerifier.append (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ 
       simp [h] at this ⊢
       simp [this, MessageIdx.inr]
 
+/-- Converting the appended oracle verifier to a plain verifier coincides with appending the two
+plain verifiers.
+
+FRONTIER (sorry): with `verify` and the `AppendCoherent` side condition in place this is now
+provable; the remaining obstruction is the two-stage `simulateQ` collapse (the mission's anticipated
+heavy step), not an interface gap. Proof skeleton for the next agent:
+
+* `apply Verifier.ext; funext ⟨stmt, oStmt⟩ tr`. The RHS is
+  `do let s₂ ← V₁.toVerifier.verify (stmt, oStmt) tr.fst; V₂.toVerifier.verify s₂ tr.snd`; the LHS is
+  `simulateQ (simOracle2 oSpec oStmt tr.messages) (Append.verify V₁ V₂ stmt tr.challenges)` followed
+  by the `oStmtOut` assembly along `(append V₁ V₂).embed`/`hEq`.
+* **V₁ leg.** Rewrite `simulateQ (simOracle2 …) (simulateQ router₁ X)` as
+  `simulateQ (simOracle2 … ∘ₛ router₁) X` (`QueryImpl.simulateQ_compose`, reversed), then prove the
+  `QueryImpl` equality `simOracle2 oSpec oStmt tr.messages ∘ₛ router₁ = simOracle2 oSpec oStmt
+  (tr.messages ∘ MessageIdx.inl)` per query (the `inl` message case uses `instAppend_inl_heq`; the
+  `oSpec`/`OStmt₁` cases are `rfl` after `simp [QueryImpl.compose, simOracle2, addLift, id]`). This
+  identifies the V₁ leg with `V₁.toVerifier`'s own `simulateQ`. Mind the challenge re-indexing
+  `ChallengeIdx.inl`/`tr.fst.challenges = tr.challenges ∘ inl`.
+* **V₂ leg.** Analogously `simOracle2 … ∘ₛ router₂ V₁ = simOracle2 oSpec oStmt₂ (tr.messages ∘
+  MessageIdx.inr)`, where `oStmt₂ i := V₁.toVerifier`'s assembled output oracle statement
+  (`hEq i ▸ embed-selected oStmt/message`). The `OStmt₂` case is the load-bearing one: it routes via
+  `emitOStmt₂Query`, and `AppendCoherent.hCoh i` is exactly what makes `simOracle2 (appended)`'s
+  answer agree with `(Oₛ₂ i).answer (oStmt₂ i)` (transport the `srcInst`/`Response_eq_of_instHeq`
+  casts through `OracleInterface.answer`). The `inr` message case uses `instAppend_inr_heq`.
+* **Output assembly.** Both sides' `oStmtOut i` select the same source: collapse
+  `(append V₁ V₂).embed = V₂.embed ≫ (V₁.embed ⊕ id) ≫ assoc ≫ (id ⊕ MessageIdx.sumEquiv)` against the
+  nested `V₁`/`V₂` selections, casing on `V₂.embed i` then `V₁.embed`, discharging the `hEq`-`▸`
+  payloads by `eq_of_heq` + `cast_heq` (idiom: see `OracleVerifier.cast_toVerifier` in `Cast.lean`).
+
+No new interface is required; only the `simulateQ`-fusion algebra above. -/
 @[simp]
 lemma OracleVerifier.append_toVerifier
     (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
