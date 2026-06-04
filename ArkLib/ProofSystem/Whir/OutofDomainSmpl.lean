@@ -121,6 +121,109 @@ lemma oodSampling_crs_eq_rs
     funext fun rs => congr_arg PMF.pure (propext (hequiv rs))
   exact congr_arg (· True) (congr_arg (PMF.bind ($ᵖ (Fin s → F))) hfun)
 
+section CountingBridge
+
+open LinearMvExtension Polynomial
+
+/-- The mass that the `Pr_{...}[...]` PMF encoding assigns to an event under uniform sampling
+is exactly `#event / #domain`. -/
+private lemma uniform_event_mass {α : Type} [Fintype α] [Nonempty α]
+    (P : α → Prop) [DecidablePred P] :
+    PMF.bind (PMF.uniformOfFintype α) (fun r => PMF.pure (P r)) True
+      = ((Finset.univ.filter P).card : ENNReal) * ((Fintype.card α : ENNReal))⁻¹ := by
+  classical
+  rw [PMF.bind_apply, tsum_fintype]
+  trans (∑ a ∈ Finset.univ.filter P, ((Fintype.card α : ENNReal))⁻¹)
+  · rw [Finset.sum_filter]
+    refine Finset.sum_congr rfl fun a _ => ?_
+    by_cases h : P a <;>
+      simp [PMF.uniformOfFintype_apply, PMF.pure_apply, h, eq_iff_iff]
+  · rw [Finset.sum_const, nsmul_eq_mul]
+
+/-- Tuples satisfying `Q` in every coordinate form the `piFinset` of the per-coordinate
+solution set, so their count is `(#Q)^s`. -/
+private lemma card_filter_forall_pi {β : Type} [Fintype β] [DecidableEq β] {s : ℕ}
+    (Q : β → Prop) [DecidablePred Q] :
+    (Finset.univ.filter (fun r : Fin s → β => ∀ i, Q (r i))).card
+      = ((Finset.univ.filter Q).card) ^ s := by
+  classical
+  have h : (Finset.univ.filter (fun r : Fin s → β => ∀ i, Q (r i)))
+      = Fintype.piFinset (fun _ : Fin s => Finset.univ.filter Q) := by
+    ext r
+    simp [Fintype.mem_piFinset]
+  rw [h, Fintype.card_piFinset]
+  simp
+
+/-- Distinct smooth codewords decode to distinct univariate polynomials (the decoded
+polynomial interpolates the codeword on the domain). -/
+private lemma decodeLT_ne_of_val_ne {φ : ι ↪ F} [Smooth φ] {m : ℕ} (u u' : smoothCode φ m)
+    (hne : u.val ≠ u'.val) :
+    ((decodeLT u : Polynomial F)) ≠ ((decodeLT u' : Polynomial F)) := by
+  intro h
+  apply hne
+  funext x
+  have hu : ((decodeLT u : Polynomial F)).eval (φ x) = u.val x :=
+    Lagrange.eval_interpolate_at_node u.val (φ.injective.injOn) (Finset.mem_univ x)
+  have hu' : ((decodeLT u' : Polynomial F)).eval (φ x) = u'.val x :=
+    Lagrange.eval_interpolate_at_node u'.val (φ.injective.injOn) (Finset.mem_univ x)
+  rw [← hu, ← hu', h]
+
+/-- Two distinct smooth codewords' decoded polynomials agree on at most `2^m - 1` field
+points: agreement points are roots of the nonzero difference of degree `< 2^m`. -/
+private lemma card_agreement_le [Fintype F] {φ : ι ↪ F} [Smooth φ] {m : ℕ}
+    (u u' : smoothCode φ m) (hne : u.val ≠ u'.val) :
+    (Finset.univ.filter (fun x : F =>
+      ((decodeLT u : Polynomial F)).eval x = ((decodeLT u' : Polynomial F)).eval x)).card
+      ≤ 2 ^ m - 1 := by
+  classical
+  set q : Polynomial F := (decodeLT u : Polynomial F) - (decodeLT u' : Polynomial F) with hq
+  have hq0 : q ≠ 0 := sub_ne_zero_of_ne (decodeLT_ne_of_val_ne u u' hne)
+  have hqdeg : q.natDegree < 2 ^ m := by
+    have hp := (decodeLT u).2
+    have hp' := (decodeLT u').2
+    rw [Polynomial.mem_degreeLT] at hp hp'
+    have hlt : q.degree < ((2 ^ m : ℕ) : WithBot ℕ) :=
+      lt_of_le_of_lt (Polynomial.degree_sub_le _ _) (max_lt hp hp')
+    exact (Polynomial.natDegree_lt_iff_degree_lt hq0).mpr hlt
+  have hsub : (Finset.univ.filter (fun x : F =>
+        ((decodeLT u : Polynomial F)).eval x = ((decodeLT u' : Polynomial F)).eval x))
+      ⊆ q.roots.toFinset := by
+    intro y hy
+    simp only [Finset.mem_filter] at hy
+    rw [Multiset.mem_toFinset, Polynomial.mem_roots hq0]
+    simp [hq, Polynomial.IsRoot, hy.2]
+  calc (Finset.univ.filter _).card
+      ≤ q.roots.toFinset.card := Finset.card_le_card hsub
+    _ ≤ Multiset.card q.roots := q.roots.toFinset_card_le
+    _ ≤ q.natDegree := Polynomial.card_roots' q
+    _ ≤ 2 ^ m - 1 := by omega
+
+/-- Evaluating the decoded multilinear polynomial at the power vector `(r^(2^j))_j` recovers
+the decoded univariate polynomial's value at `r` (the smooth-code power substitution
+round-trip). -/
+private lemma mVdecode_eval_pow {φ : ι ↪ F} [Smooth φ] {m : ℕ} (u : smoothCode φ m) (r : F) :
+    (mVdecode u).eval (fun j : Fin m => r ^ (2 ^ (j : ℕ)))
+      = ((decodeLT u : Polynomial F)).eval r := by
+  have h1 : Polynomial.eval r (powAlgHom (mVdecode u))
+      = MvPolynomial.eval (fun j : Fin m => r ^ (2 ^ (j : ℕ))) (mVdecode u) := by
+    unfold powAlgHom
+    rw [MvPolynomial.aeval_def, ← Polynomial.coe_evalRingHom,
+      MvPolynomial.eval₂_comp_left (Polynomial.evalRingHom r)]
+    have hhom : (Polynomial.evalRingHom r).comp (algebraMap F (Polynomial F))
+        = RingHom.id F := RingHom.ext fun a => by simp
+    have hg : (⇑(Polynomial.evalRingHom r)
+          ∘ fun j : Fin m => (Polynomial.X : Polynomial F) ^ 2 ^ (j : ℕ))
+        = fun j : Fin m => r ^ 2 ^ (j : ℕ) := by
+      funext j
+      simp
+    rw [hhom, hg, MvPolynomial.eval₂_id]
+  have h2 : powAlgHom (mVdecode u) = ((decodeLT u : Polynomial F)) := by
+    have := powContraction_is_right_inverse_to_linearMvExtension (decodeLT u)
+    simpa [powContraction, mVdecode] using this
+  rw [← h1, h2]
+
+end CountingBridge
+
 /-- Lemma 4.25 part 2
   Let `f : ι → F`, `m` be the number of variables, `s` be a repetition parameter
   and `δ ∈ [0,1]` be a distance parameter,
