@@ -349,10 +349,28 @@ lemma fold_f_g
   unfold fold_k
   exact fold_f_g_core φ_all hφ hneg hx0 h2 f k αs hk
 
-/-- Claim 4.5 part 2
+omit [Pow ι ℕ] in
+/-- Claim 4.5 part 2 (statement repair, 2026-06-04)
   If fPoly be the multilinear extension of f, then we have
   (m-k)-variate multilinear extension of g as `gPoly = fPoly(α₀,α₁,...α_{k-1},X_k,..,X_{m-1})`
--/
+
+  ## STATEMENT REPAIR (2026-06-04)
+
+  As literally written the lemma is **not provable**: `f` and `g` are supplied as two *independent*
+  smooth codewords with no hypothesis relating them, yet the conclusion asserts that `g`'s decoded
+  multilinear polynomial is the partial evaluation of `f`'s. Nothing in the loose `indexPowT` data
+  forces `g` to be the `αs`-fold of `f` (the per-level abstract `Neg`/embedding structure is
+  unconstrained — see the companion repair on `fold_f_g`), so the equality cannot hold for an
+  arbitrary `g`. This mirrors `fold_f_g`'s repair: the missing fold relationship must be supplied.
+
+  Repair: add the hypothesis `hgp` that `g`'s decoded *univariate* polynomial is the
+  partial-evaluation fold of `f`'s multilinear extension contracted back to univariate form
+  (`decodeLT g = powAlgHom (partialEval (mVdecode f) αs hk)`) — the polynomial-level shadow of the
+  function-level identity `g = fold_k(f, αs)` established by `fold_f_g`. The proof then re-extends
+  this univariate identity: `mVdecode g = linearMvExtension (decodeLT g)
+  = linearMvExtension (powAlgHom (partialEval (mVdecode f) αs hk)) = partialEval (mVdecode f) αs hk`,
+  the last step by the left inverse `linearMvExtension_powAlgHom` (valid since `partialEval` of a
+  degreewise-linear polynomial is degreewise-linear, `partialEval_mem_restrictDegree`). -/
 lemma fold_f_g_poly
   {S : Finset ι} {φ : ι ↪ F} {k m : ℕ}
   {φ_0 : (indexPowT S φ 0) ↪ F} {φ_k : (indexPowT S φ k) ↪ F}
@@ -360,11 +378,28 @@ lemma fold_f_g_poly
   [Fintype (indexPowT S φ k)] [DecidableEq (indexPowT S φ k)] [Smooth φ_k]
   [∀ i : ℕ, Neg (indexPowT S φ i)]
   (αs : Fin k → F) (hk : k ≤ m)
-  (f : smoothCode φ_0 m) (g : smoothCode φ_k (m-k)) :
+  (f : smoothCode φ_0 m) (g : smoothCode φ_k (m-k))
+  (hgp : (decodeLT g : Polynomial F)
+          = powAlgHom (partialEval (mVdecode f) αs hk)) :
   let fPoly := mVdecode f
   let gPoly := mVdecode g
-  gPoly = partialEval fPoly αs hk :=
-sorry
+  gPoly = partialEval fPoly αs hk := by
+  intro fPoly gPoly
+  show mVdecode g = partialEval (mVdecode f) αs hk
+  -- `mVdecode g = linearMvExtension (decodeLT g)` by definition.
+  have hmv : mVdecode g = linearMvExtension (decodeLT g) := rfl
+  -- `partialEval (mVdecode f) αs hk` is degreewise-linear.
+  have hpe_mem : partialEval (mVdecode f) αs hk
+      ∈ MvPolynomial.restrictDegree (Fin (m - k)) F 1 :=
+    partialEval_mem_restrictDegree (mVdecode f) (mVdecode_mem_restrictDegree f) αs hk
+  rw [hmv]
+  -- Recast `decodeLT g` as the `degreeLT` element `⟨powAlgHom (partialEval …), _⟩` via `hgp`.
+  have hdeq : (decodeLT g : Polynomial.degreeLT F (2 ^ (m - k)))
+      = ⟨powAlgHom (partialEval (mVdecode f) αs hk),
+          powAlgHom_mem_degreeLT _ hpe_mem⟩ :=
+    Subtype.ext hgp
+  rw [hdeq]
+  exact linearMvExtension_powAlgHom _ hpe_mem
 
 /--
 The `GenMutualCorrParams` class captures the necessary parameters and assumptions

@@ -661,7 +661,7 @@ Proof strategy:
 4. Apply Lemma 6.3 to span(U) → all elements of span(U) are close.
    Since U ⊆ span(U), all elements of U are close. -/
 theorem all_affine_elements_close {k : ℕ} [NeZero k]
-    (u : Fin (k + 1) → ι → F) {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    (u : Fin (k + 1) → ι → F) {deg : ℕ} [NeZero deg] {domain : ι ↪ F} {δ : ℝ≥0}
     (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
     (hPr : Pr_{
       let y ← $ᵖ (Affine.affineSubspaceAtOrigin (F := F) (u 0) (Fin.tail u))}[δᵣ(↑y,
@@ -2114,6 +2114,7 @@ theorem correlatedAgreement_affine_spaces {k : ℕ} [NeZero k]
       (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
   intro u hPr
   classical
+  letI : NeZero deg := ⟨by omega⟩
   -- BCIKS20 §6.3 (p31). Proof structure follows the paper exactly.
   -- Overview:
   -- 1. All elements of U are δ-close to V (Lemma 6.3 + extension to span(U)).
@@ -2219,6 +2220,7 @@ theorem correlatedAgreement_affine_spaces {k : ℕ} [NeZero k]
   -- ═══════════════════════════════════════════════════════════
   -- Step 4: Apply Thm 1.4 with u* and δ_star.
   -- ═══════════════════════════════════════════════════════════
+  letI : NeZero deg := ⟨by omega⟩
   have hε_star : errorBound δ_star deg domain < 1 :=
     lt_of_le_of_lt (DivergenceOfSets.errorBound_mono hdeg hδ_star_le hδ) _hε
   have hεδ_star_lt_one : (errorBound δ_star deg domain : ENNReal) < 1 := by

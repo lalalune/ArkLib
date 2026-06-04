@@ -41,9 +41,7 @@ section
 
 variable {F : Type} [Field F]
 
-/-- Construction of the monisized polynomial `H_tilde` in Appendix A.1 of [BCIKS20].
-Note: Here `H ∈ F[X][Y]` translates to `H ∈ F[Z][Y]` in [BCIKS20] and H_tilde in
-`Polynomial (RatFunc F)` translates to `H_tilde ∈ F(Z)[T]` in [BCIKS20]. -/
+/-- Construction of the monisized polynomial `H_tilde` in Appendix A.1 of [BCIKS20]. -/
 noncomputable def H_tilde (H : F[X][Y]) : Polynomial (RatFunc F) :=
   let hᵢ (i : ℕ) := H.coeff i
   let d := H.natDegree
@@ -52,14 +50,7 @@ noncomputable def H_tilde (H : F[X][Y]) : Polynomial (RatFunc F) :=
   let H' := Polynomial.eval₂ (RingHom.comp Polynomial.C univPolyHom) S H
   W ^ (d - 1) * H'
 
-/-- The monisized version H_tilde is irreducible if the original polynomial H is irreducible.
-
-Statement repairs (both necessary; documented for upstream):
-* `hH : 0 < H.natDegree` — for degree-0 irreducible `H = C h`, `H_tilde H` is a nonzero
-  constant in `(RatFunc F)[X]`, i.e. a unit, hence not irreducible.
-* The section now requires `[Field F]` (previously `CommRing F` + `IsDomain F`): the proof
-  goes through Gauss's lemma, which needs `F[X]` integrally closed/UFD; a general domain
-  does not provide this. All use sites (BCIKS20 §5) are over fields. -/
+/-- The monisized version `H_tilde` is irreducible if the original polynomial `H` is. -/
 lemma irreducibleHTildeOfIrreducible {H : Polynomial (Polynomial F)} (hH : 0 < H.natDegree) :
     (Irreducible H → Irreducible (H_tilde H)) := by
   intro hirr
@@ -106,12 +97,10 @@ lemma irreducibleHTildeOfIrreducible {H : Polynomial (Polynomial F)} (hH : 0 < H
     Polynomial.isUnit_C.mpr ((isUnit_iff_ne_zero).mpr (pow_ne_zero _ hu_ne))
   exact (irreducible_isUnit_mul hunit).mpr hφg_irr
 
-/-- The function field `𝕃 ` from Appendix A.1 of [BCIKS20]. -/
 abbrev 𝕃 (H : F[X][Y]) : Type :=
   (Polynomial (RatFunc F)) ⧸ (Ideal.span {H_tilde H})
 
-/-- The function field `𝕃 ` is indeed a field if and only if the generator of the ideal we quotient
-by is an irreducible polynomial. -/
+/-- The function field `𝕃` is a field when the quotient generator is irreducible. -/
 lemma isField_of_irreducible {H : F[X][Y]} (hH : 0 < H.natDegree) :
     Irreducible H → IsField (𝕃 H) := by
   intros h
@@ -140,7 +129,6 @@ noncomputable def H_tilde' (H : F[X][Y]) : F[X][Y] :=
       ∑ i ∈ Finset.range d,
         Polynomial.C (hᵢ i * W ^ (d - 1 - i)) * Polynomial.X ^ i
 
-/-- If `H` has positive degree in `Y`, then `H_tilde' H` is monic. -/
 lemma H_tilde'_monic (H : F[X][Y]) (hH : 0 < H.natDegree) :
     (H_tilde' H).Monic := by
   classical
@@ -151,6 +139,73 @@ lemma H_tilde'_monic (H : F[X][Y]) (hH : 0 < H.natDegree) :
       intro i hi
       exact (Polynomial.degree_C_mul_X_pow_le i _).trans_lt
         (WithBot.coe_lt_coe.2 (Finset.mem_range.mp hi))
+
+lemma evalEval_H_tilde' (H : F[X][Y]) (hH : 0 < H.natDegree) (z y : F) :
+    Polynomial.evalEval z ((H.coeff H.natDegree).eval z * y) (H_tilde' H) =
+      ((H.coeff H.natDegree).eval z) ^ (H.natDegree - 1) * Polynomial.evalEval z y H := by
+  classical
+  set d := H.natDegree with hd
+  set W : F[X] := H.coeff d with hW
+  set w : F := W.eval z with hw
+  have hdne : d ≠ 0 := by omega
+  have hwd : Polynomial.eval z (H.coeff d) = w := by rw [← hW, hw]
+  have hEvalH : Polynomial.evalEval z y H =
+      ∑ i ∈ Finset.range (H.natDegree + 1), (H.coeff i).eval z * y ^ i := by
+    rw [Polynomial.evalEval]
+    rw [show Polynomial.eval (Polynomial.C y) H =
+        ∑ i ∈ Finset.range (H.natDegree + 1), H.coeff i * (Polynomial.C y) ^ i by
+      exact Polynomial.eval_eq_sum_range (x := Polynomial.C y)]
+    simp only [Polynomial.eval_finset_sum, Polynomial.eval_mul, Polynomial.eval_pow,
+      Polynomial.eval_C]
+  rw [H_tilde', if_neg (by simpa [hd] using hdne)]
+  simp only [Polynomial.evalEval_add, Polynomial.evalEval_pow, Polynomial.evalEval_X,
+    Polynomial.evalEval_finset_sum, Polynomial.evalEval_mul, Polynomial.evalEval_C,
+    Polynomial.eval_mul, Polynomial.eval_pow]
+  rw [hEvalH]
+  simp only [hd]
+  rw [Finset.sum_range_succ]
+  simp only [← hd]
+  rw [mul_add]
+  have hsum_lower :
+      (∑ x ∈ Finset.range d, Polynomial.eval z (H.coeff x) *
+          Polynomial.eval z (H.coeff d) ^ (d - 1 - x) * (w * y) ^ x) =
+        w ^ (d - 1) * ∑ x ∈ Finset.range d, Polynomial.eval z (H.coeff x) * y ^ x := by
+    rw [Finset.mul_sum]
+    refine Finset.sum_congr rfl ?_
+    intro i hi
+    have hid : d - 1 - i + i = d - 1 := by
+      have : i < d := Finset.mem_range.mp hi
+      omega
+    rw [hwd, mul_pow]
+    calc
+      Polynomial.eval z (H.coeff i) * w ^ (d - 1 - i) * (w ^ i * y ^ i)
+          = Polynomial.eval z (H.coeff i) * ((w ^ (d - 1 - i) * w ^ i) * y ^ i) := by ring
+      _ = Polynomial.eval z (H.coeff i) * (w ^ (d - 1) * y ^ i) := by rw [← pow_add, hid]
+      _ = w ^ (d - 1) * (Polynomial.eval z (H.coeff i) * y ^ i) := by ring
+  have hlead : (w * y) ^ d = w ^ (d - 1) * (Polynomial.eval z (H.coeff d) * y ^ d) := by
+    rw [hwd, mul_pow]
+    have hpow : w ^ d = w ^ (d - 1) * w := by
+      have hds : d = (d - 1) + 1 := by omega
+      calc
+        w ^ d = w ^ ((d - 1) + 1) := congrArg (fun n : ℕ => w ^ n) hds
+        _ = w ^ (d - 1) * w := by rw [pow_succ]
+    rw [hpow]; ring
+  rw [hsum_lower, hlead, add_comm]
+
+lemma evalEval_H_tilde'_eq_zero_of_evalEval_eq_zero (H : F[X][Y]) (hH : 0 < H.natDegree)
+    {z y : F} (hroot : Polynomial.evalEval z y H = 0) :
+    Polynomial.evalEval z ((H.coeff H.natDegree).eval z * y) (H_tilde' H) = 0 := by
+  rw [evalEval_H_tilde' H hH z y, hroot, mul_zero]
+
+lemma eval_evalX_eq_evalEval (H : F[X][Y]) (z y : F) :
+    (Polynomial.Bivariate.evalX z H).eval y = Polynomial.evalEval z y H := by
+  rw [Polynomial.Bivariate.evalX_eq_map, Polynomial.map_evalRingHom_eval]
+
+lemma evalEval_H_tilde'_eq_zero_of_evalX_eq_zero (H : F[X][Y]) (hH : 0 < H.natDegree)
+    {z y : F} (hroot : (Polynomial.Bivariate.evalX z H).eval y = 0) :
+    Polynomial.evalEval z ((H.coeff H.natDegree).eval z * y) (H_tilde' H) = 0 := by
+  apply evalEval_H_tilde'_eq_zero_of_evalEval_eq_zero H hH
+  rwa [← eval_evalX_eq_evalEval H z y]
 
 private lemma monicize_term {K : Type} [Field K] (a b : K) (i d : ℕ)
     (ha : a ≠ 0) (hi : i < d) :
@@ -508,8 +563,7 @@ lemma weight_Λ_over_𝒪_mk_eq_self_of_degree_lt {H : F[X][Y]} (hH : 0 < H.natD
       weight_Λ p H D := by
   simp [weight_Λ_over_𝒪, canonicalRepOf𝒪_mk_eq_self_of_degree_lt hH hp]
 
-/-- The set `S_β` from the statement of Lemma A.1 in Appendix A of [BCIKS20].
-Note: Here `F[X][Y]` is `F[Z][T]`. -/
+/-- The set `S_β` from Lemma A.1; here `F[X][Y]` is `F[Z][T]`. -/
 noncomputable def S_β {H : F[X][Y]} (β : 𝒪 H) : Set F :=
   {z : F | ∃ root : rationalRoot (H_tilde' H) z, (π_z z root) β = 0}
 
@@ -584,16 +638,14 @@ noncomputable def polyToPowerSeries𝕃 (H : F[X][Y]) (P : F[X][Y]) : PowerSerie
 
 /-! ### Lemma A.1 (BCIKS20 Appendix A.3) -/
 
-/-- The bivariate-lift hom `liftBivariate` sends a representative to zero in `𝕃` exactly when
-`H_tilde H` divides its image in `(RatFunc F)[Y]`. -/
+/-- `liftBivariate p = 0` exactly when `H_tilde H` divides the lifted representative. -/
 lemma liftBivariate_eq_zero_iff_dvd {H : F[X][Y]} (p : F[X][Y]) :
     liftBivariate (H := H) p = 0 ↔ H_tilde H ∣ p.map univPolyHom := by
   rw [liftBivariate, RingHom.comp_apply, Ideal.Quotient.eq_zero_iff_mem,
       Ideal.mem_span_singleton]
   exact Iff.rfl
 
-/-- `H_tilde' H` has `Y`-degree equal to `H.natDegree` when `H` has positive `Y`-degree
-(it is monic of that degree). -/
+/-- `H_tilde' H` has `Y`-degree equal to `H.natDegree` for positive `Y`-degree `H`. -/
 lemma natDegree_H_tilde' {H : F[X][Y]} (hH : 0 < H.natDegree) :
     (H_tilde' H).natDegree = H.natDegree := by
   classical
@@ -1140,9 +1192,8 @@ clears every denominator: each summand becomes
 of regular elements (`regularElms_set_liftToFunctionField`, `regularElms_set_functionFieldT`,
 `regularElms_set_pow`), and the whole sum is regular (`regularElms_set_sum`).
 
-This is the unconditional, statement-correct form of `ξ_regular`: `W^(d-1) · ζ` is regular for every
-`R, x₀, H`. See `ξ_regular` below for the (off-by-one) `d - 2` exponent and why it is not the right
-power to clear all denominators. -/
+This is the unconditional, statement-correct core used by `ξ_regular`: `W^(d-1) · ζ`
+is regular for every `R, x₀, H`. -/
 lemma ξ_regular' (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [H_irreducible : Fact (Irreducible H)]
     [Fact (0 < H.natDegree)] :
     ∃ pre : 𝒪 H,
@@ -1289,16 +1340,10 @@ lemma embeddingOf𝒪Into𝕃_mk_ξPoly (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]
     rw [div_pow, pow_sub₀ W hWne hjk]; field_simp
   rw [h1, h2]
 
-/-- **Claim A.2 weight bound (BCIKS20 Appendix A.4), `d - 1` form — fully proven companion
-of the still-open `weight_ξ_bound`.**
+/-- **Claim A.2 weight bound (BCIKS20 Appendix A.4), `d - 1` explicit form.**
 
-The literal `weight_ξ_bound` (below) is stated about `ξ := (ξ_regular …).choose`, where
-`ξ_regular` carries the off-by-one `d - 2` exponent and has an open proof obligation
-(documented as a genuine, not-provably-false gap). Consequently *any* proof of
-`weight_ξ_bound` must route through `(ξ_regular …).choose_spec` and would inherit that
-unsound dependency, which is not an honest closure. This companion instead bounds the weight
-of the **explicit, unconditional** `d - 1` witness `ξPoly` (mirroring how `ξ_regular'`
-replaces the `d - 2` `ξ_regular`), and is fully proven.
+This bounds the weight of the explicit, unconditional `d - 1` witness `ξPoly`, which is
+also the implementation of `ξ` below.
 
 The bound is `weight_Λ_over_𝒪 (mk ξPoly) D ≤ (natDegreeY R - 1)·(D - natDegreeY H + 1)`.
 Two inputs:
@@ -1316,7 +1361,7 @@ Two inputs:
 Given these, the weight-assembly lemma `weight_Λ_explicit_sum_le` and the telescoping
 `j·s + (k-j)·s = k·s` deliver the stated bound. -/
 lemma weight_ξPoly_bound (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
-    [H_irreducible : Fact (Irreducible H)] [Fact (0 < H.natDegree)]
+    [Fact (Irreducible H)] [Fact (0 < H.natDegree)]
     (hH : 0 < H.natDegree) {D : ℕ} (hD : D ≥ Bivariate.totalDegree H)
     (hkN : R.natDegree - 1 < H.natDegree)
     (hcoeff : ∀ j,
@@ -1373,43 +1418,10 @@ lemma weight_ξPoly_bound (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
   rw [hRHS]
   exact le_refl _
 
-omit H_irreducible H_pos in
-/-- The embedding `𝒪 H ↪ 𝕃 H` is injective when `0 < H.natDegree`.
-
-`embeddingOf𝒪Into𝕃 H (mk p) = liftBivariate p`, and `liftBivariate p = liftBivariate q` iff
-`H_tilde H ∣ (p - q).map univPolyHom` (`liftBivariate_eq_zero_iff_dvd`). Since `H_tilde' H` is
-monic (`H_tilde'_monic`, needs `0 < H.natDegree`), maps to `H_tilde H` under the injective
-coefficient hom `univPolyHom` (`H_tilde_equiv_H_tilde'`), the monic dvd-map transfer
-`Polynomial.map_dvd_map` turns this into `H_tilde' H ∣ (p - q)`, i.e. `mk p = mk q`. -/
-private lemma embeddingOf𝒪Into𝕃_injective (hH : 0 < H.natDegree) :
-    Function.Injective (embeddingOf𝒪Into𝕃 H) := by
-  have huniv_inj : Function.Injective (univPolyHom : F[X] →+* RatFunc F) := by
-    rw [univPolyHom]; exact IsFractionRing.injective _ _
-  intro a b hab
-  obtain ⟨p, rfl⟩ := Ideal.Quotient.mk_surjective a
-  obtain ⟨q, rfl⟩ := Ideal.Quotient.mk_surjective b
-  rw [embeddingOf𝒪Into𝕃_mk, embeddingOf𝒪Into𝕃_mk] at hab
-  have hsub : liftBivariate (H := H) (p - q) = 0 := by
-    rw [map_sub, hab, sub_self]
-  rw [liftBivariate_eq_zero_iff_dvd] at hsub
-  have hmap : (H_tilde' H).map univPolyHom = H_tilde H := H_tilde_equiv_H_tilde' H
-  rw [← hmap, Polynomial.map_dvd_map univPolyHom huniv_inj (H_tilde'_monic H hH)] at hsub
-  rw [Ideal.Quotient.eq, Ideal.mem_span_singleton]
-  exact hsub
-
-/-- There exist regular elements `ξ = W(Z)^(d-1) * ζ` as defined in Claim A.2 of Appendix A.4
-of [BCIKS20].
-
-**Statement repair (2026-06-04): denominator-clearing exponent `d - 1`, not `d - 2`.**
-As originally formalized the exponent was `d - 2`, but the power of `W` that unconditionally
-clears the denominators of `ζ` (a polynomial of `Y`-degree `≤ d - 1` evaluated at `T / W`) is
-`d - 1`. With the `d - 2` exponent the top summand of `W^(d-2) · ζ` is
-`liftToFunctionField (Q_{d-1}) · T^{d-1} · W^{-1}` — a genuine `W⁻¹` term (`ℕ`-truncated
-`(d-2) - (d-1) = 0` while the field division contributes a real `W⁻¹`), which is not regular for
-general irreducible `H`; so the `d - 2` statement was *not provable* (and not provably false).
-The paper-correct exponent is `d - 1`, matching `ξ_regular'`: `W^(d-1) · ζ` is regular for every
-`R, x₀, H`. The downstream `ξ`/`α`/`γ` definitions consume only the *existence* of a witness, never
-the exponent in the spec, so they are unaffected by the repair (`ξ`'s type is unchanged). -/
+/-- There exist regular elements `ξ = W(Z)^(d-1) * ζ`, the denominator-cleared form of
+Claim A.2 of Appendix A.4 of [BCIKS20]. The exponent `d - 1` is the unconditional power
+needed to clear the top `Y`-degree term of `ζ`; this is the statement-correct version of
+the regularity claim. -/
 lemma ξ_regular (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [H_irreducible : Fact (Irreducible H)]
     [Fact (0 < H.natDegree)] :
     ∃ pre : 𝒪 H,
@@ -1418,32 +1430,15 @@ lemma ξ_regular (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [H_irreducible : Fact
     embeddingOf𝒪Into𝕃 _ pre = W ^ (d - 1) * ζ R x₀ H :=
   ξ_regular' x₀ R H
 
-/-- The elements `ξ = W(Z)^(d-1) * ζ` as defined in Claim A.2 of Appendix A.4 of [BCIKS20]
-(denominator-clearing exponent `d - 1`; see the statement repair on `ξ_regular`). -/
-def ξ (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [φ : Fact (Irreducible H)]
+/-- The explicit elements `ξ = W(Z)^(d-1) * ζ` as defined in Claim A.2 of Appendix A.4
+of [BCIKS20]. -/
+def ξ (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [_φ : Fact (Irreducible H)]
     [Fact (0 < H.natDegree)] : 𝒪 H :=
-  (ξ_regular x₀ R H).choose
+  (Ideal.Quotient.mk (Ideal.span {H_tilde' H}) (ξPoly x₀ R H) : 𝒪 H)
 
 /-- The bound of the weight `Λ` of the elements `ξ` as stated in Claim A.2 of Appendix A.4
-of [BCIKS20].
-
-**Honest-closure note (read before attempting to discharge this proof).** This statement is
-about `ξ := (ξ_regular …).choose`, and `ξ_regular` carries the off-by-one `d - 2` exponent
-and is itself open (a genuine, documented, *not-provably-false* gap — see `ξ_regular`). The
-weight of an opaque `𝒪 H` element is not bounded by anything unless one knows what it embeds
-to, and the only fact tying `ξ` to `W^(d-2) · ζ` is `(ξ_regular …).choose_spec`. Therefore
-**every** proof of this exact statement must consume `choose_spec` of the open `ξ_regular`
-and would inherit that unsound dependency; that is not an honest closure, so this proof is
-deliberately left open.
-
-**Statement repair (2026-06-04): the per-coefficient degree hypotheses are required.**
-With the `ξ_regular` exponent now repaired to `d - 1`, `ξ := (ξ_regular …).choose` embeds to the
-same element of `𝕃 H` as the explicit witness `mk ξPoly` (`embeddingOf𝒪Into𝕃_mk_ξPoly`); the
-embedding is injective (`embeddingOf𝒪Into𝕃_injective`), so `ξ = mk ξPoly` and this bound is
-exactly `weight_ξPoly_bound`. That bound is genuinely false without the graded `X`-degree input
-`hcoeff` (the residual trivariate degree control of BCIKS20 §A.4) and the reducedness input
-`hkN : R.natDegree - 1 < H.natDegree`; both are now taken as hypotheses, matching
-`weight_ξPoly_bound`. -/
+of [BCIKS20]. This is the explicit `d - 1` denominator-cleared form, with the same degree
+and coefficient hypotheses needed by `weight_ξPoly_bound`. -/
 lemma weight_ξ_bound (x₀ : F) (hH : 0 < H.natDegree) {D : ℕ}
     (hD : D ≥ Bivariate.totalDegree H)
     (hkN : R.natDegree - 1 < H.natDegree)
@@ -1453,20 +1448,14 @@ lemma weight_ξ_bound (x₀ : F) (hH : 0 < H.natDegree) {D : ℕ}
         ≤ ((R.natDegree - 1) - j) * (D + 1 - Bivariate.natDegreeY H)) :
     weight_Λ_over_𝒪 hH (ξ x₀ R H) D ≤
     WithBot.some ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1)) := by
-  have hξ : ξ x₀ R H = (Ideal.Quotient.mk (Ideal.span {H_tilde' H}) (ξPoly x₀ R H) : 𝒪 H) := by
-    apply embeddingOf𝒪Into𝕃_injective hH
-    rw [embeddingOf𝒪Into𝕃_mk_ξPoly]
-    have hspec := (ξ_regular x₀ R H).choose_spec
-    simpa [ξ] using hspec
-  rw [hξ]
-  exact weight_ξPoly_bound x₀ R H hH hD hkN hcoeff
+  simpa [ξ] using weight_ξPoly_bound x₀ R H hH hD hkN hcoeff
 
 /-- There exist regular elements `β` with a weight bound as given in Claim A.2
 of Appendix A.4 of [BCIKS20]. -/
 lemma β_regular (R : F[X][X][Y])
-                (H : F[X][Y]) [H_irreducible : Fact (Irreducible H)]
+                (H : F[X][Y]) [Fact (Irreducible H)]
                 (hH : 0 < H.natDegree)
-                {D : ℕ} (hD : D ≥ Bivariate.totalDegree H) :
+                {D : ℕ} (_hD : D ≥ Bivariate.totalDegree H) :
     ∀ t : ℕ, ∃ β : 𝒪 H,
       weight_Λ_over_𝒪 hH β D ≤ (2 * t + 1) * Bivariate.natDegreeY R * D :=
   fun t => ⟨0, by rw [weight_Λ_over_𝒪_zero]; exact bot_le⟩
