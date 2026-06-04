@@ -24,7 +24,7 @@ ArkLib's `OracleReduction` framework, following the conventions used by
   spot-checks).
 * `OracleInterface`, `Inhabited`, `Fintype` instances for the messages
   and challenges of `pSpec`.
-* `inputRelation` / `outputRelation` — IOR input/output relations
+* `inputRelationFor` / `outputRelationFor` — IOR input/output relations
   (Definitions 6.1 and 6.3, in IOR shape).
 * `accepts` — the §6.1 decision predicate (extracted for use by the
   verifier and by completeness proofs).
@@ -158,31 +158,45 @@ def accepts (encode : (Fin k → F) → (ι → F))
   (∑ j, g j * stmt.1 j = stmt.2.1 + γ * stmt.2.2) ∧
   ∀ j : Fin t, encode g (xs j) = f 0 (xs j) + γ * f 1 (xs j)
 
-/-- The IOR-shaped input relation derived from `ToyProblem.relation`
-(Definition 6.1).
+/-- The IOR-shaped **fixed-encoding** input relation (Definition 6.1).
 
-  `((v, μ₁, μ₂), (f₁, f₂)) ∈ inputRelation k C ↔ ToyProblem.relation
-    C v (μ₁, μ₂) (f₁, f₂)` (modulo `Fin 2`-indexing of the latter). -/
-def inputRelation (C : Set (ι → F)) :
+`((v, μ₁, μ₂), (f₀, f₁)) ∈ inputRelationFor encode` with witness `M`
+iff the oracle codewords are the `encode`-images of the witness messages
+(`fᵢ = encode (M i)`) and the witness satisfies the linear constraint
+(`⟨M i, v⟩ = μᵢ`). The encoding is the verifier's **fixed** `encode` (a plain
+function, matching `oracleVerifier`), and the witness `M` is tied to the
+statement — this is what the honest prover sends `g = M₀ + γ·M₁` against and
+what `accepts_of_inputRelation` consumes.
+
+This replaces the earlier existential-encoding form (`ToyProblem.relation`,
+`∃ encode'`), under which honest completeness is unprovable / false: the honest
+prover's `encode g` need not match `fᵢ = encode' (Mᵢ)` when `encode' ≠ encode`
+(the same defect found for the L6.12 attack — see `ToyProblem.relationFor`). -/
+def inputRelationFor (encode : (Fin k → F) → (ι → F)) :
     Set ((Statement (F := F) k × (∀ i, OracleStatement ι F i)) ×
       Witness (F := F) k) :=
   fun input ↦
-    ToyProblem.relation (k := k) (ℓ := 2) C input.1.1.1
-      ![input.1.1.2.1, input.1.1.2.2] input.1.2
+    (∀ i : Fin 2, input.1.2 i = encode (input.2 i)) ∧
+    (∀ i : Fin 2, ∑ j, input.2 i j * input.1.1.1 j = ![input.1.1.2.1, input.1.1.2.2] i)
 
-/-- The IOR-shaped *relaxed* output relation derived from
-`ToyProblem.relaxedRelation` (Definition 6.3). The soundness statement
-of L6.6 is with respect to this relation: the verifier's "accept"
-guarantee is that the input is `δ`-close to a valid `relation`-instance. -/
-def outputRelation (C : Set (ι → F)) (δ : ℝ≥0) :
+/-- The IOR-shaped **fixed-encoding** *relaxed* output relation (Definition 6.3).
+The soundness statement of L6.6/6.8 is with respect to this: the verifier's
+"accept" guarantee is that the input `(f₀, f₁)` is `δ`-close (on a common
+agreement column set) to a valid instance `encode (M i)` for some constraint-
+satisfying messages `M`. Uses the verifier's fixed plain `encode` (cf.
+`ToyProblem.relaxedRelationFor`); the messages `M` are existential here (the
+relaxed/output relation is statement-level — the toy protocol's output witness
+is `Unit`). -/
+def outputRelationFor (encode : (Fin k → F) → (ι → F)) (δ : ℝ≥0) :
     Set ((Statement (F := F) k × (∀ i, OracleStatement ι F i)) ×
       Witness (F := F) k) :=
-  fun input ↦
-    ToyProblem.relaxedRelation (k := k) (ℓ := 2) C δ input.1.1.1
-      ![input.1.1.2.1, input.1.1.2.2] input.1.2
+  fun input ↦ ∃ M : Fin 2 → Fin k → F,
+    (∀ i : Fin 2, ∑ j, M i j * input.1.1.1 j = ![input.1.1.2.1, input.1.1.2.2] i) ∧
+    ∃ S : Finset ι, (1 - (δ : ℝ)) * Fintype.card ι ≤ S.card ∧
+      ∀ i : Fin 2, ∀ j ∈ S, input.1.2 i j = encode (M i) j
 
 -- The 1-arity relaxed relation `R̃¹_{C,δ}` lives in
--- `Spec/SimplifiedIOR.lean :: outputRelation` (the C6.9 output relation).
+-- `Spec/SimplifiedIOR.lean :: outputRelationFor` (the C6.9 output relation).
 -- We expose it from the simplified-IOR file rather than here so its
 -- type signature aligns with `SimplifiedIOR.OutputStatement` /
 -- `OutputOracleStatement` / `OutputWitness` rather than re-bundling.
@@ -420,22 +434,20 @@ theorem accepts_of_inputRelation {k t : ℕ}
 
 /-- **Honest completeness for Construction 6.2** (protocol-level form).
 
-The honest oracle reduction is perfectly complete from `inputRelation k C`
+The honest oracle reduction is perfectly complete from `inputRelationFor encode`
 to the trivial output relation `Set.univ`. The load-bearing fact is
 `accepts_of_inputRelation` above: under any verifier challenges, the
 honest prover's message `g = M₀ + γ M₁` makes `accepts` hold, so the
 verifier's `if accepts then pure () else failure` never fails.
 
-**Status: statement complete, proof structurally unfolded with one
-documented residual `sorry`.** The point-form mathematical content
-(`accepts_of_inputRelation`) is fully closed. The proof below unfolds
-`OracleReduction.perfectCompleteness` through `toReduction`, expands the
-prover's three-round `runToRound` via `Fin.induction_three`, and resolves
-all three round directions (`V_to_P`, `P_to_V`, `V_to_P`). What remains is
-the *probabilistic/monadic support bookkeeping*.
+**Status: statement complete and faithful, proof structurally unfolded with one
+documented residual `sorry` (the probabilistic/monadic support bookkeeping).**
+The point-form mathematical content (`accepts_of_inputRelation`) is fully
+closed. The proof below unfolds `OracleReduction.perfectCompleteness` through
+`toReduction`, expands the prover's three-round `runToRound` via
+`Fin.induction_three`, and resolves all three round directions.
 
-The two original framework blockers are now both addressed at the lemma
-level:
+The two original framework blockers are now both addressed at the lemma level:
 
   1. **`simulateQ_forIn`.** Closed by `simulateQ_list_forIn`
      (`ArkLib/ToVCVio/SimulateQ.lean`), which commutes `simulateQ` past the
@@ -443,51 +455,38 @@ level:
   2. **A `simulateQ`/`SubSpec` query-resolution simp set.** Closed by
      `simulateQ_addLift_add_liftM_left` / `_right`
      (`ArkLib/ToVCVio/SimulateQ.lean`): these route the `queryG`/`queryF`
-     double-`liftM`'d queries through the `simOracle2 = addLift (id []ₒ)
-     (simOracle0 _ ‖ simOracle0 _)` layer to the correct inner oracle
-     implementation in one rewrite. Combined with the `simOracle0`/answer
-     unfolds (`queryF i x ↦ oStmt i x`, `queryG ↦ messageᵢ`) the verifier
-     body resolves to a query-free `guard`/`forIn` computation.
+     double-`liftM`'d queries through the `simOracle2` layer to the correct
+     inner oracle in one rewrite, so the verifier body resolves to a query-free
+     `guard`/`forIn` computation.
 
-**Precise residual.** After the prover/verifier unfolding above, the goal
-is `probEvent (OptionT.mk do let s ← init; (simulateQ pImpl (…)).run' s) … = 1`
-where the body is the full `OracleComp (oSpec + [pSpec.Challenge]ₒ)` run.
-The `simulateQ`/`forIn`/query binds sit *underneath* the `OptionT.mk` /
-`probEvent` / `StateT.run'` layers, so the query-resolution simp set above
-cannot fire until those outer layers are peeled. Closing it requires the
-support-membership argument of
-`Sumcheck/Spec/SingleRound.lean :: reduction_perfectCompleteness`
+**Statement faithfulness (fixed 2026-06-04).** The input relation is the
+**fixed-encoding** `inputRelationFor encode` (the verifier's own `encode`, with
+the witness `M` tied to the codewords `fᵢ = encode (M i)`). An earlier
+existential-encoding form (`ToyProblem.relation`, `∃ encode'`) made completeness
+*unprovable / false* — the honest prover's `encode g` need not match
+`fᵢ = encode' (Mᵢ)` when `encode' ≠ encode` (the same defect found for the L6.12
+attack). With `inputRelationFor encode` the discharge to `accepts_of_inputRelation`
+(`hf : fᵢ = encode (M i)`, `hM : ⟨M i, v⟩ = μᵢ`) goes through.
+
+**Precise residual.** After the unfolding, the goal is
+`probEvent (OptionT.mk do let s ← init; (simulateQ pImpl (…)).run' s) … = 1`,
+with the `simulateQ`/`forIn`/query binds *underneath* the `OptionT.mk` /
+`probEvent` / `StateT.run'` layers. Closing it requires the support-membership
+argument of `Sumcheck/Spec/SingleRound.lean :: reduction_perfectCompleteness`
 (`one_le_probEvent_iff` → `probEvent_eq_one_iff` → `OptionT.run_mk` →
-`StateT.run'_eq` → iterated `support_bind` + `simulateQ_bind` peeling),
-adapted from that proof's loopless two-round shape to this three-round
-protocol *with* the spot-check loop. That adaptation is a sizeable mechanical
-peel (~250+ lines).
-
-⚠ **FAITHFULNESS FINDING (2026-06-04) — the residual is also statement-blocked.**
-The peel above is supposed to discharge to `accepts_of_inputRelation`, but that
-lemma needs `hf : ∀ i, f i = encode (M i)` for the verifier's **fixed** `encode`,
-whereas `inputRelation k C = ToyProblem.relation … C` quantifies the encoding
-**existentially** (`∃ encode', (∀ m, encode' m ∈ C) ∧ f i = encode' (M i)`). The
-honest prover sends `g = M₀ + γ·M₁` and the spot-check demands
-`encode g = f₀ + γ·f₁ = encode' (M₀ + γ·M₁)`, which fails when `encode' ≠ encode`.
-So completeness is **not provable as stated** (and is likely *false*) — the same
-existential-vs-fixed-encoding defect found for the L6.12 violation. (Tell: the
-hypothesis `_h_encode_mem` is unused.) FAITHFUL FIX: state this against the
-fixed-encoding `relationFor encode` (Definitions.lean) — i.e. an
-`inputRelationFor encode`-style input relation — for which `f i = encode (M i)`
-holds and the discharge goes through. Mirrors the L6.12 `relaxedRelationFor`
-fix; touches `inputRelation`/`outputRelation` (and hence the L6.6/6.8/6.10
-soundness statements), so it is its own scoped pass. -/
+`StateT.run'_eq` → iterated `support_bind` + `simulateQ_bind` peeling), adapted
+from that (loopless, two-round, *itself still admitted*) proof to this
+three-round protocol *with* the spot-check loop — a sizeable mechanical peel
+(~250+ lines) discharging to `accepts_of_inputRelation`. -/
 theorem oracleReduction_perfectCompleteness
     [SampleableType F] [SampleableType ι]
     {σ : Type} (init : ProbComp σ)
     (impl : QueryImpl []ₒ (StateT σ ProbComp))
-    (C : Set (ι → F)) (encode : (Fin k → F) →ₗ[F] (ι → F))
-    (_h_encode_mem : ∀ m, (encode m : ι → F) ∈ C) :
+    (encode : (Fin k → F) →ₗ[F] (ι → F)) :
     (oracleReduction (ι := ι) (F := F) (k := k) (t := t)
         (encode : (Fin k → F) → (ι → F))).perfectCompleteness
       init impl
-      (inputRelation k C)
+      (inputRelationFor (encode := (encode : (Fin k → F) → (ι → F))))
       (Set.univ : Set (((OutputStatement × ∀ i, OutputOracleStatement i)) ×
         OutputWitness)) := by
   unfold OracleReduction.perfectCompleteness
@@ -512,13 +511,12 @@ theorem oracleReduction_perfectCompleteness
   split <;> rename_i hDir2
   swap
   · exact absurd hDir2 (by decide)
-  -- ABF26-C6.2; framework-residual + STATEMENT-BLOCKED. The prover/verifier are
-  -- unfolded (above) and the query-resolution lemmas are landed
-  -- (`simulateQ_list_forIn`, `simulateQ_addLift_add_liftM_*`), but the residual
-  -- discharge to `accepts_of_inputRelation` is blocked on the existential-vs-fixed
-  -- encoding mismatch in `inputRelation` (same root cause as L6.12) PLUS the
-  -- ~250-line `OptionT`/`StateT`/`simulateQ` support-peel. See the theorem
-  -- docstring's "FAITHFULNESS FINDING" for the fix (`relationFor encode`).
+  -- ABF26-C6.2; framework-residual. The prover/verifier are unfolded (above) and
+  -- the query-resolution lemmas are landed (`simulateQ_list_forIn`,
+  -- `simulateQ_addLift_add_liftM_*`); the statement is now the faithful
+  -- fixed-encoding `inputRelationFor encode`. The only remaining gap is the
+  -- ~250-line `OptionT`/`StateT`/`simulateQ` support-peel discharging to
+  -- `accepts_of_inputRelation` — see the theorem docstring's "Precise residual".
   sorry
 
 /-- **Lemma 6.6 of [ABF26]** (knowledge soundness of Construction 6.2).
@@ -535,9 +533,9 @@ Stated against ArkLib's `Verifier.knowledgeSoundness` (cf.
 `Verifier.knowledgeSoundness` takes `(relIn, relOut)` where `relIn`
 is the relation the extracted witness satisfies and `relOut` is the
 relation the verifier's output must satisfy. In this file `relIn` is
-*our* `outputRelation` (paper's `R̃²_{C,δ}`, what the extractor
+*our* `outputRelationFor` (paper's `R̃²_{C,δ}`, what the extractor
 extracts to) and `relOut` is `Set.univ` (paper's C6.2 has trivial
-output `Unit`). The name `outputRelation` reflects the **paper's**
+output `Unit`). The name `outputRelationFor` reflects the **paper's**
 "this is the protocol's output relation" perspective; do not be misled
 by the API parameter named `relIn`.
 
@@ -556,7 +554,7 @@ theorem protocol62_knowledgeSound
     (_hδ_pos : 0 < δ)
     (_hδ_lt_min : δ < (minRelHammingDistCode C : ℝ≥0)) :
       (verifier (k := k) (t := t) encode).knowledgeSoundness (WitOut := OutputWitness)
-        init impl (outputRelation k C δ)
+        init impl (outputRelationFor k encode δ)
         (Set.univ : Set (OutputStatement × OutputWitness))
         (max ((epsMCA (F := F) (A := F) C δ).toNNReal +
                 ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
@@ -600,7 +598,7 @@ theorem protocol62_rbrKnowledgeSound
     (_hδ_pos : 0 < δ)
     (_hδ_lt_min : δ < (minRelHammingDistCode C : ℝ≥0)) :
       (verifier (k := k) (t := t) encode).rbrKnowledgeSoundness (WitOut := OutputWitness)
-        init impl (outputRelation k C δ)
+        init impl (outputRelationFor k encode δ)
         (Set.univ : Set (OutputStatement × OutputWitness))
         (fun i ↦
           -- round 0 (combination randomness γ): MCA + list-decoding term;
