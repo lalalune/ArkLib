@@ -5366,7 +5366,7 @@
         {
           "doc": "**ABF26 Definition 2.19.** An *extension field presentation* is the data of a finite `B`-basis of `F`, in the presence of a `B`-algebra structure on `F`: - `B` and `F` are fields, - `[Algebra B F]` provides the embedding `\u03c8 := algebraMap B F : B \u2192+* F` and the `B`-module structure on `F`, - `e : \u2115` is the dimension of `F` as a `B`-vector space, - `basis : Basis (Fin e) B F` witnesses the `B`-linear isomorphism `F \u2243\u2097[B] (Fin e \u2192 B)` (via `basis.equivFun`). This is a thin structure on top of Mathlib's existing `Algebra` / `Basis` machinery. The paper's named maps `\u03c8` and `\u03c6` are derived (not dup",
           "kind": "structure",
-          "line": 72,
+          "line": 73,
           "name": "CodingTheory.ExtensionFieldPresentation",
           "namespace": "CodingTheory",
           "short_name": "ExtensionFieldPresentation",
@@ -5375,34 +5375,34 @@
         {
           "doc": "The base-field embedding `\u03c8 : B \u21aa F`, derived from `[Algebra B F]`.",
           "kind": "def",
-          "line": 84,
-          "name": "CodingTheory.ExtensionFieldPresentation._anon_def_84",
+          "line": 85,
+          "name": "CodingTheory.ExtensionFieldPresentation._anon_def_85",
           "namespace": "CodingTheory.ExtensionFieldPresentation",
-          "short_name": "_anon_def_84",
+          "short_name": "_anon_def_85",
           "signature": "def def \u03c8 (_P : ExtensionFieldPresentation B F) : B \u2192+* F := algebraMap B F"
         },
         {
           "doc": "Injectivity of `\u03c8` \u2014 automatic since the algebra map between fields is always injective.",
           "kind": "lemma",
-          "line": 88,
-          "name": "CodingTheory.ExtensionFieldPresentation._anon_lemma_88",
+          "line": 89,
+          "name": "CodingTheory.ExtensionFieldPresentation._anon_lemma_89",
           "namespace": "CodingTheory.ExtensionFieldPresentation",
-          "short_name": "_anon_lemma_88",
+          "short_name": "_anon_lemma_89",
           "signature": "lemma lemma \u03c8_injective (P : ExtensionFieldPresentation B F) : Function.Injective P.\u03c8 :="
         },
         {
           "doc": "The `B`-linear coordinate isomorphism `\u03c6 : F \u2243\u2097[B] (Fin e \u2192 B)`, derived from the basis.",
           "kind": "def",
-          "line": 93,
-          "name": "CodingTheory.ExtensionFieldPresentation._anon_def_93",
+          "line": 94,
+          "name": "CodingTheory.ExtensionFieldPresentation._anon_def_94",
           "namespace": "CodingTheory.ExtensionFieldPresentation",
-          "short_name": "_anon_def_93",
+          "short_name": "_anon_def_94",
           "signature": "def noncomputable def \u03c6 (P : ExtensionFieldPresentation B F) : F \u2243\u2097[B] (Fin P.e \u2192 B) :="
         },
         {
           "doc": "The `j`-th coordinate `\u03c6\u1d62 : F \u2192\u2097[B] B` of an extension-field presentation, as a `B`-linear map.",
           "kind": "def",
-          "line": 98,
+          "line": 99,
           "name": "CodingTheory.ExtensionFieldPresentation.coord",
           "namespace": "CodingTheory.ExtensionFieldPresentation",
           "short_name": "coord",
@@ -5411,16 +5411,25 @@
         {
           "doc": "A presentation is *systematic* if `\u03c6(\u03c8(x)) = (x, 0, \u2026, 0)` for every `x : B`. This makes the base-field copy of `B` inside `F` align with the first coordinate.",
           "kind": "def",
-          "line": 103,
+          "line": 104,
           "name": "CodingTheory.ExtensionFieldPresentation.IsSystematic",
           "namespace": "CodingTheory.ExtensionFieldPresentation",
           "short_name": "IsSystematic",
           "signature": "def IsSystematic (P : ExtensionFieldPresentation B F) : Prop :="
         },
         {
+          "doc": "The `j`-th coordinate map is the `j`-th component of `\u03c6`. Holds by definition (`coord j = proj j \u2218 \u03c6`), recorded as a `simp` lemma for the list-size argument.",
+          "kind": "lemma",
+          "line": 110,
+          "name": "CodingTheory.ExtensionFieldPresentation.coord_apply",
+          "namespace": "CodingTheory.ExtensionFieldPresentation",
+          "short_name": "coord_apply",
+          "signature": "lemma coord_apply (P : ExtensionFieldPresentation B F) (j : Fin P.e) (x : F) :"
+        },
+        {
           "doc": "Each coordinate `P.coord j` is additive \u2014 direct consequence of being a `LinearMap`.",
           "kind": "lemma",
-          "line": 108,
+          "line": 115,
           "name": "CodingTheory.ExtensionFieldPresentation.coord_add",
           "namespace": "CodingTheory.ExtensionFieldPresentation",
           "short_name": "coord_add",
@@ -5429,7 +5438,7 @@
         {
           "doc": "Each coordinate `P.coord j` respects the `B`-action \u2014 direct consequence of being a `B`-linear map. The `algebraMap`-based smul (`\u03c8 b * x = b \u2022 x`) folds into ordinary `B`-scalar multiplication via `Algebra.smul_def`.",
           "kind": "lemma",
-          "line": 115,
+          "line": 122,
           "name": "CodingTheory.ExtensionFieldPresentation.coord_psi_smul",
           "namespace": "CodingTheory.ExtensionFieldPresentation",
           "short_name": "coord_psi_smul",
@@ -5438,7 +5447,7 @@
         {
           "doc": "**ABF26 Definition 2.20.** The *extension code* `C_F : F^k \u2192 F^n` associated to a linear code `C_B : B^k \u2192 B^n` via an extension-field presentation. Defined on a vector `v : \u03b9 \u2192 F` by `v \u2208 C_F \u2194 \u2200 j : Fin e, (fun i \u21a6 P.coord j (v i)) \u2208 C_B` i.e. each of the `e` coordinate-projections of `v` lies in `C_B`. **Closure properties.** With `[Algebra B F]` + `Basis (Fin e) B F` from the refactored `ExtensionFieldPresentation`, `extensionCode P C_B` is closed under **both** addition (when `C_B` is) and `F`-scalar multiplication (when `C_B` is `B`-linear). See `extensionCode_add_mem` and `extensionCode",
           "kind": "def",
-          "line": 135,
+          "line": 142,
           "name": "CodingTheory.extensionCode",
           "namespace": "CodingTheory",
           "short_name": "extensionCode",
@@ -5447,7 +5456,7 @@
         {
           "doc": "**Bridge to paper's encoder-image view.** A vector `v : \u03b9 \u2192 F` is in `extensionCode P C_B` iff each of its `e` coordinate-projections lies in `C_B`.",
           "kind": "lemma",
-          "line": 143,
+          "line": 150,
           "name": "CodingTheory.extensionCode_iff_coord_in_base",
           "namespace": "CodingTheory",
           "short_name": "extensionCode_iff_coord_in_base",
@@ -5456,7 +5465,7 @@
         {
           "doc": "**`extensionCode` is closed under addition** when `C_B` is. Uses `LinearMap.map_add` of the coordinate maps.",
           "kind": "lemma",
-          "line": 154,
+          "line": 161,
           "name": "CodingTheory.extensionCode_add_mem",
           "namespace": "CodingTheory",
           "short_name": "extensionCode_add_mem",
@@ -5465,7 +5474,7 @@
         {
           "doc": "**`extensionCode` is closed under the `\u03c8`-induced `B`-scalar action** when `C_B` is `B`-scalar closed. Uses `LinearMap.map_smul` of the coordinate maps.",
           "kind": "lemma",
-          "line": 173,
+          "line": 180,
           "name": "CodingTheory.extensionCode_psi_smul_mem",
           "namespace": "CodingTheory",
           "short_name": "extensionCode_psi_smul_mem",
@@ -5474,7 +5483,7 @@
         {
           "doc": "**F-scalar closure of `extensionCode`** \u2014 the paper's D2.20 F-linearity claim, closed via the basis-expansion argument. **Proof outline.** For `\u03b1 : F` and `v \u2208 extensionCode P C_B`: 1. Write `\u03b1` in the basis: `\u03b1 = \u2211 k, (P.basis.repr \u03b1 k) \u2022 (P.basis k)` via `Basis.sum_repr`. The coefficients `c_k := P.basis.repr \u03b1 k` live in `B`. 2. Distribute: `\u03b1 * v i = \u2211 k, c_k \u2022 (P.basis k * v i)`. 3. Coordinate-by-coordinate, `P.coord j (\u03b1 * v i) = \u2211 k, c_k * P.coord j (P.basis k * v i)`. 4. Each `(fun i \u21a6 P.coord j (P.basis k * v i))` is itself a `B`-linear combination of `(fun i \u21a6 P.coord m (v i))`s (sin",
           "kind": "lemma",
-          "line": 203,
+          "line": 210,
           "name": "CodingTheory.extensionCode_smul_mem",
           "namespace": "CodingTheory",
           "short_name": "extensionCode_smul_mem",
@@ -5483,7 +5492,7 @@
         {
           "doc": "**Submodule-packaging of `extensionCode`** when `C_B` is a `B`-submodule. Bundles the three closure laws (`add_mem`, `zero_mem`, `smul_mem`) into a single `Submodule F (\u03b9 \u2192 F)`, mirroring the `ReedSolomon.code` pattern (which returns a `Submodule F (\u03b9 \u2192 F)` directly). Downstream code that wants to consume an extension code as a linear code should use this form rather than the raw `Set`-based `extensionCode`. Built directly from the existing closure lemmas \u2014 no parallel implementation. The `Set`-form `extensionCode` is the carrier.",
           "kind": "def",
-          "line": 272,
+          "line": 279,
           "name": "CodingTheory.extensionCodeSubmodule",
           "namespace": "CodingTheory",
           "short_name": "extensionCodeSubmodule",
@@ -5492,16 +5501,61 @@
         {
           "doc": "The carrier of `extensionCodeSubmodule P C_B` coincides with the `Set`-form `extensionCode P (C_B : Set _)` \u2014 by construction.",
           "kind": "lemma",
-          "line": 293,
+          "line": 300,
           "name": "CodingTheory.coe_extensionCodeSubmodule",
           "namespace": "CodingTheory",
           "short_name": "coe_extensionCodeSubmodule",
           "signature": "lemma coe_extensionCodeSubmodule"
         },
         {
-          "doc": "**ABF26 Lemma 2.21 [BCFW25 Lemma D.3].** List size of an extension code equals the list size of the corresponding interleaved base code. Let `C_B : B^k \u2192 B^n` be a linear code and `P` be an extension-field presentation. For every `\u03b4 \u2208 (0, 1)`: `|\u039b(C_F, \u03b4)| = |\u039b(C_B^\u2261e, \u03b4)|` where `C_F` is the extension code (D2.20) and `C_B^\u2261e` is the `e`-fold interleaved base code (D2.9). Admitted as an external result.",
+          "doc": "The coordinate isometry `\u03a6 : (\u03b9 \u2192 F) \u2243 (\u03b9 \u2192 (Fin e \u2192 B))` induced by applying the basis isomorphism `\u03c6 : F \u2243 (Fin e \u2192 B)` at every position.",
+          "kind": "def",
+          "line": 322,
+          "name": "CodingTheory.extensionCoordEquiv",
+          "namespace": "CodingTheory",
+          "short_name": "extensionCoordEquiv",
+          "signature": "def extensionCoordEquiv"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 329,
+          "name": "CodingTheory.extensionCoordEquiv_apply",
+          "namespace": "CodingTheory",
+          "short_name": "extensionCoordEquiv_apply",
+          "signature": "lemma extensionCoordEquiv_apply"
+        },
+        {
+          "doc": "The isometry carries the extension code onto the interleaved base code: `v \u2208 extensionCode P C_B \u2194 \u03a6 v \u2208 interleavedCodeSet (Fin e) C_B`. The interleaved membership condition `\u2200 k, (\u03a6 v).transpose k \u2208 C_B` unfolds, position-by-position, to `(\u03a6 v) i k = \u03c6 (v i) k = coord k (v i)`, i.e. exactly the extension-code condition `\u2200 k, (fun i \u21a6 coord k (v i)) \u2208 C_B`.",
+          "kind": "lemma",
+          "line": 339,
+          "name": "CodingTheory.mem_extensionCode_iff_image_mem_interleaved",
+          "namespace": "CodingTheory",
+          "short_name": "mem_extensionCode_iff_image_mem_interleaved",
+          "signature": "lemma mem_extensionCode_iff_image_mem_interleaved"
+        },
+        {
+          "doc": "The coordinate isometry preserves relative Hamming distance: `\u03b4\u1d63(\u03a6 u, \u03a6 v) = \u03b4\u1d63(u, v)`. Both sides are `hammingDist / Fintype.card \u03b9`, and `hammingDist (\u03a6 u) (\u03a6 v) = hammingDist u v` because `\u03a6` applies the injective bijection `\u03c6` independently at each position (`Mathlib.hammingDist_comp`).",
+          "kind": "lemma",
+          "line": 352,
+          "name": "CodingTheory.extensionCoordEquiv_relHammingDist",
+          "namespace": "CodingTheory",
+          "short_name": "extensionCoordEquiv_relHammingDist",
+          "signature": "lemma extensionCoordEquiv_relHammingDist"
+        },
+        {
+          "doc": "Membership-in-the-relative-ball transfers along the coordinate isometry `\u03a6`: `\u03a6 v \u2208 relHammingBall (\u03a6 f) \u03b4 \u2194 v \u2208 relHammingBall f \u03b4`. Both balls are stated with the `relHammingBall` defining instances (the `open Classical` decidability baked into that definition), so the `DecidableEq`-instance mismatch that would arise from writing `\u03b4\u1d63` directly is avoided. The `Code.relHammingDist`-value equality itself is instance-irrelevant (a `Subsingleton`), supplied by `hammingDist_comp`.",
+          "kind": "lemma",
+          "line": 370,
+          "name": "CodingTheory.relHammingBall_image_mem_iff",
+          "namespace": "CodingTheory",
+          "short_name": "relHammingBall_image_mem_iff",
+          "signature": "lemma relHammingBall_image_mem_iff"
+        },
+        {
+          "doc": "**ABF26 Lemma 2.21 [BCFW25 Lemma D.3].** List size of an extension code equals the list size of the corresponding interleaved base code. Let `C_B : B^k \u2192 B^n` be a linear code and `P` be an extension-field presentation. For every `\u03b4 \u2208 (0, 1)`: `|\u039b(C_F, \u03b4)| = |\u039b(C_B^\u2261e, \u03b4)|` where `C_F` is the extension code (D2.20) and `C_B^\u2261e` is the `e`-fold interleaved base code (D2.9). **Proof.** The basis isomorphism `\u03c6 : F \u2243 (Fin e \u2192 B)` lifts position-by-position to a bijection `\u03a6 := extensionCoordEquiv P : (\u03b9 \u2192 F) \u2243 (\u03b9 \u2192 (Fin e \u2192 B))` that (i) carries `extensionCode P C_B` onto `interleavedCodeSet C_B`",
           "kind": "theorem",
-          "line": 309,
+          "line": 422,
           "name": "CodingTheory.lambda_extensionCode_eq_lambda_interleaved",
           "namespace": "CodingTheory",
           "short_name": "lambda_extensionCode_eq_lambda_interleaved",
@@ -14730,9 +14784,27 @@
           "signature": "class classical"
         },
         {
-          "doc": "**ABF26 Lemma 4.6.** In the unique-decoding regime `\u03b4 < \u03b4_min(C)/2`, `\u03b5_mca` and `\u03b5_ca` coincide: `\u03b5_mca(C, \u03b4) = \u03b5_ca(C, \u03b4)`. The unique-decoding hypothesis is expressed as `2 \u00b7 \u03b4 \u00b7 n < \u03b4_min(C) \u00b7 n = \u2016C\u2016\u2080` to avoid fractional arithmetic in \u2115 \u2014 equivalent to the paper's `\u03b4 < \u03b4_min(C)/2`. **Status: external admit.** Proof is in [ACFY25, Lemma 4.10] (footnote 6 in ABF26 notes the proof is for linear codes but generalises to F-additive codes). The argument is not the obvious case-split: `mcaEvent` *can* hold at specific `\u03b3`-values when `jointProximity` holds (line agrees with the unique close cod",
+          "doc": "**Structural half of ABF26 Lemma 4.6 (provable in-tree).** The `mcaEvent` always entails that the line `u\u2080 + \u03b3 \u2022 u\u2081` is `\u03b4`-close to `C`: the event's witness set `S` (of size `\u2265 (1-\u03b4)\u00b7n`) carries a codeword `w \u2208 C` that agrees with the line on `S`, so `\u03b4\u1d63(line, w) \u2264 \u03b4` and hence `\u03b4\u1d63(line, C) \u2264 \u03b4`. (This direction needs no unique-decoding hypothesis; it is the `mcaEvent`-level analogue of the line-close witness used in `epsCA_le_epsMCA`.)",
           "kind": "theorem",
-          "line": 557,
+          "line": 548,
+          "name": "ProximityGap.mcaEvent_imp_relCloseToCode",
+          "namespace": "ProximityGap",
+          "short_name": "mcaEvent_imp_relCloseToCode",
+          "signature": "theorem mcaEvent_imp_relCloseToCode"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 552,
+          "name": "ProximityGap._anon_class_552",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_552",
+          "signature": "class classical"
+        },
+        {
+          "doc": "**ABF26 Lemma 4.6.** In the unique-decoding regime `\u03b4 < \u03b4_min(C)/2`, `\u03b5_mca` and `\u03b5_ca` coincide: `\u03b5_mca(C, \u03b4) = \u03b5_ca(C, \u03b4)`. The unique-decoding hypothesis is expressed as `2 \u00b7 \u03b4 \u00b7 n < \u03b4_min(C) \u00b7 n = \u2016C\u2016\u2080` to avoid fractional arithmetic in \u2115 \u2014 equivalent to the paper's `\u03b4 < \u03b4_min(C)/2`. The proof is reduced here to **one** inequality. The direction `\u03b5_ca \u2264 \u03b5_mca` is the in-tree `epsCA_le_epsMCA` (no UDR needed). What remains, `\u03b5_mca \u2264 \u03b5_ca`, is the genuinely hard direction: **Status of the remaining direction: external admit** ([ACFY25, Lemma 4.10]; footnote 6 in ABF26 notes the proof is for ",
+          "kind": "theorem",
+          "line": 587,
           "name": "ProximityGap.epsMCA_eq_epsCA_below_udr",
           "namespace": "ProximityGap",
           "short_name": "epsMCA_eq_epsCA_below_udr",
@@ -14741,7 +14813,7 @@
         {
           "doc": "Row-extraction: the `k`-th row of a `Fin t \u2192 A`-valued word, as an `A`-valued word.",
           "kind": "def",
-          "line": 566,
+          "line": 598,
           "name": "ProximityGap.row_of",
           "namespace": "ProximityGap",
           "short_name": "row_of",
@@ -14750,7 +14822,7 @@
         {
           "doc": "**ABF26 Lemma 4.7.** For any F-additive code `C` (here: a `Submodule F (\u03b9 \u2192 A)`) and `t : \u2115`: `\u03b5_mca(C^\u2261t, \u03b4) \u2264 t \u00b7 \u03b5_mca(C, \u03b4)`. Proof recipe: 1. `mcaEvent` for the interleaved code at `\u03b3` implies `\u2203 k`, `mcaEvent` for the `k`-th row restriction (witness set `S` is shared; if every row admitted a joint codeword pair on `S`, assembling them column-by-column would produce a joint codeword pair in `C^\u22c8 (Fin t)` agreeing on `S`, contradicting the interleaved's \"no joint pair\" clause). 2. `Pr_le_Pr_of_implies` lifts the per-`\u03b3` implication to a probability bound. 3. `Pr_exists_Fin_le_sum` (union b",
           "kind": "theorem",
-          "line": 582,
+          "line": 614,
           "name": "ProximityGap.epsMCA_interleaved_le",
           "namespace": "ProximityGap",
           "short_name": "epsMCA_interleaved_le",
@@ -14759,28 +14831,28 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 585,
-          "name": "ProximityGap._anon_class_585",
+          "line": 617,
+          "name": "ProximityGap._anon_class_617",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_585",
+          "short_name": "_anon_class_617",
           "signature": "class classical"
         },
         {
           "doc": "**Bridge for affine spaces.** The predicate `\u03b4_\u03b5_correlatedAgreementAffineSpaces C \u03b4 \u03b5` (from `Basic.lean`, threshold `\u03b5`) is equivalent to `epsCA_affineSpaces C k \u03b4 \u03b4 \u2264 \u03b5`. Same proof recipe as the `AffineLines` and `Curves` bridges.",
           "kind": "theorem",
-          "line": 663,
-          "name": "ProximityGap._anon_theorem_663",
+          "line": 695,
+          "name": "ProximityGap._anon_theorem_695",
           "namespace": "ProximityGap",
-          "short_name": "_anon_theorem_663",
+          "short_name": "_anon_theorem_695",
           "signature": "theorem theorem \u03b4_\u03b5_correlatedAgreementAffineSpaces_iff_epsCA_affineSpaces_le {k : \u2115}"
         },
         {
           "doc": "",
           "kind": "class",
-          "line": 667,
-          "name": "ProximityGap._anon_class_667",
+          "line": 699,
+          "name": "ProximityGap._anon_class_699",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_667",
+          "short_name": "_anon_class_699",
           "signature": "class classical"
         }
       ]
@@ -15500,7 +15572,7 @@
         {
           "doc": "**ABF26 Theorem 4.21 [GG25 Thm 3.5].** If `C` is `(\u03b4, a, n+1)`-line-decodable, then its mutual correlated agreement error is bounded by `a / |F|`: `LineDecodable (F := F) C \u03b4 a (n+1) \u2192 \u03b5_mca(C, \u03b4) \u2264 a / |F|` where `n = |\u03b9|`. The proof in [GG25] proceeds by taking the line-decoder's witness pair `(u\u2081, u\u2082)` and showing that the `\u0394_S = 0` witness set of the MCA event must coincide with the `\u03b3`-set on which `U \u03b3 = u\u2081 + \u03b3 \u2022 u\u2082`, which has measure `\u2265 (n+1)/|F|`. Because that pair has at most `n` exceptional positions on every fold, the alignment lifts to a joint-pair witness, contradicting the `\u00ac pa",
           "kind": "theorem",
-          "line": 90,
+          "line": 102,
           "name": "CodingTheory.lineDecodable_imp_epsMCA_le",
           "namespace": "CodingTheory",
           "short_name": "lineDecodable_imp_epsMCA_le",
@@ -49829,7 +49901,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5410,
+      "declarations": 5418,
       "files": 287
     }
   }
