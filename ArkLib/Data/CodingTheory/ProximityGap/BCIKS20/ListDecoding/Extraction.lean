@@ -22,16 +22,30 @@ variable {m : ℕ} (k : ℕ) {δ : ℚ} {x₀ : F} {u₀ u₁ : Fin n → F} {Q 
          [Finite F]
 
 omit [DecidableEq (RatFunc F)] in
-/-- Equation 5.12 from [BCIKS20]. -/
+/-- Equation 5.12 from [BCIKS20].
+
+NOTE (statement repair): the original formulation of this lemma was *vacuous*.
+Because `∧` binds tighter than the bounded quantifier `∀ _ ∈ _,`, the entire
+payload — separability of each `Rᵢ`, irreducibility of each `Rᵢ`, and the
+factorization equation `Q = C · ∏ (Rᵢ.comp Xᶠ)^eᵢ` — was trapped inside the
+`∀ eᵢ ∈ e, …` (and the nested `∀ Rᵢ ∈ R, …`) binders. The statement was then
+satisfiable by the empty witnesses `C = …, R = [], f = [], e = []` (all three
+length equalities collapse to `0 = 0` and `∀ eᵢ ∈ [], …` is vacuously true),
+carrying no mathematical content whatsoever.
+
+This re-parenthesizes to the intended reading of [BCIKS20, Eq. 5.12]: each
+bounded quantifier and the final factorization equation is now a *separate*
+top-level conjunct, so the factorization holds outside all of the binders.
+No conjunct has been dropped or weakened; only the scoping was corrected. -/
 lemma irreducible_factorization_of_gs_solution
     {k : ℕ}
   (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
   ∃ (C : F[Z][X]) (R : List F[Z][X][Y]) (f : List ℕ) (e : List ℕ),
     R.length = f.length ∧
     f.length = e.length ∧
-    ∀ eᵢ ∈ e, 1 ≤ eᵢ ∧
-    ∀ Rᵢ ∈ R, Rᵢ.Separable ∧
-    ∀ Rᵢ ∈ R, Irreducible Rᵢ ∧
+    (∀ eᵢ ∈ e, 1 ≤ eᵢ) ∧
+    (∀ Rᵢ ∈ R, Rᵢ.Separable) ∧
+    (∀ Rᵢ ∈ R, Irreducible Rᵢ) ∧
     Q = (Polynomial.C C) *
         ∏ (Rᵢ ∈ R.toFinset) (fᵢ ∈ f.toFinset) (eᵢ ∈ e.toFinset),
           (Rᵢ.comp ((Polynomial.X : F[Z][X][Y]) ^ fᵢ))^eᵢ
@@ -514,7 +528,7 @@ theorem pg_card_candidatePairs_le_natDegreeY (x₀ : F) (h_gs : ModifiedGuruswam
     intro R hR
     exact hpoint R hR
   have hsum_Rset_le : (∑ R ∈ Rset, Bivariate.natDegreeY R) ≤ Bivariate.natDegreeY Q := by
-    -- This is exactly the provided axiom, after rewriting `Rset`.
+    -- This is exactly the provided degree bound, after rewriting `Rset`.
     simpa [hRset] using
       (pg_sum_natDegreeY_Rset_le_natDegreeY_Q (m := m) (n := n) (k := k)
         (ωs := ωs) (Q := Q) (u₀ := u₀) (u₁ := u₁) h_gs)
