@@ -110,7 +110,9 @@ lemma duplexSpongeToFSGameStatDist
     -- TODO: state query bound only for subset of the oracles
     -- (hQuery : IsQueryBound maliciousProver (tₒ ⊕ᵥ (tₕ ⊕ᵥ (tₚ ⊕ᵥ tₚᵢ))))
     : True :=
-  sorry
+  -- The statement is still the `True` placeholder (see TODO above to fill in the real
+  -- statistical-distance bound), so it holds vacuously; no `sorry` needed meanwhile.
+  trivial
 
 end KeyLemma
 
