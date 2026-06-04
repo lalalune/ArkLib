@@ -180,28 +180,28 @@ noncomputable def oracleVerifier :
   hEq := fun i => rfl
 
 open OracleInterface in
-omit [NeZero κ] [Fintype L] [CharP L 2] [SampleableType L] [Fintype K] [DecidableEq K]
+omit [NeZero κ] [Fintype L] [SampleableType L] [Fintype K] [DecidableEq K]
   [NeZero ℓ] [NeZero ℓ'] in
 /-- The inner oracle verifier body, simulated through `simOracle2`, collapses to the
 deterministic `if performCheck … then stmtOutAccept else failureState`. -/
 lemma oracleVerifier_verify_collapse
     (stmt : BatchingStmtIn L ℓ) (oStmt : ∀ j, aOStmtIn.OStmtIn j)
-    (tr : FullTranscript (pSpecBatching (κ:=κ) (L:=L) (K:=K))) :
+    (tr : FullTranscript (pSpecBatching (κ:=κ) (L:=L) (K:=K) (P:=P))) :
     simulateQ (OracleInterface.simOracle2 []ₒ oStmt (FullTranscript.messages tr))
-        ((oracleVerifier κ L K β ℓ ℓ' h_l (aOStmtIn:=aOStmtIn)).verify stmt
+        ((oracleVerifier κ L K P ℓ ℓ' h_l (aOStmtIn:=aOStmtIn)).verify stmt
           (FullTranscript.challenges tr))
-      = (if performCheckOriginalEvaluation κ L K β ℓ ℓ' h_l stmt.original_claim
+      = (if performCheckOriginalEvaluation κ L K P ℓ ℓ' h_l stmt.original_claim
               stmt.t_eval_point (FullTranscript.messages tr ⟨0, by rfl⟩) then
            pure ({ ctx := { t_eval_point := stmt.t_eval_point,
                             original_claim := stmt.original_claim,
                             s_hat := FullTranscript.messages tr ⟨0, by rfl⟩,
                             r_batching := FullTranscript.challenges tr ⟨1, by rfl⟩ },
-                   sumcheck_target := compute_s0 κ L K β
+                   sumcheck_target := compute_s0 κ L K P
                      (FullTranscript.messages tr ⟨0, by rfl⟩)
                      (FullTranscript.challenges tr ⟨1, by rfl⟩),
                    challenges := Fin.elim0 } : Statement (L:=L) (ℓ:=ℓ')
-                     (RingSwitchingBaseContext κ L K ℓ) 0)
-         else pure (failureState κ L K ℓ ℓ' stmt (FullTranscript.messages tr ⟨0, by rfl⟩))
+                     (RingSwitchingBaseContext κ L K ℓ P) 0)
+         else pure (failureState κ L K P ℓ ℓ' stmt (FullTranscript.messages tr ⟨0, by rfl⟩))
          : OptionT (OracleComp []ₒ) _) := by
   simp only [oracleVerifier]
   rw [simulateQ_optionT_bind, simulateQ_simOracle2_query]
@@ -217,7 +217,7 @@ lemma oracleVerifier_verify_collapse
   rw [answer_instDefault]
   simp only [apply_ite, bind_pure_comp, map_pure]
   -- Both `if`-conditions are now identical; collapse the nested `if` and `simulateQ (pure …)`.
-  by_cases hc : performCheckOriginalEvaluation κ L K β ℓ ℓ' h_l stmt.original_claim
+  by_cases hc : performCheckOriginalEvaluation κ L K P ℓ ℓ' h_l stmt.original_claim
       stmt.t_eval_point (FullTranscript.messages tr ⟨0, by rfl⟩) = true <;>
     simp only [hc, Bool.false_eq_true, reduceIte] <;>
     (erw [simulateQ_pure]; rfl)
@@ -312,32 +312,32 @@ def batchingKStateProp {m : Fin (2 + 1)}
       ⟨⟨1, Nat.lt_of_succ_le (by omega)⟩, by simp [pSpecBatching]; rfl⟩
     let batching_challenges: Fin κ → L := chalsUpTo i_msg2
 
-    -- TODO(port #17): the worker's reject-branch spec repair (round-2 KState must
-    -- branch on the verifier's accept/reject decision; asserting accept facts
-    -- unconditionally is FALSE on the reject branch). Port onto the P-threaded API
-    -- together with the 𝓑-parameterized sumcheckRoundRelationProp bridges.
-    let ctx : RingSwitchingBaseContext κ L K ℓ P := {
-      t_eval_point := stmt.t_eval_point,
-      original_claim := stmt.original_claim,
-      s_hat := s_hat,
-      r_batching := batching_challenges
-    }
-    let stmtOut : Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) 0 := {
-      ctx := ctx,
+    -- DP24 reject-branch repair (#17), ported to the profile API. The verifier has TWO
+    -- output branches and the round-2 knowledge state must mirror the verifier's actual
+    -- decision rather than asserting the accept-branch facts unconditionally:
+    -- asserting them unconditionally is FALSE on the reject branch (where
+    -- `(failureState, witOut) ∈ relOut` is satisfiable), making `toFun_full` unprovable.
+    -- The repaired prop asserts exactly `sumcheckRoundRelationProp` for whichever statement
+    -- the verifier deterministically outputs; `toFun_full` transports each branch directly
+    -- from `h_relOut`.
+    let stmtOutAccept : Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) 0 := {
+      ctx := {
+        t_eval_point := stmt.t_eval_point,
+        original_claim := stmt.original_claim,
+        s_hat := s_hat,
+        r_batching := batching_challenges
+      },
       sumcheck_target := compute_s0 κ L K P s_hat batching_challenges,
       challenges := Fin.elim0
     }
-    let witOut : SumcheckWitness L ℓ' 0 := {
-      t' := witMid.t',
-      H := projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := witMid.t')
-        (m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly (ctx := ctx))
-        (i := 0) (challenges := Fin.elim0)
-    }
     exact
-      sumcheckRoundRelationProp κ L K P ℓ ℓ' h_l aOStmtIn (i:=0) stmtOut oStmt witOut
-      ∧ performCheckOriginalEvaluation κ L K P ℓ ℓ' h_l stmt.original_claim
-        stmt.t_eval_point s_hat -- local V check
-      ∧ aOStmtIn.initialCompatibility ⟨witMid.t', oStmt⟩
+      (if performCheckOriginalEvaluation κ L K P ℓ ℓ' h_l stmt.original_claim
+            stmt.t_eval_point s_hat then
+        sumcheckRoundRelationProp κ L K P ℓ ℓ' h_l aOStmtIn (i:=0)
+          stmtOutAccept oStmt witMid
+      else
+        sumcheckRoundRelationProp κ L K P ℓ ℓ' h_l aOStmtIn (i:=0)
+          (failureState κ L K P ℓ ℓ' stmt s_hat) oStmt witMid)
 
 -- The round-0 knowledge-state conjunct is discharged via the DP24 capstone
 -- `performCheckOriginalEvaluation_packMLE_iff'`, whose soundness (multilinear-extension

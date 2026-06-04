@@ -1205,7 +1205,6 @@ lemma boolHypercube_sum_pinned (𝓑 : Fin 2 ↪ L₀)
 
 end SumcheckOrientation
 
-end RingSwitching
 
 /-! ## `simOracle2` message-query support
 
@@ -1266,4 +1265,4 @@ lemma simulateQ_simOracle2_query {ι : Type} {oSpec : OracleSpec ι}
 
 end SimOracle2MessageQuery
 
-end Binius.RingSwitching
+end RingSwitching
