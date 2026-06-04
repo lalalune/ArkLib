@@ -63,10 +63,8 @@ theorem codeInner_eq_agree_sub (u v : ι → α) (hq : 0 < Fintype.card α) :
   congr 1
   apply Finset.sum_congr rfl; intro i _; by_cases h : u i = v i <;> simp [h]
 
-omit [DecidableEq ι] in
 /-- **Constant norm.** `⟨x_w, x_w⟩ = n(1 − 1/q)` (every coordinate agrees with
 itself). -/
-omit [DecidableEq ι] in
 theorem codeInner_self (w : ι → α) (hq : 0 < Fintype.card α) :
     codeInner w w = (Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ)) := by
   have hself : agree w w = Fintype.card ι := by
