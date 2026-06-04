@@ -14128,6 +14128,33 @@
           "namespace": "BCKHS25",
           "short_name": "_anon_class_500",
           "signature": "class classical"
+        },
+        {
+          "doc": "The `Y`-evaluation of a bivariate polynomial has `X`-degree at most `degreeX`.",
+          "kind": "lemma",
+          "line": 536,
+          "name": "BCKHS25.natDegree_evalY_le_degreeX",
+          "namespace": "BCKHS25",
+          "short_name": "natDegree_evalY_le_degreeX",
+          "signature": "lemma natDegree_evalY_le_degreeX (z : F) (f : F[X][Y]) :"
+        },
+        {
+          "doc": "Evaluation order commutes: `(evalX x f).eval z = (evalY z f).eval x`.",
+          "kind": "lemma",
+          "line": 552,
+          "name": "BCKHS25.evalX_eval_comm",
+          "namespace": "BCKHS25",
+          "short_name": "evalX_eval_comm",
+          "signature": "lemma evalX_eval_comm (x z : F) (f : F[X][Y]) :"
+        },
+        {
+          "doc": "The per-`z` instantiation of the Berlekamp\u2013Welch identity: evaluating the `Y`-identity at `Y := z` gives the pointwise equation at every domain point.",
+          "kind": "lemma",
+          "line": 565,
+          "name": "BCKHS25.evalY_BW_identity",
+          "namespace": "BCKHS25",
+          "short_name": "evalY_BW_identity",
+          "signature": "lemma evalY_BW_identity {A B : F[X][Y]} (domain : \u03b9 \u21aa F) (u\u2080 u\u2081 : \u03b9 \u2192 F)"
         }
       ]
     },
@@ -50189,7 +50216,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5450,
+      "declarations": 5453,
       "files": 287
     }
   }
