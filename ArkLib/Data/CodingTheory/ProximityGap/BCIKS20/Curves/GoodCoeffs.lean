@@ -20,6 +20,12 @@ close-codeword extraction. The line case is `k = 1`
 
 namespace ProximityGap
 
+-- Decidability/Fintype instances are threaded through the section; several
+-- statement-level extraction lemmas do not mention them directly.
+set_option linter.unusedDecidableInType false
+set_option linter.unusedSectionVars false
+set_option linter.unusedFintypeInType false
+
 open NNReal Finset Function ProbabilityTheory Code
 open scoped BigOperators LinearCode
 
