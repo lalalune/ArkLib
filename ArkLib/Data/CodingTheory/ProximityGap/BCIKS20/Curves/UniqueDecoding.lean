@@ -21,6 +21,12 @@ JointAgreement chain. The list-decoding regime (Theorem 6.2) remains open
 
 namespace ProximityGap
 
+-- Decidability/Fintype instances are threaded through the section; the
+-- statement-level theorem does not mention them directly.
+set_option linter.unusedDecidableInType false
+set_option linter.unusedSectionVars false
+set_option linter.unusedFintypeInType false
+
 open NNReal Finset Function ProbabilityTheory Code
 open scoped BigOperators LinearCode
 
