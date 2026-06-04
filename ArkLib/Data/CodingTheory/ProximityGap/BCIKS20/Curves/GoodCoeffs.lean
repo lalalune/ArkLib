@@ -223,7 +223,7 @@ theorem BW_homMatrix_map_evalRingHom_poly {e k : ℕ} (ωs : ι → F) (g : ι �
       = BW_homMatrix (ι := ι) e k ωs (fun i => (g i).eval z) := by
   ext i j
   by_cases hj : (j.1 ≤ e) <;>
-    simp [BW_homMatrix, Matrix.map_apply, hj, Nat.lt_succ_iff]
+    simp [BW_homMatrix, Matrix.map_apply, hj]
 
 open scoped BigOperators in
 open Polynomial in
