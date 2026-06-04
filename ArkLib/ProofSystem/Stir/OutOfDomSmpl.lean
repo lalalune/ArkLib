@@ -78,6 +78,7 @@ private lemma card_filter_forall_pi {β : Type} [Fintype β] [DecidableEq β] {s
   rw [h, Fintype.card_piFinset]
   simp
 
+omit [Fintype F] [DecidableEq F] in
 /-- Distinct codewords decode to distinct polynomials: the decoded polynomial interpolates the
 codeword on the domain (`Lagrange.eval_interpolate_at_node`), so equal polynomials force equal
 codewords. -/
