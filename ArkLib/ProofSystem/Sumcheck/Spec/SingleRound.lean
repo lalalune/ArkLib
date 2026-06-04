@@ -421,6 +421,53 @@ instance t {ι₁ ι₂ ι₃}
   (OracleQuery (spec₁ + (spec₂ + spec₃))) := by
   infer_instance
 
+set_option maxHeartbeats 1000000 in
+/-- The honest simple prover threads its input polynomial unchanged: any output statement in the
+support of its run has output oracle statement equal to the input polynomial, and new target equal
+to that polynomial evaluated at the sampled challenge. -/
+private lemma prover_run_output (stmt : StmtIn R × (∀ i, OStmtIn R deg i))
+    (out : (pSpec R deg).FullTranscript × (StmtOut R × ((i : Unit) → OStmtOut R deg i)) × Unit)
+    (hout : out ∈ support ((prover R deg oSpec).run stmt ())) :
+    out.2.1.2 () = stmt.2 () ∧
+      out.2.1.1.1 = Polynomial.eval out.2.1.1.2 (stmt.2 ()).val := by
+  simp only [prover, Prover.run, Prover.runToRound, Fin.induction_two, Prover.processRound,
+    pSpec, bind_pure_comp] at hout
+  -- Resolve round 0 direction (P_to_V): the match reduces to the P_to_V branch
+  split at hout <;> rename_i hDir0
+  · exact absurd hDir0 (by decide)
+  -- Resolve round 1 direction (V_to_P)
+  split at hout <;> rename_i hDir1
+  swap
+  · exact absurd hDir1 (by decide)
+  -- Collapse all `pure`/`liftM`/`map` glue so only the challenge sampling remains a genuine bind
+  simp only [liftM_pure, liftComp_pure, map_pure, pure_bind, bind_pure_comp,
+    Functor.map_map, Function.comp_def, map_map] at hout
+  -- Peel the outer bind: `out` is the (pure) prover output as a function of the round result
+  -- `challenge`; `hchal` records that `challenge` arises from the two-round computation.
+  rw [mem_support_bind_iff] at hout
+  obtain ⟨challenge, hchal, hout⟩ := hout
+  -- Peel the round-0 (send poly) bind inside `hchal` to learn `challenge.2.1 = stmt.2 ()`
+  erw [support_bind] at hchal
+  rw [Set.mem_iUnion] at hchal
+  obtain ⟨r0, hchal⟩ := hchal
+  rw [Set.mem_iUnion] at hchal
+  obtain ⟨hr0, hchal⟩ := hchal
+  -- Round 0: `r0 = (concat (stmt.2 ()) default, stmt.2 ())`, so `r0.2 = stmt.2 ()`
+  erw [support_map, support_pure] at hr0
+  simp only [Set.image_singleton, Set.mem_singleton_iff] at hr0
+  subst hr0
+  -- Round 1: `challenge = (concat sampled r0.1, r0.2, sampled)`, so `challenge.2.1 = stmt.2 ()`
+  erw [support_map] at hchal
+  rw [Set.mem_image] at hchal
+  obtain ⟨c, _hc, rfl⟩ := hchal
+  -- Resolve the outer pure to determine `out`
+  erw [support_map] at hout
+  rw [Set.mem_image] at hout
+  obtain ⟨w, hw, rfl⟩ := hout
+  simp only [liftM_pure, support_pure, Set.mem_singleton_iff] at hw
+  subst hw
+  exact ⟨rfl, rfl⟩
+
 open Function in
 def oracleVerifier : OracleVerifier oSpec (StmtIn R) (OStmtIn R deg) (StmtOut R) (OStmtOut R deg)
     (pSpec R deg) where
@@ -918,6 +965,79 @@ private lemma sumcheck_round_split {n' : ℕ} {m' : ℕ} (D' : Fin m' ↪ R) (i 
   · rintro ⟨a, y⟩ hay
     rw [append_cons_eq_insertNth i a c y hc1 hc2 hc3]
 
+/-- Lift-side round identity: the `(n'+1-(i+1))`-fold sum of the polynomial with the new
+challenge `a` appended via `Fin.snoc` equals the round polynomial (partial evaluation leaving
+variable `i` intact) evaluated at `a`. This is the completeness core of the round update. -/
+private lemma sumcheck_round_eval_snoc {n' : ℕ} {m' : ℕ} (D' : Fin m' ↪ R) (i : Fin (n' + 1))
+    (c : Fin (i : ℕ) → R) (a : R) (p : MvPolynomial (Fin (n' + 1)) R)
+    (h₁ : n' + 1 = ((i : ℕ) + 1) + (n' + 1 - ((i : ℕ) + 1)))
+    (h₂ : n' = (i : ℕ) + (n' - (i : ℕ))) :
+    ∑ z ∈ (univ.map D') ^ᶠ (n' + 1 - ((i : ℕ) + 1)),
+        MvPolynomial.eval (Fin.append (Fin.snoc c a) z ∘ Fin.cast h₁) p
+      = Polynomial.eval a (∑ y ∈ (univ.map D') ^ᶠ (n' - (i : ℕ)),
+          Polynomial.map (MvPolynomial.eval (Fin.append c y ∘ Fin.cast h₂))
+            (MvPolynomial.finSuccEquivNth R i p)) := by
+  have hidx : n' + 1 - ((i : ℕ) + 1) = n' - (i : ℕ) := by omega
+  rw [Polynomial.eval_finset_sum]
+  refine Finset.sum_nbij' (i := fun z => z ∘ Fin.cast hidx.symm)
+    (j := fun y => y ∘ Fin.cast hidx) ?_ ?_ ?_ ?_ ?_
+  · intro z hz
+    simp only [Fintype.mem_piFinset] at hz ⊢
+    exact fun k => hz _
+  · intro y hy
+    simp only [Fintype.mem_piFinset] at hy ⊢
+    exact fun k => hy _
+  · intro z _
+    funext k
+    exact congrArg z (Fin.ext rfl)
+  · intro y _
+    funext k
+    exact congrArg y (Fin.ext rfl)
+  · intro z _
+    dsimp only
+    rw [← MvPolynomial.eval_eq_eval_mv_eval_finSuccEquivNth]
+    refine congrArg (fun v => MvPolynomial.eval v p) ?_
+    funext j
+    by_cases hji : j = i
+    · subst hji
+      simp only [Function.comp_apply, Fin.insertNth_apply_same]
+      have hcast : Fin.cast h₁ j
+          = Fin.castAdd (n' + 1 - ((j : ℕ) + 1)) (Fin.last (j : ℕ)) := by
+        apply Fin.ext; simp
+      rw [hcast, Fin.append_left, Fin.snoc_last]
+    · obtain ⟨k, rfl⟩ := Fin.exists_succAbove_eq hji
+      simp only [Function.comp_apply, Fin.insertNth_apply_succAbove]
+      rcases le_or_gt i k.castSucc with hk | hk
+      · rw [Fin.succAbove_of_le_castSucc _ _ hk]
+        have hkv : (i : ℕ) ≤ (k : ℕ) := hk
+        have hL : Fin.cast h₁ k.succ
+            = Fin.natAdd ((i : ℕ) + 1)
+                (⟨(k : ℕ) - (i : ℕ), by omega⟩ : Fin (n' + 1 - ((i : ℕ) + 1))) := by
+          apply Fin.ext; simp; omega
+        have hR : Fin.cast h₂ k
+            = Fin.natAdd (i : ℕ)
+                (⟨(k : ℕ) - (i : ℕ), by omega⟩ : Fin (n' - (i : ℕ))) := by
+          apply Fin.ext; simp; omega
+        rw [hL, Fin.append_right, hR, Fin.append_right]
+        simp only [Function.comp_apply]
+        congr 1
+      · rw [Fin.succAbove_of_castSucc_lt _ _ hk]
+        have hkv : (k : ℕ) < (i : ℕ) := hk
+        have hL : Fin.cast h₁ k.castSucc
+            = Fin.castAdd (n' + 1 - ((i : ℕ) + 1))
+                (⟨(k : ℕ), by omega⟩ : Fin ((i : ℕ) + 1)) := by
+          apply Fin.ext; simp
+        have hR : Fin.cast h₂ k
+            = Fin.castAdd (n' - (i : ℕ)) (⟨(k : ℕ), hkv⟩ : Fin (i : ℕ)) := by
+          apply Fin.ext; simp
+        rw [hL, Fin.append_left, hR, Fin.append_left]
+        have hsnoc : (⟨(k : ℕ), by omega⟩ : Fin ((i : ℕ) + 1))
+            = (⟨(k : ℕ), hkv⟩ : Fin (i : ℕ)).castSucc := by
+          apply Fin.ext; simp
+        rw [hsnoc, Fin.snoc_castSucc]
+
+
+
 instance oCtxLens_complete :
     (oCtxLens R n deg D i).toContext.IsComplete
       (relationRound R n deg D i.castSucc) (Simple.inputRelation R deg D)
@@ -939,14 +1059,45 @@ where
       --            = ∑ z ∈ D^(n+1-i), eval (append c z ∘ cast) p
       exact sumcheck_round_split D i _ _ (by omega) (by omega) (by omega)
   lift_complete := by
-    simp [relationRound]
-    unfold compatContext oStmtLens
-    -- simp
-    -- induction n with
-    -- | zero => exact Fin.elim0 i
-    -- | succ n ih =>
-    --   simp
-    sorry
+    induction n with
+    | zero => exact Fin.elim0 i
+    | succ n' _ih =>
+    rintro ⟨⟨target, challenges⟩, oStmt⟩ _ ⟨⟨newTarget, chal⟩, oStmt'⟩ _ hCompat hRelIn hRelOut'
+    simp only [Simple.outputRelation, Set.mem_setOf_eq] at hRelOut'
+    -- From `hCompat`: the inner output context is the honest reduction's prover output.
+    rw [Reduction.compatContext, Simple.oracleReduction_eq_reduction] at hCompat
+    simp only [Set.mem_image, Function.comp_apply] at hCompat
+    obtain ⟨out, hout, heq⟩ := hCompat
+    -- The reduction run's first component is the prover run; extract it.
+    simp only [Reduction.run, OptionT.run_bind, Option.elimM] at hout
+    rw [mem_support_bind_iff] at hout
+    obtain ⟨proverResOpt, hprover, _hout⟩ := hout
+    -- `out.1 = proverResOpt`, and `heq` pins `out.1.2`, so `proverResOpt.2.1 = ((newTarget, chal), oStmt')`
+    have hout1 : out.1 = proverResOpt := by
+      simp only [support_bind, Set.mem_iUnion] at _hout
+      obtain ⟨_, _, _hout⟩ := _hout
+      obtain ⟨_, _, _hout⟩ := _hout
+      rw [support_pure, Set.mem_singleton_iff] at _hout
+      exact congrArg Prod.fst _hout
+    rw [hout1] at heq
+    -- Characterize the prover output via `prover_run_output`.
+    have hprover' : proverResOpt ∈
+        support ((Simple.prover R deg oSpec).run
+          (Statement.Lens.proj (oCtxLens R (n' + 1) deg D i).stmt
+            ({ target := target, challenges := challenges }, oStmt)) ()) := by
+      rw [OptionT.support_liftM] at hprover
+      simpa only [Simple.reduction] using hprover
+    have hpo := Simple.prover_run_output R deg oSpec _ proverResOpt hprover'
+    -- `heq : proverResOpt.2 = (((newTarget, chal), oStmt'), innerWitOut)`
+    obtain ⟨hpoO, hpoT⟩ := hpo
+    rw [heq] at hpoO hpoT
+    -- Now `hpoT : newTarget = eval chal roundPoly`; assemble the round update.
+    dsimp only at hpoT ⊢
+    dsimp only [Statement.Lens.proj, Statement.Lens.lift, OracleContext.Lens.toContext,
+      oCtxLens, oStmtLens, Witness.Lens.trivial] at hpoT ⊢
+    simp only [relationRound, Set.mem_setOf_eq]
+    rw [hpoT]
+    exact sumcheck_round_eval_snoc D i challenges chal _ (by omega) (by omega)
 
 instance extractorLens_rbr_knowledge_soundness :
     Extractor.Lens.IsKnowledgeSound
