@@ -710,7 +710,62 @@ theorem liftContext_knowledgeSoundness [Inhabited InnerStmtOut] [Inhabited Inner
   refine le_trans ?_ hR
   -- Massage the two `probEvent`s so that they have the same base computation `oa`?
   simp [h_innerP_runWithLog]
-  -- apply probEvent_mono ?_
+  -- Reuse the soundness-proof machinery: collapse getM plumbing and push the two
+  -- lens-lifts (statement lift inside the logged verify; witness lift on the extractor)
+  -- out of their simulation layers so both games become uniform value-maps of one core.
+  have hGetMRun : ∀ {α : Type} (o : Option α),
+      (Option.getM (m := OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ))) o).run = pure o := by
+    intro _ o; cases o <;> rfl
+  have hElimM_map : ∀ {m : Type → Type} [Monad m] [LawfulMonad m] {α β γ : Type}
+      (x : m (Option α)) (g : α → β) (y : m γ) (f : β → m γ),
+      Option.elimM (Option.map g <$> x) y f = Option.elimM x y (f ∘ g) := by
+    intro m _ _ α β γ x g y f
+    simp only [Option.elimM, bind_map_left]
+    exact bind_congr fun o => by cases o <;> rfl
+  -- OptionT-functor maps ARE Option.map at the OracleComp carrier
+  have hOptCarrier : ∀ {A B : Type} (f : A → B) (v : OptionT (OracleComp oSpec) A),
+      (f <$> v : OptionT (OracleComp oSpec) B)
+        = (Option.map f <$> (v : OracleComp oSpec (Option A)) : OracleComp oSpec (Option B)) := by
+    intro A B f v
+    apply OptionT.ext
+    rw [OptionT.run_map]
+    rfl
+  -- cross-spec OptionT-lift commutes with carrier value-maps
+  have hLiftMMap : ∀ {A B : Type} (g : A → B) (y : OracleComp oSpec A),
+      ((liftM (g <$> y) : OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) B)).run
+        = Option.map g <$>
+            ((liftM y : OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) A)).run := by
+    intro A B g y
+    have h1 : ∀ {C : Type} (z : OracleComp oSpec C),
+        ((liftM z : OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) C)).run
+          = some <$> (z.liftComp (oSpec + [pSpec.Challenge]ₒ)) := by
+      intro C z
+      show simulateQ _ ((OptionT.lift z).run) = _
+      rw [show ((OptionT.lift z : OptionT (OracleComp oSpec) C).run) = some <$> z from rfl]
+      rw [simulateQ_map]; rfl
+    rw [h1, h1, OracleComp.liftComp_def, simulateQ_map, ← OracleComp.liftComp_def,
+      Functor.map_map, Functor.map_map]
+    rfl
+  have hWriterRunMap : ∀ {A B : Type} (f : A → B)
+      (w : WriterT (QueryLog oSpec) (OracleComp oSpec) A),
+      (f <$> w).run = (Prod.map f id) <$> w.run := fun _ _ => rfl
+  -- carrier-level (run-less) variants for after `OptionT.run` unfolding
+  have hLiftMMap' : ∀ {A B : Type} (g : A → B) (y : OracleComp oSpec A),
+      ((liftM (g <$> y) : OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) B)
+        : OracleComp (oSpec + [pSpec.Challenge]ₒ) (Option B))
+        = Option.map g <$>
+            ((liftM y : OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) A)
+              : OracleComp (oSpec + [pSpec.Challenge]ₒ) (Option A)) := by
+    intro A B g y
+    exact hLiftMMap g y
+  have hGetMCarrier : ∀ {A : Type} (o : Option A),
+      (Option.getM (m := OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ))) o
+        : OracleComp (oSpec + [pSpec.Challenge]ₒ) (Option A)) = pure o := by
+    intro _ o; cases o <;> rfl
+  simp only [hOptCarrier, simulateQ_map, hWriterRunMap, hLiftMMap, hLiftMMap', OptionT.run,
+    OptionT.run_map, StateT.run_map, Functor.map_map, hElimM_map, hGetMRun, hGetMCarrier,
+    simulateQ_pure, map_pure, Function.comp_def, Option.map_map, Prod.map_fst,
+    Prod.map_snd, Prod.map_apply]
   sorry
 
 /-
