@@ -7,6 +7,7 @@ Authors: Quang Dao
 import ArkLib.OracleReduction.LiftContext.Lens
 import ArkLib.OracleReduction.Security.RoundByRound
 import ArkLib.ToVCVio.EvalDist.Instances.OptionT
+import ArkLib.ToVCVio.OracleComp.Coercions.SubSpec
 -- import ArkLib.OracleReduction.Security.StateRestoration
 
 /-!
@@ -521,7 +522,6 @@ theorem liftContext_soundness [Inhabited InnerStmtOut]
       (V.compatStatement lens)]
     (h : V.soundness init impl innerLangIn innerLangOut soundnessError) :
       (V.liftContext lens).soundness init impl outerLangIn outerLangOut soundnessError := by
-  /-
   unfold soundness Reduction.run at h ⊢
   -- Note: there is no distinction between `Outer` and `Inner` here
   intro WitIn WitOut outerWitIn outerP outerStmtIn hOuterStmtIn
@@ -602,12 +602,53 @@ theorem liftContext_soundness [Inhabited InnerStmtOut]
   refine absurd hOut (lensSound.lift_sound outerStmtIn innerStmtOut ?_ hIn)
   -- extract the compatibility witness from the support of the core game
   rw [hcore] at hSupport
-  simp only [OptionT.mem_support_iff, OptionT.run_bind, mem_support_bind_iff,
-    OptionT.run_mk, support_map, Set.mem_image, OptionT.run_lift] at hSupport
-  trace_state
-  placeholder
-  -/
-  sorry
+  simp only [Option.elimM, mem_support_bind_iff, StateT.run_bind, support_map,
+    Set.mem_image, Prod.exists, OptionT.run_lift, OptionT.run_mk] at hSupport
+  obtain ⟨x0, hx0, tr, so, wo, st, hProv, hLast⟩ := hSupport
+  simp only [OptionT.mem_support_iff, OptionT.run_mk, support_map, Set.mem_image,
+    mem_support_bind_iff, Prod.exists] at hLast
+  obtain ⟨a, b, ⟨a1, b1, hVerSup, hElim⟩, hMapEq⟩ := hLast
+  -- the pairing map forces `a = some innerStmtOut`
+  rcases a with _ | v
+  · simp at hMapEq
+  simp only [Option.map_some, Option.some_inj, Prod.mk.injEq] at hMapEq
+  obtain ⟨hTr, hV⟩ := hMapEq
+  subst hV
+  -- the elim stage forces `a1 = some (some innerStmtOut)`
+  rcases a1 with _ | w
+  · simp at hElim
+  · simp only [Option.elim_some] at hElim
+    have hw : some v = w ∧ b = b1 := by
+      simpa using hElim
+    obtain ⟨rfl, rfl⟩ := hw.symm.imp Eq.symm Eq.symm
+    -- strip the simulation: the verify value is in the support of the lifted verifier run
+    have h1 : some (some v) ∈
+        support ((simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp)
+          challengeQueryImpl) ((liftM ((V.verify (lens.proj outerStmtIn) tr).run) :
+            OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) (Option InnerStmtOut)).run)).run' st) := by
+      simp only [StateT.run'_eq, support_map, Set.mem_image]
+      exact ⟨_, hVerSup, rfl⟩
+    have h2 := mem_support_simulateQ_run'_subset _ _ _ _ h1
+    -- unlift back to the verifier's own run
+    refine ⟨tr, ?_⟩
+    rw [Verifier.run]
+    rw [OptionT.mem_support_iff]
+    refine OracleComp.mem_support_of_mem_support_liftComp
+      (superSpec := oSpec + [pSpec.Challenge]ₒ) _ _ ?_
+    have h3 : ((liftM ((V.verify (lens.proj outerStmtIn) tr).run) :
+        OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) (Option InnerStmtOut)).run)
+        = some <$> (OracleComp.liftComp ((V.verify (lens.proj outerStmtIn) tr).run)
+            (oSpec + [pSpec.Challenge]ₒ)) := by
+      show simulateQ _ ((OptionT.lift ((V.verify (lens.proj outerStmtIn) tr).run)).run) = _
+      rw [show ((OptionT.lift ((V.verify (lens.proj outerStmtIn) tr).run) :
+        OptionT (OracleComp oSpec) (Option InnerStmtOut)).run)
+        = some <$> ((V.verify (lens.proj outerStmtIn) tr).run) from rfl]
+      rw [simulateQ_map]
+      rfl
+    rw [h3, support_map] at h2
+    obtain ⟨y, hy, hEq⟩ := h2
+    obtain rfl : y = some v := by simpa using hEq
+    exact hy
 
 /-
   Lifting the reduction preserves knowledge soundness, assuming the lens satisfies its knowledge
