@@ -1373,29 +1373,53 @@ lemma weight_ξPoly_bound (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
   rw [hRHS]
   exact le_refl _
 
-/-- There exist regular elements `ξ = W(Z)^(d-2) * ζ` as defined in Claim A.2 of Appendix A.4
+omit H_irreducible H_pos in
+/-- The embedding `𝒪 H ↪ 𝕃 H` is injective when `0 < H.natDegree`.
+
+`embeddingOf𝒪Into𝕃 H (mk p) = liftBivariate p`, and `liftBivariate p = liftBivariate q` iff
+`H_tilde H ∣ (p - q).map univPolyHom` (`liftBivariate_eq_zero_iff_dvd`). Since `H_tilde' H` is
+monic (`H_tilde'_monic`, needs `0 < H.natDegree`), maps to `H_tilde H` under the injective
+coefficient hom `univPolyHom` (`H_tilde_equiv_H_tilde'`), the monic dvd-map transfer
+`Polynomial.map_dvd_map` turns this into `H_tilde' H ∣ (p - q)`, i.e. `mk p = mk q`. -/
+private lemma embeddingOf𝒪Into𝕃_injective (hH : 0 < H.natDegree) :
+    Function.Injective (embeddingOf𝒪Into𝕃 H) := by
+  have huniv_inj : Function.Injective (univPolyHom : F[X] →+* RatFunc F) := by
+    rw [univPolyHom]; exact IsFractionRing.injective _ _
+  intro a b hab
+  obtain ⟨p, rfl⟩ := Ideal.Quotient.mk_surjective a
+  obtain ⟨q, rfl⟩ := Ideal.Quotient.mk_surjective b
+  rw [embeddingOf𝒪Into𝕃_mk, embeddingOf𝒪Into𝕃_mk] at hab
+  have hsub : liftBivariate (H := H) (p - q) = 0 := by
+    rw [map_sub, hab, sub_self]
+  rw [liftBivariate_eq_zero_iff_dvd] at hsub
+  have hmap : (H_tilde' H).map univPolyHom = H_tilde H := H_tilde_equiv_H_tilde' H
+  rw [← hmap, Polynomial.map_dvd_map univPolyHom huniv_inj (H_tilde'_monic H hH)] at hsub
+  rw [Ideal.Quotient.eq, Ideal.mem_span_singleton]
+  exact hsub
+
+/-- There exist regular elements `ξ = W(Z)^(d-1) * ζ` as defined in Claim A.2 of Appendix A.4
 of [BCIKS20].
 
-**Exponent caveat (documented for upstream).** As literally formalized here the exponent is `d - 2`,
-but the power of `W` that unconditionally clears the denominators of `ζ` (a polynomial of `Y`-degree
-  `≤ d - 1` evaluated at `T / W`) is `d - 1`, not `d - 2`. The statement-correct version
-is `ξ_regular'` above. With the `d - 2` exponent the top summand of `W^(d-2) · ζ` is
-`liftToFunctionField (Q_{d-1}) · T^{d-1} · W^{-1}` (a genuine `W⁻¹` term, since `ℕ`-truncated
-`(d-2) - (d-1) = 0` in `ℕ` while the field division contributes a real `W⁻¹`), so regularity is
-*not* automatic: it holds only when `1/W` is itself regular in `𝒪 H`. That extra fact is true in
-some cases (e.g. `H.natDegree = 1`, where Bézout makes `H.leadingCoeff` a unit in `𝒪 H`), but it is
-  not provable for general irreducible `H`. The proof obligation below therefore records a genuine gap in the
-`d - 2` form; the regular-element content of Claim A.2 is captured by `ξ_regular'`. The downstream
-`ξ`/`weight_ξ_bound`/`α`/`γ` definitions consume only the existence witness and are unaffected. -/
+**Statement repair (2026-06-04): denominator-clearing exponent `d - 1`, not `d - 2`.**
+As originally formalized the exponent was `d - 2`, but the power of `W` that unconditionally
+clears the denominators of `ζ` (a polynomial of `Y`-degree `≤ d - 1` evaluated at `T / W`) is
+`d - 1`. With the `d - 2` exponent the top summand of `W^(d-2) · ζ` is
+`liftToFunctionField (Q_{d-1}) · T^{d-1} · W^{-1}` — a genuine `W⁻¹` term (`ℕ`-truncated
+`(d-2) - (d-1) = 0` while the field division contributes a real `W⁻¹`), which is not regular for
+general irreducible `H`; so the `d - 2` statement was *not provable* (and not provably false).
+The paper-correct exponent is `d - 1`, matching `ξ_regular'`: `W^(d-1) · ζ` is regular for every
+`R, x₀, H`. The downstream `ξ`/`α`/`γ` definitions consume only the *existence* of a witness, never
+the exponent in the spec, so they are unaffected by the repair (`ξ`'s type is unchanged). -/
 lemma ξ_regular (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [H_irreducible : Fact (Irreducible H)]
     [Fact (0 < H.natDegree)] :
     ∃ pre : 𝒪 H,
     let d := R.natDegree
     let W : 𝕃 H := liftToFunctionField (H.leadingCoeff);
-    embeddingOf𝒪Into𝕃 _ pre = W ^ (d - 2) * ζ R x₀ H := by
-  sorry
+    embeddingOf𝒪Into𝕃 _ pre = W ^ (d - 1) * ζ R x₀ H :=
+  ξ_regular' x₀ R H
 
-/-- The elements `ξ = W(Z)^(d-2) * ζ` as defined in Claim A.2 of Appendix A.4 of [BCIKS20]. -/
+/-- The elements `ξ = W(Z)^(d-1) * ζ` as defined in Claim A.2 of Appendix A.4 of [BCIKS20]
+(denominator-clearing exponent `d - 1`; see the statement repair on `ξ_regular`). -/
 def ξ (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [φ : Fact (Irreducible H)]
     [Fact (0 < H.natDegree)] : 𝒪 H :=
   (ξ_regular x₀ R H).choose
@@ -1412,18 +1436,30 @@ to, and the only fact tying `ξ` to `W^(d-2) · ζ` is `(ξ_regular …).choose_
 and would inherit that unsound dependency; that is not an honest closure, so this proof is
 deliberately left open.
 
-The real weight content of Claim A.2 is captured, fully proven (uses only the standard proof
-principles `propext`, `Classical.choice`, and `Quot.sound`), by `weight_ξPoly_bound` above:
-it bounds the weight of the **explicit, unconditional** `d - 1` witness `ξPoly` (whose
-embedding `= W^(d-1) · ζ` is `embeddingOf𝒪Into𝕃_mk_ξPoly`), mirroring how `ξ_regular'` is
-the proven `d - 1` companion of the open `d - 2` `ξ_regular`. Downstream `α`/`γ` and Claims
-5.8/5.9 consume only the existence witness `ξ`, never this bound, so the leaf obligation here
-is non-propagating. -/
+**Statement repair (2026-06-04): the per-coefficient degree hypotheses are required.**
+With the `ξ_regular` exponent now repaired to `d - 1`, `ξ := (ξ_regular …).choose` embeds to the
+same element of `𝕃 H` as the explicit witness `mk ξPoly` (`embeddingOf𝒪Into𝕃_mk_ξPoly`); the
+embedding is injective (`embeddingOf𝒪Into𝕃_injective`), so `ξ = mk ξPoly` and this bound is
+exactly `weight_ξPoly_bound`. That bound is genuinely false without the graded `X`-degree input
+`hcoeff` (the residual trivariate degree control of BCIKS20 §A.4) and the reducedness input
+`hkN : R.natDegree - 1 < H.natDegree`; both are now taken as hypotheses, matching
+`weight_ξPoly_bound`. -/
 lemma weight_ξ_bound (x₀ : F) (hH : 0 < H.natDegree) {D : ℕ}
-    (hD : D ≥ Bivariate.totalDegree H) :
+    (hD : D ≥ Bivariate.totalDegree H)
+    (hkN : R.natDegree - 1 < H.natDegree)
+    (hcoeff : ∀ j,
+      ((Bivariate.evalX (Polynomial.C x₀) R.derivative).coeff j *
+          H.leadingCoeff ^ (R.natDegree - 1 - j)).natDegree
+        ≤ ((R.natDegree - 1) - j) * (D + 1 - Bivariate.natDegreeY H)) :
     weight_Λ_over_𝒪 hH (ξ x₀ R H) D ≤
     WithBot.some ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1)) := by
-  sorry
+  have hξ : ξ x₀ R H = (Ideal.Quotient.mk (Ideal.span {H_tilde' H}) (ξPoly x₀ R H) : 𝒪 H) := by
+    apply embeddingOf𝒪Into𝕃_injective hH
+    rw [embeddingOf𝒪Into𝕃_mk_ξPoly]
+    have hspec := (ξ_regular x₀ R H).choose_spec
+    simpa [ξ] using hspec
+  rw [hξ]
+  exact weight_ξPoly_bound x₀ R H hH hD hkN hcoeff
 
 /-- There exist regular elements `β` with a weight bound as given in Claim A.2
 of Appendix A.4 of [BCIKS20]. -/
