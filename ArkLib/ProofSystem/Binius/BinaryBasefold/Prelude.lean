@@ -936,6 +936,17 @@ lemma iterated_fold_transitivity
     lhs = by
       simp only [←Nat.add_assoc] at ⊢ rhs
       exact rhs := by
+  -- PROOF APPROACH (documented; not yet closed). After `simp only`, the goal is the
+  -- `Fin.dfoldl` append/split law:
+  --   `iterated_fold (i+s₁) s₂ (iterated_fold i s₁ f r₁) r₂`
+  --     = cast (iterated_fold i (s₁+s₂) f (Fin.append r₁ r₂)).
+  -- Induct on `s₂ := steps₂.val` (via `obtain ⟨s2, hs2⟩ := steps₂`). The base case needs
+  -- `Fin.dfoldl_zero` (LHS) + `Fin.append` of an empty tail + the `⟨s₁+0,_⟩ ≃ steps₁` cast.
+  -- The succ case peels the last step on BOTH sides and consumes the IH on the truncated
+  -- `Fin.append r₁ (r₂ ∘ castSucc)`; the heavy part is the dependent-cast/`Fin.append`
+  -- index bookkeeping under the `Fin (ℓ+1)` packaging. NOTE: unlike Lemma 4.9, the start
+  -- index here is a general `i : Fin r` (not `Fin ℓ`), so `iterated_fold_succ_last` (which
+  -- requires `Fin ℓ`) does NOT directly apply — a generic `Fin.dfoldl`-level peel is needed.
   sorry
 
 /-- Tensor product of challenge vectors : for a local fold length `steps`,

@@ -36,24 +36,23 @@ the probability that a random point on the curve is `δ`-close to the Reed-Solom
 is at most `ε`. Then, the words `u₀, ..., uκ` have correlated agreement. -/
 theorem correlatedAgreement_affine_curves {k : ℕ}
     {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    -- Finding 17 repair: `deg = 0` makes the statement FALSE (errorBound's Johnson
+    -- branch vacates the threshold at deg = 0; counterexample in upstream-issues.md).
+    [NeZero deg]
     (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain) :
     δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
       (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
   classical
-  by_cases hdeg0 : deg = 0
-  · -- Degenerate degree-0 corner (single zero codeword); open, see fork-review notes.
+  by_cases hUDR : δ ≤ Code.relativeUniqueDecodingRadius (ι := ι) (F := F)
+      (C := ReedSolomon.code domain deg)
+  · -- Unique-decoding regime: PROVEN ([BCIKS20] Theorem 6.1, all curve degrees).
+    rcases Nat.eq_zero_or_pos k with hk0 | hkpos
+    · subst hk0
+      exact RS_correlatedAgreement_curves_k_zero hUDR
+    · exact RS_correlatedAgreement_curves_uniqueDecodingRegime hkpos hUDR
+  · -- List-decoding regime: Theorem 6.2 ([BCIKS20] §6.2 / §5 chain). Research item:
+    -- the Guruswami–Sudan/§5 machinery (graph-vanishing bridge) is the known bottom.
     sorry
-  · haveI : NeZero deg := ⟨hdeg0⟩
-    by_cases hUDR : δ ≤ Code.relativeUniqueDecodingRadius (ι := ι) (F := F)
-        (C := ReedSolomon.code domain deg)
-    · -- Unique-decoding regime: PROVEN ([BCIKS20] Theorem 6.1, all curve degrees).
-      rcases Nat.eq_zero_or_pos k with hk0 | hkpos
-      · subst hk0
-        exact RS_correlatedAgreement_curves_k_zero hUDR
-      · exact RS_correlatedAgreement_curves_uniqueDecodingRegime hkpos hUDR
-    · -- List-decoding regime: Theorem 6.2 ([BCIKS20] §6.2 / §5 chain). Research item:
-      -- the Guruswami–Sudan/§5 machinery (graph-vanishing bridge) is the known bottom.
-      sorry
 
 end CoreResults
 
