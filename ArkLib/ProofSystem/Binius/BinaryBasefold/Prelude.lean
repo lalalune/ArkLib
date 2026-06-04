@@ -968,6 +968,107 @@ def challengeTensorProduct (steps : ℕ) (r_challenges : Fin steps → L) : Vect
           if bit = 0 then (1 - r_k) * prev_val else r_k * prev_val))
       steps (le_refl steps)
 
+/-- The inner `Nat.rec` accumulator of `challengeTensorProduct` (for nonzero outer `steps`),
+exposed as a structural recursion so we can reason about it compositionally. -/
+def ctpAux (m : ℕ) (r_challenges : Fin m → L) : (k : ℕ) → k ≤ m → Vector L (2 ^ k)
+  | 0, _ => ⟨#[1], rfl⟩
+  | (k + 1), hk =>
+      Vector.ofFn (fun idx : Fin (2 ^ (k + 1)) =>
+        let prev_idx : Fin (2 ^ k) := ⟨idx.val / 2, by
+          exact Nat.div_lt_of_lt_mul (Nat.lt_of_lt_of_eq idx.isLt (by rw [pow_succ, Nat.mul_comm]))⟩
+        if idx.val % 2 = 0
+          then (1 - r_challenges ⟨k, by omega⟩) * (ctpAux m r_challenges k (by omega)).get prev_idx
+          else r_challenges ⟨k, by omega⟩ * (ctpAux m r_challenges k (by omega)).get prev_idx)
+
+/-- The raw inner `Nat.rec` accumulator equals the named `ctpAux`, at every level `k ≤ m`. -/
+theorem natRec_ctp_eq_ctpAux (m : ℕ) (r_challenges : Fin m → L) :
+    ∀ (k : ℕ) (hk : k ≤ m),
+      (Nat.rec (motive := fun k => k ≤ m → Vector L (2 ^ k)) (fun _ => ⟨#[1], rfl⟩)
+        (fun k ih h_k_le =>
+          let prev_vec := ih (Nat.le_trans (Nat.le_succ k) h_k_le)
+          let r_k := r_challenges ⟨k, by omega⟩
+          Vector.ofFn (fun idx : Fin (2 ^ k.succ) =>
+            let prev_idx : Fin (2 ^ k) := ⟨idx.val / 2, by
+              have h_succ : 2 ^ k.succ = 2 * 2 ^ k := by rw [pow_succ, mul_comm]
+              rw [h_succ] at idx
+              have : idx.val < 2 * 2 ^ k := idx.isLt
+              apply Nat.div_lt_of_lt_mul
+              omega⟩
+            let bit := idx.val % 2
+            let prev_val := prev_vec.get prev_idx
+            if bit = 0 then (1 - r_k) * prev_val else r_k * prev_val))
+        k hk)
+      = ctpAux (ℓ := ℓ) (𝓡 := 𝓡) (r := r) m r_challenges k hk := by
+  intro k
+  induction k with
+  | zero => intro hk; rfl
+  | succ k ih =>
+    intro hk
+    show (Vector.ofFn _ : Vector L (2 ^ (k + 1))) = _
+    simp only [ctpAux]
+    congr 1
+    funext idx
+    rw [ih (by omega)]
+
+/-- `challengeTensorProduct` (nonzero `steps`) is exactly its named inner recursion. -/
+theorem challengeTensorProduct_eq_ctpAux (m : ℕ) (hm : m ≠ 0) (r_challenges : Fin m → L) :
+    challengeTensorProduct (L := L) (ℓ := ℓ) (𝓡 := 𝓡) (r := r) m r_challenges
+      = ctpAux (ℓ := ℓ) (𝓡 := 𝓡) (r := r) m r_challenges m (le_refl m) := by
+  rw [challengeTensorProduct]
+  simp only [hm, ↓reduceDIte]
+  exact natRec_ctp_eq_ctpAux m r_challenges m (le_refl m)
+
+/-- `ctpAux` get only depends on the challenges at indices `< k`. -/
+theorem ctpAux_congr (m m' : ℕ) (r' : Fin m → L) (r'' : Fin m' → L) :
+    ∀ (k : ℕ), (∀ (j : ℕ) (hm : j < m) (hm' : j < m'), j < k → r' ⟨j, hm⟩ = r'' ⟨j, hm'⟩) →
+      ∀ (hk : k ≤ m) (hk' : k ≤ m') (idx : Fin (2 ^ k)),
+        (ctpAux (ℓ := ℓ) (𝓡 := 𝓡) (r := r) m r' k hk).get idx
+          = (ctpAux (ℓ := ℓ) (𝓡 := 𝓡) (r := r) m' r'' k hk').get idx := by
+  intro k
+  induction k with
+  | zero => intro _ _ _ idx; fin_cases idx; rfl
+  | succ k ih =>
+    intro hagree hk hk' idx
+    simp only [ctpAux, Vector.get_ofFn]
+    have hrk : r' ⟨k, by omega⟩ = r'' ⟨k, by omega⟩ := hagree k (by omega) (by omega) (by omega)
+    have hprev : (ctpAux (ℓ := ℓ) (𝓡 := 𝓡) (r := r) m r' k (by omega)).get ⟨idx.val / 2, by
+        exact Nat.div_lt_of_lt_mul (Nat.lt_of_lt_of_eq idx.isLt (by rw [pow_succ, Nat.mul_comm]))⟩
+      = (ctpAux (ℓ := ℓ) (𝓡 := 𝓡) (r := r) m' r'' k (by omega)).get ⟨idx.val / 2, by
+        exact Nat.div_lt_of_lt_mul (Nat.lt_of_lt_of_eq idx.isLt (by rw [pow_succ, Nat.mul_comm]))⟩ :=
+      ih (fun j hmj hm'j hjk => hagree j hmj hm'j (by omega)) (by omega) (by omega) _
+    rw [hrk, hprev]
+
+set_option maxHeartbeats 2000000 in
+/-- Tensor product recursion (entry form): low bit selects last challenge, high bits index the
+`n`-step tensor over truncated challenges. -/
+theorem challengeTensorProduct_succ_get (n : ℕ) (r_challenges : Fin (n + 1) → L)
+    (idx : Fin (2 ^ (n + 1))) :
+    (challengeTensorProduct (L := L) (ℓ := ℓ) (𝓡 := 𝓡) (r := r) (n + 1) r_challenges).get idx =
+      (if idx.val % 2 = 0 then (1 - r_challenges (Fin.last n)) else r_challenges (Fin.last n)) *
+        (challengeTensorProduct (L := L) (ℓ := ℓ) (𝓡 := 𝓡) (r := r) n
+          (fun j => r_challenges j.castSucc)).get
+          ⟨idx.val / 2, by
+            exact Nat.div_lt_of_lt_mul (Nat.lt_of_lt_of_eq idx.isLt (by rw [pow_succ, Nat.mul_comm]))⟩ := by
+  rw [challengeTensorProduct_eq_ctpAux (n + 1) (by omega) r_challenges]
+  simp only [ctpAux, Vector.get_ofFn]
+  have hlast : r_challenges ⟨n, by omega⟩ = r_challenges (Fin.last n) := rfl
+  rw [hlast]
+  by_cases hn : n = 0
+  · subst hn
+    fin_cases idx <;> split <;> rfl
+  · rw [challengeTensorProduct_eq_ctpAux n hn (fun j => r_challenges j.castSucc)]
+    have hidxlt : idx.val / 2 < 2 ^ n :=
+      Nat.div_lt_of_lt_mul (Nat.lt_of_lt_of_eq idx.isLt (by rw [pow_succ, Nat.mul_comm]))
+    have hbridge :
+        (ctpAux (ℓ := ℓ) (𝓡 := 𝓡) (r := r) (n + 1) r_challenges n (by omega)).get ⟨idx.val / 2, hidxlt⟩
+        = (ctpAux (ℓ := ℓ) (𝓡 := 𝓡) (r := r) n (fun j => r_challenges j.castSucc) n (by omega)).get
+            ⟨idx.val / 2, hidxlt⟩ := by
+      apply ctpAux_congr
+      intro j hmj hm'j hjk
+      rfl
+    rw [hbridge]
+    split <;> rfl
+
 /-- Evaluation vector [f^(i)(x_0) ... f^(i)(x_{2 ^ steps-1})]^T -/
 def fiberEvaluationMapping (i : Fin r) (steps : ℕ) (h_i_add_steps : i.val + steps < ℓ + 𝓡)
     (f : (sDomain 𝔽q β h_ℓ_add_R_rate) i → L)

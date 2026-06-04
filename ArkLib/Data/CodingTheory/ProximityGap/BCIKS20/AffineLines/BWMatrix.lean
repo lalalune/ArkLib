@@ -1512,6 +1512,134 @@ theorem BW_homMatrix_det_submatrix_natDegree_le_of_natDegree_le {F : Type} [Fiel
           simpa [Nat.lt_succ_iff] using this
         rw [hcard, mul_comm]
 
+
+open Polynomial in
+/-- Branch-precise entry degree bound for the BW matrix over degree-≤`d` words:
+evaluation columns (index < e+1) have degree ≤ `d`, constraint columns are
+constants. -/
+theorem BW_homMatrix_entry_natDegree_le_of_branch {F : Type} [Field F]
+    {ι : Type} [Fintype ι] (e k : ℕ) (ωs : ι → F) (g : ι → F[X]) (d : ℕ)
+    (hd : ∀ i, (g i).natDegree ≤ d) (i : ι) (j : Fin ((e + 1) + (e + k))) :
+    (BW_homMatrix (ι := ι) e k (fun i => (Polynomial.C (ωs i) : F[X])) g i j).natDegree
+      ≤ (if j.1 < e + 1 then d else 0) := by
+  classical
+  by_cases hj : (j.1 < e + 1)
+  · simp only [BW_homMatrix, Matrix.of_apply, hj, ↓reduceIte]
+    calc ((g i) * (Polynomial.C (ωs i)) ^ j.1).natDegree
+        ≤ (g i).natDegree + ((Polynomial.C (ωs i)) ^ j.1).natDegree :=
+          Polynomial.natDegree_mul_le
+      _ ≤ d + 0 := by
+          refine Nat.add_le_add (hd i) ?_
+          simpa using Polynomial.natDegree_pow_le_of_le j.1
+            (le_of_eq (Polynomial.natDegree_C (ωs i)))
+      _ = d := Nat.add_zero d
+  · simp only [BW_homMatrix, Matrix.of_apply, hj, ↓reduceIte, Polynomial.natDegree_neg]
+    calc ((Polynomial.C (ωs i)) ^ (j.1 - (e + 1))).natDegree
+        ≤ (j.1 - (e + 1)) * (Polynomial.C (ωs i)).natDegree := Polynomial.natDegree_pow_le
+      _ = 0 := by simp [Polynomial.natDegree_C]
+
+
+open Polynomial in
+/-- General per-column degree accounting for determinants (subsumes the fixed
+`d`/`d·n` bounds): if every entry of column `j` has degree ≤ `b j`, the
+determinant has degree ≤ `∑ j, b j`. This is the single abstraction behind all
+the [BCIKS20] §4/§6.1 minor-degree bounds. -/
+theorem natDegree_det_le_sum_col_bounds {F : Type} [Field F] (n : ℕ)
+    (A : Matrix (Fin n) (Fin n) F[X]) (b : Fin n → ℕ)
+    (hb : ∀ i j, (A i j).natDegree ≤ b j) :
+    (Matrix.det A).natDegree ≤ ∑ j, b j := by
+  classical
+  rw [Matrix.det_apply]
+  refine Polynomial.natDegree_sum_le_of_forall_le
+    (s := (Finset.univ : Finset (Equiv.Perm (Fin n))))
+    (f := fun σ => (Equiv.Perm.sign σ : Units ℤ) • (∏ i, A (σ i) i)) ?_
+  intro σ _
+  have hsign : ((Equiv.Perm.sign σ : Units ℤ) • (∏ i, A (σ i) i)).natDegree
+      ≤ (∏ i, A (σ i) i).natDegree := by
+    rcases Int.units_eq_one_or (Equiv.Perm.sign σ) with hs | hs
+    · simp [hs]
+    · simp [hs]
+  refine le_trans hsign (le_trans ?_ (Finset.sum_le_sum (fun j _ => hb (σ j) j)))
+  simpa using Polynomial.natDegree_prod_le
+    (s := (Finset.univ : Finset (Fin n))) (f := fun i => A (σ i) i)
+
+open Polynomial in
+/-- Degree-`d` generalization of `BW_homMatrix_det_updateCol_natDegree_le_of_ge`:
+replacing a CONSTRAINT column (index ≥ e+1) of a BW minor over degree-≤`d` words
+by a constant unit column keeps the determinant degree ≤ `d * (e + 1)`. -/
+theorem BW_homMatrix_det_updateCol_natDegree_le_of_natDegree_le_of_ge {F : Type} [Field F]
+    {ι : Type} [Fintype ι] (e k : ℕ) (ωs : ι → F) (g : ι → F[X]) (d : ℕ)
+    (hd : ∀ i, (g i).natDegree ≤ d) (r : Fin ((e + 1) + (e + k)) → ι)
+    (i0 : Fin ((e + 1) + (e + k))) (j : Fin ((e + 1) + (e + k))) (hj : e + 1 ≤ j.1) :
+    (Matrix.det
+        (Matrix.updateCol
+          (Matrix.submatrix
+            (BW_homMatrix (ι := ι) e k (fun i => (Polynomial.C (ωs i) : F[X])) g) r id)
+          j (Pi.single i0 (1 : F[X])))).natDegree ≤ d * (e + 1) := by
+  classical
+  have hb : ∀ i' j' : Fin ((e + 1) + (e + k)),
+      ((Matrix.updateCol
+          (Matrix.submatrix
+            (BW_homMatrix (ι := ι) e k (fun i => (Polynomial.C (ωs i) : F[X])) g) r id)
+          j (Pi.single i0 (1 : F[X]))) i' j').natDegree
+        ≤ (if j'.1 < e + 1 then d else 0) := by
+    intro i' j'
+    by_cases hje : j' = j
+    · subst hje
+      have : ¬ (j'.1 < e + 1) := not_lt.mpr hj
+      simp only [Matrix.updateCol_apply, if_pos rfl, this, ↓reduceIte]
+      rcases eq_or_ne i' i0 with h | h <;> simp [Pi.single, Function.update, h]
+    · simp only [Matrix.updateCol_apply, if_neg hje, Matrix.submatrix_apply, id]
+      exact BW_homMatrix_entry_natDegree_le_of_branch e k ωs g d hd (r i') j'
+  refine le_trans (natDegree_det_le_sum_col_bounds _ _ _ hb) ?_
+  rw [← Finset.sum_filter]
+  simp only [Finset.sum_const, smul_eq_mul]
+  have hcard : #{j' : Fin ((e + 1) + (e + k)) | j'.1 < e + 1} = e + 1 := by
+    have := Fin_sum_ite_lt_e_add_one e k
+    simpa [Nat.lt_succ_iff] using this
+  rw [hcard, mul_comm]
+
+
+open Polynomial in
+/-- Degree-`d` generalization of `BW_homMatrix_det_updateCol_natDegree_le_of_lt`:
+replacing an EVALUATION column (index < e+1) of a BW minor over degree-≤`d`
+words by a constant unit column drops the determinant degree to ≤ `d * e`. -/
+theorem BW_homMatrix_det_updateCol_natDegree_le_of_natDegree_le_of_lt {F : Type} [Field F]
+    {ι : Type} [Fintype ι] (e k : ℕ) (ωs : ι → F) (g : ι → F[X]) (d : ℕ)
+    (hd : ∀ i, (g i).natDegree ≤ d) (r : Fin ((e + 1) + (e + k)) → ι)
+    (i0 : Fin ((e + 1) + (e + k))) (j : Fin ((e + 1) + (e + k))) (hj : j.1 < e + 1) :
+    (Matrix.det
+        (Matrix.updateCol
+          (Matrix.submatrix
+            (BW_homMatrix (ι := ι) e k (fun i => (Polynomial.C (ωs i) : F[X])) g) r id)
+          j (Pi.single i0 (1 : F[X])))).natDegree ≤ d * e := by
+  classical
+  have hb : ∀ i' j' : Fin ((e + 1) + (e + k)),
+      ((Matrix.updateCol
+          (Matrix.submatrix
+            (BW_homMatrix (ι := ι) e k (fun i => (Polynomial.C (ωs i) : F[X])) g) r id)
+          j (Pi.single i0 (1 : F[X]))) i' j').natDegree
+        ≤ (if j'.1 ≤ e ∧ j' ≠ j then d else 0) := by
+    intro i' j'
+    by_cases hje : j' = j
+    · subst hje
+      simp only [Matrix.updateCol_apply, if_pos rfl]
+      have : ¬ (j'.1 ≤ e ∧ j' ≠ j') := by simp
+      rw [if_neg this]
+      rcases eq_or_ne i' i0 with h | h <;> simp [Pi.single, Function.update, h]
+    · simp only [Matrix.updateCol_apply, if_neg hje, Matrix.submatrix_apply, id]
+      refine le_trans (BW_homMatrix_entry_natDegree_le_of_branch e k ωs g d hd (r i') j') ?_
+      by_cases hlt : (j'.1 < e + 1)
+      · rw [if_pos hlt, if_pos ⟨Nat.lt_succ_iff.mp hlt, hje⟩]
+      · rw [if_neg hlt]
+        exact Nat.zero_le _
+  refine le_trans (natDegree_det_le_sum_col_bounds _ _ _ hb) ?_
+  rw [← Finset.sum_filter]
+  simp only [Finset.sum_const, smul_eq_mul]
+  have hcard : #{j' : Fin ((e + 1) + (e + k)) | j'.1 ≤ e ∧ j' ≠ j} = e :=
+    Fin_sum_ite_lt_and_ne_eq_e e k j (Nat.lt_succ_iff.mp hj)
+  rw [hcard, mul_comm]
+
 end CoreResults
 
 end ProximityGap
