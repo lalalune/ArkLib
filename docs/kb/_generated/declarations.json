@@ -15198,9 +15198,90 @@
           "signature": "class classical"
         },
         {
-          "doc": "**ABF26 Lemma 4.6.** In the unique-decoding regime `\u03b4 < \u03b4_min(C)/2`, `\u03b5_mca` and `\u03b5_ca` coincide: `\u03b5_mca(C, \u03b4) = \u03b5_ca(C, \u03b4)`. The unique-decoding hypothesis is expressed as `2 \u00b7 \u03b4 \u00b7 n < \u03b4_min(C) \u00b7 n = \u2016C\u2016\u2080` to avoid fractional arithmetic in \u2115 \u2014 equivalent to the paper's `\u03b4 < \u03b4_min(C)/2`. The proof is reduced here to **one** inequality. The direction `\u03b5_ca \u2264 \u03b5_mca` is the in-tree `epsCA_le_epsMCA` (no UDR needed). What remains, `\u03b5_mca \u2264 \u03b5_ca`, is the genuinely hard direction: **Status of the remaining direction: external admit** ([ACFY25, Lemma 4.10]; footnote 6 in ABF26 notes the proof is for ",
+          "doc": "**The difference stack of a jointly-proximate stack has a uniformly close line.** If `jointProximity C u \u03b4` holds (so a codeword pair `p\u2080, p\u2081 \u2208 C` agrees with `(u 0, u 1)` on a set `S'` of size `\u2265 (1-\u03b4)\u00b7n`), then the *fixed, `\u03b3`-independent* difference stack `d := (u 0 - p\u2080, u 1 - p\u2081)` has the property that for **every** `\u03b3`, the difference line `d 0 + \u03b3\u00b7d 1 = (u 0 - p\u2080) + \u03b3\u00b7(u 1 - p\u2081)` is `\u03b4`-close to `C` \u2014 in fact close to the zero codeword. Proof: on `S'` (size `\u2265 (1-\u03b4)\u00b7n`) we have `p\u2080 = u 0` and `p\u2081 = u 1`, so the difference line vanishes there; `0 \u2208 C` and `S'` is large, hence `\u03b4\u1d63(diff-li",
           "kind": "theorem",
-          "line": 802,
+          "line": 799,
+          "name": "ProximityGap.jointProximity_diffStack_line_close",
+          "namespace": "ProximityGap",
+          "short_name": "jointProximity_diffStack_line_close",
+          "signature": "theorem jointProximity_diffStack_line_close"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 804,
+          "name": "ProximityGap._anon_class_804",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_804",
+          "signature": "class classical"
+        },
+        {
+          "doc": "**Normalization step: jointly-proximate `mcaEvent` reduces to a difference-stack `mcaEvent` (kernel-checked, UDR).** For a jointly-`\u03b4`-close stack `u` under UDR there is a *fixed, `\u03b3`-independent* codeword pair `(p\u2080, p\u2081) \u2208 C\u00b2` (the `jointProximity` witnesses) such that for **every** `\u03b3`, `mcaEvent C \u03b4 (u 0) (u 1) \u03b3 \u2192 mcaEvent C \u03b4 (u 0 - p\u2080) (u 1 - p\u2081) \u03b3`. i.e. the `mcaEvent` of `u` transfers verbatim to the *difference stack* `d := (u 0 - p\u2080, u 1 - p\u2081)`, which is \"close to `0`\" (it vanishes on the `jointProximity` set `S'`). Proof, given an `mcaEvent` at `\u03b3` with witness `S`, codeword `w`: * *",
+          "kind": "theorem",
+          "line": 866,
+          "name": "ProximityGap.jointProximity_mcaEvent_imp_diffStack_mcaEvent_udr",
+          "namespace": "ProximityGap",
+          "short_name": "jointProximity_mcaEvent_imp_diffStack_mcaEvent_udr",
+          "signature": "theorem jointProximity_mcaEvent_imp_diffStack_mcaEvent_udr"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 873,
+          "name": "ProximityGap._anon_class_873",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_873",
+          "signature": "class classical"
+        },
+        {
+          "doc": "**The jointly-proximate contribution to `\u03b5_mca`.** Explicit name for the part of the `\u03b5_mca` supremum that the in-tree machinery cannot bound against `\u03b5_ca`: the worst-case `mcaEvent` probability over the stacks `u` that *are* jointly `\u03b4`-close to `C` (where the `\u03b5_ca` body is `0`). On the non-jointly-close stacks the bound `Pr_\u03b3[mcaEvent] \u2264 Pr_\u03b3[line \u03b4-close] \u2264 \u03b5_ca` is already proved (`epsMCA_restricted_le_epsCA`); this term isolates exactly the residue. By `epsMCA_le_epsCA_add_jointlyProximateContribution`, `\u03b5_mca(C, \u03b4) \u2264 \u03b5_ca(C, \u03b4, \u03b4) + jointlyProximateContribution C \u03b4`. ABF26 Lemma 4.6 is",
+          "kind": "def",
+          "line": 992,
+          "name": "ProximityGap.jointlyProximateContribution",
+          "namespace": "ProximityGap",
+          "short_name": "jointlyProximateContribution",
+          "signature": "def jointlyProximateContribution (C : Set (\u03b9 \u2192 A)) (\u03b4 : \u211d\u22650) : ENNReal :="
+        },
+        {
+          "doc": "**Decomposition of `\u03b5_mca` (audited intermediate toward ABF26 Lemma 4.6).** `\u03b5_mca(C, \u03b4) \u2264 \u03b5_ca(C, \u03b4, \u03b4) + jointlyProximateContribution C \u03b4`. This shrinks the remaining gap of Lemma 4.6 to *exactly* the contribution of the jointly-`\u03b4`-close stacks, with that contribution given an explicit name. The proof splits the `\u03b5_mca` supremum body `Pr_\u03b3[mcaEvent]` pointwise into its `jointProximity` and `\u00acjointProximity` parts (one of the two is `0`), then applies `iSup_add_le` and bounds the non-jointly-close part by `\u03b5_ca` via the already-proven `epsMCA_restricted_le_epsCA`. What remains for the full e",
+          "kind": "theorem",
+          "line": 1014,
+          "name": "ProximityGap.epsMCA_le_epsCA_add_jointlyProximateContribution",
+          "namespace": "ProximityGap",
+          "short_name": "epsMCA_le_epsCA_add_jointlyProximateContribution",
+          "signature": "theorem epsMCA_le_epsCA_add_jointlyProximateContribution (C : Set (\u03b9 \u2192 A)) (\u03b4 : \u211d\u22650) :"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 1017,
+          "name": "ProximityGap._anon_class_1017",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_1017",
+          "signature": "class classical"
+        },
+        {
+          "doc": "**Tight (max-form) decomposition of `\u03b5_mca` (audited intermediate toward ABF26 Lemma 4.6).** `\u03b5_mca(C, \u03b4) \u2264 max (\u03b5_ca(C, \u03b4, \u03b4)) (jointlyProximateContribution C \u03b4)`. Sharper than the additive `epsMCA_le_epsCA_add_jointlyProximateContribution`: because each `\u03b5_mca` supremum body is *either* the non-jointly-close gated body (`\u2264 \u03b5_ca`) *or* the jointly-close gated body (`\u2264 jointlyProximateContribution`) \u2014 never both at once \u2014 the two contributions combine by `max`, not by `+`. The proof bounds each body by the `max` of the two gated suprema and uses `iSup_le`. This is the decomposition that makes ",
+          "kind": "theorem",
+          "line": 1061,
+          "name": "ProximityGap.epsMCA_le_max_epsCA_jointlyProximateContribution",
+          "namespace": "ProximityGap",
+          "short_name": "epsMCA_le_max_epsCA_jointlyProximateContribution",
+          "signature": "theorem epsMCA_le_max_epsCA_jointlyProximateContribution (C : Set (\u03b9 \u2192 A)) (\u03b4 : \u211d\u22650) :"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 1064,
+          "name": "ProximityGap._anon_class_1064",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_1064",
+          "signature": "class classical"
+        },
+        {
+          "doc": "**ABF26 Lemma 4.6.** In the unique-decoding regime `\u03b4 < \u03b4_min(C)/2`, `\u03b5_mca` and `\u03b5_ca` coincide: `\u03b5_mca(C, \u03b4) = \u03b5_ca(C, \u03b4)`. The unique-decoding hypothesis is expressed as `2 \u00b7 \u03b4 \u00b7 n < \u03b4_min(C) \u00b7 n = \u2016C\u2016\u2080` to avoid fractional arithmetic in \u2115 \u2014 equivalent to the paper's `\u03b4 < \u03b4_min(C)/2`. The proof is reduced here to **one** inequality. The direction `\u03b5_ca \u2264 \u03b5_mca` is the in-tree `epsCA_le_epsMCA` (no UDR needed). What remains, `\u03b5_mca \u2264 \u03b5_ca`, is the genuinely hard direction: **Status of the remaining direction: shrunk to ONE explicit inequality.** Via the audited max-form decomposition `epsMCA",
+          "kind": "theorem",
+          "line": 1127,
           "name": "ProximityGap.epsMCA_eq_epsCA_below_udr",
           "namespace": "ProximityGap",
           "short_name": "epsMCA_eq_epsCA_below_udr",
@@ -15209,7 +15290,7 @@
         {
           "doc": "Row-extraction: the `k`-th row of a `Fin t \u2192 A`-valued word, as an `A`-valued word.",
           "kind": "def",
-          "line": 813,
+          "line": 1145,
           "name": "ProximityGap.row_of",
           "namespace": "ProximityGap",
           "short_name": "row_of",
@@ -15218,7 +15299,7 @@
         {
           "doc": "**ABF26 Lemma 4.7.** For any F-additive code `C` (here: a `Submodule F (\u03b9 \u2192 A)`) and `t : \u2115`: `\u03b5_mca(C^\u2261t, \u03b4) \u2264 t \u00b7 \u03b5_mca(C, \u03b4)`. Proof recipe: 1. `mcaEvent` for the interleaved code at `\u03b3` implies `\u2203 k`, `mcaEvent` for the `k`-th row restriction (witness set `S` is shared; if every row admitted a joint codeword pair on `S`, assembling them column-by-column would produce a joint codeword pair in `C^\u22c8 (Fin t)` agreeing on `S`, contradicting the interleaved's \"no joint pair\" clause). 2. `Pr_le_Pr_of_implies` lifts the per-`\u03b3` implication to a probability bound. 3. `Pr_exists_Fin_le_sum` (union b",
           "kind": "theorem",
-          "line": 829,
+          "line": 1161,
           "name": "ProximityGap.epsMCA_interleaved_le",
           "namespace": "ProximityGap",
           "short_name": "epsMCA_interleaved_le",
@@ -15227,28 +15308,28 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 832,
-          "name": "ProximityGap._anon_class_832",
+          "line": 1164,
+          "name": "ProximityGap._anon_class_1164",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_832",
+          "short_name": "_anon_class_1164",
           "signature": "class classical"
         },
         {
           "doc": "**Bridge for affine spaces.** The predicate `\u03b4_\u03b5_correlatedAgreementAffineSpaces C \u03b4 \u03b5` (from `Basic.lean`, threshold `\u03b5`) is equivalent to `epsCA_affineSpaces C k \u03b4 \u03b4 \u2264 \u03b5`. Same proof recipe as the `AffineLines` and `Curves` bridges.",
           "kind": "theorem",
-          "line": 910,
-          "name": "ProximityGap._anon_theorem_910",
+          "line": 1242,
+          "name": "ProximityGap._anon_theorem_1242",
           "namespace": "ProximityGap",
-          "short_name": "_anon_theorem_910",
+          "short_name": "_anon_theorem_1242",
           "signature": "theorem theorem \u03b4_\u03b5_correlatedAgreementAffineSpaces_iff_epsCA_affineSpaces_le {k : \u2115}"
         },
         {
           "doc": "",
           "kind": "class",
-          "line": 914,
-          "name": "ProximityGap._anon_class_914",
+          "line": 1246,
+          "name": "ProximityGap._anon_class_1246",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_914",
+          "short_name": "_anon_class_1246",
           "signature": "class classical"
         }
       ]
@@ -15968,7 +16049,7 @@
         {
           "doc": "**ABF26 Theorem 4.21 [GG25 Thm 3.5].** If `C` is `(\u03b4, a, n+1)`-line-decodable, then its mutual correlated agreement error is bounded by `a / |F|`: `LineDecodable (F := F) C \u03b4 a (n+1) \u2192 \u03b5_mca(C, \u03b4) \u2264 a / |F|` where `n = |\u03b9|`. The proof in [GG25] proceeds by taking the line-decoder's witness pair `(u\u2081, u\u2082)` and showing that the `\u0394_S = 0` witness set of the MCA event must coincide with the `\u03b3`-set on which `U \u03b3 = u\u2081 + \u03b3 \u2022 u\u2082`, which has measure `\u2265 (n+1)/|F|`. Because that pair has at most `n` exceptional positions on every fold, the alignment lifts to a joint-pair witness, contradicting the `\u00ac pa",
           "kind": "theorem",
-          "line": 122,
+          "line": 174,
           "name": "CodingTheory.lineDecodable_imp_epsMCA_le",
           "namespace": "CodingTheory",
           "short_name": "lineDecodable_imp_epsMCA_le",
@@ -15977,11 +16058,24 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 128,
-          "name": "CodingTheory._anon_class_128",
+          "line": 180,
+          "name": "CodingTheory._anon_class_180",
           "namespace": "CodingTheory",
-          "short_name": "_anon_class_128",
+          "short_name": "_anon_class_180",
           "signature": "class classical"
+        }
+      ]
+    },
+    "ArkLib/Data/CodingTheory/ProximityGap/LineDecodingCounting.lean": {
+      "declarations": [
+        {
+          "doc": "**The double-coverage counting reduction of GG25 / ABF26 Thm 4.21 is false for `m \u2265 1`.** There exist a finite index type `\u03a6` (the field-element / `\u03b3` index), a finite domain `\u03b9`, an index finset `H \u2286 \u03a6`, per-index witness sets `S : \u03a6 \u2192 Finset \u03b9`, a target set `T \u2286 \u03b9`, a position `i\u2080 \u2208 T`, and a miss budget `m \u2265 1`, such that: * every `\u03b3 \u2208 H` misses at most `m` positions of `T` (`((univ \\ S \u03b3) \u2229 T).card \u2264 m`); * the index budget is met, `n + 1 \u2264 |H|` (here even with room to spare, `|H| = 5 \u2265 3`); * `i\u2080 \u2208 T`; yet `i\u2080` is **not** double-covered: `|{\u03b3 \u2208 H : i\u2080 \u2208 S \u03b3}| < 2`. Witnesses: `\u03a6 = Fin 5`",
+          "kind": "theorem",
+          "line": 55,
+          "name": "CodingTheory.ProximityGap.LineDecodingCounting.double_coverage_counterexample",
+          "namespace": "CodingTheory.ProximityGap.LineDecodingCounting",
+          "short_name": "double_coverage_counterexample",
+          "signature": "theorem double_coverage_counterexample :"
         }
       ]
     },
@@ -45162,6 +45256,60 @@
           "namespace": "RingSwitching",
           "short_name": "fixFirstVariablesOfMQP_eval",
           "signature": "theorem fixFirstVariablesOfMQP_eval {L : Type} [CommRing L] (\u2113 : \u2115) (v : Fin (\u2113+1))"
+        },
+        {
+          "doc": "Value-form of `finSumFinEquiv.symm`: classify the index by whether its value is `< m`.",
+          "kind": "theorem",
+          "line": 1529,
+          "name": "RingSwitching.finSumFinEquiv_symm_dite",
+          "namespace": "RingSwitching",
+          "short_name": "finSumFinEquiv_symm_dite",
+          "signature": "theorem finSumFinEquiv_symm_dite {m n : \u2115} (x : Fin (m + n)) :"
+        },
+        {
+          "doc": "Characterization of `fixFirstVariablesOfMQP` as a `bind\u2081` partial substitution: it sends the surviving variables (value `< \u2113-v` under the canonical reindex) to themselves and the fixed variables (value `\u2265 \u2113-v`) to the corresponding `challenges` constant.",
+          "kind": "theorem",
+          "line": 1543,
+          "name": "RingSwitching.fixVars_eq_bind\u2081",
+          "namespace": "RingSwitching",
+          "short_name": "fixVars_eq_bind\u2081",
+          "signature": "theorem fixVars_eq_bind\u2081 (\u2113 : \u2115) (v : Fin (\u2113 + 1)) (poly : MvPolynomial (Fin \u2113) L)"
+        },
+        {
+          "doc": "**Round-transition for `fixFirstVariablesOfMQP` (cons form).** Fixing the last `v` variables of `poly` to `challenges` and then the new last survivor to `r'` equals fixing the last `v+1` variables at once to `Fin.cons r' challenges` (the fresh challenge `r'` lands at index `0`, the previously fixed `challenges` shift to indices `1..v`), up to the canonical reindex `Fin (\u2113-(v+1)) \u2243 Fin (\u2113-v-1)`. See the section note for why `Fin.snoc challenges r'` is false.",
+          "kind": "theorem",
+          "line": 1583,
+          "name": "RingSwitching.fixVars_step",
+          "namespace": "RingSwitching",
+          "short_name": "fixVars_step",
+          "signature": "theorem fixVars_step (\u2113 : \u2115) (poly : MvPolynomial (Fin \u2113) L) (v : Fin (\u2113 + 1))"
+        },
+        {
+          "doc": "`projectToMidSumcheckPoly` is `fixFirstVariablesOfMQP` applied to the initial round polynomial `m \u00b7 t`, at the same number of fixed variables `i`.",
+          "kind": "theorem",
+          "line": 1629,
+          "name": "RingSwitching.projectToMidSumcheckPoly_eq_fixVars",
+          "namespace": "RingSwitching",
+          "short_name": "projectToMidSumcheckPoly_eq_fixVars",
+          "signature": "theorem projectToMidSumcheckPoly_eq_fixVars (\u2113 : \u2115) [NeZero \u2113] (t m : MultilinearPoly L \u2113)"
+        },
+        {
+          "doc": "**Round-transition for the projected sumcheck polynomial (target (a), cons form).** Fixing the new round-`i` survivor variable to the verifier challenge `r'` advances the projected round polynomial from round `i.castSucc` to round `i.succ`, with the challenge vector recombined as `Fin.cons r' challenges` (see the section note: the `Fin.snoc challenges r'` form is false \u2014 counterexample included). The two sides live over `Fin (\u2113 - i.succ)` vs `Fin (\u2113 - i.castSucc - 1)`; they are reconciled by the canonical `finCongr`.",
+          "kind": "theorem",
+          "line": 1642,
+          "name": "RingSwitching.fixFirstVariablesOfMQP_projectToMid_step",
+          "namespace": "RingSwitching",
+          "short_name": "fixFirstVariablesOfMQP_projectToMid_step",
+          "signature": "theorem fixFirstVariablesOfMQP_projectToMid_step (\u2113 : \u2115) [NeZero \u2113] (t m : MultilinearPoly L \u2113)"
+        },
+        {
+          "doc": "**Round-polynomial marginal identity (core of target (b)).** Evaluating, at `r'`, the sum over a finite set `S` of the partial evaluations `Polynomial.map (eval (pt x)) (finSuccEquivNth L 0 H)` equals the sum over `S` of the full evaluations of `H` with variable `0` fixed to `r'` (the rest set by `pt x`). This is the marginal that `getSumcheckRoundPoly` computes: it keeps variable `0` as the round indeterminate (`finSuccEquivNth L 0`, i.e. `Fin.insertNth 0 = Fin.cons`). Generic in the index type/point function so it can absorb the `Fin.append (\u2205) \u00b7 \u2218 Fin.cast` reindexing of the round code. CON",
+          "kind": "theorem",
+          "line": 1675,
+          "name": "RingSwitching.roundPoly_eval_eq_sum_cons",
+          "namespace": "RingSwitching",
+          "short_name": "roundPoly_eval_eq_sum_cons",
+          "signature": "theorem roundPoly_eval_eq_sum_cons {k : \u2115} {\u03b9 : Type*} (S : Finset \u03b9) (pt : \u03b9 \u2192 (Fin k \u2192 L))"
         }
       ]
     },
@@ -45457,16 +45605,25 @@
         {
           "doc": "",
           "kind": "abbrev",
-          "line": 153,
+          "line": 176,
           "name": "RingSwitching.SumcheckPhase.roundKnowledgeError",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "roundKnowledgeError",
           "signature": "abbrev roundKnowledgeError (L : Type) [Fintype L] (\u2113 : \u2115) (i : Fin \u2113) : NNReal :="
         },
         {
+          "doc": "**Target (b): `getSumcheckRoundPoly` value as a cube sum (variable-`0`/`cons` form).** The round univariate `getSumcheckRoundPoly \u2113 (boolDomain L \u2113) i H` evaluated at the verifier challenge `r'` equals the sum, over the next round's Boolean cube `(boolDomain.drop (i+1)).cube`, of the full round polynomial `H` with the round variable (variable `0`) fixed to `r'` and the remaining coordinates ranging over the cube. Proven from the marginal identity `roundPoly_eval_eq_sum_cons` (Prelude). `curH` is `H` transported across the index equality `\u2113-i.castSucc = (\u2113-i.castSucc-1)+1` (this is `getSumcheck",
+          "kind": "theorem",
+          "line": 201,
+          "name": "RingSwitching.SumcheckPhase.getSumcheckRoundPoly_eval_eq_sum_cons",
+          "namespace": "RingSwitching.SumcheckPhase",
+          "short_name": "getSumcheckRoundPoly_eval_eq_sum_cons",
+          "signature": "theorem getSumcheckRoundPoly_eval_eq_sum_cons (i : Fin \u2113')"
+        },
+        {
           "doc": "",
           "kind": "def",
-          "line": 156,
+          "line": 218,
           "name": "RingSwitching.SumcheckPhase.iteratedSumcheckRbrExtractor",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "iteratedSumcheckRbrExtractor",
@@ -45475,7 +45632,7 @@
         {
           "doc": "This follows the KState of `foldKStateProp`",
           "kind": "def",
-          "line": 175,
+          "line": 237,
           "name": "RingSwitching.SumcheckPhase.iteratedSumcheckKStateProp",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "iteratedSumcheckKStateProp",
@@ -45484,7 +45641,7 @@
         {
           "doc": "Knowledge state function (KState) for single round",
           "kind": "def",
-          "line": 237,
+          "line": 299,
           "name": "RingSwitching.SumcheckPhase.iteratedSumcheckKnowledgeStateFunction",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "iteratedSumcheckKnowledgeStateFunction",
@@ -45493,7 +45650,7 @@
         {
           "doc": "RBR knowledge soundness for a single round oracle verifier",
           "kind": "theorem",
-          "line": 273,
+          "line": 335,
           "name": "RingSwitching.SumcheckPhase.iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness",
@@ -45502,16 +45659,16 @@
         {
           "doc": "`pSpecFinalSumcheck L` is a single prover-to-verifier message (no challenge).",
           "kind": "instance",
-          "line": 292,
-          "name": "RingSwitching.SumcheckPhase._anon_instance_292",
+          "line": 354,
+          "name": "RingSwitching.SumcheckPhase._anon_instance_354",
           "namespace": "RingSwitching.SumcheckPhase",
-          "short_name": "_anon_instance_292",
+          "short_name": "_anon_instance_354",
           "signature": "instance instance : ProverOnly (pSpecFinalSumcheck L) where"
         },
         {
           "doc": "The `instDefault` oracle answer is the message itself (`answer m () = m`).",
           "kind": "lemma",
-          "line": 296,
+          "line": 358,
           "name": "RingSwitching.SumcheckPhase.answer_instDefault'",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "answer_instDefault'",
@@ -45520,7 +45677,7 @@
         {
           "doc": "`simulateQ` commutes with `OptionT.pure` (no explicit empty-spec universes).",
           "kind": "theorem",
-          "line": 300,
+          "line": 362,
           "name": "RingSwitching.SumcheckPhase.simulateQ_optionT_pure'",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "simulateQ_optionT_pure'",
@@ -45529,7 +45686,7 @@
         {
           "doc": "The prover for the final sumcheck step",
           "kind": "def",
-          "line": 309,
+          "line": 371,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckProver",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckProver",
@@ -45538,7 +45695,7 @@
         {
           "doc": "The verifier for the final sumcheck step",
           "kind": "def",
-          "line": 345,
+          "line": 407,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckVerifier",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckVerifier",
@@ -45547,7 +45704,7 @@
         {
           "doc": "The oracle reduction for the final sumcheck step",
           "kind": "def",
-          "line": 398,
+          "line": 460,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckOracleReduction",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckOracleReduction",
@@ -45556,7 +45713,7 @@
         {
           "doc": "**Final-sumcheck verifier-check algebra (defect-#10/#11 capstone).** From the input relation's structural invariant + sumcheck consistency at the last round, the honest verifier's step-9 check `sumcheck_target = compute_final_eq_value \u00b7 s'` holds, where `s' = t'(challenges)`. Derivation (scratch-verified): the consistency sum is over the 0-cube (`\u2113' - (Fin.last \u2113').val = 0`), collapsing to a single eval; `fixFirstVariablesOfMQP_eval` rewrites the projected round polynomial `H = projectToMidSumcheckPoly t' A_MLE (Fin.last \u2113') challenges` evaluated at the empty point to `(A_MLE \u00b7 t')(challenges)",
           "kind": "lemma",
-          "line": 421,
+          "line": 483,
           "name": "RingSwitching.SumcheckPhase.finalSumcheck_check_of_relIn",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheck_check_of_relIn",
@@ -45565,7 +45722,7 @@
         {
           "doc": "Perfect completeness for the final sumcheck step",
           "kind": "theorem",
-          "line": 472,
+          "line": 534,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckOracleReduction_perfectCompleteness",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckOracleReduction_perfectCompleteness",
@@ -45574,7 +45731,7 @@
         {
           "doc": "RBR knowledge error for the final sumcheck step",
           "kind": "def",
-          "line": 535,
+          "line": 597,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckRbrKnowledgeError",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckRbrKnowledgeError",
@@ -45583,7 +45740,7 @@
         {
           "doc": "The round-by-round extractor for the final sumcheck step",
           "kind": "def",
-          "line": 538,
+          "line": 600,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckRbrExtractor",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckRbrExtractor",
@@ -45592,7 +45749,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 558,
+          "line": 620,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckKStateProp",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckKStateProp",
@@ -45601,7 +45758,7 @@
         {
           "doc": "The knowledge state function for the final sumcheck step",
           "kind": "def",
-          "line": 595,
+          "line": 657,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckKnowledgeStateFunction",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckKnowledgeStateFunction",
@@ -45610,7 +45767,7 @@
         {
           "doc": "Round-by-round knowledge soundness for the final sumcheck step",
           "kind": "theorem",
-          "line": 634,
+          "line": 696,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckOracleVerifier_rbrKnowledgeSoundness",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckOracleVerifier_rbrKnowledgeSoundness",
@@ -45619,7 +45776,7 @@
         {
           "doc": "Composed oracle verifier for the SumcheckStep (seqCompose over \u2113')",
           "kind": "def",
-          "line": 654,
+          "line": 716,
           "name": "RingSwitching.SumcheckPhase.sumcheckLoopOracleVerifier",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "sumcheckLoopOracleVerifier",
@@ -45628,7 +45785,7 @@
         {
           "doc": "Composed oracle reduction for the SumcheckStep (seqCompose over \u2113')",
           "kind": "def",
-          "line": 663,
+          "line": 725,
           "name": "RingSwitching.SumcheckPhase.sumcheckLoopOracleReduction",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "sumcheckLoopOracleReduction",
@@ -45637,7 +45794,7 @@
         {
           "doc": "Large-field reduction verifier: Sumcheck seqCompose, then append FinalSum",
           "kind": "def",
-          "line": 680,
+          "line": 742,
           "name": "RingSwitching.SumcheckPhase.coreInteractionOracleVerifier",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteractionOracleVerifier",
@@ -45646,7 +45803,7 @@
         {
           "doc": "Large-field reduction: Sumcheck seqCompose, then append FinalSum",
           "kind": "def",
-          "line": 689,
+          "line": 751,
           "name": "RingSwitching.SumcheckPhase.coreInteractionOracleReduction",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteractionOracleReduction",
@@ -45655,7 +45812,7 @@
         {
           "doc": "Perfect completeness for large-field reduction (Sumcheck ++ FinalSum)",
           "kind": "theorem",
-          "line": 703,
+          "line": 765,
           "name": "RingSwitching.SumcheckPhase.coreInteraction_perfectCompleteness",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteraction_perfectCompleteness",
@@ -45664,7 +45821,7 @@
         {
           "doc": "Per-round knowledge error for the iterated sumcheck rounds.",
           "kind": "def",
-          "line": 730,
+          "line": 792,
           "name": "RingSwitching.SumcheckPhase.iteratedSumcheckRoundKnowledgeError",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "iteratedSumcheckRoundKnowledgeError",
@@ -45673,7 +45830,7 @@
         {
           "doc": "standard sumcheck error",
           "kind": "def",
-          "line": 733,
+          "line": 795,
           "name": "RingSwitching.SumcheckPhase.coreInteractionRbrKnowledgeError",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteractionRbrKnowledgeError",
@@ -45682,7 +45839,7 @@
         {
           "doc": "RBR knowledge soundness for large-field reduction (Sumcheck ++ FinalSum)",
           "kind": "theorem",
-          "line": 744,
+          "line": 806,
           "name": "RingSwitching.SumcheckPhase.coreInteraction_rbrKnowledgeSoundness",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteraction_rbrKnowledgeSoundness",
@@ -48662,9 +48819,27 @@
           "signature": "def inputRelation (C : Set (\u03b9 \u2192 F)) :"
         },
         {
+          "doc": "The IOR-shaped **honest-opening** input relation for a *fixed* encoder `encode` (the protocol's own combining map). `((v, \u03bc\u2081, \u03bc\u2082), (f\u2081, f\u2082)) \u2208 honestInputRelation k C encode` iff there is a message matrix `M : Fin 2 \u2192 Fin k \u2192 F` such that * `f i = encode (M i)` for the **protocol's** `encode` (honest opening), and * `\u2211_j M i j \u00b7 v j = \u03bc i` (the linear constraint). ## Documented statement repair (2026-06): protocol-encoder alignment (hEnc class) The historic completeness statement used `inputRelation k C`, which unfolds (Definition 6.1, `ToyProblem.relation`) to `\u2203 M, (\u2203 encode', (\u2200 m, encode' ",
+          "kind": "def",
+          "line": 222,
+          "name": "ToyProblem.Spec.honestInputRelation",
+          "namespace": "ToyProblem.Spec",
+          "short_name": "honestInputRelation",
+          "signature": "def honestInputRelation (_C : Set (\u03b9 \u2192 F)) (encode : (Fin k \u2192 F) \u2192\u2097[F] (\u03b9 \u2192 F)) :"
+        },
+        {
+          "doc": "`honestInputRelation` is contained in `inputRelation` when the encoder's image lies in `C` \u2014 i.e. honest opening is a *stronger* input hypothesis, so completeness against `honestInputRelation` is the faithful (non-vacuous) claim. (The converse fails, see the `honestInputRelation` docstring.)",
+          "kind": "theorem",
+          "line": 240,
+          "name": "ToyProblem.Spec.honestInputRelation_subset_inputRelation",
+          "namespace": "ToyProblem.Spec",
+          "short_name": "honestInputRelation_subset_inputRelation",
+          "signature": "theorem honestInputRelation_subset_inputRelation"
+        },
+        {
           "doc": "The IOR-shaped *relaxed* output relation derived from `ToyProblem.relaxedRelation` (Definition 6.3). The soundness statement of L6.6 is with respect to this relation: the verifier's \"accept\" guarantee is that the input is `\u03b4`-close to a valid `relation`-instance.",
           "kind": "def",
-          "line": 187,
+          "line": 255,
           "name": "ToyProblem.Spec.outputRelation",
           "namespace": "ToyProblem.Spec",
           "short_name": "outputRelation",
@@ -48673,7 +48848,7 @@
         {
           "doc": "Honest prover for Construction 6.2. After receiving the combination randomness `\u03b3`, the prover sends `g := M 0 + \u03b3 \u00b7 M 1` (point-wise on `Fin k`). The spot-check positions `xs` are not used by the prover \u2014 they only feed the verifier's spot-check at the end. State machine (`PrvState : Fin 4 \u2192 Type`): * `PrvState 0` \u2014 initial: the bundled `(stmt, oStmt) \u00d7 witness`. * `PrvState 1, 2, 3` \u2014 same plus the combination randomness `\u03b3`.",
           "kind": "def",
-          "line": 224,
+          "line": 292,
           "name": "ToyProblem.Spec.prover",
           "namespace": "ToyProblem.Spec",
           "short_name": "prover",
@@ -48682,7 +48857,7 @@
         {
           "doc": "The \u00a76.1 decision predicate is decidable: it's a finite conjunction of equalities in `F` (decidable via `DecidableEq F`) and a `Fin t` universally-quantified equality (decidable via the `Fintype` `Decidable` instance). Marking explicitly so the `verifier` below can stay computable (cf. FRI's `foldVerifier`, which is plain `def`).",
           "kind": "instance",
-          "line": 255,
+          "line": 323,
           "name": "ToyProblem.Spec.accepts.instDecidable",
           "namespace": "ToyProblem.Spec",
           "short_name": "accepts.instDecidable",
@@ -48691,7 +48866,7 @@
         {
           "doc": "Honest verifier for Construction 6.2. Takes the bundled input `(stmt, oStmt) = ((v, \u03bc\u2081, \u03bc\u2082), (f\u2081, f\u2082))` and the full transcript `(\u03b3, g, xs)`; accepts iff `accepts` holds for the supplied encoding. Computable \u2014 `accepts` is decidable, so no `Classical.dec` is needed. This mirrors FRI's `foldVerifier`, which is also a plain `def`.",
           "kind": "def",
-          "line": 268,
+          "line": 336,
           "name": "ToyProblem.Spec.verifier",
           "namespace": "ToyProblem.Spec",
           "short_name": "verifier",
@@ -48700,7 +48875,7 @@
         {
           "doc": "Honest reduction for Construction 6.2: the package `{prover, verifier}` over the bundled-input `Reduction` type.",
           "kind": "def",
-          "line": 282,
+          "line": 350,
           "name": "ToyProblem.Spec.reduction",
           "namespace": "ToyProblem.Spec",
           "short_name": "reduction",
@@ -48709,7 +48884,7 @@
         {
           "doc": "Same as `prover` but exposed at the `OracleProver` signature. The underlying `Prover` is identical (after the `OracleProver` type-alias unfolds to a `Prover` on bundled in/out types). The output is the trivial `(((), nofun), ())` since the IOR has no output oracle statements (`OutputOracleStatement : Fin 0 \u2192 Type`).",
           "kind": "def",
-          "line": 311,
+          "line": 379,
           "name": "ToyProblem.Spec.oracleProver",
           "namespace": "ToyProblem.Spec",
           "short_name": "oracleProver",
@@ -48718,7 +48893,7 @@
         {
           "doc": "Query helper: fetch the prover's combined-message claim `g` (`pSpec` round 1 \u2014 the `P \u2192 V` direction). Mirrors FRI's `getConst`.",
           "kind": "def",
-          "line": 339,
+          "line": 407,
           "name": "ToyProblem.Spec.queryG",
           "namespace": "ToyProblem.Spec",
           "short_name": "queryG",
@@ -48727,7 +48902,7 @@
         {
           "doc": "Query helper: read codeword `f i` at position `x : \u03b9`. Mirrors FRI's `queryCodeword`.",
           "kind": "def",
-          "line": 346,
+          "line": 414,
           "name": "ToyProblem.Spec.queryF",
           "namespace": "ToyProblem.Spec",
           "short_name": "queryF",
@@ -48736,7 +48911,7 @@
         {
           "doc": "Oracle verifier for Construction 6.2. Queries the prover's message `g` once and the two oracle codewords `f\u2081, f\u2082` at each of the `t` spot-check positions (query complexity: `2t + 1`), then `guard (accepts \u2026)` to decide. `embed` and `hEq` are trivial \u2014 `OutputOracleStatement : Fin 0 \u2192 Type` is empty, so the output-oracle family is vacuously a subset of input oracles + prover messages.",
           "kind": "def",
-          "line": 359,
+          "line": 427,
           "name": "ToyProblem.Spec.oracleVerifier",
           "namespace": "ToyProblem.Spec",
           "short_name": "oracleVerifier",
@@ -48745,7 +48920,7 @@
         {
           "doc": "Honest oracle reduction for Construction 6.2: the `OracleProver` / `OracleVerifier` pair packaged as `OracleReduction`.",
           "kind": "def",
-          "line": 391,
+          "line": 459,
           "name": "ToyProblem.Spec.oracleReduction",
           "namespace": "ToyProblem.Spec",
           "short_name": "oracleReduction",
@@ -48754,7 +48929,7 @@
         {
           "doc": "`answer` of the default oracle interface is the identity (the message itself).",
           "kind": "lemma",
-          "line": 411,
+          "line": 479,
           "name": "ToyProblem.Spec.answer_instDefault",
           "namespace": "ToyProblem.Spec",
           "short_name": "answer_instDefault",
@@ -48763,7 +48938,7 @@
         {
           "doc": "`simulateQ` commutes with `OptionT.pure`.",
           "kind": "theorem",
-          "line": 419,
+          "line": 487,
           "name": "ToyProblem.Spec.simulateQ_optionT_pure",
           "namespace": "ToyProblem.Spec",
           "short_name": "simulateQ_optionT_pure",
@@ -48772,7 +48947,7 @@
         {
           "doc": "`simulateQ` commutes with `OptionT` `failure`.",
           "kind": "theorem",
-          "line": 426,
+          "line": 494,
           "name": "ToyProblem.Spec.simulateQ_optionT_failure",
           "namespace": "ToyProblem.Spec",
           "short_name": "simulateQ_optionT_failure",
@@ -48781,7 +48956,7 @@
         {
           "doc": "`simulateQ` of a query-free `guard` is the (target-monad) `if`.",
           "kind": "theorem",
-          "line": 434,
+          "line": 502,
           "name": "ToyProblem.Spec.simulateQ_optionT_guard",
           "namespace": "ToyProblem.Spec",
           "short_name": "simulateQ_optionT_guard",
@@ -48790,7 +48965,7 @@
         {
           "doc": "`simulateQ` commutes with `forIn` over a list in `OptionT (OracleComp \u2026)`: the simulated loop equals the loop with the simulated body. The missing `simulateQ_forIn` for the `OptionT` stack.",
           "kind": "theorem",
-          "line": 444,
+          "line": 512,
           "name": "ToyProblem.Spec.simulateQ_optionT_forIn",
           "namespace": "ToyProblem.Spec",
           "short_name": "simulateQ_optionT_forIn",
@@ -48799,7 +48974,7 @@
         {
           "doc": "A `forIn` over a list whose body is `guard (Q a)` then `yield ()` collapses to `if (\u2200 a \u2208 l, Q a) then pure () else failure`: the spot-check loop accepts iff every per-element guard passes.",
           "kind": "theorem",
-          "line": 467,
+          "line": 535,
           "name": "ToyProblem.Spec.forIn_guard_eq",
           "namespace": "ToyProblem.Spec",
           "short_name": "forIn_guard_eq",
@@ -48808,7 +48983,7 @@
         {
           "doc": "`simOracle2` message-query collapse (`OracleComp` form), RIGHT (message) family.",
           "kind": "lemma",
-          "line": 501,
+          "line": 569,
           "name": "ToyProblem.Spec.simulateQ_simOracle2_messageQuery",
           "namespace": "ToyProblem.Spec",
           "short_name": "simulateQ_simOracle2_messageQuery",
@@ -48817,7 +48992,7 @@
         {
           "doc": "`simOracle2` oracle-statement-query collapse (`OracleComp` form), LEFT (oracle) family.",
           "kind": "lemma",
-          "line": 516,
+          "line": 584,
           "name": "ToyProblem.Spec.simulateQ_simOracle2_leftQuery_oc",
           "namespace": "ToyProblem.Spec",
           "short_name": "simulateQ_simOracle2_leftQuery_oc",
@@ -48826,7 +49001,7 @@
         {
           "doc": "Verify-body message-query collapse: the `OptionT.lift <| liftComp <| lift query` form that appears verbatim in `oracleVerifier.verify`, simulated via `simOracle2`, collapses to `pure` of the message `answer`.",
           "kind": "lemma",
-          "line": 533,
+          "line": 601,
           "name": "ToyProblem.Spec.simulateQ_simOracle2_messageQuery_optionT",
           "namespace": "ToyProblem.Spec",
           "short_name": "simulateQ_simOracle2_messageQuery_optionT",
@@ -48835,7 +49010,7 @@
         {
           "doc": "Verify-body oracle-statement-query collapse (LEFT family).",
           "kind": "lemma",
-          "line": 547,
+          "line": 615,
           "name": "ToyProblem.Spec.simulateQ_simOracle2_leftQuery_optionT",
           "namespace": "ToyProblem.Spec",
           "short_name": "simulateQ_simOracle2_leftQuery_optionT",
@@ -48844,7 +49019,7 @@
         {
           "doc": "**Closed form of the compiled toy-problem oracle verifier.** Simulating `oracleVerifier.verify` against the honest input codewords `oStmt` and prover messages `msgs` (via `OracleInterface.simOracle2`) collapses every query \u2014 the message query for `g` and the `2t` spot-check codeword queries \u2014 to the corresponding honest values, leaving a query-free `OptionT` computation that is exactly `if accepts \u2026 then pure () else failure`. This is the load-bearing lemma for honest completeness: composed with `accepts_of_inputRelation` it shows the compiled verifier never fails on an honest transcript.",
           "kind": "theorem",
-          "line": 571,
+          "line": 639,
           "name": "ToyProblem.Spec.simulateQ_oracleVerify_eq",
           "namespace": "ToyProblem.Spec",
           "short_name": "simulateQ_oracleVerify_eq",
@@ -48853,25 +49028,34 @@
         {
           "doc": "Honest completeness for ABF26 Construction 6.2, point form: if `((v, \u03bc\u2081, \u03bc\u2082), (f\u2081, f\u2082))` lies in `inputRelation` with the underlying messages `M = (M\u2080, M\u2081)` (and `f\u1d62` is the `encode`-image of `M\u1d62`), then for any verifier challenges `(\u03b3, xs)` the \u00a76.1 decision `accepts` holds against the honest prover's message `g = M\u2080 + \u03b3 \u00b7 M\u2081`. This is the point-form companion to the `OracleReduction.perfectCompleteness` theorem that wraps the prover and verifier objects below.",
           "kind": "theorem",
-          "line": 653,
+          "line": 721,
           "name": "ToyProblem.Spec.accepts_of_inputRelation",
           "namespace": "ToyProblem.Spec",
           "short_name": "accepts_of_inputRelation",
           "signature": "theorem accepts_of_inputRelation {k t : \u2115}"
         },
         {
-          "doc": "**Honest completeness for Construction 6.2** (protocol-level form). The honest oracle reduction is perfectly complete from `inputRelation k C` to the trivial output relation `Set.univ`. The load-bearing fact is `accepts_of_inputRelation` above: under any verifier challenges, the honest prover's message `g = M\u2080 + \u03b3 M\u2081` makes `accepts` hold, so the verifier's `if accepts then pure () else failure` never fails. **Status: statement complete, proof admitted (tagged sorry) \u2014 but the two historically-named walls are now CLOSED.** The point-form mathematical content (`accepts_of_inputRelation`) and th",
+          "doc": "**Honest completeness for Construction 6.2** (protocol-level form). The honest oracle reduction is perfectly complete from `honestInputRelation k C encode` (the honest-opening input relation \u2014 see the **statement repair** note below) to the trivial output relation `Set.univ`. The load-bearing fact is `accepts_of_inputRelation` above: under any verifier challenges, the honest prover's message `g = wit\u2080 + \u03b3\u00b7wit\u2081` makes `accepts` hold, so the verifier's `if accepts then pure () else failure` never fails. **Status: CLOSED.** `#print axioms` is exactly `[propext, Classical.choice, Quot.sound]` (no ",
           "kind": "theorem",
-          "line": 736,
+          "line": 796,
           "name": "ToyProblem.Spec.oracleReduction_perfectCompleteness",
           "namespace": "ToyProblem.Spec",
           "short_name": "oracleReduction_perfectCompleteness",
           "signature": "theorem oracleReduction_perfectCompleteness"
         },
         {
+          "doc": "",
+          "kind": "class",
+          "line": 818,
+          "name": "ToyProblem.Spec._anon_class_818",
+          "namespace": "ToyProblem.Spec",
+          "short_name": "_anon_class_818",
+          "signature": "class classical"
+        },
+        {
           "doc": "**Lemma 6.6 of [ABF26]** (knowledge soundness of Construction 6.2). For any `\u03b4 \u2208 (0, \u03b4_min(C))`, the toy-problem IOR has knowledge soundness against the relaxed relation `R\u0303_{C,\u03b4}^2` with error `max { \u03b5_mca(C, \u03b4) + |\u039b(C^{\u22612}, \u03b4)| / |F|, (1 \u2212 \u03b4)^t }`. Stated against ArkLib's `Verifier.knowledgeSoundness` (cf. `OracleReduction/Security/Basic.lean :: Verifier.knowledgeSoundness`). **Naming convention \u2014 paper vs API.** The ArkLib API's `Verifier.knowledgeSoundness` takes `(relIn, relOut)` where `relIn` is the relation the extracted witness satisfies and `relOut` is the relation the verifier's outp",
           "kind": "theorem",
-          "line": 789,
+          "line": 982,
           "name": "ToyProblem.Spec.protocol62_knowledgeSound",
           "namespace": "ToyProblem.Spec",
           "short_name": "protocol62_knowledgeSound",
@@ -48880,7 +49064,7 @@
         {
           "doc": "**Remark 6.7 of [ABF26]**: the L6.6 soundness argument depends on **mutual** correlated agreement (MCA). With only correlated agreement (CA), one cannot prove every codeword `u \u2208 \u039b(C, f\u2081 + \u03b3\u00b7f\u2082, \u03b4)` decomposes as `u = u\u2081 + \u03b3\u00b7u\u2082` for some `(u\u2081, u\u2082) \u2208 \u039b(C^{\u22612}, (f\u2081, f\u2082), \u03b4)`, so the extractor would fail. MCA provides exactly this decomposition with probability `\u2265 1 \u2212 \u03b5_mca`.",
           "kind": "def",
-          "line": 818,
+          "line": 1011,
           "name": "ToyProblem.Spec.remark67",
           "namespace": "ToyProblem.Spec",
           "short_name": "remark67",
@@ -48889,7 +49073,7 @@
         {
           "doc": "**Lemma 6.8 of [ABF26]** (round-by-round knowledge soundness of Construction 6.2). For any `\u03b4 \u2208 (0, \u03b4_min(C))`, the IOR has round-by-round knowledge soundness (paper Definition A.5 \u2261 ArkLib's `Verifier.rbrKnowledgeSoundness`) against `R\u0303_{C,\u03b4}^2`, with per-round errors * `\u03b5_mca(C, \u03b4) + |\u039b(C^{\u22612}, \u03b4)| / |F|` after the \u03b3 round, * `(1 \u2212 \u03b4)^t` after the spot-check round. The `KnowledgeStateFunction` tracks the largest current agreement set; the extractor erasure-decodes against it. Tagged sorry.",
           "kind": "theorem",
-          "line": 833,
+          "line": 1026,
           "name": "ToyProblem.Spec.protocol62_rbrKnowledgeSound",
           "namespace": "ToyProblem.Spec",
           "short_name": "protocol62_rbrKnowledgeSound",
@@ -50468,8 +50652,8 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5481,
-      "files": 287
+      "declarations": 5501,
+      "files": 288
     }
   }
 }
