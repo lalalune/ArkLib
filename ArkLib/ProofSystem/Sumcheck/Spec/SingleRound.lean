@@ -177,6 +177,90 @@ instance instSampleableTypeChallengePSpec [SampleableType R] :
     ∀ i, SampleableType ((pSpec R deg).Challenge i) :=
   instSampleableTypeChallengeAppend
 
+/-- `simulateQ` of a query lifted from the middle summand of `spec₀ + (spec₁ + spec₂)`
+is the implementation applied at the routed index. -/
+private lemma simulateQ_double_lift_query {ι₀ ι₁ ι₂ : Type} {spec₀ : OracleSpec ι₀}
+    {spec₁ : OracleSpec ι₁} {spec₂ : OracleSpec ι₂} {m' : Type → Type} [Monad m']
+    [LawfulMonad m'] (impl : QueryImpl (spec₀ + (spec₁ + spec₂)) m') (t : spec₁.Domain) :
+    simulateQ impl
+      (liftM (spec₁.query t) : OracleComp (spec₀ + (spec₁ + spec₂)) (spec₁.Range t)) =
+      impl (Sum.inr (Sum.inl t)) := by
+  change simulateQ impl (liftM ((spec₀ + (spec₁ + spec₂)).query (Sum.inr (Sum.inl t)))) = _
+  rw [simulateQ_spec_query]
+
+section VectorMapMTools
+
+universe uM
+
+/-- `Vector.mapM` over a pushed vector factors as mapM of the prefix, then the last element.
+(Extracted from the proof of `Vector.support_mapM_index`.) -/
+private lemma vector_mapM_push {m : Type → Type uM} [Monad m] [LawfulMonad m]
+    {α β : Type} {L : ℕ} (xs : Vector β L) (x : β) (f : β → m α) :
+    (xs.push x).mapM f =
+      (xs.mapM f >>= (fun ys => f x >>= fun last => pure (ys.push last))) := by
+  have hsingle : (#v[x]).mapM f = (fun last => #v[last]) <$> f x := by
+    apply Vector.map_toArray_inj.mp
+    simp
+  rw [← Vector.append_singleton, Vector.mapM_append, hsingle]
+  simp only [map_eq_bind_pure_comp, bind_assoc, Function.comp, pure_bind]
+  rfl
+
+/-- `Vector.mapM` on the empty vector is `pure`. -/
+private lemma vector_mapM_empty {m : Type → Type uM} [Monad m] [LawfulMonad m]
+    {α β : Type} (f : β → m α) :
+    ((#v[] : Vector β 0).mapM f) = pure #v[] := by
+  apply Vector.map_toArray_inj.mp
+  simp
+
+/-- `simulateQ` (into `OracleComp`) commutes with `Vector.mapM` of `OptionT` computations.
+The `OptionT` ascriptions are load-bearing: without them `mapM` elaborates at the carrier. -/
+private lemma simulateQ_optionT_vector_mapM {ι₁ ι₂ : Type} {spec₁ : OracleSpec ι₁}
+    {spec₂ : OracleSpec ι₂} (impl : QueryImpl spec₁ (OracleComp spec₂))
+    {α β : Type} {L : ℕ} (xs : Vector β L) (f : β → OptionT (OracleComp spec₁) α) :
+    simulateQ impl (xs.mapM f : OptionT (OracleComp spec₁) (Vector α L)) =
+      (xs.mapM (fun b => (simulateQ impl (f b) : OptionT (OracleComp spec₂) α)) :
+        OptionT (OracleComp spec₂) (Vector α L)) := by
+  induction L with
+  | zero =>
+    obtain rfl : xs = #v[] := by
+      apply Vector.ext
+      intro i h
+      omega
+    rw [vector_mapM_empty, vector_mapM_empty]
+    erw [simulateQ_pure]
+    rfl
+  | succ L ih =>
+    obtain ⟨xs0, x, rfl⟩ := Vector.exists_push (xs := xs)
+    rw [vector_mapM_push, vector_mapM_push]
+    rw [simulateQ_optionT_bind]
+    rw [ih]
+    refine bind_congr fun ys => ?_
+    rw [simulateQ_optionT_bind]
+    refine bind_congr fun last => ?_
+    show simulateQ impl (pure (ys.push last) : OptionT (OracleComp spec₁) _)
+      = (pure (ys.push last) : OptionT (OracleComp spec₂) _)
+    erw [simulateQ_pure]
+    rfl
+
+/-- `Vector.mapM` of pure computations collapses to `pure` of the map. -/
+private lemma vector_mapM_pure_comp {m : Type → Type uM} [Monad m] [LawfulMonad m]
+    {α β : Type} {L : ℕ} (xs : Vector β L) (g : β → α) :
+    xs.mapM (fun b => (pure (g b) : m α)) = pure (xs.map g) := by
+  induction L with
+  | zero =>
+    obtain rfl : xs = #v[] := by
+      apply Vector.ext
+      intro i h
+      omega
+    rw [vector_mapM_empty]
+    simp
+  | succ L ih =>
+    obtain ⟨xs0, x, rfl⟩ := Vector.exists_push (xs := xs)
+    rw [vector_mapM_push, ih]
+    simp
+
+end VectorMapMTools
+
 namespace Simpler
 
 -- We further break it down into each message:
@@ -877,6 +961,57 @@ theorem oracleReduction_perfectCompleteness :
   rw [oracleReduction_eq_reduction]
   exact reduction_perfectCompleteness R deg D oSpec
 
+/-- Closed form of the simulated oracle-verifier `verify`: the inner `simOracle2`
+simulation collapses to a guard on the ORACLE's `D`-sum followed by the oracle's
+evaluation at the challenge. -/
+private lemma simulateQ_oracleVerify_eq
+    (target : StmtIn R) (oStmt : ∀ i, OStmtIn R deg i)
+    (chal : ∀ i, (pSpec R deg).Challenge i)
+    (msgs : ∀ i, (pSpec R deg).Message i) :
+    simulateQ (OracleInterface.simOracle2 oSpec oStmt msgs)
+      ((oracleVerifier R deg D oSpec).verify target chal) =
+    (if ((Vector.finRange m).map (fun i => (oStmt ()).val.eval (D i))).sum = target
+      then (pure ((oStmt ()).val.eval (chal default), chal default) :
+        OptionT (OracleComp oSpec) (StmtOut R))
+      else failure) := by
+  have hcomp : ∀ x : R, (simulateQ (OracleInterface.simOracle2 oSpec oStmt msgs)
+      (OptionT.lift ((OracleComp.lift (OracleSpec.query
+        (spec := [OStmtIn R deg]ₒ) ⟨(), x⟩)).liftComp
+        (oSpec + ([OStmtIn R deg]ₒ + [(pSpec R deg).Message]ₒ)))) :
+      OptionT (OracleComp oSpec) R) = pure ((oStmt ()).val.eval x) := by
+    intro x
+    erw [simulateQ_optionT_lift]
+    erw [simulateQ_double_lift_query]
+    rfl
+  unfold oracleVerifier
+  dsimp only
+  rw [simulateQ_optionT_bind]
+  rw [simulateQ_optionT_vector_mapM]
+  have hfun : (fun b : Fin m => (simulateQ (OracleInterface.simOracle2 oSpec oStmt msgs)
+        ((OptionT.lift ((OracleComp.lift (OracleSpec.query
+            (spec := [OStmtIn R deg]ₒ) ⟨(), D b⟩)).liftComp
+          (oSpec + ([OStmtIn R deg]ₒ + [(pSpec R deg).Message]ₒ)))) :
+            OptionT (OracleComp (oSpec + ([OStmtIn R deg]ₒ + [(pSpec R deg).Message]ₒ))) R) :
+        OptionT (OracleComp oSpec) R))
+      = (fun b : Fin m => (pure ((oStmt ()).val.eval (D b)) : OptionT (OracleComp oSpec) R)) :=
+    by funext b; exact hcomp (D b)
+  rw [hfun]
+  rw [vector_mapM_pure_comp, pure_bind]
+  by_cases hP : ((Vector.finRange m).map (fun i => (oStmt ()).val.eval (D i))).sum = target
+  · simp only [guard, if_pos hP, pure_bind]
+    rw [simulateQ_optionT_bind]
+    erw [hcomp]
+    erw [pure_bind]
+    erw [simulateQ_pure]
+    rfl
+  · simp only [guard, if_neg hP]
+    refine OptionT.ext ?_
+    show simulateQ (OracleInterface.simOracle2 oSpec oStmt msgs)
+        (pure none : OracleComp (oSpec + ([OStmtIn R deg]ₒ + [(pSpec R deg).Message]ₒ))
+          (Option (StmtOut R))) = _
+    erw [simulateQ_pure]
+    rfl
+
 /-- Round-by-round knowledge soundness for the verifier -/
 theorem verifier_rbrKnowledgeSoundness [Fintype R] :
     (verifier R deg D oSpec).rbrKnowledgeSoundness init impl
@@ -1220,90 +1355,6 @@ where
       have hilt : (i : ℕ) < n + 1 := i.isLt
       exact sumcheck_round_split_point D i challenges chal _
         (by omega) (by omega) (by omega)
-
-/-- `simulateQ` of a query lifted from the middle summand of `spec₀ + (spec₁ + spec₂)`
-is the implementation applied at the routed index. -/
-private lemma simulateQ_double_lift_query {ι₀ ι₁ ι₂ : Type} {spec₀ : OracleSpec ι₀}
-    {spec₁ : OracleSpec ι₁} {spec₂ : OracleSpec ι₂} {m' : Type → Type} [Monad m']
-    [LawfulMonad m'] (impl : QueryImpl (spec₀ + (spec₁ + spec₂)) m') (t : spec₁.Domain) :
-    simulateQ impl
-      (liftM (spec₁.query t) : OracleComp (spec₀ + (spec₁ + spec₂)) (spec₁.Range t)) =
-      impl (Sum.inr (Sum.inl t)) := by
-  change simulateQ impl (liftM ((spec₀ + (spec₁ + spec₂)).query (Sum.inr (Sum.inl t)))) = _
-  rw [simulateQ_spec_query]
-
-section VectorMapMTools
-
-universe uM
-
-/-- `Vector.mapM` over a pushed vector factors as mapM of the prefix, then the last element.
-(Extracted from the proof of `Vector.support_mapM_index`.) -/
-private lemma vector_mapM_push {m : Type → Type uM} [Monad m] [LawfulMonad m]
-    {α β : Type} {L : ℕ} (xs : Vector β L) (x : β) (f : β → m α) :
-    (xs.push x).mapM f =
-      (xs.mapM f >>= (fun ys => f x >>= fun last => pure (ys.push last))) := by
-  have hsingle : (#v[x]).mapM f = (fun last => #v[last]) <$> f x := by
-    apply Vector.map_toArray_inj.mp
-    simp
-  rw [← Vector.append_singleton, Vector.mapM_append, hsingle]
-  simp only [map_eq_bind_pure_comp, bind_assoc, Function.comp, pure_bind]
-  rfl
-
-/-- `Vector.mapM` on the empty vector is `pure`. -/
-private lemma vector_mapM_empty {m : Type → Type uM} [Monad m] [LawfulMonad m]
-    {α β : Type} (f : β → m α) :
-    ((#v[] : Vector β 0).mapM f) = pure #v[] := by
-  apply Vector.map_toArray_inj.mp
-  simp
-
-/-- `simulateQ` (into `OracleComp`) commutes with `Vector.mapM` of `OptionT` computations.
-The `OptionT` ascriptions are load-bearing: without them `mapM` elaborates at the carrier. -/
-private lemma simulateQ_optionT_vector_mapM {ι₁ ι₂ : Type} {spec₁ : OracleSpec ι₁}
-    {spec₂ : OracleSpec ι₂} (impl : QueryImpl spec₁ (OracleComp spec₂))
-    {α β : Type} {L : ℕ} (xs : Vector β L) (f : β → OptionT (OracleComp spec₁) α) :
-    simulateQ impl (xs.mapM f : OptionT (OracleComp spec₁) (Vector α L)) =
-      (xs.mapM (fun b => (simulateQ impl (f b) : OptionT (OracleComp spec₂) α)) :
-        OptionT (OracleComp spec₂) (Vector α L)) := by
-  induction L with
-  | zero =>
-    obtain rfl : xs = #v[] := by
-      apply Vector.ext
-      intro i h
-      omega
-    rw [vector_mapM_empty, vector_mapM_empty]
-    erw [simulateQ_pure]
-    rfl
-  | succ L ih =>
-    obtain ⟨xs0, x, rfl⟩ := Vector.exists_push (xs := xs)
-    rw [vector_mapM_push, vector_mapM_push]
-    rw [simulateQ_optionT_bind]
-    rw [ih]
-    refine bind_congr fun ys => ?_
-    rw [simulateQ_optionT_bind]
-    refine bind_congr fun last => ?_
-    show simulateQ impl (pure (ys.push last) : OptionT (OracleComp spec₁) _)
-      = (pure (ys.push last) : OptionT (OracleComp spec₂) _)
-    erw [simulateQ_pure]
-    rfl
-
-/-- `Vector.mapM` of pure computations collapses to `pure` of the map. -/
-private lemma vector_mapM_pure_comp {m : Type → Type uM} [Monad m] [LawfulMonad m]
-    {α β : Type} {L : ℕ} (xs : Vector β L) (g : β → α) :
-    xs.mapM (fun b => (pure (g b) : m α)) = pure (xs.map g) := by
-  induction L with
-  | zero =>
-    obtain rfl : xs = #v[] := by
-      apply Vector.ext
-      intro i h
-      omega
-    rw [vector_mapM_empty]
-    simp
-  | succ L ih =>
-    obtain ⟨xs0, x, rfl⟩ := Vector.exists_push (xs := xs)
-    rw [vector_mapM_push, ih]
-    simp
-
-end VectorMapMTools
 
 instance extractorLens_rbr_knowledge_soundness :
     Extractor.Lens.IsKnowledgeSound
