@@ -1496,4 +1496,167 @@ theorem fixFirstVariablesOfMQP_eval {L : Type} [CommRing L] (ℓ : ℕ) (v : Fin
 
 end FixVarsEval
 
+/-! ## Round-transition algebra for the iterated sumcheck
+
+The per-round completeness of `iteratedSumcheckOracleReduction` needs to relate the projected
+round polynomial at round `i` to the one at round `i+1` after the verifier's challenge `r'` is
+folded in. Because `projectToMidSumcheckPoly ℓ t m i ch = fixFirstVariablesOfMQP ℓ i (m·t) ch`
+(`projectToMidSumcheckPoly_eq_fixVars` below), the round transition is a pure statement about
+`fixFirstVariablesOfMQP`: fixing the last `i` variables and then one more equals fixing the last
+`i+1` variables at once.
+
+CONVENTION / STATEMENT-REPAIR NOTE (counterexample-backed, defect-#8/#10/#11 family).
+`fixFirstVariablesOfMQP ℓ v poly ch` fixes the **last** `v` variables of `poly`, with `ch 0`
+fixing variable `ℓ-v`, …, `ch (v-1)` fixing variable `ℓ-1` (see its corrected docstring). When we
+fix one *more* variable (the new round-`i` challenge `r'`), that fresh variable is the *new last
+survivor*, i.e. the variable at position `ℓ-v-1`. In the combined `Fin (v+1)`-indexed challenge
+vector for `fixFirstVariablesOfMQP ℓ (v+1)`, position `0` corresponds to variable `ℓ-(v+1) = ℓ-v-1`
+(the fresh one) and positions `1..v` to the previously-fixed `ch 0 .. ch (v-1)`. Hence the correct
+recombination is `Fin.cons r' ch`, **not** `Fin.snoc ch r'`.
+
+The `Fin.snoc ch r'` form is FALSE. Counterexample (`L = ZMod 7`, `ℓ = 3`, `v = 1`,
+`poly = X 0 + 2·X 1 + 4·X 2`, `ch = ![5]`, `r' = 3`): fixing the last var to `5`, then one more to
+`3`, fixes `X 2 = 5, X 1 = 3`, giving (at survivor `X 0 = 2`) `2 + 2·3 + 4·5 = 28 = 0`. The
+`Fin.snoc ![5] 3 = ![5,3]` form fixes `X 1 = 5, X 2 = 3`, giving `2 + 2·5 + 4·3 = 24 = 3 ≠ 0`. The
+`Fin.cons 3 ![5] = ![3,5]` form fixes `X 1 = 3, X 2 = 5`, giving `2 + 2·3 + 4·5 = 0`, matching. So
+the round-transition lemma below is stated and proved with `Fin.cons r' challenges`. -/
+section RoundTransition
+open MvPolynomial Finset Sumcheck.Structured
+
+variable {L : Type} [CommRing L]
+
+/-- Value-form of `finSumFinEquiv.symm`: classify the index by whether its value is `< m`. -/
+theorem finSumFinEquiv_symm_dite {m n : ℕ} (x : Fin (m + n)) :
+    finSumFinEquiv.symm x
+      = if h : (x : ℕ) < m then Sum.inl ⟨x, h⟩
+        else Sum.inr ⟨(x : ℕ) - m, by omega⟩ := by
+  rw [Equiv.symm_apply_eq]
+  by_cases h : (x : ℕ) < m
+  · rw [dif_pos h, finSumFinEquiv_apply_left]
+    apply Fin.ext; simp
+  · rw [dif_neg h, finSumFinEquiv_apply_right]
+    apply Fin.ext; simp; omega
+
+/-- Characterization of `fixFirstVariablesOfMQP` as a `bind₁` partial substitution: it sends the
+surviving variables (value `< ℓ-v` under the canonical reindex) to themselves and the fixed
+variables (value `≥ ℓ-v`) to the corresponding `challenges` constant. -/
+theorem fixVars_eq_bind₁ (ℓ : ℕ) (v : Fin (ℓ + 1)) (poly : MvPolynomial (Fin ℓ) L)
+    (challenges : Fin v → L) :
+    fixFirstVariablesOfMQP ℓ v poly challenges
+      = bind₁ (fun i : Fin ℓ =>
+          Sum.elim (X : Fin (ℓ - v) → MvPolynomial (Fin (ℓ - v)) L)
+            (fun j => C (challenges j))
+            (((finCongr (by rw [Nat.add_comm]; exact (Nat.add_sub_of_le v.is_le).symm)).trans
+              (finSumFinEquiv (m := ℓ - v) (n := v).symm)) i)) poly := by
+  unfold fixFirstVariablesOfMQP
+  dsimp only
+  have hmap : ∀ q : MvPolynomial (Fin (ℓ - v) ⊕ Fin v) L,
+      MvPolynomial.map (eval challenges) ((sumAlgEquiv L (Fin (ℓ - v)) (Fin v)) q)
+        = bind₁ (Sum.elim X (fun j => C (challenges j))) q := by
+    intro q
+    induction q using MvPolynomial.induction_on with
+    | C a =>
+      rw [show ((sumAlgEquiv L (Fin (ℓ - v)) (Fin v)) (C a))
+          = sumToIter L (Fin (ℓ - v)) (Fin v) (C a) from rfl, sumToIter_C]
+      simp
+    | add p q hp hq => simp only [map_add, map_add, hp, hq]
+    | mul_X p s hp =>
+      rw [map_mul, map_mul, hp]
+      congr 1
+      cases s with
+      | inl a =>
+        rw [show ((sumAlgEquiv L (Fin (ℓ - v)) (Fin v)) (X (Sum.inl a)))
+            = sumToIter L (Fin (ℓ - v)) (Fin v) (X (Sum.inl a)) from rfl, sumToIter_Xl]
+        simp
+      | inr b =>
+        rw [show ((sumAlgEquiv L (Fin (ℓ - v)) (Fin v)) (X (Sum.inr b)))
+            = sumToIter L (Fin (ℓ - v)) (Fin v) (X (Sum.inr b)) from rfl, sumToIter_Xr]
+        simp
+  rw [hmap, bind₁_rename]
+  rfl
+
+/-- **Round-transition for `fixFirstVariablesOfMQP` (cons form).** Fixing the last `v` variables of
+`poly` to `challenges` and then the new last survivor to `r'` equals fixing the last `v+1` variables
+at once to `Fin.cons r' challenges` (the fresh challenge `r'` lands at index `0`, the previously
+fixed `challenges` shift to indices `1..v`), up to the canonical reindex
+`Fin (ℓ-(v+1)) ≃ Fin (ℓ-v-1)`. See the section note for why `Fin.snoc challenges r'` is false. -/
+theorem fixVars_step (ℓ : ℕ) (poly : MvPolynomial (Fin ℓ) L) (v : Fin (ℓ + 1))
+    (hv : (v : ℕ) < ℓ) (challenges : Fin v → L) (r' : L) :
+    fixFirstVariablesOfMQP (ℓ - v) ⟨1, by omega⟩
+        (fixFirstVariablesOfMQP ℓ v poly challenges) (fun _ => r')
+      = rename (finCongr (show ℓ - ((v : ℕ) + 1) = ℓ - v - 1 by omega))
+          (fixFirstVariablesOfMQP ℓ ⟨(v : ℕ) + 1, by omega⟩ poly (Fin.cons r' challenges)) := by
+  rw [fixVars_eq_bind₁ (ℓ - v) ⟨1, by omega⟩ _ (fun _ => r')]
+  rw [fixVars_eq_bind₁ ℓ v poly challenges]
+  rw [fixVars_eq_bind₁ ℓ ⟨(v : ℕ) + 1, by omega⟩ poly (Fin.cons r' challenges)]
+  rw [bind₁_bind₁]
+  rw [rename_bind₁]
+  apply congrArg (fun f => bind₁ f poly)
+  funext i
+  simp only [Equiv.trans_apply, finCongr_apply, finSumFinEquiv_symm_dite, Fin.val_cast]
+  by_cases h1 : (i : ℕ) < ℓ - v - 1
+  · have h2 : (i : ℕ) < ℓ - v := by omega
+    have h1' : (i : ℕ) < ℓ - ((v : ℕ) + 1) := by omega
+    -- survivor on both sides → X.  Inner gives X⟨i⟩; outer keeps it (also a survivor).
+    rw [dif_pos h2, Sum.elim_inl, bind₁_X_right, dif_pos h1, Sum.elim_inl]
+    rw [dif_pos h1', Sum.elim_inl]
+    rw [rename_X, finCongr_apply]
+    rfl
+  · have h1' : ¬ (i : ℕ) < ℓ - ((v : ℕ) + 1) := by omega
+    by_cases h2 : (i : ℕ) < ℓ - v
+    · -- fresh coord (i = ℓ-v-1): inner is survivor X⟨i⟩; outer fixes it (its last var) to C r'.
+      rw [dif_pos h2, Sum.elim_inl, bind₁_X_right]
+      rw [dif_neg h1, Sum.elim_inr]
+      rw [dif_neg h1', Sum.elim_inr]
+      rw [rename_C]
+      congr 1
+      -- RHS `Fin.cons r' challenges` index over `Fin (v+1)`: value `i-(ℓ-(v+1)) = 0`, gives `r'`.
+      have : (⟨(i : ℕ) - (ℓ - ((v : ℕ) + 1)), by omega⟩ : Fin ((v : ℕ) + 1)) = 0 := by
+        apply Fin.ext; simp; omega
+      rw [this, Fin.cons_zero]
+    · -- previously-fixed coord (i ≥ ℓ-v): `C (challenges ⟨i-(ℓ-v)⟩)` on both sides.
+      rw [dif_neg h2, Sum.elim_inr, bind₁_C_right]
+      rw [dif_neg h1', Sum.elim_inr, rename_C]
+      congr 1
+      -- RHS index value `i-(ℓ-(v+1)) = (i-(ℓ-v)) + 1`, i.e. `Fin.succ ⟨i-(ℓ-v)⟩`; cons drops to it.
+      have hidx : (⟨(i : ℕ) - (ℓ - ((v : ℕ) + 1)), by omega⟩ : Fin ((v : ℕ) + 1))
+          = Fin.succ ⟨(i : ℕ) - (ℓ - v), by omega⟩ := by
+        apply Fin.ext; simp only [Fin.val_succ]; omega
+      rw [hidx, Fin.cons_succ]
+
+/-- `projectToMidSumcheckPoly` is `fixFirstVariablesOfMQP` applied to the initial round polynomial
+`m · t`, at the same number of fixed variables `i`. -/
+theorem projectToMidSumcheckPoly_eq_fixVars (ℓ : ℕ) [NeZero ℓ] (t m : MultilinearPoly L ℓ)
+    (i : Fin (ℓ + 1)) (challenges : Fin i → L) :
+    (projectToMidSumcheckPoly ℓ t m i challenges).val
+      = fixFirstVariablesOfMQP ℓ ⟨i, by omega⟩ (m.val * t.val) challenges := by
+  unfold projectToMidSumcheckPoly computeInitialSumcheckPoly
+  rfl
+
+/-- **Round-transition for the projected sumcheck polynomial (target (a), cons form).**
+Fixing the new round-`i` survivor variable to the verifier challenge `r'` advances the projected
+round polynomial from round `i.castSucc` to round `i.succ`, with the challenge vector recombined as
+`Fin.cons r' challenges` (see the section note: the `Fin.snoc challenges r'` form is false —
+counterexample included). The two sides live over `Fin (ℓ - i.succ)` vs `Fin (ℓ - i.castSucc - 1)`;
+they are reconciled by the canonical `finCongr`. -/
+theorem fixFirstVariablesOfMQP_projectToMid_step (ℓ : ℕ) [NeZero ℓ] (t m : MultilinearPoly L ℓ)
+    (i : Fin ℓ) (challenges : Fin i.castSucc → L) (r' : L) :
+    fixFirstVariablesOfMQP (ℓ - i.castSucc)
+        ⟨1, by have := i.isLt; simp only [Fin.val_castSucc]; omega⟩
+        (projectToMidSumcheckPoly ℓ t m i.castSucc challenges).val (fun _ => r')
+      = rename (finCongr (show ℓ - (i.succ : ℕ) = ℓ - i.castSucc - 1 by
+          have := i.isLt; simp only [Fin.val_succ, Fin.val_castSucc]; omega))
+          (projectToMidSumcheckPoly ℓ t m i.succ (Fin.cons r' challenges)).val := by
+  rw [projectToMidSumcheckPoly_eq_fixVars, projectToMidSumcheckPoly_eq_fixVars]
+  -- `fixVars_step` at `v := i.castSucc`. Its `⟨↑v + 1⟩` matches `⟨↑i.succ⟩` (both `↑i + 1`).
+  have hstep := fixVars_step (L := L) ℓ (m.val * t.val) i.castSucc
+    (by have := i.isLt; simp only [Fin.val_castSucc]; omega) challenges r'
+  rw [hstep]
+  -- Both sides are `rename (finCongr …) (fixFirstVariablesOfMQP ℓ ⟨_⟩ (m·t) (Fin.cons r' ch))`;
+  -- the only difference is the fixed-variable count index `⟨↑i.castSucc + 1⟩` vs `⟨↑i.succ⟩`,
+  -- which are equal `Fin (ℓ+1)` values (`↑i.succ = ↑i + 1 = ↑i.castSucc + 1`), hence defeq.
+  rfl
+
+end RoundTransition
+
 end RingSwitching
