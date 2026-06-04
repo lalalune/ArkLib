@@ -341,7 +341,7 @@ theorem exists_decoded_polynomial_family_of_subset_goodCoeffsCurve {k deg : ℕ}
         (k := k) (deg := deg) (domain := domain) (δ := δ) u hzgood)
   simpa [P, hzgood] using hspec
 
-omit [DecidableEq ι] in
+omit [Fintype ι] [Nonempty ι] [DecidableEq ι] [Fintype F] [DecidableEq F] in
 /-- Assemble a decoded polynomial family into a Reed-Solomon codeword curve once the
 decoded family is known to be polynomial in the curve parameter with coefficient
 polynomials of degree `< deg`.
@@ -375,6 +375,40 @@ theorem decoded_family_coefficients_assemble_codeword_curve {l deg : ℕ}
     rw [hPcoeff z hz]
     simp [v, Curve.polynomialCurveEval, Polynomial.eval_finset_sum,
       Finset.sum_apply, Pi.smul_apply, smul_eq_mul]
+
+omit [Nonempty ι] [DecidableEq ι] [Fintype F] [DecidableEq F] in
+/-- Named form of the list-decoding assembly output expected by
+`subset_goodCoeffsCurve_assembled_implies_jointAgreement`.
+
+If §5 supplies coefficient polynomials `A_i` with
+`P z = ∑ i, z^i A_i` on the selected set, this theorem produces the exact
+`hassemble` hypothesis consumed by the curve GoodCoeffs bridge. -/
+theorem decoded_family_coefficients_has_assembly {l deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    {u : Fin (l + 2) → ι → F}
+    {S' : Finset F}
+    (A : Fin (l + 2) → Polynomial F)
+    (hAdeg : ∀ i, (A i).natDegree < deg)
+    (hcoeff : ∀ P : F → Polynomial F,
+      (∀ z ∈ S',
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (l + 2), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+        ∀ z ∈ S',
+          P z = ∑ i : Fin (l + 2), Polynomial.C (z ^ (i : ℕ)) * A i) :
+    ∀ P : F → Polynomial F,
+      (∀ z ∈ S',
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (l + 2), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+        ∃ v : Fin (l + 2) → ι → F,
+          (∀ i, v i ∈ ReedSolomon.code domain deg) ∧
+          ∀ z ∈ S',
+            (fun x : ι => (P z).eval (domain x)) =
+              (fun x => Curve.polynomialCurveEval (F := F) (A := F) v z x) := by
+  intro P hdecoded
+  exact decoded_family_coefficients_assemble_codeword_curve
+    (deg := deg) (domain := domain) P A hAdeg (hcoeff P hdecoded)
 
 omit [DecidableEq ι] in
 /-- GoodCoeffs-to-joint-agreement bridge with the remaining list-decoding output
@@ -436,9 +470,8 @@ theorem subset_goodCoeffsCurve_coefficient_assembly_implies_jointAgreement {l de
   exact subset_goodCoeffsCurve_assembled_implies_jointAgreement
     (deg := deg) (domain := domain) (δ := δ) (u := u)
     hS'_card hS'_card₁ hS'
-    (fun P hdecoded =>
-      decoded_family_coefficients_assemble_codeword_curve
-        (deg := deg) (domain := domain) P A hAdeg (hcoeff P hdecoded))
+    (decoded_family_coefficients_has_assembly
+      (deg := deg) (domain := domain) (δ := δ) (u := u) A hAdeg hcoeff)
 
 end CoreResults
 
