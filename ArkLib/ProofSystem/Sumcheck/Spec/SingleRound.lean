@@ -961,56 +961,11 @@ theorem oracleReduction_perfectCompleteness :
   rw [oracleReduction_eq_reduction]
   exact reduction_perfectCompleteness R deg D oSpec
 
-/-- Closed form of the simulated oracle-verifier `verify`: the inner `simOracle2`
-simulation collapses to a guard on the ORACLE's `D`-sum followed by the oracle's
-evaluation at the challenge. -/
-private lemma simulateQ_oracleVerify_eq
-    (target : StmtIn R) (oStmt : ∀ i, OStmtIn R deg i)
-    (chal : ∀ i, (pSpec R deg).Challenge i)
-    (msgs : ∀ i, (pSpec R deg).Message i) :
-    simulateQ (OracleInterface.simOracle2 oSpec oStmt msgs)
-      ((oracleVerifier R deg D oSpec).verify target chal) =
-    (if ((Vector.finRange m).map (fun i => (oStmt ()).val.eval (D i))).sum = target
-      then (pure ((oStmt ()).val.eval (chal default), chal default) :
-        OptionT (OracleComp oSpec) (StmtOut R))
-      else failure) := by
-  have hcomp : ∀ x : R, (simulateQ (OracleInterface.simOracle2 oSpec oStmt msgs)
-      (OptionT.lift ((OracleComp.lift (OracleSpec.query
-        (spec := [OStmtIn R deg]ₒ) ⟨(), x⟩)).liftComp
-        (oSpec + ([OStmtIn R deg]ₒ + [(pSpec R deg).Message]ₒ)))) :
-      OptionT (OracleComp oSpec) R) = pure ((oStmt ()).val.eval x) := by
-    intro x
-    erw [simulateQ_optionT_lift]
-    erw [simulateQ_double_lift_query]
-    rfl
-  unfold oracleVerifier
-  dsimp only
-  rw [simulateQ_optionT_bind]
-  rw [simulateQ_optionT_vector_mapM]
-  have hfun : (fun b : Fin m => (simulateQ (OracleInterface.simOracle2 oSpec oStmt msgs)
-        ((OptionT.lift ((OracleComp.lift (OracleSpec.query
-            (spec := [OStmtIn R deg]ₒ) ⟨(), D b⟩)).liftComp
-          (oSpec + ([OStmtIn R deg]ₒ + [(pSpec R deg).Message]ₒ)))) :
-            OptionT (OracleComp (oSpec + ([OStmtIn R deg]ₒ + [(pSpec R deg).Message]ₒ))) R) :
-        OptionT (OracleComp oSpec) R))
-      = (fun b : Fin m => (pure ((oStmt ()).val.eval (D b)) : OptionT (OracleComp oSpec) R)) :=
-    by funext b; exact hcomp (D b)
-  rw [hfun]
-  rw [vector_mapM_pure_comp, pure_bind]
-  by_cases hP : ((Vector.finRange m).map (fun i => (oStmt ()).val.eval (D i))).sum = target
-  · simp only [guard, if_pos hP, pure_bind]
-    rw [simulateQ_optionT_bind]
-    erw [hcomp]
-    erw [pure_bind]
-    erw [simulateQ_pure]
-    rfl
-  · simp only [guard, if_neg hP]
-    refine OptionT.ext ?_
-    show simulateQ (OracleInterface.simOracle2 oSpec oStmt msgs)
-        (pure none : OracleComp (oSpec + ([OStmtIn R deg]ₒ + [(pSpec R deg).Message]ₒ))
-          (Option (StmtOut R))) = _
-    erw [simulateQ_pure]
-    rfl
+-- NOTE: the worker-stream private lemma `simulateQ_oracleVerify_eq` (closed form of the
+-- compiled oracle verifier) is omitted: it is stated for a verifier reading round-poly evals
+-- from the STATEMENT oracle, while this tree's `oracleVerifier` (#449 lineage) queries the
+-- MESSAGE oracle; the closed form here would map over `msgs`. Unused in this tree
+-- (completeness routes through `oracleReduction_eq_reduction` + `reduction_perfectCompleteness`).
 
 /-- Round-by-round knowledge soundness for the verifier -/
 theorem verifier_rbrKnowledgeSoundness [Fintype R] :
