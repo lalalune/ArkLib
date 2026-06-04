@@ -236,6 +236,153 @@ lemma qMap_total_fiber_repr_coeff (i : Fin ℓ) (steps : ℕ) (h_i_add_steps : i
   · simp only [qMap_total_fiber, h_steps_eq_0, ↓reduceDIte, Module.Basis.repr_symm_apply,
     Module.Basis.repr_linearCombination, Finsupp.equivFunOnFinite_symm_apply_apply]
 
+/-- `b` and `2 ^ n * c` have disjoint bit supports when `b < 2 ^ n`: low `n` bits live in
+`b`, bits `≥ n` live in `2 ^ n * c`. -/
+lemma and_lt_two_pow_mul_eq_zero {n c b : ℕ} (hb : b < 2 ^ n) :
+    b &&& (2 ^ n * c) = 0 := by
+  apply Nat.and_eq_zero_iff_and_each_getBit_eq_zero.mpr
+  intro k
+  rw [Nat.getBit_of_multiple_of_power_of_two]
+  by_cases hk : k < n
+  · simp only [hk, ↓reduceIte, Nat.and_zero]
+  · -- `k ≥ n` ⇒ bit `k` of `b` is `0` since `b < 2 ^ n`.
+    have h_b_bit : Nat.getBit k b = 0 := by
+      simp only [Nat.getBit, Nat.shiftRight_eq_div_pow, Nat.and_one_is_mod]
+      rw [Nat.div_eq_of_lt (Nat.lt_of_lt_of_le hb (Nat.pow_le_pow_right (by omega)
+        (Nat.le_of_not_lt hk)))]
+    simp only [hk, ↓reduceIte, h_b_bit, Nat.zero_and]
+
+/-- Low-bit decomposition: for `b < 2 ^ n`, `c < 2`, the low `n` bits of `c * 2 ^ n + b`
+are exactly the bits of `b`. -/
+lemma getBit_low_of_add_mul_two_pow {n c b j : ℕ} (hb : b < 2 ^ n) (hj : j < n) :
+    Nat.getBit j (c * 2 ^ n + b) = Nat.getBit j b := by
+  -- `b` and `c * 2 ^ n` have disjoint bit supports below `n`, so bits agree there.
+  have h_and : (2 ^ n * c) &&& b = 0 := by
+    rw [Nat.and_comm]; exact and_lt_two_pow_mul_eq_zero hb
+  rw [Nat.mul_comm c (2 ^ n)]
+  rw [Nat.getBit_of_add_distrib (h_n_AND_m := h_and)]
+  rw [Nat.getBit_of_multiple_of_power_of_two]
+  simp only [hj, ↓reduceIte, Nat.zero_add]
+
+/-- High-bit decomposition: for `b < 2 ^ n`, `c < 2`, bit `n` of `c * 2 ^ n + b` is `c`. -/
+lemma getBit_high_of_add_mul_two_pow {n c b : ℕ} (hb : b < 2 ^ n) (hc : c < 2) :
+    Nat.getBit n (c * 2 ^ n + b) = c := by
+  have h_and : (2 ^ n * c) &&& b = 0 := by
+    rw [Nat.and_comm]; exact and_lt_two_pow_mul_eq_zero hb
+  rw [Nat.mul_comm c (2 ^ n)]
+  rw [Nat.getBit_of_add_distrib (h_n_AND_m := h_and)]
+  rw [Nat.getBit_of_multiple_of_power_of_two]
+  simp only [lt_irrefl, ↓reduceIte, Nat.sub_self]
+  -- bit `n` of `b` is `0` since `b < 2 ^ n`; bit `0` of `c` is `c` since `c < 2`.
+  have h_b_bit : Nat.getBit n b = 0 := by
+    simp only [Nat.getBit, Nat.shiftRight_eq_div_pow, Nat.and_one_is_mod]
+    rw [Nat.div_eq_of_lt hb]
+  rw [h_b_bit, add_zero]
+  simp only [Nat.getBit, Nat.shiftRight_zero, Nat.and_one_is_mod]
+  omega
+
+omit [CharP L 2] hF₂ h_β₀_eq_1 [NeZero ℓ] in
+/-- **Fiber composition (last level peeled).**
+The `(n+1)`-step fiber of `y' ∈ S^(i+(n+1))` at index `idx`, with `idx` split into the
+high bit `c := idx / 2^n` (selecting the last quotient `q^(i+n)`) and the low `n` bits
+`b := idx % 2^n`, equals the `n`-step fiber of the single-step preimage
+`z_c := qMap_total_fiber(i+n, 1, y')(c)` at index `b`. This is the geometric fact pinning
+the recursive `foldMatrixNat` construction. -/
+lemma qMap_total_fiber_succ_peel_last (i : Fin ℓ) (n : ℕ) (h_i_add_steps : i.val + (n + 1) ≤ ℓ)
+    (y' : sDomain 𝔽q β h_ℓ_add_R_rate (i := ⟨i.val + (n + 1), by omega⟩))
+    (idx : Fin (2 ^ (n + 1))) :
+    qMap_total_fiber 𝔽q β (i := ⟨i, by omega⟩) (steps := n + 1)
+      (h_i_add_steps := by simp only; exact fin_ℓ_steps_lt_ℓ_add_R i (n + 1) h_i_add_steps)
+      (y := y') idx =
+    qMap_total_fiber 𝔽q β (i := ⟨i, by omega⟩) (steps := n)
+      (h_i_add_steps := by simp only; exact fin_ℓ_steps_lt_ℓ_add_R i n (by omega))
+      (y := qMap_total_fiber 𝔽q β (i := ⟨i.val + n, by omega⟩) (steps := 1)
+        (h_i_add_steps := by
+          simp only
+          exact Nat.lt_of_le_of_lt (by omega)
+            (Nat.lt_add_of_pos_right (Nat.pos_of_ne_zero (NeZero.ne 𝓡))))
+        (y := ⟨y'.val, by have := y'.property; simpa only [Nat.add_assoc] using this⟩)
+        ⟨idx.val / 2 ^ n, by
+          have hb : idx.val < 2 ^ n * 2 := Nat.lt_of_lt_of_eq idx.isLt (by rw [pow_succ])
+          exact Nat.div_lt_of_lt_mul hb⟩)
+      ⟨idx.val % 2 ^ n, Nat.mod_lt _ (Nat.two_pow_pos n)⟩ := by
+  -- Both points live in `S^i`; compare their `basis_x` coefficients via `repr` injectivity.
+  set c : Fin 2 := ⟨idx.val / 2 ^ n, by
+    have hb : idx.val < 2 ^ n * 2 := Nat.lt_of_lt_of_eq idx.isLt (by rw [pow_succ])
+    exact Nat.div_lt_of_lt_mul hb⟩ with hc_def
+  set b : Fin (2 ^ n) := ⟨idx.val % 2 ^ n, Nat.mod_lt _ (Nat.two_pow_pos n)⟩ with hb_def
+  have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡)
+  have h_z_bound : (⟨i.val + n, by omega⟩ : Fin r).val + 1 < ℓ + 𝓡 := by simp only; omega
+  let y'_lift : sDomain 𝔽q β h_ℓ_add_R_rate (i := ⟨(⟨i.val + n, by omega⟩ : Fin r).val + 1, by
+    omega⟩) := ⟨y'.val, by have := y'.property; simpa only [Nat.add_assoc] using this⟩
+  -- `idx = c * 2^n + b` as naturals.
+  have h_idx_split : idx.val = c.val * 2 ^ n + b.val := by
+    simp only [hc_def, hb_def]
+    exact (Nat.div_add_mod' idx.val (2 ^ n)).symm
+  apply (sDomain_basis 𝔽q β h_ℓ_add_R_rate (i := ⟨i, by omega⟩)
+    (by simp only; omega)).repr.injective
+  ext j
+  -- LHS coefficient via the `(n+1)`-step extraction lemma.
+  have hL := qMap_total_fiber_repr_coeff 𝔽q β i (steps := n + 1) (by omega) y' idx (j := j)
+  -- RHS coefficient via the `n`-step extraction lemma over `z_c`.
+  set zc := qMap_total_fiber 𝔽q β (i := ⟨i.val + n, by omega⟩) (steps := 1)
+    (h_i_add_steps := h_z_bound)
+    (y := y'_lift) c with hzc_def
+  have hR := qMap_total_fiber_repr_coeff 𝔽q β i (steps := n) (by omega) zc b (j := j)
+  simp only at hL hR ⊢
+  rw [hL, hR]
+  -- Now compare the two `fiber_coeff` values bit-by-bit, using the bit decomposition of `idx`.
+  unfold fiber_coeff
+  by_cases hj_lt_n : j.val < n
+  · -- Low region: both pick up bit `j` of `idx`, which equals bit `j` of `b`.
+    have hjn1 : j.val < n + 1 := by omega
+    simp only [hj_lt_n, hjn1, ↓reduceDIte]
+    rw [h_idx_split, getBit_low_of_add_mul_two_pow b.isLt hj_lt_n]
+  · by_cases hj_eq_n : j.val = n
+    · -- Boundary: LHS picks up bit `n` of `idx` (= `c`); RHS reads the `0`-th coeff of `z_c`,
+      -- which is bit `0` of `c`.
+      have hjn1 : j.val < n + 1 := by omega
+      have hjn_not : ¬ j.val < n := by omega
+      simp only [hjn1, hjn_not, ↓reduceDIte]
+      rw [h_idx_split]
+      have h_getbit : Nat.getBit j.val (c.val * 2 ^ n + b.val) = c.val := by
+        simpa [hj_eq_n] using getBit_high_of_add_mul_two_pow b.isLt c.isLt
+      rw [h_getbit]
+      -- RHS: `(j - n)`-th coeff of `z_c`'s `basis_y` repr; with `j = n` this is its `0`-th coeff.
+      have hRc := qMap_total_fiber_repr_coeff 𝔽q β (⟨i.val + n, by omega⟩ : Fin ℓ) (steps := 1)
+        (by simp only; omega)
+        (⟨y'.val, by have := y'.property; simpa only [Nat.add_assoc] using this⟩) c
+        (j := ⟨j.val - n, by
+          have hj_ge_n : n ≤ j.val := Nat.le_of_not_lt hjn_not
+          have hsub : j.val - n < (ℓ + 𝓡 - i.val) - n :=
+            Nat.sub_lt_sub_right hj_ge_n j.isLt
+          simp only
+          omega⟩)
+      rw [← hzc_def] at hRc
+      have hj_sub : j.val - n = 0 := by omega
+      have h_c_bit : Nat.getBit 0 c.val = c.val := by
+        simp only [Nat.getBit, Nat.shiftRight_zero, Nat.and_one_is_mod]
+        omega
+      simp only [fiber_coeff, hj_sub, zero_lt_one, ↓reduceDIte, h_c_bit] at hRc
+      simpa [hj_sub] using hRc.symm
+    · -- High region (`j > n`): both read `y'`'s shifted coefficients; indices agree.
+      have hjn1_not : ¬ j.val < n + 1 := by omega
+      have hjn_not : ¬ j.val < n := by omega
+      simp only [hjn1_not, hjn_not, ↓reduceDIte]
+      have hRc := qMap_total_fiber_repr_coeff 𝔽q β (⟨i.val + n, by omega⟩ : Fin ℓ) (steps := 1)
+        (by simp only; omega)
+        (⟨y'.val, by have := y'.property; simpa only [Nat.add_assoc] using this⟩) c
+        (j := ⟨j.val - n, by
+          have hj_ge_n : n ≤ j.val := Nat.le_of_not_lt hjn_not
+          have hsub : j.val - n < (ℓ + 𝓡 - i.val) - n :=
+            Nat.sub_lt_sub_right hj_ge_n j.isLt
+          simp only
+          omega⟩)
+      rw [← hzc_def] at hRc
+      have hj_sub_not : ¬ j.val - n < 1 := by omega
+      simp only [fiber_coeff, hj_sub_not, ↓reduceDIte] at hRc
+      convert hRc.symm using 1 <;> omega
+
 def pointToIterateQuotientIndex (i : Fin (ℓ + 1)) (steps : ℕ) (h_i_add_steps : i.val + steps ≤ ℓ)
     (x : sDomain 𝔽q β h_ℓ_add_R_rate (i := ⟨i, by omega⟩)) : Fin (2 ^ steps) := by
   let basis_x := sDomain_basis 𝔽q β h_ℓ_add_R_rate ⟨i, by omega⟩
@@ -644,18 +791,68 @@ def baseFoldMatrix (i : Fin r) (h_i : i + 1 < ℓ + 𝓡)
   | 1, 0 => -1
   | 1, 1 => 1
 
+/-- The fold matrix as a `Nat`-indexed structural recursion on `steps`.
+
+This is the explicit recursive construction pinned by `iterated_fold_eq_matrix_form`
+(Lemma 4.9). Peeling the **last** fold (`Fin.dfoldl_succ_last`) at level `i + steps`,
+`iterated_fold (steps + 1)` is one extra single-step `fold` applied to `iterated_fold steps`.
+Translating that one step into matrix form yields the block/composition law:
+`M_{steps+1}(y)[a][b] = baseFoldMatrix(i+steps, y)[a % 2][b / 2^steps]`
+`  * M_{steps}(z_{b / 2^steps})[a / 2][b % 2^steps]`,
+where `z_c = qMap_total_fiber(i+steps, 1, y)(c)` are the two single-step preimages of `y`,
+the new (last) challenge occupies the **low** bit of the row index `a` (matching
+`challengeTensorProduct`'s recursion), and the last quotient level occupies the **high**
+bits of the column/fiber index `b` (matching `qMap_total_fiber`'s MSB convention).
+The base case `steps = 0` is the `1 × 1` identity scalar `1`. -/
+noncomputable def foldMatrixNat (i : Fin r) :
+    (steps : ℕ) → (h_i_add_steps : i.val + steps < ℓ + 𝓡) →
+    (y : (sDomain 𝔽q β h_ℓ_add_R_rate) ⟨↑i + steps, by omega⟩) →
+    Matrix (Fin (2 ^ steps)) (Fin (2 ^ steps)) L
+  | 0, _, _ => fun _ _ => 1
+  | (n + 1), h, y =>
+      let baseM : Matrix (Fin 2) (Fin 2) L :=
+        baseFoldMatrix 𝔽q β ⟨i.val + n, by omega⟩ (h_i := by simp only; omega)
+          (y := ⟨y.val, by have := y.property; simpa only [Nat.add_assoc] using this⟩)
+      let zMap : Fin 2 → (sDomain 𝔽q β h_ℓ_add_R_rate) ⟨i.val + n, by omega⟩ :=
+        qMap_total_fiber 𝔽q β (i := ⟨i.val + n, by omega⟩) (steps := 1)
+          (h_i_add_steps := by simp only; omega)
+          (y := ⟨y.val, by have := y.property; simpa only [Nat.add_assoc] using this⟩)
+      fun a b =>
+        let cBit : Fin 2 := ⟨b.val / 2 ^ n, by
+          have hb : b.val < 2 ^ n * 2 :=
+            Nat.lt_of_lt_of_eq b.isLt (by rw [pow_succ])
+          exact Nat.div_lt_of_lt_mul hb⟩
+        let bLow : Fin (2 ^ n) := ⟨b.val % 2 ^ n, Nat.mod_lt _ (Nat.two_pow_pos n)⟩
+        let aBit : Fin 2 := ⟨a.val % 2, Nat.mod_lt _ (by omega)⟩
+        let aHigh : Fin (2 ^ n) := ⟨a.val / 2, by
+          have ha : a.val < 2 * 2 ^ n :=
+            Nat.lt_of_lt_of_eq a.isLt (by rw [pow_succ, Nat.mul_comm])
+          exact Nat.div_lt_of_lt_mul ha⟩
+        baseM aBit cBit * foldMatrixNat i n (by omega) (zMap cBit) aHigh bLow
+
 /-- `M_y` matrix which depends only on `y ∈ S^(i+ϑ)` -/
 def foldMatrix (i : Fin r) (steps : Fin (ℓ + 1)) (h_i_add_steps : i.val + steps < ℓ + 𝓡)
     (y : (sDomain 𝔽q β h_ℓ_add_R_rate)
       ⟨↑i + steps, by apply Nat.lt_trans (m := ℓ + 𝓡) (h_i_add_steps) h_ℓ_add_R_rate⟩)
-    : Matrix (Fin (2 ^ steps.val)) (Fin (2 ^ steps.val)) L := by
-  if h_steps_eq_1 : steps.val = 1 then
-    rw [h_steps_eq_1, Nat.pow_one]
-    use baseFoldMatrix 𝔽q β i (h_i := by rw [←h_steps_eq_1]; omega)
-      (y := by simp_rw [←h_steps_eq_1]; omega)
-  else
-    -- Note: recursive definition of the fold matrix
-    sorry
+    : Matrix (Fin (2 ^ steps.val)) (Fin (2 ^ steps.val)) L :=
+  foldMatrixNat 𝔽q β i steps.val h_i_add_steps y
+
+/-- Agreement of the single-step `foldMatrixNat` with `baseFoldMatrix`: the recursion's
+`steps = 1` value is exactly the base matrix (its old special-case branch). -/
+lemma foldMatrixNat_one (i : Fin r) (h_i_add_steps : i.val + 1 < ℓ + 𝓡)
+    (y : (sDomain 𝔽q β h_ℓ_add_R_rate) ⟨↑i + 1, by omega⟩)
+    (a b : Fin (2 ^ 1)) :
+    foldMatrixNat 𝔽q β i 1 h_i_add_steps y a b =
+      baseFoldMatrix 𝔽q β i (h_i := by simpa using h_i_add_steps) y
+        (Fin.cast (by norm_num) a) (Fin.cast (by norm_num) b) := by
+  -- Unfold one recursion step; the `steps = 0` tail collapses to the scalar `1`.
+  simp only [foldMatrixNat, pow_zero, Nat.div_one, Nat.mod_one, mul_one]
+  -- Both sides are `baseFoldMatrix` of the same data; reconcile `i + 0 = i`, the `y`
+  -- subtype lift, and the `Fin 2` indices (`a % 2 = a`, `b / 1 = b` for `a, b < 2`).
+  congr 1
+  all_goals apply Fin.ext
+  all_goals simp only [Fin.coe_cast]
+  all_goals omega
 
 /-- Iterated fold over `steps` steps starting at domain index `i`. -/
 def iterated_fold (i : Fin r) (steps : Fin (ℓ + 1)) (h_i_add_steps : i.val + steps < ℓ + 𝓡)
