@@ -12485,7 +12485,7 @@
           "name": "ProximityGap.modified_guruswami_has_a_solution",
           "namespace": "ProximityGap",
           "short_name": "modified_guruswami_has_a_solution",
-          "signature": "lemma modified_guruswami_has_a_solution {m n k : \u2115} (hn : 0 < n) (hk : 0 < k)"
+          "signature": "lemma modified_guruswami_has_a_solution {m n k : \u2115} (_hn : 0 < n) (hk : 0 < k)"
         },
         {
           "doc": "",
