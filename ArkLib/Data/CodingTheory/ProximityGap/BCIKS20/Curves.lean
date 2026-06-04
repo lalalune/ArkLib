@@ -114,6 +114,9 @@ theorem large_agreement_set_on_curve_implies_correlated_agreement {l : ℕ}
     (hS : n * l < (coeffs_of_close_proximity_curve (F := F) δ u V).card) :
     coeffs_of_close_proximity_curve (F := F) δ u V = Finset.univ ∧
       ∃ v : Fin l → Fin n → F,
+        -- Finding 15b repair: the witness curve must pass through codewords —
+        -- without `∀ i, v i ∈ V` the existential is satisfied by `v := u` (vacuous).
+        (∀ i, v i ∈ V) ∧
         ∀ z,
           δᵣ(Curve.polynomialCurveEval (F := F) (A := F) u z,
             Curve.polynomialCurveEval (F := F) (A := F) v z) ≤ δ ∧
