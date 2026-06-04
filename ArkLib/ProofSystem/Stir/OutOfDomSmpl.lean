@@ -48,6 +48,21 @@ noncomputable def listDecodingCollisionProbability
                                       = (uPoly' : F[X]).eval (r i).1
                                     ]
 
+/-- The mass that the `Pr_{...}[...]` PMF encoding assigns to an event under uniform sampling
+is exactly `#event / #domain` — the counting bridge used to estimate collision probabilities. -/
+private lemma uniform_event_mass {α : Type} [Fintype α] [Nonempty α]
+    (P : α → Prop) [DecidablePred P] :
+    PMF.bind (PMF.uniformOfFintype α) (fun r => PMF.pure (P r)) True
+      = ((Finset.univ.filter P).card : ENNReal) * ((Fintype.card α : ENNReal))⁻¹ := by
+  classical
+  rw [PMF.bind_apply, tsum_fintype]
+  trans (∑ a ∈ Finset.univ.filter P, ((Fintype.card α : ENNReal))⁻¹)
+  · rw [Finset.sum_filter]
+    refine Finset.sum_congr rfl fun a _ => ?_
+    by_cases h : P a <;>
+      simp [PMF.uniformOfFintype_apply, PMF.pure_apply, h, eq_iff_iff]
+  · rw [Finset.sum_const, nsmul_eq_mul]
+
 /-- Lemma 4.5.1 -/
 lemma out_of_dom_smpl_1
   {δ l : ℝ≥0} {s : ℕ} {f : ι → F} {degree : ℕ} {φ : ι ↪ F}
