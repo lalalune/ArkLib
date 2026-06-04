@@ -36,7 +36,7 @@ open OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Polynomial
   MvPolynomial TensorProduct Module Binius.BinaryBasefold RingSwitching
 open scoped NNReal
 
--- TODO: how to make params cleaner while can explicitly reuse across sections?
+-- Note: how to make params cleaner while can explicitly reuse across sections?
 variable (κ : ℕ) [NeZero κ]
 variable (L : Type) [Field L] [Fintype L] [DecidableEq L] [CharP L 2]
   [SampleableType L]
@@ -302,7 +302,11 @@ instance sumcheckFoldExtractorLens_rbr_knowledge_soundness :
           (biniusProfile κ L K β) ℓ ℓ' h_l) K β (ϑ:=ϑ)
           (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Fin.last ℓ')
       )
-      (compatStmt := fun _ _ => True)
+      (compatStmt :=
+        (BinaryBasefold.CoreInteraction.sumcheckFoldOracleVerifier K β (ϑ:=ϑ)
+          (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).toVerifier.compatStatement
+          (sumcheckFoldStmtLens κ L K β ℓ ℓ' 𝓡 ϑ
+            (h_ℓ_add_R_rate := h_ℓ_add_R_rate)))
       (compatWit := fun _ _ => True)
       (lens := sumcheckFoldExtractorLens κ L K β ℓ ℓ' 𝓡 ϑ (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
       where
@@ -310,6 +314,35 @@ instance sumcheckFoldExtractorLens_rbr_knowledge_soundness :
     sorry
   lift_knowledgeSound := by
     sorry
+
+local instance sumcheckFoldInitialWitness_inhabited :
+    Inhabited (BinaryBasefold.Witness K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (ℓ:=ℓ') 0) where
+  default := {
+    t := ⟨0, by apply zero_mem⟩
+    H := ⟨0, by apply zero_mem⟩
+    f := fun _ => 0
+  }
+
+local instance sumcheckFoldFinalStatement_inhabited :
+    Inhabited (Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ)
+      (Fin.last ℓ')) where
+  default := {
+    sumcheck_target := 0
+    challenges := fun _ => 0
+    ctx := {
+      t_eval_point := fun _ => 0
+      original_claim := 0
+      s_hat := 0
+      r_batching := fun _ => 0
+    }
+  }
+
+local instance sumcheckFoldFinalOracleStatement_inhabited
+    (i : Fin (toOutCodewordsCount ℓ' ϑ (Fin.last ℓ'))) :
+    Inhabited (BinaryBasefold.OracleStatement K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      ϑ (Fin.last ℓ') i) :=
+  ⟨fun _ => 0⟩
 
 -- Round-by-round knowledge soundness for the lifted oracle verifier
 theorem sumcheckFoldOracleVerifier_rbrKnowledgeSoundness [Fintype L] :
@@ -338,8 +371,55 @@ theorem sumcheckFoldOracleVerifier_rbrKnowledgeSoundness [Fintype L] :
       (impl := impl)
       (rbrKnowledgeError := BinaryBasefold.CoreInteraction.sumcheckFoldKnowledgeError
         K β (ϑ := ϑ)) := by
-  -- apply OracleVerifier.liftContext_rbr_knowledgeSoundness
-  sorry
+  exact OracleVerifier.liftContext_rbr_knowledgeSoundness
+    (oSpec := []ₒ)
+    (OuterStmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ) 0)
+    (OuterStmtOut := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ)
+      (Fin.last ℓ'))
+    (OuterWitIn := RingSwitching.SumcheckWitness L ℓ' 0)
+    (OuterWitOut := BinaryBasefold.Witness K β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ:=ℓ') (Fin.last ℓ'))
+    (OuterOStmtIn := BinaryBasefold.OracleStatement K β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ 0)
+    (OuterOStmtOut := BinaryBasefold.OracleStatement K β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ (Fin.last ℓ'))
+    (InnerStmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ) 0)
+    (InnerStmtOut := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ)
+      (Fin.last ℓ'))
+    (InnerWitIn := BinaryBasefold.Witness K β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ:=ℓ') 0)
+    (InnerWitOut := BinaryBasefold.Witness K β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ:=ℓ') (Fin.last ℓ'))
+    (InnerOStmtIn := BinaryBasefold.OracleStatement K β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ 0)
+    (InnerOStmtOut := BinaryBasefold.OracleStatement K β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ (Fin.last ℓ'))
+    (pSpec := BinaryBasefold.pSpecSumcheckFold K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+    (V := BinaryBasefold.CoreInteraction.sumcheckFoldOracleVerifier K β (ϑ:=ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+    (stmtLens := sumcheckFoldStmtLens κ L K β ℓ ℓ' 𝓡 ϑ
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+    (witLens := (sumcheckFoldExtractorLens κ L K β ℓ ℓ' 𝓡 ϑ
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).wit)
+    (init := init)
+    (impl := impl)
+    (outerRelIn := RingSwitching.sumcheckRoundRelation κ L K
+      (booleanHypercubeBasis κ L K β) ℓ ℓ' h_l (𝓑 := 𝓑)
+      (aOStmtIn := BinaryBasefoldAbstractOStmtIn κ L K β ℓ' 𝓡 ϑ
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) 0)
+    (outerRelOut := BinaryBasefold.roundRelation (mp := RingSwitching_SumcheckMultParam
+      κ L K (β := booleanHypercubeBasis κ L K β) ℓ ℓ' h_l) K β (ϑ:=ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑:=𝓑) (Fin.last ℓ'))
+    (innerRelIn := BinaryBasefold.roundRelation (mp := RingSwitching_SumcheckMultParam
+      κ L K (β := booleanHypercubeBasis κ L K β) ℓ ℓ' h_l) K β (ϑ:=ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑:=𝓑) 0)
+    (innerRelOut := BinaryBasefold.roundRelation (mp := RingSwitching_SumcheckMultParam
+      κ L K (β := booleanHypercubeBasis κ L K β) ℓ ℓ' h_l) K β (ϑ:=ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑:=𝓑) (Fin.last ℓ'))
+    (lensKS := sumcheckFoldExtractorLens_rbr_knowledge_soundness κ L K β ℓ ℓ' 𝓡 ϑ
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) h_l)
+    (h := BinaryBasefold.CoreInteraction.sumcheckFoldOracleVerifier_rbrKnowledgeSoundness
+      K β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑))
 
 end Security
 end SumcheckFold

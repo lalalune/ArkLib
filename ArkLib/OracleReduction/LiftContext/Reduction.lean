@@ -1005,9 +1005,54 @@ theorem liftContext_rbr_soundness [Inhabited InnerStmtOut]
   obtain ⟨stF, h⟩ := h
   simp at h ⊢
   refine ⟨by
-    sorry, ?_⟩
+    refine {
+      toFun := fun m outerStmtIn transcript =>
+        stF m (lens.proj outerStmtIn) transcript ∨ outerStmtIn ∈ outerLangIn
+      toFun_empty := fun outerStmtIn => by
+        constructor
+        · exact Or.inr
+        · intro hState
+          rcases hState with hInnerState | hOuterStmtIn
+          · by_contra hOuterStmtIn
+            exact lensSound.proj_sound outerStmtIn hOuterStmtIn
+              ((stF.toFun_empty (lens.proj outerStmtIn)).mpr hInnerState)
+          · exact hOuterStmtIn
+      toFun_next := fun m hDir outerStmtIn transcript hState msg => by
+        simp only [not_or] at hState ⊢
+        exact ⟨stF.toFun_next m hDir (lens.proj outerStmtIn) transcript hState.1 msg,
+          hState.2⟩
+      toFun_full := fun outerStmtIn transcript hState => by
+        simp only [not_or] at hState
+        let innerGame : OptionT ProbComp InnerStmtOut := OptionT.mk do
+          (simulateQ impl (V.run (lens.proj outerStmtIn) transcript).run).run' (← init)
+        let outerGame : OptionT ProbComp OuterStmtOut := OptionT.mk do
+          (simulateQ impl ((V.liftContext lens).run outerStmtIn transcript).run).run' (← init)
+        have hInnerZero := stF.toFun_full (lens.proj outerStmtIn) transcript hState.1
+        rw [probEvent_eq_zero_iff] at hInnerZero
+        change Pr[(· ∈ outerLangOut) | outerGame] = 0
+        rw [OptionT.probEvent_eq_of_run_map_eq outerGame innerGame
+          (lens.lift outerStmtIn) (· ∈ outerLangOut)]
+        · rw [probEvent_eq_zero_iff]
+          intro innerStmtOut hInnerSupport hOuterStmtOut
+          refine lensSound.lift_sound outerStmtIn innerStmtOut ?_
+            (hInnerZero innerStmtOut hInnerSupport) hOuterStmtOut
+          refine ⟨transcript, ?_⟩
+          rw [Verifier.run, OptionT.mem_support_iff]
+          rw [OptionT.mem_support_iff] at hInnerSupport
+          simp only [innerGame, OptionT.run_mk, mem_support_bind_iff] at hInnerSupport
+          obtain ⟨s, _hs, hSim⟩ := hInnerSupport
+          exact mem_support_simulateQ_run'_subset impl s
+            (V.run (lens.proj outerStmtIn) transcript).run (some innerStmtOut) hSim
+        · have hRunMap :
+              ((V.liftContext lens).run outerStmtIn transcript).run =
+                Option.map (lens.lift outerStmtIn) <$>
+                  (V.run (lens.proj outerStmtIn) transcript).run := by
+            simp [Verifier.liftContext, Verifier.run, OptionT.run_map]
+          simp only [innerGame, outerGame, OptionT.run_mk, hRunMap, simulateQ_map,
+            StateT.run'_eq, StateT.run_map, map_bind, Functor.map_map, ← map_bind]
+    }, ?_⟩
   intro outerStmtIn hOuterStmtIn WitIn WitOut witIn outerP roundIdx hDir
-  have innerP : Prover oSpec InnerStmtIn WitIn InnerStmtOut WitOut pSpec := {
+  let innerP : Prover oSpec InnerStmtIn WitIn InnerStmtOut WitOut pSpec := {
     PrvState := outerP.PrvState
     input := fun _ => outerP.input (outerStmtIn, witIn)
     sendMessage := outerP.sendMessage
@@ -1018,8 +1063,19 @@ theorem liftContext_rbr_soundness [Inhabited InnerStmtOut]
   }
   have h' := h (lens.proj outerStmtIn) (lensSound.proj_sound _ hOuterStmtIn)
     WitIn WitOut witIn innerP roundIdx hDir
-  refine le_trans ?_ h'
-  sorry
+  refine le_trans (le_of_eq ?_) h'
+  -- The rbr-soundness game only invokes the prover's `runToRound` (never the verifier or the
+  -- prover's `output`), and `innerP` shares `input`/`sendMessage`/`receiveChallenge` with
+  -- `outerP`, so the two games are the *same* `ProbComp`.  The outer state function is
+  -- `stF (lens.proj ·) · ∨ · ∈ outerLangIn`; since `outerStmtIn ∉ outerLangIn`, the right
+  -- disjunct is false and the predicates coincide pointwise.
+  have hRTR : ∀ (i : Fin (n + 1)),
+      Prover.runToRound i (lens.proj outerStmtIn) witIn innerP
+        = Prover.runToRound i outerStmtIn witIn outerP := fun _ => rfl
+  simp only [hRTR]
+  refine probEvent_ext fun x _ => ?_
+  obtain ⟨transcript, challenge⟩ := x
+  simp only [hOuterStmtIn, or_false]
 
 /-
   Lifting the reduction preserves round-by-round knowledge soundness, assuming the lens
@@ -1038,11 +1094,31 @@ theorem liftContext_rbr_knowledgeSoundness [Inhabited InnerStmtOut] [Inhabited I
       (V.liftContext stmtLens).rbrKnowledgeSoundness init impl outerRelIn outerRelOut
         rbrKnowledgeError := by
   unfold rbrKnowledgeSoundness at h ⊢
-  obtain ⟨stF, E, h⟩ := h
-  simp at h ⊢
-  -- refine ⟨stF.liftContext (lens := lens.toStatement.Lens)
-  --   (lensSound := lensKnowledgeSound.toSound),
-  --         ?_, ?_⟩
+  obtain ⟨_WitMid, _E, _kSF, _h⟩ := h
+  -- DESIGN GAP (left as `sorry`): completing this lift requires API that does not yet exist.
+  --
+  -- To discharge the outer `rbrKnowledgeSoundness` we must supply an outer round-by-round
+  -- extractor `E' : Extractor.RoundByRound oSpec OuterStmtIn OuterWitIn OuterWitOut pSpec WitMid'`
+  -- with `E'.eqIn : WitMid' 0 = OuterWitIn`, together with an outer `KnowledgeStateFunction` over
+  -- `outerRelIn`/`outerRelOut`.  The inner extractor `E` only gives `E.eqIn : WitMid 0 = InnerWitIn`,
+  -- so `Extractor.RoundByRound.liftContext` (which reuses the *same* `WitMid` and demands
+  -- `WitMid 0 = OuterWitIn`) cannot be applied unless `InnerWitIn = OuterWitIn`.
+  --
+  -- A genuine lift would reindex `WitMid'` so that `WitMid' 0 = OuterWitIn`, but the round-0
+  -- boundary of `extractMid : (m : Fin n) → StmtIn → Transcript m.succ → WitMid' m.succ →
+  -- WitMid' m.castSucc` would then need to turn an inner round-1 witness into an `OuterWitIn`
+  -- with only `(stmtIn, transcript)` in scope.  The witness inverse lens
+  -- `witLens.lift : OuterStmtIn × OuterWitOut → InnerWitIn → OuterWitIn` requires an
+  -- `OuterWitOut`, which is unavailable at the `extractMid` boundary — there is no API to lift
+  -- `InnerWitIn → OuterWitIn` without an output witness.  Moreover `KnowledgeStateFunction.toFun_empty`
+  -- needs an `iff` relating `outerRelIn`-membership to the inner state, but
+  -- `Extractor.Lens.IsKnowledgeSound` only exposes the one-directional `lift_knowledgeSound`
+  -- (inner→outer for the *input* witness) and `proj_knowledgeSound` (outer→inner for the *output*),
+  -- never an `outerRelIn → innerRelIn` direction.
+  --
+  -- Closing this needs new core API (a round-0-boundary witness lens producing `OuterWitIn`
+  -- without an `OuterWitOut`, a `KnowledgeStateFunction.liftContext`, and a strengthened
+  -- lens-soundness class), which is out of scope for a sorry fill.
   sorry
 
 end Verifier

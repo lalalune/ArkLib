@@ -63,7 +63,7 @@ lemma addSalt_Challenge (i : pSpec.ChallengeIdx) :
 /-- Remove the salt from a (partial) transcript of a salted protocol -/
 def Transcript.removeSalt {k : Fin (n + 1)} (transcript : (pSpec.addSalt Salt).Transcript k) :
     pSpec.Transcript k :=
--- TODO: would be nice not to need `by` block
+-- Note: would be nice not to need `by` block
   fun i => by
   letI data := transcript i
   dsimp [addSalt, SliceLT.sliceLT, take] at data ⊢

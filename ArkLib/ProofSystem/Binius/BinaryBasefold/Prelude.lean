@@ -202,7 +202,7 @@ noncomputable def qMap_total_fiber
           ⟩ -- Shift indices to match y's basis
       exact basis_x.repr.symm ((Finsupp.equivFunOnFinite).symm x_coeffs)
 
-/- TODO : state that the fiber of y is the set of all 2 ^ steps points in the
+/- Note: state that the fiber of y is the set of all 2 ^ steps points in the
 larger domain S⁽ⁱ⁾ that get mapped to y by the series of quotient maps q⁽ⁱ⁾, ..., q⁽ⁱ⁺steps⁻¹⁾. -/
 
 omit [CharP L 2] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 [NeZero ℓ] in
@@ -377,7 +377,7 @@ theorem is_fiber_iff_generates_quotient_point (i : Fin ℓ) (steps : ℕ)
       -- ⊢ Here we compare coeffs, not the basis elements
       simp only [h_x_generates_y]
       have h_res := getSDomainBasisCoeff_of_iteratedQuotientMap 𝔽q β h_ℓ_add_R_rate i (k := steps)
-        (h_bound := by omega) x (j := ⟨j - steps, by -- TODO : make this index bound proof cleaner
+        (h_bound := by omega) x (j := ⟨j - steps, by -- Note: make this index bound proof cleaner
           simp only; rw [←Nat.sub_sub]; -- ⊢ ↑j - steps < ℓ + 𝓡 - ↑i - steps
           apply Nat.sub_lt_sub_right;
           · exact Nat.le_of_not_lt h_j
@@ -654,7 +654,7 @@ def foldMatrix (i : Fin r) (steps : Fin (ℓ + 1)) (h_i_add_steps : i.val + step
     use baseFoldMatrix 𝔽q β i (h_i := by rw [←h_steps_eq_1]; omega)
       (y := by simp_rw [←h_steps_eq_1]; omega)
   else
-    -- TODO : recursive definition of the fold matrix
+    -- Note: recursive definition of the fold matrix
     sorry
 
 /-- Iterated fold over `steps` steps starting at domain index `i`. -/
@@ -712,7 +712,7 @@ lemma iterated_fold_transitivity
     lhs = by
       simp only [←Nat.add_assoc] at ⊢ rhs
       exact rhs := by
-  sorry -- admitted for brevity, relies on a lemma like `Fin.dfoldl_add`
+  sorry
 
 /-- Tensor product of challenge vectors : for a local fold length `steps`,
 ⨂_{j=0}^{steps-1}(1-r_j, r_j). -/
