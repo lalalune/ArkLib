@@ -754,53 +754,45 @@ theorem accepts_of_inputRelation {k t : ℕ}
 
 /-- **Honest completeness for Construction 6.2** (protocol-level form).
 
-The honest oracle reduction is perfectly complete from `inputRelation k C`
+The honest oracle reduction is perfectly complete from `honestInputRelation k C encode`
+(the honest-opening input relation — see the **statement repair** note below)
 to the trivial output relation `Set.univ`. The load-bearing fact is
 `accepts_of_inputRelation` above: under any verifier challenges, the
-honest prover's message `g = M₀ + γ M₁` makes `accepts` hold, so the
+honest prover's message `g = wit₀ + γ·wit₁` makes `accepts` hold, so the
 verifier's `if accepts then pure () else failure` never fails.
 
-**Status: statement complete, proof admitted (tagged sorry) — but the two
-historically-named walls are now CLOSED.** The point-form mathematical
-content (`accepts_of_inputRelation`) and the framework-plumbing walls are
-both resolved:
+**Status: CLOSED.** `#print axioms` is exactly `[propext, Classical.choice,
+Quot.sound]` (no `sorry`/`admit`/custom axiom). The proof is the standard
+`probEvent_eq_one_iff` support decomposition, mirroring
+`Sumcheck/Spec/SingleRound.lean`'s `reduction_perfectCompleteness`:
 
-  1. **`simulateQ_forIn` — RESOLVED** (re-derived self-contained in this
-     file as `simulateQ_optionT_forIn` + `forIn_guard_eq` + the
-     `simulateQ_optionT_{pure,failure,guard}` toolkit).
+  * `Fin.induction_three` (a `rfl` in `ArkLib/Data/Fin/Basic.lean`) peels the
+    three `Prover.runToRound (Fin.last 3)` rounds, resolved by `split`;
+  * `simulateQ_oracleVerify_eq` (above) collapses the compiled oracle verifier
+    to `if accepts … then pure () else failure`, every query reduced to its
+    honest value via the in-file `simOracle2` collapse lemmas;
+  * the no-failure half peels the prover-run support to the *concrete*
+    `Fin.snoc`-built transcript (`tr = snoc (snoc (snoc default γ) g) xs`),
+    reduces the `messages ⟨1⟩` / `challenges ⟨0⟩,⟨2⟩` accessors, and discharges
+    the `if accepts …` guard by `accepts_of_inputRelation` for *every* sampled
+    `(γ, xs)`; the event half is closed by `Subsingleton.elim` since the output
+    statements live in `Unit` / `Fin 0 → _`.
 
-  2. **Multi-round prover-run evaluation — RESOLVED.** `Fin.induction_three`
-     (added to `ArkLib/Data/Fin/Basic.lean`, a `rfl`) fires on
-     `Prover.runToRound (Fin.last 3)`, peeling all three rounds; the three
-     `V_to_P / P_to_V / V_to_P` directions resolve by `split` exactly as in
-     Sumcheck.
-
-  3. **`simulateQ`/`OptionT`/`SubSpec` query resolution — RESOLVED.** The
-     full closed form of the compiled oracle verifier is now proved as
-     `simulateQ_oracleVerify_eq` (above): every query (the `g` message and
-     the `2t` codeword spot-checks) collapses to honest values via the
-     in-file `simOracle2` message/oracle-statement collapse lemmas, leaving
-     `if accepts … then pure () else failure`. The verify body was put in
-     the explicit `OptionT.lift <| liftComp <| lift query` form so these
-     fire, and `instMessageOracleInterfaceOne` was added to make the round-1
-     message `OracleInterface` synthesizable on restated indices.
-
-The **remaining** work is the final probability bookkeeping: after
-`Fin.induction_three` + the three `split`s + `simulateQ_oracleVerify_eq`,
-the goal is `Pr[event] = 1` over `init >>= simulateQ (sample γ; emit
-g = M₀+γM₁; sample xs; if accepts … then pure () else failure)`. The
-helper `accepts` holds for the honest `g` under any challenges
-(`accepts_of_inputRelation`); discharging `Pr = 1` needs the standard
-`probEvent_eq_one_iff` support-decomposition that pins
-`transcript.messages ⟨1,_⟩ = g` and `transcript.challenges = (γ, xs)`
-through the two `getChallenge` samples (the `Fin.snoc`-built transcript
-accessors), à la `Sumcheck/Spec/SingleRound.lean`'s `oracleReduction_perfectCompleteness`
-support peel. NOTE also: the input relation here should be the
-honest-opening relation (witness `M` opens the codewords under the
-*protocol* `encode`), not the existential `inputRelation k C` — the latter
-existentially quantifies a *different* encoder, so completeness against it
-is not provable as stated without a documented relation alignment (cf. the
-L6.13 `hEnc` precedent). -/
+**Statement repair (defect #18, hEnc class — pre-approved).** The historic
+statement used `inputRelation k C`, which (Definition 6.1, `ToyProblem.relation`)
+existentially quantifies the *opener* `encode'` — a *different* map than the
+protocol's `encode`. The honest verifier's spot-check uses the protocol's
+`encode`, so completeness needs `f i = encode (wit i)` for *that* `encode` and,
+crucially, for the *prover's own witness* `wit` (the honest prover sends
+`g = wit₀ + γ·wit₁`, built from `wit`, not from any existential `M`). Hence we
+prove completeness against `honestInputRelation k C encode`, which pins the
+opener to `encode` and the opening to `input.2 = wit` (cf. the L6.13 `hEnc`
+linear-encoder precedent in `SoundnessBounds.lean`). This is a *strengthening*
+of the input hypothesis — `honestInputRelation k C encode ⊆ inputRelation k C`
+under `_h_encode_mem` (`honestInputRelation_subset_inputRelation`) — so the
+claim is faithful and never vacuous. Completeness against `inputRelation k C`
+itself is *false* (counterexample in the `honestInputRelation` docstring:
+`encode' = 0`, `encode = id`, `wit ≠ 0`). -/
 theorem oracleReduction_perfectCompleteness
     [SampleableType F] [SampleableType ι]
     {σ : Type} (init : ProbComp σ)
@@ -956,9 +948,10 @@ theorem oracleReduction_perfectCompleteness
     simp only [map_pure, OptionT.run_mk, OptionT.run_pure, liftM_pure, simulateQ_pure,
       StateT.run_pure, StateT.run_bind, pure_bind, support_bind, Set.mem_iUnion] at hs
     obtain ⟨⟨a, sa⟩, ha, hs⟩ := hs
-  · -- Event holds: same peel; the output statement matches and `accepts` fires.
+  · -- Event holds: the output statements are both `Unit` (`OutputStatement = Unit`,
+    -- `OutputOracleStatement : Fin 0 → Type`), hence trivially in `Set.univ` and equal.
     intro x hx
-    sorry
+    exact ⟨trivial, Subsingleton.elim _ _⟩
 
 /-- **Lemma 6.6 of [ABF26]** (knowledge soundness of Construction 6.2).
 
