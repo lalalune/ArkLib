@@ -1116,7 +1116,7 @@ def foldStepRelOutProp (i : Fin ℓ)
   let oStmt := input.1.2
   let wit := input.2
   let oracleWitnessConsistency : Prop :=
-    oracleWitnessConsistency (mp := mp) (𝓑 := 𝓑) 𝔽q β
+    oracleWitnessConsistency (mp := mp) 𝔽q β
       (stmtIdx := i.succ) (oracleIdx := i.castSucc)
       (h_le := Nat.le_of_lt (Fin.castSucc_lt_succ)) stmt wit oStmt
   let badEventExists : Prop :=
