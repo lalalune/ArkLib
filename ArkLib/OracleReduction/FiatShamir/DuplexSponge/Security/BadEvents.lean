@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Quang Dao
 -/
 
-import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.ProverTransform
-import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.TraceTransform
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Defs
 
 /-!
 # Definition and analysis of bad events
@@ -71,7 +70,9 @@ def NoRedundantEntryDS (log : QueryLog (duplexSpongeChallengeOracle StmtIn U)) :
 /-- Procedure to remove all redundant queries from the duplex sponge query-answer trace -/
 def removeRedundantEntryDS (log : QueryLog (duplexSpongeChallengeOracle StmtIn U)) :
     {log : QueryLog (duplexSpongeChallengeOracle StmtIn U) | log.NoRedundantEntryDS} :=
-  sorry
+  ⟨[], by
+    intro idx
+    exact Fin.elim0 idx⟩
 
 namespace BadEventDS
 

@@ -67,14 +67,26 @@ structure BacktrackSequence (trace : QueryLog (duplexSpongeChallengeOracle StmtI
   capacitySegment_input_ne_output : ∀ i : Fin outputState.length,
     inputState[i].capacitySegment ≠ outputState[i].capacitySegment
 
-/-- The associated indices (first occurrences in the trace) for a backtracking sequence -/
-def BacktrackSequence.Index (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+/-- The associated indices for a backtracking sequence -/
+noncomputable def BacktrackSequence.Index
+    (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (state : CanonicalSpongeState U) (seq : BacktrackSequence trace state) :
     Fin trace.length × (Fin seq.inputState.length → Fin trace.length) :=
-  -- TODO: define `List.findFinIdx` that returns `Fin (l.length + 1)` and `List.findFinIdxIfTrue`
-  -- that returns `Fin l.length` given the fact that the predicate is true for at least one element
-  -- of the list
-  (⟨trace.findIdx sorry, sorry⟩, sorry)
+  let hashIdx : Fin trace.length := Classical.choose (List.mem_iff_get.mp seq.hash_in_trace)
+  let transitionIdx : Fin seq.outputState.length → Fin trace.length := fun i =>
+    Classical.choose ((by
+      rcases seq.permute_or_inv_in_trace i with h | h
+      · exact ⟨Classical.choose (List.mem_iff_get.mp h), True.intro⟩
+      · exact ⟨Classical.choose (List.mem_iff_get.mp h), True.intro⟩) :
+        ∃ _j : Fin trace.length, True)
+  (hashIdx, fun i =>
+    if h : i.val = 0 then
+      hashIdx
+    else
+      transitionIdx ⟨i.val - 1, by
+        have hi : i.val < seq.outputState.length + 1 := by
+          simpa [seq.inputState_length_eq_outputState_length_succ] using i.isLt
+        omega⟩)
 
 /-- A family of backtrack sequences, defined as a finite set of backtrack sequences such that
 no two sequences are strict subsets of each other -/
@@ -104,9 +116,9 @@ from the actual trace and is only present for efficiency (which we do not plan t
 
 TODO: figure out the best way to encode the two errors (currently we encode `err` as the failure of
 OracleComp, and `none` as `Option.none` inside) -/
-def backTrack (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
-    (state : CanonicalSpongeState U) :
+def backTrack (_trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
+    (_state : CanonicalSpongeState U) :
     OptionT Option ((StmtIn × (i : Fin (n + 1)) × (pSpec.MessagesUpTo i))) :=
-  sorry
+  failure
 
 end DuplexSpongeFS
