@@ -540,27 +540,59 @@ theorem Pr_exists_Fin_le_sum {α : Type} (D : PMF α) {t : ℕ} (f : Fin t → �
   · rw [if_neg h]
     exact zero_le _
 
+/-- **Structural half of ABF26 Lemma 4.6 (provable in-tree).** The `mcaEvent` always entails
+that the line `u₀ + γ • u₁` is `δ`-close to `C`: the event's witness set `S` (of size
+`≥ (1-δ)·n`) carries a codeword `w ∈ C` that agrees with the line on `S`, so `δᵣ(line, w) ≤ δ`
+and hence `δᵣ(line, C) ≤ δ`. (This direction needs no unique-decoding hypothesis; it is the
+`mcaEvent`-level analogue of the line-close witness used in `epsCA_le_epsMCA`.) -/
+theorem mcaEvent_imp_relCloseToCode
+    (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A) (γ : F)
+    (h : mcaEvent C δ u₀ u₁ γ) :
+    δᵣ(u₀ + γ • u₁, C) ≤ δ := by
+  classical
+  obtain ⟨S, hS_card, ⟨w, hw_mem, hw_eq⟩, _hpair⟩ := h
+  rw [relCloseToCode_iff_relCloseToCodeword_of_minDist]
+  refine ⟨w, hw_mem, ?_⟩
+  rw [relCloseToWord_iff_exists_agreementCols]
+  refine ⟨S, (relDist_floor_bound_iff_complement_bound _ _ _).mpr hS_card, ?_⟩
+  intro j
+  refine ⟨fun hj ↦ ?_, fun hne hj ↦ ?_⟩
+  · -- agreement on `S`: `w j = (u₀ + γ • u₁) j`
+    simpa [Pi.add_apply, Pi.smul_apply] using (hw_eq j hj).symm
+  · -- contradiction: if `j ∈ S` then `w` agrees with the line at `j`
+    exact hne (by simpa [Pi.add_apply, Pi.smul_apply] using (hw_eq j hj).symm)
+
 /-- **ABF26 Lemma 4.6.** In the unique-decoding regime `δ < δ_min(C)/2`, `ε_mca` and `ε_ca`
 coincide: `ε_mca(C, δ) = ε_ca(C, δ)`.
 
 The unique-decoding hypothesis is expressed as `2 · δ · n < δ_min(C) · n = ‖C‖₀` to avoid
 fractional arithmetic in ℕ — equivalent to the paper's `δ < δ_min(C)/2`.
 
-**Status: external admit.** Proof is in [ACFY25, Lemma 4.10] (footnote 6 in ABF26 notes
-the proof is for linear codes but generalises to F-additive codes). The argument is not
-the obvious case-split: `mcaEvent` *can* hold at specific `γ`-values when `jointProximity`
-holds (line agrees with the unique close codeword `v₀ + γ v₁` on `S_pair ∪ {i*}` for an
-extra position `i*`, requiring `γ` to satisfy a specific equation per `i*`), and the
-equality only follows from a dominance argument over the choice of `u`. Formalising
-this in Lean is out of scope for Phase 1; tracked in `docs/kb/ABF26_PLAN.md` §6
-conjecture ledger. -/
+The proof is reduced here to **one** inequality. The direction `ε_ca ≤ ε_mca` is the in-tree
+`epsCA_le_epsMCA` (no UDR needed). What remains, `ε_mca ≤ ε_ca`, is the genuinely hard
+direction:
+
+**Status of the remaining direction: external admit** ([ACFY25, Lemma 4.10]; footnote 6 in
+ABF26 notes the proof is for linear codes but generalises to F-additive codes). It is **not**
+a pointwise `iSup`-monotonicity: for a fixed stack `u`, when `jointProximity C u δ` holds the
+`epsCA` body collapses to `0` while `Pr_γ[mcaEvent]` can still be **positive** — under UDR the
+line can agree with the unique close codeword `v₀ + γ·v₁` on `S_pair ∪ {i*}` for an extra
+position `i*`, which happens exactly when `γ` solves a per-`i*` linear equation, a non-empty
+`γ`-set. So `epsMCA_body u ≤ epsCA_body u` is false in general; the inequality only holds after
+the global dominance/rearrangement argument of ACFY25 (matching each such `u` against a
+non-jointly-close `u'` realising the same probability). Formalising that argument is out of
+scope for Phase 1; tracked in `docs/kb/ABF26_PLAN.md` §6 conjecture ledger. The provable
+structural half `mcaEvent → δᵣ(line, C) ≤ δ` is recorded above as
+`mcaEvent_imp_relCloseToCode`. -/
 theorem epsMCA_eq_epsCA_below_udr
     (C : Submodule F (ι → A)) (δ : ℝ≥0)
     (_h_udr : 2 * δ * (Fintype.card ι : ℝ≥0) <
               (Code.dist ((C : Set (ι → A))) : ℝ≥0)) :
     epsMCA (F := F) (A := A) ((C : Set (ι → A))) δ =
     epsCA (F := F) (A := A) ((C : Set (ι → A))) δ δ := by
-  sorry -- ABF26 L4.6: external result from ACFY25 Lemma 4.10
+  refine le_antisymm ?_ (epsCA_le_epsMCA C δ)
+  -- Remaining hard direction `ε_mca ≤ ε_ca` (ACFY25 Lemma 4.10): see docstring.
+  sorry -- ABF26 L4.6 (ε_mca ≤ ε_ca only): external result from ACFY25 Lemma 4.10
 
 /-- Row-extraction: the `k`-th row of a `Fin t → A`-valued word, as an `A`-valued word. -/
 private def row_of {ι : Type} {A : Type} {t : ℕ}
