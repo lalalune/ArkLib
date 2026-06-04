@@ -1102,17 +1102,23 @@ The proof is reduced here to **one** inequality. The direction `ε_ca ≤ ε_mca
 `epsCA_le_epsMCA` (no UDR needed). What remains, `ε_mca ≤ ε_ca`, is the genuinely hard
 direction:
 
-**Status of the remaining direction: shrunk to ONE explicit inequality.** Via the audited
-max-form decomposition `epsMCA_le_max_epsCA_jointlyProximateContribution`,
-`ε_mca ≤ max (ε_ca) (jointlyProximateContribution C δ)`. So the whole hard direction now
-follows from the *single* residual
+**Status of the remaining direction: shrunk to ONE explicit per-stack inequality on the
+*difference* stack.** Via the audited max-form decomposition
+`epsMCA_le_max_epsCA_jointlyProximateContribution`,
+`ε_mca ≤ max (ε_ca) (jointlyProximateContribution C δ)`, so the hard direction follows from
+`jointlyProximateContribution C δ ≤ ε_ca(C, δ, δ)`. **Step A of that residual is now proven
+in-tree** (the `iSup_le`/`Pr_le_Pr_of_implies` block below): for each jointly-`δ`-close stack
+`u`, `jointProximity_mcaEvent_imp_diffStack_mcaEvent_udr` transfers `mcaEvent(u)` to the
+*difference stack* `d := (u 0 - p₀, u 1 - p₁)` (with `(p₀, p₁) ∈ C²` the `γ`-independent
+`jointProximity` witnesses), giving `Pr_γ[mcaEvent(u)] ≤ Pr_γ[mcaEvent(d)]`. This sharpens the
+`sorry` from the opaque `jointlyProximateContribution ≤ ε_ca` to the **single per-stack**
 
-  `jointlyProximateContribution C δ ≤ ε_ca(C, δ, δ)`     (the `sorry` below),
+  `Pr_γ[mcaEvent C δ (u 0 - p₀) (u 1 - p₁) γ] ≤ ε_ca(C, δ, δ)`     (Step B, the `sorry` below),
 
-after which `max (ε_ca) (jointlyProximateContribution) = ε_ca`. This is strictly less than the
-former opaque `ε_mca ≤ ε_ca` admit: the residual is now explicitly the worst-case `mcaEvent`
-mass over the *jointly-`δ`-close* stacks only (the `¬jointProximity` part is already discharged
-by `epsMCA_restricted_le_epsCA`).
+where `d` *vanishes* on the size-`≥(1-δ)n` `jointProximity` set `S'`. This is strictly less than
+the former opaque admit: the `¬jointProximity` part is discharged by `epsMCA_restricted_le_epsCA`,
+the jointly-close part is normalized to a difference stack, and only the bound on the
+exceptional-`γ` set of that one fixed difference stack remains.
 
 Why even this residual is **not** a pointwise `iSup`-monotonicity ([ACFY25, Lemma 4.10];
 footnote 6 in ABF26 notes the proof is for linear codes but generalises to F-additive codes):
@@ -1137,9 +1143,71 @@ theorem epsMCA_eq_epsCA_below_udr
     (F := F) (C := (C : Set (ι → A))) δ) ?_
   rw [max_le_iff]
   refine ⟨le_refl _, ?_⟩
-  -- Remaining: `jointlyProximateContribution C δ ≤ ε_ca` — the ACFY25 Lemma 4.10 list-decoding
-  -- count of the exceptional `γ` of the fixed difference stack; see docstring.
-  sorry -- ABF26 L4.6 residual: jointlyProximateContribution ≤ ε_ca (ACFY25 Lemma 4.10)
+  -- Remaining: `jointlyProximateContribution C δ ≤ ε_ca`.
+  --
+  -- **Step A (now proven in-tree): normalize each jointly-proximate `mcaEvent` to its difference
+  -- stack.** For a jointly-`δ`-close `u`, `jointProximity_mcaEvent_imp_diffStack_mcaEvent_udr`
+  -- supplies a *fixed, `γ`-independent* codeword pair `(p₀, p₁) ∈ C²` with
+  -- `∀ γ, mcaEvent C δ (u 0) (u 1) γ → mcaEvent C δ (u 0 - p₀) (u 1 - p₁) γ`, so
+  -- `Pr_γ[mcaEvent(u)] ≤ Pr_γ[mcaEvent(diff)]` by event domination. This **sharpens** the residual
+  -- from the opaque `jointlyProximateContribution ≤ ε_ca` to the precise per-stack
+  --
+  --   `Pr_γ[mcaEvent C δ (u 0 - p₀) (u 1 - p₁) γ] ≤ ε_ca(C, δ, δ)`     (Step B, the `sorry`),
+  --
+  -- where the difference stack `d := (u 0 - p₀, u 1 - p₁)` **vanishes** on the `jointProximity`
+  -- set `S'` (size `≥ (1-δ)·n`); it is itself jointly `δ`-close (witness `(0,0)` on `S'`, see
+  -- `jointProximity_diffStack_line_close`).
+  unfold jointlyProximateContribution
+  apply iSup_le
+  intro u
+  by_cases hjp : jointProximity (C := (C : Set (ι → A))) (u := u) δ
+  · rw [if_pos hjp]
+    -- Step A: transfer the `mcaEvent` of `u` to the *difference stack* `d := (u0-p₀, u1-p₁)`.
+    obtain ⟨p₀, hp₀, p₁, hp₁, h_imp⟩ :=
+      jointProximity_mcaEvent_imp_diffStack_mcaEvent_udr (F := F) C δ u _h_udr hjp
+    refine le_trans (Pr_le_Pr_of_implies _ _ _ h_imp) ?_
+    -- ════════════════════════════════════════════════════════════════════════════════════════
+    -- **Step B — RESIDUAL (WALL; the in-tree counting reduction is kernel-checked FALSE; the
+    -- faithful route needs Guruswami–Sudan list-decoding not yet wired to these definitions).**
+    -- Exact remaining goal state (via `extract_goal`):
+    --   `Pr_{let r ← $ᵖ F}[mcaEvent (↑C) δ (u 0 - p₀) (u 1 - p₁) r] ≤ epsCA (↑C) δ δ`
+    -- with `p₀ p₁ ∈ ↑C`, `hjp : jointProximity (↑C) u δ`, and `h_imp` as above.
+    --
+    -- Why Step B is NOT closable in-tree (four distinct skeletons, all failing identically):
+    --
+    --  S1 (bound `mcaEvent(d)` by `d`'s own `ε_ca` body): the difference stack `d` is itself
+    --     jointly `δ`-close (`jointProximity_diffStack_line_close`, witness `(0,0)` on `S'`), so
+    --     the `ε_ca` body `if jointProximity C d δ then 0 else …` for `d` is **`0`**; one cannot
+    --     bound a positive `Pr_γ[mcaEvent(d)]` by `0`. The diff-stack transfer keeps us *inside*
+    --     the jointly-close branch — it does not move `d` into the non-jointly-close part of the
+    --     `ε_ca` supremum (the only part `epsMCA_restricted_le_epsCA` controls).
+    --  S2 (route `mcaEvent(d) → line-close(d)`, dominate by a line-close probability ≤ ε_ca):
+    --     `mcaEvent_imp_relCloseToCode` gives `δᵣ(d0+γ·d1, C) ≤ δ`, but the line-close
+    --     probability of `d` also collapses through `d`'s gated `ε_ca` body (= 0, `d` jointly
+    --     close). Same wall as S1.
+    --  S3 (show `mcaEvent(d)` impossible under UDR ⇒ Pr = 0): UDR forces the `mcaEvent(d)` witness
+    --     `w = 0` globally (on `S ∩ S'`, `d0+γ·d1 = 0`, complement `< δ_min`, so `w = 0`); but the
+    --     no-joint-pair clause is on the **full** `S`, and `(0,0)` agrees with `(d0, d1)` only on
+    --     `S ∩ S'`, not on `S \ S'`. So `mcaEvent(d)` can still fire (`pairJointAgreesOn` is
+    --     **antitone** in `S`; the easy 2-`γ` argument yields agreement on the *intersection* only
+    --     — cf. `LineDecoding.lean` WALL, lines 106–112).
+    --  S4 (global multi-`γ` double-coverage count on `S`): the per-position double-coverage target
+    --     is **mathematically FALSE for `m := ⌊δ·n⌋ ≥ 1`** (the only non-degenerate regime,
+    --     `δ ≥ 1/n`); refuted by the kernel-checked
+    --     `ProximityGap.LineDecodingCounting.double_coverage_counterexample`
+    --     (axioms `[propext, Classical.choice, Quot.sound]`).
+    --
+    -- The faithful route is the Guruswami–Sudan/[Hab25]/[GG25 Thm 3.5] bivariate list decoder of
+    -- `f₀ + Z·f₁` over `F(Z)`: the exceptional `γ` are the roots of one interpolation polynomial
+    -- `Q(X,Y)` of `Y`-degree `ℓ` (list size), with `|E| ≤ ℓ⁷·(ρn)²/3`. That count is the in-tree
+    -- `WeightedAgreement.list_agreement_on_curve_implies_correlated_agreement_bound` machinery, but
+    -- wiring it here requires `ε_ca`/`mcaEvent` to expose the GS degree structure (a documented
+    -- statement REPAIR of these abstract definitions), not a leaf proof of the present form.
+    -- Tracked in `docs/kb/ABF26_PLAN.md` §6; mirrors `LineDecoding.lean`'s residual.
+    -- ════════════════════════════════════════════════════════════════════════════════════════
+    -- Step-B residual: `Pr_γ[mcaEvent(diff-stack)] ≤ ε_ca` (GS list-decoding count); see above.
+    sorry
+  · rw [if_neg hjp]; exact zero_le _
 
 /-- Row-extraction: the `k`-th row of a `Fin t → A`-valued word, as an `A`-valued word. -/
 private def row_of {ι : Type} {A : Type} {t : ℕ}
