@@ -74,7 +74,7 @@ private lemma card_reconciling_le_one (u₀ u₁ p₀ p₁ : ι → F) {x : ι}
 the joint disagreement count `d` satisfies `(|Z| − 1) · d ≤ |Z| · e`
 (equivalently `d ≤ |Z|/(|Z|−1) · e`). -/
 theorem card_jointDisagreement_mul_le {u₀ u₁ p₀ p₁ : ι → F} {e : ℕ}
-    (Z : Finset F) (hZ : 2 ≤ Z.card)
+    (Z : Finset F) (_hZ : 2 ≤ Z.card)
     (hclose : ∀ z ∈ Z,
       hammingDist (fun x => u₀ x + z * u₁ x) (fun x => p₀ x + z * p₁ x) ≤ e) :
     (Z.card - 1) * (jointDisagreement u₀ u₁ p₀ p₁).card ≤ Z.card * e := by
@@ -137,7 +137,7 @@ theorem card_jointDisagreement_mul_le {u₀ u₁ p₀ p₁ : ι → F} {e : ℕ}
   by_cases hde : d ≤ e
   · calc (Z.card - 1) * d ≤ Z.card * d := Nat.mul_le_mul_right d (Nat.sub_le _ _)
       _ ≤ Z.card * e := Nat.mul_le_mul_left _ hde
-  · push_neg at hde
+  · push Not at hde
     -- distribute, then rearrange with sub_le_iff (products are opaque to omega)
     have hms : Z.card * (d - e) = Z.card * d - Z.card * e := by
       rw [Nat.mul_comm, Nat.sub_mul, Nat.mul_comm d, Nat.mul_comm e]
