@@ -343,6 +343,68 @@ theorem RS_BW_homMatrix_det_submatrix_eq_zero_of_goodCoeffsCurve_card_gt
       (by simpa using hdeg_lt)
   simpa [A, M, N, e] using hdetA0
 
+open scoped BigOperators in
+open Polynomial in
+open Matrix in
+theorem RS_BW_homMatrix_det_submatrix_eq_zero_of_goodCoeffsCurve_card_gt_fun
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (u : WordStack F (Fin (k + 1)) ι)
+    (hdeg : deg ≤ Fintype.card ι)
+    (hδ : δ ≤ relativeUniqueDecodingRadius (ι := ι) (F := F)
+      (C := ReedSolomon.code domain deg))
+    (hS : (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k * Fintype.card ι + 1) :
+    let e : ℕ := Nat.floor (δ * Fintype.card ι)
+    let N : ℕ := (e + 1) + (e + deg)
+    ∀ r : Fin N → ι,
+      Matrix.det
+          (Matrix.submatrix
+            (BW_homMatrix (ι := ι) e deg
+              (fun i => (Polynomial.C (domain i) : F[X]))
+              (fun i => ∑ t : Fin (k + 1), Polynomial.C (u t i) * Polynomial.X ^ (t : ℕ)))
+            r id) = 0 := by
+  classical
+  dsimp
+  intro r
+  by_cases hinj : Function.Injective r
+  · let r' :
+        Fin ((Nat.floor (δ * Fintype.card ι) + 1) + (Nat.floor (δ * Fintype.card ι) + deg)) ↪ ι :=
+      ⟨r, hinj⟩
+    have h :=
+      RS_BW_homMatrix_det_submatrix_eq_zero_of_goodCoeffsCurve_card_gt
+        (k := k) (deg := deg) (domain := domain) (δ := δ) u hdeg hδ hS
+    dsimp at h
+    exact h r'
+  · have hinj' :
+        ∃ i j : Fin ((Nat.floor (δ * Fintype.card ι) + 1) + (Nat.floor (δ * Fintype.card ι) + deg)),
+        r i = r j ∧ i ≠ j := by
+      -- unfold Injective and push negation
+      have : ¬ (∀ i j, r i = r j → i = j) := by
+        simpa [Function.Injective] using hinj
+      push Not at this
+      -- `this` is now ∃ i j, r i = r j ∧ i ≠ j
+      simpa [and_left_comm, and_assoc, and_comm] using this
+    rcases hinj' with ⟨i, j, hij, hne⟩
+    have hrow : (Matrix.submatrix
+        (BW_homMatrix (ι := ι) (Nat.floor (δ * Fintype.card ι)) deg
+          (fun i => (Polynomial.C (domain i) : F[X]))
+          (fun i => ∑ t : Fin (k + 1), Polynomial.C (u t i) * Polynomial.X ^ (t : ℕ)))
+        r id) i =
+        (Matrix.submatrix
+          (BW_homMatrix (ι := ι) (Nat.floor (δ * Fintype.card ι)) deg
+            (fun i => (Polynomial.C (domain i) : F[X]))
+            (fun i => ∑ t : Fin (k + 1), Polynomial.C (u t i) * Polynomial.X ^ (t : ℕ)))
+          r id) j := by
+      ext k
+      simp [Matrix.submatrix, hij]
+    -- determinant is zero due to repeated rows
+    exact Matrix.det_zero_of_row_eq (M :=
+        Matrix.submatrix
+          (BW_homMatrix (ι := ι) (Nat.floor (δ * Fintype.card ι)) deg
+            (fun i => (Polynomial.C (domain i) : F[X]))
+            (fun i => ∑ t : Fin (k + 1), Polynomial.C (u t i) * Polynomial.X ^ (t : ℕ)))
+          r id) hne hrow
+
+
 end CoreResults
 
 end ProximityGap
