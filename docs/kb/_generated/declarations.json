@@ -48675,9 +48675,27 @@
           "signature": "def inputRelation (C : Set (\u03b9 \u2192 F)) :"
         },
         {
+          "doc": "The IOR-shaped **honest-opening** input relation for a *fixed* encoder `encode` (the protocol's own combining map). `((v, \u03bc\u2081, \u03bc\u2082), (f\u2081, f\u2082)) \u2208 honestInputRelation k C encode` iff there is a message matrix `M : Fin 2 \u2192 Fin k \u2192 F` such that * `f i = encode (M i)` for the **protocol's** `encode` (honest opening), and * `\u2211_j M i j \u00b7 v j = \u03bc i` (the linear constraint). ## Documented statement repair (2026-06): protocol-encoder alignment (hEnc class) The historic completeness statement used `inputRelation k C`, which unfolds (Definition 6.1, `ToyProblem.relation`) to `\u2203 M, (\u2203 encode', (\u2200 m, encode' ",
+          "kind": "def",
+          "line": 222,
+          "name": "ToyProblem.Spec.honestInputRelation",
+          "namespace": "ToyProblem.Spec",
+          "short_name": "honestInputRelation",
+          "signature": "def honestInputRelation (_C : Set (\u03b9 \u2192 F)) (encode : (Fin k \u2192 F) \u2192\u2097[F] (\u03b9 \u2192 F)) :"
+        },
+        {
+          "doc": "`honestInputRelation` is contained in `inputRelation` when the encoder's image lies in `C` \u2014 i.e. honest opening is a *stronger* input hypothesis, so completeness against `honestInputRelation` is the faithful (non-vacuous) claim. (The converse fails, see the `honestInputRelation` docstring.)",
+          "kind": "theorem",
+          "line": 240,
+          "name": "ToyProblem.Spec.honestInputRelation_subset_inputRelation",
+          "namespace": "ToyProblem.Spec",
+          "short_name": "honestInputRelation_subset_inputRelation",
+          "signature": "theorem honestInputRelation_subset_inputRelation"
+        },
+        {
           "doc": "The IOR-shaped *relaxed* output relation derived from `ToyProblem.relaxedRelation` (Definition 6.3). The soundness statement of L6.6 is with respect to this relation: the verifier's \"accept\" guarantee is that the input is `\u03b4`-close to a valid `relation`-instance.",
           "kind": "def",
-          "line": 187,
+          "line": 255,
           "name": "ToyProblem.Spec.outputRelation",
           "namespace": "ToyProblem.Spec",
           "short_name": "outputRelation",
@@ -48686,7 +48704,7 @@
         {
           "doc": "Honest prover for Construction 6.2. After receiving the combination randomness `\u03b3`, the prover sends `g := M 0 + \u03b3 \u00b7 M 1` (point-wise on `Fin k`). The spot-check positions `xs` are not used by the prover \u2014 they only feed the verifier's spot-check at the end. State machine (`PrvState : Fin 4 \u2192 Type`): * `PrvState 0` \u2014 initial: the bundled `(stmt, oStmt) \u00d7 witness`. * `PrvState 1, 2, 3` \u2014 same plus the combination randomness `\u03b3`.",
           "kind": "def",
-          "line": 224,
+          "line": 292,
           "name": "ToyProblem.Spec.prover",
           "namespace": "ToyProblem.Spec",
           "short_name": "prover",
@@ -48695,7 +48713,7 @@
         {
           "doc": "The \u00a76.1 decision predicate is decidable: it's a finite conjunction of equalities in `F` (decidable via `DecidableEq F`) and a `Fin t` universally-quantified equality (decidable via the `Fintype` `Decidable` instance). Marking explicitly so the `verifier` below can stay computable (cf. FRI's `foldVerifier`, which is plain `def`).",
           "kind": "instance",
-          "line": 255,
+          "line": 323,
           "name": "ToyProblem.Spec.accepts.instDecidable",
           "namespace": "ToyProblem.Spec",
           "short_name": "accepts.instDecidable",
@@ -48704,7 +48722,7 @@
         {
           "doc": "Honest verifier for Construction 6.2. Takes the bundled input `(stmt, oStmt) = ((v, \u03bc\u2081, \u03bc\u2082), (f\u2081, f\u2082))` and the full transcript `(\u03b3, g, xs)`; accepts iff `accepts` holds for the supplied encoding. Computable \u2014 `accepts` is decidable, so no `Classical.dec` is needed. This mirrors FRI's `foldVerifier`, which is also a plain `def`.",
           "kind": "def",
-          "line": 268,
+          "line": 336,
           "name": "ToyProblem.Spec.verifier",
           "namespace": "ToyProblem.Spec",
           "short_name": "verifier",
@@ -48713,7 +48731,7 @@
         {
           "doc": "Honest reduction for Construction 6.2: the package `{prover, verifier}` over the bundled-input `Reduction` type.",
           "kind": "def",
-          "line": 282,
+          "line": 350,
           "name": "ToyProblem.Spec.reduction",
           "namespace": "ToyProblem.Spec",
           "short_name": "reduction",
@@ -48722,7 +48740,7 @@
         {
           "doc": "Same as `prover` but exposed at the `OracleProver` signature. The underlying `Prover` is identical (after the `OracleProver` type-alias unfolds to a `Prover` on bundled in/out types). The output is the trivial `(((), nofun), ())` since the IOR has no output oracle statements (`OutputOracleStatement : Fin 0 \u2192 Type`).",
           "kind": "def",
-          "line": 311,
+          "line": 379,
           "name": "ToyProblem.Spec.oracleProver",
           "namespace": "ToyProblem.Spec",
           "short_name": "oracleProver",
@@ -48731,7 +48749,7 @@
         {
           "doc": "Query helper: fetch the prover's combined-message claim `g` (`pSpec` round 1 \u2014 the `P \u2192 V` direction). Mirrors FRI's `getConst`.",
           "kind": "def",
-          "line": 339,
+          "line": 407,
           "name": "ToyProblem.Spec.queryG",
           "namespace": "ToyProblem.Spec",
           "short_name": "queryG",
@@ -48740,7 +48758,7 @@
         {
           "doc": "Query helper: read codeword `f i` at position `x : \u03b9`. Mirrors FRI's `queryCodeword`.",
           "kind": "def",
-          "line": 346,
+          "line": 414,
           "name": "ToyProblem.Spec.queryF",
           "namespace": "ToyProblem.Spec",
           "short_name": "queryF",
@@ -48749,7 +48767,7 @@
         {
           "doc": "Oracle verifier for Construction 6.2. Queries the prover's message `g` once and the two oracle codewords `f\u2081, f\u2082` at each of the `t` spot-check positions (query complexity: `2t + 1`), then `guard (accepts \u2026)` to decide. `embed` and `hEq` are trivial \u2014 `OutputOracleStatement : Fin 0 \u2192 Type` is empty, so the output-oracle family is vacuously a subset of input oracles + prover messages.",
           "kind": "def",
-          "line": 359,
+          "line": 427,
           "name": "ToyProblem.Spec.oracleVerifier",
           "namespace": "ToyProblem.Spec",
           "short_name": "oracleVerifier",
@@ -48758,7 +48776,7 @@
         {
           "doc": "Honest oracle reduction for Construction 6.2: the `OracleProver` / `OracleVerifier` pair packaged as `OracleReduction`.",
           "kind": "def",
-          "line": 391,
+          "line": 459,
           "name": "ToyProblem.Spec.oracleReduction",
           "namespace": "ToyProblem.Spec",
           "short_name": "oracleReduction",
@@ -48767,7 +48785,7 @@
         {
           "doc": "`answer` of the default oracle interface is the identity (the message itself).",
           "kind": "lemma",
-          "line": 411,
+          "line": 479,
           "name": "ToyProblem.Spec.answer_instDefault",
           "namespace": "ToyProblem.Spec",
           "short_name": "answer_instDefault",
@@ -48776,7 +48794,7 @@
         {
           "doc": "`simulateQ` commutes with `OptionT.pure`.",
           "kind": "theorem",
-          "line": 419,
+          "line": 487,
           "name": "ToyProblem.Spec.simulateQ_optionT_pure",
           "namespace": "ToyProblem.Spec",
           "short_name": "simulateQ_optionT_pure",
@@ -48785,7 +48803,7 @@
         {
           "doc": "`simulateQ` commutes with `OptionT` `failure`.",
           "kind": "theorem",
-          "line": 426,
+          "line": 494,
           "name": "ToyProblem.Spec.simulateQ_optionT_failure",
           "namespace": "ToyProblem.Spec",
           "short_name": "simulateQ_optionT_failure",
@@ -48794,7 +48812,7 @@
         {
           "doc": "`simulateQ` of a query-free `guard` is the (target-monad) `if`.",
           "kind": "theorem",
-          "line": 434,
+          "line": 502,
           "name": "ToyProblem.Spec.simulateQ_optionT_guard",
           "namespace": "ToyProblem.Spec",
           "short_name": "simulateQ_optionT_guard",
@@ -48803,7 +48821,7 @@
         {
           "doc": "`simulateQ` commutes with `forIn` over a list in `OptionT (OracleComp \u2026)`: the simulated loop equals the loop with the simulated body. The missing `simulateQ_forIn` for the `OptionT` stack.",
           "kind": "theorem",
-          "line": 444,
+          "line": 512,
           "name": "ToyProblem.Spec.simulateQ_optionT_forIn",
           "namespace": "ToyProblem.Spec",
           "short_name": "simulateQ_optionT_forIn",
@@ -48812,7 +48830,7 @@
         {
           "doc": "A `forIn` over a list whose body is `guard (Q a)` then `yield ()` collapses to `if (\u2200 a \u2208 l, Q a) then pure () else failure`: the spot-check loop accepts iff every per-element guard passes.",
           "kind": "theorem",
-          "line": 467,
+          "line": 535,
           "name": "ToyProblem.Spec.forIn_guard_eq",
           "namespace": "ToyProblem.Spec",
           "short_name": "forIn_guard_eq",
@@ -48821,7 +48839,7 @@
         {
           "doc": "`simOracle2` message-query collapse (`OracleComp` form), RIGHT (message) family.",
           "kind": "lemma",
-          "line": 501,
+          "line": 569,
           "name": "ToyProblem.Spec.simulateQ_simOracle2_messageQuery",
           "namespace": "ToyProblem.Spec",
           "short_name": "simulateQ_simOracle2_messageQuery",
@@ -48830,7 +48848,7 @@
         {
           "doc": "`simOracle2` oracle-statement-query collapse (`OracleComp` form), LEFT (oracle) family.",
           "kind": "lemma",
-          "line": 516,
+          "line": 584,
           "name": "ToyProblem.Spec.simulateQ_simOracle2_leftQuery_oc",
           "namespace": "ToyProblem.Spec",
           "short_name": "simulateQ_simOracle2_leftQuery_oc",
@@ -48839,7 +48857,7 @@
         {
           "doc": "Verify-body message-query collapse: the `OptionT.lift <| liftComp <| lift query` form that appears verbatim in `oracleVerifier.verify`, simulated via `simOracle2`, collapses to `pure` of the message `answer`.",
           "kind": "lemma",
-          "line": 533,
+          "line": 601,
           "name": "ToyProblem.Spec.simulateQ_simOracle2_messageQuery_optionT",
           "namespace": "ToyProblem.Spec",
           "short_name": "simulateQ_simOracle2_messageQuery_optionT",
@@ -48848,7 +48866,7 @@
         {
           "doc": "Verify-body oracle-statement-query collapse (LEFT family).",
           "kind": "lemma",
-          "line": 547,
+          "line": 615,
           "name": "ToyProblem.Spec.simulateQ_simOracle2_leftQuery_optionT",
           "namespace": "ToyProblem.Spec",
           "short_name": "simulateQ_simOracle2_leftQuery_optionT",
@@ -48857,7 +48875,7 @@
         {
           "doc": "**Closed form of the compiled toy-problem oracle verifier.** Simulating `oracleVerifier.verify` against the honest input codewords `oStmt` and prover messages `msgs` (via `OracleInterface.simOracle2`) collapses every query \u2014 the message query for `g` and the `2t` spot-check codeword queries \u2014 to the corresponding honest values, leaving a query-free `OptionT` computation that is exactly `if accepts \u2026 then pure () else failure`. This is the load-bearing lemma for honest completeness: composed with `accepts_of_inputRelation` it shows the compiled verifier never fails on an honest transcript.",
           "kind": "theorem",
-          "line": 571,
+          "line": 639,
           "name": "ToyProblem.Spec.simulateQ_oracleVerify_eq",
           "namespace": "ToyProblem.Spec",
           "short_name": "simulateQ_oracleVerify_eq",
@@ -48866,25 +48884,34 @@
         {
           "doc": "Honest completeness for ABF26 Construction 6.2, point form: if `((v, \u03bc\u2081, \u03bc\u2082), (f\u2081, f\u2082))` lies in `inputRelation` with the underlying messages `M = (M\u2080, M\u2081)` (and `f\u1d62` is the `encode`-image of `M\u1d62`), then for any verifier challenges `(\u03b3, xs)` the \u00a76.1 decision `accepts` holds against the honest prover's message `g = M\u2080 + \u03b3 \u00b7 M\u2081`. This is the point-form companion to the `OracleReduction.perfectCompleteness` theorem that wraps the prover and verifier objects below.",
           "kind": "theorem",
-          "line": 653,
+          "line": 721,
           "name": "ToyProblem.Spec.accepts_of_inputRelation",
           "namespace": "ToyProblem.Spec",
           "short_name": "accepts_of_inputRelation",
           "signature": "theorem accepts_of_inputRelation {k t : \u2115}"
         },
         {
-          "doc": "**Honest completeness for Construction 6.2** (protocol-level form). The honest oracle reduction is perfectly complete from `inputRelation k C` to the trivial output relation `Set.univ`. The load-bearing fact is `accepts_of_inputRelation` above: under any verifier challenges, the honest prover's message `g = M\u2080 + \u03b3 M\u2081` makes `accepts` hold, so the verifier's `if accepts then pure () else failure` never fails. **Status: statement complete, proof admitted (tagged sorry) \u2014 but the two historically-named walls are now CLOSED.** The point-form mathematical content (`accepts_of_inputRelation`) and th",
+          "doc": "**Honest completeness for Construction 6.2** (protocol-level form). The honest oracle reduction is perfectly complete from `honestInputRelation k C encode` (the honest-opening input relation \u2014 see the **statement repair** note below) to the trivial output relation `Set.univ`. The load-bearing fact is `accepts_of_inputRelation` above: under any verifier challenges, the honest prover's message `g = wit\u2080 + \u03b3\u00b7wit\u2081` makes `accepts` hold, so the verifier's `if accepts then pure () else failure` never fails. **Status: CLOSED.** `#print axioms` is exactly `[propext, Classical.choice, Quot.sound]` (no ",
           "kind": "theorem",
-          "line": 736,
+          "line": 796,
           "name": "ToyProblem.Spec.oracleReduction_perfectCompleteness",
           "namespace": "ToyProblem.Spec",
           "short_name": "oracleReduction_perfectCompleteness",
           "signature": "theorem oracleReduction_perfectCompleteness"
         },
         {
+          "doc": "",
+          "kind": "class",
+          "line": 818,
+          "name": "ToyProblem.Spec._anon_class_818",
+          "namespace": "ToyProblem.Spec",
+          "short_name": "_anon_class_818",
+          "signature": "class classical"
+        },
+        {
           "doc": "**Lemma 6.6 of [ABF26]** (knowledge soundness of Construction 6.2). For any `\u03b4 \u2208 (0, \u03b4_min(C))`, the toy-problem IOR has knowledge soundness against the relaxed relation `R\u0303_{C,\u03b4}^2` with error `max { \u03b5_mca(C, \u03b4) + |\u039b(C^{\u22612}, \u03b4)| / |F|, (1 \u2212 \u03b4)^t }`. Stated against ArkLib's `Verifier.knowledgeSoundness` (cf. `OracleReduction/Security/Basic.lean :: Verifier.knowledgeSoundness`). **Naming convention \u2014 paper vs API.** The ArkLib API's `Verifier.knowledgeSoundness` takes `(relIn, relOut)` where `relIn` is the relation the extracted witness satisfies and `relOut` is the relation the verifier's outp",
           "kind": "theorem",
-          "line": 789,
+          "line": 982,
           "name": "ToyProblem.Spec.protocol62_knowledgeSound",
           "namespace": "ToyProblem.Spec",
           "short_name": "protocol62_knowledgeSound",
@@ -48893,7 +48920,7 @@
         {
           "doc": "**Remark 6.7 of [ABF26]**: the L6.6 soundness argument depends on **mutual** correlated agreement (MCA). With only correlated agreement (CA), one cannot prove every codeword `u \u2208 \u039b(C, f\u2081 + \u03b3\u00b7f\u2082, \u03b4)` decomposes as `u = u\u2081 + \u03b3\u00b7u\u2082` for some `(u\u2081, u\u2082) \u2208 \u039b(C^{\u22612}, (f\u2081, f\u2082), \u03b4)`, so the extractor would fail. MCA provides exactly this decomposition with probability `\u2265 1 \u2212 \u03b5_mca`.",
           "kind": "def",
-          "line": 818,
+          "line": 1011,
           "name": "ToyProblem.Spec.remark67",
           "namespace": "ToyProblem.Spec",
           "short_name": "remark67",
@@ -48902,7 +48929,7 @@
         {
           "doc": "**Lemma 6.8 of [ABF26]** (round-by-round knowledge soundness of Construction 6.2). For any `\u03b4 \u2208 (0, \u03b4_min(C))`, the IOR has round-by-round knowledge soundness (paper Definition A.5 \u2261 ArkLib's `Verifier.rbrKnowledgeSoundness`) against `R\u0303_{C,\u03b4}^2`, with per-round errors * `\u03b5_mca(C, \u03b4) + |\u039b(C^{\u22612}, \u03b4)| / |F|` after the \u03b3 round, * `(1 \u2212 \u03b4)^t` after the spot-check round. The `KnowledgeStateFunction` tracks the largest current agreement set; the extractor erasure-decodes against it. Tagged sorry.",
           "kind": "theorem",
-          "line": 833,
+          "line": 1026,
           "name": "ToyProblem.Spec.protocol62_rbrKnowledgeSound",
           "namespace": "ToyProblem.Spec",
           "short_name": "protocol62_rbrKnowledgeSound",
@@ -50481,7 +50508,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5482,
+      "declarations": 5485,
       "files": 288
     }
   }
