@@ -216,6 +216,89 @@ noncomputable def averageDistOn
   (1 : ℚ) / (2 * choose_2 B.card) *
     ∑ x ∈ B ×ˢ B with x.1 ≠ x.2, Δ₀(x.1, x.2)
 
+/-- Any two distinct members of a code are separated by at least `Code.minDist`. -/
+lemma minDist_le_hammingDist_of_mem_ne
+    {ι : Type} [Fintype ι] {α : Type} [DecidableEq α]
+    {C : Set (ι → α)} {u v : ι → α}
+    (hu : u ∈ C) (hv : v ∈ C) (hne : u ≠ v) :
+    Code.minDist C ≤ hammingDist u v := by
+  unfold Code.minDist
+  apply Nat.sInf_le
+  exact ⟨u, hu, v, hv, hne, rfl⟩
+
+/-- The ordered off-diagonal pair count matches the Johnson `choose_2`
+normalisation. -/
+private lemma two_mul_choose_two_card_eq_offdiag_card
+    {β : Type} [DecidableEq β] (B : Finset β) :
+    2 * choose_2 (B.card : ℚ) = (({ x ∈ B ×ˢ B | x.1 ≠ x.2 }.card : ℕ) : ℚ) := by
+  simp only [ne_eq]
+  unfold choose_2
+  ring_nf
+  have BBcard : (B ×ˢ B).card = B.card ^ 2 := by rw [card_product, sq]
+  have BBdiagcard : { x ∈ B ×ˢ B | x.1 = x.2 }.card = B.card := by simp
+  have BBdisjoint : { x ∈ B ×ˢ B | x.1 = x.2 } ∩
+      { x ∈ B ×ˢ B | x.1 ≠ x.2 } = ∅ := by
+    grind only [= mem_inter, ← notMem_empty, = mem_filter]
+  have BBunion : B ×ˢ B =
+      { x ∈ B ×ˢ B | x.1 = x.2 } ∪ { x ∈ B ×ˢ B | x.1 ≠ x.2 } := by
+    grind only [= mem_union, = mem_filter]
+  have BBcount : { x ∈ B ×ˢ B | x.1 ≠ x.2 }.card =
+      (B ×ˢ B).card - { x ∈ B ×ˢ B | x.1 = x.2 }.card := by
+    grind only [usr card_filter_le, usr card_union_add_card_inter, = Finset.card_empty]
+  rw [BBcount, BBcard, BBdiagcard, Nat.cast_sub]
+  · grind only
+  · grind only [usr card_filter_le]
+
+/-- A finite sublist of a code has average pairwise distance at least the code
+minimum distance. -/
+theorem minDist_le_averageDistOn_of_subset
+    {ι : Type} [Fintype ι] {α : Type} [DecidableEq α]
+    {C : Set (ι → α)} {B : Finset (ι → α)}
+    (hB : 1 < B.card) (hsub : ∀ x ∈ B, x ∈ C) :
+    (Code.minDist C : ℚ) ≤ averageDistOn B := by
+  unfold averageDistOn
+  let dmin : ℚ := Code.minDist C
+  have h_d : ∀ x ∈ { x ∈ B ×ˢ B | x.1 ≠ x.2 }, dmin ≤ Δ₀(x.1, x.2) := by
+    intro x hx
+    simp only [ne_eq, mem_filter, mem_product] at hx
+    dsimp [dmin]
+    exact_mod_cast minDist_le_hammingDist_of_mem_ne
+      (hsub x.1 hx.1.1) (hsub x.2 hx.1.2) hx.2
+  have B2_card :
+      2 * choose_2 (B.card : ℚ) =
+        (({ x ∈ B ×ˢ B | x.1 ≠ x.2 }.card : ℕ) : ℚ) :=
+    two_mul_choose_two_card_eq_offdiag_card B
+  have B2_card_pos : 0 < { x ∈ B ×ˢ B | x.1 ≠ x.2 }.card := by
+    have ⟨u, hu, v, hv, huv⟩ := one_lt_card.mp hB
+    have : { x ∈ B ×ˢ B | x.1 ≠ x.2 }.Nonempty := by
+      use ⟨u, v⟩
+      simp [hu, hv, huv]
+    exact card_pos.mpr this
+  have h_bound : ∑ x ∈ B ×ˢ B with x.1 ≠ x.2, dmin ≤
+      ∑ x ∈ B ×ˢ B with x.1 ≠ x.2, Δ₀(x.1, x.2) :=
+    by simpa [Nat.cast_sum] using sum_le_sum h_d
+  have h_eq : dmin =
+      1 / (2 * choose_2 (B.card : ℚ)) *
+        ∑ x ∈ B ×ˢ B with x.1 ≠ x.2, dmin := by
+    rw [sum_const, B2_card]
+    simp only [ne_eq, one_div]
+    set c := ({ x ∈ B ×ˢ B | ¬x.1 = x.2 }.card : ℚ) with hc
+    have c_pos : 0 < c := by
+      unfold c
+      exact_mod_cast B2_card_pos
+    rw [nsmul_eq_mul]
+    change dmin = c⁻¹ * (c * dmin)
+    field_simp [ne_of_gt c_pos]
+  change dmin ≤ 1 / (2 * choose_2 (B.card : ℚ)) *
+    ↑(∑ x ∈ B ×ˢ B with x.1 ≠ x.2, Δ₀(x.1, x.2))
+  rw [h_eq]
+  have c2_nonneg : 0 ≤ (1 / (2 * choose_2 (B.card : ℚ)) : ℚ) := by
+    have c2_pos : 0 < (2 * choose_2 (B.card : ℚ) : ℚ) := by
+      rw [B2_card]
+      exact_mod_cast B2_card_pos
+    positivity
+  exact mul_le_mul_of_nonneg_left h_bound c2_nonneg
+
 /-- Arbitrary-index q-ary Plotkin average-distance upper bound. -/
 theorem averageDistOn_le_plotkin
     {ι : Type} [Fintype ι] [DecidableEq ι]
