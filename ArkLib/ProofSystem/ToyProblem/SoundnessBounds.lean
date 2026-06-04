@@ -58,7 +58,7 @@ open scoped NNReal ENNReal
 
 variable {ι F : Type} [Fintype ι] [Field F] [Fintype F] [DecidableEq F]
 
-omit [Fintype F] in
+omit [Field F] [Fintype F] in
 /-- **Lemma 6.5 of [ABF26]** (= [GRS25]).
 
 Every `F`-additive code `C : F^k → (F^s)^n` supports erasure correction
@@ -69,14 +69,65 @@ time `O((s · n)^3)`. Equivalently: the predicate
 "some `ecor` works" form here; pinning down the constant `K` requires
 modelling the encoder concretely.
 
-Admitted as an external result. -/
+PROVEN (existence form). The paper's L6.5 / [GRS25] content is the
+*polynomial running time* `O((s·n)^3)`; the `SupportsErasureCorrection`
+predicate carries `ecor` as an inert numeric parameter (`_ecor`), so the
+*existence* of a correct (not necessarily efficient) erasure-decoder is an
+unconditional, in-tree fact: when fewer than `minDist C` symbols are erased
+the agreeing codeword is unique (two such codewords would differ only on
+the erased coordinates, giving Hamming distance `< minDist C`, forcing
+equality), so a classical decoder choosing that witness is well-defined.
+We take `ecor = 0` (the numeric time bound is not operationally modelled). -/
 theorem additive_code_supports_erasure_correction_grs25
     (C : Set (ι → F)) :
     ∃ ecor : ℕ, CodingTheory.SupportsErasureCorrection C ecor := by
-  -- ABF26-L6.5; external admit [GRS25]. Polynomial-time erasure-correction
-  -- algorithm via Gaussian elimination on the parity-check matrix of any
-  -- additive code (cf. Guruswami-Rudra-Sudan, *Essential Coding Theory*).
-  sorry
+  classical
+  -- The "good witness" predicate: a codeword agreeing with `f` off the
+  -- erasures, with strictly fewer than `minDist C` erasures.
+  set erasureCard : (ι → Option F) → ℕ :=
+    fun f ↦ (Finset.univ.filter (fun i ↦ f i = none)).card with hEC
+  let good : (ι → Option F) → (ι → F) → Prop :=
+    fun f u ↦ u ∈ C ∧ (∀ i, f i = some (u i) ∨ f i = none) ∧ erasureCard f < Code.minDist C
+  -- Uniqueness: two good witnesses for the same `f` coincide.
+  have huniq : ∀ (f : ι → Option F) (u u' : ι → F), good f u → good f u' → u = u' := by
+    intro f u u' ⟨huC, hua, hue⟩ ⟨hu'C, hu'a, _⟩
+    by_contra hne
+    -- The disagreement set of `u, u'` is contained in the erasure set of `f`.
+    have hsub : (Finset.univ.filter (fun i ↦ u i ≠ u' i)) ⊆
+        (Finset.univ.filter (fun i ↦ f i = none)) := by
+      intro i hi
+      simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hi ⊢
+      -- if `f i ≠ none` then `f i = some (u i) = some (u' i)`, so `u i = u' i`.
+      rcases hua i with hfi | hfi
+      · rcases hu'a i with hfi' | hfi'
+        · exact absurd (Option.some.inj (hfi.symm.trans hfi')) hi
+        · rw [hfi] at hfi'; exact absurd hfi' (by simp)
+      · exact hfi
+    have hdist_le : Δ₀(u, u') ≤ erasureCard f := by
+      rw [hEC]; exact Finset.card_le_card hsub
+    -- But distinct codewords are `≥ minDist C` apart.
+    have hge : Code.minDist C ≤ Δ₀(u, u') := by
+      have hd : ‖C‖₀ ≤ Δ₀(u, u') := pairDist_ge_code_mindist_of_ne huC hu'C hne
+      rwa [dist_eq_minDist] at hd
+    exact absurd (lt_of_le_of_lt (le_trans hge hdist_le) hue) (lt_irrefl _)
+  -- The decoder: pick the (unique) good witness when one exists, else `none`.
+  let E : (ι → Option F) → Option (ι → F) :=
+    fun f ↦ if h : ∃ u, good f u then some h.choose else none
+  refine ⟨0, E, fun f ↦ ⟨?_, ?_⟩⟩
+  · -- (i) recovery clause
+    intro u huC hagree hsmall
+    have hgood : good f u := ⟨huC, hagree, hsmall⟩
+    have hex : ∃ u, good f u := ⟨u, hgood⟩
+    change E f = some u
+    simp only [E, dif_pos hex]
+    exact congrArg some (huniq f hex.choose u hex.choose_spec hgood)
+  · -- (ii) failure clause
+    intro hno
+    have : ¬ ∃ u, good f u := by
+      rintro ⟨u, huC, hagree, hsmall⟩
+      exact hno ⟨u, huC, hagree, hsmall⟩
+    change E f = none
+    simp only [E, dif_neg this]
 
 omit [DecidableEq F] in
 /-- **Lemma 6.12 of [ABF26]** (list-decoding lower bound on the simplified IOR).
