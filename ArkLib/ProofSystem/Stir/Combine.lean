@@ -752,10 +752,10 @@ theorem combine_theorem_uniqueDecodingRegime [Nonempty ι]
     simp
     ext j
     exact (False.elim <| hempty.1 j)
-  · generalize htotal: total_terms dstar degs = total 
+  · generalize htotal: totalTerms dstar degs = total 
     replace hempty : Nonempty ι := inferInstance
     rcases total with _ | total
-    · simp [total_terms, block_size] at htotal 
+    · simp [totalTerms, blockSize] at htotal 
       rcases m with _ | m
       · simp
         exists Finset.univ
@@ -763,10 +763,10 @@ theorem combine_theorem_uniqueDecodingRegime [Nonempty ι]
       · specialize htotal 0
         simp at htotal
     · have proximity_gap : ProximityGap.δ_ε_correlatedAgreementCurves
-          (k := total_terms dstar degs - 1) (A := F) (F := F) (ι := ι)
+          (k := totalTerms dstar degs - 1) (A := F) (F := F) (ι := ι)
           (C := ReedSolomon.code φ dstar) (δ := δ)
           (ε := ProximityGap.errorBound δ dstar φ) := by
-        rcases Nat.eq_zero_or_pos (total_terms dstar degs - 1) with hk0 | hkpos
+        rcases Nat.eq_zero_or_pos (totalTerms dstar degs - 1) with hk0 | hkpos
         · exact hk0 ▸ ProximityGap.RS_correlatedAgreement_curves_k_zero (deg := dstar)
             (domain := φ) (δ := δ) hδUDR
         · exact ProximityGap.RS_correlatedAgreement_curves_uniqueDecodingRegime
@@ -775,9 +775,9 @@ theorem combine_theorem_uniqueDecodingRegime [Nonempty ι]
 
       specialize proximity_gap 
           (fun l (x : ι) ↦ (
-            let i : WithBot (Fin m) := Finset.max (univ.filter (fun j ↦ block_start dstar degs j ≤ l))
+            let i : WithBot (Fin m) := Finset.max (univ.filter (fun j ↦ blockStart dstar degs j ≤ l))
             i.elim (0 : F) fun i ↦
-              let k := l - block_start dstar degs i
+              let k := l - blockStart dstar degs i
               fs i x * (φ x) ^ k                     
           ))
           (by {
@@ -831,7 +831,7 @@ theorem combine_theorem_uniqueDecodingRegime [Nonempty ι]
                 rw [Nat.sub_add_comm (hdegs x)]
               have h : ∑ x, (dstar - degs x + 1) = total + 1 := by
                 rw [←htotal]
-                simp [total_terms, block_size]
+                simp [totalTerms, blockSize]
               rw [h]
               simp
             · apply lt_of_lt_of_le hProb
@@ -849,7 +849,7 @@ theorem combine_theorem_uniqueDecodingRegime [Nonempty ι]
       have proximity_gap :
         ∃ S : Finset ι, 
           ↑(#S) ≥ (1 - δ) * ↑(Fintype.card ι)
-            ∧ ∃ v : Π i : Fin m, (Fin (block_size dstar degs i) → Polynomial F),
+            ∧ ∃ v : Π i : Fin m, (Fin (blockSize dstar degs i) → Polynomial F),
                 ∀ i j, (v i j).degree < dstar ∧ 
                   ∀ x ∈ S, (v i j).eval (φ x) = (φ x) ^ j.val * (fs i x) := by
           rcases proximity_gap with ⟨S, ⟨hcard, hagr⟩⟩
@@ -859,22 +859,22 @@ theorem combine_theorem_uniqueDecodingRegime [Nonempty ι]
           simp [code] at hagr
           rw [forall_and] at hagr
           rcases hagr with ⟨hagr1, hagr2⟩ 
-          let vaux (i : Fin m) (j : Fin (block_size dstar degs i)) 
-          : Fin (total_terms dstar degs - 1 + 1)
+          let vaux (i : Fin m) (j : Fin (blockSize dstar degs i)) 
+          : Fin (totalTerms dstar degs - 1 + 1)
           :=
-            ⟨block_start dstar degs i + j.val,
+            ⟨blockStart dstar degs i + j.val,
             by {
             rw [htotal]
             simp only [add_tsub_cancel_right]
             rw [←htotal]
-            simp [block_start, total_terms, block_size]
+            simp [blockStart, totalTerms, blockSize]
             rcases i with ⟨i, hi⟩ 
             rcases j with ⟨j, hj⟩ 
             simp
             apply lt_of_lt_of_le
             apply Nat.add_lt_add_left (m := dstar - degs ⟨i, hi⟩ + 1) 
               (by {
-                simp [block_size] at hj
+                simp [blockSize] at hj
                 omega
               })
             rw [Finset.sum_equiv 
@@ -920,28 +920,24 @@ theorem combine_theorem_uniqueDecodingRegime [Nonempty ι]
             simp [vaux]
             rw [mul_comm]
       rcases proximity_gap with ⟨S, ⟨hS_card, ⟨v, hv⟩⟩⟩ 
-      have master_lemma :=
-        @master_lemma _ _ _ _ _ _ hempty  
-          _ _ _ _ hdegs _
-          hδLt _ (by {
-          simp at hS_card
-          exact hS_card
-        }) (v := v) (fs := fs)
-        (by {
+      have exists_agreement_set_of_combine :=
+        fun i j => exists_agreement_set_of_combine (φ := φ) (fs := fs) (hdegs := hdegs)
+          (hδLt := hδLt)
+          (hS_card := by simp at hS_card; exact hS_card) (v := v)
+          (hv_deg := by
             intro i j
             specialize hv i j
-            tauto
-        })
-        (by {
-          intro i j x hx
-          specialize hv i j
-          rcases hv with ⟨_, hv⟩  
-          specialize hv x hx
-          rw [hv]
-        })
+            tauto)
+          (hv_eval := by
+            intro i j x hx
+            specialize hv i j
+            rcases hv with ⟨_, hv⟩
+            specialize hv x hx
+            rw [hv])
+          i j
       exists S
       apply And.intro hS_card
-      have hf : ∀ i, 0 < block_size dstar degs i := by simp [block_size]
+      have hf : ∀ i, 0 < blockSize dstar degs i := by simp [blockSize]
       exists (fun i => evalOnPoints φ <| v i (⟨0, hf i⟩))
       intro i
       simp
@@ -951,10 +947,10 @@ theorem combine_theorem_uniqueDecodingRegime [Nonempty ι]
         simp
         simp [Polynomial.degreeLT]
         intro j hj
-        specialize master_lemma i ⟨0, hf i⟩
-        simp at master_lemma
-        rw [Polynomial.degree_lt_iff_coeff_zero] at master_lemma
-        exact (master_lemma _ hj)
+        specialize exists_agreement_set_of_combine i ⟨0, hf i⟩
+        simp at exists_agreement_set_of_combine
+        rw [Polynomial.degree_lt_iff_coeff_zero] at exists_agreement_set_of_combine
+        exact (exists_agreement_set_of_combine _ hj)
       · intro x hx
         simp [evalOnPoints]
         specialize (hv i ⟨0, hf i⟩)
