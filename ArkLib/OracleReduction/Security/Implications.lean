@@ -94,13 +94,24 @@ theorem rbrSoundness_implies_soundness (langIn : Set StmtIn) (langOut : Set Stmt
   -- the round-`i.succ` transcript prefix; in the full game that prefix is produced by
   -- `runToRound (last n)` followed by the trailing `receiveChallenge`/`sendMessage`/`output` and
   -- verifier steps, whereas the rbr game produces it via `runToRound i.castSucc >>= getChallenge`.
-  -- The geometry (`Prover.fin_take_snoc_of_le`), the per-round prover factorization
-  -- (`Prover.fst_map_runToRound_succ_challenge`), and the failure-monotone trailing-bind lemma
-  -- (`Verifier.StateFunction.probEvent_bind_trailing_le`) are all in place; what remains is to
-  -- transport the failure-monotone step across `simulateQ (impl.addLift challengeQueryImpl) … |>.run'`
-  -- and the `(← init)` bind for an *arbitrary* stateful `impl` (state threads through the dropped
-  -- trailing steps, so a state-aware analogue of `probEvent_bind_trailing_le` over
-  -- `StateT σ ProbComp` is needed). See Execution.lean FRONTIER NOTE.
+  --
+  -- BANKED bridge ingredients (all proven, committed):
+  --   • `Verifier.StateFunction.probEvent_bind_trailing_le` — failure-monotone trailing bind;
+  --   • `Verifier.StateFunction.probEvent_simulateQ_run'_bind_trailing_le` — the STATE-AWARE
+  --     transport of that across `simulateQ so · |>.run' s` for an *arbitrary* stateful `so`
+  --     (this was the previously-identified hard probabilistic frontier — now closed);
+  --   • `Prover.fst_map_runToRound_succ_challenge` — per-round prover factorization;
+  --   • `Prover.fin_take_snoc_of_le` — geometric prefix preservation under `snoc`;
+  --   • `exists_challenge_flip_of_full`, `probEvent_le_sum_of_imp_exists` — combinatorial backbone.
+  --
+  -- REMAINING (structural assembly only): a `runToRound` *round-range decomposition*
+  --   `runToRound (last n) = runToRound i.succ >>= continueRoundsFrom`  (a plain `OracleComp`
+  -- equality, since the continuation only `processRound`s further rounds), so that
+  -- `probEvent_simulateQ_run'_bind_trailing_le` can drop the `continueRoundsFrom` tail and the
+  -- `Reduction.run` verifier/output tail, exposing the `runToRound i.succ` prefix to which
+  -- `fst_map_runToRound_succ_challenge` then applies, landing on the rbr game `hsf i`.  This
+  -- decomposition is a dependent-`Fin`-range induction (the continuation's type depends on `i`);
+  -- it is the last keystone.  See Execution.lean FRONTIER NOTE.
   sorry
 
 /-- Round-by-round knowledge soundness with error `rbrKnowledgeError` implies round-by-round
