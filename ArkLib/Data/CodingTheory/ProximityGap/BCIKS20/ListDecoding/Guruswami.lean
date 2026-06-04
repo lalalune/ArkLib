@@ -998,6 +998,44 @@ lemma gsQ_multiplicity {n m k : ℕ} (hk : 0 < k) (ωs : Fin n ↪ F) (u₀ u₁
   · -- beyond the Z-degree budget: the coefficient is 0 by the degree bound
     exact Polynomial.coeff_eq_zero_of_natDegree_lt (lt_of_le_of_lt (hshiftZ s t) (by omega))
 
+/-! ### `D_YZ` upper bound and box facts -/
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- A `Finset ℕ` all of whose elements are `≤ B` has `(max).getD 0 ≤ B`.  This is the
+`Option.getD`-wrapped form of `Finset.max_le_iff`, matching the shape of `D_YZ`. -/
+lemma finset_max_getD_le {s : Finset ℕ} {B : ℕ} (h : ∀ x ∈ s, x ≤ B) :
+    (s.max).getD 0 ≤ B := by
+  rcases s.eq_empty_or_nonempty with rfl | hne
+  · simp only [Finset.max_empty, Option.getD]; exact Nat.zero_le _
+  · obtain ⟨b, hb⟩ := Finset.max_of_nonempty hne
+    rw [hb]
+    exact h b (Finset.mem_of_max hb)
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- **`D_YZ` upper bound.**  If `Q` has `Y`-degree `≤ d` and every bivariate coefficient has
+`Z`-degree `≤ e` (`ZdegLE Q e`), then `D_YZ Q ≤ d + e`.
+
+`D_YZ Q = maxⱼ maxₖ (j + Zdeg(coeff of `X^j Y^k`))`; the outer `j` is a `Y`-degree `≤ d` and every
+`Z`-degree term is `≤ e`, so each summand is `≤ d + e`. -/
+lemma D_YZ_le_of_ZdegLE {Q : F[Z][X][Y]} {d e : ℕ}
+    (hY : Polynomial.Bivariate.natDegreeY Q ≤ d) (hZ : ZdegLE Q e) :
+    Trivariate.D_YZ Q ≤ d + e := by
+  classical
+  unfold Trivariate.D_YZ
+  apply finset_max_getD_le
+  intro x hx
+  rw [Finset.mem_image] at hx
+  obtain ⟨j, hj, rfl⟩ := hx
+  apply finset_max_getD_le
+  intro y hy
+  rw [Finset.mem_image] at hy
+  obtain ⟨kx, hkx, rfl⟩ := hy
+  have hjd : j ≤ d := le_trans (Polynomial.le_natDegree_of_mem_supp j hj) hY
+  have hze : (Polynomial.Bivariate.coeff Q j kx).natDegree ≤ e := by
+    unfold Polynomial.Bivariate.coeff
+    exact hZ j kx
+  omega
+
 end ModifiedGuruswamiHelpers
 
 
