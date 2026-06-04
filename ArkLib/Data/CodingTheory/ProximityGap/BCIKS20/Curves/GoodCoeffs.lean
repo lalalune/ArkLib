@@ -207,6 +207,135 @@ theorem RS_exists_kernelVec_BW_homMatrix_eval_of_mem_goodCoeffsCurve
             rw [hQ, Polynomial.eval_mul]
       _ = ∑ s : Fin (e + deg), b s * (domain i) ^ s.1 := by rw [hsum_b]
 
+open Polynomial in
+/-- Evaluation commutes with the BW matrix construction for arbitrary
+polynomial words (generic form of `BW_homMatrix_map_evalRingHom`). -/
+theorem BW_homMatrix_map_evalRingHom_poly {e k : ℕ} (ωs : ι → F) (g : ι → F[X]) (z : F) :
+    (BW_homMatrix (ι := ι) e k (fun i => (Polynomial.C (ωs i) : F[X])) g).map
+        (Polynomial.eval z)
+      = BW_homMatrix (ι := ι) e k ωs (fun i => (g i).eval z) := by
+  ext i j
+  by_cases hj : (j.1 ≤ e) <;>
+    simp [BW_homMatrix, Matrix.map_apply, hj, Nat.lt_succ_iff]
+
+open scoped BigOperators in
+open Polynomial in
+open Matrix in
+/-- Curves analogue of `RS_BW_homMatrix_det_submatrix_eq_zero_of_goodCoeffs_card_gt`
+([BCIKS20] §6.1): with more than `k · n` good curve parameters, every square
+minor of the BW matrix over the degree-`k` polynomial words vanishes
+identically — the minors have degree ≤ `k * (e + 1) ≤ k · n < |S|` and vanish
+at every good parameter. -/
+theorem RS_BW_homMatrix_det_submatrix_eq_zero_of_goodCoeffsCurve_card_gt
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (u : WordStack F (Fin (k + 1)) ι)
+    (hdeg : deg ≤ Fintype.card ι)
+    (hδ : δ ≤ relativeUniqueDecodingRadius (ι := ι) (F := F)
+      (C := ReedSolomon.code domain deg))
+    (hS : (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card
+      > k * Fintype.card ι + 1) :
+    let e : ℕ := Nat.floor (δ * Fintype.card ι)
+    let N : ℕ := (e + 1) + (e + deg)
+    ∀ r : Fin N ↪ ι,
+      Matrix.det
+          (Matrix.submatrix
+            (BW_homMatrix (ι := ι) e deg
+              (fun i => (Polynomial.C (domain i) : F[X]))
+              (fun i => ∑ t : Fin (k + 1), Polynomial.C (u t i) * Polynomial.X ^ (t : ℕ)))
+            r id) = 0 := by
+  classical
+  dsimp
+  intro r
+  let e : ℕ := Nat.floor (δ * Fintype.card ι)
+  let N : ℕ := (e + 1) + (e + deg)
+  let S : Finset F := RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ
+  let g : ι → F[X] := fun i => ∑ t : Fin (k + 1), Polynomial.C (u t i) * Polynomial.X ^ (t : ℕ)
+  have hg : ∀ i, (g i).natDegree ≤ k := by
+    intro i
+    refine Polynomial.natDegree_sum_le_of_forall_le _ _ ?_
+    intro t _
+    refine le_trans Polynomial.natDegree_mul_le ?_
+    simp only [Polynomial.natDegree_C, Polynomial.natDegree_pow, Polynomial.natDegree_X,
+      mul_one, Nat.zero_add]
+    exact Nat.le_of_lt_succ t.isLt
+  let M : Matrix ι (Fin N) F[X] :=
+    BW_homMatrix (ι := ι) e deg (fun i => (Polynomial.C (domain i) : F[X])) g
+  let A : Matrix (Fin N) (Fin N) F[X] :=
+    Matrix.submatrix M (r : Fin N → ι) (id : Fin N → Fin N)
+  -- degree bound k(e+1) via the d-generalized minor lemma
+  have hdeg_det : (Matrix.det A).natDegree ≤ k * (e + 1) := by
+    simpa [A, M, N, e] using
+      (BW_homMatrix_det_submatrix_natDegree_le_of_natDegree_le (ι := ι) (F := F) e deg
+        (ωs := fun i => domain i) (g := g) (d := k) hg (r := (r : Fin N → ι)))
+  have he1_le : e + 1 ≤ Fintype.card ι := by
+    simpa [e] using
+      (RS_floor_mul_card_ι_add_one_le_card_ι_of_le_relUDR (deg := deg) (domain := domain)
+        (δ := δ) (hdeg := hdeg) (hδ := hδ))
+  have hk_le : k * (e + 1) ≤ k * Fintype.card ι := Nat.mul_le_mul_left k he1_le
+  have hS' : k * Fintype.card ι + 1 < S.card := by
+    simpa [S] using hS
+  have hdeg_lt : (Matrix.det A).natDegree < S.card :=
+    lt_of_le_of_lt (le_trans hdeg_det hk_le) (lt_of_le_of_lt (Nat.le_succ _) hS')
+  -- det(A) vanishes at every good parameter
+  have heval : ∀ z ∈ S, (Matrix.det A).eval z = 0 := by
+    intro z hz
+    have hz' : z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ := by
+      simpa [S] using hz
+    have hk :=
+      RS_exists_kernelVec_BW_homMatrix_eval_of_mem_goodCoeffsCurve (k := k) (deg := deg)
+        (domain := domain) (δ := δ) (u := u) (z := z) hz'
+    dsimp at hk
+    rcases hk with ⟨a, b, ha0, hmul⟩
+    let v : Fin N → F := Fin.append a b
+    have hv_ne : v ≠ 0 := by
+      intro hv
+      apply ha0
+      ext i
+      have hvi : v (Fin.castAdd (e + deg) i) = (0 : Fin N → F) (Fin.castAdd (e + deg) i) :=
+        congrArg (fun f => f (Fin.castAdd (e + deg) i)) hv
+      simpa [v, N] using hvi
+    let Mz : Matrix ι (Fin N) F :=
+      BW_homMatrix (ι := ι) e deg (fun i => domain i)
+        (fun i => ∑ t : Fin (k + 1), z ^ (t : ℕ) * u t i)
+    have hmulMz : Mz *ᵥ v = 0 := by
+      simpa [Mz, v, N, e] using hmul
+    have hmulSub :
+        (Matrix.submatrix Mz (r : Fin N → ι) (id : Fin N → Fin N)) *ᵥ v = 0 := by
+      ext i
+      have hi : (Mz *ᵥ v) (r i) = 0 := by
+        simpa using congrArg (fun f => f (r i)) hmulMz
+      simpa [Matrix.mulVec, Matrix.submatrix] using hi
+    have hdetMz :
+        Matrix.det (Matrix.submatrix Mz (r : Fin N → ι) (id : Fin N → Fin N)) = 0 := by
+      exact (Matrix.exists_mulVec_eq_zero_iff
+        (M := Matrix.submatrix Mz (r : Fin N → ι) (id : Fin N → Fin N))).1
+        ⟨v, hv_ne, hmulSub⟩
+    have hdet_eval : (Matrix.det A).eval z = Matrix.det (A.map (Polynomial.eval z)) := by
+      simpa [Polynomial.coe_evalRingHom] using (RingHom.map_det (Polynomial.evalRingHom z) A)
+    have hAmap : A.map (Polynomial.eval z) =
+        Matrix.submatrix Mz (r : Fin N → ι) (id : Fin N → Fin N) := by
+      have hMmap : M.map (Polynomial.eval z) = Mz := by
+        rw [show M.map (Polynomial.eval z)
+            = BW_homMatrix (ι := ι) e deg (fun i => domain i) (fun i => (g i).eval z) from
+          BW_homMatrix_map_evalRingHom_poly (e := e) (k := deg)
+            (ωs := fun i => domain i) (g := g) z]
+        have hgeval : (fun i => (g i).eval z)
+            = fun i => ∑ t : Fin (k + 1), z ^ (t : ℕ) * u t i := by
+          funext i
+          simp only [g, Polynomial.eval_finset_sum, Polynomial.eval_mul, Polynomial.eval_C,
+            Polynomial.eval_pow, Polynomial.eval_X]
+          exact Finset.sum_congr rfl fun t _ => mul_comm _ _
+        rw [hgeval]
+      ext i j
+      change (M.map (Polynomial.eval z)) (r i) j = Mz (r i) j
+      rw [hMmap]
+    rw [hdet_eval]
+    simpa [hAmap] using hdetMz
+  have hdetA0 : Matrix.det A = 0 :=
+    Polynomial.eq_zero_of_natDegree_lt_card_of_eval_eq_zero' (p := Matrix.det A) (s := S) heval
+      (by simpa using hdeg_lt)
+  simpa [A, M, N, e] using hdetA0
+
 end CoreResults
 
 end ProximityGap
