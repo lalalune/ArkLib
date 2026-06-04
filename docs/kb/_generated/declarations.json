@@ -31432,6 +31432,136 @@
         }
       ]
     },
+    "ArkLib/OracleReduction/Security/CoordinateWiseSpecialSoundness.lean": {
+      "declarations": [
+        {
+          "doc": "",
+          "kind": "structure",
+          "line": 39,
+          "name": "_anon_structure_39",
+          "namespace": "",
+          "short_name": "_anon_structure_39",
+          "signature": "structure structured, accepting tree of transcripts into a valid input witness \u2014 exactly [NOZ26] Def. 3."
+        },
+        {
+          "doc": "The relation `x \u2261\u1d62 y`: the coordinate-vectors `x` and `y` agree in every coordinate except the `i`-th, where they differ. For `\u2113 = 1` this is just `x 0 \u2260 y 0`.",
+          "kind": "def",
+          "line": 73,
+          "name": "CoordinateWise.CoordEq",
+          "namespace": "CoordinateWise",
+          "short_name": "CoordEq",
+          "signature": "def CoordEq {\u2113 : \u2115} (i : Fin \u2113) (x y : Fin \u2113 \u2192 S) : Prop :="
+        },
+        {
+          "doc": "A family of `\u2113\u00b7(k-1)+1` coordinate-vectors `c` is **coordinate-wise special sound**, i.e. lies in `SS(S, \u2113, k)`, if - the `\u2113\u00b7(k-1)+1` vectors are pairwise distinct (`Function.Injective c`), and - there is a *central* index `e` such that for every coordinate `i \u2208 Fin \u2113` there are `k-1` other indices whose vectors agree with `c e` off coordinate `i` (and differ on it). This is the precise rendering of the set `SS(S, \u2113, k)` from [FMN24] Def. 2.9 / [NOZ26] \u00a72.3. In the paper `SS(S, \u2113, k)` is a *set* `{x\u2081, \u2026, x_K}` of `K := \u2113\u00b7(k-1)+1` **distinct** vectors; the `Function.Injective c` clause is what ",
+          "kind": "def",
+          "line": 91,
+          "name": "CoordinateWise.IsSpecialSoundFamily",
+          "namespace": "CoordinateWise",
+          "short_name": "IsSpecialSoundFamily",
+          "signature": "def IsSpecialSoundFamily (\u2113 k : \u2115) (c : Fin (\u2113 * (k - 1) + 1) \u2192 (Fin \u2113 \u2192 S)) : Prop :="
+        },
+        {
+          "doc": "For `\u2113 = 1`, coordinate-wise special soundness is ordinary `k`-special soundness: the challenge values are distinct, and there is a central vector together with `k - 1` siblings differing in the single coordinate \u2014 i.e. `k` pairwise-distinct challenge values.",
+          "kind": "theorem",
+          "line": 100,
+          "name": "CoordinateWise.isSpecialSoundFamily_one",
+          "namespace": "CoordinateWise",
+          "short_name": "isSpecialSoundFamily_one",
+          "signature": "theorem isSpecialSoundFamily_one {k : \u2115} (c : Fin (1 * (k - 1) + 1) \u2192 (Fin 1 \u2192 S)) :"
+        },
+        {
+          "doc": "A **coordinate-wise special-soundness structure** for a protocol `pSpec`. For each challenge round `i` it provides: - the number `coordIndex i = \u2113\u1d62` of coordinates, - the per-coordinate alphabet `alphabet i = S\u1d62`, - an identification `decompose i : Challenge i \u2243 S\u1d62^{\u2113\u1d62}` of the challenge as a coordinate-vector, - the soundness parameter `soundnessParam i = k\u1d62`. The branching arity it induces at round `i` is `arity i = \u2113\u1d62\u00b7(k\u1d62-1)+1`.",
+          "kind": "structure",
+          "line": 131,
+          "name": "CWSSStructure",
+          "namespace": "",
+          "short_name": "CWSSStructure",
+          "signature": "structure CWSSStructure (pSpec : ProtocolSpec n) where"
+        },
+        {
+          "doc": "The branching arity `arity i = \u2113\u1d62\u00b7(k\u1d62-1)+1` of the transcript tree at challenge round `i`.",
+          "kind": "def",
+          "line": 147,
+          "name": "CWSSStructure.arity",
+          "namespace": "CWSSStructure",
+          "short_name": "arity",
+          "signature": "def arity : pSpec.ChallengeIdx \u2192 \u2115 :="
+        },
+        {
+          "doc": "The canonical coordinate-wise structure underlying plain `k`-special soundness: every challenge has a single coordinate (`\u2113\u1d62 = 1`) over the alphabet `Challenge i`, with soundness parameters `k`. Used to obtain `k`-special soundness as a special case of CWSS, reusing all of the machinery below.",
+          "kind": "def",
+          "line": 154,
+          "name": "CWSSStructure.ofSpecialSound",
+          "namespace": "CWSSStructure",
+          "short_name": "ofSpecialSound",
+          "signature": "def ofSpecialSound (k : pSpec.ChallengeIdx \u2192 \u2115) : CWSSStructure pSpec where"
+        },
+        {
+          "doc": "A tree of transcripts with arity `D.arity` is **`D`-structured** if, at every challenge node, the sibling challenges \u2014 read as coordinate-vectors via `D.decompose` \u2014 form a coordinate-wise special-sound family `SS(S\u1d62, \u2113\u1d62, k\u1d62)`. This is the structural condition that makes a tree usable by a coordinate-wise special-soundness extractor. With `D = CWSSStructure.ofSpecialSound k` it specializes to \"the `k` sibling challenges at each node are pairwise distinct\", i.e. the condition for plain `k`-special soundness.",
+          "kind": "def",
+          "line": 175,
+          "name": "ProtocolSpec.ChallengeTree.IsStructured",
+          "namespace": "ProtocolSpec.ChallengeTree",
+          "short_name": "IsStructured",
+          "signature": "def IsStructured (D : CWSSStructure pSpec) :"
+        },
+        {
+          "doc": "A **tree-based extractor**: a deterministic algorithm that, given the input statement and a tree of transcripts (rooted at round `0`), outputs an input witness. This is the type of extractor used by (coordinate-wise) special soundness. The tree already contains all transcripts, so the extractor is a plain function; it is the rewinding/forking extractor of the knowledge-soundness reduction that actually *produces* the tree.",
+          "kind": "def",
+          "line": 198,
+          "name": "Extractor.TreeBased",
+          "namespace": "Extractor",
+          "short_name": "TreeBased",
+          "signature": "def TreeBased (StmtIn WitIn : Type) {n : \u2115} (pSpec : ProtocolSpec n)"
+        },
+        {
+          "doc": "A verifier is **coordinate-wise special sound** with respect to a coordinate-wise structure `D`, an input relation `relIn` and an output language `langOut` if there is a tree-based extractor `E` such that: for every input statement `stmtIn` and every tree of transcripts that is - `D`-structured (its sibling challenges form `SS(S\u1d62, \u2113\u1d62, k\u1d62)`-sets), and - accepting (the verifier accepts every root-to-leaf transcript, landing in `langOut`), the extracted witness `E stmtIn tree` satisfies `(stmtIn, E stmtIn tree) \u2208 relIn`. This is the multi-round coordinate-wise special soundness of [NOZ26] Def. 3 ",
+          "kind": "def",
+          "line": 225,
+          "name": "Verifier.coordinateWiseSpecialSound",
+          "namespace": "Verifier",
+          "short_name": "coordinateWiseSpecialSound",
+          "signature": "def coordinateWiseSpecialSound (D : CWSSStructure pSpec)"
+        },
+        {
+          "doc": "`k`-special soundness as the `\u2113\u1d62 = 1` case of coordinate-wise special soundness.",
+          "kind": "def",
+          "line": 236,
+          "name": "Verifier.specialSound",
+          "namespace": "Verifier",
+          "short_name": "specialSound",
+          "signature": "def specialSound (k : pSpec.ChallengeIdx \u2192 \u2115)"
+        },
+        {
+          "doc": "Coordinate-wise special soundness of an oracle reduction, defined (as for round-by-round notions) via the underlying non-oracle verifier on the combined (oracle + non-oracle) statements. The challenge structure `D` is unchanged, since the verifier's challenges are the same.",
+          "kind": "def",
+          "line": 258,
+          "name": "OracleVerifier.coordinateWiseSpecialSound",
+          "namespace": "OracleVerifier",
+          "short_name": "coordinateWiseSpecialSound",
+          "signature": "def coordinateWiseSpecialSound (D : CWSSStructure pSpec)"
+        },
+        {
+          "doc": "The CWSS knowledge error `\u2211\u1d62 \u2113\u1d62\u00b7k\u1d62 / |S\u1d62|^{\u2113\u1d62}` of [NOZ26] Lemma 4, summed over challenge rounds. Here `(2\u03b2C+1)^N`-style denominators of the paper are `|S\u1d62|^{\u2113\u1d62}`, the size of the challenge space of round `i`.",
+          "kind": "def",
+          "line": 289,
+          "name": "CWSSStructure.knowledgeError",
+          "namespace": "CWSSStructure",
+          "short_name": "knowledgeError",
+          "signature": "def knowledgeError (D : CWSSStructure pSpec) [\u2200 i, Fintype (D.alphabet i)] : \u211d\u22650 :="
+        },
+        {
+          "doc": "**Coordinate-wise special soundness implies knowledge soundness**, with the CWSS knowledge error of [NOZ26] Lemma 4. The acceptance language for the tree is taken to be `relOut.language`, the set of output statements admitting some valid output witness. The knowledge extractor witnessing `knowledgeSoundness` is the rewinding extractor that builds a structured, accepting tree of transcripts by iterating `VCVio.CryptoFoundations.forkReplay` at each challenge round, then applies the combinatorial extractor supplied by `coordinateWiseSpecialSound`.",
+          "kind": "theorem",
+          "line": 314,
+          "name": "Verifier.coordinateWiseSpecialSound_implies_knowledgeSoundness",
+          "namespace": "Verifier",
+          "short_name": "coordinateWiseSpecialSound_implies_knowledgeSoundness",
+          "signature": "theorem coordinateWiseSpecialSound_implies_knowledgeSoundness"
+        }
+      ]
+    },
     "ArkLib/OracleReduction/Security/Implications.lean": {
       "declarations": [
         {
@@ -32007,6 +32137,46 @@
           "namespace": "Verifier.StateRestoration",
           "short_name": "knowledgeSoundness",
           "signature": "def knowledgeSoundness"
+        }
+      ]
+    },
+    "ArkLib/OracleReduction/Security/TranscriptTree.lean": {
+      "declarations": [
+        {
+          "doc": "A **tree of transcripts** for a protocol `pSpec`, branching only at challenge rounds. The tree is indexed by the current round `m : Fin (n + 1)` (the rounds `m, m+1, \u2026, n-1` are still to come). Each challenge round `i` branches into `arity i` children. A `ChallengeTree pSpec arity 0` (rooted at round `0`) describes a full tree of transcripts; reading the messages and challenges along each root-to-leaf path recovers the corresponding `FullTranscript pSpec` (see `ChallengeTree.transcripts`). The challenge labels and subtrees of a challenge node are kept as two separate functions (rather than a s",
+          "kind": "inductive",
+          "line": 61,
+          "name": "ProtocolSpec.ChallengeTree",
+          "namespace": "ProtocolSpec",
+          "short_name": "ChallengeTree",
+          "signature": "inductive ChallengeTree (pSpec : ProtocolSpec n) (arity : pSpec.ChallengeIdx \u2192 \u2115) :"
+        },
+        {
+          "doc": "Collect all root-to-leaf transcripts of a tree, given the partial transcript `pre` accumulated on the path from the root to the current node. At a message (resp. challenge) node we extend the prefix by the stored message (resp. by each child's challenge label) and recurse. At a leaf the accumulated prefix is a `FullTranscript`.",
+          "kind": "def",
+          "line": 86,
+          "name": "ProtocolSpec.ChallengeTree.transcripts",
+          "namespace": "ProtocolSpec.ChallengeTree",
+          "short_name": "transcripts",
+          "signature": "def transcripts :"
+        },
+        {
+          "doc": "The transcripts of a full tree (rooted at round `0`), starting from the empty prefix.",
+          "kind": "def",
+          "line": 96,
+          "name": "ProtocolSpec.ChallengeTree.fullTranscripts",
+          "namespace": "ProtocolSpec.ChallengeTree",
+          "short_name": "fullTranscripts",
+          "signature": "def fullTranscripts (tree : ChallengeTree pSpec arity 0) : List (FullTranscript pSpec) :="
+        },
+        {
+          "doc": "A tree of transcripts is **accepting** with respect to an input statement `stmtIn` and an output language `langOut` if the verifier accepts every root-to-leaf transcript, i.e. for each such transcript the verifier outputs a statement in `langOut` with probability `1`. This is the tree-level analogue of the verifier's \"accept\" condition, phrased exactly as in the round-by-round state-function machinery (cf. `Verifier.StateFunction.toFun_full`).",
+          "kind": "def",
+          "line": 113,
+          "name": "ProtocolSpec.ChallengeTree.IsAccepting",
+          "namespace": "ProtocolSpec.ChallengeTree",
+          "short_name": "IsAccepting",
+          "signature": "def IsAccepting (verifier : Verifier oSpec StmtIn StmtOut pSpec)"
         }
       ]
     },
@@ -43343,8 +43513,8 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 4708,
-      "files": 245
+      "declarations": 4726,
+      "files": 247
     }
   }
 }
