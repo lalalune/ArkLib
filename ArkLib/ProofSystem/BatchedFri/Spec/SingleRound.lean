@@ -53,22 +53,36 @@ instance : ∀ j, OracleInterface (OracleStatement m ω j) :=
 
 namespace BatchingRound
 
+-- DEFINITION COMPLETED (2026-06-04): batching-round input relation. The batched-FRI input is a
+-- collection of `m + 1` purported codewords on the full domain `ω`, each committed to its own
+-- low-degree witness polynomial (degree `< 2 ^ (∑ s) * d`). Following [BCIKS20 §8]/[FRI1216], the
+-- well-formed-input relation asserts every batched oracle is the honest evaluation of its witness
+-- polynomial on `ω`. (No `δ`: the relation is stated on the witnessed polynomials directly; the
+-- subsequent proximity claim is carried by the FRI round-0 relation after batching — see
+-- `outputRelation`, which composes with `Fri.Spec.FoldPhase.inputRelation`.)
 def inputRelation :
     Set
       (
         (Unit × (∀ j, OracleStatement m ω j)) ×
         Witness F s d m
-      ) := sorry
+      ) :=
+  { ⟨⟨_, oStmt⟩, wit⟩ | ∀ j x, oStmt j x = (wit j).1.toPoly.eval x.1 }
 
-/- The FRI non-final folding round output relation, with proximity parameter `δ`,
-   for the `i`th round. -/
+-- DEFINITION COMPLETED (2026-06-04): batching-round output relation. After the verifier sends the
+-- random batching coefficients, the protocol hands off to the FRI round-0 reduction on the single
+-- batched codeword. The relation is the FRI round-0 well-formedness clause: the (single) round-0
+-- oracle on `ω = subdomainNatReversed 0` is the honest evaluation of the batched witness polynomial.
+-- This is exactly the witness/oracle-agreement half of `Fri.Spec.FoldPhase.inputRelation` at `i = 0`,
+-- so the batching reduction composes with FRI (the random-linear-combination batching of the `m + 1`
+-- oracles is realised in `liftingLens.stmt`).
 def outputRelation :
     Set
       (
         (Fri.Spec.Statement F (0 : Fin (k + 1)) ×
         (∀ j, Fri.Spec.OracleStatement s ω (0 : Fin (k + 1)) j)) ×
         Fri.Spec.Witness F s d (0 : Fin (k + 2))
-      ) := sorry
+      ) :=
+  { ⟨⟨_, oStmt⟩, wit⟩ | ∀ x, oStmt 0 x = wit.1.toPoly.eval x.1 }
 
 /-- The verifier send `m` field elements to batch the `m + 1` batched polynomials,
     the prover then returns the putative codeword corresponding to the batched polynomial -/
