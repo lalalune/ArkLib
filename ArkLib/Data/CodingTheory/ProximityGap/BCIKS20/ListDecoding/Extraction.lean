@@ -6,10 +6,12 @@ Authors: Quang Dao, Katerina Hristova, František Silváši, Julian Sutherland,
 -/
 
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Guruswami
+import ArkLib.Data.Polynomial.RationalFunctions
 
 namespace ProximityGap
 
-open Polynomial Polynomial.Bivariate  NNReal Finset Function ProbabilityTheory Code Trivariate
+open Polynomial Polynomial.Bivariate NNReal Finset Function ProbabilityTheory Code Trivariate
+open _root_.BCIKS20AppendixA
 open scoped BigOperators LinearCode
 
 universe u v w k l
@@ -1367,6 +1369,72 @@ theorem pg_card_candidatePairs_le_natDegreeY (x₀ : F) (h_gs : ModifiedGuruswam
         (ωs := ωs) (Q := Q) (u₀ := u₀) (u₁ := u₁) h_gs)
   -- Put everything together.
   exact (hcard_biUnion.trans (hsum.trans hsum_Rset_le))
+
+omit [DecidableEq (RatFunc F)] in
+/-- Divisibility-facing common-pair extraction with denominator `D_Y Q`. -/
+theorem pg_exists_common_candidate_pair_of_dvd_card_natDegreeY (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hx0 : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q) (u₀ := u₀)
+          (u₁ := u₁) h_gs →
+        Bivariate.evalX (Polynomial.C x₀) R ≠ 0)
+    (hsep : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q) (u₀ := u₀)
+          (u₁ := u₁) h_gs →
+        (Bivariate.evalX (Polynomial.C x₀) R).Separable)
+    (hS_nonempty :
+      (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).Nonempty)
+    (hdiv : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      let P : F[X] := Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2
+      Polynomial.X - Polynomial.C P ∣ (pg_eval_on_Z (F := F) Q z.1)) :
+    ∃ R H,
+      (R, H) ∈ pg_candidatePairs (m := m) (n := n) (k := k) (ωs := ωs)
+        (Q := Q) (u₀ := u₀) (u₁ := u₁) x₀ h_gs ∧
+      #(Finset.univ.filter
+          (fun z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ =>
+            let P : F[X] :=
+              Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2
+            (pg_eval_on_Z (F := F) R z.1).eval P = 0 ∧
+              (Bivariate.evalX z.1 H).eval (P.eval x₀) = 0))
+        ≥ #(Finset.univ : Finset (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁)) /
+          Bivariate.natDegreeY Q := by
+  classical
+  obtain ⟨R, H, hmem, hfiber⟩ :=
+    pg_exists_common_candidate_pair_of_dvd (F := F) (k := k) (δ := δ) (x₀ := x₀)
+      (h_gs := h_gs) hx0 hS_nonempty hdiv
+  refine ⟨R, H, hmem, ?_⟩
+  let T : Finset (F[Z][X][Y] × F[Z][X]) :=
+    pg_candidatePairs (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+      (u₀ := u₀) (u₁ := u₁) x₀ h_gs
+  have hTpos : 0 < #T := by
+    exact Finset.card_pos.mpr ⟨(R, H), by simpa [T] using hmem⟩
+  have hT_le : #T ≤ Bivariate.natDegreeY Q := by
+    simpa [T] using
+      (pg_card_candidatePairs_le_natDegreeY (F := F) (k := k) (x₀ := x₀)
+        (h_gs := h_gs) hsep)
+  have hden :
+      #(Finset.univ : Finset (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁)) /
+          Bivariate.natDegreeY Q
+        ≤ #(Finset.univ : Finset (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁)) / #T :=
+    Nat.div_le_div_left hT_le hTpos
+  exact hden.trans (by simpa [T] using hfiber)
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+/-- Common-root fibers are contained in the appendix set `S_β`. -/
+theorem common_roots_subset_S_β_mk
+    {H P : F[X][Y]} {T : Finset F}
+    (hroot : ∀ z ∈ T, ∃ t : F,
+      Polynomial.evalEval z t (_root_.BCIKS20AppendixA.H_tilde' H) = 0 ∧
+        Polynomial.evalEval z t P = 0) :
+    (T : Set F) ⊆
+      _root_.BCIKS20AppendixA.S_β
+        (Ideal.Quotient.mk (Ideal.span {_root_.BCIKS20AppendixA.H_tilde' H}) P :
+          _root_.BCIKS20AppendixA.𝒪 H) := by
+  intro z hz
+  obtain ⟨t, hHt, hPt⟩ := hroot z (by simpa using hz)
+  refine ⟨⟨t, hHt⟩, ?_⟩
+  rw [_root_.BCIKS20AppendixA.π_z, Ideal.Quotient.lift_mk]
+  exact hPt
 
 /-! ### Statement Analysis for Claim 5.7
 
