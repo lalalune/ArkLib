@@ -11095,9 +11095,18 @@
           "signature": "def coeffs_of_close_proximity_curve {l : \u2115}"
         },
         {
+          "doc": "Unique decoding brick for the \u00a76.1 argument: two codewords of a code with minimum distance `d` that are both within distance summing below `d` of a common word are equal (triangle inequality).",
+          "kind": "lemma",
+          "line": 55,
+          "name": "ProximityGap.eq_of_both_close_lt_minDist",
+          "namespace": "ProximityGap",
+          "short_name": "eq_of_both_close_lt_minDist",
+          "signature": "lemma eq_of_both_close_lt_minDist {n : \u2115} {F : Type} [DecidableEq F]"
+        },
+        {
           "doc": "If the set of points `\u03b4`-close to the code `V` has at least `n * l + 1` points, then there exists a curve defined by vectors `v` from `V` such that the points of `curve u` and `curve v` are `\u03b4`-close with the same parameters. Moreover, `u` and `v` differ at at most `\u03b4 * n` positions.",
           "kind": "theorem",
-          "line": 56,
+          "line": 69,
           "name": "ProximityGap.large_agreement_set_on_curve_implies_correlated_agreement",
           "namespace": "ProximityGap",
           "short_name": "large_agreement_set_on_curve_implies_correlated_agreement",
@@ -11106,16 +11115,16 @@
         {
           "doc": "The distance bound from [BCIKS20].",
           "kind": "def",
-          "line": 72,
-          "name": "ProximityGap._anon_def_72",
+          "line": 89,
+          "name": "ProximityGap._anon_def_89",
           "namespace": "ProximityGap",
-          "short_name": "_anon_def_72",
+          "short_name": "_anon_def_89",
           "signature": "def noncomputable def \u03b4\u2080 (rho : \u211a) (m : \u2115) : \u211d :="
         },
         {
           "doc": "If the set of points on the curve defined by `u` close to `V` has at least `((1 + 1 / (2 * m)) ^ 7 * m ^ 7) / (3 * (Real.rpow rho (3 / 2 : \u211a))) * n ^ 2 * l + 1` points, then there exist vectors `v` from `V` that are `(1 - \u03b4) * n` close to `u`.",
           "kind": "theorem",
-          "line": 78,
+          "line": 95,
           "name": "ProximityGap.large_agreement_set_on_curve_implies_correlated_agreement'",
           "namespace": "ProximityGap",
           "short_name": "large_agreement_set_on_curve_implies_correlated_agreement'",
@@ -48900,7 +48909,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5309,
+      "declarations": 5310,
       "files": 282
     }
   }
