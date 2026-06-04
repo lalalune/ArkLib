@@ -111,7 +111,7 @@ lemma goodCoeffsCurve_card_bounds_of_prob_threshold {k deg : ℕ}
   · exact finset_card_gt_of_natCast_le_ennreal_lt hsmall hx
   · exact finset_card_ge_of_pred_natCast_le_ennreal_lt hlarge hx
 
-omit [DecidableEq ι] [DecidableEq F] in
+omit [Nonempty ι] [DecidableEq ι] [DecidableEq F] in
 /-- The easy threshold side condition follows from the standard lower bound
 `|ι| / |F| ≤ errorBound`. -/
 lemma prob_threshold_small_of_errorBound_ge_const {k deg : ℕ}
@@ -1165,6 +1165,26 @@ theorem errorBound_ge_succ_const_of_strict_johnson {deg : ℕ} {domain : ι ↪ 
     exact (le_div_iff₀ hm7_pos).2 (by
       simpa [mul_assoc] using hmul_goal)
   simpa [mul_assoc] using this
+
+omit [Nonempty ι] [DecidableEq ι] [DecidableEq F] in
+/-- In the Johnson-side branch, failure of the strict Johnson upper bound puts
+`errorBound` in its fallback branch. This isolates the only boundary case not
+covered by the strict list-decoding front door. -/
+theorem errorBound_eq_zero_of_johnson_not_lt_sqrt {deg : ℕ} {domain : ι ↪ F}
+    {δ : ℝ≥0}
+    (hJ : (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ)
+    (hnot : ¬δ < 1 - ReedSolomon.sqrtRate deg domain) :
+    errorBound δ deg domain = 0 := by
+  classical
+  have hnotUD :
+      ¬δ ≤ (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 :=
+    not_le_of_gt hJ
+  have hnotJ :
+      ¬((1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ ∧
+        δ < 1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0).sqrt) := by
+    intro h
+    exact hnot (by simpa [ReedSolomon.sqrtRate] using h.2)
+  simp [errorBound, Set.mem_Icc, Set.mem_Ioo, hnotUD, hnotJ]
 
 omit [DecidableEq ι] in
 /-- Strict Johnson-range front door with the standard `|ι| / |F|`
