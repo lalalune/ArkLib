@@ -589,11 +589,11 @@ lemma gamma_eq_P (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
 `w(x,z)` matches `P_z(x)`. -/
 noncomputable def matching_set_at_x
     (δ : ℚ)
-    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (_h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
     (x : Fin n)
-    : Finset F := @Set.toFinset _ {z : F | ∃ h : z ∈ matching_set k ωs δ u₀ u₁ h_gs,
+    : Finset F := @Set.toFinset _ {z : F | ∃ h : z ∈ coeffs_of_close_proximity k ωs δ u₀ u₁,
     u₀ x + z * u₁ x =
-      (Pz (matching_set_is_a_sub_of_coeffs_of_close_proximity k h_gs h)).eval (ωs x)}
+      (Pz h).eval (ωs x)}
       (@Fintype.ofFinite _ Subtype.finite)
 
 /-- Claim 5.10 of [BCIKS20].
