@@ -475,7 +475,7 @@ theorem finalSumcheckOracleVerifier_rbrKnowledgeSoundness [Fintype L] [IsDomain 
   use finalSumcheckRbrExtractor κ L K P ℓ ℓ' h_l aOStmtIn
   use finalSumcheckKnowledgeStateFunction κ L K P ℓ ℓ' h_l aOStmtIn init impl
   intro stmtIn witIn prover j
-  sorry
+  exact absurd j.2 (by simp [pSpecFinalSumcheck])
 
 end FinalSumcheckStep
 
@@ -559,8 +559,13 @@ theorem coreInteraction_perfectCompleteness :
       (P:=P) (ℓ:=ℓ) (ℓ':=ℓ') (h_l:=h_l) (aOStmtIn:=aOStmtIn) (init:=init) (impl:=impl)
 
 /-- standard sumcheck error -/
-def coreInteractionRbrKnowledgeError (_ : (pSpecCoreInteraction L ℓ').ChallengeIdx) : ℝ≥0 :=
-  (2 : ℝ≥0) / (Fintype.card L)
+def coreInteractionRbrKnowledgeError (j : (pSpecCoreInteraction L ℓ').ChallengeIdx) : ℝ≥0 :=
+  Sum.elim
+    (f := fun i =>
+      let ij := seqComposeChallengeIdxToSigma i
+      roundKnowledgeError L ℓ' ij.1)
+    (g := fun _ => finalSumcheckRbrKnowledgeError (L := L))
+    (ChallengeIdx.sumEquiv.symm j)
 
 /-- RBR knowledge soundness for the iterated sumcheck loop. -/
 theorem iteratedSumcheckLoop_rbrKnowledgeSoundness [IsDomain L] :
@@ -600,7 +605,32 @@ theorem coreInteraction_rbrKnowledgeSoundness [IsDomain L] :
     (relIn := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn 0)
     (relOut := aOStmtIn.toRelInput)
     (rbrKnowledgeError := coreInteractionRbrKnowledgeError (L:=L) (ℓ':=ℓ')) := by
-  sorry
+  unfold coreInteractionOracleVerifier
+  have h := OracleVerifier.append_rbrKnowledgeSoundness
+    (oSpec := []ₒ)
+    (OStmt₁ := aOStmtIn.OStmtIn)
+    (OStmt₂ := aOStmtIn.OStmtIn)
+    (OStmt₃ := aOStmtIn.OStmtIn)
+    (init := init) (impl := impl)
+    (rel₁ := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn 0)
+    (rel₂ := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn (Fin.last ℓ'))
+    (rel₃ := aOStmtIn.toRelInput)
+    (V₁ := sumcheckLoopOracleVerifier κ L K P ℓ ℓ' aOStmtIn)
+    (V₂ := finalSumcheckVerifier κ L K P ℓ ℓ' h_l aOStmtIn)
+    (Oₛ₃ := by exact fun _ => OracleInterface.instDefault)
+    (rbrKnowledgeError₁ := fun i =>
+      let ij := seqComposeChallengeIdxToSigma i
+      roundKnowledgeError L ℓ' ij.1)
+    (rbrKnowledgeError₂ := fun _ => finalSumcheckRbrKnowledgeError (L := L))
+    (h₁ := by
+      exact iteratedSumcheckLoop_rbrKnowledgeSoundness (κ := κ) (L := L) (K := K)
+        (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn)
+        (init := init) (impl := impl))
+    (h₂ := by
+      exact finalSumcheckOracleVerifier_rbrKnowledgeSoundness (κ := κ) (L := L) (K := K)
+        (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn)
+        (init := init) (impl := impl))
+  simpa [coreInteractionRbrKnowledgeError] using h
 
 end LargeFieldReduction
 end
