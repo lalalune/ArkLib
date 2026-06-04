@@ -1113,6 +1113,79 @@ private lemma simulateQ_double_lift_query {ι₀ ι₁ ι₂ : Type} {spec₀ : 
   change simulateQ impl (liftM ((spec₀ + (spec₁ + spec₂)).query (Sum.inr (Sum.inl t)))) = _
   rw [simulateQ_spec_query]
 
+section VectorMapMTools
+
+universe uM
+
+/-- `Vector.mapM` over a pushed vector factors as mapM of the prefix, then the last element.
+(Extracted from the proof of `Vector.support_mapM_index`.) -/
+private lemma vector_mapM_push {m : Type → Type uM} [Monad m] [LawfulMonad m]
+    {α β : Type} {L : ℕ} (xs : Vector β L) (x : β) (f : β → m α) :
+    (xs.push x).mapM f =
+      (xs.mapM f >>= (fun ys => f x >>= fun last => pure (ys.push last))) := by
+  have hsingle : (#v[x]).mapM f = (fun last => #v[last]) <$> f x := by
+    apply Vector.map_toArray_inj.mp
+    simp
+  rw [← Vector.append_singleton, Vector.mapM_append, hsingle]
+  simp only [map_eq_bind_pure_comp, bind_assoc, Function.comp, pure_bind]
+  rfl
+
+/-- `Vector.mapM` on the empty vector is `pure`. -/
+private lemma vector_mapM_empty {m : Type → Type uM} [Monad m] [LawfulMonad m]
+    {α β : Type} (f : β → m α) :
+    ((#v[] : Vector β 0).mapM f) = pure #v[] := by
+  apply Vector.map_toArray_inj.mp
+  simp
+
+/-- `simulateQ` (into `OracleComp`) commutes with `Vector.mapM` of `OptionT` computations.
+The `OptionT` ascriptions are load-bearing: without them `mapM` elaborates at the carrier. -/
+private lemma simulateQ_optionT_vector_mapM {ι₁ ι₂ : Type} {spec₁ : OracleSpec ι₁}
+    {spec₂ : OracleSpec ι₂} (impl : QueryImpl spec₁ (OracleComp spec₂))
+    {α β : Type} {L : ℕ} (xs : Vector β L) (f : β → OptionT (OracleComp spec₁) α) :
+    simulateQ impl (xs.mapM f : OptionT (OracleComp spec₁) (Vector α L)) =
+      (xs.mapM (fun b => (simulateQ impl (f b) : OptionT (OracleComp spec₂) α)) :
+        OptionT (OracleComp spec₂) (Vector α L)) := by
+  induction L with
+  | zero =>
+    obtain rfl : xs = #v[] := by
+      apply Vector.ext
+      intro i h
+      omega
+    rw [vector_mapM_empty, vector_mapM_empty]
+    erw [simulateQ_pure]
+    rfl
+  | succ L ih =>
+    obtain ⟨xs0, x, rfl⟩ := Vector.exists_push (xs := xs)
+    rw [vector_mapM_push, vector_mapM_push]
+    rw [simulateQ_optionT_bind]
+    rw [ih]
+    refine bind_congr fun ys => ?_
+    rw [simulateQ_optionT_bind]
+    refine bind_congr fun last => ?_
+    show simulateQ impl (pure (ys.push last) : OptionT (OracleComp spec₁) _)
+      = (pure (ys.push last) : OptionT (OracleComp spec₂) _)
+    erw [simulateQ_pure]
+    rfl
+
+/-- `Vector.mapM` of pure computations collapses to `pure` of the map. -/
+private lemma vector_mapM_pure_comp {m : Type → Type uM} [Monad m] [LawfulMonad m]
+    {α β : Type} {L : ℕ} (xs : Vector β L) (g : β → α) :
+    xs.mapM (fun b => (pure (g b) : m α)) = pure (xs.map g) := by
+  induction L with
+  | zero =>
+    obtain rfl : xs = #v[] := by
+      apply Vector.ext
+      intro i h
+      omega
+    rw [vector_mapM_empty]
+    simp
+  | succ L ih =>
+    obtain ⟨xs0, x, rfl⟩ := Vector.exists_push (xs := xs)
+    rw [vector_mapM_push, ih]
+    simp
+
+end VectorMapMTools
+
 instance extractorLens_rbr_knowledge_soundness :
     Extractor.Lens.IsKnowledgeSound
       (relationRound R n deg D i.castSucc) (Simple.inputRelation R deg D)
