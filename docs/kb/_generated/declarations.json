@@ -13763,7 +13763,7 @@
         {
           "doc": "A bivariate polynomial of `X`-degree less than the number of points at which its `X`-evaluation vanishes is zero (coefficient-wise root counting). The `A \u2260 0` upgrade of [BCKHS25] Lemma 2.1 and the \u00a73 interpolant both reduce to this.",
           "kind": "theorem",
-          "line": 42,
+          "line": 43,
           "name": "BCKHS25.eq_zero_of_degreeX_lt_card_of_evalX_eq_zero",
           "namespace": "BCKHS25",
           "short_name": "eq_zero_of_degreeX_lt_card_of_evalX_eq_zero",
@@ -13772,16 +13772,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 45,
-          "name": "BCKHS25._anon_class_45",
+          "line": 46,
+          "name": "BCKHS25._anon_class_46",
           "namespace": "BCKHS25",
-          "short_name": "_anon_class_45",
+          "short_name": "_anon_class_46",
           "signature": "class classical"
         },
         {
           "doc": "Abstract underdetermined-system existence: a linear map between finite-dimensional spaces with strictly larger domain has a nonzero kernel vector.",
           "kind": "theorem",
-          "line": 66,
+          "line": 67,
           "name": "BCKHS25.exists_ne_zero_map_eq_zero",
           "namespace": "BCKHS25",
           "short_name": "exists_ne_zero_map_eq_zero",
@@ -13790,7 +13790,7 @@
         {
           "doc": "Unknown index type for the (A, B) coefficient vector: `A` has `X`-degree `< da` and `Z`-degree `< za`; `B` has `X`-degree `< db` and `Z`-degree `< zb`.",
           "kind": "abbrev",
-          "line": 77,
+          "line": 78,
           "name": "BCKHS25.BWIdx",
           "namespace": "BCKHS25",
           "short_name": "BWIdx",
@@ -13799,7 +13799,7 @@
         {
           "doc": "The Berlekamp\u2013Welch constraint matrix over the line word `u\u2080 + Z\u00b7u\u2081`: row `(x, j)` is the `Z^j`-coefficient of `B(\u03c9_x, Z) \u2212 (u\u2080 x + Z\u00b7u\u2081 x)\u00b7A(\u03c9_x, Z)`.",
           "kind": "def",
-          "line": 81,
+          "line": 82,
           "name": "BCKHS25.BWMatrix'",
           "namespace": "BCKHS25",
           "short_name": "BWMatrix'",
@@ -13808,7 +13808,7 @@
         {
           "doc": "The dimension count: with `zb = za + 1` (B one Z-degree higher) and `da\u00b7za + db\u00b7(za+1) > n\u00b7(za+1)`, the constraint system has a nontrivial solution.",
           "kind": "theorem",
-          "line": 95,
+          "line": 96,
           "name": "BCKHS25.exists_ne_zero_BWvec",
           "namespace": "BCKHS25",
           "short_name": "exists_ne_zero_BWvec",
@@ -13817,16 +13817,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 100,
-          "name": "BCKHS25._anon_class_100",
+          "line": 101,
+          "name": "BCKHS25._anon_class_101",
           "namespace": "BCKHS25",
-          "short_name": "_anon_class_100",
+          "short_name": "_anon_class_101",
           "signature": "class classical"
         },
         {
           "doc": "Package the `A`-block of a coefficient vector as a bivariate polynomial.",
           "kind": "def",
-          "line": 109,
+          "line": 110,
           "name": "BCKHS25.toPolyA",
           "namespace": "BCKHS25",
           "short_name": "toPolyA",
@@ -13835,7 +13835,7 @@
         {
           "doc": "Package the `B`-block of a coefficient vector as a bivariate polynomial.",
           "kind": "def",
-          "line": 114,
+          "line": 115,
           "name": "BCKHS25.toPolyB",
           "namespace": "BCKHS25",
           "short_name": "toPolyB",
@@ -13844,7 +13844,7 @@
         {
           "doc": "The `Y`-coefficients of the packaged polynomial, evaluated in `X`: inside the index range it is the coefficient-weighted power sum; beyond it, zero.",
           "kind": "lemma",
-          "line": 120,
+          "line": 121,
           "name": "BCKHS25.coeff_evalX_toPolyB",
           "namespace": "BCKHS25",
           "short_name": "coeff_evalX_toPolyB",
@@ -13853,16 +13853,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 124,
-          "name": "BCKHS25._anon_class_124",
+          "line": 125,
+          "name": "BCKHS25._anon_class_125",
           "namespace": "BCKHS25",
-          "short_name": "_anon_class_124",
+          "short_name": "_anon_class_125",
           "signature": "class classical"
         },
         {
           "doc": "Same for the `A`-block.",
           "kind": "lemma",
-          "line": 152,
+          "line": 153,
           "name": "BCKHS25.coeff_evalX_toPolyA",
           "namespace": "BCKHS25",
           "short_name": "coeff_evalX_toPolyA",
@@ -13871,16 +13871,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 156,
-          "name": "BCKHS25._anon_class_156",
+          "line": 157,
+          "name": "BCKHS25._anon_class_157",
           "namespace": "BCKHS25",
-          "short_name": "_anon_class_156",
+          "short_name": "_anon_class_157",
           "signature": "class classical"
         },
         {
           "doc": "Coefficient recovery: the packaged polynomials are injective images of the coefficient vector.",
           "kind": "lemma",
-          "line": 185,
+          "line": 186,
           "name": "BCKHS25.coeff_coeff_toPolyA",
           "namespace": "BCKHS25",
           "short_name": "coeff_coeff_toPolyA",
@@ -13889,16 +13889,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 188,
-          "name": "BCKHS25._anon_class_188",
+          "line": 189,
+          "name": "BCKHS25._anon_class_189",
           "namespace": "BCKHS25",
-          "short_name": "_anon_class_188",
+          "short_name": "_anon_class_189",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 209,
+          "line": 210,
           "name": "BCKHS25.coeff_coeff_toPolyB",
           "namespace": "BCKHS25",
           "short_name": "coeff_coeff_toPolyB",
@@ -13907,16 +13907,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 212,
-          "name": "BCKHS25._anon_class_212",
+          "line": 213,
+          "name": "BCKHS25._anon_class_213",
           "namespace": "BCKHS25",
-          "short_name": "_anon_class_212",
+          "short_name": "_anon_class_213",
           "signature": "class classical"
         },
         {
           "doc": "The kernel rows are exactly the Y-coefficients of the Berlekamp\u2013Welch identity: if `mulVec (BWMatrix' \u2026) v = 0` then at every domain point `B(\u03c9_x, Y) = (u\u2080 x + u\u2081 x \u00b7 Y) \u00b7 A(\u03c9_x, Y)`.",
           "kind": "lemma",
-          "line": 235,
+          "line": 236,
           "name": "BCKHS25.identity_of_mulVec_eq_zero",
           "namespace": "BCKHS25",
           "short_name": "identity_of_mulVec_eq_zero",
@@ -13925,16 +13925,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 241,
-          "name": "BCKHS25._anon_class_241",
+          "line": 242,
+          "name": "BCKHS25._anon_class_242",
           "namespace": "BCKHS25",
-          "short_name": "_anon_class_241",
+          "short_name": "_anon_class_242",
           "signature": "class classical"
         },
         {
           "doc": "The Y-coefficients of `toPolyA` in explicit sum form (in-range).",
           "kind": "lemma",
-          "line": 375,
+          "line": 376,
           "name": "BCKHS25.coeff_toPolyA",
           "namespace": "BCKHS25",
           "short_name": "coeff_toPolyA",
@@ -13943,16 +13943,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 379,
-          "name": "BCKHS25._anon_class_379",
+          "line": 380,
+          "name": "BCKHS25._anon_class_380",
           "namespace": "BCKHS25",
-          "short_name": "_anon_class_379",
+          "short_name": "_anon_class_380",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 389,
+          "line": 390,
           "name": "BCKHS25.coeff_toPolyB",
           "namespace": "BCKHS25",
           "short_name": "coeff_toPolyB",
@@ -13961,16 +13961,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 393,
-          "name": "BCKHS25._anon_class_393",
+          "line": 394,
+          "name": "BCKHS25._anon_class_394",
           "namespace": "BCKHS25",
-          "short_name": "_anon_class_393",
+          "short_name": "_anon_class_394",
           "signature": "class classical"
         },
         {
           "doc": "Out-of-range Y-coefficients vanish.",
           "kind": "lemma",
-          "line": 404,
+          "line": 405,
           "name": "BCKHS25.coeff_toPolyA_eq_zero",
           "namespace": "BCKHS25",
           "short_name": "coeff_toPolyA_eq_zero",
@@ -13979,16 +13979,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 406,
-          "name": "BCKHS25._anon_class_406",
+          "line": 407,
+          "name": "BCKHS25._anon_class_407",
           "namespace": "BCKHS25",
-          "short_name": "_anon_class_406",
+          "short_name": "_anon_class_407",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 412,
+          "line": 413,
           "name": "BCKHS25.coeff_toPolyB_eq_zero",
           "namespace": "BCKHS25",
           "short_name": "coeff_toPolyB_eq_zero",
@@ -13997,16 +13997,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 414,
-          "name": "BCKHS25._anon_class_414",
+          "line": 415,
+          "name": "BCKHS25._anon_class_415",
           "namespace": "BCKHS25",
-          "short_name": "_anon_class_414",
+          "short_name": "_anon_class_415",
           "signature": "class classical"
         },
         {
           "doc": "Each in-range coefficient has X-degree < da (power-sum shape).",
           "kind": "lemma",
-          "line": 421,
+          "line": 422,
           "name": "BCKHS25.natDegree_coeff_toPolyA_lt",
           "namespace": "BCKHS25",
           "short_name": "natDegree_coeff_toPolyA_lt",
@@ -14015,16 +14015,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 424,
-          "name": "BCKHS25._anon_class_424",
+          "line": 425,
+          "name": "BCKHS25._anon_class_425",
           "namespace": "BCKHS25",
-          "short_name": "_anon_class_424",
+          "short_name": "_anon_class_425",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 436,
+          "line": 437,
           "name": "BCKHS25.natDegree_coeff_toPolyB_lt",
           "namespace": "BCKHS25",
           "short_name": "natDegree_coeff_toPolyB_lt",
@@ -14033,16 +14033,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 439,
-          "name": "BCKHS25._anon_class_439",
+          "line": 440,
+          "name": "BCKHS25._anon_class_440",
           "namespace": "BCKHS25",
-          "short_name": "_anon_class_439",
+          "short_name": "_anon_class_440",
           "signature": "class classical"
         },
         {
           "doc": "X-degree bounds for the packaged polynomials.",
           "kind": "lemma",
-          "line": 452,
+          "line": 453,
           "name": "BCKHS25.degreeX_toPolyA_lt",
           "namespace": "BCKHS25",
           "short_name": "degreeX_toPolyA_lt",
@@ -14051,16 +14051,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 454,
-          "name": "BCKHS25._anon_class_454",
+          "line": 455,
+          "name": "BCKHS25._anon_class_455",
           "namespace": "BCKHS25",
-          "short_name": "_anon_class_454",
+          "short_name": "_anon_class_455",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 459,
+          "line": 460,
           "name": "BCKHS25.degreeX_toPolyB_lt",
           "namespace": "BCKHS25",
           "short_name": "degreeX_toPolyB_lt",
@@ -14069,16 +14069,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 461,
-          "name": "BCKHS25._anon_class_461",
+          "line": 462,
+          "name": "BCKHS25._anon_class_462",
           "namespace": "BCKHS25",
-          "short_name": "_anon_class_461",
+          "short_name": "_anon_class_462",
           "signature": "class classical"
         },
         {
           "doc": "Y-degree bounds.",
           "kind": "lemma",
-          "line": 467,
+          "line": 468,
           "name": "BCKHS25.natDegreeY_toPolyA_lt",
           "namespace": "BCKHS25",
           "short_name": "natDegreeY_toPolyA_lt",
@@ -14087,16 +14087,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 469,
-          "name": "BCKHS25._anon_class_469",
+          "line": 470,
+          "name": "BCKHS25._anon_class_470",
           "namespace": "BCKHS25",
-          "short_name": "_anon_class_469",
+          "short_name": "_anon_class_470",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 476,
+          "line": 477,
           "name": "BCKHS25.natDegreeY_toPolyB_lt",
           "namespace": "BCKHS25",
           "short_name": "natDegreeY_toPolyB_lt",
@@ -14105,16 +14105,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 478,
-          "name": "BCKHS25._anon_class_478",
+          "line": 479,
+          "name": "BCKHS25._anon_class_479",
           "namespace": "BCKHS25",
-          "short_name": "_anon_class_478",
+          "short_name": "_anon_class_479",
           "signature": "class classical"
         },
         {
           "doc": "**[BCKHS25] Lemma 2.1 (assembled).** With more unknowns than constraints, there is a Berlekamp\u2013Welch pair `(A, B)` for the line word: `A \u2260 0`, both with the stated degree bounds, satisfying `B(\u03c9_x, Y) = (u\u2080 x + u\u2081 x\u00b7Y)\u00b7A(\u03c9_x, Y)` at every domain point.",
           "kind": "theorem",
-          "line": 489,
+          "line": 490,
           "name": "BCKHS25.exists_BW_pair",
           "namespace": "BCKHS25",
           "short_name": "exists_BW_pair",
@@ -14123,16 +14123,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 500,
-          "name": "BCKHS25._anon_class_500",
+          "line": 501,
+          "name": "BCKHS25._anon_class_501",
           "namespace": "BCKHS25",
-          "short_name": "_anon_class_500",
+          "short_name": "_anon_class_501",
           "signature": "class classical"
         },
         {
           "doc": "The `Y`-evaluation of a bivariate polynomial has `X`-degree at most `degreeX`.",
           "kind": "lemma",
-          "line": 536,
+          "line": 537,
           "name": "BCKHS25.natDegree_evalY_le_degreeX",
           "namespace": "BCKHS25",
           "short_name": "natDegree_evalY_le_degreeX",
@@ -14141,7 +14141,7 @@
         {
           "doc": "Evaluation order commutes: `(evalX x f).eval z = (evalY z f).eval x`.",
           "kind": "lemma",
-          "line": 552,
+          "line": 553,
           "name": "BCKHS25.evalX_eval_comm",
           "namespace": "BCKHS25",
           "short_name": "evalX_eval_comm",
@@ -14150,11 +14150,29 @@
         {
           "doc": "The per-`z` instantiation of the Berlekamp\u2013Welch identity: evaluating the `Y`-identity at `Y := z` gives the pointwise equation at every domain point.",
           "kind": "lemma",
-          "line": 565,
+          "line": 566,
           "name": "BCKHS25.evalY_BW_identity",
           "namespace": "BCKHS25",
           "short_name": "evalY_BW_identity",
           "signature": "lemma evalY_BW_identity {A B : F[X][Y]} (domain : \u03b9 \u21aa F) (u\u2080 u\u2081 : \u03b9 \u2192 F)"
+        },
+        {
+          "doc": "Steps 1\u20132 of Claim 2.3: given the BW pair and a degree-`k` proximate at `z` agreeing outside \u2264 `e` points, the bivariate factors at `Y := z`: `evalY z B = P_z \u00b7 evalY z A` (by-degree equality on the agreement set).",
+          "kind": "lemma",
+          "line": 578,
+          "name": "BCKHS25.evalY_eq_proximate_mul",
+          "namespace": "BCKHS25",
+          "short_name": "evalY_eq_proximate_mul",
+          "signature": "lemma evalY_eq_proximate_mul {k e h : \u2115}"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 589,
+          "name": "BCKHS25._anon_class_589",
+          "namespace": "BCKHS25",
+          "short_name": "_anon_class_589",
+          "signature": "class classical"
         }
       ]
     },
@@ -50216,7 +50234,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5453,
+      "declarations": 5455,
       "files": 287
     }
   }
