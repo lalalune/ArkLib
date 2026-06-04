@@ -824,6 +824,20 @@ noncomputable def queryKnowledgeStateFunction {σ : Type} (init : ProbComp σ)
     --      the fold-semantics facts. This index/cast bookkeeping is the genuine remaining content.
     sorry
 
+/-- Round-by-round knowledge error for the query phase: the documented proximity-gap target
+`(1/2 + 2^-(𝓡+1))^γ` (per-repetition soundness `1/2 + 2^-(𝓡+1)`, `γ` independent repetitions).
+
+RESTORED DEFINITION (pre-existing breakage): `queryRbrKnowledgeError` was *referenced* by this
+file (`queryOracleVerifier_rbrKnowledgeSoundness`) and by `BinaryBasefold/General.lean`
+(`fullRbrKnowledgeError`) but never **defined** anywhere in the tree — `Unknown identifier
+queryRbrKnowledgeError`. This was masked behind upstream merge failures and surfaced once they were
+fixed. Supplied here at the documented bound; the soundness theorem consuming it remains `sorry`
+(research-tier proximity-gap argument), so no proof is affected. -/
+noncomputable def queryRbrKnowledgeError
+    (_i : (pSpecQuery 𝔽q β γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).ChallengeIdx) :
+    ℝ≥0 :=
+  ((1 : ℝ≥0) / 2 + (1 : ℝ≥0) / 2 ^ (𝓡 + 1)) ^ γ_repetitions
+
 /-- Round-by-round knowledge soundness for the oracle verifier (query phase) -/
 theorem queryOracleVerifier_rbrKnowledgeSoundness [Fintype L] {σ : Type} (init : ProbComp σ)
     (impl : QueryImpl []ₒ (StateT σ ProbComp)) :
