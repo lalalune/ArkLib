@@ -550,7 +550,10 @@ open LinearCode Classical ProbabilityTheory ReedSolomon STIR in
       Pr_{r ← F} [δᵣ(Combine(dstar,r,(f₁,degs₁),...,(fₘ,degsₘ)))]
                    > err' (dstar, ρ, δ, m * (dstar + 1) - ∑ i degsᵢ) -/
 theorem combine_theorem
-    {φ : ι ↪ F} {dstar m : ℕ}
+  {φ : ι ↪ F} {dstar m : ℕ}
+  -- Finding 17 cascade: the keystone is false at dstar = 0, so this consumer
+  -- inherits the nondegeneracy hypothesis (see upstream-issues.md).
+  [NeZero dstar]
   (fs : Fin m → ι → F) (degs : Fin m → ℕ) (hdegs : ∀ i, degs i ≤ dstar)
   (δ : ℝ≥0) (hδPos : δ > 0)
   (hδLt : δ < (min (1 - (ReedSolomon.sqrtRate dstar φ))
@@ -576,15 +579,22 @@ theorem combine_theorem
   · generalize htotal: totalTerms dstar degs = total
     rw [Fintype.card_eq_zero_iff, not_isEmpty_iff] at hempty
     rcases total with _ | total
-    · rcases m with _ | m
-      · aesop
-          (add simp [totalTerms, blockSize])
-          (add safe (by exists Finset.univ))
-      · aesop (add simp [totalTerms, blockSize])
-    · have proximity_gap :=
-        @ProximityGap.correlatedAgreement_affine_curves ι _ _ F _ _ _
-          (totalTerms dstar degs - 1) dstar φ δ (le_of_lt <| by
-            aesop (add simp [lt_min_iff, ReedSolomon.sqrtRate]))
+    · simp [totalTerms, blockSize] at htotal 
+      rcases m with _ | m
+      · simp
+        exists Finset.univ
+        simp
+      · specialize htotal 0
+        simp at htotal
+    · have proximity_gap := 
+        ProximityGap.correlatedAgreement_affine_curves (ι := ι) (F := F)
+          (k := totalTerms dstar degs - 1) (deg := dstar) (domain := φ) (δ := δ) (by {
+            rw [lt_min_iff] at hδLt
+            rcases hδLt with ⟨h, _⟩
+            simp only [ReedSolomon.sqrtRate]
+            apply le_of_lt
+            assumption
+          })
       simp only [ProximityGap.δ_ε_correlatedAgreementCurves] at proximity_gap
       specialize proximity_gap
           (fun l (x : ι) ↦ (
