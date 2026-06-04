@@ -4,7 +4,7 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 282 files, 5016 declarations
+- `ArkLib` — 282 files, 5027 declarations
 
 ## Same short-name across multiple files (143 groups)
 
@@ -767,32 +767,32 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `liftContext_completeness` (2 declarations, 2 files)
 
 - `theorem OracleReduction.liftContext_completeness` [ArkLib/OracleReduction/LiftContext/OracleReduction.lean:118](../../../ArkLib/OracleReduction/LiftContext/OracleReduction.lean#L118) — (no docstring)
-- `theorem Reduction.liftContext_completeness` [ArkLib/OracleReduction/LiftContext/Reduction.lean:418](../../../ArkLib/OracleReduction/LiftContext/Reduction.lean#L418) — Lifting the reduction preserves completeness, assuming the lens satisfies its completeness condition
+- `theorem Reduction.liftContext_completeness` [ArkLib/OracleReduction/LiftContext/Reduction.lean:419](../../../ArkLib/OracleReduction/LiftContext/Reduction.lean#L419) — Lifting the reduction preserves completeness, assuming the lens satisfies its completeness condition
 
 ### `liftContext_knowledgeSoundness` (2 declarations, 2 files)
 
 - `theorem OracleVerifier.liftContext_knowledgeSoundness` [ArkLib/OracleReduction/LiftContext/OracleReduction.lean:155](../../../ArkLib/OracleReduction/LiftContext/OracleReduction.lean#L155) — (no docstring)
-- `theorem Verifier.liftContext_knowledgeSoundness` [ArkLib/OracleReduction/LiftContext/Reduction.lean:622](../../../ArkLib/OracleReduction/LiftContext/Reduction.lean#L622) — (no docstring)
+- `theorem Verifier.liftContext_knowledgeSoundness` [ArkLib/OracleReduction/LiftContext/Reduction.lean:663](../../../ArkLib/OracleReduction/LiftContext/Reduction.lean#L663) — (no docstring)
 
 ### `liftContext_perfectCompleteness` (2 declarations, 2 files)
 
 - `theorem OracleReduction.liftContext_perfectCompleteness` [ArkLib/OracleReduction/LiftContext/OracleReduction.lean:125](../../../ArkLib/OracleReduction/LiftContext/OracleReduction.lean#L125) — (no docstring)
-- `theorem Reduction.liftContext_perfectCompleteness` [ArkLib/OracleReduction/LiftContext/Reduction.lean:458](../../../ArkLib/OracleReduction/LiftContext/Reduction.lean#L458) — (no docstring)
+- `theorem Reduction.liftContext_perfectCompleteness` [ArkLib/OracleReduction/LiftContext/Reduction.lean:459](../../../ArkLib/OracleReduction/LiftContext/Reduction.lean#L459) — (no docstring)
 
 ### `liftContext_rbr_knowledgeSoundness` (2 declarations, 2 files)
 
 - `theorem OracleVerifier.liftContext_rbr_knowledgeSoundness` [ArkLib/OracleReduction/LiftContext/OracleReduction.lean:186](../../../ArkLib/OracleReduction/LiftContext/OracleReduction.lean#L186) — (no docstring)
-- `theorem Verifier.liftContext_rbr_knowledgeSoundness` [ArkLib/OracleReduction/LiftContext/Reduction.lean:706](../../../ArkLib/OracleReduction/LiftContext/Reduction.lean#L706) — (no docstring)
+- `theorem Verifier.liftContext_rbr_knowledgeSoundness` [ArkLib/OracleReduction/LiftContext/Reduction.lean:747](../../../ArkLib/OracleReduction/LiftContext/Reduction.lean#L747) — (no docstring)
 
 ### `liftContext_rbr_soundness` (2 declarations, 2 files)
 
 - `theorem OracleVerifier.liftContext_rbr_soundness` [ArkLib/OracleReduction/LiftContext/OracleReduction.lean:172](../../../ArkLib/OracleReduction/LiftContext/OracleReduction.lean#L172) — (no docstring)
-- `theorem Verifier.liftContext_rbr_soundness` [ArkLib/OracleReduction/LiftContext/Reduction.lean:671](../../../ArkLib/OracleReduction/LiftContext/Reduction.lean#L671) — (no docstring)
+- `theorem Verifier.liftContext_rbr_soundness` [ArkLib/OracleReduction/LiftContext/Reduction.lean:712](../../../ArkLib/OracleReduction/LiftContext/Reduction.lean#L712) — (no docstring)
 
 ### `liftContext_soundness` (2 declarations, 2 files)
 
 - `theorem OracleVerifier.liftContext_soundness` [ArkLib/OracleReduction/LiftContext/OracleReduction.lean:142](../../../ArkLib/OracleReduction/LiftContext/OracleReduction.lean#L142) — Lifting the reduction preserves soundness, assuming the lens satisfies its soundness conditions
-- `theorem Verifier.liftContext_soundness` [ArkLib/OracleReduction/LiftContext/Reduction.lean:513](../../../ArkLib/OracleReduction/LiftContext/Reduction.lean#L513) — Lifting the reduction preserves soundness, assuming the lens satisfies its soundness conditions
+- `theorem Verifier.liftContext_soundness` [ArkLib/OracleReduction/LiftContext/Reduction.lean:514](../../../ArkLib/OracleReduction/LiftContext/Reduction.lean#L514) — Lifting the reduction preserves soundness, assuming the lens satisfies its soundness conditions
 
 ### `masterKStateProp` (2 declarations, 2 files)
 
@@ -1051,7 +1051,7 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **1.00** `KZG.CommitmentScheme.map_binding_instance_drag` [ArkLib/CommitmentScheme/KZG/Binding.lean:639](../../../ArkLib/CommitmentScheme/KZG/Binding.lean#L639) vs `KZG.CommitmentScheme.map_instance_drag` [ArkLib/CommitmentScheme/KZG/FunctionBinding/Basic.lean:534](../../../ArkLib/CommitmentScheme/KZG/FunctionBinding/Basic.lean#L534)
     - a: Transition 3: dragging the map into the probability event.
     - b: Transition 3: dragging the map into the probability event
-- **1.00** `OracleVerifier.liftContext_soundness` [ArkLib/OracleReduction/LiftContext/OracleReduction.lean:142](../../../ArkLib/OracleReduction/LiftContext/OracleReduction.lean#L142) vs `Verifier.liftContext_soundness` [ArkLib/OracleReduction/LiftContext/Reduction.lean:513](../../../ArkLib/OracleReduction/LiftContext/Reduction.lean#L513)
+- **1.00** `OracleVerifier.liftContext_soundness` [ArkLib/OracleReduction/LiftContext/OracleReduction.lean:142](../../../ArkLib/OracleReduction/LiftContext/OracleReduction.lean#L142) vs `Verifier.liftContext_soundness` [ArkLib/OracleReduction/LiftContext/Reduction.lean:514](../../../ArkLib/OracleReduction/LiftContext/Reduction.lean#L514)
     - a: Lifting the reduction preserves soundness, assuming the lens satisfies its soundness conditions
     - b: Lifting the reduction preserves soundness, assuming the lens satisfies its soundness conditions
 - **1.00** `Prover.processRoundFS` [ArkLib/OracleReduction/FiatShamir/Basic.lean:78](../../../ArkLib/OracleReduction/FiatShamir/Basic.lean#L78) vs `Prover.processRoundDSFS` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Defs.lean:167](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Defs.lean#L167)
