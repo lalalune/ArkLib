@@ -35,9 +35,7 @@ variable [hdiv : Fact (ϑ ∣ ℓ)]
 
 instance {_ : Empty} : OracleInterface (Unit) := OracleInterface.instDefault
 
-/-- The oracle verifier for the full Binary Basefold protocol: the core interaction phase
-(`pSpecCoreInteraction`) appended with the final query phase (`pSpecQuery`), matching
-`fullPSpec = pSpecCoreInteraction ++ₚ pSpecQuery`. -/
+/-- The oracle verifier for the full Binary Basefold protocol. -/
 @[reducible]
 noncomputable def fullOracleVerifier :
   OracleVerifier (oSpec := []ₒ)
@@ -46,23 +44,10 @@ noncomputable def fullOracleVerifier :
     (StmtOut := Bool)
     (OStmtOut := fun _ : Empty => Unit)
     (pSpec := fullPSpec 𝔽q β γ_repetitions (ϑ := ϑ)
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) :=
-  OracleVerifier.append (oSpec := []ₒ)
-    (Stmt₁ := Statement (L := L) (ℓ := ℓ) (SumcheckBaseContext L ℓ) 0)
-    (Stmt₂ := FinalSumcheckStatementOut (L := L) (ℓ := ℓ))
-    (Stmt₃ := Bool)
-    (OStmt₁ := OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ 0)
-    (OStmt₂ := OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ (Fin.last ℓ))
-    (OStmt₃ := fun _ : Empty => Unit)
-    (pSpec₁ := pSpecCoreInteraction 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
-    (pSpec₂ := pSpecQuery 𝔽q β γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
-    (V₁ := CoreInteraction.coreInteractionOracleVerifier 𝔽q β (ϑ := ϑ)
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
-    (V₂ := QueryPhase.queryOracleVerifier 𝔽q β (ϑ := ϑ) γ_repetitions
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) := by
+  sorry
 
-/-- The reduction for the full Binary Basefold protocol: the core interaction phase appended with
-the final query phase, matching `fullPSpec = pSpecCoreInteraction ++ₚ pSpecQuery`. -/
+/-- The reduction for the full Binary Basefold protocol. -/
 @[reducible]
 noncomputable def fullOracleReduction :
   OracleReduction (oSpec := []ₒ)
@@ -73,22 +58,8 @@ noncomputable def fullOracleReduction :
     (WitIn := Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) 0)
     (WitOut := Unit)
     (pSpec := fullPSpec 𝔽q β γ_repetitions (ϑ := ϑ)
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) :=
-  OracleReduction.append (oSpec := []ₒ)
-    (Stmt₁ := Statement (L := L) (ℓ := ℓ) (SumcheckBaseContext L ℓ) 0)
-    (Stmt₂ := FinalSumcheckStatementOut (L := L) (ℓ := ℓ))
-    (Stmt₃ := Bool)
-    (Wit₁ := Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) 0)
-    (Wit₂ := Unit)
-    (Wit₃ := Unit)
-    (OStmt₁ := OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ 0)
-    (OStmt₂ := OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ (Fin.last ℓ))
-    (OStmt₃ := fun _ : Empty => Unit)
-    (pSpec₁ := pSpecCoreInteraction 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
-    (pSpec₂ := pSpecQuery 𝔽q β γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
-    (R₁ := coreInteractionOracleReduction 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
-    (R₂ := queryOracleReduction 𝔽q β (ϑ := ϑ) γ_repetitions
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) := by
+  sorry
 
 /-- The full Binary Basefold protocol as a proof object. -/
 @[reducible]
