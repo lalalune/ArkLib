@@ -392,6 +392,7 @@ lemma irreducible_factorization_of_gs_solution
     (∀ Rᵢ ∈ R,
         (Rᵢ.map (algebraMap (F[Z][X]) (FractionRing (F[Z][X])))).Separable) ∧
     (∀ Rᵢ ∈ R, Irreducible Rᵢ) ∧
+    (∀ Rᵢ ∈ R, 0 < Rᵢ.natDegree) ∧
     Q = (Polynomial.C C) *
         ∏ i ∈ Finset.range R.length,
           ((R.getD i 1).comp ((Polynomial.X : F[Z][X][Y]) ^ f.getD i 0)) ^ e.getD i 0
@@ -471,7 +472,7 @@ lemma irreducible_factorization_of_gs_solution
     L.map (fun t : F[Z][X][Y] × ℕ × ℕ => t.2.2),
     by simp only [List.length_map],
     by simp only [List.length_map],
-    ?_, ?_, ?_, ?_⟩
+    ?_, ?_, ?_, ?_, ?_⟩
   · -- ∀ eᵢ ∈ e, 1 ≤ eᵢ
     intro eᵢ hmem
     rw [hL] at hmem
@@ -496,6 +497,23 @@ lemma irreducible_factorization_of_gs_solution
     obtain ⟨g, hgP, rfl⟩ := hmem
     simp only [Function.comp]
     exact (hspec g hgP).1
+  · -- positive Y-degree of each factor `rr g`
+    intro Rᵢ hmem
+    rw [hL] at hmem
+    simp only [List.map_map, List.mem_map, Finset.mem_toList] at hmem
+    obtain ⟨g, hgP, rfl⟩ := hmem
+    simp only [Function.comp]
+    -- `g = C (uu g) * expand (nn g) (rr g)`, with `g` of positive `natDegree`, so `rr g` is too.
+    obtain ⟨_, _, hu, hgeq⟩ := hspec g hgP
+    have hgpos : 0 < g.natDegree := by
+      rw [hP, Finset.mem_filter] at hgP; exact hgP.2
+    have hgnat : g.natDegree = (rr g).natDegree * (nn g) := by
+      conv_lhs => rw [hgeq]
+      rw [Polynomial.natDegree_C_mul_of_isUnit hu, Polynomial.natDegree_expand]
+    rw [hgnat] at hgpos
+    rcases Nat.eq_zero_or_pos (rr g).natDegree with h | h
+    · rw [h, Nat.zero_mul] at hgpos; exact absurd hgpos (lt_irrefl 0)
+    · exact h
   · -- the factorization equation
     -- product over range = list product (bridge) = ∏ over P of body
     have hbridge := eq512_prod_range_triple_list L
@@ -531,12 +549,222 @@ lemma irreducible_factorization_of_gs_solution
     ring
 
 
-omit [DecidableEq (RatFunc F)] in
-/-- Claim 5.6 of [BCIKS20]. -/
-lemma discr_of_irred_components_nonzero (_h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
+/-- *Discriminant–map bridge*: the (univariate) discriminant `Polynomial.discr` commutes with an
+injective coefficient hom into a field. Proved from the resultant–discriminant identity
+`Polynomial.resultant_deriv` on both rings together with `resultant_map_map`, cancelling the common
+sign and (nonzero) leading-coefficient factor inside the target field. -/
+theorem discr_map_of_injective_to_field {A : Type} [CommRing A] {B : Type} [Field B]
+    (ψ : A →+* B) (hinj : Function.Injective ψ) {f : A[X]} (hdeg : 0 < f.degree) :
+    (f.map ψ).discr = ψ f.discr := by
+  classical
+  set g : B[X] := f.map ψ with hg
+  have hgnat : g.natDegree = f.natDegree := natDegree_map_eq_of_injective hinj f
+  have hgdeg : 0 < g.degree := by rw [hg, degree_map_eq_of_injective hinj]; exact hdeg
+  have hgdegnat : 0 < g.natDegree := natDegree_pos_iff_degree_pos.mpr hgdeg
+  have hgne : g ≠ 0 := fun h => by
+    rw [h, natDegree_zero] at hgdegnat; exact absurd hgdegnat (lt_irrefl 0)
+  have hglc : g.leadingCoeff = ψ f.leadingCoeff := leadingCoeff_map_of_injective hinj f
+  have hlc_ne : g.leadingCoeff ≠ 0 := leadingCoeff_ne_zero.mpr hgne
+  have hmapres :
+      resultant g g.derivative g.natDegree (g.natDegree - 1)
+        = ψ (resultant f f.derivative f.natDegree (f.natDegree - 1)) := by
+    rw [hg, derivative_map, natDegree_map_eq_of_injective hinj, resultant_map_map]
+  have hrd := resultant_deriv (f := g) hgdeg
+  have hrdf := resultant_deriv (f := f) hdeg
+  have h1 := hmapres
+  rw [hrd, hrdf] at h1
+  rw [map_mul, map_mul, map_pow, map_neg, map_one, hglc] at h1
+  have hsigneq : (g.natDegree * (g.natDegree - 1) / 2) = (f.natDegree * (f.natDegree - 1) / 2) := by
+    rw [hgnat]
+  rw [hsigneq] at h1
+  have hcancel : ((-1 : B) ^ (f.natDegree * (f.natDegree - 1) / 2) * ψ f.leadingCoeff) ≠ 0 :=
+    mul_ne_zero (pow_ne_zero _ (by norm_num)) (by rw [← hglc]; exact hlc_ne)
+  exact mul_left_cancel₀ hcancel h1
+
+/-- *Separable ⟹ nonzero discriminant over a field*. Working over the splitting field `L` of `f`,
+`f.map` splits and stays separable, so by `resultant_eq_prod_eval` its `(natDegree, natDegree-1)`
+resultant with its derivative is `leadingCoeff^… · ∏_{a ∈ roots} f'(a)`. Separability forces
+`f'(a) ≠ 0` at every root (`Separable.eval₂_derivative_ne_zero`), so the product — hence
+(via `resultant_deriv`) the discriminant over `L` — is nonzero; the `discr_map` bridge then
+pulls it back to `f.discr ≠ 0` over the base field. -/
+theorem discr_ne_zero_of_separable_field {K : Type} [Field K] {f : K[X]}
+    (hsep : f.Separable) (hdeg : 0 < f.natDegree) : f.discr ≠ 0 := by
+  classical
+  set L := f.SplittingField with hL
+  set q : K →+* L := algebraMap K L with hq
+  have hqinj : Function.Injective q := (algebraMap K L).injective
+  set g : L[X] := f.map q with hg
+  have hgsep : g.Separable := hsep.map
+  have hgsplits : g.Splits := Polynomial.SplittingField.splits f
+  have hgnat : g.natDegree = f.natDegree := natDegree_map_eq_of_injective hqinj f
+  have hfdeg : 0 < f.degree := natDegree_pos_iff_degree_pos.mp hdeg
+  have hgdeg : 0 < g.degree := by rw [hg, degree_map_eq_of_injective hqinj]; exact hfdeg
+  have hgdegnat : 0 < g.natDegree := by rw [hgnat]; exact hdeg
+  have hgne : g ≠ 0 := fun h => by
+    rw [h, natDegree_zero] at hgdegnat; exact absurd hgdegnat (lt_irrefl 0)
+  have hderiv_le : g.derivative.natDegree ≤ g.natDegree - 1 := natDegree_derivative_le g
+  have hres_eval :
+      resultant g g.derivative g.natDegree (g.natDegree - 1)
+        = g.leadingCoeff ^ (g.natDegree - 1) * (g.roots.map g.derivative.eval).prod :=
+    resultant_eq_prod_eval g g.derivative (g.natDegree - 1) hderiv_le hgsplits
+  have hprod_ne : (g.roots.map g.derivative.eval).prod ≠ 0 := by
+    rw [Ne, Multiset.prod_eq_zero_iff, Multiset.mem_map]
+    rintro ⟨r, hr, hr0⟩
+    have hroot : g.eval r = 0 := (mem_roots hgne).1 hr
+    have hne := hgsep.eval₂_derivative_ne_zero (RingHom.id L) (by simpa using hroot)
+    rw [eval₂_id] at hne
+    exact hne hr0
+  have hlc_ne : g.leadingCoeff ≠ 0 := leadingCoeff_ne_zero.mpr hgne
+  have hres_ne : resultant g g.derivative g.natDegree (g.natDegree - 1) ≠ 0 := by
+    rw [hres_eval]; exact mul_ne_zero (pow_ne_zero _ hlc_ne) hprod_ne
+  have hrd := resultant_deriv (f := g) hgdeg
+  rw [hrd] at hres_ne
+  have hgdiscr : g.discr ≠ 0 := by
+    intro h0; apply hres_ne; rw [h0]; ring
+  have hbridge : g.discr = q f.discr := discr_map_of_injective_to_field q hqinj hfdeg
+  rw [hbridge] at hgdiscr
+  intro h0; apply hgdiscr; rw [h0, map_zero]
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+/-- *Per-factor discriminant nonvanishing for Eq-5.12 factors*: a positive-`Y`-degree factor `R`
+whose fraction-field image is separable has `Bivariate.discr_y R ≠ 0` in `F[Z][X]`. Combines the
+field-side `discr_ne_zero_of_separable_field` over `K := FractionRing (F[Z][X])` with the
+`discr_map` bridge along the injective `algebraMap` (so `(R.map _).discr = algebraMap _ R.discr`)
+and unfolds `discr_y` (which is `±R.discr` once `0 < R.degree`). -/
+theorem discr_y_ne_zero_of_sep (R : F[Z][X][Y])
+    (hsep : (R.map (algebraMap (F[Z][X]) (FractionRing (F[Z][X])))).Separable)
+    (hdeg : 0 < R.natDegree) :
+    Bivariate.discr_y R ≠ 0 := by
+  classical
+  set φ : F[Z][X] →+* FractionRing (F[Z][X]) := algebraMap _ _ with hφ
+  have hφinj : Function.Injective φ := IsFractionRing.injective (F[Z][X]) (FractionRing (F[Z][X]))
+  have hRdeg : 0 < R.degree := natDegree_pos_iff_degree_pos.mp hdeg
+  have hmapnat : (R.map φ).natDegree = R.natDegree := natDegree_map_eq_of_injective hφinj R
+  have hmapdeg : 0 < (R.map φ).natDegree := by rw [hmapnat]; exact hdeg
+  have hKdiscr : (R.map φ).discr ≠ 0 := discr_ne_zero_of_separable_field hsep hmapdeg
+  have hbridge : (R.map φ).discr = φ R.discr := discr_map_of_injective_to_field φ hφinj hRdeg
+  rw [hbridge] at hKdiscr
+  have hRdiscr : R.discr ≠ 0 := fun h => hKdiscr (by rw [h, map_zero])
+  rw [Polynomial.Bivariate.discr_y, if_pos hRdeg]
+  exact mul_ne_zero (pow_ne_zero _ (by norm_num)) hRdiscr
+
+omit [DecidableEq (RatFunc F)] [Finite F] in
+/-- *Bad-set cardinality bound* for `evalX`: for a nonzero `p : F[Z][X]`, the set of `x₀ : F` at
+which `Bivariate.evalX x₀ p` vanishes injects into the roots of the (nonzero) leading coefficient
+`p.leadingCoeff : F[X]`, so it has at most `p.leadingCoeff.natDegree` elements. -/
+theorem c56_evalX_bad_set_card_le [Fintype F] (p : F[Z][X]) (hp : p ≠ 0) :
+    (Finset.univ.filter (fun x₀ : F => Bivariate.evalX x₀ p = 0)).card
+      ≤ p.leadingCoeff.natDegree := by
+  classical
+  have hlc : p.leadingCoeff ≠ 0 := leadingCoeff_ne_zero.mpr hp
+  have hsub : (Finset.univ.filter (fun x₀ : F => Bivariate.evalX x₀ p = 0))
+      ⊆ p.leadingCoeff.roots.toFinset := by
+    intro x hx
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hx
+    rw [Polynomial.Bivariate.evalX_eq_map] at hx
+    have h0 : (p.map (Polynomial.evalRingHom x)).coeff p.natDegree = 0 := by rw [hx]; simp
+    rw [Polynomial.coeff_map] at h0
+    rw [Multiset.mem_toFinset, Polynomial.mem_roots hlc, Polynomial.IsRoot.def]
+    change (p.coeff p.natDegree).eval x = 0
+    rw [← Polynomial.coe_evalRingHom]; exact h0
+  calc (Finset.univ.filter (fun x₀ : F => Bivariate.evalX x₀ p = 0)).card
+      ≤ p.leadingCoeff.roots.toFinset.card := Finset.card_le_card hsub
+    _ ≤ Multiset.card p.leadingCoeff.roots := Multiset.toFinset_card_le _
+    _ ≤ p.leadingCoeff.natDegree := Polynomial.card_roots' _
+
+omit [Field F] [DecidableEq (RatFunc F)] [Finite F] in
+/-- The cardinality of a `foldr (· ∪ ·)` union over a list is bounded by the sum of
+cardinalities. -/
+theorem c56_foldr_union_card_le {ι : Type} (bad : ι → Finset F) (L : List ι) :
+    ((L.map bad).foldr (· ∪ ·) ∅).card ≤ (L.map (fun R => (bad R).card)).sum := by
+  induction L with
+  | nil => simp
+  | cons a t ih =>
+    simp only [List.map_cons, List.foldr_cons, List.sum_cons]
+    exact le_trans (Finset.card_union_le _ _) (Nat.add_le_add_left ih _)
+
+omit [Field F] [DecidableEq (RatFunc F)] [Finite F] in
+/-- Each list member's `bad` set is contained in the `foldr (· ∪ ·)` union over the list. -/
+theorem c56_subset_foldr_union {ι : Type} (bad : ι → Finset F) (L : List ι)
+    {R : ι} (hR : R ∈ L) : bad R ⊆ (L.map bad).foldr (· ∪ ·) ∅ := by
+  induction L with
+  | nil => simp at hR
+  | cons a t ih =>
+    simp only [List.map_cons, List.foldr_cons]
+    rcases List.mem_cons.1 hR with rfl | htail
+    · exact Finset.subset_union_left
+    · exact (ih htail).trans Finset.subset_union_right
+
+omit [Field F] [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+/-- *Avoidance lemma*: if the total size of the per-index `bad` sets is `< |F|`, there is a field
+element avoiding all of them. (Counting core of Claim 5.6's existential.) -/
+theorem c56_exists_avoiding [Fintype F] {ι : Type} (L : List ι) (bad : ι → Finset F)
+    (hcard : (L.map (fun R => (bad R).card)).sum < Fintype.card F) :
+    ∃ x₀ : F, ∀ R ∈ L, x₀ ∉ bad R := by
+  classical
+  set U : Finset F := (L.map bad).foldr (· ∪ ·) ∅ with hU
+  have hUlt : U.card < Fintype.card F :=
+    lt_of_le_of_lt (c56_foldr_union_card_le bad L) hcard
+  have hcompl : 0 < Uᶜ.card := by rw [Finset.card_compl]; omega
+  obtain ⟨x₀, hx₀⟩ := Finset.card_pos.1 hcompl
+  rw [Finset.mem_compl] at hx₀
+  exact ⟨x₀, fun R hR hc => hx₀ (c56_subset_foldr_union bad L hR hc)⟩
+
+omit [DecidableEq (RatFunc F)] [Finite F] in
+/-- Claim 5.6 of [BCIKS20].
+
+STATEMENT REPAIR (size hypothesis `hcard`). As literally stated for a general `[Finite F]` the
+claim is **false**: over a small finite field the "bad" sets `{x₀ | evalX x₀ (discr_y R) = 0}`
+can cover all of `F`, leaving no good `x₀`. (Each bad set is finite — bounded by
+`(discr_y R).leadingCoeff.natDegree`, cf. `c56_evalX_bad_set_card_le` — but their union need not
+be proper without a field-size bound.) [BCIKS20] uses a field large relative to the GS degree
+budget; we make exactly this requirement explicit as `hcard`: the total bad-set size is smaller
+than `|F|`. Under `hcard` the existential is genuine — no conjunct of the conclusion is weakened,
+and the witness `x₀` makes **every** factor's `evalX (discr_y …)` nonzero.
+
+PROOF. Each factor `R` of the Eq-5.12 list is irreducible, positive-`Y`-degree, and
+fraction-field-separable (the strengthened `irreducible_factorization_of_gs_solution`), so
+`Bivariate.discr_y R ≠ 0` in `F[Z][X]` (`discr_y_ne_zero_of_sep`). A nonzero `discr_y R` vanishes
+under `evalX x₀` for at most `(discr_y R).leadingCoeff.natDegree` values of `x₀`
+(`c56_evalX_bad_set_card_le`); summing over the list and invoking `hcard`, `c56_exists_avoiding`
+produces an `x₀` outside every bad set. -/
+lemma discr_of_irred_components_nonzero [Fintype F]
+    (_h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcard :
+      ((irreducible_factorization_of_gs_solution _h_gs).choose_spec.choose.map
+        (fun R => (Bivariate.discr_y R).leadingCoeff.natDegree)).sum < Fintype.card F) :
     ∃ x₀,
       ∀ R ∈ (irreducible_factorization_of_gs_solution _h_gs).choose_spec.choose,
-      Bivariate.evalX x₀ (Bivariate.discr_y R) ≠ 0 := by sorry
+      Bivariate.evalX x₀ (Bivariate.discr_y R) ≠ 0 := by
+  classical
+  -- the chosen factor list and its proven properties (separable, irreducible, positive-degree)
+  set L : List F[Z][X][Y] :=
+    (irreducible_factorization_of_gs_solution _h_gs).choose_spec.choose with hLdef
+  have hspec := (irreducible_factorization_of_gs_solution
+      _h_gs).choose_spec.choose_spec.choose_spec.choose_spec
+  -- destructure the body conjunction
+  obtain ⟨_hlen1, _hlen2, _he, hsep, _hirr, hpos, _hfact⟩ := hspec
+  -- per-factor: discr_y R ≠ 0, hence bad set bounded
+  set bad : F[Z][X][Y] → Finset F :=
+    (fun R => Finset.univ.filter (fun x₀ : F => Bivariate.evalX x₀ (Bivariate.discr_y R) = 0))
+    with hbad
+  have hbad_card : ∀ R ∈ L, (bad R).card ≤ (Bivariate.discr_y R).leadingCoeff.natDegree := by
+    intro R hR
+    have hdy : Bivariate.discr_y R ≠ 0 := discr_y_ne_zero_of_sep R (hsep R hR) (hpos R hR)
+    exact c56_evalX_bad_set_card_le (Bivariate.discr_y R) hdy
+  -- the sum of bad-set cards is ≤ the hypothesised sum < |F|
+  have hsum_le :
+      (L.map (fun R => (bad R).card)).sum
+        ≤ (L.map (fun R => (Bivariate.discr_y R).leadingCoeff.natDegree)).sum :=
+    List.sum_le_sum hbad_card
+  have hsum_lt : (L.map (fun R => (bad R).card)).sum < Fintype.card F :=
+    lt_of_le_of_lt hsum_le hcard
+  -- avoidance lemma yields the good x₀
+  obtain ⟨x₀, hx₀⟩ := c56_exists_avoiding L bad hsum_lt
+  refine ⟨x₀, fun R hR => ?_⟩
+  have := hx₀ R hR
+  rw [hbad] at this
+  simpa [Finset.mem_filter] using this
 
 noncomputable def pg_Rset (_h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) : Finset F[Z][X][Y] :=
   (UniqueFactorizationMonoid.normalizedFactors Q).toFinset
