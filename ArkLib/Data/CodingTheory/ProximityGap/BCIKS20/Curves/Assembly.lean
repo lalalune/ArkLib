@@ -148,6 +148,26 @@ theorem goodCoeffsCurve_card_bounds_of_ennreal_threshold {l deg : ℕ}
   · exact finset_card_gt_of_natCast_le_ennreal_lt hsmall hx
   · exact finset_card_ge_of_pred_natCast_le_ennreal_lt hlarge hx
 
+omit [Nonempty ι] [DecidableEq ι] in
+/-- Positive-`k` cardinal-bounds form of
+`goodCoeffsCurve_card_bounds_of_ennreal_threshold`, matching the natural index
+shape of `correlatedAgreement_affine_curves`. -/
+theorem goodCoeffsCurve_card_bounds_of_ennreal_threshold_of_pos {k deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0}
+    (u : Fin (k + 1) → ι → F) {x : ENNReal}
+    (hx :
+      x <
+        ((RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card :
+          ENNReal))
+    (hsmall : (k : ENNReal) ≤ x)
+    (hlarge : ((((Fintype.card ι + 1) * k : ℕ) - 1 : ℕ) : ENNReal) ≤ x) :
+    (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k ∧
+      (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card ≥
+        (Fintype.card ι + 1) * k := by
+  constructor
+  · exact finset_card_gt_of_natCast_le_ennreal_lt hsmall hx
+  · exact finset_card_ge_of_pred_natCast_le_ennreal_lt hlarge hx
+
 omit [Fintype ι] [Nonempty ι] [DecidableEq ι] [Fintype F] [DecidableEq F] in
 /-- Reindex a finite sum of curve coefficient words. This is the algebraic
 part of changing the coefficient index type in `RS_goodCoeffsCurve`. -/
