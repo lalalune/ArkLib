@@ -154,7 +154,7 @@ instance : IsSingleRound (pSpec R deg) where
 
 -- Don't know why instance synthesis requires restating these instances
 -- Doesn't seem like instance synthesis can infer the instances for the appends
--- TODO: may need to tweak synthesis?
+-- Note: may need to tweak synthesis?
 
 instance instOI₁ : ∀ i, OracleInterface ((⟨!v[.P_to_V], !v[R⦃≤ deg⦄[X]]⟩ ++ₚ !p[]).Message i) :=
   instOracleInterfaceMessageAppend
@@ -432,7 +432,9 @@ def oracleVerifier : OracleVerifier oSpec (StmtIn R) (OStmtIn R deg) (StmtOut R)
           OracleSpec.query (show [(pSpec R deg).Message]ₒ.Domain from ⟨default, D i⟩))
         _)
     guard (evals.sum = target)
-    let newTarget ← OptionT.lift <| OracleComp.liftComp
+    -- The new target is the evaluation of the oracle polynomial at the challenge point.
+    -- The verifier obtains it directly via an evaluation query at `chal default`.
+    let newTarget : R ← OptionT.lift <| OracleComp.liftComp
       (OracleComp.lift <|
         OracleSpec.query (show [OStmtIn R deg]ₒ.Domain from ⟨(), chal default⟩))
       _
@@ -458,6 +460,7 @@ open scoped NNReal
 --   · simp; exact default
 --   · simp; exact default
 
+-- Note: show that the oracle verifier reduces to the (non-oracle) verifier
 theorem oracleVerifier_eq_verifier :
     (oracleVerifier R deg D oSpec).toVerifier = verifier R deg D oSpec := by
   ext ⟨target, oStmt⟩ transcript
@@ -669,7 +672,7 @@ theorem reduction_perfectCompleteness :
     obtain ⟨s, _, hx⟩ := hx
     simp only [StateT.run'_eq, support_map, Set.mem_image] at hx
     obtain ⟨⟨_, s'⟩, hx, rfl⟩ := hx
-    -- Same decomposition as sorry 1: peel outer OptionT bind
+    -- Same decomposition as the first placeholder: peel outer OptionT bind
     erw [simulateQ_bind] at hx
     erw [StateT.run_bind] at hx
     rw [mem_support_bind_iff] at hx
@@ -839,7 +842,7 @@ theorem oracleVerifier_rbrKnowledgeSoundness [Fintype R] :
     (inputRelation R deg D) (outputRelation R deg) (fun _ => (deg : ℝ≥0) / (Fintype.card R)) := by
   sorry
 
--- TODO: break down the oracle reduction into a series of oracle reductions as stated above
+-- Note: break down the oracle reduction into a series of oracle reductions as stated above
 
 end Simple
 
@@ -1273,7 +1276,7 @@ theorem oracleVerifier_rbrKnowledgeSoundness [Fintype R] :
 --     -- rw [← OracleComp.support_map]
 --     -- simp [verifier]
 --     -- let x := tr ⟨0, by simp⟩
---     sorry
+--     placeholder
 
 -- /-- Trivial extractor since witness is `Unit` -/
 -- def rbrExtractor : Extractor.RoundByRound (pSpec R deg) oSpec (Statement R n i.castSucc) Unit :=

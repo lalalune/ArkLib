@@ -247,11 +247,25 @@ noncomputable def queryOracleVerifier :
             sDomainToFin 𝔽q β h_ℓ_add_R_rate ⟨i + ϑ, by omega⟩ (by
                 apply Nat.lt_add_of_pos_right_of_le; simp only; omega) next_suffix_of_v
 
-        /- Create the list of fiber points of `next_suffix_of_v` in `S^(i)`, which have the
+        /- Create the fiber points of `next_suffix_of_v` in `S^(i)`, which have the
         form `(u_0, ..., u_{ϑ-1}, v_{i+v}, ..., v_{ℓ+R-1})`, which are actually result of the
         fiber mapping: `(q^(i+ϑ-1) ∘ ... ∘ q^(i))⁻¹({(v_{i+ϑ}, ..., v_{ℓ+R-1})})`,
-        by querying the oracle `f^(i)` on all fiber points using queryCodeword helper. -/
-        let f_i_on_fiber ← (List.finRange (2^ϑ)).mapM (fun (u : Fin (2^ϑ)) => do
+        by querying the oracle `f^(i)` on all `2^ϑ` fiber points using queryCodeword helper.
+
+        DESIGN NOTE (length-carrying restructure): the fiber evaluations are gathered into a
+        `List.Vector L (2^ϑ)` via `List.Vector.mmap` rather than into a plain `List L` via
+        `List.mapM`. The previous list-based form forced a downstream obligation
+        `f_i_on_fiber.length = 2 ^ ϑ` to justify the `Fin (2^ϑ)`-indexed accesses below; but
+        under the monadic bind `f_i_on_fiber` is a lambda-bound free variable, so that length
+        equation would have to hold for ALL lists of the binder's type and is therefore
+        unprovable (and this toolchain has neither a `List.length_mapM` lemma nor VCVio's
+        `mem_support_vector_mapM`, which is a TODO). Carrying the length in the type via
+        `List.Vector` makes the obligation vanish: `List.Vector.get : Fin (2^ϑ) → L` is total,
+        so both consumers below index without any side proof. Semantics are unchanged — the same
+        `2^ϑ` oracle queries are issued, in the same order (`(List.Vector.ofFn id).mmap` visits
+        `u = 0, 1, ..., 2^ϑ-1`), with the same per-index query body, and `(ofFn id).get u = u`. -/
+        let f_i_on_fiber : List.Vector L (2^ϑ) ←
+          (List.Vector.ofFn (n := 2^ϑ) (id : Fin (2^ϑ) → Fin (2^ϑ))).mmap (fun (u : Fin (2^ϑ)) => do
           let x: Fin (2 ^ (ℓ + 𝓡 - i)) := by
             let fiber_point_num_repr := Nat.joinBits (low := u) (high := next_suffix_of_v_fin)
             simp at fiber_point_num_repr
@@ -267,16 +281,12 @@ noncomputable def queryOracleVerifier :
             (j := k_th_oracleIdx) (point := x_point)
         )
 
-        have h_f_i_on_fiber_length: f_i_on_fiber.length = 2 ^ ϑ := by
-          sorry
-
         if i > 0 then
           -- cᵢ ?= f^(i)(vᵢ, ..., v_{ℓ+R-1})
           let oracle_point_idx := extractMiddleFinMask 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
             (v:=v) (i:=⟨i, by exact h_i_lt_ℓ⟩) (steps:=ϑ)
 
-          let f_i_val := f_i_on_fiber.get ⟨oracle_point_idx.val, by
-            rw [h_f_i_on_fiber_length]; exact oracle_point_idx.isLt⟩
+          let f_i_val := f_i_on_fiber.get oracle_point_idx
           unless c_cur = f_i_val do
             return false
 
@@ -286,8 +296,7 @@ noncomputable def queryOracleVerifier :
         let c_next := localized_fold_matrix_form 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
           (i:=⟨i, by omega⟩) (steps:=ϑ) (h_i_add_steps:=by simp only; omega)
           (r_challenges:=cur_challenge_batch) (y:=next_suffix_of_v)
-          (fiber_eval_mapping:=fun idx => f_i_on_fiber.get ⟨idx, by
-            rw [h_f_i_on_fiber_length]; omega⟩)
+          (fiber_eval_mapping:=f_i_on_fiber.get)
 
         -- Update c_prev_iter for the next loop iteration's check.
         c_cur := c_next
