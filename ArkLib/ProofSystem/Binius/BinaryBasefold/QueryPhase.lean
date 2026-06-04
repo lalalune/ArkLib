@@ -508,17 +508,18 @@ theorem queryOracleProof_perfectCompleteness {σ : Type}
     (impl := impl) := by
   unfold OracleProof.perfectCompleteness
   intro stmtIn witIn h_relIn
-  -- RESIDUAL (loop-support gap, NOT a fixable local oversight): perfect completeness asks for
-  -- `Pr[honest run accepts] = 1`. The honest run's verifier is `queryOracleVerifier.verify`, a
-  -- DOUBLY-NESTED `forIn` (`for rep …` over `for k_val …`) whose body issues `2^ϑ` oracle-statement
-  -- queries (via `List.Vector.mmap`) and contains EARLY-EXIT `unless … do return false` branches
-  -- (desugaring to `ForInStep.done`). Computing the distribution of this run requires pushing
-  -- `evalDist`/`probOutput` through `forIn`, but neither VCVio, Mathlib, nor ArkLib provides any
-  -- `evalDist_forIn` / `probOutput_forIn` / `support_forIn` lemma. The only `forIn` bridge in scope,
-  -- `VCVio.ToMathlib.General.List.forIn_mprod_yield_eq_foldlM`, requires a YIELD-ONLY body, which this
-  -- loop is not (the `return false` exits are essential to the protocol's semantics). Closing this
-  -- honestly requires first building a `forIn`-with-early-exit distribution theory in VCVio — out of
-  -- scope of this file and a research contribution in its own right.
+  -- RESIDUAL (protocol-specific honest-acceptance, NOT a missing primitive). Perfect completeness
+  -- asks for `Pr[honest run accepts] = 1`. The forIn-with-early-exit support/transport theory that
+  -- this once needed NOW EXISTS in the `ForInSupport` section above: `simulateQ_optionT_forIn`
+  -- pushes `simulateQ` through the doubly-nested `forIn`, `simulateQ_optionT_listVector_mmap`
+  -- collapses the inner `2^ϑ`-query `List.Vector.mmap`, and `forIn_yield_pure_eq_foldl` collapses an
+  -- all-pass (all-`yield`) loop to a deterministic `pure` of a fold. What remains is genuinely
+  -- protocol-specific and research-tier: one must prove the HONEST RUN's per-iteration checks all
+  -- pass — i.e. `c_cur = f^(i)(v_i,…)` at every fold level and `c_cur = c` at the end — from
+  -- `finalSumcheckRelOut` (= `finalNonDoomedFoldingProp`). That is the BaseFold fold/oracle
+  -- correctness argument (`localized_fold_matrix_form` equals the next-level codeword value on the
+  -- honest oracles), not loop plumbing; only once it is in hand does `forIn_yield_pure_eq_foldl`
+  -- finish the `= 1` via the no-early-exit collapse. Out of scope for this file's loop-theory remit.
   sorry
 
 open scoped NNReal
@@ -589,22 +590,27 @@ noncomputable def queryKnowledgeStateFunction {σ : Type} (init : ProbComp σ)
     obtain ⟨s, _, hx⟩ := hx
     simp only [OracleVerifier.toVerifier, Verifier.run, StateT.run'_eq,
       support_map, Set.mem_image, Prod.exists] at hx
-    -- WEDGE / RESIDUAL (loop-support gap, NOT a fixable local oversight). `hx` now exposes
-    --   `(a, b) ∈ support (simulateQ impl
-    --       (do let stmtOut ← simulateQ (simOracle2 []ₒ stmt.2 tr.messages)
-    --             ((queryOracleVerifier …).verify stmt.1 tr.challenges); pure (stmtOut, …)).run s)`.
-    -- The goal (the `m.val = 1` branch of `queryKStateProp`) is exactly `proximityChecksSpec …`,
-    -- the conjunction of every per-repetition / per-fold-level consistency check. To transport it
-    -- we must compute the `support` of `simulateQ (simOracle2 …) (verify …)`, i.e. push `simulateQ`
-    -- through `queryOracleVerifier.verify`. That `verify` is a DOUBLY-NESTED `forIn` with EARLY-EXIT
-    -- `unless … do return false` branches and an inner `List.Vector.mmap` of oracle queries. The
-    -- per-query collapse IS available (`Prelude.simulateQ_simOracle2_query`,
-    -- `simulateQ_listVector_mmap`), but there is NO `simulateQ_forIn` / `support_forIn` lemma anywhere
-    -- in VCVio, Mathlib, or ArkLib, and `simulateQ_bind` does not apply to `forIn` (a recursor, not a
-    -- bind). The only `forIn` bridge, `List.forIn_mprod_yield_eq_foldlM`, needs a YIELD-ONLY body,
-    -- which this loop is not. Hence the support cannot be reduced to the per-check conjunction here.
-    -- Closing this honestly requires a `forIn`-with-early-exit support theory in VCVio (out of scope
-    -- of this file). The reduction above is left in place as it legibly reaches the precise wedge.
+    obtain ⟨a, b, hx, hab⟩ := hx
+    -- Expose the loop structure: `simp [queryOracleVerifier, simulateQ_optionT_bind]` rewrites the
+    -- `simulateQ (simOracle2 …) (verify …)` into the explicit DOUBLY-NESTED `forIn` over
+    -- `MProd (Option Bool) _` accumulators (the `do`-notation early-return desugaring), with the inner
+    -- `(List.Vector.ofFn id).mmap` of `2^ϑ` oracle queries and the `unless … do return false` exits
+    -- rendered as `ForInStep.yield ⟨none, …⟩` / `ForInStep.done ⟨some false, …⟩`.
+    simp only [queryOracleVerifier, simulateQ_optionT_bind] at hx
+    -- RESIDUAL (protocol-specific verifier-run collapse, NOT a missing primitive). The
+    -- `forIn`-with-early-exit support/transport theory this once lacked NOW EXISTS in the
+    -- `ForInSupport` section above: `simulateQ_optionT_forIn` pushes `simulateQ` through the nested
+    -- `forIn` (it IS the missing `simulateQ_forIn`), `simulateQ_optionT_listVector_mmap` collapses the
+    -- inner query `mmap`, `mem_support_forIn_cons` / `forIn_support_invariant` characterize the loop
+    -- support, and the per-query collapse `Prelude.simulateQ_simOracle2_query` turns each simulated
+    -- query into `pure (answer (oStmt …) point)`. What remains is the protocol-specific
+    -- `queryOracleVerifier_verify_collapse`: thread `simulateQ` through both loops + the `mmap`, run
+    -- `forIn_support_invariant` with the no-early-exit invariant `(MProd.fst = none)` to learn that
+    -- EVERY per-iteration `unless c_cur = f_i_val` (and the final `unless c_cur = c`) check held, then
+    -- align the loop's `f_i_on_fiber`/`c_cur`/`c_next` (`localized_fold_matrix_form`,
+    -- `extractMiddleFinMask`, `next_suffix_of_v` with their `Fin`/`Nat.joinBits` casts) with the goal
+    -- `proximityChecksSpec`'s identically-shaped terms. That alignment is heavy index/cast bookkeeping
+    -- specific to BaseFold, not loop plumbing; it is the remaining work and is left documented here.
     sorry
 
 /-- Round-by-round knowledge soundness for the oracle verifier (query phase) -/
@@ -619,17 +625,17 @@ theorem queryOracleVerifier_rbrKnowledgeSoundness [Fintype L] {σ : Type} (init 
   use queryRbrExtractor 𝔽q β (ϑ:=ϑ) γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
   use queryKnowledgeStateFunction 𝔽q β (ϑ:=ϑ) γ_repetitions init impl
   intro stmtIn witIn prover j
-  -- RESIDUAL (research-tier + loop-support gap). Two independent obstructions stack here:
-  --  (1) The target error `(1/2 + 2^-(𝓡+1))^γ` is the proximity-gap bound: bounding it requires the
-  --      Binius/BaseFold list-decoding proximity argument (per-repetition soundness `1/2 + 2^-(𝓡+1)`,
-  --      independence across the `γ` repetitions), which is genuine research-tier content not yet
-  --      formalized in this development.
-  --  (2) Even the structural step reduces to bounding the probability that the `forIn`-loop verifier
-  --      `queryOracleVerifier.verify` accepts a state failing `queryKStateProp`; this depends on the
-  --      SAME missing `forIn`-with-early-exit distribution/support theory that blocks
-  --      `queryKnowledgeStateFunction.toFun_full` and `queryOracleProof_perfectCompleteness` above.
-  -- Neither is closable within this single file under the honest-proof constraints (no axioms,
-  -- no weakening of the bound, no assume-the-conclusion).
+  -- RESIDUAL (research-tier; the loop-support primitive is no longer the blocker). The dominant
+  -- obstruction is intrinsic: the target error `(1/2 + 2^-(𝓡+1))^γ` is the proximity-gap bound, whose
+  -- proof needs the Binius/BaseFold list-decoding proximity argument (per-repetition soundness
+  -- `1/2 + 2^-(𝓡+1)`, independence across the `γ` repetitions) — genuine research-tier content not
+  -- yet formalized in this development. The structural step (bounding the probability the
+  -- `forIn`-loop verifier accepts a state failing `queryKStateProp`) now HAS its loop-support
+  -- machinery available — the `ForInSupport` section above (`simulateQ_optionT_forIn`,
+  -- `simulateQ_optionT_listVector_mmap`, `forIn_support_invariant`, …) supplies exactly the
+  -- `simulateQ_forIn` / `support_forIn` transport that was previously missing — but it bottoms out in
+  -- the same proximity bound. Not closable in this single file under the honest-proof constraints
+  -- (no axioms, no weakening of the bound, no assume-the-conclusion).
   sorry
 
 end FinalQueryRoundIOR
