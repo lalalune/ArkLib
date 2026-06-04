@@ -1102,6 +1102,94 @@ theorem pg_exists_pair_for_z (δ : ℚ) (x₀ : F)
   -- Discharge the inner `let P := ...` binder using our local `P`.
   simpa [P] using And.intro hRzero hHzero
 
+omit [DecidableEq (RatFunc F)] in
+/-- Pigeonhole form of the per-`z` candidate-pair extraction.
+
+If every close parameter `z` makes `Q(z, X, Pz(X))` vanish, then one candidate pair
+`(R, H)` accounts for at least the average-sized fiber of close parameters. This is the
+finite combinatorial core used before the common factor is converted into a global
+polynomial relation. -/
+theorem pg_exists_common_candidate_pair (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hx0 : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q) (u₀ := u₀)
+          (u₁ := u₁) h_gs →
+        Bivariate.evalX (Polynomial.C x₀) R ≠ 0)
+    (hS_nonempty :
+      (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).Nonempty)
+    (hQzero : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      let P : F[X] := Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2
+      (pg_eval_on_Z (F := F) Q z.1).eval P = 0) :
+    ∃ R H,
+      (R, H) ∈ pg_candidatePairs (m := m) (n := n) (k := k) (ωs := ωs)
+        (Q := Q) (u₀ := u₀) (u₁ := u₁) x₀ h_gs ∧
+      #(Finset.univ.filter
+          (fun z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ =>
+            let P : F[X] :=
+              Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2
+            (pg_eval_on_Z (F := F) R z.1).eval P = 0 ∧
+              (Bivariate.evalX z.1 H).eval (P.eval x₀) = 0))
+        ≥ #(Finset.univ : Finset (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁)) /
+          #(pg_candidatePairs (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+            (u₀ := u₀) (u₁ := u₁) x₀ h_gs) := by
+  classical
+  let S : Finset (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) := Finset.univ
+  let T : Finset (F[Z][X][Y] × F[Z][X]) :=
+    pg_candidatePairs (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+      (u₀ := u₀) (u₁ := u₁) x₀ h_gs
+  let hExists :
+      ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+        ∃ R H,
+          (R, H) ∈ T ∧
+          let P : F[X] :=
+            Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2
+          (pg_eval_on_Z (F := F) R z.1).eval P = 0 ∧
+            (Bivariate.evalX z.1 H).eval (P.eval x₀) = 0 := by
+    intro z
+    simpa [T] using
+      (pg_exists_pair_for_z (F := F) (k := k) (δ := δ) (x₀ := x₀)
+        (h_gs := h_gs) hx0 z (hQzero z))
+  let Rof : (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) → F[Z][X][Y] :=
+    fun z => Classical.choose (hExists z)
+  let Hof : (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) → F[Z][X] :=
+    fun z => Classical.choose (Classical.choose_spec (hExists z))
+  let tag : (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) → F[Z][X][Y] × F[Z][X] :=
+    fun z => (Rof z, Hof z)
+  have hspec : ∀ z,
+      tag z ∈ T ∧
+        let P : F[X] :=
+          Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2
+        (pg_eval_on_Z (F := F) (Rof z) z.1).eval P = 0 ∧
+          (Bivariate.evalX z.1 (Hof z)).eval (P.eval x₀) = 0 := by
+    intro z
+    simpa [tag, Rof, Hof] using Classical.choose_spec (Classical.choose_spec (hExists z))
+  have hmaps : ∀ z ∈ S, tag z ∈ T := by
+    intro z _hz
+    exact (hspec z).1
+  have hT : T.Nonempty := by
+    obtain ⟨z, hz⟩ := hS_nonempty
+    exact ⟨tag ⟨z, hz⟩, (hspec ⟨z, hz⟩).1⟩
+  obtain ⟨pair, hpair_mem, hfiber⟩ := tagged_fiber_pigeonhole S tag T hmaps hT
+  rcases pair with ⟨R, H⟩
+  refine ⟨R, H, by simpa [T] using hpair_mem, ?_⟩
+  have hsub :
+      S.filter (fun z => tag z = (R, H)) ⊆
+        Finset.univ.filter
+          (fun z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ =>
+            let P : F[X] :=
+              Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2
+            (pg_eval_on_Z (F := F) R z.1).eval P = 0 ∧
+              (Bivariate.evalX z.1 H).eval (P.eval x₀) = 0) := by
+    intro z hz
+    rw [Finset.mem_filter] at hz ⊢
+    refine ⟨Finset.mem_univ z, ?_⟩
+    have htag : tag z = (R, H) := hz.2
+    have hR : Rof z = R := congrArg Prod.fst htag
+    have hH : Hof z = H := congrArg Prod.snd htag
+    simpa [tag, hR, hH] using (hspec z).2
+  have hcard_sub := Finset.card_le_card hsub
+  exact le_trans (by simpa [S, T] using hfiber) hcard_sub
+
 
 omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
 theorem pg_natDegree_evalX_le_natDegreeY (x₀ : F) (R : F[Z][X][Y]) :
