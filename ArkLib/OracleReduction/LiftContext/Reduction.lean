@@ -6,7 +6,6 @@ Authors: Quang Dao
 
 import ArkLib.OracleReduction.LiftContext.Lens
 import ArkLib.OracleReduction.Security.RoundByRound
-import ArkLib.ToVCVio.EvalDist.Instances.OptionT
 -- import ArkLib.OracleReduction.Security.StateRestoration
 
 /-!
@@ -357,53 +356,20 @@ theorem liftContext_completeness
     (lensComplete.proj_complete _ _ hRelIn)
   rw [Reduction.liftContext_run]
   refine le_trans hR ?_
-  -- The lifted run is the inner run post-composed with the output lens map
-  --   `f r = ((tr, lens.lift _ ctxOut), lens.stmt.lift _ verStmtOut)`.
-  -- Rewrite the RHS `probEvent` (over the *lifted* run) into a `probEvent` over the *inner* run,
-  -- folding `f` into the predicate, via the bridge lemma `OptionT.probEvent_eq_of_run_map_eq`.
-  -- The two underlying `run`s are related by `Option.map f`, since lifting is `f <$> innerRun`
-  -- inside the `OptionT` monad.
-  rw [OptionT.probEvent_eq_of_run_map_eq
-        (mx := OptionT.mk (do
-          let s ← init
-          (simulateQ (impl.addLift challengeQueryImpl)
-            (do
-              let r ← Reduction.run (lens.stmt.proj outerStmtIn)
-                (lens.wit.proj (outerStmtIn, outerWitIn)) R
-              pure
-                ((r.1.1, lens.lift (outerStmtIn, outerWitIn) r.1.2),
-                  lens.stmt.lift outerStmtIn r.2)).run).run' s))
-        (my := OptionT.mk (do
-          let s ← init
-          (simulateQ (impl.addLift challengeQueryImpl)
-            (Reduction.run (lens.stmt.proj outerStmtIn)
-              (lens.wit.proj (outerStmtIn, outerWitIn)) R).run).run' s))
-        (f := fun r =>
-          ((r.1.1, lens.lift (outerStmtIn, outerWitIn) r.1.2),
-            lens.stmt.lift outerStmtIn r.2))
-        (by
-          -- `(lifted run).run = Option.map f <$> (inner run).run`: push the post-map through
-          -- the `OptionT`/`simulateQ`/`StateT.run'` stack.
-          simp only [bind_pure_comp, OptionT.run_map, simulateQ_map, StateT.run'_eq,
-            StateT.run_map, map_bind, Functor.map_map])]
-  -- Both `probEvent`s are now over the *same* inner computation; reduce to a support-aware
-  -- pointwise implication via monotonicity, then discharge it with the lens completeness law.
-  refine _root_.probEvent_mono ?_
-  rintro ⟨⟨innerTr, innerStmtPrv, innerWit⟩, innerStmtVer⟩ hSupport ⟨hRelOut, hVer⟩
-  -- `hVer : innerStmtPrv = innerStmtVer`: the prover & verifier output statements agree.
-  simp only [Function.comp_apply] at hVer ⊢
-  subst hVer
-  refine ⟨?_, rfl⟩
-  -- Goal: the lifted output context satisfies `outerRelOut`.  Apply the lens completeness law;
-  -- its compatibility hypothesis `R.compatContext lens` asks that the inner output context be
-  -- reachable by the inner reduction run.
-  refine lensComplete.lift_complete outerStmtIn outerWitIn innerStmtPrv innerWit ?_ hRelIn hRelOut
-  -- Compatibility witness.  This needs a support-subset fact for stateful simulation across the
-  -- challenge/oracle interpretation, i.e. that any outcome in the support of
-  -- `(simulateQ (impl.addLift challengeQueryImpl) (R.run …).run).run' s` (post `init`-sampling)
-  -- is also in the support of `R.run …`.  That `simulateQ`-`run'` support-subset lemma (across the
-  -- `oSpec + [Challenge]ₒ → ProbComp` spec change) is not yet available in the supporting library.
+  simp
   sorry
+  -- refine probEvent_mono ?_
+  -- intro ⟨innerContextOut, a, b⟩ hSupport ⟨hRelOut, hRelOut'⟩
+  -- have : innerContextOut ∈
+  --     Prod.fst <$>
+  --       (R.run (lens.stmt.proj outerStmtIn)
+  -- (lens.wit.proj (outerStmtIn, outerWitIn))).support := by
+  --   simp
+  --   exact ⟨a, b, hSupport⟩
+  -- simp_all
+  -- rw [← hRelOut'] at hRelOut ⊢
+  -- refine lensComplete.lift_complete _ _ _ _ ?_ hRelIn hRelOut
+  -- simp [compatContext]; exact this
 
 theorem liftContext_perfectCompleteness
     (h : R.perfectCompleteness init impl innerRelIn innerRelOut) :
