@@ -260,16 +260,6 @@ variable (F : Type) [Field F] [Fintype F] [DecidableEq F] [Fact ((-1 : F) ≠ 1)
   [SampleableType F] (n M : ℕ)
 variable (params : ProtocolParams M)
 
--- THREADED (2026-06-04): AppendCoherent. `outerVerifier`'s output oracle statements literally are
--- their routed sources (its `hEq` is `rfl` per index), so the interface agreement is `HEq.rfl`.
-instance instAppendCoherent_outerVerifier :
-    OracleVerifier.Append.AppendCoherent (outerVerifier oSpec F n M params) :=
-  OracleVerifier.Append.instAppendCoherent_of_eq _ (fun i => by
-    cases i with
-    | input j => rfl
-    | multiplicity => rfl
-    | helpers => rfl)
-
 /-- The full LogUp verifier, obtained by composing the outer verifier with the embedded sumcheck
 verifier. -/
 noncomputable def logupVerifier :
