@@ -46,7 +46,7 @@ protected def subdomain_embed_inverse (i : ℕ) (k : Fin (2 ^ n)) :
   apply Nat.div_lt_of_lt_mul
   by_cases hi : i ≤ n
   · calc k.val < 2 ^ n := k.isLt
-      _ = 2 ^ i * 2 ^ (n - i) := by rw [← pow_add, Nat.add_sub_cancel' hi]
+      _ = 2 ^ i * 2 ^ (n - i) := by rw [←pow_add, Nat.add_sub_cancel' hi]
   · simp only [not_le] at hi
     have : n ≤ i := by omega
     simp only [Nat.sub_eq_zero_of_le this, pow_zero, mul_one]
@@ -422,10 +422,10 @@ lemma square_roots_explicit {i : ℕ} (hi : i < n) {y : F}
   · have hy_mem : y ∈ subdomain ω i := sq_root_mem_subdomain hi hx hy
     simp_all [Finset.subset_iff]
 
-lemma evalDomain_sq_root [NeZero n] {p : Polynomial F} :
-  ReedSolomon.evalOnPoints (ω : Fin (2 ^ n) ↪ F) (p.comp (Polynomial.X ^ 2)) =
-    ReedSolomon.evalOnPoints (subdomain ω 1 : Fin (2 ^ (n - 1)) ↪ F) p := by
-    sorry
+/- lemma evalDomain_sq_root [NeZero n] {p : Polynomial F} : -/
+/-   ReedSolomon.evalOnPoints (ω : Fin (2 ^ n) ↪ F) (p.comp (Polynomial.X ^ 2)) = -/
+/-     ReedSolomon.evalOnPoints (subdomain ω 1 : Fin (2 ^ (n - 1)) ↪ F) p := by -/
+/-     sorry -/
 
 end CosetFftDomainClass
 
