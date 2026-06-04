@@ -594,7 +594,15 @@ def commitKState (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i) :
   toFun := fun m ⟨stmtIn, oStmtIn⟩ tr witMid =>
     commitKStateProp 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)
       (i := i) (m := m) (stmtIn := stmtIn) (witMid := witMid) (oStmtIn := oStmtIn) (mp:=mp)
-  toFun_empty := fun stmtIn witMid => by rfl
+  toFun_empty := fun stmtIn witMid => by
+    -- commitment round ⇒ `foldStepRelOutProp` takes its `then` (commit/weak) branch, which is
+    -- definitionally `commitKStateProp 0` (`masterKStateProp (stmtIdx := i.succ)
+    -- (oracleIdx := i.castSucc)`).
+    obtain ⟨stmt, oStmt⟩ := stmtIn
+    simp only [foldStepRelOut, foldStepRelOutProp, Set.mem_setOf_eq, cast_eq, commitKStateProp]
+    rw [if_pos hCR]
+    unfold masterKStateProp
+    simp only [true_and]
   toFun_next := fun m hDir (stmtIn, oStmtIn) tr msg witMid => by
     simp only [Nat.reduceAdd]
     intro kState_next
@@ -757,12 +765,20 @@ def relayKnowledgeStateFunction (i : Fin ℓ) (hNCR : ¬ isCommitmentRound ℓ �
       (𝓑 := 𝓑) i hNCR stmtIn witMid oStmtIn
   toFun_empty := fun ⟨stmtIn, oStmtIn⟩ witIn => by
     simp only [foldStepRelOut, foldStepRelOutProp, cast_eq, Set.mem_setOf_eq, relayKStateProp]
+    -- relay round ⇒ non-commitment ⇒ `foldStepRelOutProp` takes its `else` (relay) branch, whose
+    -- bad event is evaluated at the statement index `i.succ` (oracle `i.castSucc`).
+    rw [if_neg hNCR]
     unfold masterKStateProp
     simp only [Fin.val_succ, Fin.coe_castSucc, Fin.take_eq_init, true_and, Fin.take_eq_self]
     have hRight := oracleWitnessConsistency_relay_preserved (mp := mp) (𝓑 := 𝓑) 𝔽q β i
       hNCR stmtIn witIn oStmtIn
     rw [hRight]
-    sorry
+    -- The two `oracleWitnessConsistency` disjuncts now coincide (via `hRight`). The bad-event
+    -- disjuncts coincide too: both are evaluated at the statement index `i.succ` (LHS oracle
+    -- `i.castSucc`, RHS oracle `i.succ` on the relay-mapped oracle), and
+    -- `badEventExistsProp_relay_preserved` shows the relay relabel preserves the existential.
+    -- Hence the `↔` is `Iff.rfl` at every non-commitment round, including the last (`i.val+1 = ℓ`).
+    rw [badEventExistsProp_relay_preserved 𝔽q β i hNCR stmtIn.challenges oStmtIn]
   toFun_next := fun m hDir (stmtIn, oStmtIn) tr msg witMid => by exact fun a ↦ a
   toFun_full := fun (stmtIn, oStmtIn) tr witOut=> by
     intro h
