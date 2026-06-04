@@ -307,10 +307,31 @@ step-4 winning-set construction remains:
     `|F| > binom(N, 2)`). This is a multi-step protocol-attack development,
     not a mechanical application of B.1, and is left for follow-up.
 
+## Faithfulness note (2026-06): why a trivial witness is INADMISSIBLE here
+
+The Lean conclusion is an *existential* over `(v, μ₁, μ₂, f₁, f₂)` and — unlike
+the paper's prose — does **not** carry the §6.4 side condition that `(f₁, f₂)`
+violate the relaxed relation `R̃²_{C,δ}`. The arithmetic bound is weak:
+`N·|F| / (|F| + N − 1) ≤ |F|` for all `N ≥ 0` (since `N ≤ |F| + N − 1` whenever
+`|F| ≥ 1`). Hence the all-zero instance `v = 0, μ₁ = μ₂ = 0, f₁ = f₂ = 0`
+*formally* discharges the goal: under `hEnc` the zero word lies in `C` and
+satisfies `relation C 0 0 0` (via the `hrel_of_mem` bridge proved in
+`simplified_iop_soundness_ca_lb`), so `winningSet C δ 0 0 0 0 0 = F` and its
+`ncard = |F| ≥ N·|F|/(|F|+N−1)`. **This trivial proof is deliberately NOT
+submitted**: it is vacuous (the all-zero `(f₁,f₂)` is *inside* `R̃²`, the exact
+instance the paper excludes), it bypasses Steps 1–3 entirely, and it
+misrepresents L6.12's content (the bound is only meaningful as a *lower bound
+on the soundness error realised by a violating attack instance*). A faithful
+proof must (a) add the §6.4 violation hypothesis `¬ R̃²_{C,δ}(f₁,f₂)` to the
+statement — which blocks the all-zero witness — and (b) realise the genuine
+Step-4 maximiser+injection attack. Both are deferred together; the residual
+below is that faithful proof, not the vacuous discharge.
+
 Tagged sorry (`paper-proof-owed`, step 4 only) — ABF26's OWN result
 (§6.4.1). Steps 1–3 are realised by in-tree lemmas; the residual is the
 list→challenge winning-set injection, which additionally needs the
-`hEnc` linear-encoder hypothesis (as in `simplified_iop_soundness_ca_lb`). -/
+`hEnc` linear-encoder hypothesis (as in `simplified_iop_soundness_ca_lb`)
+and the §6.4 violation hypothesis (see the faithfulness note above). -/
 theorem simplified_iop_soundness_listDecoding_lb {k : ℕ}
     (C : Set (ι → F)) (δ : ℝ≥0) (_hδ_pos : (0 : ℝ≥0) < δ) (_hδ_lt : δ < 1)
     (_hF : (Fintype.card F : ℝ) >
@@ -321,10 +342,8 @@ theorem simplified_iop_soundness_listDecoding_lb {k : ℕ}
             * Fintype.card F)
           / (Fintype.card F
               + ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ) - 1) := by
-  -- ABF26-L6.12; paper-proof-owed [ABF26 §6.4.1]. Paper's OWN result with a
-  -- full elementary proof; IN-TREE PROVABLE NOW — its key lemma Claim B.1
-  -- (`Probability.exists_large_image_of_pairwise_collision_bound`) is already
-  -- closed. Follow §6.4.1: build the collision map `φ_v` and apply B.1.
+  -- ABF26-L6.12; paper-proof-owed [ABF26 §6.4.1]. The genuine §6.4.1 attack
+  -- (Step 4 below) is the residual; Steps 1–3 are realised by in-tree lemmas.
   sorry
 
 /-- **Lemma 6.13 of [ABF26]** (correlated-agreement lower bound on the simplified IOR).
