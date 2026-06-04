@@ -32,7 +32,7 @@ lemma exists_factors_with_large_common_root_set (δ : ℚ) (x₀ : F)
     #(@Set.toFinset _ { z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ |
         letI Pz := Pz z.2
         (Trivariate.eval_on_Z R z.1).eval Pz = 0 ∧
-        (Bivariate.evalX z.1 H).eval (Pz.eval x₀) = 0} sorry)
+        (Bivariate.evalX z.1 H).eval (Pz.eval x₀) = 0} (by infer_instance))
     ≥ #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q)
     ∧ #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
       2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q := by sorry
@@ -64,8 +64,7 @@ lemma approximate_solution_is_exact_solution_coeffs
       (irreducible_H k h_gs)
       t
     =
-    (0 : BCIKS20AppendixA.𝕃 (H k δ x₀ h_gs))
-    := by sorry
+    (0 : BCIKS20AppendixA.𝕃 (H k δ x₀ h_gs)) := by sorry
 
 open BCIKS20AppendixA.ClaimA2 in
 /-- Claim 5.8 from [BCIKS20].
@@ -127,7 +126,8 @@ noncomputable def matching_set_at_x
     (x : Fin n)
     : Finset F := @Set.toFinset _ {z : F | ∃ h : z ∈ matching_set k ωs δ u₀ u₁ h_gs,
     u₀ x + z * u₁ x =
-      (Pz (matching_set_is_a_sub_of_coeffs_of_close_proximity k h_gs h)).eval (ωs x)} sorry
+      (Pz (matching_set_is_a_sub_of_coeffs_of_close_proximity k h_gs h)).eval (ωs x)}
+      (by infer_instance)
 
 /-- Claim 5.10 of [BCIKS20].
 Needed to prove Claim 5.9. This claim states that `γ(x) = w(x,Z)` if the cardinality `|S'_x|` is big
@@ -144,8 +144,7 @@ lemma solution_gamma_matches_word_if_subset_large
         * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
         * D)
     : (P k δ x₀ h_gs).eval (Polynomial.C (ωs x)) =
-      (Polynomial.C <| u₀ x) + u₁ x • Polynomial.X
-    := by sorry
+      (Polynomial.C <| u₀ x) + u₁ x • Polynomial.X := by sorry
 
 /-- Claim 5.11 from [BCIKS20].
 There exists a set of points `{x₀,...,x_{k+1}}` such that the sets S_{x_j} satisfy the condition in

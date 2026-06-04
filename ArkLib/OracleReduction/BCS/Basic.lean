@@ -57,7 +57,7 @@ def renameMessage (pSpec : ProtocolSpec n) (NewMessage : pSpec.MessageIdx → Ty
 --     {queries : List ((i : pSpec.MessageIdx) × (pSpec.Message i))}
   --   (pSpecCom : ∀ i, ProtocolSpec (nCom i)) (CommType : pSpec.MessageIdx → Type) :
   --     ProtocolSpec (n + ∑ i, nCom i) :=
-  -- .append (pSpec.renameMessage CommType) (sorry)
+  -- .append (pSpec.renameMessage CommType) (_)
 
 end ProtocolSpec
 
@@ -75,6 +75,6 @@ variable {StmtIn StmtOut WitIn WitOut : Type}
 
 -- def BCSTransform (reduction : OracleReduction pSpec oSpec StmtIn StmtOut WitIn WitOut OStmtIn OStmtOut) :
 --     Reduction (pSpec.BCSTransform commitmentScheme) oSpec StmtIn StmtOut WitIn WitOut :=
---     sorry
+--     _
 
 end OracleReduction
