@@ -1444,10 +1444,27 @@ theorem common_roots_force_lift_zero
     lt_of_lt_of_le (by simpa [β] using hcard) hTcard'
   simpa [β] using _root_.BCIKS20AppendixA.Lemma_A_1 hH β D hD hSβ_card
 
-/-! ### Statement Analysis for Claim 5.7 -/
-
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+theorem H_tilde'_dvd_of_embedding_mk_eq_zero
+    {H P : F[X][Y]} (hH : 0 < H.natDegree)
+    (hemb :
+      _root_.BCIKS20AppendixA.embeddingOf𝒪Into𝕃 H
+        (Ideal.Quotient.mk (Ideal.span {_root_.BCIKS20AppendixA.H_tilde' H}) P :
+          _root_.BCIKS20AppendixA.𝒪 H) = 0) :
+    _root_.BCIKS20AppendixA.H_tilde' H ∣ P := by
+  let β : _root_.BCIKS20AppendixA.𝒪 H :=
+    Ideal.Quotient.mk (Ideal.span {_root_.BCIKS20AppendixA.H_tilde' H}) P
+  have hcanon :
+      _root_.BCIKS20AppendixA.canonicalRepOf𝒪 hH β = 0 :=
+    _root_.BCIKS20AppendixA.canonicalRep_eq_zero_of_embeddingOf𝒪Into𝕃_eq_zero
+      hH β (by simpa [β] using hemb)
+  have hβzero : β = 0 := by
+    rw [← _root_.BCIKS20AppendixA.mk_canonicalRepOf𝒪 hH β, hcanon]
+    simp
+  have hmem : P ∈ Ideal.span {_root_.BCIKS20AppendixA.H_tilde' H} := by
+    exact Ideal.Quotient.eq_zero_iff_mem.mp (by simpa [β] using hβzero)
+  simpa [Ideal.mem_span_singleton] using hmem
 omit [DecidableEq (RatFunc F)] in
-/-- For `δ < 0`, the close-proximity coefficient set is empty. -/
 lemma coeffs_of_close_proximity_eq_empty_of_neg [NeZero n] (hδ : δ < 0) :
     coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ = ∅ := by
   classical
@@ -1459,7 +1476,6 @@ lemma coeffs_of_close_proximity_eq_empty_of_neg [NeZero n] (hδ : δ < 0) :
   linarith
 
 omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
-/-- The right-hand side of the second cardinality conjunct of Claim 5.7 is non-negative. -/
 lemma c57_rhs_nonneg :
     (0 : ℝ) ≤ 2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q := by
   have hD : (0 : ℝ) ≤ D_X ((k + 1 : ℚ) / n) n m := by
@@ -1467,7 +1483,6 @@ lemma c57_rhs_nonneg :
   positivity
 
 omit [DecidableEq (RatFunc F)] in
-/-- The second cardinality conjunct is false whenever the close-proximity set is empty. -/
 lemma c57_second_conjunct_unsat_of_S_empty
     (hSempty : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ = ∅)
     (hconj2 :
