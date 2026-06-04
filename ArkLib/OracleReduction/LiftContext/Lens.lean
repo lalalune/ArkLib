@@ -125,6 +125,90 @@ def lift : OuterStmtIn × (∀ i, OuterOStmtIn i) → InnerStmtOut × (∀ i, In
 
 end OracleStatement.Lens
 
+/-- An **oracle-routing lens** for lifting an *oracle verifier* from an inner oracle reduction to
+  an outer one.
+
+  Design note (#433): the value-level `OracleStatement.Lens` only transports the *values* of the
+  oracle statements; it cannot express how the outer oracle verifier should *answer the inner
+  verifier's oracle queries* using the outer oracles, nor which outer oracles/messages the output
+  oracle statements are drawn from. Those two pieces of routing data are exactly what an oracle
+  verifier needs (see `OracleVerifier` in `OracleReduction/Basic.lean`, whose `verify`/`embed`/`hEq`
+  fields this lens supplies). This structure adds them on top of the value-level lens:
+
+  - `simOStmt` : routes each inner *input* oracle query into an `OracleComp` over the outer input
+    oracles (with access to the outer input statement via `ReaderT`). This realizes virtual /
+    non-invertible oracle routing such as sum-check's "answer the inner univariate query at `x` by
+    `∑` over `|D|^(n-i)` evaluation queries to the outer multivariate oracle".
+  - `embedOStmt` / `hEqOStmt` : the *output*-side routing, mirroring `OracleVerifier.embed`/`hEq` —
+    each outer output oracle index is drawn from an outer input oracle or a prover message, with a
+    type-coherence proof. This supports index-type-changing output routing (e.g. Spartan).
+  - `projStmt` / `liftStmt` : the non-oracle input projection and output lift, matching the
+    `projStmt` / `liftStmt` interface documented in `LiftContext/Reduction.lean`.
+
+  We deliberately do **not** add these fields to `OracleStatement.Lens` itself (that would break
+  every construction site repo-wide). Instead this is a separate structure that carries a
+  `toLens : OracleStatement.Lens` so that all the value-level soundness / completeness machinery
+  (`IsSound`, `IsComplete`, …) continues to apply to `toLens`. -/
+structure OracleStatement.OracleLens
+    {ι : Type} (oSpec : OracleSpec ι)
+    (OuterStmtIn OuterStmtOut InnerStmtIn InnerStmtOut : Type)
+    {Outer_ιₛᵢ : Type} (OuterOStmtIn : Outer_ιₛᵢ → Type) [∀ i, OracleInterface (OuterOStmtIn i)]
+    {Outer_ιₛₒ : Type} (OuterOStmtOut : Outer_ιₛₒ → Type) [∀ i, OracleInterface (OuterOStmtOut i)]
+    {Inner_ιₛᵢ : Type} (InnerOStmtIn : Inner_ιₛᵢ → Type) [∀ i, OracleInterface (InnerOStmtIn i)]
+    {Inner_ιₛₒ : Type} (InnerOStmtOut : Inner_ιₛₒ → Type) [∀ i, OracleInterface (InnerOStmtOut i)]
+    {n : ℕ} (pSpec : ProtocolSpec n) [∀ i, OracleInterface (pSpec.Message i)] where
+  /-- The underlying value-level oracle-statement lens (used by all the soundness / completeness
+    conditions, which are stated purely in terms of values). -/
+  toLens : OracleStatement.Lens OuterStmtIn OuterStmtOut InnerStmtIn InnerStmtOut
+              OuterOStmtIn OuterOStmtOut InnerOStmtIn InnerOStmtOut
+  /-- Non-oracle input-statement projection (outer → inner). -/
+  projStmt : OuterStmtIn → InnerStmtIn
+  /-- Non-oracle output-statement lift (inner output → outer output, relying on the outer input). -/
+  liftStmt : OuterStmtIn → InnerStmtOut → OuterStmtOut
+  /-- Routing of each *inner input* oracle query into an `OracleComp` over the *outer input* oracles
+    (plus the shared `oSpec`), with `ReaderT` access to the outer (non-oracle) input statement.
+
+    This is the heart of virtual oracle reductions: it is allowed to be non-invertible (e.g. a sum
+    over many outer queries answering a single inner query). -/
+  simOStmt : QueryImpl [InnerOStmtIn]ₒ
+    (ReaderT OuterStmtIn (OracleComp (oSpec + [OuterOStmtIn]ₒ)))
+  /-- Output-side embedding: each outer *output* oracle index is derived either from an outer input
+    oracle (`Sum.inl`) or from a prover message (`Sum.inr`). Mirrors `OracleVerifier.embed`. -/
+  embedOStmt : Outer_ιₛₒ ↪ Outer_ιₛᵢ ⊕ pSpec.MessageIdx
+  /-- Type coherence for `embedOStmt`, mirroring `OracleVerifier.hEq`. -/
+  hEqOStmt : ∀ i, OuterOStmtOut i = match embedOStmt i with
+    | Sum.inl j => OuterOStmtIn j
+    | Sum.inr j => pSpec.Message j
+
+namespace OracleStatement.OracleLens
+
+variable {ι : Type} {oSpec : OracleSpec ι}
+    {OuterStmtIn OuterStmtOut InnerStmtIn InnerStmtOut : Type}
+    {Outer_ιₛᵢ : Type} {OuterOStmtIn : Outer_ιₛᵢ → Type} [∀ i, OracleInterface (OuterOStmtIn i)]
+    {Outer_ιₛₒ : Type} {OuterOStmtOut : Outer_ιₛₒ → Type} [∀ i, OracleInterface (OuterOStmtOut i)]
+    {Inner_ιₛᵢ : Type} {InnerOStmtIn : Inner_ιₛᵢ → Type} [∀ i, OracleInterface (InnerOStmtIn i)]
+    {Inner_ιₛₒ : Type} {InnerOStmtOut : Inner_ιₛₒ → Type} [∀ i, OracleInterface (InnerOStmtOut i)]
+    {n : ℕ} {pSpec : ProtocolSpec n} [∀ i, OracleInterface (pSpec.Message i)]
+
+/-- The identity oracle-routing lens (over a single oracle-statement family `OuterOStmtIn` used for
+  both input and output): identity on values, routes each inner input oracle query to the
+  identically-indexed outer input oracle, and draws each output oracle statement from the
+  corresponding input oracle. Mirrors `OracleVerifier.id`. -/
+@[inline]
+protected def id :
+    OracleStatement.OracleLens oSpec OuterStmtIn OuterStmtOut OuterStmtIn OuterStmtOut
+      OuterOStmtIn OuterOStmtIn OuterOStmtIn OuterOStmtIn pSpec where
+  toLens := PFunctor.Lens.id _
+  projStmt := id
+  liftStmt := fun _ s => s
+  simOStmt := fun q => ReaderT.mk fun _ =>
+    (OracleComp.lift <| OracleSpec.query (spec := [OuterOStmtIn]ₒ) q :
+      OracleComp (oSpec + [OuterOStmtIn]ₒ) _)
+  embedOStmt := Function.Embedding.inl
+  hEqOStmt := fun _ => rfl
+
+end OracleStatement.OracleLens
+
 /-- Lenses for transporting the input & output witnesses from an inner protocol to an outer
     protocol.
 
