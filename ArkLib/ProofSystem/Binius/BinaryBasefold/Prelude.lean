@@ -1314,6 +1314,45 @@ theorem localized_fold_eval_eq_sum (i : Fin ℓ) (steps : ℕ) (h_i_add_steps : 
   simp only [Vector.get_ofFn]
   rfl
 
+/-- Split a sum over `Fin (2^(n+1))` into the low bit `lo ∈ Fin 2` and the high `n` bits
+`hi ∈ Fin (2^n)`, where `idx = lo + 2 * hi`. -/
+theorem sum_fin_pow_succ_split_low {M : Type*} [AddCommMonoid M] (n : ℕ)
+    (g : Fin (2 ^ (n + 1)) → M) :
+    ∑ idx : Fin (2 ^ (n + 1)), g idx =
+      ∑ lo : Fin 2, ∑ hi : Fin (2 ^ n),
+        g ⟨lo.val + 2 * hi.val, by
+          have h2 : 2 ^ (n + 1) = 2 * 2 ^ n := by rw [pow_succ, Nat.mul_comm]
+          have hlo : lo.val < 2 := lo.isLt
+          have hhi : hi.val < 2 ^ n := hi.isLt
+          rw [h2]; omega⟩ := by
+  have h2 : 2 ^ (n + 1) = 2 * 2 ^ n := by rw [pow_succ, Nat.mul_comm]
+  rw [← Finset.sum_product']
+  refine Finset.sum_nbij'
+    (i := fun idx => (⟨idx.val % 2, Nat.mod_lt _ (by omega)⟩, ⟨idx.val / 2, by
+        have : idx.val < 2 * 2 ^ n := by rw [← h2]; exact idx.isLt
+        exact Nat.div_lt_of_lt_mul (by omega)⟩))
+    (j := fun p => ⟨p.1.val + 2 * p.2.val, by
+        have hlo : p.1.val < 2 := p.1.isLt
+        have hhi : p.2.val < 2 ^ n := p.2.isLt
+        rw [h2]; omega⟩)
+    ?_ ?_ ?_ ?_ ?_
+  · intro idx _; exact Finset.mem_univ _
+  · intro p _; exact Finset.mem_univ _
+  · intro idx _
+    apply Fin.ext; simp only
+    omega
+  · intro p _
+    apply Prod.ext
+    · apply Fin.ext; simp only
+      rw [Nat.add_mul_mod_self_left]
+      exact Nat.mod_eq_of_lt p.1.isLt
+    · apply Fin.ext; simp only
+      rw [Nat.add_mul_div_left _ _ (by omega : 0 < 2), Nat.div_eq_of_lt p.1.isLt, Nat.zero_add]
+  · intro idx _
+    congr 1
+    apply Fin.ext; simp only
+    omega
+
 /-- **Lemma 4.9.** The iterated fold equals the localized fold evaluation via matmul form -/
 theorem iterated_fold_eq_matrix_form (i : Fin ℓ) (steps : ℕ) (h_i_add_steps : i + steps ≤ ℓ)
     (f : (sDomain 𝔽q β h_ℓ_add_R_rate) ⟨i, by omega⟩ → L)
