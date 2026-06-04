@@ -745,13 +745,13 @@ lemma weight_Λ_add_le (f g H : F[X][Y]) (D : ℕ) :
     have hg : g.coeff n ≠ 0 := by simpa [hf] using hsum_ne
     have hng : n ∈ g.support := Polynomial.mem_support_iff.mpr hg
     have heq : (f + g).coeff n = g.coeff n := by simp [hcoeff, hf]
-    show (WithBot.some _ : WithBot ℕ) ≤ _
+    change (WithBot.some _ : WithBot ℕ) ≤ _
     rw [heq]
     exact (le_weight_Λ_of_mem_support hng).trans (le_max_right _ _)
   · have hnf : n ∈ f.support := Polynomial.mem_support_iff.mpr hf
     by_cases hg : g.coeff n = 0
     · have heq : (f + g).coeff n = f.coeff n := by simp [hcoeff, hg]
-      show (WithBot.some _ : WithBot ℕ) ≤ _
+      change (WithBot.some _ : WithBot ℕ) ≤ _
       rw [heq]
       exact (le_weight_Λ_of_mem_support hnf).trans (le_max_left _ _)
     · have hng : n ∈ g.support := Polynomial.mem_support_iff.mpr hg
