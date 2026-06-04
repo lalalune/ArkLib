@@ -352,7 +352,8 @@ theorem RS_BW_homMatrix_det_submatrix_eq_zero_of_goodCoeffsCurve_card_gt_fun
     (hdeg : deg ≤ Fintype.card ι)
     (hδ : δ ≤ relativeUniqueDecodingRadius (ι := ι) (F := F)
       (C := ReedSolomon.code domain deg))
-    (hS : (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k * Fintype.card ι + 1) :
+    (hS : (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k *
+      Fintype.card ι + 1) :
     let e : ℕ := Nat.floor (δ * Fintype.card ι)
     let N : ℕ := (e + 1) + (e + deg)
     ∀ r : Fin N → ι,
