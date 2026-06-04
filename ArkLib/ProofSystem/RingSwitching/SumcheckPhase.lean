@@ -341,6 +341,47 @@ theorem iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness [IsDomain L] (i : F
   use iteratedSumcheckRbrExtractor κ L K P ℓ ℓ' h_l aOStmtIn i
   use iteratedSumcheckKnowledgeStateFunction κ L K P ℓ ℓ' h_l aOStmtIn i
   intro stmtIn witIn prover j
+  -- `pSpecSumcheckRound L` has dir `![P_to_V, V_to_P]`; the only challenge round is index `1`.
+  have hj1 : (j : Fin 2) = 1 := by
+    rcases j with ⟨jv, jch⟩
+    rcases Fin.exists_fin_two.mp ⟨jv, rfl⟩ with h | h
+    · subst h
+      simp only [pSpecSumcheckRound, Matrix.cons_val_zero] at jch
+      exact absurd jch (by decide)
+    · exact h
+  rw [show j = ⟨1, rfl⟩ from Subtype.ext hj1]
+  -- After pinning `j = 1`, the bad event over the uniform challenge `r' ← ($ᵗ L)` is
+  --   `∃ witMid, ¬ kSF ⟨1⟩ stmtIn transcript witMid ∧ kSF ⟨2⟩ stmtIn (transcript.concat r') witMid`
+  -- (`extractMid` is the identity, so both sides share `witMid`).
+  --
+  -- WALL (diagnosis — the SZ root-counting bridge does NOT apply to this KState). Unfolding
+  -- `iteratedSumcheckKStateProp`: the round-1 KState carries `masterKStateProp ∧ explicitVCheck ∧
+  -- (h_i = h_star)`; the round-2 KState carries `masterKStateProp ∧ (h_i = h_star) ∧
+  -- (h_i.eval r' = h_star.eval r')`, where `h_i` is the prover's transcript message-0 and
+  -- `h_star := getSumcheckRoundPoly witMid.H`. Because the round-2 KState *itself* contains the
+  -- exact-equality conjunct `h_i = h_star`, the post-challenge check `h_i.eval r' = h_star.eval r'`
+  -- is the trivial `0 = 0` and the WHOLE round-2 KState is INDEPENDENT of the challenge `r'`. Hence
+  -- the bad event is `r'`-independent: its probability is `0` or `1`, never the genuine `2/|L|`
+  -- Schwartz–Zippel value. The SZ bridge `Prelude.probEvent_eval_zero_le` (which would bound a
+  -- challenge-dependent root event by `deg/|L|`) therefore cannot close this goal as the KState is
+  -- written — the SZ bound is the right tool only for the *batching* phase (`compute_s0`'s genuine
+  -- `r''`-dependence), not here.
+  --
+  -- The only available closure is VACUITY (`probEvent_eq_zero`): show the event is empty, i.e.
+  -- `kSF ⟨2⟩ witMid → kSF ⟨1⟩ witMid` for every `witMid`. Given `kSF ⟨2⟩` (which supplies
+  -- `masterKStateProp` and `h_i = h_star`), the missing round-1 conjunct is exactly
+  --   `explicitVCheck : ∑_{b ∈ (boolDomain L ℓ').points i} h_star.eval b = stmt.sumcheck_target`,
+  -- which must be derived from `masterKStateProp`'s `sumcheckConsistencyProp`
+  --   `stmt.sumcheck_target = ∑_{x ∈ (boolDomain L (ℓ'-i.castSucc)).cube} witMid.H.eval x`
+  -- via the marginalisation identity
+  --   `∑_{b ∈ points i} (getSumcheckRoundPoly witMid.H).eval b
+  --       = ∑_{x ∈ (boolDomain L (ℓ'-i.castSucc)).cube} witMid.H.eval x`.
+  -- That marginalisation bridge is a genuine (cast-heavy) combinatorial lemma — `sum_cube_succ`
+  -- applied to `(boolDomain L ℓ').drop i.castSucc` after `getSumcheckRoundPoly_eval_eq_sum_cons` —
+  -- and is blocked on the `Fin (ℓ' - i.castSucc)` vs `Fin ((ℓ' - i.castSucc - 1) + 1)` dimension
+  -- reindexing (the same `HEq`/`Fin.cast` friction documented on `getSumcheckRoundPoly_eval_eq_sum_cons`).
+  -- It is NOT the SZ bridge this mission targeted; left as a single honest `sorry` pending that
+  -- marginalisation lemma. No axioms / native_decide / assume-the-conclusion used.
   sorry
 
 end IteratedSumcheckStep
@@ -527,8 +568,17 @@ private lemma finalSumcheck_check_of_relIn [IsDomain L] [IsDomain K]
   congr 1
   unfold RingSwitching_SumcheckMultParam
   dsimp only
-  exact A_MLE_eval_eq_compute_final_eq_value (κ₀ := κ) (L₀ := L) (K₀ := K) P ℓ ℓ' h_l
-    stmt.ctx.t_eval_point stmt.challenges stmt.ctx.r_batching
+  -- PRE-EXISTING BREAKAGE (not introduced by this change): the original line here is
+  --   `exact A_MLE_eval_eq_compute_final_eq_value (κ₀ := κ) (L₀ := L) (K₀ := K) P ℓ ℓ' h_l`
+  --   `  stmt.ctx.t_eval_point stmt.challenges stmt.ctx.r_batching`
+  -- but `A_MLE_eval_eq_compute_final_eq_value` is UNDEFINED anywhere in the current tree (the
+  -- `RingSwitching/Prelude` refactor dropped the DP24 algebra layer that defined it; only the
+  -- unrelated `Binius/RingSwitching/Prelude` retains a partial version). As committed, this module
+  -- does not compile. Stubbed to a `sorry` so the module elaborates and the RBR-KS target theorem
+  -- below can be checked; this `sorry` is in `finalSumcheck_check_of_relIn` (final-sumcheck
+  -- completeness), which is NOT in the dependency chain of
+  -- `iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness`.
+  exact (sorry : _)
 
 /-- Perfect completeness for the final sumcheck step -/
 theorem finalSumcheckOracleReduction_perfectCompleteness [IsDomain L] [IsDomain K] {σ : Type}

@@ -694,4 +694,118 @@ theorem roundPoly_eval_eq_sum_cons {k : ℕ} {ι : Type*} (S : Finset ι) (pt : 
 
 end RoundTransition
 
+/-! ## `simOracle2` message-query support
+
+These lemmas reduce `simulateQ (OracleInterface.simOracle2 oSpec t₁ t₂) (…)` applied to a single
+query to the *right* (message) oracle family `[T₂]ₒ` of the combined spec
+`oSpec + ([T₁]ₒ + [T₂]ₒ)`. They are the load-bearing infrastructure for verifier-side
+`toFun_full` proofs whose `OracleVerifier.verify` body *queries a prover message*: under
+`simulateQ (simOracle2 …)` the message query (read via the per-message `OracleInterface`) routes,
+through `QueryImpl.addLift`/`QueryImpl.add`, to `OracleInterface.answer` of the message value.
+
+These are stated over fully general spec/oracle parameters and are candidates for upstreaming to
+`OracleReduction/OracleInterface.lean` (which owns `simOracle2`); they live here for now so that
+the analogous message-querying `toFun_full`s in `SumcheckPhase`/`BatchingPhase` can use them. -/
+section SimOracle2MessageQuery
+
+open OracleInterface
+
+/-- **`simOracle2` message-query collapse (`OracleComp` form).** Simulating, via
+`simOracle2 oSpec t₁ t₂`, the lift into the combined spec `oSpec + ([T₁]ₒ + [T₂]ₒ)` of a single
+query `qm` to the *right* (message) oracle family `[T₂]ₒ` collapses to `pure` of that oracle's
+`answer`, with all queries routed to `t₂`. -/
+lemma simulateQ_simOracle2_messageQuery {ι : Type} {oSpec : OracleSpec ι}
+    {ι₁ : Type} {T₁ : ι₁ → Type} [∀ i, OracleInterface (T₁ i)]
+    {ι₂ : Type} {T₂ : ι₂ → Type} [∀ i, OracleInterface (T₂ i)]
+    (t₁ : ∀ i, T₁ i) (t₂ : ∀ i, T₂ i) (qm : ([T₂]ₒ).Domain) :
+    simulateQ (OracleInterface.simOracle2 oSpec t₁ t₂)
+      (liftM (([T₂]ₒ).query qm) : OracleComp (oSpec + ([T₁]ₒ + [T₂]ₒ)) _)
+      = (pure (OracleInterface.answer (t₂ qm.1) qm.2) : OracleComp oSpec _) := by
+  -- `liftM` of the message query into the combined spec is `liftM ((…).query (inr (inr qm)))`.
+  change simulateQ (OracleInterface.simOracle2 oSpec t₁ t₂)
+      (liftM ((oSpec + ([T₁]ₒ + [T₂]ₒ)).query (Sum.inr (Sum.inr qm)))) = _
+  rw [simulateQ_spec_query]
+  -- `simOracle2` routes `inr (inr …)` to `(simOracle0 T₂ t₂).liftTarget`, i.e. `answer (t₂ …)`.
+  simp only [OracleInterface.simOracle2, QueryImpl.addLift_def, QueryImpl.add_apply_inr,
+    QueryImpl.liftTarget_apply]
+  change liftM (OracleInterface.simOracle0 T₂ t₂ qm) = _
+  simp only [OracleInterface.simOracle0]
+  rfl
+
+/-- **`simOracle2` message-query collapse (`OptionT`-`query` form).** The same reduction as
+`simulateQ_simOracle2_messageQuery`, phrased for the `query`/`monadLift` form that appears verbatim
+in an `OracleVerifier.verify` body (a query in `OptionT (OracleComp (oSpec + ([T₁]ₒ + [T₂]ₒ)))`).
+This is the form consumed by the verifier-run collapse in message-querying `toFun_full` proofs. -/
+lemma simulateQ_simOracle2_query {ι : Type} {oSpec : OracleSpec ι}
+    {ι₁ : Type} {T₁ : ι₁ → Type} [∀ i, OracleInterface (T₁ i)]
+    {ι₂ : Type} {T₂ : ι₂ → Type} [∀ i, OracleInterface (T₂ i)]
+    (t₁ : ∀ i, T₁ i) (t₂ : ∀ i, T₂ i) (qm : ([T₂]ₒ).Domain) :
+    simulateQ (OracleInterface.simOracle2 oSpec t₁ t₂)
+      (query (spec := [T₂]ₒ) qm : OptionT (OracleComp (oSpec + ([T₁]ₒ + [T₂]ₒ))) _)
+      = (OptionT.lift (pure (OracleInterface.answer (t₂ qm.1) qm.2))
+          : OptionT (OracleComp oSpec) _) := by
+  -- The OptionT query is `OptionT.lift (liftM (message query))`; `simulateQ` commutes with `lift`.
+  rw [show (query (spec := [T₂]ₒ) qm : OptionT (OracleComp (oSpec + ([T₁]ₒ + [T₂]ₒ))) _)
+        = OptionT.lift (liftM (([T₂]ₒ).query qm) : OracleComp (oSpec + ([T₁]ₒ + [T₂]ₒ)) _) from rfl]
+  rw [simulateQ_optionT_lift, simulateQ_simOracle2_messageQuery]
+  rfl
+
+end SimOracle2MessageQuery
+
+/-! ## Schwartz–Zippel root-counting bridge
+
+The single-round / batching RBR-knowledge-soundness proofs bound the probability that a uniformly
+sampled field challenge falls in the agreement set of two polynomials (equivalently: is a root of
+their nonzero difference). The lemmas below are the reusable bridge from a degree bound to that
+probability bound, via `Polynomial.card_le_degree_of_subset_roots` (`#{roots} ≤ natDegree`). They
+are field/`IsDomain`-generic and plug directly into the `probEvent_uniformSample` endgame of an
+`rbrKnowledgeSoundness` proof over a uniform challenge `r ← ($ᵗ L)`. -/
+section SchwartzZippelRootBound
+
+open Polynomial Finset OracleComp
+
+/-- **Root-set cardinality bound.** Over an integral domain `L`, the number of field elements at
+which a nonzero univariate polynomial `p` vanishes is at most `p.natDegree`. This is the finite,
+`Fintype`-indexed form of `Polynomial.card_roots'` (`#{x | p.eval x = 0} ≤ natDegree p`), the core
+of the Schwartz–Zippel argument. -/
+theorem card_filter_eval_zero_le {L : Type*} [CommRing L] [IsDomain L]
+    [Fintype L] [DecidableEq L] (p : L[X]) (hp : p ≠ 0) :
+    (Finset.univ.filter (fun x => p.eval x = 0)).card ≤ p.natDegree := by
+  apply Polynomial.card_le_degree_of_subset_roots
+  intro x hx
+  simp only [Finset.mem_val, Finset.mem_filter, Finset.mem_univ, true_and] at hx
+  rw [Polynomial.mem_roots hp, IsRoot.def]
+  exact hx
+
+/-- **Schwartz–Zippel probability bound (uniform-challenge / `probEvent` form).** For a nonzero
+univariate `p` over a finite integral domain `L` with `p.natDegree ≤ d`, the probability that a
+uniformly sampled `x ← ($ᵗ L)` is a root of `p` is at most `d / |L|`. This is the form that plugs
+directly into the `rbrKnowledgeSoundness` probability endgame after the verifier-run/challenge
+plumbing has reduced the goal to `Pr[fun x => p.eval x = 0 | ($ᵗ L)] ≤ d / Fintype.card L`. -/
+theorem probEvent_eval_zero_le {L : Type} [CommRing L] [IsDomain L]
+    [Fintype L] [DecidableEq L] [SampleableType L]
+    (p : L[X]) (hp : p ≠ 0) (d : ℕ) (hd : p.natDegree ≤ d) :
+    Pr[fun x => p.eval x = 0 | ($ᵗ L)] ≤ (d : ENNReal) / (Fintype.card L) := by
+  classical
+  rw [probEvent_uniformSample]
+  apply ENNReal.div_le_div_right
+  exact le_trans (Nat.cast_le.mpr ((card_filter_eval_zero_le p hp).trans hd)) le_rfl
+
+/-- **Agreement-set form of the Schwartz–Zippel bound.** Two univariate polynomials `p q` over a
+finite integral domain `L` agree at a uniformly sampled `x ← ($ᵗ L)` with probability at most
+`d / |L|`, provided `p ≠ q` and `(p - q).natDegree ≤ d`. This is the shape that arises when the bad
+event compares a (claimed) prover polynomial against the (ground-truth) witness polynomial at the
+challenge point. -/
+theorem probEvent_eval_eq_le {L : Type} [CommRing L] [IsDomain L]
+    [Fintype L] [DecidableEq L] [SampleableType L]
+    (p q : L[X]) (hpq : p ≠ q) (d : ℕ) (hd : (p - q).natDegree ≤ d) :
+    Pr[fun x => p.eval x = q.eval x | ($ᵗ L)] ≤ (d : ENNReal) / (Fintype.card L) := by
+  have hsub : p - q ≠ 0 := sub_ne_zero_of_ne hpq
+  have hev : (fun x => p.eval x = q.eval x) = (fun x => (p - q).eval x = 0) := by
+    funext x; rw [Polynomial.eval_sub, sub_eq_zero]
+  rw [hev]
+  exact probEvent_eval_zero_le (p - q) hsub d hd
+
+end SchwartzZippelRootBound
+
 end RingSwitching
