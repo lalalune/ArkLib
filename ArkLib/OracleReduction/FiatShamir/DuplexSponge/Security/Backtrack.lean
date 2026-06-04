@@ -71,7 +71,7 @@ structure BacktrackSequence (trace : QueryLog (duplexSpongeChallengeOracle StmtI
 def BacktrackSequence.Index (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (state : CanonicalSpongeState U) (seq : BacktrackSequence trace state) :
     Fin trace.length × (Fin seq.inputState.length → Fin trace.length) :=
-  -- TODO: define `List.findFinIdx` that returns `Fin (l.length + 1)` and `List.findFinIdxIfTrue`
+  -- NOTE: define `List.findFinIdx` that returns `Fin (l.length + 1)` and `List.findFinIdxIfTrue`
   -- that returns `Fin l.length` given the fact that the predicate is true for at least one element
   -- of the list
   (⟨trace.findIdx sorry, sorry⟩, sorry)
@@ -102,7 +102,7 @@ And returns one of the following:
 NOTE: we do _not_ define the extra data structure `tr▵` as in the paper, as that is entirely derived
 from the actual trace and is only present for efficiency (which we do not plan to reason about)
 
-TODO: figure out the best way to encode the two errors (currently we encode `err` as the failure of
+NOTE: figure out the best way to encode the two errors (currently we encode `err` as the failure of
 OracleComp, and `none` as `Option.none` inside) -/
 def backTrack (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (state : CanonicalSpongeState U) :

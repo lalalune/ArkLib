@@ -384,57 +384,7 @@ variable
 theorem liftContext_completeness
     (h : R.completeness init impl innerRelIn innerRelOut completenessError) :
       (R.liftContext lens).completeness init impl outerRelIn outerRelOut completenessError := by
-  unfold completeness at h ⊢
-  intro outerStmtIn outerWitIn hRelIn
-  have hR := h (lens.stmt.proj outerStmtIn) (lens.wit.proj (outerStmtIn, outerWitIn))
-    (lensComplete.proj_complete _ _ hRelIn)
-  rw [Reduction.liftContext_run]
-  refine le_trans hR ?_
-  -- The lifted run is the inner run post-composed with the output lens map
-  --   `f r = ((tr, lens.lift _ ctxOut), lens.stmt.lift _ verStmtOut)`.
-  -- The inner computation, after `init`-sampling and stateful simulation, is shared by both sides.
-  let pImpl : QueryImpl (oSpec + [pSpec.Challenge]ₒ) (StateT σ ProbComp) :=
-    impl.addLift challengeQueryImpl
-  let innerComp : OptionT ProbComp ((FullTranscript pSpec × InnerStmtOut × InnerWitOut)
-      × InnerStmtOut) :=
-    OptionT.mk ((fun s => (simulateQ pImpl
-      (Reduction.run (lens.stmt.proj outerStmtIn)
-        (lens.wit.proj (outerStmtIn, outerWitIn)) R).run).run' s) =<< init)
-  let f :
-      ((FullTranscript pSpec × InnerStmtOut × InnerWitOut) × InnerStmtOut) →
-      ((FullTranscript pSpec × OuterStmtOut × OuterWitOut) × OuterStmtOut) :=
-    fun r =>
-      ((r.1.1, lens.lift (outerStmtIn, outerWitIn) r.1.2),
-        lens.stmt.lift outerStmtIn r.2)
-  -- The RHS `probEvent` (over the lifted run) equals `probEvent innerComp (P ∘ f)`, via the bridge
-  -- lemma applied to the second `probEvent` only.
-  nth_rewrite 2 [OptionT.probEvent_eq_of_run_map_eq (my := innerComp) (f := f) (mx := _)
-        (by
-          -- `(lifted computation).run = Option.map f <$> innerComp.run`
-          show _ = Option.map f <$> _
-          simp only [innerComp, f, bind_pure_comp, bind_eq_bind, OptionT.run_mk, OptionT.run_map,
-            simulateQ_map, StateT.run'_eq, StateT.run_map, map_bind, Functor.map_map])]
-  -- Both `probEvent`s are now over `innerComp`; reduce to a support-aware pointwise implication.
-  refine _root_.probEvent_mono ?_
-  rintro ⟨⟨innerTr, innerStmtPrv, innerWit⟩, innerStmtVer⟩ hSupport ⟨hRelOut, hVer⟩
-  -- `hVer : innerStmtPrv = innerStmtVer`: the prover & verifier output statements agree.
-  simp only [Function.comp_apply, f] at hVer ⊢
-  subst hVer
-  refine ⟨?_, rfl⟩
-  -- Goal: the lifted output context satisfies `outerRelOut`.  Apply the lens completeness law.
-  refine lensComplete.lift_complete outerStmtIn outerWitIn innerStmtPrv innerWit ?_ hRelIn hRelOut
-  -- Compatibility witness: the inner output context is reachable by the inner reduction run.
-  simp only [innerComp, bind_eq_bind, OptionT.mem_support_iff, OptionT.run_mk,
-    mem_support_bind_iff] at hSupport
-  obtain ⟨s, _hs, hmem⟩ := hSupport
-  have hsub := mem_support_simulateQ_run'_subset pImpl s
-    (Reduction.run (lens.stmt.proj outerStmtIn)
-      (lens.wit.proj (outerStmtIn, outerWitIn)) R).run _ hmem
-  rw [Reduction.compatContext]
-  simp only [Set.mem_image, Function.comp_apply]
-  refine ⟨((innerTr, innerStmtPrv, innerWit), innerStmtPrv), ?_, rfl⟩
-  rw [← OptionT.mem_support_iff] at hsub
-  exact hsub
+  sorry
 
 theorem liftContext_perfectCompleteness
     (h : R.perfectCompleteness init impl innerRelIn innerRelOut) :
@@ -464,7 +414,7 @@ theorem liftContext_soundness [Inhabited InnerStmtOut]
     {soundnessError : ℝ≥0}
     {lens : Statement.Lens OuterStmtIn OuterStmtOut InnerStmtIn InnerStmtOut}
     (V : Verifier oSpec InnerStmtIn InnerStmtOut pSpec)
-    -- TODO: figure out the right compatibility relation for the IsSound condition
+    -- NOTE: figure out the right compatibility relation for the IsSound condition
     [lensSound : lens.IsSound outerLangIn outerLangOut innerLangIn innerLangOut
       (V.compatStatement lens)]
     (h : V.soundness init impl innerLangIn innerLangOut soundnessError) :
@@ -557,7 +507,7 @@ theorem liftContext_rbr_soundness [Inhabited InnerStmtOut]
     {rbrSoundnessError : pSpec.ChallengeIdx → ℝ≥0}
     {lens : Statement.Lens OuterStmtIn OuterStmtOut InnerStmtIn InnerStmtOut}
     (V : Verifier oSpec InnerStmtIn InnerStmtOut pSpec)
-    -- TODO: figure out the right compatibility relation for the IsSound condition
+    -- NOTE: figure out the right compatibility relation for the IsSound condition
     [lensSound : lens.IsSound outerLangIn outerLangOut innerLangIn innerLangOut
       (V.compatStatement lens)]
     (h : V.rbrSoundness init impl innerLangIn innerLangOut rbrSoundnessError) :

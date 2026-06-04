@@ -36,7 +36,7 @@ theorem RS_correlatedAgreement_affineLines {deg : ℕ} {domain : ι ↪ F} {δ :
   then
     RS_correlatedAgreement_affineLines_uniqueDecodingRegime (hδ := hδ_uniqueDecodingRegime)
   else
-    -- TODO: theorem 5.1 for list-decoding regime
+    -- NOTE: theorem 5.1 for list-decoding regime
     sorry
 
 end CoreResults

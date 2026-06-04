@@ -233,7 +233,7 @@ This does not really need to be the case. For knowledge soundness, we do not nee
 for soundness, we don't even need the output. All we care about that the prover participates in the
 interaction to produce a transcript.
 
-TODO: see if the new `ProverInteraction` and `ProverInteractionWithOutput` types can be used to
+NOTE: see if the new `ProverInteraction` and `ProverInteractionWithOutput` types can be used to
 prove knowledge soundness implies soundness.
 -/
 
@@ -286,7 +286,7 @@ structure OracleVerifier {ι : Type} (oSpec : OracleSpec ι)
   verify : StmtIn → pSpec.Challenges →
     OptionT (OracleComp (oSpec + ([OStmtIn]ₒ + [pSpec.Message]ₒ))) StmtOut
 
-  -- TODO: this seems like the right way for compositionality
+  -- NOTE: this seems like the right way for compositionality
   -- Makes it potentially more difficult for compilation with commitment schemes
   -- Can recover the old version (with `embed` and `hEq`) via a constructor `QueryImpl.ofEmbed`
 
@@ -339,7 +339,7 @@ def toVerifier : Verifier oSpec (StmtIn × ∀ i, OStmtIn i) (StmtOut × (∀ i,
   This is given as an oracle computation itself, since the oracle verifier may be adaptive and has
   different number of queries depending on the prior responses.
 
-  TODO: define once `numQueries` is defined in `OracleComp` -/
+  NOTE: define once `numQueries` is defined in `OracleComp` -/
 def numQueries (stmt : StmtIn) (challenges : ∀ i, pSpec.Challenge i)
     (verifier : OracleVerifier oSpec StmtIn OStmtIn StmtOut OStmtOut pSpec) :
   OracleComp (oSpec + ([OStmtIn]ₒ + [pSpec.Message]ₒ)) ℕ := sorry

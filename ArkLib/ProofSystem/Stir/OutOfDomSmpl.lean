@@ -78,6 +78,56 @@ private lemma card_filter_forall_pi {β : Type} [Fintype β] [DecidableEq β] {s
   rw [h, Fintype.card_piFinset]
   simp
 
+/-- Distinct codewords decode to distinct polynomials: the decoded polynomial interpolates the
+codeword on the domain (`Lagrange.eval_interpolate_at_node`), so equal polynomials force equal
+codewords. -/
+private lemma decodeLT_ne_of_val_ne {φ : ι ↪ F} {degree : ℕ} (u u' : code φ degree)
+    (hne : u.val ≠ u'.val) :
+    ((decodeLT u : F[X])) ≠ ((decodeLT u' : F[X])) := by
+  intro h
+  apply hne
+  funext x
+  have hu : ((decodeLT u : F[X])).eval (φ x) = u.val x :=
+    Lagrange.eval_interpolate_at_node u.val (φ.injective.injOn) (Finset.mem_univ x)
+  have hu' : ((decodeLT u' : F[X])).eval (φ x) = u'.val x :=
+    Lagrange.eval_interpolate_at_node u'.val (φ.injective.injOn) (Finset.mem_univ x)
+  rw [← hu, ← hu', h]
+
+/-- The agreement set of two distinct codewords' polynomials (inside any subtype of `F`) has at
+most `degree − 1` elements: agreement points are roots of the nonzero difference, whose degree is
+below `degree`. -/
+private lemma card_agreement_le {φ : ι ↪ F} {degree : ℕ} (u u' : code φ degree)
+    (hne : u.val ≠ u'.val) :
+    (Finset.univ.filter (fun x : ↥(domainComplement φ) =>
+      ((decodeLT u : F[X])).eval x.1 = ((decodeLT u' : F[X])).eval x.1)).card
+      ≤ degree - 1 := by
+  classical
+  set q : F[X] := (decodeLT u : F[X]) - (decodeLT u' : F[X]) with hq
+  have hq0 : q ≠ 0 := sub_ne_zero_of_ne (decodeLT_ne_of_val_ne u u' hne)
+  have hqdeg : q.natDegree < degree := by
+    have hp := (decodeLT u).2
+    have hp' := (decodeLT u').2
+    rw [Polynomial.mem_degreeLT] at hp hp'
+    have hlt : q.degree < (degree : WithBot ℕ) :=
+      lt_of_le_of_lt (Polynomial.degree_sub_le _ _) (max_lt hp hp')
+    exact (Polynomial.natDegree_lt_iff_degree_lt hq0).mpr hlt
+  have hsub : (Finset.univ.filter (fun x : ↥(domainComplement φ) =>
+        ((decodeLT u : F[X])).eval x.1 = ((decodeLT u' : F[X])).eval x.1)).image Subtype.val
+      ⊆ q.roots.toFinset := by
+    intro y hy
+    simp only [Finset.mem_image, Finset.mem_filter] at hy
+    obtain ⟨x, ⟨_, hx⟩, rfl⟩ := hy
+    rw [Multiset.mem_toFinset, Polynomial.mem_roots hq0]
+    simp [hq, Polynomial.IsRoot, hx]
+  calc (Finset.univ.filter _).card
+      = ((Finset.univ.filter (fun x : ↥(domainComplement φ) =>
+          ((decodeLT u : F[X])).eval x.1 = ((decodeLT u' : F[X])).eval x.1)).image
+            Subtype.val).card := (Finset.card_image_of_injective _ Subtype.val_injective).symm
+    _ ≤ q.roots.toFinset.card := Finset.card_le_card hsub
+    _ ≤ Multiset.card q.roots := q.roots.toFinset_card_le
+    _ ≤ q.natDegree := Polynomial.card_roots' q
+    _ ≤ degree - 1 := by omega
+
 /-- Lemma 4.5.1 -/
 lemma out_of_dom_smpl_1
   {δ l : ℝ≥0} {s : ℕ} {f : ι → F} {degree : ℕ} {φ : ι ↪ F}

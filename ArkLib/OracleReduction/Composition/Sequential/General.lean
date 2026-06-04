@@ -31,7 +31,7 @@ namespace Prover
 - `seqCompose (m := 0) P = Prover.id`
 - `seqCompose (m := m + 1) P = append (P 0) (seqCompose (m := m) P)`
 
-TODO: improve efficiency, this might be `O(m^2)`
+NOTE: improve efficiency, this might be `O(m^2)`
 -/
 @[inline]
 def seqCompose
@@ -69,7 +69,7 @@ two verifiers. Specifically, we have the following definitional equalities:
 - `seqCompose (m := 0) V = Verifier.id`
 - `seqCompose (m := m + 1) V = append (V 0) (seqCompose (m := m) V)`
 
-TODO: improve efficiency, this might be `O(m^2)`
+NOTE: improve efficiency, this might be `O(m^2)`
 -/
 @[inline]
 def seqCompose {m : ℕ} (Stmt : Fin (m + 1) → Type)
@@ -98,7 +98,7 @@ namespace Reduction
 /-- Sequential composition of reductions, defined via sequential composition of provers and
   verifiers (or equivalently, folding over the append of reductions).
 
-TODO: improve efficiency, this might be `O(m^2)`
+NOTE: improve efficiency, this might be `O(m^2)`
 -/
 @[inline]
 def seqCompose {m : ℕ} (Stmt : Fin (m + 1) → Type) (Wit : Fin (m + 1) → Type)
@@ -161,7 +161,7 @@ namespace OracleVerifier
 This is the auxiliary version that has instance parameters as implicit parameters, so that matching
 on `m` can properly specialize those parameters.
 
-TODO: have to fix instance diamonds to make this work -/
+NOTE: have to fix instance diamonds to make this work -/
 def seqCompose' {m : ℕ}
     (Stmt : Fin (m + 1) → Type)
     {ιₛ : Fin (m + 1) → Type} (OStmt : (i : Fin (m + 1)) → ιₛ i → Type)

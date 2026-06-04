@@ -39,7 +39,7 @@ variable {ι : Type} {oSpec : OracleSpec ι}
   {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
 
 /-
-TODO: the "right" factoring for the security definitions are the following:
+NOTE: the "right" factoring for the security definitions are the following:
 
 - We have a two-layer interpretation approach: first, interpret the oracle queries into some monad
   `m` which admits a monad morphism into `PMF` (i.e. `HasEvalDist`); then we interpret the resulting

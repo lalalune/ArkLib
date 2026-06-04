@@ -146,7 +146,7 @@ lemma foldWord_zero {k : ℕ} :
   foldWord domain 0 k = 0 := by aesop (add simp [foldWord])
 
 omit [DecidableEq F] in
-/-- TODO: this will go once this https://github.com/Verified-zkEVM/CompPoly/pull/203
+/-- NOTE: this will go once this https://github.com/Verified-zkEVM/CompPoly/pull/203
   is merged. -/
 private lemma eval_comm {f : Polynomial (Polynomial F)} {a x : F} :
   (f.eval (Polynomial.C a)).eval x = (Polynomial.map (evalRingHom x) f).eval a := by

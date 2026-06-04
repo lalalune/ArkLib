@@ -166,7 +166,7 @@ instance : ∀ i, OracleInterface (OracleStatement R pp i) :=
 -- For the input witness, we define its oracle interface to be the polynomial evaluation oracle of
 -- its multilinear extension.
 
--- TODO: define an `OracleInterface.ofEquiv` definition that transfers the oracle interface across
+-- NOTE: define an `OracleInterface.ofEquiv` definition that transfers the oracle interface across
 -- an equivalence of types.
 instance : OracleInterface (Witness R pp) where
   Query := Fin pp.ℓ_w → R

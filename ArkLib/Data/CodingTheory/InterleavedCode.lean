@@ -154,7 +154,7 @@ instance ModuleCode.moduleInterleavedCode : ModuleCode ι F (InterleavedSymbol A
   smul_mem' a _ hV i := MC.smul_mem a (hV i)
 }
 
--- TODO: lift these to CodeInterleavable
+-- NOTE: lift these to CodeInterleavable
 omit [Fintype κ] [Fintype ι] [AddCommMonoid A] in
 @[simp]
 lemma mem_interleavedCode_iff (v : InterleavedWord A κ ι) : -- column-wise matrix
@@ -211,7 +211,7 @@ abbrev InterleavedCodeword := interleavedCodeSet (κ := κ) (C := C)
 @[simp]
 abbrev CodewordStack := codewordStackSet (κ := κ) (C := C)
 
--- TODO: mem of Module interleaved code, Module codeword stack
+-- NOTE: mem of Module interleaved code, Module codeword stack
 
 @[simp]
 def interleaveWordStack {A : Type*} {κ ι : Type*} (u : WordStack A κ ι) : InterleavedWord A κ ι

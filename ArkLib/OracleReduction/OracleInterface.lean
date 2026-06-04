@@ -38,7 +38,7 @@ open OracleComp OracleSpec OracleQuery
   - a function `answer` that given a message `m : Message` and a query `q : Query`,
   returns a response `r : Response`.
 
-TODO: turn `(Query, Response)` into a general `PFunctor` (i.e. `Response : Query → Type`) This
+NOTE: turn `(Query, Response)` into a general `PFunctor` (i.e. `Response : Query → Type`) This
 allows for better compositionality of `OracleInterface`, including (indexed) sum, instead of
 requiring indexed family of `OracleInterface`s.
 
@@ -318,13 +318,13 @@ end OracleInterface
 
 section PolynomialDistance
 
--- TODO: refactor these theorems and move them into the appropriate `(Mv)Polynomial` files
+-- NOTE: refactor these theorems and move them into the appropriate `(Mv)Polynomial` files
 
 open Polynomial MvPolynomial OracleInterface
 
 variable {R : Type*} [CommRing R] {d : ℕ} [Fintype R] [DecidableEq R] [IsDomain R]
 
--- TODO: golf this theorem
+-- NOTE: golf this theorem
 @[simp]
 theorem distanceLE_polynomial_degreeLT :
     distanceLE (instPolynomialDegreeLT R d) (d - 1) := by

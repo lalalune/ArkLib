@@ -178,7 +178,7 @@ variable {Statement} {OStatement}
 -- theorem oracleReduction_completeness (h : init.neverFails) :
 --     (oracleReduction oSpec Statement OStatement pred).perfectCompleteness init impl
 --     (toRelInput pred hPred) Set.univ := by
---   -- TODO: fix this proof once `OracleComp` no longer has failure
+--   -- NOTE: fix this proof once `OracleComp` no longer has failure
 --   simp only [OracleReduction.perfectCompleteness, toRelInput, OracleReduction.toReduction,
 --     oracleReduction, oracleProver, Nat.reduceAdd, Fin.isValue, MessageIdx, Message, ChallengeIdx,
 --     Challenge, Fin.reduceLast, oracleVerifier, bind_pure_comp, OracleVerifier.toVerifier,

@@ -295,20 +295,36 @@ def toORelOut :
 theorem oracleReduction_completeness (h : NeverFail init) :
     (oracleReduction oSpec Statement OStatement Witness).perfectCompleteness init impl oRelIn
     (toORelOut oRelIn) := by
-  sorry
-  -- TODO: clean up this proof
-  -- simp only [OracleReduction.perfectCompleteness, oraclePSpec, toORelOut, Fin.isValue,
-  --   OracleReduction.toReduction, MessageIdx, Reduction.perfectCompleteness_eq_prob_one,
-  --   ChallengeIdx, StateT.run'_eq, Set.mem_setOf_eq, probEvent_eq_one_iff, probFailure_eq_zero_iff,
-  --   neverFails_bind_iff, neverFails_map_iff, support_bind, support_map, Set.mem_iUnion,
-  --   Set.mem_image, Prod.exists, exists_and_right, exists_eq_right, exists_prop, forall_exists_index,
-  --   and_imp, Prod.forall, Prod.mk.injEq]
-  -- simp_rw [h, Reduction.run, oracleReduction, oracleVerifier_toVerifier_run, oracleProver_run]
-  -- simp only [ChallengeIdx, oraclePSpec, id_eq, liftM_eq_liftComp,
-  --   liftComp_pure, bind_pure_comp, map_pure, simulateQ_pure, StateT.run_pure,
-  --   neverFails_pure, implies_true, and_self, support_pure, Set.mem_singleton_iff, Prod.mk.injEq,
-  --   and_true, Fin.isValue, and_imp, forall_const, true_and]
-  -- aesop
+  simp only [OracleReduction.perfectCompleteness, Reduction.perfectCompleteness,
+    Reduction.completeness, ENNReal.coe_zero, tsub_zero]
+  intro ⟨stmt, oStmt⟩ wit hIn
+  have _inst : ProverOnly (oraclePSpec Witness) := { prover_first' := by simp }
+  simp only [OracleReduction.toReduction, oracleReduction]
+  rw [Reduction.run_of_prover_first]
+  simp only [oracleProver, id_eq, liftM_pure, pure_bind, bind_pure_comp,
+    OracleVerifier.toVerifier, oracleVerifier]
+  erw [simulateQ_pure]
+  simp only [StateT.run'_eq, StateT.run_pure, map_pure]
+  rw [ge_iff_le, one_le_probEvent_iff, probEvent_eq_one_iff]
+  refine ⟨?_, ?_⟩
+  · rw [OptionT.probFailure_eq, OptionT.run_mk]
+    simp
+  · intro x hx
+    rw [OptionT.mem_support_iff, OptionT.run_mk] at hx
+    simp only [support_bind, support_pure, Set.mem_iUnion, Set.mem_singleton_iff] at hx
+    obtain ⟨s, _, hx⟩ := hx
+    cases hx
+    refine ⟨?_, ?_⟩
+    · simp only [toORelOut, Set.mem_setOf_eq]
+      convert hIn using 2
+    · refine Prod.ext rfl ?_
+      funext i
+      rcases i with j | j
+      · simp only [Embedding.sumMap, Function.Embedding.coeFn_mk, Sum.map_inl,
+          Embedding.refl_apply]
+      · fin_cases j
+        simp only [Embedding.sumMap, Function.Embedding.coeFn_mk, Sum.map_inr]
+        rfl
 
 theorem oracleReduction_rbr_knowledge_soundness : True := trivial
 

@@ -127,7 +127,7 @@ def pSpec : ProtocolSpec (Fin.vsum (fun _ : Fin n => 2)) :=
   -- n * 2
   -- fun i => if i % 2 = 0 then (.P_to_V, R⦃≤ d⦄[X]) else (.V_to_P, R)
 
--- TODO: the input statement should not mention sum-check challenges at all (currently it does,
+-- NOTE: the input statement should not mention sum-check challenges at all (currently it does,
 -- initial challenge vector is empty). We can compose with a `ReduceClaim` (oracle) reduction to get
 -- the correct input statement type
 

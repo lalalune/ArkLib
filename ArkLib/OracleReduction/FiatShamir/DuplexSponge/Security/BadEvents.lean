@@ -13,7 +13,7 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.TraceTransform
 This file contains the definition and analysis of bad events for the analysis of duplex sponge
 Fiat-Shamir, following Section 5.6 in the paper.
 
-(TODO: may have to split this into multiple files given the number of lemmas)
+(NOTE: may have to split this into multiple files given the number of lemmas)
 -/
 
 open OracleComp OracleSpec ProtocolSpec
@@ -46,7 +46,7 @@ variable {StmtIn : Type} {n : ℕ} {pSpec : ProtocolSpec n}
 /-- The definition of a redundant entry in a duplex sponge challenge oracle trace (Definition 5.5),
   used in the analysis of bad events
 
-TODO: refactor this into a combination of simpler properties? -/
+NOTE: refactor this into a combination of simpler properties? -/
 def redundantEntryDS (log : QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (idx : Fin log.length) : Prop :=
   match log[idx] with
@@ -292,7 +292,7 @@ lemma not_collisionPerm_of_not_combined (h : ¬ E trace) : ¬ E_prp trace := by
       right; left
       exact ⟨⟨j, hj⟩, h_lt, sO', sI, hgj, rfl⟩
 
-/- TODO: these events / predicates depend on the definition of backtracking sequence family and
+/- NOTE: these events / predicates depend on the definition of backtracking sequence family and
 indices -/
 
 def inv : Prop :=

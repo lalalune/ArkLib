@@ -31,7 +31,7 @@ namespace Verifier
 
 section Implications
 
-/- TODO: add the following results
+/- NOTE: add the following results
 - `knowledgeSoundness` implies `soundness`
 - `roundByRoundSoundness` implies `soundness`
 - `roundByRoundKnowledgeSoundness` implies `roundByRoundSoundness`
@@ -184,13 +184,13 @@ theorem srKnowledgeSoundness_implies_knowledgeSoundness
         verifier srKnowledgeError →
       knowledgeSoundness init impl relIn relOut verifier srKnowledgeError := by sorry
 
--- TODO: state that round-by-round security implies state-restoration security for protocol with
+-- NOTE: state that round-by-round security implies state-restoration security for protocol with
 -- arbitrary added (non-empty?) salts
 
--- TODO: state that state-restoration security for added salts imply state-restoration security for
+-- NOTE: state that state-restoration security for added salts imply state-restoration security for
 -- the original protocol (with some better parameters)
 
--- TODO: state that state-restoration security implies basic security
+-- NOTE: state that state-restoration security implies basic security
 
 end Implications
 

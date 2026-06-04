@@ -12,7 +12,7 @@ import CompPoly.Data.MvPolynomial.Notation
 /-!
   # Lemmas about degrees of multivariate polynomials
 
-  TODO: write a `poly_degree` tactic that can prove goals involving degrees of univariate or
+  NOTE: write a `poly_degree` tactic that can prove goals involving degrees of univariate or
   multivariate polynomials
 
   (will need to prove by hand first before knowing how to write the tactic)
@@ -133,14 +133,14 @@ end Degrees
 
 section DegreeOf
 
--- TODO we can prove equality here if R is a domain
+-- NOTE we can prove equality here if R is a domain
 -- theorem degreeOf_mul_eq' [IsDomain R] (i : σ) (f g : MvPolynomial σ R) :
 --     degreeOf i (f * g) = degreeOf i f + degreeOf i g := by
 --   classical
 --   repeat' rw [degreeOf]
 --   simp [degreeOf]
 
--- TODO in the following we have equality iff f ≠ 0
+-- NOTE in the following we have equality iff f ≠ 0
 -- theorem degreeOf_mul_X_eq' (j : σ) (f : MvPolynomial σ R) (h : f ≠ 0) :
 --     degreeOf j (f * X j) = degreeOf j f + 1 := by
 --   classical

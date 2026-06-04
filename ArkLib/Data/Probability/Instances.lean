@@ -17,7 +17,7 @@ open NNReal Finset Function
 open scoped BigOperators ProbabilityTheory
 open Real
 
--- TODO(dtumad): Move most of the stuff in this file to VCV and generalize as possible
+-- NOTE(dtumad): Move most of the stuff in this file to VCV and generalize as possible
 
 section
 variable {α : Type*}

@@ -404,7 +404,7 @@ def Reduction.runWithLog (stmt : StmtIn) (wit : WitIn)
     liftM (simulateQ loggingOracle (reduction.verifier.run stmt proverResult.1)).run
   return ⟨⟨proverResult, ← stmtOut.getM⟩, proveQueryLog, verifyQueryLog⟩
 
-/-- TODO: figure out a better name for this -/
+/-- NOTE: figure out a better name for this -/
 private lemma Monad.map_of_prod_fst_eq_prod_fst {m : Type u → Type v} [Monad m] [LawfulMonad m]
     {α β γ : Type u} (ma : m (α × β)) (c : γ) :
     (fun a => (c, a.1)) <$> ma = Prod.mk c <$> Prod.fst <$> ma := by

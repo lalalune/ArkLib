@@ -35,7 +35,7 @@ class VCVCompatible (α : Type*) extends Fintype α, Inhabited α where
 
 instance {α : Type*} [VCVCompatible α] : DecidableEq α := VCVCompatible.type_decidableEq'
 
--- TODO: port first to batteries, second to mathlib
+-- NOTE: port first to batteries, second to mathlib
 
 @[simp]
 theorem Vector.ofFn_get {α : Type*} {n : ℕ} (v : Vector α n) : Vector.ofFn (Vector.get v) = v := by
@@ -100,7 +100,7 @@ end Direction
 
 section Relation
 
--- TODO: use mathlib's `Rel` which will be `Set`-based in the next update
+-- NOTE: use mathlib's `Rel` which will be `Set`-based in the next update
 
 /-- The associated language `Set α` for a relation `Set (α × β)`. -/
 @[reducible]

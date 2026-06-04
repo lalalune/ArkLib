@@ -226,7 +226,7 @@ namespace Extractor
 
 /-- The sequential composition of two straightline extractors.
 
-TODO: state a monotone condition on the extractor, namely that if extraction succeeds on a given
+NOTE: state a monotone condition on the extractor, namely that if extraction succeeds on a given
 query log, then it also succeeds on any extension of that query log -/
 def Straightline.append (E₁ : Extractor.Straightline oSpec Stmt₁ Wit₁ Wit₂ pSpec₁)
     (E₂ : Extractor.Straightline oSpec Stmt₂ Wit₂ Wit₃ pSpec₂)
@@ -371,7 +371,7 @@ theorem append_run (stmt : Stmt₁) (wit : Wit₁) :
   unfold run runToRound
   sorry
 
--- TODO: Need to define a function that "extracts" a second prover from the combined prover
+-- NOTE: Need to define a function that "extracts" a second prover from the combined prover
 
 end Prover
 
@@ -408,7 +408,7 @@ commutative monad (such as `Id`, i.e. all oracle queries are answered determinis
 all oracle queries are answered probabilistically, `Option`, `ReaderT ρ`, `Set`, `WriterT` into a
 commutative monoid, etc.). -/
 
--- TODO: prove this after VCVio refactor
+-- NOTE: prove this after VCVio refactor
 -- theorem append_run_interp {m : Type → Type} [Monad m] [m.IsCommutative]
 --     {interp : OracleImpl oSpec m} : ((R₁.append R₂).run stmt wit).runM interp =
 --         (do
@@ -436,7 +436,7 @@ variable {Stmt₁ Wit₁ Stmt₂ Wit₂ Stmt₃ Wit₃ : Type}
     {rel₁ : Set (Stmt₁ × Wit₁)} {rel₂ : Set (Stmt₂ × Wit₂)} {rel₃ : Set (Stmt₃ × Wit₃)}
 
 /-
-TODO: when do these theorems hold? The answer may be that when oracle queries are answered according
+NOTE: when do these theorems hold? The answer may be that when oracle queries are answered according
 to a _commutative_ monad, which are then interpreted into a probability distribution.
 
 Unfortunately, this means that `StateT` is out; this works for `ReaderT` and `WriterT` into a

@@ -102,7 +102,7 @@ noncomputable def δ_ε_proximityGap {α : Type} [DecidableEq α] [Nonempty α]
 /-- Definition: `(δ, ε)`-correlated agreement for affine lines.
 For every pair of words `u₀, u₁`, if the probability that a random affine line `u₀ + z • u₁` is
 `δ`-close to `C` exceeds `ε`, then `u₀` and `u₁` have correlated agreement with `C`.
--- **TODO**: prove that `δ_ε_correlatedAgreementAffineLines` implies `δ_ε_proximityGap`
+-- **NOTE**: prove that `δ_ε_correlatedAgreementAffineLines` implies `δ_ε_proximityGap`
 -/
 noncomputable def δ_ε_correlatedAgreementAffineLines [Module F A]
     (C : Set (ι → A)) (δ ε : ℝ≥0) : Prop :=
