@@ -881,7 +881,7 @@ lemma fri_soundness
               ⟨
                 prov,
                 (BatchedFri.Spec.batchedFRIreduction
-                  (ω := ω) (n := n) k s d l t).verifier
+                  (ω := ω) (n := n) k s d domain_size_cond l t).verifier
               ⟩
           ] > εC 𝔽 n s m ρ_sqrt + α ^ l) →
       Code.jointAgreement
