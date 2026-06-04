@@ -41634,9 +41634,9 @@
           "signature": "def embedded_MLP_eval (t' : MultilinearPoly L \u2113') (r : Fin \u2113 \u2192 L) :"
         },
         {
-          "doc": "Step 2 (V): Check 1: s ?= \u03a3_{v \u2208 {0,1}^\u03ba} eqTilde(v, r_{0..\u03ba-1}) \u22c5 \u015d_v.",
+          "doc": "Step 2 (V): Check 1: s ?= \u03a3_{v \u2208 {0,1}^\u03ba} eqTilde(v, r_{0..\u03ba-1}) \u22c5 \u015d_v. Note (soundness fix): the decomposition here must read the **row** components of `\u015d` (`P.decomposeRows`), which carry the `\u03c6\u2081`/`t'` tensor factor: by `decompose_rows_packMLE`, `(rows \u015d)_u = \u03a3_w t(u,w)\u00b7eq\u0303(w, r_suffix)`, so the `eq\u0303(\u00b7, r_prefix)`-weighted sum reconstructs `t(r)`. The previous version used the column decomposition, which extracts the `\u03c6\u2080`/`eq` factor instead (`(columns (a \u2297 b))_v = \u03b2.repr a v \u2022 b`); with it the check does **not** imply `s = t(r)` (failing term at `\u03ba = 1`, `t(0,w) = 1`, `t(1,w) = 0`).",
           "kind": "def",
-          "line": 337,
+          "line": 345,
           "name": "RingSwitching.performCheckOriginalEvaluation",
           "namespace": "RingSwitching",
           "short_name": "performCheckOriginalEvaluation",
@@ -41645,7 +41645,7 @@
         {
           "doc": "Step 4a: For each `w \u2208 {0,1}^{\u2113'}`, P decompose `eq\u0303(r_\u03ba, ..., r_{\u2113-1}, w_0, ..., w_{\u2113'-1})` `=: \u03a3_{u \u2208 {0,1}^\u03ba} A_{w, u} \u22c5 \u03b2_u`. P define the function `A: w \u21a6 \u03a3_{u \u2208 {0,1}^\u03ba} eq\u0303(u_0, ..., u_{\u03ba-1}, r''_0, ..., r''_{\u03ba-1}) \u22c5 A_{w, u}` on `{0,1}^{\u2113'}`.",
           "kind": "def",
-          "line": 350,
+          "line": 358,
           "name": "RingSwitching.compute_A_func",
           "namespace": "RingSwitching",
           "short_name": "compute_A_func",
@@ -41654,7 +41654,7 @@
         {
           "doc": "Step 4b: P writes `A(X_0, ..., X_{\u2113'-1})` for its multilinear extension of `A_func`.",
           "kind": "def",
-          "line": 367,
+          "line": 375,
           "name": "RingSwitching.compute_A_MLE",
           "namespace": "RingSwitching",
           "short_name": "compute_A_MLE",
@@ -41663,7 +41663,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 374,
+          "line": 382,
           "name": "RingSwitching.getEvaluationPointSuffix",
           "namespace": "RingSwitching",
           "short_name": "getEvaluationPointSuffix",
@@ -41672,7 +41672,7 @@
         {
           "doc": "Ring-Switching multiplier parameter for sumcheck, using `A_MLE` as the multiplier.",
           "kind": "def",
-          "line": 378,
+          "line": 386,
           "name": "RingSwitching.RingSwitching_SumcheckMultParam",
           "namespace": "RingSwitching",
           "short_name": "RingSwitching_SumcheckMultParam",
@@ -41681,7 +41681,7 @@
         {
           "doc": "Step 5 (V): Compute `s\u2080 := \u03a3_{u \u2208 {0,1}^\u03ba} eqTilde(u, r'') \u22c5 \u015d_u`, where \u015d_u is the row components of \u015d.",
           "kind": "def",
-          "line": 392,
+          "line": 400,
           "name": "RingSwitching.compute_s0",
           "namespace": "RingSwitching",
           "short_name": "compute_s0",
@@ -41690,7 +41690,7 @@
         {
           "doc": "Compute the tensor `e := eq\u0303(\u03c6\u2080(r_\u03ba), ..., \u03c6\u2080(r_{\u2113-1}), \u03c6\u2081(r'_0), ..., \u03c6\u2081(r'_{\u2113'-1}))`",
           "kind": "def",
-          "line": 399,
+          "line": 407,
           "name": "RingSwitching.compute_final_eq_tensor",
           "namespace": "RingSwitching",
           "short_name": "compute_final_eq_tensor",
@@ -41699,7 +41699,7 @@
         {
           "doc": "Decompose the final eq tensor `e := \u03a3_{u \u2208 {0,1}^\u03ba} eq\u0303(u, r'') \u2a02 e_u`, where e_u is the row components of e. Then compute `\u03a3_{u \u2208 {0,1}^\u03ba} eq\u0303(u_0, ..., u_{\u03ba-1}, r''_0, ..., r''_{\u03ba-1}) \u22c5 e_u`.",
           "kind": "def",
-          "line": 409,
+          "line": 417,
           "name": "RingSwitching.compute_final_eq_value",
           "namespace": "RingSwitching",
           "short_name": "compute_final_eq_value",
@@ -41708,7 +41708,7 @@
         {
           "doc": "This condition ensures that the witness polynomial `H` has the correct structure `A(...) * t'(...)`",
           "kind": "def",
-          "line": 421,
+          "line": 429,
           "name": "RingSwitching.witnessStructuralInvariant",
           "namespace": "RingSwitching",
           "short_name": "witnessStructuralInvariant",
@@ -41717,7 +41717,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 428,
+          "line": 436,
           "name": "RingSwitching.masterKStateProp",
           "namespace": "RingSwitching",
           "short_name": "masterKStateProp",
@@ -41726,7 +41726,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 438,
+          "line": 446,
           "name": "RingSwitching.sumcheckRoundRelationProp",
           "namespace": "RingSwitching",
           "short_name": "sumcheckRoundRelationProp",
@@ -41735,7 +41735,7 @@
         {
           "doc": "Input relation for single round: proper sumcheck statement",
           "kind": "def",
-          "line": 445,
+          "line": 453,
           "name": "RingSwitching.sumcheckRoundRelation",
           "namespace": "RingSwitching",
           "short_name": "sumcheckRoundRelation",
@@ -41744,7 +41744,7 @@
         {
           "doc": "The Binius (binary-tower) instantiation of `RingSwitchingProfile`, built from the tensor-algebra definitions above: `A := L \u2297[K] L`, embeddings `\u03c6\u2080 = \u00b7 \u2297 1` / `\u03c6\u2081 = 1 \u2297 \u00b7`, and the decompositions are the `K`-basis coordinates via the left/right `L`-module structures. Marked `@[reducible]` so that, once the protocol code is rewired through the profile, references to `(binaryTowerProfile \u2026).A` (etc.) unfold to `L \u2297[K] L` at reducible transparency \u2014 preserving the existing `rfl`/instance-driven Binius proofs (and the byte-identical `#print axioms`).",
           "kind": "def",
-          "line": 461,
+          "line": 469,
           "name": "RingSwitching.binaryTowerProfile",
           "namespace": "RingSwitching",
           "short_name": "binaryTowerProfile",
@@ -41753,7 +41753,7 @@
         {
           "doc": "A single `eqPolynomial` factor, evaluated through the mixed embedding `eval\u2082 \u03c6\u2081 (\u03c6\u2080 \u2218 g)` at a Boolean coefficient, collapses to the column embedding `\u03c6\u2080`, because `\u03c6\u2080` and `\u03c6\u2081` agree on the Boolean literals `{0, 1}`.",
           "kind": "lemma",
-          "line": 530,
+          "line": 538,
           "name": "RingSwitching.singleEq_collapse",
           "namespace": "RingSwitching",
           "short_name": "singleEq_collapse",
@@ -41762,7 +41762,7 @@
         {
           "doc": "The full `eqPolynomial` collapses through the mixed embedding to `\u03c6\u2080` of its ordinary evaluation, by multiplying the `singleEq_collapse` factors.",
           "kind": "lemma",
-          "line": 547,
+          "line": 555,
           "name": "RingSwitching.eqPoly_collapse",
           "namespace": "RingSwitching",
           "short_name": "eqPoly_collapse",
@@ -41771,7 +41771,7 @@
         {
           "doc": "**DP24 packing expansion.** The prover's tensor `\u015d := \u03c6\u2081(t')(\u03c6\u2080(r_\u03ba), \u2026, \u03c6\u2080(r_{\u2113-1}))` expands over the suffix hypercube as `\u015d = \u03a3_{w \u2208 {0,1}^\u2113'} \u03c6\u2080(eq\u0303(w, r_suffix)) \u00b7 \u03c6\u2081(t'(w))`, i.e. `\u03a3_w eq\u0303(r_suffix, w) \u2297 t'(w)`.",
           "kind": "lemma",
-          "line": 562,
+          "line": 570,
           "name": "RingSwitching.embedded_MLP_eval_eq_sum",
           "namespace": "RingSwitching",
           "short_name": "embedded_MLP_eval_eq_sum",
@@ -41780,7 +41780,7 @@
         {
           "doc": "`decompose_tensor_algebra_rows` is additive over finite sums of tensors.",
           "kind": "lemma",
-          "line": 592,
+          "line": 600,
           "name": "RingSwitching.decompose_rows_sum",
           "namespace": "RingSwitching",
           "short_name": "decompose_rows_sum",
@@ -41789,7 +41789,7 @@
         {
           "doc": "Row decomposition of a separated tensor `\u03c6\u2080(a) \u00b7 \u03c6\u2081(b) = a \u2297 b`: the `u`-th row component represents the *right* (`\u03c6\u2081`) factor `b`, scaled by `a`.",
           "kind": "lemma",
-          "line": 602,
+          "line": 610,
           "name": "RingSwitching.decompose_rows_\u03c6\u2080\u03c6\u2081",
           "namespace": "RingSwitching",
           "short_name": "decompose_rows_\u03c6\u2080\u03c6\u2081",
@@ -41798,7 +41798,7 @@
         {
           "doc": "The basis coordinate of a packed evaluation recovers the small-field coefficient: `\u03b2.repr (t'(w)) u = t(u, w)`, where `t' = packMLE \u03b2 t`.",
           "kind": "lemma",
-          "line": 615,
+          "line": 623,
           "name": "RingSwitching.packMLE_repr_eval",
           "namespace": "RingSwitching",
           "short_name": "packMLE_repr_eval",
@@ -41807,7 +41807,7 @@
         {
           "doc": "**Row recovery of `t`-evaluations.** The row components of the prover's tensor `\u015d = embedded_MLP_eval (packMLE \u03b2 t) r` carry the suffix-`eq`-weighted evaluations of `t`: `(decompose_rows \u015d)_u = \u03a3_{w \u2208 {0,1}^\u2113'} t(u, w) \u00b7 eq\u0303(w, r_suffix)`. This is the load-bearing identity for reconstructing `t(r)` from `\u015d`. It uses the *row* decomposition (which represents the `t'`/`\u03c6\u2081` factor); the verifier's `performCheckOriginalEvaluation` instead uses the *column* decomposition \u2014 see the module note above.",
           "kind": "lemma",
-          "line": 638,
+          "line": 646,
           "name": "RingSwitching.decompose_rows_packMLE",
           "namespace": "RingSwitching",
           "short_name": "decompose_rows_packMLE",

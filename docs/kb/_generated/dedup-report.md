@@ -797,7 +797,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `masterKStateProp` (2 declarations, 2 files)
 
 - `def Binius.BinaryBasefold.masterKStateProp` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:926](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L926) — Before V's challenge of the `i-th` foldStep, we ignore the bad-folding-event of the `i-th` oracle if
-- `def RingSwitching.masterKStateProp` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:428](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L428) — (no docstring)
+- `def RingSwitching.masterKStateProp` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:436](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L436) — (no docstring)
 
 ### `ofFinCoeff` (2 declarations, 2 files)
 
@@ -902,7 +902,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `witnessStructuralInvariant` (2 declarations, 2 files)
 
 - `def Binius.BinaryBasefold.witnessStructuralInvariant` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:818](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L818) — This condition ensures that the witness polynomial `H` has the correct structure `eq(...) * t(...)`
-- `def RingSwitching.witnessStructuralInvariant` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:421](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L421) — This condition ensures that the witness polynomial `H` has the correct structure `A(...) * t'(...)`
+- `def RingSwitching.witnessStructuralInvariant` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:429](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L429) — This condition ensures that the witness polynomial `H` has the correct structure `A(...) * t'(...)`
 
 ### `OracleInterface` (3 declarations, 2 files)
 
@@ -1009,7 +1009,7 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **1.00** `Binius.BinaryBasefold.FullBinaryBasefold.fullOracleVerifier` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:44](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L44) vs `RingSwitching.FullRingSwitching.fullOracleVerifier` [ArkLib/ProofSystem/RingSwitching/General.lean:51](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L51)
     - a: The oracle verifier for the full Binary Basefold protocol
     - b: The oracle verifier for the full Binary Basefold protocol
-- **1.00** `Binius.BinaryBasefold.witnessStructuralInvariant` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:818](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L818) vs `RingSwitching.witnessStructuralInvariant` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:421](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L421)
+- **1.00** `Binius.BinaryBasefold.witnessStructuralInvariant` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:818](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L818) vs `RingSwitching.witnessStructuralInvariant` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:429](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L429)
     - a: This condition ensures that the witness polynomial `H` has the correct structure `eq(...) * t(...)`
     - b: This condition ensures that the witness polynomial `H` has the correct structure `A(...) * t'(...)`
 - **1.00** `Binius.FRIBinius.CoreInteractionPhase.biniusProfile` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:56](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L56) vs `Binius.FRIBinius.FullFRIBinius.biniusProfile` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:51](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L51)
