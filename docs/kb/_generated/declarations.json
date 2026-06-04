@@ -120,13 +120,13 @@
           "signature": "def Adversary (\u03b9 : Type) (G : Type) (p : \u2115) (bitLength : \u2115) (\u03b1 : Type) : Type _ :="
         },
         {
-          "doc": "Running the adversary on a given table, returning the list of group elements it is supposed to output, and the non-group-element result.",
+          "doc": "Running the adversary on a given table, returning the list of group elements it is supposed to output, and the non-group-element result. The run can fail if an oracle query fails or if the adversary returns a handle that is not defined in the final table.",
           "kind": "def",
-          "line": 164,
+          "line": 165,
           "name": "AGM.Adversary.run",
           "namespace": "AGM.Adversary",
           "short_name": "run",
-          "signature": "def run (adversary : Adversary \u03b9 G p bitLength \u03b1) (table : GroupValTable \u03b9 G) : List G \u00d7 \u03b1 :="
+          "signature": "def run (adversary : Adversary \u03b9 G p bitLength \u03b1) (table : GroupValTable \u03b9 G) :"
         }
       ]
     },
@@ -11157,9 +11157,27 @@
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean": {
       "declarations": [
         {
-          "doc": "Claim 5.7 of [BCIKS20].",
+          "doc": "*Accessible twin of the sealed `eval_on_Z`.*  The per-`z` `Z`-specialization used throughout the proven Claim-5.7 machinery in `Extraction.lean` is `pg_eval_on_Z`, and it reduces, by `rfl`, to exactly the definitional body of `Trivariate.eval_on_Z`, namely `p.map (mapRingHom (evalRingHom z))`. This lemma is the *positive half* of the verified obstruction recorded on `exists_factors_with_large_common_root_set` below: every fact the proof needs (`pg_exists_pair_for_z`, `pg_card_candidatePairs_le_natDegreeY`, the per-`z` factor/`H` extraction) is phrased for `pg_eval_on_Z`, and `pg_eval_on_Z = (\u00b7",
           "kind": "lemma",
-          "line": 32,
+          "line": 43,
+          "name": "ProximityGap.c57_pg_eval_on_Z_body",
+          "namespace": "ProximityGap",
+          "short_name": "c57_pg_eval_on_Z_body",
+          "signature": "lemma c57_pg_eval_on_Z_body (p : F[Z][X][Y]) (z : F) :"
+        },
+        {
+          "doc": "",
+          "kind": "opaque",
+          "line": 81,
+          "name": "ProximityGap._anon_opaque_81",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_opaque_81",
+          "signature": "opaque opaque `.choose` element constrained only by that upper bound \u2014 it does **not** encode the"
+        },
+        {
+          "doc": "Claim 5.7 of [BCIKS20]. OBSTRUCTION (statement unprovable as formalized \u2014 verified defect, the 6th in this tree). There are two independent blockers; the first is fatal on its own. * *Sealed `eval_on_Z` (Gap A \u2014 verified, see `c57_pg_eval_on_Z_body`).*  The first cardinality conjunct lower-bounds `#S'`, where `S'` is the subset of `S = coeffs_of_close_proximity` cut out by the predicate `(Trivariate.eval_on_Z R z.1).eval Pz = 0 \u2227 \u2026`.  But `Trivariate.eval_on_Z` (`Trivariate.lean`) is declared `opaque`, so **no** property of `eval_on_Z R z.1` is derivable: one cannot prove `eval_on_Z 0 z = 0`, ",
+          "kind": "lemma",
+          "line": 172,
           "name": "ProximityGap.exists_factors_with_large_common_root_set",
           "namespace": "ProximityGap",
           "short_name": "exists_factors_with_large_common_root_set",
@@ -11168,7 +11186,7 @@
         {
           "doc": "Claim 5.7 establishes existens of a polynomial `R`. his is the extraction of this polynomial.",
           "kind": "def",
-          "line": 47,
+          "line": 187,
           "name": "ProximityGap.R",
           "namespace": "ProximityGap",
           "short_name": "R",
@@ -11177,7 +11195,7 @@
         {
           "doc": "Claim 5.7 establishes existens of a polynomial `H`. This is the extraction of this polynomial.",
           "kind": "def",
-          "line": 52,
+          "line": 192,
           "name": "ProximityGap.H",
           "namespace": "ProximityGap",
           "short_name": "H",
@@ -11186,7 +11204,7 @@
         {
           "doc": "An important property of the polynomial `H` extracted from Claim 5.7 is that it is irreducible.",
           "kind": "lemma",
-          "line": 57,
+          "line": 197,
           "name": "ProximityGap.irreducible_H",
           "namespace": "ProximityGap",
           "short_name": "irreducible_H",
@@ -11195,7 +11213,7 @@
         {
           "doc": "The factor `H` extracted from Claim 5.7 has positive degree in the `Y` variable, matching the Appendix A hypotheses needed for the function field construction.",
           "kind": "lemma",
-          "line": 62,
+          "line": 202,
           "name": "ProximityGap.natDegree_H_pos",
           "namespace": "ProximityGap",
           "short_name": "natDegree_H_pos",
@@ -11204,7 +11222,7 @@
         {
           "doc": "The `Fact` form of `natDegree_H_pos`, for downstream declarations that take the positivity as an instance.",
           "kind": "instance",
-          "line": 68,
+          "line": 208,
           "name": "ProximityGap.fact_natDegree_H_pos",
           "namespace": "ProximityGap",
           "short_name": "fact_natDegree_H_pos",
@@ -11213,7 +11231,7 @@
         {
           "doc": "The extracted `H` divides `R(x\u2080, Y, Z)`, as required for the Hensel setup in Claim A.2.",
           "kind": "lemma",
-          "line": 73,
+          "line": 213,
           "name": "ProximityGap.H_dvd_evalX_R",
           "namespace": "ProximityGap",
           "short_name": "H_dvd_evalX_R",
@@ -11222,7 +11240,7 @@
         {
           "doc": "The specialization `R(x\u2080, Y, Z)` is separable in `Y`, as required for Claim A.2.",
           "kind": "lemma",
-          "line": 78,
+          "line": 218,
           "name": "ProximityGap.evalX_R_separable",
           "namespace": "ProximityGap",
           "short_name": "evalX_R_separable",
@@ -11231,34 +11249,34 @@
         {
           "doc": "The Claim A.2 hypotheses satisfied by the `R,H` pair extracted from Claim 5.7.",
           "kind": "lemma",
-          "line": 84,
+          "line": 224,
           "name": "ProximityGap.claimA2_hypotheses",
           "namespace": "ProximityGap",
           "short_name": "claimA2_hypotheses",
           "signature": "lemma claimA2_hypotheses (h_gs : ModifiedGuruswami m n k \u03c9s Q u\u2080 u\u2081) :"
         },
         {
-          "doc": "Claim 5.8 from [BCIKS20]. States that the approximate solution is actually a solution. This version of the claim is stated in terms of coefficients.",
+          "doc": "Claim 5.8 from [BCIKS20]. States that the approximate solution is actually a solution. This version of the claim is stated in terms of coefficients. GAP (blocked \u2014 see the \u00a75 GAP ANALYSIS block above). `\u03b1' x\u2080 R \u2026 t = embeddingOf\ud835\udcaaInto\ud835\udd43 _ (\u03b2 R t) / (W^(t+1) \u00b7 \u03be-emb^(2t-1))`, so the goal reduces by `zero_div` to `embeddingOf\ud835\udcaaInto\ud835\udd43 _ (\u03b2 R t) = 0`, which is the conclusion of `Lemma_A_1`. But `Lemma_A_1`'s hypothesis `#(S_\u03b2 (\u03b2 R t)) > \u039b(\u03b2 R t)\u00b7d\u2095` has no supplier (missing ingredient C), and more fundamentally `\u03b2 R t` is an opaque weight-bounded `.choose`, not the recursive Hensel numerator (missing ",
           "kind": "lemma",
-          "line": 92,
+          "line": 239,
           "name": "ProximityGap.approximate_solution_is_exact_solution_coeffs",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_is_exact_solution_coeffs",
           "signature": "lemma approximate_solution_is_exact_solution_coeffs"
         },
         {
-          "doc": "Claim 5.8 from [BCIKS20]. States that the approximate solution is actually a solution. This version is in terms of polynomials.",
+          "doc": "Claim 5.8 from [BCIKS20]. States that the approximate solution is actually a solution. This version is in terms of polynomials. GAP (blocked \u2014 see the \u00a75 GAP ANALYSIS block above). Equivalent to `coeff t \u03b3' = 0` for `t \u2265 k`. Would follow from the coefficient form (`approximate_solution_is_exact_solution_coeffs`) by `PowerSeries.subst` bookkeeping on `\u03b3 = subst (mk shift) (mk \u03b1)`, but that form is itself blocked (ingredients C, D), so this cannot stand alone.",
           "kind": "lemma",
-          "line": 112,
+          "line": 263,
           "name": "ProximityGap.approximate_solution_is_exact_solution_coeffs'",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_is_exact_solution_coeffs'",
           "signature": "lemma approximate_solution_is_exact_solution_coeffs'"
         },
         {
-          "doc": "Claim 5.9 from [BCIKS20]. States that the solution `\u03b3` is linear in the variable `Z`.",
+          "doc": "Claim 5.9 from [BCIKS20]. States that the solution `\u03b3` is linear in the variable `Z`. GAP (blocked \u2014 see the \u00a75 GAP ANALYSIS block above). Consumes Claim 5.8' (the degree-`< k` truncation of `\u03b3`) together with the `Bivariate.degreeX P \u2264 1` output of Proposition 5.5 to read off the linear representative `v\u2080 + Z\u00b7v\u2081`. Blocked transitively on 5.8' (ingredients C, D) and on the still-`sorry` Prop 5.5 (`exists_a_set_and_a_matching_polynomial`, `Guruswami.lean`).",
           "kind": "lemma",
-          "line": 133,
+          "line": 289,
           "name": "ProximityGap.solution_gamma_is_linear_in_Z",
           "namespace": "ProximityGap",
           "short_name": "solution_gamma_is_linear_in_Z",
@@ -11267,7 +11285,7 @@
         {
           "doc": "The linear represenation of the solution `\u03b3` extracted from Claim 5.9.",
           "kind": "def",
-          "line": 148,
+          "line": 304,
           "name": "ProximityGap.P",
           "namespace": "ProximityGap",
           "short_name": "P",
@@ -11276,7 +11294,7 @@
         {
           "doc": "The extracted `P` from Claim 5.9 equals `\u03b3`.",
           "kind": "lemma",
-          "line": 160,
+          "line": 316,
           "name": "ProximityGap.gamma_eq_P",
           "namespace": "ProximityGap",
           "short_name": "gamma_eq_P",
@@ -11285,25 +11303,25 @@
         {
           "doc": "The set `S'_x` from [BCIKS20] (just before Claim 5.10). The set of all `z \u2208 S'` such that `w(x,z)` matches `P_z(x)`.",
           "kind": "def",
-          "line": 171,
+          "line": 327,
           "name": "ProximityGap.matching_set_at_x",
           "namespace": "ProximityGap",
           "short_name": "matching_set_at_x",
           "signature": "def matching_set_at_x"
         },
         {
-          "doc": "Claim 5.10 of [BCIKS20]. Needed to prove Claim 5.9. This claim states that `\u03b3(x) = w(x,Z)` if the cardinality `|S'_x|` is big enough.",
+          "doc": "Claim 5.10 of [BCIKS20]. Needed to prove Claim 5.9. This claim states that `\u03b3(x) = w(x,Z)` if the cardinality `|S'_x|` is big enough. GAP (blocked \u2014 see the \u00a75 GAP ANALYSIS block above). The hypothesis `hx` bounds `(matching_set_at_x \u2026).card` from below, and the conclusion is the \u00a75 polynomial identity `P(\u03c9s x) = C(u\u2080 x) + u\u2081 x \u00b7 X`. Bridging the geometric matching-set bound to the `S_\u03b2`-largeness that `Lemma_A_1` consumes (so that the relevant Hensel coefficient vanishes) is exactly missing ingredient C; the underlying `\u03b2` under-specification (ingredient D) also applies.",
           "kind": "lemma",
-          "line": 183,
+          "line": 345,
           "name": "ProximityGap.solution_gamma_matches_word_if_subset_large",
           "namespace": "ProximityGap",
           "short_name": "solution_gamma_matches_word_if_subset_large",
           "signature": "lemma solution_gamma_matches_word_if_subset_large"
         },
         {
-          "doc": "Claim 5.11 from [BCIKS20]. There exists a set of points `{x\u2080,...,x_{k+1}}` such that the sets S_{x_j} satisfy the condition in Claim 5.10.",
+          "doc": "Claim 5.11 from [BCIKS20]. There exists a set of points `{x\u2080,...,x_{k+1}}` such that the sets S_{x_j} satisfy the condition in Claim 5.10. GAP (blocked \u2014 see the \u00a75 GAP ANALYSIS block above). A double-counting argument over the matching set, which is `.choose` of the still-`sorry` Prop 5.5 (`exists_a_set_and_a_matching_polynomial`, `Guruswami.lean`); the per-point cardinality bound additionally relies on missing ingredient C.",
           "kind": "lemma",
-          "line": 202,
+          "line": 368,
           "name": "ProximityGap.exists_points_with_large_matching_subset",
           "namespace": "ProximityGap",
           "short_name": "exists_points_with_large_matching_subset",
@@ -27113,18 +27131,27 @@
           "signature": "def eval_on_Z\u2080 (p : (RatFunc F)) (z : F) : F :="
         },
         {
-          "doc": "A ring homomorphism mapping a trivariate polynomial with coefficients in `F` and variables `Z, X, Y` to a bivariate polynomial with coefficients in `F` and variables in `X, Y` by evaluating on a point `z \u2208 F`.",
-          "kind": "opaque",
-          "line": 56,
+          "doc": "A ring homomorphism mapping a trivariate polynomial with coefficients in `F` and variables `Z, X, Y` to a bivariate polynomial with coefficients in `F` and variables in `X, Y` by evaluating on a point `z \u2208 F`. Note: this was previously declared `opaque`, which seals the body away from ALL reasoning (no delta-reduction, no equation lemmas \u2014 even a definitionally-identical twin cannot be proven equal). That made every statement quantifying over `eval_on_Z`'s values (e.g. BCIKS20 Claim 5.7) unprovable. Re-declared as a transparent `def` with an explicit equation lemma; the body is unchanged.",
+          "kind": "def",
+          "line": 62,
           "name": "Trivariate.eval_on_Z",
           "namespace": "Trivariate",
           "short_name": "eval_on_Z",
-          "signature": "opaque eval_on_Z (p : F[Z][X][Y]) (z : F) : F[X][Y] :="
+          "signature": "def eval_on_Z (p : F[Z][X][Y]) (z : F) : F[X][Y] :="
+        },
+        {
+          "doc": "Definitional equation for `eval_on_Z` (the de-sealed body).",
+          "kind": "lemma",
+          "line": 67,
+          "name": "Trivariate.eval_on_Z_eq",
+          "namespace": "Trivariate",
+          "short_name": "eval_on_Z_eq",
+          "signature": "lemma eval_on_Z_eq (p : F[Z][X][Y]) (z : F) :"
         },
         {
           "doc": "A ring homomorphism mapping a trivariate polynomial to an element in the field of rational functions of polynomial ring in two variables.",
           "kind": "def",
-          "line": 62,
+          "line": 73,
           "name": "Trivariate.toRatFuncPoly",
           "namespace": "Trivariate",
           "short_name": "toRatFuncPoly",
@@ -27133,7 +27160,7 @@
         {
           "doc": "Following [BCIKS20] this the `Y`-degree of a trivariate polynomial `Q`.",
           "kind": "def",
-          "line": 66,
+          "line": 77,
           "name": "Trivariate.D_Y",
           "namespace": "Trivariate",
           "short_name": "D_Y",
@@ -27142,7 +27169,7 @@
         {
           "doc": "The `YZ`-degree of a trivariate polynomial.",
           "kind": "def",
-          "line": 69,
+          "line": 80,
           "name": "Trivariate.D_YZ",
           "namespace": "Trivariate",
           "short_name": "D_YZ",
@@ -29893,7 +29920,7 @@
           "signature": "def existPriorSameQuery (log : QueryLog spec) (idx : Fin log.length) : Prop :="
         },
         {
-          "doc": "The definition of a redundant entry in a duplex sponge challenge oracle trace (Definition 5.5), used in the analysis of bad events TODO: refactor this into a combination of simpler properties?",
+          "doc": "The definition of a redundant entry in a duplex sponge challenge oracle trace (Definition 5.5), used in the analysis of bad events Note: refactor this into a combination of simpler properties?",
           "kind": "def",
           "line": 50,
           "name": "OracleSpec.QueryLog.redundantEntryDS",
@@ -31573,9 +31600,9 @@
     "ArkLib/OracleReduction/OracleInterface.lean": {
       "declarations": [
         {
-          "doc": "`OracleInterface` is a type class that provides an oracle interface for a type `Message`. It consists of: - a query type `Query`, - a response type `Response`, - a function `answer` that given a message `m : Message` and a query `q : Query`, returns a response `r : Response`. TODO: turn `(Query, Response)` into a general `PFunctor` (i.e. `Response : Query \u2192 Type`) This allows for better compositionality of `OracleInterface`, including (indexed) sum, instead of requiring indexed family of `OracleInterface`s. However, this won't be possible until `OracleSpec` is changed to be an alias for `PFunc",
+          "doc": "`OracleInterface` is a type class that provides an oracle interface for a type `Message`. It consists of: - a query type `Query`, - a response type `Response`, - a function `answer` that given a message `m : Message` and a query `q : Query`, returns a response `r : Response`. Note: turn `(Query, Response)` into a general `PFunctor` (i.e. `Response : Query \u2192 Type`) This allows for better compositionality of `OracleInterface`, including (indexed) sum, instead of requiring indexed family of `OracleInterface`s. However, this won't be possible until `OracleSpec` is changed to be an alias for `PFunc",
           "kind": "class",
-          "line": 49,
+          "line": 52,
           "name": "OracleInterface",
           "namespace": "",
           "short_name": "OracleInterface",
@@ -31584,7 +31611,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 54,
+          "line": 57,
           "name": "OracleContext.ofFunction",
           "namespace": "",
           "short_name": "OracleContext.ofFunction",
@@ -31593,7 +31620,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 61,
+          "line": 64,
           "name": "OracleInterface.Response",
           "namespace": "OracleInterface",
           "short_name": "Response",
@@ -31602,7 +31629,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 65,
+          "line": 68,
           "name": "OracleInterface.spec",
           "namespace": "OracleInterface",
           "short_name": "spec",
@@ -31611,7 +31638,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 69,
+          "line": 72,
           "name": "OracleInterface.answer",
           "namespace": "OracleInterface",
           "short_name": "answer",
@@ -31620,7 +31647,7 @@
         {
           "doc": "The default instance for `OracleInterface`, where the query is trivial (a `Unit`) and the response returns the data. We do not register this as an instance, instead explicitly calling it where necessary.",
           "kind": "def",
-          "line": 77,
+          "line": 80,
           "name": "OracleInterface.instDefault",
           "namespace": "OracleInterface",
           "short_name": "instDefault",
@@ -31629,16 +31656,16 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 82,
-          "name": "OracleInterface._anon_instance_82",
+          "line": 85,
+          "name": "OracleInterface._anon_instance_85",
           "namespace": "OracleInterface",
-          "short_name": "_anon_instance_82",
+          "short_name": "_anon_instance_85",
           "signature": "instance instance {Message : Type*} : Inhabited (OracleInterface Message) :="
         },
         {
           "doc": "Converts an indexed type family of oracle interfaces into an oracle specification. Notation: `[v]\u2092` for when the oracle interfaces can be inferred, and `[v]\u2092'O` for when the oracle interfaces need to be specified.",
           "kind": "def",
-          "line": 89,
+          "line": 92,
           "name": "OracleInterface.toOracleSpec",
           "namespace": "OracleInterface",
           "short_name": "toOracleSpec",
@@ -31647,7 +31674,7 @@
         {
           "doc": "Given an underlying data for an indexed type family of oracle interfaces `v`, we can give an implementation of all queries to the interface defined by `v`",
           "kind": "def",
-          "line": 97,
+          "line": 100,
           "name": "OracleInterface.toOracleImpl",
           "namespace": "OracleInterface",
           "short_name": "toOracleImpl",
@@ -31656,16 +31683,16 @@
         {
           "doc": "Any function type has a canonical `OracleInterface` instance, whose `answer` is the function itself.",
           "kind": "instance",
-          "line": 103,
-          "name": "OracleInterface._anon_instance_103",
+          "line": 106,
+          "name": "OracleInterface._anon_instance_106",
           "namespace": "OracleInterface",
-          "short_name": "_anon_instance_103",
+          "short_name": "_anon_instance_106",
           "signature": "instance instance (i : Fin 0) : OracleInterface i.elim0 := Fin.elim0 i"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 106,
+          "line": 109,
           "name": "OracleInterface.instFunction",
           "namespace": "OracleInterface",
           "short_name": "instFunction",
@@ -31674,52 +31701,52 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 110,
-          "name": "OracleInterface._anon_instance_110",
+          "line": 113,
+          "name": "OracleInterface._anon_instance_113",
           "namespace": "OracleInterface",
-          "short_name": "_anon_instance_110",
+          "short_name": "_anon_instance_113",
           "signature": "instance instance {\u03b9 : Type u} [DecidableEq \u03b9] (v : \u03b9 \u2192 Type v) [O : \u2200 i, OracleInterface (v i)]"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 117,
-          "name": "OracleInterface._anon_instance_117",
+          "line": 120,
+          "name": "OracleInterface._anon_instance_120",
           "namespace": "OracleInterface",
-          "short_name": "_anon_instance_117",
+          "short_name": "_anon_instance_120",
           "signature": "instance instance {\u03b9 : Type u} (v : \u03b9 \u2192 Type v) [O : \u2200 i, OracleInterface (v i)]"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 122,
-          "name": "OracleInterface._anon_instance_122",
+          "line": 125,
+          "name": "OracleInterface._anon_instance_125",
           "namespace": "OracleInterface",
-          "short_name": "_anon_instance_122",
+          "short_name": "_anon_instance_125",
           "signature": "instance instance {\u03b9 : Type u} (v : \u03b9 \u2192 Type v) [O : \u2200 i, OracleInterface (v i)]"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 128,
-          "name": "OracleInterface._anon_instance_128",
+          "line": 131,
+          "name": "OracleInterface._anon_instance_131",
           "namespace": "OracleInterface",
-          "short_name": "_anon_instance_128",
+          "short_name": "_anon_instance_131",
           "signature": "instance instance {\u03b9\u2081 : Type u} {T\u2081 : \u03b9\u2081 \u2192 Type v} [inst\u2081 : \u2200 i, OracleInterface (T\u2081 i)]"
         },
         {
           "doc": "The tensor product oracle interface for the product of two types `\u03b1` and `\u03b2`, each with its own oracle interface, is defined as: - The query & response types are the product of the two query & response types. - The oracle will run both oracles and return the pair of responses. This is a low priority instance since we do not expect to have this behavior often. See `instProd` for the sum behavior on the interface.",
           "kind": "instance",
-          "line": 143,
-          "name": "OracleInterface._anon_instance_143",
+          "line": 146,
+          "name": "OracleInterface._anon_instance_146",
           "namespace": "OracleInterface",
-          "short_name": "_anon_instance_143",
+          "short_name": "_anon_instance_146",
           "signature": "instance instance (priority := low) instTensorProd {\u03b1 \u03b2 : Type*}"
         },
         {
           "doc": "The product oracle interface for the product of two types `\u03b1` and `\u03b2`, each with its own oracle interface, is defined as: - The query & response types are the sum type of the two query & response types. - The oracle will answer depending on the input query. This is the behavior more often assumed, i.e. when we send multiple oracle messages in a round. See `instTensor` for the tensor product behavior on the interface.",
           "kind": "instance",
-          "line": 159,
+          "line": 162,
           "name": "OracleInterface.instProd",
           "namespace": "OracleInterface",
           "short_name": "instProd",
@@ -31728,16 +31755,16 @@
         {
           "doc": "The indexed tensor product oracle interface for the dependent product of a type family `v`, indexed by `\u03b9`, each having an oracle interface, is defined as: - The query & response types are the dependent product of the query & response types of the type family. - The oracle, on a given query specifying the index `i` of the type family, will run the oracle of `v i` and return the response. This is a low priority instance since we do not expect to have this behavior often. See `instProdForall` for the product behavior on the interface (with dependent sums for the query and response types).",
           "kind": "instance",
-          "line": 176,
-          "name": "OracleInterface._anon_instance_176",
+          "line": 179,
+          "name": "OracleInterface._anon_instance_179",
           "namespace": "OracleInterface",
-          "short_name": "_anon_instance_176",
+          "short_name": "_anon_instance_179",
           "signature": "instance instance (priority := low) instTensorForall {\u03b9 : Type u} (v : \u03b9 \u2192 Type _)"
         },
         {
           "doc": "The indexed product oracle interface for the dependent product of a type family `v`, indexed by `\u03b9`, each having an oracle interface, is defined as: - The query & response types are the dependent product of the query & response types of the type family. - The oracle, on a given query specifying the index `i` of the type family, will run the oracle of `v i` and return the response. This is the behavior usually assumed, i.e. when we send multiple oracle messages in a round. See `instTensorForall` for the tensor product behavior on the interface.",
           "kind": "instance",
-          "line": 192,
+          "line": 195,
           "name": "OracleInterface.instProdForall",
           "namespace": "OracleInterface",
           "short_name": "instProdForall",
@@ -31746,7 +31773,7 @@
         {
           "doc": "Auto apply the `ReaderM` monad in the underlying `QueryImpl` to get an `Id` final monad.",
           "kind": "def",
-          "line": 199,
+          "line": 202,
           "name": "OracleInterface.simOracle0",
           "namespace": "OracleInterface",
           "short_name": "simOracle0",
@@ -31755,7 +31782,7 @@
         {
           "doc": "Combines multiple oracle specifications into a single oracle by routing queries to the appropriate underlying oracle. Takes: - A base oracle specification `oSpec` - An indexed type family `T` with `OracleInterface` instances - Values of that type family Returns a stateless oracle that routes queries to the appropriate underlying oracle.",
           "kind": "def",
-          "line": 210,
+          "line": 213,
           "name": "OracleInterface.simOracle",
           "namespace": "OracleInterface",
           "short_name": "simOracle",
@@ -31764,7 +31791,7 @@
         {
           "doc": "Combines multiple oracle specifications into a single oracle by routing queries to the appropriate underlying oracle. Takes: - A base oracle specification `oSpec` - Two indexed type families `T\u2081` and `T\u2082` with `OracleInterface` instances - Values of those type families Returns a stateless oracle that routes queries to the appropriate underlying oracle.",
           "kind": "def",
-          "line": 222,
+          "line": 225,
           "name": "OracleInterface.simOracle2",
           "namespace": "OracleInterface",
           "short_name": "simOracle2",
@@ -31773,7 +31800,7 @@
         {
           "doc": "A message type together with a `OracleInterface` instance is said to have **oracle distance** (at most) `d` if for any two distinct messages, there is at most `d` queries that distinguish them, i.e. `#{q | OracleInterface.answer a q = OracleInterface.answer b q} \u2264 d`. This property corresponds to the distance of a code, when the oracle instance is to encode the message and the query is a position of the codeword. In particular, it applies to `(Mv)Polynomial`.",
           "kind": "def",
-          "line": 242,
+          "line": 245,
           "name": "OracleInterface.distanceLE",
           "namespace": "OracleInterface",
           "short_name": "distanceLE",
@@ -31782,7 +31809,7 @@
         {
           "doc": "Univariate polynomials can be accessed via evaluation queries.",
           "kind": "instance",
-          "line": 256,
+          "line": 259,
           "name": "OracleInterface.instPolynomial",
           "namespace": "OracleInterface",
           "short_name": "instPolynomial",
@@ -31791,7 +31818,7 @@
         {
           "doc": "Univariate polynomials with degree at most `d` can be accessed via evaluation queries.",
           "kind": "instance",
-          "line": 263,
+          "line": 266,
           "name": "OracleInterface.instPolynomialDegreeLE",
           "namespace": "OracleInterface",
           "short_name": "instPolynomialDegreeLE",
@@ -31800,7 +31827,7 @@
         {
           "doc": "Univariate polynomials with degree less than `d` can be accessed via evaluation queries.",
           "kind": "instance",
-          "line": 270,
+          "line": 273,
           "name": "OracleInterface.instPolynomialDegreeLT",
           "namespace": "OracleInterface",
           "short_name": "instPolynomialDegreeLT",
@@ -31809,7 +31836,7 @@
         {
           "doc": "Multivariate polynomials can be accessed via evaluation queries.",
           "kind": "instance",
-          "line": 276,
+          "line": 279,
           "name": "OracleInterface.instMvPolynomial",
           "namespace": "OracleInterface",
           "short_name": "instMvPolynomial",
@@ -31818,7 +31845,7 @@
         {
           "doc": "Multivariate polynomials with individual degree at most `d` can be accessed via evaluation queries.",
           "kind": "instance",
-          "line": 283,
+          "line": 286,
           "name": "OracleInterface.instMvPolynomialDegreeLE",
           "namespace": "OracleInterface",
           "short_name": "instMvPolynomialDegreeLE",
@@ -31827,16 +31854,16 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 288,
-          "name": "OracleInterface._anon_instance_288",
+          "line": 291,
+          "name": "OracleInterface._anon_instance_291",
           "namespace": "OracleInterface",
-          "short_name": "_anon_instance_288",
+          "short_name": "_anon_instance_291",
           "signature": "instance instance [Fintype \u03c3] [DecidableEq \u03c3] [Fintype R] :"
         },
         {
           "doc": "Vectors of the form `List.Vector \u03b1 n` can be accessed via queries on their indices.",
           "kind": "instance",
-          "line": 304,
+          "line": 307,
           "name": "OracleInterface.instListVector",
           "namespace": "OracleInterface",
           "short_name": "instListVector",
@@ -31845,7 +31872,7 @@
         {
           "doc": "Vectors of the form `Vector \u03b1 n` can be accessed via queries on their indices.",
           "kind": "instance",
-          "line": 310,
+          "line": 313,
           "name": "OracleInterface.instVector",
           "namespace": "OracleInterface",
           "short_name": "instVector",
@@ -31853,8 +31880,26 @@
         },
         {
           "doc": "",
+          "kind": "lemma",
+          "line": 331,
+          "name": "totalDegree_le_card_mul_of_degreeOf_le",
+          "namespace": "",
+          "short_name": "totalDegree_le_card_mul_of_degreeOf_le",
+          "signature": "lemma totalDegree_le_card_mul_of_degreeOf_le {\u03c3 : Type*} [Fintype \u03c3]"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 334,
+          "name": "_anon_class_334",
+          "namespace": "",
+          "short_name": "_anon_class_334",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
           "kind": "theorem",
-          "line": 329,
+          "line": 349,
           "name": "distanceLE_polynomial_degreeLT",
           "namespace": "",
           "short_name": "distanceLE_polynomial_degreeLT",
@@ -31863,7 +31908,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 359,
+          "line": 379,
           "name": "distanceLE_polynomial_degreeLE",
           "namespace": "",
           "short_name": "distanceLE_polynomial_degreeLE",
@@ -31872,11 +31917,20 @@
         {
           "doc": "Schwartz-Zippel-type distance bound for multivariable polynomials of degree \u2264 d. The bound is `Fintype.card \u03c3 * d * Fintype.card R ^ (Fintype.card \u03c3 - 1)` (the earlier bound `Fintype.card \u03c3 * d` was false; see counterexample in comment history).",
           "kind": "theorem",
-          "line": 367,
+          "line": 387,
           "name": "distanceLE_mvPolynomial_degreeLE",
           "namespace": "",
           "short_name": "distanceLE_mvPolynomial_degreeLE",
           "signature": "theorem distanceLE_mvPolynomial_degreeLE {\u03c3 : Type} [Fintype \u03c3] [DecidableEq \u03c3] :"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 390,
+          "name": "_anon_class_390",
+          "namespace": "",
+          "short_name": "_anon_class_390",
+          "signature": "class classical"
         }
       ]
     },
@@ -37400,7 +37454,7 @@
         {
           "doc": "The oracle reduction for the final query phase.",
           "kind": "def",
-          "line": 305,
+          "line": 314,
           "name": "Binius.BinaryBasefold.QueryPhase.queryOracleReduction",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryOracleReduction",
@@ -37409,7 +37463,7 @@
         {
           "doc": "The final query round as an `OracleProof` (since it outputs Bool and no oracle statements).",
           "kind": "def",
-          "line": 320,
+          "line": 329,
           "name": "Binius.BinaryBasefold.QueryPhase.queryOracleProof",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryOracleProof",
@@ -37418,7 +37472,7 @@
         {
           "doc": "Perfect completeness for the final query round (using the oracle queryProof).",
           "kind": "theorem",
-          "line": 330,
+          "line": 339,
           "name": "Binius.BinaryBasefold.QueryPhase.queryOracleProof_perfectCompleteness",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryOracleProof_perfectCompleteness",
@@ -37427,7 +37481,7 @@
         {
           "doc": "The round-by-round extractor for the query phase. Since f^(0) is always available, we can invoke the extractMLP function directly.",
           "kind": "def",
-          "line": 347,
+          "line": 356,
           "name": "Binius.BinaryBasefold.QueryPhase.queryRbrExtractor",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryRbrExtractor",
@@ -37436,7 +37490,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 359,
+          "line": 368,
           "name": "Binius.BinaryBasefold.QueryPhase.queryKStateProp",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryKStateProp",
@@ -37445,7 +37499,7 @@
         {
           "doc": "The knowledge state function for the query phase",
           "kind": "def",
-          "line": 388,
+          "line": 397,
           "name": "Binius.BinaryBasefold.QueryPhase.queryKnowledgeStateFunction",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryKnowledgeStateFunction",
@@ -37454,7 +37508,7 @@
         {
           "doc": "Round-by-round knowledge soundness for the oracle verifier (query phase)",
           "kind": "theorem",
-          "line": 405,
+          "line": 414,
           "name": "Binius.BinaryBasefold.QueryPhase.queryOracleVerifier_rbrKnowledgeSoundness",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryOracleVerifier_rbrKnowledgeSoundness",
@@ -42595,11 +42649,11 @@
         {
           "doc": "Round-by-round knowledge soundness for the full ring-switching oracle verifier. `IsDomain K` (with the existing `IsDomain L`) is inherited from the batching phase's knowledge soundness, where it backs the DP24 row-extraction capstone; it holds in every real instantiation (`binaryTowerProfile` builds from a field `K`).",
           "kind": "theorem",
-          "line": 148,
+          "line": 149,
           "name": "RingSwitching.FullRingSwitching.fullOracleVerifier_rbrKnowledgeSoundness",
           "namespace": "RingSwitching.FullRingSwitching",
           "short_name": "fullOracleVerifier_rbrKnowledgeSoundness",
-          "signature": "theorem fullOracleVerifier_rbrKnowledgeSoundness [IsDomain L] [IsDomain K] :"
+          "signature": "theorem fullOracleVerifier_rbrKnowledgeSoundness [IsDomain L] [IsDomain K] {\ud835\udcd1 : Fin 2 \u21aa L} :"
         }
       ]
     },
@@ -45480,7 +45534,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 443,
+          "line": 445,
           "name": "Sumcheck.Spec.SingleRound.Simple.oracleReduction",
           "namespace": "Sumcheck.Spec.SingleRound.Simple",
           "short_name": "oracleReduction",
@@ -45489,7 +45543,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 461,
+          "line": 464,
           "name": "Sumcheck.Spec.SingleRound.Simple.oracleVerifier_eq_verifier",
           "namespace": "Sumcheck.Spec.SingleRound.Simple",
           "short_name": "oracleVerifier_eq_verifier",
@@ -45498,7 +45552,7 @@
         {
           "doc": "The oracle reduction is equivalent to the non-oracle reduction",
           "kind": "theorem",
-          "line": 535,
+          "line": 538,
           "name": "Sumcheck.Spec.SingleRound.Simple.oracleReduction_eq_reduction",
           "namespace": "Sumcheck.Spec.SingleRound.Simple",
           "short_name": "oracleReduction_eq_reduction",
@@ -45507,7 +45561,7 @@
         {
           "doc": "Perfect completeness for the (non-oracle) reduction",
           "kind": "theorem",
-          "line": 543,
+          "line": 546,
           "name": "Sumcheck.Spec.SingleRound.Simple.reduction_perfectCompleteness",
           "namespace": "Sumcheck.Spec.SingleRound.Simple",
           "short_name": "reduction_perfectCompleteness",
@@ -45516,7 +45570,7 @@
         {
           "doc": "Any successful run of the simple single-round reduction has the prover's output oracle statement equal to the input polynomial, and its output target equal to that polynomial evaluated at the challenge. This captures the honest prover's behavior: it forwards the input polynomial and reports its evaluation at the verifier's challenge.",
           "kind": "theorem",
-          "line": 764,
+          "line": 767,
           "name": "Sumcheck.Spec.SingleRound.Simple.reduction_run_prover_output",
           "namespace": "Sumcheck.Spec.SingleRound.Simple",
           "short_name": "reduction_run_prover_output",
@@ -45525,7 +45579,7 @@
         {
           "doc": "Perfect completeness for the oracle reduction",
           "kind": "theorem",
-          "line": 823,
+          "line": 826,
           "name": "Sumcheck.Spec.SingleRound.Simple.oracleReduction_perfectCompleteness",
           "namespace": "Sumcheck.Spec.SingleRound.Simple",
           "short_name": "oracleReduction_perfectCompleteness",
@@ -45534,7 +45588,7 @@
         {
           "doc": "Round-by-round knowledge soundness for the verifier",
           "kind": "theorem",
-          "line": 831,
+          "line": 834,
           "name": "Sumcheck.Spec.SingleRound.Simple.verifier_rbrKnowledgeSoundness",
           "namespace": "Sumcheck.Spec.SingleRound.Simple",
           "short_name": "verifier_rbrKnowledgeSoundness",
@@ -45543,7 +45597,7 @@
         {
           "doc": "Round-by-round knowledge soundness for the oracle verifier",
           "kind": "theorem",
-          "line": 837,
+          "line": 840,
           "name": "Sumcheck.Spec.SingleRound.Simple.oracleVerifier_rbrKnowledgeSoundness",
           "namespace": "Sumcheck.Spec.SingleRound.Simple",
           "short_name": "oracleVerifier_rbrKnowledgeSoundness",
@@ -45552,7 +45606,7 @@
         {
           "doc": "Auxiliary lemma for proving that the polynomial sent by the honest prover is of degree at most `deg`",
           "kind": "theorem",
-          "line": 848,
+          "line": 851,
           "name": "Sumcheck.Spec.SingleRound.sumcheck_roundPoly_degreeLE",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "sumcheck_roundPoly_degreeLE",
@@ -45561,7 +45615,7 @@
         {
           "doc": "The oracle statement lens that connect the simple to the full single-round sum-check protocol For `n = 0`, since `poly : R[X Fin 0]` is just a constant, we need to embed it as a constant poly. For other `n := n + 1`, we proceed with the sum `\u2211 x \u2208 D ^ (n - i), poly \u2e28challenges, X, x\u2e29`",
           "kind": "def",
-          "line": 864,
+          "line": 867,
           "name": "Sumcheck.Spec.SingleRound.oStmtLens",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oStmtLens",
@@ -45570,7 +45624,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 882,
+          "line": 885,
           "name": "Sumcheck.Spec.SingleRound.oCtxLens",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oCtxLens",
@@ -45579,7 +45633,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 891,
+          "line": 894,
           "name": "Sumcheck.Spec.SingleRound.extractorLens",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "extractorLens",
@@ -45588,7 +45642,7 @@
         {
           "doc": "The verifier for the `i`-th round of the sum-check protocol",
           "kind": "def",
-          "line": 903,
+          "line": 906,
           "name": "Sumcheck.Spec.SingleRound.verifier",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "verifier",
@@ -45597,7 +45651,7 @@
         {
           "doc": "The oracle verifier for the `i`-th round of the sum-check protocol",
           "kind": "def",
-          "line": 909,
+          "line": 912,
           "name": "Sumcheck.Spec.SingleRound.oracleVerifier",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oracleVerifier",
@@ -45606,7 +45660,7 @@
         {
           "doc": "The sum-check reduction for the `i`-th round of the sum-check protocol",
           "kind": "def",
-          "line": 914,
+          "line": 917,
           "name": "Sumcheck.Spec.SingleRound.reduction",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "reduction",
@@ -45615,7 +45669,7 @@
         {
           "doc": "The sum-check oracle reduction for the `i`-th round of the sum-check protocol",
           "kind": "def",
-          "line": 920,
+          "line": 923,
           "name": "Sumcheck.Spec.SingleRound.oracleReduction",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oracleReduction",
@@ -45624,7 +45678,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 927,
+          "line": 930,
           "name": "Sumcheck.Spec.SingleRound.reduction_verifier_eq_verifier",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "reduction_verifier_eq_verifier",
@@ -45633,7 +45687,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 933,
+          "line": 936,
           "name": "Sumcheck.Spec.SingleRound.oracleReduction_verifier_eq_verifier",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oracleReduction_verifier_eq_verifier",
@@ -45642,7 +45696,7 @@
         {
           "doc": "Keystone `Fin`-plumbing identity for the sum-check round split: inserting `a` at position `i` into `append c y \u2218 cast` agrees with appending the cons-extended tuple `cons a y` to `c`.",
           "kind": "lemma",
-          "line": 950,
+          "line": 953,
           "name": "Sumcheck.Spec.SingleRound.append_cons_eq_insertNth",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "append_cons_eq_insertNth",
@@ -45651,7 +45705,7 @@
         {
           "doc": "The sum-check round split: the `(n'+1-i)`-fold sum factors as a sum over the first coordinate of a sum over the remaining `(n'-i)` coordinates, with the inserted-variable evaluation.",
           "kind": "lemma",
-          "line": 993,
+          "line": 996,
           "name": "Sumcheck.Spec.SingleRound.sumcheck_round_split",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "sumcheck_round_split",
@@ -45660,7 +45714,7 @@
         {
           "doc": "Pointwise `Fin`-plumbing identity for the single-point round split: appending `a` via `snoc` to `c` and then `w` agrees with inserting `a` at position `i` into `append c w'`.",
           "kind": "lemma",
-          "line": 1049,
+          "line": 1052,
           "name": "Sumcheck.Spec.SingleRound.append_snoc_eq_insertNth",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "append_snoc_eq_insertNth",
@@ -45669,7 +45723,7 @@
         {
           "doc": "The single-point sum-check round split: specializing the inserted variable at a fixed value `a` (rather than summing over the domain). The `(n'+1-i.succ)`-fold sum with `a` snoc-appended to `c` agrees with the `(n'-i)`-fold sum that inserts `a` at position `i`. This realizes the round-i claim update used in the lens completeness `lift`.",
           "kind": "lemma",
-          "line": 1090,
+          "line": 1093,
           "name": "Sumcheck.Spec.SingleRound.sumcheck_round_split_point",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "sumcheck_round_split_point",
@@ -45678,7 +45732,7 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 1112,
+          "line": 1115,
           "name": "Sumcheck.Spec.SingleRound.oCtxLens_complete",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oCtxLens_complete",
@@ -45687,7 +45741,7 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 1174,
+          "line": 1177,
           "name": "Sumcheck.Spec.SingleRound.extractorLens_rbr_knowledge_soundness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "extractorLens_rbr_knowledge_soundness",
@@ -45696,7 +45750,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 1199,
+          "line": 1202,
           "name": "Sumcheck.Spec.SingleRound.reduction_perfectCompleteness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "reduction_perfectCompleteness",
@@ -45705,7 +45759,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 1207,
+          "line": 1210,
           "name": "Sumcheck.Spec.SingleRound.verifier_rbrKnowledgeSoundness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "verifier_rbrKnowledgeSoundness",
@@ -45714,7 +45768,7 @@
         {
           "doc": "Completeness theorem for single-round of sum-check, obtained by transporting the completeness proof for the simplified version",
           "kind": "theorem",
-          "line": 1217,
+          "line": 1220,
           "name": "Sumcheck.Spec.SingleRound.oracleReduction_perfectCompleteness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oracleReduction_perfectCompleteness",
@@ -45723,7 +45777,7 @@
         {
           "doc": "Round-by-round knowledge soundness theorem for single-round of sum-check, obtained by transporting the knowledge soundness proof for the simplified version",
           "kind": "theorem",
-          "line": 1230,
+          "line": 1233,
           "name": "Sumcheck.Spec.SingleRound.oracleVerifier_rbrKnowledgeSoundness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oracleVerifier_rbrKnowledgeSoundness",
@@ -45732,7 +45786,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 1290,
+          "line": 1293,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.proverState",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "proverState",
@@ -45741,7 +45795,7 @@
         {
           "doc": "Prover input for the `i`-th round of the sum-check protocol, where `i < n`",
           "kind": "def",
-          "line": 1297,
+          "line": 1300,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.proverInput",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "proverInput",
@@ -45750,7 +45804,7 @@
         {
           "doc": "Prover interaction for the `i`-th round of the sum-check protocol, where `i < n`.",
           "kind": "def",
-          "line": 1303,
+          "line": 1306,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.proverRound",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "proverRound",
@@ -45759,7 +45813,7 @@
         {
           "doc": "Since there is no witness, the prover's output for each round `i < n` of the sum-check protocol is trivial",
           "kind": "def",
-          "line": 1328,
+          "line": 1331,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.proverOutput",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "proverOutput",
@@ -45768,7 +45822,7 @@
         {
           "doc": "The overall prover for the `i`-th round of the sum-check protocol, where `i < n`. This is only well-defined for `n > 0`, since when `n = 0` there is no protocol.",
           "kind": "def",
-          "line": 1335,
+          "line": 1338,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.prover",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "prover",
@@ -45777,7 +45831,7 @@
         {
           "doc": "The (non-oracle) verifier of the sum-check protocol for the `i`-th round, where `i < n + 1`",
           "kind": "def",
-          "line": 1345,
+          "line": 1348,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.verifier",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "verifier",
@@ -46343,18 +46397,27 @@
           "signature": "lemma Claim B.1 is already closed); the sorries are unfinished work, not"
         },
         {
-          "doc": "**Lemma 6.5 of [ABF26]** (= [GRS25]). Every `F`-additive code `C : F^k \u2192 (F^s)^n` supports erasure correction (in the sense of `CodingTheory.SupportsErasureCorrection`) with correction time `O((s \u00b7 n)^3)`. Equivalently: the predicate `CodingTheory.SupportsErasureCorrection C ecor` holds for some `ecor \u2264 K \u00b7 (s \u00b7 n)^3`. We state the more permissive \"some `ecor` works\" form here; pinning down the constant `K` requires modelling the encoder concretely. Admitted as an external result.",
+          "doc": "**Lemma 6.5 of [ABF26]** (= [GRS25]). Every `F`-additive code `C : F^k \u2192 (F^s)^n` supports erasure correction (in the sense of `CodingTheory.SupportsErasureCorrection`) with correction time `O((s \u00b7 n)^3)`. Equivalently: the predicate `CodingTheory.SupportsErasureCorrection C ecor` holds for some `ecor \u2264 K \u00b7 (s \u00b7 n)^3`. We state the more permissive \"some `ecor` works\" form here; pinning down the constant `K` requires modelling the encoder concretely. PROVEN (existence form). The paper's L6.5 / [GRS25] content is the *polynomial running time* `O((s\u00b7n)^3)`; the `SupportsErasureCorrection` predica",
           "kind": "theorem",
-          "line": 73,
+          "line": 81,
           "name": "ToyProblem.additive_code_supports_erasure_correction_grs25",
           "namespace": "ToyProblem",
           "short_name": "additive_code_supports_erasure_correction_grs25",
           "signature": "theorem additive_code_supports_erasure_correction_grs25"
         },
         {
+          "doc": "",
+          "kind": "class",
+          "line": 84,
+          "name": "ToyProblem._anon_class_84",
+          "namespace": "ToyProblem",
+          "short_name": "_anon_class_84",
+          "signature": "class classical"
+        },
+        {
           "doc": "**Lemma 6.12 of [ABF26]** (list-decoding lower bound on the simplified IOR). Coding-theory form: if `|F| > binomial(|\u039b(C^{\u22612}, \u03b4)|, 2)`, then there exist witnesses `(v, \u03bc_1, \u03bc_2, f_1, f_2)` with `(f_1, f_2)` lying outside the relaxed relation `R\u0303_{C,\u03b4}^2`, for which the winning challenge set `\u03a9^{f_1,f_2}_{v,\u03bc_1,\u03bc_2}` (Definition 6.11) has at least `|\u039b(C^{\u22612}, \u03b4)| \u00b7 |F| / (|F| + |\u039b(C^{\u22612}, \u03b4)| - 1)` elements. The protocol-level reading: the soundness error of the simplified IOR `T'[C, t]` (Construction 6.9, `ToyProblem.SimplifiedIOR.reduction`) is at least `|\u039b(C^{\u22612}, \u03b4)| / (|F| + |\u039b(C^{\u22612}, \u03b4)",
           "kind": "theorem",
-          "line": 133,
+          "line": 184,
           "name": "ToyProblem.simplified_iop_soundness_listDecoding_lb",
           "namespace": "ToyProblem",
           "short_name": "simplified_iop_soundness_listDecoding_lb",
@@ -46363,7 +46426,7 @@
         {
           "doc": "**Lemma 6.13 of [ABF26]** (correlated-agreement lower bound on the simplified IOR). Coding-theory form: there exist `(v, \u03bc_1, \u03bc_2, f_1, f_2)` with `(f_1, f_2)` outside the relaxed relation `R\u0303_{C,\u03b4}^2` whose winning challenge set has size at least `\u03b5_ca(C, \u03b4) \u00b7 |F|`. Protocol-level reading: the soundness error of the simplified IOR `T'[C, t]` (Construction 6.9) is at least `\u03b5_ca(C, \u03b4)`. Proof sketch: take `f_1, f_2` maximising the CA error; then `f_1 + \u03b3\u00b7f_2` is `\u03b4`-close to `C` precisely on a set `S` of size `\u03b5_ca \u00b7 |F|`, and `S` is contained in the winning set `\u03a9^{f_1,f_2}_{0^k, 0, 0}` of De",
           "kind": "theorem",
-          "line": 168,
+          "line": 219,
           "name": "ToyProblem.simplified_iop_soundness_ca_lb",
           "namespace": "ToyProblem",
           "short_name": "simplified_iop_soundness_ca_lb",
@@ -48198,7 +48261,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5231,
+      "declarations": 5238,
       "files": 282
     }
   }
