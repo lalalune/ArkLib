@@ -343,7 +343,7 @@ structure Simulator (oSpec : OracleSpec ι) (StmtIn : Type) {n : ℕ} (pSpec : P
 --     let transcript := Prod.fst <$> Prod.snd <$> result
 --     let simTranscript := simulator
 --     -- let prob := spec.relOut.isValid' <$> output
---     sorry
+--     -- unfinished sketch
 
 end ZeroKnowledge
 
