@@ -115,7 +115,34 @@ theorem pg_candidate_roots_to_common_roots_cleared'
       Polynomial.evalEval z t' (_root_.BCIKS20AppendixA.H_tilde' H) = 0 ∧
         Polynomial.evalEval z t'
           (Polynomial.clearDenomY (H.coeff H.natDegree) e
-            (Bivariate.evalX (Polynomial.C x₀) R)) = 0 :=
+    (Bivariate.evalX (Polynomial.C x₀) R)) = 0 :=
   pg_candidate_roots_to_common_roots_cleared x₀ z hH hroots.1 hroots.2 he
+
+variable [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F]
+variable {n : ℕ} {k : ℕ} {δ : ℚ}
+variable {ωs : Fin n ↪ F} {u₀ u₁ : Fin n → F}
+
+omit [DecidableEq (RatFunc F)] in
+theorem pg_candidate_fiber_image_common_roots_cleared
+    (x₀ : F) {R : F[Z][X][Y]} {H : F[Z][X]}
+    (hH : 0 < H.natDegree) {e : ℕ}
+    (he : (Bivariate.evalX (Polynomial.C x₀) R).natDegree ≤ e) :
+    ∀ z ∈
+      (Finset.univ.filter
+        (fun z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ =>
+          let P : F[X] :=
+            Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2
+          (pg_eval_on_Z (F := F) R z.1).eval P = 0 ∧
+            (Bivariate.evalX z.1 H).eval (P.eval x₀) = 0)).image
+          (fun z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ => z.1),
+      ∃ t' : F,
+        Polynomial.evalEval z t' (_root_.BCIKS20AppendixA.H_tilde' H) = 0 ∧
+          Polynomial.evalEval z t'
+            (Polynomial.clearDenomY (H.coeff H.natDegree) e
+              (Bivariate.evalX (Polynomial.C x₀) R)) = 0 := by
+  intro z hz
+  rcases Finset.mem_image.mp hz with ⟨zS, hzS, rfl⟩
+  have hroots := (Finset.mem_filter.mp hzS).2
+  exact pg_candidate_roots_to_common_roots_cleared' x₀ zS.1 hH hroots he
 
 end ProximityGap
