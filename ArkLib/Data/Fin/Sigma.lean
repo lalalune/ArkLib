@@ -279,7 +279,18 @@ theorem vflatten_eq_vappend_last {m : ℕ} {n : Fin (m + 1) → ℕ}
   | zero => ext i; simp
   | succ m ih =>
     rw [vflatten_succ, ih, vflatten_succ]
-    sorry
+    ext k
+    let b : Fin (vsum ((fun i => n i.succ) ∘ Fin.castSucc)) → α :=
+      vflatten (fun i => v i.castSucc.succ)
+    let c : Fin (n (last (m + 1))) → α := v (last (m + 1))
+    have hlen : n 0 + (n 1 + vsum ((fun i => n i.succ) ∘ Fin.succ)) =
+        n 0 + vsum ((fun i => n i.succ) ∘ Fin.castSucc) + n (last (m + 1)) := by
+      change n 0 + vsum (fun i : Fin (m + 1) => n i.succ) =
+        n 0 + vsum ((fun i => n i.succ) ∘ Fin.castSucc) + n (last (m + 1))
+      rw [vsum_castSucc]
+      simp [succ_last, Nat.add_assoc]
+    simpa [vappend_eq_append, Function.comp_apply, Fin.cast, b, c, hlen] using
+      (congr_fun (Fin.append_assoc (v 0) b c).symm (Fin.cast hlen k))
 
 @[simp]
 theorem vflatten_splitSum {m : ℕ} {n : Fin m → ℕ} (v : (k : Fin (vsum n)) → α) (k : Fin (vsum n)) :

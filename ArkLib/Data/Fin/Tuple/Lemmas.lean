@@ -1093,7 +1093,36 @@ theorem happend_assoc {α : Fin m → Sort u} {β : Fin n → Sort u} {p : ℕ} 
     (u : (i : Fin m) → α i) (v : (i : Fin n) → β i) (w : (i : Fin p) → γ i) :
     happend (happend u v) w =
       fun i => cast (by simp [vappend_assoc])
-        (happend u (happend v w) (i.cast (by omega))) := by sorry
+        (happend u (happend v w) (i.cast (by omega))) := by
+  ext i
+  cases i using Fin.addCases with
+  | left i =>
+      cases i using Fin.addCases with
+      | left i =>
+          have hidx :
+              Fin.cast (by omega) (Fin.castAdd p (Fin.castAdd n i)) =
+                Fin.castAdd (n + p) i := by
+            ext
+            simp
+          rw! (castMode := .all) [hidx]
+          simp [happend_eq_addCases]
+      | right i =>
+          have hidx :
+              Fin.cast (by omega) (Fin.castAdd p (Fin.natAdd m i)) =
+                Fin.natAdd m (Fin.castAdd p i) := by
+            ext
+            simp
+          rw! (castMode := .all) [hidx]
+          simp [happend_eq_addCases]
+  | right i =>
+      have hidx :
+          Fin.cast (by omega) (Fin.natAdd (m + n) i) =
+            Fin.natAdd m (Fin.natAdd n i) := by
+        ext
+        simp
+        omega
+      rw! (castMode := .all) [hidx]
+      simp [happend_eq_addCases]
   -- induction p with
   -- | zero => simp [append]
   -- | succ p ih =>
