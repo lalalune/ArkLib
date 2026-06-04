@@ -5,6 +5,7 @@ Authors: Quang Dao
 -/
 
 import ArkLib.Data.Hash.DomainSep
+import ArkLib.Data.Hash.Keccak
 
 /-!
   # State of the Prover and Verifier in Duplex Sponge Fiat-Shamir
@@ -80,8 +81,7 @@ fn generate_tag(iop_bytes: &[u8]) -> [u8; 32] {
 ```
 -/
 def generateTag (iopBytes : ByteArray) : Vector UInt8 32 :=
-  -- TODO: Implement Keccak hashing
-  sorry
+  Keccak.keccak256Vector iopBytes
 
 /-- Initialize a stateful hash object from a domain separator.
 
