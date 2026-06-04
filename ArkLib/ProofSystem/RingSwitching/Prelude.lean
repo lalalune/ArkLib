@@ -497,6 +497,17 @@ existing `rfl`/instance-driven Binius proofs (and the byte-identical `#print axi
       (Algebra.TensorProduct.includeRight).toRingHom.comp (algebraMap L L) by rfl]
     unfold φ₀ φ₁
     simp [Algebra.TensorProduct.tmul_mul_tmul]
+  decomposeRows_add := fun z w u => by
+    unfold decompose_tensor_algebra_rows
+    simp [map_add]
+  decomposeRows_φ₀_mul_φ₁ := fun a b u => by
+    have h : φ₀ L K a * φ₁ L K b = a ⊗ₜ[K] b := by
+      simp only [φ₀, φ₁, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
+        Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
+    show decompose_tensor_algebra_rows (L := L) (K := K) (β := β) _ u = _
+    rw [h]
+    unfold decompose_tensor_algebra_rows
+    rw [Basis.baseChange_repr_tmul]
 
 
 /-! ## DP24 Ring-Switching Algebra Layer
