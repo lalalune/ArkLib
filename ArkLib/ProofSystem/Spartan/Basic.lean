@@ -235,13 +235,156 @@ abbrev Witness.AfterFirstChallenge : Type := Unit
 
 #check RandomQuery.oracleReduction
 
+/-! ### `firstChallenge` via `RandomQuery` + `OracleLens`
+
+We lift the `RandomQuery` oracle reduction onto the *virtual* zero-check polynomial `𝒢`.
+`RandomQuery` tests two oracles `(o₀, o₁)` for equality at a random query; here we instantiate
+`o₀ := 𝒢` (the zero-check polynomial built from the R1CS matrix/witness oracles) and `o₁ := 0`,
+so the random-query test is exactly "is `𝒢 = 0` at the sampled point `τ`?".
+
+The routing data:
+- `projStmt`/`liftStmt`: the inner input statement is `Unit`; the outer output statement is
+  `(τ, 𝕩)` (the sampled challenge paired with the unchanged public input).
+- `simOStmt`: answers an inner evaluation query to oracle index `j : Fin 2` at point `pt`:
+  - `j = 1` (the zero oracle): answer `0` — no outer query needed.
+  - `j = 0` (the `𝒢` oracle): answer `𝒢.eval pt` by *reconstructing* it from the outer matrix &
+    witness oracles. We read each `(M *ᵥ 𝕫) x` for `x : Fin (2 ^ ℓ_m)` as a `|Fin (2^ℓ_n)|`-fold
+    sum of `M(x,y) · 𝕫(y)`, where `M(x,y)` is recovered by a boolean MLE-evaluation query to the
+    matrix oracle and `𝕫(y)` is `𝕩` on the public coordinates and a boolean MLE-evaluation query
+    to the witness oracle otherwise. This is the faithful virtual-oracle routing (mirroring the
+    sum-fold shape of `sumcheckOracleLens.simOStmt`).
+- `embedOStmt`/`hEqOStmt`: the output oracle family is the unchanged input family
+  (`A, B, C, 𝕨`), so we draw each output oracle from the corresponding input oracle (`.inl`) with
+  definitional type coherence. -/
+
+variable [SampleableType R]
+
+/-- The boolean point in `Fin k → R` obtained from the binary digits of `e : Fin (2 ^ k)`. -/
+@[reducible]
+def boolPoint {k : ℕ} (e : Fin (2 ^ k)) : Fin k → R :=
+  fun j => ((finFunctionFinEquiv.symm e j : Fin 2) : R)
+
+/-- The faithful reconstruction of one summand `M(x,y) · 𝕫(y)` of `(M *ᵥ 𝕫) x` from the outer
+matrix & witness oracles, as an `OracleComp` over `oSpec + [OuterOStmtIn]ₒ`. We recover the boolean
+matrix entry `M(x,y)` via a matrix MLE-evaluation query at the boolean points, and `𝕫 y` either
+from the public input `𝕩` (when `y` indexes a public coordinate) or via a witness
+MLE-evaluation query. -/
+noncomputable def matVecSummandFromOracles
+    (𝕩 : Statement.AfterFirstMessage R pp)
+    (idx : R1CS.MatrixIdx) (xBits : Fin pp.ℓ_m → R)
+    (yEnum : Fin (2 ^ pp.ℓ_n)) :
+    OracleComp (oSpec + [OracleStatement.AfterFirstMessage R pp]ₒ) R := do
+  let yBits : Fin pp.ℓ_n → R := boolPoint R yEnum
+  -- entry `M(x,y)` via boolean MLE query to the matrix oracle
+  let mEntry ← (OracleComp.lift <| OracleSpec.query
+      (spec := [OracleStatement.AfterFirstMessage R pp]ₒ)
+      (show [OracleStatement.AfterFirstMessage R pp]ₒ.Domain from
+        ⟨.inl idx, (xBits, yBits)⟩) :
+      OracleComp (oSpec + [OracleStatement.AfterFirstMessage R pp]ₒ) R)
+  -- value `𝕫 y`: public coordinate from `𝕩`, witness coordinate from the witness oracle
+  let zVal : R ←
+    if hy : (yEnum : ℕ) < pp.toSizeR1CS.n_x then
+      (pure (𝕩 ⟨(yEnum : ℕ), hy⟩) :
+        OracleComp (oSpec + [OracleStatement.AfterFirstMessage R pp]ₒ) R)
+    else
+      (OracleComp.lift <| OracleSpec.query
+        (spec := [OracleStatement.AfterFirstMessage R pp]ₒ)
+        (show [OracleStatement.AfterFirstMessage R pp]ₒ.Domain from
+          ⟨.inr 0,
+            boolPoint R
+              (⟨(yEnum : ℕ) - pp.toSizeR1CS.n_x,
+                by
+                  have hlt := yEnum.isLt
+                  have hnx : pp.toSizeR1CS.n_x = 2 ^ pp.ℓ_n - 2 ^ pp.ℓ_w := rfl
+                  have hle : 2 ^ pp.ℓ_w ≤ 2 ^ pp.ℓ_n :=
+                    Nat.pow_le_pow_of_le (by decide) pp.ℓ_w_le_ℓ_n
+                  omega⟩ : Fin (2 ^ pp.ℓ_w))⟩) :
+        OracleComp (oSpec + [OracleStatement.AfterFirstMessage R pp]ₒ) R)
+  pure (mEntry * zVal)
+
+/-- The faithful reconstruction of the zero-check polynomial's evaluation `𝒢.eval pt`, computed
+from the outer matrix & witness oracles. Mirrors `zeroCheckVirtualPolynomial` term-by-term:
+`∑ x, eqPolynomial (bits x) pt * (A𝕫 x · B𝕫 x − C𝕫 x)`. -/
+noncomputable def zeroCheckEvalFromOracles
+    (𝕩 : Statement.AfterFirstMessage R pp) (pt : Fin pp.ℓ_m → R) :
+    OracleComp (oSpec + [OracleStatement.AfterFirstMessage R pp]ₒ) R :=
+  (Finset.univ : Finset (Fin (2 ^ pp.ℓ_m))).toList.foldlM
+    (fun (acc : R) (xEnum : Fin (2 ^ pp.ℓ_m)) => do
+      let xBits : Fin pp.ℓ_m → R := boolPoint R xEnum
+      -- A𝕫 x, B𝕫 x, C𝕫 x as `2^ℓ_n`-fold sums over the boolean `y`
+      let rowSum : R1CS.MatrixIdx →
+          OracleComp (oSpec + [OracleStatement.AfterFirstMessage R pp]ₒ) R :=
+        fun idx => (Finset.univ : Finset (Fin (2 ^ pp.ℓ_n))).toList.foldlM
+          (fun (a : R) (yEnum : Fin (2 ^ pp.ℓ_n)) => do
+            let term ← matVecSummandFromOracles R pp oSpec 𝕩 idx xBits yEnum
+            pure (a + term))
+          (0 : R)
+      let aVal ← rowSum .A
+      let bVal ← rowSum .B
+      let cVal ← rowSum .C
+      let coeff : R := MvPolynomial.eval pt
+        (eqPolynomial (boolPoint R xEnum))
+      pure (acc + coeff * (aVal * bVal - cVal)))
+    (0 : R)
+
+/-- The value-level oracle-statement lens for `firstChallenge`: projects to the two virtual
+RandomQuery oracles `(𝒢, 0)`, and lifts back to `((τ, 𝕩), A, B, C, 𝕨)`. -/
+noncomputable def firstChallengeStmtLens :
+    OracleStatement.Lens
+      (Statement.AfterFirstMessage R pp) (Statement.AfterFirstChallenge R pp)
+      (RandomQuery.StmtIn) (RandomQuery.StmtOut (MvPolynomial (Fin pp.ℓ_m) R))
+      (OracleStatement.AfterFirstMessage R pp) (OracleStatement.AfterFirstChallenge R pp)
+      (RandomQuery.OStmtIn (MvPolynomial (Fin pp.ℓ_m) R))
+      (RandomQuery.OStmtOut (MvPolynomial (Fin pp.ℓ_m) R)) :=
+  { toFunA := fun ⟨𝕩, oStmt⟩ =>
+      ⟨(), fun j => match j with
+        | 0 => zeroCheckVirtualPolynomial R pp 𝕩 oStmt
+        | 1 => 0⟩
+    toFunB := fun ⟨_𝕩, _oStmt⟩ ⟨q, _innerO⟩ => ⟨(q, _𝕩), fun i => (_oStmt i)⟩ }
+
+/-- The oracle-routing lens lifting `RandomQuery` (on the virtual zero-check poly `𝒢`, compared to
+the zero polynomial) into Spartan's `firstChallenge` context. -/
+noncomputable def firstChallengeOracleLens :
+    OracleStatement.OracleLens oSpec
+      (Statement.AfterFirstMessage R pp) (Statement.AfterFirstChallenge R pp)
+      (RandomQuery.StmtIn) (RandomQuery.StmtOut (MvPolynomial (Fin pp.ℓ_m) R))
+      (OracleStatement.AfterFirstMessage R pp) (OracleStatement.AfterFirstChallenge R pp)
+      (RandomQuery.OStmtIn (MvPolynomial (Fin pp.ℓ_m) R))
+      (RandomQuery.OStmtOut (MvPolynomial (Fin pp.ℓ_m) R))
+      (RandomQuery.pSpec (MvPolynomial (Fin pp.ℓ_m) R)) where
+  toLens := firstChallengeStmtLens R pp
+  projStmt := fun _ => ()
+  liftStmt := fun 𝕩 q => (q, 𝕩)
+  simOStmt := fun q =>
+    match q with
+    | ⟨j, pt⟩ => ReaderT.mk fun 𝕩 =>
+      match j with
+      | 0 => zeroCheckEvalFromOracles R pp oSpec 𝕩 pt
+      | 1 => (pure 0 : OracleComp (oSpec + [OracleStatement.AfterFirstMessage R pp]ₒ) R)
+  embedOStmt := Function.Embedding.inl
+  hEqOStmt := fun _ => rfl
+
+/-- The value-level oracle context lens (drives the prover) corresponding to
+`firstChallengeOracleLens`. -/
+noncomputable def firstChallengeContextLens :
+    OracleContext.Lens
+      (Statement.AfterFirstMessage R pp) (Statement.AfterFirstChallenge R pp)
+      (RandomQuery.StmtIn) (RandomQuery.StmtOut (MvPolynomial (Fin pp.ℓ_m) R))
+      (OracleStatement.AfterFirstMessage R pp) (OracleStatement.AfterFirstChallenge R pp)
+      (RandomQuery.OStmtIn (MvPolynomial (Fin pp.ℓ_m) R))
+      (RandomQuery.OStmtOut (MvPolynomial (Fin pp.ℓ_m) R))
+      (Witness R pp) Unit RandomQuery.WitIn RandomQuery.WitOut where
+  stmt := firstChallengeStmtLens R pp
+  wit := ⟨fun _ => (), fun _ _ => ()⟩
+
 def oracleReduction.firstChallenge :
     OracleReduction oSpec
       (Statement.AfterFirstMessage R pp) (OracleStatement.AfterFirstMessage R pp) (Witness R pp)
       (Statement.AfterFirstChallenge R pp) (OracleStatement.AfterFirstChallenge R pp) Unit
       ⟨!v[.V_to_P], !v[FirstChallenge R pp]⟩ :=
-  sorry
-  -- (RandomQuery.oracleReduction oSpec (Statement.AfterFirstMessage R pp)).liftContext placeholder
+  (RandomQuery.oracleReduction oSpec (MvPolynomial (Fin pp.ℓ_m) R)).liftContext
+    (firstChallengeContextLens R pp)
+    (firstChallengeOracleLens R pp oSpec)
 
 /-!
   ## First sum-check
