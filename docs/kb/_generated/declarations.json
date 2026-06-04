@@ -11316,7 +11316,7 @@
         {
           "doc": "Equation 5.12 from [BCIKS20]. NOTE (statement repair): the original formulation of this lemma was *vacuous*. Because `\u2227` binds tighter than the bounded quantifier `\u2200 _ \u2208 _,`, the entire payload \u2014 separability of each `R\u1d62`, irreducibility of each `R\u1d62`, and the factorization equation `Q = C \u00b7 \u220f (R\u1d62.comp X\u1da0)^e\u1d62` \u2014 was trapped inside the `\u2200 e\u1d62 \u2208 e, \u2026` (and the nested `\u2200 R\u1d62 \u2208 R, \u2026`) binders. The statement was then satisfiable by the empty witnesses `C = \u2026, R = [], f = [], e = []` (all three length equalities collapse to `0 = 0` and `\u2200 e\u1d62 \u2208 [], \u2026` is vacuously true), carrying no mathematical content",
           "kind": "lemma",
-          "line": 72,
+          "line": 86,
           "name": "ProximityGap.irreducible_factorization_of_gs_solution",
           "namespace": "ProximityGap",
           "short_name": "irreducible_factorization_of_gs_solution",
@@ -11325,16 +11325,34 @@
         {
           "doc": "*Cartesian cross-term blowup* witnessing the indexing defect in the factorization conjunct of `irreducible_factorization_of_gs_solution` (= [BCIKS20, Eq. 5.12] as currently formalized). For two distinct factors `a, b` the *intended* Eq-5.12 witnesses `R = [a, b]`, `f = [1, 1]`, `e = [1, 2]` (which should encode `a\u00b9 \u00b7 b\u00b2`) instead make the displayed triple product over the three `toFinset`s evaluate to `a\u00b3 \u00b7 b\u00b3`: each factor is raised to `\u2211 (e\u1d62 \u2208 {1,2}) = 3` and is copied across `f.toFinset = {1}`. Hence the Cartesian-product form cannot represent a factorization with non-uniform multiplicities",
           "kind": "lemma",
-          "line": 95,
+          "line": 110,
           "name": "ProximityGap.eq512_cartesian_product_blowup",
           "namespace": "ProximityGap",
           "short_name": "eq512_cartesian_product_blowup",
           "signature": "lemma eq512_cartesian_product_blowup (a b : F[Z][X][Y]) (hab : a \u2260 b) :"
         },
         {
+          "doc": "*Strong-separability is unsatisfiable for genuinely-arising factors* \u2014 the verified defect (bug #18) in the separability conjunct of `irreducible_factorization_of_gs_solution`. The conjunct `\u2200 R\u1d62 \u2208 R, R\u1d62.Separable` uses `Polynomial.Separable` over the **coefficient ring** `F[Z][X]`, which is *not a field*. By `separable_def`, `R\u1d62.Separable` unfolds to a B\u00e9zout identity `a \u00b7 R\u1d62 + b \u00b7 R\u1d62.derivative = 1` with `a, b : F[Z][X][Y]` \u2014 i.e. coprimality *in the polynomial ring* `F[Z][X][Y]`, an extremely strong condition. It is **not** the paper's intended separability of `R\u1d62` over the fraction field `",
+          "kind": "lemma",
+          "line": 149,
+          "name": "ProximityGap.eq512_strong_separable_unsat",
+          "namespace": "ProximityGap",
+          "short_name": "eq512_strong_separable_unsat",
+          "signature": "lemma eq512_strong_separable_unsat"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 153,
+          "name": "ProximityGap._anon_class_153",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_153",
+          "signature": "class classical"
+        },
+        {
           "doc": "Claim 5.6 of [BCIKS20].",
           "kind": "lemma",
-          "line": 116,
+          "line": 174,
           "name": "ProximityGap.discr_of_irred_components_nonzero",
           "namespace": "ProximityGap",
           "short_name": "discr_of_irred_components_nonzero",
@@ -11343,7 +11361,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 121,
+          "line": 179,
           "name": "ProximityGap.pg_Rset",
           "namespace": "ProximityGap",
           "short_name": "pg_Rset",
@@ -11352,7 +11370,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 125,
+          "line": 183,
           "name": "ProximityGap.pg_Rset_irreducible",
           "namespace": "ProximityGap",
           "short_name": "pg_Rset_irreducible",
@@ -11361,16 +11379,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 130,
-          "name": "ProximityGap._anon_class_130",
+          "line": 188,
+          "name": "ProximityGap._anon_class_188",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_130",
+          "short_name": "_anon_class_188",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 138,
+          "line": 196,
           "name": "ProximityGap.pg_candidatePairs",
           "namespace": "ProximityGap",
           "short_name": "pg_candidatePairs",
@@ -11379,7 +11397,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 148,
+          "line": 206,
           "name": "ProximityGap.pg_natDegree_pos_of_mem_normalizedFactors_of_separable",
           "namespace": "ProximityGap",
           "short_name": "pg_natDegree_pos_of_mem_normalizedFactors_of_separable",
@@ -11388,7 +11406,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 173,
+          "line": 231,
           "name": "ProximityGap.pg_candidatePairs_snd_natDegree_pos",
           "namespace": "ProximityGap",
           "short_name": "pg_candidatePairs_snd_natDegree_pos",
@@ -11397,16 +11415,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 183,
-          "name": "ProximityGap._anon_class_183",
+          "line": 241,
+          "name": "ProximityGap._anon_class_241",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_183",
+          "short_name": "_anon_class_241",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 195,
+          "line": 253,
           "name": "ProximityGap.pg_card_normalizedFactors_toFinset_le_natDegree",
           "namespace": "ProximityGap",
           "short_name": "pg_card_normalizedFactors_toFinset_le_natDegree",
@@ -11415,16 +11433,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 197,
-          "name": "ProximityGap._anon_class_197",
+          "line": 255,
+          "name": "ProximityGap._anon_class_255",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_197",
+          "short_name": "_anon_class_255",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 240,
+          "line": 298,
           "name": "ProximityGap.pg_evalX_eq_map_evalRingHom",
           "namespace": "ProximityGap",
           "short_name": "pg_evalX_eq_map_evalRingHom",
@@ -11433,16 +11451,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 242,
-          "name": "ProximityGap._anon_class_242",
+          "line": 300,
+          "name": "ProximityGap._anon_class_300",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_242",
+          "short_name": "_anon_class_300",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 248,
+          "line": 306,
           "name": "ProximityGap.pg_eval_on_Z",
           "namespace": "ProximityGap",
           "short_name": "pg_eval_on_Z",
@@ -11451,7 +11469,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 252,
+          "line": 310,
           "name": "ProximityGap.pg_exists_H_of_R_eval_zero",
           "namespace": "ProximityGap",
           "short_name": "pg_exists_H_of_R_eval_zero",
@@ -11460,16 +11478,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 262,
-          "name": "ProximityGap._anon_class_262",
+          "line": 320,
+          "name": "ProximityGap._anon_class_320",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_262",
+          "short_name": "_anon_class_320",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 363,
+          "line": 421,
           "name": "ProximityGap.pg_exists_R_of_Q_eval_zero",
           "namespace": "ProximityGap",
           "short_name": "pg_exists_R_of_Q_eval_zero",
@@ -11478,16 +11496,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 371,
-          "name": "ProximityGap._anon_class_371",
+          "line": 429,
+          "name": "ProximityGap._anon_class_429",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_371",
+          "short_name": "_anon_class_429",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 416,
+          "line": 474,
           "name": "ProximityGap.pg_exists_pair_for_z",
           "namespace": "ProximityGap",
           "short_name": "pg_exists_pair_for_z",
@@ -11496,16 +11514,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 430,
-          "name": "ProximityGap._anon_class_430",
+          "line": 488,
+          "name": "ProximityGap._anon_class_488",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_430",
+          "short_name": "_anon_class_488",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 485,
+          "line": 543,
           "name": "ProximityGap.pg_natDegree_evalX_le_natDegreeY",
           "namespace": "ProximityGap",
           "short_name": "pg_natDegree_evalX_le_natDegreeY",
@@ -11514,16 +11532,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 487,
-          "name": "ProximityGap._anon_class_487",
+          "line": 545,
+          "name": "ProximityGap._anon_class_545",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_487",
+          "short_name": "_anon_class_545",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 498,
+          "line": 556,
           "name": "ProximityGap.pg_sum_natDegreeY_Rset_le_natDegreeY_Q",
           "namespace": "ProximityGap",
           "short_name": "pg_sum_natDegreeY_Rset_le_natDegreeY_Q",
@@ -11532,16 +11550,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 502,
-          "name": "ProximityGap._anon_class_502",
+          "line": 560,
+          "name": "ProximityGap._anon_class_560",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_502",
+          "short_name": "_anon_class_560",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 551,
+          "line": 609,
           "name": "ProximityGap.pg_card_candidatePairs_le_natDegreeY",
           "namespace": "ProximityGap",
           "short_name": "pg_card_candidatePairs_le_natDegreeY",
@@ -11550,10 +11568,10 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 558,
-          "name": "ProximityGap._anon_class_558",
+          "line": 616,
+          "name": "ProximityGap._anon_class_616",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_558",
+          "short_name": "_anon_class_616",
           "signature": "class classical"
         }
       ]
@@ -48090,7 +48108,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5219,
+      "declarations": 5221,
       "files": 282
     }
   }
