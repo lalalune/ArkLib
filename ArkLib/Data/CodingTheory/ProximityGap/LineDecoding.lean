@@ -86,30 +86,101 @@ that pair has at most `n` exceptional positions on every fold, the alignment lif
 joint-pair witness, contradicting the `¬ pairJointAgreesOn` clause of `mcaEvent` when the
 fraction of γ-aligned points exceeds `n/|F|`.
 
-The statement is reduced here, via `iSup_le`, to the **per-stack** bound
-`Pr_γ[mcaEvent C δ (u 0) (u 1) γ] ≤ a / |F|` for every word stack `u`. This is exactly the
-core of [GG25 Thm 3.5]: fix `f₁ := u 0`, `f₂ := u 1` and, on the `γ`-set where `mcaEvent`
-fires, let `U γ` be the codeword `w_γ` that the event provides agreeing with the line on a
-size-`≥(1-δ)n` set (so `δᵣ(f₁ + γ·f₂, U γ) ≤ δ` there; cf.
-`ProximityGap.mcaEvent_imp_relCloseToCode`). If `Pr_γ[mcaEvent] > a/|F|` then the line-close
-probability exceeds `a/|F|`, so line-decodability yields a single affine pair `(u₁, u₂)` with
-`Pr_γ[U γ = u₁ + γ·u₂] ≥ (n+1)/|F|`; picking two distinct aligned `γ` whose witness sets
-overlap in `> n` positions forces `u₁`/`u₂` to agree with `f₁`/`f₂` on that overlap, a
-`pairJointAgreesOn` witness contradicting `mcaEvent`'s `¬ pairJointAgreesOn` clause. This
-counting/extraction step is the external [GG25] content.
+## Status (2026-06): U-construction realised in-tree; residual is the multi-γ coverage count
 
-Admitted as an external result; formalising the GG25 per-stack argument is tracked separately. -/
+The statement is reduced here, via `iSup_le`, to the **per-stack** bound
+`Pr_γ[mcaEvent C δ (u 0) (u 1) γ] ≤ a / |F|` for every word stack `u`, then attacked by
+contradiction. The **GG25 U-construction is now fully formalised in-tree** (no longer a
+black-box): fixing `f₁ := u 0`, `f₂ := u 1`, the proof builds
+`U : F → ι → A`, `U γ := if mcaEvent fires then the event's witness codeword `w_γ` else `0``
+(`0 ∈ C` as `C` is a submodule), proves `∀ γ, U γ ∈ C` (`hU_mem`) and that on the
+`mcaEvent`-set the line is `δ`-close to `U γ` (`hU_close`, agreement on the size-`≥(1-δ)n`
+witness set `S_γ`; cf. `ProximityGap.mcaEvent_imp_relCloseToCode`). Under the negated goal
+`Pr_γ[mcaEvent] > a/|F|`, event-domination (`Pr_le_Pr_of_implies`) lifts this to
+`a/|F| ≤ Pr_γ[δᵣ(f₁+γ·f₂, U γ) ≤ δ]`, so **line-decodability fires in-tree** and yields a
+single affine pair `(u₁, u₂) ∈ C` with `Pr_γ[U γ = u₁ + γ·u₂] ≥ (n+1)/|F|`.
+
+**Residual (the only remaining `sorry`): the GG25 multi-γ overlap/coverage extraction.**
+The aligned set `G := {γ : U γ = u₁ + γ·u₂}` has `> n` elements. For `γ ∈ G` with `mcaEvent`
+firing, `U γ = w_γ` agrees with the line on `S_γ`, so the affine-in-γ word
+`D(γ) := (u₁ - f₁) + γ·(u₂ - f₂)` vanishes on `S_γ`. To contradict `¬ pairJointAgreesOn C
+S_{γ₀} f₁ f₂` for a fixed bad `γ₀` one must show `(u₁, u₂)` agrees with `(f₁, f₂)` on **all**
+of `S_{γ₀}`, i.e. for **every** `i ∈ S_{γ₀}` a *second* aligned-mcaEvent `γ ≠ γ₀` with
+`i ∈ S_γ` (two zeros of the affine `g_i(γ) := (u₁-f₁) i + γ·(u₂-f₂) i` pin `u₁ i = f₁ i`,
+`u₂ i = f₂ i`). Note `pairJointAgreesOn` is **antitone** in `S`, so the easy 2-γ argument —
+which only yields agreement on the *intersection* `S_γ ∩ S_{γ'} ⊆ S_{γ₀}` — does **not**
+contradict `¬ pairJointAgreesOn` on the larger `S_{γ₀}` (wrong direction). The genuine GG25
+content is the counting that `> n` aligned points force per-position double-coverage of
+`S_{γ₀}` (each `S_γ` misses `≤ δn` positions; the `n+1`-point budget closes the cover). This
+coupling of the line-decode alignment set `G` with the per-γ `mcaEvent` witness sets is the
+external [GG25 Thm 3.5] combinatorics and is the sole residual admit (the unique-decoding
+restriction does not shortcut it: under UDR the close codeword is unique, forcing
+`u₁+γ·u₂ = w_γ`, but the antitone-`S` obstruction above is unchanged).
+
+Admitted residual: the GG25 multi-γ coverage count; the U-construction reduction above is
+machine-checked. -/
 theorem lineDecodable_imp_epsMCA_le
     (C : ModuleCode ι F A) (δ : ℝ≥0) (a : ℝ≥0)
-    (_h : LineDecodable (F := F) ((C : Set (ι → A))) δ a
+    (h : LineDecodable (F := F) ((C : Set (ι → A))) δ a
             ((Fintype.card ι : ℝ≥0) + 1)) :
     epsMCA (F := F) (A := A) ((C : Set (ι → A))) δ
         ≤ (a : ENNReal) / (Fintype.card F : ENNReal) := by
+  classical
   -- Reduce to the per-stack bound `Pr_γ[mcaEvent] ≤ a/|F|` (the GG25 core).
   unfold epsMCA
   refine iSup_le fun u ↦ ?_
-  -- Per-stack `γ`-probability bound from line-decodability (external [GG25 Thm 3.5]).
-  sorry -- ABF26-T4.21 (per-stack `Pr_γ[mcaEvent] ≤ a/|F|`); external admit [GG25 Thm 3.5].
+  -- Per-stack: contrapositive. Suppose `Pr_γ[mcaEvent] > a/|F|` and derive a contradiction
+  -- by feeding the `mcaEvent`-witness codewords into line-decodability (the GG25 U-construction).
+  by_contra hgt
+  push Not at hgt
+  -- `f₁ := u 0`, `f₂ := u 1`.
+  set f₁ := u 0 with hf₁
+  set f₂ := u 1 with hf₂
+  -- The U-construction: for each `γ`, pick the `mcaEvent`-witness codeword if the event fires,
+  -- else the zero codeword (`0 ∈ C` as `C` is a submodule).
+  have hzeroC : (0 : ι → A) ∈ (C : Set (ι → A)) := C.zero_mem
+  set U : F → ι → A := fun γ =>
+    if hev : mcaEvent (F := F) ((C : Set (ι → A))) δ f₁ f₂ γ
+      then hev.choose_spec.2.1.choose
+      else 0 with hU_def
+  -- Every `U γ` is a codeword.
+  have hU_mem : ∀ γ : F, U γ ∈ (C : Set (ι → A)) := by
+    intro γ
+    by_cases hev : mcaEvent (F := F) ((C : Set (ι → A))) δ f₁ f₂ γ
+    · simp only [hU_def, dif_pos hev]
+      exact hev.choose_spec.2.1.choose_spec.1
+    · simp only [hU_def, dif_neg hev]; exact hzeroC
+  -- On the `mcaEvent`-set, the line is `δ`-close to `U γ` (the chosen witness codeword agrees
+  -- with the line on the size-`≥(1-δ)n` set `S_γ`).
+  have hU_close : ∀ γ : F, mcaEvent (F := F) ((C : Set (ι → A))) δ f₁ f₂ γ →
+      δᵣ(f₁ + γ • f₂, U γ) ≤ δ := by
+    intro γ hev
+    -- `U γ = (hev.choose_spec.2.1).choose`, the event's witness codeword.
+    have hUγ : U γ = hev.choose_spec.2.1.choose := by
+      simp only [hU_def, dif_pos hev]
+    -- The event's witness set `S = hev.choose` carries this codeword agreeing with the line.
+    obtain ⟨hS_card, hw, _hpair⟩ := hev.choose_spec
+    obtain ⟨_hwC, hw_eq⟩ := hw.choose_spec
+    rw [hUγ, Code.relCloseToWord_iff_exists_agreementCols]
+    refine ⟨hev.choose,
+      (Code.relDist_floor_bound_iff_complement_bound _ _ _).mpr hev.choose_spec.1, ?_⟩
+    intro j
+    refine ⟨fun hj ↦ ?_, fun hne hj ↦ ?_⟩
+    · simpa [Pi.add_apply, Pi.smul_apply] using (hw_eq j hj).symm
+    · exact hne (by simpa [Pi.add_apply, Pi.smul_apply] using (hw_eq j hj).symm)
+  -- The line-close event dominates the `mcaEvent` event, so its probability exceeds `a/|F|`.
+  have hPr_close : (a : ENNReal) / (Fintype.card F : ENNReal)
+      ≤ Pr_{let γ ← $ᵖ F}[δᵣ(f₁ + γ • f₂, U γ) ≤ δ] := by
+    refine le_trans (le_of_lt hgt) ?_
+    refine Pr_le_Pr_of_implies ($ᵖ F) _ _ ?_
+    intro γ hev; exact hU_close γ hev
+  -- Apply line-decodability: get the aligned affine pair `(u₁, u₂)`.
+  obtain ⟨u₁, hu₁C, u₂, hu₂C, hPr_align⟩ := h f₁ f₂ U hU_mem hPr_close
+  -- `Pr_γ[U γ = u₁ + γ • u₂] ≥ (n+1)/|F|`, so the aligned set has `> n` elements.
+  -- The GG25 two-γ / multi-γ overlap extraction: among the `≥ n+1` aligned `γ`'s, two whose
+  -- `mcaEvent` witness sets jointly cover some `S_γ₀` force `pairJointAgreesOn C S_γ₀ f₁ f₂`,
+  -- contradicting the `¬ pairJointAgreesOn` clause of `mcaEvent`.
+  sorry -- ABF26-T4.21 (GG25 multi-γ overlap extraction); residual after the U-construction.
 
 end
 
