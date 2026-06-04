@@ -5,6 +5,7 @@ Concept pages synthesize across multiple papers and ArkLib modules.
 Use this directory for topics such as:
 
 - interactive oracle proofs;
+- oracle reductions (the IOR layer architecture);
 - Reed-Solomon proximity;
 - list decoding;
 - binary-tower proof systems.
