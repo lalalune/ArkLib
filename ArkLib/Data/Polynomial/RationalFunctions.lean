@@ -1566,6 +1566,24 @@ lemma evalX_derivative_comm (x₀ : F) (p : F[X][X][Y]) :
       (Bivariate.evalX (Polynomial.C x₀) p).derivative := by
   rw [Bivariate.evalX_eq_map, Bivariate.evalX_eq_map, Polynomial.derivative_map]
 
+/-- The coefficient of `Y^n` in `∂R/∂Y(x₀,Z)` is `(n+1) · (R(x₀,Z)).coeff (n+1)`, so its
+`X`-degree is bounded by `D - (n+1)` when `D` bounds the total degree of `R(x₀,Z)`. -/
+lemma natDegree_evalX_derivative_coeff_le {x₀ : F} {R : F[X][X][Y]} {D : ℕ}
+    (hD : Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R) ≤ D) (n : ℕ) :
+    ((Bivariate.evalX (Polynomial.C x₀) R.derivative).coeff n).natDegree ≤ D - (n + 1) := by
+  have hcoeff :
+      (Bivariate.evalX (Polynomial.C x₀) R.derivative).coeff n =
+        ((n + 1 : ℕ) : F[X]) * (Bivariate.evalX (Polynomial.C x₀) R).coeff (n + 1) := by
+    rw [evalX_derivative_comm, Polynomial.coeff_derivative]
+    push_cast
+    ring
+  rw [hcoeff]
+  calc (((n + 1 : ℕ) : F[X]) * (Bivariate.evalX (Polynomial.C x₀) R).coeff (n + 1)).natDegree
+      ≤ ((Bivariate.evalX (Polynomial.C x₀) R).coeff (n + 1)).natDegree := by
+        rw [← nsmul_eq_mul]
+        exact Polynomial.natDegree_smul_le _ _
+    _ ≤ D - (n + 1) := natDegree_coeff_le_of_totalDegree_le _ hD (n + 1)
+
 /-- The product-rule factorization of `ζ` at the root `α₀ = T/W`: writing `Q = R(x₀,·) = H · g`
 with `g` the cofactor of the factor `H`, the Y-derivative product rule evaluated at `α₀` gives
 `ζ = H'_Y(α₀) · g(α₀)`, since the `H(α₀) · g'_Y(α₀)` term vanishes (`H(α₀) = 0`).
