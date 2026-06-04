@@ -11622,15 +11622,15 @@
           "name": "ProximityGap.RS_jointAgreement_of_goodCoeffsCurve_card_gt",
           "namespace": "ProximityGap",
           "short_name": "RS_jointAgreement_of_goodCoeffsCurve_card_gt",
-          "signature": "theorem RS_jointAgreement_of_goodCoeffsCurve_card_gt {k deg : \u2115} {domain : \u03b9 \u21aa F} {\u03b4 : \u211d\u22650} [NeZero deg] (hk : 0 < k)"
+          "signature": "theorem RS_jointAgreement_of_goodCoeffsCurve_card_gt {k deg : \u2115} {domain : \u03b9 \u21aa F} {\u03b4 : \u211d\u22650}"
         },
         {
           "doc": "",
           "kind": "class",
-          "line": 253,
-          "name": "ProximityGap._anon_class_253",
+          "line": 255,
+          "name": "ProximityGap._anon_class_255",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_253",
+          "short_name": "_anon_class_255",
           "signature": "class classical"
         }
       ]
