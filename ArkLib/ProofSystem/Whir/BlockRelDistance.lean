@@ -121,7 +121,14 @@ noncomputable def blockRelDistance
 /-- notation `Δᵣ(i, k, f, S', φ', g)` is the (i,k)-wise block relative distance. -/
 scoped notation "Δᵣ( "i", "k", "f", "S'", "φ'", "g" )"  => blockRelDistance i k f S' φ' g
 
-/-- The block relative distance simplifies to the standard relative Hamming distance when `k=0`. -/
+omit [Pow ι ℕ] in
+/-- The block relative distance simplifies to the standard relative Hamming distance when `k=i`:
+each block over `z` is then the singleton `{z}` itself, so block disagreement is pointwise
+disagreement.
+
+`hφ'` pins the evaluation embedding to the canonical subtype inclusion (as in the paper, where
+the power domain sits inside `F` directly); for an arbitrary embedding the blocks are unrelated
+to the points and the claim fails. -/
 lemma blockRelDistance_eq_relHammingDist_of_k_eq_i -- Renamed for clarity
   (i : ℕ) {S : Finset ι} {φ : ι ↪ F}
   [DecidableEq F] [DecidableEq ι] [Smooth φ]
@@ -130,9 +137,30 @@ lemma blockRelDistance_eq_relHammingDist_of_k_eq_i -- Renamed for clarity
   (f g : (indexPowT S φ i) → F) (S' : Finset (indexPowT S φ i))
   (hS' : S' = Finset.univ) -- This now works.
   (φ' : (indexPowT S φ i) ↪ F)
+  (hφ' : ∀ x : indexPowT S φ i, φ' x = x.val)
   [h_dec : DecidableBlockDisagreement i i f S' φ'] :
   Δᵣ(i, i, f, S', φ', g) = δᵣ(f, g) := by
-  sorry
+  classical
+  have hset : disagreementSet i i f S' φ' g
+      = Finset.univ.filter (fun z => f z ≠ g z) := by
+    unfold disagreementSet
+    ext z
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and, decide_eq_true_eq]
+    constructor
+    · rintro ⟨⟨x, hxS', hxz⟩, hfg⟩
+      rw [Nat.sub_self, pow_zero, pow_one, hφ'] at hxz
+      have hxz' : x = z := Subtype.ext hxz
+      subst hxz'
+      exact hfg
+    · intro hfg
+      refine ⟨⟨z, ?_, ?_⟩, hfg⟩
+      · rw [hS']; exact Finset.mem_univ z
+      · rw [Nat.sub_self, pow_zero, pow_one, hφ']
+  unfold blockRelDistance
+  rw [hset]
+  unfold Code.relHammingDist
+  rw [NNRat.cast_div]
+  congr 1
 
 /-- For the set S ⊆ F^ι, we define the minimum block relative distance wrt set S. -/
 noncomputable def minBlockRelDistance
