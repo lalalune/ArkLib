@@ -11,6 +11,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.WeightedAgreement
 import ArkLib.Data.CodingTheory.DivergenceOfSets
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.ToMathlib.Polynomial.EvalExt
+import ArkLib.ToMathlib.Polynomial.NatDegreeOfSum
 
 namespace ProximityGap
 
@@ -790,6 +791,72 @@ theorem goodCoeffsCurve_coeff_polys_implies_jointAgreement_core {l deg : ℕ}
     (deg := deg) (domain := domain) (δ := δ) (u := u)
     (S' := RS_goodCoeffsCurve (k := l + 1) (deg := deg) (domain := domain) u δ)
     hS_card hS_card₁ (fun z hz => hz) hcoeffPoly
+
+omit [Nonempty ι] [DecidableEq ι] [Fintype F] in
+/-- If every domain evaluation of a decoded family is polynomial of degree `< k + 1`
+in the curve parameter, then each `X`-coefficient of the decoded polynomial is
+also polynomial of degree `< k + 1` in that parameter. This is the interpolation
+bridge needed between the §5 pointwise output and the coefficient-polynomial
+assembly theorem above. -/
+theorem coeff_polys_of_eval_polys_on_domain {k deg : ℕ}
+    {domain : ι ↪ F} {S : Finset F} {P : F → Polynomial F}
+    (hdeg_le : deg ≤ Fintype.card ι)
+    (hPdeg : ∀ z ∈ S, (P z).natDegree < deg)
+    (E : ι → Polynomial F)
+    (hEdeg : ∀ x, (E x).natDegree < k + 1)
+    (hEval : ∀ z ∈ S, ∀ x, (P z).eval (domain x) = (E x).eval z) :
+    ∃ B : ℕ → Polynomial F,
+      (∀ j < deg, (B j).natDegree < k + 1) ∧
+        ∀ z ∈ S, ∀ j < deg, (P z).coeff j = (B j).eval z := by
+  classical
+  let B : ℕ → Polynomial F := fun j =>
+    ∑ x : ι, Polynomial.C ((Lagrange.basis (Finset.univ : Finset ι) domain x).coeff j) *
+      E x
+  refine ⟨B, ?_, ?_⟩
+  · intro j _hj
+    refine Polynomial.natDegree_sum_lt_of_forall_lt
+      (s := (Finset.univ : Finset ι))
+      (f := fun x =>
+        Polynomial.C ((Lagrange.basis (Finset.univ : Finset ι) domain x).coeff j) *
+          E x) ?_
+    intro x _hx
+    exact lt_of_le_of_lt (Polynomial.natDegree_C_mul_le _ _) (hEdeg x)
+  · intro z hz j _hj
+    have hdegree :
+        (P z).degree < ((Finset.univ : Finset ι).card : WithBot ℕ) := by
+      have hnat : (P z).natDegree < (Finset.univ : Finset ι).card := by
+        exact lt_of_lt_of_le (hPdeg z hz) (by simpa using hdeg_le)
+      exact lt_of_le_of_lt Polynomial.degree_le_natDegree (WithBot.coe_lt_coe.mpr hnat)
+    have hinterp :
+        P z =
+          Lagrange.interpolate (Finset.univ : Finset ι) domain
+            (fun x => (P z).eval (domain x)) :=
+      Lagrange.eq_interpolate (s := (Finset.univ : Finset ι)) (v := domain)
+        domain.injective.injOn hdegree
+    calc
+      (P z).coeff j
+          =
+            (Lagrange.interpolate (Finset.univ : Finset ι) domain
+              (fun x => (P z).eval (domain x))).coeff j := by
+              exact congrArg (fun q : Polynomial F => q.coeff j) hinterp
+      _ = (∑ x : ι,
+            Polynomial.C ((P z).eval (domain x)) *
+              Lagrange.basis (Finset.univ : Finset ι) domain x).coeff j := by
+              rw [Lagrange.interpolate_apply]
+      _ = ∑ x : ι,
+            (P z).eval (domain x) *
+              (Lagrange.basis (Finset.univ : Finset ι) domain x).coeff j := by
+              rw [Polynomial.finset_sum_coeff]
+              simp [Polynomial.coeff_C_mul]
+      _ = ∑ x : ι,
+            (E x).eval z *
+              (Lagrange.basis (Finset.univ : Finset ι) domain x).coeff j := by
+              refine Finset.sum_congr rfl ?_
+              intro x _hx
+              rw [hEval z hz x]
+      _ = (B j).eval z := by
+              simp [B, Polynomial.eval_finset_sum, Polynomial.eval_mul, Polynomial.eval_C,
+                mul_comm]
 
 omit [Fintype ι] [Nonempty ι] [DecidableEq ι] [Fintype F] [DecidableEq F] in
 /-- Reindex a finite sum of curve coefficient words. -/
