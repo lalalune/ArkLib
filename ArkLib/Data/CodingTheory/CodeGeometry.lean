@@ -72,4 +72,25 @@ theorem codeInner_self (w : ι → α) (hq : 0 < Fintype.card α) :
   have hqne : (Fintype.card α : ℝ) ≠ 0 := by positivity
   field_simp
 
+/-- **The Plotkin / positive-semidefiniteness inequality.** For any finite
+family of words, the Gram-sum of their simplex embeddings is nonnegative:
+`∑ i ∑ j ⟨x_{c i}, x_{c j}⟩ = ‖∑ i x_{c i}‖² ≥ 0`. This is the engine of the
+quadratic-in-`L` counting in Johnson-type list-size bounds. -/
+theorem sum_sum_codeInner_nonneg {L : ℕ} (c : Fin L → ι → α) :
+    0 ≤ ∑ i, ∑ j, codeInner (c i) (c j) := by
+  classical
+  have hswap : (∑ i, ∑ j, codeInner (c i) (c j))
+      = ∑ p : ι × α, (∑ i, emb (c i) p) ^ 2 := by
+    calc (∑ i, ∑ j, codeInner (c i) (c j))
+        = ∑ i, ∑ j, ∑ p : ι × α, emb (c i) p * emb (c j) p := rfl
+      _ = ∑ i, ∑ p : ι × α, ∑ j, emb (c i) p * emb (c j) p := by
+          refine Finset.sum_congr rfl fun i _ => ?_
+          exact Finset.sum_comm
+      _ = ∑ p : ι × α, ∑ i, ∑ j, emb (c i) p * emb (c j) p := Finset.sum_comm
+      _ = ∑ p : ι × α, (∑ i, emb (c i) p) ^ 2 := by
+          refine Finset.sum_congr rfl fun p _ => ?_
+          rw [sq, Finset.sum_mul_sum]
+  rw [hswap]
+  exact Finset.sum_nonneg fun p _ => sq_nonneg _
+
 end CodeGeometry
