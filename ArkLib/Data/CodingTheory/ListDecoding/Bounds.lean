@@ -138,7 +138,8 @@ theorem linear_lambda_ge_elias_volume_eli57
     simp only [Code.relHammingDist, NNRat.cast_div, NNRat.cast_natCast]
     rw [div_le_iff₀ (by exact_mod_cast hn_pos : (0 : ℝ) < (Fintype.card ι : ℝ)), hr_def,
       ← hn_def]
-    exact (Nat.le_floor_iff (mul_nonneg hδ_nonneg (Nat.cast_nonneg n))).symm
+    rw [Nat.le_floor_iff (mul_nonneg hδ_nonneg (Nat.cast_nonneg n))]
+    congr!
   -- Rewrite each maximised-list term as a `Finset.card`.
   have hncard : ∀ f : ι → F,
       (closeCodewordsRel (↑C : Set (ι → F)) f δ).ncard
@@ -169,6 +170,7 @@ theorem linear_lambda_ge_elias_volume_eli57
           ListDecodable.hammingBall]
         rw [hammingDist_comm]
         simp only [hr_def, ← hn_def]
+        congr!
       · simp only [hc, false_and, if_false, Finset.sum_const_zero]
     rw [Finset.sum_congr rfl (fun c _ => hinner c), ← Finset.sum_filter, Finset.sum_const,
       smul_eq_mul]
