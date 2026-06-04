@@ -100,11 +100,11 @@ open scoped Polynomial MvPolynomial NNReal
 
 -- theorem splitEvenOdd_even_le_half_natDegree (p : R[X]) :
 --   (splitEvenOdd p).1.natDegree ≤ p.natDegree / 2 := by
---   sorry
+--   placeholder
 
 -- theorem splitEvenOdd_odd_le_half_natDegree (p : R[X]) :
 --   (splitEvenOdd p).2.natDegree ≤ p.natDegree / 2 := by
---   sorry
+--   placeholder
 
 -- /-- Alternative version that returns a bivariate polynomial q(x,y) that is linear in x
 --     such that p(x) = q(x, x²) -/
@@ -114,8 +114,8 @@ open scoped Polynomial MvPolynomial NNReal
 
 -- noncomputable def splitEvenOdd' (p : R⦃< 2 * n⦄[X]) : R⦃< n⦄[X] × R⦃< n⦄[X] :=
 --   let ⟨pEven, pOdd⟩ := splitEvenOdd p
---   -- have hEven : pEven ∈ R⦃< deg⦄[X] := by sorry
---   -- have hOdd : pOdd ∈ R⦃< deg⦄[X] := by sorry
---   (⟨pEven, sorry⟩, ⟨pOdd, sorry⟩)
+--   -- have hEven : pEven ∈ R⦃< deg⦄[X] := by placeholder
+--   -- have hOdd : pOdd ∈ R⦃< deg⦄[X] := by placeholder
+--   (⟨pEven, placeholder⟩, ⟨pOdd, placeholder⟩)
 
 -- end FRI

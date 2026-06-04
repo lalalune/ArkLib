@@ -169,7 +169,7 @@ theorem fiatShamir_completeness (relIn : Set (StmtIn × WitIn)) (relOut : Set (S
           (StateT (σ × QueryImpl (srChallengeOracle StmtIn pSpec) Id) ProbComp))
         relIn relOut completenessError := sorry
 
--- NOTE: state-restoration (knowledge) soundness implies (knowledge) soundness after Fiat-Shamir
+-- TODO: state-restoration (knowledge) soundness implies (knowledge) soundness after Fiat-Shamir
 
 end
 

@@ -322,7 +322,7 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
       ⟨stmtLast, oStmtLast⟩ tr witOut
     simp only [Fin.reduceLast, Fin.isValue]
     -- ⊢ iteratedSumcheckKStateProp 𝔽q β 2 tr stmtLast witLast oStmtLast
-    -- NOTE : prove this via the relations between stmtLast & stmtOut,
+    -- TODO : prove this via the relations between stmtLast & stmtOut,
       --  witLast & witOut, oStmtLast & oStmtOut
     sorry
 
@@ -621,7 +621,7 @@ theorem coreInteraction_perfectCompleteness :
 def coreInteractionRbrKnowledgeError (_ : (pSpecCoreInteraction L ℓ').ChallengeIdx) : ℝ≥0 :=
   (2 : ℝ≥0) / (Fintype.card L)
 
--- NOTE: iteratedSumcheckLoop_rbrKnowledgeSoundness
+-- TODO: iteratedSumcheckLoop_rbrKnowledgeSoundness
 
 /-- RBR knowledge soundness for large-field reduction (Sumcheck ++ FinalSum) -/
 theorem coreInteraction_rbrKnowledgeSoundness:

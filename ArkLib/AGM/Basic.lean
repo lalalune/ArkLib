@@ -144,7 +144,7 @@ Note: even if the adversary knows the initial group table, it can only output gr
 implicitly, via indices in the table. This means the group element outputs can only be computed via
 utilizing the oracles.
 
-NOTE: need to be sure this definition is correct.
+TODO: need to be sure this definition is correct.
 -/
 def Adversary (ι : Type) (G : Type) (p : ℕ) (bitLength : ℕ) (α : Type) : Type _ :=
   ReaderT (GroupValTable ι G)
@@ -172,6 +172,6 @@ end Adversary
 -- Perhaps we need to enforce parametricity, i.e. it should be of type `∀ G, Group G →
 -- AGMAdversary G bitLength α`?
 
--- NOTE: talk about AGM in the pairing setting
+-- TODO: talk about AGM in the pairing setting
 
 end AGM

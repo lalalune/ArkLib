@@ -28,7 +28,7 @@ namespace Extractor
 - Takes in index `m : Fin (n + 1)`
 - Takes in the input statement `stmtIn : StmtIn`
 - Takes in a partial transcript up to round `m`
-- Takes in the prover's query log (NOTE: refine this, verifier's query log as well?)
+- Takes in the prover's query log (TODO: refine this, verifier's query log as well?)
 
 and returns an input witness `witIn : WitIn`.
 
@@ -42,7 +42,7 @@ def RoundByRoundOneShot
 /-- A one-shot round-by-round extractor is **monotone** if its success probability on a given query
   log is the same as the success probability on any extension of that query log.
 
-  NOTE: refine this -/
+  TODO: refine this -/
 class RoundByRoundOneShot.IsMonotone (E : RoundByRoundOneShot oSpec StmtIn WitIn pSpec)
     (relIn : Set (StmtIn × WitIn)) where
   is_monotone : ∀ roundIdx stmtIn transcript,
@@ -229,14 +229,12 @@ def KnowledgeStateFunctionOneShot.toKnowledgeStateFunction
     by_cases hm : m.castSucc = 0
     · have stF_empty := stF.toFun_empty stmtIn
       rw! (castMode := .all) [hm] at stF_next ⊢
-      simp_all [Extractor.RoundByRoundOneShot.toRoundByRound]
-      have : hm ▸ tr = default := by ext i; exact Fin.elim0 i
-      rw [this] at stF_next
-      simp_all
+      simp only [Extractor.RoundByRoundOneShot.toRoundByRound] at *
+      trace_state
       sorry
-    · simp_all
+    · trace_state
       sorry
-    -- NOTE: Complete this proof
+    -- TODO: Complete this proof
   toFun_full := fun stmtIn tr witOut h => by
     have := stF.toFun_full stmtIn tr
     contrapose! this
@@ -414,7 +412,7 @@ theorem rbrKnowledgeSoundnessOneShot_implies_rbrKnowledgeSoundness
   -- intro hCastSucc witIn' hSucc
   -- simp_all
   -- have := stF.toFun_empty
-  -- NOTE: Complete this proof
+  -- TODO: Complete this proof
   sorry
 
 end RoundByRound

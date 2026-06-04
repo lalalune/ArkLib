@@ -12,7 +12,7 @@ import CompPoly.Data.MvPolynomial.Notation
 /-!
   # Lemmas about degrees of multivariate polynomials
 
-  NOTE: write a `poly_degree` tactic that can prove goals involving degrees of univariate or
+  TODO: write a `poly_degree` tactic that can prove goals involving degrees of univariate or
   multivariate polynomials
 
   (will need to prove by hand first before knowing how to write the tactic)

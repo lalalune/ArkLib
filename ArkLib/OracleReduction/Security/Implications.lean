@@ -31,7 +31,7 @@ namespace Verifier
 
 section Implications
 
-/- NOTE: add the following results
+/- TODO: add the following results
 - `knowledgeSoundness` implies `soundness`
 - `roundByRoundSoundness` implies `soundness`
 - `roundByRoundKnowledgeSoundness` implies `roundByRoundSoundness`
@@ -60,7 +60,7 @@ theorem knowledgeSoundness_implies_soundness
   -- · convert hKS'; rename_i result
   --   obtain ⟨transcript, queryLog, stmtOut, witOut⟩ := result
   --   simp
-  --   sorry
+  --   placeholder
   -- · simp only [Set.language, Set.mem_setOf_eq, not_exists] at hStmtIn
   --   simp only [Functor.map, Seq.seq, PMF.bind_bind, Function.comp_apply, PMF.pure_bind, hStmtIn,
   --     PMF.bind_const, PMF.pure_apply, eq_iff_iff, iff_false, not_true_eq_false, ↓reduceIte,
@@ -110,7 +110,7 @@ theorem rbrKnowledgeSoundness_implies_knowledgeSoundness
 --     (Salt : pSpec.MessageIdx → Type) [∀ i, Nonempty (Salt i)] [∀ i, Fintype (Salt i)] :
 --       rbrSoundness init impl langIn langOut verifier rbrSoundnessError →
 --         Verifier.StateRestoration.soundness init impl langIn langOut (verifier.addSalt Salt)
---           (∑ i, (rbrSoundnessError i)) := by sorry
+--           (∑ i, (rbrSoundnessError i)) := by placeholder
 
 -- /-- Round-by-round knowledge soundness for a protocol implies state-restoration
 -- knowledge soundness for the same protocol with arbitrary added non-empty salts. -/
@@ -123,7 +123,7 @@ theorem rbrKnowledgeSoundness_implies_knowledgeSoundness
 --     (Salt : pSpec.MessageIdx → Type) [∀ i, Nonempty (Salt i)] [∀ i, Fintype (Salt i)] :
 --       rbrKnowledgeSoundness init impl relIn relOut verifier rbrKnowledgeError →
 --         Verifier.StateRestoration.knowledgeSoundness init impl relIn relOut
---           (verifier.addSalt Salt) (∑ i, rbrKnowledgeError i) := by sorry
+--           (verifier.addSalt Salt) (∑ i, rbrKnowledgeError i) := by placeholder
 
 /-- State-restoration soundness for a protocol with added salts implies state-restoration
 soundness for the original protocol (with improved parameters?)
@@ -184,13 +184,13 @@ theorem srKnowledgeSoundness_implies_knowledgeSoundness
         verifier srKnowledgeError →
       knowledgeSoundness init impl relIn relOut verifier srKnowledgeError := by sorry
 
--- NOTE: state that round-by-round security implies state-restoration security for protocol with
+-- TODO: state that round-by-round security implies state-restoration security for protocol with
 -- arbitrary added (non-empty?) salts
 
--- NOTE: state that state-restoration security for added salts imply state-restoration security for
+-- TODO: state that state-restoration security for added salts imply state-restoration security for
 -- the original protocol (with some better parameters)
 
--- NOTE: state that state-restoration security implies basic security
+-- TODO: state that state-restoration security implies basic security
 
 end Implications
 

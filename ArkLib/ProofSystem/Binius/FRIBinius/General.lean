@@ -216,7 +216,7 @@ theorem fullOracleReduction_perfectCompleteness :
     (h₂ := QueryPhase.queryOracleProof_perfectCompleteness K β γ_repetitions
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ:=ϑ) init impl)
 
--- NOTE: state RBR KS
+-- TODO: state RBR KS
 
 end
 end Binius.FRIBinius.FullFRIBinius

@@ -364,7 +364,7 @@ def foldKnowledgeStateFunction (i : Fin ℓ) :
       ⟨stmtLast, oStmtLast⟩ tr witOut
     simp only [Fin.reduceLast, Fin.isValue]
     -- ⊢ foldKStateProp 𝔽q β 2 tr stmtLast witLast oStmtLast
-    -- NOTE : prove this via the relations between stmtLast & stmtOut,
+    -- TODO : prove this via the relations between stmtLast & stmtOut,
       --  witLast & witOut, oStmtLast & oStmtOut
     have h_oStmt : oStmtLast = oStmtOut := by sorry
     sorry

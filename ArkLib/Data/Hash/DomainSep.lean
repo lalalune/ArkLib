@@ -180,7 +180,7 @@ pub fn absorb(self, count: usize, label: &str) -> Self
 ```
 -/
 def absorb (ds : DomainSeparator U H) (count : Nat) (label : String) : DomainSeparator U H :=
-  -- NOTE: Add assertions:
+  -- TODO: Add assertions:
   -- - count > 0
   -- - label doesn't contain SEP_CHAR
   -- - label doesn't start with a digit
@@ -194,7 +194,7 @@ pub fn hint(self, label: &str) -> Self
 ```
 -/
 def hint (ds : DomainSeparator U H) (label : String) : DomainSeparator U H :=
-  -- NOTE: Add assertion that label doesn't contain SEP_CHAR
+  -- TODO: Add assertion that label doesn't contain SEP_CHAR
   { io := ds.io ++ SEP_BYTE ++ "H" ++ label }
 
 /-- Squeeze `count` native elements.
@@ -205,7 +205,7 @@ pub fn squeeze(self, count: usize, label: &str) -> Self
 ```
 -/
 def squeeze (ds : DomainSeparator U H) (count : Nat) (label : String) : DomainSeparator U H :=
-  -- NOTE: Add assertions:
+  -- TODO: Add assertions:
   -- - count > 0
   -- - label doesn't contain SEP_CHAR
   -- - label doesn't start with a digit

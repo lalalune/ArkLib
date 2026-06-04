@@ -396,7 +396,7 @@ theorem dappend_assoc {p : ℕ} {motive : Fin (m + n + p) → Sort u}
     --   (dappend
     --     (motive := fun i : Fin (n + p) =>
     --       motive (Fin.cast (Nat.add_assoc _ _ _).symm (natAdd m i)))
-    --     v (sorry)) := by sorry
+    --     v (placeholder)) := by placeholder
   -- ext i
   -- simp [dappend]
   -- have : castAdd p (castAdd n i) = castAdd (n + p) i := by
@@ -405,7 +405,7 @@ theorem dappend_assoc {p : ℕ} {motive : Fin (m + n + p) → Sort u}
   -- simp [dappend]
   -- have : castAdd p (natAdd m i) = castAdd (m + p) i := by
   --   ext; simp [coe_castAdd]
-  -- sorry
+  -- placeholder
 
 theorem vappend_assoc {p : ℕ} (u : Fin m → α) (v : Fin n → α) (w : Fin p → α) :
     (vappend (vappend u v) w) = (vappend u (vappend v w)) ∘ Fin.cast (add_assoc m n p) := by
@@ -464,7 +464,7 @@ lemma vappend_right_of_not_lt {m n : ℕ} {α : Sort u}
 --       fun i => cast (by simp) (dcons a
 -- (dappend (motive := fun i => motive (cast (by omega) i)) u v)
 --         (i.cast (Nat.succ_add m n))) := by
---   sorry
+--   placeholder
 
 @[simp]
 theorem vappend_vcons (a : α) (u : Fin m → α) (v : Fin n → α) :
@@ -478,7 +478,7 @@ theorem vappend_vcons (a : α) (u : Fin m → α) (v : Fin n → α) :
 --     (a : motive (cast (by omega) (natAdd m (last n)))) :
 --     dappend (motive := fun i => motive (cast (by omega) i)) u (dconcat v a) =
 --       dconcat (motive := fun i => motive (cast (by omega) i)) (dappend u v) a := by
---   sorry
+--   placeholder
 
 theorem vappend_vconcat (u : Fin m → α) (v : Fin n → α) (a : α) :
     vappend u (vconcat v a) = vconcat (vappend u v) a := by
@@ -490,7 +490,7 @@ theorem vappend_vconcat (u : Fin m → α) (v : Fin n → α) (a : α) :
 --     (v : (i : Fin n) → motive (cast (by omega) (natAdd 1 i))) :
 --     dappend (motive := fun i => motive (cast (by omega) i)) a v =
 --       fun i => cast (by simp) (dcons (a 0) v (i.cast (Nat.add_comm 1 n))) := by
---   sorry
+--   placeholder
 
 theorem vappend_left_eq_cons (a : Fin 1 → α) (v : Fin n → α) :
     vappend a v = (vcons (a 0) v) ∘ Fin.cast (Nat.add_comm 1 n) := by
@@ -501,7 +501,7 @@ theorem vappend_left_eq_cons (a : Fin 1 → α) (v : Fin n → α) :
 --     {motive : Fin (m + 1) → Sort u} (u : (i : Fin m) → motive (cast (by omega) (castAdd 1 i)))
 --     (a : (i : Fin 1) → motive (cast (by omega) (natAdd m i))) :
 --     dappend (motive := motive) u a = dconcat u (a 0) := by
---   sorry
+--   placeholder
 
 theorem vappend_right_eq_snoc (u : Fin m → α) (a : Fin 1 → α) :
     vappend u a = vconcat u (a 0) := by

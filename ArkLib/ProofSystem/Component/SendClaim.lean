@@ -17,7 +17,7 @@ import ArkLib.OracleReduction.Security.RoundByRound
      and the other is the message from the prover.
    - The output relation checks whether the two `OStatement`s are the same.
 
-   NOTE: Generalize
+   TODO: Generalize
 -/
 
 open OracleSpec OracleComp OracleQuery OracleInterface ProtocolSpec

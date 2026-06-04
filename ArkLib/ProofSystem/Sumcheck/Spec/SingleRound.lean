@@ -153,7 +153,7 @@ instance : IsSingleRound (pSpec R deg) where
 
 -- Don't know why instance synthesis requires restating these instances
 -- Doesn't seem like instance synthesis can infer the instances for the appends
--- NOTE: may need to tweak synthesis?
+-- TODO: may need to tweak synthesis?
 
 instance instOI₁ : ∀ i, OracleInterface ((⟨!v[.P_to_V], !v[R⦃≤ deg⦄[X]]⟩ ++ₚ !p[]).Message i) :=
   instOracleInterfaceMessageAppend
@@ -454,7 +454,7 @@ open scoped NNReal
 --   · simp; exact default
 --   · simp; exact default
 
--- NOTE: show that the oracle verifier reduces to the (non-oracle) verifier
+-- TODO: show that the oracle verifier reduces to the (non-oracle) verifier
 theorem oracleVerifier_eq_verifier :
     (oracleVerifier R deg D oSpec).toVerifier = verifier R deg D oSpec := by
   ext
@@ -708,7 +708,7 @@ theorem oracleVerifier_rbrKnowledgeSoundness [Fintype R] :
     (inputRelation R deg D) (outputRelation R deg) (fun _ => (deg : ℝ≥0) / (Fintype.card R)) := by
   sorry
 
--- NOTE: break down the oracle reduction into a series of oracle reductions as stated above
+-- TODO: break down the oracle reduction into a series of oracle reductions as stated above
 
 end Simple
 

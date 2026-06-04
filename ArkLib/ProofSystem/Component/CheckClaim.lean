@@ -222,7 +222,7 @@ variable {Statement} {OStatement}
 -- theorem oracleReduction_completeness (h : init.neverFails) :
 --     (oracleReduction oSpec Statement OStatement pred).perfectCompleteness init impl
 --     (toRelInput pred hPred) Set.univ := by
---   -- NOTE: fix this proof once `OracleComp` no longer has failure
+--   -- TODO: fix this proof once `OracleComp` no longer has failure
 --   simp only [OracleReduction.perfectCompleteness, toRelInput, OracleReduction.toReduction,
 --     oracleReduction, oracleProver, Nat.reduceAdd, Fin.isValue, MessageIdx, Message, ChallengeIdx,
 --     Challenge, Fin.reduceLast, oracleVerifier, bind_pure_comp, OracleVerifier.toVerifier,
@@ -236,11 +236,11 @@ variable {Statement} {OStatement}
 --   simp only [ChallengeIdx, Fin.reduceLast, Prover.runToRound_zero_of_prover_first, Fin.isValue,
 --     bind_pure_comp, liftM_eq_liftComp, liftComp_map, Functor.map_map, pure_bind]
 --   intro stmt oStmt _
---   sorry
+--   placeholder
 --   -- simp [Reduction.run, Prover.run, Verifier.run, simOracle2]
 --   -- aesop
 
--- theorem oracleReduction_rbr_knowledge_soundness : True := sorry
+-- theorem oracleReduction_rbr_knowledge_soundness : True := placeholder
 
 end OracleReduction
 

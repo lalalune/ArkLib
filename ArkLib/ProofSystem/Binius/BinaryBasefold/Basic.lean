@@ -296,7 +296,7 @@ omit [NeZero ℓ] hdiv in
 If a new oracle is committed at round `i + 1` (i.e., `ϑ ∣ i + 1`), then the index of this
 new oracle (which is the count of oracles from the previous round, `i`) multiplied by `ϑ`
 equals the current round number `i + 1`.
-NOTE: double check why this is still correct when replacing `hCR` with `ϑ | i + 1`
+TODO: double check why this is still correct when replacing `hCR` with `ϑ | i + 1`
 -/
 lemma toOutCodewordsCount_mul_ϑ_eq_i_succ (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i) :
   (toOutCodewordsCount ℓ ϑ i.castSucc) * ϑ = i.val + 1 := by

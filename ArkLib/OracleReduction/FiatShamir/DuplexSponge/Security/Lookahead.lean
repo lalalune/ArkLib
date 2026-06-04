@@ -32,7 +32,7 @@ subject to the following conditions:
 - The first input state is the given initial state
   ...
 
-NOTE: refactor this to cut down on data (can just omit output states?) -/
+TODO: refactor this to cut down on data (can just omit output states?) -/
 structure LookaheadSequence (trace : QueryLog (forwardPermutationOracle (CanonicalSpongeState U)))
     (state : CanonicalSpongeState U) where
   /-- The list of input states in a look-ahead sequence -/
@@ -80,7 +80,7 @@ structure LookaheadSequenceFamily
 
 /-- Procedure to compute the lookahead sequence family (Equation 14)
 
-NOTE: nail down exactly what this is; can it fail? -/
+TODO: nail down exactly what this is; can it fail? -/
 def computeLookaheadSequenceFamily
     (trace : QueryLog (forwardPermutationOracle (CanonicalSpongeState U)))
     (state : CanonicalSpongeState U) (i : pSpec.ChallengeIdx) :
@@ -98,7 +98,7 @@ one of the following:
 - `err`
 - An encoded verifier's challenge (vector of `chalSize i` units)
 
-NOTE: figure out the best way to encode the two errors (currently we encode `err` as the failure of
+TODO: figure out the best way to encode the two errors (currently we encode `err` as the failure of
 OracleComp, and `none` as `Option.none` inside)
 -/
 noncomputable def lookAhead (fwdPermTrace : QueryLog (forwardPermutationOracle (CanonicalSpongeState U)))
@@ -123,7 +123,7 @@ noncomputable def lookAhead (fwdPermTrace : QueryLog (forwardPermutationOracle (
   else
     have : seqFamily.card = 1 := by omega
     have : seqFamily.val.toList.length = 1 := by aesop
-    -- Get the only element of the finset (NOTE: find better way)
+    -- Get the only element of the finset (TODO: find better way)
     let seq := seqFamily.val.toList[0]
     let seqRateSegment := seq.inputState.map (fun s => s.rateSegment)
     -- Sample units to fill the encoded challenge length, then return
