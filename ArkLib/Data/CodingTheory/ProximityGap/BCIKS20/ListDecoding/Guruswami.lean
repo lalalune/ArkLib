@@ -435,6 +435,51 @@ lemma natWeightedDegree_triCoeffsToPoly_le (box : Finset (ℕ × ℕ × ℕ)) (c
   refine Finset.sup_le fun p _ ↦ ?_
   exact le_trans (natWeightedDegree_triMonC_le _ _ _ _ _ _) (hbox p.1 p.2)
 
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- The `(i, j, t)`-coefficient of `a · X^i Y^j Z^t` (i.e. `((·.coeff j).coeff i).coeff t`). -/
+lemma coeff_triMonC (i j t i' j' t' : ℕ) (a : F) :
+    (((triMonC (F := F) i' j' t' a).coeff j).coeff i).coeff t
+      = if (i', j', t') = (i, j, t) then a else 0 := by
+  unfold triMonC
+  rw [Polynomial.coeff_monomial]
+  by_cases hj : j' = j
+  · subst hj
+    rw [if_pos rfl, Polynomial.coeff_monomial]
+    by_cases hi : i' = i
+    · subst hi
+      rw [if_pos rfl, Polynomial.coeff_monomial]
+      by_cases ht : t' = t
+      · subst ht; rw [if_pos rfl, if_pos rfl]
+      · rw [if_neg ht, if_neg (by simp [ht])]
+    · rw [if_neg hi, Polynomial.coeff_zero, if_neg (by simp [hi])]
+  · rw [if_neg hj, Polynomial.coeff_zero, Polynomial.coeff_zero, if_neg (by simp [hj])]
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- Coefficient extraction for `triCoeffsToPoly`: the coefficient of `X^i Y^j Z^t` at a box index
+`p = (i, j, t)` is exactly `c p`. -/
+lemma coeff_triCoeffsToPoly (box : Finset (ℕ × ℕ × ℕ)) (c : box → F) (p : box) :
+    (((triCoeffsToPoly box c).coeff p.1.2.1).coeff p.1.1).coeff p.1.2.2 = c p := by
+  unfold triCoeffsToPoly
+  rw [Polynomial.finset_sum_coeff, Polynomial.finset_sum_coeff, Polynomial.finset_sum_coeff]
+  rw [Finset.sum_eq_single p]
+  · rw [coeff_triMonC, if_pos rfl]
+  · intro q _ hq
+    rw [coeff_triMonC, if_neg]
+    intro heq
+    exact hq (Subtype.ext heq)
+  · intro h; exact absurd (Finset.mem_univ p) h
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- A nonzero coefficient vector yields a nonzero assembled polynomial (the `Q_ne_0` field). -/
+lemma triCoeffsToPoly_ne_zero (box : Finset (ℕ × ℕ × ℕ)) (c : box → F) (hc : c ≠ 0) :
+    triCoeffsToPoly box c ≠ 0 := by
+  obtain ⟨p, hp⟩ := Function.ne_iff.mp hc
+  rw [Pi.zero_apply] at hp
+  intro hQ
+  apply hp
+  rw [← coeff_triCoeffsToPoly box c p, hQ]
+  simp
+
 end ModifiedGuruswamiHelpers
 
 omit [DecidableEq (RatFunc F)] in
