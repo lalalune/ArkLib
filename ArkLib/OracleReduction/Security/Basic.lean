@@ -531,13 +531,54 @@ private lemma Reduction.run_mk_verifier_id {WitIn WitOut : Type}
     monadLift_bind, Function.comp_apply, monadLift_pure,
     pure_bind, Option.getM, map_eq_bind_pure_comp]
 
+omit init impl in
+/-- Lifting an `OracleComp` into `OptionT` commutes with `Functor.map`. -/
+private lemma liftM_oc_map_optionT {spec : OracleSpec ι} {X Y : Type}
+    (oa : OracleComp spec X) (g : X → Y) :
+    (liftM (g <$> oa) : OptionT (OracleComp spec) Y)
+      = g <$> (liftM oa : OptionT (OracleComp spec) X) := by
+  apply OptionT.ext; rw [OptionT.run_map]
+  show some <$> (g <$> oa) = Option.map g <$> (some <$> oa)
+  rw [Functor.map_map, Functor.map_map]; rfl
+
+omit init impl in
+/-- Running, with query logging, the reduction obtained from an arbitrary prover and the identity
+  verifier: the verifier's output statement is always the input statement, the verifier makes no
+  queries, and the prover's run (with its log) is otherwise unchanged. -/
+private lemma Reduction.runWithLog_mk_verifier_id {WitIn WitOut : Type}
+    (prover : Prover oSpec StmtIn WitIn StmtIn WitOut !p[])
+    (stmtIn : StmtIn) (witIn : WitIn) :
+    (Reduction.mk prover Verifier.id).runWithLog stmtIn witIn =
+      (fun pr => ((pr.1, stmtIn), pr.2, ([] : oSpec.QueryLog)))
+        <$> prover.runWithLog stmtIn witIn := by
+  have hver : ∀ t : (!p[]).FullTranscript,
+      (simulateQ loggingOracle
+        (Verifier.run stmtIn t (Verifier.id : Verifier oSpec StmtIn StmtIn !p[]))).run
+        = pure (some stmtIn, ([] : oSpec.QueryLog)) := fun _ => rfl
+  unfold Reduction.runWithLog
+  simp only [hver, OptionT.run_lift, liftM_pure, pure_bind, Option.getM, map_pure,
+    bind_pure_comp]
+  rw [liftM_oc_map_optionT]
+
 /-- The identity / trivial verifier is perfectly sound. -/
 @[simp]
 theorem Verifier.id_soundness {lang : Set StmtIn} :
     (Verifier.id : Verifier oSpec _ _ _).soundness init impl lang lang 0 := by
-  sorry
-  -- Approach: after Reduction.run_mk_verifier_id, stmtOut = stmtIn always.
-  -- Needs StateT.run'_bind/pure or manual support reasoning through OptionT+simulateQ+StateT.
+  rw [Verifier.soundness]
+  intro WitIn WitOut witIn prover stmtIn hIn
+  simp only [ENNReal.coe_zero, nonpos_iff_eq_zero]
+  rw [probEvent_eq_zero_iff]
+  intro x hx
+  -- After `Reduction.run_mk_verifier_id`, every run output has its output statement equal to
+  -- `stmtIn`, which lies outside `lang`; hence the success event has probability zero.
+  rw [Reduction.run_mk_verifier_id] at hx
+  suffices h : x.2 = stmtIn by rw [h]; exact hIn
+  rw [liftM_oc_map_optionT, OptionT.run_map, OptionT.mem_support_iff] at hx
+  simp only [OptionT.run_mk, simulateQ_map, StateT.run'_eq, StateT.run_map,
+    Functor.map_map, support_bind, support_map, Set.mem_iUnion, Set.mem_image,
+    Option.map_eq_some_iff] at hx
+  obtain ⟨_, _, _, _, _, _, hax⟩ := hx
+  rw [← hax]
 
 /-- The straightline extractor for the identity / trivial reduction, which just returns the input
   witness. -/
@@ -549,10 +590,27 @@ def Extractor.Straightline.id : Extractor.Straightline oSpec StmtIn WitIn WitIn 
 @[simp]
 theorem Verifier.id_knowledgeSoundness {rel : Set (StmtIn × WitIn)} :
     (Verifier.id : Verifier oSpec _ _ _).knowledgeSoundness init impl rel rel 0 := by
-  sorry
-  -- Approach: Extractor.Straightline.id returns input witness.
-  -- Event (stmtIn, witIn) ∉ rel ∧ (stmtIn, witIn) ∈ rel is contradiction.
-  -- Same blocker: needs StateT.run'_bind/pure or manual support reasoning.
+  rw [Verifier.knowledgeSoundness]
+  refine ⟨Extractor.Straightline.id, ?_⟩
+  intro stmtIn witIn prover
+  simp only [ENNReal.coe_zero, nonpos_iff_eq_zero]
+  rw [probEvent_eq_zero_iff]
+  intro x hx
+  -- The extractor returns the prover's output witness, and the identity verifier returns the
+  -- input statement, so every game output is of the form `(stmtIn, w, stmtIn, w)`. The success
+  -- event `(stmtIn, w) ∉ rel ∧ (stmtIn, w) ∈ rel` is contradictory, hence has probability zero.
+  suffices h : x.1 = x.2.2.1 ∧ x.2.1 = x.2.2.2 by
+    rintro ⟨hni, hi⟩; rw [h.1, h.2] at hni; exact hni hi
+  simp only [Reduction.runWithLog_mk_verifier_id, Extractor.Straightline.id,
+    liftM_oc_map_optionT, map_bind, bind_map_left, liftM_pure, map_pure,
+    bind_pure_comp, Functor.map_map, Function.comp] at hx
+  rw [OptionT.run_map, OptionT.mem_support_iff] at hx
+  simp only [OptionT.run_mk, simulateQ_map, StateT.run'_eq, StateT.run_map,
+    Functor.map_map, support_bind, support_map, Set.mem_iUnion, Set.mem_image,
+    Option.map_eq_some_iff] at hx
+  obtain ⟨_, _, _, _, _, _, hax⟩ := hx
+  rw [← hax]
+  exact ⟨rfl, rfl⟩
 
 /-- The identity / trivial reduction is perfectly complete. -/
 @[simp]
