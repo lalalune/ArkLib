@@ -8,6 +8,9 @@ Authors: Quang Dao, Katerina Hristova, František Silváši, Julian Sutherland,
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Prelude
 import ArkLib.Data.CodingTheory.ReedSolomon
 
+
+set_option linter.style.longFile 1800
+
 namespace ProximityGap
 
 open NNReal Finset Function ProbabilityTheory Code
