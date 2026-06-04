@@ -550,6 +550,9 @@ open LinearCode Classical ProbabilityTheory ReedSolomon STIR in
                    > err' (dstar, ρ, δ, m * (dstar + 1) - ∑ i degsᵢ) -/
 theorem combine_theorem
   {φ : ι ↪ F} {dstar m : ℕ}
+  -- Finding 17 cascade: the keystone is false at dstar = 0, so this consumer
+  -- inherits the nondegeneracy hypothesis (see upstream-issues.md).
+  [NeZero dstar]
   (fs : Fin m → ι → F) (degs : Fin m → ℕ) (hdegs : ∀ i, degs i ≤ dstar)
   (δ : ℝ≥0) (hδPos : δ > 0)
   (hδLt : δ < (min (1 - (ReedSolomon.sqrtRate dstar φ))
@@ -583,8 +586,8 @@ theorem combine_theorem
       · specialize htotal 0
         simp at htotal
     · have proximity_gap := 
-        @ProximityGap.correlatedAgreement_affine_curves ι _ _ F _ _ _ 
-          (total_terms dstar degs - 1) dstar φ δ (by {
+        ProximityGap.correlatedAgreement_affine_curves (ι := ι) (F := F)
+          (k := total_terms dstar degs - 1) (deg := dstar) (domain := φ) (δ := δ) (by {
             rw [lt_min_iff] at hδLt
             rcases hδLt with ⟨h, _⟩
             simp only [ReedSolomon.sqrtRate]
