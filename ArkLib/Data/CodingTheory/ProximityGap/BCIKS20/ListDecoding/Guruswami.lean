@@ -625,7 +625,390 @@ lemma card_gsBox_gt_constraints (n m k : ℕ) :
     _ ≤ numVars (k + 1) Dpg * (B * Dpg + 1) := by
         exact Nat.mul_le_mul_right _ hAB
 
+/-! ### `Z`-degree budget of the shifted constraints
+
+To turn the finite system "all `Z`-coefficients up to `zMax` vanish" into the genuine multiplicity
+condition "the `F[Z]`-coefficient vanishes", we bound the `Z`-degree of every constraint output.
+`ZdegLE f d` says all bivariate coefficients of `f : F[Z][X][Y]` are `F[Z]`-polynomials of degree
+`≤ d`.  Shifting raises the `Z`-degree by at most the `Y`-degree (the only point coordinate with
+positive `Z`-degree is `y = u₀ + Z·u₁`). -/
+
+/-- `ZdegLE f d`: every bivariate coefficient `((f.coeff j).coeff i)` of `f : F[Z][X][Y]` is an
+`F[Z]`-polynomial of degree at most `d`. -/
+def ZdegLE (f : F[Z][X][Y]) (d : ℕ) : Prop := ∀ i j, ((f.coeff j).coeff i).natDegree ≤ d
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+lemma ZdegLE_zero (d : ℕ) : ZdegLE (0 : F[Z][X][Y]) d := by
+  intro i j; simp
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+lemma ZdegLE.add {f g : F[Z][X][Y]} {d : ℕ} (hf : ZdegLE f d) (hg : ZdegLE g d) :
+    ZdegLE (f + g) d := by
+  intro i j
+  rw [Polynomial.coeff_add, Polynomial.coeff_add]
+  exact le_trans (Polynomial.natDegree_add_le _ _) (max_le (hf i j) (hg i j))
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+lemma ZdegLE.mono {f : F[Z][X][Y]} {d e : ℕ} (hf : ZdegLE f d) (hde : d ≤ e) : ZdegLE f e :=
+  fun i j ↦ le_trans (hf i j) hde
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+lemma ZdegLE_sum {ι : Type*} (s : Finset ι) (g : ι → F[Z][X][Y]) (d : ℕ)
+    (h : ∀ i ∈ s, ZdegLE (g i) d) : ZdegLE (∑ i ∈ s, g i) d := by
+  classical
+  induction s using Finset.induction with
+  | empty => simpa using ZdegLE_zero d
+  | insert a s ha ih =>
+      rw [Finset.sum_insert ha]
+      exact (h a (Finset.mem_insert_self a s)).add (ih (fun i hi ↦ h i (Finset.mem_insert_of_mem hi)))
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+lemma ZdegLE.mul {f g : F[Z][X][Y]} {d e : ℕ} (hf : ZdegLE f d) (hg : ZdegLE g e) :
+    ZdegLE (f * g) (d + e) := by
+  classical
+  intro i j
+  rw [Polynomial.coeff_mul]
+  rw [Polynomial.finset_sum_coeff]
+  refine Polynomial.natDegree_sum_le_of_forall_le _ _ (fun p hp ↦ ?_)
+  rw [Polynomial.coeff_mul]
+  refine Polynomial.natDegree_sum_le_of_forall_le _ _ (fun q hq ↦ ?_)
+  exact le_trans (Polynomial.natDegree_mul_le) (Nat.add_le_add (hf _ _) (hg _ _))
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+lemma ZdegLE_one : ZdegLE (1 : F[Z][X][Y]) 0 := by
+  intro i j
+  rw [Polynomial.coeff_one]
+  by_cases hj : j = 0
+  · subst hj
+    rw [if_pos rfl, Polynomial.coeff_one]
+    by_cases hi : i = 0
+    · rw [if_pos hi]; simp
+    · rw [if_neg hi]; simp
+  · rw [if_neg hj]; simp
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+lemma ZdegLE.pow {f : F[Z][X][Y]} {d : ℕ} (hf : ZdegLE f d) (a : ℕ) :
+    ZdegLE (f ^ a) (a * d) := by
+  induction a with
+  | zero => simpa using ZdegLE_one.mono (Nat.zero_le _)
+  | succ a ih =>
+      rw [pow_succ]
+      exact (ih.mul hf).mono (by ring_nf; omega)
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- `ZdegLE (C P) d` whenever every `X`-coefficient of `P : F[Z][X]` has `Z`-degree `≤ d`. -/
+lemma ZdegLE_C {P : F[Z][X]} {d : ℕ} (hP : ∀ i, (P.coeff i).natDegree ≤ d) :
+    ZdegLE (Polynomial.C P) d := by
+  intro i j
+  rw [Polynomial.coeff_C]
+  by_cases hj : j = 0
+  · rw [if_pos hj]; exact hP i
+  · rw [if_neg hj]; simp
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- The double-constant `C (C s)` (constant in `X` and `Y`) has `Z`-degree `s.natDegree`. -/
+lemma ZdegLE_CC (s : Polynomial F) : ZdegLE (Polynomial.C (Polynomial.C s)) s.natDegree := by
+  refine ZdegLE_C (fun i ↦ ?_)
+  rw [Polynomial.coeff_C]
+  by_cases hi : i = 0
+  · rw [if_pos hi]
+  · rw [if_neg hi]; simp
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- The outer variable `Y` has `Z`-degree `0`. -/
+lemma ZdegLE_Y : ZdegLE (Polynomial.X : F[Z][X][Y]) 0 := by
+  intro i j
+  rw [Polynomial.coeff_X]
+  by_cases hj : 1 = j
+  · rw [if_pos hj]; simp [Polynomial.coeff_one]; by_cases hi : i = 0 <;> simp [hi]
+  · rw [if_neg hj]; simp
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- `comp`-closure for the outer `Y`-substitution: substituting `Y ↦ Y + c` raises the `Z`-degree
+by at most `(Y-degree of f) · (Z-degree of c)`. -/
+lemma ZdegLE.comp_addYC {f c : F[Z][X][Y]} {d e : ℕ} (hf : ZdegLE f d) (hc : ZdegLE c e) :
+    ZdegLE (f.comp (Polynomial.X + c)) (d + f.natDegree * e) := by
+  classical
+  rw [Polynomial.comp, Polynomial.eval₂_eq_sum, Polynomial.sum_def]
+  refine ZdegLE_sum _ _ _ (fun a ha ↦ ?_)
+  have hCa : ZdegLE (Polynomial.C (f.coeff a)) d := ZdegLE_C (fun i ↦ hf i a)
+  have hYc : ZdegLE (Polynomial.X + c) e := (ZdegLE_Y.mono (Nat.zero_le e)).add hc
+  have hpow : ZdegLE ((Polynomial.X + c) ^ a) (a * e) := hYc.pow a
+  have hbound : ZdegLE (Polynomial.C (f.coeff a) * (Polynomial.X + c) ^ a) (d + a * e) :=
+    hCa.mul hpow
+  refine hbound.mono ?_
+  have ha_le : a ≤ f.natDegree := Polynomial.le_natDegree_of_mem_supp a ha
+  exact Nat.add_le_add_left (Nat.mul_le_mul_right e ha_le) d
+
+/-- `ZdegLE1 p d`: every `X`-coefficient of `p : F[Z][X]` is an `F[Z]`-polynomial of degree `≤ d`.
+The middle-variable analogue of `ZdegLE`, used to push a `Z`-degree bound through the inner
+`X ↦ X + C(C ω)` substitution. -/
+def ZdegLE1 (p : F[Z][X]) (d : ℕ) : Prop := ∀ i, (p.coeff i).natDegree ≤ d
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+lemma ZdegLE1_zero (d : ℕ) : ZdegLE1 (0 : F[Z][X]) d := by intro i; simp
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+lemma ZdegLE1.add {p q : F[Z][X]} {d : ℕ} (hp : ZdegLE1 p d) (hq : ZdegLE1 q d) :
+    ZdegLE1 (p + q) d := by
+  intro i; rw [Polynomial.coeff_add]
+  exact le_trans (Polynomial.natDegree_add_le _ _) (max_le (hp i) (hq i))
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+lemma ZdegLE1.mono {p : F[Z][X]} {d e : ℕ} (hp : ZdegLE1 p d) (hde : d ≤ e) : ZdegLE1 p e :=
+  fun i ↦ le_trans (hp i) hde
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+lemma ZdegLE1_sum {ι : Type*} (s : Finset ι) (g : ι → F[Z][X]) (d : ℕ)
+    (h : ∀ i ∈ s, ZdegLE1 (g i) d) : ZdegLE1 (∑ i ∈ s, g i) d := by
+  classical
+  induction s using Finset.induction with
+  | empty => simpa using ZdegLE1_zero d
+  | insert a s ha ih =>
+      rw [Finset.sum_insert ha]
+      exact (h a (Finset.mem_insert_self a s)).add
+        (ih (fun i hi ↦ h i (Finset.mem_insert_of_mem hi)))
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+lemma ZdegLE1.mul {p q : F[Z][X]} {d e : ℕ} (hp : ZdegLE1 p d) (hq : ZdegLE1 q e) :
+    ZdegLE1 (p * q) (d + e) := by
+  classical
+  intro i; rw [Polynomial.coeff_mul]
+  refine Polynomial.natDegree_sum_le_of_forall_le _ _ (fun x _ ↦ ?_)
+  exact le_trans Polynomial.natDegree_mul_le (Nat.add_le_add (hp _) (hq _))
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+lemma ZdegLE1_one : ZdegLE1 (1 : F[Z][X]) 0 := by
+  intro i; rw [Polynomial.coeff_one]
+  by_cases hi : i = 0
+  · rw [if_pos hi]; simp
+  · rw [if_neg hi]; simp
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+lemma ZdegLE1.pow {p : F[Z][X]} {d : ℕ} (hp : ZdegLE1 p d) (a : ℕ) : ZdegLE1 (p ^ a) (a * d) := by
+  induction a with
+  | zero => simpa using ZdegLE1_one.mono (Nat.zero_le _)
+  | succ a ih => rw [pow_succ]; exact (ih.mul hp).mono (by ring_nf; omega)
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- `X` has `Z`-degree `0` at the middle level. -/
+lemma ZdegLE1_X : ZdegLE1 (Polynomial.X : F[Z][X]) 0 := by
+  intro i; rw [Polynomial.coeff_X]
+  by_cases hi : 1 = i
+  · rw [if_pos hi]; simp
+  · rw [if_neg hi]; simp
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- `C (C ω)` (constant in `X`, scalar in `Z`) has `Z`-degree `0`. -/
+lemma ZdegLE1_CC (ω : F) : ZdegLE1 (Polynomial.C (Polynomial.C ω) : F[Z][X]) 0 := by
+  intro i; rw [Polynomial.coeff_C]
+  by_cases hi : i = 0
+  · rw [if_pos hi]; simp
+  · rw [if_neg hi]; simp
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- Pushing a middle-level `Z`-degree bound through the substitution `X ↦ X + C(C ω)` (which is
+`Z`-degree `0`): the bound is preserved. -/
+lemma ZdegLE1.comp_addXCC {p : F[Z][X]} {d : ℕ} (hp : ZdegLE1 p d) (ω : F) :
+    ZdegLE1 (p.comp (Polynomial.X + Polynomial.C (Polynomial.C ω))) d := by
+  classical
+  rw [Polynomial.comp, Polynomial.eval₂_eq_sum, Polynomial.sum_def]
+  refine ZdegLE1_sum _ _ _ (fun a _ ↦ ?_)
+  have hCa : ZdegLE1 (Polynomial.C (p.coeff a)) d := by
+    intro i; rw [Polynomial.coeff_C]
+    by_cases hi : i = 0
+    · rw [if_pos hi]; exact hp a
+    · rw [if_neg hi]; simp
+  have hg : ZdegLE1 ((Polynomial.X + Polynomial.C (Polynomial.C ω)) ^ a) 0 :=
+    ((ZdegLE1_X.mono (le_refl 0)).add (ZdegLE1_CC ω)).pow a |>.mono (by simp)
+  exact (hCa.mul hg).mono (by simp)
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- Pushing the `Z`-degree bound through the outer map `X ↦ X + C(C ω)` of `shift`. -/
+lemma ZdegLE.map_compX {f : F[Z][X][Y]} {d : ℕ} (hf : ZdegLE f d) (ω : F) :
+    ZdegLE (f.map (Polynomial.compRingHom (Polynomial.X + Polynomial.C (Polynomial.C ω)))) d := by
+  intro i j
+  rw [Polynomial.coeff_map, Polynomial.coe_compRingHom]
+  exact (ZdegLE1.comp_addXCC (fun i' ↦ hf i' j) ω) i
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- `s = u₀ + Z·u₁ : F[Z]` has `Z`-degree at most `1`. -/
+lemma natDegree_u0_add_Z_u1 (u0 u1 : F) :
+    (Polynomial.C u0 + Polynomial.X * Polynomial.C u1 : Polynomial F).natDegree ≤ 1 := by
+  refine le_trans (Polynomial.natDegree_add_le _ _) (max_le ?_ ?_)
+  · simp
+  · rw [mul_comm]
+    exact le_trans (Polynomial.natDegree_C_mul_le _ _) (le_of_eq Polynomial.natDegree_X)
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- **Master `Z`-degree bound for the shift.**  At the Claim-5.4 curve point
+`(x, y) = (C ω, u₀ + Z·u₁)`, shifting raises the `Z`-degree by at most the `Y`-degree of `Q`
+(since only `y` carries positive `Z`-degree, `≤ 1`).  Hence every constraint output
+`((shift Q x y).coeff t).coeff s` is an `F[Z]`-polynomial of degree `≤ d + natDegreeY Q`. -/
+lemma ZdegLE_shift {Q : F[Z][X][Y]} {d : ℕ} (hQ : ZdegLE Q d) (ω u0 u1 : F) :
+    ZdegLE (Polynomial.Bivariate.shift Q (Polynomial.C ω)
+        (Polynomial.C u0 + Polynomial.X * Polynomial.C u1)) (d + Q.natDegree) := by
+  unfold Polynomial.Bivariate.shift
+  set s : Polynomial F := Polynomial.C u0 + Polynomial.X * Polynomial.C u1 with hs
+  have hcdeg : s.natDegree ≤ 1 := natDegree_u0_add_Z_u1 u0 u1
+  have hc : ZdegLE (Polynomial.C (Polynomial.C s) : F[Z][X][Y]) s.natDegree := ZdegLE_CC s
+  have hcomp : ZdegLE (Q.comp (Polynomial.X + Polynomial.C (Polynomial.C s)))
+      (d + Q.natDegree) :=
+    (hQ.comp_addYC hc).mono (by
+      refine Nat.add_le_add_left ?_ d
+      calc Q.natDegree * s.natDegree ≤ Q.natDegree * 1 := Nat.mul_le_mul_left _ hcdeg
+        _ = Q.natDegree := Nat.mul_one _)
+  exact hcomp.map_compX ω
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- The monomial `a · X^i Y^j Z^t` has `Z`-degree `≤ t`. -/
+lemma ZdegLE_triMonC (i j t : ℕ) (a : F) : ZdegLE (triMonC (F := F) i j t a) t := by
+  intro i' j'
+  unfold triMonC
+  rw [Polynomial.coeff_monomial]
+  by_cases hj : j = j'
+  · subst hj; rw [if_pos rfl, Polynomial.coeff_monomial]
+    by_cases hi : i = i'
+    · subst hi; rw [if_pos rfl]; exact Polynomial.natDegree_monomial_le _
+    · rw [if_neg hi]; simp
+  · rw [if_neg hj]; simp
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- If every box index has `Z`-degree `t ≤ zCap`, the assembled `Q` has `Z`-degree `≤ zCap`. -/
+lemma ZdegLE_triCoeffsToPoly (box : Finset (ℕ × ℕ × ℕ)) (c : box → F) (zCap : ℕ)
+    (hbox : ∀ p ∈ box, p.2.2 ≤ zCap) :
+    ZdegLE (triCoeffsToPoly box c) zCap := by
+  classical
+  unfold triCoeffsToPoly
+  refine ZdegLE_sum _ _ _ (fun p _ ↦ ?_)
+  exact (ZdegLE_triMonC _ _ _ _).mono (hbox p.1 p.2)
+
+/-! ### Existence of a nonzero kernel element
+
+Rank-nullity over the box: since `#box > #constraints`, the linear constraint map has a nonzero
+kernel, mirroring `GuruswamiSudan.exists_nonzero_solution_gen`. -/
+
+open GuruswamiSudan in
+/-- There is a nonzero box-coefficient vector in the kernel of the trivariate constraint map. -/
+lemma exists_nonzero_triSolution (n m k : ℕ) (ωs : Fin n ↪ F) (u₀ u₁ : Fin n → F) :
+    ∃ c : (gsBox n m k) → F, c ≠ 0 ∧
+      triConstraintMap (gsBox n m k) m (gsZMax n m k) ωs u₀ u₁ c = 0 := by
+  classical
+  have h_kernel_nontrivial :
+      Module.finrank F ((gsBox n m k) → F) >
+        Module.finrank F (Fin n × constraintIndices m × Fin (gsZMax n m k + 1) → F) := by
+    rw [Module.finrank_fintype_fun_eq_card, Module.finrank_fintype_fun_eq_card]
+    simp only [Fintype.card_coe, Fintype.card_prod, Fintype.card_fin]
+    have h := card_gsBox_gt_constraints n m k
+    rw [gt_iff_lt, ← mul_assoc]
+    exact h
+  have h_inj : ¬ Function.Injective
+      (triConstraintMap (gsBox n m k) m (gsZMax n m k) ωs u₀ u₁) := by
+    intro h_inj
+    exact h_kernel_nontrivial.not_ge
+      (LinearMap.finrank_range_of_inj h_inj ▸ Submodule.finrank_le _)
+  contrapose! h_inj
+  exact LinearMap.ker_eq_bot.mp (eq_bot_iff.mpr fun x hx ↦
+    by_contra fun hx' ↦ h_inj x hx' <| by simpa using hx)
+
+/-! ### Box degree facts and the multiplicity bridge -/
+
+open GuruswamiSudan in
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- For a box index `(i,j,t)`: `i + k·j ≤ Dpg`. -/
+lemma gsBox_weighted_le {n m k : ℕ} {p : ℕ × ℕ × ℕ} (hk : 0 < k) (hp : p ∈ gsBox n m k) :
+    1 * p.1 + k * p.2.1 ≤ gsDpg n m k := by
+  rw [mem_gsBox] at hp
+  have hw := hp.1
+  unfold weigthBoundIndices at hw
+  rw [Finset.mem_filter] at hw
+  have := hw.2
+  simp only [Nat.add_sub_cancel] at this
+  omega
+
+open GuruswamiSudan in
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- For a box index `(i,j,t)`: `j ≤ Dpg`. -/
+lemma gsBox_Y_le {n m k : ℕ} {p : ℕ × ℕ × ℕ} (hk : 0 < k) (hp : p ∈ gsBox n m k) :
+    0 * p.1 + 1 * p.2.1 ≤ gsDpg n m k := by
+  have := gsBox_weighted_le hk hp
+  have hk1 : 1 ≤ k := hk
+  nlinarith [this]
+
+open GuruswamiSudan in
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- For a box index `(i,j,t)`: `i ≤ Dpg`. -/
+lemma gsBox_X_le {n m k : ℕ} {p : ℕ × ℕ × ℕ} (hk : 0 < k) (hp : p ∈ gsBox n m k) :
+    1 * p.1 + 0 * p.2.1 ≤ gsDpg n m k := by
+  have := gsBox_weighted_le hk hp
+  omega
+
+open GuruswamiSudan in
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- For a box index `(i,j,t)`: `t ≤ zCap`. -/
+lemma gsBox_Z_le {n m k : ℕ} {p : ℕ × ℕ × ℕ} (hp : p ∈ gsBox n m k) :
+    p.2.2 ≤ gsZCap n m k := by
+  rw [mem_gsBox] at hp; exact hp.2
+
+open GuruswamiSudan Polynomial.Bivariate in
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- The `Y`-degree of the box-assembled `Q` is at most `Dpg`. -/
+lemma natDegree_gsQ_le {n m k : ℕ} (hk : 0 < k) (c : (gsBox n m k) → F) :
+    (triCoeffsToPoly (gsBox n m k) c).natDegree ≤ gsDpg n m k := by
+  have h := natWeightedDegree_triCoeffsToPoly_le (gsBox n m k) c 0 1 (gsDpg n m k)
+    (fun p hp ↦ gsBox_Y_le hk hp)
+  rwa [← degreeY_as_weighted_deg, natDegreeY] at h
+
+open GuruswamiSudan Polynomial.Bivariate in
+omit [DecidableEq (RatFunc F)] in
+/-- **Multiplicity bridge.**  If `c` lies in the kernel of the constraint map, the assembled
+nonzero `Q` has root multiplicity `≥ m` at every curve point `(C ωᵢ, u₀ᵢ + Z·u₁ᵢ)`.
+
+The kernel forces every `Z`-coefficient (up to `zMax`) of each order-`< m` shifted coefficient to
+vanish; combined with the `Z`-degree budget (`ZdegLE_shift` + the box bound), the whole `F[Z]`
+coefficient vanishes, and `triv_rootMultiplicity_ge_of_shift_zero` yields multiplicity `≥ m`. -/
+lemma gsQ_multiplicity {n m k : ℕ} (hk : 0 < k) (ωs : Fin n ↪ F) (u₀ u₁ : Fin n → F)
+    (c : (gsBox n m k) → F) (hc : c ≠ 0)
+    (hker : triConstraintMap (gsBox n m k) m (gsZMax n m k) ωs u₀ u₁ c = 0) (i : Fin n) :
+    (m : ℕ) ≤ rootMultiplicity (triCoeffsToPoly (gsBox n m k) c)
+        (Polynomial.C (ωs i)) (Polynomial.C (u₀ i) + Polynomial.X * Polynomial.C (u₁ i)) := by
+  classical
+  set Q := triCoeffsToPoly (gsBox n m k) c with hQdef
+  set x := Polynomial.C (ωs i) with hx
+  set y := Polynomial.C (u₀ i) + Polynomial.X * Polynomial.C (u₁ i) with hy
+  -- Q ≠ 0
+  have hQne : Q ≠ 0 := triCoeffsToPoly_ne_zero (gsBox n m k) c hc
+  -- Q has Z-degree ≤ zCap and Y-degree ≤ Dpg
+  have hQz : ZdegLE Q (gsZCap n m k) :=
+    ZdegLE_triCoeffsToPoly (gsBox n m k) c (gsZCap n m k) (fun p hp ↦ gsBox_Z_le hp)
+  have hQy : Q.natDegree ≤ gsDpg n m k := natDegree_gsQ_le hk c
+  -- the shifted constraint output has Z-degree ≤ zMax
+  have hshiftZ : ZdegLE (shift Q x y) (gsZMax n m k) := by
+    refine (ZdegLE_shift hQz (ωs i) (u₀ i) (u₁ i)).mono ?_
+    rw [gsZMax]; exact Nat.add_le_add_left hQy _
+  -- apply the order-of-vanishing criterion
+  refine triv_rootMultiplicity_ge_of_shift_zero hQne (fun s t hst ↦ ?_)
+  -- every Z-coefficient up to zMax vanishes, and Z-degree ≤ zMax ⟹ the F[Z] coeff is 0
+  apply Polynomial.ext
+  intro z
+  rw [Polynomial.coeff_zero]
+  by_cases hz : z ≤ gsZMax n m k
+  · -- use the kernel: the (i, (s,t), z) coordinate is 0
+    have hst' : (s, t) ∈ constraintIndices m := by
+      unfold constraintIndices
+      rw [Finset.mem_filter, Finset.product_eq_sprod, Finset.mem_product, Finset.mem_range,
+        Finset.mem_range]
+      exact ⟨⟨by omega, by omega⟩, hst⟩
+    have hcoord := congr_fun hker (i, ⟨(s, t), hst'⟩, ⟨z, Nat.lt_succ_of_le hz⟩)
+    simp only [triConstraintMap, LinearMap.coe_comp, Function.comp_apply, LinearMap.pi_apply,
+      triEvalConstraint, LinearMap.coe_mk, AddHom.coe_mk, Pi.zero_apply] at hcoord
+    rw [triCoeffsToPolyₗ_apply] at hcoord
+    exact hcoord
+  · -- beyond the Z-degree budget: the coefficient is 0 by the degree bound
+    exact Polynomial.coeff_eq_zero_of_natDegree_lt (lt_of_le_of_lt (hshiftZ s t) (by omega))
+
 end ModifiedGuruswamiHelpers
+
 
 omit [DecidableEq (RatFunc F)] in
 /-- Claim 5.4 from [BCIKS20].
