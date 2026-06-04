@@ -229,11 +229,8 @@ theorem cast_toVerifier (V : OracleVerifier oSpec StmtIn OStmtIn StmtOut OStmtOu
         obtain ⟨i, q⟩ := t
         -- `MessageIdx.cast _ _ i` is definitionally `i`, so after evaluating the inner `simulateQ`
         -- (which routes the message query) the two sides agree definitionally.
-        simp only [castMessageImpl, castMessageQuery, map_eq_bind_pure_comp, simulateQ_bind,
-          simulateQ_query, OracleQuery.input_query, OracleQuery.cont_query, simulateQ_pure,
-          Function.comp, id_eq, bind_pure]
-        rw [simulateQ_spec_query]
-        simp
+        simp only [castMessageImpl, castMessageQuery]
+        simp [simulateQ_query, OracleQuery.input_query, OracleQuery.cont_query]
   · -- Continuation: the two builders of `oStmtOut` agree.  The casting embedding
     -- `V.embed.trans (sumMap (Equiv.refl _) (MessageIdx.cast _ _))` is `V.embed` (both the
     -- `Equiv.refl` map and `MessageIdx.cast _ _` are identities), so the `match`es coincide.
