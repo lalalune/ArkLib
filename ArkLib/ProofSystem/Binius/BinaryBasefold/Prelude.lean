@@ -1373,6 +1373,88 @@ theorem foldMatrixNat_succ_apply (i : Fin r) (n : ℕ) (h : i.val + (n + 1) < �
         ⟨b.val % 2 ^ n, Nat.mod_lt _ (Nat.two_pow_pos n)⟩ := by
   rfl
 
+set_option maxHeartbeats 4000000 in
+seal sDomain qMap_total_fiber normalizedW intermediateEvaluationPoly in
+/-- RHS recursion of `localized_fold_eval`: the `(n+1)`-step localized fold evaluation at `y`
+equals one single-step `fold` (at level `i + n`, last challenge `r_challenges (last n)`) applied
+to the `n`-step localized fold evaluation over the truncated challenges. -/
+theorem localized_fold_eval_succ (i : Fin ℓ) (n : ℕ) (h_i_add_steps : i.val + (n + 1) ≤ ℓ)
+    (f : (sDomain 𝔽q β h_ℓ_add_R_rate)
+      ⟨i, by exact Nat.lt_of_le_of_lt (n := i) (k := r) (m := ℓ) (h₁ := by
+        exact Fin.is_le') (by exact lt_of_add_right_lt h_ℓ_add_R_rate)⟩ → L)
+    (r_challenges : Fin (n + 1) → L)
+    (y : (sDomain 𝔽q β h_ℓ_add_R_rate) ⟨↑i + (n + 1), by omega⟩) :
+    localized_fold_eval 𝔽q β i (steps := n + 1) (h_i_add_steps := h_i_add_steps) f
+        r_challenges y =
+      fold 𝔽q β (i := ⟨i.val + n, by omega⟩)
+        (h_i := by simp only; have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡); omega)
+        (f := localized_fold_eval 𝔽q β i (steps := n) (h_i_add_steps := by omega) f
+              (fun j => r_challenges j.castSucc))
+        (r_chal := r_challenges (Fin.last n))
+        ⟨y.val, by have hy := y.property; simpa only [Nat.add_assoc] using hy⟩ := by
+  rw [localized_fold_eval_eq_sum]
+  conv_rhs => unfold fold
+  simp only
+  rw [localized_fold_eval_eq_sum, localized_fold_eval_eq_sum]
+  rw [sum_fin_pow_succ_split_low (r := r) (ℓ := ℓ) (𝓡 := 𝓡) n]
+  conv_lhs =>
+    enter [2, lo, 2, hi]
+    rw [challengeTensorProduct_succ_get, sum_fin_pow_succ_split (n := n)]
+    enter [2, 2, c, 2, bL]
+    rw [foldMatrixNat_succ_apply,
+      qMap_total_fiber_succ_peel_last 𝔽q β (i := i) (n := n) (h_i_add_steps := h_i_add_steps)]
+  have e1 : ∀ x : Fin (2^n), (2 * (x:ℕ)) / 2 = (x:ℕ) := fun x => by omega
+  have e2 : ∀ x : Fin (2^n), (1 + 2 * (x:ℕ)) / 2 = (x:ℕ) := fun x => by omega
+  have e3 : ∀ x : Fin (2^n), (2^n + (x:ℕ)) / 2^n = 1 := fun x => by
+    rw [Nat.add_comm, Nat.add_div_right _ (Nat.two_pow_pos n), Nat.div_eq_of_lt x.isLt]
+  have e4 : ∀ x : Fin (2^n), (2^n + (x:ℕ)) % 2^n = (x:ℕ) := fun x => by
+    rw [Nat.add_mod_left]; exact Nat.mod_eq_of_lt x.isLt
+  simp only [Fin.sum_univ_two, Fin.val_zero, Fin.val_one,
+    Nat.zero_mul, Nat.one_mul, Nat.zero_add,
+    Nat.add_mul_mod_self_left,
+    Nat.mul_mod_right, e1, e2, e3, e4,
+    Nat.div_eq_of_lt (Fin.is_lt _), Nat.mod_eq_of_lt (Fin.is_lt _),
+    if_true, Nat.one_ne_zero, if_false]
+  simp only [baseFoldMatrix, Fin.eta, neg_mul, one_mul]
+  rw [Finset.sum_mul, Finset.sum_mul]
+  simp only [Finset.mul_sum, Finset.sum_mul, neg_mul, mul_neg, ← Finset.sum_add_distrib,
+    ← Finset.sum_neg_distrib]
+  apply Finset.sum_congr rfl
+  intro x _
+  apply Finset.sum_congr rfl
+  intro x_1 _
+  simp only [Fin.mk_zero, Fin.mk_one]
+  ring
+
+set_option maxHeartbeats 2000000 in
+seal sDomain normalizedW intermediateEvaluationPoly in
+/-- Base case of the localized fold evaluation: zero steps is just `f` at `y`. -/
+theorem localized_fold_eval_zero (i : Fin ℓ) (h_i_add_steps : i.val + 0 ≤ ℓ)
+    (f : (sDomain 𝔽q β h_ℓ_add_R_rate)
+      ⟨i, by exact Nat.lt_of_le_of_lt (n := i) (k := r) (m := ℓ) (h₁ := by
+        exact Fin.is_le') (by exact lt_of_add_right_lt h_ℓ_add_R_rate)⟩ → L)
+    (r_challenges : Fin 0 → L)
+    (y : (sDomain 𝔽q β h_ℓ_add_R_rate) ⟨↑i + 0, by omega⟩) :
+    localized_fold_eval 𝔽q β i (steps := 0) (h_i_add_steps := h_i_add_steps) f r_challenges y
+      = f ⟨y.val, by have := y.property; simpa only [Nat.add_zero] using this⟩ := by
+  have hsub : Subsingleton (Fin (2 ^ 0)) := by rw [pow_zero]; infer_instance
+  rw [localized_fold_eval_eq_sum]
+  rw [Fintype.sum_subsingleton _ (0 : Fin (2^0))]
+  rw [Fintype.sum_subsingleton _ (0 : Fin (2^0))]
+  have hctp : (challengeTensorProduct (L := L) (ℓ := ℓ) (𝓡 := 𝓡) (r := r) 0 r_challenges).get
+      (0 : Fin (2 ^ 0)) = 1 := rfl
+  have hfm : foldMatrixNat 𝔽q β ⟨↑i, by omega⟩ 0
+      (by simp only; exact fin_ℓ_steps_lt_ℓ_add_R i 0 h_i_add_steps) y (0 : Fin (2^0)) (0 : Fin (2^0)) = 1 := rfl
+  have hfib : qMap_total_fiber 𝔽q β (i := ⟨↑i, by omega⟩) (steps := 0)
+      (h_i_add_steps := by simp only; exact fin_ℓ_steps_lt_ℓ_add_R i 0 h_i_add_steps)
+      (y := y) (0 : Fin (2^0)) = ⟨y.val, by have := y.property; simpa only [Nat.add_zero] using this⟩ := by
+    simp only [qMap_total_fiber, ↓reduceDIte]
+    apply Subtype.ext
+    simp
+  rw [hctp, hfm, hfib, one_mul, one_mul]
+
+set_option maxHeartbeats 4000000 in
+seal sDomain qMap_total_fiber normalizedW intermediateEvaluationPoly in
 /-- **Lemma 4.9.** The iterated fold equals the localized fold evaluation via matmul form -/
 theorem iterated_fold_eq_matrix_form (i : Fin ℓ) (steps : ℕ) (h_i_add_steps : i + steps ≤ ℓ)
     (f : (sDomain 𝔽q β h_ℓ_add_R_rate) ⟨i, by omega⟩ → L)
@@ -1385,18 +1467,18 @@ theorem iterated_fold_eq_matrix_form (i : Fin ℓ) (steps : ℕ) (h_i_add_steps 
       r_challenges ⟨y, by exact Submodule.coe_mem y⟩) =
     localized_fold_eval 𝔽q β i (steps := steps) (h_i_add_steps := h_i_add_steps) f
       r_challenges (y := ⟨y, by exact Submodule.coe_mem y⟩) := by
-  -- PROOF PLAN (decomposition complete; reusable bricks all proven above):
-  -- Induct on `steps`. Base case: both sides reduce to `f y` (dfoldl_zero on the LHS;
-  -- the 1×1 identity matrix and `challengeTensorProduct 0 = [1]` on the RHS).
-  -- Succ case (`steps = n+1`): peel the last fold via `iterated_fold_succ_last`, rewrite the
-  -- inner `iterated_fold n` to `localized_fold_eval n` by the IH (pointwise at the two
-  -- single-step preimages of `y`), then apply `localized_fold_eval_succ` (the RHS recursion).
-  -- `localized_fold_eval_succ` is assembled from `localized_fold_eval_eq_sum`,
-  -- `challengeTensorProduct_succ_get`, `foldMatrixNat_succ_apply`,
-  -- `qMap_total_fiber_succ_peel_last`, `sum_fin_pow_succ_split{,_low}`, and `fold`'s closed form.
-  -- All three "peels" (tensor / matrix / fiber) and both bit-splits are proven; the final
-  -- step is the `Finset.sum` algebra matching the split double-sum to `fold`'s two-term form.
-  sorry
+  induction steps with
+  | zero =>
+    rw [localized_fold_eval_zero]
+    unfold iterated_fold
+    rw [Fin.dfoldl_zero]
+  | succ n ih =>
+    rw [iterated_fold_succ_last 𝔽q β i n h_i_add_steps,
+      localized_fold_eval_succ 𝔽q β i n h_i_add_steps]
+    congr 1
+    funext y'
+    exact ih (by omega) f (fun j => r_challenges j.castSucc) y'
+
 
 omit [CharP L 2] [NeZero ℓ] in
 /-- Lemma 4.13 : if f⁽ⁱ⁾ is evaluation of P⁽ⁱ⁾(X) over S⁽ⁱ⁾, then fold(f⁽ⁱ⁾, r_chal)
