@@ -11914,7 +11914,7 @@
         {
           "doc": "The bivariate degree cap used for Claim 5.4: the proximity-gap degree bound with `\u03c1=(k+1)/n`.",
           "kind": "def",
-          "line": 548,
+          "line": 549,
           "name": "ProximityGap.gsDpg",
           "namespace": "ProximityGap",
           "short_name": "gsDpg",
@@ -11923,7 +11923,7 @@
         {
           "doc": "The `Z`-budget of the box: large enough that the `Z`-degree introduced by shifting (`\u2264 Dpg`) cannot overturn the strict bivariate counting gap.",
           "kind": "def",
-          "line": 552,
+          "line": 553,
           "name": "ProximityGap.gsZCap",
           "namespace": "ProximityGap",
           "short_name": "gsZCap",
@@ -11932,7 +11932,7 @@
         {
           "doc": "The number of `Z`-coefficients the constraints can occupy: the box `Z`-budget plus the maximal `Y`-degree `\u2264 Dpg` (the shift `Y \u2190 Y + (u\u2080 + Z\u00b7u\u2081)` raises the `Z`-degree by at most the `Y`-degree).",
           "kind": "def",
-          "line": 557,
+          "line": 559,
           "name": "ProximityGap.gsZMax",
           "namespace": "ProximityGap",
           "short_name": "gsZMax",
@@ -11941,7 +11941,7 @@
         {
           "doc": "The embedding `((i,j),t) \u21a6 (i,j,t)`.",
           "kind": "def",
-          "line": 560,
+          "line": 562,
           "name": "ProximityGap.gsTriple",
           "namespace": "ProximityGap",
           "short_name": "gsTriple",
@@ -11950,7 +11950,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 562,
+          "line": 564,
           "name": "ProximityGap.gsTriple_injective",
           "namespace": "ProximityGap",
           "short_name": "gsTriple_injective",
@@ -11959,7 +11959,7 @@
         {
           "doc": "The box of `(i, j, t)` triples: bivariate Guruswami\u2013Sudan `(i,j)`-box times `Z`-budget.",
           "kind": "def",
-          "line": 570,
+          "line": 572,
           "name": "ProximityGap.gsBox",
           "namespace": "ProximityGap",
           "short_name": "gsBox",
@@ -11968,7 +11968,7 @@
         {
           "doc": "The cardinality of the box is `numVars (k+1) Dpg \u00b7 (zCap+1)`.",
           "kind": "lemma",
-          "line": 575,
+          "line": 577,
           "name": "ProximityGap.card_gsBox",
           "namespace": "ProximityGap",
           "short_name": "card_gsBox",
@@ -11977,16 +11977,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 577,
-          "name": "ProximityGap._anon_class_577",
+          "line": 579,
+          "name": "ProximityGap._anon_class_579",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_577",
+          "short_name": "_anon_class_579",
           "signature": "class classical"
         },
         {
           "doc": "Membership in the box: `(i, j, t) \u2208 gsBox` iff `(i,j) \u2208 weigthBoundIndices (k+1) Dpg` and `t \u2264 zCap`.",
           "kind": "lemma",
-          "line": 584,
+          "line": 586,
           "name": "ProximityGap.mem_gsBox",
           "namespace": "ProximityGap",
           "short_name": "mem_gsBox",
@@ -11995,16 +11995,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 587,
-          "name": "ProximityGap._anon_class_587",
+          "line": 589,
+          "name": "ProximityGap._anon_class_589",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_587",
+          "short_name": "_anon_class_589",
           "signature": "class classical"
         },
         {
           "doc": "The counting inequality: `#box > #constraints`.  This is the trivariate analogue of `numVars_gt_numConstraints`, with the `Z`-budget chosen so the strict bivariate gap dominates.",
           "kind": "lemma",
-          "line": 604,
+          "line": 606,
           "name": "ProximityGap.card_gsBox_gt_constraints",
           "namespace": "ProximityGap",
           "short_name": "card_gsBox_gt_constraints",
@@ -12013,7 +12013,7 @@
         {
           "doc": "Claim 5.4 from [BCIKS20]. It essentially claims that there exists a solution to the Guruswami-Sudan constraints above. NOTE: As currently formalized this lemma is **false** for `n = 0` or `k = 0` (see `modified_guruswami_unsat_of_n_zero` / `modified_guruswami_unsat_of_k_zero`): the degree bound `D_X` collapses to `0` and the strict degree constraints become unsatisfiable.  The statement below therefore carries the proven-necessary side conditions `0 < n` and `0 < k` (the paper's non-degenerate regime is `k + 1 \u2264 n`, `1 \u2264 m`; the eventual dimension-counting proof \u2014 the trivariate analogue of `G",
           "kind": "lemma",
-          "line": 639,
+          "line": 641,
           "name": "ProximityGap.modified_guruswami_has_a_solution",
           "namespace": "ProximityGap",
           "short_name": "modified_guruswami_has_a_solution",
@@ -12022,16 +12022,16 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 649,
-          "name": "ProximityGap._anon_instance_649",
+          "line": 651,
+          "name": "ProximityGap._anon_instance_651",
           "namespace": "ProximityGap",
-          "short_name": "_anon_instance_649",
+          "short_name": "_anon_instance_651",
           "signature": "instance noncomputable instance {\u03b1 : Type} (s : Set \u03b1) [inst : Finite s] : Fintype s := Fintype.ofFinite _"
         },
         {
           "doc": "The set `S` (equation 5.2 of [BCIKS20]).",
           "kind": "def",
-          "line": 652,
+          "line": 654,
           "name": "ProximityGap.coeffs_of_close_proximity",
           "namespace": "ProximityGap",
           "short_name": "coeffs_of_close_proximity",
@@ -12040,7 +12040,7 @@
         {
           "doc": "There exists a `\u03b4`-close polynomial `P_z` for each `z` from the set `S`.",
           "kind": "lemma",
-          "line": 659,
+          "line": 661,
           "name": "ProximityGap.exists_Pz_of_coeffs_of_close_proximity",
           "namespace": "ProximityGap",
           "short_name": "exists_Pz_of_coeffs_of_close_proximity",
@@ -12049,7 +12049,7 @@
         {
           "doc": "The `\u03b4`-close polynomial `Pz` for each `z` from the set `S` (`coeffs_of_close_proximity`).",
           "kind": "def",
-          "line": 678,
+          "line": 680,
           "name": "ProximityGap.Pz",
           "namespace": "ProximityGap",
           "short_name": "Pz",
@@ -12058,7 +12058,7 @@
         {
           "doc": "Proposition 5.5 from [BCIKS20]. There exists a subset `S'` of the set `S` and a bivariate polynomial `P(X, Z)` that matches `Pz` on that set.",
           "kind": "lemma",
-          "line": 686,
+          "line": 688,
           "name": "ProximityGap.exists_a_set_and_a_matching_polynomial",
           "namespace": "ProximityGap",
           "short_name": "exists_a_set_and_a_matching_polynomial",
@@ -12067,7 +12067,7 @@
         {
           "doc": "The subset `S'` extracted from Proprosition 5.5 [BCIKS20].",
           "kind": "def",
-          "line": 696,
+          "line": 698,
           "name": "ProximityGap.matching_set",
           "namespace": "ProximityGap",
           "short_name": "matching_set",
@@ -12076,7 +12076,7 @@
         {
           "doc": "`S'` is indeed a subset of `S`",
           "kind": "lemma",
-          "line": 702,
+          "line": 704,
           "name": "ProximityGap.matching_set_is_a_sub_of_coeffs_of_close_proximity",
           "namespace": "ProximityGap",
           "short_name": "matching_set_is_a_sub_of_coeffs_of_close_proximity",
