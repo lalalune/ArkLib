@@ -49,6 +49,11 @@ Output: `witOut = (Statement (L := L) (ℓ := ℓ')`
 noncomputable section
 namespace RingSwitching.BatchingPhase
 
+/-- The default oracle interface (`OracleInterface.instDefault`, used by the ring-switching message
+oracles in `Spec.lean`) answers its only (unit) query with the message itself. -/
+@[simp] lemma answer_instDefault {M : Type _} (m : M) (q : Unit) :
+    @OracleInterface.answer M OracleInterface.instDefault m q = m := rfl
+
 variable (κ : ℕ) [NeZero κ]
 variable (L : Type) [CommRing L] [Nontrivial L] [Fintype L] [DecidableEq L]
   [SampleableType L]
@@ -173,6 +178,49 @@ noncomputable def oracleVerifier :
   -- Standard embedding for empty oSpec.
   embed := ⟨fun j => Sum.inl j, fun a b h => by cases h; rfl⟩
   hEq := fun i => rfl
+
+open OracleInterface in
+omit [NeZero κ] [Fintype L] [CharP L 2] [SampleableType L] [Fintype K] [DecidableEq K]
+  [NeZero ℓ] [NeZero ℓ'] in
+/-- The inner oracle verifier body, simulated through `simOracle2`, collapses to the
+deterministic `if performCheck … then stmtOutAccept else failureState`. -/
+lemma oracleVerifier_verify_collapse
+    (stmt : BatchingStmtIn L ℓ) (oStmt : ∀ j, aOStmtIn.OStmtIn j)
+    (tr : FullTranscript (pSpecBatching (κ:=κ) (L:=L) (K:=K))) :
+    simulateQ (OracleInterface.simOracle2 []ₒ oStmt (FullTranscript.messages tr))
+        ((oracleVerifier κ L K β ℓ ℓ' h_l (aOStmtIn:=aOStmtIn)).verify stmt
+          (FullTranscript.challenges tr))
+      = (if performCheckOriginalEvaluation κ L K β ℓ ℓ' h_l stmt.original_claim
+              stmt.t_eval_point (FullTranscript.messages tr ⟨0, by rfl⟩) then
+           pure ({ ctx := { t_eval_point := stmt.t_eval_point,
+                            original_claim := stmt.original_claim,
+                            s_hat := FullTranscript.messages tr ⟨0, by rfl⟩,
+                            r_batching := FullTranscript.challenges tr ⟨1, by rfl⟩ },
+                   sumcheck_target := compute_s0 κ L K β
+                     (FullTranscript.messages tr ⟨0, by rfl⟩)
+                     (FullTranscript.challenges tr ⟨1, by rfl⟩),
+                   challenges := Fin.elim0 } : Statement (L:=L) (ℓ:=ℓ')
+                     (RingSwitchingBaseContext κ L K ℓ) 0)
+         else pure (failureState κ L K ℓ ℓ' stmt (FullTranscript.messages tr ⟨0, by rfl⟩))
+         : OptionT (OracleComp []ₒ) _) := by
+  simp only [oracleVerifier]
+  rw [simulateQ_optionT_bind, simulateQ_simOracle2_query]
+  -- `simulateQ (simOracle2 …) (query) = OptionT.lift (pure (answer …))`. Reduce the lift-bind at
+  -- the `.run` level via `OptionT.run_bind_lift` (+ `pure_bind`), then push `simulateQ` through
+  -- the query-free `if`.
+  refine OptionT.ext ?_
+  dsimp only [Sigma.fst, Sigma.snd]
+  erw [OptionT.run_bind_lift]
+  erw [pure_bind]
+  -- The `instDefault` answer is the message itself: reduce `answer m () = m` FIRST so the two
+  -- `if`-conditions coincide, then push `simulateQ`/`OptionT.run` through the query-free `if`/`pure`s.
+  rw [answer_instDefault]
+  simp only [apply_ite, bind_pure_comp, map_pure]
+  -- Both `if`-conditions are now identical; collapse the nested `if` and `simulateQ (pure …)`.
+  by_cases hc : performCheckOriginalEvaluation κ L K β ℓ ℓ' h_l stmt.original_claim
+      stmt.t_eval_point (FullTranscript.messages tr ⟨0, by rfl⟩) = true <;>
+    simp only [hc, Bool.false_eq_true, reduceIte] <;>
+    (erw [simulateQ_pure]; rfl)
 
 /-- The Oracle Reduction for the Batching Phase. -/
 noncomputable def batchingOracleReduction : OracleReduction (oSpec:=[]ₒ)
@@ -358,20 +406,58 @@ noncomputable def batchingKnowledgeStateFunction :
     -- required by `batchingReduction_perfectCompleteness`, which must establish consistency from
     -- scratch on the honest run).
     --
-    -- REMAINING OBSTRUCTION (verifier-run query simulation, not the spec). To consume `h_relOut`
-    -- we must resolve `Pr[(stmtOutᵥ, witOut) ∈ relOut | (simulateQ impl (verifier.run …)).run' …]`
-    -- to the concrete `stmtOutᵥ`. The verifier's `verify` issues a message-oracle query
+    -- VERIFIER-RUN QUERY SIMULATION (resolved). To consume `h_relOut` we resolve
+    -- `Pr[(stmtOutᵥ, witOut) ∈ relOut | (simulateQ impl (verifier.run …)).run' …]` to the
+    -- concrete `stmtOutᵥ`. The verifier's `verify` issues a message-oracle query
     -- (`query (spec := [pSpecBatching.Message]ₒ) ⟨⟨0,rfl⟩,()⟩`); under
-    -- `simulateQ (OracleInterface.simOracle2 …)` this query desugars (via the VCVio `FreeM`
-    -- representation) into nested `MonadLift.monadLift (OracleSpec.query …).fst/.snd` chains that
-    -- `simulateQ_query` (which matches a canonical `liftM q`) does not collapse, and for which no
-    -- supporting reduction lemma yet exists. This is the SAME unresolved infrastructure that leaves
-    -- every analogous message-querying `toFun_full` a `sorry` repo-wide (e.g.
-    -- `SumcheckPhase.iteratedSumcheckKnowledgeStateFunction.toFun_full`,
-    -- `BinaryBasefold.Steps`). Once a `simulateQ_simOracle2_messageQuery`-style support lemma lands,
-    -- both branches close by `probEvent_pos_iff` → `OptionT.mem_support_iff` → case-split on
-    -- `performCheck` → `rcases`/`subst` the singleton support → transport `h_relOut`.
-    sorry
+    -- `simulateQ (OracleInterface.simOracle2 …)` it collapses, via the support lemma
+    -- `Prelude.simulateQ_simOracle2_query`, to `pure (answer s_hat)`. Threaded through
+    -- `oracleVerifier_verify_collapse`, the whole `verifier.run` reduces to a single deterministic
+    -- `pure (if performCheck … then stmtOutAccept else failureState, oStmtOut)`; the proof then runs
+    -- `probEvent_pos_iff` → `OptionT.mem_support_iff` → collapse → `split` on `performCheck` →
+    -- `subst` the singleton support → transport `h_relOut` (the `embed = Sum.inl` map gives
+    -- `oStmtOut = oStmt`). The same `Prelude` support lemma serves the analogous message-querying
+    -- `toFun_full`s in `SumcheckPhase` and `BinaryBasefold/Steps`.
+    intro h
+    rw [gt_iff_lt, probEvent_pos_iff] at h
+    obtain ⟨x, hx, hrel⟩ := h
+    rw [OptionT.mem_support_iff] at hx
+    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+    obtain ⟨s, _, hx⟩ := hx
+    simp only [OracleVerifier.toVerifier, Verifier.run, StateT.run'_eq,
+      support_map, Set.mem_image, Prod.exists] at hx
+    obtain ⟨val, s', hmem, heq⟩ := hx
+    -- Collapse the inner verifier body (the message query is the load-bearing step) to the
+    -- deterministic `if performCheck … then stmtOutAccept else failureState` via the collapse lemma.
+    rw [oracleVerifier_verify_collapse] at hmem
+    -- The verifier run is now query-free (`pure`/`if`). Case-split the verifier's accept/reject
+    -- decision (`split`), then collapse each `pure` branch to a singleton support.
+    split at hmem <;>
+      simp only [bind_pure_comp, map_pure] at hmem <;>
+      erw [simulateQ_pure] at hmem <;>
+      simp only [StateT.run_pure, support_pure, Set.mem_singleton_iff, Prod.mk.injEq] at hmem <;>
+      obtain ⟨rfl, -⟩ := hmem <;>
+      injection heq with hxv <;>
+      subst hxv
+    -- Goal in each branch: round-2 `batchingKStateProp` = the `if performCheck …` over
+    -- `sumcheckRoundRelationProp` for the statement the verifier output. `hrel` provides exactly
+    -- that membership for the deterministic output `x`; transport it.
+    all_goals
+      simp only [batchingKStateProp, batchingRbrExtractor, Fin.isValue, Equiv.toFun_as_coe,
+        Transcript.equivMessagesChallenges_apply, sumcheckRoundRelation, Set.mem_setOf_eq,
+        Transcript.toMessagesChallenges,
+        Transcript.toMessagesUpTo, Transcript.toChallengesUpTo, FullTranscript.messages,
+        FullTranscript.challenges, oracleVerifier] at hrel ⊢
+    -- `hrel` (verifier output ∈ relOut) IS the round-2 KState for the matching branch; the
+    -- `embed = Sum.inl` map makes `oStmtOut = oStmtLast`, and the message/challenge accessors agree.
+    all_goals dsimp only [Fin.last, Fin.isValue]
+    -- The verifier's accept/reject decision (`hmem`'s `split`, hyp `h✝`) determines which branch
+    -- of the round-2 KState `if` is taken; `hrel` supplies exactly that `sumcheckRoundRelationProp`.
+    -- The `embed = Sum.inl` map gives `oStmtOut = oStmtLast`, so `hrel` matches up to that cast.
+    · rw [if_pos (by assumption)]
+      convert hrel using 3
+    · rw [if_neg (by assumption)]
+      convert hrel using 3
 
 /-! ## Security Properties -/
 

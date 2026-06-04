@@ -1206,3 +1206,64 @@ lemma boolHypercube_sum_pinned (𝓑 : Fin 2 ↪ L₀)
 end SumcheckOrientation
 
 end RingSwitching
+
+/-! ## `simOracle2` message-query support
+
+These lemmas reduce `simulateQ (OracleInterface.simOracle2 oSpec t₁ t₂) (…)` applied to a single
+query to the *right* (message) oracle family `[T₂]ₒ` of the combined spec
+`oSpec + ([T₁]ₒ + [T₂]ₒ)`. They are the load-bearing infrastructure for verifier-side
+`toFun_full` proofs whose `OracleVerifier.verify` body *queries a prover message*: under
+`simulateQ (simOracle2 …)` the message query (read via the per-message `OracleInterface`) routes,
+through `QueryImpl.addLift`/`QueryImpl.add`, to `OracleInterface.answer` of the message value.
+
+These are stated over fully general spec/oracle parameters and are candidates for upstreaming to
+`OracleReduction/OracleInterface.lean` (which owns `simOracle2`); they live here for now so that
+the analogous message-querying `toFun_full`s in `SumcheckPhase` and `BinaryBasefold/Steps` can
+import them. -/
+section SimOracle2MessageQuery
+
+open OracleInterface
+
+/-- **`simOracle2` message-query collapse (`OracleComp` form).** Simulating, via
+`simOracle2 oSpec t₁ t₂`, the lift into the combined spec `oSpec + ([T₁]ₒ + [T₂]ₒ)` of a single
+query `qm` to the *right* (message) oracle family `[T₂]ₒ` collapses to `pure` of that oracle's
+`answer`, with all queries routed to `t₂`. -/
+lemma simulateQ_simOracle2_messageQuery {ι : Type} {oSpec : OracleSpec ι}
+    {ι₁ : Type} {T₁ : ι₁ → Type} [∀ i, OracleInterface (T₁ i)]
+    {ι₂ : Type} {T₂ : ι₂ → Type} [∀ i, OracleInterface (T₂ i)]
+    (t₁ : ∀ i, T₁ i) (t₂ : ∀ i, T₂ i) (qm : ([T₂]ₒ).Domain) :
+    simulateQ (OracleInterface.simOracle2 oSpec t₁ t₂)
+      (liftM (([T₂]ₒ).query qm) : OracleComp (oSpec + ([T₁]ₒ + [T₂]ₒ)) _)
+      = (pure (OracleInterface.answer (t₂ qm.1) qm.2) : OracleComp oSpec _) := by
+  -- `liftM` of the message query into the combined spec is `liftM ((…).query (inr (inr qm)))`.
+  change simulateQ (OracleInterface.simOracle2 oSpec t₁ t₂)
+      (liftM ((oSpec + ([T₁]ₒ + [T₂]ₒ)).query (Sum.inr (Sum.inr qm)))) = _
+  rw [simulateQ_spec_query]
+  -- `simOracle2` routes `inr (inr …)` to `(simOracle0 T₂ t₂).liftTarget`, i.e. `answer (t₂ …)`.
+  simp only [OracleInterface.simOracle2, QueryImpl.addLift_def, QueryImpl.add_apply_inr,
+    QueryImpl.liftTarget_apply]
+  change liftM (OracleInterface.simOracle0 T₂ t₂ qm) = _
+  simp only [OracleInterface.simOracle0]
+  rfl
+
+/-- **`simOracle2` message-query collapse (`OptionT`-`query` form).** The same reduction as
+`simulateQ_simOracle2_messageQuery`, phrased for the `query`/`monadLift` form that appears verbatim
+in an `OracleVerifier.verify` body (a query in `OptionT (OracleComp (oSpec + ([T₁]ₒ + [T₂]ₒ)))`).
+This is the form consumed by the verifier-run collapse in message-querying `toFun_full` proofs. -/
+lemma simulateQ_simOracle2_query {ι : Type} {oSpec : OracleSpec ι}
+    {ι₁ : Type} {T₁ : ι₁ → Type} [∀ i, OracleInterface (T₁ i)]
+    {ι₂ : Type} {T₂ : ι₂ → Type} [∀ i, OracleInterface (T₂ i)]
+    (t₁ : ∀ i, T₁ i) (t₂ : ∀ i, T₂ i) (qm : ([T₂]ₒ).Domain) :
+    simulateQ (OracleInterface.simOracle2 oSpec t₁ t₂)
+      (query (spec := [T₂]ₒ) qm : OptionT (OracleComp (oSpec + ([T₁]ₒ + [T₂]ₒ))) _)
+      = (OptionT.lift (pure (OracleInterface.answer (t₂ qm.1) qm.2))
+          : OptionT (OracleComp oSpec) _) := by
+  -- The OptionT query is `OptionT.lift (liftM (message query))`; `simulateQ` commutes with `lift`.
+  rw [show (query (spec := [T₂]ₒ) qm : OptionT (OracleComp (oSpec + ([T₁]ₒ + [T₂]ₒ))) _)
+        = OptionT.lift (liftM (([T₂]ₒ).query qm) : OracleComp (oSpec + ([T₁]ₒ + [T₂]ₒ)) _) from rfl]
+  rw [simulateQ_optionT_lift, simulateQ_simOracle2_messageQuery]
+  rfl
+
+end SimOracle2MessageQuery
+
+end Binius.RingSwitching
