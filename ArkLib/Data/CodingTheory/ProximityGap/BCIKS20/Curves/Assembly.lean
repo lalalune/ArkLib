@@ -404,6 +404,46 @@ theorem goodCoeffsCurve_coeff_polys_implies_jointAgreement_of_pos_ennreal
   exact goodCoeffsCurve_coeff_polys_implies_jointAgreement_of_pos
     (deg := deg) (domain := domain) (δ := δ) hk hS_card hS_card₁ hcoeffPoly
 
+omit [DecidableEq ι] in
+/-- Positive-`k` assembly bridge in the exact threshold form produced by
+`goodCoeffsCurve_threshold_mul_card_lt_card_of_prob_gt` in the curve theorem.
+
+After the probability calculation, the remaining proof obligations are the two
+lower bounds on this threshold and the coefficient-polynomial extraction
+witness. -/
+theorem goodCoeffsCurve_coeff_polys_implies_jointAgreement_of_prob_threshold
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hk : 0 < k)
+    {u : Fin (k + 1) → ι → F}
+    (hx :
+      ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+          (Fintype.card F : ENNReal) <
+        ((RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card :
+          ENNReal))
+    (hsmall :
+      (k : ENNReal) ≤
+        ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+          (Fintype.card F : ENNReal))
+    (hlarge :
+      ((((Fintype.card ι + 1) * k : ℕ) - 1 : ℕ) : ENNReal) ≤
+        ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+          (Fintype.card F : ENNReal))
+    (hcoeffPoly : ∀ P : F → Polynomial F,
+      (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+        ∃ B : ℕ → Polynomial F,
+          (∀ j < deg, (B j).natDegree < k + 1) ∧
+            ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              ∀ j < deg, (P z).coeff j = (B j).eval z) :
+    jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u) := by
+  exact goodCoeffsCurve_coeff_polys_implies_jointAgreement_of_pos_ennreal
+    (deg := deg) (domain := domain) (δ := δ) hk
+    (x := ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+      (Fintype.card F : ENNReal))
+    hx hsmall hlarge hcoeffPoly
+
 end CurveAssemblyBridge
 
 end ProximityGap
