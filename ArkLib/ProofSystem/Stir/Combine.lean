@@ -6,10 +6,12 @@ Authors: Mirco Richter, Poulami Das (Least Authority)
 
 import Mathlib.Tactic.FieldSimp
 
+import ArkLib.Data.Fin.Sigma
 import ArkLib.Data.CodingTheory.ProximityGap.Basic
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.Probability.Notation
 import ArkLib.ProofSystem.Stir.ProximityBound
+import ArkLib.ProofSystem.Stir.ProximityGap
 
 /-! Section 4.5 from STIR [ACFY24stir]
 
@@ -165,6 +167,98 @@ lemma combine_theorem
     proximityError F dstar (rate (code φ dstar)) δ (m * (dstar + 1) - ∑ i, degs i)) :
     jointAgreement (F := F) (κ := Fin m) (ι := ι) (C := code φ dstar)
       (W := fs) (δ := δ)
-    := by sorry
+    := by
+  classical
+  let nterms : Fin m → ℕ := fun i => dstar - degs i + 1
+  let K := (i : Fin m) × Fin (nterms i)
+  let e : Fin (Fintype.card K) ≃ K := (Fintype.equivFin K).symm
+  let fexp : Fin (Fintype.card K) → ι → F :=
+    fun k x => fs (e k).1 x * (φ x) ^ ((e k).2 : ℕ)
+  let gen : F → Fin (Fintype.card K) → F :=
+    fun r k => ri dstar degs r (e k).1 * r ^ ((e k).2 : ℕ)
+  have hδLt' : δ < 1 - Bstar (rate (code φ dstar)) := by
+    exact lt_of_lt_of_le hδLt (min_le_left _ _)
+  have hcardK :
+      Fintype.card K = m * (dstar + 1) - ∑ i : Fin m, degs i := by
+    have hsum :
+        (∑ i : Fin m, nterms i) = m * (dstar + 1) - ∑ i : Fin m, degs i := by
+      calc
+        (∑ i : Fin m, nterms i) = ∑ i : Fin m, ((dstar + 1) - degs i) := by
+          apply Finset.sum_congr rfl
+          intro i _
+          simp only [nterms]
+          have hi := hdegs i
+          omega
+        _ = (∑ _ : Fin m, (dstar + 1)) - ∑ i : Fin m, degs i := by
+          simpa using Finset.sum_tsub_distrib (s := Finset.univ)
+            (f := fun _ : Fin m => dstar + 1) (g := degs) (by
+              intro i _
+              exact Nat.le_trans (hdegs i) (Nat.le_succ dstar))
+        _ = m * (dstar + 1) - ∑ i : Fin m, degs i := by
+          simp [Finset.sum_const]
+    calc
+      Fintype.card K = ∑ i : Fin m, nterms i := by
+        simp [K]
+      _ = m * (dstar + 1) - ∑ i : Fin m, degs i := hsum
+  have hcombine :
+      (fun r : F => (fun x : ι => ∑ j : Fin (Fintype.card K), gen r j * fexp j x)) =
+        (fun r : F => combine φ dstar r fs degs) := by
+    funext r x
+    simp only [combine, gen, fexp]
+    rw [(Equiv.sum_comp e (fun k : K =>
+      ri dstar degs r k.1 * r ^ (k.2 : ℕ) * (fs k.1 x * φ x ^ (k.2 : ℕ))))]
+    change (∑ k : K, ri dstar degs r k.1 * r ^ (k.2 : ℕ) *
+        (fs k.1 x * φ x ^ (k.2 : ℕ))) =
+      ∑ i, ri dstar degs r i * fs i x *
+        ∑ l ∈ range (dstar - degs i + 1), (φ x * r) ^ l
+    rw [Fintype.sum_sigma]
+    apply Finset.sum_congr rfl
+    intro i _
+    rw [Finset.sum_fin_eq_sum_range]
+    simp only [nterms]
+    rw [Finset.mul_sum]
+    apply Finset.sum_congr rfl
+    intro l hl
+    rw [dif_pos (by
+      have hl' := Finset.mem_range.mp hl
+      omega)]
+    ring_nf
+  have hProb' :
+      Pr_{ let r ← $ᵖ F}[
+        δᵣ((fun x => ∑ j : Fin (Fintype.card K), gen r j * fexp j x), code φ dstar) ≤ δ] >
+      ENNReal.ofReal
+        (proximityError F dstar (rate (code φ dstar)) δ (Fintype.card K)) := by
+    have hProb₁ :
+        Pr_{ let r ← $ᵖ F}[δᵣ((combine φ dstar r fs degs), code φ dstar) ≤ δ] >
+        ENNReal.ofReal
+          (proximityError F dstar (rate (code φ dstar)) δ (Fintype.card K)) := by
+      rw [hcardK]
+      simpa using hProb
+    have hcombine_app :
+        ∀ r : F, (fun x : ι => ∑ j : Fin (Fintype.card K), gen r j * fexp j x) =
+          combine φ dstar r fs degs := by
+      intro r
+      exact congrFun hcombine r
+    simpa [hcombine_app] using hProb₁
+  rcases STIR.proximity_gap (φ := φ) (degree := dstar) (m := Fintype.card K)
+      (δ := δ) (f := fexp) (GenFun := gen) hδPos hδLt' hProb' with
+    ⟨S, hS, hclose⟩
+  refine ⟨S, hS, ?_⟩
+  choose v hv_mem hv_agree using
+    (fun i : Fin m => hclose (e.symm ⟨i, ⟨0, by simp [nterms]⟩⟩))
+  refine ⟨v, fun i => ?_⟩
+  constructor
+  · exact hv_mem i
+  · intro x hx
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+    let pair : K := ⟨i, ⟨0, by simp [nterms]⟩⟩
+    have h : fexp (e.symm pair) x = v i x := by
+      simpa [pair] using hv_agree i x hx
+    have hfs : fexp (e.symm pair) x = fs i x := by
+      have heq : e (e.symm pair) = pair := Equiv.apply_symm_apply e pair
+      change fs (e (e.symm pair)).1 x * φ x ^ ((e (e.symm pair)).2 : ℕ) = fs i x
+      rw [heq]
+      simp [pair]
+    exact h.symm.trans hfs
 
 end Combine

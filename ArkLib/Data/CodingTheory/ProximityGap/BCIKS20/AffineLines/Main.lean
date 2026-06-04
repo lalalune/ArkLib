@@ -8,6 +8,7 @@ Authors: Quang Dao, Katerina Hristova, František Silváši, Julian Sutherland,
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Prelude
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ErrorBound
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.UniqueDecoding
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
 
 namespace ProximityGap
 
@@ -29,15 +30,19 @@ Then, the words `u₀` and `u₁` have correlated agreement. -/
 theorem RS_correlatedAgreement_affineLines {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     (hδ : δ ≤ 1 - (ReedSolomon.sqrtRate deg domain)) :
   δ_ε_correlatedAgreementAffineLines (A := F) (F := F) (ι := ι)
-    (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
+    (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
   -- Do casing analysis on `hδ`
-  if hδ_uniqueDecodingRegime :
+  by_cases hδ_uniqueDecodingRegime :
     δ ≤ Code.relativeUniqueDecodingRadius (ι := ι) (F := F) (C := ReedSolomon.code domain deg)
-  then
-    RS_correlatedAgreement_affineLines_uniqueDecodingRegime (hδ := hδ_uniqueDecodingRegime)
-  else
-    -- Blocked: theorem 5.1 for the list-decoding regime is not available in this import graph.
-    sorry
+  · exact RS_correlatedAgreement_affineLines_uniqueDecodingRegime (hδ := hδ_uniqueDecodingRegime)
+  ·
+    classical
+    unfold δ_ε_correlatedAgreementAffineLines
+    intro u hprob
+    have hcurves := correlatedAgreement_affine_curves (k := 1) (deg := deg) (domain := domain)
+      (δ := δ) hδ
+    unfold δ_ε_correlatedAgreementCurves at hcurves
+    exact hcurves u (by simpa [Fin.sum_univ_two] using hprob)
 
 end CoreResults
 
