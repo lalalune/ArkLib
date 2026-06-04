@@ -4,26 +4,13 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 259 files, 4678 declarations
+- `ArkLib` — 281 files, 4928 declarations
 
-## Same short-name across multiple files (135 groups)
+## Same short-name across multiple files (138 groups)
 
 Each group lists declarations sharing a short name across ≥2 files. Most are legitimate (overloaded interface, paper-shape vs general form), but the list is the right anchor to look for duplicates.
 
-### `oracleVerifier` (10 declarations, 9 files)
-
-- `def CheckClaim.oracleVerifier` [ArkLib/ProofSystem/Component/CheckClaim.lean:186](../../../ArkLib/ProofSystem/Component/CheckClaim.lean#L186) — The oracle verifier for the `CheckClaim` oracle reduction.
-- `def DoNothing.oracleVerifier` [ArkLib/ProofSystem/Component/DoNothing.lean:72](../../../ArkLib/ProofSystem/Component/DoNothing.lean#L72) — The oracle verifier for the `DoNothing` oracle reduction.
-- `def RandomQuery.oracleVerifier` [ArkLib/ProofSystem/Component/RandomQuery.lean:82](../../../ArkLib/ProofSystem/Component/RandomQuery.lean#L82) — The oracle verifier simply returns the challenge, and performs no checks.
-- `def ReduceClaim.oracleVerifier` [ArkLib/ProofSystem/Component/ReduceClaim.lean:198](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L198) — The oracle verifier for the `ReduceClaim` oracle reduction.
-- `def SendClaim.oracleVerifier` [ArkLib/ProofSystem/Component/SendClaim.lean:63](../../../ArkLib/ProofSystem/Component/SendClaim.lean#L63) — The verifier checks that the relationship `rel oldStmt newStmt` holds. It has access to the original
-- `def SendSingleWitness.oracleVerifier` [ArkLib/ProofSystem/Component/SendWitness.lean:242](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L242) — The oracle verifier for the `SendSingleWitness` oracle reduction. The verifier receives the input st
-- `def RingSwitching.BatchingPhase.oracleVerifier` [ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean:138](../../../ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean#L138) — (no docstring)
-- `def Sumcheck.Spec.oracleVerifier` [ArkLib/ProofSystem/Sumcheck/Spec/General.lean:158](../../../ArkLib/ProofSystem/Sumcheck/Spec/General.lean#L158) — The oracle verifier for the (full) sum-check protocol
-- `def Sumcheck.Spec.SingleRound.Simple.oracleVerifier` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:426](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L426) — (no docstring)
-- `def Sumcheck.Spec.SingleRound.oracleVerifier` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:848](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L848) — The oracle verifier for the `i`-th round of the sum-check protocol
-
-### `reduction` (10 declarations, 9 files)
+### `reduction` (12 declarations, 11 files)
 
 - `def KZG.CommitmentScheme.reduction` [ArkLib/CommitmentScheme/KZG/FunctionBinding/Basic.lean:115](../../../ArkLib/CommitmentScheme/KZG/FunctionBinding/Basic.lean#L115) — The reduction breaking ARSDH using a successful function-binding adversary. The reduction follows th
 - `def CheckClaim.reduction` [ArkLib/ProofSystem/Component/CheckClaim.lean:55](../../../ArkLib/ProofSystem/Component/CheckClaim.lean#L55) — The reduction for the `CheckClaim` reduction.
@@ -35,8 +22,24 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def Sumcheck.Spec.reduction` [ArkLib/ProofSystem/Sumcheck/Spec/General.lean:168](../../../ArkLib/ProofSystem/Sumcheck/Spec/General.lean#L168) — The sum-check protocol as a reduction
 - `def Sumcheck.Spec.SingleRound.Simple.reduction` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:413](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L413) — The reduction for the simple description of a single round of sum-check
 - `def Sumcheck.Spec.SingleRound.reduction` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:853](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L853) — The sum-check reduction for the `i`-th round of the sum-check protocol
+- `def ToyProblem.Spec.reduction` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:271](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L271) — Honest reduction for Construction 6.2: the package `{prover, verifier}` over the bundled-input `Redu
+- `def ToyProblem.SimplifiedIOR.reduction` [ArkLib/ProofSystem/ToyProblem/Spec/SimplifiedIOR.lean:165](../../../ArkLib/ProofSystem/ToyProblem/Spec/SimplifiedIOR.lean#L165) — Honest reduction for Construction 6.9.
 
-### `oracleReduction` (10 declarations, 8 files)
+### `oracleVerifier` (11 declarations, 10 files)
+
+- `def CheckClaim.oracleVerifier` [ArkLib/ProofSystem/Component/CheckClaim.lean:186](../../../ArkLib/ProofSystem/Component/CheckClaim.lean#L186) — The oracle verifier for the `CheckClaim` oracle reduction.
+- `def DoNothing.oracleVerifier` [ArkLib/ProofSystem/Component/DoNothing.lean:72](../../../ArkLib/ProofSystem/Component/DoNothing.lean#L72) — The oracle verifier for the `DoNothing` oracle reduction.
+- `def RandomQuery.oracleVerifier` [ArkLib/ProofSystem/Component/RandomQuery.lean:82](../../../ArkLib/ProofSystem/Component/RandomQuery.lean#L82) — The oracle verifier simply returns the challenge, and performs no checks.
+- `def ReduceClaim.oracleVerifier` [ArkLib/ProofSystem/Component/ReduceClaim.lean:198](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L198) — The oracle verifier for the `ReduceClaim` oracle reduction.
+- `def SendClaim.oracleVerifier` [ArkLib/ProofSystem/Component/SendClaim.lean:63](../../../ArkLib/ProofSystem/Component/SendClaim.lean#L63) — The verifier checks that the relationship `rel oldStmt newStmt` holds. It has access to the original
+- `def SendSingleWitness.oracleVerifier` [ArkLib/ProofSystem/Component/SendWitness.lean:242](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L242) — The oracle verifier for the `SendSingleWitness` oracle reduction. The verifier receives the input st
+- `def RingSwitching.BatchingPhase.oracleVerifier` [ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean:138](../../../ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean#L138) — (no docstring)
+- `def Sumcheck.Spec.oracleVerifier` [ArkLib/ProofSystem/Sumcheck/Spec/General.lean:158](../../../ArkLib/ProofSystem/Sumcheck/Spec/General.lean#L158) — The oracle verifier for the (full) sum-check protocol
+- `def Sumcheck.Spec.SingleRound.Simple.oracleVerifier` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:426](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L426) — (no docstring)
+- `def Sumcheck.Spec.SingleRound.oracleVerifier` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:848](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L848) — The oracle verifier for the `i`-th round of the sum-check protocol
+- `def ToyProblem.Spec.oracleVerifier` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:348](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L348) — Oracle verifier for Construction 6.2. Queries the prover's message `g` once and the two oracle codew
+
+### `oracleReduction` (11 declarations, 9 files)
 
 - `def CheckClaim.oracleReduction` [ArkLib/ProofSystem/Component/CheckClaim.lean:194](../../../ArkLib/ProofSystem/Component/CheckClaim.lean#L194) — The oracle reduction for the `CheckClaim` oracle reduction.
 - `def DoNothing.oracleReduction` [ArkLib/ProofSystem/Component/DoNothing.lean:82](../../../ArkLib/ProofSystem/Component/DoNothing.lean#L82) — The oracle reduction for the `DoNothing` oracle reduction. - Prover simply returns the (non-oracle a
@@ -48,19 +51,9 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def Sumcheck.Spec.SingleRound.Simpler.oracleReduction` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:300](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L300) — (no docstring)
 - `def Sumcheck.Spec.SingleRound.Simple.oracleReduction` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:443](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L443) — (no docstring)
 - `def Sumcheck.Spec.SingleRound.oracleReduction` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:859](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L859) — The sum-check oracle reduction for the `i`-th round of the sum-check protocol
+- `def ToyProblem.Spec.oracleReduction` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:368](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L368) — Honest oracle reduction for Construction 6.2: the `OracleProver` / `OracleVerifier` pair packaged as
 
-### `OracleStatement` (8 declarations, 8 files)
-
-- `def BatchedFri.Spec.OracleStatement` [ArkLib/ProofSystem/BatchedFri/Spec/SingleRound.lean:40](../../../ArkLib/ProofSystem/BatchedFri/Spec/SingleRound.lean#L40) — An oracle for each batched polynomial.
-- `def Binius.BinaryBasefold.OracleStatement` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:488](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L488) — For the `i`-th round of the protocol, there will be oracle statements corresponding to all committed
-- `def R1CS.OracleStatement` [ArkLib/ProofSystem/ConstraintSystem/R1CS.lean:48](../../../ArkLib/ProofSystem/ConstraintSystem/R1CS.lean#L48) — (no docstring)
-- `def Fri.Spec.OracleStatement` [ArkLib/ProofSystem/Fri/Spec/SingleRound.lean:88](../../../ArkLib/ProofSystem/Fri/Spec/SingleRound.lean#L88) — For the `i`-th round of the protocol, there will be `i + 1` oracle statements, one for the beginning
-- `abbrev Spartan.Spec.OracleStatement` [ArkLib/ProofSystem/Spartan/Basic.lean:144](../../../ArkLib/ProofSystem/Spartan/Basic.lean#L144) — This unfolds to `A, B, C : Matrix (Fin 2 ^ ℓ_m) (Fin 2 ^ ℓ_n) R`
-- `def StirIOP.OracleStatement` [ArkLib/ProofSystem/Stir/MainThm.lean:81](../../../ArkLib/ProofSystem/Stir/MainThm.lean#L81) — `OracleStatement` defines the oracle message type for a multi-indexed setting: given base input type
-- `def Sumcheck.Spec.OracleStatement` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:135](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L135) — Oracle statement for sum-check, which is a multivariate polynomial over `n` variables of individual 
-- `def WhirIOP.OracleStatement` [ArkLib/ProofSystem/Whir/RBRSoundness.lean:146](../../../ArkLib/ProofSystem/Whir/RBRSoundness.lean#L146) — `OracleStatement` defines the oracle message type for a multi-indexed setting: given base input type
-
-### `pSpec` (9 declarations, 7 files)
+### `pSpec` (11 declarations, 9 files)
 
 - `def RandomQuery.pSpec` [ArkLib/ProofSystem/Component/RandomQuery.lean:53](../../../ArkLib/ProofSystem/Component/RandomQuery.lean#L53) — (no docstring)
 - `def SendClaim.pSpec` [ArkLib/ProofSystem/Component/SendClaim.lean:31](../../../ArkLib/ProofSystem/Component/SendClaim.lean#L31) — (no docstring)
@@ -71,8 +64,10 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def Logup.pSpec` [ArkLib/ProofSystem/Logup/Protocol.lean:75](../../../ArkLib/ProofSystem/Logup/Protocol.lean#L75) — Protocol 2 transcript shape: the outer LogUp messages followed by ArkLib's generic sumcheck.
 - `def Sumcheck.Spec.pSpec` [ArkLib/ProofSystem/Sumcheck/Spec/General.lean:125](../../../ArkLib/ProofSystem/Sumcheck/Spec/General.lean#L125) — The protocol specification for the general sum-check protocol, which is the composition of the singl
 - `def Sumcheck.Spec.SingleRound.pSpec` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:148](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L148) — The protocol specification for a single round of sum-check. Has the form `⟨!v[.P_to_V, .V_to_P], !v[
+- `def ToyProblem.Spec.pSpec` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:121](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L121) — Protocol specification for Construction 6.2: three rounds, in the order V → P  (γ : F)            --
+- `def ToyProblem.SimplifiedIOR.pSpec` [ArkLib/ProofSystem/ToyProblem/Spec/SimplifiedIOR.lean:105](../../../ArkLib/ProofSystem/ToyProblem/Spec/SimplifiedIOR.lean#L105) — Protocol specification for Construction 6.9: a single `V → P` round sending the combination randomne
 
-### `verifier` (9 declarations, 7 files)
+### `verifier` (11 declarations, 9 files)
 
 - `def CheckClaim.verifier` [ArkLib/ProofSystem/Component/CheckClaim.lean:50](../../../ArkLib/ProofSystem/Component/CheckClaim.lean#L50) — The verifier for the `CheckClaim` reduction.
 - `def DoNothing.verifier` [ArkLib/ProofSystem/Component/DoNothing.lean:34](../../../ArkLib/ProofSystem/Component/DoNothing.lean#L34) — The verifier for the `DoNothing` reduction.
@@ -83,8 +78,22 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def Sumcheck.Spec.SingleRound.Simple.verifier` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:404](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L404) — The verifier for the simple description of a single round of sum-check
 - `def Sumcheck.Spec.SingleRound.verifier` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:842](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L842) — The verifier for the `i`-th round of the sum-check protocol
 - `def Sumcheck.Spec.SingleRound.Unfolded.verifier` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:1090](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L1090) — The (non-oracle) verifier of the sum-check protocol for the `i`-th round, where `i < n + 1`
+- `def ToyProblem.Spec.verifier` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:257](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L257) — Honest verifier for Construction 6.2. Takes the bundled input `(stmt, oStmt) = ((v, μ₁, μ₂), (f₁, f₂
+- `def ToyProblem.SimplifiedIOR.verifier` [ArkLib/ProofSystem/ToyProblem/Spec/SimplifiedIOR.lean:154](../../../ArkLib/ProofSystem/ToyProblem/Spec/SimplifiedIOR.lean#L154) — Honest verifier for Construction 6.9. Reads `γ` from the transcript and produces the new statement `
 
-### `oracleProver` (8 declarations, 7 files)
+### `OracleStatement` (9 declarations, 9 files)
+
+- `def BatchedFri.Spec.OracleStatement` [ArkLib/ProofSystem/BatchedFri/Spec/SingleRound.lean:40](../../../ArkLib/ProofSystem/BatchedFri/Spec/SingleRound.lean#L40) — An oracle for each batched polynomial.
+- `def Binius.BinaryBasefold.OracleStatement` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:488](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L488) — For the `i`-th round of the protocol, there will be oracle statements corresponding to all committed
+- `def R1CS.OracleStatement` [ArkLib/ProofSystem/ConstraintSystem/R1CS.lean:48](../../../ArkLib/ProofSystem/ConstraintSystem/R1CS.lean#L48) — (no docstring)
+- `def Fri.Spec.OracleStatement` [ArkLib/ProofSystem/Fri/Spec/SingleRound.lean:88](../../../ArkLib/ProofSystem/Fri/Spec/SingleRound.lean#L88) — For the `i`-th round of the protocol, there will be `i + 1` oracle statements, one for the beginning
+- `abbrev Spartan.Spec.OracleStatement` [ArkLib/ProofSystem/Spartan/Basic.lean:144](../../../ArkLib/ProofSystem/Spartan/Basic.lean#L144) — This unfolds to `A, B, C : Matrix (Fin 2 ^ ℓ_m) (Fin 2 ^ ℓ_n) R`
+- `def StirIOP.OracleStatement` [ArkLib/ProofSystem/Stir/MainThm.lean:81](../../../ArkLib/ProofSystem/Stir/MainThm.lean#L81) — `OracleStatement` defines the oracle message type for a multi-indexed setting: given base input type
+- `def Sumcheck.Spec.OracleStatement` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:135](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L135) — Oracle statement for sum-check, which is a multivariate polynomial over `n` variables of individual 
+- `def ToyProblem.Spec.OracleStatement` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:88](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L88) — Oracle statements of Construction 6.2: the two purported codewords `f₁, f₂ : ι → F`. The verifier on
+- `def WhirIOP.OracleStatement` [ArkLib/ProofSystem/Whir/RBRSoundness.lean:146](../../../ArkLib/ProofSystem/Whir/RBRSoundness.lean#L146) — `OracleStatement` defines the oracle message type for a multi-indexed setting: given base input type
+
+### `oracleProver` (9 declarations, 8 files)
 
 - `def CheckClaim.oracleProver` [ArkLib/ProofSystem/Component/CheckClaim.lean:173](../../../ArkLib/ProofSystem/Component/CheckClaim.lean#L173) — The oracle prover for the `CheckClaim` oracle reduction.
 - `def DoNothing.oracleProver` [ArkLib/ProofSystem/Component/DoNothing.lean:67](../../../ArkLib/ProofSystem/Component/DoNothing.lean#L67) — The oracle prover for the `DoNothing` oracle reduction.
@@ -94,8 +103,21 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def SendWitness.oracleProver` [ArkLib/ProofSystem/Component/SendWitness.lean:138](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L138) — The oracle prover for the `SendWitness` oracle reduction. For each round `i : Fin (FinEnum.card ιw)`
 - `def SendSingleWitness.oracleProver` [ArkLib/ProofSystem/Component/SendWitness.lean:226](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L226) — The oracle prover for the `SendSingleWitness` oracle reduction. The prover sends the witness `wit` t
 - `def RingSwitching.BatchingPhase.oracleProver` [ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean:90](../../../ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean#L90) — (no docstring)
+- `def ToyProblem.Spec.oracleProver` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:300](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L300) — Same as `prover` but exposed at the `OracleProver` signature. The underlying `Prover` is identical (
 
-### `relation` (8 declarations, 7 files)
+### `prover` (9 declarations, 8 files)
+
+- `def CheckClaim.prover` [ArkLib/ProofSystem/Component/CheckClaim.lean:39](../../../ArkLib/ProofSystem/Component/CheckClaim.lean#L39) — The prover for the `CheckClaim` reduction.
+- `def DoNothing.prover` [ArkLib/ProofSystem/Component/DoNothing.lean:30](../../../ArkLib/ProofSystem/Component/DoNothing.lean#L30) — The prover for the `DoNothing` reduction.
+- `def NoInteraction.prover` [ArkLib/ProofSystem/Component/NoInteraction.lean:43](../../../ArkLib/ProofSystem/Component/NoInteraction.lean#L43) — The prover in a no-interaction reduction can be specified by a tuple of functions: - `mapStmt : Stmt
+- `def ReduceClaim.prover` [ArkLib/ProofSystem/Component/ReduceClaim.lean:44](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L44) — The prover for the `ReduceClaim` reduction.
+- `def SendWitness.prover` [ArkLib/ProofSystem/Component/SendWitness.lean:47](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L47) — (no docstring)
+- `def Sumcheck.Spec.SingleRound.Simple.prover` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:382](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L382) — The prover in the simple description of a single round of sum-check. Takes in input `target : R` and
+- `def Sumcheck.Spec.SingleRound.Unfolded.prover` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:1080](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L1080) — The overall prover for the `i`-th round of the sum-check protocol, where `i < n`. This is only well-
+- `def ToyProblem.Spec.prover` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:213](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L213) — Honest prover for Construction 6.2. After receiving the combination randomness `γ`, the prover sends
+- `def ToyProblem.SimplifiedIOR.prover` [ArkLib/ProofSystem/ToyProblem/Spec/SimplifiedIOR.lean:123](../../../ArkLib/ProofSystem/ToyProblem/Spec/SimplifiedIOR.lean#L123) — Honest prover for Construction 6.9. After receiving `γ`, sets the new witness `M_new := M₀ + γ·M₁` a
+
+### `relation` (9 declarations, 8 files)
 
 - `def ArkLib.Lattices.ModuleSIS.relation` [ArkLib/Data/Lattices/ModuleSIS.lean:81](../../../ArkLib/Data/Lattices/ModuleSIS.lean#L81) — The kernel-form Module-SIS relation for a fixed matrix `A`: `z` is nonzero, short, and lies in the k
 - `def ConstraintSystem.relation` [ArkLib/ProofSystem/ConstraintSystem/Basic.lean:68](../../../ArkLib/ProofSystem/ConstraintSystem/Basic.lean#L68) — The underlying set-theoretic relation at a given index.
@@ -105,8 +127,9 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def Plonk.relation` [ArkLib/ProofSystem/ConstraintSystem/Plonk.lean:193](../../../ArkLib/ProofSystem/ConstraintSystem/Plonk.lean#L193) — To define a relation based on the constraint system, we extend it with: - A natural number `ℓ ≤ m` r
 - `def R1CS.relation` [ArkLib/ProofSystem/ConstraintSystem/R1CS.lean:61](../../../ArkLib/ProofSystem/ConstraintSystem/R1CS.lean#L61) — The R1CS relation: `(A *ᵥ 𝕫) * (B *ᵥ 𝕫) = (C *ᵥ 𝕫)`, where `*` is understood to mean component-wise 
 - `abbrev Spartan.Spec.relation` [ArkLib/ProofSystem/Spartan/Basic.lean:152](../../../ArkLib/ProofSystem/Spartan/Basic.lean#L152) — This unfolds to `(A *ᵥ 𝕫) * (B *ᵥ 𝕫) = (C *ᵥ 𝕫)`, where `𝕫 = 𝕩 ‖ 𝕨`
+- `def ToyProblem.relation` [ArkLib/ProofSystem/ToyProblem/Definitions.lean:74](../../../ArkLib/ProofSystem/ToyProblem/Definitions.lean#L74) — **Definition 6.1 of [ABF26]** (toy problem relation `R_C^ℓ`). Given a base code `C ⊆ (ι → F)` (the p
 
-### `inputRelation` (9 declarations, 6 files)
+### `inputRelation` (10 declarations, 7 files)
 
 - `def BatchedFri.Spec.inputRelation` [ArkLib/ProofSystem/BatchedFri/Spec/General.lean:41](../../../ArkLib/ProofSystem/BatchedFri/Spec/General.lean#L41) — (no docstring)
 - `def BatchedFri.Spec.BatchingRound.inputRelation` [ArkLib/ProofSystem/BatchedFri/Spec/SingleRound.lean:56](../../../ArkLib/ProofSystem/BatchedFri/Spec/SingleRound.lean#L56) — (no docstring)
@@ -117,18 +140,9 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def Logup.inputRelation` [ArkLib/ProofSystem/Logup/Common.lean:162](../../../ArkLib/ProofSystem/Logup/Common.lean#L162) — Semantic input relation for Protocol 2: every lookup-column value occurs in the table range.
 - `def Sumcheck.Spec.SingleRound.Simpler.inputRelation` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:242](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L242) — (no docstring)
 - `def Sumcheck.Spec.SingleRound.Simple.inputRelation` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:367](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L367) — (no docstring)
+- `def ToyProblem.Spec.inputRelation` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:165](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L165) — The IOR-shaped input relation derived from `ToyProblem.relation` (Definition 6.1). `((v, μ₁, μ₂), (f
 
-### `prover` (7 declarations, 6 files)
-
-- `def CheckClaim.prover` [ArkLib/ProofSystem/Component/CheckClaim.lean:39](../../../ArkLib/ProofSystem/Component/CheckClaim.lean#L39) — The prover for the `CheckClaim` reduction.
-- `def DoNothing.prover` [ArkLib/ProofSystem/Component/DoNothing.lean:30](../../../ArkLib/ProofSystem/Component/DoNothing.lean#L30) — The prover for the `DoNothing` reduction.
-- `def NoInteraction.prover` [ArkLib/ProofSystem/Component/NoInteraction.lean:43](../../../ArkLib/ProofSystem/Component/NoInteraction.lean#L43) — The prover in a no-interaction reduction can be specified by a tuple of functions: - `mapStmt : Stmt
-- `def ReduceClaim.prover` [ArkLib/ProofSystem/Component/ReduceClaim.lean:44](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L44) — The prover for the `ReduceClaim` reduction.
-- `def SendWitness.prover` [ArkLib/ProofSystem/Component/SendWitness.lean:47](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L47) — (no docstring)
-- `def Sumcheck.Spec.SingleRound.Simple.prover` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:382](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L382) — The prover in the simple description of a single round of sum-check. Takes in input `target : R` and
-- `def Sumcheck.Spec.SingleRound.Unfolded.prover` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:1080](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L1080) — The overall prover for the `i`-th round of the sum-check protocol, where `i < n`. This is only well-
-
-### `outputRelation` (8 declarations, 5 files)
+### `outputRelation` (10 declarations, 7 files)
 
 - `def BatchedFri.Spec.BatchingRound.outputRelation` [ArkLib/ProofSystem/BatchedFri/Spec/SingleRound.lean:65](../../../ArkLib/ProofSystem/BatchedFri/Spec/SingleRound.lean#L65) — (no docstring)
 - `def Fri.Spec.outputRelation` [ArkLib/ProofSystem/Fri/Spec/General.lean:47](../../../ArkLib/ProofSystem/Fri/Spec/General.lean#L47) — (no docstring)
@@ -138,6 +152,17 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def Logup.outputRelation` [ArkLib/ProofSystem/Logup/Common.lean:189](../../../ArkLib/ProofSystem/Logup/Common.lean#L189) — The full protocol has a trivial final relation: successful verification returns `Unit`.
 - `def Sumcheck.Spec.SingleRound.Simpler.outputRelation` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:271](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L271) — (no docstring)
 - `def Sumcheck.Spec.SingleRound.Simple.outputRelation` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:370](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L370) — (no docstring)
+- `def ToyProblem.Spec.outputRelation` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:176](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L176) — The IOR-shaped *relaxed* output relation derived from `ToyProblem.relaxedRelation` (Definition 6.3).
+- `def ToyProblem.SimplifiedIOR.outputRelation` [ArkLib/ProofSystem/ToyProblem/Spec/SimplifiedIOR.lean:92](../../../ArkLib/ProofSystem/ToyProblem/Spec/SimplifiedIOR.lean#L92) — The 1-arity relaxed relation `R̃¹_{C,δ}` — the output relation of Construction 6.9. Bundles the post
+
+### `Witness` (6 declarations, 6 files)
+
+- `def BatchedFri.Spec.Witness` [ArkLib/ProofSystem/BatchedFri/Spec/SingleRound.lean:48](../../../ArkLib/ProofSystem/BatchedFri/Spec/SingleRound.lean#L48) — The Batched FRI protocol has as witness for each batched polynomial that is supposed to correspond t
+- `structure Binius.BinaryBasefold.Witness` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:509](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L509) — The round witness for round `i` of `t ∈ L[≤ 2][X Fin ℓ]` and `Hᵢ(Xᵢ, ..., Xₗ₋₁) := h(r₀', ..., rᵢ₋₁'
+- `def R1CS.Witness` [ArkLib/ProofSystem/ConstraintSystem/R1CS.lean:51](../../../ArkLib/ProofSystem/ConstraintSystem/R1CS.lean#L51) — (no docstring)
+- `def Fri.Spec.Witness` [ArkLib/ProofSystem/Fri/Spec/SingleRound.lean:109](../../../ArkLib/ProofSystem/Fri/Spec/SingleRound.lean#L109) — The FRI protocol has as witness the polynomial that is supposed to correspond to the codeword in the
+- `abbrev Spartan.Spec.Witness` [ArkLib/ProofSystem/Spartan/Basic.lean:148](../../../ArkLib/ProofSystem/Spartan/Basic.lean#L148) — This unfolds to `𝕨 : Fin 2 ^ ℓ_w → R`
+- `def ToyProblem.Spec.Witness` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:96](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L96) — Honest witness: the underlying messages `M₁, M₂ : Fin k → F` whose encodings are the oracle codeword
 
 ### `oracleVerifier_rbrKnowledgeSoundness` (7 declarations, 5 files)
 
@@ -149,13 +174,13 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem Sumcheck.Spec.SingleRound.Simple.oracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:776](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L776) — Round-by-round knowledge soundness for the oracle verifier
 - `theorem Sumcheck.Spec.SingleRound.oracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:975](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L975) — Round-by-round knowledge soundness theorem for single-round of sum-check, obtained by transporting t
 
-### `Witness` (5 declarations, 5 files)
+### `Statement` (5 declarations, 5 files)
 
-- `def BatchedFri.Spec.Witness` [ArkLib/ProofSystem/BatchedFri/Spec/SingleRound.lean:48](../../../ArkLib/ProofSystem/BatchedFri/Spec/SingleRound.lean#L48) — The Batched FRI protocol has as witness for each batched polynomial that is supposed to correspond t
-- `structure Binius.BinaryBasefold.Witness` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:509](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L509) — The round witness for round `i` of `t ∈ L[≤ 2][X Fin ℓ]` and `Hᵢ(Xᵢ, ..., Xₗ₋₁) := h(r₀', ..., rᵢ₋₁'
-- `def R1CS.Witness` [ArkLib/ProofSystem/ConstraintSystem/R1CS.lean:51](../../../ArkLib/ProofSystem/ConstraintSystem/R1CS.lean#L51) — (no docstring)
-- `def Fri.Spec.Witness` [ArkLib/ProofSystem/Fri/Spec/SingleRound.lean:109](../../../ArkLib/ProofSystem/Fri/Spec/SingleRound.lean#L109) — The FRI protocol has as witness the polynomial that is supposed to correspond to the codeword in the
-- `abbrev Spartan.Spec.Witness` [ArkLib/ProofSystem/Spartan/Basic.lean:148](../../../ArkLib/ProofSystem/Spartan/Basic.lean#L148) — This unfolds to `𝕨 : Fin 2 ^ ℓ_w → R`
+- `def R1CS.Statement` [ArkLib/ProofSystem/ConstraintSystem/R1CS.lean:45](../../../ArkLib/ProofSystem/ConstraintSystem/R1CS.lean#L45) — (no docstring)
+- `def Fri.Spec.Statement` [ArkLib/ProofSystem/Fri/Spec/SingleRound.lean:79](../../../ArkLib/ProofSystem/Fri/Spec/SingleRound.lean#L79) — For the `i`-th round of the protocol, the input statement is equal to the challenges sent from round
+- `abbrev Spartan.Spec.Statement` [ArkLib/ProofSystem/Spartan/Basic.lean:140](../../../ArkLib/ProofSystem/Spartan/Basic.lean#L140) — This unfolds to `𝕩 : Fin (2 ^ ℓ_n - 2 ^ ℓ_w) → R`
+- `structure Sumcheck.Structured.Statement` [ArkLib/ProofSystem/Sumcheck/Structured.lean:197](../../../ArkLib/ProofSystem/Sumcheck/Structured.lean#L197) — Statement per iterated sumcheck round
+- `def ToyProblem.Spec.Statement` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:82](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L82) — Input (explicit) statement of Construction 6.2: the linear-constraint vector `v ∈ F^k` and the two c
 
 ### `StmtIn` (5 declarations, 4 files)
 
@@ -165,19 +190,12 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def Sumcheck.Spec.SingleRound.Simpler.StmtIn` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:239](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L239) — (no docstring)
 - `def Sumcheck.Spec.SingleRound.Simple.StmtIn` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:356](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L356) — (no docstring)
 
-### `Statement` (4 declarations, 4 files)
-
-- `def R1CS.Statement` [ArkLib/ProofSystem/ConstraintSystem/R1CS.lean:45](../../../ArkLib/ProofSystem/ConstraintSystem/R1CS.lean#L45) — (no docstring)
-- `def Fri.Spec.Statement` [ArkLib/ProofSystem/Fri/Spec/SingleRound.lean:79](../../../ArkLib/ProofSystem/Fri/Spec/SingleRound.lean#L79) — For the `i`-th round of the protocol, the input statement is equal to the challenges sent from round
-- `abbrev Spartan.Spec.Statement` [ArkLib/ProofSystem/Spartan/Basic.lean:140](../../../ArkLib/ProofSystem/Spartan/Basic.lean#L140) — This unfolds to `𝕩 : Fin (2 ^ ℓ_n - 2 ^ ℓ_w) → R`
-- `structure Sumcheck.Structured.Statement` [ArkLib/ProofSystem/Sumcheck/Structured.lean:197](../../../ArkLib/ProofSystem/Sumcheck/Structured.lean#L197) — Statement per iterated sumcheck round
-
 ### `disagreementSet` (4 declarations, 4 files)
 
-- `def disagreementSet` [ArkLib/Data/CodingTheory/ProximityGap/DG25/MainResults.lean:56](../../../ArkLib/Data/CodingTheory/ProximityGap/DG25/MainResults.lean#L56) — The set D = Δ^{2m}(U, V), columns where U₀≠V₀ or U₁≠V₁.
-- `def Binius.BinaryBasefold.disagreementSet` [ArkLib/ProofSystem/Binius/BinaryBasefold/Prelude.lean:1042](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Prelude.lean#L1042) — Disagreement set Δ : The set of points where two functions disagree. For functions f^(i+ϑ) and g^(i+
-- `def Quotienting.disagreementSet` [ArkLib/ProofSystem/Stir/Quotienting.lean:54](../../../ArkLib/ProofSystem/Stir/Quotienting.lean#L54) — We define the set disagreementSet(f,ι,S,Ans) as the set of all points x ∈ ι that lie in S such that 
-- `def BlockRelDistance.disagreementSet` [ArkLib/ProofSystem/Whir/BlockRelDistance.lean:97](../../../ArkLib/ProofSystem/Whir/BlockRelDistance.lean#L97) — Let C be a smooth ReedSolomon code `C = RS[F, ι^(2ⁱ), φ', m]` and `f,g : ι^(2ⁱ) → F`, then the (i,k)
+- `def disagreementSet` [ArkLib/Data/CodingTheory/ProximityGap/DG25/MainResults.lean:63](../../../ArkLib/Data/CodingTheory/ProximityGap/DG25/MainResults.lean#L63) — The set D = Δ^{2m}(U, V), columns where U₀≠V₀ or U₁≠V₁. Specialisation of the canonical `Code.disagr
+- `def Binius.BinaryBasefold.disagreementSet` [ArkLib/ProofSystem/Binius/BinaryBasefold/Prelude.lean:1048](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Prelude.lean#L1048) — Disagreement set Δ : The set of points where two functions disagree. For functions f^(i+ϑ) and g^(i+
+- `def Quotienting.disagreementSet` [ArkLib/ProofSystem/Stir/Quotienting.lean:64](../../../ArkLib/ProofSystem/Stir/Quotienting.lean#L64) — We define the set disagreementSet(f,ι,S,Ans) as the set of all points x ∈ ι that lie in S such that 
+- `def BlockRelDistance.disagreementSet` [ArkLib/ProofSystem/Whir/BlockRelDistance.lean:104](../../../ArkLib/ProofSystem/Whir/BlockRelDistance.lean#L104) — Let C be a smooth ReedSolomon code `C = RS[F, ι^(2ⁱ), φ', m]` and `f,g : ι^(2ⁱ) → F`, then the (i,k)
 
 ### `reduction_completeness` (4 declarations, 4 files)
 
@@ -185,6 +203,14 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem NoInteraction.reduction_completeness` [ArkLib/ProofSystem/Component/NoInteraction.lean:69](../../../ArkLib/ProofSystem/Component/NoInteraction.lean#L69) — (no docstring)
 - `theorem ReduceClaim.reduction_completeness` [ArkLib/ProofSystem/Component/ReduceClaim.lean:66](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L66) — The `ReduceClaim` reduction satisfies perfect completeness for any relation.
 - `theorem SendWitness.reduction_completeness` [ArkLib/ProofSystem/Component/SendWitness.lean:77](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L77) — The `SendWitness` reduction satisfies perfect completeness.
+
+### `oracleReduction_perfectCompleteness` (5 declarations, 3 files)
+
+- `theorem DoNothing.oracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Component/DoNothing.lean:92](../../../ArkLib/ProofSystem/Component/DoNothing.lean#L92) — The `DoNothing` oracle reduction satisfies perfect completeness for any relation.
+- `theorem Sumcheck.Spec.SingleRound.Simpler.oracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:312](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L312) — (no docstring)
+- `theorem Sumcheck.Spec.SingleRound.Simple.oracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:762](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L762) — Perfect completeness for the oracle reduction
+- `theorem Sumcheck.Spec.SingleRound.oracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:962](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L962) — Completeness theorem for single-round of sum-check, obtained by transporting the completeness proof 
+- `theorem ToyProblem.Spec.oracleReduction_perfectCompleteness` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:453](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L453) — **Honest completeness for Construction 6.2** (protocol-level form). The honest oracle reduction is p
 
 ### `ratchet` (5 declarations, 3 files)
 
@@ -261,6 +287,12 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `structure ArkLib.Lattices.Ajtai.InnerOuter.Opening` [ArkLib/CommitmentScheme/Ajtai/InnerOuter/Scheme.lean:98](../../../ArkLib/CommitmentScheme/Ajtai/InnerOuter/Scheme.lean#L98) — A Hachi/Greyhound *weak opening* `(sᵢ, t̂ᵢ, cᵢ)ᵢ`: the decomposition data `(sᵢ, t̂ᵢ)` (`Decomp`) ext
 - `abbrev ArkLib.Lattices.Ajtai.Simple.Opening` [ArkLib/CommitmentScheme/Ajtai/Simple/Scheme.lean:43](../../../ArkLib/CommitmentScheme/Ajtai/Simple/Scheme.lean#L43) — The simple Ajtai commitment has no auxiliary opening data.
 - `structure Commitment.Opening` [ArkLib/CommitmentScheme/Basic.lean:59](../../../ArkLib/CommitmentScheme/Basic.lean#L59) — The opening protocol used to prove a claimed oracle response for committed data.
+
+### `OutputStatement` (3 declarations, 3 files)
+
+- `abbrev Sumcheck.Spec.OutputStatement` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:130](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L130) — (no docstring)
+- `def ToyProblem.Spec.OutputStatement` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:101](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L101) — Output statement: the IOR is a yes/no test — accept (return `()`) or short-circuit to `none` via `Op
+- `def ToyProblem.SimplifiedIOR.OutputStatement` [ArkLib/ProofSystem/ToyProblem/Spec/SimplifiedIOR.lean:71](../../../ArkLib/ProofSystem/ToyProblem/Spec/SimplifiedIOR.lean#L71) — Output statement for C6.9: the new `(v, μ_new)` pair. The constraint count drops from 2 to 1 (a sing
 
 ### `Params` (3 declarations, 3 files)
 
@@ -487,19 +519,18 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `instance ProtocolSpec.ChallengeIdx.instDCast₂` [ArkLib/OracleReduction/ProtocolSpec/Cast.lean:132](../../../ArkLib/OracleReduction/ProtocolSpec/Cast.lean#L132) — (no docstring)
 - `instance ProtocolSpec.FullTranscript.instDCast₂` [ArkLib/OracleReduction/ProtocolSpec/Cast.lean:200](../../../ArkLib/OracleReduction/ProtocolSpec/Cast.lean#L200) — (no docstring)
 
-### `oracleReduction_perfectCompleteness` (4 declarations, 2 files)
-
-- `theorem DoNothing.oracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Component/DoNothing.lean:92](../../../ArkLib/ProofSystem/Component/DoNothing.lean#L92) — The `DoNothing` oracle reduction satisfies perfect completeness for any relation.
-- `theorem Sumcheck.Spec.SingleRound.Simpler.oracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:312](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L312) — (no docstring)
-- `theorem Sumcheck.Spec.SingleRound.Simple.oracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:762](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L762) — Perfect completeness for the oracle reduction
-- `theorem Sumcheck.Spec.SingleRound.oracleReduction_perfectCompleteness` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:962](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L962) — Completeness theorem for single-round of sum-check, obtained by transporting the completeness proof 
-
 ### `subdomain` (4 declarations, 2 files)
 
 - `def Domain.CosetFftDomainClass.subdomain` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:75](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L75) — Given a smooth coset FFT domain `ω` of log-order `n` this function returns its subdomain of log-orde
 - `abbrev Domain.CosetFftDomain.subdomain` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:408](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L408) — (no docstring)
 - `def Domain.FftDomainClass.subdomain` [ArkLib/Data/Domain/FftDomain/Subdomain.lean:32](../../../ArkLib/Data/Domain/FftDomain/Subdomain.lean#L32) — (no docstring)
 - `abbrev Domain.FftDomain.subdomain` [ArkLib/Data/Domain/FftDomain/Subdomain.lean:122](../../../ArkLib/Data/Domain/FftDomain/Subdomain.lean#L122) — (no docstring)
+
+### `accepts` (3 declarations, 2 files)
+
+- `def Plonk.Gate.accepts` [ArkLib/ProofSystem/ConstraintSystem/Plonk.lean:58](../../../ArkLib/ProofSystem/ConstraintSystem/Plonk.lean#L58) — A gate accepts an input vector `x` if its evaluation at `x` is zero.
+- `def Plonk.ConstraintSystem.accepts` [ArkLib/ProofSystem/ConstraintSystem/Plonk.lean:129](../../../ArkLib/ProofSystem/ConstraintSystem/Plonk.lean#L129) — A constraint system accepts an input vector `x` if all of its gates accept `x`.
+- `def ToyProblem.Spec.accepts` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:154](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L154) — The §6.1 decision predicate, factored out so completeness proofs and the verifier object share the s
 
 ### `advantage` (3 declarations, 2 files)
 
@@ -572,6 +603,16 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `def ProtocolSpec.MessageIdx` [ArkLib/OracleReduction/ProtocolSpec/Basic.lean:49](../../../ArkLib/OracleReduction/ProtocolSpec/Basic.lean#L49) — Subtype of `Fin n` for the indices corresponding to messages in a protocol specification
 - `def ProtocolSpec.VectorSpec.MessageIdx` [ArkLib/OracleReduction/VectorIOR.lean:50](../../../ArkLib/OracleReduction/VectorIOR.lean#L50) — The type of indices for messages in a `VectorSpec`.
+
+### `OutputOracleStatement` (2 declarations, 2 files)
+
+- `def ToyProblem.Spec.OutputOracleStatement` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:105](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L105) — Output oracle statement: the IOR has no output oracle component.
+- `def ToyProblem.SimplifiedIOR.OutputOracleStatement` [ArkLib/ProofSystem/ToyProblem/Spec/SimplifiedIOR.lean:76](../../../ArkLib/ProofSystem/ToyProblem/Spec/SimplifiedIOR.lean#L76) — Output oracle statement: the single combined codeword `f_new := f₁ + γ·f₂ : ι → F`.
+
+### `OutputWitness` (2 declarations, 2 files)
+
+- `def ToyProblem.Spec.OutputWitness` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:109](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L109) — Output witness: empty.
+- `def ToyProblem.SimplifiedIOR.OutputWitness` [ArkLib/ProofSystem/ToyProblem/Spec/SimplifiedIOR.lean:80](../../../ArkLib/ProofSystem/ToyProblem/Spec/SimplifiedIOR.lean#L80) — Output witness for C6.9: the combined message `M_new := M₁ + γ·M₂`.
 
 ### `ParamConditions` (2 declarations, 2 files)
 
@@ -753,11 +794,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def Binius.BinaryBasefold.masterKStateProp` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:926](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L926) — Before V's challenge of the `i-th` foldStep, we ignore the bad-folding-event of the `i-th` oracle if
 - `def RingSwitching.masterKStateProp` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:428](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L428) — (no docstring)
 
-### `minDist` (2 declarations, 2 files)
-
-- `def Code.minDist` [ArkLib/Data/CodingTheory/Basic/Distance.lean:164](../../../ArkLib/Data/CodingTheory/Basic/Distance.lean#L164) — (no docstring)
-- `theorem ReedSolomon.minDist` [ArkLib/Data/CodingTheory/ReedSolomon.lean:395](../../../ArkLib/Data/CodingTheory/ReedSolomon.lean#L395) — The minimal code distance of an RS code of length `ι` and dimension `deg` is `ι - deg + 1`.
-
 ### `ofFinCoeff` (2 declarations, 2 files)
 
 - `def ArkLib.Lattices.CyclotomicModulus.Rq.ofFinCoeff` [ArkLib/Data/Lattices/CyclotomicRing/Rq.lean:184](../../../ArkLib/Data/Lattices/CyclotomicRing/Rq.lean#L184) — The reduced representative with prescribed finite coefficients `Σ_{k<N} cₖ Xᵏ`, valid when `N` does 
@@ -790,7 +826,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `proximityCondition` (2 declarations, 2 files)
 
-- `def MutualCorrAgreement.proximityCondition` [ArkLib/ProofSystem/Whir/MutualCorrAgreement.lean:47](../../../ArkLib/ProofSystem/Whir/MutualCorrAgreement.lean#L47) — For `parℓ` functions `fᵢ : ι → 𝔽`, distance `δ`, generator function `GenFun: 𝔽 → parℓ → 𝔽` and linea
+- `def MutualCorrAgreement.proximityCondition` [ArkLib/ProofSystem/Whir/MutualCorrAgreement.lean:56](../../../ArkLib/ProofSystem/Whir/MutualCorrAgreement.lean#L56) — For `parℓ` functions `fᵢ : ι → 𝔽`, distance `δ`, generator function `GenFun: 𝔽 → parℓ → 𝔽` and linea
 - `def Generator.proximityCondition` [ArkLib/ProofSystem/Whir/ProximityGen.lean:42](../../../ArkLib/ProofSystem/Whir/ProximityGen.lean#L42) — For `l` functions `fᵢ : ι → 𝔽`, distance `δ`, generator function `GenFun: 𝔽 → parℓ → 𝔽ˡ` and linear 
 
 ### `queryCodeword` (2 declarations, 2 files)
