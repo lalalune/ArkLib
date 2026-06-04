@@ -18394,9 +18394,27 @@
           "signature": "theorem induction_two' {motive : Fin 3 \u2192 Sort*} {zero : motive 0}"
         },
         {
-          "doc": "Heterogeneous equality on `Fin.induction`",
+          "doc": "",
           "kind": "theorem",
           "line": 100,
+          "name": "Fin.induction_three",
+          "namespace": "Fin",
+          "short_name": "induction_three",
+          "signature": "theorem induction_three {motive : Fin 4 \u2192 Sort*} {zero : motive 0}"
+        },
+        {
+          "doc": "Alternate version of `Fin.induction_three` that uses `3 : Fin 4` instead of `last 3`.",
+          "kind": "theorem",
+          "line": 106,
+          "name": "Fin.induction_three'",
+          "namespace": "Fin",
+          "short_name": "induction_three'",
+          "signature": "theorem induction_three' {motive : Fin 4 \u2192 Sort*} {zero : motive 0}"
+        },
+        {
+          "doc": "Heterogeneous equality on `Fin.induction`",
+          "kind": "theorem",
+          "line": 111,
           "name": "Fin.induction_heq",
           "namespace": "Fin",
           "short_name": "induction_heq",
@@ -18405,7 +18423,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 111,
+          "line": 122,
           "name": "Fin.induction_init",
           "namespace": "Fin",
           "short_name": "induction_init",
@@ -18414,7 +18432,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 123,
+          "line": 134,
           "name": "Fin.induction_tail",
           "namespace": "Fin",
           "short_name": "induction_tail",
@@ -18423,7 +18441,7 @@
         {
           "doc": "`Fin.induction` on `m + n` for `i \u2264 m` steps is equivalent to `Fin.induction` on `m` for `i` steps.",
           "kind": "theorem",
-          "line": 136,
+          "line": 147,
           "name": "Fin.induction_append_left",
           "namespace": "Fin",
           "short_name": "induction_append_left",
@@ -18432,7 +18450,7 @@
         {
           "doc": "`Fin.induction` on `m + n` for `m + i` steps is equivalent to `Fin.induction` on `n` on `i` steps on the result of `Fin.induction` on `m`.",
           "kind": "theorem",
-          "line": 150,
+          "line": 161,
           "name": "Fin.induction_append_right",
           "namespace": "Fin",
           "short_name": "induction_append_right",
@@ -18441,7 +18459,7 @@
         {
           "doc": "`Fin.insertNth 0` is equivalent to `Fin.cases`.",
           "kind": "theorem",
-          "line": 170,
+          "line": 181,
           "name": "Fin.insertNth_zero_eq_cases",
           "namespace": "Fin",
           "short_name": "insertNth_zero_eq_cases",
@@ -18450,7 +18468,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 184,
+          "line": 195,
           "name": "Fin.append_zero_of_succ_left",
           "namespace": "Fin",
           "short_name": "append_zero_of_succ_left",
@@ -18459,7 +18477,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 189,
+          "line": 200,
           "name": "Fin.append_last_of_succ_right",
           "namespace": "Fin",
           "short_name": "append_last_of_succ_right",
@@ -18468,7 +18486,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 193,
+          "line": 204,
           "name": "Fin.append_comp",
           "namespace": "Fin",
           "short_name": "append_comp",
@@ -18477,7 +18495,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 199,
+          "line": 210,
           "name": "Fin.append_comp'",
           "namespace": "Fin",
           "short_name": "append_comp'",
@@ -18486,7 +18504,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 203,
+          "line": 214,
           "name": "Fin.addCases_left'",
           "namespace": "Fin",
           "short_name": "addCases_left'",
@@ -18495,7 +18513,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 210,
+          "line": 221,
           "name": "Fin.addCases_right'",
           "namespace": "Fin",
           "short_name": "addCases_right'",
@@ -18504,7 +18522,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 222,
+          "line": 233,
           "name": "Fin.append_right'",
           "namespace": "Fin",
           "short_name": "append_right'",
@@ -18513,7 +18531,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 227,
+          "line": 238,
           "name": "Fin.append_left_of_lt",
           "namespace": "Fin",
           "short_name": "append_left_of_lt",
@@ -18522,7 +18540,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 232,
+          "line": 243,
           "name": "Fin.append_right_of_not_lt",
           "namespace": "Fin",
           "short_name": "append_right_of_not_lt",
@@ -18531,7 +18549,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 238,
+          "line": 249,
           "name": "Fin.append_left_injective",
           "namespace": "Fin",
           "short_name": "append_left_injective",
@@ -18540,7 +18558,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 246,
+          "line": 257,
           "name": "Fin.append_right_injective",
           "namespace": "Fin",
           "short_name": "append_right_injective",
@@ -18549,7 +18567,7 @@
         {
           "doc": "Version of `Fin.addCases` that splits the motive into two dependent vectors `\u03b1` and `\u03b2`, and the return type is `Fin.append \u03b1 \u03b2`.",
           "kind": "def",
-          "line": 257,
+          "line": 268,
           "name": "Fin.addCases'",
           "namespace": "Fin",
           "short_name": "addCases'",
@@ -18558,7 +18576,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 268,
+          "line": 279,
           "name": "Fin.addCases'_left",
           "namespace": "Fin",
           "short_name": "addCases'_left",
@@ -18567,7 +18585,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 274,
+          "line": 285,
           "name": "Fin.addCases'_right",
           "namespace": "Fin",
           "short_name": "addCases'_right",
@@ -18576,7 +18594,7 @@
         {
           "doc": "Embed `Fin (l.get k)` into `Fin l.sum` at the `k`-th block. Indexing is **positional** (`k : Fin l.length`): the previous membership-based design (`n \u2208 l`) collapsed duplicate lengths (e.g. for `l = [2, 2]` both occurrences embedded into the head block, leaving the tail block unreachable), which made the accompanying eliminator unprovable.",
           "kind": "def",
-          "line": 294,
+          "line": 305,
           "name": "Fin.castSum",
           "namespace": "Fin",
           "short_name": "castSum",
@@ -18585,7 +18603,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 299,
+          "line": 310,
           "name": "Fin.castSum_castLT",
           "namespace": "Fin",
           "short_name": "castSum_castLT",
@@ -18594,7 +18612,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 304,
+          "line": 315,
           "name": "Fin.castSum_castAdd",
           "namespace": "Fin",
           "short_name": "castSum_castAdd",
@@ -18603,7 +18621,7 @@
         {
           "doc": "Dependent elimination for `Fin l.sum`: every index lies in exactly one positional block `castSum l k i`.",
           "kind": "def",
-          "line": 310,
+          "line": 321,
           "name": "Fin.sumCases",
           "namespace": "Fin",
           "short_name": "sumCases",
@@ -18612,7 +18630,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 339,
+          "line": 350,
           "name": "Fin.finSuccEquivNth'",
           "namespace": "Fin",
           "short_name": "finSuccEquivNth'",
@@ -39175,7 +39193,7 @@
         {
           "doc": "Round-by-round knowledge soundness for the oracle verifier (query phase)",
           "kind": "theorem",
-          "line": 836,
+          "line": 992,
           "name": "Binius.BinaryBasefold.QueryPhase.queryOracleVerifier_rbrKnowledgeSoundness",
           "namespace": "Binius.BinaryBasefold.QueryPhase",
           "short_name": "queryOracleVerifier_rbrKnowledgeSoundness",
@@ -48485,33 +48503,42 @@
           "doc": "",
           "kind": "instance",
           "line": 125,
-          "name": "ToyProblem.Spec._anon_instance_125",
+          "name": "ToyProblem.Spec.instMessageOracleInterface",
           "namespace": "ToyProblem.Spec",
-          "short_name": "_anon_instance_125",
-          "signature": "instance instance : \u2200 j, OracleInterface ((pSpec (\u03b9 := \u03b9) (F := F) k t).Message j)"
+          "short_name": "instMessageOracleInterface",
+          "signature": "instance instMessageOracleInterface :"
+        },
+        {
+          "doc": "Pointwise `OracleInterface` instance for the (sole) prover message of `pSpec`, at round 1. The `\u2200 j`-indexed `instMessageOracleInterface` is not found by `inferInstance` on a *concrete* restated index `\u27e81, h\u27e9` (the indexed match does not reduce during typeclass search), which blocks completeness-proof terms that mention `answer (msgs \u27e81, _\u27e9) _`. This pointwise instance restores synthesis; it is *definitionally equal* to `instMessageOracleInterface \u27e81, _\u27e9` (both `instDefault`), so it introduces no diamond.",
+          "kind": "instance",
+          "line": 137,
+          "name": "ToyProblem.Spec.instMessageOracleInterfaceOne",
+          "namespace": "ToyProblem.Spec",
+          "short_name": "instMessageOracleInterfaceOne",
+          "signature": "instance instMessageOracleInterfaceOne {h : (pSpec (\u03b9 := \u03b9) (F := F) k t).dir 1 = .P_to_V} :"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 130,
-          "name": "ToyProblem.Spec._anon_instance_130",
+          "line": 141,
+          "name": "ToyProblem.Spec._anon_instance_141",
           "namespace": "ToyProblem.Spec",
-          "short_name": "_anon_instance_130",
+          "short_name": "_anon_instance_141",
           "signature": "instance instance : \u2200 j, OracleInterface ((pSpec (\u03b9 := \u03b9) (F := F) k t).Challenge j) :="
         },
         {
           "doc": "The challenges of the toy-problem `pSpec` are `SampleableType` when the underlying field `F` and the codeword index `\u03b9` are. This is needed to instantiate the (round-by-round) knowledge-soundness games, which sample challenges from the protocol's challenge spaces.",
           "kind": "instance",
-          "line": 137,
-          "name": "ToyProblem.Spec._anon_instance_137",
+          "line": 148,
+          "name": "ToyProblem.Spec._anon_instance_148",
           "namespace": "ToyProblem.Spec",
-          "short_name": "_anon_instance_137",
+          "short_name": "_anon_instance_148",
           "signature": "instance instance [SampleableType F] [SampleableType \u03b9] :"
         },
         {
           "doc": "The \u00a76.1 decision predicate, factored out so completeness proofs and the verifier object share the same statement. Given the explicit input `(v, \u03bc\u2081, \u03bc\u2082)`, the oracle codewords `(f 0, f 1)`, the challenge `\u03b3`, the prover's claim `g`, the spot-check positions `xs`, and an encoding function `encode`, the verifier accepts iff: * `\u27e8g, v\u27e9 = \u03bc\u2081 + \u03b3 \u00b7 \u03bc\u2082` (linear constraint), and * `\u2200 j, encode(g)(xs j) = f 0 (xs j) + \u03b3 \u00b7 f 1 (xs j)` (per-spot-check).",
           "kind": "def",
-          "line": 154,
+          "line": 165,
           "name": "ToyProblem.Spec.accepts",
           "namespace": "ToyProblem.Spec",
           "short_name": "accepts",
@@ -48520,7 +48547,7 @@
         {
           "doc": "The IOR-shaped input relation derived from `ToyProblem.relation` (Definition 6.1). `((v, \u03bc\u2081, \u03bc\u2082), (f\u2081, f\u2082)) \u2208 inputRelation k C \u2194 ToyProblem.relation C v (\u03bc\u2081, \u03bc\u2082) (f\u2081, f\u2082)` (modulo `Fin 2`-indexing of the latter).",
           "kind": "def",
-          "line": 165,
+          "line": 176,
           "name": "ToyProblem.Spec.inputRelation",
           "namespace": "ToyProblem.Spec",
           "short_name": "inputRelation",
@@ -48529,7 +48556,7 @@
         {
           "doc": "The IOR-shaped *relaxed* output relation derived from `ToyProblem.relaxedRelation` (Definition 6.3). The soundness statement of L6.6 is with respect to this relation: the verifier's \"accept\" guarantee is that the input is `\u03b4`-close to a valid `relation`-instance.",
           "kind": "def",
-          "line": 176,
+          "line": 187,
           "name": "ToyProblem.Spec.outputRelation",
           "namespace": "ToyProblem.Spec",
           "short_name": "outputRelation",
@@ -48538,7 +48565,7 @@
         {
           "doc": "Honest prover for Construction 6.2. After receiving the combination randomness `\u03b3`, the prover sends `g := M 0 + \u03b3 \u00b7 M 1` (point-wise on `Fin k`). The spot-check positions `xs` are not used by the prover \u2014 they only feed the verifier's spot-check at the end. State machine (`PrvState : Fin 4 \u2192 Type`): * `PrvState 0` \u2014 initial: the bundled `(stmt, oStmt) \u00d7 witness`. * `PrvState 1, 2, 3` \u2014 same plus the combination randomness `\u03b3`.",
           "kind": "def",
-          "line": 213,
+          "line": 224,
           "name": "ToyProblem.Spec.prover",
           "namespace": "ToyProblem.Spec",
           "short_name": "prover",
@@ -48547,7 +48574,7 @@
         {
           "doc": "The \u00a76.1 decision predicate is decidable: it's a finite conjunction of equalities in `F` (decidable via `DecidableEq F`) and a `Fin t` universally-quantified equality (decidable via the `Fintype` `Decidable` instance). Marking explicitly so the `verifier` below can stay computable (cf. FRI's `foldVerifier`, which is plain `def`).",
           "kind": "instance",
-          "line": 244,
+          "line": 255,
           "name": "ToyProblem.Spec.accepts.instDecidable",
           "namespace": "ToyProblem.Spec",
           "short_name": "accepts.instDecidable",
@@ -48556,7 +48583,7 @@
         {
           "doc": "Honest verifier for Construction 6.2. Takes the bundled input `(stmt, oStmt) = ((v, \u03bc\u2081, \u03bc\u2082), (f\u2081, f\u2082))` and the full transcript `(\u03b3, g, xs)`; accepts iff `accepts` holds for the supplied encoding. Computable \u2014 `accepts` is decidable, so no `Classical.dec` is needed. This mirrors FRI's `foldVerifier`, which is also a plain `def`.",
           "kind": "def",
-          "line": 257,
+          "line": 268,
           "name": "ToyProblem.Spec.verifier",
           "namespace": "ToyProblem.Spec",
           "short_name": "verifier",
@@ -48565,7 +48592,7 @@
         {
           "doc": "Honest reduction for Construction 6.2: the package `{prover, verifier}` over the bundled-input `Reduction` type.",
           "kind": "def",
-          "line": 271,
+          "line": 282,
           "name": "ToyProblem.Spec.reduction",
           "namespace": "ToyProblem.Spec",
           "short_name": "reduction",
@@ -48574,7 +48601,7 @@
         {
           "doc": "Same as `prover` but exposed at the `OracleProver` signature. The underlying `Prover` is identical (after the `OracleProver` type-alias unfolds to a `Prover` on bundled in/out types). The output is the trivial `(((), nofun), ())` since the IOR has no output oracle statements (`OutputOracleStatement : Fin 0 \u2192 Type`).",
           "kind": "def",
-          "line": 300,
+          "line": 311,
           "name": "ToyProblem.Spec.oracleProver",
           "namespace": "ToyProblem.Spec",
           "short_name": "oracleProver",
@@ -48583,7 +48610,7 @@
         {
           "doc": "Query helper: fetch the prover's combined-message claim `g` (`pSpec` round 1 \u2014 the `P \u2192 V` direction). Mirrors FRI's `getConst`.",
           "kind": "def",
-          "line": 328,
+          "line": 339,
           "name": "ToyProblem.Spec.queryG",
           "namespace": "ToyProblem.Spec",
           "short_name": "queryG",
@@ -48592,7 +48619,7 @@
         {
           "doc": "Query helper: read codeword `f i` at position `x : \u03b9`. Mirrors FRI's `queryCodeword`.",
           "kind": "def",
-          "line": 335,
+          "line": 346,
           "name": "ToyProblem.Spec.queryF",
           "namespace": "ToyProblem.Spec",
           "short_name": "queryF",
@@ -48601,7 +48628,7 @@
         {
           "doc": "Oracle verifier for Construction 6.2. Queries the prover's message `g` once and the two oracle codewords `f\u2081, f\u2082` at each of the `t` spot-check positions (query complexity: `2t + 1`), then `guard (accepts \u2026)` to decide. `embed` and `hEq` are trivial \u2014 `OutputOracleStatement : Fin 0 \u2192 Type` is empty, so the output-oracle family is vacuously a subset of input oracles + prover messages.",
           "kind": "def",
-          "line": 348,
+          "line": 359,
           "name": "ToyProblem.Spec.oracleVerifier",
           "namespace": "ToyProblem.Spec",
           "short_name": "oracleVerifier",
@@ -48610,25 +48637,124 @@
         {
           "doc": "Honest oracle reduction for Construction 6.2: the `OracleProver` / `OracleVerifier` pair packaged as `OracleReduction`.",
           "kind": "def",
-          "line": 368,
+          "line": 391,
           "name": "ToyProblem.Spec.oracleReduction",
           "namespace": "ToyProblem.Spec",
           "short_name": "oracleReduction",
           "signature": "def oracleReduction (encode : (Fin k \u2192 F) \u2192 (\u03b9 \u2192 F)) :"
         },
         {
+          "doc": "`answer` of the default oracle interface is the identity (the message itself).",
+          "kind": "lemma",
+          "line": 411,
+          "name": "ToyProblem.Spec.answer_instDefault",
+          "namespace": "ToyProblem.Spec",
+          "short_name": "answer_instDefault",
+          "signature": "lemma answer_instDefault {M : Type _} (m : M) (q : Unit) :"
+        },
+        {
+          "doc": "`simulateQ` commutes with `OptionT.pure`.",
+          "kind": "theorem",
+          "line": 419,
+          "name": "ToyProblem.Spec.simulateQ_optionT_pure",
+          "namespace": "ToyProblem.Spec",
+          "short_name": "simulateQ_optionT_pure",
+          "signature": "theorem simulateQ_optionT_pure (impl : QueryImpl spec m) (b : \u03b2) :"
+        },
+        {
+          "doc": "`simulateQ` commutes with `OptionT` `failure`.",
+          "kind": "theorem",
+          "line": 426,
+          "name": "ToyProblem.Spec.simulateQ_optionT_failure",
+          "namespace": "ToyProblem.Spec",
+          "short_name": "simulateQ_optionT_failure",
+          "signature": "theorem simulateQ_optionT_failure (impl : QueryImpl spec m) :"
+        },
+        {
+          "doc": "`simulateQ` of a query-free `guard` is the (target-monad) `if`.",
+          "kind": "theorem",
+          "line": 434,
+          "name": "ToyProblem.Spec.simulateQ_optionT_guard",
+          "namespace": "ToyProblem.Spec",
+          "short_name": "simulateQ_optionT_guard",
+          "signature": "theorem simulateQ_optionT_guard (impl : QueryImpl spec m) (P : Prop) [Decidable P] :"
+        },
+        {
+          "doc": "`simulateQ` commutes with `forIn` over a list in `OptionT (OracleComp \u2026)`: the simulated loop equals the loop with the simulated body. The missing `simulateQ_forIn` for the `OptionT` stack.",
+          "kind": "theorem",
+          "line": 444,
+          "name": "ToyProblem.Spec.simulateQ_optionT_forIn",
+          "namespace": "ToyProblem.Spec",
+          "short_name": "simulateQ_optionT_forIn",
+          "signature": "theorem simulateQ_optionT_forIn (impl : QueryImpl spec m)"
+        },
+        {
+          "doc": "A `forIn` over a list whose body is `guard (Q a)` then `yield ()` collapses to `if (\u2200 a \u2208 l, Q a) then pure () else failure`: the spot-check loop accepts iff every per-element guard passes.",
+          "kind": "theorem",
+          "line": 467,
+          "name": "ToyProblem.Spec.forIn_guard_eq",
+          "namespace": "ToyProblem.Spec",
+          "short_name": "forIn_guard_eq",
+          "signature": "theorem forIn_guard_eq (l : List \u03b1) (Q : \u03b1 \u2192 Prop) [\u2200 a, Decidable (Q a)]"
+        },
+        {
+          "doc": "`simOracle2` message-query collapse (`OracleComp` form), RIGHT (message) family.",
+          "kind": "lemma",
+          "line": 501,
+          "name": "ToyProblem.Spec.simulateQ_simOracle2_messageQuery",
+          "namespace": "ToyProblem.Spec",
+          "short_name": "simulateQ_simOracle2_messageQuery",
+          "signature": "lemma simulateQ_simOracle2_messageQuery (t\u2081 : \u2200 i, T\u2081 i) (t\u2082 : \u2200 i, T\u2082 i)"
+        },
+        {
+          "doc": "`simOracle2` oracle-statement-query collapse (`OracleComp` form), LEFT (oracle) family.",
+          "kind": "lemma",
+          "line": 516,
+          "name": "ToyProblem.Spec.simulateQ_simOracle2_leftQuery_oc",
+          "namespace": "ToyProblem.Spec",
+          "short_name": "simulateQ_simOracle2_leftQuery_oc",
+          "signature": "lemma simulateQ_simOracle2_leftQuery_oc (t\u2081 : \u2200 i, T\u2081 i) (t\u2082 : \u2200 i, T\u2082 i)"
+        },
+        {
+          "doc": "Verify-body message-query collapse: the `OptionT.lift <| liftComp <| lift query` form that appears verbatim in `oracleVerifier.verify`, simulated via `simOracle2`, collapses to `pure` of the message `answer`.",
+          "kind": "lemma",
+          "line": 533,
+          "name": "ToyProblem.Spec.simulateQ_simOracle2_messageQuery_optionT",
+          "namespace": "ToyProblem.Spec",
+          "short_name": "simulateQ_simOracle2_messageQuery_optionT",
+          "signature": "lemma simulateQ_simOracle2_messageQuery_optionT (t\u2081 : \u2200 i, T\u2081 i) (t\u2082 : \u2200 i, T\u2082 i)"
+        },
+        {
+          "doc": "Verify-body oracle-statement-query collapse (LEFT family).",
+          "kind": "lemma",
+          "line": 547,
+          "name": "ToyProblem.Spec.simulateQ_simOracle2_leftQuery_optionT",
+          "namespace": "ToyProblem.Spec",
+          "short_name": "simulateQ_simOracle2_leftQuery_optionT",
+          "signature": "lemma simulateQ_simOracle2_leftQuery_optionT (t\u2081 : \u2200 i, T\u2081 i) (t\u2082 : \u2200 i, T\u2082 i)"
+        },
+        {
+          "doc": "**Closed form of the compiled toy-problem oracle verifier.** Simulating `oracleVerifier.verify` against the honest input codewords `oStmt` and prover messages `msgs` (via `OracleInterface.simOracle2`) collapses every query \u2014 the message query for `g` and the `2t` spot-check codeword queries \u2014 to the corresponding honest values, leaving a query-free `OptionT` computation that is exactly `if accepts \u2026 then pure () else failure`. This is the load-bearing lemma for honest completeness: composed with `accepts_of_inputRelation` it shows the compiled verifier never fails on an honest transcript.",
+          "kind": "theorem",
+          "line": 571,
+          "name": "ToyProblem.Spec.simulateQ_oracleVerify_eq",
+          "namespace": "ToyProblem.Spec",
+          "short_name": "simulateQ_oracleVerify_eq",
+          "signature": "theorem simulateQ_oracleVerify_eq (encode : (Fin k \u2192 F) \u2192 (\u03b9 \u2192 F))"
+        },
+        {
           "doc": "Honest completeness for ABF26 Construction 6.2, point form: if `((v, \u03bc\u2081, \u03bc\u2082), (f\u2081, f\u2082))` lies in `inputRelation` with the underlying messages `M = (M\u2080, M\u2081)` (and `f\u1d62` is the `encode`-image of `M\u1d62`), then for any verifier challenges `(\u03b3, xs)` the \u00a76.1 decision `accepts` holds against the honest prover's message `g = M\u2080 + \u03b3 \u00b7 M\u2081`. This is the point-form companion to the `OracleReduction.perfectCompleteness` theorem that wraps the prover and verifier objects below.",
           "kind": "theorem",
-          "line": 386,
+          "line": 653,
           "name": "ToyProblem.Spec.accepts_of_inputRelation",
           "namespace": "ToyProblem.Spec",
           "short_name": "accepts_of_inputRelation",
           "signature": "theorem accepts_of_inputRelation {k t : \u2115}"
         },
         {
-          "doc": "**Honest completeness for Construction 6.2** (protocol-level form). The honest oracle reduction is perfectly complete from `inputRelation k C` to the trivial output relation `Set.univ`. The load-bearing fact is `accepts_of_inputRelation` above: under any verifier challenges, the honest prover's message `g = M\u2080 + \u03b3 M\u2081` makes `accepts` hold, so the verifier's `if accepts then pure () else failure` never fails. **Status: statement complete, proof admitted (tagged sorry).** The point-form mathematical content (`accepts_of_inputRelation`) is fully closed; only the probabilistic/monadic plumbing of ",
+          "doc": "**Honest completeness for Construction 6.2** (protocol-level form). The honest oracle reduction is perfectly complete from `inputRelation k C` to the trivial output relation `Set.univ`. The load-bearing fact is `accepts_of_inputRelation` above: under any verifier challenges, the honest prover's message `g = M\u2080 + \u03b3 M\u2081` makes `accepts` hold, so the verifier's `if accepts then pure () else failure` never fails. **Status: statement complete, proof admitted (tagged sorry) \u2014 but the two historically-named walls are now CLOSED.** The point-form mathematical content (`accepts_of_inputRelation`) and th",
           "kind": "theorem",
-          "line": 471,
+          "line": 736,
           "name": "ToyProblem.Spec.oracleReduction_perfectCompleteness",
           "namespace": "ToyProblem.Spec",
           "short_name": "oracleReduction_perfectCompleteness",
@@ -48637,7 +48763,7 @@
         {
           "doc": "**Lemma 6.6 of [ABF26]** (knowledge soundness of Construction 6.2). For any `\u03b4 \u2208 (0, \u03b4_min(C))`, the toy-problem IOR has knowledge soundness against the relaxed relation `R\u0303_{C,\u03b4}^2` with error `max { \u03b5_mca(C, \u03b4) + |\u039b(C^{\u22612}, \u03b4)| / |F|, (1 \u2212 \u03b4)^t }`. Stated against ArkLib's `Verifier.knowledgeSoundness` (cf. `OracleReduction/Security/Basic.lean :: Verifier.knowledgeSoundness`). **Naming convention \u2014 paper vs API.** The ArkLib API's `Verifier.knowledgeSoundness` takes `(relIn, relOut)` where `relIn` is the relation the extracted witness satisfies and `relOut` is the relation the verifier's outp",
           "kind": "theorem",
-          "line": 522,
+          "line": 789,
           "name": "ToyProblem.Spec.protocol62_knowledgeSound",
           "namespace": "ToyProblem.Spec",
           "short_name": "protocol62_knowledgeSound",
@@ -48646,7 +48772,7 @@
         {
           "doc": "**Remark 6.7 of [ABF26]**: the L6.6 soundness argument depends on **mutual** correlated agreement (MCA). With only correlated agreement (CA), one cannot prove every codeword `u \u2208 \u039b(C, f\u2081 + \u03b3\u00b7f\u2082, \u03b4)` decomposes as `u = u\u2081 + \u03b3\u00b7u\u2082` for some `(u\u2081, u\u2082) \u2208 \u039b(C^{\u22612}, (f\u2081, f\u2082), \u03b4)`, so the extractor would fail. MCA provides exactly this decomposition with probability `\u2265 1 \u2212 \u03b5_mca`.",
           "kind": "def",
-          "line": 551,
+          "line": 818,
           "name": "ToyProblem.Spec.remark67",
           "namespace": "ToyProblem.Spec",
           "short_name": "remark67",
@@ -48655,7 +48781,7 @@
         {
           "doc": "**Lemma 6.8 of [ABF26]** (round-by-round knowledge soundness of Construction 6.2). For any `\u03b4 \u2208 (0, \u03b4_min(C))`, the IOR has round-by-round knowledge soundness (paper Definition A.5 \u2261 ArkLib's `Verifier.rbrKnowledgeSoundness`) against `R\u0303_{C,\u03b4}^2`, with per-round errors * `\u03b5_mca(C, \u03b4) + |\u039b(C^{\u22612}, \u03b4)| / |F|` after the \u03b3 round, * `(1 \u2212 \u03b4)^t` after the spot-check round. The `KnowledgeStateFunction` tracks the largest current agreement set; the extractor erasure-decodes against it. Tagged sorry.",
           "kind": "theorem",
-          "line": 566,
+          "line": 833,
           "name": "ToyProblem.Spec.protocol62_rbrKnowledgeSound",
           "namespace": "ToyProblem.Spec",
           "short_name": "protocol62_rbrKnowledgeSound",
@@ -50234,7 +50360,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5455,
+      "declarations": 5469,
       "files": 287
     }
   }
