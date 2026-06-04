@@ -531,4 +531,44 @@ theorem exists_BW_pair (da za db zb : ℕ) (hzb : zb = za + 1)
       rw [hB0] at this
       simpa using this.symm
 
+/-- The `Y`-evaluation of a bivariate polynomial has `X`-degree at most
+`degreeX`. -/
+lemma natDegree_evalY_le_degreeX (z : F) (f : F[X][Y]) :
+    (evalY z f).natDegree ≤ degreeX f := by
+  have heval : evalY z f = ∑ j ∈ f.support, f.coeff j * (Polynomial.C z : F[X]) ^ j := by
+    simp [evalY, Polynomial.eval_eq_sum, Polynomial.sum_def]
+  rw [heval]
+  refine Polynomial.natDegree_sum_le_of_forall_le (s := f.support)
+    (f := fun j => f.coeff j * (Polynomial.C z : F[X]) ^ j) (n := degreeX f) ?_
+  intro j hj
+  have hj_le : (f.coeff j).natDegree ≤ degreeX f :=
+    Polynomial.Bivariate.coeff_natDegree_le_degreeX f j
+  have hmul : (f.coeff j * (Polynomial.C z : F[X]) ^ j).natDegree ≤ (f.coeff j).natDegree := by
+    simpa [Polynomial.C_pow] using
+      (Polynomial.natDegree_mul_C_le (f := f.coeff j) (a := z ^ j))
+  exact le_trans hmul hj_le
+
+/-- Evaluation order commutes: `(evalX x f).eval z = (evalY z f).eval x`. -/
+lemma evalX_eval_comm (x z : F) (f : F[X][Y]) :
+    (evalX x f).eval z = (evalY z f).eval x := by
+  calc (evalX x f).eval z
+      = (f.map (Polynomial.evalRingHom x)).eval z := by rw [evalX_eq_map]
+    _ = f.eval₂ (Polynomial.evalRingHom x) z := by
+        simpa using (Polynomial.eval_map (f := Polynomial.evalRingHom x) (p := f) (x := z))
+    _ = (Polynomial.eval (Polynomial.C z) f).eval x := by
+        simpa [evalY] using
+          (Polynomial.eval₂_at_apply (p := f) (f := Polynomial.evalRingHom x)
+            (r := Polynomial.C z))
+
+/-- The per-`z` instantiation of the Berlekamp–Welch identity: evaluating the
+`Y`-identity at `Y := z` gives the pointwise equation at every domain point. -/
+lemma evalY_BW_identity {A B : F[X][Y]} (domain : ι ↪ F) (u₀ u₁ : ι → F)
+    (hid : ∀ x : ι, evalX (domain x) B
+      = (Polynomial.C (u₀ x) + Polynomial.C (u₁ x) * Polynomial.X)
+          * evalX (domain x) A)
+    (z : F) (x : ι) :
+    (evalY z B).eval (domain x) = (u₀ x + u₁ x * z) * (evalY z A).eval (domain x) := by
+  rw [← evalX_eval_comm, ← evalX_eval_comm, hid x]
+  simp [Polynomial.eval_add, Polynomial.eval_mul]
+
 end BCKHS25
