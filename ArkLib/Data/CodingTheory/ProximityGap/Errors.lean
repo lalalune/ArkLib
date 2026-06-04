@@ -836,6 +836,147 @@ theorem jointProximity_diffStack_line_close
   refine ⟨fun hj ↦ (h_zero_S' j hj), fun hne hj ↦ hne (h_zero_S' j hj)⟩
 
 open Classical in
+/-- **Normalization step: jointly-proximate `mcaEvent` reduces to a difference-stack `mcaEvent`
+(kernel-checked, UDR).**
+
+For a jointly-`δ`-close stack `u` under UDR there is a *fixed, `γ`-independent* codeword pair
+`(p₀, p₁) ∈ C²` (the `jointProximity` witnesses) such that for **every** `γ`,
+
+  `mcaEvent C δ (u 0) (u 1) γ → mcaEvent C δ (u 0 - p₀) (u 1 - p₁) γ`.
+
+i.e. the `mcaEvent` of `u` transfers verbatim to the *difference stack* `d := (u 0 - p₀,
+u 1 - p₁)`, which is "close to `0`" (it vanishes on the `jointProximity` set `S'`).
+
+Proof, given an `mcaEvent` at `γ` with witness `S`, codeword `w`:
+* **Forcing** (`mcaEvent_witness_eq_combined_of_jointProximity_udr`, needs UDR): `w = p₀ + γ·p₁`
+  everywhere. On `S` also `w = u 0 + γ·u 1`, so the difference line
+  `d 0 + γ·d 1 = (u 0 + γ·u 1) - (p₀ + γ·p₁) = w - w = 0` on `S`. The zero codeword `0 ∈ C`
+  therefore witnesses the line clause for `d` on the *same* `S`.
+* **No joint pair for `d` on `S`**: if some `(c₀, c₁) ∈ C²` agreed with `(d 0, d 1)` on `S`, then
+  `(p₀ + c₀, p₁ + c₁) ∈ C²` (submodule closure) would agree with `(u 0, u 1)` on `S`
+  (`u i = p i + d i = p i + c i` there), contradicting the no-joint-pair clause of the original
+  `mcaEvent`.
+
+This is the ACFY25/[Hab25] *normalization* (subtract the unique close codeword pair): it shows
+the entire jointly-proximate `mcaEvent` mass is carried by difference stacks `d` whose line
+`d 0 + γ·d 1` *vanishes* on a size-`≥ (1-δ)·n` set while `d` is **not** the zero pair there.
+Bounding the `γ` for which a nonzero-on-`S` difference line vanishes on `S` is exactly the
+list-decoding (Guruswami–Sudan / [Hab25]) root count — the step still missing from the tree, and
+the reason the residual `jointlyProximateContribution ≤ ε_ca` cannot yet be closed in-file. -/
+theorem jointProximity_mcaEvent_imp_diffStack_mcaEvent_udr
+    (C : Submodule F (ι → A)) (δ : ℝ≥0) (u : WordStack A (Fin 2) ι)
+    (h_udr : 2 * δ * (Fintype.card ι : ℝ≥0) < (Code.dist ((C : Set (ι → A))) : ℝ≥0))
+    (h_jp : jointProximity (C := (C : Set (ι → A))) (u := u) δ) :
+    ∃ p₀ ∈ (C : Set (ι → A)), ∃ p₁ ∈ (C : Set (ι → A)),
+      ∀ γ : F, mcaEvent (C : Set (ι → A)) δ (u 0) (u 1) γ →
+        mcaEvent (C : Set (ι → A)) δ (u 0 - p₀) (u 1 - p₁) γ := by
+  classical
+  -- Re-extract the `γ`-independent jointAgreement witnesses `p₀, p₁` on `S'`.
+  have h_jp' := h_jp
+  rw [← jointAgreement_iff_jointProximity] at h_jp'
+  obtain ⟨S', hS'_card, p, hp⟩ := h_jp'
+  set p₀ := p 0 with hp₀_def
+  set p₁ := p 1 with hp₁_def
+  have hp₀_mem : p₀ ∈ (C : Set (ι → A)) := (hp 0).1
+  have hp₁_mem : p₁ ∈ (C : Set (ι → A)) := (hp 1).1
+  -- Pointwise agreement of `p` with `u` on `S'`.
+  have h_agree_S' : ∀ j ∈ S', p₀ j = u 0 j ∧ p₁ j = u 1 j := by
+    intro j hj
+    refine ⟨?_, ?_⟩
+    · have : j ∈ Finset.filter (fun k ↦ p 0 k = u 0 k) Finset.univ := (hp 0).2 hj
+      exact (Finset.mem_filter.mp this).2
+    · have : j ∈ Finset.filter (fun k ↦ p 1 k = u 1 k) Finset.univ := (hp 1).2 hj
+      exact (Finset.mem_filter.mp this).2
+  refine ⟨p₀, hp₀_mem, p₁, hp₁_mem, ?_⟩
+  intro γ h_event
+  obtain ⟨S, hS_card, ⟨w, hw_mem, hw_line⟩, hno_pair⟩ := h_event
+  -- Forcing for *this* `p`: `w = p₀ + γ•p₁`. Replicate the `eq_of_lt_dist` argument (the content
+  -- of `mcaEvent_witness_eq_combined_of_jointProximity_udr`) directly with the `p` witnesses, so
+  -- we avoid any `q = p` identification.
+  have hcomb_mem : (p₀ + γ • p₁) ∈ (C : Set (ι → A)) := C.add_mem hp₀_mem (C.smul_mem γ hp₁_mem)
+  set e : ℕ := Nat.floor (δ * (Fintype.card ι : ℝ≥0)) with he
+  have hScompl : (Finset.univ \ S).card ≤ e := by
+    have hsub : Fintype.card ι - e ≤ S.card := by
+      have := (Code.relDist_floor_bound_iff_complement_bound (Fintype.card ι) S.card δ).mpr hS_card
+      simpa [he] using this
+    have hle : S.card ≤ Fintype.card ι := Finset.card_le_univ S
+    rw [← Finset.compl_eq_univ_sdiff, Finset.card_compl]
+    omega
+  have hS'compl : (Finset.univ \ S').card ≤ e := by
+    have hsub : Fintype.card ι - e ≤ S'.card := by
+      have := (Code.relDist_floor_bound_iff_complement_bound (Fintype.card ι) S'.card δ).mpr
+        hS'_card
+      simpa [he] using this
+    have hle : S'.card ≤ Fintype.card ι := Finset.card_le_univ S'
+    rw [← Finset.compl_eq_univ_sdiff, Finset.card_compl]
+    omega
+  have h_dis_sub :
+      Finset.univ.filter (fun i ↦ w i ≠ (p₀ + γ • p₁) i) ⊆
+        (Finset.univ \ S) ∪ (Finset.univ \ S') := by
+    intro i hi
+    rw [Finset.mem_filter] at hi
+    by_contra hni
+    rw [Finset.mem_union] at hni
+    push Not at hni
+    obtain ⟨hiS, hiS'⟩ := hni
+    have hiS_mem : i ∈ S := by
+      by_contra h; exact hiS (Finset.mem_sdiff.mpr ⟨Finset.mem_univ i, h⟩)
+    have hiS'_mem : i ∈ S' := by
+      by_contra h; exact hiS' (Finset.mem_sdiff.mpr ⟨Finset.mem_univ i, h⟩)
+    obtain ⟨hp0i, hp1i⟩ := h_agree_S' i hiS'_mem
+    have : w i = (p₀ + γ • p₁) i := by
+      rw [hw_line i hiS_mem]
+      simp [Pi.add_apply, Pi.smul_apply, hp0i, hp1i]
+    exact hi.2 this
+  have h_ham_le : Δ₀(w, p₀ + γ • p₁) ≤ 2 * e := by
+    have h1 : Δ₀(w, p₀ + γ • p₁) ≤ ((Finset.univ \ S) ∪ (Finset.univ \ S')).card := by
+      unfold hammingDist
+      exact le_trans (Finset.card_le_card h_dis_sub) (le_refl _)
+    have h2 : ((Finset.univ \ S) ∪ (Finset.univ \ S')).card ≤ 2 * e := by
+      refine le_trans (Finset.card_union_le _ _) ?_
+      omega
+    exact le_trans h1 h2
+  have h_lt : Δ₀(w, p₀ + γ • p₁) < Code.dist (C : Set (ι → A)) := by
+    have he_le : (e : ℝ≥0) ≤ δ * (Fintype.card ι : ℝ≥0) := by
+      rw [he]; exact Nat.floor_le (zero_le _)
+    have h2e : (2 * e : ℝ≥0) ≤ 2 * δ * (Fintype.card ι : ℝ≥0) := by
+      have : (2 : ℝ≥0) * (e : ℝ≥0) ≤ 2 * (δ * (Fintype.card ι : ℝ≥0)) := by gcongr
+      simpa [mul_assoc] using this
+    have h2e' : ((Δ₀(w, p₀ + γ • p₁) : ℕ) : ℝ≥0) < (Code.dist (C : Set (ι → A)) : ℝ≥0) := by
+      have hcast : ((Δ₀(w, p₀ + γ • p₁) : ℕ) : ℝ≥0) ≤ (2 * e : ℝ≥0) := by exact_mod_cast h_ham_le
+      exact lt_of_le_of_lt (le_trans hcast h2e) h_udr
+    exact_mod_cast h2e'
+  have hpw : w = p₀ + γ • p₁ := eq_of_lt_dist hw_mem hcomb_mem h_lt
+  -- For `d`, build the `mcaEvent`: witness `S`, codeword `0`, no joint pair.
+  refine ⟨S, hS_card, ⟨0, C.zero_mem, ?_⟩, ?_⟩
+  · -- `0 = (u0-p₀) + γ•(u1-p₁)` on `S`: from `w = u0+γu1` on `S` and `w = p₀+γ•p₁` globally.
+    intro i hi
+    have hwi : w i = u 0 i + γ • u 1 i := hw_line i hi
+    have hwi' : w i = p₀ i + γ • p₁ i := by rw [hpw]; simp [Pi.add_apply, Pi.smul_apply]
+    have heq : u 0 i + γ • u 1 i = p₀ i + γ • p₁ i := by rw [← hwi, hwi']
+    simp only [Pi.zero_apply, Pi.sub_apply]
+    rw [smul_sub]
+    -- goal: `0 = (u0 i - p₀ i) + (γ•u1 i - γ•p₁ i)`; rearrange to a difference and use `heq`.
+    have hrearr : u 0 i - p₀ i + (γ • u 1 i - γ • p₁ i)
+        = (u 0 i + γ • u 1 i) - (p₀ i + γ • p₁ i) := by abel
+    rw [hrearr, heq, sub_self]
+  · -- No joint pair for `d` on `S`: transfer to a joint pair for `u`, contradicting `hno_pair`.
+    intro h_pair_d
+    apply hno_pair
+    obtain ⟨c₀, hc₀_mem, c₁, hc₁_mem, h_agree_d⟩ := h_pair_d
+    refine ⟨p₀ + c₀, C.add_mem hp₀_mem hc₀_mem, p₁ + c₁, C.add_mem hp₁_mem hc₁_mem, ?_⟩
+    intro i hi
+    obtain ⟨hd0, hd1⟩ := h_agree_d i hi
+    -- `(p₀+c₀) i = p₀ i + c₀ i = p₀ i + (u0-p₀) i = u0 i` ; likewise for index 1.
+    refine ⟨?_, ?_⟩
+    · have hc : c₀ i = u 0 i - p₀ i := by simpa [Pi.sub_apply] using hd0
+      simp only [Pi.add_apply]
+      rw [hc]; abel
+    · have hc : c₁ i = u 1 i - p₁ i := by simpa [Pi.sub_apply] using hd1
+      simp only [Pi.add_apply]
+      rw [hc]; abel
+
+open Classical in
 /-- **The jointly-proximate contribution to `ε_mca`.** Explicit name for the part of the `ε_mca`
 supremum that the in-tree machinery cannot bound against `ε_ca`: the worst-case `mcaEvent`
 probability over the stacks `u` that *are* jointly `δ`-close to `C` (where the `ε_ca` body is
