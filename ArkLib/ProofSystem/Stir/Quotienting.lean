@@ -7,7 +7,7 @@ import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.CodingTheory.ListDecodability
 import CompPoly.Data.MvPolynomial.Notation
 
-open Polynomial NNReal ReedSolomon ListDecodable
+open Polynomial NNReal ReedSolomon ListDecodable Code
 
 namespace Quotienting
 
@@ -143,19 +143,139 @@ lemma decodeLT_evalOnPoints {degree : ℕ} {domain : ι ↪ F} (hdeg : degree �
     _ = Lagrange.interpolate Finset.univ ⇑domain (fun i => p.eval (domain i)) := by rw [hval]
     _ = p := h.symm
 
+/-- The `ℚ≥0`-valued relative Hamming distance, cast to `ENNReal`, is the `ENNReal` quotient of
+the Hamming distance by the domain size. -/
+lemma relHammingDist_cast_ennreal {ι' : Type*} [Fintype ι'] [Nonempty ι'] {G : Type*}
+    [DecidableEq G] (u v : ι' → G) :
+    ((relHammingDist u v : ℚ≥0) : ENNReal)
+      = (hammingDist u v : ENNReal) / (Fintype.card ι' : ENNReal) := by
+  rw [show ((relHammingDist u v : ℚ≥0) : ENNReal)
+      = (((relHammingDist u v : ℚ≥0) : ℝ≥0) : ENNReal) from rfl]
+  unfold relHammingDist
+  rw [NNRat.cast_div, ENNReal.coe_div (by exact_mod_cast Fintype.card_ne_zero)]
+  norm_cast
+
 /-- Quotienting Lemma 4.4
   Let `f : ι → F` be a function, `degree` a degree parameter, `δ ∈ (0,1)` be a distance parameter
   `S` be a set with |S| < degree, `Ans, Fill : S → F`. Suppose for all `u ∈ Λ(code, f, δ)`,
   there exists `x : S`, such that `uPoly(x) ≠ Ans(x)` then
   `δᵣ(funcQuotient(f, S, Ans, Fill), code[ι, F, degree - |S|]) + |T|/|ι| > δ`,
-  where T is the disagreementSet as defined above -/
+  where T is the disagreementSet as defined above.
+
+  Compared to the original (sorried) statement, two hypotheses are added; both are implicit
+  in [ACFY24stir] and necessary for the claim:
+  * `hdom : ∀ x, domain x = x.val` — `funcQuotient`/`disagreementSet` and the conclusion all
+    evaluate `ansPoly`/`vanishingPoly` at `x.val`, while codewords of `code domain _` are
+    evaluations at `domain x`; the quotient/reconstruction correspondence requires these to
+    be the same points (the paper works with `L ⊆ F` directly).
+  * `hdeg_le : degree ≤ ι.card` — the decoding round-trip (degree-`< degree` polynomials are
+    determined by their evaluations on the domain) requires the degree budget to fit; STIR
+    always operates at rate `< 1`. -/
 lemma quotienting {degree : ℕ} {domain : ι ↪ F} [Nonempty ι]
-  (S : Finset F) (hS_lt : S.card < degree) (r : F)
-  (f : ι → F) (Ans Fill : S → F) (δ : ℝ≥0) (hδPos : δ > 0) (hδLt : δ < 1)
+  (hdom : ∀ x, domain x = x.val) (hdeg_le : degree ≤ ι.card)
+  (S : Finset F) (hS_lt : S.card < degree) (_r : F)
+  (f : ι → F) (Ans Fill : S → F) (δ : ℝ≥0) (_hδPos : δ > 0) (_hδLt : δ < 1)
   (h : ∀ u : code domain degree, u.val ∈ (closeCodewordsRel ↑(code domain degree) f δ) →
     ∃ x : S, ((decodeLT u) : F[X]).eval x.val ≠ Ans x) :
     δᵣ((funcQuotient f S Ans Fill), (code domain (degree - S.card))) +
       ((disagreementSet f S Ans).card) / (ι.card) > δ := by
-  sorry
+  classical
+  by_contra hcon
+  rw [not_lt] at hcon
+  set Q : ι → F := funcQuotient f S Ans Fill with hQdef
+  -- The smaller code is nonempty; pick a closest codeword `w` to `Q`.
+  haveI hCne : Nonempty ↥(↑(code domain (degree - S.card)) : Set (ι → F)) :=
+    Set.nonempty_coe_sort.mpr ⟨0, Submodule.zero_mem _⟩
+  obtain ⟨w, hwC, hwdist⟩ := exists_relClosest_codeword_of_Nonempty_Code
+    (↑(code domain (degree - S.card)) : Set (ι → F)) Q
+  obtain ⟨q, hq, hqw⟩ := Submodule.mem_map.mp hwC
+  have hwx : ∀ x : ι, w x = q.eval x.val := by
+    intro x
+    rw [← hqw]
+    show q.eval (domain x) = _
+    rw [hdom]
+  -- Reconstruct the degree-< degree polynomial and its codeword.
+  have hUmem : q * vanishingPoly S + ansPoly S Ans ∈ Polynomial.degreeLT F degree :=
+    reconstruct_mem_degreeLT hS_lt hq Ans
+  set uvec : ι → F := fun x => (q * vanishingPoly S + ansPoly S Ans).eval (domain x) with huvec
+  have huC : uvec ∈ code domain degree := evalOnPoints_mem_code hUmem
+  have huvx : ∀ x : ι, uvec x
+      = q.eval x.val * (vanishingPoly S).eval x.val + (ansPoly S Ans).eval x.val := by
+    intro x
+    rw [huvec]
+    simp only [Polynomial.eval_add, Polynomial.eval_mul, hdom x]
+  -- Counting: disagreements of `f` with `uvec` are covered by those of `Q` with `w`, plus `T`.
+  have hcount : hammingDist f uvec
+      ≤ hammingDist Q w + (disagreementSet f S Ans).card := by
+    have hT : (disagreementSet f S Ans).card
+        = (Finset.univ.filter
+            (fun x : ι => x.val ∈ S ∧ (ansPoly S Ans).eval x.val ≠ f x)).card := by
+      unfold disagreementSet
+      rw [Set.toFinset_image, Finset.card_image_of_injective _ Subtype.val_injective,
+        Set.toFinset_setOf]
+    rw [hT]
+    show (Finset.univ.filter (fun x => f x ≠ uvec x)).card ≤ _
+    refine le_trans (Finset.card_le_card (t :=
+        (Finset.univ.filter (fun x : ι => Q x ≠ w x)) ∪
+        (Finset.univ.filter
+          (fun x : ι => x.val ∈ S ∧ (ansPoly S Ans).eval x.val ≠ f x)) ) ?_)
+      (Finset.card_union_le _ _)
+    intro x hx
+    rw [Finset.mem_filter] at hx
+    rw [Finset.mem_union, Finset.mem_filter, Finset.mem_filter]
+    rcases Decidable.em (x.val ∈ S) with hxS | hxS
+    · rcases Decidable.em ((ansPoly S Ans).eval x.val = f x) with hAx | hAx
+      · exfalso
+        apply hx.2
+        rw [huvx x, vanishingPoly_eval_eq_zero hxS, mul_zero, zero_add, hAx]
+      · exact Or.inr ⟨Finset.mem_univ _, hxS, hAx⟩
+    · rcases Decidable.em (Q x = w x) with hQw | hQw
+      · exfalso
+        apply hx.2
+        have hVne := vanishingPoly_eval_ne_zero (S := S) hxS
+        have hQx : Q x
+            = (f x - (ansPoly S Ans).eval x.val) / (vanishingPoly S).eval x.val := by
+          rw [hQdef]
+          unfold funcQuotient
+          rw [dif_neg hxS]
+        rw [huvx x, ← hwx x, ← hQw, hQx, div_mul_cancel₀ _ hVne, sub_add_cancel]
+      · exact Or.inl ⟨Finset.mem_univ _, hQw⟩
+  -- Lift to ENNReal: `uvec` is δ-close to `f`.
+  have hcard0 : (ι.card : ENNReal) ≠ 0 := by
+    have := Finset.card_pos.mpr ((Finset.nonempty_coe_sort (s := ι)).mp inferInstance)
+    exact_mod_cast this.ne'
+  have e1 : ((relHammingDist f uvec : ℚ≥0) : ENNReal)
+      ≤ ((relHammingDist Q w : ℚ≥0) : ENNReal)
+        + ((disagreementSet f S Ans).card : ENNReal) / (ι.card : ENNReal) := by
+    rw [relHammingDist_cast_ennreal, relHammingDist_cast_ennreal, Fintype.card_coe,
+      ENNReal.div_add_div_same]
+    refine ENNReal.div_le_div_right ?_ _
+    exact_mod_cast hcount
+  have hcon' : ((relHammingDist Q w : ℚ≥0) : ENNReal)
+      + ((disagreementSet f S Ans).card : ENNReal) / (ι.card : ENNReal) ≤ (δ : ENNReal) := by
+    rw [hwdist]
+    exact hcon
+  have e3 : ((relHammingDist f uvec : ℚ≥0) : ENNReal) ≤ (δ : ENNReal) := le_trans e1 hcon'
+  have hclose_r : ((relHammingDist f uvec : ℚ≥0) : ℝ) ≤ ((δ : ℝ≥0) : ℝ) := by
+    have h4 : ((relHammingDist f uvec : ℚ≥0) : ℝ≥0) ≤ δ := by
+      rw [show ((relHammingDist f uvec : ℚ≥0) : ENNReal)
+          = (((relHammingDist f uvec : ℚ≥0) : ℝ≥0) : ENNReal) from rfl] at e3
+      exact_mod_cast e3
+    exact_mod_cast h4
+  have hclose : uvec ∈ closeCodewordsRel (↑(code domain degree) : Set (ι → F)) f (δ : ℝ) := by
+    refine ⟨huC, ?_⟩
+    show uvec ∈ relHammingBall f (δ : ℝ)
+    unfold relHammingBall
+    rw [Set.mem_setOf_eq]
+    convert hclose_r using 2
+    congr!
+  -- The list hypothesis contradicts the decoded reconstruction agreeing with `Ans` on `S`.
+  obtain ⟨a, ha⟩ := h ⟨uvec, huC⟩ hclose
+  apply ha
+  have hdecode : ((decodeLT (⟨uvec, huC⟩ : code domain degree)) : Polynomial F)
+      = q * vanishingPoly S + ansPoly S Ans :=
+    decodeLT_evalOnPoints hdeg_le hUmem _ (fun x => rfl)
+  rw [hdecode, Polynomial.eval_add, Polynomial.eval_mul,
+    vanishingPoly_eval_eq_zero a.2, mul_zero, zero_add, ansPoly_eval Ans a.2]
 
 end Quotienting
