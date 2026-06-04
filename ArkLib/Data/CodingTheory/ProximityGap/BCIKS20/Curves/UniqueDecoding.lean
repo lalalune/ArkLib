@@ -116,6 +116,64 @@ theorem RS_correlatedAgreement_curves_k_zero {deg : ℕ} {domain : ι ↪ F} {δ
     exact this.symm
 
 
+-- Placed here to avoid invalidating the ReedSolomon.lean olean cascade;
+-- natural upstream home: ReedSolomon.lean next to relativeUniqueDecodingRadius_RS_eq'.
+/-- The relative unique decoding radius of a Reed–Solomon code is strictly below
+the Johnson-type bound `1 − √ρ` whenever it is positive: `(1−ρ)/2 < 1−√ρ` for
+`ρ < 1`, by AM–GM (`2√ρ < 1 + ρ` strictly since `√ρ < 1`). Merges the
+unique-decoding hypothesis into the [BCIKS20] full-range hypothesis. -/
+lemma relativeUniqueDecodingRadius_lt_one_sub_sqrtRate
+    {ι : Type*} [Fintype ι] {F : Type*} [Field F] [DecidableEq F]
+    {deg : ℕ} {domain : ι ↪ F} [NeZero deg] (h : deg ≤ Fintype.card ι)
+    (hpos : 0 < Code.relativeUniqueDecodingRadius (ι := ι) (F := F)
+      (C := ReedSolomon.code domain deg)) :
+    Code.relativeUniqueDecodingRadius (ι := ι) (F := F)
+        (C := ReedSolomon.code domain deg)
+      < 1 - ReedSolomon.sqrtRate deg domain := by
+  classical
+  have hn_pos : 0 < Fintype.card ι :=
+    lt_of_lt_of_le (Nat.pos_of_neZero deg) h
+  -- the rate is deg/n
+  have hrate : (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)
+      = (deg : ℝ≥0) / (Fintype.card ι : ℝ≥0) := by
+    rw [ReedSolomon.rateOfLinearCode_eq_min_div, min_eq_left (by exact_mod_cast h)]
+    push_cast
+    ring
+  set ρ : ℝ≥0 := (deg : ℝ≥0) / (Fintype.card ι : ℝ≥0) with hρ
+  -- relUDR = (1 − ρ)/2
+  have hudr : Code.relativeUniqueDecodingRadius (ι := ι) (F := F)
+      (C := ReedSolomon.code domain deg) = (1 - ρ) / 2 := by
+    rw [ReedSolomon.relativeUniqueDecodingRadius_RS_eq' (α := domain) (n := deg) h]
+  -- positivity forces ρ < 1
+  have hρ_lt_one : ρ < 1 := by
+    by_contra hge
+    push_neg at hge
+    have : (1 : ℝ≥0) - ρ = 0 := tsub_eq_zero_of_le hge
+    rw [hudr, this] at hpos
+    simp at hpos
+  -- pass to ℝ
+  rw [hudr]
+  rw [show ReedSolomon.sqrtRate deg domain = NNReal.sqrt ρ by
+    simp only [ReedSolomon.sqrtRate, hrate]]
+  rw [← NNReal.coe_lt_coe]
+  have hsqrt_le_one : NNReal.sqrt ρ ≤ 1 := by
+    rw [show (1 : ℝ≥0) = NNReal.sqrt 1 by simp]
+    exact NNReal.sqrt_le_sqrt.mpr (le_of_lt hρ_lt_one)
+  rw [NNReal.coe_sub hsqrt_le_one]
+  rw [NNReal.coe_div, NNReal.coe_sub (le_of_lt hρ_lt_one)]
+  have hρ_real : ((NNReal.sqrt ρ : ℝ≥0) : ℝ) = Real.sqrt (ρ : ℝ) := by
+    rw [Real.coe_sqrt]
+  rw [hρ_real]
+  have hρ0 : (0 : ℝ) ≤ (ρ : ℝ) := (ρ : ℝ≥0).coe_nonneg
+  have hρ1 : (ρ : ℝ) < 1 := by exact_mod_cast hρ_lt_one
+  have hsq : Real.sqrt (ρ : ℝ) ^ 2 = (ρ : ℝ) := Real.sq_sqrt hρ0
+  have hsqrt_lt_one : Real.sqrt (ρ : ℝ) < 1 := by
+    rw [show (1 : ℝ) = Real.sqrt 1 by simp]
+    exact Real.sqrt_lt_sqrt hρ0 hρ1
+  have hsub_pos : 0 < 1 - Real.sqrt (ρ : ℝ) := sub_pos.mpr hsqrt_lt_one
+  push_cast
+  nlinarith [pow_pos hsub_pos 2, hsq]
+
 end CoreResults
 
 end ProximityGap
