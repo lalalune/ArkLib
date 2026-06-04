@@ -249,6 +249,10 @@ def batchingKStateProp {m : Fin (2 + 1)}
       ∧ embedded_MLP_eval κ L K ℓ ℓ' h_l witMid.t' stmt.t_eval_point = s_hat
       ∧ performCheckOriginalEvaluation κ L K β ℓ ℓ' h_l stmt.original_claim
         stmt.t_eval_point s_hat -- local V check
+      -- DP24 repair: carry the oracle-statement compatibility (present in rounds 0 and 2),
+      -- so that `extractMid` at round 0 can reconstruct the round-0 `batchingInputRelationProp`.
+      -- `batchingKStateProp`/`batchingKnowledgeStateFunction` have no users outside this file.
+      ∧ aOStmtIn.initialCompatibility ⟨witMid.t', oStmt⟩
   | ⟨2, _⟩ => by -- implied by relOut
     simp only [batchingWitMid] at witMid
     let ⟨msgsUpTo, chalsUpTo⟩ := Transcript.equivMessagesChallenges (k := 2)
@@ -300,10 +304,35 @@ noncomputable def batchingKnowledgeStateFunction :
         Equiv.toFun_as_coe, Transcript.equivMessagesChallenges_apply, Fin.castSucc_zero,
         batchingRbrExtractor, Fin.mk_one, Fin.succ_one_eq_two,
         batchingInputRelationProp] at ⊢ hSuccTrue
-      rw [hSuccTrue.1]
-      simp only [true_and]
-      set s_hat := (Transcript.concat msg tr).toMessagesChallenges.1 ⟨(0 : Fin (0 + 1)), by rfl⟩
-      -- ⊢ stmtIn.1.original_claim = (MvPolynomial.aeval stmtIn.1.t_eval_point) ↑witMid.t
+      -- Round-1 `batchingKStateProp` gives, in order:
+      --   (1) `witMid.t' = packMLE β witMid.t`,
+      --   (2) `embedded_MLP_eval witMid.t' r = s_hat`,
+      --   (3) `performCheckOriginalEvaluation original_claim r s_hat`,
+      --   (4) `aOStmtIn.initialCompatibility ⟨witMid.t', oStmt⟩`  (the documented repair).
+      -- The round-0 `batchingInputRelationProp` goal is the conjunction
+      --   `t' = packMLE t ∧ original_claim = aeval r t ∧ initialCompatibility`.
+      -- Conjuncts (1) and (3-of-goal) are discharged directly from `hSuccTrue`.
+      refine ⟨hSuccTrue.1, ?_, hSuccTrue.2.2.2⟩
+      -- Remaining goal: `original_claim = aeval r witMid.t`.
+      --
+      -- DEFINITION BUG (blocks this conjunct). From `hSuccTrue` we have
+      --   `original_claim = ∑_v eq̃(v, r_prefix) · (decompose_tensor_algebra_COLUMNS s_hat)_v`
+      -- with `s_hat = embedded_MLP_eval (packMLE β t) r`. To equal `aeval r t = t(r)`, the
+      -- reconstruction must weight the tensor components that carry the `t`-evaluations, i.e.
+      -- the ROW components (the `φ₁`/`t'` factor): by `Prelude.decompose_rows_packMLE`,
+      --   `(decompose_rows s_hat)_u = ∑_w t(u,w) · eq̃(w, r_suffix)`,
+      -- whence `∑_u eq̃(u, r_prefix) · (decompose_rows s_hat)_u = t(r)`.
+      -- But `performCheckOriginalEvaluation` uses `decompose_tensor_algebra_COLUMNS`, which
+      -- represents the LEFT (`φ₀`/`eq`) factor:
+      --   `decompose_columns (a ⊗ b) v = β.repr a v • b`,
+      -- so `(decompose_columns s_hat)_v = ∑_w β.repr(eq̃(w, r_suffix)) v • t'(w)` and the
+      -- column-weighted sum is `∑_w λ(eq̃(w, r_suffix)) · t'(w)` with `λ : β_v ↦ eq̃(v, r_prefix)`
+      -- a merely `K`-linear (non-multiplicative) map. For `κ = 1`, `t(0,w)=1, t(1,w)=0` already
+      -- gives column-sum `= λ(eq_w)·β₀ ≠ eq_w·(1-r_prefix) = ` the `t(r)` term, so the identity
+      -- is FALSE as the protocol is currently defined. The single coupled fix is to swap the
+      -- embeddings in `embedded_MLP_eval` (map `t'` through `φ₀`, evaluate at `φ₁(r_suffix)`),
+      -- or equivalently change Step 2 to `decompose_tensor_algebra_rows`. Both lie outside the
+      -- two files editable here, so this conjunct is left open pending that definition repair.
       sorry
     | ⟨1, h⟩ => nomatch h
   toFun_full := fun ⟨stmtLast, oStmtLast⟩ tr witOut => by sorry
