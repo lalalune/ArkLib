@@ -198,15 +198,26 @@ def stateFunction [Inhabited OStatement] : (oracleVerifier oSpec OStatement).Sta
   toFun_empty := fun stmt => by simp
   toFun_next | 0 => fun hDir ⟨stmt, oStmt⟩ tr h => by simp_all
   toFun_full := fun ⟨stmt, oStmt⟩ tr h => by
-    sorry
-    -- simp_all only [Fin.reduceLast, Fin.isValue, OStmtIn, Nat.reduceAdd, Fin.coe_ofNat_eq_mod,
-    --   Nat.reduceMod, Fin.zero_eta, StmtOut, OStmtOut, StmtIn, StateT.run'_eq, Set.language, WitOut,
-    --   relOut, Set.mem_image, Set.mem_setOf_eq, Prod.exists, exists_const, exists_eq_right,
-    --   probEvent_eq_zero_iff, support_bind, support_map, Set.mem_iUnion, exists_and_right,
-    --   exists_prop, forall_exists_index, and_imp, Prod.forall]
-    -- intro a b s hs s' hSupp
-    -- simp [OracleVerifier.toVerifier, Verifier.run, oracleVerifier] at hSupp
-    -- simp [hSupp.1, h]
+    -- The verifier deterministically returns `(tr.challenges ⟨0, rfl⟩, oStmt)`. If the answers at
+    -- that query differ (hypothesis `h`), the output is never in `relOut.language`, so prob is 0.
+    rw [probEvent_eq_zero_iff]
+    intro x hx
+    rw [OptionT.mem_support_iff] at hx
+    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+    obtain ⟨s, _, hx⟩ := hx
+    simp only [OracleVerifier.toVerifier, oracleVerifier, Verifier.run, StateT.run'_eq,
+      support_map, Set.mem_image, Prod.exists] at hx
+    obtain ⟨val, s', hmem, heq⟩ := hx
+    erw [simulateQ_pure] at hmem
+    simp only [StateT.run_pure, support_pure, Set.mem_singleton_iff, Prod.mk.injEq] at hmem
+    obtain ⟨rfl, -⟩ := hmem
+    -- `x = (tr.challenges ⟨0, rfl⟩, oStmt)`; not in `relOut.language` since answers differ.
+    injection heq with hx
+    subst x
+    simp only [Set.language, relOut, Set.mem_image, Set.mem_setOf_eq, Prod.exists, exists_const,
+      exists_eq_right]
+    intro hrel
+    exact h (by simpa [FullTranscript.challenges, pSpec] using hrel)
 
 /-- The round-by-round extractor is trivial since the output witness is `Unit`. -/
 def rbrExtractor : Extractor.RoundByRound oSpec
@@ -226,9 +237,26 @@ def knowledgeStateFunction :
     answer (oracles 0) q = answer (oracles 1) q
   toFun_empty := fun stmt => by simp
   toFun_next | 0 => fun hDir ⟨stmt, oStmt⟩ tr h => by simp_all
-  toFun_full := fun ⟨stmt, oStmt⟩ tr _ => by
-    sorry
-    -- simp_all [oracleVerifier, OracleVerifier.toVerifier, Verifier.run]
+  toFun_full := fun ⟨stmt, oStmt⟩ tr witOut => by
+    -- Bind via `intro` to avoid an expensive `isDefEq` against the heavy `verifier.run` field type.
+    intro h
+    rw [gt_iff_lt, probEvent_pos_iff] at h
+    obtain ⟨x, hx, hrel⟩ := h
+    rw [OptionT.mem_support_iff] at hx
+    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+    obtain ⟨s, _, hx⟩ := hx
+    -- The verifier deterministically returns `(tr.challenges ⟨0, rfl⟩, oStmt)`.
+    simp only [OracleVerifier.toVerifier, oracleVerifier, Verifier.run, StateT.run'_eq,
+      support_map, Set.mem_image, Prod.exists] at hx
+    obtain ⟨val, s', hmem, heq⟩ := hx
+    erw [simulateQ_pure] at hmem
+    simp only [StateT.run_pure, support_pure, Set.mem_singleton_iff, Prod.mk.injEq] at hmem
+    obtain ⟨rfl, -⟩ := hmem
+    injection heq with hxout
+    subst x
+    -- `hrel` is the output relation membership; the goal is the `toFun` body for the last round.
+    simp only [relOut, Set.mem_setOf_eq] at hrel
+    simpa [FullTranscript.challenges, pSpec] using hrel
 
 variable [Fintype (Query OStatement)] [∀ q, DecidableEq (O.toOC.spec q)]
 
