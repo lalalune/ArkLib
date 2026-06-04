@@ -331,6 +331,7 @@ theorem oracleVerifier_rbrKnowledgeSoundness [Nonempty (Query OStatement)]
       simpa using hq.2
   · rw [ENNReal.tsum_mul_right]
     exact le_trans (mul_le_mul' tsum_probOutput_le_one le_rfl) (by rw [one_mul])
+
 end RandomQuery
 
 -- namespace RandomQueryAndReduceClaim

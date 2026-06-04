@@ -93,14 +93,56 @@ open ListDecodable JohnsonBound
   `|Λ(C, J_{q,ℓ}(δ_min(C)))| ≤ ℓ`
 
 where `δ_min(C) = minDist(C) / n` is the relative minimum distance and `J_{q,ℓ}`
-is the paper's q-ary ℓ-radius Johnson function. **Admitted (tagged sorry).** Note
-the existing absolute-distance Johnson bound in
-[`JohnsonBound/Basic.lean`](Basic.lean) (`johnson_bound`, `johnson_bound_alphabet_free`)
-is **not** directly portable to this `J_{q,ℓ}`-radius `Lambda` form: at the `Jqℓ`
-boundary the existing bound's `JohnsonConditionStrong` precondition is violated (the
-denominator goes negative — see the inline comment below for the computation), so a
-Guruswami–Sudan-style `J_{q,ℓ}`-specific argument is required. Tracked in
-`docs/kb/ABF26_PLAN.md`.
+is the paper's q-ary ℓ-radius Johnson function. **Admitted (tagged sorry).**
+
+**Why the in-tree `johnson_bound` does NOT reach this radius (verified, 2026-06-04).**
+A prior triage suggested "plug `e/n = J_{q,ℓ}` into the in-tree `johnson_bound`; its
+`JohnsonConditionStrong` then fails at the boundary, forcing `|Λ| ≤ ℓ`". This was
+re-checked symbolically and is **incorrect** — there is a factor inversion that makes
+the in-tree bound land at a *strictly smaller* radius. The exact computation:
+
+Write `frac = q/(q-1)`, `t = frac·δ_min`, `L = ℓ/(ℓ-1) > 1`. The boundary identity for
+`Jqℓ` is `(1 - frac·Jqℓ)² = 1 - frac·L·δ_min = 1 - L·t`. The packaged bound
+[`johnson_bound`](Basic.lean) gives `B.card ≤ (frac·d/n)/Denom` with
+`Denom = (1 - frac·e/n)² - (1 - frac·d/n)`. Setting `e/n = Jqℓ`, `d/n = δ_min`:
+`Denom = (1 - L·t) - (1 - t) = t·(1 - L) = -t/(ℓ-1) < 0`. So `JohnsonConditionStrong`
+(`Denom > 0`) is *false* and the bound is unusable — but the failure does **not** force
+`|Λ| ≤ ℓ`: the raw [`johnson_bound_lemma`](Lemmas.lean), which holds unconditionally
+(`n>0`, `|B|≥2`, `|F|≥2`), reads `B.card · Denom ≤ frac·d/n`, and with `Denom < 0` this
+is a *negative lower* bound on `B.card` — vacuous as an upper bound.
+
+Inverting the packaging the other way: `johnson_bound` yields `B.card ≤ ℓ` exactly when
+`Denom ≥ (frac·d/n)/ℓ = t/ℓ`, i.e. `(1 - frac·e/n)² ≥ 1 - t·(ℓ-1)/ℓ = 1 - t/L`, i.e.
+`e/n ≤ (1/frac)·(1 - √(1 - frac·δ_min/L))`. That radius uses the factor `1/L = (ℓ-1)/ℓ`,
+the **reciprocal** of the `L = ℓ/(ℓ-1)` factor inside `Jqℓ`. Since `L > 1`, the in-tree
+radius is strictly *smaller* than the paper's `Jqℓ`. The paper's larger (tight) list-of-ℓ
+radius is the Plotkin-refined Johnson radius and is not reachable from the second-moment
+`johnson_bound` alone.
+
+**Exact missing ingredient (citation upgrade).** Closing T3.2 at the paper's `Jqℓ`
+requires the *q-ary Plotkin average-distance upper bound*
+
+  `d(B') ≤ frac · n · M/(M-1)`     where `M = |B'|`, `frac = q/(q-1)`,
+
+i.e. the convex *dual* of the in-tree `almost_johnson` (which lower-bounds
+`∑_α C₂(K_i(α))`; the Plotkin step instead lower-bounds `∑_α K_i(α)² ≥ M²/q` by
+Cauchy–Schwarz / power-mean, giving an *upper* bound on the average distance). The tree
+currently has only `min_dist_le_d` (`δ_min ≤ d_avg`) and `johnson_d_le_n` (`d_avg ≤ n`),
+neither of which suffices. Combining this Plotkin bound with `johnson_bound_lemma`
+discharges T3.2 at `Jqℓ`. This is a self-contained ~150–250-line development over the
+existing `K B i α` column-count machinery in [`JohnsonBound/Lemmas.lean`](Lemmas.lean)
+and is the only nontrivial gap; see the four skeletons in the inline comment below.
+
+**Two further mechanical gaps** (independent of the math wall above):
+- *Alphabet*: this statement is over a bare alphabet `α` (`Fintype + DecidableEq`, no
+  `Field`), but every in-tree Johnson lemma — including `johnson_bound_alphabet_free` —
+  carries `[Field F]`. Either redo the column-count core over `DecidableEq α`, or weaken
+  this statement to `[Field α]`.
+- *Index type*: the in-tree apparatus (`e B v`, `d B`, the ball) is over `Fin n → F`;
+  this statement is over `ι → α`. A `Fintype.equivFin ι` transport of `hammingDist`/`e`/`d`
+  is needed (mechanical but not free).
+
+Tracked in `docs/kb/ABF26_PLAN.md` and the audit log.
 
 **Alphabet generality.** Stated over an arbitrary alphabet `α` (not necessarily a
 field), matching the paper's `Σ`. The Johnson bound is a purely combinatorial fact
@@ -112,15 +154,38 @@ theorem johnson_bound_lambda_le_ell
     let q : ℚ := Fintype.card α
     let δ_min : ℚ := Code.minDist C / Fintype.card ι
     Lambda C (Jqℓ q ℓ δ_min) ≤ (ℓ : ℕ∞) := by
-  sorry -- ABF26-T3.2; external admit. The earlier comment "port from
-        -- JohnsonBound.johnson_bound" understates the work: the existing
-        -- `johnson_bound` gives `B.card ≤ (frac·d/n) / Denom` where
-        -- `Denom = (1 - frac·e/n)² - (1 - frac·d/n)`. Plugging `e/n = Jqℓ q ℓ δ_min`,
-        -- the `(1 - frac·e/n)²` term simplifies to `1 - frac·(ℓ/(ℓ-1))·δ_min`, making
-        -- `Denom = frac·δ_min·(1 - ℓ/(ℓ-1)) < 0` for ℓ ≥ 2 — the existing bound's
-        -- precondition (`JohnsonConditionStrong`) is violated exactly at the
-        -- Jqℓ boundary. T3.2 needs the Guruswami-Sudan-style `J_{q,ℓ}`-specific
-        -- argument, not a direct port. Tracked as external admit.
+  -- ABF26-T3.2; external admit. The ONLY nontrivial gap is the q-ary Plotkin
+  -- average-distance upper bound `d(B') ≤ frac·n·M/(M-1)` (see docstring). Four
+  -- attempted in-tree routes, each blocked at a precisely-identified step:
+  --
+  -- SKELETON 1 (direct `johnson_bound`, the route the docstring refutes).
+  --   intro q δ_min; refine iSup_le fun f => ?_;  set B' := closeCodewordsRel C f _
+  --   Transport B' to a `Finset (Fin n → α)`; apply `johnson_bound` to get
+  --   `B'.card ≤ (frac·d/n)/Denom`.  BLOCKED: at `e/n = Jqℓ`, `Denom = -t/(ℓ-1) < 0`,
+  --   so `JohnsonConditionStrong` is false; no `B'.card ≤ ℓ` follows (factor inversion).
+  --
+  -- SKELETON 2 (raw `johnson_bound_lemma` + Plotkin — the CORRECT route).
+  --   From `johnson_bound_lemma`: `M·Denom ≤ frac·d_avg/n`, holds unconditionally.
+  --   Need: q-ary Plotkin `d_avg ≤ frac·n·M/(M-1)` ⇒ substitute and solve for M.
+  --   BLOCKED: the Plotkin bound is ABSENT in-tree (the convex dual of `almost_johnson`;
+  --   would lower-bound `∑_α K_i(α)² ≥ M²/q`, opposite to `le_sum_sum_choose_K`).
+  --
+  -- SKELETON 3 (`johnson_bound_alphabet_free` ⇒ `q·d·n`).
+  --   `johnson_bound_alphabet_free` gives `(B ∩ ball e).card ≤ q·d·n` under
+  --   `e ≤ n - √(n·(n-d))`.  BLOCKED twice: (a) the bound `q·d·n` is far weaker than `ℓ`
+  --   (it is the alphabet-free coarse form, not list-of-ℓ); (b) its radius hypothesis is
+  --   the `J_q` (ℓ→∞) radius, not `Jqℓ` — wrong both in tightness and in the ℓ-factor.
+  --
+  -- SKELETON 4 (Lambda_mono down to the in-tree reachable radius `1/L`).
+  --   By the docstring, `johnson_bound` *does* give `|Λ(C, R₀)| ≤ ℓ` at
+  --   `R₀ = (1/frac)(1 - √(1 - frac·δ_min/L))`.  `Lambda_mono` needs `Jqℓ ≤ R₀` to
+  --   transport ℓ from `R₀` up to `Jqℓ`.  BLOCKED: `Jqℓ > R₀` (since `L > 1/L`), so
+  --   monotonicity runs the WRONG way — it would only give `|Λ(C, Jqℓ)| ≥ |Λ(C, R₀)|`.
+  --   This is the formal restatement of the factor inversion: the in-tree bound is
+  --   strictly inside the paper's radius, and Lambda is monotone INCREASING in radius.
+  --
+  -- All four bottom out at the missing q-ary Plotkin bound. Tagged sorry / external admit.
+  sorry
 
 /-- **ABF26 Corollary 3.3.** MDS coarse Johnson corollary. For every MDS code `C` with
 rate `ρ := dim C / n` and `η > 0`:
@@ -145,6 +210,16 @@ theorem mds_johnson_lambda_le
     let ρ : ℝ := (Module.finrank F C : ℝ) / Fintype.card ι
     (Lambda ((C : Set (ι → F))) (1 - Real.sqrt ρ - η) : ENNReal) ≤
       ENNReal.ofReal (1 / (2 * η * ρ)) := by
-  sorry -- ABF26-C3.3; derivable from L2.6 (via IsMDS_iff_rate_distance) + Jcap form of T3.2.
+  -- ABF26-C3.3; external admit. Reduction chain (each step verified to exist in-tree):
+  --   1. `IsMDS_iff_rate_distance` (Basic/LinearCode.lean) ⇒ for an MDS code,
+  --      `δ_min = 1 - ρ + 1/n`, hence `Jcap δ_min = 1 - √ρ + O(1/n)` matches the
+  --      `1 - √ρ - η` radius once `η` absorbs the `1/n` correction.
+  --   2. The asymptotic (q,ℓ → ∞) `Jcap` form of T3.2: `Lambda C δ ≤ 1/(2·(Jcap δ - δ))`.
+  -- BLOCKED: step 2 IS T3.2 in its asymptotic specialisation; it inherits T3.2's wall —
+  -- the q-ary Plotkin average-distance upper bound `d_avg ≤ frac·n·M/(M-1)` (see
+  -- `johnson_bound_lambda_le_ell` docstring). No additional MDS-specific obstruction:
+  -- once T3.2 lands at `Jqℓ`/`Jcap`, C3.3 is pure algebra on the Singleton equation.
+  -- Tagged sorry until the Plotkin bound is developed.
+  sorry
 
 end CodingTheory

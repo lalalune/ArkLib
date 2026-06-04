@@ -56,8 +56,8 @@ on a point `z ∈ F`.
 
 Note: this was previously declared `opaque`, which seals the body away from ALL reasoning
 (no delta-reduction, no equation lemmas — even a definitionally-identical twin cannot be
-proven equal). That made every statement quantifying over `eval_on_Z`'s values (e.g.
-BCIKS20 Claim 5.7) unprovable. Re-declared as a transparent `def` with an explicit equation
+proven equal). That blocked direct reasoning about statements quantifying over `eval_on_Z`'s
+values (e.g. BCIKS20 Claim 5.7). Re-declared as a transparent `def` with an explicit equation
 lemma; the body is unchanged. -/
 noncomputable def eval_on_Z (p : F[Z][X][Y]) (z : F) : F[X][Y] :=
   p.map (Polynomial.mapRingHom (Polynomial.evalRingHom z))

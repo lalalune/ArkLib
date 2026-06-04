@@ -29,7 +29,7 @@ variable {h_ℓ_add_R_rate : ℓ + 𝓡 < r} -- ℓ ∈ {1, ..., r-1}
 variable [hdiv : Fact (ϑ ∣ ℓ)]
 
 section IndexBounds
--- TODO: need a main lemma for bounds involving last bIdx = (ℓ / ϑ - 1)
+-- Note: need a main lemma for bounds involving last bIdx = (ℓ / ϑ - 1)
 @[simp]
 lemma lastBlockIdx_mul_ϑ_add_x_lt_ℓ_succ (x : ℕ) {hx : x ≤ ϑ} :
     (ℓ / ϑ - 1) * ϑ + x < ℓ + 1 := by

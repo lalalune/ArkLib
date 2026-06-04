@@ -85,10 +85,6 @@ def fullOracleProof :
     (pSpec:= fullPspec κ L K P ℓ' mlIOPCS) :=
     fullOracleReduction κ L K P ℓ ℓ' h_l mlIOPCS
 
-/-!
-## Security Properties
--/
-
 variable [∀ i, SampleableType (mlIOPCS.pSpec.Challenge i)]
 
 /-- Input relation for the full ring-switching protocol -/

@@ -203,6 +203,24 @@ noncomputable def toySoundnessError (C : Set (ι → F)) (δ : ℝ≥0) (t : ℕ
           / (Fintype.card F : ℝ≥0))
       ((1 - δ) ^ t)
 
+/-
+STATUS (DISPROVEN + NEEDS_CLASSICAL). This bound is the soundness analysis of
+Construction 6.9 (ABF26 Lemma 6.10): `winningSetSoundness ≤ ε_mca + |Λ|/|F|`.
+Its `ε_mca` term is the *mutual correlated agreement* error, whose provable
+size hinges on the proximity radius `δ` one is allowed to take. The
+up-to-capacity reading (correlated-agreement / mutual-correlated-agreement /
+list-decodability with `BStar = ρ`) was DISPROVEN in 2025 (Crites–Stewart;
+Ben-Sasson–Carmon–Haback–Kopparty–Saraf; Diamond–Gruen;
+eprint.iacr.org/2025/2046): it is FALSE for some Reed–Solomon families, so any
+sorry discharged at capacity would be discharging a false statement. The
+provable replacement is the Johnson-radius variant (`BStar = √ρ`). Even the
+Johnson-radius bound is NEEDS_CLASSICAL: discharging it requires classical
+coding-theory results (Johnson bound / Guruswami–Sudan / Reed–Solomon
+list-decoding) that are NOT yet in mathlib (no Reed–Solomon, list-decoding, or
+Johnson API upstream) — a genuine ground-up formalization, not a port. Do not
+attempt to close the sorry; do not remove it. See
+research/formal/arklib-proof-research-2026-06.md.
+-/
 /-- **The simplified-IOR soundness is below the full-protocol RBR bound**
 (**Lemma 6.10 of [ABF26]**). `winningSetSoundness ≤ toySoundnessError`: the
 simplified IOR's worst-case winning fraction is at most the `γ`-round error
@@ -436,6 +454,20 @@ noncomputable def koalaIRS : ToyParams := by
       n := 4
       η := 1 / 16 }
 
+/-
+STATUS (OPEN_PRIZE). This anchor is the *provable-security* (X) side of the
+EF Proximity Prize / ABF26 §6 Grand Challenge: how many bits of soundness can
+one actually *prove* for the toy protocol at the KoalaBear-sextic rate regime
+(target `ε* = 2^-128` at rates `1/2 .. 1/16`). Maximising this provable `bits`
+is the open research problem the prize poses — it is an unsolved research
+problem, not a closeable Lean obligation. The `64`-bit value here is a
+placeholder anchor, and the proof route moreover inherits the
+DISPROVEN/NEEDS_CLASSICAL status of `winningSetSoundness_le_toySoundnessError`
+(the up-to-capacity `ε_mca` term, disproven 2025; the Johnson-radius
+replacement needs absent mathlib coding-theory API). Do not attempt to close
+the sorry; do not remove it. See
+research/formal/arklib-proof-research-2026-06.md.
+-/
 /-- **ArkLib provable lower bound (≈64 bits) at the IRS/KoalaBear/`t=128`
 point.** Cites **Lemmas 6.10 / 6.6 / 6.8 of [ABF26]**: the simplified-IOR
 soundness error is bounded by the full-protocol RBR error

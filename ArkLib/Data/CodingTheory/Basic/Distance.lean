@@ -113,7 +113,7 @@ import CompPoly.Data.Nat.Bitwise
   We define the block length, rate, and distance of `C`. We prove simple properties of linear codes
   such as the singleton bound.
 
-## TODOs
+## Notes
 - Implement `ENNRat (ℚ≥0∞)`, for usage in `relDistFromCode` and `relDistFromCode'`,
   as counterpart of `ENat (ℕ∞)` in `distFromCode` and `distFromCode'`.
 -/
@@ -169,7 +169,7 @@ code with `u ≠ v` and `hammingDist u v ≤ d`. If none exists, then we define 
 noncomputable def dist (C : Set (n → R)) : ℕ :=
   sInf {d | ∃ u ∈ C, ∃ v ∈ C, u ≠ v ∧ Δ₀( u, v ) ≤ d}
 
--- TODO: rewrite this file using existing `(e)infsep` definitions
+-- Note: rewrite this file using existing `(e)infsep` definitions
 
 instance : EDist (n → R) where
   edist := fun u v => hammingDist u v
@@ -819,7 +819,7 @@ theorem dist'_eq_dist : ‖C‖₀'.toNat = ‖C‖₀ := by
 section
 
 /-
-- TODO: We currently do not use `(E)Dist` as it forces the distance(s) into `ℝ`.
+- Note: We currently do not use `(E)Dist` as it forces the distance(s) into `ℝ`.
         Instead, we take some explicit notion of distance `δf`.
         Let us give this some thought.
 -/
@@ -857,7 +857,7 @@ lemma possibleDistsToCode_nonempty_iff
 
 /-- The set of possible distances `δf` between distinct codewords in a code `C`.
 
-  - TODO: This allows us to express distance in non-ℝ, which is quite convenient.
+  - Note: This allows us to express distance in non-ℝ, which is quite convenient.
           Extending to `(E)Dist` forces this into `ℝ`; give some thought.
 -/
 def possibleDists (C : Set (ι → F)) (δf : (ι → F) → (ι → F) → α) : Set α :=

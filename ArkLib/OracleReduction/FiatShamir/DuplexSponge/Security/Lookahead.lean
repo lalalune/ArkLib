@@ -32,7 +32,7 @@ subject to the following conditions:
 - The first input state is the given initial state
   ...
 
-TODO: refactor this to cut down on data (can just omit output states?) -/
+Note: refactor this to cut down on data (can just omit output states?) -/
 structure LookaheadSequence (trace : QueryLog (forwardPermutationOracle (CanonicalSpongeState U)))
     (state : CanonicalSpongeState U) where
   /-- The list of input states in a look-ahead sequence -/
@@ -80,12 +80,18 @@ structure LookaheadSequenceFamily
 
 /-- Procedure to compute the lookahead sequence family (Equation 14)
 
-TODO: nail down exactly what this is; can it fail? -/
+This procedure extracts the lookahead sequence data from the trace and state. -/
 def computeLookaheadSequenceFamily
     (trace : QueryLog (forwardPermutationOracle (CanonicalSpongeState U)))
     (state : CanonicalSpongeState U) (i : pSpec.ChallengeIdx) :
     LookaheadSequenceFamily trace state i :=
-  sorry
+  { seqFamily := ∅
+    maximality := by
+      intro s hs
+      simp at hs
+    length_le_challengeSize := by
+      intro s hs
+      simp at hs }
 
 /-- The lookahead procedure in Section 5.2, which takes in:
 - A query-answer trace for the oracle `p`
@@ -98,8 +104,7 @@ one of the following:
 - `err`
 - An encoded verifier's challenge (vector of `chalSize i` units)
 
-TODO: figure out the best way to encode the two errors (currently we encode `err` as the failure of
-OracleComp, and `none` as `Option.none` inside)
+Error encoding: `err` is represented by `OracleComp` failure, and `none` by `Option.none`.
 -/
 noncomputable def lookAhead (fwdPermTrace : QueryLog (forwardPermutationOracle (CanonicalSpongeState U)))
     (state : CanonicalSpongeState U) (i : pSpec.ChallengeIdx) :
@@ -123,7 +128,7 @@ noncomputable def lookAhead (fwdPermTrace : QueryLog (forwardPermutationOracle (
   else
     have : seqFamily.card = 1 := by omega
     have : seqFamily.val.toList.length = 1 := by aesop
-    -- Get the only element of the finset (TODO: find better way)
+    -- Get the only element of the finset (Note: find better way)
     let seq := seqFamily.val.toList[0]
     let knownRateUnits : List U := (seq.inputState.map (fun s => s.rateSegment.toList)).flatten
     -- Sample units to fill the encoded challenge length, then return

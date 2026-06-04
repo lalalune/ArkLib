@@ -73,9 +73,7 @@ theorem RS_correlatedAgreement_curves_uniqueDecodingRegime {k deg : ℕ}
 constant word `u 0`, so any positive probability of closeness gives the plain
 closeness fact, and joint agreement follows from unique decoding. -/
 theorem RS_correlatedAgreement_curves_k_zero {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
-    [NeZero deg]
-    (_hδ : δ ≤ relativeUniqueDecodingRadius (ι := ι) (F := F)
-      (C := ReedSolomon.code domain deg)) :
+    [NeZero deg] :
     δ_ε_correlatedAgreementCurves (k := 0) (A := F) (F := F) (ι := ι)
       (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
   classical
@@ -163,7 +161,7 @@ theorem proximity_gap_uniqueDecodingRegime {k deg : ℕ}
   have keystone : δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
       (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
     rcases Nat.eq_zero_or_pos k with hk0 | hkpos
-    · subst hk0; exact RS_correlatedAgreement_curves_k_zero hδ
+    · subst hk0; exact RS_correlatedAgreement_curves_k_zero
     · exact RS_correlatedAgreement_curves_uniqueDecodingRegime hkpos hδ
   -- Feed the probability hypothesis through the keystone (same shape as Combine.lean:599+).
   simp only [δ_ε_correlatedAgreementCurves] at keystone

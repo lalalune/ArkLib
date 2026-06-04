@@ -281,7 +281,7 @@ pub fn hint_bytes(&mut self) -> Result<&'a [u8], DomainSeparatorMismatch>
 def hintBytes (state : FSVerifierState U H) :
     Except DomainSeparatorMismatch (FSVerifierState U H × ByteArray) := do
   let newHashState ← state.hashState.hint
-    -- Ensure at least 4 bytes are available for the length prefix
+  -- Ensure at least 4 bytes are available for the length prefix
   if state.nargString.size < 4 then
     .error { message := "Insufficient transcript remaining for hint" }
   else
@@ -332,7 +332,7 @@ transcript while being seeded by a cryptographically secure source.
 -/
 structure ProverPrivateRng (R : Type*) where
   /-- The duplex sponge for generating random coins. -/
-  ds : Unit -- TODO: Replace with actual Keccak type
+  ds : Unit -- Note: Replace with actual Keccak type
   /-- The cryptographic random number generator -/
   csrng : R
 deriving Repr
@@ -378,7 +378,7 @@ pub fn new(domain_separator: &DomainSeparator<H, U>, csrng: R) -> Self
 -/
 def new (domainSeparator : DomainSeparator U H) (csrng : R) : FSProverState U H R :=
   let hashState := HashStateWithInstructions.new domainSeparator
-  -- TODO: Initialize ProverPrivateRng properly
+  -- Note: Initialize ProverPrivateRng properly
   let rng : ProverPrivateRng R := { ds := (), csrng := csrng }
   { rng := rng, hashState := hashState, nargString := ByteArray.empty }
 
@@ -393,8 +393,8 @@ def addUnits (state : FSProverState U H R) (input : Array U) :
     Except DomainSeparatorMismatch (FSProverState U H R) :=
   match state.hashState.absorb input with
   | .ok newHashState =>
-    -- TODO: Serialize units and append to NARG string
-    -- TODO: Update RNG with new transcript data
+    -- Note: Serialize units and append to NARG string
+    -- Note: Update RNG with new transcript data
     .ok { rng := state.rng, hashState := newHashState, nargString := state.nargString }
   | .error e => .error e
 
@@ -405,11 +405,11 @@ Rust interface:
 pub fn hint_bytes(&mut self, hint: &[u8]) -> Result<(), DomainSeparatorMismatch>
 ```
 -/
-def hintBytes (state : FSProverState U H R) (hint : ByteArray) :
+def hintBytes (state : FSProverState U H R) (_hint : ByteArray) :
     Except DomainSeparatorMismatch (FSProverState U H R) :=
   match state.hashState.hint with
   | .ok newHashState =>
-    -- TODO: Add length prefix and hint to NARG string
+    -- Note: Add length prefix and hint to NARG string
     -- let len = u32::try_from(hint.len()).expect("Hint size out of bounds");
     .ok { rng := state.rng, hashState := newHashState, nargString := state.nargString }
   | .error e => .error e

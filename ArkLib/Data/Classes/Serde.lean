@@ -33,7 +33,7 @@ class Serialize.IsInjective (α : Type u) (β : Type v) [inst : Serialize α β]
 class Deserialize (α : Type u) (β : Type v) where
   deserialize : β → α
 
--- Local instance for now, will need to develop statistical distance a lot more
+-- Local instance using total-variation distance on finite PMFs.
 instance {α : Type*} [Fintype α] : Dist (PMF α) where
   dist := fun a b => ∑ x, abs ((a x).toReal - (b x).toReal)
 

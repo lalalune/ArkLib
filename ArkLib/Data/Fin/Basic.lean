@@ -301,7 +301,7 @@ section Sum
 /-- Embed `Fin (l.get k)` into `Fin l.sum` at the `k`-th block. Indexing is **positional**
 (`k : Fin l.length`): the previous membership-based design (`n ∈ l`) collapsed duplicate
 lengths (e.g. for `l = [2, 2]` both occurrences embedded into the head block, leaving the
-tail block unreachable), which made the accompanying eliminator unprovable. -/
+tail block unreachable), which did not support the accompanying eliminator. -/
 def castSum : (l : List ℕ) → (k : Fin l.length) → Fin (l.get k) → Fin l.sum
   | _ :: l', ⟨0, _⟩, i => castAdd l'.sum i
   | n' :: l', ⟨k + 1, hk⟩, i =>

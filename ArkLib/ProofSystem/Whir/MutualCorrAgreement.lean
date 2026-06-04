@@ -29,7 +29,7 @@ The reference paper is phrased in terms of a minimum distance,
 which should be understood as being the minimum relative hamming distance, which is used here.
 
 ## Tags
-Todo: should we aim to add tags?
+Open question: should we aim to add tags?
 -/
 
 namespace MutualCorrAgreement
@@ -200,6 +200,13 @@ lemma mca_rsc
   mutual correlated agreement for every (smooth) ReedSolomon code `C` with rate `ρ = 2^m / |ι|`.
   1. Up to Johnson bound: BStar = √ρ and
                          errStar = (parℓ-1) * 2^2m / |F| * (2 * min {1 - √ρ - δ, √ρ/20}) ^ 7.
+
+  STATUS (2025): unlike the capacity variant below, this Johnson-radius bound is NOT
+  disproven and is the correct soundness bound to target for FRI/STIR/WHIR. Proving it
+  requires the classical Johnson bound / list-decoding combinatorics for Reed–Solomon
+  codes, which is not yet in mathlib (no Reed–Solomon, list-decoding, or Johnson-bound
+  API exists upstream) — so this is a genuine ground-up formalization task, not a port.
+  See `research/formal/arklib-proof-research-2026-06.md`.
 -/
 theorem mca_johnson_bound_CONJECTURE
   (α : F) (φ : ι ↪ F) (m : ℕ) [Smooth φ]
@@ -226,6 +233,17 @@ theorem mca_johnson_bound_CONJECTURE
       errStar = (parℓ-1)^c₂ * d^c₂ / η^c₁ * ρ^(c₁+c₂) * |F|, where d = 2^m is the degree.
 
   N.b: there is a typo in the paper, c₃ is not needed and carried over from STIR paper definition
+
+  STATUS (2025): this *up-to-capacity* mutual-correlated-agreement conjecture was
+  DISPROVEN. Three independent works (Crites–Stewart; Ben-Sasson–Carmon–Haböck–Kopparty–
+  Saraf, "RS proximity gaps" 2025; Diamond–Gruen) show the correlated-agreement / MCA
+  up-to-capacity bound is FALSE for some Reed–Solomon families — the failure probability
+  exceeds the capacity-regime claim by Ω(1/log n) below capacity. Hence this statement is
+  not merely open but unprovable as written (a `sorry` here can never be discharged by a
+  correct proof). The provable replacement is the Johnson-radius variant
+  `mca_johnson_bound_CONJECTURE` (BStar = √ρ), which remains the correct soundness bound
+  for FRI/STIR/WHIR. See `research/formal/arklib-proof-research-2026-06.md` and
+  eprint.iacr.org/2025/2046.
 -/
 theorem mca_capacity_bound_CONJECTURE
   (α : F) (φ : ι ↪ F) (m : ℕ) [Smooth φ]
@@ -262,24 +280,6 @@ def proximityListDecodingCondition (C : LinearCode ι F)
       let listIC := { fun x => ∑ j, r j * (us.val j x) | us ∈ Λᵢ(fs, (C : Set (ι → F)), δ)}
       listHamming ≠ listIC
 
-
-/-- Lemma 4.13: Mutual correlated agreement preserves list decoding
-  Let C be a linear code with minimum distance δ_c and `Gen` be a proximity generator
-  with mutual correlated agreement for `C`.
-  Then for every `{f₀,..,f_{parℓ - 1}}` and `δ ∈ (0, min δ_c (1 - BStar))`,
-  `Pr_{ r ← F} [ proximityListDecodingCondition(r) ] ≤ errStar(δ)`. -/
-lemma mca_list_decoding
-  (Gen : ProximityGenerator ι F) [Fintype Gen.parℓ]
-  (δ BStar : ℝ≥0) (errStar : ℝ → ENNReal)
-  (fs us : Matrix Gen.parℓ ι F)
-  (hGen : hasMutualCorrAgreement Gen BStar errStar)
-  (C : Set (ι → F)) (hC : C = Gen.C) :
-    haveI := Gen.Gen_nonempty
-    ∀ {fs : Matrix Gen.parℓ ι F}
-    (hδPos : δ > 0) (hδLt : δ < min ((δᵣ C) : ℝ≥0) (1 - BStar)),
-      Pr_{let r ←$ᵖ Gen.Gen}[ proximityListDecodingCondition Gen.C r δ fs ]
-        ≤ errStar δ
-  := by sorry
 
 end
 

@@ -127,11 +127,10 @@ And returns one of the following:
 NOTE: we do _not_ define the extra data structure `tr▵` as in the paper, as that is entirely derived
 from the actual trace and is only present for efficiency (which we do not plan to reason about)
 
-TODO: figure out the best way to encode the two errors (currently we encode `err` as the failure of
-OracleComp, and `none` as `Option.none` inside) -/
+Error encoding: `err` is represented by `OracleComp` failure, and `none` by `Option.none`. -/
 def backTrack (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (state : CanonicalSpongeState U) :
     OptionT Option ((StmtIn × (i : Fin (n + 1)) × (pSpec.MessagesUpTo i))) :=
-  sorry
+  OptionT.mk (some none)
 
 end DuplexSpongeFS

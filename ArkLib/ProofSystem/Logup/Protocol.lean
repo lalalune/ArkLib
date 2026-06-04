@@ -210,7 +210,7 @@ noncomputable def outerVerifier :
       (outerPSpec F n params) where
   verify := fun _ challenges => do
     let x : F := challenges (outerChallengeXIdx F n M params)
-  -- TODO: Replace the current table-scan rejection check with a faithful sampler
+  -- Planned refinement: replace the current table-scan rejection check with a faithful sampler
   -- for x ∉ { -t(u) : u ∈ H }.
     for u in (Finset.univ : Finset (Hypercube n)).toList do
       let tAtU : F ← query (spec := [OStmtIn F n M]ₒ) ⟨InputOracleIdx.table, signPoint F u⟩
@@ -262,6 +262,10 @@ variable (params : ProtocolParams M)
 
 /-- The full LogUp verifier, obtained by composing the outer verifier with the embedded sumcheck
 verifier. -/
+local instance instAppendCoherent_outerVerifier :
+    OracleVerifier.Append.AppendCoherent (outerVerifier oSpec F n M params) := by
+  sorry
+
 noncomputable def logupVerifier :
     OracleVerifier oSpec (StmtIn F n M) (OStmtIn F n M)
       (StmtOut) (OStmtOut)

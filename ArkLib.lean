@@ -23,6 +23,9 @@ import ArkLib.CommitmentScheme.KZG.FunctionBinding.Support
 import ArkLib.CommitmentScheme.KZG.FunctionBinding.TauInQueries
 import ArkLib.CommitmentScheme.KZG.HardnessAssumptions
 import ArkLib.CommitmentScheme.KZG.Sampling
+import ArkLib.CommitmentScheme.MerkleTree.Batch
+import ArkLib.CommitmentScheme.MerkleTree.Extraction
+import ArkLib.CommitmentScheme.MerkleTree.Hiding
 import ArkLib.CommitmentScheme.SimpleRO
 import ArkLib.Data.Classes.FunEquiv
 import ArkLib.Data.Classes.HasSize
@@ -78,6 +81,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ErrorBound
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Agreement
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Extraction
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Guruswami
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.RootClearing
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Prelude
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ReedSolomonGap
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.WeightedAgreement
@@ -151,6 +155,7 @@ import ArkLib.Data.MvPolynomial.RestrictDegree
 import ArkLib.Data.MvPolynomial.RestrictDegreeVar
 import ArkLib.Data.MvPolynomial.SchwartzZippelCounting
 import ArkLib.Data.Polynomial.Bivariate
+import ArkLib.Data.Polynomial.ClearDenomY
 import ArkLib.Data.Polynomial.FoldingPolynomial
 import ArkLib.Data.Polynomial.Indicator
 import ArkLib.Data.Polynomial.Interface
@@ -183,6 +188,7 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.TraceTransform
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.State
 import ArkLib.OracleReduction.LiftContext.Lens
 import ArkLib.OracleReduction.LiftContext.OracleReduction
+import ArkLib.OracleReduction.LiftContext.OracleStatementPreserving
 import ArkLib.OracleReduction.LiftContext.Reduction
 import ArkLib.OracleReduction.OracleInterface
 import ArkLib.OracleReduction.Prelude
