@@ -944,6 +944,90 @@ lemma performCheckOriginalEvaluation_packMLE_iff' (ℓ ℓ' : ℕ) [NeZero ℓ] 
   simp only [decide_eq_true_eq]
   rw [check_rows_sum_eq_aeval']
 
+/-! ### DP24 §2.5 `A_MLE` final-evaluation identity
+
+The final sumcheck step's verifier check compares the carried sumcheck target against
+`compute_final_eq_value · s'`, where `s' = t'(challenges)`. The sumcheck target, in turn, equals the
+round polynomial `H = A_MLE · t'` evaluated at all `ℓ'` challenges, i.e. `A_MLE(challenges) ·
+t'(challenges)`. Completeness therefore hinges on the algebraic identity
+`A_MLE(challenges) = compute_final_eq_value`, i.e. the multilinear extension `A_MLE` of
+`compute_A_func` evaluated at the (arbitrary, non-Boolean) challenge point equals the
+row-decomposition value of the final eq-tensor `e := eq̃(φ₀(r_suffix), φ₁(challenges))`.
+
+The two helper lemmas below (MLE evaluation as an `eq̃`-weighted sum over the Boolean hypercube, and
+the `φ₀/φ₁`-tensor expansion of `e`) reduce the identity to the row-extraction laws
+`P.decomposeRows_φ₀_mul_φ₁` / `P.decomposeRows_sum`, exactly as in
+`decompose_rows_packMLE'`. -/
+
+omit [IsDomain L₀] [CharP L₀ 2] [IsDomain K₀] [Fintype K₀] [DecidableEq K₀] in
+/-- **MLE evaluation as an `eq̃`-weighted hypercube sum.** Evaluating the multilinear extension
+`MLE f` at an arbitrary (not necessarily Boolean) point `r` equals the `eq̃`-weighted sum of the
+hypercube values `f x`, with weight `eq̃(x, r)`. This is the standard multilinear-extension
+evaluation formula, here phrased with the Boolean-literal embedding `x ↦ (if x = 1 then 1 else 0)`
+used throughout the ring-switching algebra layer. -/
+lemma MLE_eval_eq_sum_eqTilde {ℓ_ : ℕ} (f : (Fin ℓ_ → Fin 2) → L₀) (r : Fin ℓ_ → L₀) :
+    MvPolynomial.eval r (MvPolynomial.MLE f)
+      = ∑ x : Fin ℓ_ → Fin 2,
+          eqTilde (fun i => (if x i == 1 then (1 : L₀) else 0)) r * f x := by
+  rw [MvPolynomial.MLE, map_sum]
+  apply Finset.sum_congr rfl
+  intro x _
+  rw [map_mul, MvPolynomial.eval_C]
+  congr 1
+  -- `eval r (eqPolynomial (x : Fin ℓ_ → L₀)) = eqTilde (boolEmbed x) r`
+  rw [show ((x : Fin ℓ_ → L₀)) = (fun i => ((x i : Fin 2) : L₀)) from rfl]
+  rw [show (fun i => ((x i : Fin 2) : L₀)) = (fun i => (if x i == 1 then (1 : L₀) else 0))
+      from by funext i; rcases Fin.exists_fin_two.mp ⟨x i, rfl⟩ with h | h <;> rw [h] <;> simp]
+  rw [eqTilde]
+
+omit [CharP L₀ 2] [Fintype K₀] [DecidableEq K₀] in
+/-- **`φ₀/φ₁`-tensor expansion of an eq-tensor.** The mixed eq-tensor
+`eq̃(φ₀ ∘ g, φ₁ ∘ h) ∈ P.A` expands over the Boolean hypercube as
+`∑_w φ₀(eq̃(w, g)) · φ₁(eq̃(w, h))`. Proven by collapsing each `eqPolynomial` factor through the
+`eval₂ φ₁ (φ₀ ∘ ·)` mixed embedding (the same Boolean-literal-agreement argument as
+`embedded_MLP_eval_eq_sum'`, instantiated with the multilinear `eqPolynomial h`). -/
+lemma eqTilde_tensor_expand {ℓ_ : ℕ} (g h : Fin ℓ_ → L₀) :
+    eqTilde (fun i => P.φ₀ (g i)) (fun i => P.φ₁ (h i))
+      = ∑ w : Fin ℓ_ → Fin 2,
+          P.φ₀ (eqTilde (fun i => (if w i == 1 then (1 : L₀) else 0)) g)
+            * P.φ₁ (eqTilde (fun i => (if w i == 1 then (1 : L₀) else 0)) h) := by
+  -- LHS: `eval (φ₁ ∘ h) (eqPolynomial (φ₀ ∘ g))`. Rewrite `eqPolynomial (φ₀ ∘ g)` as the
+  -- `φ₀`-image of `eqPolynomial g`, then as the multilinear MLE of its Boolean evaluations, and
+  -- push through `eval₂`.
+  rw [eqTilde, eqPolynomial_symm]
+  -- now LHS = eval (φ₀ ∘ g) (eqPolynomial (φ₁ ∘ h))
+  -- View eqPolynomial (φ₁ ∘ h) as map φ₁ of the multilinear eqPolynomial h, evaluated at φ₀ ∘ g.
+  have hmap : (eqPolynomial (fun i => P.φ₁ (h i)) : MvPolynomial (Fin ℓ_) P.A)
+      = MvPolynomial.map (P.φ₁) (eqPolynomial h) := by
+    unfold eqPolynomial singleEqPolynomial
+    rw [map_prod]
+    apply Finset.prod_congr rfl
+    intro i _
+    simp only [map_add, map_mul, map_sub, map_one, MvPolynomial.map_C, MvPolynomial.map_X]
+  rw [hmap, ← MvPolynomial.eval₂_eq_eval_map]
+  -- Expand the multilinear `eqPolynomial h` as `MLE` of its Boolean evaluations.
+  conv_lhs => rw [show (eqPolynomial h : MvPolynomial (Fin ℓ_) L₀)
+      = MvPolynomial.MLE (eqPolynomial h).toEvalsZeroOne from
+        (MvPolynomial.is_multilinear_iff_eq_evals_zeroOne.mp
+          (eqPolynomial_mem_restrictDegree h)).symm]
+  unfold MvPolynomial.MLE
+  rw [← MvPolynomial.coe_eval₂Hom, map_sum]
+  apply Finset.sum_congr rfl
+  intro w _
+  rw [map_mul, MvPolynomial.coe_eval₂Hom, MvPolynomial.eval₂_C]
+  have hcoe : (fun i => (((w i : Fin 2) : L₀))) = (fun i => (if w i == 1 then (1 : L₀) else 0)) := by
+    funext i; rcases Fin.exists_fin_two.mp ⟨w i, rfl⟩ with hh | hh <;> rw [hh] <;> simp
+  congr 1
+  · -- φ₀ factor: collapse eqPolynomial through the mixed embedding eval₂ φ₁ (φ₀ ∘ g)
+    rw [show (fun i => ((w i : Fin 2) : L₀)) = (fun i => (if w i == 1 then (1 : L₀) else 0))
+        from hcoe]
+    rw [eqPoly_collapse' P g w]
+    rfl
+  · -- φ₁ factor: the Boolean evaluation of eqPolynomial h is eqTilde (boolEmbed w) h
+    congr 1
+    unfold MvPolynomial.toEvalsZeroOne
+    rw [hcoe, eqTilde, eqPolynomial_symm]
+
 end RingSwitchingAlgebra
 
 section RingSwitchingAlgebraBinius
