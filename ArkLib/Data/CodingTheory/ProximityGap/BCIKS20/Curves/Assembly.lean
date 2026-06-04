@@ -103,6 +103,15 @@ section CurveAssemblyBridge
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
+omit [Fintype ι] [Nonempty ι] [DecidableEq ι] [Fintype F] [DecidableEq F] in
+/-- Reindex a finite sum of curve coefficient words. This is the algebraic
+part of changing the coefficient index type in `RS_goodCoeffsCurve`. -/
+theorem curve_sum_reindex_equiv {κ κ' : Type} [Fintype κ] [Fintype κ']
+    (e : κ ≃ κ') (z : F) (u : κ' → ι → F) (pow : κ' → ℕ) :
+    (∑ t : κ, (z ^ pow (e t)) • u (e t)) =
+      ∑ t' : κ', (z ^ pow t') • u t' := by
+  simpa using (Equiv.sum_comp e (fun t' : κ' => (z ^ pow t') • u t'))
+
 omit [Nonempty ι] [DecidableEq ι] [Field F] [Fintype F] in
 /-- `jointAgreement` is invariant under reindexing the coefficient words by an
 equivalence. This packages the casts needed when a curve helper is stated with
@@ -164,6 +173,38 @@ theorem subset_goodCoeffsCurve_coeff_polys_implies_jointAgreement {l deg : ℕ}
       hBdeg (fun z hz => (hdecoded z hz).1) hcoeff
   exact decoded_family_coefficients_assemble_codeword_curve
     (deg := deg) (domain := domain) P A hAdeg hPcoeff
+
+omit [DecidableEq ι] in
+/-- Full-good-set specialization of
+`subset_goodCoeffsCurve_coeff_polys_implies_jointAgreement`.
+
+This is the form expected in the list-decoding branch after the probability
+hypothesis has been converted into cardinality lower bounds for
+`RS_goodCoeffsCurve`. -/
+theorem goodCoeffsCurve_coeff_polys_implies_jointAgreement {l deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    {u : Fin (l + 2) → ι → F}
+    (hS_card :
+      (RS_goodCoeffsCurve (k := l + 1) (deg := deg) (domain := domain) u δ).card >
+        l + 1)
+    (hS_card₁ :
+      (RS_goodCoeffsCurve (k := l + 1) (deg := deg) (domain := domain) u δ).card ≥
+        (Fintype.card ι + 1) * (l + 1))
+    (hcoeffPoly : ∀ P : F → Polynomial F,
+      (∀ z ∈ RS_goodCoeffsCurve (k := l + 1) (deg := deg) (domain := domain) u δ,
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (l + 2), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+        ∃ B : ℕ → Polynomial F,
+          (∀ j < deg, (B j).natDegree < l + 2) ∧
+            ∀ z ∈ RS_goodCoeffsCurve (k := l + 1) (deg := deg) (domain := domain) u δ,
+              ∀ j < deg, (P z).coeff j = (B j).eval z) :
+    jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u) := by
+  classical
+  exact subset_goodCoeffsCurve_coeff_polys_implies_jointAgreement
+    (deg := deg) (domain := domain) (δ := δ) (u := u)
+    (S' := RS_goodCoeffsCurve (k := l + 1) (deg := deg) (domain := domain) u δ)
+    hS_card hS_card₁ (fun z hz => hz) hcoeffPoly
 
 end CurveAssemblyBridge
 
