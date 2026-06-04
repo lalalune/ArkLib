@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import CompPoly.ToMathlib.Polynomial.BivariateDegree
+import ArkLib.Data.CodingTheory.PolishchukSpielman
 import ArkLib.ToMathlib.Polynomial.EvalExt
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
@@ -615,4 +616,157 @@ lemma evalY_eq_proximate_mul {k e h : ℕ}
     rcases Finset.mem_image.mp ha with ⟨x, hx, rfl⟩
     have hagree : p.eval (domain x) = u₀ x + u₁ x * z := (Finset.mem_filter.mp hx).2
     rw [evalY_BW_identity domain u₀ u₁ hid z x, Polynomial.eval_mul, hagree]
+
+section PSApplication
+-- The in-tree `polishchuk_spielman` is stated over `Type 0`; this section
+-- matches it (the rest of the file is universe-polymorphic).
+variable {F : Type} [Field F] [DecidableEq F]
+variable {ι : Type} [Fintype ι] [DecidableEq ι] [Nonempty ι]
+
+set_option maxHeartbeats 3200000 in
+/-- **[BCKHS25] Claim 2.3 (joint proximate).** If every `z ∈ S` admits a
+degree-`k` proximate within Hamming distance `e` of the line combination, and
+`S` is large enough relative to the Polishchuk–Spielman ratio, then there is a
+JOINT pair `(p₀, p₁)` of degree-`k` polynomials agreeing with `(u₀, u₁)`
+outside at most `e + h` points. -/
+theorem exists_joint_proximate (k e h DZ : ℕ)
+    (hn : k + 2 * e + h + 1 = Fintype.card ι)
+    (hDZ : e + 1 ≤ (h + 1) * DZ) (hDZ0 : 0 < DZ)
+    (domain : ι ↪ F) (u₀ u₁ : ι → F) (S : Finset F) (hS0 : 0 < S.card)
+    (prox : ∀ z ∈ S, ∃ p : F[X], p.natDegree ≤ k ∧
+      (Finset.univ.filter (fun x => p.eval (domain x) ≠ u₀ x + u₁ x * z)).card ≤ e)
+    (hratio : ((k + e + h : ℕ) : ℚ) / (Fintype.card ι : ℚ)
+      + ((DZ : ℕ) : ℚ) / (S.card : ℚ) < 1) :
+    ∃ p₀ p₁ : F[X], p₀.natDegree ≤ k ∧ p₁.natDegree ≤ k ∧
+      (Finset.univ.filter
+        (fun x => ¬(p₀.eval (domain x) = u₀ x ∧ p₁.eval (domain x) = u₁ x))).card
+        ≤ e + h := by
+  classical
+  -- 1. the BW pair from the dimension count
+  have hcount : Fintype.card ι * (DZ + 1)
+      < (e + h + 1) * DZ + (k + e + h + 1) * (DZ + 1) := by
+    rw [← hn]
+    nlinarith [hDZ, hDZ0]
+  obtain ⟨A, B, hA0, hAx, hAy, hBx, hBy, hid⟩ :=
+    exists_BW_pair (e + h + 1) DZ (k + e + h + 1) (DZ + 1) rfl
+      (by omega) (by omega) hDZ0 domain u₀ u₁ hcount (by omega)
+  -- 2. proximates
+  set pz : F → F[X] := fun z => if hz : z ∈ S then (prox z hz).choose else 0 with hpz
+  have hpz_deg : ∀ z ∈ S, (pz z).natDegree ≤ k := by
+    intro z hz
+    simp only [hpz, dif_pos hz]
+    exact (prox z hz).choose_spec.1
+  have hpz_prox : ∀ z ∈ S, (Finset.univ.filter
+      (fun x => (pz z).eval (domain x) ≠ u₀ x + u₁ x * z)).card ≤ e := by
+    intro z hz
+    simp only [hpz, dif_pos hz]
+    exact (prox z hz).choose_spec.2
+  -- 3. Polishchuk–Spielman
+  have hcard_pos : 0 < Fintype.card ι := by omega
+  set Px : Finset F := Finset.univ.image domain with hPx
+  have hPx_card : Px.card = Fintype.card ι := by
+    rw [hPx, Finset.card_image_of_injective _ domain.injective, Finset.card_univ]
+  haveI : Nonempty Px :=
+    (Finset.card_pos.mp (by rw [hPx_card]; omega)).to_subtype
+  haveI : Nonempty S := (Finset.card_pos.mp hS0).to_subtype
+  set quotY : F → F[X] := fun a =>
+    Polynomial.C (u₀ (Function.invFun domain a))
+      + Polynomial.C (u₁ (Function.invFun domain a)) * Polynomial.X with hquotY
+  have hsAx : e + h ≥ degreeX A := by omega
+  have hsBx : k + e + h ≥ degreeX B := by omega
+  have hsAy : DZ - 1 ≥ natDegreeY A := by omega
+  have hsBy : DZ ≥ natDegreeY B := by omega
+  have hsPx : ((⟨Fintype.card ι, hcard_pos⟩ : ℕ+) : ℕ) ≤ Px.card := by
+    rw [hPx_card]
+  have hsQx : ∀ z ∈ S, (pz z).natDegree ≤ (k + e + h) - (e + h) ∧
+      evalY z B = (pz z) * evalY z A := by
+    intro z hz
+    refine ⟨by have := hpz_deg z hz; omega, ?_⟩
+    exact evalY_eq_proximate_mul (by omega) domain u₀ u₁ hAx hBx hid
+      (hpz_deg z hz) (hpz_prox z hz)
+  have hsQy : ∀ a ∈ Px, (quotY a).natDegree ≤ DZ - (DZ - 1) ∧
+      evalX a B = (quotY a) * evalX a A := by
+    intro a ha
+    rcases Finset.mem_image.mp (hPx ▸ ha) with ⟨x, -, rfl⟩
+    have hinv : Function.invFun domain (domain x) = x :=
+      Function.leftInverse_invFun domain.injective x
+    constructor
+    · have h1 : (quotY (domain x)).natDegree ≤ 1 := by
+        simp only [hquotY, hinv]
+        refine le_trans (Polynomial.natDegree_add_le _ _) ?_
+        refine max_le (by simp [Polynomial.natDegree_C]) ?_
+        refine le_trans (Polynomial.natDegree_mul_le) ?_
+        simp [Polynomial.natDegree_C, Polynomial.natDegree_X]
+      omega
+    · simp only [hquotY, hinv]
+      exact hid x
+  have hsRatio : 1 > ((k + e + h : ℕ) : ℚ) / ((⟨Fintype.card ι, hcard_pos⟩ : ℕ+) : ℚ)
+      + ((DZ : ℕ) : ℚ) / ((⟨S.card, hS0⟩ : ℕ+) : ℚ) := by
+    exact_mod_cast hratio
+  have hPS := polishchuk_spielman (e + h) (DZ - 1) (k + e + h) DZ
+    ⟨Fintype.card ι, hcard_pos⟩ ⟨S.card, hS0⟩
+    (by omega) (by omega) A B hA0 hsAx hsBx hsAy hsBy
+    Px S pz quotY hsPx (le_refl _) hsQx hsQy hsRatio
+  obtain ⟨P, hBPA, hPx_deg, hPy_deg, ⟨Qx, hQx_card, hQx_sub, hQx_eval⟩, -⟩ := hPS
+  -- 4. extract the pair and count disagreements
+  refine ⟨P.coeff 0, P.coeff 1,
+    le_trans (Polynomial.Bivariate.coeff_natDegree_le_degreeX P 0) (by omega),
+    le_trans (Polynomial.Bivariate.coeff_natDegree_le_degreeX P 1) (by omega), ?_⟩
+  have hagree : ∀ x : ι, domain x ∈ Qx →
+      (P.coeff 0).eval (domain x) = u₀ x ∧ (P.coeff 1).eval (domain x) = u₁ x := by
+    intro x hx
+    have heq := hQx_eval (domain x) hx
+    have hinv : Function.invFun domain (domain x) = x :=
+      Function.leftInverse_invFun domain.injective x
+    rw [hquotY] at heq
+    simp only [hinv] at heq
+    have hcoeff_eval : ∀ j : ℕ, (evalX (domain x) P).coeff j = (P.coeff j).eval (domain x) := by
+      intro j
+      simp [evalX, Polynomial.coeff]
+    constructor
+    · have hc0 : (evalX (domain x) P).coeff 0
+          = (Polynomial.C (u₀ x) + Polynomial.C (u₁ x) * Polynomial.X).coeff 0 := by
+        rw [heq]
+      rw [hcoeff_eval 0] at hc0
+      simpa [Polynomial.coeff_add, Polynomial.coeff_C_mul, Polynomial.coeff_X] using hc0
+    · have hc1 : (evalX (domain x) P).coeff 1
+          = (Polynomial.C (u₀ x) + Polynomial.C (u₁ x) * Polynomial.X).coeff 1 := by
+        rw [heq]
+      rw [hcoeff_eval 1] at hc1
+      simpa [Polynomial.coeff_add, Polynomial.coeff_C_mul, Polynomial.coeff_X] using hc1
+  -- disagreement set is inside the complement of the Qx-preimage
+  have hsub : (Finset.univ.filter
+      (fun x => ¬((P.coeff 0).eval (domain x) = u₀ x ∧ (P.coeff 1).eval (domain x) = u₁ x)))
+      ⊆ Finset.univ.filter (fun x => domain x ∉ Qx) := by
+    intro x hx
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hx ⊢
+    intro hmem
+    exact hx (hagree x hmem)
+  refine le_trans (Finset.card_le_card hsub) ?_
+  -- |{x : domain x ∉ Qx}| = n − |Qx ∩ image| = n − |Qx| ≤ e + h
+  have hQx_in_im : Qx ⊆ Px := hQx_sub
+  have hpre : (Finset.univ.filter (fun x => domain x ∈ Qx)).card = Qx.card := by
+    rw [← Finset.card_image_of_injective
+      (Finset.univ.filter (fun x => domain x ∈ Qx)) domain.injective]
+    congr 1
+    apply Finset.Subset.antisymm
+    · intro a ha
+      rcases Finset.mem_image.mp ha with ⟨x, hx, rfl⟩
+      exact (Finset.mem_filter.mp hx).2
+    · intro a ha
+      have haPx : a ∈ Px := hQx_in_im ha
+      rcases Finset.mem_image.mp (hPx ▸ haPx) with ⟨x, -, rfl⟩
+      exact Finset.mem_image.mpr ⟨x, Finset.mem_filter.mpr ⟨Finset.mem_univ x, ha⟩, rfl⟩
+  have hsplit : (Finset.univ.filter (fun x => domain x ∈ Qx)).card
+      + (Finset.univ.filter (fun x => domain x ∉ Qx)).card = Fintype.card ι := by
+    rw [Finset.filter_card_add_filter_neg_card_eq_card]
+    simp
+  have hQge : (Fintype.card ι : ℕ) - (e + h) ≤ Qx.card := by
+    have := hQx_card
+    simp only [PNat.mk_coe] at this
+    omega
+  omega
+
+end PSApplication
+
 end BCKHS25
