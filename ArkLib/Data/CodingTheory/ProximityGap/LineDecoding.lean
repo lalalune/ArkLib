@@ -129,7 +129,9 @@ misses exactly `1 ≤ m` position of `T`, `|H|` may be arbitrarily large, yet `i
 `0 < 2` times, so the affine `g_{i₀}` gets only one equation and `(u₁ u₂)` is unpinned at `i₀`.
 A kernel-checked counterexample to the reduction target lives at
 `ArkLib/Data/CodingTheory/ProximityGap/LineDecodingCounting.lean`
-(`double_coverage_counterexample`, axioms `[propext, Classical.choice, Quot.sound]`).
+(`double_coverage_counterexample`, axioms `[propext, Classical.choice, Quot.sound]`;
+the constant-`S` fiber is beta-reduced before `decide`, since a free `γ` blocks the kernel
+decision procedure — the earlier `intro γ _; decide` form did *not* compile).
 Equivalently: the docstring's earlier claim that "the `n+1`-point budget closes the cover"
 is **wrong** — the per-position miss is *not* bounded by the per-γ total miss `δn`, so the
 `n+1`-budget bounds the *average* coverage, never the *minimum*. Averaging gives double
