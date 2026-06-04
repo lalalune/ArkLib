@@ -55,13 +55,11 @@ gives correlated coordinate agreement for the input coefficient lists. This is
 the curve-facing form of [BCIKS20] Lemma 7.6. -/
 theorem weighted_list_agreement_on_curves_implies_correlated_agreement {l : ℕ}
     {u : Fin (l + 2) → ι → F}
-    {deg : ℕ} {domain : ι ↪ F}
     {μ : ι → Set.Icc (0 : ℚ) 1}
     {α : ℝ≥0}
     {M : ℕ}
     (hμ : ∀ i, ∃ n : ℤ, (μ i).1 = (n : ℚ) / (M : ℚ))
     {v : Fin (l + 2) → ι → F}
-    (hv : ∀ i, v i ∈ ReedSolomon.code domain deg)
     {S' : Finset F}
     (hS'_card : S'.card > l + 1)
     (hS'_card₁ : S'.card ≥ (M * Fintype.card ι + 1) * (l + 1))
@@ -71,8 +69,8 @@ theorem weighted_list_agreement_on_curves_implies_correlated_agreement {l : ℕ}
         (fun x => Curve.polynomialCurveEval (F := F) (A := F) v z x) ≥ α) :
     WeightedAgreement.mu_set μ { x : ι | ∀ i, u i x = v i x } ≥ α := by
   exact WeightedAgreement.sufficiently_large_list_agreement_on_curve_implies_correlated_agreement
-    (u := u) (deg := deg) (domain := domain) (μ := μ) (α := α)
-    (v := v) hμ hS'_card hS'_card₁ hS'_agree
+    (u := u) (μ := μ) (α := α) (v := v)
+    hμ hS'_card hS'_card₁ hS'_agree
 
 omit [DecidableEq ι] [Fintype F] in
 /-- The unit weight function used to view ordinary coordinate density as a
@@ -166,8 +164,8 @@ theorem uniform_list_agreement_on_curves_implies_jointAgreement {l : ℕ}
       WeightedAgreement.mu_set μ S ≥ ((1 - δ : ℝ≥0) : ℝ) := by
     simpa [μ, S] using
       weighted_list_agreement_on_curves_implies_correlated_agreement
-        (u := u) (deg := deg) (domain := domain) (μ := μ) (α := 1 - δ)
-        (M := 1) hμ hv hS'_card (by simpa using hS'_card₁) hS'_agree
+        (u := u) (μ := μ) (α := 1 - δ) (M := 1)
+        hμ hS'_card (by simpa using hS'_card₁) hS'_agree
   refine ⟨S, ?_, v, ?_⟩
   · exact card_ge_of_uniform_mu_set_ge hweighted
   · intro i

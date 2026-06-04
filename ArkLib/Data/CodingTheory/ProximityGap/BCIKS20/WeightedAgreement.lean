@@ -86,10 +86,11 @@ lemma diffPoly_ne_zero {l : ℕ} (u v : Fin (l + 2) → ι → F) (x : ι)
   rw [hzero, Polynomial.coeff_zero] at hcoeff
   exact sub_eq_zero.mp hcoeff.symm
 
-omit [Nonempty ι] in
+omit [Nonempty ι] [DecidableEq F] in
 /-- A nonzero polynomial has at most `natDegree`-many roots inside any finite set. -/
 lemma card_le_natDegree_of_eval_zero (p : Polynomial F) (hp : p ≠ 0) (S : Finset F)
     (hS : ∀ z ∈ S, p.eval z = 0) : S.card ≤ p.natDegree := by
+  classical
   have hsub : S ⊆ p.roots.toFinset := fun z hz => by
     rw [Multiset.mem_toFinset, Polynomial.mem_roots hp]; exact hS z hz
   calc S.card ≤ p.roots.toFinset.card := Finset.card_le_card hsub
@@ -142,8 +143,7 @@ lemma mu_set_eq_div (μ : ι → Set.Icc (0 : ℚ) 1) {M : ℕ}
 /-- Lemma 7.5 in [BCIKS20].
 This is the "list agreement on a curve implies correlated agreement" lemma.
 
-We are given two lists of functions `u, v : Fin (l + 2) → ι → F`, where each `v i` is a
-Reed-Solomon codeword of degree `deg` over the evaluation domain `domain`. From these
+We are given two lists of functions `u, v : Fin (l + 2) → ι → F`. From these
 lists we form the bivariate curve evaluations
 
 * `w x z = Curve.polynomialCurveEval u z x`,
@@ -158,7 +158,6 @@ has μ-measure strictly larger than
 `α - (l + 1) / (S'.card - (l + 1))`. -/
 lemma list_agreement_on_curve_implies_correlated_agreement_bound
     {l : ℕ} {u : Fin (l + 2) → ι → F}
-    {deg : ℕ} {domain : ι ↪ F}
     {μ : ι → Set.Icc (0 : ℚ) 1}
     {α : ℝ≥0}
     {v : Fin (l + 2) → ι → F}
@@ -286,9 +285,8 @@ lemma list_agreement_on_curve_implies_correlated_agreement_bound
 This is the "integral-weight" strengthening of the list-agreement-on-a-curve =>
 correlated-agreement bound.
 
-We have two lists of functions `u, v : Fin (l + 2) → ι → F`, where each `v i` is a
-Reed-Solomon codeword of degree `deg` over the evaluation domain `domain`. From
-these lists we form the bivariate curve evaluations
+We have two lists of functions `u, v : Fin (l + 2) → ι → F`. From these lists
+we form the bivariate curve evaluations
 
 * `w x z = Curve.polynomialCurveEval u z x`,
 * `wtilde x z = Curve.polynomialCurveEval v z x`.
@@ -306,7 +304,6 @@ coordinates agree, i.e. where `u i x = v i x` for every `i`, is at least `α`:
 `mu_set μ {x | ∀ i, u i x = v i x} ≥ α`. -/
 lemma sufficiently_large_list_agreement_on_curve_implies_correlated_agreement
     {l : ℕ} {u : Fin (l + 2) → ι → F}
-    {deg : ℕ} {domain : ι ↪ F}
     {μ : ι → Set.Icc (0 : ℚ) 1}
     {α : ℝ≥0}
     {M : ℕ}
@@ -377,7 +374,7 @@ lemma sufficiently_large_list_agreement_on_curve_implies_correlated_agreement
     -- Apply Lemma 7.5 with the grid value β (as an ℝ≥0).
     have hβ_eq : (β.toNNReal : ℝ) = β := Real.coe_toNNReal β hβ_nonneg
     have h75 := list_agreement_on_curve_implies_correlated_agreement_bound
-      (u := u) (deg := deg) (domain := domain) (μ := μ) (α := β.toNNReal)
+      (u := u) (μ := μ) (α := β.toNNReal)
       (v := v) (S' := S') hS'_card
       (by
         intro z hz
