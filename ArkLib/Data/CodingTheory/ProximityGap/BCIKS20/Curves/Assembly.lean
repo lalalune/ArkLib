@@ -9,7 +9,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
 namespace ProximityGap
 
 open Polynomial
-open scoped BigOperators
+open scoped BigOperators LinearCode
+open Code
+open NNReal
 
 section CoreResults
 
@@ -95,5 +97,74 @@ theorem decoded_family_coefficients_of_coeff_polys {l deg : ℕ} [NeZero deg]
     rw [Polynomial.coeff_C_mul, hAj, mul_zero]
 
 end CoreResults
+
+section CurveAssemblyBridge
+
+variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
+
+omit [Nonempty ι] [DecidableEq ι] [Field F] [Fintype F] in
+/-- `jointAgreement` is invariant under reindexing the coefficient words by an
+equivalence. This packages the casts needed when a curve helper is stated with
+an index type definitionally different from the caller's `Fin (k + 1)`. -/
+theorem jointAgreement_reindex_equiv {κ κ' : Type}
+    {C : Set (ι → F)} {δ : ℝ≥0}
+    {W : κ → ι → F} {W' : κ' → ι → F}
+    (e : κ ≃ κ')
+    (hW : ∀ i x, W' (e i) x = W i x)
+    (h : jointAgreement (C := C) (δ := δ) (W := W')) :
+    jointAgreement (C := C) (δ := δ) (W := W) := by
+  classical
+  obtain ⟨S, hS_card, v', hv'⟩ := h
+  refine ⟨S, hS_card, fun i => v' (e i), ?_⟩
+  intro i
+  constructor
+  · exact (hv' (e i)).1
+  · intro x hx
+    have hx' := (hv' (e i)).2 hx
+    rw [Finset.mem_filter] at hx' ⊢
+    exact ⟨hx'.1, by simpa [hW i x] using hx'.2⟩
+
+omit [DecidableEq ι] in
+/-- GoodCoeffs-to-joint-agreement bridge where the remaining list-decoding
+output is coefficientwise low-degree dependence on the curve parameter.
+
+For every decoded selector `P`, if each coefficient `(P z).coeff j` agrees on
+`S'` with a polynomial in `z` of degree `< l + 2`, then the decoded selector
+assembles into a Reed-Solomon codeword curve and the original coefficient words
+have joint agreement. This is the curve-facing consumer for the §5 extraction
+output. -/
+theorem subset_goodCoeffsCurve_coeff_polys_implies_jointAgreement {l deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    {u : Fin (l + 2) → ι → F}
+    {S' : Finset F}
+    (hS'_card : S'.card > l + 1)
+    (hS'_card₁ : S'.card ≥ (Fintype.card ι + 1) * (l + 1))
+    (hS' : ∀ z ∈ S',
+      z ∈ RS_goodCoeffsCurve (k := l + 1) (deg := deg) (domain := domain) u δ)
+    (hcoeffPoly : ∀ P : F → Polynomial F,
+      (∀ z ∈ S',
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (l + 2), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+        ∃ B : ℕ → Polynomial F,
+          (∀ j < deg, (B j).natDegree < l + 2) ∧
+            ∀ z ∈ S', ∀ j < deg, (P z).coeff j = (B j).eval z) :
+    Code.jointAgreement (F := F) (κ := Fin (l + 2)) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (W := u) := by
+  classical
+  refine subset_goodCoeffsCurve_assembled_implies_jointAgreement
+    (deg := deg) (domain := domain) (δ := δ) (u := u)
+    hS'_card hS'_card₁ hS' ?_
+  intro P hdecoded
+  obtain ⟨B, hBdeg, hcoeff⟩ := hcoeffPoly P hdecoded
+  obtain ⟨A, hAdeg, hPcoeff⟩ :=
+    decoded_family_coefficients_of_coeff_polys
+      (l := l) (deg := deg) (S' := S') (P := P) B
+      hBdeg (fun z hz => (hdecoded z hz).1) hcoeff
+  exact decoded_family_coefficients_assemble_codeword_curve
+    (deg := deg) (domain := domain) P A hAdeg hPcoeff
+
+end CurveAssemblyBridge
 
 end ProximityGap
