@@ -271,6 +271,119 @@ theorem goodCoeffsCurve_coeff_polys_implies_jointAgreement {l deg : ℕ}
     (S' := RS_goodCoeffsCurve (k := l + 1) (deg := deg) (domain := domain) u δ)
     hS_card hS_card₁ (fun z hz => hz) hcoeffPoly
 
+omit [DecidableEq ι] in
+/-- Positive-`k` front door for
+`goodCoeffsCurve_coeff_polys_implies_jointAgreement`.
+
+The curve theorem is naturally indexed by `Fin (k + 1)`, while the assembly
+bridge is stated with `Fin (l + 2)`. For `0 < k`, this specializes the assembly
+bridge at `l = k - 1` and transports the result back to the original index
+type. -/
+theorem goodCoeffsCurve_coeff_polys_implies_jointAgreement_of_pos {k deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hk : 0 < k)
+    {u : Fin (k + 1) → ι → F}
+    (hS_card :
+      (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k)
+    (hS_card₁ :
+      (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card ≥
+        (Fintype.card ι + 1) * k)
+    (hcoeffPoly : ∀ P : F → Polynomial F,
+      (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+        ∃ B : ℕ → Polynomial F,
+          (∀ j < deg, (B j).natDegree < k + 1) ∧
+            ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              ∀ j < deg, (P z).coeff j = (B j).eval z) :
+    jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u) := by
+  classical
+  let l : ℕ := k - 1
+  have hlk : l + 1 = k := by omega
+  have hlen : l + 2 = k + 1 := by omega
+  let u' : Fin (l + 2) → ι → F := fun i => u (finCongr hlen i)
+  have hgood_eq :
+      RS_goodCoeffsCurve (k := l + 1) (deg := deg) (domain := domain) u' δ =
+        RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ := by
+    simpa [u', hlk] using
+      (RS_goodCoeffsCurve_finCongr (F := F) (ι := ι)
+        (k := l + 1) (k' := k) (deg := deg) (domain := domain) (δ := δ)
+        (by omega : (l + 1) + 1 = k + 1) u)
+  have hja' :
+      jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u') := by
+    refine goodCoeffsCurve_coeff_polys_implies_jointAgreement
+      (deg := deg) (domain := domain) (δ := δ) (u := u')
+      ?_ ?_ ?_
+    · simpa [hgood_eq, hlk] using hS_card
+    · simpa [hgood_eq, hlk] using hS_card₁
+    · intro P hdecoded
+      have hdecoded_orig :
+          ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+            (P z).natDegree < deg ∧
+              δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+                (P z).eval ∘ domain) ≤ δ := by
+        intro z hz
+        have hz' :
+            z ∈ RS_goodCoeffsCurve (k := l + 1) (deg := deg) (domain := domain) u' δ := by
+          simpa [hgood_eq] using hz
+        have hsum :
+            (∑ t : Fin (l + 2), (z ^ (t : ℕ)) • u' t) =
+              ∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t := by
+          simpa [u'] using
+            (curve_sum_reindex_equiv (F := F) (ι := ι) (e := finCongr hlen) z u
+              (fun t : Fin (k + 1) => (t : ℕ)))
+        exact ⟨(hdecoded z hz').1, by simpa [hsum] using (hdecoded z hz').2⟩
+      obtain ⟨B, hBdeg, hcoeff⟩ := hcoeffPoly P hdecoded_orig
+      · refine ⟨B, ?_, ?_⟩
+        · intro j hj
+          simpa [hlen] using hBdeg j hj
+        · intro z hz j hj
+          exact hcoeff z (by simpa [hgood_eq] using hz) j hj
+  exact jointAgreement_reindex_equiv
+    (F := F) (ι := ι) (C := ReedSolomon.code domain deg) (δ := δ)
+    (W := u) (W' := u') (e := (finCongr hlen).symm)
+    (by intro i x; simp [u'])
+    hja'
+
+omit [DecidableEq ι] in
+/-- Positive-`k` assembly bridge in the ENNReal-threshold form produced by the
+probability calculation in `correlatedAgreement_affine_curves`.
+
+The caller supplies a threshold `x` with `x < |RS_goodCoeffsCurve|`; this theorem
+turns lower bounds on `x` into the natural cardinality assumptions required by
+`goodCoeffsCurve_coeff_polys_implies_jointAgreement_of_pos`. -/
+theorem goodCoeffsCurve_coeff_polys_implies_jointAgreement_of_pos_ennreal
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hk : 0 < k)
+    {u : Fin (k + 1) → ι → F} {x : ENNReal}
+    (hx :
+      x <
+        ((RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card :
+          ENNReal))
+    (hsmall : (k : ENNReal) ≤ x)
+    (hlarge : ((((Fintype.card ι + 1) * k : ℕ) - 1 : ℕ) : ENNReal) ≤ x)
+    (hcoeffPoly : ∀ P : F → Polynomial F,
+      (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+        ∃ B : ℕ → Polynomial F,
+          (∀ j < deg, (B j).natDegree < k + 1) ∧
+            ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              ∀ j < deg, (P z).coeff j = (B j).eval z) :
+    jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u) := by
+  classical
+  have hS_card :
+      (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k :=
+    finset_card_gt_of_natCast_le_ennreal_lt hsmall hx
+  have hS_card₁ :
+      (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card ≥
+        (Fintype.card ι + 1) * k :=
+    finset_card_ge_of_pred_natCast_le_ennreal_lt hlarge hx
+  exact goodCoeffsCurve_coeff_polys_implies_jointAgreement_of_pos
+    (deg := deg) (domain := domain) (δ := δ) hk hS_card hS_card₁ hcoeffPoly
+
 end CurveAssemblyBridge
 
 end ProximityGap
