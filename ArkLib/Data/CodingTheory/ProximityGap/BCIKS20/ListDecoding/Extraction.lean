@@ -296,7 +296,8 @@ theorem eq512_descent_of_fraction_field_contraction
   have hφc : φ N.content ≠ 0 :=
     fun h => hcontent0 (IsFractionRing.injective R K (by rwa [map_zero]))
   have hφb : φ b ≠ 0 := fun h => hb0 (IsFractionRing.injective R K (by rwa [map_zero]))
-  have heq : Polynomial.C (φ N.content) * r.map φ = Polynomial.C (φ b) * sK := hmap.symm.trans hbsmul
+  have heq : Polynomial.C (φ N.content) * r.map φ = Polynomial.C (φ b) * sK := hmap.symm.trans
+    hbsmul
   set c := φ b * (φ N.content)⁻¹ with hc
   have hcunit : IsUnit c := IsUnit.mul (Ne.isUnit hφb) (IsUnit.inv (Ne.isUnit hφc))
   have hrmap : r.map φ = Polynomial.C c * sK := by
