@@ -39356,9 +39356,9 @@
           "signature": "def reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut !p[] where"
         },
         {
-          "doc": "",
+          "doc": "Completeness of a no-interaction reduction. **Faithfulness of the hypothesis `hRel`.** `Reduction.run` (`Execution.lean`) runs the prover and the verifier as two *independent* sub-computations: the prover evaluates `combineMap mapStmt mapWit` (one call each to `mapStmt` and `mapWit`), while the verifier *separately* evaluates `mapStmt` again on the same input statement. The completeness event (`Reduction.completeness`, `Security/Basic.lean`) then demands not only `(stmtOut, witOut) \u2208 relOut` but also that the prover's and the verifier's output statements *agree* (`prvStmtOut = stmtOut`). When ",
           "kind": "theorem",
-          "line": 69,
+          "line": 84,
           "name": "NoInteraction.reduction_completeness",
           "namespace": "NoInteraction",
           "short_name": "reduction_completeness",
