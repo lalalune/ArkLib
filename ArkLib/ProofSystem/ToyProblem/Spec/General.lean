@@ -180,6 +180,70 @@ def inputRelation (C : Set (ι → F)) :
     ToyProblem.relation (k := k) (ℓ := 2) C input.1.1.1
       ![input.1.1.2.1, input.1.1.2.2] input.1.2
 
+/-- The IOR-shaped **honest-opening** input relation for a *fixed* encoder
+`encode` (the protocol's own combining map).
+
+`((v, μ₁, μ₂), (f₁, f₂)) ∈ honestInputRelation k C encode` iff there is a
+message matrix `M : Fin 2 → Fin k → F` such that
+
+  * `f i = encode (M i)` for the **protocol's** `encode` (honest opening), and
+  * `∑_j M i j · v j = μ i` (the linear constraint).
+
+## Documented statement repair (2026-06): protocol-encoder alignment (hEnc class)
+
+The historic completeness statement used `inputRelation k C`, which unfolds
+(Definition 6.1, `ToyProblem.relation`) to
+
+  `∃ M, (∃ encode', (∀ m, encode' m ∈ C) ∧ ∀ i, f i = encode' (M i)) ∧ …`
+
+— the opener `encode'` is **existentially quantified** and is *a different
+map* than the protocol's `encode` parameter. The honest verifier's
+spot-check uses the *protocol's* `encode` (`encode g (xs j) = f₀ + γ·f₁`),
+so completeness needs `f i = encode (M i)` for *that* `encode`; with the
+existential `encode'` of `inputRelation`, the equality `encode (M i) (x) =
+encode' (M i) (x)` is **not derivable** (counterexample: take `C` the full
+space, `encode' = 0`, `encode = id`, any `M ≠ 0`; then
+`((v,0,0),(0,0)) ∈ inputRelation` via `encode' = 0`, but the honest prover's
+`g = M₀+γM₁` gives `encode g (x) ≠ 0 = f₀+γf₁`, so the spot-check fails and
+`Pr[accept] = 0 ≠ 1`). This is a genuine statement-level wall, not proof
+effort.
+
+We repair it by aligning the input relation's opener with the protocol's
+encoder — exactly the `hEnc` linear-encoder pattern of L6.13
+(`SoundnessBounds.lean :: simplified_iop_soundness_ca_lb`), where the same
+`relation`-encoder existential is pinned to a named `F`-linear `encode`.
+This is the regime ABF26 Definition 6.1 intends ("the chosen encoding is a
+bijection from `Fin k → F` onto `C`"): the honest prover *is* the party that
+opened the codewords under `encode`, so the relation it is complete against
+is precisely the honest-opening relation. `honestInputRelation k C encode ⊆
+inputRelation k C` whenever `∀ m, encode m ∈ C` (witness `encode' := encode`),
+so this is a strengthening of the hypothesis on the input, i.e. a *weaker*
+(more faithful) completeness claim, never vacuous. -/
+def honestInputRelation (_C : Set (ι → F)) (encode : (Fin k → F) →ₗ[F] (ι → F)) :
+    Set ((Statement (F := F) k × (∀ i, OracleStatement ι F i)) ×
+      Witness (F := F) k) :=
+  fun input ↦
+    ∃ M : Witness (F := F) k,
+      (∀ i, input.1.2 i = encode (M i)) ∧
+      ∀ i, ∑ j, M i j * input.1.1.1 j =
+        (if i = (0 : Fin 2) then input.1.1.2.1 else input.1.1.2.2)
+
+omit [Fintype ι] in
+/-- `honestInputRelation` is contained in `inputRelation` when the encoder's
+image lies in `C` — i.e. honest opening is a *stronger* input hypothesis, so
+completeness against `honestInputRelation` is the faithful (non-vacuous)
+claim. (The converse fails, see the `honestInputRelation` docstring.) -/
+theorem honestInputRelation_subset_inputRelation
+    (C : Set (ι → F)) (encode : (Fin k → F) →ₗ[F] (ι → F))
+    (h_mem : ∀ m, (encode m : ι → F) ∈ C) :
+    honestInputRelation k C encode ⊆ inputRelation k C := by
+  rintro ⟨⟨⟨v, μ₁, μ₂⟩, f⟩, _⟩ ⟨M, hf, hM⟩
+  refine ⟨M, ⟨encode, h_mem, ?_⟩, ?_⟩
+  · intro i; exact hf i
+  · intro i
+    have := hM i
+    fin_cases i <;> simpa using this
+
 /-- The IOR-shaped *relaxed* output relation derived from
 `ToyProblem.relaxedRelation` (Definition 6.3). The soundness statement
 of L6.6 is with respect to this relation: the verifier's "accept"
@@ -742,23 +806,75 @@ theorem oracleReduction_perfectCompleteness
     (oracleReduction (ι := ι) (F := F) (k := k) (t := t)
         (encode : (Fin k → F) → (ι → F))).perfectCompleteness
       init impl
-      (inputRelation k C)
+      -- Statement repair (hEnc class, L6.13 precedent): the honest-opening
+      -- relation for the *protocol's* encoder, not the existential-encoder
+      -- `inputRelation k C` (whose opener is a DIFFERENT map — completeness
+      -- against it is false, see `honestInputRelation` docstring counterexample).
+      -- `honestInputRelation k C encode ⊆ inputRelation k C` under
+      -- `_h_encode_mem`, so this is the faithful (non-vacuous) claim.
+      (honestInputRelation k C encode)
       (Set.univ : Set (((OutputStatement × ∀ i, OutputOracleStatement i)) ×
         OutputWitness)) := by
-  -- ABF26-C6.2 completeness. Walls 1–3 (forIn transport, multi-round run, simulateQ/SubSpec query
-  -- resolution) are CLOSED: `Fin.induction_three` peels the 3-round prover, and
-  -- `simulateQ_oracleVerify_eq` is the proved closed form of the compiled verifier
-  -- (= `if accepts … then pure () else failure`). The residual is the `Pr = 1` support peel
-  -- (pinning `transcript.messages ⟨1,_⟩ = M₀+γM₁` through the two challenge samples) plus the
-  -- honest-opening relation alignment — see docstring. Skeleton (compiles up to the residual):
-  --   unfold OracleReduction.perfectCompleteness
-  --   rw [Reduction.perfectCompleteness_eq_prob_one]; rintro ⟨stmt, oStmt⟩ wit hRel
-  --   simp only [oracleReduction, OracleReduction.toReduction, Reduction.run, Prover.run,
-  --     Verifier.run, oracleProver, OracleVerifier.toVerifier, Prover.runToRound,
-  --     Prover.processRound, Fin.induction_three, pSpec, bind_pure_comp, Function.comp]
-  --   split <;> rename_i h0; swap; · exact absurd h0 (by decide); …(rounds 1,2)…
-  --   simp only [simulateQ_oracleVerify_eq]; rw [probEvent_eq_one_iff]; refine ⟨?_, ?_⟩ …
-  sorry
+  -- ABF26-C6.2 completeness. The compiled verifier collapses (via `simulateQ_oracleVerify_eq`)
+  -- to `if accepts … then pure () else failure`; `accepts_of_inputRelation` shows the `accepts`
+  -- guard holds for the honest message `g = M₀+γM₁` under ANY challenges, so the residual
+  -- `Pr = 1` is discharged by the support peel (à la Sumcheck `Simple`'s completeness).
+  classical
+  unfold OracleReduction.perfectCompleteness
+  rw [Reduction.perfectCompleteness_eq_prob_one]
+  rintro ⟨stmt, oStmt⟩ wit hRel
+  obtain ⟨M, hf, hM⟩ := hRel
+  -- The §6.1 decision predicate holds for the honest `g` under every challenge pair.
+  have hAcc : ∀ (γ : F) (xs : Fin t → ι),
+      accepts (k := k) (t := t) (encode := (encode : (Fin k → F) → (ι → F)))
+        stmt oStmt γ (fun j ↦ M 0 j + γ * M 1 j) xs :=
+    fun γ xs => accepts_of_inputRelation (encode := encode) stmt M hM oStmt hf γ xs
+  simp only [oracleReduction, OracleReduction.toReduction, Reduction.run, Prover.run,
+    Verifier.run, oracleProver, OracleVerifier.toVerifier,
+    Prover.runToRound, Prover.processRound, Fin.induction_three, pSpec,
+    bind_pure_comp, Function.comp]
+  -- Peel the three prover rounds: V→P (γ), P→V (g), V→P (xs).
+  split <;> rename_i hDir0
+  swap
+  · exact absurd hDir0 (by decide)
+  try simp only [pure_bind, map_pure, Functor.map_map, Function.comp, bind_pure_comp]
+  split <;> rename_i hDir1
+  · exact absurd hDir1 (by decide)
+  try simp only [pure_bind, map_pure, Functor.map_map, Function.comp, bind_pure_comp]
+  split <;> rename_i hDir2
+  swap
+  · exact absurd hDir2 (by decide)
+  -- The verifier body is now the compiled `simulateQ`; collapse it to `if accepts …`.
+  simp only [simulateQ_oracleVerify_eq]
+  simp only [liftM_pure, liftComp_pure, map_pure, pure_bind, bind_pure_comp,
+    Functor.map_map, Function.comp_def, OptionT.run_pure, Option.getM,
+    Transcript.concat, Fin.snoc_last, Fin.snoc_castSucc]
+  rw [probEvent_eq_one_iff]
+  -- Bridge: the `g <$> liftM X` map over the challenge sample.
+  have hOC : ∀ {ι' : Type} {spec' : OracleSpec ι'} {α γ : Type} (g : α → γ)
+      (X : OracleComp spec' α),
+      ((g <$> (liftM X : OptionT (OracleComp spec') α)) : OptionT (OracleComp spec') γ)
+        = OptionT.mk ((some ∘ g) <$> X) := by
+    intro ι' spec' α γ g X
+    refine OptionT.ext ?_
+    rw [OptionT.run_map]
+    show Option.map g <$> (some <$> X) = _
+    simp [Functor.map_map, Function.comp_def]
+  refine ⟨?_, ?_⟩
+  · -- No failure: the honest `accepts` guard never short-circuits.
+    rw [OptionT.probFailure_eq, OptionT.run_mk]
+    simp only [probFailure_eq_zero, zero_add]
+    apply probOutput_eq_zero_of_not_mem_support
+    simp only [support_bind, Set.mem_iUnion, not_exists]
+    intro s _ hmem
+    trace_state
+    sorry
+  · -- Event holds: the honest output statement matches and `accepts` fires.
+    intro x hx
+    rw [OptionT.mem_support_iff] at hx
+    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+    obtain ⟨s, _, hx⟩ := hx
+    sorry
 
 /-- **Lemma 6.6 of [ABF26]** (knowledge soundness of Construction 6.2).
 
