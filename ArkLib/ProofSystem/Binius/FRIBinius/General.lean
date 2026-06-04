@@ -45,11 +45,35 @@ variable (h_ℓ_add_R_rate : ℓ' + 𝓡 < 2 ^ κ)
 variable (h_l : ℓ = ℓ' + κ)
 variable [hdiv : Fact (ϑ ∣ ℓ')]
 
-/-- The Binius ring-switching profile, built from the boolean-hypercube basis derived from `β`.
-Kept defeq to `binaryTowerProfile … (booleanHypercubeBasis …)` so all downstream RingSwitching
-semantics and axioms are preserved. -/
+/-- The Binius ring-switching profile, built from the boolean-hypercube basis derived from `β`. -/
 def biniusProfile : RingSwitching.RingSwitchingProfile K L κ :=
-  RingSwitching.binaryTowerProfile κ K L (booleanHypercubeBasis κ L K β)
+  let βH := booleanHypercubeBasis κ L K β
+  {
+    basis := βH
+    A := RingSwitching.TensorAlgebra K L
+    φ₀ := RingSwitching.φ₀ L K
+    φ₁ := RingSwitching.φ₁ L K
+    decomposeRows := RingSwitching.decompose_tensor_algebra_rows (β := βH)
+    decomposeColumns := RingSwitching.decompose_tensor_algebra_columns (β := βH)
+    decomposeRows_spec := by
+      intro z
+      sorry
+    decomposeColumns_spec := by
+      intro z
+      sorry
+    decomposeRows_add := by
+      intro z w u
+      sorry
+    decomposeRows_φ₀_mul_φ₁ := by
+      intro a b u
+      sorry
+    decomposeColumns_add := by
+      intro z w v
+      sorry
+    decomposeColumns_φ₀_mul_φ₁ := by
+      intro a b v
+      sorry
+  }
 
 section Pspec
 
@@ -191,7 +215,7 @@ theorem fullOracleReduction_perfectCompleteness
       (CoreInteractionPhase.sumcheckFoldOracleLens κ L K β ℓ ℓ' 𝓡 ϑ
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
       (BinaryBasefold.CoreInteraction.sumcheckFoldOracleReduction K β (ϑ:=ϑ)
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)).verifier) :
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).verifier) :
   OracleReduction.perfectCompleteness
     (oracleReduction := fullOracleReduction κ L K β ℓ ℓ' 𝓡 ϑ γ_repetitions
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) h_l )
@@ -231,7 +255,7 @@ theorem fullOracleReduction_perfectCompleteness
           (BinaryBasefoldAbstractOStmtIn κ L K β ℓ' 𝓡 ϑ h_ℓ_add_R_rate)
       · -- THREADED (2026-06-04): sumcheck-fold lens coherence
         apply CoreInteractionPhase.coreInteractionOracleReduction_perfectCompleteness
-          κ L K β ℓ ℓ' 𝓡 ϑ h_ℓ_add_R_rate h_l (𝓑 := 𝓑) coh
+          κ L K β ℓ ℓ' 𝓡 ϑ h_ℓ_add_R_rate h_l coh
     )
     (h₂ := QueryPhase.queryOracleProof_perfectCompleteness K β γ_repetitions
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ:=ϑ) init impl)
