@@ -824,14 +824,6 @@ theorem reduction_perfectCompleteness :
       constructor <;> simp
 
 
-/-- Perfect completeness for the oracle reduction -/
-theorem oracleReduction_perfectCompleteness :
-    (oracleReduction R deg D oSpec).perfectCompleteness init impl
-      (inputRelation R deg D) (outputRelation R deg) := by
-  unfold OracleReduction.perfectCompleteness
-  rw [oracleReduction_eq_reduction]
-  exact reduction_perfectCompleteness R deg D oSpec
-
 /-- Closed form of the simulated oracle-verifier `verify`: the inner `simOracle2`
 simulation collapses to a guard on the ORACLE's `D`-sum followed by the oracle's
 evaluation at the challenge. -/
@@ -891,6 +883,108 @@ private lemma vector_finRange_map_sum_eq (g : Fin m → R) :
     simp only [Vector.finRange, Array.finRange, Vector.toList_ofFn]
     exact List.ofFn_id m
   rw [h]
+
+/-- Bridge (early copy for the completeness proof below; see also
+`vector_finRange_map_sum_eq`): the vector `D`-evaluation sum equals the `Fin` sum. -/
+private lemma vector_finRange_map_sum_eq' (g : Fin m → R) :
+    ((Vector.finRange m).map g).sum = ∑ i : Fin m, g i := by
+  rw [← Vector.sum_toList, Vector.toList_map, Fin.sum_univ_def]
+  have h : (Vector.finRange m).toList = List.finRange m := by
+    simp only [Vector.finRange, Array.finRange, Vector.toList_ofFn]
+    exact List.ofFn_id m
+  rw [h]
+
+/-- Perfect completeness for the oracle reduction -/
+theorem oracleReduction_perfectCompleteness :
+    (oracleReduction R deg D oSpec).perfectCompleteness init impl
+      (inputRelation R deg D) (outputRelation R deg) := by
+  -- Direct proof (no detour through the false `oracleReduction_eq_reduction`, Finding 13b):
+  -- the oracle verifier collapses to a guard on the ORACLE's D-sum, which holds by `hValid`.
+  unfold OracleReduction.perfectCompleteness
+  simp only [Reduction.perfectCompleteness, Reduction.completeness, ENNReal.coe_zero, tsub_zero]
+  intro ⟨target, oStmt⟩ () hValid
+  simp only [inputRelation, Set.mem_setOf_eq] at hValid
+  have hValid' : ((Vector.finRange m).map (fun i => (oStmt ()).val.eval (D i))).sum = target := by
+    rw [vector_finRange_map_sum_eq']
+    simpa [Finset.sum_map] using hValid
+  simp only [oracleReduction, OracleReduction.toReduction, Reduction.run, Prover.run,
+    Verifier.run, prover, OracleVerifier.toVerifier,
+    Prover.runToRound, Prover.processRound, Fin.induction_two, pSpec,
+    bind_pure_comp, Function.comp]
+  split <;> rename_i hDir0
+  · exact absurd hDir0 (by decide)
+  try simp only [pure_bind, map_pure, Functor.map_map, Function.comp, bind_pure_comp]
+  split <;> rename_i hDir1
+  swap
+  · exact absurd hDir1 (by decide)
+  simp only [simulateQ_oracleVerify_eq R deg D oSpec, hValid', eq_self_iff_true, if_true]
+  simp only [liftM_pure, liftComp_pure, map_pure, pure_bind, bind_pure_comp,
+    Functor.map_map, Function.comp_def, map_map, OptionT.run_pure, Option.getM,
+    Transcript.concat, Fin.snoc_last, Fin.snoc_castSucc]
+  rw [ge_iff_le, one_le_probEvent_iff, probEvent_eq_one_iff]
+  refine ⟨?_, ?_⟩
+  all_goals
+    have hOC : ∀ {ι' : Type} {spec' : OracleSpec ι'} {α γ : Type} (g : α → γ)
+        (X : OracleComp spec' α),
+        ((g <$> (liftM X : OptionT (OracleComp spec') α)) : OptionT (OracleComp spec') γ)
+          = OptionT.mk ((some ∘ g) <$> X) := by
+      intro ι' spec' α γ g X
+      refine OptionT.ext ?_
+      rw [OptionT.run_map]
+      show Option.map g <$> (some <$> X) = _
+      simp [Functor.map_map, Function.comp_def]
+  · -- No failure: the computation is a `some`-producing map over the challenge sample.
+    rw [OptionT.probFailure_eq, OptionT.run_mk]
+    simp only [probFailure_eq_zero, zero_add]
+    apply probOutput_eq_zero_of_not_mem_support
+    simp only [support_bind, Set.mem_iUnion, not_exists]
+    intro s _ hmem
+    rw [hOC] at hmem
+    simp only [StateT.run'_eq, support_map, Set.mem_image] at hmem
+    obtain ⟨⟨v, s'⟩, hmem, hv⟩ := hmem
+    erw [simulateQ_map] at hmem
+    rw [StateT.run_map] at hmem
+    simp only [support_map, Set.mem_image] at hmem
+    obtain ⟨⟨w, s''⟩, hw, heq⟩ := hmem
+    obtain ⟨rfl, rfl⟩ := Prod.mk.inj heq
+    simp [Function.comp_def] at hv
+  · -- Event: holds for every sampled challenge by construction.
+    intro x hx
+    rw [OptionT.mem_support_iff] at hx
+    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+    obtain ⟨s, _, hx⟩ := hx
+    rw [hOC] at hx
+    simp only [StateT.run'_eq, support_map, Set.mem_image] at hx
+    obtain ⟨⟨v, s'⟩, hx, hv⟩ := hx
+    erw [simulateQ_map] at hx
+    rw [StateT.run_map] at hx
+    simp only [support_map, Set.mem_image] at hx
+    obtain ⟨⟨w, s''⟩, hw, heq⟩ := hx
+    obtain ⟨rfl, rfl⟩ := Prod.mk.inj heq
+    simp only [Function.comp_def, Option.some.injEq] at hv
+    subst hv
+    refine ⟨?_, ?_⟩
+    · simp only [outputRelation, Set.mem_setOf_eq]
+      rfl
+    · -- pin the prover result's structure from hw
+      erw [simulateQ_bind] at hw
+      rw [StateT.run_bind] at hw
+      rw [mem_support_bind_iff] at hw
+      obtain ⟨⟨g1, sg⟩, hg1, hw⟩ := hw
+      rcases g1 with ⟨tr1, polyLE, chal⟩
+      simp only [liftM_pure, map_pure] at hw
+      erw [simulateQ_pure] at hw
+      rw [StateT.run_pure] at hw
+      simp only [support_pure, Set.mem_singleton_iff, Prod.mk.injEq] at hw
+      obtain ⟨⟨rfl, rfl⟩, -⟩ := hw
+      -- peel hg1: the challenge sample pins the transcript (glue already collapsed)
+      erw [simulateQ_map] at hg1
+      rw [StateT.run_map] at hg1
+      simp only [support_map, Set.mem_image] at hg1
+      obtain ⟨⟨c, sc⟩, -, heqc⟩ := hg1
+      simp only [Prod.mk.injEq] at heqc
+      obtain ⟨⟨rfl, rfl, rfl⟩, rfl⟩ := heqc
+      rfl
 
 /-- Trivial round-by-round extractor (all witnesses are `Unit`). -/
 private def simpleRbrExtractor : Extractor.RoundByRound oSpec
