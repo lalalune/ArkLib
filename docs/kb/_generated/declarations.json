@@ -45498,6 +45498,15 @@
           "namespace": "Combine",
           "short_name": "combine_theorem_uniqueDecodingRegime",
           "signature": "theorem combine_theorem_uniqueDecodingRegime [Nonempty \u03b9]"
+        },
+        {
+          "doc": "Clean single-hypothesis form of `combine_theorem_uniqueDecodingRegime`: below the unique-decoding radius, the `1 \u2212 \u221a\u03c1` bound follows from the regime-nesting comparison (`relativeUniqueDecodingRadius_lt_one_sub_sqrtRate`), so only the UDR bound and the rate-margin bound need to be assumed.",
+          "kind": "theorem",
+          "line": 967,
+          "name": "Combine.combine_theorem_uniqueDecodingRegime'",
+          "namespace": "Combine",
+          "short_name": "combine_theorem_uniqueDecodingRegime'",
+          "signature": "theorem combine_theorem_uniqueDecodingRegime' [Nonempty \u03b9]"
         }
       ]
     },
@@ -49587,7 +49596,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5384,
+      "declarations": 5385,
       "files": 285
     }
   }
