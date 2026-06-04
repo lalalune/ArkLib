@@ -398,6 +398,271 @@ theorem RS_BW_homMatrix_det_submatrix_eq_zero_of_goodCoeffsCurve_card_gt_fun
           r id) hne hrow
 
 
+open scoped BigOperators in
+open Polynomial in
+open Matrix in
+open BerlekampWelch in
+theorem RS_exists_nonzero_kernelVec_BW_homMatrix_of_goodCoeffsCurve_card_gt
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (u : WordStack F (Fin (k + 1)) ι)
+    (hdeg : deg ≤ Fintype.card ι)
+    (hδ : δ ≤ relativeUniqueDecodingRadius (ι := ι) (F := F) (C := ReedSolomon.code domain deg))
+    (hS : (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k * Fintype.card ι + 1) :
+    let e : ℕ := Nat.floor (δ * Fintype.card ι)
+    ∃ a : Fin (e + 1) → F[X],
+      ∃ b : Fin (e + deg) → F[X],
+        Fin.append a b ≠ 0 ∧
+          (∀ t, (a t).natDegree ≤ k * e) ∧
+            (∀ s, (b s).natDegree ≤ k * (e + 1)) ∧
+              Matrix.mulVec
+                  (BW_homMatrix (ι := ι) e deg
+                    (fun i => (Polynomial.C (domain i) : F[X]))
+                    (fun i => ∑ t : Fin (k + 1), Polynomial.C (u t i) * Polynomial.X ^ (t : ℕ)))
+                  (Fin.append a b) = 0 := by
+  classical
+  -- unfold the initial `let e := ...`
+  dsimp
+  set e : ℕ := Nat.floor (δ * Fintype.card ι) with he
+  let m : ℕ := e + 1
+  let n : ℕ := e + deg
+  let N : ℕ := m + n
+  let M : Matrix ι (Fin N) F[X] :=
+    BW_homMatrix (ι := ι) e deg (fun i => (Polynomial.C (domain i) : F[X]))
+      (fun i => ∑ t : Fin (k + 1), Polynomial.C (u t i) * Polynomial.X ^ (t : ℕ))
+  have hdetM : ∀ r : Fin N → ι, Matrix.det (Matrix.submatrix M r id) = 0 := by
+    intro r
+    simpa [M, N, m, n, he] using
+      (RS_BW_homMatrix_det_submatrix_eq_zero_of_goodCoeffsCurve_card_gt_fun (k := k) (deg := deg)
+        (domain := domain) (δ := δ) (u := u) hdeg hδ hS r)
+  have hcard_n : n ≤ Fintype.card ι := by
+    simpa [n, e, he] using
+      (RS_floor_mul_card_ι_add_deg_le_card_ι_of_le_relUDR (deg := deg) (domain := domain)
+        (δ := δ) hdeg hδ)
+  obtain ⟨rB⟩ : Nonempty (Fin n ↪ ι) := by
+    classical
+    refine Function.Embedding.nonempty_of_card_le ?_
+    simpa using hcard_n
+  let cL : Fin m → Fin N := fun j => Fin.castAdd n j
+  let cR : Fin n → Fin N := fun j => Fin.natAdd m j
+  let L : Matrix ι (Fin m) F[X] := Matrix.submatrix M id cL
+  let R : Matrix ι (Fin n) F[X] := Matrix.submatrix M id cR
+  let A21 : Matrix (Fin n) (Fin m) F[X] := Matrix.submatrix M rB cL
+  let D : Matrix (Fin n) (Fin n) F[X] := Matrix.submatrix M rB cR
+  have hD : D = -Matrix.vandermonde (fun i : Fin n => (Polynomial.C (domain (rB i)) : F[X])) := by
+    funext i j
+    have hj' : ¬ e + 1 + (j : ℕ) ≤ e := by
+      omega
+    simp [D, M, BW_homMatrix, cR, Matrix.vandermonde, m, hj']
+  have hvB : Function.Injective (fun i : Fin n => domain (rB i)) := by
+    intro i1 i2 h
+    apply rB.injective
+    apply domain.injective
+    exact h
+  have hdetV : IsUnit
+      (Matrix.det
+        (Matrix.vandermonde (fun i : Fin n => (Polynomial.C (domain (rB i)) : F[X])))) := by
+    simpa using
+      (RS_isUnit_det_vandermonde_C_of_injective (F := F) n (fun i : Fin n => domain (rB i)) hvB)
+  have hdetD : IsUnit (Matrix.det D) := by
+    have hunitNeg : IsUnit ((-1 : F[X]) ^ Fintype.card (Fin n)) := by
+      simpa using (isUnit_neg_one (α := F[X])).pow (Fintype.card (Fin n))
+    have hdetD' :
+        Matrix.det D =
+          (-1 : F[X]) ^ Fintype.card (Fin n) *
+            Matrix.det
+              (Matrix.vandermonde (fun i : Fin n => (Polynomial.C (domain (rB i)) : F[X]))) := by
+      simp [hD, Matrix.det_neg]
+    refine hdetD'.symm ▸ (hunitNeg.mul hdetV)
+  letI : Invertible D := Matrix.invertibleOfIsUnitDet D hdetD
+  let K0 : Matrix ι (Fin m) F[X] := L - R * (⅟D * A21)
+  have hdetK0 : ∀ rA : Fin m → ι, Matrix.det (K0.submatrix rA id) = 0 := by
+    intro rA
+    let r : Fin N → ι := Fin.append rA rB
+    have hdetA : Matrix.det (M.submatrix r id) = 0 := hdetM r
+    let eSum : (Fin m ⊕ Fin n) ≃ Fin N := finSumFinEquiv (m := m) (n := n)
+    let Ablocks : Matrix (Fin m ⊕ Fin n) (Fin m ⊕ Fin n) F[X] :=
+      (M.submatrix r id).submatrix eSum eSum
+    have hdetAblocks : Matrix.det Ablocks = 0 := by
+      have hdetEq : Matrix.det Ablocks = Matrix.det (M.submatrix r id) := by
+        simpa [Ablocks] using (Matrix.det_submatrix_equiv_self (e := eSum) (M.submatrix r id))
+      simpa [hdetEq] using hdetA
+    have hAblocks_eq :
+        Ablocks = Matrix.fromBlocks (L.submatrix rA id) (R.submatrix rA id) A21 D := by
+      funext i j
+      cases i <;> cases j <;>
+        simp (config := { zeta := true })
+          [Ablocks, eSum, L, R, A21, D, r, cL, cR, Matrix.fromBlocks, N, m, n]
+    have hmul :
+        Matrix.det D *
+            Matrix.det ((L.submatrix rA id) - (R.submatrix rA id) * ⅟D * A21) =
+          0 := by
+      have hformula :=
+        (Matrix.det_fromBlocks₂₂ (A := L.submatrix rA id) (B := R.submatrix rA id)
+          (C := A21) (D := D))
+      simpa [hAblocks_eq, hformula, Matrix.mul_assoc] using hdetAblocks
+    have hdetSchur :
+        Matrix.det ((L.submatrix rA id) - (R.submatrix rA id) * ⅟D * A21) = 0 := by
+      exact (IsUnit.mul_right_eq_zero (a := Matrix.det D)
+        (b := Matrix.det ((L.submatrix rA id) - (R.submatrix rA id) * ⅟D * A21)) hdetD).1 hmul
+    simpa [K0, Matrix.submatrix_sub, Matrix.submatrix_mul, Matrix.submatrix_submatrix,
+      Matrix.mul_assoc, Function.comp, L, R] using hdetSchur
+  have hg : ∀ i : ι,
+      ((∑ t : Fin (k + 1), Polynomial.C (u t i) * Polynomial.X ^ (t : ℕ) : F[X])).natDegree ≤ k := by
+    intro i
+    refine Polynomial.natDegree_sum_le_of_forall_le _ _ ?_
+    intro t _
+    refine le_trans Polynomial.natDegree_mul_le ?_
+    simp only [Polynomial.natDegree_C, Polynomial.natDegree_pow, Polynomial.natDegree_X,
+      mul_one, Nat.zero_add]
+    exact Nat.le_of_lt_succ t.isLt
+  have hdegL : ∀ i j, (L i j).natDegree ≤ k := by
+    intro i j
+    simpa [L, cL, M] using
+      (BW_homMatrix_entry_natDegree_le_of_natDegree_le (F := F) (ι := ι) e deg
+        (ωs := fun i => domain i)
+        (g := (fun i => ∑ t : Fin (k + 1), Polynomial.C (u t i) * Polynomial.X ^ (t : ℕ)))
+        (d := k) hg i (cL j))
+  have hdegA21 : ∀ i j, (A21 i j).natDegree ≤ k := by
+    intro i j
+    simpa [A21, cL, M] using
+      (BW_homMatrix_entry_natDegree_le_of_natDegree_le (F := F) (ι := ι) e deg
+        (ωs := fun i => domain i)
+        (g := (fun i => ∑ t : Fin (k + 1), Polynomial.C (u t i) * Polynomial.X ^ (t : ℕ)))
+        (d := k) hg (rB i) (cL j))
+  have hdegR0 : ∀ i j, (R i j).natDegree = 0 := by
+    intro i j
+    have hj : e + 1 ≤ (cR j).1 := by
+      simp [cR, m]
+    have hle := BW_homMatrix_entry_natDegree_le_of_branch (F := F) (ι := ι) e deg
+      (ωs := fun i => domain i)
+      (g := (fun i => ∑ t : Fin (k + 1), Polynomial.C (u t i) * Polynomial.X ^ (t : ℕ)))
+      (d := k) hg i (cR j)
+    rw [if_neg (by omega : ¬ ((cR j).1 < e + 1))] at hle
+    simpa [R, cR, M] using Nat.le_zero.mp hle
+  have hdegInvD0 : ∀ i j : Fin n, (D⁻¹ i j).natDegree = 0 := by
+    intro i j
+    simpa [hD] using
+      (RS_natDegree_inv_neg_vandermonde_C_eq_zero
+        (F := F) n (fun t : Fin n => domain (rB t)) hvB i j)
+  have hdegInvDA21 : ∀ i j, ((⅟D * A21) i j).natDegree ≤ k := by
+    intro i j
+    classical
+    have hterm : ∀ kk ∈ (Finset.univ : Finset (Fin n)),
+        ((⅟D i kk) * (A21 kk j)).natDegree ≤ k := by
+      intro kk hk
+      have hInv' : (D⁻¹ i kk).natDegree = 0 := hdegInvD0 i kk
+      calc
+        ((⅟D i kk) * (A21 kk j)).natDegree ≤ (⅟D i kk).natDegree + (A21 kk j).natDegree :=
+          Polynomial.natDegree_mul_le
+        _ = 0 + (A21 kk j).natDegree := by
+          simp [Matrix.invOf_eq_nonsing_inv, hInv']
+        _ = (A21 kk j).natDegree := by simp
+        _ ≤ k := hdegA21 kk j
+    have hsum :=
+      Polynomial.natDegree_sum_le_of_forall_le (s := (Finset.univ : Finset (Fin n)))
+        (n := k) (f := fun k : Fin n => (⅟D i k) * (A21 k j)) hterm
+    simpa [Matrix.mul_apply] using hsum
+  have hdegRInvDA21 : ∀ i j, ((R * (⅟D * A21)) i j).natDegree ≤ k := by
+    intro i j
+    classical
+    have hterm : ∀ kk ∈ (Finset.univ : Finset (Fin n)),
+        (R i kk * ((⅟D * A21) kk j)).natDegree ≤ k := by
+      intro kk hk
+      have hR : (R i kk).natDegree = 0 := hdegR0 i kk
+      calc
+        (R i kk * ((⅟D * A21) kk j)).natDegree ≤ (R i kk).natDegree + ((⅟D * A21) kk j).natDegree :=
+          Polynomial.natDegree_mul_le
+        _ = 0 + ((⅟D * A21) kk j).natDegree := by simp [hR]
+        _ = ((⅟D * A21) kk j).natDegree := by simp
+        _ ≤ k := hdegInvDA21 kk j
+    have hsum :=
+      Polynomial.natDegree_sum_le_of_forall_le (s := (Finset.univ : Finset (Fin n)))
+        (n := k) (f := fun k : Fin n => R i k * ((⅟D * A21) k j)) hterm
+    simpa [Matrix.mul_apply] using hsum
+  have hdegK0 : ∀ i j, (K0 i j).natDegree ≤ k := by
+    intro i j
+    have hsub : (L i j - (R * (⅟D * A21)) i j).natDegree ≤
+        max (L i j).natDegree ((R * (⅟D * A21)) i j).natDegree :=
+      Polynomial.natDegree_sub_le (L i j) ((R * (⅟D * A21)) i j)
+    have hmax :
+        max (L i j).natDegree ((R * (⅟D * A21)) i j).natDegree ≤ k := by
+      exact max_le_iff.mpr ⟨hdegL i j, hdegRInvDA21 i j⟩
+    have : (K0 i j).natDegree ≤
+        max (L i j).natDegree ((R * (⅟D * A21)) i j).natDegree := by
+      simpa [K0] using hsub
+    exact le_trans this hmax
+  have hcard_m : m ≤ Fintype.card ι := by
+    simpa [m, e, he] using
+      (RS_floor_mul_card_ι_add_one_le_card_ι_of_le_relUDR (deg := deg) (domain := domain)
+        (δ := δ) hdeg hδ)
+  obtain ⟨a, ha0, ha_deg, haKer⟩ :=
+    RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le (ι := ι) (F := F) e k K0
+      (by simpa [m] using hcard_m) hdegK0 (by
+        intro rA
+        simpa [m, K0] using hdetK0 rA)
+  let b : Fin n → F[X] := -(⅟D).mulVec (A21.mulVec a)
+  refine ⟨a, b, ?_, ha_deg, ?_, ?_⟩
+  · intro happ
+    apply ha0
+    funext t
+    have := congrArg (fun f : Fin N → F[X] => f (Fin.castAdd n t)) happ
+    simpa [Fin.append_left, m, n, N, b] using this
+  · intro s
+    classical
+    have hdegA21mulVec : ∀ i : Fin n, ((A21.mulVec a) i).natDegree ≤ k * (e + 1) := by
+      intro i
+      have hterm : ∀ t ∈ (Finset.univ : Finset (Fin m)),
+          (A21 i t * a t).natDegree ≤ k * (e + 1) := by
+        intro t ht
+        have hA : (A21 i t).natDegree ≤ k := hdegA21 i t
+        have ha : (a t).natDegree ≤ k * e := ha_deg t
+        have hmul : (A21 i t * a t).natDegree ≤ (A21 i t).natDegree + (a t).natDegree :=
+          Polynomial.natDegree_mul_le
+        have hadd : (A21 i t).natDegree + (a t).natDegree ≤ k + k * e := Nat.add_le_add hA ha
+        have : (A21 i t * a t).natDegree ≤ k + k * e := le_trans hmul hadd
+        calc (A21 i t * a t).natDegree ≤ k + k * e := this
+          _ = k * (e + 1) := by ring
+      have hsum :=
+        Polynomial.natDegree_sum_le_of_forall_le (s := (Finset.univ : Finset (Fin m)))
+          (n := k * (e + 1)) (f := fun t : Fin m => A21 i t * a t) hterm
+      simpa [Matrix.mulVec, dotProduct] using hsum
+    have hdegInvDmulVec : ∀ i : Fin n, ((⅟D).mulVec (A21.mulVec a) i).natDegree ≤ k * (e + 1) := by
+      intro i
+      have hterm : ∀ kk ∈ (Finset.univ : Finset (Fin n)),
+          ((⅟D i kk) * (A21.mulVec a kk)).natDegree ≤ k * (e + 1) := by
+        intro kk hk
+        have hInv' : (D⁻¹ i kk).natDegree = 0 := hdegInvD0 i kk
+        have hA : ((A21.mulVec a) kk).natDegree ≤ k * (e + 1) := hdegA21mulVec kk
+        calc
+          ((⅟D i kk) * (A21.mulVec a kk)).natDegree ≤
+              (⅟D i kk).natDegree + (A21.mulVec a kk).natDegree :=
+            Polynomial.natDegree_mul_le
+          _ = 0 + (A21.mulVec a kk).natDegree := by
+            simp [Matrix.invOf_eq_nonsing_inv, hInv']
+          _ = (A21.mulVec a kk).natDegree := by simp
+          _ ≤ k * (e + 1) := hA
+      have hsum :=
+        Polynomial.natDegree_sum_le_of_forall_le (s := (Finset.univ : Finset (Fin n)))
+          (n := k * (e + 1)) (f := fun k : Fin n => (⅟D i k) * (A21.mulVec a k)) hterm
+      simpa [Matrix.mulVec, dotProduct] using hsum
+    simpa [b] using hdegInvDmulVec s
+  · -- kernel equation
+    have hRb : Matrix.mulVec R b = -Matrix.mulVec (R * (⅟D * A21)) a := by
+      ext i
+      simp [b, Matrix.mulVec_neg, Matrix.mulVec_mulVec]
+    have hLR : Matrix.mulVec L a + Matrix.mulVec R b = 0 := by
+      have haKer' : Matrix.mulVec (L - R * (⅟D * A21)) a = 0 := by
+        simpa [K0] using haKer
+      have haKer'' : Matrix.mulVec L a - Matrix.mulVec (R * (⅟D * A21)) a = 0 := by
+        simpa [Matrix.sub_mulVec] using haKer'
+      simpa [sub_eq_add_neg, hRb] using haKer''
+    have hsplit : Matrix.mulVec M (Fin.append a b) = Matrix.mulVec L a + Matrix.mulVec R b := by
+      simpa [L, R, cL, cR, N] using
+        (RS_mulVec_append_castAdd_natAdd (ι := ι) (R := F[X]) m n M a b)
+    change Matrix.mulVec M (Fin.append a b) = 0
+    rw [hsplit]
+    exact hLR
+
 end CoreResults
 
 end ProximityGap
