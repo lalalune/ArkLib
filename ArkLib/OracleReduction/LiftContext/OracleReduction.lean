@@ -90,7 +90,9 @@ theorem OracleReduction.liftContext_toReduction_comm
     {R : OracleReduction oSpec InnerStmtIn InnerOStmtIn InnerWitIn
                             InnerStmtOut InnerOStmtOut InnerWitOut pSpec} :
       (R.liftContext lens).toReduction = R.toReduction.liftContext lens.toContext := by
-  sorry
+  unfold OracleReduction.liftContext OracleReduction.toReduction Reduction.liftContext
+    OracleProver.liftContext
+  rw [OracleVerifier.liftContext_toVerifier_comm]
 
 end Execution
 

@@ -776,7 +776,9 @@ theorem verifier_rbrKnowledgeSoundness [Fintype R] :
 theorem oracleVerifier_rbrKnowledgeSoundness [Fintype R] :
     (oracleVerifier R deg D oSpec).rbrKnowledgeSoundness init impl
     (inputRelation R deg D) (outputRelation R deg) (fun _ => (deg : ℝ≥0) / (Fintype.card R)) := by
-  sorry
+  unfold OracleVerifier.rbrKnowledgeSoundness
+  rw [oracleVerifier_eq_verifier]
+  exact verifier_rbrKnowledgeSoundness R deg D oSpec
 
 -- TODO: break down the oracle reduction into a series of oracle reductions as stated above
 
