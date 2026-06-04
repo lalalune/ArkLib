@@ -35,7 +35,8 @@ and the list size of the corresponding interleaved base code.
   full `F`-`Submodule` (B-linear closure was always present; the F-scalar
   closure is what the structural refactor delivers).
 - `lambda_extensionCode_eq_lambda_interleaved` (L2.21, [BCFW25 Lem D.3]):
-  `|Λ(C_F, δ)| = |Λ(C_B^≡e, δ)|`. Tagged sorry.
+  `|Λ(C_F, δ)| = |Λ(C_B^≡e, δ)|`. Proved in-tree via the coordinate isometry
+  `extensionCoordEquiv` (the per-position basis bijection `F ≃ (Fin e → B)`).
 
 ## References
 
@@ -102,6 +103,12 @@ noncomputable def coord (P : ExtensionFieldPresentation B F) (j : Fin P.e) : F �
 This makes the base-field copy of `B` inside `F` align with the first coordinate. -/
 def IsSystematic (P : ExtensionFieldPresentation B F) : Prop :=
   ∀ x : B, P.φ (P.ψ x) = fun i ↦ if i.val = 0 then x else 0
+
+/-- The `j`-th coordinate map is the `j`-th component of `φ`. Holds by definition
+(`coord j = proj j ∘ φ`), recorded as a `simp` lemma for the list-size argument. -/
+@[simp]
+lemma coord_apply (P : ExtensionFieldPresentation B F) (j : Fin P.e) (x : F) :
+    P.coord j x = P.φ x j := rfl
 
 /-- Each coordinate `P.coord j` is additive — direct consequence of being a
 `LinearMap`. -/
@@ -298,6 +305,101 @@ noncomputable def extensionCodeSubmodule
     (extensionCodeSubmodule P C_B : Set (ι → F)) =
       extensionCode P (C_B : Set (ι → B)) := rfl
 
+/-! ### The coordinate isometry `Φ` underlying ABF26 Lemma 2.21
+
+The list-size equality of L2.21 is, at bottom, the statement that the alphabet
+bijection `φ : F ≃ (Fin e → B)` (the `B`-basis isomorphism of the presentation)
+induces a *Hamming isometry* `Φ : (ι → F) ≃ (ι → (Fin e → B))` carrying the
+extension code onto the interleaved base code. Because `Φ` is a per-position
+bijection it preserves Hamming distance, and it bijects each list ball onto the
+corresponding ball over the matrix alphabet; the maximised list sizes therefore
+coincide. This is exactly the content of [BCFW25 Lemma D.3], proved here in-tree
+from the in-tree `extensionCode`/`interleavedCodeSet` definitions rather than
+admitted. -/
+
+/-- The coordinate isometry `Φ : (ι → F) ≃ (ι → (Fin e → B))` induced by applying the
+basis isomorphism `φ : F ≃ (Fin e → B)` at every position. -/
+noncomputable def extensionCoordEquiv
+    {ι : Type} {B F : Type} [Field B] [Field F] [Algebra B F]
+    (P : ExtensionFieldPresentation B F) :
+    (ι → F) ≃ (ι → (Fin P.e → B)) :=
+  Equiv.piCongrRight (fun _ : ι ↦ (P.φ : F ≃ₗ[B] (Fin P.e → B)).toEquiv)
+
+@[simp]
+lemma extensionCoordEquiv_apply
+    {ι : Type} {B F : Type} [Field B] [Field F] [Algebra B F]
+    (P : ExtensionFieldPresentation B F) (v : ι → F) (i : ι) :
+    extensionCoordEquiv (ι := ι) P v i = P.φ (v i) := rfl
+
+/-- The isometry carries the extension code onto the interleaved base code:
+`v ∈ extensionCode P C_B ↔ Φ v ∈ interleavedCodeSet (Fin e) C_B`. The interleaved
+membership condition `∀ k, (Φ v).transpose k ∈ C_B` unfolds, position-by-position,
+to `(Φ v) i k = φ (v i) k = coord k (v i)`, i.e. exactly the extension-code
+condition `∀ k, (fun i ↦ coord k (v i)) ∈ C_B`. -/
+lemma mem_extensionCode_iff_image_mem_interleaved
+    {ι : Type} [Fintype ι]
+    {B F : Type} [Field B] [Field F] [Algebra B F]
+    (P : ExtensionFieldPresentation B F)
+    (C_B : Set (ι → B)) (v : ι → F) :
+    v ∈ extensionCode P C_B ↔
+      extensionCoordEquiv (ι := ι) P v ∈ Code.interleavedCodeSet (κ := Fin P.e) C_B := by
+  rfl
+
+/-- The coordinate isometry preserves relative Hamming distance: `δᵣ(Φ u, Φ v) = δᵣ(u, v)`.
+Both sides are `hammingDist / Fintype.card ι`, and `hammingDist (Φ u) (Φ v) = hammingDist u v`
+because `Φ` applies the injective bijection `φ` independently at each position
+(`Mathlib.hammingDist_comp`). -/
+lemma extensionCoordEquiv_relHammingDist
+    {ι : Type} [Fintype ι] [Nonempty ι]
+    {B F : Type} [Field B] [DecidableEq B] [Field F] [DecidableEq F] [Algebra B F]
+    (P : ExtensionFieldPresentation B F) (u v : ι → F) :
+    δᵣ(extensionCoordEquiv (ι := ι) P u, extensionCoordEquiv (ι := ι) P v) = δᵣ(u, v) := by
+  unfold Code.relHammingDist
+  have hHam : Δ₀(extensionCoordEquiv (ι := ι) P u, extensionCoordEquiv (ι := ι) P v)
+      = Δ₀(u, v) :=
+    hammingDist_comp (fun _ : ι ↦ (P.φ : F → (Fin P.e → B)))
+      (fun _ ↦ (P.φ : F ≃ₗ[B] (Fin P.e → B)).injective)
+  rw [hHam]
+
+/-- Membership-in-the-relative-ball transfers along the coordinate isometry `Φ`:
+`Φ v ∈ relHammingBall (Φ f) δ ↔ v ∈ relHammingBall f δ`. Both balls are stated with
+the `relHammingBall` defining instances (the `open Classical` decidability baked into
+that definition), so the `DecidableEq`-instance mismatch that would arise from writing
+`δᵣ` directly is avoided. The `Code.relHammingDist`-value equality itself is
+instance-irrelevant (a `Subsingleton`), supplied by `hammingDist_comp`. -/
+lemma relHammingBall_image_mem_iff
+    {ι : Type} [Fintype ι] [Nonempty ι]
+    {B F : Type} [Field B] [DecidableEq B] [Field F] [DecidableEq F] [Algebra B F]
+    (P : ExtensionFieldPresentation B F) (f v : ι → F) {δ : ℝ} :
+    extensionCoordEquiv (ι := ι) P v ∈
+        ListDecodable.relHammingBall (extensionCoordEquiv (ι := ι) P f) δ ↔
+      v ∈ ListDecodable.relHammingBall f δ := by
+  simp only [ListDecodable.relHammingBall, Set.mem_setOf_eq]
+  -- Reduce both `relHammingDist`s to `hammingDist`, where instance choice is irrelevant
+  -- (`hammingDist`'s value does not depend on the `DecidableEq` witness), and apply
+  -- the per-position injectivity of `φ` via `hammingDist_comp`.
+  have hHam :
+      Δ₀(extensionCoordEquiv (ι := ι) P f, extensionCoordEquiv (ι := ι) P v) = Δ₀(f, v) :=
+    hammingDist_comp (fun _ : ι ↦ (P.φ : F → (Fin P.e → B)))
+      (fun _ ↦ (P.φ : F ≃ₗ[B] (Fin P.e → B)).injective)
+  have h₁ : (Code.relHammingDist (extensionCoordEquiv (ι := ι) P f)
+          (extensionCoordEquiv (ι := ι) P v) : ℚ≥0)
+        = Code.relHammingDist f v := by
+    unfold Code.relHammingDist; rw [hHam]
+  -- The two `δᵣ` terms in the goal carry the `relHammingBall`-defining (`Classical`)
+  -- `DecidableEq` instances, which differ syntactically from `h₁`'s canonical ones but
+  -- are propositionally equal (`DecidableEq` is a `Subsingleton`); `convert` bridges them.
+  have hcast : ((Code.relHammingDist (extensionCoordEquiv (ι := ι) P f)
+          (extensionCoordEquiv (ι := ι) P v) : ℚ≥0) : ℝ)
+        = ((Code.relHammingDist f v : ℚ≥0) : ℝ) := by exact_mod_cast h₁
+  constructor
+  · intro h
+    refine le_of_eq_of_le ?_ h
+    convert hcast.symm using 3
+  · intro h
+    refine le_of_eq_of_le ?_ h
+    convert hcast using 3
+
 /-- **ABF26 Lemma 2.21 [BCFW25 Lemma D.3].** List size of an extension code equals the
 list size of the corresponding interleaved base code. Let `C_B : B^k → B^n` be a
 linear code and `P` be an extension-field presentation. For every `δ ∈ (0, 1)`:
@@ -305,7 +407,18 @@ linear code and `P` be an extension-field presentation. For every `δ ∈ (0, 1)
   `|Λ(C_F, δ)| = |Λ(C_B^≡e, δ)|`
 
 where `C_F` is the extension code (D2.20) and `C_B^≡e` is the `e`-fold interleaved
-base code (D2.9). Admitted as an external result. -/
+base code (D2.9).
+
+**Proof.** The basis isomorphism `φ : F ≃ (Fin e → B)` lifts position-by-position to a
+bijection `Φ := extensionCoordEquiv P : (ι → F) ≃ (ι → (Fin e → B))` that (i) carries
+`extensionCode P C_B` onto `interleavedCodeSet C_B`
+(`mem_extensionCode_iff_image_mem_interleaved`) and (ii) preserves relative Hamming
+distance (`extensionCoordEquiv_relHammingDist`). Hence for every word `f`, `Φ` maps the
+point list `Λ(C_F, δ, f)` bijectively onto `Λ(C_B^≡e, δ, Φ f)`, so the two have equal
+`ncard`. Reindexing the supremum over words by the bijection `Φ` gives the maximised
+list sizes are equal. The `(0,1)`-range hypotheses on `δ` are not needed for the
+equality (the lists are nested balls regardless) and are kept to match the paper's
+statement. -/
 theorem lambda_extensionCode_eq_lambda_interleaved
     {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
     {B F : Type} [Field B] [Fintype B] [DecidableEq B]
@@ -315,6 +428,43 @@ theorem lambda_extensionCode_eq_lambda_interleaved
     Lambda (extensionCode P C_B) δ =
       Lambda (Code.interleavedCodeSet (κ := Fin P.e) C_B)
         δ := by
-  sorry -- ABF26-L2.21; external admit [BCFW25 Lem D.3].
+  set Φ := extensionCoordEquiv (ι := ι) P with hΦ
+  -- Point-list correspondence: `Φ` maps `Λ(C_F, δ, f)` bijectively onto `Λ(C_B^≡e, δ, Φ f)`.
+  have h_image : ∀ f : ι → F,
+      Φ '' (ListDecodable.closeCodewordsRel (extensionCode P C_B) f δ) =
+        ListDecodable.closeCodewordsRel
+          (Code.interleavedCodeSet (κ := Fin P.e) C_B) (Φ f) δ := by
+    intro f
+    ext V
+    constructor
+    · rintro ⟨v, ⟨hv_mem, hv_ball⟩, rfl⟩
+      refine ⟨(mem_extensionCode_iff_image_mem_interleaved P C_B v).mp hv_mem, ?_⟩
+      -- `δᵣ(Φ f, Φ v) ≤ δ` from `δᵣ(f, v) ≤ δ` by the isometry; transfer membership
+      -- via `relHammingBall_image_mem_iff` (instance-agnostic in the alphabet).
+      exact (relHammingBall_image_mem_iff P f v).mpr hv_ball
+    · rintro ⟨hV_mem, hV_ball⟩
+      refine ⟨Φ.symm V, ⟨?_, ?_⟩, Φ.apply_symm_apply V⟩
+      · rw [mem_extensionCode_iff_image_mem_interleaved P C_B, Φ.apply_symm_apply]
+        exact hV_mem
+      · -- `Φ.symm V ∈ ball f δ` from `V ∈ ball (Φ f) δ`: rewrite `V = Φ (Φ.symm V)`.
+        have hmp : extensionCoordEquiv (ι := ι) P (Φ.symm V) ∈
+              ListDecodable.relHammingBall (Φ f) δ → Φ.symm V ∈ ListDecodable.relHammingBall f δ :=
+          (relHammingBall_image_mem_iff P f (Φ.symm V)).mp
+        rw [show extensionCoordEquiv (ι := ι) P (Φ.symm V) = V from Φ.apply_symm_apply V] at hmp
+        exact hmp hV_ball
+  -- Equal `ncard` for each `f`, since `Φ` is injective.
+  have h_ncard : ∀ f : ι → F,
+      (ListDecodable.closeCodewordsRel (extensionCode P C_B) f δ).ncard =
+        (ListDecodable.closeCodewordsRel
+          (Code.interleavedCodeSet (κ := Fin P.e) C_B) (Φ f) δ).ncard := by
+    intro f
+    rw [← h_image f, Set.ncard_image_of_injective _ Φ.injective]
+  -- Reindex the supremum defining `Lambda` by the bijection `Φ`.
+  unfold Lambda
+  rw [← Equiv.iSup_comp (e := Φ)
+        (g := fun g : ι → (Fin P.e → B) ↦
+          ((ListDecodable.closeCodewordsRel
+            (Code.interleavedCodeSet (κ := Fin P.e) C_B) g δ).ncard : ℕ∞))]
+  exact iSup_congr fun f ↦ by rw [h_ncard f]
 
 end CodingTheory
