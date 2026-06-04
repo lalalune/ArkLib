@@ -1216,6 +1216,43 @@ theorem pg_exists_common_candidate_pair (δ : ℚ) (x₀ : F)
   have hcard_sub := Finset.card_le_card hsub
   exact le_trans (by simpa [S, T] using hfiber) hcard_sub
 
+omit [DecidableEq (RatFunc F)] in
+/-- Divisibility-facing form of `pg_exists_common_candidate_pair`.
+
+The Guruswami-Sudan step naturally gives divisibility by `Y - Pz(X)` after evaluating
+`Q` at `Z = z`. This theorem packages that divisibility into the pointwise vanishing
+hypothesis used by the candidate-pair extraction and pigeonhole step. -/
+theorem pg_exists_common_candidate_pair_of_dvd (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hx0 : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q) (u₀ := u₀)
+          (u₁ := u₁) h_gs →
+        Bivariate.evalX (Polynomial.C x₀) R ≠ 0)
+    (hS_nonempty :
+      (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).Nonempty)
+    (hdiv : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      let P : F[X] := Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2
+      Polynomial.X - Polynomial.C P ∣ (pg_eval_on_Z (F := F) Q z.1)) :
+    ∃ R H,
+      (R, H) ∈ pg_candidatePairs (m := m) (n := n) (k := k) (ωs := ωs)
+        (Q := Q) (u₀ := u₀) (u₁ := u₁) x₀ h_gs ∧
+      #(Finset.univ.filter
+          (fun z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ =>
+            let P : F[X] :=
+              Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2
+            (pg_eval_on_Z (F := F) R z.1).eval P = 0 ∧
+              (Bivariate.evalX z.1 H).eval (P.eval x₀) = 0))
+        ≥ #(Finset.univ : Finset (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁)) /
+          #(pg_candidatePairs (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+            (u₀ := u₀) (u₁ := u₁) x₀ h_gs) := by
+  classical
+  refine pg_exists_common_candidate_pair (F := F) (k := k) (δ := δ) (x₀ := x₀)
+    (h_gs := h_gs) hx0 hS_nonempty ?_
+  intro z
+  let P : F[X] := Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2
+  have hzdiv : Polynomial.X - Polynomial.C P ∣ (pg_eval_on_Z (F := F) Q z.1) := by
+    simpa [P] using hdiv z
+  exact Polynomial.dvd_iff_isRoot.mp hzdiv
 
 omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
 theorem pg_natDegree_evalX_le_natDegreeY (x₀ : F) (R : F[Z][X][Y]) :
