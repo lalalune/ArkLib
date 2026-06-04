@@ -46252,9 +46252,18 @@
           "signature": "instance oCtxLens_complete :"
         },
         {
+          "doc": "`simulateQ` of a query lifted from the middle summand of `spec\u2080 + (spec\u2081 + spec\u2082)` is the implementation applied at the routed index.",
+          "kind": "lemma",
+          "line": 1226,
+          "name": "Sumcheck.Spec.SingleRound.simulateQ_double_lift_query",
+          "namespace": "Sumcheck.Spec.SingleRound",
+          "short_name": "simulateQ_double_lift_query",
+          "signature": "lemma simulateQ_double_lift_query {\u03b9\u2080 \u03b9\u2081 \u03b9\u2082 : Type} {spec\u2080 : OracleSpec \u03b9\u2080}"
+        },
+        {
           "doc": "",
           "kind": "instance",
-          "line": 1224,
+          "line": 1235,
           "name": "Sumcheck.Spec.SingleRound.extractorLens_rbr_knowledge_soundness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "extractorLens_rbr_knowledge_soundness",
@@ -46263,7 +46272,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 1256,
+          "line": 1296,
           "name": "Sumcheck.Spec.SingleRound.reduction_perfectCompleteness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "reduction_perfectCompleteness",
@@ -46272,7 +46281,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 1264,
+          "line": 1304,
           "name": "Sumcheck.Spec.SingleRound.verifier_rbrKnowledgeSoundness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "verifier_rbrKnowledgeSoundness",
@@ -46281,7 +46290,7 @@
         {
           "doc": "Completeness theorem for single-round of sum-check, obtained by transporting the completeness proof for the simplified version",
           "kind": "theorem",
-          "line": 1274,
+          "line": 1314,
           "name": "Sumcheck.Spec.SingleRound.oracleReduction_perfectCompleteness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oracleReduction_perfectCompleteness",
@@ -46290,7 +46299,7 @@
         {
           "doc": "Round-by-round knowledge soundness theorem for single-round of sum-check, obtained by transporting the knowledge soundness proof for the simplified version",
           "kind": "theorem",
-          "line": 1287,
+          "line": 1327,
           "name": "Sumcheck.Spec.SingleRound.oracleVerifier_rbrKnowledgeSoundness",
           "namespace": "Sumcheck.Spec.SingleRound",
           "short_name": "oracleVerifier_rbrKnowledgeSoundness",
@@ -46299,7 +46308,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 1347,
+          "line": 1387,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.proverState",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "proverState",
@@ -46308,7 +46317,7 @@
         {
           "doc": "Prover input for the `i`-th round of the sum-check protocol, where `i < n`",
           "kind": "def",
-          "line": 1354,
+          "line": 1394,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.proverInput",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "proverInput",
@@ -46317,7 +46326,7 @@
         {
           "doc": "Prover interaction for the `i`-th round of the sum-check protocol, where `i < n`.",
           "kind": "def",
-          "line": 1360,
+          "line": 1400,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.proverRound",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "proverRound",
@@ -46326,7 +46335,7 @@
         {
           "doc": "Since there is no witness, the prover's output for each round `i < n` of the sum-check protocol is trivial",
           "kind": "def",
-          "line": 1385,
+          "line": 1425,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.proverOutput",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "proverOutput",
@@ -46335,7 +46344,7 @@
         {
           "doc": "The overall prover for the `i`-th round of the sum-check protocol, where `i < n`. This is only well-defined for `n > 0`, since when `n = 0` there is no protocol.",
           "kind": "def",
-          "line": 1392,
+          "line": 1432,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.prover",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "prover",
@@ -46344,7 +46353,7 @@
         {
           "doc": "The (non-oracle) verifier of the sum-check protocol for the `i`-th round, where `i < n + 1`",
           "kind": "def",
-          "line": 1402,
+          "line": 1442,
           "name": "Sumcheck.Spec.SingleRound.Unfolded.verifier",
           "namespace": "Sumcheck.Spec.SingleRound.Unfolded",
           "short_name": "verifier",
@@ -48774,7 +48783,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5295,
+      "declarations": 5296,
       "files": 282
     }
   }
