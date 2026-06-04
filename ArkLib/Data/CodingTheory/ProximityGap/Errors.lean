@@ -1173,7 +1173,8 @@ theorem epsMCA_eq_epsCA_below_udr
     --   `Pr_{let r ← $ᵖ F}[mcaEvent (↑C) δ (u 0 - p₀) (u 1 - p₁) r] ≤ epsCA (↑C) δ δ`
     -- with `p₀ p₁ ∈ ↑C`, `hjp : jointProximity (↑C) u δ`, and `h_imp` as above.
     --
-    -- Why Step B is NOT closable in-tree (four distinct skeletons, all failing identically):
+    -- Why Step B is NOT closable in-tree (five distinct skeletons, all failing at the same
+    -- ε_ca-connection / γ-counting wall):
     --
     --  S1 (bound `mcaEvent(d)` by `d`'s own `ε_ca` body): the difference stack `d` is itself
     --     jointly `δ`-close (`jointProximity_diffStack_line_close`, witness `(0,0)` on `S'`), so
@@ -1196,6 +1197,18 @@ theorem epsMCA_eq_epsCA_below_udr
     --     `δ ≥ 1/n`); refuted by the kernel-checked
     --     `ProximityGap.LineDecodingCounting.double_coverage_counterexample`
     --     (axioms `[propext, Classical.choice, Quot.sound]`).
+    --  S5 (single-codeword *row* pinning, sharper than S3): under UDR the diff-stack `mcaEvent`
+    --     witness `w` is forced to `0` everywhere (`mcaEvent_witness_eq_combined_…`-style
+    --     `eq_of_lt_dist`), so `d0 = -γ·d1` on the *whole* witness set `S`. Hence if any *single*
+    --     codeword `c ∈ C` agreed with `d1 = u1-p₁` on `S`, the pair `(-γ•c, c) ∈ C²` (submodule
+    --     closure) would agree with `(d0, d1)` on all of `S`, contradicting no-joint-pair. So
+    --     `mcaEvent(d)` at `γ` ⇒ *no codeword agrees with `d1` on `S`*. This is a genuine
+    --     strengthening of S3 (it pins the obstruction to a single row `d1`, removing the second
+    --     equation), and it is a TRUE consequence — but it still does not bound `Pr_γ`: the witness
+    --     `S` and the row-agreement failure both vary with `γ`, and `ε_ca` is gated on *line*
+    --     `v0+γ·v1` closeness, not on single-row agreement. Connecting "row `d1` un-pinnable on the
+    --     γ-dependent `S`" to the `ε_ca` line supremum is exactly the same Guruswami–Sudan γ-count.
+    --     Same wall: the per-γ event is realizable (S4 counterexample), only its *mass* is small.
     --
     -- The faithful route is the Guruswami–Sudan/[Hab25]/[GG25 Thm 3.5] bivariate list decoder of
     -- `f₀ + Z·f₁` over `F(Z)`: the exceptional `γ` are the roots of one interpolation polynomial
