@@ -25,10 +25,16 @@ variable {F : Type} [Field F] [DecidableEq F]
              uPoly, uPoly' denotes the decoded multivariate polynomials of u and u'
     - ∃ σ₁,..,σₛ : F, such that |Λ(C',f,δ)| > 1
       where, C' is a multiconstrained RS = MCRS[F, ι, φ, m, s, w, σ]
-             σ = {σ₁,..,σₛ}, w = {w₁,..,wₛ}, wᵢ = Z * eqPolynomial(rᵢ) -/
+             σ = {σ₁,..,σₛ}, w = {w₁,..,wₛ}, wᵢ = Z * eqPolynomial(rᵢ)
+
+  Note on the weight encoding: `toWeightAssignment` (underlying `weightConstraint`) assigns
+  the codeword value `p(b)` to variable index `0` and the point `b` to indices `1..m`, matching
+  the paper's `ŵ(Z, X₁, …, X_m)`. The weights here are accordingly
+  `X 0 * rename Fin.succ (eqPolynomial (r i))` (the original statement read the value variable
+  at `Fin.last m` while the assignment provides it at `0`, making the claim unprovable). -/
 lemma crs_equiv_rs_random_point_agreement
   {f : ι → F} {m s : ℕ} {φ : ι ↪ F} [Smooth φ] :
-  ∀ (r : Fin s → Fin m → F) (δ : ℝ≥0) (hδLe : δ ≤ 1),
+  ∀ (r : Fin s → Fin m → F) (δ : ℝ≥0) (_hδLe : δ ≤ 1),
     (∃ u u' : smoothCode φ m,
       u.val ≠ u'.val ∧
       u.val ∈ closeCodewordsRel (smoothCode φ m) f δ ∧
@@ -37,12 +43,30 @@ lemma crs_equiv_rs_random_point_agreement
     ↔
     (∃ σ : Fin s → F,
       let w : Fin s → MvPolynomial (Fin (m + 1)) F :=
-        fun i => MvPolynomial.X (Fin.last m) * rename Fin.castSucc (eqPolynomial (r i))
+        fun i => MvPolynomial.X 0 * rename Fin.succ (eqPolynomial (r i))
       let multiCRSCode := multiConstrainedCode φ m s w σ
       ∃ u u' : ι → F, u ≠ u' ∧
         u ∈ closeCodewordsRel multiCRSCode f δ ∧
         u' ∈ closeCodewordsRel multiCRSCode f δ)
-  := by sorry
+  := by
+  intro r δ _hδLe
+  constructor
+  · rintro ⟨u, u', huu, hu, hu', hagree⟩
+    refine ⟨fun i => MvPolynomial.eval (r i) (mVdecode u), u.val, u'.val, huu, ?_, ?_⟩
+    · refine ⟨⟨u.2, fun i => ?_⟩, hu.2⟩
+      rw [weightConstraint_eqPolynomial_iff _ (mVdecode_mem_restrictDegree _)]
+    · refine ⟨⟨u'.2, fun i => ?_⟩, hu'.2⟩
+      rw [weightConstraint_eqPolynomial_iff _ (mVdecode_mem_restrictDegree _)]
+      exact (hagree i).symm
+  · rintro ⟨σv, u, u', huu, hu, hu'⟩
+    obtain ⟨⟨hmu, hcu⟩, hbu⟩ := hu
+    obtain ⟨⟨hmu', hcu'⟩, hbu'⟩ := hu'
+    refine ⟨⟨u, hmu⟩, ⟨u', hmu'⟩, huu, ⟨hmu, hbu⟩, ⟨hmu', hbu'⟩, fun i => ?_⟩
+    have h1 := (weightConstraint_eqPolynomial_iff _
+      (mVdecode_mem_restrictDegree _) (r i) (σv i)).mp (hcu i)
+    have h2 := (weightConstraint_eqPolynomial_iff _
+      (mVdecode_mem_restrictDegree _) (r i) (σv i)).mp (hcu' i)
+    rw [h1, h2]
 
 /-- Lemma 4.25 part 1
   Let `f : ι → F`, `m` be the number of variables, `s` be a repetition parameter
@@ -62,7 +86,7 @@ lemma oodSampling_crs_eq_rs
                           fun i =>
                             let ri := rs i
                             let rVec := fun j : Fin m => ri ^ (2^(j : ℕ))
-                            MvPolynomial.X (Fin.last m) * rename Fin.castSucc (eqPolynomial rVec)
+                            MvPolynomial.X 0 * rename Fin.succ (eqPolynomial rVec)
                         let multiCRSCode := multiConstrainedCode φ m s w σ
                         ∃ u u' : ι → F, u ≠ u' ∧
                           u ∈ closeCodewordsRel multiCRSCode f δ ∧
@@ -85,7 +109,7 @@ lemma oodSampling_crs_eq_rs
         fun i =>
           let ri := rs i
           let rVec := fun j : Fin m => ri ^ (2^(j : ℕ))
-          MvPolynomial.X (Fin.last m) * rename Fin.castSucc (eqPolynomial rVec)
+          MvPolynomial.X 0 * rename Fin.succ (eqPolynomial rVec)
       let multiCRSCode := multiConstrainedCode φ m s w σ
       ∃ u u' : ι → F, u ≠ u' ∧
         u ∈ closeCodewordsRel multiCRSCode f ↑δ ∧
@@ -105,7 +129,7 @@ lemma oodSampling_crs_eq_rs
       let w := fun i =>
         let ri := rs i
         let rVec := fun j : Fin m => ri ^ (2^(j : ℕ))
-        MvPolynomial.X (Fin.last m) * rename Fin.castSucc (eqPolynomial rVec)
+        MvPolynomial.X 0 * rename Fin.succ (eqPolynomial rVec)
       let multiCRSCode := multiConstrainedCode φ m s w σ
       ∃ u u' : ι → F, u ≠ u' ∧
         u ∈ closeCodewordsRel multiCRSCode f ↑δ ∧
