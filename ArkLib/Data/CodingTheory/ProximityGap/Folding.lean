@@ -18,6 +18,9 @@ import ArkLib.Data.Polynomial.Indicator
 import ArkLib.ToMathlib.Polynomial.EvalExt
 import ArkLib.ToMathlib.Polynomial.NatDegreeOfSum
 
+import CompPoly.Univariate.Lagrange
+import CompPoly.Univariate.ToPoly.Impl
+
 /-! This file contains all the definition needed to state
   and prove the lemma 4.9 from [ACFY24] as well as the proof of it.
 
@@ -969,4 +972,116 @@ theorem folding_preserves_distance
 
 end
     
+end ProximityGap
+
+namespace ProximityGap
+
+open Code ReedSolomon Polynomial
+
+variable {F : Type} [Field F] [DecidableEq F]
+variable {n : ℕ}
+
+/-- Computable version of `foldWordAux`: a `CPolynomial F` of degree `< k` such that its
+evaluation at `domain i` equals `f i` for each `i` with `domain i ^ k = x`. Built on CompPoly's
+computable Lagrange interpolation. -/
+def cpolyFoldWordAux (domain : SmoothCosetFftDomain n F)
+    (f : Word F (Fin (2 ^ n))) (k : ℕ) (x : F) : CompPoly.CPolynomial F :=
+  CompPoly.CPolynomial.CLagrange.interpolate {i | domain i ^ k = x}
+    (fun i => domain i) f
+
+/-- Bridge lemma: pushing `cpolyFoldWordAux` through `toPoly` recovers `foldWordAux`. -/
+@[simp]
+lemma cpolyFoldWordAux_toPoly (domain : SmoothCosetFftDomain n F)
+    (f : Word F (Fin (2 ^ n))) (k : ℕ) (x : F) :
+    (cpolyFoldWordAux domain f k x).toPoly = foldWordAux domain f k x := by
+  unfold cpolyFoldWordAux foldWordAux
+  exact CompPoly.CPolynomial.CLagrange.cinterpolate_eq_interpolate
+
+section
+variable {domain : SmoothCosetFftDomain n F} {f : Word F (Fin (2 ^ n))}
+variable {k : ℕ} {x : F}
+
+/-- The natDegree of `cpolyFoldWordAux` is less than `k`. -/
+lemma cpolyFoldWordAux_natDegree [NeZero k] :
+    (cpolyFoldWordAux domain f k x).natDegree < k := by
+  rw [CompPoly.CPolynomial.natDegree_toPoly, cpolyFoldWordAux_toPoly]
+  exact foldWordAux_natDegree
+
+/-- Computable version of `foldWordAuxCoeff`. -/
+private def cpolyFoldWordAuxCoeff (domain : SmoothCosetFftDomain n F)
+    (f : Word F (Fin (2 ^ n))) (k : ℕ) (i : Fin k) (x : F) : F :=
+  (cpolyFoldWordAux domain f k x).coeff i
+
+/-- Value equality: `cpolyFoldWordAuxCoeff` agrees with `foldWordAuxCoeff`. -/
+private lemma cpolyFoldWordAuxCoeff_eq_foldWordAuxCoeff {i : Fin k} :
+    cpolyFoldWordAuxCoeff domain f k i x = foldWordAuxCoeff domain f k i x := by
+  unfold cpolyFoldWordAuxCoeff foldWordAuxCoeff
+  rw [CompPoly.CPolynomial.coeff_toPoly, cpolyFoldWordAux_toPoly]
+
+end
+
+/-- Computable version of `foldValue`: evaluate `cpolyFoldWordAux` at the random challenge `α`. -/
+def cpolyFoldValue (domain : SmoothCosetFftDomain n F)
+    (f : Word F (Fin (2 ^ n))) (k : ℕ) (α : F) (x : F) : F :=
+  (cpolyFoldWordAux domain f (2 ^ k) x).eval α
+
+/-- Value equality: `cpolyFoldValue` agrees with `foldValue`. -/
+@[simp]
+lemma cpolyFoldValue_eq_foldValue (domain : SmoothCosetFftDomain n F)
+    (f : Word F (Fin (2 ^ n))) (k : ℕ) (α : F) (x : F) :
+    cpolyFoldValue domain f k α x = foldValue domain f k α x := by
+  unfold cpolyFoldValue foldValue
+  rw [CompPoly.CPolynomial.eval_toPoly, cpolyFoldWordAux_toPoly]
+
+/-- Computable version of `foldWord`. -/
+def cpolyFoldWord (domain : SmoothCosetFftDomain n F)
+    (f : Word F (Fin (2 ^ n))) (k : ℕ) (α : F) :
+    Word F (Fin (2 ^ (n - k))) := fun x =>
+  cpolyFoldValue domain f k α (domain.subdomainNatReversed k x)
+
+/-- Function equality: `cpolyFoldWord` agrees with `foldWord`. -/
+@[simp]
+lemma cpolyFoldWord_eq_foldWord (domain : SmoothCosetFftDomain n F)
+    (f : Word F (Fin (2 ^ n))) (k : ℕ) (α : F) :
+    cpolyFoldWord domain f k α = foldWord domain f k α := by
+  funext x
+  exact cpolyFoldValue_eq_foldValue _ _ _ _ _
+
+section
+variable {domain : SmoothCosetFftDomain n F} {f : Word F (Fin (2 ^ n))}
+variable {k : ℕ} {x : F}
+
+/-- Lifted from `foldValue_pow_x_k`: evaluating the fold at the k-th power of a domain element
+recovers `f i`. -/
+@[simp]
+lemma cpolyFoldValue_pow_x_k {i : Fin (2 ^ n)} :
+    cpolyFoldValue domain f k (domain i) ((domain i) ^ (2 ^ k)) = f i := by
+  rw [cpolyFoldValue_eq_foldValue]; exact foldValue_pow_x_k
+
+/-- Lifted from `foldValue_zero`: folding the zero word yields zero. -/
+@[simp]
+lemma cpolyFoldValue_zero : cpolyFoldValue domain (0 : Word F (Fin (2 ^ n))) k = 0 := by
+  funext α x
+  rw [cpolyFoldValue_eq_foldValue]
+  exact congrFun (congrFun foldValue_zero α) x
+
+/-- Lifted from `foldWord_zero`: folding the zero word yields zero. -/
+@[simp]
+lemma cpolyFoldWord_zero : cpolyFoldWord domain (0 : Word F (Fin (2 ^ n))) k = 0 := by
+  funext α x
+  rw [cpolyFoldWord_eq_foldWord]
+  exact congrFun (congrFun foldWord_zero α) x
+
+/-- Lifted completeness: folding a codeword equals encoding the polynomial fold. -/
+theorem cpolyFoldWord_codeword {d : ℕ} {α : F}
+    (hk : k ≤ n)
+    {p : ReedSolomon.code (domain : Fin (2 ^ n) ↪ F) d} :
+    cpolyFoldWord domain p k α =
+      evalOnPoints (domain.subdomainNatReversed k)
+        (FoldingPolynomial.polyFold (ReedSolomon.codewordToPoly p) (2 ^ k) α) := by
+  rw [cpolyFoldWord_eq_foldWord]
+  exact foldWord_codeword hk
+
+end
+
 end ProximityGap
