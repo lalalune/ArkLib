@@ -125,6 +125,49 @@ private lemma triv_rootMultiplicity_ge_of_shift_zero {f : S[X][Y]} {x y : S}
 
 end GenericTrivariateMultiplicity
 
+/-! ### Generic weighted-degree sub-additivity (any coefficient semiring)
+
+These mirror `GuruswamiSudan.natWeightedDegree_{add,sum,smul}_le` (which are proven for a field
+coefficient ring) over an arbitrary semiring `S`, so they apply to the trivariate setting where the
+coefficient ring is `S = F[Z]`. -/
+section GenericTrivariateDegree
+
+open Polynomial Polynomial.Bivariate
+
+variable {S : Type} [Semiring S]
+
+lemma tri_natWeightedDegree_add_le (p q : S[X][Y]) (u v : ℕ) :
+    natWeightedDegree (p + q) u v ≤ max (natWeightedDegree p u v) (natWeightedDegree q u v) := by
+  refine Finset.sup_le fun mm hm ↦ ?_
+  by_cases h : mm ∈ p.support <;>
+  by_cases h' : mm ∈ q.support <;>
+    simp_all only [Polynomial.mem_support_iff, coeff_add, ne_eq, le_sup_iff]
+  · have h_deg : (p.coeff mm + q.coeff mm).natDegree ≤
+        max ((p.coeff mm).natDegree) ((q.coeff mm).natDegree) :=
+      natDegree_add_le (p.coeff mm) (q.coeff mm)
+    cases max_cases (natDegree (p.coeff mm)) (natDegree (q.coeff mm)) <;>
+      simp_all only [sup_of_le_left, sup_eq_left, and_self, natWeightedDegree]
+    · exact Or.inl (le_trans (add_le_add (mul_le_mul_of_nonneg_left h_deg <| Nat.zero_le _) le_rfl)
+        <| Finset.le_sup (f := fun mm ↦ u * natDegree (p.coeff mm) + v * mm) <| by aesop)
+    · exact Or.inr (le_trans (add_le_add (mul_le_mul_of_nonneg_left h_deg <| Nat.zero_le _) le_rfl)
+        <| Finset.le_sup (f := fun mm ↦ u * natDegree (q.coeff mm) + v * mm) <| by aesop)
+  all_goals simp_all only [not_not, add_zero, zero_add, not_false_eq_true]
+  · exact Or.inl <| Finset.le_sup (f := fun mm ↦ u * natDegree (p.coeff mm) + v * mm) <| by aesop
+  · exact Or.inr <| Finset.le_sup (f := fun mm ↦ u * natDegree (q.coeff mm) + v * mm) <| by aesop
+  · simp at hm
+
+lemma tri_natWeightedDegree_sum_le {ι : Type*} (s : Finset ι) (f : ι → S[X][Y]) (u v : ℕ) :
+    natWeightedDegree (∑ i ∈ s, f i) u v ≤ s.sup (fun i ↦ natWeightedDegree (f i) u v) := by
+  classical
+  induction s using Finset.induction with
+  | empty => simp only [Finset.sum_empty, Finset.sup_empty, Nat.bot_eq_zero, nonpos_iff_eq_zero,
+      natWeightedDegree, Polynomial.support_zero, coeff_zero, natDegree_zero, mul_zero, zero_add,
+      Finset.sup_empty, Nat.bot_eq_zero]
+  | insert a s ha ih => rw [Finset.sum_insert ha, Finset.sup_insert]
+                        exact le_trans (tri_natWeightedDegree_add_le _ _ _ _) (max_le_max le_rfl ih)
+
+end GenericTrivariateDegree
+
 section BCIKS20ProximityGapSection5
 
 variable {F : Type} [Field F] [DecidableEq F] [DecidableEq (RatFunc F)]
@@ -349,6 +392,49 @@ lemma D_YZ_triMonomial_of_ne (i j t : ℕ) (hij : i ≠ j) :
   simp [Polynomial.natDegree_zero]
   rfl
 
+/-! ### Assembling a candidate from box-indexed coefficients
+
+`triCoeffsToPoly box c` assembles `Q = ∑ c_{i,j,t} · X^i Y^j Z^t` over a finite index box of
+triples `(i, j, t)`.  `natWeightedDegree_triCoeffsToPoly_le` bounds its `(u,v)`-weighted degree by
+the box's weighted cap; specialising `(u,v)` recovers the `degreeX` and `natDegreeY` bounds via
+`degreeX_as_weighted_deg` / `degreeY_as_weighted_deg`. -/
+
+/-- `a · X^i Y^j Z^t` as nested monomials (carries the coefficient inside, avoiding the long
+`SMul F (F[Z][X][Y])` synthesis path). -/
+noncomputable def triMonC (i j t : ℕ) (a : F) : F[Z][X][Y] :=
+  Polynomial.monomial j (Polynomial.monomial i (Polynomial.monomial t a))
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- The `(u,v)`-weighted degree of `a · X^i Y^j Z^t` is at most `u*i + v*j`. -/
+lemma natWeightedDegree_triMonC_le (i j t u v : ℕ) (a : F) :
+    natWeightedDegree (triMonC (F := F) i j t a) u v ≤ u * i + v * j := by
+  classical
+  unfold natWeightedDegree triMonC
+  refine Finset.sup_le fun b hb ↦ ?_
+  have hbj : b = j := by
+    by_contra hbj
+    rw [Polynomial.mem_support_iff, Polynomial.coeff_monomial, if_neg (Ne.symm hbj)] at hb
+    exact hb rfl
+  subst hbj
+  rw [Polynomial.coeff_monomial, if_pos rfl]
+  refine add_le_add (Nat.mul_le_mul_left u ?_) le_rfl
+  exact Polynomial.natDegree_monomial_le _
+
+/-- Assemble a trivariate polynomial from box-indexed coefficients. -/
+noncomputable def triCoeffsToPoly (box : Finset (ℕ × ℕ × ℕ)) (c : box → F) : F[Z][X][Y] :=
+  ∑ p : box, triMonC (F := F) p.1.1 p.1.2.1 p.1.2.2 (c p)
+
+omit [DecidableEq F] [DecidableEq (RatFunc F)] in
+/-- The weighted degree of the assembled polynomial is bounded by the box's weighted-degree cap. -/
+lemma natWeightedDegree_triCoeffsToPoly_le (box : Finset (ℕ × ℕ × ℕ)) (c : box → F) (u v D : ℕ)
+    (hbox : ∀ p ∈ box, u * p.1 + v * p.2.1 ≤ D) :
+    natWeightedDegree (triCoeffsToPoly box c) u v ≤ D := by
+  classical
+  unfold triCoeffsToPoly
+  refine le_trans (tri_natWeightedDegree_sum_le _ _ _ _) ?_
+  refine Finset.sup_le fun p _ ↦ ?_
+  exact le_trans (natWeightedDegree_triMonC_le _ _ _ _ _ _) (hbox p.1 p.2)
+
 end ModifiedGuruswamiHelpers
 
 omit [DecidableEq (RatFunc F)] in
@@ -433,3 +519,7 @@ lemma matching_set_is_a_sub_of_coeffs_of_close_proximity
 end BCIKS20ProximityGapSection5
 
 end ProximityGap
+
+
+
+

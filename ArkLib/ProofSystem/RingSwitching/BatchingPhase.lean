@@ -315,25 +315,18 @@ noncomputable def batchingKnowledgeStateFunction :
       refine ⟨hSuccTrue.1, ?_, hSuccTrue.2.2.2⟩
       -- Remaining goal: `original_claim = aeval r witMid.t`.
       --
-      -- DEFINITION BUG (blocks this conjunct). From `hSuccTrue` we have
-      --   `original_claim = ∑_v eq̃(v, r_prefix) · (decompose_tensor_algebra_COLUMNS s_hat)_v`
-      -- with `s_hat = embedded_MLP_eval (packMLE β t) r`. To equal `aeval r t = t(r)`, the
-      -- reconstruction must weight the tensor components that carry the `t`-evaluations, i.e.
-      -- the ROW components (the `φ₁`/`t'` factor): by `Prelude.decompose_rows_packMLE`,
-      --   `(decompose_rows s_hat)_u = ∑_w t(u,w) · eq̃(w, r_suffix)`,
-      -- whence `∑_u eq̃(u, r_prefix) · (decompose_rows s_hat)_u = t(r)`.
-      -- But `performCheckOriginalEvaluation` uses `decompose_tensor_algebra_COLUMNS`, which
-      -- represents the LEFT (`φ₀`/`eq`) factor:
-      --   `decompose_columns (a ⊗ b) v = β.repr a v • b`,
-      -- so `(decompose_columns s_hat)_v = ∑_w β.repr(eq̃(w, r_suffix)) v • t'(w)` and the
-      -- column-weighted sum is `∑_w λ(eq̃(w, r_suffix)) · t'(w)` with `λ : β_v ↦ eq̃(v, r_prefix)`
-      -- a merely `K`-linear (non-multiplicative) map. For `κ = 1`, `t(0,w)=1, t(1,w)=0` already
-      -- gives column-sum `= λ(eq_w)·β₀ ≠ eq_w·(1-r_prefix) = ` the `t(r)` term, so the identity
-      -- is FALSE as the protocol is currently defined. The single coupled fix is to swap the
-      -- embeddings in `embedded_MLP_eval` (map `t'` through `φ₀`, evaluate at `φ₁(r_suffix)`),
-      -- or equivalently change Step 2 to `decompose_tensor_algebra_rows`. Both lie outside the
-      -- two files editable here, so this conjunct is left open pending that definition repair.
-      sorry
+      -- With the Step-2 check now reading the ROW components (`decompose_tensor_algebra_rows`),
+      -- the DP24 capstone `performCheckOriginalEvaluation_packMLE_iff` is SOUND: substituting
+      --   (2) `s_hat = embedded_MLP_eval witMid.t' r`  and
+      --   (1) `witMid.t' = packMLE β witMid.t`
+      -- into the local check (3) yields
+      --   `performCheckOriginalEvaluation original_claim r
+      --      (embedded_MLP_eval (packMLE β witMid.t) r) = true`,
+      -- which the capstone turns into exactly `original_claim = aeval r witMid.t`.
+      have hcheck := hSuccTrue.2.2.1
+      rw [← hSuccTrue.2.1, hSuccTrue.1] at hcheck
+      exact (performCheckOriginalEvaluation_packMLE_iff ℓ ℓ' h_l β
+        stmtIn.1.original_claim witMid.t stmtIn.1.t_eval_point).mp hcheck
     | ⟨1, h⟩ => nomatch h
   toFun_full := fun ⟨stmtLast, oStmtLast⟩ tr witOut => by sorry
 
