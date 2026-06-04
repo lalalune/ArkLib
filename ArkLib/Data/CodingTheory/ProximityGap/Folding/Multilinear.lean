@@ -48,13 +48,9 @@ lemma multilinear_folding [NeZero n] {i : Fin (2 ^ (n - 1))} {α : F}
   conv_lhs => 
     rw [powAlgHom_eq_even_add_odd_powAlgHom (CosetFftDomainClass.domain_implies_char_ne_2 domain)]
   simp [evalOnPoints_sq_eq_evalOnPoints_subdomain]
-  rw [←evalOnPointsRingHom_eq_evalOnPoints (p := _ * _)]
-  simp only [map_mul, Pi.mul_apply]
-  simp [evalOnPointsRingHom_eq_evalOnPoints]
-  simp [evalOnPoints_sq_eq_evalOnPoints_subdomain]
-  conv_rhs => rw [←evalOnPointsRingHom_eq_evalOnPoints (p := _ * _)]
-  simp
-  rw [evalOnPointsRingHom_eq_evalOnPoints]
+  rw [show domain j = x by aesop, show domain j' = -x by aesop]
+  norm_num
+
 
 
 
