@@ -14,7 +14,7 @@ import ArkLib.ToMathlib.Polynomial.EvalExt
 namespace ProximityGap
 
 open NNReal Finset Function ProbabilityTheory
-open scoped BigOperators LinearCode ProbabilityTheory
+open scoped BigOperators LinearCode ProbabilityTheory ENNReal
 open Code
 
 section CoreResults
@@ -22,6 +22,48 @@ section CoreResults
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
+omit [Nonempty ι] [DecidableEq ι] in
+lemma prob_close_curve_eq_card_goodCoeffsCurve_div_card {k deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0} (u : WordStack F (Fin (k + 1)) ι) :
+    Pr_{let z ← $ᵖ F}[
+        δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] =
+      ((RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card : ℝ≥0) /
+        (Fintype.card F : ℝ≥0) := by
+  classical
+  simpa [RS_goodCoeffsCurve] using
+    (prob_uniform_eq_card_filter_div_card (F := F)
+      (P := fun z : F =>
+        δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ))
+
+omit [Nonempty ι] [DecidableEq ι] in
+lemma goodCoeffsCurve_threshold_mul_card_lt_card_of_prob_gt {k deg : ℕ}
+    {domain : ι ↪ F} {δ η : ℝ≥0} (u : WordStack F (Fin (k + 1)) ι)
+    (hprob :
+      Pr_{let z ← $ᵖ F}[
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            ReedSolomon.code domain deg) ≤ δ] > (η : ENNReal)) :
+    (η : ENNReal) * (Fintype.card F : ENNReal) <
+      ((RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card :
+        ENNReal) := by
+  classical
+  have hPr := prob_close_curve_eq_card_goodCoeffsCurve_div_card
+    (k := k) (deg := deg) (domain := domain) (δ := δ) u
+  have hlt :
+      (η : ENNReal) <
+        (((RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card :
+          ℝ≥0) / (Fintype.card F : ℝ≥0) : ENNReal) := by
+    rw [← hPr]
+    exact hprob
+  have hq0 : (Fintype.card F : ℝ≥0) ≠ 0 := by
+    simp [Fintype.card_ne_zero]
+  have hlt' :
+      (η : ENNReal) <
+        ((RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card :
+          ENNReal) / (Fintype.card F : ENNReal) := by
+    simpa [ENNReal.coe_div hq0, ENNReal.coe_natCast] using hlt
+  exact ENNReal.mul_lt_of_lt_div hlt'
 
 omit [DecidableEq ι] in
 /-- Theorem 1.5 (Correlated agreement for low-degree parameterised curves) in [BCIKS20].
@@ -47,6 +89,16 @@ theorem correlatedAgreement_affine_curves {k : ℕ}
     · -- Unique-decoding regime: PROVEN ([BCIKS20] Theorem 6.1, all curve degrees).
       exact RS_correlatedAgreement_curves_uniqueDecodingRegime hkpos hUDR
     · -- List-decoding regime: Theorem 6.2 ([BCIKS20] §6.2 / §5 chain).
+      unfold δ_ε_correlatedAgreementCurves
+      intro u hprob
+      have hS_card :
+          ((k : ℝ≥0∞) * (errorBound δ deg domain : ℝ≥0∞)) *
+              (Fintype.card F : ℝ≥0∞) <
+            ((RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card :
+              ℝ≥0∞) := by
+        simpa [ENNReal.coe_mul, ENNReal.coe_natCast] using
+          goodCoeffsCurve_threshold_mul_card_lt_card_of_prob_gt
+            (u := u) (η := (k : ℝ≥0) * errorBound δ deg domain) hprob
       sorry
 
 omit [DecidableEq ι] [Fintype F] in
