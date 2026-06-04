@@ -328,7 +328,27 @@ noncomputable def batchingKnowledgeStateFunction :
       exact (performCheckOriginalEvaluation_packMLE_iff ℓ ℓ' h_l β
         stmtIn.1.original_claim witMid.t stmtIn.1.t_eval_point).mp hcheck
     | ⟨1, h⟩ => nomatch h
-  toFun_full := fun ⟨stmtLast, oStmtLast⟩ tr witOut => by sorry
+  toFun_full := fun ⟨stmtLast, oStmtLast⟩ tr witOut => by
+    -- BLOCKED (failure-branch spec bug). From `h_relOut` we obtain the verifier's deterministic
+    -- output `stmtOutᵥ` together with `(stmtOutᵥ, witOut) ∈ relOut`. The verifier has TWO output
+    -- branches:
+    --   • accept (`performCheckOriginalEvaluation … s_hat = true`): then `stmtOutᵥ` matches the
+    --     round-2 reconstructed `stmtOut'` (same `s_hat`, `r_batching`, `challenges = Fin.elim0`),
+    --     and the `witnessStructuralInvariant` in `relOut` forces `witOut.H = witOut'.H`, so all
+    --     three round-2 `batchingKStateProp` conjuncts (incl. `sumcheckConsistencyProp`) transport
+    --     directly from `h_relOut` — provable.
+    --   • reject (`performCheck … s_hat = false`): the verifier returns `failureState`, which has
+    --     `r_batching := 0` and `sumcheck_target := 0`, and `(failureState, witOut) ∈ relOut` is
+    --     SATISFIABLE (e.g. `witOut = ⟨0, projectToMidSumcheckPoly 0 …⟩`, and the abstract
+    --     `initialCompatibility` may hold). But the round-2 `batchingKStateProp` goal asserts
+    --     `performCheck … s_hat = true` UNCONDITIONALLY (see the `⟨2,_⟩` case above), which is
+    --     FALSE on this branch. Hence the goal is unprovable here.
+    -- Root cause: `batchingKStateProp ⟨2,_⟩` should be guarded by / disjoined with the verifier's
+    -- accept decision (mirroring `failureState`), instead of unconditionally requiring `performCheck`.
+    -- Closing this honestly requires reorienting that existing definition; `return` early-exits in
+    -- this `OptionT (OracleComp []ₒ)` `do`-block (verified), so the reject branch is a real, distinct
+    -- output. Documented as a failing instance per the honest-completion stance.
+    sorry
 
 /-! ## Security Properties -/
 
@@ -341,6 +361,17 @@ theorem batchingReduction_perfectCompleteness :
     (init := init) (impl := impl) := by
   -- The honest prover's computations are deterministic. If the input relation holds,
   -- the prover correctly computes ŝ, h, and s₀, so the output relation will also hold.
+  --
+  -- BLOCKED (free-`𝓑` orientation bug). On the honest run the Step-2 check passes (capstone
+  -- `performCheckOriginalEvaluation_packMLE_iff`), so there is no failure branch; but `relOut`
+  -- then demands the sumcheck consistency
+  --   `compute_s0 κ L K β ŝ r'' = ∑ x ∈ (univ.map 𝓑) ^ᶠ ℓ', H.eval x`,
+  -- with `H = projectToMidSumcheckPoly t' (A_MLE …) 0 Fin.elim0 = A_MLE · t'`. The LHS is
+  -- `𝓑`-independent, the RHS is `𝓑`-dependent, and `𝓑 : Fin 2 ↪ L` is a free variable here with
+  -- NO constraint pinning it to the Boolean embedding. See `Prelude.sumcheckSum_X0_eq` /
+  -- `Prelude.sumcheckTarget_domain_indep`: this identity is unsatisfiable for a free `𝓑`. Closing
+  -- it honestly requires pinning `𝓑 0 = 0, 𝓑 1 = 1` (or reorienting `compute_s0`), which alters
+  -- existing free declarations. Documented as a failing instance per the honest-completion stance.
   unfold OracleReduction.perfectCompleteness
   sorry
 
@@ -362,6 +393,13 @@ theorem batchingOracleVerifier_rbrKnowledgeSoundness :
   -- `KState 2 = (s ?= Σ_{v ∈ {0,1}^κ} eqTilde(v, r_{0..κ-1}) ⋅ ŝ_v) ∧`
     -- `h = projectSumcheckPoly t' 0 r r' ∧ s_0 = Σ_{w ∈ {0,1}^{ℓ'}} h(w)`
   -- ⊢ `Pr[KState(2, witMidSucc) ∧ ¬KState(1, extractMid(iChal, witMidSucc))] ≤ (κ/|L|)`
+  --
+  -- BLOCKED downstream of `batchingKnowledgeStateFunction.toFun_full` (see its in-file note): the
+  -- round-2 knowledge-state function carries an unconditional `performCheck` conjunct that the
+  -- verifier's reject branch (`failureState`) cannot satisfy, so the knowledge state function is not
+  -- a valid `KnowledgeStateFunction`. The bound itself is the Schwartz–Zippel `κ/|L|` collision
+  -- error, but it can only be established once the round-2 KState / `failureState` orientation is
+  -- fixed. Documented as a failing instance per the honest-completion stance.
   sorry
 
 end BatchingPhase
