@@ -852,9 +852,11 @@ theorem folding_preserves_distance
           (add safe [(by rw [folded_sqrtRate_eq])])
           (add safe [(by grind)])
           (add safe (by norm_cast at *))
+    haveI : NeZero (d / 2 ^ k) :=
+      ⟨Nat.ne_of_gt (Nat.div_pos (Nat.le_of_dvd hd0 k_div_d) (by positivity))⟩
     have correlated_agreement :=
       @correlatedAgreement_affine_curves (Fin (2 ^ (n - k))) _ _ F _ _ _ 
-        (2 ^ k - 1) (d / (2 ^ k)) 
+        (2 ^ k - 1) (d / (2 ^ k)) _ 
         (domain := domain.subdomain k) (δ := δ) 
         (hδ := bound_tighter)
     unfold foldWord δ_ε_correlatedAgreementCurves at *
