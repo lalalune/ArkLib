@@ -1517,6 +1517,57 @@ lemma RS_le_relativeUniqueDecodingRadius_of_le_rate_half {deg : ℕ} {domain : �
     exact le_trans hδ0 (zero_le _)
 
 omit [DecidableEq ι] in
+/-- Final curve theorem with the two list-decoding obligations made explicit.
+
+The unique-decoding regime and the closed rate-half branch are discharged in
+this file. The remaining list-decoding work is exactly:
+* the strict Johnson branch, where the §5 extraction supplies coefficient or
+  evaluation polynomials; and
+* the closed square-root boundary, where `errorBound = 0` and the probability
+  hypothesis only gives nonempty `RS_goodCoeffsCurve`.
+-/
+theorem correlatedAgreement_affine_curves_of_list_decoding_obligations {k : ℕ}
+    {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    [NeZero deg]
+    (_hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hStrict : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      δ < 1 - ReedSolomon.sqrtRate deg domain →
+      jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u))
+    (hBoundary : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      ¬δ < 1 - ReedSolomon.sqrtRate deg domain →
+      jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u)) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  classical
+  rcases Nat.eq_zero_or_pos k with hk0 | hkpos
+  · subst hk0
+    exact RS_correlatedAgreement_curves_k_zero (deg := deg) (domain := domain) (δ := δ)
+  · by_cases hUDR : δ ≤ Code.relativeUniqueDecodingRadius (ι := ι) (F := F)
+        (C := ReedSolomon.code domain deg)
+    · exact RS_correlatedAgreement_curves_uniqueDecodingRegime hkpos hUDR
+    · unfold δ_ε_correlatedAgreementCurves
+      intro u hprob
+      by_cases hJ :
+          (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ
+      · by_cases hsqrt : δ < 1 - ReedSolomon.sqrtRate deg domain
+        · exact hStrict hkpos u hprob hJ hsqrt
+        · exact hBoundary hkpos u hprob hJ hsqrt
+      · push Not at hJ
+        exact False.elim (hUDR
+          (RS_le_relativeUniqueDecodingRadius_of_le_rate_half
+            (deg := deg) (domain := domain) (δ := δ) hJ))
+
+omit [DecidableEq ι] in
 /-- Theorem 1.5 (Correlated agreement for low-degree parameterised curves) in [BCIKS20].
 
 Take a Reed-Solomon code of length `ι` and degree `deg`, a proximity-error parameter
