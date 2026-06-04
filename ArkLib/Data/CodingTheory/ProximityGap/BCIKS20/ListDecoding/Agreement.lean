@@ -551,12 +551,6 @@ lemma exists_pg_factors_with_large_common_root_set_of_dvd (δ : ℚ) (x₀ : F)
   · exact UniqueFactorizationMonoid.dvd_of_mem_normalizedFactors hpair.2
   · simpa [c57_eval_on_Z_eq_pg] using hcard_pg
 
-/- Convenience composition of the two proved helpers above. This is left as
-commented scaffolding because the result predicate is definitionally brittle
-under `Finset.filter`; callers can compose
-`pg_divisibility_of_graph_vanishing_conditions` with
-`exists_pg_factors_with_large_common_root_set_of_dvd` directly.
-
 omit [DecidableEq (RatFunc F)] in
 /-- Candidate-pair extraction directly from the graph agreement/count hypotheses used by
 `Q_vanishes_on_close_codeword_graph`.
@@ -616,8 +610,8 @@ lemma exists_pg_factors_with_large_common_root_set_of_graph_conditions
   obtain ⟨R, H, hR, hRirr, hHirr, hHdeg, hHdvd, hRsep, hcard, hlarge'⟩ :=
     exists_pg_factors_with_large_common_root_set_of_dvd (F := F) (k := k)
       (δ := δ) (x₀ := x₀) (h_gs := h_gs) hx0 hsep hS_nonempty hdiv hlarge
-  exact ⟨R, H, hR, hRirr, hHirr, hHdeg, hHdvd, hRsep, by simpa using hcard, hlarge'⟩
--/
+  exact ⟨R, H, hR, hRirr, hHirr, hHdeg, hHdvd, hRsep, by
+    convert hcard using 3, hlarge'⟩
 
 lemma exists_factors_with_large_common_root_set (δ : ℚ) (x₀ : F)
   (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
