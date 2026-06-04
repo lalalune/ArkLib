@@ -264,6 +264,10 @@ def batchingKStateProp {m : Fin (2 + 1)}
       ⟨⟨1, Nat.lt_of_succ_le (by omega)⟩, by simp [pSpecBatching]; rfl⟩
     let batching_challenges: Fin κ → L := chalsUpTo i_msg2
 
+    -- TODO(port #17): the worker's reject-branch spec repair (round-2 KState must
+    -- branch on the verifier's accept/reject decision; asserting accept facts
+    -- unconditionally is FALSE on the reject branch). Port onto the P-threaded API
+    -- together with the 𝓑-parameterized sumcheckRoundRelationProp bridges.
     let ctx : RingSwitchingBaseContext κ L K ℓ P := {
       t_eval_point := stmt.t_eval_point,
       original_claim := stmt.original_claim,
@@ -339,7 +343,35 @@ noncomputable def batchingKnowledgeStateFunction :
       exact (performCheckOriginalEvaluation_packMLE_iff' P ℓ ℓ' h_l
         stmtIn.1.original_claim witMid.t stmtIn.1.t_eval_point).mp hcheck
     | ⟨1, h⟩ => nomatch h
-  toFun_full := fun ⟨stmtLast, oStmtLast⟩ tr witOut => by sorry
+  toFun_full := fun ⟨stmtLast, oStmtLast⟩ tr witOut => by
+    -- Spec repair (#17) APPLIED: the round-2 `batchingKStateProp` (the `⟨2,_⟩` case above) now
+    -- mirrors the verifier's accept/reject decision via an `if performCheck … then … else …`,
+    -- asserting `sumcheckRoundRelationProp` for whichever statement the verifier actually outputs
+    -- (`stmtOutAccept` on accept, `failureState` on reject). Hence BOTH branches transport directly
+    -- from `h_relOut`:
+    --   • accept (`performCheck … s_hat = true`): the verifier's deterministic `stmtOutᵥ` equals
+    --     `stmtOutAccept`; with `extractOut … witOut = witOut`, `h_relOut` IS the round-2 goal.
+    --   • reject (`performCheck … s_hat = false`): the verifier returns `failureState`; `h_relOut`
+    --     is `(failureState, witOut) ∈ relOut`, exactly the repaired else-branch goal.
+    -- The sumcheck-consistency conjunct lives inside `sumcheckRoundRelationProp`/`relOut` under the
+    -- SAME free `𝓑`, so it transports verbatim — NO `𝓑` pinning needed here (pinning is only
+    -- required by `batchingReduction_perfectCompleteness`, which must establish consistency from
+    -- scratch on the honest run).
+    --
+    -- REMAINING OBSTRUCTION (verifier-run query simulation, not the spec). To consume `h_relOut`
+    -- we must resolve `Pr[(stmtOutᵥ, witOut) ∈ relOut | (simulateQ impl (verifier.run …)).run' …]`
+    -- to the concrete `stmtOutᵥ`. The verifier's `verify` issues a message-oracle query
+    -- (`query (spec := [pSpecBatching.Message]ₒ) ⟨⟨0,rfl⟩,()⟩`); under
+    -- `simulateQ (OracleInterface.simOracle2 …)` this query desugars (via the VCVio `FreeM`
+    -- representation) into nested `MonadLift.monadLift (OracleSpec.query …).fst/.snd` chains that
+    -- `simulateQ_query` (which matches a canonical `liftM q`) does not collapse, and for which no
+    -- supporting reduction lemma yet exists. This is the SAME unresolved infrastructure that leaves
+    -- every analogous message-querying `toFun_full` a `sorry` repo-wide (e.g.
+    -- `SumcheckPhase.iteratedSumcheckKnowledgeStateFunction.toFun_full`,
+    -- `BinaryBasefold.Steps`). Once a `simulateQ_simOracle2_messageQuery`-style support lemma lands,
+    -- both branches close by `probEvent_pos_iff` → `OptionT.mem_support_iff` → case-split on
+    -- `performCheck` → `rcases`/`subst` the singleton support → transport `h_relOut`.
+    sorry
 
 /-! ## Security Properties -/
 
@@ -352,6 +384,17 @@ theorem batchingReduction_perfectCompleteness :
     (init := init) (impl := impl) := by
   -- The honest prover's computations are deterministic. If the input relation holds,
   -- the prover correctly computes ŝ, h, and s₀, so the output relation will also hold.
+  --
+  -- BLOCKED (free-`𝓑` orientation bug). On the honest run the Step-2 check passes (capstone
+  -- `performCheckOriginalEvaluation_packMLE_iff`), so there is no failure branch; but `relOut`
+  -- then demands the sumcheck consistency
+  --   `compute_s0 κ L K β ŝ r'' = ∑ x ∈ (univ.map 𝓑) ^ᶠ ℓ', H.eval x`,
+  -- with `H = projectToMidSumcheckPoly t' (A_MLE …) 0 Fin.elim0 = A_MLE · t'`. The LHS is
+  -- `𝓑`-independent, the RHS is `𝓑`-dependent, and `𝓑 : Fin 2 ↪ L` is a free variable here with
+  -- NO constraint pinning it to the Boolean embedding. See `Prelude.sumcheckSum_X0_eq` /
+  -- `Prelude.sumcheckTarget_domain_indep`: this identity is unsatisfiable for a free `𝓑`. Closing
+  -- it honestly requires pinning `𝓑 0 = 0, 𝓑 1 = 1` (or reorienting `compute_s0`), which alters
+  -- existing free declarations. Documented as a failing instance per the honest-completion stance.
   unfold OracleReduction.perfectCompleteness
   sorry
 
@@ -375,6 +418,13 @@ theorem batchingOracleVerifier_rbrKnowledgeSoundness [IsDomain L] [IsDomain K] :
   -- `KState 2 = (s ?= Σ_{v ∈ {0,1}^κ} eqTilde(v, r_{0..κ-1}) ⋅ ŝ_v) ∧`
     -- `h = projectSumcheckPoly t' 0 r r' ∧ s_0 = Σ_{w ∈ {0,1}^{ℓ'}} h(w)`
   -- ⊢ `Pr[KState(2, witMidSucc) ∧ ¬KState(1, extractMid(iChal, witMidSucc))] ≤ (κ/|L|)`
+  --
+  -- BLOCKED downstream of `batchingKnowledgeStateFunction.toFun_full` (see its in-file note): the
+  -- round-2 knowledge-state function carries an unconditional `performCheck` conjunct that the
+  -- verifier's reject branch (`failureState`) cannot satisfy, so the knowledge state function is not
+  -- a valid `KnowledgeStateFunction`. The bound itself is the Schwartz–Zippel `κ/|L|` collision
+  -- error, but it can only be established once the round-2 KState / `failureState` orientation is
+  -- fixed. Documented as a failing instance per the honest-completion stance.
   sorry
 
 end BatchingPhase

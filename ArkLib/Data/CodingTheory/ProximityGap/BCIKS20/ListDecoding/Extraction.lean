@@ -36,7 +36,39 @@ carrying no mathematical content whatsoever.
 This re-parenthesizes to the intended reading of [BCIKS20, Eq. 5.12]: each
 bounded quantifier and the final factorization equation is now a *separate*
 top-level conjunct, so the factorization holds outside all of the binders.
-No conjunct has been dropped or weakened; only the scoping was corrected. -/
+No conjunct has been dropped or weakened; only the scoping was corrected.
+
+OBSTRUCTION (statement still mis-specified — see `eq512_cartesian_product_blowup`).
+After the scoping repair the lemma remains **unprovable as written** for a general
+`ModifiedGuruswami` solution `Q`, for two independent reasons:
+
+* *Cartesian (not zipped) product indexing.* The factorization conjunct is
+  `Q = C · ∏ (Rᵢ ∈ R.toFinset) (fᵢ ∈ f.toFinset) (eᵢ ∈ e.toFinset), (Rᵢ.comp Xᶠⁱ)^eᵢ`,
+  i.e. a product over the **Cartesian product** of three independent finsets, rather
+  than the intended single index `∏ᵢ (Rᵢ.comp X^(f i))^(e i)` of [BCIKS20, Eq. 5.12]
+  that *pairs* the `i`-th factor, exponent and multiplicity. Consequently each factor
+  `Rᵢ` is forced to the common power `∑ (eᵢ ∈ e.toFinset)` and replicated across every
+  `fᵢ ∈ f.toFinset`, so the equation can only reproduce a `Q` whose distinct irreducible
+  factors share a single multiplicity and a single contraction exponent. The companion
+  lemma `eq512_cartesian_product_blowup` (below) makes this concrete: the *intended*
+  witnesses `R = [a, b]`, `f = [1, 1]`, `e = [1, 2]` for `Q = a · b²` instead evaluate
+  the displayed product to `a³ · b³`. No choice of `C, R, f, e` satisfying the
+  separability and irreducibility conjuncts reproduces a general factored `Q` (e.g.
+  `g · h²` with `g ≠ h` distinct separable irreducibles).
+
+* *Separable contraction over a non-field.* Even with corrected indexing, the per-factor
+  shape `Rᵢ.comp (X^fᵢ)` with `Rᵢ.Separable` is the separable-contraction normal form,
+  which Mathlib provides (`Polynomial.exists_separable_of_irreducible`,
+  `Irreducible.hasSeparableContraction`) **only over a field**. Here the `Y`-coefficient
+  ring is `F[Z][X] = Polynomial (Polynomial F)`, which is *not* a field, so the
+  contraction must be transferred from the fraction field `F(Z,X)` by a Gauss/primitivity
+  argument; Mathlib has no such transfer lemma in this direction.
+
+The factorization conjunct now uses the **zipped** indexed product
+`∏ i ∈ Finset.range R.length, (Rᵢ.comp X^fᵢ)^eᵢ` (paper-faithful), repairing the earlier
+Cartesian-product mis-indexing witnessed by `eq512_cartesian_product_blowup`. The remaining
+open content is the proof itself, whose separable-contraction step must be transported
+through `Frac (F[Z][X])` (no such mathlib transfer exists yet); the `sorry` is honest. -/
 lemma irreducible_factorization_of_gs_solution
     {k : ℕ}
   (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
@@ -47,9 +79,37 @@ lemma irreducible_factorization_of_gs_solution
     (∀ Rᵢ ∈ R, Rᵢ.Separable) ∧
     (∀ Rᵢ ∈ R, Irreducible Rᵢ) ∧
     Q = (Polynomial.C C) *
-        ∏ (Rᵢ ∈ R.toFinset) (fᵢ ∈ f.toFinset) (eᵢ ∈ e.toFinset),
-          (Rᵢ.comp ((Polynomial.X : F[Z][X][Y]) ^ fᵢ))^eᵢ
+        ∏ i ∈ Finset.range R.length,
+          ((R.getD i 1).comp ((Polynomial.X : F[Z][X][Y]) ^ f.getD i 0)) ^ e.getD i 0
     := sorry
+
+omit [DecidableEq (RatFunc F)] [Finite F] in
+/-- *Cartesian cross-term blowup* witnessing the indexing defect in the factorization
+conjunct of `irreducible_factorization_of_gs_solution` (= [BCIKS20, Eq. 5.12] as currently
+formalized). For two distinct factors `a, b` the *intended* Eq-5.12 witnesses
+`R = [a, b]`, `f = [1, 1]`, `e = [1, 2]` (which should encode `a¹ · b²`) instead make the
+displayed triple product over the three `toFinset`s evaluate to `a³ · b³`: each factor is
+raised to `∑ (eᵢ ∈ {1,2}) = 3` and is copied across `f.toFinset = {1}`. Hence the
+Cartesian-product form cannot represent a factorization with non-uniform multiplicities,
+confirming the product is mis-indexed relative to the paper's single index `∏ᵢ`. -/
+lemma eq512_cartesian_product_blowup (a b : F[Z][X][Y]) (hab : a ≠ b) :
+    (∏ (Rᵢ ∈ ([a, b]).toFinset) (fᵢ ∈ ([1, 1] : List ℕ).toFinset)
+        (eᵢ ∈ ([1, 2] : List ℕ).toFinset),
+        (Rᵢ.comp ((Polynomial.X : F[Z][X][Y]) ^ fᵢ)) ^ eᵢ)
+      = a ^ 3 * b ^ 3 := by
+  have e1 : ([1, 1] : List ℕ).toFinset = ({1} : Finset ℕ) := by decide
+  have e2 : ([1, 2] : List ℕ).toFinset = ({1, 2} : Finset ℕ) := by decide
+  have eR : ([a, b]).toFinset = {a, b} := by simp [List.toFinset_cons]
+  -- The parenthesized triple binder `∏ (Rᵢ ∈ _) (fᵢ ∈ _) (eᵢ ∈ _), …` desugars to a single
+  -- product over the Cartesian (`×ˢ`) finset `{a,b} ×ˢ {1} ×ˢ {1,2}`; split it back out.
+  rw [eR, e1, e2, Finset.prod_product]
+  simp_rw [Finset.prod_product]
+  rw [Finset.prod_pair hab]
+  simp only [Finset.prod_singleton]
+  rw [Finset.prod_pair (show (1 : ℕ) ≠ 2 by decide),
+      Finset.prod_pair (show (1 : ℕ) ≠ 2 by decide)]
+  simp only [pow_one, comp_X]
+  ring
 
 omit [DecidableEq (RatFunc F)] in
 /-- Claim 5.6 of [BCIKS20]. -/

@@ -1090,4 +1090,119 @@ lemma performCheckOriginalEvaluation_packMLE_iff (ℓ ℓ' : ℕ) [NeZero ℓ] [
 
 end RingSwitchingAlgebraBinius
 
+
+/-! ## DP24 Batching-Phase Sumcheck Orientation (gap analysis)
+
+The batching phase's round-2 knowledge-state and its completeness require the **sumcheck
+consistency** identity (`sumcheckConsistencyProp`)
+
+  `compute_s0 κ L K β ŝ r'' = ∑ x ∈ (univ.map 𝓑) ^ᶠ ℓ', H.eval x`,
+
+with `H = projectToMidSumcheckPoly t' (A_MLE …) 0 Fin.elim0` (so `H = A_MLE · t'` at round 0).
+
+The left-hand side `compute_s0` is a sum over `{0,1}^κ` of `eqTilde`-weighted **row components**
+and is **independent of the evaluation domain `𝓑 : Fin 2 ↪ L`**. The right-hand side is the
+sumcheck sum over the 2-element domain `{𝓑 0, 𝓑 1}^{ℓ'}` and is genuinely **`𝓑`-dependent**
+(the variable `𝓑` is declared free in `BatchingPhase`/`SumcheckPhase`, with no constraint pinning
+it to the Boolean embedding `𝓑 0 = 0, 𝓑 1 = 1`).
+
+The two lemmas below make this concrete: the consistency sum of the linear polynomial `X 0`
+equals `𝓑 0 + 𝓑 1`, so no single `𝓑`-free target can satisfy consistency simultaneously for two
+domains with different element sums. Consequently the round-2
+`batchingKStateProp`/`batchingReduction_perfectCompleteness` sumcheck-consistency obligation is
+**not satisfiable for a free `𝓑`**; honestly closing it requires either pinning `𝓑` to the
+Boolean embedding or reorienting `compute_s0`/`sumcheckConsistencyProp` — both of which would
+alter the existing free declarations. See the module report. -/
+section SumcheckOrientation
+open Module Finset
+
+variable {L₀ : Type} [Field L₀] [Fintype L₀] [DecidableEq L₀] [CharP L₀ 2]
+
+omit [Fintype L₀] [DecidableEq L₀] [CharP L₀ 2] in
+/-- **Sumcheck hypercube sum depends on the evaluation domain `𝓑`.**
+The single-variable sumcheck consistency sum of the linear polynomial `X 0` over the
+2-element domain `{𝓑 0, 𝓑 1}` equals `𝓑 0 + 𝓑 1`. -/
+lemma sumcheckSum_X0_eq (𝓑 : Fin 2 ↪ L₀) :
+    (∑ x ∈ (univ.map 𝓑) ^ᶠ (1),
+        (MvPolynomial.X (0 : Fin 1) : MvPolynomial (Fin 1) L₀).eval x) = 𝓑 0 + 𝓑 1 := by
+  rw [Finset.sum_bij' (t := univ.map 𝓑) (g := fun a => a)
+    (fun x _ => x 0) (fun a _ => (fun _ => a))
+    (fun a ha => by simp only [Fintype.mem_piFinset] at ha; exact ha 0)
+    (fun a ha => by simp only [Fintype.mem_piFinset]; exact fun i => ha)
+    (fun a ha => by funext i; rw [Fin.fin_one_eq_zero i])
+    (fun a ha => rfl)
+    (fun a ha => by simp only [MvPolynomial.eval_X])]
+  rw [Finset.sum_map]; simp [Fin.sum_univ_two]
+
+omit [Fintype L₀] [DecidableEq L₀] [CharP L₀ 2] in
+/-- **No `𝓑`-free target satisfies sumcheck consistency for all domains `𝓑`.**
+If a single value `c` (independent of `𝓑`) equals the sumcheck consistency sum of `X 0`
+for two embeddings `𝓑₁`, `𝓑₂`, then `𝓑₁ 0 + 𝓑₁ 1 = 𝓑₂ 0 + 𝓑₂ 1`. Contrapositive: whenever two
+domains have different element sums (e.g. `{0,1}` vs `{0,ω}` in `GF(4)`, where `1 ≠ ω`), no
+`𝓑`-free target can be consistent with both. Since `compute_s0` does not depend on `𝓑`, this
+obstructs `sumcheckConsistencyProp (compute_s0 …) H` for a free `𝓑`. -/
+lemma sumcheckTarget_domain_indep (c : L₀) (𝓑₁ 𝓑₂ : Fin 2 ↪ L₀)
+    (h₁ : c = ∑ x ∈ (univ.map 𝓑₁) ^ᶠ (1),
+        (MvPolynomial.X (0 : Fin 1) : MvPolynomial (Fin 1) L₀).eval x)
+    (h₂ : c = ∑ x ∈ (univ.map 𝓑₂) ^ᶠ (1),
+        (MvPolynomial.X (0 : Fin 1) : MvPolynomial (Fin 1) L₀).eval x) :
+    𝓑₁ 0 + 𝓑₁ 1 = 𝓑₂ 0 + 𝓑₂ 1 := by
+  rw [sumcheckSum_X0_eq] at h₁ h₂
+  rw [← h₁, ← h₂]
+
+/-! ### Boolean-domain (pinned-`𝓑`) regime of DP24
+
+The two lemmas above show the sumcheck consistency identity is `𝓑`-dependent and hence
+unsatisfiable for a *free* `𝓑`. The lemmas below pin `𝓑` to the Boolean embedding
+`{𝓑 0 = 0, 𝓑 1 = 1}` (the regime DP24 actually instantiates) and re-express the `𝓑`-domain
+hypercube sum `∑ x ∈ (univ.map 𝓑) ^ᶠ k, f x` as the canonical Boolean hypercube sum over
+`Fin k → Fin 2`. This is the bridge that turns the `𝓑`-dependent right-hand side of
+`sumcheckConsistencyProp` into a `𝓑`-free form matching `compute_s0`, and is the load-bearing
+reindexing step for closing `batchingReduction_perfectCompleteness` once `𝓑` is pinned. -/
+
+/-- The Boolean hypercube embedding `(Fin k → Fin 2) ↪ (Fin k → L₀)` induced by a 2-element
+domain embedding `𝓑`, sending `b ↦ (j ↦ 𝓑 (b j))`. -/
+def boolHypercubeEmb (𝓑 : Fin 2 ↪ L₀) (k : ℕ) : (Fin k → Fin 2) ↪ (Fin k → L₀) where
+  toFun b := fun j => 𝓑 (b j)
+  inj' := by intro a b hab; funext j; exact 𝓑.injective (congrFun hab j)
+
+omit [Field L₀] [Fintype L₀] [DecidableEq L₀] [CharP L₀ 2] in
+/-- **`𝓑`-domain hypercube sum reindexes to the Boolean hypercube.** For any `𝓑 : Fin 2 ↪ L₀`,
+summing `f` over the `k`-fold product domain `{𝓑 0, 𝓑 1}^k` equals summing `f ∘ (𝓑 ∘ ·)` over
+the Boolean hypercube `Fin k → Fin 2`. (No pinning required — `𝓑` only needs to be an embedding.) -/
+lemma boolHypercube_sum_eq (𝓑 : Fin 2 ↪ L₀) {k : ℕ} {M : Type*} [AddCommMonoid M]
+    (f : (Fin k → L₀) → M) :
+    (∑ x ∈ (univ.map 𝓑) ^ᶠ k, f x) = ∑ b : Fin k → Fin 2, f (fun j => 𝓑 (b j)) := by
+  have hset : (univ.map 𝓑) ^ᶠ k
+      = (univ : Finset (Fin k → Fin 2)).map (boolHypercubeEmb 𝓑 k) := by
+    ext x
+    simp only [Fintype.mem_piFinset, Finset.mem_map, Finset.mem_univ, true_and, boolHypercubeEmb,
+      Function.Embedding.coeFn_mk]
+    constructor
+    · intro hx; choose c hc using hx; exact ⟨c, funext hc⟩
+    · rintro ⟨b, rfl⟩ j; exact ⟨b j, rfl⟩
+  rw [hset, Finset.sum_map]
+  rfl
+
+omit [Fintype L₀] [DecidableEq L₀] [CharP L₀ 2] in
+/-- **Pinned-`𝓑` Boolean-domain sumcheck sum.** When `𝓑` is pinned to the Boolean embedding
+(`𝓑 c = if c = 1 then 1 else 0`, i.e. `𝓑 0 = 0`, `𝓑 1 = 1`), the `𝓑`-domain hypercube sum equals
+the canonical sum over `Fin k → Fin 2` with the Boolean-literal evaluation point
+`j ↦ (if b j = 1 then 1 else 0)`. This is the `𝓑`-free right-hand side of `sumcheckConsistencyProp`
+in the regime DP24 instantiates. -/
+lemma boolHypercube_sum_pinned (𝓑 : Fin 2 ↪ L₀)
+    (h𝓑 : ∀ c, (𝓑 c : L₀) = if c = 1 then 1 else 0)
+    {k : ℕ} {M : Type*} [AddCommMonoid M] (f : (Fin k → L₀) → M) :
+    (∑ x ∈ (univ.map 𝓑) ^ᶠ k, f x)
+      = ∑ b : Fin k → Fin 2, f (fun j => (if b j == 1 then (1 : L₀) else 0)) := by
+  rw [boolHypercube_sum_eq]
+  apply Finset.sum_congr rfl
+  intro b _
+  congr 1
+  funext j
+  rw [h𝓑 (b j)]
+  rcases Fin.exists_fin_two.mp ⟨b j, rfl⟩ with h | h <;> rw [h] <;> simp
+
+end SumcheckOrientation
+
 end RingSwitching
