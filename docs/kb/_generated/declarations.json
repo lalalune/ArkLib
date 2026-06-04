@@ -37376,9 +37376,45 @@
           "signature": "lemma qMap_total_fiber_repr_coeff (i : Fin \u2113) (steps : \u2115) (h_i_add_steps : i.val + steps \u2264 \u2113)"
         },
         {
+          "doc": "`b` and `2 ^ n * c` have disjoint bit supports when `b < 2 ^ n`: low `n` bits live in `b`, bits `\u2265 n` live in `2 ^ n * c`.",
+          "kind": "lemma",
+          "line": 241,
+          "name": "Binius.BinaryBasefold.and_lt_two_pow_mul_eq_zero",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "and_lt_two_pow_mul_eq_zero",
+          "signature": "lemma and_lt_two_pow_mul_eq_zero {n c b : \u2115} (hb : b < 2 ^ n) :"
+        },
+        {
+          "doc": "Low-bit decomposition: for `b < 2 ^ n`, `c < 2`, the low `n` bits of `c * 2 ^ n + b` are exactly the bits of `b`.",
+          "kind": "lemma",
+          "line": 257,
+          "name": "Binius.BinaryBasefold.getBit_low_of_add_mul_two_pow",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "getBit_low_of_add_mul_two_pow",
+          "signature": "lemma getBit_low_of_add_mul_two_pow {n c b j : \u2115} (hb : b < 2 ^ n) (hj : j < n) :"
+        },
+        {
+          "doc": "High-bit decomposition: for `b < 2 ^ n`, `c < 2`, bit `n` of `c * 2 ^ n + b` is `c`.",
+          "kind": "lemma",
+          "line": 268,
+          "name": "Binius.BinaryBasefold.getBit_high_of_add_mul_two_pow",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "getBit_high_of_add_mul_two_pow",
+          "signature": "lemma getBit_high_of_add_mul_two_pow {n c b : \u2115} (hb : b < 2 ^ n) (hc : c < 2) :"
+        },
+        {
+          "doc": "**Fiber composition (last level peeled).** The `(n+1)`-step fiber of `y' \u2208 S^(i+(n+1))` at index `idx`, with `idx` split into the high bit `c := idx / 2^n` (selecting the last quotient `q^(i+n)`) and the low `n` bits `b := idx % 2^n`, equals the `n`-step fiber of the single-step preimage `z_c := qMap_total_fiber(i+n, 1, y')(c)` at index `b`. This is the geometric fact pinning the recursive `foldMatrixNat` construction.",
+          "kind": "lemma",
+          "line": 291,
+          "name": "Binius.BinaryBasefold.qMap_total_fiber_succ_peel_last",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "qMap_total_fiber_succ_peel_last",
+          "signature": "lemma qMap_total_fiber_succ_peel_last (i : Fin \u2113) (n : \u2115) (h_i_add_steps : i.val + (n + 1) \u2264 \u2113)"
+        },
+        {
           "doc": "",
           "kind": "def",
-          "line": 239,
+          "line": 386,
           "name": "Binius.BinaryBasefold.pointToIterateQuotientIndex",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "pointToIterateQuotientIndex",
@@ -37387,7 +37423,7 @@
         {
           "doc": "When \u03d1 = 1, qMap_total_fiber maps k = 0 to an element with first coefficient 0 and k = 1 to an element with first coefficient 1.",
           "kind": "lemma",
-          "line": 256,
+          "line": 403,
           "name": "Binius.BinaryBasefold.qMap_total_fiber_one_level_eq",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "qMap_total_fiber_one_level_eq",
@@ -37396,7 +37432,7 @@
         {
           "doc": "`x` is in the fiber of `y` under `qMap_total_fiber` iff `y` is the iterated quotient of `x`. That is, for binary field, the fiber of `y` is exactly the set of all `x` that map to `y` under the iterated quotient map.",
           "kind": "theorem",
-          "line": 306,
+          "line": 453,
           "name": "Binius.BinaryBasefold.generates_quotient_point_if_is_fiber_of_y",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "generates_quotient_point_if_is_fiber_of_y",
@@ -37405,7 +37441,7 @@
         {
           "doc": "State the corrrespondence between the forward qMap and the backward qMap_total_fiber",
           "kind": "theorem",
-          "line": 332,
+          "line": 479,
           "name": "Binius.BinaryBasefold.is_fiber_iff_generates_quotient_point",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "is_fiber_iff_generates_quotient_point",
@@ -37414,7 +37450,7 @@
         {
           "doc": "the pointToIterateQuotientIndex of qMap_total_fiber",
           "kind": "lemma",
-          "line": 397,
+          "line": 544,
           "name": "Binius.BinaryBasefold.pointToIterateQuotientIndex_qMap_total_fiber_eq_self",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "pointToIterateQuotientIndex_qMap_total_fiber_eq_self",
@@ -37423,7 +37459,7 @@
         {
           "doc": "**qMap_fiber coefficient extraction**",
           "kind": "lemma",
-          "line": 429,
+          "line": 576,
           "name": "Binius.BinaryBasefold.qMap_total_fiber_basis_sum_repr",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "qMap_total_fiber_basis_sum_repr",
@@ -37432,7 +37468,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 469,
+          "line": 616,
           "name": "Binius.BinaryBasefold.card_qMap_total_fiber",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "card_qMap_total_fiber",
@@ -37441,7 +37477,7 @@
         {
           "doc": "The images of `qMap_total_fiber` over distinct quotient points `y\u2081 \u2260 y\u2082` are disjoint",
           "kind": "theorem",
-          "line": 533,
+          "line": 680,
           "name": "Binius.BinaryBasefold.qMap_total_fiber_disjoint",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "qMap_total_fiber_disjoint",
@@ -37450,7 +37486,7 @@
         {
           "doc": "Single-step fold : Given `f : S\u207d\u2071\u207e \u2192 L` and challenge `r`, produce `S\u207d\u2071\u207a\u00b9\u207e \u2192 L`, where `f\u207d\u2071\u207a\u00b9\u207e = fold(f\u207d\u2071\u207e, r) : y \u21a6 [1-r, r] \u00b7 [[x\u2081, -x\u2080], [-1, 1]] \u00b7 [f\u207d\u2071\u207e(x\u2080), f\u207d\u2071\u207e(x\u2081)]`",
           "kind": "def",
-          "line": 623,
+          "line": 770,
           "name": "Binius.BinaryBasefold.fold",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "fold",
@@ -37459,25 +37495,43 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 635,
+          "line": 782,
           "name": "Binius.BinaryBasefold.baseFoldMatrix",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "baseFoldMatrix",
           "signature": "def baseFoldMatrix (i : Fin r) (h_i : i + 1 < \u2113 + \ud835\udce1)"
         },
         {
+          "doc": "The fold matrix as a `Nat`-indexed structural recursion on `steps`. This is the explicit recursive construction pinned by `iterated_fold_eq_matrix_form` (Lemma 4.9). Peeling the **last** fold (`Fin.dfoldl_succ_last`) at level `i + steps`, `iterated_fold (steps + 1)` is one extra single-step `fold` applied to `iterated_fold steps`. Translating that one step into matrix form yields the block/composition law: `M_{steps+1}(y)[a][b] = baseFoldMatrix(i+steps, y)[a % 2][b / 2^steps]` `  * M_{steps}(z_{b / 2^steps})[a / 2][b % 2^steps]`, where `z_c = qMap_total_fiber(i+steps, 1, y)(c)` are the two sin",
+          "kind": "def",
+          "line": 807,
+          "name": "Binius.BinaryBasefold.foldMatrixNat",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "foldMatrixNat",
+          "signature": "def foldMatrixNat (i : Fin r) :"
+        },
+        {
           "doc": "`M_y` matrix which depends only on `y \u2208 S^(i+\u03d1)`",
           "kind": "def",
-          "line": 648,
+          "line": 834,
           "name": "Binius.BinaryBasefold.foldMatrix",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "foldMatrix",
           "signature": "def foldMatrix (i : Fin r) (steps : Fin (\u2113 + 1)) (h_i_add_steps : i.val + steps < \u2113 + \ud835\udce1)"
         },
         {
+          "doc": "Agreement of the single-step `foldMatrixNat` with `baseFoldMatrix`: the recursion's `steps = 1` value is exactly the base matrix (its old special-case branch).",
+          "kind": "lemma",
+          "line": 842,
+          "name": "Binius.BinaryBasefold.foldMatrixNat_one",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "foldMatrixNat_one",
+          "signature": "lemma foldMatrixNat_one (i : Fin r) (h_i_add_steps : i.val + 1 < \u2113 + \ud835\udce1)"
+        },
+        {
           "doc": "Iterated fold over `steps` steps starting at domain index `i`.",
           "kind": "def",
-          "line": 661,
+          "line": 858,
           "name": "Binius.BinaryBasefold.iterated_fold",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "iterated_fold",
@@ -37486,7 +37540,7 @@
         {
           "doc": "Transitivity of iterated_fold : folding for `steps\u2081` and then for `steps\u2082` equals folding for `steps\u2081 + steps\u2082` with concatenated challenges.",
           "kind": "lemma",
-          "line": 684,
+          "line": 881,
           "name": "Binius.BinaryBasefold.iterated_fold_transitivity",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "iterated_fold_transitivity",
@@ -37495,7 +37549,7 @@
         {
           "doc": "Tensor product of challenge vectors : for a local fold length `steps`, \u2a02_{j=0}^{steps-1}(1-r_j, r_j).",
           "kind": "def",
-          "line": 719,
+          "line": 916,
           "name": "Binius.BinaryBasefold.challengeTensorProduct",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "challengeTensorProduct",
@@ -37504,7 +37558,7 @@
         {
           "doc": "Evaluation vector [f^(i)(x_0) ... f^(i)(x_{2 ^ steps-1})]^T",
           "kind": "def",
-          "line": 748,
+          "line": 945,
           "name": "Binius.BinaryBasefold.fiberEvaluationMapping",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "fiberEvaluationMapping",
@@ -37513,7 +37567,7 @@
         {
           "doc": "Matrix-vector multiplication form of iterated fold : For a local `steps > 0`, `\u2200 i \u2208 {0, ..., l-steps}`, `y \u2208 S^(i+steps)`, `fold(f^(i), r_0, ..., r_{steps-1})(y) = [\u2a02_{j=0}^{steps-1}(1-r_j, r_j)] \u2022 M_y` `\u2022 [f^(i)(x_0) ... f^(i)(x_{2 ^ steps-1})]^T`, where the right-hand vector's values `(x_0, ..., x_{2 ^ steps-1})` represent the fiber `(q^(i+steps-1) \u2218 ... \u2218 q^(i))\u207b\u00b9({y}) \u2282 S^(i)`.",
           "kind": "def",
-          "line": 768,
+          "line": 965,
           "name": "Binius.BinaryBasefold.localized_fold_matrix_form",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "localized_fold_matrix_form",
@@ -37522,7 +37576,7 @@
         {
           "doc": "Wrapper of `localized_fold_matrix_form` with `fiber_eval_mapping` being specified explicitly.",
           "kind": "def",
-          "line": 785,
+          "line": 982,
           "name": "Binius.BinaryBasefold.localized_fold_eval",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "localized_fold_eval",
@@ -37531,7 +37585,7 @@
         {
           "doc": "**Lemma 4.9.** The iterated fold equals the localized fold evaluation via matmul form",
           "kind": "theorem",
-          "line": 798,
+          "line": 995,
           "name": "Binius.BinaryBasefold.iterated_fold_eq_matrix_form",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "iterated_fold_eq_matrix_form",
@@ -37540,7 +37594,7 @@
         {
           "doc": "Lemma 4.13 : if f\u207d\u2071\u207e is evaluation of P\u207d\u2071\u207e(X) over S\u207d\u2071\u207e, then fold(f\u207d\u2071\u207e, r_chal) is evaluation of P\u207d\u2071\u207a\u00b9\u207e(X) over S\u207d\u2071\u207a\u00b9\u207e. At level `i = \u2113`, we have P\u207d\u02e1\u207e =",
           "kind": "theorem",
-          "line": 815,
+          "line": 1012,
           "name": "Binius.BinaryBasefold.fold_advances_evaluation_poly",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "fold_advances_evaluation_poly",
@@ -37549,7 +37603,7 @@
         {
           "doc": "Given a point `v \u2208 S^(0)`, extract the middle `steps` bits `{v_i, ..., v_{i+steps-1}}` as a `Fin (2 ^ steps)`.",
           "kind": "def",
-          "line": 1002,
+          "line": 1199,
           "name": "Binius.BinaryBasefold.extractMiddleFinMask",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "extractMiddleFinMask",
@@ -37558,7 +37612,7 @@
         {
           "doc": "The Reed-Solomon code C^(i) for round i in Binary Basefold. For each i \u2208 {0, steps, ..., \u2113}, C(i) is the Reed-Solomon code RS_{L, S\u207d\u2071\u207e}[2^{\u2113+R-i}, 2^{\u2113-i}].",
           "kind": "def",
-          "line": 1028,
+          "line": 1225,
           "name": "Binius.BinaryBasefold.BBF_Code",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "BBF_Code",
@@ -37567,7 +37621,7 @@
         {
           "doc": "The (minimum) distance d_i of the code C^(i) : `d\u1d62 := 2^(\u2113 + R - i) - 2^(\u2113 - i) + 1`",
           "kind": "def",
-          "line": 1037,
+          "line": 1234,
           "name": "Binius.BinaryBasefold.BBF_CodeDistance",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "BBF_CodeDistance",
@@ -37576,7 +37630,7 @@
         {
           "doc": "Disagreement set \u0394 : The set of points where two functions disagree. For functions f^(i+\u03d1) and g^(i+\u03d1), this is {y \u2208 S^(i+\u03d1) | f^(i+\u03d1)(y) \u2260 g^(i+\u03d1)(y)}. `Set`-valued analogue of the canonical `Code.disagreementCols` (in `ArkLib/Data/CodingTheory/Basic/Distance.lean`): used here because the underlying `sDomain` need not be `Fintype` / `DecidableEq` at every call site. When both instances are available, the two coincide modulo `Set.toFinset`.",
           "kind": "def",
-          "line": 1048,
+          "line": 1245,
           "name": "Binius.BinaryBasefold.disagreementSet",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "disagreementSet",
@@ -37585,7 +37639,7 @@
         {
           "doc": "Fiber-wise disagreement set \u0394^(i) : The set of points y \u2208 S^(i+\u03d1) for which functions f^(i) and g^(i) are not identical when restricted to the entire fiber of points in S\u207d\u2071\u207e that maps to y.",
           "kind": "def",
-          "line": 1057,
+          "line": 1254,
           "name": "Binius.BinaryBasefold.fiberwiseDisagreementSet",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "fiberwiseDisagreementSet",
@@ -37594,7 +37648,7 @@
         {
           "doc": "Fiber-wise distance d^(i) : The minimum size of the fiber-wise disagreement set between f^(i) and any codeword in C^(i).",
           "kind": "def",
-          "line": 1068,
+          "line": 1265,
           "name": "Binius.BinaryBasefold.fiberwiseDistance",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "fiberwiseDistance",
@@ -37603,7 +37657,7 @@
         {
           "doc": "Fiberwise closeness : f^(i) is fiberwise close to C^(i) if 2 * d^(i)(f^(i), C^(i)) < d_{i+steps}",
           "kind": "def",
-          "line": 1079,
+          "line": 1276,
           "name": "Binius.BinaryBasefold.fiberwiseClose",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "fiberwiseClose",
@@ -37612,7 +37666,7 @@
         {
           "doc": "Hamming closeness : f is close to C in Hamming distance if 2 * d(f, C) < d_i",
           "kind": "def",
-          "line": 1087,
+          "line": 1284,
           "name": "Binius.BinaryBasefold.hammingClose",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "hammingClose",
@@ -37621,7 +37675,7 @@
         {
           "doc": "Unique closest codeword : If a function f^(i) is within the unique decoding radius of the code C^(i), then this gives the unique closest codeword using Berlekamp-Welch decoder.",
           "kind": "def",
-          "line": 1097,
+          "line": 1294,
           "name": "Binius.BinaryBasefold.uniqueClosestCodeword",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "uniqueClosestCodeword",
@@ -37630,7 +37684,7 @@
         {
           "doc": "if `d\u207d\u2071\u207e(f\u207d\u2071\u207e, C\u207d\u2071\u207e) < d_{\u1d62\u208asteps} / 2` (fiberwise distance), then `d(f\u207d\u2071\u207e, C\u207d\u2071\u207e) < d\u1d62/2` (regular code distance)",
           "kind": "theorem",
-          "line": 1271,
+          "line": 1468,
           "name": "Binius.BinaryBasefold.fiberwise_dist_lt_imp_dist_lt_unique_decoding_radius",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "fiberwise_dist_lt_imp_dist_lt_unique_decoding_radius",
@@ -37639,7 +37693,7 @@
         {
           "doc": "Compliance condition (Definition 4.17) : For an index `i` that is a multiple of `steps`, the oracle `f_i` is compliant if it's close to the code fiber-wise, the next oracle `f_i_plus_steps` is close to its code, and their unique closest codewords are consistent with folding.",
           "kind": "def",
-          "line": 1487,
+          "line": 1684,
           "name": "Binius.BinaryBasefold.isCompliant",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "isCompliant",
@@ -37648,7 +37702,7 @@
         {
           "doc": "Farness implies non-compliance. If `f_i` is far from its code `C_i`, it cannot be compliant. This follows directly from the contrapositive of `fiberwise_dist_lt_imp_dist_lt`.",
           "kind": "lemma",
-          "line": 1520,
+          "line": 1717,
           "name": "Binius.BinaryBasefold.farness_implies_non_compliance",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "farness_implies_non_compliance",
@@ -37657,7 +37711,7 @@
         {
           "doc": "Bad event for folding (Definition 4.19) : This event captures two scenarios where the random folding challenges undermine the protocol's soundness checks. For `i \u2208 {0, ..., \u2113 - steps}`, - In case `d\u207d\u2071\u207e(f\u207d\u2071\u207e, C\u207d\u2071\u207e) < d\u1d62\u208asteps / 2` : `\u0394\u207d\u2071\u207e(f\u207d\u2071\u207e, f\u0304\u207d\u2071\u207e) \u2284 \u0394(fold(f\u207d\u2071\u207e, r\u1d62', ..., r\u1d62\u208asteps\u208b\u2081'), fold(f\u0304\u207d\u2071\u207e, r\u1d62', ..., r\u1d62\u208asteps\u208b\u2081'))` - In case `d\u207d\u2071\u207e(f\u207d\u2071\u207e, C\u207d\u2071\u207e) \u2265 d\u1d62\u208asteps / 2` : `d(fold(f\u207d\u2071\u207e, r\u1d62', ..., r\u1d62\u208asteps\u208b\u2081'), C\u207d\u2071\u207asteps\u207e) < d\u1d62\u208asteps / 2`",
           "kind": "def",
-          "line": 1549,
+          "line": 1746,
           "name": "Binius.BinaryBasefold.foldingBadEvent",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "foldingBadEvent",
@@ -48711,7 +48765,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5288,
+      "declarations": 5294,
       "files": 282
     }
   }

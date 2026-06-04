@@ -4,7 +4,7 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 282 files, 5288 declarations
+- `ArkLib` — 282 files, 5294 declarations
 
 ## Same short-name across multiple files (143 groups)
 
@@ -193,7 +193,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `disagreementSet` (4 declarations, 4 files)
 
 - `def disagreementSet` [ArkLib/Data/CodingTheory/ProximityGap/DG25/MainResults.lean:63](../../../ArkLib/Data/CodingTheory/ProximityGap/DG25/MainResults.lean#L63) — The set D = Δ^{2m}(U, V), columns where U₀≠V₀ or U₁≠V₁. Specialisation of the canonical `Code.disagr
-- `def Binius.BinaryBasefold.disagreementSet` [ArkLib/ProofSystem/Binius/BinaryBasefold/Prelude.lean:1048](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Prelude.lean#L1048) — Disagreement set Δ : The set of points where two functions disagree. For functions f^(i+ϑ) and g^(i+
+- `def Binius.BinaryBasefold.disagreementSet` [ArkLib/ProofSystem/Binius/BinaryBasefold/Prelude.lean:1245](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Prelude.lean#L1245) — Disagreement set Δ : The set of points where two functions disagree. For functions f^(i+ϑ) and g^(i+
 - `def Quotienting.disagreementSet` [ArkLib/ProofSystem/Stir/Quotienting.lean:109](../../../ArkLib/ProofSystem/Stir/Quotienting.lean#L109) — We define the set disagreementSet(f,ι,S,Ans) as the set of all points x ∈ ι that lie in S such that 
 - `def BlockRelDistance.disagreementSet` [ArkLib/ProofSystem/Whir/BlockRelDistance.lean:104](../../../ArkLib/ProofSystem/Whir/BlockRelDistance.lean#L104) — Let C be a smooth ReedSolomon code `C = RS[F, ι^(2ⁱ), φ', m]` and `f,g : ι^(2ⁱ) → F`, then the (i,k)
 
