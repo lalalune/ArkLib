@@ -2123,6 +2123,109 @@ constant-derivative case. -/
 lemma ξ_regular_of_natDegree_le_one
     (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [H_irreducible : Fact (Irreducible H)]
     [H_natDegree_pos : Fact (0 < H.natDegree)] (hR : R.natDegree ≤ 1) :
+
+omit H_irreducible in
+/-- `liftToFunctionField` of a nonzero polynomial is nonzero. The defining relation `H_tilde H`
+has `Y`-degree `H.natDegree ≥ 1`, so it cannot divide a nonzero degree-`0` polynomial; hence the
+coefficient embedding into the function field `𝕃` has trivial kernel on constants. In particular
+`W = liftToFunctionField H.leadingCoeff ≠ 0`, so `W` is invertible in the field `𝕃 H`. -/
+lemma liftToFunctionField_ne_zero {p : F[X]} (hp : p ≠ 0) :
+    liftToFunctionField (H := H) p ≠ 0 := by
+  intro h0
+  have hbiv : liftBivariate (H := H) (Polynomial.C p) = 0 := by
+    rw [liftBivariate_C]; exact h0
+  rw [liftBivariate_eq_zero_iff_dvd, Polynomial.map_C] at hbiv
+  have hinj : Function.Injective (univPolyHom : F[X] →+* RatFunc F) := by
+    rw [univPolyHom]; exact IsFractionRing.injective _ _
+  have hup_ne : univPolyHom p ≠ 0 := fun h => hp (hinj (by rw [h, map_zero]))
+  have hC_ne : (Polynomial.C (univPolyHom p) : Polynomial (RatFunc F)) ≠ 0 := by
+    rwa [Ne, Polynomial.C_eq_zero]
+  have hdeg_le := Polynomial.degree_le_of_dvd hbiv hC_ne
+  rw [Polynomial.degree_C hup_ne] at hdeg_le
+  have hHt_pos : 0 < (H_tilde H).natDegree := by
+    rw [natDegree_H_tilde H_pos.out]; exact H_pos.out
+  have hHt_ne : (H_tilde H) ≠ 0 := by
+    intro h; rw [h, Polynomial.natDegree_zero] at hHt_pos; exact absurd hHt_pos (by omega)
+  have hlt : (0 : WithBot ℕ) < (H_tilde H).degree := by
+    rw [Polynomial.degree_eq_natDegree hHt_ne]; exact_mod_cast hHt_pos
+  exact absurd (lt_of_lt_of_le hlt hdeg_le) (by simp)
+
+omit H_irreducible H_pos in
+/-- A finite sum of regular elements of `𝕃 H` is regular. -/
+lemma regularElms_set_sum {ι : Type*} (s : Finset ι) (f : ι → 𝕃 H)
+    (hf : ∀ i ∈ s, f i ∈ regularElms_set H) :
+    (∑ i ∈ s, f i) ∈ regularElms_set H :=
+  Finset.sum_induction f (· ∈ regularElms_set H)
+    (fun _ _ ha hb => regularElms_set_add ha hb) (regularElms_set_zero H) hf
+
+/-- Claim A.2 of Appendix A.4 of [BCIKS20], with the **denominator-clearing exponent `d - 1`**.
+
+`ζ R x₀ H` is a polynomial of `Y`-degree `≤ d - 1` (where `d = R.natDegree`) in the function-field
+variable `T`, evaluated at `T / W` with `W := liftToFunctionField H.leadingCoeff`. Expanding,
+`ζ = ∑_{j ≤ d-1} liftToFunctionField (Qⱼ) · (T / W)^j` where `Q := evalX (C x₀) R.derivative` and
+`R.derivative` lowers the `Y`-degree by one (`natDegree_derivative_le`). Multiplying by `W^(d-1)`
+clears every denominator: each summand becomes
+`liftToFunctionField (Qⱼ) · T^j · W^(d-1-j)` with `d-1-j ≥ 0` for all `j ≤ d-1`, so it is a product
+of regular elements (`regularElms_set_liftToFunctionField`, `regularElms_set_functionFieldT`,
+`regularElms_set_pow`), and the whole sum is regular (`regularElms_set_sum`).
+
+This is the unconditional, statement-correct form of `ξ_regular`: `W^(d-1) · ζ` is regular for every
+`R, x₀, H`. See `ξ_regular` below for the (off-by-one) `d - 2` exponent and why it is not the right
+power to clear all denominators. -/
+lemma ξ_regular' (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [H_irreducible : Fact (Irreducible H)]
+    [Fact (0 < H.natDegree)] :
+    ∃ pre : 𝒪 H,
+    let d := R.natDegree
+    let W : 𝕃 H := liftToFunctionField (H.leadingCoeff);
+    embeddingOf𝒪Into𝕃 _ pre = W ^ (d - 1) * ζ R x₀ H := by
+  classical
+  set Q : F[X][Y] := Bivariate.evalX (Polynomial.C x₀) R.derivative with hQ
+  set W : 𝕃 H := liftToFunctionField (H := H) H.leadingCoeff with hWdef
+  set T : 𝕃 H := functionFieldT (H := H) with hTdef
+  set k : ℕ := R.natDegree - 1 with hk
+  have hH0 : H.leadingCoeff ≠ 0 :=
+    Polynomial.leadingCoeff_ne_zero.mpr H_irreducible.out.ne_zero
+  have hWne : W ≠ 0 := liftToFunctionField_ne_zero hH0
+  have hQdeg : Q.natDegree ≤ k := by
+    rw [hQ, hk, Polynomial.Bivariate.evalX_eq_map]
+    exact le_trans Polynomial.natDegree_map_le (Polynomial.natDegree_derivative_le R)
+  have hreg : W ^ k * ζ R x₀ H ∈ regularElms_set H := by
+    have hζ : ζ R x₀ H
+        = ∑ j ∈ Q.support, liftToFunctionField (H := H) (Q.coeff j) * (T / W) ^ j := by
+      rw [ζ, ← hQ, ← hWdef, ← hTdef, Polynomial.eval₂_eq_sum, Polynomial.sum_def]
+    rw [hζ, Finset.mul_sum]
+    apply regularElms_set_sum
+    intro j hj
+    have hjk : j ≤ k := le_trans (Polynomial.le_natDegree_of_mem_supp j hj) hQdeg
+    have hterm : W ^ k * (liftToFunctionField (H := H) (Q.coeff j) * (T / W) ^ j)
+        = liftToFunctionField (H := H) (Q.coeff j) * T ^ j * W ^ (k - j) := by
+      rw [div_pow, pow_sub₀ W hWne hjk]; field_simp
+    rw [hterm]
+    refine regularElms_set_mul (regularElms_set_mul ?_ ?_) ?_
+    · exact regularElms_set_liftToFunctionField H (Q.coeff j)
+    · exact regularElms_set_pow (regularElms_set_functionFieldT H) j
+    · exact regularElms_set_pow (regularElms_set_liftToFunctionField H H.leadingCoeff) (k - j)
+  obtain ⟨pre, hpre⟩ := hreg
+  refine ⟨pre, ?_⟩
+  change embeddingOf𝒪Into𝕃 H pre = W ^ k * ζ R x₀ H
+  exact hpre.symm
+
+/-- There exist regular elements `ξ = W(Z)^(d-2) * ζ` as defined in Claim A.2 of Appendix A.4
+of [BCIKS20].
+
+**Exponent caveat (documented for upstream).** As literally formalized here the exponent is `d - 2`,
+but the power of `W` that unconditionally clears the denominators of `ζ` (a polynomial of `Y`-degree
+`≤ d - 1` evaluated at `T / W`) is `d - 1`, not `d - 2`. The fully-proven statement-correct version
+is `ξ_regular'` above. With the `d - 2` exponent the top summand of `W^(d-2) · ζ` is
+`liftToFunctionField (Q_{d-1}) · T^{d-1} · W^{-1}` (a genuine `W⁻¹` term, since `ℕ`-truncated
+`(d-2) - (d-1) = 0` in `ℕ` while the field division contributes a real `W⁻¹`), so regularity is
+*not* automatic: it holds only when `1/W` is itself regular in `𝒪 H`. That extra fact is true in
+some cases (e.g. `H.natDegree = 1`, where Bézout makes `H.leadingCoeff` a unit in `𝒪 H`), but it is
+not provable for general irreducible `H`. The `sorry` below therefore records a genuine gap in the
+`d - 2` form; the regular-element content of Claim A.2 is captured by `ξ_regular'`. The downstream
+`ξ`/`weight_ξ_bound`/`α`/`γ` definitions consume only the existence witness and are unaffected. -/
+lemma ξ_regular (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [H_irreducible : Fact (Irreducible H)]
+    [Fact (0 < H.natDegree)] :
     ∃ pre : 𝒪 H,
     let d := R.natDegree
     let W : 𝕃 H := liftToFunctionField (H.leadingCoeff);

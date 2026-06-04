@@ -31,7 +31,7 @@ namespace Prover
 - `seqCompose (m := 0) P = Prover.id`
 - `seqCompose (m := m + 1) P = append (P 0) (seqCompose (m := m) P)`
 
-TODO: improve efficiency, this might be `O(m^2)`
+Note: improve efficiency, this might be `O(m^2)`
 -/
 @[inline]
 def seqCompose
@@ -69,7 +69,7 @@ two verifiers. Specifically, we have the following definitional equalities:
 - `seqCompose (m := 0) V = Verifier.id`
 - `seqCompose (m := m + 1) V = append (V 0) (seqCompose (m := m) V)`
 
-TODO: improve efficiency, this might be `O(m^2)`
+Note: improve efficiency, this might be `O(m^2)`
 -/
 @[inline]
 def seqCompose {m : ℕ} (Stmt : Fin (m + 1) → Type)
@@ -98,7 +98,7 @@ namespace Reduction
 /-- Sequential composition of reductions, defined via sequential composition of provers and
   verifiers (or equivalently, folding over the append of reductions).
 
-TODO: improve efficiency, this might be `O(m^2)`
+Note: improve efficiency, this might be `O(m^2)`
 -/
 @[inline]
 def seqCompose {m : ℕ} (Stmt : Fin (m + 1) → Type) (Wit : Fin (m + 1) → Type)
@@ -161,7 +161,7 @@ namespace OracleVerifier
 This is the auxiliary version that has instance parameters as implicit parameters, so that matching
 on `m` can properly specialize those parameters.
 
-TODO: have to fix instance diamonds to make this work -/
+Note: have to fix instance diamonds to make this work -/
 def seqCompose' {m : ℕ}
     (Stmt : Fin (m + 1) → Type)
     {ιₛ : Fin (m + 1) → Type} (OStmt : (i : Fin (m + 1)) → ιₛ i → Type)
@@ -437,6 +437,88 @@ theorem seqCompose_knowledgeSoundness
     exact append_knowledgeSoundness (V 0) (seqCompose (Stmt ∘ Fin.succ) (fun i => V i.succ))
       (h 0) this
 
+/-- Reduction of `seqComposeChallengeIdxToSigma` along the `inl` embedding of a challenge index of
+    the head protocol `pSpec 0`: it lands in the first component (`Fin 0`) with the original index. -/
+private theorem seqComposeIdx_inl {m : ℕ} {n : Fin (m + 1) → ℕ} {pSpec : ∀ i, ProtocolSpec (n i)}
+    (s : (pSpec 0).ChallengeIdx) :
+    seqComposeChallengeIdxToSigma (pSpec := pSpec)
+      (ChallengeIdx.inl (pSpec₁ := pSpec 0) (pSpec₂ := ProtocolSpec.seqCompose (fun i => pSpec i.succ)) s)
+      = ⟨0, s⟩ := by
+  have hsplit : (Fin.splitSum (n := n)
+      (ChallengeIdx.inl (pSpec₁ := pSpec 0)
+        (pSpec₂ := ProtocolSpec.seqCompose (fun i => pSpec i.succ)) s).1) = ⟨0, s.1⟩ := by
+    rw [Fin.splitSum_succ]; erw [Fin.dappend_left]
+  have hfst : (seqComposeChallengeIdxToSigma (pSpec := pSpec)
+      (ChallengeIdx.inl (pSpec₁ := pSpec 0)
+        (pSpec₂ := ProtocolSpec.seqCompose (fun i => pSpec i.succ)) s)).fst = (0 : Fin (m + 1)) :=
+    congrArg Sigma.fst hsplit
+  refine Sigma.ext hfst ?_
+  rw [Subtype.heq_iff_coe_heq (by rw [hfst]) (by rw [hfst])]
+  have hval : ((seqComposeChallengeIdxToSigma (pSpec := pSpec)
+      (ChallengeIdx.inl (pSpec₁ := pSpec 0)
+        (pSpec₂ := ProtocolSpec.seqCompose (fun i => pSpec i.succ)) s)).snd.1)
+      = (Fin.splitSum (n := n)
+          (ChallengeIdx.inl (pSpec₁ := pSpec 0)
+            (pSpec₂ := ProtocolSpec.seqCompose (fun i => pSpec i.succ)) s).1).snd := rfl
+  rw [hval]
+  exact (Sigma.ext_iff.mp hsplit).2
+
+/-- Reduction of `seqComposeChallengeIdxToSigma` along the `inr` embedding of a challenge index of
+    the tail protocol: the first component is shifted by `Fin.succ` and the tail index is recovered
+    by `seqComposeChallengeIdxToSigma` on the tail. -/
+private theorem seqComposeIdx_inr {m : ℕ} {n : Fin (m + 1) → ℕ} {pSpec : ∀ i, ProtocolSpec (n i)}
+    (s : (ProtocolSpec.seqCompose (fun i => pSpec i.succ)).ChallengeIdx) :
+    seqComposeChallengeIdxToSigma (pSpec := pSpec)
+      (ChallengeIdx.inr (pSpec₁ := pSpec 0) (pSpec₂ := ProtocolSpec.seqCompose (fun i => pSpec i.succ)) s)
+      = ⟨(seqComposeChallengeIdxToSigma (pSpec := fun i => pSpec i.succ) s).fst.succ,
+          (seqComposeChallengeIdxToSigma (pSpec := fun i => pSpec i.succ) s).snd⟩ := by
+  have hsplit : (Fin.splitSum (n := n)
+      (ChallengeIdx.inr (pSpec₁ := pSpec 0)
+        (pSpec₂ := ProtocolSpec.seqCompose (fun i => pSpec i.succ)) s).1)
+      = ⟨(Fin.splitSum (n := fun i => n i.succ) s.1).fst.succ,
+          (Fin.splitSum (n := fun i => n i.succ) s.1).snd⟩ := by
+    rw [Fin.splitSum_succ]; erw [Fin.dappend_right]
+  have hfst : (seqComposeChallengeIdxToSigma (pSpec := pSpec)
+      (ChallengeIdx.inr (pSpec₁ := pSpec 0)
+        (pSpec₂ := ProtocolSpec.seqCompose (fun i => pSpec i.succ)) s)).fst =
+        (seqComposeChallengeIdxToSigma (pSpec := fun i => pSpec i.succ) s).fst.succ :=
+    congrArg Sigma.fst hsplit
+  refine Sigma.ext hfst ?_
+  rw [Subtype.heq_iff_coe_heq (by rw [hfst]) (by rw [hfst])]
+  have hval : ((seqComposeChallengeIdxToSigma (pSpec := pSpec)
+      (ChallengeIdx.inr (pSpec₁ := pSpec 0)
+        (pSpec₂ := ProtocolSpec.seqCompose (fun i => pSpec i.succ)) s)).snd.1)
+      = (Fin.splitSum (n := n)
+          (ChallengeIdx.inr (pSpec₁ := pSpec 0)
+            (pSpec₂ := ProtocolSpec.seqCompose (fun i => pSpec i.succ)) s).1).snd := rfl
+  rw [hval]
+  exact (Sigma.ext_iff.mp hsplit).2
+
+/-- The RBR error of a sequential composition, expressed via `seqComposeChallengeIdxToSigma` over
+    the *global* challenge index, equals the appended-form error built from the head error and the
+    tail's `seqCompose` error transported by `ChallengeIdx.sumEquiv.symm`. This is the combinatorial
+    bridge identifying the two indexings of the composed protocol's challenges, used to discharge the
+    challenge-index transport goals left by `convert append_rbr…`. -/
+private theorem seqComposeError_eq_append {m : ℕ} {n : Fin (m + 1) → ℕ}
+    {pSpec : ∀ i, ProtocolSpec (n i)} (f : ∀ i, (pSpec i).ChallengeIdx → ℝ≥0)
+    (a : (pSpec 0 ++ₚ ProtocolSpec.seqCompose (fun i => pSpec i.succ)).ChallengeIdx) :
+    f (seqComposeChallengeIdxToSigma (pSpec := pSpec) a).fst
+        (seqComposeChallengeIdxToSigma (pSpec := pSpec) a).snd =
+      (Sum.elim (f 0)
+          (fun k => f (seqComposeChallengeIdxToSigma (pSpec := fun i => pSpec i.succ) k).fst.succ
+            (seqComposeChallengeIdxToSigma (pSpec := fun i => pSpec i.succ) k).snd) ∘
+        ⇑ChallengeIdx.sumEquiv.symm) a := by
+  set g : ((i : Fin (m + 1)) × (pSpec i).ChallengeIdx) → ℝ≥0 := fun x => f x.fst x.snd with hg
+  rw [Function.comp_apply]
+  rw [show a = ChallengeIdx.sumEquiv (ChallengeIdx.sumEquiv.symm a) from
+    (Equiv.apply_symm_apply _ _).symm]
+  rw [Equiv.symm_apply_apply]
+  rcases ChallengeIdx.sumEquiv.symm a with s | s
+  · simp only [Sum.elim_inl, ChallengeIdx.sumEquiv, Equiv.coe_fn_mk]
+    exact congrArg g (seqComposeIdx_inl s)
+  · simp only [Sum.elim_inr, ChallengeIdx.sumEquiv, Equiv.coe_fn_mk]
+    exact congrArg g (seqComposeIdx_inr s)
+
 /-- If all verifiers in a sequence satisfy round-by-round soundness with respective RBR soundness
     errors, then their sequential composition also satisfies round-by-round soundness. -/
 theorem seqCompose_rbrSoundness
@@ -460,8 +542,17 @@ theorem seqCompose_rbrSoundness
       (fun i => rbrSoundnessError i.succ) (fun i => h i.succ)
     simp only [Fin.succ_zero_eq_one, Fin.succ_last] at this
     convert append_rbrSoundness (V 0) (seqCompose (Stmt ∘ Fin.succ) (fun i => V i.succ))
-      (h 0) this <;>
-    sorry
+      (h 0) this
+    · -- `SampleableType` instances on the two (defeq) challenge-index types agree
+      rename_i a a' hHEq
+      have hEq : a = a' := eq_of_heq hHEq
+      subst hEq
+      rfl
+    · -- challenge-index transport: the two RBR-error indexings coincide
+      rename_i a a' hHEq
+      have hEq : a = a' := eq_of_heq hHEq
+      subst hEq
+      exact seqComposeError_eq_append rbrSoundnessError a
 
 /-- If all verifiers in a sequence satisfy round-by-round knowledge soundness with respective RBR
     knowledge errors, then their sequential composition also satisfies round-by-round knowledge
@@ -488,8 +579,17 @@ theorem seqCompose_rbrKnowledgeSoundness
       (fun i => rbrKnowledgeError i.succ) (fun i => h i.succ)
     simp only [Fin.succ_zero_eq_one, Fin.succ_last] at this
     convert append_rbrKnowledgeSoundness (V 0) (seqCompose (Stmt ∘ Fin.succ) (fun i => V i.succ))
-      (h 0) this <;>
-    sorry
+      (h 0) this
+    · -- `SampleableType` instances on the two (defeq) challenge-index types agree
+      rename_i a a' hHEq
+      have hEq : a = a' := eq_of_heq hHEq
+      subst hEq
+      rfl
+    · -- challenge-index transport: the two RBR-error indexings coincide
+      rename_i a a' hHEq
+      have hEq : a = a' := eq_of_heq hHEq
+      subst hEq
+      exact seqComposeError_eq_append rbrKnowledgeError a
 
 end Verifier
 

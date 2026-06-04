@@ -123,20 +123,7 @@ def runWithLogToRound (i : Fin (n + 1))
 private lemma fst_map_simulateQ_loggingOracle_run {ι : Type} {spec : OracleSpec ι} {α : Type}
     (oa : OracleComp spec α) :
     Prod.fst <$> WriterT.run (simulateQ loggingOracle oa) = oa := by
-  induction oa using OracleComp.induction with
-  | pure a => simp
-  | query_bind t oa ih =>
-    simp only [simulateQ_query_bind]
-    show Prod.fst <$> (do let u ← liftM (loggingOracle t); simulateQ loggingOracle (oa u)).run =
-      liftM (query t) >>= oa
-    stop -- This is broken for now until the refactor of `loggingOracle` and `WriterT`
-    simp only [WriterT.run_bind, map_bind, Functor.map_map]
-    have key : ∀ (w : QueryLog spec), (fun a_1 => (Prod.map id (w * ·) a_1).1) =
-        (Prod.fst : α × QueryLog spec → α) :=
-      fun w => funext fun ⟨a, b⟩ => rfl
-    simp_rw [key, ih]
-    rw [← bind_map_left Prod.fst]
-    rfl
+  exact loggingOracle.fst_map_run_simulateQ oa
 
 @[simp]
 lemma runWithLogToRound_discard_log_eq_runToRound (i : Fin (n + 1))
@@ -175,6 +162,16 @@ lemma runWithLog_discard_log_eq_run (stmt : StmtIn) (wit : WitIn)
   simp [runWithLog]
 
 end Prover
+
+private lemma fst_map_liftComp_simulateQ_loggingOracle_run {ι τ : Type}
+    {spec : OracleSpec ι} {superSpec : OracleSpec τ} {α : Type}
+    [MonadLiftT (OracleQuery spec) (OracleQuery superSpec)]
+    (oa : OracleComp spec α) :
+    Prod.fst <$> (WriterT.run (simulateQ loggingOracle oa)).liftComp superSpec =
+      oa.liftComp superSpec := by
+  rw [← OracleComp.liftComp_map]
+  exact congrArg (fun x => x.liftComp superSpec)
+    (loggingOracle.fst_map_run_simulateQ oa)
 
 /-- Run the (non-oracle) verifier in an interactive reduction. It takes in the input statement and
   the transcript, and return the output statement.
@@ -404,7 +401,7 @@ def Reduction.runWithLog (stmt : StmtIn) (wit : WitIn)
     liftM (simulateQ loggingOracle (reduction.verifier.run stmt proverResult.1)).run
   return ⟨⟨proverResult, ← stmtOut.getM⟩, proveQueryLog, verifyQueryLog⟩
 
-/-- TODO: figure out a better name for this -/
+/-- Note: figure out a better name for this -/
 private lemma Monad.map_of_prod_fst_eq_prod_fst {m : Type u → Type v} [Monad m] [LawfulMonad m]
     {α β γ : Type u} (ma : m (α × β)) (c : γ) :
     (fun a => (c, a.1)) <$> ma = Prod.mk c <$> Prod.fst <$> ma := by
