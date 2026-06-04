@@ -1244,6 +1244,85 @@ lemma approximate_solution_is_exact_solution_coeffs_graph_of_beta_embedding_zero
     (hemb t ht)
 
 open BCIKS20AppendixA.ClaimA2 in
+omit [DecidableEq (RatFunc F)] in
+/-- Graph-extractor version of the conditional Claim 5.8' bridge.  Once the
+Appendix-A argument supplies tail-coefficient vanishing for the `γ'` built from
+`R_graph,H_graph`, the published truncation statement follows immediately. -/
+lemma approximate_solution_is_exact_solution_coeffs_graph'_of_gamma_coeff_zero
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hx0 : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        Bivariate.evalX (Polynomial.C x₀) R ≠ 0)
+    (hsep : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        (Bivariate.evalX (Polynomial.C x₀) R).Separable)
+    (hS_nonempty :
+      (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).Nonempty)
+    (A : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ → Finset (Fin n))
+    (hA : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      ∀ i ∈ A z, (u₀ + z.1 • u₁) i =
+        (Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2).eval
+          (ωs i))
+    (hcount : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z.1) 1 k < m * (A z).card)
+    (hlarge :
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q)
+    (hzero : ∀ t ≥ k,
+      PowerSeries.coeff t
+        (γ' x₀
+          (R_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+            hx0 hsep hS_nonempty A hA hcount hlarge)
+          (irreducible_H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+            hx0 hsep hS_nonempty A hA hcount hlarge)
+          (natDegree_H_graph_pos (F := F) (m := m) (n := n) k δ x₀ h_gs
+            hx0 hsep hS_nonempty A hA hcount hlarge)
+          (claimA2_hypotheses_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+            hx0 hsep hS_nonempty A hA hcount hlarge)) =
+        (0 : BCIKS20AppendixA.𝕃
+          (H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+            hx0 hsep hS_nonempty A hA hcount hlarge))) :
+    γ' x₀
+      (R_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+        hx0 hsep hS_nonempty A hA hcount hlarge)
+      (irreducible_H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+        hx0 hsep hS_nonempty A hA hcount hlarge)
+      (natDegree_H_graph_pos (F := F) (m := m) (n := n) k δ x₀ h_gs
+        hx0 hsep hS_nonempty A hA hcount hlarge)
+      (claimA2_hypotheses_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+        hx0 hsep hS_nonempty A hA hcount hlarge) =
+        PowerSeries.mk (fun t =>
+          if t ≥ k
+          then (0 : BCIKS20AppendixA.𝕃
+            (H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+              hx0 hsep hS_nonempty A hA hcount hlarge))
+          else PowerSeries.coeff t
+            (γ'
+              x₀
+              (R_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+                hx0 hsep hS_nonempty A hA hcount hlarge)
+              (irreducible_H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+                hx0 hsep hS_nonempty A hA hcount hlarge)
+              (natDegree_H_graph_pos (F := F) (m := m) (n := n) k δ x₀ h_gs
+                hx0 hsep hS_nonempty A hA hcount hlarge)
+              (claimA2_hypotheses_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+                hx0 hsep hS_nonempty A hA hcount hlarge))) := by
+  exact powerSeries_eq_truncate_of_coeff_zero_ge
+    (γ' x₀
+      (R_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+        hx0 hsep hS_nonempty A hA hcount hlarge)
+      (irreducible_H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+        hx0 hsep hS_nonempty A hA hcount hlarge)
+      (natDegree_H_graph_pos (F := F) (m := m) (n := n) k δ x₀ h_gs
+        hx0 hsep hS_nonempty A hA hcount hlarge)
+      (claimA2_hypotheses_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+        hx0 hsep hS_nonempty A hA hcount hlarge))
+    hzero
+
+open BCIKS20AppendixA.ClaimA2 in
 /-- Claim 5.8 from [BCIKS20].
 States that the approximate solution is actually a solution. This version of the claim is stated in
 terms of coefficients.
