@@ -698,7 +698,15 @@ theorem liftContext_knowledgeSoundness [Inhabited InnerStmtOut] [Inhabited Inner
       = do
         let ⟨⟨transcript, ⟨_, outerWitOut⟩⟩, rest⟩ ← outerP.runWithLog outerStmtIn outerWitIn
         return ⟨⟨transcript, ⟨default, witLens.proj (outerStmtIn, outerWitOut)⟩⟩, rest⟩ := by
-    sorry
+    have hRTR : ∀ i, Prover.runToRound i innerStmtIn innerWitIn innerP
+        = Prover.runToRound i outerStmtIn outerWitIn outerP := fun _ => rfl
+    have hRun : innerP.run innerStmtIn innerWitIn
+        = (fun p => ⟨p.1, default, witLens.proj (outerStmtIn, p.2.2)⟩) <$>
+            outerP.run outerStmtIn outerWitIn := by
+      simp only [Prover.run, hRTR]
+      simp only [innerP, map_bind, bind_pure_comp, Functor.map_map, liftM_map]
+    simp only [Prover.runWithLog, hRun, simulateQ_map, bind_pure_comp]
+    first | rfl | rw [WriterT.run_map] | (apply WriterT.ext?; rfl)
   refine le_trans ?_ hR
   -- Massage the two `probEvent`s so that they have the same base computation `oa`?
   simp [h_innerP_runWithLog]
