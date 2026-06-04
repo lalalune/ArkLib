@@ -184,11 +184,13 @@ It essentially claims that there exists a solution to the Guruswami-Sudan constr
 
 NOTE: As currently formalized this lemma is **false** for `n = 0` or `k = 0` (see
 `modified_guruswami_unsat_of_n_zero` / `modified_guruswami_unsat_of_k_zero`): the degree bound
-`D_X` collapses to `0` and the strict degree constraints become unsatisfiable.  A faithful
-restatement requires `0 < n` and `0 < k` (paper regime `k + 1 ≤ n`, `1 ≤ m`). The existence proof
-in that regime is the trivariate dimension-counting argument (BCIKS20 Claim 5.4), analogous to
-`GuruswamiSudan.gs_existence`. -/
-lemma modified_guruswami_has_a_solution {m n k : ℕ} {ωs : Fin n ↪ F} {u₀ u₁ : Fin n → F} :
+`D_X` collapses to `0` and the strict degree constraints become unsatisfiable.  The statement
+below therefore carries the proven-necessary side conditions `0 < n` and `0 < k` (the paper's
+non-degenerate regime is `k + 1 ≤ n`, `1 ≤ m`; the eventual dimension-counting proof — the
+trivariate analogue of `GuruswamiSudan.gs_existence` — may require strengthening to that full
+regime). -/
+lemma modified_guruswami_has_a_solution {m n k : ℕ} (hn : 0 < n) (hk : 0 < k)
+    {ωs : Fin n ↪ F} {u₀ u₁ : Fin n → F} :
     ∃ Q : F[Z][X][Y], ModifiedGuruswami m n k ωs Q u₀ u₁ := by
   sorry
 
