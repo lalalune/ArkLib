@@ -60,8 +60,11 @@ theorem fixVars_step (ℓ : ℕ) (poly : MvPolynomial (Fin ℓ) L) (v : Fin (ℓ
   rw [bind₁_bind₁]
   rw [rename_bind₁]
   -- Both sides are `bind₁ (something) poly`; reduce to pointwise equality of substitution maps.
-  congr 1
+  apply congrArg (fun f => bind₁ f poly)
   funext i
+  -- Reduce the equivs to value-conditions.
+  simp only [Equiv.trans_apply, finCongr_apply]
+  trace_state
   sorry
 
 end ScratchRS
