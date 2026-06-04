@@ -117,7 +117,7 @@ noncomputable def toPolyB {da za db zb : ℕ} (v : BWIdx da za db zb → F) : F[
 
 /-- The `Y`-coefficients of the packaged polynomial, evaluated in `X`: inside
 the index range it is the coefficient-weighted power sum; beyond it, zero. -/
-private lemma coeff_evalX_toPolyB {da za db zb : ℕ} (v : BWIdx da za db zb → F)
+lemma coeff_evalX_toPolyB {da za db zb : ℕ} (v : BWIdx da za db zb → F)
     (a : F) (j : ℕ) :
     (evalX a (toPolyB v)).coeff j
       = if h : j < zb then ∑ i : Fin db, v (Sum.inr (i, ⟨j, h⟩)) * a ^ (i : ℕ) else 0 := by
@@ -149,7 +149,7 @@ private lemma coeff_evalX_toPolyB {da za db zb : ℕ} (v : BWIdx da za db zb →
     simp
 
 /-- Same for the `A`-block. -/
-private lemma coeff_evalX_toPolyA {da za db zb : ℕ} (v : BWIdx da za db zb → F)
+lemma coeff_evalX_toPolyA {da za db zb : ℕ} (v : BWIdx da za db zb → F)
     (a : F) (j : ℕ) :
     (evalX a (toPolyA v)).coeff j
       = if h : j < za then ∑ i : Fin da, v (Sum.inl (i, ⟨j, h⟩)) * a ^ (i : ℕ) else 0 := by
@@ -179,5 +179,196 @@ private lemma coeff_evalX_toPolyA {da za db zb : ℕ} (v : BWIdx da za db zb →
     simp [Polynomial.eval_finset_sum]
   · rw [dif_neg h, dif_neg h]
     simp
+
+/-- Coefficient recovery: the packaged polynomials are injective images of the
+coefficient vector. -/
+private lemma coeff_coeff_toPolyA {da za db zb : ℕ} (v : BWIdx da za db zb → F)
+    (i : Fin da) (j : Fin za) :
+    ((toPolyA v).coeff (j : ℕ)).coeff (i : ℕ) = v (Sum.inl (i, j)) := by
+  classical
+  -- compute the Y-coefficient, then its X-coefficient
+  have hYcoeff : (toPolyA v).coeff (j : ℕ)
+      = ∑ i' : Fin da, Polynomial.C (v (Sum.inl (i', j))) * Polynomial.X ^ (i' : ℕ) := by
+    simp only [toPolyA, Polynomial.finset_sum_coeff, Polynomial.coeff_monomial]
+    rw [Finset.sum_eq_single j]
+    · simp
+    · intro b _ hb
+      have hne : ((j : Fin za) : ℕ) ≠ ((b : Fin za) : ℕ) := fun heq => hb (Fin.ext heq.symm)
+      simp [hne, hne.symm]
+    · intro habs
+      exact absurd (Finset.mem_univ _) habs
+  rw [hYcoeff, Polynomial.finset_sum_coeff]
+  rw [Finset.sum_eq_single i]
+  · simp
+  · intro b _ hb
+    have hne : ((i : Fin da) : ℕ) ≠ ((b : Fin da) : ℕ) := fun heq => hb (Fin.ext heq.symm)
+    simp [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, hne, hne.symm]
+  · intro habs
+    exact absurd (Finset.mem_univ _) habs
+
+private lemma coeff_coeff_toPolyB {da za db zb : ℕ} (v : BWIdx da za db zb → F)
+    (i : Fin db) (j : Fin zb) :
+    ((toPolyB v).coeff (j : ℕ)).coeff (i : ℕ) = v (Sum.inr (i, j)) := by
+  classical
+  have hYcoeff : (toPolyB v).coeff (j : ℕ)
+      = ∑ i' : Fin db, Polynomial.C (v (Sum.inr (i', j))) * Polynomial.X ^ (i' : ℕ) := by
+    simp only [toPolyB, Polynomial.finset_sum_coeff, Polynomial.coeff_monomial]
+    rw [Finset.sum_eq_single j]
+    · simp
+    · intro b _ hb
+      have hne : ((j : Fin zb) : ℕ) ≠ ((b : Fin zb) : ℕ) := fun heq => hb (Fin.ext heq.symm)
+      simp [hne, hne.symm]
+    · intro habs
+      exact absurd (Finset.mem_univ _) habs
+  rw [hYcoeff, Polynomial.finset_sum_coeff]
+  rw [Finset.sum_eq_single i]
+  · simp
+  · intro b _ hb
+    have hne : ((i : Fin db) : ℕ) ≠ ((b : Fin db) : ℕ) := fun heq => hb (Fin.ext heq.symm)
+    simp [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, hne, hne.symm]
+  · intro habs
+    exact absurd (Finset.mem_univ _) habs
+
+/-- The kernel rows are exactly the Y-coefficients of the Berlekamp–Welch
+identity: if `mulVec (BWMatrix' …) v = 0` then at every domain point
+`B(ω_x, Y) = (u₀ x + u₁ x · Y) · A(ω_x, Y)`. -/
+private lemma identity_of_mulVec_eq_zero {da za db zb : ℕ} (hzb : zb = za + 1)
+    (domain : ι ↪ F) (u₀ u₁ : ι → F) (v : BWIdx da za db zb → F)
+    (hker : Matrix.mulVec (BWMatrix' da za db zb domain u₀ u₁) v = 0) (x : ι) :
+    evalX (domain x) (toPolyB v)
+      = (Polynomial.C (u₀ x) + Polynomial.C (u₁ x) * Polynomial.X)
+          * evalX (domain x) (toPolyA v) := by
+  classical
+  ext j : 1
+  -- RHS coefficient: u₀·a_j + u₁·a_{j−1}
+  have hrhs : ((Polynomial.C (u₀ x) + Polynomial.C (u₁ x) * Polynomial.X)
+      * evalX (domain x) (toPolyA v)).coeff j
+      = u₀ x * (evalX (domain x) (toPolyA v)).coeff j
+        + u₁ x * (if j = 0 then 0 else (evalX (domain x) (toPolyA v)).coeff (j - 1)) := by
+    rw [add_mul, Polynomial.coeff_add, Polynomial.coeff_C_mul]
+    congr 1
+    rw [mul_assoc, mul_comm Polynomial.X, ← mul_assoc]
+    cases j with
+    | zero => simp
+    | succ j' =>
+        rw [Polynomial.coeff_mul_X]
+        simp [Polynomial.coeff_C_mul]
+  -- the kernel row at (x, j) for j < zb; trivial beyond
+  rw [hrhs]
+  simp only [coeff_evalX_toPolyB, coeff_evalX_toPolyA]
+  by_cases hj : j < zb
+  · rw [dif_pos hj]
+    -- expand the vanishing kernel row
+    have hrow := congrFun hker (x, ⟨j, hj⟩)
+    simp only [Matrix.mulVec, dotProduct, Pi.zero_apply] at hrow
+    rw [Fintype.sum_sum_type] at hrow
+    -- collapse the A-block double sum
+    have hAblock : (∑ p : Fin da × Fin za,
+        BWMatrix' da za db zb domain u₀ u₁ (x, ⟨j, hj⟩) (Sum.inl p) * v (Sum.inl p))
+        = -(u₀ x) * (if h : j < za then
+              ∑ i : Fin da, v (Sum.inl (i, ⟨j, h⟩)) * (domain x) ^ (i : ℕ) else 0)
+          + -(u₁ x) * (if h : j - 1 < za ∧ 1 ≤ j then
+              ∑ i : Fin da, v (Sum.inl (i, ⟨j - 1, h.1⟩)) * (domain x) ^ (i : ℕ) else 0) := by
+      rw [Fintype.sum_prod_type]
+      simp only [BWMatrix', add_mul, Finset.sum_add_distrib]
+      congr 1
+      · -- the u₀-part: collapse j' = j
+        by_cases h : j < za
+        · rw [dif_pos h, Finset.mul_sum]
+          rw [Finset.sum_comm]
+          rw [Finset.sum_eq_single (⟨j, h⟩ : Fin za)]
+          · refine Finset.sum_congr rfl fun i _ => ?_
+            simp [mul_comm, mul_assoc, mul_left_comm]
+          · intro b _ hb
+            have hne : ((b : Fin za) : ℕ) ≠ j := fun heq => hb (Fin.ext heq)
+            refine Finset.sum_eq_zero fun i _ => ?_
+            simp [hne]
+          · intro habs
+            exact absurd (Finset.mem_univ _) habs
+        · rw [dif_neg h, mul_zero]
+          refine Finset.sum_eq_zero fun i _ => Finset.sum_eq_zero fun b _ => ?_
+          have hne : ((b : Fin za) : ℕ) ≠ j := fun heq => h (heq ▸ b.isLt)
+          simp [hne]
+      · -- the u₁-part: collapse j' + 1 = j
+        by_cases h : j - 1 < za ∧ 1 ≤ j
+        · rw [dif_pos h, Finset.mul_sum]
+          rw [Finset.sum_comm]
+          rw [Finset.sum_eq_single (⟨j - 1, h.1⟩ : Fin za)]
+          · refine Finset.sum_congr rfl fun i _ => ?_
+            have hcond : (j - 1) + 1 = j := Nat.succ_pred_eq_of_pos h.2
+            simp [hcond, mul_comm, mul_assoc, mul_left_comm]
+          · intro b _ hb
+            have hne : ¬(((b : Fin za) : ℕ) + 1 = j) := by
+              intro heq
+              apply hb
+              apply Fin.ext
+              show ((b : Fin za) : ℕ) = j - 1
+              omega
+            refine Finset.sum_eq_zero fun i _ => ?_
+            simp [hne]
+          · intro habs
+            exact absurd (Finset.mem_univ _) habs
+        · rw [dif_neg h, mul_zero]
+          refine Finset.sum_eq_zero fun i _ => Finset.sum_eq_zero fun b _ => ?_
+          have hblt : ((b : Fin za) : ℕ) < za := b.isLt
+          have hne : ¬(((b : Fin za) : ℕ) + 1 = j) := by
+            intro heq
+            exact h ⟨by omega, by omega⟩
+          simp [hne]
+    -- collapse the B-block double sum
+    have hBblock : (∑ p : Fin db × Fin zb,
+        BWMatrix' da za db zb domain u₀ u₁ (x, ⟨j, hj⟩) (Sum.inr p) * v (Sum.inr p))
+        = ∑ i : Fin db, v (Sum.inr (i, ⟨j, hj⟩)) * (domain x) ^ (i : ℕ) := by
+      rw [Fintype.sum_prod_type]
+      simp only [BWMatrix']
+      rw [Finset.sum_comm]
+      rw [Finset.sum_eq_single (⟨j, hj⟩ : Fin zb)]
+      · refine Finset.sum_congr rfl fun i _ => ?_
+        simp [mul_comm]
+      · intro b _ hb
+        have hne : ((b : Fin zb) : ℕ) ≠ j := fun heq => hb (Fin.ext heq)
+        refine Finset.sum_eq_zero fun i _ => ?_
+        simp [hne]
+      · intro habs
+        exact absurd (Finset.mem_univ _) habs
+    rw [hAblock, hBblock] at hrow
+    -- rearrange: B-sum = u₀·A_j + u₁·A_{j−1}
+    by_cases hza : j < za
+    · by_cases hj1 : j - 1 < za ∧ 1 ≤ j
+      · rw [dif_pos hza, dif_pos hj1] at hrow
+        rw [dif_pos hza]
+        have hj0 : ¬(j = 0) := by omega
+        rw [if_neg hj0, dif_pos hj1.1]
+        linear_combination hrow
+      · -- j = 0 (since j < za ≤ ... and ¬(j−1<za ∧ 1≤j) with j<za means ¬1≤j)
+        have hj0 : j = 0 := by omega
+        rw [dif_pos hza, dif_neg hj1] at hrow
+        rw [dif_pos hza, if_pos hj0]
+        linear_combination hrow
+    · -- j ≥ za: A_j term vanishes; j−1 may still be < za (j = za case)
+      rw [dif_neg hza] at hrow
+      rw [dif_neg hza]
+      by_cases hj1 : j - 1 < za ∧ 1 ≤ j
+      · rw [dif_pos hj1] at hrow
+        have hj0 : ¬(j = 0) := by omega
+        rw [if_neg hj0, dif_pos hj1.1]
+        linear_combination hrow
+      · rw [dif_neg hj1] at hrow
+        by_cases hj0 : j = 0
+        · rw [if_pos hj0]
+          linear_combination hrow
+        · rw [if_neg hj0]
+          have : ¬(j - 1 < za) := by omega
+          rw [dif_neg this]
+          linear_combination hrow
+  · -- j ≥ zb: everything vanishes
+    rw [dif_neg hj]
+    have hza : ¬(j < za) := by omega
+    rw [dif_neg hza]
+    have hj0 : ¬(j = 0) := by omega
+    rw [if_neg hj0]
+    have hj1 : ¬(j - 1 < za) := by omega
+    rw [dif_neg hj1]
+    ring
 
 end BCKHS25
