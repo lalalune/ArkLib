@@ -11734,18 +11734,117 @@
           "signature": "theorem weighted_correlated_agreement_over_affine_spaces'"
         },
         {
+          "doc": "Each weight `(\u03bc i).1` is nonnegative.",
+          "kind": "lemma",
+          "line": 164,
+          "name": "ProximityGap.WeightedAgreement.mu_nonneg",
+          "namespace": "ProximityGap.WeightedAgreement",
+          "short_name": "mu_nonneg",
+          "signature": "lemma mu_nonneg (\u03bc : \u03b9 \u2192 Set.Icc (0 : \u211a) 1) (i : \u03b9) : 0 \u2264 (\u03bc i).1 := (\u03bc i).2.1"
+        },
+        {
+          "doc": "Each weight `(\u03bc i).1` is at most one.",
+          "kind": "lemma",
+          "line": 168,
+          "name": "ProximityGap.WeightedAgreement.mu_le_one",
+          "namespace": "ProximityGap.WeightedAgreement",
+          "short_name": "mu_le_one",
+          "signature": "lemma mu_le_one (\u03bc : \u03b9 \u2192 Set.Icc (0 : \u211a) 1) (i : \u03b9) : (\u03bc i).1 \u2264 1 := (\u03bc i).2.2"
+        },
+        {
+          "doc": "`\u03bc`-agreement equals the `\u03bc`-measure of the agreement subdomain.",
+          "kind": "lemma",
+          "line": 172,
+          "name": "ProximityGap.WeightedAgreement.agree_eq_mu_set_filter",
+          "namespace": "ProximityGap.WeightedAgreement",
+          "short_name": "agree_eq_mu_set_filter",
+          "signature": "lemma agree_eq_mu_set_filter (\u03bc : \u03b9 \u2192 Set.Icc (0 : \u211a) 1) (a b : \u03b9 \u2192 F) :"
+        },
+        {
+          "doc": "Evaluating a polynomial curve (with `A = F`) at parameter `z` and coordinate `x` is the pointwise power sum `\u2211 i, z ^ i * u i x`.",
+          "kind": "lemma",
+          "line": 179,
+          "name": "ProximityGap.WeightedAgreement.polynomialCurveEval_apply",
+          "namespace": "ProximityGap.WeightedAgreement",
+          "short_name": "polynomialCurveEval_apply",
+          "signature": "lemma polynomialCurveEval_apply {l : \u2115} (u : Fin (l + 2) \u2192 \u03b9 \u2192 F) (z : F) (x : \u03b9) :"
+        },
+        {
+          "doc": "The coordinate-wise difference polynomial `P_x(z) = \u2211 i, (u i x - v i x) * z ^ i` has degree at most `l + 1`.",
+          "kind": "lemma",
+          "line": 187,
+          "name": "ProximityGap.WeightedAgreement.diffPoly_natDegree_le",
+          "namespace": "ProximityGap.WeightedAgreement",
+          "short_name": "diffPoly_natDegree_le",
+          "signature": "lemma diffPoly_natDegree_le {l : \u2115} (u v : Fin (l + 2) \u2192 \u03b9 \u2192 F) (x : \u03b9) :"
+        },
+        {
+          "doc": "Evaluating the difference polynomial at `z` recovers `w x z - wtilde x z`, the gap between the two curve evaluations at coordinate `x`.",
+          "kind": "lemma",
+          "line": 199,
+          "name": "ProximityGap.WeightedAgreement.diffPoly_eval",
+          "namespace": "ProximityGap.WeightedAgreement",
+          "short_name": "diffPoly_eval",
+          "signature": "lemma diffPoly_eval {l : \u2115} (u v : Fin (l + 2) \u2192 \u03b9 \u2192 F) (x : \u03b9) (z : F) :"
+        },
+        {
+          "doc": "At a coordinate `x` where the lists disagree in some component, the difference polynomial is not identically zero.",
+          "kind": "lemma",
+          "line": 212,
+          "name": "ProximityGap.WeightedAgreement.diffPoly_ne_zero",
+          "namespace": "ProximityGap.WeightedAgreement",
+          "short_name": "diffPoly_ne_zero",
+          "signature": "lemma diffPoly_ne_zero {l : \u2115} (u v : Fin (l + 2) \u2192 \u03b9 \u2192 F) (x : \u03b9)"
+        },
+        {
+          "doc": "A nonzero polynomial has at most `natDegree`-many roots inside any finite set.",
+          "kind": "lemma",
+          "line": 231,
+          "name": "ProximityGap.WeightedAgreement.card_le_natDegree_of_eval_zero",
+          "namespace": "ProximityGap.WeightedAgreement",
+          "short_name": "card_le_natDegree_of_eval_zero",
+          "signature": "lemma card_le_natDegree_of_eval_zero (p : Polynomial F) (hp : p \u2260 0) (S : Finset F)"
+        },
+        {
+          "doc": "**Key fiber bound.** At a coordinate `x` where the two lists disagree in some component, the number of curve parameters `z \u2208 S'` at which the two curve evaluations agree is at most `l + 1` (the degree bound of the difference polynomial).",
+          "kind": "lemma",
+          "line": 243,
+          "name": "ProximityGap.WeightedAgreement.badCoord_match_card_le",
+          "namespace": "ProximityGap.WeightedAgreement",
+          "short_name": "badCoord_match_card_le",
+          "signature": "lemma badCoord_match_card_le {l : \u2115} (u v : Fin (l + 2) \u2192 \u03b9 \u2192 F) (x : \u03b9)"
+        },
+        {
+          "doc": "Double-counting (Fubini) identity: summing a weight `g` over the agreement set `{x | R x z}` and then over `z \u2208 S'` equals summing, over each coordinate `x`, the weight `g x` times the number of parameters `z \u2208 S'` at which the relation `R x z` holds.",
+          "kind": "lemma",
+          "line": 259,
+          "name": "ProximityGap.WeightedAgreement.sum_filter_sum_eq",
+          "namespace": "ProximityGap.WeightedAgreement",
+          "short_name": "sum_filter_sum_eq",
+          "signature": "lemma sum_filter_sum_eq (S' : Finset F) (R : \u03b9 \u2192 F \u2192 Prop)"
+        },
+        {
           "doc": "Lemma 7.5 in [BCIKS20]. This is the \"list agreement on a curve implies correlated agreement\" lemma. We are given two lists of functions `u, v : Fin (l + 2) \u2192 \u03b9 \u2192 F`, where each `v i` is a Reed-Solomon codeword of degree `deg` over the evaluation domain `domain`. From these lists we form the bivariate curve evaluations * `w x z = Curve.polynomialCurveEval u z x`, * `wtilde x z = Curve.polynomialCurveEval v z x`. Fix a finite set `S' \u2286 F` with `S'.card > l + 1`, and a (product) measure `\u03bc` on the evaluation domain `\u03b9`. Assume that for every `z \u2208 S'` the one-dimensional functions `w \u00b7 z` and `wti",
           "kind": "lemma",
-          "line": 178,
+          "line": 286,
           "name": "ProximityGap.WeightedAgreement.list_agreement_on_curve_implies_correlated_agreement_bound",
           "namespace": "ProximityGap.WeightedAgreement",
           "short_name": "list_agreement_on_curve_implies_correlated_agreement_bound",
           "signature": "lemma list_agreement_on_curve_implies_correlated_agreement_bound"
         },
         {
+          "doc": "",
+          "kind": "class",
+          "line": 300,
+          "name": "ProximityGap.WeightedAgreement._anon_class_300",
+          "namespace": "ProximityGap.WeightedAgreement",
+          "short_name": "_anon_class_300",
+          "signature": "class classical"
+        },
+        {
           "doc": "Lemma 7.6 in [BCIKS20]. This is the \"integral-weight\" strengthening of the list-agreement-on-a-curve => correlated-agreement bound. We have two lists of functions `u, v : Fin (l + 2) \u2192 \u03b9 \u2192 F`, where each `v i` is a Reed-Solomon codeword of degree `deg` over the evaluation domain `domain`. From these lists we form the bivariate curve evaluations * `w x z = Curve.polynomialCurveEval u z x`, * `wtilde x z = Curve.polynomialCurveEval v z x`. The domain `\u03b9` is finite and is equipped with a weighted measure `\u03bc`, where each weight `\u03bc i` is a rational with common denominator `M`. Let `S' \u2286 F` be a set",
           "kind": "lemma",
-          "line": 216,
+          "line": 435,
           "name": "ProximityGap.WeightedAgreement.sufficiently_large_list_agreement_on_curve_implies_correlated_agreement",
           "namespace": "ProximityGap.WeightedAgreement",
           "short_name": "sufficiently_large_list_agreement_on_curve_implies_correlated_agreement",
@@ -40953,7 +41052,7 @@
         {
           "doc": "Knowledge state function for the batching phase.",
           "kind": "def",
-          "line": 287,
+          "line": 291,
           "name": "RingSwitching.BatchingPhase.batchingKnowledgeStateFunction",
           "namespace": "RingSwitching.BatchingPhase",
           "short_name": "batchingKnowledgeStateFunction",
@@ -40962,7 +41061,7 @@
         {
           "doc": "Perfect completeness for the batching phase oracle reduction.",
           "kind": "theorem",
-          "line": 314,
+          "line": 343,
           "name": "RingSwitching.BatchingPhase.batchingReduction_perfectCompleteness",
           "namespace": "RingSwitching.BatchingPhase",
           "short_name": "batchingReduction_perfectCompleteness",
@@ -40971,7 +41070,7 @@
         {
           "doc": "RBR knowledge soundness for the batching phase oracle verifier.",
           "kind": "theorem",
-          "line": 326,
+          "line": 355,
           "name": "RingSwitching.BatchingPhase.batchingOracleVerifier_rbrKnowledgeSoundness",
           "namespace": "RingSwitching.BatchingPhase",
           "short_name": "batchingOracleVerifier_rbrKnowledgeSoundness",
@@ -41407,6 +41506,69 @@
           "namespace": "RingSwitching",
           "short_name": "binaryTowerProfile",
           "signature": "def binaryTowerProfile (\u03ba : \u2115) [NeZero \u03ba] (K L : Type)"
+        },
+        {
+          "doc": "A single `eqPolynomial` factor, evaluated through the mixed embedding `eval\u2082 \u03c6\u2081 (\u03c6\u2080 \u2218 g)` at a Boolean coefficient, collapses to the column embedding `\u03c6\u2080`, because `\u03c6\u2080` and `\u03c6\u2081` agree on the Boolean literals `{0, 1}`.",
+          "kind": "lemma",
+          "line": 530,
+          "name": "RingSwitching.singleEq_collapse",
+          "namespace": "RingSwitching",
+          "short_name": "singleEq_collapse",
+          "signature": "lemma singleEq_collapse {\u2113_suf : \u2115} (g : Fin \u2113_suf \u2192 L\u2080) (w : Fin \u2113_suf \u2192 Fin 2)"
+        },
+        {
+          "doc": "The full `eqPolynomial` collapses through the mixed embedding to `\u03c6\u2080` of its ordinary evaluation, by multiplying the `singleEq_collapse` factors.",
+          "kind": "lemma",
+          "line": 547,
+          "name": "RingSwitching.eqPoly_collapse",
+          "namespace": "RingSwitching",
+          "short_name": "eqPoly_collapse",
+          "signature": "lemma eqPoly_collapse {\u2113_suf : \u2115} (g : Fin \u2113_suf \u2192 L\u2080) (w : Fin \u2113_suf \u2192 Fin 2) :"
+        },
+        {
+          "doc": "**DP24 packing expansion.** The prover's tensor `\u015d := \u03c6\u2081(t')(\u03c6\u2080(r_\u03ba), \u2026, \u03c6\u2080(r_{\u2113-1}))` expands over the suffix hypercube as `\u015d = \u03a3_{w \u2208 {0,1}^\u2113'} \u03c6\u2080(eq\u0303(w, r_suffix)) \u00b7 \u03c6\u2081(t'(w))`, i.e. `\u03a3_w eq\u0303(r_suffix, w) \u2297 t'(w)`.",
+          "kind": "lemma",
+          "line": 562,
+          "name": "RingSwitching.embedded_MLP_eval_eq_sum",
+          "namespace": "RingSwitching",
+          "short_name": "embedded_MLP_eval_eq_sum",
+          "signature": "lemma embedded_MLP_eval_eq_sum (\u03b2 : Module.Basis (Fin \u03ba\u2080 \u2192 Fin 2) K\u2080 L\u2080)"
+        },
+        {
+          "doc": "`decompose_tensor_algebra_rows` is additive over finite sums of tensors.",
+          "kind": "lemma",
+          "line": 592,
+          "name": "RingSwitching.decompose_rows_sum",
+          "namespace": "RingSwitching",
+          "short_name": "decompose_rows_sum",
+          "signature": "lemma decompose_rows_sum {\u03b9 : Type} [Fintype \u03b9] (\u03b2 : Basis (Fin \u03ba\u2080 \u2192 Fin 2) K\u2080 L\u2080)"
+        },
+        {
+          "doc": "Row decomposition of a separated tensor `\u03c6\u2080(a) \u00b7 \u03c6\u2081(b) = a \u2297 b`: the `u`-th row component represents the *right* (`\u03c6\u2081`) factor `b`, scaled by `a`.",
+          "kind": "lemma",
+          "line": 602,
+          "name": "RingSwitching.decompose_rows_\u03c6\u2080\u03c6\u2081",
+          "namespace": "RingSwitching",
+          "short_name": "decompose_rows_\u03c6\u2080\u03c6\u2081",
+          "signature": "lemma decompose_rows_\u03c6\u2080\u03c6\u2081 (\u03b2 : Basis (Fin \u03ba\u2080 \u2192 Fin 2) K\u2080 L\u2080) (a b : L\u2080) (u : Fin \u03ba\u2080 \u2192 Fin 2) :"
+        },
+        {
+          "doc": "The basis coordinate of a packed evaluation recovers the small-field coefficient: `\u03b2.repr (t'(w)) u = t(u, w)`, where `t' = packMLE \u03b2 t`.",
+          "kind": "lemma",
+          "line": 615,
+          "name": "RingSwitching.packMLE_repr_eval",
+          "namespace": "RingSwitching",
+          "short_name": "packMLE_repr_eval",
+          "signature": "lemma packMLE_repr_eval (\u2113 \u2113' : \u2115) [NeZero \u2113] [NeZero \u2113'] (h_l : \u2113 = \u2113' + \u03ba\u2080)"
+        },
+        {
+          "doc": "**Row recovery of `t`-evaluations.** The row components of the prover's tensor `\u015d = embedded_MLP_eval (packMLE \u03b2 t) r` carry the suffix-`eq`-weighted evaluations of `t`: `(decompose_rows \u015d)_u = \u03a3_{w \u2208 {0,1}^\u2113'} t(u, w) \u00b7 eq\u0303(w, r_suffix)`. This is the load-bearing identity for reconstructing `t(r)` from `\u015d`. It uses the *row* decomposition (which represents the `t'`/`\u03c6\u2081` factor); the verifier's `performCheckOriginalEvaluation` instead uses the *column* decomposition \u2014 see the module note above.",
+          "kind": "lemma",
+          "line": 638,
+          "name": "RingSwitching.decompose_rows_packMLE",
+          "namespace": "RingSwitching",
+          "short_name": "decompose_rows_packMLE",
+          "signature": "lemma decompose_rows_packMLE (\u2113 \u2113' : \u2115) [NeZero \u2113] [NeZero \u2113'] (h_l : \u2113 = \u2113' + \u03ba\u2080)"
         }
       ]
     },
@@ -45059,18 +45221,27 @@
           "signature": "def listBlockRelDistance"
         },
         {
-          "doc": "Claim 4.19, Part 1 For a smooth Reed-Solomon code, the standard relative Hamming distance `\u03b4\u1d63(f,g)` is a lower bound for the (i, k)-wise block relative distance `\u0394\u1d63(i, k, f, S', \u03c6', g)`.",
+          "doc": "Claim 4.19, Part 1 For a smooth Reed-Solomon code, the standard relative Hamming distance `\u03b4\u1d63(f,g)` is a lower bound for the (i, k)-wise block relative distance `\u0394\u1d63(i, k, f, S', \u03c6', g)`. ## Statement repair (paper-faithful hypotheses) As literally stated over the file's loose `indexPowT`/instance setup the claim is not provable for an arbitrary evaluation embedding `\u03c6'`, an arbitrary `S'`, or arbitrary subtype `Fintype` instances; the paper's smooth-domain setting silently supplies extra structure. We make that structure explicit, exactly mirroring the repair documented on `blockRelDistance_eq",
           "kind": "lemma",
-          "line": 207,
+          "line": 240,
           "name": "BlockRelDistance.relHammingDist_le_blockRelDistance",
           "namespace": "BlockRelDistance",
           "short_name": "relHammingDist_le_blockRelDistance",
           "signature": "lemma relHammingDist_le_blockRelDistance"
         },
         {
-          "doc": "Claim 4.19, Part 2 As a consequence of `relHammingDist_le_blockRelDistance`, the list of codewords within a certain block relative distance `\u03b4` is a subset of the list of codewords within the same relative Hamming distance `\u03b4`.",
+          "doc": "",
+          "kind": "class",
+          "line": 253,
+          "name": "BlockRelDistance._anon_class_253",
+          "namespace": "BlockRelDistance",
+          "short_name": "_anon_class_253",
+          "signature": "class classical"
+        },
+        {
+          "doc": "Claim 4.19, Part 2 As a consequence of `relHammingDist_le_blockRelDistance`, the list of codewords within a certain block relative distance `\u03b4` is a subset of the list of codewords within the same relative Hamming distance `\u03b4`. This cites Claim 4.19 Part 1 (`relHammingDist_le_blockRelDistance`) verbatim, so it inherits the same paper-faithful hypotheses (`hS'`, `h\u03c6'`, `hik`, `hcard`); see that lemma's docstring for the full justification. Both are otherwise-unused leaf lemmas in this file.",
           "kind": "lemma",
-          "line": 222,
+          "line": 340,
           "name": "BlockRelDistance.listBlock_subset_listHamming",
           "namespace": "BlockRelDistance",
           "short_name": "listBlock_subset_listHamming",
@@ -46398,7 +46569,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5031,
+      "declarations": 5050,
       "files": 282
     }
   }
