@@ -11824,9 +11824,18 @@
           "signature": "lemma sum_filter_sum_eq (S' : Finset F) (R : \u03b9 \u2192 F \u2192 Prop)"
         },
         {
+          "doc": "With integral weights (each `\u03bc i` a multiple of `1/M`), the `\u03bc`-measure `mu_set \u03bc s` is a multiple of `1 / (M * card \u03b9)`: explicitly `(\u2211_{i \u2208 s} n i) / (M * card \u03b9)`, where `\u03bc i = n i / M`.",
+          "kind": "lemma",
+          "line": 279,
+          "name": "ProximityGap.WeightedAgreement.mu_set_eq_div",
+          "namespace": "ProximityGap.WeightedAgreement",
+          "short_name": "mu_set_eq_div",
+          "signature": "lemma mu_set_eq_div (\u03bc : \u03b9 \u2192 Set.Icc (0 : \u211a) 1) {M : \u2115}"
+        },
+        {
           "doc": "Lemma 7.5 in [BCIKS20]. This is the \"list agreement on a curve implies correlated agreement\" lemma. We are given two lists of functions `u, v : Fin (l + 2) \u2192 \u03b9 \u2192 F`, where each `v i` is a Reed-Solomon codeword of degree `deg` over the evaluation domain `domain`. From these lists we form the bivariate curve evaluations * `w x z = Curve.polynomialCurveEval u z x`, * `wtilde x z = Curve.polynomialCurveEval v z x`. Fix a finite set `S' \u2286 F` with `S'.card > l + 1`, and a (product) measure `\u03bc` on the evaluation domain `\u03b9`. Assume that for every `z \u2208 S'` the one-dimensional functions `w \u00b7 z` and `wti",
           "kind": "lemma",
-          "line": 292,
+          "line": 305,
           "name": "ProximityGap.WeightedAgreement.list_agreement_on_curve_implies_correlated_agreement_bound",
           "namespace": "ProximityGap.WeightedAgreement",
           "short_name": "list_agreement_on_curve_implies_correlated_agreement_bound",
@@ -11835,20 +11844,29 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 306,
-          "name": "ProximityGap.WeightedAgreement._anon_class_306",
+          "line": 319,
+          "name": "ProximityGap.WeightedAgreement._anon_class_319",
           "namespace": "ProximityGap.WeightedAgreement",
-          "short_name": "_anon_class_306",
+          "short_name": "_anon_class_319",
           "signature": "class classical"
         },
         {
           "doc": "Lemma 7.6 in [BCIKS20]. This is the \"integral-weight\" strengthening of the list-agreement-on-a-curve => correlated-agreement bound. We have two lists of functions `u, v : Fin (l + 2) \u2192 \u03b9 \u2192 F`, where each `v i` is a Reed-Solomon codeword of degree `deg` over the evaluation domain `domain`. From these lists we form the bivariate curve evaluations * `w x z = Curve.polynomialCurveEval u z x`, * `wtilde x z = Curve.polynomialCurveEval v z x`. The domain `\u03b9` is finite and is equipped with a weighted measure `\u03bc`, where each weight `\u03bc i` is a rational with common denominator `M`. Let `S' \u2286 F` be a set",
           "kind": "lemma",
-          "line": 441,
+          "line": 454,
           "name": "ProximityGap.WeightedAgreement.sufficiently_large_list_agreement_on_curve_implies_correlated_agreement",
           "namespace": "ProximityGap.WeightedAgreement",
           "short_name": "sufficiently_large_list_agreement_on_curve_implies_correlated_agreement",
           "signature": "lemma sufficiently_large_list_agreement_on_curve_implies_correlated_agreement"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 471,
+          "name": "ProximityGap.WeightedAgreement._anon_class_471",
+          "namespace": "ProximityGap.WeightedAgreement",
+          "short_name": "_anon_class_471",
+          "signature": "class classical"
         }
       ]
     },
@@ -46569,7 +46587,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5050,
+      "declarations": 5052,
       "files": 282
     }
   }
