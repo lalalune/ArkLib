@@ -1014,6 +1014,77 @@ theorem goodCoeffsCurve_coeff_polys_implies_jointAgreement_of_prob_threshold_cor
     (deg := deg) (domain := domain) (δ := δ) hk hbounds.1 hbounds.2 hcoeffPoly
 
 omit [DecidableEq ι] in
+/-- Positive-`k` front door when the list-decoding output is polynomial
+dependence of each domain evaluation in the curve parameter. Interpolation over
+the Reed-Solomon domain converts this pointwise form to coefficient-polynomial
+dependence. -/
+theorem goodCoeffsCurve_eval_polys_implies_jointAgreement_of_pos_core
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hk : 0 < k)
+    (hdeg_le : deg ≤ Fintype.card ι)
+    {u : Fin (k + 1) → ι → F}
+    (hS_card :
+      (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k)
+    (hS_card₁ :
+      (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card ≥
+        (Fintype.card ι + 1) * k)
+    (hEvalPoly : ∀ P : F → Polynomial F,
+      (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+        ∃ E : ι → Polynomial F,
+          (∀ x, (E x).natDegree < k + 1) ∧
+            ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              ∀ x, (P z).eval (domain x) = (E x).eval z) :
+    jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u) := by
+  refine goodCoeffsCurve_coeff_polys_implies_jointAgreement_of_pos_core
+    (deg := deg) (domain := domain) (δ := δ) hk hS_card hS_card₁ ?_
+  intro P hdecoded
+  obtain ⟨E, hEdeg, hEval⟩ := hEvalPoly P hdecoded
+  exact coeff_polys_of_eval_polys_on_domain
+    (domain := domain)
+    (S := RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ)
+    (P := P) hdeg_le (fun z hz => (hdecoded z hz).1) E hEdeg hEval
+
+omit [DecidableEq ι] in
+/-- Probability-threshold version of
+`goodCoeffsCurve_eval_polys_implies_jointAgreement_of_pos_core`. -/
+theorem goodCoeffsCurve_eval_polys_implies_jointAgreement_of_prob_threshold_core
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hk : 0 < k)
+    (hdeg_le : deg ≤ Fintype.card ι)
+    {u : Fin (k + 1) → ι → F}
+    (hx :
+      ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+          (Fintype.card F : ENNReal) <
+        ((RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card :
+          ENNReal))
+    (hsmall :
+      (k : ENNReal) ≤
+        ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+          (Fintype.card F : ENNReal))
+    (hlarge :
+      ((((Fintype.card ι + 1) * k : ℕ) - 1 : ℕ) : ENNReal) ≤
+        ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+          (Fintype.card F : ENNReal))
+    (hEvalPoly : ∀ P : F → Polynomial F,
+      (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+        ∃ E : ι → Polynomial F,
+          (∀ x, (E x).natDegree < k + 1) ∧
+            ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              ∀ x, (P z).eval (domain x) = (E x).eval z) :
+    jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u) := by
+  have hbounds :=
+    goodCoeffsCurve_card_bounds_of_prob_threshold
+      (deg := deg) (domain := domain) (δ := δ) u hx hsmall hlarge
+  exact goodCoeffsCurve_eval_polys_implies_jointAgreement_of_pos_core
+    (deg := deg) (domain := domain) (δ := δ) hk hdeg_le hbounds.1 hbounds.2 hEvalPoly
+
+omit [DecidableEq ι] in
 /-- List-branch front door after the probability calculation.
 
 This packages the exact remaining outputs needed from the list-decoding part of
@@ -1291,6 +1362,78 @@ theorem RS_jointAgreement_of_prob_gt_strict_johnson_and_coeff_polys
     (errorBound_ge_succ_const_of_strict_johnson (deg := deg) (domain := domain)
       hJ hδ)
     hcoeffPoly
+
+omit [DecidableEq ι] [Fintype F] in
+/-- The Johnson-list branch below the square-root rate bound can only occur in
+the non-full Reed-Solomon regime. If `deg > |ι|`, the code rate is `1`, so the
+rate-half lower bound forces `0 < δ` while the square-root upper bound forces
+`δ ≤ 0`. -/
+lemma RS_degree_le_domain_card_of_rate_half_lt_and_le_sqrt {deg : ℕ} {domain : ι ↪ F}
+    {δ : ℝ≥0}
+    (hJ : (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ)
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain) :
+    deg ≤ Fintype.card ι := by
+  classical
+  by_contra hdeg
+  push Not at hdeg
+  have hrate_eq : (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0) = 1 := by
+    rw [ReedSolomon.rateOfLinearCode_eq_min_div]
+    have hcard_ne : (Fintype.card ι : ℚ≥0) ≠ 0 := by
+      exact_mod_cast (Fintype.card_ne_zero (α := ι))
+    have hmin : min deg (Fintype.card ι) = Fintype.card ι := by omega
+    simp [hmin, hcard_ne]
+  have hδpos : 0 < δ := by
+    simpa [hrate_eq] using hJ
+  have hδzero : δ ≤ 0 := by
+    simpa [ReedSolomon.sqrtRate, hrate_eq] using hδ
+  exact (not_lt_of_ge hδzero) hδpos
+
+omit [DecidableEq ι] in
+/-- Strict Johnson front door when §5 supplies pointwise evaluation-polynomial
+dependence rather than coefficient-polynomial dependence. -/
+theorem RS_jointAgreement_of_prob_gt_strict_johnson_and_eval_polys
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hk : 0 < k)
+    (u : WordStack F (Fin (k + 1)) ι)
+    (hprob :
+      Pr_{let z ← $ᵖ F}[
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            ReedSolomon.code domain deg) ≤ δ] >
+        ((k : ENNReal) * (errorBound δ deg domain : ENNReal)))
+    (hJ : (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ)
+    (hδ : δ < 1 - ReedSolomon.sqrtRate deg domain)
+    (hEvalPoly : ∀ P : F → Polynomial F,
+      (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+        ∃ E : ι → Polynomial F,
+          (∀ x, (E x).natDegree < k + 1) ∧
+            ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              ∀ x, (P z).eval (domain x) = (E x).eval z) :
+    jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u) := by
+  classical
+  have hS_card :
+      ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+          (Fintype.card F : ENNReal) <
+        ((RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card :
+          ENNReal) := by
+    simpa [ENNReal.coe_mul, ENNReal.coe_natCast] using
+      goodCoeffsCurve_threshold_mul_card_lt_card_of_prob_gt
+        (u := u) (η := (k : ℝ≥0) * errorBound δ deg domain) hprob
+  exact goodCoeffsCurve_eval_polys_implies_jointAgreement_of_prob_threshold_core
+    (deg := deg) (domain := domain) (δ := δ) hk
+    (RS_degree_le_domain_card_of_rate_half_lt_and_le_sqrt
+      (deg := deg) (domain := domain) hJ (le_of_lt hδ))
+    hS_card
+    (prob_threshold_small_of_strict_johnson
+      (deg := deg) (domain := domain) (δ := δ) hk
+      (Nat.pos_of_neZero deg) hδ)
+    (prob_threshold_large_of_errorBound_ge_succ_const
+      (deg := deg) (domain := domain) (δ := δ)
+      (errorBound_ge_succ_const_of_strict_johnson (deg := deg) (domain := domain)
+        hJ hδ))
+    hEvalPoly
 
 omit [DecidableEq ι] [Fintype F] in
 /-- For Reed-Solomon codes, the rate-half radius is the relative unique-decoding
