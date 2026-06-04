@@ -334,12 +334,6 @@ private theorem gapB_vanish_of_orderM_and_count
   exact hne (GuruswamiSudan.roots_le_degree_of_deg_lt_roots (ωs := ωs) (Qz.eval P) M A hRoot
     (lt_of_le_of_lt hdeg hcount))
 
-/- Convenience composition of the two proved helpers above. This is left as
-commented scaffolding because the result predicate is definitionally brittle
-under `Finset.filter`; callers can compose
-`pg_divisibility_of_graph_vanishing_conditions` with
-`exists_pg_factors_with_large_common_root_set_of_dvd` directly.
-
 omit [DecidableEq (RatFunc F)] in
 /-- **Gap-B keystone: the trivariate graph-vanishing bridge** ([BCIKS20] §5, the residual keystone
 of Claim 5.7 / Prop 5.5).  Given a `ModifiedGuruswami` solution `Q`, a coefficient `z` in the
@@ -386,6 +380,12 @@ theorem Q_vanishes_on_close_codeword_graph [DecidableEq (Polynomial F)]
   have := gapB_vanish_of_orderM_and_count ωs Qz P (u₀ + z • u₁) m
     (Bivariate.natWeightedDegree Qz 1 k) A hroots hA hdeg hcount
   rw [hQz, hP] at this ⊢; exact this
+
+/- Convenience composition of the two proved helpers above. This is left as
+commented scaffolding because the result predicate is definitionally brittle
+under `Finset.filter`; callers can compose
+`pg_divisibility_of_graph_vanishing_conditions` with
+`exists_pg_factors_with_large_common_root_set_of_dvd` directly.
 
 omit [DecidableEq (RatFunc F)] in
 /-- Convert the explicit graph-vanishing side conditions into the divisibility hypothesis consumed
@@ -482,6 +482,18 @@ rather than the stronger Eq. 5.12 factorization list.  The missing work for the 
 free-parameter Claim 5.7 is now isolated in the hypotheses here: nonvanishing/separability of the
 `x₀` specialization, nonempty close set, graph divisibility for every close `z`, and the large-set
 Johnson-regime inequality. -/
+lemma coeffs_of_close_proximity_nonempty_of_large_natdiv (δ : ℚ)
+    (hlarge :
+      (#(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) : ℝ) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q) :
+    (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).Nonempty := by
+  classical
+  by_contra hS
+  rw [Finset.not_nonempty_iff_eq_empty] at hS
+  rw [hS] at hlarge
+  simp only [Finset.card_empty, Nat.zero_div, Nat.cast_zero] at hlarge
+  exact absurd hlarge (not_lt.mpr (c57_rhs_nonneg k))
+
 lemma exists_pg_factors_with_large_common_root_set_of_dvd (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
     (hx0 : ∀ R : F[Z][X][Y],
