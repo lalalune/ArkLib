@@ -5,6 +5,7 @@ Authors: Quang Dao
 -/
 
 import ArkLib.Data.Hash.DomainSep
+import ArkLib.Data.Hash.Keccak
 
 /-!
   # State of the Prover and Verifier in Duplex Sponge Fiat-Shamir
@@ -80,8 +81,11 @@ fn generate_tag(iop_bytes: &[u8]) -> [u8; 32] {
 ```
 -/
 def generateTag (iopBytes : ByteArray) : Vector UInt8 32 :=
-  -- TODO: Implement Keccak hashing
-  sorry
+  -- spongefish's `generate_tag` constructs a fresh `tiny_keccak` `Keccak` (the *original*
+  -- Keccak with rate 1088 / capacity 512 / `0x01` padding — i.e. Ethereum's keccak256, NOT
+  -- NIST SHA3-256), absorbs `iop_bytes`, then squeezes 32 bytes. That is exactly
+  -- `keccak256 iopBytes`, returned as a fixed-length 32-byte vector.
+  Keccak.keccak256Vector iopBytes
 
 /-- Initialize a stateful hash object from a domain separator.
 
