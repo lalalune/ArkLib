@@ -414,6 +414,58 @@ def verify
   simulateQ (router₂ V₁) (V₂.verify stmt₂ (fun chal =>
     by simpa [ChallengeIdx.inr, ProtocolSpec.append] using challenges (ChallengeIdx.inr chal)))
 
+/-! ### `simulateQ`-fusion lemmas for `append_toVerifier`
+
+The composite `verify` runs `V₁`/`V₂` inside the appended-spec oracle context (routed by
+`router₁`/`router₂`); converting `(append V₁ V₂)` to a plain verifier wraps the *whole* thing in
+`simulateQ (simOracle2 oStmt tr.messages)`. The two lemmas below fuse the outer `simOracle2` with each
+inner router, identifying each leg with that leg's *own* `simOracle2` over the split transcript
+(`tr.messages ∘ MessageIdx.inl` / `∘ MessageIdx.inr`). This is the `QueryImpl.simulateQ_compose`
+collapse called for in the `append_toVerifier` skeleton. -/
+
+variable
+  (oStmt : ∀ i, OStmt₁ i)
+  (msgs : ∀ i, (pSpec₁ ++ₚ pSpec₂).Message i)
+
+/-- Answering an `emitMessageQuery O₁ j hMsg hO q` through the appended-context oracle
+`simOracle2 oSpec oStmt msgs` reduces (definitionally, after discharging the two `subst`s baked into
+`emitMessageQuery`) to `O₁`'s own answer on the transported message `msgs j`. -/
+private lemma simulateQ_simOracle2_emitMessageQuery
+    {T₁ : Type} (O₁ : OracleInterface T₁)
+    (j : (pSpec₁ ++ₚ pSpec₂).MessageIdx) (hMsg : (pSpec₁ ++ₚ pSpec₂).Message j = T₁)
+    (hO : O₁ = _root_.cast (congrArg OracleInterface hMsg)
+      (instOracleInterfaceMessageAppend (pSpec₁ := pSpec₁) (pSpec₂ := pSpec₂) j))
+    (q : O₁.Query) :
+    simulateQ (OracleInterface.simOracle2 oSpec oStmt msgs)
+        (emitMessageQuery (oSpec := oSpec) (OStmt₁ := OStmt₁) O₁ j hMsg hO q) =
+      (pure (O₁.answer (hMsg ▸ msgs j) q) : OracleComp oSpec (O₁.Response q)) := by
+  subst hMsg
+  subst hO
+  simp only [emitMessageQuery, simulateQ_spec_query]
+  rfl
+
+/-- **V₁-leg fusion.** Composing the appended-context answering oracle `simOracle2 oSpec oStmt msgs`
+with `router₁` (which re-emits `oSpec`/`OStmt₁` queries unchanged and lifts `pSpec₁`-messages to the
+appended message oracle at `MessageIdx.inl`) collapses to `V₁`'s own answering oracle over the
+`pSpec₁`-restricted messages `msgs ∘ MessageIdx.inl`. The `inl`-message branch is where
+`instAppend_inl_heq` discharges the message-interface transport. -/
+private lemma simOracle2_comp_router₁ :
+    (OracleInterface.simOracle2 oSpec oStmt msgs ∘ₛ
+        router₁ (OStmt₁ := OStmt₁) (pSpec₁ := pSpec₁) (pSpec₂ := pSpec₂)) =
+      OracleInterface.simOracle2 (T₁ := OStmt₁) (T₂ := pSpec₁.Message) oSpec oStmt
+        (fun i => Message_inl (pSpec₂ := pSpec₂) i ▸ msgs (MessageIdx.inl i)) := by
+  funext q
+  rcases q with t | t | ⟨i, q⟩
+  · rfl
+  · rfl
+  · -- `inl`-message branch: `emitMessageInl` answers via the appended message oracle at `inl i`,
+    -- which agrees with `Oₘ₁ i`'s answer on `msgs (inl i)` (the message transport is justified by the
+    -- definitional `Message_inl ▸` already present on both sides).
+    show simulateQ (OracleInterface.simOracle2 oSpec oStmt msgs)
+        (emitMessageInl (oSpec := oSpec) (OStmt₁ := OStmt₁) (pSpec₂ := pSpec₂) i q) = _
+    rw [emitMessageInl, simulateQ_simOracle2_emitMessageQuery]
+    rfl
+
 end OracleVerifier.Append
 
 open Function Embedding in
