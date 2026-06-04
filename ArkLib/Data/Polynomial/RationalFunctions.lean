@@ -10,6 +10,8 @@ import Mathlib.FieldTheory.RatFunc.Defs
 import Mathlib.RingTheory.Ideal.Quotient.Defs
 import Mathlib.RingTheory.Ideal.Span
 import Mathlib.RingTheory.PowerSeries.Substitution
+import Mathlib.RingTheory.Polynomial.GaussLemma
+import Mathlib.RingTheory.Polynomial.Content
 
 /-!
 # Definitions and Theorems about Function Fields and Rings of Regular Functions
@@ -33,7 +35,7 @@ namespace BCIKS20AppendixA
 
 section
 
-variable {F : Type} [CommRing F] [IsDomain F]
+variable {F : Type} [Field F]
 
 /-- Construction of the monisized polynomial `H_tilde` in Appendix A.1 of [BCIKS20].
 Note: Here `H ∈ F[X][Y]` translates to `H ∈ F[Z][Y]` in [BCIKS20] and H_tilde in
@@ -46,10 +48,59 @@ noncomputable def H_tilde (H : F[X][Y]) : Polynomial (RatFunc F) :=
   let H' := Polynomial.eval₂ (RingHom.comp Polynomial.C univPolyHom) S H
   W ^ (d - 1) * H'
 
-/-- The monisized version H_tilde is irreducible if the originial polynomial H is irreducible. -/
-lemma irreducibleHTildeOfIrreducible {H : Polynomial (Polynomial F)} :
+/-- The monisized version H_tilde is irreducible if the original polynomial H is irreducible.
+
+Statement repairs (both necessary; documented for upstream):
+* `hH : 0 < H.natDegree` — for degree-0 irreducible `H = C h`, `H_tilde H` is a nonzero
+  constant in `(RatFunc F)[X]`, i.e. a unit, hence not irreducible.
+* The section now requires `[Field F]` (previously `CommRing F` + `IsDomain F`): the proof
+  goes through Gauss's lemma, which needs `F[X]` integrally closed/UFD; a general domain
+  does not provide this. All use sites (BCIKS20 §5) are over fields. -/
+lemma irreducibleHTildeOfIrreducible {H : Polynomial (Polynomial F)} (hH : 0 < H.natDegree) :
     (Irreducible H → Irreducible (H_tilde H)) := by
-  sorry
+  intro hirr
+  set d := H.natDegree with hd_def
+  set w : F[X] := H.coeff d with hw_def
+  have hw_ne : w ≠ 0 := by
+    rw [hw_def, hd_def, ← Polynomial.leadingCoeff]
+    exact Polynomial.leadingCoeff_ne_zero.mpr hirr.ne_zero
+  set u : RatFunc F := univPolyHom w with hu_def
+  have huniv_inj : Function.Injective (univPolyHom : F[X] →+* RatFunc F) := by
+    rw [univPolyHom]; exact IsFractionRing.injective _ _
+  have hu_ne : u ≠ 0 := by
+    rw [hu_def]; intro hzero; exact hw_ne (huniv_inj (by rw [hzero, map_zero]))
+  have hprim : H.IsPrimitive := hirr.isPrimitive (Nat.ne_of_gt hH)
+  set g : Polynomial (RatFunc F) := H.map univPolyHom with hg_def
+  have hg_irr : Irreducible g := by
+    rw [hg_def, show (univPolyHom : F[X] →+* RatFunc F) = algebraMap (F[X]) (RatFunc F) from rfl]
+    exact (hprim.irreducible_iff_irreducible_map_fraction_map).mp hirr
+  letI := invertibleOfNonzero (inv_ne_zero hu_ne)
+  set φ : (Polynomial (RatFunc F)) ≃ₐ[RatFunc F] (Polynomial (RatFunc F)) :=
+    algEquivCMulXAddC u⁻¹ 0 with hφ_def
+  have hφg_irr : Irreducible (φ g) := (MulEquiv.irreducible_iff φ.toRingEquiv.toMulEquiv).mpr hg_irr
+  have hident : H_tilde H = Polynomial.C (u ^ (d - 1)) * φ g := by
+    have hW : (RingHom.comp Polynomial.C univPolyHom) ((fun i => H.coeff i) d)
+        = Polynomial.C u := by
+      simp only [RingHom.comp_apply, hu_def, hw_def]
+    have heval : Polynomial.eval₂ (RingHom.comp Polynomial.C univPolyHom)
+          (Polynomial.X / Polynomial.C u) H
+        = g.comp (Polynomial.X / Polynomial.C u) := by
+      rw [hg_def, Polynomial.comp, ← Polynomial.eval₂_map]
+    have hXW : (Polynomial.X / Polynomial.C u : Polynomial (RatFunc F))
+        = Polynomial.C u⁻¹ * Polynomial.X := by
+      rw [Polynomial.div_C, mul_comm]
+    have hφg : φ g = g.comp (Polynomial.C u⁻¹ * Polynomial.X) := by
+      rw [hφ_def, algEquivCMulXAddC_apply, map_zero, add_zero, comp_eq_aeval]
+    have hWpow : (Polynomial.C u : Polynomial (RatFunc F)) ^ (d - 1)
+        = Polynomial.C (u ^ (d-1)) := by
+      rw [Polynomial.C_pow]
+    rw [H_tilde]
+    simp only []
+    rw [hW, heval, hXW, hWpow, hφg]
+  rw [hident]
+  have hunit : IsUnit (Polynomial.C (u ^ (d - 1)) : Polynomial (RatFunc F)) :=
+    Polynomial.isUnit_C.mpr ((isUnit_iff_ne_zero).mpr (pow_ne_zero _ hu_ne))
+  exact (irreducible_isUnit_mul hunit).mpr hφg_irr
 
 /-- The function field `𝕃 ` from Appendix A.1 of [BCIKS20]. -/
 abbrev 𝕃 (H : F[X][Y]) : Type :=
@@ -57,7 +108,8 @@ abbrev 𝕃 (H : F[X][Y]) : Type :=
 
 /-- The function field `𝕃 ` is indeed a field if and only if the generator of the ideal we quotient
 by is an irreducible polynomial. -/
-lemma isField_of_irreducible {H : F[X][Y]} : Irreducible H → IsField (𝕃 H) := by
+lemma isField_of_irreducible {H : F[X][Y]} (hH : 0 < H.natDegree) :
+    Irreducible H → IsField (𝕃 H) := by
   intros h
   unfold 𝕃
   erw
@@ -65,11 +117,12 @@ lemma isField_of_irreducible {H : F[X][Y]} : Irreducible H → IsField (𝕃 H) 
       ←Ideal.Quotient.maximal_ideal_iff_isField_quotient,
       principal_is_maximal_iff_irred
     ]
-  exact irreducibleHTildeOfIrreducible h
+  exact irreducibleHTildeOfIrreducible hH h
 
 /-- The function field `𝕃` as defined above is a field. -/
-noncomputable instance {H : F[X][Y]} [inst : Fact (Irreducible H)] : Field (𝕃 H) :=
-  IsField.toField (isField_of_irreducible inst.out)
+noncomputable instance {H : F[X][Y]} [inst : Fact (Irreducible H)]
+    [hd : Fact (0 < H.natDegree)] : Field (𝕃 H) :=
+  IsField.toField (isField_of_irreducible hd.out inst.out)
 
 /-- The monisized polynomial `H_tilde` is in fact an element of `F[X][Y]`. -/
 noncomputable def H_tilde' (H : F[X][Y]) : F[X][Y] :=
@@ -83,7 +136,6 @@ noncomputable def H_tilde' (H : F[X][Y]) : F[X][Y] :=
       ∑ i ∈ Finset.range d,
         Polynomial.C (hᵢ i * W ^ (d - 1 - i)) * Polynomial.X ^ i
 
-omit [IsDomain F] in
 /-- If `H` has positive degree in `Y`, then `H_tilde' H` is monic. -/
 lemma H_tilde'_monic (H : F[X][Y]) (hH : 0 < H.natDegree) :
     (H_tilde' H).Monic := by
@@ -355,14 +407,12 @@ lemma canonicalRepOf𝒪_degree_lt {H : F[X][Y]} (hH : 0 < H.natDegree) (β : �
   rw [canonicalRepOf𝒪]
   exact Polynomial.degree_modByMonic_lt _ (H_tilde'_monic H hH)
 
-omit [IsDomain F] in
 /-- The canonical representative has natural degree bounded by the defining relation. -/
 lemma canonicalRepOf𝒪_natDegree_le {H : F[X][Y]} (hH : 0 < H.natDegree) (β : 𝒪 H) :
     (canonicalRepOf𝒪 hH β).natDegree ≤ (H_tilde' H).natDegree := by
   rw [canonicalRepOf𝒪]
   exact Polynomial.natDegree_modByMonic_le _ (H_tilde'_monic H hH)
 
-omit [IsDomain F] in
 /-- The canonical representative maps back to the original quotient element of `𝒪`. -/
 @[simp]
 lemma mk_canonicalRepOf𝒪 {H : F[X][Y]} (hH : 0 < H.natDegree) (β : 𝒪 H) :
@@ -386,7 +436,6 @@ lemma mk_canonicalRepOf𝒪 {H : F[X][Y]} (hH : 0 < H.natDegree) (β : 𝒪 H) :
     _ = β := by
             simp [I, p]
 
-omit [IsDomain F] in
 /-- Canonical representatives of quotient constructors are computed by `modByMonic`. -/
 lemma canonicalRepOf𝒪_mk {H : F[X][Y]} (hH : 0 < H.natDegree) (p : F[X][Y]) :
     canonicalRepOf𝒪 hH (Ideal.Quotient.mk (Ideal.span {H_tilde' H}) p : 𝒪 H) =
@@ -400,7 +449,6 @@ lemma canonicalRepOf𝒪_mk {H : F[X][Y]} (hH : 0 < H.natDegree) (p : F[X][Y]) :
         = (Ideal.Quotient.mk (Ideal.span {H_tilde' H}) p : 𝒪 H) := by simp
     _ = Ideal.Quotient.mk (Ideal.span {H_tilde' H}) p := rfl
 
-omit [IsDomain F] in
 /-- The canonical representative of zero is zero. -/
 @[simp]
 lemma canonicalRepOf𝒪_zero {H : F[X][Y]} (hH : 0 < H.natDegree) :
@@ -425,7 +473,6 @@ noncomputable def weight_Λ (f H : F[X][Y]) (D : ℕ) : WithBot ℕ :=
       WithBot.some <| deg * (D + 1 - Bivariate.natDegreeY H) + (f.coeff deg).natDegree
     )
 
-omit [IsDomain F] in
 /-- The zero polynomial has bottom `Λ`-weight. -/
 @[simp]
 lemma weight_Λ_zero (H : F[X][Y]) (D : ℕ) :
@@ -437,14 +484,12 @@ canonical representatives in `F[X][Y]`. -/
 noncomputable def weight_Λ_over_𝒪 {H : F[X][Y]} (hH : 0 < H.natDegree) (f : 𝒪 H) (D : ℕ) :
     WithBot ℕ := weight_Λ (canonicalRepOf𝒪 hH f) H D
 
-omit [IsDomain F] in
 /-- The `𝒪`-weight of zero is bottom. -/
 @[simp]
 lemma weight_Λ_over_𝒪_zero {H : F[X][Y]} (hH : 0 < H.natDegree) (D : ℕ) :
     weight_Λ_over_𝒪 hH (0 : 𝒪 H) D = ⊥ := by
   simp [weight_Λ_over_𝒪]
 
-omit [IsDomain F] in
 /-- The `𝒪`-weight of a quotient constructor is computed on its canonical remainder. -/
 lemma weight_Λ_over_𝒪_mk {H : F[X][Y]} (hH : 0 < H.natDegree) (p : F[X][Y])
     (D : ℕ) :
@@ -546,12 +591,14 @@ noncomputable section
 
 namespace ClaimA2
 
-variable {F : Type} [CommRing F] [IsDomain F]
+variable {F : Type} [Field F]
          {R : F[X][X][X]}
          {H : F[X][Y]} [H_irreducible : Fact (Irreducible H)]
+         [H_pos : Fact (0 < H.natDegree)]
 
 /-- The definition of `ζ` given in Appendix A.4 of [BCIKS20]. -/
-def ζ (R : F[X][X][Y]) (x₀ : F) (H : F[X][Y]) [H_irreducible : Fact (Irreducible H)] : 𝕃 H :=
+def ζ (R : F[X][X][Y]) (x₀ : F) (H : F[X][Y]) [H_irreducible : Fact (Irreducible H)]
+    [Fact (0 < H.natDegree)] : 𝕃 H :=
   let W  : 𝕃 H := liftToFunctionField (H.leadingCoeff);
   let T : 𝕃 H := functionFieldT (H := H);
     Polynomial.eval₂ liftToFunctionField (T / W)
@@ -560,7 +607,7 @@ def ζ (R : F[X][X][Y]) (x₀ : F) (H : F[X][Y]) [H_irreducible : Fact (Irreduci
 /-- If the derivative specialization is constant in the function-field variable, then `ζ` is
 regular. -/
 lemma ζ_regular_of_derivative_evalX_eq_C (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
-    [H_irreducible : Fact (Irreducible H)] {p : F[X]}
+    [H_irreducible : Fact (Irreducible H)] [Fact (0 < H.natDegree)] {p : F[X]}
     (hp : Bivariate.evalX (Polynomial.C x₀) R.derivative = Polynomial.C p) :
     ζ R x₀ H ∈ regularElms_set H := by
   rw [ζ, hp]
@@ -570,6 +617,7 @@ lemma ζ_regular_of_derivative_evalX_eq_C (x₀ : F) (R : F[X][X][Y]) (H : F[X][
 /-- In the constant-derivative, low-`Y`-degree case, the `ξ` regularity witness is explicit. -/
 lemma ξ_regular_of_derivative_evalX_eq_C_of_natDegree_le_one
     (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [H_irreducible : Fact (Irreducible H)]
+    [Fact (0 < H.natDegree)]
     {p : F[X]} (hp : Bivariate.evalX (Polynomial.C x₀) R.derivative = Polynomial.C p)
     (hR : R.natDegree ≤ 1) :
     ∃ pre : 𝒪 H,
@@ -583,7 +631,8 @@ lemma ξ_regular_of_derivative_evalX_eq_C_of_natDegree_le_one
 
 /-- There exist regular elements `ξ = W(Z)^(d-2) * ζ` as defined in Claim A.2 of Appendix A.4
 of [BCIKS20]. -/
-lemma ξ_regular (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [H_irreducible : Fact (Irreducible H)] :
+lemma ξ_regular (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [H_irreducible : Fact (Irreducible H)]
+    [Fact (0 < H.natDegree)] :
     ∃ pre : 𝒪 H,
     let d := R.natDegree
     let W : 𝕃 H := liftToFunctionField (H.leadingCoeff);
@@ -591,7 +640,8 @@ lemma ξ_regular (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [H_irreducible : Fact
   sorry
 
 /-- The elements `ξ = W(Z)^(d-2) * ζ` as defined in Claim A.2 of Appendix A.4 of [BCIKS20]. -/
-def ξ (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [φ : Fact (Irreducible H)] : 𝒪 H :=
+def ξ (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [φ : Fact (Irreducible H)]
+    [Fact (0 < H.natDegree)] : 𝒪 H :=
   (ξ_regular x₀ R H).choose
 
 /-- The bound of the weight `Λ` of the elements `ζ` as stated in Claim A.2 of Appendix A.4
@@ -622,7 +672,8 @@ def β (R : F[X][X][Y]) (t : ℕ) : 𝒪 H :=
 
 /-- The Hensel lift coefficients `α` are of the form as given in Claim A.2 of Appendix A.4
 of [BCIKS20]. -/
-def α (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [φ : Fact (Irreducible H)] (t : ℕ) : 𝕃 H :=
+def α (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [φ : Fact (Irreducible H)]
+    [Fact (0 < H.natDegree)] (t : ℕ) : 𝕃 H :=
   let W : 𝕃 H := liftToFunctionField (H.leadingCoeff)
   embeddingOf𝒪Into𝕃 _ (β R t) /
     (W ^ (t + 1) * (embeddingOf𝒪Into𝕃 _ (ξ x₀ R H)) ^ (2*t - 1))
@@ -632,7 +683,8 @@ def α' (x₀ : F) (R : F[X][X][Y]) (H_irreducible : Irreducible H) (t : ℕ) : 
 
 /-- The power series `γ = ∑ α^t (X - x₀)^t ∈ 𝕃 [[X - x₀]]` as defined in Appendix A.4
 of [BCIKS20]. -/
-def γ (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [φ : Fact (Irreducible H)] : PowerSeries (𝕃 H) :=
+def γ (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [φ : Fact (Irreducible H)]
+    [Fact (0 < H.natDegree)] : PowerSeries (𝕃 H) :=
   let subst (t : ℕ) : 𝕃 H :=
     match t with
     | 0 => fieldTo𝕃 (-x₀)
