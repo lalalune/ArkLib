@@ -13758,7 +13758,7 @@
           "name": "BCKHS25.exists_ne_zero_BWvec",
           "namespace": "BCKHS25",
           "short_name": "exists_ne_zero_BWvec",
-          "signature": "theorem exists_ne_zero_BWvec (da za db zb : \u2115) (hzb : zb = za + 1)"
+          "signature": "theorem exists_ne_zero_BWvec (da za db zb : \u2115) (_hzb : zb = za + 1)"
         },
         {
           "doc": "",
