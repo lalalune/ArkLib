@@ -916,7 +916,7 @@ lemma exists_nonzero_triSolution (n m k : ℕ) (ωs : Fin n ↪ F) (u₀ u₁ : 
 open GuruswamiSudan in
 omit [DecidableEq F] [DecidableEq (RatFunc F)] in
 /-- For a box index `(i,j,t)`: `i + k·j ≤ Dpg`. -/
-lemma gsBox_weighted_le {n m k : ℕ} {p : ℕ × ℕ × ℕ} (hk : 0 < k) (hp : p ∈ gsBox n m k) :
+lemma gsBox_weighted_le {n m k : ℕ} {p : ℕ × ℕ × ℕ} (_hk : 0 < k) (hp : p ∈ gsBox n m k) :
     1 * p.1 + k * p.2.1 ≤ gsDpg n m k := by
   rw [mem_gsBox] at hp
   have hw := hp.1
