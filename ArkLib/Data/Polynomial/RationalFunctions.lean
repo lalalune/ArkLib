@@ -651,6 +651,26 @@ lemma canonicalRep_eq_zero_of_embeddingOf𝒪Into𝕃_eq_zero {H : F[X][Y]} (hH 
     exact IsFractionRing.injective _ _
   exact hinj (by simpa using hmap_zero)
 
+/-- The substitution `π_z` evaluated on `β` agrees with evaluating the canonical representative
+of `β` at `(z, t_z)`. -/
+lemma π_z_eq_evalEval_canonicalRep {H : F[X][Y]} (hH : 0 < H.natDegree) (β : 𝒪 H) (z : F)
+    (root : rationalRoot (H_tilde' H) z) :
+    (π_z z root) β = Polynomial.evalEval z root.1 (canonicalRepOf𝒪 hH β) := by
+  conv_lhs => rw [← mk_canonicalRepOf𝒪 hH β]
+  rw [π_z, Ideal.Quotient.lift_mk]
+  rfl
+
+/-- Membership in `S_β` extracts, for the canonical representative `P` of `β`, a common root
+`(z, t_z)` of `H_tilde' H` and `P` over `F`. -/
+lemma exists_common_root_of_mem_S_β {H : F[X][Y]} (hH : 0 < H.natDegree) (β : 𝒪 H) {z : F}
+    (hz : z ∈ S_β β) :
+    ∃ t : F, Polynomial.evalEval z t (H_tilde' H) = 0 ∧
+      Polynomial.evalEval z t (canonicalRepOf𝒪 hH β) = 0 := by
+  obtain ⟨root, hroot⟩ := hz
+  refine ⟨root.1, root.2, ?_⟩
+  rw [← π_z_eq_evalEval_canonicalRep hH β z root]
+  exact hroot
+
 /-- The statement of Lemma A.1 in Appendix A.3 of [BCIKS20].
 
 Statement repair (necessary, documented for upstream): the section context provides only
