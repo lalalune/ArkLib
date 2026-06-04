@@ -849,32 +849,54 @@ theorem oracleReduction_perfectCompleteness
   simp only [liftM_pure, liftComp_pure, map_pure, pure_bind, bind_pure_comp,
     Functor.map_map, Function.comp_def, OptionT.run_pure, Option.getM,
     Transcript.concat, Fin.snoc_last, Fin.snoc_castSucc]
+  -- The honest `accepts` guard never short-circuits: under ANY challenges, the honest
+  -- prover's message `g = M₀+γM₁` satisfies `accepts` (`hAcc`). We pin the `if accepts …`
+  -- to `pure ()` by a definitional rewrite of the transcript accessors that feed it.
   rw [probEvent_eq_one_iff]
-  -- Bridge: the `g <$> liftM X` map over the challenge sample.
-  have hOC : ∀ {ι' : Type} {spec' : OracleSpec ι'} {α γ : Type} (g : α → γ)
-      (X : OracleComp spec' α),
-      ((g <$> (liftM X : OptionT (OracleComp spec') α)) : OptionT (OracleComp spec') γ)
-        = OptionT.mk ((some ∘ g) <$> X) := by
-    intro ι' spec' α γ g X
-    refine OptionT.ext ?_
-    rw [OptionT.run_map]
-    show Option.map g <$> (some <$> X) = _
-    simp [Functor.map_map, Function.comp_def]
+  -- After the collapse the verifier branch is `if accepts … (proverResult.1.messages ⟨1,_⟩) …`.
+  -- The honest prover writes `proverResult.1.messages ⟨1,_⟩ = fun j ↦ M 0 j + γ · M 1 j`
+  -- (round-1 `Transcript.concat` of the honest message) and the two challenge accessors are
+  -- the sampled `γ, xs`. Reduce the accessors so the `if` condition matches `hAcc`.
+  have hIf : ∀ (γc : F) (xsc : Fin t → ι),
+      (if accepts (k := k) (t := t) (encode := (encode : (Fin k → F) → (ι → F)))
+            stmt oStmt γc (fun j ↦ M 0 j + γc * M 1 j) xsc
+        then (pure () : OptionT (OracleComp []ₒ) Unit) else failure) = pure () :=
+    fun γc xsc => if_pos (hAcc γc xsc)
   refine ⟨?_, ?_⟩
-  · -- No failure: the honest `accepts` guard never short-circuits.
+  · -- No failure: peel the challenge / message samples; the `if` collapses to `pure ()`.
     rw [OptionT.probFailure_eq, OptionT.run_mk]
     simp only [probFailure_eq_zero, zero_add]
     apply probOutput_eq_zero_of_not_mem_support
     simp only [support_bind, Set.mem_iUnion, not_exists]
     intro s _ hmem
+    -- Peel outer `init >>= …` then the prover-run / verifier binds, resolving each
+    -- `getChallenge` sample, until the verifier `if accepts …` (which is `pure ()` by `hIf`).
+    simp only [StateT.run'_eq, support_map, Set.mem_image] at hmem
+    obtain ⟨⟨_, s'⟩, hmem, rfl⟩ := hmem
+    erw [simulateQ_bind] at hmem
+    erw [StateT.run_bind] at hmem
+    rw [mem_support_bind_iff] at hmem
+    obtain ⟨⟨x, s''⟩, hx, hs⟩ := hmem
     trace_state
     sorry
-  · -- Event holds: the honest output statement matches and `accepts` fires.
+  · -- Event holds: same peel; the output statement matches and `accepts` fires.
     intro x hx
     rw [OptionT.mem_support_iff] at hx
     simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
     obtain ⟨s, _, hx⟩ := hx
-    sorry
+    simp only [StateT.run'_eq, support_map, Set.mem_image] at hx
+    obtain ⟨⟨_, s'⟩, hx, rfl⟩ := hx
+    erw [simulateQ_bind] at hx
+    erw [StateT.run_bind] at hx
+    rw [mem_support_bind_iff] at hx
+    obtain ⟨⟨y, s''⟩, hy, hx⟩ := hx
+    revert hx
+    simp only [hIf, Fin.snoc, simulateQ_map, simulateQ_pure, StateT.run_map, StateT.run_pure,
+      OptionT.run_pure, Option.getM, pure_bind, support_map, support_pure, Set.mem_image,
+      Set.mem_singleton_iff, map_pure]
+    rintro ⟨a, rfl, rfl⟩
+    -- The event: output statement `()` matches and the prover output statement equals it.
+    exact ⟨trivial, rfl⟩
 
 /-- **Lemma 6.6 of [ABF26]** (knowledge soundness of Construction 6.2).
 
