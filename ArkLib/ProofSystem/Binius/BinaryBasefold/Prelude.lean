@@ -1002,6 +1002,33 @@ def iterated_fold (i : Fin r) (steps : Fin (ℓ + 1)) (h_i_add_steps : i.val + s
     have fSucc : α ⟨i.succ, by omega⟩ := fold_step i accF
     fSucc) (init := f)
 
+set_option maxHeartbeats 1000000 in
+seal sDomain qMap_total_fiber normalizedW intermediateEvaluationPoly in
+/-- **Peel the last fold step from `iterated_fold`.** Folding `n + 1` steps starting at
+level `i` equals one single-step `fold` (at level `i + n`, with the last challenge
+`r_challenges (last n)`) applied to the `n`-step iterated fold over the truncated
+challenges. This is the structural `Fin.dfoldl` peel (`Fin.dfoldl_succ_last`) that drives
+the inductive proof of Lemma 4.9. -/
+theorem iterated_fold_succ_last (i : Fin ℓ) (n : ℕ)
+    (h_i_add_steps : i.val + (n + 1) ≤ ℓ)
+    (f : sDomain 𝔽q β h_ℓ_add_R_rate (i := ⟨i, by omega⟩) → L)
+    (r_challenges : Fin (n + 1) → L)
+    (y : sDomain 𝔽q β h_ℓ_add_R_rate (i := ⟨i.val + (n + 1), by omega⟩)) :
+    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i, by omega⟩)
+      (steps := ⟨n + 1, by omega⟩)
+      (by simp only; exact fin_ℓ_steps_lt_ℓ_add_R i (n + 1) h_i_add_steps) f r_challenges y =
+    fold 𝔽q β (i := ⟨i.val + n, by omega⟩)
+      (h_i := by simp only; have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡); omega)
+      (f := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i, by omega⟩)
+        (steps := ⟨n, by omega⟩)
+        (by simp only; exact fin_ℓ_steps_lt_ℓ_add_R i n (by omega)) f
+        (fun j => r_challenges j.castSucc))
+      (r_chal := r_challenges (Fin.last n))
+      ⟨y.val, by have hy := y.property; simpa only [Nat.add_assoc] using hy⟩ := by
+  unfold iterated_fold
+  rw [Fin.dfoldl_succ_last]
+  rfl
+
 /--
 Transitivity of iterated_fold : folding for `steps₁` and then for `steps₂`
 equals folding for `steps₁ + steps₂` with concatenated challenges.
