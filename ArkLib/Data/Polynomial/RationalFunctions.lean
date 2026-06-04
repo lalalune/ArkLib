@@ -101,8 +101,7 @@ lemma irreducibleHTildeOfIrreducible {H : Polynomial (Polynomial F)} (hH : 0 < H
 abbrev 𝕃 (H : F[X][Y]) : Type :=
   (Polynomial (RatFunc F)) ⧸ (Ideal.span {H_tilde H})
 
-/-- The function field `𝕃 ` is indeed a field if and only if the generator of the ideal we quotient
-by is an irreducible polynomial. -/
+/-- The function field `𝕃` is a field when the quotient generator is irreducible. -/
 lemma isField_of_irreducible {H : F[X][Y]} (hH : 0 < H.natDegree) :
     Irreducible H → IsField (𝕃 H) := by
   intros h
@@ -131,7 +130,6 @@ noncomputable def H_tilde' (H : F[X][Y]) : F[X][Y] :=
       ∑ i ∈ Finset.range d,
         Polynomial.C (hᵢ i * W ^ (d - 1 - i)) * Polynomial.X ^ i
 
-/-- If `H` has positive degree in `Y`, then `H_tilde' H` is monic. -/
 lemma H_tilde'_monic (H : F[X][Y]) (hH : 0 < H.natDegree) :
     (H_tilde' H).Monic := by
   classical
@@ -143,7 +141,6 @@ lemma H_tilde'_monic (H : F[X][Y]) (hH : 0 < H.natDegree) :
       exact (Polynomial.degree_C_mul_X_pow_le i _).trans_lt
         (WithBot.coe_lt_coe.2 (Finset.mem_range.mp hi))
 
-/-- Evaluation of `H_tilde'` is monicization of evaluation of `H`. -/
 lemma evalEval_H_tilde' (H : F[X][Y]) (hH : 0 < H.natDegree) (z y : F) :
     Polynomial.evalEval z ((H.coeff H.natDegree).eval z * y) (H_tilde' H) =
       ((H.coeff H.natDegree).eval z) ^ (H.natDegree - 1) * Polynomial.evalEval z y H := by
@@ -200,6 +197,16 @@ lemma evalEval_H_tilde'_eq_zero_of_evalEval_eq_zero (H : F[X][Y]) (hH : 0 < H.na
     {z y : F} (hroot : Polynomial.evalEval z y H = 0) :
     Polynomial.evalEval z ((H.coeff H.natDegree).eval z * y) (H_tilde' H) = 0 := by
   rw [evalEval_H_tilde' H hH z y, hroot, mul_zero]
+
+lemma eval_evalX_eq_evalEval (H : F[X][Y]) (z y : F) :
+    (Polynomial.Bivariate.evalX z H).eval y = Polynomial.evalEval z y H := by
+  rw [Polynomial.Bivariate.evalX_eq_map, Polynomial.map_evalRingHom_eval]
+
+lemma evalEval_H_tilde'_eq_zero_of_evalX_eq_zero (H : F[X][Y]) (hH : 0 < H.natDegree)
+    {z y : F} (hroot : (Polynomial.Bivariate.evalX z H).eval y = 0) :
+    Polynomial.evalEval z ((H.coeff H.natDegree).eval z * y) (H_tilde' H) = 0 := by
+  apply evalEval_H_tilde'_eq_zero_of_evalEval_eq_zero H hH
+  rwa [← eval_evalX_eq_evalEval H z y]
 
 private lemma monicize_term {K : Type} [Field K] (a b : K) (i d : ℕ)
     (ha : a ≠ 0) (hi : i < d) :
@@ -557,8 +564,7 @@ lemma weight_Λ_over_𝒪_mk_eq_self_of_degree_lt {H : F[X][Y]} (hH : 0 < H.natD
       weight_Λ p H D := by
   simp [weight_Λ_over_𝒪, canonicalRepOf𝒪_mk_eq_self_of_degree_lt hH hp]
 
-/-- The set `S_β` from the statement of Lemma A.1 in Appendix A of [BCIKS20].
-Note: Here `F[X][Y]` is `F[Z][T]`. -/
+/-- The set `S_β` from Lemma A.1; here `F[X][Y]` is `F[Z][T]`. -/
 noncomputable def S_β {H : F[X][Y]} (β : 𝒪 H) : Set F :=
   {z : F | ∃ root : rationalRoot (H_tilde' H) z, (π_z z root) β = 0}
 
@@ -633,16 +639,14 @@ noncomputable def polyToPowerSeries𝕃 (H : F[X][Y]) (P : F[X][Y]) : PowerSerie
 
 /-! ### Lemma A.1 (BCIKS20 Appendix A.3) -/
 
-/-- The bivariate-lift hom `liftBivariate` sends a representative to zero in `𝕃` exactly when
-`H_tilde H` divides its image in `(RatFunc F)[Y]`. -/
+/-- `liftBivariate p = 0` exactly when `H_tilde H` divides the lifted representative. -/
 lemma liftBivariate_eq_zero_iff_dvd {H : F[X][Y]} (p : F[X][Y]) :
     liftBivariate (H := H) p = 0 ↔ H_tilde H ∣ p.map univPolyHom := by
   rw [liftBivariate, RingHom.comp_apply, Ideal.Quotient.eq_zero_iff_mem,
       Ideal.mem_span_singleton]
   exact Iff.rfl
 
-/-- `H_tilde' H` has `Y`-degree equal to `H.natDegree` when `H` has positive `Y`-degree
-(it is monic of that degree). -/
+/-- `H_tilde' H` has `Y`-degree equal to `H.natDegree` for positive `Y`-degree `H`. -/
 lemma natDegree_H_tilde' {H : F[X][Y]} (hH : 0 < H.natDegree) :
     (H_tilde' H).natDegree = H.natDegree := by
   classical
