@@ -49,6 +49,19 @@ noncomputable def coeffs_of_close_proximity_curve {l : ℕ}
     infer_instance
   @Set.toFinset _ { z | δᵣ(Curve.polynomialCurveEval (F := F) (A := F) u z, V) ≤ δ } this
 
+/-- Unique decoding brick for the §6.1 argument: two codewords of a code with
+minimum distance `d` that are both within distance summing below `d` of a common
+word are equal (triangle inequality). -/
+private lemma eq_of_both_close_lt_minDist {n : ℕ} {F : Type} [DecidableEq F]
+    {V : Finset (Fin n → F)} {d : ℕ}
+    (hV : ∀ w ∈ V, ∀ w' ∈ V, w ≠ w' → d ≤ Δ₀(w, w'))
+    {w₁ w₂ f : Fin n → F} (h₁ : w₁ ∈ V) (h₂ : w₂ ∈ V)
+    (hsum : Δ₀(w₁, f) + Δ₀(f, w₂) < d) :
+    w₁ = w₂ := by
+  by_contra hne
+  have htri : Δ₀(w₁, w₂) ≤ Δ₀(w₁, f) + Δ₀(f, w₂) := hammingDist_triangle w₁ f w₂
+  exact absurd (le_trans (hV w₁ h₁ w₂ h₂ hne) htri) (not_le.mpr hsum)
+
 /-- If the set of points `δ`-close to the code `V` has at least `n * l + 1` points, then
 there exists a curve defined by vectors `v` from `V` such that the points of `curve u`
 and `curve v` are `δ`-close with the same parameters. Moreover, `u` and `v` differ at
@@ -57,6 +70,10 @@ theorem large_agreement_set_on_curve_implies_correlated_agreement {l : ℕ}
     {rho : ℚ≥0}
     {δ : ℚ≥0}
     {V : Finset (Fin n → F)}
+    -- Finding 15 repair: `V` must be a code of rate `rho` (min relative distance ≥ 1 − rho);
+    -- with `rho` free and `V` arbitrary the statement is false (counterexample in
+    -- research/formal/arklib-patches/upstream-issues.md, Finding 15).
+    (hV : ∀ w ∈ V, ∀ w' ∈ V, w ≠ w' → (1 - rho) * n ≤ (Δ₀(w, w') : ℚ≥0))
     (hδ : δ ≤ (1 - rho) / 2)
     {u : Fin l → Fin n → F}
     (hS : n * l < (coeffs_of_close_proximity_curve (F := F) δ u V).card) :
@@ -82,6 +99,8 @@ theorem large_agreement_set_on_curve_implies_correlated_agreement' {l : ℕ}
     {δ : ℚ≥0}
     (hm : 3 ≤ m)
     {V : Finset (Fin n → F)}
+    -- Finding 15 repair (same defect as the unique-decoding lemma above).
+    (hV : ∀ w ∈ V, ∀ w' ∈ V, w ≠ w' → (1 - rho) * n ≤ (Δ₀(w, w') : ℚ≥0))
     (hδ : δ ≤ δ₀ rho m)
     {u : Fin l → Fin n → F}
     (hS : ((1 + 1 / (2 * m)) ^ 7 * m ^ 7) / (3 * (Real.rpow rho (3 / 2 : ℚ)))
