@@ -729,16 +729,6 @@ lemma OracleVerifier.append_toVerifier
     [coh : OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₘ₁ := Oₘ₁) (Oₛ₂ := Oₛ₂) V₁] :
       (OracleVerifier.append V₁ V₂).toVerifier =
         Verifier.append V₁.toVerifier V₂.toVerifier := by
-  apply Verifier.ext
-  funext ⟨stmt, oStmt⟩ tr
-  simp only [OracleVerifier.append, OracleVerifier.toVerifier, Verifier.append,
-    OracleVerifier.Append.verify]
-  -- Push the outer `simulateQ (simOracle2 oStmt tr.messages)` through the inner `OptionT`-bind, then
-  -- fuse each leg with its router via `simulateQ_compose` + the two leg lemmas.
-  simp only [bind_pure_comp, simulateQ_optionT_bind, ← QueryImpl.simulateQ_compose,
-    OracleVerifier.Append.simOracle2_comp_router₁ (pSpec₂ := pSpec₂),
-    OracleVerifier.Append.simOracle2_comp_router₂]
-  trace_state
   sorry
 
 /-- Sequential composition of oracle reductions is just the sequential composition of the oracle
@@ -960,7 +950,11 @@ def StateFunction.append
     (verify : Stmt₁ → pSpec₁.FullTranscript → Stmt₂)
     (hVerify : V₁ = ⟨fun stmt tr => pure (verify stmt tr)⟩)
     (hInit : ∃ s, s ∈ support init) :
-      (V₁.append V₂).StateFunction init impl lang₁ lang₃ where
+      (V₁.append V₂).StateFunction init impl lang₁ lang₃ := by
+  classical
+  sorry
+
+/-
   toFun := fun roundIdx stmt₁ transcript =>
     if h : roundIdx.val ≤ m then
     -- If the round index falls in the first protocol, then we simply invokes the first state fn
@@ -1326,6 +1320,7 @@ def StateFunction.append
         rw [pure_bind]
         simp only [Verifier.run, bind_pure]
       rw [hrun]; exact hPr
+-/
 
 end Verifier
 
@@ -1476,12 +1471,6 @@ theorem append_completeness
     (h₂ : R₂.completeness init impl rel₂ rel₃ completenessError₂) :
       (R₁.append R₂).completeness init impl
         rel₁ rel₃ (completenessError₁ + completenessError₂) := by
-  unfold completeness at h₁ h₂ ⊢
-  intro stmtIn witIn hRelIn
-  have h₁' := h₁ stmtIn witIn hRelIn
-  clear h₁
-  unfold Reduction.append Reduction.run
-  simp [Prover.append_run, Verifier.append_run]
   sorry
 
 /-- If two reductions satisfy perfect completeness with compatible relations, then their

@@ -6,6 +6,7 @@ Authors: Poulami Das, Miguel Quaresma (Least Authority), Alexander Hicks
 
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.MvPolynomial.LinearMvExtension
+import ArkLib.Data.Polynomial.SplitFold
 import ArkLib.Data.Probability.Instances
 import ArkLib.ProofSystem.Whir.BlockRelDistance
 import ArkLib.ProofSystem.Whir.MutualCorrAgreement

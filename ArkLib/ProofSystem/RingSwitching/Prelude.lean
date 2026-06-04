@@ -456,8 +456,8 @@ def sumcheckRoundRelation (aOStmtIn : AbstractOStmtIn L ℓ') (i : Fin (ℓ' + 1
 
 end Relations
 
-open Module in
-/-- The Binius (binary-tower) instantiation of `RingSwitchingProfile`, built from the tensor-algebra
+open Module
+/- The Binius (binary-tower) instantiation of `RingSwitchingProfile`, built from the tensor-algebra
 definitions above: `A := L ⊗[K] L`, embeddings `φ₀ = · ⊗ 1` / `φ₁ = 1 ⊗ ·`, and the decompositions
 are the `K`-basis coordinates via the left/right `L`-module structures.
 

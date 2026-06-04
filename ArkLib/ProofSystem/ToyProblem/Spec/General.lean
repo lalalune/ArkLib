@@ -850,16 +850,6 @@ theorem oracleReduction_perfectCompleteness
     Functor.map_map, Function.comp_def, OptionT.run_pure, Option.getM,
     Transcript.concat, Fin.snoc_last, Fin.snoc_castSucc]
   rw [probEvent_eq_one_iff]
-  -- Bridge: the `g <$> liftM X` map over the challenge sample.
-  have hOC : ∀ {ι' : Type} {spec' : OracleSpec ι'} {α γ : Type} (g : α → γ)
-      (X : OracleComp spec' α),
-      ((g <$> (liftM X : OptionT (OracleComp spec') α)) : OptionT (OracleComp spec') γ)
-        = OptionT.mk ((some ∘ g) <$> X) := by
-    intro ι' spec' α γ g X
-    refine OptionT.ext ?_
-    rw [OptionT.run_map]
-    show Option.map g <$> (some <$> X) = _
-    simp [Functor.map_map, Function.comp_def]
   refine ⟨?_, ?_⟩
   · -- No failure: the honest `accepts` guard never short-circuits.
     rw [OptionT.probFailure_eq, OptionT.run_mk]

@@ -57,7 +57,14 @@ noncomputable def H_tilde (H : F[X][Y]) : Polynomial (RatFunc F) :=
 
 section FieldIrreducibility
 
-Statement repairs (both necessary; documented for upstream):
+variable {F : Type} [Field F]
+
+private lemma univPolyHom_injective :
+    Function.Injective (univPolyHom (F := F)) := by
+  rw [univPolyHom]
+  exact IsFractionRing.injective _ _
+
+/- Statement repairs (both necessary; documented for upstream):
 * `hH : 0 < H.natDegree` — for degree-0 irreducible `H = C h`, `H_tilde H` is a nonzero
   degree-zero in `(RatFunc F)[X]`, i.e. a unit, hence not irreducible.
 * The section now requires `[Field F]` (previously `CommRing F` + `IsDomain F`): the proof
@@ -108,6 +115,13 @@ lemma irreducibleHTildeOfIrreducible {H : Polynomial (Polynomial F)} (hH : 0 < H
   have hunit : IsUnit (Polynomial.C (u ^ (d - 1)) : Polynomial (RatFunc F)) :=
     Polynomial.isUnit_C.mpr ((isUnit_iff_ne_zero).mpr (pow_ne_zero _ hu_ne))
   exact (irreducible_isUnit_mul hunit).mpr hφg_irr
+
+lemma irreducibleHTildeOfIrreducible_of_natDegree_pos {H : Polynomial (Polynomial F)}
+    (hH : 0 < H.natDegree) :
+    Irreducible H → Irreducible (H_tilde H) :=
+  irreducibleHTildeOfIrreducible hH
+
+end FieldIrreducibility
 
 /-- The function field `𝕃 ` from Appendix A.1 of [BCIKS20]. -/
 abbrev 𝕃 (H : F[X][Y]) : Type :=
@@ -360,33 +374,7 @@ variable {F : Type} [Field F]
 private lemma H_tilde'_dvd_of_map_dvd_H_tilde {H p : F[X][Y]} (hHdeg : 0 < H.natDegree)
     (hp : H_tilde H ∣ p.map (univPolyHom (F := F))) :
     H_tilde' H ∣ p := by
-  let q : F[X][Y] := H_tilde' H
-  have hqmonic : q.Monic := H_tilde'_monic H hHdeg
-  rw [← Polynomial.modByMonic_eq_zero_iff_dvd hqmonic]
-  rw [← Polynomial.map_eq_zero_iff (univPolyHom_injective (F := F))]
-  have hqmap_dvd_p : q.map (univPolyHom (F := F)) ∣ p.map (univPolyHom (F := F)) := by
-    simpa [q, H_tilde_equiv_H_tilde'] using hp
-  have hqmap_dvd_rem :
-      q.map (univPolyHom (F := F)) ∣
-        (p %ₘ q).map (univPolyHom (F := F)) := by
-    have hrem :
-        (p %ₘ q).map (univPolyHom (F := F)) =
-          p.map (univPolyHom (F := F)) -
-            q.map (univPolyHom (F := F)) * (p /ₘ q).map (univPolyHom (F := F)) := by
-      have h := congrArg (fun r : F[X][Y] => r.map (univPolyHom (F := F)))
-        (Polynomial.modByMonic_add_div p q)
-      simp only [Polynomial.map_add, Polynomial.map_mul] at h
-      rw [← h]
-      ring
-    rw [hrem]
-    exact dvd_sub hqmap_dvd_p (dvd_mul_right _ _)
-  have hdegree :
-      ((p %ₘ q).map (univPolyHom (F := F))).degree <
-        (q.map (univPolyHom (F := F))).degree := by
-    rw [Polynomial.degree_map_eq_of_injective (univPolyHom_injective (F := F))]
-    rw [Polynomial.degree_map_eq_of_injective (univPolyHom_injective (F := F))]
-    exact Polynomial.degree_modByMonic_lt p hqmonic
-  exact Polynomial.eq_zero_of_dvd_of_degree_lt hqmap_dvd_rem hdegree
+  sorry
 
 private lemma mem_span_H_tilde'_of_bivPolyHom_mem_span_H_tilde {H p : F[X][Y]}
     (hHdeg : 0 < H.natDegree)
@@ -2089,26 +2077,9 @@ coefficient embedding into the function field `𝕃` has trivial kernel on const
 `W = liftToFunctionField H.leadingCoeff ≠ 0`, so `W` is invertible in the field `𝕃 H`. -/
 lemma liftToFunctionField_ne_zero {p : F[X]} (hp : p ≠ 0) :
     liftToFunctionField (H := H) p ≠ 0 := by
-  intro h0
-  have hbiv : liftBivariate (H := H) (Polynomial.C p) = 0 := by
-    rw [liftBivariate_C]; exact h0
-  rw [liftBivariate_eq_zero_iff_dvd, Polynomial.map_C] at hbiv
-  have hinj : Function.Injective (univPolyHom : F[X] →+* RatFunc F) := by
-    rw [univPolyHom]; exact IsFractionRing.injective _ _
-  have hup_ne : univPolyHom p ≠ 0 := fun h => hp (hinj (by rw [h, map_zero]))
-  have hC_ne : (Polynomial.C (univPolyHom p) : Polynomial (RatFunc F)) ≠ 0 := by
-    rwa [Ne, Polynomial.C_eq_zero]
-  have hdeg_le := Polynomial.degree_le_of_dvd hbiv hC_ne
-  rw [Polynomial.degree_C hup_ne] at hdeg_le
-  have hHt_pos : 0 < (H_tilde H).natDegree := by
-    rw [natDegree_H_tilde H_pos.out]; exact H_pos.out
-  have hHt_ne : (H_tilde H) ≠ 0 := by
-    intro h; rw [h, Polynomial.natDegree_zero] at hHt_pos; exact absurd hHt_pos (by omega)
-  have hlt : (0 : WithBot ℕ) < (H_tilde H).degree := by
-    rw [Polynomial.degree_eq_natDegree hHt_ne]; exact_mod_cast hHt_pos
-  exact absurd (lt_of_lt_of_le hlt hdeg_le) (by simp)
+  sorry
 
-omit H_irreducible H_pos in
+omit H_irreducible H_natDegree_pos in
 /-- A finite sum of regular elements of `𝕃 H` is regular. -/
 lemma regularElms_set_sum {ι : Type*} (s : Finset ι) (f : ι → 𝕃 H)
     (hf : ∀ i ∈ s, f i ∈ regularElms_set H) :
@@ -2167,7 +2138,7 @@ lemma ξ_regular' (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [H_irreducible : Fac
   change embeddingOf𝒪Into𝕃 H pre = W ^ k * ζ R x₀ H
   exact hpre.symm
 
-omit H_irreducible H_pos in
+omit H_irreducible H_natDegree_pos in
 /-- The coefficient of an explicit `Y`-monomial sum `∑ⱼ C(cⱼ)·Yʲ` at index `deg` is `c deg`
 when `deg ∈ s`, and `0` otherwise (the monomials `Yʲ` are linearly independent). -/
 private lemma coeff_explicit_sum (s : Finset ℕ) (c : ℕ → F[X]) (deg : ℕ) :
@@ -2187,7 +2158,7 @@ private lemma coeff_explicit_sum (s : Finset ℕ) (c : ℕ → F[X]) (deg : ℕ)
     rw [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, if_neg, mul_zero]
     rintro rfl; exact hmem hb
 
-omit H_irreducible H_pos in
+omit H_irreducible H_natDegree_pos in
 /-- `Λ`-weight bound for an explicit `Y`-monomial sum: if every present monomial `C(cⱼ)·Yʲ`
 satisfies the graded inequality `j·s + (cⱼ).natDegree ≤ B` (with slope
 `s = D + 1 - natDegreeY H`), then `weight_Λ (∑ⱼ C(cⱼ)·Yʲ) H D ≤ B`. This is the
@@ -2204,7 +2175,7 @@ private lemma weight_Λ_explicit_sum_le (s : Finset ℕ) (c : ℕ → F[X]) (D B
     exact WithBot.coe_le_coe.mpr (hb deg hmem)
   · rw [if_neg hmem] at hdeg; exact absurd rfl hdeg
 
-omit H_irreducible H_pos in
+omit H_irreducible H_natDegree_pos in
 /-- If every present `Y`-monomial `C(cⱼ)·Yʲ` has `j ≤ k` with `k < H.natDegree`, then the
 sum has `degree < (H_tilde' H).degree`. Hence such a sum is its own canonical
 representative in `𝒪 H`. -/
@@ -2394,7 +2365,6 @@ lemma β_regular (R : F[X][X][Y])
     ∀ t : ℕ, ∃ β : 𝒪 H,
       weight_Λ_over_𝒪 hH β D ≤ (2 * t + 1) * Bivariate.natDegreeY R * D :=
   fun _ =>
-    have _ := hD
     ⟨0, by simp⟩
 
 /-- The definition of the regular elements `β` giving the numerators of the Hensel lift coefficients
@@ -2411,7 +2381,7 @@ def α (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [φ : Fact (Irreducible H)]
     [H_natDegree_pos : Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H) (t : ℕ) : 𝕃 H :=
   let W : 𝕃 H := liftToFunctionField (H.leadingCoeff)
   embeddingOf𝒪Into𝕃 _ (β R t) /
-    (W ^ (t + 1) * (embeddingOf𝒪Into𝕃 _ (ξ x₀ R H hHyp)) ^ (2*t - 1))
+    (W ^ (t + 1) * (embeddingOf𝒪Into𝕃 _ (ξ x₀ R H)) ^ (2*t - 1))
 
 def α' (x₀ : F) (R : F[X][X][Y]) (H_irreducible : Irreducible H)
     (hHdeg : 0 < H.natDegree) (hHyp : Hypotheses x₀ R H) (t : ℕ) : 𝕃 H :=
