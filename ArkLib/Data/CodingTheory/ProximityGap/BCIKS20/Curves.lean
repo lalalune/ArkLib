@@ -883,6 +883,43 @@ theorem coeff_polys_of_eval_polys_on_domain {k deg : ℕ}
               simp [B, Polynomial.eval_finset_sum, Polynomial.eval_mul, Polynomial.eval_C,
                 mul_comm]
 
+omit [Nonempty ι] [DecidableEq ι] [Fintype F] in
+/-- Conversely, coefficient-polynomial dependence gives pointwise
+evaluation-polynomial dependence by summing the coefficient polynomials against
+the fixed domain powers. -/
+theorem eval_polys_of_coeff_polys_on_domain {k deg : ℕ}
+    {domain : ι ↪ F} {S : Finset F} {P : F → Polynomial F}
+    (hPdeg : ∀ z ∈ S, (P z).natDegree < deg)
+    (B : ℕ → Polynomial F)
+    (hBdeg : ∀ j < deg, (B j).natDegree < k + 1)
+    (hCoeff : ∀ z ∈ S, ∀ j < deg, (P z).coeff j = (B j).eval z) :
+    ∃ E : ι → Polynomial F,
+      (∀ x, (E x).natDegree < k + 1) ∧
+        ∀ z ∈ S, ∀ x, (P z).eval (domain x) = (E x).eval z := by
+  classical
+  let E : ι → Polynomial F := fun x =>
+    ∑ j ∈ Finset.range deg, Polynomial.C ((domain x) ^ j) * B j
+  refine ⟨E, ?_, ?_⟩
+  · intro x
+    refine Polynomial.natDegree_sum_lt_of_forall_lt
+      (s := Finset.range deg)
+      (f := fun j => Polynomial.C ((domain x) ^ j) * B j) ?_
+    intro j hj
+    exact lt_of_le_of_lt (Polynomial.natDegree_C_mul_le _ _)
+      (hBdeg j (Finset.mem_range.mp hj))
+  · intro z hz x
+    calc
+      (P z).eval (domain x)
+          = ∑ j ∈ Finset.range deg, (P z).coeff j * (domain x) ^ j := by
+              exact Polynomial.eval_eq_sum_range' (hPdeg z hz) (domain x)
+      _ = ∑ j ∈ Finset.range deg, (B j).eval z * (domain x) ^ j := by
+              refine Finset.sum_congr rfl ?_
+              intro j hj
+              rw [hCoeff z hz j (Finset.mem_range.mp hj)]
+      _ = (E x).eval z := by
+              simp [E, Polynomial.eval_finset_sum, Polynomial.eval_mul, Polynomial.eval_C,
+                mul_comm]
+
 omit [Fintype ι] [Nonempty ι] [DecidableEq ι] [Fintype F] [DecidableEq F] in
 /-- Reindex a finite sum of curve coefficient words. -/
 theorem curve_sum_reindex_equiv_core {κ κ' : Type} [Fintype κ] [Fintype κ']
