@@ -525,6 +525,72 @@ theorem Prover.runToRound_zero_of_prover_first
       prover.runToRound 0 stmt wit = (pure (default, prover.input (stmt, wit))) := by
   simp [Prover.runToRound]
 
+namespace Prover
+
+/-! ### Prefix / marginal decomposition of `runToRound` over rounds
+
+These additive lemmas relate the prover's full run to its per-round partial runs.  They are the
+execution-level ingredients of the `rbrSoundness → soundness` implication (ArkLib#1): the
+round-by-round soundness game speaks about `runToRound i.castSucc` followed by a *fresh* challenge,
+whereas the soundness game speaks about the full `Reduction.run`.  The lemmas below expose the
+single-round step `runToRound j.succ = processRound j (runToRound j.castSucc)` and, for a challenge
+round, factor the run as "partial run, then sample a challenge, then receive it". -/
+
+/-- **Single-round unfolding of `runToRound`.**  Running the prover up to round `j.succ` is the same
+  as running it up to round `j.castSucc` and then processing round `j`.  This is the computational
+  recursion of `runToRound`, made into a rewriting lemma via `Fin.induction_succ`. -/
+theorem runToRound_succ (j : Fin n)
+    (stmt : StmtIn) (wit : WitIn) (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec) :
+    prover.runToRound j.succ stmt wit
+      = prover.processRound j (prover.runToRound j.castSucc stmt wit) := by
+  unfold runToRound
+  rw [Fin.induction_succ]
+
+/-- **`processRound` at a challenge (V_to_P) round.**  Specialization of `processRound` to a round
+  `i` that is a challenge round (so `pSpec.dir i = .V_to_P`).  The dependent `match` on the round
+  direction is discharged using the direction proof carried by the `ChallengeIdx`, exposing the
+  clean "sample a challenge, then receive it" shape. -/
+theorem processRound_challenge (i : pSpec.ChallengeIdx)
+    (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (currentResult : OracleComp (oSpec + [pSpec.Challenge]ₒ)
+      (pSpec.Transcript i.1.castSucc × prover.PrvState i.1.castSucc)) :
+    prover.processRound i.1 currentResult = (do
+      let ⟨transcript, state⟩ ← currentResult
+      let challenge ← pSpec.getChallenge i
+      let newState := (← prover.receiveChallenge i state) challenge
+      return ⟨transcript.concat challenge, newState⟩) := by
+  unfold processRound
+  obtain ⟨j, hj⟩ := i
+  simp only
+  congr 1
+  funext x
+  split <;> rename_i hDir
+  · rfl
+  · rw [hj] at hDir; exact absurd hDir (by decide)
+
+/-- **Transcript-marginal factorization at a challenge round.**  For a challenge round `i`, the
+  transcript produced by running the prover up to round `i.succ` is distributed as: run up to round
+  `i.castSucc`, sample a fresh challenge, *receive* it (the side effect is retained, it can only
+  fail), and concatenate the challenge to the transcript.
+
+  This is the exact bridge between the soundness game (which runs the prover to completion, hence
+  through `receiveChallenge`) and the round-by-round soundness game (which runs only to
+  `runToRound i.castSucc` and then samples a fresh challenge): the only difference is the trailing
+  `receiveChallenge` step, whose effect on the resulting *transcript* is none (the transcript is
+  already determined). -/
+theorem fst_map_runToRound_succ_challenge (i : pSpec.ChallengeIdx)
+    (stmt : StmtIn) (wit : WitIn) (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec) :
+    (fun x => x.1) <$> prover.runToRound i.1.succ stmt wit
+      = (do
+          let ⟨transcript, state⟩ ← prover.runToRound i.1.castSucc stmt wit
+          let challenge ← (pSpec.getChallenge i : OracleComp (oSpec + [pSpec.Challenge]ₒ) _)
+          let _ ← prover.receiveChallenge i state
+          return transcript.concat challenge) := by
+  rw [runToRound_succ, processRound_challenge]
+  simp only [map_bind, map_pure]
+
+end Prover
+
 end Execution
 
 variable {ι : Type} {oSpec : OracleSpec ι}

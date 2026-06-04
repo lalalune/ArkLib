@@ -23,6 +23,9 @@ import ArkLib.CommitmentScheme.KZG.FunctionBinding.Support
 import ArkLib.CommitmentScheme.KZG.FunctionBinding.TauInQueries
 import ArkLib.CommitmentScheme.KZG.HardnessAssumptions
 import ArkLib.CommitmentScheme.KZG.Sampling
+import ArkLib.CommitmentScheme.MerkleTree.Batch
+import ArkLib.CommitmentScheme.MerkleTree.Extraction
+import ArkLib.CommitmentScheme.MerkleTree.Hiding
 import ArkLib.CommitmentScheme.SimpleRO
 import ArkLib.Data.Classes.FunEquiv
 import ArkLib.Data.Classes.HasSize

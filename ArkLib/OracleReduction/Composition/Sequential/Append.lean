@@ -302,7 +302,199 @@ def StateFunction.append
         convert h' using 2; exact funext fun i => i.elim0
       · exact (S₁.toFun_empty stmt).mpr (by convert h using 2; exact funext fun i => i.elim0)
     · exact absurd (Nat.zero_le m) ‹_›
-  toFun_next := sorry
+  toFun_next := by
+    intro roundIdx hDir stmt₁ tr hPrev msg
+    by_cases hlt : (roundIdx : ℕ) < m
+    · -- first segment: roundIdx.succ ≤ m, both branches are `then`
+      have hsucc : (roundIdx : ℕ) + 1 ≤ m := hlt
+      have hcs : (roundIdx : ℕ) ≤ m := le_of_lt hlt
+      simp only [Fin.val_succ, Fin.coe_castSucc] at *
+      rw [dif_pos hsucc] at *
+      rw [dif_pos hcs] at hPrev
+      have hDir₁ : pSpec₁.dir ⟨roundIdx, hlt⟩ = .P_to_V := by
+        have := hDir
+        rw [show ((pSpec₁.dir ++ᵛ pSpec₂.dir) roundIdx)
+              = pSpec₁.dir ⟨roundIdx, hlt⟩ from Fin.vappend_left_of_lt _ _ _ hlt] at this
+        exact this
+      have hmsgty : (pSpec₁ ++ₚ pSpec₂).Type roundIdx = pSpec₁.Type ⟨roundIdx, hlt⟩ := by
+        show Fin.vappend pSpec₁.Type pSpec₂.Type roundIdx = pSpec₁.Type ⟨roundIdx, hlt⟩
+        rw [Fin.vappend_left_of_lt _ _ _ hlt]
+      have key := S₁.toFun_next ⟨roundIdx, hlt⟩ hDir₁ stmt₁ _ hPrev (cast hmsgty msg)
+      convert key using 2
+      apply eq_of_heq
+      apply HEq.trans (b := (Transcript.concat msg tr).fst)
+      · exact cast_heq _ _
+      · -- (concat msg tr).fst ≍ concat (cast hmsgty msg) (castP.mp tr.fst)
+        apply Function.hfunext
+        · congr 1
+          simp only [Fin.val_succ]
+          omega
+        · intro a a' haa'
+          have hav : a.val = a'.val := by
+            have := Fin.heq_ext_iff (by simp only [Fin.val_succ]; omega) |>.mp haa'
+            omega
+          simp only [Transcript.concat, Transcript.fst]
+          refine HEq.trans (cast_heq _ _) ?_
+          -- goal: Fin.snoc tr msg ⟨a.val,_⟩ ≍ Fin.snoc (castP tr.fst) (cast msg) a'
+          -- replace the implicit index proof on the LHS by an explicit one
+          obtain ⟨av, hav_lt⟩ := a
+          simp only [Fin.val_mk, Fin.val_succ] at hav hav_lt ⊢
+          rw [show min ((roundIdx : ℕ) + 1) m = (roundIdx : ℕ) + 1 from by omega] at hav_lt
+          have ha'_lt : (a' : ℕ) < (roundIdx : ℕ) + 1 := by
+            have := a'.isLt; simpa [Fin.val_succ] using this
+          simp only [Fin.snoc, Fin.val_mk]
+          have hav' : (a' : ℕ) = av := hav.symm
+          by_cases hlast : av = roundIdx
+          · -- last position: both snocs yield the message
+            rw [dif_neg (show ¬ av < roundIdx from by omega),
+                dif_neg (show ¬ (a' : ℕ) < roundIdx from by omega)]
+            exact HEq.trans (cast_heq _ _)
+              (HEq.trans (cast_heq hmsgty msg).symm (cast_heq _ _).symm)
+          · -- earlier position: both snocs yield the underlying transcript value
+            have hlt' : av < roundIdx := by omega
+            rw [dif_pos (show av < roundIdx from hlt'),
+                dif_pos (show (a' : ℕ) < roundIdx from by omega)]
+            -- goal: cast _ (tr (⟨av,_⟩.castLT _)) ≍ cast _ (castP.mp (Transcript.fst tr) (a'.castLT _))
+            refine HEq.trans (cast_heq _ _) (HEq.trans ?_ (cast_heq _ _).symm)
+            -- goal: tr (⟨av,_⟩.castLT _) ≍ castP.mp (Transcript.fst tr) (a'.castLT _)
+            -- strip the function cast `castP.mp` and unfold `Transcript.fst`
+            have hmincard : min (roundIdx : ℕ) m = (roundIdx : ℕ) := by omega
+            have hFstHeq : (by simpa [hcs] using tr.fst : pSpec₁.Transcript ⟨roundIdx, by omega⟩)
+                ≍ Transcript.fst tr := cast_heq _ _
+            refine HEq.trans ?_ (dcongr_heq (f₁ := Transcript.fst tr)
+              (a₁ := (⟨av, by omega⟩ : Fin (min (roundIdx : ℕ) m)))
+              (a₂ := (a'.castLT (show (a' : ℕ) < roundIdx from by omega)))
+              (Fin.heq_ext_iff hmincard |>.mpr (by simpa using hav))
+              (fun t₁ t₂ ht => by
+                have hv : (t₁ : ℕ) = (t₂ : ℕ) := Fin.val_eq_val_of_heq ht
+                show pSpec₁.Type _ = pSpec₁.Type _
+                congr 1
+                ext
+                simpa using hv)
+              (fun _ _ => HEq.symm hFstHeq))
+            -- goal: tr (⟨av,_⟩.castLT _) ≍ Transcript.fst tr ⟨av, _⟩
+            unfold Transcript.fst
+            refine HEq.trans ?_ (cast_heq _ _).symm
+            congr 1
+    · -- second segment: roundIdx ≥ m
+      push_neg at hlt
+      have hnsucc : ¬ ((roundIdx : ℕ) + 1 ≤ m) := by omega
+      simp only [Fin.val_succ, Fin.coe_castSucc] at *
+      rw [dif_neg hnsucc] at *
+      -- the first-segment part of the transcript is unchanged by concatenating a 2nd-segment round
+      -- the first-segment fst is unchanged by concatenating a 2nd-segment round (HEq form)
+      have hfstHeq : (Transcript.concat msg tr).fst ≍ tr.fst := by
+        have hmr : m ≤ (roundIdx : ℕ) := hlt
+        have hcard : min ((roundIdx : Fin (m + n)).succ : ℕ) m
+            = min ((roundIdx : Fin (m + n)).castSucc : ℕ) m := by
+          simp only [Fin.val_succ, Fin.coe_castSucc]; omega
+        -- (concat msg tr).fst ≍ tr.fst   (over their min-indexed domains)
+        apply Function.hfunext
+        · congr 1
+        · intro a a' haa'
+          have hav : (a : ℕ) = (a' : ℕ) := by
+            have := Fin.heq_ext_iff hcard |>.mp haa'
+            omega
+          simp only [Transcript.concat, Transcript.fst]
+          obtain ⟨av, hav_lt⟩ := a
+          simp only [Fin.val_mk, Fin.val_succ] at hav hav_lt ⊢
+          rw [show min ((roundIdx : ℕ) + 1) m = m from by omega] at hav_lt
+          refine HEq.trans (cast_heq _ _) ?_
+          refine HEq.trans ?_ (cast_heq _ _).symm
+          -- Fin.snoc tr msg ⟨av,_⟩ ≍ tr ⟨av,_⟩  since av < m ≤ roundIdx
+          simp only [Fin.snoc, Fin.val_mk]
+          rw [dif_pos (show av < roundIdx from by omega)]
+          refine HEq.trans (cast_heq _ _) ?_
+          congr 1
+          ext; simp only [Fin.val_castLT]; omega
+      rintro ⟨hS1, hS2⟩
+      by_cases hrm : (roundIdx : ℕ) ≤ m
+      · -- roundIdx = m: hPrev is the first-segment state fn, contradicted by hS1
+        rw [dif_pos hrm] at hPrev
+        apply hPrev
+        have hrm' : (roundIdx : ℕ) = m := by omega
+        convert hS1 using 2
+        exact HEq.trans (cast_heq _ _) (HEq.trans hfstHeq.symm (cast_heq _ _).symm)
+      · -- roundIdx > m: derive both conjuncts and contradict hPrev's `else` branch
+        rw [dif_neg hrm] at hPrev
+        apply hPrev
+        refine ⟨?_, ?_⟩
+        · -- S₁ conjunct: same as hS1 up to the unchanged first-segment transcript
+          convert hS1 using 2
+          exact eq_of_heq (HEq.trans (cast_heq _ _) (HEq.trans hfstHeq.symm (cast_heq _ _).symm))
+        · -- S₂ conjunct: from hS2 via toFun_next contrapositive on the second segment
+          have hmlt : m < (roundIdx : ℕ) := by omega
+          have hfstCast :
+              (by simpa [min_eq_right_of_lt (show m < (roundIdx : ℕ) + 1 from by omega)]
+                  using (Transcript.concat msg tr).fst : pSpec₁.Transcript ⟨m, by omega⟩)
+              = (by simpa [min_eq_right_of_lt hmlt]
+                  using tr.fst : pSpec₁.Transcript ⟨m, by omega⟩) :=
+            eq_of_heq (HEq.trans (cast_heq _ _) (HEq.trans hfstHeq (cast_heq _ _).symm))
+          -- the second-segment direction at this round
+          have hDir₂ : pSpec₂.dir ⟨(roundIdx : ℕ) - m, by omega⟩ = .P_to_V := by
+            have h2 := hDir
+            rw [show ((pSpec₁.dir ++ᵛ pSpec₂.dir) roundIdx)
+                  = pSpec₂.dir ⟨(roundIdx : ℕ) - m, by omega⟩
+                from by rw [Fin.vappend_right_of_not_lt _ _ _ (by omega : ¬ (roundIdx : ℕ) < m)]] at h2
+            exact h2
+          -- the message transported into the second segment's type
+          have hmsgty₂ : (pSpec₁ ++ₚ pSpec₂).Type roundIdx
+              = pSpec₂.Type ⟨(roundIdx : ℕ) - m, by omega⟩ := by
+            show Fin.vappend pSpec₁.Type pSpec₂.Type roundIdx = _
+            rw [Fin.vappend_right_of_not_lt _ _ _ (by omega : ¬ (roundIdx : ℕ) < m)]
+          -- apply toFun_next contrapositive: from hS2 (at succ) get the state fn at castSucc
+          apply Classical.byContradiction
+          intro hnot
+          have key := S₂.toFun_next ⟨(roundIdx : ℕ) - m, by omega⟩ hDir₂ _ tr.snd hnot
+            (cast hmsgty₂ msg)
+          -- key : ¬ S₂.toFun (succ) (verify ... tr.fst) (tr.snd.concat msg₂)
+          apply key
+          convert hS2 using 2
+          all_goals
+            try exact hfstCast.symm
+          all_goals
+            try (simp only [Fin.val_succ, Fin.val_mk]; omega)
+          -- remaining: (tr.snd).concat msg₂  ≍  (concat msg tr).snd
+          -- the second-segment snd gains exactly the new message via snoc
+          have hsndcard : ((roundIdx : ℕ) - m) + 1 = ((roundIdx : Fin (m + n)).succ : ℕ) - m := by
+            simp only [Fin.val_succ]; omega
+          apply Function.hfunext
+          · congr 1
+          · intro a a' haa'
+            -- a : Fin ((roundIdx - m) + 1),  a' : Fin (roundIdx.succ - m)
+            have haa : (a : ℕ) = (a' : ℕ) := by
+              have := Fin.heq_ext_iff hsndcard |>.mp haa'
+              omega
+            simp only [Transcript.concat]
+            -- evaluate both snocs / snd by casing on the position
+            obtain ⟨av, hav_lt⟩ := a
+            simp only [Fin.val_mk] at haa hav_lt ⊢
+            -- unfold the right `snd` (over the snoc'd transcript)
+            unfold Transcript.snd
+            rw [dif_neg (show ¬ (roundIdx : Fin (m + n)).succ ≤ m from by
+                  simp only [Fin.le_def, Fin.val_succ]; omega),
+                dif_neg (show ¬ (roundIdx : Fin (m + n)).castSucc ≤ m from by
+                  simp only [Fin.le_def, Fin.coe_castSucc]; omega)]
+            simp only [Fin.snoc, Fin.val_mk]
+            by_cases hlast : av = (roundIdx : ℕ) - m
+            · -- last position: snoc gives msg; snd reads the snoc'd entry at index roundIdx
+              rw [dif_neg (show ¬ av < (roundIdx : ℕ) - m from by omega),
+                  dif_neg (show ¬ m + (a' : ℕ) < (roundIdx : ℕ) from by omega)]
+              refine HEq.trans (cast_heq _ _) ?_
+              refine HEq.trans ?_ (cast_heq _ _).symm
+              refine HEq.trans (cast_heq _ _) (HEq.trans ?_ (cast_heq _ _).symm)
+              rfl
+            · -- earlier position: snoc gives tr.snd value; snd reads tr at index m+av
+              have hlt2 : av < (roundIdx : ℕ) - m := by omega
+              rw [dif_pos (show av < (roundIdx : ℕ) - m from hlt2),
+                  dif_pos (show m + (a' : ℕ) < (roundIdx : ℕ) from by omega)]
+              refine HEq.trans (cast_heq _ _) ?_
+              refine HEq.trans ?_ (cast_heq _ _).symm
+              refine HEq.trans (cast_heq _ _) (HEq.trans ?_ (cast_heq _ _).symm)
+              congr 1
+              ext
+              simp only [Fin.val_castLT]
+              omega
   toFun_full := sorry
 
 end Verifier

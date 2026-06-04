@@ -124,6 +124,110 @@ structure StateFunction
   toFun_full : ∀ stmt tr, ¬ toFun (.last n) stmt tr →
     Pr[(· ∈ langOut) | OptionT.mk do (simulateQ impl (verifier.run stmt tr)).run' (← init)] = 0
 
+namespace StateFunction
+
+/-! ### Reusable combinatorial / union-bound backbone for round-by-round soundness
+
+These lemmas isolate the two protocol-independent ingredients of the
+`rbrSoundness → soundness` implication (and its knowledge variant):
+
+* a *first-crossing* (pigeonhole) argument: a Prop-valued sequence over the `Fin (n + 1)` rounds
+  that is `false` at round `0` and `true` at the last round must *flip* `false → true` at some
+  round, and — given the `toFun_next` semantics that forbid flips at prover-to-verifier rounds —
+  that flipping round is a *challenge* round; and
+* a *finite union bound* over the (finite) set of challenge rounds.
+
+Composing these reduces the soundness error to `∑ i, rbrSoundnessError i`, once the realized run is
+related to the per-round partial-run marginals.  The two lemmas below are fully general (they make
+no reference to the probabilistic execution), so they are directly reusable for both the plain and
+the knowledge variants. -/
+
+omit [∀ i, SampleableType (pSpec.Challenge i)] init impl in
+/-- **First-crossing / pigeonhole over rounds.**  If a `Prop`-valued sequence indexed by the
+`Fin (n + 1)` rounds is `false` at round `0` and `true` at the last round, then there is some round
+`j : Fin n` at which it flips from `false` (at `j.castSucc`) to `true` (at `j.succ`).
+
+This is the protocol-independent core of the union bound that turns round-by-round soundness into
+plain soundness: a run that ends accepting on a bad statement (state `true` at the end) but starts
+rejecting (state `false` at the start) must cross at some first round, and the per-round crossing
+events are exactly what `rbrSoundnessError` bounds. -/
+theorem exists_flip_of_false_zero_true_last
+    (P : Fin (n + 1) → Prop) [DecidablePred P]
+    (h0 : ¬ P 0) (hlast : P (Fin.last n)) :
+    ∃ j : Fin n, ¬ P j.castSucc ∧ P j.succ := by
+  by_contra hcon
+  push Not at hcon
+  have key : ∀ k : Fin (n + 1), ¬ P k := by
+    intro k
+    induction k using Fin.induction with
+    | zero => exact h0
+    | succ i ih => exact hcon i ih
+  exact key (Fin.last n) hlast
+
+omit [∀ i, SampleableType (pSpec.Challenge i)] init impl in
+/-- **First-crossing landing on a challenge round.**  Strengthening of
+`exists_flip_of_false_zero_true_last`: if, in addition, `P` cannot flip `false → true` at any
+prover-to-verifier round (the property guaranteed by `StateFunction.toFun_next`), then the crossing
+round is a *challenge* round `j : pSpec.ChallengeIdx`.
+
+This is the exact shape consumed by the union bound over challenge rounds: the resulting
+`pSpec.ChallengeIdx` matches the index type of `rbrSoundnessError`. -/
+theorem exists_challenge_flip_of_false_zero_true_last
+    (P : Fin (n + 1) → Prop) [DecidablePred P]
+    (h0 : ¬ P 0) (hlast : P (Fin.last n))
+    (hPtoV : ∀ j : Fin n, pSpec.dir j = .P_to_V → ¬ P j.castSucc → ¬ P j.succ) :
+    ∃ j : pSpec.ChallengeIdx, ¬ P j.1.castSucc ∧ P j.1.succ := by
+  obtain ⟨j, hcast, hsucc⟩ := exists_flip_of_false_zero_true_last P h0 hlast
+  cases hdir : pSpec.dir j with
+  | P_to_V => exact absurd hsucc (hPtoV j hdir hcast)
+  | V_to_P => exact ⟨⟨j, hdir⟩, hcast, hsucc⟩
+
+omit [∀ i, SampleableType (pSpec.Challenge i)] init impl in
+/-- **Union bound over a finset of indices.**  The probability that *some* index in a finset `s`
+satisfies its event is at most the sum, over `s`, of the per-index probabilities.  Proved by
+iterating the binary union bound `probEvent_or_le`. -/
+theorem probEvent_exists_mem_le_sum {m : Type → Type*} [Monad m] [HasEvalSPMF m] {α : Type}
+    {κ : Type} [DecidableEq κ] (mx : m α) (p : κ → α → Prop) (s : Finset κ) :
+    Pr[fun x => ∃ i ∈ s, p i x | mx] ≤ ∑ i ∈ s, Pr[fun x => p i x | mx] := by
+  classical
+  induction s using Finset.induction with
+  | empty =>
+    simp only [Finset.sum_empty]
+    rw [nonpos_iff_eq_zero, probEvent_eq_zero_iff]
+    rintro x _ ⟨i, hi, _⟩
+    simp at hi
+  | @insert a s ha ih =>
+    rw [Finset.sum_insert ha]
+    have hor : Pr[fun x => (∃ i ∈ insert a s, p i x) | mx]
+        ≤ Pr[p a | mx] + Pr[fun x => ∃ i ∈ s, p i x | mx] := by
+      refine le_trans (le_of_eq ?_) (probEvent_or_le mx (p a) (fun x => ∃ i ∈ s, p i x))
+      congr 1
+      funext x
+      simp only [Finset.mem_insert, eq_iff_iff]
+      constructor
+      · rintro ⟨i, (rfl | hi), hpi⟩
+        · exact Or.inl hpi
+        · exact Or.inr ⟨i, hi, hpi⟩
+      · rintro (hpa | ⟨i, hi, hpi⟩)
+        · exact ⟨a, Or.inl rfl, hpa⟩
+        · exact ⟨i, Or.inr hi, hpi⟩
+    calc Pr[fun x => (∃ i ∈ insert a s, p i x) | mx]
+        ≤ Pr[p a | mx] + Pr[fun x => ∃ i ∈ s, p i x | mx] := hor
+      _ ≤ Pr[p a | mx] + ∑ i ∈ s, Pr[fun x => p i x | mx] := by gcongr
+
+omit [∀ i, SampleableType (pSpec.Challenge i)] init impl in
+/-- **Union bound over a fintype of indices.**  Specialization of `probEvent_exists_mem_le_sum` to
+the full (finite) index type, e.g. `pSpec.ChallengeIdx`.  The probability that *some* index
+satisfies its event is at most the total sum of per-index probabilities — the form used to bound a
+soundness error by `∑ i, rbrSoundnessError i`. -/
+theorem probEvent_exists_le_sum {m : Type → Type*} [Monad m] [HasEvalSPMF m] {α : Type}
+    {κ : Type} [Fintype κ] [DecidableEq κ] (mx : m α) (p : κ → α → Prop) :
+    Pr[fun x => ∃ i, p i x | mx] ≤ ∑ i : κ, Pr[fun x => p i x | mx] := by
+  have := probEvent_exists_mem_le_sum mx p Finset.univ
+  simpa using this
+
+end StateFunction
+
 /-- A knowledge state function for a verifier, with respect to input relation `relIn`, output
   relation `relOut`, and intermediate witness types `WitMid`. This is used to define
   round-by-round knowledge soundness. -/
