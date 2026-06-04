@@ -1,8 +1,8 @@
 {
   "counts": {
-    "files_with_citations": 79,
+    "files_with_citations": 80,
     "keys_cited": 27,
-    "total_citation_edges": 111
+    "total_citation_edges": 112
   },
   "files": {
     "ArkLib/AGM/Basic.lean": [
@@ -131,6 +131,9 @@
       "BCIKS20"
     ],
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/GoodCoeffs.lean": [
       "BCIKS20"
     ],
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean": [
@@ -328,6 +331,7 @@
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AffineLines/BWMatrix.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AffineLines/Main.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AffineSpaces.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/GoodCoeffs.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Extraction.lean",

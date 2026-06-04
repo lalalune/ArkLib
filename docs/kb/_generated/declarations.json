@@ -11303,6 +11303,55 @@
         }
       ]
     },
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/GoodCoeffs.lean": {
+      "declarations": [
+        {
+          "doc": "The set of curve parameters `z : F` at which the degree-`k` parameterized curve through `u 0, \u2026, u k` is `\u03b4`-close to the Reed\u2013Solomon code. Curves analogue of `RS_goodCoeffs` (the line case is `k = 1`).",
+          "kind": "def",
+          "line": 33,
+          "name": "ProximityGap.RS_goodCoeffsCurve",
+          "namespace": "ProximityGap",
+          "short_name": "RS_goodCoeffsCurve",
+          "signature": "def RS_goodCoeffsCurve {k deg : \u2115} {domain : \u03b9 \u21aa F}"
+        },
+        {
+          "doc": "At every good curve parameter there is a codeword polynomial within the floor-`\u03b4` Hamming radius. Curves analogue of `RS_exists_Pz_of_mem_goodCoeffs`.",
+          "kind": "theorem",
+          "line": 43,
+          "name": "ProximityGap.RS_exists_Pz_of_mem_goodCoeffsCurve",
+          "namespace": "ProximityGap",
+          "short_name": "RS_exists_Pz_of_mem_goodCoeffsCurve",
+          "signature": "theorem RS_exists_Pz_of_mem_goodCoeffsCurve {k deg : \u2115} {domain : \u03b9 \u21aa F} {\u03b4 : \u211d\u22650}"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 49,
+          "name": "ProximityGap._anon_class_49",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_49",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 74,
+          "name": "ProximityGap.RS_exists_kernelVec_BW_homMatrix_eval_of_mem_goodCoeffsCurve",
+          "namespace": "ProximityGap",
+          "short_name": "RS_exists_kernelVec_BW_homMatrix_eval_of_mem_goodCoeffsCurve",
+          "signature": "theorem RS_exists_kernelVec_BW_homMatrix_eval_of_mem_goodCoeffsCurve"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 86,
+          "name": "ProximityGap._anon_class_86",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_86",
+          "signature": "class classical"
+        }
+      ]
+    },
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ErrorBound.lean": {
       "declarations": [
         {
@@ -34808,7 +34857,7 @@
         {
           "doc": "Transform a reduction for a protocol specification `pSpec` into a reduction for the salted protocol specification `pSpec.addSalt Salt`. Require additional computation of the salt for each prover's round.",
           "kind": "def",
-          "line": 180,
+          "line": 191,
           "name": "Reduction.addSalt",
           "namespace": "",
           "short_name": "Reduction.addSalt",
@@ -34817,7 +34866,7 @@
         {
           "doc": "Transform an oracle reduction for a protocol specification `pSpec` into an oracle reduction for the salted protocol specification `pSpec.addSalt Salt`. Require additional computation of the salt for each prover's round.",
           "kind": "def",
-          "line": 190,
+          "line": 201,
           "name": "OracleReduction.addSalt",
           "namespace": "",
           "short_name": "OracleReduction.addSalt",
@@ -37826,9 +37875,18 @@
           "signature": "def localized_fold_eval (i : Fin \u2113) (steps : \u2115) (h_i_add_steps : i + steps \u2264 \u2113)"
         },
         {
+          "doc": "Split a sum over `Fin (2^(n+1))` into the high bit `c \u2208 Fin 2` and the low `n` bits `b \u2208 Fin (2^n)`, where `idx = c * 2^n + b`.",
+          "kind": "theorem",
+          "line": 1124,
+          "name": "Binius.BinaryBasefold.sum_fin_pow_succ_split",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "sum_fin_pow_succ_split",
+          "signature": "theorem sum_fin_pow_succ_split {M : Type*} [AddCommMonoid M] (n : \u2115)"
+        },
+        {
           "doc": "**Lemma 4.9.** The iterated fold equals the localized fold evaluation via matmul form",
           "kind": "theorem",
-          "line": 1123,
+          "line": 1167,
           "name": "Binius.BinaryBasefold.iterated_fold_eq_matrix_form",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "iterated_fold_eq_matrix_form",
@@ -37837,7 +37895,7 @@
         {
           "doc": "Lemma 4.13 : if f\u207d\u2071\u207e is evaluation of P\u207d\u2071\u207e(X) over S\u207d\u2071\u207e, then fold(f\u207d\u2071\u207e, r_chal) is evaluation of P\u207d\u2071\u207a\u00b9\u207e(X) over S\u207d\u2071\u207a\u00b9\u207e. At level `i = \u2113`, we have P\u207d\u02e1\u207e =",
           "kind": "theorem",
-          "line": 1140,
+          "line": 1184,
           "name": "Binius.BinaryBasefold.fold_advances_evaluation_poly",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "fold_advances_evaluation_poly",
@@ -37846,7 +37904,7 @@
         {
           "doc": "Given a point `v \u2208 S^(0)`, extract the middle `steps` bits `{v_i, ..., v_{i+steps-1}}` as a `Fin (2 ^ steps)`.",
           "kind": "def",
-          "line": 1327,
+          "line": 1371,
           "name": "Binius.BinaryBasefold.extractMiddleFinMask",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "extractMiddleFinMask",
@@ -37855,7 +37913,7 @@
         {
           "doc": "The Reed-Solomon code C^(i) for round i in Binary Basefold. For each i \u2208 {0, steps, ..., \u2113}, C(i) is the Reed-Solomon code RS_{L, S\u207d\u2071\u207e}[2^{\u2113+R-i}, 2^{\u2113-i}].",
           "kind": "def",
-          "line": 1353,
+          "line": 1397,
           "name": "Binius.BinaryBasefold.BBF_Code",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "BBF_Code",
@@ -37864,7 +37922,7 @@
         {
           "doc": "The (minimum) distance d_i of the code C^(i) : `d\u1d62 := 2^(\u2113 + R - i) - 2^(\u2113 - i) + 1`",
           "kind": "def",
-          "line": 1362,
+          "line": 1406,
           "name": "Binius.BinaryBasefold.BBF_CodeDistance",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "BBF_CodeDistance",
@@ -37873,7 +37931,7 @@
         {
           "doc": "Disagreement set \u0394 : The set of points where two functions disagree. For functions f^(i+\u03d1) and g^(i+\u03d1), this is {y \u2208 S^(i+\u03d1) | f^(i+\u03d1)(y) \u2260 g^(i+\u03d1)(y)}. `Set`-valued analogue of the canonical `Code.disagreementCols` (in `ArkLib/Data/CodingTheory/Basic/Distance.lean`): used here because the underlying `sDomain` need not be `Fintype` / `DecidableEq` at every call site. When both instances are available, the two coincide modulo `Set.toFinset`.",
           "kind": "def",
-          "line": 1373,
+          "line": 1417,
           "name": "Binius.BinaryBasefold.disagreementSet",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "disagreementSet",
@@ -37882,7 +37940,7 @@
         {
           "doc": "Fiber-wise disagreement set \u0394^(i) : The set of points y \u2208 S^(i+\u03d1) for which functions f^(i) and g^(i) are not identical when restricted to the entire fiber of points in S\u207d\u2071\u207e that maps to y.",
           "kind": "def",
-          "line": 1382,
+          "line": 1426,
           "name": "Binius.BinaryBasefold.fiberwiseDisagreementSet",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "fiberwiseDisagreementSet",
@@ -37891,7 +37949,7 @@
         {
           "doc": "Fiber-wise distance d^(i) : The minimum size of the fiber-wise disagreement set between f^(i) and any codeword in C^(i).",
           "kind": "def",
-          "line": 1393,
+          "line": 1437,
           "name": "Binius.BinaryBasefold.fiberwiseDistance",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "fiberwiseDistance",
@@ -37900,7 +37958,7 @@
         {
           "doc": "Fiberwise closeness : f^(i) is fiberwise close to C^(i) if 2 * d^(i)(f^(i), C^(i)) < d_{i+steps}",
           "kind": "def",
-          "line": 1404,
+          "line": 1448,
           "name": "Binius.BinaryBasefold.fiberwiseClose",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "fiberwiseClose",
@@ -37909,7 +37967,7 @@
         {
           "doc": "Hamming closeness : f is close to C in Hamming distance if 2 * d(f, C) < d_i",
           "kind": "def",
-          "line": 1412,
+          "line": 1456,
           "name": "Binius.BinaryBasefold.hammingClose",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "hammingClose",
@@ -37918,7 +37976,7 @@
         {
           "doc": "Unique closest codeword : If a function f^(i) is within the unique decoding radius of the code C^(i), then this gives the unique closest codeword using Berlekamp-Welch decoder.",
           "kind": "def",
-          "line": 1422,
+          "line": 1466,
           "name": "Binius.BinaryBasefold.uniqueClosestCodeword",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "uniqueClosestCodeword",
@@ -37927,7 +37985,7 @@
         {
           "doc": "if `d\u207d\u2071\u207e(f\u207d\u2071\u207e, C\u207d\u2071\u207e) < d_{\u1d62\u208asteps} / 2` (fiberwise distance), then `d(f\u207d\u2071\u207e, C\u207d\u2071\u207e) < d\u1d62/2` (regular code distance)",
           "kind": "theorem",
-          "line": 1596,
+          "line": 1640,
           "name": "Binius.BinaryBasefold.fiberwise_dist_lt_imp_dist_lt_unique_decoding_radius",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "fiberwise_dist_lt_imp_dist_lt_unique_decoding_radius",
@@ -37936,7 +37994,7 @@
         {
           "doc": "Compliance condition (Definition 4.17) : For an index `i` that is a multiple of `steps`, the oracle `f_i` is compliant if it's close to the code fiber-wise, the next oracle `f_i_plus_steps` is close to its code, and their unique closest codewords are consistent with folding.",
           "kind": "def",
-          "line": 1812,
+          "line": 1856,
           "name": "Binius.BinaryBasefold.isCompliant",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "isCompliant",
@@ -37945,7 +38003,7 @@
         {
           "doc": "Farness implies non-compliance. If `f_i` is far from its code `C_i`, it cannot be compliant. This follows directly from the contrapositive of `fiberwise_dist_lt_imp_dist_lt`.",
           "kind": "lemma",
-          "line": 1845,
+          "line": 1889,
           "name": "Binius.BinaryBasefold.farness_implies_non_compliance",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "farness_implies_non_compliance",
@@ -37954,7 +38012,7 @@
         {
           "doc": "Bad event for folding (Definition 4.19) : This event captures two scenarios where the random folding challenges undermine the protocol's soundness checks. For `i \u2208 {0, ..., \u2113 - steps}`, - In case `d\u207d\u2071\u207e(f\u207d\u2071\u207e, C\u207d\u2071\u207e) < d\u1d62\u208asteps / 2` : `\u0394\u207d\u2071\u207e(f\u207d\u2071\u207e, f\u0304\u207d\u2071\u207e) \u2284 \u0394(fold(f\u207d\u2071\u207e, r\u1d62', ..., r\u1d62\u208asteps\u208b\u2081'), fold(f\u0304\u207d\u2071\u207e, r\u1d62', ..., r\u1d62\u208asteps\u208b\u2081'))` - In case `d\u207d\u2071\u207e(f\u207d\u2071\u207e, C\u207d\u2071\u207e) \u2265 d\u1d62\u208asteps / 2` : `d(fold(f\u207d\u2071\u207e, r\u1d62', ..., r\u1d62\u208asteps\u208b\u2081'), C\u207d\u2071\u207asteps\u207e) < d\u1d62\u208asteps / 2`",
           "kind": "def",
-          "line": 1874,
+          "line": 1918,
           "name": "Binius.BinaryBasefold.foldingBadEvent",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "foldingBadEvent",
@@ -49134,8 +49192,8 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5335,
-      "files": 282
+      "declarations": 5341,
+      "files": 283
     }
   }
 }
