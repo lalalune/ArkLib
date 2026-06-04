@@ -1409,6 +1409,106 @@ theorem BW_homMatrix_entry_natDegree_le_of_natDegree_le {F : Type} [Field F]
       _ = 0 := by simp [Polynomial.natDegree_C]
       _ ≤ d := Nat.zero_le d
 
+
+open Polynomial in
+/-- Degree-`d` generalization of `RS_natDegree_det_le_of_entry_natDegree_le_one`
+(the curves case of [BCIKS20] §6.1): the determinant of an `n × n` matrix of
+polynomials with entries of degree ≤ `d` has degree ≤ `d * n`. The line case
+is `d = 1`. -/
+theorem RS_natDegree_det_le_of_entry_natDegree_le (n d : ℕ)
+    (A : Matrix (Fin n) (Fin n) F[X])
+    (hdeg : ∀ i j, (A i j).natDegree ≤ d) :
+    (Matrix.det A).natDegree ≤ d * n := by
+  classical
+  rw [Matrix.det_apply]
+  refine Polynomial.natDegree_sum_le_of_forall_le (s := (Finset.univ : Finset (Equiv.Perm (Fin n))))
+    (f := fun σ : Equiv.Perm (Fin n) => (Equiv.Perm.sign σ : Units ℤ) • (∏ i : Fin n, A (σ i) i)) ?_
+  intro σ hσ
+  have hsign :
+      ((Equiv.Perm.sign σ : Units ℤ) • (∏ i : Fin n, A (σ i) i)).natDegree
+        ≤ (∏ i : Fin n, A (σ i) i).natDegree := by
+    rcases Int.units_eq_one_or (Equiv.Perm.sign σ) with hs | hs
+    · simp [hs]
+    · simp [hs]
+  have hprod : (∏ i : Fin n, A (σ i) i).natDegree ≤ d * n := by
+    have h1 : (∏ i : Fin n, A (σ i) i).natDegree ≤ ∑ i : Fin n, (A (σ i) i).natDegree := by
+      simpa using
+        (Polynomial.natDegree_prod_le (s := (Finset.univ : Finset (Fin n)))
+          (f := fun i : Fin n => A (σ i) i))
+    have h2 : (∑ i : Fin n, (A (σ i) i).natDegree) ≤ d * n := by
+      have hsum' : (∑ i ∈ (Finset.univ : Finset (Fin n)), (A (σ i) i).natDegree)
+          ≤ (Finset.univ : Finset (Fin n)).card • (d : ℕ) :=
+        Finset.sum_le_card_nsmul (s := (Finset.univ : Finset (Fin n)))
+          (f := fun i : Fin n => (A (σ i) i).natDegree) (n := d)
+          (fun i _ => hdeg (σ i) i)
+      simpa [Finset.card_univ, Fintype.card_fin, smul_eq_mul, mul_comm] using hsum'
+    exact le_trans h1 h2
+  exact le_trans hsign hprod
+
+
+open Polynomial in
+/-- Degree-`d` generalization of `BW_homMatrix_det_submatrix_natDegree_le_e_add_one`
+(the curves case of [BCIKS20] §6.1): minors of the BW matrix over words of
+degree ≤ `d` have degree ≤ `d * (e + 1)` — only the `e + 1` evaluation columns
+carry degree. The line case is `d = 1`. -/
+theorem BW_homMatrix_det_submatrix_natDegree_le_of_natDegree_le {F : Type} [Field F]
+    {ι : Type} [Fintype ι] (e k : ℕ) (ωs : ι → F) (g : ι → F[X]) (d : ℕ)
+    (hd : ∀ i, (g i).natDegree ≤ d) (r : Fin ((e + 1) + (e + k)) → ι) :
+    (Matrix.det
+        (Matrix.submatrix
+          (BW_homMatrix (ι := ι) e k (fun i => (Polynomial.C (ωs i) : F[X])) g)
+          r id)).natDegree ≤ d * (e + 1) := by
+  classical
+  set A : Matrix (Fin ((e + 1) + (e + k))) (Fin ((e + 1) + (e + k))) F[X] :=
+    Matrix.submatrix
+      (BW_homMatrix (ι := ι) e k (fun i => (Polynomial.C (ωs i) : F[X])) g) r id with hA
+  rw [Matrix.det_apply]
+  refine Polynomial.natDegree_sum_le_of_forall_le
+    (s := (Finset.univ : Finset (Equiv.Perm (Fin ((e + 1) + (e + k))))))
+    (f := fun σ => (Equiv.Perm.sign σ : Units ℤ) • (∏ i, A (σ i) i)) ?_
+  intro σ _
+  have hsign : ((Equiv.Perm.sign σ : Units ℤ) • (∏ i, A (σ i) i)).natDegree
+      ≤ (∏ i, A (σ i) i).natDegree := by
+    rcases Int.units_eq_one_or (Equiv.Perm.sign σ) with hs | hs
+    · simp [hs]
+    · simp [hs]
+  refine le_trans hsign ?_
+  -- column-precise entry bounds
+  have hcol : ∀ j : Fin ((e + 1) + (e + k)),
+      (A (σ j) j).natDegree ≤ if j.1 < e + 1 then d else 0 := by
+    intro j
+    by_cases hj : (j.1 < e + 1)
+    · simp only [hA, Matrix.submatrix_apply, id, BW_homMatrix, Matrix.of_apply, hj, ↓reduceIte]
+      calc ((g (r (σ j))) * (Polynomial.C (ωs (r (σ j)))) ^ j.1).natDegree
+          ≤ (g (r (σ j))).natDegree + ((Polynomial.C (ωs (r (σ j)))) ^ j.1).natDegree :=
+            Polynomial.natDegree_mul_le
+        _ ≤ d + 0 := by
+            refine Nat.add_le_add (hd _) ?_
+            simpa using Polynomial.natDegree_pow_le_of_le j.1
+              (le_of_eq (Polynomial.natDegree_C (ωs (r (σ j)))))
+        _ = d := Nat.add_zero d
+    · simp only [hA, Matrix.submatrix_apply, id, BW_homMatrix, Matrix.of_apply, hj, ↓reduceIte,
+        Polynomial.natDegree_neg]
+      calc ((Polynomial.C (ωs (r (σ j)))) ^ (j.1 - (e + 1))).natDegree
+          ≤ (j.1 - (e + 1)) * (Polynomial.C (ωs (r (σ j)))).natDegree :=
+            Polynomial.natDegree_pow_le
+        _ = 0 := by simp [Polynomial.natDegree_C]
+  -- product over columns: degree ≤ Σ column bounds = d * (e + 1)
+  calc (∏ i, A (σ i) i).natDegree
+      ≤ ∑ i, (A (σ i) i).natDegree := by
+        simpa using Polynomial.natDegree_prod_le
+          (s := (Finset.univ : Finset (Fin ((e + 1) + (e + k)))))
+          (f := fun i => A (σ i) i)
+    _ ≤ ∑ j : Fin ((e + 1) + (e + k)), (if j.1 < e + 1 then d else 0) :=
+        Finset.sum_le_sum (fun j _ => hcol j)
+    _ = d * (e + 1) := by
+        rw [← Finset.sum_filter]
+        simp only [Finset.sum_const, smul_eq_mul]
+        have hcard : #{j : Fin ((e + 1) + (e + k)) | j.1 < e + 1} = e + 1 := by
+          have := Fin_sum_ite_lt_e_add_one e k
+          simpa [Nat.lt_succ_iff] using this
+        rw [hcard, mul_comm]
+
 end CoreResults
 
 end ProximityGap
