@@ -37546,7 +37546,7 @@
         {
           "doc": "The *prismalinear* round polynomial `H = P \u00b7 Q(t)`, where `P = param.multpoly ctx` has per-variable degree `\u2264 multpolyBound i` in coord `i` and `Q = param.combinator ctx` is the public univariate combinator applied to the multilinear witness `t`. Output has degree `\u2264 param.degCombinator + multpolyBound i` in coord `i`. For `multpolyBound = fun _ => 1`, recovers `Sumcheck.Structured.computeRoundPoly`'s uniform output via `restrictDegreeVar_const` (defeq).",
           "kind": "def",
-          "line": 69,
+          "line": 70,
           "name": "Sumcheck.Structured.Prismalinear.computeRoundPoly",
           "namespace": "Sumcheck.Structured.Prismalinear",
           "short_name": "computeRoundPoly",

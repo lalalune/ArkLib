@@ -70,9 +70,10 @@ structure RingSwitchingProfile (B L : Type*) (κ : ℕ)
   φ₀ : L →+* A
   /-- row embedding `L → A`; Binius `α ↦ 1 ⊗ α`, Hachi the automorphism `σ₋₁`. -/
   φ₁ : L →+* A
-  /-- The `2^κ` `L`-valued "row" coordinates of an `A`-element (Binius: `β.baseChange L`-coords of
-  `ŝ ∈ L ⊗_K L`; used in step 5 / `compute_s0`). The algebraic law relating it to `φ₀`/`φ₁` and
-  `A`'s multiplication is an instance-internal lemma (used in soundness proofs), not a field here. -/
+  /-- The `2^κ` `L`-valued "row" coordinates of an `A`-element (Binius:
+  `β.baseChange L`-coords of `ŝ ∈ L ⊗_K L`; used in step 5 / `compute_s0`).
+  The algebraic law relating it to `φ₀`/`φ₁` and `A`'s multiplication is an
+  instance-internal lemma (used in soundness proofs), not a field here. -/
   decomposeRows : A → (Fin κ → Fin 2) → L
   /-- The `2^κ` `L`-valued "column" coordinates of an `A`-element (Binius: `baseChangeRight`-coords;
   used in step 2 / `performCheckOriginalEvaluation`). NOTE: in the Binius instance this uses the
@@ -81,9 +82,10 @@ structure RingSwitchingProfile (B L : Type*) (κ : ℕ)
   /-- **Row reconstruction law** (the eq̃/trace structural identity, DP24 §2.5 / Hachi Theorem 2):
   every `A`-element is recovered from its row coordinates via the `φ₀`-image of those coordinates
   weighted by the `φ₁`-image of the basis. This is the algebraic law tying `decomposeRows` to
-  `φ₀`/`φ₁`/`basis`; it is what the batching/sumcheck completeness and soundness proofs depend on,
-  and what rules out degenerate profiles (e.g. `decomposeRows ≡ 0`). For Binius (`A = L ⊗_K L`) it is
-  `Basis.sum_repr` for `β.baseChange L`; for Hachi it is Theorem 2. -/
+  `φ₀`/`φ₁`/`basis`; it is what the batching/sumcheck completeness and soundness
+  proofs depend on, and what rules out degenerate profiles (e.g. `decomposeRows ≡ 0`).
+  For Binius (`A = L ⊗_K L`) it is `Basis.sum_repr` for `β.baseChange L`; for Hachi
+  it is Theorem 2. -/
   decomposeRows_spec : ∀ z : A, z = ∑ u, φ₀ (decomposeRows z u) * φ₁ (basis u)
   /-- **Column reconstruction law**: the right/`φ₁`-action dual of `decomposeRows_spec`. -/
   decomposeColumns_spec : ∀ z : A, z = ∑ v, φ₁ (decomposeColumns z v) * φ₀ (basis v)

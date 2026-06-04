@@ -22,9 +22,9 @@ This file is the prismalinear specialization, mirroring the multilinear surface 
 | `SumcheckMultiplierParam`              | `SumcheckMultiplierParam`                            |
 | `computeRoundPoly`                     | `computeRoundPoly`                                   |
 
-For `multpolyBound = fun _ => 1`, the prismalinear case is *definitionally* the multilinear case
-(via `restrictDegreeVar_const`, mechanically locked in by `example := rfl` next to `PrismalinearPoly`
-in `Sumcheck.Structured`).
+For `multpolyBound = fun _ => 1`, the prismalinear case is *definitionally* the
+multilinear case (via `restrictDegreeVar_const`, mechanically locked in by
+`example := rfl` next to `PrismalinearPoly` in `Sumcheck.Structured`).
 
 The polynomial-shape primitives `MultilinearPoly` and `PrismalinearPoly` live at the parent
 namespace `Sumcheck.Structured` — they're shape primitives, not sumcheck-specific concepts, so
@@ -49,7 +49,8 @@ The multilinear analog is `Sumcheck.Structured.SumcheckMultiplierParam`; with
 `multpolyBound = fun _ => 1`, the two specialize to the same shape via `restrictDegreeVar_const`. -/
 structure SumcheckMultiplierParam (L : Type) [CommSemiring L] {ℓ : ℕ} (Context : Type)
     (multpolyBound : Fin ℓ → ℕ) where
-  /-- Public *prismalinear* multiplier `P` — per-variable degree in coord `i` is `≤ multpolyBound i`. -/
+  /-- Public *prismalinear* multiplier `P`; per-variable degree in coord `i` is
+  `≤ multpolyBound i`. -/
   multpoly : (ctx : Context) → PrismalinearPoly L multpolyBound
   /-- Public univariate combinator `Q`, applied to the witness: `H = P · Q(t)`. -/
   combinator : (ctx : Context) → Polynomial L
