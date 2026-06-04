@@ -443,52 +443,121 @@ abbrev EvalClaim : R1CS.MatrixIdx → Type := fun _ => R
 instance : ∀ i, OracleInterface (EvalClaim R i) :=
   fun _ => default
 
+/-- The *bundled* evaluation-claim oracle `(v_A, v_B, v_C)`, modelled as a single oracle of type
+  `∀ i, EvalClaim R i`. Its oracle interface is the indexed-product interface `instProdForall`
+  (query `(i : R1CS.MatrixIdx) × Unit`, response `R`), which is *definitionally* the interface used
+  for the bundled `P_to_V` message `∀ i, EvalClaim R i`. -/
+@[simp]
+abbrev BundledEvalClaim : Type := ∀ i, EvalClaim R i
+
+/-
+STATEMENT REPAIR (2026-06-04): the previous output oracle family was indexed by
+`R1CS.MatrixIdx ⊕ R1CS.MatrixIdx ⊕ Fin 1`, putting THREE separate `EvalClaim R i` oracles in the
+left summand while the protocol spec `⟨!v[.P_to_V], !v[∀ i, EvalClaim R i]⟩` carries exactly ONE
+bundled `P_to_V` message. Since `pSpec.MessageIdx` is `Unique`, the oracle-verifier embedding
+`ιₛₒ ↪ ιₛᵢ ⊕ pSpec.MessageIdx` cannot inject three new oracles into one message — so the def was
+unrealizable at the signature level (documented inline by the prior agent).
+
+Repair, option (b) from that note: the new eval-claim oracle is the SINGLE *bundled* oracle
+`BundledEvalClaim = ∀ i, EvalClaim R i`, drawn directly from the single bundled message. The output
+oracle family is therefore indexed by `Fin 1 ⊕ (R1CS.MatrixIdx ⊕ Fin 1)`: the left `Fin 1` is the
+bundled claim oracle (sourced from the message), the right summand is the unchanged input family
+`A, B, C, 𝕨` (passed through). This keeps the message/output arity matched, so `embedOStmt` is a
+genuine injection and the reduction is realizable (built directly below, mirroring `SendClaim`). The
+downstream `secondSumCheckVirtualPolynomial` is rethreaded to read the bundled claim and the
+matrices through the new index. -/
 @[simp]
 abbrev Statement.AfterSendEvalClaim : Type := Statement.AfterFirstSumcheck R pp
 
 @[simp]
-abbrev OracleStatement.AfterSendEvalClaim : R1CS.MatrixIdx ⊕ R1CS.MatrixIdx ⊕ Fin 1 → Type :=
-  Sum.elim (EvalClaim R) (OracleStatement.AfterFirstSumcheck R pp)
+abbrev OracleStatement.AfterSendEvalClaim : Fin 1 ⊕ (R1CS.MatrixIdx ⊕ Fin 1) → Type :=
+  Sum.elim (fun _ => BundledEvalClaim R) (OracleStatement.AfterFirstSumcheck R pp)
+
+/-- Oracle interface for the bundled-eval-claim output family: the leading `Fin 1` index is the
+bundled claim oracle `∀ i, EvalClaim R i` (indexed-product interface `instProdForall`, the same
+interface used for the bundled `P_to_V` message, so output/message types are coherent); the trailing
+`R1CS.MatrixIdx ⊕ Fin 1` indices reuse the matrix/witness interfaces of `AfterFirstSumcheck`. -/
+instance : ∀ i, OracleInterface (OracleStatement.AfterSendEvalClaim R pp i) :=
+  fun i => match i with
+    | .inl _ => OracleInterface.instProdForall (EvalClaim R)
+    | .inr j => (inferInstance : ∀ k, OracleInterface (OracleStatement.AfterFirstSumcheck R pp k)) j
 
 @[simp]
 abbrev Witness.AfterSendEvalClaim : Type := Unit
 
-/-
-OBSTRUCTION (precise, 2026-06-04): this def CANNOT be realized — neither by lifting `SendClaim`
-through `OracleLens` nor by any hand-built `OracleVerifier` — under the *stated* signature.
+/-- The honest *value* of the bundled evaluation claim `(v_A, v_B, v_C)` at the first sum-check
+challenge `r_x`, computed in the clear from the matrices `A, B, C`, the witness `𝕨`, and the public
+input `𝕩`. Each `v_idx = (M *ᵥ 𝕫) ⸨r_x⸩` is the multilinear extension of the row vector `M *ᵥ 𝕫`
+evaluated at `r_x`. (The prover holds all oracle statements in the clear, so this is a plain
+function; the verifier only ever queries it as an oracle.) -/
+noncomputable def evalClaimValue
+    (stmt : Statement.AfterFirstSumcheck R pp)
+    (oStmt : ∀ i, OracleStatement.AfterFirstSumcheck R pp i) :
+    BundledEvalClaim R :=
+  letI r_x : Fin pp.ℓ_m → R := stmt.1
+  letI 𝕩 : Statement.AfterFirstMessage R pp := stmt.2.2
+  letI 𝕫 := R1CS.𝕫 𝕩 (oStmt (.inr 0))
+  fun idx => MvPolynomial.eval r_x (MLE (((oStmt (.inl idx)) *ᵥ 𝕫) ∘ finFunctionFinEquiv))
 
-The output oracle family `OracleStatement.AfterSendEvalClaim` is indexed by
-`R1CS.MatrixIdx ⊕ R1CS.MatrixIdx ⊕ Fin 1`, whose LEFT summand is THREE separate `EvalClaim R i`
-oracles (one each for `v_A, v_B, v_C`). The protocol spec `⟨!v[.P_to_V], !v[∀ i, EvalClaim R i]⟩`
-carries ONE bundled `P_to_V` message, so `pSpec.MessageIdx` is `Unique` (cardinality 1; see
-`instance : Unique (MessageIdx ⟨!v[.P_to_V], !v[Msg]⟩)` in OracleReduction/ProtocolSpec/Basic.lean).
+/-- The oracle prover for `sendEvalClaim`: it forwards the input oracle family `A, B, C, 𝕨`
+unchanged and sends the bundled evaluation claim `(v_A, v_B, v_C)` (computed via `evalClaimValue`)
+as the single `P_to_V` message. Mirrors `SendClaim.oracleProver`, but the message is reconstructed
+from the input oracles rather than being an input oracle itself. -/
+noncomputable def sendEvalClaimProver :
+    OracleProver oSpec
+      (Statement.AfterFirstSumcheck R pp) (OracleStatement.AfterFirstSumcheck R pp) (Witness R pp)
+      (Statement.AfterSendEvalClaim R pp) (OracleStatement.AfterSendEvalClaim R pp) Unit
+      ⟨!v[.P_to_V], !v[∀ i, EvalClaim R i]⟩ where
+  PrvState := fun _ =>
+    (Statement.AfterFirstSumcheck R pp × (∀ i, OracleStatement.AfterFirstSumcheck R pp i))
+      × BundledEvalClaim R
+  input := fun ⟨⟨stmt, oStmt⟩, _wit⟩ => (⟨stmt, oStmt⟩, evalClaimValue R pp stmt oStmt)
+  sendMessage | ⟨0, _⟩ => fun st => pure (st.2, st)
+  receiveChallenge | ⟨0, h⟩ => nomatch h
+  output := fun st => pure
+    (⟨st.1.1,
+      fun i => match i with
+        | .inl _ => st.2
+        | .inr j => st.1.2 j⟩,
+     ())
 
-Every oracle verifier (and hence every `OracleLens.embedOStmt`) must supply an *injective*
-  `embed : Outer_ιₛₒ ↪ Outer_ιₛᵢ ⊕ pSpec.MessageIdx`
-routing each output oracle to either an INPUT oracle (`A,B,C,𝕨`, indexed `MatrixIdx ⊕ Fin 1`) or a
-message. The three NEW `EvalClaim` output oracles are not among the input oracles, so they must all
-come from `pSpec.MessageIdx` — but that has only ONE element, so three distinct indices cannot
-inject into it. `SendClaim` lifts a single oracle to `OStatement ⊕ᵥ OStatement` (two oracles from
-one message), which is also the wrong arity.
+/-- The oracle verifier for `sendEvalClaim`: it performs no check (the eval-claim send is a pure
+forwarding component; the claims are verified later by the second sum-check / final check), routes
+the bundled claim output oracle from the `P_to_V` message, and routes the `A, B, C, 𝕨` output
+oracles from the corresponding input oracles. Mirrors `SendClaim.oracleVerifier`. -/
+def sendEvalClaimVerifier :
+    OracleVerifier oSpec
+      (Statement.AfterFirstSumcheck R pp) (OracleStatement.AfterFirstSumcheck R pp)
+      (Statement.AfterSendEvalClaim R pp) (OracleStatement.AfterSendEvalClaim R pp)
+      ⟨!v[.P_to_V], !v[∀ i, EvalClaim R i]⟩ where
+  verify := fun stmt _challenges => pure stmt
+  embed := {
+    toFun := fun
+      | .inl _ => .inr default
+      | .inr j => .inl j
+    inj' := by
+      intro a b h
+      match a, b with
+      | .inl _, .inl _ => congr 1; exact Subsingleton.elim _ _
+      | .inl _, .inr _ => simp at h
+      | .inr _, .inl _ => simp at h
+      | .inr _, .inr _ => simpa using h
+  }
+  hEq := fun i => match i with
+    | .inl _ => rfl
+    | .inr _ => rfl
 
-This is a SIGNATURE-level mismatch, not an unfinished proof: to make `sendEvalClaim` realizable
-one must either (a) split the message into three separate `P_to_V` messages
-`⟨!v[.P_to_V, .P_to_V, .P_to_V], !v[EvalClaim R .A, EvalClaim R .B, EvalClaim R .C]⟩` so
-`pSpec.MessageIdx` has cardinality 3, or (b) make the output a SINGLE bundled eval-claim oracle
-(index `Unit ⊕ MatrixIdx ⊕ Fin 1`) drawn from the single bundled message. Both change the stated
-output-oracle / pSpec interface, which is owned by the surrounding scaffolding (and consumed by the
-commented-out `secondSumcheck`/`finalCheck`), so it is left as an obstruction rather than silently
-mutated. `firstChallenge` (above) shows the OracleLens lift works cleanly when the output-oracle
-arity matches the message/input arity.
--/
-def oracleReduction.sendEvalClaim :
+/-- STATEMENT REPAIR (2026-06-04): `sendEvalClaim` is now realized (no `sorry`) by the bundled
+output-oracle interface above. The prover forwards `A, B, C, 𝕨` and sends the bundled claim
+`(v_A, v_B, v_C)`; the verifier draws the claim oracle from the message and the rest from the
+inputs. -/
+noncomputable def oracleReduction.sendEvalClaim :
     OracleReduction oSpec
       (Statement.AfterFirstSumcheck R pp) (OracleStatement.AfterFirstSumcheck R pp) (Witness R pp)
       (Statement.AfterSendEvalClaim R pp) (OracleStatement.AfterSendEvalClaim R pp) Unit
-      ⟨!v[.P_to_V], !v[∀ i, EvalClaim R i]⟩ :=
-  sorry
-  -- SendClaim.oracleReduction oSpec
-  --   (Statement.AfterFirstSumcheck R pp)
+      ⟨!v[.P_to_V], !v[∀ i, EvalClaim R i]⟩ where
+  prover := sendEvalClaimProver R pp oSpec
+  verifier := sendEvalClaimVerifier R pp oSpec
 
 /-!
   ## Random linear combination challenges
@@ -505,43 +574,67 @@ abbrev LinearCombinationChallenge : Type := R1CS.MatrixIdx → R
 abbrev Statement.AfterLinearCombination : Type :=
   LinearCombinationChallenge R × Statement.AfterSendEvalClaim R pp
 
+/-- STATEMENT REPAIR (2026-06-04): the output oracle family now matches the (corrected) bundled
+shape of `AfterSendEvalClaim` — the bundled claim oracle `BundledEvalClaim` plus the passthrough
+`A, B, C, 𝕨`, indexed `Fin 1 ⊕ (R1CS.MatrixIdx ⊕ Fin 1)`. `linearCombination` is a pure challenge,
+so the oracles pass through unchanged. -/
 @[simp]
-abbrev OracleStatement.AfterLinearCombination : R1CS.MatrixIdx ⊕ R1CS.MatrixIdx ⊕ Fin 1 → Type :=
-  Sum.elim (EvalClaim R) (OracleStatement.AfterFirstSumcheck R pp)
+abbrev OracleStatement.AfterLinearCombination : Fin 1 ⊕ (R1CS.MatrixIdx ⊕ Fin 1) → Type :=
+  OracleStatement.AfterSendEvalClaim R pp
 
 @[simp]
 abbrev Witness.AfterLinearCombination : Type := Unit
 
 /-
-OBSTRUCTION (precise, 2026-06-04): this def CANNOT be realized under the *stated* signature.
+STATEMENT REPAIR (2026-06-04): the previous signature stated the INPUT oracle family as
+`OracleStatement.AfterFirstSumcheck` (`A, B, C, 𝕨` only), while the OUTPUT family already contained
+the eval-claim oracles `v_A, v_B, v_C`, which were absent from that input. Since `linearCombination`
+is a pure `V_to_P` challenge, `pSpec.MessageIdx` is `IsEmpty`, so `embed : ιₛₒ ↪ ιₛᵢ ⊕ MessageIdx`
+must route every output oracle from an input oracle — impossible for the new claim oracles. The def
+was therefore unrealizable at the signature level (documented inline by the prior agent).
 
-The INPUT oracle family is `OracleStatement.AfterFirstSumcheck` (indexed `R1CS.MatrixIdx ⊕ Fin 1`:
-`A, B, C, 𝕨`), but the OUTPUT oracle family `OracleStatement.AfterLinearCombination` is indexed
-`R1CS.MatrixIdx ⊕ R1CS.MatrixIdx ⊕ Fin 1 = Sum.elim (EvalClaim R) (AfterFirstSumcheck)` — i.e. it
-ALSO contains the three `EvalClaim` oracles `v_A, v_B, v_C`, which are absent from the input.
+Repair (the prior agent's root-cause fix): per the protocol order, `linearCombination` runs AFTER
+`sendEvalClaim`, so its INPUT oracle family is `OracleStatement.AfterSendEvalClaim` (the bundled
+claim oracle + `A, B, C, 𝕨`), which equals the output family. With the input corrected, this is a
+clean identity-oracle challenge round — exactly the shape of `RandomQuery.oracleVerifier`'s
+bare-challenge: the prover receives the challenge `r = (r_A, r_B, r_C)`, the verifier returns it and
+identity-routes every oracle (`embed = .inl`, `hEq = rfl`). Built directly below. -/
+def linearCombinationProver :
+    OracleProver oSpec
+      (Statement.AfterSendEvalClaim R pp) (OracleStatement.AfterSendEvalClaim R pp) Unit
+      (Statement.AfterLinearCombination R pp) (OracleStatement.AfterLinearCombination R pp) Unit
+      ⟨!v[.V_to_P], !v[LinearCombinationChallenge R]⟩ where
+  PrvState
+  | 0 => (Statement.AfterSendEvalClaim R pp × (∀ i, OracleStatement.AfterSendEvalClaim R pp i)) × Unit
+  | 1 => (Statement.AfterSendEvalClaim R pp × (∀ i, OracleStatement.AfterSendEvalClaim R pp i))
+            × (LinearCombinationChallenge R)
+  input := fun x => x
+  sendMessage | ⟨0, h⟩ => nomatch h
+  receiveChallenge | ⟨0, _⟩ => fun st => pure fun r => (st.1, r)
+  output := fun ⟨⟨stmt, oStmt⟩, r⟩ => pure (((r, stmt), oStmt), ())
 
-`linearCombination` is a pure verifier challenge (`⟨!v[.V_to_P], !v[LinearCombinationChallenge R]⟩`),
-so `pSpec.MessageIdx` is `IsEmpty` (cardinality 0; see
-`instance : IsEmpty (MessageIdx ⟨!v[.V_to_P], !v[Chal]⟩)` in OracleReduction/ProtocolSpec/Basic.lean).
-Hence `embedOStmt : Outer_ιₛₒ ↪ Outer_ιₛᵢ ⊕ pSpec.MessageIdx` must route EVERY output oracle to an
-INPUT oracle — but the three new `EvalClaim` output oracles have no input source and there are no
-messages either. So no `OracleVerifier` / `OracleLens` exists for this signature.
+/-- The oracle verifier for `linearCombination`: returns the linear-combination challenge and
+identity-routes every oracle, mirroring `RandomQuery.oracleVerifier`. -/
+def linearCombinationVerifier :
+    OracleVerifier oSpec
+      (Statement.AfterSendEvalClaim R pp) (OracleStatement.AfterSendEvalClaim R pp)
+      (Statement.AfterLinearCombination R pp) (OracleStatement.AfterLinearCombination R pp)
+      ⟨!v[.V_to_P], !v[LinearCombinationChallenge R]⟩ where
+  verify := fun stmt chal => do
+    let r : LinearCombinationChallenge R := chal ⟨0, rfl⟩
+    pure (r, stmt)
+  embed := Function.Embedding.inl
+  hEq := fun _ => rfl
 
-Root cause: the stated INPUT type is inconsistent with the protocol order. Per the module docstring,
-`linearCombination` runs AFTER `sendEvalClaim`, so its input oracle family should already be
-`OracleStatement.AfterSendEvalClaim` (which equals the output family `Sum.elim (EvalClaim R) (…)`).
-With that corrected input, `linearCombination` becomes a clean identity-oracle challenge lift
-(`embedOStmt = .inl`, oracles pass through unchanged) — structurally the same shape as
-`firstChallenge` above. Correcting the input type changes the stated interface (owned by the
-surrounding scaffolding and threaded into `secondSumcheck`), so this is left as an obstruction rather
-than silently mutated.
--/
+/-- STATEMENT REPAIR (2026-06-04): `linearCombination` is now realized (no `sorry`) with the
+corrected input oracle family `AfterSendEvalClaim`. It is a clean identity-oracle challenge round. -/
 def oracleReduction.linearCombination :
     OracleReduction oSpec
-      (Statement.AfterFirstSumcheck R pp) (OracleStatement.AfterFirstSumcheck R pp) (Witness R pp)
+      (Statement.AfterSendEvalClaim R pp) (OracleStatement.AfterSendEvalClaim R pp) Unit
       (Statement.AfterLinearCombination R pp) (OracleStatement.AfterLinearCombination R pp) Unit
-      ⟨!v[.V_to_P], !v[LinearCombinationChallenge R]⟩ :=
-  sorry
+      ⟨!v[.V_to_P], !v[LinearCombinationChallenge R]⟩ where
+  prover := linearCombinationProver R pp oSpec
+  verifier := linearCombinationVerifier R pp oSpec
 
 /-!
   ## Second sum-check
@@ -550,6 +643,9 @@ def oracleReduction.linearCombination :
       `+ r_C * (MLE C) ⸨r_x, Y⸩ * (MLE 𝕫) ⸨Y⸩`
 -/
 
+-- STATEMENT REPAIR (2026-06-04): rethreaded to the bundled output-oracle index
+-- `Fin 1 ⊕ (R1CS.MatrixIdx ⊕ Fin 1)`: the witness oracle is now `.inr (.inr 0)` and matrix `idx`
+-- is `.inr (.inl idx)` (the leading `.inl 0` is the bundled eval-claim oracle, unused here).
 def secondSumCheckVirtualPolynomial
     (stmt : Statement.AfterLinearCombination R pp)
     (oStmt : ∀ i, OracleStatement.AfterLinearCombination R pp i) :
@@ -577,9 +673,12 @@ abbrev SecondSumcheckChallenge : Type := Fin pp.ℓ_n → R
 abbrev Statement.AfterSecondSumcheck : Type :=
   SecondSumcheckChallenge R pp × Statement.AfterLinearCombination R pp
 
+-- STATEMENT REPAIR (2026-06-04): rethreaded to the bundled output-oracle index
+-- `Fin 1 ⊕ (R1CS.MatrixIdx ⊕ Fin 1)`, matching `AfterLinearCombination` (the second sum-check
+-- leaves the oracle family unchanged).
 @[simp]
-abbrev OracleStatement.AfterSecondSumcheck : R1CS.MatrixIdx ⊕ R1CS.MatrixIdx ⊕ Fin 1 → Type :=
-  Sum.elim (EvalClaim R) (OracleStatement.AfterFirstSumcheck R pp)
+abbrev OracleStatement.AfterSecondSumcheck : Fin 1 ⊕ (R1CS.MatrixIdx ⊕ Fin 1) → Type :=
+  OracleStatement.AfterLinearCombination R pp
 
 @[simp]
 abbrev Witness.AfterSecondSumcheck : Type := Unit
