@@ -66,11 +66,30 @@ def reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut !p[] where
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
   {relIn : Set (StmtIn × WitIn)} {relOut : Set (StmtOut × WitOut)}
 
+/-- Completeness of a no-interaction reduction.
+
+  **Faithfulness of the hypothesis `hRel`.** `Reduction.run` (`Execution.lean`) runs the prover and
+  the verifier as two *independent* sub-computations: the prover evaluates `combineMap mapStmt mapWit`
+  (one call each to `mapStmt` and `mapWit`), while the verifier *separately* evaluates `mapStmt` again
+  on the same input statement. The completeness event (`Reduction.completeness`, `Security/Basic.lean`)
+  then demands not only `(stmtOut, witOut) ∈ relOut` but also that the prover's and the verifier's
+  output statements *agree* (`prvStmtOut = stmtOut`). When `mapStmt` is randomized (queries `oSpec`),
+  the two independent evaluations may disagree, so a hypothesis about a *single* evaluation of
+  `combineMap` is too weak to imply completeness — it cannot constrain the verifier's separate
+  `mapStmt` call. Accordingly `hRel` is stated over the *genuine* run distribution: the prover's
+  `combineMap`, the verifier's separate `mapStmt`, and the success event including the agreement
+  constraint, all threaded through the *same* state via `simulateQ impl`. There is no challenge
+  oracle to lift (the protocol `!p[]` has no rounds), so this is the faithful image of
+  `Reduction.run` for the no-interaction reduction. -/
 theorem reduction_completeness {ε : ℝ≥0} [DecidablePred (· ∈ relOut)]
     [DecidableEq StmtOut]
     (hRel : ∀ stmtIn witIn, (stmtIn, witIn) ∈ relIn →
-      Pr[fun ⟨stmtOut, witOut⟩ => (stmtOut, witOut) ∈ relOut | do
-        (simulateQ impl <| combineMap mapStmt mapWit ⟨stmtIn, witIn⟩).run' (← init)] ≥ 1 - ε) :
+      Pr[fun ⟨⟨pStmtOut, witOut⟩, vStmtOut⟩ =>
+          (vStmtOut, witOut) ∈ relOut ∧ pStmtOut = vStmtOut | do
+        (simulateQ impl <| do
+            let ctxOut ← combineMap mapStmt mapWit ⟨stmtIn, witIn⟩
+            let vStmtOut ← mapStmt stmtIn
+            pure (ctxOut, vStmtOut)).run' (← init)] ≥ 1 - ε) :
     Reduction.completeness init impl relIn relOut (reduction mapStmt mapWit) ε := by
   simp [Reduction.completeness, Reduction.run, Verifier.run, prover, Prover.run,
     - tsub_le_iff_right]
