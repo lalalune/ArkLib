@@ -36860,9 +36860,18 @@
           "signature": "lemma firstOracleWitnessConsistencyProp_relay_preserved (i : Fin \u2113)"
         },
         {
+          "doc": "**Relay-step transport for `oracleFoldingConsistencyProp`.** A non-commitment (\"relay\") round advances the statement/witness index from `i.castSucc` to `i.succ` but leaves the oracle family unchanged up to the index reindexing `mapOStmtOutRelayStep` (the oracle count is preserved because `\u00ac isCommitmentRound`, so `toOutCodewordsCount \u2113 \u03d1 i.castSucc = toOutCodewordsCount \u2113 \u03d1 i.succ`). The per-block compliance check `isCompliant` of `oracleFoldingConsistencyProp` only reads `oStmt j`, `getNextOracle \u2026 j` and the challenge slice `getFoldingChallenges \u2026 (j * \u03d1)` with `j * \u03d1 + \u03d1 \u2264 oracleIdx`; under",
+          "kind": "lemma",
+          "line": 891,
+          "name": "Binius.BinaryBasefold.oracleFoldingConsistencyProp_relay_preserved",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "oracleFoldingConsistencyProp_relay_preserved",
+          "signature": "lemma oracleFoldingConsistencyProp_relay_preserved (i : Fin \u2113)"
+        },
+        {
           "doc": "",
           "kind": "lemma",
-          "line": 881,
+          "line": 956,
           "name": "Binius.BinaryBasefold.nonDoomedFoldingProp_relay_preserved",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "nonDoomedFoldingProp_relay_preserved",
@@ -36871,7 +36880,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 891,
+          "line": 966,
           "name": "Binius.BinaryBasefold.oracleWitnessConsistency",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "oracleWitnessConsistency",
@@ -36880,7 +36889,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 909,
+          "line": 984,
           "name": "Binius.BinaryBasefold.oracleWitnessConsistency_relay_preserved",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "oracleWitnessConsistency_relay_preserved",
@@ -36889,7 +36898,7 @@
         {
           "doc": "Before V's challenge of the `i-th` foldStep, we ignore the bad-folding-event of the `i-th` oracle if any and enable it after the next V's challenge, i.e. one round later. This is for the purpose of reasoning its RBR KS properly. Formally, = (oracleIdx = stmtIdx)`.",
           "kind": "def",
-          "line": 926,
+          "line": 1018,
           "name": "Binius.BinaryBasefold.masterKStateProp",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "masterKStateProp",
@@ -36898,7 +36907,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 939,
+          "line": 1031,
           "name": "Binius.BinaryBasefold.roundRelationProp",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "roundRelationProp",
@@ -36907,7 +36916,7 @@
         {
           "doc": "A modified version of roundRelationProp (i+1)",
           "kind": "def",
-          "line": 950,
+          "line": 1042,
           "name": "Binius.BinaryBasefold.foldStepRelOutProp",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "foldStepRelOutProp",
@@ -36916,7 +36925,7 @@
         {
           "doc": "This is a special case of nonDoomedFoldingProp for `i = \u2113`, where we support the consistency between the last oracle `\u2113 - \u03d1` and the final constant `c`",
           "kind": "def",
-          "line": 963,
+          "line": 1055,
           "name": "Binius.BinaryBasefold.finalNonDoomedFoldingProp",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "finalNonDoomedFoldingProp",
@@ -36925,7 +36934,7 @@
         {
           "doc": "Input relation for round i: R_i must hold at the beginning of round i",
           "kind": "def",
-          "line": 1012,
+          "line": 1104,
           "name": "Binius.BinaryBasefold.foldStepRelOut",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "foldStepRelOut",
@@ -36934,7 +36943,7 @@
         {
           "doc": "Relation at step `i` of the CoreInteraction. `\u2200 i < \u2113, R_i` must hold at the beginning of ITERATION `i`. `R_\u2113` must hold after the last iteration and before sending the final constant.",
           "kind": "def",
-          "line": 1021,
+          "line": 1113,
           "name": "Binius.BinaryBasefold.roundRelation",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "roundRelation",
@@ -36943,7 +36952,7 @@
         {
           "doc": "Relation for final sumcheck step",
           "kind": "def",
-          "line": 1028,
+          "line": 1120,
           "name": "Binius.BinaryBasefold.finalSumcheckRelOutProp",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "finalSumcheckRelOutProp",
@@ -36952,7 +36961,7 @@
         {
           "doc": "Final sumcheck relation",
           "kind": "def",
-          "line": 1038,
+          "line": 1130,
           "name": "Binius.BinaryBasefold.finalSumcheckRelOut",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "finalSumcheckRelOut",
@@ -46982,18 +46991,45 @@
     "ArkLib/ProofSystem/ToyProblem/SoundnessBounds.lean": {
       "declarations": [
         {
-          "doc": "",
+          "doc": "**Finite-domain `iSup` attainment helper.** Over a finite domain, a `\u2a06` into a conditionally-complete linear order with a bottom (here `\u2115\u221e`/ `ENNReal`) is attained at some point. Used to extract the CA- / list-maximiser in `simplified_iop_soundness_ca_lb` and `simplified_iop_soundness_listDecoding_lb`.",
           "kind": "lemma",
-          "line": 42,
-          "name": "Claim",
-          "namespace": "",
-          "short_name": "Claim",
-          "signature": "lemma Claim B.1 is already closed); the sorries are unfinished work, not"
+          "line": 74,
+          "name": "ToyProblem.finite_iSup_eq_apply",
+          "namespace": "ToyProblem",
+          "short_name": "finite_iSup_eq_apply",
+          "signature": "lemma finite_iSup_eq_apply {\u03b1 : Type*} [Finite \u03b1] [Nonempty \u03b1] {\u03b2 : Type*}"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 77,
+          "name": "ToyProblem._anon_class_77",
+          "namespace": "ToyProblem",
+          "short_name": "_anon_class_77",
+          "signature": "class classical"
+        },
+        {
+          "doc": "**Linear-functional collision bound** (ABF26 \u00a76.4.1, Step 2 kernel count). For a nonzero coefficient vector `w : Fin k \u2192 F` over a finite field, the linear functional `v \u21a6 \u2211 j, w j * v j : (Fin k \u2192 F) \u2192 F` is surjective, so each of its fibers has cardinality `|F|^k / |F| = |F|^{k-1}`. Hence a uniformly random `v` lands in the zero-fiber (the kernel hyperplane) with probability exactly `1 / |F|`. This is the per-pair collision bound fed to Claim B.1 in the proof of `simplified_iop_soundness_listDecoding_lb`.",
+          "kind": "lemma",
+          "line": 90,
+          "name": "ToyProblem.linearForm_collision_prob",
+          "namespace": "ToyProblem",
+          "short_name": "linearForm_collision_prob",
+          "signature": "lemma linearForm_collision_prob {k : \u2115} (w : Fin k \u2192 F) (hw : w \u2260 0) :"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 93,
+          "name": "ToyProblem._anon_class_93",
+          "namespace": "ToyProblem",
+          "short_name": "_anon_class_93",
+          "signature": "class classical"
         },
         {
           "doc": "**Lemma 6.5 of [ABF26]** (= [GRS25]). Every `F`-additive code `C : F^k \u2192 (F^s)^n` supports erasure correction (in the sense of `CodingTheory.SupportsErasureCorrection`) with correction time `O((s \u00b7 n)^3)`. Equivalently: the predicate `CodingTheory.SupportsErasureCorrection C ecor` holds for some `ecor \u2264 K \u00b7 (s \u00b7 n)^3`. We state the more permissive \"some `ecor` works\" form here; pinning down the constant `K` requires modelling the encoder concretely. PROVEN (existence form). The paper's L6.5 / [GRS25] content is the *polynomial running time* `O((s\u00b7n)^3)`; the `SupportsErasureCorrection` predica",
           "kind": "theorem",
-          "line": 81,
+          "line": 176,
           "name": "ToyProblem.additive_code_supports_erasure_correction_grs25",
           "namespace": "ToyProblem",
           "short_name": "additive_code_supports_erasure_correction_grs25",
@@ -47002,16 +47038,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 84,
-          "name": "ToyProblem._anon_class_84",
+          "line": 179,
+          "name": "ToyProblem._anon_class_179",
           "namespace": "ToyProblem",
-          "short_name": "_anon_class_84",
+          "short_name": "_anon_class_179",
           "signature": "class classical"
         },
         {
           "doc": "**Lemma 6.12 of [ABF26]** (list-decoding lower bound on the simplified IOR). Coding-theory form: if `|F| > binomial(|\u039b(C^{\u22612}, \u03b4)|, 2)`, then there exist witnesses `(v, \u03bc_1, \u03bc_2, f_1, f_2)` with `(f_1, f_2)` lying outside the relaxed relation `R\u0303_{C,\u03b4}^2`, for which the winning challenge set `\u03a9^{f_1,f_2}_{v,\u03bc_1,\u03bc_2}` (Definition 6.11) has at least `|\u039b(C^{\u22612}, \u03b4)| \u00b7 |F| / (|F| + |\u039b(C^{\u22612}, \u03b4)| - 1)` elements. The protocol-level reading: the soundness error of the simplified IOR `T'[C, t]` (Construction 6.9, `ToyProblem.SimplifiedIOR.reduction`) is at least `|\u039b(C^{\u22612}, \u03b4)| / (|F| + |\u039b(C^{\u22612}, \u03b4)",
           "kind": "theorem",
-          "line": 220,
+          "line": 314,
           "name": "ToyProblem.simplified_iop_soundness_listDecoding_lb",
           "namespace": "ToyProblem",
           "short_name": "simplified_iop_soundness_listDecoding_lb",
@@ -47020,11 +47056,20 @@
         {
           "doc": "**Lemma 6.13 of [ABF26]** (correlated-agreement lower bound on the simplified IOR). Coding-theory form: there exist `(v, \u03bc_1, \u03bc_2, f_1, f_2)` with `(f_1, f_2)` outside the relaxed relation `R\u0303_{C,\u03b4}^2` whose winning challenge set has size at least `\u03b5_ca(C, \u03b4) \u00b7 |F|`. Protocol-level reading: the soundness error of the simplified IOR `T'[C, t]` (Construction 6.9) is at least `\u03b5_ca(C, \u03b4)`. Proof sketch: take `f_1, f_2` maximising the CA error; then `f_1 + \u03b3\u00b7f_2` is `\u03b4`-close to `C` precisely on a set `S` of size `\u03b5_ca \u00b7 |F|`, and `S` is contained in the winning set `\u03a9^{f_1,f_2}_{0^k, 0, 0}` of De",
           "kind": "theorem",
-          "line": 275,
+          "line": 372,
           "name": "ToyProblem.simplified_iop_soundness_ca_lb",
           "namespace": "ToyProblem",
           "short_name": "simplified_iop_soundness_ca_lb",
-          "signature": "theorem simplified_iop_soundness_ca_lb {k : \u2115}"
+          "signature": "theorem simplified_iop_soundness_ca_lb {k : \u2115} [Nonempty \u03b9]"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 381,
+          "name": "ToyProblem._anon_class_381",
+          "namespace": "ToyProblem",
+          "short_name": "_anon_class_381",
+          "signature": "class classical"
         }
       ]
     },
@@ -48855,7 +48900,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5304,
+      "declarations": 5309,
       "files": 282
     }
   }

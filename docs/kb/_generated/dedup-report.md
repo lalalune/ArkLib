@@ -4,7 +4,7 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 282 files, 5304 declarations
+- `ArkLib` — 282 files, 5309 declarations
 
 ## Same short-name across multiple files (143 groups)
 
@@ -796,7 +796,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `masterKStateProp` (2 declarations, 2 files)
 
-- `def Binius.BinaryBasefold.masterKStateProp` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:926](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L926) — Before V's challenge of the `i-th` foldStep, we ignore the bad-folding-event of the `i-th` oracle if
+- `def Binius.BinaryBasefold.masterKStateProp` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1018](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1018) — Before V's challenge of the `i-th` foldStep, we ignore the bad-folding-event of the `i-th` oracle if
 - `def RingSwitching.masterKStateProp` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:442](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L442) — (no docstring)
 
 ### `ofFinCoeff` (2 declarations, 2 files)
