@@ -777,6 +777,64 @@ theorem mcaEvent_witness_eq_combined_of_jointProximity_udr
     exact_mod_cast h2e'
   exact eq_of_lt_dist hw_mem hcomb_mem h_lt
 
+open Classical in
+/-- **The difference stack of a jointly-proximate stack has a uniformly close line.**
+
+If `jointProximity C u δ` holds (so a codeword pair `p₀, p₁ ∈ C` agrees with `(u 0, u 1)` on a
+set `S'` of size `≥ (1-δ)·n`), then the *fixed, `γ`-independent* difference stack
+`d := (u 0 - p₀, u 1 - p₁)` has the property that for **every** `γ`, the difference line
+`d 0 + γ·d 1 = (u 0 - p₀) + γ·(u 1 - p₁)` is `δ`-close to `C` — in fact close to the zero
+codeword.
+
+Proof: on `S'` (size `≥ (1-δ)·n`) we have `p₀ = u 0` and `p₁ = u 1`, so the difference line
+vanishes there; `0 ∈ C` and `S'` is large, hence `δᵣ(diff-line, C) ≤ δ`.
+
+This is the structural fact behind the ACFY25/[Hab25] reduction: the codeword pair `(p₀, p₁)`
+realizing `jointProximity` is `γ`-independent, so the exceptional `γ` of the `mcaEvent` on a
+jointly-close `u` all live inside the (already-`δ`-close) line family of one *fixed* difference
+stack. Concretely it shows the difference stack `d` is itself jointly `δ`-close to `C` (witnessed
+by the pair `(0,0)` on `S'`), which is exactly *why* the pointwise CA body for `d` collapses to
+`0` and the count of exceptional `γ` cannot be read off without the global list-decoding
+(GS/PS) machinery — see `epsMCA_le_epsCA_add_jointlyProximateContribution`. -/
+theorem jointProximity_diffStack_line_close
+    (C : Submodule F (ι → A)) (δ : ℝ≥0) (u : WordStack A (Fin 2) ι)
+    (h_jp : jointProximity (C := (C : Set (ι → A))) (u := u) δ) :
+    ∃ p₀ ∈ (C : Set (ι → A)), ∃ p₁ ∈ (C : Set (ι → A)),
+      ∀ γ : F, δᵣ((u 0 - p₀) + γ • (u 1 - p₁), (C : Set (ι → A))) ≤ δ := by
+  classical
+  -- Extract the `γ`-independent jointAgreement witnesses `p₀, p₁` on `S'`.
+  rw [← jointAgreement_iff_jointProximity] at h_jp
+  obtain ⟨S', hS'_card, p, hp⟩ := h_jp
+  set p₀ := p 0 with hp₀_def
+  set p₁ := p 1 with hp₁_def
+  have hp₀_mem : p₀ ∈ (C : Set (ι → A)) := (hp 0).1
+  have hp₁_mem : p₁ ∈ (C : Set (ι → A)) := (hp 1).1
+  refine ⟨p₀, hp₀_mem, p₁, hp₁_mem, ?_⟩
+  intro γ
+  -- On `S'` (size ≥(1-δ)n): `p₀ = u 0`, `p₁ = u 1`, so the difference line vanishes there,
+  -- and `0 ∈ C`, giving `δᵣ(diff-line, C) ≤ δ`.
+  have h_agree_S' : ∀ j ∈ S', p₀ j = u 0 j ∧ p₁ j = u 1 j := by
+    intro j hj
+    refine ⟨?_, ?_⟩
+    · have : j ∈ Finset.filter (fun k ↦ p 0 k = u 0 k) Finset.univ := (hp 0).2 hj
+      exact (Finset.mem_filter.mp this).2
+    · have : j ∈ Finset.filter (fun k ↦ p 1 k = u 1 k) Finset.univ := (hp 1).2 hj
+      exact (Finset.mem_filter.mp this).2
+  -- The difference line vanishes on `S'`.
+  have h_zero_S' : ∀ j ∈ S', ((u 0 - p₀) + γ • (u 1 - p₁)) j = (0 : ι → A) j := by
+    intro j hj
+    obtain ⟨h0, h1⟩ := h_agree_S' j hj
+    simp only [Pi.add_apply, Pi.sub_apply, Pi.smul_apply, Pi.zero_apply]
+    rw [h0, h1]
+    simp
+  -- `0 ∈ C` and `S'` is large, so `δᵣ(diff-line, C) ≤ δ`.
+  rw [relCloseToCode_iff_relCloseToCodeword_of_minDist]
+  refine ⟨0, C.zero_mem, ?_⟩
+  rw [relCloseToWord_iff_exists_agreementCols]
+  refine ⟨S', (relDist_floor_bound_iff_complement_bound _ _ _).mpr hS'_card, ?_⟩
+  intro j
+  refine ⟨fun hj ↦ (h_zero_S' j hj), fun hne hj ↦ hne (h_zero_S' j hj)⟩
+
 /-- **ABF26 Lemma 4.6.** In the unique-decoding regime `δ < δ_min(C)/2`, `ε_mca` and `ε_ca`
 coincide: `ε_mca(C, δ) = ε_ca(C, δ)`.
 
