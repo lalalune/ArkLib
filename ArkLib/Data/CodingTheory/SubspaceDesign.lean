@@ -95,7 +95,36 @@ constraint on `τ`, so the bound is vacuous for `r = 0` (where `A ≤ C` with
 `finrank A ≤ 0` forces `A = ⊥`, making the design inequality `0 ≤ 0 · τ(0)`
 trivially satisfied by any `τ(0)` including ones violating the lower bound).
 
-Admitted as an external result. -/
+**STATEMENT DEFECT — wrong `ρ` normalization (found 2026-06-04, counterexample below).**
+The rate `ρ` here is written `(finrank F C)/Fintype.card ι = dim_F C / n`. That is
+`s` times too large: the paper's rate is the *per-`F^s`-symbol* rate
+`ρ = dim_F C / (s · n)` (alphabet `F^s`, block length `n`), so `dim_F C / n = s · ρ`.
+
+*Counterexample to the statement as written.* Take `F = GF(2)`, `s = 2`, `n = 3`,
+`C = ⊤` the full space `(F²)³ = F⁶`. The minimal valid design profile is
+`τ*(r) = max_{1 ≤ dim A ≤ r} (∑_i dim Aᵢ)/(n · dim A)`; at `r = 1`, `τ*(1)` is maximised
+by a weight-1 codeword (nonzero in one of the three blocks), giving
+`τ*(1) = (n - 1)/n = 2/3`. The current RHS demands `τ(1) ≥ dim_F C / n − 1/n = 6/3 − 1/3
+= 5/3 > 2/3`. So `τ = τ*` witnesses `IsSubspaceDesign` while violating the conclusion at
+`r = 1`. With the corrected per-symbol `ρ = dim_F C/(s·n) = 1`, the RHS is `1 − 1/3 = 2/3
+= τ*(1)`, consistent. **The fix is to divide by `s · Fintype.card ι` (guard `s ≠ 0`).**
+
+**Exact missing ingredient (citation upgrade), even after the normalization fix.**
+The 1-dimensional witness route (`A = span{c}` for a minimum-block-weight `c`) only
+yields `τ(r) ≥ 1 − d_min/n`, which via the alphabet-`F^s` Singleton bound
+`d_min ≤ n − dim_F C/s + 1` gives `τ(r) ≥ ρ − 1/n` *only* when `dim A` scales with `ρ`,
+i.e. it reaches the bound at best as `ρ/s − 1/n` from a single codeword (a factor-`s`
+short — sharper than the prior "only `1 − δ_min`" note). The genuine GG25 proof needs
+**dimension-averaging over an `r`-dimensional subspace `A ≤ C`**: an existence/averaging
+principle over the Grassmannian of `r`-dim subspaces producing an `A` with
+`(1/n) ∑_i dim Aᵢ ≥ dim A · (ρ − 1/n)`, together with the GG25 global rank identity
+`∑_i rank(proj_i restricted to C) ≤ dim_F C · (1 + (n−1)/n)`-style counting. Neither
+the random / generic-subspace expectation machinery nor that rank identity exists
+in-tree (mathlib has `Module.finrank` rank-nullity per map, but not the averaged
+Grassmannian existence). This is the irreducible paper development.
+
+Admitted as an external result; statement left at the as-published (mis-normalised) form
+pending the owner's choice of normalization, with the defect and the fix recorded here. -/
 theorem subspaceDesign_tau_lower
     {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
     {F : Type} [Field F] [Fintype F] [DecidableEq F]
@@ -103,7 +132,23 @@ theorem subspaceDesign_tau_lower
     (_h : IsSubspaceDesign s τ C) :
     ∀ r ∈ Finset.Icc 1 s,
       τ r ≥ (Module.finrank F C : ℝ) / Fintype.card ι - 1 / Fintype.card ι := by
-  sorry -- ABF26-L2.17; external admit [GG25].
+  -- ABF26-L2.17; external admit [GG25]. Statement defect (factor-s ρ; counterexample in
+  -- docstring) AND a genuine missing development. Three in-tree routes, each blocked:
+  --
+  -- SKELETON A (1-dim min-weight witness). A := span{c}, c of min block-weight, dimA=1≤r.
+  --   Design ineq ⇒ τ(r) ≥ 1 − wt(c)/n = 1 − d_min/n; Singleton (alphabet F^s) ⇒ ≥ ρ/s − 1/n.
+  --   BLOCKED: a factor s short of the (corrected) ρ − 1/n; a 1-dim witness cannot scale with ρ.
+  --
+  -- SKELETON B (r-dim rank-nullity witness). dim(A ⊓ ker_i) ≥ dim A − s (proj_i into F^s);
+  --   ∑_i ≥ n(dim A − s) ⇒ τ(r) ≥ 1 − s/dim A. BLOCKED: for r ≤ s, dim A ≤ s ⇒ ≤ 0 (vacuous).
+  --
+  -- SKELETON C (GG25 dimension-averaging — correct route). Average dim(A_i) over a generic
+  --   r-dim A ≤ C to extract A with (1/n)∑_i dim A_i ≥ dim A·(ρ − 1/n); close via design ineq.
+  --   BLOCKED: needs Grassmannian averaging/existence + GG25 global rank identity; both ABSENT.
+  --
+  -- The conclusion is additionally false at small r under the current ρ normalization (see
+  -- the counterexample). Tagged sorry / external admit; normalization left for owner.
+  sorry
 
 /-- **ABF26 Theorem 2.18 [GK16].** Both folded Reed-Solomon codes and univariate
 multiplicity codes are τ-subspace-design for an explicit τ:
@@ -117,7 +162,33 @@ boundary values.
 The FRS case requires `(L, s)`-admissibility of `ω`; the multiplicity case requires
 `|F| > n` and `char(F) > ρ·s·n > s`. We state only the FRS half here; the multiplicity
 half is gated on `D2.19 / DA.7` (univariate-multiplicity definition), which is tracked
-separately. Admitted as an external result. -/
+separately. Admitted as an external result.
+
+**Normalization note (consistent with the L2.17 defect above).** This `τ` uses
+`s · k / n` (with `dim_F (frsCode) = k`, so `k/n = dim_F C / n = s · ρ_persymbol`), giving
+`τ(1) = k/n = ρ_intree` and `τ(s) = s·k/n`. It is therefore internally consistent with
+`subspaceDesign_tau_lower`'s *current* `ρ = dim_F C / n` convention (so the lower bound
+`τ(1) ≥ ρ_intree − 1/n` would read `k/n ≥ k/n − 1/n`, true). If L2.17's `ρ` is fixed to
+the paper's per-symbol `dim_F C/(s·n)`, this `τ` must be rescaled by `1/s` in lockstep
+(`τ(r) := k/(n·(s−r+1))`). The two statements share one normalization decision.
+
+**Exact missing ingredients (citation upgrade).** Proving `IsSubspaceDesign` for `frsCode`
+requires, for every `A ≤ frsCode domain k s ω` with `dim_F A ≤ r`, the GK16 bound
+`∑_i dim_F(A ⊓ ker proj_i) ≤ dim_F A · n · τ(r)`. The GK16 argument is:
+(1) lift `A` to a space of `degreeLT F k` polynomials via `frsEvalOnPoints` (the in-tree
+    `mem_frsCode_iff` / `dim_frsCode` give the lift and `dim A = #polys`);
+(2) a codeword vanishes at coordinate `i` iff its polynomial `p` satisfies
+    `p(ω^j · domain i) = 0` for all `j < s`, i.e. `∏_{j<s}(X − ω^j·domain i) ∣ p`;
+(3) the *Wronskian / folded-Vandermonde non-degeneracy* under `Admissible ω`: at most
+    `s − r + 1` of the `n` folded blocks can simultaneously annihilate an `r`-dim space of
+    degree-`<k` polynomials (this is the GK16 linear-algebra core, a rank bound on the
+    block-Vandermonde matrices). Step (3) — the folded-Vandermonde rank bound — is the
+    irreducible external: ArkLib has the FRS evaluation map and `degreeLT` dimension, but
+    **not** the multi-point/Wronskian Vandermonde rank lemma over folded orbits. That lemma
+    (≈ several hundred lines: Vandermonde minors, derivative/Wronskian non-vanishing under
+    `Admissible`) is the entire content of T2.18 and is not reducible to in-tree lemmas.
+    Statement-level: T2.18 is a self-contained GK16 development, not a corollary of any
+    present result. Tagged sorry / external admit. -/
 theorem frs_is_subspaceDesign_gk16
     {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
     {F : Type} [Field F] [Fintype F] [DecidableEq F]
@@ -129,6 +200,9 @@ theorem frs_is_subspaceDesign_gk16
         (s : ℝ) * (k : ℝ) / Fintype.card ι / (s - r + 1)
       else 1
     IsSubspaceDesign s τ (ReedSolomon.Folded.frsCode domain k s ω) := by
-  sorry -- ABF26-T2.18 (FRS half); external admit [GK16].
+  -- ABF26-T2.18 (FRS half); external admit [GK16]. Standalone GK16 development; the
+  -- irreducible ingredient is the folded-Vandermonde / Wronskian rank bound under
+  -- `Admissible ω` (≤ s−r+1 blocks annihilate an r-dim degree-<k space). See docstring.
+  sorry
 
 end CodingTheory
