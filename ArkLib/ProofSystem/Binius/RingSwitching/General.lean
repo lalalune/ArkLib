@@ -141,6 +141,7 @@ def fullRbrKnowledgeError (i : (fullPspec κ L K ℓ' mlIOPCS).ChallengeIdx) : �
 
 variable [SampleableType L]
 
+omit [(i : mlIOPCS.pSpec.ChallengeIdx) → SampleableType (mlIOPCS.pSpec.Challenge i)] in
 /-- Round-by-round knowledge soundness for the full ring-switching oracle verifier -/
 theorem fullOracleVerifier_rbrKnowledgeSoundness {𝓑 : Fin 2 ↪ L} :
   OracleVerifier.rbrKnowledgeSoundness
@@ -177,11 +178,8 @@ theorem fullOracleVerifier_rbrKnowledgeSoundness {𝓑 : Fin 2 ↪ L} :
     (rbrKnowledgeError₂:=mlIOPCS.rbrKnowledgeError)
     (h₁:=batchInteractionRBRKS) (h₂:=by
       convert mlIOPCS.rbrKnowledgeSoundness (L:=L) (ℓ' := ℓ') (init:=init) (impl:=impl)
-      · sorry
     )
   convert res
-  · simp only [ChallengeIdx, Challenge, instSampleableTypeChallengeFullPspec]
-    sorry
 
 end SecurityProperties
 end
