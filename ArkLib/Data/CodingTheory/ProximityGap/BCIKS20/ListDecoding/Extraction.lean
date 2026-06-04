@@ -1419,19 +1419,22 @@ theorem common_roots_force_lift_zero
     Ideal.Quotient.mk (Ideal.span {_root_.BCIKS20AppendixA.H_tilde' H}) P
   have hsub : (T : Set F) ⊆ _root_.BCIKS20AppendixA.S_β β := by
     simpa [β] using (common_roots_subset_S_β_mk (H := H) (P := P) (T := T) hroot)
-  rcases eq_or_ne (_root_.BCIKS20AppendixA.canonicalRepOf𝒪 hH β) 0 with hβ | hβ
-  · simpa [β] using
-      (_root_.BCIKS20AppendixA.embeddingOf𝒪Into𝕃_eq_zero_of_canonicalRep_eq_zero
-        hH β hβ)
+  -- The merge left this theorem referencing an `elimPoly`/`embedding↔canonicalRep`
+  -- abstraction that no longer exists in `BCIKS20AppendixA`. The surviving (more-proven)
+  -- side exposes the resultant directly: `S_β β` is contained in the (finite) root set of
+  -- `Res_Y(canonicalRep β, H̃')`, which is the elimination polynomial in everything but
+  -- name. We reconstruct `S_β β`'s finiteness from those primitives, exactly as
+  -- `BCIKS20AppendixA.Lemma_A_1` does internally.
+  rcases eq_or_ne β 0 with hβ | hβ
+  · simp [β, hβ]
   have hSfinite : (_root_.BCIKS20AppendixA.S_β β).Finite := by
-    have hsubroot :
-        _root_.BCIKS20AppendixA.S_β β ⊆
-          ↑((_root_.BCIKS20AppendixA.elimPoly hH β).roots.toFinset) := by
-      intro z hz
-      rw [Finset.mem_coe, Multiset.mem_toFinset,
-        Polynomial.mem_roots (_root_.BCIKS20AppendixA.elimPoly_ne_zero hH β hβ)]
-      exact _root_.BCIKS20AppendixA.elimPoly_eval_eq_zero_of_mem_S_β hH β hz
-    exact (Finset.finite_toSet _).subset hsubroot
+    have hR_ne :
+        Polynomial.resultant (_root_.BCIKS20AppendixA.canonicalRepOf𝒪 hH β)
+          (_root_.BCIKS20AppendixA.H_tilde' H) H.natDegree H.natDegree ≠ 0 :=
+      _root_.BCIKS20AppendixA.resultant_canonicalRep_H_tilde'_ne_zero hH hβ
+    refine (Polynomial.finite_setOf_isRoot hR_ne).subset (fun z hz => ?_)
+    simpa [Polynomial.IsRoot] using
+      _root_.BCIKS20AppendixA.eval_resultant_eq_zero_of_mem_S_β hH β hz
   have hTcard : T.card ≤ Set.ncard (_root_.BCIKS20AppendixA.S_β β) := by
     rw [← Set.ncard_coe_finset T]; exact Set.ncard_le_ncard hsub hSfinite
   have hTcard' :
@@ -1454,13 +1457,14 @@ theorem H_tilde'_dvd_of_embedding_mk_eq_zero
     _root_.BCIKS20AppendixA.H_tilde' H ∣ P := by
   let β : _root_.BCIKS20AppendixA.𝒪 H :=
     Ideal.Quotient.mk (Ideal.span {_root_.BCIKS20AppendixA.H_tilde' H}) P
-  have hcanon :
-      _root_.BCIKS20AppendixA.canonicalRepOf𝒪 hH β = 0 :=
-    _root_.BCIKS20AppendixA.canonicalRep_eq_zero_of_embeddingOf𝒪Into𝕃_eq_zero
-      hH β (by simpa [β] using hemb)
+  -- The merge dropped `canonicalRep_eq_zero_of_embeddingOf𝒪Into𝕃_eq_zero`; the embedding
+  -- is a ring hom and (more-proven side) injective, so `embedding β = 0 = embedding 0`
+  -- gives `β = 0` directly.
   have hβzero : β = 0 := by
-    rw [← _root_.BCIKS20AppendixA.mk_canonicalRepOf𝒪 hH β, hcanon]
-    simp
+    have h0 : _root_.BCIKS20AppendixA.embeddingOf𝒪Into𝕃 H β
+        = _root_.BCIKS20AppendixA.embeddingOf𝒪Into𝕃 H 0 := by
+      simpa [β] using hemb
+    exact (_root_.BCIKS20AppendixA.embeddingOf𝒪Into𝕃_injective hH) h0
   have hmem : P ∈ Ideal.span {_root_.BCIKS20AppendixA.H_tilde' H} := by
     exact Ideal.Quotient.eq_zero_iff_mem.mp (by simpa [β] using hβzero)
   simpa [Ideal.mem_span_singleton] using hmem
