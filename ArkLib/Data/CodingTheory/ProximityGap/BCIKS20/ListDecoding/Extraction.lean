@@ -255,6 +255,7 @@ theorem eq512_descent_of_fraction_field_contraction
   exact ⟨r, u, hr_irr, hrmap_sep, hu_unit, by rw [← hw, hu_eq, mul_comm]⟩
 
 omit [DecidableEq (RatFunc F)] [Finite F] in
+set_option linter.unusedDecidableInType false in
 /-- *Per-factor descent for Eq. 5.12*: composes the field-side separable contraction
 (`eq512_separable_contraction_over_fraction_field`) with the UFD descent
 (`eq512_descent_of_fraction_field_contraction`). For a positive-`Y`-degree irreducible factor `g`
