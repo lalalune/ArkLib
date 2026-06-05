@@ -279,6 +279,27 @@ def roundOracleReduction (i : Fin ℓ) :
   prover := roundOracleProver (L := L) ℓ D Context (OStmtIn := OStmtIn) d i
   verifier := roundOracleVerifier (L := L) ℓ D Context (OStmtIn := OStmtIn) d i
 
+/-- The structured per-round oracle verifier routes every output oracle straight to the unchanged
+input oracle (`embed = Sum.inl`, `OStmtIn = OStmtOut`, `hEq = rfl`) and exposes no message oracle, so
+its `AppendCoherent` coherence holds by `rfl`. Needed to `seqCompose` the rounds (e.g. for the
+ring-switching/Binius sumcheck loops). -/
+instance instRoundOracleVerifierAppendCoherent [Oₛ : ∀ i, OracleInterface (OStmtIn i)] (i : Fin ℓ) :
+    OracleVerifier.Append.AppendCoherent
+      (roundOracleVerifier (L := L) ℓ D Context (OStmtIn := OStmtIn) d i) where
+  hCohInl := fun a k h => by
+    have : a = k := by
+      simpa only [roundOracleVerifier, Function.Embedding.coeFn_mk, Sum.inl.injEq] using h
+    subst this; rfl
+  hCohInr := fun a k h => by
+    simp only [roundOracleVerifier, Function.Embedding.coeFn_mk, reduceCtorEq] at h
+
+/-- The structured per-round oracle *reduction*'s verifier is definitionally `roundOracleVerifier`,
+so it inherits `AppendCoherent`. -/
+instance instRoundOracleReductionAppendCoherent [Oₛ : ∀ i, OracleInterface (OStmtIn i)] (i : Fin ℓ) :
+    OracleVerifier.Append.AppendCoherent
+      (roundOracleReduction (L := L) ℓ D Context (OStmtIn := OStmtIn) d i).verifier :=
+  instRoundOracleVerifierAppendCoherent (L := L) ℓ D Context (OStmtIn := OStmtIn) d i
+
 end SingleRound
 
 section RoundError

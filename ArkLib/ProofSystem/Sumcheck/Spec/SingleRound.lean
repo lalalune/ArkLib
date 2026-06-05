@@ -517,6 +517,50 @@ def oracleReduction.reduceClaim : OracleReduction oSpec
     }
   }
 
+/-- All oracle statements in the single-round sumcheck reduction are the (homogeneous) bounded
+polynomial type `R⦃≤ deg⦄[X]`, so the `AppendCoherent` coherence conditions for each step of the
+`.append` chain hold definitionally. -/
+local instance instSendClaimAppendCoherent :
+    OracleVerifier.Append.AppendCoherent (oracleReduction.sendClaim R deg oSpec).verifier where
+  hCohInl := fun i k h => by
+    cases i <;>
+      (first
+        | (simp only [oracleReduction.sendClaim, Function.Embedding.coeFn_mk] at h; cases h; rfl)
+        | (exfalso; simp_all [oracleReduction.sendClaim]))
+  hCohInr := fun i k h => by
+    cases i <;>
+      (first
+        | (simp only [oracleReduction.sendClaim, Function.Embedding.coeFn_mk] at h;
+            obtain rfl := Sum.inr.inj h; rfl)
+        | (exfalso; simp_all [oracleReduction.sendClaim]))
+
+local instance instCheckClaimAppendCoherent :
+    OracleVerifier.Append.AppendCoherent (oracleReduction.checkClaim R deg D oSpec).verifier where
+  hCohInl := fun i k h => by
+    simp only [oracleReduction.checkClaim, Function.Embedding.inl_apply] at h
+    obtain rfl := Sum.inl.inj h; rfl
+  hCohInr := fun i k h => by
+    simp only [oracleReduction.checkClaim, Function.Embedding.inl_apply] at h
+    cases h
+
+local instance instRandomQueryAppendCoherent :
+    OracleVerifier.Append.AppendCoherent (oracleReduction.randomQuery R deg oSpec).verifier where
+  hCohInl := fun i k h => by
+    simp only [oracleReduction.randomQuery, Function.Embedding.inl_apply] at h
+    obtain rfl := Sum.inl.inj h; rfl
+  hCohInr := fun i k h => by
+    simp only [oracleReduction.randomQuery, Function.Embedding.inl_apply] at h
+    cases h
+
+local instance instReduceClaimAppendCoherent :
+    OracleVerifier.Append.AppendCoherent (oracleReduction.reduceClaim R deg oSpec).verifier where
+  hCohInl := fun i k h => by
+    simp only [oracleReduction.reduceClaim, Function.Embedding.coeFn_mk] at h
+    obtain rfl := Sum.inl.inj h; rfl
+  hCohInr := fun i k h => by
+    simp only [oracleReduction.reduceClaim, Function.Embedding.coeFn_mk] at h
+    cases h
+
 def oracleReduction : OracleReduction oSpec (StmtIn R) (OStmtIn R deg) Unit
     (StmtOut R) (OStmtOut R deg) Unit (pSpec R deg) :=
   ((oracleReduction.sendClaim R deg oSpec)
@@ -1268,6 +1312,20 @@ def oracleVerifier (i : Fin n) : OracleVerifier oSpec (StatementRound R n i.cast
     (OracleStatement R n deg) (StatementRound R n i.succ) (OracleStatement R n deg) (pSpec R deg) :=
   (Simple.oracleVerifier R deg D oSpec).liftContext (sumcheckOracleLens R n deg D oSpec i)
 
+/-- The `i`-th-round oracle verifier routes its (single) output oracle to the (unchanged) input
+oracle (`sumcheckOracleLens.embedOStmt = Function.Embedding.inl`, `hEqOStmt = rfl`), so its
+`AppendCoherent` coherence holds definitionally. -/
+instance instOracleVerifierAppendCoherent (i : Fin n) :
+    OracleVerifier.Append.AppendCoherent (oracleVerifier R n deg D oSpec i) where
+  hCohInl := fun a k h => by
+    have hk : a = k := by
+      simpa only [oracleVerifier, OracleVerifier.liftContext, sumcheckOracleLens,
+        Function.Embedding.inl_apply, Sum.inl.injEq] using h
+    subst hk; rfl
+  hCohInr := fun a k h => by
+    simp only [oracleVerifier, OracleVerifier.liftContext, sumcheckOracleLens,
+      Function.Embedding.inl_apply, reduceCtorEq] at h
+
 /-- The sum-check reduction for the `i`-th round of the sum-check protocol -/
 def reduction (i : Fin n) : Reduction oSpec
     ((StatementRound R n i.castSucc) × (∀ i, OracleStatement R n deg i)) Unit
@@ -1284,6 +1342,12 @@ def oracleReduction (i : Fin n) : OracleReduction oSpec
     (StatementRound R n i.succ) (OracleStatement R n deg) Unit (pSpec R deg) :=
   (Simple.oracleReduction R deg D oSpec).liftContext (oCtxLens R n deg D i)
     (sumcheckOracleLens R n deg D oSpec i)
+
+/-- The `i`-th-round oracle *reduction*'s verifier is definitionally `oracleVerifier i`, so it
+inherits `AppendCoherent` (used to seqCompose the rounds at the reduction level). -/
+instance instOracleReductionVerifierAppendCoherent (i : Fin n) :
+    OracleVerifier.Append.AppendCoherent (oracleReduction R n deg D oSpec i).verifier :=
+  instOracleVerifierAppendCoherent R n deg D oSpec i
 
 omit [SampleableType R] in
 @[simp]

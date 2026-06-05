@@ -236,6 +236,22 @@ noncomputable def outerVerifier :
     | multiplicity => rfl
     | helpers => rfl
 
+/-- The outer LogUp verifier's output oracle interfaces are *definitionally* the source interfaces
+selected by `embed` (input oracles are passed through, prover-message oracles are the registered
+message interfaces), so the `AppendCoherent` coherence side condition holds by `rfl`. -/
+noncomputable instance instOuterVerifierAppendCoherent :
+    OracleVerifier.Append.AppendCoherent (outerVerifier oSpec F n M params) where
+  hCohInl := fun i k h => by
+    cases i <;> simp only [outerVerifier, Function.Embedding.coeFn_mk] at h
+    · obtain rfl := Sum.inl.inj h; rfl
+    · exact absurd h (by simp)
+    · exact absurd h (by simp)
+  hCohInr := fun i k h => by
+    cases i <;> simp only [outerVerifier, Function.Embedding.coeFn_mk] at h
+    · exact absurd h (by simp)
+    · obtain rfl := Sum.inr.inj h; rfl
+    · obtain rfl := Sum.inr.inj h; rfl
+
 end OuterVerifier
 
 section SumcheckVerifier
@@ -283,6 +299,12 @@ noncomputable def outerOracleReduction :
       (outerPSpec F n params) where
   prover := outerProver oSpec F n M params
   verifier := outerVerifier oSpec F n M params
+
+/-- The outer oracle *reduction*'s verifier is definitionally `outerVerifier`, so it inherits the
+`AppendCoherent` coherence needed to `OracleReduction.append` it with the embedded sumcheck phase. -/
+noncomputable instance instOuterOracleReductionAppendCoherent :
+    OracleVerifier.Append.AppendCoherent (outerOracleReduction oSpec F n M params).verifier :=
+  instOuterVerifierAppendCoherent oSpec F n M params
 
 end OuterReduction
 

@@ -270,7 +270,13 @@ instance : ∀ j, OracleInterface ((pSpecRelay).Message j)
 
 instance {i : Fin ℓ} :
     ∀ j, OracleInterface ((pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i).Message j)
-  | ⟨0, _⟩ => by exact OracleInterface.instDefault -- oracle commitment (conditional)
+  -- The committed codeword `f^(i+1) : OracleFunction (i+1) = sDomain … → L` is exposed as a
+  -- *point-query* oracle (`instFunction`), matching how it is later re-read as an
+  -- `OracleStatement` and mirroring the FRI codeword commitment.  (Previously `instDefault`,
+  -- whose `Query := Unit` is incompatible with the `OracleStatement` point-query interface and
+  -- makes `commitOracleVerifier`'s `AppendCoherent` coherence — needed to seqCompose the blocks —
+  -- unprovable.)
+  | ⟨0, _⟩ => by unfold pSpecCommit; exact OracleInterface.instFunction
 
 instance : ∀ j, OracleInterface ((pSpecRelay).Message j)
   | ⟨x, hj⟩ => by exact x.elim0
