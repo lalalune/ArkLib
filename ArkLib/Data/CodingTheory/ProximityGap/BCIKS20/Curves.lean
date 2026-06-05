@@ -2259,8 +2259,6 @@ theorem coeffs_of_close_proximity_curve_RS_toFinset_eq_goodCoeffsCurve
         δ u (ReedSolomon.toFinset domain deg) =
       RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u (δ : ℝ≥0) := by
   classical
-  apply Finset.ext
-  intro z
   simp [coeffs_of_close_proximity_curve, RS_goodCoeffsCurve,
     ReedSolomon.toFinset, ReedSolomon.RScodeSet, polynomialCurveEval_eq_sum_smul,
     ENNReal.coe_nnratCast]
@@ -2268,7 +2266,7 @@ theorem coeffs_of_close_proximity_curve_RS_toFinset_eq_goodCoeffsCurve
 omit [NeZero n] in
 /-- Membership form of
 `coeffs_of_close_proximity_curve_RS_toFinset_eq_goodCoeffsCurve`. -/
-theorem mem_coeffs_of_close_proximity_curve_RS_toFinset_iff_goodCoeffsCurve
+theorem coeffs_of_close_proximity_curve_RS_toFinset_mem_iff_goodCoeffsCurve
     {k deg : ℕ} {domain : Fin n ↪ F}
     (δ : ℚ≥0) (u : WordStack F (Fin (k + 1)) (Fin n)) (z : F) :
     z ∈ coeffs_of_close_proximity_curve (F := F) (n := n) (l := k + 1)
@@ -2280,7 +2278,7 @@ theorem mem_coeffs_of_close_proximity_curve_RS_toFinset_iff_goodCoeffsCurve
 omit [NeZero n] in
 /-- Cardinality form of
 `coeffs_of_close_proximity_curve_RS_toFinset_eq_goodCoeffsCurve`. -/
-theorem card_coeffs_of_close_proximity_curve_RS_toFinset_eq_goodCoeffsCurve
+theorem coeffs_of_close_proximity_curve_RS_toFinset_card_eq_goodCoeffsCurve
     {k deg : ℕ} {domain : Fin n ↪ F}
     (δ : ℚ≥0) (u : WordStack F (Fin (k + 1)) (Fin n)) :
     (coeffs_of_close_proximity_curve (F := F) (n := n) (l := k + 1)
