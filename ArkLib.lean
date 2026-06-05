@@ -306,3 +306,4 @@ import ArkLib.ToVCVio.ToMathlib.Data.Vector.Basic
 import ArkLib.ProofSystem.Whir.MCAJohnsonTrivialRegime
 import ArkLib.ProofSystem.Whir.MCAJohnsonHardRegime
 import ArkLib.ProofSystem.Whir.MCAJohnsonCurveExtract
+import ArkLib.ProofSystem.Whir.MCAJohnsonCurveJoint
