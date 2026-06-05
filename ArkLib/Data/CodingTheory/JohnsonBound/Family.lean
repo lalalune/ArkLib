@@ -548,6 +548,39 @@ theorem closeCodewordsRelFinset_card_le_of_johnson_condition
       exact e.injective (Subtype.ext hval)
     exact CodeGeometry.card_le_of_johnson_condition hq hSpos f c ℓ hAidx hBidx hβ hcond
 
+/-- Close-list Johnson cap with the canonical agreement parameters:
+
+* `A = n - ⌊δ·n⌋₊`, forced by membership in the radius-`δ` close-list;
+* `B = n - minDist(C)`, forced by pairwise separation inside the code.
+
+This leaves only the nonnegativity/field-size assumptions, the shift parameter,
+and the radical-free Johnson algebra condition. -/
+theorem closeCodewordsRelFinset_card_le_of_floor_minDist_johnson_condition
+    {ι : Type} [Fintype ι] [DecidableEq ι] [Nonempty ι]
+    {α : Type} [Fintype α] [DecidableEq α]
+    (C : ListDecodable.Code ι α) (f : ι → α) (δ : ℝ)
+    {ℓ : ℕ} {β : ℝ}
+    (hδ : 0 ≤ δ) (hq : 0 < Fintype.card α) (hβ : 0 ≤ β)
+    (hcond : ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ)) * (1 + β ^ 2)
+        - 2 * β * (((Fintype.card ι - ⌊δ * (Fintype.card ι : ℝ)⌋₊ : ℕ) : ℝ)
+          - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ)))
+      + (ℓ : ℝ) * ((((Fintype.card ι - Code.minDist C : ℕ) : ℝ)
+          - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ))
+        - 2 * β * (((Fintype.card ι - ⌊δ * (Fintype.card ι : ℝ)⌋₊ : ℕ) : ℝ)
+          - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ))
+        + β ^ 2 * (Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ))) < 0) :
+    (ListDecodable.closeCodewordsRelFinset C f δ).card ≤ ℓ := by
+  apply closeCodewordsRelFinset_card_le_of_johnson_condition
+      (C := C) (f := f) (δ := δ)
+      (A := Fintype.card ι - ⌊δ * (Fintype.card ι : ℝ)⌋₊)
+      (B := Fintype.card ι - Code.minDist C)
+      (ℓ := ℓ) (β := β) hq hβ
+  · intro x hx
+    exact card_sub_floor_mul_card_le_agree_of_mem_closeCodewordsRelFinset hδ hx
+  · intro u hu v hv hne
+    exact closeCodewordsRelFinset_pairwise_agree_le_card_sub_minDist hu hv hne
+  · exact hcond
+
 /-- A violated finite `Lambda` bound produces a concrete point-list whose average
 distance is controlled by the q-ary Plotkin bound.
 
