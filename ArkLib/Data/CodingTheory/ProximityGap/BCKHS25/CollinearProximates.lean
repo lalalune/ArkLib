@@ -146,4 +146,18 @@ theorem card_jointDisagreement_mul_le {u₀ u₁ p₀ p₁ : ι → F} {e : ℕ}
     calc (Z.card - 1) * d = Z.card * d - d := by rw [Nat.sub_mul, one_mul]
       _ ≤ Z.card * e := Nat.sub_le_iff_le_add'.mpr h2
 
+/-- **[BCKHS25] Lemma 2.4 (collinear proximates), public filter form.** Same as
+`card_jointDisagreement_mul_le` but with the joint disagreement count exposed as
+an explicit `Finset.filter` cardinality (the private `jointDisagreement` def is
+not nameable downstream). This is the form consumed by the §2 distance
+restoration after the joint proximate of Claim 2.3. -/
+theorem card_jointDisagreement_filter_mul_le {u₀ u₁ p₀ p₁ : ι → F} {e : ℕ}
+    (Z : Finset F) (hZ : 2 ≤ Z.card)
+    (hclose : ∀ z ∈ Z,
+      hammingDist (fun x => u₀ x + z * u₁ x) (fun x => p₀ x + z * p₁ x) ≤ e) :
+    (Z.card - 1) *
+        (Finset.univ.filter (fun x => ¬(u₀ x = p₀ x ∧ u₁ x = p₁ x))).card
+      ≤ Z.card * e :=
+  card_jointDisagreement_mul_le Z hZ hclose
+
 end BCKHS25

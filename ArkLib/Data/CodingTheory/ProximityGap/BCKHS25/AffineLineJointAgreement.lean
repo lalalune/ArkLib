@@ -145,4 +145,42 @@ theorem jointAgreement_of_proximates (k e h DZ : ℕ) {δ : ℝ≥0}
   exact jointAgreement_of_jointDisagreement_le (deg := k + 1) hp₀' hp₁'
     (le_trans hdis hfit)
 
+/-- **[BCKHS25] §2 distance restoration (2.4 ∘ 2.2 chain).** Combining Theorem
+2.2's uniform-in-`z` line closeness (`proximity_gap_listDecoding`) with Lemma 2.4
+(`card_jointDisagreement_filter_mul_le`) sharpens the joint disagreement bound:
+the SAME joint pair `(p₀, p₁)` produced by Claim 2.3 has joint disagreement `d`
+with `(u₀, u₁)` satisfying `(|Z| − 1)·d ≤ |Z|·(e + h)` for every `z`-set `Z` of
+size `≥ 2` — i.e. `d ≤ |Z|/(|Z| − 1)·(e + h)`, which beats the raw `e + h` bound
+as `|Z|` grows. This is the oversized-error-locator distance restoration that
+closes the [BCKHS25] §2 Berlekamp–Welch route. -/
+theorem card_jointDisagreement_restored (k e h DZ : ℕ)
+    (hn : k + 2 * e + h + 1 = Fintype.card ι)
+    (hDZ : e + 1 ≤ (h + 1) * DZ) (hDZ0 : 0 < DZ)
+    (domain : ι ↪ F) (u₀ u₁ : ι → F) (S : Finset F) (hS0 : 0 < S.card)
+    (prox : ∀ z ∈ S, ∃ p : F[X], p.natDegree ≤ k ∧
+      (Finset.univ.filter (fun x => p.eval (domain x) ≠ u₀ x + u₁ x * z)).card ≤ e)
+    (hratio : ((k + e + h : ℕ) : ℚ) / (Fintype.card ι : ℚ)
+      + ((DZ : ℕ) : ℚ) / (S.card : ℚ) < 1) :
+    ∃ p₀ p₁ : F[X], p₀.natDegree ≤ k ∧ p₁.natDegree ≤ k ∧
+      (∀ (Zs : Finset F), 2 ≤ Zs.card →
+        (Zs.card - 1) *
+            (Finset.univ.filter
+              (fun x => ¬(u₀ x = p₀.eval (domain x) ∧ u₁ x = p₁.eval (domain x)))).card
+          ≤ Zs.card * (e + h)) := by
+  classical
+  obtain ⟨p₀, p₁, hp₀, hp₁, hclose⟩ :=
+    proximity_gap_listDecoding k e h DZ hn hDZ hDZ0 domain u₀ u₁ S hS0 prox hratio
+  refine ⟨p₀, p₁, hp₀, hp₁, fun Zs hZ => ?_⟩
+  -- Lemma 2.4 with the evaluated codeword pair, fed Theorem 2.2's per-z closeness
+  refine card_jointDisagreement_filter_mul_le (u₀ := u₀) (u₁ := u₁)
+    (p₀ := fun x => p₀.eval (domain x)) (p₁ := fun x => p₁.eval (domain x))
+    (e := e + h) Zs hZ (fun z _ => ?_)
+  -- the keystone's bound is stated with `(p₀ + C z * p₁).eval`; rewrite to `q₀ + z·q₁`
+  have hpt : (fun x => (p₀ + Polynomial.C z * p₁).eval (domain x))
+      = (fun x => p₀.eval (domain x) + z * p₁.eval (domain x)) := by
+    funext x
+    simp [Polynomial.eval_add, Polynomial.eval_mul, Polynomial.eval_C]
+  have := hclose z
+  rwa [hpt] at this
+
 end BCKHS25
