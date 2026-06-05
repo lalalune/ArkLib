@@ -173,6 +173,26 @@ theorem sum_terms_eq_table_add_columns
   rw [Fin.sum_univ_succ]
   congr 1
 
+omit [Fintype F] in
+theorem sum_terms_zero_no_columns
+    (oStmt : ∀ i, OStmtIn F n 0 i) (xChallenge : F) (u : Hypercube n) :
+    (∑ i : TermIdx 0,
+        termNumerator (honestMultiplicity oStmt) i u / termPhi oStmt xChallenge i u) = 0 := by
+  rw [sum_terms_eq_table_add_columns (F := F) (n := n) (M := 0) oStmt xChallenge u]
+  simp [honestMultiplicity_eval_zero_no_columns]
+
+omit [Fintype F] in
+theorem honest_helper_sum_zero_no_columns
+    (params : ProtocolParams 0) (oStmt : ∀ i, OStmtIn F n 0 i) (xChallenge : F) :
+    (∑ u : Hypercube n,
+      ∑ k : Fin params.numGroups,
+        evalOnHypercube (honestHelpers params oStmt xChallenge k) u) = 0 := by
+  apply Finset.sum_eq_zero
+  intro u _
+  rw [honest_helper_sum_eq_sum_terms
+    (F := F) (n := n) (M := 0) (params := params) oStmt xChallenge u]
+  exact sum_terms_zero_no_columns (F := F) (n := n) oStmt xChallenge u
+
 /-- Semantic agreement between final oracle-query answers and the retained LogUp oracles. -/
 def logupPointEvaluationsAgree
     (r : Fin n → F)

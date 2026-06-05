@@ -403,6 +403,36 @@ def lookupMultiplicityCount (oStmt : ∀ i, OStmtIn F n M i) (a : F) : ℕ :=
     evalOnHypercube (columnOracle oStmt ix.1) ix.2 = a).card
 
 omit [Field F] [Fintype F] in
+theorem lookupMultiplicityCount_zero_no_columns
+    (oStmt : ∀ i, OStmtIn F n 0 i) (a : F) :
+    lookupMultiplicityCount oStmt a = 0 := by
+  simp [lookupMultiplicityCount]
+
+omit [Field F] [Fintype F] in
+theorem lookupMultiplicityCount_eq_sum_column_counts
+    (oStmt : ∀ i, OStmtIn F n M i) (a : F) :
+    lookupMultiplicityCount oStmt a =
+      ∑ i : Fin M,
+        ((Finset.univ : Finset (Hypercube n)).filter fun u =>
+          evalOnHypercube (columnOracle oStmt i) u = a).card := by
+  unfold lookupMultiplicityCount
+  rw [Finset.card_eq_sum_ones]
+  simp_rw [Finset.card_eq_sum_ones]
+  have huniv : (Finset.univ : Finset (Fin M × Hypercube n)) =
+      (Finset.univ : Finset (Fin M)).product (Finset.univ : Finset (Hypercube n)) := by
+    ext x
+    simp
+  rw [huniv]
+  simp_rw [Finset.sum_filter]
+  change (∑ p ∈ (Finset.univ : Finset (Fin M)) ×ˢ
+      (Finset.univ : Finset (Hypercube n)),
+      if evalOnHypercube (columnOracle oStmt p.1) p.2 = a then (1 : ℕ) else 0) = _
+  rw [Finset.sum_product (s := (Finset.univ : Finset (Fin M)))
+    (t := (Finset.univ : Finset (Hypercube n)))
+    (f := fun p : Fin M × Hypercube n =>
+      if evalOnHypercube (columnOracle oStmt p.1) p.2 = a then (1 : ℕ) else 0)]
+
+omit [Field F] [Fintype F] in
 theorem tableMultiplicityCount_pos_of_eval
     (oStmt : ∀ i, OStmtIn F n M i) (u : Hypercube n) :
     0 < tableMultiplicityCount oStmt (evalOnHypercube (tableOracle oStmt) u) := by
@@ -449,10 +479,22 @@ noncomputable def normalizedMultiplicityValue (oStmt : ∀ i, OStmtIn F n M i)
   let a := evalOnHypercube (tableOracle oStmt) u
   (lookupMultiplicityCount oStmt a : F) / (tableMultiplicityCount oStmt a : F)
 
+omit [Fintype F] in
+theorem normalizedMultiplicityValue_zero_no_columns
+    (oStmt : ∀ i, OStmtIn F n 0 i) (u : Hypercube n) :
+    normalizedMultiplicityValue oStmt u = 0 := by
+  simp [normalizedMultiplicityValue, lookupMultiplicityCount_zero_no_columns]
+
 /-- The honest multiplicity oracle `m : H → F` from paper equation (14). -/
 noncomputable def honestMultiplicity (oStmt : ∀ i, OStmtIn F n M i) :
     MultiplicityMessage F n :=
   ⟨fun u => normalizedMultiplicityValue oStmt u⟩
+
+omit [Fintype F] in
+theorem honestMultiplicity_eval_zero_no_columns
+    (oStmt : ∀ i, OStmtIn F n 0 i) (u : Hypercube n) :
+    evalOnHypercube (honestMultiplicity oStmt) u = 0 := by
+  simp [honestMultiplicity, evalOnHypercube, normalizedMultiplicityValue_zero_no_columns]
 
 /-- The denominator term `φᵢ(u)` from Protocol 2. -/
 noncomputable def phi (oStmt : ∀ i, OStmtIn F n M i) (xChallenge : F) :
