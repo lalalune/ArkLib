@@ -119,7 +119,6 @@ noncomputable def listAtF (C : Finset (ι → F)) (x : ι → F) (r : ℕ) : ℕ
   (C.filter (fun c => hammingDist x c ≤ r)).card
 
 /-- Double-counting: `∑_x |B(x,r) ∩ C| = |C| · V`. -/
-omit [Nonempty ι] in
 theorem sum_listAtF (C : Finset (ι → F)) (r : ℕ) (x₀ : ι → F) :
     (∑ x : ι → F, listAtF C x r) = C.card * ballVolF x₀ r := by
   classical
