@@ -80,7 +80,7 @@ variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 noncomputable def ballVolF (x : ι → F) (r : ℕ) : ℕ :=
   (Finset.univ.filter (fun y : ι → F => hammingDist x y ≤ r)).card
 
-omit [Nonempty ι] [DecidableEq ι] [Fintype F] in
+/-- Hamming distance is translation-invariant on the right. -/
 theorem hammingDist_add_right (x y t : ι → F) :
     hammingDist (x + t) (y + t) = hammingDist x y := by
   classical
@@ -90,7 +90,7 @@ theorem hammingDist_add_right (x y t : ι → F) :
   · intro h hxy; exact h (by rw [hxy])
   · intro h hxy; exact h (by simpa using add_right_cancel hxy)
 
-omit [Nonempty ι] in
+/-- The Hamming-ball volume is independent of the center. -/
 theorem ballVolF_eq (x x' : ι → F) (r : ℕ) : ballVolF x r = ballVolF x' r := by
   classical
   unfold ballVolF
@@ -154,7 +154,6 @@ theorem exists_word_listAtF_ge (C : Finset (ι → F)) (r : ℕ) :
       _ = (Finset.univ : Finset (ι → F)).card * listAtF C x₀ r := by rw [smul_eq_mul]
   rw [hsum] at hle; rwa [Finset.card_univ] at hle
 
-omit [DecidableEq ι] [Fintype F] in
 /-- Relative↔absolute radius bridge (same as Elias proof). -/
 theorem closeCodewordsRel_iff
     (C : Submodule F (ι → F)) (w : ι → F) (δ : ℝ) (hδ_nonneg : 0 ≤ δ) (c : ι → F) :
@@ -170,12 +169,11 @@ theorem closeCodewordsRel_iff
     ← hn_def, Nat.le_floor_iff (mul_nonneg hδ_nonneg (Nat.cast_nonneg n))]
   congr!
 
-omit [DecidableEq ι] [DecidableEq F] in
 /-- **ABF26 Theorem 3.13 / GHSZ02 Corollary 20 — averaging core (full combinatorial strength).**
 For `C = ReedSolomon.code domain k`, `q=|F|`, `n=|ι|`, `k≤n`, `0<δ<1`: there is a word `w` with
 `q^k · C(n,⌊δn⌋) · (q-1)^⌊δn⌋  ≤  qⁿ · |Λ(C,δ,w)|`. -/
 theorem ghsz02_rs_averaging_core
-    (domain : ι ↪ F) (k : ℕ) (δ : ℝ) (hδ_pos : 0 < δ) (_hδ_lt : δ < 1)
+    (domain : ι ↪ F) (k : ℕ) (δ : ℝ) (hδ_pos : 0 < δ) (hδ_lt : δ < 1)
     (hk : k ≤ Fintype.card ι) :
     ∃ w : ι → F,
       (Fintype.card F) ^ k
@@ -206,11 +204,11 @@ theorem ghsz02_rs_averaging_core
   have hcard_words : Fintype.card (ι → F) = q ^ n := by rw [Fintype.card_fun, hq_def, hn_def]
   have hballvol_eq : ballVolF w r = hammingBallVolume q δ n := by
     have hb := hammingBallVolume_eq_ncard_hammingBall (F := F) (ι := ι) δ w
-    rw [show hammingBallVolume q δ n =
-        hammingBallVolume (Fintype.card F) δ (Fintype.card ι) from rfl, hb]
+    rw [show hammingBallVolume q δ n
+          = hammingBallVolume (Fintype.card F) δ (Fintype.card ι) from rfl, hb]
     unfold ballVolF; rw [← Set.ncard_coe_finset]; congr 1; ext y
-    simp only [Finset.coe_filter, Finset.mem_univ, true_and, Set.mem_setOf_eq,
-      ListDecodable.hammingBall]
+    simp only [Finset.coe_filter, Finset.mem_univ, true_and,
+      Set.mem_setOf_eq, ListDecodable.hammingBall]
     constructor
     · intro h; rw [hr_def, hn_def] at h; convert h using 2
     · intro h; rw [hr_def, hn_def]; convert h using 2

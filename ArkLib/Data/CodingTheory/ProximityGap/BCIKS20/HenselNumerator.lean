@@ -9,6 +9,7 @@ import Mathlib.Combinatorics.Enumerative.Partition.Basic
 import Mathlib.Data.Nat.Choose.Multinomial
 import ArkLib.Data.Polynomial.RationalFunctions
 import ArkLib.Data.Polynomial.PowerSeriesComposition
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.GammaGenuine
 
 set_option linter.style.longFile 1900
 -- This proof-note-heavy integration file contains many long paper-route doc lines.
@@ -436,6 +437,7 @@ layer (char-free, no `m!`, per BCIKS20 line 4350), never a stub. -/
 
 open Polynomial Polynomial.Bivariate
 open BCIKS20AppendixA
+open ProximityPrize.BCIKS20.GammaGenuine
 
 section Wave2
 
@@ -1610,6 +1612,20 @@ theorem βHensel_weight_bound (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypoth
           (fun l hl => hIH l (by omega)) i1 hi1 lam (Finset.mem_filter.mp hlam).2
 
 /-! ### 4e. (P2) the lift identity — the irreducible BCIKS20 A.4 frontier -/
+
+/-- **P2-facing genuine root coefficient data.**
+
+The genuine Hensel root has the base coefficient `α₀ = T/W`, and every coefficient of the
+recentered root equation vanishes.  This packages the two `GammaGenuine` facts in the
+`HenselNumerator` namespace, where the remaining `βHensel_lift_identity` work needs exactly this
+order-by-order root data before identifying the recursive numerator with the lifted coefficients. -/
+theorem gammaGenuine_P2_coefficient_data (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) :
+    PowerSeries.coeff 0 (gammaGenuine x₀ R H hHyp) = α₀ H ∧
+      PowerSeries.coeff t (Polynomial.eval (gammaGenuine x₀ R H hHyp) (Q x₀ R H)) = 0 := by
+  constructor
+  · rw [PowerSeries.coeff_zero_eq_constantCoeff_apply, gammaGenuine_constantCoeff hHyp]
+  · exact coeff_gammaGenuine_root hHyp t
 
 /-- **(P2) right-hand side, definitionally unfolded (PROVEN, axiom-clean).**
 
