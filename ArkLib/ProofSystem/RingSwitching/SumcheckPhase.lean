@@ -398,6 +398,148 @@ theorem getSumcheckRoundPoly_points_sum_eq_cube (i : Fin ℓ')
           Fin.append_left]
       exact congrArg x (Fin.ext rfl)
 
+/-- **Round-transition consistency (next-round cube form, defect-#20 last-variable).** The prover's
+round univariate `getSumcheckRoundPoly i (projectToMidSumcheckPoly … i.castSucc challenges)`
+evaluated at the verifier challenge `r'` equals the *next* round's cube sum of the advanced projected
+polynomial `projectToMidSumcheckPoly … i.succ (Fin.cons r' challenges)`. This is the multi-round
+analog of `finalSumcheck_cube0_sum_eq`: it relates `h_star.eval r'` (the next-round target produced
+by the honest verifier) to `∑_cube witOut.H` (the next-round sumcheck consistency), and is the
+load-bearing identity for the iterated KState's `nextSumcheckTargetCheck` reconstruction.
+
+Derivation: `getSumcheckRoundPoly_eval_eq_sum_snoc` rewrites the LHS as a survivor-cube sum of the
+round polynomial `H = projectToMid … i.castSucc challenges` with the *last* surviving variable fixed
+to `r'` (via `Fin.snoc`); `fixFirstVariablesOfMQP_eval` (with `v := 1`) identifies that snoc-eval with
+the survivor-eval of `fixFirstVariablesOfMQP (ℓ'-i.castSucc) ⟨1⟩ H {r'}`; the round-transition
+`fixFirstVariablesOfMQP_projectToMid_step` rewrites that fixed-last poly as `rename (finCongr)
+(projectToMid … i.succ (cons r' challenges)) = rename (finCongr) witOut.H`; finally `eval_rename` +
+a `Fin.cast` reindex of the (uniform Boolean) survivor cube collapse the rename to the next-round
+cube sum. -/
+theorem getSumcheckRoundPoly_eval_eq_cube_succ (i : Fin ℓ')
+    (t m : MultilinearPoly L ℓ') (challenges : Fin i.castSucc → L) (r' : L) :
+    (getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i)
+        (projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := t) (m := m)
+          (i := i.castSucc) (challenges := challenges))).val.eval r'
+      = ∑ z ∈ (boolDomain L (ℓ' - ↑i.succ)).cube,
+          (projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := t) (m := m)
+            (i := i.succ) (challenges := Fin.cons r' challenges)).val.eval z := by
+  -- Abbreviate `H := witLast.H = projectToMid … i.castSucc challenges`.
+  set H : L⦃≤ 2⦄[X Fin (ℓ' - ↑i.castSucc)] :=
+    projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := t) (m := m)
+      (i := i.castSucc) (challenges := challenges) with hHdef
+  -- `ℓ' - i.castSucc = (ℓ'-i.castSucc-1) + 1` from `i.isLt`.
+  have hn : ℓ' - ↑i.castSucc = (ℓ' - ↑i.castSucc - 1) + 1 := by
+    have := i.2; simp only [Fin.val_castSucc]; omega
+  set curH : L[X Fin ((ℓ' - ↑i.castSucc - 1) + 1)] := rename (finCongr hn) H.val with hcurH_def
+  have hHEq : HEq curH H.val := by
+    rw [hcurH_def]; exact rename_finCongr_heq (h := hn) (p := H.val)
+  -- (1) LHS: round univariate value as a survivor-cube snoc-sum (last-variable form).
+  rw [getSumcheckRoundPoly_eval_eq_sum_snoc (i := i) (H := H) (r' := r') (curH := curH)
+    (hcurH := hHEq)]
+  -- (2) Rewrite each snoc-eval of `curH` back to an eval of `H` (via `eval_rename`), then to the
+  -- survivor-eval of the *fixed-last* `H` (via `fixFirstVariablesOfMQP_eval` with `v := 1`).
+  have hpos : 0 < ℓ' - ↑i.castSucc := by have := i.2; simp only [Fin.val_castSucc]; omega
+  set v1 : Fin (ℓ' - ↑i.castSucc + 1) := ⟨1, by omega⟩ with hv1
+  -- Survivor point of `fixFirstVariablesOfMQP _ v1` lives over `Fin ((ℓ'-i.castSucc) - v1)`; with
+  -- `v1 = 1` this is the same dimension `ℓ'-i.castSucc-1` as the `curH` survivors.
+  have hfix : ∀ x : Fin (ℓ' - (↑i.castSucc + 1)) → L,
+      MvPolynomial.eval
+          (Fin.snoc (Fin.append x (fun j => j.elim0) ∘ Fin.cast (by omega)) r') curH
+        = MvPolynomial.eval
+            (fun k : Fin ((ℓ' - ↑i.castSucc) - ↑v1) =>
+              (Fin.append x (fun j => j.elim0) ∘ Fin.cast (by simp only [hv1]; omega)) k)
+            (fixFirstVariablesOfMQP (ℓ' - ↑i.castSucc) v1 H.val (fun _ => r')) := by
+    intro x
+    -- `fixFirstVariablesOfMQP_eval` (v := v1): `eval y (fix-last H {r'}) = eval (recombine y {r'}) H`.
+    rw [RingSwitching.fixFirstVariablesOfMQP_eval (L := L) (ℓ := ℓ' - ↑i.castSucc)
+        v1 H.val (fun _ => r')
+        (fun k : Fin ((ℓ' - ↑i.castSucc) - ↑v1) =>
+          (Fin.append x (fun j => j.elim0) ∘ Fin.cast (by simp only [hv1]; omega)) k)]
+    -- Both sides are `eval (·) H.val`; transport the snoc-eval of `curH` to `H` via `eval_rename`.
+    rw [hcurH_def, eval_rename]
+    refine congrArg (fun pt => MvPolynomial.eval pt H.val) ?_
+    -- The recombined points agree coordinatewise: the survivors come from `x` and the single fixed
+    -- coordinate is `r'`, in both the `Fin.snoc … r' ∘ finCongr` and the `Sum.elim … {r'}` forms.
+    funext j
+    -- LHS (after `eval_rename`): `(Fin.snoc … r') (Fin.cast hn j)`, `Fin.cast hn j : Fin (…-1+1)`.
+    -- RHS (`fixFirstVariablesOfMQP_eval` recombine): classify `j` by the `finSumFinEquiv` split
+    -- (`finSumFinEquiv_symm_dite`: split on `j < (ℓ'-i.castSucc) - v1`).
+    simp only [Function.comp_apply, Equiv.trans_apply, finCongr_apply,
+      RingSwitching.finSumFinEquiv_symm_dite, Fin.val_cast]
+    by_cases hj : (j : ℕ) < ℓ' - ↑i.castSucc - 1
+    · -- survivor coordinate: both sides read `x` at the matching index.
+      rw [dif_pos (show (j : ℕ) < (ℓ' - ↑i.castSucc) - ↑v1 by simp only [hv1]; omega), Sum.elim_inl]
+      simp only [show (Fin.cast hn j) = Fin.castSucc ⟨(j : ℕ), by omega⟩ from Fin.ext rfl,
+        Fin.snoc_castSucc, Function.comp_apply, Fin.val_cast]
+    · -- fixed coordinate (`j = ℓ'-i.castSucc-1`, the last): both sides read `r'`.
+      have hjlast : (j : ℕ) = ℓ' - ↑i.castSucc - 1 := by have := j.2; omega
+      rw [dif_neg (show ¬ (j : ℕ) < (ℓ' - ↑i.castSucc) - ↑v1 by simp only [hv1]; omega),
+          Sum.elim_inr]
+      simp only [show (Fin.cast hn j) = Fin.last (ℓ' - ↑i.castSucc - 1) from Fin.ext (by simp [hjlast]),
+        Fin.snoc_last]
+  rw [Finset.sum_congr rfl (fun x _ => hfix x)]
+  -- (3) The fixed-last `H` is the advanced projected poly up to `rename (finCongr)`; rewrite via the
+  -- round-transition step, then push `eval_rename` and reindex the survivor cube to the next cube.
+  have hstep := RingSwitching.fixFirstVariablesOfMQP_projectToMid_step (L := L) (ℓ := ℓ') t m i
+    challenges r'
+  -- `hstep : fix-last (projectToMid i.castSucc ch) {r'} = rename (finCongr) (projectToMid i.succ …)`.
+  rw [show (fixFirstVariablesOfMQP (ℓ' - ↑i.castSucc) ⟨1, by
+              have := i.2; simp only [Fin.val_castSucc]; omega⟩ H.val (fun _ => r'))
+        = (fixFirstVariablesOfMQP (ℓ' - ↑i.castSucc) ⟨1, by
+              have := i.2; simp only [Fin.val_castSucc]; omega⟩
+            (projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := t) (m := m)
+              (i := i.castSucc) (challenges := challenges)).val (fun _ => r')) from by rw [hHdef]]
+  rw [hstep]
+  -- Push `eval_rename` so each survivor eval is of the next-round projected poly directly.
+  have hren : ∀ x : Fin (ℓ' - (↑i.castSucc + 1)) → L,
+      MvPolynomial.eval (Fin.append x (fun j => j.elim0) ∘ Fin.cast (by omega))
+          (rename (finCongr (show ℓ' - (↑i.succ : ℕ) = ℓ' - ↑i.castSucc - 1 by
+              have := i.2; simp only [Fin.val_succ, Fin.val_castSucc]; omega))
+            (projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := t) (m := m)
+              (i := i.succ) (challenges := Fin.cons r' challenges)).val)
+        = MvPolynomial.eval
+            ((Fin.append x (fun j => j.elim0) ∘ Fin.cast (by omega))
+              ∘ finCongr (show ℓ' - (↑i.succ : ℕ) = ℓ' - ↑i.castSucc - 1 by
+                have := i.2; simp only [Fin.val_succ, Fin.val_castSucc]; omega))
+            (projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := t) (m := m)
+              (i := i.succ) (challenges := Fin.cons r' challenges)).val := by
+    intro x; rw [eval_rename]
+  rw [Finset.sum_congr rfl (fun x _ => hren x)]
+  -- (4) Reindex the survivor cube `((boolDomain ℓ').drop (i+1)).cube` to the next-round cube
+  -- `(boolDomain (ℓ'-i.succ)).cube`; both are the uniform Boolean cube of dimension `ℓ'-i.succ`.
+  simp only [boolDomain, SumcheckDomain.drop_uniform]
+  symm
+  have hdim : ℓ' - (↑i.succ : ℕ) = ℓ' - (↑i.castSucc + 1) := by
+    have := i.2; simp only [Fin.val_succ, Fin.val_castSucc]
+  apply Finset.sum_nbij' (fun z => z ∘ Fin.cast hdim) (fun y => y ∘ Fin.cast hdim.symm)
+  · intro z hz
+    apply SumcheckDomain.mem_cube.2
+    intro j
+    exact by simpa using SumcheckDomain.mem_cube.1 hz (Fin.cast hdim j)
+  · intro y hy
+    apply SumcheckDomain.mem_cube.2
+    intro j
+    exact by simpa using SumcheckDomain.mem_cube.1 hy (Fin.cast hdim.symm j)
+  · intro z _; funext j; simp
+  · intro y _; funext j; simp
+  · intro z _
+    refine congrArg
+      (fun pt => MvPolynomial.eval pt
+        (projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := t) (m := m)
+          (i := i.succ) (challenges := Fin.cons r' challenges)).val) ?_
+    funext j
+    -- The recombined point `append (z ∘ cast) ∅ (cast (finCongr j))` reads `z` at the value-`j`
+    -- index (the `Fin.append`-with-empty is the left part, and every cast preserves `.val`).
+    simp only [Function.comp_apply, finCongr_apply, Fin.cast_cast]
+    rw [show (Fin.cast (show ℓ' - (↑i.succ : ℕ) = ℓ' - (↑i.castSucc + 1) + 0 by
+              have := i.2; simp only [Fin.val_succ, Fin.val_castSucc]; omega) j)
+          = Fin.castAdd 0 (Fin.cast hdim j) from Fin.ext rfl,
+        Fin.append_left, Function.comp_apply]
+    exact congrArg z (Fin.ext (by simp only [Fin.val_cast]))
+  -- The `getSumcheckRoundPoly_eval_eq_sum_snoc` rewrite leaves its (conclusion-irrelevant) autobound
+  -- `ℕ` parameters as trailing metavariable goals; any `ℕ` discharges them (the lemma's statement is
+  -- independent of them).
+  all_goals exact ℓ'
+
 noncomputable def iteratedSumcheckRbrExtractor (i : Fin ℓ') :
   Extractor.RoundByRound []ₒ
     (StmtIn := (Statement (L := L) (ℓ := ℓ')
