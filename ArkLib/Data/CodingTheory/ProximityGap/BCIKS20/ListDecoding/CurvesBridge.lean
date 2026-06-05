@@ -306,6 +306,7 @@ theorem RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_selected_
         P z = PzFamily (F := F) (n := n) (δ : ℚ) u₀ u₁ ωs k z) :
     jointAgreement (C := ReedSolomon.code ωs (k + 1)) (δ := (δ : ℝ≥0))
       (W := Code.finMapTwoWords u₀ u₁) := by
+  classical
   exact RS_jointAgreement_of_prob_gt_strict_johnson_and_coeff_polys
     (deg := k + 1) (domain := ωs) (δ := (δ : ℝ≥0))
     (hk := Nat.zero_lt_succ 0) (u := Code.finMapTwoWords u₀ u₁)
@@ -361,6 +362,57 @@ theorem RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_natCeil_n
   exact RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_selected_matching_domain
     (F := F) (n := n) (m := m) (k := k) (ωs := ωs) (Q := Q)
     δ u₀ u₁ hprob hJ hδ h_gs Dtop hDtop_card hsubset hunique
+
+/-- Strict Johnson §6 joint-agreement front door specialized to the §5
+affine-line setup, with the `ModifiedGuruswami` solution produced by Claim
+5.4 and the selected coordinate domain produced by the nat-ceil Claim-5.11
+counting package for that chosen solution. -/
+theorem RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_exists_natCeil_counting
+    {m k : ℕ} (hk : 0 < k) {ωs : Fin n ↪ F}
+    [DecidableEq (RatFunc F)]
+    (δ : ℚ≥0) (u₀ u₁ : Fin n → F)
+    (hDx : ((gsDpg n m k : ℕ) : ℝ) < D_X ((k + 1) / (n : ℚ)) n m)
+    (hYZ : ((gsDpg n m k + gsZCap n m k : ℕ) : ℝ) ≤
+      n * (m + 1 / (2 : ℚ)) ^ 3 / (6 * Real.sqrt ((k + 1) / n)))
+    (hprob :
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin 2, (z ^ (t : ℕ)) • Code.finMapTwoWords u₀ u₁ t,
+          ReedSolomon.code ωs (k + 1)) ≤ (δ : ℝ≥0)] >
+        (((1 : ℕ) : ENNReal) * (errorBound (δ : ℝ≥0) (k + 1) ωs : ENNReal)))
+    (hJ : (1 - (LinearCode.rate (ReedSolomon.code ωs (k + 1)) : ℝ≥0)) / 2 <
+      (δ : ℝ≥0))
+    (hδ : (δ : ℝ≥0) < 1 - ReedSolomon.sqrtRate (k + 1) ωs)
+    (hcounting : ∀ {Q : F[Z][X][Y]} (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁),
+      ∃ (x₀ : F) (D t : ℕ),
+        (coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁).card - 1 ≤
+          (2 * k + 1)
+            * (Polynomial.Bivariate.natDegreeY <| H k (δ : ℚ) x₀ h_gs)
+            * (Polynomial.Bivariate.natDegreeY <| R k (δ : ℚ) x₀ h_gs)
+            * D ∧
+        (2 * k + 1)
+          * (Polynomial.Bivariate.natDegreeY <| H k (δ : ℚ) x₀ h_gs)
+          * (Polynomial.Bivariate.natDegreeY <| R k (δ : ℚ) x₀ h_gs)
+          * D + t ≤ #(coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁) ∧
+        ⌈(δ : ℚ) * (n : ℚ)⌉₊ *
+            #(coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁) <
+          (n - k) * t)
+    (hunique : ∀ {Q : F[Z][X][Y]} (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+      (P : F → Polynomial F),
+      (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+        (P z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P z).eval ∘ ωs) ≤ (δ : ℚ)) →
+      ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+        P z = PzFamily (F := F) (n := n) (δ : ℚ) u₀ u₁ ωs k z) :
+    jointAgreement (C := ReedSolomon.code ωs (k + 1)) (δ := (δ : ℝ≥0))
+      (W := Code.finMapTwoWords u₀ u₁) := by
+  classical
+  obtain ⟨Q, h_gs⟩ :=
+    modified_guruswami_has_a_solution (F := F) (m := m) (n := n) (k := k)
+      (Nat.pos_of_neZero n) hk (ωs := ωs) (u₀ := u₀) (u₁ := u₁) hDx hYZ
+  obtain ⟨x₀, D, t, hcover, hthreshold, hsmall⟩ := hcounting h_gs
+  exact RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_natCeil_nonmatching_bound
+    (F := F) (n := n) (m := m) (k := k) (ωs := ωs) (Q := Q) (x₀ := x₀)
+    δ u₀ u₁ hprob hJ hδ h_gs
+    (D := D) (t := t) hcover hthreshold hsmall (hunique h_gs)
 
 /-- Strict Johnson §6 joint-agreement front door specialized to the §5
 degree-one affine-line setup.  The remaining hypotheses are exactly the §5
