@@ -808,15 +808,31 @@ theorem iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness [IsDomain L] (i : F
   use iteratedSumcheckRbrExtractor κ L K P ℓ ℓ' h_l aOStmtIn i
   use iteratedSumcheckKnowledgeStateFunction κ L K P ℓ ℓ' h_l aOStmtIn i
   intro stmtIn witIn prover j
-  -- WIP (blocked, two independent obstructions):
-  --   (a) `iteratedSumcheckKnowledgeStateFunction` still carries the wall-(1) `toFun_full` `sorry`s
-  --       (the index-⟨2⟩ ACCEPT-branch round-poly algebra; see above). The defect-#21 verifier-failure
-  --       repair only unblocked the REJECT branch / run-collapse front-end, which are now closed.
-  --   (b) the round bad-event probability bound `Pr[challenge hits a root] ≤ roundKnowledgeError`
-  --       (degree-2 Schwartz–Zippel over `L` for the single round challenge `r'`) is a separate
-  --       analysis, independent of `toFun_full`. The challenge index `j` here is the round's single
-  --       `V_to_P` message; the bound is `2 / |L|` (`roundKnowledgeError L ℓ' i`).
-  -- Both must land before this closes; left as WIP `sorry`.
+  obtain ⟨stmt, oStmt⟩ := stmtIn
+  -- The single challenge is at round index `1` (`pSpecSumcheckRound` = `[P_to_V, V_to_P]`).
+  have hj : j = ⟨1, rfl⟩ := by
+    obtain ⟨jv, hjdir⟩ := j
+    match jv, hjdir with
+    | ⟨0, _⟩, hjdir => simp [pSpecSumcheckRound] at hjdir
+    | ⟨1, _⟩, _ => rfl
+  subst hj
+  -- KEY SOUNDNESS REDUCTION (defect-#22 KState). For ANY transcript `tr` (whatever round-0 message
+  -- `h_i := tr ⟨0⟩` the prover sends) and challenge `r'`, the bad-event predicate
+  --   `∃ witMid, ¬kSF⟨1⟩ tr witMid ∧ kSF⟨2⟩ (tr.concat r') witMid`
+  -- forces `r'` to be a root of the FIXED nonzero degree-≤2 univariate `h_i - h_star`, where
+  -- `h_star := getSumcheckRoundPoly i (projectToMid i.castSucc stmt.challenges)` is pinned by
+  -- `kSF⟨2⟩`'s `witnessStructuralInvariant` (so it is the SAME for every `witMid`):
+  --   • `kSF⟨2⟩` gives struct (`witMid.H = projectToMid i.castSucc stmt.challenges`),
+  --     `explicitVCheck` (`∑_b h_i(b) = stmt.sumcheck_target`) and `nextTarget` (`h_i(r') =
+  --     h_star(r')`);
+  --   • `¬kSF⟨1⟩`: `kSF⟨1⟩ = master(stmt,witMid) ∧ explicitVCheck ∧ (h_i = h_star)`. Under `kSF⟨2⟩`'s
+  --     struct + `explicitVCheck`, the cube identity `getSumcheckRoundPoly_points_sum_eq_cube` makes
+  --     `h_i = h_star ⇒ consistency`, so the only remaining way `kSF⟨1⟩` can fail is `h_i ≠ h_star`.
+  -- Hence the predicate ⟹ `h_i ≠ h_star ∧ h_i(r') = h_star(r')`, i.e. `r' ∈ roots(h_i - h_star)`,
+  -- a set of size `< 2` (degree ≤ 2, nonzero) — a Schwartz–Zippel `2/|L|` event. WIP: the outer
+  -- probabilistic plumbing (peel `prover.runToRound 1`'s round-0 send + the uniform `r'` sample,
+  -- then `probEvent_uniformSample`/`card_roots`) mirrors `RandomQuery.oracleVerifier_rbrKnowledgeSoundness`
+  -- but with the extra prover-first round-0 message peel. Preserved per honest-completion.
   sorry
 
 end IteratedSumcheckStep
