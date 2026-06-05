@@ -22171,9 +22171,36 @@
           "signature": "def FaaDiBrunoFullSumVanishes (x\u2080 : F) (R : F[X][X][Y])"
         },
         {
+          "doc": "The legacy explicit-successor-sum formulation of the same residual as `FaaDiBrunoFullSumVanishes`.  This is the exact statement shape of `faaDiBruno_succ_sum_eq_zero` in `HenselNumerator.lean`, recorded as a `Prop` so the old frontier and the newer full-vanishing frontier can be compared without consuming the admitted theorem.",
+          "kind": "def",
+          "line": 89,
+          "name": "BCIKS20.HenselNumerator.FaaDiBrunoSuccSumsVanish",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "FaaDiBrunoSuccSumsVanish",
+          "signature": "def FaaDiBrunoSuccSumsVanish (x\u2080 : F) (R : F[X][X][Y])"
+        },
+        {
+          "doc": "The named full-vanishing residual and the legacy explicit successor-sum residual are definitionally the same statement.  This bridge is axiom-clean; it does not consume the admitted `faaDiBruno_succ_sum_eq_zero` theorem.",
+          "kind": "theorem",
+          "line": 105,
+          "name": "BCIKS20.HenselNumerator.fullVanishes_iff_succSumsVanish",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "fullVanishes_iff_succSumsVanish",
+          "signature": "theorem fullVanishes_iff_succSumsVanish (x\u2080 : F) (R : F[X][X][Y])"
+        },
+        {
+          "doc": "Compatibility bridge from the older `HenselNumerator.lean` residual theorem to the newer full-vanishing residual.  Its only non-kernel content is exactly the legacy admitted theorem `faaDiBruno_succ_sum_eq_zero`; the equivalence above is axiom-clean.",
+          "kind": "theorem",
+          "line": 113,
+          "name": "BCIKS20.HenselNumerator.fullVanishes_of_faaDiBruno_succ_sum_eq_zero",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "fullVanishes_of_faaDiBruno_succ_sum_eq_zero",
+          "signature": "theorem fullVanishes_of_faaDiBruno_succ_sum_eq_zero (x\u2080 : F) (R : F[X][X][Y])"
+        },
+        {
           "doc": "**THE EQUIVALENCE (PROVEN, axiom-clean).**  The carved core `RestrictedFaaDiBrunoMatch` of `P2Close.lean` is *exactly* the full-sum vanishing `FaaDiBrunoFullSumVanishes`, with the difference accounted for entirely by the PROVEN Newton split.  Neither direction introduces any new axiom: the `(t+1) \u2208 m` terms are handled by `coeff_succ_eval_defect_reduction`.",
           "kind": "theorem",
-          "line": 88,
+          "line": 123,
           "name": "BCIKS20.HenselNumerator.restrictedMatch_iff_fullVanishes",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "restrictedMatch_iff_fullVanishes",
@@ -22182,7 +22209,7 @@
         {
           "doc": "The carved core, OBTAINED from the full-vanishing identity (forward direction, PROVEN axiom-clean).",
           "kind": "theorem",
-          "line": 102,
+          "line": 137,
           "name": "BCIKS20.HenselNumerator.restrictedFaaDiBrunoMatch_of_fullVanishes",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "restrictedFaaDiBrunoMatch_of_fullVanishes",
@@ -22191,7 +22218,7 @@
         {
           "doc": "**P2 root from the full-vanishing identity (PROVEN reduction).**",
           "kind": "theorem",
-          "line": 116,
+          "line": 151,
           "name": "BCIKS20.HenselNumerator.assembledSeries_isRoot_of_fullVanishes",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "assembledSeries_isRoot_of_fullVanishes",
@@ -22200,7 +22227,7 @@
         {
           "doc": "**`P2_closed` from the single full-vanishing identity (PROVEN reduction).** The ENTIRE remaining mathematical content of BCIKS20 A.4's P2 is `FaaDiBrunoFullSumVanishes` (equivalently `RestrictedFaaDiBrunoMatch`): given it, the assembled series is the genuine Hensel root AND the repaired lift identity holds for all orders.",
           "kind": "theorem",
-          "line": 127,
+          "line": 162,
           "name": "BCIKS20.HenselNumerator.P2_closed_of_fullVanishes",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "P2_closed_of_fullVanishes",
@@ -73353,7 +73380,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 7977,
+      "declarations": 7980,
       "files": 393
     }
   }

@@ -81,6 +81,41 @@ def FaaDiBrunoFullSumVanishes (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H) : Prop :=
   ∀ t : ℕ, faaDiBrunoFullSum H x₀ R hHyp (t + 1) = 0
 
+/-- The legacy explicit-successor-sum formulation of the same residual as
+`FaaDiBrunoFullSumVanishes`.  This is the exact statement shape of
+`faaDiBruno_succ_sum_eq_zero` in `HenselNumerator.lean`, recorded as a `Prop` so the old
+frontier and the newer full-vanishing frontier can be compared without consuming the admitted
+theorem. -/
+def FaaDiBrunoSuccSumsVanish (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) : Prop :=
+  ∀ t : ℕ,
+    (∑ i ∈ Finset.range ((Q x₀ R H).natDegree + 1),
+        ∑ ab ∈ Finset.antidiagonal (t + 1),
+          (liftToFunctionField (H := H)
+              ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX ab.1 R)).coeff i))
+          * (∑ m ∈ (Finset.finsuppAntidiag (Finset.range i) ab.2).image
+                    (ArkLib.PowerSeriesComposition.valueMultiset (Finset.range i)),
+              (Multiset.countPerms m) •
+                ((m.map (fun j =>
+                  PowerSeries.coeff j (βHenselAssembled H x₀ R hHyp))).prod))) = 0
+
+/-- The named full-vanishing residual and the legacy explicit successor-sum residual are
+definitionally the same statement.  This bridge is axiom-clean; it does not consume the admitted
+`faaDiBruno_succ_sum_eq_zero` theorem. -/
+theorem fullVanishes_iff_succSumsVanish (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    FaaDiBrunoFullSumVanishes H x₀ R hHyp ↔ FaaDiBrunoSuccSumsVanish H x₀ R hHyp := by
+  rfl
+
+/-- Compatibility bridge from the older `HenselNumerator.lean` residual theorem to the newer
+full-vanishing residual.  Its only non-kernel content is exactly the legacy admitted theorem
+`faaDiBruno_succ_sum_eq_zero`; the equivalence above is axiom-clean. -/
+theorem fullVanishes_of_faaDiBruno_succ_sum_eq_zero (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    FaaDiBrunoFullSumVanishes H x₀ R hHyp :=
+  (fullVanishes_iff_succSumsVanish H x₀ R hHyp).mpr
+    (fun t => faaDiBruno_succ_sum_eq_zero H x₀ R hHyp t)
+
 /-- **THE EQUIVALENCE (PROVEN, axiom-clean).**  The carved core `RestrictedFaaDiBrunoMatch` of
 `P2Close.lean` is *exactly* the full-sum vanishing `FaaDiBrunoFullSumVanishes`, with the
 difference accounted for entirely by the PROVEN Newton split.  Neither direction introduces any
@@ -137,6 +172,7 @@ theorem P2_closed_of_fullVanishes (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hy
 section AxiomAudit
 #print axioms faaDiBrunoFullSum_eq_coeff
 #print axioms faaDiBrunoFullSum_succ_eq
+#print axioms fullVanishes_iff_succSumsVanish
 #print axioms restrictedMatch_iff_fullVanishes
 #print axioms restrictedFaaDiBrunoMatch_of_fullVanishes
 #print axioms assembledSeries_isRoot_of_fullVanishes
