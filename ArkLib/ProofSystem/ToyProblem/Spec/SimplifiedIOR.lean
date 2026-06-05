@@ -17,7 +17,8 @@ Construction 6.2, this version:
   * does **not** test acceptance (no final `guard`); instead it
     *reduces* the input instance `(v, μ₁, μ₂, f₁, f₂)` to a smaller
     instance `(v, μ₁ + γ·μ₂, f₁ + γ·f₂)`,
-  * is therefore a reduction from `R̃²_{C,δ}` to `R̃¹_{C,δ}`.
+  * is therefore a reduction from the fixed-encoding `R̃²_{C,δ}` to the
+    fixed-encoding `R̃¹_{C,δ}`.
 
 This file follows the FRI/Sumcheck `Spec/` convention exactly (mirroring
 `ToyProblem/Spec/General.lean`). The two protocols live in sibling
@@ -84,7 +85,8 @@ Construction 6.9.
 
 Bundles the post-step instance `((v, μ_new), f_new)` together with the
 post-step witness `M_new` and asserts that `(v, μ_new, f_new)` is
-`δ`-close to a valid `relation`-instance for the 1-codeword setting.
+`δ`-close to `encode M_new` and that `M_new` satisfies the combined
+linear constraint.
 
 Type-aligned with `OutputStatement × (∀ i, OutputOracleStatement ι F i)
 × OutputWitness`, i.e. directly consumable by the L6.10 knowledge-
@@ -92,10 +94,10 @@ soundness statement against `verifier.knowledgeSoundness`. -/
 def outputRelationFor (encode : (Fin k → F) → (ι → F)) (δ : ℝ≥0) :
     Set ((OutputStatement (F := F) k × (∀ i, OutputOracleStatement ι F i)) ×
       OutputWitness (F := F) k) :=
-  fun input ↦ ∃ m : Fin k → F,
-    (∑ j, m j * input.1.1.1 j = input.1.1.2) ∧
+  fun input ↦
+    (∑ j, input.2 j * input.1.1.1 j = input.1.1.2) ∧
     ∃ S : Finset ι, (1 - (δ : ℝ)) * Fintype.card ι ≤ S.card ∧
-      ∀ j ∈ S, input.1.2 0 j = encode m j
+      ∀ j ∈ S, input.1.2 0 j = encode input.2 j
 
 section Protocol
 variable [DecidableEq ι] [Fintype F] [DecidableEq F]

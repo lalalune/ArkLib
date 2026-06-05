@@ -527,8 +527,12 @@ floor is supplied by steps 1–3 of this file:
 * `mcaEventGS_singleton_eq_mcaEvent_udr` certifies the GS definition is faithful in UDR.
 
 The remaining gap to the full statement is the *beyond-UDR* GS list-decoder mass bound (radius up
-to the Johnson/capacity bound `1 - ρ - η`), which is exactly the external prize content. -/
-theorem epsMCAgs_prizeBound_conjecture
+to the Johnson/capacity bound `1 - ρ - η`), which is exactly the external prize content.
+
+This is a named `Prop`, not a theorem: carrying it as a theorem with `sorry` would launder the
+open prize into `sorryAx`. Downstream formal developments should take this proposition as an
+explicit hypothesis until the beyond-UDR GS mass bound is actually proved. -/
+def epsMCAgs_prizeBound_conjecture
     (domain : ι ↪ F) (j : Fin 4) (m : ℕ) (η δ : ℝ≥0) (hη : 0 < η)
     (L : WordStack F (Fin 2) ι → Finset (ι → F))
     (hδ : (δ : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η : ℝ)) :
@@ -538,16 +542,7 @@ theorem epsMCAgs_prizeBound_conjecture
           ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)))
         δ L
       ≤ ENNReal.ofReal
-          (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j) η c₁ c₂ c₃) := by
-  -- ════════════════════════════════════════════════════════════════════════════════════════
-  -- HONEST CONJECTURE MARKER — ABF26 Grand Challenge 1, beyond-UDR direction.
-  -- This is the open prize: the GS list-decoder mass bound on the exceptional-γ set up to the
-  -- capacity radius `1 - ρ - η`. Steps 1–3 of this file (epsMCAgs_restricted_le_epsCA,
-  -- gsList_bad_gamma_bound, mcaEventGS_singleton_eq_mcaEvent_udr) supply the UDR floor; the
-  -- remaining content is the external prize and is deliberately NOT discharged here. The
-  -- statement is what this file makes formally stateable against real GS-exposed definitions.
-  -- ════════════════════════════════════════════════════════════════════════════════════════
-  sorry
+          (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j) η c₁ c₂ c₃)
 
 end Prize
 
