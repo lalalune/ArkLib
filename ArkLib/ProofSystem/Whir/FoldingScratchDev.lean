@@ -82,8 +82,8 @@ lemma folding_preserves_listdecoding_base_mca
           foldSet ≠ listBlock'
         ] ≤ errStarV δ
   := by
-    exact folding_preserves_listdecoding_base_of_mca_bridge hm hcode C' hcode' Gen'
-      BStarV errStarV hmca hsub fStack hbridge
+    exact folding_preserves_listdecoding_base_of_mca_bridge
+      (F := F) (ι := ι) hm hcode C' hcode' Gen' BStarV errStarV hmca hsub fStack hbridge
 
 end FoldingLemmasTmp
 
