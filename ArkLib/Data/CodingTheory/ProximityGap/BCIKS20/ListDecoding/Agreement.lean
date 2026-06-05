@@ -601,6 +601,57 @@ lemma exists_pg_factors_with_large_common_root_set_of_dvd (δ : ℚ) (x₀ : F)
   · simpa [c57_eval_on_Z_eq_pg] using hcard_pg
 
 omit [DecidableEq (RatFunc F)] in
+/-- Candidate-pair extraction from the `pg_eval_on_Z` divisibility hypothesis
+with close-set nonemptiness derived from the same large-set hypothesis carried
+by the conclusion.
+
+This is the side-condition-explicit `pg_eval_on_Z` form of Claim 5.7 that
+downstream callers can use when the Johnson-regime cardinality hypothesis is
+available directly, without separately proving the close set is nonempty. -/
+lemma exists_pg_factors_with_large_common_root_set_of_dvd_of_large (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hx0 : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        Bivariate.evalX (Polynomial.C x₀) R ≠ 0)
+    (hsep : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        (Bivariate.evalX (Polynomial.C x₀) R).Separable)
+    (hdiv : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      let P : F[X] := Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2
+      Polynomial.X - Polynomial.C P ∣ (pg_eval_on_Z (F := F) Q z.1))
+    (hlarge :
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q) :
+    ∃ R H,
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs ∧
+      Irreducible R ∧
+      Irreducible H ∧
+      0 < H.natDegree ∧
+      H ∣ (Bivariate.evalX (Polynomial.C x₀) R) ∧
+      (Bivariate.evalX (Polynomial.C x₀) R).Separable ∧
+        #(Finset.univ.filter
+            (fun z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ =>
+              (Trivariate.eval_on_Z R z.1).eval
+                  (Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2) = 0 ∧
+                (Bivariate.evalX z.1 H).eval
+                  ((Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2).eval x₀)
+                  = 0))
+        ≥ #(Finset.univ : Finset (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁)) /
+          Bivariate.natDegreeY Q ∧
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q :=
+  exists_pg_factors_with_large_common_root_set_of_dvd
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+    (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hx0 hsep
+    (coeffs_of_close_proximity_nonempty_of_large_natdiv
+      (F := F) (n := n) (m := m) (k := k) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) δ hlarge)
+    hdiv hlarge
+
+omit [DecidableEq (RatFunc F)] in
 /-- Candidate-pair extraction directly from the graph agreement/count hypotheses used by
 `Q_vanishes_on_close_codeword_graph`.
 

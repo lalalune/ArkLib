@@ -4,7 +4,7 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 390 files, 7923 declarations
+- `ArkLib` — 390 files, 7924 declarations
 
 ## Same short-name across multiple files (296 groups)
 
@@ -1188,7 +1188,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `exists_coordinate_subset_with_many_nonbad_of_heavy_complement_card` (2 declarations, 2 files)
 
-- `lemma ProximityGap.exists_coordinate_subset_with_many_nonbad_of_heavy_complement_card` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean:6027](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean#L6027) — Complement-to-incidence form of the heavy-coordinate argument.  If a coordinate is not heavy for the
+- `lemma ProximityGap.exists_coordinate_subset_with_many_nonbad_of_heavy_complement_card` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean:6078](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean#L6078) — Complement-to-incidence form of the heavy-coordinate argument.  If a coordinate is not heavy for the
 - `lemma ArkLib.Claim511.exists_coordinate_subset_with_many_nonbad_of_heavy_complement_card` [ArkLib/ToMathlib/Claim511.lean:128](../../../ArkLib/ToMathlib/Claim511.lean#L128) — **Complement-to-incidence selection.** If at least `r` coordinates are *not* heavy (each bad for `< 
 
 ### `exists_ne_zero_map_eq_zero` (2 declarations, 2 files)
@@ -1198,7 +1198,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `exists_subset_card_eq_of_le_card` (2 declarations, 2 files)
 
-- `lemma ProximityGap.exists_subset_card_eq_of_le_card` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean:5977](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean#L5977) — Select exactly `r` elements from a finite set once its cardinality is large enough.  This is the fin
+- `lemma ProximityGap.exists_subset_card_eq_of_le_card` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean:6028](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean#L6028) — Select exactly `r` elements from a finite set once its cardinality is large enough.  This is the fin
 - `lemma ArkLib.Claim511.exists_subset_card_eq_of_le_card` [ArkLib/ToMathlib/Claim511.lean:118](../../../ArkLib/ToMathlib/Claim511.lean#L118) — Select exactly `r` elements from a finite set once its cardinality is large enough.  Final selection
 
 ### `extractor` (2 declarations, 2 files)
@@ -1288,7 +1288,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `heavyCoords_card_mul_le` (2 declarations, 2 files)
 
-- `lemma ProximityGap.heavyCoords_card_mul_le` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean:5985](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean#L5985) — Generic double-counting brick for Claim 5.11. If each `z ∈ S` has at most `m` bad coordinates, then 
+- `lemma ProximityGap.heavyCoords_card_mul_le` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean:6036](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean#L6036) — Generic double-counting brick for Claim 5.11. If each `z ∈ S` has at most `m` bad coordinates, then
 - `lemma ArkLib.Claim511.heavyCoords_card_mul_le` [ArkLib/ToMathlib/Claim511.lean:77](../../../ArkLib/ToMathlib/Claim511.lean#L77) — **Double-counting brick.** If each `z ∈ S` has at most `m` bad coordinates, then the coordinates tha
 
 ### `hint` (2 declarations, 2 files)
@@ -1976,4 +1976,3 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **1.00** `Prover.runToRound` [ArkLib/OracleReduction/Execution.lean:103](../../../ArkLib/OracleReduction/Execution.lean#L103) vs `Prover.runToRoundDSFS` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Defs.lean:197](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Defs.lean#L197)
     - a: Run the prover in an interactive reduction up to round index `i`, via first inputting the statement 
     - b: Run the prover in an interactive reduction up to round index `i`, via first inputting the statement 
-

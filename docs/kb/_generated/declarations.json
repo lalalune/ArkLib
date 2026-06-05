@@ -17665,9 +17665,18 @@
           "signature": "class classical"
         },
         {
+          "doc": "Candidate-pair extraction from the `pg_eval_on_Z` divisibility hypothesis with close-set nonemptiness derived from the same large-set hypothesis carried by the conclusion. This is the side-condition-explicit `pg_eval_on_Z` form of Claim 5.7 that downstream callers can use when the Johnson-regime cardinality hypothesis is available directly, without separately proving the close set is nonempty.",
+          "kind": "lemma",
+          "line": 611,
+          "name": "ProximityGap.exists_pg_factors_with_large_common_root_set_of_dvd_of_large",
+          "namespace": "ProximityGap",
+          "short_name": "exists_pg_factors_with_large_common_root_set_of_dvd_of_large",
+          "signature": "lemma exists_pg_factors_with_large_common_root_set_of_dvd_of_large (\u03b4 : \u211a) (x\u2080 : F)"
+        },
+        {
           "doc": "Candidate-pair extraction directly from the graph agreement/count hypotheses used by `Q_vanishes_on_close_codeword_graph`. This is the proved side-condition-heavy replacement for the first half of Claim 5.7: the only remaining inputs are the list-decoding regime inequalities and the per-`z` agreement sets that make the graph-vanishing theorem applicable.",
           "kind": "lemma",
-          "line": 610,
+          "line": 661,
           "name": "ProximityGap.exists_pg_factors_with_large_common_root_set_of_graph_conditions",
           "namespace": "ProximityGap",
           "short_name": "exists_pg_factors_with_large_common_root_set_of_graph_conditions",
@@ -17676,16 +17685,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 652,
-          "name": "ProximityGap._anon_class_652",
+          "line": 703,
+          "name": "ProximityGap._anon_class_703",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_652",
+          "short_name": "_anon_class_703",
           "signature": "class classical"
         },
         {
           "doc": "Candidate-pair extraction from graph agreement/count hypotheses, with nonemptiness derived from the large-set hypothesis.",
           "kind": "lemma",
-          "line": 667,
+          "line": 718,
           "name": "ProximityGap.exists_pg_factors_with_large_common_root_set_of_graph_conditions_of_large",
           "namespace": "ProximityGap",
           "short_name": "exists_pg_factors_with_large_common_root_set_of_graph_conditions_of_large",
@@ -17694,7 +17703,7 @@
         {
           "doc": "The side hypotheses needed for the proved graph-condition candidate-pair extractions.  This package avoids repeating the same large binder block in the root-clearing API.",
           "kind": "structure",
-          "line": 717,
+          "line": 768,
           "name": "ProximityGap.GraphExtractionHypotheses",
           "namespace": "ProximityGap",
           "short_name": "GraphExtractionHypotheses",
@@ -17703,7 +17712,7 @@
         {
           "doc": "Build the graph-extraction side-condition package while deriving close-set nonemptiness from the large-set inequality.",
           "kind": "def",
-          "line": 743,
+          "line": 794,
           "name": "ProximityGap.GraphExtractionHypotheses.ofLarge",
           "namespace": "ProximityGap",
           "short_name": "GraphExtractionHypotheses.ofLarge",
@@ -17712,7 +17721,7 @@
         {
           "doc": "Candidate-pair extraction plus the proved Appendix-A root-clearing bridge. This is the side-condition-explicit form needed before Claims 5.8--5.10 can be made honest: once the Claim-5.7 candidate pair has a large enough common-root fiber for the `clearDenomY` representative, `H_tilde' H` divides the cleared specialization of `R`.",
           "kind": "lemma",
-          "line": 783,
+          "line": 834,
           "name": "ProximityGap.exists_pg_factors_with_large_common_root_set_and_clearDenomY_of_graph_conditions",
           "namespace": "ProximityGap",
           "short_name": "exists_pg_factors_with_large_common_root_set_and_clearDenomY_of_graph_conditions",
@@ -17721,16 +17730,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 843,
-          "name": "ProximityGap._anon_class_843",
+          "line": 894,
+          "name": "ProximityGap._anon_class_894",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_843",
+          "short_name": "_anon_class_894",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 861,
+          "line": 912,
           "name": "ProximityGap.exists_pg_factors_with_large_common_root_set_setToFinset_of_graph_conditions",
           "namespace": "ProximityGap",
           "short_name": "exists_pg_factors_with_large_common_root_set_setToFinset_of_graph_conditions",
@@ -17739,16 +17748,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 903,
-          "name": "ProximityGap._anon_class_903",
+          "line": 954,
+          "name": "ProximityGap._anon_class_954",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_903",
+          "short_name": "_anon_class_954",
           "signature": "class classical"
         },
         {
           "doc": "The `R` polynomial extracted from the graph-condition theorem that also carries the proved `clearDenomY` root-clearing payload.",
           "kind": "def",
-          "line": 932,
+          "line": 983,
           "name": "ProximityGap.R_graph_clear",
           "namespace": "ProximityGap",
           "short_name": "R_graph_clear",
@@ -17757,7 +17766,7 @@
         {
           "doc": "The `H` polynomial extracted with `R_graph_clear`.",
           "kind": "def",
-          "line": 944,
+          "line": 995,
           "name": "ProximityGap.H_graph_clear",
           "namespace": "ProximityGap",
           "short_name": "H_graph_clear",
@@ -17766,7 +17775,7 @@
         {
           "doc": "The `R_graph_clear` extraction with close-set nonemptiness derived from the large-set inequality.",
           "kind": "def",
-          "line": 956,
+          "line": 1007,
           "name": "ProximityGap.R_graph_clear_ofLarge",
           "namespace": "ProximityGap",
           "short_name": "R_graph_clear_ofLarge",
@@ -17775,7 +17784,7 @@
         {
           "doc": "The `H_graph_clear` extraction with close-set nonemptiness derived from the large-set inequality.",
           "kind": "def",
-          "line": 985,
+          "line": 1036,
           "name": "ProximityGap.H_graph_clear_ofLarge",
           "namespace": "ProximityGap",
           "short_name": "H_graph_clear_ofLarge",
@@ -17784,7 +17793,7 @@
         {
           "doc": "The large-set `R_graph_clear` extraction remains in the `pg_Rset`.",
           "kind": "lemma",
-          "line": 1013,
+          "line": 1064,
           "name": "ProximityGap.R_graph_clear_ofLarge_mem_pg_Rset",
           "namespace": "ProximityGap",
           "short_name": "R_graph_clear_ofLarge_mem_pg_Rset",
@@ -17793,7 +17802,7 @@
         {
           "doc": "Irreducibility of the large-set `R_graph_clear` extraction.",
           "kind": "lemma",
-          "line": 1048,
+          "line": 1099,
           "name": "ProximityGap.irreducible_R_graph_clear_ofLarge",
           "namespace": "ProximityGap",
           "short_name": "irreducible_R_graph_clear_ofLarge",
@@ -17802,7 +17811,7 @@
         {
           "doc": "Irreducibility of the large-set `H_graph_clear` extraction.",
           "kind": "lemma",
-          "line": 1081,
+          "line": 1132,
           "name": "ProximityGap.irreducible_H_graph_clear_ofLarge",
           "namespace": "ProximityGap",
           "short_name": "irreducible_H_graph_clear_ofLarge",
@@ -17811,7 +17820,7 @@
         {
           "doc": "Positive degree of the large-set `H_graph_clear` extraction.",
           "kind": "lemma",
-          "line": 1114,
+          "line": 1165,
           "name": "ProximityGap.natDegree_H_graph_clear_ofLarge_pos",
           "namespace": "ProximityGap",
           "short_name": "natDegree_H_graph_clear_ofLarge_pos",
@@ -17820,7 +17829,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1147,
+          "line": 1198,
           "name": "ProximityGap.R_graph_clear_mem_pg_Rset",
           "namespace": "ProximityGap",
           "short_name": "R_graph_clear_mem_pg_Rset",
@@ -17829,7 +17838,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1160,
+          "line": 1211,
           "name": "ProximityGap.irreducible_R_graph_clear",
           "namespace": "ProximityGap",
           "short_name": "irreducible_R_graph_clear",
@@ -17838,7 +17847,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1171,
+          "line": 1222,
           "name": "ProximityGap.irreducible_H_graph_clear",
           "namespace": "ProximityGap",
           "short_name": "irreducible_H_graph_clear",
@@ -17847,7 +17856,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1182,
+          "line": 1233,
           "name": "ProximityGap.natDegree_H_graph_clear_pos",
           "namespace": "ProximityGap",
           "short_name": "natDegree_H_graph_clear_pos",
@@ -17856,7 +17865,7 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 1193,
+          "line": 1244,
           "name": "ProximityGap.fact_irreducible_H_graph_clear",
           "namespace": "ProximityGap",
           "short_name": "fact_irreducible_H_graph_clear",
@@ -17865,7 +17874,7 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 1201,
+          "line": 1252,
           "name": "ProximityGap.fact_natDegree_H_graph_clear_pos",
           "namespace": "ProximityGap",
           "short_name": "fact_natDegree_H_graph_clear_pos",
@@ -17874,7 +17883,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1209,
+          "line": 1260,
           "name": "ProximityGap.H_graph_clear_dvd_evalX_R_graph_clear",
           "namespace": "ProximityGap",
           "short_name": "H_graph_clear_dvd_evalX_R_graph_clear",
@@ -17883,7 +17892,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1222,
+          "line": 1273,
           "name": "ProximityGap.evalX_R_graph_clear_separable",
           "namespace": "ProximityGap",
           "short_name": "evalX_R_graph_clear_separable",
@@ -17892,7 +17901,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1235,
+          "line": 1286,
           "name": "ProximityGap.claimA2_hypotheses_graph_clear",
           "namespace": "ProximityGap",
           "short_name": "claimA2_hypotheses_graph_clear",
@@ -17901,7 +17910,7 @@
         {
           "doc": "The root-clearing payload projected from the side-condition-explicit candidate extraction.",
           "kind": "lemma",
-          "line": 1250,
+          "line": 1301,
           "name": "ProximityGap.H_tilde'_dvd_clearDenomY_graph_clear",
           "namespace": "ProximityGap",
           "short_name": "H_tilde'_dvd_clearDenomY_graph_clear",
@@ -17910,7 +17919,7 @@
         {
           "doc": "The `R` polynomial extracted from the proved, side-condition-explicit Claim 5.7 replacement.  Unlike the legacy `R` below, this one carries all hypotheses needed for the extraction theorem.",
           "kind": "def",
-          "line": 1306,
+          "line": 1357,
           "name": "ProximityGap.R_graph",
           "namespace": "ProximityGap",
           "short_name": "R_graph",
@@ -17919,7 +17928,7 @@
         {
           "doc": "The `H` polynomial extracted alongside `R_graph`.",
           "kind": "def",
-          "line": 1334,
+          "line": 1385,
           "name": "ProximityGap.H_graph",
           "namespace": "ProximityGap",
           "short_name": "H_graph",
@@ -17928,7 +17937,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1362,
+          "line": 1413,
           "name": "ProximityGap.R_graph_mem_pg_Rset",
           "namespace": "ProximityGap",
           "short_name": "R_graph_mem_pg_Rset",
@@ -17937,7 +17946,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1394,
+          "line": 1445,
           "name": "ProximityGap.irreducible_H_graph",
           "namespace": "ProximityGap",
           "short_name": "irreducible_H_graph",
@@ -17946,7 +17955,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1424,
+          "line": 1475,
           "name": "ProximityGap.natDegree_H_graph_pos",
           "namespace": "ProximityGap",
           "short_name": "natDegree_H_graph_pos",
@@ -17955,7 +17964,7 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 1454,
+          "line": 1505,
           "name": "ProximityGap.fact_irreducible_H_graph",
           "namespace": "ProximityGap",
           "short_name": "fact_irreducible_H_graph",
@@ -17964,7 +17973,7 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 1483,
+          "line": 1534,
           "name": "ProximityGap.fact_natDegree_H_graph_pos",
           "namespace": "ProximityGap",
           "short_name": "fact_natDegree_H_graph_pos",
@@ -17973,7 +17982,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1512,
+          "line": 1563,
           "name": "ProximityGap.H_graph_dvd_evalX_R_graph",
           "namespace": "ProximityGap",
           "short_name": "H_graph_dvd_evalX_R_graph",
@@ -17982,7 +17991,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1545,
+          "line": 1596,
           "name": "ProximityGap.evalX_R_graph_separable",
           "namespace": "ProximityGap",
           "short_name": "evalX_R_graph_separable",
@@ -17991,7 +18000,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1577,
+          "line": 1628,
           "name": "ProximityGap.claimA2_hypotheses_graph",
           "namespace": "ProximityGap",
           "short_name": "claimA2_hypotheses_graph",
@@ -18000,7 +18009,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1610,
+          "line": 1661,
           "name": "ProximityGap.exists_factors_with_large_common_root_set",
           "namespace": "ProximityGap",
           "short_name": "exists_factors_with_large_common_root_set",
@@ -18009,7 +18018,7 @@
         {
           "doc": "Claim 5.7 establishes existens of a polynomial `R`. his is the extraction of this polynomial.",
           "kind": "def",
-          "line": 1625,
+          "line": 1676,
           "name": "ProximityGap.R",
           "namespace": "ProximityGap",
           "short_name": "R",
@@ -18018,7 +18027,7 @@
         {
           "doc": "Claim 5.7 establishes existens of a polynomial `H`. This is the extraction of this polynomial.",
           "kind": "def",
-          "line": 1630,
+          "line": 1681,
           "name": "ProximityGap.H",
           "namespace": "ProximityGap",
           "short_name": "H",
@@ -18027,7 +18036,7 @@
         {
           "doc": "An important property of the polynomial `H` extracted from Claim 5.7 is that it is irreducible.",
           "kind": "lemma",
-          "line": 1635,
+          "line": 1686,
           "name": "ProximityGap.irreducible_H",
           "namespace": "ProximityGap",
           "short_name": "irreducible_H",
@@ -18036,7 +18045,7 @@
         {
           "doc": "The `Fact` form of `irreducible_H`, for Appendix-A declarations with typeclass hypotheses.",
           "kind": "instance",
-          "line": 1640,
+          "line": 1691,
           "name": "ProximityGap.fact_irreducible_H",
           "namespace": "ProximityGap",
           "short_name": "fact_irreducible_H",
@@ -18045,7 +18054,7 @@
         {
           "doc": "The factor `H` extracted from Claim 5.7 has positive degree in the `Y` variable, matching the Appendix A hypotheses needed for the function field construction.",
           "kind": "lemma",
-          "line": 1646,
+          "line": 1697,
           "name": "ProximityGap.natDegree_H_pos",
           "namespace": "ProximityGap",
           "short_name": "natDegree_H_pos",
@@ -18054,7 +18063,7 @@
         {
           "doc": "The `Fact` form of `natDegree_H_pos`, for downstream declarations that take the positivity as an instance.",
           "kind": "instance",
-          "line": 1652,
+          "line": 1703,
           "name": "ProximityGap.fact_natDegree_H_pos",
           "namespace": "ProximityGap",
           "short_name": "fact_natDegree_H_pos",
@@ -18063,7 +18072,7 @@
         {
           "doc": "The extracted `H` divides `R(x\u2080, Y, Z)`, as required for the Hensel setup in Claim A.2.",
           "kind": "lemma",
-          "line": 1657,
+          "line": 1708,
           "name": "ProximityGap.H_dvd_evalX_R",
           "namespace": "ProximityGap",
           "short_name": "H_dvd_evalX_R",
@@ -18072,7 +18081,7 @@
         {
           "doc": "The specialization `R(x\u2080, Y, Z)` is separable in `Y`, as required for Claim A.2.",
           "kind": "lemma",
-          "line": 1662,
+          "line": 1713,
           "name": "ProximityGap.evalX_R_separable",
           "namespace": "ProximityGap",
           "short_name": "evalX_R_separable",
@@ -18081,7 +18090,7 @@
         {
           "doc": "The Claim A.2 hypotheses satisfied by the `R,H` pair extracted from Claim 5.7.",
           "kind": "lemma",
-          "line": 1668,
+          "line": 1719,
           "name": "ProximityGap.claimA2_hypotheses",
           "namespace": "ProximityGap",
           "short_name": "claimA2_hypotheses",
@@ -18090,7 +18099,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1672,
+          "line": 1723,
           "name": "ProximityGap.powerSeries_eq_truncate_of_coeff_zero_ge",
           "namespace": "ProximityGap",
           "short_name": "powerSeries_eq_truncate_of_coeff_zero_ge",
@@ -18099,7 +18108,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1681,
+          "line": 1732,
           "name": "ProximityGap.powerSeries_eq_coe_trunc_of_coeff_zero_ge",
           "namespace": "ProximityGap",
           "short_name": "powerSeries_eq_coe_trunc_of_coeff_zero_ge",
@@ -18108,7 +18117,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1691,
+          "line": 1742,
           "name": "ProximityGap.powerSeries_mk_eq_coe_trunc_of_tail_zero",
           "namespace": "ProximityGap",
           "short_name": "powerSeries_mk_eq_coe_trunc_of_tail_zero",
@@ -18117,7 +18126,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1700,
+          "line": 1751,
           "name": "ProximityGap.powerSeries_subst_coe_polynomial",
           "namespace": "ProximityGap",
           "short_name": "powerSeries_subst_coe_polynomial",
@@ -18126,7 +18135,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1710,
+          "line": 1761,
           "name": "ProximityGap.polynomial_aeval_coe_eq_coe_comp",
           "namespace": "ProximityGap",
           "short_name": "polynomial_aeval_coe_eq_coe_comp",
@@ -18135,7 +18144,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1722,
+          "line": 1773,
           "name": "ProximityGap.natDegree_C_add_X_le_one",
           "namespace": "ProximityGap",
           "short_name": "natDegree_C_add_X_le_one",
@@ -18144,7 +18153,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1733,
+          "line": 1784,
           "name": "ProximityGap.powerSeries_trunc_zero",
           "namespace": "ProximityGap",
           "short_name": "powerSeries_trunc_zero",
@@ -18153,7 +18162,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1738,
+          "line": 1789,
           "name": "ProximityGap.coeff_aeval_affine_trunc_eq_zero_of_ge",
           "namespace": "ProximityGap",
           "short_name": "coeff_aeval_affine_trunc_eq_zero_of_ge",
@@ -18162,7 +18171,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1768,
+          "line": 1819,
           "name": "ProximityGap.affine_shift_powerSeries_eq_coe_C_add_X",
           "namespace": "ProximityGap",
           "short_name": "affine_shift_powerSeries_eq_coe_C_add_X",
@@ -18171,7 +18180,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1784,
+          "line": 1835,
           "name": "ProximityGap.alpha'_powerSeries_eq_trunc_of_coeff_zero",
           "namespace": "ProximityGap",
           "short_name": "alpha'_powerSeries_eq_trunc_of_coeff_zero",
@@ -18180,7 +18189,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1799,
+          "line": 1850,
           "name": "ProximityGap.gamma'_eq_subst_alpha'_trunc_of_coeff_zero",
           "namespace": "ProximityGap",
           "short_name": "gamma'_eq_subst_alpha'_trunc_of_coeff_zero",
@@ -18189,7 +18198,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1830,
+          "line": 1881,
           "name": "ProximityGap.gamma'_eq_aeval_alpha'_trunc_of_coeff_zero",
           "namespace": "ProximityGap",
           "short_name": "gamma'_eq_aeval_alpha'_trunc_of_coeff_zero",
@@ -18198,7 +18207,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1867,
+          "line": 1918,
           "name": "ProximityGap.gamma'_coeff_zero_of_alpha'_coeff_zero",
           "namespace": "ProximityGap",
           "short_name": "gamma'_coeff_zero_of_alpha'_coeff_zero",
@@ -18207,7 +18216,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1902,
+          "line": 1953,
           "name": "ProximityGap.alpha'_eq_zero_of_embedding_beta_eq_zero",
           "namespace": "ProximityGap",
           "short_name": "alpha'_eq_zero_of_embedding_beta_eq_zero",
@@ -18216,7 +18225,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1914,
+          "line": 1965,
           "name": "ProximityGap.approximate_solution_is_exact_solution_coeffs_of_beta_embedding_zero",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_is_exact_solution_coeffs_of_beta_embedding_zero",
@@ -18225,7 +18234,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1939,
+          "line": 1990,
           "name": "ProximityGap.approximate_solution_is_exact_solution_coeffs_of_\u03b2Hensel_embedding_zero",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_is_exact_solution_coeffs_of_\u03b2Hensel_embedding_zero",
@@ -18234,7 +18243,7 @@
         {
           "doc": "Claim 5.8 front door from the genuine recursive Hensel numerator. If the real Hensel numerator has the Appendix-A `S_\u03b2` largeness needed by `Lemma_A_1`, and it agrees under the embedding with the placeholder numerator `\u03b2`, then the approximate solution coefficients vanish in degrees `\u2265 k`.",
           "kind": "lemma",
-          "line": 1977,
+          "line": 2028,
           "name": "ProximityGap.approximate_solution_is_exact_solution_coeffs_of_\u03b2Hensel_S\u03b2_large",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_is_exact_solution_coeffs_of_\u03b2Hensel_S\u03b2_large",
@@ -18243,16 +18252,16 @@
         {
           "doc": "Convert the structured Hensel-weight route into the exact `S_\u03b2` largeness shape consumed by Claim 5.8. The new `\u03b2Hensel_weight_bound_of_structured_weight` theorem turns a structured `\u03b1_t`-style weight invariant into the loose numeric bound `\u039b(\u03b2_t) \u2264 (2t+1)\u00b7d_R\u00b7D`.  Therefore a geometric count that is larger than this numeric target is automatically larger than the actual Appendix-A weight.",
           "kind": "lemma",
-          "line": 2030,
-          "name": "ProximityGap._anon_lemma_2030",
+          "line": 2081,
+          "name": "ProximityGap._anon_lemma_2081",
           "namespace": "ProximityGap",
-          "short_name": "_anon_lemma_2030",
+          "short_name": "_anon_lemma_2081",
           "signature": "lemma lemma \u03b2Hensel_S\u03b2_large_of_structured_weight"
         },
         {
           "doc": "Claim 5.8 coefficient front door from the genuine Hensel lift identity. This packages the native Appendix-A proof obligations for the coefficient statement: denominator nonvanishing, the denominator-cleared Hensel lift identity, and `S_\u03b2` largeness for the recursive numerator.",
           "kind": "lemma",
-          "line": 2090,
+          "line": 2141,
           "name": "ProximityGap.approximate_solution_is_exact_solution_coeffs_of_\u03b2Hensel_lift_identity_S\u03b2_large",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_is_exact_solution_coeffs_of_\u03b2Hensel_lift_identity_S\u03b2_large",
@@ -18261,7 +18270,7 @@
         {
           "doc": "Claim 5.8 front door from the exact Appendix-A Lemma A.1 largeness condition.  This isolates the remaining geometric work: for each coefficient index `t \u2265 k`, it is enough to produce a degree bound `D` and prove that `S_\u03b2 (\u03b2 R t)` is larger than `\u039b(\u03b2 R t) * deg H`.",
           "kind": "lemma",
-          "line": 2147,
+          "line": 2198,
           "name": "ProximityGap.approximate_solution_is_exact_solution_coeffs_of_S\u03b2_large",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_is_exact_solution_coeffs_of_S\u03b2_large",
@@ -18270,7 +18279,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 2176,
+          "line": 2227,
           "name": "ProximityGap.approximate_solution_is_exact_solution_coeffs_graph_of_beta_embedding_zero",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_is_exact_solution_coeffs_graph_of_beta_embedding_zero",
@@ -18279,7 +18288,7 @@
         {
           "doc": "Graph Claim 5.8 front door from the exact Appendix-A Lemma A.1 largeness condition.",
           "kind": "lemma",
-          "line": 2240,
+          "line": 2291,
           "name": "ProximityGap.approximate_solution_is_exact_solution_coeffs_graph_of_S\u03b2_large",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_is_exact_solution_coeffs_graph_of_S\u03b2_large",
@@ -18288,7 +18297,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 2318,
+          "line": 2369,
           "name": "ProximityGap.approximate_solution_is_exact_solution_coeffs_graph_clear_of_beta_embedding_zero",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_is_exact_solution_coeffs_graph_clear_of_beta_embedding_zero",
@@ -18297,7 +18306,7 @@
         {
           "doc": "Graph-clear Claim 5.8 front door from the exact Appendix-A Lemma A.1 largeness condition.  This is the same criterion as `approximate_solution_is_exact_solution_coeffs_of_S\u03b2_large`, but phrased for the explicit `GraphExtractionHypotheses` package used by the proved extraction pipeline.",
           "kind": "lemma",
-          "line": 2355,
+          "line": 2406,
           "name": "ProximityGap.approximate_solution_is_exact_solution_coeffs_graph_clear_of_S\u03b2_large",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_is_exact_solution_coeffs_graph_clear_of_S\u03b2_large",
@@ -18306,7 +18315,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 2398,
+          "line": 2449,
           "name": "ProximityGap.approximate_solution_alpha_powerSeries_eq_trunc_of_beta_embedding_zero",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_alpha_powerSeries_eq_trunc_of_beta_embedding_zero",
@@ -18315,7 +18324,7 @@
         {
           "doc": "Alpha-series truncation from the exact Appendix-A Lemma A.1 largeness condition.",
           "kind": "lemma",
-          "line": 2432,
+          "line": 2483,
           "name": "ProximityGap.approximate_solution_alpha_powerSeries_eq_trunc_of_S\u03b2_large",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_alpha_powerSeries_eq_trunc_of_S\u03b2_large",
@@ -18324,7 +18333,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 2467,
+          "line": 2518,
           "name": "ProximityGap.approximate_solution_alpha_graph_clear_powerSeries_eq_trunc_of_beta_embedding_zero",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_alpha_graph_clear_powerSeries_eq_trunc_of_beta_embedding_zero",
@@ -18333,7 +18342,7 @@
         {
           "doc": "Graph-clear alpha-series truncation from the exact Appendix-A Lemma A.1 largeness condition.",
           "kind": "lemma",
-          "line": 2510,
+          "line": 2561,
           "name": "ProximityGap.approximate_solution_alpha_graph_clear_powerSeries_eq_trunc_of_S\u03b2_large",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_alpha_graph_clear_powerSeries_eq_trunc_of_S\u03b2_large",
@@ -18342,7 +18351,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 2557,
+          "line": 2608,
           "name": "ProximityGap.approximate_solution_gamma_coeff_zero_of_beta_embedding_zero",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_gamma_coeff_zero_of_beta_embedding_zero",
@@ -18351,7 +18360,7 @@
         {
           "doc": "Gamma-tail coefficient vanishing from the exact Appendix-A Lemma A.1 largeness condition.",
           "kind": "lemma",
-          "line": 2581,
+          "line": 2632,
           "name": "ProximityGap.approximate_solution_gamma_coeff_zero_of_S\u03b2_large",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_gamma_coeff_zero_of_S\u03b2_large",
@@ -18360,7 +18369,7 @@
         {
           "doc": "Gamma-tail coefficient vanishing from the genuine recursive Hensel numerator. This is the `\u03b3'` consumer form of `approximate_solution_is_exact_solution_coeffs_of_\u03b2Hensel_S\u03b2_large`: after the Appendix-A lift identifies the recursive numerator with the placeholder under the embedding, `S_\u03b2` largeness for `\u03b2Hensel` gives the vanishing tail used by the linearity step.",
           "kind": "lemma",
-          "line": 2613,
+          "line": 2664,
           "name": "ProximityGap.approximate_solution_gamma_coeff_zero_of_\u03b2Hensel_S\u03b2_large",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_gamma_coeff_zero_of_\u03b2Hensel_S\u03b2_large",
@@ -18369,7 +18378,7 @@
         {
           "doc": "Gamma-tail coefficient vanishing from the genuine Hensel lift identity. This is the coefficient-level sibling of `approximate_solution_is_exact_solution_coeffs'_of_\u03b2Hensel_lift_identity_S\u03b2_large`: it converts the native Appendix-A denominator/lift-identity obligations into the embedded \u03b2-compatibility consumed by `approximate_solution_gamma_coeff_zero_of_\u03b2Hensel_S\u03b2_large`.",
           "kind": "lemma",
-          "line": 2657,
+          "line": 2708,
           "name": "ProximityGap.approximate_solution_gamma_coeff_zero_of_\u03b2Hensel_lift_identity_S\u03b2_large",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_gamma_coeff_zero_of_\u03b2Hensel_lift_identity_S\u03b2_large",
@@ -18378,7 +18387,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 2705,
+          "line": 2756,
           "name": "ProximityGap.approximate_solution_gamma_graph_coeff_zero_of_beta_embedding_zero",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_gamma_graph_coeff_zero_of_beta_embedding_zero",
@@ -18387,7 +18396,7 @@
         {
           "doc": "Graph gamma-tail coefficient vanishing from the exact Appendix-A Lemma A.1 largeness condition.",
           "kind": "lemma",
-          "line": 2768,
+          "line": 2819,
           "name": "ProximityGap.approximate_solution_gamma_graph_coeff_zero_of_S\u03b2_large",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_gamma_graph_coeff_zero_of_S\u03b2_large",
@@ -18396,7 +18405,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 2839,
+          "line": 2890,
           "name": "ProximityGap.approximate_solution_gamma_graph_clear_coeff_zero_of_beta_embedding_zero",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_gamma_graph_clear_coeff_zero_of_beta_embedding_zero",
@@ -18405,7 +18414,7 @@
         {
           "doc": "Graph-clear gamma-tail coefficient vanishing from the exact Appendix-A Lemma A.1 largeness condition.",
           "kind": "lemma",
-          "line": 2875,
+          "line": 2926,
           "name": "ProximityGap.approximate_solution_gamma_graph_clear_coeff_zero_of_S\u03b2_large",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_gamma_graph_clear_coeff_zero_of_S\u03b2_large",
@@ -18414,7 +18423,7 @@
         {
           "doc": "Graph-extractor version of the conditional Claim 5.8' bridge.  Once the Appendix-A argument supplies tail-coefficient vanishing for the `\u03b3'` built from `R_graph,H_graph`, the published truncation statement follows immediately.",
           "kind": "lemma",
-          "line": 2919,
+          "line": 2970,
           "name": "ProximityGap.approximate_solution_is_exact_solution_coeffs_graph'_of_gamma_coeff_zero",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_is_exact_solution_coeffs_graph'_of_gamma_coeff_zero",
@@ -18423,7 +18432,7 @@
         {
           "doc": "Cleared graph-extractor version of the conditional Claim 5.8' bridge.",
           "kind": "lemma",
-          "line": 2996,
+          "line": 3047,
           "name": "ProximityGap.approximate_solution_is_exact_solution_coeffs_graph_clear'_of_gamma_coeff_zero",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_is_exact_solution_coeffs_graph_clear'_of_gamma_coeff_zero",
@@ -18432,7 +18441,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 3040,
+          "line": 3091,
           "name": "ProximityGap.approximate_solution_is_exact_solution_coeffs'_of_beta_embedding_zero",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_is_exact_solution_coeffs'_of_beta_embedding_zero",
@@ -18441,7 +18450,7 @@
         {
           "doc": "Claim 5.8' front door from the exact Appendix-A Lemma A.1 largeness condition.  This is the published \u03b3-truncation form consumed by the linearity step, with the missing geometric work isolated as an `S_\u03b2` counting hypothesis.",
           "kind": "lemma",
-          "line": 3071,
+          "line": 3122,
           "name": "ProximityGap.approximate_solution_is_exact_solution_coeffs'_of_S\u03b2_large",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_is_exact_solution_coeffs'_of_S\u03b2_large",
@@ -18450,7 +18459,7 @@
         {
           "doc": "Claim 5.8' front door from the genuine recursive Hensel numerator. This is the published `\u03b3'` truncation statement with the remaining geometric work isolated as `S_\u03b2` largeness for the actual recursive Hensel numerator, plus the Appendix-A compatibility equality identifying that numerator with the placeholder `\u03b2` under the embedding.",
           "kind": "lemma",
-          "line": 3112,
+          "line": 3163,
           "name": "ProximityGap.approximate_solution_is_exact_solution_coeffs'_of_\u03b2Hensel_S\u03b2_large",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_is_exact_solution_coeffs'_of_\u03b2Hensel_S\u03b2_large",
@@ -18459,7 +18468,7 @@
         {
           "doc": "Claim 5.8' front door from the genuine Hensel lift identity. This packages the two Appendix-A proof obligations in their native form: the lift denominator is nonzero, and the recursive Hensel numerator satisfies the denominator-cleared identity.  The helper `\u03b2_embedding_eq_of_\u03b2Hensel_lift_identity` converts those obligations into the embedding compatibility consumed by `approximate_solution_is_exact_solution_coeffs'_of_\u03b2Hensel_S\u03b2_large`.",
           "kind": "lemma",
-          "line": 3162,
+          "line": 3213,
           "name": "ProximityGap.approximate_solution_is_exact_solution_coeffs'_of_\u03b2Hensel_lift_identity_S\u03b2_large",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_is_exact_solution_coeffs'_of_\u03b2Hensel_lift_identity_S\u03b2_large",
@@ -18468,7 +18477,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 3217,
+          "line": 3268,
           "name": "ProximityGap.approximate_solution_is_exact_solution_coeffs_graph'_of_beta_embedding_zero",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_is_exact_solution_coeffs_graph'_of_beta_embedding_zero",
@@ -18477,7 +18486,7 @@
         {
           "doc": "Graph Claim 5.8' front door from the exact Appendix-A Lemma A.1 largeness condition.",
           "kind": "lemma",
-          "line": 3286,
+          "line": 3337,
           "name": "ProximityGap.approximate_solution_is_exact_solution_coeffs_graph'_of_S\u03b2_large",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_is_exact_solution_coeffs_graph'_of_S\u03b2_large",
@@ -18486,7 +18495,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 3371,
+          "line": 3422,
           "name": "ProximityGap.approximate_solution_is_exact_solution_coeffs_graph_clear'_of_beta_embedding_zero",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_is_exact_solution_coeffs_graph_clear'_of_beta_embedding_zero",
@@ -18495,7 +18504,7 @@
         {
           "doc": "Graph-clear Claim 5.8' front door from the exact Appendix-A Lemma A.1 largeness condition.",
           "kind": "lemma",
-          "line": 3411,
+          "line": 3462,
           "name": "ProximityGap.approximate_solution_is_exact_solution_coeffs_graph_clear'_of_S\u03b2_large",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_is_exact_solution_coeffs_graph_clear'_of_S\u03b2_large",
@@ -18504,7 +18513,7 @@
         {
           "doc": "Claim 5.8 from [BCIKS20]. States that the approximate solution is actually a solution. This version of the claim is stated in terms of coefficients. GAP (blocked \u2014 see the \u00a75 GAP ANALYSIS block above). `\u03b1' x\u2080 R \u2026 t = embeddingOf\ud835\udcaaInto\ud835\udd43 _ (\u03b2 R t) / (W^(t+1) \u00b7 \u03be-emb^(2t-1))`, so the goal reduces by `zero_div` to `embeddingOf\ud835\udcaaInto\ud835\udd43 _ (\u03b2 R t) = 0`, which is the conclusion of `Lemma_A_1`. But `Lemma_A_1`'s hypothesis `#(S_\u03b2 (\u03b2 R t)) > \u039b(\u03b2 R t)\u00b7d\u2095` has no supplier (missing ingredient C), and more fundamentally `\u03b2 R t` is an opaque weight-bounded `.choose`, not the recursive Hensel numerator (missing ",
           "kind": "lemma",
-          "line": 3471,
+          "line": 3522,
           "name": "ProximityGap.approximate_solution_is_exact_solution_coeffs",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_is_exact_solution_coeffs",
@@ -18513,7 +18522,7 @@
         {
           "doc": "Side-condition-explicit form of Claim 5.8'.  Once the Appendix-A argument has supplied vanishing of all coefficients of `\u03b3'` in degrees `\u2265 k`, the published truncation statement is immediate.",
           "kind": "lemma",
-          "line": 3490,
+          "line": 3541,
           "name": "ProximityGap.approximate_solution_is_exact_solution_coeffs'_of_gamma_coeff_zero",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_is_exact_solution_coeffs'_of_gamma_coeff_zero",
@@ -18522,7 +18531,7 @@
         {
           "doc": "Claim 5.8 from [BCIKS20]. States that the approximate solution is actually a solution. This version is in terms of polynomials. GAP (blocked \u2014 see the \u00a75 GAP ANALYSIS block above). Equivalent to `coeff t \u03b3' = 0` for `t \u2265 k`. Would follow from the coefficient form (`approximate_solution_is_exact_solution_coeffs`) by `PowerSeries.subst` bookkeeping on `\u03b3 = subst (mk shift) (mk \u03b1)`, but that form is itself blocked (ingredients C, D), so this cannot stand alone.",
           "kind": "lemma",
-          "line": 3524,
+          "line": 3575,
           "name": "ProximityGap.approximate_solution_is_exact_solution_coeffs'",
           "namespace": "ProximityGap",
           "short_name": "approximate_solution_is_exact_solution_coeffs'",
@@ -18531,7 +18540,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 3553,
+          "line": 3604,
           "name": "ProximityGap.constantCoeffPolynomialInY",
           "namespace": "ProximityGap",
           "short_name": "constantCoeffPolynomialInY",
@@ -18540,7 +18549,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 3557,
+          "line": 3608,
           "name": "ProximityGap.linearCoeffPolynomialInY",
           "namespace": "ProximityGap",
           "short_name": "linearCoeffPolynomialInY",
@@ -18549,7 +18558,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 3562,
+          "line": 3613,
           "name": "ProximityGap.exists_linear_in_coeff_variable_of_degreeX_le_one",
           "namespace": "ProximityGap",
           "short_name": "exists_linear_in_coeff_variable_of_degreeX_le_one",
@@ -18558,16 +18567,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 3568,
-          "name": "ProximityGap._anon_class_3568",
+          "line": 3619,
+          "name": "ProximityGap._anon_class_3619",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_3568",
+          "short_name": "_anon_class_3619",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 3591,
+          "line": 3642,
           "name": "ProximityGap.gamma'_is_linear_in_Z_of_polynomial_representative_degreeX_le_one",
           "namespace": "ProximityGap",
           "short_name": "gamma'_is_linear_in_Z_of_polynomial_representative_degreeX_le_one",
@@ -18576,7 +18585,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 3614,
+          "line": 3665,
           "name": "ProximityGap.eval_linear_in_coeff_variable",
           "namespace": "ProximityGap",
           "short_name": "eval_linear_in_coeff_variable",
@@ -18585,7 +18594,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 3628,
+          "line": 3679,
           "name": "ProximityGap.eval_linear_in_coeff_variable_eq_word",
           "namespace": "ProximityGap",
           "short_name": "eval_linear_in_coeff_variable_eq_word",
@@ -18594,7 +18603,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 3639,
+          "line": 3690,
           "name": "ProximityGap.polynomial_representative_matches_word_of_linear_coeff_values",
           "namespace": "ProximityGap",
           "short_name": "polynomial_representative_matches_word_of_linear_coeff_values",
@@ -18603,7 +18612,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 3653,
+          "line": 3704,
           "name": "ProximityGap.polynomial_representative_eval_eval_eq_word_of_linear_coeff_values",
           "namespace": "ProximityGap",
           "short_name": "polynomial_representative_eval_eval_eq_word_of_linear_coeff_values",
@@ -18612,7 +18621,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 3666,
+          "line": 3717,
           "name": "ProximityGap.solution_gamma_is_linear_in_Z_of_polynomial_representative_degreeX_le_one",
           "namespace": "ProximityGap",
           "short_name": "solution_gamma_is_linear_in_Z_of_polynomial_representative_degreeX_le_one",
@@ -18621,7 +18630,7 @@
         {
           "doc": "The polynomial represented by an explicit linearity witness for the base approximate solution.  Unlike `P`, this does not depend on the unsolved published Claim 5.9; the witness is supplied as a side condition.",
           "kind": "def",
-          "line": 3696,
+          "line": 3747,
           "name": "ProximityGap.P_of_linear_witness",
           "namespace": "ProximityGap",
           "short_name": "P_of_linear_witness",
@@ -18630,7 +18639,7 @@
         {
           "doc": "The explicit-witness polynomial represents the base `\u03b3'`.",
           "kind": "lemma",
-          "line": 3714,
+          "line": 3765,
           "name": "ProximityGap.gamma_eq_P_of_linear_witness",
           "namespace": "ProximityGap",
           "short_name": "gamma_eq_P_of_linear_witness",
@@ -18639,7 +18648,7 @@
         {
           "doc": "Algebraic Claim 5.10 core for an explicit base linearity witness.",
           "kind": "lemma",
-          "line": 3734,
+          "line": 3785,
           "name": "ProximityGap.P_eval_eq_word_of_linear_witness_coeff_values",
           "namespace": "ProximityGap",
           "short_name": "P_eval_eq_word_of_linear_witness_coeff_values",
@@ -18648,7 +18657,7 @@
         {
           "doc": "Scalar-evaluated algebraic Claim 5.10 core for an explicit base linearity witness.",
           "kind": "lemma",
-          "line": 3757,
+          "line": 3808,
           "name": "ProximityGap.P_eval_eval_eq_word_of_linear_witness_coeff_values",
           "namespace": "ProximityGap",
           "short_name": "P_eval_eval_eq_word_of_linear_witness_coeff_values",
@@ -18657,7 +18666,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 3780,
+          "line": 3831,
           "name": "ProximityGap.solution_gamma_graph_is_linear_in_Z_of_polynomial_representative_degreeX_le_one",
           "namespace": "ProximityGap",
           "short_name": "solution_gamma_graph_is_linear_in_Z_of_polynomial_representative_degreeX_le_one",
@@ -18666,7 +18675,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 3843,
+          "line": 3894,
           "name": "ProximityGap.P_graph_of_linear_witness",
           "namespace": "ProximityGap",
           "short_name": "P_graph_of_linear_witness",
@@ -18675,7 +18684,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 3887,
+          "line": 3938,
           "name": "ProximityGap.gamma_graph_eq_P_graph_of_linear_witness",
           "namespace": "ProximityGap",
           "short_name": "gamma_graph_eq_P_graph_of_linear_witness",
@@ -18684,7 +18693,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 3941,
+          "line": 3992,
           "name": "ProximityGap.P_graph_eval_eq_word_of_linear_coeff_values",
           "namespace": "ProximityGap",
           "short_name": "P_graph_eval_eq_word_of_linear_coeff_values",
@@ -18693,7 +18702,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 3992,
+          "line": 4043,
           "name": "ProximityGap.P_graph_eval_eval_eq_word_of_linear_coeff_values",
           "namespace": "ProximityGap",
           "short_name": "P_graph_eval_eval_eq_word_of_linear_coeff_values",
@@ -18702,7 +18711,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 4043,
+          "line": 4094,
           "name": "ProximityGap.solution_gamma_graph_clear_is_linear_in_Z_of_polynomial_representative_degreeX_le_one",
           "namespace": "ProximityGap",
           "short_name": "solution_gamma_graph_clear_is_linear_in_Z_of_polynomial_representative_degreeX_le_one",
@@ -18711,7 +18720,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 4085,
+          "line": 4136,
           "name": "ProximityGap.P_graph_clear_of_linear_witness",
           "namespace": "ProximityGap",
           "short_name": "P_graph_clear_of_linear_witness",
@@ -18720,7 +18729,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 4109,
+          "line": 4160,
           "name": "ProximityGap.gamma_graph_clear_eq_P_graph_clear_of_linear_witness",
           "namespace": "ProximityGap",
           "short_name": "gamma_graph_clear_eq_P_graph_clear_of_linear_witness",
@@ -18729,7 +18738,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 4141,
+          "line": 4192,
           "name": "ProximityGap.P_graph_clear_eval_eq_word_of_linear_coeff_values",
           "namespace": "ProximityGap",
           "short_name": "P_graph_clear_eval_eq_word_of_linear_coeff_values",
@@ -18738,7 +18747,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 4171,
+          "line": 4222,
           "name": "ProximityGap.P_graph_clear_eval_eval_eq_word_of_linear_coeff_values",
           "namespace": "ProximityGap",
           "short_name": "P_graph_clear_eval_eval_eq_word_of_linear_coeff_values",
@@ -18747,7 +18756,7 @@
         {
           "doc": "Claim 5.9 from [BCIKS20]. States that the solution `\u03b3` is linear in the variable `Z`. GAP (blocked \u2014 see the \u00a75 GAP ANALYSIS block above). Consumes Claim 5.8' (the degree-`< k` truncation of `\u03b3`) together with the `Bivariate.degreeX P \u2264 1` output of Proposition 5.5 to read off the linear representative `v\u2080 + Z\u00b7v\u2081`. Blocked transitively on 5.8' (ingredients C, D) and on the still-`sorry` Prop 5.5 (`exists_a_set_and_a_matching_polynomial`, `Guruswami.lean`).",
           "kind": "lemma",
-          "line": 4207,
+          "line": 4258,
           "name": "ProximityGap.solution_gamma_is_linear_in_Z",
           "namespace": "ProximityGap",
           "short_name": "solution_gamma_is_linear_in_Z",
@@ -18756,7 +18765,7 @@
         {
           "doc": "The linear represenation of the solution `\u03b3` extracted from Claim 5.9.",
           "kind": "def",
-          "line": 4222,
+          "line": 4273,
           "name": "ProximityGap.P",
           "namespace": "ProximityGap",
           "short_name": "P",
@@ -18765,7 +18774,7 @@
         {
           "doc": "The extracted `P` from Claim 5.9 equals `\u03b3`.",
           "kind": "lemma",
-          "line": 4234,
+          "line": 4285,
           "name": "ProximityGap.gamma_eq_P",
           "namespace": "ProximityGap",
           "short_name": "gamma_eq_P",
@@ -18774,7 +18783,7 @@
         {
           "doc": "Side-condition-explicit algebraic core of Claim 5.10.  Once the linear representative extracted by Claim 5.9 has coefficient polynomials evaluating to the word values at `\u03c9s x`, the desired `P(\u03c9s x) = u\u2080 x + (u\u2081 x) Z` identity is immediate.",
           "kind": "lemma",
-          "line": 4248,
+          "line": 4299,
           "name": "ProximityGap.P_eval_eq_word_of_solution_gamma_coeff_values",
           "namespace": "ProximityGap",
           "short_name": "P_eval_eq_word_of_solution_gamma_coeff_values",
@@ -18783,7 +18792,7 @@
         {
           "doc": "Scalar-evaluated form of `P_eval_eq_word_of_solution_gamma_coeff_values`. This is the shape consumed by the curve assembly layer after evaluating the linear representative at a curve parameter `z`.",
           "kind": "lemma",
-          "line": 4269,
+          "line": 4320,
           "name": "ProximityGap.P_eval_eval_eq_word_of_solution_gamma_coeff_values",
           "namespace": "ProximityGap",
           "short_name": "P_eval_eval_eq_word_of_solution_gamma_coeff_values",
@@ -18792,7 +18801,7 @@
         {
           "doc": "The chosen close polynomial family as a total function of the curve parameter.  Outside `coeffs_of_close_proximity` the value is irrelevant; all assembly lemmas consume it only on that finite set.",
           "kind": "def",
-          "line": 4291,
+          "line": 4342,
           "name": "ProximityGap.PzFamily",
           "namespace": "ProximityGap",
           "short_name": "PzFamily",
@@ -18801,7 +18810,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 4300,
+          "line": 4351,
           "name": "ProximityGap.PzFamily_eq_Pz_of_mem",
           "namespace": "ProximityGap",
           "short_name": "PzFamily_eq_Pz_of_mem",
@@ -18810,7 +18819,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 4307,
+          "line": 4358,
           "name": "ProximityGap.PzFamily_coeff_eq_Pz_coeff_of_mem",
           "namespace": "ProximityGap",
           "short_name": "PzFamily_coeff_eq_Pz_coeff_of_mem",
@@ -18819,7 +18828,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 4315,
+          "line": 4366,
           "name": "ProximityGap.PzFamily_eval_eq_Pz_eval_of_mem",
           "namespace": "ProximityGap",
           "short_name": "PzFamily_eval_eq_Pz_eval_of_mem",
@@ -18828,7 +18837,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 4323,
+          "line": 4374,
           "name": "ProximityGap.PzFamily_natDegree_lt_succ_of_mem",
           "namespace": "ProximityGap",
           "short_name": "PzFamily_natDegree_lt_succ_of_mem",
@@ -18837,7 +18846,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 4333,
+          "line": 4384,
           "name": "ProximityGap.PzFamily_relDist_le_of_mem",
           "namespace": "ProximityGap",
           "short_name": "PzFamily_relDist_le_of_mem",
@@ -18846,7 +18855,7 @@
         {
           "doc": "`PzFamily` has exactly the decoded-family hypotheses used by the \u00a76 coefficient/evaluation-polynomial assembly front doors, restricted to the close parameter set.",
           "kind": "lemma",
-          "line": 4346,
+          "line": 4397,
           "name": "ProximityGap.PzFamily_decoded_on_close_set",
           "namespace": "ProximityGap",
           "short_name": "PzFamily_decoded_on_close_set",
@@ -18855,7 +18864,7 @@
         {
           "doc": "The set `S'` from [BCIKS20] (just before Claim 5.10): the sub-collection of close coefficients `z \u2208 S = coeffs_of_close_proximity` that are bound to the common irreducible factor pair `(R, H)` selected by the Claim-5.7 pigeonhole. REPAIR NOTE (pre-existing breakage). `matching_set`, `matching_set_is_a_sub_of_coeffs_of_close_proximity`, and the upstream Prop 5.5 `exists_a_set_and_a_matching_polynomial` were *referenced* by `matching_set_at_x` and by the \u00a75 GAP docstrings but never **defined** anywhere in the tree, so this file \u2014 and the entire BCIKS20 \u00a75 downstream including `correlatedAgreemen",
           "kind": "def",
-          "line": 4376,
+          "line": 4427,
           "name": "ProximityGap.matching_set",
           "namespace": "ProximityGap",
           "short_name": "matching_set",
@@ -18864,7 +18873,7 @@
         {
           "doc": "`matching_set` (BCIKS20's `S'`) is a subset of `S = coeffs_of_close_proximity` (here, equal by the `S' := S` over-approximation \u2014 see `matching_set`).",
           "kind": "lemma",
-          "line": 4384,
+          "line": 4435,
           "name": "ProximityGap.matching_set_is_a_sub_of_coeffs_of_close_proximity",
           "namespace": "ProximityGap",
           "short_name": "matching_set_is_a_sub_of_coeffs_of_close_proximity",
@@ -18873,7 +18882,7 @@
         {
           "doc": "The set `S'_x` from [BCIKS20] (just before Claim 5.10). The set of all `z \u2208 S'` such that `w(x,z)` matches `P_z(x)`.",
           "kind": "def",
-          "line": 4391,
+          "line": 4442,
           "name": "ProximityGap.matching_set_at_x",
           "namespace": "ProximityGap",
           "short_name": "matching_set_at_x",
@@ -18882,7 +18891,7 @@
         {
           "doc": "For a fixed close parameter `z`, the coordinates where the word `u\u2080 + z \u2022 u\u2081` matches its Reed-Solomon witness polynomial.",
           "kind": "def",
-          "line": 4402,
+          "line": 4453,
           "name": "ProximityGap.matching_coords_for_z",
           "namespace": "ProximityGap",
           "short_name": "matching_coords_for_z",
@@ -18891,7 +18900,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 4413,
+          "line": 4464,
           "name": "ProximityGap.mem_matching_coords_for_z",
           "namespace": "ProximityGap",
           "short_name": "mem_matching_coords_for_z",
@@ -18900,7 +18909,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 4424,
+          "line": 4475,
           "name": "ProximityGap.mem_matching_coords_for_z_iff_PzFamily",
           "namespace": "ProximityGap",
           "short_name": "mem_matching_coords_for_z_iff_PzFamily",
@@ -18909,7 +18918,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 4437,
+          "line": 4488,
           "name": "ProximityGap.coeff_mem_matching_set_at_x_of_mem_matching_coords",
           "namespace": "ProximityGap",
           "short_name": "coeff_mem_matching_set_at_x_of_mem_matching_coords",
@@ -18918,7 +18927,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 4448,
+          "line": 4499,
           "name": "ProximityGap.matching_coords_filter_card_le_matching_set_at_x_card",
           "namespace": "ProximityGap",
           "short_name": "matching_coords_filter_card_le_matching_set_at_x_card",
@@ -18927,16 +18936,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 4454,
-          "name": "ProximityGap._anon_class_4454",
+          "line": 4505,
+          "name": "ProximityGap._anon_class_4505",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_4454",
+          "short_name": "_anon_class_4505",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 4471,
+          "line": 4522,
           "name": "ProximityGap.mem_matching_set_at_x_iff",
           "namespace": "ProximityGap",
           "short_name": "mem_matching_set_at_x_iff",
@@ -18945,7 +18954,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 4482,
+          "line": 4533,
           "name": "ProximityGap.mem_matching_set_at_x_iff_PzFamily",
           "namespace": "ProximityGap",
           "short_name": "mem_matching_set_at_x_iff_PzFamily",
@@ -18954,7 +18963,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 4502,
+          "line": 4553,
           "name": "ProximityGap.matching_set_at_x_eq_filter_PzFamily",
           "namespace": "ProximityGap",
           "short_name": "matching_set_at_x_eq_filter_PzFamily",
@@ -18963,7 +18972,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 4521,
+          "line": 4572,
           "name": "ProximityGap.matching_set_at_x_card_eq_filter_PzFamily",
           "namespace": "ProximityGap",
           "short_name": "matching_set_at_x_card_eq_filter_PzFamily",
@@ -18972,7 +18981,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 4532,
+          "line": 4583,
           "name": "ProximityGap.matching_set_at_x_subset_close_proximity",
           "namespace": "ProximityGap",
           "short_name": "matching_set_at_x_subset_close_proximity",
@@ -18981,7 +18990,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 4542,
+          "line": 4593,
           "name": "ProximityGap.close_proximity_subset_matching_set_at_x_of_card_le",
           "namespace": "ProximityGap",
           "short_name": "close_proximity_subset_matching_set_at_x_of_card_le",
@@ -18990,7 +18999,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 4561,
+          "line": 4612,
           "name": "ProximityGap.close_proximity_subset_matching_set_at_x_of_pred_lt_card",
           "namespace": "ProximityGap",
           "short_name": "close_proximity_subset_matching_set_at_x_of_pred_lt_card",
@@ -18999,7 +19008,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 4574,
+          "line": 4625,
           "name": "ProximityGap.close_proximity_subset_matching_set_at_x_on_domain_of_card_le",
           "namespace": "ProximityGap",
           "short_name": "close_proximity_subset_matching_set_at_x_on_domain_of_card_le",
@@ -19008,7 +19017,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 4588,
+          "line": 4639,
           "name": "ProximityGap.close_proximity_subset_matching_set_at_x_on_domain_of_pred_lt_card",
           "namespace": "ProximityGap",
           "short_name": "close_proximity_subset_matching_set_at_x_on_domain_of_pred_lt_card",
@@ -19017,7 +19026,7 @@
         {
           "doc": "The degree-one curve-parameter polynomial representing the line word at a fixed coordinate.",
           "kind": "def",
-          "line": 4605,
+          "line": 4656,
           "name": "ProximityGap.lineValuePolynomial",
           "namespace": "ProximityGap",
           "short_name": "lineValuePolynomial",
@@ -19026,7 +19035,7 @@
         {
           "doc": "The coordinate-indexed polynomial family `z \u21a6 u\u2080 x + z \u00b7 u\u2081 x`.",
           "kind": "def",
-          "line": 4611,
+          "line": 4662,
           "name": "ProximityGap.lineValuePolynomialFamily",
           "namespace": "ProximityGap",
           "short_name": "lineValuePolynomialFamily",
@@ -19035,7 +19044,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 4616,
+          "line": 4667,
           "name": "ProximityGap.lineValuePolynomial_eval",
           "namespace": "ProximityGap",
           "short_name": "lineValuePolynomial_eval",
@@ -19044,7 +19053,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 4624,
+          "line": 4675,
           "name": "ProximityGap.lineValuePolynomial_natDegree_le_one",
           "namespace": "ProximityGap",
           "short_name": "lineValuePolynomial_natDegree_le_one",
@@ -19053,7 +19062,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 4635,
+          "line": 4686,
           "name": "ProximityGap.lineValuePolynomial_natDegree_lt_succ_succ",
           "namespace": "ProximityGap",
           "short_name": "lineValuePolynomial_natDegree_lt_succ_succ",
@@ -19062,7 +19071,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 4641,
+          "line": 4692,
           "name": "ProximityGap.lineValuePolynomial_natDegree_lt_succ_of_pos",
           "namespace": "ProximityGap",
           "short_name": "lineValuePolynomial_natDegree_lt_succ_of_pos",
@@ -19071,7 +19080,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 4650,
+          "line": 4701,
           "name": "ProximityGap.lineValuePolynomialFamily_natDegree_lt_succ_of_pos",
           "namespace": "ProximityGap",
           "short_name": "lineValuePolynomialFamily_natDegree_lt_succ_of_pos",
@@ -19080,7 +19089,7 @@
         {
           "doc": "Membership in `matching_set_at_x` gives exactly the pointwise evaluation polynomial relation for the total close-polynomial family.",
           "kind": "lemma",
-          "line": 4660,
+          "line": 4711,
           "name": "ProximityGap.PzFamily_eval_eq_lineValuePolynomial_eval_of_mem_matching_set_at_x",
           "namespace": "ProximityGap",
           "short_name": "PzFamily_eval_eq_lineValuePolynomial_eval_of_mem_matching_set_at_x",
@@ -19089,7 +19098,7 @@
         {
           "doc": "If a coordinate has the matching-set membership for a parameter `z`, then `PzFamily z` agrees there with the line-value polynomial family.",
           "kind": "lemma",
-          "line": 4676,
+          "line": 4727,
           "name": "ProximityGap.PzFamily_eval_eq_lineValuePolynomialFamily_eval_of_mem_matching_set_at_x",
           "namespace": "ProximityGap",
           "short_name": "PzFamily_eval_eq_lineValuePolynomialFamily_eval_of_mem_matching_set_at_x",
@@ -19098,7 +19107,7 @@
         {
           "doc": "Finite-domain version of the `PzFamily` evaluation-polynomial relation. This is the exact local shape used after Claim 5.11 selects the top coordinate set and Claim 5.10 supplies membership in each selected matching set.",
           "kind": "lemma",
-          "line": 4690,
+          "line": 4741,
           "name": "ProximityGap.PzFamily_eval_eq_lineValuePolynomialFamily_eval_on_matching_domain",
           "namespace": "ProximityGap",
           "short_name": "PzFamily_eval_eq_lineValuePolynomialFamily_eval_on_matching_domain",
@@ -19107,7 +19116,7 @@
         {
           "doc": "Selected-domain evaluation-polynomial witness for `PzFamily`. This is the local output shape supplied by Claim 5.11 plus Claim 5.10 before the remaining interpolation/extension step upgrades it to all coordinates.",
           "kind": "lemma",
-          "line": 4707,
+          "line": 4758,
           "name": "ProximityGap.PzFamily_exists_eval_polys_on_matching_domain_subtype",
           "namespace": "ProximityGap",
           "short_name": "PzFamily_exists_eval_polys_on_matching_domain_subtype",
@@ -19116,7 +19125,7 @@
         {
           "doc": "Bundled selected-domain extraction for `PzFamily`: decodedness on the close-parameter set plus evaluation-polynomial witnesses on a Claim 5.11-selected coordinate domain.",
           "kind": "lemma",
-          "line": 4734,
+          "line": 4785,
           "name": "ProximityGap.PzFamily_decoded_and_exists_eval_polys_on_matching_domain_subtype",
           "namespace": "ProximityGap",
           "short_name": "PzFamily_decoded_and_exists_eval_polys_on_matching_domain_subtype",
@@ -19125,7 +19134,7 @@
         {
           "doc": "Selected-domain canonical-family package for the \u00a75-to-\u00a76 bridge. Claim 5.11 selects a coordinate set `Dtop`; once every close parameter matches every selected coordinate, `PzFamily` gives the decoded canonical representative and the evaluation-polynomial witnesses on that selected domain.",
           "kind": "lemma",
-          "line": 4762,
+          "line": 4813,
           "name": "ProximityGap.PzFamily_exists_canonical_eval_polys_on_matching_domain_and_unique",
           "namespace": "ProximityGap",
           "short_name": "PzFamily_exists_canonical_eval_polys_on_matching_domain_and_unique",
@@ -19134,7 +19143,7 @@
         {
           "doc": "Subset-hypothesis form of the selected-domain canonical package. This is the direct shape returned after the double-counting step identifies a domain `Dtop` whose every coordinate contains the full close-parameter set.",
           "kind": "lemma",
-          "line": 4798,
+          "line": 4849,
           "name": "ProximityGap.PzFamily_exists_canonical_eval_polys_on_close_subset_and_unique",
           "namespace": "ProximityGap",
           "short_name": "PzFamily_exists_canonical_eval_polys_on_close_subset_and_unique",
@@ -19143,7 +19152,7 @@
         {
           "doc": "Full-domain evaluation-polynomial witness for `PzFamily`, conditional on the remaining assembly fact that every close parameter lies in every coordinate matching set.  This is the exact `E` witness expected by the \u00a76 `hEvalPoly` consumer, specialized to the list-decoding polynomial family.",
           "kind": "lemma",
-          "line": 4832,
+          "line": 4883,
           "name": "ProximityGap.PzFamily_exists_eval_polys_of_forall_mem_matching_set_at_x",
           "namespace": "ProximityGap",
           "short_name": "PzFamily_exists_eval_polys_of_forall_mem_matching_set_at_x",
@@ -19152,7 +19161,7 @@
         {
           "doc": "Bundled canonical-family extraction: the chosen close-polynomial family is decoded on the close parameter set, and under the remaining full-coordinate matching hypothesis it also has the evaluation-polynomial dependence required by the \u00a76 assembly layer. This deliberately stays specialized to `PzFamily`; the final \u00a76 front door still asks for a universal statement over every decoded family, which requires the missing uniqueness/representative bridge rather than just this canonical choice.",
           "kind": "lemma",
-          "line": 4862,
+          "line": 4913,
           "name": "ProximityGap.PzFamily_decoded_and_exists_eval_polys_of_forall_mem_matching_set_at_x",
           "namespace": "ProximityGap",
           "short_name": "PzFamily_decoded_and_exists_eval_polys_of_forall_mem_matching_set_at_x",
@@ -19161,7 +19170,7 @@
         {
           "doc": "Subset-hypothesis form of the bundled canonical-family extraction. This matches the shape produced by double-counting over coordinates: for each domain coordinate `x`, the full close-parameter set is contained in `matching_set_at_x`.",
           "kind": "lemma",
-          "line": 4890,
+          "line": 4941,
           "name": "ProximityGap.PzFamily_decoded_and_exists_eval_polys_of_close_subset_matching_set_at_x",
           "namespace": "ProximityGap",
           "short_name": "PzFamily_decoded_and_exists_eval_polys_of_close_subset_matching_set_at_x",
@@ -19170,7 +19179,7 @@
         {
           "doc": "Canonical-family package for the \u00a76 bridge: under the full-coordinate matching-set condition, `PzFamily` supplies the decoded family and the evaluation-polynomial witness; an external uniqueness/representative theorem then upgrades it to the canonical-family shape consumed by the curve assembly wrappers.",
           "kind": "lemma",
-          "line": 4918,
+          "line": 4969,
           "name": "ProximityGap.PzFamily_exists_canonical_eval_polys_of_close_subset_and_unique",
           "namespace": "ProximityGap",
           "short_name": "PzFamily_exists_canonical_eval_polys_of_close_subset_and_unique",
@@ -19179,7 +19188,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 4951,
+          "line": 5002,
           "name": "ProximityGap.matching_set_at_x_eq_matching_coords_image_univ",
           "namespace": "ProximityGap",
           "short_name": "matching_set_at_x_eq_matching_coords_image_univ",
@@ -19188,16 +19197,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 4957,
-          "name": "ProximityGap._anon_class_4957",
+          "line": 5008,
+          "name": "ProximityGap._anon_class_5008",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_4957",
+          "short_name": "_anon_class_5008",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 4978,
+          "line": 5029,
           "name": "ProximityGap.matching_coords_univ_filter_card_eq_matching_set_at_x_card",
           "namespace": "ProximityGap",
           "short_name": "matching_coords_univ_filter_card_eq_matching_set_at_x_card",
@@ -19206,16 +19215,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 4984,
-          "name": "ProximityGap._anon_class_4984",
+          "line": 5035,
+          "name": "ProximityGap._anon_class_5035",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_4984",
+          "short_name": "_anon_class_5035",
           "signature": "class classical"
         },
         {
           "doc": "Coordinates where the selected close polynomial for `z` does not match the line word.  These are the bad coordinates used by the Claim 5.11 double-counting argument.",
           "kind": "def",
-          "line": 4992,
+          "line": 5043,
           "name": "ProximityGap.nonmatching_coords_for_z",
           "namespace": "ProximityGap",
           "short_name": "nonmatching_coords_for_z",
@@ -19224,7 +19233,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 5000,
+          "line": 5051,
           "name": "ProximityGap.not_mem_nonmatching_coords_for_z_iff",
           "namespace": "ProximityGap",
           "short_name": "not_mem_nonmatching_coords_for_z_iff",
@@ -19233,7 +19242,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 5009,
+          "line": 5060,
           "name": "ProximityGap.nonmatching_coords_filter_card_le_matching_set_at_x_card",
           "namespace": "ProximityGap",
           "short_name": "nonmatching_coords_filter_card_le_matching_set_at_x_card",
@@ -19242,16 +19251,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 5015,
-          "name": "ProximityGap._anon_class_5015",
+          "line": 5066,
+          "name": "ProximityGap._anon_class_5066",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_5015",
+          "short_name": "_anon_class_5066",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 5028,
+          "line": 5079,
           "name": "ProximityGap.nonmatching_coords_for_z_card_eq_hammingDist",
           "namespace": "ProximityGap",
           "short_name": "nonmatching_coords_for_z_card_eq_hammingDist",
@@ -19260,7 +19269,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 5043,
+          "line": 5094,
           "name": "ProximityGap.matching_coords_card_add_nonmatching_coords_card",
           "namespace": "ProximityGap",
           "short_name": "matching_coords_card_add_nonmatching_coords_card",
@@ -19269,16 +19278,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 5049,
-          "name": "ProximityGap._anon_class_5049",
+          "line": 5100,
+          "name": "ProximityGap._anon_class_5100",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_5049",
+          "short_name": "_anon_class_5100",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 5057,
+          "line": 5108,
           "name": "ProximityGap.matching_coords_card_eq_sub_nonmatching_coords_card",
           "namespace": "ProximityGap",
           "short_name": "matching_coords_card_eq_sub_nonmatching_coords_card",
@@ -19287,7 +19296,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 5068,
+          "line": 5119,
           "name": "ProximityGap.nonmatching_coords_for_z_card_div_le_delta",
           "namespace": "ProximityGap",
           "short_name": "nonmatching_coords_for_z_card_div_le_delta",
@@ -19296,7 +19305,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 5080,
+          "line": 5131,
           "name": "ProximityGap.nonmatching_coords_for_z_card_le_of_delta_mul_le",
           "namespace": "ProximityGap",
           "short_name": "nonmatching_coords_for_z_card_le_of_delta_mul_le",
@@ -19305,7 +19314,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 5097,
+          "line": 5148,
           "name": "ProximityGap.nonmatching_coords_for_z_card_le_natCeil_delta_mul",
           "namespace": "ProximityGap",
           "short_name": "nonmatching_coords_for_z_card_le_natCeil_delta_mul",
@@ -19314,7 +19323,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 5108,
+          "line": 5159,
           "name": "ProximityGap.graphExtractionHypotheses_of_matching_coords",
           "namespace": "ProximityGap",
           "short_name": "graphExtractionHypotheses_of_matching_coords",
@@ -19323,7 +19332,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 5140,
+          "line": 5191,
           "name": "ProximityGap.graphExtractionHypotheses_of_nonmatching_count",
           "namespace": "ProximityGap",
           "short_name": "graphExtractionHypotheses_of_nonmatching_count",
@@ -19332,7 +19341,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 5169,
+          "line": 5220,
           "name": "ProximityGap.graphExtractionHypotheses_of_uniform_nonmatching_bound",
           "namespace": "ProximityGap",
           "short_name": "graphExtractionHypotheses_of_uniform_nonmatching_bound",
@@ -19341,7 +19350,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 5200,
+          "line": 5251,
           "name": "ProximityGap.graphExtractionHypotheses_of_delta_nonmatching_bound",
           "namespace": "ProximityGap",
           "short_name": "graphExtractionHypotheses_of_delta_nonmatching_bound",
@@ -19350,7 +19359,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 5230,
+          "line": 5281,
           "name": "ProximityGap.graphExtractionHypotheses_of_natCeil_delta_nonmatching_bound",
           "namespace": "ProximityGap",
           "short_name": "graphExtractionHypotheses_of_natCeil_delta_nonmatching_bound",
@@ -19359,7 +19368,7 @@
         {
           "doc": "Claim 5.10 with the missing counting-to-coefficient-value bridge exposed as hypotheses.  The published cardinality assumptions are retained so this can replace the legacy statement at call sites once the Appendix-A/value bridge is available.",
           "kind": "lemma",
-          "line": 5262,
+          "line": 5313,
           "name": "ProximityGap.solution_gamma_matches_word_if_subset_large_of_coeff_values",
           "namespace": "ProximityGap",
           "short_name": "solution_gamma_matches_word_if_subset_large_of_coeff_values",
@@ -19368,7 +19377,7 @@
         {
           "doc": "Scalar-evaluated side-condition-explicit form of Claim 5.10.  This is the bridge from the \u00a75 polynomial identity to the pointwise curve value used by the \u00a76 coefficient/evaluation-polynomial assembly.",
           "kind": "lemma",
-          "line": 5291,
+          "line": 5342,
           "name": "ProximityGap.solution_gamma_matches_word_eval_if_subset_large_of_coeff_values",
           "namespace": "ProximityGap",
           "short_name": "solution_gamma_matches_word_eval_if_subset_large_of_coeff_values",
@@ -19377,7 +19386,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 5319,
+          "line": 5370,
           "name": "ProximityGap.solution_gamma_matches_word_if_subset_large_of_linear_witness",
           "namespace": "ProximityGap",
           "short_name": "solution_gamma_matches_word_if_subset_large_of_linear_witness",
@@ -19386,7 +19395,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 5348,
+          "line": 5399,
           "name": "ProximityGap.solution_gamma_matches_word_eval_if_subset_large_of_linear_witness",
           "namespace": "ProximityGap",
           "short_name": "solution_gamma_matches_word_eval_if_subset_large_of_linear_witness",
@@ -19395,7 +19404,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 5379,
+          "line": 5430,
           "name": "ProximityGap.solution_gamma_matches_word_if_subset_large_of_representative_degreeX_le_one",
           "namespace": "ProximityGap",
           "short_name": "solution_gamma_matches_word_if_subset_large_of_representative_degreeX_le_one",
@@ -19404,7 +19413,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 5422,
+          "line": 5473,
           "name": "ProximityGap.solution_gamma_matches_word_eval_if_subset_large_of_representative_degreeX_le_one",
           "namespace": "ProximityGap",
           "short_name": "solution_gamma_matches_word_eval_if_subset_large_of_representative_degreeX_le_one",
@@ -19413,7 +19422,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 5465,
+          "line": 5516,
           "name": "ProximityGap.solution_gamma_graph_matches_word_if_subset_large_of_coeff_values",
           "namespace": "ProximityGap",
           "short_name": "solution_gamma_graph_matches_word_if_subset_large_of_coeff_values",
@@ -19422,7 +19431,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 5530,
+          "line": 5581,
           "name": "ProximityGap.solution_gamma_graph_matches_word_eval_if_subset_large_of_coeff_values",
           "namespace": "ProximityGap",
           "short_name": "solution_gamma_graph_matches_word_eval_if_subset_large_of_coeff_values",
@@ -19431,7 +19440,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 5596,
+          "line": 5647,
           "name": "ProximityGap.solution_gamma_graph_clear_matches_word_if_subset_large_of_coeff_values",
           "namespace": "ProximityGap",
           "short_name": "solution_gamma_graph_clear_matches_word_if_subset_large_of_coeff_values",
@@ -19440,7 +19449,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 5637,
+          "line": 5688,
           "name": "ProximityGap.solution_gamma_graph_clear_matches_word_eval_if_subset_large_of_coeff_values",
           "namespace": "ProximityGap",
           "short_name": "solution_gamma_graph_clear_matches_word_eval_if_subset_large_of_coeff_values",
@@ -19449,7 +19458,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 5679,
+          "line": 5730,
           "name": "ProximityGap.solution_gamma_graph_matches_word_if_subset_large_of_representative_degreeX_le_one",
           "namespace": "ProximityGap",
           "short_name": "solution_gamma_graph_matches_word_if_subset_large_of_representative_degreeX_le_one",
@@ -19458,7 +19467,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 5761,
+          "line": 5812,
           "name": "ProximityGap.solution_gamma_graph_clear_matches_word_if_subset_large_of_representative_degreeX_le_one",
           "namespace": "ProximityGap",
           "short_name": "solution_gamma_graph_clear_matches_word_if_subset_large_of_representative_degreeX_le_one",
@@ -19467,7 +19476,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 5817,
+          "line": 5868,
           "name": "ProximityGap.solution_gamma_graph_matches_word_eval_if_subset_large_of_representative_degreeX_le_one",
           "namespace": "ProximityGap",
           "short_name": "solution_gamma_graph_matches_word_eval_if_subset_large_of_representative_degreeX_le_one",
@@ -19476,7 +19485,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 5897,
+          "line": 5948,
           "name": "ProximityGap.solution_gamma_graph_clear_matches_word_eval_if_subset_large_of_representative_degreeX_le_one",
           "namespace": "ProximityGap",
           "short_name": "solution_gamma_graph_clear_matches_word_eval_if_subset_large_of_representative_degreeX_le_one",
@@ -19485,7 +19494,7 @@
         {
           "doc": "Claim 5.10 of [BCIKS20]. Needed to prove Claim 5.9. This claim states that `\u03b3(x) = w(x,Z)` if the cardinality `|S'_x|` is big enough. GAP (blocked \u2014 see the \u00a75 GAP ANALYSIS block above). The hypothesis `hx` bounds `(matching_set_at_x \u2026).card` from below, and the conclusion is the \u00a75 polynomial identity `P(\u03c9s x) = C(u\u2080 x) + u\u2081 x \u00b7 X`. Bridging the geometric matching-set bound to the `S_\u03b2`-largeness that `Lemma_A_1` consumes (so that the relevant Hensel coefficient vanishes) is exactly missing ingredient C; the underlying `\u03b2` under-specification (ingredient D) also applies.",
           "kind": "lemma",
-          "line": 5958,
+          "line": 6009,
           "name": "ProximityGap.solution_gamma_matches_word_if_subset_large",
           "namespace": "ProximityGap",
           "short_name": "solution_gamma_matches_word_if_subset_large",
@@ -19494,7 +19503,7 @@
         {
           "doc": "Select exactly `r` elements from a finite set once its cardinality is large enough.  This is the final selection step in Claim 5.11 after double-counting has produced enough good coordinates.",
           "kind": "lemma",
-          "line": 5977,
+          "line": 6028,
           "name": "ProximityGap.exists_subset_card_eq_of_le_card",
           "namespace": "ProximityGap",
           "short_name": "exists_subset_card_eq_of_le_card",
@@ -19503,7 +19512,7 @@
         {
           "doc": "Generic double-counting brick for Claim 5.11. If each `z \u2208 S` has at most `m` bad coordinates, then coordinates that are bad for at least `t` elements of `S` occupy at most `m * #S / t` in the multiplicative form below.",
           "kind": "lemma",
-          "line": 5985,
+          "line": 6036,
           "name": "ProximityGap.heavyCoords_card_mul_le",
           "namespace": "ProximityGap",
           "short_name": "heavyCoords_card_mul_le",
@@ -19512,16 +19521,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 5991,
-          "name": "ProximityGap._anon_class_5991",
+          "line": 6042,
+          "name": "ProximityGap._anon_class_6042",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_5991",
+          "short_name": "_anon_class_6042",
           "signature": "class classical"
         },
         {
           "doc": "Complement-to-incidence form of the heavy-coordinate argument.  If a coordinate is not heavy for the bad sets `B`, then it is nonbad for more than `threshold` elements of `S`, provided `threshold + t \u2264 #S`.  The hypothesis `hcard` is the remaining arithmetic lower bound on the non-heavy coordinates.",
           "kind": "lemma",
-          "line": 6027,
+          "line": 6078,
           "name": "ProximityGap.exists_coordinate_subset_with_many_nonbad_of_heavy_complement_card",
           "namespace": "ProximityGap",
           "short_name": "exists_coordinate_subset_with_many_nonbad_of_heavy_complement_card",
@@ -19530,16 +19539,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 6036,
-          "name": "ProximityGap._anon_class_6036",
+          "line": 6087,
+          "name": "ProximityGap._anon_class_6087",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_6036",
+          "short_name": "_anon_class_6087",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 6053,
+          "line": 6104,
           "name": "ProximityGap.exists_good_coordinate_subset_of_filter_card",
           "namespace": "ProximityGap",
           "short_name": "exists_good_coordinate_subset_of_filter_card",
@@ -19548,7 +19557,7 @@
         {
           "doc": "Incidence-form selection step for Claim 5.11.  Once a separate double-counting argument shows that at least `r` coordinates have more than `threshold` incident good parameters, this selects exactly `r` of them.",
           "kind": "lemma",
-          "line": 6067,
+          "line": 6118,
           "name": "ProximityGap.exists_coordinate_subset_with_large_incidence",
           "namespace": "ProximityGap",
           "short_name": "exists_coordinate_subset_with_large_incidence",
@@ -19557,7 +19566,7 @@
         {
           "doc": "Side-condition-explicit Claim 5.11.  The remaining mathematical work is to prove `hcard` from the \u00a75 matching construction; the finite-set selection part itself is just `exists_good_coordinate_subset_of_filter_card`.",
           "kind": "lemma",
-          "line": 6079,
+          "line": 6130,
           "name": "ProximityGap.exists_points_with_large_matching_subset_of_filter_card",
           "namespace": "ProximityGap",
           "short_name": "exists_points_with_large_matching_subset_of_filter_card",
@@ -19566,7 +19575,7 @@
         {
           "doc": "Incidence-counting version of the Claim 5.11 selection step.  A later double-counting proof can work with the per-parameter coordinate sets `matching_coords_for_z`; this lemma converts the resulting incidence lower bound into the published `matching_set_at_x` conclusion.",
           "kind": "lemma",
-          "line": 6110,
+          "line": 6161,
           "name": "ProximityGap.exists_points_with_large_matching_subset_of_incidence_filter_card",
           "namespace": "ProximityGap",
           "short_name": "exists_points_with_large_matching_subset_of_incidence_filter_card",
@@ -19575,7 +19584,7 @@
         {
           "doc": "Heavy-bad-coordinate version of the Claim 5.11 selection step.  This is the form closest to the paper's double-counting proof: `nonmatching_coords_for_z` are the bad coordinates for each close parameter, `t` is the heaviness cutoff, and `hcard` asserts that at least `k + 1` coordinates are not heavy.",
           "kind": "lemma",
-          "line": 6149,
+          "line": 6200,
           "name": "ProximityGap.exists_points_with_large_matching_subset_of_heavy_nonmatching_complement_card",
           "namespace": "ProximityGap",
           "short_name": "exists_points_with_large_matching_subset_of_heavy_nonmatching_complement_card",
@@ -19584,7 +19593,7 @@
         {
           "doc": "Derive the complement-cardinality side condition for the heavy-bad coordinate form of Claim 5.11 from a uniform bad-coordinate bound.",
           "kind": "lemma",
-          "line": 6194,
+          "line": 6245,
           "name": "ProximityGap.heavy_nonmatching_complement_card_ge_of_uniform_bound",
           "namespace": "ProximityGap",
           "short_name": "heavy_nonmatching_complement_card_ge_of_uniform_bound",
@@ -19593,16 +19602,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 6206,
-          "name": "ProximityGap._anon_class_6206",
+          "line": 6257,
+          "name": "ProximityGap._anon_class_6257",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_6206",
+          "short_name": "_anon_class_6257",
           "signature": "class classical"
         },
         {
           "doc": "Uniform-bad-coordinate version of the Claim 5.11 selection step.  The arithmetic hypothesis `hsmall` is exactly the paper's requirement that the heavy bad coordinates leave at least `k + 1` usable coordinates.",
           "kind": "lemma",
-          "line": 6230,
+          "line": 6281,
           "name": "ProximityGap.exists_points_with_large_matching_subset_of_uniform_nonmatching_bound",
           "namespace": "ProximityGap",
           "short_name": "exists_points_with_large_matching_subset_of_uniform_nonmatching_bound",
@@ -19611,7 +19620,7 @@
         {
           "doc": "Full-close-set version of the uniform-bad-coordinate Claim 5.11 wrapper.",
           "kind": "lemma",
-          "line": 6258,
+          "line": 6309,
           "name": "ProximityGap.exists_points_with_large_matching_subset_of_univ_uniform_nonmatching_bound",
           "namespace": "ProximityGap",
           "short_name": "exists_points_with_large_matching_subset_of_univ_uniform_nonmatching_bound",
@@ -19620,7 +19629,7 @@
         {
           "doc": "Full-close-set Claim 5.11 wrapper where the uniform bad-coordinate bound is obtained from the relative-distance radius `\u03b4`.",
           "kind": "lemma",
-          "line": 6289,
+          "line": 6340,
           "name": "ProximityGap.exists_points_with_large_matching_subset_of_delta_nonmatching_bound",
           "namespace": "ProximityGap",
           "short_name": "exists_points_with_large_matching_subset_of_delta_nonmatching_bound",
@@ -19629,7 +19638,7 @@
         {
           "doc": "Full-close-set Claim 5.11 wrapper with the canonical integer bad-coordinate bound `\u2308\u03b4 * n\u2309\u208a`.",
           "kind": "lemma",
-          "line": 6319,
+          "line": 6370,
           "name": "ProximityGap.exists_points_with_large_matching_subset_of_natCeil_delta_nonmatching_bound",
           "namespace": "ProximityGap",
           "short_name": "exists_points_with_large_matching_subset_of_natCeil_delta_nonmatching_bound",
@@ -19638,7 +19647,7 @@
         {
           "doc": "Complement-threshold form of the nat-ceil Claim 5.11 wrapper. This specializes the free slack parameter `t` in `exists_points_with_large_matching_subset_of_natCeil_delta_nonmatching_bound` to the remaining number of close parameters after the target fiber threshold is removed. It is the arithmetic shape used by the final Claim 5.11 capstone: the side conditions become `threshold \u2264 #S` and a single strict counting inequality over `#S - threshold`.",
           "kind": "lemma",
-          "line": 6353,
+          "line": 6404,
           "name": "ProximityGap.exists_points_with_large_matching_subset_of_natCeil_delta_nonmatching_bound_complement",
           "namespace": "ProximityGap",
           "short_name": "exists_points_with_large_matching_subset_of_natCeil_delta_nonmatching_bound_complement",
@@ -19647,25 +19656,25 @@
         {
           "doc": "Direct Claim-5.11 complement wrapper through the standalone `ArkLib.Claim511` double-counting theorem. This has the same BCIKS20 object shape as `exists_points_with_large_matching_subset_of_natCeil_delta_nonmatching_bound_complement`, but keeps the imported combinatorial core visible to downstream callers.",
           "kind": "lemma",
-          "line": 6393,
-          "name": "ProximityGap._anon_lemma_6393",
+          "line": 6444,
+          "name": "ProximityGap._anon_lemma_6444",
           "namespace": "ProximityGap",
-          "short_name": "_anon_lemma_6393",
+          "short_name": "_anon_lemma_6444",
           "signature": "lemma lemma"
         },
         {
           "doc": "",
           "kind": "class",
-          "line": 6420,
-          "name": "ProximityGap._anon_class_6420",
+          "line": 6471,
+          "name": "ProximityGap._anon_class_6471",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_6420",
+          "short_name": "_anon_class_6471",
           "signature": "class classical"
         },
         {
           "doc": "Turn a Claim-5.11 point set with sufficiently large `S'_x` fibers into the full close-set coverage condition consumed by the canonical `PzFamily` evaluation-polynomial package.",
           "kind": "lemma",
-          "line": 6447,
+          "line": 6498,
           "name": "ProximityGap.close_proximity_subset_matching_set_on_points_of_large_matching_subset",
           "namespace": "ProximityGap",
           "short_name": "close_proximity_subset_matching_set_on_points_of_large_matching_subset",
@@ -19674,7 +19683,7 @@
         {
           "doc": "Graph-clear variant of `close_proximity_subset_matching_set_on_points_of_large_matching_subset`. This is the selected-domain coverage step with the honest graph-condition extractions `R_graph_clear`/`H_graph_clear`, rather than the legacy `R`/`H` chosen by the still-open Claim-5.7 surface.",
           "kind": "lemma",
-          "line": 6478,
+          "line": 6529,
           "name": "ProximityGap.close_proximity_subset_matching_set_on_points_of_large_matching_subset_graph_clear",
           "namespace": "ProximityGap",
           "short_name": "close_proximity_subset_matching_set_on_points_of_large_matching_subset_graph_clear",
@@ -19683,7 +19692,7 @@
         {
           "doc": "Claim-5.11-to-assembly bridge for any uniform integer bad-coordinate bound `E`: once double counting selects points with large fibers and the coverage arithmetic says that every close parameter must fit in such a fiber, the selected points cover the full close-parameter set.",
           "kind": "lemma",
-          "line": 6508,
+          "line": 6559,
           "name": "ProximityGap.exists_points_with_close_subset_matching_set_of_delta_nonmatching_bound",
           "namespace": "ProximityGap",
           "short_name": "exists_points_with_close_subset_matching_set_of_delta_nonmatching_bound",
@@ -19692,7 +19701,7 @@
         {
           "doc": "Claim-5.11-to-assembly bridge for the canonical integer bad-coordinate bound: under the additional arithmetic coverage inequality, the selected points cover the full close-parameter set in every selected fiber.",
           "kind": "lemma",
-          "line": 6545,
+          "line": 6596,
           "name": "ProximityGap.exists_points_with_close_subset_matching_set_of_natCeil_delta_nonmatching_bound",
           "namespace": "ProximityGap",
           "short_name": "exists_points_with_close_subset_matching_set_of_natCeil_delta_nonmatching_bound",
@@ -19701,7 +19710,7 @@
         {
           "doc": "Complement-threshold close-subset bridge for the canonical integer bad-coordinate bound. This is the same selected-domain conclusion as `exists_points_with_close_subset_matching_set_of_natCeil_delta_nonmatching_bound`, but with `t` specialized to the complement of the target fiber threshold.",
           "kind": "lemma",
-          "line": 6578,
+          "line": 6629,
           "name": "ProximityGap.exists_points_with_close_subset_matching_set_of_natCeil_delta_nonmatching_bound_complement",
           "namespace": "ProximityGap",
           "short_name": "exists_points_with_close_subset_matching_set_of_natCeil_delta_nonmatching_bound_complement",
@@ -19710,34 +19719,34 @@
         {
           "doc": "Complement-threshold close-subset bridge through the standalone `ArkLib.Claim511` double-counting theorem. This is the direct consumer form for \u00a76 callers that want the selected coordinates and full close-set coverage while exposing the imported combinatorial core.",
           "kind": "lemma",
-          "line": 6621,
-          "name": "ProximityGap._anon_lemma_6621",
+          "line": 6672,
+          "name": "ProximityGap._anon_lemma_6672",
           "namespace": "ProximityGap",
-          "short_name": "_anon_lemma_6621",
+          "short_name": "_anon_lemma_6672",
           "signature": "lemma lemma"
         },
         {
           "doc": "Graph-clear complement-threshold close-subset bridge through the standalone `ArkLib.Claim511` double-counting theorem. This is the direct Claim-5.11 consumer for the honest graph-condition extractions `R_graph_clear` and `H_graph_clear`.",
           "kind": "lemma",
-          "line": 6666,
-          "name": "ProximityGap._anon_lemma_6666",
+          "line": 6717,
+          "name": "ProximityGap._anon_lemma_6717",
           "namespace": "ProximityGap",
-          "short_name": "_anon_lemma_6666",
+          "short_name": "_anon_lemma_6717",
           "signature": "lemma lemma"
         },
         {
           "doc": "",
           "kind": "class",
-          "line": 6697,
-          "name": "ProximityGap._anon_class_6697",
+          "line": 6748,
+          "name": "ProximityGap._anon_class_6748",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_6697",
+          "short_name": "_anon_class_6748",
           "signature": "class classical"
         },
         {
           "doc": "Claim-5.11 plus the canonical `PzFamily` selected-domain package for any uniform integer bad-coordinate bound `E`.  This is the assembled form consumed by \u00a75-to-\u00a76 interpolation steps that use a non-canonical integer cap before specializing to the nat-ceil close-proximity bound.",
           "kind": "lemma",
-          "line": 6732,
+          "line": 6783,
           "name": "ProximityGap.exists_points_with_canonical_eval_polys_on_close_subset_of_delta_nonmatching_bound",
           "namespace": "ProximityGap",
           "short_name": "exists_points_with_canonical_eval_polys_on_close_subset_of_delta_nonmatching_bound",
@@ -19746,7 +19755,7 @@
         {
           "doc": "Claim-5.11 plus the canonical `PzFamily` selected-domain package.  This is the assembled form consumed by the remaining \u00a75-to-\u00a76 interpolation step: the double-counting hypotheses select `k + 1` coordinates, and on exactly that domain the canonical close-polynomial family has evaluation-polynomial witnesses and uniqueness.",
           "kind": "lemma",
-          "line": 6784,
+          "line": 6835,
           "name": "ProximityGap.exists_points_with_canonical_eval_polys_on_close_subset_of_natCeil_delta_nonmatching_bound",
           "namespace": "ProximityGap",
           "short_name": "exists_points_with_canonical_eval_polys_on_close_subset_of_natCeil_delta_nonmatching_bound",
@@ -19755,7 +19764,7 @@
         {
           "doc": "Canonical selected-domain package in the complement-threshold arithmetic shape. This is the direct consumer form for callers that have already chosen the natural slack `#S - threshold`: it packages Claim 5.11 coverage, the canonical `PzFamily` evaluation-polynomial witnesses, and uniqueness under one strict counting inequality.",
           "kind": "lemma",
-          "line": 6833,
+          "line": 6884,
           "name": "ProximityGap.exists_points_with_canonical_eval_polys_on_close_subset_of_natCeil_delta_nonmatching_bound_complement",
           "namespace": "ProximityGap",
           "short_name": "exists_points_with_canonical_eval_polys_on_close_subset_of_natCeil_delta_nonmatching_bound_complement",
@@ -19764,7 +19773,7 @@
         {
           "doc": "Claim 5.11 from [BCIKS20]. There exists a set of points `{x\u2080,...,x_{k+1}}` such that the sets S_{x_j} satisfy the condition in Claim 5.10. GAP (blocked \u2014 see the \u00a75 GAP ANALYSIS block above). A double-counting argument over the matching set, which is `.choose` of the still-`sorry` Prop 5.5 (`exists_a_set_and_a_matching_polynomial`, `Guruswami.lean`); the per-point cardinality bound additionally relies on missing ingredient C.",
           "kind": "lemma",
-          "line": 6892,
+          "line": 6943,
           "name": "ProximityGap.exists_points_with_large_matching_subset",
           "namespace": "ProximityGap",
           "short_name": "exists_points_with_large_matching_subset",
@@ -72855,7 +72864,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 7923,
+      "declarations": 7924,
       "files": 390
     }
   }
