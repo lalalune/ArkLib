@@ -728,6 +728,25 @@ theorem Lambda_le_of_normalized_johnson_condition
   convert hscaled using 1
   field_simp [hn_pos.ne']
 
+/-- Compact relative-distance version of `Lambda_le_of_normalized_johnson_condition`.
+
+Writing `γ = 1 - 1/q` and `drel = minDist(C)/n`, the Johnson side condition is
+the scalar quadratic
+`γ(1+β²) - 2β(γ-δ) + ℓ((γ-drel) - 2β(γ-δ) + β²γ) < 0`. -/
+theorem Lambda_le_of_gamma_johnson_condition
+    {ι : Type} [Fintype ι] [DecidableEq ι] [Nonempty ι]
+    {α : Type} [Fintype α] [DecidableEq α]
+    (C : ListDecodable.Code ι α) {δ : ℝ} {ℓ : ℕ} {β : ℝ}
+    (hδ : 0 ≤ δ) (hq : 0 < Fintype.card α) (hβ : 0 ≤ β)
+    (hcond :
+      let γ : ℝ := 1 - 1 / (Fintype.card α : ℝ)
+      let drel : ℝ := (Code.minDist C : ℝ) / (Fintype.card ι : ℝ)
+      γ * (1 + β ^ 2) - 2 * β * (γ - δ)
+        + (ℓ : ℝ) * ((γ - drel) - 2 * β * (γ - δ) + β ^ 2 * γ) < 0) :
+    ListDecodable.Lambda C δ ≤ (ℓ : ℕ∞) := by
+  apply Lambda_le_of_normalized_johnson_condition C hδ hq hβ
+  simpa [sub_eq_add_neg, add_assoc, add_left_comm, add_comm] using hcond
+
 /-- A violated finite `Lambda` bound produces a concrete point-list whose average
 distance is controlled by the q-ary Plotkin bound.
 
