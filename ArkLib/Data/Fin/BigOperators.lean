@@ -11,6 +11,8 @@ import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Tactic.IntervalCases
 
 set_option linter.all false
+set_option linter.deprecated false
+set_option linter.unusedSimpArgs false
 
 /-!
 

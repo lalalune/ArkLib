@@ -7,6 +7,8 @@ Authors: Chung Thai Nguyen, Quang Dao
 import Mathlib
 
 set_option linter.all false
+set_option linter.deprecated false
+set_option linter.unusedSimpArgs false
 
 /-!
   # Tower of Algebras and Tower of Algebra Equivalences
@@ -44,7 +46,7 @@ variable {ι : Type*} [Preorder ι]
   {B : ι → Type*} [∀ i, CommSemiring (B i)] [TowerOfAlgebra B]
   {C : ι → Type*} [∀ i, CommSemiring (C i)] [AssocTowerOfAlgebra C]
 
-@[simp]
+@[reducible, simp]
 def TowerOfAlgebra.toAlgebra {i j : ι} (h : i ≤ j) : Algebra (A i) (A j) :=
   (TowerOfAlgebra.towerAlgebraMap (i:=i) (j:=j) (h:=h)).toAlgebra
 

@@ -10,6 +10,8 @@ import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Data.Nat.Bitwise
 
 set_option linter.all false
+set_option linter.deprecated false
+set_option linter.unusedSimpArgs false
 
 /-!
 # Bit operations on natural numbers
