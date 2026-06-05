@@ -99,6 +99,87 @@ theorem coeffs_of_close_proximity_card_eq_goodCoeffsCurve_finMapTwoWords
   rw [coeffs_of_close_proximity_eq_goodCoeffsCurve_finMapTwoWords
     (F := F) (n := n) (k := k) (ωs := ωs) δ u₀ u₁]
 
+open Polynomial in
+/-- The §5 canonical `PzFamily` package in the exact canonical-evaluation
+shape consumed by the strict §6 curve front doors, specialized to degree-one
+curves `Code.finMapTwoWords`.
+
+The hypotheses are the remaining §5 assembly inputs: every close parameter is
+in every coordinate matching set, and decoded representatives are unique on the
+§5 close set. -/
+theorem PzFamily_exists_canonical_eval_polys_goodCoeffsCurve_finMapTwoWords
+    {m k : ℕ} {ωs : Fin n ↪ F} {Q : F[Z][X][Y]}
+    (δ : ℚ≥0) (u₀ u₁ : Fin n → F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hsubset : ∀ x : Fin n,
+      coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁ ⊆
+        matching_set_at_x k (δ : ℚ) h_gs x)
+    (hunique : ∀ P : F → F[X],
+      (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+        (P z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P z).eval ∘ ωs) ≤ (δ : ℚ)) →
+      ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+        P z = PzFamily (F := F) (n := n) (δ : ℚ) u₀ u₁ ωs k z) :
+    ∃ P₀ : F → F[X],
+      (∀ z ∈ RS_goodCoeffsCurve (k := 1) (deg := k + 1) (domain := ωs)
+          (Code.finMapTwoWords u₀ u₁) (δ : ℝ≥0),
+        (P₀ z).natDegree < k + 1 ∧
+          δᵣ(∑ t : Fin 2, (z ^ (t : ℕ)) • Code.finMapTwoWords u₀ u₁ t,
+            (P₀ z).eval ∘ ωs) ≤ (δ : ℝ≥0)) ∧
+      (∃ E : Fin n → F[X],
+        (∀ x, (E x).natDegree < 1 + 1) ∧
+          ∀ z ∈ RS_goodCoeffsCurve (k := 1) (deg := k + 1) (domain := ωs)
+              (Code.finMapTwoWords u₀ u₁) (δ : ℝ≥0),
+            ∀ x : Fin n, (P₀ z).eval (ωs x) = (E x).eval z) ∧
+      ∀ P : F → F[X],
+        (∀ z ∈ RS_goodCoeffsCurve (k := 1) (deg := k + 1) (domain := ωs)
+            (Code.finMapTwoWords u₀ u₁) (δ : ℝ≥0),
+          (P z).natDegree < k + 1 ∧
+            δᵣ(∑ t : Fin 2, (z ^ (t : ℕ)) • Code.finMapTwoWords u₀ u₁ t,
+              (P z).eval ∘ ωs) ≤ (δ : ℝ≥0)) →
+        ∀ z ∈ RS_goodCoeffsCurve (k := 1) (deg := k + 1) (domain := ωs)
+            (Code.finMapTwoWords u₀ u₁) (δ : ℝ≥0),
+          P z = P₀ z := by
+  classical
+  refine ⟨PzFamily (F := F) (n := n) (δ : ℚ) u₀ u₁ ωs k, ?_, ?_, ?_⟩
+  · intro z hz
+    have hz_close :
+        z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁ := by
+      exact (coeffs_of_close_proximity_mem_iff_goodCoeffsCurve_finMapTwoWords
+        (F := F) (n := n) (k := k) (ωs := ωs) δ u₀ u₁ z).mpr hz
+    have hdecoded :=
+      PzFamily_decoded_on_close_set
+        (F := F) (n := n) (k := k) (δ := (δ : ℚ)) (u₀ := u₀) (u₁ := u₁)
+        (ωs := ωs) z hz_close
+    exact ⟨hdecoded.1, by
+      simpa [sum_finMapTwoWords_eq, ENNReal.coe_nnratCast] using hdecoded.2⟩
+  · refine ⟨lineValuePolynomialFamily (F := F) (n := n) u₀ u₁, ?_, ?_⟩
+    · intro x
+      simpa [lineValuePolynomialFamily] using
+        lineValuePolynomial_natDegree_lt_succ_succ (F := F) (n := n) u₀ u₁ x
+    · intro z hz x
+      have hz_close :
+          z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁ := by
+        exact (coeffs_of_close_proximity_mem_iff_goodCoeffsCurve_finMapTwoWords
+          (F := F) (n := n) (k := k) (ωs := ωs) δ u₀ u₁ z).mpr hz
+      exact PzFamily_eval_eq_lineValuePolynomial_eval_of_mem_matching_set_at_x
+        (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs
+        (hsubset x hz_close)
+  · intro P hP z hz
+    have hz_close :
+        z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁ := by
+      exact (coeffs_of_close_proximity_mem_iff_goodCoeffsCurve_finMapTwoWords
+        (F := F) (n := n) (k := k) (ωs := ωs) δ u₀ u₁ z).mpr hz
+    exact hunique P (by
+      intro w hw
+      have hw_good :
+          w ∈ RS_goodCoeffsCurve (k := 1) (deg := k + 1) (domain := ωs)
+            (Code.finMapTwoWords u₀ u₁) (δ : ℝ≥0) := by
+        exact (coeffs_of_close_proximity_mem_iff_goodCoeffsCurve_finMapTwoWords
+          (F := F) (n := n) (k := k) (ωs := ωs) δ u₀ u₁ w).mp hw
+      have hwP := hP w hw_good
+      exact ⟨hwP.1, by
+        simpa [sum_finMapTwoWords_eq, ENNReal.coe_nnratCast] using hwP.2⟩) z hz_close
+
 end BCIKS20ProximityGapSection5To6Bridge
 
 end ProximityGap
