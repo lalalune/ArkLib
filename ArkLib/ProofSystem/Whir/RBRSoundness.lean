@@ -170,7 +170,18 @@ def whirRelation
   (L4.21–L4.23, corresponding to ABF26 T3.4 specialized to FRS). The `errStar` and
   `ε_fold` rate-distance ingredients line up with ABF26's `epsMCA` (Def 4.3); the
   per-round shifting/folding error budget is the WHIR-side accounting of those
-  abstract bounds. -/
+  abstract bounds.
+
+  DISPOSITION (2026-06-04): open — the deepest obligation, gated on (a) the full MCA chain and
+  (b) a construction that does not yet exist in the tree. The conclusion is an *existential* that
+  must **construct** an `n`-message Vector IOPP `π : VectorIOP …` realizing the WHIR protocol
+  (Construction 5.1) and then prove `IsSecureWithGap` for it with the per-round RBR error `ε_rbr`.
+  No such `π` is built anywhere in ArkLib yet, so the `∃ π` cannot be introduced. Even granting the
+  construction, the `IsSecureWithGap` bound composes the folding list-decoding lemmas
+  (`Whir/Folding.lean` L4.20–4.23, open) with the MCA `errStar` bounds (`mca_rsc`/`mca_linearCode`,
+  open). This is therefore strictly downstream of every other WHIR sorry: it requires the protocol
+  construction *plus* the entire upstream chain, not a folding/MCA lemma in isolation.
+  Honest-stop: exact gap = (WHIR IOPP construction `π`) + (folding L4.20–4.23) + (MCA Cor 4.11). -/
 theorem whir_rbr_soundness
     [SampleableType F] {d dstar : ℕ}
   -- P : set of M + 1 parameters including foldingParamᵢ, varCountᵢ, φᵢ, repeatParamᵢ,

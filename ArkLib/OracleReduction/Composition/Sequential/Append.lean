@@ -264,25 +264,97 @@ def router₁ : QueryImpl (oSpec + ([OStmt₁]ₒ + [pSpec₁.Message]ₒ))
         query (spec := oSpec + ([OStmt₁]ₒ + [(pSpec₁ ++ₚ pSpec₂).Message]ₒ)) (Sum.inr (Sum.inl t))
     | Sum.inr (Sum.inr ⟨i, q⟩) => emitMessageInl (pSpec₂ := pSpec₂) i q
 
-/-- Emit a query to `V₁`'s output oracle statement `OStmt₂ i`.
+/-- Specialize `V₁.hEq i` to the type equality `OStmt₁ k = OStmt₂ i` under the branch witness
+`h : V₁.embed i = Sum.inl k` (oriented source-first, to match the `congrArg OracleInterface`
+cast shape used by `OracleVerifier.castMessageQuery`). -/
+theorem hEqInl (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    (i : ιₛ₂) (k : ιₛ₁) (h : V₁.embed i = Sum.inl k) : OStmt₁ k = OStmt₂ i := by
+  have := V₁.hEq i; rw [h] at this; exact this.symm
 
-FRONTIER (instance-coherence gap): if `V₁.embed i = .inl k`, V₁'s output oracle for `OStmt₂ i` is
-`OStmt₁ k` (answered via `Oₛ₁ k`); if `.inr k`, it is the appended `pSpec₁`-message at
-`MessageIdx.inl k` (answered via `Oₘ₁ k`). Routing the query `q : (Oₛ₂ i).Query` to that oracle
-requires `Oₛ₂ i ≍ Oₛ₁ k` (resp. `Oₘ₁ k`), which is *not* derivable from `V₁.hEq i` (a bare type
-equality `OStmt₂ i = OStmt₁ k`): the output-oracle-statement interfaces are free parameters of
-`OracleVerifier` (cf. the commented-out `Oₛₒ` field in `OracleReduction/Basic.lean`). This is the
-same kind of side condition resolved by `OracleVerifier.LiftContextCoherent` for `liftContext`;
-closing it needs an added instance-coherence hypothesis on `OracleVerifier.append`. -/
+/-- Specialize `V₁.hEq i` to the type equality `pSpec₁.Message k = OStmt₂ i` under the branch witness
+`h : V₁.embed i = Sum.inr k`. -/
+theorem hEqInr (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    (i : ιₛ₂) (k : pSpec₁.MessageIdx) (h : V₁.embed i = Sum.inr k) :
+    pSpec₁.Message k = OStmt₂ i := by
+  have := V₁.hEq i; rw [h] at this; exact this.symm
+
+/-- Per-query body emitting a query to `V₁`'s output oracle interface at an index that `V₁.embed`
+maps to an *input* oracle statement `OStmt₁ k` (i.e. `V₁.embed i = .inl k`). The interface `O` (here
+`Oₛ₂ i`) agrees, up to the type equality `hSt : OStmt₁ k = T`, with the source interface `Oₛ₁ k` via
+the coherence equality `hO`. The query is routed straight into `[OStmt₁]ₒ` at index `k`.
+
+Modelled line-by-line on `emitMessageQuery` / `OracleVerifier.castMessageQuery` (`Cast.lean`): the
+`subst hSt; subst hO` collapse turns `O` into the registered source interface `Oₛ₁ k`, so the query
+and its response have exactly the oracle-spec types. -/
+private def emitOStmtQueryInl
+    {T : Type} (O : OracleInterface T)
+    (k : ιₛ₁) (hSt : OStmt₁ k = T)
+    (hO : O = _root_.cast (congrArg OracleInterface hSt) (Oₛ₁ k))
+    (q : O.Query) :
+    OracleComp (oSpec + ([OStmt₁]ₒ + [(pSpec₁ ++ₚ pSpec₂).Message]ₒ)) (O.Response q) := by
+  subst hSt
+  subst hO
+  exact query (spec := oSpec + ([OStmt₁]ₒ + [(pSpec₁ ++ₚ pSpec₂).Message]ₒ))
+    (Sum.inr (Sum.inl ⟨k, q⟩))
+
+/-- Per-query body for the case `V₁.embed i = .inr k`: `V₁`'s output oracle for `OStmt₂ i` is the
+prover's `pSpec₁`-message `pSpec₁.Message k` (answered, in the appended spec, at `MessageIdx.inl k`).
+The interface `O` agrees, up to `hSt : pSpec₁.Message k = T`, with `Oₘ₁ k` via `hO`.
+After collapsing the casts we delegate to the proven `emitMessageInl` router. -/
+private def emitOStmtQueryInr
+    {T : Type} (O : OracleInterface T)
+    (k : pSpec₁.MessageIdx) (hSt : pSpec₁.Message k = T)
+    (hO : O = _root_.cast (congrArg OracleInterface hSt) (Oₘ₁ k))
+    (q : O.Query) :
+    OracleComp (oSpec + ([OStmt₁]ₒ + [(pSpec₁ ++ₚ pSpec₂).Message]ₒ)) (O.Response q) := by
+  subst hSt
+  subst hO
+  exact emitMessageInl (pSpec₂ := pSpec₂) (OStmt₁ := OStmt₁) k q
+
+/-- Coherence side condition for `OracleVerifier.append` at the oracle-interface level.
+
+`OracleVerifier.hEq` only records a *type* equality `OStmt₂ i = (source type)`; faithfully routing a
+query `q : (Oₛ₂ i).Query` to the underlying source oracle additionally requires the registered
+`OracleInterface` instances to agree (the output-oracle-statement interfaces `Oₛ₂` are *free*
+parameters of `OracleVerifier`, cf. the commented-out `Oₛₒ` field in `Basic.lean`). This is the
+direct analogue of `OracleVerifier.LiftContextCoherent` (#433) for `liftContext`.
+
+`hCohInl`/`hCohInr` state, in the exact `cast (congrArg OracleInterface hSt) (source)` shape consumed
+by `emitOStmtQuery{Inl,Inr}`, that `Oₛ₂ i` agrees with the source interface (`Oₛ₁ k` resp. `Oₘ₁ k`)
+selected by `V₁.embed i`, conditioned on the corresponding `embed`-branch witness `h`. Honest
+verifiers (e.g. the LogUp outer verifier) discharge both by `rfl`/`simp`. -/
+class AppendCoherent (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁) : Prop where
+  hCohInl : ∀ (i : ιₛ₂) (k : ιₛ₁) (h : V₁.embed i = Sum.inl k),
+    (Oₛ₂ i) = _root_.cast (congrArg OracleInterface (hEqInl V₁ i k h)) (Oₛ₁ k)
+  hCohInr : ∀ (i : ιₛ₂) (k : pSpec₁.MessageIdx) (h : V₁.embed i = Sum.inr k),
+    (Oₛ₂ i) = _root_.cast (congrArg OracleInterface (hEqInr V₁ i k h)) (Oₘ₁ k)
+
+/-- Emit a query to `V₁`'s output oracle statement `OStmt₂ i`, faithfully routed into the
+appended-spec oracle context.
+
+If `V₁.embed i = .inl k`, the query is sent to the input oracle statement `OStmt₁ k`; if `.inr k`, it
+is sent (via `emitMessageInl`) to the appended `pSpec₁`-message at `MessageIdx.inl k`. The transport
+of the query/response across the type equality `V₁.hEq i` is justified by the instance-coherence side
+condition `AppendCoherent V₁` (the same kind of side condition resolved by
+`OracleVerifier.LiftContextCoherent` for `liftContext`). -/
 def emitOStmt₂Query (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    [coh : AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
     (i : ιₛ₂) (q : (Oₛ₂ i).Query) :
-    OracleComp (oSpec + ([OStmt₁]ₒ + [(pSpec₁ ++ₚ pSpec₂).Message]ₒ)) ((Oₛ₂ i).Response q) :=
-  sorry
+    OracleComp (oSpec + ([OStmt₁]ₒ + [(pSpec₁ ++ₚ pSpec₂).Message]ₒ)) ((Oₛ₂ i).Response q) := by
+  -- Case on how `V₁.embed` derives `OStmt₂ i`.
+  cases h : V₁.embed i with
+  | inl k =>
+      exact emitOStmtQueryInl (Oₛ₁ := Oₛ₁) (pSpec₂ := pSpec₂)
+        (Oₛ₂ i) k (hEqInl V₁ i k h) (coh.hCohInl i k h) q
+  | inr k =>
+      exact emitOStmtQueryInr (Oₛ₁ := Oₛ₁) (pSpec₂ := pSpec₂)
+        (Oₛ₂ i) k (hEqInr V₁ i k h) (coh.hCohInr i k h) q
 
 /-- Router carrying `V₂`'s oracle context into the appended-spec oracle context: `oSpec` passes
 through; `OStmt₂`-queries are answered via `V₁`'s output oracle statements (`emitOStmt₂Query`);
 `pSpec₂`-message queries are emitted at `MessageIdx.inr`. -/
-def router₂ (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁) :
+def router₂ (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    [AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁] :
     QueryImpl (oSpec + ([OStmt₂]ₒ + [pSpec₂.Message]ₒ))
       (OracleComp (oSpec + ([OStmt₁]ₒ + [(pSpec₁ ++ₚ pSpec₂).Message]ₒ))) :=
   fun q => match q with
@@ -296,6 +368,7 @@ then run `V₂` (routed by `router₂ V₁`) to obtain the final statement, all 
 oracle context. -/
 def verify
     (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    [AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
     (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂)
     (stmt : Stmt₁) (challenges : (pSpec₁ ++ₚ pSpec₂).Challenges) :
     OptionT (OracleComp (oSpec + ([OStmt₁]ₒ + [(pSpec₁ ++ₚ pSpec₂).Message]ₒ))) Stmt₃ := do

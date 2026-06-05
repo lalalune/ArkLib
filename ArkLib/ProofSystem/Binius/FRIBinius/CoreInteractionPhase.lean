@@ -64,59 +64,43 @@ def biniusProfile : RingSwitching.RingSwitchingProfile K L κ :=
     decomposeRows := RingSwitching.decompose_tensor_algebra_rows (β := βH)
     decomposeColumns := RingSwitching.decompose_tensor_algebra_columns (β := βH)
     decomposeRows_spec := by
+      -- `z = ∑ u, φ₀ ((βH.baseChange L).repr z u) * φ₁ (βH u)` is `Basis.sum_repr` for
+      -- `βH.baseChange L`: `φ₀ a * φ₁ b = a ⊗ₜ b` and `(βH.baseChange L) u = 1 ⊗ₜ βH u`.
       intro z
-      calc
-        z = ∑ u, ((βH.baseChange L).repr z) u • (βH.baseChange L) u := by
-          exact ((βH.baseChange L).sum_repr z).symm
-        _ = ∑ u, RingSwitching.φ₀ L K
-              (RingSwitching.decompose_tensor_algebra_rows (L := L) (K := K) (β := βH) z u)
-            * RingSwitching.φ₁ L K (βH u) := by
-          apply Finset.sum_congr rfl
-          intro u _
-          unfold RingSwitching.decompose_tensor_algebra_rows RingSwitching.φ₀ RingSwitching.φ₁
-          rw [Basis.baseChange_apply]
-          simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
-            Algebra.TensorProduct.tmul_mul_tmul, one_mul]
-          change (((βH.baseChange L).repr z) u • (1 : L)) ⊗ₜ[K] βH u =
-            (((βH.baseChange L).repr z) u * 1) ⊗ₜ[K] βH u
-          rw [smul_eq_mul]
+      conv_lhs => rw [← Basis.sum_repr (βH.baseChange L) z]
+      apply Finset.sum_congr rfl
+      intro u _
+      unfold RingSwitching.decompose_tensor_algebra_rows
+      rw [Basis.baseChange_apply]
+      simp only [RingSwitching.φ₀, RingSwitching.φ₁, RingHom.coe_mk, MonoidHom.coe_mk,
+        OneHom.coe_mk, Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul,
+        TensorProduct.smul_tmul', smul_eq_mul]
     decomposeColumns_spec := by
+      -- column-side dual: `Basis.sum_repr` for `baseChangeRight βH` (right `L`-module structure),
+      -- using `φ₁ a * φ₀ b = b ⊗ₜ a` and `(baseChangeRight βH) v = βH v ⊗ₜ 1`.
       intro z
       letI rightAlgebra : Algebra L (L ⊗[K] L) := Algebra.TensorProduct.rightAlgebra
       letI rightModule : Module L (L ⊗[K] L) := rightAlgebra.toModule
-      let b := Basis.baseChangeRight (b := βH) (Right := L)
-      let smulR : L → (L ⊗[K] L) → (L ⊗[K] L) :=
-        fun a x => @SMul.smul L (L ⊗[K] L) rightModule.toSMul a x
-      calc
-        z = ∑ v, smulR (b.repr z v) (b v) := by
-          change z = ∑ v, @SMul.smul L (L ⊗[K] L) rightModule.toSMul
-            (b.repr z v) (b v)
-          exact (b.sum_repr z).symm
-        _ = ∑ v, RingSwitching.φ₁ L K
-              (RingSwitching.decompose_tensor_algebra_columns
-                (L := L) (K := K) (β := βH) z v)
-            * RingSwitching.φ₀ L K (βH v) := by
-          apply Finset.sum_congr rfl
-          intro v _
-          unfold smulR
-          unfold RingSwitching.decompose_tensor_algebra_columns RingSwitching.φ₀ RingSwitching.φ₁
-          rw [Basis.baseChangeRight_apply]
-          simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
-            Algebra.TensorProduct.tmul_mul_tmul, one_mul]
-          rw [show @SMul.smul L (L ⊗[K] L) rightModule.toSMul ((b.repr z) v)
-              (βH v ⊗ₜ[K] (1 : L)) =
-                algebraMap L (L ⊗[K] L) ((b.repr z) v) * (βH v ⊗ₜ[K] (1 : L))
-              from rfl]
-          rw [show algebraMap L (L ⊗[K] L) =
-              (Algebra.TensorProduct.includeRight : L →ₐ[K] L ⊗[K] L).toRingHom by rfl]
-          simp [Algebra.TensorProduct.includeRight_apply, Algebra.TensorProduct.tmul_mul_tmul]
-          rfl
+      conv_lhs => rw [← Basis.sum_repr
+        (Basis.baseChangeRight (b := booleanHypercubeBasis κ L K β) (Right := L)) z]
+      apply Finset.sum_congr rfl
+      intro v _
+      conv_rhs => rw [show RingSwitching.decompose_tensor_algebra_columns (L := L) (K := K)
+        (β := booleanHypercubeBasis κ L K β) z v
+        = (Basis.baseChangeRight (b := booleanHypercubeBasis κ L K β) (Right := L)).repr z v
+          from rfl]
+      rw [Basis.baseChangeRight_apply]
+      simp only [RingSwitching.φ₀, RingSwitching.φ₁, RingHom.coe_mk, MonoidHom.coe_mk,
+        OneHom.coe_mk, Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
+      rw [Algebra.smul_def, Algebra.TensorProduct.right_algebraMap_apply,
+        Algebra.TensorProduct.tmul_mul_tmul, one_mul, mul_one]
     decomposeRows_add := by
+      -- additivity of `(βH.baseChange L).repr` (a `LinearEquiv`)
       intro z w u
       unfold RingSwitching.decompose_tensor_algebra_rows
-      rw [map_add]
-      rfl
+      rw [map_add, Finsupp.add_apply]
     decomposeRows_φ₀_mul_φ₁ := by
+      -- `decomposeRows (φ₀ a * φ₁ b) u = βH.repr b u • a` via `Basis.baseChange_repr_tmul`
       intro a b u
       have h : RingSwitching.φ₀ L K a * RingSwitching.φ₁ L K b = a ⊗ₜ[K] b := by
         simp only [RingSwitching.φ₀, RingSwitching.φ₁, RingHom.coe_mk, MonoidHom.coe_mk,
@@ -125,15 +109,17 @@ def biniusProfile : RingSwitching.RingSwitchingProfile K L κ :=
       unfold RingSwitching.decompose_tensor_algebra_rows
       rw [Basis.baseChange_repr_tmul]
     decomposeColumns_add := by
+      -- additivity of `(baseChangeRight βH).repr` (right `L`-module structure)
       intro z w v
-      unfold RingSwitching.decompose_tensor_algebra_columns
       letI rightAlgebra : Algebra L (L ⊗[K] L) := Algebra.TensorProduct.rightAlgebra
       letI rightModule : Module L (L ⊗[K] L) := rightAlgebra.toModule
-      let b := Basis.baseChangeRight (b := βH) (Right := L)
-      change b.repr (z + w) v = b.repr z v + b.repr w v
-      rw [map_add]
-      rfl
+      show (Basis.baseChangeRight (b := booleanHypercubeBasis κ L K β) (Right := L)).repr
+            (z + w) v
+        = (Basis.baseChangeRight (b := booleanHypercubeBasis κ L K β) (Right := L)).repr z v
+        + (Basis.baseChangeRight (b := booleanHypercubeBasis κ L K β) (Right := L)).repr w v
+      rw [map_add, Finsupp.add_apply]
     decomposeColumns_φ₀_mul_φ₁ := by
+      -- `decomposeColumns (φ₀ a * φ₁ b) v = βH.repr a v • b` via `Basis.baseChangeRight_repr_tmul`
       intro a b v
       have h : RingSwitching.φ₀ L K a * RingSwitching.φ₁ L K b = a ⊗ₜ[K] b := by
         simp only [RingSwitching.φ₀, RingSwitching.φ₁, RingHom.coe_mk, MonoidHom.coe_mk,

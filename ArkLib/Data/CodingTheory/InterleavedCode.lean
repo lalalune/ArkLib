@@ -829,7 +829,33 @@ is fixed, the list size of `C^{≡m}` grows as a *polynomial in*
 `|Λ(C, δ)|` of degree `r`, **independent of `m`**. Used in ABF26 §3
 list-decoding analyses and §6.3.
 
-External admit — paper-cited [GGR11]. -/
+## Disposition: REDUCED to the external GGR11 list-size recursion.
+
+All *in-tree* infrastructure this statement rests on is proven sorry-free in this
+file and in `ListDecodability.lean`: the interleaved-code carrier
+(`interleavedCodeSet`, with its `Fintype` instance `interleavedCodeSet_fintype`),
+the maximised list size `Lambda` (= `ListDecodability.Lambda`) and its monotonicity
+(`Lambda_mono`), and the row-projection characterisation `mem_interleavedCode_iff`
+(`V ∈ C^{≡m} ↔ ∀ k, V.transpose k ∈ C`).
+
+The residual is the **Gopalan–Guruswami–Raghavendra (GGR11)** combinatorial
+list-recovery recursion (RANDOM 2011, "List Decoding Tensor Products and Interleaved
+Codes"; ABF26 Lemma 2.10): given that every column of an interleaved word lies in a
+list of size ≤ `|Λ(C,δ)|`, a budget/covering argument over the columns selects `r`
+"pivot" columns and shows the joint list embeds into the product of the per-pivot
+lists, yielding the `(b+r choose r)·|Λ(C,δ)|^r` bound with `b,r` as defined. This
+recursion has **no in-tree analogue** — ArkLib presently has neither a list-recovery
+primitive nor the column-pruning / iterated-projection lemmas it needs — so the full
+port is *not reachable* from current in-tree leaf lemmas; it is a genuine
+external-paper obstruction, not a missing local proof.
+
+Note also `F` is only `[Field F]` (not `[Fintype F]`), so over an infinite field
+`Lambda C δ` can be `⊤`, in which case the RHS is `⊤` and the bound is trivially true;
+but the universally-quantified statement is governed by the finite-list case, which is
+exactly the GGR11 recursion above. The `sorry` below is therefore a precisely
+characterised external wall.
+
+Residual external lemma: GGR11 interleaved/tensor list-size recursion. -/
 theorem lambda_le_ggr11 {ι F : Type} [Fintype ι] [Field F] [DecidableEq F]
     (C : Set (ι → F)) (δ : ℝ) (m : ℕ) (_hm : 1 ≤ m)
     (_hδ_lb : 0 ≤ δ)
@@ -840,7 +866,9 @@ theorem lambda_le_ggr11 {ι F : Type} [Fintype ι] [Field F] [DecidableEq F]
                   Real.log 2⌉₊
     Lambda (interleavedCodeSet (κ := Fin m) C) δ ≤
       ((b + r).choose r : ℕ∞) * (Lambda C δ) ^ r := by
-  -- ABF26-L2.10; external admit [GGR11].
+  -- REDUCED: residual is the external GGR11 list-recovery recursion (ABF26 L2.10);
+  -- all in-tree infra (interleavedCodeSet/Lambda/Lambda_mono/mem_interleavedCode_iff)
+  -- is proven. No in-tree list-recovery/column-pruning primitive exists to close it.
   sorry
 
 end InterleavedCode

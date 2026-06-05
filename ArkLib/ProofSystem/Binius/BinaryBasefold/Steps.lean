@@ -684,22 +684,27 @@ variable {R : Type} [CommSemiring R] [DecidableEq R] [SampleableType R]
 
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
 
-lemma foldStepRelOut_relay_iff_roundRelation (i : Fin ℓ)
-    (hNCR : ¬ isCommitmentRound ℓ ϑ i)
-    (stmt : Statement (L := L) Context i.succ)
-    (wit : Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ)
-    (oStmt : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j) :
-    ⟨⟨stmt, oStmt⟩, wit⟩ ∈ foldStepRelOut (mp := mp) 𝔽q β
-      (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i ↔
-    ⟨⟨stmt, mapOStmtOutRelayStep 𝔽q β
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR oStmt⟩, wit⟩ ∈
-      roundRelation (mp := mp) 𝔽q β
-        (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ := by
-  simp only [foldStepRelOut, roundRelation, Set.mem_setOf_eq, foldStepRelOutProp,
-    roundRelationProp, masterKStateProp, hNCR, ↓reduceIte, true_and]
-  rw [badEventExistsProp_relay_preserved 𝔽q β i hNCR stmt.challenges oStmt]
-  rw [oracleWitnessConsistency_relay_preserved 𝔽q β i hNCR stmt wit oStmt]
-  simp [Fin.take_eq_self]
+/-- Run-collapse for the relay reduction: since `pSpecRelay` is the zero-round protocol, the honest
+prover and (oracle) verifier execute deterministically. The verifier returns the input non-oracle
+statement, and both prover and verifier relabel the oracle statements via `mapOStmtOutRelayStep`. -/
+private lemma relayReduction_run_collapse (i : Fin ℓ) (hNCR : ¬ isCommitmentRound ℓ ϑ i)
+    (stmtIn : Statement (L := L) Context i.succ)
+    (oStmtIn : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)
+    (witIn : Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ) :
+    (relayOracleReduction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR).toReduction.run
+        (stmtIn, oStmtIn) witIn =
+      (pure ⟨⟨default,
+          (stmtIn, mapOStmtOutRelayStep 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR oStmtIn),
+          witIn⟩,
+          (stmtIn, mapOStmtOutRelayStep 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR oStmtIn)⟩) := by
+  simp only [OracleReduction.toReduction, Reduction.run, relayOracleReduction,
+    relayOracleProver, relayOracleVerifier, Prover.run,
+    Prover.runToRound_zero_of_prover_first,
+    OracleVerifier.toVerifier, Verifier.run,
+    simulateQ_pure, OptionT.run_pure,
+    bind_pure_comp, map_pure, pure_bind, monadLift_pure, liftM_pure,
+    Option.getM, StateT.run'_eq, StateT.run_pure]
+  rfl
 
 theorem relayOracleReduction_perfectCompleteness (i : Fin ℓ)
     (hNCR : ¬ isCommitmentRound ℓ ϑ i) :
@@ -713,53 +718,65 @@ theorem relayOracleReduction_perfectCompleteness (i : Fin ℓ)
         i hNCR)
       (init := init)
       (impl := impl) := by
-  unfold OracleReduction.perfectCompleteness Reduction.perfectCompleteness Reduction.completeness
+  unfold OracleReduction.perfectCompleteness
+  rw [Reduction.perfectCompleteness_eq_prob_one]
   intro ⟨stmtIn, oStmtIn⟩ witIn h_relIn
-  simp only [OracleReduction.toReduction, relayOracleReduction, relayOracleProver,
-    relayOracleVerifier, Reduction.run, Prover.run, Verifier.run,
-    Prover.runToRound_zero_of_prover_first, Fin.last, Fin.zero_eta,
-    OracleVerifier.toVerifier, QueryImpl.addLift_def, ENNReal.coe_zero, tsub_zero]
-  rw [ge_iff_le, one_le_probEvent_iff, probEvent_eq_one_iff]
+  -- The relay reduction is a 0-round protocol; both prover and verifier execute deterministically.
+  rw [relayReduction_run_collapse]
+  -- Abbreviation for the deterministic relabeled oracle statement.
+  set relayO := mapOStmtOutRelayStep 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR oStmtIn
+    with hrelayO
+  -- The output statement-witness pair is in `roundRelation i.succ` (the mathematical core).
+  have h_rel : ((stmtIn, relayO), witIn) ∈
+      roundRelation (mp := mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ := by
+    simp only [roundRelation, Set.mem_setOf_eq, roundRelationProp, masterKStateProp]
+    simp only [foldStepRelOut, Set.mem_setOf_eq, foldStepRelOutProp, hNCR, if_false] at h_relIn
+    have h_take : Fin.take (m := (i.succ : Fin (ℓ + 1)).val) (le_refl _) stmtIn.challenges
+        = stmtIn.challenges := by funext x; simp [Fin.take_apply]
+    refine ⟨trivial, ?_⟩
+    rw [h_take, hrelayO]
+    rw [← badEventExistsProp_relay_preserved 𝔽q β i hNCR stmtIn.challenges oStmtIn,
+        ← oracleWitnessConsistency_relay_preserved 𝔽q β i hNCR stmtIn witIn oStmtIn]
+    exact h_relIn
+  -- The run collapses to a deterministic `pure`; its event probability is exactly one because the
+  -- success predicate holds on the (unique) output and `init` contributes probability one.
+  -- (Same plumbing as `Reduction.id_perfectCompleteness`, with the relabeled oracle statement.)
+  rw [probEvent_eq_one_iff]
   refine ⟨?_, ?_⟩
-  · rw [OptionT.probFailure_eq, OptionT.run_mk]
+  · -- `Pr[⊥ | OptionT.mk ...] = 0`.
+    rw [OptionT.probFailure_eq, OptionT.run_mk]
     simp only [probFailure_eq_zero, zero_add]
     apply probOutput_eq_zero_of_not_mem_support
     simp only [support_bind, Set.mem_iUnion, not_exists]
-    intro s _ hmem
+    intro s _
     change none ∈ _root_.support
-      (StateT.run' (simulateQ _ (pure (some ((default,
-        ((stmtIn, mapOStmtOutRelayStep 𝔽q β i hNCR oStmtIn), witIn)),
-        (stmtIn, mapOStmtOutRelayStep 𝔽q β i hNCR oStmtIn))) :
-          OracleComp _ _)) s) at hmem
-    rw [simulateQ_pure] at hmem
+      (StateT.run' (simulateQ _ (pure (some
+        (((default : pSpecRelay.FullTranscript), (stmtIn, relayO), witIn), stmtIn, relayO)) :
+        OracleComp _ _)) s) → False
+    rw [simulateQ_pure]
     change none ∈ _root_.support
-      (Prod.fst <$> (pure (some ((default,
-        ((stmtIn, mapOStmtOutRelayStep 𝔽q β i hNCR oStmtIn), witIn)),
-        (stmtIn, mapOStmtOutRelayStep 𝔽q β i hNCR oStmtIn))) :
-          StateT σ ProbComp _).run s) at hmem
-    rw [StateT.run_pure] at hmem
-    simp [map_pure] at hmem
-  · intro y hy
-    rw [OptionT.mem_support_iff] at hy
-    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hy
-    obtain ⟨s, _, hy⟩ := hy
-    change some y ∈ _root_.support
-      (StateT.run' (simulateQ _ (pure (some ((default,
-        ((stmtIn, mapOStmtOutRelayStep 𝔽q β i hNCR oStmtIn), witIn)),
-        (stmtIn, mapOStmtOutRelayStep 𝔽q β i hNCR oStmtIn))) :
-          OracleComp _ _)) s) at hy
-    rw [simulateQ_pure] at hy
-    change some y ∈ _root_.support
-      (Prod.fst <$> (pure (some ((default,
-        ((stmtIn, mapOStmtOutRelayStep 𝔽q β i hNCR oStmtIn), witIn)),
-        (stmtIn, mapOStmtOutRelayStep 𝔽q β i hNCR oStmtIn))) :
-          StateT σ ProbComp _).run s) at hy
-    rw [StateT.run_pure] at hy
-    simp [map_pure, support_pure] at hy
-    cases hy
-    exact ⟨(foldStepRelOut_relay_iff_roundRelation
-      (mp := mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      i hNCR stmtIn witIn oStmtIn).mp h_relIn, rfl⟩
+      (Prod.fst <$> (pure (some
+        (((default : pSpecRelay.FullTranscript), (stmtIn, relayO), witIn), stmtIn, relayO)) :
+        StateT σ ProbComp _).run s) → False
+    rw [StateT.run_pure]; simp [map_pure]
+  · -- Every supported output satisfies the success predicate.
+    intro x hx
+    rw [OptionT.mem_support_iff] at hx
+    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+    obtain ⟨s, _, hx⟩ := hx
+    change some x ∈ _root_.support
+      (StateT.run' (simulateQ _ (pure (some
+        (((default : pSpecRelay.FullTranscript), (stmtIn, relayO), witIn), stmtIn, relayO)) :
+        OracleComp _ _)) s) at hx
+    rw [simulateQ_pure] at hx
+    change some x ∈ _root_.support
+      (Prod.fst <$> (pure (some
+        (((default : pSpecRelay.FullTranscript), (stmtIn, relayO), witIn), stmtIn, relayO)) :
+        StateT σ ProbComp _).run s) at hx
+    rw [StateT.run_pure] at hx
+    simp [map_pure, support_pure] at hx
+    cases hx
+    exact ⟨h_rel, rfl⟩
 
 def relayKnowledgeError (m : pSpecRelay.ChallengeIdx) : ℝ≥0 :=
   match m with
@@ -800,36 +817,61 @@ def relayKnowledgeStateFunction (i : Fin ℓ) (hNCR : ¬ isCommitmentRound ℓ �
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
       (relOut := roundRelation (mp := mp) 𝔽q β (ϑ := ϑ)
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ)
-      (extractor := relayRbrExtractor 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) := by
-  refine
-    { toFun := fun _ ⟨stmt, oStmt⟩ _ witMid =>
-        relayKStateProp (mp := mp) 𝔽q β (ϑ := ϑ)
-          (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR stmt witMid oStmt
-      toFun_empty := ?_
-      toFun_next := ?_
-      toFun_full := ?_ }
-  · intro ⟨stmt, oStmt⟩ witMid
-    exact foldStepRelOut_relay_iff_roundRelation
-      (mp := mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      i hNCR stmt witMid oStmt
-  · intro m _hDir
-    exact m.elim0
-  · intro ⟨stmt, oStmt⟩ tr witOut hprob
-    rw [gt_iff_lt, probEvent_pos_iff] at hprob
-    obtain ⟨stmtOut, hsupport, hrel⟩ := hprob
-    rw [OptionT.mem_support_iff] at hsupport
-    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hsupport
-    obtain ⟨s, _, hsupport⟩ := hsupport
-    change some stmtOut ∈ _root_.support
-      (StateT.run' (simulateQ _ (pure (some (stmt,
-        mapOStmtOutRelayStep 𝔽q β i hNCR oStmt)) : OracleComp _ _)) s) at hsupport
-    rw [simulateQ_pure] at hsupport
-    change some stmtOut ∈ _root_.support
-      (Prod.fst <$> (pure (some (stmt,
-        mapOStmtOutRelayStep 𝔽q β i hNCR oStmt)) : StateT σ ProbComp _).run s) at hsupport
-    rw [StateT.run_pure] at hsupport
-    simp [map_pure, support_pure] at hsupport
-    cases hsupport
+      (extractor := relayRbrExtractor 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) where
+  toFun := fun m ⟨stmtIn, oStmtIn⟩ tr witMid =>
+    relayKStateProp (mp:=mp) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      i hNCR stmtIn witMid oStmtIn
+  toFun_empty := fun ⟨stmtIn, oStmtIn⟩ witIn => by
+    simp only [foldStepRelOut, foldStepRelOutProp, cast_eq, Set.mem_setOf_eq, relayKStateProp]
+    -- relay round ⇒ non-commitment ⇒ `foldStepRelOutProp` takes its `else` (relay) branch, whose
+    -- bad event is evaluated at the statement index `i.succ` (oracle `i.castSucc`).
+    rw [if_neg hNCR]
+    unfold masterKStateProp
+    simp only [Fin.val_succ, Fin.coe_castSucc, Fin.take_eq_init, true_and, Fin.take_eq_self]
+    have hRight := oracleWitnessConsistency_relay_preserved (mp := mp) 𝔽q β i
+      hNCR stmtIn witIn oStmtIn
+    rw [hRight]
+    -- The two `oracleWitnessConsistency` disjuncts now coincide (via `hRight`). The bad-event
+    -- disjuncts coincide too: both are evaluated at the statement index `i.succ` (LHS oracle
+    -- `i.castSucc`, RHS oracle `i.succ` on the relay-mapped oracle), and
+    -- `badEventExistsProp_relay_preserved` shows the relay relabel preserves the existential.
+    -- Hence the `↔` is `Iff.rfl` at every non-commitment round, including the last (`i.val+1 = ℓ`).
+    rw [badEventExistsProp_relay_preserved 𝔽q β i hNCR stmtIn.challenges oStmtIn]
+  toFun_next := fun m hDir (stmtIn, oStmtIn) tr msg witMid => by exact fun a ↦ a
+  toFun_full := fun (stmtIn, oStmtIn) tr witOut=> by
+    intro h
+    rw [gt_iff_lt, probEvent_pos_iff] at h
+    obtain ⟨x, hx, hrel⟩ := h
+    -- The relay verifier deterministically outputs `(stmtIn, mapOStmtOutRelayStep ... oStmtIn)`.
+    have hrun : Verifier.run (stmtIn, oStmtIn) tr (relayOracleVerifier 𝔽q β
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR).toVerifier =
+        (pure (stmtIn, mapOStmtOutRelayStep 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR oStmtIn)
+          : OptionT (OracleComp []ₒ) _) := by
+      simp only [Verifier.run, OracleVerifier.toVerifier, relayOracleVerifier]
+      erw [simulateQ_pure]
+      rfl
+    rw [hrun] at hx
+    rw [OptionT.mem_support_iff] at hx
+    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+    obtain ⟨s, _, hx⟩ := hx
+    have key : (simulateQ impl (pure (stmtIn,
+        mapOStmtOutRelayStep 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR oStmtIn) :
+          OptionT (OracleComp []ₒ) _)).run' s =
+        pure (some (stmtIn,
+          mapOStmtOutRelayStep 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR oStmtIn)) := by
+      change (simulateQ impl (pure (some (stmtIn,
+        mapOStmtOutRelayStep 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR oStmtIn)) :
+          OracleComp []ₒ _)).run' s = _
+      rw [simulateQ_pure]
+      change Prod.fst <$> (pure (some (stmtIn,
+        mapOStmtOutRelayStep 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR oStmtIn)) :
+          StateT σ ProbComp _).run s = _
+      rw [StateT.run_pure]; simp [map_pure]
+    rw [key] at hx
+    simp only [support_pure, Set.mem_singleton_iff] at hx
+    cases hx
+    -- Now `hrel : ((stmtIn, mapOStmtOutRelayStep ...), witOut) ∈ roundRelation i.succ`,
+    -- which is definitionally `relayKStateProp 𝔽q β i hNCR stmtIn witOut oStmtIn`.
     exact hrel
 
 /-- RBR knowledge soundness for a single round oracle verifier -/
@@ -992,6 +1034,19 @@ theorem finalSumcheckOracleReduction_perfectCompleteness {σ : Type}
   unfold OracleReduction.perfectCompleteness
   intro stmtIn witIn h_relIn
   simp only
+  -- HONEST STOP (residual — deep missing algebra, same class as the sibling
+  -- `RingSwitching.…finalSumcheck…_perfectCompleteness`'s `finalSumcheck_check_of_relIn`):
+  -- the honest run is deterministic (`pSpecFinalSumcheckStep` = one P→V message, no challenge); the
+  -- prover sends `c := witIn.f ⟨0,_⟩ = f^(ℓ)(0)` and the verifier checks
+  --   `stmtIn.sumcheck_target = eqTilde r r' * c`  (the `if` guard).
+  -- Discharging the guard requires the algebraic chain
+  --   relIn (roundRelation = masterKStateProp at `Fin.last ℓ`)  ⟹  sumcheck_target = eqTilde · c,
+  -- i.e. a `finalSumcheck_check_of_relIn`-analog tying `sumcheckConsistencyProp` + the
+  -- `witnessStructuralInvariant` (`wit.f = getMidCodewords … t`, `wit.H = projectToMidSumcheckPoly`)
+  -- to `f^(ℓ)(0) = t(r')` and the final `H_ℓ`-collapse `s_ℓ = eqTilde(r,r') · t(r')`. No such lemma
+  -- exists in-tree for BinaryBasefold (only the RingSwitching variant has the DP24 cube-0 algebra),
+  -- and relIn may hold via the bad-event disjunct alone (no `owc`), under which the honest `c` need
+  -- not pass the guard — so even the deterministic-run collapse cannot close without this algebra.
   sorry
 
 /-- RBR knowledge error for the final sumcheck step -/
@@ -1069,6 +1124,66 @@ def finalSumcheckKStateProp {m : Fin (1 + 1)} (tr : Transcript m (pSpecFinalSumc
 
     sumcheckFinalCheck ∧ finalFoldingProp -- local checks ∧ (oracleConsitency ∨ badEventExists)
 
+/-! ### Local `simulateQ`/`simOracle2` message-query collapse toolkit
+
+`Steps.lean` does not import the `RingSwitching` tree (where the analogous helpers live), so the
+three small `simulateQ` collapse lemmas needed by `finalSumcheckKnowledgeStateFunction.toFun_full`
+are replicated here from core VCVio primitives (`simulateQ_spec_query`, `simulateQ_optionT_lift`,
+`simulateQ_pure`). They are protocol-agnostic. -/
+section SimulateQCollapse
+
+open OracleInterface in
+/-- The `OracleInterface.simOracle2` collapse for a message (right-family) query, `OracleComp`
+form: simulating a query to the prover-message oracle answers with the message itself. -/
+private lemma simulateQ_simOracle2_messageQuery {ι : Type} {oSpec : OracleSpec ι}
+    {ι₁ : Type} {T₁ : ι₁ → Type} [∀ i, OracleInterface (T₁ i)]
+    {ι₂ : Type} {T₂ : ι₂ → Type} [∀ i, OracleInterface (T₂ i)]
+    (t₁ : ∀ i, T₁ i) (t₂ : ∀ i, T₂ i) (qm : ([T₂]ₒ).Domain) :
+    simulateQ (OracleInterface.simOracle2 oSpec t₁ t₂)
+      (liftM (([T₂]ₒ).query qm) : OracleComp (oSpec + ([T₁]ₒ + [T₂]ₒ)) _)
+      = (pure (OracleInterface.answer (t₂ qm.1) qm.2) : OracleComp oSpec _) := by
+  change simulateQ (OracleInterface.simOracle2 oSpec t₁ t₂)
+      (liftM ((oSpec + ([T₁]ₒ + [T₂]ₒ)).query (Sum.inr (Sum.inr qm)))) = _
+  rw [simulateQ_spec_query]
+  simp only [OracleInterface.simOracle2, QueryImpl.addLift_def, QueryImpl.add_apply_inr,
+    QueryImpl.liftTarget_apply]
+  change liftM (OracleInterface.simOracle0 T₂ t₂ qm) = _
+  simp only [OracleInterface.simOracle0]
+  rfl
+
+open OracleInterface in
+/-- `OptionT`/`query` form of `simulateQ_simOracle2_messageQuery`: the form appearing verbatim in an
+`OracleVerifier.verify` body. -/
+private lemma simulateQ_simOracle2_query {ι : Type} {oSpec : OracleSpec ι}
+    {ι₁ : Type} {T₁ : ι₁ → Type} [∀ i, OracleInterface (T₁ i)]
+    {ι₂ : Type} {T₂ : ι₂ → Type} [∀ i, OracleInterface (T₂ i)]
+    (t₁ : ∀ i, T₁ i) (t₂ : ∀ i, T₂ i) (qm : ([T₂]ₒ).Domain) :
+    simulateQ (OracleInterface.simOracle2 oSpec t₁ t₂)
+      (query (spec := [T₂]ₒ) qm : OptionT (OracleComp (oSpec + ([T₁]ₒ + [T₂]ₒ))) _)
+      = (OptionT.lift (pure (OracleInterface.answer (t₂ qm.1) qm.2))
+          : OptionT (OracleComp oSpec) _) := by
+  rw [show (query (spec := [T₂]ₒ) qm : OptionT (OracleComp (oSpec + ([T₁]ₒ + [T₂]ₒ))) _)
+        = OptionT.lift (liftM (([T₂]ₒ).query qm) : OracleComp (oSpec + ([T₁]ₒ + [T₂]ₒ)) _) from rfl]
+  rw [simulateQ_optionT_lift, simulateQ_simOracle2_messageQuery]
+  rfl
+
+/-- The `instDefault` oracle answer is the message itself (`answer m () = m`). -/
+@[simp] private lemma answer_instDefault' {M : Type} (m : M) (q : Unit) :
+    @OracleInterface.answer M OracleInterface.instDefault m q = m := rfl
+
+/-- `simulateQ` commutes with `OptionT.pure`, for any target monad `n` (in particular
+`StateT σ ProbComp`, which the outer `impl` simulation maps into). -/
+@[simp] private theorem simulateQ_optionT_pure' {ιₐ : Type} {specₐ : OracleSpec ιₐ}
+    {n : Type → Type} [Monad n] [LawfulMonad n] {γ : Type}
+    (impl : QueryImpl specₐ n) (b : γ) :
+    simulateQ impl (pure b : OptionT (OracleComp specₐ) γ)
+      = (pure b : OptionT n γ) := by
+  rw [show (pure b : OptionT (OracleComp specₐ) γ) = OptionT.lift (pure b)
+        from (OptionT.lift_pure b).symm]
+  rw [simulateQ_optionT_lift, simulateQ_pure, OptionT.lift_pure]
+
+end SimulateQCollapse
+
 /-- The knowledge state function for the final sumcheck step -/
 noncomputable def finalSumcheckKnowledgeStateFunction {σ : Type} (init : ProbComp σ)
     (impl : QueryImpl []ₒ (StateT σ ProbComp)) :
@@ -1085,8 +1200,60 @@ noncomputable def finalSumcheckKnowledgeStateFunction {σ : Type} (init : ProbCo
   toFun_next := fun m hDir stmt tr msg witMid h => by
     -- Either bad events exist, or (oracleFoldingConsistency is true so
       -- the extractor can construct a satisfying witness)
-    sorry
+    obtain ⟨stmt, oStmt⟩ := stmt
+    fin_cases m
+    -- `m.succ = ⟨1, _⟩`: `h` is `finalSumcheckKStateProp 1 = sumcheckFinalCheck ∧ finalFoldingProp`.
+    -- `m.castSucc = ⟨0, _⟩`: goal is `finalSumcheckKStateProp 0 =
+    --   masterKStateProp (stmtIdx := oracleIdx := Fin.last ℓ) (localChecks := True)
+    --   = True ∧ (badEventExists ∨ oracleWitnessConsistency)`.
+    simp only [finalSumcheckKStateProp, masterKStateProp, true_and] at h ⊢
+    obtain ⟨_hSumcheckCheck, hFold⟩ := h
+    -- `hFold : finalNonDoomedFoldingProp · = oracleFoldingConsistency ∨ foldingBadEventExists`.
+    -- The `foldingBadEventExists` disjunct is exactly the `badEventExists` of the index-0
+    -- `masterKStateProp` (oracleIdx := Fin.last ℓ, challenges = stmt.challenges, modulo
+    -- `Fin.take_eq_self`).
+    rcases hFold with hOFC | hBad
+    · -- `oracleFoldingConsistency` branch: deriving `badEventExists ∨ oracleWitnessConsistency`
+      -- requires extraction soundness for the m=0 `extractMid` witness (`witnessStructuralInvariant`,
+      -- `sumcheckConsistency`, `firstOracleConsistency`), which is not available in-tree.
+      sorry
+    · -- `foldingBadEventExists` branch: route into `badEventExists` directly.
+      refine Or.inl ?_
+      simpa only [finalNonDoomedFoldingProp, Fin.take_eq_self] using hBad
   toFun_full := fun stmt tr witOut h => by
+    obtain ⟨stmt, oStmt⟩ := stmt
+    -- (1) PLUMBING (mechanical, lands): unfold the positive-probability hypothesis to a support
+    -- membership of the simulated verifier run, then collapse the single message-oracle query
+    -- (`c := tr ⟨0,_⟩`) via `simulateQ_simOracle2_query` + `answer_instDefault'`.
+    rw [gt_iff_lt, probEvent_pos_iff] at h
+    obtain ⟨x, hx, hrel⟩ := h
+    rw [OptionT.mem_support_iff] at hx
+    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+    obtain ⟨s, _, hx⟩ := hx
+    simp only [Verifier.run, OracleVerifier.toVerifier, finalSumcheckVerifier] at hx
+    -- Collapse the simOracle2 layer through the OptionT binds and the single message query.
+    simp only [simulateQ_optionT_bind, simulateQ_simOracle2_query, OptionT.lift_pure, pure_bind,
+      answer_instDefault', FullTranscript.messages, apply_ite, simulateQ_optionT_pure'] at hx
+    -- After this, `hx` (verified via `pp.all`) reads:
+    --   ∃ x₁ ∈ support (StateT.run ((fun a => (a, oStmtOut)) <$>
+    --     (do let a ← simulateQ impl (pure (tr ⟨0,_⟩));   -- the message value `c`
+    --         if stmt.sumcheck_target = eqTilde stmt.ctx.t_eval_point stmt.challenges * a
+    --         then pure { …, final_constant := a }        -- accept: stmtOut carries `c`
+    --         else pure { 0,0,0,0 })) s), x₁.1 = some x
+    -- HONEST STOP (residual #1 — `simulateQ`/cast unpacking explodes): the inner
+    -- `simulateQ impl (pure (tr ⟨0,_⟩))` resists every `simulateQ_pure`/`simulateQ_optionT_pure'`
+    -- rewrite because the message term `tr ⟨0,_⟩` is wrapped in the opaque `pSpecFinalSumcheckStep`
+    -- message-index cast machinery (`OracleSpec.Range`/`Sigma (MessageIdx …)`), the same
+    -- "BaseFold cast alignment" wall noted in `QueryPhase.queryKnowledgeStateFunction.toFun_full`.
+    -- HONEST STOP (residual #2 — genuine math obstruction in the reject branch): even with the
+    -- plumbing finished, the `else` (reject) branch outputs the dummy `stmtOut = {0,0,0,0}`. From
+    -- `hrel : (dummy, ()) ∈ finalSumcheckRelOut` one cannot reconstruct the goal's
+    -- `finalSumcheckKStateProp 1` on the *real* `stmt`, since its `sumcheckFinalCheck`
+    -- (`stmt.sumcheck_target = eqTilde · * c`) is exactly the verifier check that FAILED in this
+    -- branch. Closing it requires proving the dummy `{0,0,0,0}` is not in `finalSumcheckRelOut`
+    -- (i.e. `¬ finalNonDoomedFoldingProp ({0,0,0,0}, oStmt)`), which is NOT true in general (zero
+    -- challenges can trigger the bad-event disjunct). This is the same unsolved `if`-branch case
+    -- split flagged in the sibling `RingSwitching.…finalSumcheck…toFun_full` (left open there too).
     sorry
 
 /-- Round-by-round knowledge soundness for the final sumcheck step -/

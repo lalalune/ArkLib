@@ -157,6 +157,35 @@ noncomputable def hasMutualCorrAgreement
   Let `C` be a linear code with minimum distance `δ_C`, `Gen` be a proximity generator for C
   with parameters `B` and `err`, then Gen has mutual correlated agreement with proximity bounds
   `BStar = min {1 - δ_C/2, B}` and `errStar = err`.
+
+  ## DISPOSITION (2026-06-04): not provable as literally stated — missing proximity-gap hypothesis.
+
+  The hypothesis "`Gen` *is* a proximity generator for `C` with parameters `B` and `err`" (i.e.
+  the proximity-gap soundness `Pr_{r ←$ᵖ Gen.Gen}[proximityCondition f δ r Gen.C] ≤ Gen.err …`)
+  is the load-bearing premise of the paper's Lemma 4.10, but it is recorded **nowhere**: the
+  `ProximityGenerator` structure (`ProximityGen.lean`) carries `Gen`, `B`, `err` as *free data*
+  with no field asserting they satisfy any proximity-gap bound. The only hypothesis supplied here
+  is `hC : C = Gen.C`. So the conclusion cannot be derived.
+
+  **Demonstrated falsity (as written).** `LinearCode` is a `Submodule`, hence `0 ∈ C`, hence
+  `δᵣ(0, C) = 0 ≤ δ` for every `δ`. Instantiate `Gen.Gen := {(fun _ => 0)}` (the all-zero
+  randomness tuple). Then `∑ⱼ (r j)·f j = 0`, and the (asymmetric, per-row) `proximityCondition`
+  is satisfiable for the all-zero `r` whenever some `fᵢ` is not itself a codeword (clause (iii)),
+  so `Pr_{r ←$ᵖ Gen.Gen}[proximityCondition …] = 1`. With any `errStar δ < 1` the bound fails.
+  Both a bound-respecting and a bound-violating `(Gen.Gen, Gen.err)` are consistent with the loose
+  structure, so `hasMutualCorrAgreement` cannot be forced from `hC` alone.
+
+  **Faithful repair (not a port; intentionally not applied here).** Mirroring the `fold_f_g`
+  repair, the honest fix threads the missing premise as an explicit hypothesis — the BCIKS20-style
+  *correlated-agreement* soundness of `Gen` — and derives the MCA *strengthening* (the
+  `min{1 - δ_C/2, B}` radius). That derivation is the genuine content of ABF26 §4 and is **not**
+  available as a ported asset: the correlated-agreement → mutual-correlated-agreement machinery is
+  being built concurrently in `ProximityGap/BCIKS20` / `MCAGenerator.lean` (over a *different*,
+  matrix-based `Generator S ℓ F` type that is not definitionally the WHIR `ProximityGenerator`).
+  Closing it requires (i) a WHIR-side restatement carrying the CA premise, and (ii) the per-row
+  `proximityCondition` ↔ joint `mcaEvent` reconciliation (cf. `proximityCondition_imp_mcaEvent_…`
+  above, which is one-way only). Left as an open obligation rather than fake-proved or repaired
+  vacuously. See `research/formal/arklib-proof-research-2026-06.md`.
 -/
 lemma mca_linearCode
   (Gen : ProximityGenerator ι F) [Fintype Gen.parℓ] [Nonempty Gen.parℓ]
@@ -177,6 +206,29 @@ lemma mca_linearCode
     `errStar = (parℓ-1)*2^m / ρ*|F|`.
 
   function `Gen(parℓ,α)={1,α,..,α ^ parℓ-1}`
+
+  ## DISPOSITION (2026-06-04): open — genuine RS mutual-correlated-agreement bound, multi-step.
+
+  Unlike `mca_linearCode`, here `Gen` is *pinned* to `RSGenerator.genRSC parℓ_type φ m exp`, so the
+  loose-data falsity does **not** apply: `Gen.Gen` is the real Vandermonde family
+  `r ↦ (j ↦ r^(exp j))` and `Gen.err` is the concrete RS error. The claimed `BStar = (1+ρ)/2`
+  (unique-decoding radius) and `errStar` are the true Corollary 4.11 statement.
+
+  The now-proven BCIKS20 machinery in this tree — `ProximityGap.proximity_gap_RSCodes`
+  (`BCIKS20/ReedSolomonGap.lean`, sorry-free), the RS `(δ,ε)`-proximity gap up to the Johnson
+  radius — is the right ingredient but does **not** close this directly:
+  * it bounds the BCIKS20 event `δᵣ(∑ⱼ rⱼ·fⱼ, C) ≤ δ` over *affine-span* collections, whereas
+    `hasMutualCorrAgreement` here uses the **asymmetric per-row** `proximityCondition` (clause (iii):
+    "some `fᵢ` is unmatched by any single codeword on `S`"), a strictly different/stronger event;
+  * it yields a plain proximity gap, not the *mutual correlated agreement* strengthening;
+  * its `errorBound` must be reconciled with the `(parℓ-1)·2ᵐ/(ρ·|F|)` form claimed here.
+
+  Closing this therefore needs the ABF26 §4 derivation chaining `proximity_gap_RSCodes`
+  → correlated agreement → MCA, plus the per-row↔joint `proximityCondition`/`mcaEvent`
+  reconciliation (the existing `Pr_proximityCondition_le_epsMCA` bridge is one-way and `epsMCA`-side
+  only). That CA→MCA machinery is being built concurrently (`ProximityGap/BCIKS20`,
+  `MCAGenerator.lean`); this is a multi-step formalization, not a port of existing assets, so it is
+  left as an open obligation rather than fake-proved. See `research/formal/arklib-proof-research-2026-06.md`.
 -/
 
 lemma mca_rsc
@@ -245,11 +297,18 @@ theorem mca_johnson_bound_CONJECTURE
   for FRI/STIR/WHIR. See `research/formal/arklib-proof-research-2026-06.md` and
   eprint.iacr.org/2025/2046.
 -/
-theorem mca_capacity_bound_CONJECTURE
+/- **Statement repair (2026-06-04):** restated `theorem … := by sorry` → `def … : Prop`.
+Rationale: per the STATUS note above, this up-to-capacity claim is DISPROVEN in the
+literature, so the former `sorry` was permanently undischargeable — a `theorem` shape
+mis-advertises it as a pending proof obligation. As a named `Prop` it remains the
+faithful record of the (refuted) conjecture, usable in hypothetical reasoning.
+Blast radius: zero (no in-tree consumers; grep-verified). The provable replacement
+remains `mca_johnson_bound_CONJECTURE` above. -/
+def mca_capacity_bound_CONJECTURE
   (α : F) (φ : ι ↪ F) (m : ℕ) [Smooth φ]
-  (parℓ_type : Type) [Fintype parℓ_type] (exp : parℓ_type ↪ ℕ) :
+  (parℓ_type : Type) [Fintype parℓ_type] (exp : parℓ_type ↪ ℕ) : Prop :=
   let Gen := RSGenerator.genRSC parℓ_type φ m exp
-  let : Fintype Gen.parℓ := Gen.hℓ
+  let _ : Fintype Gen.parℓ := Gen.hℓ
   haveI := Gen.Gen_nonempty
   ∃ (c₁ c₂ : ℕ),
     ∀ (f : Gen.parℓ → ι → F) (η : ℝ) (_hη : 0 < η) (δ : ℝ≥0)
@@ -259,7 +318,6 @@ theorem mca_capacity_bound_CONJECTURE
           (((Fintype.card parℓ_type - 1) : ℝ)^c₂ * ((2^m) : ℝ)^c₂) /
           (η^c₁ * Gen.rate^(c₁+c₂) * (Fintype.card F))
         )
-  := by sorry
 
 section
 

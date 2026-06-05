@@ -89,3 +89,56 @@ Security/Basic 3→0, Rewinding 2→0, Sequential/General 3→0, BCS 2→0, Fold
 `Polynomial.foldNth` + `polyFold_eq_foldNth` + `eval_eq_sum_splitNth` +
 `splitNth_two_eval_add`/`_sub` + `foldNth_two_eval` (SplitFold.lean);
 `InductiveMerkleTree` batch/extraction/hiding modules (CommitmentScheme/MerkleTree/).
+
+---
+
+## FINAL LEDGER (2026-06-04, post-convergence proving waves)
+
+Tree: `gh-issues` = consolidated convergence (campaign pin 19a7a93e7 + build fixes + issue
+deliverables + consolidated/prize branch merges). All remaining sorries were attacked by
+dedicated agents; final state below. Census: ~66 sorry-tokens (from 94 at the pin).
+
+### Closed by the final waves (commits on gh-issues)
+`b2a07aee9` Composition/General 7/7 (seqCompose security stack; taint now gated solely on
+Append's 7) · `5cd537e60` BBF Steps relay pair regraft · `bb0c9f32f` FRIBinius 12 profile-law
+obligations (FRIBinius/General → 0 sorries) · `04f2c6818` DP24 capstone layer ported to
+RingSwitching/Prelude (16 lemmas) + **soundness-bug fix** (performCheckOriginalEvaluation
+columns→rows) + BatchingPhase L424 · `4fba2a67e` q-ary Plotkin average-distance bound (4
+lemmas; also corrected an inverted factor in the docstring) · `5fee4013b` BBF General def pair
+· `a144924af` Steps toFun_next bad-event branch + simulateQ toolkit. All axiom-clean
+(propext/Classical.choice/Quot.sound only on own proofs).
+
+### MUST-STAY-OPEN (9) — intentional, do not close
+- ToyProblem ×7: EF Proximity Prize leaderboard contract (proximityprize.org, ABF26 §6);
+  routes partially DISPROVEN (Diamond-Gruen eprint 2025/2046); in-file "do not close" markers.
+- mca_johnson_bound_CONJECTURE, mca_capacity_bound_CONJECTURE: ACFY24 Conjecture 4.12;
+  capacity variant DISPROVEN.
+
+### Research frontier (each with its named gap)
+- **§5 list-decoding extraction** (gates Curves keystone → Agreement ×6, Stir/ProximityGap,
+  BatchedFri 8.3): needs `hcoeffPoly` = Claims 5.8'/5.9 in curve coeff-poly form; ingredients
+  C (Appendix-A↔§5 bridge) + D (β_regular as Hensel numerator). Active on concurrent
+  worktrees (arklib-agree/arklib-bounds) — harvest, don't race.
+- **Append ×7** (gates General's taint + Logup ×2): rbr pair needs V₁-determinism hypothesis
+  or non-deterministic StateFunction.append; completeness family = commutative-monad reorder
+  (direction-independent); verify pair = AppendCoherent with verified 13-protocol-file blast
+  radius + unsolved append_toVerifier simulateQ-fusion. Probability toolkit fully in-tree.
+- **BaseFold crypto content**: QueryPhase ×3 (proximity bound (1/2+2^-(𝓡+1))^γ, Lemma 4.9
+  cast alignment), Steps fold/commit/finalSumcheck residuals (extraction soundness,
+  reject-branch reconstruction), BBF General ×2 theorems (gated on QueryPhase).
+- **RingSwitching residuals** (~6): eqTilde tensor-expansion dual (L563), SZ κ/|L| bridge,
+  KState reconstructions, shared snoc-vs-cons defect (L203, counterexample-backed, needs
+  owner fix in Sumcheck.Structured).
+- **JohnsonBound ×2**: needs the sharp Johnson–Plotkin sphere/projection argument (in-tree
+  second-moment provably lands at reciprocal radius; Plotkin ingredient now banked).
+- **Stir/MainThm ×2**: IOPP/VectorIOP construction layer absent. **CoordinateWise ×1**:
+  forking/rewinding extractor framework (explicitly future work). **InterleavedCode ×1**:
+  [GGR11] external admit. **MCA ×2 open** (mca_linearCode needs CA-soundness field on
+  ProximityGenerator — statement gap with falsifying instantiation documented; mca_rsc =
+  multi-step ABF26 §4). **Whir Folding ×3 + RBRSoundness ×1**: MCA-chain + IOPP gated.
+
+### Verdict
+Every theorem provable with current in-tree mathematics is proven. The remainder is:
+intentional prize-contract markers, stated conjectures (one disproven), and the genuine
+research frontier with each gap precisely named — the same frontier the source papers leave
+open or the upstream authors have deferred (#433-class design decisions).
