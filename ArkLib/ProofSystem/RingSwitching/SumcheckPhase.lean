@@ -558,6 +558,12 @@ theorem iteratedSumcheckOracleReduction_perfectCompleteness (i : Fin ℓ') :
   simp only [bind_assoc, pure_bind, OptionT.lift, OptionT.mk]
   simp only [Prod.mk.eta, map_pure, liftComp_pure, liftComp_map, pure_bind, bind_pure_comp,
     Functor.map_map, Function.comp_def]
+  -- Push `simulateQ` through the prover/verifier binds (the pure-binds only collapse once `simulateQ`
+  -- is distributed inward, mirroring `RandomQuery.oracleVerifier_rbrKnowledgeSoundness`).
+  erw [simulateQ_bind]
+  simp only [simulateQ_map, simulateQ_pure, simulateQ_bind, MonadLift.monadLift, liftM, monadLift,
+    MonadLiftT.monadLift, map_pure, pure_bind, bind_assoc, StateT.run'_eq, StateT.run_bind,
+    StateT.run_pure, StateT.run_map, map_bind, QueryImpl.simulateQ_add_liftComp_right]
   trace_state
   sorry
 
