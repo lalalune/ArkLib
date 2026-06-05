@@ -884,6 +884,70 @@ theorem coeff_polys_of_eval_polys_on_domain {k deg : ℕ}
               simp [B, Polynomial.eval_finset_sum, Polynomial.eval_mul, Polynomial.eval_C,
                 mul_comm]
 
+omit [Nonempty ι] [Fintype F] in
+/-- Selected-domain version of `coeff_polys_of_eval_polys_on_domain`. It is the
+interpolation bridge needed after Claim 5.11 selects only a large coordinate
+subset: evaluations on any domain subset with at least `deg` points determine
+all coefficients of decoded polynomials of degree `< deg`. -/
+theorem coeff_polys_of_eval_polys_on_finset_domain {k deg : ℕ}
+    {domain : ι ↪ F} {S : Finset F} {D : Finset ι} {P : F → Polynomial F}
+    (hdeg_le : deg ≤ D.card)
+    (hPdeg : ∀ z ∈ S, (P z).natDegree < deg)
+    (E : D → Polynomial F)
+    (hEdeg : ∀ x, (E x).natDegree < k + 1)
+    (hEval : ∀ z ∈ S, ∀ x : D, (P z).eval (domain x.1) = (E x).eval z) :
+    ∃ B : ℕ → Polynomial F,
+      (∀ j < deg, (B j).natDegree < k + 1) ∧
+        ∀ z ∈ S, ∀ j < deg, (P z).coeff j = (B j).eval z := by
+  classical
+  let B : ℕ → Polynomial F := fun j =>
+    ∑ x : D, Polynomial.C ((Lagrange.basis D domain x.1).coeff j) * E x
+  refine ⟨B, ?_, ?_⟩
+  · intro j _hj
+    refine Polynomial.natDegree_sum_lt_of_forall_lt
+      (s := Finset.univ)
+      (f := fun x : D =>
+        Polynomial.C ((Lagrange.basis D domain x.1).coeff j) * E x) ?_
+    intro x _hx
+    exact lt_of_le_of_lt (Polynomial.natDegree_C_mul_le _ _) (hEdeg x)
+  · intro z hz j _hj
+    have hdegree :
+        (P z).degree < (D.card : WithBot ℕ) := by
+      have hnat : (P z).natDegree < D.card := by
+        exact lt_of_lt_of_le (hPdeg z hz) hdeg_le
+      exact lt_of_le_of_lt Polynomial.degree_le_natDegree (WithBot.coe_lt_coe.mpr hnat)
+    have hinterp :
+        P z =
+          Lagrange.interpolate D domain (fun x => (P z).eval (domain x)) :=
+      Lagrange.eq_interpolate (s := D) (v := domain)
+        domain.injective.injOn hdegree
+    calc
+      (P z).coeff j
+          =
+            (Lagrange.interpolate D domain
+              (fun x => (P z).eval (domain x))).coeff j := by
+              exact congrArg (fun q : Polynomial F => q.coeff j) hinterp
+      _ = (∑ x ∈ D,
+            Polynomial.C ((P z).eval (domain x)) *
+              Lagrange.basis D domain x).coeff j := by
+              rw [Lagrange.interpolate_apply]
+      _ = ∑ x ∈ D,
+            (P z).eval (domain x) *
+              (Lagrange.basis D domain x).coeff j := by
+              rw [Polynomial.finset_sum_coeff]
+              simp [Polynomial.coeff_C_mul]
+      _ = ∑ x : D,
+            (E x).eval z *
+              (Lagrange.basis D domain x.1).coeff j := by
+              rw [← Finset.sum_attach D (fun x =>
+                (P z).eval (domain x) * (Lagrange.basis D domain x).coeff j)]
+              refine Finset.sum_congr rfl ?_
+              intro x _hx
+              rw [hEval z hz x]
+      _ = (B j).eval z := by
+              simp [B, Polynomial.eval_finset_sum, Polynomial.eval_mul, Polynomial.eval_C,
+                mul_comm]
+
 omit [Nonempty ι] [DecidableEq ι] [Fintype F] in
 /-- Conversely, coefficient-polynomial dependence gives pointwise
 evaluation-polynomial dependence by summing the coefficient polynomials against
