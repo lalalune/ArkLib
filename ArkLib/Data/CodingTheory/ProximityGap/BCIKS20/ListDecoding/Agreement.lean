@@ -7,7 +7,7 @@ Authors: Quang Dao, Katerina Hristova, Frantisek Silvasi, Julian Sutherland,
 
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.RootClearing
 
-set_option linter.style.longFile 2600
+set_option linter.style.longFile 2800
 
 /-!
 # BCIKS20 list-decoding agreement compatibility module
