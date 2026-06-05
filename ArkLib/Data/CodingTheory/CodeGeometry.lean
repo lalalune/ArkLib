@@ -270,4 +270,43 @@ theorem shiftInner_offdiag_le (hq : 0 < Fintype.card α)
   have hB' : (agree u v : ℝ) ≤ (B : ℝ) := by exact_mod_cast hB
   nlinarith [hβ, hAu', hAv', hB']
 
+/-- **The abstract Johnson list-size cap.** Let `f` be a center and
+`c : Fin L → ι → α` a family of words each agreeing with `f` on at least `A`
+coordinates and pairwise agreeing on at most `B` coordinates. For any shift
+parameter `β ≥ 0` making the off-diagonal Gram bound
+`Do := (B − n/q) − 2β(A − n/q) + β²·n(1−1/q)` negative, the family size obeys
+the quadratic cap `(L − 1)·(−Do) ≤ Dd` with
+`Dd := n(1−1/q)(1+β²) − 2β(A − n/q)`.
+
+Composes the simplex-embedding identities, the shifted PSD inequality, and the
+Gram counting lemma; instantiating `A`/`B`/`β` at the `J_{q,ℓ}` radius yields
+the q-ary Johnson list-size bound (ABF26 Theorem 3.2). -/
+theorem johnson_quadratic_cap (hq : 0 < Fintype.card α) {L : ℕ} (hL : 0 < L)
+    (f : ι → α) (c : Fin L → ι → α) {A B : ℕ}
+    (hA : ∀ i, A ≤ agree (c i) f)
+    (hB : ∀ i j, i ≠ j → agree (c i) (c j) ≤ B)
+    {β : ℝ} (hβ : 0 ≤ β)
+    (hDo : ((B : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ))
+        - 2 * β * ((A : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ))
+        + β ^ 2 * (Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ)) < 0) :
+    ((L : ℝ) - 1) *
+      (-(((B : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ))
+        - 2 * β * ((A : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ))
+        + β ^ 2 * (Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ))))
+      ≤ (Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ)) * (1 + β ^ 2)
+        - 2 * β * ((A : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ)) := by
+  classical
+  set S : Fin L → Fin L → ℝ := fun i j =>
+    codeInner (c i) (c j) - β * codeInner (c i) f - β * codeInner (c j) f
+      + β ^ 2 * codeInner f f with hS
+  refine card_le_of_gram_bounds hL S ?_ ?_ ?_ hDo
+  · -- PSD
+    simpa [hS] using sum_sum_shiftInner_nonneg c f β
+  · -- diagonal
+    intro i
+    simpa [hS] using shiftInner_diag_le hq (hA i) hβ
+  · -- off-diagonal
+    intro i j hij
+    simpa [hS] using shiftInner_offdiag_le hq (hA i) (hA j) (hB i j hij) hβ
+
 end CodeGeometry
