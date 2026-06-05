@@ -189,6 +189,97 @@ theorem PzFamily_exists_canonical_eval_polys_goodCoeffsCurve_finMapTwoWords
       exact ⟨hwP.1, by
         simpa [sum_finMapTwoWords_eq, ENNReal.coe_nnratCast] using hwP.2⟩) z hz_close
 
+open Polynomial in
+/-- Selected-domain coefficient-polynomial witness for the §6 strict-Johnson
+front door, specialized to the §5 affine-line setup.
+
+Claim 5.11 naturally selects only `k + 1` coordinates.  Since decoded
+polynomials have degree `< k + 1`, interpolation on that selected domain is
+enough to recover every coefficient as a degree-one polynomial in the curve
+parameter. -/
+theorem hcoeffPoly_goodCoeffsCurve_finMapTwoWords_of_selected_matching_domain
+    {m k : ℕ} {ωs : Fin n ↪ F} {Q : F[Z][X][Y]}
+    (δ : ℚ≥0) (u₀ u₁ : Fin n → F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (Dtop : Finset (Fin n))
+    (hDtop_card : Dtop.card = k + 1)
+    (hsubset : ∀ x ∈ Dtop,
+      coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁ ⊆
+        matching_set_at_x k (δ : ℚ) h_gs x)
+    (hunique : ∀ P : F → F[X],
+      (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+        (P z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P z).eval ∘ ωs) ≤ (δ : ℚ)) →
+      ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+        P z = PzFamily (F := F) (n := n) (δ : ℚ) u₀ u₁ ωs k z) :
+    ∀ P : F → F[X],
+      (∀ z ∈ RS_goodCoeffsCurve (k := 1) (deg := k + 1) (domain := ωs)
+          (Code.finMapTwoWords u₀ u₁) (δ : ℝ≥0),
+        (P z).natDegree < k + 1 ∧
+          δᵣ(∑ t : Fin 2, (z ^ (t : ℕ)) • Code.finMapTwoWords u₀ u₁ t,
+            (P z).eval ∘ ωs) ≤ (δ : ℝ≥0)) →
+        ∃ B : ℕ → F[X],
+          (∀ j < k + 1, (B j).natDegree < 1 + 1) ∧
+            ∀ z ∈ RS_goodCoeffsCurve (k := 1) (deg := k + 1) (domain := ωs)
+                (Code.finMapTwoWords u₀ u₁) (δ : ℝ≥0),
+              ∀ j < k + 1, (P z).coeff j = (B j).eval z := by
+  classical
+  intro P hP
+  let P₀ : F → F[X] := PzFamily (F := F) (n := n) (δ : ℚ) u₀ u₁ ωs k
+  have hP_close :
+      ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+        (P z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P z).eval ∘ ωs) ≤ (δ : ℚ) := by
+    intro z hz
+    have hz_good :
+        z ∈ RS_goodCoeffsCurve (k := 1) (deg := k + 1) (domain := ωs)
+          (Code.finMapTwoWords u₀ u₁) (δ : ℝ≥0) := by
+      exact (coeffs_of_close_proximity_mem_iff_goodCoeffsCurve_finMapTwoWords
+        (F := F) (n := n) (k := k) (ωs := ωs) δ u₀ u₁ z).mp hz
+    have hzP := hP z hz_good
+    exact ⟨hzP.1, by
+      simpa [sum_finMapTwoWords_eq, ENNReal.coe_nnratCast] using hzP.2⟩
+  have hP_eq : ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+      P z = P₀ z := by
+    intro z hz
+    exact hunique P hP_close z hz
+  obtain ⟨B, hBdeg, hBcoeff₀⟩ :=
+    coeff_polys_of_eval_polys_on_finset_domain
+      (F := F) (ι := Fin n) (k := 1) (deg := k + 1) (domain := ωs)
+      (S := RS_goodCoeffsCurve (k := 1) (deg := k + 1) (domain := ωs)
+        (Code.finMapTwoWords u₀ u₁) (δ : ℝ≥0))
+      (D := Dtop) (P := P₀)
+      (by simpa [hDtop_card])
+      (by
+        intro z hz
+        have hz_close :
+            z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁ := by
+          exact (coeffs_of_close_proximity_mem_iff_goodCoeffsCurve_finMapTwoWords
+            (F := F) (n := n) (k := k) (ωs := ωs) δ u₀ u₁ z).mpr hz
+        exact (PzFamily_decoded_on_close_set
+          (F := F) (n := n) (k := k) (δ := (δ : ℚ)) (u₀ := u₀) (u₁ := u₁)
+          (ωs := ωs) z hz_close).1)
+      (fun x => lineValuePolynomialFamily (F := F) (n := n) u₀ u₁ x.1)
+      (by
+        intro x
+        simpa [lineValuePolynomialFamily] using
+          lineValuePolynomial_natDegree_lt_succ_succ (F := F) (n := n) u₀ u₁ x.1)
+      (by
+        intro z hz x
+        have hz_close :
+            z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁ := by
+          exact (coeffs_of_close_proximity_mem_iff_goodCoeffsCurve_finMapTwoWords
+            (F := F) (n := n) (k := k) (ωs := ωs) δ u₀ u₁ z).mpr hz
+        exact PzFamily_eval_eq_lineValuePolynomialFamily_eval_of_mem_matching_set_at_x
+          (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs
+          (hsubset x.1 x.2 hz_close))
+  refine ⟨B, hBdeg, ?_⟩
+  intro z hz j hj
+  have hz_close :
+      z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁ := by
+    exact (coeffs_of_close_proximity_mem_iff_goodCoeffsCurve_finMapTwoWords
+      (F := F) (n := n) (k := k) (ωs := ωs) δ u₀ u₁ z).mpr hz
+  rw [hP_eq z hz_close]
+  exact hBcoeff₀ z hz j hj
+
 /-- Strict Johnson §6 joint-agreement front door specialized to the §5
 degree-one affine-line setup.  The remaining hypotheses are exactly the §5
 matching-set coverage and uniqueness data needed to build the canonical
