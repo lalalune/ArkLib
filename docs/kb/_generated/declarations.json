@@ -39088,6 +39088,64 @@
         }
       ]
     },
+    "ArkLib/Data/Polynomial/MultinomialChainRule.lean": {
+      "declarations": [
+        {
+          "doc": "**Injective reindexing of `Nat.multinomial`.** The multinomial is invariant under an injective relabeling of the index set (sum and factorial-product both transport).",
+          "kind": "theorem",
+          "line": 35,
+          "name": "ProximityPrize.MultinomialChainRule.multinomial_map",
+          "namespace": "ProximityPrize.MultinomialChainRule",
+          "short_name": "multinomial_map",
+          "signature": "theorem multinomial_map {\u03b1 \u03b2 : Type*} [DecidableEq \u03b1] [DecidableEq \u03b2]"
+        },
+        {
+          "doc": "**The chain rule / `prefactor_eq_paper` reconciliation (abstract form).** For a fresh slot of weight `j\u2080` adjoined to a finite family of slot-weights `f` on `s`: `multinomial (j\u2080-slot \u222a s) = C(j\u2080 + \u03a3f, \u03a3f) \u00b7 multinomial s f`. With `s` = the distinct part sizes of a partition `\u03bb` and `f` = their multiplicities (`\u03a3f = \u03a3\u03bb`), this is exactly `(j; j\u2080, \u03bb) = C(j, \u03a3\u03bb)\u00b7(\u03a3\u03bb; \u03bb)`.",
+          "kind": "theorem",
+          "line": 49,
+          "name": "ProximityPrize.MultinomialChainRule.multinomial_option_insert",
+          "namespace": "ProximityPrize.MultinomialChainRule",
+          "short_name": "multinomial_option_insert",
+          "signature": "theorem multinomial_option_insert {\u03b1 : Type*} [DecidableEq \u03b1]"
+        },
+        {
+          "doc": "**Specialisation to a `Nat.Partition`** \u2014 the literal `prefactor_eq_paper` shape: `(j\u2080 + \u03a3\u03bb; j\u2080, \u03bb\u2081, \u2026) = C(j\u2080 + \u03a3\u03bb, \u03a3\u03bb) \u00b7 (\u03a3\u03bb; \u03bb\u2081, \u2026)` with `\u03a3\u03bb = lam.parts.card` (`\u2211 count = card`) and the in-tree multiplicities `lam.parts.count`.",
+          "kind": "theorem",
+          "line": 72,
+          "name": "ProximityPrize.MultinomialChainRule.prefactor_paper_factorization",
+          "namespace": "ProximityPrize.MultinomialChainRule",
+          "short_name": "prefactor_paper_factorization",
+          "signature": "theorem prefactor_paper_factorization {m : \u2115} (j\u2080 : \u2115) (lam : Nat.Partition m) :"
+        },
+        {
+          "doc": "`\u2211_{l \u2208 \u03bb.parts} (l + 1) = m + \u03a3\u03bb` for a partition `\u03bb \u22a2 m`: the `W`-power telescope.",
+          "kind": "theorem",
+          "line": 99,
+          "name": "ProximityPrize.MultinomialChainRule.partition_sum_add_one",
+          "namespace": "ProximityPrize.MultinomialChainRule",
+          "short_name": "partition_sum_add_one",
+          "signature": "theorem partition_sum_add_one {m : \u2115} (lam : Nat.Partition m) :"
+        },
+        {
+          "doc": "General multiset form: over positive entries, `\u2211 (2l \u2212 1) + #s = 2\u00b7\u2211 l`.",
+          "kind": "theorem",
+          "line": 105,
+          "name": "ProximityPrize.MultinomialChainRule.multiset_sum_two_mul_sub_one",
+          "namespace": "ProximityPrize.MultinomialChainRule",
+          "short_name": "multiset_sum_two_mul_sub_one",
+          "signature": "theorem multiset_sum_two_mul_sub_one (s : Multiset \u2115) (hpos : \u2200 l \u2208 s, 1 \u2264 l) :"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 116,
+          "name": "ProximityPrize.MultinomialChainRule.partition_sum_two_mul_sub_one",
+          "namespace": "ProximityPrize.MultinomialChainRule",
+          "short_name": "partition_sum_two_mul_sub_one",
+          "signature": "theorem partition_sum_two_mul_sub_one {m : \u2115} (lam : Nat.Partition m) :"
+        }
+      ]
+    },
     "ArkLib/Data/Polynomial/NewtonLinearization.lean": {
       "declarations": [
         {
@@ -72434,8 +72492,8 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 7878,
-      "files": 386
+      "declarations": 7884,
+      "files": 387
     }
   }
 }
