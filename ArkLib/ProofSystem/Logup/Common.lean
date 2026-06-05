@@ -586,6 +586,79 @@ theorem table_sum_normalizedMultiplicity_eq_lookup_sum
     simp [hfilter, hlookup_zero]
 
 omit [Fintype F] in
+theorem column_fiber_one_div_sum_eq_count_div
+    (oStmt : ∀ i, OStmtIn F n M i) (i : Fin M) (a xChallenge : F) :
+    (∑ u ∈ (Finset.univ : Finset (Hypercube n)).filter fun u =>
+        evalOnHypercube (columnOracle oStmt i) u = a,
+      (1 : F) / (xChallenge + evalOnHypercube (columnOracle oStmt i) u)) =
+      (((Finset.univ : Finset (Hypercube n)).filter fun u =>
+        evalOnHypercube (columnOracle oStmt i) u = a).card : F) /
+        (xChallenge + a) := by
+  calc
+    (∑ u ∈ (Finset.univ : Finset (Hypercube n)).filter fun u =>
+        evalOnHypercube (columnOracle oStmt i) u = a,
+      (1 : F) / (xChallenge + evalOnHypercube (columnOracle oStmt i) u))
+        = ∑ u ∈ (Finset.univ : Finset (Hypercube n)).filter fun u =>
+            evalOnHypercube (columnOracle oStmt i) u = a,
+          (1 : F) / (xChallenge + a) := by
+          apply Finset.sum_congr rfl
+          intro u hu
+          simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hu
+          simp [hu]
+    _ = (((Finset.univ : Finset (Hypercube n)).filter fun u =>
+          evalOnHypercube (columnOracle oStmt i) u = a).card : F) /
+          (xChallenge + a) := by
+          rw [Finset.sum_const]
+          simp [nsmul_eq_mul, div_eq_mul_inv]
+
+theorem lookupMultiplicity_sum_div_eq_column_sum
+    (oStmt : ∀ i, OStmtIn F n M i) (xChallenge : F) :
+    (∑ a : F, (lookupMultiplicityCount oStmt a : F) / (xChallenge + a)) =
+      ∑ i : Fin M,
+        ∑ u : Hypercube n,
+          (1 : F) / (xChallenge + evalOnHypercube (columnOracle oStmt i) u) := by
+  calc
+    (∑ a : F, (lookupMultiplicityCount oStmt a : F) / (xChallenge + a))
+        = ∑ a : F,
+            (∑ i : Fin M,
+              (((Finset.univ : Finset (Hypercube n)).filter fun u =>
+                evalOnHypercube (columnOracle oStmt i) u = a).card : F)) /
+              (xChallenge + a) := by
+          apply Finset.sum_congr rfl
+          intro a _
+          rw [lookupMultiplicityCount_eq_sum_column_counts]
+          norm_cast
+    _ = ∑ a : F,
+          ∑ i : Fin M,
+            (((Finset.univ : Finset (Hypercube n)).filter fun u =>
+              evalOnHypercube (columnOracle oStmt i) u = a).card : F) /
+              (xChallenge + a) := by
+          apply Finset.sum_congr rfl
+          intro a _
+          rw [Finset.sum_div]
+    _ = ∑ i : Fin M,
+          ∑ a : F,
+            (((Finset.univ : Finset (Hypercube n)).filter fun u =>
+              evalOnHypercube (columnOracle oStmt i) u = a).card : F) /
+              (xChallenge + a) := by
+          rw [Finset.sum_comm]
+    _ = ∑ i : Fin M,
+          ∑ u : Hypercube n,
+            (1 : F) / (xChallenge + evalOnHypercube (columnOracle oStmt i) u) := by
+          apply Finset.sum_congr rfl
+          intro i _
+          rw [← Finset.sum_fiberwise_of_maps_to
+            (s := (Finset.univ : Finset (Hypercube n)))
+            (t := (Finset.univ : Finset F))
+            (g := fun u : Hypercube n => evalOnHypercube (columnOracle oStmt i) u)
+            (f := fun u : Hypercube n =>
+              (1 : F) / (xChallenge + evalOnHypercube (columnOracle oStmt i) u))
+            (fun _ _ => Finset.mem_univ _)]
+          apply Finset.sum_congr rfl
+          intro a _
+          exact (column_fiber_one_div_sum_eq_count_div oStmt i a xChallenge).symm
+
+omit [Fintype F] in
 theorem normalizedMultiplicityValue_zero_no_columns
     (oStmt : ∀ i, OStmtIn F n 0 i) (u : Hypercube n) :
     normalizedMultiplicityValue oStmt u = 0 := by
