@@ -130,7 +130,7 @@ Hensel-free [BCKHS25] restored-distance affine-line `jointAgreement`.
 The existing closed-radius capstones only expose nonemptiness of the boundary
 close set. This adapter records the additional [BCKHS25] obligations needed to
 turn that same close set into a restored-distance joint-agreement certificate. -/
-theorem affine_lines_boundaryCard_of_BCKHS25_restored
+lemma affine_lines_boundaryCard_of_BCKHS25_restored
     {k e h DZ : ℕ} {ωs : Fin n ↪ F} (δ : ℚ≥0)
     (hn : k + 2 * e + h + 1 = Fintype.card (Fin n))
     (hDZ : e + 1 ≤ (h + 1) * DZ) (hDZ0 : 0 < DZ)
