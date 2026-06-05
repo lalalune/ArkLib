@@ -396,7 +396,7 @@ theorem RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_exists_na
         ⌈(δ : ℚ) * (n : ℚ)⌉₊ *
             #(coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁) <
           (n - k) * t)
-    (hunique : ∀ {Q : F[Z][X][Y]} (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hunique : ∀ {Q : F[Z][X][Y]} (_h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
       (P : F → Polynomial F),
       (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
         (P z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P z).eval ∘ ωs) ≤ (δ : ℚ)) →
