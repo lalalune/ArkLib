@@ -472,7 +472,9 @@ lemma probFailure_liftComp_of_OracleComp_Option {ι' : Type w} {spec : OracleSpe
   change probOutput (m := OracleComp superSpec) (mx := OptionT.run (liftComp oa superSpec))
       (x := none) =
     probOutput (m := OracleComp spec) (mx := oa.run) (x := none)
-  rw [run_liftComp_eq]
+  change probOutput (m := OracleComp superSpec) (mx := liftComp oa.run superSpec)
+      (x := none) =
+    probOutput (m := OracleComp spec) (mx := oa.run) (x := none)
   rw [OracleComp.probOutput_liftComp (spec := spec)
     (superSpec := superSpec) (mx := oa.run) (x := none)]
 
