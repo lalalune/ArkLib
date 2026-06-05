@@ -196,9 +196,12 @@ We define the Statement and Witness types at the boundaries of each phase
 following the enhanced specification.
 -/
 
--- Initial Input (Input to Batching Phase)
-abbrev MLPEvalStatement :=
-  Binius.BinaryBasefold.InitialStatement (L := L) (ℓ := ℓ)
+/-- Initial input (input to the batching phase): a polynomial-evaluation claim `s = t(r)`. -/
+structure MLPEvalStatement where
+  /-- The evaluation point `r = (r₀, …, r_{ℓ-1})`, shared input. -/
+  t_eval_point : Fin ℓ → L
+  /-- The claimed evaluation `s = t(r)`. -/
+  original_claim : L
 
 structure WitMLP where
   t : MultilinearPoly K ℓ
@@ -378,6 +381,9 @@ def RingSwitching_SumcheckMultParam :
     compute_A_MLE κ L K β ℓ' (original_r_eval_suffix :=
       getEvaluationPointSuffix κ L ℓ ℓ' h_l (r := ctx.t_eval_point))
       (r''_batching := ctx.r_batching)
+  combinator := fun _ => Polynomial.X
+  degCombinator := 1
+  combinator_natDegree_le := by intro _; exact Polynomial.natDegree_X_le
 }
 
 /-- Step 5 (V): Compute `s₀ := Σ_{u ∈ {0,1}^κ} eqTilde(u, r'') ⋅ ŝ_u`,
@@ -425,20 +431,20 @@ def masterKStateProp (aOStmtIn : AbstractOStmtIn L ℓ') (stmtIdx : Fin (ℓ' + 
     (localChecks : Prop := True) : Prop :=
   localChecks
   ∧ witnessStructuralInvariant κ L K β ℓ ℓ' h_l stmt wit
-  ∧ sumcheckConsistencyProp (𝓑:=𝓑) stmt.sumcheck_target wit.H
+  ∧ sumcheckConsistencyProp (boolDomain L _) stmt.sumcheck_target wit.H
   ∧ aOStmtIn.initialCompatibility ⟨wit.t', oStmt⟩
 
 def sumcheckRoundRelationProp (aOStmtIn : AbstractOStmtIn L ℓ') (i : Fin (ℓ' + 1))
     (stmt : Statement (L := L) (RingSwitchingBaseContext κ L K ℓ) i)
     (oStmt : ∀ j, aOStmtIn.OStmtIn j)
     (wit : SumcheckWitness L ℓ' i) : Prop :=
-  masterKStateProp κ L K β ℓ ℓ' h_l (𝓑:=𝓑) aOStmtIn i stmt oStmt wit
+  masterKStateProp κ L K β ℓ ℓ' h_l aOStmtIn i stmt oStmt wit
 
 /-- Input relation for single round: proper sumcheck statement -/
 def sumcheckRoundRelation (aOStmtIn : AbstractOStmtIn L ℓ') (i : Fin (ℓ' + 1)) :
   Set (((Statement (L := L) (RingSwitchingBaseContext κ L K ℓ) i) ×
     (∀ j, aOStmtIn.OStmtIn j)) × SumcheckWitness L ℓ' i) :=
-  { ((stmt, oStmt), wit) | sumcheckRoundRelationProp κ L K β ℓ ℓ' h_l (𝓑:=𝓑)
+  { ((stmt, oStmt), wit) | sumcheckRoundRelationProp κ L K β ℓ ℓ' h_l
     aOStmtIn i stmt oStmt wit }
 
 end Relations
