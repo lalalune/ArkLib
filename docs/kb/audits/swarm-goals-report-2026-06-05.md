@@ -22,28 +22,28 @@ the trivial `beta_regular` path, proving `hcoeffPoly`, closing
 `correlatedAgreement_affine_curves`, and only then de-tainting STIR, WHIR, and FRI downstream
 soundness.
 
-Recent validation evidence on 2026-06-05 is better than the original baseline: repeated
-`./scripts/validate.sh` runs completed the full Lean build and reached the Data warning-budget gate
-with:
+Current validation evidence on 2026-06-05 is green. A fresh `./scripts/validate.sh` run completed
+the full Lean build, Data warning-budget gate, umbrella import check, docs integrity check, and KB
+freshness check with:
 
 ```text
-Build completed successfully (9055 jobs).
+Build completed successfully (9061 jobs).
 No ArkLib/Data non-sorry warnings found.
+✓ All imports are up to date!
+All documentation integrity checks passed.
+Knowledge base generated files are up to date.
+Knowledge base lint passed.
+All requested validation checks passed.
 ```
 
-The latest known full validation blocker was not a Lean proof failure. It was the umbrella import
-check rejecting a transient untracked scratch file:
+The validation repair path was: shorten the single Data warning in
+`ArkLib/Data/CodingTheory/ProximityGap/BivariateVanishing.lean`, regenerate `ArkLib.lean`, regenerate
+the KB artifacts with `extract_lean_citations.py`, `extract_declarations.py`, and
+`find_dedup_candidates.py`, then confirm `check_generated.py` and `./scripts/validate.sh`.
 
-```text
-ERROR: Untracked Lean files under ArkLib/ are not included in ArkLib.lean generation.
-Stage them first, then rerun this script:
-  git add ArkLib/Data/CodingTheory/InterleavedListSize.lean
-```
-
-That file has repeatedly appeared and disappeared during concurrent-agent work. Versions inspected
-were scratch/probe code containing `trace_state`, `sorry`, and unscoped options. It should not be
-staged or imported as-is. If it exists and is still scratch, remove it from `ArkLib/` before running
-the generated-import and validation checks.
+The earlier transient untracked-scratch blocker
+`ArkLib/Data/CodingTheory/InterleavedListSize.lean` was not present in the green run. If it reappears
+and contains `trace_state`, `sorry`, or unscoped probe options, do not stage it as production code.
 
 Multiple concurrent agents are editing and committing in this checkout. Always re-check the live
 worktree before acting, and do not revert or overwrite other agents' changes.
@@ -67,10 +67,12 @@ worktree before acting, and do not revert or overwrite other agents' changes.
   distances, and `minDist_C : Code.minDist C = 1`.
 - `LineDecodingRefutation.lean` is tracked and imported through `ArkLib.lean`; it refutes the false
   `lineDecodable_imp_epsMCA_le` statement.
-- KB generation has passed after the latest import/generator churn when run as:
-  `./scripts/update-lib.sh`, `python3 ./scripts/kb/extract_declarations.py`,
-  `python3 ./scripts/kb/find_dedup_candidates.py`, and
-  `python3 ./scripts/kb/check_generated.py`.
+- `CurvesBridge.lean` now has a degree-one canonical coefficient-polynomial supplier,
+  `section5_strict_canonical_coeff_polys_for_RS_goodCoeffsCurve_finMapTwoWords_of_natCeil_complement_counting`,
+  for the affine-line-to-§6 bridge. Direct build of
+  `ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.CurvesBridge` passed.
+- KB generation is current after running `extract_lean_citations.py`, `extract_declarations.py`,
+  `find_dedup_candidates.py`, and `check_generated.py`.
 
 ## Goals
 
