@@ -141,6 +141,27 @@ abbrev stirRoundIOR (φ : ι ↪ F) (deg : ℕ) :
     OracleReduction []ₒ Unit (OStmt ι F) Unit Unit (OStmt ι F) Unit (pSpec ι F) :=
   stirRoundReduction φ deg
 
+/-- **Combine on a single function at its own degree is the identity.**
+
+  Specializing STIR's `Combine.combine` (Definition 4.11) to the single-function family `![f]` with
+  target degree `d* = deg` and degree list `![deg]` collapses to `f` itself:
+
+  * `ri deg ![deg] r 0 = r ^ (0 + ∑_{j<0} (deg - deg j)) = r ^ 0 = 1` (empty sum exponent), and
+  * the inner geometric sum runs over `range (deg - deg + 1) = range 1 = {0}`, contributing the
+    single term `(φ x * r) ^ 0 = 1`.
+
+  Hence each summand is `1 * f x * 1 = f x`, and the outer `Fin 1` sum is `f x`.  This is the honest
+  completeness fact for the one-round STIR fold-and-combine object: when the prover combines the
+  single incoming codeword at its own degree, the folded oracle it emits is literally the input
+  oracle, so any closeness property of the input transfers verbatim to the output. -/
+theorem combine_single_self (φ : ι ↪ F) (deg : ℕ) (r : F) (f : ι → F) :
+    Combine.combine φ deg r (fun _ : Fin 1 => f) (fun _ : Fin 1 => deg) = f := by
+  funext x
+  simp only [Combine.combine, Combine.ri, Finset.univ_unique, Fin.default_eq_zero,
+    Finset.sum_singleton, Nat.sub_self, Nat.zero_add, Finset.range_one]
+  -- the `∑ j < 0` exponent is over the empty filter; the inner sum is over `{0}`.
+  simp
+
 section Security
 
 variable [Nonempty ι]
@@ -175,10 +196,33 @@ open scoped NNReal
 theorem stirRoundReduction_completeness (φ : ι ↪ F) (deg : ℕ) (δ : ℝ≥0) :
     (stirRoundReduction φ deg).completeness init impl
       (stirRoundInputRel φ deg δ) (stirRoundOutputRel φ deg δ) 0 := by
-  -- Owed: requires that `Combine.combine` preserves `δ`-closeness to `RS[F, φ, deg]` in the
-  -- honest run, plus the prover/verifier execution trace of `stirRoundReduction`.  This is the
-  -- per-round completeness that `stir_main` quantifies over `M+1` times; here it is finally a
-  -- statement about a concrete object rather than an existential over a missing one.
+  -- WIP (Preserve-WIP, exact goal state below).  The mathematical content is fully discharged by
+  -- `combine_single_self`: on the honest run the prover emits `Combine.combine φ deg r ![f] ![deg]`,
+  -- which by that lemma equals the input oracle `f`; the oracle verifier forwards this as the output
+  -- oracle and always `pure ()`-accepts, so the output relation
+  -- `relDistFromCode (combine …) (code φ deg) ≤ δ` reduces *definitionally* (via the combine
+  -- identity) to the input relation `relDistFromCode f (code φ deg) ≤ δ`, which is `hIn`.
+  --
+  -- The remaining obstruction is purely the *execution-trace* unfolding of a 2-message
+  -- (`V_to_P` then `P_to_V`) `Reduction.run`.  After
+  --   `simp only [OracleReduction.completeness]; intro stmtIn witIn hIn;`
+  --   `simp only [tsub_zero, ENNReal.coe_zero, ge_iff_le, one_le_probEvent_iff,`
+  --   `           probEvent_eq_one_iff]`
+  -- the goal splits into `Pr[⊥ | run] = 0` and `∀ x ∈ support (run), relOut ∧ prvStmt = stmt`, both
+  -- over `Reduction.run`.  Peeling the run via the keystone
+  -- `Prover.runToRound_eq_bind_continueFromTo … 0 (Fin.last 2)` followed by
+  -- `Prover.runToRound_zero_of_prover_first` and `bind_assoc/pure_bind` reduces it to
+  --   `continueFromTo (stirRoundProver φ deg) stmtIn witIn 0 (Fin.last 2) (default, input) >>= …`.
+  -- Peeling `continueFromTo` one round (`continueFromTo_succ_of_ne` at
+  -- `Fin.last 2 = (Fin.last 1).succ`, then `processRound_eq_bind`) succeeds; the *second* peel is
+  -- blocked: `processRound (Fin.last 1) cont` fixes its argument's type to the index
+  -- `(Fin.last 1).castSucc`, so rewriting `(Fin.last 1).castSucc = (0 : Fin 1).succ` to continue the
+  -- peel produces an ill-typed motive (the `pure r` argument carries `Transcript _a × PrvState _a`).
+  -- Closing this needs the `HEq`-based round-peeling infrastructure used by
+  -- `Prover.append_runToRound_left` (heterogeneous `processRound` challenge/message branch lemmas),
+  -- i.e. the same dependent-`Fin` machinery the in-tree `append_run` characterization is still
+  -- assembling.  Deferred to that infrastructure landing; `combine_single_self` (axiom-clean) is the
+  -- load-bearing mathematical lemma it will consume.
   sorry
 
 end Security
