@@ -220,17 +220,22 @@ theorem hab25_lemma1_counting
   rw [hkey] at hlb
   omega
 
+omit [DecidableEq ι] in
 /-- **Hab25 Claim-1 endgame.** If every exceptional scalar `z ∈ T` matches the received word
 at some coordinate of the disagreement set `E = disagreeSet d₀ d₁`, then `|T| ≤ |E|`: a
 choice of matching coordinate is injective because a non-trivial affine functional has at
 most one root. -/
-theorem hab25_endgame_count [Nonempty ι] (d₀ d₁ : ι → F) (T : Finset F)
+theorem hab25_endgame_count (d₀ d₁ : ι → F) (T : Finset F)
     (hT : ∀ z ∈ T, ∃ x ∈ disagreeSet d₀ d₁, affineGap d₀ d₁ z x = 0) :
     T.card ≤ (disagreeSet d₀ d₁).card := by
   classical
+  rcases T.eq_empty_or_nonempty with rfl | hTne
+  · simp
+  obtain ⟨z₀, hz₀⟩ := hTne
+  obtain ⟨x₀, _, _⟩ := hT z₀ hz₀
   choose w hwmem hwzero using hT
   refine Finset.card_le_card_of_injOn
-    (fun z => if hz : z ∈ T then w z hz else Classical.arbitrary ι)
+    (fun z => if hz : z ∈ T then w z hz else x₀)
     (fun z hz => by
       simp only [Finset.mem_coe] at hz
       simp only [dif_pos hz]
