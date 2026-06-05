@@ -865,7 +865,7 @@ theorem correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_cou
         (Nat.pos_of_neZero n) hk (ωs := ωs) (u₀ := u 0) (u₁ := u 1) hDx hYZ
     obtain ⟨x₀, D, hcover, hthreshold, hsmall⟩ := hcounting (u 0) (u 1) h_gs
     obtain ⟨Dtop, hDtop_card, hsubset⟩ :=
-      exists_points_with_close_subset_matching_set_of_natCeil_delta_nonmatching_bound_complement
+      exists_points_with_close_subset_matching_set_claim511_complement
         (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := (δ : ℚ)) (x₀ := x₀)
         h_gs (D := D) hcover hthreshold hsmall
     exact PzFamily_exists_canonical_coeff_polys_goodCoeffsCurve_finMapTwoWords_of_selected_domain
