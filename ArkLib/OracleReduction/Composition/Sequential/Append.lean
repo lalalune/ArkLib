@@ -2236,6 +2236,30 @@ supplies the missing per-round handle for right *challenge* rounds, completing t
 reduction set for the right block (`{send,receive}Message_natAdd`, `{send,receive}_seam`,
 `getChallenge_natAdd`). -/
 
+/-- **Seam-peel of the right-block continuation (structural step).**  Continuing the appended
+prover's run from the seam-round state index `m` (`= (⟨m,_⟩ : Fin (m+n)).castSucc`, the state going
+INTO the seam round) to the next index `m+1` (`= (⟨m,_⟩ : Fin (m+n)).succ`) is exactly one
+`processRound` of the seam round `⟨m,_⟩` applied to the (`pure`d) seam start.
+
+This is the once-up-front *peel* the right-block run induction needs: it cannot run a uniform
+`Fin.induction` over `k : Fin (n+1)` directly because the seam round `m` (`= pSpec₂` round `0`)
+threads `P₁.output >>= P₂.input` INSIDE the `k = 0 → k = 1` `processRound` (so at base `k = 0` the
+continuation is `continueFromTo_self = pure rSeam`, carrying NO `P₁.output` bind, and cannot be HEq
+to a fixed shape that already does).  Peeling this single seam round (here, as a plain `OracleComp`
+equality) exposes the seam `processRound`; the seam-direction reductions
+`append_sendMessage_seam` / `append_receiveChallenge_seam` then surface the `P₁.output >>= P₂.input`
+bind, after which the interior `k : Fin n` is uniform. -/
+theorem append_continueFromTo_seam_peel (hn : 0 < n)
+    (rSeam : (pSpec₁ ++ₚ pSpec₂).Transcript (⟨m, by omega⟩ : Fin (m + n)).castSucc
+      × (P₁.append P₂).PrvState (⟨m, by omega⟩ : Fin (m + n)).castSucc) :
+    Prover.continueFromTo (P₁.append P₂) stmt wit
+        (⟨m, by omega⟩ : Fin (m + n)).castSucc (⟨m, by omega⟩ : Fin (m + n)).succ rSeam
+      = (P₁.append P₂).processRound ⟨m, by omega⟩ (pure rSeam) := by
+  rw [Prover.continueFromTo_succ_of_ne (P₁.append P₂) stmt wit
+        (⟨m, by omega⟩ : Fin (m + n)).castSucc (⟨m, by omega⟩ : Fin (m + n))
+        (by intro h; exact absurd (congrArg Fin.val h) (by simp)) rSeam]
+  rw [Prover.continueFromTo_self]
+
 /--
 States that running an appended prover `P₁.append P₂` with an initial statement `stmt₁` and
 witness `wit₁` behaves as expected: it first runs `P₁` to obtain an intermediate statement
