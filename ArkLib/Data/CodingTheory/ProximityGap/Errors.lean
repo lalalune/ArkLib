@@ -996,6 +996,74 @@ noncomputable def jointlyProximateContribution (C : Set (ι → A)) (δ : ℝ≥
     else (0 : ENNReal)
 
 open Classical in
+/-- **Slack case of ABF26 Lemma 4.6's residual: the jointly-proximate contribution vanishes when
+`⌊δ·n⌋ = 0` (i.e. `δ < 1/n`).**
+
+This is the regime in which the residual `jointlyProximateContribution ≤ ε_ca` is closeable
+*without* the missing Guruswami–Sudan/[Hab25] exceptional-`γ` count: when `⌊δ·n⌋ = 0` the size
+clause forces every `jointProximity` / `mcaEvent` witness set to be all of `ι`. Concretely, for a
+jointly-`δ`-close stack `u` the agreement set `S'` (whose complement has size `≤ ⌊δ·n⌋ = 0`) is
+`univ`, so the codeword pair `(p₀, p₁)` realizing `jointProximity` agrees with `(u 0, u 1)`
+*everywhere*. That makes `pairJointAgreesOn C S (u 0) (u 1)` hold on **every** `S`, falsifying the
+"no joint pair on `S`" clause of `mcaEvent` for every `γ`. Hence `Pr_γ[mcaEvent] = 0` on every
+jointly-close `u`, so the whole supremum is `0`.
+
+The complementary `⌊δ·n⌋ ≥ 1` band is the genuine wall: there the contribution can be positive
+(up to `⌊δ·n⌋/|F|` by the root count of the fixed difference stack) and dominating it by `ε_ca`
+needs the global ACFY25 Lemma 4.10 / list-decoding rearrangement absent from the tree (see
+`epsMCA_eq_epsCA_below_udr`). -/
+theorem jointlyProximateContribution_eq_zero_of_floor_eq_zero
+    (C : Set (ι → A)) (δ : ℝ≥0)
+    (h_floor : Nat.floor (δ * (Fintype.card ι : ℝ≥0)) = 0) :
+    jointlyProximateContribution (F := F) C δ = 0 := by
+  classical
+  unfold jointlyProximateContribution
+  refine le_antisymm ?_ (zero_le _)
+  apply iSup_le
+  intro u
+  by_cases hjp : jointProximity (C := C) (u := u) δ
+  · rw [if_pos hjp]
+    -- `mcaEvent` never fires on a jointly-close `u` when `⌊δn⌋ = 0`.
+    have h_never : ∀ γ : F, ¬ mcaEvent C δ (u 0) (u 1) γ := by
+      rw [← jointAgreement_iff_jointProximity] at hjp
+      obtain ⟨S', hS'_card, p, hp⟩ := hjp
+      -- `S'ᶜ.card ≤ ⌊δn⌋ = 0`, so `S' = univ`.
+      have hS'compl : (Finset.univ \ S').card ≤ Nat.floor (δ * (Fintype.card ι : ℝ≥0)) := by
+        have hsub : Fintype.card ι - Nat.floor (δ * (Fintype.card ι : ℝ≥0)) ≤ S'.card := by
+          have := (Code.relDist_floor_bound_iff_complement_bound
+            (Fintype.card ι) S'.card δ).mpr hS'_card
+          simpa using this
+        have hle : S'.card ≤ Fintype.card ι := Finset.card_le_univ S'
+        rw [← Finset.compl_eq_univ_sdiff, Finset.card_compl]
+        omega
+      have hS'_univ : S' = Finset.univ := by
+        rw [h_floor] at hS'compl
+        have hcard0 : (Finset.univ \ S').card = 0 := Nat.le_zero.mp hS'compl
+        have hempty : Finset.univ \ S' = ∅ := Finset.card_eq_zero.mp hcard0
+        exact Finset.univ_subset_iff.mp (Finset.sdiff_eq_empty_iff_subset.mp hempty)
+      -- `p` agrees with `u` on all of `ι`.
+      have h_agree_all : ∀ j, p 0 j = u 0 j ∧ p 1 j = u 1 j := by
+        intro j
+        have hj : j ∈ S' := hS'_univ ▸ Finset.mem_univ j
+        refine ⟨?_, ?_⟩
+        · have : j ∈ Finset.filter (fun k ↦ p 0 k = u 0 k) Finset.univ := (hp 0).2 hj
+          exact (Finset.mem_filter.mp this).2
+        · have : j ∈ Finset.filter (fun k ↦ p 1 k = u 1 k) Finset.univ := (hp 1).2 hj
+          exact (Finset.mem_filter.mp this).2
+      -- Every `mcaEvent`'s no-pair clause is then violated.
+      intro γ h_event
+      obtain ⟨S, _hScard, _hline, hno_pair⟩ := h_event
+      exact hno_pair ⟨p 0, (hp 0).1, p 1, (hp 1).1,
+        fun i _hi ↦ ⟨(h_agree_all i).1, (h_agree_all i).2⟩⟩
+    have h_le : Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ] ≤
+        Pr_{let γ ← $ᵖ F}[(fun _ : F => False) γ] :=
+      Pr_le_Pr_of_implies _ _ _ fun γ hγ ↦ (h_never γ hγ).elim
+    have h0 : Pr_{let γ ← $ᵖ F}[(fun _ : F => False) γ] = 0 := by
+      rw [prob_uniform_eq_card_filter_div_card]; simp
+    rw [h0] at h_le; exact h_le
+  · rw [if_neg hjp]
+
+open Classical in
 /-- **Decomposition of `ε_mca` (audited intermediate toward ABF26 Lemma 4.6).**
 
 `ε_mca(C, δ) ≤ ε_ca(C, δ, δ) + jointlyProximateContribution C δ`.
@@ -1102,28 +1170,42 @@ The proof is reduced here to **one** inequality. The direction `ε_ca ≤ ε_mca
 `epsCA_le_epsMCA` (no UDR needed). What remains, `ε_mca ≤ ε_ca`, is the genuinely hard
 direction:
 
-**Status of the remaining direction: shrunk to ONE explicit inequality.** Via the audited
-max-form decomposition `epsMCA_le_max_epsCA_jointlyProximateContribution`,
-`ε_mca ≤ max (ε_ca) (jointlyProximateContribution C δ)`. So the whole hard direction now
-follows from the *single* residual
+**Status of the remaining direction: shrunk to ONE explicit inequality, then split on `⌊δ·n⌋`.**
+Via the audited max-form decomposition `epsMCA_le_max_epsCA_jointlyProximateContribution`,
+`ε_mca ≤ max (ε_ca) (jointlyProximateContribution C δ)`. So the whole hard direction follows from
+the *single* residual
 
-  `jointlyProximateContribution C δ ≤ ε_ca(C, δ, δ)`     (the `sorry` below),
+  `jointlyProximateContribution C δ ≤ ε_ca(C, δ, δ)`,
 
 after which `max (ε_ca) (jointlyProximateContribution) = ε_ca`. This is strictly less than the
 former opaque `ε_mca ≤ ε_ca` admit: the residual is now explicitly the worst-case `mcaEvent`
 mass over the *jointly-`δ`-close* stacks only (the `¬jointProximity` part is already discharged
 by `epsMCA_restricted_le_epsCA`).
 
-Why even this residual is **not** a pointwise `iSup`-monotonicity ([ACFY25, Lemma 4.10];
+That residual is now **partially discharged** by a case split on `⌊δ·n⌋`:
+* **`⌊δ·n⌋ = 0` (the slack band `δ < 1/n`) — CLOSED in-file.** Here every `jointProximity` witness
+  set is forced to be all of `ι`, so the codeword pair agrees with `u` everywhere and falsifies
+  every `mcaEvent`'s "no joint pair" clause; the contribution is `0`. This is
+  `jointlyProximateContribution_eq_zero_of_floor_eq_zero`.
+* **`⌊δ·n⌋ ≥ 1` — remains the `sorry` (the genuine wall).** Here the contribution can be positive
+  (up to `⌊δ·n⌋/|F|` by the root count of the fixed difference stack `(u 0 - p₀, u 1 - p₁)`, see
+  `jointProximity_diffStack_line_close`).
+
+Why the `⌊δ·n⌋ ≥ 1` band is **not** a pointwise `iSup`-monotonicity ([ACFY25, Lemma 4.10];
 footnote 6 in ABF26 notes the proof is for linear codes but generalises to F-additive codes):
 for a fixed jointly-close stack `u` the `epsCA` body collapses to `0` while `Pr_γ[mcaEvent]`
 can still be **positive** — under UDR the line agrees with the unique close codeword
-`p₀ + γ·p₁` on the witness set for the exact `γ` solving the per-position linear equations of
-the *fixed difference stack* `(u 0 - p₀, u 1 - p₁)` (see `jointProximity_diffStack_line_close`),
-a non-empty `γ`-set. So the bound only holds after the global dominance/rearrangement of ACFY25
-(equivalently: the Guruswami–Sudan/[Hab25] list-decoding count of those exceptional `γ`),
-machinery not yet in-tree. Tracked in `docs/kb/ABF26_PLAN.md` §6 conjecture ledger. The provable
-structural half `mcaEvent → δᵣ(line, C) ≤ δ` is recorded above as `mcaEvent_imp_relCloseToCode`. -/
+`p₀ + γ·p₁` on the witness set for the exact `γ` solving the per-position linear equations of the
+fixed difference stack, a non-empty `γ`-set. The bound only holds after the global
+dominance/rearrangement of ACFY25 (the Guruswami–Sudan/[Hab25] list-decoding count of those
+exceptional `γ`), machinery not yet in-tree. Crucially it is also **not** obtainable by exhibiting
+a single absorbing non-jointly-close witness: any one witness has its line-`δ`-closeness and its
+joint-closeness coupled (small interleaved support forces *both* to be close, large support forces
+*both* to be far), so a single witness cannot carry the up-to-`⌊δ·n⌋/|F|` exceptional mass while
+staying jointly-far — and the `⨆` defining `ε_ca` cannot aggregate one exceptional `γ` from each of
+several witnesses. That coupling is exactly the content the GS/Polishchuk–Spielman count supplies.
+Tracked in `docs/kb/ABF26_PLAN.md` §6 conjecture ledger. The provable structural half
+`mcaEvent → δᵣ(line, C) ≤ δ` is recorded above as `mcaEvent_imp_relCloseToCode`. -/
 theorem epsMCA_eq_epsCA_below_udr
     (C : Submodule F (ι → A)) (δ : ℝ≥0)
     (_h_udr : 2 * δ * (Fintype.card ι : ℝ≥0) <
@@ -1137,9 +1219,21 @@ theorem epsMCA_eq_epsCA_below_udr
     (F := F) (C := (C : Set (ι → A))) δ) ?_
   rw [max_le_iff]
   refine ⟨le_refl _, ?_⟩
-  -- Remaining: `jointlyProximateContribution C δ ≤ ε_ca` — the ACFY25 Lemma 4.10 list-decoding
-  -- count of the exceptional `γ` of the fixed difference stack; see docstring.
-  sorry -- ABF26 L4.6 residual: jointlyProximateContribution ≤ ε_ca (ACFY25 Lemma 4.10)
+  -- Remaining: `jointlyProximateContribution C δ ≤ ε_ca`. Split on the slack band `⌊δ·n⌋ = 0`,
+  -- which is closeable in-file; the `⌊δ·n⌋ ≥ 1` band is the residual wall (ACFY25 Lemma 4.10).
+  by_cases h_floor : Nat.floor (δ * (Fintype.card ι : ℝ≥0)) = 0
+  · -- Slack case: the jointly-proximate contribution vanishes outright.
+    rw [jointlyProximateContribution_eq_zero_of_floor_eq_zero (F := F) _ δ h_floor]
+    exact zero_le _
+  · -- Boundary (`⌊δ·n⌋ ≥ 1`): the ACFY25 Lemma 4.10 / Guruswami–Sudan exceptional-`γ` count of the
+    -- fixed difference stack, which is the global list-decoding rearrangement absent from the tree.
+    -- It is NOT a pointwise body bound (on a jointly-close `u` the `ε_ca` body is `0` while
+    -- `Pr_γ[mcaEvent]` can be positive), and it is provably NOT obtainable by a single absorbing
+    -- non-jointly-close witness: any one witness has its line-`δ`-closeness and joint-closeness
+    -- coupled (small interleaved support ⇒ both close), so it cannot carry the up-to-`⌊δn⌋/|F|`
+    -- exceptional mass while staying jointly-far; the `⨆` cannot aggregate per-`γ` witnesses.
+    -- ABF26 L4.6 residual, `⌊δ·n⌋ ≥ 1` band: jointlyProximateContribution ≤ ε_ca (ACFY25 L4.10).
+    sorry
 
 /-- Row-extraction: the `k`-th row of a `Fin t → A`-valued word, as an `A`-valued word. -/
 private def row_of {ι : Type} {A : Type} {t : ℕ}
