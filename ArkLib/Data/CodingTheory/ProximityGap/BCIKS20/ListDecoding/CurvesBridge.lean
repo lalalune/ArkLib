@@ -666,6 +666,7 @@ theorem RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_exists_Pz
     (fun x => hsubset h_gs x)
     hunique
 
+set_option linter.style.longLine false in
 /-- Degree-one correlated-agreement capstone in the native §5 affine-line
 language, using the nat-ceil Claim-5.11 counting package for the strict branch
 and a boundary-card obligation for the closed square-root boundary. -/

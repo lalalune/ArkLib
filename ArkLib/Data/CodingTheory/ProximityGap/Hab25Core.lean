@@ -9,6 +9,8 @@ import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Data.Fintype.Card
 import Mathlib.Tactic
 
+set_option linter.unusedSectionVars false
+
 /-!
 # Hab25 core: from collinearity to correlated agreement (Lemma 1, [AHIV17/BKS18])
 
@@ -217,5 +219,31 @@ theorem hab25_lemma1_counting
   -- Combine: `|S| ≤ e + 1`, contradicting `hS : e + 1 < |S|`.
   rw [hkey] at hlb
   omega
+
+/-- **Hab25 Claim-1 endgame.** If every exceptional scalar `z ∈ T` matches the received word
+at some coordinate of the disagreement set `E = disagreeSet d₀ d₁`, then `|T| ≤ |E|`: a
+choice of matching coordinate is injective because a non-trivial affine functional has at
+most one root. -/
+theorem hab25_endgame_count [Nonempty ι] (d₀ d₁ : ι → F) (T : Finset F)
+    (hT : ∀ z ∈ T, ∃ x ∈ disagreeSet d₀ d₁, affineGap d₀ d₁ z x = 0) :
+    T.card ≤ (disagreeSet d₀ d₁).card := by
+  classical
+  choose w hwmem hwzero using hT
+  refine Finset.card_le_card_of_injOn
+    (fun z => if hz : z ∈ T then w z hz else Classical.arbitrary ι)
+    (fun z hz => by
+      simp only [Finset.mem_coe] at hz
+      simp only [dif_pos hz]
+      exact hwmem z hz) ?_
+  intro z hz y hy hxy
+  simp only [Finset.mem_coe] at hz hy
+  simp only [dif_pos hz, dif_pos hy] at hxy
+  have hzx : affineGap d₀ d₁ z (w z hz) = 0 := hwzero z hz
+  have hyx : affineGap d₀ d₁ y (w z hz) = 0 := by rw [hxy]; exact hwzero y hy
+  have hne : d₀ (w z hz) ≠ 0 ∨ d₁ (w z hz) ≠ 0 := by
+    have hmem := hwmem z hz
+    simpa [disagreeSet] using hmem
+  exact affine_root_subsingleton hne (by simpa [affineGap] using hzx)
+    (by simpa [affineGap] using hyx)
 
 end CodingTheory.ProximityGap.Hab25Core

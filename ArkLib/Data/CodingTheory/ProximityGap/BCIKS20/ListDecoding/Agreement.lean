@@ -411,9 +411,10 @@ divisibility `X - C (Pz) ∣ pg_eval_on_Z Q z` — which is *verbatim* the per-`
 of `pg_exists_common_candidate_pair_of_dvd` /
 `pg_exists_common_candidate_pair_of_dvd_card_natDegreeY`.
 
-This is the maximal honest reach of the Gap-B keystone toward Claim 5.7: it supplies, for any single
-`z ∈ S` equipped with an agreement set `A` satisfying the Johnson count `m·#A > natWeightedDegree …`,
-the exact divisibility the first-conjunct pigeonhole needs.  Closing the *whole* of Claim 5.7 from
+This is the maximal honest reach of the Gap-B keystone toward Claim 5.7: it supplies, for any
+single `z ∈ S` equipped with an agreement set `A` satisfying the Johnson count
+`m·#A > natWeightedDegree …`, the exact divisibility the first-conjunct pigeonhole needs.  Closing
+the *whole* of Claim 5.7 from
 here is still blocked — `hdiv` must hold for **every** `z ∈ S` simultaneously, which requires the
 Johnson count for every `z`, i.e. a `δ ≤ δ₀` binder absent from the (uneditable) statement; and the
 second cardinality conjunct of Claim 5.7 is independently false off the list-decoding regime
@@ -524,6 +525,7 @@ rather than the stronger Eq. 5.12 factorization list.  The missing work for the 
 free-parameter Claim 5.7 is now isolated in the hypotheses here: nonvanishing/separability of the
 `x₀` specialization, nonempty close set, graph divisibility for every close `z`, and the large-set
 Johnson-regime inequality. -/
+omit [DecidableEq (RatFunc F)] in
 lemma coeffs_of_close_proximity_nonempty_of_large_natdiv (δ : ℚ)
     (hlarge :
       (#(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) : ℝ) >
@@ -4089,8 +4091,9 @@ downstream including `correlatedAgreement_affine_curves` — failed to compile w
 Faithfulness: in [BCIKS20] `S' ⊆ S` is the fiber bound to the chosen `(R, H)`.  Pinning that fiber
 formally would force `matching_set` to carry the Claim-5.7 `.choose` data `R k δ x₀ h_gs` (hence an
 extra `x₀` parameter the uneditable call site `matching_set k ωs δ u₀ u₁ h_gs` does not pass).  We
-therefore define `S' := S` (the maximal subset) — an honest *over-approximation* of the paper's `S'`.
-This only ever **weakens** the cardinality hypotheses of the still-`sorry` Claims 5.10/5.11 (a larger
+therefore define `S' := S` (the maximal subset) — an honest *over-approximation* of the paper's
+`S'`. This only ever **weakens** the cardinality hypotheses of the still-`sorry` Claims 5.10/5.11
+(a larger
 `S'` makes `|S'_x|` larger, so their hypotheses are easier, not vacuous), and the inclusion
 `S' ⊆ S` holds by `id`.  No proven statement is affected. -/
 noncomputable def matching_set
@@ -6311,6 +6314,7 @@ lemma exists_points_with_canonical_eval_polys_on_close_subset_of_natCeil_delta_n
     h_gs hk (D := D) (E := ⌈δ * (n : ℚ)⌉₊) (t := t)
     (Nat.le_ceil _) hcover hthreshold hsmall hunique
 
+set_option linter.style.longLine false in
 /-- Canonical selected-domain package in the complement-threshold arithmetic shape.
 
 This is the direct consumer form for callers that have already chosen the natural
