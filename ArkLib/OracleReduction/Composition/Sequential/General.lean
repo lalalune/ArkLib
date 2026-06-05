@@ -379,8 +379,9 @@ theorem seqCompose_completeness
       (fun i => completenessError i.succ) (fun i => h i.succ)
     simp only [Fin.succ_zero_eq_one, Fin.succ_last] at this
     rw [Fin.sum_univ_succ]
-    exact Reduction.reduction_append_completeness (R 0)
-      (Reduction.seqCompose (Stmt ∘ Fin.succ) (Wit ∘ Fin.succ) (fun i => R i.succ))
+    exact reduction_append_completeness
+      (R 0)
+      (seqCompose (Stmt ∘ Fin.succ) (Wit ∘ Fin.succ) (fun i => R (Fin.succ i)))
       (h 0) this
 
 omit Oₘ in

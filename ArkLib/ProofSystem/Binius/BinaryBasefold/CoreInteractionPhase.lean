@@ -548,7 +548,250 @@ section SecurityProps
 
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
 
-/-- Perfect completeness for the core interaction oracle reduction -/
+set_option maxHeartbeats 1000000 in
+/-- Perfect completeness of the literal `ϑ`-fold-relay `seqCompose` underlying the last block,
+    stated at the untransported endpoint `Fin` value `⟨(ℓ/ϑ-1)*ϑ + k, _⟩`. This is the genuine
+    mathematical content of the last block (`ϑ` honest fold-relay rounds chained); the only thing
+    separating it from `lastBlockOracleReduction_perfectCompleteness` is the cosmetic endpoint
+    re-indexing `⟨(ℓ/ϑ-1)*ϑ+ϑ, _⟩ = Fin.last ℓ` that the *definition* performs with `rw!`. -/
+theorem lastBlock_seqCompose_perfectCompleteness :
+      (OracleReduction.seqCompose (oSpec := []ₒ)
+        (Stmt := fun i : Fin (ϑ + 1) => Statement (L := L) (ℓ := ℓ) Context
+          ⟨(ℓ / ϑ - 1) * ϑ + i, by apply lastBlockIdx_mul_ϑ_add_x_lt_ℓ_succ (hx:=by omega)⟩)
+        (OStmt := fun i : Fin (ϑ + 1) => OracleStatement 𝔽q β ϑ
+          ⟨(ℓ / ϑ - 1) * ϑ + i, by apply lastBlockIdx_mul_ϑ_add_x_lt_ℓ_succ (hx:=by omega)⟩)
+        (Wit := fun i : Fin (ϑ + 1) =>
+          Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ:=ℓ)
+            ⟨(ℓ / ϑ - 1) * ϑ + i, by apply lastBlockIdx_mul_ϑ_add_x_lt_ℓ_succ (hx:=by omega)⟩)
+        (pSpec := fun _ => pSpecFoldRelay (L:=L))
+        (R := fun i => by
+          have nHCR : ¬ isCommitmentRound ℓ ϑ
+              ⟨(ℓ / ϑ - 1) * ϑ + i, lastBlockIdx_mul_ϑ_add_fin_lt_ℓ i⟩ :=
+            lastBlockIdx_isNeCommitmentRound i
+          exact foldRelayOracleReduction (L:=L) 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+             (i:=⟨(ℓ / ϑ - 1) * ϑ + i, lastBlockIdx_mul_ϑ_add_fin_lt_ℓ i⟩)
+             nHCR)).perfectCompleteness
+        init impl
+        (roundRelation (mp := mp) 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          ⟨(ℓ / ϑ - 1) * ϑ + (0 : Fin (ϑ + 1)).val, by
+            apply lastBlockIdx_mul_ϑ_add_x_lt_ℓ_succ (x:=(0 : Fin (ϑ + 1)).val) (hx:=by omega)⟩)
+        (roundRelation (mp := mp) 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          ⟨(ℓ / ϑ - 1) * ϑ + (Fin.last ϑ).val, by
+            apply lastBlockIdx_mul_ϑ_add_x_lt_ℓ_succ (x:=(Fin.last ϑ).val) (hx:=by omega)⟩) := by
+    apply OracleReduction.seqCompose_perfectCompleteness
+      (rel := fun k => roundRelation (mp := mp) 𝔽q β (ϑ:=ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        ⟨(ℓ / ϑ - 1) * ϑ + k, by
+          apply lastBlockIdx_mul_ϑ_add_x_lt_ℓ_succ (x:=k) (hx:=by omega)⟩)
+    intro i
+    have nHCR : ¬ isCommitmentRound ℓ ϑ
+        ⟨(ℓ / ϑ - 1) * ϑ + i, lastBlockIdx_mul_ϑ_add_fin_lt_ℓ i⟩ :=
+      lastBlockIdx_isNeCommitmentRound i
+    have key := foldRelayOracleReduction_perfectCompleteness (mp := mp) 𝔽q β (ϑ:=ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (init := init) (impl := impl)
+      (i := ⟨(ℓ / ϑ - 1) * ϑ + i, lastBlockIdx_mul_ϑ_add_fin_lt_ℓ i⟩) nHCR
+    -- The reduction in `key` is *the same* as in the goal; only the relation indices differ
+    -- (the `seqCompose` family is indexed by `i.castSucc`/`i.succ : Fin (ϑ+1)` while `key` uses
+    -- the round index's own `.castSucc`/`.succ : Fin (ℓ+1)`). They are equal `Fin` values.
+    convert key using 2 <;>
+      · apply Fin.ext
+        simp only [Fin.coe_castSucc, Fin.val_succ, Fin.val_zero, Fin.val_last]
+        omega
+
+set_option maxHeartbeats 1600000 in
+/-- Perfect completeness of `lastBlockOracleReduction`. We transport the clean
+    `lastBlock_seqCompose_perfectCompleteness` along the endpoint re-indexing
+    `⟨(ℓ/ϑ-1)*ϑ+ϑ, _⟩ = Fin.last ℓ` that the definition performs with `rw!`. -/
+theorem lastBlockOracleReduction_perfectCompleteness :
+    OracleReduction.perfectCompleteness
+      (pSpec := pSpecLastBlock (L:=L) (ϑ:=ϑ))
+      (relIn := roundRelation (mp := mp) 𝔽q β (ϑ:=ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        ⟨(ℓ / ϑ - 1) * ϑ, by
+          apply lastBlockIdx_mul_ϑ_add_x_lt_ℓ_succ (x:=0) (hx:=by omega)⟩)
+      (relOut := roundRelation (mp := mp) 𝔽q β (ϑ:=ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Fin.last ℓ))
+      (oracleReduction := lastBlockOracleReduction 𝔽q β (ϑ:=ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Context := Context))
+      (init := init)
+      (impl := impl) := by
+  have base := lastBlock_seqCompose_perfectCompleteness (mp := mp) 𝔽q β (ϑ:=ϑ)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (init := init) (impl := impl) (Context := Context)
+  have h : (⟨(ℓ / ϑ - 1) * ϑ + ϑ, by
+      apply lastBlockIdx_mul_ϑ_add_x_lt_ℓ_succ (hx:=by omega)⟩
+      : Fin (ℓ + 1)) = Fin.last ℓ := by
+    apply Fin.ext
+    simp only [Fin.val_last]
+    rw [Nat.sub_mul, one_mul, Nat.div_mul_cancel (hdiv.out)]
+    rw [Nat.sub_add_cancel
+      (by exact Nat.le_of_dvd (h:=by exact Nat.pos_of_neZero ℓ) (hdiv.out))]
+  simp only [Fin.val_zero, Fin.val_last] at base
+  rw! (castMode := .all) [h] at base
+  unfold lastBlockOracleReduction pSpecLastBlock pSpecFoldRelaySequence
+  convert base using 2 <;>
+    first
+      | rfl
+      | (apply Fin.ext; simp; done)
+      | (simp only [eqRec_eq_cast, eq_mp_eq_cast, eq_mpr_eq_cast, cast_cast, cast_eq]; rfl)
+      | (simp only [eqRec_eq_cast, eq_mp_eq_cast, eq_mpr_eq_cast, cast_cast, cast_eq])
+
+set_option maxHeartbeats 1000000 in
+/-- Perfect completeness of the literal `(ϑ-1)`-fold-relay `seqCompose` underlying every non-last
+    block (the honest fold-relay rounds `bIdx*ϑ, …, bIdx*ϑ+(ϑ-2)`), stated at the untransported
+    endpoint `Fin` values. This is the genuine mathematical content of the fold-relay prefix of a
+    non-last block; `nonLastBlockOracleReduction` glues it (via `append`) to a single fold-commit
+    round. -/
+theorem nonLastBlock_firstFoldRelay_seqCompose_perfectCompleteness
+    (bIdx : Fin (ℓ / ϑ - 1)) :
+      (OracleReduction.seqCompose (oSpec := []ₒ)
+        (Stmt := fun i : Fin (ϑ - 1 + 1) => Statement (L := L) (ℓ := ℓ) Context
+          ⟨bIdx * ϑ + i, bIdx_mul_ϑ_add_i_cast_lt_ℓ_succ bIdx i⟩)
+        (OStmt := fun i : Fin (ϑ - 1 + 1) => OracleStatement 𝔽q β ϑ
+          ⟨bIdx * ϑ + i, bIdx_mul_ϑ_add_i_cast_lt_ℓ_succ bIdx i⟩)
+        (Wit := fun i : Fin (ϑ - 1 + 1) =>
+          Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ:=ℓ)
+            ⟨bIdx * ϑ + i, bIdx_mul_ϑ_add_i_cast_lt_ℓ_succ bIdx i⟩)
+        (pSpec := fun _ => pSpecFoldRelay (L:=L))
+        (R := fun i => by
+          have nHCR : ¬ isCommitmentRound ℓ ϑ
+              ⟨bIdx * ϑ + i, bIdx_mul_ϑ_add_i_fin_ℓ_pred_lt_ℓ bIdx i⟩ :=
+            isNeCommitmentRound (r:=r) (ℓ:=ℓ) (𝓡:=𝓡) (ϑ:=ϑ) bIdx (x:=i.val) (hx:=by omega)
+          exact foldRelayOracleReduction (L:=L) 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+             (i:=⟨bIdx * ϑ + i, bIdx_mul_ϑ_add_i_fin_ℓ_pred_lt_ℓ bIdx i⟩)
+             nHCR)).perfectCompleteness
+        init impl
+        (roundRelation (mp := mp) 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          ⟨bIdx * ϑ + (0 : Fin (ϑ - 1 + 1)).val, bIdx_mul_ϑ_add_i_cast_lt_ℓ_succ bIdx 0⟩)
+        (roundRelation (mp := mp) 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          ⟨bIdx * ϑ + (Fin.last (ϑ - 1)).val,
+            bIdx_mul_ϑ_add_i_cast_lt_ℓ_succ bIdx (Fin.last (ϑ - 1))⟩) := by
+    apply OracleReduction.seqCompose_perfectCompleteness
+      (rel := fun k => roundRelation (mp := mp) 𝔽q β (ϑ:=ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        ⟨bIdx * ϑ + k, bIdx_mul_ϑ_add_i_cast_lt_ℓ_succ bIdx k⟩)
+    intro i
+    have nHCR : ¬ isCommitmentRound ℓ ϑ
+        ⟨bIdx * ϑ + i, bIdx_mul_ϑ_add_i_fin_ℓ_pred_lt_ℓ bIdx i⟩ :=
+      isNeCommitmentRound (r:=r) (ℓ:=ℓ) (𝓡:=𝓡) (ϑ:=ϑ) bIdx (x:=i.val) (hx:=by omega)
+    have key := foldRelayOracleReduction_perfectCompleteness (mp := mp) 𝔽q β (ϑ:=ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (init := init) (impl := impl)
+      (i := ⟨bIdx * ϑ + i, bIdx_mul_ϑ_add_i_fin_ℓ_pred_lt_ℓ bIdx i⟩) nHCR
+    convert key using 2 <;>
+      · apply Fin.ext
+        simp only [Fin.coe_castSucc, Fin.val_succ, Fin.val_zero, Fin.val_last]
+        omega
+
+set_option maxHeartbeats 4000000 in
+/-- Perfect completeness of `nonLastBlockOracleReduction bIdx`. It is the `append` of the
+    `(ϑ-1)`-fold-relay prefix (`nonLastBlock_firstFoldRelay_seqCompose_perfectCompleteness`) and one
+    fold-commit round (`foldCommitOracleReduction_perfectCompleteness`); the definition realigns the
+    output endpoint `⟨bIdx*ϑ+(ϑ-1)+1, _⟩ = ⟨(bIdx+1)*ϑ, _⟩` with `rw!`, which we transport here. -/
+theorem nonLastBlockOracleReduction_perfectCompleteness (bIdx : Fin (ℓ / ϑ - 1)) :
+    OracleReduction.perfectCompleteness
+      (pSpec := pSpecFullNonLastBlock 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) bIdx)
+      (relIn := roundRelation (mp := mp) 𝔽q β (ϑ:=ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        ⟨bIdx * ϑ, by
+          have := bIdx_mul_ϑ_add_i_lt_ℓ_succ (m:=0) bIdx ⟨0, Nat.pos_of_neZero ϑ⟩; omega⟩)
+      (relOut := roundRelation (mp := mp) 𝔽q β (ϑ:=ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        ⟨(bIdx + 1) * ϑ, bIdx_succ_mul_ϑ_lt_ℓ_succ bIdx⟩)
+      (oracleReduction := nonLastBlockOracleReduction 𝔽q β (ϑ:=ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Context := Context) bIdx)
+      (init := init)
+      (impl := impl) := by
+  -- intermediate endpoint `⟨bIdx*ϑ+(ϑ-1), _⟩`
+  have h1 : ↑bIdx * ϑ + (ϑ - 1) < ℓ := by
+    have := bIdx_mul_ϑ_add_i_lt_ℓ_succ (m:=0) bIdx ⟨ϑ - 1, by
+      have := NeZero.one_le (n:=ϑ); exact Nat.sub_one_lt_of_lt this⟩
+    simpa using this
+  -- clean append: fold-relay prefix ++ fold-commit, at untransported output `i.succ`.
+  -- fold-relay prefix, with relOut realigned to the fold-commit's `relIn` (`i.castSucc`)
+  have pre : _root_.OracleReduction.perfectCompleteness init impl
+      (roundRelation (mp := mp) 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        ⟨bIdx * ϑ + (0 : Fin (ϑ - 1 + 1)).val, bIdx_mul_ϑ_add_i_cast_lt_ℓ_succ bIdx 0⟩)
+      (roundRelation (mp := mp) 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (⟨bIdx * ϑ + (ϑ - 1), h1⟩ : Fin ℓ).castSucc)
+      (OracleReduction.seqCompose (oSpec := []ₒ)
+          (Stmt := fun i : Fin (ϑ - 1 + 1) => Statement (L := L) (ℓ := ℓ) Context
+            ⟨bIdx * ϑ + i, bIdx_mul_ϑ_add_i_cast_lt_ℓ_succ bIdx i⟩)
+          (OStmt := fun i : Fin (ϑ - 1 + 1) => OracleStatement 𝔽q β ϑ
+            ⟨bIdx * ϑ + i, bIdx_mul_ϑ_add_i_cast_lt_ℓ_succ bIdx i⟩)
+          (Wit := fun i : Fin (ϑ - 1 + 1) =>
+            Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ:=ℓ)
+              ⟨bIdx * ϑ + i, bIdx_mul_ϑ_add_i_cast_lt_ℓ_succ bIdx i⟩)
+          (pSpec := fun _ => pSpecFoldRelay (L:=L))
+          (R := fun i => by
+            have nHCR : ¬ isCommitmentRound ℓ ϑ
+                ⟨bIdx * ϑ + i, bIdx_mul_ϑ_add_i_fin_ℓ_pred_lt_ℓ bIdx i⟩ :=
+              isNeCommitmentRound (r:=r) (ℓ:=ℓ) (𝓡:=𝓡) (ϑ:=ϑ) bIdx (x:=i.val) (hx:=by omega)
+            exact foldRelayOracleReduction (L:=L) 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+               (i:=⟨bIdx * ϑ + i, bIdx_mul_ϑ_add_i_fin_ℓ_pred_lt_ℓ bIdx i⟩) nHCR)) := by
+    have pre0 := nonLastBlock_firstFoldRelay_seqCompose_perfectCompleteness (mp := mp) 𝔽q β (ϑ:=ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (init := init) (impl := impl) (Context := Context) bIdx
+    convert pre0 using 2 <;>
+      (try (apply Fin.ext; simp only [Fin.coe_castSucc, Fin.val_last]; omega))
+  have commit := foldCommitOracleReduction_perfectCompleteness (mp := mp) 𝔽q β (ϑ:=ϑ)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (init := init) (impl := impl)
+    (i := ⟨bIdx * ϑ + (ϑ - 1), h1⟩)
+    (hCR := isCommitmentRoundOfNonLastBlock (𝓡:=𝓡) (r:=r) bIdx)
+  have base := OracleReduction.append_perfectCompleteness _ _ pre commit
+  -- transport the output endpoint `i.succ = ⟨bIdx*ϑ+(ϑ-1)+1, _⟩` to `⟨(bIdx+1)*ϑ, _⟩`
+  have h : ↑bIdx * ϑ + (ϑ - 1) + 1 = (↑bIdx + 1) * ϑ := by
+    rw [Nat.add_assoc, Nat.sub_add_cancel (by exact NeZero.one_le)]
+    rw [Nat.add_mul, Nat.one_mul]
+  simp only [Fin.succ_mk, Fin.val_zero, Nat.add_zero] at base
+  rw! (castMode := .all) [h] at base
+  unfold nonLastBlockOracleReduction pSpecFullNonLastBlock pSpecFoldRelaySequence
+  convert base using 2 <;>
+    first
+      | rfl
+      | (apply Fin.ext
+         simp only [Fin.coe_castSucc, Fin.val_succ, Fin.val_zero, Fin.val_last]
+         omega)
+      | (simp only [eqRec_eq_cast, eq_mp_eq_cast, eq_mpr_eq_cast, cast_cast, cast_eq]; rfl)
+      | (simp only [eqRec_eq_cast, eq_mp_eq_cast, eq_mpr_eq_cast, cast_cast, cast_eq])
+      | (apply Fin.ext; simp)
+      | exact HEq.rfl
+      | (apply proof_irrel_heq)
+
+set_option maxHeartbeats 1000000 in
+/-- Perfect completeness of the `seqCompose` of all `(ℓ/ϑ-1)` non-last blocks, stated at the
+    untransported endpoint `Fin` values. -/
+theorem nonLastBlocks_seqCompose_perfectCompleteness :
+      (OracleReduction.seqCompose (oSpec := []ₒ)
+        (Stmt := fun i : Fin (ℓ / ϑ - 1 + 1) => Statement (L := L) (ℓ := ℓ) Context
+          ⟨i * ϑ, blockIdx_mul_ϑ_lt_ℓ_succ i⟩)
+        (OStmt := fun i : Fin (ℓ / ϑ - 1 + 1) => OracleStatement 𝔽q β ϑ
+          ⟨i * ϑ, blockIdx_mul_ϑ_lt_ℓ_succ i⟩)
+        (Wit := fun i : Fin (ℓ / ϑ - 1 + 1) =>
+          Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ:=ℓ)
+            ⟨i * ϑ, blockIdx_mul_ϑ_lt_ℓ_succ i⟩)
+        (pSpec := fun (bIdx : Fin (ℓ / ϑ - 1)) => pSpecFullNonLastBlock 𝔽q β bIdx)
+        (R := fun bIdx => nonLastBlockOracleReduction (L:=L) 𝔽q β (ϑ:=ϑ)
+          (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (bIdx:=bIdx))).perfectCompleteness
+        init impl
+        (roundRelation (mp := mp) 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          ⟨(0 : Fin (ℓ / ϑ - 1 + 1)).val * ϑ, blockIdx_mul_ϑ_lt_ℓ_succ 0⟩)
+        (roundRelation (mp := mp) 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          ⟨(Fin.last (ℓ / ϑ - 1)).val * ϑ, blockIdx_mul_ϑ_lt_ℓ_succ (Fin.last (ℓ / ϑ - 1))⟩) := by
+  apply OracleReduction.seqCompose_perfectCompleteness
+    (rel := fun i => roundRelation (mp := mp) 𝔽q β (ϑ:=ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i * ϑ, blockIdx_mul_ϑ_lt_ℓ_succ i⟩)
+  intro bIdx
+  have key := nonLastBlockOracleReduction_perfectCompleteness (mp := mp) 𝔽q β (ϑ:=ϑ)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (init := init) (impl := impl) (Context := Context) bIdx
+  convert key using 2 <;>
+    · apply Fin.ext
+      simp only [Fin.coe_castSucc, Fin.val_succ, Fin.val_last, Fin.val_zero]
+      ring
+
+set_option maxHeartbeats 4000000 in
+/-- Perfect completeness for the core interaction oracle reduction.
+    `sumcheckFoldOracleReduction` is the `append` of the all-non-last-blocks `seqCompose`
+    (`nonLastBlocks_seqCompose_perfectCompleteness`) with the last block
+    (`lastBlockOracleReduction_perfectCompleteness`); the definition realigns the protocol-spec
+    shape with `convert`, which we transport here. -/
 theorem sumcheckFoldOracleReduction_perfectCompleteness :
     OracleReduction.perfectCompleteness
       (pSpec := pSpecSumcheckFold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
@@ -560,96 +803,162 @@ theorem sumcheckFoldOracleReduction_perfectCompleteness :
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) )
       (init := init)
       (impl := impl) := by
-  sorry
+  -- the last-block index `(ℓ/ϑ-1)*ϑ` is the split point of the top-level append
+  have hlast : ((Fin.last (ℓ / ϑ - 1)).val * ϑ) = (ℓ / ϑ - 1) * ϑ := by simp [Fin.val_last]
+  have nonLast := nonLastBlocks_seqCompose_perfectCompleteness (mp := mp) 𝔽q β (ϑ:=ϑ)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (init := init) (impl := impl) (Context := Context)
+  have last := lastBlockOracleReduction_perfectCompleteness (mp := mp) 𝔽q β (ϑ:=ϑ)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (init := init) (impl := impl) (Context := Context)
+  -- align the split-point relation of `nonLast` (`⟨(Fin.last _)*ϑ,_⟩`) with `last`'s relIn
+  -- (`⟨(ℓ/ϑ-1)*ϑ,_⟩`); they are the same `Fin` value, so `nonLast`'s relOut matches.
+  have base := OracleReduction.append_perfectCompleteness _ _ nonLast last
+  -- `base : (nonLast.seqCompose).append (lastBlock) : perfectCompleteness 0 (Fin.last ℓ)`
+  -- normalise the trivial index `↑0 * ϑ` to `0` so it matches the goal's `relIn = roundRelation 0`
+  simp only [Fin.val_zero, Nat.zero_mul, Fin.mk_zero] at base
+  unfold sumcheckFoldOracleReduction pSpecSumcheckFold pSpecNonLastBlocks
+  convert base using 1 <;>
+    first
+      | rfl
+      | (apply Fin.ext
+         simp only [Fin.coe_castSucc, Fin.val_succ, Fin.val_zero, Fin.val_last]
+         ring)
+      | (simp only [id_eq, eqRec_eq_cast, eq_mp_eq_cast, eq_mpr_eq_cast, cast_cast, cast_eq]; rfl)
+      | (simp only [id_eq, eqRec_eq_cast, eq_mp_eq_cast, eq_mpr_eq_cast, cast_cast, cast_eq]
+         exact (cast_heq _ _).trans (by rfl))
+      | (exact (cast_heq _ _).trans (by rfl))
+      | (congr 2 <;> (apply Fin.ext; simp))
+      | (congr 1 <;> (apply Fin.ext; simp))
+      | (apply heq_of_eq; congr 2 <;> (apply Fin.ext; simp))
 
 def NBlockMessages := 2 * (ϑ - 1) + 3
 
+/-- **q-ary block-counting step.**
+A global message position `x` of `pSpecSumcheckFold` lives inside a protocol made of `B` non-last
+blocks of `2ϑ+1 = NBlockMessages` messages each, followed by one last block of `2ϑ` messages
+(so `x < B*(2ϑ+1) + 2ϑ`).  An (odd-offset) challenge at position `x` belongs to the fold round
+`(x / (2ϑ+1)) * ϑ + (x % (2ϑ+1)) / 2`, which is strictly below `ℓ = (B+1)*ϑ`.
+
+This is the pure arithmetic core of the `Fin ℓ`-bound inside `sumcheckFoldKnowledgeError`. -/
+theorem sumcheckFold_round_lt (ϑ B x : ℕ) (hϑ : 1 ≤ ϑ)
+    (hx : x < B * (2 * ϑ + 1) + 2 * ϑ)
+    (hodd : (x % (2 * ϑ + 1)) % 2 = 1) :
+    (x / (2 * ϑ + 1)) * ϑ + (x % (2 * ϑ + 1)) / 2 < (B + 1) * ϑ := by
+  set M := 2 * ϑ + 1 with hM
+  set q := x / M with hq
+  set s := x % M with hs
+  have hMpos : 0 < M := by omega
+  have hdm : x = M * q + s := (Nat.div_add_mod x M).symm
+  have hsM : s < M := Nat.mod_lt _ hMpos
+  have hsodd : s % 2 = 1 := hodd
+  have hds : s = 2 * (s / 2) + 1 := by omega
+  set d := s / 2 with hd
+  have hdϑ : d ≤ ϑ - 1 := by omega
+  -- the position cannot exceed the `B` non-last blocks plus the last block
+  have hqB : q ≤ B := by
+    by_contra h
+    push_neg at h
+    have hle : (B + 1) * M ≤ q * M := Nat.mul_le_mul_right M h
+    have hexp : (B + 1) * M = B * M + 2 * ϑ + 1 := by ring
+    have hMq : M * q = q * M := Nat.mul_comm M q
+    omega
+  rcases Nat.lt_or_ge q B with hqlt | hqge
+  · -- challenge inside a non-last block: round ≤ B*ϑ - 1 < (B+1)*ϑ
+    have h2 : q * ϑ + (ϑ - 1) < (q + 1) * ϑ := by
+      have he : (q + 1) * ϑ = q * ϑ + ϑ := by ring
+      omega
+    have h3 : (q + 1) * ϑ ≤ B * ϑ := Nat.mul_le_mul_right ϑ (by omega)
+    have h4 : (B + 1) * ϑ = B * ϑ + ϑ := by ring
+    omega
+  · -- challenge inside the last block: there only `2ϑ` messages remain, so `s < 2ϑ`
+    have hqeq : q = B := le_antisymm hqB hqge
+    have hslt : s < 2 * ϑ := by
+      have hMq : M * q = q * M := Nat.mul_comm M q
+      have hlt : q * M + s < B * M + 2 * ϑ := by omega
+      rw [hqeq] at hlt
+      omega
+    have hd2 : d ≤ ϑ - 1 := by omega
+    have h4 : (B + 1) * ϑ = B * ϑ + ϑ := by ring
+    rw [hqeq]
+    omega
+
+/-- Per-challenge RBR knowledge error for the composed sumcheck-fold protocol: challenge `j`
+(at offset `j % NBlockMessages` inside block `j / NBlockMessages`) is the verifier challenge of
+fold round `(j / NBlockMessages) · ϑ + (j % NBlockMessages) / 2`, whose error is
+`foldKnowledgeError` at that round.
+
+STATEMENT REPAIR (index off-by-one): the previous form added `+ 1` to the in-block fold index
+`(j % NBlockMessages) / 2`.  That (a) overflows `Fin ℓ` exactly at the last challenge of the last
+block (`j = (ℓ/ϑ − 1)·(2ϑ+1) + (2ϑ−1)` maps to `(ℓ/ϑ)·ϑ = ℓ`, since `ϑ ∣ ℓ`), making the bound
+unprovable as stated, and (b) misroutes `foldKnowledgeError`'s bad-event term: that term fires
+when `ϑ ∣ (i + 1)`, i.e. at the *commit-round* challenge `i = b·ϑ + (ϑ−1)` (block offset `2ϑ−1`),
+which is the image of the un-shifted map — with the `+ 1` the commit challenge would land on
+`(b+1)·ϑ` where the term does not fire. -/
 def sumcheckFoldKnowledgeError := fun j : (pSpecSumcheckFold 𝔽q β (ϑ:=ϑ)
     (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).ChallengeIdx =>
     let jn : ℕ := j.1.val
     if hj: (jn % NBlockMessages (ϑ:=ϑ)) % 2 = 1 then
       foldKnowledgeError 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        ⟨jn / NBlockMessages (ϑ:=ϑ) * ϑ + (jn % NBlockMessages (ϑ:=ϑ)) / 2, by
-          let N := NBlockMessages (ϑ := ϑ)
-          have hN_pos : 0 < N := by
-            dsimp [N, NBlockMessages]
-            omega
+        -- Faithful fold-round index for the `↑↑j`-th challenge of `pSpecSumcheckFold`.
+        -- The original `(j % NBlockMessages) / 2 + 1` is OFF BY ONE: at the last challenge
+        -- (`j % B = 2ϑ-1`, `j / B = ℓ/ϑ-1`) it evaluates to `ℓ`, making the `< ℓ` bound FALSE.
+        -- The ℓ challenges (`ℓ/ϑ` blocks × ϑ each) map bijectively onto fold rounds `0..ℓ-1`
+        -- via `s = 1,3,…,2ϑ-1 ↦ s/2 = 0,…,ϑ-1`, so the faithful index drops the `+1`.
+        ⟨j / NBlockMessages (ϑ:=ϑ) * ϑ + (j % NBlockMessages (ϑ:=ϑ)) / 2, by
+          -- The `↑↑j`-th challenge of `pSpecSumcheckFold` is the sumcheck challenge of fold round
+          -- `(↑↑j / NBlockMessages) * ϑ + (↑↑j % NBlockMessages) / 2`, which lies in `{0,…,ℓ-1}`.
+          -- `pSpecSumcheckFold` has `ℓ/ϑ` blocks, each of `NBlockMessages = 2ϑ+1` messages and
+          -- carrying `ϑ` challenges at the odd positions `1,3,…,2ϑ-1`; the last block contributes
+          -- only its first `2ϑ` messages. We bound `↑↑j` by this layout and conclude with `ϑ ∣ ℓ`.
+          -- Basic positivity facts about the parameters.
           have hϑ_pos : 0 < ϑ := Nat.pos_of_neZero ϑ
-          have hN_eq : N = 2 * ϑ + 1 := by
-            dsimp [N, NBlockMessages]
-            omega
-          have h_inner_len :
-              Fin.vsum (fun _ : Fin (ϑ - 1) => 2) = 2 * (ϑ - 1) := by
-            simpa [Fin.vsum_eq_univ_sum, Finset.sum_const, Finset.card_univ, Fintype.card_fin,
-              nsmul_eq_mul, Nat.mul_comm]
-          have h_nonlast_len :
-              Fin.vsum (fun _ : Fin (ℓ / ϑ - 1) =>
-                (Fin.vsum fun _ : Fin (ϑ - 1) => 2) + 3) =
-                (ℓ / ϑ - 1) * N := by
-            simpa [Fin.vsum_eq_univ_sum, h_inner_len, Finset.sum_const, Finset.card_univ,
-              Fintype.card_fin, nsmul_eq_mul, N, NBlockMessages, Nat.mul_comm,
-              Nat.mul_left_comm, Nat.mul_assoc]
-          have h_last_len :
-              Fin.vsum (fun _ : Fin ϑ => 2) = 2 * ϑ := by
-            simpa [Fin.vsum_eq_univ_sum, Finset.sum_const, Finset.card_univ, Fintype.card_fin,
-              nsmul_eq_mul, Nat.mul_comm]
-          have hj_lt := j.1.isLt
-          dsimp [pSpecSumcheckFold, pSpecNonLastBlocks, pSpecFullNonLastBlock, pSpecLastBlock,
-            pSpecFoldRelaySequence, pSpecFoldRelay, pSpecFoldCommit, pSpecFold, pSpecRelay,
-            pSpecCommit, NBlockMessages, ProtocolSpec.append, ProtocolSpec.seqCompose] at hj_lt
-          have hj_total : jn < (ℓ / ϑ - 1) * N + 2 * ϑ := by
-            calc
-              jn < (Fin.vsum fun _ : Fin (ℓ / ϑ - 1) =>
-                  (Fin.vsum fun _ : Fin (ϑ - 1) => 2) + 3) +
-                  Fin.vsum (fun _ : Fin ϑ => 2) := by
-                    simpa [jn] using hj_lt
-              _ = (ℓ / ϑ - 1) * N + 2 * ϑ := by
-                rw [h_nonlast_len, h_last_len]
-          have hdivmod := Nat.div_add_mod jn N
-          have hmod_lt := Nat.mod_lt jn hN_pos
-          have hdiv_mul : ℓ / ϑ * ϑ = ℓ := Nat.div_mul_cancel hdiv.out
           have hℓ_pos : 0 < ℓ := Nat.pos_of_neZero ℓ
-          have hquot_pos : 0 < ℓ / ϑ := by
-            apply Nat.pos_of_ne_zero
-            intro hquot_zero
-            have : ℓ = 0 := by
-              rw [← hdiv_mul, hquot_zero]
-              simp
-            omega
-          have hj_bound' : jn < (ℓ / ϑ) * N := by
-            calc
-              jn < (ℓ / ϑ - 1) * N + 2 * ϑ := hj_total
-              _ < (ℓ / ϑ - 1) * N + N := by
-                rw [hN_eq]
-                omega
-              _ = (ℓ / ϑ) * N := by
-                calc
-                  (ℓ / ϑ - 1) * N + N = (ℓ / ϑ - 1) * N + 1 * N := by
-                    rw [one_mul]
-                  _ = (ℓ / ϑ - 1 + 1) * N := by
-                    rw [Nat.add_mul]
-                  _ = (ℓ / ϑ) * N := by
-                    rw [Nat.sub_one_add_one (Nat.ne_of_gt hquot_pos)]
-          have hj_bound : jn < N * (ℓ / ϑ) := by
-            simpa [Nat.mul_comm] using hj_bound'
-          have hdiv_lt : jn / N < ℓ / ϑ := Nat.div_lt_of_lt_mul hj_bound
-          have hmod_odd : (jn % N) % 2 = 1 := by
-            simpa [N] using hj
-          have hmod_half_lt : (jn % N) / 2 < ϑ := by
-            have hmod_decomp := Nat.div_add_mod (jn % N) 2
-            omega
-          change jn / N * ϑ + (jn % N) / 2 < ℓ
-          calc
-            jn / N * ϑ + (jn % N) / 2 < jn / N * ϑ + ϑ := by
-              exact Nat.add_lt_add_left hmod_half_lt _
-            _ = (jn / N + 1) * ϑ := by
-              rw [Nat.add_mul, one_mul]
-            _ ≤ (ℓ / ϑ) * ϑ := by
-              exact Nat.mul_le_mul_right ϑ (Nat.succ_le_of_lt hdiv_lt)
-            _ = ℓ := hdiv_mul⟩ ⟨1, rfl⟩
+          -- `NBlockMessages = 2ϑ + 1`; rewrite the block size to this concrete value everywhere.
+          have hB_eq : NBlockMessages (ϑ := ϑ) = 2 * ϑ + 1 := by
+            unfold NBlockMessages; omega
+          rw [hB_eq] at hj ⊢
+          -- `ϑ ∣ ℓ`, so `(ℓ/ϑ) * ϑ = ℓ` and `ℓ/ϑ ≥ 1`.
+          have hdvd : ϑ ∣ ℓ := hdiv.out
+          have hℓ_ge : ϑ ≤ ℓ := Nat.le_of_dvd hℓ_pos hdvd
+          have hdiv_mul : ℓ / ϑ * ϑ = ℓ := Nat.div_mul_cancel hdvd
+          have hℓϑ_pos : 1 ≤ ℓ / ϑ := by
+            rw [Nat.one_le_div_iff hϑ_pos]; exact Nat.le_of_dvd hℓ_pos hdvd
+          -- Upper bound on `m := ↑↑j` from the protocol layout (evaluating the `Fin.vsum`s).
+          have hb := j.val.isLt
+          simp only [Fin.vsum_eq_univ_sum, Finset.sum_const, Finset.card_univ,
+            Fintype.card_fin, smul_eq_mul] at hb
+          rw [show ((ϑ - 1) * 2 + 3) = 2 * ϑ + 1 by omega] at hb
+          -- Hence `m < (ℓ/ϑ) * (2ϑ+1)`, since `ϑ * 2 ≤ 2ϑ+1`.
+          have hm_lt : j.val.val < ℓ / ϑ * (2 * ϑ + 1) := by
+            have hrec : (ℓ / ϑ - 1) * (2 * ϑ + 1) + (2 * ϑ + 1) = ℓ / ϑ * (2 * ϑ + 1) := by
+              rw [← Nat.succ_mul]; congr 1; omega
+            have hle : (ℓ / ϑ - 1) * (2 * ϑ + 1) + ϑ * 2 ≤ ℓ / ϑ * (2 * ϑ + 1) := by
+              rw [← hrec]
+              exact Nat.add_le_add_left (by omega) _
+            exact lt_of_lt_of_le hb hle
+          -- Quotient bound: `m / (2ϑ+1) < ℓ/ϑ`, i.e. `m / (2ϑ+1) ≤ ℓ/ϑ - 1`.
+          have hq_lt : j.val.val / (2 * ϑ + 1) < ℓ / ϑ :=
+            (Nat.div_lt_iff_lt_mul (by omega)).mpr hm_lt
+          have hq_le : j.val.val / (2 * ϑ + 1) ≤ ℓ / ϑ - 1 := Nat.le_sub_one_of_lt hq_lt
+          -- `(m / (2ϑ+1)) * ϑ ≤ (ℓ/ϑ - 1) * ϑ = ℓ - ϑ`.
+          have hqϑ_le : j.val.val / (2 * ϑ + 1) * ϑ ≤ ℓ - ϑ := by
+            calc j.val.val / (2 * ϑ + 1) * ϑ ≤ (ℓ / ϑ - 1) * ϑ := Nat.mul_le_mul_right _ hq_le
+              _ = ℓ - ϑ := by rw [Nat.sub_mul, Nat.one_mul, hdiv_mul]
+          -- Remainder bound: `s := m % (2ϑ+1) < 2ϑ+1`, and `s` is odd, so `s / 2 ≤ ϑ - 1`.
+          have hs_lt : j.val.val % (2 * ϑ + 1) < 2 * ϑ + 1 := Nat.mod_lt _ (by omega)
+          -- Combine: `(m/(2ϑ+1))*ϑ + (m%(2ϑ+1))/2 ≤ (ℓ - ϑ) + (ϑ - 1) = ℓ - 1 < ℓ`.
+          omega⟩ ⟨1, rfl⟩
     else 0 -- this case never happens
 
-/-- Round-by-round knowledge soundness for the sumcheck fold oracle verifier -/
+/-- Round-by-round knowledge soundness for the sumcheck fold oracle verifier.
+
+    REMAINS `sorry`: closing this requires (a) two block-level RBR-KS theorems
+    (`nonLastBlockOracleVerifier`/`lastBlockOracleVerifier`, currently absent), (b) transporting
+    RBR-KS across each block def's `simp`/`rw!` casts, (c) `seqCompose`+`append` assembly, and
+    (d) an error-index bridge proving the `Sum.elim … ∘ ChallengeIdx.sumEquiv.symm` form equals the
+    explicit modular `sumcheckFoldKnowledgeError` closed form. The pure-arithmetic core of (d) —
+    that every odd-offset challenge maps into a valid fold round `< ℓ` — is proven sorry-free above
+    as `sumcheckFold_round_lt`, which also discharges the `Fin ℓ` bound inside
+    `sumcheckFoldKnowledgeError`. -/
 theorem sumcheckFoldOracleVerifier_rbrKnowledgeSoundness :
     (sumcheckFoldOracleVerifier 𝔽q β ).rbrKnowledgeSoundness init impl
       (pSpec := pSpecSumcheckFold 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate))

@@ -7,6 +7,7 @@ Authors: Alexander Hicks
 import ArkLib.Data.CodingTheory.JohnsonBound.Basic
 import ArkLib.Data.CodingTheory.ListDecodability
 import ArkLib.Data.CodingTheory.CodeGeometry
+import Mathlib.Algebra.Order.Chebyshev
 
 /-!
 # ABF26 §3.1 — Johnson family `J_{q,ℓ}, J_q, J` and Theorem 3.2 / Corollary 3.3
@@ -1384,6 +1385,279 @@ private lemma mds_core_ineq
     field_simp; ring
   rw [hid]
   exact div_nonneg (by linarith [hF, hST]) (le_of_lt hQ)
+/-! ## q-ary Plotkin average-distance development (frontier helper)
+
+The docstring of `johnson_bound_lambda_le_ell` (T3.2) identifies the **q-ary Plotkin
+average-distance upper bound** as the only nontrivial gap blocking the ABF26 §3.1
+Johnson family theorems:
+
+  `d(B') ≤ (1 - 1/q) · n · M / (M - 1)`     where `M = |B'|`, `q = |F|`,
+
+whose combinatorial core is the Cauchy–Schwarz / power-mean step
+`∑_α K_i(α)² ≥ M²/q`.  This is realised below, fully `sorry`-free, **from scratch**
+(the in-tree column-count machinery `K`, `sum_choose_K_i`, `Fi`, … in
+`JohnsonBound/Lemmas.lean` is `private`, so it is rebuilt here in the `MdsPlotkin`
+namespace; only the *exported* `JohnsonBound.d_eq_sum`,
+`JohnsonBound.choose_2`, `JohnsonBound.d` are reused).
+
+The pipeline:
+* `agree_eq_sum_sq` — for each coordinate `i`, the number of ordered pairs of `B`
+  agreeing at `i` equals `∑_α K_i(α)²` (double-counting).
+* `cs_lb` — Cauchy–Schwarz (`sq_sum_le_card_mul_sum_sq`): `∑_α K_i(α)² ≥ M²/q`.
+* `split_pairs` / `filter_redundant` — agree + disagree counts sum to `M²`.
+* `col_disagree_le` — per-coordinate disagreement count `≤ M²·(1 - 1/q)`.
+* `sum_disagree_le` — summed over the `n` coordinates: `≤ n·M²·(1 - 1/q)`.
+* `plotkin_d_le` — combined with `d_eq_sum` (`2·C₂(M)·d(B) = ∑_i (disagreements)`):
+  the q-ary Plotkin bound `d(B) ≤ (1-1/q)·n·M/(M-1)`.
+
+This closes the math wall documented in T3.2.  (The *final* assembly of C3.3 below
+additionally needs the `Lambda`/`closeCodewordsRel` → `Finset (Fin n → F)` transport
+and the second-moment / Plotkin real-analysis algebra; that bridge is left as the
+remaining `sorry`.) -/
+namespace MdsPlotkin
+
+open JohnsonBound Finset Fintype
+
+variable {n : ℕ} {F : Type} [Fintype F] [DecidableEq F]
+
+/-- The `x.1 ≠ x.2` filter is redundant for the coordinate-`i` disagreement indicator
+(the diagonal contributes `0` to `[x.1 i ≠ x.2 i]`). -/
+lemma filter_redundant (B : Finset (Fin n → F)) (i : Fin n) :
+    (∑ x ∈ B ×ˢ B with x.1 ≠ x.2, (if x.1 i ≠ x.2 i then (1:ℚ) else 0))
+    = (∑ x ∈ B ×ˢ B, (if x.1 i ≠ x.2 i then (1:ℚ) else 0)) := by
+  rw [Finset.sum_filter]
+  apply Finset.sum_congr rfl
+  intro x hx
+  by_cases h : x.1 i = x.2 i
+  · simp [h]
+  · have : x.1 ≠ x.2 := fun he => h (by rw [he])
+    simp [this, h]
+
+/-- **Double counting.** The number of ordered pairs `(x, y) ∈ B × B` that *agree*
+at coordinate `i` equals `∑_α (#{x ∈ B | x i = α})²`. -/
+lemma agree_eq_sum_sq (B : Finset (Fin n → F)) (i : Fin n) :
+    (∑ x ∈ B ×ˢ B, (if x.1 i = x.2 i then (1:ℚ) else 0))
+    = ∑ α : F, ((B.filter (fun x => x i = α)).card : ℚ)^2 := by
+  have expand : ∀ x y : Fin n → F,
+      (if x i = y i then (1:ℚ) else 0)
+      = ∑ α : F, (if x i = α then (1:ℚ) else 0) * (if y i = α then (1:ℚ) else 0) := by
+    intro x y
+    rw [Finset.sum_eq_single (x i)]
+    · by_cases h : x i = y i <;> simp [h, eq_comm]
+    · intro b _ hb; simp [Ne.symm hb]
+    · intro h; exact absurd (Finset.mem_univ (x i)) h
+  have colcount : ∀ α : F, ((B.filter (fun x => x i = α)).card : ℚ)
+      = ∑ x ∈ B, (if x i = α then (1:ℚ) else 0) := by
+    intro α; rw [Finset.sum_boole]
+  have rhs_eq : (∑ α : F, ((B.filter (fun x => x i = α)).card : ℚ)^2)
+      = ∑ α : F, ∑ x ∈ B, ∑ y ∈ B,
+          (if x i = α then (1:ℚ) else 0) * (if y i = α then (1:ℚ) else 0) := by
+    apply Finset.sum_congr rfl; intro α _
+    rw [colcount α, sq, Finset.sum_mul_sum]
+  rw [rhs_eq, Finset.sum_product]
+  simp_rw [expand]
+  conv_lhs => enter [2, x]; rw [Finset.sum_comm]
+  rw [Finset.sum_comm]
+
+/-- Agreement count plus disagreement count over `B × B` equals `M²`. -/
+lemma split_pairs (B : Finset (Fin n → F)) (i : Fin n) :
+    (∑ x ∈ B ×ˢ B, (if x.1 i = x.2 i then (1:ℚ) else 0))
+    + (∑ x ∈ B ×ˢ B, (if x.1 i ≠ x.2 i then (1:ℚ) else 0))
+    = (B.card:ℚ)^2 := by
+  rw [← Finset.sum_add_distrib]
+  rw [show (B.card:ℚ)^2 = ∑ _x ∈ B ×ˢ B, (1:ℚ) by
+    rw [Finset.sum_const, Finset.card_product]; push_cast; ring]
+  apply Finset.sum_congr rfl
+  intro x _
+  by_cases h : x.1 i = x.2 i <;> simp [h]
+
+/-- **Cauchy–Schwarz lower bound.** `∑_α (#{x ∈ B | x i = α})² ≥ M²/q`, via
+`sq_sum_le_card_mul_sum_sq` and `∑_α #{x ∈ B | x i = α} = M` (fiberwise count). -/
+lemma cs_lb (B : Finset (Fin n → F)) (i : Fin n) (hq : 0 < Fintype.card F) :
+    (B.card:ℚ)^2 / (Fintype.card F : ℚ)
+      ≤ ∑ α : F, ((B.filter (fun x => x i = α)).card : ℚ)^2 := by
+  have hsum : (∑ α : F, ((B.filter (fun x => x i = α)).card : ℚ)) = (B.card:ℚ) := by
+    rw [← Nat.cast_sum]; congr 1
+    exact (Finset.card_eq_sum_card_fiberwise (f := fun x => x i) (s := B) (t := univ)
+      (fun x _ => Finset.mem_univ _)).symm
+  have hcard : (Finset.univ : Finset F).card = Fintype.card F := by simp
+  have cs := sq_sum_le_card_mul_sum_sq (s := (univ : Finset F))
+    (f := fun α => ((B.filter (fun x => x i = α)).card : ℚ))
+  rw [hsum, hcard] at cs
+  rw [div_le_iff₀ (by exact_mod_cast hq), mul_comm]; exact cs
+
+/-- **Per-coordinate Plotkin step.** The number of distinct ordered pairs of `B`
+disagreeing at coordinate `i` is at most `M²·(1 - 1/q)`. -/
+lemma col_disagree_le (B : Finset (Fin n → F)) (i : Fin n) (hq : 0 < Fintype.card F) :
+    (∑ x ∈ B ×ˢ B with x.1 ≠ x.2, (if x.1 i ≠ x.2 i then (1:ℚ) else 0))
+    ≤ (B.card:ℚ)^2 * (1 - 1 / (Fintype.card F : ℚ)) := by
+  rw [filter_redundant]
+  have hsplit := split_pairs B i
+  have hagree := agree_eq_sum_sq B i
+  have hcs := cs_lb B i hq
+  have hq' : (0:ℚ) < (Fintype.card F : ℚ) := by exact_mod_cast hq
+  have hdis : (∑ x ∈ B ×ˢ B, (if x.1 i ≠ x.2 i then (1:ℚ) else 0))
+      = (B.card:ℚ)^2 - (∑ α : F, ((B.filter (fun x => x i = α)).card : ℚ)^2) := by
+    rw [← hagree]; linarith
+  rw [hdis]
+  have hexp : (B.card:ℚ)^2 * (1 - 1/(Fintype.card F : ℚ))
+      = (B.card:ℚ)^2 - (B.card:ℚ)^2/(Fintype.card F : ℚ) := by field_simp
+  rw [hexp]; linarith
+
+/-- Sum over all `n` coordinates of the per-coordinate disagreement count. -/
+lemma sum_disagree_le (B : Finset (Fin n → F)) (hq : 0 < Fintype.card F) :
+    (∑ i : Fin n, ∑ x ∈ B ×ˢ B with x.1 ≠ x.2, (if x.1 i ≠ x.2 i then (1:ℚ) else 0))
+    ≤ (n:ℚ) * (B.card:ℚ)^2 * (1 - 1 / (Fintype.card F : ℚ)) := by
+  calc (∑ i : Fin n, ∑ x ∈ B ×ˢ B with x.1 ≠ x.2, (if x.1 i ≠ x.2 i then (1:ℚ) else 0))
+      ≤ ∑ _i : Fin n, (B.card:ℚ)^2 * (1 - 1 / (Fintype.card F : ℚ)) :=
+        Finset.sum_le_sum (fun i _ => col_disagree_le B i hq)
+    _ = (n:ℚ) * (B.card:ℚ)^2 * (1 - 1 / (Fintype.card F : ℚ)) := by
+        rw [Finset.sum_const, Finset.card_univ, Fintype.card_fin]; push_cast; ring
+
+/-- **q-ary Plotkin average-distance bound** (the missing ingredient flagged in the
+T3.2 docstring). For any `B ⊆ Fⁿ` with `|B| ≥ 2`,
+
+  `d(B) ≤ (1 - 1/q) · n · |B| / (|B| - 1)`.
+
+Proof: `JohnsonBound.d_eq_sum` rewrites `2·C₂(|B|)·d(B)` as the total coordinate
+disagreement count `∑_i (…)`, which `sum_disagree_le` bounds by
+`n·|B|²·(1 - 1/q)`; since `2·C₂(|B|) = |B|·(|B|-1)`, cancelling `|B| > 0` gives the
+claim. -/
+lemma plotkin_d_le (B : Finset (Fin n → F)) (h_B : 2 ≤ B.card) (hq : 0 < Fintype.card F) :
+    JohnsonBound.d B
+      ≤ (n:ℚ) * (B.card:ℚ) * (1 - 1/(Fintype.card F:ℚ)) / ((B.card:ℚ) - 1) := by
+  have hM : (2:ℚ) ≤ (B.card:ℚ) := by exact_mod_cast h_B
+  have hMpos : (0:ℚ) < (B.card:ℚ) := by linarith
+  have hM1pos : (0:ℚ) < (B.card:ℚ) - 1 := by linarith
+  have key : 2 * JohnsonBound.choose_2 (B.card:ℚ) * JohnsonBound.d B
+      ≤ (n:ℚ) * (B.card:ℚ)^2 * (1 - 1 / (Fintype.card F : ℚ)) := by
+    rw [JohnsonBound.d_eq_sum h_B]; exact sum_disagree_le B hq
+  have hch : 2 * JohnsonBound.choose_2 (B.card:ℚ) = (B.card:ℚ) * ((B.card:ℚ) - 1) := by
+    simp [JohnsonBound.choose_2]; ring
+  have key2 : (B.card:ℚ) * ((B.card:ℚ) - 1) * JohnsonBound.d B
+      ≤ (n:ℚ) * (B.card:ℚ)^2 * (1 - 1 / (Fintype.card F : ℚ)) := by
+    rw [← hch]; linarith [key]
+  rw [le_div_iff₀ hM1pos]
+  nlinarith [key2, hMpos, mul_pos hMpos hM1pos]
+
+/-- **Index transport for `hammingDist`.** Reindexing both arguments by a bijection
+`κ ≃ ι` leaves the Hamming distance unchanged (used to move the `ι → F` statement of
+C3.3 to the `Fin n → F` apparatus of `JohnsonBound`). -/
+lemma hammingDist_reindex {ι κ : Type} [Fintype ι] [Fintype κ]
+    [DecidableEq ι] [DecidableEq κ] {G : Type} [DecidableEq G]
+    (eqv : κ ≃ ι) (u v : ι → G) :
+    hammingDist (u ∘ eqv) (v ∘ eqv) = hammingDist u v := by
+  unfold hammingDist
+  refine Finset.card_bij (fun a _ => eqv a) ?_ ?_ ?_
+  · intro a ha
+    simp only [mem_filter, mem_univ, true_and, Function.comp_apply] at ha ⊢; exact ha
+  · intro a _ b _ h; exact eqv.injective h
+  · intro b hb
+    refine ⟨eqv.symm b, ?_, by simp⟩
+    simp only [mem_filter, mem_univ, true_and, Function.comp_apply,
+      Equiv.apply_symm_apply] at hb ⊢; exact hb
+
+/-- **Real-analysis closing step for C3.3.** Given the second-moment Johnson output
+`M·(2η√ρ) ≤ 1` with `ρ ∈ (0,1]`, `η > 0`, one gets `M ≤ 1/(2ηρ)` (because
+`√ρ ≥ ρ` on `(0,1]`). This is the final inequality of the C3.3 bound. -/
+lemma mds_real_close (M ρ η : ℝ) (hM : 0 ≤ M) (hρ0 : 0 < ρ) (hρ1 : ρ ≤ 1)
+    (hη : 0 < η) (hbound : M * (2 * η * Real.sqrt ρ) ≤ 1) :
+    M ≤ 1 / (2 * η * ρ) := by
+  have hsq : ρ ≤ Real.sqrt ρ := by
+    have h := Real.sqrt_le_sqrt hρ1
+    rw [Real.sqrt_one] at h
+    nlinarith [Real.sq_sqrt hρ0.le, Real.sqrt_nonneg ρ, Real.sqrt_pos.mpr hρ0]
+  have hden_pos : 0 < 2 * η * ρ := by positivity
+  rw [le_div_iff₀ hden_pos]
+  calc M * (2 * η * ρ) ≤ M * (2 * η * Real.sqrt ρ) := by
+        apply mul_le_mul_of_nonneg_left _ hM; nlinarith [hsq]
+    _ ≤ 1 := hbound
+
+/-- **Reduced denominator inequality (frac-free core).** With `s = √ρ`, average radius
+`e0 ∈ [0, 1 - s - η]`, relative distance `δ ≥ 1 - s²`, the elementary inequality
+`2·η·s²·δ ≤ δ - 2·e0 + e0²` holds. This is the `frac = 1` reduction of the
+second-moment denominator (the general `frac ≥ 1` case follows by `frac·e0² ≥ e0²`).
+The proof is by monotonicity: the LHS-minus-RHS is decreasing in `e0` (on `[0,1]`) and
+increasing in `δ`, so its minimum is the boundary value
+`η·(η + 2s³ - 2s² + 2s) ≥ 0` (using `2s³ - 2s² + 1 > 0` on `(0,1)`). -/
+lemma den_reduced
+    (e0 δ s η : ℝ)
+    (hη : 0 < η) (hs0 : 0 < s) (hs1 : s < 1)
+    (he0_nonneg : 0 ≤ e0) (he0_le : e0 ≤ 1 - s - η) (hδ_ge : 1 - s^2 ≤ δ) :
+    2 * η * s^2 * δ ≤ δ - 2 * e0 + e0^2 := by
+  have hη_le : η ≤ 1 - s := by linarith
+  have he0_le1 : e0 ≤ 1 := by linarith
+  have hpoly : 0 < 2*s^3 - 2*s^2 + 1 := by
+    nlinarith [sq_nonneg (s - 1), mul_nonneg hs0.le (sq_nonneg (s-1)), sq_nonneg s,
+      mul_pos hs0 hs0, mul_nonneg hs0.le hs0.le]
+  have h2ηs2 : 0 < 1 - 2 * η * s^2 := by
+    nlinarith [mul_le_mul_of_nonneg_right hη_le (mul_nonneg hs0.le hs0.le), hpoly]
+  have hstep1 : (1 - s^2) * (1 - 2*η*s^2) ≤ δ * (1 - 2*η*s^2) :=
+    mul_le_mul_of_nonneg_right hδ_ge h2ηs2.le
+  have hmono : 2*e0 - e0^2 ≤ 2*(1-s-η) - (1-s-η)^2 := by
+    nlinarith [he0_le, he0_nonneg, he0_le1]
+  have hbdry : 0 ≤ (1 - s^2) * (1 - 2*η*s^2) - (2*(1-s-η) - (1-s-η)^2) := by
+    nlinarith [mul_pos hη hη, mul_pos hη hs0, mul_pos hs0 (mul_pos hs0 hs0),
+      mul_nonneg hη.le (mul_nonneg hs0.le (mul_nonneg hs0.le hs0.le)),
+      mul_nonneg hη.le hs0.le, sq_nonneg s, mul_pos hη (mul_pos hs0 hs0)]
+  nlinarith [hstep1, hmono, hbdry]
+
+/-- **C3.3 second-moment core (over ℝ).** This is the complete, sound real-analysis
+argument behind ABF26 Corollary 3.3 via the second-moment (`johnson_bound_lemma`) route.
+
+Given the raw Johnson output `M · Den ≤ frac·δ` with `Den = (1 - frac·e0)² - (1 - frac·δ)`,
+where `frac = q/(q-1) ≥ 1`, the average ball radius `e0 ∈ [0, 1 - √ρ - η]`, and the MDS
+relative distance `δ ≥ 1 - ρ`, one concludes `M ≤ 1/(2·η·ρ)`.
+
+**This generalises and corrects the `frac = 1` heuristic** in the prior C3.3 inline note:
+the denominator there was approximated as `(√ρ+η)² - ρ = η(2√ρ+η)`, which is the `frac → 1`
+(asymptotic) value. Here the bound is established for *every* `frac ≥ 1` (hence every finite
+alphabet `q ≥ 2`), since `Den = frac·(δ - 2e0 + frac·e0²) ≥ frac·(δ - 2e0 + e0²) ≥
+frac·(2ηρδ)` by `frac·e0² ≥ e0²` (`frac ≥ 1`) and `den_reduced`. Cancelling `frac·δ > 0`
+from `M·(2ηρ·frac·δ) ≤ M·Den ≤ frac·δ` gives `M·(2ηρ) ≤ 1`. -/
+lemma c33_core
+    (M frac δ e0 ρ η : ℝ)
+    (hM : 0 ≤ M)
+    (hfrac1 : 1 ≤ frac)
+    (hρ0 : 0 < ρ) (hρ1 : ρ < 1) (hη : 0 < η)
+    (he0_nonneg : 0 ≤ e0)
+    (he0_le : e0 ≤ 1 - Real.sqrt ρ - η)
+    (hδ_ge : 1 - ρ ≤ δ) (hδ_le : δ ≤ 1)
+    (hjohnson : M * ((1 - frac * e0)^2 - (1 - frac * δ)) ≤ frac * δ) :
+    M ≤ 1 / (2 * η * ρ) := by
+  set s := Real.sqrt ρ with hs
+  have hs0 : 0 < s := Real.sqrt_pos.mpr hρ0
+  have hs1 : s < 1 := by
+    rw [hs]; calc Real.sqrt ρ < Real.sqrt 1 := Real.sqrt_lt_sqrt hρ0.le hρ1
+      _ = 1 := Real.sqrt_one
+  have hssq : s^2 = ρ := Real.sq_sqrt hρ0.le
+  have hfrac_pos : 0 < frac := by linarith
+  have hδ_pos : 0 < δ := by linarith [hρ1, hδ_ge]
+  have hfracδ_pos : 0 < frac * δ := mul_pos hfrac_pos hδ_pos
+  have hred : 2 * η * s^2 * δ ≤ δ - 2 * e0 + e0^2 := by
+    apply den_reduced e0 δ s η hη hs0 hs1 he0_nonneg he0_le
+    rw [hssq]; exact hδ_ge
+  have hfe2 : e0^2 ≤ frac * e0^2 := le_mul_of_one_le_left (sq_nonneg e0) hfrac1
+  have hDen_eq : (1 - frac * e0)^2 - (1 - frac * δ) = frac * (δ - 2*e0 + frac*e0^2) := by ring
+  have hDen_ge : 2 * η * s^2 * (frac * δ) ≤ (1 - frac * e0)^2 - (1 - frac * δ) := by
+    rw [hDen_eq, show 2 * η * s^2 * (frac * δ) = frac * (2 * η * s^2 * δ) by ring]
+    apply mul_le_mul_of_nonneg_left _ hfrac_pos.le
+    calc 2 * η * s^2 * δ ≤ δ - 2*e0 + e0^2 := hred
+      _ ≤ δ - 2*e0 + frac*e0^2 := by linarith [hfe2]
+  have hchain : M * (2 * η * s^2 * (frac * δ)) ≤ frac * δ := by
+    calc M * (2 * η * s^2 * (frac * δ))
+        ≤ M * ((1 - frac * e0)^2 - (1 - frac * δ)) := mul_le_mul_of_nonneg_left hDen_ge hM
+      _ ≤ frac * δ := hjohnson
+  have hcancel : M * (2 * η * s^2) ≤ 1 := by
+    have h : (M * (2 * η * s^2)) * (frac * δ) ≤ 1 * (frac * δ) := by
+      rw [show (M * (2 * η * s^2)) * (frac * δ) = M * (2 * η * s^2 * (frac * δ)) by ring, one_mul]
+      exact hchain
+    exact le_of_mul_le_mul_right h hfracδ_pos
+  rw [hssq] at hcancel
+  rw [le_div_iff₀ (by positivity)]
+  linarith [hcancel]
+
+end MdsPlotkin
 
 /-- **ABF26 Corollary 3.3.** MDS coarse Johnson corollary. For every MDS code `C` with
 rate `ρ := dim C / n` and `η > 0`:

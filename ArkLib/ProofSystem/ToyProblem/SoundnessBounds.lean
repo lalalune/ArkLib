@@ -224,6 +224,92 @@ theorem additive_code_supports_erasure_correction_grs25
     change E f = none
     simp only [E, dif_neg this]
 
+/-- **L6.12 Step-4 arithmetic helper (B.1 bound is `≤ |F|`).** The list-decoding
+soundness lower bound `N·|F| / (|F| + N − 1)` never exceeds `|F|`: indeed
+`(N − 1)(|F| − 1) ≥ 0` gives `N·|F| ≤ |F|·(|F| + N − 1)`, and dividing by the
+positive denominator yields the claim. (Real-arithmetic core of the
+faithfulness note: the bound is meaningful only as a soundness-error lower
+bound, never larger than `|F|`.) PROVEN, axiom-clean. -/
+lemma listDecoding_lb_le_card (N : ℕ) (M : ℝ) (hM : (1 : ℝ) ≤ M) :
+    ((N : ℝ) * M) / (M + (N : ℝ) - 1) ≤ M := by
+  rcases Nat.eq_zero_or_pos N with hN | hN
+  · subst hN; simp; positivity
+  · have hNR : (1 : ℝ) ≤ (N : ℝ) := by exact_mod_cast hN
+    have hden_pos : 0 < M + (N : ℝ) - 1 := by linarith
+    rw [div_le_iff₀ hden_pos]
+    nlinarith [mul_nonneg (by linarith : (0:ℝ) ≤ (N:ℝ) - 1) (by linarith : (0:ℝ) ≤ M - 1)]
+
+/-- **L6.12 Step-4 arithmetic helper (B.1 bound is `≥ 1` when the list is
+nonempty).** When `N ≥ 1` and `|F| ≥ 1`, the bound `N·|F| / (|F| + N − 1)` is
+at least `1`: the numerator dominates the denominator by `(N − 1)(|F| − 1) ≥ 0`.
+So a faithful attack instance must exhibit at least one winning challenge.
+PROVEN, axiom-clean. -/
+lemma one_le_listDecoding_lb (N : ℕ) (M : ℝ) (hM : (1 : ℝ) ≤ M) (hN : 1 ≤ N) :
+    (1 : ℝ) ≤ ((N : ℝ) * M) / (M + (N : ℝ) - 1) := by
+  have hNR : (1 : ℝ) ≤ (N : ℝ) := by exact_mod_cast hN
+  have hden_pos : 0 < M + (N : ℝ) - 1 := by linarith
+  rw [le_div_iff₀ hden_pos, one_mul]
+  nlinarith [mul_nonneg (by linarith : (0:ℝ) ≤ (N:ℝ) - 1) (by linarith : (0:ℝ) ≤ M - 1)]
+
+/-- **L6.12 Step-4 reduction helper (empty-list branch).** When the maximised
+list size is `0`, the list-decoding lower bound `N·|F| / (|F| + N − 1)` collapses
+to `0`, so *any* attack instance discharges the bound (cardinalities are
+nonnegative). This is the honest `N = 0` branch of L6.12 — vacuous *bound*, not
+a vacuous *witness*: it does not claim a large winning set. PROVEN, axiom-clean. -/
+lemma listDecoding_lb_zero_of_card_zero (N : ℕ) (M : ℝ) (hN : N = 0) :
+    ((N : ℝ) * M) / (M + (N : ℝ) - 1) ≤ 0 := by
+  subst hN; simp
+
+/-- **L6.12 Step-2 collision bridge** (ABF26 §6.4.1, pair form). For two
+*distinct* message pairs `(m₀, m₁) ≠ (m₀', m₁')` over a finite field, the
+"evaluation map" `v ↦ (⟨m₀, v⟩, ⟨m₁, v⟩) : (Fin k → F) → F × F` collides on the
+two pairs (i.e. `φ_v(m₀,m₁) = φ_v(m₀',m₁')`) with probability at most `1/|F|`
+over a uniform `v ←$ F^k`. Proof: at least one difference vector
+`m₀ − m₀'` / `m₁ − m₁'` is nonzero; the *joint* collision event implies the
+*single*-functional zero event for that difference, whose probability is
+exactly `1/|F|` by `linearForm_collision_prob`. This is precisely the per-pair
+collision hypothesis fed to Claim B.1
+(`Probability.exists_large_image_of_pairwise_collision_bound`) in Step 3, with
+`S = Fin N` the codeword list, `T = F × F`, and `ε = 1/|F|`. PROVEN,
+axiom-clean. -/
+lemma pair_linearForm_collision_le {k : ℕ}
+    (m0 m1 m0' m1' : Fin k → F) (hne : (m0, m1) ≠ (m0', m1')) :
+    Pr_{ let v ← $ᵖ (Fin k → F) }[
+      (decide ((∑ j, m0 j * v j, ∑ j, m1 j * v j)
+             = (∑ j, m0' j * v j, ∑ j, m1' j * v j)) : Prop)]
+      ≤ (1 : ENNReal) / (Fintype.card F : ENNReal) := by
+  classical
+  -- At least one of the two message-difference vectors is nonzero.
+  have hdiff : (m0 - m0' ≠ 0) ∨ (m1 - m1' ≠ 0) := by
+    by_contra h
+    push_neg at h
+    obtain ⟨h0, h1⟩ := h
+    apply hne
+    have e0 : m0 = m0' := by funext j; have := congrFun h0 j; simpa [sub_eq_zero] using this
+    have e1 : m1 = m1' := by funext j; have := congrFun h1 j; simpa [sub_eq_zero] using this
+    rw [e0, e1]
+  rcases hdiff with hd | hd
+  · -- Nonzero first-coordinate difference `w = m₀ − m₀'`.
+    refine le_trans (Pr_le_Pr_of_implies ($ᵖ (Fin k → F)) _
+      (fun v => (decide ((∑ j, (m0 - m0') j * v j) = 0) : Prop)) ?_) ?_
+    · intro v hev
+      simp only [decide_eq_true_eq, Prod.mk.injEq] at hev ⊢
+      have h0 := hev.1
+      simp only [Pi.sub_apply, sub_mul, Finset.sum_sub_distrib]
+      rw [h0]; ring
+    · have := linearForm_collision_prob (m0 - m0') hd
+      simpa using le_of_eq this
+  · -- Nonzero second-coordinate difference `w = m₁ − m₁'`.
+    refine le_trans (Pr_le_Pr_of_implies ($ᵖ (Fin k → F)) _
+      (fun v => (decide ((∑ j, (m1 - m1') j * v j) = 0) : Prop)) ?_) ?_
+    · intro v hev
+      simp only [decide_eq_true_eq, Prod.mk.injEq] at hev ⊢
+      have h1 := hev.2
+      simp only [Pi.sub_apply, sub_mul, Finset.sum_sub_distrib]
+      rw [h1]; ring
+    · have := linearForm_collision_prob (m1 - m1') hd
+      simpa using le_of_eq this
+
 omit [DecidableEq F] in
 /-- **Lemma 6.12 of [ABF26]** (list-decoding lower bound on the simplified IOR).
 
@@ -331,7 +417,23 @@ Tagged sorry (`paper-proof-owed`, step 4 only) — ABF26's OWN result
 (§6.4.1). Steps 1–3 are realised by in-tree lemmas; the residual is the
 list→challenge winning-set injection, which additionally needs the
 `hEnc` linear-encoder hypothesis (as in `simplified_iop_soundness_ca_lb`)
-and the §6.4 violation hypothesis (see the faithfulness note above). -/
+and the §6.4 violation hypothesis (see the faithfulness note above).
+
+## Integrated Step-2/Step-4 helpers (PROVEN, axiom-clean)
+
+The following sorry-free, axiom-clean helpers (immediately above) are the
+genuine partial progress toward this residual; the main `sorry` is *not*
+discharged, but these are reusable by whoever completes Step 4:
+
+  * `listDecoding_lb_le_card` : `N·|F| / (|F| + N − 1) ≤ |F|` (the loose-bound
+    clamp / faithfulness-note arithmetic core).
+  * `one_le_listDecoding_lb` : `1 ≤ N·|F| / (|F| + N − 1)` for `N, |F| ≥ 1`
+    (a faithful attack must exhibit ≥ 1 winning challenge).
+  * `listDecoding_lb_zero_of_card_zero` : `N = 0 ⇒ N·|F| / (|F| + N − 1) ≤ 0`
+    (honest empty-list branch — vacuous *bound*, never a vacuous *witness*).
+  * `pair_linearForm_collision_le` : the Step-2 *pair*-collision bound feeding
+    Claim B.1 — distinct message pairs collide under `v ↦ (⟨m₀,v⟩,⟨m₁,v⟩)`
+    with probability `≤ 1/|F|`, via the proven `linearForm_collision_prob`. -/
 theorem simplified_iop_soundness_listDecoding_lb {k : ℕ}
     (C : Set (ι → F)) (δ : ℝ≥0) (_hδ_pos : (0 : ℝ≥0) < δ) (_hδ_lt : δ < 1)
     (_hF : (Fintype.card F : ℝ) >
