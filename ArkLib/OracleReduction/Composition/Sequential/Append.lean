@@ -1041,6 +1041,27 @@ theorem append_PrvState_natAdd_succ (k : Fin n) :
   rw [Fin.append_right]
   rfl
 
+/-- The appended protocol's direction at a *right interior* round `Fin.natAdd m k` (`k : Fin n`)
+matches `pSpec₂`'s direction at `k`.  Mirror of `append_dir_castLE` via `Fin.append_right`. -/
+theorem append_dir_natAdd (k : Fin n) :
+    (pSpec₁ ++ₚ pSpec₂).dir (Fin.natAdd m k) = pSpec₂.dir k := by
+  show Fin.vappend pSpec₁.dir pSpec₂.dir (Fin.natAdd m k) = pSpec₂.dir k
+  rw [Fin.vappend_eq_append, Fin.append_right]
+
+/-- The appended-protocol message type at a right interior round equals `pSpec₂`'s. -/
+theorem append_Message_natAdd (k : Fin n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (Fin.natAdd m k) = .P_to_V) (hDir₂ : pSpec₂.dir k = .P_to_V) :
+    (pSpec₁ ++ₚ pSpec₂).Message ⟨Fin.natAdd m k, hDir⟩ = pSpec₂.Message ⟨k, hDir₂⟩ := by
+  show Fin.vappend pSpec₁.«Type» pSpec₂.«Type» (Fin.natAdd m k) = pSpec₂.«Type» k
+  rw [Fin.vappend_eq_append, Fin.append_right]
+
+/-- The appended-protocol challenge type at a right interior round equals `pSpec₂`'s. -/
+theorem append_Challenge_natAdd (k : Fin n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (Fin.natAdd m k) = .V_to_P) (hDir₂ : pSpec₂.dir k = .V_to_P) :
+    (pSpec₁ ++ₚ pSpec₂).Challenge ⟨Fin.natAdd m k, hDir⟩ = pSpec₂.Challenge ⟨k, hDir₂⟩ := by
+  show Fin.vappend pSpec₁.«Type» pSpec₂.«Type» (Fin.natAdd m k) = pSpec₂.«Type» k
+  rw [Fin.vappend_eq_append, Fin.append_right]
+
 /--
 States that running an appended prover `P₁.append P₂` with an initial statement `stmt₁` and
 witness `wit₁` behaves as expected: it first runs `P₁` to obtain an intermediate statement
