@@ -10,6 +10,8 @@ import ArkLib.OracleReduction.Basic
 import ArkLib.OracleReduction.Security.RoundByRound
 import CompPoly.Fields.Binary.Tower.TensorAlgebra
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Basic
+import ArkLib.ProofSystem.RingSwitching.Profile
+import ArkLib.ProofSystem.Sumcheck.Structured
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Matrix.Basic
 
@@ -32,6 +34,7 @@ noncomputable section
 
 namespace Binius.RingSwitching
 open Binius.BinaryBasefold
+open Sumcheck.Structured
 
 open OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Polynomial MvPolynomial TensorProduct
 open scoped NNReal
@@ -214,15 +217,14 @@ structure BatchingStmtIn where
   t_eval_point : Fin ℓ → L         -- r = (r_0, ..., r_{ℓ-1}) => shared input
   original_claim : L               -- s = t(r) => the original claim to verify
 
-structure RingSwitchingBaseContext extends (SumcheckBaseContext L ℓ) where
+structure RingSwitchingBaseContext (P : _root_.RingSwitching.RingSwitchingProfile K L κ)
+    extends (SumcheckBaseContext L ℓ) where
   -- context from batching phase
-  s_hat : TensorAlgebra K L  -- ŝ
+  s_hat : P.A  -- ŝ
   r_batching : Fin κ → L     -- r''
 
-structure SumcheckWitness (i : Fin (ℓ' + 1)) where
-  t' : MultilinearPoly L ℓ' -- the packed polynomial
-  -- `h(X_0, ..., X_{ℓ'-1}) := A(X_0, ..., X_{ℓ'-1}) ⋅ t'(X_0, ..., X_{ℓ'-1})`
-  H : L⦃≤ 2⦄[X Fin (ℓ' - i)]
+abbrev SumcheckWitness (L : Type) [CommSemiring L] (ℓ : ℕ) (i : Fin (ℓ + 1)) :=
+  Sumcheck.Structured.SumcheckWitness L ℓ i 2
 
 section MLIOPCS
 -- Define the specific Stmt/Wit types Π' expects.
@@ -309,6 +311,7 @@ variable (L : Type) [Field L] [Fintype L] [DecidableEq L] [CharP L 2]
 variable (K : Type) [Field K] [Fintype K] [DecidableEq K]
 variable [Algebra K L]
 variable (β : Basis (Fin κ → Fin 2) K L)
+variable (P : _root_.RingSwitching.RingSwitchingProfile K L κ)
 variable (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ']
 variable (h_l : ℓ = ℓ' + κ)
 variable {𝓑 : Fin 2 ↪ L}
@@ -376,7 +379,7 @@ def getEvaluationPointSuffix (r : Fin ℓ → L) : Fin ℓ' → L :=
 
 /-- Ring-Switching multiplier parameter for sumcheck, using `A_MLE` as the multiplier. -/
 def RingSwitching_SumcheckMultParam :
-  SumcheckMultiplierParam L ℓ' (RingSwitchingBaseContext κ L K ℓ) :=
+  SumcheckMultiplierParam L ℓ' (RingSwitchingBaseContext κ L K ℓ P) :=
 { multpoly := fun ctx => -- This is supposed to be (r_κ, …, r_{ℓ-1})
     compute_A_MLE κ L K β ℓ' (original_r_eval_suffix :=
       getEvaluationPointSuffix κ L ℓ ℓ' h_l (r := ctx.t_eval_point))
@@ -418,33 +421,33 @@ def compute_final_eq_value (r_eval : Fin ℓ → L)
 /-- This condition ensures that the witness polynomial `H` has the
 correct structure `A(...) * t'(...)` -/
 def witnessStructuralInvariant {i : Fin (ℓ' + 1)}
-    (stmt : Statement (L := L) (RingSwitchingBaseContext κ L K ℓ) i)
+    (stmt : Statement (L := L) (RingSwitchingBaseContext κ L K ℓ P) i)
     (wit : SumcheckWitness L ℓ' i) : Prop :=
   wit.H = projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := wit.t') (m :=
-    (RingSwitching_SumcheckMultParam κ L K β ℓ ℓ' h_l).multpoly stmt.ctx)
+    (RingSwitching_SumcheckMultParam κ L K β P ℓ ℓ' h_l).multpoly stmt.ctx)
     (i := i) (challenges := stmt.challenges)
 
 def masterKStateProp (aOStmtIn : AbstractOStmtIn L ℓ') (stmtIdx : Fin (ℓ' + 1))
-    (stmt : Statement (L := L) (RingSwitchingBaseContext κ L K ℓ) stmtIdx)
+    (stmt : Statement (L := L) (RingSwitchingBaseContext κ L K ℓ P) stmtIdx)
     (oStmt : ∀ j, aOStmtIn.OStmtIn j)
     (wit : SumcheckWitness L ℓ' stmtIdx)
     (localChecks : Prop := True) : Prop :=
   localChecks
-  ∧ witnessStructuralInvariant κ L K β ℓ ℓ' h_l stmt wit
+  ∧ witnessStructuralInvariant κ L K β P ℓ ℓ' h_l stmt wit
   ∧ sumcheckConsistencyProp (boolDomain L _) stmt.sumcheck_target wit.H
   ∧ aOStmtIn.initialCompatibility ⟨wit.t', oStmt⟩
 
 def sumcheckRoundRelationProp (aOStmtIn : AbstractOStmtIn L ℓ') (i : Fin (ℓ' + 1))
-    (stmt : Statement (L := L) (RingSwitchingBaseContext κ L K ℓ) i)
+    (stmt : Statement (L := L) (RingSwitchingBaseContext κ L K ℓ P) i)
     (oStmt : ∀ j, aOStmtIn.OStmtIn j)
     (wit : SumcheckWitness L ℓ' i) : Prop :=
-  masterKStateProp κ L K β ℓ ℓ' h_l aOStmtIn i stmt oStmt wit
+  masterKStateProp κ L K β P ℓ ℓ' h_l aOStmtIn i stmt oStmt wit
 
 /-- Input relation for single round: proper sumcheck statement -/
 def sumcheckRoundRelation (aOStmtIn : AbstractOStmtIn L ℓ') (i : Fin (ℓ' + 1)) :
-  Set (((Statement (L := L) (RingSwitchingBaseContext κ L K ℓ) i) ×
+  Set (((Statement (L := L) (RingSwitchingBaseContext κ L K ℓ P) i) ×
     (∀ j, aOStmtIn.OStmtIn j)) × SumcheckWitness L ℓ' i) :=
-  { ((stmt, oStmt), wit) | sumcheckRoundRelationProp κ L K β ℓ ℓ' h_l
+  { ((stmt, oStmt), wit) | sumcheckRoundRelationProp κ L K β P ℓ ℓ' h_l
     aOStmtIn i stmt oStmt wit }
 
 end Relations

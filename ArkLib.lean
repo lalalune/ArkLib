@@ -175,6 +175,7 @@ import ArkLib.Data.Polynomial.ClearDenomY
 import ArkLib.Data.Polynomial.FoldingPolynomial
 import ArkLib.Data.Polynomial.GammaSubstObstruction
 import ArkLib.Data.Polynomial.HenselExistence
+import ArkLib.Data.Polynomial.HenselSeriesCoeff
 import ArkLib.Data.Polynomial.Indicator
 import ArkLib.Data.Polynomial.Interface
 import ArkLib.Data.Polynomial.NewtonLinearization
