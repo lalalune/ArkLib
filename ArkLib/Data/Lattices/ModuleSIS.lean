@@ -3,9 +3,9 @@ Copyright (c) 2024-2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tobias Rothmann
 -/
+import VCVio
 import ArkLib.Data.Lattices.CyclotomicRing.Rq
 import ArkLib.Data.Lattices.CyclotomicRing.Vectors
-import VCVio
 
 /-!
 # Module Short Integer Solution (Module-SIS) over the Cyclotomic Ring
@@ -13,6 +13,10 @@ import VCVio
 A small, ArkLib-native generic `SIS` search game and its Module-SIS specialization
 over the computable cyclotomic ring `Rq Φ`. The kernel-form relation: given a uniformly
 random matrix `A`, find a nonzero short vector `z` with `A *ᵥ z = 0`.
+
+Note, there is another SIS definition in VCV-io, that is however not defined over computable
+polynomials (CompPoly), for details checkout:
+`VCV-io/LatticeCrypto/HardnessAssumptions/ShortIntegerSolution.lean`.
 
 This is the hardness assumption the Ajtai [Ajt96] commitment binding reductions target, in
 the module form used by Greyhound [NS24] and Hachi [NOZ26].
