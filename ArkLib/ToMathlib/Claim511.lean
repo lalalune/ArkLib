@@ -248,6 +248,33 @@ theorem exists_points_with_large_matching_subset_fin
       hbad hthreshold hsmall' hbridge
   exact ⟨Dtop, hDtop, fun x hx => hgood x hx⟩
 
+/-- **Complement-threshold Claim 5.11 over `Fin n`.** This is the same
+published conclusion as `exists_points_with_large_matching_subset_fin`, with the
+slack parameter specialized to `#S - threshold`.  This is the arithmetic shape
+used by the downstream BCIKS20 wrapper once the close-parameter largeness
+hypothesis is available separately. -/
+theorem exists_points_with_large_matching_subset_fin_complement
+    {n : ℕ} {β : Type*}
+    {S : Finset β} {nonmatching : β → Finset (Fin n)}
+    {matchSet : Fin n → Finset (Fin n)}
+    {E k dH dR D : ℕ}
+    (hthreshold : (2 * k + 1) * dH * dR * D ≤ S.card)
+    (hbad : ∀ z ∈ S, (nonmatching z).card ≤ E)
+    (hsmall :
+      E * S.card < (n - k) * (S.card - (2 * k + 1) * dH * dR * D))
+    (hbridge : ∀ x : Fin n,
+      (2 * k + 1) * dH * dR * D < (S.filter (fun z => x ∉ nonmatching z)).card →
+      (2 * k + 1) * dH * dR * D < (matchSet x).card) :
+    ∃ Dtop : Finset (Fin n),
+      Dtop.card = k + 1 ∧
+      ∀ x ∈ Dtop,
+        (matchSet x).card > (2 * k + 1) * dH * dR * D := by
+  exact exists_points_with_large_matching_subset_fin
+    (S := S) (nonmatching := nonmatching) (matchSet := matchSet)
+    (E := E) (t := S.card - (2 * k + 1) * dH * dR * D)
+    (k := k) (dH := dH) (dR := dR) (D := D)
+    hbad (by omega) hsmall hbridge
+
 end Claim511
 
 end ArkLib
@@ -256,3 +283,6 @@ end ArkLib
 
 open ArkLib.Claim511 in
 #print axioms exists_points_with_large_matching_subset_fin
+
+open ArkLib.Claim511 in
+#print axioms exists_points_with_large_matching_subset_fin_complement
