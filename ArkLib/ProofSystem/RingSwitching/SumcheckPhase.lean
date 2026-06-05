@@ -459,7 +459,7 @@ theorem getSumcheckRoundPoly_eval_eq_cube_succ (i : Fin ℓ')
   all_goals exact ℓ'
 
 
-omit [Fintype L] [Fintype K] [DecidableEq K] in
+omit [Fintype K] [DecidableEq K] in
 theorem iteratedSumcheckOracleReduction_perfectCompleteness (i : Fin ℓ') :
     OracleReduction.perfectCompleteness
       (pSpec := pSpecSumcheckRound L)
@@ -540,9 +540,9 @@ theorem iteratedSumcheckOracleReduction_perfectCompleteness (i : Fin ℓ') :
   -- `OptionT`/`StateT`/`simulateQ` run-shape plumbing for a 2-message+1-challenge oracle reduction
   -- (no proven precedent in-repo — the only closed oracle-reduction completeness, final-sumcheck, has
   -- ZERO challenges) plus the HEq cast reconciliation in (2). Preserved as WIP per honest-completion.
-  -- (A) VERIFIER CHECK: the honest round univariate `h_i := getSumcheckRoundPoly i witIn.H` satisfies
-  -- the verifier's accept condition `∑_{points i} h_i(b) = stmtIn.sumcheck_target` via the cube
-  -- identity `getSumcheckRoundPoly_points_sum_eq_cube` and the relIn `sumcheckConsistencyProp`.
+  -- (A) VERIFIER CHECK: the honest round univariate `h_i := getSumcheckRoundPoly i witIn.H`
+  -- satisfies the verifier's accept condition by `getSumcheckRoundPoly_points_sum_eq_cube`
+  -- and the relIn `sumcheckConsistencyProp`.
   have hcheck : (∑ b ∈ (boolDomain L ℓ').points i,
       Polynomial.eval b (getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i) witIn.H).val)
       = stmtIn.sumcheck_target := by
@@ -550,7 +550,14 @@ theorem iteratedSumcheckOracleReduction_perfectCompleteness (i : Fin ℓ') :
   -- (B) NEXT-ROUND CONSISTENCY (for every challenge `r'`): the next-round target `h_i.eval r'`
   -- equals the next cube-sum of the advanced witness `witOut.H = fixFirstVariablesOfMQP … {r'}`.
   -- This is `getSumcheckRoundPoly_eval_eq_cube_succ` instantiated at the honest witness.
-  trace_state
+  -- (C) PLUMBING: collapse the deterministic prover binds, the verifier message-query, and the
+  -- `guard`, reducing the run to a `$ᵗ L`-sample probEvent.
+  simp only [liftM, monadLift, MonadLiftT.monadLift, MonadLift.monadLift, pure_bind,
+    bind_pure_comp, map_pure, Functor.map_map, Function.comp, getRoundProverFinalOutput,
+    Transcript.concat]
+  simp only [liftComp_pure, liftComp_bind, liftComp_map, bind_assoc, pure_bind, map_pure]
+  dsimp only []
+  simp only [liftComp_pure, liftComp_map, bind_assoc, pure_bind, map_pure]
   sorry
 
 noncomputable def iteratedSumcheckRbrExtractor (i : Fin ℓ') :
@@ -1390,7 +1397,8 @@ variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ Pro
 /-- Perfect completeness for large-field reduction (Sumcheck ++ FinalSum) -/
 theorem coreInteraction_perfectCompleteness [IsDomain L] [IsDomain K] :
   OracleReduction.perfectCompleteness
-    (oracleReduction := coreInteractionOracleReduction κ L K P ℓ ℓ' h_l aOStmtIn)
+    (oracleReduction := coreInteractionOracleReduction (κ := κ) (L := L) (K := K)
+      (P := P) (ℓ := ℓ) (ℓ' := ℓ') (aOStmtIn := aOStmtIn) (h_l := h_l))
     (StmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) 0)
     (OStmtIn := aOStmtIn.OStmtIn)
     (StmtOut := MLPEvalStatement L ℓ')
@@ -1431,7 +1439,8 @@ def coreInteractionRbrKnowledgeError (j : (pSpecCoreInteraction L ℓ').Challeng
 /-- RBR knowledge soundness for large-field reduction (Sumcheck ++ FinalSum) -/
 theorem coreInteraction_rbrKnowledgeSoundness [IsDomain L] [IsDomain K] :
   OracleVerifier.rbrKnowledgeSoundness
-    (verifier := coreInteractionOracleVerifier κ L K P ℓ ℓ' h_l aOStmtIn)
+    (verifier := coreInteractionOracleVerifier (κ := κ) (L := L) (K := K)
+      (P := P) (ℓ := ℓ) (ℓ' := ℓ') (aOStmtIn := aOStmtIn) (h_l := h_l))
     (StmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) 0)
     (OStmtIn := aOStmtIn.OStmtIn)
     (StmtOut := MLPEvalStatement L ℓ')
