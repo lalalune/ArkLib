@@ -239,6 +239,20 @@ def MCAUpperWitness.ofEpsCAGt {MC : Submodule F (ι → F)} {ε_star δ : ℝ≥
     MCAUpperWitness (MC : Set (ι → F)) ε_star :=
   ⟨δ, lt_of_lt_of_le h (epsCA_le_epsMCA MC δ)⟩
 
+/-- A lower witness remains valid when the target threshold is relaxed. -/
+def MCALowerWitness.monoEps {C : Set (ι → F)} {ε_star ε_star' : ℝ≥0}
+    (w : MCALowerWitness C ε_star)
+    (hε : (ε_star : ENNReal) ≤ (ε_star' : ENNReal)) :
+    MCALowerWitness C ε_star' :=
+  ⟨w.δ, w.le_one, le_trans w.bound hε⟩
+
+/-- An upper witness remains valid when the target threshold is tightened. -/
+def MCAUpperWitness.monoEps {C : Set (ι → F)} {ε_star ε_star' : ℝ≥0}
+    (w : MCAUpperWitness C ε_star)
+    (hε : (ε_star' : ENNReal) ≤ (ε_star : ENNReal)) :
+    MCAUpperWitness C ε_star' :=
+  ⟨w.δ, lt_of_le_of_lt hε w.exceeds⟩
+
 /-! ## Concrete bridges from `CapacityBounds`
 
 One representative of each direction, consuming an actual external-admit bound. The
