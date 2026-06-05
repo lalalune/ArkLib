@@ -25,6 +25,7 @@ section BCIKS20ProximityGapSection5To6Bridge
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 variable {n : ℕ} [NeZero n]
 
+set_option linter.unusedSectionVars false in
 omit [Field F] [Fintype F] [DecidableEq F] [NeZero n] in
 /-- Every two-row word stack is definitionally the stack made from its two rows. -/
 lemma wordStack_fin_two_eq_finMapTwoWords (u : WordStack F (Fin 2) (Fin n)) :
@@ -122,13 +123,13 @@ theorem coeffs_of_close_proximity_card_eq_goodCoeffsCurve_finMapTwoWords
   rw [coeffs_of_close_proximity_eq_goodCoeffsCurve_finMapTwoWords
     (F := F) (n := n) (k := k) (ωs := ωs) δ u₀ u₁]
 
+set_option linter.unusedFintypeInType false in
 /-- Boundary-card supplier for the §5 affine-line bridge, routed through the
 Hensel-free [BCKHS25] restored-distance affine-line `jointAgreement`.
 
 The existing closed-radius capstones only expose nonemptiness of the boundary
 close set. This adapter records the additional [BCKHS25] obligations needed to
 turn that same close set into a restored-distance joint-agreement certificate. -/
-set_option linter.unusedFintypeInType false in
 theorem affine_lines_boundaryCard_of_BCKHS25_restored
     {k e h DZ : ℕ} {ωs : Fin n ↪ F} (δ : ℚ≥0)
     (hn : k + 2 * e + h + 1 = Fintype.card (Fin n))
