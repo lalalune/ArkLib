@@ -5606,14 +5606,10 @@ lemma exists_points_with_close_subset_matching_set_of_natCeil_delta_nonmatching_
     ∀ x ∈ Dtop,
       coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ ⊆
         matching_set_at_x k δ h_gs x := by
-  obtain ⟨Dtop, hcard, hlarge⟩ :=
-    exists_points_with_large_matching_subset_of_natCeil_delta_nonmatching_bound
-      (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
-      h_gs (D := D) (t := t) hthreshold hsmall
-  refine ⟨Dtop, hcard, ?_⟩
-  exact close_proximity_subset_matching_set_on_points_of_large_matching_subset
-    (k := k) (δ := δ) (x₀ := x₀) (ωs := ωs) (Dtop := Dtop) (D := D)
-    h_gs hcover hlarge
+  exact exists_points_with_close_subset_matching_set_of_delta_nonmatching_bound
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+    h_gs (D := D) (E := ⌈δ * (n : ℚ)⌉₊) (t := t)
+    (Nat.le_ceil _) hcover hthreshold hsmall
 
 /-- Claim 5.11 from [BCIKS20].
 There exists a set of points `{x₀,...,x_{k+1}}` such that the sets S_{x_j} satisfy the condition in
