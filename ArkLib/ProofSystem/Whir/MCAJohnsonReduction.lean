@@ -1,4 +1,5 @@
 import ArkLib.ProofSystem.Whir.MutualCorrAgreement
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges
 
 /-! Reduction scaffold for the MCA Johnson conjecture (affine-line / parℓ=2 case):
 the WHIR proximityCondition probability over the affine-line generator is bounded
@@ -31,6 +32,20 @@ theorem mca_affineLine_of_epsMCA_bound
       let γ ← $ᵖ F}[proximityCondition (parℓ := Fin 2) f δ
         (fun j ↦ if j = 0 then 1 else γ) C] ≤ E δ :=
   le_trans (Pr_proximityCondition_le_epsMCA hδ f) (hbound δ hδ)
+
+/-- **Affine-line MCA from a Grand Challenge lower witness.** A certified
+`MCALowerWitness` for the ABF26 grand challenge immediately bounds WHIR's
+affine-line `proximityCondition` probability at the witness radius. -/
+theorem mca_affineLine_of_mcaLowerWitness
+    {C : LinearCode ι F} {ε_star : ℝ≥0}
+    (w : ProximityGap.GrandChallenges.MCALowerWitness
+      ((C : Set (ι → F))) ε_star)
+    (hδ : w.δ < 1)
+    (f : Fin 2 → ι → F) :
+    Pr_{
+      let γ ← $ᵖ F}[proximityCondition (parℓ := Fin 2) f w.δ
+        (fun j ↦ if j = 0 then 1 else γ) C] ≤ (ε_star : ENNReal) :=
+  le_trans (Pr_proximityCondition_le_epsMCA hδ f) w.bound
 
 end
 
