@@ -280,6 +280,72 @@ theorem hcoeffPoly_goodCoeffsCurve_finMapTwoWords_of_selected_matching_domain
   rw [hP_eq z hz_close]
   exact hBcoeff₀ z hz j hj
 
+open Polynomial in
+/-- Canonical coefficient-polynomial package for `PzFamily` on a selected
+matching domain, in the exact shape consumed by the strict §6 canonical
+coefficient front doors. -/
+theorem PzFamily_exists_canonical_coeff_polys_goodCoeffsCurve_finMapTwoWords_of_selected_domain
+    {m k : ℕ} {ωs : Fin n ↪ F} {Q : F[Z][X][Y]}
+    (δ : ℚ≥0) (u₀ u₁ : Fin n → F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (Dtop : Finset (Fin n))
+    (hDtop_card : Dtop.card = k + 1)
+    (hsubset : ∀ x ∈ Dtop,
+      coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁ ⊆
+        matching_set_at_x k (δ : ℚ) h_gs x)
+    (hunique : ∀ P : F → F[X],
+      (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+        (P z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P z).eval ∘ ωs) ≤ (δ : ℚ)) →
+      ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+        P z = PzFamily (F := F) (n := n) (δ : ℚ) u₀ u₁ ωs k z) :
+    ∃ P₀ : F → F[X],
+      (∃ B : ℕ → F[X],
+        (∀ j < k + 1, (B j).natDegree < 1 + 1) ∧
+          ∀ z ∈ RS_goodCoeffsCurve (k := 1) (deg := k + 1) (domain := ωs)
+              (Code.finMapTwoWords u₀ u₁) (δ : ℝ≥0),
+            ∀ j < k + 1, (P₀ z).coeff j = (B j).eval z) ∧
+      ∀ P : F → F[X],
+        (∀ z ∈ RS_goodCoeffsCurve (k := 1) (deg := k + 1) (domain := ωs)
+            (Code.finMapTwoWords u₀ u₁) (δ : ℝ≥0),
+          (P z).natDegree < k + 1 ∧
+            δᵣ(∑ t : Fin 2, (z ^ (t : ℕ)) • Code.finMapTwoWords u₀ u₁ t,
+              (P z).eval ∘ ωs) ≤ (δ : ℝ≥0)) →
+        ∀ z ∈ RS_goodCoeffsCurve (k := 1) (deg := k + 1) (domain := ωs)
+            (Code.finMapTwoWords u₀ u₁) (δ : ℝ≥0),
+          P z = P₀ z := by
+  classical
+  let P₀ : F → F[X] := PzFamily (F := F) (n := n) (δ : ℚ) u₀ u₁ ωs k
+  refine ⟨P₀, ?_, ?_⟩
+  · refine hcoeffPoly_goodCoeffsCurve_finMapTwoWords_of_selected_matching_domain
+      (F := F) (n := n) (m := m) (k := k) (ωs := ωs) (Q := Q)
+      δ u₀ u₁ h_gs Dtop hDtop_card hsubset hunique P₀ ?_
+    intro z hz
+    have hz_close :
+        z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁ := by
+      exact (coeffs_of_close_proximity_mem_iff_goodCoeffsCurve_finMapTwoWords
+        (F := F) (n := n) (k := k) (ωs := ωs) δ u₀ u₁ z).mpr hz
+    have hdecoded :=
+      PzFamily_decoded_on_close_set
+        (F := F) (n := n) (k := k) (δ := (δ : ℚ)) (u₀ := u₀) (u₁ := u₁)
+        (ωs := ωs) z hz_close
+    exact ⟨hdecoded.1, by
+      simpa [P₀, sum_finMapTwoWords_eq, ENNReal.coe_nnratCast] using hdecoded.2⟩
+  · intro P hP z hz
+    have hz_close :
+        z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁ := by
+      exact (coeffs_of_close_proximity_mem_iff_goodCoeffsCurve_finMapTwoWords
+        (F := F) (n := n) (k := k) (ωs := ωs) δ u₀ u₁ z).mpr hz
+    exact hunique P (by
+      intro w hw
+      have hw_good :
+          w ∈ RS_goodCoeffsCurve (k := 1) (deg := k + 1) (domain := ωs)
+            (Code.finMapTwoWords u₀ u₁) (δ : ℝ≥0) := by
+        exact (coeffs_of_close_proximity_mem_iff_goodCoeffsCurve_finMapTwoWords
+          (F := F) (n := n) (k := k) (ωs := ωs) δ u₀ u₁ w).mp hw
+      have hwP := hP w hw_good
+      exact ⟨hwP.1, by
+        simpa [sum_finMapTwoWords_eq, ENNReal.coe_nnratCast] using hwP.2⟩) z hz_close
+
 /-- Strict Johnson §6 joint-agreement front door specialized to the §5
 affine-line setup, using only the Claim-5.11 selected coordinate domain. -/
 theorem RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_selected_matching_domain
@@ -307,13 +373,14 @@ theorem RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_selected_
     jointAgreement (C := ReedSolomon.code ωs (k + 1)) (δ := (δ : ℝ≥0))
       (W := Code.finMapTwoWords u₀ u₁) := by
   classical
-  exact RS_jointAgreement_of_prob_gt_strict_johnson_and_coeff_polys
+  obtain ⟨P₀, hCoeff₀, huniq⟩ :=
+    PzFamily_exists_canonical_coeff_polys_goodCoeffsCurve_finMapTwoWords_of_selected_domain
+      (F := F) (n := n) (m := m) (k := k) (ωs := ωs) (Q := Q)
+      δ u₀ u₁ h_gs Dtop hDtop_card hsubset hunique
+  exact RS_jointAgreement_of_prob_gt_strict_johnson_and_canonical_coeff_polys
     (deg := k + 1) (domain := ωs) (δ := (δ : ℝ≥0))
     (hk := Nat.zero_lt_succ 0) (u := Code.finMapTwoWords u₀ u₁)
-    hprob hJ hδ
-    (hcoeffPoly_goodCoeffsCurve_finMapTwoWords_of_selected_matching_domain
-      (F := F) (n := n) (m := m) (k := k) (ωs := ωs) (Q := Q)
-      δ u₀ u₁ h_gs Dtop hDtop_card hsubset hunique)
+    hprob hJ hδ P₀ hCoeff₀ huniq
 
 /-- Strict Johnson §6 joint-agreement front door specialized to the §5
 affine-line setup, with the selected coordinate domain produced from any
