@@ -5574,6 +5574,7 @@ lemma exists_points_with_close_subset_matching_set_of_natCeil_delta_nonmatching_
       h_gs (D := D) (t := t) hthreshold hsmall
   refine ⟨Dtop, hcard, ?_⟩
   exact close_proximity_subset_matching_set_on_points_of_large_matching_subset
+    (k := k) (δ := δ) (x₀ := x₀) (ωs := ωs) (Dtop := Dtop) (D := D)
     h_gs hcover hlarge
 
 /-- Claim 5.11 from [BCIKS20].
