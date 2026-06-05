@@ -111,4 +111,38 @@ theorem jointAgreement_of_jointDisagreement_le {deg : ℕ} [NeZero deg]
     simp only [hAgr, Finset.mem_filter] at hx
     simpa [lineWordStack] using hx.2.2
 
+/-- **[BCKHS25] §2 Hensel-free affine-line `jointAgreement` (end-to-end).**
+
+Direct consumer closure: from the per-`z` list-decoding hypothesis (`prox`: a
+large set `S` of curve parameters, each with a degree-`k` proximate within
+Hamming distance `e` of the line combination `u₀ + u₁·z`) together with the
+Polishchuk–Spielman ratio (`hratio`) and degree budget (`hn`, `hDZ`), the line
+word `(u₀, u₁)` has `jointAgreement` with the Reed–Solomon code of degree
+`deg = k + 1`, provided the joint-agreement loss `e + h` fits inside the
+proximity radius `⌊δ·n⌋`.
+
+This chains [BCKHS25] Claim 2.3 (`exists_joint_proximate`, built on Lemma 2.1's
+Berlekamp–Welch pair) with the joint-pair → `jointAgreement` bridge, giving the
+list-decoding-branch output of `δ_ε_correlatedAgreementAffineLines` entirely on
+the Hensel-free route. -/
+theorem jointAgreement_of_proximates (k e h DZ : ℕ) {δ : ℝ≥0}
+    (hn : k + 2 * e + h + 1 = Fintype.card ι)
+    (hDZ : e + 1 ≤ (h + 1) * DZ) (hDZ0 : 0 < DZ)
+    (domain : ι ↪ F) (u₀ u₁ : ι → F) (S : Finset F) (hS0 : 0 < S.card)
+    (prox : ∀ z ∈ S, ∃ p : F[X], p.natDegree ≤ k ∧
+      (Finset.univ.filter (fun x => p.eval (domain x) ≠ u₀ x + u₁ x * z)).card ≤ e)
+    (hratio : ((k + e + h : ℕ) : ℚ) / (Fintype.card ι : ℚ)
+      + ((DZ : ℕ) : ℚ) / (S.card : ℚ) < 1)
+    (hfit : e + h ≤ Nat.floor (δ * (Fintype.card ι : ℝ≥0))) :
+    jointAgreement (F := F) (κ := Fin 2) (ι := ι)
+      (C := ReedSolomon.code domain (k + 1)) (δ := δ) (W := lineWordStack u₀ u₁) := by
+  classical
+  obtain ⟨p₀, p₁, hp₀, hp₁, hdis⟩ :=
+    exists_joint_proximate k e h DZ hn hDZ hDZ0 domain u₀ u₁ S hS0 prox hratio
+  haveI : NeZero (k + 1) := ⟨Nat.succ_ne_zero k⟩
+  have hp₀' : p₀.natDegree < k + 1 := Nat.lt_succ_of_le hp₀
+  have hp₁' : p₁.natDegree < k + 1 := Nat.lt_succ_of_le hp₁
+  exact jointAgreement_of_jointDisagreement_le (deg := k + 1) hp₀' hp₁'
+    (le_trans hdis hfit)
+
 end BCKHS25
