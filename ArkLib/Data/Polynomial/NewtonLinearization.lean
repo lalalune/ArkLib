@@ -212,6 +212,36 @@ theorem coeff_aeval_sub_at (P : Polynomial R) {γ₁ γ₂ : R⟦X⟧} {t : ℕ}
   rw [Polynomial.derivative_eval, Polynomial.sum_over_range' _ (by simp) (P.natDegree + 1)
         (Nat.lt_succ_self _)]
 
+
+/-! ## Hensel-root uniqueness (the flagship corollary)
+
+With the linearization in hand, uniqueness of a power-series root of a polynomial above a
+simple residue root is a clean strong induction: two roots sharing the constant term must
+agree at every order, because at the first disagreement the linearization forces
+`P'(c) · (difference) = 0` and `P'(c)` is a unit. This is the uniqueness half of Hensel's
+lemma for `R⟦X⟧`, exactly the "unique affine pair / unique lift" ingredient consumed by
+[Hab25] Steps 5–7 and the BCIKS20 App. A.4 chain (P2). -/
+
+/-- **Power-series Hensel-root uniqueness.** If `γ₁, γ₂` are roots of the polynomial `P`
+(under `aeval`), share their constant coefficient `c`, and `P'(c)` is a unit, then
+`γ₁ = γ₂`. -/
+theorem aeval_root_unique (P : Polynomial R) {γ₁ γ₂ : R⟦X⟧}
+    (hc : constantCoeff γ₁ = constantCoeff γ₂)
+    (hu : IsUnit (Polynomial.eval (constantCoeff γ₁) (Polynomial.derivative P)))
+    (h₁ : Polynomial.aeval γ₁ P = 0) (h₂ : Polynomial.aeval γ₂ P = 0) :
+    γ₁ = γ₂ := by
+  apply PowerSeries.ext
+  intro t
+  induction t using Nat.strong_induction_on with
+  | _ t ih =>
+    rcases Nat.eq_zero_or_pos t with rfl | ht
+    · simpa [PowerSeries.coeff_zero_eq_constantCoeff] using hc
+    · have hsub := coeff_aeval_sub_at P ht (fun j hj => ih j hj)
+      rw [h₁, h₂, sub_self] at hsub
+      have hzero : Polynomial.eval (constantCoeff γ₁) (Polynomial.derivative P) *
+          (PowerSeries.coeff t γ₁ - PowerSeries.coeff t γ₂) = 0 := hsub.symm
+      exact sub_eq_zero.mp ((IsUnit.mul_right_eq_zero hu).mp hzero)
+
 /-! ## Axiom audit (recorded 2026-06-05)
 
 In-file `#print axioms` (run on a temp copy, then removed) confirmed every declaration of this
