@@ -1128,6 +1128,83 @@ theorem append_receiveChallenge_seam (hn : 0 < n)
   · apply heq_of_eq; congr 1
   · rintro c c' rfl; rfl
 
+/-! ### Right interior-round reductions
+
+The right *interior* rounds `m+1 .. m+n-1` are the `i > m` branch of `Prover.append`: uniform `P₂`
+rounds.  These mirror the left-block reductions (`append_sendMessage_left` etc.), now indexed through
+`Fin.natAdd m k` (`k : Fin n`, `k > 0`); the appended step reduces heterogeneously to `P₂`'s step at
+round `k`, with the state transported by `append_PrvState_natAdd_castSucc`. -/
+
+/-- State-type equality: the appended prover's state at the interior right round `Fin.natAdd m k`'s
+`castSucc` (state going INTO interior round `k`, where `k > 0`) equals `P₂`'s state at `k`. -/
+theorem append_PrvState_natAdd_castSucc (k : Fin n) (hk : 0 < (k : ℕ)) :
+    (P₁.append P₂).PrvState (Fin.natAdd m k).castSucc = P₂.PrvState k.castSucc := by
+  have hpred : (⟨(k : ℕ) - 1, by omega⟩ : Fin n).succ = k.castSucc := by ext; simp; omega
+  have := append_PrvState_natAdd_succ (P₁ := P₁) (P₂ := P₂) ⟨(k : ℕ) - 1, by omega⟩
+  rw [hpred] at this
+  rw [show ((Fin.natAdd m k).castSucc : Fin (m + n + 1))
+        = (Fin.natAdd (m + 1) (⟨(k : ℕ) - 1, by omega⟩ : Fin n)).cast (by omega) from by
+        ext; simp; omega]
+  exact this
+
+/-- State-type equality at the interior right round `succ` index (state AFTER interior round `k`,
+`k > 0`).  Equals `P₂.PrvState k.succ`. -/
+theorem append_PrvState_natAdd_interior_succ (k : Fin n) (hk : 0 < (k : ℕ)) :
+    (P₁.append P₂).PrvState (Fin.natAdd m k).succ = P₂.PrvState k.succ := by
+  have := append_PrvState_natAdd_succ (P₁ := P₁) (P₂ := P₂) k
+  rw [show ((Fin.natAdd m k).succ : Fin (m + n + 1))
+        = (Fin.natAdd (m + 1) k).cast (by omega) from by ext; simp; omega]
+  exact this
+
+/-- **Right interior-round `sendMessage` reduction.**  At an interior right round `Fin.natAdd m k`
+(`k : Fin n`, `k > 0`, the `i > m` branch of `Prover.append.sendMessage`), the appended prover's
+`sendMessage` is heterogeneously equal to `P₂`'s `sendMessage` at round `k`. -/
+theorem append_sendMessage_natAdd (k : Fin n) (hk : 0 < (k : ℕ))
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (Fin.natAdd m k) = .P_to_V)
+    (hDir₂ : pSpec₂.dir k = .P_to_V)
+    (state : (P₁.append P₂).PrvState (Fin.natAdd m k).castSucc) :
+    HEq ((P₁.append P₂).sendMessage ⟨Fin.natAdd m k, hDir⟩ state)
+      (P₂.sendMessage ⟨k, hDir₂⟩ (cast (append_PrvState_natAdd_castSucc k hk) state)) := by
+  unfold Prover.append
+  dsimp only [Fin.vappend_eq_append]
+  have hnlt : ¬ (↑(Fin.natAdd m k) : ℕ) < m := by simp
+  rw [id_eq, dif_neg hnlt]
+  have hne : (↑(Fin.natAdd m k) : ℕ) ≠ m := by simp; omega
+  rw [dif_neg hne]
+  simp only [eq_mpr_eq_cast, eq_mp_eq_cast]
+  apply HEq.trans (cast_heq _ _)
+  have hkeq : (⟨(↑(Fin.natAdd m k) : ℕ) - m, by simp⟩ : Fin n) = k := by ext; simp
+  have hdir₂' : pSpec₂.dir ⟨(↑(Fin.natAdd m k) : ℕ) - m, by simp⟩ = .P_to_V := by
+    rw [hkeq]; exact hDir₂
+  have hidx : (⟨⟨(↑(Fin.natAdd m k) : ℕ) - m, by simp⟩, hdir₂'⟩ : pSpec₂.MessageIdx)
+      = ⟨k, hDir₂⟩ := by ext; simp
+  refine sendMessage_heq_congr hidx ?_
+  exact (cast_heq _ _).trans ((cast_heq _ _).trans (cast_heq _ _).symm)
+
+/-- **Right interior-round `receiveChallenge` reduction.**  Mirror of `append_sendMessage_natAdd`
+for the `V_to_P` direction. -/
+theorem append_receiveChallenge_natAdd (k : Fin n) (hk : 0 < (k : ℕ))
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (Fin.natAdd m k) = .V_to_P)
+    (hDir₂ : pSpec₂.dir k = .V_to_P)
+    (state : (P₁.append P₂).PrvState (Fin.natAdd m k).castSucc) :
+    HEq ((P₁.append P₂).receiveChallenge ⟨Fin.natAdd m k, hDir⟩ state)
+      (P₂.receiveChallenge ⟨k, hDir₂⟩ (cast (append_PrvState_natAdd_castSucc k hk) state)) := by
+  unfold Prover.append
+  dsimp only [Fin.vappend_eq_append]
+  have hnlt : ¬ (↑(Fin.natAdd m k) : ℕ) < m := by simp
+  rw [dif_neg hnlt]
+  have hne : (↑(Fin.natAdd m k) : ℕ) ≠ m := by simp; omega
+  rw [dif_neg hne]
+  simp only [eq_mpr_eq_cast, eq_mp_eq_cast]
+  apply HEq.trans (cast_heq _ _)
+  have hkeq : (⟨(↑(Fin.natAdd m k) : ℕ) - m, by simp⟩ : Fin n) = k := by ext; simp
+  have hdir₂' : pSpec₂.dir ⟨(↑(Fin.natAdd m k) : ℕ) - m, by simp⟩ = .V_to_P := by
+    rw [hkeq]; exact hDir₂
+  have hidx : (⟨⟨(↑(Fin.natAdd m k) : ℕ) - m, by simp⟩, hdir₂'⟩ : pSpec₂.ChallengeIdx)
+      = ⟨k, hDir₂⟩ := by ext; simp
+  refine receiveChallenge_heq_congr hidx ?_
+  exact (cast_heq _ _).trans ((cast_heq _ _).trans (cast_heq _ _).symm)
+
 /--
 States that running an appended prover `P₁.append P₂` with an initial statement `stmt₁` and
 witness `wit₁` behaves as expected: it first runs `P₁` to obtain an intermediate statement
