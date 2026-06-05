@@ -385,7 +385,30 @@ open Trivariate in
 open Bivariate in
 /-- Claim 5.7 of [BCIKS20].
 
-OBSTRUCTION (one residual blocker remains — the trivariate vanishing bridge).
+STATEMENT REPAIRS APPLIED (wave5-c57, 2026-06-04). The two verified statement-layer defects below
+are now FIXED so the claim is provable-as-stated; what remains is genuine proof work (Prop 5.5
+assembly), not statement falsity. Concretely:
+
+  1. *Johnson hypothesis added.* A side hypothesis `hδ : (δ : ℝ) ≤ proximity_gap_johnson (k+1) n m`
+     now binds `δ` inside the list-decoding radius `δ₀(ρ,m) = 1 − √ρ − √ρ/(2m)`. Rationale: the
+     Gap-B keystone `Q_vanishes_on_close_codeword_graph` needs the strict count
+     `natWeightedDegree (eval_on_Z Q z) 1 k < m·#A` (with `#A ≥ (1−δ)n`), which holds only when `δ`
+     is within the Johnson radius. Countermodel for the un-repaired free `δ`: for `δ` near `1` the
+     agreement set `A` is too small and the per-`z` graph vanishing genuinely fails, so the
+     pigeonhole feeding the first conjunct breaks.
+  2. *Second cardinality conjunct moved to a hypothesis.* The conjunct
+     `(#S : ℝ)/(D_Y Q) > 2·D_Y Q²·D_X·D_YZ Q` was MOVED from the conclusion to the new hypothesis
+     `hScard`. Rationale: in [BCIKS20] this is a *standing* list-decoding-regime ("`S` large")
+     assumption, not a consequence of `ModifiedGuruswami`. Countermodel as a conclusion
+     (`Extraction.c57_second_conjunct_unsat_of_S_empty`): for `δ < 0` the set `S` is empty
+     (`Extraction.coeffs_of_close_proximity_eq_empty_of_neg`), so the LHS is `0`, while the RHS is
+     `≥ 0` always (`Extraction.c57_rhs_nonneg`), giving `0 > (≥0)` — false.
+
+Both repairs are threaded through the extractors `R`/`H`/`irreducible_H`/`natDegree_H_pos`/… and
+Claims 5.8–5.11 (each now carries the `hδ`/`hScard` binders), since on this branch we own every
+downstream signature (the previously-blocking positional `(δ)(x₀)(h_gs)` constraint is lifted).
+
+ORIGINAL OBSTRUCTION NOTES (Gap A / Gap B history; both resolved).
 
 * *Sealed `eval_on_Z` (Gap A — NOW RESOLVED).*  Previously `Trivariate.eval_on_Z` was declared
   `opaque`, so **no** property of `eval_on_Z R z.1` (which appears in the `S'`-membership predicate
@@ -409,31 +432,36 @@ OBSTRUCTION (one residual blocker remains — the trivariate vanishing bridge).
   over `F[Z]` at `(C ωᵢ, C(u₀ᵢ) + X·C(u₁ᵢ))` under `Z ↦ z` (`gapB_transport_mult`) to order-`≥ m`
   vanishing of `eval_on_Z Q z` at the word point `(ωᵢ, (u₀ + z•u₁) i)`, then a degree-vs-roots count
   (`gapB_vanish_of_orderM_and_count`).  `#print axioms` is clean.
-  *Verified residual side hypothesis (NOT in this binder):* the count requires the strict inequality
+  *Verified side hypothesis (NOW IN THIS BINDER as `hδ`):* the count requires the strict inequality
   `m·#A > natWeightedDegree (eval_on_Z Q z) 1 k` (with `#A ≥ (1−δ)n` the agreement count), i.e. `δ`
-  within the Johnson radius `proximity_gap_johnson`.  `δ` is a *free* parameter of this Claim-5.7
-  lemma (no `δ ≤ δ₀` hypothesis), so for `δ` near `1` the vanishing genuinely fails; the keystone
-  therefore takes that Johnson/count condition as an *explicit hypothesis*.  Closing Claim 5.7 from
-  the keystone is thus blocked only on adding the absent `δ ≤ δ₀` binder — a statement repair the
-  uneditable downstream consumers forbid (see the second-conjunct note below).
+  within the Johnson radius `proximity_gap_johnson`.  This is supplied by the added repair-1
+  hypothesis `hδ : (δ : ℝ) ≤ proximity_gap_johnson (k+1) n m`, so the keystone's count condition is
+  now discharimble internally; for `δ` near `1` (excluded by `hδ`) the vanishing genuinely fails.
 
-* *Second cardinality conjunct is false off the list-decoding regime (VERIFIED defect, the 7th in
-  this tree).*  The conjunct `(#S : ℝ)/(D_Y Q) > 2·D_Y Q²·D_X·D_YZ Q` is a *lower bound on `#S`*
-  (`S = coeffs_of_close_proximity`) that does not follow from `ModifiedGuruswami`: for `δ < 0` (and
-  `0 < n`) the set `S` is **empty** (`Extraction.coeffs_of_close_proximity_eq_empty_of_neg`), so the
-  LHS is `0`, while the RHS is `≥ 0` always (`Extraction.c57_rhs_nonneg`); hence `0 > (≥0)` is
-  false (`Extraction.c57_second_conjunct_unsat_of_S_empty`).  In [BCIKS20] this inequality is a
-  *hypothesis* (`S` large — the list-decoding case), mis-placed into the conclusion; the faithful
-  fix carries it (and the Johnson bound above) as side hypotheses, which the uneditable consumer
-  signatures `(δ) (x₀) (h_gs)` of `R`/`H`/`irreducible_H`/Claims-5.8–5.11 do not admit.
+* *Second cardinality conjunct was false off the list-decoding regime (VERIFIED defect — NOW MOVED
+  to hypothesis `hScard`).*  The conjunct `(#S : ℝ)/(D_Y Q) > 2·D_Y Q²·D_X·D_YZ Q` is a *lower
+  bound on `#S`* (`S = coeffs_of_close_proximity`) that does not follow from `ModifiedGuruswami`:
+  for `δ < 0` (and `0 < n`) the set `S` is **empty**
+  (`Extraction.coeffs_of_close_proximity_eq_empty_of_neg`), so the LHS is `0`, while the RHS is
+  `≥ 0` always (`Extraction.c57_rhs_nonneg`); hence `0 > (≥0)` is false
+  (`Extraction.c57_second_conjunct_unsat_of_S_empty`).  In [BCIKS20] this inequality is a
+  *hypothesis* (`S` large — the list-decoding case); the faithful fix (applied) carries it as the
+  side hypothesis `hScard`, alongside the Johnson bound `hδ`.  On this branch the previously
+  uneditable consumer signatures `(δ)(x₀)(h_gs)` of `R`/`H`/`irreducible_H`/Claims-5.8–5.11 are
+  owned and threaded with the new binders.
 
-With Gap A resolved, the proof obligation is retained pending the Gap-B vanishing bridge (which
-  itself
-needs the absent `δ ≤ δ₀` hypothesis), the false-off-regime second conjunct, and the upstream
-Prop 5.5.  The binder structure `∃ R H, R ∈ … ∧ Irreducible H ∧ …` is preserved so the
+With Gaps A/B resolved and both statement repairs applied, the only `sorry` obligation retained is
+the genuine proof of the (now true-as-stated) first-conjunct pigeonhole plus the upstream Prop 5.5
+assembly.  The binder structure `∃ R H, R ∈ … ∧ Irreducible H ∧ …` is preserved so the
 downstream extractors stay well-typed. -/
 lemma exists_factors_with_large_common_root_set (δ : ℚ) (x₀ : F)
-  (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
+  (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+  -- STATEMENT REPAIR 1 (Johnson hypothesis): `δ` within the list-decoding radius `δ₀(ρ,m)`.
+  (hδ : (δ : ℝ) ≤ proximity_gap_johnson (k + 1) n m)
+  -- STATEMENT REPAIR 2 (moved conjunct): the `#S`-large list-decoding-regime standing hypothesis,
+  -- formerly the (off-regime-false) second conjunct of the conclusion.
+  (hScard : (#(coeffs_of_close_proximity k ωs δ u₀ u₁) : ℝ) / (Bivariate.natDegreeY Q) >
+      2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q) :
   ∃ R H, R ∈ (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose ∧
     Irreducible H ∧ 0 < H.natDegree ∧ H ∣ (Bivariate.evalX (Polynomial.C x₀) R) ∧
     (Bivariate.evalX (Polynomial.C x₀) R).Separable ∧
@@ -442,51 +470,79 @@ lemma exists_factors_with_large_common_root_set (δ : ℚ) (x₀ : F)
         (Trivariate.eval_on_Z R z.1).eval Pz = 0 ∧
         (Bivariate.evalX z.1 H).eval (Pz.eval x₀) = 0}
         (@Fintype.ofFinite _ Subtype.finite))
-    ≥ #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q)
-    ∧ #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
-      2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q := by sorry
+    ≥ #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) := by sorry
 
-/-- Claim 5.7 establishes existens of a polynomial `R`. his is the extraction of this polynomial. -/
-noncomputable def R (δ : ℚ) (x₀ : F) (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) : F[Z][X][Y] :=
- (exists_factors_with_large_common_root_set k δ x₀ h_gs).choose
+/-- The Johnson-radius side hypothesis (STATEMENT REPAIR 1) for the Claim-5.7 extractors:
+`δ` lies within the list-decoding radius `δ₀(ρ,m) = 1 − √ρ − √ρ/(2m)`. Abbreviated so every
+extractor binder reads uniformly. The trivariate solution `Q` and curve data `ωs, u₀, u₁` are
+explicit (rather than auto-bound implicit) so the cardinality `Finite`/`Fintype` instance in
+`C57Scard` is never blocked on an undetermined metavariable at the binder use sites. -/
+abbrev C57Johnson (n m : ℕ) (δ : ℚ) : Prop := (δ : ℝ) ≤ proximity_gap_johnson (k + 1) n m
+
+/-- The `#S`-large list-decoding-regime side hypothesis (STATEMENT REPAIR 2) for the Claim-5.7
+extractors: the cardinality lower bound formerly mis-placed as the second conjunct of Claim 5.7's
+conclusion (false off-regime — see `Extraction.c57_second_conjunct_unsat_of_S_empty`). The data
+`(n) (m) (ωs) (Q) (u₀) (u₁)` are taken explicitly so that the `#(coeffs_of_close_proximity …)`
+cardinality's `Finite`/`Fintype` instance is fully determined wherever this abbrev is applied. -/
+abbrev C57Scard (n m : ℕ) (ωs : Fin n ↪ F) (Q : F[Z][X][Y]) (u₀ u₁ : Fin n → F) (δ : ℚ) : Prop :=
+  (#(coeffs_of_close_proximity k ωs δ u₀ u₁) : ℝ) / (Bivariate.natDegreeY Q) >
+    2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q
+
+/-- Claim 5.7 establishes existens of a polynomial `R`. his is the extraction of this polynomial.
+
+Threaded with STATEMENT REPAIRS 1/2 (`hδ`, `hScard`) so the now-repaired Claim 5.7 binder is
+satisfied; see `exists_factors_with_large_common_root_set`. -/
+noncomputable def R (δ : ℚ) (x₀ : F) (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hδ : C57Johnson k n m δ) (hScard : C57Scard k n m ωs Q u₀ u₁ δ) : F[Z][X][Y] :=
+ (exists_factors_with_large_common_root_set k δ x₀ h_gs hδ hScard).choose
 
 /-- Claim 5.7 establishes existens of a polynomial `H`. This is the extraction of this polynomial.
--/
-noncomputable def H (δ : ℚ) (x₀ : F) (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) : F[Z][X] :=
-(exists_factors_with_large_common_root_set k δ x₀ h_gs).choose_spec.choose
+
+Threaded with STATEMENT REPAIRS 1/2 (`hδ`, `hScard`); see
+`exists_factors_with_large_common_root_set`. -/
+noncomputable def H (δ : ℚ) (x₀ : F) (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hδ : C57Johnson k n m δ) (hScard : C57Scard k n m ωs Q u₀ u₁ δ) : F[Z][X] :=
+(exists_factors_with_large_common_root_set k δ x₀ h_gs hδ hScard).choose_spec.choose
 
 /-- An important property of the polynomial `H` extracted from Claim 5.7 is that it is irreducible.
 -/
-lemma irreducible_H (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) : Irreducible (H k δ x₀ h_gs) :=
-  (exists_factors_with_large_common_root_set k δ x₀ h_gs).choose_spec.choose_spec.2.1
+lemma irreducible_H (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hδ : C57Johnson k n m δ) (hScard : C57Scard k n m ωs Q u₀ u₁ δ) :
+    Irreducible (H k δ x₀ h_gs hδ hScard) :=
+  (exists_factors_with_large_common_root_set k δ x₀ h_gs hδ hScard).choose_spec.choose_spec.2.1
 
 /-- The factor `H` extracted from Claim 5.7 has positive degree in the `Y` variable, matching the
 Appendix A hypotheses needed for the function field construction. -/
-lemma natDegree_H_pos (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
-    0 < (H k δ x₀ h_gs).natDegree :=
-  (exists_factors_with_large_common_root_set k δ x₀ h_gs).choose_spec.choose_spec.2.2.1
+lemma natDegree_H_pos (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hδ : C57Johnson k n m δ) (hScard : C57Scard k n m ωs Q u₀ u₁ δ) :
+    0 < (H k δ x₀ h_gs hδ hScard).natDegree :=
+  (exists_factors_with_large_common_root_set k δ x₀ h_gs hδ hScard).choose_spec.choose_spec.2.2.1
 
 /-- The `Fact` form of `natDegree_H_pos`, for downstream declarations that take the
 positivity as an instance. -/
-instance fact_natDegree_H_pos (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
-    Fact (0 < (H k δ x₀ h_gs).natDegree) :=
-  ⟨natDegree_H_pos k h_gs⟩
+lemma fact_natDegree_H_pos (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hδ : C57Johnson k n m δ) (hScard : C57Scard k n m ωs Q u₀ u₁ δ) :
+    Fact (0 < (H k δ x₀ h_gs hδ hScard).natDegree) :=
+  ⟨natDegree_H_pos k h_gs hδ hScard⟩
 
 /-- The extracted `H` divides `R(x₀, Y, Z)`, as required for the Hensel setup in Claim A.2. -/
-lemma H_dvd_evalX_R (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
-    H k δ x₀ h_gs ∣ Bivariate.evalX (Polynomial.C x₀) (R k δ x₀ h_gs) :=
-  (exists_factors_with_large_common_root_set k δ x₀ h_gs).choose_spec.choose_spec.2.2.2.1
+lemma H_dvd_evalX_R (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hδ : C57Johnson k n m δ) (hScard : C57Scard k n m ωs Q u₀ u₁ δ) :
+    H k δ x₀ h_gs hδ hScard ∣ Bivariate.evalX (Polynomial.C x₀) (R k δ x₀ h_gs hδ hScard) :=
+  (exists_factors_with_large_common_root_set k δ x₀ h_gs hδ hScard).choose_spec.choose_spec.2.2.2.1
 
 /-- The specialization `R(x₀, Y, Z)` is separable in `Y`, as required for Claim A.2. -/
-lemma evalX_R_separable (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
-    (Bivariate.evalX (Polynomial.C x₀) (R k δ x₀ h_gs)).Separable :=
-  (exists_factors_with_large_common_root_set k δ x₀ h_gs).choose_spec.choose_spec.2.2.2.2.1
+lemma evalX_R_separable (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hδ : C57Johnson k n m δ) (hScard : C57Scard k n m ωs Q u₀ u₁ δ) :
+    (Bivariate.evalX (Polynomial.C x₀) (R k δ x₀ h_gs hδ hScard)).Separable :=
+  (exists_factors_with_large_common_root_set k δ x₀ h_gs hδ hScard).choose_spec.choose_spec.2.2.2.2.1
 
 open BCIKS20AppendixA.ClaimA2 in
 /-- The Claim A.2 hypotheses satisfied by the `R,H` pair extracted from Claim 5.7. -/
-lemma claimA2_hypotheses (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
-    Hypotheses x₀ (R k δ x₀ h_gs) (H k δ x₀ h_gs) :=
-  ⟨H_dvd_evalX_R k h_gs, evalX_R_separable k h_gs⟩
+lemma claimA2_hypotheses (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hδ : C57Johnson k n m δ) (hScard : C57Scard k n m ωs Q u₀ u₁ δ) :
+    Hypotheses x₀ (R k δ x₀ h_gs hδ hScard) (H k δ x₀ h_gs hδ hScard) :=
+  ⟨H_dvd_evalX_R k h_gs hδ hScard, evalX_R_separable k h_gs hδ hScard⟩
 
 open BCIKS20AppendixA.ClaimA2 in
 /-- Claim 5.8 from [BCIKS20].
@@ -501,17 +557,17 @@ weight-bounded `.choose`, not the recursive Hensel numerator (missing ingredient
 conclusion is underdetermined by the current definitions. -/
 lemma approximate_solution_is_exact_solution_coeffs
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
-    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    (hδ : C57Johnson k n m δ) (hScard : C57Scard k n m ωs Q u₀ u₁ δ)
     : ∀ t ≥ k,
     α'
       x₀
-      (R k δ x₀ h_gs)
-      (irreducible_H k h_gs)
-      (natDegree_H_pos k h_gs)
-      (claimA2_hypotheses k h_gs)
+      (R k δ x₀ h_gs hδ hScard)
+      (irreducible_H k h_gs hδ hScard)
+      (natDegree_H_pos k h_gs hδ hScard)
+      (claimA2_hypotheses k h_gs hδ hScard)
       t
     =
-    (0 : BCIKS20AppendixA.𝕃 (H k δ x₀ h_gs))
+    (0 : BCIKS20AppendixA.𝕃 (H k δ x₀ h_gs hδ hScard))
     := by sorry
 
 open BCIKS20AppendixA.ClaimA2 in
@@ -525,20 +581,21 @@ Would follow from the coefficient form (`approximate_solution_is_exact_solution_
 (ingredients C, D), so this cannot stand alone. -/
 lemma approximate_solution_is_exact_solution_coeffs'
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
-    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    (hδ : C57Johnson k n m δ) (hScard : C57Scard k n m ωs Q u₀ u₁ δ)
     :
-    γ' x₀ (R k δ x₀ h_gs) (irreducible_H k h_gs) (natDegree_H_pos k h_gs)
-        (claimA2_hypotheses k h_gs) =
+    γ' x₀ (R k δ x₀ h_gs hδ hScard) (irreducible_H k h_gs hδ hScard)
+        (natDegree_H_pos k h_gs hδ hScard)
+        (claimA2_hypotheses k h_gs hδ hScard) =
         PowerSeries.mk (fun t =>
           if t ≥ k
-          then (0 : BCIKS20AppendixA.𝕃 (H k δ x₀ h_gs))
+          then (0 : BCIKS20AppendixA.𝕃 (H k δ x₀ h_gs hδ hScard))
           else PowerSeries.coeff t
             (γ'
               x₀
-              (R k (x₀ := x₀) (δ := δ) h_gs)
-              (irreducible_H k h_gs)
-              (natDegree_H_pos k h_gs)
-              (claimA2_hypotheses k h_gs))) := by
+              (R k (x₀ := x₀) (δ := δ) h_gs hδ hScard)
+              (irreducible_H k h_gs hδ hScard)
+              (natDegree_H_pos k h_gs hδ hScard)
+              (claimA2_hypotheses k h_gs hδ hScard))) := by
    sorry
 
 open BCIKS20AppendixA.ClaimA2 in
@@ -551,12 +608,12 @@ off the linear representative `v₀ + Z·v₁`. Blocked transitively on 5.8' (in
 the still-`sorry` Prop 5.5 (`exists_a_set_and_a_matching_polynomial`, `Guruswami.lean`). -/
 lemma solution_gamma_is_linear_in_Z
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
-    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    (hδ : C57Johnson k n m δ) (hScard : C57Scard k n m ωs Q u₀ u₁ δ)
     :
   ∃ (v₀ v₁ : F[X]),
-    γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
-      (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs)
-      (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs) =
+    γ' x₀ (R k δ x₀ h_gs hδ hScard) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs hδ hScard)
+      (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs hδ hScard)
+      (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs hδ hScard) =
         BCIKS20AppendixA.polyToPowerSeries𝕃 _
           (
             (Polynomial.map Polynomial.C v₀) +
@@ -565,10 +622,10 @@ lemma solution_gamma_is_linear_in_Z
 
 /-- The linear represenation of the solution `γ` extracted from Claim 5.9. -/
 noncomputable def P (δ : ℚ) (x₀ : F) (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
-    [Fact (0 < (H k δ x₀ h_gs).natDegree)] : F[Z][X] :=
-  let v₀ := Classical.choose (solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs)
+    (hδ : C57Johnson k n m δ) (hScard : C57Scard k n m ωs Q u₀ u₁ δ) : F[Z][X] :=
+  let v₀ := Classical.choose (solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs hδ hScard)
   let v₁ := Classical.choose
-    (Classical.choose_spec <| solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs)
+    (Classical.choose_spec <| solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs hδ hScard)
   (
     (Polynomial.map Polynomial.C v₀) +
     (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)
@@ -576,14 +633,15 @@ noncomputable def P (δ : ℚ) (x₀ : F) (h_gs : ModifiedGuruswami m n k ωs Q 
 
 open BCIKS20AppendixA.ClaimA2 in
 /-- The extracted `P` from Claim 5.9 equals `γ`. -/
-lemma gamma_eq_P (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
-  γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
-    (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs)
-    (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs) =
+lemma gamma_eq_P (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hδ : C57Johnson k n m δ) (hScard : C57Scard k n m ωs Q u₀ u₁ δ) :
+  γ' x₀ (R k δ x₀ h_gs hδ hScard) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs hδ hScard)
+    (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs hδ hScard)
+    (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs hδ hScard) =
   BCIKS20AppendixA.polyToPowerSeries𝕃 _
-    (P k δ x₀ h_gs) :=
+    (P k δ x₀ h_gs hδ hScard) :=
   Classical.choose_spec
-    (Classical.choose_spec (solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs))
+    (Classical.choose_spec (solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs hδ hScard))
 
 /-- The set `S'` from [BCIKS20] (just before Claim 5.10): the sub-collection of close coefficients
 `z ∈ S = coeffs_of_close_proximity` that are bound to the common irreducible factor pair `(R, H)`
@@ -638,16 +696,16 @@ ingredient C; the underlying `β` under-specification (ingredient D) also applie
 lemma solution_gamma_matches_word_if_subset_large
     {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
-    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    (hδ : C57Johnson k n m δ) (hScard : C57Scard k n m ωs Q u₀ u₁ δ)
     {x : Fin n}
     {D : ℕ}
-    (hD : D ≥ Bivariate.totalDegree (H k δ x₀ h_gs))
+    (hD : D ≥ Bivariate.totalDegree (H k δ x₀ h_gs hδ hScard))
     (hx : (matching_set_at_x k δ h_gs x).card >
       (2 * k + 1)
-        * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
-        * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+        * (Bivariate.natDegreeY <| H k δ x₀ h_gs hδ hScard)
+        * (Bivariate.natDegreeY <| R k δ x₀ h_gs hδ hScard)
         * D)
-    : (P k δ x₀ h_gs).eval (Polynomial.C (ωs x)) =
+    : (P k δ x₀ h_gs hδ hScard).eval (Polynomial.C (ωs x)) =
       (Polynomial.C <| u₀ x) + u₁ x • Polynomial.X
     := by sorry
 
@@ -661,17 +719,18 @@ set, which is `.choose` of the still-`sorry` Prop 5.5 (`exists_a_set_and_a_match
 lemma exists_points_with_large_matching_subset
     {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hδ : C57Johnson k n m δ) (hScard : C57Scard k n m ωs Q u₀ u₁ δ)
     {x : Fin n}
     {D : ℕ}
-    (hD : D ≥ Bivariate.totalDegree (H k δ x₀ h_gs))
+    (hD : D ≥ Bivariate.totalDegree (H k δ x₀ h_gs hδ hScard))
     :
   ∃ Dtop : Finset (Fin n),
     Dtop.card = k + 1 ∧
     ∀ x ∈ Dtop,
       (matching_set_at_x k δ h_gs x).card >
         (2 * k + 1)
-        * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
-        * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+        * (Bivariate.natDegreeY <| H k δ x₀ h_gs hδ hScard)
+        * (Bivariate.natDegreeY <| R k δ x₀ h_gs hδ hScard)
         * D := by sorry
 
 end BCIKS20ProximityGapSection5
