@@ -30059,9 +30059,18 @@
           "signature": "def cast"
         },
         {
+          "doc": "Helper for `cast_toVerifier`: the output oracle-statement function produced by `OracleVerifier.toVerifier` depends only on the embedding pointwise. If two embeddings `e` and `emb` agree pointwise, the resulting (dependent) `match` functions are equal, up to the proof-irrelevant `hEq`/discriminant transports. This is stated generically to keep the `split`/transport reasoning away from the heterogeneous-cast normalization in `cast_toVerifier`, which keeps the proof term free of `sorryAx`.",
+          "kind": "theorem",
+          "line": 195,
+          "name": "OracleVerifier.toVerifier_oStmtOut_congr",
+          "namespace": "OracleVerifier",
+          "short_name": "toVerifier_oStmtOut_congr",
+          "signature": "theorem toVerifier_oStmtOut_congr"
+        },
+        {
           "doc": "",
           "kind": "theorem",
-          "line": 190,
+          "line": 229,
           "name": "OracleVerifier.cast_toVerifier",
           "namespace": "OracleVerifier",
           "short_name": "cast_toVerifier",
@@ -30070,7 +30079,7 @@
         {
           "doc": "Casting the reduction of a non-oracle reduction across an equality of `ProtocolSpec`s, which casts the underlying prover and verifier.",
           "kind": "def",
-          "line": 200,
+          "line": 278,
           "name": "Reduction.cast",
           "namespace": "Reduction",
           "short_name": "cast",
@@ -30079,7 +30088,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 206,
+          "line": 284,
           "name": "Reduction.cast_id",
           "namespace": "Reduction",
           "short_name": "cast_id",
@@ -30088,7 +30097,7 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 213,
+          "line": 291,
           "name": "Reduction.instDCast\u2082Reduction",
           "namespace": "Reduction",
           "short_name": "instDCast\u2082Reduction",
@@ -30097,7 +30106,7 @@
         {
           "doc": "Casting the oracle reduction across an equality of `ProtocolSpec`s, which casts the underlying prover and verifier.",
           "kind": "def",
-          "line": 228,
+          "line": 306,
           "name": "OracleReduction.cast",
           "namespace": "OracleReduction",
           "short_name": "cast",
@@ -30106,7 +30115,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 248,
+          "line": 326,
           "name": "OracleReduction.cast_toReduction",
           "namespace": "OracleReduction",
           "short_name": "cast_toReduction",
@@ -30115,7 +30124,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 265,
+          "line": 343,
           "name": "Prover.cast_processRound",
           "namespace": "Prover",
           "short_name": "cast_processRound",
@@ -30124,7 +30133,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 278,
+          "line": 356,
           "name": "Prover.cast_runToRound",
           "namespace": "Prover",
           "short_name": "cast_runToRound",
@@ -30133,7 +30142,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 288,
+          "line": 366,
           "name": "Prover.cast_run",
           "namespace": "Prover",
           "short_name": "cast_run",
@@ -30142,7 +30151,7 @@
         {
           "doc": "The casted verifier produces the same output as the original verifier.",
           "kind": "theorem",
-          "line": 302,
+          "line": 380,
           "name": "Verifier.cast_run",
           "namespace": "Verifier",
           "short_name": "cast_run",
@@ -30151,7 +30160,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 314,
+          "line": 392,
           "name": "Reduction.cast_run",
           "namespace": "Reduction",
           "short_name": "cast_run",
@@ -30160,7 +30169,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 357,
+          "line": 436,
           "name": "Verifier.cast_rbrKnowledgeSoundness",
           "namespace": "Verifier",
           "short_name": "cast_rbrKnowledgeSoundness",
@@ -30169,7 +30178,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 398,
+          "line": 494,
           "name": "OracleVerifier.cast_rbrKnowledgeSoundness",
           "namespace": "OracleVerifier",
           "short_name": "cast_rbrKnowledgeSoundness",
@@ -50652,7 +50661,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5501,
+      "declarations": 5502,
       "files": 288
     }
   }

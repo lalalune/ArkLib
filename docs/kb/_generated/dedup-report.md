@@ -4,7 +4,7 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 288 files, 5501 declarations
+- `ArkLib` — 288 files, 5502 declarations
 
 ## Same short-name across multiple files (149 groups)
 
@@ -437,7 +437,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem Prover.cast_id` [ArkLib/OracleReduction/Cast.lean:53](../../../ArkLib/OracleReduction/Cast.lean#L53) — (no docstring)
 - `theorem OracleProver.cast_id` [ArkLib/OracleReduction/Cast.lean:77](../../../ArkLib/OracleReduction/Cast.lean#L77) — (no docstring)
 - `theorem Verifier.cast_id` [ArkLib/OracleReduction/Cast.lean:99](../../../ArkLib/OracleReduction/Cast.lean#L99) — (no docstring)
-- `theorem Reduction.cast_id` [ArkLib/OracleReduction/Cast.lean:206](../../../ArkLib/OracleReduction/Cast.lean#L206) — (no docstring)
+- `theorem Reduction.cast_id` [ArkLib/OracleReduction/Cast.lean:284](../../../ArkLib/OracleReduction/Cast.lean#L284) — (no docstring)
 - `theorem ProtocolSpec.cast_id` [ArkLib/OracleReduction/ProtocolSpec/Cast.lean:36](../../../ArkLib/OracleReduction/ProtocolSpec/Cast.lean#L36) — (no docstring)
 - `theorem ProtocolSpec.MessageIdx.cast_id` [ArkLib/OracleReduction/ProtocolSpec/Cast.lean:80](../../../ArkLib/OracleReduction/ProtocolSpec/Cast.lean#L80) — (no docstring)
 - `theorem ProtocolSpec.ChallengeIdx.cast_id` [ArkLib/OracleReduction/ProtocolSpec/Cast.lean:124](../../../ArkLib/OracleReduction/ProtocolSpec/Cast.lean#L124) — (no docstring)
