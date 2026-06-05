@@ -773,6 +773,82 @@ theorem exists_joint_proximate (k e h DZ : ℕ)
     omega
   omega
 
+/-- **Forward distance bridge.** A joint agreement pair `(p₀, p₁)` whose joint
+disagreement set with `(u₀, u₁)` has at most `m` points makes EVERY line
+combination `u₀ + z·u₁` within Hamming distance `m` of `p₀ + z·p₁` (evaluated on
+the domain). This is the direction used to turn the joint proximate of Claim 2.3
+into the list-decoding-regime proximity-gap conclusion: a witness that the whole
+affine line is close, uniformly in `z`.
+
+Derivation: at any point `x` outside the joint disagreement set we have both
+`p₀.eval (domain x) = u₀ x` and `p₁.eval (domain x) = u₁ x`, hence
+`(p₀ + z·p₁).eval (domain x) = u₀ x + z·u₁ x` for every `z`; so the per-`z`
+disagreement set is contained in the (fixed) joint disagreement set. -/
+lemma hammingDist_line_le_of_jointDisagreement_le {m : ℕ}
+    (domain : ι ↪ F) (u₀ u₁ : ι → F) {p₀ p₁ : F[X]}
+    (hdis : (Finset.univ.filter
+      (fun x => ¬(p₀.eval (domain x) = u₀ x ∧ p₁.eval (domain x) = u₁ x))).card ≤ m)
+    (z : F) :
+    hammingDist (fun x => u₀ x + z * u₁ x)
+      (fun x => (p₀ + Polynomial.C z * p₁).eval (domain x)) ≤ m := by
+  classical
+  -- the per-`z` disagreement set lies inside the (fixed) joint disagreement set
+  have hsub : (Finset.univ.filter (fun x =>
+        (fun x => u₀ x + z * u₁ x) x ≠ (fun x => (p₀ + Polynomial.C z * p₁).eval (domain x)) x))
+      ⊆ Finset.univ.filter
+        (fun x => ¬(p₀.eval (domain x) = u₀ x ∧ p₁.eval (domain x) = u₁ x)) := by
+    intro x hx
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hx ⊢
+    intro hagree
+    apply hx
+    -- at an agreement point the line combinations coincide
+    have h0 : p₀.eval (domain x) = u₀ x := hagree.1
+    have h1 : p₁.eval (domain x) = u₁ x := hagree.2
+    rw [Polynomial.eval_add, Polynomial.eval_mul, Polynomial.eval_C, h0, h1]
+  calc hammingDist (fun x => u₀ x + z * u₁ x)
+        (fun x => (p₀ + Polynomial.C z * p₁).eval (domain x))
+      = (Finset.univ.filter (fun x =>
+          (fun x => u₀ x + z * u₁ x) x
+            ≠ (fun x => (p₀ + Polynomial.C z * p₁).eval (domain x)) x)).card := by
+        simp [hammingDist]
+    _ ≤ _ := Finset.card_le_card hsub
+    _ ≤ m := hdis
+
+/-- **[BCKHS25] Theorem 2.2 (Hensel-free list-decoding-regime proximity gap,
+assembled).**
+
+Let `(u₀, u₁)` be a line word on `domain` and let `S` be a set of `z`-values,
+each admitting a degree-`k` proximate within Hamming distance `e` of the line
+combination `u₀ + z·u₁` (the per-`z` list-decoding hypothesis). If `S` is large
+enough that the Polishchuk–Spielman ratio closes (`hratio`) and the degree
+budget holds (`hn`, `hDZ`), then there is a SINGLE pair `(p₀, p₁)` of degree-`k`
+polynomials that is simultaneously a proximate for EVERY `z`: the line
+`u₀ + z·u₁` is within Hamming distance `e + h` of `p₀ + z·p₁` on the domain,
+uniformly in `z`. In coding-theoretic terms, the whole affine line lies within
+relative distance `(e + h)/n` of the (curve over the) Reed–Solomon code.
+
+This is the Hensel-free route's lift of the proximity gap into the
+list-decoding regime: Claim 2.3 (`exists_joint_proximate`, itself built from
+Lemma 2.1's Berlekamp–Welch pair via Polishchuk–Spielman) produces the joint
+proximate, and the forward distance bridge converts the joint-agreement bound
+into the uniform per-`z` closeness that is the proximity-gap conclusion. -/
+theorem proximity_gap_listDecoding (k e h DZ : ℕ)
+    (hn : k + 2 * e + h + 1 = Fintype.card ι)
+    (hDZ : e + 1 ≤ (h + 1) * DZ) (hDZ0 : 0 < DZ)
+    (domain : ι ↪ F) (u₀ u₁ : ι → F) (S : Finset F) (hS0 : 0 < S.card)
+    (prox : ∀ z ∈ S, ∃ p : F[X], p.natDegree ≤ k ∧
+      (Finset.univ.filter (fun x => p.eval (domain x) ≠ u₀ x + u₁ x * z)).card ≤ e)
+    (hratio : ((k + e + h : ℕ) : ℚ) / (Fintype.card ι : ℚ)
+      + ((DZ : ℕ) : ℚ) / (S.card : ℚ) < 1) :
+    ∃ p₀ p₁ : F[X], p₀.natDegree ≤ k ∧ p₁.natDegree ≤ k ∧
+      ∀ z : F, hammingDist (fun x => u₀ x + z * u₁ x)
+        (fun x => (p₀ + Polynomial.C z * p₁).eval (domain x)) ≤ e + h := by
+  classical
+  obtain ⟨p₀, p₁, hp₀, hp₁, hdis⟩ :=
+    exists_joint_proximate k e h DZ hn hDZ hDZ0 domain u₀ u₁ S hS0 prox hratio
+  exact ⟨p₀, p₁, hp₀, hp₁,
+    fun z => hammingDist_line_le_of_jointDisagreement_le domain u₀ u₁ hdis z⟩
+
 end PSApplication
 
 /-- **[BCKHS25] Lemma 3.1, integer-cap wrapper.** The improved
