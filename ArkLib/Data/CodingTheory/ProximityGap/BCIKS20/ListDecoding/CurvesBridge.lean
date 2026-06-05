@@ -258,6 +258,116 @@ theorem RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_exists_Pz
     (fun x => hsubset h_gs x)
     hunique
 
+/-- Degree-one correlated-agreement capstone in the native §5 affine-line
+language. The generic §6 theorem quantifies over arbitrary
+`WordStack F (Fin 2) (Fin n)`; this wrapper identifies every such stack with
+`Code.finMapTwoWords (u 0) (u 1)` and transports both the strict
+`PzFamily` package and the closed-boundary cardinality obligation through the
+§5/§6 close-set equality. -/
+theorem correlatedAgreement_affine_lines_of_strict_exists_PzFamily_and_boundary_card
+    {m k : ℕ} (hk : 0 < k) {ωs : Fin n ↪ F}
+    (δ : ℚ≥0)
+    (hδ : (δ : ℝ≥0) ≤ 1 - ReedSolomon.sqrtRate (k + 1) ωs)
+    (hDx : ((gsDpg n m k : ℕ) : ℝ) < D_X ((k + 1) / (n : ℚ)) n m)
+    (hYZ : ((gsDpg n m k + gsZCap n m k : ℕ) : ℝ) ≤
+      n * (m + 1 / (2 : ℚ)) ^ 3 / (6 * Real.sqrt ((k + 1) / n)))
+    (hsubset : ∀ (u₀ u₁ : Fin n → F) {Q : F[Z][X][Y]}
+      (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) (x : Fin n),
+        coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁ ⊆
+          matching_set_at_x k (δ : ℚ) h_gs x)
+    (hunique : ∀ (u₀ u₁ : Fin n → F) (P : F → Polynomial F),
+        (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+          (P z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P z).eval ∘ ωs) ≤ (δ : ℚ)) →
+        ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+          P z = PzFamily (F := F) (n := n) (δ : ℚ) u₀ u₁ ωs k z)
+    (hBoundaryCard : ∀ u₀ u₁ : Fin n → F,
+      (δ : ℝ≥0) = 1 - ReedSolomon.sqrtRate (k + 1) ωs →
+      0 < (coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁).card →
+      jointAgreement (C := ReedSolomon.code ωs (k + 1)) (δ := (δ : ℝ≥0))
+        (W := Code.finMapTwoWords u₀ u₁)) :
+    δ_ε_correlatedAgreementCurves (k := 1) (A := F) (F := F) (ι := Fin n)
+      (C := ReedSolomon.code ωs (k + 1)) (δ := (δ : ℝ≥0))
+      (ε := errorBound (δ : ℝ≥0) (k + 1) ωs) := by
+  classical
+  refine correlatedAgreement_affine_curves_of_strict_canonical_eval_polys_and_boundary_card
+    (k := 1) (deg := k + 1) (domain := ωs) (δ := (δ : ℝ≥0)) hδ ?_ ?_
+  · intro _hk u _hprob _hJ _hsqrt
+    have h_u_eq : u = Code.finMapTwoWords (u 0) (u 1) := by
+      funext rowIdx
+      match rowIdx with
+      | 0 => rfl
+      | 1 => rfl
+    obtain ⟨Q, h_gs⟩ :=
+      modified_guruswami_has_a_solution (F := F) (m := m) (n := n) (k := k)
+        (Nat.pos_of_neZero n) hk (ωs := ωs) (u₀ := u 0) (u₁ := u 1) hDx hYZ
+    obtain ⟨P₀, _hDecoded, hEval, huniq⟩ :=
+      PzFamily_exists_canonical_eval_polys_goodCoeffsCurve_finMapTwoWords
+        (F := F) (n := n) (m := m) (k := k) (ωs := ωs) (Q := Q)
+        δ (u 0) (u 1) h_gs
+        (fun x => hsubset (u 0) (u 1) h_gs x)
+        (hunique (u 0) (u 1))
+    rw [h_u_eq]
+    exact ⟨P₀, hEval, huniq⟩
+  · intro _hk u hδeq hcard
+    have h_u_eq : u = Code.finMapTwoWords (u 0) (u 1) := by
+      funext rowIdx
+      match rowIdx with
+      | 0 => rfl
+      | 1 => rfl
+    have hcard_close :
+        0 < (coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) (u 0) (u 1)).card := by
+      rw [coeffs_of_close_proximity_card_eq_goodCoeffsCurve_finMapTwoWords
+        (F := F) (n := n) (k := k) (ωs := ωs) δ (u 0) (u 1)]
+      rw [h_u_eq] at hcard
+      exact hcard
+    rw [h_u_eq]
+    exact hBoundaryCard (u 0) (u 1) hδeq hcard_close
+
+/-- Strict square-root-radius degree-one correlated-agreement capstone in the
+native §5 affine-line language. Unlike
+`correlatedAgreement_affine_lines_of_strict_exists_PzFamily_and_boundary_card`,
+this version needs no closed-boundary obligation because the global hypothesis
+is already `δ < 1 - sqrtRate`. -/
+theorem correlatedAgreement_affine_lines_of_strict_exists_PzFamily
+    {m k : ℕ} (hk : 0 < k) {ωs : Fin n ↪ F}
+    (δ : ℚ≥0)
+    (hδ : (δ : ℝ≥0) < 1 - ReedSolomon.sqrtRate (k + 1) ωs)
+    (hDx : ((gsDpg n m k : ℕ) : ℝ) < D_X ((k + 1) / (n : ℚ)) n m)
+    (hYZ : ((gsDpg n m k + gsZCap n m k : ℕ) : ℝ) ≤
+      n * (m + 1 / (2 : ℚ)) ^ 3 / (6 * Real.sqrt ((k + 1) / n)))
+    (hsubset : ∀ (u₀ u₁ : Fin n → F) {Q : F[Z][X][Y]}
+      (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) (x : Fin n),
+        coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁ ⊆
+          matching_set_at_x k (δ : ℚ) h_gs x)
+    (hunique : ∀ (u₀ u₁ : Fin n → F) (P : F → Polynomial F),
+        (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+          (P z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P z).eval ∘ ωs) ≤ (δ : ℚ)) →
+        ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+          P z = PzFamily (F := F) (n := n) (δ : ℚ) u₀ u₁ ωs k z) :
+    δ_ε_correlatedAgreementCurves (k := 1) (A := F) (F := F) (ι := Fin n)
+      (C := ReedSolomon.code ωs (k + 1)) (δ := (δ : ℝ≥0))
+      (ε := errorBound (δ : ℝ≥0) (k + 1) ωs) := by
+  classical
+  refine correlatedAgreement_affine_curves_of_strict_canonical_eval_polys
+    (k := 1) (deg := k + 1) (domain := ωs) (δ := (δ : ℝ≥0)) hδ ?_
+  intro _hk u _hprob _hJ
+  have h_u_eq : u = Code.finMapTwoWords (u 0) (u 1) := by
+    funext rowIdx
+    match rowIdx with
+    | 0 => rfl
+    | 1 => rfl
+  obtain ⟨Q, h_gs⟩ :=
+    modified_guruswami_has_a_solution (F := F) (m := m) (n := n) (k := k)
+      (Nat.pos_of_neZero n) hk (ωs := ωs) (u₀ := u 0) (u₁ := u 1) hDx hYZ
+  obtain ⟨P₀, _hDecoded, hEval, huniq⟩ :=
+    PzFamily_exists_canonical_eval_polys_goodCoeffsCurve_finMapTwoWords
+      (F := F) (n := n) (m := m) (k := k) (ωs := ωs) (Q := Q)
+      δ (u 0) (u 1) h_gs
+      (fun x => hsubset (u 0) (u 1) h_gs x)
+      (hunique (u 0) (u 1))
+  rw [h_u_eq]
+  exact ⟨P₀, hEval, huniq⟩
+
 end BCIKS20ProximityGapSection5To6Bridge
 
 end ProximityGap

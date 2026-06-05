@@ -47,4 +47,32 @@ theorem affineLine_joint_agreement {deg : ℕ}
     Finset.card_inter_add_card_union A A'
   omega
 
+/-- Nat-valued form of `affineLine_joint_agreement`: the common agreement set
+has the standard inclusion-exclusion lower bound `|A ∩ A'| + n ≥ |A| + |A'|`.
+This is the form usually needed for threshold arithmetic. -/
+theorem affineLine_joint_agreement_nat_card {deg : ℕ}
+    {c c' : F[X]} (hc : c ∈ Polynomial.degreeLT F deg)
+    (hc' : c' ∈ Polynomial.degreeLT F deg)
+    {γ γ' : F} (hγ : γ ≠ γ') {f₀ f₁ : ι → F}
+    (A A' : Finset ι)
+    (hA : ∀ x ∈ A, c.eval (domain x) = f₀ x + γ * f₁ x)
+    (hA' : ∀ x ∈ A', c'.eval (domain x) = f₀ x + γ' * f₁ x) :
+    ∃ (p₀ p₁ : F[X]) (S : Finset ι),
+      p₀ ∈ Polynomial.degreeLT F deg ∧ p₁ ∈ Polynomial.degreeLT F deg ∧
+      S = A ∩ A' ∧
+      A.card + A'.card ≤ S.card + Fintype.card ι ∧
+      (∀ x ∈ S, p₁.eval (domain x) = f₁ x ∧ p₀.eval (domain x) = f₀ x) := by
+  classical
+  obtain ⟨p₀, p₁, hp₀, hp₁, hpe⟩ :=
+    affineLine_mutual_extract domain hc hc' hγ
+      (S := A ∩ A') (f₀ := f₀) (f₁ := f₁)
+      (fun x hx => ⟨hA x (Finset.mem_inter.mp hx).1, hA' x (Finset.mem_inter.mp hx).2⟩)
+  refine ⟨p₀, p₁, A ∩ A', hp₀, hp₁, rfl, ?_, hpe⟩
+  have hue : (A ∪ A').card ≤ Fintype.card ι := by
+    rw [← Finset.card_univ]
+    exact Finset.card_le_card (Finset.subset_univ _)
+  have hie : (A ∩ A').card + (A ∪ A').card = A.card + A'.card :=
+    Finset.card_inter_add_card_union A A'
+  omega
+
 end MCAJohnson
