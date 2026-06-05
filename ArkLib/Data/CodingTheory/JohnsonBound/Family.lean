@@ -432,6 +432,32 @@ theorem minDist_le_averageDistOn_closeCodewordsRelFinset
   intro x hx
   exact (ListDecodable.mem_closeCodewordsRelFinset.mp hx).1
 
+/-- Distinct codewords agree in at most `n - minDist(C)` coordinates. -/
+lemma agree_le_card_sub_minDist_of_mem_ne
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    {α : Type} [Fintype α] [DecidableEq α]
+    {C : Set (ι → α)} {u v : ι → α}
+    (hu : u ∈ C) (hv : v ∈ C) (hne : u ≠ v) :
+    CodeGeometry.agree u v ≤ Fintype.card ι - Code.minDist C := by
+  have hsum := CodeGeometry.agree_add_hammingDist u v
+  have hmin := minDist_le_hammingDist_of_mem_ne hu hv hne
+  omega
+
+/-- Pairwise agreement upper bound for finite point-lists, derived from the
+ambient code minimum distance. -/
+lemma closeCodewordsRelFinset_pairwise_agree_le_card_sub_minDist
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    {α : Type} [Fintype α] [DecidableEq α]
+    {C : ListDecodable.Code ι α} {f : ι → α} {δ : ℝ}
+    {u v : ι → α}
+    (hu : u ∈ ListDecodable.closeCodewordsRelFinset C f δ)
+    (hv : v ∈ ListDecodable.closeCodewordsRelFinset C f δ)
+    (hne : u ≠ v) :
+    CodeGeometry.agree u v ≤ Fintype.card ι - Code.minDist C := by
+  exact agree_le_card_sub_minDist_of_mem_ne
+    (ListDecodable.mem_closeCodewordsRelFinset.mp hu).1
+    (ListDecodable.mem_closeCodewordsRelFinset.mp hv).1 hne
+
 /-- Close-list wrapper for the radical-free `CodeGeometry` Johnson cap.
 
 This converts the finite point-list into an indexed family via `Finset.equivFin`.
