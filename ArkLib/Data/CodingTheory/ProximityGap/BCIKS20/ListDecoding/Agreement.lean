@@ -2243,6 +2243,61 @@ lemma approximate_solution_gamma_coeff_zero_of_βHensel_Sβ_large
       (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
       h_gs hcompat hlarge)
 
+open BCIKS20AppendixA in
+open BCIKS20AppendixA.ClaimA2 in
+/-- Gamma-tail coefficient vanishing from the genuine Hensel lift identity.
+
+This is the coefficient-level sibling of
+`approximate_solution_is_exact_solution_coeffs'_of_βHensel_lift_identity_Sβ_large`:
+it converts the native Appendix-A denominator/lift-identity obligations into
+the embedded β-compatibility consumed by
+`approximate_solution_gamma_coeff_zero_of_βHensel_Sβ_large`. -/
+lemma approximate_solution_gamma_coeff_zero_of_βHensel_lift_identity_Sβ_large
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    (hden : ∀ t ≥ k,
+      (liftToFunctionField (H := H k δ x₀ h_gs)
+            (H k δ x₀ h_gs).leadingCoeff) ^ (t + 1)
+          * (embeddingOf𝒪Into𝕃 (H k δ x₀ h_gs)
+              (ξ x₀ (R k δ x₀ h_gs) (H k δ x₀ h_gs)
+                (claimA2_hypotheses k h_gs))) ^ (2 * t - 1) ≠ 0)
+    (hlift : ∀ t ≥ k,
+      embeddingOf𝒪Into𝕃 (H k δ x₀ h_gs)
+        (_root_.BCIKS20.HenselNumerator.βHensel
+          (H := H k δ x₀ h_gs) x₀ (R k δ x₀ h_gs)
+          (claimA2_hypotheses k h_gs) t)
+        = α x₀ (R k δ x₀ h_gs) (H k δ x₀ h_gs)
+            (claimA2_hypotheses k h_gs) t
+          * (liftToFunctionField (H := H k δ x₀ h_gs)
+              (H k δ x₀ h_gs).leadingCoeff) ^ (t + 1)
+          * (embeddingOf𝒪Into𝕃 (H k δ x₀ h_gs)
+              (ξ x₀ (R k δ x₀ h_gs) (H k δ x₀ h_gs)
+                (claimA2_hypotheses k h_gs))) ^ (2 * t - 1))
+    (hlarge : ∀ t ≥ k, ∃ D : ℕ,
+      D ≥ Bivariate.totalDegree (H k δ x₀ h_gs) ∧
+        Set.ncard (S_β
+          (_root_.BCIKS20.HenselNumerator.βHensel
+            (H := H k δ x₀ h_gs) x₀ (R k δ x₀ h_gs)
+            (claimA2_hypotheses k h_gs) t)) >
+          weight_Λ_over_𝒪 (natDegree_H_pos k h_gs)
+            (_root_.BCIKS20.HenselNumerator.βHensel
+              (H := H k δ x₀ h_gs) x₀ (R k δ x₀ h_gs)
+              (claimA2_hypotheses k h_gs) t) D *
+            (H k δ x₀ h_gs).natDegree) :
+    ∀ t ≥ k,
+      PowerSeries.coeff t
+        (γ' x₀ (R k δ x₀ h_gs) (irreducible_H k h_gs) (natDegree_H_pos k h_gs)
+          (claimA2_hypotheses k h_gs)) =
+        (0 : BCIKS20AppendixA.𝕃 (H k δ x₀ h_gs)) := by
+  exact approximate_solution_gamma_coeff_zero_of_βHensel_Sβ_large
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+    h_gs
+    (fun t ht =>
+      _root_.BCIKS20.HenselNumerator.β_embedding_eq_of_βHensel_lift_identity
+        (H := H k δ x₀ h_gs) x₀ (R k δ x₀ h_gs)
+        (claimA2_hypotheses k h_gs) t (hden t ht) (hlift t ht))
+    hlarge
+
 open BCIKS20AppendixA.ClaimA2 in
 omit [DecidableEq (RatFunc F)] in
 lemma approximate_solution_gamma_graph_coeff_zero_of_beta_embedding_zero
