@@ -656,6 +656,80 @@ theorem runToRound_eq_bind_continueFromTo
       refine bind_congr (fun rk => ?_)
       rw [← processRound_eq_bind]
 
+/-! ### Direction-resolved single-round peels
+
+The two lemmas below resolve the `processRound` direction match into the two honest round shapes,
+so a fixed-`n` honest run can be peeled one round at a time without unfolding the `match` by hand.
+They sit on top of `runToRound_succ` (the one-round unfolding) and `processRound`'s definition. -/
+
+/-- Unfold `processRound` into its `do`-block: take the previous round's `(transcript, state)`,
+then branch on the round direction.  A rewrite handle; once the direction of the round is known use
+the direction-resolved `runToRound_succ_challenge`/`runToRound_succ_message`. -/
+theorem processRound_def (j : Fin n)
+    (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (currentResult : OracleComp (oSpec + [pSpec.Challenge]ₒ)
+      (pSpec.Transcript j.castSucc × prover.PrvState j.castSucc)) :
+      prover.processRound j currentResult = (do
+        let ⟨transcript, state⟩ ← currentResult
+        match hDir : pSpec.dir j with
+        | .V_to_P => do
+          let challenge ← pSpec.getChallenge ⟨j, hDir⟩
+          letI newState := (← prover.receiveChallenge ⟨j, hDir⟩ state) challenge
+          return ⟨transcript.concat challenge, newState⟩
+        | .P_to_V => do
+          let ⟨msg, newState⟩ ← prover.sendMessage ⟨j, hDir⟩ state
+          return ⟨transcript.concat msg, newState⟩) := rfl
+
+/-- **Message-round peel.** When round `j` is a `P_to_V` (prover-message) round, peeling one round
+binds over the previous result and then runs `sendMessage`, appending the message to the
+transcript. -/
+theorem runToRound_succ_message (j : Fin n)
+    (stmt : StmtIn) (wit : WitIn) (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hDir : pSpec.dir j = .P_to_V) :
+      prover.runToRound j.succ stmt wit = (do
+        let ⟨transcript, state⟩ ← prover.runToRound j.castSucc stmt wit
+        let ⟨msg, newState⟩ ← prover.sendMessage ⟨j, hDir⟩ state
+        return ⟨transcript.concat msg, newState⟩) := by
+  rw [runToRound_succ, processRound_def]
+  apply bind_congr
+  rintro ⟨transcript, state⟩
+  -- Collapse the tuple match, then resolve the direction match: the `V_to_P` branch is impossible
+  -- by `hDir`, the `P_to_V` branch is the honest message shape (proof-irrelevant in `hDir`).
+  dsimp only
+  split <;> rename_i hDir'
+  · exact absurd (hDir.symm.trans hDir') (by decide)
+  · rfl
+
+/-- **Challenge-round peel.** When round `j` is a `V_to_P` (verifier-challenge) round, peeling one
+round binds over the previous result, samples the challenge, runs `receiveChallenge`, and appends
+the challenge to the transcript. -/
+theorem runToRound_succ_challenge (j : Fin n)
+    (stmt : StmtIn) (wit : WitIn) (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hDir : pSpec.dir j = .V_to_P) :
+      prover.runToRound j.succ stmt wit = (do
+        let ⟨transcript, state⟩ ← prover.runToRound j.castSucc stmt wit
+        let challenge ← pSpec.getChallenge ⟨j, hDir⟩
+        letI newState := (← prover.receiveChallenge ⟨j, hDir⟩ state) challenge
+        return ⟨transcript.concat challenge, newState⟩) := by
+  rw [runToRound_succ, processRound_def]
+  apply bind_congr
+  rintro ⟨transcript, state⟩
+  -- Collapse the tuple match, then resolve the direction match: the `V_to_P` branch is the honest
+  -- challenge shape, the `P_to_V` branch is impossible by `hDir`.
+  dsimp only
+  split <;> rename_i hDir'
+  · rfl
+  · exact absurd (hDir.symm.trans hDir') (by decide)
+
+/-- **Full-run peel.** `Prover.run` is `runToRound (Fin.last n)` followed by `output`. This exposes
+the head so that the run can be peeled round-by-round (via `runToRound_succ` and friends) down to
+the `output` step. -/
+theorem run_eq_runToRound_last
+    (stmt : StmtIn) (wit : WitIn) (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec) :
+      prover.run stmt wit = (do
+        let ⟨transcript, state⟩ ← prover.runToRound (Fin.last n) stmt wit
+        return ⟨transcript, ← prover.output state⟩) := rfl
+
 end Prover
 
 end Execution
