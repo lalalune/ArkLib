@@ -3,6 +3,7 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.HenselNumerator
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1Conditional
 
 /-!
 # (P1, A.4) `AlphaGenuineRegularWeightLe` — analysis, equivalence, structured closure, obstruction
@@ -93,28 +94,14 @@ variable (H : F[X][Y]) [Fact (Irreducible H)] [Fact (0 < H.natDegree)]
 
 `embedding (W𝒪 H) = liftToFunctionField H.leadingCoeff` — the lift identity's `W^{t+1}` factor is
 literally the embedding of `W𝒪^{t+1}`.  Pure unfolding (`W𝒪 = mk (C lc)`,
-`embedding ∘ mk = liftBivariate`, `liftBivariate (C p) = liftToFunctionField p`). -/
-
-omit [Fact (Irreducible H)] [Fact (0 < H.natDegree)] in
-/-- The embedding of the `𝒪`-element `W𝒪` is the `𝕃`-element `liftToFunctionField H.leadingCoeff`
-(the `W` of the lift identity). -/
-theorem embeddingOf𝒪Into𝕃_W𝒪 :
-    embeddingOf𝒪Into𝕃 H (W𝒪 H) = liftToFunctionField (H := H) H.leadingCoeff := by
-  rw [W𝒪, embeddingOf𝒪Into𝕃_mk, liftBivariate_C]
+`embedding ∘ mk = liftBivariate`, `liftBivariate (C p) = liftToFunctionField p`).
+`embeddingOf𝒪Into𝕃_W𝒪` is imported from `P1Conditional`. -/
 
 /-! ### 1. The carved A.4 link, re-stated verbatim (the named gap)
 
 Identical to `P1Conditional.AlphaGenuineRegularWeightLe`: the genuine Hensel-root coefficient
-`αGenuine t ∈ 𝕃 H` is *regular* (an embedding of an `𝒪`-element) of `Λ_𝒪`-weight `≤ 1`. -/
-
-/-- **The carved A.4 link (named gap), verbatim from `P1Conditional`.**  At order `t`, the genuine
-Hensel-root coefficient `αGenuine t` is the embedding of an `𝒪`-element `a_t` of `Λ_𝒪`-weight `≤ 1`.
-This is the formal content of BCIKS20's `Λ(α_t) = Λ(Y) = 1`. -/
-def AlphaGenuineRegularWeightLe (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
-    (hH : 0 < H.natDegree) (D : ℕ) : Prop :=
-  ∀ t : ℕ, ∃ a : 𝒪 H,
-    embeddingOf𝒪Into𝕃 H a = αGenuine H x₀ R hHyp t
-      ∧ weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1
+`αGenuine t ∈ 𝕃 H` is *regular* (an embedding of an `𝒪`-element) of `Λ_𝒪`-weight `≤ 1`.
+`AlphaGenuineRegularWeightLe` is imported from `P1Conditional`. -/
 
 /-- **The `𝒪`-level divisibility-with-weight form** of the carved link.  At order `t`, `βHensel t`
 factors *in `𝒪 H`* as `a_t · W𝒪^{t+1} · ξ^{e_t}` with the quotient `a_t` of `Λ_𝒪`-weight `≤ 1`.  This
@@ -128,26 +115,9 @@ def DivWeightLe (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
         = a * (W𝒪 H) ^ (t + 1) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t - 1)
       ∧ weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1
 
-/-! ### 1′. The two halves of the `𝕃 ↔ 𝒪` bridge -/
+/-! ### 1′. The two halves of the `𝕃 ↔ 𝒪` bridge
 
-/-- **Bridge, `𝕃 → 𝒪`.**  Given the (P2) lift identity at order `t` (`hlift_t`) and a carved
-`𝒪`-preimage `a` of `αGenuine t` (`ha`), the `βHensel t` factors, IN `𝒪 H`, as
-`βHensel t = a · W𝒪^{t+1} · ξ^{2t−1}`.  The `𝕃`-level identity equals
-`embedding (a · W𝒪^{t+1} · ξ^{2t−1})` (ring-hom multiplicativity + the `W` bridge); injectivity of
-`embeddingOf𝒪Into𝕃` descends it to `𝒪`. -/
-theorem βHensel_eq_alpha_mul_of_lift (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
-    (hH : 0 < H.natDegree) (t : ℕ) {a : 𝒪 H}
-    (ha : embeddingOf𝒪Into𝕃 H a = αGenuine H x₀ R hHyp t)
-    (hlift_t :
-      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
-        = αGenuine H x₀ R hHyp t
-            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
-            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1)) :
-    βHensel H x₀ R hHyp t
-      = a * (W𝒪 H) ^ (t + 1) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t - 1) := by
-  apply embeddingOf𝒪Into𝕃_injective hH
-  rw [hlift_t]
-  rw [map_mul, map_mul, map_pow, map_pow, ha, embeddingOf𝒪Into𝕃_W𝒪]
+The `𝕃 → 𝒪` half `βHensel_eq_alpha_mul_of_lift` is imported from `P1Conditional`. -/
 
 /-- **Bridge, `𝒪 → 𝕃`.**  The reverse: given the `𝒪`-level factorization `hfact` and the lift identity
 `hlift_t`, the quotient `a` embeds to `αGenuine t`.  Push `embedding` through `hfact`
@@ -205,52 +175,8 @@ theorem alphaWeight_iff_divWeight (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hy
 This is the genuine forward closure: the carved link + the lift identity yield the paper's structured
 weight invariant, via the `𝒪`-level factorization + the proven sub-multiplicative `Λ_𝒪` calculus.  It
 shows `AlphaGenuineRegularWeightLe` is at least as strong as the structured invariant (and, by §2's
-sub-additivity remark, strictly stronger). -/
-
-/-- **(P1) the STRUCTURED INVARIANT, conditional.**  Given `hlift`, the carved link `hα`, and the
-`Λ(ξ)` bound `hξ` (`weight_ξ_bound`, automatic under its regime), the structured invariant
-`Λ_𝒪(βHensel l) ≤ 1 + (l+1)·Λ(W) + e_l·Λ(ξ)` holds, with `Λ(W) = (lc H).natDegree`,
-`Λ(ξ) ≤ (d−1)·(D−dH+1)`, `e_l = 2l−1` (ℕ-truncated).  Route: the link gives `β_l = a_l·W𝒪^{l+1}·ξ^{e_l}`
-(Task-1 `𝕃 → 𝒪`), then `weight_Λ_over_𝒪_mul_le`/`_pow_le`/`_W` + `nsmul_withBot_le` + `Λ(a_l) ≤ 1`. -/
-theorem βHensel_weight_structured (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
-    (hH : 0 < H.natDegree) {D : ℕ} (hDH : Bivariate.totalDegree H ≤ D)
-    (hlift : ∀ t : ℕ,
-      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
-        = αGenuine H x₀ R hHyp t
-            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
-            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1))
-    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D)
-    (hξ : weight_Λ_over_𝒪 hH (ClaimA2.ξ x₀ R H hHyp) D
-            ≤ WithBot.some ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1)))
-    (l : ℕ) :
-    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp l) D
-      ≤ WithBot.some
-          (1 + (l + 1) * (H.leadingCoeff).natDegree
-            + (2 * l - 1)
-              * ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1))) := by
-  -- Task 1 (`𝕃 → 𝒪`): extract `a_l` and the `𝒪`-level factorization.
-  obtain ⟨a, ha_eq, ha_wt⟩ := hα l
-  have hfact : βHensel H x₀ R hHyp l
-      = a * (W𝒪 H) ^ (l + 1) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * l - 1) :=
-    βHensel_eq_alpha_mul_of_lift H x₀ R hHyp hH l ha_eq (hlift l)
-  rw [hfact]
-  -- Sub-multiplicativity over `𝒪`: split the two products.
-  refine (weight_Λ_over_𝒪_mul_le H hH hDH _ _).trans ?_
-  refine le_trans (add_le_add (weight_Λ_over_𝒪_mul_le H hH hDH _ _) (le_refl _)) ?_
-  -- (ii) `Λ_𝒪(W𝒪^{l+1}) ≤ (l+1)·Λ(W) ≤ (l+1)·(lc H).natDegree`.
-  have hW_pow : weight_Λ_over_𝒪 hH ((W𝒪 H) ^ (l + 1)) D
-      ≤ WithBot.some ((l + 1) * (H.leadingCoeff).natDegree) := by
-    refine (weight_Λ_over_𝒪_pow_le H hH hDH (W𝒪 H) (l + 1)).trans ?_
-    exact nsmul_withBot_le (l + 1) _ (weight_Λ_over_𝒪_W H hH hDH)
-  -- (iii) `Λ_𝒪(ξ^{2l−1}) ≤ (2l−1)·Λ(ξ) ≤ (2l−1)·((d−1)(D−dH+1))`.
-  have hξ_pow : weight_Λ_over_𝒪 hH ((ClaimA2.ξ x₀ R H hHyp) ^ (2 * l - 1)) D
-      ≤ WithBot.some
-          ((2 * l - 1) * ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1))) := by
-    refine (weight_Λ_over_𝒪_pow_le H hH hDH (ClaimA2.ξ x₀ R H hHyp) (2 * l - 1)).trans ?_
-    exact nsmul_withBot_le (2 * l - 1) _ hξ
-  -- Combine: `(Λ(a) + Λ(W^{l+1})) + Λ(ξ^{e_l}) ≤ (1 + (l+1)Λ(W)) + e_l·Λ(ξ)`.
-  refine le_trans (add_le_add (add_le_add ha_wt hW_pow) hξ_pow) ?_
-  rw [← WithBot.coe_add, ← WithBot.coe_add]
+sub-additivity remark, strictly stronger).  `βHensel_weight_structured` is imported from
+`P1Conditional`. -/
 
 /-! ### 4. (P1) the loose weight bound, PROVEN from the structured invariant -/
 
