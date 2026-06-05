@@ -6,6 +6,7 @@ open MvPolynomial Finset Sumcheck.Structured RingSwitching
 namespace ScratchRS
 
 set_option linter.style.longFile 0
+set_option linter.unusedSectionVars false
 set_option linter.unusedVariables false
 
 variable {L : Type} [CommRing L] [Nontrivial L] [DecidableEq L]
