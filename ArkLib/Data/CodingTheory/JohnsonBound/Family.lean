@@ -939,6 +939,24 @@ theorem Lambda_le_of_JqℓRecipReal_minDist
   simpa [JqℓRecipReal] using
     Lambda_le_of_reciprocal_johnson_radius C hℓ hq_one hmin_pos hrad
 
+/-- Monotone-radius corollary of the named reciprocal Johnson radius bound. -/
+theorem Lambda_le_of_le_JqℓRecipReal_minDist
+    {ι : Type} [Fintype ι] [DecidableEq ι] [Nonempty ι]
+    {α : Type} [Fintype α] [DecidableEq α]
+    (C : ListDecodable.Code ι α) {δ : ℝ} {ℓ : ℕ}
+    (hδ_le : δ ≤ JqℓRecipReal (Fintype.card α : ℝ) (ℓ : ℝ)
+      ((Code.minDist C : ℝ) / (Fintype.card ι : ℝ)))
+    (hℓ : 2 ≤ ℓ) (hq_one : 1 < Fintype.card α)
+    (hmin_pos : 0 < Code.minDist C)
+    (hrad :
+      0 ≤ 1
+        - (1 / (1 - 1 / (Fintype.card α : ℝ)))
+          * (((ℓ : ℝ) - 1) / (ℓ : ℝ))
+          * ((Code.minDist C : ℝ) / (Fintype.card ι : ℝ))) :
+    ListDecodable.Lambda C δ ≤ (ℓ : ℕ∞) := by
+  exact le_trans (ListDecodable.Lambda_mono (C := C) hδ_le)
+    (Lambda_le_of_JqℓRecipReal_minDist C hℓ hq_one hmin_pos hrad)
+
 /-- A violated finite `Lambda` bound produces a concrete point-list whose average
 distance is controlled by the q-ary Plotkin bound.
 
