@@ -526,6 +526,7 @@ rather than the stronger Eq. 5.12 factorization list.  The missing work for the 
 free-parameter Claim 5.7 is now isolated in the hypotheses here: nonvanishing/separability of the
 `x₀` specialization, nonempty close set, graph divisibility for every close `z`, and the large-set
 Johnson-regime inequality. -/
+omit [DecidableEq (RatFunc F)] in
 lemma coeffs_of_close_proximity_nonempty_of_large_natdiv (δ : ℚ)
     (hlarge :
       (#(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) : ℝ) >
