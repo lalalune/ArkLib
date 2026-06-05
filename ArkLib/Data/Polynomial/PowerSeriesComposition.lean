@@ -75,6 +75,34 @@ theorem compositionSum_eq_valueMultisetSum {ι : Type*} [DecidableEq ι]
   simp_rw [hsummand]
   exact Finset.sum_comp (fun m => (m.map b).prod) (valueMultiset s)
 
+/-- The concrete family `b n := 2 ^ n : ℕ → ℕ` used to witness non-vacuity of L4. -/
+private def bWitness : ℕ → ℕ := fun n => 2 ^ n
+
+/-- **Non-vacuity witness for L4 (composition side).**  At `s = range 2`, `t = 2`, with
+`b n := 2 ^ n`, the three weak compositions `(2,0),(0,2),(1,1)` each contribute
+`2^{l₀}·2^{l₁} = 2^2 = 4`, so the left-hand (ungrouped) sum is `4 + 4 + 4 = 12 ≠ 0`. -/
+example : (∑ l ∈ finsuppAntidiag (range 2) 2, ∏ i ∈ range 2, bWitness (l i)) = 12 := by decide
+
+/-- **Non-vacuity witness for L4 (grouped side).**  The same data, grouped by value-multiset:
+`{2,0}` has fiber size `2` and product `2^2·2^0 = 4` (contributing `2 • 4 = 8`); `{1,1}` has
+fiber size `1` and product `2^1·2^1 = 4` (contributing `1 • 4 = 4`); total `12`.  So the
+grouping genuinely splits into two distinct multisets with *different* multinomial weights —
+neither an empty sum nor a degenerate `0 = 0`. -/
+example :
+    (∑ m ∈ (finsuppAntidiag (range 2) 2).image (valueMultiset (range 2)),
+        (#{l ∈ finsuppAntidiag (range 2) 2 | valueMultiset (range 2) l = m})
+          • ((m.map bWitness).prod)) = 12 := by decide
+
+/-- The two sides of L4 visibly agree, and both equal the nonzero value `12`, at the concrete
+instance `s = range 2`, `t = 2`, `b n = 2^n`: a self-check that
+`compositionSum_eq_valueMultisetSum` is not vacuous. -/
+theorem compositionSum_example :
+    (∑ l ∈ finsuppAntidiag (range 2) 2, ∏ i ∈ range 2, bWitness (l i))
+      = ∑ m ∈ (finsuppAntidiag (range 2) 2).image (valueMultiset (range 2)),
+          (#{l ∈ finsuppAntidiag (range 2) 2 | valueMultiset (range 2) l = m})
+            • ((m.map bWitness).prod) :=
+  compositionSum_eq_valueMultisetSum (range 2) 2 bWitness
+
 end Combinatorics
 
 end ArkLib.PowerSeriesComposition
