@@ -164,6 +164,7 @@ import ArkLib.Data.Domain.FftDomain.Subdomain
 import ArkLib.Data.Domain.FftDomain.ToSubgroup
 import ArkLib.Data.EllipticCurve.BN254
 import ArkLib.Data.Fin.Basic
+import ArkLib.Data.Fin.BigOperators
 import ArkLib.Data.Fin.Fold
 import ArkLib.Data.Fin.Lift
 import ArkLib.Data.Fin.Sigma
@@ -201,14 +202,17 @@ import ArkLib.Data.MvPolynomial.MultilinearComputational
 import ArkLib.Data.MvPolynomial.RestrictDegree
 import ArkLib.Data.MvPolynomial.RestrictDegreeVar
 import ArkLib.Data.MvPolynomial.SchwartzZippelCounting
+import ArkLib.Data.Nat.Bitwise
 import ArkLib.Data.Polynomial.Bivariate
 import ArkLib.Data.Polynomial.ClearDenomY
 import ArkLib.Data.Polynomial.FoldingPolynomial
+import ArkLib.Data.Polynomial.Frobenius
 import ArkLib.Data.Polynomial.GammaSubstObstruction
 import ArkLib.Data.Polynomial.HenselExistence
 import ArkLib.Data.Polynomial.HenselSeriesCoeff
 import ArkLib.Data.Polynomial.Indicator
 import ArkLib.Data.Polynomial.Interface
+import ArkLib.Data.Polynomial.MonomialBasis
 import ArkLib.Data.Polynomial.MultinomialChainRule
 import ArkLib.Data.Polynomial.NewtonLinearization
 import ArkLib.Data.Polynomial.PowerSeriesComposition
@@ -219,6 +223,7 @@ import ArkLib.Data.Polynomial.Trivariate
 import ArkLib.Data.Probability.Combinatorial
 import ArkLib.Data.Probability.Instances
 import ArkLib.Data.Probability.Notation
+import ArkLib.Data.RingTheory.TowerOfAlgebra
 import ArkLib.Interaction.Oracle.Core
 import ArkLib.Interaction.Oracle.Spec
 import ArkLib.Interaction.Reduction
@@ -289,6 +294,12 @@ import ArkLib.ProofSystem.ConstraintSystem.Lookup
 import ArkLib.ProofSystem.ConstraintSystem.MemoryChecking
 import ArkLib.ProofSystem.ConstraintSystem.Plonk
 import ArkLib.ProofSystem.ConstraintSystem.R1CS
+import ArkLib.ProofSystem.Fri.AuxLemmas
+import ArkLib.ProofSystem.Fri.Domain
+import ArkLib.ProofSystem.Fri.EvenAndOdd
+import ArkLib.ProofSystem.Fri.EvenAndOdd.Def
+import ArkLib.ProofSystem.Fri.EvenAndOdd.Lemmas
+import ArkLib.ProofSystem.Fri.PolySplit
 import ArkLib.ProofSystem.Fri.RoundConsistency
 import ArkLib.ProofSystem.Fri.Spec.General
 import ArkLib.ProofSystem.Fri.Spec.SingleRound
