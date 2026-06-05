@@ -30336,9 +30336,396 @@
           "signature": "instance instance : [(pSpec\u2082).Challenge]\u2092 \u2282\u2092 [(pSpec\u2081 ++\u209a pSpec\u2082).Challenge]\u2092 where"
         },
         {
+          "doc": "Support lemma: PrvState of the appended prover matches `P\u2081`'s on the left half.",
+          "kind": "theorem",
+          "line": 370,
+          "name": "Prover.append_PrvState_castLE",
+          "namespace": "Prover",
+          "short_name": "append_PrvState_castLE",
+          "signature": "theorem append_PrvState_castLE (j : Fin (m + 1)) :"
+        },
+        {
+          "doc": "Support lemma `append_Transcript_castLE`: the appended-protocol transcript type at a left-half round equals `pSpec\u2081`'s transcript type.",
+          "kind": "theorem",
+          "line": 380,
+          "name": "Prover.append_Transcript_castLE",
+          "namespace": "Prover",
+          "short_name": "append_Transcript_castLE",
+          "signature": "theorem append_Transcript_castLE (j : Fin (m + 1)) :"
+        },
+        {
+          "doc": "Support lemma `append_input_heq`: the appended prover's `input` is heterogeneously equal to `P\u2081`'s `input`.",
+          "kind": "theorem",
+          "line": 398,
+          "name": "Prover.append_input_heq",
+          "namespace": "Prover",
+          "short_name": "append_input_heq",
+          "signature": "theorem append_input_heq :"
+        },
+        {
+          "doc": "Support lemma `prodMk_heq`: heterogeneous congruence for pairs whose component types vary.",
+          "kind": "theorem",
+          "line": 406,
+          "name": "Prover.prodMk_heq",
+          "namespace": "Prover",
+          "short_name": "prodMk_heq",
+          "signature": "theorem prodMk_heq {\u03b1 \u03b1' \u03b2 \u03b2' : Type _} {a : \u03b1} {a' : \u03b1'} {b : \u03b2} {b' : \u03b2'}"
+        },
+        {
+          "doc": "Support lemma `pure_heq_pure`: heterogeneous congruence for `pure` in `OracleComp`, lifting a HEq of values (over equal element types) to a HEq of the pure computations.",
+          "kind": "theorem",
+          "line": 414,
+          "name": "Prover.pure_heq_pure",
+          "namespace": "Prover",
+          "short_name": "pure_heq_pure",
+          "signature": "theorem pure_heq_pure {\u03b9 : Type} {spec : OracleSpec \u03b9} {\u03b1 \u03b1' : Type _} {a : \u03b1} {a' : \u03b1'}"
+        },
+        {
+          "doc": "HEq congruence for `sendMessage`: equal message index and HEq state imply HEq results.",
+          "kind": "theorem",
+          "line": 421,
+          "name": "Prover.sendMessage_heq_congr",
+          "namespace": "Prover",
+          "short_name": "sendMessage_heq_congr",
+          "signature": "theorem sendMessage_heq_congr {P : Prover oSpec Stmt\u2081 Wit\u2081 Stmt\u2082 Wit\u2082 pSpec\u2081}"
+        },
+        {
+          "doc": "HEq congruence for `receiveChallenge`: equal challenge index and HEq state imply HEq results.",
+          "kind": "theorem",
+          "line": 429,
+          "name": "Prover.receiveChallenge_heq_congr",
+          "namespace": "Prover",
+          "short_name": "receiveChallenge_heq_congr",
+          "signature": "theorem receiveChallenge_heq_congr {P : Prover oSpec Stmt\u2081 Wit\u2081 Stmt\u2082 Wit\u2082 pSpec\u2081}"
+        },
+        {
+          "doc": "Split a HEq of pairs (over componentwise-equal types) into HEqs of the components.",
+          "kind": "theorem",
+          "line": 437,
+          "name": "Prover.prod_heq_split",
+          "namespace": "Prover",
+          "short_name": "prod_heq_split",
+          "signature": "theorem prod_heq_split {\u03b1 \u03b1' \u03b2 \u03b2' : Type _} (h\u03b1 : \u03b1 = \u03b1') (h\u03b2 : \u03b2 = \u03b2')"
+        },
+        {
+          "doc": "HEq congruence for monadic `bind` in `OracleComp` where the element types may differ propositionally.  If the bound computations are HEq (over equal element types) and the continuations send HEq inputs to HEq outputs, the binds are HEq.",
+          "kind": "theorem",
+          "line": 448,
+          "name": "Prover.bind_heq_congr",
+          "namespace": "Prover",
+          "short_name": "bind_heq_congr",
+          "signature": "theorem bind_heq_congr {\u03b9 : Type} {spec : OracleSpec \u03b9} {\u03b1 \u03b1' \u03b2 \u03b2' : Type _}"
+        },
+        {
+          "doc": "HEq congruence for `OracleComp.liftComp` (along the canonical query-level `MonadLiftT`): HEq inputs (over equal element types) give HEq lifts.  Unlike `liftM_heq_congr`, `liftComp` depends only on the *query-level* `MonadLiftT (OracleQuery spec) (OracleQuery superSpec)`, which is canonical, so this avoids the OracleComp-level `MonadLiftT` instance diamond.",
+          "kind": "theorem",
+          "line": 463,
+          "name": "Prover.liftComp_heq_congr",
+          "namespace": "Prover",
+          "short_name": "liftComp_heq_congr",
+          "signature": "theorem liftComp_heq_congr {\u03b9 \u03b9' : Type} {spec : OracleSpec \u03b9} {superSpec : OracleSpec \u03b9'}"
+        },
+        {
+          "doc": "HEq congruence for `liftM` (along a fixed transitive `MonadLiftT` of `OracleComp`s): HEq inputs (over equal element types) give HEq lifts.",
+          "kind": "theorem",
+          "line": 473,
+          "name": "Prover.liftM_heq_congr",
+          "namespace": "Prover",
+          "short_name": "liftM_heq_congr",
+          "signature": "theorem liftM_heq_congr {\u03b9 \u03b9' : Type} {spec : OracleSpec \u03b9} {superSpec : OracleSpec \u03b9'}"
+        },
+        {
+          "doc": "HEq congruence: `liftM` (the `OracleQuery \u2192 OracleComp` embedding over the SAME spec) of HEq queries (over equal response types) gives HEq computations.",
+          "kind": "theorem",
+          "line": 482,
+          "name": "Prover.liftM_query_heq",
+          "namespace": "Prover",
+          "short_name": "liftM_query_heq",
+          "signature": "theorem liftM_query_heq {\u03b9s : Type} {spec : OracleSpec \u03b9s} {\u03b1 \u03b1' : Type}"
+        },
+        {
+          "doc": "HEq of two oracle queries over the same spec whose inputs agree and whose response types are propositionally equal, with HEq continuations.",
+          "kind": "theorem",
+          "line": 489,
+          "name": "Prover.oracleQuery_heq",
+          "namespace": "Prover",
+          "short_name": "oracleQuery_heq",
+          "signature": "theorem oracleQuery_heq {\u03b9s : Type} {spec : OracleSpec \u03b9s} {\u03b1 \u03b1' : Type}"
+        },
+        {
+          "doc": "**OracleComp-level lift-coherence.**  Lifting `mx : OracleComp spec` first through an intermediate spec `midSpec` and then to `superSpec` agrees, as a *function*, with lifting it directly to `superSpec`, provided the two query-level `MonadLiftT`s cohere (`OracleQuery.liftM_eq_liftM_liftM`, which is `rfl` for the canonical `+`/transitive instances). Proved by induction on `mx`: the `query_bind` head reduces both sides to `q.cont <$> liftM (...)` where the inner lifts coincide by `hquery`. This is the bridge that defuses the `OracleComp`-level `MonadLiftT` instance diamond: the *transitive* inst",
+          "kind": "theorem",
+          "line": 506,
+          "name": "Prover.liftComp_liftComp",
+          "namespace": "Prover",
+          "short_name": "liftComp_liftComp",
+          "signature": "theorem liftComp_liftComp {\u03b9\u2081 \u03b9\u2082 \u03b9\u2083 : Type} {spec : OracleSpec \u03b9\u2081} {midSpec : OracleSpec \u03b9\u2082}"
+        },
+        {
+          "doc": "`processRound` resolved at a message (`P_to_V`) round (mirror of the library's `processRound_challenge`).",
+          "kind": "theorem",
+          "line": 535,
+          "name": "Prover.processRound_message",
+          "namespace": "Prover",
+          "short_name": "processRound_message",
+          "signature": "theorem processRound_message {\u03b9 : Type} {oSpec : OracleSpec \u03b9} {StmtIn WitIn StmtOut WitOut : Type}"
+        },
+        {
+          "doc": "Generic HEq congruence for `Fin.snoc` over dependent codomain families.  If the lengths agree, the codomain families are HEq, the tuples are HEq and the appended elements are HEq, the two snocs are HEq.",
+          "kind": "theorem",
+          "line": 556,
+          "name": "Prover.Fin_snoc_heq",
+          "namespace": "Prover",
+          "short_name": "Fin_snoc_heq",
+          "signature": "theorem Fin_snoc_heq {N N' : \u2115} (hN : N = N')"
+        },
+        {
+          "doc": "Dependent function-application HEq congruence: HEq functions (over equal domain and HEq codomain families) applied to HEq arguments give HEq results.",
+          "kind": "theorem",
+          "line": 567,
+          "name": "Prover.heq_app",
+          "namespace": "Prover",
+          "short_name": "heq_app",
+          "signature": "theorem heq_app {\u03b1 \u03b1' : Type _} {\u03b2 : \u03b1 \u2192 Type _} {\u03b2' : \u03b1' \u2192 Type _}"
+        },
+        {
+          "doc": "The appended-protocol message type at a left round equals `pSpec\u2081`'s.",
+          "kind": "theorem",
+          "line": 577,
+          "name": "Prover.append_Message_castLE",
+          "namespace": "Prover",
+          "short_name": "append_Message_castLE",
+          "signature": "theorem append_Message_castLE (i : Fin m)"
+        },
+        {
+          "doc": "HEq congruence for `Transcript.concat` across left-round transcripts of the appended and the `pSpec\u2081` protocols.  `Transcript.concat = Fin.snoc`; compared as dependent functions on `Fin (\u00b7.succ)` via `Function.hfunext`, splitting each index into the appended `msg` (last) or an interior entry read from the transcript.",
+          "kind": "theorem",
+          "line": 588,
+          "name": "Prover.concat_heq",
+          "namespace": "Prover",
+          "short_name": "concat_heq",
+          "signature": "theorem concat_heq (i : Fin m)"
+        },
+        {
+          "doc": "The appended protocol's direction at a left-half round matches `pSpec\u2081`'s.",
+          "kind": "theorem",
+          "line": 625,
+          "name": "Prover.append_dir_castLE",
+          "namespace": "Prover",
+          "short_name": "append_dir_castLE",
+          "signature": "theorem append_dir_castLE (i : Fin m) :"
+        },
+        {
+          "doc": "State-type equality used to transport the appended prover's state into `P\u2081`'s state at the `castSucc` of a left round.",
+          "kind": "theorem",
+          "line": 636,
+          "name": "Prover.append_PrvState_castSucc",
+          "namespace": "Prover",
+          "short_name": "append_PrvState_castSucc",
+          "signature": "theorem append_PrvState_castSucc (i : Fin m) :"
+        },
+        {
+          "doc": "State-type equality at the `succ` of a left round.",
+          "kind": "theorem",
+          "line": 642,
+          "name": "Prover.append_PrvState_succ",
+          "namespace": "Prover",
+          "short_name": "append_PrvState_succ",
+          "signature": "theorem append_PrvState_succ (i : Fin m) :"
+        },
+        {
+          "doc": "Transcript-type equality at the `castSucc` of a left round.",
+          "kind": "theorem",
+          "line": 648,
+          "name": "Prover.append_Transcript_castSucc",
+          "namespace": "Prover",
+          "short_name": "append_Transcript_castSucc",
+          "signature": "theorem append_Transcript_castSucc (i : Fin m) :"
+        },
+        {
+          "doc": "Transcript-type equality at the `succ` of a left round.",
+          "kind": "theorem",
+          "line": 654,
+          "name": "Prover.append_Transcript_succ",
+          "namespace": "Prover",
+          "short_name": "append_Transcript_succ",
+          "signature": "theorem append_Transcript_succ (i : Fin m) :"
+        },
+        {
+          "doc": "**Left-round `sendMessage` reduction.**  The appended prover's `sendMessage` at a left round `i < m` reduces (heterogeneously) to `P\u2081`'s `sendMessage`.",
+          "kind": "theorem",
+          "line": 661,
+          "name": "Prover.append_sendMessage_left",
+          "namespace": "Prover",
+          "short_name": "append_sendMessage_left",
+          "signature": "theorem append_sendMessage_left (i : Fin m)"
+        },
+        {
+          "doc": "**Left-round `receiveChallenge` reduction.**  The appended prover's `receiveChallenge` at a left round `i < m` reduces (heterogeneously) to `P\u2081`'s `receiveChallenge`.",
+          "kind": "theorem",
+          "line": 679,
+          "name": "Prover.append_receiveChallenge_left",
+          "namespace": "Prover",
+          "short_name": "append_receiveChallenge_left",
+          "signature": "theorem append_receiveChallenge_left (i : Fin m)"
+        },
+        {
+          "doc": "**Left-round `getChallenge` reduction.**  The appended protocol's `getChallenge` at a left challenge round `i < m` is heterogeneously equal to the `liftM` (along the left challenge `SubSpec` `[pSpec\u2081.Challenge]\u2092 \u2282\u2092 [(pSpec\u2081 ++\u209a pSpec\u2082).Challenge]\u2092`) of `pSpec\u2081`'s `getChallenge`.  The two single queries coincide on the (value-equal) challenge index `i.castLE = ChallengeIdx.inl \u27e8i,_\u27e9`; the response types differ only by the propositional `range_challenge_append_inl` transport carried by the SubSpec `onResponse`, so the queries are HEq.",
+          "kind": "theorem",
+          "line": 701,
+          "name": "Prover.append_getChallenge_left",
+          "namespace": "Prover",
+          "short_name": "append_getChallenge_left",
+          "signature": "theorem append_getChallenge_left (i : Fin m)"
+        },
+        {
+          "doc": "`processRound` resolved at a challenge (`V_to_P`) round (mirror of `processRound_message`).",
+          "kind": "theorem",
+          "line": 750,
+          "name": "Prover.processRound_challenge'",
+          "namespace": "Prover",
+          "short_name": "processRound_challenge'",
+          "signature": "theorem processRound_challenge' {\u03b9 : Type} {oSpec : OracleSpec \u03b9}"
+        },
+        {
+          "doc": "**Left-round `processRound` compatibility (message branch).**  Working scratch lemma to inspect the message-round goal shape.",
+          "kind": "theorem",
+          "line": 771,
+          "name": "Prover.append_processRound_left_message",
+          "namespace": "Prover",
+          "short_name": "append_processRound_left_message",
+          "signature": "theorem append_processRound_left_message (i : Fin m) (hDir\u2081 : pSpec\u2081.dir i = .P_to_V)"
+        },
+        {
+          "doc": "**Left-round `processRound` compatibility (challenge branch).**  The `V_to_P` analogue of `append_processRound_left_message`: at a left challenge round `i < m`, the appended prover's `processRound` (heterogeneously) equals the `liftM` of `P\u2081`'s, assuming the run-up-to inputs are HEq.  Mirrors the message branch, with `getChallenge` (`append_getChallenge_left`) and `receiveChallenge` (`append_receiveChallenge_left`) in place of `sendMessage`, plus the extra function-application of the `receiveChallenge` result to the sampled challenge.",
+          "kind": "theorem",
+          "line": 868,
+          "name": "Prover.append_processRound_left_challenge",
+          "namespace": "Prover",
+          "short_name": "append_processRound_left_challenge",
+          "signature": "theorem append_processRound_left_challenge (i : Fin m) (hDir\u2081 : pSpec\u2081.dir i = .V_to_P)"
+        },
+        {
+          "doc": "**The corrected well-founded `append_runToRound_left`.**  Running the appended prover up to a left-half round `j \u2264 m` (embedded as `j.castLE` into `Fin (m + n + 1)`) is heterogeneously equal to the `liftM` (along the left challenge `SubSpec`) of running `P\u2081` up to round `j`.",
+          "kind": "theorem",
+          "line": 963,
+          "name": "Prover.append_runToRound_left",
+          "namespace": "Prover",
+          "short_name": "append_runToRound_left",
+          "signature": "theorem append_runToRound_left (j : Fin (m + 1)) :"
+        },
+        {
+          "doc": "**Seam specialization of `append_runToRound_left`.**  Running the appended prover up to the *seam* round `m` (the last round of `pSpec\u2081`, embedded as `(Fin.last m).castLE` into the appended protocol) is heterogeneously equal to the `liftM` of running `P\u2081` to its last round \u2014 i.e. the full honest run of `P\u2081`'s message phase.  This is the entry point for assembling `Prover.append_run`: after the seam, the continuation runs `P\u2082` (rounds `m+1 .. m+n`) starting from `P\u2081.output`-fed `P\u2082.input`.",
+          "kind": "theorem",
+          "line": 1018,
+          "name": "Prover.append_runToRound_seam",
+          "namespace": "Prover",
+          "short_name": "append_runToRound_seam",
+          "signature": "theorem append_runToRound_seam :"
+        },
+        {
+          "doc": "PrvState of the appended prover at a *right interior* round `m + 1 + k` (`k : Fin n`) equals `P\u2082`'s state at round `k + 1`.  Mirror of `append_PrvState_castLE` via `Fin.append_right`/`Fin.tail` (here `Fin.tail P\u2082.PrvState \u2218 Fin.cast` reduces to `P\u2082.PrvState \u2218 Fin.succ` on the right).",
+          "kind": "theorem",
+          "line": 1035,
+          "name": "Prover.append_PrvState_natAdd_succ",
+          "namespace": "Prover",
+          "short_name": "append_PrvState_natAdd_succ",
+          "signature": "theorem append_PrvState_natAdd_succ (k : Fin n) :"
+        },
+        {
+          "doc": "The appended protocol's direction at a *right interior* round `Fin.natAdd m k` (`k : Fin n`) matches `pSpec\u2082`'s direction at `k`.  Mirror of `append_dir_castLE` via `Fin.append_right`.",
+          "kind": "theorem",
+          "line": 1046,
+          "name": "Prover.append_dir_natAdd",
+          "namespace": "Prover",
+          "short_name": "append_dir_natAdd",
+          "signature": "theorem append_dir_natAdd (k : Fin n) :"
+        },
+        {
+          "doc": "The appended-protocol message type at a right interior round equals `pSpec\u2082`'s.",
+          "kind": "theorem",
+          "line": 1052,
+          "name": "Prover.append_Message_natAdd",
+          "namespace": "Prover",
+          "short_name": "append_Message_natAdd",
+          "signature": "theorem append_Message_natAdd (k : Fin n)"
+        },
+        {
+          "doc": "The appended-protocol challenge type at a right interior round equals `pSpec\u2082`'s.",
+          "kind": "theorem",
+          "line": 1059,
+          "name": "Prover.append_Challenge_natAdd",
+          "namespace": "Prover",
+          "short_name": "append_Challenge_natAdd",
+          "signature": "theorem append_Challenge_natAdd (k : Fin n)"
+        },
+        {
+          "doc": "State-type equality: the appended prover's state at the seam-round `castSucc` index `m` (the state going INTO the seam round) equals `P\u2081`'s last state.",
+          "kind": "theorem",
+          "line": 1074,
+          "name": "Prover.append_PrvState_seam_castSucc",
+          "namespace": "Prover",
+          "short_name": "append_PrvState_seam_castSucc",
+          "signature": "theorem append_PrvState_seam_castSucc (hn : 0 < n) :"
+        },
+        {
+          "doc": "**Seam-round `sendMessage` reduction.**  At the seam round `m` (the `i = m` branch of `Prover.append.sendMessage`), the appended prover's `sendMessage` is heterogeneously equal to `P\u2081.output state >>= fun ctx => P\u2082.sendMessage \u27e80,_\u27e9 (P\u2082.input ctx)`.",
+          "kind": "theorem",
+          "line": 1084,
+          "name": "Prover.append_sendMessage_seam",
+          "namespace": "Prover",
+          "short_name": "append_sendMessage_seam",
+          "signature": "theorem append_sendMessage_seam (hn : 0 < n)"
+        },
+        {
+          "doc": "**Seam-round `receiveChallenge` reduction.**  The `V_to_P` analogue of `append_sendMessage_seam`: at the seam round `m`, the appended prover's `receiveChallenge` is heterogeneously equal to `P\u2081.output state >>= fun ctx => P\u2082.receiveChallenge \u27e80,_\u27e9 (P\u2082.input ctx)`.",
+          "kind": "theorem",
+          "line": 1110,
+          "name": "Prover.append_receiveChallenge_seam",
+          "namespace": "Prover",
+          "short_name": "append_receiveChallenge_seam",
+          "signature": "theorem append_receiveChallenge_seam (hn : 0 < n)"
+        },
+        {
+          "doc": "State-type equality: the appended prover's state at the interior right round `Fin.natAdd m k`'s `castSucc` (state going INTO interior round `k`, where `k > 0`) equals `P\u2082`'s state at `k`.",
+          "kind": "theorem",
+          "line": 1140,
+          "name": "Prover.append_PrvState_natAdd_castSucc",
+          "namespace": "Prover",
+          "short_name": "append_PrvState_natAdd_castSucc",
+          "signature": "theorem append_PrvState_natAdd_castSucc (k : Fin n) (hk : 0 < (k : \u2115)) :"
+        },
+        {
+          "doc": "State-type equality at the interior right round `succ` index (state AFTER interior round `k`, `k > 0`).  Equals `P\u2082.PrvState k.succ`.",
+          "kind": "theorem",
+          "line": 1152,
+          "name": "Prover.append_PrvState_natAdd_interior_succ",
+          "namespace": "Prover",
+          "short_name": "append_PrvState_natAdd_interior_succ",
+          "signature": "theorem append_PrvState_natAdd_interior_succ (k : Fin n) (hk : 0 < (k : \u2115)) :"
+        },
+        {
+          "doc": "**Right interior-round `sendMessage` reduction.**  At an interior right round `Fin.natAdd m k` (`k : Fin n`, `k > 0`, the `i > m` branch of `Prover.append.sendMessage`), the appended prover's `sendMessage` is heterogeneously equal to `P\u2082`'s `sendMessage` at round `k`.",
+          "kind": "theorem",
+          "line": 1162,
+          "name": "Prover.append_sendMessage_natAdd",
+          "namespace": "Prover",
+          "short_name": "append_sendMessage_natAdd",
+          "signature": "theorem append_sendMessage_natAdd (k : Fin n) (hk : 0 < (k : \u2115))"
+        },
+        {
+          "doc": "**Right interior-round `receiveChallenge` reduction.**  Mirror of `append_sendMessage_natAdd` for the `V_to_P` direction.",
+          "kind": "theorem",
+          "line": 1186,
+          "name": "Prover.append_receiveChallenge_natAdd",
+          "namespace": "Prover",
+          "short_name": "append_receiveChallenge_natAdd",
+          "signature": "theorem append_receiveChallenge_natAdd (k : Fin n) (hk : 0 < (k : \u2115))"
+        },
+        {
           "doc": "States that running an appended prover `P\u2081.append P\u2082` with an initial statement `stmt\u2081` and witness `wit\u2081` behaves as expected: it first runs `P\u2081` to obtain an intermediate statement `stmt\u2082`, witness `wit\u2082`, and transcript `transcript\u2081`. Then, it runs `P\u2082` on `stmt\u2082` and `wit\u2082` to produce the final statement `stmt\u2083`, witness `wit\u2083`, and transcript `transcript\u2082`. The overall output is `stmt\u2083`, `wit\u2083`, and the combined transcript `transcript\u2081 ++\u209c transcript\u2082`.",
           "kind": "theorem",
-          "line": 372,
+          "line": 1215,
           "name": "Prover.append_run",
           "namespace": "Prover",
           "short_name": "append_run",
@@ -30347,7 +30734,7 @@
         {
           "doc": "Running the sequential composition of two verifiers on a transcript of the combined protocol is equivalent to running the first verifier on the first part of the transcript, and the second verifier on the second part of the transcript, and returning the final statement.",
           "kind": "theorem",
-          "line": 392,
+          "line": 1275,
           "name": "Verifier.append_run",
           "namespace": "Verifier",
           "short_name": "append_run",
@@ -30356,7 +30743,7 @@
         {
           "doc": "Sequential composition preserves completeness Namely, two reductions satisfy completeness with compatible relations (`rel\u2081`, `rel\u2082` for `R\u2081` and `rel\u2082`, `rel\u2083` for `R\u2082`), and respective completeness errors `completenessError\u2081` and `completenessError\u2082`, then their sequential composition `R\u2081.append R\u2082` also satisfies completeness with respect to `rel\u2081` and `rel\u2083`. The completeness error of the appended reduction is the sum of the individual errors (`completenessError\u2081 + completenessError\u2082`).",
           "kind": "theorem",
-          "line": 464,
+          "line": 1347,
           "name": "Reduction.append_completeness",
           "namespace": "Reduction",
           "short_name": "append_completeness",
@@ -30365,7 +30752,7 @@
         {
           "doc": "If two reductions satisfy perfect completeness with compatible relations, then their concatenation also satisfies perfect completeness.",
           "kind": "theorem",
-          "line": 482,
+          "line": 1365,
           "name": "Reduction.append_perfectCompleteness",
           "namespace": "Reduction",
           "short_name": "append_perfectCompleteness",
@@ -30374,7 +30761,7 @@
         {
           "doc": "If two verifiers satisfy soundness with compatible languages and respective soundness errors, then their sequential composition also satisfies soundness. The soundness error of the appended verifier is the sum of the individual errors.",
           "kind": "theorem",
-          "line": 506,
+          "line": 1389,
           "name": "Verifier.append_soundness",
           "namespace": "Verifier",
           "short_name": "append_soundness",
@@ -30383,7 +30770,7 @@
         {
           "doc": "If two verifiers satisfy knowledge soundness with compatible relations and respective knowledge errors, then their sequential composition also satisfies knowledge soundness. The knowledge error of the appended verifier is the sum of the individual errors.",
           "kind": "theorem",
-          "line": 517,
+          "line": 1400,
           "name": "Verifier.append_knowledgeSoundness",
           "namespace": "Verifier",
           "short_name": "append_knowledgeSoundness",
@@ -30392,7 +30779,7 @@
         {
           "doc": "If two verifiers satisfy round-by-round soundness with compatible languages and respective RBR soundness errors, then their sequential composition also satisfies round-by-round soundness. The RBR soundness error of the appended verifier extends the individual errors appropriately.",
           "kind": "theorem",
-          "line": 530,
+          "line": 1413,
           "name": "Verifier.append_rbrSoundness",
           "namespace": "Verifier",
           "short_name": "append_rbrSoundness",
@@ -30401,7 +30788,7 @@
         {
           "doc": "If two verifiers satisfy round-by-round knowledge soundness with compatible relations and respective RBR knowledge errors, then their sequential composition also satisfies round-by-round knowledge soundness. The RBR knowledge error of the appended verifier extends the individual errors appropriately.",
           "kind": "theorem",
-          "line": 545,
+          "line": 1428,
           "name": "Verifier.append_rbrKnowledgeSoundness",
           "namespace": "Verifier",
           "short_name": "append_rbrKnowledgeSoundness",
@@ -30410,7 +30797,7 @@
         {
           "doc": "Sequential composition preserves completeness Namely, two oracle reductions satisfy completeness with compatible relations (`rel\u2081`, `rel\u2082` for `R\u2081` and `rel\u2082`, `rel\u2083` for `R\u2082`), and respective completeness errors `completenessError\u2081` and `completenessError\u2082`, then their sequential composition `R\u2081.append R\u2082` also satisfies completeness with respect to `rel\u2081` and `rel\u2083`. The completeness error of the appended reduction is the sum of the individual errors (`completenessError\u2081 + completenessError\u2082`).",
           "kind": "theorem",
-          "line": 588,
+          "line": 1471,
           "name": "OracleReduction.append_completeness",
           "namespace": "OracleReduction",
           "short_name": "append_completeness",
@@ -30419,7 +30806,7 @@
         {
           "doc": "If two oracle reductions satisfy perfect completeness with compatible relations, then their sequential composition also satisfies perfect completeness.",
           "kind": "theorem",
-          "line": 602,
+          "line": 1485,
           "name": "OracleReduction.append_perfectCompleteness",
           "namespace": "OracleReduction",
           "short_name": "append_perfectCompleteness",
@@ -30428,7 +30815,7 @@
         {
           "doc": "If two oracle verifiers satisfy soundness with compatible languages and respective soundness errors, then their sequential composition also satisfies soundness. The soundness error of the appended verifier is the sum of the individual errors.",
           "kind": "theorem",
-          "line": 622,
+          "line": 1505,
           "name": "OracleVerifier.append_soundness",
           "namespace": "OracleVerifier",
           "short_name": "append_soundness",
@@ -30437,7 +30824,7 @@
         {
           "doc": "If two oracle verifiers satisfy knowledge soundness with compatible relations and respective knowledge errors, then their sequential composition also satisfies knowledge soundness. The knowledge error of the appended verifier is the sum of the individual errors.",
           "kind": "theorem",
-          "line": 636,
+          "line": 1519,
           "name": "OracleVerifier.append_knowledgeSoundness",
           "namespace": "OracleVerifier",
           "short_name": "append_knowledgeSoundness",
@@ -30446,7 +30833,7 @@
         {
           "doc": "If two oracle verifiers satisfy round-by-round soundness with compatible languages and respective RBR soundness errors, then their sequential composition also satisfies round-by-round soundness. The RBR soundness error of the appended verifier extends the individual errors appropriately.",
           "kind": "theorem",
-          "line": 652,
+          "line": 1535,
           "name": "OracleVerifier.append_rbrSoundness",
           "namespace": "OracleVerifier",
           "short_name": "append_rbrSoundness",
@@ -30455,7 +30842,7 @@
         {
           "doc": "If two oracle verifiers satisfy round-by-round knowledge soundness with compatible relations and respective RBR knowledge errors, then their sequential composition also satisfies round-by-round knowledge soundness. The RBR knowledge error of the appended verifier extends the individual errors appropriately.",
           "kind": "theorem",
-          "line": 668,
+          "line": 1551,
           "name": "OracleVerifier.append_rbrKnowledgeSoundness",
           "namespace": "OracleVerifier",
           "short_name": "append_rbrKnowledgeSoundness",
@@ -45846,9 +46233,18 @@
           "signature": "def iteratedSumcheckKnowledgeStateFunction (i : Fin \u2113') :"
         },
         {
+          "doc": "**Round bad-event vacuity (the #22 justification, soundness core).** The RBR-KS bad event for the single iterated round \u2014 `\u00ackSF \u27e81\u27e9 stmt tr witMid \u2227 kSF \u27e82\u27e9 stmt (tr.concat chal) witMid` \u2014 is *contradictory*, hence has probability `0`. The reason is structural, NOT challenge-dependent: * `kSF \u27e82\u27e9` (the post-challenge index) supplies the shared `masterKStateProp` invariants (`witnessStructuralInvariant`, `sumcheckConsistencyProp`, `initialCompatibility`) \u2014 these are transcript-index-free, so they hold equally at `\u27e81\u27e9` \u2014 together with its localChecks `localizedRoundPolyCheck := (h_i = h_star)`. ",
+          "kind": "theorem",
+          "line": 669,
+          "name": "RingSwitching.SumcheckPhase.iteratedSumcheck_rbr_badEvent_vacuous",
+          "namespace": "RingSwitching.SumcheckPhase",
+          "short_name": "iteratedSumcheck_rbr_badEvent_vacuous",
+          "signature": "theorem iteratedSumcheck_rbr_badEvent_vacuous [IsDomain L] (i : Fin \u2113')"
+        },
+        {
           "doc": "RBR knowledge soundness for a single round oracle verifier",
           "kind": "theorem",
-          "line": 629,
+          "line": 734,
           "name": "RingSwitching.SumcheckPhase.iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness",
@@ -45857,16 +46253,16 @@
         {
           "doc": "`pSpecFinalSumcheck L` is a single prover-to-verifier message (no challenge).",
           "kind": "instance",
-          "line": 657,
-          "name": "RingSwitching.SumcheckPhase._anon_instance_657",
+          "line": 769,
+          "name": "RingSwitching.SumcheckPhase._anon_instance_769",
           "namespace": "RingSwitching.SumcheckPhase",
-          "short_name": "_anon_instance_657",
+          "short_name": "_anon_instance_769",
           "signature": "instance instance : ProverOnly (pSpecFinalSumcheck L) where"
         },
         {
           "doc": "The prover for the final sumcheck step",
           "kind": "def",
-          "line": 661,
+          "line": 773,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckProver",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckProver",
@@ -45875,7 +46271,7 @@
         {
           "doc": "The verifier for the final sumcheck step",
           "kind": "def",
-          "line": 697,
+          "line": 809,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckVerifier",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckVerifier",
@@ -45884,7 +46280,7 @@
         {
           "doc": "The oracle reduction for the final sumcheck step",
           "kind": "def",
-          "line": 755,
+          "line": 867,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckOracleReduction",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckOracleReduction",
@@ -45893,7 +46289,7 @@
         {
           "doc": "**Final-sumcheck 0-cube sum identity (shared algebra).** The consistency sum of the projected last-round polynomial over the 0-cube collapses to `compute_final_eq_value \u00b7 t'(challenges)`. This is the pure-algebra core shared by the completeness check (`finalSumcheck_check_of_relIn`) and the round-by-round KState reconstruction (`finalSumcheckKnowledgeStateFunction.toFun_full`): the consistency sum is over the 0-cube (`\u2113' - (Fin.last \u2113').val = 0`), collapsing to a single eval; `fixFirstVariablesOfMQP_eval` rewrites the projected round polynomial evaluated at the empty point to `(A_MLE \u00b7 t')(cha",
           "kind": "lemma",
-          "line": 776,
+          "line": 888,
           "name": "RingSwitching.SumcheckPhase.finalSumcheck_cube0_sum_eq",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheck_cube0_sum_eq",
@@ -45902,7 +46298,7 @@
         {
           "doc": "**Final-sumcheck verifier-check algebra (defect-#10/#11 capstone).** From the input relation's structural invariant + sumcheck consistency at the last round, the honest verifier's step-9 check `sumcheck_target = compute_final_eq_value \u00b7 s'` holds, where `s' = t'(challenges)`. Derivation (scratch-verified): the consistency sum is over the 0-cube (`\u2113' - (Fin.last \u2113').val = 0`), collapsing to a single eval; `fixFirstVariablesOfMQP_eval` rewrites the projected round polynomial `H = projectToMidSumcheckPoly t' A_MLE (Fin.last \u2113') challenges` evaluated at the empty point to `(A_MLE \u00b7 t')(challenges)",
           "kind": "lemma",
-          "line": 832,
+          "line": 944,
           "name": "RingSwitching.SumcheckPhase.finalSumcheck_check_of_relIn",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheck_check_of_relIn",
@@ -45911,7 +46307,7 @@
         {
           "doc": "Perfect completeness for the final sumcheck step",
           "kind": "theorem",
-          "line": 848,
+          "line": 960,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckOracleReduction_perfectCompleteness",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckOracleReduction_perfectCompleteness",
@@ -45920,7 +46316,7 @@
         {
           "doc": "RBR knowledge error for the final sumcheck step",
           "kind": "def",
-          "line": 919,
+          "line": 1031,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckRbrKnowledgeError",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckRbrKnowledgeError",
@@ -45929,7 +46325,7 @@
         {
           "doc": "The round-by-round extractor for the final sumcheck step",
           "kind": "def",
-          "line": 922,
+          "line": 1034,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckRbrExtractor",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckRbrExtractor",
@@ -45938,7 +46334,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 942,
+          "line": 1054,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckKStateProp",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckKStateProp",
@@ -45947,7 +46343,7 @@
         {
           "doc": "The knowledge state function for the final sumcheck step",
           "kind": "def",
-          "line": 979,
+          "line": 1091,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckKnowledgeStateFunction",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckKnowledgeStateFunction",
@@ -45956,7 +46352,7 @@
         {
           "doc": "Round-by-round knowledge soundness for the final sumcheck step",
           "kind": "theorem",
-          "line": 1100,
+          "line": 1212,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckOracleVerifier_rbrKnowledgeSoundness",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckOracleVerifier_rbrKnowledgeSoundness",
@@ -45965,7 +46361,7 @@
         {
           "doc": "Composed oracle verifier for the SumcheckStep (seqCompose over \u2113')",
           "kind": "def",
-          "line": 1121,
+          "line": 1233,
           "name": "RingSwitching.SumcheckPhase.sumcheckLoopOracleVerifier",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "sumcheckLoopOracleVerifier",
@@ -45974,7 +46370,7 @@
         {
           "doc": "Composed oracle reduction for the SumcheckStep (seqCompose over \u2113')",
           "kind": "def",
-          "line": 1130,
+          "line": 1242,
           "name": "RingSwitching.SumcheckPhase.sumcheckLoopOracleReduction",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "sumcheckLoopOracleReduction",
@@ -45983,7 +46379,7 @@
         {
           "doc": "Large-field reduction verifier: Sumcheck seqCompose, then append FinalSum",
           "kind": "def",
-          "line": 1147,
+          "line": 1259,
           "name": "RingSwitching.SumcheckPhase.coreInteractionOracleVerifier",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteractionOracleVerifier",
@@ -45992,7 +46388,7 @@
         {
           "doc": "Large-field reduction: Sumcheck seqCompose, then append FinalSum",
           "kind": "def",
-          "line": 1156,
+          "line": 1268,
           "name": "RingSwitching.SumcheckPhase.coreInteractionOracleReduction",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteractionOracleReduction",
@@ -46001,7 +46397,7 @@
         {
           "doc": "Perfect completeness for large-field reduction (Sumcheck ++ FinalSum)",
           "kind": "theorem",
-          "line": 1170,
+          "line": 1282,
           "name": "RingSwitching.SumcheckPhase.coreInteraction_perfectCompleteness",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteraction_perfectCompleteness",
@@ -46010,7 +46406,7 @@
         {
           "doc": "Per-round knowledge error for the iterated sumcheck rounds.",
           "kind": "def",
-          "line": 1197,
+          "line": 1309,
           "name": "RingSwitching.SumcheckPhase.iteratedSumcheckRoundKnowledgeError",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "iteratedSumcheckRoundKnowledgeError",
@@ -46019,7 +46415,7 @@
         {
           "doc": "standard sumcheck error",
           "kind": "def",
-          "line": 1200,
+          "line": 1312,
           "name": "RingSwitching.SumcheckPhase.coreInteractionRbrKnowledgeError",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteractionRbrKnowledgeError",
@@ -46028,7 +46424,7 @@
         {
           "doc": "RBR knowledge soundness for large-field reduction (Sumcheck ++ FinalSum)",
           "kind": "theorem",
-          "line": 1211,
+          "line": 1323,
           "name": "RingSwitching.SumcheckPhase.coreInteraction_rbrKnowledgeSoundness",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteraction_rbrKnowledgeSoundness",
@@ -47201,9 +47597,18 @@
           "signature": "abbrev stirRoundIOR (\u03c6 : \u03b9 \u21aa F) (deg : \u2115) :"
         },
         {
+          "doc": "**Combine on a single function at its own degree is the identity.** Specializing STIR's `Combine.combine` (Definition 4.11) to the single-function family `![f]` with target degree `d* = deg` and degree list `![deg]` collapses to `f` itself: * `ri deg ![deg] r 0 = r ^ (0 + \u2211_{j<0} (deg - deg j)) = r ^ 0 = 1` (empty sum exponent), and * the inner geometric sum runs over `range (deg - deg + 1) = range 1 = {0}`, contributing the single term `(\u03c6 x * r) ^ 0 = 1`. Hence each summand is `1 * f x * 1 = f x`, and the outer `Fin 1` sum is `f x`.  This is the honest completeness fact for the one-round STI",
+          "kind": "theorem",
+          "line": 157,
+          "name": "StirIOP.Round.combine_single_self",
+          "namespace": "StirIOP.Round",
+          "short_name": "combine_single_self",
+          "signature": "theorem combine_single_self (\u03c6 : \u03b9 \u21aa F) (deg : \u2115) (r : F) (f : \u03b9 \u2192 F) :"
+        },
+        {
           "doc": "Input relation for the STIR fold round: the input oracle function is `\u03b4`-close to the Reed-Solomon codeword space `RS[F, \u03c6, deg]`.  (This is the completeness relation of the round, matching `StirIOP.stirRelation`.)",
           "kind": "def",
-          "line": 151,
+          "line": 172,
           "name": "StirIOP.Round.stirRoundInputRel",
           "namespace": "StirIOP.Round",
           "short_name": "stirRoundInputRel",
@@ -47212,7 +47617,7 @@
         {
           "doc": "Output relation for the STIR fold round: the folded oracle (`Combine.combine \u2026`) is `\u03b4`-close to the Reed-Solomon codeword space.  (The round folds `RS[F, \u03c6, deg]` into itself at the same domain in this single-domain model; the genuine multi-domain degree reduction is future work.)",
           "kind": "def",
-          "line": 158,
+          "line": 179,
           "name": "StirIOP.Round.stirRoundOutputRel",
           "namespace": "StirIOP.Round",
           "short_name": "stirRoundOutputRel",
@@ -47221,7 +47626,7 @@
         {
           "doc": "**Completeness of the real STIR fold-round object** (statement; proof owed). This is the completeness statement *rewritten against the genuine `stirRoundReduction` object* defined above \u2014 not against a nonexistent protocol.  The proof is `sorry`, but it is now an honest obligation about a real, sorry-free protocol object whose prover message is the actual STIR `Combine.combine` operation. Category status: the STIR directory previously had **no** protocol object at all; this statement is the first completeness claim attached to an actual STIR protocol object.",
           "kind": "theorem",
-          "line": 175,
+          "line": 196,
           "name": "StirIOP.Round.stirRoundReduction_completeness",
           "namespace": "StirIOP.Round",
           "short_name": "stirRoundReduction_completeness",
@@ -51034,7 +51439,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5543,
+      "declarations": 5588,
       "files": 289
     }
   }
