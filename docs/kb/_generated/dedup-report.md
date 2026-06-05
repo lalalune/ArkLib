@@ -4,7 +4,7 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 396 files, 8024 declarations
+- `ArkLib` — 396 files, 8026 declarations
 
 ## Same short-name across multiple files (296 groups)
 
@@ -223,7 +223,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def ReedSolomon.FftDomain.subdomain` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:806](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L806) — Given a smooth FFT domain `ω` of log-order `n` this function returns its subdomain of log-order `i`.
 - `def ReedSolomon.CosetFftDomain.subdomain` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:1371](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L1371) — Given a smooth coset FFT domain `ω` of log-order `n` returns a subdomain of log-order `i`.
 - `def Domain.CosetFftDomainClass.subdomain` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:75](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L75) — Given a smooth coset FFT domain `ω` of log-order `n` this function returns its subdomain of log-orde
-- `abbrev Domain.CosetFftDomain.subdomain` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:408](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L408) — (no docstring)
+- `abbrev Domain.CosetFftDomain.subdomain` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:414](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L414) — (no docstring)
 - `def Domain.FftDomainClass.subdomain` [ArkLib/Data/Domain/FftDomain/Subdomain.lean:32](../../../ArkLib/Data/Domain/FftDomain/Subdomain.lean#L32) — (no docstring)
 - `abbrev Domain.FftDomain.subdomain` [ArkLib/Data/Domain/FftDomain/Subdomain.lean:122](../../../ArkLib/Data/Domain/FftDomain/Subdomain.lean#L122) — (no docstring)
 
@@ -740,25 +740,25 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `def ReedSolomon.FftDomain.twoNthRoot` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:1258](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L1258) — Finds a `2 ^ n`th root of `x`.
 - `def ReedSolomon.CosetFftDomain.twoNthRoot` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:1909](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L1909) — Finds a `2 ^ n`th root of `x`.
-- `def Domain.CosetFftDomain.twoNthRoot` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:423](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L423) — Finds a `2 ^ n`th root of `x`.
+- `def Domain.CosetFftDomain.twoNthRoot` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:429](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L429) — Finds a `2 ^ n`th root of `x`.
 
 ### `twoNthRootAux` (3 declarations, 2 files)
 
 - `def ReedSolomon.FftDomain.twoNthRootAux` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:1246](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L1246) — (no docstring)
 - `def ReedSolomon.CosetFftDomain.twoNthRootAux` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:1897](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L1897) — (no docstring)
-- `def Domain.CosetFftDomain.twoNthRootAux` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:411](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L411) — (no docstring)
+- `def Domain.CosetFftDomain.twoNthRootAux` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:417](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L417) — (no docstring)
 
 ### `twoNthRootAux_correct` (3 declarations, 2 files)
 
 - `lemma ReedSolomon.FftDomain.twoNthRootAux_correct` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:1262](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L1262) — (no docstring)
 - `lemma ReedSolomon.CosetFftDomain.twoNthRootAux_correct` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:1913](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L1913) — (no docstring)
-- `lemma Domain.CosetFftDomain.twoNthRootAux_correct` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:427](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L427) — (no docstring)
+- `lemma Domain.CosetFftDomain.twoNthRootAux_correct` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:433](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L433) — (no docstring)
 
 ### `twoNthRoot_correct` (3 declarations, 2 files)
 
 - `lemma ReedSolomon.FftDomain.twoNthRoot_correct` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:1274](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L1274) — (no docstring)
 - `lemma ReedSolomon.CosetFftDomain.twoNthRoot_correct` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:1925](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L1925) — (no docstring)
-- `lemma Domain.CosetFftDomain.twoNthRoot_correct` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:441](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L441) — (no docstring)
+- `lemma Domain.CosetFftDomain.twoNthRoot_correct` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:447](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L447) — (no docstring)
 
 ### `AbstractOStmtIn` (2 declarations, 2 files)
 
@@ -1524,7 +1524,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `size_of_smooth_coset_domain_eq_pow_of_2` (2 declarations, 2 files)
 
 - `lemma ReedSolomon.CosetFftDomain.size_of_smooth_coset_domain_eq_pow_of_2` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:1317](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L1317) — (no docstring)
-- `lemma Domain.size_of_smooth_coset_domain_eq_pow_of_2` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:474](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L474) — Compatibility form of the smooth-coset domain size: the `toFinset` of a `SmoothCosetFftDomain n F` h
+- `lemma Domain.size_of_smooth_coset_domain_eq_pow_of_2` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:480](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L480) — Compatibility form of the smooth-coset domain size: the `toFinset` of a `SmoothCosetFftDomain n F` h
 
 ### `sq_root_mem_subdomain` (2 declarations, 2 files)
 
@@ -1629,7 +1629,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `twoNthRoot_correct_one` (2 declarations, 2 files)
 
 - `lemma ReedSolomon.CosetFftDomain.twoNthRoot_correct_one` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:1940](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L1940) — (no docstring)
-- `lemma Domain.CosetFftDomain.twoNthRoot_correct_one` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:456](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L456) — (no docstring)
+- `lemma Domain.CosetFftDomain.twoNthRoot_correct_one` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:462](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L462) — (no docstring)
 
 ### `unpackMLE` (2 declarations, 2 files)
 

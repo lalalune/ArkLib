@@ -24651,9 +24651,18 @@
           "signature": "theorem foldWord_k_1 [NeZero n] {i : Fin (2 ^ (n - 1))} {\u03b1 : F} :"
         },
         {
+          "doc": "Function-level form of `foldWord_k_1`.",
+          "kind": "theorem",
+          "line": 264,
+          "name": "ProximityGap.foldWord_k_1'",
+          "namespace": "ProximityGap",
+          "short_name": "foldWord_k_1'",
+          "signature": "theorem foldWord_k_1' [NeZero n] {\u03b1 : F} :"
+        },
+        {
           "doc": "TODO: this will go once this https://github.com/Verified-zkEVM/CompPoly/pull/203 is merged.",
           "kind": "lemma",
-          "line": 266,
+          "line": 276,
           "name": "ProximityGap.eval_comm",
           "namespace": "ProximityGap",
           "short_name": "eval_comm",
@@ -24662,7 +24671,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 275,
+          "line": 285,
           "name": "ProximityGap.roots_in_domain_card_eq_if_x_in_domain",
           "namespace": "ProximityGap",
           "short_name": "roots_in_domain_card_eq_if_x_in_domain",
@@ -24671,7 +24680,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 297,
+          "line": 307,
           "name": "ProximityGap.interpolate_eq_folding_poly_eval",
           "namespace": "ProximityGap",
           "short_name": "interpolate_eq_folding_poly_eval",
@@ -24680,7 +24689,7 @@
         {
           "doc": "Perfect completeness of folding: folding a codeword is the same as applying `polyFold` and then encoding.",
           "kind": "theorem",
-          "line": 346,
+          "line": 356,
           "name": "ProximityGap.foldWord_codeword",
           "namespace": "ProximityGap",
           "short_name": "foldWord_codeword",
@@ -24689,7 +24698,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 360,
+          "line": 370,
           "name": "ProximityGap.foldWordAuxCoeff",
           "namespace": "ProximityGap",
           "short_name": "foldWordAuxCoeff",
@@ -24698,7 +24707,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 364,
+          "line": 374,
           "name": "ProximityGap.foldWordAux_coeff_eq_foldWordAuxCoeff_fin",
           "namespace": "ProximityGap",
           "short_name": "foldWordAux_coeff_eq_foldWordAuxCoeff_fin",
@@ -24707,7 +24716,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 369,
+          "line": 379,
           "name": "ProximityGap.foldWordAux_coeff_eq_foldWordAuxCoeff_nat",
           "namespace": "ProximityGap",
           "short_name": "foldWordAux_coeff_eq_foldWordAuxCoeff_nat",
@@ -24716,7 +24725,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 381,
+          "line": 391,
           "name": "ProximityGap.foldWordAux_eq_sum_of_foldWordAuxCoeff",
           "namespace": "ProximityGap",
           "short_name": "foldWordAux_eq_sum_of_foldWordAuxCoeff",
@@ -24725,7 +24734,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 395,
+          "line": 405,
           "name": "ProximityGap.foldValue_eq_sum_of_foldAuxCoeff_mul_pow_alpha",
           "namespace": "ProximityGap",
           "short_name": "foldValue_eq_sum_of_foldAuxCoeff_mul_pow_alpha",
@@ -24734,7 +24743,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 405,
+          "line": 415,
           "name": "ProximityGap.indicatedPolynomial",
           "namespace": "ProximityGap",
           "short_name": "indicatedPolynomial",
@@ -24743,7 +24752,7 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 415,
+          "line": 425,
           "name": "ProximityGap.card_ne_zero",
           "namespace": "ProximityGap",
           "short_name": "card_ne_zero",
@@ -24752,7 +24761,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 418,
+          "line": 428,
           "name": "ProximityGap.indicated_polynomial_degree_x_lt",
           "namespace": "ProximityGap",
           "short_name": "indicated_polynomial_degree_x_lt",
@@ -24761,7 +24770,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 428,
+          "line": 438,
           "name": "ProximityGap.indicated_polynomial_degree_y_lt",
           "namespace": "ProximityGap",
           "short_name": "indicated_polynomial_degree_y_lt",
@@ -24770,7 +24779,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 439,
+          "line": 449,
           "name": "ProximityGap.indicated_polynomial_eq_foldAux",
           "namespace": "ProximityGap",
           "short_name": "indicated_polynomial_eq_foldAux",
@@ -24779,7 +24788,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 449,
+          "line": 459,
           "name": "ProximityGap.indicated_polynomial_eval_eq_combination_of_correlated",
           "namespace": "ProximityGap",
           "short_name": "indicated_polynomial_eval_eq_combination_of_correlated",
@@ -24788,7 +24797,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 462,
+          "line": 472,
           "name": "ProximityGap.indicated_polynomial_eq_combination_of_correlated",
           "namespace": "ProximityGap",
           "short_name": "indicated_polynomial_eq_combination_of_correlated",
@@ -24797,7 +24806,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 485,
+          "line": 495,
           "name": "ProximityGap.indicated_polynomial_eq_foldAux'",
           "namespace": "ProximityGap",
           "short_name": "indicated_polynomial_eq_foldAux'",
@@ -24806,7 +24815,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 517,
+          "line": 527,
           "name": "ProximityGap.foldWordAux_poly_sum",
           "namespace": "ProximityGap",
           "short_name": "foldWordAux_poly_sum",
@@ -24815,7 +24824,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 524,
+          "line": 534,
           "name": "ProximityGap.indicated_polynomial_comp_x_k_natDegree",
           "namespace": "ProximityGap",
           "short_name": "indicated_polynomial_comp_x_k_natDegree",
@@ -24824,7 +24833,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 556,
+          "line": 566,
           "name": "ProximityGap.eval_comp_x_pow_map_eq",
           "namespace": "ProximityGap",
           "short_name": "eval_comp_x_pow_map_eq",
@@ -24833,7 +24842,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 572,
+          "line": 582,
           "name": "ProximityGap.hammingDistComplementBound",
           "namespace": "ProximityGap",
           "short_name": "hammingDistComplementBound",
@@ -24842,7 +24851,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 580,
+          "line": 590,
           "name": "ProximityGap.hammingDistBound",
           "namespace": "ProximityGap",
           "short_name": "hammingDistBound",
@@ -24851,7 +24860,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 585,
+          "line": 595,
           "name": "ProximityGap.contradictory_hamming_dist_zero",
           "namespace": "ProximityGap",
           "short_name": "contradictory_hamming_dist_zero",
@@ -24860,7 +24869,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 590,
+          "line": 600,
           "name": "ProximityGap.contradictory_hamming_dist_formula",
           "namespace": "ProximityGap",
           "short_name": "contradictory_hamming_dist_formula",
@@ -24869,7 +24878,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 654,
+          "line": 664,
           "name": "ProximityGap.correlated_agreement_implies_contradictory_hamm_dist",
           "namespace": "ProximityGap",
           "short_name": "correlated_agreement_implies_contradictory_hamm_dist",
@@ -24878,7 +24887,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 721,
+          "line": 731,
           "name": "ProximityGap.dist_from_code_bound_of_correlated_agreement",
           "namespace": "ProximityGap",
           "short_name": "dist_from_code_bound_of_correlated_agreement",
@@ -24887,7 +24896,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 753,
+          "line": 763,
           "name": "ProximityGap.folded_rate_div_eq_helper",
           "namespace": "ProximityGap",
           "short_name": "folded_rate_div_eq_helper",
@@ -24896,7 +24905,7 @@
         {
           "doc": "The rate of the folded RS-code is the same.",
           "kind": "lemma",
-          "line": 766,
+          "line": 776,
           "name": "ProximityGap.folded_rate_eq",
           "namespace": "ProximityGap",
           "short_name": "folded_rate_eq",
@@ -24905,7 +24914,7 @@
         {
           "doc": "The square root of the rate of the folded RS-code is the same.",
           "kind": "lemma",
-          "line": 797,
+          "line": 807,
           "name": "ProximityGap.folded_sqrtRate_eq",
           "namespace": "ProximityGap",
           "short_name": "folded_sqrtRate_eq",
@@ -24914,7 +24923,7 @@
         {
           "doc": "Folding preserves distance from Reed\u2013Solomon codes. For any word `f` over the smooth coset FFT domain, degree parameter `d`, folding parameter `k`, and distance threshold `\u03b4` satisfying `0 < \u03b4 < min (\u03b4\u1d63(f, RS[d])) (1 - sqrtRate(d))`, the probability over a uniformly random folding challenge `r : F` that the folded word is within relative distance `\u03b4` of the Reed\u2013Solomon code of reduced degree `d / 2^k` on the folded subdomain is bounded by the proximity-gap error term. This is Lemma 4.9 from [ACFY24]: a random `2^k`-folding step preserves distance from the corresponding Reed\u2013Solomon code excep",
           "kind": "theorem",
-          "line": 823,
+          "line": 833,
           "name": "ProximityGap.folding_preserves_distance",
           "namespace": "ProximityGap",
           "short_name": "folding_preserves_distance",
@@ -30236,9 +30245,18 @@
           "signature": "lemma square_roots_explicit {i : \u2115} (hi : i < n) {y : F}"
         },
         {
+          "doc": "Modular reduction from a smooth coset FFT domain index to the index of a smaller subdomain. This is the index-level map induced by taking `2 ^ i` powers.",
+          "kind": "def",
+          "line": 407,
+          "name": "Domain.CosetFftDomainClass.sqFoldMapGen",
+          "namespace": "Domain.CosetFftDomainClass",
+          "short_name": "sqFoldMapGen",
+          "signature": "def sqFoldMapGen {i : \u2115} (u : Fin (2 ^ n)) : Fin (2 ^ (n - i)) :="
+        },
+        {
           "doc": "",
           "kind": "abbrev",
-          "line": 408,
+          "line": 414,
           "name": "Domain.CosetFftDomain.subdomain",
           "namespace": "Domain.CosetFftDomain",
           "short_name": "subdomain",
@@ -30247,7 +30265,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 411,
+          "line": 417,
           "name": "Domain.CosetFftDomain.twoNthRootAux",
           "namespace": "Domain.CosetFftDomain",
           "short_name": "twoNthRootAux",
@@ -30256,7 +30274,7 @@
         {
           "doc": "Finds a `2 ^ n`th root of `x`.",
           "kind": "def",
-          "line": 423,
+          "line": 429,
           "name": "Domain.CosetFftDomain.twoNthRoot",
           "namespace": "Domain.CosetFftDomain",
           "short_name": "twoNthRoot",
@@ -30265,7 +30283,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 427,
+          "line": 433,
           "name": "Domain.CosetFftDomain.twoNthRootAux_correct",
           "namespace": "Domain.CosetFftDomain",
           "short_name": "twoNthRootAux_correct",
@@ -30274,7 +30292,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 441,
+          "line": 447,
           "name": "Domain.CosetFftDomain.twoNthRoot_correct",
           "namespace": "Domain.CosetFftDomain",
           "short_name": "twoNthRoot_correct",
@@ -30283,7 +30301,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 456,
+          "line": 462,
           "name": "Domain.CosetFftDomain.twoNthRoot_correct_one",
           "namespace": "Domain.CosetFftDomain",
           "short_name": "twoNthRoot_correct_one",
@@ -30292,7 +30310,7 @@
         {
           "doc": "Compatibility form of the smooth-coset domain size: the `toFinset` of a `SmoothCosetFftDomain n F` has exactly `2 ^ n` elements.",
           "kind": "lemma",
-          "line": 474,
+          "line": 480,
           "name": "Domain.size_of_smooth_coset_domain_eq_pow_of_2",
           "namespace": "Domain",
           "short_name": "size_of_smooth_coset_domain_eq_pow_of_2",
@@ -73788,7 +73806,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 8024,
+      "declarations": 8026,
       "files": 396
     }
   }
