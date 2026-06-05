@@ -168,6 +168,21 @@ theorem P2_closed_of_fullVanishes (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hy
             * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1)) :=
   P2_closed H x₀ R hHyp (restrictedFaaDiBrunoMatch_of_fullVanishes H x₀ R hHyp hvan)
 
+/-- **Legacy P2 capstone from the explicit successor-sum residual.**
+This is the compatibility endpoint for the older theorem
+`faaDiBruno_succ_sum_eq_zero` in `HenselNumerator.lean`: that theorem is the only admitted
+mathematical content consumed here, while every bridge from the explicit sums to the P2 root and
+lift identity is proven above. -/
+theorem P2_closed_of_faaDiBruno_succ_sum_eq_zero (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    (Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H) = 0)
+    ∧ (∀ t : ℕ, embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+        = αGenuine H x₀ R hHyp t
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1)) :=
+  P2_closed_of_fullVanishes H x₀ R hHyp
+    (fullVanishes_of_faaDiBruno_succ_sum_eq_zero H x₀ R hHyp)
+
 -- In-file axiom audit (edited, unbuilt source: must audit IN-FILE, not via import).
 section AxiomAudit
 #print axioms faaDiBrunoFullSum_eq_coeff
