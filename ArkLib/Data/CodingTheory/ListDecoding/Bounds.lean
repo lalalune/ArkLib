@@ -256,6 +256,70 @@ theorem linear_lambda_ge_entropy_volume_of_le_elias_rhs
   exact le_trans hEntropy_le_elias
     (linear_lambda_ge_elias_volume_eli57 C δ hδ_pos hδ_lt)
 
+/-- Entropy-volume lower bound reduced to the standalone MS77 Hamming-ball estimate.
+
+This is the algebraic consumer for the missing analytic ingredient
+`q^{n·H_q(δ)} / √(8nδ(1-δ)) ≤ Vol_q(δ,n)`: after rewriting
+`ρ = k/n`, the desired C3.8 expression is exactly that volume lower bound divided
+by `q^{n-k}`, so the checked Elias-volume theorem applies. -/
+theorem linear_lambda_ge_entropy_volume_of_hammingBallVolume_ge_qEntropy
+    (C : Submodule F (ι → F)) (δ : ℝ) (hδ_pos : 0 < δ) (hδ_lt : δ < 1)
+    (hVolume :
+      let q : ℕ := Fintype.card F
+      let n : ℕ := Fintype.card ι
+      (q : ℝ) ^ ((n : ℝ) * qEntropy q δ)
+          / (8 * n * δ * (1 - δ)) ^ ((1 : ℝ) / 2)
+        ≤ (hammingBallVolume q δ n : ℝ)) :
+    let q : ℕ := Fintype.card F
+    let n : ℕ := Fintype.card ι
+    let k : ℕ := Module.finrank F C
+    let ρ : ℝ := k / n
+    ENNReal.ofReal
+        ((q : ℝ) ^ ((n : ℝ) * (ρ - 1 + qEntropy q δ))
+          / (8 * n * δ * (1 - δ)) ^ ((1 : ℝ) / 2))
+      ≤ (Lambda ((C : Set (ι → F))) δ : ENNReal) := by
+  refine linear_lambda_ge_entropy_volume_of_le_elias_rhs C δ hδ_pos hδ_lt ?_
+  dsimp only
+  let q : ℕ := Fintype.card F
+  let n : ℕ := Fintype.card ι
+  let k : ℕ := Module.finrank F C
+  let ρ : ℝ := k / n
+  let denom : ℝ := (8 * n * δ * (1 - δ)) ^ ((1 : ℝ) / 2)
+  let P : ℝ := (q : ℝ) ^ ((n : ℝ) - k)
+  have hq_pos : (0 : ℝ) < (q : ℝ) := by
+    have : 1 < q := Fintype.one_lt_card
+    exact_mod_cast Nat.lt_of_lt_of_le Nat.zero_lt_one this.le
+  have hn_pos : (0 : ℝ) < (n : ℝ) := by
+    exact_mod_cast Fintype.card_pos_iff.mpr (inferInstance : Nonempty ι)
+  have hP_pos : 0 < P := Real.rpow_pos_of_pos hq_pos _
+  have hVolume' :
+      (q : ℝ) ^ ((n : ℝ) * qEntropy q δ) / denom
+        ≤ (hammingBallVolume q δ n : ℝ) := by
+    simpa [q, n, denom] using hVolume
+  have hdiv :
+      ((q : ℝ) ^ ((n : ℝ) * qEntropy q δ) / denom) / P
+        ≤ (hammingBallVolume q δ n : ℝ) / P :=
+    div_le_div_of_nonneg_right hVolume' hP_pos.le
+  have hpow :
+      (q : ℝ) ^ ((n : ℝ) * (ρ - 1 + qEntropy q δ))
+        = (q : ℝ) ^ ((n : ℝ) * qEntropy q δ) / P := by
+    have hexp :
+        (n : ℝ) * (ρ - 1 + qEntropy q δ)
+          = (n : ℝ) * qEntropy q δ - ((n : ℝ) - k) := by
+      have hn_ne : (n : ℝ) ≠ 0 := ne_of_gt hn_pos
+      simp [ρ, div_eq_mul_inv]
+      field_simp [hn_ne]
+      ring
+    rw [hexp, Real.rpow_sub hq_pos]
+  exact ENNReal.ofReal_le_ofReal (by
+    simpa [q, n, k, ρ, denom, P] using
+      (calc
+        (q : ℝ) ^ ((n : ℝ) * (ρ - 1 + qEntropy q δ)) / denom
+            = ((q : ℝ) ^ ((n : ℝ) * qEntropy q δ) / denom) / P := by
+              rw [hpow]
+              field_simp [hP_pos.ne']
+        _ ≤ (hammingBallVolume q δ n : ℝ) / P := hdiv))
+
 /-- **ABF26 Corollary 3.8.** Volume-based lower bound on list size, using the MS77
 volume estimate `Vol_q(δ, n) ≥ q^{n·H_q(δ)} / √(8·n·δ·(1-δ))`. With `ρ := k/n`:
 

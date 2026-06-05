@@ -1062,6 +1062,18 @@ theorem surviving_parts_lt {k i1 : ℕ} (lam : Nat.Partition (k + 1 - i1))
   have hne : l ≠ k + 1 := fun h => hlam (h ▸ hl)
   omega
 
+/-- A surviving partition only sees recursive indices below the guard `k+1`, so the guarded
+family in `βHensel_succ` has the same partition product as the unguarded family. -/
+theorem partitionProd_surviving_guard {M : Type*} [CommMonoid M] {k i1 : ℕ}
+    (lam : Nat.Partition (k + 1 - i1)) (hlam : (k + 1) ∉ lam.parts)
+    (b : ℕ → M) (z : M) :
+    partitionProd lam (fun l => if _h : l < k + 1 then b l else z)
+      = partitionProd lam b := by
+  classical
+  rw [partitionProd, partitionProd]
+  refine congrArg Multiset.prod (Multiset.map_congr rfl (fun l hl => ?_))
+  rw [dif_pos (surviving_parts_lt lam hlam hl)]
+
 /-- The genuine `∑_l λ_l·(2l+1)` telescoping coefficient as a pure-`ℕ` multiset identity:
 `∑_{l ∈ parts} (2l+1)·c = (2·(∑ parts) + parts.card)·c`.  For `lam : Nat.Partition (k+1−i1)`
 this is `(2·(k+1−i1) + Σλ)·c` (using `parts.sum = k+1−i1`, `parts.card = Σλ`), the exact
@@ -1617,6 +1629,25 @@ theorem βHensel_lift_identity_of_β_embedding_eq (x₀ : F) (R : F[X][X][Y])
           * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
           * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1) := by
   exact (βHensel_lift_identity_iff_β_eq H x₀ R hHyp t hden).2 hβ
+
+/-- **(P2) reverse wrapper from the lift identity to the localized β-numerator equality.**
+
+This is the converse consumer form of `βHensel_lift_identity_of_β_embedding_eq`: once a caller
+has established the full lift identity, the denominator-clearing equivalence immediately returns
+the exact embedded equality between the genuine Hensel numerator and the paper placeholder
+numerator. -/
+theorem β_embedding_eq_of_βHensel_lift_identity (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ)
+    (hden : (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+              * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1) ≠ 0)
+    (hlift :
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+        = ClaimA2.α x₀ R H hHyp t
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1)) :
+    embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+      = embeddingOf𝒪Into𝕃 H (ClaimA2.β R t) := by
+  exact (βHensel_lift_identity_iff_β_eq H x₀ R hHyp t hden).1 hlift
 
 /-- **(P2) lift identity — the IRREDUCIBLE FRONTIER (documented `sorry`).**
 `embeddingOf𝒪Into𝕃 (βHensel … t) = α_t · W^{t+1} · ξ^{2t−1}` (`α_t` is the in-tree
