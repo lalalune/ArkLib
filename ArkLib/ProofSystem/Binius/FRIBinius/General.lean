@@ -82,7 +82,14 @@ def biniusProfile : RingSwitching.RingSwitchingProfile K L κ :=
       rw [Basis.baseChange_repr_tmul]
     decomposeColumns_add := by
       intro z w v
-      sorry
+      letI rightAlgebra : Algebra L (RingSwitching.TensorAlgebra K L) :=
+        Algebra.TensorProduct.rightAlgebra
+      letI rightModule : Module L (RingSwitching.TensorAlgebra K L) := rightAlgebra.toModule
+      show (Basis.baseChangeRight (b := booleanHypercubeBasis κ L K β) (Right := L)).repr
+            (z + w) v
+        = (Basis.baseChangeRight (b := booleanHypercubeBasis κ L K β) (Right := L)).repr z v
+        + (Basis.baseChangeRight (b := booleanHypercubeBasis κ L K β) (Right := L)).repr w v
+      rw [map_add, Finsupp.add_apply]
     decomposeColumns_φ₀_mul_φ₁ := by
       intro a b v
       sorry
