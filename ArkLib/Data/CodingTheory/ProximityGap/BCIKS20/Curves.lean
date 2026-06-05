@@ -19,6 +19,7 @@ namespace ProximityGap
 -- several statement-level bricks do not mention them directly.
 set_option linter.unusedDecidableInType false
 set_option linter.unusedSectionVars false
+set_option linter.style.longFile 2100
 
 open NNReal Finset Function ProbabilityTheory
 open scoped BigOperators LinearCode ProbabilityTheory ENNReal
@@ -1391,6 +1392,16 @@ theorem errorBound_eq_zero_of_johnson_not_lt_sqrt {deg : ℕ} {domain : ι ↪ F
     exact hnot (by simpa [ReedSolomon.sqrtRate] using h.2)
   simp [errorBound, Set.mem_Icc, Set.mem_Ioo, hnotUD, hnotJ]
 
+omit [Nonempty ι] [DecidableEq ι] [DecidableEq F] [Fintype F] in
+/-- Under the capstone hypothesis `δ ≤ 1 - sqrtRate`, the non-strict Johnson
+branch is exactly the closed square-root boundary. -/
+theorem eq_sqrt_boundary_of_le_sqrt_and_not_lt {deg : ℕ} {domain : ι ↪ F}
+    {δ : ℝ≥0}
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hnot : ¬δ < 1 - ReedSolomon.sqrtRate deg domain) :
+    δ = 1 - ReedSolomon.sqrtRate deg domain :=
+  le_antisymm hδ (not_lt.mp hnot)
+
 omit [DecidableEq ι] in
 /-- In the closed Johnson boundary, the curve-theorem probability hypothesis
 only implies that there is at least one good coefficient. The stronger
@@ -1417,6 +1428,28 @@ theorem goodCoeffsCurve_card_pos_of_prob_gt_johnson_boundary
     simpa [hε0] using hprob
   exact goodCoeffsCurve_card_pos_of_prob_gt_zero
     (deg := deg) (domain := domain) (δ := δ) u hprob0
+
+omit [DecidableEq ι] in
+/-- In the capstone's closed square-root boundary branch, the probability
+hypothesis identifies the branch as equality at `1 - sqrtRate` and still gives a
+nonempty good-coefficient set. -/
+theorem goodCoeffsCurve_card_pos_of_prob_gt_closed_sqrt_boundary
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (u : WordStack F (Fin (k + 1)) ι)
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hprob :
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            ReedSolomon.code domain deg) ≤ δ] >
+        ((k : ENNReal) * (errorBound δ deg domain : ENNReal)))
+    (hJ : (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ)
+    (hnot : ¬δ < 1 - ReedSolomon.sqrtRate deg domain) :
+    δ = 1 - ReedSolomon.sqrtRate deg domain ∧
+      0 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card := by
+  exact ⟨eq_sqrt_boundary_of_le_sqrt_and_not_lt
+      (deg := deg) (domain := domain) hδ hnot,
+    goodCoeffsCurve_card_pos_of_prob_gt_johnson_boundary
+      (deg := deg) (domain := domain) (δ := δ) u hprob hJ hnot⟩
 
 omit [DecidableEq ι] in
 /-- Strict Johnson-range front door with the standard `|ι| / |F|`

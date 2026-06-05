@@ -262,18 +262,6 @@ theorem LogupSumcheckBridge.relationInput
   logupSumcheckRelationInput_of_rowsAgree (F := F) (n := n) (M := M) (params := params)
     bridge.rowsAgree bridge.claimZero
 
-theorem logupSumcheckOutputTarget_eq_eval
-    {hSigns : (-1 : F) ≠ 1}
-    {out : LogupSumcheckStmtOut F n M params}
-    {oStmt : ∀ i, LogupSumcheckOracleStatement F n M params i}
-    (hRel :
-      ((out, oStmt), ()) ∈
-        Sumcheck.Spec.relationRound F n (logupSumcheckDegree M params)
-          (signDomain F hSigns) (.last n)) :
-    out.target = MvPolynomial.eval out.challenges (oStmt ()).1 := by
-  unfold Sumcheck.Spec.relationRound at hRel
-  simpa using hRel.symm
-
 theorem LogupSumcheckBridge.finalQueryCheck
     {stmt : StmtAfterOuter F n M params}
     {oStmt : ∀ i, OStmtAfterOuter F n M params i}
