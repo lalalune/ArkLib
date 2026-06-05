@@ -73,4 +73,32 @@ theorem double_coverage_counterexample :
     decide
   · decide
 
+/-- The same obstruction persists with an arbitrarily large aligned index set.
+
+For every requested size `q ≥ 4`, take `Φ = Fin q`, `H = univ`, and keep the same
+three-position target with a single shared missed position.  Thus increasing the
+number of aligned `γ`'s alone cannot repair the failed double-coverage reduction:
+the bad position can remain uncovered by every aligned index. -/
+theorem double_coverage_counterexample_arbitrarily_large (q : ℕ) (hq : 4 ≤ q) :
+    ∃ (Φ : Type) (_ : Fintype Φ) (_ : DecidableEq Φ)
+      (ι : Type) (_ : Fintype ι) (_ : DecidableEq ι)
+      (H : Finset Φ) (S : Φ → Finset ι) (T : Finset ι) (i₀ : ι) (n m : ℕ),
+        1 ≤ m ∧
+        n + 1 ≤ H.card ∧
+        q ≤ H.card ∧
+        i₀ ∈ T ∧
+        (∀ γ ∈ H, ((Finset.univ \ S γ) ∩ T).card ≤ m) ∧
+        (H.filter (fun γ => i₀ ∈ S γ)).card < 2 := by
+  refine ⟨Fin q, inferInstance, inferInstance, Fin 3, inferInstance, inferInstance,
+    Finset.univ, fun _ => ({1, 2} : Finset (Fin 3)), ({0, 1, 2} : Finset (Fin 3)),
+    (0 : Fin 3), 3, 1, ?_, ?_, ?_, ?_, ?_, ?_⟩
+  · exact Nat.le_refl 1
+  · simpa using hq
+  · simp
+  · decide
+  · intro γ _
+    simp only
+    decide
+  · simp
+
 end CodingTheory.ProximityGap.LineDecodingCounting

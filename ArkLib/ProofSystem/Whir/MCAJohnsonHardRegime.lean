@@ -16,7 +16,7 @@ open MutualCorrAgreement ProbabilityTheory PMF Generator
 open scoped NNReal ENNReal
 
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
-  {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+  {ι : Type} [Fintype ι] [Nonempty ι]
 
 /-- **MCA from the hard regime.** If the proximity-condition probability is
 bounded by `errStar δ` whenever `errStar δ < 1`, then mutual correlated agreement
@@ -28,7 +28,8 @@ theorem mca_of_hard_regime
     (hhard : ∀ (f : Gen.parℓ → ι → F) (δ : ℝ≥0), (0 < δ ∧ δ < 1 - BStar) →
       errStar δ < 1 →
       haveI := Gen.Gen_nonempty
-      Pr_{let r ←$ᵖ Gen.Gen}[ MutualCorrAgreement.proximityCondition f δ r Gen.C ] ≤ errStar δ) :
+      Pr_{
+        let r ← $ᵖ Gen.Gen}[MutualCorrAgreement.proximityCondition f δ r Gen.C] ≤ errStar δ) :
     hasMutualCorrAgreement Gen BStar errStar := by
   intro f δ hδ
   by_cases h : errStar (δ : ℝ) < 1
