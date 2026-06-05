@@ -1726,6 +1726,7 @@ lemma approximate_solution_is_exact_solution_coeffs_of_βHensel_Sβ_large
       t
     =
     (0 : BCIKS20AppendixA.𝕃 (H k δ x₀ h_gs)) := by
+  intro t ht
   exact approximate_solution_is_exact_solution_coeffs_of_βHensel_embedding_zero
     (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
     h_gs hcompat
@@ -1736,6 +1737,69 @@ lemma approximate_solution_is_exact_solution_coeffs_of_βHensel_Sβ_large
         (_root_.BCIKS20.HenselNumerator.βHensel
           (H := H k δ x₀ h_gs) x₀ (R k δ x₀ h_gs)
           (claimA2_hypotheses k h_gs) t) D hD hcard)
+    t ht
+
+open BCIKS20AppendixA in
+open BCIKS20AppendixA.ClaimA2 in
+/-- Convert the structured Hensel-weight route into the exact `S_β` largeness
+shape consumed by Claim 5.8.
+
+The new `βHensel_weight_bound_of_structured_weight` theorem turns a structured
+`α_t`-style weight invariant into the loose numeric bound
+`Λ(β_t) ≤ (2t+1)·d_R·D`.  Therefore a geometric count that is larger than this
+numeric target is automatically larger than the actual Appendix-A weight. -/
+lemma βHensel_Sβ_large_of_structured_weight
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    (hlarge : ∀ t ≥ k, ∃ D : ℕ,
+      D ≥ Bivariate.totalDegree (H k δ x₀ h_gs) ∧
+        2 ≤ Bivariate.natDegreeY (R k δ x₀ h_gs) ∧
+        Bivariate.natDegreeY (H k δ x₀ h_gs) ≤
+          Bivariate.natDegreeY (R k δ x₀ h_gs) ∧
+        (H k δ x₀ h_gs).leadingCoeff.natDegree +
+            Bivariate.natDegreeY (H k δ x₀ h_gs) ≤ D ∧
+        weight_Λ_over_𝒪 (natDegree_H_pos k h_gs)
+          (_root_.BCIKS20.HenselNumerator.βHensel
+            (H := H k δ x₀ h_gs) x₀ (R k δ x₀ h_gs)
+            (claimA2_hypotheses k h_gs) t) D
+          ≤ WithBot.some
+            (1 + (t + 1) * (H k δ x₀ h_gs).leadingCoeff.natDegree
+              + (2 * t - 1)
+                * ((Bivariate.natDegreeY (R k δ x₀ h_gs) - 1)
+                  * (D - Bivariate.natDegreeY (H k δ x₀ h_gs) + 1))) ∧
+        (Set.ncard (S_β
+          (_root_.BCIKS20.HenselNumerator.βHensel
+            (H := H k δ x₀ h_gs) x₀ (R k δ x₀ h_gs)
+            (claimA2_hypotheses k h_gs) t)) : WithBot ℕ) >
+          WithBot.some
+            ((2 * t + 1) * Bivariate.natDegreeY (R k δ x₀ h_gs) * D)
+            * ((H k δ x₀ h_gs).natDegree : WithBot ℕ)) :
+    ∀ t ≥ k, ∃ D : ℕ,
+      D ≥ Bivariate.totalDegree (H k δ x₀ h_gs) ∧
+        Set.ncard (S_β
+          (_root_.BCIKS20.HenselNumerator.βHensel
+            (H := H k δ x₀ h_gs) x₀ (R k δ x₀ h_gs)
+            (claimA2_hypotheses k h_gs) t)) >
+          weight_Λ_over_𝒪 (natDegree_H_pos k h_gs)
+            (_root_.BCIKS20.HenselNumerator.βHensel
+              (H := H k δ x₀ h_gs) x₀ (R k δ x₀ h_gs)
+              (claimA2_hypotheses k h_gs) t) D *
+            (H k δ x₀ h_gs).natDegree := by
+  intro t ht
+  obtain ⟨D, hD, hdR2, hdHR, hW, hstructured, hcard⟩ := hlarge t ht
+  refine ⟨D, hD, ?_⟩
+  have hweight :
+      weight_Λ_over_𝒪 (natDegree_H_pos k h_gs)
+        (_root_.BCIKS20.HenselNumerator.βHensel
+          (H := H k δ x₀ h_gs) x₀ (R k δ x₀ h_gs)
+          (claimA2_hypotheses k h_gs) t) D
+        ≤ WithBot.some
+          ((2 * t + 1) * Bivariate.natDegreeY (R k δ x₀ h_gs) * D) :=
+    _root_.BCIKS20.HenselNumerator.βHensel_weight_bound_of_structured_weight
+      (H := H k δ x₀ h_gs) x₀ (R k δ x₀ h_gs)
+      (claimA2_hypotheses k h_gs) (natDegree_H_pos k h_gs)
+      hdR2 hdHR hW t hstructured
+  exact lt_of_le_of_lt (by gcongr) hcard
 
 open BCIKS20AppendixA in
 open BCIKS20AppendixA.ClaimA2 in
