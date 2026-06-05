@@ -2500,6 +2500,29 @@ theorem append_continueFromTo_seam_peel (hn : 0 < n)
         (by intro h; exact absurd (congrArg Fin.val h) (by simp)) rSeam]
   rw [Prover.continueFromTo_self]
 
+/-- **`Fin.snoc`/`Fin.hconcat` bridge (partial `(T)` family).**  A partial-transcript
+`Transcript.concat msg T` is `Fin.snoc T msg` over the transcript motive `δ`; the prefix/snoc
+commutation keystone `Fin.happend_hconcat_eq` is, by contrast, stated for `Fin.hconcat`.  This lemma
+identifies the two heterogeneously over an arbitrary snoc-motive `δ`, so that the right-block run
+induction can move a `Transcript.concat` (a `snoc`) onto `Fin.hconcat` and then pull it out through
+the `transcript₁` prefix via `happend_hconcat_eq`.  Proof: `Fin.hconcat_eq_snoc` rewrites `hconcat`
+to a `snoc` over the `vconcat` motive, which agrees index-wise (`vconcat_castSucc`/`vconcat_last`)
+with `δ`, closed by `Fin_snoc_heq`. -/
+theorem snoc_heq_hconcat {N : ℕ} {δ : Fin (N + 1) → Type u}
+    (T : (i : Fin N) → δ i.castSucc) (a : δ (Fin.last N)) :
+    HEq (Fin.snoc T a) (Fin.hconcat T a) := by
+  rw [Fin.hconcat_eq_snoc T a]
+  refine Fin_snoc_heq rfl ?_ ?_ ?_
+  · apply heq_of_eq; funext i
+    rcases Fin.eq_castSucc_or_eq_last i with ⟨j, rfl⟩ | rfl
+    · exact (Fin.vconcat_castSucc (fun j => δ j.castSucc) (δ (Fin.last N)) j).symm
+    · exact (Fin.vconcat_last (fun j => δ j.castSucc) (δ (Fin.last N))).symm
+  · apply Function.hfunext rfl
+    intro i j hij
+    obtain rfl : i = j := by ext; exact (Fin.heq_ext_iff rfl).mp hij
+    exact (cast_heq _ _).symm
+  · exact (cast_heq _ _).symm
+
 /--
 States that running an appended prover `P₁.append P₂` with an initial statement `stmt₁` and
 witness `wit₁` behaves as expected: it first runs `P₁` to obtain an intermediate statement
@@ -2536,16 +2559,19 @@ theorem append_run (stmt : Stmt₁) (wit : Wit₁) :
   --     interior/seam challenge-round `processRound` needs the appended `getChallenge` ≍ `liftM` of
   --     `pSpec₂.getChallenge` along `[pSpec₂.Challenge]ₒ ⊂ₒ [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ`.  PROVEN.
   --
-  -- (T) Transcript-PREFIX family — NOW DISCHARGED (committed infrastructure):
-  --   The prefix/snoc commutation `Transcript.concat msg (transcript₁ ++ₜ tr₂)
-  --   ≍ transcript₁ ++ₜ (Transcript.concat msg tr₂)` is proven as
-  --   `ProtocolSpec.FullTranscript.concat_append_right` (SeqCompose.lean), itself the
-  --   `FullTranscript`-level instance of `Fin.happend_hconcat_eq` (the keystone prefix/snoc
-  --   commutation for `Fin.happend`, with helpers `Fin.hconcat_heq` / `Fin.happend_heq_right`, in
-  --   Data/Fin/Tuple/Lemmas.lean).  The seam boundary `transcript₁ ++ₜ (default : Transcript 0)
-  --   ≍ transcript₁` is `Fin.happend_empty` (`++ₜ` on an empty right block is the identity, `rfl`),
-  --   and the partial-transcript seam state `(pSpec₁++pSpec₂).Transcript ⟨m,_⟩ ≍ transcript₁` is the
-  --   proven `append_Transcript_castLE` (`Fin.last m`).  All #print-axioms clean.
+  -- (T) Transcript-PREFIX family — DISCHARGED at BOTH transcript levels (committed infrastructure):
+  --   • FULL level: `Transcript.concat msg (transcript₁ ++ₜ tr₂) ≍ transcript₁ ++ₜ
+  --     (Transcript.concat msg tr₂)` is `ProtocolSpec.FullTranscript.concat_append_right`
+  --     (SeqCompose.lean), the `FullTranscript`-level instance of `Fin.happend_hconcat_eq`.
+  --   • PARTIAL (round-`k`) level: `Prover.snoc_heq_hconcat` (NEW, axiom-clean) bridges the partial
+  --     `Transcript.concat = Fin.snoc` to `Fin.hconcat` over an arbitrary snoc-motive `δ`, so the
+  --     partial-transcript prefix/snoc commutation `Fin.snoc (Fin.happend P Q) msg ≍ Fin.happend P
+  --     (Fin.snoc Q msg)` follows from `snoc_heq_hconcat` + `happend_hconcat_eq` + `happend_heq_right`.
+  --     These (with helpers `Fin.hconcat_heq` / `Fin.happend_heq_right`, Data/Fin/Tuple/Lemmas.lean)
+  --     are the commutation the right-block run induction folds at each interior round.  The seam
+  --     boundary `transcript₁ ++ₜ (default : Transcript 0) ≍ transcript₁` is `Fin.happend_empty`
+  --     (`rfl`), and the partial-transcript seam state `(pSpec₁++pSpec₂).Transcript ⟨m,_⟩ ≍
+  --     transcript₁` is the proven `append_Transcript_castLE` (`Fin.last m`).  All #print-axioms clean.
   --
   -- REMAINING OBSTRUCTION (now sharply localized to ONE structural mismatch):
   --   (R) Right-block run induction.  The intended invariant is
@@ -2563,6 +2589,14 @@ theorem append_run (stmt : Stmt₁) (wit : Wit₁) :
   --       uniform shape, closed by `append_{send,receive}Message_natAdd` / `append_getChallenge_natAdd`
   --       + `concat_append_right`).  All round-local handles for this are now PROVEN (see above); the
   --       residue is the multi-step HEq plumbing of this peel-then-induct, ~200 lines.
+  --       PRECISE structural mismatch still to bridge: the appended partial transcript at right round
+  --       `natAdd m k` has motive `(pSpec₁++pSpec₂).«Type» ∘ Fin.castLE` (over `Fin (m+k)`), whereas
+  --       the prefix view `Fin.happend transcript₁ tr₂` has codomain `Fin.vappend α β`; these agree
+  --       index-wise (`vappend_left`/`vappend_right`) but are NOT defeq, so the induction must carry
+  --       the appended transcript explicitly as a `Fin.happend` (transporting `transcript₁`/`tr₂`
+  --       into the `(pSpec₁++pSpec₂).«Type»` family per-index) so that, at each `Transcript.concat`
+  --       step, `snoc_heq_hconcat` (partial `snoc ≍ hconcat`) composed with `Fin.happend_hconcat_eq`
+  --       pulls the snoc back out through the `transcript₁` prefix.
   --   (O) `output` assembly: combine via `++ₜ` + `P₂.output` tail (`output` branch of `Prover.append`,
   --       incl. `n = 0` degenerate seam where `P₁.output >>= P₂.input >>= P₂.output` collapses).
   --
