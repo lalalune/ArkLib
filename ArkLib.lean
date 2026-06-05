@@ -303,6 +303,7 @@ import ArkLib.ProofSystem.Whir.RBRSoundness
 import ArkLib.ToCompPoly.Univariate.Basic
 import ArkLib.ToCompPoly.Univariate.Lagrange
 import ArkLib.ToMathlib.BigOperators.Fin
+import ArkLib.ToMathlib.CorrelatedAgreementListDecodingClosed
 import ArkLib.ToMathlib.Finset.Basic
 import ArkLib.ToMathlib.Finset.ToListWithProof
 import ArkLib.ToMathlib.List.Basic
