@@ -471,7 +471,7 @@ counting form for every affine line.
 This is the strict-radius analogue of the `PzFamily` capstone below, but it
 uses only the selected-domain coefficient-polynomial bridge; callers no longer
 need matching-set coverage at every coordinate. -/
-theorem correlatedAgreement_affine_lines_of_strict_exists_natCeil_counting_expanded
+theorem correlatedAgreement_affine_lines_of_strict_exists_natCeil_counting
     {m k : ℕ} (hk : 0 < k) {ωs : Fin n ↪ F}
     [DecidableEq (RatFunc F)]
     (δ : ℚ≥0)
