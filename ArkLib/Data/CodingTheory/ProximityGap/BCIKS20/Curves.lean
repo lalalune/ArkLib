@@ -2335,14 +2335,11 @@ section BCIKS20ProximityGapSection6
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 variable {n : ℕ} [NeZero n]
 
-/-- The two-point curve stack corresponding to the affine line `u₀ + z • u₁`. -/
-noncomputable def lineWordStack (u₀ u₁ : Fin n → F) : WordStack F (Fin (1 + 1)) (Fin n) :=
-  Fin.cases u₀ (fun _ : Fin 1 => u₁)
-
 omit [NeZero n] in
-/-- The generic curve sum for `lineWordStack` is the affine line word. -/
-lemma sum_lineWordStack_eq (u₀ u₁ : Fin n → F) (z : F) :
-    (∑ t : Fin (1 + 1), (z ^ (t : ℕ)) • lineWordStack (F := F) (n := n) u₀ u₁ t)
+/-- The generic degree-one curve sum for `Code.finMapTwoWords` is the affine
+line word. -/
+lemma sum_finMapTwoWords_eq (u₀ u₁ : Fin n → F) (z : F) :
+    (∑ t : Fin 2, (z ^ (t : ℕ)) • Code.finMapTwoWords u₀ u₁ t)
       = u₀ + z • u₁ := by
   funext x
   rw [Fin.sum_univ_two]
@@ -2356,6 +2353,19 @@ noncomputable def coeffs_of_close_proximity_curve {l : ℕ}
   have : Fintype { z | δᵣ(Curve.polynomialCurveEval (F := F) (A := F) u z, V) ≤ δ } := by
     infer_instance
   @Set.toFinset _ { z | δᵣ(Curve.polynomialCurveEval (F := F) (A := F) u z, V) ≤ δ } this
+
+omit [NeZero n] in
+/-- The generic §6 close-parameter set for a two-word affine line agrees with
+the §5 close-proximity set. -/
+theorem coeffs_of_close_proximity_curve_finMapTwoWords_eq
+    {k : ℕ} {ωs : Fin n ↪ F} (δ : ℚ≥0) (u₀ u₁ : Fin n → F) :
+    coeffs_of_close_proximity_curve (F := F) (n := n) (l := 2)
+        δ (Code.finMapTwoWords u₀ u₁) (ReedSolomon.toFinset ωs (k + 1)) =
+      coeffs_of_close_proximity (F := F) (n := n) (k := k) ωs (δ : ℚ) u₀ u₁ := by
+  classical
+  simp [coeffs_of_close_proximity_curve, coeffs_of_close_proximity,
+    ReedSolomon.toFinset, ReedSolomon.RScodeSet, polynomialCurveEval_eq_sum_smul,
+    sum_finMapTwoWords_eq, ENNReal.coe_nnratCast]
 
 omit [NeZero n] in
 /-- The §6 close-parameter set specialized to a Reed-Solomon code is the same
