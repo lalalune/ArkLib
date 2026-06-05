@@ -51,9 +51,9 @@ private lemma row_identity (u v : ι → α) (i : ι) (hq : 0 < Fintype.card α)
     · intro b _ hb; simp [Ne.symm hb]
     · intro h; exact absurd (Finset.mem_univ _) h
   have h2 : (∑ a : α, (1/q) * (if u i = a then (1:ℝ) else 0)) = 1/q := by
-    rw [← Finset.mul_sum]; simp [Finset.sum_ite_eq']
+    rw [← Finset.mul_sum]; simp
   have h3 : (∑ a : α, (1/q) * (if v i = a then (1:ℝ) else 0)) = 1/q := by
-    rw [← Finset.mul_sum]; simp [Finset.sum_ite_eq']
+    rw [← Finset.mul_sum]; simp
   have h4 : (∑ _a : α, (1/q)*(1/q)) = 1/q := by
     rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul, ← hqdef]
     field_simp

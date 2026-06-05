@@ -1479,7 +1479,7 @@ lemma split_pairs (B : Finset (Fin n → F)) (i : Fin n) :
     = (B.card:ℚ)^2 := by
   rw [← Finset.sum_add_distrib]
   rw [show (B.card:ℚ)^2 = ∑ _x ∈ B ×ˢ B, (1:ℚ) by
-    rw [Finset.sum_const, Finset.card_product]; push_cast; ring]
+    rw [Finset.sum_const, Finset.card_product]; ring]
   apply Finset.sum_congr rfl
   intro x _
   by_cases h : x.1 i = x.2 i <;> simp [h]
@@ -1525,7 +1525,7 @@ lemma sum_disagree_le (B : Finset (Fin n → F)) (hq : 0 < Fintype.card F) :
       ≤ ∑ _i : Fin n, (B.card:ℚ)^2 * (1 - 1 / (Fintype.card F : ℚ)) :=
         Finset.sum_le_sum (fun i _ => col_disagree_le B i hq)
     _ = (n:ℚ) * (B.card:ℚ)^2 * (1 - 1 / (Fintype.card F : ℚ)) := by
-        rw [Finset.sum_const, Finset.card_univ, Fintype.card_fin]; push_cast; ring
+        rw [Finset.sum_const, Finset.card_univ, Fintype.card_fin]; ring
 
 /-- **q-ary Plotkin average-distance bound** (the missing ingredient flagged in the
 T3.2 docstring). For any `B ⊆ Fⁿ` with `|B| ≥ 2`,
@@ -1596,8 +1596,8 @@ increasing in `δ`, so its minimum is the boundary value
 lemma den_reduced
     (e0 δ s η : ℝ)
     (hη : 0 < η) (hs0 : 0 < s) (hs1 : s < 1)
-    (he0_nonneg : 0 ≤ e0) (he0_le : e0 ≤ 1 - s - η) (hδ_ge : 1 - s^2 ≤ δ) :
-    2 * η * s^2 * δ ≤ δ - 2 * e0 + e0^2 := by
+    (he0_nonneg : 0 ≤ e0) (he0_le : e0 ≤ 1 - s - η) (hδ_ge : 1 - s ^ 2 ≤ δ) :
+    2 * η * s ^ 2 * δ ≤ δ - 2 * e0 + e0 ^ 2 := by
   have hη_le : η ≤ 1 - s := by linarith
   have he0_le1 : e0 ≤ 1 := by linarith
   have hpoly : 0 < 2*s^3 - 2*s^2 + 1 := by
@@ -1635,8 +1635,8 @@ lemma c33_core
     (hρ0 : 0 < ρ) (hρ1 : ρ < 1) (hη : 0 < η)
     (he0_nonneg : 0 ≤ e0)
     (he0_le : e0 ≤ 1 - Real.sqrt ρ - η)
-    (hδ_ge : 1 - ρ ≤ δ) (hδ_le : δ ≤ 1)
-    (hjohnson : M * ((1 - frac * e0)^2 - (1 - frac * δ)) ≤ frac * δ) :
+    (hδ_ge : 1 - ρ ≤ δ) (_hδ_le : δ ≤ 1)
+    (hjohnson : M * ((1 - frac * e0) ^ 2 - (1 - frac * δ)) ≤ frac * δ) :
     M ≤ 1 / (2 * η * ρ) := by
   set s := Real.sqrt ρ with hs
   have hs0 : 0 < s := Real.sqrt_pos.mpr hρ0
@@ -1736,7 +1736,7 @@ theorem mds_johnson_lambda_le
     linarith
   have hkR_pos : (0 : ℝ) < (k : ℝ) := by exact_mod_cast hk_pos
   have hρ_pos : 0 < ρ := by
-    show 0 < (k : ℝ) / (n : ℝ)
+    change 0 < (k : ℝ) / (n : ℝ)
     positivity
   set δ : ℝ := 1 - Real.sqrt ρ - η with hδ_def
   -- `q = card F ≥ 2`.
