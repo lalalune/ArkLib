@@ -1933,6 +1933,35 @@ theorem coeff_succ_eval_defect_reduction (x₀ : F) (R : F[X][X][Y])
   rw [htrunc_top, sub_zero, hderiv] at hsub
   linear_combination hsub
 
+/-- **Product bridge (PROVEN — the multiplicative half of the cleared-defect identity).**
+The product of assembled-series coefficients over any finite multiset of orders clears to
+the embedded product of the (A.1) numerators over the telescoped `W`/`ξ` powers:
+
+  `∏_{l ∈ s} coeff l (βHenselAssembled) = embedding (∏ βHensel l) / (W^{∑(l+1)} · ξ^{∑(2l−1)})`.
+
+Instantiated at a partition `λ ⊢ m` (via `partitionProd` and the proven telescopes
+`partition_sum_add_one` / `partition_sum_two_mul_sub_one` in `MultinomialChainRule.lean`)
+this is exactly the per-partition term of the defect expansion. Unconditional in the field
+`𝕃 H` (`div_mul_div_comm` needs no nonvanishing). -/
+theorem prod_map_coeff_assembled (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (s : Multiset ℕ) :
+    (s.map (fun l => PowerSeries.coeff l (βHenselAssembled H x₀ R hHyp))).prod
+      = embeddingOf𝒪Into𝕃 H ((s.map (βHensel H x₀ R hHyp)).prod)
+        / ((liftToFunctionField (H := H) H.leadingCoeff) ^ ((s.map (· + 1)).sum)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ ((s.map (fun l => 2 * l - 1)).sum)) := by
+  induction s using Multiset.induction with
+  | empty => simp
+  | cons a t ih =>
+      simp only [Multiset.map_cons, Multiset.prod_cons, Multiset.sum_cons]
+      rw [ih,
+        show PowerSeries.coeff a (βHenselAssembled H x₀ R hHyp)
+          = embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp a)
+              / ((liftToFunctionField (H := H) H.leadingCoeff) ^ (a + 1)
+                  * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * a - 1)) from by
+            simp [βHenselAssembled, PowerSeries.coeff_mk],
+        map_mul, pow_add, pow_add, div_mul_div_comm]
+      ring
+
 /-- **(P2) order-`(t+1)` vanishing — THE SINGLE IRREDUCIBLE RESIDUAL (documented `sorry`).**
 
 The successor-order coefficient of `eval (βHenselAssembled …) Q` vanishes.  This is the genuine,
