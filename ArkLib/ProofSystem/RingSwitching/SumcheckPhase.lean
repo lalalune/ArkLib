@@ -142,8 +142,12 @@ theorem iteratedSumcheckOracleReduction_perfectCompleteness (i : Fin ℓ') :
       (init := init)
       (impl := impl) := by
   unfold OracleReduction.perfectCompleteness
-  intro stmtIn witIn h_relIn
-  simp only
+  rw [Reduction.perfectCompleteness_eq_prob_one]
+  intro ⟨stmtIn, oStmtIn⟩ witIn h_relIn
+  -- (ALGEBRA) Unpack the input relation's master KState conjuncts at round `i.castSucc`.
+  simp only [sumcheckRoundRelation, sumcheckRoundRelationProp, masterKStateProp,
+    witnessStructuralInvariant, sumcheckConsistencyProp, Set.mem_setOf_eq, true_and] at h_relIn
+  obtain ⟨hStruct, hConsist, hCompat⟩ := h_relIn
   -- WIP (algebra UNBLOCKED by the defect-#20 machinery repair; remaining work is the run-shape peel).
   -- After the coherent var-ordering repair in `Sumcheck.Structured.SingleRound`, the honest round is
   -- now fully consistent and the OUTPUT relation is *provable* (no false residual remains):
@@ -160,12 +164,55 @@ theorem iteratedSumcheckOracleReduction_perfectCompleteness (i : Fin ℓ') :
   --     the verifier's check `∑_{D.points i} h_i.eval b = sumcheck_target` discharges from the relIn
   --     `sumcheckConsistencyProp i.castSucc` (`h_i` is the variable-`(last)` marginal of `witIn.H`);
   --   • `initialCompatibility` carries over (`witOut.t' = witIn.t'`).
-  -- REMAINING (mechanical, no math obstruction): peel the 2-message honest `OracleReduction.run`
-  -- (`run_eq_run_reduction` → `Reduction.run`/`Prover.run`/`Verifier.run` → `runToRound`/`processRound`
-  -- `Fin.induction_two`), collapse the verifier's `simOracle2` message-query (`simulateQ_simOracle2_query`)
-  -- and the `guard`-emitting failure branch (defect-#21, now in `roundOracleVerifier`), then discharge
-  -- the four KState conjuncts above. This is the same run-shape plumbing as the final-sumcheck
-  -- completeness peel; deferred here as WIP to keep the build green after the machinery repair landed.
+  -- (PLUMBING) Peel the 2-message honest oracle-reduction run.  `OracleReduction.perfectCompleteness`
+  -- = `Reduction.perfectCompleteness … .toReduction`; unfold the reduction and the prover's
+  -- `runToRound` over `Fin.induction_two`, then resolve the two round-direction matches.
+  simp only [iteratedSumcheckOracleReduction, OracleReduction.toReduction,
+    Sumcheck.Structured.roundOracleReduction, Reduction.run,
+    Sumcheck.Structured.roundOracleProver, Sumcheck.Structured.roundOracleVerifier,
+    Prover.run, Prover.runToRound, Fin.induction_two, Prover.processRound,
+    OracleVerifier.toVerifier, Verifier.run, pSpecSumcheckRound]
+  -- Round 0 = `P_to_V` (prover sends `h_i = getSumcheckRoundPoly ℓ' (boolDomain L ℓ') i witIn.H`),
+  -- round 1 = `V_to_P` (verifier samples `r'`); both direction matches collapse cleanly.
+  simp only [Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons,
+    Matrix.cons_val_fin_one, reduceCtorEq]
+  -- WIP — RUN IS NOW FULLY UNFOLDED + DIRECTION-RESOLVED (verified `trace_state`). The honest run is:
+  --   P→V `h_i := getSumcheckRoundPoly ℓ' (boolDomain L ℓ') i witIn.H`;
+  --   V samples `r' ← L` (the single probabilistic step);
+  --   prover output `getRoundProverFinalOutput … 2 i` (witOut.H = `fixFirstVariablesOfMQP (ℓ'-i) ⟨1⟩
+  --     witIn.H {r'}`, stmtOut.challenges = `Fin.cons r' stmtIn.challenges`, target = `h_i.eval r'`);
+  --   V reads the message via `simulateQ (simOracle2 …)`, runs `guard (∑ b ∈ (boolDomain L ℓ').points i,
+  --     h_i.eval b = stmtIn.sumcheck_target)`, outputs stmtOut.
+  -- Goal: `probEvent (…) = 1` over the uniform `r'` sample.
+  --
+  -- TWO REMAINING TASKS (both now mathematically UNBLOCKED; only mechanical):
+  -- (1) PROBABILITY ENDGAME. Collapse the `simulateQ (simOracle2 …)` message-query
+  --     (`simulateQ_simOracle2_query` + `answer_instDefault`), tie `proverResult.1.messages ⟨0⟩ = h_i`
+  --     and `proverResult.1.challenges ⟨1⟩ = r'` from the transcript binds, then close
+  --     `probEvent = 1` via `probEvent_eq_one_iff` over the uniform `r'`-sample (no-failure: the
+  --     `guard` ALWAYS passes by `getSumcheckRoundPoly_points_sum_eq_cube` + `hConsist`; every output
+  --     satisfies the predicate by task (2)). This is the single-challenge analog of the closed
+  --     `finalSumcheckOracleReduction_perfectCompleteness` accept-branch peel (which has no challenge).
+  -- (2) relOut DISCHARGE (the four master-KState conjuncts at index `i.succ`):
+  --   • `witnessStructuralInvariant i.succ`: `witOut.H = projectToMidSumcheckPoly t' m i.succ
+  --     (Fin.cons r' ch)`.  From `hStruct` (`witIn.H = projectToMid … i.castSucc ch`) and
+  --     `RingSwitching.fixFirstVariablesOfMQP_projectToMid_step`, the honest `witOut.H` equals
+  --     `rename (finCongr …) (projectToMid … i.succ (cons r' ch))`.  The residual `rename (finCongr)`
+  --     is the index relabel `Fin (ℓ'-i.succ) ≃ Fin (ℓ'-i.castSucc-1)`; it must be reconciled with
+  --     `getRoundProverFinalOutput`'s own internal `by omega` cast (HEq bookkeeping — same family as
+  --     `rename_finCongr_heq`).
+  --   • `sumcheckConsistencyProp i.succ`: `stmtOut.sumcheck_target (= h_i.eval r') = ∑_{cube(ℓ'-i.succ)}
+  --     witOut.H`.  This is the single-point (`r'`) specialisation of the proven
+  --     `getSumcheckRoundPoly_points_sum_eq_cube` chain: `h_i.eval r' = ∑_{survivors} eval (snoc · r')
+  --     curH = ∑_{cube} (fixFirstVariablesOfMQP witIn.H {r'})` (via `getSumcheckRoundPoly_eval_eq_sum_snoc`
+  --     + `fixFirstVariablesOfMQP_eval` + the `sum_cube_snoc` survivor reindex already used above).
+  --   • the verifier `guard` (`∑ b ∈ points i, h_i.eval b = sumcheck_target`) is `hConsist` rewritten
+  --     by `getSumcheckRoundPoly_points_sum_eq_cube` (PROVEN above).
+  --   • `initialCompatibility ⟨witOut.t', oStmt⟩ = ⟨witIn.t', oStmt⟩` is `hCompat` (`witOut.t' = witIn.t'`).
+  -- The verifier-check algebra (the genuinely #20-unblocked core) is DONE; what remains is the
+  -- `OptionT`/`StateT`/`simulateQ` run-shape plumbing for a 2-message+1-challenge oracle reduction
+  -- (no proven precedent in-repo — the only closed oracle-reduction completeness, final-sumcheck, has
+  -- ZERO challenges) plus the HEq cast reconciliation in (2). Preserved as WIP per honest-completion.
   sorry
 
 open scoped NNReal
@@ -208,6 +255,106 @@ theorem getSumcheckRoundPoly_eval_eq_sum_snoc (i : Fin ℓ')
   -- `curH_cast` is `Eq.mpr _ H.val`, hence `HEq` to `H.val`; `curH` is also `HEq` to `H.val`.
   refine HEq.trans ?_ hcurH.symm
   exact cast_heq _ _
+
+omit [NeZero κ] [Fintype L] [DecidableEq L] [SampleableType L] [NeZero ℓ] [NeZero ℓ'] in
+/-- Renaming a polynomial along the canonical index `finCongr` of a (propositional) dimension
+equality `a = b` is heterogeneously equal to the original polynomial. -/
+private lemma rename_finCongr_heq {a b : ℕ} (h : a = b) (p : MvPolynomial (Fin a) L) :
+    HEq (rename (finCongr h) p) p := by
+  subst h
+  rw [finCongr_refl, Equiv.coe_refl, rename_id_apply]
+
+/-- **Verifier-check identity (defect-#20 last-variable form).** Summing the prover's round
+univariate `getSumcheckRoundPoly ℓ' (boolDomain L ℓ') i H` over coordinate `i`'s Boolean domain
+`{0,1}` recovers the full cube-sum of the round polynomial `H` over the round-`i.castSucc` Boolean
+cube. This is the honest verifier's step-6 check: `∑_{b ∈ D.points i} h_i.eval b = ∑_{cube} H`, which
+the input relation's `sumcheckConsistencyProp` equates to `stmtIn.sumcheck_target`.
+
+The univariate keeps the **last** surviving variable as the indeterminate, so the marginal is the
+`snoc` cube-telescoping `sum_cube_snoc`: splitting off coordinate `Fin.last` of the round cube
+`(boolDomain L (ℓ' - i.castSucc)).cube` reproduces exactly the `b`-then-survivors structure of the
+univariate's evaluation. Both the survivor cubes `((boolDomain L ℓ').drop (i.castSucc+1))` (used by
+`getSumcheckRoundPoly`) and `(boolDomain L (ℓ'-i.castSucc)).init` (produced by `sum_cube_snoc`)
+collapse to the *uniform* Boolean cube of equal dimension `ℓ'-i.castSucc-1`, so the heterogeneous
+`drop`-vs-`init` index gap is harmless for the Boolean domain. -/
+theorem getSumcheckRoundPoly_points_sum_eq_cube (i : Fin ℓ')
+    (H : L⦃≤ 2⦄[X Fin (ℓ' - ↑i.castSucc)]) :
+    ∑ b ∈ (boolDomain L ℓ').points i,
+        (getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i) H).val.eval b
+      = ∑ z ∈ (boolDomain L (ℓ' - ↑i.castSucc)).cube, H.val.eval z := by
+  -- `ℓ' - i.castSucc = (ℓ'-i.castSucc-1) + 1` from `i.isLt`.
+  have hn : ℓ' - ↑i.castSucc = (ℓ' - ↑i.castSucc - 1) + 1 := by
+    have := i.2; simp only [Fin.val_castSucc]; omega
+  -- `curH := rename (finCongr hn) H.val` is `H.val` reindexed to `Fin ((ℓ'-i.castSucc-1)+1)`; the
+  -- rename keeps the polynomial (just relabels variables along the canonical `Fin.cast`).
+  set curH : L[X Fin ((ℓ' - ↑i.castSucc - 1) + 1)] := rename (finCongr hn) H.val with hcurH_def
+  have hHEq : HEq curH H.val := by
+    rw [hcurH_def]; exact rename_finCongr_heq (h := hn) (p := H.val)
+  -- (1) LHS: each round-univariate value is a survivor-cube snoc-sum (degree-generic lemma).
+  rw [show (∑ b ∈ (boolDomain L ℓ').points i,
+        (getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i) H).val.eval b)
+      = ∑ b ∈ (boolDomain L ℓ').points i,
+          ∑ x ∈ ((boolDomain L ℓ').drop (↑i.castSucc + 1)).cube,
+            MvPolynomial.eval
+              (Fin.snoc (Fin.append x (fun j => j.elim0) ∘ Fin.cast (by omega)) b) curH from
+    Finset.sum_congr rfl fun b _ =>
+      Sumcheck.Structured.getSumcheckRoundPoly_eval_eq_sum_snoc ℓ' (boolDomain L ℓ')
+        i H b curH hHEq]
+  -- (2) RHS: transport the cube-sum of `H` to `curH` over `Fin ((ℓ'-i.castSucc-1)+1)` via the
+  -- variable-renaming `eval_rename`, then split off the last coordinate via `sum_cube_snoc`.
+  have heval_curH : ∀ z : Fin ((ℓ' - ↑i.castSucc - 1) + 1) → L,
+      curH.eval z = H.val.eval (z ∘ finCongr hn) := by
+    intro z; rw [hcurH_def, eval_rename]
+  rw [show (∑ z ∈ (boolDomain L (ℓ' - ↑i.castSucc)).cube, H.val.eval z)
+      = ∑ z ∈ (boolDomain L ((ℓ' - ↑i.castSucc - 1) + 1)).cube, curH.eval z from by
+    apply Finset.sum_nbij' (fun z => z ∘ finCongr hn.symm) (fun z => z ∘ finCongr hn)
+    · intro z hz; simp only [SumcheckDomain.mem_cube] at hz ⊢; intro j; simpa using hz _
+    · intro z hz; simp only [SumcheckDomain.mem_cube] at hz ⊢; intro j; simpa using hz _
+    · intro z _; funext j; simp only [Function.comp_apply, finCongr_apply,
+        Fin.cast_cast, Fin.cast_eq_self]
+    · intro z _; funext j; simp only [Function.comp_apply, finCongr_apply,
+        Fin.cast_cast, Fin.cast_eq_self]
+    · intro z _
+      rw [heval_curH]
+      refine congrArg (fun pt => MvPolynomial.eval pt H.val) ?_
+      funext j
+      simp only [Function.comp_apply, finCongr_apply, Fin.cast_cast, Fin.cast_eq_self]]
+  rw [SumcheckDomain.sum_cube_snoc (boolDomain L ((ℓ' - ↑i.castSucc - 1) + 1))
+    (fun z => curH.eval z)]
+  -- (3) Match the outer Boolean point-sum (`b`) and the inner survivor cube-sums.
+  -- Outer index sets: `(boolDomain ℓ').points i = univ.map boolEmbedding = points last` (uniform).
+  simp only [points_boolDomain]
+  refine Finset.sum_congr rfl fun b _ => ?_
+  -- Inner survivor cubes: `((boolDomain ℓ').drop (i+1))` and `(boolDomain (..)).init` are both the
+  -- uniform Boolean cube of dimension `ℓ'-i.castSucc-1`. Reindex by the canonical `Fin.cast`.
+  simp only [boolDomain, SumcheckDomain.init_uniform, SumcheckDomain.drop_uniform]
+  -- `ℓ' - (i.castSucc+1) = ℓ' - i.castSucc - 1`, so both cubes are over the same dimension up to a
+  -- `Fin.cast` reindex of the points; the snoc-survivor reconstruction `append x ∅ ∘ cast` matches.
+  apply Finset.sum_nbij' (fun x => x ∘ Fin.cast (by omega)) (fun y => y ∘ Fin.cast (by omega))
+  · intro x hx
+    simp only [SumcheckDomain.mem_cube] at hx ⊢
+    intro j
+    simpa using hx (Fin.cast (by omega) j)
+  · intro y hy
+    simp only [SumcheckDomain.mem_cube] at hy ⊢
+    intro j
+    simpa using hy (Fin.cast (by omega) j)
+  · intro x _; funext j; simp
+  · intro y _; funext j; simp
+  · intro x _
+    -- The snoc-survivor reconstructions agree: `append x ∅ ∘ cast` and `x ∘ cast` coincide as the
+    -- survivor point (the `Fin.append`-with-empty is just `x`, up to the harmless `Fin.cast`).
+    refine congrArg (fun pt => MvPolynomial.eval pt curH) ?_
+    funext j
+    refine Fin.lastCases ?_ (fun j => ?_) j
+    · simp only [Fin.snoc_last]
+    · simp only [Fin.snoc_castSucc, Function.comp_apply]
+      -- `Fin.append x ∅` at a left-side (cast) index is just `x` at the matching index: rewrite the
+      -- `Fin.cast` index as a `Fin.castAdd 0` and apply `Fin.append_left`.
+      rw [show (Fin.cast (by omega) j : Fin (ℓ' - (↑i.castSucc + 1) + 0))
+            = Fin.castAdd 0 (Fin.cast (by omega) j) from Fin.ext rfl,
+          Fin.append_left]
+      exact congrArg x (Fin.ext rfl)
 
 noncomputable def iteratedSumcheckRbrExtractor (i : Fin ℓ') :
   Extractor.RoundByRound []ₒ
