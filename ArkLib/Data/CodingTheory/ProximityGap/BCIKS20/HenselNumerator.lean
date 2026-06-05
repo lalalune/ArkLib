@@ -2044,6 +2044,37 @@ theorem coeff_succ_eval_of_trunc_defect_cancel (x₀ : F) (R : F[X][X][Y])
   rw [coeff_succ_eval_defect_reduction H x₀ R hHyp t]
   exact hcancel
 
+/-- The assembled series is a root once every truncated-defect cancellation is
+proved. This is the direct consumer form for the remaining `(A.1)` expansion
+obligation after Newton linearization. -/
+theorem assembledSeries_isRoot_of_trunc_defect_cancel (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hcancel : ∀ t : ℕ,
+      PowerSeries.coeff (t + 1)
+          (Polynomial.eval (βHenselTrunc H x₀ R hHyp t) (Q x₀ R H))
+        + ClaimA2.ζ R x₀ H * PowerSeries.coeff (t + 1) (βHenselAssembled H x₀ R hHyp)
+          = 0) :
+    Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H) = 0 :=
+  assembledSeries_isRoot_of_coeff_succ_eval H x₀ R hHyp
+    (fun t => coeff_succ_eval_of_trunc_defect_cancel H x₀ R hHyp t (hcancel t))
+
+/-- The repaired lift identity follows directly from the per-order
+truncated-defect cancellations. -/
+theorem βHensel_lift_identity_of_trunc_defect_cancel (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hcancel : ∀ t : ℕ,
+      PowerSeries.coeff (t + 1)
+          (Polynomial.eval (βHenselTrunc H x₀ R hHyp t) (Q x₀ R H))
+        + ClaimA2.ζ R x₀ H * PowerSeries.coeff (t + 1) (βHenselAssembled H x₀ R hHyp)
+          = 0)
+    (t : ℕ) :
+    embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+      = αGenuine H x₀ R hHyp t
+          * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+          * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1) :=
+  βHensel_lift_identity_of_assembledSeries_isRoot H x₀ R hHyp
+    (assembledSeries_isRoot_of_trunc_defect_cancel H x₀ R hHyp hcancel) t
+
 /-- **Product bridge (PROVEN — the multiplicative half of the cleared-defect identity).**
 The product of assembled-series coefficients over any finite multiset of orders clears to
 the embedded product of the (A.1) numerators over the telescoped `W`/`ξ` powers. -/
