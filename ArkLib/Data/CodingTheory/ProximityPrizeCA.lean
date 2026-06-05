@@ -284,4 +284,102 @@ theorem ca_equal_threshold_of_hammingDist
       jointAgreeSet_card_add_lt_of_hammingDist_gt (hprem g₁ hg₁ g₂ hg₂))
     Γ hbad
 
+/-- The joint agreement set is contained in the second component's agreement set. -/
+theorem jointAgreeSet_subset_agreeSet_snd (f₁ f₂ g₁ g₂ : ι → F) :
+    jointAgreeSet f₁ f₂ g₁ g₂ ⊆ agreeSet f₂ g₂ := by
+  intro x hx
+  simp only [jointAgreeSet, agreeSet, Finset.mem_filter, mem_univ, true_and] at hx ⊢
+  exact hx.2
+
+/-- If the second word is `2 * d`-far from every codeword, then any pair with it as
+second component satisfies the halved-threshold joint-distance premise. -/
+theorem far_implies_joint_far
+    (C : Submodule F (ι → F))
+    (rest fᵢ : ι → F) (d : ℕ)
+    (hfar : ∀ g ∈ C, (agreeSet fᵢ g).card + 2 * d < Fintype.card ι) :
+    ∀ g₁ ∈ C, ∀ g₂ ∈ C,
+      (jointAgreeSet rest fᵢ g₁ g₂).card + 2 * d < Fintype.card ι := by
+  intro _g₁ _hg₁ g₂ hg₂
+  have hsub := jointAgreeSet_subset_agreeSet_snd rest fᵢ _g₁ g₂
+  have hcard := Finset.card_le_card hsub
+  have hg := hfar g₂ hg₂
+  omega
+
+/-- Per-coordinate batch correlated agreement: after fixing an arbitrary `rest`,
+there are not two distinct coefficients that make `rest + α • fᵢ` close to the
+code, provided `fᵢ` itself is `2 * d`-far from the code. -/
+theorem batch_ca_per_coord
+    (C : Submodule F (ι → F))
+    (rest fᵢ : ι → F) (d : ℕ)
+    (hfar : ∀ g ∈ C, (agreeSet fᵢ g).card + 2 * d < Fintype.card ι)
+    {α₁ α₂ : F} (hne : α₁ ≠ α₂)
+    {c₁ c₂ : ι → F} (hc₁ : c₁ ∈ C) (hc₂ : c₂ ∈ C)
+    (hA₁ : Fintype.card ι ≤ (agreeSet (linComb rest fᵢ α₁) c₁).card + d)
+    (hA₂ : Fintype.card ι ≤ (agreeSet (linComb rest fᵢ α₂) c₂).card + d) :
+    False :=
+  ca_halved C rest fᵢ d (far_implies_joint_far C rest fᵢ d hfar) hne hc₁ hc₂ hA₁ hA₂
+
+/-- Contrapositive singleton form for the per-coordinate batch CA argument. -/
+theorem batch_ca_at_most_one
+    (C : Submodule F (ι → F))
+    (rest fᵢ : ι → F) (d : ℕ)
+    (hfar : ∀ g ∈ C, (agreeSet fᵢ g).card + 2 * d < Fintype.card ι)
+    {α₁ α₂ : F}
+    (hα₁ : ∃ c ∈ C, Fintype.card ι ≤ (agreeSet (linComb rest fᵢ α₁) c).card + d)
+    (hα₂ : ∃ c ∈ C, Fintype.card ι ≤ (agreeSet (linComb rest fᵢ α₂) c).card + d) :
+    α₁ = α₂ := by
+  by_contra hne
+  obtain ⟨c₁, hc₁, hA₁⟩ := hα₁
+  obtain ⟨c₂, hc₂, hA₂⟩ := hα₂
+  exact batch_ca_per_coord C rest fᵢ d hfar hne hc₁ hc₂ hA₁ hA₂
+
+open Classical in
+/-- For fixed `rest`, the bad coefficient set for one batch coordinate has cardinality at
+most one. -/
+theorem batch_ca_per_coord_bad_card [Fintype F]
+    (C : Submodule F (ι → F))
+    (rest fᵢ : ι → F) (d : ℕ)
+    (hfar : ∀ g ∈ C, (agreeSet fᵢ g).card + 2 * d < Fintype.card ι) :
+    ((Finset.univ : Finset F).filter
+      (fun α => ∃ c ∈ C, Fintype.card ι ≤
+        (agreeSet (linComb rest fᵢ α) c).card + d)).card ≤ 1 := by
+  rw [Finset.card_le_one]
+  intro α₁ hα₁ α₂ hα₂
+  rw [Finset.mem_filter] at hα₁ hα₂
+  exact batch_ca_at_most_one C rest fᵢ d hfar hα₁.2 hα₂.2
+
+/-- A finite union of bad scalar sets, one per batch coordinate, has cardinality bounded by
+the number of coordinates when each coordinate contributes at most one bad scalar. -/
+theorem batch_ca_bad_count {κ : Type*} [Fintype κ] [DecidableEq κ]
+    {A : Type*} [DecidableEq A]
+    (bad : κ → Finset A) (hbad : ∀ i, (bad i).card ≤ 1) :
+    (Finset.univ.biUnion bad).card ≤ Fintype.card κ := by
+  calc
+    (Finset.univ.biUnion bad).card
+        ≤ Finset.univ.sum (fun i => (bad i).card) := Finset.card_biUnion_le
+    _ ≤ Finset.univ.sum (fun _ : κ => 1) :=
+        Finset.sum_le_sum fun i _ => hbad i
+    _ = Fintype.card κ := by simp
+
+open Classical in
+/-- Fixed-rest aggregate batch CA bound. For each coordinate `i`, if `f i` is
+`2 * d`-far from `C`, then the union of all fixed-rest bad scalar sets has size at
+most the number of coordinates. This is the reusable counting core behind the
+tuple-form batch CA probability statement. -/
+theorem batch_ca_aggregate [Fintype F]
+    (C : Submodule F (ι → F))
+    {κ : Type*} [Fintype κ] [DecidableEq κ]
+    (rest : κ → ι → F) (f : κ → ι → F) (d : ℕ)
+    (hfar : ∀ i, ∀ g ∈ C, (agreeSet (f i) g).card + 2 * d < Fintype.card ι) :
+    (Finset.univ.biUnion (fun i =>
+      (Finset.univ : Finset F).filter
+        (fun α => ∃ c ∈ C,
+          Fintype.card ι ≤ (agreeSet (linComb (rest i) (f i) α) c).card + d))).card
+    ≤ Fintype.card κ :=
+  batch_ca_bad_count
+    (fun i => (Finset.univ : Finset F).filter
+      (fun α => ∃ c ∈ C,
+        Fintype.card ι ≤ (agreeSet (linComb (rest i) (f i) α) c).card + d))
+    (fun i => batch_ca_per_coord_bad_card C (rest i) (f i) d (hfar i))
+
 end ProximityPrizeCA
