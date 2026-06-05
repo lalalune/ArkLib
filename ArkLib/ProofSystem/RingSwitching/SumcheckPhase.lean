@@ -551,7 +551,7 @@ theorem iteratedSumcheckOracleReduction_perfectCompleteness (i : Fin ℓ') :
   -- equals the next cube-sum of the advanced witness `witOut.H = fixFirstVariablesOfMQP … {r'}`.
   -- This is `getSumcheckRoundPoly_eval_eq_cube_succ` instantiated at the honest witness.
   -- (C) PLUMBING: collapse the deterministic prover binds, the verifier message-query, and the
-  -- `guard`, reducing the run to a `$ᵗ L`-sample probEvent.
+  -- `guard` (which always passes by `hcheck`), reducing the run to a `$ᵗ L`-sample probEvent.
   simp only [liftM, monadLift, MonadLiftT.monadLift, MonadLift.monadLift, pure_bind,
     bind_pure_comp, map_pure, Functor.map_map, Function.comp, getRoundProverFinalOutput,
     Transcript.concat]
