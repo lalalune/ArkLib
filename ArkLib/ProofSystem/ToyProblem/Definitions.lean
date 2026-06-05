@@ -115,4 +115,55 @@ def winningSet {k : ℕ} (C : Set (ι → F)) (δ : ℝ≥0)
          (fun _ ↦ μ₁ + γ * μ₂)
          (fun _ j ↦ f₁ j + γ * f₂ j) }
 
+/-! ## Fixed-encoding variants (for the §6.4.1 list-decoding attack)
+
+The `relation`/`relaxedRelation`/`winningSet` above quantify the encoding
+**existentially** (`∃ encode, …`), which faithfully covers general `F`-additive
+codes. For the §6.4.1 list-decoding attack
+(`ToyProblem.simplified_iop_soundness_listDecoding_lb`) this existential is *too
+permissive*: an adversary can satisfy the relaxed relation at a target `(μ₁,μ₂)`
+by reparameterising the linear constraint through a *different* linear encoding
+with the same image. The paper's `R_C` uses **the code's fixed encoding**; the
+`…For encode` variants below pin it down, so the attack's violation step (no
+δ-close codeword stack under `encode` meets the constraint) is faithful and
+provable. A fixed-encoding witness is in particular an existential one
+(`relaxedRelationFor_imp`, `winningSetFor_subset`), so quantitative winning-set
+bounds transfer up to `winningSet`. -/
+
+/-- **Fixed-encoding toy relation** (cf. `relation`). The §6.1 relation `R_C^ℓ`
+with the encoding pinned to a given `F`-linear `encode` (the code's encoding;
+codewords are exactly `encode`'s image). -/
+def relationFor {k ℓ : ℕ} (encode : (Fin k → F) →ₗ[F] (ι → F))
+    (v : Fin k → F) (μ : Fin ℓ → F) (W : Fin ℓ → ι → F) : Prop :=
+  ∃ M : Fin ℓ → Fin k → F, (∀ i, W i = encode (M i)) ∧ ∀ i, ∑ j, M i j * v j = μ i
+
+/-- **Fixed-encoding relaxed relation** (cf. `relaxedRelation`). -/
+def relaxedRelationFor {k ℓ : ℕ} (encode : (Fin k → F) →ₗ[F] (ι → F)) (δ : ℝ≥0)
+    (v : Fin k → F) (μ : Fin ℓ → F) (W : Fin ℓ → ι → F) : Prop :=
+  ∃ Wstar : Fin ℓ → ι → F, relationFor encode v μ Wstar ∧
+    ∃ S : Finset ι, (1 - (δ : ℝ)) * Fintype.card ι ≤ S.card ∧
+      ∀ i, ∀ j ∈ S, W i j = Wstar i j
+
+/-- **Fixed-encoding winning set** (cf. `winningSet`). -/
+def winningSetFor {k : ℕ} (encode : (Fin k → F) →ₗ[F] (ι → F)) (δ : ℝ≥0)
+    (v : Fin k → F) (μ₁ μ₂ : F) (f₁ f₂ : ι → F) : Set F :=
+  { γ | relaxedRelationFor (ℓ := 1) encode δ v
+         (fun _ ↦ μ₁ + γ * μ₂) (fun _ j ↦ f₁ j + γ * f₂ j) }
+
+/-- A fixed-encoding relaxed witness is in particular an existential-encoding one,
+provided the encoding's image lies in `C`. -/
+theorem relaxedRelationFor_imp {k ℓ : ℕ} {C : Set (ι → F)}
+    {encode : (Fin k → F) →ₗ[F] (ι → F)} (hC : ∀ m, encode m ∈ C)
+    {δ : ℝ≥0} {v : Fin k → F} {μ : Fin ℓ → F} {W : Fin ℓ → ι → F} :
+    relaxedRelationFor (ℓ := ℓ) encode δ v μ W → relaxedRelation (ℓ := ℓ) C δ v μ W := by
+  rintro ⟨Wstar, ⟨M, hWeq, hconstr⟩, S, hScard, hSag⟩
+  exact ⟨Wstar, ⟨M, ⟨encode, hC, hWeq⟩, hconstr⟩, S, hScard, hSag⟩
+
+/-- `winningSetFor encode ⊆ winningSet C` when `encode`'s image lies in `C`. -/
+theorem winningSetFor_subset {k : ℕ} {C : Set (ι → F)}
+    {encode : (Fin k → F) →ₗ[F] (ι → F)} (hC : ∀ m, encode m ∈ C)
+    {δ : ℝ≥0} {v : Fin k → F} {μ₁ μ₂ : F} {f₁ f₂ : ι → F} :
+    winningSetFor encode δ v μ₁ μ₂ f₁ f₂ ⊆ winningSet C δ v μ₁ μ₂ f₁ f₂ :=
+  fun _ hγ ↦ relaxedRelationFor_imp hC hγ
+
 end ToyProblem
