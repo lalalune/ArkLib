@@ -570,6 +570,30 @@ lemma decomposeRows_sum {ι : Type} [Fintype ι]
   | @insert a s ha ih =>
     rw [Finset.sum_insert ha, Finset.sum_insert ha, P₀.decomposeRows_add, ih]
 
+/-- `P.decomposeColumns 0 v = 0`, derived from `decomposeColumns_add`. -/
+private lemma decomposeColumns_zero (v : Fin κ₀ → Fin 2) : P₀.decomposeColumns 0 v = 0 := by
+  have h := P₀.decomposeColumns_add 0 0 v
+  rw [add_zero] at h
+  have h2 :
+      P₀.decomposeColumns 0 v + P₀.decomposeColumns 0 v =
+        P₀.decomposeColumns 0 v + (0 : L₀) := by
+    rw [add_zero]; exact h.symm
+  exact add_left_cancel h2
+
+/-- `P.decomposeColumns` is additive over finite sums. -/
+lemma decomposeColumns_sum {ι : Type} [Fintype ι]
+    (f : ι → P₀.A) (v : Fin κ₀ → Fin 2) :
+    P₀.decomposeColumns (∑ i, f i) v = ∑ i, P₀.decomposeColumns (f i) v := by
+  classical
+  suffices h : ∀ s : Finset ι, P₀.decomposeColumns (∑ i ∈ s, f i) v
+      = ∑ i ∈ s, P₀.decomposeColumns (f i) v by
+    simpa using h Finset.univ
+  intro s
+  induction s using Finset.induction with
+  | empty => simp [decomposeColumns_zero P₀ v]
+  | @insert a s ha ih =>
+    rw [Finset.sum_insert ha, Finset.sum_insert ha, P₀.decomposeColumns_add, ih]
+
 /-- The basis coordinate of a packed evaluation recovers the small-field coefficient:
 `β.repr (t'(w)) u = t(u, w)`, where `t' = packMLE β t`. -/
 lemma packMLE_repr_eval (ℓ ℓ' : ℕ) [NeZero ℓ] [NeZero ℓ'] (h_l : ℓ = ℓ' + κ₀)
