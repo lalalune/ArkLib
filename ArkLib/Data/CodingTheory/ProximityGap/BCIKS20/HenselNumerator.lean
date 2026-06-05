@@ -1967,6 +1967,34 @@ noncomputable def βHenselTrunc (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypo
   PowerSeries.mk (fun j =>
     if j ≤ t then PowerSeries.coeff j (βHenselAssembled H x₀ R hHyp) else 0)
 
+/-- Coefficients of the `t`-truncation agree with the assembled series at
+orders `≤ t`. -/
+theorem coeff_βHenselTrunc_of_le (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) {t j : ℕ} (hj : j ≤ t) :
+    PowerSeries.coeff j (βHenselTrunc H x₀ R hHyp t)
+      = PowerSeries.coeff j (βHenselAssembled H x₀ R hHyp) := by
+  simp only [βHenselTrunc, PowerSeries.coeff_mk, if_pos hj]
+
+/-- Coefficients of the `t`-truncation agree with the assembled series at
+orders `< t + 1`. -/
+theorem coeff_βHenselTrunc_of_lt_succ (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) {t j : ℕ} (hj : j < t + 1) :
+    PowerSeries.coeff j (βHenselTrunc H x₀ R hHyp t)
+      = PowerSeries.coeff j (βHenselAssembled H x₀ R hHyp) :=
+  coeff_βHenselTrunc_of_le H x₀ R hHyp (Nat.lt_succ_iff.mp hj)
+
+/-- Coefficients of the `t`-truncation vanish above order `t`. -/
+theorem coeff_βHenselTrunc_of_gt (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) {t j : ℕ} (hj : t < j) :
+    PowerSeries.coeff j (βHenselTrunc H x₀ R hHyp t) = 0 := by
+  simp only [βHenselTrunc, PowerSeries.coeff_mk, if_neg (Nat.not_le_of_gt hj)]
+
+/-- The first omitted coefficient of the `t`-truncation is zero. -/
+theorem coeff_βHenselTrunc_succ (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) :
+    PowerSeries.coeff (t + 1) (βHenselTrunc H x₀ R hHyp t) = 0 :=
+  coeff_βHenselTrunc_of_gt H x₀ R hHyp (Nat.lt_succ_self t)
+
 /-- **The defect reduction (PROVEN — the first slice of the per-order match).**
 By the series-coefficient Newton linearization (`HenselSeriesCoeff.coeff_eval_sub_at`)
 against the `t`-truncation, the order-`(t+1)` coefficient of `eval (βHenselAssembled) Q`
@@ -1988,12 +2016,12 @@ theorem coeff_succ_eval_defect_reduction (x₀ : F) (R : F[X][X][Y])
       PowerSeries.coeff j (βHenselAssembled H x₀ R hHyp)
         = PowerSeries.coeff j (βHenselTrunc H x₀ R hHyp t) := by
     intro j hj
-    simp only [βHenselTrunc, PowerSeries.coeff_mk, if_pos (Nat.lt_succ_iff.mp hj)]
+    rw [coeff_βHenselTrunc_of_lt_succ H x₀ R hHyp hj]
   have hsub := ProximityPrize.HenselSeriesCoeff.coeff_eval_sub_at (Q := Q x₀ R H)
     (γ₁ := βHenselAssembled H x₀ R hHyp) (γ₂ := βHenselTrunc H x₀ R hHyp t)
     (Nat.succ_pos t) hagree
   have htrunc_top : PowerSeries.coeff (t + 1) (βHenselTrunc H x₀ R hHyp t) = 0 := by
-    simp only [βHenselTrunc, PowerSeries.coeff_mk, if_neg (Nat.not_succ_le_self t)]
+    exact coeff_βHenselTrunc_succ H x₀ R hHyp t
   have hderiv : Polynomial.eval (PowerSeries.constantCoeff (βHenselAssembled H x₀ R hHyp))
       (Polynomial.derivative (ProximityPrize.HenselSeriesCoeff.Q₀ (Q x₀ R H)))
         = ClaimA2.ζ R x₀ H := by
