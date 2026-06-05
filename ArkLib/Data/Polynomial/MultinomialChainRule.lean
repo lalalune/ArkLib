@@ -32,8 +32,7 @@ open Finset
 
 /-- **Injective reindexing of `Nat.multinomial`.** The multinomial is invariant under an
 injective relabeling of the index set (sum and factorial-product both transport). -/
-theorem multinomial_map {α β : Type*} [DecidableEq α] [DecidableEq β]
-    (s : Finset α) (e : α ↪ β) (f : β → ℕ) :
+theorem multinomial_map {α β : Type*} (s : Finset α) (e : α ↪ β) (f : β → ℕ) :
     Nat.multinomial (s.map e) f = Nat.multinomial s (f ∘ e) := by
   unfold Nat.multinomial
   rw [Finset.sum_map, Finset.prod_map]
