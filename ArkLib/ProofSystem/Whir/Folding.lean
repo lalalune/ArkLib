@@ -1307,6 +1307,81 @@ lemma folding_preserves_listdecoding_base_ne_subset
         ] < errStar C' 2 δ
   := hrev
 
+/-- Lemma 4.21 variant whose error bound is tied to a concrete
+`hasMutualCorrAgreement` instance, rather than an unconstrained `errStar` parameter. -/
+lemma folding_preserves_listdecoding_base_mca
+  [Fintype F] {S : Finset ι} {k m : ℕ} (hm : 1 ≤ m) {φ : ι ↪ F}
+  [Fintype ι] [DecidableEq ι] [Smooth φ] {δ : ℝ≥0}
+  {S_0 : Finset (indexPowT S φ 0)} {S_1 : Finset (indexPowT S φ 1)}
+  {φ_0 : (indexPowT S φ 0) ↪ F} {φ_1 : (indexPowT S φ 1) ↪ F}
+  [∀ i : ℕ, Fintype (indexPowT S φ i)] [∀ i : ℕ, DecidableEq (indexPowT S φ i)]
+  [Smooth φ_0] [Smooth φ_1] [Nonempty (indexPowT S φ 1)]
+  [hbd0 : ∀ {f : (indexPowT S φ 0) → F}, DecidableBlockDisagreement 0 k f S_0 φ_0]
+  [hbd1 : ∀ {f : (indexPowT S φ 1) → F}, DecidableBlockDisagreement 1 k f S_1 φ_1]
+  [∀ i : ℕ, Neg (indexPowT S φ i)]
+  {C : Set ((indexPowT S φ 0) → F)} (hcode : C = smoothCode φ_0 m)
+  (Gen' : ProximityGenerator (indexPowT S φ 1) F) [hℓ : Fintype Gen'.parℓ]
+  (hcode' : (Gen'.C : Set ((indexPowT S φ 1) → F)) = smoothCode φ_1 (m-1))
+  (BStarV : ℝ) (errStarV : ℝ → ENNReal)
+  (hmca : hasMutualCorrAgreement Gen' BStarV errStarV)
+  (hsub : ∀ (f : (indexPowT S φ 0) → F) (α : F),
+      fold_k_set (Λᵣ(0, k, f, S_0, C, hcode, δ)) (fun _ : Fin 1 => α) hm
+        ⊆ Λᵣ(1, k, fold_k f (fun _ : Fin 1 => α) hm, S_1,
+              (Gen'.C : Set ((indexPowT S φ 1) → F)), hcode', δ))
+  (fStack : ((indexPowT S φ 0) → F) → Gen'.parℓ → (indexPowT S φ 1) → F)
+  (hbridge : ∀ (f : (indexPowT S φ 0) → F),
+      Pr_{let α ←$ᵖ F}[
+          let listBlock : Set ((indexPowT S φ 0) → F) := Λᵣ(0, k, f, S_0, C, hcode, δ)
+          let vec_α : Fin 1 → F := (fun _ : Fin 1 => α)
+          let foldSet := fold_k_set listBlock vec_α hm
+          let fold := fold_k f vec_α hm
+          let listBlock' : Set ((indexPowT S φ 1) → F) :=
+            Λᵣ(1, k, fold, S_1, (Gen'.C : Set ((indexPowT S φ 1) → F)), hcode', δ)
+          ¬ (listBlock' ⊆ foldSet)
+        ]
+        ≤ (haveI := Gen'.Gen_nonempty;
+            Pr_{let r ←$ᵖ Gen'.Gen}[
+              MutualCorrAgreement.proximityCondition (fStack f) δ r Gen'.C ])) :
+    ∀ (f : (indexPowT S φ 0) → F) (_hδ : 0 < δ ∧ δ < 1 - BStarV),
+      Pr_{let α ←$ᵖ F}[
+          let listBlock : Set ((indexPowT S φ 0) → F) := Λᵣ(0, k, f, S_0, C, hcode, δ)
+          let vec_α : Fin 1 → F := (fun _ : Fin 1 => α)
+          let foldSet := fold_k_set listBlock vec_α hm
+          let fold := fold_k f vec_α hm
+          let listBlock' : Set ((indexPowT S φ 1) → F) :=
+            Λᵣ(1, k, fold, S_1, (Gen'.C : Set ((indexPowT S φ 1) → F)), hcode', δ)
+          foldSet ≠ listBlock'
+        ] ≤ errStarV δ
+  := by
+    intro f hδ
+    let D : PMF F := PMF.uniformOfFintype F
+    have hmono :
+        Pr_{let α ← D}[
+          let listBlock : Set ((indexPowT S φ 0) → F) := Λᵣ(0, k, f, S_0, C, hcode, δ)
+          let vec_α : Fin 1 → F := (fun _ : Fin 1 => α)
+          let foldSet := fold_k_set listBlock vec_α hm
+          let fold := fold_k f vec_α hm
+          let listBlock' : Set ((indexPowT S φ 1) → F) :=
+            Λᵣ(1, k, fold, S_1, (Gen'.C : Set ((indexPowT S φ 1) → F)), hcode', δ)
+          foldSet ≠ listBlock'
+        ] ≤
+        Pr_{let α ← D}[
+          let listBlock : Set ((indexPowT S φ 0) → F) := Λᵣ(0, k, f, S_0, C, hcode, δ)
+          let vec_α : Fin 1 → F := (fun _ : Fin 1 => α)
+          let foldSet := fold_k_set listBlock vec_α hm
+          let fold := fold_k f vec_α hm
+          let listBlock' : Set ((indexPowT S φ 1) → F) :=
+            Λᵣ(1, k, fold, S_1, (Gen'.C : Set ((indexPowT S φ 1) → F)), hcode', δ)
+          ¬ (listBlock' ⊆ foldSet)
+        ] := by
+      refine Pr_le_Pr_of_implies D _ _ ?_
+      intro α hne
+      dsimp only
+      dsimp only at hne
+      intro hsub'
+      exact hne (Set.Subset.antisymm (hsub f α) hsub')
+    exact le_trans hmono (le_trans (hbridge f) (hmca (fStack f) δ hδ))
+
 
 end FoldingLemmas
 
