@@ -218,4 +218,31 @@ theorem hammingBallVolume_ge_top_term (q : ℕ) (δ : ℝ) (n : ℕ) :
     (fun i _ => Nat.zero_le _) ?_
   exact Finset.self_mem_range_succ _
 
+/-- **Single-term lower bound on the Hamming-ball volume.**
+
+Every summand whose radius index lies inside the ball gives a lower bound on
+`Vol_q(δ,n)`.  This is the flexible form used by entropy-volume arguments that
+choose an index near `δn` and then apply a binomial/Stirling estimate to that
+single summand. -/
+theorem hammingBallVolume_ge_term_of_le_floor
+    (q : ℕ) (δ : ℝ) (n i : ℕ) (hi : i ≤ ⌊δ * n⌋₊) :
+    Nat.choose n i * (q - 1) ^ i ≤ hammingBallVolume q δ n := by
+  classical
+  rw [hammingBallVolume]
+  refine Finset.single_le_sum (f := fun j => Nat.choose n j * (q - 1) ^ j)
+    (fun j _ => Nat.zero_le _) ?_
+  exact Finset.mem_range.mpr (Nat.lt_succ_of_le hi)
+
+/-- Real-valued form of `hammingBallVolume_ge_term_of_le_floor`. -/
+theorem hammingBallVolume_real_ge_term_of_le_floor
+    (q : ℕ) (δ : ℝ) (n i : ℕ) (hi : i ≤ ⌊δ * n⌋₊) :
+    ((Nat.choose n i * (q - 1) ^ i : ℕ) : ℝ) ≤ (hammingBallVolume q δ n : ℝ) := by
+  exact_mod_cast hammingBallVolume_ge_term_of_le_floor q δ n i hi
+
+/-- Real-valued form of the top-term lower bound. -/
+theorem hammingBallVolume_real_ge_top_term (q : ℕ) (δ : ℝ) (n : ℕ) :
+    ((Nat.choose n (⌊δ * n⌋₊) * (q - 1) ^ (⌊δ * n⌋₊) : ℕ) : ℝ)
+      ≤ (hammingBallVolume q δ n : ℝ) := by
+  exact hammingBallVolume_real_ge_term_of_le_floor q δ n (⌊δ * n⌋₊) le_rfl
+
 end CodingTheory
