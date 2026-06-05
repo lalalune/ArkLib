@@ -5,6 +5,7 @@ Authors: Alexander Hicks
 -/
 
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.UniqueDecoding
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.CodingTheory.Basic.Entropy
 import ArkLib.Data.CodingTheory.HammingBallVolume
@@ -178,6 +179,52 @@ section ReedSolomon
 
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
+
+/-- **ABF26 Theorem 4.9 Item 1 [BCIKS20 Theorem 1.4].** Reed-Solomon CA bound in the
+**unique-decoding regime**. Let `C := RS[F, L, k]` with rate `ρ := k/n` and `n := |L|`.
+For every proximity radius `δ ≤ (1 - ρ)/2` (the relative unique-decoding radius):
+
+  `ε_ca(C, δ) ≤ n / |F|` .
+
+Unlike T4.9 Item 2 (BCHKS25, the `δ_min/3`-to-Johnson regime) and the Johnson / capacity
+regime results below, **this is NOT an external admit**: it is the `epsCA`-form repackaging
+of the in-tree, machine-verified BCIKS20 unique-decoding correlated-agreement arc.
+
+**Derivation (fully in-tree).** Three proven facts compose:
+
+1. `RS_correlatedAgreement_affineLines_uniqueDecodingRegime` (BCIKS20/AffineLines,
+   sorry-free) proves the predicate
+   `δ_ε_correlatedAgreementAffineLines (RS C) δ (errorBound δ k domain)` for
+   `δ ≤ relativeUniqueDecodingRadius`.
+2. `errorBound_eq_n_div_q_of_le_relUDR` collapses `errorBound δ k domain = n/|F|` in that
+   regime.
+3. `δ_ε_correlatedAgreementAffineLines_iff_epsCA_le` (Errors.lean) bridges the predicate
+   form to the numeric `epsCA C δ δ ≤ (ε : ℝ≥0)` form.
+
+The hypothesis `δ ≤ (1 - ρ)/2` is converted to `δ ≤ relativeUniqueDecodingRadius` via
+`relativeUniqueDecodingRadius_RS_eq'` (which needs `k ≤ n`, the only nondegeneracy
+hypotheses below). No cross-paper bridge is invented; the bound is `n/|F|` exactly. -/
+theorem rs_epsCA_uniqueDecodingRegime_bciks20
+    (domain : ι ↪ F) (k : ℕ) [NeZero k] (δ : ℝ≥0)
+    (h_k_le : k ≤ Fintype.card ι)
+    (hδ : (δ : ℝ≥0) ≤ (1 - (k : ℝ≥0) / Fintype.card ι) / 2) :
+    epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F))) δ δ ≤
+      ((((Fintype.card ι : ℝ≥0) / (Fintype.card F : ℝ≥0)) : ℝ≥0) : ENNReal) := by
+  -- Convert the `(1-ρ)/2` regime hypothesis to the relative-unique-decoding-radius form.
+  have hδ_udr :
+      δ ≤ Code.relativeUniqueDecodingRadius (ι := ι) (F := F)
+        (C := ReedSolomon.code domain k) := by
+    rwa [ReedSolomon.relativeUniqueDecodingRadius_RS_eq' (α := domain) (n := k) h_k_le]
+  -- The proven BCIKS20 UDR affine-lines correlated-agreement predicate, at error `errorBound`.
+  have h_pred := ProximityGap.RS_correlatedAgreement_affineLines_uniqueDecodingRegime
+    (deg := k) (domain := domain) (δ := δ) hδ_udr
+  -- In the UDR the native error bound collapses to `n / |F|`.
+  rw [ProximityGap.errorBound_eq_n_div_q_of_le_relUDR
+    (deg := k) (domain := domain) (δ := δ) hδ_udr] at h_pred
+  -- Bridge the predicate form to the numeric `epsCA ≤ ε` form.
+  exact (δ_ε_correlatedAgreementAffineLines_iff_epsCA_le
+    (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F)))
+    δ ((Fintype.card ι : ℝ≥0) / (Fintype.card F : ℝ≥0))).mp h_pred
 
 /-- **ABF26 Theorem 4.9 Item 2 [BCHKS25 Theorem 1.3].** Reed-Solomon CA bound in the
 `δ_min/3`-to-Johnson regime. Let `C := RS[F, L, k]` with rate `ρ`. For
