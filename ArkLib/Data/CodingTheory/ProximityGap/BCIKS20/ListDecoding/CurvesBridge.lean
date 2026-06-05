@@ -967,6 +967,56 @@ theorem correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_cou
     rw [h_u_eq]
     exact hBoundaryCard (u 0) (u 1) hδeq hcard_close
 
+/-- Strict square-root-radius degree-one correlated-agreement capstone in the
+native §5 affine-line language, with Claim-5.11 counting supplied in the
+complement-threshold arithmetic shape. Unlike the closed-boundary wrapper, this
+version needs no boundary obligation because the global hypothesis is already
+`δ < 1 - sqrtRate`. -/
+theorem correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_counting_canonical_coeff_strict
+    {m k : ℕ} (hk : 0 < k) {ωs : Fin n ↪ F}
+    [DecidableEq (RatFunc F)]
+    (δ : ℚ≥0)
+    (hδ : (δ : ℝ≥0) < 1 - ReedSolomon.sqrtRate (k + 1) ωs)
+    (hDx : ((gsDpg n m k : ℕ) : ℝ) < D_X ((k + 1) / (n : ℚ)) n m)
+    (hYZ : ((gsDpg n m k + gsZCap n m k : ℕ) : ℝ) ≤
+      n * (m + 1 / (2 : ℚ)) ^ 3 / (6 * Real.sqrt ((k + 1) / n)))
+    (hcounting : ∀ (u₀ u₁ : Fin n → F) {Q : F[Z][X][Y]}
+      (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁),
+      ∃ (x₀ : F) (D : ℕ),
+        (coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁).card - 1 ≤
+          (2 * k + 1)
+            * (Polynomial.Bivariate.natDegreeY <| H k (δ : ℚ) x₀ h_gs)
+            * (Polynomial.Bivariate.natDegreeY <| R k (δ : ℚ) x₀ h_gs)
+            * D ∧
+        (2 * k + 1)
+          * (Polynomial.Bivariate.natDegreeY <| H k (δ : ℚ) x₀ h_gs)
+          * (Polynomial.Bivariate.natDegreeY <| R k (δ : ℚ) x₀ h_gs)
+          * D ≤ #(coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁) ∧
+        ⌈(δ : ℚ) * (n : ℚ)⌉₊ *
+            #(coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁) <
+          (n - k) *
+            (#(coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁) -
+              (2 * k + 1)
+                * (Polynomial.Bivariate.natDegreeY <| H k (δ : ℚ) x₀ h_gs)
+                * (Polynomial.Bivariate.natDegreeY <| R k (δ : ℚ) x₀ h_gs)
+                * D))
+    (hunique : ∀ (u₀ u₁ : Fin n → F) {Q : F[Z][X][Y]}
+      (_h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) (P : F → Polynomial F),
+      (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+        (P z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P z).eval ∘ ωs) ≤ (δ : ℚ)) →
+      ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+        P z = PzFamily (F := F) (n := n) (δ : ℚ) u₀ u₁ ωs k z) :
+    δ_ε_correlatedAgreementCurves (k := 1) (A := F) (F := F) (ι := Fin n)
+      (C := ReedSolomon.code ωs (k + 1)) (δ := (δ : ℝ≥0))
+      (ε := errorBound (δ : ℝ≥0) (k + 1) ωs) := by
+  classical
+  refine correlatedAgreement_affine_curves_of_strict_canonical_coeff_polys
+    (k := 1) (deg := k + 1) (domain := ωs) (δ := (δ : ℝ≥0)) hδ ?_
+  intro _hk u hprob hJ
+  exact section5_strict_canonical_coeff_polys_for_RS_goodCoeffsCurve_finMapTwoWords_of_natCeil_complement_counting
+    (F := F) (n := n) (m := m) (k := k) hk (ωs := ωs) δ hDx hYZ hcounting hunique
+    u hprob hJ hδ
+
 /-- Strict Johnson canonical-evaluation supplier for the §6 curve front doors,
 specialized to §5 affine lines represented as `Code.finMapTwoWords`.
 
