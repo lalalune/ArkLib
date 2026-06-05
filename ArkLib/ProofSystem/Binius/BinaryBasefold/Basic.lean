@@ -1265,4 +1265,11 @@ end SumcheckContextIncluded_Relations
 end SecurityRelations
 end OracleReductionComponents
 
+-- wave6-commitfix: confirm the snoc_oracle commit-branch restatement did not taint or weaken
+-- the existing (proven, clean-axiom) relay lemmas or the snoc consumer.
+#print axioms take_snoc_oracle_eq_oStmtIn
+#print axioms nonDoomedFoldingProp_relay_preserved
+#print axioms foldingBadEventAtBlock_relay_preserved
+#print axioms badEventExistsProp_relay_preserved
+
 end Binius.BinaryBasefold

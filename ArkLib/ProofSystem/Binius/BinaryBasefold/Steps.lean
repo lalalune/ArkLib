@@ -749,8 +749,23 @@ def commitKState (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i) :
     intro kState_next
     fin_cases m
     simpa [commitKStateProp] using kState_next.1
-  toFun_full := fun (stmtIn, oStmtIn) tr witOut=> by
-    sorry
+  toFun_full := fun (stmtIn, oStmtIn) tr witOut => by
+    intro _
+    -- `commitKStateProp 1` is a conjunction of two `masterKStateProp`s at the COMMIT round, both
+    -- evaluated at an interior oracle index (`i.castSucc.val = i.val < ℓ`, `i.succ.val = i+1 < ℓ`).
+    -- At an interior index the bad-event disjunct of `masterKStateProp` is UNCONDITIONALLY True via
+    -- `badEventExistsProp_of_lt` — for ANY oracle. Hence both conjuncts hold WITHOUT needing
+    -- `tr.messages ⟨0,_⟩ = witOut.f` (the old obstruction (B), which only bit the
+    -- oracleWitnessConsistency disjunct, is sidestepped by taking the bad-event disjunct).
+    have h_castSucc_lt : i.castSucc.val < ℓ := by simp only [Fin.coe_castSucc]; exact i.isLt
+    have h_succ_lt : i.succ.val < ℓ := by have := hCR.2; simp only [Fin.val_succ]; omega
+    simp only [commitKStateProp, getCommitProverFinalOutput, masterKStateProp]
+    refine ⟨⟨trivial, Or.inl ?_⟩, ⟨trivial, Or.inl ?_⟩⟩
+    · exact badEventExistsProp_of_lt 𝔽q β (stmtIdx := i.castSucc) (oracleIdx := i.castSucc)
+        (oStmt := oStmtIn) (challenges := _) (h_lt := h_castSucc_lt) (h_eq := rfl)
+    · exact badEventExistsProp_of_lt 𝔽q β (stmtIdx := i.succ) (oracleIdx := i.succ)
+        (oStmt := snoc_oracle 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) oStmtIn witOut.f)
+        (challenges := _) (h_lt := h_succ_lt) (h_eq := rfl)
 
 /-- RBR knowledge soundness for a single round oracle verifier -/
 theorem commitOracleVerifier_rbrKnowledgeSoundness (i : Fin ℓ)
@@ -767,6 +782,9 @@ theorem commitOracleVerifier_rbrKnowledgeSoundness (i : Fin ℓ)
   use commitKState (mp:=mp) 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hCR
   intro stmtIn witIn prover j
   exact absurd j.2 (by simp [pSpecCommit])
+
+#print axioms commitKState
+#print axioms commitOracleVerifier_rbrKnowledgeSoundness
 
 end CommitStep
 
