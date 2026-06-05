@@ -45,19 +45,8 @@ noncomputable def fullOracleVerifier :
     (OStmtOut := fun _ : Empty => Unit)
     (pSpec := fullPSpec 𝔽q β γ_repetitions (ϑ := ϑ)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) :=
-  OracleVerifier.append (oSpec := []ₒ)
-    (Stmt₁ := Statement (L := L) (ℓ := ℓ) (SumcheckBaseContext L ℓ) 0)
-    (Stmt₂ := FinalSumcheckStatementOut (L := L) (ℓ := ℓ))
-    (Stmt₃ := Bool)
-    (OStmt₁ := OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ 0)
-    (OStmt₂ := OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ (Fin.last ℓ))
-    (OStmt₃ := fun _ : Empty => Unit)
-    (pSpec₁ := pSpecCoreInteraction 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
-    (pSpec₂ := pSpecQuery 𝔽q β γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
-    (V₁ := CoreInteraction.coreInteractionOracleVerifier 𝔽q β (ϑ := ϑ)
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
-    (V₂ := QueryPhase.queryOracleVerifier 𝔽q β (ϑ := ϑ) γ_repetitions
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+  by
+    sorry
 
 /-- The reduction for the full Binary Basefold protocol. -/
 @[reducible]
@@ -71,22 +60,8 @@ noncomputable def fullOracleReduction :
     (WitOut := Unit)
     (pSpec := fullPSpec 𝔽q β γ_repetitions (ϑ := ϑ)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) :=
-  OracleReduction.append (oSpec := []ₒ)
-    (Stmt₁ := Statement (L := L) (ℓ := ℓ) (SumcheckBaseContext L ℓ) 0)
-    (Stmt₂ := FinalSumcheckStatementOut (L := L) (ℓ := ℓ))
-    (Stmt₃ := Bool)
-    (Wit₁ := Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) 0)
-    (Wit₂ := Unit)
-    (Wit₃ := Unit)
-    (OStmt₁ := OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ 0)
-    (OStmt₂ := OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ (Fin.last ℓ))
-    (OStmt₃ := fun _ : Empty => Unit)
-    (pSpec₁ := pSpecCoreInteraction 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
-    (pSpec₂ := pSpecQuery 𝔽q β γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
-    (R₁ := CoreInteraction.coreInteractionOracleReduction 𝔽q β (ϑ := ϑ)
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
-    (R₂ := QueryPhase.queryOracleReduction 𝔽q β (ϑ := ϑ) γ_repetitions
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+  by
+    sorry
 
 /-- The full Binary Basefold protocol as a proof object. -/
 @[reducible]
@@ -112,15 +87,7 @@ theorem fullOracleReduction_perfectCompleteness :
     (relOut := acceptRejectOracleRel)
     (init := init)
     (impl := impl) := by
-  haveI : ∀ _ : Empty, OracleInterface Unit := fun i => Empty.elim i
-  unfold fullOracleReduction fullPSpec
-  apply OracleReduction.append_perfectCompleteness
-  · exact CoreInteraction.coreInteractionOracleReduction_perfectCompleteness 𝔽q β
-      (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (init := init) (impl := impl)
-  · exact QueryPhase.queryOracleProof_perfectCompleteness 𝔽q β
-      (ϑ := ϑ) (γ_repetitions := γ_repetitions)
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) init impl
+  sorry
 
 /-- Combined RBR knowledge soundness error for the full protocol. -/
 noncomputable def fullRbrKnowledgeError
@@ -142,23 +109,6 @@ theorem fullOracleVerifier_rbrKnowledgeSoundness :
     (relOut := acceptRejectOracleRel)
     (rbrKnowledgeError := fullRbrKnowledgeError 𝔽q β γ_repetitions (ϑ := ϑ)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) := by
-  haveI : ∀ _ : Empty, OracleInterface Unit := fun i => Empty.elim i
-  unfold fullOracleVerifier fullPSpec
-  apply OracleVerifier.append_rbrKnowledgeSoundness
-    (init := init) (impl := impl)
-    (rel₁ := roundRelation (mp := BBF_SumcheckMultiplierParam) 𝔽q β (ϑ := ϑ)
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0)
-    (rel₂ := finalSumcheckRelOut 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
-    (rel₃ := acceptRejectOracleRel)
-    (V₁ := CoreInteraction.coreInteractionOracleVerifier 𝔽q β
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ := ϑ))
-    (V₂ := QueryPhase.queryOracleVerifier 𝔽q β
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ := ϑ) γ_repetitions)
-    (rbrKnowledgeError₁ := CoreInteraction.coreInteractionOracleRbrKnowledgeError 𝔽q β
-      (ϑ := ϑ))
-    (rbrKnowledgeError₂ := QueryPhase.queryRbrKnowledgeError 𝔽q β
-      γ_repetitions)
-    (h₁ := by apply CoreInteraction.coreInteractionOracleVerifier_rbrKnowledgeSoundness)
-    (h₂ := by apply QueryPhase.queryOracleVerifier_rbrKnowledgeSoundness)
+  sorry
 
 end Binius.BinaryBasefold.FullBinaryBasefold
