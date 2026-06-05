@@ -327,10 +327,10 @@ lemma or_by_split_lowBits {n m n1 m1 bn bm : ℕ} (h_bn : bn < 2) (h_bm : bm < 2
 
 lemma sum_eq_xor_plus_twice_and (n : Nat) : ∀ m : ℕ, n + m = (n ^^^ m) + 2 * (n &&& m) := by
   induction n using Nat.binaryRec with
-  | z =>
+  | zero =>
     intro m
     rw [zero_add, Nat.zero_and, mul_zero, add_zero, Nat.zero_xor]
-  | f bn n2 ih =>
+  | bit bn n2 ih =>
     intro m
     let resDiv2M := Nat.boddDiv2 m
     let bm := resDiv2M.fst

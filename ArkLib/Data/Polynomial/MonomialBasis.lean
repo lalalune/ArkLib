@@ -7,6 +7,7 @@ Authors: Chung Thai Nguyen, Quang Dao
 import CompPoly.Data.MvPolynomial.Notation
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Order.Star.Basic
+import Mathlib.LinearAlgebra.Basis.Basic
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.Order.CompletePartialOrder
