@@ -115,7 +115,7 @@ lemma heavyCoords_card_mul_le {α β : Type*} [Fintype α] [DecidableEq α]
 /-- Select exactly `r` elements from a finite set once its cardinality is large
 enough.  Final selection step after double counting has produced enough good
 coordinates.  Abstract reconstruction of `Agreement.exists_subset_card_eq_of_le_card`. -/
-lemma exists_subset_card_eq_of_le_card {α : Type*} [DecidableEq α]
+lemma exists_subset_card_eq_of_le_card {α : Type*}
     {S : Finset α} {r : ℕ} (hcard : r ≤ S.card) :
     ∃ T : Finset α, T ⊆ S ∧ T.card = r :=
   Finset.exists_subset_card_eq hcard
@@ -197,8 +197,8 @@ side conditions made explicit. The only non-derived input is `hbridge`, which is
 the definitional fact proven (under the real definitions) by
 `Agreement.nonmatching_coords_filter_card_le_matching_set_at_x_card`. -/
 theorem exists_points_with_large_matching_subset_abstract
-    {α β : Type*} [Fintype α] [DecidableEq α]
-    {S : Finset β} {nonmatching : β → Finset α} {matchSet : α → Finset α}
+    {α β γ : Type*} [Fintype α] [DecidableEq α]
+    {S : Finset β} {nonmatching : β → Finset α} {matchSet : α → Finset γ}
     {E t k threshold : ℕ}
     (hbad : ∀ z ∈ S, (nonmatching z).card ≤ E)
     (hthreshold : threshold + t ≤ S.card)
@@ -223,9 +223,9 @@ written with `>` and the exact published threshold `(2k+1)·d_H·d_R·D`, matchi
 `Agreement.exists_points_with_large_matching_subset` character for character
 modulo the explicit side conditions. -/
 theorem exists_points_with_large_matching_subset_fin
-    {n : ℕ} {β : Type*}
+    {n : ℕ} {β γ : Type*}
     {S : Finset β} {nonmatching : β → Finset (Fin n)}
-    {matchSet : Fin n → Finset (Fin n)}
+    {matchSet : Fin n → Finset γ}
     {E t k dH dR D : ℕ}
     (hbad : ∀ z ∈ S, (nonmatching z).card ≤ E)
     (hthreshold : (2 * k + 1) * dH * dR * D + t ≤ S.card)
@@ -254,9 +254,9 @@ slack parameter specialized to `#S - threshold`.  This is the arithmetic shape
 used by the downstream BCIKS20 wrapper once the close-parameter largeness
 hypothesis is available separately. -/
 theorem exists_points_with_large_matching_subset_fin_complement
-    {n : ℕ} {β : Type*}
+    {n : ℕ} {β γ : Type*}
     {S : Finset β} {nonmatching : β → Finset (Fin n)}
-    {matchSet : Fin n → Finset (Fin n)}
+    {matchSet : Fin n → Finset γ}
     {E k dH dR D : ℕ}
     (hthreshold : (2 * k + 1) * dH * dR * D ≤ S.card)
     (hbad : ∀ z ∈ S, (nonmatching z).card ≤ E)
