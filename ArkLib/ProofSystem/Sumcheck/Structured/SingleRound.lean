@@ -105,6 +105,35 @@ def getSumcheckRoundPoly {d : ℕ} (i : Fin ℓ) (h : ↥L⦃≤ d⦄[X Fin (ℓ
     exact h_deg_le_d
   ⟩
 
+/-- **Round-univariate evaluation as a survivor-cube sum (last-variable / `snoc` form).** Evaluating
+the prover's round univariate `getSumcheckRoundPoly ℓ D i h` at any point `r` equals the sum, over
+the next round's survivor cube `(D.drop (i.castSucc+1)).cube`, of the full round polynomial `H = h`
+with the **last** surviving variable fixed to `r` (via `Fin.snoc`). Proven from the marginal identity
+`RingSwitching.roundPoly_eval_eq_sum_snoc` (Prelude). `curH` is `h.val` transported across
+`getSumcheckRoundPoly`'s internal index equality `ℓ-i.castSucc = (ℓ-i.castSucc-1)+1`, supplied via a
+`HEq`. This is the degree-generic generalisation of `RingSwitching`'s boolDomain-specialised
+`getSumcheckRoundPoly_eval_eq_sum_snoc`. -/
+theorem getSumcheckRoundPoly_eval_eq_sum_snoc {d : ℕ} (i : Fin ℓ)
+    (h : ↥L⦃≤ d⦄[X Fin (ℓ - ↑i.castSucc)]) (r : L)
+    (curH : L[X Fin ((ℓ - ↑i.castSucc - 1) + 1)]) (hcurH : HEq curH h.val) :
+    (getSumcheckRoundPoly ℓ D (i := i) h).val.eval r
+      = ∑ x ∈ (D.drop (↑i.castSucc + 1)).cube,
+          MvPolynomial.eval
+            (Fin.snoc (Fin.append x (fun j => j.elim0) ∘ Fin.cast (by omega)) r) curH := by
+  unfold getSumcheckRoundPoly
+  dsimp only
+  -- Marginal identity (last-variable form): evaluating the survivor-sum of partial evaluations at
+  -- `r` equals the survivor-sum of `curH_cast` with the last variable fixed to `r` (`Fin.snoc`).
+  rw [Polynomial.eval_finset_sum]
+  refine Finset.sum_congr rfl fun x _ => ?_
+  rw [← eval_eq_eval_mv_eval_finSuccEquivNth, Fin.insertNth_last']
+  -- Reconcile `getSumcheckRoundPoly`'s internal `curH_cast` (an `Eq.mpr _ h.val`, `HEq` to `h.val`)
+  -- with the supplied `curH` (also `HEq` to `h.val`).
+  congr 1
+  apply eq_of_heq
+  refine HEq.trans ?_ hcurH.symm
+  exact cast_heq _ _
+
 end RoundPoly
 
 section ProtocolSpec
