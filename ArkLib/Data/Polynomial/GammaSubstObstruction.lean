@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 import Mathlib.RingTheory.PowerSeries.Substitution
 import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.Algebra.Polynomial.Taylor
+import ArkLib.Data.Polynomial.PowerSeriesComposition
 
 /-!
 # The γ-substitution obstruction (BCIKS20 App. A.4 — P2 frontier)
@@ -120,5 +121,25 @@ theorem coeff_aeval_shift {R : Type*} [CommRing R]
       ∑ i ∈ Finset.range ((Polynomial.taylor r P).natDegree + 1),
         (Polynomial.taylor r P).coeff i * PowerSeries.coeff n (γ ^ i) := by
   rw [← aeval_taylor_powerSeries, coeff_aeval_powerSeries]
+
+/-- **Shifted `aeval` coefficient in partition/multinomial form.** This is the
+`HasSubst`-free composition expansion from `coeff_aeval_shift` with each power coefficient
+expanded by `ArkLib.PowerSeriesComposition.coeff_pow_eq_partitionSum`.
+
+It is the reusable bridge from the polynomial-evaluation picture of the recentered
+`R(X, γ, Z)` argument to the partition-indexed Faà-di-Bruno sums consumed by the
+BCIKS20 Appendix A.4 `B_coeff` / `partitionProd` recurrence. -/
+theorem coeff_aeval_shift_partitionSum {R : Type*} [CommRing R]
+    (P : Polynomial R) (r : R) (γ : PowerSeries R) (n : ℕ) :
+    PowerSeries.coeff n (Polynomial.aeval (γ + PowerSeries.C r) P) =
+      ∑ i ∈ Finset.range ((Polynomial.taylor r P).natDegree + 1),
+        (Polynomial.taylor r P).coeff i *
+          ∑ m ∈ (Finset.finsuppAntidiag (Finset.range i) n).image
+                  (ArkLib.PowerSeriesComposition.valueMultiset (Finset.range i)),
+            (Multiset.countPerms m) •
+              ((m.map (fun j => PowerSeries.coeff j γ)).prod) := by
+  rw [coeff_aeval_shift]
+  refine Finset.sum_congr rfl fun i _ => ?_
+  rw [ArkLib.PowerSeriesComposition.coeff_pow_eq_partitionSum i n γ]
 
 end ProximityPrize

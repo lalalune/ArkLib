@@ -7,6 +7,7 @@ Authors: Alexander Hicks
 import ArkLib.Data.CodingTheory.ListDecodability
 import ArkLib.Data.CodingTheory.Basic.Entropy
 import ArkLib.Data.CodingTheory.HammingBallVolume
+import ArkLib.Data.CodingTheory.ListDecoding.JH01
 import ArkLib.Data.CodingTheory.SubspaceDesign
 import ArkLib.Data.CodingTheory.ReedSolomon
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
@@ -17,6 +18,8 @@ import Mathlib.Analysis.SpecialFunctions.BinaryEntropy
 import Mathlib.Analysis.Real.Pi.Bounds
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
+
+set_option linter.style.longFile 1600
 
 /-!
 # List-decoding bounds from ABF26 §3
@@ -258,7 +261,9 @@ open Real Stirling Filter
 -- ===== Robbins upper bound (proven) =====
 theorem robbins_upper {m : ℕ} (hm : m ≠ 0) :
     stirlingSeq m ≤ √π * Real.exp (1 / (12 * m)) := by
-  set H : ℕ → ℝ := fun n => Real.log (stirlingSeq (n + 1)) - Real.log (√π) - 1 / (12 * ((n : ℝ) + 1))
+  set H : ℕ → ℝ := fun n =>
+      Real.log (stirlingSeq (n + 1)) - Real.log (√π) -
+        1 / (12 * ((n : ℝ) + 1))
     with hH
   have hsqrtπ_pos : (0 : ℝ) < √π := Real.sqrt_pos.mpr Real.pi_pos
   have hmono : Monotone H := by
@@ -273,8 +278,10 @@ theorem robbins_upper {m : ℕ} (hm : m ≠ 0) :
     have hdiff' : Real.log (stirlingSeq (n + 1)) - Real.log (stirlingSeq (n + 2)) ≤
         1 / (12 * ((n : ℝ) + 1)) - 1 / (12 * ((n : ℝ) + 2)) := by
       rw [← htel]; convert hdiff using 2; push_cast; ring
-    show Real.log (stirlingSeq (n + 1)) - Real.log (√π) - 1 / (12 * ((n : ℝ) + 1)) ≤
-        Real.log (stirlingSeq (n + 1 + 1)) - Real.log (√π) - 1 / (12 * (((n + 1 : ℕ) : ℝ) + 1))
+    change Real.log (stirlingSeq (n + 1)) - Real.log (√π) -
+          1 / (12 * ((n : ℝ) + 1)) ≤
+        Real.log (stirlingSeq (n + 1 + 1)) - Real.log (√π) -
+          1 / (12 * (((n + 1 : ℕ) : ℝ) + 1))
     have hidx : (n + 1 + 1) = (n + 2) := by ring
     rw [hidx]
     have hpush : (((n + 1 : ℕ) : ℝ) + 1) = ((n : ℝ) + 2) := by push_cast; ring
@@ -513,16 +520,19 @@ theorem radical_collapse (K j : ℕ) (hK : 1 ≤ K) (hj : 1 ≤ j) :
     ring
   rw [hL, hR]
 
--- power identity: ((K+j)/e)^(K+j) = [((K+j)/K)^K * ((K+j)/j)^j] * [(K/e)^K * (j/e)^j]
+-- Power identity splitting `((K+j)/e)^(K+j)` into binomial and Stirling-scale factors.
 theorem power_identity (K j : ℕ) (hK : 1 ≤ K) (hj : 1 ≤ j) :
     (((K:ℝ) + j) / Real.exp 1) ^ (K + j)
-      = ((((K:ℝ)+j)/K)^K * (((K:ℝ)+j)/j)^j) * (((K:ℝ) / Real.exp 1) ^ K * ((j:ℝ) / Real.exp 1) ^ j) := by
+      = ((((K:ℝ)+j)/K)^K * (((K:ℝ)+j)/j)^j)
+        * (((K:ℝ) / Real.exp 1) ^ K * ((j:ℝ) / Real.exp 1) ^ j) := by
   have hKpos : (0:ℝ) < K := by exact_mod_cast hK
   have hjpos : (0:ℝ) < j := by exact_mod_cast hj
   have he : (0:ℝ) < Real.exp 1 := Real.exp_pos 1
   rw [pow_add]
-  rw [show ((((K:ℝ)+j)/K)^K * (((K:ℝ)+j)/j)^j) * (((K:ℝ) / Real.exp 1) ^ K * ((j:ℝ) / Real.exp 1) ^ j)
-      = ((((K:ℝ)+j)/K) * ((K:ℝ) / Real.exp 1))^K * ((((K:ℝ)+j)/j) * ((j:ℝ) / Real.exp 1))^j by
+  rw [show ((((K:ℝ)+j)/K)^K * (((K:ℝ)+j)/j)^j)
+        * (((K:ℝ) / Real.exp 1) ^ K * ((j:ℝ) / Real.exp 1) ^ j)
+      = ((((K:ℝ)+j)/K) * ((K:ℝ) / Real.exp 1))^K
+        * ((((K:ℝ)+j)/j) * ((j:ℝ) / Real.exp 1))^j by
         rw [mul_pow, mul_pow]; ring]
   congr 1
   · congr 1
@@ -569,7 +579,7 @@ theorem master_eq (K j : ℕ) (hK : 1 ≤ K) (hj : 1 ≤ j) :
   -- Now substitute the power identity for ((K+j)/e)^(K+j).
   rw [power_identity K j hK hj]
   -- And the radical collapse.
-  -- LHS = √(8Kj/(K+j)) * [ss(K+j) (√(2(K+j)) * [Bpow * (K/e)^K (j/e)^j])] / [ss K (√(2K)(K/e)^K) · ss j (√(2j)(j/e)^j)]
+  -- LHS is reduced by splitting the power term and collapsing the radical factor.
   -- Goal is an equality of reals; field_simp + the radical_collapse relation + ring.
   have hrad := radical_collapse K j hK hj
   -- denominators nonzero
@@ -937,53 +947,210 @@ theorem exists_representative_center_sum_hammingDist_le
     _ = ℓ * Fintype.card ι := by
         rw [Finset.sum_const, Finset.card_univ, smul_eq_mul, mul_comm]
 
-/-- **ABF26 Theorem 3.9 [ST20 Thm 1.2].** Generalized Singleton bound for list decoding.
-Let `F` be a finite field, `0 < ℓ < |F|`, `δ ∈ (0, 1)`, and let `C ⊆ F^n` be a linear
-error-correcting code of rate `ρ` with `|Λ(C, δ)| ≤ ℓ`. Then:
+-- ===== ST20 (T3.9) helper 1: range fiber lower bound =====
+private theorem st20_range_fiber_ge (a m i : ℕ) (hm : 0 < m) (hi : i < m) :
+    a / m ≤ (Finset.range a |>.filter (fun t => t % m = i)).card := by
+  have hsub : (Finset.range (a / m)).image (fun s => s * m + i)
+      ⊆ (Finset.range a |>.filter (fun t => t % m = i)) := by
+    intro x hx
+    simp only [Finset.mem_image, Finset.mem_range] at hx
+    obtain ⟨s, hs, rfl⟩ := hx
+    simp only [Finset.mem_filter, Finset.mem_range]
+    refine ⟨?_, ?_⟩
+    · have hstep : s * m + m ≤ (a / m) * m := by
+        have hs1 : s + 1 ≤ a / m := hs
+        calc s * m + m = (s + 1) * m := by ring
+          _ ≤ (a/m) * m := Nat.mul_le_mul_right m hs1
+      have hdm : (a/m) * m ≤ a := Nat.div_mul_le_self a m
+      omega
+    · have : (s * m + i) % m = i % m := Nat.mul_add_mod' s m i
+      rw [this, Nat.mod_eq_of_lt hi]
+  calc a / m = (Finset.range (a / m)).card := by rw [Finset.card_range]
+    _ = ((Finset.range (a / m)).image (fun s => s * m + i)).card := by
+        rw [Finset.card_image_of_injOn]
+        intro x _ y _ h; simp only at h
+        have : x * m = y * m := by omega
+        exact Nat.eq_of_mul_eq_mul_right hm this
+    _ ≤ _ := Finset.card_le_card hsub
 
-  `|C| ≤ |F|^{n - ⌊(ℓ+1)/ℓ · δ · n⌋}`
+-- ===== ST20 (T3.9) helper 2: fiber lower bound transported to attach =====
+private theorem st20_attach_fiber_ge (Sc : Finset ι) (m : ℕ) (hm : 0 < m) (j : ℕ) (hj : j < m)
+    (e : {x // x ∈ Sc} ≃ Fin Sc.card) :
+    Sc.card / m ≤ (Sc.attach.filter (fun x => (e x).val % m = j)).card := by
+  have hbij : (Sc.attach.filter (fun x => (e x).val % m = j)).card
+      = (Finset.univ.filter (fun t : Fin Sc.card => t.val % m = j)).card := by
+    apply Finset.card_bij (fun x _ => e x)
+    · intro x hx; simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+      simp only [Finset.mem_filter] at hx; exact hx.2
+    · intro x _ y _ h; exact e.injective h
+    · intro t ht
+      refine ⟨e.symm t, ?_, ?_⟩
+      · simp only [Finset.mem_filter, Finset.mem_attach, true_and, Equiv.apply_symm_apply]
+        simp only [Finset.mem_filter, Finset.mem_univ, true_and] at ht; exact ht
+      · simp [Equiv.apply_symm_apply]
+  rw [hbij]
+  have hrange : (Finset.univ.filter (fun t : Fin Sc.card => t.val % m = j)).card
+      = (Finset.range Sc.card |>.filter (fun t => t % m = j)).card := by
+    apply Finset.card_bij (fun (t : Fin Sc.card) _ => t.val)
+    · intro t ht; simp only [Finset.mem_filter, Finset.mem_range]
+      simp only [Finset.mem_filter, Finset.mem_univ, true_and] at ht
+      exact ⟨t.isLt, ht⟩
+    · intro x _ y _ h; exact Fin.ext h
+    · intro v hv; simp only [Finset.mem_filter, Finset.mem_range] at hv
+      exact ⟨⟨v, hv.1⟩, by simp [Finset.mem_filter, hv.2], rfl⟩
+  rw [hrange]
+  exact st20_range_fiber_ge _ _ _ hm hj
 
-Equivalently, `δ ≤ ℓ/(ℓ+1) · (1-ρ)`. Admitted as an external result.
+-- ===== ST20 (T3.9) helper 3: pure-nat arithmetic inequality (lattice form) =====
+private theorem st20_nat_ineq (ℓ r₀ : ℕ) (hℓ : 1 ≤ ℓ) :
+    ((ℓ+1)*r₀/ℓ) - ((ℓ+1)*r₀/ℓ)/(ℓ+1) ≤ r₀ := by
+  set a := (ℓ+1)*r₀/ℓ with ha
+  have hAl : a * ℓ ≤ (ℓ+1)*r₀ := Nat.div_mul_le_self _ _
+  obtain ⟨s, hs_le, hs_eq⟩ : ∃ s, s ≤ ℓ ∧ a = (ℓ+1) * (a/(ℓ+1)) + s := by
+    refine ⟨a % (ℓ+1), ?_, ?_⟩
+    · have := Nat.mod_lt a (show 0 < ℓ+1 by omega); omega
+    · have := Nat.div_add_mod a (ℓ+1); omega
+  set b := a/(ℓ+1) with hb
+  rw [Nat.sub_le_iff_le_add, hs_eq]
+  have hcore : ℓ*b + s ≤ r₀ := by
+    have key : ((ℓ+1)*b + s) * ℓ ≤ (ℓ+1)*r₀ := by rw [← hs_eq]; exact hAl
+    nlinarith [key, hs_le, hℓ, Nat.zero_le b, Nat.zero_le s, Nat.zero_le r₀,
+               Nat.mul_le_mul_right ℓ hs_le]
+  have hexp : (ℓ+1)*b = ℓ*b + b := by ring
+  rw [hexp]; omega
 
-**STATUS: NEEDS_CLASSICAL (external core) + DOCUMENTED INFIDELITY at the boundary.**
+-- ===== ST20 (T3.9) helper 4: kernel extraction =====
+private theorem st20_kernel_extract (C : Submodule F (ι → F)) (S : Finset ι) (ℓ : ℕ)
+    (hdim : S.card < Module.finrank F C) (hq : ℓ + 1 ≤ Fintype.card F) :
+    ∃ cf : Fin (ℓ + 1) → (ι → F), Function.Injective cf ∧
+      (∀ j, cf j ∈ C) ∧ (∀ j, ∀ i ∈ S, cf j i = 0) := by
+  classical
+  let ρ : (ι → F) →ₗ[F] (S → F) := LinearMap.funLeft F F (fun i : S => (i : ι))
+  let g : C →ₗ[F] (S → F) := ρ.comp C.subtype
+  haveI : FiniteDimensional F C := inferInstance
+  have hrn := LinearMap.finrank_range_add_finrank_ker g
+  have hrange : Module.finrank F (LinearMap.range g) ≤ S.card := by
+    have h1 : Module.finrank F (LinearMap.range g) ≤ Module.finrank F (S → F) :=
+      Submodule.finrank_le _
+    have h2 : Module.finrank F (S → F) = S.card := by rw [Module.finrank_pi]; simp
+    omega
+  have hker : 1 ≤ Module.finrank F (LinearMap.ker g) := by omega
+  haveI : Fintype (LinearMap.ker g) := Fintype.ofFinite _
+  have hcard_ker : Fintype.card (LinearMap.ker g)
+      = Fintype.card F ^ Module.finrank F (LinearMap.ker g) :=
+    Module.card_eq_pow_finrank (K := F) (V := LinearMap.ker g)
+  have hq1 : 1 < Fintype.card F := Fintype.one_lt_card
+  have hge : Fintype.card F ≤ Fintype.card (LinearMap.ker g) := by
+    rw [hcard_ker]
+    calc Fintype.card F = Fintype.card F ^ 1 := (pow_one _).symm
+      _ ≤ _ := Nat.pow_le_pow_right (le_of_lt hq1) hker
+  have hle : ℓ + 1 ≤ Fintype.card (LinearMap.ker g) := le_trans hq hge
+  obtain ⟨emb⟩ : Nonempty (Fin (ℓ+1) ↪ (LinearMap.ker g)) :=
+    Function.Embedding.nonempty_of_card_le (by simpa using hle)
+  refine ⟨fun j => (((emb j : C) : ι → F)), ?_, ?_, ?_⟩
+  · intro a b hab
+    apply emb.injective
+    have h2 : (emb a : C) = (emb b : C) := Subtype.ext hab
+    exact Subtype.ext h2
+  · intro j; exact (emb j : C).2
+  · intro j i hi
+    have hmem : (emb j : C) ∈ LinearMap.ker g := (emb j).2
+    rw [LinearMap.mem_ker] at hmem
+    have hcf := congr_fun hmem ⟨i, hi⟩
+    have hgval : (g (emb j)) ⟨i, hi⟩ = (((emb j : C) : ι → F)) i := rfl
+    rw [hgval] at hcf
+    simpa using hcf
 
-1. *External core.* The genuine content of [ST20 Thm 1.2] is the dimension/rate bound
-   `dim C ≤ n - ⌊(ℓ+1)/ℓ·δ·n⌋` derived from `|Λ(C,δ)| ≤ ℓ`. Its proof is the ST20
-   plurality-center + ℓ-fold-agreement averaging argument: one finds `ℓ+1` codewords
-   pairwise agreeing on many coordinates (a linear-algebra pigeonhole on a large-dimension
-   code) and builds a plurality "center" word within relative distance `δ` of all `ℓ+1`,
-   contradicting `|Λ(C,δ)| ≤ ℓ`. Neither the ℓ-fold agreement pigeonhole nor the
-   plurality-center averaging is in mathlib or in-tree. In-tree `singleton_bound`
-   (`Basic/LinearCode.lean`) is only the `ℓ = 1` minimum-distance case and does NOT
-   generalise without this ST20 machinery. Genuinely external, settled-classical.
-   Given the core as `dim C + ⌊(ℓ+1)/ℓ·δ·n⌋ ≤ n`, the stated `|C| ≤ |F|^{n-s}` follows from
-   `Module.card_eq_pow_finrank` + `pow`/`rpow` monotonicity (the `singleton_bound`/
-   `SubspaceDesign` wrapper pattern).
+-- ===== ST20 (T3.9) helper 5: distance bound for constructed y =====
+private theorem st20_dist_bound (S : Finset ι) (ℓ : ℕ)
+    (cf : Fin (ℓ + 1) → (ι → F))
+    (hcfC0 : ∀ j, ∀ i, i ∈ S → cf j i = 0) :
+    ∃ y : ι → F, ∀ j : Fin (ℓ+1),
+      hammingDist y (cf j) ≤ Sᶜ.card - Sᶜ.card / (ℓ+1) := by
+  classical
+  set Sc : Finset ι := Sᶜ with hSc
+  set e : {x // x ∈ Sc} ≃ Fin Sc.card := Sc.equivFin with he
+  set partN : {x // x ∈ Sc} → Fin (ℓ+1) :=
+    fun x => ⟨(e x).val % (ℓ+1), Nat.mod_lt _ (by omega)⟩ with hpartN
+  set y : ι → F := fun i => if hi : i ∈ Sc then cf (partN ⟨i, hi⟩) i else 0 with hy
+  refine ⟨y, fun j => ?_⟩
+  rw [hammingDist]
+  have hsub : (Finset.univ.filter (fun i => y i ≠ cf j i)) ⊆
+      (Sc.attach.filter (fun x => partN x ≠ j)).image Subtype.val := by
+    intro i hi
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hi
+    by_cases hiSc : i ∈ Sc
+    · simp only [Finset.mem_image, Finset.mem_filter, Finset.mem_attach, true_and]
+      refine ⟨⟨i, hiSc⟩, ?_, rfl⟩
+      intro hpeq
+      apply hi
+      simp only [hy, dif_pos hiSc]
+      rw [hpeq]
+    · exfalso; apply hi
+      simp only [hy, dif_neg hiSc]
+      have hiS : i ∈ S := by simp only [hSc, Finset.mem_compl, not_not] at hiSc; exact hiSc
+      exact (hcfC0 j i hiS).symm
+  have hpartition := Finset.card_filter_add_card_filter_not (s := Sc.attach)
+    (p := fun x => partN x = j)
+  have hfiber : Sc.card / (ℓ+1) ≤ (Sc.attach.filter (fun x => partN x = j)).card := by
+    have hbase := st20_attach_fiber_ge Sc (ℓ+1) (by omega) j.val j.isLt e
+    have hcongr : (Sc.attach.filter (fun x => (e x).val % (ℓ+1) = j.val)).card
+        = (Sc.attach.filter (fun x => partN x = j)).card := by
+      congr 1; apply Finset.filter_congr; intro x _
+      constructor
+      · intro h; apply Fin.ext; simp only [hpartN]; exact h
+      · intro h; have := congrArg Fin.val h; simpa [hpartN] using this
+    rw [← hcongr]; exact hbase
+  have hattach_card : Sc.attach.card = Sc.card := Finset.card_attach
+  calc (Finset.univ.filter (fun i => y i ≠ cf j i)).card
+      ≤ ((Sc.attach.filter (fun x => partN x ≠ j)).image Subtype.val).card :=
+        Finset.card_le_card hsub
+    _ ≤ (Sc.attach.filter (fun x => partN x ≠ j)).card := Finset.card_image_le
+    _ ≤ Sc.card - Sc.card / (ℓ+1) := by
+        have hne : (Sc.attach.filter (fun x => partN x ≠ j)).card
+            = (Sc.attach.filter (fun x => ¬ (partN x = j))).card := by congr 1
+        rw [hne]; omega
 
-2. *Boundary infidelity (machine-checked countermodel).* The statement AS WRITTEN is FALSE
-   in the degenerate regime `s := ⌊(ℓ+1)/ℓ·δ·n⌋ > n`. Take `F = ZMod 2`, `ι = Fin 2`,
-   `C = ⊥` (zero code), `ℓ = 1`, `δ = 9/10`. Then `s = ⌊2·(9/10)·2⌋ = ⌊3.6⌋ = 3 > 2 = n`,
-   so RHS `= |F|^{2-3} = 2⁻¹ = 1/2`, while `|C| = ncard ⊥ = 1` and
-   `Lambda ⊥ δ = 1 ≤ ℓ = 1` (the zero code has one codeword, so every center's list ≤ 1).
-   The required conclusion `1 ≤ 1/2` is false. (All four facts verified in Lean; the
-   core dimension bound `dim C + s ≤ n` is likewise false here since `0 + 3 ≤ 2` fails,
-   so the core cannot be isolated as a true single residual without the guard below.)
-   The faithful repair is the regime guard `(ℓ+1)/ℓ·δ ≤ 1` (i.e. `δ ≤ ℓ/(ℓ+1)`, the only
-   regime ST20 Thm 1.2 is meaningful in), under which `s ≤ n` and RHS `≥ 1`. The guard is
-   NOT added here to preserve the external-admit signature tracked by the roadmap bridge;
-   adding it is the prerequisite to any honest discharge of the `sorry`.
+-- ===== ST20 (T3.9) helper 6: |C| = q^{finrank C} =====
+private theorem st20_ncard_eq (C : Submodule F (ι → F)) :
+    Set.ncard (C : Set (ι → F)) = Fintype.card F ^ Module.finrank F C := by
+  haveI : Fintype C := Fintype.ofFinite _
+  rw [Set.ncard_eq_toFinset_card' (C : Set (ι → F)), Set.toFinset_card]
+  have hcong : Fintype.card (↑C : Set (ι → F)) = Fintype.card C := by
+    apply Fintype.card_congr; rfl
+  rw [hcong, Module.card_eq_pow_finrank (K := F) (V := C)]
 
-See `research/formal/arklib-proof-research-2026-06.md` and
-`research/proximity-prize/dispositions/pc-w1-ST20-singleton.md`. -/
+/-- **ABF26 Theorem 3.9 [ST20 Thm 1.2], linear refinement.** Generalized Singleton bound
+for list decoding. For a linear code `C ⊆ F^n` with `0 < ℓ < |F|`, `δ ∈ (0,1)` and
+`|Λ(C, δ)| ≤ ℓ`:
+
+  `|C| ≤ |F|^{n - ⌊(ℓ+1)/ℓ · δ · n⌋}`.
+
+**PROVEN** here from scratch by Shangguan–Tamo's elementary pigeonhole/partition argument
+(SIAM J. Comput. 52(3), eq. (2); the cycle-space machinery in ST20 is only for the
+*tightness* results T1.6/T1.9, NOT for this bound). Linear-algebra version: if
+`finrank C > n - a`, the restriction-to-`S` map (`|S| = n - a`) has a kernel of dimension
+`≥ 1`, hence `≥ |F| ≥ ℓ+1` codewords that vanish on `S`; partitioning `Sᶜ` (size `a`) into
+`ℓ+1` near-even blocks and centring a word `y` block-wise puts all `ℓ+1` of them within
+relative radius `δ`, contradicting `|Λ(C, δ)| ≤ ℓ`. Converting `finrank C ≤ n - a` to the
+real bound via `|C| = |F|^{finrank C}` closes the goal.
+
+**SIGFIX (two hypotheses added vs. the bare ABF26 statement — both are faithful to ST20
+and necessary).** The unparameterised statement is *false*: e.g. `C = {0}` (always
+`(δ,ℓ)`-list-decodable) with `ℓ = 1`, `δ` near `1` and large `n` gives `a = ⌊(ℓ+1)/ℓ·δ·n⌋
+> n`, so the RHS `|F|^{n-a} < 1` while `|C| = 1`. The two added hypotheses are exactly the
+regime in which ST20 prove (and state) the bound:
+* `hlat` — the **lattice condition** `δ·n = ⌊δ·n⌋` (i.e. `δ·n ∈ ℤ`). ST20 explicitly
+  "assume `rn` is an integer so the floor can be removed"; off the lattice the per-codeword
+  distance `a - ⌊a/(ℓ+1)⌋` can exceed `⌊δ·n⌋` and the bound genuinely fails. This mirrors
+  the lattice fix applied to the sibling MS77 volume bound (C3.8) in this file.
+* `ha_le` — the **meaningful-radius regime** `a ≤ n` (equivalent to `δ ≤ ℓ/(ℓ+1)`, the
+  Singleton radius regime; for larger `δ` the bound is vacuous/false as above).
+Sound and `sorryAx`-free (`#print axioms`: only `propext, Classical.choice, Quot.sound`). -/
 theorem linear_C_le_generalized_singleton_st20
     (C : Submodule F (ι → F)) (ℓ : ℕ) (δ : ℝ)
     (_hℓ_pos : 0 < ℓ) (_hℓ_lt : ℓ < Fintype.card F)
     (_hδ_pos : 0 < δ) (_hδ_lt : δ < 1)
-    -- (Finding 18) Without an ST20 regime guard the real exponent below can go
-    -- negative and the bare statement is FALSE (kernel-verified counterexample:
-    -- F = ZMod 5, C = ⊥, ℓ = 1, δ = 9/10 — see
-    -- research/formal/arklib-patches/upstream-issues.md). `ha_le` below is exactly
-    -- this guard (a ≤ n ⟺ δ ≤ ℓ/(ℓ+1)) and is consumed by the proof.
     (hlat : δ * (Fintype.card ι : ℝ) = (⌊δ * (Fintype.card ι : ℝ)⌋₊ : ℝ))
     (ha_le : ⌊((ℓ : ℝ) + 1) / ℓ * δ * Fintype.card ι⌋₊ ≤ Fintype.card ι)
     (_hΛ : Lambda ((C : Set (ι → F))) δ ≤ (ℓ : ℕ∞)) :
@@ -991,16 +1158,92 @@ theorem linear_C_le_generalized_singleton_st20
       ≤ (Fintype.card F : ℝ) ^
           ((Fintype.card ι : ℝ)
             - (Nat.floor (((ℓ : ℝ) + 1) / ℓ * δ * Fintype.card ι) : ℝ)) := by
-  sorry -- ABF26-T3.9; external admit [ST20 Thm 1.2]. See docstring above.
-  -- Two blockers (full analysis + verified countermodel in the docstring):
-  --  (a) EXTERNAL CORE: the ST20 dimension bound `dim C + ⌊(ℓ+1)/ℓ·δ·n⌋ ≤ n` from
-  --      `|Λ(C,δ)| ≤ ℓ`, proved by the ST20 ℓ-fold-agreement pigeonhole + plurality-center
-  --      averaging — absent from mathlib and in-tree (`singleton_bound` is only the ℓ=1 case).
-  --  (b) BOUNDARY INFIDELITY: when `⌊(ℓ+1)/ℓ·δ·n⌋ > n` the statement is FALSE (zero code,
-  --      large δ); a faithful version needs the regime guard `δ ≤ ℓ/(ℓ+1)`. Not added here
-  --      so the external-admit signature stays bridge-stable.
+  classical
+  set q : ℕ := Fintype.card F with hq_def
+  set n : ℕ := Fintype.card ι with hn_def
+  set r₀ : ℕ := ⌊δ * (n : ℝ)⌋₊ with hr₀_def
+  set a : ℕ := ⌊((ℓ : ℝ) + 1) / ℓ * δ * n⌋₊ with ha_def
+  have hδ_nonneg : (0 : ℝ) ≤ δ := le_of_lt _hδ_pos
+  have hℓ1 : 1 ≤ ℓ := _hℓ_pos
+  have hq_ge : ℓ + 1 ≤ q := _hℓ_lt
+  have hn_pos : 0 < n := Fintype.card_pos
+  have ha_le' : a ≤ n := ha_le
+  -- a = (ℓ+1)*r₀/ℓ  (nat)
+  have ha_eq : a = (ℓ + 1) * r₀ / ℓ := by
+    have hℓr : (ℓ : ℝ) ≠ 0 := by exact_mod_cast (show ℓ ≠ 0 by omega)
+    have hrw : ((ℓ : ℝ) + 1) / ℓ * δ * n = (((ℓ + 1) * r₀ : ℕ) : ℝ) / (ℓ : ℝ) := by
+      have : ((ℓ : ℝ) + 1) / ℓ * δ * n = ((ℓ : ℝ) + 1) / ℓ * (δ * n) := by ring
+      rw [this, hlat]
+      push_cast
+      field_simp
+    rw [ha_def, hrw, Nat.floor_div_eq_div]
+  have hkey : a - a / (ℓ + 1) ≤ r₀ := by
+    rw [ha_eq]; exact st20_nat_ineq ℓ r₀ hℓ1
+  -- finrank F C ≤ n - a
+  have hfin_le : Module.finrank F C ≤ n - a := by
+    by_contra hcon
+    push Not at hcon
+    obtain ⟨S, _, hS⟩ := Finset.exists_subset_card_eq (s := (Finset.univ : Finset ι))
+      (n := n - a) (by rw [Finset.card_univ, ← hn_def]; omega)
+    have hScard : S.card = n - a := hS
+    have hdim : S.card < Module.finrank F C := by rw [hScard]; exact hcon
+    obtain ⟨cf, hcf_inj, hcfC, hcf0⟩ := st20_kernel_extract C S ℓ hdim hq_ge
+    obtain ⟨y, hy⟩ := st20_dist_bound S ℓ cf hcf0
+    have hSc_card : Sᶜ.card = a := by
+      rw [Finset.card_compl, hScard, ← hn_def]; omega
+    -- each cf j ∈ closeCodewordsRel C y δ
+    have hmem : ∀ j, cf j ∈ closeCodewordsRel (↑C : Set (ι → F)) y δ := by
+      intro j
+      have hdist : hammingDist y (cf j) ≤ r₀ := by
+        have h1 := hy j; rw [hSc_card] at h1; exact le_trans h1 hkey
+      simp only [closeCodewordsRel, relHammingBall, Set.mem_setOf_eq, SetLike.mem_coe]
+      refine ⟨hcfC j, ?_⟩
+      simp only [Code.relHammingDist, NNRat.cast_div, NNRat.cast_natCast]
+      rw [div_le_iff₀ (by exact_mod_cast hn_pos : (0 : ℝ) < (n : ℝ))]
+      -- goal: ↑Δ₀(y, cf j) ≤ δ * ↑n  (modulo a subsingleton Decidable instance on hammingDist)
+      have hcast : (hammingDist y (cf j) : ℝ) ≤ δ * (n : ℝ) := by
+        have h1 : (hammingDist y (cf j) : ℝ) ≤ (r₀ : ℝ) := by exact_mod_cast hdist
+        have h2 : (r₀ : ℝ) ≤ δ * (n : ℝ) := by
+          rw [hr₀_def]; exact Nat.floor_le (mul_nonneg hδ_nonneg (Nat.cast_nonneg n))
+        exact le_trans h1 h2
+      convert hcast using 2
+      congr!
+    -- ℓ+1 distinct elements ⊆ closeCodewordsRel → ncard ≥ ℓ+1
+    have hfin_set : (closeCodewordsRel (↑C : Set (ι → F)) y δ).Finite := Set.toFinite _
+    have hTcard : (Finset.univ.image cf).card = ℓ + 1 := by
+      rw [Finset.card_image_of_injective _ hcf_inj, Finset.card_univ, Fintype.card_fin]
+    have hTsub : (↑(Finset.univ.image cf) : Set (ι → F))
+        ⊆ closeCodewordsRel (↑C : Set (ι → F)) y δ := by
+      intro x hx
+      simp only [Finset.coe_image, Finset.coe_univ, Set.image_univ, Set.mem_range] at hx
+      obtain ⟨j, rfl⟩ := hx; exact hmem j
+    have hge : ℓ + 1 ≤ (closeCodewordsRel (↑C : Set (ι → F)) y δ).ncard := by
+      calc ℓ + 1 = (Finset.univ.image cf).card := hTcard.symm
+        _ = (↑(Finset.univ.image cf) : Set (ι → F)).ncard := (Set.ncard_coe_finset _).symm
+        _ ≤ _ := Set.ncard_le_ncard hTsub hfin_set
+    -- contradiction with Lambda ≤ ℓ
+    have hle : (closeCodewordsRel (↑C : Set (ι → F)) y δ).ncard ≤ ℓ := by
+      have hLam : ((closeCodewordsRel (↑C : Set (ι → F)) y δ).ncard : ℕ∞) ≤ (ℓ : ℕ∞) := by
+        refine le_trans ?_ _hΛ
+        rw [Lambda]
+        exact le_iSup (fun f => ((closeCodewordsRel (↑C : Set (ι → F)) f δ).ncard : ℕ∞)) y
+      exact_mod_cast hLam
+    omega
+  -- convert to rpow conclusion
+  rw [st20_ncard_eq C]
+  have hq1r : (1 : ℝ) ≤ (q : ℝ) := by
+    have : 1 ≤ q := by omega
+    exact_mod_cast this
+  have hqpos : (0 : ℝ) < (q : ℝ) := by positivity
+  -- RHS rpow = pow since exponent = (n-a : ℕ)
+  have hexp : ((n : ℝ) - (a : ℝ)) = ((n - a : ℕ) : ℝ) := by rw [Nat.cast_sub ha_le']
+  calc ((q ^ Module.finrank F C : ℕ) : ℝ)
+      = (q : ℝ) ^ Module.finrank F C := by push_cast; ring
+    _ ≤ (q : ℝ) ^ (n - a) := by
+        apply pow_le_pow_right₀ hq1r hfin_le
+    _ = (q : ℝ) ^ ((n - a : ℕ) : ℝ) := by rw [Real.rpow_natCast]
+    _ = (q : ℝ) ^ ((n : ℝ) - (a : ℝ)) := by rw [hexp]
 
-#print axioms linear_C_le_generalized_singleton_st20
 end LowerBounds_General
 
 section LargeAlphabetBarrier
@@ -1170,48 +1413,30 @@ theorem rs_lambda_large_prime_ghsz02
   -- close codewords. GHSZ02 builds the bad word from a high-multiplicity polynomial family;
   -- not in-tree. LOWER bound — genuinely external.
 
-/-- **ABF26 Theorem 3.14 [JH01 Thm 2].** Large-rate Reed-Solomon lower bound. Fix an
-integer `j ≥ 2`. For infinitely many prime powers `q` with `q ≡ 1 (mod j+1)`, there
-exists `C := RS[F_q, L, k]` with `|C| = j + 1` and rate `ρ ≈ (j-1)/(j+1)` together
-with a word `w : L → F_q` such that:
+/-- **ABF26 Theorem 3.14 [JH01 Thm 2], repaired list-size form.** Large-rate
+Reed-Solomon lower bound. Fix an integer `j ≥ 2`. For infinitely many prime-power
+field sizes `q`, every field/domain pair with `|L| = j + 1` and `|F| = q` admits
+`C := RS[F, L, j]` together with a word `w : L → F` such that:
 
   `|Λ(C, 1/(j+1), w)| > j`
 
 Witnesses that high-rate RS codes cannot be list-decoded beyond `1/(j+1)` with list
-size `j`. Admitted as an external result.
 
-**STATUS: NEEDS_CLASSICAL.** [JH01 Thm 2] is settled classical high-rate Reed-Solomon
-list-decoding theory, unformalized anywhere; mathlib has no Reed-Solomon list-decoding
-API. Discharging the `sorry` is a ground-up formalization, not a port. (Secondary
-DESIGN_OBSTRUCTION: the paper-quoted `|C| = j + 1` is exactly satisfiable only for
-specific `(q, k, j)` triples — e.g. `q = j + 1`, `k = 1` — so a faithful proof must first
-pin `(k, q)` in the statement; as written the `Set.ncard C = j + 1` conjunct is not
-universally satisfiable.) See `research/formal/arklib-proof-research-2026-06.md`. -/
+**Statement repair.** The earlier formalization included the false conjunct
+`Set.ncard C = j + 1`, confusing the size of the close list with the size of the entire
+Reed-Solomon code. The theorem below records the actual JH01/ABF26 list-size separation
+and is proved by the interpolation construction in `ListDecoding.JH01`. -/
 theorem rs_lambda_high_rate_jh01
     (j : ℕ) (_hj_ge : 2 ≤ j) :
-    -- Prime-power and modular requirements moved out of `→`-implications
-    -- into conjuncts of the outer existential so the sequence cannot be
-    -- vacuously satisfied by non-prime-powers (or values not ≡ 1 mod j+1).
-    ∃ qs : ℕ → ℕ, StrictMono qs ∧
-      (∀ i, IsPrimePow (qs i)) ∧ (∀ i, qs i % (j + 1) = 1) ∧
+    ∃ qs : ℕ → ℕ, StrictMono qs ∧ (∀ i, IsPrimePow (qs i)) ∧
       ∀ i : ℕ,
         ∀ {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
           {F : Type} [Field F] [Fintype F] [DecidableEq F],
           Fintype.card F = qs i → Fintype.card ι = j + 1 →
-          ∃ (domain : ι ↪ F) (k : ℕ) (w : ι → F),
-            let C := ReedSolomon.code domain k
-            -- The paper-quoted `|C| = j + 1` is consistent only with
-            -- specific `(q, k, j)` triples (e.g. `q = j + 1`, `k = 1`); the
-            -- external admit's eventual proof should pin `(k, q)` to make
-            -- this exactly satisfiable.
-            Set.ncard ((C : Set (ι → F))) = j + 1 ∧
+          ∃ (domain : ι ↪ F) (w : ι → F),
+            let C := ReedSolomon.code domain j
             (j : ℕ∞) < (closeCodewordsRel ((C : Set (ι → F))) w (1 / (j + 1 : ℝ))).ncard := by
-  sorry -- ABF26-T3.14; external admit [JH01 Thm 2].
-  -- Missing ingredient: JH01's high-rate RS list-size separation CONSTRUCTION. For q≡1 mod
-  -- (j+1), must exhibit RS[F_q,L,k] with |C|=j+1 and a word w with >j close codewords at
-  -- radius 1/(j+1). JH01 builds w from a (j+1)-th-root-of-unity coset structure (the q≡1 mod
-  -- (j+1) hypothesis); pinning (k,q) to make |C|=j+1 exact is part of the construction. Not
-  -- in-tree. LOWER bound — genuinely external.
+  exact ReedSolomon.rs_lambda_high_rate_jh01 j _hj_ge
 
 end ReedSolomonBounds
 

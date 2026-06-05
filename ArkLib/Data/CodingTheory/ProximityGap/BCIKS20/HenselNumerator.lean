@@ -8,8 +8,11 @@ import Mathlib.Algebra.Polynomial.HasseDeriv
 import Mathlib.Combinatorics.Enumerative.Partition.Basic
 import Mathlib.Data.Nat.Choose.Multinomial
 import ArkLib.Data.Polynomial.RationalFunctions
+import ArkLib.Data.Polynomial.PowerSeriesComposition
 
 set_option linter.style.longFile 1900
+-- This proof-note-heavy integration file contains many long paper-route doc lines.
+set_option linter.style.longLine false
 
 /-!
 # BCIKS20 Appendix A.4 — Hensel-lift numerator `β` : WAVE 1 FOUNDATION
@@ -399,6 +402,20 @@ theorem prefactor_pos {m : ℕ} (i i1 : ℕ) (lam : Nat.Partition m) (hi : i1 �
     0 < prefactor i i1 lam := by
   rw [prefactor]
   exact Nat.mul_pos (Nat.choose_pos hi) (Nat.multinomial_pos _ _)
+
+/-- The multinomial part of the BCIKS20 prefactor is exactly the value-multiset
+permutation count used by the power-series composition expansion. -/
+theorem countPerms_parts_eq_multinomial {m : ℕ} (lam : Nat.Partition m) :
+    lam.parts.countPerms =
+      Nat.multinomial lam.parts.toFinset (fun l => lam.parts.count l) :=
+  ArkLib.PowerSeriesComposition.countPerms_eq_multinomial lam.parts
+
+/-- `prefactor` as the binomial Hasse weight times the composition fiber-count
+`countPerms`.  This is the direct bridge from
+`PowerSeriesComposition.coeff_pow_eq_partitionSum` to the `B_coeff` normalization. -/
+theorem prefactor_eq_choose_mul_countPerms {m : ℕ} (i i1 : ℕ) (lam : Nat.Partition m) :
+    prefactor i i1 lam = Nat.choose i i1 * lam.parts.countPerms := by
+  rw [prefactor, countPerms_parts_eq_multinomial]
 
 end Partition
 
@@ -1053,6 +1070,22 @@ theorem degreeX_hasseCoeffRepr_le (x₀ : F) (R : F[X][X][Y]) (i1 m D : ℕ)
   unfold Bivariate.degreeX
   exact Finset.sup_le (fun n _ => hcoeff n)
 
+/-- **Graded `B_coeff` weight bound.**  This is the paper-literal specialization of
+`B_coeff_weight_le`: under the graded `Z`-degree hypothesis on every `Y`-coefficient of `R`,
+the residual `degreeX` term is bounded by `D - Σλ`. -/
+lemma B_coeff_weight_le_graded (x₀ : F) (R : F[X][X][Y]) (i1 : ℕ) {m : ℕ}
+    (lam : Nat.Partition m) (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hR : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j) :
+    weight_Λ_over_𝒪 hH (B_coeff H x₀ R i1 lam) D
+      ≤ WithBot.some
+          ((Bivariate.natDegreeY R - sigmaLambda lam) * (D + 1 - Bivariate.natDegreeY H)
+            + (D - sigmaLambda lam)) := by
+  refine (B_coeff_weight_le H x₀ R i1 lam hH hDH).trans ?_
+  exact_mod_cast Nat.add_le_add_left
+    (degreeX_hasseCoeffRepr_le x₀ R i1 (sigmaLambda lam) D hR)
+    ((Bivariate.natDegreeY R - sigmaLambda lam) * (D + 1 - Bivariate.natDegreeY H))
+
 /-- Every part of a *surviving* partition is `< k+1`: a `lam : Nat.Partition (k+1−i1)` with
 `(k+1) ∉ lam.parts` has all parts `l` positive and `≤ k+1−i1 ≤ k+1`, and `l ≠ k+1`, hence
 `l < k+1`.  This is the genuine well-foundedness witness for the `(A.1)` recursion: the guard
@@ -1602,7 +1635,7 @@ theorem ClaimA2_α_mul_Wξ_eq_embedding_β (x₀ : F) (R : F[X][X][Y])
         * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1)
       = embeddingOf𝒪Into𝕃 H (ClaimA2.β R t) := by
   -- Unfold the definition of `α_t`; the `let W` in `ClaimA2.α` is `liftToFunctionField …`.
-  show embeddingOf𝒪Into𝕃 H (ClaimA2.β R t)
+  change embeddingOf𝒪Into𝕃 H (ClaimA2.β R t)
         / ((liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
             * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1))
         * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
@@ -1636,6 +1669,23 @@ theorem βHensel_lift_identity_iff_β_eq (x₀ : F) (R : F[X][X][Y])
       ↔ embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
             = embeddingOf𝒪Into𝕃 H (ClaimA2.β R t) := by
   rw [ClaimA2_α_mul_Wξ_eq_embedding_β H x₀ R hHyp t hden]
+
+/-- **(P2) equivalence with the denominator localized to `ξ`.**  The `W` factor in the
+denominator is always nonzero, so the reusable nonzero premise can be focused on the actual
+remaining obligation `embeddingOf𝒪Into𝕃 ξ ≠ 0`. -/
+theorem βHensel_lift_identity_iff_β_eq_of_ξ_ne_zero (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ)
+    (hξ : embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp) ≠ 0) :
+    (embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+        = ClaimA2.α x₀ R H hHyp t
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1))
+      ↔ embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+            = embeddingOf𝒪Into𝕃 H (ClaimA2.β R t) := by
+  exact βHensel_lift_identity_iff_β_eq H x₀ R hHyp t
+    (mul_ne_zero
+      (pow_ne_zero _ (liftToFunctionField_leadingCoeff_ne_zero (H := H)))
+      (pow_ne_zero _ hξ))
 
 /-- **(P2) forward wrapper from the localized β-numerator equality.**
 

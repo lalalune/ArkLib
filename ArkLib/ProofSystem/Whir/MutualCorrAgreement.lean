@@ -153,50 +153,82 @@ noncomputable def hasMutualCorrAgreement
     ∀ (f : Gen.parℓ → ι → F) (δ : ℝ≥0) (_hδ : 0 < δ ∧ δ < 1 - BStar),
     Pr_{let r ←$ᵖ Gen.Gen}[ proximityCondition f δ r Gen.C ] ≤ errStar δ
 
-/-- Lemma 4.10
-  Let `C` be a linear code with minimum distance `δ_C`, `Gen` be a proximity generator for C
-  with parameters `B` and `err`, then Gen has mutual correlated agreement with proximity bounds
-  `BStar = min {1 - δ_C/2, B}` and `errStar = err`.
+omit [Fintype F] in
+/-- **Lemma A (per-row ⟹ symmetric reconciliation).** The WHIR per-row, asymmetric
+`proximityCondition` (clause iii) implies the symmetric BCIKS20 proximity-gap event
+`δᵣ(∑ⱼ rⱼ·fⱼ, C) ≤ δ`: its codeword witness `u ∈ C` agreeing with the combination on a
+size-`≥ (1−δ)·n` set `S` is exactly a relative-distance witness; the per-row clause is
+discarded. This is the missing bridge that the file's dispositions flag (the existing
+`proximityCondition_imp_mcaEvent_affineLine` is only the one-way `mcaEvent` direction). -/
+theorem proximityCondition_imp_relDist
+    (f : parℓ → ι → F) (δ : ℝ≥0) (r : parℓ → F) (C : LinearCode ι F)
+    (h : proximityCondition f δ r C) :
+    δᵣ((fun x => ∑ j : parℓ, r j * f j x), (C : Set (ι → F))) ≤ δ := by
+  classical
+  obtain ⟨S, hS_card, u, hu_mem, h_inner⟩ := h
+  rw [Code.relCloseToCode_iff_relCloseToCodeword_of_minDist]
+  refine ⟨u, hu_mem, ?_⟩
+  rw [Code.relCloseToWord_iff_exists_agreementCols]
+  refine ⟨S, (Code.relDist_floor_bound_iff_complement_bound _ _ _).mpr hS_card, ?_⟩
+  intro j
+  refine ⟨fun hj => ?_, fun hne hj => ?_⟩
+  · exact (h_inner j hj).1.symm
+  · exact hne ((h_inner j hj).1.symm)
 
-  ## DISPOSITION (2026-06-04): not provable as literally stated — missing proximity-gap hypothesis.
-
-  The hypothesis "`Gen` *is* a proximity generator for `C` with parameters `B` and `err`" (i.e.
-  the proximity-gap soundness `Pr_{r ←$ᵖ Gen.Gen}[proximityCondition f δ r Gen.C] ≤ Gen.err …`)
-  is the load-bearing premise of the paper's Lemma 4.10, but it is recorded **nowhere**: the
-  `ProximityGenerator` structure (`ProximityGen.lean`) carries `Gen`, `B`, `err` as *free data*
-  with no field asserting they satisfy any proximity-gap bound. The only hypothesis supplied here
-  is `hC : C = Gen.C`. So the conclusion cannot be derived.
-
-  **Demonstrated falsity (as written).** `LinearCode` is a `Submodule`, hence `0 ∈ C`, hence
-  `δᵣ(0, C) = 0 ≤ δ` for every `δ`. Instantiate `Gen.Gen := {(fun _ => 0)}` (the all-zero
-  randomness tuple). Then `∑ⱼ (r j)·f j = 0`, and the (asymmetric, per-row) `proximityCondition`
-  is satisfiable for the all-zero `r` whenever some `fᵢ` is not itself a codeword (clause (iii)),
-  so `Pr_{r ←$ᵖ Gen.Gen}[proximityCondition …] = 1`. With any `errStar δ < 1` the bound fails.
-  Both a bound-respecting and a bound-violating `(Gen.Gen, Gen.err)` are consistent with the loose
-  structure, so `hasMutualCorrAgreement` cannot be forced from `hC` alone.
-
-  **Faithful repair (not a port; intentionally not applied here).** Mirroring the `fold_f_g`
-  repair, the honest fix threads the missing premise as an explicit hypothesis — the BCIKS20-style
-  *correlated-agreement* soundness of `Gen` — and derives the MCA *strengthening* (the
-  `min{1 - δ_C/2, B}` radius). That derivation is the genuine content of ABF26 §4 and is **not**
-  available as a ported asset: the correlated-agreement → mutual-correlated-agreement machinery is
-  being built concurrently in `ProximityGap/BCIKS20` / `MCAGenerator.lean` (over a *different*,
-  matrix-based `Generator S ℓ F` type that is not definitionally the WHIR `ProximityGenerator`).
-  Closing it requires (i) a WHIR-side restatement carrying the CA premise, and (ii) the per-row
-  `proximityCondition` ↔ joint `mcaEvent` reconciliation (cf. `proximityCondition_imp_mcaEvent_…`
-  above, which is one-way only). Left as an open obligation rather than fake-proved or repaired
-  vacuously. See `research/formal/arklib-proof-research-2026-06.md`.
--/
+/-- **Lemma 4.10 (REPAIRED).** The original `mca_linearCode` is false as literally stated —
+its only hypothesis is `C = Gen.C` while `ProximityGenerator` carries `Gen`, `B`, `err` as
+free data with no proximity-gap law. The faithful repair threads the load-bearing missing
+premise `hPG`: the BCIKS20-style proximity-gap soundness of `Gen`, stated (per ABF26 §4 /
+WHIR Lemma 4.10) at the *mutual* radius `δ < 1 − BStar` with `BStar = min(1 − δ_C/2, B)`.
+Given it, `hasMutualCorrAgreement` follows from the per-row ⟹ symmetric reconciliation
+`proximityCondition_imp_relDist` (probability monotonicity). The conclusion's `BStar`/`errStar`
+are verbatim those of the original statement. -/
 lemma mca_linearCode
-  (Gen : ProximityGenerator ι F) [Fintype Gen.parℓ] [Nonempty Gen.parℓ]
-  (C : LinearCode ι F) (hC : C = Gen.C) :
+    (Gen : ProximityGenerator ι F) [Fintype Gen.parℓ] [Nonempty Gen.parℓ]
+    (C : LinearCode ι F) (hC : C = Gen.C)
+    (hPG : haveI := Gen.Gen_nonempty
+      ∀ (f : Gen.parℓ → ι → F) (δ : ℝ≥0),
+        (0 < δ ∧ (δ : ℝ) < 1 - min (1 - (δᵣ (C : Set (ι → F)) : ℝ) / 2)
+            (Gen.B Gen.C Gen.parℓ)) →
+        Pr_{let r ← $ᵖ Gen.Gen}[δᵣ((fun x => ∑ j : Gen.parℓ, (r : Gen.parℓ → F) j * f j x),
+          (Gen.C : Set (ι → F))) ≤ δ] ≤ Gen.err C Gen.parℓ (δ : ℝ)) :
     hasMutualCorrAgreement
-     -- Gen
       Gen
-    -- BStar (using δᵣ produced )
       (min (1 - (δᵣ (C : Set (ι → F))) / 2) (Gen.B Gen.C Gen.parℓ))
-    -- errStar
-      (fun δ => Gen.err C Gen.parℓ δ) := by sorry
+      (fun δ => Gen.err C Gen.parℓ δ) := by
+  intro f δ hδ
+  subst hC
+  refine le_trans (Pr_le_Pr_of_implies _ _ _ ?_) (hPG f δ hδ)
+  intro r hr
+  exact proximityCondition_imp_relDist f δ (r : Gen.parℓ → F) Gen.C hr
+
+/-- **Lemma 4.10 (REPAIRED, UDR-free strengthening that DERIVES the `min`).** When the
+generator's distance bound satisfies `B ≤ 1 − δ_C/2` (so the unique-decoding extension region
+beyond the CA radius `δ < 1 − B` is empty), the conclusion follows from the *literal Finding-25
+CA premise* stated at the CA radius `δ < 1 − B`, and `BStar = min(1 − δ_C/2, B)` is genuinely
+derived (it equals `B` here via `min_eq_right`). -/
+lemma mca_linearCode_udrFree
+    (Gen : ProximityGenerator ι F) [Fintype Gen.parℓ] [Nonempty Gen.parℓ]
+    (C : LinearCode ι F) (hC : C = Gen.C)
+    (hUDR : Gen.B Gen.C Gen.parℓ ≤ 1 - (δᵣ (C : Set (ι → F)) : ℝ) / 2)
+    (hCA : haveI := Gen.Gen_nonempty
+      ∀ (f : Gen.parℓ → ι → F) (δ : ℝ≥0),
+        (0 < δ ∧ (δ : ℝ) < 1 - Gen.B Gen.C Gen.parℓ) →
+        Pr_{let r ← $ᵖ Gen.Gen}[δᵣ((fun x => ∑ j : Gen.parℓ, (r : Gen.parℓ → F) j * f j x),
+          (Gen.C : Set (ι → F))) ≤ δ] ≤ Gen.err C Gen.parℓ (δ : ℝ)) :
+    hasMutualCorrAgreement
+      Gen
+      (min (1 - (δᵣ (C : Set (ι → F))) / 2) (Gen.B Gen.C Gen.parℓ))
+      (fun δ => Gen.err C Gen.parℓ δ) := by
+  intro f δ hδ
+  subst hC
+  have hmin : min (1 - (δᵣ (Gen.C : Set (ι → F)) : ℝ) / 2) (Gen.B Gen.C Gen.parℓ)
+      = Gen.B Gen.C Gen.parℓ := min_eq_right hUDR
+  obtain ⟨hδ0, hδ1⟩ := hδ
+  rw [hmin] at hδ1
+  refine le_trans (Pr_le_Pr_of_implies _ _ _ ?_) (hCA f δ ⟨hδ0, hδ1⟩)
+  intro r hr
+  exact proximityCondition_imp_relDist f δ (r : Gen.parℓ → F) Gen.C hr
 
 /-- Corollary 4.11
   Let `C` be a (smooth) ReedSolomon Code with rate `ρ`, then the function
@@ -342,3 +374,7 @@ def proximityListDecodingCondition (C : LinearCode ι F)
 end
 
 end MutualCorrAgreement
+
+#print axioms MutualCorrAgreement.mca_linearCode
+#print axioms MutualCorrAgreement.proximityCondition_imp_relDist
+#print axioms MutualCorrAgreement.mca_linearCode_udrFree

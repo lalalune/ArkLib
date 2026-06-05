@@ -15,7 +15,7 @@ namespace GSCounting
 
 open Finset
 
-variable {κ ι : Type*} [Fintype κ] [Fintype ι] [DecidableEq κ] [DecidableEq ι]
+variable {κ ι : Type*} [Fintype κ] [Fintype ι]
 
 /-- **Row–column double counting.** The total over rows of per-row marked-column
 counts equals the total over columns of per-column marked-row counts. -/
@@ -39,10 +39,11 @@ theorem exists_heavy_coordinate (M : κ → ι → Prop) [∀ k x, Decidable (M 
     rw [← sum_rows_eq_sum_cols]
     calc Fintype.card κ * a = ∑ _k : κ, a := by
             rw [Finset.sum_const, Finset.card_univ, smul_eq_mul]
-      _ ≤ ∑ k : κ, (Finset.univ.filter (fun x => M k x)).card := Finset.sum_le_sum (fun k _ => hrow k)
+      _ ≤ ∑ k : κ, (Finset.univ.filter (fun x => M k x)).card :=
+        Finset.sum_le_sum (fun k _ => hrow k)
   -- averaging: some column ≥ average, i.e. |ι|·(col x) ≥ Σ ≥ |κ|·a
   by_contra hcon
-  push_neg at hcon
+  push Not at hcon
   -- every column has |ι|·count < |κ|·a, so the sum is < |ι|·(|κ|·a)... derive contradiction
   have hbound : ∀ x : ι, Fintype.card ι * (Finset.univ.filter (fun k => M k x)).card
       < Fintype.card κ * a := hcon

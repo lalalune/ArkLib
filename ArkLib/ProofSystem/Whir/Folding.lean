@@ -753,6 +753,15 @@ theorem Pr_le_finset_sum_of_implies {α : Type} (D : PMF.{0} α) {β : Type} [De
   · simp only [hP, if_false, MulZeroClass.mul_zero]
     exact zero_le _
 
+/-- If `A x` is always a subset of `B x`, then the event that the two sets differ is contained
+in the event that the reverse inclusion fails. -/
+lemma Pr_set_ne_le_Pr_not_subset_of_subset {α β : Type} (D : PMF.{0} α)
+    (A B : α → Set β) (hsub : ∀ x, A x ⊆ B x) :
+    Pr_{let x ← D}[A x ≠ B x] ≤ Pr_{let x ← D}[¬ B x ⊆ A x] := by
+  refine Pr_le_Pr_of_implies D _ _ ?_
+  intro x hne hrev
+  exact hne (Set.Subset.antisymm (hsub x) hrev)
+
 /-- Theorem 4.20
   Let C = RS[F,ι,m] be a smooth ReedSolomon code
   For k ≤ m and 0 ≤ i ≤ k,
@@ -926,15 +935,93 @@ lemma folding_preserves_listdecoding_base
           let listBlock' : Set ((indexPowT S φ 1) → F) := Λᵣ(1, k, fold, S_1, C', hcode', δ)
           ¬ (listBlock' ⊆ foldSet)
         ] := by
-      refine Pr_le_Pr_of_implies D _ _ ?_
-      intro α hne
-      dsimp only
-      dsimp only at hne
-      -- `foldSet ⊆ listBlock'` (forward inclusion) together with `foldSet ≠ listBlock'`
-      -- forces `¬ (listBlock' ⊆ foldSet)`: otherwise the two would be equal by antisymmetry.
-      intro hsub'
-      exact hne (Set.Subset.antisymm (hsub f α) hsub')
+        refine Pr_le_Pr_of_implies D _ _ ?_
+        intro α hne
+        dsimp only
+        dsimp only at hne
+        intro hsub'
+        exact hne (Set.Subset.antisymm (hsub f α) hsub')
     exact lt_of_le_of_lt hmono hrev'
+
+/-- **Lemma 4.21, MCA-bridged repaired form.**
+
+This is the production version of the Finding-19 repair: the error term is no longer a free
+function that could be set to zero independently of the protocol. Instead it is tied to a genuine
+level-1 proximity generator `Gen'` and a hypothesis
+`hmca : hasMutualCorrAgreement Gen' BStarV errStarV`.
+
+The proof keeps the same two honest obligations as the repaired `folding_preserves_listdecoding_base`:
+the deterministic forward inclusion `hsub`, and the real ABF26 §4 bridge `hbridge` from
+reverse-inclusion failure to WHIR's `proximityCondition`. Once those are supplied, the probability
+bound is a direct event-domination chain ending in `hmca`. The conclusion is `≤ errStarV δ`, matching
+the MCA API exactly; no artificial strict inequality is introduced. -/
+lemma folding_preserves_listdecoding_base_of_mca_bridge
+  [Fintype F] {S : Finset ι} {k m : ℕ} (hm : 1 ≤ m) {φ : ι ↪ F}
+  [Fintype ι] [DecidableEq ι] [Smooth φ] {δ : ℝ≥0}
+  {S_0 : Finset (indexPowT S φ 0)} {S_1 : Finset (indexPowT S φ 1)}
+  {φ_0 : (indexPowT S φ 0) ↪ F} {φ_1 : (indexPowT S φ 1) ↪ F}
+  [∀ i : ℕ, Fintype (indexPowT S φ i)] [∀ i : ℕ, DecidableEq (indexPowT S φ i)]
+  [Smooth φ_0] [Smooth φ_1] [Nonempty (indexPowT S φ 1)]
+  [hbd0 : ∀ {f : (indexPowT S φ 0) → F}, DecidableBlockDisagreement 0 k f S_0 φ_0]
+  [hbd1 : ∀ {f : (indexPowT S φ 1) → F}, DecidableBlockDisagreement 1 k f S_1 φ_1]
+  [∀ i : ℕ, Neg (indexPowT S φ i)]
+  {C : Set ((indexPowT S φ 0) → F)} (hcode : C = smoothCode φ_0 m)
+  (C' : Set ((indexPowT S φ 1) → F)) (hcode' : C' = smoothCode φ_1 (m - 1))
+  (Gen' : ProximityGenerator (indexPowT S φ 1) F) [Fintype Gen'.parℓ]
+  (BStarV : ℝ) (errStarV : ℝ → ENNReal)
+  (hmca : hasMutualCorrAgreement Gen' BStarV errStarV)
+  (hsub : ∀ (f : (indexPowT S φ 0) → F) (α : F),
+      fold_k_set (Λᵣ(0, k, f, S_0, C, hcode, δ)) (fun _ : Fin 1 => α) hm
+        ⊆ Λᵣ(1, k, fold_k f (fun _ : Fin 1 => α) hm, S_1, C', hcode', δ))
+  (fStack : ((indexPowT S φ 0) → F) → Gen'.parℓ → (indexPowT S φ 1) → F)
+  (hbridge : ∀ (f : (indexPowT S φ 0) → F),
+      Pr_{let α ←$ᵖ F}[
+          let listBlock : Set ((indexPowT S φ 0) → F) := Λᵣ(0, k, f, S_0, C, hcode, δ)
+          let vec_α : Fin 1 → F := (fun _ : Fin 1 => α)
+          let foldSet := fold_k_set listBlock vec_α hm
+          let fold := fold_k f vec_α hm
+          let listBlock' : Set ((indexPowT S φ 1) → F) := Λᵣ(1, k, fold, S_1, C', hcode', δ)
+          ¬ (listBlock' ⊆ foldSet)
+        ]
+        ≤ (haveI := Gen'.Gen_nonempty;
+            Pr_{let r ←$ᵖ Gen'.Gen}[
+              MutualCorrAgreement.proximityCondition (fStack f) δ r Gen'.C ])) :
+    ∀ (f : (indexPowT S φ 0) → F) (_hδ : 0 < δ ∧ δ < 1 - BStarV),
+      Pr_{let α ←$ᵖ F}[
+          let listBlock : Set ((indexPowT S φ 0) → F) := Λᵣ(0, k, f, S_0, C, hcode, δ)
+          let vec_α : Fin 1 → F := (fun _ : Fin 1 => α)
+          let foldSet := fold_k_set listBlock vec_α hm
+          let fold := fold_k f vec_α hm
+          let listBlock' : Set ((indexPowT S φ 1) → F) := Λᵣ(1, k, fold, S_1, C', hcode', δ)
+          foldSet ≠ listBlock'
+        ] ≤ errStarV δ
+  := by
+    intro f hδ
+    let D : PMF F := PMF.uniformOfFintype F
+    have hmono :
+        Pr_{let α ← D}[
+          let listBlock : Set ((indexPowT S φ 0) → F) := Λᵣ(0, k, f, S_0, C, hcode, δ)
+          let vec_α : Fin 1 → F := (fun _ : Fin 1 => α)
+          let foldSet := fold_k_set listBlock vec_α hm
+          let fold := fold_k f vec_α hm
+          let listBlock' : Set ((indexPowT S φ 1) → F) := Λᵣ(1, k, fold, S_1, C', hcode', δ)
+          foldSet ≠ listBlock'
+        ] ≤
+        Pr_{let α ← D}[
+          let listBlock : Set ((indexPowT S φ 0) → F) := Λᵣ(0, k, f, S_0, C, hcode, δ)
+          let vec_α : Fin 1 → F := (fun _ : Fin 1 => α)
+          let foldSet := fold_k_set listBlock vec_α hm
+          let fold := fold_k f vec_α hm
+          let listBlock' : Set ((indexPowT S φ 1) → F) := Λᵣ(1, k, fold, S_1, C', hcode', δ)
+          ¬ (listBlock' ⊆ foldSet)
+        ] := by
+        refine Pr_le_Pr_of_implies D _ _ ?_
+        intro α hne
+        dsimp only
+        dsimp only at hne
+        intro hsub'
+        exact hne (Set.Subset.antisymm (hsub f α) hsub')
+    exact le_trans hmono (le_trans (hbridge f) (hmca (fStack f) δ hδ))
 
 /-! ### Helper lemmas for `folding_preserves_listdecoding_bound` (Lemma 4.22, forward inclusion)
 
@@ -1219,6 +1306,8 @@ lemma folding_preserves_listdecoding_base_ne_subset
           ¬ (listBlock' ⊆ foldSet)
         ] < errStar C' 2 δ
   := hrev
+
+
 
 end FoldingLemmas
 

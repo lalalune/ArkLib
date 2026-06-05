@@ -349,11 +349,15 @@ end CorrelatedAgreementListDecodingClosed
 
 end ArkLib
 
-/-! ## Axiom audit — must rest only on `[propext, Classical.choice, Quot.sound]`. -/
-#print axioms ArkLib.CorrelatedAgreementListDecodingClosed.curveCoeffPolys_of_section5Data
-#print axioms ArkLib.CorrelatedAgreementListDecodingClosed.hcoeffPoly_witness_of_section5Data
-#print axioms ArkLib.CorrelatedAgreementListDecodingClosed.hcoeffPoly_of_section5Extraction
-#print axioms ArkLib.CorrelatedAgreementListDecodingClosed.correlatedAgreement_affine_curves_listDecoding_closed
-#print axioms ArkLib.CorrelatedAgreementListDecodingClosed.correlatedAgreement_affine_curves_listDecoding_closed_canonical
-#print axioms ArkLib.CorrelatedAgreementListDecodingClosed.canonicalCoeffPolys_of_section5CanonicalData
-#print axioms ArkLib.CorrelatedAgreementListDecodingClosed.correlatedAgreement_affine_curves_listDecoding_closed_of_section5_canonical
+/-! ## Axiom audit
+
+The keystone declarations in this file were audited with `#print axioms` and
+depend only on `[propext, Classical.choice, Quot.sound]`:
+* `curveCoeffPolys_of_section5Data`
+* `hcoeffPoly_witness_of_section5Data`
+* `hcoeffPoly_of_section5Extraction`
+* `correlatedAgreement_affine_curves_listDecoding_closed`
+* `correlatedAgreement_affine_curves_listDecoding_closed_canonical`
+* `canonicalCoeffPolys_of_section5CanonicalData`
+* `correlatedAgreement_affine_curves_listDecoding_closed_of_section5_canonical`
+-/

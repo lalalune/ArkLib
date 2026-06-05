@@ -5,6 +5,7 @@ Authors: OpenAI
 -/
 
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
+import ArkLib.ToMathlib.CorrelatedAgreementListDecodingClosed
 
 namespace ProximityGap
 
