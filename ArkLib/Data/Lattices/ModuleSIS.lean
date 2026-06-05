@@ -15,7 +15,7 @@ over the computable cyclotomic ring `Rq Φ`. The kernel-form relation: given a u
 random matrix `A`, find a nonzero short vector `z` with `A *ᵥ z = 0`.
 
 Note, there is another SIS definition in VCV-io, that is however not defined over computable
-polynomials (i.e. CompPoly), for details checkout:
+polynomials (CompPoly), for details checkout:
 `VCV-io/LatticeCrypto/HardnessAssumptions/ShortIntegerSolution.lean`.
 
 This is the hardness assumption the Ajtai [Ajt96] commitment binding reductions target, in
