@@ -811,6 +811,86 @@ theorem correlatedAgreement_affine_lines_of_strict_exists_natCeil_counting_canon
     rw [h_u_eq]
     exact hBoundaryCard (u 0) (u 1) hδeq hcard_close
 
+/-- Strict Johnson canonical coefficient-polynomial supplier for affine lines,
+with Claim-5.11 counting supplied in the complement-threshold arithmetic shape.
+
+This factors the strict branch used by
+`correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_counting_canonical_coeff`
+into the exact canonical-coefficient front-door shape consumed by the §6 curve
+wrappers. -/
+theorem section5_strict_canonical_coeff_polys_for_RS_goodCoeffsCurve_finMapTwoWords_of_natCeil_complement_counting
+    {m k : ℕ} (hk : 0 < k) {ωs : Fin n ↪ F}
+    [DecidableEq (RatFunc F)]
+    (δ : ℚ≥0)
+    (hDx : ((gsDpg n m k : ℕ) : ℝ) < D_X ((k + 1) / (n : ℚ)) n m)
+    (hYZ : ((gsDpg n m k + gsZCap n m k : ℕ) : ℝ) ≤
+      n * (m + 1 / (2 : ℚ)) ^ 3 / (6 * Real.sqrt ((k + 1) / n)))
+    (hcounting : ∀ (u₀ u₁ : Fin n → F) {Q : F[Z][X][Y]}
+      (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁),
+      ∃ (x₀ : F) (D : ℕ),
+        (coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁).card - 1 ≤
+          (2 * k + 1)
+            * (Polynomial.Bivariate.natDegreeY <| H k (δ : ℚ) x₀ h_gs)
+            * (Polynomial.Bivariate.natDegreeY <| R k (δ : ℚ) x₀ h_gs)
+            * D ∧
+        (2 * k + 1)
+          * (Polynomial.Bivariate.natDegreeY <| H k (δ : ℚ) x₀ h_gs)
+          * (Polynomial.Bivariate.natDegreeY <| R k (δ : ℚ) x₀ h_gs)
+          * D ≤ #(coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁) ∧
+        ⌈(δ : ℚ) * (n : ℚ)⌉₊ *
+            #(coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁) <
+          (n - k) *
+            (#(coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁) -
+              (2 * k + 1)
+                * (Polynomial.Bivariate.natDegreeY <| H k (δ : ℚ) x₀ h_gs)
+                * (Polynomial.Bivariate.natDegreeY <| R k (δ : ℚ) x₀ h_gs)
+                * D))
+    (hunique : ∀ (u₀ u₁ : Fin n → F) {Q : F[Z][X][Y]}
+      (_h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) (P : F → Polynomial F),
+      (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+        (P z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P z).eval ∘ ωs) ≤ (δ : ℚ)) →
+      ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+        P z = PzFamily (F := F) (n := n) (δ : ℚ) u₀ u₁ ωs k z) :
+    ∀ u : WordStack F (Fin (1 + 1)) (Fin n),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (1 + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code ωs (k + 1)) ≤ (δ : ℝ≥0)] >
+          (((1 : ℕ) : ENNReal) * (errorBound (δ : ℝ≥0) (k + 1) ωs : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code ωs (k + 1)) : ℝ≥0)) / 2 <
+        (δ : ℝ≥0) →
+      (δ : ℝ≥0) < 1 - ReedSolomon.sqrtRate (k + 1) ωs →
+      ∃ P₀ : F → Polynomial F,
+        (∃ B : ℕ → Polynomial F,
+          (∀ j < k + 1, (B j).natDegree < 1 + 1) ∧
+            ∀ z ∈ RS_goodCoeffsCurve (k := 1) (deg := k + 1) (domain := ωs)
+                u (δ : ℝ≥0),
+              ∀ j < k + 1, (P₀ z).coeff j = (B j).eval z) ∧
+        ∀ P : F → Polynomial F,
+          (∀ z ∈ RS_goodCoeffsCurve (k := 1) (deg := k + 1) (domain := ωs)
+              u (δ : ℝ≥0),
+            (P z).natDegree < k + 1 ∧
+              δᵣ(∑ t : Fin (1 + 1), (z ^ (t : ℕ)) • u t,
+                (P z).eval ∘ ωs) ≤ (δ : ℝ≥0)) →
+          ∀ z ∈ RS_goodCoeffsCurve (k := 1) (deg := k + 1) (domain := ωs)
+              u (δ : ℝ≥0),
+            P z = P₀ z := by
+  classical
+  intro u _hprob _hJ _hsqrt
+  have h_u_eq := wordStack_fin_two_eq_finMapTwoWords (F := F) (n := n) u
+  rw [h_u_eq]
+  obtain ⟨Q, h_gs⟩ :=
+    modified_guruswami_has_a_solution (F := F) (m := m) (n := n) (k := k)
+      (Nat.pos_of_neZero n) hk (ωs := ωs) (u₀ := u 0) (u₁ := u 1) hDx hYZ
+  obtain ⟨x₀, D, hcover, hthreshold, hsmall⟩ := hcounting (u 0) (u 1) h_gs
+  obtain ⟨Dtop, hDtop_card, hsubset⟩ :=
+    exists_points_with_close_subset_matching_set_claim511_complement
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := (δ : ℚ)) (x₀ := x₀)
+      h_gs (D := D) hcover hthreshold hsmall
+  exact PzFamily_exists_canonical_coeff_polys_goodCoeffsCurve_finMapTwoWords_of_selected_domain
+    (F := F) (n := n) (m := m) (k := k) (ωs := ωs) (Q := Q)
+    δ (u 0) (u 1) h_gs Dtop hDtop_card hsubset
+    (hunique (u 0) (u 1) h_gs)
+
 /-- Degree-one correlated-agreement capstone in the native §5 affine-line
 language, with Claim-5.11 counting supplied in the complement-threshold
 arithmetic shape.  This is the same canonical-coefficient front door as

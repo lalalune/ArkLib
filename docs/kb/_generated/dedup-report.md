@@ -4,9 +4,9 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 380 files, 7715 declarations
+- `ArkLib` — 386 files, 7878 declarations
 
-## Same short-name across multiple files (285 groups)
+## Same short-name across multiple files (296 groups)
 
 Each group lists declarations sharing a short name across ≥2 files. Most are legitimate (overloaded interface, paper-shape vs general form), but the list is the right anchor to look for duplicates.
 
@@ -991,6 +991,21 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma Binius.RingSwitching.boolHypercube_sum_pinned` [ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean:917](../../../ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean#L917) — **Pinned-`𝓑` Boolean-domain sumcheck sum.** When `𝓑` is pinned to the Boolean embedding (`𝓑 c = if c
 - `lemma RingSwitching.boolHypercube_sum_pinned` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:1375](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L1375) — **Pinned-`𝓑` Boolean-domain sumcheck sum.** When `𝓑` is pinned to the Boolean embedding (`𝓑 c = if c
 
+### `c0_ne_c1` (2 declarations, 2 files)
+
+- `theorem JohnsonBound.FamilyRefutation.c0_ne_c1` [ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutation.lean:36](../../../ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutation.lean#L36) — The three codewords are pairwise distinct.
+- `theorem JohnsonBound.JqlRefutation.c0_ne_c1` [ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutationComplete.lean:75](../../../ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutationComplete.lean#L75) — The three codewords are pairwise distinct.
+
+### `c0_ne_c2` (2 declarations, 2 files)
+
+- `theorem JohnsonBound.FamilyRefutation.c0_ne_c2` [ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutation.lean:37](../../../ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutation.lean#L37) — (no docstring)
+- `theorem JohnsonBound.JqlRefutation.c0_ne_c2` [ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutationComplete.lean:76](../../../ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutationComplete.lean#L76) — (no docstring)
+
+### `c1_ne_c2` (2 declarations, 2 files)
+
+- `theorem JohnsonBound.FamilyRefutation.c1_ne_c2` [ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutation.lean:38](../../../ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutation.lean#L38) — (no docstring)
+- `theorem JohnsonBound.JqlRefutation.c1_ne_c2` [ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutationComplete.lean:77](../../../ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutationComplete.lean#L77) — (no docstring)
+
 ### `check_rows_sum_eq_aeval` (2 declarations, 2 files)
 
 - `lemma Binius.RingSwitching.check_rows_sum_eq_aeval` [ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean:740](../../../ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean#L740) — **DP24 ring-switching capstone (sum form).** The verifier's row-decomposition check sum, applied to 
@@ -1173,12 +1188,17 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `exists_coordinate_subset_with_many_nonbad_of_heavy_complement_card` (2 declarations, 2 files)
 
-- `lemma ProximityGap.exists_coordinate_subset_with_many_nonbad_of_heavy_complement_card` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean:5616](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean#L5616) — Complement-to-incidence form of the heavy-coordinate argument.  If a coordinate is not heavy for the
+- `lemma ProximityGap.exists_coordinate_subset_with_many_nonbad_of_heavy_complement_card` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean:6027](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean#L6027) — Complement-to-incidence form of the heavy-coordinate argument.  If a coordinate is not heavy for the
 - `lemma ArkLib.Claim511.exists_coordinate_subset_with_many_nonbad_of_heavy_complement_card` [ArkLib/ToMathlib/Claim511.lean:128](../../../ArkLib/ToMathlib/Claim511.lean#L128) — **Complement-to-incidence selection.** If at least `r` coordinates are *not* heavy (each bad for `< 
+
+### `exists_ne_zero_map_eq_zero` (2 declarations, 2 files)
+
+- `theorem GSMultInterp.exists_ne_zero_map_eq_zero` [ArkLib/Data/CodingTheory/GuruswamiSudan/MultiplicityInterpolation.lean:214](../../../ArkLib/Data/CodingTheory/GuruswamiSudan/MultiplicityInterpolation.lean#L214) — **Abstract underdetermined-system existence** (mirrors `BCKHS25.exists_ne_zero_map_eq_zero`): a line
+- `theorem BCKHS25.exists_ne_zero_map_eq_zero` [ArkLib/Data/CodingTheory/ProximityGap/BCKHS25/Interpolation.lean:69](../../../ArkLib/Data/CodingTheory/ProximityGap/BCKHS25/Interpolation.lean#L69) — Abstract underdetermined-system existence: a linear map between finite-dimensional spaces with stric
 
 ### `exists_subset_card_eq_of_le_card` (2 declarations, 2 files)
 
-- `lemma ProximityGap.exists_subset_card_eq_of_le_card` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean:5566](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean#L5566) — Select exactly `r` elements from a finite set once its cardinality is large enough.  This is the fin
+- `lemma ProximityGap.exists_subset_card_eq_of_le_card` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean:5977](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean#L5977) — Select exactly `r` elements from a finite set once its cardinality is large enough.  This is the fin
 - `lemma ArkLib.Claim511.exists_subset_card_eq_of_le_card` [ArkLib/ToMathlib/Claim511.lean:118](../../../ArkLib/ToMathlib/Claim511.lean#L118) — Select exactly `r` elements from a finite set once its cardinality is large enough.  Final selection
 
 ### `extractor` (2 declarations, 2 files)
@@ -1246,9 +1266,29 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma GuruswamiSudan.guruswami_sudan_for_proximity_gap_property` [ArkLib/Data/CodingTheory/GuruswamiSudan/GuruswamiSudan.lean:794](../../../ArkLib/Data/CodingTheory/GuruswamiSudan/GuruswamiSudan.lean#L794) — Constructive witness property for the Guruswami–Sudan system. When `m > 0` and the codeword polynomi
 - `lemma ProximityGap.guruswami_sudan_for_proximity_gap_property` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Guruswami.lean:201](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Guruswami.lean#L201) — The second part of Lemma 5.3 from [BCIKS20]. For any solution `Q` of the Guruswami-Sudan system, and
 
+### `ham_c0_c1` (2 declarations, 2 files)
+
+- `theorem JohnsonBound.FamilyRefutation.ham_c0_c1` [ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutation.lean:41](../../../ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutation.lean#L41) — Pairwise Hamming distances.
+- `theorem JohnsonBound.JqlRefutation.ham_c0_c1` [ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutationComplete.lean:80](../../../ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutationComplete.lean#L80) — Pairwise Hamming distances.
+
+### `ham_c0_c2` (2 declarations, 2 files)
+
+- `theorem JohnsonBound.FamilyRefutation.ham_c0_c2` [ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutation.lean:42](../../../ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutation.lean#L42) — (no docstring)
+- `theorem JohnsonBound.JqlRefutation.ham_c0_c2` [ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutationComplete.lean:81](../../../ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutationComplete.lean#L81) — (no docstring)
+
+### `ham_c1_c2` (2 declarations, 2 files)
+
+- `theorem JohnsonBound.FamilyRefutation.ham_c1_c2` [ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutation.lean:43](../../../ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutation.lean#L43) — (no docstring)
+- `theorem JohnsonBound.JqlRefutation.ham_c1_c2` [ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutationComplete.lean:82](../../../ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutationComplete.lean#L82) — (no docstring)
+
+### `hasseCoeff` (2 declarations, 2 files)
+
+- `def GSMultInterp.hasseCoeff` [ArkLib/Data/CodingTheory/GuruswamiSudan/MultiplicityInterpolation.lean:135](../../../ArkLib/Data/CodingTheory/GuruswamiSudan/MultiplicityInterpolation.lean#L135) — The order-`(a, b)` *Hasse coefficient* of the bivariate polynomial `Q = ∑_{(s,t)∈monoIdx} c(s,t)·X^s
+- `def ArkLib.GS.hasseCoeff` [ArkLib/Data/CodingTheory/ProximityGap/BivariateVanishing.lean:67](../../../ArkLib/Data/CodingTheory/ProximityGap/BivariateVanishing.lean#L67) — The bivariate Hasse–Taylor coefficient of bidegree `(i, j)` of `Q` at `(a, b)`: take the `j`-th oute
+
 ### `heavyCoords_card_mul_le` (2 declarations, 2 files)
 
-- `lemma ProximityGap.heavyCoords_card_mul_le` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean:5574](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean#L5574) — Generic double-counting brick for Claim 5.11. If each `z ∈ S` has at most `m` bad coordinates, then 
+- `lemma ProximityGap.heavyCoords_card_mul_le` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean:5985](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean#L5985) — Generic double-counting brick for Claim 5.11. If each `z ∈ S` has at most `m` bad coordinates, then 
 - `lemma ArkLib.Claim511.heavyCoords_card_mul_le` [ArkLib/ToMathlib/Claim511.lean:77](../../../ArkLib/ToMathlib/Claim511.lean#L77) — **Double-counting brick.** If each `z ∈ S` has at most `m` bad coordinates, then the coordinates tha
 
 ### `hint` (2 declarations, 2 files)
@@ -1326,6 +1366,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma ReedSolomon.Finset.list_reduceOption_helper` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:256](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L256) — (no docstring)
 - `lemma Finset.list_reduceOption_helper` [ArkLib/ToMathlib/Finset/ToListWithProof.lean:35](../../../ArkLib/ToMathlib/Finset/ToListWithProof.lean#L35) — (no docstring)
 
+### `mem_C_iff` (2 declarations, 2 files)
+
+- `theorem JohnsonBound.FamilyRefutation.mem_C_iff` [ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutation.lean:46](../../../ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutation.lean#L46) — Membership in `C` is membership in the explicit three-element set.
+- `theorem JohnsonBound.JqlRefutation.mem_C_iff` [ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutationComplete.lean:85](../../../ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutationComplete.lean#L85) — Membership in `C` is membership in the explicit three-element set.
+
 ### `mem_subgroup_iff_mem_domain` (2 declarations, 2 files)
 
 - `lemma ReedSolomon.FftDomain.mem_subgroup_iff_mem_domain` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:324](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L324) — (no docstring)
@@ -1335,6 +1380,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `lemma ReedSolomon.FftDomain.mem_subgroup_iff_mem_finset` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:318](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L318) — (no docstring)
 - `lemma Domain.FftDomainClass.mem_subgroup_iff_mem_finset` [ArkLib/Data/Domain/FftDomain/ToSubgroup.lean:52](../../../ArkLib/Data/Domain/FftDomain/ToSubgroup.lean#L52) — (no docstring)
+
+### `minDist_C` (2 declarations, 2 files)
+
+- `theorem JohnsonBound.FamilyRefutation.minDist_C` [ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutation.lean:51](../../../ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutation.lean#L51) — Every distinct pair of codewords has Hamming distance `≥ 1`, and the pair `(c0, c1)` attains `1`. He
+- `theorem JohnsonBound.JqlRefutation.minDist_C` [ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutationComplete.lean:93](../../../ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutationComplete.lean#L93) — **`Code.minDist C = 1`.**  The defining set of distinct-pair distances is `{1, 2}` (`d(c0,c1) = d(c0
 
 ### `neg_one_mem_domain` (2 declarations, 2 files)
 
@@ -1590,6 +1640,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `lemma ReedSolomon.FftDomain.val_eq_nsmul_one` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:481](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L481) — (no docstring)
 - `lemma Domain.FftDomainClass.val_eq_nsmul_one` [ArkLib/Data/Domain/FftDomain/Ops.lean:104](../../../ArkLib/Data/Domain/FftDomain/Ops.lean#L104) — (no docstring)
+
+### `vanishesToOrder` (2 declarations, 2 files)
+
+- `def GSMultInterp.vanishesToOrder` [ArkLib/Data/CodingTheory/GuruswamiSudan/MultiplicityInterpolation.lean:152](../../../ArkLib/Data/CodingTheory/GuruswamiSudan/MultiplicityInterpolation.lean#L152) — `Q` (given by coefficient vector `c`) **vanishes to order `m`** at `(x₀, y₀)`: every Hasse coefficie
+- `def ArkLib.GS.vanishesToOrder` [ArkLib/Data/CodingTheory/ProximityGap/BivariateVanishing.lean:60](../../../ArkLib/Data/CodingTheory/ProximityGap/BivariateVanishing.lean#L60) — `Q : F[X][Y]` **vanishes to order `m` at `(a, b)`** when, for every `Y`-index `j`, the inner Taylor 
 
 ### `vecL2NormSq` (2 declarations, 2 files)
 
