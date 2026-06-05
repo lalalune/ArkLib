@@ -458,7 +458,7 @@ theorem correlatedAgreement_affine_curves_of_section5_canonical_data
     (hCanonicalExtract :
       ∀ u : WordStack F (Fin (k + 1)) ι,
         ∃ P₀ : F → Polynomial F,
-          ∃ _ : _root_.ArkLib.CorrelatedAgreementListDecodingClosed.Section5StrictData
+          ∃ _ : ArkLib.CorrelatedAgreementListDecodingClosed.Section5StrictData
             (k := k) (deg := deg) (domain := domain) (δ := δ) u P₀,
           ∀ P : F → Polynomial F,
             (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
@@ -473,7 +473,8 @@ theorem correlatedAgreement_affine_curves_of_section5_canonical_data
       jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u)) :
     δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
       (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
-  exact _root_.ArkLib.CorrelatedAgreementListDecodingClosed.correlatedAgreement_affine_curves_listDecoding_closed_of_section5_canonical
+  open ArkLib.CorrelatedAgreementListDecodingClosed in
+  exact correlatedAgreement_affine_curves_listDecoding_closed_of_section5_canonical
     (deg := deg) (domain := domain) (δ := δ) hδ hCanonicalExtract hBoundaryCard
 
 end CurveAssemblyBridge
