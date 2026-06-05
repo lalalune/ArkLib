@@ -6524,6 +6524,72 @@ lemma
     (k := k) (δ := δ) (x₀ := x₀) (ωs := ωs) (Dtop := Dtop) (D := D)
     h_gs hcover hlarge
 
+omit [DecidableEq (RatFunc F)] in
+/-- Graph-clear complement-threshold close-subset bridge through the standalone
+`ArkLib.Claim511` double-counting theorem. This is the direct Claim-5.11
+consumer for the honest graph-condition extractions `R_graph_clear` and
+`H_graph_clear`. -/
+lemma
+    exists_points_with_close_subset_matching_set_graph_clear_claim511_complement
+    [NeZero n] [DecidableEq (Polynomial F)]
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
+    {D : ℕ}
+    (hcover :
+      (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).card - 1 ≤
+        (2 * k + 1)
+          * (Bivariate.natDegreeY <| H_graph_clear k δ x₀ h_gs hcond)
+          * (Bivariate.natDegreeY <| R_graph_clear k δ x₀ h_gs hcond)
+          * D)
+    (hthreshold :
+      (2 * k + 1)
+        * (Bivariate.natDegreeY <| H_graph_clear k δ x₀ h_gs hcond)
+        * (Bivariate.natDegreeY <| R_graph_clear k δ x₀ h_gs hcond)
+        * D ≤ #(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁))
+    (hsmall :
+      ⌈δ * (n : ℚ)⌉₊ * #(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) <
+        (n - k) *
+          (#(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) -
+            (2 * k + 1)
+              * (Bivariate.natDegreeY <| H_graph_clear k δ x₀ h_gs hcond)
+              * (Bivariate.natDegreeY <| R_graph_clear k δ x₀ h_gs hcond)
+              * D)) :
+  ∃ Dtop : Finset (Fin n),
+    Dtop.card = k + 1 ∧
+    ∀ x ∈ Dtop,
+      coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ ⊆
+        matching_set_at_x k δ h_gs x := by
+  classical
+  obtain ⟨Dtop, hcard, hlarge⟩ :=
+    ArkLib.Claim511.exists_points_with_large_matching_subset_fin_complement
+      (n := n)
+      (β := coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁)
+      (γ := F)
+      (S := (Finset.univ : Finset (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁)))
+      (nonmatching := fun z => nonmatching_coords_for_z k δ h_gs z)
+      (matchSet := fun x => matching_set_at_x k δ h_gs x)
+      (E := ⌈δ * (n : ℚ)⌉₊)
+      (k := k)
+      (dH := Bivariate.natDegreeY <| H_graph_clear k δ x₀ h_gs hcond)
+      (dR := Bivariate.natDegreeY <| R_graph_clear k δ x₀ h_gs hcond)
+      (D := D)
+      (by simpa using hthreshold)
+      (fun z _hz =>
+        nonmatching_coords_for_z_card_le_natCeil_delta_mul
+          (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs z)
+      (by simpa using hsmall)
+      (fun x hx =>
+        lt_of_lt_of_le hx
+          (nonmatching_coords_filter_card_le_matching_set_at_x_card
+            (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs
+            (Finset.univ : Finset (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁)) x))
+  refine ⟨Dtop, hcard, ?_⟩
+  exact close_proximity_subset_matching_set_on_points_of_large_matching_subset_graph_clear
+    (F := F) (m := m) (n := n) (Q := Q)
+    (k := k) (δ := δ) (x₀ := x₀) (ωs := ωs) (Dtop := Dtop) (D := D)
+    h_gs hcond hcover hlarge
+
 open Polynomial in
 /-- Claim-5.11 plus the canonical `PzFamily` selected-domain package for any
 uniform integer bad-coordinate bound `E`.  This is the assembled form consumed
