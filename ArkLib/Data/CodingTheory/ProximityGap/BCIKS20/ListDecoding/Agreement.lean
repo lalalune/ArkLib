@@ -9,7 +9,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.RootClearing
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.HenselNumerator
 import ArkLib.ToMathlib.Claim511
 
-set_option linter.style.longFile 6700
+set_option linter.style.longFile 6900
 set_option linter.unusedSectionVars false
 
 /-!
@@ -1008,6 +1008,140 @@ noncomputable def H_graph_clear_ofLarge
     (GraphExtractionHypotheses.ofLarge (F := F) (m := m) (n := n) (k := k)
       (Q := Q) (ωs := ωs) (u₀ := u₀) (u₁ := u₁)
       δ x₀ h_gs hx0 hsep A hA hcount hlarge)
+
+/-- The large-set `R_graph_clear` extraction remains in the `pg_Rset`. -/
+lemma R_graph_clear_ofLarge_mem_pg_Rset
+    [DecidableEq (Polynomial F)] [DecidableEq (RatFunc F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hx0 : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        Bivariate.evalX (Polynomial.C x₀) R ≠ 0)
+    (hsep : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        (Bivariate.evalX (Polynomial.C x₀) R).Separable)
+    (A : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ → Finset (Fin n))
+    (hA : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      ∀ i ∈ A z, (u₀ + z.1 • u₁) i =
+        (Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2).eval
+          (ωs i))
+    (hcount : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z.1) 1 k < m * (A z).card)
+    (hlarge :
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q) :
+    R_graph_clear_ofLarge (F := F) (m := m) (n := n) k δ x₀ h_gs
+      hx0 hsep A hA hcount hlarge ∈
+      pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs := by
+  unfold R_graph_clear_ofLarge R_graph_clear
+  exact (exists_pg_factors_with_large_common_root_set_and_clearDenomY_of_graph_conditions
+    (F := F) (k := k) (δ := δ) (x₀ := x₀) (h_gs := h_gs)
+    hx0 hsep
+    (coeffs_of_close_proximity_nonempty_of_large_natdiv
+      (F := F) (n := n) (m := m) (k := k) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) δ hlarge)
+    A hA hcount hlarge).choose_spec.choose_spec.1
+
+/-- Irreducibility of the large-set `R_graph_clear` extraction. -/
+lemma irreducible_R_graph_clear_ofLarge
+    [DecidableEq (Polynomial F)] [DecidableEq (RatFunc F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hx0 : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        Bivariate.evalX (Polynomial.C x₀) R ≠ 0)
+    (hsep : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        (Bivariate.evalX (Polynomial.C x₀) R).Separable)
+    (A : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ → Finset (Fin n))
+    (hA : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      ∀ i ∈ A z, (u₀ + z.1 • u₁) i =
+        (Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2).eval
+          (ωs i))
+    (hcount : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z.1) 1 k < m * (A z).card)
+    (hlarge :
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q) :
+    Irreducible (R_graph_clear_ofLarge (F := F) (m := m) (n := n) k δ x₀ h_gs
+      hx0 hsep A hA hcount hlarge) := by
+  unfold R_graph_clear_ofLarge R_graph_clear
+  exact (exists_pg_factors_with_large_common_root_set_and_clearDenomY_of_graph_conditions
+    (F := F) (k := k) (δ := δ) (x₀ := x₀) (h_gs := h_gs)
+    hx0 hsep
+    (coeffs_of_close_proximity_nonempty_of_large_natdiv
+      (F := F) (n := n) (m := m) (k := k) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) δ hlarge)
+    A hA hcount hlarge).choose_spec.choose_spec.2.1
+
+/-- Irreducibility of the large-set `H_graph_clear` extraction. -/
+lemma irreducible_H_graph_clear_ofLarge
+    [DecidableEq (Polynomial F)] [DecidableEq (RatFunc F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hx0 : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        Bivariate.evalX (Polynomial.C x₀) R ≠ 0)
+    (hsep : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        (Bivariate.evalX (Polynomial.C x₀) R).Separable)
+    (A : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ → Finset (Fin n))
+    (hA : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      ∀ i ∈ A z, (u₀ + z.1 • u₁) i =
+        (Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2).eval
+          (ωs i))
+    (hcount : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z.1) 1 k < m * (A z).card)
+    (hlarge :
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q) :
+    Irreducible (H_graph_clear_ofLarge (F := F) (m := m) (n := n) k δ x₀ h_gs
+      hx0 hsep A hA hcount hlarge) := by
+  unfold H_graph_clear_ofLarge H_graph_clear
+  exact (exists_pg_factors_with_large_common_root_set_and_clearDenomY_of_graph_conditions
+    (F := F) (k := k) (δ := δ) (x₀ := x₀) (h_gs := h_gs)
+    hx0 hsep
+    (coeffs_of_close_proximity_nonempty_of_large_natdiv
+      (F := F) (n := n) (m := m) (k := k) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) δ hlarge)
+    A hA hcount hlarge).choose_spec.choose_spec.2.2.1
+
+/-- Positive degree of the large-set `H_graph_clear` extraction. -/
+lemma natDegree_H_graph_clear_ofLarge_pos
+    [DecidableEq (Polynomial F)] [DecidableEq (RatFunc F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hx0 : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        Bivariate.evalX (Polynomial.C x₀) R ≠ 0)
+    (hsep : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        (Bivariate.evalX (Polynomial.C x₀) R).Separable)
+    (A : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ → Finset (Fin n))
+    (hA : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      ∀ i ∈ A z, (u₀ + z.1 • u₁) i =
+        (Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2).eval
+          (ωs i))
+    (hcount : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z.1) 1 k < m * (A z).card)
+    (hlarge :
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q) :
+    0 < (H_graph_clear_ofLarge (F := F) (m := m) (n := n) k δ x₀ h_gs
+      hx0 hsep A hA hcount hlarge).natDegree := by
+  unfold H_graph_clear_ofLarge H_graph_clear
+  exact (exists_pg_factors_with_large_common_root_set_and_clearDenomY_of_graph_conditions
+    (F := F) (k := k) (δ := δ) (x₀ := x₀) (h_gs := h_gs)
+    hx0 hsep
+    (coeffs_of_close_proximity_nonempty_of_large_natdiv
+      (F := F) (n := n) (m := m) (k := k) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) δ hlarge)
+    A hA hcount hlarge).choose_spec.choose_spec.2.2.2.1
 
 omit [DecidableEq (RatFunc F)] in
 lemma R_graph_clear_mem_pg_Rset
