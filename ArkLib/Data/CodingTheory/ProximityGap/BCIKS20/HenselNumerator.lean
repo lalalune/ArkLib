@@ -1324,6 +1324,34 @@ theorem structured_weight_collapse (d dH D t wW : ℕ) (hd : 2 ≤ d) (hdH : 1 �
     nlinarith [hwe, hc1, hdH, hdHc, Nat.mul_le_mul_left (2 * s + 2) hwe,
       Nat.mul_le_mul_left (2 * s + 1) (Nat.mul_le_mul_left c (by omega : e + 1 ≤ dH + e))]
 
+/-- **Structured invariant consumer for (P1).**
+
+Once the P2/`α_t` route supplies the structured Hensel-numerator weight
+`Λ(β_t) ≤ 1 + (t+1)Λ(W) + e_tΛ(ξ)`, the loose Claim-A.2 target
+`Λ(β_t) ≤ (2t+1)·d_R·D` follows by the proven arithmetic collapse
+`structured_weight_collapse`.
+
+This theorem deliberately keeps the genuine structured invariant as an explicit
+hypothesis; it does not use the false loose-IH route of
+`βHensel_succ_term_weight_le`. -/
+theorem βHensel_weight_bound_of_structured_weight (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D) (t : ℕ)
+    (hstructured :
+      weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+        ≤ WithBot.some
+          (1 + (t + 1) * (H.leadingCoeff).natDegree
+            + (2 * t - 1)
+              * ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1)))) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) := by
+  refine hstructured.trans ?_
+  exact_mod_cast structured_weight_collapse
+    (Bivariate.natDegreeY R) (Bivariate.natDegreeY H) D t (H.leadingCoeff).natDegree
+    hdR2 (by simpa using hH) hdHR hW
+
 /-- **WAVE 5 — the `WithBot ℕ` nsmul-bound helper.**  If `w ≤ some n` then `k • w ≤ some (k·n)`:
 the over-`𝒪` power bound `weight_Λ_over_𝒪_pow_le` produces `k • Λ_𝒪(a)`, and this descends a
 numeric `Λ_𝒪(a) ≤ some n` to `Λ_𝒪(a^k) ≤ some (k·n)` (used for the `W`/`ξ` power factors). -/
