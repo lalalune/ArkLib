@@ -488,6 +488,15 @@ theorem iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness [IsDomain L] (i : F
   use iteratedSumcheckRbrExtractor κ L K P ℓ ℓ' h_l aOStmtIn i
   use iteratedSumcheckKnowledgeStateFunction κ L K P ℓ ℓ' h_l aOStmtIn i
   intro stmtIn witIn prover j
+  -- WIP (blocked, two independent obstructions):
+  --   (a) `iteratedSumcheckKnowledgeStateFunction` still carries the wall-(1) `toFun_full` `sorry`s
+  --       (the index-⟨2⟩ ACCEPT-branch round-poly algebra; see above). The defect-#21 verifier-failure
+  --       repair only unblocked the REJECT branch / run-collapse front-end, which are now closed.
+  --   (b) the round bad-event probability bound `Pr[challenge hits a root] ≤ roundKnowledgeError`
+  --       (degree-2 Schwartz–Zippel over `L` for the single round challenge `r'`) is a separate
+  --       analysis, independent of `toFun_full`. The challenge index `j` here is the round's single
+  --       `V_to_P` message; the bound is `2 / |L|` (`roundKnowledgeError L ℓ' i`).
+  -- Both must land before this closes; left as WIP `sorry`.
   sorry
 
 end IteratedSumcheckStep
