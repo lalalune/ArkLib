@@ -64,4 +64,34 @@ theorem degreeLT_eq_of_agree_on_finset {k : ℕ}
       exact Finset.mem_filter.mpr ⟨hx, hagree x hx⟩]
   exact hcard
 
+open Classical in
+/-- **Reed–Solomon unique decoding.** If `p, q ∈ degreeLT F k` each agree with a
+word `w` on at least `a` domain points and `2a ≥ n + k` (the unique-decoding
+radius), then `p = q`: their agreement sets overlap in `≥ k` points on which `p`
+and `q` coincide, forcing equality by RS distinctness. -/
+theorem degreeLT_unique_decode {k : ℕ} {p q : F[X]} {w : ι → F}
+    (hp : p ∈ Polynomial.degreeLT F k) (hq : q ∈ Polynomial.degreeLT F k) {a : ℕ}
+    (hpa : a ≤ (Finset.univ.filter (fun x => p.eval (domain x) = w x)).card)
+    (hqa : a ≤ (Finset.univ.filter (fun x => q.eval (domain x) = w x)).card)
+    (hrad : Fintype.card ι + k ≤ 2 * a) :
+    p = q := by
+  classical
+  set Ap : Finset ι := Finset.univ.filter (fun x => p.eval (domain x) = w x) with hAp
+  set Aq : Finset ι := Finset.univ.filter (fun x => q.eval (domain x) = w x) with hAq
+  have hsub : Ap ∩ Aq ⊆ Finset.univ.filter (fun x => p.eval (domain x) = q.eval (domain x)) := by
+    intro x hx
+    rcases Finset.mem_inter.mp hx with ⟨hxp, hxq⟩
+    have h1 := (Finset.mem_filter.mp hxp).2
+    have h2 := (Finset.mem_filter.mp hxq).2
+    exact Finset.mem_filter.mpr ⟨Finset.mem_univ x, by rw [h1, h2]⟩
+  have hunion : (Ap ∪ Aq).card ≤ Fintype.card ι := by
+    rw [← Finset.card_univ]; exact Finset.card_le_card (Finset.subset_univ _)
+  have hie : (Ap ∩ Aq).card + (Ap ∪ Aq).card = Ap.card + Aq.card :=
+    Finset.card_inter_add_card_union _ _
+  have hinter_ge : k ≤ (Ap ∩ Aq).card := by omega
+  have hagree_ge : k ≤ (Finset.univ.filter
+      (fun x => p.eval (domain x) = q.eval (domain x))).card :=
+    le_trans hinter_ge (Finset.card_le_card hsub)
+  exact degreeLT_eq_of_agree_card_ge domain hp hq hagree_ge
+
 end RSDistinct

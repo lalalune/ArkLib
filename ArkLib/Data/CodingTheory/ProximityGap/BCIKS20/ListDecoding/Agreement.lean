@@ -1466,10 +1466,9 @@ lemma evalX_R_separable (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
 
 open BCIKS20AppendixA.ClaimA2 in
 /-- The Claim A.2 hypotheses satisfied by the `R,H` pair extracted from Claim 5.7. -/
-lemma claimA2_hypotheses (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
-    (hδ : C57Johnson k n m δ) (hScard : C57Scard k n m ωs Q u₀ u₁ δ) :
-    Hypotheses x₀ (R k δ x₀ h_gs hδ hScard) (H k δ x₀ h_gs hδ hScard) :=
-  ⟨H_dvd_evalX_R k h_gs hδ hScard, evalX_R_separable k h_gs hδ hScard⟩
+lemma claimA2_hypotheses (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
+    Hypotheses x₀ (R k δ x₀ h_gs) (H k δ x₀ h_gs) :=
+  ⟨H_dvd_evalX_R k h_gs, evalX_R_separable k h_gs⟩
 
 lemma powerSeries_eq_truncate_of_coeff_zero_ge
     {R : Type} [Semiring R] (f : PowerSeries R) {k : ℕ}
@@ -3599,9 +3598,9 @@ lemma solution_gamma_is_linear_in_Z
     (hδ : C57Johnson k n m δ) (hScard : C57Scard k n m ωs Q u₀ u₁ δ)
     :
   ∃ (v₀ v₁ : F[X]),
-    γ' x₀ (R k δ x₀ h_gs hδ hScard) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs hδ hScard)
-      (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs hδ hScard)
-      (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs hδ hScard) =
+    γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
+      (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs)
+      (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs) =
         BCIKS20AppendixA.polyToPowerSeries𝕃 _
           (
             (Polynomial.map Polynomial.C v₀) +
@@ -3621,11 +3620,10 @@ noncomputable def P (δ : ℚ) (x₀ : F) (h_gs : ModifiedGuruswami m n k ωs Q 
 
 open BCIKS20AppendixA.ClaimA2 in
 /-- The extracted `P` from Claim 5.9 equals `γ`. -/
-lemma gamma_eq_P (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
-    (hδ : C57Johnson k n m δ) (hScard : C57Scard k n m ωs Q u₀ u₁ δ) :
-  γ' x₀ (R k δ x₀ h_gs hδ hScard) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs hδ hScard)
-    (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs hδ hScard)
-    (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs hδ hScard) =
+lemma gamma_eq_P (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
+  γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
+    (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs)
+    (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs) =
   BCIKS20AppendixA.polyToPowerSeries𝕃 _
     (P k δ x₀ h_gs hδ hScard) :=
   Classical.choose_spec

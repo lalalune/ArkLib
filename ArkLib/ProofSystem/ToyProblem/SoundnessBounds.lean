@@ -323,20 +323,13 @@ The protocol-level reading: the soundness error of the simplified IOR
 `T'[C, t]` (Construction 6.9, `ToyProblem.SimplifiedIOR.reduction`) is
 at least `|Λ(C^{≡2}, δ)| / (|F| + |Λ(C^{≡2}, δ)| - 1)`.
 
-**Adjudication (2026-06-04, eprint 2026/680 p.36 vs. local extract
-`research/proximity-prize/artifacts/2026-680.txt` lines 1660–1700).** The paper
-applies Claim B.1 **once** — the first application gives
-`|S_v| ≥ N / (1 + (N−1)/F) = N·F/(F+N−1)` — and then exhibits an **injective**
-affine map `ψ : S_v → Γ_{μ₁,μ₂}`, so `|Γ_{μ₁,μ₂}| ≥ |S_v| ≥ N·F/(F+N−1)`. The
-injectivity (NOT a second Claim-B.1 pass) is what carries the first-B.1 bound
-through *verbatim*. The previously in-tree `N·F/(F+2N)` used a **second**, lossy
-B.1 application on the affine map (giving `F·|S_v|/(F+|S_v|−1)`) and a denominator
-chain `z ↦ z/(F+z−1)`; that overestimated the collision slack and undershot the
-paper. Replacing the second B.1 with the paper's injective `ψ` recovers the exact
-`N·F/(F+N−1)`. The injection requires `|F| > binom(N, 2)` (so a `μ₁` avoiding the
-`≤ binom(|S_v|, 2)` bad values exists); this is exactly the paper's hypothesis.
-
-## Proof recipe (ABF26 §6.4.1, with Claim B.1 machine-checked)
+The bound `N · F / (F + N − 1)` (writing `N := |Λ(C^{≡2}, δ)|`,
+`F := |F|`) is exactly the conclusion of Claim B.1 specialised to
+`|S| = N`, `|T| = F`, `ε = 1/F`:
+```
+N / (1 + (N − 1) · (1/F)) = N · F / (F + N − 1)
+```
+so the proof skeleton is:
 
 The bound `N · F / (F + N − 1)` (writing `N := |Λ(C^{≡2}, δ)|`,
 `F := |F|`) is exactly the conclusion of Claim B.1 specialised to
