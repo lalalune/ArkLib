@@ -1900,6 +1900,43 @@ lemma approximate_solution_alpha_powerSeries_eq_trunc_of_beta_embedding_zero
       (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
       h_gs hemb)
 
+open BCIKS20AppendixA in
+open BCIKS20AppendixA.ClaimA2 in
+/-- Alpha-series truncation from the exact Appendix-A Lemma A.1 largeness
+condition. -/
+lemma approximate_solution_alpha_powerSeries_eq_trunc_of_Sβ_large
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    (hlarge : ∀ t ≥ k, ∃ D : ℕ,
+      D ≥ Bivariate.totalDegree (H k δ x₀ h_gs) ∧
+        Set.ncard (S_β (β (H := H k δ x₀ h_gs) (R k δ x₀ h_gs) t)) >
+          weight_Λ_over_𝒪 (natDegree_H_pos k h_gs)
+            (β (H := H k δ x₀ h_gs) (R k δ x₀ h_gs) t) D *
+            (H k δ x₀ h_gs).natDegree) :
+    PowerSeries.mk
+      (α'
+        x₀
+        (R k δ x₀ h_gs)
+        (irreducible_H k h_gs)
+        (natDegree_H_pos k h_gs)
+        (claimA2_hypotheses k h_gs)) =
+      ((PowerSeries.mk
+        (α'
+          x₀
+          (R k δ x₀ h_gs)
+          (irreducible_H k h_gs)
+          (natDegree_H_pos k h_gs)
+          (claimA2_hypotheses k h_gs))).trunc k :
+        PowerSeries (BCIKS20AppendixA.𝕃 (H k δ x₀ h_gs))) := by
+  exact alpha'_powerSeries_eq_trunc_of_coeff_zero
+    (F := F) (x₀ := x₀)
+    (irreducible_H k h_gs)
+    (natDegree_H_pos k h_gs)
+    (claimA2_hypotheses k h_gs)
+    (approximate_solution_is_exact_solution_coeffs_of_Sβ_large
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+      h_gs hlarge)
+
 open BCIKS20AppendixA.ClaimA2 in
 omit [DecidableEq (RatFunc F)] in
 lemma approximate_solution_alpha_graph_clear_powerSeries_eq_trunc_of_beta_embedding_zero
@@ -1939,6 +1976,57 @@ lemma approximate_solution_alpha_graph_clear_powerSeries_eq_trunc_of_beta_embedd
       (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
     (approximate_solution_is_exact_solution_coeffs_graph_clear_of_beta_embedding_zero
       (F := F) (m := m) (n := n) (k := k) (Q := Q) δ x₀ h_gs hcond hemb)
+
+open BCIKS20AppendixA in
+open BCIKS20AppendixA.ClaimA2 in
+omit [DecidableEq (RatFunc F)] in
+/-- Graph-clear alpha-series truncation from the exact Appendix-A Lemma A.1
+largeness condition. -/
+lemma approximate_solution_alpha_graph_clear_powerSeries_eq_trunc_of_Sβ_large
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
+    (hlarge : ∀ t ≥ k, ∃ D : ℕ,
+      D ≥ Bivariate.totalDegree
+        (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond) ∧
+        Set.ncard (S_β
+          (β
+            (H := H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+            (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond) t)) >
+          weight_Λ_over_𝒪
+            (natDegree_H_graph_clear_pos
+              (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+            (β
+              (H := H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+              (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond) t) D *
+            (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond).natDegree) :
+    PowerSeries.mk
+      (α'
+        x₀
+        (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+        (irreducible_H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+        (natDegree_H_graph_clear_pos (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+        (claimA2_hypotheses_graph_clear
+          (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)) =
+      ((PowerSeries.mk
+        (α'
+          x₀
+          (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+          (irreducible_H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+          (natDegree_H_graph_clear_pos
+            (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+          (claimA2_hypotheses_graph_clear
+            (F := F) (m := m) (n := n) k δ x₀ h_gs hcond))).trunc k :
+        PowerSeries (BCIKS20AppendixA.𝕃
+          (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond))) := by
+  exact alpha'_powerSeries_eq_trunc_of_coeff_zero
+    (F := F) (x₀ := x₀)
+    (irreducible_H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+    (natDegree_H_graph_clear_pos (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+    (claimA2_hypotheses_graph_clear
+      (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+    (approximate_solution_is_exact_solution_coeffs_graph_clear_of_Sβ_large
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) δ x₀ h_gs hcond hlarge)
 
 open BCIKS20AppendixA.ClaimA2 in
 lemma approximate_solution_gamma_coeff_zero_of_beta_embedding_zero
