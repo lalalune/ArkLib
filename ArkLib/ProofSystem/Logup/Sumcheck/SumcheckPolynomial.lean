@@ -49,6 +49,76 @@ private theorem lagrangeKernelPolynomial_eval (z r : Fin n → F) :
       lagrangeKernelAtPoint F r z := by
   simp [lagrangeKernelPolynomial, lagrangeKernelAtPoint, mul_comm]
 
+private theorem two_ne_zero_of_signsDistinct (hSigns : (-1 : F) ≠ 1) : (2 : F) ≠ 0 := by
+  intro htwo
+  apply hSigns
+  have hsum : (1 : F) + 1 = 0 := by
+    rw [← htwo]
+    norm_num
+  calc
+    (-1 : F) = 1 := by
+      rw [← sub_eq_zero]
+      calc
+        (-1 : F) - 1 = -((1 : F) + 1) := by ring
+        _ = 0 := by rw [hsum]; ring
+
+private theorem signFactor_same (b : Fin 2) :
+    1 + bitToSign F b * bitToSign F b = (2 : F) := by
+  fin_cases b <;> simp [bitToSign] <;> ring
+
+private theorem signFactor_diff {a b : Fin 2} (hab : a ≠ b) :
+    1 + bitToSign F a * bitToSign F b = (0 : F) := by
+  fin_cases a <;> fin_cases b <;> simp [bitToSign] at hab ⊢
+
+private theorem lagrangeKernel_signPoint
+    (hSigns : (-1 : F) ≠ 1) (u v : Hypercube n) :
+    lagrangeKernel F v (signPoint F u) = if v = u then 1 else 0 := by
+  classical
+  by_cases hvu : v = u
+  · subst v
+    simp only [lagrangeKernel, lagrangeKernelAtPoint, signPoint]
+    have hprod :
+        (∏ j : Fin n, (1 + bitToSign F (u j) * bitToSign F (u j))) = (2 : F) ^ n := by
+      calc
+        (∏ j : Fin n, (1 + bitToSign F (u j) * bitToSign F (u j))) =
+            ∏ _j : Fin n, (2 : F) := by
+              apply Finset.prod_congr rfl
+              intro j _
+              exact signFactor_same F (u j)
+        _ = (2 : F) ^ (Finset.univ : Finset (Fin n)).card := by
+              rw [Finset.prod_const]
+        _ = (2 : F) ^ n := by simp
+    rw [hprod]
+    have hpow : (2 : F) ^ n ≠ 0 :=
+      pow_ne_zero n (two_ne_zero_of_signsDistinct F hSigns)
+    field_simp [hpow]
+    simp
+  · simp only [lagrangeKernel, lagrangeKernelAtPoint, signPoint]
+    have hex : ∃ j : Fin n, v j ≠ u j := by
+      by_contra h
+      apply hvu
+      funext j
+      by_contra hj
+      exact h ⟨j, hj⟩
+    rcases hex with ⟨j, hj⟩
+    have hprod :
+        (∏ j : Fin n, (1 + bitToSign F (v j) * bitToSign F (u j))) = 0 := by
+      exact Finset.prod_eq_zero (Finset.mem_univ j) (signFactor_diff F hj)
+    rw [hprod]
+    simp [hvu]
+
+private theorem signedMLEPolynomial_eval_signPoint
+    (hSigns : (-1 : F) ≠ 1) (values : Hypercube n → F) (u : Hypercube n) :
+    MvPolynomial.eval (signPoint F u) (signedMLEPolynomial F n values) = values u := by
+  classical
+  rw [signedMLEPolynomial_eval]
+  rw [Finset.sum_eq_single u]
+  · simp [lagrangeKernel_signPoint F n hSigns]
+  · intro v _ hv
+    simp [lagrangeKernel_signPoint F n hSigns, hv]
+  · intro h
+    exact False.elim (h (Finset.mem_univ u))
+
 private theorem signedLinearFactor_degreeOf (a : F) (i j : Fin n) :
     MvPolynomial.degreeOf i (1 + MvPolynomial.C a * MvPolynomial.X j) ≤
       if i = j then 1 else 0 := by
@@ -173,6 +243,13 @@ private theorem multilinearOraclePolynomial_eval (oracle : MultilinearOracle F n
   simp [multilinearOraclePolynomial, signedMLEPolynomial_eval, lagrangeOracleEval,
     evalOnHypercube]
 
+private theorem multilinearOraclePolynomial_eval_signPoint
+    (hSigns : (-1 : F) ≠ 1) (oracle : MultilinearOracle F n) (u : Hypercube n) :
+    MvPolynomial.eval (signPoint F u) (multilinearOraclePolynomial F n oracle) =
+      evalOnHypercube oracle u := by
+  simpa [multilinearOraclePolynomial, evalOnHypercube] using
+    signedMLEPolynomial_eval_signPoint F n hSigns (fun u => evalOnHypercube oracle u) u
+
 private noncomputable def inputOraclePolynomial
     (oStmt : ∀ i, OStmtAfterOuter F n M params i) (idx : InputOracleIdx M) :
     MvPolynomial (Fin n) F :=
@@ -229,11 +306,34 @@ private theorem inputOraclePolynomial_eval
       simpa [inputOraclePolynomial] using
         multilinearOraclePolynomial_eval F n (oStmt (.input (.column i))) r
 
+private theorem inputOraclePolynomial_eval_signPoint
+    (hSigns : (-1 : F) ≠ 1)
+    (oStmt : ∀ i, OStmtAfterOuter F n M params i) (idx : InputOracleIdx M)
+    (u : Hypercube n) :
+    MvPolynomial.eval (signPoint F u) (inputOraclePolynomial F n M params oStmt idx) =
+      match idx with
+      | .table => evalOnHypercube (oStmt (.input .table)) u
+      | .column i => evalOnHypercube (oStmt (.input (.column i))) u := by
+  cases idx with
+  | table =>
+      simpa [inputOraclePolynomial] using
+        multilinearOraclePolynomial_eval_signPoint F n hSigns (oStmt (.input .table)) u
+  | column i =>
+      simpa [inputOraclePolynomial] using
+        multilinearOraclePolynomial_eval_signPoint F n hSigns (oStmt (.input (.column i))) u
+
 private theorem multiplicityPolynomial_eval
     (oStmt : ∀ i, OStmtAfterOuter F n M params i) (r : Fin n → F) :
     MvPolynomial.eval r (multiplicityPolynomial F n M params oStmt) =
       lagrangeOracleEval (oStmt .multiplicity) r :=
   multilinearOraclePolynomial_eval F n (oStmt .multiplicity) r
+
+private theorem multiplicityPolynomial_eval_signPoint
+    (hSigns : (-1 : F) ≠ 1)
+    (oStmt : ∀ i, OStmtAfterOuter F n M params i) (u : Hypercube n) :
+    MvPolynomial.eval (signPoint F u) (multiplicityPolynomial F n M params oStmt) =
+      evalOnHypercube (oStmt .multiplicity) u :=
+  multilinearOraclePolynomial_eval_signPoint F n hSigns (oStmt .multiplicity) u
 
 private theorem helperPolynomial_eval
     (oStmt : ∀ i, OStmtAfterOuter F n M params i) (k : Fin params.numGroups)
@@ -241,6 +341,54 @@ private theorem helperPolynomial_eval
     MvPolynomial.eval r (helperPolynomial F n M params oStmt k) =
       lagrangeOracleEval ((oStmt .helpers) k) r :=
   multilinearOraclePolynomial_eval F n ((oStmt .helpers) k) r
+
+private theorem helperPolynomial_eval_signPoint
+    (hSigns : (-1 : F) ≠ 1)
+    (oStmt : ∀ i, OStmtAfterOuter F n M params i) (k : Fin params.numGroups)
+    (u : Hypercube n) :
+    MvPolynomial.eval (signPoint F u) (helperPolynomial F n M params oStmt k) =
+      evalOnHypercube ((oStmt .helpers) k) u :=
+  multilinearOraclePolynomial_eval_signPoint F n hSigns ((oStmt .helpers) k) u
+
+private theorem termPhiPolynomial_eval_eq_termPhi
+    (hSigns : (-1 : F) ≠ 1)
+    (stmt : StmtAfterOuter F n M params)
+    (oStmt : ∀ i, OStmtAfterOuter F n M params i)
+    (u : Hypercube n) (i : TermIdx M) :
+    MvPolynomial.eval (signPoint F u) (termPhiPolynomial F n M params stmt oStmt i) =
+      termPhi (fun i => oStmt (.input i)) stmt.xChallenge i u := by
+  unfold termPhiPolynomial termPhi phi
+  cases hidx : termToInput i with
+  | table =>
+      simp [inputOraclePolynomial_eval_signPoint, hSigns]
+  | column j =>
+      simp [inputOraclePolynomial_eval_signPoint, hSigns]
+
+private theorem termNumeratorPolynomial_eval_eq_termNumerator
+    (hSigns : (-1 : F) ≠ 1)
+    (oStmt : ∀ i, OStmtAfterOuter F n M params i)
+    (u : Hypercube n) (i : TermIdx M) :
+    MvPolynomial.eval (signPoint F u) (termNumeratorPolynomial F n M params oStmt i) =
+      termNumerator (oStmt .multiplicity) i u := by
+  unfold termNumeratorPolynomial termNumerator numerator
+  cases hidx : termToInput i with
+  | table =>
+      simp [multiplicityPolynomial_eval_signPoint, hSigns]
+  | column j =>
+      simp
+
+private theorem domainIdentityPolynomial_eval_eq_domainIdentityTerm
+    (hSigns : (-1 : F) ≠ 1)
+    (stmt : StmtAfterOuter F n M params)
+    (oStmt : ∀ i, OStmtAfterOuter F n M params i)
+    (u : Hypercube n) (k : Fin params.numGroups) :
+    MvPolynomial.eval (signPoint F u) (domainIdentityPolynomial F n M params stmt oStmt k) =
+      domainIdentityTerm (canonicalGroups params) (fun i => oStmt (.input i))
+        (oStmt .multiplicity) (oStmt .helpers) stmt.xChallenge k u := by
+  unfold domainIdentityPolynomial domainIdentityTerm denominatorProduct
+  simp [helperPolynomial_eval_signPoint, hSigns,
+    termPhiPolynomial_eval_eq_termPhi F n M params hSigns stmt oStmt u,
+    termNumeratorPolynomial_eval_eq_termNumerator F n M params hSigns oStmt u]
 
 private theorem termPhiPolynomial_eval_eq_termPhiAtPoint
     (stmt : StmtAfterOuter F n M params)
@@ -442,6 +590,20 @@ noncomputable def logupQPolynomial
       lagrangeKernelPolynomial F n stmt.zChallenge *
         MvPolynomial.C (stmt.batchingScalars k) *
           domainIdentityPolynomial F n M params stmt oStmt k)
+
+/-- On the signed hypercube, the concrete `Q` polynomial is exactly the row expression from
+LogUp's outer algebra. -/
+theorem logupQPolynomial_eval_signPoint_eq_qOnHypercube
+    (hSigns : (-1 : F) ≠ 1)
+    (stmt : StmtAfterOuter F n M params)
+    (oStmt : ∀ i, OStmtAfterOuter F n M params i)
+    (u : Hypercube n) :
+    MvPolynomial.eval (signPoint F u) (logupQPolynomial F n M params stmt oStmt) =
+      qOnHypercube (canonicalGroups params) (fun i => oStmt (.input i)) (oStmt .multiplicity)
+        (oStmt .helpers) stmt.xChallenge stmt.zChallenge stmt.batchingScalars u := by
+  simp [logupQPolynomial, qOnHypercube, helperPolynomial_eval_signPoint, hSigns,
+    lagrangeKernelPolynomial_eval, lagrangeKernelAtPoint, lagrangeKernel, signPoint,
+    domainIdentityPolynomial_eval_eq_domainIdentityTerm F n M params hSigns stmt oStmt u]
 
 /-- Evaluating the concrete LogUp sumcheck polynomial at the final verifier point recovers the
 value reconstructed by LogUp's final oracle-query check. -/
