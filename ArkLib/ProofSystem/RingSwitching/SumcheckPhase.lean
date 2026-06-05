@@ -169,6 +169,20 @@ def iteratedSumcheckOracleReduction (i : Fin ℓ') :
   Sumcheck.Structured.roundOracleReduction (L := L) ℓ' (boolDomain L ℓ')
     (RingSwitchingBaseContext κ L K ℓ P) (OStmtIn := aOStmtIn.OStmtIn) (d := 2) i
 
+instance instIteratedSumcheckOracleVerifierAppendCoherent (i : Fin ℓ') :
+    OracleVerifier.Append.AppendCoherent
+      (iteratedSumcheckOracleVerifier κ L K P ℓ ℓ' aOStmtIn i) :=
+  Sumcheck.Structured.instRoundOracleVerifierAppendCoherent
+    (L := L) ℓ' (boolDomain L ℓ') (RingSwitchingBaseContext κ L K ℓ P)
+    (OStmtIn := aOStmtIn.OStmtIn) (d := 2) i
+
+instance instIteratedSumcheckOracleReductionAppendCoherent (i : Fin ℓ') :
+    OracleVerifier.Append.AppendCoherent
+      (iteratedSumcheckOracleReduction κ L K P ℓ ℓ' aOStmtIn i).verifier :=
+  Sumcheck.Structured.instRoundOracleReductionAppendCoherent
+    (L := L) ℓ' (boolDomain L ℓ') (RingSwitchingBaseContext κ L K ℓ P)
+    (OStmtIn := aOStmtIn.OStmtIn) (d := 2) i
+
 variable {R : Type} [CommSemiring R] [DecidableEq R] [SampleableType R]
   {n : ℕ} {deg : ℕ} {m : ℕ} {D : Fin m ↪ R}
 
@@ -1398,7 +1412,7 @@ variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ Pro
 theorem coreInteraction_perfectCompleteness [IsDomain L] [IsDomain K] :
   OracleReduction.perfectCompleteness
     (oracleReduction := coreInteractionOracleReduction (κ := κ) (L := L) (K := K)
-      (P := P) (ℓ := ℓ) (ℓ' := ℓ') (aOStmtIn := aOStmtIn) (h_l := h_l))
+      (P := P) (ℓ := ℓ) (ℓ' := ℓ') (aOStmtIn := aOStmtIn))
     (StmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) 0)
     (OStmtIn := aOStmtIn.OStmtIn)
     (StmtOut := MLPEvalStatement L ℓ')
@@ -1440,7 +1454,7 @@ def coreInteractionRbrKnowledgeError (j : (pSpecCoreInteraction L ℓ').Challeng
 theorem coreInteraction_rbrKnowledgeSoundness [IsDomain L] [IsDomain K] :
   OracleVerifier.rbrKnowledgeSoundness
     (verifier := coreInteractionOracleVerifier (κ := κ) (L := L) (K := K)
-      (P := P) (ℓ := ℓ) (ℓ' := ℓ') (aOStmtIn := aOStmtIn) (h_l := h_l))
+      (P := P) (ℓ := ℓ) (ℓ' := ℓ') (aOStmtIn := aOStmtIn))
     (StmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) 0)
     (OStmtIn := aOStmtIn.OStmtIn)
     (StmtOut := MLPEvalStatement L ℓ')
