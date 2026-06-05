@@ -401,6 +401,12 @@ lemma square_roots_explicit {i : ℕ} (hi : i < n) {y : F}
   · have hy_mem : y ∈ subdomain ω i := sq_root_mem_subdomain hi hx hy
     simp_all [Finset.subset_iff]
 
+/-- Modular reduction from a smooth coset FFT domain index to the index of a
+smaller subdomain. This is the index-level map induced by taking `2 ^ i`
+powers. -/
+def sqFoldMapGen {i : ℕ} (u : Fin (2 ^ n)) : Fin (2 ^ (n - i)) :=
+  ⟨u.val % 2 ^ (n - i), Nat.mod_lt _ (Nat.two_pow_pos _)⟩
+
 end CosetFftDomainClass
 
 namespace CosetFftDomain 
