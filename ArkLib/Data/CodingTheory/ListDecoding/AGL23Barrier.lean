@@ -9,7 +9,7 @@ namespace AGL23
 /-- **AGL23 pigeonhole core.** The number of distinct restrictions of a finite set of
 words `ι → F` to a coordinate subset `I` is at most `|F|^|I|`. -/
 theorem restriction_image_card_le {ι : Type*} {F : Type*} [Fintype F] [DecidableEq F]
-    [DecidableEq ι] (S : Finset (ι → F)) (I : Finset ι) :
+    (S : Finset (ι → F)) (I : Finset ι) :
     (S.image (fun w => fun i : I => w i)).card ≤ Fintype.card F ^ I.card := by
   classical
   have hsub : S.image (fun w => fun i : I => w i) ⊆ (Finset.univ : Finset (I → F)) :=
@@ -43,7 +43,7 @@ with `2^(c·n) ≤ |ℱ|`, and an injective realization of `ℱ` as `I₀`-restr
 we derive the alphabet lower bound `q ≥ 2^((c/4)/ε)` (so [ABF26 T3.10]'s constant is
 `α = c/4`). -/
 theorem alphabet_barrier_reduction
-    {ι : Type*} {F : Type*} [Fintype F] [DecidableEq F] [DecidableEq ι]
+    {ι : Type*} {F : Type*} [Fintype F] [DecidableEq F]
     (S : Finset (ι → F)) (I₀ : Finset ι) (Fam : Finset (I₀ → F))
     (n ε c : ℝ) (hn : 0 < n) (hε : 0 < ε)
     (hI₀ : (I₀.card : ℝ) ≤ 4 * ε * n)

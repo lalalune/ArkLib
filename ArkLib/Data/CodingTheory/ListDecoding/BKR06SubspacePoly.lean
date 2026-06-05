@@ -218,7 +218,7 @@ theorem subspacePoly_eval_add_submodule (W : Submodule F K) [Fintype W] (x y : K
 noncomputable def subspacePolyHom (W : Submodule F K) [Fintype W] : K →+ K where
   toFun x := (subspacePoly (subFinset W)).eval x
   map_zero' := by
-    show (subspacePoly (subFinset W)).eval 0 = 0
+    change (subspacePoly (subFinset W)).eval 0 = 0
     exact subspacePoly_eval_zero _ (by simp [W.zero_mem])
   map_add' x y := subspacePoly_eval_add_submodule W x y
 

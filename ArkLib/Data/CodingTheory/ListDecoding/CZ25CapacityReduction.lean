@@ -106,14 +106,14 @@ theorem frs_list_decoding_capacity_cz25_of_T34_T218
   have hn : n = (Fintype.card ι : ℝ) := rfl
   -- `ρ * s / (s - 1/η + 1) = τt`.
   have hδ_eq : δ = 1 - τt - η := by
-    show 1 - ρ * s / (s - 1 / η + 1) - η = 1 - τt - η
+    change 1 - ρ * s / (s - 1 / η + 1) - η = 1 - τt - η
     rw [hηt, hρ, hn, hτt_def]
     have : (k : ℝ) / (Fintype.card ι : ℝ) * (s : ℝ)
         = (s : ℝ) * (k : ℝ) / (Fintype.card ι : ℝ) := by ring
     rw [this]
   -- Rewrite the C3.5 bound to `(1 - τt)/η`.
   have hbound_eq : bound = (1 - τt) / η := by
-    show (s * (1 - ρ) + 1 - 1 / η) / (η * (s + 1 - 1 / η)) = (1 - τt) / η
+    change (s * (1 - ρ) + 1 - 1 / η) / (η * (s + 1 - 1 / η)) = (1 - τt) / η
     rw [hηt]
     -- Now bound is in terms of integer `t`; use the arithmetic bridge in reverse.
     rw [hτt_def, hρ, hn]
