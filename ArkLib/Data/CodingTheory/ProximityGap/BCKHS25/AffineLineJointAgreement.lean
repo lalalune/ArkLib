@@ -32,8 +32,7 @@ set_option linter.unusedSectionVars false
 open NNReal Code Polynomial
 open scoped LinearCode
 
-variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
-variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
+variable {ι F : Type}
 
 /-- The two-row word stack of a line word `(u₀, u₁)`. -/
 noncomputable def lineWordStack (u₀ u₁ : ι → F) : WordStack F (Fin 2) ι :=
@@ -41,6 +40,9 @@ noncomputable def lineWordStack (u₀ u₁ : ι → F) : WordStack F (Fin 2) ι 
 
 @[simp] lemma lineWordStack_zero (u₀ u₁ : ι → F) : lineWordStack u₀ u₁ 0 = u₀ := rfl
 @[simp] lemma lineWordStack_one (u₀ u₁ : ι → F) : lineWordStack u₀ u₁ 1 = u₁ := rfl
+
+variable [Fintype ι] [Nonempty ι]
+variable [Field F] [Finite F] [DecidableEq F]
 
 /-- **Joint pair ⟹ affine-line `jointAgreement`.** A degree-`< deg` polynomial
 pair `(p₀, p₁)` whose joint disagreement set with the line word `(u₀, u₁)` has
@@ -61,6 +63,7 @@ theorem jointAgreement_of_jointDisagreement_le {deg : ℕ} [NeZero deg]
     jointAgreement (F := F) (κ := Fin 2) (ι := ι)
       (C := ReedSolomon.code domain deg) (δ := δ) (W := lineWordStack u₀ u₁) := by
   classical
+  haveI := Fintype.ofFinite F
   set n := Fintype.card ι with hn
   -- agreement set: complement of the joint disagreement set
   set Dis : Finset ι := Finset.univ.filter
@@ -137,6 +140,7 @@ theorem jointAgreement_of_proximates (k e h DZ : ℕ) {δ : ℝ≥0}
     jointAgreement (F := F) (κ := Fin 2) (ι := ι)
       (C := ReedSolomon.code domain (k + 1)) (δ := δ) (W := lineWordStack u₀ u₁) := by
   classical
+  haveI := Fintype.ofFinite F
   obtain ⟨p₀, p₁, hp₀, hp₁, hdis⟩ :=
     exists_joint_proximate k e h DZ hn hDZ hDZ0 domain u₀ u₁ S hS0 prox hratio
   haveI : NeZero (k + 1) := ⟨Nat.succ_ne_zero k⟩
@@ -168,6 +172,7 @@ theorem card_jointDisagreement_restored (k e h DZ : ℕ)
               (fun x => ¬(u₀ x = p₀.eval (domain x) ∧ u₁ x = p₁.eval (domain x)))).card
           ≤ Zs.card * (e + h)) := by
   classical
+  haveI := Fintype.ofFinite F
   obtain ⟨p₀, p₁, hp₀, hp₁, hclose⟩ :=
     proximity_gap_listDecoding k e h DZ hn hDZ hDZ0 domain u₀ u₁ S hS0 prox hratio
   refine ⟨p₀, p₁, hp₀, hp₁, fun Zs hZ => ?_⟩
@@ -207,6 +212,7 @@ theorem jointAgreement_of_proximates_restored (k e h DZ : ℕ) {δ : ℝ≥0}
     jointAgreement (F := F) (κ := Fin 2) (ι := ι)
       (C := ReedSolomon.code domain (k + 1)) (δ := δ) (W := lineWordStack u₀ u₁) := by
   classical
+  haveI := Fintype.ofFinite F
   have hS0 : 0 < S.card := by omega
   obtain ⟨p₀, p₁, hp₀, hp₁, hrestored⟩ :=
     card_jointDisagreement_restored k e h DZ hn hDZ hDZ0 domain u₀ u₁ S hS0 prox hratio
