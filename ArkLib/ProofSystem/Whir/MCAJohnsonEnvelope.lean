@@ -197,6 +197,20 @@ theorem conditional_errStar_envelope
   have hKp : 0 ≤ K * (parl - 1) := mul_nonneg (le_of_lt hKpos) (by linarith)
   exact le_trans hdiv (errStar_worst_le K parl s δ hKp hs0 hδ)
 
+/-- Version of `conditional_errStar_envelope` with the common field-size denominator restored.
+Both the BCHKS25 T4.6 bound and the conjectural ABF26 §4.5 `errStar` carry the same `1/q`
+factor; this corollary is the directly reusable real inequality for later `ENNReal.ofReal`
+packaging. -/
+theorem conditional_errStar_envelope_with_q
+    (m n s δ parl K q : ℝ) (hm : 3 ≤ m) (hn : 1 ≤ n)
+    (hs0 : 0 < s) (hs1 : s < 1) (hδ0 : 0 ≤ δ) (hδ : δ < 1 - s)
+    (hparl : 1 ≤ parl - 1) (hKpos : 0 < K) (hcond : 26 * m ^ 5 * n ≤ K)
+    (hq : 0 < q) :
+    bchksBound (m + 1 / 2) n δ s / q ≤ errStarNum K parl s δ / q :=
+  div_le_div_of_nonneg_right
+    (conditional_errStar_envelope m n s δ parl K hm hn hs0 hs1 hδ0 hδ hparl hKpos hcond)
+    (le_of_lt hq)
+
 /-! ## Tying the side condition to an explicit bound on η
 
 In `rs_epsMCA_johnson_range_bchks25` the multiplicity is `m = max(⌈√ρ₊/(2η)⌉, 3)`.

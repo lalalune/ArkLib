@@ -126,6 +126,65 @@ structure Section5StrictData {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
           + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)).eval (Polynomial.C z))
       ∧ v₀.natDegree < k + 1 ∧ v₁.natDegree < k + 1
 
+/-! ### Transporting §5 data across canonical-family uniqueness
+
+The §5 datum depends on the decoded family only through the final specialization bridge `hPz`.
+Thus, if a decoded family agrees with a canonical family on the good set, the canonical datum can be
+reused for that decoded family. -/
+
+omit [Nonempty ι] [DecidableEq ι] in
+/-- Transport `Section5StrictData` along equality on the good-coefficient set. -/
+def section5StrictDataOfEqOnGood {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    {u : WordStack F (Fin (k + 1)) ι} {P P₀ : F → Polynomial F}
+    (d : Section5StrictData (k := k) (deg := deg) (domain := domain) (δ := δ) u P₀)
+    (hEq : ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+      P z = P₀ z) :
+    Section5StrictData (k := k) (deg := deg) (domain := domain) (δ := δ) u P where
+  x₀ := d.x₀
+  R := d.R
+  H := d.H
+  hIrr := d.hIrr
+  hPos := d.hPos
+  hHyp := d.hHyp
+  Bcoeff := d.Bcoeff
+  hH := d.hH
+  D := d.D
+  hD := d.hD
+  matchingSet := d.matchingSet
+  root := d.root
+  mp := d.mp
+  hcard := d.hcard
+  hsubst := d.hsubst
+  hγ := d.hγ
+  Ppoly := d.Ppoly
+  hrep := d.hrep
+  hdegX := d.hdegX
+  hPz := by
+    intro v₀ v₁ hγlin
+    rcases d.hPz v₀ v₁ hγlin with ⟨hPz₀, hv₀, hv₁⟩
+    exact ⟨fun z hz => by rw [hEq z hz, hPz₀ z hz], hv₀, hv₁⟩
+
+/-- Canonical §5 data for one received word stack, bundled as data.
+
+The uniqueness field is propositional, but the whole structure lives in `Type`, so it can be used as
+an input hypothesis to wrappers that must construct `Section5StrictData` for arbitrary decoded
+families. -/
+structure StrictCanonicalSection5Data {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    (u : WordStack F (Fin (k + 1)) ι) : Type where
+  /-- The canonical decoded family for this word stack. -/
+  family : F → Polynomial F
+  /-- The genuine §5 extraction data for the canonical family. -/
+  section5 :
+    Section5StrictData (k := k) (deg := deg) (domain := domain) (δ := δ) u family
+  /-- Any good decoded family agrees with the canonical family on the good-coefficient set. -/
+  unique : ∀ P : F → Polynomial F,
+    (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+      (P z).natDegree < deg ∧
+        δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          (P z).eval ∘ domain) ≤ δ) →
+    ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+      P z = family z
+
 /-! ## Step 1 — the genuine `betaRec ⟹ CurveCoeffPolys` call
 
 From the §5 datum for a decoding `P`, the `betaRec`-driven brick produces the per-coefficient
@@ -280,6 +339,92 @@ theorem correlatedAgreement_affine_curves_listDecoding_closed_canonical {k deg :
   exact correlatedAgreement_affine_curves_of_uniform_strict_canonical_coeff_polys_and_boundary_card
     (deg := deg) (domain := domain) (δ := δ) hδ hStrictCanonicalCoeff hBoundaryCard
 
+omit [DecidableEq ι] in
+/-- Closed list-decoding keystone with branch-specific canonical
+coefficient-polynomial data.
+
+This is the coefficient-polynomial analogue of
+`correlatedAgreement_affine_curves_listDecoding_closed_of_strict_section5_canonical`: the strict
+Johnson branch may use the probability/radius hypotheses to choose its canonical decoded family and
+coefficient witnesses, while the closed square-root boundary remains explicit. -/
+theorem correlatedAgreement_affine_curves_listDecoding_closed_of_strict_canonical_coeff
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hStrictCanonicalCoeff : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      δ < 1 - ReedSolomon.sqrtRate deg domain →
+      ∃ P₀ : F → Polynomial F,
+        (∃ B : ℕ → Polynomial F,
+          (∀ j < deg, (B j).natDegree < k + 1) ∧
+            ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              ∀ j < deg, (P₀ z).coeff j = (B j).eval z) ∧
+        ∀ P : F → Polynomial F,
+          (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+            (P z).natDegree < deg ∧
+              δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+                (P z).eval ∘ domain) ≤ δ) →
+          ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+            P z = P₀ z)
+    (hBoundary : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      ¬δ < 1 - ReedSolomon.sqrtRate deg domain →
+      jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u)) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  exact correlatedAgreement_affine_curves_of_strict_canonical_coeff_polys_and_boundary
+    (deg := deg) (domain := domain) (δ := δ) hδ hStrictCanonicalCoeff hBoundary
+
+omit [DecidableEq ι] in
+/-- Closed list-decoding keystone with the strict branch phrased as one
+canonical decoded family with evaluation-polynomial witnesses.
+
+This is the evaluation-polynomial analogue of
+`correlatedAgreement_affine_curves_listDecoding_closed_of_strict_canonical_coeff`.
+It exposes the existing curve front door through the non-cyclic closed layer. -/
+theorem correlatedAgreement_affine_curves_listDecoding_closed_of_strict_canonical_eval
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hStrictCanonicalEval :
+      ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+        Pr_{
+          let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            ReedSolomon.code domain deg) ≤ δ] >
+            ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+        (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+        δ < 1 - ReedSolomon.sqrtRate deg domain →
+        ∃ P₀ : F → Polynomial F,
+          (∃ E : ι → Polynomial F,
+            (∀ x, (E x).natDegree < k + 1) ∧
+              ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+                ∀ x, (P₀ z).eval (domain x) = (E x).eval z) ∧
+          ∀ P : F → Polynomial F,
+            (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              (P z).natDegree < deg ∧
+                δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+                  (P z).eval ∘ domain) ≤ δ) →
+              ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+                P z = P₀ z)
+    (hBoundary : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      ¬δ < 1 - ReedSolomon.sqrtRate deg domain →
+      jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u)) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  exact correlatedAgreement_affine_curves_of_strict_canonical_eval_polys_and_boundary
+    (deg := deg) (domain := domain) (δ := δ) hδ hStrictCanonicalEval hBoundary
+
 omit [Nonempty ι] [DecidableEq ι] in
 /-- Turn the genuine §5 extraction datum for one canonical decoded family into
 the canonical coefficient-polynomial package consumed by the closed keystone.
@@ -345,6 +490,40 @@ theorem correlatedAgreement_affine_curves_listDecoding_closed_of_section5_canoni
   obtain ⟨P₀, d, hunique⟩ := hCanonicalExtract u
   exact ⟨P₀, canonicalCoeffPolys_of_section5CanonicalData d hunique⟩
 
+omit [DecidableEq ι] in
+/-- Closed list-decoding keystone with branch-specific canonical §5 extraction data.
+
+In the strict Johnson branch, it is enough to provide one canonical decoded family `P₀` carrying
+`Section5StrictData`, plus uniqueness of all good decodings against `P₀`.  The proof transports the
+canonical datum to each decoded family using `section5StrictData_of_eq_on_good`, then calls the
+per-decoding closed keystone. -/
+theorem correlatedAgreement_affine_curves_listDecoding_closed_of_strict_section5_canonical
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hCanonicalExtract : ∀ (u : WordStack F (Fin (k + 1)) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      δ < 1 - ReedSolomon.sqrtRate deg domain →
+      StrictCanonicalSection5Data (k := k) (deg := deg) (domain := domain) (δ := δ) u)
+    (hBoundary : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      ¬δ < 1 - ReedSolomon.sqrtRate deg domain →
+      jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u)) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  refine correlatedAgreement_affine_curves_listDecoding_closed
+    (deg := deg) (domain := domain) (δ := δ) hδ ?_ hBoundary
+  intro u hprob hJ hsqrt P hP
+  let c := hCanonicalExtract u hprob hJ hsqrt
+  exact section5StrictDataOfEqOnGood c.section5 (c.unique P hP)
+
 end CorrelatedAgreementListDecodingClosed
 
 end ArkLib
@@ -358,6 +537,9 @@ depend only on `[propext, Classical.choice, Quot.sound]`:
 * `hcoeffPoly_of_section5Extraction`
 * `correlatedAgreement_affine_curves_listDecoding_closed`
 * `correlatedAgreement_affine_curves_listDecoding_closed_canonical`
+* `correlatedAgreement_affine_curves_listDecoding_closed_of_strict_canonical_coeff`
 * `canonicalCoeffPolys_of_section5CanonicalData`
 * `correlatedAgreement_affine_curves_listDecoding_closed_of_section5_canonical`
+* `section5StrictDataOfEqOnGood`
+* `correlatedAgreement_affine_curves_listDecoding_closed_of_strict_section5_canonical`
 -/

@@ -440,12 +440,29 @@ theorem subspaceDesign_epsMCA_gg25
     epsMCA (F := F) (A := Fin s → F) ((C : Set (ι → Fin s → F)))
         ((1 - τ (t + 1) - 3 / (2 * t)).toNNReal) ≤
       ENNReal.ofReal (((t : ℝ) * Fintype.card ι + 4 * t ^ 2) / Fintype.card F) := by
-  sorry -- ABF26-T4.13; external admit [GG25 Cor 4.9].
-  -- Missing ingredient: GG25 Cor 4.9's subspace-design MCA bound. The (t·n+4t²)/|F| count
-  -- follows from the IsSubspaceDesign predicate (in-tree, D2.16) PLUS GG25's MCA-up-to-capacity
-  -- analysis, which itself rests on L2.17 (subspaceDesign_tau_lower — STILL an external admit
-  -- in SubspaceDesign.lean). Blocked transitively on L2.17 and the GG25 design→MCA error
-  -- conversion (absent). Genuinely external until L2.17 lands.
+  sorry -- ABF26-T4.13; external admit [GG25 Cor 4.9 = eprint 2025/2054 / arXiv 2601.10047].
+  -- Missing ingredient: GG25's subspace-design MCA bound. The (t·n+4t²)/|F| count is the core
+  -- technical result of the whole GG25 paper; its proof is the three-step pipeline
+  --   (i) LINE STITCHING from the τ-subspace-design property + pruning (GG25 Lem 5.5, 5.7),
+  --  (ii) STITCHING → correlated agreement, combined with the subspace-design LIST-DECODING
+  --       bound (GG25 Lem 5.10 — in-tree this is T3.4 `subspaceDesign_list_decoding_cz25`,
+  --       itself STILL a sorry: its design→Λ dimension-counting analysis is absent), and
+  -- (iii) polynomial INTERPOLATION lifting agreement from finitely many γ to all parameters
+  --       (GG25 Lem 5.4).
+  -- Equivalently the bound factors as T3.4 (design→list-size) ∘ T5.1
+  -- (`linear_listSize_to_epsMCA_gcxk25`, list-size→MCA) — but BOTH composands are themselves
+  -- unproven sorries whose own notes document absent machinery (the design→Λ count, and the
+  -- reduction of the `epsMCA` sup over arbitrary word stacks with single-witness `mcaEvent`
+  -- (D4.3) to GG25/GCXK25's per-codeword-pair Bad-set counting).
+  -- L2.17 (`subspaceDesign_tau_lower`) — one prerequisite — is now PROVEN kernel-clean in
+  -- SubspaceDesign.lean, but it alone does NOT unblock this: the design→MCA conversion (the
+  -- line-stitching + list-decoder + interpolation engine above) is the substantive absent
+  -- content. In-tree GK16Wronskian supplies only the elementary linear-independence criterion,
+  -- not the list-decoder or stitching argument.
+  -- No vacuous-truncation escape: even when (1-τ(t+1)-3/(2t)).toNNReal truncates to 0, the RHS
+  -- (t·n+4t²)/|F| is a genuine positive bound and `epsMCA C 0 > 0` in general
+  -- (cf. epsMCA_Czero_pos / lineDecodable_imp_epsMCA_le_false), so the statement stays
+  -- nonvacuous. Genuinely external (the GG25 line-stitching/list-decoder pipeline is unformalized).
 
 /-- **ABF26 Theorem 4.14 [GG25 Corollary 4.10].** Folded Reed-Solomon codes have MCA
 up to capacity. Let `η ∈ (0, 1)` and `C := FRS[F, L, k, s, ω]` be a folded RS code

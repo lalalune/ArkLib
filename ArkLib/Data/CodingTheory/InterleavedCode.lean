@@ -358,6 +358,30 @@ noncomputable instance instFintypeInterleavedModuleCode [Fintype A] : Fintype (M
 lemma interleavedCode_eq_interleavedCodeSet {A : Type*} {ι : Type*} {κ : Type*} {C : Set (ι → A)} :
     (C ^⋈ κ) = interleavedCodeSet (κ := κ) C:= by rfl
 
+set_option linter.unusedSectionVars false in
+set_option linter.unusedFintypeInType false in
+-- Column projection shrinks relative Hamming distance for interleaved words.
+lemma relHammingDist_transpose_le {F : Type*} [DecidableEq F] [Fintype ι] [Nonempty ι] {m : ℕ}
+    (f V : Matrix ι (Fin m) F) (k : Fin m) :
+    δᵣ(V.transpose k, f.transpose k) ≤ δᵣ(V, f) := by
+  unfold relHammingDist
+  have h : hammingDist (V.transpose k) (f.transpose k) ≤ hammingDist V f := by
+    have := hammingDist_comp_le_hammingDist (γ := fun _ : ι => Fin m → F)
+      (β := fun _ : ι => F) (fun (_ : ι) (row : Fin m → F) => row k) (x := V) (y := f)
+    simpa [Matrix.transpose] using this
+  gcongr
+
+set_option linter.unusedSectionVars false in
+set_option linter.unusedFintypeInType false in
+/-- A close interleaved codeword projects, column-wise, to a codeword of the base code. -/
+lemma closeCodewordsRel_interleaved_transpose_mem_code {F : Type*}
+    {m : ℕ} {C : Set (ι → F)} {δ : ℝ}
+    {f V : Matrix ι (Fin m) F}
+    (hV : V ∈ ListDecodable.closeCodewordsRel (interleavedCodeSet (κ := Fin m) C) f δ)
+    (k : Fin m) :
+    V.transpose k ∈ C :=
+  hV.1 k
+
 @[simp]
 lemma interleavedCode_eq_interleavedCodeSet_of_moduleCode {F A : Type*} {κ ι : Type*} [Semiring F]
     [AddCommMonoid A] [Module F A] {MC : ModuleCode ι F A} :
@@ -836,7 +860,9 @@ file and in `ListDecodability.lean`: the interleaved-code carrier
 (`interleavedCodeSet`, with its `Fintype` instance `interleavedCodeSet_fintype`),
 the maximised list size `Lambda` (= `ListDecodability.Lambda`) and its monotonicity
 (`Lambda_mono`), and the row-projection characterisation `mem_interleavedCode_iff`
-(`V ∈ C^{≡m} ↔ ∀ k, V.transpose k ∈ C`).
+(`V ∈ C^{≡m} ↔ ∀ k, V.transpose k ∈ C`).  In particular,
+`closeCodewordsRel_interleaved_transpose_mem_code` proves that any interleaved
+codeword in a relative Hamming ball projects, row-wise, to a codeword of `C`.
 
 The residual is the **Gopalan–Guruswami–Raghavendra (GGR11)** combinatorial
 list-recovery recursion (RANDOM 2011, "List Decoding Tensor Products and Interleaved

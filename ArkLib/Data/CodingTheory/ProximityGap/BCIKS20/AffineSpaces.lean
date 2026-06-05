@@ -1451,6 +1451,8 @@ private lemma gs_degree_bound_le_inv_mu
     _ ≤ 1 / μ + 1 / (4 * μ) := add_le_add h5 h6
     _ = 5 / (4 * μ) := by ring
 
+set_option maxHeartbeats 800000 in
+-- The low-degree branch performs several real/NNReal casts and arithmetic normalizations.
 omit [DecidableEq ι] [DecidableEq F] in
 /-- Construct a GS multiplicity `m` satisfying both the Johnson radius bound and the degree
 bound. Witness: `m = ⌈√ρ/(2η)⌉ + 1` where `η = 1 - √ρ - δ`. -/

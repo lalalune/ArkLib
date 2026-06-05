@@ -11,7 +11,7 @@ import ArkLib.Data.Polynomial.RationalFunctions
 import ArkLib.Data.Polynomial.PowerSeriesComposition
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.GammaGenuine
 
-set_option linter.style.longFile 2100
+set_option linter.style.longFile 2600
 -- This proof-note-heavy integration file contains many long paper-route doc lines.
 set_option linter.style.longLine false
 
@@ -58,12 +58,17 @@ genuine `β` recursion of BCIKS20 (A.1) over the in-tree ring `𝒪 H`:
    (`GammaGenuine.lean`): `embedding (βHensel … t) = αGenuine t · W^{t+1} · ξ^{2t−1}` with
    `αGenuine t = coeff t (gammaGenuine …)`, NOT the vacuous in-tree `ClaimA2.α` (the old statement
    was provably FALSE at `t = 0`; see the §4f statement-repair note).  Now PROVEN modulo the SINGLE
-   residual `assembledSeries_isRoot` (`eval (βHenselAssembled) Q = 0`).  PROVEN unconditionally:
-   the base case `βHensel_lift_identity_zero` / `βHenselAssembled_constantCoeff` (`= α₀ = T/W`), the
-   denominator nonvanishing `ζ_ne_zero` / `embeddingOf𝒪Into𝕃_ξ_ne_zero` / `den_ne_zero`, and the
-   uniqueness reduction `βHenselAssembled_eq_gammaGenuine` /
-   `βHensel_lift_identity_of_assembledSeries_isRoot` (via `gammaGenuine_unique`).  The residual is
-   the Faà-di-Bruno bridge `coeff_eval ↔ B_coeff·partitionProd`.
+   per-successor-order residual `coeff_succ_eval_βHenselAssembled`
+   (`coeff (t+1) (eval (βHenselAssembled) Q) = 0`).  PROVEN unconditionally:
+   the base case `βHensel_lift_identity_zero` / `βHenselAssembled_constantCoeff` (`= α₀ = T/W`); the
+   **order-`0` root vanishing** `coeff_zero_eval_βHenselAssembled` (`coeff 0 (eval … Q) = eval α₀ Q₀
+   = 0`); the whole-series assembly `assembledSeries_isRoot` (by `PowerSeries.ext` from the order-`0`
+   and order-`(t+1)` halves); the denominator nonvanishing `ζ_ne_zero` /
+   `embeddingOf𝒪Into𝕃_ξ_ne_zero` / `den_ne_zero`; and the uniqueness reduction
+   `βHenselAssembled_eq_gammaGenuine` / `βHensel_lift_identity_of_assembledSeries_isRoot` (via
+   `gammaGenuine_unique`).  The residual is the order-`≥1` Faà-di-Bruno bridge
+   `coeff_eval ↔ B_coeff·partitionProd` (equivalently the (A.1)-recursion ↔ Newton-correction match),
+   gated on the STATED-NOT-PROVEN combinatorial reconciliation `prefactor_eq_paper`.
 
 WAVE 3 SCOPE (§4c′ / 4d below).  The reusable **`Λ`-weight calculus over `𝒪 H`**, all PROVEN
 axiom-clean (`[propext, Classical.choice, Quot.sound]`, no `sorryAx`):
@@ -1877,49 +1882,525 @@ theorem βHensel_lift_identity_of_assembledSeries_isRoot (x₀ : F) (R : F[X][X]
       PowerSeries.coeff_mk]
   rw [hcoeff, mul_assoc, div_mul_cancel₀ _ (den_ne_zero H x₀ R hHyp t)]
 
-/-- **(P2) the assembled series is a root of `Q` — THE SINGLE IRREDUCIBLE RESIDUAL
-(documented `sorry`).**
+/-- **(P2) order-0 vanishing — PROVEN, axiom-clean.**  The order-`0` coefficient of
+`eval (βHenselAssembled …) Q` vanishes: `coeff 0 (eval γ Q) = eval (constantCoeff γ) Q₀`
+(`HenselSeriesCoeff.constantCoeff_eval`), and `constantCoeff (βHenselAssembled …) = α₀`
+(`βHenselAssembled_constantCoeff`), so the value is `eval α₀ Q₀ = 0` by the base root
+`eval_α₀_Q₀_eq_zero` (`H ∣ evalX (C x₀) R` and `H(α₀) = 0`).  This discharges the order-`0` half
+of the root residual unconditionally; only the orders `≥ 1` remain. -/
+theorem coeff_zero_eval_βHenselAssembled (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    PowerSeries.coeff 0 (Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H)) = 0 := by
+  rw [PowerSeries.coeff_zero_eq_constantCoeff_apply,
+    ProximityPrize.HenselSeriesCoeff.constantCoeff_eval, βHenselAssembled_constantCoeff]
+  exact eval_α₀_Q₀_eq_zero hHyp
 
-`eval (βHenselAssembled …) Q = 0`, i.e. the genuine BCIKS20 A.4 statement that the power series
-assembled from the (A.1) numerators `βHensel` (normalized by `W^{t+1}·ξ^{e_t}`) is a root of the
-`X`-recentered `Y`-polynomial `Q` of `R`.  This is the deepest remaining step and the *only*
-residual of (P2): everything else (base case, denominator nonvanishing, the uniqueness reduction
-to `gammaGenuine`, and the clearing of the denominator for all `t`) is PROVEN above.
+/-- **(P2) explicit-residual root reduction — PROVEN.**
+
+If the single successor-order residual is supplied as a hypothesis, then the assembled
+`βHensel` series is a root of `Q`. This is the hypothesis-taking version of
+`assembledSeries_isRoot`; unlike that theorem, this declaration does not depend on the
+documented residual `sorry` and is the reusable API for any future proof of the Faà-di-Bruno
+coefficient bridge. -/
+theorem assembledSeries_isRoot_of_coeff_succ_eval (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hsucc : ∀ t : ℕ,
+      PowerSeries.coeff (t + 1)
+        (Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H)) = 0) :
+    Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H) = 0 := by
+  ext t
+  rw [map_zero]
+  rcases t with _ | t
+  · exact coeff_zero_eval_βHenselAssembled H x₀ R hHyp
+  · exact hsucc t
+
+/-- Conditional identification with the genuine Hensel root from the single
+successor-coefficient residual.
+
+Once the positive-order root coefficients vanish, `assembledSeries_isRoot_of_coeff_succ_eval`
+turns the assembled numerator series into a root of `Q`; the already-proven order-`0`
+coefficient then lets `gammaGenuine_unique` identify it with the genuine Hensel lift. -/
+theorem βHenselAssembled_eq_gammaGenuine_of_coeff_succ_eval (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hsucc : ∀ t : ℕ,
+      PowerSeries.coeff (t + 1)
+        (Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H)) = 0) :
+    βHenselAssembled H x₀ R hHyp = gammaGenuine x₀ R H hHyp :=
+  βHenselAssembled_eq_gammaGenuine H x₀ R hHyp
+    (assembledSeries_isRoot_of_coeff_succ_eval H x₀ R hHyp hsucc)
+
+/-- Coefficient-level form of the conditional Hensel identification.
+
+Once the positive-order coefficients of `eval (βHenselAssembled …) Q` vanish, every coefficient of
+the assembled numerator series is the corresponding genuine Hensel coefficient `αGenuine`. -/
+theorem coeff_βHenselAssembled_eq_αGenuine_of_coeff_succ_eval (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hsucc : ∀ t : ℕ,
+      PowerSeries.coeff (t + 1)
+        (Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H)) = 0) (t : ℕ) :
+    PowerSeries.coeff t (βHenselAssembled H x₀ R hHyp) = αGenuine H x₀ R hHyp t := by
+  rw [βHenselAssembled_eq_gammaGenuine_of_coeff_succ_eval H x₀ R hHyp hsucc, αGenuine]
+
+/-- **(P2) explicit-residual lift identity — PROVEN.**
+
+The repaired lift identity follows from the successor-coefficient vanishing residual. This combines
+the explicit-residual root reduction `assembledSeries_isRoot_of_coeff_succ_eval` with the already
+proven uniqueness and denominator-clearing theorem
+`βHensel_lift_identity_of_assembledSeries_isRoot`. -/
+theorem βHensel_lift_identity_of_coeff_succ_eval (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hsucc : ∀ t : ℕ,
+      PowerSeries.coeff (t + 1)
+        (Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H)) = 0)
+    (t : ℕ) :
+    embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+      = αGenuine H x₀ R hHyp t
+          * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+          * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1) :=
+  βHensel_lift_identity_of_assembledSeries_isRoot H x₀ R hHyp
+    (assembledSeries_isRoot_of_coeff_succ_eval H x₀ R hHyp hsucc) t
+
+/-- The `t`-truncation of the assembled series: coefficients `≤ t` agree with
+`βHenselAssembled`, all higher coefficients are `0`. -/
+noncomputable def βHenselTrunc (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (t : ℕ) : PowerSeries (𝕃 H) :=
+  PowerSeries.mk (fun j =>
+    if j ≤ t then PowerSeries.coeff j (βHenselAssembled H x₀ R hHyp) else 0)
+
+/-- Coefficients of the `t`-truncation agree with the assembled series at
+orders `≤ t`. -/
+theorem coeff_βHenselTrunc_of_le (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) {t j : ℕ} (hj : j ≤ t) :
+    PowerSeries.coeff j (βHenselTrunc H x₀ R hHyp t)
+      = PowerSeries.coeff j (βHenselAssembled H x₀ R hHyp) := by
+  simp only [βHenselTrunc, PowerSeries.coeff_mk, if_pos hj]
+
+/-- Coefficients of the `t`-truncation agree with the assembled series at
+orders `< t + 1`. -/
+theorem coeff_βHenselTrunc_of_lt_succ (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) {t j : ℕ} (hj : j < t + 1) :
+    PowerSeries.coeff j (βHenselTrunc H x₀ R hHyp t)
+      = PowerSeries.coeff j (βHenselAssembled H x₀ R hHyp) :=
+  coeff_βHenselTrunc_of_le H x₀ R hHyp (Nat.lt_succ_iff.mp hj)
+
+/-- Coefficients of the `t`-truncation vanish above order `t`. -/
+theorem coeff_βHenselTrunc_of_gt (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) {t j : ℕ} (hj : t < j) :
+    PowerSeries.coeff j (βHenselTrunc H x₀ R hHyp t) = 0 := by
+  simp only [βHenselTrunc, PowerSeries.coeff_mk, if_neg (Nat.not_le_of_gt hj)]
+
+/-- The first omitted coefficient of the `t`-truncation is zero. -/
+theorem coeff_βHenselTrunc_succ (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) :
+    PowerSeries.coeff (t + 1) (βHenselTrunc H x₀ R hHyp t) = 0 :=
+  coeff_βHenselTrunc_of_gt H x₀ R hHyp (Nat.lt_succ_self t)
+
+/-- **The defect reduction (PROVEN — the first slice of the per-order match).**
+By the series-coefficient Newton linearization (`HenselSeriesCoeff.coeff_eval_sub_at`)
+against the `t`-truncation, the order-`(t+1)` coefficient of `eval (βHenselAssembled) Q`
+splits into the truncated *defect* plus the `ζ`-linear response of the new coefficient:
+
+  `coeff (t+1) (eval γ Q) = coeff (t+1) (eval γₜ Q) + ζ · coeff (t+1) γ`.
+
+Hence the residual `coeff_succ_eval_βHenselAssembled` is equivalent to the *cleared defect
+identity* `embedding (βHensel (t+1)) = −W^{t+2}·ξ^{e_{t+1}}·coeff (t+1) (eval γₜ Q)/ζ` —
+the (A.1) sum being exactly the expansion of the truncated defect. -/
+theorem coeff_succ_eval_defect_reduction (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) :
+    PowerSeries.coeff (t + 1)
+        (Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H)) =
+      PowerSeries.coeff (t + 1)
+          (Polynomial.eval (βHenselTrunc H x₀ R hHyp t) (Q x₀ R H))
+        + ClaimA2.ζ R x₀ H * PowerSeries.coeff (t + 1) (βHenselAssembled H x₀ R hHyp) := by
+  have hagree : ∀ j < t + 1,
+      PowerSeries.coeff j (βHenselAssembled H x₀ R hHyp)
+        = PowerSeries.coeff j (βHenselTrunc H x₀ R hHyp t) := by
+    intro j hj
+    rw [coeff_βHenselTrunc_of_lt_succ H x₀ R hHyp hj]
+  have hsub := ProximityPrize.HenselSeriesCoeff.coeff_eval_sub_at (Q := Q x₀ R H)
+    (γ₁ := βHenselAssembled H x₀ R hHyp) (γ₂ := βHenselTrunc H x₀ R hHyp t)
+    (Nat.succ_pos t) hagree
+  have htrunc_top : PowerSeries.coeff (t + 1) (βHenselTrunc H x₀ R hHyp t) = 0 := by
+    exact coeff_βHenselTrunc_succ H x₀ R hHyp t
+  have hderiv : Polynomial.eval (PowerSeries.constantCoeff (βHenselAssembled H x₀ R hHyp))
+      (Polynomial.derivative (ProximityPrize.HenselSeriesCoeff.Q₀ (Q x₀ R H)))
+        = ClaimA2.ζ R x₀ H := by
+    rw [βHenselAssembled_constantCoeff, eval_α₀_derivative_Q₀]
+  rw [htrunc_top, sub_zero, hderiv] at hsub
+  linear_combination hsub
+
+/-- Successor-coefficient vanishing from the cleared truncated-defect
+cancellation. This isolates the remaining `(A.1)` expansion obligation from the
+already-proven Newton linearization step. -/
+theorem coeff_succ_eval_of_trunc_defect_cancel (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ)
+    (hcancel :
+      PowerSeries.coeff (t + 1)
+          (Polynomial.eval (βHenselTrunc H x₀ R hHyp t) (Q x₀ R H))
+        + ClaimA2.ζ R x₀ H * PowerSeries.coeff (t + 1) (βHenselAssembled H x₀ R hHyp)
+          = 0) :
+    PowerSeries.coeff (t + 1)
+      (Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H)) = 0 := by
+  rw [coeff_succ_eval_defect_reduction H x₀ R hHyp t]
+  exact hcancel
+
+/-- The assembled series is a root once every truncated-defect cancellation is
+proved. This is the direct consumer form for the remaining `(A.1)` expansion
+obligation after Newton linearization. -/
+theorem assembledSeries_isRoot_of_trunc_defect_cancel (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hcancel : ∀ t : ℕ,
+      PowerSeries.coeff (t + 1)
+          (Polynomial.eval (βHenselTrunc H x₀ R hHyp t) (Q x₀ R H))
+        + ClaimA2.ζ R x₀ H * PowerSeries.coeff (t + 1) (βHenselAssembled H x₀ R hHyp)
+          = 0) :
+    Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H) = 0 :=
+  assembledSeries_isRoot_of_coeff_succ_eval H x₀ R hHyp
+    (fun t => coeff_succ_eval_of_trunc_defect_cancel H x₀ R hHyp t (hcancel t))
+
+/-- The assembled series is the genuine Hensel root once every truncated-defect
+cancellation is proved. -/
+theorem βHenselAssembled_eq_gammaGenuine_of_trunc_defect_cancel (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hcancel : ∀ t : ℕ,
+      PowerSeries.coeff (t + 1)
+          (Polynomial.eval (βHenselTrunc H x₀ R hHyp t) (Q x₀ R H))
+        + ClaimA2.ζ R x₀ H * PowerSeries.coeff (t + 1) (βHenselAssembled H x₀ R hHyp)
+          = 0) :
+    βHenselAssembled H x₀ R hHyp = gammaGenuine x₀ R H hHyp :=
+  βHenselAssembled_eq_gammaGenuine H x₀ R hHyp
+    (assembledSeries_isRoot_of_trunc_defect_cancel H x₀ R hHyp hcancel)
+
+/-- Coefficient-level form of the trunc-defect cancellation reduction. -/
+theorem coeff_βHenselAssembled_eq_αGenuine_of_trunc_defect_cancel
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hcancel : ∀ t : ℕ,
+      PowerSeries.coeff (t + 1)
+          (Polynomial.eval (βHenselTrunc H x₀ R hHyp t) (Q x₀ R H))
+        + ClaimA2.ζ R x₀ H * PowerSeries.coeff (t + 1) (βHenselAssembled H x₀ R hHyp)
+          = 0)
+    (t : ℕ) :
+    PowerSeries.coeff t (βHenselAssembled H x₀ R hHyp) = αGenuine H x₀ R hHyp t := by
+  rw [βHenselAssembled_eq_gammaGenuine_of_trunc_defect_cancel H x₀ R hHyp hcancel,
+    αGenuine]
+
+/-- Successor-coefficient form of the trunc-defect cancellation reduction.
+This is the index shape consumed by the `(A.1)` successor recursion. -/
+theorem coeff_succ_βHenselAssembled_eq_αGenuine_of_trunc_defect_cancel
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hcancel : ∀ t : ℕ,
+      PowerSeries.coeff (t + 1)
+          (Polynomial.eval (βHenselTrunc H x₀ R hHyp t) (Q x₀ R H))
+        + ClaimA2.ζ R x₀ H * PowerSeries.coeff (t + 1) (βHenselAssembled H x₀ R hHyp)
+          = 0)
+    (t : ℕ) :
+    PowerSeries.coeff (t + 1) (βHenselAssembled H x₀ R hHyp) =
+      αGenuine H x₀ R hHyp (t + 1) :=
+  coeff_βHenselAssembled_eq_αGenuine_of_trunc_defect_cancel H x₀ R hHyp hcancel (t + 1)
+
+/-- The repaired lift identity follows directly from the per-order
+truncated-defect cancellations. -/
+theorem βHensel_lift_identity_of_trunc_defect_cancel (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hcancel : ∀ t : ℕ,
+      PowerSeries.coeff (t + 1)
+          (Polynomial.eval (βHenselTrunc H x₀ R hHyp t) (Q x₀ R H))
+        + ClaimA2.ζ R x₀ H * PowerSeries.coeff (t + 1) (βHenselAssembled H x₀ R hHyp)
+          = 0)
+    (t : ℕ) :
+    embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+      = αGenuine H x₀ R hHyp t
+          * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+          * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1) :=
+  βHensel_lift_identity_of_assembledSeries_isRoot H x₀ R hHyp
+    (assembledSeries_isRoot_of_trunc_defect_cancel H x₀ R hHyp hcancel) t
+
+/-- Coefficients of the recentered `Q` coefficient series are the `X`-Hasse
+derivatives of the corresponding `Y`-coefficient of `R`, evaluated at `x₀` and
+lifted to the function field. This is the first bridge from the power-series
+coefficient expansion to the Appendix-A Hasse-derivative notation. -/
+theorem coeff_Q_coeff_eq_eval_hasseDerivX
+    (x₀ : F) (R : F[X][X][Y]) (j i1 : ℕ) :
+    PowerSeries.coeff i1 ((Q x₀ R H).coeff j) =
+      liftToFunctionField (H := H)
+        (Polynomial.eval (Polynomial.C x₀) (Polynomial.hasseDeriv i1 (R.coeff j))) := by
+  rw [Q, Polynomial.coeff_map, ProximityPrize.BCIKS20.GammaGenuine.coeff_coeffHom,
+    Polynomial.taylor_coeff]
+
+/-- `Q`-coefficient expansion in the same `evalX ∘ hasseDerivX` form used by
+the `B_coeff` numerator and weight lemmas. -/
+theorem coeff_Q_coeff_eq_evalX_hasseDerivX_coeff
+    (x₀ : F) (R : F[X][X][Y]) (j i1 : ℕ) :
+    PowerSeries.coeff i1 ((Q x₀ R H).coeff j) =
+      liftToFunctionField (H := H)
+        ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 R)).coeff j) := by
+  rw [coeff_Q_coeff_eq_eval_hasseDerivX, evalX_C_coeff, hasseDerivX_coeff]
+
+/-- **Product bridge (PROVEN — the multiplicative half of the cleared-defect identity).**
+The product of assembled-series coefficients over any finite multiset of orders clears to
+the embedded product of the (A.1) numerators over the telescoped `W`/`ξ` powers. -/
+theorem prod_map_coeff_assembled (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (s : Multiset ℕ) :
+    (s.map (fun l => PowerSeries.coeff l (βHenselAssembled H x₀ R hHyp))).prod
+      = embeddingOf𝒪Into𝕃 H ((s.map (βHensel H x₀ R hHyp)).prod)
+        / ((liftToFunctionField (H := H) H.leadingCoeff) ^ ((s.map (· + 1)).sum)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp))
+              ^ ((s.map (fun l => 2 * l - 1)).sum)) := by
+  induction s using Multiset.induction with
+  | empty => simp
+  | cons a t ih =>
+      simp only [Multiset.map_cons, Multiset.prod_cons, Multiset.sum_cons]
+      rw [ih,
+        show PowerSeries.coeff a (βHenselAssembled H x₀ R hHyp)
+          = embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp a)
+              / ((liftToFunctionField (H := H) H.leadingCoeff) ^ (a + 1)
+                  * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * a - 1)) from by
+            simp [βHenselAssembled, PowerSeries.coeff_mk],
+        map_mul, pow_add, pow_add, div_mul_div_comm]
+      ring
+
+/-- `∑_{l ∈ λ.parts} (l+1) = m + Σλ` — the `W`-power telescope. Local restatement of
+`ProximityPrize.MultinomialChainRule.partition_sum_add_one`. -/
+theorem partition_sum_add_one_local {m : ℕ} (lam : Nat.Partition m) :
+    (lam.parts.map (· + 1)).sum = m + Multiset.card lam.parts := by
+  rw [Multiset.sum_map_add]
+  simp [lam.parts_sum, Multiset.map_id']
+
+/-- **Truncation agreement for products (PROVEN).** Over any multiset of orders all `≤ t`,
+the truncated and assembled coefficient products coincide. -/
+theorem prod_map_coeff_trunc_eq (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) (s : Multiset ℕ)
+    (hs : ∀ l ∈ s, l ≤ t) :
+    (s.map (fun l => PowerSeries.coeff l (βHenselTrunc H x₀ R hHyp t))).prod
+      = (s.map (fun l => PowerSeries.coeff l (βHenselAssembled H x₀ R hHyp))).prod := by
+  congr 1
+  exact Multiset.map_congr rfl (fun l hl => by
+    simp only [βHenselTrunc, PowerSeries.coeff_mk, if_pos (hs l hl)])
+
+/-- Partition-specialized truncation agreement.  If every part of `λ` is at most
+`t`, then the partition product built from the `t`-truncation equals the one built
+from the assembled series. -/
+theorem partitionProd_coeff_trunc_eq {m : ℕ} (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) (lam : Nat.Partition m)
+    (hs : ∀ l ∈ lam.parts, l ≤ t) :
+    partitionProd lam (fun l => PowerSeries.coeff l (βHenselTrunc H x₀ R hHyp t))
+      = partitionProd lam (fun l => PowerSeries.coeff l (βHenselAssembled H x₀ R hHyp)) := by
+  rw [partitionProd, partitionProd]
+  exact prod_map_coeff_trunc_eq H x₀ R hHyp t lam.parts hs
+
+/-- Partition-specialized truncation agreement in the guard shape produced by
+`surviving_parts_lt`: every part is `< t + 1`. -/
+theorem partitionProd_coeff_trunc_eq_of_parts_lt_succ {m : ℕ} (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) (lam : Nat.Partition m)
+    (hs : ∀ l ∈ lam.parts, l < t + 1) :
+    partitionProd lam (fun l => PowerSeries.coeff l (βHenselTrunc H x₀ R hHyp t))
+      = partitionProd lam (fun l => PowerSeries.coeff l (βHenselAssembled H x₀ R hHyp)) := by
+  exact partitionProd_coeff_trunc_eq H x₀ R hHyp t lam
+    (fun l hl => Nat.lt_succ_iff.mp (hs l hl))
+
+/-- **Per-partition cleared term (PROVEN corollary).** Instantiating the product bridge at
+a partition `λ ⊢ m` and rewriting the `W`-exponent by `partition_sum_add_one_local`. -/
+theorem partitionProd_coeff_assembled {m : ℕ} (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (lam : Nat.Partition m) :
+    partitionProd lam (fun l => PowerSeries.coeff l (βHenselAssembled H x₀ R hHyp))
+      = embeddingOf𝒪Into𝕃 H (partitionProd lam (βHensel H x₀ R hHyp))
+        / ((liftToFunctionField (H := H) H.leadingCoeff) ^ (m + Multiset.card lam.parts)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp))
+                ^ ((lam.parts.map (fun l => 2 * l - 1)).sum)) := by
+  rw [partitionProd, prod_map_coeff_assembled, ← partitionProd]
+  congr 2
+  exact congrArg (fun n => (liftToFunctionField (H := H) H.leadingCoeff) ^ n)
+    (partition_sum_add_one_local lam)
+
+/-- **Per-partition cleared term for the truncation (PROVEN).**  When all parts of
+`λ` are at most `t`, the partition product of coefficients of `βHenselTrunc t`
+has the same cleared `βHensel` numerator expression as the assembled product. -/
+theorem partitionProd_coeff_trunc_assembled {m : ℕ} (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) (lam : Nat.Partition m)
+    (hs : ∀ l ∈ lam.parts, l ≤ t) :
+    partitionProd lam (fun l => PowerSeries.coeff l (βHenselTrunc H x₀ R hHyp t))
+      = embeddingOf𝒪Into𝕃 H (partitionProd lam (βHensel H x₀ R hHyp))
+        / ((liftToFunctionField (H := H) H.leadingCoeff) ^ (m + Multiset.card lam.parts)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp))
+                ^ ((lam.parts.map (fun l => 2 * l - 1)).sum)) := by
+  rw [partitionProd_coeff_trunc_eq H x₀ R hHyp t lam hs,
+    partitionProd_coeff_assembled H x₀ R hHyp lam]
+
+/-- Cleared truncation term for a surviving `(A.1)` partition. The survival
+condition rules out the current order `k + 1`, so every recursive part is
+visible to the `k`-truncation. -/
+theorem partitionProd_coeff_trunc_assembled_of_surviving {k i1 : ℕ}
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (lam : Nat.Partition (k + 1 - i1))
+    (hlam : (k + 1) ∉ lam.parts) :
+    partitionProd lam (fun l => PowerSeries.coeff l (βHenselTrunc H x₀ R hHyp k))
+      = embeddingOf𝒪Into𝕃 H (partitionProd lam (βHensel H x₀ R hHyp))
+        / ((liftToFunctionField (H := H) H.leadingCoeff) ^
+              (k + 1 - i1 + Multiset.card lam.parts)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp))
+                ^ ((lam.parts.map (fun l => 2 * l - 1)).sum)) := by
+  exact partitionProd_coeff_trunc_assembled H x₀ R hHyp k lam
+    (fun l hl => Nat.lt_succ_iff.mp (surviving_parts_lt lam hlam hl))
+
+/-! ### 4g. The Faà-di-Bruno coefficient bridge for `Q` (PROVEN, content-free)
+
+These three declarations carry NO open content. They lay the order-`n` coefficient of
+`eval γ Q` completely bare in the partition/`countPerms` shape that the `(A.1)` recursion's
+`B_coeff`/`partitionProd`/`prefactor` objects were built to match, isolating the single
+remaining combinatorial-weight reconciliation into the named residual
+`faaDiBruno_succ_sum_eq_zero` below. -/
+
+/-- **The `Q`-coefficient bridge (PROVEN, axiom-clean, content-free).**
+The order-`a` (`X`-Taylor) coefficient of the `i`-th power-series coefficient of `Q` is the lift
+of the `i`-th `Y`-coefficient of the middle-`X` Hasse derivative `Δ_X^{a} R` specialised at
+`X = x₀`.
+
+This is the exact composite of the orchestrator's prepped chain, every step a proven rewrite:
+`Q.coeff i = coeffHom x₀ H (R.coeff i)` (`coeff_map`); `coeff a (coeffHom ...) =
+liftToFunctionField ((taylor (C x₀) (R.coeff i)).coeff a)` (`coeff_coeffHom`); the mathlib Taylor
+identity `(taylor r f).coeff a = (hasseDeriv a f).eval r` (`Polynomial.taylor_coeff`) turns the
+`X`-Taylor coefficient into the middle-`X` Hasse derivative evaluated at `x₀`; and the proven
+layer-commutations `evalX_C_coeff` / `hasseDerivX_coeff` re-express
+`eval (C x₀) (hasseDeriv a (R.coeff i))` as `(evalX (C x₀) (Δ_X^{a} R)).coeff i`, exactly the
+`F[X]` object whose lift sits inside `hasseCoeffRepr𝒪`. The `X`-Taylor order `a` is the
+middle-`X` Hasse order `i1` of the `(A.1)` recursion. -/
+theorem coeff_Q_eq_B (x₀ : F) (R : F[X][X][Y]) (i a : ℕ) :
+    PowerSeries.coeff a ((Q x₀ R H).coeff i)
+      = liftToFunctionField (H := H)
+          ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX a R)).coeff i) := by
+  rw [Q, Polynomial.coeff_map, coeff_coeffHom, Polynomial.taylor_coeff,
+    evalX_C_coeff, hasseDerivX_coeff]
+
+/-- **The full Faà-di-Bruno expansion of `coeff n (eval γ Q)` (PROVEN, axiom-clean,
+content-free).**
+Chaining the three proven expansion lemmas with the `Q`-coefficient bridge `coeff_Q_eq_B`:
+
+* `HenselSeriesCoeff.coeff_eval_eq_sum_range` is the convolution over the `Y`-degree
+  `i ≤ deg Q`;
+* `PowerSeries.coeff_mul` is the antidiagonal split of each `coeff n (Q.coeff i * γ^i)` into
+  the `X`-Taylor order `a = ab.1` and the `Y`-composition order `b = ab.2`;
+* `PowerSeriesComposition.coeff_pow_eq_partitionSum` expands each `coeff b (γ^i)` as the
+  `countPerms`-weighted sum over the distinct value-multisets `m` of weak compositions of `b`
+  into `i` parts; and
+* `coeff_Q_eq_B` rewrites the `a`-coefficient of `Q.coeff i`.
+
+The lifted `(evalX (C x₀) (Δ_X^{a} R)).coeff i` factor is precisely the genuine iterated-Hasse
+object underlying `B_coeff`, modulo the `Y`-Hasse binomial bookkeeping linking the `Y`-coefficient
+index `i` to a `Δ_Y` order. Nothing here is open: the residual is exactly the value of this sum. -/
+theorem coeff_eval_Q_faaDiBruno (x₀ : F) (R : F[X][X][Y])
+    (γ : PowerSeries (𝕃 H)) (n : ℕ) :
+    PowerSeries.coeff n (Polynomial.eval γ (Q x₀ R H))
+      = ∑ i ∈ Finset.range ((Q x₀ R H).natDegree + 1),
+          ∑ ab ∈ Finset.antidiagonal n,
+            (liftToFunctionField (H := H)
+                ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX ab.1 R)).coeff i))
+            * (∑ m ∈ (Finset.finsuppAntidiag (Finset.range i) ab.2).image
+                      (ArkLib.PowerSeriesComposition.valueMultiset (Finset.range i)),
+                (Multiset.countPerms m) • ((m.map (fun j => PowerSeries.coeff j γ)).prod)) := by
+  rw [ProximityPrize.HenselSeriesCoeff.coeff_eval_eq_sum_range]
+  refine Finset.sum_congr rfl fun i _ => ?_
+  rw [PowerSeries.coeff_mul]
+  refine Finset.sum_congr rfl fun ab _ => ?_
+  rw [ArkLib.PowerSeriesComposition.coeff_pow_eq_partitionSum]
+  congr 1
+  exact coeff_Q_eq_B H x₀ R i ab.1
+
+/-- **(P2) the single named combinatorial residual (documented `sorry`).**
+
+After the proven Faà-di-Bruno expansion `coeff_eval_Q_faaDiBruno`, the order-`(t+1)` coefficient
+of `eval (βHenselAssembled ...) Q` is this explicit partition/`countPerms` sum. Its vanishing is
+the isolated BCIKS20 A.4 content: the combinatorial-weight reconciliation that the weighted
+Faà-di-Bruno sum collapses, against the `(A.1)` recursion `βHensel_succ`, to `0`. -/
+theorem faaDiBruno_succ_sum_eq_zero (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) :
+    (∑ i ∈ Finset.range ((Q x₀ R H).natDegree + 1),
+        ∑ ab ∈ Finset.antidiagonal (t + 1),
+          (liftToFunctionField (H := H)
+              ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX ab.1 R)).coeff i))
+          * (∑ m ∈ (Finset.finsuppAntidiag (Finset.range i) ab.2).image
+                    (ArkLib.PowerSeriesComposition.valueMultiset (Finset.range i)),
+              (Multiset.countPerms m) •
+                ((m.map (fun j =>
+                  PowerSeries.coeff j (βHenselAssembled H x₀ R hHyp))).prod))) = 0 := by
+  -- IRREDUCIBLE FRONTIER: the combinatorial-weight reconciliation `prefactor_eq_paper`.
+  -- Everything connective is proven above.
+  sorry
+
+/-- **(P2) order-`(t+1)` vanishing — reduced to the single named combinatorial residual
+`faaDiBruno_succ_sum_eq_zero`.**
+
+The successor-order coefficient of `eval (βHenselAssembled …) Q` vanishes.  This is the genuine,
+minimally-carved BCIKS20 A.4 content: with the order-`0` half already PROVEN
+(`coeff_zero_eval_βHenselAssembled`) and the whole-series statement assembled from this by
+`PowerSeries.ext` (`assembledSeries_isRoot` below), the *entire* remaining mathematical content
+of (P2) is exactly this per-successor-order vanishing.
 
 WHY THIS IS THE GENUINE A.4 CONTENT.  The (A.1) recursion `βHensel_succ` was *built* so that the
 order-`(k+1)` coefficient of `R(X, γ, Z)` vanishes: comparing the `X^{k+1}` coefficient of
 `eval γ Q` to `0` and solving for the new numerator is exactly the literal `(A.1)` sum
-`−∑_{i1}∑_{λ} W^{…}·ξ^{…}·B_{i1,λ}·∏_l β_l^{λ_l}`.  Establishing `eval (βHenselAssembled) Q = 0`
-formally is the Faà-di-Bruno / multivariate-chain-rule expansion: `coeff_eval` of `Q`
-(`HenselSeriesCoeff.coeff_eval_eq_sum_range`) expands the order-`n` coefficient of `eval γ Q`
-into a sum over `Y`-degrees and over `X`-partitions of `n`, and `PowerSeriesComposition`'s
+`−∑_{i1}∑_{λ} W^{…}·ξ^{…}·B_{i1,λ}·∏_l β_l^{λ_l}`.  Establishing this per-order vanishing formally
+is the Faà-di-Bruno / multivariate-chain-rule expansion: `coeff_eval` of `Q`
+(`HenselSeriesCoeff.coeff_eval_eq_sum_range`) expands the order-`(t+1)` coefficient of `eval γ Q`
+into a sum over `Y`-degrees and over `X`-partitions of `t+1`, and `PowerSeriesComposition`'s
 `coeff_pow_eq_partitionSum` turns each `γ^j` factor into the partition sum whose shape is exactly
-`B_coeff · partitionProd` (the objects in this file were built to those shapes).  The match
-discharges every order `≥ 1`; order `0` is the base root `eval_α₀_Q₀_eq_zero`.
+`B_coeff · partitionProd` (the objects in this file were built to those shapes).
+
+EQUIVALENTLY (the ALTERNATIVE STRATEGY's frame).  By the Newton linearization
+`HenselSeriesCoeff.coeff_eval_sub_at` against the genuine root `gammaGenuine` (which is a root,
+`gammaGenuine_root`, with the same order-`0` datum `α₀`), this per-order vanishing is — under the
+proven unit `eval α₀ (derivative Q₀) = ζ ≠ 0` (`isUnit_eval_α₀_derivative_Q₀`) and the inductive
+agreement below order `t+1` — equivalent to the coefficient match
+`coeff (t+1) (βHenselAssembled …) = coeff (t+1) (gammaGenuine …)`.  So closing this residual is
+exactly proving that the (A.1) recursion computes the same Newton correction as `gammaGenuine`'s
+partial-sum construction `HenselSeriesCoeff.S` at every order — the term-by-term recursion match.
 
 This residual carries NO false content: it is a true statement (the genuine `gammaGenuine` IS a
 root, `gammaGenuine_root`, and the A.1 recursion reproduces its coefficients), and the only
 missing piece is the formal Faà-di-Bruno bridge `coeff_eval ↔ partition sums ↔ B_coeff·partitionProd`
-for the *assembled* series.  Carved as small as possible: a single root equality, with the
-remaining work entirely inside the already-built partition/coefficient calculus.  See
-`pc-w10-connect.md`. -/
+for the *assembled* series, which is gated on the STATED-NOT-PROVEN combinatorial reconciliation
+`prefactor_eq_paper` (the Hasse-intrinsic `C(j,Σλ)` weight vs the paper's `multinomial(j0,λ)`).
+Carved as small as possible: a single per-successor-order coefficient equality, with the order-`0`
+base case, the extensionality assembly, the denominator clearing, and the uniqueness reduction to
+`gammaGenuine` all PROVEN.  See `pc-w11-bridge.md`. -/
+theorem coeff_succ_eval_βHenselAssembled (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) :
+    PowerSeries.coeff (t + 1) (Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H)) = 0 := by
+  -- REDUCED: the proven Faà-di-Bruno expansion lays this coefficient bare as the explicit
+  -- partition/`countPerms` sum; its vanishing is the single named residual.
+  rw [coeff_eval_Q_faaDiBruno]
+  exact faaDiBruno_succ_sum_eq_zero H x₀ R hHyp t
+
+/-- **(P2) the assembled series is a root of `Q` — PROVEN modulo the SINGLE per-successor-order
+residual `coeff_succ_eval_βHenselAssembled`.**
+
+`eval (βHenselAssembled …) Q = 0`, the genuine BCIKS20 A.4 statement that the power series
+assembled from the (A.1) numerators `βHensel` (normalized by `W^{t+1}·ξ^{e_t}`) is a root of the
+`X`-recentered `Y`-polynomial `Q` of `R`.  Proved by `PowerSeries.ext`, splitting into the
+order-`0` vanishing `coeff_zero_eval_βHenselAssembled` (PROVEN) and the order-`(t+1)` vanishing
+`coeff_succ_eval_βHenselAssembled` (the single documented residual).  Everything else of (P2)
+(base case `βHenselAssembled_constantCoeff`, denominator nonvanishing `den_ne_zero`, the
+uniqueness reduction to `gammaGenuine` `βHenselAssembled_eq_gammaGenuine`, and the denominator
+clearing for all `t`) is PROVEN above. -/
 theorem assembledSeries_isRoot (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) :
     Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H) = 0 := by
-  -- IRREDUCIBLE FRONTIER: the Faà-di-Bruno expansion `coeff_eval ↔ B_coeff·partitionProd` that
-  -- shows the (A.1)-assembled series is a root of `Q`.  All surrounding scaffolding PROVEN above.
-  sorry
+  exact assembledSeries_isRoot_of_coeff_succ_eval H x₀ R hHyp
+    (coeff_succ_eval_βHenselAssembled H x₀ R hHyp)
 
-/-- **(P2) lift identity — REPAIRED against the genuine root, PROVEN modulo the single residual
-`assembledSeries_isRoot`.**
+/-- **(P2) lift identity — REPAIRED against the genuine root, PROVEN modulo the single
+per-successor-order residual `coeff_succ_eval_βHenselAssembled`.**
 `embeddingOf𝒪Into𝕃 (βHensel … t) = αGenuine t · W^{t+1} · ξ^{2t−1}`, where
 `αGenuine t = coeff t (gammaGenuine …)` is the genuine Hensel coefficient of A.4 (NOT the vacuous
 in-tree `ClaimA2.α`; see the statement-repair note at §4f above).
 
-PROOF STATUS.  Fully reduced to the single root residual `assembledSeries_isRoot`:
-`βHensel_lift_identity_of_assembledSeries_isRoot` derives this for all `t` from
-`eval (βHenselAssembled) Q = 0`, using the PROVEN base case (`βHenselAssembled_constantCoeff`)
-+ uniqueness (`gammaGenuine_unique`) + denominator clearing (`den_ne_zero`).  The `t = 0`
-instance is unconditionally PROVEN (`βHensel_lift_identity_zero`). -/
+PROOF STATUS.  Reduced to the single per-successor-order residual
+`coeff_succ_eval_βHenselAssembled` (`coeff (t+1) (eval (βHenselAssembled) Q) = 0`):
+`assembledSeries_isRoot` assembles the full root `eval (βHenselAssembled) Q = 0` from the PROVEN
+order-`0` vanishing (`coeff_zero_eval_βHenselAssembled`) and that residual (via `PowerSeries.ext`),
+and `βHensel_lift_identity_of_assembledSeries_isRoot` then derives this identity for all `t`, using
+the PROVEN base case (`βHenselAssembled_constantCoeff`) + uniqueness (`gammaGenuine_unique`) +
+denominator clearing (`den_ne_zero`).  The `t = 0` instance is unconditionally PROVEN
+(`βHensel_lift_identity_zero`). -/
 theorem βHensel_lift_identity (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
     (t : ℕ) :
     embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)

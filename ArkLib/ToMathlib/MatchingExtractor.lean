@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.GuruswamiSudan.Basic
+import ArkLib.Data.CodingTheory.ProximityGap.GSFactorExtract
 
 /-!
 # The `MatchingExtractor` residual of Proposition 5.5 — the GS matching-polynomial extraction
@@ -165,6 +166,43 @@ theorem matchingFactor_dvd_of_weightedDegree
   have hcount : (Qz.eval Pz).natDegree < m * A.card := lt_of_le_of_lt hdeg hwcount
   exact matchingFactor_dvd_of_orderM_and_count ωs Qz Pz m A hord hcount
 
+/-! ### Finite-family list-size adapters
+
+The preceding lemmas extract one factor `Y - Pz(X)` at a time.  The public
+`GSFactorExtract` API then counts how many distinct extracted factors can divide a nonzero
+interpolant.  These adapters are the standalone GS list-decoding surface consumed by callers that
+already have per-candidate agreement sets. -/
+
+/-- **Finite-family GS list-size bound from order-`m` graph vanishing.**
+
+For every candidate message `P ∈ Ps`, assume `Qz` has GS order-`m` vanishing on the graph of `P`
+over the agreement set `A P`, and that the specialized degree is below the corresponding
+root-count budget.  Then all those candidates contribute distinct linear factors of `Qz`, so their
+number is at most the `Y`-degree of `Qz`. -/
+theorem list_size_le_of_orderM_and_count
+    (ωs : Fin n ↪ F) (Qz : F[X][Y]) (hQz : Qz ≠ 0) (Ps : Finset F[X])
+    (m : ℕ) (A : F[X] → Finset (Fin n))
+    (hord : ∀ P ∈ Ps, ∀ i ∈ A P, GuruswamiSudan.HasOrderAt Qz (ωs i) (P.eval (ωs i)) m)
+    (hcount : ∀ P ∈ Ps, (Qz.eval P).natDegree < m * (A P).card) :
+    Ps.card ≤ Qz.natDegree := by
+  exact GSFactorExtract.gs_list_size_le Qz hQz Ps (fun P hP =>
+    matchingFactor_dvd_of_orderM_and_count ωs Qz P m (A P) (hord P hP) (hcount P hP))
+
+/-- **Finite-family GS list-size bound from the weighted-degree Johnson budget.**
+
+This is the common caller-facing form: the degree of every candidate is at most `k`, and the
+Johnson count is discharged from the `(1,k)` weighted-degree bound on `Qz`. -/
+theorem list_size_le_of_orderM_and_weightedDegree
+    (ωs : Fin n ↪ F) (Qz : F[X][Y]) (hQz : Qz ≠ 0) (Ps : Finset F[X])
+    (m k : ℕ) (A : F[X] → Finset (Fin n))
+    (hPdeg : ∀ P ∈ Ps, P.natDegree ≤ k)
+    (hord : ∀ P ∈ Ps, ∀ i ∈ A P, GuruswamiSudan.HasOrderAt Qz (ωs i) (P.eval (ωs i)) m)
+    (hwcount : ∀ P ∈ Ps, Bivariate.natWeightedDegree Qz 1 k < m * (A P).card) :
+    Ps.card ≤ Qz.natDegree := by
+  exact GSFactorExtract.gs_list_size_le Qz hQz Ps (fun P hP =>
+    matchingFactor_dvd_of_weightedDegree ωs Qz P m k (A P) (hPdeg P hP) (hord P hP)
+      (hwcount P hP))
+
 end MatchingExtractor
 
 end ArkLib
@@ -176,3 +214,5 @@ end ArkLib
 #print axioms ArkLib.MatchingExtractor.matchesGraph_iff_dvd
 #print axioms ArkLib.MatchingExtractor.matchingPolynomial_extracts
 #print axioms ArkLib.MatchingExtractor.matchingFactor_dvd_of_weightedDegree
+#print axioms ArkLib.MatchingExtractor.list_size_le_of_orderM_and_count
+#print axioms ArkLib.MatchingExtractor.list_size_le_of_orderM_and_weightedDegree

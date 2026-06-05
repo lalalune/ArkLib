@@ -5,6 +5,7 @@ Authors: Alexander Hicks
 -/
 
 import ArkLib.Data.CodingTheory.ReedSolomon.Folded
+import ArkLib.Data.CodingTheory.ProximityGap.GK16DegreeBudget
 import Mathlib.FieldTheory.Finiteness
 
 /-!
@@ -296,7 +297,45 @@ boundary values.
 The FRS case requires `(L, s)`-admissibility of `ω`; the multiplicity case requires
 `|F| > n` and `char(F) > ρ·s·n > s`. We state only the FRS half here; the multiplicity
 half is gated on `D2.19 / DA.7` (univariate-multiplicity definition), which is tracked
-separately. Admitted as an external result. -/
+separately.
+
+**Reduction status (2026-06-05). The GK16 §4 degree-counting *spine* is now verified.**
+Following GK16 §4 (Theorem 13 with the basic `t = s` specialization, multiplicity form),
+the proof reduces to the folded Wronskian `L := foldedWronskian P ω` of a basis
+`P : Fin d → F[X]` (`d = dim A ≤ r`) of the polynomials underlying `A` via the (injective)
+FRS encoder. Then:
+
+  `∑_i dim A_i  =  ∑_i dim (W ∩ H_{domain i})`            (encoder iso; `A_i = A ⊓ ker(eval_i)`)
+              `≤  ∑_i rootMultiplicity (domain i) L`        (GK16 Claim 16, see gap ②)
+              `≤  natDegree L  ≤  d·(k-1)  ≤  r·(k-1)` ,    (**verified**, see below)
+
+and `r·(k-1)/n ≤ d·τ(r)` holds with room to spare for the paper's
+`τ(r) = s·k/(n·(s-r+1))` since `(k-1)(s-r+1) ≤ (k-1)·s < s·k`.
+
+The last chain `∑_i rootMultiplicity (domain i) L ≤ d·(k-1)` is **proven, axiom-clean**:
+`ArkLib.FRS.GK16.sum_rootMultiplicity_foldedWronskian_le` (file `GK16DegreeBudget.lean`),
+which chains `ArkLib.FRS.GK16.natDegree_foldedWronskian_le` (`deg L ≤ s·(k-1)`,
+`ProximityPrizeLeaves.lean`) with `Polynomial.sum_rootMultiplicity_le_natDegree`
+(`∑ over distinct points of rootMultiplicity ≤ natDegree`, `GK16RootCounting.lean`).
+
+**Two genuine, deep gaps remain** (both pinned precisely; neither is faked):
+
+① **GK16 Lemma 12, hard direction** — `LinearIndependent F P → foldedWronskian P ω ≠ 0`,
+   needed to know `L ≠ 0`. Requires `ω` of multiplicative order ≥ `v` (the
+   trailing-monomial degree spread), supplied by `Admissible`; the proof is a Gaussian
+   reduction to a triangular trailing-monomial system + a Vandermonde monomial base case
+   (GK16 Appendix A / the folded-Wronskian note, Lemmas 2.2–2.4). Only the *easy*
+   direction (`≠ 0 → LinearIndependent`) is formalized, in
+   `ArkLib.FRS.GK16.gk16_folded_wronskian_nonvanishing` (`GK16Wronskian.lean`).
+
+② **GK16 Claim 16** — `rootMultiplicity (domain i) L ≥ dim (A ⊓ ker(eval_i))`: the link
+   from a vanishing subspace to a high-multiplicity root of `L`, via the
+   determinant-derivative expansion `L^(ℓ) = ∑ det(M^{(i₁,…,i_s)})` (GK16 §3) and a
+   row-sharing rank argument over `F[X]` (Claim 15: `rank M(α) ≤ s - dim(A ⊓ ker(eval_i))`).
+
+Plus the structural encoder-isomorphism transport (`A ≤ frsCode ↔ U ⊆ degreeLT F k`,
+carrying `finrank (A ⊓ ker(eval_i)) = dim (U ∩ H_{domain i})`), which is routine but
+unwritten. Until ① and ② are formalized the FRS half stays admitted. -/
 theorem frs_is_subspaceDesign_gk16
     {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
     {F : Type} [Field F] [Fintype F] [DecidableEq F]
@@ -308,6 +347,7 @@ theorem frs_is_subspaceDesign_gk16
         (s : ℝ) * (k : ℝ) / Fintype.card ι / (s - r + 1)
       else 1
     IsSubspaceDesign s τ (ReedSolomon.Folded.frsCode domain k s ω) := by
-  sorry -- ABF26-T2.18 (FRS half); external admit [GK16].
+  sorry -- ABF26-T2.18 (FRS half): GK16 §4 spine verified; gaps ① (Lemma 12 hard
+        -- direction) + ② (Claim 16 multiplicity bound) remain. See docstring.
 
 end CodingTheory

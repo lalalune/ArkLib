@@ -36,4 +36,23 @@ theorem mca_of_hard_regime
   · exact hhard f δ hδ h
   · exact le_trans (PMF.coe_le_one _ _) (not_lt.mp h)
 
+/-- **Hard-regime equivalence.**  A generator has MCA iff the MCA probability bound is proved
+only in the nontrivial range `errStar δ < 1`.  The reverse direction is
+`mca_of_hard_regime`; the forward direction is just specializing the MCA hypothesis. -/
+theorem hasMutualCorrAgreement_iff_hard_regime
+    (Gen : ProximityGenerator ι F) [Fintype Gen.parℓ]
+    (BStar : ℝ) (errStar : ℝ → ENNReal) :
+    hasMutualCorrAgreement Gen BStar errStar ↔
+      ∀ (f : Gen.parℓ → ι → F) (δ : ℝ≥0), (0 < δ ∧ δ < 1 - BStar) →
+        errStar δ < 1 →
+        haveI := Gen.Gen_nonempty
+        Pr_{
+          let r ← $ᵖ Gen.Gen}[MutualCorrAgreement.proximityCondition f δ r Gen.C] ≤
+            errStar δ := by
+  constructor
+  · intro hmca f δ hδ _hsmall
+    exact hmca f δ hδ
+  · intro hhard
+    exact mca_of_hard_regime Gen BStar errStar hhard
+
 end MCAJohnson

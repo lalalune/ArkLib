@@ -108,15 +108,25 @@ theorem linear_listSize_to_epsMCA_gcxk25
       ENNReal.ofReal
         (((L : ℝ) ^ 2 * δ * Fintype.card ι + 1 / η) / Fintype.card F) := by
   sorry -- ABF26-T5.1; external admit [GCXK25 Thm 3].
-  -- Missing ingredient: the GCXK25 list-decoding→MCA amplification. Concretely, a
-  -- second-moment (pair-counting) bound on `epsMCA`'s bad event: for each `γ`, an
-  -- mcaEvent witness at radius `1-√(1-δ+η)` forces ≥2 distinct codewords in the
-  -- δ-list `closeCodewordsRel C (line) δ` agreeing on a (1-δ+η)-fraction; bounding the
-  -- number of such "colliding γ" by `L²·δ·n` (Johnson pair count, |Λ|≤L) and dividing by
-  -- |F| gives the RHS. In-tree this needs: (i) Λ(C,δ)≤L ⇒ the per-γ collision set has
-  -- size ≤ L²·δ·n, and (ii) the 1/η additive slack term from the η-margin. Neither the
-  -- pair-collision counting nor the η-slack accounting is in-tree (Johnson pair counting
-  -- exists in JohnsonBound/ but in a non-Λ formulation). Genuinely external.
+  -- Missing ingredient: the GCXK25 list-decoding→MCA amplification. GCXK25 (eprint 2025/870)
+  -- partition the bad combining points into `Bad¹` (count `≤ p·n`, their Cor 2 via the GKL24
+  -- agree-domain intersection Lemma 1/Cor 1) and `Bad²` (count `< 1/ε`, their Lemma 3, a
+  -- second-moment Cauchy–Schwarz count over the δ-agreement domains); together with the
+  -- `l ≤ L²` list-size factor this gives the `L²·δ·n + 1/η` shape, divided by |F|.
+  --
+  -- VERIFIED BACKBONE: the GCXK25 Lemma 3 `Bad² < 1/ε` second-moment count is now formalized
+  -- kernel-clean in `Connections/GCXK25SecondMoment.lean`
+  -- (`GCXK25SecondMoment.card_lt_inv_of_second_moment_rs`, with the abstract master inequality
+  -- `card_le_of_second_moment` and the Cauchy–Schwarz step
+  -- `sq_sum_card_le_card_mul_sum_sum_card_inter`). Its `ε ≤ p` hypothesis is exactly the
+  -- `η ≤ δ` constraint imposed above.
+  --
+  -- STILL EXTERNAL (not in-tree): (i) the GKL24 maximal-correlated-agree-domain machinery
+  -- and the `Bad¹ ≤ pn` per-domain count (the `Bad`-set / `A_{δ,{π₁,π₂},C}` structure is not
+  -- connected to `Lambda`/`epsMCA`); and (ii) the reduction from `epsMCA` — a supremum over
+  -- ARBITRARY word stacks `u` with the single-witness-set `mcaEvent` (ABF26 Def 4.3) — to
+  -- GCXK25's per-CODEWORD-PAIR `Bad(π₁,π₂,δ)` count (the content of ABF26 §5). Genuinely
+  -- external pending those two pieces.
 
 end ListImpliesMCA
 
