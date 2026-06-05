@@ -434,10 +434,12 @@ theorem card_le_of_johnson_sq_dist (hq1 : 1 < Fintype.card α) (hn : 0 < Fintype
       (Fintype.card ι : ℝ) / (Fintype.card α : ℝ)
         ≤ ((Fintype.card ι - e : ℕ) : ℝ))
     (hsq : ((ℓ : ℝ) + 1)
-        * (((Fintype.card ι - e : ℕ) : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ)) ^ 2
+        * (((Fintype.card ι - e : ℕ) : ℝ)
+          - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ)) ^ 2
       > ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ)))
         * ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ))
-            + (ℓ : ℝ) * (((Fintype.card ι - d : ℕ) : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ)))) :
+            + (ℓ : ℝ) * (((Fintype.card ι - d : ℕ) : ℝ)
+              - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ)))) :
     L ≤ ℓ := by
   classical
   -- A := n − e is a lower bound for each agree(c i, f)

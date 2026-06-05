@@ -190,4 +190,5 @@ theorem ncard_code_eq_pow_card
 end ReedSolomon
 
 -- #print axioms ReedSolomon.ncard_code_eq_pow_card
--- ⇒ depends on axioms: [propext, Classical.choice, Quot.sound]  (clean; sorry-free; compiles exit 0)
+-- ⇒ depends on axioms: [propext, Classical.choice, Quot.sound]
+-- (clean; sorry-free; compiles exit 0)

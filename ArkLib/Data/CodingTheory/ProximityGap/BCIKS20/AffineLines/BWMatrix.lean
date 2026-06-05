@@ -290,7 +290,7 @@ theorem BW_homMatrix_det_submatrix_natDegree_le_e_add_one {F : Type} [Field F] {
         (Finset.sum_le_sum
           (s := (Finset.univ : Finset (Fin ((e + 1) + (e + k)))))
           (fun i _ => hpoint i))
-    -- `simp` rewrites this indicator sum into a cardinality, so rewrite the hypothesis the same way.
+    -- `simp` rewrites this indicator sum into a cardinality; do the same for the hypothesis.
     have hcard :
         (#{x : Fin ((e + 1) + (e + k)) | (x.1 : ℕ) ≤ e} : ℕ) = e + 1 := by
       simpa [Nat.lt_succ_iff] using Fin_sum_ite_lt_e_add_one e k

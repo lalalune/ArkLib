@@ -193,7 +193,7 @@ theorem ReedSolomon_interpolate_through_subset
     exact mem_code_of_polynomial_of_degree_lt_of_eval p hdeg (fun i => rfl)
   · -- Agreement on `S`: Lagrange interpolant takes value `target i` at node `domain i`.
     intro i hi
-    show p.eval (domain i) = target i
+    change p.eval (domain i) = target i
     rw [hp]
     exact Lagrange.eval_interpolate_at_node target hInj hi
 
@@ -222,7 +222,7 @@ The distance bound is the combinatorial heart: by the partition identity
 `agree + hammingDist = n`, an agreement of `≥ n - e` forces a distance of `≤ e`.
 The degree hypothesis is what makes the evaluated word an actual RS codeword. -/
 theorem ReedSolomon_agreement_implies_close
-    {F : Type*} [Field F] {ι : Type*} [Fintype ι] [DecidableEq ι] [DecidableEq F]
+    {F : Type*} [Field F] {ι : Type*} [Fintype ι] [DecidableEq F]
     (domain : ι ↪ F) (k e : ℕ) (p : F[X]) (w : ι → F)
     (hdeg : p ∈ Polynomial.degreeLT F k)
     (hagree : Fintype.card ι - e ≤ agree (evalOnPoints domain p) w) :
