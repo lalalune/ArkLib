@@ -157,6 +157,24 @@ def concat {pSpec : ProtocolSpec n} {NextMessage : Type}
         FullTranscript (pSpec ++ₚ ⟨!v[dir], !v[NextMessage]⟩) :=
   Fin.hconcat T msg
 
+/-- **Prefix/concat commutation for transcript append.**  Concatenating a final message onto a
+right-appended transcript `T₁ ++ₜ T₂` agrees — heterogeneously, up to the `++ₚ`-associativity of the
+underlying protocol specs (`((pSpec₁ ++ₚ pSpec₂) ++ₚ single)` vs `(pSpec₁ ++ₚ (pSpec₂ ++ₚ single))`)
+— with appending `T₁` onto the *right* transcript with the message already concatenated.  Since
+`concat = Fin.hconcat` and `++ₜ = Fin.happend`, this is the `FullTranscript`-level instance of the
+prefix/snoc commutation `Fin.happend_hconcat_eq`.
+
+This is the "(T)" transcript-prefix lemma consumed by the right-block run characterization of
+`Prover.append_run`: when the appended prover sends a right-block message, the appended transcript
+grows by a `concat` on the *outside* of the `transcript₁ ++ₜ ...` prefix, while the factored
+`liftM (P₂.run …)` grows by a `concat` on the *inner* `pSpec₂` transcript; this lemma identifies the
+two. -/
+theorem concat_append_right (T₁ : FullTranscript pSpec₁) (T₂ : FullTranscript pSpec₂)
+    (dir : Direction) {NextMessage : Type} (msg : NextMessage) :
+    HEq ((T₁ ++ₜ T₂).concat dir msg) (T₁ ++ₜ (T₂.concat dir msg)) := by
+  unfold FullTranscript.concat FullTranscript.append
+  exact (Fin.happend_hconcat_eq T₁ T₂ msg).symm
+
 -- @[simp]
 -- theorem append_cast_left {n m : ℕ} {pSpec₁ pSpec₂ : ProtocolSpec n} {pSpec' : ProtocolSpec m}
 --     {T₁ : FullTranscript pSpec₁} {T₂ : FullTranscript pSpec'} (n' : ℕ)

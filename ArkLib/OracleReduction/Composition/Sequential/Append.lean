@@ -2207,27 +2207,34 @@ theorem append_run (stmt : Stmt₁) (wit : Wit₁) :
   --     `append_receiveChallenge_natAdd` reduce to `P₂`'s step at round `k`; state transports
   --     `append_PrvState_natAdd_castSucc` / `_interior_succ`; types `append_{dir,Message,Challenge}_natAdd`.
   --
+  -- (T) Transcript-PREFIX family — NOW DISCHARGED (committed infrastructure):
+  --   The prefix/snoc commutation `Transcript.concat msg (transcript₁ ++ₜ tr₂)
+  --   ≍ transcript₁ ++ₜ (Transcript.concat msg tr₂)` is proven as
+  --   `ProtocolSpec.FullTranscript.concat_append_right` (SeqCompose.lean), itself the
+  --   `FullTranscript`-level instance of `Fin.happend_hconcat_eq` (the keystone prefix/snoc
+  --   commutation for `Fin.happend`, with helpers `Fin.hconcat_heq` / `Fin.happend_heq_right`, in
+  --   Data/Fin/Tuple/Lemmas.lean).  The seam boundary `transcript₁ ++ₜ (default : Transcript 0)
+  --   ≍ transcript₁` is `Fin.happend_empty` (`++ₜ` on an empty right block is the identity, `rfl`),
+  --   and the partial-transcript seam state `(pSpec₁++pSpec₂).Transcript ⟨m,_⟩ ≍ transcript₁` is the
+  --   proven `append_Transcript_castLE` (`Fin.last m`).  All #print-axioms clean.
+  --
   -- REMAINING OBSTRUCTION (the genuinely new content, blocking assembly):
-  --   (T) Transcript-PREFIX family.  Unlike the left block (where the appended transcript truncated
-  --       to `j ≤ m` IS `pSpec₁.Transcript j`), the RIGHT block carries the full `transcript₁`
-  --       prefix: `(pSpec₁++pSpec₂).Transcript (natAdd m k).castSucc ≅ transcript₁ ⊕ pSpec₂.Transcript
-  --       k.castSucc`.  Need `Fin.happend`/`Fin.snoc` interaction lemmas — a prefix analogue of the
-  --       proven `concat_heq` — proving `Transcript.concat msg (transcript₁ ++ₜ tr₂)
-  --       ≍ transcript₁ ++ₜ (Transcript.concat msg tr₂)` (i.e. `Fin.happend` commutes with the
-  --       seam-side `Fin.snoc`), plus the seam boundary `transcript₁ ++ₜ (default : Transcript 0)
-  --       ≍ transcript₁`.
   --   (R) Right-block run induction.  By `Fin.induction` on `k : Fin (n+1)`, with the prefix `(T)`
   --       threaded: `continueFromTo (P₁++P₂) stmt wit ⟨m,_⟩ (natAdd m k) rSeam`
   --       ≍ (do `⟨tr₂,s₂'⟩ ← P₂.runToRound k (P₂.input (←P₁.output …)) …; pure (transcript₁ ++ₜ tr₂, …)`)
-  --       — base `k=0` is `continueFromTo_self`; succ steps peel via `continueFromTo_succ_of_ne` +
-  --       `processRound_{message,challenge}` and the PROVEN per-round seam/interior reductions above.
+  --       — base `k=0` is `continueFromTo_self` (+ the seam-boundary (T) facts above); succ steps peel
+  --       via `continueFromTo_succ_of_ne` + `processRound_{message,challenge}` and the PROVEN per-round
+  --       seam/interior reductions above, now closing the transcript-prefix conjunct with (T).  This is
+  --       the right-block analogue of `append_processRound_left_*` + `append_runToRound_left`, with the
+  --       additional `transcript₁` prefix carried by `concat_append_right` at every `concat` step.
   --   (O) `output` assembly: combine via `++ₜ` (`append_fst`/`append_snd`) + `P₂.output` tail
   --       (`output` branch of `Prover.append`, incl. `n = 0` degenerate seam where the right block is
   --       empty and `P₁.output >>= P₂.input >>= P₂.output` collapses).
   --
-  -- All round-local reductions are discharged; the residue is the transcript-prefix dependent-tuple
-  -- bookkeeping (T) + its induction (R) + output (O).  This is a `HEq`/`Fin.happend` engineering
-  -- task on top of the now-complete reduction layer, with NO remaining monadic-interleaving gap.
+  -- All round-local reductions AND the transcript-prefix family (T) are discharged; the residue is the
+  -- right-block run induction (R) wiring the per-round reductions + (T) prefix commutation, plus the
+  -- output assembly (O).  A `HEq` engineering task on the now-complete reduction+transcript layer,
+  -- with NO remaining monadic-interleaving or transcript-prefix gap.
   sorry
 
 -- TODO: Need to define a function that "extracts" a second prover from the combined prover

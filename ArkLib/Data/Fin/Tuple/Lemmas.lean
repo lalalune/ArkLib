@@ -1083,10 +1083,56 @@ theorem happend_hcons {β : Fin m → Sort u} {γ : Fin n → Sort u}
     True := by
     simp_all only
 
-theorem happend_hconcat {α : Fin m → Sort u} {β : Fin n → Sort u} {γ : Sort u}
-    (_u : (i : Fin m) → α i) (_v : (i : Fin n) → β i) (_c : γ) :
-    True := by
-    simp_all only
+/-- HEq congruence for `hconcat` across (possibly) distinct lengths/codomains: equal lengths, HEq
+type families, equal last-element types, HEq prefix tuples and HEq last elements give HEq
+concats. -/
+theorem hconcat_heq {n n' : ℕ} (hn : n = n')
+    {α : Fin n → Sort u} {α' : Fin n' → Sort u} (hα : HEq α α') {β β' : Sort u} (hβ : β = β')
+    {v : (i : Fin n) → α i} {v' : (i : Fin n') → α' i} (hv : HEq v v')
+    {a : β} {a' : β'} (ha : HEq a a') :
+    HEq (hconcat v a) (hconcat v' a') := by
+  subst hn; subst hβ; obtain rfl := eq_of_heq hα; rw [eq_of_heq hv, eq_of_heq ha]
+
+/-- HEq congruence for `happend` in its right argument (left tuple fixed): an equal-length HEq of
+the right tuple (over an equal type family) gives an HEq of the appended tuples. -/
+theorem happend_heq_right {α : Fin m → Sort u} {β β' : Fin n → Sort u}
+    (hβ : β = β') (u : (i : Fin m) → α i)
+    {v : (i : Fin n) → β i} {v' : (i : Fin n) → β' i} (hv : HEq v v') :
+    HEq (happend u v) (happend u v') := by
+  subst hβ; rw [eq_of_heq hv]
+
+/-- **Prefix/snoc commutation for `happend` (the "(T)" lemma).**  Appending `u` on the left of a
+right-concatenated tuple `hconcat v a` agrees with concatenating `a` on the right of `happend u v`.
+The two sides live over equal natural-number lengths (`m + (n + 1)` vs `(m + n) + 1`) but distinct
+addition-associations, so this is stated as an `HEq`.
+
+Derivation: unfold `happend u (hconcat v a)` by `happend_succ` (which peels the *last* slot of its
+right argument, here `hconcat v a`); the peeled init is `v` (up to the per-index `vconcat_castSucc`
+cast) and the peeled last is `a` (up to `vconcat_last`).  This is exactly the structural identity
+that lets a right-block `Transcript.concat` (a `Fin.hconcat`/`snoc`) be pulled out of a transcript
+`++ₜ` (a `Fin.happend`) — the keystone of the right-block run characterization in `append_run`. -/
+theorem happend_hconcat_eq {α : Fin m → Sort u} {β : Fin n → Sort u} {γ : Sort u}
+    (u : (i : Fin m) → α i) (v : (i : Fin n) → β i) (a : γ) :
+    HEq (happend u (hconcat v a)) (hconcat (happend u v) a) := by
+  rw [happend_succ u (hconcat v a)]
+  have hfam : (fun i => (vconcat β γ) (castSucc i)) = β := by funext i; exact vconcat_castSucc β γ i
+  refine hconcat_heq rfl ?_ (vconcat_last β γ) ?_ ?_
+  · -- type families: `vappend α (vconcat β γ ∘ castSucc) = vappend α β`, index-wise.
+    apply heq_of_eq
+    funext i
+    by_cases h : (i : ℕ) < m
+    · rw [vappend_left_of_lt _ _ _ h, vappend_left_of_lt _ _ _ h]
+    · rw [vappend_right_of_not_lt _ _ _ h, vappend_right_of_not_lt _ _ _ h]
+      exact congrFun hfam _
+  · -- prefix tuples: `happend u (init (hconcat v a)) ≍ happend u v` (`init (hconcat v a) ≍ v`).
+    refine happend_heq_right hfam u ?_
+    apply Function.hfunext rfl
+    intro i j hij
+    have : i = j := by ext; exact (Fin.heq_ext_iff rfl).mp hij
+    subst this
+    rw [hconcat_castSucc]; exact (cast_heq _ _)
+  · -- last elements: `last (hconcat v a) = cast _ a ≍ a`.
+    rw [hconcat_last]; exact (cast_heq _ _)
 
 -- Compatibility lemmas
 theorem happend_left_eq_hcons {α : Fin 1 → Sort u} {β : Fin n → Sort u}
