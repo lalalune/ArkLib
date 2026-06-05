@@ -34,34 +34,26 @@ Items in this file:
    — Lemma 6.13 [ABF26]: correlated-agreement-based lower bound on the
    soundness error of `T'[C, t]`.
 
-All three are tagged sorries, but of two distinct kinds:
+Proof status:
 
 * **L6.5** is `external admit [GRS25]` — a classical result imported from
   another work; admitting it is acceptable for a survey formalization.
-* **L6.12 and L6.13** are `paper-proof-owed` — ABF26's OWN results, proved
-  in full in §6.4.1/§6.4.2. They are stated in coding-theory form (direct
-  cardinality bounds on `winningSet`); their protocol-level reading bounds
-  the soundness of `ToyProblem.SimplifiedIOR.reduction` from below.
+* **L6.12 and L6.13** are proved. They are stated in coding-theory form
+  (direct cardinality bounds on `winningSetFor` / `winningSet`); their
+  protocol-level reading bounds the soundness of
+  `ToyProblem.SimplifiedIOR.reduction` from below.
 
-**L6.12 status (Phase 4, 2026-06-04).** The proof is decomposed and its full
-logical skeleton compiles; all the probability/algebra infrastructure is proven
-and axiom-clean (`exists_dotProduct_image_lb` and `exists_affine_image_lb` —
-the two Claim-B.1 applications; `claimB1_bound_to_real`; `listDecoding_winning_lb`;
-`mem_winningSetFor_of_agree`; `affine_collision_card_le_one`; plus
-`Pr_map_eq` / `prob_dotProduct_eq_zero_le` / `prob_uniform_le_inv_of_card_le_one`
-in `Data/Probability/Instances.lean`).
+**L6.12 status (Phase 4, 2026-06-04).** The list-decoding lower bound is closed
+against the **fixed-encoding** `relaxedRelationFor enc` / `winningSetFor enc`
+(Definitions.lean). The proof uses an injective linear encoder whose range is
+`C`, enumerates `Λ(C^{≡2}, δ)` by message pairs through `encStack`, proves the
+violation conjunct against the fixed relation, and lifts affine winning
+challenges into `winningSetFor`.
 
-**Faithfulness fix applied:** the statement is now against the **fixed-encoding**
-`relaxedRelationFor enc` / `winningSetFor enc` (Definitions.lean). A Phase-4
-review found the violation conjunct `¬ relaxedRelation (ℓ:=2)` is *false* against
-ArkLib's existential-encoding `relation` — an adversary reparameterises the
-linear constraint through a different linear encoding. The paper's `R_C` fixes
-the code's encoding; against `relaxedRelationFor enc` the violation is exactly
-`(μ₁,μ₂) ∉ S_v` and holds. The remaining coding-theory obligations (all provable)
-are `hSmsgN` (the enc-injective codeword↔message bijection), `hmem` (membership
-via `mem_winningSetFor_of_agree`), and the violation (via the agreement↔distance
-reconciliation, template `mem_winningSet_zero_of_relClose`). The bound transfers
-to the existential `winningSet` via `winningSetFor_subset`.
+**L6.13 status (Phase 4, 2026-06-04).** The correlated-agreement lower bound is
+closed against the existential `relaxedRelation` / `winningSet` relation. Its
+line-membership helper `mem_winningSet_zero_of_relClose` uses a linear encoder
+with range `C` to convert line proximity into a winning challenge.
 
 ## References
 

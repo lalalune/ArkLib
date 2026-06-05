@@ -25,7 +25,8 @@ ArkLib's `OracleReduction` framework, following the conventions used by
 * `OracleInterface`, `Inhabited`, `Fintype` instances for the messages
   and challenges of `pSpec`.
 * `inputRelationFor` / `outputRelationFor` — IOR input/output relations
-  (Definitions 6.1 and 6.3, in IOR shape).
+  (Definitions 6.1 and 6.3, in IOR shape, pinned to the verifier's fixed
+  encoder).
 * `accepts` — the §6.1 decision predicate (extracted for use by the
   verifier and by completeness proofs).
 
@@ -184,16 +185,17 @@ The soundness statement of L6.6/6.8 is with respect to this: the verifier's
 "accept" guarantee is that the input `(f₀, f₁)` is `δ`-close (on a common
 agreement column set) to a valid instance `encode (M i)` for some constraint-
 satisfying messages `M`. Uses the verifier's fixed plain `encode` (cf.
-`ToyProblem.relaxedRelationFor`); the messages `M` are existential here (the
-relaxed/output relation is statement-level — the toy protocol's output witness
-is `Unit`). -/
+`ToyProblem.relaxedRelationFor`), and checks the witness component supplied by
+the ArkLib knowledge extractor; this is a witness-bearing relation, not merely
+language membership. -/
 def outputRelationFor (encode : (Fin k → F) → (ι → F)) (δ : ℝ≥0) :
     Set ((Statement (F := F) k × (∀ i, OracleStatement ι F i)) ×
       Witness (F := F) k) :=
-  fun input ↦ ∃ M : Fin 2 → Fin k → F,
-    (∀ i : Fin 2, ∑ j, M i j * input.1.1.1 j = ![input.1.1.2.1, input.1.1.2.2] i) ∧
+  fun input ↦
+    (∀ i : Fin 2, ∑ j, input.2 i j * input.1.1.1 j =
+      ![input.1.1.2.1, input.1.1.2.2] i) ∧
     ∃ S : Finset ι, (1 - (δ : ℝ)) * Fintype.card ι ≤ S.card ∧
-      ∀ i : Fin 2, ∀ j ∈ S, input.1.2 i j = encode (M i) j
+      ∀ i : Fin 2, ∀ j ∈ S, input.1.2 i j = encode (input.2 i) j
 
 -- The 1-arity relaxed relation `R̃¹_{C,δ}` lives in
 -- `Spec/SimplifiedIOR.lean :: outputRelationFor` (the C6.9 output relation).
@@ -432,6 +434,7 @@ theorem accepts_of_inputRelation {k t : ℕ}
     rw [hg_eq, map_add, map_smul, hf 0, hf 1]
     simp [Pi.add_apply, Pi.smul_apply, smul_eq_mul]
 
+omit [Fintype ι] [DecidableEq ι] [Fintype F] in
 /-- **Honest completeness for Construction 6.2** (protocol-level form).
 
 The honest oracle reduction is perfectly complete from `inputRelationFor encode`
@@ -497,7 +500,7 @@ theorem oracleReduction_perfectCompleteness
   simp only [OracleReduction.toReduction, Reduction.run, oracleReduction,
     oracleProver, OracleVerifier.toVerifier, oracleVerifier,
     Prover.run, Prover.runToRound, Fin.induction_three, Prover.processRound,
-    Verifier.run, pSpec, bind_pure_comp, Functor.map_map, Function.comp]
+    Verifier.run, pSpec, bind_pure_comp]
   -- Resolve round 0 direction (`V_to_P`, the combination randomness `γ`).
   split <;> rename_i hDir0
   swap
@@ -519,10 +522,12 @@ theorem oracleReduction_perfectCompleteness
   -- `accepts_of_inputRelation` — see the theorem docstring's "Precise residual".
   sorry
 
+omit [DecidableEq ι] in
 /-- **Lemma 6.6 of [ABF26]** (knowledge soundness of Construction 6.2).
 
-For any `δ ∈ (0, δ_min(C))`, the toy-problem IOR has knowledge
-soundness against the relaxed relation `R̃_{C,δ}^2` with error
+For any `δ ∈ (0, δ_min(C))` and fixed linear encoder with range `C`,
+the toy-problem IOR has knowledge soundness against the relaxed relation
+`R̃_{C,δ}^2` with error
 
   `max { ε_mca(C, δ) + |Λ(C^{≡2}, δ)| / |F|, (1 − δ)^t }`.
 
@@ -533,11 +538,11 @@ Stated against ArkLib's `Verifier.knowledgeSoundness` (cf.
 `Verifier.knowledgeSoundness` takes `(relIn, relOut)` where `relIn`
 is the relation the extracted witness satisfies and `relOut` is the
 relation the verifier's output must satisfy. In this file `relIn` is
-*our* `outputRelationFor` (paper's `R̃²_{C,δ}`, what the extractor
-extracts to) and `relOut` is `Set.univ` (paper's C6.2 has trivial
-output `Unit`). The name `outputRelationFor` reflects the **paper's**
-"this is the protocol's output relation" perspective; do not be misled
-by the API parameter named `relIn`.
+*our* `outputRelationFor` (paper's `R̃²_{C,δ}`, checked against the
+messages returned by the extractor) and `relOut` is `Set.univ` (paper's
+C6.2 has trivial output `Unit`). The name `outputRelationFor` reflects
+the **paper's** "this is the protocol's output relation" perspective; do
+not be misled by the API parameter named `relIn`.
 
 The proof exhibits an extractor that (i) erasure-decodes `(f₁, f₂)`
 against the largest agreement set, (ii) outputs the recovered messages,
@@ -550,11 +555,13 @@ theorem protocol62_knowledgeSound
     {σ : Type} (init : ProbComp σ)
     (impl : QueryImpl []ₒ (StateT σ ProbComp))
     (C : Set (ι → F)) (δ : ℝ≥0)
-    (encode : (Fin k → F) → (ι → F))
+    (encode : (Fin k → F) →ₗ[F] (ι → F))
+    (_hC : Set.range encode = C)
     (_hδ_pos : 0 < δ)
     (_hδ_lt_min : δ < (minRelHammingDistCode C : ℝ≥0)) :
-      (verifier (k := k) (t := t) encode).knowledgeSoundness (WitOut := OutputWitness)
-        init impl (outputRelationFor k encode δ)
+      (verifier (k := k) (t := t) (encode : (Fin k → F) → (ι → F))).knowledgeSoundness
+        (WitOut := OutputWitness)
+        init impl (outputRelationFor k (encode : (Fin k → F) → (ι → F)) δ)
         (Set.univ : Set (OutputStatement × OutputWitness))
         (max ((epsMCA (F := F) (A := F) C δ).toNNReal +
                 ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
@@ -576,13 +583,14 @@ decomposes as `u = u₁ + γ·u₂` for some
 provides exactly this decomposition with probability `≥ 1 − ε_mca`. -/
 def remark67 : Unit := ()
 
+omit [DecidableEq ι] in
 /-- **Lemma 6.8 of [ABF26]** (round-by-round knowledge soundness of
 Construction 6.2).
 
-For any `δ ∈ (0, δ_min(C))`, the IOR has round-by-round knowledge
-soundness (paper Definition A.5 ≡ ArkLib's
-`Verifier.rbrKnowledgeSoundness`) against `R̃_{C,δ}^2`, with per-round
-errors
+For any `δ ∈ (0, δ_min(C))` and fixed linear encoder with range `C`,
+the IOR has round-by-round knowledge soundness (paper Definition A.5 ≡
+ArkLib's `Verifier.rbrKnowledgeSoundness`) against `R̃_{C,δ}^2`, with
+per-round errors
 
   * `ε_mca(C, δ) + |Λ(C^{≡2}, δ)| / |F|` after the γ round,
   * `(1 − δ)^t` after the spot-check round.
@@ -594,11 +602,13 @@ theorem protocol62_rbrKnowledgeSound
     {σ : Type} (init : ProbComp σ)
     (impl : QueryImpl []ₒ (StateT σ ProbComp))
     (C : Set (ι → F)) (δ : ℝ≥0)
-    (encode : (Fin k → F) → (ι → F))
+    (encode : (Fin k → F) →ₗ[F] (ι → F))
+    (_hC : Set.range encode = C)
     (_hδ_pos : 0 < δ)
     (_hδ_lt_min : δ < (minRelHammingDistCode C : ℝ≥0)) :
-      (verifier (k := k) (t := t) encode).rbrKnowledgeSoundness (WitOut := OutputWitness)
-        init impl (outputRelationFor k encode δ)
+      (verifier (k := k) (t := t) (encode : (Fin k → F) → (ι → F))).rbrKnowledgeSoundness
+        (WitOut := OutputWitness)
+        init impl (outputRelationFor k (encode : (Fin k → F) → (ι → F)) δ)
         (Set.univ : Set (OutputStatement × OutputWitness))
         (fun i ↦
           -- round 0 (combination randomness γ): MCA + list-decoding term;
