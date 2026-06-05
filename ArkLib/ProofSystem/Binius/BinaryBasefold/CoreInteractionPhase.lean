@@ -375,11 +375,14 @@ def nonLastBlockOracleVerifier (bIdx : Fin (ℓ / ϑ - 1)) :
       (OStmtOut := OracleStatement 𝔽q β ϑ ⟨(bIdx + 1) * ϑ, bIdx_succ_mul_ϑ_lt_ℓ_succ bIdx⟩)
       (pSpec := pSpecFoldCommit 𝔽q β ⟨bIdx * ϑ + (ϑ - 1), h1⟩) := by
     have lastOV := lastOracleVerifier
+    simp only [Fin.succ_mk, Fin.castSucc_mk] at lastOV
     rw! (castMode := .all) [h] at lastOV
     exact lastOV
   letI V₂coh : OracleVerifier.Append.AppendCoherent V₂ := by
     show OracleVerifier.Append.AppendCoherent
-      (by have lastOV := lastOracleVerifier; rw! (castMode := .all) [h] at lastOV; exact lastOV)
+      (by have lastOV := lastOracleVerifier
+          simp only [Fin.succ_mk, Fin.castSucc_mk] at lastOV
+          rw! (castMode := .all) [h] at lastOV; exact lastOV)
     rw! (castMode := .all) [← h]
     exact instFoldCommitOracleVerifierAppendCoherent 𝔽q β (ϑ := ϑ)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Context := Context)
