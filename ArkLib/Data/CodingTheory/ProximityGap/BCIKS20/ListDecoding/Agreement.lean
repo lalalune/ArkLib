@@ -518,6 +518,7 @@ With Gap A resolved, the proof obligation is retained pending the Gap-B vanishin
 needs the absent `δ ≤ δ₀` hypothesis), the false-off-regime second conjunct, and the upstream
 Prop 5.5.  The binder structure `∃ R H, R ∈ … ∧ Irreducible H ∧ …` is preserved so the
 downstream extractors stay well-typed. -/
+omit [DecidableEq (RatFunc F)] in
 /-- Proved, side-condition-explicit form of the Claim 5.7 candidate-pair extraction.
 
 This packages the already-proved `pg_exists_common_candidate_pair_of_dvd_card_natDegreeY` into the
@@ -526,7 +527,6 @@ rather than the stronger Eq. 5.12 factorization list.  The missing work for the 
 free-parameter Claim 5.7 is now isolated in the hypotheses here: nonvanishing/separability of the
 `x₀` specialization, nonempty close set, graph divisibility for every close `z`, and the large-set
 Johnson-regime inequality. -/
-omit [DecidableEq (RatFunc F)] in
 lemma coeffs_of_close_proximity_nonempty_of_large_natdiv (δ : ℚ)
     (hlarge :
       (#(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) : ℝ) >
@@ -737,6 +737,41 @@ structure GraphExtractionHypotheses
   hlarge :
     #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
       2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q
+
+/-- Build the graph-extraction side-condition package while deriving close-set
+nonemptiness from the large-set inequality. -/
+def GraphExtractionHypotheses.ofLarge
+    [DecidableEq (Polynomial F)] [DecidableEq (RatFunc F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hx0 : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        Bivariate.evalX (Polynomial.C x₀) R ≠ 0)
+    (hsep : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        (Bivariate.evalX (Polynomial.C x₀) R).Separable)
+    (A : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ → Finset (Fin n))
+    (hA : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      ∀ i ∈ A z, (u₀ + z.1 • u₁) i =
+        (Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2).eval
+          (ωs i))
+    (hcount : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z.1) 1 k < m * (A z).card)
+    (hlarge :
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q) :
+    GraphExtractionHypotheses (F := F) (m := m) (n := n) (k := k)
+      (Q := Q) (ωs := ωs) (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs :=
+  { hx0 := hx0
+    hsep := hsep
+    hS_nonempty := coeffs_of_close_proximity_nonempty_of_large_natdiv
+      (F := F) (n := n) (m := m) (k := k) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) δ hlarge
+    A := A
+    hA := hA
+    hcount := hcount
+    hlarge := hlarge }
 
 omit [DecidableEq (RatFunc F)] in
 /-- Candidate-pair extraction plus the proved Appendix-A root-clearing bridge.
