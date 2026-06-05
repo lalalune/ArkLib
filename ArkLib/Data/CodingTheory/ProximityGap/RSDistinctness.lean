@@ -12,9 +12,8 @@ being identical. Consumable by the GS list-size / Sbeta agreement-counting. -/
 namespace RSDistinct
 
 open Polynomial
-open scoped Classical
 
-variable {F : Type} [Field F] {ι : Type} (domain : ι ↪ F)
+variable {F : Type} [Field F] [DecidableEq F] {ι : Type} (domain : ι ↪ F)
 
 /-- **RS distinctness.** Distinct `p, q ∈ degreeLT F k` agree on `< k` of the
 domain points: `|{x ∈ S : p(ωₓ) = q(ωₓ)}| < k`. -/
@@ -53,6 +52,7 @@ theorem degreeLT_eq_of_agree_on_finset {k : ℕ}
     {S : Finset ι} (hcard : k ≤ S.card)
     (hagree : ∀ x ∈ S, p.eval (domain x) = q.eval (domain x)) :
     p = q := by
+  classical
   apply degreeLT_eq_of_agree_card_ge domain hp hq
   rw [show S.filter (fun x => p.eval (domain x) = q.eval (domain x)) = S by
     apply Finset.ext
