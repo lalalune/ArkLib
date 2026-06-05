@@ -233,6 +233,7 @@ theorem card_le_of_gram_bounds {L : ℕ} (hL : 0 < L) (S : Fin L → Fin L → �
   have hDo_le : Do ≤ 0 := le_of_lt hDo
   nlinarith [hfull, hLpos, hDo_le]
 
+omit [DecidableEq ι] in
 /-- Diagonal bound for the shifted Gram entries: if the listed word agrees with
 the center on at least `A` coordinates, then (with `β ≥ 0`)
 `⟨y,y⟩ ≤ n(1−1/q)(1+β²) − 2β(A − n/q)`. -/
@@ -248,6 +249,7 @@ theorem shiftInner_diag_le (hq : 0 < Fintype.card α)
   have hAle : (A : ℝ) ≤ (agree w f : ℝ) := by exact_mod_cast hA
   nlinarith [hβ, hAle]
 
+omit [DecidableEq ι] in
 /-- Off-diagonal bound: if two listed words agree with the center on at least
 `A` coordinates each, and with each other on at most `B` coordinates, then
 (with `β ≥ 0`)
@@ -270,6 +272,7 @@ theorem shiftInner_offdiag_le (hq : 0 < Fintype.card α)
   have hB' : (agree u v : ℝ) ≤ (B : ℝ) := by exact_mod_cast hB
   nlinarith [hβ, hAu', hAv', hB']
 
+omit [DecidableEq ι] in
 /-- **The abstract Johnson list-size cap.** Let `f` be a center and
 `c : Fin L → ι → α` a family of words each agreeing with `f` on at least `A`
 coordinates and pairwise agreeing on at most `B` coordinates. For any shift
@@ -309,6 +312,7 @@ theorem johnson_quadratic_cap (hq : 0 < Fintype.card α) {L : ℕ} (hL : 0 < L)
     intro i j hij
     simpa [hS] using shiftInner_offdiag_le hq (hA i) (hA j) (hB i j hij) hβ
 
+omit [DecidableEq ι] in
 /-- **Radical-free Johnson list-size bound (finite form).** Under the
 agreement/distance constraints of `johnson_quadratic_cap`, if the shift
 parameter additionally satisfies `Dd + ℓ·Do < 0`, then `L ≤ ℓ`. Stated without
@@ -355,6 +359,7 @@ theorem card_le_of_johnson_condition (hq : 0 < Fintype.card α) {L : ℕ} (hL : 
   have : (L : ℝ) < (ℓ : ℝ) + 1 := by linarith
   exact_mod_cast Nat.lt_succ_iff.mp (by exact_mod_cast this)
 
+omit [DecidableEq ι] in
 /-- **Optimal-β squared-form q-ary Johnson list-size bound.** With center
 correlation `P := A − n/q ≥ 0`, block parameter `N := n(1−1/q) > 0`, and the
 squared Johnson condition `(ℓ+1)·P² > N·(N + ℓ·(B − n/q))`, the family size
@@ -412,6 +417,7 @@ theorem card_le_of_johnson_sq (hq1 : 1 < Fintype.card α) (hn : 0 < Fintype.card
   rw [hnR, hqR] at hsq
   nlinarith [hsq]
 
+omit [DecidableEq ι] in
 /-- **q-ary Johnson list-size bound, distance form.** A family of words each
 within Hamming distance `e` of a center `f`, pairwise at Hamming distance `≥ d`
 (the code minimum distance), has size `≤ ℓ` whenever the squared Johnson
@@ -424,7 +430,9 @@ theorem card_le_of_johnson_sq_dist (hq1 : 1 < Fintype.card α) (hn : 0 < Fintype
     (f : ι → α) (c : Fin L → ι → α) {e d : ℕ} (ℓ : ℕ)
     (hclose : ∀ i, hammingDist (c i) f ≤ e)
     (hdist : ∀ i j, i ≠ j → d ≤ hammingDist (c i) (c j))
-    (hP : (Fintype.card ι : ℝ) / (Fintype.card α : ℝ) ≤ ((Fintype.card ι - e : ℕ) : ℝ))
+    (hP :
+      (Fintype.card ι : ℝ) / (Fintype.card α : ℝ)
+        ≤ ((Fintype.card ι - e : ℕ) : ℝ))
     (hsq : ((ℓ : ℝ) + 1)
         * (((Fintype.card ι - e : ℕ) : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ)) ^ 2
       > ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ)))

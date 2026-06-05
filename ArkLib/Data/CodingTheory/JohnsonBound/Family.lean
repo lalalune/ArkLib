@@ -1433,6 +1433,7 @@ open JohnsonBound Finset Fintype
 
 variable {n : ℕ} {F : Type} [Fintype F] [DecidableEq F]
 
+omit [Fintype F] in
 /-- The `x.1 ≠ x.2` filter is redundant for the coordinate-`i` disagreement indicator
 (the diagonal contributes `0` to `[x.1 i ≠ x.2 i]`). -/
 lemma filter_redundant (B : Finset (Fin n → F)) (i : Fin n) :
@@ -1472,6 +1473,7 @@ lemma agree_eq_sum_sq (B : Finset (Fin n → F)) (i : Fin n) :
   conv_lhs => enter [2, x]; rw [Finset.sum_comm]
   rw [Finset.sum_comm]
 
+omit [Fintype F] in
 /-- Agreement count plus disagreement count over `B × B` equals `M²`. -/
 lemma split_pairs (B : Finset (Fin n → F)) (i : Fin n) :
     (∑ x ∈ B ×ˢ B, (if x.1 i = x.2 i then (1:ℚ) else 0))
