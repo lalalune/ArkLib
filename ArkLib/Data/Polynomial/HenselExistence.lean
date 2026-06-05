@@ -283,6 +283,40 @@ theorem aeval_γ_eq_zero : Polynomial.aeval (γ P c) P = 0 := by
   · exact coeff_zero_aeval_γ P c hc0
   · exact coeff_succ_aeval_γ P c hu t
 
+/-! ## Uniqueness from coefficient linearization -/
+
+/-- **Power-series root uniqueness for `aeval`.** If two power-series roots of `P`
+have the same constant coefficient `c`, and `P'` is a unit at `c`, then the two roots
+are equal.
+
+This is the uniqueness half matching `exists_powerSeries_root`, proved directly by
+coefficient induction from `coeff_aeval_sub_at`: once the roots agree below order `t`,
+the order-`t` coefficient difference is killed by multiplication with the unit
+`eval c P'`. -/
+theorem aeval_root_unique
+    {P : Polynomial R} {γ₁ γ₂ : R⟦X⟧} {c : R}
+    (hc₁ : constantCoeff γ₁ = c) (hc₂ : constantCoeff γ₂ = c)
+    (hroot₁ : Polynomial.aeval γ₁ P = 0)
+    (hroot₂ : Polynomial.aeval γ₂ P = 0)
+    (hu : IsUnit (Polynomial.eval c (Polynomial.derivative P))) :
+    γ₁ = γ₂ := by
+  ext n
+  induction n using Nat.strong_induction_on with
+  | h n ih =>
+      rcases n with _ | t
+      · rw [coeff_zero_eq_constantCoeff_apply, coeff_zero_eq_constantCoeff_apply, hc₁, hc₂]
+      · have hagree : ∀ j < t + 1, coeff j γ₁ = coeff j γ₂ := fun j hj =>
+          ih j hj
+        have hlin := coeff_aeval_sub_at P (γ₁ := γ₁) (γ₂ := γ₂)
+          (t := t + 1) (Nat.succ_pos t) hagree
+        rw [hc₁] at hlin
+        have hmul :
+            Polynomial.eval c (Polynomial.derivative P) *
+              (coeff (t + 1) γ₁ - coeff (t + 1) γ₂) = 0 := by
+          simpa [hroot₁, hroot₂] using hlin.symm
+        rw [mul_comm] at hmul
+        exact sub_eq_zero.mp ((IsUnit.mul_left_eq_zero hu).1 hmul)
+
 /-! ## Main existence theorem (abstract Hensel for `R⟦X⟧`, existence half) -/
 
 variable {P c}
