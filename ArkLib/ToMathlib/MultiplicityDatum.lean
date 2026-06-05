@@ -60,8 +60,8 @@ All results rest only on `[propext, Classical.choice, Quot.sound]`; `#print axio
   §5 (list-decoding agreement chain) and Appendix A.4 (the `W`-power-numerator recursion (A.1)).
 -/
 
-import ArkLib.Data.CodingTheory.GuruswamiSudan.Basic
 import ArkLib.Data.Polynomial.RationalFunctions
+import ArkLib.ToMathlib.MatchingExtractor
 
 open Polynomial Polynomial.Bivariate
 
@@ -103,8 +103,8 @@ theorem hasOrderAt_of_rootMultiplicity_ge [DecidableEq F] {Q : F[X][Y]} {x y : F
 
 /-- **Obligation-4 datum, packaged over an agreement set.**  From the *proven* per-index root
 multiplicity `m ≤ rootMultiplicity Qz (ωs i) (Pz.eval (ωs i))` (the field-side output of
-`gsQ_multiplicity` / the `gapB_transport_mult` transport behind `Q_vanishes_on_close_codeword_graph`)
-on an agreement set `A`, the exact `hord` hypothesis consumed by
+`gsQ_multiplicity` / the `gapB_transport_mult` transport behind
+`Q_vanishes_on_close_codeword_graph`) on an agreement set `A`, the exact `hord` hypothesis consumed by
 `MatchingExtractor.matchingFactor_dvd_of_orderM_and_count` is produced:
 `∀ i ∈ A, GuruswamiSudan.HasOrderAt Qz (ωs i) (Pz.eval (ωs i)) m`. -/
 theorem hord_of_rootMultiplicity_ge [DecidableEq F] {n : ℕ}
@@ -113,6 +113,45 @@ theorem hord_of_rootMultiplicity_ge [DecidableEq F] {n : ℕ}
       (m : Option ℕ) ≤ Bivariate.rootMultiplicity Qz (ωs i) (Pz.eval (ωs i))) :
     ∀ i ∈ A, GuruswamiSudan.HasOrderAt Qz (ωs i) (Pz.eval (ωs i)) m :=
   fun i hi => hasOrderAt_of_rootMultiplicity_ge (hmult i hi)
+
+/-! ### List-size corollaries from root-multiplicity data
+
+These are the direct finite-family consumers of the obligation-4 datum above: once each candidate
+has the proven root-multiplicity lower bound on its agreement set, the standalone
+`MatchingExtractor` list-size adapters discharge the GS factor extraction and distinct-factor count.
+-/
+
+/-- **Finite-family GS list-size bound from bivariate root-multiplicity data.**
+
+For every candidate `P ∈ Ps`, assume the interpolant has root multiplicity at least `m` on the
+agreement graph points indexed by `A P`, and that the specialized degree is below `m * #(A P)`.
+Then the candidate family has size at most the `Y`-degree of the nonzero interpolant. -/
+theorem list_size_le_of_rootMultiplicity_and_count [DecidableEq F] {n : ℕ}
+    (ωs : Fin n ↪ F) (Qz : F[X][Y]) (hQz : Qz ≠ 0) (Ps : Finset F[X])
+    (m : ℕ) (A : F[X] → Finset (Fin n))
+    (hmult : ∀ P ∈ Ps, ∀ i ∈ A P,
+      (m : Option ℕ) ≤ Bivariate.rootMultiplicity Qz (ωs i) (P.eval (ωs i)))
+    (hcount : ∀ P ∈ Ps, (Qz.eval P).natDegree < m * (A P).card) :
+    Ps.card ≤ Qz.natDegree := by
+  refine MatchingExtractor.list_size_le_of_orderM_and_count ωs Qz hQz Ps m A ?_ hcount
+  intro P hP
+  exact hord_of_rootMultiplicity_ge ωs Qz P m (A P) (hmult P hP)
+
+/-- Weighted-degree form of `list_size_le_of_rootMultiplicity_and_count`.  The per-candidate
+specialized degree budget is discharged from `P.natDegree ≤ k` and the common `(1,k)` weighted
+degree bound on `Qz`. -/
+theorem list_size_le_of_rootMultiplicity_and_weightedDegree [DecidableEq F] {n : ℕ}
+    (ωs : Fin n ↪ F) (Qz : F[X][Y]) (hQz : Qz ≠ 0) (Ps : Finset F[X])
+    (m k : ℕ) (A : F[X] → Finset (Fin n))
+    (hPdeg : ∀ P ∈ Ps, P.natDegree ≤ k)
+    (hmult : ∀ P ∈ Ps, ∀ i ∈ A P,
+      (m : Option ℕ) ≤ Bivariate.rootMultiplicity Qz (ωs i) (P.eval (ωs i)))
+    (hwcount : ∀ P ∈ Ps, Bivariate.natWeightedDegree Qz 1 k < m * (A P).card) :
+    Ps.card ≤ Qz.natDegree := by
+  refine MatchingExtractor.list_size_le_of_orderM_and_weightedDegree ωs Qz hQz Ps m k A
+    hPdeg ?_ hwcount
+  intro P hP
+  exact hord_of_rootMultiplicity_ge ωs Qz P m (A P) (hmult P hP)
 
 /-! ## Obligation 1 datum: `hdvd_C` from the un-specialized GS-factor divisibility
 
@@ -191,6 +230,8 @@ end ArkLib
 
 #print axioms ArkLib.MultiplicityDatum.hasOrderAt_of_rootMultiplicity_ge
 #print axioms ArkLib.MultiplicityDatum.hord_of_rootMultiplicity_ge
+#print axioms ArkLib.MultiplicityDatum.list_size_le_of_rootMultiplicity_and_count
+#print axioms ArkLib.MultiplicityDatum.list_size_le_of_rootMultiplicity_and_weightedDegree
 #print axioms ArkLib.MultiplicityDatum.leadingCoeff_Hlift
 #print axioms ArkLib.MultiplicityDatum.leadingCoeff_dvd_of_dvd
 #print axioms ArkLib.MultiplicityDatum.hdvd_C_of_Hlift_dvd
