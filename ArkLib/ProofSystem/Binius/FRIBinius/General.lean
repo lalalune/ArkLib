@@ -115,18 +115,18 @@ def biniusProfile : RingSwitching.RingSwitchingProfile K L κ :=
 
 section Pspec
 
-def batchingCorePspec := (RingSwitching.pSpecBatching κ L K (biniusProfile κ L K β)) ++ₚ
+def batchingCorePspec := (RingSwitching.pSpecBatching κ L K (biniusProfile κ L K)) ++ₚ
   (BinaryBasefold.pSpecCoreInteraction K β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
 
 def fullPspec := (batchingCorePspec κ L K β ℓ' 𝓡 ϑ h_ℓ_add_R_rate) ++ₚ
   (BinaryBasefold.pSpecQuery K β γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
 
 instance : ∀ j, OracleInterface ((batchingCorePspec κ L K β ℓ' 𝓡 ϑ h_ℓ_add_R_rate).Message j) :=
-  instOracleInterfaceMessageAppend (pSpec₁ := RingSwitching.pSpecBatching κ L K (biniusProfile κ L K β))
+  instOracleInterfaceMessageAppend (pSpec₁ := RingSwitching.pSpecBatching κ L K (biniusProfile κ L K))
     (pSpec₂ := BinaryBasefold.pSpecCoreInteraction K β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
 
 instance : ∀ j, SampleableType ((batchingCorePspec κ L K β ℓ' 𝓡 ϑ h_ℓ_add_R_rate).Challenge j) :=
-  instSampleableTypeChallengeAppend (pSpec₁ := RingSwitching.pSpecBatching κ L K (biniusProfile κ L K β))
+  instSampleableTypeChallengeAppend (pSpec₁ := RingSwitching.pSpecBatching κ L K (biniusProfile κ L K))
     (pSpec₂ := BinaryBasefold.pSpecCoreInteraction K β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
 
 instance : ∀ j, OracleInterface ((fullPspec κ L K β ℓ' 𝓡 ϑ γ_repetitions
@@ -143,9 +143,9 @@ end Pspec
 
 def batchingCoreVerifier :=
   OracleVerifier.append (oSpec:=[]ₒ)
-    (V₁:= RingSwitching.BatchingPhase.oracleVerifier κ L K (biniusProfile κ L K β)
+    (V₁:= RingSwitching.BatchingPhase.oracleVerifier κ L K (biniusProfile κ L K)
       ℓ ℓ' h_l (aOStmtIn := BinaryBasefoldAbstractOStmtIn κ L K β ℓ' 𝓡 ϑ h_ℓ_add_R_rate))
-    (pSpec₁ := RingSwitching.pSpecBatching κ L K (biniusProfile κ L K β))
+    (pSpec₁ := RingSwitching.pSpecBatching κ L K (biniusProfile κ L K))
     (pSpec₂:=BinaryBasefold.pSpecCoreInteraction K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
     (OStmt₁ := (BinaryBasefoldAbstractOStmtIn κ L K β ℓ' 𝓡 ϑ h_ℓ_add_R_rate).OStmtIn)
     (OStmt₂ := BinaryBasefold.OracleStatement K β
@@ -158,9 +158,9 @@ def batchingCoreVerifier :=
 def batchingCoreReduction :=
   OracleReduction.append (oSpec:=[]ₒ)
     (R₁ := RingSwitching.BatchingPhase.batchingOracleReduction κ L K
-      (biniusProfile κ L K β) ℓ ℓ' h_l
+      (biniusProfile κ L K) ℓ ℓ' h_l
       (aOStmtIn := BinaryBasefoldAbstractOStmtIn κ L K β ℓ' 𝓡 ϑ h_ℓ_add_R_rate))
-    (pSpec₁ := RingSwitching.pSpecBatching κ L K (biniusProfile κ L K β))
+    (pSpec₁ := RingSwitching.pSpecBatching κ L K (biniusProfile κ L K))
     (pSpec₂:=BinaryBasefold.pSpecCoreInteraction K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
     (OStmt₁ := (BinaryBasefoldAbstractOStmtIn κ L K β ℓ' 𝓡 ϑ h_ℓ_add_R_rate).OStmtIn)
     (OStmt₂ := BinaryBasefold.OracleStatement K β
@@ -226,11 +226,12 @@ noncomputable def fullOracleReduction :
 @[reducible]
 noncomputable def fullOracleProof :
   OracleProof []ₒ
-    (Statement := BatchingStmtIn (L := L) (ℓ:=ℓ))
+    (Statement := BatchingStmtIn (L := L) (ℓ := ℓ))
     (OStatement := (BinaryBasefoldAbstractOStmtIn κ L K β ℓ' 𝓡 ϑ h_ℓ_add_R_rate).OStmtIn)
     (Witness := BatchingWitIn L K ℓ ℓ')
-    (pSpec:= fullPspec κ L K β ℓ' 𝓡 ϑ γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) :=
-  fullOracleReduction κ L K β ℓ ℓ' 𝓡 ϑ γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate) h_l 
+    (pSpec := fullPspec κ L K β ℓ' 𝓡 ϑ γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) :=
+  fullOracleReduction κ L K β ℓ ℓ' 𝓡 ϑ γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    h_l
 
 /-!
 ## Security Properties
@@ -248,7 +249,6 @@ upstream and threaded as a hypothesis there (commit a22be75b, exactly as in
 `Sumcheck/Spec/General.lean`). We thread the same `coh` through here and pass it through at the
 core-interaction call site below. -/
 theorem fullOracleReduction_perfectCompleteness
-    -- THREADED (2026-06-04): sumcheck-fold lens coherence
     (coh : OracleVerifier.LiftContextCoherent
       (CoreInteractionPhase.sumcheckFoldOracleLens κ L K β ℓ ℓ' 𝓡 ϑ
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
@@ -256,8 +256,8 @@ theorem fullOracleReduction_perfectCompleteness
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).verifier) :
   OracleReduction.perfectCompleteness
     (oracleReduction := fullOracleReduction κ L K β ℓ ℓ' 𝓡 ϑ γ_repetitions
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) h_l )
-    (relIn := BatchingPhase.batchingInputRelation κ L K (biniusProfile κ L K β)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) h_l)
+    (relIn := BatchingPhase.batchingInputRelation κ L K (biniusProfile κ L K)
       ℓ ℓ' h_l (BinaryBasefoldAbstractOStmtIn κ L K β ℓ' 𝓡 ϑ h_ℓ_add_R_rate))
     (relOut := acceptRejectOracleRel)
     (init := init)

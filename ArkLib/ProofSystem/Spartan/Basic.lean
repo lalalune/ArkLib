@@ -21,6 +21,8 @@ namespace Spartan
 
 noncomputable section
 
+open MvPolynomial
+
 /-- The public parameters of the (padded) Spartan protocol. Consists of the number of bits of the
   R1CS dimensions, and the number of bits of the witness variables. -/
 structure PublicParams where
