@@ -105,4 +105,103 @@ theorem compositionSum_example :
 
 end Combinatorics
 
+section PowerSeries
+
+open scoped Classical in
+/-- **L1 — substitution coefficient as a Finset sum.**  Packages mathlib's
+`PowerSeries.coeff_subst'` (a `finsum` over `d : ℕ`) as a genuine `Finset.sum` over the
+finite support guaranteed by `coeff_subst_finite'`.  This is the form the keystone needs:
+the `e`-coefficient of `subst b f` is the finite sum `∑_d (coeff_d f) • coeff_e (b^d)`.
+
+Pure mathlib repackaging (no new math), but reusable: it removes the `finsum` boilerplate at
+every downstream use. -/
+theorem coeff_subst_eq_finset_sum
+    {R : Type*} [CommRing R] {S : Type*} [CommRing S] [Algebra R S]
+    {b : S⟦X⟧} (hb : PowerSeries.HasSubst b) (f : R⟦X⟧) (e : ℕ) :
+    coeff e (f.subst b)
+      = ∑ d ∈ (PowerSeries.coeff_subst_finite' hb f e).toFinset,
+          coeff d f • PowerSeries.coeff e (b ^ d) := by
+  rw [PowerSeries.coeff_subst' hb f e]
+  exact finsum_eq_sum _ (PowerSeries.coeff_subst_finite' hb f e)
+
+/-- **L2 — power coefficient as a weak-composition sum.**  A thin restatement (definitional
+alias) of `PowerSeries.coeff_pow`: the `n`-th coefficient of `φ ^ k` is the sum over weak
+compositions `l ∈ finsuppAntidiag (range k) n` of `∏_{i<k} coeff_{l i} φ`.  This is the exact
+antidiagonal form that `compositionSum_eq_valueMultisetSum` (L4) then regroups. -/
+theorem coeff_pow_eq_compositionSum {R : Type*} [CommSemiring R] (k n : ℕ) (φ : R⟦X⟧) :
+    coeff n (φ ^ k)
+      = ∑ l ∈ finsuppAntidiag (range k) n, ∏ i ∈ range k, coeff (l i) φ :=
+  PowerSeries.coeff_pow k n φ
+
+/-- **L5-precursor — `coeff_pow` already in grouped (value-multiset) form.**  Combining L2
+(`coeff_pow_eq_compositionSum`) with L4 (`compositionSum_eq_valueMultisetSum`) lands the
+`n`-th coefficient of `φ^k` directly on the multiplicity-grouped sum: over the distinct
+value-multisets `m` of weak compositions of `n` into `k` parts, weighted by the number of
+compositions realizing `m`, of `∏_l (coeff_l φ)^{count l m}`.
+
+This is the structural shape the keystone's order-`t` coefficient must reproduce (with
+`φ = γ`, `k = i` the `Y`-degree); the only remaining gap to the in-tree
+`partitionProd`/`prefactor` form is the zero-part / `Nat.Partition` reconciliation staged in
+`compositionSum_eq_partitionSum` below. -/
+theorem coeff_pow_eq_valueMultisetSum {R : Type*} [CommSemiring R] (k n : ℕ) (φ : R⟦X⟧) :
+    coeff n (φ ^ k)
+      = ∑ m ∈ (finsuppAntidiag (range k) n).image (valueMultiset (range k)),
+          (#{l ∈ finsuppAntidiag (range k) n | valueMultiset (range k) l = m})
+            • ((m.map (fun j => coeff j φ)).prod) := by
+  rw [coeff_pow_eq_compositionSum k n φ]
+  exact compositionSum_eq_valueMultisetSum (range k) n (fun j => coeff j φ)
+
+end PowerSeries
+
+section StagedResidual
+
+/-! ## Staged residual — the in-tree `Nat.Partition` / `Nat.multinomial` form
+
+The value-multiset index `m` of `compositionSum_eq_valueMultisetSum` is a `Multiset ℕ` of
+cardinality `#s` summing to `t`; it carries the `#s − (number of positive parts)` **zero**
+parts of a *weak* composition.  The in-tree keystone objects (`partitionProd`, `prefactor`,
+`sigmaLambda` in `HenselNumerator.lean`) are instead indexed by `Nat.Partition t`, whose
+`parts` are *positive only*.
+
+Bridging the two requires (i) splitting off the zero parts of `m` (an `i₁`-choice: how many
+of the `#s` slots take the `α₀`/constant branch — exactly the `Nat.choose i i₁` factor of
+`prefactor`), and (ii) identifying the fiber-cardinality `#{l | valueMultiset s l = m}` with
+`Nat.multinomial` of the part-multiplicities (i.e. `Multiset.countPerms m`).  Both pieces sit
+with the `B_{i1,λ}` Hasse machinery (see the WALL note in
+`research/proximity-prize/dispositions/pc-w3-faadibruno-scout.md`) and are a *later* wave.
+
+The statement below records the precise target so the next wave has an exact obligation; it
+is **stated with a documented `sorry`, NOT proven** — honesty requires we not fake it. -/
+
+/-- **STAGED (later wave): fiber-cardinality = multinomial of multiplicities.**
+
+The number of weak compositions `l : range k →₀ ℕ` with `∑ l = t` realizing a fixed
+value-multiset `m` (so `m` has `card = k`, `sum = t`) equals `Multiset.countPerms m`, the
+number of distinct orderings of the bag `m` — i.e. the `Nat.multinomial` of `m`'s
+multiplicities.  This is the load-bearing combinatorial identity that turns the
+fiber-card weight of `compositionSum_eq_valueMultisetSum` into the `prefactor`/`multinomial`
+of `(A.1)`.
+
+NOT proven here: reconciling `valueMultiset (range k)`'s fiber count with `countPerms`
+requires a `finsuppAntidiag ≃ Sym`-style argument (`Finset.finsuppAntidiagEquiv`) plus
+`Multiset.countPerms_filter_ne` bookkeeping over the zero parts — a self-contained but
+non-trivial later-wave brick. -/
+theorem fiberCard_eq_countPerms_staged {k t : ℕ} (m : Multiset ℕ)
+    (hcard : m.card = k) (hsum : m.sum = t) :
+    (#{l ∈ finsuppAntidiag (range k) t | valueMultiset (range k) l = m})
+      = Multiset.countPerms m := by
+  sorry
+
+end StagedResidual
+
+/-! ## Axiom audit (recorded 2026-06-05)
+
+In-file `#print axioms` confirmed every sorry-free declaration of this file
+(`valueMultiset_card`, `valueMultiset_sum`, `prod_eq_multiset_value_prod`,
+`compositionSum_eq_valueMultisetSum`, `compositionSum_example`, `coeff_subst_eq_finset_sum`,
+`coeff_pow_eq_compositionSum`, `coeff_pow_eq_valueMultisetSum`) depends only on
+`[propext, Classical.choice, Quot.sound]` — no `sorryAx`, no `Lean.ofReduceBool`
+(the `decide` witnesses are kernel-checked, not native).  The single `sorry` is the
+explicitly-staged `fiberCard_eq_countPerms_staged` (later wave). -/
+
 end ArkLib.PowerSeriesComposition
