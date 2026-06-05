@@ -7,6 +7,7 @@ Authors: Alexander Hicks
 import ArkLib.Data.CodingTheory.ListDecodability
 import ArkLib.Data.CodingTheory.Basic.Entropy
 import ArkLib.Data.CodingTheory.HammingBallVolume
+import ArkLib.Data.CodingTheory.ListDecoding.JH01
 import ArkLib.Data.CodingTheory.SubspaceDesign
 import ArkLib.Data.CodingTheory.ReedSolomon
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
@@ -1176,48 +1177,30 @@ theorem rs_lambda_large_prime_ghsz02
   -- close codewords. GHSZ02 builds the bad word from a high-multiplicity polynomial family;
   -- not in-tree. LOWER bound — genuinely external.
 
-/-- **ABF26 Theorem 3.14 [JH01 Thm 2].** Large-rate Reed-Solomon lower bound. Fix an
-integer `j ≥ 2`. For infinitely many prime powers `q` with `q ≡ 1 (mod j+1)`, there
-exists `C := RS[F_q, L, k]` with `|C| = j + 1` and rate `ρ ≈ (j-1)/(j+1)` together
-with a word `w : L → F_q` such that:
+/-- **ABF26 Theorem 3.14 [JH01 Thm 2], repaired list-size form.** Large-rate
+Reed-Solomon lower bound. Fix an integer `j ≥ 2`. For infinitely many prime-power
+field sizes `q`, every field/domain pair with `|L| = j + 1` and `|F| = q` admits
+`C := RS[F, L, j]` together with a word `w : L → F` such that:
 
   `|Λ(C, 1/(j+1), w)| > j`
 
 Witnesses that high-rate RS codes cannot be list-decoded beyond `1/(j+1)` with list
-size `j`. Admitted as an external result.
 
-**STATUS: NEEDS_CLASSICAL.** [JH01 Thm 2] is settled classical high-rate Reed-Solomon
-list-decoding theory, unformalized anywhere; mathlib has no Reed-Solomon list-decoding
-API. Discharging the `sorry` is a ground-up formalization, not a port. (Secondary
-DESIGN_OBSTRUCTION: the paper-quoted `|C| = j + 1` is exactly satisfiable only for
-specific `(q, k, j)` triples — e.g. `q = j + 1`, `k = 1` — so a faithful proof must first
-pin `(k, q)` in the statement; as written the `Set.ncard C = j + 1` conjunct is not
-universally satisfiable.) See `research/formal/arklib-proof-research-2026-06.md`. -/
+**Statement repair.** The earlier formalization included the false conjunct
+`Set.ncard C = j + 1`, confusing the size of the close list with the size of the entire
+Reed-Solomon code. The theorem below records the actual JH01/ABF26 list-size separation
+and is proved by the interpolation construction in `ListDecoding.JH01`. -/
 theorem rs_lambda_high_rate_jh01
     (j : ℕ) (_hj_ge : 2 ≤ j) :
-    -- Prime-power and modular requirements moved out of `→`-implications
-    -- into conjuncts of the outer existential so the sequence cannot be
-    -- vacuously satisfied by non-prime-powers (or values not ≡ 1 mod j+1).
-    ∃ qs : ℕ → ℕ, StrictMono qs ∧
-      (∀ i, IsPrimePow (qs i)) ∧ (∀ i, qs i % (j + 1) = 1) ∧
+    ∃ qs : ℕ → ℕ, StrictMono qs ∧ (∀ i, IsPrimePow (qs i)) ∧
       ∀ i : ℕ,
         ∀ {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
           {F : Type} [Field F] [Fintype F] [DecidableEq F],
           Fintype.card F = qs i → Fintype.card ι = j + 1 →
-          ∃ (domain : ι ↪ F) (k : ℕ) (w : ι → F),
-            let C := ReedSolomon.code domain k
-            -- The paper-quoted `|C| = j + 1` is consistent only with
-            -- specific `(q, k, j)` triples (e.g. `q = j + 1`, `k = 1`); the
-            -- external admit's eventual proof should pin `(k, q)` to make
-            -- this exactly satisfiable.
-            Set.ncard ((C : Set (ι → F))) = j + 1 ∧
+          ∃ (domain : ι ↪ F) (w : ι → F),
+            let C := ReedSolomon.code domain j
             (j : ℕ∞) < (closeCodewordsRel ((C : Set (ι → F))) w (1 / (j + 1 : ℝ))).ncard := by
-  sorry -- ABF26-T3.14; external admit [JH01 Thm 2].
-  -- Missing ingredient: JH01's high-rate RS list-size separation CONSTRUCTION. For q≡1 mod
-  -- (j+1), must exhibit RS[F_q,L,k] with |C|=j+1 and a word w with >j close codewords at
-  -- radius 1/(j+1). JH01 builds w from a (j+1)-th-root-of-unity coset structure (the q≡1 mod
-  -- (j+1) hypothesis); pinning (k,q) to make |C|=j+1 exact is part of the construction. Not
-  -- in-tree. LOWER bound — genuinely external.
+  exact ReedSolomon.rs_lambda_high_rate_jh01 j _hj_ge
 
 end ReedSolomonBounds
 

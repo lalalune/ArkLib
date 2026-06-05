@@ -14,9 +14,11 @@ brief for the next wave of work.
 
 ## Current Baseline
 
-ArkLib is buildable, but routine validation is not clean: `./scripts/validate.sh` reaches a Lean
-build and then fails the ArkLib/Data non-sorry warning budget. The proximity-prize keystone has a
-real conditional bridge in
+The ArkLib/Data non-sorry warning budget has been reported clean by recent validation runs. In the
+live checkout, `lake build ArkLib` now completes after the JH01 close-ball proof stabilization and
+the stale scratch-import cleanup. Re-run `./scripts/validate.sh` before starting a new warning-budget
+batch because multiple agents are changing umbrella imports and scratch files concurrently. The
+proximity-prize keystone has a real conditional bridge in
 `ArkLib.BetaToCurveCoeffPolys.curveCoeffPolys_of_betaRec`, but it still needs its section-5
 extraction/setup hypotheses supplied and connected to the in-place `Curves.lean` theorem.
 
@@ -36,8 +38,8 @@ its remaining assumptions are explicitly named and justified as external section
    is genuinely closed.
 5. Reduce remaining executable `sorry`s where they sit on active proof paths, prioritizing real
    proof discharge over wrapper APIs.
-6. Make `./scripts/validate.sh` green by reducing the ArkLib/Data warning budget, with targeted
-   module builds after each warning batch.
+6. Keep the ArkLib/Data warning budget at zero non-sorry warnings and make `./scripts/validate.sh`
+   green by fixing the umbrella-imported build blockers.
 7. Audit external admits, conjectures, and explicit hypotheses, separating acceptable formal
    interfaces from unresolved mathematical obligations.
 8. Map claimed ArkLib theorems to the full zkVM verification stack and state which end-to-end
@@ -63,8 +65,8 @@ proofs, targeted `lake build <module>` checks, and updates to the audit docs wit
   existing `betaRec` bridge to section-5 data rather than re-proving the bridge.
 - Gamma and beta path: fix the `x₀`/gamma recentering issue, replace `β_regular` with `betaRec`,
   and thread the resulting hypotheses into the `Curves.lean` front door.
-- Warning budget: remove low-risk ArkLib/Data style warnings first, run targeted module builds, and
-  then re-run `./scripts/validate.sh`.
+- Validation repair: preserve the zero ArkLib/Data non-sorry warning budget, then repair the
+  umbrella-imported build blockers exposed by `./scripts/update-lib.sh` and `./scripts/validate.sh`.
 - Sorry audit: inventory remaining executable `sorry`s on proof-critical paths and distinguish
   active gaps from documentation-only or intentionally abstract interfaces.
 - ZKVM map: extend the baseline report's whole-stack analysis with theorem-to-component evidence
