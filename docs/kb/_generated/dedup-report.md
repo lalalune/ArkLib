@@ -4,9 +4,9 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 376 files, 7658 declarations
+- `ArkLib` — 377 files, 7677 declarations
 
-## Same short-name across multiple files (285 groups)
+## Same short-name across multiple files (289 groups)
 
 Each group lists declarations sharing a short name across ≥2 files. Most are legitimate (overloaded interface, paper-shape vs general form), but the list is the right anchor to look for duplicates.
 
@@ -1642,6 +1642,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma OutOfDomSmpl.card_agreement_le` [ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean:102](../../../ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean#L102) — The agreement set of two distinct codewords' polynomials (inside any subtype of `F`) has at most `de
 - `lemma OutOfDomSmpl.card_agreement_le` [ArkLib/ProofSystem/Whir/OutofDomainSmpl.lean:197](../../../ArkLib/ProofSystem/Whir/OutofDomainSmpl.lean#L197) — Two distinct smooth codewords' decoded polynomials agree on at most `2^m - 1` field points: agreemen
 
+### `card_eq_sum_indicator` (2 declarations, 2 files)
+
+- `theorem GCXK25SecondMoment.card_eq_sum_indicator` [ArkLib/Data/CodingTheory/Connections/GCXK25SecondMoment.lean:29](../../../ArkLib/Data/CodingTheory/Connections/GCXK25SecondMoment.lean#L29) — (no docstring)
+- `theorem GCXK25SecondMoment.card_eq_sum_indicator` [ArkLib/Data/CodingTheory/ProximityGap/GCXK25SecondMoment.lean:104](../../../ArkLib/Data/CodingTheory/ProximityGap/GCXK25SecondMoment.lean#L104) — (no docstring)
+
 ### `card_filter_forall_pi` (2 declarations, 2 files)
 
 - `lemma OutOfDomSmpl.card_filter_forall_pi` [ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean:71](../../../ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean#L71) — Counting a coordinatewise event: the tuples satisfying `Q` in every coordinate form the `piFinset` o
@@ -1667,10 +1672,25 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma ProximityGap.finset_card_gt_of_natCast_le_ennreal_lt` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean:104](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean#L104) — (no docstring)
 - `theorem ProximityGap.finset_card_gt_of_natCast_le_ennreal_lt` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/Assembly.lean:110](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/Assembly.lean#L110) — Convert an ENNReal lower bound on a finite set cardinality into a natural number strict cardinality 
 
+### `mult` (2 declarations, 2 files)
+
+- `def GCXK25SecondMoment.mult` [ArkLib/Data/CodingTheory/Connections/GCXK25SecondMoment.lean:18](../../../ArkLib/Data/CodingTheory/Connections/GCXK25SecondMoment.lean#L18) — Per-coordinate multiplicity: how many of the sets `A α` (for `α ∈ T`) contain `x`.
+- `def GCXK25SecondMoment.mult` [ArkLib/Data/CodingTheory/ProximityGap/GCXK25SecondMoment.lean:95](../../../ArkLib/Data/CodingTheory/ProximityGap/GCXK25SecondMoment.lean#L95) — Per-coordinate multiplicity: how many of the sets `A α` (for `α ∈ T`) contain `x`.
+
+### `mult_eq_sum` (2 declarations, 2 files)
+
+- `theorem GCXK25SecondMoment.mult_eq_sum` [ArkLib/Data/CodingTheory/Connections/GCXK25SecondMoment.lean:22](../../../ArkLib/Data/CodingTheory/Connections/GCXK25SecondMoment.lean#L22) — (no docstring)
+- `theorem GCXK25SecondMoment.mult_eq_sum` [ArkLib/Data/CodingTheory/ProximityGap/GCXK25SecondMoment.lean:98](../../../ArkLib/Data/CodingTheory/ProximityGap/GCXK25SecondMoment.lean#L98) — (no docstring)
+
 ### `qEntropy_mul_log_eq_qaryEntropy` (2 declarations, 2 files)
 
 - `theorem CodingTheory.qEntropy_mul_log_eq_qaryEntropy` [ArkLib/Data/CodingTheory/ProximityPrizeLeaves.lean:143](../../../ArkLib/Data/CodingTheory/ProximityPrizeLeaves.lean#L143) — **Base-change bridge for the `q`-ary entropy.** For `q ≥ 2`, ArkLib's `qEntropy` (defined with base-
 - `theorem CodingTheory.qEntropy_mul_log_eq_qaryEntropy` [ArkLib/Data/CodingTheory/ProximityPrizeLeaves2.lean:82](../../../ArkLib/Data/CodingTheory/ProximityPrizeLeaves2.lean#L82) — **Base-change bridge for the `q`-ary entropy** (re-proven locally so that this file is self-containe
+
+### `sum_card_eq_sum_mult` (2 declarations, 2 files)
+
+- `theorem GCXK25SecondMoment.sum_card_eq_sum_mult` [ArkLib/Data/CodingTheory/Connections/GCXK25SecondMoment.lean:37](../../../ArkLib/Data/CodingTheory/Connections/GCXK25SecondMoment.lean#L37) — **Double counting (rows = columns).** Total size of the family equals the sum of per-coordinate mult
+- `theorem GCXK25SecondMoment.sum_card_eq_sum_mult` [ArkLib/Data/CodingTheory/ProximityGap/GCXK25SecondMoment.lean:114](../../../ArkLib/Data/CodingTheory/ProximityGap/GCXK25SecondMoment.lean#L114) — **Double counting (rows = columns).** Total size of the family equals the sum of per-coordinate mult
 
 ### `uniform_event_mass` (2 declarations, 2 files)
 

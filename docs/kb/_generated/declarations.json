@@ -5563,7 +5563,7 @@
         {
           "doc": "**ABF26 Theorem 5.2 [BCHKS25 Theorem 1.9].** Small CA error implies small list size. Let `C := RS[F, L, k]` be a Reed-Solomon code with rate `\u03c1` and let `\u03b4 \u2208 (0, 1-\u03c1)`. If `\u03b5_ca(C, \u03b4_fld = \u03b4 + 2/n, \u03b4_int = 1 - \u03c1 - 1/n) < 1/(2n)` then `|\u039b(C, \u03b4)| < |F|` . Reading: CA at `\u03b4 + 2/n` with proximity loss to `1 - \u03c1 - 1/n` having very small error forces the list size at `\u03b4` to be strictly below the field size. Admitted as an external result.",
           "kind": "theorem",
-          "line": 142,
+          "line": 152,
           "name": "CodingTheory.rs_epsCA_small_implies_lambda_lt_F_bchks25",
           "namespace": "CodingTheory",
           "short_name": "rs_epsCA_small_implies_lambda_lt_F_bchks25",
@@ -5572,7 +5572,7 @@
         {
           "doc": "**ABF26 Theorem 5.3 [CS25 Theorem 2].** CA error converts to list size for related RS. Let `C := RS[F, L, k]` and `C\u207a := RS[F, L, k+1]` be Reed-Solomon codes with `|L| = n`. For `\u03b4 \u2208 (0, \u03b4_min(C))` and `\u03b7 \u2208 [0, 1)`, if `\u03b5_ca(C, \u03b4) \u2264 \u03b7 \u00b7 (1/k - n/(k\u00b7|F|))` then `|\u039b(C\u207a, \u03b4)| \u2264 \u2308|F|/(1-\u03b7) \u00b7 \u03b5_ca(C, \u03b4)\u2309` Pivots CA on `C` to a list-size bound on the extended code `C\u207a`. Admitted as an external result.",
           "kind": "theorem",
-          "line": 175,
+          "line": 185,
           "name": "CodingTheory.rs_epsCA_implies_lambda_extended_cs25",
           "namespace": "CodingTheory",
           "short_name": "rs_epsCA_implies_lambda_extended_cs25",
@@ -5581,7 +5581,7 @@
         {
           "doc": "**ABF26 Theorem 5.4 [BGKS20 Lemma 3.3].** List decoding does **not** tightly imply CA. For all fields `F` of characteristic 2, the Reed-Solomon code `C := RS[F, F, |F|/8]` of rate `\u03c1 = 1/8` (using `F` itself as the evaluation domain \u2014 a \"full-domain\" RS) satisfies `\u03b5_ca(C, 1 - \u03c1^{1/3}) \u2265 1 - 1/|F|` . In particular `1 - \u03c1^{1/3} = 1 - (1/8)^{1/3} = 0.5`; the Johnson bound for the same code sits at `1 - \u221a\u03c1 - \u03b7 \u2248 0.55`, where the list size is `\u2248 40` (constant in `|F|`). This witnesses a code that is list-decodable at the Johnson radius yet has CA error \u2248 1 at a smaller radius \u2014 separating list dec",
           "kind": "theorem",
-          "line": 222,
+          "line": 232,
           "name": "CodingTheory.rs_epsCA_separation_bgks20",
           "namespace": "CodingTheory",
           "short_name": "rs_epsCA_separation_bgks20",
@@ -22800,6 +22800,181 @@
           "namespace": "ProximityGap",
           "short_name": "folding_preserves_distance",
           "signature": "theorem folding_preserves_distance"
+        }
+      ]
+    },
+    "ArkLib/Data/CodingTheory/ProximityGap/GCXK25SecondMoment.lean": {
+      "declarations": [
+        {
+          "doc": "Per-coordinate multiplicity: how many of the sets `A \u03b1` (for `\u03b1 \u2208 T`) contain `x`.",
+          "kind": "def",
+          "line": 95,
+          "name": "GCXK25SecondMoment.mult",
+          "namespace": "GCXK25SecondMoment",
+          "short_name": "mult",
+          "signature": "def mult (T : Finset \u03ba) (A : \u03ba \u2192 Finset \u03b9) (x : \u03b9) : \u2115 :="
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 98,
+          "name": "GCXK25SecondMoment.mult_eq_sum",
+          "namespace": "GCXK25SecondMoment",
+          "short_name": "mult_eq_sum",
+          "signature": "theorem mult_eq_sum (T : Finset \u03ba) (A : \u03ba \u2192 Finset \u03b9) (x : \u03b9) :"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 100,
+          "name": "GCXK25SecondMoment._anon_class_100",
+          "namespace": "GCXK25SecondMoment",
+          "short_name": "_anon_class_100",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 104,
+          "name": "GCXK25SecondMoment.card_eq_sum_indicator",
+          "namespace": "GCXK25SecondMoment",
+          "short_name": "card_eq_sum_indicator",
+          "signature": "theorem card_eq_sum_indicator (s : Finset \u03b9) :"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 106,
+          "name": "GCXK25SecondMoment._anon_class_106",
+          "namespace": "GCXK25SecondMoment",
+          "short_name": "_anon_class_106",
+          "signature": "class classical"
+        },
+        {
+          "doc": "**Double counting (rows = columns).** Total size of the family equals the sum of per-coordinate multiplicities.",
+          "kind": "theorem",
+          "line": 114,
+          "name": "GCXK25SecondMoment.sum_card_eq_sum_mult",
+          "namespace": "GCXK25SecondMoment",
+          "short_name": "sum_card_eq_sum_mult",
+          "signature": "theorem sum_card_eq_sum_mult (T : Finset \u03ba) (A : \u03ba \u2192 Finset \u03b9) :"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 116,
+          "name": "GCXK25SecondMoment._anon_class_116",
+          "namespace": "GCXK25SecondMoment",
+          "short_name": "_anon_class_116",
+          "signature": "class classical"
+        },
+        {
+          "doc": "**Second moment = pairwise intersections.** `\u2211_\u03b1 \u2211_\u03b2 |A_\u03b1 \u2229 A_\u03b2| = \u2211_x d(x)\u00b2`.",
+          "kind": "theorem",
+          "line": 126,
+          "name": "GCXK25SecondMoment.sum_sum_card_inter_eq_sum_mult_sq",
+          "namespace": "GCXK25SecondMoment",
+          "short_name": "sum_sum_card_inter_eq_sum_mult_sq",
+          "signature": "theorem sum_sum_card_inter_eq_sum_mult_sq (T : Finset \u03ba) (A : \u03ba \u2192 Finset \u03b9) :"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 128,
+          "name": "GCXK25SecondMoment._anon_class_128",
+          "namespace": "GCXK25SecondMoment",
+          "short_name": "_anon_class_128",
+          "signature": "class classical"
+        },
+        {
+          "doc": "**Cauchy\u2013Schwarz / Chebyshev second-moment bound (\u2115 form).** The square of the total size of the family is at most `n` times the sum of all pairwise intersection sizes. This is the first inequality `(5)\u2013(6)` of the GCXK25 second-moment count, packaged over the ambient coordinate set `\u03b9` (so the union bound `r \u2264 n` is automatic).",
+          "kind": "theorem",
+          "line": 163,
+          "name": "GCXK25SecondMoment.sq_sum_card_le_card_mul_sum_sum_card_inter",
+          "namespace": "GCXK25SecondMoment",
+          "short_name": "sq_sum_card_le_card_mul_sum_sum_card_inter",
+          "signature": "theorem sq_sum_card_le_card_mul_sum_sum_card_inter (T : Finset \u03ba) (A : \u03ba \u2192 Finset \u03b9) :"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 166,
+          "name": "GCXK25SecondMoment._anon_class_166",
+          "namespace": "GCXK25SecondMoment",
+          "short_name": "_anon_class_166",
+          "signature": "class classical"
+        },
+        {
+          "doc": "The total second moment splits into the diagonal (`\u2211 |A \u03b1|`) plus the off-diagonal pairwise intersections.",
+          "kind": "theorem",
+          "line": 174,
+          "name": "GCXK25SecondMoment.sum_sum_card_inter_eq_diag_add_offdiag",
+          "namespace": "GCXK25SecondMoment",
+          "short_name": "sum_sum_card_inter_eq_diag_add_offdiag",
+          "signature": "theorem sum_sum_card_inter_eq_diag_add_offdiag (T : Finset \u03ba) (A : \u03ba \u2192 Finset \u03b9) :"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 178,
+          "name": "GCXK25SecondMoment._anon_class_178",
+          "namespace": "GCXK25SecondMoment",
+          "short_name": "_anon_class_178",
+          "signature": "class classical"
+        },
+        {
+          "doc": "**Off-diagonal pairwise bound (\u2115 form).** If every distinct pair `\u03b1 \u2260 \u03b2` (both in `T`) has `|A \u03b1 \u2229 A \u03b2| \u2264 B`, the off-diagonal sum is at most `N\u00b7(N-1)\u00b7B`, where `N = |T|`.",
+          "kind": "theorem",
+          "line": 186,
+          "name": "GCXK25SecondMoment.offdiag_le",
+          "namespace": "GCXK25SecondMoment",
+          "short_name": "offdiag_le",
+          "signature": "theorem offdiag_le (T : Finset \u03ba) (A : \u03ba \u2192 Finset \u03b9) {B : \u2115}"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 189,
+          "name": "GCXK25SecondMoment._anon_class_189",
+          "namespace": "GCXK25SecondMoment",
+          "short_name": "_anon_class_189",
+          "signature": "class classical"
+        },
+        {
+          "doc": "**GCXK25 second-moment master inequality (real form).** Let `T` be a nonempty index set with `N := |T|` members, and `A : \u03ba \u2192 Finset \u03b9` a family of subsets of an ambient coordinate set of size `n`. Suppose * each member is large: `S \u2264 |A \u03b1|` for all `\u03b1 \u2208 T` (with `S \u2265 0`); * distinct members overlap little: `|A \u03b1 \u2229 A \u03b2| \u2264 B` for all distinct `\u03b1, \u03b2 \u2208 T`. Then `N \u00b7 S\u00b2 \u2264 n \u00b7 (S + (N \u2212 1) \u00b7 B)`. This is the inequality the GCXK25 proof of Lemma 3 extracts from Cauchy\u2013Schwarz right before substituting the Reed\u2013Solomon values `S = \u221a(1\u2212p+\u03b5)\u00b7n`, `B = (1\u2212p)\u00b7n` (which then yield `N < 1/\u03b5`). Proven via th",
+          "kind": "theorem",
+          "line": 219,
+          "name": "GCXK25SecondMoment.card_le_of_second_moment",
+          "namespace": "GCXK25SecondMoment",
+          "short_name": "card_le_of_second_moment",
+          "signature": "theorem card_le_of_second_moment"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 226,
+          "name": "GCXK25SecondMoment._anon_class_226",
+          "namespace": "GCXK25SecondMoment",
+          "short_name": "_anon_class_226",
+          "signature": "class classical"
+        },
+        {
+          "doc": "**GCXK25 Lemma 3 (second-moment count of bad second-part points).** Specialization of `card_le_of_second_moment` to the Reed\u2013Solomon values `S = \u221a(1\u2212p+\u03b5)\u00b7n` (member lower bound: a bad second-part point is at least `1\u2212\u221a(1\u2212p+\u03b5)`-close, so its `\u03b4`-agreement domain has `\u2265 \u221a(1\u2212p+\u03b5)\u00b7n` coordinates) and `B = (1\u2212p)\u00b7n` (distinct agreement domains share `\u2264 (1\u2212p)\u00b7n` coordinates). Under `0 < \u03b5`, `\u03b5 \u2264 p < 1`, and `0 < n`, `|T| \u00b7 \u03b5 < \u221a(1\u2212p+\u03b5) \u2212 (1\u2212p) + \u03b5 \u2264 1`, i.e. `|T| < 1/\u03b5`. This is exactly the bound `|Bad(\u03c0\u2081,\u03c0\u2082,\u03b4)\u00b2| < 1/\u03b5` of GCXK25 Lemma 3, packaged abstractly over the agree-domain family `T`. The hypo",
+          "kind": "theorem",
+          "line": 332,
+          "name": "GCXK25SecondMoment.card_lt_inv_of_second_moment_rs",
+          "namespace": "GCXK25SecondMoment",
+          "short_name": "card_lt_inv_of_second_moment_rs",
+          "signature": "theorem card_lt_inv_of_second_moment_rs"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 340,
+          "name": "GCXK25SecondMoment._anon_class_340",
+          "namespace": "GCXK25SecondMoment",
+          "short_name": "_anon_class_340",
+          "signature": "class classical"
         }
       ]
     },
@@ -70414,8 +70589,8 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 7658,
-      "files": 376
+      "declarations": 7677,
+      "files": 377
     }
   }
 }

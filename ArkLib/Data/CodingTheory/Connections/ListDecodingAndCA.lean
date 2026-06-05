@@ -115,7 +115,7 @@ theorem linear_listSize_to_epsMCA_gcxk25
   -- `l ≤ L²` list-size factor this gives the `L²·δ·n + 1/η` shape, divided by |F|.
   --
   -- VERIFIED BACKBONE: the GCXK25 Lemma 3 `Bad² < 1/ε` second-moment count is now formalized
-  -- kernel-clean in `ProximityGap/GCXK25SecondMoment.lean`
+  -- kernel-clean in `Connections/GCXK25SecondMoment.lean`
   -- (`GCXK25SecondMoment.card_lt_inv_of_second_moment_rs`, with the abstract master inequality
   -- `card_le_of_second_moment` and the Cauchy–Schwarz step
   -- `sq_sum_card_le_card_mul_sum_sum_card_inter`). Its `ε ≤ p` hypothesis is exactly the
