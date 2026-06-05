@@ -6,8 +6,10 @@ File: `upstream/lean-research/ArkLib/ArkLib/Data/CodingTheory/ProximityGap/BCIKS
 (worktree `/home/shaw/ethereumroadmap/upstream/lean-research/ArkLib`; content materialized from /
 matching `lalalune/main`). Edited ONLY that file for the PC-W11 bridge pass. Compiled it alone with
 `lake env lean ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean` → **exit 0**.
-Axiom-audited in-file (`#print axioms`, then removed). A later upstream validation pass also ran
-`lake build ArkLib` successfully.
+Axiom-audited in-file (`#print axioms`, then removed). A later upstream validation pass attempted
+`lake build ArkLib`; it rebuilt `HenselNumerator.lean` successfully, then failed in unrelated
+`ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean` with a missing
+`Agreement.olean` output error.
 
 ## What changed
 
@@ -91,6 +93,10 @@ equivalence is documented inside the residual's doc-comment so the next attempt 
 ## Verification
 
 - `cd /home/shaw/ethereumroadmap/upstream/lean-research/ArkLib && lake env lean ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean` → exit 0.
+- `cd /home/shaw/ethereumroadmap/upstream/lean-research/ArkLib && lake build ArkLib` → exit 1:
+  Hensel rebuilt successfully; broad build then failed in unrelated
+  `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean` because the expected
+  `.lake/build/.../Agreement.olean` artifact was not produced.
 - In-file `#print axioms` (temp, removed):
   - `coeff_zero_eval_βHenselAssembled` → `[propext, Classical.choice, Quot.sound]` (clean).
   - `assembledSeries_isRoot` → `[propext, sorryAx, Classical.choice, Quot.sound]` (`sorryAx`
