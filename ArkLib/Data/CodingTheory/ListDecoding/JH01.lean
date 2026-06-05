@@ -88,7 +88,6 @@ theorem mem_relHammingBall_of_agree_off_point (j : ℕ) (w c : Fin (j + 1) → F
   have hcancel : (1 / (j + 1 : ℝ)) * ((j : ℝ) + 1) = 1 := by
     field_simp
   rw [hcancel]
-  exact hd
 
 /-- Generalized combinatorial core of JH01 / ABF26 Theorem 3.14.  For any index type `ι`
 of size `j + 1` and any evaluation domain `domain : ι ↪ F`, the Reed-Solomon code
@@ -175,8 +174,6 @@ theorem exists_word_with_many_close_codewords_of_card_succ
     have hd : (hammingDist w (cwf x) : ℝ) ≤ 1 := by exact_mod_cast hdist
     have hcancel : (1 / (j + 1 : ℝ)) * ((j : ℝ) + 1) = 1 := by field_simp
     rw [hcancel]
-    convert hd using 2
-    congr!
   have hsub : (↑(Finset.univ.image cwf) : Set (ι → F))
       ⊆ _root_.ListDecodable.closeCodewordsRel ((ReedSolomon.code domain j : Set (ι → F)))
           w (1 / (j + 1 : ℝ)) := by
