@@ -316,6 +316,58 @@ theorem RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_selected_
       δ u₀ u₁ h_gs Dtop hDtop_card hsubset hunique)
 
 /-- Strict Johnson §6 joint-agreement front door specialized to the §5
+affine-line setup, with the selected coordinate domain produced from any
+uniform integer bad-coordinate bound `E`.
+
+This is the same bridge as the nat-ceil wrapper below, but it keeps the
+bad-coordinate bound abstract.  The nat-ceil version is recovered by taking
+`E = ⌈δ * n⌉₊`. -/
+theorem RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_delta_nonmatching_bound
+    {m k : ℕ} {ωs : Fin n ↪ F} {Q : F[Z][X][Y]} {x₀ : F}
+    [DecidableEq (RatFunc F)]
+    (δ : ℚ≥0) (u₀ u₁ : Fin n → F)
+    (hprob :
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin 2, (z ^ (t : ℕ)) • Code.finMapTwoWords u₀ u₁ t,
+          ReedSolomon.code ωs (k + 1)) ≤ (δ : ℝ≥0)] >
+        (((1 : ℕ) : ENNReal) * (errorBound (δ : ℝ≥0) (k + 1) ωs : ENNReal)))
+    (hJ : (1 - (LinearCode.rate (ReedSolomon.code ωs (k + 1)) : ℝ≥0)) / 2 <
+      (δ : ℝ≥0))
+    (hδ : (δ : ℝ≥0) < 1 - ReedSolomon.sqrtRate (k + 1) ωs)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    {D E t : ℕ}
+    (hE : (δ : ℚ) * (n : ℚ) ≤ E)
+    (hcover :
+      (coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁).card - 1 ≤
+        (2 * k + 1)
+          * (Polynomial.Bivariate.natDegreeY <| H k (δ : ℚ) x₀ h_gs)
+          * (Polynomial.Bivariate.natDegreeY <| R k (δ : ℚ) x₀ h_gs)
+          * D)
+    (hthreshold :
+      (2 * k + 1)
+        * (Polynomial.Bivariate.natDegreeY <| H k (δ : ℚ) x₀ h_gs)
+        * (Polynomial.Bivariate.natDegreeY <| R k (δ : ℚ) x₀ h_gs)
+        * D + t ≤ #(coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁))
+    (hsmall :
+      E * #(coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁) <
+        (n - k) * t)
+    (hunique : ∀ P : F → Polynomial F,
+      (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+        (P z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P z).eval ∘ ωs) ≤ (δ : ℚ)) →
+      ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+        P z = PzFamily (F := F) (n := n) (δ : ℚ) u₀ u₁ ωs k z) :
+    jointAgreement (C := ReedSolomon.code ωs (k + 1)) (δ := (δ : ℝ≥0))
+      (W := Code.finMapTwoWords u₀ u₁) := by
+  classical
+  obtain ⟨Dtop, hDtop_card, hsubset⟩ :=
+    exists_points_with_close_subset_matching_set_of_delta_nonmatching_bound
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := (δ : ℚ)) (x₀ := x₀)
+      h_gs (D := D) (E := E) (t := t) hE hcover hthreshold hsmall
+  exact RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_selected_matching_domain
+    (F := F) (n := n) (m := m) (k := k) (ωs := ωs) (Q := Q)
+    δ u₀ u₁ hprob hJ hδ h_gs Dtop hDtop_card hsubset hunique
+
+/-- Strict Johnson §6 joint-agreement front door specialized to the §5
 affine-line setup, with the selected coordinate domain produced by the
 nat-ceil nonmatching-coordinate form of Claim 5.11. -/
 theorem RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_natCeil_nonmatching_bound
@@ -355,13 +407,11 @@ theorem RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_natCeil_n
     jointAgreement (C := ReedSolomon.code ωs (k + 1)) (δ := (δ : ℝ≥0))
       (W := Code.finMapTwoWords u₀ u₁) := by
   classical
-  obtain ⟨Dtop, hDtop_card, hsubset⟩ :=
-    exists_points_with_close_subset_matching_set_of_natCeil_delta_nonmatching_bound
-      (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := (δ : ℚ)) (x₀ := x₀)
-      h_gs (D := D) (t := t) hcover hthreshold hsmall
-  exact RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_selected_matching_domain
+  exact RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_delta_nonmatching_bound
     (F := F) (n := n) (m := m) (k := k) (ωs := ωs) (Q := Q)
-    δ u₀ u₁ hprob hJ hδ h_gs Dtop hDtop_card hsubset hunique
+    (x₀ := x₀) δ u₀ u₁ hprob hJ hδ h_gs
+    (D := D) (E := ⌈(δ : ℚ) * (n : ℚ)⌉₊) (t := t)
+    (Nat.le_ceil _) hcover hthreshold hsmall hunique
 
 /-- Strict Johnson §6 joint-agreement front door specialized to the §5
 affine-line setup, with the `ModifiedGuruswami` solution produced by Claim
