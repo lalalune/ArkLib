@@ -117,6 +117,48 @@ theorem logupOuterSumcheckClaim_honestHelpers_eq_sum_helpers
       oStmtIn (honestMultiplicity oStmtIn) stmt.xChallenge stmt.zChallenge
       stmt.batchingScalars u hden
 
+omit [Fintype F] [DecidableEq F] in
+theorem canonicalGroups_sum_partition (f : TermIdx M → F) :
+    (∑ k : Fin params.numGroups, ∑ i ∈ canonicalGroups params k, f i) =
+      ∑ i : TermIdx M, f i := by
+  classical
+  simp only [canonicalGroups]
+  rw [Finset.sum_sigma' (s := (Finset.univ : Finset (Fin params.numGroups)))
+    (t := fun k => params.group k) (f := fun _ i => f i)]
+  refine Finset.sum_bij (s := (Finset.univ.sigma fun k => params.group k))
+    (t := (Finset.univ : Finset (TermIdx M))) (i := fun x _ => x.2) ?_ ?_ ?_ ?_
+  · intro x _
+    exact Finset.mem_univ x.2
+  · intro x hx y hy hxy
+    rcases x with ⟨kx, ix⟩
+    rcases y with ⟨ky, iy⟩
+    change ix = iy at hxy
+    have hfst : kx = ky := by
+      apply params.group_eq_of_mem (i := ix)
+      · exact (Finset.mem_sigma.mp hx).2
+      · rw [hxy]
+        exact (Finset.mem_sigma.mp hy).2
+    cases hfst
+    cases hxy
+    rfl
+  · intro i _
+    rcases params.exists_mem_group i with ⟨k, hk⟩
+    exact ⟨Sigma.mk k i, Finset.mem_sigma.mpr ⟨Finset.mem_univ k, hk⟩, rfl⟩
+  · intro x _
+    rfl
+
+omit [Fintype F] in
+theorem honest_helper_sum_eq_sum_terms
+    (oStmt : ∀ i, OStmtIn F n M i) (xChallenge : F) (u : Hypercube n) :
+    (∑ k : Fin params.numGroups,
+        evalOnHypercube (honestHelpers params oStmt xChallenge k) u) =
+      ∑ i : TermIdx M,
+        termNumerator (honestMultiplicity oStmt) i u / termPhi oStmt xChallenge i u := by
+  simpa [honestHelpers, helperOracle, helperValue, evalOnHypercube] using
+    canonicalGroups_sum_partition (params := params)
+      (f := fun i : TermIdx M =>
+        termNumerator (honestMultiplicity oStmt) i u / termPhi oStmt xChallenge i u)
+
 /-- Semantic agreement between final oracle-query answers and the retained LogUp oracles. -/
 def logupPointEvaluationsAgree
     (r : Fin n → F)
