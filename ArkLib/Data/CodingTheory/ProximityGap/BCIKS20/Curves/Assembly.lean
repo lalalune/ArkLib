@@ -10,7 +10,7 @@ import ArkLib.ToMathlib.CorrelatedAgreementListDecodingClosed
 namespace ProximityGap
 
 open Polynomial
-open scoped BigOperators LinearCode
+open scoped BigOperators LinearCode ProbabilityTheory
 open Code
 open NNReal
 
@@ -452,6 +452,74 @@ omit [DecidableEq ι] in
 directly, because that file itself imports the curve front doors.  This module sits
 above both sides of the dependency graph, so it can expose the final canonical §5
 residual shape under the `ProximityGap` namespace. -/
+theorem correlatedAgreement_affine_curves_of_section5_data
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hExtract : ∀ (u : WordStack F (Fin (k + 1)) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      δ < 1 - ReedSolomon.sqrtRate deg domain →
+      ∀ P : F → Polynomial F,
+        (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+          (P z).natDegree < deg ∧
+            δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t, (P z).eval ∘ domain) ≤ δ) →
+        ArkLib.CorrelatedAgreementListDecodingClosed.Section5StrictData
+          (k := k) (deg := deg) (domain := domain) (δ := δ) u P)
+    (hBoundary : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      ¬δ < 1 - ReedSolomon.sqrtRate deg domain →
+      jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u)) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  open ArkLib.CorrelatedAgreementListDecodingClosed in
+  exact correlatedAgreement_affine_curves_listDecoding_closed
+    (deg := deg) (domain := domain) (δ := δ) hδ hExtract hBoundary
+
+omit [DecidableEq ι] in
+/-- Non-cyclic public wrapper for the closed canonical coefficient-polynomial
+assembly theorem.
+
+This is the uniform canonical-family shape produced after the §5 data have
+already been converted into coefficient-polynomial witnesses and uniqueness on
+the good-coefficient set. -/
+theorem correlatedAgreement_affine_curves_of_section5_canonical_coeff_data
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hStrictCanonicalCoeff :
+      ∀ u : WordStack F (Fin (k + 1)) ι,
+        ∃ P₀ : F → Polynomial F,
+          (∃ B : ℕ → Polynomial F,
+            (∀ j < deg, (B j).natDegree < k + 1) ∧
+              ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+                ∀ j < deg, (P₀ z).coeff j = (B j).eval z) ∧
+          ∀ P : F → Polynomial F,
+            (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              (P z).natDegree < deg ∧
+                δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+                  (P z).eval ∘ domain) ≤ δ) →
+              ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+                P z = P₀ z)
+    (hBoundaryCard : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      δ = 1 - ReedSolomon.sqrtRate deg domain →
+      0 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card →
+      jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u)) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  open ArkLib.CorrelatedAgreementListDecodingClosed in
+  exact correlatedAgreement_affine_curves_listDecoding_closed_canonical
+    (deg := deg) (domain := domain) (δ := δ) hδ hStrictCanonicalCoeff hBoundaryCard
+
+omit [DecidableEq ι] in
+/-- Non-cyclic public wrapper for the closed list-decoding assembly theorem
+with the strict branch phrased as canonical §5 extraction data for one decoded
+family, plus uniqueness. -/
 theorem correlatedAgreement_affine_curves_of_section5_canonical_data
     {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
     (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
