@@ -459,7 +459,7 @@ theorem getSumcheckRoundPoly_eval_eq_cube_succ (i : Fin ℓ')
   all_goals exact ℓ'
 
 
-omit [Fintype L] [Fintype K] [DecidableEq K] in
+omit [Fintype K] [DecidableEq K] in
 theorem iteratedSumcheckOracleReduction_perfectCompleteness (i : Fin ℓ') :
     OracleReduction.perfectCompleteness
       (pSpec := pSpecSumcheckRound L)
@@ -550,6 +550,14 @@ theorem iteratedSumcheckOracleReduction_perfectCompleteness (i : Fin ℓ') :
   -- (B) NEXT-ROUND CONSISTENCY (for every challenge `r'`): the next-round target `h_i.eval r'`
   -- equals the next cube-sum of the advanced witness `witOut.H = fixFirstVariablesOfMQP … {r'}`.
   -- This is `getSumcheckRoundPoly_eval_eq_cube_succ` instantiated at the honest witness.
+  -- (C) PLUMBING: collapse the deterministic prover binds, the verifier message-query, and the
+  -- `guard` (which always passes by `hcheck`), reducing the run to a `$ᵗ L`-sample probEvent.
+  simp only [liftM, monadLift, MonadLiftT.monadLift, MonadLift.monadLift, pure_bind,
+    bind_pure_comp, map_pure, Functor.map_map, Function.comp, getRoundProverFinalOutput,
+    Transcript.concat]
+  simp only [liftComp_pure, liftComp_bind, liftComp_map, bind_assoc, pure_bind, map_pure]
+  dsimp only []
+  simp only [liftComp_pure, liftComp_map, bind_assoc, pure_bind, map_pure]
   trace_state
   sorry
 
