@@ -174,88 +174,6 @@ variable {R : Type} [CommSemiring R] [DecidableEq R] [SampleableType R]
 
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
 
-omit [Fintype L] [Fintype K] [DecidableEq K] in
-theorem iteratedSumcheckOracleReduction_perfectCompleteness (i : Fin ℓ') :
-    OracleReduction.perfectCompleteness
-      (pSpec := pSpecSumcheckRound L)
-      (relIn := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i.castSucc)
-      (relOut := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i.succ)
-      (oracleReduction := iteratedSumcheckOracleReduction κ L K P ℓ ℓ' aOStmtIn i)
-      (init := init)
-      (impl := impl) := by
-  unfold OracleReduction.perfectCompleteness
-  rw [Reduction.perfectCompleteness_eq_prob_one]
-  intro ⟨stmtIn, oStmtIn⟩ witIn h_relIn
-  -- (ALGEBRA) Unpack the input relation's master KState conjuncts at round `i.castSucc`.
-  simp only [sumcheckRoundRelation, sumcheckRoundRelationProp, masterKStateProp,
-    witnessStructuralInvariant, sumcheckConsistencyProp, Set.mem_setOf_eq, true_and] at h_relIn
-  obtain ⟨hStruct, hConsist, hCompat⟩ := h_relIn
-  -- WIP (algebra UNBLOCKED by the defect-#20 machinery repair; remaining work is the run-shape peel).
-  -- After the coherent var-ordering repair in `Sumcheck.Structured.SingleRound`, the honest round is
-  -- now fully consistent and the OUTPUT relation is *provable* (no false residual remains):
-  --   • challenges accumulate via `Fin.cons r' stmtIn.challenges` in BOTH the prover
-  --     (`getRoundProverFinalOutput`) and the verifier (`roundOracleVerifier`), matching the cons-form
-  --     round transition `RingSwitching.fixFirstVariablesOfMQP_projectToMid_step`;
-  --   • `witnessStructuralInvariant i.succ` then holds: `witOut.H = fixFirstVariablesOfMQP … witIn.H
-  --     {r'}` and, from the relIn invariant `witIn.H = projectToMidSumcheckPoly … i.castSucc ch`, the
-  --     cons-step lemma gives `witOut.H = (rename finCongr) (projectToMidSumcheckPoly … i.succ
-  --     (Fin.cons r' ch))` — exactly what relOut demands (the old cons=snoc obstruction is GONE);
-  --   • `sumcheckConsistencyProp i.succ` holds: the repaired `getSumcheckRoundPoly` marginalises the
-  --     LAST variable, so `stmtOut.sumcheck_target = h_i.eval r' = ∑_{next cube} (fix-last witIn.H
-  --     {r'}) = ∑_{cube} witOut.H` via `getSumcheckRoundPoly_eval_eq_sum_snoc` + `fixFirstVariablesOfMQP_eval`;
-  --     the verifier's check `∑_{D.points i} h_i.eval b = sumcheck_target` discharges from the relIn
-  --     `sumcheckConsistencyProp i.castSucc` (`h_i` is the variable-`(last)` marginal of `witIn.H`);
-  --   • `initialCompatibility` carries over (`witOut.t' = witIn.t'`).
-  -- (PLUMBING) Peel the 2-message honest oracle-reduction run.  `OracleReduction.perfectCompleteness`
-  -- = `Reduction.perfectCompleteness … .toReduction`; unfold the reduction and the prover's
-  -- `runToRound` over `Fin.induction_two`, then resolve the two round-direction matches.
-  simp only [iteratedSumcheckOracleReduction, OracleReduction.toReduction,
-    Sumcheck.Structured.roundOracleReduction, Reduction.run,
-    Sumcheck.Structured.roundOracleProver, Sumcheck.Structured.roundOracleVerifier,
-    Prover.run, Prover.runToRound, Fin.induction_two, Prover.processRound,
-    OracleVerifier.toVerifier, Verifier.run, pSpecSumcheckRound]
-  -- Round 0 = `P_to_V` (prover sends `h_i = getSumcheckRoundPoly ℓ' (boolDomain L ℓ') i witIn.H`),
-  -- round 1 = `V_to_P` (verifier samples `r'`); both direction matches collapse cleanly.
-  simp only [Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons,
-    Matrix.cons_val_fin_one, reduceCtorEq]
-  -- WIP — RUN IS NOW FULLY UNFOLDED + DIRECTION-RESOLVED (verified `trace_state`). The honest run is:
-  --   P→V `h_i := getSumcheckRoundPoly ℓ' (boolDomain L ℓ') i witIn.H`;
-  --   V samples `r' ← L` (the single probabilistic step);
-  --   prover output `getRoundProverFinalOutput … 2 i` (witOut.H = `fixFirstVariablesOfMQP (ℓ'-i) ⟨1⟩
-  --     witIn.H {r'}`, stmtOut.challenges = `Fin.cons r' stmtIn.challenges`, target = `h_i.eval r'`);
-  --   V reads the message via `simulateQ (simOracle2 …)`, runs `guard (∑ b ∈ (boolDomain L ℓ').points i,
-  --     h_i.eval b = stmtIn.sumcheck_target)`, outputs stmtOut.
-  -- Goal: `probEvent (…) = 1` over the uniform `r'` sample.
-  --
-  -- TWO REMAINING TASKS (both now mathematically UNBLOCKED; only mechanical):
-  -- (1) PROBABILITY ENDGAME. Collapse the `simulateQ (simOracle2 …)` message-query
-  --     (`simulateQ_simOracle2_query` + `answer_instDefault`), tie `proverResult.1.messages ⟨0⟩ = h_i`
-  --     and `proverResult.1.challenges ⟨1⟩ = r'` from the transcript binds, then close
-  --     `probEvent = 1` via `probEvent_eq_one_iff` over the uniform `r'`-sample (no-failure: the
-  --     `guard` ALWAYS passes by `getSumcheckRoundPoly_points_sum_eq_cube` + `hConsist`; every output
-  --     satisfies the predicate by task (2)). This is the single-challenge analog of the closed
-  --     `finalSumcheckOracleReduction_perfectCompleteness` accept-branch peel (which has no challenge).
-  -- (2) relOut DISCHARGE (the four master-KState conjuncts at index `i.succ`):
-  --   • `witnessStructuralInvariant i.succ`: `witOut.H = projectToMidSumcheckPoly t' m i.succ
-  --     (Fin.cons r' ch)`.  From `hStruct` (`witIn.H = projectToMid … i.castSucc ch`) and
-  --     `RingSwitching.fixFirstVariablesOfMQP_projectToMid_step`, the honest `witOut.H` equals
-  --     `rename (finCongr …) (projectToMid … i.succ (cons r' ch))`.  The residual `rename (finCongr)`
-  --     is the index relabel `Fin (ℓ'-i.succ) ≃ Fin (ℓ'-i.castSucc-1)`; it must be reconciled with
-  --     `getRoundProverFinalOutput`'s own internal `by omega` cast (HEq bookkeeping — same family as
-  --     `rename_finCongr_heq`).
-  --   • `sumcheckConsistencyProp i.succ`: `stmtOut.sumcheck_target (= h_i.eval r') = ∑_{cube(ℓ'-i.succ)}
-  --     witOut.H`.  This is the single-point (`r'`) specialisation of the proven
-  --     `getSumcheckRoundPoly_points_sum_eq_cube` chain: `h_i.eval r' = ∑_{survivors} eval (snoc · r')
-  --     curH = ∑_{cube} (fixFirstVariablesOfMQP witIn.H {r'})` (via `getSumcheckRoundPoly_eval_eq_sum_snoc`
-  --     + `fixFirstVariablesOfMQP_eval` + the `sum_cube_snoc` survivor reindex already used above).
-  --   • the verifier `guard` (`∑ b ∈ points i, h_i.eval b = sumcheck_target`) is `hConsist` rewritten
-  --     by `getSumcheckRoundPoly_points_sum_eq_cube` (PROVEN above).
-  --   • `initialCompatibility ⟨witOut.t', oStmt⟩ = ⟨witIn.t', oStmt⟩` is `hCompat` (`witOut.t' = witIn.t'`).
-  -- The verifier-check algebra (the genuinely #20-unblocked core) is DONE; what remains is the
-  -- `OptionT`/`StateT`/`simulateQ` run-shape plumbing for a 2-message+1-challenge oracle reduction
-  -- (no proven precedent in-repo — the only closed oracle-reduction completeness, final-sumcheck, has
-  -- ZERO challenges) plus the HEq cast reconciliation in (2). Preserved as WIP per honest-completion.
-  sorry
 
 open scoped NNReal
 
@@ -539,6 +457,101 @@ theorem getSumcheckRoundPoly_eval_eq_cube_succ (i : Fin ℓ')
   -- `ℕ` parameters as trailing metavariable goals; any `ℕ` discharges them (the lemma's statement is
   -- independent of them).
   all_goals exact ℓ'
+
+
+omit [Fintype L] [Fintype K] [DecidableEq K] in
+theorem iteratedSumcheckOracleReduction_perfectCompleteness (i : Fin ℓ') :
+    OracleReduction.perfectCompleteness
+      (pSpec := pSpecSumcheckRound L)
+      (relIn := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i.castSucc)
+      (relOut := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i.succ)
+      (oracleReduction := iteratedSumcheckOracleReduction κ L K P ℓ ℓ' aOStmtIn i)
+      (init := init)
+      (impl := impl) := by
+  unfold OracleReduction.perfectCompleteness
+  rw [Reduction.perfectCompleteness_eq_prob_one]
+  intro ⟨stmtIn, oStmtIn⟩ witIn h_relIn
+  -- (ALGEBRA) Unpack the input relation's master KState conjuncts at round `i.castSucc`.
+  simp only [sumcheckRoundRelation, sumcheckRoundRelationProp, masterKStateProp,
+    witnessStructuralInvariant, sumcheckConsistencyProp, Set.mem_setOf_eq, true_and] at h_relIn
+  obtain ⟨hStruct, hConsist, hCompat⟩ := h_relIn
+  -- WIP (algebra UNBLOCKED by the defect-#20 machinery repair; remaining work is the run-shape peel).
+  -- After the coherent var-ordering repair in `Sumcheck.Structured.SingleRound`, the honest round is
+  -- now fully consistent and the OUTPUT relation is *provable* (no false residual remains):
+  --   • challenges accumulate via `Fin.cons r' stmtIn.challenges` in BOTH the prover
+  --     (`getRoundProverFinalOutput`) and the verifier (`roundOracleVerifier`), matching the cons-form
+  --     round transition `RingSwitching.fixFirstVariablesOfMQP_projectToMid_step`;
+  --   • `witnessStructuralInvariant i.succ` then holds: `witOut.H = fixFirstVariablesOfMQP … witIn.H
+  --     {r'}` and, from the relIn invariant `witIn.H = projectToMidSumcheckPoly … i.castSucc ch`, the
+  --     cons-step lemma gives `witOut.H = (rename finCongr) (projectToMidSumcheckPoly … i.succ
+  --     (Fin.cons r' ch))` — exactly what relOut demands (the old cons=snoc obstruction is GONE);
+  --   • `sumcheckConsistencyProp i.succ` holds: the repaired `getSumcheckRoundPoly` marginalises the
+  --     LAST variable, so `stmtOut.sumcheck_target = h_i.eval r' = ∑_{next cube} (fix-last witIn.H
+  --     {r'}) = ∑_{cube} witOut.H` via `getSumcheckRoundPoly_eval_eq_sum_snoc` + `fixFirstVariablesOfMQP_eval`;
+  --     the verifier's check `∑_{D.points i} h_i.eval b = sumcheck_target` discharges from the relIn
+  --     `sumcheckConsistencyProp i.castSucc` (`h_i` is the variable-`(last)` marginal of `witIn.H`);
+  --   • `initialCompatibility` carries over (`witOut.t' = witIn.t'`).
+  -- (PLUMBING) Peel the 2-message honest oracle-reduction run.  `OracleReduction.perfectCompleteness`
+  -- = `Reduction.perfectCompleteness … .toReduction`; unfold the reduction and the prover's
+  -- `runToRound` over `Fin.induction_two`, then resolve the two round-direction matches.
+  simp only [iteratedSumcheckOracleReduction, OracleReduction.toReduction,
+    Sumcheck.Structured.roundOracleReduction, Reduction.run,
+    Sumcheck.Structured.roundOracleProver, Sumcheck.Structured.roundOracleVerifier,
+    Prover.run, Prover.runToRound, Fin.induction_two, Prover.processRound,
+    OracleVerifier.toVerifier, Verifier.run, pSpecSumcheckRound]
+  -- Round 0 = `P_to_V` (prover sends `h_i = getSumcheckRoundPoly ℓ' (boolDomain L ℓ') i witIn.H`),
+  -- round 1 = `V_to_P` (verifier samples `r'`); both direction matches collapse cleanly.
+  simp only [Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons,
+    Matrix.cons_val_fin_one, reduceCtorEq]
+  -- WIP — RUN IS NOW FULLY UNFOLDED + DIRECTION-RESOLVED (verified `trace_state`). The honest run is:
+  --   P→V `h_i := getSumcheckRoundPoly ℓ' (boolDomain L ℓ') i witIn.H`;
+  --   V samples `r' ← L` (the single probabilistic step);
+  --   prover output `getRoundProverFinalOutput … 2 i` (witOut.H = `fixFirstVariablesOfMQP (ℓ'-i) ⟨1⟩
+  --     witIn.H {r'}`, stmtOut.challenges = `Fin.cons r' stmtIn.challenges`, target = `h_i.eval r'`);
+  --   V reads the message via `simulateQ (simOracle2 …)`, runs `guard (∑ b ∈ (boolDomain L ℓ').points i,
+  --     h_i.eval b = stmtIn.sumcheck_target)`, outputs stmtOut.
+  -- Goal: `probEvent (…) = 1` over the uniform `r'` sample.
+  --
+  -- TWO REMAINING TASKS (both now mathematically UNBLOCKED; only mechanical):
+  -- (1) PROBABILITY ENDGAME. Collapse the `simulateQ (simOracle2 …)` message-query
+  --     (`simulateQ_simOracle2_query` + `answer_instDefault`), tie `proverResult.1.messages ⟨0⟩ = h_i`
+  --     and `proverResult.1.challenges ⟨1⟩ = r'` from the transcript binds, then close
+  --     `probEvent = 1` via `probEvent_eq_one_iff` over the uniform `r'`-sample (no-failure: the
+  --     `guard` ALWAYS passes by `getSumcheckRoundPoly_points_sum_eq_cube` + `hConsist`; every output
+  --     satisfies the predicate by task (2)). This is the single-challenge analog of the closed
+  --     `finalSumcheckOracleReduction_perfectCompleteness` accept-branch peel (which has no challenge).
+  -- (2) relOut DISCHARGE (the four master-KState conjuncts at index `i.succ`):
+  --   • `witnessStructuralInvariant i.succ`: `witOut.H = projectToMidSumcheckPoly t' m i.succ
+  --     (Fin.cons r' ch)`.  From `hStruct` (`witIn.H = projectToMid … i.castSucc ch`) and
+  --     `RingSwitching.fixFirstVariablesOfMQP_projectToMid_step`, the honest `witOut.H` equals
+  --     `rename (finCongr …) (projectToMid … i.succ (cons r' ch))`.  The residual `rename (finCongr)`
+  --     is the index relabel `Fin (ℓ'-i.succ) ≃ Fin (ℓ'-i.castSucc-1)`; it must be reconciled with
+  --     `getRoundProverFinalOutput`'s own internal `by omega` cast (HEq bookkeeping — same family as
+  --     `rename_finCongr_heq`).
+  --   • `sumcheckConsistencyProp i.succ`: `stmtOut.sumcheck_target (= h_i.eval r') = ∑_{cube(ℓ'-i.succ)}
+  --     witOut.H`.  This is the single-point (`r'`) specialisation of the proven
+  --     `getSumcheckRoundPoly_points_sum_eq_cube` chain: `h_i.eval r' = ∑_{survivors} eval (snoc · r')
+  --     curH = ∑_{cube} (fixFirstVariablesOfMQP witIn.H {r'})` (via `getSumcheckRoundPoly_eval_eq_sum_snoc`
+  --     + `fixFirstVariablesOfMQP_eval` + the `sum_cube_snoc` survivor reindex already used above).
+  --   • the verifier `guard` (`∑ b ∈ points i, h_i.eval b = sumcheck_target`) is `hConsist` rewritten
+  --     by `getSumcheckRoundPoly_points_sum_eq_cube` (PROVEN above).
+  --   • `initialCompatibility ⟨witOut.t', oStmt⟩ = ⟨witIn.t', oStmt⟩` is `hCompat` (`witOut.t' = witIn.t'`).
+  -- The verifier-check algebra (the genuinely #20-unblocked core) is DONE; what remains is the
+  -- `OptionT`/`StateT`/`simulateQ` run-shape plumbing for a 2-message+1-challenge oracle reduction
+  -- (no proven precedent in-repo — the only closed oracle-reduction completeness, final-sumcheck, has
+  -- ZERO challenges) plus the HEq cast reconciliation in (2). Preserved as WIP per honest-completion.
+  -- (A) VERIFIER CHECK: the honest round univariate `h_i := getSumcheckRoundPoly i witIn.H` satisfies
+  -- the verifier's accept condition `∑_{points i} h_i(b) = stmtIn.sumcheck_target` via the cube
+  -- identity `getSumcheckRoundPoly_points_sum_eq_cube` and the relIn `sumcheckConsistencyProp`.
+  have hcheck : (∑ b ∈ (boolDomain L ℓ').points i,
+      Polynomial.eval b (getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i) witIn.H).val)
+      = stmtIn.sumcheck_target := by
+    rw [getSumcheckRoundPoly_points_sum_eq_cube (i := i) (H := witIn.H), ← hConsist]
+  -- (B) NEXT-ROUND CONSISTENCY (for every challenge `r'`): the next-round target `h_i.eval r'`
+  -- equals the next cube-sum of the advanced witness `witOut.H = fixFirstVariablesOfMQP … {r'}`.
+  -- This is `getSumcheckRoundPoly_eval_eq_cube_succ` instantiated at the honest witness.
+  trace_state
+  sorry
 
 noncomputable def iteratedSumcheckRbrExtractor (i : Fin ℓ') :
   Extractor.RoundByRound []ₒ
