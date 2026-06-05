@@ -95,7 +95,8 @@ lemma hasseCoeff_isLinear (i j : ℕ) (a b : F) :
   · simp only [hasseCoeff, innerTaylorCoeff_add, map_add, eval_add]
   · simp only [hasseCoeff, innerTaylorCoeff_smul, map_smul, eval_smul, smul_eq_mul]
 
-/-- The bivariate Hasse–Taylor coefficient packaged as an honest `F`-linear map `F[X][Y] →ₗ[F] F`. -/
+/-- The bivariate Hasse–Taylor coefficient packaged as an honest `F`-linear map
+`F[X][Y] →ₗ[F] F`. -/
 @[simps] def hasseCoeffLinearMap (i j : ℕ) (a b : F) :
     Polynomial (Polynomial F) →ₗ[F] F where
   toFun Q := hasseCoeff i j Q a b
