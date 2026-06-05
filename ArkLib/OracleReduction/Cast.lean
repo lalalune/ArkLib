@@ -186,10 +186,88 @@ variable (hOₘ : ∀ i, Oₘ₁ i = dcast (Message.cast_idx hSpec) (Oₘ₂ (i.
 --   dcast₂ := OracleVerifier.cast
 --   dcast₂_id := OracleVerifier.cast_id
 
+/-- Helper for `cast_toVerifier`: the output oracle-statement function produced by
+`OracleVerifier.toVerifier` depends only on the embedding pointwise. If two embeddings `e` and `emb`
+agree pointwise, the resulting (dependent) `match` functions are equal, up to the proof-irrelevant
+`hEq`/discriminant transports. This is stated generically to keep the `split`/transport reasoning
+away from the heterogeneous-cast normalization in `cast_toVerifier`, which keeps the proof term
+free of `sorryAx`. -/
+private theorem toVerifier_oStmtOut_congr
+    {emb : ιₛₒ → ιₛᵢ ⊕ pSpec₁.MessageIdx}
+    (hEqEmb : ∀ i, OStmtOut i =
+      match emb i with | Sum.inl j => OStmtIn j | Sum.inr j => pSpec₁.Message j)
+    (oStmt : (i : ιₛᵢ) → OStmtIn i) (transcript : pSpec₁.FullTranscript)
+    (e : ιₛₒ → ιₛᵢ ⊕ pSpec₁.MessageIdx) (he : ∀ i, e i = emb i)
+    (hEqE : ∀ i, OStmtOut i =
+      match e i with | Sum.inl j => OStmtIn j | Sum.inr j => pSpec₁.Message j) :
+    ∀ i,
+    (match h : e i with
+      | Sum.inl j => (hEqE i ▸ h ▸ oStmt j : OStmtOut i)
+      | Sum.inr j => (hEqE i ▸ h ▸ transcript.messages j : OStmtOut i))
+    = (match h : emb i with
+      | Sum.inl j => (hEqEmb i ▸ h ▸ oStmt j : OStmtOut i)
+      | Sum.inr j => (hEqEmb i ▸ h ▸ transcript.messages j : OStmtOut i)) := by
+  intro i
+  have hei := he i
+  split <;> rename_i j heq <;> rw [hei] at heq <;>
+    (split <;> rename_i j' heq' <;> rw [heq] at heq')
+  · have hjj : j = j' := Sum.inl.inj heq'
+    simp only [eqRec_eq_cast, cast_cast]
+    apply eq_of_heq
+    refine (cast_heq _ (oStmt j)).trans (HEq.trans ?_ (cast_heq _ (oStmt j')).symm)
+    rw [hjj]
+  · exact absurd heq' (by simp)
+  · exact absurd heq' (by simp)
+  · have hjj : j = j' := Sum.inr.inj heq'
+    simp only [eqRec_eq_cast, cast_cast]
+    apply eq_of_heq
+    refine (cast_heq _ (transcript.messages j)).trans
+      (HEq.trans ?_ (cast_heq _ (transcript.messages j')).symm)
+    rw [hjj]
+
 @[simp]
 theorem cast_toVerifier (V : OracleVerifier oSpec StmtIn OStmtIn StmtOut OStmtOut pSpec₁) :
     (OracleVerifier.cast hn hSpec hOₘ V).toVerifier = Verifier.cast hn hSpec V.toVerifier := by
-  sorry
+  subst hn
+  -- `ProtocolSpec.cast rfl = id`, so `hSpec` identifies `pSpec₂` with `pSpec₁`
+  rw [ProtocolSpec.cast_id, id_eq] at hSpec
+  subst hSpec
+  have hOeq : Oₘ₁ = Oₘ₂ := by
+    funext i; rw [hOₘ i]; rfl
+  subst hOeq
+  -- `MessageIdx.cast rfl hSpec = id`
+  have hMC : (MessageIdx.cast (pSpec₁ := pSpec₁) (pSpec₂ := pSpec₁) rfl hSpec) = id := by
+    funext j
+    exact congrFun (MessageIdx.cast_id (pSpec₁ := pSpec₁)) j
+  -- The composed output embedding agrees with `V.embed` pointwise.
+  have he : ∀ i, (V.embed.trans ((Equiv.refl ιₛᵢ).toEmbedding.sumMap
+      ⟨MessageIdx.cast rfl hSpec, MessageIdx.cast_injective (hn := rfl) (hSpec := hSpec)⟩)) i
+      = V.embed i := by
+    intro i
+    simp only [Function.Embedding.trans_apply, Function.Embedding.coe_sumMap,
+      Equiv.coe_refl, Function.Embedding.coeFn_mk, hMC, Sum.map_id_id, id_eq]
+  simp only [OracleVerifier.cast, Verifier.cast, OracleVerifier.toVerifier]
+  congr 1
+  funext ⟨stmt, oStmt⟩ transcript
+  -- The casted full transcript / challenges are the original (all casts at `rfl` proofs)
+  simp only [dcast₂_eq']
+  congr 1
+  · -- the outer message-query translation `simulateQ` is the identity oracle (`rfl` proofs)
+    congr 1
+    refine Eq.trans ?_ (simulateQ_id' (V.verify stmt transcript.challenges))
+    congr 1
+    funext q
+    rcases q with t | (t | t)
+    · rfl
+    · rfl
+    · simp only [castMessageImpl, castMessageQuery, QueryImpl.id'_apply]; rfl
+  · -- the output oracle-statement function depends only on the embedding pointwise
+    funext stmtOut
+    congr 1
+    refine Prod.ext rfl ?_
+    funext i
+    refine toVerifier_oStmtOut_congr (emb := V.embed) (V.hEq) oStmt transcript _ he ?_ i
+    intro i'; rw [he i']; exact V.hEq i'
 
 end OracleVerifier
 
@@ -353,12 +431,29 @@ namespace Verifier
 
 variable (V : Verifier oSpec StmtIn StmtOut pSpec₁)
 
+include hChallenge in
 @[simp]
 theorem cast_rbrKnowledgeSoundness (ε : pSpec₁.ChallengeIdx → ℝ≥0)
     (hRbrKs : V.rbrKnowledgeSoundness init impl relIn relOut ε) :
     (V.cast hn hSpec).rbrKnowledgeSoundness init impl relIn relOut
       (ε ∘ (ChallengeIdx.cast hn.symm (cast_symm hSpec))) := by
-  sorry
+  subst hn
+  rw [ProtocolSpec.cast_id, id_eq] at hSpec
+  subst hSpec
+  -- The two challenge-sampling instances agree (`hChallenge` at `rfl` proofs).
+  have hInst : inst₁ = inst₂ := by
+    funext i; rw [hChallenge i]; rfl
+  subst hInst
+  -- After substituting the (rfl-content) equalities, the casted verifier is `V` and the
+  -- challenge reindexing is the identity, so the goal coincides with the hypothesis.
+  have hVeq : Verifier.cast (pSpec₁ := pSpec₁) (pSpec₂ := pSpec₁) rfl hSpec V = V :=
+    congrFun (Verifier.cast_id (pSpec₁ := pSpec₁)) V
+  have hCC : ∀ c, ChallengeIdx.cast (pSpec₁ := pSpec₁) (pSpec₂ := pSpec₁) rfl
+      (cast_symm hSpec) c = c :=
+    fun c => congrFun (ChallengeIdx.cast_id (pSpec₁ := pSpec₁)) c
+  rw [hVeq, show (ε ∘ ChallengeIdx.cast rfl (cast_symm hSpec)) = ε from
+    funext fun c => by simp only [Function.comp_apply, hCC]]
+  exact hRbrKs
 
 end Verifier
 
@@ -394,6 +489,7 @@ namespace OracleVerifier
 
 variable (V : OracleVerifier oSpec StmtIn OStmtIn StmtOut OStmtOut pSpec₁)
 
+include hChallenge in
 @[simp]
 theorem cast_rbrKnowledgeSoundness (ε : pSpec₁.ChallengeIdx → ℝ≥0)
     (hRbrKs : V.rbrKnowledgeSoundness init impl relIn relOut ε) :
@@ -401,7 +497,7 @@ theorem cast_rbrKnowledgeSoundness (ε : pSpec₁.ChallengeIdx → ℝ≥0)
       (ε ∘ (ChallengeIdx.cast hn.symm (cast_symm hSpec))) := by
   unfold rbrKnowledgeSoundness
   rw [cast_toVerifier]
-  exact Verifier.cast_rbrKnowledgeSoundness hn hSpec V.toVerifier ε hRbrKs
+  exact Verifier.cast_rbrKnowledgeSoundness (hChallenge := hChallenge) hn hSpec V.toVerifier ε hRbrKs
 
 end OracleVerifier
 
