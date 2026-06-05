@@ -1062,6 +1062,72 @@ theorem append_Challenge_natAdd (k : Fin n)
   show Fin.vappend pSpec₁.«Type» pSpec₂.«Type» (Fin.natAdd m k) = pSpec₂.«Type» k
   rw [Fin.vappend_eq_append, Fin.append_right]
 
+/-! ### Seam-round reductions
+
+The seam round `m` is the genuinely-new monadic-interleaving step of `Prover.append` (the `i = m`
+branch): it threads `P₁.output state >>= P₂.input` before `P₂`'s round-`0` step.  We characterize the
+two seam shapes (`sendMessage`/`receiveChallenge`) heterogeneously in terms of `P₁.output` /
+`P₂.input` / `P₂`'s round-0 step.  These feed the seam-round `processRound` in the right-block run. -/
+
+/-- State-type equality: the appended prover's state at the seam-round `castSucc` index `m`
+(the state going INTO the seam round) equals `P₁`'s last state. -/
+theorem append_PrvState_seam_castSucc (hn : 0 < n) :
+    (P₁.append P₂).PrvState (⟨m, by omega⟩ : Fin (m + n)).castSucc = P₁.PrvState (Fin.last m) := by
+  have := append_PrvState_castLE (P₁ := P₁) (P₂ := P₂) (Fin.last m)
+  rw [show ((Fin.last m).castLE (show m + 1 ≤ m + n + 1 by omega) : Fin (m + n + 1))
+        = (⟨m, by omega⟩ : Fin (m + n)).castSucc from by ext; simp] at this
+  exact this
+
+/-- **Seam-round `sendMessage` reduction.**  At the seam round `m` (the `i = m` branch of
+`Prover.append.sendMessage`), the appended prover's `sendMessage` is heterogeneously equal to
+`P₁.output state >>= fun ctx => P₂.sendMessage ⟨0,_⟩ (P₂.input ctx)`. -/
+theorem append_sendMessage_seam (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir ⟨m, by omega⟩ = .P_to_V)
+    (hDir₂ : pSpec₂.dir ⟨0, hn⟩ = .P_to_V)
+    (state : (P₁.append P₂).PrvState (⟨m, by omega⟩ : Fin (m + n)).castSucc) :
+    HEq ((P₁.append P₂).sendMessage ⟨⟨m, by omega⟩, hDir⟩ state)
+      (do
+        let ctxIn₂ ← P₁.output (cast (append_PrvState_seam_castSucc hn) state)
+        P₂.sendMessage ⟨⟨0, hn⟩, hDir₂⟩ (P₂.input ctxIn₂) : OracleComp oSpec _) := by
+  unfold Prover.append
+  dsimp only [Fin.vappend_eq_append]
+  have hnlt : ¬ (↑(⟨m, by omega⟩ : Fin (m + n)) : ℕ) < m := by simp
+  rw [id_eq, dif_neg hnlt]
+  have heqm : (↑(⟨m, by omega⟩ : Fin (m + n)) : ℕ) = m := by simp
+  rw [dif_pos heqm]
+  simp only [eq_mpr_eq_cast, eq_mp_eq_cast]
+  apply HEq.trans (cast_heq _ _)
+  -- Both sides are `P₁.output (·) >>= fun ctx => P₂.sendMessage ⟨0,_⟩ (P₂.input ctx)` over oSpec;
+  -- the seam's internally-cast `state` and our `cast _ state` target the same `P₁.PrvState (last m)`.
+  refine bind_heq_congr (α := Stmt₂ × Wit₂) (α' := Stmt₂ × Wit₂) rfl
+    (by congr 1) ?_ ?_
+  · apply heq_of_eq; congr 1
+  · rintro c c' rfl; rfl
+
+/-- **Seam-round `receiveChallenge` reduction.**  The `V_to_P` analogue of `append_sendMessage_seam`:
+at the seam round `m`, the appended prover's `receiveChallenge` is heterogeneously equal to
+`P₁.output state >>= fun ctx => P₂.receiveChallenge ⟨0,_⟩ (P₂.input ctx)`. -/
+theorem append_receiveChallenge_seam (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir ⟨m, by omega⟩ = .V_to_P)
+    (hDir₂ : pSpec₂.dir ⟨0, hn⟩ = .V_to_P)
+    (state : (P₁.append P₂).PrvState (⟨m, by omega⟩ : Fin (m + n)).castSucc) :
+    HEq ((P₁.append P₂).receiveChallenge ⟨⟨m, by omega⟩, hDir⟩ state)
+      (do
+        let ctxIn₂ ← P₁.output (cast (append_PrvState_seam_castSucc hn) state)
+        P₂.receiveChallenge ⟨⟨0, hn⟩, hDir₂⟩ (P₂.input ctxIn₂) : OracleComp oSpec _) := by
+  unfold Prover.append
+  dsimp only [Fin.vappend_eq_append]
+  have hnlt : ¬ (↑(⟨m, by omega⟩ : Fin (m + n)) : ℕ) < m := by simp
+  rw [dif_neg hnlt]
+  have heqm : (↑(⟨m, by omega⟩ : Fin (m + n)) : ℕ) = m := by simp
+  rw [dif_pos heqm]
+  simp only [eq_mpr_eq_cast, eq_mp_eq_cast]
+  apply HEq.trans (cast_heq _ _)
+  refine bind_heq_congr (α := Stmt₂ × Wit₂) (α' := Stmt₂ × Wit₂) rfl
+    (by congr 1) ?_ ?_
+  · apply heq_of_eq; congr 1
+  · rintro c c' rfl; rfl
+
 /--
 States that running an appended prover `P₁.append P₂` with an initial statement `stmt₁` and
 witness `wit₁` behaves as expected: it first runs `P₁` to obtain an intermediate statement
