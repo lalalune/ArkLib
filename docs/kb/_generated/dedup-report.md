@@ -4,7 +4,7 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 390 files, 7924 declarations
+- `ArkLib` — 393 files, 7974 declarations
 
 ## Same short-name across multiple files (296 groups)
 
@@ -539,8 +539,8 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def OracleProver.seqCompose` [ArkLib/OracleReduction/Composition/Sequential/General.lean:135](../../../ArkLib/OracleReduction/Composition/Sequential/General.lean#L135) — Sequential composition of provers in oracle reductions, defined via sequential composition of prover
 - `def OracleVerifier.seqCompose` [ArkLib/OracleReduction/Composition/Sequential/General.lean:188](../../../ArkLib/OracleReduction/Composition/Sequential/General.lean#L188) — Sequential composition of oracle verifiers (in oracle reductions), defined via iteration of the comp
 - `def OracleReduction.seqCompose` [ArkLib/OracleReduction/Composition/Sequential/General.lean:323](../../../ArkLib/OracleReduction/Composition/Sequential/General.lean#L323) — Sequential composition of oracle reductions, defined via sequential composition of oracle provers an
-- `def ProtocolSpec.seqCompose` [ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean:284](../../../ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean#L284) — Sequential composition of a family of `ProtocolSpec`s, indexed by `i : Fin m`. Defined for definitio
-- `def ProtocolSpec.FullTranscript.seqCompose` [ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean:342](../../../ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean#L342) — Sequential composition of a family of `FullTranscript`s, indexed by `i : Fin m`. Defined for definit
+- `def ProtocolSpec.seqCompose` [ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean:302](../../../ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean#L302) — Sequential composition of a family of `ProtocolSpec`s, indexed by `i : Fin m`. Defined for definitio
+- `def ProtocolSpec.FullTranscript.seqCompose` [ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean:360](../../../ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean#L360) — Sequential composition of a family of `FullTranscript`s, indexed by `i : Fin m`. Defined for definit
 
 ### `seqCompose_zero` (7 declarations, 2 files)
 
@@ -549,8 +549,8 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma Reduction.seqCompose_zero` [ArkLib/OracleReduction/Composition/Sequential/General.lean:113](../../../ArkLib/OracleReduction/Composition/Sequential/General.lean#L113) — (no docstring)
 - `lemma OracleVerifier.seqCompose_zero` [ArkLib/OracleReduction/Composition/Sequential/General.lean:204](../../../ArkLib/OracleReduction/Composition/Sequential/General.lean#L204) — (no docstring)
 - `lemma OracleReduction.seqCompose_zero` [ArkLib/OracleReduction/Composition/Sequential/General.lean:360](../../../ArkLib/OracleReduction/Composition/Sequential/General.lean#L360) — (no docstring)
-- `theorem ProtocolSpec.seqCompose_zero` [ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean:300](../../../ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean#L300) — (no docstring)
-- `theorem ProtocolSpec.FullTranscript.seqCompose_zero` [ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean:347](../../../ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean#L347) — (no docstring)
+- `theorem ProtocolSpec.seqCompose_zero` [ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean:318](../../../ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean#L318) — (no docstring)
+- `theorem ProtocolSpec.FullTranscript.seqCompose_zero` [ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean:365](../../../ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean#L365) — (no docstring)
 
 ### `completeness` (5 declarations, 2 files)
 
@@ -1288,7 +1288,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `heavyCoords_card_mul_le` (2 declarations, 2 files)
 
-- `lemma ProximityGap.heavyCoords_card_mul_le` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean:6036](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean#L6036) — Generic double-counting brick for Claim 5.11. If each `z ∈ S` has at most `m` bad coordinates, then
+- `lemma ProximityGap.heavyCoords_card_mul_le` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean:6036](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean#L6036) — Generic double-counting brick for Claim 5.11. If each `z ∈ S` has at most `m` bad coordinates, then 
 - `lemma ArkLib.Claim511.heavyCoords_card_mul_le` [ArkLib/ToMathlib/Claim511.lean:77](../../../ArkLib/ToMathlib/Claim511.lean#L77) — **Double-counting brick.** If each `z ∈ S` has at most `m` bad coordinates, then the coordinates tha
 
 ### `hint` (2 declarations, 2 files)
@@ -1976,3 +1976,4 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **1.00** `Prover.runToRound` [ArkLib/OracleReduction/Execution.lean:103](../../../ArkLib/OracleReduction/Execution.lean#L103) vs `Prover.runToRoundDSFS` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Defs.lean:197](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Defs.lean#L197)
     - a: Run the prover in an interactive reduction up to round index `i`, via first inputting the statement 
     - b: Run the prover in an interactive reduction up to round index `i`, via first inputting the statement 
+

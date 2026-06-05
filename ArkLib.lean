@@ -101,6 +101,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Extraction
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Guruswami
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.RootClearing
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Close
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Match
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Prelude
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ReedSolomonGap
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.WeightedAgreement

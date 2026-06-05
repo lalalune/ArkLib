@@ -15088,7 +15088,7 @@
         {
           "doc": "The generic degree-one curve sum for `Code.finMapTwoWords` is the affine line word.",
           "kind": "lemma",
-          "line": 2535,
+          "line": 2577,
           "name": "ProximityGap.sum_finMapTwoWords_eq",
           "namespace": "ProximityGap",
           "short_name": "sum_finMapTwoWords_eq",
@@ -15097,7 +15097,7 @@
         {
           "doc": "The parameters for which the curve points are `\u03b4`-close to a set `V` (typically, a linear code). This is the set `S` from the proximity gap paper.",
           "kind": "def",
-          "line": 2545,
+          "line": 2587,
           "name": "ProximityGap.coeffs_of_close_proximity_curve",
           "namespace": "ProximityGap",
           "short_name": "coeffs_of_close_proximity_curve",
@@ -15106,7 +15106,7 @@
         {
           "doc": "The \u00a76 close-parameter set specialized to a Reed-Solomon code is the same good-coefficient set used by the curve assembly layer.",
           "kind": "theorem",
-          "line": 2554,
+          "line": 2596,
           "name": "ProximityGap.coeffs_of_close_proximity_curve_RS_toFinset_eq_goodCoeffsCurve",
           "namespace": "ProximityGap",
           "short_name": "coeffs_of_close_proximity_curve_RS_toFinset_eq_goodCoeffsCurve",
@@ -15115,16 +15115,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 2560,
-          "name": "ProximityGap._anon_class_2560",
+          "line": 2602,
+          "name": "ProximityGap._anon_class_2602",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_2560",
+          "short_name": "_anon_class_2602",
           "signature": "class classical"
         },
         {
           "doc": "Membership form of `coeffs_of_close_proximity_curve_RS_toFinset_eq_goodCoeffsCurve`.",
           "kind": "theorem",
-          "line": 2568,
+          "line": 2610,
           "name": "ProximityGap.coeffs_of_close_proximity_curve_RS_toFinset_mem_iff_goodCoeffsCurve",
           "namespace": "ProximityGap",
           "short_name": "coeffs_of_close_proximity_curve_RS_toFinset_mem_iff_goodCoeffsCurve",
@@ -15133,7 +15133,7 @@
         {
           "doc": "Cardinality form of `coeffs_of_close_proximity_curve_RS_toFinset_eq_goodCoeffsCurve`.",
           "kind": "theorem",
-          "line": 2580,
+          "line": 2622,
           "name": "ProximityGap.coeffs_of_close_proximity_curve_RS_toFinset_card_eq_goodCoeffsCurve",
           "namespace": "ProximityGap",
           "short_name": "coeffs_of_close_proximity_curve_RS_toFinset_card_eq_goodCoeffsCurve",
@@ -15142,7 +15142,7 @@
         {
           "doc": "Strict cardinal lower bounds transport from the \u00a76 close-parameter set to the `RS_goodCoeffsCurve` set used by the curve assembly layer.",
           "kind": "theorem",
-          "line": 2592,
+          "line": 2634,
           "name": "ProximityGap.coeffs_of_close_proximity_curve_RS_toFinset_card_gt_iff_goodCoeffsCurve",
           "namespace": "ProximityGap",
           "short_name": "coeffs_of_close_proximity_curve_RS_toFinset_card_gt_iff_goodCoeffsCurve",
@@ -15151,7 +15151,7 @@
         {
           "doc": "Non-strict cardinal lower bounds transport from the \u00a76 close-parameter set to the `RS_goodCoeffsCurve` set used by the curve assembly layer.",
           "kind": "theorem",
-          "line": 2605,
+          "line": 2647,
           "name": "ProximityGap.coeffs_of_close_proximity_curve_RS_toFinset_card_ge_iff_goodCoeffsCurve",
           "namespace": "ProximityGap",
           "short_name": "coeffs_of_close_proximity_curve_RS_toFinset_card_ge_iff_goodCoeffsCurve",
@@ -15160,7 +15160,7 @@
         {
           "doc": "Propagation brick for the \u00a76.1 argument: two polynomial curves of degree `< l` that agree in coordinate `x` on at least `l` parameter values agree in that coordinate everywhere.",
           "kind": "lemma",
-          "line": 2619,
+          "line": 2661,
           "name": "ProximityGap.polynomialCurveEval_coord_eq_of_agree",
           "namespace": "ProximityGap",
           "short_name": "polynomialCurveEval_coord_eq_of_agree",
@@ -15169,7 +15169,7 @@
         {
           "doc": "Counting brick for the \u00a76.1 argument (generic double counting): if every `z \u2208 S` has a bad-set of size at most `m`, then the number of coordinates that are bad for at least `t` elements of `S` is bounded: `t \u00b7 #poor \u2264 m \u00b7 #S`.",
           "kind": "lemma",
-          "line": 2654,
+          "line": 2696,
           "name": "ProximityGap.card_heavyCoords_mul_le",
           "namespace": "ProximityGap",
           "short_name": "card_heavyCoords_mul_le",
@@ -15178,16 +15178,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 2660,
-          "name": "ProximityGap._anon_class_2660",
+          "line": 2702,
+          "name": "ProximityGap._anon_class_2702",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_2660",
+          "short_name": "_anon_class_2702",
           "signature": "class classical"
         },
         {
           "doc": "Interpolation brick for the \u00a76.1 argument: through any `l` distinct parameter values and arbitrary target vectors there is a polynomial curve of degree `< l`.",
           "kind": "lemma",
-          "line": 2693,
+          "line": 2735,
           "name": "ProximityGap.exists_polynomialCurve_through",
           "namespace": "ProximityGap",
           "short_name": "exists_polynomialCurve_through",
@@ -15196,16 +15196,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 2699,
-          "name": "ProximityGap._anon_class_2699",
+          "line": 2741,
+          "name": "ProximityGap._anon_class_2741",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_2699",
+          "short_name": "_anon_class_2741",
           "signature": "class classical"
         },
         {
           "doc": "Unique decoding brick for the \u00a76.1 argument: two codewords of a code with minimum distance `d` that are both within distance summing below `d` of a common word are equal (triangle inequality).",
           "kind": "lemma",
-          "line": 2728,
+          "line": 2770,
           "name": "ProximityGap.eq_of_both_close_lt_minDist",
           "namespace": "ProximityGap",
           "short_name": "eq_of_both_close_lt_minDist",
@@ -22114,6 +22114,91 @@
         }
       ]
     },
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P2Match.lean": {
+      "declarations": [
+        {
+          "doc": "The **full** (unrestricted) order-`n` Fa\u00e0-di-Bruno sum of `eval (\u03b2HenselAssembled) Q`: the value of `coeff n (eval (\u03b2HenselAssembled) Q)` laid bare by the PROVEN expansion `coeff_eval_Q_faaDiBruno`.  (Same shape as `restrictedFaaDiBrunoSum` but WITHOUT the `(n) \u2209 m` guard.)",
+          "kind": "def",
+          "line": 39,
+          "name": "BCIKS20.HenselNumerator.faaDiBrunoFullSum",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "faaDiBrunoFullSum",
+          "signature": "def faaDiBrunoFullSum (x\u2080 : F) (R : F[X][X][Y])"
+        },
+        {
+          "doc": "`faaDiBrunoFullSum n` is exactly `coeff n (eval (\u03b2HenselAssembled) Q)` (PROVEN, from the proven Fa\u00e0-di-Bruno expansion `coeff_eval_Q_faaDiBruno`).",
+          "kind": "theorem",
+          "line": 53,
+          "name": "BCIKS20.HenselNumerator.faaDiBrunoFullSum_eq_coeff",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "faaDiBrunoFullSum_eq_coeff",
+          "signature": "theorem faaDiBrunoFullSum_eq_coeff (x\u2080 : F) (R : F[X][X][Y])"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 64,
+          "name": "BCIKS20.HenselNumerator._anon_def_64",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "_anon_def_64",
+          "signature": "def defect reduction read through the two proven expansions. -/"
+        },
+        {
+          "doc": "**The full/restricted Newton split (PROVEN, axiom-clean).** `faaDiBrunoFullSum (t+1) = restrictedFaaDiBrunoSum t + \u03b6 \u00b7 coeff (t+1) (\u03b2HenselAssembled)`.",
+          "kind": "theorem",
+          "line": 68,
+          "name": "BCIKS20.HenselNumerator.faaDiBrunoFullSum_succ_eq",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "faaDiBrunoFullSum_succ_eq",
+          "signature": "theorem faaDiBrunoFullSum_succ_eq (x\u2080 : F) (R : F[X][X][Y])"
+        },
+        {
+          "doc": "**The full vanishing statement (the genuine A.4 combinatorial core).** For every order, the FULL (unrestricted) order-`(t+1)` Fa\u00e0-di-Bruno sum of `eval (\u03b2HenselAssembled) Q` vanishes \u2014 i.e. the (A.1)-assembled numerator series is a root of `Q` at every positive order.  This is the single genuinely-unformalized identity of BCIKS20 A.4.",
+          "kind": "def",
+          "line": 80,
+          "name": "BCIKS20.HenselNumerator.FaaDiBrunoFullSumVanishes",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "FaaDiBrunoFullSumVanishes",
+          "signature": "def FaaDiBrunoFullSumVanishes (x\u2080 : F) (R : F[X][X][Y])"
+        },
+        {
+          "doc": "**THE EQUIVALENCE (PROVEN, axiom-clean).**  The carved core `RestrictedFaaDiBrunoMatch` of `P2Close.lean` is *exactly* the full-sum vanishing `FaaDiBrunoFullSumVanishes`, with the difference accounted for entirely by the PROVEN Newton split.  Neither direction introduces any new axiom: the `(t+1) \u2208 m` terms are handled by `coeff_succ_eval_defect_reduction`.",
+          "kind": "theorem",
+          "line": 88,
+          "name": "BCIKS20.HenselNumerator.restrictedMatch_iff_fullVanishes",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "restrictedMatch_iff_fullVanishes",
+          "signature": "theorem restrictedMatch_iff_fullVanishes (x\u2080 : F) (R : F[X][X][Y])"
+        },
+        {
+          "doc": "The carved core, OBTAINED from the full-vanishing identity (forward direction, PROVEN axiom-clean).",
+          "kind": "theorem",
+          "line": 102,
+          "name": "BCIKS20.HenselNumerator.restrictedFaaDiBrunoMatch_of_fullVanishes",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "restrictedFaaDiBrunoMatch_of_fullVanishes",
+          "signature": "theorem restrictedFaaDiBrunoMatch_of_fullVanishes (x\u2080 : F) (R : F[X][X][Y])"
+        },
+        {
+          "doc": "**P2 root from the full-vanishing identity (PROVEN reduction).**",
+          "kind": "theorem",
+          "line": 116,
+          "name": "BCIKS20.HenselNumerator.assembledSeries_isRoot_of_fullVanishes",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "assembledSeries_isRoot_of_fullVanishes",
+          "signature": "theorem assembledSeries_isRoot_of_fullVanishes (x\u2080 : F) (R : F[X][X][Y])"
+        },
+        {
+          "doc": "**`P2_closed` from the single full-vanishing identity (PROVEN reduction).** The ENTIRE remaining mathematical content of BCIKS20 A.4's P2 is `FaaDiBrunoFullSumVanishes` (equivalently `RestrictedFaaDiBrunoMatch`): given it, the assembled series is the genuine Hensel root AND the repaired lift identity holds for all orders.",
+          "kind": "theorem",
+          "line": 127,
+          "name": "BCIKS20.HenselNumerator.P2_closed_of_fullVanishes",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "P2_closed_of_fullVanishes",
+          "signature": "theorem P2_closed_of_fullVanishes (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
+        }
+      ]
+    },
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Prelude.lean": {
       "declarations": []
     },
@@ -22287,6 +22372,91 @@
         }
       ]
     },
+    "ArkLib/Data/CodingTheory/ProximityGap/BCKHS25/AffineLineJointAgreement.lean": {
+      "declarations": [
+        {
+          "doc": "The two-row word stack of a line word `(u\u2080, u\u2081)`.",
+          "kind": "def",
+          "line": 39,
+          "name": "BCKHS25.lineWordStack",
+          "namespace": "BCKHS25",
+          "short_name": "lineWordStack",
+          "signature": "def lineWordStack (u\u2080 u\u2081 : \u03b9 \u2192 F) : WordStack F (Fin 2) \u03b9 :="
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 42,
+          "name": "BCKHS25.lineWordStack_zero",
+          "namespace": "BCKHS25",
+          "short_name": "lineWordStack_zero",
+          "signature": "lemma lineWordStack_zero (u\u2080 u\u2081 : \u03b9 \u2192 F) : lineWordStack u\u2080 u\u2081 0 = u\u2080 := rfl"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 43,
+          "name": "BCKHS25.lineWordStack_one",
+          "namespace": "BCKHS25",
+          "short_name": "lineWordStack_one",
+          "signature": "lemma lineWordStack_one (u\u2080 u\u2081 : \u03b9 \u2192 F) : lineWordStack u\u2080 u\u2081 1 = u\u2081 := rfl"
+        },
+        {
+          "doc": "**Joint pair \u27f9 affine-line `jointAgreement`.** A degree-`< deg` polynomial pair `(p\u2080, p\u2081)` whose joint disagreement set with the line word `(u\u2080, u\u2081)` has at most `Nat.floor (\u03b4 \u00b7 n)` points yields the `jointAgreement` predicate for the two-row stack `(u\u2080, u\u2081)` against the Reed\u2013Solomon code: the common agreement set has size `\u2265 (1 \u2212 \u03b4)\u00b7n`, and `p\u2080, p\u2081` give the two required codewords. Derivation: the agreement set `S = {x | p\u2080(domain x) = u\u2080 x \u2227 p\u2081(domain x) = u\u2081 x}` is the complement of the joint disagreement set, so `|S| = n \u2212 |disagreement| \u2265 n \u2212 \u230a\u03b4\u00b7n\u230b \u2265 (1\u2212\u03b4)\u00b7n`; and `evalOnPoints domain p\u1d62`",
+          "kind": "theorem",
+          "line": 55,
+          "name": "BCKHS25.jointAgreement_of_jointDisagreement_le",
+          "namespace": "BCKHS25",
+          "short_name": "jointAgreement_of_jointDisagreement_le",
+          "signature": "theorem jointAgreement_of_jointDisagreement_le {deg : \u2115} [NeZero deg]"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 63,
+          "name": "BCKHS25._anon_class_63",
+          "namespace": "BCKHS25",
+          "short_name": "_anon_class_63",
+          "signature": "class classical"
+        },
+        {
+          "doc": "**[BCKHS25] \u00a72 Hensel-free affine-line `jointAgreement` (end-to-end).** Direct consumer closure: from the per-`z` list-decoding hypothesis (`prox`: a large set `S` of curve parameters, each with a degree-`k` proximate within Hamming distance `e` of the line combination `u\u2080 + u\u2081\u00b7z`) together with the Polishchuk\u2013Spielman ratio (`hratio`) and degree budget (`hn`, `hDZ`), the line word `(u\u2080, u\u2081)` has `jointAgreement` with the Reed\u2013Solomon code of degree `deg = k + 1`, provided the joint-agreement loss `e + h` fits inside the proximity radius `\u230a\u03b4\u00b7n\u230b`. This chains [BCKHS25] Claim 2.3 (`exists_joint_",
+          "kind": "theorem",
+          "line": 128,
+          "name": "BCKHS25.jointAgreement_of_proximates",
+          "namespace": "BCKHS25",
+          "short_name": "jointAgreement_of_proximates",
+          "signature": "theorem jointAgreement_of_proximates (k e h DZ : \u2115) {\u03b4 : \u211d\u22650}"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 139,
+          "name": "BCKHS25._anon_class_139",
+          "namespace": "BCKHS25",
+          "short_name": "_anon_class_139",
+          "signature": "class classical"
+        },
+        {
+          "doc": "**[BCKHS25] \u00a72 distance restoration (2.4 \u2218 2.2 chain).** Combining Theorem 2.2's uniform-in-`z` line closeness (`proximity_gap_listDecoding`) with Lemma 2.4 (`card_jointDisagreement_filter_mul_le`) sharpens the joint disagreement bound: the SAME joint pair `(p\u2080, p\u2081)` produced by Claim 2.3 has joint disagreement `d` with `(u\u2080, u\u2081)` satisfying `(|Z| \u2212 1)\u00b7d \u2264 |Z|\u00b7(e + h)` for every `z`-set `Z` of size `\u2265 2` \u2014 i.e. `d \u2264 |Z|/(|Z| \u2212 1)\u00b7(e + h)`, which beats the raw `e + h` bound as `|Z|` grows. This is the oversized-error-locator distance restoration that closes the [BCKHS25] \u00a72 Berlekamp\u2013Welch rout",
+          "kind": "theorem",
+          "line": 156,
+          "name": "BCKHS25.card_jointDisagreement_restored",
+          "namespace": "BCKHS25",
+          "short_name": "card_jointDisagreement_restored",
+          "signature": "theorem card_jointDisagreement_restored (k e h DZ : \u2115)"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 170,
+          "name": "BCKHS25._anon_class_170",
+          "namespace": "BCKHS25",
+          "short_name": "_anon_class_170",
+          "signature": "class classical"
+        }
+      ]
+    },
     "ArkLib/Data/CodingTheory/ProximityGap/BCKHS25/CollinearProximates.lean": {
       "declarations": [
         {
@@ -22333,6 +22503,15 @@
           "namespace": "BCKHS25",
           "short_name": "_anon_class_81",
           "signature": "class classical"
+        },
+        {
+          "doc": "**[BCKHS25] Lemma 2.4 (collinear proximates), public filter form.** Same as `card_jointDisagreement_mul_le` but with the joint disagreement count exposed as an explicit `Finset.filter` cardinality (the private `jointDisagreement` def is not nameable downstream). This is the form consumed by the \u00a72 distance restoration after the joint proximate of Claim 2.3.",
+          "kind": "theorem",
+          "line": 154,
+          "name": "BCKHS25.card_jointDisagreement_filter_mul_le",
+          "namespace": "BCKHS25",
+          "short_name": "card_jointDisagreement_filter_mul_le",
+          "signature": "theorem card_jointDisagreement_filter_mul_le {u\u2080 u\u2081 p\u2080 p\u2081 : \u03b9 \u2192 F} {e : \u2115}"
         }
       ]
     },
@@ -22771,9 +22950,45 @@
           "signature": "class classical"
         },
         {
+          "doc": "**Forward distance bridge.** A joint agreement pair `(p\u2080, p\u2081)` whose joint disagreement set with `(u\u2080, u\u2081)` has at most `m` points makes EVERY line combination `u\u2080 + z\u00b7u\u2081` within Hamming distance `m` of `p\u2080 + z\u00b7p\u2081` (evaluated on the domain). This is the direction used to turn the joint proximate of Claim 2.3 into the list-decoding-regime proximity-gap conclusion: a witness that the whole affine line is close, uniformly in `z`. Derivation: at any point `x` outside the joint disagreement set we have both `p\u2080.eval (domain x) = u\u2080 x` and `p\u2081.eval (domain x) = u\u2081 x`, hence `(p\u2080 + z\u00b7p\u2081).eval (domain",
+          "kind": "lemma",
+          "line": 787,
+          "name": "BCKHS25.hammingDist_line_le_of_jointDisagreement_le",
+          "namespace": "BCKHS25",
+          "short_name": "hammingDist_line_le_of_jointDisagreement_le",
+          "signature": "lemma hammingDist_line_le_of_jointDisagreement_le {m : \u2115}"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 794,
+          "name": "BCKHS25._anon_class_794",
+          "namespace": "BCKHS25",
+          "short_name": "_anon_class_794",
+          "signature": "class classical"
+        },
+        {
+          "doc": "**[BCKHS25] Theorem 2.2 (Hensel-free list-decoding-regime proximity gap, assembled).** Let `(u\u2080, u\u2081)` be a line word on `domain` and let `S` be a set of `z`-values, each admitting a degree-`k` proximate within Hamming distance `e` of the line combination `u\u2080 + z\u00b7u\u2081` (the per-`z` list-decoding hypothesis). If `S` is large enough that the Polishchuk\u2013Spielman ratio closes (`hratio`) and the degree budget holds (`hn`, `hDZ`), then there is a SINGLE pair `(p\u2080, p\u2081)` of degree-`k` polynomials that is simultaneously a proximate for EVERY `z`: the line `u\u2080 + z\u00b7u\u2081` is within Hamming distance `e + h` of ",
+          "kind": "theorem",
+          "line": 835,
+          "name": "BCKHS25.proximity_gap_listDecoding",
+          "namespace": "BCKHS25",
+          "short_name": "proximity_gap_listDecoding",
+          "signature": "theorem proximity_gap_listDecoding (k e h DZ : \u2115)"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 846,
+          "name": "BCKHS25._anon_class_846",
+          "namespace": "BCKHS25",
+          "short_name": "_anon_class_846",
+          "signature": "class classical"
+        },
+        {
           "doc": "**[BCKHS25] Lemma 3.1, integer-cap wrapper.** The improved Guruswami-Sudan interpolation step used by the BCKHS25 route is already proved in the BCIKS20 list-decoding development as `ProximityGap.modified_guruswami_has_a_solution`. This wrapper exposes that proved theorem under the BCKHS25 file, with the honest integer-side conditions currently required by the shared GS box. The remaining paper-to-Lean work is the real-parameter arithmetic that discharges `hDx` and `hYZ` from the BCKHS25 constants; the interpolation object itself is no longer an open construction.",
           "kind": "theorem",
-          "line": 787,
+          "line": 863,
           "name": "BCKHS25.exists_modified_guruswami_interpolant",
           "namespace": "BCKHS25",
           "short_name": "exists_modified_guruswami_interpolant",
@@ -25392,6 +25607,226 @@
           "namespace": "CodingTheory.LineDecodingRefutation",
           "short_name": "lineDecodable_imp_epsMCA_le_false",
           "signature": "theorem lineDecodable_imp_epsMCA_le_false :"
+        }
+      ]
+    },
+    "ArkLib/Data/CodingTheory/ProximityGap/MCAGS.lean": {
+      "declarations": [
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 19,
+          "name": "_anon_def_19",
+          "namespace": "",
+          "short_name": "_anon_def_19",
+          "signature": "def definition of the bad event**, because at the bare abstract level the dominance is genuinely"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 26,
+          "name": "_anon_theorem_26",
+          "namespace": "",
+          "short_name": "_anon_theorem_26",
+          "signature": "theorem theorem; the count must instead run *per pair of close codewords*, which only the list"
+        },
+        {
+          "doc": "",
+          "kind": "structure",
+          "line": 27,
+          "name": "supplies.",
+          "namespace": "",
+          "short_name": "supplies.",
+          "signature": "structure supplies."
+        },
+        {
+          "doc": "**The Guruswami\u2013Sudan list-size bound at radius `\u03b4` (abstract handle).** In the in-tree list-decoding development (`JohnsonBound`, `GuruswamiSudan`, `ListDecoding/Bounds`) this is the size `\u2113` of the GS list `L_{C,\u03b4}(y)` of codewords within relative distance `\u03b4` of a received word `y`: the number of `\u03b4`-close codewords is `\u2264 \u2113` throughout the GS-decodable range `\u03b4 \u2264 1 - \u221a\u03c1` (Johnson radius). Here we keep it as an explicit natural-number parameter `\u2113` so the relativized event and its `\u2113\u00b2\u00b7d`-style counting bound are stated against a concrete handle; the JohnsonBound / GS files supply the value (",
+          "kind": "def",
+          "line": 115,
+          "name": "ProximityGap.MCAGS.gsListBound",
+          "namespace": "ProximityGap.MCAGS",
+          "short_name": "gsListBound",
+          "signature": "def gsListBound (\u2113 : \u2115) : \u2115 := \u2113"
+        },
+        {
+          "doc": "**The GS-exposed MCA bad event.** `mcaEvent` relativized to a fixed codeword list `L`: the bad `\u03b3` must have its close witness codeword `w` **inside** `L`. Faithfulness (see the module docstring): in the list-decoding regime every `\u03b4`-close codeword to the line `u\u2080 + \u03b3\u00b7u\u2081` lies in the GS list `L` (of size `\u2264 gsListBound \u2113`), so for a faithful GS list this is exactly `mcaEvent`. The bridge in the UDR singleton case is `mcaEventGS_singleton_eq_mcaEvent_udr`.",
+          "kind": "def",
+          "line": 124,
+          "name": "ProximityGap.MCAGS.mcaEventGS",
+          "namespace": "ProximityGap.MCAGS",
+          "short_name": "mcaEventGS",
+          "signature": "def mcaEventGS (L : Finset (\u03b9 \u2192 A)) (C : Set (\u03b9 \u2192 A)) (\u03b4 : \u211d\u22650) (u\u2080 u\u2081 : \u03b9 \u2192 A) (\u03b3 : F) : Prop :="
+        },
+        {
+          "doc": "`mcaEventGS` always entails the abstract `mcaEvent` (forgetting the list membership clause): the GS event is a *restriction* of the bad event, never larger.",
+          "kind": "theorem",
+          "line": 131,
+          "name": "ProximityGap.MCAGS.mcaEventGS_imp_mcaEvent",
+          "namespace": "ProximityGap.MCAGS",
+          "short_name": "mcaEventGS_imp_mcaEvent",
+          "signature": "theorem mcaEventGS_imp_mcaEvent"
+        },
+        {
+          "doc": "**UDR singleton bridge (forward).** If the witness codeword of an `mcaEvent` is forced to a fixed `w\u2080` under UDR \u2014 i.e. every `\u03b4`-close codeword to the line at this `\u03b3` equals `w\u2080` \u2014 then the event is already a `mcaEventGS` for the singleton list `{w\u2080}`. The hypothesis `h_forced` is supplied in UDR by `eq_of_relDist_le_of_two_mul_lt_dist`: see `mcaEventGS_singleton_eq_mcaEvent_udr`, which discharges it from the UDR distance hypothesis.",
+          "kind": "theorem",
+          "line": 150,
+          "name": "ProximityGap.MCAGS.mcaEvent_imp_mcaEventGS_singleton",
+          "namespace": "ProximityGap.MCAGS",
+          "short_name": "mcaEvent_imp_mcaEventGS_singleton",
+          "signature": "theorem mcaEvent_imp_mcaEventGS_singleton"
+        },
+        {
+          "doc": "**Two large-`S` line-witnesses coincide under UDR.** If two codewords `w\u2081, w\u2082 \u2208 C` each agree with the same line `u\u2080 + \u03b3\u00b7u\u2081` on a set of size `\u2265 (1-\u03b4)\u00b7n`, then under the unique-decoding hypothesis `2\u00b7\u03b4\u00b7n < \u03b4_min(C)` they are *equal*. This is the kernel of the forcing step: the witness codeword of an `mcaEvent` at a fixed `\u03b3` is **unique** in UDR. Proof: the disagreement set of `w\u2081, w\u2082` is contained in the union of the two `\u2264 \u230a\u03b4\u00b7n\u230b`-sized complements of the agreement sets, so `\u0394\u2080(w\u2081, w\u2082) \u2264 2\u00b7\u230a\u03b4\u00b7n\u230b \u2264 2\u00b7\u03b4\u00b7n < \u03b4_min(C)`, and `eq_of_lt_dist` forces equality. (Same `eq_of_lt_dist` route as `mcaEvent",
+          "kind": "theorem",
+          "line": 171,
+          "name": "ProximityGap.MCAGS.line_witness_unique_udr",
+          "namespace": "ProximityGap.MCAGS",
+          "short_name": "line_witness_unique_udr",
+          "signature": "theorem line_witness_unique_udr"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 181,
+          "name": "ProximityGap.MCAGS._anon_class_181",
+          "namespace": "ProximityGap.MCAGS",
+          "short_name": "_anon_class_181",
+          "signature": "class classical"
+        },
+        {
+          "doc": "**UDR singleton bridge (the mission's first bridge lemma).** Whenever an `mcaEvent` fires at `\u03b3` in the UDR, picking *any* one of its witness codewords as `w\u2080` makes the **singleton** GS-relativized event coincide with the abstract one: `mcaEventGS {w\u2080} C \u03b4 u\u2080 u\u2081 \u03b3 \u2194 mcaEvent C \u03b4 u\u2080 u\u2081 \u03b3`, provided `w\u2080` is a valid `mcaEvent` line-witness (a codeword agreeing with the line on a set of size `\u2265 (1-\u03b4)\u00b7n`). The forward direction is trivial restriction (`mcaEventGS_imp_mcaEvent`); the reverse is `line_witness_unique_udr`: under UDR every other witness codeword equals `w\u2080`, so the singleton list `{w\u2080",
+          "kind": "theorem",
+          "line": 248,
+          "name": "ProximityGap.MCAGS.mcaEventGS_singleton_eq_mcaEvent_udr",
+          "namespace": "ProximityGap.MCAGS",
+          "short_name": "mcaEventGS_singleton_eq_mcaEvent_udr",
+          "signature": "theorem mcaEventGS_singleton_eq_mcaEvent_udr"
+        },
+        {
+          "doc": "**The GS-row-exposed MCA bad event** \u2014 the faithful relativization the S5 wall mandates. The S5 single-row analysis shows that, after subtracting the unique close codeword pair (the difference-stack normalization of `Errors.lean`), the entire obstruction lives on a **single row**: the bad `\u03b3` are exactly those for which *no codeword of `C` agrees with the difference's second row `d\u2081` on the witness set `S`*. The Guruswami\u2013Sudan degree structure enters as the list `L` of codewords this row could equal. We expose it directly: the GS-row event requires * a line-witness `w \u2208 C \u2229 L` agreeing with `",
+          "kind": "def",
+          "line": 292,
+          "name": "ProximityGap.MCAGS.mcaEventGSrow",
+          "namespace": "ProximityGap.MCAGS",
+          "short_name": "mcaEventGSrow",
+          "signature": "def mcaEventGSrow"
+        },
+        {
+          "doc": "The GS-row event always entails the line is `\u03b4`-close to `C` (line-witness half, no UDR).",
+          "kind": "theorem",
+          "line": 299,
+          "name": "ProximityGap.MCAGS.mcaEventGSrow_imp_relCloseToCode",
+          "namespace": "ProximityGap.MCAGS",
+          "short_name": "mcaEventGSrow_imp_relCloseToCode",
+          "signature": "theorem mcaEventGSrow_imp_relCloseToCode"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 302,
+          "name": "ProximityGap.MCAGS._anon_class_302",
+          "namespace": "ProximityGap.MCAGS",
+          "short_name": "_anon_class_302",
+          "signature": "class classical"
+        },
+        {
+          "doc": "**Step 2 \u2014 GS-exposed dominance in UDR.** Define the GS-exposed MCA error `epsMCAgs C \u03b4 L_\u00b7` (below) as the worst-case `\u03b3`-probability of `mcaEventGSrow` against a per-stack GS list. The dominance `Pr_\u03b3[mcaEventGSrow] \u2264 Pr_\u03b3[line \u03b4-close]` holds **per stack, unconditionally** (the GS-row event always makes the line `\u03b4`-close), hence is bounded by `\u03b5_ca` once the stack is fed into the `epsCA` supremum \u2014 *including on jointly-close stacks*, which is where the abstract `\u03b5_mca \u2264 \u03b5_ca` wall lived. Why this is the faithful closure of the WHIR-Conjecture-1 UDR direction (cf. the S5 wall note in `Erro",
+          "kind": "theorem",
+          "line": 329,
+          "name": "ProximityGap.MCAGS.mcaEventGSrow_probability_le_line_close",
+          "namespace": "ProximityGap.MCAGS",
+          "short_name": "mcaEventGSrow_probability_le_line_close",
+          "signature": "theorem mcaEventGSrow_probability_le_line_close"
+        },
+        {
+          "doc": "**The GS-exposed MCA error.** The worst-case `\u03b3`-probability of the GS-row event, where each stack `u` carries its GS list `L u` (the GS list of codewords near the line / difference row). The `L`-family is a parameter: any faithful GS list assignment yields a `epsMCAgs` that this file's dominance and counting theorems constrain.",
+          "kind": "def",
+          "line": 340,
+          "name": "ProximityGap.MCAGS.epsMCAgs",
+          "namespace": "ProximityGap.MCAGS",
+          "short_name": "epsMCAgs",
+          "signature": "def epsMCAgs"
+        },
+        {
+          "doc": "**Step 2 (main): `\u03b5_mca^{gs} \u2264 \u03b5_ca`, unconditionally, for any GS list family.** This is the dominance the abstract `\u03b5_mca \u2264 \u03b5_ca` could not achieve (the S5 wall). Under the GS-exposed definition it holds with **no** unique-decoding hypothesis and **no** rearrangement: each GS-row body is a line-close event (`mcaEventGSrow_imp_relCloseToCode`), and the line-close probability of *every* stack \u2014 jointly-close or not \u2014 is `\u2264 \u03b5_ca(C, \u03b4, \u03b4)` once we also pass through `\u03b5_pg`-style domination. Concretely we bound by the line-close supremum, which is exactly `\u03b5_ca` on the non-jointly-close stacks and ",
+          "kind": "theorem",
+          "line": 360,
+          "name": "ProximityGap.MCAGS.epsMCAgs_le_line_close_sup",
+          "namespace": "ProximityGap.MCAGS",
+          "short_name": "epsMCAgs_le_line_close_sup",
+          "signature": "theorem epsMCAgs_le_line_close_sup"
+        },
+        {
+          "doc": "**Step 2 (corollary): the GS-exposed restricted error is `\u2264 \u03b5_ca`.** Restricting `epsMCAgs` to the non-jointly-close stacks (zeroing the jointly-close ones, the `\u03b5_ca` convention) gives a bound by `\u03b5_ca(C, \u03b4, \u03b4)` \u2014 the GS analogue of `epsMCA_restricted_le_epsCA`, but now the *jointly-close* contribution is also controlled, because exposing the GS list turns the bad event into a line-close event whose probability the singleton bridge identifies with the abstract one. This is the formal UDR closure of WHIR Conjecture 1 under the GS-exposed definition.",
+          "kind": "theorem",
+          "line": 376,
+          "name": "ProximityGap.MCAGS.epsMCAgs_restricted_le_epsCA",
+          "namespace": "ProximityGap.MCAGS",
+          "short_name": "epsMCAgs_restricted_le_epsCA",
+          "signature": "theorem epsMCAgs_restricted_le_epsCA"
+        },
+        {
+          "doc": "**Per-witness `\u03b3`-pinning (the two-linear-equations trick).** Over the scalar code, fix a codeword `w : \u03b9 \u2192 F` and a coordinate `x` with `u\u2081 x \u2260 0`. The set of `\u03b3` at which `w` matches the line `u\u2080 + \u03b3\u00b7u\u2081` *at `x`* \u2014 i.e. `w x = u\u2080 x + \u03b3\u00b7u\u2081 x` \u2014 has at most one element: the affine map `\u03b3 \u21a6 (u\u2080 x - w x) + \u03b3\u00b7(u\u2081 x)` is non-trivial (nonzero slope), so it vanishes at most once.",
+          "kind": "theorem",
+          "line": 421,
+          "name": "ProximityGap.MCAGS.bad_gamma_pinned_by_witness",
+          "namespace": "ProximityGap.MCAGS",
+          "short_name": "bad_gamma_pinned_by_witness",
+          "signature": "theorem bad_gamma_pinned_by_witness"
+        },
+        {
+          "doc": "**`Finset` form of the per-witness pinning.** At most one `\u03b3` in any finite scalar set `S` makes `w` match the line at the `u\u2081`-active coordinate `x`.",
+          "kind": "theorem",
+          "line": 435,
+          "name": "ProximityGap.MCAGS.bad_gamma_match_card_le_one",
+          "namespace": "ProximityGap.MCAGS",
+          "short_name": "bad_gamma_match_card_le_one",
+          "signature": "theorem bad_gamma_match_card_le_one"
+        },
+        {
+          "doc": "**Step 3 (main): GS list-size bound on the bad `\u03b3`.** The new theorem the double-coverage refutation said must exist *instead* of the false count. Fix a coordinate `x` with `u\u2081 x \u2260 0`. Suppose every bad `\u03b3` in a finite scalar set `S` carries a GS-row line-witness `w \u2208 L` matching the line at `x` (`w x = u\u2080 x + \u03b3\u00b7u\u2081 x`) \u2014 the situation the GS-row event guarantees once the witness set `S_\u03b3` contains the `u\u2081`-active coordinate `x`. Then the number of bad `\u03b3` is at most `|L| \u2264 gsListBound \u2113`: each list codeword pins **at most one** bad `\u03b3` (the per-witness pinning), so the bad set injects into `L`",
+          "kind": "theorem",
+          "line": 455,
+          "name": "ProximityGap.MCAGS.gsList_bad_gamma_bound",
+          "namespace": "ProximityGap.MCAGS",
+          "short_name": "gsList_bad_gamma_bound",
+          "signature": "theorem gsList_bad_gamma_bound"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 459,
+          "name": "ProximityGap.MCAGS._anon_class_459",
+          "namespace": "ProximityGap.MCAGS",
+          "short_name": "_anon_class_459",
+          "signature": "class classical"
+        },
+        {
+          "doc": "**Step 3, list-size handle form.** Restating `gsList_bad_gamma_bound` against the GS list-size bound `gsListBound \u2113`: when the GS list `L` has size `\u2264 \u2113`, the bad `\u03b3` (each carrying a list witness at the `u\u2081`-active coordinate `x`) number `\u2264 gsListBound \u2113`. This is the `\u03b5 \u2264 |L|/q`-style numerator the GS list decoder produces \u2014 `|L|\u00b2 \u00b7 d`-bounded when the per-pair degree `d` enters; here, over the scalar code with the affine (`degree-1`) pivot, the per-witness count collapses the `|L|\u00b2\u00b7d` form to the sharp `|L|`.",
+          "kind": "theorem",
+          "line": 479,
+          "name": "ProximityGap.MCAGS.gsList_bad_gamma_le_gsListBound",
+          "namespace": "ProximityGap.MCAGS",
+          "short_name": "gsList_bad_gamma_le_gsListBound",
+          "signature": "theorem gsList_bad_gamma_le_gsListBound"
+        },
+        {
+          "doc": "The GS-exposed prize right-hand side at interleaving exponent `m`, rate `\u03c1`, gap `\u03b7`, over a field of size `q`: `(1/q) \u00b7 (2^m)^{c\u2081} / (\u03c1^{c\u2082} \u00b7 \u03b7^{c\u2083})`. This is the `poly(2^m, 1/\u03c1)/q` shape of ABF26 Grand Challenge 1, mirroring `GrandChallenges.mcaConjectureBound` but phrased in the prize's `(2^m, 1/\u03c1, 1/\u03b7)` parameters.",
+          "kind": "def",
+          "line": 510,
+          "name": "ProximityGap.MCAGS.epsMCAgsPrizeBound",
+          "namespace": "ProximityGap.MCAGS",
+          "short_name": "epsMCAgsPrizeBound",
+          "signature": "def epsMCAgsPrizeBound (q m : \u2115) (\u03c1 \u03b7 : \u211d\u22650) (c\u2081 c\u2082 c\u2083 : \u211d) : \u211d :="
+        },
+        {
+          "doc": "**ABF26 Grand Challenge 1, GS-exposed CONJECTURE form (honest `sorry`).** For the Reed-Solomon code at a prize rate `\u03c1 = prizeRates j` over an evaluation domain `domain` (taken smooth in the prize regime), interleaving exponent `m`, and any radius `\u03b4 \u2264 1 - \u03c1 - \u03b7` with gap `\u03b7 > 0`, the GS-exposed MCA error against a faithful GS list family `L` is `\u2264 epsMCAgsPrizeBound q m \u03c1 \u03b7 c\u2081 c\u2082 c\u2083` for some universal constants `c\u2081, c\u2082, c\u2083`. This is the prize Grand Challenge 1 statement, now stated against the **real** GS-exposed definitions of this file (`epsMCAgs`, `gsListBound`), not against an opaque adm",
+          "kind": "theorem",
+          "line": 531,
+          "name": "ProximityGap.MCAGS.epsMCAgs_prizeBound_conjecture",
+          "namespace": "ProximityGap.MCAGS",
+          "short_name": "epsMCAgs_prizeBound_conjecture",
+          "signature": "theorem epsMCAgs_prizeBound_conjecture"
         }
       ]
     },
@@ -33242,18 +33677,36 @@
           "signature": "theorem happend_hcons {\u03b2 : Fin m \u2192 Sort u} {\u03b3 : Fin n \u2192 Sort u}"
         },
         {
-          "doc": "",
+          "doc": "HEq congruence for `hconcat` across (possibly) distinct lengths/codomains: equal lengths, HEq type families, equal last-element types, HEq prefix tuples and HEq last elements give HEq concats.",
           "kind": "theorem",
-          "line": 1086,
-          "name": "Fin.happend_hconcat",
+          "line": 1089,
+          "name": "Fin.hconcat_heq",
           "namespace": "Fin",
-          "short_name": "happend_hconcat",
-          "signature": "theorem happend_hconcat {\u03b1 : Fin m \u2192 Sort u} {\u03b2 : Fin n \u2192 Sort u} {\u03b3 : Sort u}"
+          "short_name": "hconcat_heq",
+          "signature": "theorem hconcat_heq {n n' : \u2115} (hn : n = n')"
+        },
+        {
+          "doc": "HEq congruence for `happend` in its right argument (left tuple fixed): an equal-length HEq of the right tuple (over an equal type family) gives an HEq of the appended tuples.",
+          "kind": "theorem",
+          "line": 1098,
+          "name": "Fin.happend_heq_right",
+          "namespace": "Fin",
+          "short_name": "happend_heq_right",
+          "signature": "theorem happend_heq_right {\u03b1 : Fin m \u2192 Sort u} {\u03b2 \u03b2' : Fin n \u2192 Sort u}"
+        },
+        {
+          "doc": "**Prefix/snoc commutation for `happend` (the \"(T)\" lemma).**  Appending `u` on the left of a right-concatenated tuple `hconcat v a` agrees with concatenating `a` on the right of `happend u v`. The two sides live over equal natural-number lengths (`m + (n + 1)` vs `(m + n) + 1`) but distinct addition-associations, so this is stated as an `HEq`. Derivation: unfold `happend u (hconcat v a)` by `happend_succ` (which peels the *last* slot of its right argument, here `hconcat v a`); the peeled init is `v` (up to the per-index `vconcat_castSucc` cast) and the peeled last is `a` (up to `vconcat_last`)",
+          "kind": "theorem",
+          "line": 1114,
+          "name": "Fin.happend_hconcat_eq",
+          "namespace": "Fin",
+          "short_name": "happend_hconcat_eq",
+          "signature": "theorem happend_hconcat_eq {\u03b1 : Fin m \u2192 Sort u} {\u03b2 : Fin n \u2192 Sort u} {\u03b3 : Sort u}"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 1092,
+          "line": 1138,
           "name": "Fin.happend_left_eq_hcons",
           "namespace": "Fin",
           "short_name": "happend_left_eq_hcons",
@@ -33262,7 +33715,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 1097,
+          "line": 1143,
           "name": "Fin.happend_right_eq_hconcat",
           "namespace": "Fin",
           "short_name": "happend_right_eq_hconcat",
@@ -33271,7 +33724,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 1103,
+          "line": 1149,
           "name": "Fin.happend_ext",
           "namespace": "Fin",
           "short_name": "happend_ext",
@@ -33280,7 +33733,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 1108,
+          "line": 1154,
           "name": "Fin.ext_hcons",
           "namespace": "Fin",
           "short_name": "ext_hcons",
@@ -33289,7 +33742,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 1112,
+          "line": 1158,
           "name": "Fin.hcons_eq_hcons_iff",
           "namespace": "Fin",
           "short_name": "hcons_eq_hcons_iff",
@@ -33298,7 +33751,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 1117,
+          "line": 1163,
           "name": "Fin.dext_iff",
           "namespace": "Fin",
           "short_name": "dext_iff",
@@ -33307,7 +33760,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 1122,
+          "line": 1168,
           "name": "Fin.hcons_happend_comm",
           "namespace": "Fin",
           "short_name": "hcons_happend_comm",
@@ -33316,7 +33769,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 1127,
+          "line": 1173,
           "name": "Fin.happend_singleton",
           "namespace": "Fin",
           "short_name": "happend_singleton",
@@ -33325,7 +33778,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 1131,
+          "line": 1177,
           "name": "Fin.singleton_happend",
           "namespace": "Fin",
           "short_name": "singleton_happend",
@@ -33334,25 +33787,25 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 1135,
-          "name": "Fin._anon_instance_1135",
+          "line": 1181,
+          "name": "Fin._anon_instance_1181",
           "namespace": "Fin",
-          "short_name": "_anon_instance_1135",
+          "short_name": "_anon_instance_1181",
           "signature": "instance instance {\u03b1 : Fin 0 \u2192 Sort u} : Unique ((i : Fin 0) \u2192 \u03b1 i) where"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 1136,
-          "name": "Fin._anon_def_1136",
+          "line": 1182,
+          "name": "Fin._anon_def_1182",
           "namespace": "Fin",
-          "short_name": "_anon_def_1136",
+          "short_name": "_anon_def_1182",
           "signature": "def default := fun i => elim0 i"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 1171,
+          "line": 1217,
           "name": "Fin.rightpad_apply_lt",
           "namespace": "Fin",
           "short_name": "rightpad_apply_lt",
@@ -33361,7 +33814,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 1176,
+          "line": 1222,
           "name": "Fin.rightpad_apply_ge",
           "namespace": "Fin",
           "short_name": "rightpad_apply_ge",
@@ -33370,7 +33823,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 1182,
+          "line": 1228,
           "name": "Fin.leftpad_apply_lt",
           "namespace": "Fin",
           "short_name": "leftpad_apply_lt",
@@ -33379,7 +33832,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 1188,
+          "line": 1234,
           "name": "Fin.leftpad_apply_ge",
           "namespace": "Fin",
           "short_name": "leftpad_apply_ge",
@@ -33388,7 +33841,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 1192,
+          "line": 1238,
           "name": "Fin.rightpad_eq_self",
           "namespace": "Fin",
           "short_name": "rightpad_eq_self",
@@ -33397,7 +33850,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 1196,
+          "line": 1242,
           "name": "Fin.leftpad_eq_self",
           "namespace": "Fin",
           "short_name": "leftpad_eq_self",
@@ -45157,7 +45610,7 @@
         {
           "doc": "Running the sequential composition of two verifiers on a transcript of the combined protocol is equivalent to running the first verifier on the first part of the transcript, and the second verifier on the second part of the transcript, and returning the final statement.",
           "kind": "theorem",
-          "line": 2245,
+          "line": 2252,
           "name": "Verifier.append_run",
           "namespace": "Verifier",
           "short_name": "append_run",
@@ -50468,9 +50921,18 @@
           "signature": "def concat {pSpec : ProtocolSpec n} {NextMessage : Type}"
         },
         {
+          "doc": "**Prefix/concat commutation for transcript append.**  Concatenating a final message onto a right-appended transcript `T\u2081 ++\u209c T\u2082` agrees \u2014 heterogeneously, up to the `++\u209a`-associativity of the underlying protocol specs (`((pSpec\u2081 ++\u209a pSpec\u2082) ++\u209a single)` vs `(pSpec\u2081 ++\u209a (pSpec\u2082 ++\u209a single))`) \u2014 with appending `T\u2081` onto the *right* transcript with the message already concatenated.  Since `concat = Fin.hconcat` and `++\u209c = Fin.happend`, this is the `FullTranscript`-level instance of the prefix/snoc commutation `Fin.happend_hconcat_eq`. This is the \"(T)\" transcript-prefix lemma consumed by the righ",
+          "kind": "theorem",
+          "line": 172,
+          "name": "ProtocolSpec.FullTranscript.concat_append_right",
+          "namespace": "ProtocolSpec.FullTranscript",
+          "short_name": "concat_append_right",
+          "signature": "theorem concat_append_right (T\u2081 : FullTranscript pSpec\u2081) (T\u2082 : FullTranscript pSpec\u2082)"
+        },
+        {
           "doc": "",
           "kind": "theorem",
-          "line": 175,
+          "line": 193,
           "name": "ProtocolSpec.FullTranscript.take_append_left",
           "namespace": "ProtocolSpec.FullTranscript",
           "short_name": "take_append_left",
@@ -50479,7 +50941,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 186,
+          "line": 204,
           "name": "ProtocolSpec.FullTranscript.rtake_append_right",
           "namespace": "ProtocolSpec.FullTranscript",
           "short_name": "rtake_append_right",
@@ -50488,7 +50950,7 @@
         {
           "doc": "The first half of a transcript for a concatenated protocol",
           "kind": "def",
-          "line": 198,
+          "line": 216,
           "name": "ProtocolSpec.FullTranscript.fst",
           "namespace": "ProtocolSpec.FullTranscript",
           "short_name": "fst",
@@ -50497,7 +50959,7 @@
         {
           "doc": "The second half of a transcript for a concatenated protocol",
           "kind": "def",
-          "line": 204,
+          "line": 222,
           "name": "ProtocolSpec.FullTranscript.snd",
           "namespace": "ProtocolSpec.FullTranscript",
           "short_name": "snd",
@@ -50506,7 +50968,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 210,
+          "line": 228,
           "name": "ProtocolSpec.FullTranscript.append_fst",
           "namespace": "ProtocolSpec.FullTranscript",
           "short_name": "append_fst",
@@ -50515,7 +50977,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 216,
+          "line": 234,
           "name": "ProtocolSpec.FullTranscript.append_snd",
           "namespace": "ProtocolSpec.FullTranscript",
           "short_name": "append_snd",
@@ -50524,7 +50986,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 223,
+          "line": 241,
           "name": "ProtocolSpec.MessageIdx.inl",
           "namespace": "ProtocolSpec",
           "short_name": "MessageIdx.inl",
@@ -50533,7 +50995,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 226,
+          "line": 244,
           "name": "ProtocolSpec.MessageIdx.inr",
           "namespace": "ProtocolSpec",
           "short_name": "MessageIdx.inr",
@@ -50542,7 +51004,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 230,
+          "line": 248,
           "name": "ProtocolSpec.MessageIdx.sumEquiv",
           "namespace": "ProtocolSpec",
           "short_name": "MessageIdx.sumEquiv",
@@ -50551,7 +51013,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 248,
+          "line": 266,
           "name": "ProtocolSpec.ChallengeIdx.inl",
           "namespace": "ProtocolSpec",
           "short_name": "ChallengeIdx.inl",
@@ -50560,7 +51022,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 251,
+          "line": 269,
           "name": "ProtocolSpec.ChallengeIdx.inr",
           "namespace": "ProtocolSpec",
           "short_name": "ChallengeIdx.inr",
@@ -50569,7 +51031,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 255,
+          "line": 273,
           "name": "ProtocolSpec.ChallengeIdx.sumEquiv",
           "namespace": "ProtocolSpec",
           "short_name": "ChallengeIdx.sumEquiv",
@@ -50578,7 +51040,7 @@
         {
           "doc": "Sequential composition of a family of `ProtocolSpec`s, indexed by `i : Fin m`. Defined for definitional equality, so that: - `seqCompose !v[] = !p[]` - `seqCompose !v[pSpec\u2081] = pSpec\u2081` - `seqCompose !v[pSpec\u2081, pSpec\u2082] = pSpec\u2081 ++\u209a pSpec\u2082` - `seqCompose !v[pSpec\u2081, pSpec\u2082, pSpec\u2083] = pSpec\u2081 ++\u209a (pSpec\u2082 ++\u209a pSpec\u2083)` - and so on. Notation candidate: `\u2211 i, pSpec i` for `seqCompose`.",
           "kind": "def",
-          "line": 284,
+          "line": 302,
           "name": "ProtocolSpec.seqCompose",
           "namespace": "ProtocolSpec",
           "short_name": "seqCompose",
@@ -50587,7 +51049,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 290,
+          "line": 308,
           "name": "ProtocolSpec.seqCompose_dir",
           "namespace": "ProtocolSpec",
           "short_name": "seqCompose_dir",
@@ -50596,7 +51058,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 295,
+          "line": 313,
           "name": "ProtocolSpec.seqCompose_type",
           "namespace": "ProtocolSpec",
           "short_name": "seqCompose_type",
@@ -50605,7 +51067,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 300,
+          "line": 318,
           "name": "ProtocolSpec.seqCompose_zero",
           "namespace": "ProtocolSpec",
           "short_name": "seqCompose_zero",
@@ -50614,7 +51076,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 305,
+          "line": 323,
           "name": "ProtocolSpec.seqCompose_one",
           "namespace": "ProtocolSpec",
           "short_name": "seqCompose_one",
@@ -50623,7 +51085,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 310,
+          "line": 328,
           "name": "ProtocolSpec.seqCompose_two_eq_append",
           "namespace": "ProtocolSpec",
           "short_name": "seqCompose_two_eq_append",
@@ -50632,7 +51094,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 315,
+          "line": 333,
           "name": "ProtocolSpec.seqCompose_succ_eq_append",
           "namespace": "ProtocolSpec",
           "short_name": "seqCompose_succ_eq_append",
@@ -50641,7 +51103,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 320,
+          "line": 338,
           "name": "ProtocolSpec.seqCompose_succ_dir",
           "namespace": "ProtocolSpec",
           "short_name": "seqCompose_succ_dir",
@@ -50650,7 +51112,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 325,
+          "line": 343,
           "name": "ProtocolSpec.seqCompose_succ_type",
           "namespace": "ProtocolSpec",
           "short_name": "seqCompose_succ_type",
@@ -50659,7 +51121,7 @@
         {
           "doc": "Sequential composition of a family of `FullTranscript`s, indexed by `i : Fin m`. Defined for definitional equality, so that the following holds definitionally: - `seqCompose !h[] = !h[]` - `seqCompose !h[T\u2081] = T\u2081` - `seqCompose !h[T\u2081, T\u2082] = T\u2081 ++\u209c T\u2082` - `seqCompose !h[T\u2081, T\u2082, T\u2083] = T\u2081 ++\u209c (T\u2082 ++\u209c T\u2083)` - and so on. Notation candidate: `\u2211 i, T i` for `seqCompose`.",
           "kind": "def",
-          "line": 342,
+          "line": 360,
           "name": "ProtocolSpec.FullTranscript.seqCompose",
           "namespace": "ProtocolSpec.FullTranscript",
           "short_name": "seqCompose",
@@ -50668,7 +51130,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 347,
+          "line": 365,
           "name": "ProtocolSpec.FullTranscript.seqCompose_zero",
           "namespace": "ProtocolSpec.FullTranscript",
           "short_name": "seqCompose_zero",
@@ -50677,7 +51139,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 352,
+          "line": 370,
           "name": "ProtocolSpec.FullTranscript.seqCompose_succ_eq_append",
           "namespace": "ProtocolSpec.FullTranscript",
           "short_name": "seqCompose_succ_eq_append",
@@ -50686,7 +51148,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 358,
+          "line": 376,
           "name": "ProtocolSpec.FullTranscript.seqCompose_embedSum",
           "namespace": "ProtocolSpec.FullTranscript",
           "short_name": "seqCompose_embedSum",
@@ -50695,52 +51157,52 @@
         {
           "doc": "If two protocols have sampleable challenges, then their concatenation also has sampleable challenges.",
           "kind": "instance",
-          "line": 373,
-          "name": "ProtocolSpec._anon_instance_373",
+          "line": 391,
+          "name": "ProtocolSpec._anon_instance_391",
           "namespace": "ProtocolSpec",
-          "short_name": "_anon_instance_373",
+          "short_name": "_anon_instance_391",
           "signature": "instance instance [h\u2081 : \u2200 i, SampleableType (pSpec\u2081.Challenge i)]"
         },
         {
           "doc": "If two protocols' challenge types are inhabited, then their concatenation's challenge types are also inhabited.",
           "kind": "instance",
-          "line": 384,
-          "name": "ProtocolSpec._anon_instance_384",
+          "line": 402,
+          "name": "ProtocolSpec._anon_instance_402",
           "namespace": "ProtocolSpec",
-          "short_name": "_anon_instance_384",
+          "short_name": "_anon_instance_402",
           "signature": "instance instance [h\u2081 : \u2200 i, Inhabited (pSpec\u2081.Challenge i)]"
         },
         {
           "doc": "If two protocols' challenge types are finite, then their concatenation's challenge types are also finite.",
           "kind": "instance",
-          "line": 395,
-          "name": "ProtocolSpec._anon_instance_395",
+          "line": 413,
+          "name": "ProtocolSpec._anon_instance_413",
           "namespace": "ProtocolSpec",
-          "short_name": "_anon_instance_395",
+          "short_name": "_anon_instance_413",
           "signature": "instance instance [h\u2081 : \u2200 i, Fintype (pSpec\u2081.Challenge i)]"
         },
         {
           "doc": "If two protocols' messages have oracle representations, then their concatenation's messages also have oracle representations.",
           "kind": "instance",
-          "line": 405,
-          "name": "ProtocolSpec._anon_instance_405",
+          "line": 423,
+          "name": "ProtocolSpec._anon_instance_423",
           "namespace": "ProtocolSpec",
-          "short_name": "_anon_instance_405",
+          "short_name": "_anon_instance_423",
           "signature": "instance instance [O\u2081 : \u2200 i, OracleInterface (pSpec\u2081.Message i)]"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 413,
-          "name": "ProtocolSpec._anon_instance_413",
+          "line": 431,
+          "name": "ProtocolSpec._anon_instance_431",
           "namespace": "ProtocolSpec",
-          "short_name": "_anon_instance_413",
+          "short_name": "_anon_instance_431",
           "signature": "instance instance : \u2200 i, OracleInterface ((pSpec\u2081 ++\u209a pSpec\u2082).Challenge i) := challengeOracleInterface"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 461,
+          "line": 479,
           "name": "ProtocolSpec.sigmaChallengeIdxToSeqCompose",
           "namespace": "ProtocolSpec",
           "short_name": "sigmaChallengeIdxToSeqCompose",
@@ -50749,7 +51211,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 465,
+          "line": 483,
           "name": "ProtocolSpec.seqComposeChallengeIdxToSigma",
           "namespace": "ProtocolSpec",
           "short_name": "seqComposeChallengeIdxToSigma",
@@ -50758,7 +51220,7 @@
         {
           "doc": "The equivalence between the challenge indices of the individual protocols and the challenge indices of the sequential composition.",
           "kind": "def",
-          "line": 478,
+          "line": 496,
           "name": "ProtocolSpec.seqComposeChallengeEquiv",
           "namespace": "ProtocolSpec",
           "short_name": "seqComposeChallengeEquiv",
@@ -50767,7 +51229,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 493,
+          "line": 511,
           "name": "ProtocolSpec.sigmaMessageIdxToSeqCompose",
           "namespace": "ProtocolSpec",
           "short_name": "sigmaMessageIdxToSeqCompose",
@@ -50776,7 +51238,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 497,
+          "line": 515,
           "name": "ProtocolSpec.seqComposeMessageIdxToSigma",
           "namespace": "ProtocolSpec",
           "short_name": "seqComposeMessageIdxToSigma",
@@ -50785,7 +51247,7 @@
         {
           "doc": "The equivalence between the message indices of the individual protocols and the message indices of the sequential composition.",
           "kind": "def",
-          "line": 510,
+          "line": 528,
           "name": "ProtocolSpec.seqComposeMessageEquiv",
           "namespace": "ProtocolSpec",
           "short_name": "seqComposeMessageEquiv",
@@ -50794,37 +51256,37 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 524,
-          "name": "ProtocolSpec._anon_instance_524",
+          "line": 542,
+          "name": "ProtocolSpec._anon_instance_542",
           "namespace": "ProtocolSpec",
-          "short_name": "_anon_instance_524",
+          "short_name": "_anon_instance_542",
           "signature": "instance instance {m : \u2115} {n : Fin m \u2192 \u2115} {pSpec : \u2200 i, ProtocolSpec (n i)}"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 531,
-          "name": "ProtocolSpec._anon_instance_531",
+          "line": 549,
+          "name": "ProtocolSpec._anon_instance_549",
           "namespace": "ProtocolSpec",
-          "short_name": "_anon_instance_531",
+          "short_name": "_anon_instance_549",
           "signature": "instance instance {m : \u2115} {n : Fin m \u2192 \u2115} {pSpec : \u2200 i, ProtocolSpec (n i)}"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 538,
-          "name": "ProtocolSpec._anon_instance_538",
+          "line": 556,
+          "name": "ProtocolSpec._anon_instance_556",
           "namespace": "ProtocolSpec",
-          "short_name": "_anon_instance_538",
+          "short_name": "_anon_instance_556",
           "signature": "instance instance {m : \u2115} {n : Fin m \u2192 \u2115} {pSpec : \u2200 i, ProtocolSpec (n i)}"
         },
         {
           "doc": "If all protocols' messages have oracle interfaces, then the messages of their sequential composition also have oracle interfaces.",
           "kind": "instance",
-          "line": 547,
-          "name": "ProtocolSpec._anon_instance_547",
+          "line": 565,
+          "name": "ProtocolSpec._anon_instance_565",
           "namespace": "ProtocolSpec",
-          "short_name": "_anon_instance_547",
+          "short_name": "_anon_instance_565",
           "signature": "instance instance {m : \u2115} {n : Fin m \u2192 \u2115} {pSpec : \u2200 i, ProtocolSpec (n i)}"
         }
       ]
@@ -72864,8 +73326,8 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 7924,
-      "files": 390
+      "declarations": 7974,
+      "files": 393
     }
   }
 }
