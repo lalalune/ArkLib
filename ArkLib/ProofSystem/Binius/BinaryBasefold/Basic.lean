@@ -720,6 +720,23 @@ lemma take_snoc_oracle_eq_oStmtIn (i : Fin ℓ)
   unfold snoc_oracle
   simp
 
+-- The commit branch of `snoc_oracle`: at the NEW oracle index (`¬ j < count i.castSucc` and a
+-- commitment round), the snoc value is heterogeneously equal to the freshly committed `newOracleFn`.
+-- Proved once HERE (where `snoc_oracle` is local and the elaboration environment is light) so the
+-- heavy `cast`/`congrArg` reduction over the reducible `OracleStatement`/`sDomain` omega bound is
+-- kernel-checked a single time; downstream (`Steps.lean`) references this as an opaque constant,
+-- avoiding the kernel deterministic timeout the inlined unfolding triggered under merged siblings.
+omit [CharP L 2] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 [NeZero 𝓡] in
+lemma snoc_oracle_commit_new_heq (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i)
+    (oStmtIn : (j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc)) →
+      OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)
+    (newOracleFn : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ)
+    (j : Fin (toOutCodewordsCount ℓ ϑ i.succ))
+    (hge : ¬ (j.val < toOutCodewordsCount ℓ ϑ i.castSucc)) :
+    HEq (snoc_oracle 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) oStmtIn newOracleFn j) newOracleFn := by
+  simp only [snoc_oracle, dif_neg hge, dif_pos hCR]
+  exact cast_heq _ newOracleFn
+
 /-- Extract the first oracle f^(0) from oracle statements -/
 def getFirstOracle {i : Fin (ℓ + 1)}
     (oStmt : (∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i j)) :
