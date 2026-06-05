@@ -282,6 +282,7 @@ import ArkLib.ProofSystem.Whir.MCAJohnsonErrStar
 import ArkLib.ProofSystem.Whir.MCAJohnsonErrStarBounds
 import ArkLib.ProofSystem.Whir.MCAJohnsonReduction
 import ArkLib.ProofSystem.Whir.MCAJohnsonMutualExtract
+import ArkLib.ProofSystem.Whir.MCAJohnsonUniqueness
 import ArkLib.ProofSystem.Whir.OutofDomainSmpl
 import ArkLib.ProofSystem.Whir.ProximityGen
 import ArkLib.ProofSystem.Whir.RBRSoundness
