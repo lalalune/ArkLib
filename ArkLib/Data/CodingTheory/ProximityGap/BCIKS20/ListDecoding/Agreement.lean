@@ -5612,6 +5612,57 @@ lemma exists_points_with_close_subset_matching_set_of_natCeil_delta_nonmatching_
     (Nat.le_ceil _) hcover hthreshold hsmall
 
 open Polynomial in
+/-- Claim-5.11 plus the canonical `PzFamily` selected-domain package for any
+uniform integer bad-coordinate bound `E`.  This is the assembled form consumed
+by §5-to-§6 interpolation steps that use a non-canonical integer cap before
+specializing to the nat-ceil close-proximity bound. -/
+lemma exists_points_with_canonical_eval_polys_on_close_subset_of_delta_nonmatching_bound
+    [NeZero n]
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hk : 0 < k)
+    {D E t : ℕ}
+    (hE : δ * (n : ℚ) ≤ E)
+    (hcover :
+      (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).card - 1 ≤
+        (2 * k + 1)
+          * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+          * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+          * D)
+    (hthreshold :
+      (2 * k + 1)
+        * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+        * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+        * D + t ≤ #(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁))
+    (hsmall :
+      E * #(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) < (n - k) * t)
+    (hunique : ∀ P : F → F[X],
+      (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+        (P z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P z).eval ∘ ωs) ≤ δ) →
+      ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+        P z = PzFamily (F := F) (n := n) δ u₀ u₁ ωs k z) :
+  ∃ Dtop : Finset (Fin n),
+    Dtop.card = k + 1 ∧
+    ∃ P₀ : F → F[X],
+      (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+        (P₀ z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P₀ z).eval ∘ ωs) ≤ δ) ∧
+      (∃ E : Dtop → F[X],
+        (∀ x, (E x).natDegree < k + 1) ∧
+          ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+            ∀ x : Dtop, (P₀ z).eval (ωs x.1) = (E x).eval z) ∧
+      ∀ P : F → F[X],
+        (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+          (P z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P z).eval ∘ ωs) ≤ δ) →
+        ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁, P z = P₀ z := by
+  obtain ⟨Dtop, hDtop_card, hsubset⟩ :=
+    exists_points_with_close_subset_matching_set_of_delta_nonmatching_bound
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+      h_gs (D := D) (E := E) (t := t) hE hcover hthreshold hsmall
+  refine ⟨Dtop, hDtop_card, ?_⟩
+  exact PzFamily_exists_canonical_eval_polys_on_close_subset_and_unique
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) h_gs Dtop hk hsubset
+    hunique
+
 /-- Claim-5.11 plus the canonical `PzFamily` selected-domain package.  This is
 the assembled form consumed by the remaining §5-to-§6 interpolation step: the
 double-counting hypotheses select `k + 1` coordinates, and on exactly that
@@ -5655,14 +5706,10 @@ lemma exists_points_with_canonical_eval_polys_on_close_subset_of_natCeil_delta_n
         (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
           (P z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P z).eval ∘ ωs) ≤ δ) →
         ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁, P z = P₀ z := by
-  obtain ⟨Dtop, hDtop_card, hsubset⟩ :=
-    exists_points_with_close_subset_matching_set_of_natCeil_delta_nonmatching_bound
-      (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
-      h_gs (D := D) (t := t) hcover hthreshold hsmall
-  refine ⟨Dtop, hDtop_card, ?_⟩
-  exact PzFamily_exists_canonical_eval_polys_on_close_subset_and_unique
-    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) h_gs Dtop hk hsubset
-    hunique
+  exact exists_points_with_canonical_eval_polys_on_close_subset_of_delta_nonmatching_bound
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+    h_gs hk (D := D) (E := ⌈δ * (n : ℚ)⌉₊) (t := t)
+    (Nat.le_ceil _) hcover hthreshold hsmall hunique
 
 /-- Claim 5.11 from [BCIKS20].
 There exists a set of points `{x₀,...,x_{k+1}}` such that the sets S_{x_j} satisfy the condition in

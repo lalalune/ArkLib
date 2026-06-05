@@ -2285,6 +2285,36 @@ theorem correlatedAgreement_affine_curves_of_strict_canonical_coeff_polys_and_bo
     (u := u) P₀ hCoeff₀ huniq P hP
 
 omit [DecidableEq ι] in
+/-- Coefficient-polynomial capstone with uniform strict-branch extraction and
+the closed square-root boundary reduced to equality plus nonemptiness of the
+good-coefficient set. This is the closed-radius counterpart of
+`correlatedAgreement_affine_curves_of_uniform_strict_coeff_polys`. -/
+theorem correlatedAgreement_affine_curves_of_uniform_strict_coeff_polys_and_boundary_card
+    {k : ℕ} {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    [NeZero deg]
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hCoeff : ∀ u : WordStack F (Fin (k + 1)) ι,
+      ∀ P : F → Polynomial F,
+        (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+          (P z).natDegree < deg ∧
+            δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+              (P z).eval ∘ domain) ≤ δ) →
+          ∃ B : ℕ → Polynomial F,
+            (∀ j < deg, (B j).natDegree < k + 1) ∧
+              ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+                ∀ j < deg, (P z).coeff j = (B j).eval z)
+    (hBoundaryCard : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      δ = 1 - ReedSolomon.sqrtRate deg domain →
+      0 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card →
+      jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u)) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  refine correlatedAgreement_affine_curves_of_strict_coeff_polys_and_boundary_card
+    (deg := deg) (domain := domain) (δ := δ) hδ ?_ hBoundaryCard
+  intro _hk u _hprob _hJ _hsqrt P hP
+  exact hCoeff u P hP
+
+omit [DecidableEq ι] in
 /-- Strict square-root-radius capstone phrased in the coefficient-polynomial
 language of §5. In the strict range, the closed-boundary branch is impossible. -/
 theorem correlatedAgreement_affine_curves_of_strict_coeff_polys {k : ℕ}
