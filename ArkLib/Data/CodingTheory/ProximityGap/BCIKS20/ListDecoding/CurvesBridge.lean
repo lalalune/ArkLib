@@ -180,6 +180,42 @@ theorem PzFamily_exists_canonical_eval_polys_goodCoeffsCurve_finMapTwoWords
       exact ⟨hwP.1, by
         simpa [sum_finMapTwoWords_eq, ENNReal.coe_nnratCast] using hwP.2⟩) z hz_close
 
+/-- Strict Johnson §6 joint-agreement front door specialized to the §5
+degree-one affine-line setup.  The remaining hypotheses are exactly the §5
+matching-set coverage and uniqueness data needed to build the canonical
+`PzFamily` package. -/
+theorem RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_PzFamily
+    {m k : ℕ} {ωs : Fin n ↪ F} {Q : F[Z][X][Y]}
+    (δ : ℚ≥0) (u₀ u₁ : Fin n → F)
+    (hprob :
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin 2, (z ^ (t : ℕ)) • Code.finMapTwoWords u₀ u₁ t,
+          ReedSolomon.code ωs (k + 1)) ≤ (δ : ℝ≥0)] >
+        (((1 : ℕ) : ENNReal) * (errorBound (δ : ℝ≥0) (k + 1) ωs : ENNReal)))
+    (hJ : (1 - (LinearCode.rate (ReedSolomon.code ωs (k + 1)) : ℝ≥0)) / 2 <
+      (δ : ℝ≥0))
+    (hδ : (δ : ℝ≥0) < 1 - ReedSolomon.sqrtRate (k + 1) ωs)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hsubset : ∀ x : Fin n,
+      coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁ ⊆
+        matching_set_at_x k (δ : ℚ) h_gs x)
+    (hunique : ∀ P : F → Polynomial F,
+      (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+        (P z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P z).eval ∘ ωs) ≤ (δ : ℚ)) →
+      ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+        P z = PzFamily (F := F) (n := n) (δ : ℚ) u₀ u₁ ωs k z) :
+    jointAgreement (C := ReedSolomon.code ωs (k + 1)) (δ := (δ : ℝ≥0))
+      (W := Code.finMapTwoWords u₀ u₁) := by
+  classical
+  obtain ⟨P₀, hP₀, hEval₀, huniq⟩ :=
+    PzFamily_exists_canonical_eval_polys_goodCoeffsCurve_finMapTwoWords
+      (F := F) (n := n) (m := m) (k := k) (ωs := ωs) (Q := Q)
+      δ u₀ u₁ h_gs hsubset hunique
+  exact RS_jointAgreement_of_prob_gt_strict_johnson_and_canonical_eval_polys
+    (deg := k + 1) (domain := ωs) (δ := (δ : ℝ≥0))
+    (hk := Nat.zero_lt_succ 0) (u := Code.finMapTwoWords u₀ u₁)
+    hprob hJ hδ P₀ hEval₀ huniq
+
 end BCIKS20ProximityGapSection5To6Bridge
 
 end ProximityGap
