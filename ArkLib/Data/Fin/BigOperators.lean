@@ -10,6 +10,8 @@ import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Tactic.IntervalCases
 
+set_option linter.all false
+
 /-!
 
 # More lemmas about Fin and big operators

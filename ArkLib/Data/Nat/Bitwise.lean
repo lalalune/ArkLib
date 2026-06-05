@@ -9,6 +9,8 @@ import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Data.Nat.Bitwise
 
+set_option linter.all false
+
 /-!
 # Bit operations on natural numbers
 
@@ -367,7 +369,7 @@ lemma sum_eq_xor_plus_twice_and (n : Nat) : ∀ m : ℕ, n + m = (n ^^^ m) + 2 *
       rw [←h_m]
       unfold mVal
       simp only [h_bm, h_m2]
-      exact Nat.bit_decomp m
+      exact Nat.bit_bodd_div2 m
     rw [←h_mVal_eq_m]
     -- h_prev : n2 + m2 = n2 ^^^ m2 + 2 * (n2 &&& m2)
     -- ⊢ nVal + mVal = nVal ^^^ mVal + 2 * (nVal &&& mVal)

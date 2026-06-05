@@ -7,11 +7,13 @@ Authors: Chung Thai Nguyen, Quang Dao
 import CompPoly.Data.MvPolynomial.Notation
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.LinearAlgebra.Basis.Basic
+import Mathlib.LinearAlgebra.Basis.Defs
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.Order.CompletePartialOrder
 import Mathlib.RingTheory.Henselian
+
+set_option linter.all false
 
 /-!
 # Monomial basis for algebra extensions
@@ -37,7 +39,7 @@ theorem sum_degreeLT_monomial_eq_subtype {n : ℕ} (p : L⦃< n⦄[X]) :
       -- `span_le` changes the goal to showing every vector in the generating set
   Subtype.eq (Polynomial.sum_monomial_eq p.val)
 
-noncomputable def monomialBasisOfDegreeLT {n : ℕ} : Basis (Fin n) L (L⦃< n⦄[X]) := by
+noncomputable def monomialBasisOfDegreeLT {n : ℕ} : Module.Basis (Fin n) L (L⦃< n⦄[X]) := by
   set monomials_in_submodule:Fin n → L⦃< n⦄[X] := fun ⟨i, hi⟩ =>
   ⟨monomial (R := L) (n := i) (a := 1), by
     simp only [Polynomial.mem_degreeLT]
@@ -117,12 +119,13 @@ noncomputable def monomialBasisOfDegreeLT {n : ℕ} : Basis (Fin n) L (L⦃< n�
       simp only [monomial_one_right_eq_X_pow]
       rw [←Polynomial.smul_X_eq_monomial]
 
-  apply Basis.mk (R := L) (M := degreeLT (R := L) (n := n))
+  apply Module.Basis.mk (R := L) (M := degreeLT (R := L) (n := n))
   · exact h_li_submodule
   · exact le_of_eq (hab := h_span_submodule.symm)
 
 theorem finrank_degreeLT_n (n : ℕ) : Module.finrank L (L⦃< n⦄[X]) = n := by
-  have monomial_basis : Basis (Fin n) (R := L) (M := L⦃< n⦄[X]) := monomialBasisOfDegreeLT (n := n)
+  have monomial_basis : Module.Basis (Fin n) (R := L) (M := L⦃< n⦄[X]) :=
+    monomialBasisOfDegreeLT (n := n)
   rw [Module.finrank_eq_card_basis monomial_basis]
   rw [Fintype.card_fin]
 

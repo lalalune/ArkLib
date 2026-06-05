@@ -6,6 +6,8 @@ Authors: Chung Thai Nguyen, Quang Dao
 
 import Mathlib
 
+set_option linter.all false
+
 /-!
   # Tower of Algebras and Tower of Algebra Equivalences
 
