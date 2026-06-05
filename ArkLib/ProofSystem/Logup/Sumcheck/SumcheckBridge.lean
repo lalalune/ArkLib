@@ -193,6 +193,99 @@ theorem honest_helper_sum_zero_no_columns
     (F := F) (n := n) (M := 0) (params := params) oStmt xChallenge u]
   exact sum_terms_zero_no_columns (F := F) (n := n) oStmt xChallenge u
 
+theorem honest_helper_sum_zero_of_inputRelation
+    (stmt : StmtIn F n M) (oStmt : ∀ i, OStmtIn F n M i)
+    (hInput : (((stmt, oStmt), ()) ∈ inputRelation F n M))
+    (hM : 0 < M) (xChallenge : F) :
+    (∑ u : Hypercube n,
+      ∑ k : Fin params.numGroups,
+        evalOnHypercube (honestHelpers params oStmt xChallenge k) u) = 0 := by
+  have hhelpers_eq_terms :
+      (∑ u : Hypercube n,
+        ∑ k : Fin params.numGroups,
+          evalOnHypercube (honestHelpers params oStmt xChallenge k) u) =
+        ∑ u : Hypercube n,
+          ∑ i : TermIdx M,
+            termNumerator (honestMultiplicity oStmt) i u /
+              termPhi oStmt xChallenge i u := by
+    apply Finset.sum_congr rfl
+    intro u _
+    exact honest_helper_sum_eq_sum_terms
+      (F := F) (n := n) (M := M) (params := params) oStmt xChallenge u
+  have hterms_split :
+      (∑ u : Hypercube n,
+          ∑ i : TermIdx M,
+            termNumerator (honestMultiplicity oStmt) i u /
+              termPhi oStmt xChallenge i u) =
+        (∑ u : Hypercube n,
+          evalOnHypercube (honestMultiplicity oStmt) u /
+            (xChallenge + evalOnHypercube (tableOracle oStmt) u)) +
+        ∑ u : Hypercube n,
+          ∑ i : Fin M,
+            (-1 : F) /
+              (xChallenge + evalOnHypercube (columnOracle oStmt i) u) := by
+    simp_rw [sum_terms_eq_table_add_columns
+      (F := F) (n := n) (M := M) oStmt xChallenge]
+    rw [Finset.sum_add_distrib]
+  have hcolumns_neg :
+      (∑ u : Hypercube n,
+          ∑ i : Fin M,
+            (-1 : F) /
+              (xChallenge + evalOnHypercube (columnOracle oStmt i) u)) =
+        - ∑ i : Fin M,
+            ∑ u : Hypercube n,
+              (1 : F) /
+                (xChallenge + evalOnHypercube (columnOracle oStmt i) u) := by
+    rw [Finset.sum_comm]
+    simp_rw [neg_div]
+    simp_rw [Finset.sum_neg_distrib]
+  calc
+    (∑ u : Hypercube n,
+      ∑ k : Fin params.numGroups,
+        evalOnHypercube (honestHelpers params oStmt xChallenge k) u)
+        = ∑ u : Hypercube n,
+            ∑ i : TermIdx M,
+              termNumerator (honestMultiplicity oStmt) i u /
+                termPhi oStmt xChallenge i u := hhelpers_eq_terms
+    _ = (∑ u : Hypercube n,
+          evalOnHypercube (honestMultiplicity oStmt) u /
+            (xChallenge + evalOnHypercube (tableOracle oStmt) u)) +
+        ∑ u : Hypercube n,
+          ∑ i : Fin M,
+            (-1 : F) /
+              (xChallenge + evalOnHypercube (columnOracle oStmt i) u) := hterms_split
+    _ = (∑ a : F, (lookupMultiplicityCount oStmt a : F) / (xChallenge + a)) +
+        ∑ u : Hypercube n,
+          ∑ i : Fin M,
+            (-1 : F) /
+              (xChallenge + evalOnHypercube (columnOracle oStmt i) u) := by
+          change
+            (∑ u : Hypercube n,
+              normalizedMultiplicityValue oStmt u /
+                (xChallenge + evalOnHypercube (tableOracle oStmt) u)) +
+              ∑ u : Hypercube n,
+                ∑ i : Fin M,
+                  (-1 : F) /
+                    (xChallenge + evalOnHypercube (columnOracle oStmt i) u) =
+              (∑ a : F, (lookupMultiplicityCount oStmt a : F) / (xChallenge + a)) +
+              ∑ u : Hypercube n,
+                ∑ i : Fin M,
+                  (-1 : F) /
+                    (xChallenge + evalOnHypercube (columnOracle oStmt i) u)
+          rw [table_sum_normalizedMultiplicity_eq_lookup_sum stmt oStmt hInput hM]
+    _ = (∑ i : Fin M,
+          ∑ u : Hypercube n,
+            (1 : F) /
+              (xChallenge + evalOnHypercube (columnOracle oStmt i) u)) +
+        ∑ u : Hypercube n,
+          ∑ i : Fin M,
+            (-1 : F) /
+              (xChallenge + evalOnHypercube (columnOracle oStmt i) u) := by
+          rw [lookupMultiplicity_sum_div_eq_column_sum]
+    _ = 0 := by
+          rw [hcolumns_neg]
+          exact add_neg_cancel _
+
 /-- Semantic agreement between final oracle-query answers and the retained LogUp oracles. -/
 def logupPointEvaluationsAgree
     (r : Fin n → F)
