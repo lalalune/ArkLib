@@ -45776,7 +45776,7 @@
         {
           "doc": "RBR knowledge soundness for a single round oracle verifier",
           "kind": "theorem",
-          "line": 335,
+          "line": 362,
           "name": "RingSwitching.SumcheckPhase.iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness",
@@ -45785,16 +45785,16 @@
         {
           "doc": "`pSpecFinalSumcheck L` is a single prover-to-verifier message (no challenge).",
           "kind": "instance",
-          "line": 354,
-          "name": "RingSwitching.SumcheckPhase._anon_instance_354",
+          "line": 381,
+          "name": "RingSwitching.SumcheckPhase._anon_instance_381",
           "namespace": "RingSwitching.SumcheckPhase",
-          "short_name": "_anon_instance_354",
+          "short_name": "_anon_instance_381",
           "signature": "instance instance : ProverOnly (pSpecFinalSumcheck L) where"
         },
         {
           "doc": "The `instDefault` oracle answer is the message itself (`answer m () = m`).",
           "kind": "lemma",
-          "line": 358,
+          "line": 385,
           "name": "RingSwitching.SumcheckPhase.answer_instDefault'",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "answer_instDefault'",
@@ -45803,7 +45803,7 @@
         {
           "doc": "`simulateQ` commutes with `OptionT.pure` (no explicit empty-spec universes).",
           "kind": "theorem",
-          "line": 362,
+          "line": 389,
           "name": "RingSwitching.SumcheckPhase.simulateQ_optionT_pure'",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "simulateQ_optionT_pure'",
@@ -45812,7 +45812,7 @@
         {
           "doc": "The prover for the final sumcheck step",
           "kind": "def",
-          "line": 371,
+          "line": 398,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckProver",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckProver",
@@ -45821,7 +45821,7 @@
         {
           "doc": "The verifier for the final sumcheck step",
           "kind": "def",
-          "line": 407,
+          "line": 434,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckVerifier",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckVerifier",
@@ -45830,16 +45830,25 @@
         {
           "doc": "The oracle reduction for the final sumcheck step",
           "kind": "def",
-          "line": 460,
+          "line": 487,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckOracleReduction",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckOracleReduction",
           "signature": "def finalSumcheckOracleReduction :"
         },
         {
+          "doc": "**Final-sumcheck 0-cube sum identity (shared algebra).** The consistency sum of the projected last-round polynomial over the 0-cube collapses to `compute_final_eq_value \u00b7 t'(challenges)`. This is the pure-algebra core shared by the completeness check (`finalSumcheck_check_of_relIn`) and the round-by-round KState reconstruction (`finalSumcheckKnowledgeStateFunction.toFun_full`): the consistency sum is over the 0-cube (`\u2113' - (Fin.last \u2113').val = 0`), collapsing to a single eval; `fixFirstVariablesOfMQP_eval` rewrites the projected round polynomial evaluated at the empty point to `(A_MLE \u00b7 t')(cha",
+          "kind": "lemma",
+          "line": 508,
+          "name": "RingSwitching.SumcheckPhase.finalSumcheck_cube0_sum_eq",
+          "namespace": "RingSwitching.SumcheckPhase",
+          "short_name": "finalSumcheck_cube0_sum_eq",
+          "signature": "lemma finalSumcheck_cube0_sum_eq [IsDomain L] [IsDomain K]"
+        },
+        {
           "doc": "**Final-sumcheck verifier-check algebra (defect-#10/#11 capstone).** From the input relation's structural invariant + sumcheck consistency at the last round, the honest verifier's step-9 check `sumcheck_target = compute_final_eq_value \u00b7 s'` holds, where `s' = t'(challenges)`. Derivation (scratch-verified): the consistency sum is over the 0-cube (`\u2113' - (Fin.last \u2113').val = 0`), collapsing to a single eval; `fixFirstVariablesOfMQP_eval` rewrites the projected round polynomial `H = projectToMidSumcheckPoly t' A_MLE (Fin.last \u2113') challenges` evaluated at the empty point to `(A_MLE \u00b7 t')(challenges)",
           "kind": "lemma",
-          "line": 483,
+          "line": 564,
           "name": "RingSwitching.SumcheckPhase.finalSumcheck_check_of_relIn",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheck_check_of_relIn",
@@ -45848,7 +45857,7 @@
         {
           "doc": "Perfect completeness for the final sumcheck step",
           "kind": "theorem",
-          "line": 534,
+          "line": 580,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckOracleReduction_perfectCompleteness",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckOracleReduction_perfectCompleteness",
@@ -45857,7 +45866,7 @@
         {
           "doc": "RBR knowledge error for the final sumcheck step",
           "kind": "def",
-          "line": 597,
+          "line": 643,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckRbrKnowledgeError",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckRbrKnowledgeError",
@@ -45866,7 +45875,7 @@
         {
           "doc": "The round-by-round extractor for the final sumcheck step",
           "kind": "def",
-          "line": 600,
+          "line": 646,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckRbrExtractor",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckRbrExtractor",
@@ -45875,7 +45884,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 620,
+          "line": 666,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckKStateProp",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckKStateProp",
@@ -45884,25 +45893,25 @@
         {
           "doc": "The knowledge state function for the final sumcheck step",
           "kind": "def",
-          "line": 657,
+          "line": 703,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckKnowledgeStateFunction",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckKnowledgeStateFunction",
-          "signature": "def finalSumcheckKnowledgeStateFunction {\u03c3 : Type} (init : ProbComp \u03c3)"
+          "signature": "def finalSumcheckKnowledgeStateFunction [IsDomain L] [IsDomain K] {\u03c3 : Type}"
         },
         {
           "doc": "Round-by-round knowledge soundness for the final sumcheck step",
           "kind": "theorem",
-          "line": 696,
+          "line": 817,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckOracleVerifier_rbrKnowledgeSoundness",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckOracleVerifier_rbrKnowledgeSoundness",
-          "signature": "theorem finalSumcheckOracleVerifier_rbrKnowledgeSoundness [Fintype L] [IsDomain L] {\u03c3 : Type}"
+          "signature": "theorem finalSumcheckOracleVerifier_rbrKnowledgeSoundness [Fintype L] [IsDomain L] [IsDomain K]"
         },
         {
           "doc": "Composed oracle verifier for the SumcheckStep (seqCompose over \u2113')",
           "kind": "def",
-          "line": 716,
+          "line": 838,
           "name": "RingSwitching.SumcheckPhase.sumcheckLoopOracleVerifier",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "sumcheckLoopOracleVerifier",
@@ -45911,7 +45920,7 @@
         {
           "doc": "Composed oracle reduction for the SumcheckStep (seqCompose over \u2113')",
           "kind": "def",
-          "line": 725,
+          "line": 847,
           "name": "RingSwitching.SumcheckPhase.sumcheckLoopOracleReduction",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "sumcheckLoopOracleReduction",
@@ -45920,7 +45929,7 @@
         {
           "doc": "Large-field reduction verifier: Sumcheck seqCompose, then append FinalSum",
           "kind": "def",
-          "line": 742,
+          "line": 864,
           "name": "RingSwitching.SumcheckPhase.coreInteractionOracleVerifier",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteractionOracleVerifier",
@@ -45929,7 +45938,7 @@
         {
           "doc": "Large-field reduction: Sumcheck seqCompose, then append FinalSum",
           "kind": "def",
-          "line": 751,
+          "line": 873,
           "name": "RingSwitching.SumcheckPhase.coreInteractionOracleReduction",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteractionOracleReduction",
@@ -45938,7 +45947,7 @@
         {
           "doc": "Perfect completeness for large-field reduction (Sumcheck ++ FinalSum)",
           "kind": "theorem",
-          "line": 765,
+          "line": 887,
           "name": "RingSwitching.SumcheckPhase.coreInteraction_perfectCompleteness",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteraction_perfectCompleteness",
@@ -45947,7 +45956,7 @@
         {
           "doc": "Per-round knowledge error for the iterated sumcheck rounds.",
           "kind": "def",
-          "line": 792,
+          "line": 914,
           "name": "RingSwitching.SumcheckPhase.iteratedSumcheckRoundKnowledgeError",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "iteratedSumcheckRoundKnowledgeError",
@@ -45956,7 +45965,7 @@
         {
           "doc": "standard sumcheck error",
           "kind": "def",
-          "line": 795,
+          "line": 917,
           "name": "RingSwitching.SumcheckPhase.coreInteractionRbrKnowledgeError",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteractionRbrKnowledgeError",
@@ -45965,11 +45974,11 @@
         {
           "doc": "RBR knowledge soundness for large-field reduction (Sumcheck ++ FinalSum)",
           "kind": "theorem",
-          "line": 806,
+          "line": 928,
           "name": "RingSwitching.SumcheckPhase.coreInteraction_rbrKnowledgeSoundness",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteraction_rbrKnowledgeSoundness",
-          "signature": "theorem coreInteraction_rbrKnowledgeSoundness [IsDomain L] :"
+          "signature": "theorem coreInteraction_rbrKnowledgeSoundness [IsDomain L] [IsDomain K] :"
         }
       ]
     },
@@ -50778,7 +50787,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5515,
+      "declarations": 5516,
       "files": 288
     }
   }
