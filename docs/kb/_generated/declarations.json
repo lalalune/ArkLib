@@ -31158,9 +31158,45 @@
           "signature": "theorem runToRound_eq_bind_continueFromTo"
         },
         {
+          "doc": "Unfold `processRound` into its `do`-block: take the previous round's `(transcript, state)`, then branch on the round direction.  A rewrite handle; once the direction of the round is known use the direction-resolved `runToRound_succ_challenge`/`runToRound_succ_message`.",
+          "kind": "theorem",
+          "line": 668,
+          "name": "Prover.processRound_def",
+          "namespace": "Prover",
+          "short_name": "processRound_def",
+          "signature": "theorem processRound_def (j : Fin n)"
+        },
+        {
+          "doc": "**Message-round peel.** When round `j` is a `P_to_V` (prover-message) round, peeling one round binds over the previous result and then runs `sendMessage`, appending the message to the transcript.",
+          "kind": "theorem",
+          "line": 686,
+          "name": "Prover.runToRound_succ_message",
+          "namespace": "Prover",
+          "short_name": "runToRound_succ_message",
+          "signature": "theorem runToRound_succ_message (j : Fin n)"
+        },
+        {
+          "doc": "**Challenge-round peel.** When round `j` is a `V_to_P` (verifier-challenge) round, peeling one round binds over the previous result, samples the challenge, runs `receiveChallenge`, and appends the challenge to the transcript.",
+          "kind": "theorem",
+          "line": 706,
+          "name": "Prover.runToRound_succ_challenge",
+          "namespace": "Prover",
+          "short_name": "runToRound_succ_challenge",
+          "signature": "theorem runToRound_succ_challenge (j : Fin n)"
+        },
+        {
+          "doc": "**Full-run peel.** `Prover.run` is `runToRound (Fin.last n)` followed by `output`. This exposes the head so that the run can be peeled round-by-round (via `runToRound_succ` and friends) down to the `output` step.",
+          "kind": "theorem",
+          "line": 727,
+          "name": "Prover.run_eq_runToRound_last",
+          "namespace": "Prover",
+          "short_name": "run_eq_runToRound_last",
+          "signature": "theorem run_eq_runToRound_last"
+        },
+        {
           "doc": "Running the identity or trivial reduction results in the same input statement and witness, and empty transcript.",
           "kind": "theorem",
-          "line": 675,
+          "line": 749,
           "name": "Reduction.id_run",
           "namespace": "",
           "short_name": "Reduction.id_run",
@@ -31169,7 +31205,7 @@
         {
           "doc": "Running the identity or trivial reduction, with logging of queries to the shared oracle, results in the same input statement and witness, empty transcript, and empty query logs.",
           "kind": "theorem",
-          "line": 684,
+          "line": 758,
           "name": "Reduction.id_runWithLog",
           "namespace": "",
           "short_name": "Reduction.id_runWithLog",
@@ -31178,7 +31214,7 @@
         {
           "doc": "Running the identity or trivial oracle reduction results in the same input statement, oracle statement, and witness.",
           "kind": "theorem",
-          "line": 693,
+          "line": 767,
           "name": "OracleReduction.id_run",
           "namespace": "",
           "short_name": "OracleReduction.id_run",
@@ -31187,7 +31223,7 @@
         {
           "doc": "Running the identity or trivial oracle reduction results in the same input statement, oracle statement, and witness.",
           "kind": "theorem",
-          "line": 701,
+          "line": 775,
           "name": "OracleReduction.id_runWithLog",
           "namespace": "",
           "short_name": "OracleReduction.id_runWithLog",
@@ -31196,7 +31232,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 719,
+          "line": 793,
           "name": "Prover.runToRound_one_of_prover_first",
           "namespace": "",
           "short_name": "Prover.runToRound_one_of_prover_first",
@@ -31205,7 +31241,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 735,
+          "line": 809,
           "name": "Prover.runToRound_one_of_verifier_first",
           "namespace": "",
           "short_name": "Prover.runToRound_one_of_verifier_first",
@@ -31214,7 +31250,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 762,
+          "line": 836,
           "name": "Prover.run_of_verifier_first",
           "namespace": "",
           "short_name": "Prover.run_of_verifier_first",
@@ -31223,7 +31259,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 773,
+          "line": 847,
           "name": "Prover.run_of_prover_first",
           "namespace": "",
           "short_name": "Prover.run_of_prover_first",
@@ -31232,7 +31268,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 783,
+          "line": 857,
           "name": "Reduction.run_of_prover_first",
           "namespace": "",
           "short_name": "Reduction.run_of_prover_first",
@@ -50742,7 +50778,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5511,
+      "declarations": 5515,
       "files": 288
     }
   }
