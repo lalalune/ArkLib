@@ -5541,6 +5541,44 @@ lemma close_proximity_subset_matching_set_on_points_of_large_matching_subset
     (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs x
     (lt_of_le_of_lt hcover (hlarge x hx))
 
+/-- Claim-5.11-to-assembly bridge for any uniform integer bad-coordinate
+bound `E`: once double counting selects points with large fibers and the
+coverage arithmetic says that every close parameter must fit in such a fiber,
+the selected points cover the full close-parameter set. -/
+lemma exists_points_with_close_subset_matching_set_of_delta_nonmatching_bound
+    [NeZero n]
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    {D E t : ℕ}
+    (hE : δ * (n : ℚ) ≤ E)
+    (hcover :
+      (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).card - 1 ≤
+        (2 * k + 1)
+          * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+          * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+          * D)
+    (hthreshold :
+      (2 * k + 1)
+        * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+        * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+        * D + t ≤ #(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁))
+    (hsmall :
+      E * #(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) < (n - k) * t) :
+  ∃ Dtop : Finset (Fin n),
+    Dtop.card = k + 1 ∧
+    ∀ x ∈ Dtop,
+      coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ ⊆
+        matching_set_at_x k δ h_gs x := by
+  obtain ⟨Dtop, hcard, hlarge⟩ :=
+    exists_points_with_large_matching_subset_of_delta_nonmatching_bound
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+      h_gs (D := D) (E := E) (t := t) hE hthreshold hsmall
+  refine ⟨Dtop, hcard, ?_⟩
+  exact close_proximity_subset_matching_set_on_points_of_large_matching_subset
+    (F := F) (m := m) (n := n) (Q := Q)
+    (k := k) (δ := δ) (x₀ := x₀) (ωs := ωs) (Dtop := Dtop) (D := D)
+    h_gs hcover hlarge
+
 /-- Claim-5.11-to-assembly bridge for the canonical integer bad-coordinate
 bound: under the additional arithmetic coverage inequality, the selected
 points cover the full close-parameter set in every selected fiber. -/
