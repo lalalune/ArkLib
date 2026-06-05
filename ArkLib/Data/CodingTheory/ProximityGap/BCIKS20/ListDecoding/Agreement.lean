@@ -7,7 +7,7 @@ Authors: Quang Dao, Katerina Hristova, Frantisek Silvasi, Julian Sutherland,
 
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.RootClearing
 
-set_option linter.style.longFile 4400
+set_option linter.style.longFile 4600
 
 /-!
 # BCIKS20 list-decoding agreement compatibility module
@@ -3200,6 +3200,33 @@ lemma PzFamily_eval_eq_lineValuePolynomialFamily_eval_on_matching_domain
 
 open Polynomial in
 omit [DecidableEq (RatFunc F)] in
+/-- Selected-domain evaluation-polynomial witness for `PzFamily`. This is the
+local output shape supplied by Claim 5.11 plus Claim 5.10 before the remaining
+interpolation/extension step upgrades it to all coordinates. -/
+lemma PzFamily_exists_eval_polys_on_matching_domain_subtype
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (Dtop : Finset (Fin n))
+    (hk : 0 < k)
+    (hmatch : ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      ∀ x ∈ Dtop, z ∈ matching_set_at_x k δ h_gs x) :
+    ∃ E : Dtop → F[X],
+      (∀ x, (E x).natDegree < k + 1) ∧
+        ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+          ∀ x : Dtop,
+            (PzFamily (F := F) (n := n) δ u₀ u₁ ωs k z).eval (ωs x.1) =
+              (E x).eval z := by
+  refine ⟨fun x => lineValuePolynomialFamily (F := F) (n := n) u₀ u₁ x.1, ?_, ?_⟩
+  · intro x
+    exact lineValuePolynomialFamily_natDegree_lt_succ_of_pos
+      (F := F) (n := n) (k := k) u₀ u₁ hk x.1
+  · intro z hz x
+    exact PzFamily_eval_eq_lineValuePolynomialFamily_eval_of_mem_matching_set_at_x
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs
+      (hmatch z hz x.1 x.2)
+
+open Polynomial in
+omit [DecidableEq (RatFunc F)] in
 /-- Full-domain evaluation-polynomial witness for `PzFamily`, conditional on
 the remaining assembly fact that every close parameter lies in every coordinate
 matching set.  This is the exact `E` witness expected by the §6
@@ -3222,6 +3249,38 @@ lemma PzFamily_exists_eval_polys_of_forall_mem_matching_set_at_x
   · intro z hz x
     exact PzFamily_eval_eq_lineValuePolynomialFamily_eval_of_mem_matching_set_at_x
       (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs (hmatch z hz x)
+
+open Polynomial in
+omit [DecidableEq (RatFunc F)] in
+/-- Bundled canonical-family extraction: the chosen close-polynomial family is
+decoded on the close parameter set, and under the remaining full-coordinate
+matching hypothesis it also has the evaluation-polynomial dependence required
+by the §6 assembly layer.
+
+This deliberately stays specialized to `PzFamily`; the final §6 front door
+still asks for a universal statement over every decoded family, which requires
+the missing uniqueness/representative bridge rather than just this canonical
+choice. -/
+lemma PzFamily_decoded_and_exists_eval_polys_of_forall_mem_matching_set_at_x
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hk : 0 < k)
+    (hmatch : ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      ∀ x : Fin n, z ∈ matching_set_at_x k δ h_gs x) :
+    (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      (PzFamily (F := F) (n := n) δ u₀ u₁ ωs k z).natDegree < k + 1 ∧
+        δᵣ(u₀ + z • u₁,
+          (PzFamily (F := F) (n := n) δ u₀ u₁ ωs k z).eval ∘ ωs) ≤ δ) ∧
+      ∃ E : Fin n → F[X],
+        (∀ x, (E x).natDegree < k + 1) ∧
+          ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+            ∀ x : Fin n,
+              (PzFamily (F := F) (n := n) δ u₀ u₁ ωs k z).eval (ωs x) =
+                (E x).eval z := by
+  exact ⟨PzFamily_decoded_on_close_set
+      (F := F) (n := n) (k := k) (δ := δ) (u₀ := u₀) (u₁ := u₁) (ωs := ωs),
+    PzFamily_exists_eval_polys_of_forall_mem_matching_set_at_x
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) h_gs hk hmatch⟩
 
 omit [DecidableEq (RatFunc F)] in
 lemma matching_set_at_x_eq_matching_coords_image_univ
