@@ -15432,9 +15432,18 @@
           "signature": "theorem correlatedAgreement_affine_curves_of_strict_canonical_coeff_data"
         },
         {
-          "doc": "Non-cyclic public wrapper for the closed list-decoding assembly theorem with the strict branch phrased as canonical \u00a75 extraction data for one decoded family, plus uniqueness.",
+          "doc": "Non-cyclic public wrapper for the closed canonical evaluation-polynomial assembly theorem with canonical evaluation data required only in the strict Johnson branch.",
           "kind": "theorem",
           "line": 563,
+          "name": "ProximityGap.correlatedAgreement_affine_curves_of_strict_canonical_eval_data",
+          "namespace": "ProximityGap",
+          "short_name": "correlatedAgreement_affine_curves_of_strict_canonical_eval_data",
+          "signature": "theorem correlatedAgreement_affine_curves_of_strict_canonical_eval_data"
+        },
+        {
+          "doc": "Non-cyclic public wrapper for the closed list-decoding assembly theorem with the strict branch phrased as canonical \u00a75 extraction data for one decoded family, plus uniqueness.",
+          "kind": "theorem",
+          "line": 604,
           "name": "ProximityGap.correlatedAgreement_affine_curves_of_section5_canonical_data",
           "namespace": "ProximityGap",
           "short_name": "correlatedAgreement_affine_curves_of_section5_canonical_data",
@@ -15443,7 +15452,7 @@
         {
           "doc": "Non-cyclic public wrapper for the closed list-decoding assembly theorem with canonical \u00a75 extraction data required only in the strict Johnson branch.",
           "kind": "theorem",
-          "line": 591,
+          "line": 632,
           "name": "ProximityGap.correlatedAgreement_affine_curves_of_strict_section5_canonical_data",
           "namespace": "ProximityGap",
           "short_name": "correlatedAgreement_affine_curves_of_strict_section5_canonical_data",
@@ -20126,9 +20135,27 @@
           "signature": "class classical"
         },
         {
+          "doc": "Strict square-root-radius degree-one correlated-agreement capstone routed through the non-cyclic closed assembly wrapper, using the native \u00a75 `PzFamily`/evaluation-polynomial package.",
+          "kind": "theorem",
+          "line": 1139,
+          "name": "ProximityGap.correlatedAgreement_affine_lines_of_strict_exists_PzFamily_assembled",
+          "namespace": "ProximityGap",
+          "short_name": "correlatedAgreement_affine_lines_of_strict_exists_PzFamily_assembled",
+          "signature": "theorem correlatedAgreement_affine_lines_of_strict_exists_PzFamily_assembled"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 1158,
+          "name": "ProximityGap._anon_class_1158",
+          "namespace": "ProximityGap",
+          "short_name": "_anon_class_1158",
+          "signature": "class classical"
+        },
+        {
           "doc": "Strict Johnson evaluation-polynomial supplier for the \u00a76 curve front doors, derived from the canonical `PzFamily` supplier above.",
           "kind": "theorem",
-          "line": 1138,
+          "line": 1172,
           "name": "ProximityGap.section5_strict_eval_polys_for_RS_goodCoeffsCurve_finMapTwoWords",
           "namespace": "ProximityGap",
           "short_name": "section5_strict_eval_polys_for_RS_goodCoeffsCurve_finMapTwoWords",
@@ -20137,16 +20164,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1171,
-          "name": "ProximityGap._anon_class_1171",
+          "line": 1205,
+          "name": "ProximityGap._anon_class_1205",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_1171",
+          "short_name": "_anon_class_1205",
           "signature": "class classical"
         },
         {
           "doc": "Degree-one correlated-agreement capstone in the native \u00a75 affine-line language, using the raw strict evaluation-polynomial front door. This is the same mathematical content as `correlatedAgreement_affine_lines_of_strict_exists_PzFamily_and_boundary_card`, but exposes the \u00a75 extraction in the non-canonical hypothesis shape consumed by `correlatedAgreement_affine_curves_of_strict_eval_polys_and_boundary_card`.",
           "kind": "theorem",
-          "line": 1188,
+          "line": 1222,
           "name": "ProximityGap.correlatedAgreement_affine_lines_of_strict_eval_polys_and_boundary_card",
           "namespace": "ProximityGap",
           "short_name": "correlatedAgreement_affine_lines_of_strict_eval_polys_and_boundary_card",
@@ -20155,16 +20182,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1212,
-          "name": "ProximityGap._anon_class_1212",
+          "line": 1246,
+          "name": "ProximityGap._anon_class_1246",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_1212",
+          "short_name": "_anon_class_1246",
           "signature": "class classical"
         },
         {
           "doc": "Strict square-root-radius degree-one correlated-agreement capstone in the native \u00a75 affine-line language, using the raw strict evaluation-polynomial front door.",
           "kind": "theorem",
-          "line": 1233,
+          "line": 1267,
           "name": "ProximityGap.correlatedAgreement_affine_lines_of_strict_eval_polys",
           "namespace": "ProximityGap",
           "short_name": "correlatedAgreement_affine_lines_of_strict_eval_polys",
@@ -20173,16 +20200,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1252,
-          "name": "ProximityGap._anon_class_1252",
+          "line": 1286,
+          "name": "ProximityGap._anon_class_1286",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_1252",
+          "short_name": "_anon_class_1286",
           "signature": "class classical"
         },
         {
           "doc": "Degree-one correlated-agreement capstone in the native \u00a75 affine-line language. The generic \u00a76 theorem quantifies over arbitrary `WordStack F (Fin 2) (Fin n)`; this wrapper identifies every such stack with `Code.finMapTwoWords (u 0) (u 1)` and transports both the strict `PzFamily` package and the closed-boundary cardinality obligation through the \u00a75/\u00a76 close-set equality.",
           "kind": "theorem",
-          "line": 1266,
+          "line": 1300,
           "name": "ProximityGap.correlatedAgreement_affine_lines_of_strict_exists_PzFamily_and_boundary_card",
           "namespace": "ProximityGap",
           "short_name": "correlatedAgreement_affine_lines_of_strict_exists_PzFamily_and_boundary_card",
@@ -20191,16 +20218,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1290,
-          "name": "ProximityGap._anon_class_1290",
+          "line": 1324,
+          "name": "ProximityGap._anon_class_1324",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_1290",
+          "short_name": "_anon_class_1324",
           "signature": "class classical"
         },
         {
           "doc": "Strict square-root-radius degree-one correlated-agreement capstone in the native \u00a75 affine-line language. Unlike `correlatedAgreement_affine_lines_of_strict_exists_PzFamily_and_boundary_card`, this version needs no closed-boundary obligation because the global hypothesis is already `\u03b4 < 1 - sqrtRate`.",
           "kind": "theorem",
-          "line": 1313,
+          "line": 1347,
           "name": "ProximityGap.correlatedAgreement_affine_lines_of_strict_exists_PzFamily",
           "namespace": "ProximityGap",
           "short_name": "correlatedAgreement_affine_lines_of_strict_exists_PzFamily",
@@ -20209,10 +20236,10 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1332,
-          "name": "ProximityGap._anon_class_1332",
+          "line": 1366,
+          "name": "ProximityGap._anon_class_1366",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_1332",
+          "short_name": "_anon_class_1366",
           "signature": "class classical"
         }
       ]
@@ -28710,82 +28737,6 @@
           "namespace": "CodingTheory",
           "short_name": "frs_is_subspaceDesign_gk16",
           "signature": "theorem frs_is_subspaceDesign_gk16"
-        }
-      ]
-    },
-    "ArkLib/Data/CodingTheory/zz_a5_devwork.lean": {
-      "declarations": [
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 28,
-          "name": "ProximityGap.MCAListSize.badSlopes",
-          "namespace": "ProximityGap.MCAListSize",
-          "short_name": "badSlopes",
-          "signature": "def badSlopes (C : Set (\u03b9 \u2192 A)) (\u03b4 : \u211d\u22650) (u\u2080 u\u2081 : \u03b9 \u2192 A) : Finset F :="
-        },
-        {
-          "doc": "",
-          "kind": "theorem",
-          "line": 32,
-          "name": "ProximityGap.MCAListSize.Pr_mcaEvent_eq_badSlopes_card_div",
-          "namespace": "ProximityGap.MCAListSize",
-          "short_name": "Pr_mcaEvent_eq_badSlopes_card_div",
-          "signature": "theorem Pr_mcaEvent_eq_badSlopes_card_div (C : Set (\u03b9 \u2192 A)) (\u03b4 : \u211d\u22650) (u\u2080 u\u2081 : \u03b9 \u2192 A) :"
-        },
-        {
-          "doc": "",
-          "kind": "class",
-          "line": 35,
-          "name": "ProximityGap.MCAListSize._anon_class_35",
-          "namespace": "ProximityGap.MCAListSize",
-          "short_name": "_anon_class_35",
-          "signature": "class classical"
-        },
-        {
-          "doc": "",
-          "kind": "theorem",
-          "line": 41,
-          "name": "ProximityGap.MCAListSize.epsMCA_le_of_badSlopeCount",
-          "namespace": "ProximityGap.MCAListSize",
-          "short_name": "epsMCA_le_of_badSlopeCount",
-          "signature": "theorem epsMCA_le_of_badSlopeCount (C : Set (\u03b9 \u2192 A)) (\u03b4 : \u211d\u22650) (N : \u2115)"
-        },
-        {
-          "doc": "",
-          "kind": "class",
-          "line": 44,
-          "name": "ProximityGap.MCAListSize._anon_class_44",
-          "namespace": "ProximityGap.MCAListSize",
-          "short_name": "_anon_class_44",
-          "signature": "class classical"
-        },
-        {
-          "doc": "",
-          "kind": "theorem",
-          "line": 57,
-          "name": "ProximityGap.MCAListSize.badSlope_rs_witness",
-          "namespace": "ProximityGap.MCAListSize",
-          "short_name": "badSlope_rs_witness",
-          "signature": "theorem badSlope_rs_witness {\u03b4 : \u211d\u22650} {f\u2080 f\u2081 : \u03b9 \u2192 F} {\u03b3 : F}"
-        },
-        {
-          "doc": "",
-          "kind": "theorem",
-          "line": 75,
-          "name": "ProximityGap.MCAListSize.affineLine_jointAgree_of_two_badSlopes",
-          "namespace": "ProximityGap.MCAListSize",
-          "short_name": "affineLine_jointAgree_of_two_badSlopes",
-          "signature": "theorem affineLine_jointAgree_of_two_badSlopes {\u03b4 : \u211d\u22650} {f\u2080 f\u2081 : \u03b9 \u2192 F} {\u03b3 \u03b3' : F}"
-        },
-        {
-          "doc": "",
-          "kind": "class",
-          "line": 87,
-          "name": "ProximityGap.MCAListSize._anon_class_87",
-          "namespace": "ProximityGap.MCAListSize",
-          "short_name": "_anon_class_87",
-          "signature": "class classical"
         }
       ]
     },
@@ -69656,9 +69607,18 @@
           "signature": "theorem correlatedAgreement_affine_curves_listDecoding_closed_of_strict_canonical_coeff"
         },
         {
+          "doc": "Closed list-decoding keystone with the strict branch phrased as one canonical decoded family with evaluation-polynomial witnesses. This is the evaluation-polynomial analogue of `correlatedAgreement_affine_curves_listDecoding_closed_of_strict_canonical_coeff`. It exposes the existing curve front door through the non-cyclic closed layer.",
+          "kind": "theorem",
+          "line": 392,
+          "name": "ArkLib.CorrelatedAgreementListDecodingClosed.correlatedAgreement_affine_curves_listDecoding_closed_of_strict_canonical_eval",
+          "namespace": "ArkLib.CorrelatedAgreementListDecodingClosed",
+          "short_name": "correlatedAgreement_affine_curves_listDecoding_closed_of_strict_canonical_eval",
+          "signature": "theorem correlatedAgreement_affine_curves_listDecoding_closed_of_strict_canonical_eval"
+        },
+        {
           "doc": "Turn the genuine \u00a75 extraction datum for one canonical decoded family into the canonical coefficient-polynomial package consumed by the closed keystone. The coefficient witnesses are still derived from `Section5StrictData` through `curveCoeffPolys_of_betaRec`; the only extra assumption is the expected uniqueness statement identifying every good decoding with the chosen canonical family `P\u2080`.",
           "kind": "theorem",
-          "line": 393,
+          "line": 436,
           "name": "ArkLib.CorrelatedAgreementListDecodingClosed.canonicalCoeffPolys_of_section5CanonicalData",
           "namespace": "ArkLib.CorrelatedAgreementListDecodingClosed",
           "short_name": "canonicalCoeffPolys_of_section5CanonicalData",
@@ -69667,7 +69627,7 @@
         {
           "doc": "Closed list-decoding keystone where the strict branch supplies exactly the canonical \u00a75 extraction data for one family `P\u2080` per stack, plus uniqueness. This is the direct residual target for the current \u00a75 assembly: the betaRec extraction datum is still genuine `Section5StrictData`, while the theorem packages it into the canonical-coefficient front door automatically.",
           "kind": "theorem",
-          "line": 424,
+          "line": 467,
           "name": "ArkLib.CorrelatedAgreementListDecodingClosed.correlatedAgreement_affine_curves_listDecoding_closed_of_section5_canonical",
           "namespace": "ArkLib.CorrelatedAgreementListDecodingClosed",
           "short_name": "correlatedAgreement_affine_curves_listDecoding_closed_of_section5_canonical",
@@ -69676,7 +69636,7 @@
         {
           "doc": "Closed list-decoding keystone with branch-specific canonical \u00a75 extraction data. In the strict Johnson branch, it is enough to provide one canonical decoded family `P\u2080` carrying `Section5StrictData`, plus uniqueness of all good decodings against `P\u2080`.  The proof transports the canonical datum to each decoded family using `section5StrictData_of_eq_on_good`, then calls the per-decoding closed keystone.",
           "kind": "theorem",
-          "line": 457,
+          "line": 500,
           "name": "ArkLib.CorrelatedAgreementListDecodingClosed.correlatedAgreement_affine_curves_listDecoding_closed_of_strict_section5_canonical",
           "namespace": "ArkLib.CorrelatedAgreementListDecodingClosed",
           "short_name": "correlatedAgreement_affine_curves_listDecoding_closed_of_strict_section5_canonical",
@@ -72774,8 +72734,8 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 7914,
-      "files": 390
+      "declarations": 7910,
+      "files": 389
     }
   }
 }
