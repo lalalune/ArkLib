@@ -5444,6 +5444,70 @@ lemma exists_points_with_large_matching_subset_of_natCeil_delta_nonmatching_boun
     (Nat.le_ceil _)
     hthreshold hsmall
 
+omit [DecidableEq (RatFunc F)] in
+/-- Turn a Claim-5.11 point set with sufficiently large `S'_x` fibers into the
+full close-set coverage condition consumed by the canonical `PzFamily`
+evaluation-polynomial package. -/
+lemma close_proximity_subset_matching_set_on_points_of_large_matching_subset
+    {ωs : Fin n ↪ F} {Dtop : Finset (Fin n)}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    {D : ℕ}
+    (hcover :
+      (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).card - 1 ≤
+        (2 * k + 1)
+          * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+          * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+          * D)
+    (hlarge : ∀ x ∈ Dtop,
+      (matching_set_at_x k δ h_gs x).card >
+        (2 * k + 1)
+          * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+          * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+          * D) :
+    ∀ x ∈ Dtop,
+      coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ ⊆
+        matching_set_at_x k δ h_gs x := by
+  intro x hx
+  exact close_proximity_subset_matching_set_at_x_of_pred_lt_card
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs x
+    (lt_of_le_of_lt hcover (hlarge x hx))
+
+/-- Claim-5.11-to-assembly bridge for the canonical integer bad-coordinate
+bound: under the additional arithmetic coverage inequality, the selected
+points cover the full close-parameter set in every selected fiber. -/
+lemma exists_points_with_close_subset_matching_set_of_natCeil_delta_nonmatching_bound
+    [NeZero n]
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    {D t : ℕ}
+    (hcover :
+      (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).card - 1 ≤
+        (2 * k + 1)
+          * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+          * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+          * D)
+    (hthreshold :
+      (2 * k + 1)
+        * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+        * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+        * D + t ≤ #(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁))
+    (hsmall :
+      ⌈δ * (n : ℚ)⌉₊ * #(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) <
+        (n - k) * t) :
+  ∃ Dtop : Finset (Fin n),
+    Dtop.card = k + 1 ∧
+    ∀ x ∈ Dtop,
+      coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ ⊆
+        matching_set_at_x k δ h_gs x := by
+  obtain ⟨Dtop, hcard, hlarge⟩ :=
+    exists_points_with_large_matching_subset_of_natCeil_delta_nonmatching_bound
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+      h_gs (D := D) (t := t) hthreshold hsmall
+  refine ⟨Dtop, hcard, ?_⟩
+  exact close_proximity_subset_matching_set_on_points_of_large_matching_subset
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+    h_gs hcover hlarge
+
 /-- Claim 5.11 from [BCIKS20].
 There exists a set of points `{x₀,...,x_{k+1}}` such that the sets S_{x_j} satisfy the condition in
 Claim 5.10.
