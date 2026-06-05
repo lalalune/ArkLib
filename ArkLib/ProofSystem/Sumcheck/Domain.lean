@@ -120,6 +120,13 @@ def init (D : SumcheckDomain R (k + 1)) : SumcheckDomain R k where
 @[simp] lemma points_init (D : SumcheckDomain R (k + 1)) (i : Fin k) :
     D.init.points i = D.points i.castSucc := rfl
 
+/-- `init` of a uniform domain is uniform of one lower dimension. -/
+@[simp] lemma init_uniform (D₀ : Fin m ↪ R) (k : ℕ) :
+    (uniform D₀ (k + 1)).init = uniform D₀ k := rfl
+
+@[simp] lemma points_last_uniform (D₀ : Fin m ↪ R) (k : ℕ) :
+    (uniform D₀ (k + 1)).points (Fin.last k) = Finset.univ.map D₀ := rfl
+
 /-- Drop the first `j` coordinates, leaving the domain on the remaining `k - j` coordinates:
 coordinate `i` of `D.drop j` is coordinate `j + i` of `D`. This is the *suffix* that per-round
 sum-check needs — round `j` sums over coordinates `j … k-1`. -/

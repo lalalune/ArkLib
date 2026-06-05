@@ -209,6 +209,106 @@ theorem getSumcheckRoundPoly_eval_eq_sum_snoc (i : Fin ℓ')
   refine HEq.trans ?_ hcurH.symm
   exact cast_heq _ _
 
+omit [NeZero κ] [Fintype L] [DecidableEq L] [SampleableType L] [NeZero ℓ] [NeZero ℓ'] in
+/-- Renaming a polynomial along the canonical index `finCongr` of a (propositional) dimension
+equality `a = b` is heterogeneously equal to the original polynomial. -/
+private lemma rename_finCongr_heq {a b : ℕ} (h : a = b) (p : MvPolynomial (Fin a) L) :
+    HEq (rename (finCongr h) p) p := by
+  subst h
+  rw [finCongr_refl, Equiv.coe_refl, rename_id_apply]
+
+/-- **Verifier-check identity (defect-#20 last-variable form).** Summing the prover's round
+univariate `getSumcheckRoundPoly ℓ' (boolDomain L ℓ') i H` over coordinate `i`'s Boolean domain
+`{0,1}` recovers the full cube-sum of the round polynomial `H` over the round-`i.castSucc` Boolean
+cube. This is the honest verifier's step-6 check: `∑_{b ∈ D.points i} h_i.eval b = ∑_{cube} H`, which
+the input relation's `sumcheckConsistencyProp` equates to `stmtIn.sumcheck_target`.
+
+The univariate keeps the **last** surviving variable as the indeterminate, so the marginal is the
+`snoc` cube-telescoping `sum_cube_snoc`: splitting off coordinate `Fin.last` of the round cube
+`(boolDomain L (ℓ' - i.castSucc)).cube` reproduces exactly the `b`-then-survivors structure of the
+univariate's evaluation. Both the survivor cubes `((boolDomain L ℓ').drop (i.castSucc+1))` (used by
+`getSumcheckRoundPoly`) and `(boolDomain L (ℓ'-i.castSucc)).init` (produced by `sum_cube_snoc`)
+collapse to the *uniform* Boolean cube of equal dimension `ℓ'-i.castSucc-1`, so the heterogeneous
+`drop`-vs-`init` index gap is harmless for the Boolean domain. -/
+theorem getSumcheckRoundPoly_points_sum_eq_cube (i : Fin ℓ')
+    (H : L⦃≤ 2⦄[X Fin (ℓ' - ↑i.castSucc)]) :
+    ∑ b ∈ (boolDomain L ℓ').points i,
+        (getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i) H).val.eval b
+      = ∑ z ∈ (boolDomain L (ℓ' - ↑i.castSucc)).cube, H.val.eval z := by
+  -- `ℓ' - i.castSucc = (ℓ'-i.castSucc-1) + 1` from `i.isLt`.
+  have hn : ℓ' - ↑i.castSucc = (ℓ' - ↑i.castSucc - 1) + 1 := by
+    have := i.2; simp only [Fin.val_castSucc]; omega
+  -- `curH := rename (finCongr hn) H.val` is `H.val` reindexed to `Fin ((ℓ'-i.castSucc-1)+1)`; the
+  -- rename keeps the polynomial (just relabels variables along the canonical `Fin.cast`).
+  set curH : L[X Fin ((ℓ' - ↑i.castSucc - 1) + 1)] := rename (finCongr hn) H.val with hcurH_def
+  have hHEq : HEq curH H.val := by
+    rw [hcurH_def]; exact rename_finCongr_heq (h := hn) (p := H.val)
+  -- (1) LHS: each round-univariate value is a survivor-cube snoc-sum (degree-generic lemma).
+  rw [show (∑ b ∈ (boolDomain L ℓ').points i,
+        (getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i) H).val.eval b)
+      = ∑ b ∈ (boolDomain L ℓ').points i,
+          ∑ x ∈ ((boolDomain L ℓ').drop (↑i.castSucc + 1)).cube,
+            MvPolynomial.eval
+              (Fin.snoc (Fin.append x (fun j => j.elim0) ∘ Fin.cast (by omega)) b) curH from
+    Finset.sum_congr rfl fun b _ =>
+      Sumcheck.Structured.getSumcheckRoundPoly_eval_eq_sum_snoc ℓ' (boolDomain L ℓ')
+        i H b curH hHEq]
+  -- (2) RHS: transport the cube-sum of `H` to `curH` over `Fin ((ℓ'-i.castSucc-1)+1)` via the
+  -- variable-renaming `eval_rename`, then split off the last coordinate via `sum_cube_snoc`.
+  have heval_curH : ∀ z : Fin ((ℓ' - ↑i.castSucc - 1) + 1) → L,
+      curH.eval z = H.val.eval (z ∘ finCongr hn) := by
+    intro z; rw [hcurH_def, eval_rename]
+  rw [show (∑ z ∈ (boolDomain L (ℓ' - ↑i.castSucc)).cube, H.val.eval z)
+      = ∑ z ∈ (boolDomain L ((ℓ' - ↑i.castSucc - 1) + 1)).cube, curH.eval z from by
+    apply Finset.sum_nbij' (fun z => z ∘ finCongr hn.symm) (fun z => z ∘ finCongr hn)
+    · intro z hz; simp only [SumcheckDomain.mem_cube] at hz ⊢; intro j; simpa using hz _
+    · intro z hz; simp only [SumcheckDomain.mem_cube] at hz ⊢; intro j; simpa using hz _
+    · intro z _; funext j; simp only [Function.comp_apply, finCongr_apply,
+        Fin.cast_cast, Fin.cast_eq_self]
+    · intro z _; funext j; simp only [Function.comp_apply, finCongr_apply,
+        Fin.cast_cast, Fin.cast_eq_self]
+    · intro z _
+      rw [heval_curH]
+      refine congrArg (fun pt => MvPolynomial.eval pt H.val) ?_
+      funext j
+      simp only [Function.comp_apply, finCongr_apply, Fin.cast_cast, Fin.cast_eq_self]]
+  rw [SumcheckDomain.sum_cube_snoc (boolDomain L ((ℓ' - ↑i.castSucc - 1) + 1))
+    (fun z => curH.eval z)]
+  -- (3) Match the outer Boolean point-sum (`b`) and the inner survivor cube-sums.
+  -- Outer index sets: `(boolDomain ℓ').points i = univ.map boolEmbedding = points last` (uniform).
+  simp only [points_boolDomain]
+  refine Finset.sum_congr rfl fun b _ => ?_
+  -- Inner survivor cubes: `((boolDomain ℓ').drop (i+1))` and `(boolDomain (..)).init` are both the
+  -- uniform Boolean cube of dimension `ℓ'-i.castSucc-1`. Reindex by the canonical `Fin.cast`.
+  simp only [boolDomain, SumcheckDomain.init_uniform, SumcheckDomain.drop_uniform]
+  -- `ℓ' - (i.castSucc+1) = ℓ' - i.castSucc - 1`, so both cubes are over the same dimension up to a
+  -- `Fin.cast` reindex of the points; the snoc-survivor reconstruction `append x ∅ ∘ cast` matches.
+  apply Finset.sum_nbij' (fun x => x ∘ Fin.cast (by omega)) (fun y => y ∘ Fin.cast (by omega))
+  · intro x hx
+    simp only [SumcheckDomain.mem_cube] at hx ⊢
+    intro j
+    simpa using hx (Fin.cast (by omega) j)
+  · intro y hy
+    simp only [SumcheckDomain.mem_cube] at hy ⊢
+    intro j
+    simpa using hy (Fin.cast (by omega) j)
+  · intro x _; funext j; simp
+  · intro y _; funext j; simp
+  · intro x _
+    -- The snoc-survivor reconstructions agree: `append x ∅ ∘ cast` and `x ∘ cast` coincide as the
+    -- survivor point (the `Fin.append`-with-empty is just `x`, up to the harmless `Fin.cast`).
+    refine congrArg (fun pt => MvPolynomial.eval pt curH) ?_
+    funext j
+    refine Fin.lastCases ?_ (fun j => ?_) j
+    · simp only [Fin.snoc_last]
+    · simp only [Fin.snoc_castSucc, Function.comp_apply]
+      -- `Fin.append x ∅` at a left-side (cast) index is just `x` at the matching index: rewrite the
+      -- `Fin.cast` index as a `Fin.castAdd 0` and apply `Fin.append_left`.
+      rw [show (Fin.cast (by omega) j : Fin (ℓ' - (↑i.castSucc + 1) + 0))
+            = Fin.castAdd 0 (Fin.cast (by omega) j) from Fin.ext rfl,
+          Fin.append_left]
+      exact congrArg x (Fin.ext rfl)
+
 noncomputable def iteratedSumcheckRbrExtractor (i : Fin ℓ') :
   Extractor.RoundByRound []ₒ
     (StmtIn := (Statement (L := L) (ℓ := ℓ')
