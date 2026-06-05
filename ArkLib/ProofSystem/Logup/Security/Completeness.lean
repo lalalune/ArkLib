@@ -188,7 +188,7 @@ theorem logup_completeness :
   -- (`logupOracleReduction_eq_append`), so the composed completeness fact unifies with the goal up
   -- to `logupCompletenessError F n + 0 = logupCompletenessError F n`. We assemble the composed fact
   -- and close by `simpa`, avoiding a `rw` that would force `whnf` of the full reduction.
-  have h := OracleReduction.append_completeness.{0, 0, 0, 0}
+  have h := OracleReduction.append_completeness.{0, 0}
     (rel₂ := midRelation F n M params)
     (outerOracleReduction oSpec F n M params)
     (sumcheckOracleReduction oSpec F n M params)

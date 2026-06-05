@@ -212,6 +212,20 @@ noncomputable def oracleVerifier :
   embed := ⟨fun j => Sum.inl j, fun a b h => by cases h; rfl⟩
   hEq := fun i => rfl
 
+/-- The batching-phase oracle verifier passes every output oracle through to the unchanged input
+oracle (`embed = Sum.inl`, `OStmtIn = OStmtOut`, `hEq = rfl`) and exposes no message oracle, so its
+`AppendCoherent` coherence holds by `rfl`. Used to `.append` the batching phase onto the core
+interaction phase. -/
+instance instOracleVerifierAppendCoherent :
+    OracleVerifier.Append.AppendCoherent
+      (oracleVerifier κ L K P ℓ ℓ' h_l (aOStmtIn := aOStmtIn)) where
+  hCohInl := fun a k h => by
+    have : a = k := by
+      simpa only [oracleVerifier, Function.Embedding.coeFn_mk, Sum.inl.injEq] using h
+    subst this; rfl
+  hCohInr := fun a k h => by
+    simp only [oracleVerifier, Function.Embedding.coeFn_mk, reduceCtorEq] at h
+
 open OracleInterface in
 omit [NeZero κ] [Fintype L] [SampleableType L] [Fintype K] [DecidableEq K]
   [NeZero ℓ] [NeZero ℓ'] in
@@ -264,6 +278,13 @@ noncomputable def batchingOracleReduction : OracleReduction (oSpec:=[]ₒ)
     (pSpec := pSpecBatching (κ:=κ) (L:=L) (K:=K) (P:=P)) where
   prover := oracleProver κ L K P ℓ ℓ' h_l (aOStmtIn:=aOStmtIn)
   verifier := oracleVerifier κ L K P ℓ ℓ' h_l (aOStmtIn:=aOStmtIn)
+
+/-- The batching oracle *reduction*'s verifier is definitionally `oracleVerifier`, so it inherits
+`AppendCoherent`. -/
+instance instBatchingOracleReductionAppendCoherent :
+    OracleVerifier.Append.AppendCoherent
+      (batchingOracleReduction κ L K P ℓ ℓ' h_l (aOStmtIn := aOStmtIn)).verifier :=
+  instOracleVerifierAppendCoherent κ L K P ℓ ℓ' h_l (aOStmtIn := aOStmtIn)
 
 /-! ## RBR Knowledge Soundness Components -/
 

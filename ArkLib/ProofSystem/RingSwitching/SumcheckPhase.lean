@@ -127,6 +127,18 @@ def iteratedSumcheckOracleReduction (i : Fin ℓ') :
   Sumcheck.Structured.roundOracleReduction (L := L) ℓ' (boolDomain L ℓ')
     (RingSwitchingBaseContext κ L K ℓ P) (OStmtIn := aOStmtIn.OStmtIn) (d := 2) i
 
+/-- Leaf `AppendCoherent` for the `i`-th iterated sumcheck round verifier (definitionally the
+structured `roundOracleVerifier`), so the `seqCompose` loop synthesizes its outer coherence. -/
+instance instIteratedSumcheckOracleVerifierAppendCoherent (i : Fin ℓ') :
+    OracleVerifier.Append.AppendCoherent (iteratedSumcheckOracleVerifier κ L K P ℓ ℓ' aOStmtIn i) :=
+  Sumcheck.Structured.instRoundOracleVerifierAppendCoherent (L := L) ℓ' (boolDomain L ℓ')
+    (RingSwitchingBaseContext κ L K ℓ P) (OStmtIn := aOStmtIn.OStmtIn) (d := 2) i
+
+instance instIteratedSumcheckOracleReductionAppendCoherent (i : Fin ℓ') :
+    OracleVerifier.Append.AppendCoherent
+      (iteratedSumcheckOracleReduction κ L K P ℓ ℓ' aOStmtIn i).verifier :=
+  instIteratedSumcheckOracleVerifierAppendCoherent κ L K P ℓ ℓ' aOStmtIn i
+
 variable {R : Type} [CommSemiring R] [DecidableEq R] [SampleableType R]
   {n : ℕ} {deg : ℕ} {m : ℕ} {D : Fin m ↪ R}
 
@@ -526,6 +538,25 @@ noncomputable def finalSumcheckOracleReduction :
     (pSpec := pSpecFinalSumcheck L) where
   prover := finalSumcheckProver κ L K P ℓ ℓ' aOStmtIn
   verifier := finalSumcheckVerifier κ L K P ℓ ℓ' h_l aOStmtIn
+
+/-- The final-sumcheck oracle verifier passes every output oracle through to the unchanged input
+oracle (`embed = Sum.inl`, `OStmtIn = OStmtOut`, `hEq = rfl`) and exposes no message oracle, so its
+`AppendCoherent` coherence holds by `rfl`. Used to `.append` the final step onto the sumcheck loop. -/
+instance instFinalSumcheckVerifierAppendCoherent :
+    OracleVerifier.Append.AppendCoherent (finalSumcheckVerifier κ L K P ℓ ℓ' h_l aOStmtIn) where
+  hCohInl := fun a k h => by
+    have : a = k := by
+      simpa only [finalSumcheckVerifier, Function.Embedding.coeFn_mk, Sum.inl.injEq] using h
+    subst this; rfl
+  hCohInr := fun a k h => by
+    simp only [finalSumcheckVerifier, Function.Embedding.coeFn_mk, reduceCtorEq] at h
+
+/-- The final-sumcheck oracle *reduction*'s verifier is definitionally `finalSumcheckVerifier`, so it
+inherits `AppendCoherent`. -/
+instance instFinalSumcheckOracleReductionAppendCoherent :
+    OracleVerifier.Append.AppendCoherent
+      (finalSumcheckOracleReduction κ L K P ℓ ℓ' h_l aOStmtIn).verifier :=
+  instFinalSumcheckVerifierAppendCoherent κ L K P ℓ ℓ' h_l aOStmtIn
 
 /-- **Final-sumcheck consistency-sum collapse (sorry-free algebra core).** The round-0 consistency
 sum of the final-step round polynomial `H = projectToMidSumcheckPoly t' A_MLE (Fin.last ℓ') challenges`
@@ -938,23 +969,64 @@ def sumcheckLoopOracleReduction :
     (Wit := fun i => SumcheckWitness L ℓ' i)
     (R := fun (i: Fin ℓ') => iteratedSumcheckOracleReduction κ L K P ℓ ℓ' aOStmtIn i)
 
+/-- The sumcheck-loop oracle verifier (a `seqCompose` of the per-round verifiers) is `AppendCoherent`
+via `OracleVerifier.seqCompose_appendCoherent` and the per-round leaf instances, so it can be
+`.append`ed with the final-sumcheck step. -/
+instance instSumcheckLoopOracleVerifierAppendCoherent :
+    OracleVerifier.Append.AppendCoherent
+      (Oₛ₁ := inferInstance) (Oₛ₂ := inferInstance) (Oₘ₁ := inferInstance)
+      (sumcheckLoopOracleVerifier κ L K P ℓ ℓ' aOStmtIn) :=
+  OracleVerifier.seqCompose_appendCoherent
+    (Stmt := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P))
+    (OStmt := fun _ => aOStmtIn.OStmtIn)
+    (fun (i : Fin ℓ') => iteratedSumcheckOracleVerifier κ L K P ℓ ℓ' aOStmtIn i)
+
+instance instSumcheckLoopOracleReductionAppendCoherent :
+    OracleVerifier.Append.AppendCoherent
+      (Oₛ₁ := inferInstance) (Oₛ₂ := inferInstance) (Oₘ₁ := inferInstance)
+      (sumcheckLoopOracleReduction κ L K P ℓ ℓ' aOStmtIn).verifier :=
+  OracleReduction.seqCompose_verifier_appendCoherent
+    (Stmt := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P))
+    (OStmt := fun _ => aOStmtIn.OStmtIn)
+    (Wit := fun i => SumcheckWitness L ℓ' i)
+    (fun (i : Fin ℓ') => iteratedSumcheckOracleReduction κ L K P ℓ ℓ' aOStmtIn i)
+
+set_option maxHeartbeats 800000 in
+set_option synthInstance.maxHeartbeats 800000 in
 /-- Large-field reduction verifier: Sumcheck seqCompose, then append FinalSum -/
 @[reducible]
 def coreInteractionOracleVerifier :=
   OracleVerifier.append (oSpec:=[]ₒ)
     (V₁:=sumcheckLoopOracleVerifier κ L K P ℓ ℓ' aOStmtIn)
-    (pSpec₁:=pSpecSumcheckLoop L ℓ')
     (V₂:=finalSumcheckVerifier κ L K P ℓ ℓ' h_l aOStmtIn)
     (pSpec₂:=pSpecFinalSumcheck L)
 
+set_option maxHeartbeats 800000 in
+set_option synthInstance.maxHeartbeats 800000 in
 /-- Large-field reduction: Sumcheck seqCompose, then append FinalSum -/
 @[reducible]
 def coreInteractionOracleReduction :=
   OracleReduction.append
     (R₁ := sumcheckLoopOracleReduction κ L K P ℓ ℓ' aOStmtIn)
-    (pSpec₁:=pSpecSumcheckLoop L ℓ')
     (R₂ := finalSumcheckOracleReduction κ L K P ℓ ℓ' h_l aOStmtIn)
     (pSpec₂:=pSpecFinalSumcheck L)
+
+set_option maxHeartbeats 800000 in
+set_option synthInstance.maxHeartbeats 800000 in
+/-- The core-interaction oracle verifier (sumcheck loop `.append` final-sumcheck) is `AppendCoherent`
+via `AppendCoherent.append` and the two phase coherence instances, so it can be `.append`ed onto the
+batching phase. -/
+instance instCoreInteractionOracleVerifierAppendCoherent :
+    OracleVerifier.Append.AppendCoherent
+      (coreInteractionOracleVerifier κ L K P ℓ ℓ' h_l aOStmtIn) :=
+  OracleVerifier.Append.AppendCoherent.append _ _
+
+set_option maxHeartbeats 800000 in
+set_option synthInstance.maxHeartbeats 800000 in
+instance instCoreInteractionOracleReductionAppendCoherent :
+    OracleVerifier.Append.AppendCoherent
+      (coreInteractionOracleReduction κ L K P ℓ ℓ' h_l aOStmtIn).verifier :=
+  OracleVerifier.Append.AppendCoherent.oracleReductionAppend _ _
 
 /-!
 ## RBR Knowledge Soundness Components for Single Round

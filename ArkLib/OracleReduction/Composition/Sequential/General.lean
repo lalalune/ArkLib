@@ -170,12 +170,18 @@ def seqCompose' {m : ℕ}
     (Oₘ : ∀ i, ∀ j, OracleInterface ((pSpec i).Message j))
     (V : (i : Fin m) →
       OracleVerifier oSpec (Stmt i.castSucc) (OStmt i.castSucc) (Stmt i.succ) (OStmt i.succ)
-        (pSpec i)) :
+        (pSpec i))
+    (coh : ∀ i, OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ i.castSucc) (Oₛ₂ := Oₛ i.succ)
+      (Oₘ₁ := Oₘ i) (V i)) :
     OracleVerifier oSpec (Stmt 0) (OStmt 0) (Stmt (Fin.last m)) (OStmt (Fin.last m))
       (seqCompose pSpec) := match m with
   | 0 => @OracleVerifier.id ι oSpec (Stmt 0) (ιₛ 0) (OStmt 0) (Oₛ := Oₛ 0)
-  | _ + 1 => append (V 0) (seqCompose' (Stmt ∘ Fin.succ) (fun i => OStmt (Fin.succ i))
-      (Oₛ := fun i => Oₛ (Fin.succ i)) (Oₘ := fun i => Oₘ (Fin.succ i)) (fun i => V (Fin.succ i)))
+  | _ + 1 =>
+    letI : OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ 0) (Oₛ₂ := Oₛ 1) (Oₘ₁ := Oₘ 0) (V 0) :=
+      coh 0
+    append (V 0) (seqCompose' (Stmt ∘ Fin.succ) (fun i => OStmt (Fin.succ i))
+      (Oₛ := fun i => Oₛ (Fin.succ i)) (Oₘ := fun i => Oₘ (Fin.succ i)) (fun i => V (Fin.succ i))
+      (fun i => coh i.succ))
 
 /-- Sequential composition of oracle verifiers (in oracle reductions), defined via iteration of the
   composition (append) of two oracle verifiers. -/
@@ -187,10 +193,12 @@ def seqCompose {m : ℕ}
     [Oₘ : ∀ i, ∀ j, OracleInterface ((pSpec i).Message j)]
     (V : (i : Fin m) →
       OracleVerifier oSpec (Stmt i.castSucc) (OStmt i.castSucc) (Stmt i.succ) (OStmt i.succ)
-        (pSpec i)) :
+        (pSpec i))
+    [coh : ∀ i, OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ i.castSucc) (Oₛ₂ := Oₛ i.succ)
+      (Oₘ₁ := Oₘ i) (V i)] :
     OracleVerifier oSpec (Stmt 0) (OStmt 0) (Stmt (Fin.last m)) (OStmt (Fin.last m))
       (seqCompose pSpec) :=
-  seqCompose' Stmt OStmt Oₛ Oₘ V
+  seqCompose' Stmt OStmt Oₛ Oₘ V coh
 
 @[simp]
 lemma seqCompose_zero
@@ -200,7 +208,9 @@ lemma seqCompose_zero
     {n : Fin 0 → ℕ} {pSpec : ∀ i, ProtocolSpec (n i)}
     [Oₘ : ∀ i, ∀ j, OracleInterface ((pSpec i).Message j)]
     (V : (i : Fin 0) → OracleVerifier oSpec
-      (Stmt i.castSucc) (OStmt i.castSucc) (Stmt i.succ) (OStmt i.succ) (pSpec i)) :
+      (Stmt i.castSucc) (OStmt i.castSucc) (Stmt i.succ) (OStmt i.succ) (pSpec i))
+    [coh : ∀ i, OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ i.castSucc) (Oₛ₂ := Oₛ i.succ)
+      (Oₘ₁ := Oₘ i) (V i)] :
     seqCompose Stmt OStmt V = OracleVerifier.id := rfl
 
 @[simp]
@@ -211,11 +221,16 @@ lemma seqCompose_succ {m : ℕ}
     {n : Fin (m + 1) → ℕ} {pSpec : ∀ i, ProtocolSpec (n i)}
     [Oₘ : ∀ i, ∀ j, OracleInterface ((pSpec i).Message j)]
     (V : (i : Fin (m + 1)) → OracleVerifier oSpec
-      (Stmt i.castSucc) (OStmt i.castSucc) (Stmt i.succ) (OStmt i.succ) (pSpec i)) :
+      (Stmt i.castSucc) (OStmt i.castSucc) (Stmt i.succ) (OStmt i.succ) (pSpec i))
+    [coh : ∀ i, OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ i.castSucc) (Oₛ₂ := Oₛ i.succ)
+      (Oₘ₁ := Oₘ i) (V i)] :
     seqCompose Stmt OStmt V =
+      letI : OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ 0) (Oₛ₂ := Oₛ 1) (Oₘ₁ := Oₘ 0) (V 0) :=
+        coh 0
       append (V 0) (seqCompose (Stmt ∘ Fin.succ) (fun i => OStmt (Fin.succ i))
         (Oₛ := fun i => Oₛ (Fin.succ i)) (Oₘ := fun i => Oₘ (Fin.succ i))
-          (fun i => V (Fin.succ i))) := rfl
+          (fun i => V (Fin.succ i))
+          (coh := fun i => coh i.succ)) := rfl
 
 @[simp]
 lemma seqCompose_toVerifier {m : ℕ}
@@ -226,7 +241,9 @@ lemma seqCompose_toVerifier {m : ℕ}
     [Oₘ : ∀ i, ∀ j, OracleInterface ((pSpec i).Message j)]
     (V : (i : Fin m) →
       OracleVerifier oSpec (Stmt i.castSucc) (OStmt i.castSucc) (Stmt i.succ) (OStmt i.succ)
-        (pSpec i)) :
+        (pSpec i))
+    [coh : ∀ i, OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ i.castSucc) (Oₛ₂ := Oₛ i.succ)
+      (Oₘ₁ := Oₘ i) (V i)] :
     (seqCompose Stmt OStmt V).toVerifier =
       Verifier.seqCompose (fun i => Stmt i × (∀ j, OStmt i j)) (fun i => (V i).toVerifier) := by
   induction m with
@@ -235,11 +252,67 @@ lemma seqCompose_toVerifier {m : ℕ}
       Verifier.seqCompose_zero]
     exact OracleVerifier.id_toVerifier
   | succ m ih =>
+    letI : OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ 0) (Oₛ₂ := Oₛ 1) (Oₘ₁ := Oₘ 0) (V 0) :=
+      coh 0
+    letI cohTail : ∀ i, OracleVerifier.Append.AppendCoherent
+        (Oₛ₁ := (fun i => Oₛ (Fin.succ i)) i.castSucc) (Oₛ₂ := (fun i => Oₛ (Fin.succ i)) i.succ)
+        (Oₘ₁ := (fun i => Oₘ (Fin.succ i)) i) (V (Fin.succ i)) :=
+      fun i => coh i.succ
     simp only [seqCompose_succ, Verifier.seqCompose_succ]
     have h1 := OracleVerifier.append_toVerifier (V 0) (seqCompose (Stmt ∘ Fin.succ)
-      (fun i => OStmt (Fin.succ i)) (fun i => V (Fin.succ i)))
+      (fun i => OStmt (Fin.succ i)) (fun i => V (Fin.succ i)) (coh := cohTail))
     exact h1.trans (congrArg ((V 0).toVerifier.append ·)
-      (ih (Stmt ∘ Fin.succ) (fun i => OStmt (Fin.succ i)) (fun i => V (Fin.succ i))))
+      (ih (Stmt ∘ Fin.succ) (fun i => OStmt (Fin.succ i)) (fun i => V (Fin.succ i)) (coh := cohTail)))
+
+/-- **Sequential-composition coherence.** A `seqCompose'` of oracle verifiers whose every leaf is
+`AppendCoherent` is itself `AppendCoherent` (as the outer verifier over the `seqCompose`d message
+oracles).  Proved by induction: `seqCompose'` unfolds (via `seqCompose_succ`) to a binary `append`
+of `V 0` with the tail's `seqCompose'`, whose coherence is supplied by `AppendCoherent.append`
+together with the inductive hypothesis; the base case is the trivial `OracleVerifier.id`.  The
+appended-spec message interface `instOracleInterfaceMessageAppend (pSpec 0) (seqCompose tail)` is
+definitionally the `seqCompose`-message interface, so no message-interface coercion is needed. -/
+theorem seqCompose'_appendCoherent {m : ℕ}
+    (Stmt : Fin (m + 1) → Type)
+    {ιₛ : Fin (m + 1) → Type} (OStmt : (i : Fin (m + 1)) → ιₛ i → Type)
+    (Oₛ : ∀ i, ∀ j, OracleInterface (OStmt i j))
+    {n : Fin m → ℕ} {pSpec : ∀ i, ProtocolSpec (n i)}
+    (Oₘ : ∀ i, ∀ j, OracleInterface ((pSpec i).Message j))
+    (V : (i : Fin m) →
+      OracleVerifier oSpec (Stmt i.castSucc) (OStmt i.castSucc) (Stmt i.succ) (OStmt i.succ)
+        (pSpec i))
+    (coh : ∀ i, OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ i.castSucc) (Oₛ₂ := Oₛ i.succ)
+      (Oₘ₁ := Oₘ i) (V i)) :
+    OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ 0) (Oₛ₂ := Oₛ (Fin.last m))
+      (OracleVerifier.seqCompose' Stmt OStmt Oₛ Oₘ V coh) := by
+  induction m with
+  | zero =>
+    refine { hCohInl := fun a k h => ?_, hCohInr := fun a k h => k.1.elim0 }
+    simp only [OracleVerifier.seqCompose', OracleVerifier.id, Function.Embedding.inl_apply] at h ⊢
+    obtain rfl := Sum.inl.inj h; rfl
+  | succ m ih =>
+    letI : OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ 0) (Oₛ₂ := Oₛ 1) (Oₘ₁ := Oₘ 0) (V 0) :=
+      coh 0
+    letI tailcoh := ih (Stmt ∘ Fin.succ) (fun i => OStmt (Fin.succ i)) (fun i => Oₛ (Fin.succ i))
+      (fun i => Oₘ (Fin.succ i)) (fun i => V (Fin.succ i)) (fun i => coh i.succ)
+    exact OracleVerifier.Append.AppendCoherent.append (c₁ := coh 0) (c₂ := tailcoh) (V 0) _
+
+/-- Instance form of `seqCompose'_appendCoherent` for the public `OracleVerifier.seqCompose`: chains
+of `seqCompose` synthesize their outer `AppendCoherent` automatically from the per-round leaf
+instances. -/
+instance seqCompose_appendCoherent {m : ℕ}
+    (Stmt : Fin (m + 1) → Type)
+    {ιₛ : Fin (m + 1) → Type} (OStmt : (i : Fin (m + 1)) → ιₛ i → Type)
+    [Oₛ : ∀ i, ∀ j, OracleInterface (OStmt i j)]
+    {n : Fin m → ℕ} {pSpec : ∀ i, ProtocolSpec (n i)}
+    [Oₘ : ∀ i, ∀ j, OracleInterface ((pSpec i).Message j)]
+    (V : (i : Fin m) →
+      OracleVerifier oSpec (Stmt i.castSucc) (OStmt i.castSucc) (Stmt i.succ) (OStmt i.succ)
+        (pSpec i))
+    [coh : ∀ i, OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ i.castSucc) (Oₛ₂ := Oₛ i.succ)
+      (Oₘ₁ := Oₘ i) (V i)] :
+    OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ 0) (Oₛ₂ := Oₛ (Fin.last m))
+      (OracleVerifier.seqCompose Stmt OStmt V) :=
+  seqCompose'_appendCoherent Stmt OStmt Oₛ Oₘ V coh
 
 end OracleVerifier
 
@@ -256,11 +329,32 @@ def seqCompose {m : ℕ}
     [Oₘ : ∀ i, ∀ j, OracleInterface ((pSpec i).Message j)]
     (R : (i : Fin m) →
       OracleReduction oSpec (Stmt i.castSucc) (OStmt i.castSucc) (Wit i.castSucc)
-        (Stmt i.succ) (OStmt i.succ) (Wit i.succ) (pSpec i)) :
+        (Stmt i.succ) (OStmt i.succ) (Wit i.succ) (pSpec i))
+    [coh : ∀ i, OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ i.castSucc) (Oₛ₂ := Oₛ i.succ)
+      (Oₘ₁ := Oₘ i) (R i).verifier] :
     OracleReduction oSpec (Stmt 0) (OStmt 0) (Wit 0)
       (Stmt (Fin.last m)) (OStmt (Fin.last m)) (Wit (Fin.last m)) (seqCompose pSpec) where
   prover := OracleProver.seqCompose Stmt OStmt Wit (fun i => (R i).prover)
   verifier := OracleVerifier.seqCompose Stmt OStmt (fun i => (R i).verifier)
+
+/-- The verifier of a `seqCompose`d oracle reduction is again `AppendCoherent` (its `verifier` field
+is definitionally `OracleVerifier.seqCompose … (fun i => (R i).verifier)`), so a `seqCompose`
+composite can itself be `.append`ed onto another phase with coherence synthesized automatically. -/
+instance seqCompose_verifier_appendCoherent {m : ℕ}
+    (Stmt : Fin (m + 1) → Type)
+    {ιₛ : Fin (m + 1) → Type} (OStmt : (i : Fin (m + 1)) → ιₛ i → Type)
+    [Oₛ : ∀ i, ∀ j, OracleInterface (OStmt i j)]
+    (Wit : Fin (m + 1) → Type)
+    {n : Fin m → ℕ} {pSpec : ∀ i, ProtocolSpec (n i)}
+    [Oₘ : ∀ i, ∀ j, OracleInterface ((pSpec i).Message j)]
+    (R : (i : Fin m) →
+      OracleReduction oSpec (Stmt i.castSucc) (OStmt i.castSucc) (Wit i.castSucc)
+        (Stmt i.succ) (OStmt i.succ) (Wit i.succ) (pSpec i))
+    [coh : ∀ i, OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ i.castSucc) (Oₛ₂ := Oₛ i.succ)
+      (Oₘ₁ := Oₘ i) (R i).verifier] :
+    OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ 0) (Oₛ₂ := Oₛ (Fin.last m))
+      (seqCompose Stmt OStmt Wit R).verifier :=
+  OracleVerifier.seqCompose_appendCoherent Stmt OStmt (fun i => (R i).verifier)
 
 @[simp]
 lemma seqCompose_zero
@@ -272,7 +366,9 @@ lemma seqCompose_zero
     [Oₘ : ∀ i, ∀ j, OracleInterface ((pSpec i).Message j)]
     (R : (i : Fin 0) →
       OracleReduction oSpec (Stmt i.castSucc) (OStmt i.castSucc) (Wit i.castSucc)
-        (Stmt i.succ) (OStmt i.succ) (Wit i.succ) (pSpec i)) :
+        (Stmt i.succ) (OStmt i.succ) (Wit i.succ) (pSpec i))
+    [coh : ∀ i, OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ i.castSucc) (Oₛ₂ := Oₛ i.succ)
+      (Oₘ₁ := Oₘ i) (R i).verifier] :
     seqCompose Stmt OStmt Wit R =
       @OracleReduction.id ι oSpec (Stmt 0) (ιₛ 0) (OStmt 0) (Wit 0) (Oₛ 0) := rfl
 
@@ -286,11 +382,16 @@ lemma seqCompose_succ {m : ℕ}
     [Oₘ : ∀ i, ∀ j, OracleInterface ((pSpec i).Message j)]
     (R : (i : Fin (m + 1)) →
       OracleReduction oSpec (Stmt i.castSucc) (OStmt i.castSucc) (Wit i.castSucc)
-        (Stmt i.succ) (OStmt i.succ) (Wit i.succ) (pSpec i)) :
+        (Stmt i.succ) (OStmt i.succ) (Wit i.succ) (pSpec i))
+    [coh : ∀ i, OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ i.castSucc) (Oₛ₂ := Oₛ i.succ)
+      (Oₘ₁ := Oₘ i) (R i).verifier] :
     seqCompose Stmt OStmt Wit R =
+      letI : OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ 0) (Oₛ₂ := Oₛ 1) (Oₘ₁ := Oₘ 0)
+          (R 0).verifier := coh 0
       append (R 0) (seqCompose (Stmt ∘ Fin.succ) (fun i => OStmt (Fin.succ i)) (Wit ∘ Fin.succ)
         (Oₛ := fun i => Oₛ (Fin.succ i)) (Oₘ := fun i => Oₘ (Fin.succ i))
-          (fun i => R (Fin.succ i))) := rfl
+          (fun i => R (Fin.succ i))
+          (coh := fun i => coh i.succ)) := rfl
 
 @[simp]
 lemma seqCompose_toReduction {m : ℕ}
@@ -302,7 +403,9 @@ lemma seqCompose_toReduction {m : ℕ}
     [Oₘ : ∀ i, ∀ j, OracleInterface ((pSpec i).Message j)]
     (R : (i : Fin m) →
       OracleReduction oSpec (Stmt i.castSucc) (OStmt i.castSucc) (Wit i.castSucc)
-        (Stmt i.succ) (OStmt i.succ) (Wit i.succ) (pSpec i)) :
+        (Stmt i.succ) (OStmt i.succ) (Wit i.succ) (pSpec i))
+    [coh : ∀ i, OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ i.castSucc) (Oₛ₂ := Oₛ i.succ)
+      (Oₘ₁ := Oₘ i) (R i).verifier] :
     (seqCompose Stmt OStmt Wit R).toReduction =
       Reduction.seqCompose (fun i => Stmt i × (∀ j, OStmt i j)) Wit
         (fun i => (R i).toReduction) := by
@@ -312,12 +415,18 @@ lemma seqCompose_toReduction {m : ℕ}
       Reduction.seqCompose_zero]
     exact OracleReduction.id_toReduction
   | succ m ih =>
+    letI : OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ 0) (Oₛ₂ := Oₛ 1) (Oₘ₁ := Oₘ 0)
+        (R 0).verifier := coh 0
+    letI cohTail : ∀ i, OracleVerifier.Append.AppendCoherent
+        (Oₛ₁ := (fun i => Oₛ (Fin.succ i)) i.castSucc) (Oₛ₂ := (fun i => Oₛ (Fin.succ i)) i.succ)
+        (Oₘ₁ := (fun i => Oₘ (Fin.succ i)) i) (R (Fin.succ i)).verifier :=
+      fun i => coh i.succ
     simp only [seqCompose_succ, Reduction.seqCompose_succ]
     have h1 := OracleReduction.append_toReduction (R 0) (seqCompose (Stmt ∘ Fin.succ)
-      (fun i => OStmt (Fin.succ i)) (Wit ∘ Fin.succ) (fun i => R (Fin.succ i)))
+      (fun i => OStmt (Fin.succ i)) (Wit ∘ Fin.succ) (fun i => R (Fin.succ i)) (coh := cohTail))
     exact h1.trans (congrArg ((R 0).toReduction.append ·)
       (ih (Stmt ∘ Fin.succ) (fun i => OStmt (Fin.succ i)) (Wit ∘ Fin.succ)
-        (fun i => R (Fin.succ i))))
+        (fun i => R (Fin.succ i)) (coh := cohTail)))
 
 end OracleReduction
 
@@ -591,6 +700,8 @@ theorem seqCompose_completeness
     (rel : (i : Fin (m + 1)) → Set ((Stmt i × ∀ j, OStmt i j) × Wit i))
     (R : ∀ i, OracleReduction oSpec (Stmt i.castSucc) (OStmt i.castSucc) (Wit i.castSucc)
       (Stmt i.succ) (OStmt i.succ) (Wit i.succ) (pSpec i))
+    [coh : ∀ i, OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ i.castSucc) (Oₛ₂ := Oₛ i.succ)
+      (Oₘ₁ := Oₘ i) (R i).verifier]
     (completenessError : Fin m → ℝ≥0)
     (h : ∀ i, (R i).completeness init impl (rel i.castSucc) (rel i.succ) (completenessError i)) :
       (OracleReduction.seqCompose Stmt OStmt Wit R).completeness
@@ -604,6 +715,8 @@ theorem seqCompose_perfectCompleteness
     (rel : (i : Fin (m + 1)) → Set ((Stmt i × ∀ j, OStmt i j) × Wit i))
     (R : ∀ i, OracleReduction oSpec (Stmt i.castSucc) (OStmt i.castSucc) (Wit i.castSucc)
       (Stmt i.succ) (OStmt i.succ) (Wit i.succ) (pSpec i))
+    [coh : ∀ i, OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ i.castSucc) (Oₛ₂ := Oₛ i.succ)
+      (Oₘ₁ := Oₘ i) (R i).verifier]
     (h : ∀ i, (R i).perfectCompleteness init impl (rel i.castSucc) (rel i.succ)) :
       (OracleReduction.seqCompose Stmt OStmt Wit R).perfectCompleteness
         init impl (rel 0) (rel (Fin.last m)) := by
@@ -624,6 +737,8 @@ theorem seqCompose_soundness
     (V : (i : Fin m) →
       OracleVerifier oSpec (Stmt i.castSucc) (OStmt i.castSucc) (Stmt i.succ) (OStmt i.succ)
         (pSpec i))
+    [coh : ∀ i, OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ i.castSucc) (Oₛ₂ := Oₛ i.succ)
+      (Oₘ₁ := Oₘ i) (V i)]
     (soundnessError : Fin m → ℝ≥0)
     (h : ∀ i, (V i).soundness init impl (lang i.castSucc) (lang i.succ) (soundnessError i)) :
       (OracleVerifier.seqCompose Stmt OStmt V).soundness init impl (lang 0) (lang (Fin.last m))
@@ -641,6 +756,8 @@ theorem seqCompose_knowledgeSoundness
     (V : (i : Fin m) →
       OracleVerifier oSpec (Stmt i.castSucc) (OStmt i.castSucc) (Stmt i.succ) (OStmt i.succ)
         (pSpec i))
+    [coh : ∀ i, OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ i.castSucc) (Oₛ₂ := Oₛ i.succ)
+      (Oₘ₁ := Oₘ i) (V i)]
     (knowledgeError : Fin m → ℝ≥0)
     (h : ∀ i, (V i).knowledgeSoundness init impl (rel i.castSucc) (rel i.succ) (knowledgeError i)) :
       (OracleVerifier.seqCompose Stmt OStmt V).knowledgeSoundness
@@ -656,6 +773,8 @@ theorem seqCompose_rbrSoundness
     (V : (i : Fin m) →
       OracleVerifier oSpec (Stmt i.castSucc) (OStmt i.castSucc) (Stmt i.succ) (OStmt i.succ)
         (pSpec i))
+    [coh : ∀ i, OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ i.castSucc) (Oₛ₂ := Oₛ i.succ)
+      (Oₘ₁ := Oₘ i) (V i)]
     (rbrSoundnessError : ∀ i, (pSpec i).ChallengeIdx → ℝ≥0)
     (h : ∀ i, (V i).rbrSoundness init impl (lang i.castSucc) (lang i.succ) (rbrSoundnessError i)) :
       (OracleVerifier.seqCompose Stmt OStmt V).rbrSoundness
@@ -675,6 +794,8 @@ theorem seqCompose_rbrKnowledgeSoundness
     (rel : ∀ i, Set ((Stmt i × ∀ j, OStmt i j) × Wit i))
     (V : (i : Fin m) → OracleVerifier oSpec (Stmt i.castSucc) (OStmt i.castSucc)
       (Stmt i.succ) (OStmt i.succ) (pSpec i))
+    [coh : ∀ i, OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ i.castSucc) (Oₛ₂ := Oₛ i.succ)
+      (Oₘ₁ := Oₘ i) (V i)]
     (rbrKnowledgeError : ∀ i, (pSpec i).ChallengeIdx → ℝ≥0)
     (h : ∀ i, (V i).rbrKnowledgeSoundness init impl
       (rel i.castSucc) (rel i.succ) (rbrKnowledgeError i)) :

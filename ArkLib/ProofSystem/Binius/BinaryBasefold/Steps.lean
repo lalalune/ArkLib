@@ -209,6 +209,27 @@ noncomputable def foldOracleReduction (i : Fin ℓ) :
   prover := foldOracleProver 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i
   verifier := foldOracleVerifier 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i
 
+/-- The fold-step oracle verifier routes every output oracle to the unchanged input oracle (`embed`
+maps `j ↦ Sum.inl ⟨j.val,_⟩`, `OStmtIn = OStmtOut`, `hEq` by `simp`) and exposes no message oracle,
+so its `AppendCoherent` coherence holds by `rfl` after resolving the `embed` `dite`. -/
+instance instFoldOracleVerifierAppendCoherent (i : Fin ℓ) :
+    OracleVerifier.Append.AppendCoherent
+      (foldOracleVerifier 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Context := Context) i) where
+  hCohInl := fun a k h => by
+    simp only [foldOracleVerifier, Function.Embedding.coeFn_mk] at h
+    split_ifs at h with hj
+    · obtain rfl := Sum.inl.inj h; rfl
+    · exact absurd a.isLt (by simpa [toOutCodewordsCount] using hj)
+  hCohInr := fun a k h => by
+    simp only [foldOracleVerifier, Function.Embedding.coeFn_mk] at h
+    split_ifs at h with hj
+    exact absurd a.isLt (by simpa [toOutCodewordsCount] using hj)
+
+instance instFoldOracleReductionAppendCoherent (i : Fin ℓ) :
+    OracleVerifier.Append.AppendCoherent
+      (foldOracleReduction 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Context := Context) i).verifier :=
+  instFoldOracleVerifierAppendCoherent 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Context := Context) i
+
 variable {R : Type} [CommSemiring R] [DecidableEq R] [SampleableType R]
   {n : ℕ} {deg : ℕ} {m : ℕ} {D : Fin m ↪ R}
 
@@ -678,6 +699,32 @@ noncomputable def relayOracleReduction (i : Fin ℓ) (hNCR : ¬ isCommitmentRoun
     (pSpec := pSpecRelay) where
   prover := relayOracleProver 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR
   verifier := relayOracleVerifier 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hNCR
+
+/-- The relay-step oracle verifier routes each output oracle (round `i.succ`) to the input oracle
+(round `i.castSucc`) at the same numeric index; on a non-commitment round the codeword counts agree
+(`toOutCodewordsCount_succ_eq`), so the `OracleStatement` interfaces — index-dependent only through
+the numeric position — coincide, giving `AppendCoherent` by `rfl` after the index `subst`. -/
+instance instRelayOracleVerifierAppendCoherent (i : Fin ℓ) (hNCR : ¬ isCommitmentRound ℓ ϑ i) :
+    OracleVerifier.Append.AppendCoherent
+      (relayOracleVerifier 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Context := Context)
+        i hNCR) where
+  hCohInl := fun a k h => by
+    have hak : a.val = k.val := by
+      simpa only [relayOracleVerifier, Function.Embedding.coeFn_mk, Sum.inl.injEq]
+        using congrArg (·.val) (Sum.inl.inj h)
+    have hcnt : toOutCodewordsCount ℓ ϑ i.castSucc = toOutCodewordsCount ℓ ϑ i.succ := by
+      simp only [toOutCodewordsCount_succ_eq, hNCR, ↓reduceIte]
+    obtain ⟨av, hav⟩ := a; obtain ⟨kv, hkv⟩ := k
+    simp only [] at hak; subst hak; rfl
+  hCohInr := fun a k h => by
+    simp only [relayOracleVerifier, Function.Embedding.coeFn_mk, reduceCtorEq] at h
+
+instance instRelayOracleReductionAppendCoherent (i : Fin ℓ) (hNCR : ¬ isCommitmentRound ℓ ϑ i) :
+    OracleVerifier.Append.AppendCoherent
+      (relayOracleReduction 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Context := Context)
+        i hNCR).verifier :=
+  instRelayOracleVerifierAppendCoherent 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (Context := Context) i hNCR
 
 variable {R : Type} [CommSemiring R] [DecidableEq R] [SampleableType R]
   {n : ℕ} {deg : ℕ} {m : ℕ} {D : Fin m ↪ R}
