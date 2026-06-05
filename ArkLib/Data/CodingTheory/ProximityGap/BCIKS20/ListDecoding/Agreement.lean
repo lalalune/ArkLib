@@ -2153,6 +2153,17 @@ lemma nonmatching_coords_for_z_card_le_of_delta_mul_le
   exact_mod_cast le_trans hcard hE
 
 omit [DecidableEq (RatFunc F)] in
+lemma nonmatching_coords_for_z_card_le_natCeil_delta_mul
+    [NeZero n]
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) :
+    (nonmatching_coords_for_z k δ h_gs z).card ≤ ⌈δ * (n : ℚ)⌉₊ := by
+  exact nonmatching_coords_for_z_card_le_of_delta_mul_le
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs z
+    (Nat.le_ceil _)
+
+omit [DecidableEq (RatFunc F)] in
 noncomputable def graphExtractionHypotheses_of_matching_coords
     [DecidableEq (Polynomial F)]
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
@@ -2272,6 +2283,34 @@ noncomputable def graphExtractionHypotheses_of_delta_nonmatching_bound
     h_gs hx0 hsep hS_nonempty
     (fun z => nonmatching_coords_for_z_card_le_of_delta_mul_le
       (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs z hE)
+    hcount hlarge
+
+omit [DecidableEq (RatFunc F)] in
+noncomputable def graphExtractionHypotheses_of_natCeil_delta_nonmatching_bound
+    [NeZero n]
+    [DecidableEq (Polynomial F)]
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hx0 : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        Bivariate.evalX (Polynomial.C x₀) R ≠ 0)
+    (hsep : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        (Bivariate.evalX (Polynomial.C x₀) R).Separable)
+    (hS_nonempty :
+      (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).Nonempty)
+    (hcount : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z.1) 1 k <
+        m * (n - ⌈δ * (n : ℚ)⌉₊))
+    (hlarge :
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q) :
+    GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs :=
+  graphExtractionHypotheses_of_delta_nonmatching_bound
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+    h_gs hx0 hsep hS_nonempty
+    (Nat.le_ceil _)
     hcount hlarge
 
 open Polynomial in
@@ -2670,6 +2709,35 @@ lemma exists_points_with_large_matching_subset_of_delta_nonmatching_bound
     h_gs (D := D) (E := E) (t := t)
     (fun z => nonmatching_coords_for_z_card_le_of_delta_mul_le
       (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs z hE)
+    hthreshold hsmall
+
+/-- Full-close-set Claim 5.11 wrapper with the canonical integer bad-coordinate
+bound `⌈δ * n⌉₊`. -/
+lemma exists_points_with_large_matching_subset_of_natCeil_delta_nonmatching_bound
+    [NeZero n]
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    {D t : ℕ}
+    (hthreshold :
+      (2 * k + 1)
+        * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+        * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+        * D + t ≤ #(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁))
+    (hsmall :
+      ⌈δ * (n : ℚ)⌉₊ * #(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) <
+        (n - k) * t) :
+  ∃ Dtop : Finset (Fin n),
+    Dtop.card = k + 1 ∧
+    ∀ x ∈ Dtop,
+      (matching_set_at_x k δ h_gs x).card >
+        (2 * k + 1)
+        * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+        * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+        * D := by
+  exact exists_points_with_large_matching_subset_of_delta_nonmatching_bound
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+    h_gs (D := D) (E := ⌈δ * (n : ℚ)⌉₊) (t := t)
+    (Nat.le_ceil _)
     hthreshold hsmall
 
 /-- Claim 5.11 from [BCIKS20].
