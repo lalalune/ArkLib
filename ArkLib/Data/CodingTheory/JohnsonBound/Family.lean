@@ -581,6 +581,30 @@ theorem closeCodewordsRelFinset_card_le_of_floor_minDist_johnson_condition
     exact closeCodewordsRelFinset_pairwise_agree_le_card_sub_minDist hu hv hne
   · exact hcond
 
+/-- Lambda-level Johnson cap with the canonical close-list agreement parameters.
+
+This is the pointwise close-list cap packaged through the maximised
+`ListDecodable.Lambda`; the remaining obligation is the same radical-free
+Johnson algebra condition, independent of the received word. -/
+theorem Lambda_le_of_floor_minDist_johnson_condition
+    {ι : Type} [Fintype ι] [DecidableEq ι] [Nonempty ι]
+    {α : Type} [Fintype α] [DecidableEq α]
+    (C : ListDecodable.Code ι α) {δ : ℝ} {ℓ : ℕ} {β : ℝ}
+    (hδ : 0 ≤ δ) (hq : 0 < Fintype.card α) (hβ : 0 ≤ β)
+    (hcond : ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ)) * (1 + β ^ 2)
+        - 2 * β * (((Fintype.card ι - ⌊δ * (Fintype.card ι : ℝ)⌋₊ : ℕ) : ℝ)
+          - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ)))
+      + (ℓ : ℝ) * ((((Fintype.card ι - Code.minDist C : ℕ) : ℝ)
+          - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ))
+        - 2 * β * (((Fintype.card ι - ⌊δ * (Fintype.card ι : ℝ)⌋₊ : ℕ) : ℝ)
+          - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ))
+        + β ^ 2 * (Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ))) < 0) :
+    ListDecodable.Lambda C δ ≤ (ℓ : ℕ∞) := by
+  apply ListDecodable.Lambda_le_natCast_of_forall_closeFinset_card_le
+  intro f
+  exact closeCodewordsRelFinset_card_le_of_floor_minDist_johnson_condition
+    C f δ hδ hq hβ hcond
+
 /-- A violated finite `Lambda` bound produces a concrete point-list whose average
 distance is controlled by the q-ary Plotkin bound.
 
