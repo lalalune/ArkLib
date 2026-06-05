@@ -259,8 +259,10 @@ theorem H_tilde'_dvd_clearDenomY_of_large_candidate_fiber
     _root_.BCIKS20AppendixA.H_tilde' H ∣
       Polynomial.clearDenomY (H.coeff H.natDegree) e
         (Bivariate.evalX (Polynomial.C x₀) R) := by
-  exact H_tilde'_dvd_of_large_common_roots hH D hD
-    (pg_candidate_fiber_image_common_roots_cleared x₀ hH he) hcard
+  exact H_tilde'_dvd_of_embedding_mk_eq_zero hH
+    (embedding_clearDenomY_of_large_candidate_fiber
+      (F := F) (n := n) (k := k) (δ := δ) (ωs := ωs) (u₀ := u₀) (u₁ := u₁)
+      x₀ hH he hD hcard)
 
 omit [DecidableEq (RatFunc F)] in
 theorem H_tilde'_dvd_clearDenomY_of_large_candidate_fiber_card
