@@ -246,6 +246,40 @@ theorem correlatedAgreement_affine_curves_listDecoding_closed {k deg : ℕ}
   exact hcoeffPoly_of_section5Extraction
     (hExtract u hprob hJ hsqrt) P hP
 
+omit [DecidableEq ι] in
+/-- Closed list-decoding keystone with the strict branch phrased as one
+canonical decoded family per received word stack.
+
+This is the target shape produced by the newer selected-domain/canonical-coefficient
+bridges: the strict branch supplies a single `P₀` with coefficient polynomials and
+uniqueness for each stack, while the closed square-root boundary is reduced to its
+actual data, equality at the boundary plus nonempty good-coefficient set. -/
+theorem correlatedAgreement_affine_curves_listDecoding_closed_canonical {k deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hStrictCanonicalCoeff :
+      ∀ u : WordStack F (Fin (k + 1)) ι,
+        ∃ P₀ : F → Polynomial F,
+          (∃ B : ℕ → Polynomial F,
+            (∀ j < deg, (B j).natDegree < k + 1) ∧
+              ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+                ∀ j < deg, (P₀ z).coeff j = (B j).eval z) ∧
+          ∀ P : F → Polynomial F,
+            (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              (P z).natDegree < deg ∧
+                δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+                  (P z).eval ∘ domain) ≤ δ) →
+              ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+                P z = P₀ z)
+    (hBoundaryCard : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      δ = 1 - ReedSolomon.sqrtRate deg domain →
+      0 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card →
+      jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u)) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  exact correlatedAgreement_affine_curves_of_uniform_strict_canonical_coeff_polys_and_boundary_card
+    (deg := deg) (domain := domain) (δ := δ) hδ hStrictCanonicalCoeff hBoundaryCard
+
 end CorrelatedAgreementListDecodingClosed
 
 end ArkLib
@@ -255,3 +289,4 @@ end ArkLib
 #print axioms ArkLib.CorrelatedAgreementListDecodingClosed.hcoeffPoly_witness_of_section5Data
 #print axioms ArkLib.CorrelatedAgreementListDecodingClosed.hcoeffPoly_of_section5Extraction
 #print axioms ArkLib.CorrelatedAgreementListDecodingClosed.correlatedAgreement_affine_curves_listDecoding_closed
+#print axioms ArkLib.CorrelatedAgreementListDecodingClosed.correlatedAgreement_affine_curves_listDecoding_closed_canonical
