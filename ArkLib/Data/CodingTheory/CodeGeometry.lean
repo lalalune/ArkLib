@@ -355,4 +355,61 @@ theorem card_le_of_johnson_condition (hq : 0 < Fintype.card α) {L : ℕ} (hL : 
   have : (L : ℝ) < (ℓ : ℝ) + 1 := by linarith
   exact_mod_cast Nat.lt_succ_iff.mp (by exact_mod_cast this)
 
+/-- **Optimal-β squared-form q-ary Johnson list-size bound.** With center
+correlation `P := A − n/q ≥ 0`, block parameter `N := n(1−1/q) > 0`, and the
+squared Johnson condition `(ℓ+1)·P² > N·(N + ℓ·(B − n/q))`, the family size
+obeys `L ≤ ℓ`. The optimal shift `β = P/N` discharges the
+`card_le_of_johnson_condition` side condition exactly into `hsq`. This is the
+radical-free form of ABF26 Theorem 3.2. -/
+theorem card_le_of_johnson_sq (hq1 : 1 < Fintype.card α) (hn : 0 < Fintype.card ι)
+    {L : ℕ} (hL : 0 < L)
+    (f : ι → α) (c : Fin L → ι → α) {A B : ℕ} (ℓ : ℕ)
+    (hA : ∀ i, A ≤ agree (c i) f)
+    (hB : ∀ i j, i ≠ j → agree (c i) (c j) ≤ B)
+    (hP : (Fintype.card ι : ℝ) / (Fintype.card α : ℝ) ≤ (A : ℝ))
+    (hsq : ((ℓ : ℝ) + 1)
+        * ((A : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ)) ^ 2
+      > ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ)))
+        * ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ))
+            + (ℓ : ℝ) * ((B : ℝ) - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ)))) :
+    L ≤ ℓ := by
+  classical
+  set nR : ℝ := (Fintype.card ι : ℝ) with hnR
+  set qR : ℝ := (Fintype.card α : ℝ) with hqR
+  have hqpos : (0 : ℝ) < qR := by rw [hqR]; positivity
+  have hq1R : (1 : ℝ) < qR := by rw [hqR]; exact_mod_cast hq1
+  have hnpos : (0 : ℝ) < nR := by rw [hnR]; exact_mod_cast hn
+  have hq_ne : qR ≠ 0 := ne_of_gt hqpos
+  have hfrac : (1 : ℝ) / qR < 1 := by rw [div_lt_one hqpos]; exact hq1R
+  have hμpos : (0 : ℝ) < 1 - 1 / qR := by linarith
+  have hNpos : (0 : ℝ) < nR * (1 - 1 / qR) := by positivity
+  have hNne : nR * (1 - 1 / qR) ≠ 0 := ne_of_gt hNpos
+  have hPnn : (0 : ℝ) ≤ (A : ℝ) - nR / qR := by rw [hnR, hqR]; linarith [hP]
+  refine card_le_of_johnson_condition (by omega : 0 < Fintype.card α) hL f c ℓ hA hB
+    (β := ((A : ℝ) - nR / qR) / (nR * (1 - 1 / qR)))
+    (div_nonneg hPnn (le_of_lt hNpos)) ?_
+  rw [← hnR, ← hqR]
+  have hμne : (1 : ℝ) - 1 / qR ≠ 0 := ne_of_gt hμpos
+  have hnRne : nR ≠ 0 := ne_of_gt hnpos
+  have hqm1 : qR - 1 ≠ 0 := by linarith
+  have hμeq : (1 : ℝ) - 1 / qR = (qR - 1) / qR := by field_simp
+  -- the side-condition LHS, at β = (A−n/q)/(n(1−1/q)), equals NUM / (n(1−1/q))
+  have hid :
+      nR * (1 - 1 / qR)
+          * (1 + (((A : ℝ) - nR / qR) / (nR * (1 - 1 / qR))) ^ 2)
+        - 2 * (((A : ℝ) - nR / qR) / (nR * (1 - 1 / qR))) * ((A : ℝ) - nR / qR)
+        + (ℓ : ℝ) * (((B : ℝ) - nR / qR)
+            - 2 * (((A : ℝ) - nR / qR) / (nR * (1 - 1 / qR))) * ((A : ℝ) - nR / qR)
+            + (((A : ℝ) - nR / qR) / (nR * (1 - 1 / qR))) ^ 2 * nR * (1 - 1 / qR))
+      = (nR * (1 - 1 / qR)
+            * (nR * (1 - 1 / qR) + (ℓ : ℝ) * ((B : ℝ) - nR / qR))
+          - ((ℓ : ℝ) + 1) * ((A : ℝ) - nR / qR) ^ 2) / (nR * (1 - 1 / qR)) := by
+    simp only [hμeq]
+    field_simp
+    ring
+  rw [hid]
+  apply div_neg_of_neg_of_pos _ hNpos
+  rw [hnR, hqR] at hsq
+  nlinarith [hsq]
+
 end CodeGeometry
