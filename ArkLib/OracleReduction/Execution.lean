@@ -384,133 +384,6 @@ lemma Reduction.support_run_pure_verifier
       rw [htd]
       exact hvOut
 
-/-- **Verifier-verdict transport for the soundness game.**  Any *accepting* support point of the
-    simulated reduction run — i.e. `some x` in the support of
-    `(simulateQ (impl.addLift challengeQueryImpl) (reduction.run stmt wit).run).run' s` — has its
-    verifier verdict `x.2` reachable as a support point of the *verifier game*
-    `(simulateQ impl (reduction.verifier.run stmt x.1.1)).run' s'` on the *realized* transcript
-    `x.1.1`, for some intermediate state `s'`.
-
-    This is the support-level bridge consumed by `rbrSoundness_implies_soundness` (obligation A): it
-    ties a soundness-game support point's transcript `x.1.1` to its verdict `x.2`, exactly as
-    `StateFunction.toFun_full` requires.  The proof walks the `OptionT`/`StateT` bind chain of
-    `Reduction.run` (prover lift, then the verifier `OptionT` verdict, then `getM`), and collapses the
-    `impl.addLift challengeQueryImpl` simulation of the `oSpec`-only verifier `verify` back to
-    `simulateQ impl` via `QueryImpl.simulateQ_add_liftComp_left`. -/
-theorem Reduction.support_run_verdict
-    {StmtIn WitIn StmtOut WitOut : Type} {n : ℕ} {pSpec : ProtocolSpec n}
-    [∀ i, SampleableType (pSpec.Challenge i)] {σ : Type}
-    (reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
-    (impl : QueryImpl oSpec (StateT σ ProbComp)) (s : σ)
-    (stmt : StmtIn) (wit : WitIn)
-    (x : (FullTranscript pSpec × StmtOut × WitOut) × StmtOut)
-    (hx : some x ∈ support
-      (StateT.run' (simulateQ (impl.addLift challengeQueryImpl : QueryImpl _ (StateT σ ProbComp))
-        (reduction.run stmt wit).run) s)) :
-    ∃ s', some x.2 ∈ support
-      (StateT.run' (simulateQ impl (reduction.verifier.run stmt x.1.1)) s') := by
-  unfold Reduction.run at hx
-  simp only [OptionT.run_bind, Option.elimM, simulateQ_bind, StateT.run'_eq, StateT.run_bind,
-    support_bind, Set.mem_iUnion, support_map, Set.mem_image] at hx
-  obtain ⟨⟨pOpt, s1⟩, hp_mem, hx⟩ := hx
-  subst hx
-  obtain ⟨⟨iOpt, is⟩, _hi_mem, hverif⟩ := hp_mem
-  simp only at hverif
-  cases iOpt with
-  | none => simp only [Option.elim_none, simulateQ_pure, StateT.run_pure, support_pure,
-      Set.mem_singleton_iff, Prod.mk.injEq, reduceCtorEq, false_and] at hverif
-  | some pr =>
-    simp only [Option.elim_some, Verifier.run, simulateQ_bind, StateT.run_bind,
-      support_bind, Set.mem_iUnion] at hverif
-    obtain ⟨⟨vOpt, vs⟩, hv_mem, hgetM⟩ := hverif
-    simp only at hgetM
-    cases vOpt with
-    | none => simp only [Option.elim_none, simulateQ_pure, StateT.run_pure, support_pure,
-        Set.mem_singleton_iff, Prod.mk.injEq, reduceCtorEq, false_and] at hgetM
-    | some v =>
-      cases v with
-      | none => simp [Option.getM] at hgetM
-      | some w =>
-        simp only [Option.getM_some, OptionT.run_pure, pure_bind, Option.elim_some,
-          simulateQ_pure, StateT.run_pure, support_pure, Set.mem_singleton_iff,
-          Prod.mk.injEq] at hgetM
-        obtain ⟨hxeq, _⟩ := hgetM
-        have hxeq' : x = (pr, w) := Option.some.inj hxeq
-        have hx1 : x.1 = pr := congrArg Prod.fst hxeq'
-        have hx2 : x.2 = w := congrArg Prod.snd hxeq'
-        refine ⟨is, ?_⟩
-        rw [hx2, hx1, Verifier.run]
-        rw [show ((liftM ((reduction.verifier.verify stmt pr.1).run) :
-              OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) (Option StmtOut)).run)
-            = (Option.some <$> OracleComp.liftComp
-                ((reduction.verifier.verify stmt pr.1).run) (oSpec + [pSpec.Challenge]ₒ)) from by
-              conv_lhs => dsimp only [liftM, MonadLiftT.monadLift, MonadLift.monadLift]
-              simp only [OptionT.run_mk, OptionT.lift]
-              erw [simulateQ_bind]
-              simp only [simulateQ_pure, ← map_eq_pure_bind]
-              rfl] at hv_mem
-        rw [simulateQ_map, QueryImpl.addLift_def, QueryImpl.simulateQ_add_liftComp_left,
-          QueryImpl.liftTarget_self, StateT.run_map, support_map, Set.mem_image] at hv_mem
-        obtain ⟨⟨a, s'⟩, hmem, heq⟩ := hv_mem
-        simp only [Prod.mk.injEq, Option.some.injEq] at heq
-        obtain ⟨ha, _hs⟩ := heq
-        show some w ∈ support (StateT.run' (simulateQ impl
-          (reduction.verifier.verify stmt pr.1).run) is)
-        rw [StateT.run'_eq, support_map, Set.mem_image]
-        exact ⟨(a, s'), hmem, by rw [ha]⟩
-
-/-- **State-preserving prover simulation.**  The implementation `impl` (lifted to the challenge
-    spec) is *state-preserving* for `init` over `reduction` if running the prover phase (and the
-    whole reduction) from any `init`-supported start state leaves the resulting verifier-game start
-    state again in `support init`.
-
-    Concretely, this is the witness condition produced by `support_run_verdict`: it asks that the
-    POST-PROVER simulation state `s'` (from which the verifier's verdict is drawn) can be taken in
-    `support init`.  This holds in the standard cryptographic setting — e.g. when `σ` is a
-    subsingleton, when `impl` is stateless, or when the prover's `oSpec` queries are answered in a
-    distribution/`support init`-preserving way (the challenge oracle never touches `σ`).  It FAILS
-    for an arbitrary stateful `impl`, where a malicious prover can steer `σ` outside `support init`
-    (see the FRONTIER NOTE below). -/
-def Reduction.StatePreserving
-    {StmtIn WitIn StmtOut WitOut : Type} {n : ℕ} {pSpec : ProtocolSpec n}
-    [∀ i, SampleableType (pSpec.Challenge i)] {σ : Type}
-    (reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
-    (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp)) : Prop :=
-  ∀ (stmt : StmtIn) (wit : WitIn) (s : σ), s ∈ support init →
-    ∀ x : (FullTranscript pSpec × StmtOut × WitOut) × StmtOut,
-      some x ∈ support
-        (StateT.run' (simulateQ (impl.addLift challengeQueryImpl : QueryImpl _ (StateT σ ProbComp))
-          (reduction.run stmt wit).run) s) →
-      ∃ s' ∈ support init, some x.2 ∈ support
-        (StateT.run' (simulateQ impl (reduction.verifier.run stmt x.1.1)) s')
-
-/-- **Verdict reachability from a fresh `init` sample (state-preserving impl).**  Under
-    `Reduction.StatePreserving`, an *accepting* support point `x` of the soundness game (run from a
-    start state `s ∈ support init`) has its verifier verdict `x.2` reachable from a FRESH `init`
-    sample on the realized transcript `x.1.1`.  This is exactly the shape that
-    `StateFunction.toFun_full`'s contrapositive consumes (its probability event is over
-    `OptionT.mk do (simulateQ impl (verifier.run stmt tr)).run' (← init)`), with the (A) state-
-    threading gap discharged by the state-preservation hypothesis. -/
-theorem Reduction.mem_support_verdict_init_of_statePreserving
-    {StmtIn WitIn StmtOut WitOut : Type} {n : ℕ} {pSpec : ProtocolSpec n}
-    [∀ i, SampleableType (pSpec.Challenge i)] {σ : Type}
-    (reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
-    (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
-    (hPres : reduction.StatePreserving init impl)
-    (stmt : StmtIn) (wit : WitIn) (s : σ) (hs : s ∈ support init)
-    (x : (FullTranscript pSpec × StmtOut × WitOut) × StmtOut)
-    (hx : some x ∈ support
-      (StateT.run' (simulateQ (impl.addLift challengeQueryImpl : QueryImpl _ (StateT σ ProbComp))
-        (reduction.run stmt wit).run) s)) :
-    x.2 ∈ support
-      (OptionT.mk (do
-        (simulateQ impl (reduction.verifier.run stmt x.1.1)).run' (← init))
-        : OptionT ProbComp StmtOut) := by
-  obtain ⟨s', hs', hverdict⟩ := hPres stmt wit s hs x hx
-  rw [OptionT.mem_support_iff]
-  simp only [OptionT.run_mk, mem_support_bind_iff]
-  exact ⟨s', hs', hverdict⟩
-
 /-- An execution of an interactive reduction on a given initial statement and witness. Consists of
   first running the prover, and then the verifier. Returns the full transcript, the output statement
   and witness from the prover, and the output statement from the verifier, along with the logs of
@@ -528,7 +401,7 @@ def Reduction.runWithLog (stmt : StmtIn) (wit : WitIn)
     liftM (simulateQ loggingOracle (reduction.verifier.run stmt proverResult.1)).run
   return ⟨⟨proverResult, ← stmtOut.getM⟩, proveQueryLog, verifyQueryLog⟩
 
-/-- Map over the first component of a monadic product by pairing it with a fixed value. -/
+/-- Note: figure out a better name for this -/
 private lemma Monad.map_of_prod_fst_eq_prod_fst {m : Type u → Type v} [Monad m] [LawfulMonad m]
     {α β γ : Type u} (ma : m (α × β)) (c : γ) :
     (fun a => (c, a.1)) <$> ma = Prod.mk c <$> Prod.fst <$> ma := by
@@ -654,18 +527,18 @@ theorem Prover.runToRound_zero_of_prover_first
 
 namespace Prover
 
-/-! ### Prefix / marginal decomposition of `runToRound` over rounds
+/-! ### Prefix / round-range decomposition of `runToRound`
 
-These additive lemmas relate the prover's full run to its per-round partial runs.  They are the
-execution-level ingredients of the `rbrSoundness → soundness` implication (ArkLib#1): the
-round-by-round soundness game speaks about `runToRound i.castSucc` followed by a *fresh* challenge,
-whereas the soundness game speaks about the full `Reduction.run`.  The lemmas below expose the
-single-round step `runToRound j.succ = processRound j (runToRound j.castSucc)` and, for a challenge
-round, factor the run as "partial run, then sample a challenge, then receive it". -/
+These additive lemmas relate the prover's full run to its per-round partial runs.  The keystone is
+`runToRound_eq_bind_continueFromTo`: for any earlier round `k ≤ j`, the run up to round `j` factors
+as the run up to `k` followed by a continuation `continueFromTo` that folds `processRound` over the
+remaining rounds `k .. j-1`.  This is a plain `OracleComp` *equality* (the continuation only
+`processRound`s further rounds), which is the structural connective consumed by both the
+`rbrSoundness → soundness` probability bridge and the sequential-composition `append_run`
+characterization. -/
 
 /-- **Single-round unfolding of `runToRound`.**  Running the prover up to round `j.succ` is the same
-  as running it up to round `j.castSucc` and then processing round `j`.  This is the computational
-  recursion of `runToRound`, made into a rewriting lemma via `Fin.induction_succ`. -/
+  as running it up to round `j.castSucc` and then processing round `j`. -/
 theorem runToRound_succ (j : Fin n)
     (stmt : StmtIn) (wit : WitIn) (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec) :
     prover.runToRound j.succ stmt wit
@@ -674,9 +547,7 @@ theorem runToRound_succ (j : Fin n)
   rw [Fin.induction_succ]
 
 /-- **`processRound` at a challenge (V_to_P) round.**  Specialization of `processRound` to a round
-  `i` that is a challenge round (so `pSpec.dir i = .V_to_P`).  The dependent `match` on the round
-  direction is discharged using the direction proof carried by the `ChallengeIdx`, exposing the
-  clean "sample a challenge, then receive it" shape. -/
+  `i` that is a challenge round (so `pSpec.dir i = .V_to_P`). -/
 theorem processRound_challenge (i : pSpec.ChallengeIdx)
     (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)
     (currentResult : OracleComp (oSpec + [pSpec.Challenge]ₒ)
@@ -695,63 +566,12 @@ theorem processRound_challenge (i : pSpec.ChallengeIdx)
   · rfl
   · rw [hj] at hDir; exact absurd hDir (by decide)
 
-/-- **Transcript-marginal factorization at a challenge round.**  For a challenge round `i`, the
-  transcript produced by running the prover up to round `i.succ` is distributed as: run up to round
-  `i.castSucc`, sample a fresh challenge, *receive* it (the side effect is retained, it can only
-  fail), and concatenate the challenge to the transcript.
-
-  This is the exact bridge between the soundness game (which runs the prover to completion, hence
-  through `receiveChallenge`) and the round-by-round soundness game (which runs only to
-  `runToRound i.castSucc` and then samples a fresh challenge): the only difference is the trailing
-  `receiveChallenge` step, whose effect on the resulting *transcript* is none (the transcript is
-  already determined). -/
-theorem fst_map_runToRound_succ_challenge (i : pSpec.ChallengeIdx)
-    (stmt : StmtIn) (wit : WitIn) (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec) :
-    (fun x => x.1) <$> prover.runToRound i.1.succ stmt wit
-      = (do
-          let ⟨transcript, state⟩ ← prover.runToRound i.1.castSucc stmt wit
-          let challenge ← (pSpec.getChallenge i : OracleComp (oSpec + [pSpec.Challenge]ₒ) _)
-          let _ ← prover.receiveChallenge i state
-          return transcript.concat challenge) := by
-  rw [runToRound_succ, processRound_challenge]
-  simp only [map_bind, map_pure]
-
-/-! ### Prover-run transcript-prefix consistency (keystone marginal bridge)
-
-The round-by-round soundness game speaks about the round-`i.succ` transcript produced by
-`runToRound i.succ`, while the soundness game runs the prover to completion (`runToRound (last n)`).
-The geometric lemma below records the *value*-level fact that processing a later round only `snoc`s a
-new entry onto the transcript and never alters earlier ones, so taking a round-`m` prefix discards
-the appended entry.  (Note: this does NOT lift to a distributional equality between the full-run
-prefix marginal and `runToRound m`, because the intervening `sendMessage`/`receiveChallenge` steps
-can fail — only the failure-monotone `≤` direction holds; see the FRONTIER NOTE below.) -/
-
-/-- **`Fin.take` of a `snoc` below the cut.**  Taking the first `m ≤ k` entries of `Fin.snoc T msg`
-(a tuple of length `k + 1`) discards the appended `msg` and equals taking the first `m` entries of
-`T`.  The geometric core of transcript-prefix preservation under `processRound`. -/
-theorem fin_take_snoc_of_le {k m : ℕ} (hm : m ≤ k) {α : Fin (k + 1) → Sort*}
-    (T : (i : Fin k) → α i.castSucc) (msg : α (Fin.last k)) :
-    Fin.take m (by omega) (Fin.snoc T msg) = Fin.take m hm (fun i => T i) := by
-  rw [← Fin.take_init m hm (Fin.snoc T msg), Fin.init_snoc]
-
-/-! ### Round-range decomposition of `runToRound` (the keystone monadic bridge)
-
-The round-by-round soundness game speaks about the round-`i.succ` transcript prefix, while the
-soundness game runs the prover to completion (`runToRound (last n)`).  The keystone below factors the
-full run as the partial run *up to any earlier round* `k` followed by a continuation that folds
-`processRound` over the remaining rounds `k .. j-1`.  This is a plain `OracleComp` *equality* (the
-continuation only `processRound`s further rounds; no probabilistic content), which is exactly the
-shape `Verifier.StateFunction.probEvent_simulateQ_run'_bind_trailing_le` consumes to drop the
-trailing rounds (and the verifier/`output` tail) while exposing the `runToRound k` prefix that
-`fst_map_runToRound_succ_challenge` then rewrites into the round-by-round game shape. -/
-
 /-- **Kleisli continuation folding `processRound` over rounds `k .. j-1`.**  Transforms a round-`k`
 partial result `(transcript, state)` into the round-`j` partial run, by folding `processRound`.
 Defined by `Fin.induction` on the *target* index `j`: when the running index reaches `k` exactly it
 returns the supplied start `rk` (`pure`), and each subsequent `succ` step applies one more
 `processRound`.  (The `j < k` branches are never used; for those the dependent-`Fin` base is filled
-with the `runToRound 0` seed value, kept only to make the fold total.)  This is the data half of the
-round-range decomposition `runToRound_eq_bind_continueFromTo`. -/
+with the `runToRound 0` seed value, kept only to make the fold total.) -/
 noncomputable def continueFromTo (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)
     (stmt : StmtIn) (wit : WitIn) (k : Fin (n + 1)) :
     (j : Fin (n + 1)) →
@@ -791,8 +611,8 @@ theorem continueFromTo_self (prover : Prover oSpec StmtIn WitIn StmtOut WitOut p
   | succ m _ => simp [Fin.induction_succ]
 
 /-- **`processRound` factors as a bind on its input.**  Since `processRound j cur` first runs `cur`
-and then performs a round-`j` step depending only on `cur`'s output, it equals `cur >>= (round-j step
-on a `pure`d result)`.  The monadic-associativity ingredient of the round-range decomposition. -/
+and then performs a round-`j` step depending only on `cur`'s output, it equals
+`cur >>= (round-j step on a `pure`d result)`. -/
 theorem processRound_eq_bind (j : Fin n) (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)
     (cur : OracleComp (oSpec + [pSpec.Challenge]ₒ)
       (pSpec.Transcript j.castSucc × prover.PrvState j.castSucc)) :
@@ -803,14 +623,8 @@ theorem processRound_eq_bind (j : Fin n) (prover : Prover oSpec StmtIn WitIn Stm
 /-- **Round-range decomposition of `runToRound` (THE keystone).**  For any earlier round `k ≤ j`, the
 prover run up to round `j` equals the run up to round `k` followed by the continuation
 `continueFromTo` that folds `processRound` over rounds `k .. j-1`.  A plain `OracleComp` equality,
-proved by `Fin.induction` on `j` (with `k` fixed) via the single-round unfolding `runToRound_succ`,
-the `processRound` bind-factorization `processRound_eq_bind`, and monad associativity.
-
-This is the missing structural connective of the `rbrSoundness → soundness` probability bridge: with
-`k := i.succ` and `j := Fin.last n` it exposes the round-`i.succ` prefix (whose transcript determines
-the per-round flip event) as a `>>=`-prefix of the full run, to which the failure-monotone transport
-`Verifier.StateFunction.probEvent_simulateQ_run'_bind_trailing_le` and the per-round factorization
-`fst_map_runToRound_succ_challenge` then apply. -/
+proved by `Fin.induction` on `j` (with `k` fixed) via `runToRound_succ`, `processRound_eq_bind`, and
+monad associativity. -/
 theorem runToRound_eq_bind_continueFromTo
     (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)
     (stmt : StmtIn) (wit : WitIn) (k j : Fin (n + 1)) (hkj : k ≤ j) :
@@ -842,157 +656,79 @@ theorem runToRound_eq_bind_continueFromTo
       refine bind_congr (fun rk => ?_)
       rw [← processRound_eq_bind]
 
-/-- **`processRound` only `snoc`s: the `castSucc`-prefix is preserved.**  Every support point of
-`processRound j cur` has its round-`j.succ` transcript's `j.castSucc`-prefix equal to the
-corresponding `j.castSucc`-prefix of its `cur`-predecessor.  The single-step geometric core of
-`continueFromTo`'s prefix stability (both branches `snoc` a new entry onto the running transcript). -/
-theorem take_castSucc_processRound (j : Fin n)
+/-! ### Direction-resolved single-round peels
+
+The two lemmas below resolve the `processRound` direction match into the two honest round shapes,
+so a fixed-`n` honest run can be peeled one round at a time without unfolding the `match` by hand.
+They sit on top of `runToRound_succ` (the one-round unfolding) and `processRound`'s definition. -/
+
+/-- Unfold `processRound` into its `do`-block: take the previous round's `(transcript, state)`,
+then branch on the round direction.  A rewrite handle; once the direction of the round is known use
+the direction-resolved `runToRound_succ_challenge`/`runToRound_succ_message`. -/
+theorem processRound_def (j : Fin n)
     (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)
-    (cur : OracleComp (oSpec + [pSpec.Challenge]ₒ)
-      (pSpec.Transcript j.castSucc × prover.PrvState j.castSucc))
-    (r : pSpec.Transcript j.succ × prover.PrvState j.succ)
-    (hr : r ∈ support (prover.processRound j cur)) :
-    ∃ rprev ∈ support cur,
-      Fin.take j.castSucc.val (by simp) r.1 = rprev.1 := by
-  unfold processRound at hr
-  rw [mem_support_bind_iff] at hr
-  obtain ⟨rprev, hprev, hr⟩ := hr
-  refine ⟨rprev, hprev, ?_⟩
-  obtain ⟨tprev, sprev⟩ := rprev
-  simp only at hr ⊢
-  -- Both round directions `snoc` a new entry onto `tprev`; the `j.castSucc`-prefix is unchanged.
-  have hsnoc : ∃ msg : pSpec.«Type» j, r.1 = Transcript.concat msg tprev := by
-    split at hr
-    · rename_i hDir
-      simp only [bind_pure_comp, mem_support_bind_iff, support_map, Set.mem_image] at hr
-      obtain ⟨ch, _, ⟨st, _, hr⟩⟩ := hr
-      exact ⟨ch, by rw [← hr]⟩
-    · rename_i hDir
-      simp only [bind_pure_comp, support_map, Set.mem_image] at hr
-      obtain ⟨⟨msg, st⟩, _, hr⟩ := hr
-      exact ⟨msg, by rw [← hr]⟩
-  obtain ⟨msg, hmsg⟩ := hsnoc
-  rw [hmsg]
-  -- `Fin.take j.val (Fin.snoc tprev msg) = tprev` (taking below the appended entry).
-  funext k
-  have hkv : k.val < j.val := by have h := k.isLt; simp only [Fin.val_castSucc] at h; exact h
-  simp only [Transcript.concat, Fin.take_apply, Fin.snoc, Fin.val_castLE]
-  rw [dif_pos hkv]
-  apply cast_eq_iff_heq.mpr
-  congr 1
+    (currentResult : OracleComp (oSpec + [pSpec.Challenge]ₒ)
+      (pSpec.Transcript j.castSucc × prover.PrvState j.castSucc)) :
+      prover.processRound j currentResult = (do
+        let ⟨transcript, state⟩ ← currentResult
+        match hDir : pSpec.dir j with
+        | .V_to_P => do
+          let challenge ← pSpec.getChallenge ⟨j, hDir⟩
+          letI newState := (← prover.receiveChallenge ⟨j, hDir⟩ state) challenge
+          return ⟨transcript.concat challenge, newState⟩
+        | .P_to_V => do
+          let ⟨msg, newState⟩ ← prover.sendMessage ⟨j, hDir⟩ state
+          return ⟨transcript.concat msg, newState⟩) := rfl
 
-/-- **`continueFromTo` preserves the round-`k` transcript prefix.**  Any support point of
-`continueFromTo k j rk` (with `k ≤ j`) has its round-`j` transcript's round-`k` prefix equal to the
-start transcript `rk.1`: the continuation only appends later-round entries (`processRound` `snoc`s),
-never altering the round-`k` prefix.  This is the geometric fact (paired with the monadic keystone
-`runToRound_eq_bind_continueFromTo`) that lets the soundness game's full-run transcript prefix at
-round `k = i.succ` be read off `runToRound i.succ`, feeding the round-by-round game. -/
-theorem take_continueFromTo (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)
-    (stmt : StmtIn) (wit : WitIn) (k : Fin (n + 1)) :
-    ∀ (j : Fin (n + 1)) (hkj : k ≤ j) (rk : pSpec.Transcript k × prover.PrvState k)
-      (r : pSpec.Transcript j × prover.PrvState j),
-      r ∈ support (continueFromTo prover stmt wit k j rk) →
-        Fin.take k.val (by exact (Fin.val_le_of_le hkj)) r.1 = rk.1 := by
-  intro j
-  induction j using Fin.induction with
-  | zero =>
-      intro hkj rk r hr
-      have hk0 : k = 0 := le_antisymm hkj (Fin.zero_le _)
-      subst hk0
-      rw [continueFromTo_self] at hr
-      rw [mem_support_pure_iff] at hr
-      subst hr
-      -- `Fin.take 0` of any transcript is the (subsingleton) empty round-0 transcript.
-      funext i; exact absurd i.isLt (by simp)
-  | succ m ih =>
-      intro hkj rk r hr
-      rcases eq_or_lt_of_le hkj with heq | hlt
-      · subst heq
-        rw [continueFromTo_self, mem_support_pure_iff] at hr
-        subst hr
-        -- `Fin.take k.val` of the round-`k` transcript `rk.1` is `rk.1` itself.
-        exact Fin.take_eq_self _
-      · have hkm : k ≤ m.castSucc := by rw [Fin.le_castSucc_iff]; exact hlt
-        have hne : (k : Fin (n + 1)) ≠ m.succ := ne_of_lt hlt
-        rw [continueFromTo_succ_of_ne prover stmt wit k m hne rk] at hr
-        obtain ⟨rprev, hprev, htake⟩ := take_castSucc_processRound m prover _ r hr
-        have hih := ih hkm rk rprev hprev
-        rw [← hih, ← htake]
-        -- `take k (take m.castSucc v) = take k v` (nested takes collapse), position-wise.
-        funext idx
-        rw [Fin.take_apply, Fin.take_apply, Fin.take_apply]
-        congr 1
+/-- **Message-round peel.** When round `j` is a `P_to_V` (prover-message) round, peeling one round
+binds over the previous result and then runs `sendMessage`, appending the message to the
+transcript. -/
+theorem runToRound_succ_message (j : Fin n)
+    (stmt : StmtIn) (wit : WitIn) (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hDir : pSpec.dir j = .P_to_V) :
+      prover.runToRound j.succ stmt wit = (do
+        let ⟨transcript, state⟩ ← prover.runToRound j.castSucc stmt wit
+        let ⟨msg, newState⟩ ← prover.sendMessage ⟨j, hDir⟩ state
+        return ⟨transcript.concat msg, newState⟩) := by
+  rw [runToRound_succ, processRound_def]
+  apply bind_congr
+  rintro ⟨transcript, state⟩
+  -- Collapse the tuple match, then resolve the direction match: the `V_to_P` branch is impossible
+  -- by `hDir`, the `P_to_V` branch is the honest message shape (proof-irrelevant in `hDir`).
+  dsimp only
+  split <;> rename_i hDir'
+  · exact absurd (hDir.symm.trans hDir') (by decide)
+  · rfl
 
--- FRONTIER NOTE (rbrSoundness → soundness, probability bridge; ArkLib#1).
---
--- KEYSTONE STATUS: the round-range decomposition `runToRound_eq_bind_continueFromTo` (and its
--- supporting `continueFromTo` / `continueFromTo_self` / `continueFromTo_succ_of_ne` /
--- `processRound_eq_bind`, all axiom-clean, directly above) is now PROVEN.  With `k := i.succ`,
--- `j := Fin.last n` it rewrites `Prover.run` / `Reduction.run` so the round-`i.succ` prefix is an
--- explicit `>>=`-prefix of the full run (verified).  The structural connective the spine below
--- called for is therefore in place; what remains is purely the probability-plumbing transport.
---
--- The remaining gap is the *per-round distributional marginal* relating the full prover run's
--- round-`i.succ` transcript prefix to the round-by-round game's `runToRound i.castSucc`-then-fresh-
--- challenge form.  An earlier attempt formulated this as a *computation equality*
---   `(fun x => Fin.take m x.1) <$> runToRound j = (fun x => x.1) <$> runToRound ⟨m,_⟩`  (for m ≤ j),
--- proved by induction peeling one `processRound` at a time.  That equality is FALSE: at a P_to_V
--- (message) round `processRound` runs `prover.sendMessage`, and at a V_to_P (challenge) round it
--- runs `prover.receiveChallenge`, both of which return an `OracleComp oSpec _` that *can fail*.
--- Taking the round-`m` transcript prefix (with `m ≤ j.val`) discards the newly appended entry — see
--- the (kept, correct) geometric lemma `fin_take_snoc_of_le` above — but the failure mass of those
--- trailing steps remains.  Hence only the *failure-monotone* `≤` direction holds, not `=`.
---
--- The correct statement is therefore a `probEvent` inequality, threaded through
--- `simulateQ (impl.addLift challengeQueryImpl) … |>.run' (← init)`:
---   Pr[ p (Fin.take i.succ.val tr) | full run ] ≤ Pr[ p | rbr game i ]
--- whose proof spine is:
---   (1) peel rounds `i.succ … last n` off `runToRound (last n)` as trailing binds whose outputs do
---       not affect the round-`i.succ` prefix (geometry: `fin_take_snoc_of_le`), then drop them via
---       the failure-monotone trailing-bind lemma
---       `Verifier.StateFunction.probEvent_bind_trailing_le` (in RoundByRound.lean) — each dropped
---       step can only raise the event probability;
---   (2) the verifier phase and `prover.output` of `Reduction.run` are likewise trailing binds whose
---       failure only raises the prefix-event probability (same lemma);
---   (3) `fst_map_runToRound_succ_challenge` (above) rewrites the surviving `runToRound i.succ`
---       prefix into the rbr game's `runToRound i.castSucc >>= getChallenge` shape (the trailing
---       `receiveChallenge` there is dropped by the same failure-monotone step).
--- All three steps must be transported across `simulateQ … |>.run'` and the `(← init)` bind; the
--- `impl`/`init` thread identically through both games, so they are carried as an opaque common
--- prefix.  The reusable ingredients now in place: `fin_take_snoc_of_le` (here),
--- `probEvent_bind_trailing_le`, `exists_challenge_flip_of_full`, `probEvent_le_sum_of_imp_exists`
--- (RoundByRound.lean).  The missing connective is the `simulateQ`/`run'`/`init`-transport of the
--- failure-monotone step, i.e. a `probEvent_simulateQ_run'_bind_trailing_le` analogue for an
--- *arbitrary* (not distribution-preserving) `impl`.
---
--- ASSEMBLY UPDATE (2026-06-04, obligation A).  The *support-implication* half of
--- `rbrSoundness_implies_soundness` (frontier obligation (A): an accepting soundness-game support
--- point flips the state function at some challenge round) was assembled down to a SINGLE residual
--- obligation, which exposed a genuine **state-threading mismatch in the theorem as stated** (for an
--- *arbitrary stateful* `impl`):
---   • `Reduction.support_run_verdict` (above) was proven (axiom-clean): an accepting soundness-game
---     support point `some x ∈ support ((simulateQ pImpl (reduction.run …).run).run' s)` has its
---     verifier verdict `x.2 ∈ support ((simulateQ impl (verifier.run … x.1.1)).run' s')` for the
---     POST-PROVER state `s'` (the simulation state *after* the prover has run from the init sample
---     `s ∈ support init`).
---   • `StateFunction.toFun_full`'s contrapositive yields `Pr[· ∈ langOut | OptionT.mk do
---     (simulateQ impl (verifier.run … x.1.1)).run' (← init)] = 0`, i.e. NO verifier verdict
---     reachable from a FRESH `init` sample is in `langOut`.
---   • Closing (A) therefore reduces *exactly* to `s' ∈ support init` — but `s'` is the
---     post-prover state, which is NOT in `support init` whenever the (malicious) prover queries the
---     shared oracle `oSpec` (handled by `impl`, which mutates the `σ` state).  Only the challenge
---     oracle (`challengeQueryImpl : QueryImpl _ ProbComp`) leaves `σ` untouched.
--- Consequently `rbrSoundness_implies_soundness` is unprovable as stated for an arbitrary stateful
--- `impl`: a prover that steers the oracle state to make the verifier accept a bad statement from a
--- non-`init`-reachable state breaks soundness while round-by-round soundness (whose `toFun_full` is
--- a fresh-`init` statement) still holds.  The theorem closes once either (i) `toFun_full` is
--- strengthened to quantify over all starting states, or (ii) `impl` is constrained so the prover
--- simulation preserves `support init` (e.g. `σ` a subsingleton / stateless `impl`, or a
--- distribution-preserving challenge-only `impl` — cf. `probEvent_simulateQ_run'_eq`).  This is a
--- STATEMENT-level finding, recorded for the orchestrator; it is NOT closable by further plumbing.
--- Obligation (B) (the per-round bound `Pr[p i | game] ≤ rbrSoundnessError i`) does NOT have this
--- gap: both the soundness game and the rbr game thread `init` through the prover identically, so the
--- failure-monotone keystone transport (the spine above) applies per shared state `s`.
+/-- **Challenge-round peel.** When round `j` is a `V_to_P` (verifier-challenge) round, peeling one
+round binds over the previous result, samples the challenge, runs `receiveChallenge`, and appends
+the challenge to the transcript. -/
+theorem runToRound_succ_challenge (j : Fin n)
+    (stmt : StmtIn) (wit : WitIn) (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hDir : pSpec.dir j = .V_to_P) :
+      prover.runToRound j.succ stmt wit = (do
+        let ⟨transcript, state⟩ ← prover.runToRound j.castSucc stmt wit
+        let challenge ← pSpec.getChallenge ⟨j, hDir⟩
+        letI newState := (← prover.receiveChallenge ⟨j, hDir⟩ state) challenge
+        return ⟨transcript.concat challenge, newState⟩) := by
+  rw [runToRound_succ, processRound_def]
+  apply bind_congr
+  rintro ⟨transcript, state⟩
+  -- Collapse the tuple match, then resolve the direction match: the `V_to_P` branch is the honest
+  -- challenge shape, the `P_to_V` branch is impossible by `hDir`.
+  dsimp only
+  split <;> rename_i hDir'
+  · rfl
+  · exact absurd (hDir.symm.trans hDir') (by decide)
+
+/-- **Full-run peel.** `Prover.run` is `runToRound (Fin.last n)` followed by `output`. This exposes
+the head so that the run can be peeled round-by-round (via `runToRound_succ` and friends) down to
+the `output` step. -/
+theorem run_eq_runToRound_last
+    (stmt : StmtIn) (wit : WitIn) (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec) :
+      prover.run stmt wit = (do
+        let ⟨transcript, state⟩ ← prover.runToRound (Fin.last n) stmt wit
+        return ⟨transcript, ← prover.output state⟩) := rfl
 
 end Prover
 
@@ -1173,4 +909,11 @@ variable {ι : Type} {oSpec : OracleSpec ι}
 --     (reduction : Reduction pSpec oSpec StmtIn WitIn StmtOut WitOut PrvState)
 --     (stmt : StmtIn) (wit : WitIn) :
 --       reduction.run stmt wit = do
+--         let state := reduction.prover.load stmt wit
+--         let ⟨⟨msg, state⟩, queryLog⟩ ← liftComp (simulate loggingOracle ∅
+--           (reduction.prover.sendMessage default state))
+--         let challenge := reduction.prover.receiveChallenge default state
+--         let stmtOut ← reduction.verifier.verify stmt transcript
+--         return (transcript, queryLog, stmtOut, reduction.prover.output state) := by placeholder
+
 end Classes

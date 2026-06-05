@@ -1034,6 +1034,22 @@ theorem roundPoly_eval_eq_sum_cons {k : ℕ} {ι : Type*} (S : Finset ι) (pt : 
   refine Finset.sum_congr rfl fun x _ => ?_
   rw [← eval_eq_eval_mv_eval_finSuccEquivNth, Fin.insertNth_zero']
 
+/-- **Round-polynomial marginal identity (LAST-variable form, defect-#20 repair).** The last-variable
+analog of `roundPoly_eval_eq_sum_cons`: evaluating, at `r'`, the sum over `S` of the partial
+evaluations `Polynomial.map (eval (pt x)) (finSuccEquivNth L (Fin.last k) H)` equals the sum over `S`
+of the full evaluations of `H` with the **last** variable fixed to `r'` (the survivors set by `pt x`,
+via `Fin.snoc (pt x) r'`). This is the marginal that the repaired `getSumcheckRoundPoly` computes: it
+keeps the *last* variable as the round indeterminate (`finSuccEquivNth L (Fin.last k)`, i.e.
+`Fin.insertNth (Fin.last k) = Fin.snoc`), matching the witness advance `fixFirstVariablesOfMQP … {r'}`
+(which also fixes the last surviving variable) and the `Fin.cons`-form round transition. -/
+theorem roundPoly_eval_eq_sum_snoc {k : ℕ} {ι : Type*} (S : Finset ι) (pt : ι → (Fin k → L))
+    (H : MvPolynomial (Fin (k + 1)) L) (r' : L) :
+    Polynomial.eval r' (∑ x ∈ S, Polynomial.map (eval (pt x)) (finSuccEquivNth L (Fin.last k) H))
+      = ∑ x ∈ S, eval (Fin.snoc (pt x) r') H := by
+  rw [Polynomial.eval_finset_sum]
+  refine Finset.sum_congr rfl fun x _ => ?_
+  rw [← eval_eq_eval_mv_eval_finSuccEquivNth, Fin.insertNth_last']
+
 end RoundTransition
 
 /-! ## `simOracle2` message-query support
