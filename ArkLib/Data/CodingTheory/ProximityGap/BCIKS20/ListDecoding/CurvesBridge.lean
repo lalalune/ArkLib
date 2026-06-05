@@ -697,6 +697,69 @@ theorem correlatedAgreement_affine_lines_of_strict_exists_PzFamily
   rw [h_u_eq]
   exact ⟨P₀, hEval, huniq⟩
 
+/-- Strict square-root-radius degree-one correlated-agreement capstone using
+the Claim-5.4 Guruswami-Sudan solution and the nat-ceil Claim-5.11 counting
+package.  The remaining hypotheses are the arithmetic counting package and
+the uniqueness of decoded representatives for the chosen solution. -/
+theorem correlatedAgreement_affine_lines_of_strict_exists_natCeil_counting
+    {m k : ℕ} (hk : 0 < k) {ωs : Fin n ↪ F}
+    [DecidableEq (RatFunc F)]
+    (δ : ℚ≥0)
+    (hδ : (δ : ℝ≥0) < 1 - ReedSolomon.sqrtRate (k + 1) ωs)
+    (hDx : ((gsDpg n m k : ℕ) : ℝ) < D_X ((k + 1) / (n : ℚ)) n m)
+    (hYZ : ((gsDpg n m k + gsZCap n m k : ℕ) : ℝ) ≤
+      n * (m + 1 / (2 : ℚ)) ^ 3 / (6 * Real.sqrt ((k + 1) / n)))
+    (hcounting : ∀ (u₀ u₁ : Fin n → F) {Q : F[Z][X][Y]}
+      (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁),
+      ∃ (x₀ : F) (D t : ℕ),
+        (coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁).card - 1 ≤
+          (2 * k + 1)
+            * (Polynomial.Bivariate.natDegreeY <| H k (δ : ℚ) x₀ h_gs)
+            * (Polynomial.Bivariate.natDegreeY <| R k (δ : ℚ) x₀ h_gs)
+            * D ∧
+        (2 * k + 1)
+          * (Polynomial.Bivariate.natDegreeY <| H k (δ : ℚ) x₀ h_gs)
+          * (Polynomial.Bivariate.natDegreeY <| R k (δ : ℚ) x₀ h_gs)
+          * D + t ≤ #(coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁) ∧
+        ⌈(δ : ℚ) * (n : ℚ)⌉₊ *
+            #(coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁) <
+          (n - k) * t)
+    (hunique : ∀ (u₀ u₁ : Fin n → F) {Q : F[Z][X][Y]}
+      (_h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) (P : F → Polynomial F),
+      (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+        (P z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P z).eval ∘ ωs) ≤ (δ : ℚ)) →
+      ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+        P z = PzFamily (F := F) (n := n) (δ : ℚ) u₀ u₁ ωs k z) :
+    δ_ε_correlatedAgreementCurves (k := 1) (A := F) (F := F) (ι := Fin n)
+      (C := ReedSolomon.code ωs (k + 1)) (δ := (δ : ℝ≥0))
+      (ε := errorBound (δ : ℝ≥0) (k + 1) ωs) := by
+  classical
+  refine correlatedAgreement_affine_curves_of_strict_coeff_polys
+    (k := 1) (deg := k + 1) (domain := ωs) (δ := (δ : ℝ≥0)) hδ ?_
+  intro _hk u _hprob _hJ P hP
+  have h_u_eq := wordStack_fin_two_eq_finMapTwoWords (F := F) (n := n) u
+  obtain ⟨Q, h_gs⟩ :=
+    modified_guruswami_has_a_solution (F := F) (m := m) (n := n) (k := k)
+      (Nat.pos_of_neZero n) hk (ωs := ωs) (u₀ := u 0) (u₁ := u 1) hDx hYZ
+  obtain ⟨x₀, D, t, hcover, hthreshold, hsmall⟩ :=
+    hcounting (u 0) (u 1) h_gs
+  obtain ⟨Dtop, hDtop_card, hsubset⟩ :=
+    exists_points_with_close_subset_matching_set_of_natCeil_delta_nonmatching_bound
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := (δ : ℚ)) (x₀ := x₀)
+      h_gs (D := D) (t := t) hcover hthreshold hsmall
+  exact hcoeffPoly_goodCoeffsCurve_finMapTwoWords_of_selected_matching_domain
+    (F := F) (n := n) (m := m) (k := k) (ωs := ωs) (Q := Q)
+    δ (u 0) (u 1) h_gs Dtop hDtop_card hsubset
+    (hunique (u 0) (u 1) h_gs) P
+    (by
+      intro z hz
+      have hz_u :
+          z ∈ RS_goodCoeffsCurve (k := 1) (deg := k + 1) (domain := ωs)
+            u (δ : ℝ≥0) := by
+        simpa [h_u_eq] using hz
+      have hzP := hP z hz_u
+      exact ⟨hzP.1, by simpa [h_u_eq] using hzP.2⟩)
+
 end BCIKS20ProximityGapSection5To6Bridge
 
 end ProximityGap
