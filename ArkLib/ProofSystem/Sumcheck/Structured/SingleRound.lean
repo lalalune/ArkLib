@@ -58,7 +58,20 @@ theorem roundPoly_degreeLE_finset {R : Type*} [CommSemiring R] {n deg : ℕ} (i 
   exact degreeOf_le_iff.mpr fun m a ↦ hp a i
 
 /- `H_i(X_i, ..., X_{ℓ-1})` -> `g_i(X)` derivation. Degree-generic: the round polynomial
-`h` and the resulting univariate `g_i` share the degree bound `d` (inferred from `h`). -/
+`h` and the resulting univariate `g_i` share the degree bound `d` (inferred from `h`).
+
+VARIABLE-CONVENTION REPAIR (defect-#20, counterexample-backed). This marginalises the **last**
+surviving variable (index `ℓ - i.castSucc - 1`), keeping it as the round indeterminate `X`, and sums
+over the Boolean cube of the *earlier* survivors `(D.drop (i+1)).cube`. The previous form
+marginalised variable `0`, which is INCONSISTENT with the witness advance / structural invariant:
+`projectToMidSumcheckPoly` and `fixFirstVariablesOfMQP` consume variables from the **end** (the
+`Fin.cons`-form round transition `fixFirstVariablesOfMQP_projectToMid_step` fixes the *last*
+surviving variable). Keeping variable `0` free while the witness advance fixes the *last* variable
+makes the two marginals of an asymmetric `H` differ — the verified `ZMod 7` counterexample in the
+`RoundTransition` section note of `RingSwitching.Prelude`. Marginalising the **last** variable here
+(`Fin.last _` in the `⸨X ⦃·⦄, …⸩` notation) puts the round indeterminate on the *same* coordinate
+that `getRoundProverFinalOutput`'s `fixFirstVariablesOfMQP … {r'}` fixes, so `h_i.eval r'` is the
+next-round consistency sum of `witOut.H` (see `getSumcheckRoundPoly_eval_eq_sum_lastVar`). -/
 def getSumcheckRoundPoly {d : ℕ} (i : Fin ℓ) (h : ↥L⦃≤ d⦄[X Fin (ℓ - ↑i.castSucc)])
     : L⦃≤ d⦄[X] := by
   have h_i_lt_ℓ : ℓ - ↑i.castSucc > 0 := by
@@ -69,24 +82,57 @@ def getSumcheckRoundPoly {d : ℕ} (i : Fin ℓ) (h : ↥L⦃≤ d⦄[X Fin (ℓ
   let challenges : Fin 0 → L := fun (j : Fin 0) => j.elim0
   let curH_cast : L[X Fin ((ℓ - ↑i.castSucc - 1) + 1)] := by
     convert h.val
-  let g := ∑ x ∈ (D.drop (↑i.castSucc + 1)).cube, curH_cast ⸨X ⦃0⦄, challenges, x⸩' (by omega)
+  let g := ∑ x ∈ (D.drop (↑i.castSucc + 1)).cube,
+    curH_cast ⸨X ⦃Fin.last (ℓ - ↑i.castSucc - 1)⦄, x, challenges⸩' (by omega)
   exact ⟨g, by
+    have h_in_degLE : curH_cast ∈ L⦃≤ d⦄[X Fin (ℓ - ↑i.castSucc - 1 + 1)] := by
+      rw! (castMode := .all) [h_count_eq]
+      dsimp only [Fin.val_castSucc, eq_mpr_eq_cast, curH_cast]
+      rw [eqRec_eq_cast, cast_cast, cast_eq]
+      exact h.property
     have h_deg_le_d : g ∈ L⦃≤ d⦄[X] := by
       simp only [g]
-      let hDegIn := roundPoly_degreeLE_finset
-        (R := L) (n := ℓ - ↑i.castSucc - 1) (deg := d) (i := ⟨0, by omega⟩)
-        (challenges := fun j => j.elim0) (poly := curH_cast)
-        (S := (D.drop (↑i.castSucc + 1)).cube)
-      have h_in_degLE : curH_cast ∈ L⦃≤ d⦄[X Fin (ℓ - ↑i.castSucc - 1 + 1)] := by
-        rw! (castMode := .all) [h_count_eq]
-        dsimp only [Fin.val_castSucc, eq_mpr_eq_cast, curH_cast]
-        rw [eqRec_eq_cast, cast_cast, cast_eq]
-        exact h.property
-      let res := hDegIn h_in_degLE
-      exact res
+      -- Each summand `curH_cast ⸨X ⦃Fin.last⦄, x, ∅⸩` has degree `≤ d` in the free variable
+      -- (`finSuccEquivNth` keeps the degree along the un-fixed coordinate), and a finite sum of
+      -- such preserves the degree bound.
+      have h_dof : ∀ j, MvPolynomial.degreeOf j curH_cast ≤ d :=
+        (MvPolynomial.mem_restrictDegree_iff_degreeOf_le curH_cast d).mp h_in_degLE
+      refine mem_degreeLE.mpr ((degree_sum_le _ _).trans (Finset.sup_le fun x _ => ?_))
+      refine degree_map_le.trans (natDegree_le_iff_degree_le.mp ?_)
+      rw [natDegree_finSuccEquivNth]
+      exact h_dof (Fin.last (ℓ - ↑i.castSucc - 1))
     rw [mem_degreeLE] at h_deg_le_d ⊢
     exact h_deg_le_d
   ⟩
+
+/-- **Round-univariate evaluation as a survivor-cube sum (last-variable / `snoc` form).** Evaluating
+the prover's round univariate `getSumcheckRoundPoly ℓ D i h` at any point `r` equals the sum, over
+the next round's survivor cube `(D.drop (i.castSucc+1)).cube`, of the full round polynomial `H = h`
+with the **last** surviving variable fixed to `r` (via `Fin.snoc`). Proven from the marginal identity
+`RingSwitching.roundPoly_eval_eq_sum_snoc` (Prelude). `curH` is `h.val` transported across
+`getSumcheckRoundPoly`'s internal index equality `ℓ-i.castSucc = (ℓ-i.castSucc-1)+1`, supplied via a
+`HEq`. This is the degree-generic generalisation of `RingSwitching`'s boolDomain-specialised
+`getSumcheckRoundPoly_eval_eq_sum_snoc`. -/
+theorem getSumcheckRoundPoly_eval_eq_sum_snoc {d : ℕ} (i : Fin ℓ)
+    (h : ↥L⦃≤ d⦄[X Fin (ℓ - ↑i.castSucc)]) (r : L)
+    (curH : L[X Fin ((ℓ - ↑i.castSucc - 1) + 1)]) (hcurH : HEq curH h.val) :
+    (getSumcheckRoundPoly ℓ D (i := i) h).val.eval r
+      = ∑ x ∈ (D.drop (↑i.castSucc + 1)).cube,
+          MvPolynomial.eval
+            (Fin.snoc (Fin.append x (fun j => j.elim0) ∘ Fin.cast (by omega)) r) curH := by
+  unfold getSumcheckRoundPoly
+  dsimp only
+  -- Marginal identity (last-variable form): evaluating the survivor-sum of partial evaluations at
+  -- `r` equals the survivor-sum of `curH_cast` with the last variable fixed to `r` (`Fin.snoc`).
+  rw [Polynomial.eval_finset_sum]
+  refine Finset.sum_congr rfl fun x _ => ?_
+  rw [← eval_eq_eval_mv_eval_finSuccEquivNth, Fin.insertNth_last']
+  -- Reconcile `getSumcheckRoundPoly`'s internal `curH_cast` (an `Eq.mpr _ h.val`, `HEq` to `h.val`)
+  -- with the supplied `curH` (also `HEq` to `h.val`).
+  congr 1
+  apply eq_of_heq
+  refine HEq.trans ?_ hcurH.symm
+  exact cast_heq _ _
 
 end RoundPoly
 
@@ -169,10 +215,15 @@ def getRoundProverFinalOutput (i : Fin ℓ)
   := by
   let (stmtIn, oStmtIn, witIn, h_i, r_i') := finalPrvState
   let newSumcheckTarget : L := h_i.val.eval r_i'
+  -- Challenges accumulate via `Fin.cons` (defect-#20 repair): the fresh challenge `r'` lands at
+  -- index `0` of the `Fin i.succ` challenge vector, matching the `Fin.cons`-form round transition
+  -- `fixFirstVariablesOfMQP_projectToMid_step` consumed by the structural invariant. The previous
+  -- `Fin.snoc` form put `r'` at the LAST index, which is inconsistent with `projectToMid`'s
+  -- end-consuming order (verified counterexample in `RingSwitching.Prelude`'s `RoundTransition`).
   let stmtOut : Statement (L := L) (ℓ := ℓ) Context i.succ := {
     ctx := stmtIn.ctx,
     sumcheck_target := newSumcheckTarget,
-    challenges := Fin.snoc stmtIn.challenges r_i'
+    challenges := Fin.cons r_i' stmtIn.challenges
   }
   let challenges : Fin 1 → L := fun _ => r_i'
   let witOut : SumcheckWitness L ℓ i.succ d := by
@@ -248,19 +299,21 @@ def roundOracleVerifier (i : Fin ℓ) :
     -- Sumcheck check: s_i ?= ∑_{b ∈ D.points i} h_i(b), summing the round polynomial over the
     -- evaluation domain of coordinate `i` (for the boolean hypercube this is `h_i(0) + h_i(1)`).
     let sumcheck_check := (∑ b ∈ D.points i, h_i.val.eval b) = stmtIn.sumcheck_target
-    unless sumcheck_check do
-      let dummyStmt : Statement (L := L) (ℓ := ℓ) Context i.succ := {
-        ctx := stmtIn.ctx,
-        sumcheck_target := 0,
-        challenges := Fin.snoc stmtIn.challenges 0
-      }
-      return dummyStmt
+    -- FAILURE-EMITTING VERIFIER (defect-#21 repair): on a failed check the verifier emits `failure`
+    -- (`guard`, i.e. `OptionT` `none`) rather than a *dummy* accepting statement. Emitting a dummy
+    -- let a maliciously-chosen dummy lie in `relOut` while the round-by-round KState local check is
+    -- false, leaving the `toFun_full` REJECT branch unprovable (the dummy is reachable). With
+    -- `guard`, the reject branch has no support element, so the REJECT branch is vacuous and the
+    -- knowledge-soundness contract (verifier signals rejection, never forwards a fake statement)
+    -- holds. Completeness only ever exercises the accept branch, so this does not weaken it.
+    guard sumcheck_check
     -- Message 1: V samples r'_i and sends it to P.
     let r_i' : L := pSpecChallenges ⟨1, rfl⟩
+    -- Challenges accumulate via `Fin.cons` (defect-#20 repair); see `getRoundProverFinalOutput`.
     let stmtOut : Statement (L := L) (ℓ := ℓ) Context i.succ := {
       ctx := stmtIn.ctx,
       sumcheck_target := h_i.val.eval r_i',
-      challenges := Fin.snoc stmtIn.challenges r_i'
+      challenges := Fin.cons r_i' stmtIn.challenges
     }
     pure stmtOut
   embed := ⟨fun j => Sum.inl j, fun a b h => by cases h; rfl⟩
@@ -278,6 +331,27 @@ def roundOracleReduction (i : Fin ℓ) :
     (pSpec := pSpecSumcheckRound L d) where
   prover := roundOracleProver (L := L) ℓ D Context (OStmtIn := OStmtIn) d i
   verifier := roundOracleVerifier (L := L) ℓ D Context (OStmtIn := OStmtIn) d i
+
+/-- The structured per-round oracle verifier routes every output oracle straight to the unchanged
+input oracle (`embed = Sum.inl`, `OStmtIn = OStmtOut`, `hEq = rfl`) and exposes no message oracle, so
+its `AppendCoherent` coherence holds by `rfl`. Needed to `seqCompose` the rounds (e.g. for the
+ring-switching/Binius sumcheck loops). -/
+instance instRoundOracleVerifierAppendCoherent [Oₛ : ∀ i, OracleInterface (OStmtIn i)] (i : Fin ℓ) :
+    OracleVerifier.Append.AppendCoherent
+      (roundOracleVerifier (L := L) ℓ D Context (OStmtIn := OStmtIn) d i) where
+  hCohInl := fun a k h => by
+    have : a = k := by
+      simpa only [roundOracleVerifier, Function.Embedding.coeFn_mk, Sum.inl.injEq] using h
+    subst this; rfl
+  hCohInr := fun a k h => by
+    simp only [roundOracleVerifier, Function.Embedding.coeFn_mk, reduceCtorEq] at h
+
+/-- The structured per-round oracle *reduction*'s verifier is definitionally `roundOracleVerifier`,
+so it inherits `AppendCoherent`. -/
+instance instRoundOracleReductionAppendCoherent [Oₛ : ∀ i, OracleInterface (OStmtIn i)] (i : Fin ℓ) :
+    OracleVerifier.Append.AppendCoherent
+      (roundOracleReduction (L := L) ℓ D Context (OStmtIn := OStmtIn) d i).verifier :=
+  instRoundOracleVerifierAppendCoherent (L := L) ℓ D Context (OStmtIn := OStmtIn) d i
 
 end SingleRound
 

@@ -216,6 +216,7 @@ def batchVerifier :
   hEq := by simp
 
 /-- The batching round oracle reduction. -/
+@[reducible]
 def batchOracleReduction :
   OracleReduction []ₒ
     Unit (OracleStatement m ω) (Witness F s d m)
@@ -225,6 +226,27 @@ def batchOracleReduction :
     (batchSpec F m) where
   prover := batchProver s d m
   verifier := batchVerifier (k := k) m
+
+/-- The batching-round oracle verifier passes every output oracle through to the unchanged input
+oracle (`embed = Sum.inl`, `OStmtIn = OStmtOut = OracleStatement m ω`, `hEq` by `simp`) and exposes
+no message oracle, so its `AppendCoherent` coherence holds by `rfl`. Used to `.append` the batching
+round onto the lifted FRI reduction. -/
+instance instBatchVerifierAppendCoherent :
+    OracleVerifier.Append.AppendCoherent (batchVerifier (k := k) m (ω := ω)) where
+  hCohInl := fun a k h => by
+    have : a = k := by
+      simpa only [batchVerifier, Function.Embedding.coeFn_mk, Sum.inl.injEq] using h
+    subst this; rfl
+  hCohInr := fun a k h => by
+    simp only [batchVerifier, Function.Embedding.coeFn_mk, reduceCtorEq] at h
+
+instance instBatchOracleReductionAppendCoherent :
+    OracleVerifier.Append.AppendCoherent
+      (Oₛ₁ := (inferInstance : ∀ j, OracleInterface (OracleStatement m ω j)))
+      (Oₛ₂ := (inferInstance : ∀ j, OracleInterface (OracleStatement m ω j)))
+      (Oₘ₁ := (inferInstance : ∀ j, OracleInterface ((batchSpec F m).Message j)))
+      (batchOracleReduction s d m).verifier :=
+  instBatchVerifierAppendCoherent (k := k) m (ω := ω)
 
 end BatchingRound
 

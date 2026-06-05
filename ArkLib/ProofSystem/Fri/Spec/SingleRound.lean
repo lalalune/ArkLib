@@ -11,6 +11,7 @@ import ArkLib.Data.Domain.CosetFftDomain.Subdomain
 import ArkLib.Data.Domain.CosetFftDomain.ToList
 import ArkLib.Data.Domain.FftDomain.Subdomain
 import ArkLib.OracleReduction.Basic
+import ArkLib.OracleReduction.Composition.Sequential.Append
 import CompPoly.Univariate.Basic
 import CompPoly.Univariate.Linear
 import CompPoly.Univariate.ToPoly.Impl
@@ -459,7 +460,59 @@ def foldVerifier :
       aesop
     · rfl
 
+/-- `AppendCoherent` for the `i`-th non-final folding round's oracle verifier.
+
+The verifier's `embed` (a `dite` on `j.val = i.val + 1`) routes each output oracle index `a` either
+to an input oracle (`Sum.inl ⟨a.val, _⟩`, same numeric index) or to the prover message
+(`Sum.inr ⟨1, _⟩`, the freshly committed codeword). In both branches the registered
+`OracleInterface` is `inferInstance` over the *same* function type `(ω.subdomain …).toFinset → F`,
+where the subdomain exponent depends only on the *numeric* index: `OracleStatement … i.succ a`
+depends on `a.val`, `OracleStatement … i.castSucc k` depends on `k.val = a.val`, and the message
+type at `⟨1,_⟩` uses exponent `finRangeTo (k+1) (i.val + 1) = finRangeTo (k+1) a.val`. So once the
+embed-branch witness fixes the numeric index, both interface sides are definitionally equal and the
+required `cast` collapses by `eq_of_heq`/`cast_heq` (arithmetic only on the `Fin` numeric index, no
+proof-relevant content). -/
+instance instFoldVerifierAppendCoherent :
+    OracleVerifier.Append.AppendCoherent (foldVerifier s (ω := ω) i) where
+  hCohInl := fun a k h => by
+    -- `embed a = Sum.inl k` forces the dite's else-branch, with `k.val = a.val`.
+    have hak : a.val = k.val := by
+      simp only [foldVerifier, Function.Embedding.coeFn_mk] at h
+      split_ifs at h with hcond
+      exact congrArg Fin.val (Sum.inl.inj h)
+    apply eq_of_heq
+    refine HEq.trans ?_ (cast_heq _ _).symm
+    -- Both interfaces are `instFunction` over `(ω.subdomain (∑ … ·).toFinset → F)`; the carrier
+    -- depends only on the numeric index, so destructuring the `Fin`s and `subst`-ing the numeric
+    -- equality makes the two carriers syntactically identical.
+    unfold instOracleInterfaceOracleStatement OracleStatement
+    obtain ⟨av, hav⟩ := a; obtain ⟨kv, hkv⟩ := k
+    simp only [] at hak; subst hak; rfl
+  hCohInr := fun a k h => by
+    -- `embed a = Sum.inr k` forces the dite's then-branch: `a.val = i.val + 1` and `k = ⟨1,_⟩`.
+    have hkk : k = ⟨1, by simp⟩ := by
+      simp only [foldVerifier, Function.Embedding.coeFn_mk] at h
+      split_ifs at h with hcond
+      exact (Sum.inr.inj h).symm
+    have hacond : a.val = i.val + 1 := by
+      simp only [foldVerifier, Function.Embedding.coeFn_mk] at h
+      split_ifs at h with hcond
+      exact hcond
+    subst hkk
+    apply eq_of_heq
+    refine HEq.trans ?_ (cast_heq _ _).symm
+    -- The message interface at `⟨1,_⟩` is `instFunction` of the codeword carrier with exponent
+    -- `finRangeTo (k+1) (i.val+1)`; bridge to it, then match the output oracle at `a` (`a.val = i.val+1`).
+    have hmsg : HEq (instOracleInterfaceMessagePSpec (ω := ω) s (i := i) ⟨1, by simp⟩)
+        (@OracleInterface.instFunction
+          (↥((ω.subdomain (∑ j' ∈ finRangeTo (k+1) (i.1+1), (s j':ℕ))).toFinset)) F) := by rfl
+    refine HEq.trans ?_ hmsg.symm
+    unfold instOracleInterfaceOracleStatement OracleStatement
+    obtain ⟨av, hav⟩ := a
+    simp only [] at hacond; subst hacond; rfl
+
 /-- The oracle reduction that is the `i`-th round of the FRI protocol. -/
+@[reducible]
 def foldOracleReduction :
   OracleReduction []ₒ
     (Statement F i.castSucc) (OracleStatement s ω i.castSucc) (Witness F s d i.castSucc.castSucc)
@@ -467,6 +520,14 @@ def foldOracleReduction :
     (pSpec (ω := ω) s i) where
   prover := foldProver s d i
   verifier := foldVerifier s i
+
+/-- The `i`-th round's oracle *reduction*'s verifier is definitionally `foldVerifier`, so it
+inherits `AppendCoherent` (used to `seqCompose` the folding rounds). -/
+instance instFoldOracleReductionAppendCoherent :
+    OracleVerifier.Append.AppendCoherent
+      (Oₘ₁ := instOracleInterfaceMessagePSpec (ω := ω) s (i := i))
+      (foldOracleReduction s d i).verifier :=
+  instFoldVerifierAppendCoherent s i
 
 end FoldPhase
 
@@ -711,7 +772,132 @@ def finalFoldVerifier :
     · simp
     · rfl
 
+/-! ### `AppendCoherent` for the final folding round
+
+Unlike the non-final rounds, the *output* interface family `FinalOracleStatement` carries the
+hand-built `finalOracleStatementInterface` (a `dite`/`ite` on `j.val = k+1`), while the *input*
+`OracleStatement` carries the canonical `instFunction` and the message carries
+`OracleInterface.instDefault`. So even when the underlying carrier types coincide the registered
+`OracleInterface` *structures* are only propositionally (not definitionally) equal — exactly the free
+`Oₛ₂` parameter the coherence class is designed to capture. The cast in each coherence field is
+discharged by `OracleInterface.ext`, reducing to a `Query` (type) equality and a heterogeneous
+`toOC` equality; the latter descends through `OracleContext`/`OracleSpec`/`QueryImpl` via the
+`*_heq` congruence lemmas below, collapsing every `rfl`-level cast once the `if`/`dite` on
+`j.val = k+1` is resolved. -/
+
+private theorem finalFold_bindcomp_heq {M1 M2 : Type} (hM : M1 = M2) {β1 β2 : Type}
+    {f1 : M1 → ReaderM M1 β1} {f2 : M2 → ReaderM M2 β2} (hβ : β1 = β2) (hf : HEq f1 f2) :
+    HEq ((read : ReaderM M1 M1) >>= f1) ((read : ReaderM M2 M2) >>= f2) := by
+  subst hM; subst hβ; rw [heq_eq_eq] at hf; subst hf; rfl
+
+private theorem finalFold_pure_heq {M1 M2 α1 α2 : Type} (hM : M1 = M2) (hα : α1 = α2)
+    {a1 : α1} {a2 : α2} (ha : HEq a1 a2) :
+    HEq (pure a1 : ReaderM M1 α1) (pure a2 : ReaderM M2 α2) := by
+  subst hM; subst hα; rw [heq_eq_eq] at ha; subst ha; rfl
+
+private theorem finalFold_oc_mk_heq {Q1 Q2 : Type} {m1 m2 : Type → Type}
+    (sp1 : OracleSpec Q1) (im1 : QueryImpl sp1 m1) (sp2 : OracleSpec Q2) (im2 : QueryImpl sp2 m2)
+    (hQ : Q1 = Q2) (hm : m1 = m2) (hsp : HEq sp1 sp2) (him : HEq im1 im2) :
+    HEq (OracleContext.mk sp1 im1) (OracleContext.mk sp2 im2) := by
+  subst hQ; subst hm; rw [heq_eq_eq] at hsp; subst hsp; rw [heq_eq_eq] at him; subst him; rfl
+
+private theorem finalFold_query_cast {A B : Type} (h : A = B) (o : OracleInterface A) :
+    HEq (cast (congrArg OracleInterface h) o).Query o.Query := by subst h; rw [cast_eq]
+
+private theorem finalFold_toOC_cast {A B : Type} (h : A = B) (o : OracleInterface A) :
+    HEq (cast (congrArg OracleInterface h) o).toOC o.toOC := by subst h; rw [cast_eq]
+
+private theorem hfun_app {A1 A2 B1 B2 : Type} {f1 : A1 → B1} {f2 : A2 → B2} {a1 : A1} {a2 : A2}
+    (hA : A1 = A2) (hB : B1 = B2) (hf : HEq f1 f2) (ha : HEq a1 a2) : HEq (f1 a1) (f2 a2) := by
+  subst hA; subst hB; rw [heq_eq_eq] at hf ha; subst hf; subst ha; rfl
+
+instance instFinalFoldVerifierAppendCoherent :
+    OracleVerifier.Append.AppendCoherent (finalFoldVerifier s d (ω := ω)) where
+  hCohInl := fun j a h => by
+    -- `embed j = Sum.inl a` forces the dite else-branch: `j.val ≠ k+1` and `a.val = j.val`.
+    have hja : a.val = j.val := by
+      simp only [finalFoldVerifier, Function.Embedding.coeFn_mk] at h
+      split_ifs at h with hcond; exact (congrArg Fin.val (Sum.inl.inj h)).symm
+    have hne : j.val ≠ k + 1 := by
+      simp only [finalFoldVerifier, Function.Embedding.coeFn_mk] at h
+      split_ifs at h with hcond; exact hcond
+    -- carrier-type equality of the (else-branch) output oracle and the routed input oracle.
+    have hM : FinalOracleStatement (ω := ω) s j
+        = OracleStatement (ω := ω) s (Fin.last k) a := by
+      unfold FinalOracleStatement OracleStatement
+      rw [if_neg hne]
+      obtain ⟨jv, hjv⟩ := j; obtain ⟨av, hav⟩ := a
+      simp only [] at hja; subst hja; rfl
+    apply OracleInterface.ext
+    · -- `Query`: `finalOracleStatementInterface … j` reduces (else) to the codeword carrier.
+      apply eq_of_heq
+      refine HEq.trans ?_ (finalFold_query_cast hM.symm (instOracleInterfaceOracleStatement s a)).symm
+      rw [query_lem, if_neg hne]
+      obtain ⟨jv, hjv⟩ := j; obtain ⟨av, hav⟩ := a
+      simp only [] at hja; subst hja; rfl
+    · -- `toOC`: descend through `OracleContext`/spec/impl, collapsing the `rfl`-casts.
+      refine HEq.trans ?_ (finalFold_toOC_cast hM.symm (instOracleInterfaceOracleStatement s a)).symm
+      obtain ⟨jv, hjv⟩ := j; obtain ⟨av, hav⟩ := a
+      simp only [] at hja hne; subst hja
+      have hMC : FinalOracleStatement (ω := ω) s ⟨av, hjv⟩
+          = (↥((ω.subdomain (∑ j' ∈ finRangeTo (k+1) av, (s j':ℕ))).toFinset) → F) := by
+        unfold FinalOracleStatement; rw [if_neg hne]; rfl
+      have hQ : (if av = k + 1 then Unit
+          else ↥((ω.subdomain (∑ j' ∈ finRangeTo (k+1) av, (s j':ℕ))).toFinset))
+          = ↥((ω.subdomain (∑ j' ∈ finRangeTo (k+1) av, (s j':ℕ))).toFinset) := if_neg hne
+      have hβ : (if av = k + 1 then CompPoly.CPolynomial F else F) = F := if_neg hne
+      unfold finalOracleStatementInterface instOracleInterfaceOracleStatement OracleStatement
+        OracleInterface.instFunction OracleContext.ofFunction
+      simp only [Fin.val_mk, dif_neg hne]
+      refine finalFold_oc_mk_heq _ _ _ _ hQ (congrArg ReaderM hMC) ?_ ?_
+      · -- spec
+        refine Function.hfunext hQ (fun x1 x2 _ => ?_)
+        apply heq_of_eq; rw [if_neg hne]
+      · -- impl
+        refine Function.hfunext hQ (fun q1 q2 hq => ?_)
+        exact finalFold_bindcomp_heq hMC hβ
+          (Function.hfunext hMC (fun v1 v2 hv =>
+            finalFold_pure_heq hMC hβ ((cast_heq _ _).trans
+              (hfun_app rfl rfl ((cast_heq _ _).trans hv) ((cast_heq _ _).trans hq)))))
+  hCohInr := fun j a h => by
+    -- `embed j = Sum.inr a` forces the dite then-branch: `j.val = k+1` and `a = ⟨1,_⟩`.
+    have hcond : j.val = k + 1 := by
+      simp only [finalFoldVerifier, Function.Embedding.coeFn_mk] at h
+      split_ifs at h with hc; exact hc
+    have haa : a = ⟨1, by simp⟩ := by
+      simp only [finalFoldVerifier, Function.Embedding.coeFn_mk] at h
+      split_ifs at h with hc; exact (Sum.inr.inj h).symm
+    subst haa
+    -- output oracle (then) is the committed polynomial; message interface is `instDefault`.
+    have hMsg : (pSpec F).Message (⟨1, by simp⟩ : (pSpec F).MessageIdx)
+        = FinalOracleStatement (ω := ω) s j := by
+      unfold FinalOracleStatement pSpec Message; simp [hcond]
+    apply OracleInterface.ext
+    · -- `Query`: both `Unit`.
+      apply eq_of_heq
+      refine HEq.trans ?_ (finalFold_query_cast hMsg (instOracleInterfaceMessagePSpec ⟨1, by simp⟩)).symm
+      rw [query_lem, if_pos hcond]; rfl
+    · -- `toOC`: both `instDefault` over `CompPoly.CPolynomial F`.
+      refine HEq.trans ?_ (finalFold_toOC_cast hMsg (instOracleInterfaceMessagePSpec ⟨1, by simp⟩)).symm
+      have hM : FinalOracleStatement (ω := ω) s j = (pSpec F).Message ⟨1, by simp⟩ := by
+        unfold FinalOracleStatement pSpec Message; simp [hcond]
+      have hUnit : (if (j : Fin (k+2)).val = k + 1 then Unit
+          else ↥((ω.subdomain (∑ j' ∈ finRangeTo (k + 1) (j : Fin (k+2)).val, (s j':ℕ))).toFinset))
+          = Unit := if_pos hcond
+      have hβ : (if (j : Fin (k+2)).val = k + 1 then CompPoly.CPolynomial F else F)
+          = (pSpec F).Message ⟨1, by simp⟩ := by rw [if_pos hcond]; rfl
+      unfold finalOracleStatementInterface instOracleInterfaceMessagePSpec OracleInterface.instDefault
+      simp only [↓reduceDIte, ↓reduceIte, hcond]
+      refine finalFold_oc_mk_heq _ _ _ _ hUnit (congrArg ReaderM hM) ?_ ?_
+      · refine Function.hfunext hUnit (fun x1 x2 _ => ?_)
+        apply heq_of_eq; rw [if_pos hcond]; rfl
+      · refine Function.hfunext hUnit (fun q1 q2 hq => ?_)
+        exact finalFold_bindcomp_heq hM hβ
+          (Function.hfunext hM (fun v1 v2 hv =>
+            finalFold_pure_heq hM hβ ((cast_heq _ _).trans ((cast_heq _ _).trans hv))))
+
 /-- The oracle reduction that is the final folding round of the FRI protocol. -/
+@[reducible]
 def finalFoldOracleReduction :
   OracleReduction []ₒ
     (Statement F (Fin.last k)) (OracleStatement s ω (Fin.last k))
@@ -721,6 +907,16 @@ def finalFoldOracleReduction :
     (pSpec F) where
   prover := finalFoldProver s d
   verifier := finalFoldVerifier s d
+
+/-- The final round's oracle *reduction*'s verifier is definitionally `finalFoldVerifier`, so it
+inherits `AppendCoherent` (used to `.append` the final round onto the folding-round composite). -/
+instance instFinalFoldOracleReductionAppendCoherent :
+    OracleVerifier.Append.AppendCoherent
+      (Oₛ₁ := instOracleInterfaceOracleStatement (ω := ω) s (i := Fin.last k))
+      (Oₛ₂ := finalOracleStatementInterface (ω := ω) s)
+      (Oₘ₁ := instOracleInterfaceMessagePSpec (F := F))
+      (finalFoldOracleReduction s d).verifier :=
+  instFinalFoldVerifierAppendCoherent s d
 
 end FinalFoldPhase
 

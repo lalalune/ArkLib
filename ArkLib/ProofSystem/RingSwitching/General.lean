@@ -42,26 +42,39 @@ variable (mlIOPCS : MLIOPCS L ℓ')
 def batchingCoreVerifier :=
   OracleVerifier.append (oSpec:=[]ₒ)
     (V₁:= BatchingPhase.oracleVerifier κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn)
-    (pSpec₁:=pSpecBatching κ L K P)
     (V₂:=SumcheckPhase.coreInteractionOracleVerifier κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn)
     (pSpec₂:=pSpecCoreInteraction L ℓ')
+
+/-- The batching-then-core composite verifier is `AppendCoherent` (batching `.append`
+core-interaction, both phases coherent), so it can be `.append`ed onto the MLIOPCS sub-protocol. -/
+instance instBatchingCoreVerifierAppendCoherent :
+    OracleVerifier.Append.AppendCoherent (batchingCoreVerifier κ L K P ℓ ℓ' h_l mlIOPCS) :=
+  OracleVerifier.Append.AppendCoherent.append
+    (c₁ := BatchingPhase.instOracleVerifierAppendCoherent κ L K P ℓ ℓ' h_l
+      (aOStmtIn := mlIOPCS.toAbstractOStmtIn))
+    (c₂ := SumcheckPhase.instCoreInteractionOracleVerifierAppendCoherent κ L K P ℓ ℓ' h_l
+      (aOStmtIn := mlIOPCS.toAbstractOStmtIn)) _ _
 
 /-- The oracle verifier for the full Binary Basefold protocol -/
 @[reducible]
 def fullOracleVerifier :=
   OracleVerifier.append (oSpec:=[]ₒ)
     (V₁:=batchingCoreVerifier κ L K P ℓ ℓ' h_l mlIOPCS)
-    (pSpec₁:=pSpecLargeFieldReduction κ L K P ℓ')
     (V₂:=mlIOPCS.oracleReduction.verifier)
     (pSpec₂:=mlIOPCS.pSpec)
 
 def batchingCoreReduction :=
   OracleReduction.append
     (R₁ := BatchingPhase.batchingOracleReduction κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn)
-    (pSpec₁:=pSpecBatching κ L K P)
     (R₂ := SumcheckPhase.coreInteractionOracleReduction κ L K P ℓ ℓ' h_l
        mlIOPCS.toAbstractOStmtIn)
     (pSpec₂:=pSpecCoreInteraction L ℓ')
+
+/-- The batching-then-core composite reduction's verifier is `AppendCoherent`. -/
+instance instBatchingCoreReductionAppendCoherent :
+    OracleVerifier.Append.AppendCoherent
+      (batchingCoreReduction κ L K P ℓ ℓ' h_l mlIOPCS).verifier :=
+  OracleVerifier.Append.AppendCoherent.oracleReductionAppend _ _
 
 /-- The reduction for the full Binary Basefold protocol -/
 @[reducible]

@@ -263,6 +263,7 @@ import ArkLib.ProofSystem.Stir.OutOfDomSmpl
 import ArkLib.ProofSystem.Stir.ProximityBound
 import ArkLib.ProofSystem.Stir.ProximityGap
 import ArkLib.ProofSystem.Stir.Quotienting
+import ArkLib.ProofSystem.Stir.RoundProtocol
 import ArkLib.ProofSystem.Sumcheck.Domain
 import ArkLib.ProofSystem.Sumcheck.Impl.Basic
 import ArkLib.ProofSystem.Sumcheck.Spec.General

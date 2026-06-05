@@ -107,6 +107,19 @@ theorem induction_three' {motive : Fin 4 → Sort*} {zero : motive 0}
     {succ : ∀ i : Fin 3, motive i.castSucc → motive i.succ} :
       induction (motive := motive) zero succ (3 : Fin 4) = succ 2 (succ 1 (succ 0 zero)) := by rfl
 
+@[simp]
+theorem induction_four {motive : Fin 5 → Sort*} {zero : motive 0}
+    {succ : ∀ i : Fin 4, motive i.castSucc → motive i.succ} :
+      induction (motive := motive) zero succ (last 4) =
+        succ 3 (succ 2 (succ 1 (succ 0 zero))) := rfl
+
+/-- Alternate version of `Fin.induction_four` that uses `4 : Fin 5` instead of `last 4`. -/
+@[simp]
+theorem induction_four' {motive : Fin 5 → Sort*} {zero : motive 0}
+    {succ : ∀ i : Fin 4, motive i.castSucc → motive i.succ} :
+      induction (motive := motive) zero succ (4 : Fin 5) =
+        succ 3 (succ 2 (succ 1 (succ 0 zero))) := by rfl
+
 /-- Heterogeneous equality on `Fin.induction` -/
 theorem induction_heq {n n' : ℕ} {motive : Fin (n + 1) → Sort u} {motive' : Fin (n' + 1) → Sort u}
     {zero : motive 0} {zero' : motive' 0}

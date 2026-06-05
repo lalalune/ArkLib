@@ -329,21 +329,6 @@ class AppendCoherent (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt
   hCohInr : ∀ (i : ιₛ₂) (k : pSpec₁.MessageIdx) (h : V₁.embed i = Sum.inr k),
     (Oₛ₂ i) = _root_.cast (congrArg OracleInterface (hEqInr V₁ i k h)) (Oₘ₁ k)
 
-/-- Placeholder coherence instance for generic sequential composition.
-
-Concrete verifier families should discharge `AppendCoherent` from their `embed` maps. The current
-generic `General.lean` fold needs a typeclass inhabitant before those family-specific proofs exist;
-this keeps the build surface available while the no-sorry gate continues to track the proof debt. -/
-instance (priority := low) instAppendCoherentDefault
-    (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁) :
-    AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁ where
-  hCohInl := by
-    intro i k h
-    sorry
-  hCohInr := by
-    intro i k h
-    sorry
-
 /-- Emit a query to `V₁`'s output oracle statement `OStmt₂ i`, faithfully routed into the
 appended-spec oracle context.
 
@@ -399,10 +384,7 @@ def OracleVerifier.append (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ 
     [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
     (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂) :
       OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₃ OStmt₃ (pSpec₁ ++ₚ pSpec₂) where
-  verify := by
-    haveI : OracleVerifier.Append.AppendCoherent
-      (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁ := inferInstance
-    exact OracleVerifier.Append.verify V₁ V₂
+  verify := OracleVerifier.Append.verify V₁ V₂
 
   -- Need to provide an embedding `ιₛ₃ ↪ ιₛ₁ ⊕ (pSpec₁ ++ₚ pSpec₂).MessageIdx`
   embed :=
@@ -430,6 +412,80 @@ def OracleVerifier.append (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ 
       simp [h] at this ⊢
       simp [this, MessageIdx.inr]
 
+namespace OracleVerifier.Append
+
+/-- How the composite `(OracleVerifier.append V₁ V₂).embed` evaluates: it factors through
+`V₂.embed` then `V₁.embed`.  The three cases match the three coherence sources (input oracle of
+`V₁`; `pSpec₁`-message; `pSpec₂`-message). -/
+theorem append_embed_eq (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    [AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
+    (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂) (i : ιₛ₃) :
+    (OracleVerifier.append (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁ V₂).embed i =
+      match V₂.embed i with
+      | Sum.inl j => (V₁.embed j).map id MessageIdx.inl
+      | Sum.inr j => Sum.inr (MessageIdx.inr j) := by
+  rcases h : V₂.embed i with j | j
+  · rcases h' : V₁.embed j with k | k <;>
+      simp [OracleVerifier.append, Function.Embedding.trans, Function.Embedding.sumMap,
+        Equiv.sumAssoc, h, h', Sum.map]
+  · simp [OracleVerifier.append, Function.Embedding.trans, Function.Embedding.sumMap,
+      Equiv.sumAssoc, h, Sum.map]
+
+/-- `hCohInl`/`hCohInr` in heterogeneous form: the output oracle interface `Oₛ₂ i` is `HEq` to the
+routed source interface. This is just the `cast`-removed restatement of the class fields. -/
+theorem AppendCoherent.hCohInl_heq (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    [c : AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
+    (i : ιₛ₂) (k : ιₛ₁) (h : V₁.embed i = Sum.inl k) : HEq (Oₛ₂ i) (Oₛ₁ k) := by
+  rw [c.hCohInl i k h]; exact (cast_heq _ _)
+
+theorem AppendCoherent.hCohInr_heq (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    [c : AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
+    (i : ιₛ₂) (k : pSpec₁.MessageIdx) (h : V₁.embed i = Sum.inr k) : HEq (Oₛ₂ i) (Oₘ₁ k) := by
+  rw [c.hCohInr i k h]; exact (cast_heq _ _)
+
+/-- **Compositional coherence.** If `V₁` and `V₂` are each `AppendCoherent`, then so is their
+composite `OracleVerifier.append V₁ V₂`, viewed as an outer verifier whose appended-protocol message
+oracles use the canonical `instOracleInterfaceMessageAppend`. The output oracle interface `Oₛ₃ i`
+is routed (through `V₂.embed` then `V₁.embed`) to one of `Oₛ₁`, `Oₘ₁`, or `Oₘ₂`; in each case the
+required interface agreement is supplied by `c₂`/`c₁` together with the appended-message agreement
+lemmas `instAppend_inl_heq`/`instAppend_inr_heq`. -/
+instance AppendCoherent.append
+    (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    [c₁ : AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
+    (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂)
+    [c₂ : AppendCoherent (Oₛ₁ := Oₛ₂) (Oₛ₂ := Oₛ₃) (Oₘ₁ := Oₘ₂) V₂] :
+    AppendCoherent (Oₛ₁ := Oₛ₁)
+      (Oₛ₂ := Oₛ₃)
+      (Oₘ₁ := instOracleInterfaceMessageAppend (pSpec₁ := pSpec₁) (pSpec₂ := pSpec₂))
+      (OracleVerifier.append (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁ V₂) where
+  hCohInl := fun i k h => by
+    apply eq_of_heq
+    refine HEq.trans ?_ (cast_heq _ _).symm
+    -- `(append V₁ V₂).embed i = .inl k` forces `V₂.embed i = .inl j`, `V₁.embed j = .inl k`.
+    rw [append_embed_eq] at h
+    rcases hj : V₂.embed i with j | j <;> rw [hj] at h <;> simp only [] at h
+    · rcases hjk : V₁.embed j with k' | k' <;> rw [hjk] at h <;> simp [Sum.map] at h
+      subst h
+      exact (AppendCoherent.hCohInl_heq (c := c₂) V₂ i j hj).trans
+        (AppendCoherent.hCohInl_heq (c := c₁) V₁ j k' hjk)
+    · simp [Sum.map] at h
+  hCohInr := fun i k h => by
+    apply eq_of_heq
+    refine HEq.trans ?_ (cast_heq _ _).symm
+    rw [append_embed_eq] at h
+    rcases hj : V₂.embed i with j | j <;> rw [hj] at h <;> simp only [] at h
+    · rcases hjk : V₁.embed j with k' | k' <;> rw [hjk] at h <;> simp [Sum.map] at h
+      subst h
+      exact (AppendCoherent.hCohInl_heq (c := c₂) V₂ i j hj).trans
+        ((AppendCoherent.hCohInr_heq (c := c₁) V₁ j k' hjk).trans
+          (instAppend_inl_heq (pSpec₂ := pSpec₂) k').symm)
+    · simp [Sum.map] at h
+      subst h
+      exact (AppendCoherent.hCohInr_heq (c := c₂) V₂ i j hj).trans
+        (instAppend_inr_heq (pSpec₁ := pSpec₁) j).symm
+
+end OracleVerifier.Append
+
 @[simp]
 lemma OracleVerifier.append_toVerifier
     (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
@@ -442,18 +498,29 @@ lemma OracleVerifier.append_toVerifier
 /-- Sequential composition of oracle reductions is just the sequential composition of the oracle
   provers and oracle verifiers. -/
 def OracleReduction.append (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
-    [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁)
-      R₁.verifier]
+    [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) R₁.verifier]
     (R₂ : OracleReduction oSpec Stmt₂ OStmt₂ Wit₂ Stmt₃ OStmt₃ Wit₃ pSpec₂) :
       OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₃ OStmt₃ Wit₃ (pSpec₁ ++ₚ pSpec₂) where
   prover := Prover.append R₁.prover R₂.prover
   verifier := OracleVerifier.append R₁.verifier R₂.verifier
 
+/-- The verifier of a composed oracle reduction is again `AppendCoherent` (its `verifier` field is
+definitionally `OracleVerifier.append R₁.verifier R₂.verifier`), so chains of `OracleReduction.append`
+synthesize their coherence side conditions automatically from the leaves. -/
+instance OracleVerifier.Append.AppendCoherent.oracleReductionAppend
+    (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
+    [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) R₁.verifier]
+    (R₂ : OracleReduction oSpec Stmt₂ OStmt₂ Wit₂ Stmt₃ OStmt₃ Wit₃ pSpec₂)
+    [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₂) (Oₛ₂ := Oₛ₃) (Oₘ₁ := Oₘ₂) R₂.verifier] :
+    OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₃)
+      (Oₘ₁ := instOracleInterfaceMessageAppend (pSpec₁ := pSpec₁) (pSpec₂ := pSpec₂))
+      (OracleReduction.append (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) R₁ R₂).verifier :=
+  OracleVerifier.Append.AppendCoherent.append R₁.verifier R₂.verifier
+
 @[simp]
 lemma OracleReduction.append_toReduction
     (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
-    [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁)
-      R₁.verifier]
+    [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) R₁.verifier]
     (R₂ : OracleReduction oSpec Stmt₂ OStmt₂ Wit₂ Stmt₃ OStmt₃ Wit₃ pSpec₂) :
       (OracleReduction.append R₁ R₂).toReduction =
         Reduction.append R₁.toReduction R₂.toReduction := by
@@ -696,8 +763,7 @@ namespace OracleReduction
 
 theorem append_completeness
     (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
-    [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁)
-      R₁.verifier]
+    [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) R₁.verifier]
     (R₂ : OracleReduction oSpec Stmt₂ OStmt₂ Wit₂ Stmt₃ OStmt₃ Wit₃ pSpec₂)
     {completenessError₁ completenessError₂ : ℝ≥0}
     (h₁ : R₁.completeness init impl rel₁ rel₂ completenessError₁)
@@ -710,8 +776,7 @@ theorem append_completeness
 
 theorem append_perfectCompleteness
     (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
-    [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁)
-      R₁.verifier]
+    [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) R₁.verifier]
     (R₂ : OracleReduction oSpec Stmt₂ OStmt₂ Wit₂ Stmt₃ OStmt₃ Wit₃ pSpec₂)
     (h₁ : R₁.perfectCompleteness init impl rel₁ rel₂)
     (h₂ : R₂.perfectCompleteness init impl rel₂ rel₃) :

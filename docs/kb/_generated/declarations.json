@@ -8320,16 +8320,16 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 35,
-          "name": "_anon_theorem_35",
+          "line": 37,
+          "name": "_anon_theorem_37",
           "namespace": "",
-          "short_name": "_anon_theorem_35",
+          "short_name": "_anon_theorem_37",
           "signature": "theorem theorem's outermost binder. The user instantiates at the call site."
         },
         {
-          "doc": "**ABF26 Lemma 3.7 [Eli57].** Elias volume lower bound on list size: `|\u039b(C, \u03b4)| \u2265 Vol_q(\u03b4, n) / q^(n-k)` where `q = |F|`, `n = |\u03b9|`, and `k = dim(C)` is the dimension of the linear code `C` (so `|C| = q^k`). The paper's proof uses an averaging argument over random words; we admit it here as an external result. Uses `hammingBallVolume` (ABF26 D2.4) from `HammingBallVolume.lean`.",
+          "doc": "**ABF26 Lemma 3.7 [Eli57].** Elias volume lower bound on list size: `|\u039b(C, \u03b4)| \u2265 Vol_q(\u03b4, n) / q^(n-k)` where `q = |F|`, `n = |\u03b9|`, and `k = dim(C)` is the dimension of the linear code `C` (so `|C| = q^k`). **Proven** by the paper's averaging argument (fulltext \u00a73, [Eli57]): the maximised list size dominates the mean over received words, and double counting gives `\u2211_f |\u039b(C,\u03b4,f)| = \u2211_{c\u2208C} Vol_q(\u03b4,n) = q^k \u00b7 Vol_q(\u03b4,n)`, so the max is `\u2265 Vol/q^{n-k}`. Uses `hammingBallVolume` (ABF26 D2.4) and `hammingBallVolume_eq_ncard_hammingBall` from `HammingBallVolume.lean`.",
           "kind": "theorem",
-          "line": 114,
+          "line": 118,
           "name": "CodingTheory.linear_lambda_ge_elias_volume_eli57",
           "namespace": "CodingTheory",
           "short_name": "linear_lambda_ge_elias_volume_eli57",
@@ -8338,7 +8338,7 @@
         {
           "doc": "**ABF26 Corollary 3.8.** Volume-based lower bound on list size, using the MS77 volume estimate `Vol_q(\u03b4, n) \u2265 q^{n\u00b7(\u03c1-1+H_q(\u03b4))} / \u221a(8\u00b7n\u00b7\u03b4\u00b7(1-\u03b4))`. With `\u03c1 := k/n`: `|\u039b(C, \u03b4)| \u2265 q^{n\u00b7(\u03c1 - 1 + H_q(\u03b4))} / \u221a(8\u00b7n\u00b7\u03b4\u00b7(1-\u03b4))` Uses `qEntropy` (ABF26 D2.2). Admitted as an external result.",
           "kind": "theorem",
-          "line": 129,
+          "line": 236,
           "name": "CodingTheory.linear_lambda_ge_entropy_volume",
           "namespace": "CodingTheory",
           "short_name": "linear_lambda_ge_entropy_volume",
@@ -8347,7 +8347,7 @@
         {
           "doc": "**ABF26 Theorem 3.9 [ST20 Thm 1.2].** Generalized Singleton bound for list decoding. Let `F` be a finite field, `0 < \u2113 < |F|`, `\u03b4 \u2208 (0, 1)`, and let `C \u2286 F^n` be a linear error-correcting code of rate `\u03c1` with `|\u039b(C, \u03b4)| \u2264 \u2113`. Then: `|C| \u2264 |F|^{n - \u230a(\u2113+1)/\u2113 \u00b7 \u03b4 \u00b7 n\u230b}` Equivalently, `\u03b4 \u2264 \u2113/(\u2113+1) \u00b7 (1-\u03c1)`. Admitted as an external result.",
           "kind": "theorem",
-          "line": 148,
+          "line": 255,
           "name": "CodingTheory.linear_C_le_generalized_singleton_st20",
           "namespace": "CodingTheory",
           "short_name": "linear_C_le_generalized_singleton_st20",
@@ -8356,7 +8356,7 @@
         {
           "doc": "**ABF26 Theorem 3.10 [BDG24, AGL23].** Large-alphabet barrier for generalized Singleton attainment. For every `\u2113 \u2265 2` and `\u03c1 \u2208 (0, 1)` there exists a constant `\u03b1_\u2113\u03c1 > 0` such that for every `\u03b7 > 0` and every sufficiently large `n`, every linear error-correcting code `C \u2286 F^n` of rate at least `\u03c1` with `|\u039b(C, \u2113/(\u2113+1) \u00b7 (1-\u03c1-\u03b7))| \u2264 \u2113` satisfies: `|F| \u2265 2^{\u03b1_\u2113\u03c1 / \u03b7}` i.e. attaining the generalized Singleton bound up to `\u03b7` slack requires alphabet size exponential in `1/\u03b7`. We existentially package the \"sufficiently large\" threshold as an explicit `n\u2080` parameter rather than relying on Lean's `even",
           "kind": "theorem",
-          "line": 181,
+          "line": 288,
           "name": "CodingTheory.large_alphabet_barrier_bdg24_agl23",
           "namespace": "CodingTheory",
           "short_name": "large_alphabet_barrier_bdg24_agl23",
@@ -8365,7 +8365,7 @@
         {
           "doc": "**ABF26 Theorem 3.11 [GLMRSW22 Thm 4.1].** Random linear code lower bound. Fix a prime `q`, `\u03b4 \u2208 (0, 1 - 1/q)`, and `\u03b5 \u2208 (0, 1)`. There exists `\u03b3 > 0` such that for all `1 - H_q(\u03b4) - \u03b3 < \u03c1 < 1 - H_q(\u03b4)` and all sufficiently large `n`, some linear code `C \u2286 F^n` of rate `\u03c1` satisfies: `|\u039b(C, \u03b4)| > \u230aH_q(\u03b4) / (1 - H_q(\u03b4) - \u03c1) - \u03b5\u230b` The paper's full statement gives a `1 - q^{-\u03a9(n)}` probability over the choice of `C`; we existentially package this as \"there exists a witness code\" since ArkLib does not yet have a probability distribution over linear codes.",
           "kind": "theorem",
-          "line": 209,
+          "line": 316,
           "name": "CodingTheory.random_linear_lambda_lower_glmrsw22",
           "namespace": "CodingTheory",
           "short_name": "random_linear_lambda_lower_glmrsw22",
@@ -8374,7 +8374,7 @@
         {
           "doc": "**ABF26 Theorem 3.12 [BKR06 Cor 2.2].** Reed-Solomon superpolynomial list-size over extension fields. Fix `0 < \u03b1 < \u03b2 < 1`. For infinitely many prime powers `q` there exists a Reed-Solomon code `C := RS[F_q, F_q, \u230aq^\u03b1\u230b]` and a word `w : F_q \u2192 F_q` such that: `|\u039b(C, 1 - q^{\u03b2-1}, w)| \u2265 q^{(\u03b1 - \u03b2\u00b2) \u00b7 log q}` Admitted as an external result.",
           "kind": "theorem",
-          "line": 241,
+          "line": 348,
           "name": "CodingTheory.rs_lambda_superpoly_extension_bkr06",
           "namespace": "CodingTheory",
           "short_name": "rs_lambda_superpoly_extension_bkr06",
@@ -8383,7 +8383,7 @@
         {
           "doc": "**ABF26 Theorem 3.13 [GHSZ02 Cor 20].** Reed-Solomon large list-size over prime fields. Fix `0 < \u03b1, \u03b2 < 1`. For all sufficiently large primes `p`, there exists `C := RS[F_p, F_p, \u230ap^\u03b1\u230b]` and a word `w : F_p \u2192 F_p` such that: `|\u039b(C, 1 - ((1-\u03b2)/\u03b1) \u00b7 p^{\u03b1-1}, w)| > \u03a9(p^{p^\u03b1 \u00b7 \u03b2/2})` Admitted as an external result.",
           "kind": "theorem",
-          "line": 268,
+          "line": 375,
           "name": "CodingTheory.rs_lambda_large_prime_ghsz02",
           "namespace": "CodingTheory",
           "short_name": "rs_lambda_large_prime_ghsz02",
@@ -8392,7 +8392,7 @@
         {
           "doc": "**ABF26 Theorem 3.14 [JH01 Thm 2].** Large-rate Reed-Solomon lower bound. Fix an integer `j \u2265 2`. For infinitely many prime powers `q` with `q \u2261 1 (mod j+1)`, there exists `C := RS[F_q, L, k]` with `|C| = j + 1` and rate `\u03c1 \u2248 (j-1)/(j+1)` together with a word `w : L \u2192 F_q` such that: `|\u039b(C, 1/(j+1), w)| > j` Witnesses that high-rate RS codes cannot be list-decoded beyond `1/(j+1)` with list size `j`. Admitted as an external result.",
           "kind": "theorem",
-          "line": 292,
+          "line": 399,
           "name": "CodingTheory.rs_lambda_high_rate_jh01",
           "namespace": "CodingTheory",
           "short_name": "rs_lambda_high_rate_jh01",
@@ -8401,7 +8401,7 @@
         {
           "doc": "**ABF26 Theorem 3.4 [CZ25 Theorem B.5].** \u03c4-subspace-design codes are list-decodable up to capacity. Let `C : F^k \u2192 (F^s)^n` be a \u03c4-subspace-design code. For every `\u03b7 > 0`: `|\u039b(C, 1 - \u03c4(1/\u03b7) - \u03b7)| \u2264 (1 - \u03c4(1/\u03b7)) / \u03b7` Combined with `IsSubspaceDesign` (ABF26 D2.16) and `subspaceDesign_tau_lower` (L2.17), this gives a list-decoding bound up to capacity for any subspace-design code. Admitted as an external result.",
           "kind": "theorem",
-          "line": 325,
+          "line": 432,
           "name": "CodingTheory.subspaceDesign_list_decoding_cz25",
           "namespace": "CodingTheory",
           "short_name": "subspaceDesign_list_decoding_cz25",
@@ -8410,7 +8410,7 @@
         {
           "doc": "**ABF26 Corollary 3.5 [CZ25 Corollary 2.21].** Folded Reed-Solomon codes are list-decodable up to capacity. Let `C := FRS[F, L, k, s, \u03c9]` be a folded RS code of rate `\u03c1`. For any `\u03b7 > 0` with `1/\u03b7 < s`: `|\u039b(C, 1 - \u03c1\u00b7s/(s - 1/\u03b7 + 1) - \u03b7)| \u2264 (s\u00b7(1-\u03c1) + 1 - 1/\u03b7) / (\u03b7\u00b7(s + 1 - 1/\u03b7))` When `\u03b7 \u2265 \u221a(3/s)`, the bound simplifies to `|\u039b(C, 1 - \u03c1 - \u03b7)| \u2264 1/\u03b7`. Derives from T3.4 + T2.18 (FRS is \u03c4-subspace-design). Admitted as an external result.",
           "kind": "theorem",
-          "line": 344,
+          "line": 451,
           "name": "CodingTheory.frs_list_decoding_capacity_cz25",
           "namespace": "CodingTheory",
           "short_name": "frs_list_decoding_capacity_cz25",
@@ -15279,9 +15279,9 @@
           "signature": "class classical"
         },
         {
-          "doc": "**ABF26 Lemma 4.6.** In the unique-decoding regime `\u03b4 < \u03b4_min(C)/2`, `\u03b5_mca` and `\u03b5_ca` coincide: `\u03b5_mca(C, \u03b4) = \u03b5_ca(C, \u03b4)`. The unique-decoding hypothesis is expressed as `2 \u00b7 \u03b4 \u00b7 n < \u03b4_min(C) \u00b7 n = \u2016C\u2016\u2080` to avoid fractional arithmetic in \u2115 \u2014 equivalent to the paper's `\u03b4 < \u03b4_min(C)/2`. The proof is reduced here to **one** inequality. The direction `\u03b5_ca \u2264 \u03b5_mca` is the in-tree `epsCA_le_epsMCA` (no UDR needed). What remains, `\u03b5_mca \u2264 \u03b5_ca`, is the genuinely hard direction: **Status of the remaining direction: shrunk to ONE explicit inequality.** Via the audited max-form decomposition `epsMCA",
+          "doc": "**ABF26 Lemma 4.6.** In the unique-decoding regime `\u03b4 < \u03b4_min(C)/2`, `\u03b5_mca` and `\u03b5_ca` coincide: `\u03b5_mca(C, \u03b4) = \u03b5_ca(C, \u03b4)`. The unique-decoding hypothesis is expressed as `2 \u00b7 \u03b4 \u00b7 n < \u03b4_min(C) \u00b7 n = \u2016C\u2016\u2080` to avoid fractional arithmetic in \u2115 \u2014 equivalent to the paper's `\u03b4 < \u03b4_min(C)/2`. The proof is reduced here to **one** inequality. The direction `\u03b5_ca \u2264 \u03b5_mca` is the in-tree `epsCA_le_epsMCA` (no UDR needed). What remains, `\u03b5_mca \u2264 \u03b5_ca`, is the genuinely hard direction: **Status of the remaining direction: shrunk to ONE explicit per-stack inequality on the *difference* stack.** Via the au",
           "kind": "theorem",
-          "line": 1127,
+          "line": 1133,
           "name": "ProximityGap.epsMCA_eq_epsCA_below_udr",
           "namespace": "ProximityGap",
           "short_name": "epsMCA_eq_epsCA_below_udr",
@@ -15290,7 +15290,7 @@
         {
           "doc": "Row-extraction: the `k`-th row of a `Fin t \u2192 A`-valued word, as an `A`-valued word.",
           "kind": "def",
-          "line": 1145,
+          "line": 1226,
           "name": "ProximityGap.row_of",
           "namespace": "ProximityGap",
           "short_name": "row_of",
@@ -15299,7 +15299,7 @@
         {
           "doc": "**ABF26 Lemma 4.7.** For any F-additive code `C` (here: a `Submodule F (\u03b9 \u2192 A)`) and `t : \u2115`: `\u03b5_mca(C^\u2261t, \u03b4) \u2264 t \u00b7 \u03b5_mca(C, \u03b4)`. Proof recipe: 1. `mcaEvent` for the interleaved code at `\u03b3` implies `\u2203 k`, `mcaEvent` for the `k`-th row restriction (witness set `S` is shared; if every row admitted a joint codeword pair on `S`, assembling them column-by-column would produce a joint codeword pair in `C^\u22c8 (Fin t)` agreeing on `S`, contradicting the interleaved's \"no joint pair\" clause). 2. `Pr_le_Pr_of_implies` lifts the per-`\u03b3` implication to a probability bound. 3. `Pr_exists_Fin_le_sum` (union b",
           "kind": "theorem",
-          "line": 1161,
+          "line": 1242,
           "name": "ProximityGap.epsMCA_interleaved_le",
           "namespace": "ProximityGap",
           "short_name": "epsMCA_interleaved_le",
@@ -15308,28 +15308,28 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1164,
-          "name": "ProximityGap._anon_class_1164",
+          "line": 1245,
+          "name": "ProximityGap._anon_class_1245",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_1164",
+          "short_name": "_anon_class_1245",
           "signature": "class classical"
         },
         {
           "doc": "**Bridge for affine spaces.** The predicate `\u03b4_\u03b5_correlatedAgreementAffineSpaces C \u03b4 \u03b5` (from `Basic.lean`, threshold `\u03b5`) is equivalent to `epsCA_affineSpaces C k \u03b4 \u03b4 \u2264 \u03b5`. Same proof recipe as the `AffineLines` and `Curves` bridges.",
           "kind": "theorem",
-          "line": 1242,
-          "name": "ProximityGap._anon_theorem_1242",
+          "line": 1323,
+          "name": "ProximityGap._anon_theorem_1323",
           "namespace": "ProximityGap",
-          "short_name": "_anon_theorem_1242",
+          "short_name": "_anon_theorem_1323",
           "signature": "theorem theorem \u03b4_\u03b5_correlatedAgreementAffineSpaces_iff_epsCA_affineSpaces_le {k : \u2115}"
         },
         {
           "doc": "",
           "kind": "class",
-          "line": 1246,
-          "name": "ProximityGap._anon_class_1246",
+          "line": 1327,
+          "name": "ProximityGap._anon_class_1327",
           "namespace": "ProximityGap",
-          "short_name": "_anon_class_1246",
+          "short_name": "_anon_class_1327",
           "signature": "class classical"
         }
       ]
@@ -18614,9 +18614,27 @@
           "signature": "theorem induction_three' {motive : Fin 4 \u2192 Sort*} {zero : motive 0}"
         },
         {
-          "doc": "Heterogeneous equality on `Fin.induction`",
+          "doc": "",
           "kind": "theorem",
           "line": 111,
+          "name": "Fin.induction_four",
+          "namespace": "Fin",
+          "short_name": "induction_four",
+          "signature": "theorem induction_four {motive : Fin 5 \u2192 Sort*} {zero : motive 0}"
+        },
+        {
+          "doc": "Alternate version of `Fin.induction_four` that uses `4 : Fin 5` instead of `last 4`.",
+          "kind": "theorem",
+          "line": 118,
+          "name": "Fin.induction_four'",
+          "namespace": "Fin",
+          "short_name": "induction_four'",
+          "signature": "theorem induction_four' {motive : Fin 5 \u2192 Sort*} {zero : motive 0}"
+        },
+        {
+          "doc": "Heterogeneous equality on `Fin.induction`",
+          "kind": "theorem",
+          "line": 124,
           "name": "Fin.induction_heq",
           "namespace": "Fin",
           "short_name": "induction_heq",
@@ -18625,7 +18643,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 122,
+          "line": 135,
           "name": "Fin.induction_init",
           "namespace": "Fin",
           "short_name": "induction_init",
@@ -18634,7 +18652,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 134,
+          "line": 147,
           "name": "Fin.induction_tail",
           "namespace": "Fin",
           "short_name": "induction_tail",
@@ -18643,7 +18661,7 @@
         {
           "doc": "`Fin.induction` on `m + n` for `i \u2264 m` steps is equivalent to `Fin.induction` on `m` for `i` steps.",
           "kind": "theorem",
-          "line": 147,
+          "line": 160,
           "name": "Fin.induction_append_left",
           "namespace": "Fin",
           "short_name": "induction_append_left",
@@ -18652,7 +18670,7 @@
         {
           "doc": "`Fin.induction` on `m + n` for `m + i` steps is equivalent to `Fin.induction` on `n` on `i` steps on the result of `Fin.induction` on `m`.",
           "kind": "theorem",
-          "line": 161,
+          "line": 174,
           "name": "Fin.induction_append_right",
           "namespace": "Fin",
           "short_name": "induction_append_right",
@@ -18661,7 +18679,7 @@
         {
           "doc": "`Fin.insertNth 0` is equivalent to `Fin.cases`.",
           "kind": "theorem",
-          "line": 181,
+          "line": 194,
           "name": "Fin.insertNth_zero_eq_cases",
           "namespace": "Fin",
           "short_name": "insertNth_zero_eq_cases",
@@ -18670,7 +18688,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 195,
+          "line": 208,
           "name": "Fin.append_zero_of_succ_left",
           "namespace": "Fin",
           "short_name": "append_zero_of_succ_left",
@@ -18679,7 +18697,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 200,
+          "line": 213,
           "name": "Fin.append_last_of_succ_right",
           "namespace": "Fin",
           "short_name": "append_last_of_succ_right",
@@ -18688,7 +18706,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 204,
+          "line": 217,
           "name": "Fin.append_comp",
           "namespace": "Fin",
           "short_name": "append_comp",
@@ -18697,7 +18715,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 210,
+          "line": 223,
           "name": "Fin.append_comp'",
           "namespace": "Fin",
           "short_name": "append_comp'",
@@ -18706,7 +18724,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 214,
+          "line": 227,
           "name": "Fin.addCases_left'",
           "namespace": "Fin",
           "short_name": "addCases_left'",
@@ -18715,7 +18733,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 221,
+          "line": 234,
           "name": "Fin.addCases_right'",
           "namespace": "Fin",
           "short_name": "addCases_right'",
@@ -18724,7 +18742,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 233,
+          "line": 246,
           "name": "Fin.append_right'",
           "namespace": "Fin",
           "short_name": "append_right'",
@@ -18733,7 +18751,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 238,
+          "line": 251,
           "name": "Fin.append_left_of_lt",
           "namespace": "Fin",
           "short_name": "append_left_of_lt",
@@ -18742,7 +18760,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 243,
+          "line": 256,
           "name": "Fin.append_right_of_not_lt",
           "namespace": "Fin",
           "short_name": "append_right_of_not_lt",
@@ -18751,7 +18769,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 249,
+          "line": 262,
           "name": "Fin.append_left_injective",
           "namespace": "Fin",
           "short_name": "append_left_injective",
@@ -18760,7 +18778,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 257,
+          "line": 270,
           "name": "Fin.append_right_injective",
           "namespace": "Fin",
           "short_name": "append_right_injective",
@@ -18769,7 +18787,7 @@
         {
           "doc": "Version of `Fin.addCases` that splits the motive into two dependent vectors `\u03b1` and `\u03b2`, and the return type is `Fin.append \u03b1 \u03b2`.",
           "kind": "def",
-          "line": 268,
+          "line": 281,
           "name": "Fin.addCases'",
           "namespace": "Fin",
           "short_name": "addCases'",
@@ -18778,7 +18796,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 279,
+          "line": 292,
           "name": "Fin.addCases'_left",
           "namespace": "Fin",
           "short_name": "addCases'_left",
@@ -18787,7 +18805,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 285,
+          "line": 298,
           "name": "Fin.addCases'_right",
           "namespace": "Fin",
           "short_name": "addCases'_right",
@@ -18796,7 +18814,7 @@
         {
           "doc": "Embed `Fin (l.get k)` into `Fin l.sum` at the `k`-th block. Indexing is **positional** (`k : Fin l.length`): the previous membership-based design (`n \u2208 l`) collapsed duplicate lengths (e.g. for `l = [2, 2]` both occurrences embedded into the head block, leaving the tail block unreachable), which made the accompanying eliminator unprovable.",
           "kind": "def",
-          "line": 305,
+          "line": 318,
           "name": "Fin.castSum",
           "namespace": "Fin",
           "short_name": "castSum",
@@ -18805,7 +18823,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 310,
+          "line": 323,
           "name": "Fin.castSum_castLT",
           "namespace": "Fin",
           "short_name": "castSum_castLT",
@@ -18814,7 +18832,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 315,
+          "line": 328,
           "name": "Fin.castSum_castAdd",
           "namespace": "Fin",
           "short_name": "castSum_castAdd",
@@ -18823,7 +18841,7 @@
         {
           "doc": "Dependent elimination for `Fin l.sum`: every index lies in exactly one positional block `castSum l k i`.",
           "kind": "def",
-          "line": 321,
+          "line": 334,
           "name": "Fin.sumCases",
           "namespace": "Fin",
           "short_name": "sumCases",
@@ -18832,7 +18850,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 350,
+          "line": 363,
           "name": "Fin.finSuccEquivNth'",
           "namespace": "Fin",
           "short_name": "finSuccEquivNth'",
@@ -30059,9 +30077,18 @@
           "signature": "def cast"
         },
         {
+          "doc": "Helper for `cast_toVerifier`: the output oracle-statement function produced by `OracleVerifier.toVerifier` depends only on the embedding pointwise. If two embeddings `e` and `emb` agree pointwise, the resulting (dependent) `match` functions are equal, up to the proof-irrelevant `hEq`/discriminant transports. This is stated generically to keep the `split`/transport reasoning away from the heterogeneous-cast normalization in `cast_toVerifier`, which keeps the proof term free of `sorryAx`.",
+          "kind": "theorem",
+          "line": 195,
+          "name": "OracleVerifier.toVerifier_oStmtOut_congr",
+          "namespace": "OracleVerifier",
+          "short_name": "toVerifier_oStmtOut_congr",
+          "signature": "theorem toVerifier_oStmtOut_congr"
+        },
+        {
           "doc": "",
           "kind": "theorem",
-          "line": 190,
+          "line": 229,
           "name": "OracleVerifier.cast_toVerifier",
           "namespace": "OracleVerifier",
           "short_name": "cast_toVerifier",
@@ -30070,7 +30097,7 @@
         {
           "doc": "Casting the reduction of a non-oracle reduction across an equality of `ProtocolSpec`s, which casts the underlying prover and verifier.",
           "kind": "def",
-          "line": 200,
+          "line": 278,
           "name": "Reduction.cast",
           "namespace": "Reduction",
           "short_name": "cast",
@@ -30079,7 +30106,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 206,
+          "line": 284,
           "name": "Reduction.cast_id",
           "namespace": "Reduction",
           "short_name": "cast_id",
@@ -30088,7 +30115,7 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 213,
+          "line": 291,
           "name": "Reduction.instDCast\u2082Reduction",
           "namespace": "Reduction",
           "short_name": "instDCast\u2082Reduction",
@@ -30097,7 +30124,7 @@
         {
           "doc": "Casting the oracle reduction across an equality of `ProtocolSpec`s, which casts the underlying prover and verifier.",
           "kind": "def",
-          "line": 228,
+          "line": 306,
           "name": "OracleReduction.cast",
           "namespace": "OracleReduction",
           "short_name": "cast",
@@ -30106,7 +30133,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 248,
+          "line": 326,
           "name": "OracleReduction.cast_toReduction",
           "namespace": "OracleReduction",
           "short_name": "cast_toReduction",
@@ -30115,7 +30142,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 265,
+          "line": 343,
           "name": "Prover.cast_processRound",
           "namespace": "Prover",
           "short_name": "cast_processRound",
@@ -30124,7 +30151,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 278,
+          "line": 356,
           "name": "Prover.cast_runToRound",
           "namespace": "Prover",
           "short_name": "cast_runToRound",
@@ -30133,7 +30160,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 288,
+          "line": 366,
           "name": "Prover.cast_run",
           "namespace": "Prover",
           "short_name": "cast_run",
@@ -30142,7 +30169,7 @@
         {
           "doc": "The casted verifier produces the same output as the original verifier.",
           "kind": "theorem",
-          "line": 302,
+          "line": 380,
           "name": "Verifier.cast_run",
           "namespace": "Verifier",
           "short_name": "cast_run",
@@ -30151,7 +30178,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 314,
+          "line": 392,
           "name": "Reduction.cast_run",
           "namespace": "Reduction",
           "short_name": "cast_run",
@@ -30160,7 +30187,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 357,
+          "line": 436,
           "name": "Verifier.cast_rbrKnowledgeSoundness",
           "namespace": "Verifier",
           "short_name": "cast_rbrKnowledgeSoundness",
@@ -30169,7 +30196,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 398,
+          "line": 494,
           "name": "OracleVerifier.cast_rbrKnowledgeSoundness",
           "namespace": "OracleVerifier",
           "short_name": "cast_rbrKnowledgeSoundness",
@@ -31068,9 +31095,108 @@
           "signature": "theorem Prover.runToRound_zero_of_prover_first"
         },
         {
-          "doc": "Running the identity or trivial reduction results in the same input statement and witness, and empty transcript.",
+          "doc": "**Single-round unfolding of `runToRound`.**  Running the prover up to round `j.succ` is the same as running it up to round `j.castSucc` and then processing round `j`.",
           "kind": "theorem",
           "line": 542,
+          "name": "Prover.runToRound_succ",
+          "namespace": "Prover",
+          "short_name": "runToRound_succ",
+          "signature": "theorem runToRound_succ (j : Fin n)"
+        },
+        {
+          "doc": "**`processRound` at a challenge (V_to_P) round.**  Specialization of `processRound` to a round `i` that is a challenge round (so `pSpec.dir i = .V_to_P`).",
+          "kind": "theorem",
+          "line": 551,
+          "name": "Prover.processRound_challenge",
+          "namespace": "Prover",
+          "short_name": "processRound_challenge",
+          "signature": "theorem processRound_challenge (i : pSpec.ChallengeIdx)"
+        },
+        {
+          "doc": "**Kleisli continuation folding `processRound` over rounds `k .. j-1`.**  Transforms a round-`k` partial result `(transcript, state)` into the round-`j` partial run, by folding `processRound`. Defined by `Fin.induction` on the *target* index `j`: when the running index reaches `k` exactly it returns the supplied start `rk` (`pure`), and each subsequent `succ` step applies one more `processRound`.  (The `j < k` branches are never used; for those the dependent-`Fin` base is filled with the `runToRound 0` seed value, kept only to make the fold total.)",
+          "kind": "def",
+          "line": 575,
+          "name": "Prover.continueFromTo",
+          "namespace": "Prover",
+          "short_name": "continueFromTo",
+          "signature": "def continueFromTo (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)"
+        },
+        {
+          "doc": "**`continueFromTo` step at a `succ` target that has not yet reached the start.**  When the target `m.succ` is *strictly past* the start index `k` (`k \u2260 m.succ`), the continuation applies one more `processRound m` on top of the round-`m.castSucc` continuation.",
+          "kind": "theorem",
+          "line": 592,
+          "name": "Prover.continueFromTo_succ_of_ne",
+          "namespace": "Prover",
+          "short_name": "continueFromTo_succ_of_ne",
+          "signature": "theorem continueFromTo_succ_of_ne (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)"
+        },
+        {
+          "doc": "**`continueFromTo` at the diagonal is the identity (`pure`).**  Continuing from round `k` to round `k` returns the start result unchanged.",
+          "kind": "theorem",
+          "line": 604,
+          "name": "Prover.continueFromTo_self",
+          "namespace": "Prover",
+          "short_name": "continueFromTo_self",
+          "signature": "theorem continueFromTo_self (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)"
+        },
+        {
+          "doc": "**`processRound` factors as a bind on its input.**  Since `processRound j cur` first runs `cur` and then performs a round-`j` step depending only on `cur`'s output, it equals `cur >>= (round-j step on a `pure`d result)`.",
+          "kind": "theorem",
+          "line": 616,
+          "name": "Prover.processRound_eq_bind",
+          "namespace": "Prover",
+          "short_name": "processRound_eq_bind",
+          "signature": "theorem processRound_eq_bind (j : Fin n) (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)"
+        },
+        {
+          "doc": "**Round-range decomposition of `runToRound` (THE keystone).**  For any earlier round `k \u2264 j`, the prover run up to round `j` equals the run up to round `k` followed by the continuation `continueFromTo` that folds `processRound` over rounds `k .. j-1`.  A plain `OracleComp` equality, proved by `Fin.induction` on `j` (with `k` fixed) via `runToRound_succ`, `processRound_eq_bind`, and monad associativity.",
+          "kind": "theorem",
+          "line": 628,
+          "name": "Prover.runToRound_eq_bind_continueFromTo",
+          "namespace": "Prover",
+          "short_name": "runToRound_eq_bind_continueFromTo",
+          "signature": "theorem runToRound_eq_bind_continueFromTo"
+        },
+        {
+          "doc": "Unfold `processRound` into its `do`-block: take the previous round's `(transcript, state)`, then branch on the round direction.  A rewrite handle; once the direction of the round is known use the direction-resolved `runToRound_succ_challenge`/`runToRound_succ_message`.",
+          "kind": "theorem",
+          "line": 668,
+          "name": "Prover.processRound_def",
+          "namespace": "Prover",
+          "short_name": "processRound_def",
+          "signature": "theorem processRound_def (j : Fin n)"
+        },
+        {
+          "doc": "**Message-round peel.** When round `j` is a `P_to_V` (prover-message) round, peeling one round binds over the previous result and then runs `sendMessage`, appending the message to the transcript.",
+          "kind": "theorem",
+          "line": 686,
+          "name": "Prover.runToRound_succ_message",
+          "namespace": "Prover",
+          "short_name": "runToRound_succ_message",
+          "signature": "theorem runToRound_succ_message (j : Fin n)"
+        },
+        {
+          "doc": "**Challenge-round peel.** When round `j` is a `V_to_P` (verifier-challenge) round, peeling one round binds over the previous result, samples the challenge, runs `receiveChallenge`, and appends the challenge to the transcript.",
+          "kind": "theorem",
+          "line": 706,
+          "name": "Prover.runToRound_succ_challenge",
+          "namespace": "Prover",
+          "short_name": "runToRound_succ_challenge",
+          "signature": "theorem runToRound_succ_challenge (j : Fin n)"
+        },
+        {
+          "doc": "**Full-run peel.** `Prover.run` is `runToRound (Fin.last n)` followed by `output`. This exposes the head so that the run can be peeled round-by-round (via `runToRound_succ` and friends) down to the `output` step.",
+          "kind": "theorem",
+          "line": 727,
+          "name": "Prover.run_eq_runToRound_last",
+          "namespace": "Prover",
+          "short_name": "run_eq_runToRound_last",
+          "signature": "theorem run_eq_runToRound_last"
+        },
+        {
+          "doc": "Running the identity or trivial reduction results in the same input statement and witness, and empty transcript.",
+          "kind": "theorem",
+          "line": 749,
           "name": "Reduction.id_run",
           "namespace": "",
           "short_name": "Reduction.id_run",
@@ -31079,7 +31205,7 @@
         {
           "doc": "Running the identity or trivial reduction, with logging of queries to the shared oracle, results in the same input statement and witness, empty transcript, and empty query logs.",
           "kind": "theorem",
-          "line": 551,
+          "line": 758,
           "name": "Reduction.id_runWithLog",
           "namespace": "",
           "short_name": "Reduction.id_runWithLog",
@@ -31088,7 +31214,7 @@
         {
           "doc": "Running the identity or trivial oracle reduction results in the same input statement, oracle statement, and witness.",
           "kind": "theorem",
-          "line": 560,
+          "line": 767,
           "name": "OracleReduction.id_run",
           "namespace": "",
           "short_name": "OracleReduction.id_run",
@@ -31097,7 +31223,7 @@
         {
           "doc": "Running the identity or trivial oracle reduction results in the same input statement, oracle statement, and witness.",
           "kind": "theorem",
-          "line": 568,
+          "line": 775,
           "name": "OracleReduction.id_runWithLog",
           "namespace": "",
           "short_name": "OracleReduction.id_runWithLog",
@@ -31106,7 +31232,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 586,
+          "line": 793,
           "name": "Prover.runToRound_one_of_prover_first",
           "namespace": "",
           "short_name": "Prover.runToRound_one_of_prover_first",
@@ -31115,7 +31241,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 602,
+          "line": 809,
           "name": "Prover.runToRound_one_of_verifier_first",
           "namespace": "",
           "short_name": "Prover.runToRound_one_of_verifier_first",
@@ -31124,7 +31250,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 629,
+          "line": 836,
           "name": "Prover.run_of_verifier_first",
           "namespace": "",
           "short_name": "Prover.run_of_verifier_first",
@@ -31133,7 +31259,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 640,
+          "line": 847,
           "name": "Prover.run_of_prover_first",
           "namespace": "",
           "short_name": "Prover.run_of_prover_first",
@@ -31142,7 +31268,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 650,
+          "line": 857,
           "name": "Reduction.run_of_prover_first",
           "namespace": "",
           "short_name": "Reduction.run_of_prover_first",
@@ -45310,6 +45436,15 @@
           "namespace": "RingSwitching",
           "short_name": "roundPoly_eval_eq_sum_cons",
           "signature": "theorem roundPoly_eval_eq_sum_cons {k : \u2115} {\u03b9 : Type*} (S : Finset \u03b9) (pt : \u03b9 \u2192 (Fin k \u2192 L))"
+        },
+        {
+          "doc": "**Round-polynomial marginal identity (LAST-variable form, defect-#20 repair).** The last-variable analog of `roundPoly_eval_eq_sum_cons`: evaluating, at `r'`, the sum over `S` of the partial evaluations `Polynomial.map (eval (pt x)) (finSuccEquivNth L (Fin.last k) H)` equals the sum over `S` of the full evaluations of `H` with the **last** variable fixed to `r'` (the survivors set by `pt x`, via `Fin.snoc (pt x) r'`). This is the marginal that the repaired `getSumcheckRoundPoly` computes: it keeps the *last* variable as the round indeterminate (`finSuccEquivNth L (Fin.last k)`, i.e. `Fin.inser",
+          "kind": "theorem",
+          "line": 1691,
+          "name": "RingSwitching.roundPoly_eval_eq_sum_snoc",
+          "namespace": "RingSwitching",
+          "short_name": "roundPoly_eval_eq_sum_snoc",
+          "signature": "theorem roundPoly_eval_eq_sum_snoc {k : \u2115} {\u03b9 : Type*} (S : Finset \u03b9) (pt : \u03b9 \u2192 (Fin k \u2192 L))"
         }
       ]
     },
@@ -45549,126 +45684,9 @@
     "ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean": {
       "declarations": [
         {
-          "doc": "",
-          "kind": "def",
-          "line": 80,
-          "name": "RingSwitching.SumcheckPhase.iteratedSumcheckPrvState",
-          "namespace": "RingSwitching.SumcheckPhase",
-          "short_name": "iteratedSumcheckPrvState",
-          "signature": "def iteratedSumcheckPrvState (i : Fin \u2113') : Fin (2 + 1) \u2192 Type :="
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 85,
-          "name": "RingSwitching.SumcheckPhase.getIteratedSumcheckProverFinalOutput",
-          "namespace": "RingSwitching.SumcheckPhase",
-          "short_name": "getIteratedSumcheckProverFinalOutput",
-          "signature": "def getIteratedSumcheckProverFinalOutput (i : Fin \u2113')"
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 93,
-          "name": "RingSwitching.SumcheckPhase.iteratedSumcheckOracleProver",
-          "namespace": "RingSwitching.SumcheckPhase",
-          "short_name": "iteratedSumcheckOracleProver",
-          "signature": "def iteratedSumcheckOracleProver (i : Fin \u2113') :"
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 106,
-          "name": "RingSwitching.SumcheckPhase.iteratedSumcheckOracleVerifier",
-          "namespace": "RingSwitching.SumcheckPhase",
-          "short_name": "iteratedSumcheckOracleVerifier",
-          "signature": "def iteratedSumcheckOracleVerifier (i : Fin \u2113') :"
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 118,
-          "name": "RingSwitching.SumcheckPhase.iteratedSumcheckOracleReduction",
-          "namespace": "RingSwitching.SumcheckPhase",
-          "short_name": "iteratedSumcheckOracleReduction",
-          "signature": "def iteratedSumcheckOracleReduction (i : Fin \u2113') :"
-        },
-        {
-          "doc": "",
-          "kind": "theorem",
-          "line": 136,
-          "name": "RingSwitching.SumcheckPhase.iteratedSumcheckOracleReduction_perfectCompleteness",
-          "namespace": "RingSwitching.SumcheckPhase",
-          "short_name": "iteratedSumcheckOracleReduction_perfectCompleteness",
-          "signature": "theorem iteratedSumcheckOracleReduction_perfectCompleteness (i : Fin \u2113') :"
-        },
-        {
-          "doc": "",
-          "kind": "abbrev",
-          "line": 176,
-          "name": "RingSwitching.SumcheckPhase.roundKnowledgeError",
-          "namespace": "RingSwitching.SumcheckPhase",
-          "short_name": "roundKnowledgeError",
-          "signature": "abbrev roundKnowledgeError (L : Type) [Fintype L] (\u2113 : \u2115) (i : Fin \u2113) : NNReal :="
-        },
-        {
-          "doc": "**Target (b): `getSumcheckRoundPoly` value as a cube sum (variable-`0`/`cons` form).** The round univariate `getSumcheckRoundPoly \u2113 (boolDomain L \u2113) i H` evaluated at the verifier challenge `r'` equals the sum, over the next round's Boolean cube `(boolDomain.drop (i+1)).cube`, of the full round polynomial `H` with the round variable (variable `0`) fixed to `r'` and the remaining coordinates ranging over the cube. Proven from the marginal identity `roundPoly_eval_eq_sum_cons` (Prelude). `curH` is `H` transported across the index equality `\u2113-i.castSucc = (\u2113-i.castSucc-1)+1` (this is `getSumcheck",
-          "kind": "theorem",
-          "line": 201,
-          "name": "RingSwitching.SumcheckPhase.getSumcheckRoundPoly_eval_eq_sum_cons",
-          "namespace": "RingSwitching.SumcheckPhase",
-          "short_name": "getSumcheckRoundPoly_eval_eq_sum_cons",
-          "signature": "theorem getSumcheckRoundPoly_eval_eq_sum_cons (i : Fin \u2113')"
-        },
-        {
-          "doc": "",
-          "kind": "def",
-          "line": 218,
-          "name": "RingSwitching.SumcheckPhase.iteratedSumcheckRbrExtractor",
-          "namespace": "RingSwitching.SumcheckPhase",
-          "short_name": "iteratedSumcheckRbrExtractor",
-          "signature": "def iteratedSumcheckRbrExtractor (i : Fin \u2113') :"
-        },
-        {
-          "doc": "This follows the KState of `foldKStateProp`",
-          "kind": "def",
-          "line": 237,
-          "name": "RingSwitching.SumcheckPhase.iteratedSumcheckKStateProp",
-          "namespace": "RingSwitching.SumcheckPhase",
-          "short_name": "iteratedSumcheckKStateProp",
-          "signature": "def iteratedSumcheckKStateProp (i : Fin \u2113') (m : Fin (2 + 1))"
-        },
-        {
-          "doc": "Knowledge state function (KState) for single round",
-          "kind": "def",
-          "line": 299,
-          "name": "RingSwitching.SumcheckPhase.iteratedSumcheckKnowledgeStateFunction",
-          "namespace": "RingSwitching.SumcheckPhase",
-          "short_name": "iteratedSumcheckKnowledgeStateFunction",
-          "signature": "def iteratedSumcheckKnowledgeStateFunction (i : Fin \u2113') :"
-        },
-        {
-          "doc": "RBR knowledge soundness for a single round oracle verifier",
-          "kind": "theorem",
-          "line": 335,
-          "name": "RingSwitching.SumcheckPhase.iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness",
-          "namespace": "RingSwitching.SumcheckPhase",
-          "short_name": "iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness",
-          "signature": "theorem iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness [IsDomain L] (i : Fin \u2113') :"
-        },
-        {
-          "doc": "`pSpecFinalSumcheck L` is a single prover-to-verifier message (no challenge).",
-          "kind": "instance",
-          "line": 354,
-          "name": "RingSwitching.SumcheckPhase._anon_instance_354",
-          "namespace": "RingSwitching.SumcheckPhase",
-          "short_name": "_anon_instance_354",
-          "signature": "instance instance : ProverOnly (pSpecFinalSumcheck L) where"
-        },
-        {
           "doc": "The `instDefault` oracle answer is the message itself (`answer m () = m`).",
           "kind": "lemma",
-          "line": 358,
+          "line": 67,
           "name": "RingSwitching.SumcheckPhase.answer_instDefault'",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "answer_instDefault'",
@@ -45677,16 +45695,178 @@
         {
           "doc": "`simulateQ` commutes with `OptionT.pure` (no explicit empty-spec universes).",
           "kind": "theorem",
-          "line": 362,
+          "line": 71,
           "name": "RingSwitching.SumcheckPhase.simulateQ_optionT_pure'",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "simulateQ_optionT_pure'",
           "signature": "theorem simulateQ_optionT_pure' {\u03b9\u2090 \u03b9\u1d66 : Type} {spec\u2090 : OracleSpec \u03b9\u2090}"
         },
         {
+          "doc": "`simulateQ` commutes with `OptionT` `failure`, for an arbitrary lawful target monad `m` (so it applies to both the inner `OracleComp`-valued and outer `StateT`-valued simulation passes). Companion to `simulateQ_optionT_pure'`; discharges the defect-#21 vacuous REJECT branches.",
+          "kind": "theorem",
+          "line": 82,
+          "name": "RingSwitching.SumcheckPhase.simulateQ_optionT_failure'",
+          "namespace": "RingSwitching.SumcheckPhase",
+          "short_name": "simulateQ_optionT_failure'",
+          "signature": "theorem simulateQ_optionT_failure' {\u03b9\u2090 : Type} {spec\u2090 : OracleSpec \u03b9\u2090}"
+        },
+        {
+          "doc": "A map over `OptionT` `failure` is `failure`.",
+          "kind": "theorem",
+          "line": 91,
+          "name": "RingSwitching.SumcheckPhase.map_optionT_failure'",
+          "namespace": "RingSwitching.SumcheckPhase",
+          "short_name": "map_optionT_failure'",
+          "signature": "theorem map_optionT_failure' {\u03b9\u2090 : Type} {spec\u2090 : OracleSpec \u03b9\u2090} {\u03b3 \u03b4 : Type}"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 122,
+          "name": "RingSwitching.SumcheckPhase.iteratedSumcheckPrvState",
+          "namespace": "RingSwitching.SumcheckPhase",
+          "short_name": "iteratedSumcheckPrvState",
+          "signature": "def iteratedSumcheckPrvState (i : Fin \u2113') : Fin (2 + 1) \u2192 Type :="
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 127,
+          "name": "RingSwitching.SumcheckPhase.getIteratedSumcheckProverFinalOutput",
+          "namespace": "RingSwitching.SumcheckPhase",
+          "short_name": "getIteratedSumcheckProverFinalOutput",
+          "signature": "def getIteratedSumcheckProverFinalOutput (i : Fin \u2113')"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 135,
+          "name": "RingSwitching.SumcheckPhase.iteratedSumcheckOracleProver",
+          "namespace": "RingSwitching.SumcheckPhase",
+          "short_name": "iteratedSumcheckOracleProver",
+          "signature": "def iteratedSumcheckOracleProver (i : Fin \u2113') :"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 148,
+          "name": "RingSwitching.SumcheckPhase.iteratedSumcheckOracleVerifier",
+          "namespace": "RingSwitching.SumcheckPhase",
+          "short_name": "iteratedSumcheckOracleVerifier",
+          "signature": "def iteratedSumcheckOracleVerifier (i : Fin \u2113') :"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 160,
+          "name": "RingSwitching.SumcheckPhase.iteratedSumcheckOracleReduction",
+          "namespace": "RingSwitching.SumcheckPhase",
+          "short_name": "iteratedSumcheckOracleReduction",
+          "signature": "def iteratedSumcheckOracleReduction (i : Fin \u2113') :"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 178,
+          "name": "RingSwitching.SumcheckPhase.iteratedSumcheckOracleReduction_perfectCompleteness",
+          "namespace": "RingSwitching.SumcheckPhase",
+          "short_name": "iteratedSumcheckOracleReduction_perfectCompleteness",
+          "signature": "theorem iteratedSumcheckOracleReduction_perfectCompleteness (i : Fin \u2113') :"
+        },
+        {
+          "doc": "",
+          "kind": "abbrev",
+          "line": 264,
+          "name": "RingSwitching.SumcheckPhase.roundKnowledgeError",
+          "namespace": "RingSwitching.SumcheckPhase",
+          "short_name": "roundKnowledgeError",
+          "signature": "abbrev roundKnowledgeError (L : Type) [Fintype L] (\u2113 : \u2115) (i : Fin \u2113) : NNReal :="
+        },
+        {
+          "doc": "**Target (b): `getSumcheckRoundPoly` value as a cube sum (LAST-variable/`snoc` form, defect-#20 repair).** The round univariate `getSumcheckRoundPoly \u2113 (boolDomain L \u2113) i H` evaluated at the verifier challenge `r'` equals the sum, over the next round's Boolean cube `(boolDomain.drop (i+1)).cube`, of the full round polynomial `H` with the **last** round variable fixed to `r'` (via `Fin.snoc`) and the surviving coordinates ranging over the cube. Proven from the marginal identity `roundPoly_eval_eq_sum_snoc` (Prelude). `curH` is `H` transported across the index equality `\u2113-i.castSucc = (\u2113-i.castS",
+          "kind": "theorem",
+          "line": 284,
+          "name": "RingSwitching.SumcheckPhase.getSumcheckRoundPoly_eval_eq_sum_snoc",
+          "namespace": "RingSwitching.SumcheckPhase",
+          "short_name": "getSumcheckRoundPoly_eval_eq_sum_snoc",
+          "signature": "theorem getSumcheckRoundPoly_eval_eq_sum_snoc (i : Fin \u2113')"
+        },
+        {
+          "doc": "Renaming a polynomial along the canonical index `finCongr` of a (propositional) dimension equality `a = b` is heterogeneously equal to the original polynomial.",
+          "kind": "lemma",
+          "line": 304,
+          "name": "RingSwitching.SumcheckPhase.rename_finCongr_heq",
+          "namespace": "RingSwitching.SumcheckPhase",
+          "short_name": "rename_finCongr_heq",
+          "signature": "lemma rename_finCongr_heq {a b : \u2115} (h : a = b) (p : MvPolynomial (Fin a) L) :"
+        },
+        {
+          "doc": "**Verifier-check identity (defect-#20 last-variable form).** Summing the prover's round univariate `getSumcheckRoundPoly \u2113' (boolDomain L \u2113') i H` over coordinate `i`'s Boolean domain `{0,1}` recovers the full cube-sum of the round polynomial `H` over the round-`i.castSucc` Boolean cube. This is the honest verifier's step-6 check: `\u2211_{b \u2208 D.points i} h_i.eval b = \u2211_{cube} H`, which the input relation's `sumcheckConsistencyProp` equates to `stmtIn.sumcheck_target`. The univariate keeps the **last** surviving variable as the indeterminate, so the marginal is the `snoc` cube-telescoping `sum_cube",
+          "kind": "theorem",
+          "line": 322,
+          "name": "RingSwitching.SumcheckPhase.getSumcheckRoundPoly_points_sum_eq_cube",
+          "namespace": "RingSwitching.SumcheckPhase",
+          "short_name": "getSumcheckRoundPoly_points_sum_eq_cube",
+          "signature": "theorem getSumcheckRoundPoly_points_sum_eq_cube (i : Fin \u2113')"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 401,
+          "name": "RingSwitching.SumcheckPhase.iteratedSumcheckRbrExtractor",
+          "namespace": "RingSwitching.SumcheckPhase",
+          "short_name": "iteratedSumcheckRbrExtractor",
+          "signature": "def iteratedSumcheckRbrExtractor (i : Fin \u2113') :"
+        },
+        {
+          "doc": "**Iterated-round verifier-run collapse (defect-#21 guard form).** Under the message-oracle simulation `simulateQ (simOracle2 \u2026)`, the 2-message `roundOracleVerifier` (= `iteratedSumcheckOracleVerifier`) reduces to a single deterministic `if`: on the sumcheck check passing it `pure`s the accept statement (next-round target `h_i(r')`, challenges advanced by `Fin.cons r'`), and on a failed check it emits `failure` (defect-#21) \u2014 so the reject branch has *no* support element. This is the 2-message analog of `BatchingPhase.oracleVerifier_verify_collapse`; the message query collapses via `simulateQ_",
+          "kind": "lemma",
+          "line": 428,
+          "name": "RingSwitching.SumcheckPhase.iteratedSumcheckOracleVerifier_verify_collapse",
+          "namespace": "RingSwitching.SumcheckPhase",
+          "short_name": "iteratedSumcheckOracleVerifier_verify_collapse",
+          "signature": "lemma iteratedSumcheckOracleVerifier_verify_collapse (i : Fin \u2113')"
+        },
+        {
+          "doc": "This follows the KState of `foldKStateProp`",
+          "kind": "def",
+          "line": 465,
+          "name": "RingSwitching.SumcheckPhase.iteratedSumcheckKStateProp",
+          "namespace": "RingSwitching.SumcheckPhase",
+          "short_name": "iteratedSumcheckKStateProp",
+          "signature": "def iteratedSumcheckKStateProp (i : Fin \u2113') (m : Fin (2 + 1))"
+        },
+        {
+          "doc": "Knowledge state function (KState) for single round",
+          "kind": "def",
+          "line": 527,
+          "name": "RingSwitching.SumcheckPhase.iteratedSumcheckKnowledgeStateFunction",
+          "namespace": "RingSwitching.SumcheckPhase",
+          "short_name": "iteratedSumcheckKnowledgeStateFunction",
+          "signature": "def iteratedSumcheckKnowledgeStateFunction (i : Fin \u2113') :"
+        },
+        {
+          "doc": "RBR knowledge soundness for a single round oracle verifier",
+          "kind": "theorem",
+          "line": 629,
+          "name": "RingSwitching.SumcheckPhase.iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness",
+          "namespace": "RingSwitching.SumcheckPhase",
+          "short_name": "iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness",
+          "signature": "theorem iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness [IsDomain L] (i : Fin \u2113') :"
+        },
+        {
+          "doc": "`pSpecFinalSumcheck L` is a single prover-to-verifier message (no challenge).",
+          "kind": "instance",
+          "line": 657,
+          "name": "RingSwitching.SumcheckPhase._anon_instance_657",
+          "namespace": "RingSwitching.SumcheckPhase",
+          "short_name": "_anon_instance_657",
+          "signature": "instance instance : ProverOnly (pSpecFinalSumcheck L) where"
+        },
+        {
           "doc": "The prover for the final sumcheck step",
           "kind": "def",
-          "line": 371,
+          "line": 661,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckProver",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckProver",
@@ -45695,7 +45875,7 @@
         {
           "doc": "The verifier for the final sumcheck step",
           "kind": "def",
-          "line": 407,
+          "line": 697,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckVerifier",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckVerifier",
@@ -45704,16 +45884,25 @@
         {
           "doc": "The oracle reduction for the final sumcheck step",
           "kind": "def",
-          "line": 460,
+          "line": 755,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckOracleReduction",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckOracleReduction",
           "signature": "def finalSumcheckOracleReduction :"
         },
         {
+          "doc": "**Final-sumcheck 0-cube sum identity (shared algebra).** The consistency sum of the projected last-round polynomial over the 0-cube collapses to `compute_final_eq_value \u00b7 t'(challenges)`. This is the pure-algebra core shared by the completeness check (`finalSumcheck_check_of_relIn`) and the round-by-round KState reconstruction (`finalSumcheckKnowledgeStateFunction.toFun_full`): the consistency sum is over the 0-cube (`\u2113' - (Fin.last \u2113').val = 0`), collapsing to a single eval; `fixFirstVariablesOfMQP_eval` rewrites the projected round polynomial evaluated at the empty point to `(A_MLE \u00b7 t')(cha",
+          "kind": "lemma",
+          "line": 776,
+          "name": "RingSwitching.SumcheckPhase.finalSumcheck_cube0_sum_eq",
+          "namespace": "RingSwitching.SumcheckPhase",
+          "short_name": "finalSumcheck_cube0_sum_eq",
+          "signature": "lemma finalSumcheck_cube0_sum_eq [IsDomain L] [IsDomain K]"
+        },
+        {
           "doc": "**Final-sumcheck verifier-check algebra (defect-#10/#11 capstone).** From the input relation's structural invariant + sumcheck consistency at the last round, the honest verifier's step-9 check `sumcheck_target = compute_final_eq_value \u00b7 s'` holds, where `s' = t'(challenges)`. Derivation (scratch-verified): the consistency sum is over the 0-cube (`\u2113' - (Fin.last \u2113').val = 0`), collapsing to a single eval; `fixFirstVariablesOfMQP_eval` rewrites the projected round polynomial `H = projectToMidSumcheckPoly t' A_MLE (Fin.last \u2113') challenges` evaluated at the empty point to `(A_MLE \u00b7 t')(challenges)",
           "kind": "lemma",
-          "line": 483,
+          "line": 832,
           "name": "RingSwitching.SumcheckPhase.finalSumcheck_check_of_relIn",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheck_check_of_relIn",
@@ -45722,7 +45911,7 @@
         {
           "doc": "Perfect completeness for the final sumcheck step",
           "kind": "theorem",
-          "line": 534,
+          "line": 848,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckOracleReduction_perfectCompleteness",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckOracleReduction_perfectCompleteness",
@@ -45731,7 +45920,7 @@
         {
           "doc": "RBR knowledge error for the final sumcheck step",
           "kind": "def",
-          "line": 597,
+          "line": 919,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckRbrKnowledgeError",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckRbrKnowledgeError",
@@ -45740,7 +45929,7 @@
         {
           "doc": "The round-by-round extractor for the final sumcheck step",
           "kind": "def",
-          "line": 600,
+          "line": 922,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckRbrExtractor",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckRbrExtractor",
@@ -45749,7 +45938,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 620,
+          "line": 942,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckKStateProp",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckKStateProp",
@@ -45758,25 +45947,25 @@
         {
           "doc": "The knowledge state function for the final sumcheck step",
           "kind": "def",
-          "line": 657,
+          "line": 979,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckKnowledgeStateFunction",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckKnowledgeStateFunction",
-          "signature": "def finalSumcheckKnowledgeStateFunction {\u03c3 : Type} (init : ProbComp \u03c3)"
+          "signature": "def finalSumcheckKnowledgeStateFunction [IsDomain L] [IsDomain K] {\u03c3 : Type}"
         },
         {
           "doc": "Round-by-round knowledge soundness for the final sumcheck step",
           "kind": "theorem",
-          "line": 696,
+          "line": 1100,
           "name": "RingSwitching.SumcheckPhase.finalSumcheckOracleVerifier_rbrKnowledgeSoundness",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "finalSumcheckOracleVerifier_rbrKnowledgeSoundness",
-          "signature": "theorem finalSumcheckOracleVerifier_rbrKnowledgeSoundness [Fintype L] [IsDomain L] {\u03c3 : Type}"
+          "signature": "theorem finalSumcheckOracleVerifier_rbrKnowledgeSoundness [Fintype L] [IsDomain L] [IsDomain K]"
         },
         {
           "doc": "Composed oracle verifier for the SumcheckStep (seqCompose over \u2113')",
           "kind": "def",
-          "line": 716,
+          "line": 1121,
           "name": "RingSwitching.SumcheckPhase.sumcheckLoopOracleVerifier",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "sumcheckLoopOracleVerifier",
@@ -45785,7 +45974,7 @@
         {
           "doc": "Composed oracle reduction for the SumcheckStep (seqCompose over \u2113')",
           "kind": "def",
-          "line": 725,
+          "line": 1130,
           "name": "RingSwitching.SumcheckPhase.sumcheckLoopOracleReduction",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "sumcheckLoopOracleReduction",
@@ -45794,7 +45983,7 @@
         {
           "doc": "Large-field reduction verifier: Sumcheck seqCompose, then append FinalSum",
           "kind": "def",
-          "line": 742,
+          "line": 1147,
           "name": "RingSwitching.SumcheckPhase.coreInteractionOracleVerifier",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteractionOracleVerifier",
@@ -45803,7 +45992,7 @@
         {
           "doc": "Large-field reduction: Sumcheck seqCompose, then append FinalSum",
           "kind": "def",
-          "line": 751,
+          "line": 1156,
           "name": "RingSwitching.SumcheckPhase.coreInteractionOracleReduction",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteractionOracleReduction",
@@ -45812,7 +46001,7 @@
         {
           "doc": "Perfect completeness for large-field reduction (Sumcheck ++ FinalSum)",
           "kind": "theorem",
-          "line": 765,
+          "line": 1170,
           "name": "RingSwitching.SumcheckPhase.coreInteraction_perfectCompleteness",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteraction_perfectCompleteness",
@@ -45821,7 +46010,7 @@
         {
           "doc": "Per-round knowledge error for the iterated sumcheck rounds.",
           "kind": "def",
-          "line": 792,
+          "line": 1197,
           "name": "RingSwitching.SumcheckPhase.iteratedSumcheckRoundKnowledgeError",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "iteratedSumcheckRoundKnowledgeError",
@@ -45830,7 +46019,7 @@
         {
           "doc": "standard sumcheck error",
           "kind": "def",
-          "line": 795,
+          "line": 1200,
           "name": "RingSwitching.SumcheckPhase.coreInteractionRbrKnowledgeError",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteractionRbrKnowledgeError",
@@ -45839,11 +46028,11 @@
         {
           "doc": "RBR knowledge soundness for large-field reduction (Sumcheck ++ FinalSum)",
           "kind": "theorem",
-          "line": 806,
+          "line": 1211,
           "name": "RingSwitching.SumcheckPhase.coreInteraction_rbrKnowledgeSoundness",
           "namespace": "RingSwitching.SumcheckPhase",
           "short_name": "coreInteraction_rbrKnowledgeSoundness",
-          "signature": "theorem coreInteraction_rbrKnowledgeSoundness [IsDomain L] :"
+          "signature": "theorem coreInteraction_rbrKnowledgeSoundness [IsDomain L] [IsDomain K] :"
         }
       ]
     },
@@ -46901,6 +47090,145 @@
         }
       ]
     },
+    "ArkLib/ProofSystem/Stir/RoundProtocol.lean": {
+      "declarations": [
+        {
+          "doc": "The single-index oracle statement family for a STIR fold round: the prover holds one oracle function `f : \u03b9 \u2192 F` (the purported low-degree codeword being folded).",
+          "kind": "def",
+          "line": 53,
+          "name": "StirIOP.Round.OStmt",
+          "namespace": "StirIOP.Round",
+          "short_name": "OStmt",
+          "signature": "def OStmt (\u03b9 F : Type) : Unit \u2192 Type := fun _ => \u03b9 \u2192 F"
+        },
+        {
+          "doc": "",
+          "kind": "instance",
+          "line": 55,
+          "name": "StirIOP.Round._anon_instance_55",
+          "namespace": "StirIOP.Round",
+          "short_name": "_anon_instance_55",
+          "signature": "instance instance : OracleInterface (OStmt \u03b9 F ()) := OracleInterface.instFunction"
+        },
+        {
+          "doc": "The protocol spec of one STIR fold round: the verifier first sends a folding challenge in `F` (`V_to_P`), then the prover sends the folded/combined evaluation `\u03b9 \u2192 F` (`P_to_V`).",
+          "kind": "def",
+          "line": 60,
+          "name": "StirIOP.Round.pSpec",
+          "namespace": "StirIOP.Round",
+          "short_name": "pSpec",
+          "signature": "def pSpec (\u03b9 F : Type) : ProtocolSpec 2 :="
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 63,
+          "name": "StirIOP.Round.pSpec_dir_one",
+          "namespace": "StirIOP.Round",
+          "short_name": "pSpec_dir_one",
+          "signature": "theorem pSpec_dir_one : (pSpec \u03b9 F).dir 1 = .P_to_V := rfl"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 65,
+          "name": "StirIOP.Round.pSpec_dir_zero",
+          "namespace": "StirIOP.Round",
+          "short_name": "pSpec_dir_zero",
+          "signature": "theorem pSpec_dir_zero : (pSpec \u03b9 F).dir 0 = .V_to_P := rfl"
+        },
+        {
+          "doc": "",
+          "kind": "instance",
+          "line": 67,
+          "name": "StirIOP.Round._anon_instance_67",
+          "namespace": "StirIOP.Round",
+          "short_name": "_anon_instance_67",
+          "signature": "instance instance : \u2200 j, OracleInterface ((pSpec \u03b9 F).Message j)"
+        },
+        {
+          "doc": "",
+          "kind": "instance",
+          "line": 73,
+          "name": "StirIOP.Round._anon_instance_73",
+          "namespace": "StirIOP.Round",
+          "short_name": "_anon_instance_73",
+          "signature": "instance instance : \u2200 j, OracleInterface ((pSpec \u03b9 F).Challenge j) :="
+        },
+        {
+          "doc": "",
+          "kind": "instance",
+          "line": 76,
+          "name": "StirIOP.Round._anon_instance_76",
+          "namespace": "StirIOP.Round",
+          "short_name": "_anon_instance_76",
+          "signature": "instance instance [SampleableType F] : \u2200 j, SampleableType ((pSpec \u03b9 F).Challenge j)"
+        },
+        {
+          "doc": "**The STIR fold-round prover.** - `input` carries the incoming oracle function `f` and the (combine) degree bound `deg`. - on the verifier's challenge `r`, the prover stores `r`; - it then sends, as its `P_to_V` message, the genuine STIR `Combine.combine` of the single function family `![f]` at degree `![deg]`, target degree `deg`, randomness `r` and embedding `\u03c6` \u2014 i.e. `Combine.combine \u03c6 deg r ![f] ![deg]`. All three of `input` / `sendMessage` / `receiveChallenge` / `output` are total, `sorry`-free pure computations built from the real `Combine.combine` operation.",
+          "kind": "def",
+          "line": 92,
+          "name": "StirIOP.Round.stirRoundProver",
+          "namespace": "StirIOP.Round",
+          "short_name": "stirRoundProver",
+          "signature": "def stirRoundProver (\u03c6 : \u03b9 \u21aa F) (deg : \u2115) :"
+        },
+        {
+          "doc": "**The STIR fold-round oracle verifier.** The verifier forwards its statement and keeps, as output oracle, the prover's freshly-sent folded message (index `1` of the protocol).  This is a real (non-trivial) `embed`: the output oracle is the *prover's combine message*, not an input oracle.",
+          "kind": "def",
+          "line": 121,
+          "name": "StirIOP.Round.stirRoundVerifier",
+          "namespace": "StirIOP.Round",
+          "short_name": "stirRoundVerifier",
+          "signature": "def stirRoundVerifier (\u03c6 : \u03b9 \u21aa F) (deg : \u2115) :"
+        },
+        {
+          "doc": "**The STIR fold-round oracle reduction** \u2014 a real, sorry-free STIR protocol object.",
+          "kind": "def",
+          "line": 133,
+          "name": "StirIOP.Round.stirRoundReduction",
+          "namespace": "StirIOP.Round",
+          "short_name": "stirRoundReduction",
+          "signature": "def stirRoundReduction (\u03c6 : \u03b9 \u21aa F) (deg : \u2115) :"
+        },
+        {
+          "doc": "As an IOP-shaped object (over the vectorised protocol spec is future work); here we expose the reduction directly.",
+          "kind": "abbrev",
+          "line": 140,
+          "name": "StirIOP.Round.stirRoundIOR",
+          "namespace": "StirIOP.Round",
+          "short_name": "stirRoundIOR",
+          "signature": "abbrev stirRoundIOR (\u03c6 : \u03b9 \u21aa F) (deg : \u2115) :"
+        },
+        {
+          "doc": "Input relation for the STIR fold round: the input oracle function is `\u03b4`-close to the Reed-Solomon codeword space `RS[F, \u03c6, deg]`.  (This is the completeness relation of the round, matching `StirIOP.stirRelation`.)",
+          "kind": "def",
+          "line": 151,
+          "name": "StirIOP.Round.stirRoundInputRel",
+          "namespace": "StirIOP.Round",
+          "short_name": "stirRoundInputRel",
+          "signature": "def stirRoundInputRel (\u03c6 : \u03b9 \u21aa F) (deg : \u2115) (\u03b4 : \u211d\u22650) :"
+        },
+        {
+          "doc": "Output relation for the STIR fold round: the folded oracle (`Combine.combine \u2026`) is `\u03b4`-close to the Reed-Solomon codeword space.  (The round folds `RS[F, \u03c6, deg]` into itself at the same domain in this single-domain model; the genuine multi-domain degree reduction is future work.)",
+          "kind": "def",
+          "line": 158,
+          "name": "StirIOP.Round.stirRoundOutputRel",
+          "namespace": "StirIOP.Round",
+          "short_name": "stirRoundOutputRel",
+          "signature": "def stirRoundOutputRel (\u03c6 : \u03b9 \u21aa F) (deg : \u2115) (\u03b4 : \u211d\u22650) :"
+        },
+        {
+          "doc": "**Completeness of the real STIR fold-round object** (statement; proof owed). This is the completeness statement *rewritten against the genuine `stirRoundReduction` object* defined above \u2014 not against a nonexistent protocol.  The proof is `sorry`, but it is now an honest obligation about a real, sorry-free protocol object whose prover message is the actual STIR `Combine.combine` operation. Category status: the STIR directory previously had **no** protocol object at all; this statement is the first completeness claim attached to an actual STIR protocol object.",
+          "kind": "theorem",
+          "line": 175,
+          "name": "StirIOP.Round.stirRoundReduction_completeness",
+          "namespace": "StirIOP.Round",
+          "short_name": "stirRoundReduction_completeness",
+          "signature": "theorem stirRoundReduction_completeness (\u03c6 : \u03b9 \u21aa F) (deg : \u2115) (\u03b4 : \u211d\u22650) :"
+        }
+      ]
+    },
     "ArkLib/ProofSystem/Sumcheck/Domain.lean": {
       "declarations": [
         {
@@ -47021,9 +47349,45 @@
           "signature": "lemma points_tail (D : SumcheckDomain R (k + 1)) (i : Fin k) :"
         },
         {
-          "doc": "Drop the first `j` coordinates, leaving the domain on the remaining `k - j` coordinates: coordinate `i` of `D.drop j` is coordinate `j + i` of `D`. This is the *suffix* that per-round sum-check needs \u2014 round `j` sums over coordinates `j \u2026 k-1`.",
+          "doc": "Drop the *last* coordinate of a `(k+1)`-coordinate domain family. The dual of `tail`; used by the structured per-round sum-check, whose round univariate keeps the **last** surviving variable as the indeterminate (defect-#20 convention), so the marginal sum splits off coordinate `Fin.last`.",
           "kind": "def",
           "line": 116,
+          "name": "SumcheckDomain.init",
+          "namespace": "SumcheckDomain",
+          "short_name": "init",
+          "signature": "def init (D : SumcheckDomain R (k + 1)) : SumcheckDomain R k where"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 120,
+          "name": "SumcheckDomain.points_init",
+          "namespace": "SumcheckDomain",
+          "short_name": "points_init",
+          "signature": "lemma points_init (D : SumcheckDomain R (k + 1)) (i : Fin k) :"
+        },
+        {
+          "doc": "`init` of a uniform domain is uniform of one lower dimension.",
+          "kind": "lemma",
+          "line": 124,
+          "name": "SumcheckDomain.init_uniform",
+          "namespace": "SumcheckDomain",
+          "short_name": "init_uniform",
+          "signature": "lemma init_uniform (D\u2080 : Fin m \u21aa R) (k : \u2115) :"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 127,
+          "name": "SumcheckDomain.points_last_uniform",
+          "namespace": "SumcheckDomain",
+          "short_name": "points_last_uniform",
+          "signature": "lemma points_last_uniform (D\u2080 : Fin m \u21aa R) (k : \u2115) :"
+        },
+        {
+          "doc": "Drop the first `j` coordinates, leaving the domain on the remaining `k - j` coordinates: coordinate `i` of `D.drop j` is coordinate `j + i` of `D`. This is the *suffix* that per-round sum-check needs \u2014 round `j` sums over coordinates `j \u2026 k-1`.",
+          "kind": "def",
+          "line": 133,
           "name": "SumcheckDomain.drop",
           "namespace": "SumcheckDomain",
           "short_name": "drop",
@@ -47032,7 +47396,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 120,
+          "line": 137,
           "name": "SumcheckDomain.points_drop",
           "namespace": "SumcheckDomain",
           "short_name": "points_drop",
@@ -47041,7 +47405,7 @@
         {
           "doc": "Dropping coordinates from a uniform domain is again uniform. So the per-round suffix cube `((uniform D\u2080 N).drop j).cube` reduces *definitionally* to today's `(univ.map D\u2080) ^\u1da0 (N - j)` \u2014 the `rfl` hook that lets `Sumcheck.Spec`'s round-`i` sum migrate onto `drop` with no semantic change.",
           "kind": "lemma",
-          "line": 126,
+          "line": 143,
           "name": "SumcheckDomain.drop_uniform",
           "namespace": "SumcheckDomain",
           "short_name": "drop_uniform",
@@ -47050,7 +47414,7 @@
         {
           "doc": "Membership in the cube: a point lies in the cube iff each coordinate lies in its domain.",
           "kind": "lemma",
-          "line": 130,
+          "line": 147,
           "name": "SumcheckDomain.mem_cube",
           "namespace": "SumcheckDomain",
           "short_name": "mem_cube",
@@ -47059,7 +47423,7 @@
         {
           "doc": "A point lies in coordinate `i`'s domain iff it is the image of some index under `embed i`.",
           "kind": "lemma",
-          "line": 134,
+          "line": 151,
           "name": "SumcheckDomain.mem_points",
           "namespace": "SumcheckDomain",
           "short_name": "mem_points",
@@ -47068,7 +47432,7 @@
         {
           "doc": "Coordinate `i` has exactly `size i` evaluation points.",
           "kind": "lemma",
-          "line": 138,
+          "line": 155,
           "name": "SumcheckDomain.card_points",
           "namespace": "SumcheckDomain",
           "short_name": "card_points",
@@ -47077,7 +47441,7 @@
         {
           "doc": "The cube has `\u220f\u1d62 (size i)` points \u2014 the size of the heterogeneous evaluation product. Used for the Schwartz\u2013Zippel soundness bound `d / \u220f\u1d62 (size i)`.",
           "kind": "lemma",
-          "line": 144,
+          "line": 161,
           "name": "SumcheckDomain.card_cube",
           "namespace": "SumcheckDomain",
           "short_name": "card_cube",
@@ -47086,16 +47450,25 @@
         {
           "doc": "Telescoping identity (the core sum-check completeness step): summing over the `(k+1)`-coordinate cube equals summing coordinate `0` over its domain, then the rest over the tail cube. This is the `piFinset` \"cons decomposition\" `\ud835\udd3b^{k+1} \u2194 \ud835\udd3b\u2080 \u00d7 \ud835\udd3b^k`.",
           "kind": "theorem",
-          "line": 150,
+          "line": 167,
           "name": "SumcheckDomain.sum_cube_succ",
           "namespace": "SumcheckDomain",
           "short_name": "sum_cube_succ",
           "signature": "theorem sum_cube_succ {M : Type*} [AddCommMonoid M] (D : SumcheckDomain R (k + 1))"
         },
         {
+          "doc": "Telescoping identity splitting off the **last** coordinate (dual of `sum_cube_succ`): summing over the `(k+1)`-coordinate cube equals summing coordinate `Fin.last` over its domain, then the rest over the `init` cube, recombined via `Fin.snoc`. This is the `piFinset` \"snoc decomposition\" `\ud835\udd3b^{k+1} \u2194 \ud835\udd3b^k \u00d7 \ud835\udd3b_last`, the completeness step for the structured (last-variable) round convention.",
+          "kind": "theorem",
+          "line": 183,
+          "name": "SumcheckDomain.sum_cube_snoc",
+          "namespace": "SumcheckDomain",
+          "short_name": "sum_cube_snoc",
+          "signature": "theorem sum_cube_snoc {M : Type*} [AddCommMonoid M] (D : SumcheckDomain R (k + 1))"
+        },
+        {
           "doc": "The canonical Boolean embedding `Fin 2 \u21aa R`, `0 \u21a6 (0 : R)`, `1 \u21a6 (1 : R)`. Injective because `R` is nontrivial.",
           "kind": "def",
-          "line": 165,
+          "line": 200,
           "name": "boolEmbedding",
           "namespace": "",
           "short_name": "boolEmbedding",
@@ -47104,7 +47477,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 172,
+          "line": 207,
           "name": "boolEmbedding_zero",
           "namespace": "",
           "short_name": "boolEmbedding_zero",
@@ -47113,7 +47486,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 175,
+          "line": 210,
           "name": "boolEmbedding_one",
           "namespace": "",
           "short_name": "boolEmbedding_one",
@@ -47122,7 +47495,7 @@
         {
           "doc": "The Boolean hypercube `{0,1}^k` as a `SumcheckDomain`: the canonical `0 \u21a6 0, 1 \u21a6 1` embedding in every coordinate. This is the plain multilinear sum-check domain (Binius, Hachi, \u2026).",
           "kind": "def",
-          "line": 180,
+          "line": 215,
           "name": "boolDomain",
           "namespace": "",
           "short_name": "boolDomain",
@@ -47131,7 +47504,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 183,
+          "line": 218,
           "name": "points_boolDomain",
           "namespace": "",
           "short_name": "points_boolDomain",
@@ -47140,7 +47513,7 @@
         {
           "doc": "A *hyperprism* domain `\ud835\udd3b = D \u00d7 {0,1}^k` (SWIRL): coordinate `0` ranges over a given `2^\u2113`-point univariate \"skip\" domain `Dskip`, and the remaining `k` coordinates are Boolean. `Dskip` is taken as a parameter here; constructing the concrete smooth multiplicative coset of order `2^\u2113` (which needs the `2^\u2113 \u2223 |R\u00d7|` smoothness assumption and a chosen generator) is deferred.",
           "kind": "def",
-          "line": 191,
+          "line": 226,
           "name": "hyperprismDomain",
           "namespace": "",
           "short_name": "hyperprismDomain",
@@ -48207,16 +48580,25 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 62,
+          "line": 75,
           "name": "Sumcheck.Structured.getSumcheckRoundPoly",
           "namespace": "Sumcheck.Structured",
           "short_name": "getSumcheckRoundPoly",
           "signature": "def getSumcheckRoundPoly {d : \u2115} (i : Fin \u2113) (h : \u21a5L\u2983\u2264 d\u2984[X Fin (\u2113 - \u2191i.castSucc)])"
         },
         {
+          "doc": "**Round-univariate evaluation as a survivor-cube sum (last-variable / `snoc` form).** Evaluating the prover's round univariate `getSumcheckRoundPoly \u2113 D i h` at any point `r` equals the sum, over the next round's survivor cube `(D.drop (i.castSucc+1)).cube`, of the full round polynomial `H = h` with the **last** surviving variable fixed to `r` (via `Fin.snoc`). Proven from the marginal identity `RingSwitching.roundPoly_eval_eq_sum_snoc` (Prelude). `curH` is `h.val` transported across `getSumcheckRoundPoly`'s internal index equality `\u2113-i.castSucc = (\u2113-i.castSucc-1)+1`, supplied via a `HEq`. Thi",
+          "kind": "theorem",
+          "line": 116,
+          "name": "Sumcheck.Structured.getSumcheckRoundPoly_eval_eq_sum_snoc",
+          "namespace": "Sumcheck.Structured",
+          "short_name": "getSumcheckRoundPoly_eval_eq_sum_snoc",
+          "signature": "theorem getSumcheckRoundPoly_eval_eq_sum_snoc {d : \u2115} (i : Fin \u2113)"
+        },
+        {
           "doc": "Protocol spec for one round of the structured sumcheck: P sends a degree-\u2264`d` univariate `h_i(X) \u2208 L\u2983\u2264 d\u2984[X]`; V samples a challenge `r'_i \u2208 L`. `d` is explicit (no privileged instantiation): the `H = P \u00b7 t` case passes `d := 2`, Hachi's smallness check passes `d := 2b+1`.",
           "kind": "def",
-          "line": 102,
+          "line": 148,
           "name": "Sumcheck.Structured.pSpecSumcheckRound",
           "namespace": "Sumcheck.Structured",
           "short_name": "pSpecSumcheckRound",
@@ -48225,25 +48607,25 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 105,
-          "name": "Sumcheck.Structured._anon_instance_105",
+          "line": 151,
+          "name": "Sumcheck.Structured._anon_instance_151",
           "namespace": "Sumcheck.Structured",
-          "short_name": "_anon_instance_105",
+          "short_name": "_anon_instance_151",
           "signature": "instance instance {d : \u2115} : \u2200 j, OracleInterface ((pSpecSumcheckRound L d).Message j)"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 111,
-          "name": "Sumcheck.Structured._anon_instance_111",
+          "line": 157,
+          "name": "Sumcheck.Structured._anon_instance_157",
           "namespace": "Sumcheck.Structured",
-          "short_name": "_anon_instance_111",
+          "short_name": "_anon_instance_157",
           "signature": "instance instance {d : \u2115} : \u2200 j, SampleableType ((pSpecSumcheckRound L d).Challenge j)"
         },
         {
           "doc": "State machine for the per-round prover of the structured sumcheck. - `0`: pre-message. - `1`: after the prover has sent `h_i(X)` (a degree-`d` univariate). - `2`: after the verifier has sampled `r'_i`.",
           "kind": "def",
-          "line": 151,
+          "line": 197,
           "name": "Sumcheck.Structured.roundPrvState",
           "namespace": "Sumcheck.Structured",
           "short_name": "roundPrvState",
@@ -48252,7 +48634,7 @@
         {
           "doc": "Compute the final per-round output (statement-out, oracle statement-out, witness-out) from the after-challenge prover state.",
           "kind": "def",
-          "line": 165,
+          "line": 211,
           "name": "Sumcheck.Structured.getRoundProverFinalOutput",
           "namespace": "Sumcheck.Structured",
           "short_name": "getRoundProverFinalOutput",
@@ -48261,7 +48643,7 @@
         {
           "doc": "The prover for the `i`-th round of the structured sumcheck. `sendMessage 0` runs `getSumcheckRoundPoly` to derive the degree-`d` univariate `h_i(X)` from the round polynomial `H_i`. `receiveChallenge 1` stores the verifier's challenge `r'_i`. `output` advances the witness via `getRoundProverFinalOutput`.",
           "kind": "def",
-          "line": 197,
+          "line": 248,
           "name": "Sumcheck.Structured.roundOracleProver",
           "namespace": "Sumcheck.Structured",
           "short_name": "roundOracleProver",
@@ -48270,7 +48652,7 @@
         {
           "doc": "The oracle verifier for the `i`-th round of the structured sumcheck. Receives the degree-`d` univariate `h_i(X)` from the prover, checks `s_i ?= \u2211 b \u2208 D.points i, h_i(b)` (summing the round polynomial over coordinate `i`'s evaluation domain, to match how the prover builds it; for the boolean hypercube this is `h_i(0) + h_i(1)`), samples `r'_i \u2208 L`, and outputs the updated statement with `s_{i+1} := h_i(r'_i)`.",
           "kind": "def",
-          "line": 235,
+          "line": 286,
           "name": "Sumcheck.Structured.roundOracleVerifier",
           "namespace": "Sumcheck.Structured",
           "short_name": "roundOracleVerifier",
@@ -48279,7 +48661,7 @@
         {
           "doc": "The oracle reduction bundling the per-round prover and verifier.",
           "kind": "def",
-          "line": 270,
+          "line": 323,
           "name": "Sumcheck.Structured.roundOracleReduction",
           "namespace": "Sumcheck.Structured",
           "short_name": "roundOracleReduction",
@@ -48288,7 +48670,7 @@
         {
           "doc": "Round-by-round knowledge error for a single round of the structured sumcheck: the Schwartz\u2013Zippel bound `d / |L|` for a degree-`d` round polynomial. `d` is explicit.",
           "kind": "def",
-          "line": 290,
+          "line": 343,
           "name": "Sumcheck.Structured.roundKnowledgeError",
           "namespace": "Sumcheck.Structured",
           "short_name": "roundKnowledgeError",
@@ -50652,8 +51034,8 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 5501,
-      "files": 288
+      "declarations": 5543,
+      "files": 289
     }
   }
 }
