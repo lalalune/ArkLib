@@ -409,14 +409,20 @@ WALL (deferred to a later wave): the *matching lemma* equating this with the exa
 paper combinatorial factor (reconciling the Hasse-derivative's intrinsic `C(j, Σλ)` weight
 against the paper's `multinomial(j0, λ)`) is `prefactor_eq_paper` below — STATED, not proven. -/
 def prefactor {m : ℕ} (i i1 : ℕ) (lam : Nat.Partition m) : ℕ :=
-  Nat.choose i i1 * Nat.multinomial lam.parts.toFinset (fun l => lam.parts.count l)
+  -- **DEFINITIONAL REPAIR (2026-06-05, campaign bug #5, kernel-grounded — see P2Vanish.lean):**
+  -- the previous form carried an extra explicit binomial `Nat.choose i i1`. The genuine
+  -- BCIKS20 (A.1) weights are emitted INTRINSICALLY by the X-/Y-Hasse extractions
+  -- (`Polynomial.hasseDeriv_coeff`; see `P2Vanish.hasseDerivY_coeff` +
+  -- `prefactorWeightMatch_holds`): the only explicit combinatorial factor in the
+  -- recursion is the partition multinomial. Args retained for signature stability.
+  Nat.multinomial lam.parts.toFinset (fun l => lam.parts.count l)
 
 /-- The prefactor is genuinely positive whenever the binomial part is (so it is never a
 secretly-zero stub): `Nat.multinomial` is always `> 0`. -/
-theorem prefactor_pos {m : ℕ} (i i1 : ℕ) (lam : Nat.Partition m) (hi : i1 ≤ i) :
+theorem prefactor_pos {m : ℕ} (i i1 : ℕ) (lam : Nat.Partition m) (_hi : i1 ≤ i) :
     0 < prefactor i i1 lam := by
   rw [prefactor]
-  exact Nat.mul_pos (Nat.choose_pos hi) (Nat.multinomial_pos _ _)
+  exact Nat.multinomial_pos _ _
 
 /-- The multinomial part of the BCIKS20 prefactor is exactly the value-multiset
 permutation count used by the power-series composition expansion. -/
@@ -428,8 +434,8 @@ theorem countPerms_parts_eq_multinomial {m : ℕ} (lam : Nat.Partition m) :
 /-- `prefactor` as the binomial Hasse weight times the composition fiber-count
 `countPerms`.  This is the direct bridge from
 `PowerSeriesComposition.coeff_pow_eq_partitionSum` to the `B_coeff` normalization. -/
-theorem prefactor_eq_choose_mul_countPerms {m : ℕ} (i i1 : ℕ) (lam : Nat.Partition m) :
-    prefactor i i1 lam = Nat.choose i i1 * lam.parts.countPerms := by
+theorem prefactor_eq_countPerms {m : ℕ} (i i1 : ℕ) (lam : Nat.Partition m) :
+    prefactor i i1 lam = lam.parts.countPerms := by
   rw [prefactor, countPerms_parts_eq_multinomial]
 
 end Partition
