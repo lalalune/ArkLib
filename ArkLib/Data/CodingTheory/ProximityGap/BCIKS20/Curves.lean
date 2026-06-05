@@ -2355,21 +2355,6 @@ noncomputable def coeffs_of_close_proximity_curve {l : ℕ}
   @Set.toFinset _ { z | δᵣ(Curve.polynomialCurveEval (F := F) (A := F) u z, V) ≤ δ } this
 
 omit [NeZero n] in
-/-- The generic §6 close-parameter set for a two-word affine line agrees with
-the §5 close-proximity set. -/
-theorem coeffs_of_close_proximity_curve_finMapTwoWords_eq
-    {k : ℕ} {ωs : Fin n ↪ F} (δ : ℚ≥0) (u₀ u₁ : Fin n → F) :
-    coeffs_of_close_proximity_curve (F := F) (n := n) (l := 2)
-        δ (Code.finMapTwoWords u₀ u₁) (ReedSolomon.toFinset ωs (k + 1)) =
-      coeffs_of_close_proximity k ωs (δ : ℚ) u₀ u₁ := by
-  classical
-  apply Finset.ext
-  intro z
-  simp [coeffs_of_close_proximity_curve, ProximityGap.coeffs_of_close_proximity,
-    ReedSolomon.toFinset, ReedSolomon.RScodeSet, polynomialCurveEval_eq_sum_smul,
-    sum_finMapTwoWords_eq]
-
-omit [NeZero n] in
 /-- The §6 close-parameter set specialized to a Reed-Solomon code is the same
 good-coefficient set used by the curve assembly layer. -/
 theorem coeffs_of_close_proximity_curve_RS_toFinset_eq_goodCoeffsCurve
