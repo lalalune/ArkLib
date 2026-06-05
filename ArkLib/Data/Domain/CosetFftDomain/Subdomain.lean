@@ -126,26 +126,38 @@ lemma subdomain_generator_pow_generator (i : ℕ) :
 
 omit [DecidableEq F] in
 @[simp]
-lemma mem_subdomain_0_iff_mem :
-  x ∈ subdomain ω 0 ↔ x ∈ ω := by
-  by_cases hn : n = 0
-    <;> aesop 
-          (add simp 
-            [subdomain, 
-             CosetFftDomainClass.subdomain_embed, 
-             mkSubgroupUnit, 
-             mem_def, 
-             CosetFftDomain.eval_coset_fft_domain_eq_eval_generator_mul_domain])
+lemma subdomain_0_eval {i : Fin (2 ^ n)} :
+  subdomain ω 0 i = ω i := by
+  by_cases hn : n = 0 
+  <;> aesop 
+        (add safe [cases Fin, (by grind)])
+        (add simp 
+          [subdomain, 
+           CosetFftDomainClass.subdomain_embed, 
+           mkSubgroupUnit, 
+           CosetFftDomain.eval_coset_fft_domain_eq_eval_generator_mul_domain])
 
 omit [DecidableEq F] in
-lemma mem_subdomain_n_iff_eq_pow_generator : 
-  x ∈ subdomain ω n ↔ x = ω 0 ^ 2 ^ n := by
+@[simp]
+lemma mem_subdomain_0_iff_mem :
+  x ∈ subdomain ω 0 ↔ x ∈ ω := by
+  aesop 
+    (add simp [mem_def])
+    (add unsafe (by rw [subdomain_0_eval]))
+  
+omit [DecidableEq F] in
+lemma subdomain_n_eval {i : Fin (2 ^ (n - n))} : 
+  subdomain ω n i = ω 0 ^ 2 ^ n := by
   aesop
     (add simp [subdomain
     , CosetFftDomainClass.subdomain_embed
     , mkSubgroupUnit
-    , mem_def
     , CosetFftDomain.eval_coset_fft_domain_eq_eval_generator_mul_domain])
+
+omit [DecidableEq F] in
+lemma mem_subdomain_n_iff_eq_pow_generator : 
+  x ∈ subdomain ω n ↔ x = ω 0 ^ 2 ^ n := by
+  aesop (add simp [mem_def, subdomain_n_eval])
 
 omit [DecidableEq F] in
 private lemma mkSubgroupUnit_pow (ω : D) (a : Fin (2 ^ n)) (k : ℕ) :
@@ -423,12 +435,9 @@ lemma square_roots_explicit {i : ℕ} (hi : i < n) {y : F}
     simp_all [Finset.subset_iff]
 
 /-- The generalized modular reduction map from `Fin (2^n)` to `Fin (2^(n-i))`,
-sending `u` to `u % 2^(n-i)`. This is the correct "folding" map for the `2^i`-th power
-operation on coset FFT domains. -/
+sending `u` to `u % 2^(n-i)`. Can be used to compute indices of powers of subdomain memebers. -/
 def sqFoldMapGen {i : ℕ} (u : Fin (2 ^ n)) : Fin (2 ^ (n - i)) :=
   ⟨u.val % 2 ^ (n - i), Nat.mod_lt _ (Nat.two_pow_pos _)⟩
-
-
 
 omit [DecidableEq F] in
 lemma evalOnPoints_pow_of_two_eq_evalOnPoints_subdomain
@@ -476,10 +485,9 @@ lemma evalOnPoints_sq_eq_evalOnPoints_subdomain [NeZero n] {p : Polynomial F} :
       evalOnPoints_pow_of_two_eq_evalOnPoints_subdomain]
 
 omit [DecidableEq F] in
-lemma subdomain_sqFoldMapGen_eq_pow_domain
-  [NeZero n] {i : ℕ} {j : Fin (2 ^ n)} :
+lemma subdomain_sqFoldMapGen_eq_pow_domain [NeZero n] {i : ℕ} {j : Fin (2 ^ n)} :
   subdomain ω i (sqFoldMapGen j) = ω j ^ 2 ^ i := by
-  have this := @evalOnPoints_pow_of_two_eq_evalOnPoints_subdomain
+  have := @evalOnPoints_pow_of_two_eq_evalOnPoints_subdomain
   specialize @this F _ n D _ _ ω _ (Polynomial.X) i 
   simp_all [funext_iff, ReedSolomon.evalOnPoints]
   
