@@ -247,7 +247,7 @@ theorem hcoeffPoly_goodCoeffsCurve_finMapTwoWords_of_selected_matching_domain
       (S := RS_goodCoeffsCurve (k := 1) (deg := k + 1) (domain := ωs)
         (Code.finMapTwoWords u₀ u₁) (δ : ℝ≥0))
       (D := Dtop) (P := P₀)
-      (by simpa [hDtop_card])
+      (by simp [hDtop_card])
       (by
         intro z hz
         have hz_close :
@@ -279,6 +279,40 @@ theorem hcoeffPoly_goodCoeffsCurve_finMapTwoWords_of_selected_matching_domain
       (F := F) (n := n) (k := k) (ωs := ωs) δ u₀ u₁ z).mpr hz
   rw [hP_eq z hz_close]
   exact hBcoeff₀ z hz j hj
+
+/-- Strict Johnson §6 joint-agreement front door specialized to the §5
+affine-line setup, using only the Claim-5.11 selected coordinate domain. -/
+theorem RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_selected_matching_domain
+    {m k : ℕ} {ωs : Fin n ↪ F} {Q : F[Z][X][Y]}
+    (δ : ℚ≥0) (u₀ u₁ : Fin n → F)
+    (hprob :
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin 2, (z ^ (t : ℕ)) • Code.finMapTwoWords u₀ u₁ t,
+          ReedSolomon.code ωs (k + 1)) ≤ (δ : ℝ≥0)] >
+        (((1 : ℕ) : ENNReal) * (errorBound (δ : ℝ≥0) (k + 1) ωs : ENNReal)))
+    (hJ : (1 - (LinearCode.rate (ReedSolomon.code ωs (k + 1)) : ℝ≥0)) / 2 <
+      (δ : ℝ≥0))
+    (hδ : (δ : ℝ≥0) < 1 - ReedSolomon.sqrtRate (k + 1) ωs)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (Dtop : Finset (Fin n))
+    (hDtop_card : Dtop.card = k + 1)
+    (hsubset : ∀ x ∈ Dtop,
+      coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁ ⊆
+        matching_set_at_x k (δ : ℚ) h_gs x)
+    (hunique : ∀ P : F → Polynomial F,
+      (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+        (P z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P z).eval ∘ ωs) ≤ (δ : ℚ)) →
+      ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+        P z = PzFamily (F := F) (n := n) (δ : ℚ) u₀ u₁ ωs k z) :
+    jointAgreement (C := ReedSolomon.code ωs (k + 1)) (δ := (δ : ℝ≥0))
+      (W := Code.finMapTwoWords u₀ u₁) := by
+  exact RS_jointAgreement_of_prob_gt_strict_johnson_and_coeff_polys
+    (deg := k + 1) (domain := ωs) (δ := (δ : ℝ≥0))
+    (hk := Nat.zero_lt_succ 0) (u := Code.finMapTwoWords u₀ u₁)
+    hprob hJ hδ
+    (hcoeffPoly_goodCoeffsCurve_finMapTwoWords_of_selected_matching_domain
+      (F := F) (n := n) (m := m) (k := k) (ωs := ωs) (Q := Q)
+      δ u₀ u₁ h_gs Dtop hDtop_card hsubset hunique)
 
 /-- Strict Johnson §6 joint-agreement front door specialized to the §5
 degree-one affine-line setup.  The remaining hypotheses are exactly the §5

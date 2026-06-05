@@ -92,7 +92,12 @@ def biniusProfile : RingSwitching.RingSwitchingProfile K L κ :=
       rw [map_add, Finsupp.add_apply]
     decomposeColumns_φ₀_mul_φ₁ := by
       intro a b v
-      sorry
+      have h : RingSwitching.φ₀ L K a * RingSwitching.φ₁ L K b = a ⊗ₜ[K] b := by
+        simp only [RingSwitching.φ₀, RingSwitching.φ₁, RingHom.coe_mk, MonoidHom.coe_mk,
+          OneHom.coe_mk, Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
+      rw [h]
+      unfold RingSwitching.decompose_tensor_algebra_columns
+      rw [Basis.baseChangeRight_repr_tmul]
   }
 
 section Pspec
