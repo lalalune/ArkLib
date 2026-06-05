@@ -2127,6 +2127,15 @@ theorem coeff_Q_coeff_eq_eval_hasseDerivX
   rw [Q, Polynomial.coeff_map, ProximityPrize.BCIKS20.GammaGenuine.coeff_coeffHom,
     Polynomial.taylor_coeff]
 
+/-- `Q`-coefficient expansion in the same `evalX ∘ hasseDerivX` form used by
+the `B_coeff` numerator and weight lemmas. -/
+theorem coeff_Q_coeff_eq_evalX_hasseDerivX_coeff
+    (x₀ : F) (R : F[X][X][Y]) (j i1 : ℕ) :
+    PowerSeries.coeff i1 ((Q x₀ R H).coeff j) =
+      liftToFunctionField (H := H)
+        ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 R)).coeff j) := by
+  rw [coeff_Q_coeff_eq_eval_hasseDerivX, evalX_C_coeff, hasseDerivX_coeff]
+
 /-- **Product bridge (PROVEN — the multiplicative half of the cleared-defect identity).**
 The product of assembled-series coefficients over any finite multiset of orders clears to
 the embedded product of the (A.1) numerators over the telescoped `W`/`ξ` powers. -/
