@@ -3,9 +3,11 @@ STATUS: PARTIAL — `assembledSeries_isRoot` is now sorry-free (proven by `Power
 # PC-W11 — the (A.1)-assembled numerator series is a root of `Q`
 
 File: `upstream/lean-research/ArkLib/ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean`
-(worktree `/home/shaw/arklib-prize`; content materialized from / matching `lalalune/main`).
-Edited ONLY that file. Compiled it alone with `lake env lean … HenselNumerator.lean` → **exit 0**.
-Axiom-audited in-file (`#print axioms`, then removed). No `lake build`, no commit/push.
+(worktree `/home/shaw/ethereumroadmap/upstream/lean-research/ArkLib`; content materialized from /
+matching `lalalune/main`). Edited ONLY that file for the PC-W11 bridge pass. Compiled it alone with
+`lake env lean ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean` → **exit 0**.
+Axiom-audited in-file (`#print axioms`, then removed). A later upstream validation pass also ran
+`lake build ArkLib` successfully.
 
 ## What changed
 
@@ -88,7 +90,7 @@ equivalence is documented inside the residual's doc-comment so the next attempt 
 
 ## Verification
 
-- `cd /home/shaw/arklib-prize && export PATH=$HOME/.elan/bin:$PATH && lake env lean ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean` → exit 0.
+- `cd /home/shaw/ethereumroadmap/upstream/lean-research/ArkLib && lake env lean ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean` → exit 0.
 - In-file `#print axioms` (temp, removed):
   - `coeff_zero_eval_βHenselAssembled` → `[propext, Classical.choice, Quot.sound]` (clean).
   - `assembledSeries_isRoot` → `[propext, sorryAx, Classical.choice, Quot.sound]` (`sorryAx`
