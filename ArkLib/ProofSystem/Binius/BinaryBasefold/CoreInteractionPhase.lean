@@ -660,6 +660,18 @@ def coreInteractionOracleReduction :=
     (R₁ := sumcheckFoldOracleReduction 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) )
     (R₂ := finalSumcheckOracleReduction 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
 
+instance instCoreInteractionOracleVerifierAppendCoherent :
+    OracleVerifier.Append.AppendCoherent
+      (coreInteractionOracleVerifier 𝔽q β (ϑ:=ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) := by
+  sorry
+
+instance instCoreInteractionOracleReductionAppendCoherent :
+    OracleVerifier.Append.AppendCoherent
+      (coreInteractionOracleReduction 𝔽q β (ϑ:=ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).verifier := by
+  sorry
+
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
 
 /-- Perfect completeness for the core interaction oracle reduction -/
