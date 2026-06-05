@@ -183,6 +183,28 @@ Equivalent in spirit to `Δ_S((u₀, u₁), C^≡2) = 0` from the paper. -/
 def pairJointAgreesOn (C : Set (ι → A)) (S : Finset ι) (u₀ u₁ : ι → A) : Prop :=
   ∃ v₀ ∈ C, ∃ v₁ ∈ C, ∀ i ∈ S, v₀ i = u₀ i ∧ v₁ i = u₁ i
 
+/-- Row-pinning consequence used in the UDR Step-B residual. If a line has been
+normalized so that `d₀ + γ • d₁` vanishes on `S`, then any codeword agreeing with the
+second row `d₁` on all of `S` would produce a joint pair `((-γ) • c, c)` agreeing with
+`(d₀,d₁)` on `S`. Thus the `¬ pairJointAgreesOn` clause rules out such a row codeword. -/
+theorem no_row_codeword_on_zero_line_witness_of_not_pairJointAgreesOn
+    (C : Submodule F (ι → A)) {S : Finset ι} {d₀ d₁ : ι → A} {γ : F}
+    (hzero : ∀ i ∈ S, (0 : A) = d₀ i + γ • d₁ i)
+    (hno : ¬ pairJointAgreesOn (C : Set (ι → A)) S d₀ d₁) :
+    ∀ c ∈ (C : Set (ι → A)), ¬ ∀ i ∈ S, c i = d₁ i := by
+  intro c hc hagree
+  apply hno
+  refine ⟨(-γ) • c, C.smul_mem (-γ) hc, c, hc, ?_⟩
+  intro i hi
+  refine ⟨?_, hagree i hi⟩
+  calc
+    ((-γ) • c) i = (-γ) • c i := rfl
+    _ = (-γ) • d₁ i := by rw [hagree i hi]
+    _ = d₀ i := by
+      have hz : d₀ i + γ • d₁ i = 0 := (hzero i hi).symm
+      rw [← neg_eq_iff_add_eq_zero] at hz
+      simpa [neg_smul] using congrArg Neg.neg hz.symm
+
 /-- The "bad" event in ABF26 Definition 4.3: there is a witness set `S` of size at least
 `(1-δ)·n` on which the line `u₀ + γ • u₁` exactly equals some codeword of `C`, but no
 joint pair of codewords agrees with `(u₀, u₁)` on `S`. -/
@@ -579,6 +601,24 @@ theorem epsMCA_body_le_epsCA_body_of_not_jointProximity
       Pr_{let γ ← $ᵖ F}[δᵣ(u 0 + γ • u 1, C) ≤ δ] := by
   classical
   exact Pr_le_Pr_of_implies _ _ _ fun γ hγ ↦ mcaEvent_imp_relCloseToCode C δ (u 0) (u 1) γ hγ
+
+open Classical in
+/-- A non-jointly-close stack's line-close probability is one candidate in the `epsCA`
+supremum. This is the final `iSup` plumbing needed by sampling-style lower bounds: once a
+construction produces a stack `u` with `¬ jointProximity C u δ_int`, its raw line-close
+probability is automatically bounded above by `ε_ca(C, δ_fld, δ_int)`. -/
+theorem line_close_probability_le_epsCA_of_not_jointProximity
+    (C : Set (ι → A)) (δ_fld δ_int : ℝ≥0) (u : WordStack A (Fin 2) ι)
+    (hjp : ¬ jointProximity (C := C) (u := u) δ_int) :
+    Pr_{let γ ← $ᵖ F}[δᵣ(u 0 + γ • u 1, C) ≤ δ_fld] ≤
+      epsCA (F := F) C δ_fld δ_int := by
+  unfold epsCA
+  simpa [hjp] using
+    (le_iSup
+      (f := fun u : WordStack A (Fin 2) ι =>
+        if jointProximity (C := C) (u := u) δ_int then (0 : ENNReal)
+        else Pr_{let γ ← $ᵖ F}[δᵣ(u 0 + γ • u 1, C) ≤ δ_fld])
+      u)
 
 open Classical in
 /-- **Restricted MCA error: the fully-provable slice of ABF26 Lemma 4.6 (no UDR needed).**

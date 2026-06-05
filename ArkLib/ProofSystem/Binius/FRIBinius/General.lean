@@ -67,7 +67,22 @@ def biniusProfile : RingSwitching.RingSwitchingProfile K L κ :=
         TensorProduct.smul_tmul', smul_eq_mul]
     decomposeColumns_spec := by
       intro z
-      sorry
+      letI rightAlgebra : Algebra L (RingSwitching.TensorAlgebra K L) :=
+        Algebra.TensorProduct.rightAlgebra
+      letI rightModule : Module L (RingSwitching.TensorAlgebra K L) := rightAlgebra.toModule
+      conv_lhs => rw [← Basis.sum_repr
+        (Basis.baseChangeRight (b := booleanHypercubeBasis κ L K β) (Right := L)) z]
+      apply Finset.sum_congr rfl
+      intro v _
+      conv_rhs => rw [show RingSwitching.decompose_tensor_algebra_columns (L := L) (K := K)
+        (β := booleanHypercubeBasis κ L K β) z v
+        = (Basis.baseChangeRight (b := booleanHypercubeBasis κ L K β) (Right := L)).repr z v
+          from rfl]
+      rw [Basis.baseChangeRight_apply]
+      simp only [RingSwitching.φ₀, RingSwitching.φ₁, RingHom.coe_mk, MonoidHom.coe_mk,
+        OneHom.coe_mk, Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
+      rw [Algebra.smul_def, Algebra.TensorProduct.right_algebraMap_apply,
+        Algebra.TensorProduct.tmul_mul_tmul, one_mul, mul_one]
     decomposeRows_add := by
       intro z w u
       unfold RingSwitching.decompose_tensor_algebra_rows
