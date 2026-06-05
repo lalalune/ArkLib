@@ -246,12 +246,6 @@ structure LogupSumcheckBridge
     (oStmt : ∀ i, OStmtAfterOuter F n M params i) where
   rowsAgree : logupSumcheckPolynomialRowsAgree F n M params stmt oStmt
   claimZero : logupOuterSumcheckClaim F n M params stmt oStmt = 0
-  finalEval :
-    ∀ (r : Fin n → F) (evals : PointEvaluations F M params.numGroups),
-      logupPointEvaluationsAgree F n M params r oStmt evals →
-        MvPolynomial.eval r (logupSumcheckPolynomial F n M params stmt oStmt).1 =
-          qAtPoint (canonicalGroups params) stmt.xChallenge stmt.zChallenge r
-            stmt.batchingScalars evals
 
 theorem LogupSumcheckBridge.relationInput
     {hSigns : (-1 : F) ≠ 1}
@@ -261,6 +255,17 @@ theorem LogupSumcheckBridge.relationInput
     logupSumcheckRelationInput F n M params hSigns stmt oStmt :=
   logupSumcheckRelationInput_of_rowsAgree (F := F) (n := n) (M := M) (params := params)
     bridge.rowsAgree bridge.claimZero
+
+theorem logupSumcheckPolynomial_finalEval
+    {stmt : StmtAfterOuter F n M params}
+    {oStmt : ∀ i, OStmtAfterOuter F n M params i}
+    (r : Fin n → F) (evals : PointEvaluations F M params.numGroups)
+    (hAgree : logupPointEvaluationsAgree F n M params r oStmt evals) :
+    MvPolynomial.eval r (logupSumcheckPolynomial F n M params stmt oStmt).1 =
+      qAtPoint (canonicalGroups params) stmt.xChallenge stmt.zChallenge r
+        stmt.batchingScalars evals := by
+  exact logupQPolynomial_eval_eq_qAtPoint (F := F) (n := n) (M := M) (params := params)
+    stmt oStmt r evals hAgree.multiplicity hAgree.table hAgree.column hAgree.helper
 
 theorem logupSumcheckOutputTarget_eq_eval
     {hSigns : (-1 : F) ≠ 1}
@@ -300,7 +305,6 @@ theorem logupSumcheckOutputTarget_eq_eval
 theorem LogupSumcheckBridge.finalQueryCheck
     {stmt : StmtAfterOuter F n M params}
     {oStmt : ∀ i, OStmtAfterOuter F n M params i}
-    (bridge : LogupSumcheckBridge F n M params stmt oStmt)
     (out : LogupSumcheckStmtOut F n M params)
     (evals : PointEvaluations F M params.numGroups)
     (hAgree :
@@ -315,13 +319,13 @@ theorem LogupSumcheckBridge.finalQueryCheck
     qAtPoint (canonicalGroups params) stmt.xChallenge stmt.zChallenge out.challenges
       stmt.batchingScalars evals = out.target
   rw [hTarget]
-  exact (bridge.finalEval out.challenges evals hAgree).symm
+  exact (logupSumcheckPolynomial_finalEval (F := F) (n := n) (M := M) (params := params)
+    (stmt := stmt) (oStmt := oStmt) out.challenges evals hAgree).symm
 
 theorem LogupSumcheckBridge.finalQueryCheck_of_relation
     {hSigns : (-1 : F) ≠ 1}
     {stmt : StmtAfterOuter F n M params}
     {oStmt : ∀ i, OStmtAfterOuter F n M params i}
-    (bridge : LogupSumcheckBridge F n M params stmt oStmt)
     (out : LogupSumcheckStmtOut F n M params)
     (evals : PointEvaluations F M params.numGroups)
     (hAgree :
@@ -333,7 +337,7 @@ theorem LogupSumcheckBridge.finalQueryCheck_of_relation
     Logup.finalQueryCheck (canonicalGroups params) stmt.xChallenge stmt.zChallenge out.challenges
       stmt.batchingScalars evals out.target := by
   apply LogupSumcheckBridge.finalQueryCheck (F := F) (n := n) (M := M) (params := params)
-    bridge out evals hAgree
+    out evals hAgree
   simpa [logupSumcheckOracleStmt] using
     logupSumcheckOutputTarget_eq_eval (F := F) (n := n) (M := M) (params := params)
       (hSigns := hSigns) (out := out)

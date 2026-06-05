@@ -7,7 +7,7 @@ Authors: Quang Dao, Katerina Hristova, Frantisek Silvasi, Julian Sutherland,
 
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.RootClearing
 
-set_option linter.style.longFile 2800
+set_option linter.style.longFile 3000
 
 /-!
 # BCIKS20 list-decoding agreement compatibility module
@@ -1860,6 +1860,92 @@ lemma solution_gamma_graph_clear_is_linear_in_Z_of_polynomial_representative_deg
     (claimA2_hypotheses_graph_clear
       (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
     hrepr hP
+
+open BCIKS20AppendixA.ClaimA2 in
+omit [DecidableEq (RatFunc F)] in
+noncomputable def P_graph_clear_of_linear_witness
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
+    (hlin :
+      ∃ (v₀ v₁ : F[X]),
+        γ' x₀
+          (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+          (irreducible_H_graph_clear
+            (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+          (natDegree_H_graph_clear_pos
+            (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+          (claimA2_hypotheses_graph_clear
+            (F := F) (m := m) (n := n) k δ x₀ h_gs hcond) =
+            BCIKS20AppendixA.polyToPowerSeries𝕃 _
+              ((Polynomial.map Polynomial.C v₀) +
+                (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁))) : F[Z][X] :=
+  let v₀ := Classical.choose hlin
+  let v₁ := Classical.choose (Classical.choose_spec hlin)
+  (Polynomial.map Polynomial.C v₀) +
+    (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)
+
+open BCIKS20AppendixA.ClaimA2 in
+omit [DecidableEq (RatFunc F)] in
+lemma gamma_graph_clear_eq_P_graph_clear_of_linear_witness
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
+    (hlin :
+      ∃ (v₀ v₁ : F[X]),
+        γ' x₀
+          (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+          (irreducible_H_graph_clear
+            (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+          (natDegree_H_graph_clear_pos
+            (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+          (claimA2_hypotheses_graph_clear
+            (F := F) (m := m) (n := n) k δ x₀ h_gs hcond) =
+            BCIKS20AppendixA.polyToPowerSeries𝕃 _
+              ((Polynomial.map Polynomial.C v₀) +
+                (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁))) :
+    γ' x₀
+      (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+      (irreducible_H_graph_clear
+        (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+      (natDegree_H_graph_clear_pos
+        (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+      (claimA2_hypotheses_graph_clear
+        (F := F) (m := m) (n := n) k δ x₀ h_gs hcond) =
+        BCIKS20AppendixA.polyToPowerSeries𝕃 _
+          (P_graph_clear_of_linear_witness
+            (F := F) (m := m) (n := n) k δ x₀ h_gs hcond hlin) := by
+  exact Classical.choose_spec (Classical.choose_spec hlin)
+
+open BCIKS20AppendixA.ClaimA2 Polynomial in
+omit [DecidableEq (RatFunc F)] in
+lemma P_graph_clear_eval_eq_word_of_linear_coeff_values
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
+    (hlin :
+      ∃ (v₀ v₁ : F[X]),
+        γ' x₀
+          (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+          (irreducible_H_graph_clear
+            (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+          (natDegree_H_graph_clear_pos
+            (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+          (claimA2_hypotheses_graph_clear
+            (F := F) (m := m) (n := n) k δ x₀ h_gs hcond) =
+            BCIKS20AppendixA.polyToPowerSeries𝕃 _
+              ((Polynomial.map Polynomial.C v₀) +
+                (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)))
+    (x : Fin n)
+    (h₀ : (Classical.choose hlin).eval (ωs x) = u₀ x)
+    (h₁ : (Classical.choose (Classical.choose_spec hlin)).eval (ωs x) = u₁ x) :
+    (P_graph_clear_of_linear_witness
+        (F := F) (m := m) (n := n) k δ x₀ h_gs hcond hlin).eval
+      (Polynomial.C (ωs x)) =
+      (Polynomial.C <| u₀ x) + u₁ x • Polynomial.X := by
+  unfold P_graph_clear_of_linear_witness
+  exact polynomial_representative_matches_word_of_linear_coeff_values
+    (F := F) (a := ωs x) (u₀ := u₀ x) (u₁ := u₁ x) rfl h₀ h₁
 
 open BCIKS20AppendixA.ClaimA2 in
 /-- Claim 5.9 from [BCIKS20].
