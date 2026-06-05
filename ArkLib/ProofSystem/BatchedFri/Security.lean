@@ -656,21 +656,99 @@ noncomputable instance {t l : ℕ} {ω : SmoothCosetFftDomain n 𝔽} :
   infer_instance
 
 open ENNReal in
-/-- Corresponds to Claim 8.2 of [BCIKS20] -/
+/-- Corresponds to Claim 8.2 of [BCIKS20].
+
+    The Reed–Solomon code is instantiated at the *protocol's actual committed-codeword degree*
+    `2 ^ (∑ i, (s i).1) * d` (the degree bound carried by `BatchedFri.Spec.batchCode` and the
+    batched witness `BatchedFri.Spec.Witness`), NOT the domain size `2 ^ n`. The hypothesis
+    `rate_lt_one : 2 ^ (∑ i, (s i).1) * d < 2 ^ n` (the strict form of the protocol's
+    `domain_size_cond`) forces rate `ρ = (2 ^ (∑ s) * d) / 2 ^ n < 1`, hence `sqrtRate < 1`, so
+    the soundness threshold `α0 = max α (√ρ·(1+1/2m))` is genuinely `< 1` for `m ≥ 3` and the bad
+    event `εQ x z > α0` is non-vacuous (see the non-vacuity note at the proof admit). Both the
+    agreement-density hypothesis `h_agreement` and the error-rate `ρ_sqrt` (hence `εC`) use this
+    SAME corrected degree. -/
 lemma fri_query_soundness
   {t : ℕ}
   {α : ℝ}
+  (rate_lt_one : 2 ^ (∑ i, (s i).1) * d < 2 ^ n)
   (f : Fin t.succ → (ω.subdomain 0 → 𝔽))
   (h_agreement :
     correlated_agreement_density
       (Fₛ f)
-      (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
+      (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽)
+        (2 ^ (∑ i, (s i).1) * d))
     ≤ α)
   {m : ℕ}
   (m_ge_3 : m ≥ 3)
-  : True
-    := by
-    trivial
+  :
+    let ρ_sqrt :=
+      ReedSolomon.sqrtRate
+        (2 ^ (∑ i, (s i).1) * d)
+        (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽)
+    let α0 : ℝ≥0∞ := ENNReal.ofReal (max α (ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))))
+    let εQ  (x : Fin t → 𝔽)
+            (z : Fin (k + 1) → 𝔽) :=
+      Pr_{let samp ←$ᵖ (ω.subdomain 0)}[
+        Pr[
+          fun _ => True |
+          (
+            (do
+              simulateQ
+                (oracleImpl n (ω := ω) s 1 z (fun v ↦ f 0 v + ∑ i, x i * f i.succ v))
+                ((
+                    Fri.Spec.QueryRound.queryVerifier
+                      (ω := ω)
+                      (n := n) s
+                      (
+                        by
+                          apply Spec.round_bound (d := d)
+                          transitivity
+                          · exact domain_size_cond
+                          · apply pow_le_pow (by decide) (by decide)
+                            simp
+                      )
+                      1
+                  ).verify
+                    z
+                    (fun i =>
+                      by
+                        simpa only
+                          [
+                            Spec.QueryRound.pSpec, Challenge,
+                            show i.1 = 0 by omega, Fin.isValue,
+                            Fin.vcons_zero
+                          ] using fun _ => samp
+                    )
+                )
+            )
+          )]
+        = 1
+      ]
+    Pr_{let x ←$ᵖ (Fin t → 𝔽); let z ←$ᵖ (Fin (k + 1) → 𝔽)}[ εQ x z > α0 ] ≤ εC 𝔽 n s m ρ_sqrt
+  := by
+  -- HONEST EXTERNAL ADMIT [BCIKS20, Claim 8.2]. SPEC DEFECT **FIXED** (wave5, 2026-06-04).
+  --
+  -- FIX: the RS code is now instantiated at the protocol's true committed-codeword degree
+  -- `2 ^ (∑ i, (s i).1) * d` (matching `BatchedFri.Spec.batchCode` / `BatchedFri.Spec.Witness`,
+  -- whose `degreeLT` bound is exactly `2 ^ (∑ s) * d`), NOT the domain size `2 ^ n`. The new
+  -- hypothesis `rate_lt_one : 2 ^ (∑ s) * d < 2 ^ n` (strict form of `domain_size_cond`) gives
+  --   ρ = rate(code …) = (2 ^ (∑ s) * d) / 2 ^ n < 1   (rateOfLinearCode_eq_div', domain card 2^n
+  --   by Domain.size_of_smooth_coset_domain_eq_pow_of_2), hence ρ_sqrt = √ρ < 1.
+  -- The agreement-density hypothesis `h_agreement` and the error rate `ρ_sqrt` (and thus `εC`)
+  -- all use this SAME corrected degree, so the statement is **non-vacuous**:
+  --
+  -- NON-VACUITY CHECK. Take ∑ s = n - 1, d = 1 (so 2^(∑s)·d = 2^(n-1) < 2^n ✓, rate_lt_one holds).
+  --   ρ = 2^(n-1)/2^n = 1/2,   √ρ = 0.70710678…
+  --   For m = 3:  √ρ·(1 + 1/(2m)) = 0.70710678·(1 + 1/6) = 0.70710678·1.16666… ≈ 0.82496 < 1.
+  --   So for α < that value, α0 = max α (√ρ·(1+1/2m)) < 1, the bad event `εQ x z > α0` is a
+  --   genuine probability event (probabilities are ≤ 1), and the bound carries real FRI content.
+  --   (At the old rate-1 instantiation √ρ = 1 and √ρ·(1+1/2m) ≥ 1, making α0 ≥ 1 and the event
+  --   empty — that vacuity is now removed.)
+  --
+  -- REMAINING WORK: the faithful [BCIKS20] §8 query-soundness argument (months-scale). See the
+  -- reusable external artifact zksecurity/simple-rbr-fri `FRI_query_soundness`
+  -- (Claim 5.3 analogue, MCA-hypothesis-gated).
+  sorry
 
 -- set_option diagnostics true
   -- refine @OracleSpec.instFiniteRangeSumAppend (h₁ := inferInstance) (h₂ := ?_) ..
@@ -736,15 +814,25 @@ lemma fri_query_soundness
   -- ·
 
 open ENNReal in
-/-- Corresponds to Claim 8.3 of [BCIKS20] -/
+/-- Corresponds to Claim 8.3 of [BCIKS20].
+
+    As in `fri_query_soundness`, the Reed–Solomon code is instantiated at the protocol's true
+    committed-codeword degree `2 ^ (∑ i, (s i).1) * d` (the `BatchedFri.Spec.batchCode` /
+    `BatchedFri.Spec.Witness` degree bound), NOT the domain size `2 ^ n`. The hypothesis
+    `rate_lt_one : 2 ^ (∑ i, (s i).1) * d < 2 ^ n` (strict form of `domain_size_cond`) forces
+    rate `ρ < 1`, hence `sqrtRate < 1`, so `α = √ρ·(1+1/2m) < 1` for `m ≥ 3` and the acceptance
+    threshold `εC + α^l` is `< 1` — the antecedent `Pr[…] > εC + α^l` is satisfiable and the
+    implication carries genuine FRI content. The same corrected degree is used in `ρ_sqrt` (hence
+    `εC`, `α`) and in the joint-agreement target code `C`. -/
 lemma fri_soundness
   {t l m : ℕ}
+  (rate_lt_one : 2 ^ (∑ i, (s i).1) * d < 2 ^ n)
   (f : Fin t.succ → (ω → 𝔽))
   (m_ge_3 : m ≥ 3)
   :
     let ρ_sqrt :=
       ReedSolomon.sqrtRate
-        (2 ^ n)
+        (2 ^ (∑ i, (s i).1) * d)
         (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
     let α : ℝ≥0 := (ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0))))
     (∃ prov : OracleProver (WitOut := Unit) ..,
@@ -760,10 +848,36 @@ lemma fri_soundness
         (F := 𝔽)
         (κ := Fin t.succ)
         (ι := ω)
-        (C := (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω ↪ 𝔽) (2 ^ n)).carrier)
-          (δ := 1 - α)
-          (W := f) := by
-    sorry
+        (C := (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+          (2 ^ (∑ i, (s i).1) * d)).carrier)
+        (δ := 1 - α)
+        (W := f) := by
+  -- HONEST EXTERNAL ADMIT [BCIKS20, Claim 8.3]. SPEC DEFECT **FIXED** (wave5, 2026-06-04).
+  --
+  -- FIX (same as `fri_query_soundness`): the RS code is now instantiated at the protocol's true
+  -- committed-codeword degree `2 ^ (∑ i, (s i).1) * d` (matching `BatchedFri.Spec.batchCode` /
+  -- `BatchedFri.Spec.Witness`), NOT the domain size `2 ^ n`. The new hypothesis
+  -- `rate_lt_one : 2 ^ (∑ s) * d < 2 ^ n` (strict form of `domain_size_cond`) gives
+  --   ρ = (2 ^ (∑ s) * d) / 2 ^ n < 1  (rateOfLinearCode_eq_div', domain card 2^n via
+  --   Domain.size_of_smooth_coset_domain_eq_pow_of_2), hence ρ_sqrt = √ρ < 1 and
+  --   α = √ρ·(1+1/2m) < 1. Both `ρ_sqrt` (so `εC`, `α`) and the joint-agreement code `C` use this
+  -- SAME corrected degree, so the statement is **non-vacuous**:
+  --
+  -- NON-VACUITY CHECK. Take ∑ s = n - 1, d = 1 (so 2^(∑s)·d = 2^(n-1) < 2^n ✓):
+  --   ρ = 1/2,  √ρ ≈ 0.70710678,  for m = 3:  α = √ρ·(1 + 1/6) ≈ 0.82496 < 1,  α^l < 1, and with
+  --   εC small the acceptance threshold εC + α^l < 1, so `Pr[…] > εC + α^l` is satisfiable —
+  --   the implication is no longer vacuously true by `False.elim` on an unsatisfiable antecedent.
+  --   (Old rate-1 instantiation: √ρ = 1 ⟹ α ≥ 1 ⟹ εC + α^l ≥ 1 ⟹ antecedent unsatisfiable.)
+  --
+  -- REMAINING WORK: the faithful [BCIKS20] §8 soundness argument (months-scale formalization).
+  -- Reusable external artifact: zksecurity/simple-rbr-fri `FRI_RBR_Soundness` (Thm 5.2).
+  --
+  -- NON-VACUITY VERIFIED IN LEAN (wave5): a scratch `example` (now removed) closed the goal
+  --   `rate_lt_one → LinearCode.rate (ReedSolomon.code … (2 ^ (∑ s) * d)) < 1`
+  -- via `rateOfLinearCode_eq_div'` + `Domain.size_of_smooth_coset_domain_eq_pow_of_2`
+  -- (`= (2 ^ (∑ s) * d) / 2 ^ n`, then `div_lt_one`), confirming the corrected statements are
+  -- genuinely non-vacuous (rate `< 1`, hence `sqrtRate < 1`, hence thresholds `< 1`).
+  sorry
 
 end Soundness
 

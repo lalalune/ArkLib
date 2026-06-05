@@ -650,10 +650,23 @@ def snoc_oracle {i : Fin ℓ}
           exact Nat.lt_of_le_of_ne hi_succ_le_ℓ hi_succ_ne_ℓ
         rw [toOutCodewordsCount_mul_ϑ_eq_i_succ ℓ ϑ i hi]
         rfl
-      by
-        simp only [OracleStatement]
-        simp_rw [h_commit_round]
-        exact newOracleFn -- where fᵢ is the oracle for round i+1
+      -- KERNEL-LIGHT restatement (wave6-commitfix). Instead of `simp_rw [h_commit_round]`
+      -- (which produces an `Eq.rec` over the whole `↥(sDomain …) → L` type and forces the kernel
+      -- to unfold `OracleStatement`/`sDomain`'s omega bound when later identified with the
+      -- framework's `toVerifier` cast — a deterministic kernel timeout), we transport `newOracleFn`
+      -- along a SINGLE named type-equality built by `congrArg` from a proof-irrelevant `Fin r`
+      -- index equality. `cast`/`congrArg` do not unfold their type arguments, so the resulting
+      -- term is kernel-cheap, and the new-oracle value is a single `cast` (matchable against
+      -- `toVerifier`'s `hEq ▸ …` cast via `cast`-irrelevance instead of whole-type defeq).
+      have hfin : (⟨i.succ.val, fin_ℓ_add_one_lt_r (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ⟩ : Fin r)
+          = ⟨j.val * ϑ, by
+            have := toCodewordsCount_mul_ϑ_lt_ℓ ℓ ϑ i.succ j; omega⟩ :=
+        Fin.ext (by simpa using h_commit_round.symm)
+      have htype :
+          (OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ)
+            = OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.succ j :=
+        congrArg (fun (k : Fin r) => ↥(sDomain 𝔽q β h_ℓ_add_R_rate k) → L) hfin
+      cast htype newOracleFn -- where fᵢ is the oracle for round i+1
     else by
       simp only [OracleStatement]
       have h := toOutCodewordsCount_succ_eq ℓ ϑ i
@@ -706,6 +719,23 @@ lemma take_snoc_oracle_eq_oStmtIn (i : Fin ℓ)
   unfold take_snoc_oracle
   unfold snoc_oracle
   simp
+
+-- The commit branch of `snoc_oracle`: at the NEW oracle index (`¬ j < count i.castSucc` and a
+-- commitment round), the snoc value is heterogeneously equal to the freshly committed `newOracleFn`.
+-- Proved once HERE (where `snoc_oracle` is local and the elaboration environment is light) so the
+-- heavy `cast`/`congrArg` reduction over the reducible `OracleStatement`/`sDomain` omega bound is
+-- kernel-checked a single time; downstream (`Steps.lean`) references this as an opaque constant,
+-- avoiding the kernel deterministic timeout the inlined unfolding triggered under merged siblings.
+omit [CharP L 2] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 [NeZero 𝓡] in
+lemma snoc_oracle_commit_new_heq (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i)
+    (oStmtIn : (j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc)) →
+      OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)
+    (newOracleFn : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ)
+    (j : Fin (toOutCodewordsCount ℓ ϑ i.succ))
+    (hge : ¬ (j.val < toOutCodewordsCount ℓ ϑ i.castSucc)) :
+    HEq (snoc_oracle 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) oStmtIn newOracleFn j) newOracleFn := by
+  simp only [snoc_oracle, dif_neg hge, dif_pos hCR]
+  exact cast_heq _ newOracleFn
 
 /-- Extract the first oracle f^(0) from oracle statements -/
 def getFirstOracle {i : Fin (ℓ + 1)}
@@ -1252,5 +1282,12 @@ def finalSumcheckRelOut :
 end SumcheckContextIncluded_Relations
 end SecurityRelations
 end OracleReductionComponents
+
+-- wave6-commitfix: confirm the snoc_oracle commit-branch restatement did not taint or weaken
+-- the existing (proven, clean-axiom) relay lemmas or the snoc consumer.
+#print axioms take_snoc_oracle_eq_oStmtIn
+#print axioms nonDoomedFoldingProp_relay_preserved
+#print axioms foldingBadEventAtBlock_relay_preserved
+#print axioms badEventExistsProp_relay_preserved
 
 end Binius.BinaryBasefold

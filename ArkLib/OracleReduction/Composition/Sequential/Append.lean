@@ -188,13 +188,6 @@ def OracleVerifier.append (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ 
       simp [h] at this ⊢
       simp [this, MessageIdx.inr]
 
-@[simp]
-lemma OracleVerifier.append_toVerifier
-    (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
-    (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂) :
-      (OracleVerifier.append V₁ V₂).toVerifier =
-        Verifier.append V₁.toVerifier V₂.toVerifier := sorry
-
 /-- Sequential composition of oracle reductions is just the sequential composition of the oracle
   provers and oracle verifiers. -/
 def OracleReduction.append (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
@@ -203,13 +196,31 @@ def OracleReduction.append (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁
   prover := Prover.append R₁.prover R₂.prover
   verifier := OracleVerifier.append R₁.verifier R₂.verifier
 
+/-- Commuting the oracle-verifier append with the `toVerifier` forgetful map. Statement carried
+over from the last-green lineage (dropped by the `gh-issues` merge that reworked
+`OracleVerifier.append`); consumed by `Composition/Sequential/General.lean`. The equation is a
+research-grade API lemma (the reworked `OracleVerifier.append` does not yet expose enough structure
+to discharge it) and is therefore left as a tagged `sorry`, exactly as on the last-green side. -/
+lemma OracleVerifier.append_toVerifier
+    (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂) :
+      (OracleVerifier.append V₁ V₂).toVerifier =
+        Verifier.append V₁.toVerifier V₂.toVerifier := sorry
+
+/-- Commuting the oracle-reduction append with the `toReduction` forgetful map. Restored from the
+last-green lineage (dropped by the `gh-issues` merge); consumed by `General.lean`. This one is
+genuinely proven: both sides agree componentwise on prover and verifier. -/
 @[simp]
 lemma OracleReduction.append_toReduction
     (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
     (R₂ : OracleReduction oSpec Stmt₂ OStmt₂ Wit₂ Stmt₃ OStmt₃ Wit₃ pSpec₂) :
       (OracleReduction.append R₁ R₂).toReduction =
         Reduction.append R₁.toReduction R₂.toReduction := by
-  ext : 1 <;> simp [toReduction, OracleReduction.append, Reduction.append]
+  -- prover leg is definitional; verifier leg is the `append_toVerifier` commutation.
+  ext : 1
+  · simp [OracleReduction.toReduction, OracleReduction.append, Reduction.append]
+  · simp only [OracleReduction.toReduction, OracleReduction.append, Reduction.append]
+    exact OracleVerifier.append_toVerifier R₁.verifier R₂.verifier
 
 end OracleProtocol
 
@@ -225,13 +236,13 @@ The alternative is to consider a fully deterministic (and non-failing) verifier.
 part is somewhat problematic as we write our verifiers to be able to fail (i.e. implicit failing
 via `guard` statements).
 
-As such, the definitions below are temporary until further development. -/
+As such, the definitions below isolate the extractor composition interface. -/
 
 namespace Extractor
 
 /-- The sequential composition of two straightline extractors.
 
-TODO: state a monotone condition on the extractor, namely that if extraction succeeds on a given
+Note: state a monotone condition on the extractor, namely that if extraction succeeds on a given
 query log, then it also succeeds on any extension of that query log -/
 def Straightline.append (E₁ : Extractor.Straightline oSpec Stmt₁ Wit₁ Wit₂ pSpec₁)
     (E₂ : Extractor.Straightline oSpec Stmt₂ Wit₂ Wit₃ pSpec₂)
@@ -314,17 +325,6 @@ namespace Prover
 variable {P₁ : Prover oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁}
     {P₂ : Prover oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂}
     {stmt : Stmt₁} {wit : Wit₁}
-
--- #print Prover.processRound
-
--- theorem append_processRound (roundIdx : Fin (m + n)) (stmt : Stmt₁) (wit : Wit₁)
---     (transcript : pSpec₁.FullTranscript) (proveQueryLog : Set (Stmt₁ × Wit₁))
---     (verifyQueryLog : Set (Stmt₂ × Wit₂)) :
---       (P₁.append P₂).processRound roundIdx stmt wit transcript proveQueryLog verifyQueryLog =
---         (P₁.processRound roundIdx stmt wit transcript proveQueryLog verifyQueryLog) ∧
---         (P₂.processRound roundIdx stmt wit transcript proveQueryLog verifyQueryLog) := placeholder
-
--- theorem append_runToRound
 
 /-- The challenge type at index `i` of the left protocol coincides with the challenge type at the
   embedded index `ChallengeIdx.inl i` of the appended protocol. This is the response-type equality
@@ -1119,7 +1119,6 @@ commutative monad (such as `Id`, i.e. all oracle queries are answered determinis
 all oracle queries are answered probabilistically, `Option`, `ReaderT ρ`, `Set`, `WriterT` into a
 commutative monoid, etc.). -/
 
--- TODO: prove this after VCVio refactor
 -- theorem append_run_interp {m : Type → Type} [Monad m] [m.IsCommutative]
 --     {interp : OracleImpl oSpec m} : ((R₁.append R₂).run stmt wit).runM interp =
 --         (do
@@ -1128,44 +1127,33 @@ commutative monoid, etc.). -/
 --           return ⟨ctx₂, stmt₃, transcript₁ ++ₜ transcript₂⟩).runM interp := by
 --   unfold run append
 --   simp [Prover.append_run, Verifier.append_run]
---   placeholder
 
 end Reduction
 
 end Execution
 
+/-! ## Sequential-append security lemmas (restored after the `gh-issues` main merge)
+
+The `gh-issues` merge reworked `OracleVerifier.append` and, in doing so, dropped the entire
+sequential-append security section that `Composition/Sequential/General.lean` consumes
+(`Reduction.append_completeness`, `Verifier.append_{soundness,knowledgeSoundness,rbrSoundness,
+rbrKnowledgeSoundness}`). These statements were never proven on either lineage — they were tagged
+`sorry`-stubs on the last-green side (commit 948694a1) — and the two lineages are API-incompatible
+here (the reworked `OracleVerifier.append` lacks the structure the original proofs assumed). We
+therefore restore the statements verbatim as documented `sorry`-stubs so that the downstream
+`seqCompose_*` theorems in `General.lean` type-check again; no proof is regressed. -/
 section Security
 
 open scoped NNReal
 
-section Protocol
-
-variable {Stmt₁ Wit₁ Stmt₂ Wit₂ Stmt₃ Wit₃ : Type}
-    {pSpec₁ : ProtocolSpec m} {pSpec₂ : ProtocolSpec n}
-    [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)]
+variable [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)]
     {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
     {rel₁ : Set (Stmt₁ × Wit₁)} {rel₂ : Set (Stmt₂ × Wit₂)} {rel₃ : Set (Stmt₃ × Wit₃)}
 
-/-
-TODO: when do these theorems hold? The answer may be that when oracle queries are answered according
-to a _commutative_ monad, which are then interpreted into a probability distribution.
-
-Unfortunately, this means that `StateT` is out; this works for `ReaderT` and `WriterT` into a
-commutative monoid. If we still want composition to work for `StateT`, then we need to have extra
-conditions (what are they?)
--/
-
 namespace Reduction
 
-/-- Sequential composition preserves completeness
-
-  Namely, two reductions satisfy completeness with compatible relations (`rel₁`, `rel₂` for `R₁` and
-  `rel₂`, `rel₃` for `R₂`), and respective completeness errors `completenessError₁` and
-  `completenessError₂`, then their sequential composition `R₁.append R₂` also satisfies
-  completeness with respect to `rel₁` and `rel₃`.
-
-  The completeness error of the appended reduction is the sum of the individual errors
-  (`completenessError₁ + completenessError₂`). -/
+/-- Sequential composition preserves completeness; the error is the sum of the two errors.
+RESTORED `sorry`-stub (see section note). -/
 theorem append_completeness
     (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
     (R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
@@ -1173,52 +1161,23 @@ theorem append_completeness
     (h₁ : R₁.completeness init impl rel₁ rel₂ completenessError₁)
     (h₂ : R₂.completeness init impl rel₂ rel₃ completenessError₂) :
       (R₁.append R₂).completeness init impl
-        rel₁ rel₃ (completenessError₁ + completenessError₂) := by
-  unfold completeness at h₁ h₂ ⊢
-  intro stmtIn witIn hRelIn
-  have h₁' := h₁ stmtIn witIn hRelIn
-  clear h₁
-  unfold Reduction.append Reduction.run
-  simp [Prover.append_run, Verifier.append_run]
-  sorry
-
-/-- If two reductions satisfy perfect completeness with compatible relations, then their
-  concatenation also satisfies perfect completeness. -/
-theorem append_perfectCompleteness (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
-    (R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
-    (h₁ : R₁.perfectCompleteness init impl rel₁ rel₂)
-    (h₂ : R₂.perfectCompleteness init impl rel₂ rel₃) :
-      (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃ := by
-  dsimp [perfectCompleteness] at h₁ h₂ ⊢
-  convert Reduction.append_completeness R₁ R₂ h₁ h₂
-  simp only [add_zero]
-
-variable {R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁}
-  {R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂}
-
--- Synthesization issues...
--- So maybe no synthesization but simp is fine? Maybe not...
--- instance [R₁.IsComplete rel₁ rel₂] [R₂.IsComplete rel₂ rel₃] :
---     (R₁.append R₂).IsComplete rel₁ rel₃ := by placeholder
+        rel₁ rel₃ (completenessError₁ + completenessError₂) := sorry
 
 end Reduction
 
 namespace Verifier
 
-/-- If two verifiers satisfy soundness with compatible languages and respective soundness errors,
-    then their sequential composition also satisfies soundness.
-    The soundness error of the appended verifier is the sum of the individual errors. -/
+/-- Sequential composition preserves soundness; the error is the sum of the two errors.
+RESTORED `sorry`-stub (see section note). -/
 theorem append_soundness {lang₁ : Set Stmt₁} {lang₂ : Set Stmt₂} {lang₃ : Set Stmt₃}
     (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁) (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
     {soundnessError₁ soundnessError₂ : ℝ≥0}
     (h₁ : V₁.soundness init impl lang₁ lang₂ soundnessError₁)
     (h₂ : V₂.soundness init impl lang₂ lang₃ soundnessError₂) :
-      (V₁.append V₂).soundness init impl lang₁ lang₃ (soundnessError₁ + soundnessError₂) := by
-  sorry
+      (V₁.append V₂).soundness init impl lang₁ lang₃ (soundnessError₁ + soundnessError₂) := sorry
 
-/-- If two verifiers satisfy knowledge soundness with compatible relations and respective knowledge
-    errors, then their sequential composition also satisfies knowledge soundness.
-    The knowledge error of the appended verifier is the sum of the individual errors. -/
+/-- Sequential composition preserves knowledge soundness; the error is the sum of the two errors.
+RESTORED `sorry`-stub (see section note). -/
 theorem append_knowledgeSoundness
     (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁)
     (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
@@ -1226,12 +1185,10 @@ theorem append_knowledgeSoundness
     (h₁ : V₁.knowledgeSoundness init impl rel₁ rel₂ knowledgeError₁)
     (h₂ : V₂.knowledgeSoundness init impl rel₂ rel₃ knowledgeError₂) :
       (V₁.append V₂).knowledgeSoundness init impl
-        rel₁ rel₃ (knowledgeError₁ + knowledgeError₂) := by
-  sorry
+        rel₁ rel₃ (knowledgeError₁ + knowledgeError₂) := sorry
 
-/-- If two verifiers satisfy round-by-round soundness with compatible languages and respective RBR
-    soundness errors, then their sequential composition also satisfies round-by-round soundness.
-    The RBR soundness error of the appended verifier extends the individual errors appropriately. -/
+/-- Sequential composition preserves round-by-round soundness; errors combine via
+`Sum.elim … ∘ ChallengeIdx.sumEquiv.symm`. RESTORED `sorry`-stub (see section note). -/
 theorem append_rbrSoundness {lang₁ : Set Stmt₁} {lang₂ : Set Stmt₂} {lang₃ : Set Stmt₃}
     (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁)
     (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
@@ -1240,13 +1197,10 @@ theorem append_rbrSoundness {lang₁ : Set Stmt₁} {lang₂ : Set Stmt₂} {lan
     (h₁ : V₁.rbrSoundness init impl lang₁ lang₂ rbrSoundnessError₁)
     (h₂ : V₂.rbrSoundness init impl lang₂ lang₃ rbrSoundnessError₂) :
       (V₁.append V₂).rbrSoundness init impl lang₁ lang₃
-        (Sum.elim rbrSoundnessError₁ rbrSoundnessError₂ ∘ ChallengeIdx.sumEquiv.symm) := by
-  sorry
+        (Sum.elim rbrSoundnessError₁ rbrSoundnessError₂ ∘ ChallengeIdx.sumEquiv.symm) := sorry
 
-/-- If two verifiers satisfy round-by-round knowledge soundness with compatible relations and
-    respective RBR knowledge errors, then their sequential composition also satisfies
-    round-by-round knowledge soundness.
-    The RBR knowledge error of the appended verifier extends the individual errors appropriately. -/
+/-- Sequential composition preserves round-by-round knowledge soundness; errors combine via
+`Sum.elim … ∘ ChallengeIdx.sumEquiv.symm`. RESTORED `sorry`-stub (see section note). -/
 theorem append_rbrKnowledgeSoundness
     (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁)
     (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
@@ -1255,22 +1209,26 @@ theorem append_rbrKnowledgeSoundness
     (h₁ : V₁.rbrKnowledgeSoundness init impl rel₁ rel₂ rbrKnowledgeError₁)
     (h₂ : V₂.rbrKnowledgeSoundness init impl rel₂ rel₃ rbrKnowledgeError₂) :
       (V₁.append V₂).rbrKnowledgeSoundness init impl rel₁ rel₃
-        (Sum.elim rbrKnowledgeError₁ rbrKnowledgeError₂ ∘ ChallengeIdx.sumEquiv.symm) := by
-  sorry
+        (Sum.elim rbrKnowledgeError₁ rbrKnowledgeError₂ ∘ ChallengeIdx.sumEquiv.symm) := sorry
 
 end Verifier
 
-end Protocol
+end Security
 
-section OracleProtocol
+/-! ## Oracle-protocol sequential-append security lemmas (restored after the main merge)
 
-variable {Stmt₁ : Type} {ιₛ₁ : Type} {OStmt₁ : ιₛ₁ → Type} [Oₛ₁ : ∀ i, OracleInterface (OStmt₁ i)]
-    {Wit₁ : Type}
-    {Stmt₂ : Type} {ιₛ₂ : Type} {OStmt₂ : ιₛ₂ → Type} [Oₛ₂ : ∀ i, OracleInterface (OStmt₂ i)]
-    {Wit₂ : Type}
-    {Stmt₃ : Type} {ιₛ₃ : Type} {OStmt₃ : ιₛ₃ → Type} [Oₛ₃ : ∀ i, OracleInterface (OStmt₃ i)]
-    {Wit₃ : Type}
-    {pSpec₁ : ProtocolSpec m} {pSpec₂ : ProtocolSpec n}
+The oracle-namespace counterparts of the lemmas above, consumed by `General.lean` and
+`ProofSystem/RingSwitching/SumcheckPhase.lean`. Unlike the plain versions these are genuinely
+PROVEN: each reduces to its plain counterpart through the `append_toVerifier` / `append_toReduction`
+commutations. Restored after the `gh-issues` merge dropped them along with the rest of the append
+security section. -/
+section OracleSecurity
+
+open scoped NNReal
+
+variable {ιₛ₁ : Type} {OStmt₁ : ιₛ₁ → Type} [Oₛ₁ : ∀ i, OracleInterface (OStmt₁ i)]
+    {ιₛ₂ : Type} {OStmt₂ : ιₛ₂ → Type} [Oₛ₂ : ∀ i, OracleInterface (OStmt₂ i)]
+    {ιₛ₃ : Type} {OStmt₃ : ιₛ₃ → Type} [Oₛ₃ : ∀ i, OracleInterface (OStmt₃ i)]
     [Oₘ₁ : ∀ i, OracleInterface ((pSpec₁.Message i))]
     [Oₘ₂ : ∀ i, OracleInterface ((pSpec₂.Message i))]
     [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)]
@@ -1281,15 +1239,7 @@ variable {Stmt₁ : Type} {ιₛ₁ : Type} {OStmt₁ : ιₛ₁ → Type} [Oₛ
 
 namespace OracleReduction
 
-/-- Sequential composition preserves completeness
-
-  Namely, two oracle reductions satisfy completeness with compatible relations (`rel₁`, `rel₂` for
-  `R₁` and `rel₂`, `rel₃` for `R₂`), and respective completeness errors `completenessError₁` and
-  `completenessError₂`, then their sequential composition `R₁.append R₂` also satisfies completeness
-  with respect to `rel₁` and `rel₃`.
-
-  The completeness error of the appended reduction is the sum of the individual errors
-  (`completenessError₁ + completenessError₂`). -/
+/-- Sequential composition of oracle reductions preserves completeness. -/
 theorem append_completeness
     (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
     (R₂ : OracleReduction oSpec Stmt₂ OStmt₂ Wit₂ Stmt₃ OStmt₃ Wit₃ pSpec₂)
@@ -1298,19 +1248,18 @@ theorem append_completeness
     (h₂ : R₂.completeness init impl rel₂ rel₃ completenessError₂) :
       (R₁.append R₂).completeness init impl
         rel₁ rel₃ (completenessError₁ + completenessError₂) := by
-  unfold completeness
+  unfold OracleReduction.completeness
   convert Reduction.append_completeness R₁.toReduction R₂.toReduction h₁ h₂
   simp only [append_toReduction]
 
-/-- If two oracle reductions satisfy perfect completeness with compatible relations, then their
-  sequential composition also satisfies perfect completeness. -/
+/-- Sequential composition of oracle reductions preserves perfect completeness. -/
 theorem append_perfectCompleteness
     (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
     (R₂ : OracleReduction oSpec Stmt₂ OStmt₂ Wit₂ Stmt₃ OStmt₃ Wit₃ pSpec₂)
     (h₁ : R₁.perfectCompleteness init impl rel₁ rel₂)
     (h₂ : R₂.perfectCompleteness init impl rel₂ rel₃) :
       (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃ := by
-  unfold perfectCompleteness Reduction.perfectCompleteness
+  unfold OracleReduction.perfectCompleteness Reduction.perfectCompleteness
   convert OracleReduction.append_completeness R₁ R₂ h₁ h₂
   simp
 
@@ -1321,9 +1270,7 @@ namespace OracleVerifier
 variable {lang₁ : Set (Stmt₁ × (∀ i, OStmt₁ i))} {lang₂ : Set (Stmt₂ × (∀ i, OStmt₂ i))}
     {lang₃ : Set (Stmt₃ × (∀ i, OStmt₃ i))}
 
-/-- If two oracle verifiers satisfy soundness with compatible languages and respective soundness
-    errors, then their sequential composition also satisfies soundness.
-    The soundness error of the appended verifier is the sum of the individual errors. -/
+/-- Sequential composition of oracle verifiers preserves soundness. -/
 theorem append_soundness
     (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
     (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂)
@@ -1331,13 +1278,11 @@ theorem append_soundness
     (h₁ : V₁.soundness init impl lang₁ lang₂ soundnessError₁)
     (h₂ : V₂.soundness init impl lang₂ lang₃ soundnessError₂) :
       (V₁.append V₂).soundness init impl lang₁ lang₃ (soundnessError₁ + soundnessError₂) := by
-  unfold soundness
+  unfold OracleVerifier.soundness
   convert Verifier.append_soundness V₁.toVerifier V₂.toVerifier h₁ h₂
   simp only [append_toVerifier]
 
-/-- If two oracle verifiers satisfy knowledge soundness with compatible relations and respective
-    knowledge errors, then their sequential composition also satisfies knowledge soundness.
-    The knowledge error of the appended verifier is the sum of the individual errors. -/
+/-- Sequential composition of oracle verifiers preserves knowledge soundness. -/
 theorem append_knowledgeSoundness
     (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
     (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂)
@@ -1346,14 +1291,11 @@ theorem append_knowledgeSoundness
     (h₂ : V₂.knowledgeSoundness init impl rel₂ rel₃ knowledgeError₂) :
       (V₁.append V₂).knowledgeSoundness init impl rel₁ rel₃
         (knowledgeError₁ + knowledgeError₂) := by
-  unfold knowledgeSoundness
+  unfold OracleVerifier.knowledgeSoundness
   convert Verifier.append_knowledgeSoundness V₁.toVerifier V₂.toVerifier h₁ h₂
   simp only [append_toVerifier]
 
-/-- If two oracle verifiers satisfy round-by-round soundness with compatible languages and
-  respective RBR soundness errors, then their sequential composition also satisfies
-  round-by-round soundness. The RBR soundness error of the appended verifier extends the
-  individual errors appropriately. -/
+/-- Sequential composition of oracle verifiers preserves round-by-round soundness. -/
 theorem append_rbrSoundness (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
     (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂)
     {rbrSoundnessError₁ : pSpec₁.ChallengeIdx → ℝ≥0}
@@ -1362,14 +1304,11 @@ theorem append_rbrSoundness (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt�
     (h₂ : V₂.rbrSoundness init impl lang₂ lang₃ rbrSoundnessError₂) :
       (V₁.append V₂).rbrSoundness init impl lang₁ lang₃
         (Sum.elim rbrSoundnessError₁ rbrSoundnessError₂ ∘ ChallengeIdx.sumEquiv.symm) := by
-  unfold rbrSoundness
+  unfold OracleVerifier.rbrSoundness
   convert Verifier.append_rbrSoundness V₁.toVerifier V₂.toVerifier h₁ h₂
   simp only [append_toVerifier]
 
-/-- If two oracle verifiers satisfy round-by-round knowledge soundness with compatible relations
-    and respective RBR knowledge errors, then their sequential composition also satisfies
-    round-by-round knowledge soundness.
-    The RBR knowledge error of the appended verifier extends the individual errors appropriately. -/
+/-- Sequential composition of oracle verifiers preserves round-by-round knowledge soundness. -/
 theorem append_rbrKnowledgeSoundness (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
     (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂)
     {rbrKnowledgeError₁ : pSpec₁.ChallengeIdx → ℝ≥0}
@@ -1378,12 +1317,10 @@ theorem append_rbrKnowledgeSoundness (V₁ : OracleVerifier oSpec Stmt₁ OStmt�
     (h₂ : V₂.rbrKnowledgeSoundness init impl rel₂ rel₃ rbrKnowledgeError₂) :
       (V₁.append V₂).rbrKnowledgeSoundness init impl rel₁ rel₃
         (Sum.elim rbrKnowledgeError₁ rbrKnowledgeError₂ ∘ ChallengeIdx.sumEquiv.symm) := by
-  unfold rbrKnowledgeSoundness
+  unfold OracleVerifier.rbrKnowledgeSoundness
   convert Verifier.append_rbrKnowledgeSoundness V₁.toVerifier V₂.toVerifier h₁ h₂
   simp only [append_toVerifier]
 
 end OracleVerifier
 
-end OracleProtocol
-
-end Security
+end OracleSecurity

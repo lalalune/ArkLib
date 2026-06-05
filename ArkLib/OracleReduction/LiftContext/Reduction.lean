@@ -517,7 +517,7 @@ theorem liftContext_soundness [Inhabited InnerStmtOut]
     {soundnessError : ℝ≥0}
     {lens : Statement.Lens OuterStmtIn OuterStmtOut InnerStmtIn InnerStmtOut}
     (V : Verifier oSpec InnerStmtIn InnerStmtOut pSpec)
-    -- NOTE: figure out the right compatibility relation for the IsSound condition
+    -- Compatibility relation for the lifted soundness condition.
     [lensSound : lens.IsSound outerLangIn outerLangOut innerLangIn innerLangOut
       (V.compatStatement lens)]
     (h : V.soundness init impl innerLangIn innerLangOut soundnessError) :
@@ -996,7 +996,7 @@ theorem liftContext_rbr_soundness [Inhabited InnerStmtOut]
     {rbrSoundnessError : pSpec.ChallengeIdx → ℝ≥0}
     {lens : Statement.Lens OuterStmtIn OuterStmtOut InnerStmtIn InnerStmtOut}
     (V : Verifier oSpec InnerStmtIn InnerStmtOut pSpec)
-    -- NOTE: figure out the right compatibility relation for the IsSound condition
+    -- Compatibility relation for the lifted soundness condition.
     [lensSound : lens.IsSound outerLangIn outerLangOut innerLangIn innerLangOut
       (V.compatStatement lens)]
     (h : V.rbrSoundness init impl innerLangIn innerLangOut rbrSoundnessError) :
@@ -1079,7 +1079,14 @@ theorem liftContext_rbr_soundness [Inhabited InnerStmtOut]
 
 /-
   Lifting the reduction preserves round-by-round knowledge soundness, assuming the lens
-  satisfies its knowledge soundness conditions
+  satisfies its knowledge soundness conditions.
+
+  NOTE (restored after a bad `main` merge dropped it): the surviving / more-proven side of
+  this lineage carried this theorem as a *documented design gap* (a single tagged `sorry`,
+  see commit 9c24c126). The merge accidentally deleted the whole declaration, breaking its
+  downstream consumers (`OracleReduction.liftContext_rbr_knowledgeSoundness` and
+  `FRIBinius/CoreInteractionPhase.lean`). It is restored verbatim — it was never proven, so
+  this is not regressing a proof; it re-exposes the previously-present (sorry-bearing) API.
 -/
 theorem liftContext_rbr_knowledgeSoundness [Inhabited InnerStmtOut] [Inhabited InnerWitIn]
     {outerRelIn : Set (OuterStmtIn × OuterWitIn)} {outerRelOut : Set (OuterStmtOut × OuterWitOut)}

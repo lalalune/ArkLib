@@ -15,8 +15,8 @@ point on the degree-`k` parameterized curve through `u 0, …, u k` is `δ`-clos
 to the Reed–Solomon code with probability exceeding `k · (n/q)`, then the
 words have correlated (joint) agreement. Curves analogue of
 `AffineLines/UniqueDecoding.lean`; consumes the Curves GoodCoeffs +
-JointAgreement chain. The list-decoding regime (Theorem 6.2) remains open
-(§5 chain).
+JointAgreement chain. The list-decoding regime (Theorem 6.2) is handled by
+the separate §5 chain.
 -/
 
 namespace ProximityGap
@@ -34,6 +34,7 @@ section CoreResults
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
          {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
+omit [DecidableEq ι] in
 /-- **Correlated agreement for low-degree parameterized curves, unique-decoding
 regime** ([BCIKS20] Theorem 6.1 / the UDR case of Theorem 1.5): curves analogue
 of `RS_correlatedAgreement_affineLines_uniqueDecodingRegime`. -/
@@ -69,11 +70,17 @@ theorem RS_correlatedAgreement_curves_uniqueDecodingRegime {k deg : ℕ}
   exact RS_jointAgreement_of_goodCoeffsCurve_card_gt (k := k) (deg := deg)
     (domain := domain) (δ := δ) hk hδ u hS
 
-/-- The `k = 0` corner of curves correlated agreement: a degree-0 "curve" is the
-constant word `u 0`, so any positive probability of closeness gives the plain
-closeness fact, and joint agreement follows from unique decoding. -/
-theorem RS_correlatedAgreement_curves_k_zero {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
-    [NeZero deg] :
+omit [DecidableEq ι] in
+/-- The `k = 0` corner of curves correlated agreement, **unconditional in the regime**:
+a degree-0 "curve" is the uniform word `u 0`, so any positive probability of closeness
+gives the plain closeness fact, and a *closest* codeword (not necessarily unique) furnishes
+the agreement set. Note this argument never uses the unique-decoding radius bound — it goes
+through `closeToCode_iff_closeToCodeword_of_minDist`, which holds for any code — so the
+statement is valid for every `δ`, including the list-decoding regime `δ > relUDR`. The
+list-decoding regime is reachable at `k = 0` from `correlatedAgreement_affine_curves`
+(`Curves.lean`), where no UDR hypothesis is in scope. -/
+theorem RS_correlatedAgreement_curves_k_zero_unconditional
+    {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg] :
     δ_ε_correlatedAgreementCurves (k := 0) (A := F) (F := F) (ι := ι)
       (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
   classical
@@ -119,6 +126,22 @@ theorem RS_correlatedAgreement_curves_k_zero {deg : ℕ} {domain : ι ↪ F} {δ
     subst ht0; simp only [Finset.mem_filter, Finset.mem_univ, true_and]
     exact this.symm
 
+omit [DecidableEq ι] in
+/-- The `k = 0` corner of curves correlated agreement: a degree-0 "curve" is the
+uniform word `u 0`, so any positive probability of closeness gives the plain
+closeness fact, and joint agreement follows from unique decoding. The
+unique-decoding-radius hypothesis `_hδ` is retained in the signature to match the
+keystone call shape used by `Stir/Combine.lean` and `proximity_gap_uniqueDecodingRegime`
+(repair #17-class), but the proof delegates to the regime-unconditional version since the
+`k = 0` argument never consumes it. -/
+theorem RS_correlatedAgreement_curves_k_zero {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    [NeZero deg]
+    (_hδ : δ ≤ relativeUniqueDecodingRadius (ι := ι) (F := F)
+      (C := ReedSolomon.code domain deg)) :
+    δ_ε_correlatedAgreementCurves (k := 0) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
+  RS_correlatedAgreement_curves_k_zero_unconditional
+
 /-- **Formal BCIKS20 Theorem 1.2, unique-decoding regime, witness-extraction form**
 — the machine-verified UDR rung of the proximity-prize ladder (cf. research dossier).
 
@@ -161,7 +184,7 @@ theorem proximity_gap_uniqueDecodingRegime {k deg : ℕ}
   have keystone : δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
       (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
     rcases Nat.eq_zero_or_pos k with hk0 | hkpos
-    · subst hk0; exact RS_correlatedAgreement_curves_k_zero
+    · subst hk0; exact RS_correlatedAgreement_curves_k_zero hδ
     · exact RS_correlatedAgreement_curves_uniqueDecodingRegime hkpos hδ
   -- Feed the probability hypothesis through the keystone (same shape as Combine.lean:599+).
   simp only [δ_ε_correlatedAgreementCurves] at keystone

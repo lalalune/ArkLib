@@ -57,6 +57,22 @@ lemma evalOnPoints_mul [CommSemiring F] {domain : ι ↪ F} {p q : F[X]} :
   evalOnPoints domain (p * q) = evalOnPoints domain p * evalOnPoints domain q := by
   aesop (add unsafe (by rw [←evalOnPointsRingHom_eq_evalOnPoints]))
 
+/-- Proves that `evalOnPoints` preserves multiplication as well. -/
+def evalOnPointsRingHom [CommSemiring F] : F[X] →+* (ι → F) where
+  toFun p x := p.eval (domain x)
+  map_zero' := by aesop
+  map_one'  := by aesop
+  map_add'  := by aesop
+  map_mul'  := by aesop
+
+lemma evalOnPointsRingHom_eq_evalOnPoints [CommSemiring F] {p : F[X]} {domain : ι ↪ F} :
+  evalOnPointsRingHom domain p = evalOnPoints domain p := rfl
+
+@[simp]
+lemma evalOnPoints_mul [CommSemiring F] {domain : ι ↪ F} {p q : F[X]} :
+  evalOnPoints domain (p * q) = evalOnPoints domain p * evalOnPoints domain q := by
+  aesop (add unsafe (by rw [←evalOnPointsRingHom_eq_evalOnPoints]))
+
 /-- The Reed-Solomon code for polynomials of degree less than `deg` and evaluation points `domain`.
 -/
 noncomputable def code (deg : ℕ) [Semiring F] : Submodule F (ι → F) :=

@@ -736,6 +736,10 @@ theorem combine_theorem
         simp only [pow_zero, one_mul] at hv
         exact hv
 
+-- The `(by aesop)` side-goals below (`exists_agreement_set_of_combine` args) exceed the default
+-- heartbeat budget after the main merge's definitional changes; raised to match the sibling
+-- `combine_theorem` / `exists_agreement_set_of_combine`, which already run with `maxHeartbeats 0`.
+set_option maxHeartbeats 800000 in
 open LinearCode Classical ProbabilityTheory ReedSolomon STIR in
 /-- Unconditional UDR-restricted variant of `combine_theorem` ([STIR] Lemma 4.13):
 with `δ` below the unique-decoding radius, the conclusion holds with NO dependence

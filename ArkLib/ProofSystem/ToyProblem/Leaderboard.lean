@@ -163,6 +163,39 @@ theorem winningSetRatio_le_winningSetSoundness {k : ℕ} {C : Set (ι → F)} {�
     winningSetRatio x ≤ winningSetSoundness (k := k) C δ :=
   le_ciSup (bddAbove_winningSetRatio C δ) x
 
+/-- **The correlated-agreement attack lower-bounds the simplified-IOR soundness**
+(the §6.4.2 attack chain, end-to-end and machine-checked). For a linear code
+`C`, the soundness error `winningSetSoundness` is at least the correlated
+agreement error `ε_ca(C, δ)`. This is **Lemma 6.13 of [ABF26]**
+(`simplified_iop_soundness_ca_lb`) packaged as a `ViolatingInstance` and pushed through
+`winningSetRatio_le_winningSetSoundness`: the attack witness's winning fraction
+`|Ω|/|F| ≥ ε_ca` is a genuine lower bound on the worst-case soundness.
+
+This is the real content the §6.3-numeric attack anchors instantiate: a
+`SecurityUpperBound` of `b` bits at a code with `ε_ca ≥ 2^(-b)` follows
+immediately. Axiom-clean (no `sorryAx`); only the *numeric* `ε_ca ≥ 2^(-b)` at
+the genuine KoalaBear code remains owed (Phase 5). -/
+theorem epsCA_le_winningSetSoundness {k : ℕ} [Nonempty ι] (C : Set (ι → F)) (δ : ℝ≥0)
+    (hδpos : (0 : ℝ≥0) < δ) (hδlt : δ < 1)
+    (hClin : ∃ enc : (Fin k → F) →ₗ[F] (ι → F), Set.range enc = C) :
+    epsCA (F := F) (A := F) C δ δ ≤ (winningSetSoundness (k := k) C δ : ENNReal) := by
+  rcases eq_or_lt_of_le (zero_le (epsCA (F := F) (A := F) C δ δ)) with h | hca
+  · rw [← h]; exact zero_le _
+  obtain ⟨v, μ₁, μ₂, f₁, f₂, hviol, hbound⟩ :=
+    simplified_iop_soundness_ca_lb C δ hδpos hδlt hClin hca
+  set x : ViolatingInstance C δ k := ⟨v, μ₁, μ₂, f₁, f₂, hviol⟩ with hx
+  have hF0 : (Fintype.card F : ENNReal) ≠ 0 := by simp [Fintype.card_ne_zero]
+  have hFt : (Fintype.card F : ENNReal) ≠ ⊤ := ENNReal.natCast_ne_top _
+  have hWReq : (winningSetRatio x : ENNReal)
+      = ((winningSet C δ v μ₁ μ₂ f₁ f₂).ncard : ENNReal) / (Fintype.card F : ENNReal) := by
+    rw [winningSetRatio, hx, ENNReal.coe_div (by simp [Fintype.card_ne_zero])]
+    push_cast; rfl
+  have hWR : (winningSetRatio x : ENNReal) ≤ (winningSetSoundness (k := k) C δ : ENNReal) := by
+    exact_mod_cast winningSetRatio_le_winningSetSoundness x
+  refine le_trans ?_ hWR
+  rw [hWReq, ENNReal.le_div_iff_mul_le (Or.inl hF0) (Or.inl hFt)]
+  exact hbound
+
 /-! ## What the leaderboard quantity is, and is NOT
 
 The common quantity is **`winningSetSoundness`** — the soundness error of the
@@ -316,7 +349,10 @@ submission is an *inhabitant*. -/
 and a proof that the simplified-IOR soundness error is `≤ 2^(-bits)` — i.e. "we
 can *prove* at least `bits` bits of security." The intended proof route is
 `soundnessError ≤ toySoundnessError ≤ 2^(-bits)` via [ABF26] Lemmas 6.10 / 6.6.
-`bits : ℝ` so fractional bits (e.g. `116.5`) are representable. -/
+`bits : ℝ` because the security level *is* `bitsOfSecurity e = -log₂ e`, a real for
+any soundness error `e ∈ (0,1)` (almost never an integer); the §6.3 figures the
+anchors quote are themselves fractional (the attack is `2^(-116.49)`, the C6.9 MCA
+branch `≈ 2^(-71.5)`, the spot-check `(1-δ)^128 ≈ 2^(-65.9)`). -/
 structure SecurityLowerBound (p : ToyParams) where
   /-- The provable security level, in bits. -/
   bits : ℝ
@@ -500,12 +536,16 @@ are Phase 5 / Phase 3). -/
 noncomputable def fenziSanso_upperBound_attack : SecurityUpperBound koalaIRS where
   bits := 116
   proof := by
-    -- ABF26-L6.12 (cf. Fenzi–Sanso 2025/2197 Lemma 4.4); paper-proof-owed. Route:
-    -- extract the attack witness from `simplified_iop_soundness_listDecoding_lb`,
-    -- package it as a `ViolatingInstance` (supplying the violation hypothesis,
-    -- which L6.12's `∃` does not yet certify — see the Phase-3 bootstrap), then
-    -- chain `winningSetRatio_le_winningSetSoundness` (= `soundnessError`) with the
-    -- Phase-5 numeric `|Ω|/|F| ≥ 2^(-116)`. Tagged sorry.
+    -- ABF26-L6.12/6.13 (cf. Fenzi–Sanso 2025/2197 Lemma 4.4). The attack→soundness
+    -- chain is now REAL and axiom-clean: `epsCA_le_winningSetSoundness` proves
+    -- `ε_ca(C,δ) ≤ winningSetSoundness C δ` end-to-end (L6.13 packaged as a
+    -- `ViolatingInstance`, with its violation certified, through
+    -- `winningSetRatio_le_winningSetSoundness`). All that remains owed here is the
+    -- *numeric* `2^(-116) ≤ ε_ca koalaCode (3/10)` (the §6.3 Table evaluation,
+    -- `.tex` 2925: `2^(-116.49)`) together with `koalaCode`'s linearity — both
+    -- deferred to Phase 5, where the opaque `koalaCode` is replaced by the genuine
+    -- linear KoalaBear-sextic RS/IRS code. With those in hand the proof is
+    -- `le_trans (numeric bound) (epsCA_le_winningSetSoundness …)`. Tagged sorry.
     sorry
 
 /-- **The current leaderboard frontier.** At the KoalaBear-sextic anchor the

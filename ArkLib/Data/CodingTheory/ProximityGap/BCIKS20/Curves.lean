@@ -2307,7 +2307,11 @@ theorem correlatedAgreement_affine_curves {k : ℕ}
   classical
   rcases Nat.eq_zero_or_pos k with hk0 | hkpos
   · subst hk0
-    exact RS_correlatedAgreement_curves_k_zero (deg := deg) (domain := domain) (δ := δ)
+    -- `k = 0` corner: the constant-curve argument is valid in *every* regime (it never
+    -- uses the unique-decoding radius), so use the regime-unconditional version — here no
+    -- UDR hypothesis is in scope and `δ ≤ 1 - sqrtRate` does not imply `δ ≤ relUDR`.
+    exact RS_correlatedAgreement_curves_k_zero_unconditional (deg := deg) (domain := domain)
+      (δ := δ)
   · by_cases hUDR : δ ≤ Code.relativeUniqueDecodingRadius (ι := ι) (F := F)
         (C := ReedSolomon.code domain deg)
     · -- Unique-decoding regime: PROVEN ([BCIKS20] Theorem 6.1, all curve degrees).

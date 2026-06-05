@@ -26,10 +26,10 @@ Theorem 2.18 [GK16] remains an external admit.
   repaired): a nontrivial τ-subspace-design code of rate `ρ = k/(s·n)` has
   `min_{r∈[s]} τ(r) ≥ ρ - 1/n`, via the 1-dimensional-span instantiation + the Singleton
   bound over the block alphabet.
-- `CodingTheory.frs_is_subspaceDesign_gk16` — ABF26 Theorem 2.18 [GK16] (external admit):
-  folded RS codes are τ-subspace-design for explicit τ. NOTE: its τ formula inherits the
-  same `s`-factor rate convention as the pre-repair L2.17 and should be re-checked against
-  ABF26/GK16 before any proof attempt (tracked in the L2.17 repair docstring).
+- `CodingTheory.frs_is_subspaceDesign_gk16` — ABF26 Theorem 2.18 [GK16] (external admit,
+  statement repaired): folded RS codes are τ-subspace-design for explicit τ. Its τ formula
+  has been re-stated to use the same block-alphabet rate `ρ = k/(s·n)` as the repaired
+  L2.17 (the pre-repair form carried the same spurious `s`-factor); see its docstring.
 
 ## Deferred
 
@@ -284,19 +284,38 @@ theorem subspaceDesign_tau_lower
         ring
     _ ≤ τ r := hkey
 
-/-- **ABF26 Theorem 2.18 [GK16].** Both folded Reed-Solomon codes and univariate
-multiplicity codes are τ-subspace-design for an explicit τ:
+/-- **ABF26 Theorem 2.18 [GK16]** (statement repaired — see below). Both folded
+Reed-Solomon codes and univariate multiplicity codes are τ-subspace-design for an
+explicit τ:
 
-  `τ(r) := s · ρ / (s - r + 1)` for `r ∈ [s] = {1, …, s}`, and `τ(r) := 1` otherwise.
+  `τ(r) := s · ρ / (s - r + 1)` for `r ∈ [s] = {1, …, s}`, and `τ(r) := 1` otherwise,
+
+where `ρ := k / (s · n)` is the rate of the code over the block alphabet `F^s`
+(`n := Fintype.card ι`). Substituting `ρ` gives the closed form encoded below:
+
+  `τ(r) = (k / n) / (s - r + 1)` .
 
 Note: `[s]` in the paper denotes `{1, …, s}` (one-based), which we encode in Lean as
 `Finset.Icc 1 s`. With this convention `τ(1) = ρ` and `τ(s) = s · ρ`, matching the paper's
-boundary values.
+boundary values. (Check: `τ(1) = s·ρ/s = ρ = k/(s·n) = (k/n)/s` ✓; `τ(s) = s·ρ/1 = s·ρ
+= k/n = (k/n)/1` ✓.)
+
+**Statement repair (2026-06-04).** The previous (admitted) form encoded
+`τ(r) = (s · k / n) / (s - r + 1)`, i.e. it substituted `ρ := k/n` rather than the
+paper-faithful block-alphabet rate `ρ := k/(s·n)` of ABF26 Definition 2.5. This is the
+**same `s`-factor rate convention bug** that was found and repaired in L2.17
+(`subspaceDesign_tau_lower`, above): a code over `Σ = F^s` with `|C| = |F|^k` has rate
+`log_|Σ| |C| / n = k/(s·n)`, not `k/n`. The two ABF26 results that share the rate `ρ`
+(L2.17's lower bound and T2.18's explicit τ) must use the *same* `ρ`, so the spurious
+leading `s` is removed here to match the repaired L2.17. With the old `s · k / n`
+substitution the boundary value `τ(s) = s · (s · k / n) = s² · ρ` would no longer equal
+the paper's `s · ρ`.
 
 The FRS case requires `(L, s)`-admissibility of `ω`; the multiplicity case requires
 `|F| > n` and `char(F) > ρ·s·n > s`. We state only the FRS half here; the multiplicity
 half is gated on `D2.19 / DA.7` (univariate-multiplicity definition), which is tracked
-separately. Admitted as an external result. -/
+separately. **Honest external admit** [GK16]: this is the principal theorem of
+Guruswami–Kopparty and is not proven here; only its *statement* is repaired. -/
 theorem frs_is_subspaceDesign_gk16
     {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
     {F : Type} [Field F] [Fintype F] [DecidableEq F]
@@ -305,9 +324,10 @@ theorem frs_is_subspaceDesign_gk16
     (_hω : ReedSolomon.Folded.Admissible L s ω) :
     let τ : ℕ → ℝ := fun r ↦
       if r ∈ Finset.Icc 1 s then
-        (s : ℝ) * (k : ℝ) / Fintype.card ι / (s - r + 1)
+        -- `s · ρ / (s - r + 1)` with `ρ = k/(s·n)` collapses to `(k/n)/(s-r+1)`.
+        (k : ℝ) / Fintype.card ι / (s - r + 1)
       else 1
     IsSubspaceDesign s τ (ReedSolomon.Folded.frsCode domain k s ω) := by
-  sorry -- ABF26-T2.18 (FRS half); external admit [GK16].
+  sorry -- ABF26-T2.18 (FRS half); external admit [GK16]; statement repaired (s-factor).
 
 end CodingTheory

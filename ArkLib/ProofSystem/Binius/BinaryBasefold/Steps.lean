@@ -604,6 +604,97 @@ variable {R : Type} [CommSemiring R] [DecidableEq R] [SampleableType R]
 
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
 
+/-- Prior-oracle branch of `commit_verifier_toVerifier_run` (embed = `Sum.inl`), extracted as a
+small private lemma so the kernel checks this `HEq` cast in isolation. Under the merged sibling
+environment the monolithic proof term of the bridge tripped a kernel deterministic timeout; splitting
+the two `funext` branches into their own (small) kernel checks keeps each cast cheap. -/
+private lemma commit_toVerifier_prior_heq (i : Fin ℓ)
+    (oStmt : ∀ j, OracleStatement 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.castSucc j)
+    (fNew : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ)
+    {i_1 : Fin (toOutCodewordsCount ℓ ϑ i.succ)}
+    (hlt : i_1.val < toOutCodewordsCount ℓ ϑ i.castSucc)
+    {x : OracleStatement 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.castSucc ⟨i_1.val, hlt⟩}
+    (hx : HEq x (oStmt ⟨i_1.val, hlt⟩)) :
+    HEq x (snoc_oracle 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) oStmt fNew i_1) := by
+  refine HEq.trans (b := oStmt ⟨i_1.val, hlt⟩) hx ?_
+  unfold snoc_oracle
+  simp only [hlt, ↓reduceDIte]
+  rfl
+
+/-- New (commit) oracle branch of `commit_verifier_toVerifier_run` (embed = `Sum.inr 0`), extracted
+as a small private lemma. The named-eq `cast … fNew` shape from wave6-commitfix is preserved: both
+the verifier's reconstruction and the snoc value are casts of the SAME `fNew` along propositionally
+equal paths, closed by `cast`-irrelevance — never whole-type defeq. Kept isolated so the kernel
+check stays cheap under the merged environment. -/
+private lemma commit_toVerifier_new_heq (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i)
+    (oStmt : ∀ j, OracleStatement 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.castSucc j)
+    (fNew : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ)
+    {i_1 : Fin (toOutCodewordsCount ℓ ϑ i.succ)}
+    (hge : ¬ (i_1.val < toOutCodewordsCount ℓ ϑ i.castSucc))
+    {y : OracleStatement 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ i_1}
+    (hy : HEq y fNew) :
+    HEq y (snoc_oracle 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) oStmt fNew i_1) := by
+  -- snoc_oracle's commit branch is `≍ fNew` by the kernel-light Basic lemma (proved once where
+  -- `snoc_oracle` is local); here we only chain HEqs, so no heavy reduction enters this term.
+  exact HEq.trans hy (snoc_oracle_commit_new_heq 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    i hCR oStmt fNew i_1 hge).symm
+
+/-- Bridge: the commit oracle verifier's `toVerifier`, on the honest transcript
+`tr = fun ⟨0,_⟩ => fNew`, deterministically reconstructs `(stmt, snoc_oracle oStmt fNew)`.
+This is the commit analogue of the relay `hrun`; unlike the relay case it does NOT close by `rfl`,
+because the new (commit) oracle's verifier reconstruction (`hEq ▸ h ▸ fNew`) and the snoc value
+(now a single named-eq `cast … fNew`, per wave6-commitfix) are casts of the SAME term `fNew` to the
+SAME oracle type along DIFFERENT (but propositionally equal) paths. They agree by `HEq`/cast
+irrelevance, which avoids forcing the kernel to verify whole-type defeq (the old kernel timeout).
+The per-index HEq derivations are factored into `commit_toVerifier_prior_heq` /
+`commit_toVerifier_new_heq` so that under the merged sibling environment each cast is kernel-checked
+in isolation (the monolithic term previously tripped a kernel deterministic timeout). -/
+lemma commit_verifier_toVerifier_run (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i)
+    (stmt : Statement (L := L) Context i.succ)
+    (oStmt : ∀ j, OracleStatement 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.castSucc j)
+    (fNew : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ)
+    (tr : (pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i).FullTranscript)
+    (htr : tr = fun k => match k with | ⟨0, _⟩ => fNew) :
+    (commitOracleVerifier 𝔽q β (ϑ := ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hCR).toVerifier.verify (stmt, oStmt) tr =
+      (pure (stmt, snoc_oracle 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) oStmt fNew)
+        : OptionT (OracleComp []ₒ) _) := by
+  subst htr
+  simp only [OracleVerifier.toVerifier, commitOracleVerifier]
+  erw [simulateQ_pure]
+  refine congrArg (fun o => (pure (stmt, o) : OptionT (OracleComp []ₒ) _)) ?_
+  funext i_1
+  -- reduce the verifier's `embed` dependent match on `i_1`
+  simp only [commitOracleVerifier, Function.Embedding.coeFn_mk]
+  split
+  · -- prior-oracle case (embed = Sum.inl): both sides are `oStmt ⟨i_1.val,_⟩` up to cast.
+    rename_i j heq
+    -- `heq : (if hj : … then Sum.inl ⟨i_1.val,hj⟩ else …) = Sum.inl j`
+    have hlt : i_1.val < toOutCodewordsCount ℓ ϑ i.castSucc := by
+      by_contra hge
+      rw [dif_neg hge] at heq
+      exact absurd heq (by simp)
+    rw [dif_pos hlt] at heq
+    have hj : j = ⟨i_1.val, hlt⟩ := by injection heq with h; exact h.symm
+    subst hj
+    apply eq_of_heq
+    exact commit_toVerifier_prior_heq 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i oStmt fNew
+      hlt (by simp only [eqRec_heq_iff_heq, heq_eqRec_iff_heq, heq_self_iff_true])
+  · -- new (commit) oracle case (embed = Sum.inr 0): both sides are casts of `fNew` to the SAME
+    -- target oracle type `OracleStatement ϑ i.succ i_1` along different (proof-irrelevant) paths.
+    rename_i j heq
+    have hge : ¬ (i_1.val < toOutCodewordsCount ℓ ϑ i.castSucc) := by
+      intro hlt
+      rw [dif_pos hlt] at heq
+      exact absurd heq (by simp)
+    rw [dif_neg hge] at heq
+    have hj0 : j = ⟨0, by simp [pSpecCommit]⟩ := by injection heq with h; exact h.symm
+    subst hj0
+    apply eq_of_heq
+    exact commit_toVerifier_new_heq 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hCR oStmt
+      fNew hge
+      (by simp only [FullTranscript.messages, eqRec_heq_iff_heq, heq_eqRec_iff_heq]; exact HEq.rfl)
+
 theorem commitOracleReduction_perfectCompleteness (i : Fin ℓ)
     (hCR : isCommitmentRound ℓ ϑ i) :
     OracleReduction.perfectCompleteness
@@ -616,9 +707,82 @@ theorem commitOracleReduction_perfectCompleteness (i : Fin ℓ)
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hCR)
       (init := init)
       (impl := impl) := by
-  unfold OracleReduction.perfectCompleteness
+  haveI hPF : ProverFirst (pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) := ⟨rfl⟩
+  haveI hPO : ProverOnly (pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) := ⟨⟩
+  unfold OracleReduction.perfectCompleteness OracleReduction.toReduction
   intro stmtIn witIn h_relIn
-  sorry
+  obtain ⟨stmt, oStmt⟩ := stmtIn
+  simp only
+  rw [ge_iff_le, ENNReal.coe_zero, tsub_zero, one_le_probEvent_iff, probEvent_eq_one_iff]
+  -- the prover's snoc'd output oracles
+  set sOut := (stmt, snoc_oracle 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) oStmt witIn.f)
+    with hsOut
+  -- the honest transcript (named, with explicit FullTranscript type to fix the match motive)
+  set tr0 : (pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i).FullTranscript :=
+    (fun k => match k with | ⟨0, _⟩ => witIn.f) with htr0
+  -- The reduction is a 1-message prover-only protocol: `Reduction.run_of_prover_first` collapses
+  -- it to (input → sendMessage 0 → output → verify). The prover sends `witIn.f`, outputs
+  -- `(sOut.1, snoc_oracle oStmt witIn.f, witIn)` and the verifier deterministically reconstructs
+  -- `sOut` from the honest transcript via `toVerifier` (the new-oracle cast is now kernel-light).
+  have hrun : Reduction.run (stmt, oStmt) witIn
+      { prover := (commitOracleReduction 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          i hCR).prover,
+        verifier := (commitOracleReduction 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          i hCR).verifier.toVerifier } =
+      pure ((tr0, (sOut, witIn)), sOut) := by
+    unfold commitOracleReduction
+    rw [Reduction.run_of_prover_first]
+    simp only [commitOracleProver, getCommitProverFinalOutput, pure_bind, bind_pure_comp,
+      liftM_pure, Option.getM, map_pure]
+    have hver := commit_verifier_toVerifier_run 𝔽q β (ϑ := ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i hCR stmt oStmt witIn.f tr0 htr0
+    erw [hver]
+    simp only [OptionT.run_pure, map_pure]
+    rfl
+  -- discharge the probability via the deterministic run; both relation conjuncts follow.
+  refine ⟨?_, ?_⟩
+  · -- failure prob 0
+    rw [OptionT.probFailure_eq, OptionT.run_mk]
+    simp only [probFailure_eq_zero, zero_add]
+    apply probOutput_eq_zero_of_not_mem_support
+    rw [hrun]
+    simp only [support_bind, Set.mem_iUnion, not_exists]
+    intro s _
+    change none ∈ _root_.support
+      (StateT.run' (simulateQ _ (pure (some ((tr0, (sOut, witIn)), sOut)) :
+        OracleComp _ _)) s) → False
+    rw [simulateQ_pure]
+    change none ∈ _root_.support
+      (Prod.fst <$> (pure (some ((tr0, (sOut, witIn)), sOut)) :
+        StateT σ ProbComp _).run s) → False
+    rw [StateT.run_pure]; simp [map_pure]
+  · intro x hx
+    rw [hrun] at hx
+    rw [OptionT.mem_support_iff] at hx
+    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+    obtain ⟨s, _, hx⟩ := hx
+    change some x ∈ _root_.support
+      (StateT.run' (simulateQ _ (pure (some ((tr0, (sOut, witIn)), sOut)) :
+        OracleComp _ _)) s) at hx
+    rw [simulateQ_pure] at hx
+    change some x ∈ _root_.support
+      (Prod.fst <$> (pure (some ((tr0, (sOut, witIn)), sOut)) :
+        StateT σ ProbComp _).run s) at hx
+    rw [StateT.run_pure] at hx
+    simp only [map_pure, support_pure, Set.mem_singleton_iff, Option.some.injEq] at hx
+    subst hx
+    refine ⟨?_, rfl⟩
+    -- `(sOut, witIn) ∈ roundRelation i.succ`. At a commitment round `i.succ.val = i.val + 1 < ℓ`
+    -- (since `isCommitmentRound ⇒ i+1 ≠ ℓ` and `i+1 ≤ ℓ`), so the bad-event disjunct of
+    -- `masterKStateProp (stmtIdx := i.succ) (oracleIdx := i.succ)` is unconditionally True via
+    -- `badEventExistsProp_of_lt` — for ANY output oracle, including `snoc_oracle oStmt witIn.f`.
+    have h_succ_lt : i.succ.val < ℓ := by
+      have := hCR.2; simp only [Fin.val_succ]; omega
+    simp only [hsOut, Set.mem_setOf_eq, roundRelation, roundRelationProp, masterKStateProp]
+    refine ⟨trivial, Or.inl ?_⟩
+    exact badEventExistsProp_of_lt 𝔽q β (stmtIdx := i.succ) (oracleIdx := i.succ)
+      (oStmt := snoc_oracle 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) oStmt witIn.f)
+      (challenges := _) (h_lt := h_succ_lt) (h_eq := rfl)
 
 open scoped NNReal
 

@@ -139,7 +139,8 @@ theorem linear_lambda_ge_elias_volume_eli57
     refine and_congr_right (fun _ => ?_)
     simp only [Code.relHammingDist, NNRat.cast_div, NNRat.cast_natCast]
     rw [div_le_iff₀ (by exact_mod_cast hn_pos : (0 : ℝ) < (Fintype.card ι : ℝ)), hr_def,
-      ← hn_def, Nat.le_floor_iff (mul_nonneg hδ_nonneg (Nat.cast_nonneg n))]
+      ← hn_def]
+    rw [Nat.le_floor_iff (mul_nonneg hδ_nonneg (Nat.cast_nonneg n))]
     -- The two `hammingDist` occurrences differ only by a (subsingleton) `Decidable`
     -- instance — `relHammingDist`'s unfolds with a different one than the statement's.
     congr!
@@ -171,7 +172,8 @@ theorem linear_lambda_ge_elias_volume_eli57
         ext f
         simp only [Finset.coe_filter, Finset.mem_univ, true_and, Set.mem_setOf_eq,
           ListDecodable.hammingBall]
-        rw [hr_def, ← hn_def, hammingDist_comm]
+        rw [hammingDist_comm]
+        simp only [hr_def, ← hn_def]
         congr!
       · simp only [hc, false_and, if_false, Finset.sum_const_zero]
     rw [Finset.sum_congr rfl (fun c _ => hinner c), ← Finset.sum_filter, Finset.sum_const,
