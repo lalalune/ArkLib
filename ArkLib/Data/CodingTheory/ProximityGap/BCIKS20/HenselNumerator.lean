@@ -2336,6 +2336,12 @@ minimally-carved BCIKS20 A.4 content: with the order-`0` half already PROVEN
 `PowerSeries.ext` (`assembledSeries_isRoot` below), the *entire* remaining mathematical content
 of (P2) is exactly this per-successor-order vanishing.
 
+REDUCTION (NEW — wave w13g).  By the PROVEN, content-free expansion `coeff_eval_Q_faaDiBruno`
+(convolution + antidiagonal + power-partition + the `Q`-coefficient bridge `coeff_Q_eq_B`), this
+coefficient *equals* the explicit partition/`countPerms` sum, whose vanishing is the single named
+residual `faaDiBruno_succ_sum_eq_zero`.  So this theorem now carries no bare `sorry`: it is the
+proven expansion followed by the one carved combinatorial lemma.
+
 WHY THIS IS THE GENUINE A.4 CONTENT.  The (A.1) recursion `βHensel_succ` was *built* so that the
 order-`(k+1)` coefficient of `R(X, γ, Z)` vanishes: comparing the `X^{k+1}` coefficient of
 `eval γ Q` to `0` and solving for the new numerator is exactly the literal `(A.1)` sum
