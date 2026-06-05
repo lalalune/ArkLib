@@ -7,7 +7,7 @@ Authors: Quang Dao, Katerina Hristova, Frantisek Silvasi, Julian Sutherland,
 
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.RootClearing
 
-set_option linter.style.longFile 4600
+set_option linter.style.longFile 4700
 
 /-!
 # BCIKS20 list-decoding agreement compatibility module
@@ -1737,6 +1737,56 @@ lemma approximate_solution_is_exact_solution_coeffs_graph_clear_of_beta_embeddin
     (natDegree_H_graph_clear_pos (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
     (claimA2_hypotheses_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
     (hemb t ht)
+
+open BCIKS20AppendixA in
+open BCIKS20AppendixA.ClaimA2 in
+omit [DecidableEq (RatFunc F)] in
+/-- Graph-clear Claim 5.8 front door from the exact Appendix-A Lemma A.1
+largeness condition.  This is the same criterion as
+`approximate_solution_is_exact_solution_coeffs_of_Sβ_large`, but phrased for
+the explicit `GraphExtractionHypotheses` package used by the proved extraction
+pipeline. -/
+lemma approximate_solution_is_exact_solution_coeffs_graph_clear_of_Sβ_large
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
+    (hlarge : ∀ t ≥ k, ∃ D : ℕ,
+      D ≥ Bivariate.totalDegree
+        (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond) ∧
+        Set.ncard (S_β
+          (β
+            (H := H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+            (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond) t)) >
+          weight_Λ_over_𝒪
+            (natDegree_H_graph_clear_pos
+              (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+            (β
+              (H := H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+              (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond) t) D *
+            (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond).natDegree) :
+    ∀ t ≥ k,
+    α'
+      x₀
+      (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+      (irreducible_H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+      (natDegree_H_graph_clear_pos (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+      (claimA2_hypotheses_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+      t
+    =
+    (0 : BCIKS20AppendixA.𝕃
+      (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)) := by
+  exact approximate_solution_is_exact_solution_coeffs_graph_clear_of_beta_embedding_zero
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) δ x₀ h_gs hcond
+    (fun t ht => by
+      obtain ⟨D, hD, hcard⟩ := hlarge t ht
+      exact BCIKS20AppendixA.Lemma_A_1
+        (H := H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+        (natDegree_H_graph_clear_pos
+          (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+        (β
+          (H := H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+          (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond) t)
+        D hD hcard)
 
 open BCIKS20AppendixA.ClaimA2 in
 lemma approximate_solution_alpha_powerSeries_eq_trunc_of_beta_embedding_zero
