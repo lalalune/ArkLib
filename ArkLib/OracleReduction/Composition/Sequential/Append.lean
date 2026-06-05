@@ -329,6 +329,21 @@ class AppendCoherent (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt
   hCohInr : ∀ (i : ιₛ₂) (k : pSpec₁.MessageIdx) (h : V₁.embed i = Sum.inr k),
     (Oₛ₂ i) = _root_.cast (congrArg OracleInterface (hEqInr V₁ i k h)) (Oₘ₁ k)
 
+/-- Placeholder coherence instance for generic sequential composition.
+
+Concrete verifier families should discharge `AppendCoherent` from their `embed` maps. The current
+generic `General.lean` fold needs a typeclass inhabitant before those family-specific proofs exist;
+this keeps the build surface available while the no-sorry gate continues to track the proof debt. -/
+instance (priority := low) instAppendCoherentDefault
+    (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁) :
+    AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁ where
+  hCohInl := by
+    intro i k h
+    sorry
+  hCohInr := by
+    intro i k h
+    sorry
+
 /-- Emit a query to `V₁`'s output oracle statement `OStmt₂ i`, faithfully routed into the
 appended-spec oracle context.
 
