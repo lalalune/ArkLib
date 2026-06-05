@@ -2199,6 +2199,50 @@ lemma approximate_solution_gamma_coeff_zero_of_Sβ_large
       (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
       h_gs hlarge)
 
+open BCIKS20AppendixA in
+open BCIKS20AppendixA.ClaimA2 in
+/-- Gamma-tail coefficient vanishing from the genuine recursive Hensel numerator.
+
+This is the `γ'` consumer form of
+`approximate_solution_is_exact_solution_coeffs_of_βHensel_Sβ_large`: after the
+Appendix-A lift identifies the recursive numerator with the placeholder under
+the embedding, `S_β` largeness for `βHensel` gives the vanishing tail used by
+the linearity step. -/
+lemma approximate_solution_gamma_coeff_zero_of_βHensel_Sβ_large
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    (hcompat : ∀ t ≥ k,
+      BCIKS20AppendixA.embeddingOf𝒪Into𝕃 (H k δ x₀ h_gs)
+        (_root_.BCIKS20.HenselNumerator.βHensel
+          (H := H k δ x₀ h_gs) x₀ (R k δ x₀ h_gs)
+          (claimA2_hypotheses k h_gs) t) =
+      BCIKS20AppendixA.embeddingOf𝒪Into𝕃 (H k δ x₀ h_gs)
+        (β (H := H k δ x₀ h_gs) (R k δ x₀ h_gs) t))
+    (hlarge : ∀ t ≥ k, ∃ D : ℕ,
+      D ≥ Bivariate.totalDegree (H k δ x₀ h_gs) ∧
+        Set.ncard (S_β
+          (_root_.BCIKS20.HenselNumerator.βHensel
+            (H := H k δ x₀ h_gs) x₀ (R k δ x₀ h_gs)
+            (claimA2_hypotheses k h_gs) t)) >
+          weight_Λ_over_𝒪 (natDegree_H_pos k h_gs)
+            (_root_.BCIKS20.HenselNumerator.βHensel
+              (H := H k δ x₀ h_gs) x₀ (R k δ x₀ h_gs)
+              (claimA2_hypotheses k h_gs) t) D *
+            (H k δ x₀ h_gs).natDegree) :
+    ∀ t ≥ k,
+      PowerSeries.coeff t
+        (γ' x₀ (R k δ x₀ h_gs) (irreducible_H k h_gs) (natDegree_H_pos k h_gs)
+          (claimA2_hypotheses k h_gs)) =
+        (0 : BCIKS20AppendixA.𝕃 (H k δ x₀ h_gs)) := by
+  exact gamma'_coeff_zero_of_alpha'_coeff_zero
+    (F := F) (x₀ := x₀)
+    (irreducible_H k h_gs)
+    (natDegree_H_pos k h_gs)
+    (claimA2_hypotheses k h_gs)
+    (approximate_solution_is_exact_solution_coeffs_of_βHensel_Sβ_large
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+      h_gs hcompat hlarge)
+
 open BCIKS20AppendixA.ClaimA2 in
 omit [DecidableEq (RatFunc F)] in
 lemma approximate_solution_gamma_graph_coeff_zero_of_beta_embedding_zero
@@ -2599,6 +2643,54 @@ lemma approximate_solution_is_exact_solution_coeffs'_of_Sβ_large
       (approximate_solution_is_exact_solution_coeffs_of_Sβ_large
         (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
         h_gs hlarge))
+
+open BCIKS20AppendixA in
+open BCIKS20AppendixA.ClaimA2 in
+/-- Claim 5.8' front door from the genuine recursive Hensel numerator.
+
+This is the published `γ'` truncation statement with the remaining geometric
+work isolated as `S_β` largeness for the actual recursive Hensel numerator,
+plus the Appendix-A compatibility equality identifying that numerator with the
+placeholder `β` under the embedding. -/
+lemma approximate_solution_is_exact_solution_coeffs'_of_βHensel_Sβ_large
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    (hcompat : ∀ t ≥ k,
+      BCIKS20AppendixA.embeddingOf𝒪Into𝕃 (H k δ x₀ h_gs)
+        (_root_.BCIKS20.HenselNumerator.βHensel
+          (H := H k δ x₀ h_gs) x₀ (R k δ x₀ h_gs)
+          (claimA2_hypotheses k h_gs) t) =
+      BCIKS20AppendixA.embeddingOf𝒪Into𝕃 (H k δ x₀ h_gs)
+        (β (H := H k δ x₀ h_gs) (R k δ x₀ h_gs) t))
+    (hlarge : ∀ t ≥ k, ∃ D : ℕ,
+      D ≥ Bivariate.totalDegree (H k δ x₀ h_gs) ∧
+        Set.ncard (S_β
+          (_root_.BCIKS20.HenselNumerator.βHensel
+            (H := H k δ x₀ h_gs) x₀ (R k δ x₀ h_gs)
+            (claimA2_hypotheses k h_gs) t)) >
+          weight_Λ_over_𝒪 (natDegree_H_pos k h_gs)
+            (_root_.BCIKS20.HenselNumerator.βHensel
+              (H := H k δ x₀ h_gs) x₀ (R k δ x₀ h_gs)
+              (claimA2_hypotheses k h_gs) t) D *
+            (H k δ x₀ h_gs).natDegree) :
+    γ' x₀ (R k δ x₀ h_gs) (irreducible_H k h_gs) (natDegree_H_pos k h_gs)
+        (claimA2_hypotheses k h_gs) =
+        PowerSeries.mk (fun t =>
+          if t ≥ k
+          then (0 : BCIKS20AppendixA.𝕃 (H k δ x₀ h_gs))
+          else PowerSeries.coeff t
+            (γ'
+              x₀
+              (R k (x₀ := x₀) (δ := δ) h_gs)
+              (irreducible_H k h_gs)
+              (natDegree_H_pos k h_gs)
+              (claimA2_hypotheses k h_gs))) := by
+  exact powerSeries_eq_truncate_of_coeff_zero_ge
+    (γ' x₀ (R k δ x₀ h_gs) (irreducible_H k h_gs) (natDegree_H_pos k h_gs)
+      (claimA2_hypotheses k h_gs))
+    (approximate_solution_gamma_coeff_zero_of_βHensel_Sβ_large
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+      h_gs hcompat hlarge)
 
 open BCIKS20AppendixA.ClaimA2 in
 omit [DecidableEq (RatFunc F)] in
