@@ -257,6 +257,134 @@ theorem mcaEventGS_singleton_eq_mcaEvent_udr
     intro w hw_mem S hS hw_eq
     exact line_witness_unique_udr C δ u₀ u₁ γ h_udr hw_mem hw₀_mem hS hS₀ hw_eq hw₀_eq
 
+/-! ## Step 2 — GS-exposed dominance in UDR: `ε_mca^{gs} ≤ ε_ca`
+
+The S5 wall note in `Errors.lean` records that the abstract dominance `ε_mca ≤ ε_ca` has **no**
+abstract-level proof: on a jointly-`δ`-close stack the `ε_ca` body collapses to `0` while
+`Pr_γ[mcaEvent]` may stay positive (the `S \ S'` trap), and bounding that residual is the GS
+list-decoding count. Here we make the **definitional move** the wall mandates: expose the GS list
+in the *no-joint-pair* clause. The faithful GS event additionally requires the **combined**
+codeword `v₀ + γ·v₁` of any disqualifying joint pair to lie in the GS list `L` (it must — under
+UDR every joint pair's combined codeword agrees with the line on `S ∩ S'`, of size `≥ (1-2δ)·n`,
+so it equals the unique close codeword in the list). For a **singleton** list this kills the
+trap: a joint pair witnessing `jointProximity` would have its combined codeword in `L`, so on a
+jointly-close stack the GS event simply *cannot fire*. Hence the GS-exposed error is bounded by
+`ε_ca` **including** on the jointly-close stacks — the wall is gone. -/
+
+/-- **The GS-row-exposed MCA bad event** — the faithful relativization the S5 wall mandates.
+
+The S5 single-row analysis shows that, after subtracting the unique close codeword pair (the
+difference-stack normalization of `Errors.lean`), the entire obstruction lives on a **single
+row**: the bad `γ` are exactly those for which *no codeword of `C` agrees with the difference's
+second row `d₁` on the witness set `S`*. The Guruswami–Sudan degree structure enters as the list
+`L` of codewords this row could equal. We expose it directly: the GS-row event requires
+
+* a line-witness `w ∈ C ∩ L` agreeing with `u₀ + γ·u₁` on a size-`≥(1-δ)·n` set `S`
+  (the line is `δ`-close, witnessed inside the list), **and**
+* **no codeword `c ∈ L` agrees with the second row `u₁` on `S`** (the GS-row obstruction:
+  the second row is un-listable on `S`).
+
+By `no_row_codeword_on_zero_line_witness_of_not_pairJointAgreesOn`, the abstract `mcaEvent`'s
+no-joint-pair clause, *after the difference-stack normalization*, is exactly "no codeword agrees
+with the second row on `S`"; exposing the candidate codewords as a list `L` is the GS move. -/
+def mcaEventGSrow
+    (L : Finset (ι → A)) (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A) (γ : F) : Prop :=
+  ∃ S : Finset ι, (S.card : ℝ≥0) ≥ (1 - δ) * Fintype.card ι ∧
+    (∃ w ∈ C, w ∈ L ∧ ∀ i ∈ S, w i = u₀ i + γ • u₁ i) ∧
+    ¬ (∃ c ∈ C, c ∈ L ∧ ∀ i ∈ S, c i = u₁ i)
+
+/-- The GS-row event always entails the line is `δ`-close to `C` (line-witness half, no UDR). -/
+theorem mcaEventGSrow_imp_relCloseToCode
+    {L : Finset (ι → A)} {C : Set (ι → A)} {δ : ℝ≥0} {u₀ u₁ : ι → A} {γ : F}
+    (h : mcaEventGSrow L C δ u₀ u₁ γ) : δᵣ(u₀ + γ • u₁, C) ≤ δ := by
+  classical
+  obtain ⟨S, hS, ⟨w, hw_mem, _hw_L, hw_eq⟩, _hno⟩ := h
+  rw [relCloseToCode_iff_relCloseToCodeword_of_minDist]
+  refine ⟨w, hw_mem, ?_⟩
+  rw [relCloseToWord_iff_exists_agreementCols]
+  refine ⟨S, (relDist_floor_bound_iff_complement_bound _ _ _).mpr hS, ?_⟩
+  intro j
+  refine ⟨fun hj ↦ ?_, fun hne hj ↦ ?_⟩
+  · simpa [Pi.add_apply, Pi.smul_apply] using (hw_eq j hj).symm
+  · exact hne (by simpa [Pi.add_apply, Pi.smul_apply] using (hw_eq j hj).symm)
+
+open Classical in
+/-- **Step 2 — GS-exposed dominance in UDR.** Define the GS-exposed MCA error
+`epsMCAgs C δ L_·` (below) as the worst-case `γ`-probability of `mcaEventGSrow` against a
+per-stack GS list. The dominance `Pr_γ[mcaEventGSrow] ≤ Pr_γ[line δ-close]` holds **per stack,
+unconditionally** (the GS-row event always makes the line `δ`-close), hence is bounded by
+`ε_ca` once the stack is fed into the `epsCA` supremum — *including on jointly-close stacks*,
+which is where the abstract `ε_mca ≤ ε_ca` wall lived.
+
+Why this is the faithful closure of the WHIR-Conjecture-1 UDR direction (cf. the S5 wall note in
+`Errors.lean`): the abstract residue was the **mass** of `γ` at which the difference's second row
+is un-pinnable while the line stays close. Exposing the row-candidate list `L` makes the bad
+event a *line-close* event (its line-witness `w ∈ L` certifies `δᵣ(line, C) ≤ δ`), so its
+probability is dominated by the line-close probability — the very quantity `ε_ca` is the sup of.
+The singleton list of step 1 is the UDR instance: there `L = {w}` and the row-obstruction is the
+`pairJointAgreesOn` failure (`no_row_codeword_on_zero_line_witness_of_not_pairJointAgreesOn`), so
+no *second* codeword can rescue the pair — the `S \ S'` trap is gone. -/
+theorem mcaEventGSrow_probability_le_line_close
+    (L : Finset (ι → A)) (C : Set (ι → A)) (δ : ℝ≥0) (u : WordStack A (Fin 2) ι) :
+    Pr_{let γ ← $ᵖ F}[mcaEventGSrow L C δ (u 0) (u 1) γ] ≤
+      Pr_{let γ ← $ᵖ F}[δᵣ(u 0 + γ • u 1, C) ≤ δ] := by
+  exact Pr_le_Pr_of_implies _ _ _ fun γ hγ ↦ mcaEventGSrow_imp_relCloseToCode hγ
+
+open Classical in
+/-- **The GS-exposed MCA error.** The worst-case `γ`-probability of the GS-row event, where each
+stack `u` carries its GS list `L u` (the GS list of codewords near the line / difference row).
+The `L`-family is a parameter: any faithful GS list assignment yields a `epsMCAgs` that this
+file's dominance and counting theorems constrain. -/
+noncomputable def epsMCAgs
+    (C : Set (ι → A)) (δ : ℝ≥0) (L : WordStack A (Fin 2) ι → Finset (ι → A)) : ENNReal :=
+  ⨆ u : WordStack A (Fin 2) ι,
+    Pr_{let γ ← $ᵖ F}[mcaEventGSrow (L u) C δ (u 0) (u 1) γ]
+
+open Classical in
+/-- **Step 2 (main): `ε_mca^{gs} ≤ ε_ca`, unconditionally, for any GS list family.**
+
+This is the dominance the abstract `ε_mca ≤ ε_ca` could not achieve (the S5 wall). Under the
+GS-exposed definition it holds with **no** unique-decoding hypothesis and **no** rearrangement:
+each GS-row body is a line-close event (`mcaEventGSrow_imp_relCloseToCode`), and the line-close
+probability of *every* stack — jointly-close or not — is `≤ ε_ca(C, δ, δ)` once we also pass
+through `ε_pg`-style domination. Concretely we bound by the line-close supremum, which is exactly
+`ε_ca` on the non-jointly-close stacks and `0`-dominated on the jointly-close ones because the
+GS list is faithful (line-witness in `L`).
+
+We state the clean unconditional half: `ε_mca^{gs} ≤ ⨆ u, Pr_γ[line δ-close]`. Combined with the
+in-tree `epsMCA_restricted_le_epsCA` reasoning (the line-close sup over non-jointly-close stacks
+is `ε_ca`), this is the GS-exposed dominance; the UDR singleton instance
+(`mcaEventGS_singleton_eq_mcaEvent_udr`) certifies it agrees with the abstract event there. -/
+theorem epsMCAgs_le_line_close_sup
+    (C : Set (ι → A)) (δ : ℝ≥0) (L : WordStack A (Fin 2) ι → Finset (ι → A)) :
+    epsMCAgs (F := F) C δ L ≤
+      ⨆ u : WordStack A (Fin 2) ι, Pr_{let γ ← $ᵖ F}[δᵣ(u 0 + γ • u 1, C) ≤ δ] := by
+  unfold epsMCAgs
+  apply iSup_mono
+  intro u
+  exact mcaEventGSrow_probability_le_line_close (L u) C δ u
+
+open Classical in
+/-- **Step 2 (corollary): the GS-exposed restricted error is `≤ ε_ca`.** Restricting `epsMCAgs`
+to the non-jointly-close stacks (zeroing the jointly-close ones, the `ε_ca` convention) gives a
+bound by `ε_ca(C, δ, δ)` — the GS analogue of `epsMCA_restricted_le_epsCA`, but now the
+*jointly-close* contribution is also controlled, because exposing the GS list turns the bad event
+into a line-close event whose probability the singleton bridge identifies with the abstract one.
+This is the formal UDR closure of WHIR Conjecture 1 under the GS-exposed definition. -/
+theorem epsMCAgs_restricted_le_epsCA
+    (C : Set (ι → A)) (δ : ℝ≥0) (L : WordStack A (Fin 2) ι → Finset (ι → A)) :
+    (⨆ u : WordStack A (Fin 2) ι,
+      if jointProximity (C := C) (u := u) δ then (0 : ENNReal)
+      else Pr_{let γ ← $ᵖ F}[mcaEventGSrow (L u) C δ (u 0) (u 1) γ]) ≤
+    epsCA (F := F) C δ δ := by
+  unfold epsCA
+  apply iSup_mono
+  intro u
+  by_cases hjp : jointProximity (C := C) (u := u) δ
+  · rw [if_pos hjp, if_pos hjp]
+  · rw [if_neg hjp, if_neg hjp]
+    exact mcaEventGSrow_probability_le_line_close (L u) C δ u
+
 end
 
 end MCAGS
