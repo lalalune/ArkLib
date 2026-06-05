@@ -9,6 +9,8 @@ import Mathlib.Combinatorics.Enumerative.Partition.Basic
 import Mathlib.Data.Nat.Choose.Multinomial
 import ArkLib.Data.Polynomial.RationalFunctions
 
+set_option linter.style.longFile 1900
+
 /-!
 # BCIKS20 Appendix A.4 — Hensel-lift numerator `β` : WAVE 1 FOUNDATION
 
@@ -1184,9 +1186,7 @@ theorem partitionProd_βHensel_weight_le (x₀ : F) (R : F[X][X][Y])
   have hcongr : partitionProd lam
       (fun l => if _h : l < k + 1 then βHensel H x₀ R hHyp l else 0)
       = partitionProd lam (fun l => βHensel H x₀ R hHyp l) := by
-    rw [partitionProd, partitionProd]
-    refine congrArg Multiset.prod (Multiset.map_congr rfl (fun l hl => ?_))
-    rw [dif_pos (surviving_parts_lt lam hlam hl)]
+    exact partitionProd_surviving_guard lam hlam (fun l => βHensel H x₀ R hHyp l) 0
   rw [hcongr]
   -- Multiset-sum bound via `partitionProd_weight_le`.
   refine le_trans (partitionProd_weight_le H hH hDH lam (fun l => βHensel H x₀ R hHyp l)) ?_
@@ -1363,9 +1363,7 @@ theorem partitionProd_βHensel_weight_structured_le (x₀ : F) (R : F[X][X][Y])
   have hcongr : partitionProd lam
       (fun l => if _h : l < k + 1 then βHensel H x₀ R hHyp l else 0)
       = partitionProd lam (fun l => βHensel H x₀ R hHyp l) := by
-    rw [partitionProd, partitionProd]
-    refine congrArg Multiset.prod (Multiset.map_congr rfl (fun l hl => ?_))
-    rw [dif_pos (surviving_parts_lt lam hlam hl)]
+    exact partitionProd_surviving_guard lam hlam (fun l => βHensel H x₀ R hHyp l) 0
   rw [hcongr]
   refine le_trans (partitionProd_weight_le H hH hDH lam (fun l => βHensel H x₀ R hHyp l)) ?_
   have hkey : (lam.parts.map (fun l => weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp l) D)).sum
