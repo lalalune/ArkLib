@@ -41,6 +41,7 @@ def pSpecBatching : ProtocolSpec 2 :=
 abbrev pSpecSumcheckRound (L : Type) [Semiring L] : ProtocolSpec 2 :=
   Sumcheck.Structured.pSpecSumcheckRound L 2
 
+@[reducible]
 def pSpecSumcheckLoop := ProtocolSpec.seqCompose (fun (_: Fin ℓ') => pSpecSumcheckRound L)
 
 def pSpecFinalSumcheck : ProtocolSpec 1 := ⟨![Direction.P_to_V], ![L]⟩
