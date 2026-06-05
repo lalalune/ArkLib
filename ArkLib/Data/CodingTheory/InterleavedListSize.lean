@@ -38,7 +38,7 @@ open ListDecodable Code InterleavedCode
 
 namespace InterleavedCode.ListSize
 
-variable {ι F : Type} [Fintype ι] [Field F] [DecidableEq F]
+variable {ι F : Type} [Fintype ι]
 
 set_option maxHeartbeats 1000000
 
@@ -46,7 +46,9 @@ set_option maxHeartbeats 1000000
 
 This re-derives the projection close-list membership from the in-tree
 projection-distance lemma `relHammingDist_transpose_le`. -/
-lemma transpose_mem_closeCodewordsRel [Nonempty ι] {m : ℕ} {C : Set (ι → F)} {δ : ℝ}
+omit [Field F] in
+lemma transpose_mem_closeCodewordsRel [DecidableEq F] [Nonempty ι] {m : ℕ}
+    {C : Set (ι → F)} {δ : ℝ}
     {f V : Matrix ι (Fin m) F}
     (hV : V ∈ closeCodewordsRel (interleavedCodeSet (κ := Fin m) C) f δ)
     (k : Fin m) :
@@ -77,6 +79,7 @@ lemma transpose_mem_closeCodewordsRel [Nonempty ι] {m : ℕ} {C : Set (ι → F
 
 /-- The per-column base-code list size is bounded by the maximised list size `Lambda C δ`
 (when `F` is finite, so all lists are finite). -/
+omit [Field F] [DecidableEq F] in
 lemma encard_closeCodewordsRel_le_Lambda [Fintype F] {C : Set (ι → F)} {δ : ℝ} (g : ι → F) :
     (closeCodewordsRel C g δ).encard ≤ Lambda C δ := by
   have hfin : (closeCodewordsRel C g δ).Finite := Set.toFinite _
