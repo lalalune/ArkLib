@@ -2032,6 +2032,53 @@ theorem append_Challenge_natAdd (k : Fin n)
   show Fin.vappend pSpec₁.«Type» pSpec₂.«Type» (Fin.natAdd m k) = pSpec₂.«Type» k
   rw [Fin.vappend_eq_append, Fin.append_right]
 
+/-- **Right interior-round `getChallenge` reduction.**  The `inr` analogue of
+`append_getChallenge_left`: the appended protocol's `getChallenge` at a right challenge round
+`Fin.natAdd m k` (`k : Fin n`) is heterogeneously equal to the `liftM` (along the right challenge
+`SubSpec` `[pSpec₂.Challenge]ₒ ⊂ₒ [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ`) of `pSpec₂`'s `getChallenge`. -/
+theorem append_getChallenge_natAdd (k : Fin n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (Fin.natAdd m k) = .V_to_P)
+    (hDir₂ : pSpec₂.dir k = .V_to_P) :
+    HEq ((pSpec₁ ++ₚ pSpec₂).getChallenge ⟨Fin.natAdd m k, hDir⟩)
+        (liftM (pSpec₂.getChallenge ⟨k, hDir₂⟩) :
+          OracleComp [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ _) := by
+  unfold ProtocolSpec.getChallenge
+  have hChalEq : (pSpec₁ ++ₚ pSpec₂).Challenge ⟨Fin.natAdd m k, hDir⟩
+      = pSpec₂.Challenge ⟨k, hDir₂⟩ := by
+    show Fin.vappend pSpec₁.«Type» pSpec₂.«Type» (Fin.natAdd m k) = pSpec₂.«Type» k
+    rw [Fin.vappend_eq_append, Fin.append_right]
+  show HEq (liftM (OracleSpec.query (spec := [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+        ⟨⟨Fin.natAdd m k, hDir⟩, ()⟩))
+      (liftM (OracleSpec.query (spec := [pSpec₂.Challenge]ₒ) ⟨⟨k, hDir₂⟩, ()⟩) :
+        OracleComp [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ _)
+  rw [show (liftM (OracleSpec.query (spec := [pSpec₂.Challenge]ₒ) ⟨⟨k, hDir₂⟩, ()⟩) :
+          OracleComp [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ _)
+        = liftM (liftM (OracleSpec.query (spec := [pSpec₂.Challenge]ₒ) ⟨⟨k, hDir₂⟩, ()⟩)
+            : OracleQuery [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ _) from rfl]
+  refine liftM_query_heq hChalEq ?_
+  rw [OracleSpec.query_def]
+  show HEq (OracleQuery.mk (spec := [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) ⟨⟨Fin.natAdd m k, hDir⟩, ()⟩ id)
+      (MonadLift.monadLift (OracleSpec.query (spec := [pSpec₂.Challenge]ₒ) ⟨⟨k, hDir₂⟩, ()⟩))
+  rw [SubSpec.liftM_eq_lift]
+  refine oracleQuery_heq ?_ hChalEq ?_
+  · show (⟨⟨Fin.natAdd m k, hDir⟩, ()⟩ : [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ.Domain)
+      = ⟨ChallengeIdx.inr ⟨k, hDir₂⟩, ()⟩
+    congr 1
+  · simp only [OracleQuery.cont_query, OracleQuery.input_query, Function.id_comp]
+    have hdom : [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ.Range ⟨⟨Fin.natAdd m k, hDir⟩, ()⟩
+        = [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ.Range
+            ((inferInstance : [(pSpec₂).Challenge]ₒ ⊂ₒ [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ).onQuery
+              ⟨⟨k, hDir₂⟩, ()⟩) := by
+      show (pSpec₁ ++ₚ pSpec₂).Challenge ⟨Fin.natAdd m k, hDir⟩
+        = (pSpec₁ ++ₚ pSpec₂).Challenge (ChallengeIdx.inr ⟨k, hDir₂⟩)
+      congr 1
+    refine Function.hfunext hdom (fun a a' haa => ?_)
+    refine haa.trans ?_
+    dsimp only [SubSpec.onResponse]
+    refine HEq.symm ?_
+    generalize_proofs h
+    exact cast_heq h a'
+
 /-! ### Seam-round reductions
 
 The seam round `m` is the genuinely-new monadic-interleaving step of `Prover.append` (the `i = m`
@@ -2175,6 +2222,20 @@ theorem append_receiveChallenge_natAdd (k : Fin n) (hk : 0 < (k : ℕ))
   refine receiveChallenge_heq_congr hidx ?_
   exact (cast_heq _ _).trans ((cast_heq _ _).trans (cast_heq _ _).symm)
 
+/-! ### Right-block `processRound` reductions (prefix-carrying)
+
+The right-block run carries the left transcript `transcript₁` as a prefix.  Unlike the left block
+(where `append_processRound_left_*` matched a clean `liftM (P₁.processRound ..)`), the right block's
+transcript is `happend transcript₁ tr₂`: the appended `processRound` at a right round grows the
+*outer* `happend`-prefixed transcript by a `concat`, while the factored `P₂.processRound` grows the
+*inner* `pSpec₂` transcript `tr₂` by a `concat`.  These are identified by `concat_append_right`
+(`= Fin.happend_hconcat_eq`).
+
+`append_getChallenge_natAdd` (the `inr`-SubSpec analogue of the proven `append_getChallenge_left`)
+supplies the missing per-round handle for right *challenge* rounds, completing the round-local
+reduction set for the right block (`{send,receive}Message_natAdd`, `{send,receive}_seam`,
+`getChallenge_natAdd`). -/
+
 /--
 States that running an appended prover `P₁.append P₂` with an initial statement `stmt₁` and
 witness `wit₁` behaves as expected: it first runs `P₁` to obtain an intermediate statement
@@ -2206,6 +2267,10 @@ theorem append_run (stmt : Stmt₁) (wit : Wit₁) :
   --   • RIGHT interior rounds `m+1..m+n-1` (`i > m` branch): `append_sendMessage_natAdd` /
   --     `append_receiveChallenge_natAdd` reduce to `P₂`'s step at round `k`; state transports
   --     `append_PrvState_natAdd_castSucc` / `_interior_succ`; types `append_{dir,Message,Challenge}_natAdd`.
+  --   • RIGHT challenge `getChallenge`: `append_getChallenge_natAdd` (NEW; `inr`-SubSpec analogue of
+  --     the proven `append_getChallenge_left`).  This was the last missing round-local handle: the
+  --     interior/seam challenge-round `processRound` needs the appended `getChallenge` ≍ `liftM` of
+  --     `pSpec₂.getChallenge` along `[pSpec₂.Challenge]ₒ ⊂ₒ [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ`.  PROVEN.
   --
   -- (T) Transcript-PREFIX family — NOW DISCHARGED (committed infrastructure):
   --   The prefix/snoc commutation `Transcript.concat msg (transcript₁ ++ₜ tr₂)
@@ -2218,23 +2283,29 @@ theorem append_run (stmt : Stmt₁) (wit : Wit₁) :
   --   and the partial-transcript seam state `(pSpec₁++pSpec₂).Transcript ⟨m,_⟩ ≍ transcript₁` is the
   --   proven `append_Transcript_castLE` (`Fin.last m`).  All #print-axioms clean.
   --
-  -- REMAINING OBSTRUCTION (the genuinely new content, blocking assembly):
-  --   (R) Right-block run induction.  By `Fin.induction` on `k : Fin (n+1)`, with the prefix `(T)`
-  --       threaded: `continueFromTo (P₁++P₂) stmt wit ⟨m,_⟩ (natAdd m k) rSeam`
-  --       ≍ (do `⟨tr₂,s₂'⟩ ← P₂.runToRound k (P₂.input (←P₁.output …)) …; pure (transcript₁ ++ₜ tr₂, …)`)
-  --       — base `k=0` is `continueFromTo_self` (+ the seam-boundary (T) facts above); succ steps peel
-  --       via `continueFromTo_succ_of_ne` + `processRound_{message,challenge}` and the PROVEN per-round
-  --       seam/interior reductions above, now closing the transcript-prefix conjunct with (T).  This is
-  --       the right-block analogue of `append_processRound_left_*` + `append_runToRound_left`, with the
-  --       additional `transcript₁` prefix carried by `concat_append_right` at every `concat` step.
-  --   (O) `output` assembly: combine via `++ₜ` (`append_fst`/`append_snd`) + `P₂.output` tail
-  --       (`output` branch of `Prover.append`, incl. `n = 0` degenerate seam where the right block is
-  --       empty and `P₁.output >>= P₂.input >>= P₂.output` collapses).
+  -- REMAINING OBSTRUCTION (now sharply localized to ONE structural mismatch):
+  --   (R) Right-block run induction.  The intended invariant is
+  --       `continueFromTo (P₁++P₂) stmt wit ⟨m,_⟩ (natAdd m k) rSeam`
+  --       ≍ (do `ctx ← liftM (P₁.output sLast); ⟨tr₂,s₂⟩ ← liftM (P₂.runToRound k ctx.1 ctx.2);
+  --              pure (transcript₁ ++ₜ tr₂, s₂)`).
+  --       The SEAM-MERGE MONADIC INTERLEAVING blocks a uniform `Fin.induction` here: the seam round
+  --       `m` (= pSpec₂ round 0) is where `P₁.output >>= P₂.input` runs, INSIDE the k=0→k=1
+  --       `processRound`.  So at the induction base `k=0`, the LHS is `continueFromTo_self = pure rSeam`
+  --       (state still `P₁`'s last state, NO `P₁.output` bind), while a fixed-shape RHS already carries
+  --       the `P₁.output` bind — the two cannot be HEq at `k=0`.  A correct development must peel the
+  --       seam round ONCE up front (via `continueFromTo_succ_of_ne` + `append_{send,receive}_seam` +
+  --       `append_getChallenge_natAdd ⟨0,_⟩` + `concat_append_right`), exposing the `P₁.output` bind,
+  --       and only THEN `Fin.induction` over the interior `k : Fin n` (whose succ steps DO have the
+  --       uniform shape, closed by `append_{send,receive}Message_natAdd` / `append_getChallenge_natAdd`
+  --       + `concat_append_right`).  All round-local handles for this are now PROVEN (see above); the
+  --       residue is the multi-step HEq plumbing of this peel-then-induct, ~200 lines.
+  --   (O) `output` assembly: combine via `++ₜ` + `P₂.output` tail (`output` branch of `Prover.append`,
+  --       incl. `n = 0` degenerate seam where `P₁.output >>= P₂.input >>= P₂.output` collapses).
   --
-  -- All round-local reductions AND the transcript-prefix family (T) are discharged; the residue is the
-  -- right-block run induction (R) wiring the per-round reductions + (T) prefix commutation, plus the
-  -- output assembly (O).  A `HEq` engineering task on the now-complete reduction+transcript layer,
-  -- with NO remaining monadic-interleaving or transcript-prefix gap.
+  -- STATUS: all round-local reductions (left, seam, right interior — message, challenge, AND now the
+  -- right `getChallenge` via `append_getChallenge_natAdd`) and the transcript-prefix family (T) are
+  -- discharged and build-verified.  The single remaining gap is the (R) peel-then-induct HEq plumbing
+  -- of the seam-merge monadic interleaving, plus the (O) output assembly.
   sorry
 
 -- TODO: Need to define a function that "extracts" a second prover from the combined prover
