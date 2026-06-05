@@ -867,7 +867,8 @@ theorem folding_preserves_distance
       rw [bijective_iff_has_inverse]
       exists cast'
       simp [LeftInverse, RightInverse, cast, cast']
-    specialize correlated_agreement 
+    specialize correlated_agreement (inferInstance : NeZero (d / (2 ^ k)))
+    specialize correlated_agreement
       (Matrix.of (fun i j ↦ foldWordAuxCoeff domain f (2 ^ k) 
         (cast i) 
         (domain.subdomainNatReversed k j)))
