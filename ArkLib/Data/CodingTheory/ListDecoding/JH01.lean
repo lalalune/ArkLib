@@ -3,6 +3,8 @@ import ArkLib.Data.CodingTheory.ProximityPrizeLeaves2
 import ArkLib.Data.CodingTheory.ReedSolomon
 import Mathlib.Tactic
 
+set_option linter.unusedSectionVars false
+
 /-!
 # JH01 List-Decoding Separation Helpers
 
@@ -59,7 +61,7 @@ theorem exists_codeword_agree_off_point (j : ℕ) (domain : Fin (j + 1) ↪ F)
 within relative Hamming radius `1 / (j + 1)`. -/
 theorem mem_relHammingBall_of_agree_off_point (j : ℕ) (w c : Fin (j + 1) → F)
     (x : Fin (j + 1)) (hagree : ∀ i, i ≠ x → c i = w i) :
-    c ∈ ListDecodable.relHammingBall w (1 / (j + 1 : ℝ)) := by
+    c ∈ _root_.ListDecodable.relHammingBall w (1 / (j + 1 : ℝ)) := by
   classical
   have hn_pos : 0 < Fintype.card (Fin (j + 1)) := Fintype.card_pos
   have hdist : hammingDist w c ≤ 1 := by
@@ -71,13 +73,12 @@ theorem mem_relHammingBall_of_agree_off_point (j : ℕ) (w c : Fin (j + 1) → F
       exact hi ((hagree i hix).symm)
     have heq : hammingDist w c = (Finset.univ.filter (fun i => w i ≠ c i)).card := by
       rw [hammingDist]
-      rfl
     rw [heq]
     calc (Finset.univ.filter (fun i => w i ≠ c i)).card
         ≤ ({x} : Finset (Fin (j + 1))).card := Finset.card_le_card hfsub
       _ = 1 := Finset.card_singleton x
-  simp only [ListDecodable.relHammingBall, Set.mem_setOf_eq, Code.relHammingDist, NNRat.cast_div,
-    NNRat.cast_natCast]
+  simp only [_root_.ListDecodable.relHammingBall, Set.mem_setOf_eq, Code.relHammingDist,
+    NNRat.cast_div, NNRat.cast_natCast]
   rw [div_le_iff₀ (by exact_mod_cast hn_pos :
     (0 : ℝ) < (Fintype.card (Fin (j + 1)) : ℝ))]
   have hn : (Fintype.card (Fin (j + 1)) : ℝ) = (j : ℝ) + 1 := by simp
@@ -86,8 +87,7 @@ theorem mem_relHammingBall_of_agree_off_point (j : ℕ) (w c : Fin (j + 1) → F
   have hcancel : (1 / (j + 1 : ℝ)) * ((j : ℝ) + 1) = 1 := by
     field_simp
   rw [hcancel]
-  convert hd using 2
-  congr!
+  exact hd
 
 end ReedSolomon
 end CodingTheory

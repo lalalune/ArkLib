@@ -9,6 +9,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Agreement
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Guruswami
 
+-- This bridge exposes paper-aligned theorem names that exceed the style line limit.
+set_option linter.style.longLine false
+
 namespace ProximityGap
 
 open NNReal Finset Function ProbabilityTheory
