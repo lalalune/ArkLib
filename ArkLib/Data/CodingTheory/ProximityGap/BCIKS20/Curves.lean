@@ -19,7 +19,7 @@ namespace ProximityGap
 -- several statement-level bricks do not mention them directly.
 set_option linter.unusedDecidableInType false
 set_option linter.unusedSectionVars false
-set_option linter.style.longFile 2100
+set_option linter.style.longFile 2200
 
 open NNReal Finset Function ProbabilityTheory
 open scoped BigOperators LinearCode ProbabilityTheory ENNReal
@@ -1228,6 +1228,54 @@ theorem RS_jointAgreement_of_prob_gt_and_errorBound_lower_bounds
     (prob_threshold_large_of_errorBound_ge_succ_const
       (deg := deg) (domain := domain) (δ := δ) hεlarge)
     hcoeffPoly
+
+omit [DecidableEq ι] in
+/-- List-branch front door with evaluation-polynomial dependence and the
+probability-threshold side conditions stated as lower bounds on `errorBound`.
+This is the evaluation-polynomial analogue of
+`RS_jointAgreement_of_prob_gt_and_errorBound_lower_bounds`. -/
+theorem RS_jointAgreement_of_prob_gt_and_errorBound_lower_bounds_eval_polys
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hk : 0 < k)
+    (hdeg_le : deg ≤ Fintype.card ι)
+    (u : WordStack F (Fin (k + 1)) ι)
+    (hprob :
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+        ((k : ENNReal) * (errorBound δ deg domain : ENNReal)))
+    (hεsmall :
+      (Fintype.card ι : ℝ≥0) / (Fintype.card F : ℝ≥0) ≤
+        errorBound δ deg domain)
+    (hεlarge :
+      ((Fintype.card ι + 1 : ℕ) : ℝ≥0) / (Fintype.card F : ℝ≥0) ≤
+        errorBound δ deg domain)
+    (hEvalPoly : ∀ P : F → Polynomial F,
+      (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+        ∃ E : ι → Polynomial F,
+          (∀ x, (E x).natDegree < k + 1) ∧
+            ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              ∀ x, (P z).eval (domain x) = (E x).eval z) :
+    jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u) := by
+  classical
+  have hS_card :
+      ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) *
+          (Fintype.card F : ENNReal) <
+        ((RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card :
+          ENNReal) := by
+    simpa [ENNReal.coe_mul, ENNReal.coe_natCast] using
+      goodCoeffsCurve_threshold_mul_card_lt_card_of_prob_gt
+        (u := u) (η := (k : ℝ≥0) * errorBound δ deg domain) hprob
+  exact goodCoeffsCurve_eval_polys_implies_jointAgreement_of_prob_threshold_core
+    (deg := deg) (domain := domain) (δ := δ) hk hdeg_le hS_card
+    (prob_threshold_small_of_errorBound_ge_const
+      (deg := deg) (domain := domain) (δ := δ) hk hεsmall)
+    (prob_threshold_large_of_errorBound_ge_succ_const
+      (deg := deg) (domain := domain) (δ := δ) hεlarge)
+    hEvalPoly
 
 omit [DecidableEq ι] [DecidableEq F] in
 /-- In the strict Johnson branch, the Johnson expression defining

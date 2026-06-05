@@ -3282,6 +3282,34 @@ lemma PzFamily_decoded_and_exists_eval_polys_of_forall_mem_matching_set_at_x
     PzFamily_exists_eval_polys_of_forall_mem_matching_set_at_x
       (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) h_gs hk hmatch⟩
 
+open Polynomial in
+omit [DecidableEq (RatFunc F)] in
+/-- Subset-hypothesis form of the bundled canonical-family extraction.
+
+This matches the shape produced by double-counting over coordinates: for each
+domain coordinate `x`, the full close-parameter set is contained in
+`matching_set_at_x`. -/
+lemma PzFamily_decoded_and_exists_eval_polys_of_close_subset_matching_set_at_x
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hk : 0 < k)
+    (hsubset : ∀ x : Fin n,
+      coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ ⊆
+        matching_set_at_x k δ h_gs x) :
+    (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      (PzFamily (F := F) (n := n) δ u₀ u₁ ωs k z).natDegree < k + 1 ∧
+        δᵣ(u₀ + z • u₁,
+          (PzFamily (F := F) (n := n) δ u₀ u₁ ωs k z).eval ∘ ωs) ≤ δ) ∧
+      ∃ E : Fin n → F[X],
+        (∀ x, (E x).natDegree < k + 1) ∧
+          ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+            ∀ x : Fin n,
+              (PzFamily (F := F) (n := n) δ u₀ u₁ ωs k z).eval (ωs x) =
+                (E x).eval z :=
+  PzFamily_decoded_and_exists_eval_polys_of_forall_mem_matching_set_at_x
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) h_gs hk
+    (fun _ hz x => hsubset x hz)
+
 omit [DecidableEq (RatFunc F)] in
 lemma matching_set_at_x_eq_matching_coords_image_univ
     {ωs : Fin n ↪ F}
