@@ -107,6 +107,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DG25.MainResults
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.ReedSolomon
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.CodingTheory.ProximityGap.Folding
+import ArkLib.Data.CodingTheory.ProximityGap.GK16RootCounting
 import ArkLib.Data.CodingTheory.ProximityGap.GK16Wronskian
 import ArkLib.Data.CodingTheory.ProximityGap.GSCounting
 import ArkLib.Data.CodingTheory.ProximityGap.GSKernelAffineDescent

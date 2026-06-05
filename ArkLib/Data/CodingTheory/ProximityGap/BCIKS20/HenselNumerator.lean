@@ -1929,6 +1929,18 @@ theorem βHenselAssembled_eq_gammaGenuine_of_coeff_succ_eval (x₀ : F) (R : F[X
   βHenselAssembled_eq_gammaGenuine H x₀ R hHyp
     (assembledSeries_isRoot_of_coeff_succ_eval H x₀ R hHyp hsucc)
 
+/-- Coefficient-level form of the conditional Hensel identification.
+
+Once the positive-order coefficients of `eval (βHenselAssembled …) Q` vanish, every coefficient of
+the assembled numerator series is the corresponding genuine Hensel coefficient `αGenuine`. -/
+theorem coeff_βHenselAssembled_eq_αGenuine_of_coeff_succ_eval (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hsucc : ∀ t : ℕ,
+      PowerSeries.coeff (t + 1)
+        (Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H)) = 0) (t : ℕ) :
+    PowerSeries.coeff t (βHenselAssembled H x₀ R hHyp) = αGenuine H x₀ R hHyp t := by
+  rw [βHenselAssembled_eq_gammaGenuine_of_coeff_succ_eval H x₀ R hHyp hsucc, αGenuine]
+
 /-- **(P2) explicit-residual lift identity — PROVEN.**
 
 The repaired lift identity follows from the successor-coefficient vanishing residual. This combines
