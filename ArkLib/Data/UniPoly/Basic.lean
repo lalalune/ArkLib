@@ -953,8 +953,7 @@ lemma add_descends [LawfulBEq R] (a₁ b₁ a₂ b₂ : UniPoly R) :
   equiv a₁ a₂ → equiv b₁ b₂ → add_descending a₁ b₁ = add_descending a₂ b₂ := by
   intros heq_a heq_b
   unfold add_descending
-  rw [Quotient.eq]
-  simp [instSetoidUniPoly]
+  apply Quotient.sound
   calc
     add a₁ b₁ ≈ add_raw a₁ b₁ := add_equiv_raw a₁ b₁
     _ ≈ add_raw a₂ b₂ := by
@@ -974,8 +973,7 @@ lemma smul_descends [LawfulBEq R] (r : R) (p₁ p₂ : UniPoly R) :
   equiv p₁ p₂ → smul_descending r p₁ = smul_descending r p₂ := by
   unfold equiv smul_descending
   intro heq
-  rw [Quotient.eq]
-  simp [instSetoidUniPoly]
+  apply Quotient.sound
   intro i
   rw [smul_equiv p₁, smul_equiv p₂]
   rw [heq i]
@@ -994,8 +992,7 @@ lemma nsmul_descends [LawfulBEq R] (n : ℕ) (p₁ p₂ : UniPoly R) :
   unfold equiv
   intro heq
   unfold nsmul_descending
-  rw [Quotient.eq]
-  simp [instSetoidUniPoly]
+  apply Quotient.sound
   unfold nsmul equiv
   intro i
   repeat rw [nsmul_raw_equiv, coeff_eq_coeff]
@@ -1013,8 +1010,7 @@ def neg_descending (p : UniPoly R) : QuotientUniPoly R :=
 lemma neg_descends (a b : UniPoly R) : equiv a b → neg_descending a = neg_descending b := by
   unfold equiv neg_descending
   intros heq
-  rw [Quotient.eq]
-  simp [instSetoidUniPoly]
+  apply Quotient.sound
   unfold equiv
   intro i
   rw [neg_coeff a i, neg_coeff b i, heq i]
@@ -1031,8 +1027,7 @@ lemma sub_descends [LawfulBEq R] (a₁ b₁ a₂ b₂ : UniPoly R) :
   equiv a₁ a₂ → equiv b₁ b₂ → sub_descending a₁ b₁ = sub_descending a₂ b₂ := by
   unfold equiv sub_descending
   intros heq_a heq_b
-  rw [Quotient.eq]
-  simp [instSetoidUniPoly]
+  apply Quotient.sound
   unfold sub equiv
   calc
     a₁.add b₁.neg ≈ a₁.add_raw b₁.neg := add_equiv_raw a₁ b₁.neg
@@ -1055,8 +1050,7 @@ lemma mulPowX_descends (i : ℕ) (p₁ p₂ : UniPoly R) :
   unfold equiv
   intro heq
   unfold mulPowX_descending
-  rw [Quotient.eq]
-  simp [instSetoidUniPoly]
+  apply Quotient.sound
   intro j
   rw [mulPowX_equiv p₁, mulPowX_equiv p₂]
   rw [heq]
@@ -1077,8 +1071,7 @@ lemma mul_descends [LawfulBEq R] (a₁ b₁ a₂ b₂ : UniPoly R) :
   equiv a₁ a₂ → equiv b₁ b₂ → mul_descending a₁ b₁ = mul_descending a₂ b₂ := by
   unfold mul_descending
   intros heq_a heq_b
-  rw [Quotient.eq]
-  simp [instSetoidUniPoly]
+  apply Quotient.sound
   calc
     a₁.mul b₁ ≈ a₂.mul b₁ := mul_equiv a₁ a₂ b₁ heq_a
     _ ≈ b₁.mul a₂ := mul_comm a₂ b₁
@@ -1097,8 +1090,7 @@ lemma pow_descends (n : ℕ) (p₁ p₂ : UniPoly R) :
   equiv p₁ p₂ → pow_descending p₁ n = pow_descending p₂ n := by
   intro heq
   unfold pow_descending
-  rw [Quotient.eq]
-  simp [instSetoidUniPoly]
+  apply Quotient.sound
   unfold pow
   -- intro i
   induction n with

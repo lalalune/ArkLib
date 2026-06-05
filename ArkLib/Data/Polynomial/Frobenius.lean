@@ -59,7 +59,7 @@ theorem prod_X_sub_C_eq_X_pow_card_sub_X (h_Fq_card_gt_1 : Fintype.card Fq > 1):
   have h_roots_eq : P.roots = Q.roots := by
     rw [h_roots_P, h_roots_Q]
 
-  have hP_splits : P.Splits (RingHom.id Fq) := by
+  have hP_splits : P.Splits := by
     -- ⊢ Splits (RingHom.id Fq) (∏ c ∈ Finset.univ, X - C c)
     apply Polynomial.splits_prod
     intro c _
@@ -78,7 +78,7 @@ theorem prod_X_sub_C_eq_X_pow_card_sub_X (h_Fq_card_gt_1 : Fintype.card Fq > 1):
     rw [Polynomial.natDegree_sub_eq_left_of_natDegree_lt degLt]
     rw [Polynomial.natDegree_X_pow]
 
-  have hQ_splits : Q.Splits (RingHom.id Fq) := by
+  have hQ_splits : Q.Splits := by
     unfold Q
     apply Polynomial.splits_iff_card_roots.mpr
     -- ⊢ (X ^ Fintype.card Fq - X).roots.card = (X ^ Fintype.card Fq - X).natDegree
