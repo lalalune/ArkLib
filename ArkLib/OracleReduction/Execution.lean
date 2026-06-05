@@ -807,7 +807,11 @@ lemma liftM_optionT_lift_eq_monadLift_liftM (mx : OracleComp oSpec α) :
       (monadLift (liftM mx : OracleComp (oSpec + [pSpec.Challenge]ₒ) α) :
         OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) α) := by
   rw [liftM_OptionT_eq]
-  rw [OptionT.ext_iff]
+  change
+    (simulateQ (fun t => (liftM (OracleSpec.query t) :
+        OracleComp (oSpec + [pSpec.Challenge]ₒ) _)) (OptionT.lift mx).run) =
+      (monadLift (liftM mx : OracleComp (oSpec + [pSpec.Challenge]ₒ) α) :
+        OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) α).run
   rw [show OptionT.lift mx = OptionT.mk (some <$> mx) by rfl]
   rw [show (monadLift (liftM mx : OracleComp (oSpec + [pSpec.Challenge]ₒ) α) :
       OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) α).run =
@@ -817,10 +821,12 @@ lemma liftM_optionT_lift_eq_monadLift_liftM (mx : OracleComp oSpec α) :
           (n := OracleComp (oSpec + [pSpec.Challenge]ₒ))
           (liftM mx : OracleComp (oSpec + [pSpec.Challenge]ₒ) α)]
   rw [monadLift_eq_self]
-  change simulateQ (fun t => (liftM (query t) : OracleComp (oSpec + [pSpec.Challenge]ₒ) _))
+  change simulateQ (fun t => (liftM (OracleSpec.query t) :
+      OracleComp (oSpec + [pSpec.Challenge]ₒ) _))
     (some <$> mx) = some <$> (liftM mx : OracleComp (oSpec + [pSpec.Challenge]ₒ) α)
   rw [simulateQ_map]
-  rw [show simulateQ (fun t => (liftM (query t) : OracleComp (oSpec + [pSpec.Challenge]ₒ) _))
+  rw [show simulateQ (fun t => (liftM (OracleSpec.query t) :
+        OracleComp (oSpec + [pSpec.Challenge]ₒ) _))
       mx = liftComp mx (oSpec + [pSpec.Challenge]ₒ) by rfl]
   rw [liftComp_eq_liftM]
 
