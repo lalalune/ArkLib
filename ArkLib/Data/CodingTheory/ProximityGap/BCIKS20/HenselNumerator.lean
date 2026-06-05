@@ -2084,6 +2084,20 @@ theorem coeff_βHenselAssembled_eq_αGenuine_of_trunc_defect_cancel
   rw [βHenselAssembled_eq_gammaGenuine_of_trunc_defect_cancel H x₀ R hHyp hcancel,
     αGenuine]
 
+/-- Successor-coefficient form of the trunc-defect cancellation reduction.
+This is the index shape consumed by the `(A.1)` successor recursion. -/
+theorem coeff_succ_βHenselAssembled_eq_αGenuine_of_trunc_defect_cancel
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hcancel : ∀ t : ℕ,
+      PowerSeries.coeff (t + 1)
+          (Polynomial.eval (βHenselTrunc H x₀ R hHyp t) (Q x₀ R H))
+        + ClaimA2.ζ R x₀ H * PowerSeries.coeff (t + 1) (βHenselAssembled H x₀ R hHyp)
+          = 0)
+    (t : ℕ) :
+    PowerSeries.coeff (t + 1) (βHenselAssembled H x₀ R hHyp) =
+      αGenuine H x₀ R hHyp (t + 1) :=
+  coeff_βHenselAssembled_eq_αGenuine_of_trunc_defect_cancel H x₀ R hHyp hcancel (t + 1)
+
 /-- The repaired lift identity follows directly from the per-order
 truncated-defect cancellations. -/
 theorem βHensel_lift_identity_of_trunc_defect_cancel (x₀ : F) (R : F[X][X][Y])
