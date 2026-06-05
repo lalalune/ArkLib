@@ -816,6 +816,101 @@ theorem Lambda_le_of_gamma_square_condition
   apply Lambda_le_of_gamma_optimal_johnson_condition C hδ hq_one hδ_le_gamma
   simpa using sub_neg.mpr hsquare
 
+/-- Johnson Lambda cap at the reciprocal finite-list radius reached by the
+current quadratic-cap route.
+
+This uses the factor `(ℓ-1)/ℓ`, not the paper-facing `Jqℓ` factor
+`ℓ/(ℓ-1)`. The strict inequality requires positive minimum distance; when
+`minDist(C) = 0`, the square condition degenerates to equality. -/
+theorem Lambda_le_of_reciprocal_johnson_radius
+    {ι : Type} [Fintype ι] [DecidableEq ι] [Nonempty ι]
+    {α : Type} [Fintype α] [DecidableEq α]
+    (C : ListDecodable.Code ι α) {ℓ : ℕ}
+    (hℓ : 2 ≤ ℓ) (hq_one : 1 < Fintype.card α)
+    (hmin_pos : 0 < Code.minDist C)
+    (hrad :
+      0 ≤ 1
+        - (1 / (1 - 1 / (Fintype.card α : ℝ)))
+          * (((ℓ : ℝ) - 1) / (ℓ : ℝ))
+          * ((Code.minDist C : ℝ) / (Fintype.card ι : ℝ))) :
+    ListDecodable.Lambda C
+      ((1 - 1 / (Fintype.card α : ℝ)) *
+        (1 - Real.sqrt
+          (1
+            - (1 / (1 - 1 / (Fintype.card α : ℝ)))
+              * (((ℓ : ℝ) - 1) / (ℓ : ℝ))
+              * ((Code.minDist C : ℝ) / (Fintype.card ι : ℝ))))) ≤
+        (ℓ : ℕ∞) := by
+  let γ : ℝ := 1 - 1 / (Fintype.card α : ℝ)
+  let drel : ℝ := (Code.minDist C : ℝ) / (Fintype.card ι : ℝ)
+  let L : ℝ := ((ℓ : ℝ) - 1) / (ℓ : ℝ)
+  let z : ℝ := 1 - (1 / γ) * L * drel
+  have hq_real : 1 < (Fintype.card α : ℝ) := by exact_mod_cast hq_one
+  have hq_real_pos : 0 < (Fintype.card α : ℝ) := lt_trans zero_lt_one hq_real
+  have hγ_pos : 0 < γ := by
+    have hfrac_pos :
+        0 < ((Fintype.card α : ℝ) - 1) / (Fintype.card α : ℝ) :=
+      div_pos (sub_pos.mpr hq_real) hq_real_pos
+    have hγ_eq :
+        γ = ((Fintype.card α : ℝ) - 1) / (Fintype.card α : ℝ) := by
+      dsimp [γ]
+      field_simp [hq_real_pos.ne']
+    rw [hγ_eq]
+    exact hfrac_pos
+  have hℓ_real_pos : 0 < (ℓ : ℝ) := by
+    have : (0 : ℕ) < ℓ := lt_of_lt_of_le (by norm_num) hℓ
+    exact_mod_cast this
+  have hL_nonneg : 0 ≤ L := by
+    have hℓ_real_ge_one : (1 : ℝ) ≤ (ℓ : ℝ) := by exact_mod_cast (le_trans (by norm_num) hℓ)
+    dsimp [L]
+    exact div_nonneg (sub_nonneg.mpr hℓ_real_ge_one) hℓ_real_pos.le
+  have hdrel_pos : 0 < drel := by
+    have hn_real_pos : 0 < (Fintype.card ι : ℝ) := by exact_mod_cast Fintype.card_pos
+    dsimp [drel]
+    exact div_pos (by exact_mod_cast hmin_pos) hn_real_pos
+  have hz : 0 ≤ z := by
+    simpa [γ, drel, L, z] using hrad
+  have hz_le_one : z ≤ 1 := by
+    have hterm_nonneg : 0 ≤ (1 / γ) * L * drel := by positivity
+    dsimp [z]
+    linarith
+  have hsqrt_le_one : Real.sqrt z ≤ 1 := by
+    calc
+      Real.sqrt z ≤ Real.sqrt 1 := Real.sqrt_le_sqrt hz_le_one
+      _ = 1 := by norm_num
+  have hδ_nonneg : 0 ≤ γ * (1 - Real.sqrt z) :=
+    mul_nonneg hγ_pos.le (sub_nonneg.mpr hsqrt_le_one)
+  have hδ_le_gamma : γ * (1 - Real.sqrt z) ≤ γ := by
+    nlinarith [hγ_pos, Real.sqrt_nonneg z]
+  apply Lambda_le_of_gamma_square_condition C hδ_nonneg hq_one
+      (by simpa [γ, z] using hδ_le_gamma)
+  dsimp [γ, drel, L, z]
+  have hsq : (Real.sqrt (1 - (1 / γ) * L * drel)) ^ 2 =
+      1 - (1 / γ) * L * drel := by
+    exact Real.sq_sqrt hz
+  have htarget :
+      γ + (ℓ : ℝ) * (γ - drel) <
+        ((ℓ : ℝ) + 1) *
+          (γ - γ * (1 - Real.sqrt (1 - (1 / γ) * L * drel))) ^ 2 / γ := by
+    have hdrel_div_pos : 0 < drel / (ℓ : ℝ) := div_pos hdrel_pos hℓ_real_pos
+    have hgap :
+        γ - γ * (1 - Real.sqrt (1 - (1 / γ) * L * drel)) =
+          γ * Real.sqrt (1 - (1 / γ) * L * drel) := by
+      ring
+    rw [hgap]
+    rw [show (γ * Real.sqrt (1 - (1 / γ) * L * drel)) ^ 2 =
+        γ ^ 2 * (Real.sqrt (1 - (1 / γ) * L * drel)) ^ 2 by ring]
+    rw [hsq]
+    have hrhs_eq :
+        ((ℓ : ℝ) + 1) * (γ ^ 2 * (1 - (1 / γ) * L * drel)) / γ =
+          ((ℓ : ℝ) + 1) * (γ - drel * L) := by
+      field_simp [hγ_pos.ne']
+    rw [hrhs_eq]
+    dsimp [L]
+    field_simp [hℓ_real_pos.ne']
+    nlinarith [hdrel_pos, hℓ_real_pos]
+  simpa [γ, drel, L, z] using htarget
+
 /-- A violated finite `Lambda` bound produces a concrete point-list whose average
 distance is controlled by the q-ary Plotkin bound.
 
