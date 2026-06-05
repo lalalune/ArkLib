@@ -372,6 +372,45 @@ export Sumcheck.Structured (MultilinearPoly MultiquadraticPoly
   SumcheckMultiplierParam computeInitialSumcheckPoly
   projectToMidSumcheckPoly projectToNextSumcheckPoly)
 
+/-- Computable multilinear polynomial from hypercube evaluations (`CMvPolynomial` / `CMLE'`).
+See `MvPolynomial.Computational.fromCMvPolynomial_CMLE'_eq_MLE'`. -/
+def MultilinearPoly.ofCMLEEvals {L : Type} [CommRing L] [BEq L] [LawfulBEq L] {ℓ : ℕ}
+    (evals : Fin (2 ^ ℓ) → L) : MultilinearPoly L ℓ :=
+  ⟨CPoly.fromCMvPolynomial (MvPolynomial.Computational.CMLE' evals), by
+    rw [MvPolynomial.Computational.fromCMvPolynomial_CMLE'_eq_MLE']
+    unfold MLE'
+    exact MLE_mem_restrictDegree (evals ∘ finFunctionFinEquiv)⟩
+
+theorem MultilinearPoly.ofCMLEEvals_val {L : Type} [CommRing L] [BEq L] [LawfulBEq L] {ℓ : ℕ}
+    (evals : Fin (2 ^ ℓ) → L) :
+    (ofCMLEEvals evals).val = MLE' evals := by
+  simpa [ofCMLEEvals] using MvPolynomial.Computational.fromCMvPolynomial_CMLE'_eq_MLE' evals
+
+/-- Same carrier as `⟨MLE evals, MLE_mem_restrictDegree evals⟩`, built via `CMLE'`. -/
+def MultilinearPoly.ofHypercubeEvals {L : Type} [CommRing L] [BEq L] [LawfulBEq L] {ℓ : ℕ}
+    (evals : (Fin ℓ → Fin 2) → L) : MultilinearPoly L ℓ :=
+  ofCMLEEvals (fun i => evals (finFunctionFinEquiv.symm i))
+
+theorem MultilinearPoly.ofHypercubeEvals_val {L : Type} [CommRing L] [BEq L] [LawfulBEq L] {ℓ : ℕ}
+    (evals : (Fin ℓ → Fin 2) → L) :
+    (ofHypercubeEvals evals).val = MLE evals := by
+  rw [ofHypercubeEvals, ofCMLEEvals_val, MLE']
+  congr 1
+  funext x
+  simp only [Function.comp_apply, Equiv.symm_apply_apply]
+
+theorem MultilinearPoly.ofCMLEEvals_eval_zeroOne {L : Type} [CommRing L] [BEq L] [LawfulBEq L] {ℓ : ℕ}
+    (evals : Fin (2 ^ ℓ) → L) (x : Fin ℓ → Fin 2) :
+    MvPolynomial.eval (x : Fin ℓ → L) (ofCMLEEvals evals).val = evals (finFunctionFinEquiv x) := by
+  simpa [ofCMLEEvals_val] using MLE'_eval_zeroOne x evals
+
+theorem MultilinearPoly.ofCMLEEvals_cmEval_eq_val_eval {L : Type} [CommRing L] [BEq L] [LawfulBEq L]
+    {ℓ : ℕ} (evals : Fin (2 ^ ℓ) → L) (x : Fin ℓ → Fin 2) :
+    CPoly.CMvPolynomial.eval (x : Fin ℓ → L) (MvPolynomial.Computational.CMLE' evals) =
+      MvPolynomial.eval (x : Fin ℓ → L) (ofCMLEEvals evals).val := by
+  rw [CPoly.eval_equiv]
+  simpa [ofCMLEEvals]
+
 variable {r : ℕ} [NeZero r]
 variable {L : Type} [Field L] [Fintype L] [DecidableEq L] [CharP L 2]
   -- [SampleableType L] => not used
