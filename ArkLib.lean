@@ -196,6 +196,7 @@ import ArkLib.Data.Polynomial.HenselExistence
 import ArkLib.Data.Polynomial.HenselSeriesCoeff
 import ArkLib.Data.Polynomial.Indicator
 import ArkLib.Data.Polynomial.Interface
+import ArkLib.Data.Polynomial.MultinomialChainRule
 import ArkLib.Data.Polynomial.NewtonLinearization
 import ArkLib.Data.Polynomial.PowerSeriesComposition
 import ArkLib.Data.Polynomial.Prelims
