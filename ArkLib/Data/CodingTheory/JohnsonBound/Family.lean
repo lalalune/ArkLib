@@ -605,6 +605,62 @@ theorem Lambda_le_of_floor_minDist_johnson_condition
   exact closeCodewordsRelFinset_card_le_of_floor_minDist_johnson_condition
     C f δ hδ hq hβ hcond
 
+/-- Lambda-level Johnson cap with the close-list radius side condition written
+using the real radius `n - δ*n` instead of the floored integer radius.
+
+The floored agreement lower bound is at least this real quantity, and the
+radical-free Johnson expression is monotone decreasing in that agreement
+parameter when `β ≥ 0`. -/
+theorem Lambda_le_of_real_radius_minDist_johnson_condition
+    {ι : Type} [Fintype ι] [DecidableEq ι] [Nonempty ι]
+    {α : Type} [Fintype α] [DecidableEq α]
+    (C : ListDecodable.Code ι α) {δ : ℝ} {ℓ : ℕ} {β : ℝ}
+    (hδ : 0 ≤ δ) (hq : 0 < Fintype.card α) (hβ : 0 ≤ β)
+    (hcond : ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ)) * (1 + β ^ 2)
+        - 2 * β * (((Fintype.card ι : ℝ) - δ * (Fintype.card ι : ℝ))
+          - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ)))
+      + (ℓ : ℝ) * ((((Fintype.card ι - Code.minDist C : ℕ) : ℝ)
+          - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ))
+        - 2 * β * (((Fintype.card ι : ℝ) - δ * (Fintype.card ι : ℝ))
+          - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ))
+        + β ^ 2 * (Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ))) < 0) :
+    ListDecodable.Lambda C δ ≤ (ℓ : ℕ∞) := by
+  apply Lambda_le_of_floor_minDist_johnson_condition C hδ hq hβ
+  have hx_nonneg : 0 ≤ δ * (Fintype.card ι : ℝ) := by positivity
+  have hfloor_le :
+      (⌊δ * (Fintype.card ι : ℝ)⌋₊ : ℝ) ≤ δ * (Fintype.card ι : ℝ) :=
+    Nat.floor_le hx_nonneg
+  have hA_le :
+      (Fintype.card ι : ℝ) - δ * (Fintype.card ι : ℝ) ≤
+        (((Fintype.card ι - ⌊δ * (Fintype.card ι : ℝ)⌋₊ : ℕ) : ℝ)) := by
+    by_cases hf : ⌊δ * (Fintype.card ι : ℝ)⌋₊ ≤ Fintype.card ι
+    · rw [Nat.cast_sub hf]
+      linarith
+    · have hlt : Fintype.card ι < ⌊δ * (Fintype.card ι : ℝ)⌋₊ :=
+        Nat.lt_of_not_ge hf
+      have hxgt : (Fintype.card ι : ℝ) < δ * (Fintype.card ι : ℝ) :=
+        lt_of_lt_of_le (by exact_mod_cast hlt) hfloor_le
+      have hsub : Fintype.card ι - ⌊δ * (Fintype.card ι : ℝ)⌋₊ = 0 := by omega
+      rw [hsub]
+      linarith
+  have hℓ_nonneg : (0 : ℝ) ≤ (ℓ : ℝ) := by positivity
+  have hcenter_le :
+      -2 * β * ((((Fintype.card ι - ⌊δ * (Fintype.card ι : ℝ)⌋₊ : ℕ) : ℝ))
+          - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ))
+        ≤ -2 * β * (((Fintype.card ι : ℝ) - δ * (Fintype.card ι : ℝ))
+          - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ)) := by
+    nlinarith [hA_le, hβ]
+  have hcenter_scaled_le :
+      (ℓ : ℝ) * (-2 * β *
+          ((((Fintype.card ι - ⌊δ * (Fintype.card ι : ℝ)⌋₊ : ℕ) : ℝ))
+            - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ)))
+        ≤ (ℓ : ℝ) * (-2 * β *
+          (((Fintype.card ι : ℝ) - δ * (Fintype.card ι : ℝ))
+            - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ))) :=
+    mul_le_mul_of_nonneg_left hcenter_le hℓ_nonneg
+  apply lt_of_le_of_lt ?_ hcond
+  nlinarith [hcenter_le, hcenter_scaled_le]
+
 /-- A violated finite `Lambda` bound produces a concrete point-list whose average
 distance is controlled by the q-ary Plotkin bound.
 
