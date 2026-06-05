@@ -14,7 +14,7 @@ namespace RSDistinct
 open Polynomial
 open scoped Classical
 
-variable {F : Type} [Field F] {ι : Type} [Fintype ι] [DecidableEq ι] (domain : ι ↪ F)
+variable {F : Type} [Field F] {ι : Type} (domain : ι ↪ F)
 
 /-- **RS distinctness.** Distinct `p, q ∈ degreeLT F k` agree on `< k` of the
 domain points: `|{x ∈ S : p(ωₓ) = q(ωₓ)}| < k`. -/
@@ -45,5 +45,23 @@ theorem degreeLT_eq_of_agree_card_ge {k : ℕ}
     p = q := by
   by_contra hpq
   exact absurd h (not_le.mpr (degreeLT_agree_card_lt_of_ne domain hp hq hpq S))
+
+/-- Pointwise agreement on at least `k` domain points forces equality for
+degree-`< k` polynomials. -/
+theorem degreeLT_eq_of_agree_on_finset {k : ℕ}
+    {p q : F[X]} (hp : p ∈ Polynomial.degreeLT F k) (hq : q ∈ Polynomial.degreeLT F k)
+    {S : Finset ι} (hcard : k ≤ S.card)
+    (hagree : ∀ x ∈ S, p.eval (domain x) = q.eval (domain x)) :
+    p = q := by
+  apply degreeLT_eq_of_agree_card_ge domain hp hq
+  rw [show S.filter (fun x => p.eval (domain x) = q.eval (domain x)) = S by
+    apply Finset.ext
+    intro x
+    constructor
+    · intro hx
+      exact (Finset.mem_filter.mp hx).1
+    · intro hx
+      exact Finset.mem_filter.mpr ⟨hx, hagree x hx⟩]
+  exact hcard
 
 end RSDistinct
