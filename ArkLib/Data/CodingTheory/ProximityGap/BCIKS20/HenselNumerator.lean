@@ -1895,6 +1895,44 @@ theorem coeff_zero_eval_βHenselAssembled (x₀ : F) (R : F[X][X][Y])
     ProximityPrize.HenselSeriesCoeff.constantCoeff_eval, βHenselAssembled_constantCoeff]
   exact eval_α₀_Q₀_eq_zero hHyp
 
+/-- The `t`-truncation of the assembled series: coefficients `≤ t` agree with
+`βHenselAssembled`, all higher coefficients are `0`. -/
+noncomputable def βHenselTrunc (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (t : ℕ) : PowerSeries (𝕃 H) :=
+  PowerSeries.mk (fun j => if j ≤ t then PowerSeries.coeff j (βHenselAssembled H x₀ R hHyp) else 0)
+
+/-- **The defect reduction (PROVEN — the first slice of the per-order match).**
+By the series-coefficient Newton linearization (`HenselSeriesCoeff.coeff_eval_sub_at`)
+against the `t`-truncation, the order-`(t+1)` coefficient of `eval (βHenselAssembled) Q`
+splits into the truncated *defect* plus the `ζ`-linear response of the new coefficient:
+
+  `coeff (t+1) (eval γ Q) = coeff (t+1) (eval γₜ Q) + ζ · coeff (t+1) γ`.
+
+Hence the residual `coeff_succ_eval_βHenselAssembled` is equivalent to the *cleared defect
+identity* `embedding (βHensel (t+1)) = −W^{t+2}·ξ^{e_{t+1}}·coeff (t+1) (eval γₜ Q)/ζ` —
+the (A.1) sum being exactly the expansion of the truncated defect. -/
+theorem coeff_succ_eval_defect_reduction (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) :
+    PowerSeries.coeff (t + 1) (Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H)) =
+      PowerSeries.coeff (t + 1) (Polynomial.eval (βHenselTrunc H x₀ R hHyp t) (Q x₀ R H))
+        + ClaimA2.ζ R x₀ H * PowerSeries.coeff (t + 1) (βHenselAssembled H x₀ R hHyp) := by
+  have hagree : ∀ j < t + 1,
+      PowerSeries.coeff j (βHenselAssembled H x₀ R hHyp)
+        = PowerSeries.coeff j (βHenselTrunc H x₀ R hHyp t) := by
+    intro j hj
+    simp only [βHenselTrunc, PowerSeries.coeff_mk, if_pos (Nat.lt_succ_iff.mp hj)]
+  have hsub := ProximityPrize.HenselSeriesCoeff.coeff_eval_sub_at (Q := Q x₀ R H)
+    (γ₁ := βHenselAssembled H x₀ R hHyp) (γ₂ := βHenselTrunc H x₀ R hHyp t)
+    (Nat.succ_pos t) hagree
+  have htrunc_top : PowerSeries.coeff (t + 1) (βHenselTrunc H x₀ R hHyp t) = 0 := by
+    simp only [βHenselTrunc, PowerSeries.coeff_mk, if_neg (Nat.not_succ_le_self t)]
+  have hderiv : Polynomial.eval (PowerSeries.constantCoeff (βHenselAssembled H x₀ R hHyp))
+      (Polynomial.derivative (ProximityPrize.HenselSeriesCoeff.Q₀ (Q x₀ R H)))
+        = ClaimA2.ζ R x₀ H := by
+    rw [βHenselAssembled_constantCoeff, eval_α₀_derivative_Q₀]
+  rw [htrunc_top, sub_zero, hderiv] at hsub
+  linear_combination hsub
+
 /-- **(P2) order-`(t+1)` vanishing — THE SINGLE IRREDUCIBLE RESIDUAL (documented `sorry`).**
 
 The successor-order coefficient of `eval (βHenselAssembled …) Q` vanishes.  This is the genuine,
