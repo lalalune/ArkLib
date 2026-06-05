@@ -5514,6 +5514,49 @@ lemma exists_points_with_large_matching_subset_of_natCeil_delta_nonmatching_boun
     (Nat.le_ceil _)
     hthreshold hsmall
 
+/-- Complement-threshold form of the nat-ceil Claim 5.11 wrapper.
+
+This specializes the free slack parameter `t` in
+`exists_points_with_large_matching_subset_of_natCeil_delta_nonmatching_bound` to the
+remaining number of close parameters after the target fiber threshold is removed. It is the
+arithmetic shape used by the final Claim 5.11 capstone: the side conditions become
+`threshold ≤ #S` and a single strict counting inequality over `#S - threshold`. -/
+lemma exists_points_with_large_matching_subset_of_natCeil_delta_nonmatching_bound_complement
+    [NeZero n]
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    {D : ℕ}
+    (hthreshold :
+      (2 * k + 1)
+        * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+        * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+        * D ≤ #(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁))
+    (hsmall :
+      ⌈δ * (n : ℚ)⌉₊ * #(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) <
+        (n - k) *
+          (#(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) -
+            (2 * k + 1)
+              * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+              * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+              * D)) :
+  ∃ Dtop : Finset (Fin n),
+    Dtop.card = k + 1 ∧
+    ∀ x ∈ Dtop,
+      (matching_set_at_x k δ h_gs x).card >
+        (2 * k + 1)
+        * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+        * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+        * D := by
+  exact exists_points_with_large_matching_subset_of_natCeil_delta_nonmatching_bound
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+    h_gs (D := D)
+    (t := #(coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁) -
+      (2 * k + 1)
+        * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+        * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+        * D)
+    (by omega) hsmall
+
 /-- Turn a Claim-5.11 point set with sufficiently large `S'_x` fibers into the
 full close-set coverage condition consumed by the canonical `PzFamily`
 evaluation-polynomial package. -/
