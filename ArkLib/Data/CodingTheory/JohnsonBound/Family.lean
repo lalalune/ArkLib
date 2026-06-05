@@ -507,6 +507,15 @@ lemma closeCodewordsRelFinset_pairwise_agree_le_card_sub_minDist
     (ListDecodable.mem_closeCodewordsRelFinset.mp hu).1
     (ListDecodable.mem_closeCodewordsRelFinset.mp hv).1 hne
 
+/-- The minimum distance of a code is at most the block length. -/
+lemma minDist_le_card
+    {ι : Type} [Fintype ι]
+    {α : Type} [DecidableEq α]
+    (C : ListDecodable.Code ι α) :
+    Code.minDist C ≤ Fintype.card ι := by
+  rw [← Code.dist_eq_minDist]
+  exact Code.dist_le_card C
+
 /-- Close-list wrapper for the radical-free `CodeGeometry` Johnson cap.
 
 This converts the finite point-list into an indexed family via `Finset.equivFin`.
@@ -660,6 +669,33 @@ theorem Lambda_le_of_real_radius_minDist_johnson_condition
     mul_le_mul_of_nonneg_left hcenter_le hℓ_nonneg
   apply lt_of_le_of_lt ?_ hcond
   nlinarith [hcenter_le, hcenter_scaled_le]
+
+/-- Lambda-level Johnson cap with both canonical agreement parameters written
+as real-valued expressions: `n - δ*n` for the center agreement and
+`n - minDist(C)` for pairwise agreement.
+
+This is the algebra-facing form for the final `Jqℓ` radius calculation. -/
+theorem Lambda_le_of_real_radius_real_minDist_johnson_condition
+    {ι : Type} [Fintype ι] [DecidableEq ι] [Nonempty ι]
+    {α : Type} [Fintype α] [DecidableEq α]
+    (C : ListDecodable.Code ι α) {δ : ℝ} {ℓ : ℕ} {β : ℝ}
+    (hδ : 0 ≤ δ) (hq : 0 < Fintype.card α) (hβ : 0 ≤ β)
+    (hcond : ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ)) * (1 + β ^ 2)
+        - 2 * β * (((Fintype.card ι : ℝ) - δ * (Fintype.card ι : ℝ))
+          - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ)))
+      + (ℓ : ℝ) * ((((Fintype.card ι : ℝ) - (Code.minDist C : ℝ))
+          - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ))
+        - 2 * β * (((Fintype.card ι : ℝ) - δ * (Fintype.card ι : ℝ))
+          - (Fintype.card ι : ℝ) / (Fintype.card α : ℝ))
+        + β ^ 2 * (Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card α : ℝ))) < 0) :
+    ListDecodable.Lambda C δ ≤ (ℓ : ℕ∞) := by
+  apply Lambda_le_of_real_radius_minDist_johnson_condition C hδ hq hβ
+  have hmin_le : Code.minDist C ≤ Fintype.card ι := minDist_le_card C
+  have hB :
+      (((Fintype.card ι - Code.minDist C : ℕ) : ℝ)) =
+        (Fintype.card ι : ℝ) - (Code.minDist C : ℝ) := by
+    rw [Nat.cast_sub hmin_le]
+  simpa [hB] using hcond
 
 /-- A violated finite `Lambda` bound produces a concrete point-list whose average
 distance is controlled by the q-ary Plotkin bound.
