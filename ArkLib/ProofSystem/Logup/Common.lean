@@ -1,5 +1,6 @@
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.CharP.Defs
+import Mathlib.Algebra.CharP.Lemmas
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Fintype.Basic
@@ -400,6 +401,47 @@ def tableMultiplicityCount (oStmt : ∀ i, OStmtIn F n M i) (a : F) : ℕ :=
 def lookupMultiplicityCount (oStmt : ∀ i, OStmtIn F n M i) (a : F) : ℕ :=
   ((Finset.univ : Finset (Fin M × Hypercube n)).filter fun ix =>
     evalOnHypercube (columnOracle oStmt ix.1) ix.2 = a).card
+
+omit [Field F] [Fintype F] in
+theorem tableMultiplicityCount_pos_of_eval
+    (oStmt : ∀ i, OStmtIn F n M i) (u : Hypercube n) :
+    0 < tableMultiplicityCount oStmt (evalOnHypercube (tableOracle oStmt) u) := by
+  unfold tableMultiplicityCount
+  apply Finset.card_pos.mpr
+  exact ⟨u, by simp⟩
+
+omit [Field F] [Fintype F] in
+theorem tableMultiplicityCount_le_card_hypercube
+    (oStmt : ∀ i, OStmtIn F n M i) (a : F) :
+    tableMultiplicityCount oStmt a ≤ Fintype.card (Hypercube n) := by
+  unfold tableMultiplicityCount
+  rw [← Finset.card_univ]
+  exact Finset.card_filter_le _ _
+
+omit [Fintype F] [DecidableEq F] in
+theorem natCast_ne_zero_of_pos_lt_ringChar {m : ℕ}
+    (hm_pos : 0 < m) (hm : m < ringChar F) :
+    (m : F) ≠ 0 := by
+  intro hzero
+  have hdvd : ringChar F ∣ m := (ringChar.spec F m).mp hzero
+  have hle : ringChar F ≤ m := Nat.le_of_dvd hm_pos hdvd
+  omega
+
+@[simp] theorem card_hypercube (n : ℕ) : Fintype.card (Hypercube n) = 2 ^ n := by
+  simp [Hypercube]
+
+theorem tableMultiplicityCount_natCast_ne_zero_of_stmt
+    (stmt : StmtIn F n M) (oStmt : ∀ i, OStmtIn F n M i) (a : F)
+    (hM : 0 < M) (hpos : 0 < tableMultiplicityCount oStmt a) :
+    (tableMultiplicityCount oStmt a : F) ≠ 0 := by
+  apply natCast_ne_zero_of_pos_lt_ringChar hpos
+  have hle_card := tableMultiplicityCount_le_card_hypercube (oStmt := oStmt) a
+  have hle_pow : tableMultiplicityCount oStmt a ≤ 2 ^ n := by
+    simpa [card_hypercube] using hle_card
+  have hpow_le : 2 ^ n ≤ M * 2 ^ n := by
+    have hpow_pos : 0 < 2 ^ n := pow_pos (by omega) n
+    nlinarith
+  exact lt_of_le_of_lt (hle_pow.trans hpow_le) stmt.charLarge
 
 /-- The normalized multiplicity from paper equation (14), evaluated at one table row. -/
 noncomputable def normalizedMultiplicityValue (oStmt : ∀ i, OStmtIn F n M i)
