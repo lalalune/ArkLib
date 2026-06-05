@@ -104,6 +104,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.WeightedAgreement
 import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.CollinearProximates
 import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.Interpolation
 import ArkLib.Data.CodingTheory.ProximityGap.Basic
+import ArkLib.Data.CodingTheory.ProximityGap.BivariateVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBounds
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.Basic
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.MainResults
