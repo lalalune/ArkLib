@@ -16385,16 +16385,16 @@
         {
           "doc": "The prefactor is genuinely positive whenever the binomial part is (so it is never a secretly-zero stub): `Nat.multinomial` is always `> 0`.",
           "kind": "theorem",
-          "line": 416,
+          "line": 422,
           "name": "BCIKS20.HenselNumerator.prefactor_pos",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "prefactor_pos",
-          "signature": "theorem prefactor_pos {m : \u2115} (i i1 : \u2115) (lam : Nat.Partition m) (hi : i1 \u2264 i) :"
+          "signature": "theorem prefactor_pos {m : \u2115} (i i1 : \u2115) (lam : Nat.Partition m) (_hi : i1 \u2264 i) :"
         },
         {
           "doc": "The multinomial part of the BCIKS20 prefactor is exactly the value-multiset permutation count used by the power-series composition expansion.",
           "kind": "theorem",
-          "line": 423,
+          "line": 429,
           "name": "BCIKS20.HenselNumerator.countPerms_parts_eq_multinomial",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "countPerms_parts_eq_multinomial",
@@ -16403,16 +16403,16 @@
         {
           "doc": "`prefactor` as the binomial Hasse weight times the composition fiber-count `countPerms`.  This is the direct bridge from `PowerSeriesComposition.coeff_pow_eq_partitionSum` to the `B_coeff` normalization.",
           "kind": "theorem",
-          "line": 431,
-          "name": "BCIKS20.HenselNumerator.prefactor_eq_choose_mul_countPerms",
+          "line": 437,
+          "name": "BCIKS20.HenselNumerator.prefactor_eq_countPerms",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "prefactor_eq_choose_mul_countPerms",
-          "signature": "theorem prefactor_eq_choose_mul_countPerms {m : \u2115} (i i1 : \u2115) (lam : Nat.Partition m) :"
+          "short_name": "prefactor_eq_countPerms",
+          "signature": "theorem prefactor_eq_countPerms {m : \u2115} (i i1 : \u2115) (lam : Nat.Partition m) :"
         },
         {
           "doc": "`\u0394_X^{i1}`: the `i1`-th Hasse derivative on the **lift `X` layer** (the middle `Polynomial` layer) of `R : F[X][X][Y]`, applied coefficient-wise through the outer `Y` layer.  Each `Y`-coefficient `a : F[X][X]` is sent to `Polynomial.hasseDeriv i1 a`, the genuine binomial-weighted-shift Hasse derivative on its own `X` variable.  This is the genuine `\u0394_X^{i1}` of BCIKS20 (char-free).",
           "kind": "def",
-          "line": 467,
+          "line": 473,
           "name": "BCIKS20.HenselNumerator.hasseDerivX",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "hasseDerivX",
@@ -16421,7 +16421,7 @@
         {
           "doc": "`\u0394_Y^{m}`: the `m`-th Hasse derivative on the **outermost `Y` layer** of `R`, i.e. the ordinary mathlib `Polynomial.hasseDeriv m` (genuine, char-free).",
           "kind": "def",
-          "line": 472,
+          "line": 478,
           "name": "BCIKS20.HenselNumerator.hasseDerivY",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "hasseDerivY",
@@ -16430,7 +16430,7 @@
         {
           "doc": "Non-vacuity: `\u0394_X^{0} = id` (`hasseDeriv 0 = id`, layer-wise).  Certifies `hasseDerivX` is genuinely not the zero map.",
           "kind": "theorem",
-          "line": 478,
+          "line": 484,
           "name": "BCIKS20.HenselNumerator.hasseDerivX_zero",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "hasseDerivX_zero",
@@ -16439,7 +16439,7 @@
         {
           "doc": "Non-vacuity: `\u0394_Y^{0} = id`.",
           "kind": "theorem",
-          "line": 485,
+          "line": 491,
           "name": "BCIKS20.HenselNumerator.hasseDerivY_zero",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "hasseDerivY_zero",
@@ -16448,7 +16448,7 @@
         {
           "doc": "`\u0394_X^{i1}` is additive (it is `Polynomial.hasseDeriv i1`, an `F[X]`-linear map, applied coefficient-wise).  Genuine-object witness.",
           "kind": "theorem",
-          "line": 490,
+          "line": 496,
           "name": "BCIKS20.HenselNumerator.hasseDerivX_add",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "hasseDerivX_add",
@@ -16457,7 +16457,7 @@
         {
           "doc": "`\u0394_Y^{m}` is additive.",
           "kind": "theorem",
-          "line": 498,
+          "line": 504,
           "name": "BCIKS20.HenselNumerator.hasseDerivY_add",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "hasseDerivY_add",
@@ -16466,7 +16466,7 @@
         {
           "doc": "`\u0394_X^{i1}` never raises the **`Y`-degree**: `natDegreeY (\u0394_X^{i1} p) \u2264 natDegreeY p`.  `\u0394_X` acts coefficient-wise through the outer `Y` layer (`p.sum (fun n a => monomial n (hasseDeriv i1 a))`), re-monomialising each `Y`-coefficient at the *same* `Y`-degree `n \u2264 natDegreeY p`.",
           "kind": "theorem",
-          "line": 515,
+          "line": 521,
           "name": "BCIKS20.HenselNumerator.hasseDerivX_natDegreeY_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "hasseDerivX_natDegreeY_le",
@@ -16475,16 +16475,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 517,
-          "name": "BCIKS20.HenselNumerator._anon_class_517",
+          "line": 523,
+          "name": "BCIKS20.HenselNumerator._anon_class_523",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_517",
+          "short_name": "_anon_class_523",
           "signature": "class classical"
         },
         {
           "doc": "`\u0394_Y^{m}` drops the **`Y`-degree** by (at least) `m`: `natDegreeY (\u0394_Y^{m} p) \u2264 natDegreeY p \u2212 m`. This is mathlib's `Polynomial.natDegree_hasseDeriv_le` on the outer `Y` layer \u2014 the genuine source of the `\u2212m` (`= \u2212\u03a3\u03bb`) in BCIKS20's `B_coeff` weight bound.",
           "kind": "theorem",
-          "line": 528,
+          "line": 534,
           "name": "BCIKS20.HenselNumerator.hasseDerivY_natDegreeY_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "hasseDerivY_natDegreeY_le",
@@ -16493,7 +16493,7 @@
         {
           "doc": "`evalX (C x\u2080)` (the **lift `X`-layer** substitution, ground ring `F[X]`) never raises the **`Y`-degree**: `natDegreeY (evalX a p) \u2264 natDegreeY p`.  `evalX a = map (evalRingHom a)` (`Bivariate.evalX_eq_map`), and `map` cannot raise `natDegree` (`Polynomial.natDegree_map_le`).",
           "kind": "theorem",
-          "line": 536,
+          "line": 542,
           "name": "BCIKS20.HenselNumerator.evalX_natDegreeY_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "evalX_natDegreeY_le",
@@ -16502,7 +16502,7 @@
         {
           "doc": "Evaluate the iterated Hasse coefficient `\u0394_X^{i1} \u0394_Y^{m} R` of the trivariate `R` at `(X = x\u2080, Y = \u03b1\u2080 = T/W)`, landing in `\ud835\udd43 H`.  `X \u21a6 x\u2080` via `Bivariate.evalX (C x\u2080)`; the remaining `Y` is sent to `\u03b1\u2080 = T/W` via `eval\u2082 liftToFunctionField`.  This **mirrors `ClaimA2.\u03b6`** exactly (`RationalFunctions.lean`:2229), which is the `i1 = 1, m = 0` analogue applied to `R.derivative`.",
           "kind": "def",
-          "line": 551,
+          "line": 557,
           "name": "BCIKS20.HenselNumerator.hasseEvalAtRoot",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "hasseEvalAtRoot",
@@ -16511,7 +16511,7 @@
         {
           "doc": "`\u03b4_{i1,0} = if i1 = 0 then 1 else 0`, the BCIKS20 \"save a `W`\" indicator.",
           "kind": "def",
-          "line": 558,
+          "line": 564,
           "name": "BCIKS20.HenselNumerator.deltaSave",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "deltaSave",
@@ -16520,7 +16520,7 @@
         {
           "doc": "The genuine `\ud835\udcaa H`-representative of the iterated Hasse coefficient of `R` at `(x\u2080, \u00b7)`, **lifted by `Y \u21a6 T` (the `W`-cleared form)**.  Concretely: take `\u0394_X^{i1} \u0394_Y^{\u03a3\u03bb} R : F[X][X][Y]`, specialise the lift layer `X \u21a6 x\u2080` to a polynomial in `F[X][Y]`, and `mk` it into `\ud835\udcaa H = F[X][Y] \u29f8 \u27e8H\u0303'\u27e9`.  The `Y \u21a6 T` lift (= `mk`) is exactly the `W`-cleared form of the `Y \u21a6 T/W` evaluation `hasseEvalAtRoot` (clearing the `T/W` denominators multiplies by the appropriate `W`-power).  Genuine: built from the real iterated `Polynomial.hasseDeriv`, never `0`.",
           "kind": "def",
-          "line": 567,
+          "line": 573,
           "name": "BCIKS20.HenselNumerator.hasseCoeffRepr\ud835\udcaa",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "hasseCoeffRepr\ud835\udcaa",
@@ -16529,7 +16529,7 @@
         {
           "doc": "BCIKS20's rescaled coefficient `B_{i1,\u03bb} \u2208 \ud835\udcaa H` (lines 4042\u20134080): the combinatorial `prefactor` (`C(d,i1)\u00b7multinomial(\u03bb)`) times the `W`-cleared iterated-Hasse coefficient `hasseCoeffRepr\ud835\udcaa`.  This is the **genuine** object \u2014 the real iterated Hasse coefficient of `R` at `(x\u2080, \u03b1\u2080)` carrying its genuine integer prefactor \u2014 not a stub and not secretly `0` (`prefactor_pos` shows the integer weight is positive). CLOSED (wave 6, P2-independent, axiom-clean): the *weight* lemma `B_coeff_weight_le` (`weight_\u039b_over_\ud835\udcaa hH (B_coeff \u2026) D \u2264 (natDegreeY R \u2212 \u03a3\u03bb)\u00b7(D+1\u2212natDegreeY H) + degreeX p`, the genuine i",
           "kind": "def",
-          "line": 584,
+          "line": 590,
           "name": "BCIKS20.HenselNumerator.B_coeff",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "B_coeff",
@@ -16538,7 +16538,7 @@
         {
           "doc": "The image of `W = H.leadingCoeff` as an element of `\ud835\udcaa H` (the constant `C W \u2208 F[X][Y]`, `mk`-ed).  Genuine `W` factor for the `(A.1)` recursion.",
           "kind": "def",
-          "line": 592,
+          "line": 598,
           "name": "BCIKS20.HenselNumerator.W\ud835\udcaa",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "W\ud835\udcaa",
@@ -16547,7 +16547,7 @@
         {
           "doc": "`\u039b_\ud835\udcaa(a \u00b7 b) \u2264 \u039b_\ud835\udcaa(a) + \u039b_\ud835\udcaa(b)`: sub-multiplicativity over `\ud835\udcaa H`.  Take the canonical representatives `ra, rb`; then `mk (ra \u00b7 rb) = a \u00b7 b`, and `weight_\u039b (ra \u00b7 rb) \u2264 weight_\u039b ra + weight_\u039b rb = \u039b_\ud835\udcaa a + \u039b_\ud835\udcaa b`.",
           "kind": "lemma",
-          "line": 612,
+          "line": 618,
           "name": "BCIKS20.HenselNumerator.weight_\u039b_over_\ud835\udcaa_mul_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "weight_\u039b_over_\ud835\udcaa_mul_le",
@@ -16556,7 +16556,7 @@
         {
           "doc": "`\u039b_\ud835\udcaa(a + b) \u2264 max(\u039b_\ud835\udcaa a, \u039b_\ud835\udcaa b)`: sub-additivity over `\ud835\udcaa H`.",
           "kind": "lemma",
-          "line": 627,
+          "line": 633,
           "name": "BCIKS20.HenselNumerator.weight_\u039b_over_\ud835\udcaa_add_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "weight_\u039b_over_\ud835\udcaa_add_le",
@@ -16565,7 +16565,7 @@
         {
           "doc": "`\u039b_\ud835\udcaa(-a) = \u039b_\ud835\udcaa(a)`: the `\ud835\udcaa`-weight is negation-invariant (`mk (-ra) = -a`, `weight_\u039b_neg`).",
           "kind": "lemma",
-          "line": 642,
+          "line": 648,
           "name": "BCIKS20.HenselNumerator.weight_\u039b_over_\ud835\udcaa_neg",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "weight_\u039b_over_\ud835\udcaa_neg",
@@ -16574,7 +16574,7 @@
         {
           "doc": "`\u039b_\ud835\udcaa(\u2211\u1d62 f i) \u2264 sup of \u039b_\ud835\udcaa(f i)`: the `\ud835\udcaa`-weight of a finite sum is bounded by the sup of the summand weights.  Derived from `weight_\u039b_over_\ud835\udcaa_add_le` by induction.",
           "kind": "lemma",
-          "line": 654,
+          "line": 660,
           "name": "BCIKS20.HenselNumerator.weight_\u039b_over_\ud835\udcaa_sum_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "weight_\u039b_over_\ud835\udcaa_sum_le",
@@ -16583,16 +16583,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 657,
-          "name": "BCIKS20.HenselNumerator._anon_class_657",
+          "line": 663,
+          "name": "BCIKS20.HenselNumerator._anon_class_663",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_657",
+          "short_name": "_anon_class_663",
           "signature": "class classical"
         },
         {
           "doc": "`\u039b_\ud835\udcaa(a ^ k) \u2264 k \u2022 \u039b_\ud835\udcaa(a)` (i.e. `\u2264 k \u00b7 \u039b_\ud835\udcaa(a)` in `WithBot \u2115`): the power bound over `\ud835\udcaa H`, by induction on `k` from `weight_\u039b_over_\ud835\udcaa_mul_le`.  The `k = 0` case uses `\u039b_\ud835\udcaa(1) \u2264 0`.",
           "kind": "lemma",
-          "line": 668,
+          "line": 674,
           "name": "BCIKS20.HenselNumerator.weight_\u039b_over_\ud835\udcaa_pow_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "weight_\u039b_over_\ud835\udcaa_pow_le",
@@ -16601,7 +16601,7 @@
         {
           "doc": "The genuine in-tree value of `\u039b(W)`: `\u039b_\ud835\udcaa(W\ud835\udcaa) \u2264 (H.leadingCoeff).natDegree`.  `W\ud835\udcaa` is `mk (C W)` with `W = H.leadingCoeff \u2208 F[X]`, a degree-0 (in `Y`) constant whose `\u039b`-weight is the `X`-degree `W.natDegree` of the leading `Y`-coefficient (`weight_\u039b_C_le`).  This is the in-tree analogue of BCIKS20's `\u039b(W)`; the per-`Y`-power weight `m` contributes `0` (the `Y`-power is `0`).  Stated as the load-bearing `\u039b(W)` bound for the `(A.1)` telescoping.",
           "kind": "lemma",
-          "line": 692,
+          "line": 698,
           "name": "BCIKS20.HenselNumerator.weight_\u039b_over_\ud835\udcaa_W",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "weight_\u039b_over_\ud835\udcaa_W",
@@ -16610,7 +16610,7 @@
         {
           "doc": "**`partitionProd` weight sub-additivity over `\ud835\udcaa H`.**  For `lam : Nat.Partition m` and a family `b : \u2115 \u2192 \ud835\udcaa H`, `\u039b_\ud835\udcaa(\u220f_l (b l)^{\u03bb_l}) \u2264 \u2211_{l \u2208 lam.parts} \u039b_\ud835\udcaa(b l)` (the sum over the *multiset* of parts, i.e. each distinct part `l` counted `\u03bb_l` times).  By induction on the multiset of parts using `weight_\u039b_over_\ud835\udcaa_mul_le`; the empty product has weight `\u2264 0`. This is the genuine `\u039b(\u220f_l \u03b2_l^{\u03bb_l}) \u2264 \u2211_l \u03bb_l\u00b7\u039b(\u03b2_l)` of the `(A.1)` telescoping: the multiset-`sum` form `(lam.parts.map (\u039b_\ud835\udcaa \u2218 b)).sum` is exactly `\u2211_l \u03bb_l\u00b7\u039b_\ud835\udcaa(b l)`.",
           "kind": "lemma",
-          "line": 706,
+          "line": 712,
           "name": "BCIKS20.HenselNumerator.partitionProd_weight_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "partitionProd_weight_le",
@@ -16619,7 +16619,7 @@
         {
           "doc": "Polynomial-level `nsmul` weight bound: scaling by a natural number cannot increase the `\u039b`-weight (`(n \u2022 r).support \u2286 r.support` and `(n \u2022 c).natDegree \u2264 c.natDegree`).  In positive characteristic `n \u2022 r` may collapse to a *smaller* weight, never a larger one.",
           "kind": "lemma",
-          "line": 732,
+          "line": 738,
           "name": "BCIKS20.HenselNumerator.weight_\u039b_nsmul_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "weight_\u039b_nsmul_le",
@@ -16628,16 +16628,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 734,
-          "name": "BCIKS20.HenselNumerator._anon_class_734",
+          "line": 740,
+          "name": "BCIKS20.HenselNumerator._anon_class_740",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_734",
+          "short_name": "_anon_class_740",
           "signature": "class classical"
         },
         {
           "doc": "`\u039b_\ud835\udcaa(n \u2022 a) \u2264 \u039b_\ud835\udcaa(a)`: scaling a regular element by `n : \u2115` cannot raise its `\ud835\udcaa`-weight. `n \u2022 a = mk (n \u2022 ra)` (`mk` is `\u2115`-linear), and `weight_\u039b (n \u2022 ra) \u2264 weight_\u039b ra`.",
           "kind": "lemma",
-          "line": 754,
+          "line": 760,
           "name": "BCIKS20.HenselNumerator.weight_\u039b_over_\ud835\udcaa_nsmul_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "weight_\u039b_over_\ud835\udcaa_nsmul_le",
@@ -16646,7 +16646,7 @@
         {
           "doc": "**`B_coeff` weight reduces to the iterated-Hasse representative.** `\u039b_\ud835\udcaa(B_{i1,\u03bb}) \u2264 \u039b_\ud835\udcaa(hasseCoeffRepr\ud835\udcaa x\u2080 R i1 (\u03a3\u03bb))`: the integer `prefactor` scalar cannot raise the weight (`weight_\u039b_over_\ud835\udcaa_nsmul_le`).  The remaining content \u2014 bounding `\u039b_\ud835\udcaa(hasseCoeffRepr\ud835\udcaa \u2026)` by `(D \u2212 \u03a3\u03bb) + (d \u2212 \u03b4_{i1,0} \u2212 \u03a3\u03bb)\u00b7\u039b(W)` (the iterated-Hasse degree drop + `W`-clearing) \u2014 is the deferred `B_coeff_weight` wall.",
           "kind": "lemma",
-          "line": 770,
+          "line": 776,
           "name": "BCIKS20.HenselNumerator.B_coeff_weight_le_hasse",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "B_coeff_weight_le_hasse",
@@ -16655,7 +16655,7 @@
         {
           "doc": "**The iterated-Hasse representative `Y`-degree drop (genuine, axiom-clean).**  The polynomial underlying `hasseCoeffRepr\ud835\udcaa x\u2080 R i1 m` \u2014 namely `evalX (C x\u2080) (\u0394_X^{i1} \u0394_Y^{m} R)` \u2014 has **`Y`-degree `\u2264 natDegreeY R \u2212 m`**.  Composes the three \u00a74a\u2032 drops: `\u0394_Y^{m}` drops the `Y`-degree by `m` (`hasseDerivY_natDegreeY_le`), and neither `\u0394_X^{i1}` (`hasseDerivX_natDegreeY_le`) nor the lift substitution `evalX (C x\u2080)` (`evalX_natDegreeY_le`) raises it. This is the **`Y`-degree component** of BCIKS20's `B_coeff` weight bound `\u039b_\ud835\udcaa(hasseCoeffRepr\ud835\udcaa \u2026 i1 m) \u2264 (D\u2212m) + (d\u2212\u03b4\u2212m)\u00b7\u039b(W)` (lines 4060\u20134077): the ",
           "kind": "theorem",
-          "line": 793,
+          "line": 799,
           "name": "BCIKS20.HenselNumerator.hasseCoeffRepr\ud835\udcaa_natDegreeY_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "hasseCoeffRepr\ud835\udcaa_natDegreeY_le",
@@ -16664,7 +16664,7 @@
         {
           "doc": "**Bridge:** the bivariate lift `liftBivariate` is the `Y\u21a6T` evaluation `eval\u2082 liftToFunctionField T`. Both are ring homs `F[X][Y] \u2192+* \ud835\udd43 H` agreeing on constants (`liftToFunctionField`) and on the variable (`functionFieldT`), so `Polynomial.ringHom_ext` identifies them.  This is the algebraic content behind `hasseCoeffRepr\ud835\udcaa = mk p` having embedding `eval\u2082 T p` (the un-cleared `Y\u21a6T` form), to be compared against `hasseEvalAtRoot = eval\u2082 (T/W) p`.",
           "kind": "lemma",
-          "line": 823,
+          "line": 829,
           "name": "BCIKS20.HenselNumerator.liftBivariate_eq_eval\u2082_functionFieldT",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "liftBivariate_eq_eval\u2082_functionFieldT",
@@ -16673,7 +16673,7 @@
         {
           "doc": "**The `W`-clearing identity (lower-sum form, NO divisibility).**  For `P : F[X][Y]` with `P.natDegree \u2264 k`, clearing the `(T/W)`-denominators of `eval\u2082 (T/W) P` by the full `W^k` gives a genuine `Y\u21a6T`-polynomial image: `W^k \u00b7 eval\u2082 (T/W) P = liftBivariate (\u2211_{i\u2264k} C(P.coeff i \u00b7 W_poly^{k\u2212i}) \u00b7 X^i)`. This is the lower-sum portion of `W_pow_mul_eval\u2082_div_eq_sum` specialised to the `P.coeff(k+1) = 0` case; it needs no divisibility because every cleared power `i \u2264 k` lands as a *non-negative* `W`-power `W^{k\u2212i}` (no `1/W`).  Mirrors the `\u03be_pre` clearing sum but for the un-divided Hasse representa",
           "kind": "lemma",
-          "line": 846,
+          "line": 852,
           "name": "BCIKS20.HenselNumerator.W_pow_mul_eval\u2082_div_eq_liftBivariate",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "W_pow_mul_eval\u2082_div_eq_liftBivariate",
@@ -16682,7 +16682,7 @@
         {
           "doc": "The **`W`-cleared `\ud835\udcaa`-representative** of the iterated Hasse coefficient: the explicit polynomial whose `Y\u21a6T` lift equals `W^{natDegreeY p} \u00b7 hasseEvalAtRoot` (with `p = evalX (C x\u2080) (\u0394_X^{i1} \u0394_Y^{m} R)`).  Each `Y`-power `i` of `p` is rescaled by the cleared `W`-power `lc^{(natDegreeY p)\u2212i}`, exactly as in `\u03be_pre`'s lower-sum (here un-divided, since we clear by the full `Y`-degree).  Genuine object: built from the real iterated `hasseDeriv`.",
           "kind": "def",
-          "line": 880,
+          "line": 886,
           "name": "BCIKS20.HenselNumerator.hasseCoeffRepr\ud835\udcaa_cleared",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "hasseCoeffRepr\ud835\udcaa_cleared",
@@ -16691,7 +16691,7 @@
         {
           "doc": "**(a-residual) The `W`-clearing embedding identity for the Hasse coefficient \u2014 PROVEN.** `embeddingOf\ud835\udcaaInto\ud835\udd43 \u27e6cleared\u27e7 = W^{natDegreeY p} \u00b7 hasseEvalAtRoot`, the exact analogue of `embeddingOf\ud835\udcaaInto\ud835\udd43_mk_\u03be_pre` (`embedding \u27e6\u03be_pre\u27e7 = W^{d\u22122}\u00b7\u03b6`) for the iterated Hasse coefficient. The `mk`/`Y\u21a6T`-lift of the cleared representative equals the `Y\u21a6T/W` evaluation `hasseEvalAtRoot` scaled by `W^{natDegreeY p}` (clearing every `(T/W)`-denominator).  Mirrors the in-tree `\u03be_pre/\u03b6` construction (`RationalFunctions.lean`:2380) and is fully P2-independent.",
           "kind": "lemma",
-          "line": 891,
+          "line": 897,
           "name": "BCIKS20.HenselNumerator.embeddingOf\ud835\udcaaInto\ud835\udd43_hasseCoeffRepr\ud835\udcaa_cleared",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "embeddingOf\ud835\udcaaInto\ud835\udd43_hasseCoeffRepr\ud835\udcaa_cleared",
@@ -16700,7 +16700,7 @@
         {
           "doc": "**`\u039b`-weight decomposition into the `Y`-degree and `X`-degree components.**  For any bivariate `f`, `weight_\u039b f H D \u2264 natDegreeY f \u00b7 (D+1\u2212natDegreeY H) + degreeX f`: every `Y`-power `n` in the support contributes `n\u00b7(D+1\u2212natDegreeY H) + (f.coeff n).natDegree`, with `n \u2264 natDegreeY f` (`Polynomial.le_natDegree_of_ne_zero`) and `(f.coeff n).natDegree \u2264 degreeX f` (`coeff_natDegree_le_degreeX`).  This is the bridge from the proven `Y`-degree drop + `degreeX` to the `weight_\u039b` budget.",
           "kind": "lemma",
-          "line": 914,
+          "line": 920,
           "name": "BCIKS20.HenselNumerator.weight_\u039b_le_natDegreeY_mul_add_degreeX",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "weight_\u039b_le_natDegreeY_mul_add_degreeX",
@@ -16709,16 +16709,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 918,
-          "name": "BCIKS20.HenselNumerator._anon_class_918",
+          "line": 924,
+          "name": "BCIKS20.HenselNumerator._anon_class_924",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_918",
+          "short_name": "_anon_class_924",
           "signature": "class classical"
         },
         {
           "doc": "**(STEP a, the full `B_coeff` weight bound) \u2014 PROVEN, axiom-clean, P2-INDEPENDENT.** `weight_\u039b_over_\ud835\udcaa hH (B_coeff \u2026 i1 \u03bb) D \u2264 (natDegreeY R \u2212 \u03a3\u03bb)\u00b7(D+1\u2212natDegreeY H) + degreeX p`, where `p = evalX (C x\u2080) (\u0394_X^{i1} \u0394_Y^{\u03a3\u03bb} R)` is the iterated-Hasse representative polynomial. This is the genuine `B_coeff` weight bound assembled from the two P2-independent components: * the **`Y`-degree drop** `natDegreeY p \u2264 natDegreeY R \u2212 \u03a3\u03bb` (`hasseCoeffRepr\ud835\udcaa_natDegreeY_le`, wave 4) \u2014 the `\u2212\u03a3\u03bb` of the paper's `(D\u2212\u03a3\u03bb)+(d\u2212\u03b4\u2212\u03a3\u03bb)\u00b7\u039b(W)`; and * the **`X`-degree** `degreeX p` (`weight_\u039b_le_natDegreeY_mul_add_degreeX`",
           "kind": "lemma",
-          "line": 945,
+          "line": 951,
           "name": "BCIKS20.HenselNumerator.B_coeff_weight_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "B_coeff_weight_le",
@@ -16727,7 +16727,7 @@
         {
           "doc": "The `Y^n`-coefficient of `\u0394_X^{i1} q` is `Polynomial.hasseDeriv i1` of the `Y^n`-coefficient of `q`: `\u0394_X^{i1}` acts coefficient-wise through the outer `Y` layer, re-monomialising at the same `Y`-degree, so it commutes with taking the `Y`-coefficient.",
           "kind": "theorem",
-          "line": 987,
+          "line": 993,
           "name": "BCIKS20.HenselNumerator.hasseDerivX_coeff",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "hasseDerivX_coeff",
@@ -16736,16 +16736,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 989,
-          "name": "BCIKS20.HenselNumerator._anon_class_989",
+          "line": 995,
+          "name": "BCIKS20.HenselNumerator._anon_class_995",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_989",
+          "short_name": "_anon_class_995",
           "signature": "class classical"
         },
         {
           "doc": "`\u0394_X^{i1}` (the **middle-`X` Hasse derivative** on a `Y`-coefficient `b : F[X][X]`) never raises the **`Z`-degree** (`Bivariate.degreeX`): its `X`-coefficient at `k` is `\u2191((k+i1).choose i1)\u00b7b.coeff (k+i1)`, a ground-`\u2115`-cast scalar times an original `Z`-coefficient (`hasseDeriv_coeff`), so its `natDegree` is `\u2264 degreeX b`.  The middle-`X` Hasse lowers the middle-`X` degree but cannot touch the innermost `Z`-degree.",
           "kind": "theorem",
-          "line": 1002,
+          "line": 1008,
           "name": "BCIKS20.HenselNumerator.degreeX_hasseDeriv_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "degreeX_hasseDeriv_le",
@@ -16754,16 +16754,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1004,
-          "name": "BCIKS20.HenselNumerator._anon_class_1004",
+          "line": 1010,
+          "name": "BCIKS20.HenselNumerator._anon_class_1010",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_1004",
+          "short_name": "_anon_class_1010",
           "signature": "class classical"
         },
         {
           "doc": "A ground-`\u2115`-cast scalar multiple never raises the **`Z`-degree** (`Bivariate.degreeX`): `(\u2191c)\u00b7b = c \u2022 b`, and each `X`-coefficient `c \u2022 (b.coeff k)` has `natDegree \u2264 (b.coeff k).natDegree \u2264 degreeX b` (`natDegree_smul_le`).  Used to discard the `(n+m).choose m` Hasse-coefficient scalar.",
           "kind": "theorem",
-          "line": 1015,
+          "line": 1021,
           "name": "BCIKS20.HenselNumerator.degreeX_natCast_mul_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "degreeX_natCast_mul_le",
@@ -16772,16 +16772,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1017,
-          "name": "BCIKS20.HenselNumerator._anon_class_1017",
+          "line": 1023,
+          "name": "BCIKS20.HenselNumerator._anon_class_1023",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_1017",
+          "short_name": "_anon_class_1023",
           "signature": "class classical"
         },
         {
           "doc": "Evaluating the **middle-`X` layer at the ground constant `C x\u2080`** (`Polynomial.eval (C x\u2080)`, the scalar-level core of `evalX (C x\u2080)`) never raises the **`Z`-degree**: `eval (C x\u2080) b = \u2211_e (b.coeff e)\u00b7(C x\u2080)^e`, and each `(C x\u2080)^e` is a `Z`-constant (`natDegree = 0`), so every term has `natDegree \u2264 (b.coeff e).natDegree \u2264 degreeX b`.",
           "kind": "theorem",
-          "line": 1031,
+          "line": 1037,
           "name": "BCIKS20.HenselNumerator.natDegree_eval_C_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "natDegree_eval_C_le",
@@ -16790,16 +16790,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1033,
-          "name": "BCIKS20.HenselNumerator._anon_class_1033",
+          "line": 1039,
+          "name": "BCIKS20.HenselNumerator._anon_class_1039",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_1033",
+          "short_name": "_anon_class_1039",
           "signature": "class classical"
         },
         {
           "doc": "The `Y^n`-coefficient of `evalX (C x\u2080) q` is `Polynomial.eval (C x\u2080)` of the `Y^n`-coefficient of `q` (`evalX (C x\u2080) = map (evalRingHom (C x\u2080))`, `coeff_map`).",
           "kind": "theorem",
-          "line": 1046,
+          "line": 1052,
           "name": "BCIKS20.HenselNumerator.evalX_C_coeff",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "evalX_C_coeff",
@@ -16808,7 +16808,7 @@
         {
           "doc": "**The `Z`-degree (`degreeX`) bound \u2014 PROVEN, axiom-clean, P2-INDEPENDENT.** `degreeX (evalX (C x\u2080) (\u0394_X^{i1} \u0394_Y^{\u03a3\u03bb} R)) \u2264 D \u2212 \u03a3\u03bb`, the paper's *literal* `(D\u2212\u03a3\u03bb)` constant (BCIKS20 4345's `Q_{ji}` graded `Z`-degree), under the genuine graded-`Z`-degree premise on `R`: each `Y^j`-coefficient of `R` has `Z`-degree `\u2264 D \u2212 j` (BCIKS20 lines 2110\u20132111: `degZ Q_{ji} \u2264 D\u2212j`). Mechanism (each step above): the `Y^n`-coefficient of `\u0394_Y^{\u03a3\u03bb} R` is `\u2191((n+\u03a3\u03bb).choose \u03a3\u03bb)\u00b7R.coeff (n+\u03a3\u03bb)` (`hasseDeriv_coeff`), whose `Z`-degree is `\u2264 degreeX (R.coeff (n+\u03a3\u03bb)) \u2264 D\u2212(n+\u03a3\u03bb) \u2264 D\u2212\u03a3\u03bb` by the premise; neither `\u0394_X^{i",
           "kind": "theorem",
-          "line": 1065,
+          "line": 1071,
           "name": "BCIKS20.HenselNumerator.degreeX_hasseCoeffRepr_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "degreeX_hasseCoeffRepr_le",
@@ -16817,16 +16817,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1070,
-          "name": "BCIKS20.HenselNumerator._anon_class_1070",
+          "line": 1076,
+          "name": "BCIKS20.HenselNumerator._anon_class_1076",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_1070",
+          "short_name": "_anon_class_1076",
           "signature": "class classical"
         },
         {
           "doc": "**Graded `B_coeff` weight bound.**  This is the paper-literal specialization of `B_coeff_weight_le`: under the graded `Z`-degree hypothesis on every `Y`-coefficient of `R`, the residual `degreeX` term is bounded by `D - \u03a3\u03bb`.",
           "kind": "lemma",
-          "line": 1092,
+          "line": 1098,
           "name": "BCIKS20.HenselNumerator.B_coeff_weight_le_graded",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "B_coeff_weight_le_graded",
@@ -16835,7 +16835,7 @@
         {
           "doc": "Every part of a *surviving* partition is `< k+1`: a `lam : Nat.Partition (k+1\u2212i1)` with `(k+1) \u2209 lam.parts` has all parts `l` positive and `\u2264 k+1\u2212i1 \u2264 k+1`, and `l \u2260 k+1`, hence `l < k+1`.  This is the genuine well-foundedness witness for the `(A.1)` recursion: the guard `if l < k+1` always takes the `then` branch on a surviving partition's parts.",
           "kind": "theorem",
-          "line": 1109,
+          "line": 1115,
           "name": "BCIKS20.HenselNumerator.surviving_parts_lt",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "surviving_parts_lt",
@@ -16844,7 +16844,7 @@
         {
           "doc": "A surviving partition only sees recursive indices below the guard `k+1`, so the guarded family in `\u03b2Hensel_succ` has the same partition product as the unguarded family.",
           "kind": "theorem",
-          "line": 1118,
+          "line": 1124,
           "name": "BCIKS20.HenselNumerator.partitionProd_surviving_guard",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "partitionProd_surviving_guard",
@@ -16853,16 +16853,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1123,
-          "name": "BCIKS20.HenselNumerator._anon_class_1123",
+          "line": 1129,
+          "name": "BCIKS20.HenselNumerator._anon_class_1129",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_1123",
+          "short_name": "_anon_class_1129",
           "signature": "class classical"
         },
         {
           "doc": "The genuine `\u2211_l \u03bb_l\u00b7(2l+1)` telescoping coefficient as a pure-`\u2115` multiset identity: `\u2211_{l \u2208 parts} (2l+1)\u00b7c = (2\u00b7(\u2211 parts) + parts.card)\u00b7c`.  For `lam : Nat.Partition (k+1\u2212i1)` this is `(2\u00b7(k+1\u2212i1) + \u03a3\u03bb)\u00b7c` (using `parts.sum = k+1\u2212i1`, `parts.card = \u03a3\u03bb`), the exact contribution of the `\u220f_l \u03b2_l^{\u03bb_l}` factor to the BCIKS20 weight telescoping.",
           "kind": "theorem",
-          "line": 1132,
+          "line": 1138,
           "name": "BCIKS20.HenselNumerator.sum_map_two_mul_succ",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "sum_map_two_mul_succ",
@@ -16871,34 +16871,34 @@
         {
           "doc": "**The keystone.** BCIKS20 Claim A.2's recursive Hensel-lift numerator `\u03b2_t \u2208 \ud835\udcaa H`, the genuine recursion of `(A.1)`.  Defined by strong recursion on `t`: * `\u03b2\u2080 := T mod H\u0303`, the genuine canonical `\ud835\udcaa`-representative of the function-field variable `T = functionFieldT` \u2014 concretely `mk (Polynomial.X : F[X][Y])`, whose embedding is `liftBivariate X = functionFieldT = T` (genuine base, **not** `0`). * `\u03b2_{t+1} := \u2212 \u2211_{i1 \u2208 range(t+2)} \u2211_{\u03bb \u2208 P(t+1\u2212i1), (t+1) \u2209 \u03bb.parts} W^{i1+\u03b4_{i1,0}\u22121} \u00b7 \u03be^{2i1+\u03a3\u03bb\u22122} \u00b7 B_{i1,\u03bb} \u00b7 \u220f_l (\u03b2_l)^{\u03bb_l}`, the literal `(A.1)` sum, with: - the **genuine** exclusion `\u03bb \u2260 \u03bb(t",
           "kind": "def",
-          "line": 1166,
-          "name": "BCIKS20.HenselNumerator._anon_def_1166",
+          "line": 1172,
+          "name": "BCIKS20.HenselNumerator._anon_def_1172",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_def_1166",
+          "short_name": "_anon_def_1172",
           "signature": "def noncomputable def \u03b2Hensel (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H) :"
         },
         {
           "doc": "**Base case value lemma (PROVEN).**  `\u03b2Hensel \u2026 0 = mk X`, the genuine `T mod H\u0303` representative (whose embedding is `functionFieldT = T`).",
           "kind": "theorem",
-          "line": 1182,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1182",
+          "line": 1188,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1188",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1182",
+          "short_name": "_anon_theorem_1188",
           "signature": "theorem theorem \u03b2Hensel_zero (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H) :"
         },
         {
           "doc": "**Recursive-step unfolding (PROVEN).**  `\u03b2Hensel \u2026 (k+1)` equals the literal `(A.1)` sum, with the inner recursive calls `\u03b2_l` now written as `\u03b2Hensel \u2026 l` (the well-founded `ih l` unfolds to `\u03b2Hensel \u2026 l` since `Nat.strongRecOn` is its own fixpoint).  This is the genuine `(A.1)` recurrence read at a successor, the workhorse for the (P1) inductive step.",
           "kind": "theorem",
-          "line": 1192,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1192",
+          "line": 1198,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1198",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1192",
+          "short_name": "_anon_theorem_1198",
           "signature": "theorem theorem \u03b2Hensel_succ (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H) (k : \u2115) :"
         },
         {
           "doc": "The base case embeds to the genuine function-field variable `T`: a value witness that `\u03b2Hensel \u2026 0` is the genuine `T mod H\u0303` and not a fake.",
           "kind": "theorem",
-          "line": 1207,
+          "line": 1213,
           "name": "BCIKS20.HenselNumerator.embeddingOf\ud835\udcaaInto\ud835\udd43_\u03b2Hensel_zero",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "embeddingOf\ud835\udcaaInto\ud835\udd43_\u03b2Hensel_zero",
@@ -16907,7 +16907,7 @@
         {
           "doc": "**The `\u220f_l \u03b2_l^{\u03bb_l}` factor bound \u2014 PROVEN (the IH-fed product half of the telescoping).** For a *surviving* `lam : Nat.Partition (k+1\u2212i1)` (`(k+1) \u2209 lam.parts`) and the genuine guarded recursive family from `\u03b2Hensel_succ`, given the induction hypothesis `hIH : \u2200 l < k+1, \u039b_\ud835\udcaa(\u03b2_l) \u2264 (2l+1)\u00b7d_R\u00b7D`, the partition product weight is `\u2264 (2\u00b7(k+1\u2212i1) + \u03a3\u03bb)\u00b7d_R\u00b7D`. This fully discharges the product half of the BCIKS20 telescoping: the guard always fires (`surviving_parts_lt`), `partitionProd_weight_le` gives the multiset-sum bound, `hIH` bounds each factor, and `sum_map_two_mul_succ` evaluates `\u2211_{l\u2208",
           "kind": "theorem",
-          "line": 1222,
+          "line": 1228,
           "name": "BCIKS20.HenselNumerator.partitionProd_\u03b2Hensel_weight_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "partitionProd_\u03b2Hensel_weight_le",
@@ -16916,25 +16916,25 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1233,
-          "name": "BCIKS20.HenselNumerator._anon_class_1233",
+          "line": 1239,
+          "name": "BCIKS20.HenselNumerator._anon_class_1239",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_1233",
+          "short_name": "_anon_class_1239",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "structure",
-          "line": 1278,
-          "name": "BCIKS20.HenselNumerator._anon_structure_1278",
+          "line": 1284,
+          "name": "BCIKS20.HenselNumerator._anon_structure_1284",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_structure_1278",
+          "short_name": "_anon_structure_1284",
           "signature": "structure structured route (BCIKS20 Claim A.2, the `\u03b1_t`-weight closed form):"
         },
         {
           "doc": "**WAVE 5 \u2014 the structured per-part weight sum (genuine `\u2115` telescoping).**  For a multiset `ms` of *positive* parts (a `Nat.Partition`'s parts), the per-part structured weight `1 + (l+1)\u00b7w + e_l\u00b7x` (with `e_l = 2l\u22121`) sums to the closed form `card + (sum + card)\u00b7w + (2\u00b7sum \u2212 card)\u00b7x`. This is the genuine `\u2211_l \u03bb_l\u00b7(1+(l+1)\u039b(W)+e_l\u00b7\u039b(\u03be))` bookkeeping of BCIKS20's `\u03b1_t` route: the `\u039b(W)`-coefficient telescopes to `\u03a3_l (l+1)\u03bb_l = (k+1\u2212i1)+\u03a3\u03bb` and the `\u039b(\u03be)`-coefficient to `\u03a3_l (2l\u22121)\u03bb_l = 2(k+1\u2212i1)\u2212\u03a3\u03bb` (the `\u2212\u03a3\u03bb` is what cancels the `\u03be`/`B` negative exponents).  The positivity hypothesis `1 \u2264 l` m",
           "kind": "theorem",
-          "line": 1320,
+          "line": 1326,
           "name": "BCIKS20.HenselNumerator.sum_map_structured",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "sum_map_structured",
@@ -16943,7 +16943,7 @@
         {
           "doc": "**WAVE 5 \u2014 the final `\u2115`-arithmetic collapse of the structured bound to the loose target.** `1 + (t+1)\u00b7wW + e_t\u00b7((d\u22121)\u00b7(D\u2212dH+1)) \u2264 (2t+1)\u00b7d\u00b7D`, with `e_t = 2t\u22121` (`\u2115` truncated, `= max(0,2t\u22121)`), under the genuine in-tree relations `wW + dH \u2264 D` (`\u039b(W) = (lc H).natDegree`, and `(lc H).natDegree + dH \u2264 totalDegree H \u2264 D`), `2 \u2264 d` (`= natDegreeY R`, the paper's regime), `1 \u2264 dH \u2264 d` (`dH = natDegreeY H`).  Here `wW` bounds `\u039b(W)` and `(d\u22121)\u00b7(D\u2212dH+1)` bounds `\u039b(\u03be)` (`weight_\u03be_bound`). This is the BCIKS20 Claim A.2 arithmetic collapse `((d\u22121)e_t + t+1)(D\u2212dH+1) \u2212 t < (2t+1)dD` (the `\u2264` form), nume",
           "kind": "theorem",
-          "line": 1355,
+          "line": 1361,
           "name": "BCIKS20.HenselNumerator.structured_weight_collapse",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "structured_weight_collapse",
@@ -16952,16 +16952,16 @@
         {
           "doc": "**Structured invariant consumer for (P1).** Once the P2/`\u03b1_t` route supplies the structured Hensel-numerator weight `\u039b(\u03b2_t) \u2264 1 + (t+1)\u039b(W) + e_t\u039b(\u03be)`, the loose Claim-A.2 target `\u039b(\u03b2_t) \u2264 (2t+1)\u00b7d_R\u00b7D` follows by the proven arithmetic collapse `structured_weight_collapse`. This theorem deliberately keeps the genuine structured invariant as an explicit hypothesis; it does not use the false loose-IH route of `\u03b2Hensel_succ_term_weight_le`.",
           "kind": "theorem",
-          "line": 1386,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1386",
+          "line": 1392,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1392",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1386",
+          "short_name": "_anon_theorem_1392",
           "signature": "theorem theorem \u03b2Hensel_weight_bound_of_structured_weight (x\u2080 : F) (R : F[X][X][Y])"
         },
         {
           "doc": "**WAVE 5 \u2014 the `WithBot \u2115` nsmul-bound helper.**  If `w \u2264 some n` then `k \u2022 w \u2264 some (k\u00b7n)`: the over-`\ud835\udcaa` power bound `weight_\u039b_over_\ud835\udcaa_pow_le` produces `k \u2022 \u039b_\ud835\udcaa(a)`, and this descends a numeric `\u039b_\ud835\udcaa(a) \u2264 some n` to `\u039b_\ud835\udcaa(a^k) \u2264 some (k\u00b7n)` (used for the `W`/`\u03be` power factors).",
           "kind": "theorem",
-          "line": 1407,
+          "line": 1413,
           "name": "BCIKS20.HenselNumerator.nsmul_withBot_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "nsmul_withBot_le",
@@ -16970,7 +16970,7 @@
         {
           "doc": "**WAVE 5 \u2014 the structured `\u220f_l \u03b2_l^{\u03bb_l}` factor bound (the genuine structured-IH product half).**  GIVEN the paper's **structured** induction hypothesis `hIH : \u2200 l < k+1, \u039b_\ud835\udcaa(\u03b2_l) \u2264 1 + (l+1)\u00b7wW + e_l\u00b7x\u03be` (`e_l = 2l\u22121`, `wW`/`x\u03be` the `\u039b(W)`/`\u039b(\u03be)` bounds), the partition-product weight is `\u2264 \u03a3\u03bb + ((k+1\u2212i1)+\u03a3\u03bb)\u00b7wW + (2(k+1\u2212i1)\u2212\u03a3\u03bb)\u00b7x\u03be`. This is the structured analogue of `partitionProd_\u03b2Hensel_weight_le`: the guard fires (`surviving_parts_lt`), `partitionProd_weight_le` gives the multiset-sum bound, the structured `hIH` bounds each factor, and `sum_map_structured` evaluates the closed form using",
           "kind": "theorem",
-          "line": 1427,
+          "line": 1433,
           "name": "BCIKS20.HenselNumerator.partitionProd_\u03b2Hensel_weight_structured_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "partitionProd_\u03b2Hensel_weight_structured_le",
@@ -16979,52 +16979,52 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 1439,
-          "name": "BCIKS20.HenselNumerator._anon_class_1439",
+          "line": 1445,
+          "name": "BCIKS20.HenselNumerator._anon_class_1445",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_1439",
+          "short_name": "_anon_class_1445",
           "signature": "class classical"
         },
         {
           "doc": "**(P1) `t = 0` case (PROVEN).**  `weight_\u039b_over_\ud835\udcaa hH (\u03b2Hensel \u2026 0) D \u2264 (2\u00b70+1)\u00b7natDegreeY R\u00b7D = natDegreeY R \u00b7 D`. Proof: `\u03b2Hensel \u2026 0 = mk X`, and `weight_\u039b_over_\ud835\udcaa hH (mk X) D \u2264 weight_\u039b X H D = D + 1 \u2212 natDegreeY H \u2264 D \u2264 natDegreeY R \u00b7 D` (using `0 < H.natDegree = natDegreeY H` and `1 \u2264 natDegreeY R`).  Mirrors the numeric structure of `weight_\u03be_bound`.",
           "kind": "theorem",
-          "line": 1476,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1476",
+          "line": 1482,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1482",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1476",
+          "short_name": "_anon_theorem_1482",
           "signature": "theorem theorem \u03b2Hensel_weight_bound_zero (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
         },
         {
           "doc": "**(P1) per-term weight bound \u2014 the SOLE residual WALL of the inductive step.** For an `(A.1)` summand indexed by `i1 \u2208 range (k+2)` and a *surviving* partition `lam \u2208 P(k+1\u2212i1)` with `(k+1) \u2209 lam.parts`, the single term `W^{i1+\u03b4\u22121} \u00b7 \u03be^{2i1+\u03a3\u03bb\u22122} \u00b7 B_{i1,\u03bb} \u00b7 \u220f_l \u03b2_l^{\u03bb_l}` has `\u039b`-weight `\u2264 (2(k+1)+1)\u00b7d_R\u00b7D`, **given the induction hypothesis** `hIH : \u2200 l < k+1, \u039b_\ud835\udcaa(\u03b2_l) \u2264 (2l+1)\u00b7d_R\u00b7D`. This is the BCIKS20 telescoping at the level of one term (paper lines 4264\u20134268).  Once established, the full `(A.1)` sum bound follows mechanically by the *already-proven* over-`\ud835\udcaa` weight calculus (`_neg`, `_",
           "kind": "theorem",
-          "line": 1548,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1548",
+          "line": 1554,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1554",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1548",
+          "short_name": "_anon_theorem_1554",
           "signature": "theorem theorem \u03b2Hensel_succ_term_weight_le (x\u2080 : F) (R : F[X][X][Y])"
         },
         {
           "doc": "**(P1) full weight bound.**  `weight_\u039b_over_\ud835\udcaa hH (\u03b2Hensel \u2026 t) D \u2264 (2t+1)\u00b7natDegreeY R\u00b7D`. The `t = 0` case is `\u03b2Hensel_weight_bound_zero` (PROVEN).  The inductive step is FULLY ASSEMBLED from the proven over-`\ud835\udcaa` weight calculus: strong induction supplies the IH for all `l < t`; `\u03b2Hensel_succ` exposes the literal `(A.1)` sum; `weight_\u039b_over_\ud835\udcaa_neg` strips the sign; two applications of `weight_\u039b_over_\ud835\udcaa_sum_le` + `Finset.sup_le` reduce the double sum to the per-term bound `\u03b2Hensel_succ_term_weight_le`.  The ONLY residual is that per-term WALL. HYPOTHESIS: `2 \u2264 natDegreeY R` (wave 4) \u2014 the paper's",
           "kind": "theorem",
-          "line": 1604,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1604",
+          "line": 1610,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1610",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1604",
+          "short_name": "_anon_theorem_1610",
           "signature": "theorem theorem \u03b2Hensel_weight_bound (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
         },
         {
           "doc": "",
           "kind": "class",
-          "line": 1609,
-          "name": "BCIKS20.HenselNumerator._anon_class_1609",
+          "line": 1615,
+          "name": "BCIKS20.HenselNumerator._anon_class_1615",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_class_1609",
+          "short_name": "_anon_class_1615",
           "signature": "class classical"
         },
         {
           "doc": "**(P2) right-hand side, definitionally unfolded (PROVEN, axiom-clean).** The `(P2)` right-hand side `\u03b1_t \u00b7 W^{t+1} \u00b7 \u03be^{2t\u22121}` is, by the *definition* of the in-tree `ClaimA2.\u03b1` (`RationalFunctions.lean:3024`, `\u03b1_t = embeddingOf\ud835\udcaaInto\ud835\udd43 (ClaimA2.\u03b2 R t) / (W^{t+1} \u00b7 (embeddingOf\ud835\udcaaInto\ud835\udd43 \u03be)^{2t\u22121})`), nothing but the embedding of `ClaimA2.\u03b2 R t` once the `W^{t+1}\u00b7\u03be^{2t\u22121}` denominator is cancelled.  In the field `\ud835\udd43 H` this cancellation is exactly `div_mul_cancel\u2080`, gated on the denominator being nonzero. This lemma is **pure denominator clearing**; it carries no root content.  Its sole purpose is to",
           "kind": "theorem",
-          "line": 1645,
+          "line": 1651,
           "name": "BCIKS20.HenselNumerator.ClaimA2_\u03b1_mul_W\u03be_eq_embedding_\u03b2",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "ClaimA2_\u03b1_mul_W\u03be_eq_embedding_\u03b2",
@@ -17033,70 +17033,70 @@
         {
           "doc": "**(P2) reduced to the genuine-vs-placeholder `\u03b2` identity (PROVEN, axiom-clean).** Under the (genuine, BCIKS20-faithful) hypothesis that the `(P2)` denominator `W^{t+1}\u00b7\u03be^{2t\u22121}` is nonzero, the `(P2)` lift identity `\u03b2Hensel_lift_identity` is **logically equivalent** to the bare statement that the two numerator families agree under the embedding: `embeddingOf\ud835\udcaaInto\ud835\udd43 (\u03b2Hensel \u2026 t) = embeddingOf\ud835\udcaaInto\ud835\udd43 (ClaimA2.\u03b2 R t)`. This is the honest, machine-checkable localisation of the residual: `(P2)` is *not* a missing algebraic-cancellation fact (that part is `ClaimA2_\u03b1_mul_W\u03be_eq_embedding_\u03b2`, proven ab",
           "kind": "theorem",
-          "line": 1677,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1677",
+          "line": 1683,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1683",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1677",
+          "short_name": "_anon_theorem_1683",
           "signature": "theorem theorem \u03b2Hensel_lift_identity_iff_\u03b2_eq (x\u2080 : F) (R : F[X][X][Y])"
         },
         {
           "doc": "**(P2) equivalence with the denominator localized to `\u03be`.**  The `W` factor in the denominator is always nonzero, so the reusable nonzero premise can be focused on the actual remaining obligation `embeddingOf\ud835\udcaaInto\ud835\udd43 \u03be \u2260 0`.",
           "kind": "theorem",
-          "line": 1692,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1692",
+          "line": 1698,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1698",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1692",
+          "short_name": "_anon_theorem_1698",
           "signature": "theorem theorem \u03b2Hensel_lift_identity_iff_\u03b2_eq_of_\u03be_ne_zero (x\u2080 : F) (R : F[X][X][Y])"
         },
         {
           "doc": "**(P2) forward wrapper from the localized \u03b2-numerator equality.** Once the genuine Hensel numerator `\u03b2Hensel` is known to agree under the embedding with the paper placeholder numerator `ClaimA2.\u03b2`, the full `(P2)` lift identity follows by the already-proven denominator-clearing equivalence `\u03b2Hensel_lift_identity_iff_\u03b2_eq`. This is the reusable consumer form of the P2 reduction: the remaining mathematical content is only the supplied \u03b2-equality hypothesis.",
           "kind": "theorem",
-          "line": 1713,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1713",
+          "line": 1719,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1719",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1713",
+          "short_name": "_anon_theorem_1719",
           "signature": "theorem theorem \u03b2Hensel_lift_identity_of_\u03b2_embedding_eq (x\u2080 : F) (R : F[X][X][Y])"
         },
         {
           "doc": "**(P2) reverse wrapper from the lift identity to the localized \u03b2-numerator equality.** This is the converse consumer form of `\u03b2Hensel_lift_identity_of_\u03b2_embedding_eq`: once a caller has established the full lift identity, the denominator-clearing equivalence immediately returns the exact embedded equality between the genuine Hensel numerator and the paper placeholder numerator.",
           "kind": "theorem",
-          "line": 1731,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1731",
+          "line": 1737,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1737",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1731",
+          "short_name": "_anon_theorem_1737",
           "signature": "theorem theorem \u03b2_embedding_eq_of_\u03b2Hensel_lift_identity (x\u2080 : F) (R : F[X][X][Y])"
         },
         {
           "doc": "**The genuine Hensel coefficient `\u03b1_t`** (A.4): the `t`-th coefficient of the genuine Hensel-lift root `gammaGenuine`.  Replaces the vacuous in-tree `ClaimA2.\u03b1` (built on `\u03b2 = 0`). `\u03b1Genuine 0 = \u03b1\u2080 = T/W` (`\u03b1Genuine_zero`).",
           "kind": "def",
-          "line": 1776,
-          "name": "BCIKS20.HenselNumerator._anon_def_1776",
+          "line": 1782,
+          "name": "BCIKS20.HenselNumerator._anon_def_1782",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_def_1776",
+          "short_name": "_anon_def_1782",
           "signature": "def noncomputable def \u03b1Genuine (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H) (t : \u2115) :"
         },
         {
           "doc": "`\u03b1Genuine 0 = \u03b1\u2080 = T/W`: the genuine order-0 coefficient is the base root (PROVEN, axiom-clean).",
           "kind": "theorem",
-          "line": 1782,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1782",
+          "line": 1788,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1788",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1782",
+          "short_name": "_anon_theorem_1788",
           "signature": "theorem theorem \u03b1Genuine_zero (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H) :"
         },
         {
           "doc": "**`\u03b6 \u2260 0` (PROVEN, axiom-clean).**  The genuine separability datum: `\u03b6 R x\u2080 H` is a unit in the field `\ud835\udd43 H` because `eval \u03b1\u2080 (derivative Q\u2080) = \u03b6` (`eval_\u03b1\u2080_derivative_Q\u2080`) is a unit (`isUnit_eval_\u03b1\u2080_derivative_Q\u2080`, from `Separable.eval\u2082_derivative_ne_zero`).  This is the in-tree realisation of the simple-root hypothesis that drives the Hensel lift.",
           "kind": "theorem",
-          "line": 1790,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1790",
+          "line": 1796,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1796",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1790",
+          "short_name": "_anon_theorem_1796",
           "signature": "theorem theorem \u03b6_ne_zero (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H) :"
         },
         {
           "doc": "**`embedding \u03be \u2260 0` (PROVEN, axiom-clean).**  From `embedding \u03be = W^{d\u22122}\u00b7\u03b6` (`embeddingOf\ud835\udcaaInto\ud835\udd43_\u03be`), `W \u2260 0` (`liftToFunctionField_leadingCoeff_ne_zero`) and `\u03b6 \u2260 0`. This is the nonvanishing that makes the A.4 denominator `W^{t+1}\u00b7\u03be^{e_t}` invertible.",
           "kind": "theorem",
-          "line": 1800,
+          "line": 1806,
           "name": "BCIKS20.HenselNumerator.embeddingOf\ud835\udcaaInto\ud835\udd43_\u03be_ne_zero",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "embeddingOf\ud835\udcaaInto\ud835\udd43_\u03be_ne_zero",
@@ -17105,7 +17105,7 @@
         {
           "doc": "**The A.4 denominator `W^{t+1}\u00b7\u03be^{2t\u22121}` is nonzero (PROVEN, axiom-clean).**",
           "kind": "theorem",
-          "line": 1808,
+          "line": 1814,
           "name": "BCIKS20.HenselNumerator.den_ne_zero",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "den_ne_zero",
@@ -17114,52 +17114,52 @@
         {
           "doc": "**The assembled numerator series of `\u03b2Hensel`.**  The `t`-th coefficient is the (A.4) *normalized* numerator `embedding (\u03b2Hensel \u2026 t) / (W^{t+1}\u00b7\u03be^{e_t})`.  By construction, the repaired lift identity at `t` holds iff this series' `t`-th coefficient equals `\u03b1Genuine t`; so proving the identity for all `t` is exactly proving `\u03b2HenselAssembled = gammaGenuine`.  This is the honest, machine-checkable localisation of BCIKS20's \"consider the weight of `\u03b1_t`\" route (line 4276): build the power series from the (A.1) numerators and identify it with the Hensel root by uniqueness.",
           "kind": "def",
-          "line": 1821,
-          "name": "BCIKS20.HenselNumerator._anon_def_1821",
+          "line": 1827,
+          "name": "BCIKS20.HenselNumerator._anon_def_1827",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_def_1821",
+          "short_name": "_anon_def_1827",
           "signature": "def noncomputable def \u03b2HenselAssembled (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H) :"
         },
         {
           "doc": "**Order-0 of the assembled series (PROVEN, axiom-clean \u2014 the genuine base case `t = 0`).** `constantCoeff (\u03b2HenselAssembled \u2026) = \u03b1\u2080`.  Computation: the `t = 0` coefficient is `embedding (\u03b2Hensel \u2026 0) / (W^{0+1}\u00b7\u03be^{0}) = T / W = \u03b1\u2080`, using `embeddingOf\ud835\udcaaInto\ud835\udd43_\u03b2Hensel_zero` (`embedding (\u03b2Hensel \u2026 0) = T`), `e_0 = 2\u00b70\u22121 = 0` in `\u2115`, and the definition `\u03b1\u2080 = T/W`.  This is the `t = 0` instance of the repaired lift identity, discharged in full.",
           "kind": "theorem",
-          "line": 1833,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1833",
+          "line": 1839,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1839",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1833",
+          "short_name": "_anon_theorem_1839",
           "signature": "theorem theorem \u03b2HenselAssembled_constantCoeff (x\u2080 : F) (R : F[X][X][Y])"
         },
         {
           "doc": "**(P2) base case \u2014 PROVEN, axiom-clean.**  The repaired lift identity at `t = 0`: `embedding (\u03b2Hensel \u2026 0) = \u03b1Genuine 0 \u00b7 W^{1} \u00b7 \u03be^{0} = \u03b1\u2080 \u00b7 W = (T/W)\u00b7W = T`.",
           "kind": "theorem",
-          "line": 1843,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1843",
+          "line": 1849,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1849",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1843",
+          "short_name": "_anon_theorem_1849",
           "signature": "theorem theorem \u03b2Hensel_lift_identity_zero (x\u2080 : F) (R : F[X][X][Y])"
         },
         {
           "doc": "**The assembled series is the genuine root, GIVEN it is a root of `Q` (PROVEN reduction, axiom-clean).**  By `gammaGenuine_unique`, any root of `Q` whose constant coefficient is `\u03b1\u2080` equals `gammaGenuine`.  The constant-coefficient side is the base case `\u03b2HenselAssembled_constantCoeff` (PROVEN); the root side is supplied as `hroot`.  This isolates the *entire* remaining mathematical content of (P2) into the single hypothesis `eval (\u03b2HenselAssembled \u2026) Q = 0`.",
           "kind": "theorem",
-          "line": 1859,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1859",
+          "line": 1865,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1865",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1859",
+          "short_name": "_anon_theorem_1865",
           "signature": "theorem theorem \u03b2HenselAssembled_eq_gammaGenuine (x\u2080 : F) (R : F[X][X][Y])"
         },
         {
           "doc": "**(P2) full lift identity, GIVEN the assembled series is a root (PROVEN reduction, axiom-clean).**  Once `\u03b2HenselAssembled` is identified with `gammaGenuine` (via the proven base case + uniqueness, `\u03b2HenselAssembled_eq_gammaGenuine`), its `t`-th coefficient *is* `\u03b1Genuine t`, and clearing the (nonzero, `den_ne_zero`) denominator yields the identity for **every** `t` from the single root hypothesis.",
           "kind": "theorem",
-          "line": 1870,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1870",
+          "line": 1876,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1876",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1870",
+          "short_name": "_anon_theorem_1876",
           "signature": "theorem theorem \u03b2Hensel_lift_identity_of_assembledSeries_isRoot (x\u2080 : F) (R : F[X][X][Y])"
         },
         {
           "doc": "**(P2) order-0 vanishing \u2014 PROVEN, axiom-clean.**  The order-`0` coefficient of `eval (\u03b2HenselAssembled \u2026) Q` vanishes: `coeff 0 (eval \u03b3 Q) = eval (constantCoeff \u03b3) Q\u2080` (`HenselSeriesCoeff.constantCoeff_eval`), and `constantCoeff (\u03b2HenselAssembled \u2026) = \u03b1\u2080` (`\u03b2HenselAssembled_constantCoeff`), so the value is `eval \u03b1\u2080 Q\u2080 = 0` by the base root `eval_\u03b1\u2080_Q\u2080_eq_zero` (`H \u2223 evalX (C x\u2080) R` and `H(\u03b1\u2080) = 0`).  This discharges the order-`0` half of the root residual unconditionally; only the orders `\u2265 1` remain.",
           "kind": "theorem",
-          "line": 1891,
+          "line": 1897,
           "name": "BCIKS20.HenselNumerator.coeff_zero_eval_\u03b2HenselAssembled",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "coeff_zero_eval_\u03b2HenselAssembled",
@@ -17168,7 +17168,7 @@
         {
           "doc": "**(P2) explicit-residual root reduction \u2014 PROVEN.** If the single successor-order residual is supplied as a hypothesis, then the assembled `\u03b2Hensel` series is a root of `Q`. This is the hypothesis-taking version of `assembledSeries_isRoot`; unlike that theorem, this declaration does not depend on the documented residual `sorry` and is the reusable API for any future proof of the Fa\u00e0-di-Bruno coefficient bridge.",
           "kind": "theorem",
-          "line": 1905,
+          "line": 1911,
           "name": "BCIKS20.HenselNumerator.assembledSeries_isRoot_of_coeff_succ_eval",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "assembledSeries_isRoot_of_coeff_succ_eval",
@@ -17177,16 +17177,16 @@
         {
           "doc": "Conditional identification with the genuine Hensel root from the single successor-coefficient residual. Once the positive-order root coefficients vanish, `assembledSeries_isRoot_of_coeff_succ_eval` turns the assembled numerator series into a root of `Q`; the already-proven order-`0` coefficient then lets `gammaGenuine_unique` identify it with the genuine Hensel lift.",
           "kind": "theorem",
-          "line": 1923,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1923",
+          "line": 1929,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1929",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1923",
+          "short_name": "_anon_theorem_1929",
           "signature": "theorem theorem \u03b2HenselAssembled_eq_gammaGenuine_of_coeff_succ_eval (x\u2080 : F) (R : F[X][X][Y])"
         },
         {
           "doc": "Coefficient-level form of the conditional Hensel identification. Once the positive-order coefficients of `eval (\u03b2HenselAssembled \u2026) Q` vanish, every coefficient of the assembled numerator series is the corresponding genuine Hensel coefficient `\u03b1Genuine`.",
           "kind": "theorem",
-          "line": 1936,
+          "line": 1942,
           "name": "BCIKS20.HenselNumerator.coeff_\u03b2HenselAssembled_eq_\u03b1Genuine_of_coeff_succ_eval",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "coeff_\u03b2HenselAssembled_eq_\u03b1Genuine_of_coeff_succ_eval",
@@ -17195,25 +17195,25 @@
         {
           "doc": "**(P2) explicit-residual lift identity \u2014 PROVEN.** The repaired lift identity follows from the successor-coefficient vanishing residual. This combines the explicit-residual root reduction `assembledSeries_isRoot_of_coeff_succ_eval` with the already proven uniqueness and denominator-clearing theorem `\u03b2Hensel_lift_identity_of_assembledSeries_isRoot`.",
           "kind": "theorem",
-          "line": 1950,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1950",
+          "line": 1956,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1956",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1950",
+          "short_name": "_anon_theorem_1956",
           "signature": "theorem theorem \u03b2Hensel_lift_identity_of_coeff_succ_eval (x\u2080 : F) (R : F[X][X][Y])"
         },
         {
           "doc": "The `t`-truncation of the assembled series: coefficients `\u2264 t` agree with `\u03b2HenselAssembled`, all higher coefficients are `0`.",
           "kind": "def",
-          "line": 1965,
-          "name": "BCIKS20.HenselNumerator._anon_def_1965",
+          "line": 1971,
+          "name": "BCIKS20.HenselNumerator._anon_def_1971",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_def_1965",
+          "short_name": "_anon_def_1971",
           "signature": "def noncomputable def \u03b2HenselTrunc (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
         },
         {
           "doc": "Coefficients of the `t`-truncation agree with the assembled series at orders `\u2264 t`.",
           "kind": "theorem",
-          "line": 1972,
+          "line": 1978,
           "name": "BCIKS20.HenselNumerator.coeff_\u03b2HenselTrunc_of_le",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "coeff_\u03b2HenselTrunc_of_le",
@@ -17222,7 +17222,7 @@
         {
           "doc": "Coefficients of the `t`-truncation agree with the assembled series at orders `< t + 1`.",
           "kind": "theorem",
-          "line": 1980,
+          "line": 1986,
           "name": "BCIKS20.HenselNumerator.coeff_\u03b2HenselTrunc_of_lt_succ",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "coeff_\u03b2HenselTrunc_of_lt_succ",
@@ -17231,7 +17231,7 @@
         {
           "doc": "Coefficients of the `t`-truncation vanish above order `t`.",
           "kind": "theorem",
-          "line": 1987,
+          "line": 1993,
           "name": "BCIKS20.HenselNumerator.coeff_\u03b2HenselTrunc_of_gt",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "coeff_\u03b2HenselTrunc_of_gt",
@@ -17240,7 +17240,7 @@
         {
           "doc": "The first omitted coefficient of the `t`-truncation is zero.",
           "kind": "theorem",
-          "line": 1993,
+          "line": 1999,
           "name": "BCIKS20.HenselNumerator.coeff_\u03b2HenselTrunc_succ",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "coeff_\u03b2HenselTrunc_succ",
@@ -17249,7 +17249,7 @@
         {
           "doc": "**The defect reduction (PROVEN \u2014 the first slice of the per-order match).** By the series-coefficient Newton linearization (`HenselSeriesCoeff.coeff_eval_sub_at`) against the `t`-truncation, the order-`(t+1)` coefficient of `eval (\u03b2HenselAssembled) Q` splits into the truncated *defect* plus the `\u03b6`-linear response of the new coefficient: `coeff (t+1) (eval \u03b3 Q) = coeff (t+1) (eval \u03b3\u209c Q) + \u03b6 \u00b7 coeff (t+1) \u03b3`. Hence the residual `coeff_succ_eval_\u03b2HenselAssembled` is equivalent to the *cleared defect identity* `embedding (\u03b2Hensel (t+1)) = \u2212W^{t+2}\u00b7\u03be^{e_{t+1}}\u00b7coeff (t+1) (eval \u03b3\u209c Q)/\u03b6` \u2014 the (A.1",
           "kind": "theorem",
-          "line": 2008,
+          "line": 2014,
           "name": "BCIKS20.HenselNumerator.coeff_succ_eval_defect_reduction",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "coeff_succ_eval_defect_reduction",
@@ -17258,7 +17258,7 @@
         {
           "doc": "Successor-coefficient vanishing from the cleared truncated-defect cancellation. This isolates the remaining `(A.1)` expansion obligation from the already-proven Newton linearization step.",
           "kind": "theorem",
-          "line": 2035,
+          "line": 2041,
           "name": "BCIKS20.HenselNumerator.coeff_succ_eval_of_trunc_defect_cancel",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "coeff_succ_eval_of_trunc_defect_cancel",
@@ -17267,7 +17267,7 @@
         {
           "doc": "The assembled series is a root once every truncated-defect cancellation is proved. This is the direct consumer form for the remaining `(A.1)` expansion obligation after Newton linearization.",
           "kind": "theorem",
-          "line": 2050,
+          "line": 2056,
           "name": "BCIKS20.HenselNumerator.assembledSeries_isRoot_of_trunc_defect_cancel",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "assembledSeries_isRoot_of_trunc_defect_cancel",
@@ -17276,16 +17276,16 @@
         {
           "doc": "The assembled series is the genuine Hensel root once every truncated-defect cancellation is proved.",
           "kind": "theorem",
-          "line": 2063,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_2063",
+          "line": 2069,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_2069",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_2063",
+          "short_name": "_anon_theorem_2069",
           "signature": "theorem theorem \u03b2HenselAssembled_eq_gammaGenuine_of_trunc_defect_cancel (x\u2080 : F) (R : F[X][X][Y])"
         },
         {
           "doc": "Coefficient-level form of the trunc-defect cancellation reduction.",
           "kind": "theorem",
-          "line": 2075,
+          "line": 2081,
           "name": "BCIKS20.HenselNumerator.coeff_\u03b2HenselAssembled_eq_\u03b1Genuine_of_trunc_defect_cancel",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "coeff_\u03b2HenselAssembled_eq_\u03b1Genuine_of_trunc_defect_cancel",
@@ -17294,7 +17294,7 @@
         {
           "doc": "Successor-coefficient form of the trunc-defect cancellation reduction. This is the index shape consumed by the `(A.1)` successor recursion.",
           "kind": "theorem",
-          "line": 2089,
+          "line": 2095,
           "name": "BCIKS20.HenselNumerator.coeff_succ_\u03b2HenselAssembled_eq_\u03b1Genuine_of_trunc_defect_cancel",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "coeff_succ_\u03b2HenselAssembled_eq_\u03b1Genuine_of_trunc_defect_cancel",
@@ -17303,16 +17303,16 @@
         {
           "doc": "The repaired lift identity follows directly from the per-order truncated-defect cancellations.",
           "kind": "theorem",
-          "line": 2103,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_2103",
+          "line": 2109,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_2109",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_2103",
+          "short_name": "_anon_theorem_2109",
           "signature": "theorem theorem \u03b2Hensel_lift_identity_of_trunc_defect_cancel (x\u2080 : F) (R : F[X][X][Y])"
         },
         {
           "doc": "Coefficients of the recentered `Q` coefficient series are the `X`-Hasse derivatives of the corresponding `Y`-coefficient of `R`, evaluated at `x\u2080` and lifted to the function field. This is the first bridge from the power-series coefficient expansion to the Appendix-A Hasse-derivative notation.",
           "kind": "theorem",
-          "line": 2122,
+          "line": 2128,
           "name": "BCIKS20.HenselNumerator.coeff_Q_coeff_eq_eval_hasseDerivX",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "coeff_Q_coeff_eq_eval_hasseDerivX",
@@ -17321,7 +17321,7 @@
         {
           "doc": "`Q`-coefficient expansion in the same `evalX \u2218 hasseDerivX` form used by the `B_coeff` numerator and weight lemmas.",
           "kind": "theorem",
-          "line": 2132,
+          "line": 2138,
           "name": "BCIKS20.HenselNumerator.coeff_Q_coeff_eq_evalX_hasseDerivX_coeff",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "coeff_Q_coeff_eq_evalX_hasseDerivX_coeff",
@@ -17330,7 +17330,7 @@
         {
           "doc": "**Product bridge (PROVEN \u2014 the multiplicative half of the cleared-defect identity).** The product of assembled-series coefficients over any finite multiset of orders clears to the embedded product of the (A.1) numerators over the telescoped `W`/`\u03be` powers.",
           "kind": "theorem",
-          "line": 2142,
+          "line": 2148,
           "name": "BCIKS20.HenselNumerator.prod_map_coeff_assembled",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "prod_map_coeff_assembled",
@@ -17339,7 +17339,7 @@
         {
           "doc": "`\u2211_{l \u2208 \u03bb.parts} (l+1) = m + \u03a3\u03bb` \u2014 the `W`-power telescope. Local restatement of `ProximityPrize.MultinomialChainRule.partition_sum_add_one`.",
           "kind": "theorem",
-          "line": 2164,
+          "line": 2170,
           "name": "BCIKS20.HenselNumerator.partition_sum_add_one_local",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "partition_sum_add_one_local",
@@ -17348,7 +17348,7 @@
         {
           "doc": "**Truncation agreement for products (PROVEN).** Over any multiset of orders all `\u2264 t`, the truncated and assembled coefficient products coincide.",
           "kind": "theorem",
-          "line": 2171,
+          "line": 2177,
           "name": "BCIKS20.HenselNumerator.prod_map_coeff_trunc_eq",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "prod_map_coeff_trunc_eq",
@@ -17357,7 +17357,7 @@
         {
           "doc": "Partition-specialized truncation agreement.  If every part of `\u03bb` is at most `t`, then the partition product built from the `t`-truncation equals the one built from the assembled series.",
           "kind": "theorem",
-          "line": 2183,
+          "line": 2189,
           "name": "BCIKS20.HenselNumerator.partitionProd_coeff_trunc_eq",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "partitionProd_coeff_trunc_eq",
@@ -17366,7 +17366,7 @@
         {
           "doc": "Partition-specialized truncation agreement in the guard shape produced by `surviving_parts_lt`: every part is `< t + 1`.",
           "kind": "theorem",
-          "line": 2193,
+          "line": 2199,
           "name": "BCIKS20.HenselNumerator.partitionProd_coeff_trunc_eq_of_parts_lt_succ",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "partitionProd_coeff_trunc_eq_of_parts_lt_succ",
@@ -17375,7 +17375,7 @@
         {
           "doc": "**Per-partition cleared term (PROVEN corollary).** Instantiating the product bridge at a partition `\u03bb \u22a2 m` and rewriting the `W`-exponent by `partition_sum_add_one_local`.",
           "kind": "theorem",
-          "line": 2203,
+          "line": 2209,
           "name": "BCIKS20.HenselNumerator.partitionProd_coeff_assembled",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "partitionProd_coeff_assembled",
@@ -17384,7 +17384,7 @@
         {
           "doc": "**Per-partition cleared term for the truncation (PROVEN).**  When all parts of `\u03bb` are at most `t`, the partition product of coefficients of `\u03b2HenselTrunc t` has the same cleared `\u03b2Hensel` numerator expression as the assembled product.",
           "kind": "theorem",
-          "line": 2218,
+          "line": 2224,
           "name": "BCIKS20.HenselNumerator.partitionProd_coeff_trunc_assembled",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "partitionProd_coeff_trunc_assembled",
@@ -17393,7 +17393,7 @@
         {
           "doc": "Cleared truncation term for a surviving `(A.1)` partition. The survival condition rules out the current order `k + 1`, so every recursive part is visible to the `k`-truncation.",
           "kind": "theorem",
-          "line": 2232,
+          "line": 2238,
           "name": "BCIKS20.HenselNumerator.partitionProd_coeff_trunc_assembled_of_surviving",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "partitionProd_coeff_trunc_assembled_of_surviving",
@@ -17402,7 +17402,7 @@
         {
           "doc": "**The `Q`-coefficient bridge (PROVEN, axiom-clean, content-free).** The order-`a` (`X`-Taylor) coefficient of the `i`-th power-series coefficient of `Q` is the lift of the `i`-th `Y`-coefficient of the middle-`X` Hasse derivative `\u0394_X^{a} R` specialised at `X = x\u2080`. This is the exact composite of the orchestrator's prepped chain, every step a proven rewrite: `Q.coeff i = coeffHom x\u2080 H (R.coeff i)` (`coeff_map`); `coeff a (coeffHom ...) = liftToFunctionField ((taylor (C x\u2080) (R.coeff i)).coeff a)` (`coeff_coeffHom`); the mathlib Taylor identity `(taylor r f).coeff a = (hasseDeriv a f).eval r` (`",
           "kind": "theorem",
-          "line": 2268,
+          "line": 2274,
           "name": "BCIKS20.HenselNumerator.coeff_Q_eq_B",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "coeff_Q_eq_B",
@@ -17411,7 +17411,7 @@
         {
           "doc": "**The full Fa\u00e0-di-Bruno expansion of `coeff n (eval \u03b3 Q)` (PROVEN, axiom-clean, content-free).** Chaining the three proven expansion lemmas with the `Q`-coefficient bridge `coeff_Q_eq_B`: * `HenselSeriesCoeff.coeff_eval_eq_sum_range` is the convolution over the `Y`-degree `i \u2264 deg Q`; * `PowerSeries.coeff_mul` is the antidiagonal split of each `coeff n (Q.coeff i * \u03b3^i)` into the `X`-Taylor order `a = ab.1` and the `Y`-composition order `b = ab.2`; * `PowerSeriesComposition.coeff_pow_eq_partitionSum` expands each `coeff b (\u03b3^i)` as the `countPerms`-weighted sum over the distinct value-multiset",
           "kind": "theorem",
-          "line": 2291,
+          "line": 2297,
           "name": "BCIKS20.HenselNumerator.coeff_eval_Q_faaDiBruno",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "coeff_eval_Q_faaDiBruno",
@@ -17420,7 +17420,7 @@
         {
           "doc": "**(P2) the single named combinatorial residual (documented `sorry`).** After the proven Fa\u00e0-di-Bruno expansion `coeff_eval_Q_faaDiBruno`, the order-`(t+1)` coefficient of `eval (\u03b2HenselAssembled ...) Q` is this explicit partition/`countPerms` sum. Its vanishing is the isolated BCIKS20 A.4 content: the combinatorial-weight reconciliation that the weighted Fa\u00e0-di-Bruno sum collapses, against the `(A.1)` recursion `\u03b2Hensel_succ`, to `0`.",
           "kind": "theorem",
-          "line": 2315,
+          "line": 2321,
           "name": "BCIKS20.HenselNumerator.faaDiBruno_succ_sum_eq_zero",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "faaDiBruno_succ_sum_eq_zero",
@@ -17429,7 +17429,7 @@
         {
           "doc": "**(P2) order-`(t+1)` vanishing \u2014 reduced to the single named combinatorial residual `faaDiBruno_succ_sum_eq_zero`.** The successor-order coefficient of `eval (\u03b2HenselAssembled \u2026) Q` vanishes.  This is the genuine, minimally-carved BCIKS20 A.4 content: with the order-`0` half already PROVEN (`coeff_zero_eval_\u03b2HenselAssembled`) and the whole-series statement assembled from this by `PowerSeries.ext` (`assembledSeries_isRoot` below), the *entire* remaining mathematical content of (P2) is exactly this per-successor-order vanishing. WHY THIS IS THE GENUINE A.4 CONTENT.  The (A.1) recursion `\u03b2Hensel_",
           "kind": "theorem",
-          "line": 2366,
+          "line": 2372,
           "name": "BCIKS20.HenselNumerator.coeff_succ_eval_\u03b2HenselAssembled",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "coeff_succ_eval_\u03b2HenselAssembled",
@@ -17438,7 +17438,7 @@
         {
           "doc": "**(P2) the assembled series is a root of `Q` \u2014 PROVEN modulo the SINGLE per-successor-order residual `coeff_succ_eval_\u03b2HenselAssembled`.** `eval (\u03b2HenselAssembled \u2026) Q = 0`, the genuine BCIKS20 A.4 statement that the power series assembled from the (A.1) numerators `\u03b2Hensel` (normalized by `W^{t+1}\u00b7\u03be^{e_t}`) is a root of the `X`-recentered `Y`-polynomial `Q` of `R`.  Proved by `PowerSeries.ext`, splitting into the order-`0` vanishing `coeff_zero_eval_\u03b2HenselAssembled` (PROVEN) and the order-`(t+1)` vanishing `coeff_succ_eval_\u03b2HenselAssembled` (the single documented residual).  Everything else ",
           "kind": "theorem",
-          "line": 2385,
+          "line": 2391,
           "name": "BCIKS20.HenselNumerator.assembledSeries_isRoot",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "assembledSeries_isRoot",
@@ -17447,16 +17447,16 @@
         {
           "doc": "**(P2) lift identity \u2014 REPAIRED against the genuine root, PROVEN modulo the single per-successor-order residual `coeff_succ_eval_\u03b2HenselAssembled`.** `embeddingOf\ud835\udcaaInto\ud835\udd43 (\u03b2Hensel \u2026 t) = \u03b1Genuine t \u00b7 W^{t+1} \u00b7 \u03be^{2t\u22121}`, where `\u03b1Genuine t = coeff t (gammaGenuine \u2026)` is the genuine Hensel coefficient of A.4 (NOT the vacuous in-tree `ClaimA2.\u03b1`; see the statement-repair note at \u00a74f above). PROOF STATUS.  Reduced to the single per-successor-order residual `coeff_succ_eval_\u03b2HenselAssembled` (`coeff (t+1) (eval (\u03b2HenselAssembled) Q) = 0`): `assembledSeries_isRoot` assembles the full root `eval (\u03b2Hens",
           "kind": "theorem",
-          "line": 2404,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_2404",
+          "line": 2410,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_2410",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_2404",
+          "short_name": "_anon_theorem_2410",
           "signature": "theorem theorem \u03b2Hensel_lift_identity (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 2420,
+          "line": 2426,
           "name": "BCIKS20.HenselNumerator.only",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "only",
@@ -17465,10 +17465,10 @@
         {
           "doc": "",
           "kind": "structure",
-          "line": 2442,
-          "name": "BCIKS20.HenselNumerator._anon_structure_2442",
+          "line": 2448,
+          "name": "BCIKS20.HenselNumerator._anon_structure_2448",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_structure_2442",
+          "short_name": "_anon_structure_2448",
           "signature": "structure structured invariant is itself UNDERIVABLE from the (A.1) recursion (sub-additivity forces a"
         }
       ]
@@ -22052,64 +22052,73 @@
         {
           "doc": "",
           "kind": "structure",
-          "line": 49,
-          "name": "_anon_structure_49",
+          "line": 61,
+          "name": "_anon_structure_61",
           "namespace": "",
-          "short_name": "_anon_structure_49",
-          "signature": "structure structured invariant via the wave-5 `\u2115`-arithmetic `structured_weight_collapse`"
+          "short_name": "_anon_structure_61",
+          "signature": "structure structured invariant via the wave-5 `structured_weight_collapse`"
         },
         {
-          "doc": "**The carved weight-from-identity link (named gap).**  At a fixed weight budget `D`, the structured per-coefficient weight bound on `\u03b2Hensel t`.  This is `\u039b_\ud835\udcaa(\u03b2_t) \u2264 1 + (t+1)\u039b(W) + e_t\u00b7\u039b(\u03be)`, the genuine BCIKS20 A.4 \"weight of `\u03b1_t`\" content read off the lift identity. It is the ONE precisely-located gap: the `\ud835\udd43`-level identity `embedding \u03b2_t = \u03b1_t\u00b7W^{t+1}\u00b7\u03be^{e_t}` together with `\u039b(\u03b1_t) \u2264 1` *and* an embedding-compatible reading of `\u039b_\ud835\udcaa` would deliver it, but `\u039b_\ud835\udcaa` is the weight of the canonical `F[X][Y]`-representative, not an `\ud835\udd43`-invariant, so no in-tree lemma transports it.  We name it her",
+          "doc": "The embedding of the `\ud835\udcaa`-element `W\ud835\udcaa` is the `\ud835\udd43`-element `liftToFunctionField H.leadingCoeff` (the `W` of the lift identity).",
+          "kind": "theorem",
+          "line": 91,
+          "name": "BCIKS20.HenselNumerator.embeddingOf\ud835\udcaaInto\ud835\udd43_W\ud835\udcaa",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "embeddingOf\ud835\udcaaInto\ud835\udd43_W\ud835\udcaa",
+          "signature": "theorem embeddingOf\ud835\udcaaInto\ud835\udd43_W\ud835\udcaa :"
+        },
+        {
+          "doc": "**The carved A.4 link (named gap).**  At order `t`, the genuine Hensel-root coefficient `\u03b1Genuine t` is the embedding of an `\ud835\udcaa`-element `a_t` of `\u039b_\ud835\udcaa`-weight `\u2264 1`.  This is the formal content of BCIKS20's `\u039b(\u03b1_t) = \u039b(Y) = 1` (\"consider the weight of `\u03b1_t`\", line 4276): `\u03b1_t` is, up to the `W^{t+1}\u00b7\u03be^{e_t}` clearing, the genuine root `\u03b3`'s `t`-th Taylor coefficient, whose weight is that of the variable `Y`.",
           "kind": "def",
-          "line": 95,
-          "name": "BCIKS20.HenselNumerator.StructuredWeightFromLift",
+          "line": 105,
+          "name": "BCIKS20.HenselNumerator.AlphaGenuineRegularWeightLe",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "StructuredWeightFromLift",
-          "signature": "def StructuredWeightFromLift (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
+          "short_name": "AlphaGenuineRegularWeightLe",
+          "signature": "def AlphaGenuineRegularWeightLe (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
         },
         {
-          "doc": "",
+          "doc": "**(P1) Task 1 \u2014 THE WEIGHT-FROM-IDENTITY LINK.**  Given the (P2) lift identity at order `t` (`hlift_t`) and a carved `\ud835\udcaa`-preimage `a` of `\u03b1Genuine t` (`ha`), the `\u03b2Hensel t` factors, IN `\ud835\udcaa H`, as `\u03b2Hensel t = a \u00b7 W\ud835\udcaa^{t+1} \u00b7 \u03be^{2t\u22121}`. The `\ud835\udd43`-level identity says `embedding (\u03b2_t) = embedding a \u00b7 embedding (W\ud835\udcaa)^{t+1} \u00b7 embedding \u03be^{2t\u22121} = embedding (a \u00b7 W\ud835\udcaa^{t+1} \u00b7 \u03be^{2t\u22121})` (ring-hom multiplicativity + the `W` bridge); injectivity of `embeddingOf\ud835\udcaaInto\ud835\udd43` (`embeddingOf\ud835\udcaaInto\ud835\udd43_injective`) descends it to `\ud835\udcaa`.  This is the genuine transport of the lift identity to the world where `\u039b_\ud835\udcaa` lives.",
           "kind": "theorem",
-          "line": 108,
-          "name": "BCIKS20.HenselNumerator.with",
+          "line": 122,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_122",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "with",
-          "signature": "theorem with the lift identity carried as an explicit hypothesis `hlift` (so the dependency on (P2) is"
+          "short_name": "_anon_theorem_122",
+          "signature": "theorem theorem \u03b2Hensel_eq_alpha_mul_of_lift (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
         },
         {
-          "doc": "**(P1) Task 2 \u2014 the STRUCTURED INVARIANT, conditional.**  Given the (P2) lift identity `hlift` (`embedding \u03b2_t = \u03b1Genuine t \u00b7 W^{t+1} \u00b7 \u03be^{e_t}` for all `t`) and the carved weight-from-identity link `hSWL` (the genuine `\u039b(\u03b1_t) \u2264 1` content transported to `\u039b_\ud835\udcaa`), the structured invariant `\u039b_\ud835\udcaa(\u03b2Hensel l) \u2264 1 + (l+1)\u00b7\u039b(W) + e_l\u00b7\u039b(\u03be)`   for all `l` holds.  `\u039b(W) = (lc H).natDegree`, `\u039b(\u03be) = (d\u22121)\u00b7(D\u2212dH+1)`, `e_l = 2l\u22121` (\u2115-truncated, `= e_l` of the task: `e_0 = 0`, `e_l = 2l\u22121` for `l \u2265 1`). The proof is by strong induction; both the base `l = 0` and the step are supplied uniformly by the carved l",
+          "doc": "**(P1) Task 2 \u2014 the STRUCTURED INVARIANT, conditional.**  Given the (P2) lift identity `hlift`, the carved A.4 link `h\u03b1` (`\u03b1Genuine l` regular of weight `\u2264 1`), the genuine `\u039b(W)` bound (`weight_\u039b_over_\ud835\udcaa_W`, automatic) and the `\u039b(\u03be)` bound `h\u03be` (`weight_\u03be_bound`, under its regime), the structured invariant `\u039b_\ud835\udcaa(\u03b2Hensel l) \u2264 1 + (l+1)\u00b7\u039b(W) + e_l\u00b7\u039b(\u03be)`   for all `l` holds, with `\u039b(W) = (lc H).natDegree`, `\u039b(\u03be) \u2264 (d\u22121)\u00b7(D\u2212dH+1)`, `e_l = 2l\u22121` (\u2115-truncated: `e_0 = 0`, `e_l = 2l\u22121` for `l \u2265 1`). Proof per order `l`: the link gives `\u03b2_l = a_l \u00b7 W\ud835\udcaa^{l+1} \u00b7 \u03be^{e_l}` in `\ud835\udcaa` (Task 1); then the proven ov",
           "kind": "theorem",
-          "line": 124,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_124",
+          "line": 152,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_152",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_124",
+          "short_name": "_anon_theorem_152",
           "signature": "theorem theorem \u03b2Hensel_weight_structured (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
         },
         {
-          "doc": "**(P1) Task 3 \u2014 the loose weight bound, conditional.**  From the structured invariant `\u03b2Hensel_weight_structured` (under the lift identity + carved link), the loose Claim-A.2 target `\u039b_\ud835\udcaa(\u03b2Hensel t) \u2264 (2t+1)\u00b7natDegreeY R \u00b7 D` follows by the proven `\u2115`-arithmetic collapse `structured_weight_collapse` (`= \u03b2Hensel_weight_bound_of_structured_weight`), under the paper's faithful regime `2 \u2264 d`, `dH \u2264 d`, `\u039b(W)+dH \u2264 D`. This is the conditional (P1): it auto-unlocks when `\u03b2Hensel_lift_identity` becomes axiom-clean (w16 vanishing) by instantiating `hlift := \u03b2Hensel_lift_identity \u2026` and supplying `hSWL`",
+          "doc": "**(P1) Task 3 \u2014 the loose weight bound, conditional.**  From the structured invariant `\u03b2Hensel_weight_structured` (under the lift identity + carved A.4 link + \u03be-weight regime), the loose Claim-A.2 target `\u039b_\ud835\udcaa(\u03b2Hensel t) \u2264 (2t+1)\u00b7natDegreeY R \u00b7 D` follows by the proven `\u2115`-arithmetic collapse `structured_weight_collapse` (`= \u03b2Hensel_weight_bound_of_structured_weight`), under the paper's faithful regime `2 \u2264 d`, `dH \u2264 d`, `\u039b(W)+dH \u2264 D`.",
           "kind": "theorem",
-          "line": 162,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_162",
+          "line": 206,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_206",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_162",
+          "short_name": "_anon_theorem_206",
           "signature": "theorem theorem \u03b2Hensel_weight_bound_of_lift (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
         },
         {
-          "doc": "**CONDITIONAL (P1), final form.**  Identical conclusion to the in-tree `\u03b2Hensel_weight_bound` (whose inductive step bottoms out at the open per-term WALL), but proven via the (P2) lift identity `hlift` + the carved weight-from-identity link `hSWL`, *bypassing* the WALL entirely.  This is the honest realisation of BCIKS20's \"consider the weight of `\u03b1_t`\" route: the (A.1) recursion is never re-traversed; the weight is read off the closed form.",
+          "doc": "**(P1) discharging `h\u03be` via the PROVEN `weight_\u03be_bound`.**  Under the `2 \u2264 d` regime and the two total-degree budgets of `weight_\u03be_bound`, the \u03be-weight hypothesis is automatic; so the conditional (P1) needs only `hlift` + the carved A.4 link `h\u03b1`.",
           "kind": "theorem",
-          "line": 190,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_190",
+          "line": 236,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_236",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_190",
-          "signature": "theorem theorem \u03b2Hensel_weight_bound_conditional (x\u2080 : F) (R : F[X][X][Y])"
+          "short_name": "_anon_theorem_236",
+          "signature": "theorem theorem \u03b2Hensel_weight_bound_of_lift' (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
         },
         {
-          "doc": "**AUTO-UNLOCK witness.**  Once `\u03b2Hensel_lift_identity` is axiom-clean (w16 vanishing landed), the `hlift` hypothesis of the conditional (P1) is discharged unconditionally by the in-tree `\u03b2Hensel_lift_identity`.  This lemma exhibits that discharge: feeding `\u03b2Hensel_lift_identity` for `hlift`, the conditional (P1) needs ONLY the carved link `hSWL` (the genuine A.4 weight-of-`\u03b1_t` content) plus the paper's faithful regime hypotheses.",
+          "doc": "**AUTO-UNLOCK witness.**  Once `\u03b2Hensel_lift_identity` is axiom-clean (w16 vanishing landed), the `hlift` hypothesis is discharged unconditionally by the in-tree `\u03b2Hensel_lift_identity`.  This lemma exhibits that discharge: feeding `\u03b2Hensel_lift_identity` for `hlift`, the conditional (P1) needs ONLY the carved A.4 link `h\u03b1` (`\u039b(\u03b1_t) \u2264 1`) plus the paper's faithful regime hypotheses.",
           "kind": "theorem",
-          "line": 210,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_210",
+          "line": 257,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_257",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_210",
+          "short_name": "_anon_theorem_257",
           "signature": "theorem theorem \u03b2Hensel_weight_bound_unlocked (x\u2080 : F) (R : F[X][X][Y])"
         }
       ]
@@ -22356,6 +22365,118 @@
         }
       ]
     },
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P2Vanish.lean": {
+      "declarations": [
+        {
+          "doc": "**Zero-peeling for `countPerms`.**  A value-multiset `replicate j0 0 + \u03bb` (with `0 \u2209 \u03bb`, i.e. `\u03bb` the positive entries) has permutation count `C(j0+card\u03bb, j0)\u00b7countPerms \u03bb`.  This is the exact weight carried by the `m \u2194 (j0, \u03bb)` bijection between full Fa\u00e0-di-Bruno value-multisets and the `(A.1)` recursion's partitions: the `C(card, #zeros)` factor counts the placements of the zero slots, `countPerms \u03bb = multinomial \u03bb` the orderings of the positive parts.",
+          "kind": "theorem",
+          "line": 72,
+          "name": "BCIKS20.HenselNumerator.countPerms_replicate_zero_add",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "countPerms_replicate_zero_add",
+          "signature": "theorem countPerms_replicate_zero_add (j0 : \u2115) (lam : Multiset \u2115) (h0 : (0 : \u2115) \u2209 lam) :"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 75,
+          "name": "BCIKS20.HenselNumerator._anon_class_75",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "_anon_class_75",
+          "signature": "class classical"
+        },
+        {
+          "doc": "**Zero-peeling, re-keyed to the Y-Hasse binomial (PROVEN, axiom-clean).**  With `j = card m = j0 + card\u03bb` the full Fa\u00e0-di-Bruno Y-degree and `sl = card\u03bb = \u03a3\u03bb`, the zero-placement binomial `C(j, j0) = C(j, j\u2212sl) = C(j, sl)` (`Nat.choose_symm`).  Hence the full-sum value-multiset weight is exactly `countPerms m = C(j, \u03a3\u03bb)\u00b7countPerms \u03bb` \u2014 the **Y-Hasse binomial** `C(j, \u03a3\u03bb)` times the positive-part multinomial.  This is the shape the `(A.1)` recursion's `\u0394_Y^{\u03a3\u03bb}` step produces.",
+          "kind": "theorem",
+          "line": 117,
+          "name": "BCIKS20.HenselNumerator.countPerms_replicate_zero_add_choose_sl",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "countPerms_replicate_zero_add_choose_sl",
+          "signature": "theorem countPerms_replicate_zero_add_choose_sl (j0 : \u2115) (lam : Multiset \u2115) (h0 : (0 : \u2115) \u2209 lam) :"
+        },
+        {
+          "doc": "**W-exponent of the assembled product over `m`.**  `\u220f_{l\u2208m} coeff_l(\u03b2HenselAssembled)` divides by `W^{\u2211_{l\u2208m}(l+1)} = W^{(sum m)+(card m)}`.",
+          "kind": "theorem",
+          "line": 133,
+          "name": "BCIKS20.HenselNumerator.fullSum_W_exponent",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "fullSum_W_exponent",
+          "signature": "theorem fullSum_W_exponent (m : Multiset \u2115) :"
+        },
+        {
+          "doc": "**\u03be-exponent of the assembled product over `m`.**  `\u220f_{l\u2208m} coeff_l(\u03b2HenselAssembled)` divides by `\u03be^{\u2211_{l\u2208m}(2l\u22121)}`; since `2\u00b70\u22121 = 0` in `\u2115`, only the *positive* entries `\u03bb` (here `lam`, with `0 \u2209 lam`) contribute, giving `\u03be^{2\u00b7(sum \u03bb) \u2212 (card \u03bb)}`.  This `\u2115`-truncation on the zeros is the load-bearing reason the \u03be telescope closes (see `exponent_balance_\u03be`).",
+          "kind": "theorem",
+          "line": 141,
+          "name": "BCIKS20.HenselNumerator.fullSum_\u03be_exponent",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "fullSum_\u03be_exponent",
+          "signature": "theorem fullSum_\u03be_exponent (lam : Multiset \u2115) (h0 : (0 : \u2115) \u2209 lam) :"
+        },
+        {
+          "doc": "**\u03be-exponent balance (the telescope, as a clean `\u2124` identity, PROVEN).**  Per term with `i1 + b = t + 1` (`i1` the X-Taylor/`hasseDerivX` order `= a`, `b` the composition order), the recursion's \u03be-power `2i1 + \u03a3\u03bb \u2212 2` plus the assembled-product's \u03be-denominator `2b \u2212 \u03a3\u03bb` (`fullSum_\u03be_exponent`, with `\u03a3\u03bb = sl`) minus the global denominator `2t + 1` of `coeff (t+1) (\u03b2HenselAssembled)` equals **`\u22121`**: exactly one `\u03b6`.  This single deficit is supplied by the `\u2212\u03b6` factor of `RestrictedFaaDiBrunoMatch` (recall `\u03be = W^{d\u22122}\u00b7\u03b6`).  No imbalance: the `\u03a3\u03bb`'s cancel and the residual is a clean `\u22121`.",
+          "kind": "theorem",
+          "line": 163,
+          "name": "BCIKS20.HenselNumerator.exponent_balance_\u03be",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "exponent_balance_\u03be",
+          "signature": "theorem exponent_balance_\u03be (i1 b t sl : \u2124) (h : i1 + b = t + 1) :"
+        },
+        {
+          "doc": "**W-exponent balance (the telescope, as a clean `\u2124` identity, PROVEN).**  Per term with `i1 + b = t + 1`, the recursion's W-power `i1 + \u03b4 \u2212 1` plus the assembled-product's W-denominator `b + i` (`fullSum_W_exponent`, `i = card m = j` the Y-degree) minus the global denominator `t + 2` equals **`i + \u03b4 \u2212 2`** \u2014 exactly the `W`-content of `B_coeff`/`hasseCoeffRepr\ud835\udcaa` (the `Y \u21a6 T` vs `Y \u21a6 T/W` clearing, `embeddingOf\ud835\udcaaInto\ud835\udd43_hasseCoeffRepr\ud835\udcaa_cleared`).  No imbalance: the residual is precisely the genuine Hasse-coefficient `W`-weight.",
+          "kind": "theorem",
+          "line": 173,
+          "name": "BCIKS20.HenselNumerator.exponent_balance_W",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "exponent_balance_W",
+          "signature": "theorem exponent_balance_W (i1 b t i \u03b4 : \u2124) (h : i1 + b = t + 1) :"
+        },
+        {
+          "doc": "**The single residual weight identity of P2's full-sum vanishing.**  For every value-multiset `m = replicate j0 0 + \u03bb` (positives `\u03bb`, `0 \u2209 \u03bb`) appearing in the order-`(t+1)` full Fa\u00e0-di-Bruno sum at Y-degree `j = card m`, the full weight `countPerms m` equals the genuine recursion weight: the Y-Hasse binomial `C(j, \u03a3\u03bb)` times the positive-part multinomial `countPerms \u03bb`.  By `countPerms_replicate_zero_add_choose_sl` this **is** an identity (`countPerms m = C(j, \u03a3\u03bb)\u00b7countPerms \u03bb`); it is named here as the explicit hinge of the `coeff_eval_Q_faaDiBruno \u2194 \u03b2Hensel_succ` match so the residual is a",
+          "kind": "def",
+          "line": 198,
+          "name": "BCIKS20.HenselNumerator.PrefactorWeightMatch",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "PrefactorWeightMatch",
+          "signature": "def PrefactorWeightMatch : Prop :="
+        },
+        {
+          "doc": "**`PrefactorWeightMatch` holds unconditionally (PROVEN, axiom-clean).**  It is exactly the zero-peel reindex re-keyed by `Nat.choose_symm`; this certifies the named hinge of \u00a73 is genuine (not a secretly-false or vacuous stub), and that the *combinatorial* half of the Fa\u00e0-di-Bruno match is fully discharged.",
+          "kind": "theorem",
+          "line": 207,
+          "name": "BCIKS20.HenselNumerator.prefactorWeightMatch_holds",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "prefactorWeightMatch_holds",
+          "signature": "theorem prefactorWeightMatch_holds : PrefactorWeightMatch :="
+        },
+        {
+          "doc": "**Y-Hasse binomial extraction.**  `(\u0394_Y^{m} R).coeff i = C(i+m, m) \u00b7 R.coeff (i+m)` (the `F[X][X]`-coefficient identity; `\u0394_Y = hasseDerivY = Polynomial.hasseDeriv`).  At the full-sum Y-degree `j = i + m` this is the binomial `C(j, m)`, i.e. with `m = \u03a3\u03bb`, the `C(j, \u03a3\u03bb)` of \u00a71.",
+          "kind": "theorem",
+          "line": 220,
+          "name": "BCIKS20.HenselNumerator.hasseDerivY_coeff",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "hasseDerivY_coeff",
+          "signature": "theorem hasseDerivY_coeff (m : \u2115) (R : F[X][X][Y]) (i : \u2115) :"
+        },
+        {
+          "doc": "**Full-sum vanishing from the carved core (PROVEN reduction, axiom-clean).**  Re-exposes the imported equivalence `restrictedMatch_iff_fullVanishes` in the direction needed for P2's finale: `RestrictedFaaDiBrunoMatch \u2192 FaaDiBrunoFullSumVanishes`.",
+          "kind": "theorem",
+          "line": 235,
+          "name": "BCIKS20.HenselNumerator.fullVanishes_of_restrictedMatch",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "fullVanishes_of_restrictedMatch",
+          "signature": "theorem fullVanishes_of_restrictedMatch (x\u2080 : F) (R : F[X][X][Y])"
+        },
+        {
+          "doc": "**P2 fully closes from the carved core (PROVEN reduction, axiom-clean).**  Chaining `fullVanishes_of_restrictedMatch` into the imported `P2_closed_of_fullVanishes`: the carved core `RestrictedFaaDiBrunoMatch` discharges the assembled-series root AND the repaired lift identity for all orders.  Everything else of P2 is PROVEN.  The combinatorial half of the match (`PrefactorWeightMatch`) is PROVEN here; the single remaining open step is the `B_coeff`-prefactor re-keying recorded as the module FINDING.",
+          "kind": "theorem",
+          "line": 247,
+          "name": "BCIKS20.HenselNumerator.P2_closed_of_restrictedMatch",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "P2_closed_of_restrictedMatch",
+          "signature": "theorem P2_closed_of_restrictedMatch (x\u2080 : F) (R : F[X][X][Y])"
+        }
+      ]
+    },
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Prelude.lean": {
       "declarations": []
     },
@@ -22377,6 +22498,127 @@
           "name": "ProximityGap._anon_class_46",
           "namespace": "ProximityGap",
           "short_name": "_anon_class_46",
+          "signature": "class classical"
+        }
+      ]
+    },
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/S5Genuine.lean": {
+      "declarations": [
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 96,
+          "name": "BCIKS20.HenselNumerator.S5Genuine.S\u03b2LargeAt",
+          "namespace": "BCIKS20.HenselNumerator.S5Genuine",
+          "short_name": "S\u03b2LargeAt",
+          "signature": "def S\u03b2LargeAt (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H) (t : \u2115) : Prop :="
+        },
+        {
+          "doc": "The per-`t` lift identity bridge, as a documented hypothesis the \u00a75 callers supply: `embedding (\u03b2Hensel \u2026 t) = \u03b1Genuine t \u00b7 W^{t+1} \u00b7 \u03be^{2t\u22121}` (the `(P2)` Claim-A.2 normalization).",
+          "kind": "def",
+          "line": 119,
+          "name": "BCIKS20.HenselNumerator.S5Genuine.LiftIdentityAt",
+          "namespace": "BCIKS20.HenselNumerator.S5Genuine",
+          "short_name": "LiftIdentityAt",
+          "signature": "def LiftIdentityAt (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H) (t : \u2115) : Prop :="
+        },
+        {
+          "doc": "**The numerator vanishes.**  Under the documented per-`t` largeness hypothesis on `\u03b2Hensel \u2026 t`, Lemma A.1 forces `embedding (\u03b2Hensel \u2026 t) = 0` in `\ud835\udd43 H`.  This is the direct application of `Lemma_A_1` to the genuine recursive numerator \u2014 the terminal vanishing of the \u00a75.2.6 argument (paper line 1681, \"we can therefore apply lemma A.1 to find that indeed `\u03b2_t = 0`\"). AXIOM-CLEAN (no `sorryAx`): depends only on `Lemma_A_1`.",
+          "kind": "theorem",
+          "line": 132,
+          "name": "BCIKS20.HenselNumerator.S5Genuine.embedding_\u03b2Hensel_eq_zero_of_S\u03b2Large",
+          "namespace": "BCIKS20.HenselNumerator.S5Genuine",
+          "short_name": "embedding_\u03b2Hensel_eq_zero_of_S\u03b2Large",
+          "signature": "theorem embedding_\u03b2Hensel_eq_zero_of_S\u03b2Large {x\u2080 : F} {R : F[X][X][Y]}"
+        },
+        {
+          "doc": "**Claim 5.8 (genuine).**  For each coefficient index `t`, under the documented \u00a75 largeness hypothesis on `\u03b2Hensel \u2026 t` (the `(5.14)`-derived bound), the lift-identity bridge `hlift` (`LiftIdentityAt`), and the genuine Hensel objects, `\u03b1Genuine t = 0`. Route (paper lines 1672\u20131681): largeness \u27f9 (`Lemma_A_1`, via `embedding_\u03b2Hensel_eq_zero_of_S\u03b2Large`) `embedding (\u03b2Hensel \u2026 t) = 0`; the lift identity `hlift` rewrites this as `\u03b1Genuine t \u00b7 (W^{t+1}\u00b7\u03be^{2t\u22121}) = 0`; the denominator is nonzero (`den_ne_zero`), so `\u03b1Genuine t = 0`.  No fabricated largeness, no stub: this is the genuine `\u03b1_t = 0` (`\u03b1",
+          "kind": "theorem",
+          "line": 149,
+          "name": "BCIKS20.HenselNumerator.S5Genuine.claim58_genuine",
+          "namespace": "BCIKS20.HenselNumerator.S5Genuine",
+          "short_name": "claim58_genuine",
+          "signature": "theorem claim58_genuine {x\u2080 : F} {R : F[X][X][Y]}"
+        },
+        {
+          "doc": "**Claim 5.8 (genuine), discharging the lift-identity hypothesis from the in-tree theorem.** Convenience wrapper: supplies `hlift` from `HenselNumerator.\u03b2Hensel_lift_identity`.  WARNING (HONESTY): `\u03b2Hensel_lift_identity` is PROVEN only modulo its single residual `coeff_succ_eval_\u03b2HenselAssembled`, so it currently carries an inherited `sorryAx`; this wrapper therefore inherits that `sorryAx`.  Prefer `claim58_genuine` with an explicit `hlift` for an axiom-clean result.",
+          "kind": "theorem",
+          "line": 174,
+          "name": "BCIKS20.HenselNumerator.S5Genuine.claim58_genuine_via_intree",
+          "namespace": "BCIKS20.HenselNumerator.S5Genuine",
+          "short_name": "claim58_genuine_via_intree",
+          "signature": "theorem claim58_genuine_via_intree {x\u2080 : F} {R : F[X][X][Y]}"
+        },
+        {
+          "doc": "**Claim 5.8' (genuine, coefficient/tail form).**  If the \u00a75 largeness holds for *every* `t \u2265 k` and the lift-identity bridge `hlift` holds for every `t \u2265 k`, then every coefficient `\u03b1_t` with `t \u2265 k` vanishes.  This is the direct `\u2200`-quantified consequence of `claim58_genuine` \u2014 the tail-vanishing statement that `\u03b3 = \u03b3_k`.  AXIOM-CLEAN.",
+          "kind": "theorem",
+          "line": 190,
+          "name": "BCIKS20.HenselNumerator.S5Genuine.claim58prime_genuine_tail",
+          "namespace": "BCIKS20.HenselNumerator.S5Genuine",
+          "short_name": "claim58prime_genuine_tail",
+          "signature": "theorem claim58prime_genuine_tail {x\u2080 : F} {R : F[X][X][Y]}"
+        },
+        {
+          "doc": "**Claim 5.8' (genuine, polynomial form).**  `\u03b3 = \u03b3_k`: the genuine Hensel root `gammaGenuine` *equals the coercion of its degree-`< k` truncation polynomial* `PowerSeries.trunc k (gammaGenuine)`. This is the machine-checkable \"\u03b3 is a polynomial of X-degree `< k`\" (`\u03b3 = \u03b3_k \u2208 L[X]`, fulltext 1695): for every coefficient index `t`, the series and the (coerced) truncation agree \u2014 below `k` by `coeff_trunc`, at/above `k` because both are `0` (the truncation by `coeff_trunc`, the series by Claim 5.8 / `claim58prime_genuine_tail`).  Proven from the same `\u2200 t \u2265 k` largeness + lift-identity the paper'",
+          "kind": "theorem",
+          "line": 204,
+          "name": "BCIKS20.HenselNumerator.S5Genuine.claim58prime_genuine",
+          "namespace": "BCIKS20.HenselNumerator.S5Genuine",
+          "short_name": "claim58prime_genuine",
+          "signature": "theorem claim58prime_genuine {x\u2080 : F} {R : F[X][X][Y]}"
+        },
+        {
+          "doc": "**Claim 5.8' (genuine), discharging the lift-identity hypotheses from the in-tree theorem.** As `claim58prime_genuine`, supplying `hlift` from `\u03b2Hensel_lift_identity`.  WARNING (HONESTY): this inherits `\u03b2Hensel_lift_identity`'s residual `sorryAx` (see `claim58_genuine_via_intree`).",
+          "kind": "theorem",
+          "line": 228,
+          "name": "BCIKS20.HenselNumerator.S5Genuine.claim58prime_genuine_via_intree",
+          "namespace": "BCIKS20.HenselNumerator.S5Genuine",
+          "short_name": "claim58prime_genuine_via_intree",
+          "signature": "theorem claim58prime_genuine_via_intree {x\u2080 : F} {R : F[X][X][Y]}"
+        },
+        {
+          "doc": "**Claim 5.8' (genuine, X-degree bound on the truncation).**  Companion to `claim58prime_genuine`: the degree-`< k` witness polynomial `PowerSeries.trunc k \u03b3` has `natDegree < k` (when `k > 0`), certifying the X-degree bound `deg_X \u03b3_k < k` (i.e. `\u2264 k \u2212 1`).  `PowerSeries.natDegree_trunc_lt` gives `natDegree (trunc (n+1) f) < n+1`; here phrased for `k = n+1 > 0`.",
+          "kind": "theorem",
+          "line": 239,
+          "name": "BCIKS20.HenselNumerator.S5Genuine.claim58prime_genuine_natDegree_lt",
+          "namespace": "BCIKS20.HenselNumerator.S5Genuine",
+          "short_name": "claim58prime_genuine_natDegree_lt",
+          "signature": "theorem claim58prime_genuine_natDegree_lt {x\u2080 : F} {R : F[X][X][Y]}"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 254,
+          "name": "BCIKS20.HenselNumerator.S5Genuine.yet",
+          "namespace": "BCIKS20.HenselNumerator.S5Genuine",
+          "short_name": "yet",
+          "signature": "lemma yet bounding the `Z`-degree (the `RatFunc F` / ground-layer degree) of `\u03b1Genuine t` by `1`."
+        },
+        {
+          "doc": "Z-linearity TARGET for `\u03b3` (Claim 5.9), in the genuine function field `\ud835\udd43 H` where `Z`'s image is `functionFieldT`.  `\u03b3 = v\u2080(X) + functionFieldT \u00b7 v\u2081(X)` as power series, with the `v_i` having coefficients that are images of `F`-rational data (Z-degree `0`).  This is the faithful rendering of `\u03b3 = v\u2080(X) + Z\u00b7v\u2081(X)` (fulltext 1713).",
+          "kind": "def",
+          "line": 270,
+          "name": "BCIKS20.HenselNumerator.S5Genuine.gammaGenuine_Z_linear_target",
+          "namespace": "BCIKS20.HenselNumerator.S5Genuine",
+          "short_name": "gammaGenuine_Z_linear_target",
+          "signature": "def gammaGenuine_Z_linear_target (x\u2080 : F) (R : F[X][X][Y])"
+        },
+        {
+          "doc": "**Claim 5.9 reduction (PROVEN, AXIOM-CLEAN).**  The Z-linearity target follows from *per-coefficient* Z-linearity of `\u03b3`: if every coefficient `\u03b1Genuine t = coeff t \u03b3` is of the form `liftToFunctionField c\u2080 + functionFieldT \u00b7 liftToFunctionField c\u2081` for some `c\u2080, c\u2081 : F[X]` (the `Z`-degree-`\u22641` shape, `Z \u21a6 T`), then `\u03b3` itself is Z-linear with `v_i := PowerSeries.mk (fun t => liftToFunctionField (c_i t))`.  This isolates the remaining content of Claim 5.9 into the per-coefficient `Z`-degree-1 fact (the documented obstruction).",
+          "kind": "theorem",
+          "line": 284,
+          "name": "BCIKS20.HenselNumerator.S5Genuine.gammaGenuine_Z_linear_of_coeffs_Z_linear",
+          "namespace": "BCIKS20.HenselNumerator.S5Genuine",
+          "short_name": "gammaGenuine_Z_linear_of_coeffs_Z_linear",
+          "signature": "theorem gammaGenuine_Z_linear_of_coeffs_Z_linear {x\u2080 : F} {R : F[X][X][Y]}"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 291,
+          "name": "BCIKS20.HenselNumerator.S5Genuine._anon_class_291",
+          "namespace": "BCIKS20.HenselNumerator.S5Genuine",
+          "short_name": "_anon_class_291",
           "signature": "class classical"
         }
       ]
@@ -38303,7 +38545,16 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 142,
+          "line": 143,
+          "name": "MvPolynomial.MLE'_eval_zeroOne",
+          "namespace": "MvPolynomial",
+          "short_name": "MLE'_eval_zeroOne",
+          "signature": "theorem MLE'_eval_zeroOne {n : \u2115} (x : Fin n \u2192 Fin 2) (evals : Fin (2 ^ n) \u2192 R) :"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 147,
           "name": "MvPolynomial.eval_zeroOne_eq_MLE_toEvalsZeroOne",
           "namespace": "MvPolynomial",
           "short_name": "eval_zeroOne_eq_MLE_toEvalsZeroOne",
@@ -38312,7 +38563,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 149,
+          "line": 154,
           "name": "MvPolynomial.singleEqPolynomial_degreeOf",
           "namespace": "MvPolynomial",
           "short_name": "singleEqPolynomial_degreeOf",
@@ -38321,7 +38572,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 175,
+          "line": 180,
           "name": "MvPolynomial.eqPolynomial_mem_restrictDegree",
           "namespace": "MvPolynomial",
           "short_name": "eqPolynomial_mem_restrictDegree",
@@ -38330,16 +38581,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 176,
-          "name": "MvPolynomial._anon_class_176",
+          "line": 181,
+          "name": "MvPolynomial._anon_class_181",
           "namespace": "MvPolynomial",
-          "short_name": "_anon_class_176",
+          "short_name": "_anon_class_181",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 188,
+          "line": 193,
           "name": "MvPolynomial.eqPolynomial_degreeOf",
           "namespace": "MvPolynomial",
           "short_name": "eqPolynomial_degreeOf",
@@ -38348,7 +38599,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 192,
+          "line": 197,
           "name": "MvPolynomial.MLE_mem_restrictDegree",
           "namespace": "MvPolynomial",
           "short_name": "MLE_mem_restrictDegree",
@@ -38357,16 +38608,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 193,
-          "name": "MvPolynomial._anon_class_193",
+          "line": 198,
+          "name": "MvPolynomial._anon_class_198",
           "namespace": "MvPolynomial",
-          "short_name": "_anon_class_193",
+          "short_name": "_anon_class_198",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 209,
+          "line": 214,
           "name": "MvPolynomial.MLE_degreeOf",
           "namespace": "MvPolynomial",
           "short_name": "MLE_degreeOf",
@@ -38375,7 +38626,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 220,
+          "line": 225,
           "name": "MvPolynomial.is_multilinear_eq_iff_eq_evals_zeroOne",
           "namespace": "MvPolynomial",
           "short_name": "is_multilinear_eq_iff_eq_evals_zeroOne",
@@ -38384,16 +38635,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 224,
-          "name": "MvPolynomial._anon_class_224",
+          "line": 229,
+          "name": "MvPolynomial._anon_class_229",
           "namespace": "MvPolynomial",
-          "short_name": "_anon_class_224",
+          "short_name": "_anon_class_229",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 253,
+          "line": 258,
           "name": "MvPolynomial.is_multilinear_iff_eq_evals_zeroOne",
           "namespace": "MvPolynomial",
           "short_name": "is_multilinear_iff_eq_evals_zeroOne",
@@ -38402,16 +38653,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 255,
-          "name": "MvPolynomial._anon_class_255",
+          "line": 260,
+          "name": "MvPolynomial._anon_class_260",
           "namespace": "MvPolynomial",
-          "short_name": "_anon_class_255",
+          "short_name": "_anon_class_260",
           "signature": "class classical"
         },
         {
           "doc": "Equivalence between multilinear polynomials and their evaluations on the Boolean hypercube",
           "kind": "def",
-          "line": 264,
+          "line": 269,
           "name": "MvPolynomial.MLEEquiv",
           "namespace": "MvPolynomial",
           "short_name": "MLEEquiv",
@@ -38420,11 +38671,141 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 272,
+          "line": 277,
           "name": "MvPolynomial.MLEEquivFin",
           "namespace": "MvPolynomial",
           "short_name": "MLEEquivFin",
           "signature": "def MLEEquivFin {n : \u2115} : R\u2983\u2264 1\u2984[X (Fin n)] \u2243 (Fin (2 ^ n) \u2192 R) :="
+        }
+      ]
+    },
+    "ArkLib/Data/MvPolynomial/MultilinearComputational.lean": {
+      "declarations": [
+        {
+          "doc": "Bit as ring element (0 or 1). Kept for hypercube reindexing lemmas.",
+          "kind": "def",
+          "line": 37,
+          "name": "MvPolynomial.Computational.fin2ToR",
+          "namespace": "MvPolynomial.Computational",
+          "short_name": "fin2ToR",
+          "signature": "def fin2ToR (r : Fin 2) : R :="
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 41,
+          "name": "MvPolynomial.Computational.fin2ToR_eq_coe",
+          "namespace": "MvPolynomial.Computational",
+          "short_name": "fin2ToR_eq_coe",
+          "signature": "lemma fin2ToR_eq_coe (b : Fin 2) : fin2ToR b = (b : R) := by"
+        },
+        {
+          "doc": "Pointwise equality gadget matching `singleEqPolynomial (r : R) (X j)` on `r : Fin 2`, using only `+` / `*` so `fromCMvPolynomial` splits via `map_add` / `map_mul`.",
+          "kind": "def",
+          "line": 49,
+          "name": "MvPolynomial.Computational.singleEqCM",
+          "namespace": "MvPolynomial.Computational",
+          "short_name": "singleEqCM",
+          "signature": "def singleEqCM (r : Fin 2) (j : Fin n) : CMvPolynomial n R :="
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 54,
+          "name": "MvPolynomial.Computational.eqCM",
+          "namespace": "MvPolynomial.Computational",
+          "short_name": "eqCM",
+          "signature": "def eqCM (x : Fin n \u2192 Fin 2) : CMvPolynomial n R :="
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 57,
+          "name": "MvPolynomial.Computational.CMLE'",
+          "namespace": "MvPolynomial.Computational",
+          "short_name": "CMLE'",
+          "signature": "def CMLE' (evals : Fin (2 ^ n) \u2192 R) : CMvPolynomial n R :="
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 61,
+          "name": "MvPolynomial.Computational.fromCMvPolynomial_singleEqCM",
+          "namespace": "MvPolynomial.Computational",
+          "short_name": "fromCMvPolynomial_singleEqCM",
+          "signature": "lemma fromCMvPolynomial_singleEqCM (r : Fin 2) (j : Fin n) :"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 69,
+          "name": "MvPolynomial.Computational.fromCMvPolynomial_finset_sum",
+          "namespace": "MvPolynomial.Computational",
+          "short_name": "fromCMvPolynomial_finset_sum",
+          "signature": "lemma fromCMvPolynomial_finset_sum {\u03b9 : Type*} (s : Finset \u03b9)"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 72,
+          "name": "MvPolynomial.Computational._anon_class_72",
+          "namespace": "MvPolynomial.Computational",
+          "short_name": "_anon_class_72",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 78,
+          "name": "MvPolynomial.Computational.fromCMvPolynomial_finset_prod",
+          "namespace": "MvPolynomial.Computational",
+          "short_name": "fromCMvPolynomial_finset_prod",
+          "signature": "lemma fromCMvPolynomial_finset_prod {\u03b9 : Type*} (s : Finset \u03b9)"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 81,
+          "name": "MvPolynomial.Computational._anon_class_81",
+          "namespace": "MvPolynomial.Computational",
+          "short_name": "_anon_class_81",
+          "signature": "class classical"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 87,
+          "name": "MvPolynomial.Computational.fromCMvPolynomial_eqCM",
+          "namespace": "MvPolynomial.Computational",
+          "short_name": "fromCMvPolynomial_eqCM",
+          "signature": "lemma fromCMvPolynomial_eqCM (x : Fin n \u2192 Fin 2) :"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 94,
+          "name": "MvPolynomial.Computational.fromCMvPolynomial_CMLE'_eq_MLE'",
+          "namespace": "MvPolynomial.Computational",
+          "short_name": "fromCMvPolynomial_CMLE'_eq_MLE'",
+          "signature": "theorem fromCMvPolynomial_CMLE'_eq_MLE' (evals : Fin (2 ^ n) \u2192 R) :"
+        },
+        {
+          "doc": "Hypercube evaluation for `CMLE'`; matches `MvPolynomial.MLE'_eval_zeroOne`.",
+          "kind": "theorem",
+          "line": 115,
+          "name": "MvPolynomial.Computational.CMLE'_eval_zeroOne",
+          "namespace": "MvPolynomial.Computational",
+          "short_name": "CMLE'_eval_zeroOne",
+          "signature": "theorem CMLE'_eval_zeroOne (x : Fin n \u2192 Fin 2) (evals : Fin (2 ^ n) \u2192 R) :"
+        },
+        {
+          "doc": "`CMvPolynomial.eval` on `CMLE'` agrees with `MvPolynomial.eval` on `MLE'`.",
+          "kind": "theorem",
+          "line": 122,
+          "name": "MvPolynomial.Computational.CMLE'_eval_eq_MLE'_eval",
+          "namespace": "MvPolynomial.Computational",
+          "short_name": "CMLE'_eval_eq_MLE'_eval",
+          "signature": "theorem CMLE'_eval_eq_MLE'_eval (x : Fin n \u2192 Fin 2) (evals : Fin (2 ^ n) \u2192 R) :"
         }
       ]
     },
@@ -53895,9 +54276,63 @@
           "signature": "lemma mkLastOracleIndex_last : mkLastOracleIndex \u2113 \u03d1 (Fin.last \u2113) = \u2113 / \u03d1 - 1 := by"
         },
         {
+          "doc": "Computable multilinear polynomial from hypercube evaluations (`CMvPolynomial` / `CMLE'`). See `MvPolynomial.Computational.fromCMvPolynomial_CMLE'_eq_MLE'`.",
+          "kind": "def",
+          "line": 377,
+          "name": "Binius.BinaryBasefold.MultilinearPoly.ofCMLEEvals",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "MultilinearPoly.ofCMLEEvals",
+          "signature": "def MultilinearPoly.ofCMLEEvals {L : Type} [CommRing L] [BEq L] [LawfulBEq L] {\u2113 : \u2115}"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 384,
+          "name": "Binius.BinaryBasefold.MultilinearPoly.ofCMLEEvals_val",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "MultilinearPoly.ofCMLEEvals_val",
+          "signature": "theorem MultilinearPoly.ofCMLEEvals_val {L : Type} [CommRing L] [BEq L] [LawfulBEq L] {\u2113 : \u2115}"
+        },
+        {
+          "doc": "Same carrier as `\u27e8MLE evals, MLE_mem_restrictDegree evals\u27e9`, built via `CMLE'`.",
+          "kind": "def",
+          "line": 390,
+          "name": "Binius.BinaryBasefold.MultilinearPoly.ofHypercubeEvals",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "MultilinearPoly.ofHypercubeEvals",
+          "signature": "def MultilinearPoly.ofHypercubeEvals {L : Type} [CommRing L] [BEq L] [LawfulBEq L] {\u2113 : \u2115}"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 394,
+          "name": "Binius.BinaryBasefold.MultilinearPoly.ofHypercubeEvals_val",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "MultilinearPoly.ofHypercubeEvals_val",
+          "signature": "theorem MultilinearPoly.ofHypercubeEvals_val {L : Type} [CommRing L] [BEq L] [LawfulBEq L] {\u2113 : \u2115}"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 402,
+          "name": "Binius.BinaryBasefold.MultilinearPoly.ofCMLEEvals_eval_zeroOne",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "MultilinearPoly.ofCMLEEvals_eval_zeroOne",
+          "signature": "theorem MultilinearPoly.ofCMLEEvals_eval_zeroOne {L : Type} [CommRing L] [BEq L] [LawfulBEq L] {\u2113 : \u2115}"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 407,
+          "name": "Binius.BinaryBasefold.MultilinearPoly.ofCMLEEvals_cmEval_eq_val_eval",
+          "namespace": "Binius.BinaryBasefold",
+          "short_name": "MultilinearPoly.ofCMLEEvals_cmEval_eq_val_eval",
+          "signature": "theorem MultilinearPoly.ofCMLEEvals_cmEval_eq_val_eval {L : Type} [CommRing L] [BEq L] [LawfulBEq L]"
+        },
+        {
           "doc": "\u03d1 is positive",
           "kind": "lemma",
-          "line": 390,
+          "line": 429,
           "name": "Binius.BinaryBasefold.folding_steps_pos",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "folding_steps_pos",
@@ -53906,7 +54341,7 @@
         {
           "doc": "\u2113 - \u03d1 < \u2113 when both are positive",
           "kind": "lemma",
-          "line": 394,
+          "line": 433,
           "name": "Binius.BinaryBasefold.rounds_sub_steps_lt",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "rounds_sub_steps_lt",
@@ -53915,16 +54350,16 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 397,
-          "name": "Binius.BinaryBasefold._anon_lemma_397",
+          "line": 436,
+          "name": "Binius.BinaryBasefold._anon_lemma_436",
           "namespace": "Binius.BinaryBasefold",
-          "short_name": "_anon_lemma_397",
+          "short_name": "_anon_lemma_436",
           "signature": "lemma lemma \u03d1_sub_one_le_self : \u03d1 - 1 < \u03d1 := by"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 402,
+          "line": 441,
           "name": "Binius.BinaryBasefold.bIdx_mul_\u03d1_add_x_lt_\u2113_sub_\u03d1",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "bIdx_mul_\u03d1_add_x_lt_\u2113_sub_\u03d1",
@@ -53933,7 +54368,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 418,
+          "line": 457,
           "name": "Binius.BinaryBasefold.bIdx_mul_\u03d1_add_i_lt_\u2113_succ",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "bIdx_mul_\u03d1_add_i_lt_\u2113_succ",
@@ -53942,7 +54377,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 426,
+          "line": 465,
           "name": "Binius.BinaryBasefold.bIdx_mul_\u03d1_add_i_cast_lt_\u2113_succ",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "bIdx_mul_\u03d1_add_i_cast_lt_\u2113_succ",
@@ -53951,7 +54386,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 433,
+          "line": 472,
           "name": "Binius.BinaryBasefold.bIdx_mul_\u03d1_add_x_lt_\u2113_succ",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "bIdx_mul_\u03d1_add_x_lt_\u2113_succ",
@@ -53960,7 +54395,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 440,
+          "line": 479,
           "name": "Binius.BinaryBasefold.bIdx_mul_\u03d1_add_i_fin_\u2113_pred_lt_\u2113",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "bIdx_mul_\u03d1_add_i_fin_\u2113_pred_lt_\u2113",
@@ -53969,7 +54404,7 @@
         {
           "doc": "When the block size allows it, we can get a strict inequality",
           "kind": "lemma",
-          "line": 447,
+          "line": 486,
           "name": "Binius.BinaryBasefold.bIdx_succ_mul_\u03d1_lt_\u2113_succ",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "bIdx_succ_mul_\u03d1_lt_\u2113_succ",
@@ -53978,7 +54413,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 454,
+          "line": 493,
           "name": "Binius.BinaryBasefold.bIdx_succ_mul_\u03d1_le_\u2113_succ",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "bIdx_succ_mul_\u03d1_le_\u2113_succ",
@@ -53987,7 +54422,7 @@
         {
           "doc": "Statement for the final sumcheck step - includes the final constant c",
           "kind": "structure",
-          "line": 472,
+          "line": 511,
           "name": "Binius.BinaryBasefold.FinalSumcheckStatementOut",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "FinalSumcheckStatementOut",
@@ -53996,7 +54431,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 476,
+          "line": 515,
           "name": "Binius.BinaryBasefold.toStatement",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "toStatement",
@@ -54005,7 +54440,7 @@
         {
           "doc": "For the `i`-th round of the protocol, there will be oracle statements corresponding to all committed codewords. The verifier has oracle access to functions corresponding to the handles in committed_handles.",
           "kind": "def",
-          "line": 488,
+          "line": 527,
           "name": "Binius.BinaryBasefold.OracleStatement",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "OracleStatement",
@@ -54014,7 +54449,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 496,
+          "line": 535,
           "name": "Binius.BinaryBasefold.mapOStmtOutRelayStep",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "mapOStmtOutRelayStep",
@@ -54023,7 +54458,7 @@
         {
           "doc": "The round witness for round `i` of `t \u2208 L[\u2264 2][X Fin \u2113]` and `H\u1d62(X\u1d62, ..., X\u2097\u208b\u2081) := h(r\u2080', ..., r\u1d62\u208b\u2081', X\u1d62, X\u1d62\u208a\u2081, ..., X\u2097\u208b\u2081) \u2208 L[\u2264 2][X Fin (\u2113-i)]`. This ensures efficient computability and constraint on the structure of `H_i` according to `t`.",
           "kind": "structure",
-          "line": 509,
+          "line": 548,
           "name": "Binius.BinaryBasefold.Witness",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "Witness",
@@ -54032,7 +54467,7 @@
         {
           "doc": "The extractor that recovers the multilinear polynomial t from f^(i)",
           "kind": "def",
-          "line": 515,
+          "line": 554,
           "name": "Binius.BinaryBasefold.extractMLP",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "extractMLP",
@@ -54041,7 +54476,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 605,
+          "line": 644,
           "name": "Binius.BinaryBasefold.dummyLastWitness",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "dummyLastWitness",
@@ -54050,7 +54485,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 617,
+          "line": 656,
           "name": "Binius.BinaryBasefold.snoc_oracle",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "snoc_oracle",
@@ -54059,7 +54494,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 688,
+          "line": 727,
           "name": "Binius.BinaryBasefold.take_snoc_oracle",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "take_snoc_oracle",
@@ -54068,7 +54503,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 701,
+          "line": 740,
           "name": "Binius.BinaryBasefold.take_snoc_oracle_eq_oStmtIn",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "take_snoc_oracle_eq_oStmtIn",
@@ -54077,7 +54512,7 @@
         {
           "doc": "Extract the first oracle f^(0) from oracle statements",
           "kind": "def",
-          "line": 711,
+          "line": 750,
           "name": "Binius.BinaryBasefold.getFirstOracle",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "getFirstOracle",
@@ -54086,7 +54521,7 @@
         {
           "doc": "Helper to get the k-th challenge slice for folding",
           "kind": "def",
-          "line": 723,
+          "line": 762,
           "name": "Binius.BinaryBasefold.getFoldingChallenges",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "getFoldingChallenges",
@@ -54095,7 +54530,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 729,
+          "line": 768,
           "name": "Binius.BinaryBasefold.getFoldingChallenges_init_succ_eq",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "getFoldingChallenges_init_succ_eq",
@@ -54104,7 +54539,7 @@
         {
           "doc": "The base index k = j * \u03d1 is less than \u2113 for valid oracle indices",
           "kind": "lemma",
-          "line": 742,
+          "line": 781,
           "name": "Binius.BinaryBasefold.oracle_block_k_bound",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "oracle_block_k_bound",
@@ -54113,7 +54548,7 @@
         {
           "doc": "The next oracle index k + \u03d1 = (j+1) * \u03d1 is at most i",
           "kind": "lemma",
-          "line": 747,
+          "line": 786,
           "name": "Binius.BinaryBasefold.oracle_block_k_next_le",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "oracle_block_k_next_le",
@@ -54122,7 +54557,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 753,
+          "line": 792,
           "name": "Binius.BinaryBasefold.getNextOracle",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "getNextOracle",
@@ -54131,7 +54566,7 @@
         {
           "doc": "Folding consistency for round i",
           "kind": "def",
-          "line": 769,
+          "line": 808,
           "name": "Binius.BinaryBasefold.oracleFoldingConsistencyProp",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "oracleFoldingConsistencyProp",
@@ -54140,7 +54575,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 788,
+          "line": 827,
           "name": "Binius.BinaryBasefold.oracleFoldingConsistencyProp_relay_preserved",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "oracleFoldingConsistencyProp_relay_preserved",
@@ -54149,7 +54584,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 821,
+          "line": 860,
           "name": "Binius.BinaryBasefold.BBF_eq_multiplier",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "BBF_eq_multiplier",
@@ -54158,7 +54593,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 824,
+          "line": 863,
           "name": "Binius.BinaryBasefold.BBF_SumcheckMultiplierParam",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "BBF_SumcheckMultiplierParam",
@@ -54167,7 +54602,7 @@
         {
           "doc": "This condition ensures that the folding witness `f` is properly generated from `t`",
           "kind": "def",
-          "line": 832,
+          "line": 871,
           "name": "Binius.BinaryBasefold.getMidCodewords",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "getMidCodewords",
@@ -54176,7 +54611,7 @@
         {
           "doc": "This condition ensures that the witness polynomial `H` has the correct structure `eq(...) * t(...)`",
           "kind": "def",
-          "line": 852,
+          "line": 891,
           "name": "Binius.BinaryBasefold.witnessStructuralInvariant",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "witnessStructuralInvariant",
@@ -54185,7 +54620,7 @@
         {
           "doc": "First oracle witness consistency: the witness polynomial t, when projected to level 0 and evaluated on the initial domain S^(0), must be close within unique decoding radius to f^(0)",
           "kind": "def",
-          "line": 863,
+          "line": 902,
           "name": "Binius.BinaryBasefold.firstOracleWitnessConsistencyProp",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "firstOracleWitnessConsistencyProp",
@@ -54194,7 +54629,7 @@
         {
           "doc": "The bad folding event of `f\u1d62` exists RIGHT AFTER the V's challenge of sumcheck round `i+\u03d1-1`, this is the last point that `f\u1d62` is the last oracle being sent so far and both Statement & Witness are advanced to state `i+\u03d1`, while oracle is still at state `i+\u03d1-1`.",
           "kind": "def",
-          "line": 873,
+          "line": 912,
           "name": "Binius.BinaryBasefold.foldingBadEventAtBlock",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "foldingBadEventAtBlock",
@@ -54203,7 +54638,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 889,
+          "line": 928,
           "name": "Binius.BinaryBasefold.badEventExistsProp",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "badEventExistsProp",
@@ -54212,7 +54647,7 @@
         {
           "doc": "When `stmtIdx.val < \u2113`, the highest available oracle block `j = stmtIdx/\u03d1` has `j*\u03d1 + \u03d1 > stmtIdx`, so its per-block bad-folding guard fails and `foldingBadEventAtBlock` returns `True`. Hence `badEventExistsProp` (an existential over blocks) holds unconditionally: the most-recently-sent oracle has not yet been folded past the current statement index, so the \"bad event\" disjunct is vacuously available. This is the structural reason a relay/fold round in the interior of the protocol is always non-doomed via the bad-event branch.",
           "kind": "lemma",
-          "line": 902,
+          "line": 941,
           "name": "Binius.BinaryBasefold.badEventExistsProp_of_lt",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "badEventExistsProp_of_lt",
@@ -54221,7 +54656,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 926,
+          "line": 965,
           "name": "Binius.BinaryBasefold.nonDoomedFoldingProp",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "nonDoomedFoldingProp",
@@ -54230,7 +54665,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 936,
+          "line": 975,
           "name": "Binius.BinaryBasefold.firstOracleWitnessConsistencyProp_relay_preserved",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "firstOracleWitnessConsistencyProp_relay_preserved",
@@ -54239,7 +54674,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 956,
+          "line": 995,
           "name": "Binius.BinaryBasefold.nonDoomedFoldingProp_relay_preserved",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "nonDoomedFoldingProp_relay_preserved",
@@ -54248,7 +54683,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 976,
+          "line": 1015,
           "name": "Binius.BinaryBasefold.oracleWitnessConsistency",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "oracleWitnessConsistency",
@@ -54257,7 +54692,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 995,
+          "line": 1034,
           "name": "Binius.BinaryBasefold.oracleWitnessConsistency_relay_preserved",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "oracleWitnessConsistency_relay_preserved",
@@ -54266,7 +54701,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1039,
+          "line": 1078,
           "name": "Binius.BinaryBasefold.foldingBadEventAtBlock_relay_preserved",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "foldingBadEventAtBlock_relay_preserved",
@@ -54275,7 +54710,7 @@
         {
           "doc": "The relay step's oracle relabeling preserves the bad-event existential, when both sides are evaluated against the *same* statement index `i.succ`. Both sides quantify the same per-block folding guard `j*\u03d1 + \u03d1 \u2264 i.succ` over equal block counts (`hNCR \u21d2 count i.castSucc = count i.succ`) on the identical oracle data (`mapOStmtOutRelayStep` is a pure reindex along that size equality), so the existentials coincide. This is the bad-event analogue of `oracleWitnessConsistency_relay_preserved`, and is what makes `foldStepRelOut` (with its repaired `stmtIdx := i.succ` bad event) equal to its relay imag",
           "kind": "lemma",
-          "line": 1060,
+          "line": 1099,
           "name": "Binius.BinaryBasefold.badEventExistsProp_relay_preserved",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "badEventExistsProp_relay_preserved",
@@ -54284,7 +54719,7 @@
         {
           "doc": "Before V's challenge of the `i-th` foldStep, we ignore the bad-folding-event of the `i-th` oracle if any and enable it after the next V's challenge, i.e. one round later. This is for the purpose of reasoning its RBR KS properly. Formally, = (oracleIdx = stmtIdx)`.",
           "kind": "def",
-          "line": 1089,
+          "line": 1128,
           "name": "Binius.BinaryBasefold.masterKStateProp",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "masterKStateProp",
@@ -54293,7 +54728,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 1102,
+          "line": 1141,
           "name": "Binius.BinaryBasefold.roundRelationProp",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "roundRelationProp",
@@ -54302,7 +54737,7 @@
         {
           "doc": "A modified version of roundRelationProp (i+1). STATEMENT REPAIR (2026-06-04): at *non-commitment* rounds the bad-event disjunct is evaluated at the statement index `i.succ` (the relay-step / `roundRelation i.succ` form) rather than at the oracle index `i.castSucc`. Why a per-round branch. `foldStepRelOut i` is the relOut of the fold step and the relIn of whichever single step consumes round `i` \u2014 the *commit* step when `isCommitmentRound \u2113 \u03d1 i`, the *relay* step otherwise (the two are mutually exclusive). These two consumers need *different* forms: * Commit rounds (`\u03d1 \u2223 i+1 \u2227 i+1 \u2260 \u2113`): `commi",
           "kind": "def",
-          "line": 1146,
+          "line": 1185,
           "name": "Binius.BinaryBasefold.foldStepRelOutProp",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "foldStepRelOutProp",
@@ -54311,7 +54746,7 @@
         {
           "doc": "This is a special case of nonDoomedFoldingProp for `i = \u2113`, where we support the consistency between the last oracle `\u2113 - \u03d1` and the final constant `c`",
           "kind": "def",
-          "line": 1171,
+          "line": 1210,
           "name": "Binius.BinaryBasefold.finalNonDoomedFoldingProp",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "finalNonDoomedFoldingProp",
@@ -54320,7 +54755,7 @@
         {
           "doc": "Input relation for round i: R_i must hold at the beginning of round i",
           "kind": "def",
-          "line": 1220,
+          "line": 1259,
           "name": "Binius.BinaryBasefold.foldStepRelOut",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "foldStepRelOut",
@@ -54329,7 +54764,7 @@
         {
           "doc": "Relation at step `i` of the CoreInteraction. `\u2200 i < \u2113, R_i` must hold at the beginning of ITERATION `i`. `R_\u2113` must hold after the last iteration and before sending the final constant.",
           "kind": "def",
-          "line": 1230,
+          "line": 1269,
           "name": "Binius.BinaryBasefold.roundRelation",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "roundRelation",
@@ -54338,7 +54773,7 @@
         {
           "doc": "Relation for final sumcheck step",
           "kind": "def",
-          "line": 1237,
+          "line": 1276,
           "name": "Binius.BinaryBasefold.finalSumcheckRelOutProp",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "finalSumcheckRelOutProp",
@@ -54347,7 +54782,7 @@
         {
           "doc": "Final sumcheck relation",
           "kind": "def",
-          "line": 1247,
+          "line": 1286,
           "name": "Binius.BinaryBasefold.finalSumcheckRelOut",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "finalSumcheckRelOut",
@@ -70287,6 +70722,73 @@
         }
       ]
     },
+    "ArkLib/ToMathlib/BoundaryDischarge.lean": {
+      "declarations": [
+        {
+          "doc": "Under the keystone's ambient `\u03b4 \u2264 1 \u2212 \u221a\u03c1`, the non-strict Johnson case is the **closed boundary equality** `\u03b4 = 1 \u2212 \u221a\u03c1` \u2014 the Johnson radius of the Reed\u2013Solomon code.  (Restated from `ProximityGap.eq_sqrt_boundary_of_le_sqrt_and_not_lt`.)",
+          "kind": "theorem",
+          "line": 88,
+          "name": "ArkLib.BoundaryDischarge.boundary_eq",
+          "namespace": "ArkLib.BoundaryDischarge",
+          "short_name": "boundary_eq",
+          "signature": "theorem boundary_eq {deg : \u2115} {domain : \u03b9 \u21aa F} {\u03b4 : \u211d\u22650}"
+        },
+        {
+          "doc": "At the closed boundary the error parameter degenerates: `errorBound = 0`.  This is the load-bearing structural fact \u2014 it is exactly what removes the *quantitative* probability threshold that the strict branch relies on.  (Restated from `ProximityGap.errorBound_eq_zero_of_johnson_not_lt_sqrt`.)",
+          "kind": "theorem",
+          "line": 98,
+          "name": "ArkLib.BoundaryDischarge.errorBound_eq_zero_at_boundary",
+          "namespace": "ArkLib.BoundaryDischarge",
+          "short_name": "errorBound_eq_zero_at_boundary",
+          "signature": "theorem errorBound_eq_zero_at_boundary {deg : \u2115} {domain : \u03b9 \u21aa F} {\u03b4 : \u211d\u22650}"
+        },
+        {
+          "doc": "**The exact in-tree boundary fact.**  At the closed boundary, the front-door probability hypothesis implies *only* `0 < (RS_goodCoeffsCurve \u2026).card`.  This is strictly weaker than the `card \u2265 (|\u03b9| + 1) \u00b7 k` required by the assembly bridge, so route (i) cannot reach `jointAgreement` from `hprob` alone.",
+          "kind": "theorem",
+          "line": 115,
+          "name": "ArkLib.BoundaryDischarge.boundary_card_only_pos",
+          "namespace": "ArkLib.BoundaryDischarge",
+          "short_name": "boundary_card_only_pos",
+          "signature": "theorem boundary_card_only_pos {k deg : \u2115} {domain : \u03b9 \u21aa F} {\u03b4 : \u211d\u22650} [NeZero deg]"
+        },
+        {
+          "doc": "**Route (ii) is false.**  At the closed boundary `\u03b4 = 1 \u2212 \u221a\u03c1`, the Johnson hypothesis `(1 \u2212 \u03c1)/2 < \u03b4` is equivalent to `\u221a\u03c1 \u2260 1`.  Since `\u03c1 = 1` is the full-code degenerate case, the boundary is parameter-consistent for every non-full code: it is *not* vacuous, so the discharge must do real work.",
+          "kind": "theorem",
+          "line": 139,
+          "name": "ArkLib.BoundaryDischarge.boundary_param_consistent_iff",
+          "namespace": "ArkLib.BoundaryDischarge",
+          "short_name": "boundary_param_consistent_iff",
+          "signature": "theorem boundary_param_consistent_iff {deg : \u2115} {domain : \u03b9 \u21aa F} {\u03b4 : \u211d\u22650}"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 143,
+          "name": "ArkLib.BoundaryDischarge._anon_class_143",
+          "namespace": "ArkLib.BoundaryDischarge",
+          "short_name": "_anon_class_143",
+          "signature": "class classical"
+        },
+        {
+          "doc": "**Boundary `jointAgreement` from the cardinality bounds and the \u00a75 coefficient-polynomial extraction.**  This is the in-tree assembly bridge `ProximityGap.goodCoeffsCurve_coeff_polys_implies_jointAgreement_of_pos_core`, specialised to the boundary, with `k = (k - 1) + 1`.  The hypotheses are the smallest honest explicit residual: the two cardinality lower bounds (which `hprob` cannot deliver at the boundary because `errorBound = 0`) and the \u00a75 coefficient-polynomial extraction.  None of them is `jointAgreement`.",
+          "kind": "theorem",
+          "line": 195,
+          "name": "ArkLib.BoundaryDischarge.boundary_jointAgreement_of_cards_and_coeffPolys",
+          "namespace": "ArkLib.BoundaryDischarge",
+          "short_name": "boundary_jointAgreement_of_cards_and_coeffPolys",
+          "signature": "theorem boundary_jointAgreement_of_cards_and_coeffPolys"
+        },
+        {
+          "doc": "**The boundary residual `hBoundary`, discharged from the explicit boundary datum.** This produces *exactly* the `hBoundary` shape consumed by `ProximityGap.correlatedAgreement_affine_curves_of_strict_coeff_polys_and_boundary` (`Curves.lean:1740`) and by `correlatedAgreement_affine_curves_listDecoding_closed`, given a single explicit residual `hBoundaryData`: for each curve `u` in the boundary case, the two good-set cardinality lower bounds and the \u00a75 coefficient-polynomial extraction.  These are the *same* inputs the strict branch consumes; they are the smallest honest residual because, at the",
+          "kind": "theorem",
+          "line": 230,
+          "name": "ArkLib.BoundaryDischarge.hBoundary_of_boundary_cards_and_coeffPolys",
+          "namespace": "ArkLib.BoundaryDischarge",
+          "short_name": "hBoundary_of_boundary_cards_and_coeffPolys",
+          "signature": "theorem hBoundary_of_boundary_cards_and_coeffPolys"
+        }
+      ]
+    },
     "ArkLib/ToMathlib/Claim510Conditional.lean": {
       "declarations": [
         {
@@ -71259,6 +71761,171 @@
         }
       ]
     },
+    "ArkLib/ToMathlib/GSFactorData.lean": {
+      "declarations": [
+        {
+          "doc": "",
+          "kind": "structure",
+          "line": 83,
+          "name": "ArkLib.GSFactorData.Bundle",
+          "namespace": "ArkLib.GSFactorData",
+          "short_name": "Bundle",
+          "signature": "structure Bundle (x\u2080 : F) : Type where"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 100,
+          "name": "ArkLib.GSFactorData.of_section5Inputs",
+          "namespace": "ArkLib.GSFactorData",
+          "short_name": "of_section5Inputs",
+          "signature": "def of_section5Inputs"
+        },
+        {
+          "doc": "",
+          "kind": "structure",
+          "line": 142,
+          "name": "ArkLib.GSFactorData.is",
+          "namespace": "ArkLib.GSFactorData",
+          "short_name": "is",
+          "signature": "structure is assembled with the bundle's GS-factor fields supplied verbatim.  This is the explicit"
+        },
+        {
+          "doc": "Assemble a `Section5StrictData` from a GS-factor `Bundle` plus the residual (per-`(u, P)`) \u00a75 fields.  The GS-factor fields (`x\u2080`, `R`, `H`, the two `Fact`s, `Hypotheses`, `hH`, `D`, `hD`) come straight from the bundle `b`; everything else is an explicit residual argument.",
+          "kind": "def",
+          "line": 149,
+          "name": "ArkLib.GSFactorData.toSection5StrictData",
+          "namespace": "ArkLib.GSFactorData",
+          "short_name": "toSection5StrictData",
+          "signature": "def toSection5StrictData"
+        }
+      ]
+    },
+    "ArkLib/ToMathlib/GammaFromBeta.lean": {
+      "declarations": [
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 50,
+          "name": "_anon_def_50",
+          "namespace": "",
+          "short_name": "_anon_def_50",
+          "signature": "def define `\u03b3'` directly as the `betaRec`-built series, prove the `h\u03b3` field discharges from the *single"
+        },
+        {
+          "doc": "The `betaRec`-built analogue of the in-tree `\u03b3` (`RationalFunctions.lean:2886`): the BCIKS shift substitution `X \u21a6 X \u2212 x\u2080` applied to the genuine Hensel-coefficient series `mk (\u03b1FromBeta \u2026)` (whose numerators are the App-A.4 recursion `betaRec`).  This is *exactly* the right-hand side of the `Section5StrictData.h\u03b3` field, so `\u03b3'_eq_subst_shiftSeries` below is `rfl`.",
+          "kind": "def",
+          "line": 79,
+          "name": "ArkLib.GammaFromBeta._anon_def_79",
+          "namespace": "ArkLib.GammaFromBeta",
+          "short_name": "_anon_def_79",
+          "signature": "def noncomputable def \u03b3' (x\u2080 : F) (R : F[X][X][Y]) (H : F[X][Y])"
+        },
+        {
+          "doc": "`\u03b3'` is *definitionally* the substitution form: the `h\u03b3`-field shape holds for `\u03b3'` by `rfl`. This is the route-B realization of \"`h\u03b3` is dischargeable as `rfl` for `\u03b3'`\".",
+          "kind": "theorem",
+          "line": 87,
+          "name": "ArkLib.GammaFromBeta._anon_theorem_87",
+          "namespace": "ArkLib.GammaFromBeta",
+          "short_name": "_anon_theorem_87",
+          "signature": "theorem theorem \u03b3'_eq_subst_shiftSeries (x\u2080 : F) (R : F[X][X][Y]) (H : F[X][Y])"
+        },
+        {
+          "doc": "**Numerator identification \u27f9 Hensel-coefficient identification.**  If the opaque in-tree numerator `\u03b2 R t` equals the genuine recursion `betaRec x\u2080 R H hHyp Bcoeff t` for all `t`, then the in-tree Hensel coefficient `\u03b1` equals `\u03b1FromBeta` pointwise (the denominators are literally identical, so this is `unfold` + `rw`).",
+          "kind": "theorem",
+          "line": 105,
+          "name": "ArkLib.GammaFromBeta.alpha_eq_alphaFromBeta_of_betaEq",
+          "namespace": "ArkLib.GammaFromBeta",
+          "short_name": "alpha_eq_alphaFromBeta_of_betaEq",
+          "signature": "theorem alpha_eq_alphaFromBeta_of_betaEq (x\u2080 : F) (R : F[X][X][Y]) (H : F[X][Y])"
+        },
+        {
+          "doc": "**The in-tree `\u03b3` equals the `betaRec`-built `\u03b3'`**, under the numerator identification `h\u03b2`. Both are the *same* shift substitution applied to series whose coefficients now agree pointwise.",
+          "kind": "theorem",
+          "line": 115,
+          "name": "ArkLib.GammaFromBeta.intree_gamma_eq_\u03b3'",
+          "namespace": "ArkLib.GammaFromBeta",
+          "short_name": "intree_gamma_eq_\u03b3'",
+          "signature": "theorem intree_gamma_eq_\u03b3' (x\u2080 : F) (R : F[X][X][Y]) (H : F[X][Y])"
+        },
+        {
+          "doc": "**The `Section5StrictData.h\u03b3` field, discharged.**  Under the single honest residual `h\u03b2`, the in-tree `\u03b3` equals the `betaRec`-built substitution form \u2014 i.e. *literally* the `h\u03b3` field of `Section5StrictData`.  No `sorry`, no `axiom`; `h\u03b2` is the only input (it is the genuine \u00a75 numerator identification, NOT the `h\u03b3` goal).",
+          "kind": "theorem",
+          "line": 130,
+          "name": "ArkLib.GammaFromBeta.h\u03b3_field_of_betaEq",
+          "namespace": "ArkLib.GammaFromBeta",
+          "short_name": "h\u03b3_field_of_betaEq",
+          "signature": "theorem h\u03b3_field_of_betaEq (x\u2080 : F) (R : F[X][X][Y]) (H : F[X][Y])"
+        },
+        {
+          "doc": "**`Section5StrictData` with the `h\u03b3` field discharged from `h\u03b2`.** This builds the genuine \u00a75 per-decoding extraction datum `Section5StrictData (k := k) (deg := deg) (domain := domain) (\u03b4 := \u03b4) u P` from *all* its fields *except* `h\u03b3`, supplying instead the single honest residual `h\u03b2 : \u2200 t, \u03b2 R t = betaRec x\u2080 R H hHyp Bcoeff t` (the trivial-`\u03b2_regular` gap).  The `h\u03b3` field is then discharged by `GammaFromBeta.h\u03b3_field_of_betaEq`. This is the route-B deliverable: in-tree `\u03b3` should eventually be redefined to be `betaRec`-built (then `h\u03b2` becomes `rfl` and disappears); until that deferred in-tr",
+          "kind": "def",
+          "line": 173,
+          "name": "ArkLib.CorrelatedAgreementListDecodingClosed.section5StrictData_of_betaEq",
+          "namespace": "ArkLib.CorrelatedAgreementListDecodingClosed",
+          "short_name": "section5StrictData_of_betaEq",
+          "signature": "def section5StrictData_of_betaEq {k deg : \u2115} {domain : \u03b9 \u21aa F} {\u03b4 : \u211d\u22650}"
+        }
+      ]
+    },
+    "ArkLib/ToMathlib/HPzBridge.lean": {
+      "declarations": [
+        {
+          "doc": "**Keystone per-`z` step (Hensel-uniqueness route).** At a single good `z`, two degree-`< deg` polynomials `Pz Qz : F[X]` whose coordinate power-series lifts `\u2191Pz`, `\u2191Qz` are roots of a common separable matching polynomial `f : (PowerSeries F)[Y]`, both congruent mod `X` to a common approximation `a\u2080` at which `f'(a\u2080)` is a unit, are EQUAL. `hensel_root_unique` forces `\u2191Pz = \u2191Qz` in `PowerSeries F`; `Polynomial.coe_injective` descends to `Pz = Qz` in `F[X]`.  (This is the \u00a76.2 application of `\u03c0_z(\u03b3) = P_z` to the two competing close codewords: the lifted root is unique.)",
+          "kind": "theorem",
+          "line": 114,
+          "name": "ArkLib.HPzBridge.decoded_eq_specialization_of_hensel",
+          "namespace": "ArkLib.HPzBridge",
+          "short_name": "decoded_eq_specialization_of_hensel",
+          "signature": "theorem decoded_eq_specialization_of_hensel"
+        },
+        {
+          "doc": "**Keystone per-`z` step (`MatchingExtractor` route).**  If both `Pz` and `Qz` are GS matching polynomials of the per-`z` interpolant `Q_z` (`MatchesGraph Q_z \u00b7`, equivalently `Y \u2212 \u00b7 \u2223 Q_z`), and a per-`z` single-root witness `huniq` identifies all such matching polynomials, then `Pz = Qz`.",
+          "kind": "theorem",
+          "line": 139,
+          "name": "ArkLib.HPzBridge.decoded_eq_specialization_of_matchesGraph_unique",
+          "namespace": "ArkLib.HPzBridge",
+          "short_name": "decoded_eq_specialization_of_matchesGraph_unique",
+          "signature": "theorem decoded_eq_specialization_of_matchesGraph_unique"
+        },
+        {
+          "doc": "**The genuine per-`z` uniqueness datum**, bundled for a *given* linear representative `(v\u2080, v\u2081)`. For every good `z`, it provides the matching polynomial `f z`, the approximation `a\u2080 z`, the two root facts (for `P z` and for the specialised lift `lift.eval (C z)`), the two congruences, and the unit-derivative \u2014 exactly the input of `decoded_eq_specialization_of_hensel`. This is the \u00a75 decoder's per-`z` Hensel guarantee (`\u03c0_z(\u03b3) = P_z`), NOT the per-`z` polynomial identity (which is *derived* below). It carries the per-`z` matching polynomial and approximation as data (hence a `Type`, not a `Pr",
+          "kind": "structure",
+          "line": 160,
+          "name": "ArkLib.HPzBridge.HenselDatum",
+          "namespace": "ArkLib.HPzBridge",
+          "short_name": "HenselDatum",
+          "signature": "structure HenselDatum {k deg : \u2115} {domain : \u03b9 \u21aa F} {\u03b4 : \u211d\u22650}"
+        },
+        {
+          "doc": "**The per-`z` identity is derived from the Hensel datum.**  For every good `z`, `P z = lift.eval (C z)`, via `decoded_eq_specialization_of_hensel`.",
+          "kind": "theorem",
+          "line": 191,
+          "name": "ArkLib.HPzBridge.eval_identity_of_henselDatum",
+          "namespace": "ArkLib.HPzBridge",
+          "short_name": "eval_identity_of_henselDatum",
+          "signature": "theorem eval_identity_of_henselDatum {k deg : \u2115} {domain : \u03b9 \u21aa F} {\u03b4 : \u211d\u22650}"
+        },
+        {
+          "doc": "**`hPz` from the per-`z` Hensel datum (the deliverable).** Residual hypotheses (none is `\u2261` the goal; each is the genuine \u00a75 per-`z` datum): * `hHensel` \u2014 for every `(v\u2080, v\u2081)` consistent with the `\u03b3`-hypothesis, the per-`z` Hensel root datum `HenselDatum u P v\u2080 v\u2081` (the \u00a75 decoder's `\u03c0_z(\u03b3) = P_z` guarantee \u2014 root membership + Hensel congruence, NOT the polynomial identity); * `hdeg` \u2014 for every such `(v\u2080, v\u2081)`, the \u00a75 degree bound `v\u2c7c.natDegree < k + 1`. Conclusion: the full `hPz` field \u2014 the per-`z` identity (DERIVED via Hensel uniqueness) plus the degree bounds.",
+          "kind": "theorem",
+          "line": 220,
+          "name": "ArkLib.HPzBridge.hPz_of_henselDatum",
+          "namespace": "ArkLib.HPzBridge",
+          "short_name": "hPz_of_henselDatum",
+          "signature": "theorem hPz_of_henselDatum {k deg : \u2115} {domain : \u03b9 \u21aa F} {\u03b4 : \u211d\u22650}"
+        },
+        {
+          "doc": "**`hPz` from the per-`z` identity directly (minimal landing pad).**  If the \u00a75 chain already delivers the per-`z` identity for the consistent representative (e.g. in the unique-decoding sub-case), this packages it \u2014 plus the degree bounds \u2014 into the `hPz` field.",
+          "kind": "theorem",
+          "line": 251,
+          "name": "ArkLib.HPzBridge.hPz_of_eval_identity",
+          "namespace": "ArkLib.HPzBridge",
+          "short_name": "hPz_of_eval_identity",
+          "signature": "theorem hPz_of_eval_identity {k deg : \u2115} {domain : \u03b9 \u21aa F} {\u03b4 : \u211d\u22650}"
+        }
+      ]
+    },
     "ArkLib/ToMathlib/HasseDerivNumeratorConcrete.lean": {
       "declarations": [
         {
@@ -71685,6 +72352,73 @@
         }
       ]
     },
+    "ArkLib/ToMathlib/HcardDischarge.lean": {
+      "declarations": [
+        {
+          "doc": "**Finite-range counting branch.**  From the ingredient-C matching data and the L9/L10 weight bound over the *finite* range `k \u2264 t \u2264 T` (the honestly dischargeable counting bound), the Hensel-lift coefficient `\u03b1FromBeta \u2026 t` vanishes for `k \u2264 t \u2264 T`.  This is `tail_zero_of_betaRec _embedding_zero` restricted to the finite range \u2014 exactly the range over which the Lemma-A.1 counting argument is valid for a fixed `matchingSet`.",
+          "kind": "theorem",
+          "line": 114,
+          "name": "ArkLib.HcardDischarge.tail_zero_on_finite_range",
+          "namespace": "ArkLib.HcardDischarge",
+          "short_name": "tail_zero_on_finite_range",
+          "signature": "theorem tail_zero_on_finite_range (x\u2080 : F) (R : F[X][X][Y]) (H : F[X][Y])"
+        },
+        {
+          "doc": "**The truncation lemma (the F5 repair).**  Pure recombination: if `\u03b1FromBeta` vanishes on the counting range `[k, T]` and the degree datum `htailDeg` gives vanishing on `(T, \u221e)`, then the full tail `\u2200 t \u2265 k, \u03b1FromBeta \u2026 t = 0` holds \u2014 exactly what the power-series-truncation consumer needs. The `(T, \u221e)` part is the genuine algebraic-degree argument (`\u03b3` has bounded `Z`-degree, so its numerator's coefficients vanish past the degree); it is supplied as the **explicit** hypothesis `htailDeg`, never derived from the goal.",
+          "kind": "theorem",
+          "line": 146,
+          "name": "ArkLib.HcardDischarge.tail_zero_of_range_and_degree",
+          "namespace": "ArkLib.HcardDischarge",
+          "short_name": "tail_zero_of_range_and_degree",
+          "signature": "theorem tail_zero_of_range_and_degree"
+        },
+        {
+          "doc": "**The composed truncation lemma (counting + degree \u27f9 full tail).**  Bundles `tail_zero_on_finite_range` with `tail_zero_of_range_and_degree`: the finite-range counting data plus the algebraic-degree datum give the full infinite \u03b1-tail vanishing that `BetaToCurveCoeffPolys.curveCoeffPolys_of_betaRec` (via `subst_mk_eq_aeval_trunc_of_tail_zero`) consumes.  This is the corrected replacement for the call into `tail_zero_of_betaRec_embedding_zero` with the over-strong infinite-range `hcard`.",
+          "kind": "theorem",
+          "line": 165,
+          "name": "ArkLib.HcardDischarge.tail_zero_of_finite_card_and_degree",
+          "namespace": "ArkLib.HcardDischarge",
+          "short_name": "tail_zero_of_finite_card_and_degree",
+          "signature": "theorem tail_zero_of_finite_card_and_degree (x\u2080 : F) (R : F[X][X][Y]) (H : F[X][Y])"
+        },
+        {
+          "doc": "**The corrected \u00a75 per-decoding extraction datum** (the satisfiable replacement for `Section5StrictData`).  See the file header for the F5 satisfiability verdict.  The infinite-range `hcard` is replaced by `T`/`hcardFin`/`htailDeg`.",
+          "kind": "structure",
+          "line": 193,
+          "name": "ArkLib.HcardDischarge.Section5StrictDataFin",
+          "namespace": "ArkLib.HcardDischarge",
+          "short_name": "Section5StrictDataFin",
+          "signature": "structure Section5StrictDataFin {k deg : \u2115} {domain : \u03b9 \u21aa F} {\u03b4 : \u211d\u22650}"
+        },
+        {
+          "doc": "The corrected \u00a75 datum yields the per-coefficient curve-polynomial datum on the good set, routing the \u03b1-tail vanishing through `tail_zero_of_finite_card_and_degree` (the F5-repaired, satisfiable interface).  `betaRec` is genuinely consumed.",
+          "kind": "theorem",
+          "line": 254,
+          "name": "ArkLib.HcardDischarge.curveCoeffPolys_of_section5DataFin",
+          "namespace": "ArkLib.HcardDischarge",
+          "short_name": "curveCoeffPolys_of_section5DataFin",
+          "signature": "theorem curveCoeffPolys_of_section5DataFin {k deg : \u2115} {domain : \u03b9 \u21aa F} {\u03b4 : \u211d\u22650}"
+        },
+        {
+          "doc": "The corrected \u00a75 datum yields the bundled `hcoeffPoly` existential the front door consumes (identical statement to `hcoeffPoly_witness_of_section5Data`, but from the satisfiable bundle).",
+          "kind": "theorem",
+          "line": 287,
+          "name": "ArkLib.HcardDischarge.hcoeffPoly_witness_of_section5DataFin",
+          "namespace": "ArkLib.HcardDischarge",
+          "short_name": "hcoeffPoly_witness_of_section5DataFin",
+          "signature": "theorem hcoeffPoly_witness_of_section5DataFin {k deg : \u2115} {domain : \u03b9 \u21aa F} {\u03b4 : \u211d\u22650}"
+        },
+        {
+          "doc": "The over-strong `Section5StrictData` refines into the satisfiable `Section5StrictDataFin` (taking `T := k`, so the counting range is the single index `k` and `htailDeg` covers `t > k` from the original infinite-range vanishing).  Demonstrates the corrected interface asks for strictly less.",
+          "kind": "def",
+          "line": 311,
+          "name": "ArkLib.HcardDischarge.section5DataFin_of_section5Data",
+          "namespace": "ArkLib.HcardDischarge",
+          "short_name": "section5DataFin_of_section5Data",
+          "signature": "def section5DataFin_of_section5Data {k deg : \u2115} {domain : \u03b9 \u21aa F} {\u03b4 : \u211d\u22650}"
+        }
+      ]
+    },
     "ArkLib/ToMathlib/HdvdTop.lean": {
       "declarations": [
         {
@@ -71944,6 +72678,46 @@
         }
       ]
     },
+    "ArkLib/ToMathlib/KeystoneAssembly.lean": {
+      "declarations": [
+        {
+          "doc": "**The `htailDeg` adapter.**  With the truncation index taken to be `T = Ppoly.natDegree`, the `TailDegProducer` output `\u2200 t, Ppoly.natDegree < t \u2192 \u03b1FromBeta \u2026 t = 0` is *exactly* the `htailDeg` field of `Section5StrictDataFin`.  Pure rewrite of the index.",
+          "kind": "theorem",
+          "line": 106,
+          "name": "ArkLib.KeystoneAssembly.htailDeg_field",
+          "namespace": "ArkLib.KeystoneAssembly",
+          "short_name": "htailDeg_field",
+          "signature": "theorem htailDeg_field {x\u2080 : F} {R : F[X][X][Y]} {H : F[X][Y]}"
+        },
+        {
+          "doc": "**The final builder.**  Assembles `HcardDischarge.Section5StrictDataFin u P` from the genuine \u00a75 producer inputs, with truncation index `T := Ppoly.natDegree`.  Each field is filled by the verified brick named in the file header; the only assumptions are the genuine \u00a75 standing data (none is the goal).",
+          "kind": "def",
+          "line": 128,
+          "name": "ArkLib.KeystoneAssembly.section5DataFin_of_producers",
+          "namespace": "ArkLib.KeystoneAssembly",
+          "short_name": "section5DataFin_of_producers",
+          "signature": "def section5DataFin_of_producers {k deg : \u2115} {domain : \u03b9 \u21aa F} {\u03b4 : \u211d\u22650}"
+        },
+        {
+          "doc": "**The closed list-decoding keystone, from the corrected Fin bundle.** Conclusion: the keystone goal `\u03b4_\u03b5_correlatedAgreementCurves \u2026 (\u03b5 := errorBound \u03b4 deg domain)`. Residuals (both genuine \u00a75 data, neither `\u2261` the goal): * `hExtractFin` \u2014 per curve `u` and per good decoding `P` in the strict-Johnson range, the *satisfiable* corrected \u00a75 extraction datum `Section5StrictDataFin u P`; * `hBoundary` \u2014 the closed square-root boundary `jointAgreement` discharge.",
+          "kind": "theorem",
+          "line": 203,
+          "name": "ArkLib.KeystoneAssembly.correlatedAgreement_listDecoding_closed_fin",
+          "namespace": "ArkLib.KeystoneAssembly",
+          "short_name": "correlatedAgreement_listDecoding_closed_fin",
+          "signature": "theorem correlatedAgreement_listDecoding_closed_fin {k deg : \u2115}"
+        },
+        {
+          "doc": "**THE FINAL ASSEMBLY.**  From the genuine \u00a75 standing inputs \u2014 supplied per curve/decoding `(u, P)` as the producer bundle that `section5DataFin_of_producers` consumes \u2014 together with the closed-boundary datum and the ambient Johnson hypothesis `h\u03b4`, the keystone goal `\u03b4_\u03b5_correlatedAgreementCurves \u2026 (\u03b5 := errorBound \u03b4 deg domain)` of `ProximityGap.correlatedAgreement_affine_curves` is produced. The strict-Johnson branch assembles `HcardDischarge.Section5StrictDataFin` from the bricks (GS-factor head, `h\u03b3` from `h\u03b2`, `htailDeg`/`mpFin`/`hcardFin`, Prop-5.5 representative, `hPz` from the Hensel",
+          "kind": "theorem",
+          "line": 259,
+          "name": "ArkLib.KeystoneAssembly.keystone_of_section5Inputs",
+          "namespace": "ArkLib.KeystoneAssembly",
+          "short_name": "keystone_of_section5Inputs",
+          "signature": "theorem keystone_of_section5Inputs {k deg : \u2115}"
+        }
+      ]
+    },
     "ArkLib/ToMathlib/KeystoneCapstone.lean": {
       "declarations": [
         {
@@ -72097,6 +72871,46 @@
           "namespace": "ArkLib.MatchingExtractor",
           "short_name": "list_size_le_of_orderM_and_weightedDegree",
           "signature": "theorem list_size_le_of_orderM_and_weightedDegree"
+        }
+      ]
+    },
+    "ArkLib/ToMathlib/MpProducer.lean": {
+      "declarations": [
+        {
+          "doc": "**The `MatchingPoint` constructor.** From the genuine \u00a75 per-`z` Hensel geometry (the matching polynomial `f`, the two roots `a\u03b2`, `aP`, the approximation `a\u2080`, the root/congruence/unit facts \u2014 the isolated smallest explicit inputs, exactly what `hensel_root_unique` consumes) together with the \u03c0_z-specialized bridging facts (`h\u03b1\u03b2`/`haP_coeff`/`hw`/`hx`), produce a `BetaMatchingVanishes.MatchingPoint x\u2080 R H hHyp Bcoeff t z root`. The `coeffExtract` field is filled in tree via `BetaMatchingVanishes.MatchingPoint.mk_coeffExtract` (`CoeffExtract.lean`); every other field is one of the isolated exp",
+          "kind": "def",
+          "line": 126,
+          "name": "ArkLib.MpProducer.mkMatchingPoint",
+          "namespace": "ArkLib.MpProducer",
+          "short_name": "mkMatchingPoint",
+          "signature": "def mkMatchingPoint"
+        },
+        {
+          "doc": "**Sanity: the constructed bundle yields the per-point conclusion.**  Firing `BetaMatchingVanishes.MatchingPoint.pi_z_eq_zero` on `mkMatchingPoint` (Hensel uniqueness + the in-tree `coeffExtract`) gives the geometric matching vanishing `(\u03c0_z z root)(betaRec \u2026 t) = 0`.",
+          "kind": "theorem",
+          "line": 156,
+          "name": "ArkLib.MpProducer.mkMatchingPoint_pi_z_eq_zero",
+          "namespace": "ArkLib.MpProducer",
+          "short_name": "mkMatchingPoint_pi_z_eq_zero",
+          "signature": "theorem mkMatchingPoint_pi_z_eq_zero"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 181,
+          "name": "ArkLib.is",
+          "namespace": "ArkLib",
+          "short_name": "is",
+          "signature": "lemma is the trivial currying that drops it into the bundle field. -/"
+        },
+        {
+          "doc": "**Assemble the `mpFin` family from a pointwise producer.**  If for every tail index `t` in the counting range `k \u2264 t \u2264 T` and every matching point `z \u2208 matchingSet` the \u00a75 geometry supplies a `MatchingPoint x\u2080 R H hHyp Bcoeff t z (root z)` (the pointwise producer `point`), then the finite-range family in the exact shape of `Section5StrictDataFin.mpFin` holds.",
+          "kind": "def",
+          "line": 194,
+          "name": "ArkLib.MpProducer.mpFin_of_pointwise",
+          "namespace": "ArkLib.MpProducer",
+          "short_name": "mpFin_of_pointwise",
+          "signature": "def mpFin_of_pointwise"
         }
       ]
     },
@@ -73277,6 +74091,82 @@
         }
       ]
     },
+    "ArkLib/ToMathlib/TailDegProducer.lean": {
+      "declarations": [
+        {
+          "doc": "The validity hypothesis `hsubst` forces the constant coefficient of the shift series to vanish: over the field `\ud835\udd43 H`, `HasSubst g` means `IsNilpotent (constantCoeff g)`, and a field is reduced.",
+          "kind": "theorem",
+          "line": 96,
+          "name": "ArkLib.TailDegProducer.constantCoeff_shiftSeries_eq_zero",
+          "namespace": "ArkLib.TailDegProducer",
+          "short_name": "constantCoeff_shiftSeries_eq_zero",
+          "signature": "theorem constantCoeff_shiftSeries_eq_zero (x\u2080 : F)"
+        },
+        {
+          "doc": "**The shift collapses to `X`.**  Given `hsubst` (valid BCIKS substitution over the field `\ud835\udd43 H`), the shift series `X \u21a6 X \u2212 x\u2080` is literally `X`: its constant coefficient is forced to `0` (by `hsubst`), its degree-`1` coefficient is `1`, and all higher coefficients vanish \u2014 exactly the coefficients of `X`.  (Equivalently, by `SubstFieldCaveat.hasSubst_shiftSeries_iff_eq_zero`, the only valid case is `x\u2080 = 0`, the centred shift.)",
+          "kind": "theorem",
+          "line": 106,
+          "name": "ArkLib.TailDegProducer.shiftSeries_eq_X",
+          "namespace": "ArkLib.TailDegProducer",
+          "short_name": "shiftSeries_eq_X",
+          "signature": "theorem shiftSeries_eq_X (x\u2080 : F)"
+        },
+        {
+          "doc": "`subst X` is the identity on power series (substituting the variable for itself).  This is `map_algebraMap_eq_subst_X` together with `algebraMap (\ud835\udd43 H) (\ud835\udd43 H) = id` and `map_id`.",
+          "kind": "theorem",
+          "line": 132,
+          "name": "ArkLib.TailDegProducer.subst_X_eq_self",
+          "namespace": "ArkLib.TailDegProducer",
+          "short_name": "subst_X_eq_self",
+          "signature": "theorem subst_X_eq_self (f : PowerSeries (\ud835\udd43 H)) :"
+        },
+        {
+          "doc": "**The substitution collapses.**  Given `hsubst` and the substitution form `h\u03b3`, the in-tree `\u03b3` is literally `mk \u03b1FromBeta`: the BCIKS shift over the field is `X`, and `subst X` is the identity.",
+          "kind": "theorem",
+          "line": 141,
+          "name": "ArkLib.TailDegProducer.gamma_eq_mk_alphaFromBeta",
+          "namespace": "ArkLib.TailDegProducer",
+          "short_name": "gamma_eq_mk_alphaFromBeta",
+          "signature": "theorem gamma_eq_mk_alphaFromBeta {x\u2080 : F} {R : F[X][X][Y]}"
+        },
+        {
+          "doc": "`mk \u03b1FromBeta` equals the polynomial-coercion power series of `Ppoly`.",
+          "kind": "theorem",
+          "line": 158,
+          "name": "ArkLib.TailDegProducer.mk_alphaFromBeta_eq_polyToPowerSeries",
+          "namespace": "ArkLib.TailDegProducer",
+          "short_name": "mk_alphaFromBeta_eq_polyToPowerSeries",
+          "signature": "theorem mk_alphaFromBeta_eq_polyToPowerSeries {x\u2080 : F} {R : F[X][X][Y]}"
+        },
+        {
+          "doc": "The `t`-th coefficient identity: `\u03b1FromBeta \u2026 t = liftToFunctionField (Ppoly.coeff t)`.",
+          "kind": "theorem",
+          "line": 170,
+          "name": "ArkLib.TailDegProducer.alphaFromBeta_eq_lift_coeff",
+          "namespace": "ArkLib.TailDegProducer",
+          "short_name": "alphaFromBeta_eq_lift_coeff",
+          "signature": "theorem alphaFromBeta_eq_lift_coeff {x\u2080 : F} {R : F[X][X][Y]}"
+        },
+        {
+          "doc": "**The `htailDeg` producer (the F5 residual).**  From the Prop-5.5 algebraic datum (`hsubst`/`h\u03b3`/`hrep`) the Hensel-lift numerator `\u03b1FromBeta` vanishes past the degree of the polynomial representative: with the truncation bound `T := Ppoly.natDegree`, > `\u2200 t, Ppoly.natDegree < t \u2192 \u03b1FromBeta x\u2080 R H hHyp Bcoeff t = 0`. This is the **algebraic** truncation (bounded degree of the power-series numerator on the `X \u2212 x\u2080` line), exactly the `htailDeg` field of `Section5StrictDataFin`.  It is *proven* from the Prop-5.5 data, never assumed; the conclusion is the `\u03b1FromBeta`-vanishing goal, the hypothese",
+          "kind": "theorem",
+          "line": 200,
+          "name": "ArkLib.TailDegProducer.htailDeg_of_polynomial_representative",
+          "namespace": "ArkLib.TailDegProducer",
+          "short_name": "htailDeg_of_polynomial_representative",
+          "signature": "theorem htailDeg_of_polynomial_representative {x\u2080 : F} {R : F[X][X][Y]}"
+        },
+        {
+          "doc": "**Packaged producer.**  Records the truncation index `T := Ppoly.natDegree` and produces the `htailDeg`-shaped conclusion `\u2200 t, T < t \u2192 \u03b1FromBeta \u2026 t = 0` from the Prop-5.5 datum.  `hdegX` is carried for interface fidelity with `Section5StrictDataFin` (it feeds the orthogonal linear-in-`Z` read-off downstream), but is not used in this tail derivation.",
+          "kind": "theorem",
+          "line": 223,
+          "name": "ArkLib.TailDegProducer.htailDeg_with_bound",
+          "namespace": "ArkLib.TailDegProducer",
+          "short_name": "htailDeg_with_bound",
+          "signature": "theorem htailDeg_with_bound {x\u2080 : F} {R : F[X][X][Y]}"
+        }
+      ]
+    },
     "ArkLib/ToMathlib/WeightLambdaCalculus.lean": {
       "declarations": [
         {
@@ -73793,8 +74683,8 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 8025,
-      "files": 395
+      "declarations": 8119,
+      "files": 406
     }
   }
 }

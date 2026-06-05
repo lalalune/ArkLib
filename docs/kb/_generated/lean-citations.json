@@ -1,8 +1,8 @@
 {
   "counts": {
-    "files_with_citations": 106,
+    "files_with_citations": 115,
     "keys_cited": 28,
-    "total_citation_edges": 139
+    "total_citation_edges": 148
   },
   "files": {
     "ArkLib/AGM/Basic.lean": [
@@ -155,6 +155,9 @@
       "BCIKS20"
     ],
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ReedSolomonGap.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/S5Genuine.lean": [
       "BCIKS20"
     ],
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/WeightedAgreement.lean": [
@@ -326,6 +329,9 @@
     "ArkLib/ToMathlib/BivariateDegreeToolkit.lean": [
       "BCIKS20"
     ],
+    "ArkLib/ToMathlib/BoundaryDischarge.lean": [
+      "BCIKS20"
+    ],
     "ArkLib/ToMathlib/Claim510Conditional.lean": [
       "BCIKS20"
     ],
@@ -335,10 +341,28 @@
     "ArkLib/ToMathlib/CorrelatedAgreementListDecodingClosed.lean": [
       "BCIKS20"
     ],
+    "ArkLib/ToMathlib/GSFactorData.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/ToMathlib/GammaFromBeta.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/ToMathlib/HPzBridge.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/ToMathlib/HcardDischarge.lean": [
+      "BCIKS20"
+    ],
     "ArkLib/ToMathlib/HliftDvd.lean": [
       "BCIKS20"
     ],
+    "ArkLib/ToMathlib/KeystoneAssembly.lean": [
+      "BCIKS20"
+    ],
     "ArkLib/ToMathlib/MatchingExtractor.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/ToMathlib/MpProducer.lean": [
       "BCIKS20"
     ],
     "ArkLib/ToMathlib/MultiplicityDatum.lean": [
@@ -351,6 +375,9 @@
       "BCIKS20"
     ],
     "ArkLib/ToMathlib/SbetaPackaging.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/ToMathlib/TailDegProducer.lean": [
       "BCIKS20"
     ],
     "ArkLib/ToMathlib/WeightLambdaCalculus.lean": [
@@ -423,6 +450,7 @@
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Extraction.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Guruswami.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ReedSolomonGap.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/S5Genuine.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/WeightedAgreement.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/Basic.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/Hab25Core.lean",
@@ -438,15 +466,23 @@
       "ArkLib/ToMathlib/BetaToCurveCoeffPolys.lean",
       "ArkLib/ToMathlib/BetaWeightInduction.lean",
       "ArkLib/ToMathlib/BivariateDegreeToolkit.lean",
+      "ArkLib/ToMathlib/BoundaryDischarge.lean",
       "ArkLib/ToMathlib/Claim510Conditional.lean",
       "ArkLib/ToMathlib/Claim511.lean",
       "ArkLib/ToMathlib/CorrelatedAgreementListDecodingClosed.lean",
+      "ArkLib/ToMathlib/GSFactorData.lean",
+      "ArkLib/ToMathlib/GammaFromBeta.lean",
+      "ArkLib/ToMathlib/HPzBridge.lean",
+      "ArkLib/ToMathlib/HcardDischarge.lean",
       "ArkLib/ToMathlib/HliftDvd.lean",
+      "ArkLib/ToMathlib/KeystoneAssembly.lean",
       "ArkLib/ToMathlib/MatchingExtractor.lean",
+      "ArkLib/ToMathlib/MpProducer.lean",
       "ArkLib/ToMathlib/MultiplicityDatum.lean",
       "ArkLib/ToMathlib/PowerSeriesHenselianA.lean",
       "ArkLib/ToMathlib/Prop55.lean",
       "ArkLib/ToMathlib/SbetaPackaging.lean",
+      "ArkLib/ToMathlib/TailDegProducer.lean",
       "ArkLib/ToMathlib/WeightLambdaCalculus.lean"
     ],
     "BCS16": [
