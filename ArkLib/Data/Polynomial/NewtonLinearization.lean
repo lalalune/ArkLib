@@ -34,7 +34,8 @@ Three results:
   `(0,t): c^{i+1} · δ` assemble with the inductive hypothesis into `(i+1) • (c^i δ)`.
 
 * **`coeff_aeval_sub_at`** (COROLLARY, the P2-facing form): for a polynomial `P`,
-  `coeff t (aeval γ₁ P) − coeff t (aeval γ₂ P) = (eval c (derivative P)) · (coeff t γ₁ − coeff t γ₂)`.
+  `coeff t (aeval γ₁ P) − coeff t (aeval γ₂ P) =
+    (eval c (derivative P)) · (coeff t γ₁ − coeff t γ₂)`.
   The composed-series order-`t` coefficient is `P′(c)`-linear in the order-`t` input — exactly
   the Newton/Hensel linearization driving the order-by-order vanishing argument. The
   `aeval`-expansion `coeff t (aeval γ P) = ∑ᵢ Pᵢ · coeff t (γ^i)` is restated locally
@@ -124,13 +125,13 @@ theorem coeff_pow_sub_at {γ₁ γ₂ : R⟦X⟧} {t : ℕ} (ht : 0 < t)
           simp only [coeff_zero_eq_constantCoeff_apply, ← hc]
         have ec₂ : coeff (t, 0).2 γ₂ = c := by
           simp only [coeff_zero_eq_constantCoeff_apply, hc2]
-        show (coeff (t, 0).1 (γ₁ ^ (i + 1)) * coeff (t, 0).2 γ₁
+        change (coeff (t, 0).1 (γ₁ ^ (i + 1)) * coeff (t, 0).2 γ₁
                 - coeff (t, 0).1 (γ₂ ^ (i + 1)) * coeff (t, 0).2 γ₂)
               + (coeff (0, t).1 (γ₁ ^ (i + 1)) * coeff (0, t).2 γ₁
                 - coeff (0, t).1 (γ₂ ^ (i + 1)) * coeff (0, t).2 γ₂)
             = (i + 1 + 1) • (c ^ (i + 1) * (coeff t γ₁ - coeff t γ₂))
         rw [ec₁, ec₂, e0₁, e0₂]
-        show (coeff t (γ₁ ^ (i + 1)) * c - coeff t (γ₂ ^ (i + 1)) * c)
+        change (coeff t (γ₁ ^ (i + 1)) * c - coeff t (γ₂ ^ (i + 1)) * c)
               + (c ^ (i + 1) * coeff t γ₁ - c ^ (i + 1) * coeff t γ₂)
             = (i + 1 + 1) • (c ^ (i + 1) * (coeff t γ₁ - coeff t γ₂))
         -- (t,0)-term = (coeff t γ₁^(i+1) − coeff t γ₂^(i+1)) * c = ((i+1) • (c^i δ)) * c.
