@@ -376,8 +376,9 @@ lemma encode_inj_of_le_one (d e : Fin m →₀ ℕ)
   have hej := he j
   omega
 
-/-- The univariate monomial-sum form of `powAlgHom`: `powAlgHom q = ∑_{d ∈ supp q} q(d) X^(encode d)`,
-where `encode d = ∑ⱼ 2^j · dⱼ`. -/
+/-- The univariate monomial-sum form of `powAlgHom`.
+
+Here `encode d = ∑ⱼ 2^j · dⱼ`. -/
 lemma powAlgHom_eq_sum_support (q : MvPolynomial (Fin m) F) :
     powAlgHom q
       = ∑ d ∈ q.support,
