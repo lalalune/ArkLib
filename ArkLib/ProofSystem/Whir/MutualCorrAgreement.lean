@@ -293,10 +293,10 @@ lemma mca_rsc
   See `research/formal/arklib-proof-research-2026-06.md`.
 -/
 def mca_johnson_bound_CONJECTURE
-  (α : F) (φ : ι ↪ F) (m : ℕ) [Smooth φ]
-  (parℓ_type : Type) [Fintype parℓ_type] (exp : parℓ_type ↪ ℕ) :
+  (_α : F) (φ : ι ↪ F) (m : ℕ) [Smooth φ]
+  (parℓ_type : Type) [Fintype parℓ_type] (exp : parℓ_type ↪ ℕ) : Prop :=
   let Gen := RSGenerator.genRSC parℓ_type φ m exp
-  let : Fintype Gen.parℓ := Gen.hℓ
+  haveI : Fintype Gen.parℓ := Gen.hℓ
   hasMutualCorrAgreement Gen
     -- Conjectured BStar = √ρ
     (Real.sqrt Gen.rate)
@@ -308,18 +308,6 @@ def mca_johnson_bound_CONJECTURE
         ((Fintype.card F) * (2 * min_val)^7)
       )
     )
-  := by
-    let Gen := RSGenerator.genRSC parℓ_type φ m exp
-    let _ : Fintype Gen.parℓ := Gen.hℓ
-    exact hasMutualCorrAgreement Gen
-      (Real.sqrt Gen.rate)
-      (fun δ =>
-        let min_val := min (1 - Real.sqrt Gen.rate - (δ : ℝ)) (Real.sqrt Gen.rate / 20)
-        ENNReal.ofReal (
-          ((Fintype.card parℓ_type - 1) * 2^(2*m)) /
-          ((Fintype.card F) * (2 * min_val)^7)
-        )
-      )
 
 /-- Conjecture 4.12 (Capacity Bound)
   The function `Gen(parℓ,α)={1,α,..,α ^ parℓ-1}` is a proximity generator with

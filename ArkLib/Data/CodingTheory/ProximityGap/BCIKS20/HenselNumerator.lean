@@ -1593,6 +1593,16 @@ theorem βHensel_succ_term_weight_le (x₀ : F) (R : F[X][X][Y])
   -- and `nsmul_withBot_le` (the `WithBot ℕ` power-bound descent).  So (P1) is gated *solely* on the
   -- structured IH, which is gated on (P2).  Closing this `sorry` with the loose IH would be a FALSE
   -- step (rigorously impossible); it is left open by design.  See `ingredientD-wave5.md`.
+  --
+  -- EXACT MISSING INGREDIENTS FOR THIS STATEMENT:
+  -- 1. A theorem upgrading the available loose IH to the paper's structured invariant
+  --    `weight_Λ_over_𝒪 β_l ≤ 1 + (l+1) * Λ(W) + (2*l-1) * Λ(ξ)` for every recursive coefficient
+  --    appearing in `partitionProd`; the existing loose IH is not strong enough to prove this term.
+  -- 2. Equivalently, the A.4 regularity/divisibility bridge for genuine Hensel-root coefficients:
+  --    each `αGenuine l` must be represented by an `𝒪`-element of weight at most `1`, so that
+  --    `β_l = a_l * W𝒪^(l+1) * ξ^(2*l-1)` holds in `𝒪`.
+  -- 3. That bridge is gated by the P2 full Faà-di-Bruno vanishing / prefactor match below; importing
+  --    the conditional files would only move the same residual and would make this proof circular.
   sorry
 
 /-- **(P1) full weight bound.**  `weight_Λ_over_𝒪 hH (βHensel … t) D ≤ (2t+1)·natDegreeY R·D`.
@@ -2332,6 +2342,16 @@ theorem faaDiBruno_succ_sum_eq_zero (x₀ : F) (R : F[X][X][Y])
                   PowerSeries.coeff j (βHenselAssembled H x₀ R hHyp))).prod))) = 0 := by
   -- IRREDUCIBLE FRONTIER: the combinatorial-weight reconciliation `prefactor_eq_paper`.
   -- Everything connective is proven above.
+  --
+  -- EXACT MISSING INGREDIENTS FOR THIS STATEMENT:
+  -- 1. A term-level reindex from the unrestricted Faà-di-Bruno value-multiset sum to the `(A.1)`
+  --    recursion's `(i1, lam)` partition sum for `βHensel_succ`.
+  -- 2. The prefactor alignment along that reindex: the full-sum Hasse/Faà-di-Bruno weight
+  --    `choose (j0 + card lam) (card lam) * lam.countPerms` must match the recursion's
+  --    `B_coeff` prefactor plus the `hasseDerivY` binomial after the `Y`-degree shift.
+  -- 3. The companion files prove the zero-peeling count and exponent-balance reductions, but not
+  --    the final recursion-to-full-sum match; using them here would reduce to the same open P2
+  --    identity rather than close it.
   sorry
 
 /-- **(P2) order-`(t+1)` vanishing — reduced to the single named combinatorial residual

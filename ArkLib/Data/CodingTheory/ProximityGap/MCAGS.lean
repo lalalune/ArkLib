@@ -535,7 +535,7 @@ explicit hypothesis until the beyond-UDR GS mass bound is actually proved. -/
 def epsMCAgs_prizeBound_conjecture
     (domain : ι ↪ F) (j : Fin 4) (m : ℕ) (η δ : ℝ≥0) (hη : 0 < η)
     (L : WordStack F (Fin 2) ι → Finset (ι → F))
-    (hδ : (δ : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η : ℝ)) :
+    (hδ : (δ : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η : ℝ)) : Prop :=
     ∃ c₁ c₂ c₃ : ℝ,
       epsMCAgs (F := F)
         ((ReedSolomon.code (domain := domain)

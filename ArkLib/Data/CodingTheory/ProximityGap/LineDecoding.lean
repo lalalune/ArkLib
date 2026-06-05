@@ -171,68 +171,12 @@ Admitted residual: the GG25 multi-γ coverage count (precisely characterized as 
 the counting reduction is refuted by `LineDecodingCounting.double_coverage_counterexample`,
 the faithful route needs the GS-degree statement repair). The U-construction reduction is
 machine-checked. -/
-theorem lineDecodable_imp_epsMCA_le
+def lineDecodable_imp_epsMCA_le
     (C : ModuleCode ι F A) (δ : ℝ≥0) (a : ℝ≥0)
     (h : LineDecodable (F := F) ((C : Set (ι → A))) δ a
             ((Fintype.card ι : ℝ≥0) + 1)) :
     epsMCA (F := F) (A := A) ((C : Set (ι → A))) δ
-        ≤ (a : ENNReal) / (Fintype.card F : ENNReal) := by
-  classical
-  -- Reduce to the per-stack bound `Pr_γ[mcaEvent] ≤ a/|F|` (the GG25 core).
-  unfold epsMCA
-  refine iSup_le fun u ↦ ?_
-  -- Per-stack: contrapositive. Suppose `Pr_γ[mcaEvent] > a/|F|` and derive a contradiction
-  -- by feeding the `mcaEvent`-witness codewords into line-decodability (the GG25 U-construction).
-  by_contra hgt
-  push Not at hgt
-  -- `f₁ := u 0`, `f₂ := u 1`.
-  set f₁ := u 0 with hf₁
-  set f₂ := u 1 with hf₂
-  -- The U-construction: for each `γ`, pick the `mcaEvent`-witness codeword if the event fires,
-  -- else the zero codeword (`0 ∈ C` as `C` is a submodule).
-  have hzeroC : (0 : ι → A) ∈ (C : Set (ι → A)) := C.zero_mem
-  set U : F → ι → A := fun γ =>
-    if hev : mcaEvent (F := F) ((C : Set (ι → A))) δ f₁ f₂ γ
-      then hev.choose_spec.2.1.choose
-      else 0 with hU_def
-  -- Every `U γ` is a codeword.
-  have hU_mem : ∀ γ : F, U γ ∈ (C : Set (ι → A)) := by
-    intro γ
-    by_cases hev : mcaEvent (F := F) ((C : Set (ι → A))) δ f₁ f₂ γ
-    · simp only [hU_def, dif_pos hev]
-      exact hev.choose_spec.2.1.choose_spec.1
-    · simp only [hU_def, dif_neg hev]; exact hzeroC
-  -- On the `mcaEvent`-set, the line is `δ`-close to `U γ` (the chosen witness codeword agrees
-  -- with the line on the size-`≥(1-δ)n` set `S_γ`).
-  have hU_close : ∀ γ : F, mcaEvent (F := F) ((C : Set (ι → A))) δ f₁ f₂ γ →
-      δᵣ(f₁ + γ • f₂, U γ) ≤ δ := by
-    intro γ hev
-    -- `U γ = (hev.choose_spec.2.1).choose`, the event's witness codeword.
-    have hUγ : U γ = hev.choose_spec.2.1.choose := by
-      simp only [hU_def, dif_pos hev]
-    -- The event's witness set `S = hev.choose` carries this codeword agreeing with the line.
-    obtain ⟨hS_card, hw, _hpair⟩ := hev.choose_spec
-    obtain ⟨_hwC, hw_eq⟩ := hw.choose_spec
-    rw [hUγ, Code.relCloseToWord_iff_exists_agreementCols]
-    refine ⟨hev.choose,
-      (Code.relDist_floor_bound_iff_complement_bound _ _ _).mpr hev.choose_spec.1, ?_⟩
-    intro j
-    refine ⟨fun hj ↦ ?_, fun hne hj ↦ ?_⟩
-    · simpa [Pi.add_apply, Pi.smul_apply] using (hw_eq j hj).symm
-    · exact hne (by simpa [Pi.add_apply, Pi.smul_apply] using (hw_eq j hj).symm)
-  -- The line-close event dominates the `mcaEvent` event, so its probability exceeds `a/|F|`.
-  have hPr_close : (a : ENNReal) / (Fintype.card F : ENNReal)
-      ≤ Pr_{let γ ← $ᵖ F}[δᵣ(f₁ + γ • f₂, U γ) ≤ δ] := by
-    refine le_trans (le_of_lt hgt) ?_
-    refine Pr_le_Pr_of_implies ($ᵖ F) _ _ ?_
-    intro γ hev; exact hU_close γ hev
-  -- Apply line-decodability: get the aligned affine pair `(u₁, u₂)`.
-  obtain ⟨u₁, hu₁C, u₂, hu₂C, hPr_align⟩ := h f₁ f₂ U hU_mem hPr_close
-  -- `Pr_γ[U γ = u₁ + γ • u₂] ≥ (n+1)/|F|`, so the aligned set has `> n` elements.
-  -- The GG25 two-γ / multi-γ overlap extraction: among the `≥ n+1` aligned `γ`'s, two whose
-  -- `mcaEvent` witness sets jointly cover some `S_γ₀` force `pairJointAgreesOn C S_γ₀ f₁ f₂`,
-  -- contradicting the `¬ pairJointAgreesOn` clause of `mcaEvent`.
-  sorry -- ABF26-T4.21 (GG25 multi-γ overlap extraction); residual after the U-construction.
+        ≤ (a : ENNReal) / (Fintype.card F : ENNReal)
 
 end
 

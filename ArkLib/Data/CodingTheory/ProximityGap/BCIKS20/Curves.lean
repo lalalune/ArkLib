@@ -2537,6 +2537,15 @@ theorem correlatedAgreement_affine_curves {k : ℕ}
           -- extraction, characterized precisely in the lane report.
           refine RS_jointAgreement_of_prob_gt_strict_johnson_and_coeff_polys
             (deg := deg) (domain := domain) (δ := δ) hkpos u hprob hJ hsqrt ?_
+          -- EXACT MISSING INGREDIENT FOR THIS BRANCH:
+          -- Produce the §5 coefficient-polynomial witness
+          --   ∀ P decoding `RS_goodCoeffsCurve`, ∃ B : ℕ → F[X],
+          --     (∀ j < deg, (B j).natDegree < k+1) ∧
+          --     ∀ z in `RS_goodCoeffsCurve`, ∀ j < deg, (P z).coeff j = (B j).eval z.
+          -- Existing capstones above prove the curve theorem from this witness, and
+          -- `coeff_polys_for_all_decoded_of_canonical_agreement` can propagate it from a canonical
+          -- decoded family, but the bare hypotheses here do not construct that family for
+          -- general `k`, `domain`, and `RS_goodCoeffsCurve`.
           sorry
         · -- CLOSED square-root boundary branch (`δ = 1 - sqrtRate`).  Here
           -- `errorBound δ deg domain = 0` (`errorBound_eq_zero_of_johnson_not_lt_sqrt`),
@@ -2556,6 +2565,15 @@ theorem correlatedAgreement_affine_curves {k : ℕ}
               0 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card :=
             goodCoeffsCurve_card_pos_of_prob_gt_johnson_boundary
               (deg := deg) (domain := domain) (δ := δ) u hprob hJ hsqrt
+          -- EXACT MISSING INGREDIENT FOR THIS BRANCH:
+          -- A closed-boundary assembler
+          --   δ = 1 - ReedSolomon.sqrtRate deg domain →
+          --   0 < (RS_goodCoeffsCurve ... u δ).card →
+          --   jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u).
+          -- The probability hypothesis at `errorBound = 0` gives nonemptiness only; the current
+          -- Lemma-7.6 style assembly needs the stronger strict-size/cardinality lower bounds used
+          -- away from the boundary.  The required limiting/refined boundary argument is not present
+          -- in this file or the imported §5 chain.
           sorry
       · -- Closed rate-half branch: for Reed-Solomon codes this is still inside
         -- the relative unique-decoding radius, contradicting the outer split.

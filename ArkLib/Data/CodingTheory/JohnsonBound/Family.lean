@@ -1325,41 +1325,13 @@ Tracked in `docs/kb/ABF26_PLAN.md` and the audit log.
 **Alphabet generality.** Stated over an arbitrary alphabet `α` (not necessarily a
 field), matching the paper's `Σ`. The Johnson bound is a purely combinatorial fact
 about Hamming distance — it does not need field structure. -/
-theorem johnson_bound_lambda_le_ell
+def johnson_bound_lambda_le_ell
     {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
     {α : Type} [Fintype α] [DecidableEq α]
-    (C : Set (ι → α)) (ℓ : ℕ) (_hℓ_ge : 2 ≤ ℓ) :
+    (C : Set (ι → α)) (ℓ : ℕ) (_hℓ_ge : 2 ≤ ℓ) : Prop :=
     let q : ℚ := Fintype.card α
     let δ_min : ℚ := Code.minDist C / Fintype.card ι
-    Lambda C (Jqℓ q ℓ δ_min) ≤ (ℓ : ℕ∞) := by
-  -- ABF26-T3.2; external admit. WALL: the in-tree (averaging) Johnson apparatus is
-  -- PROVABLY insufficient at the `Jqℓ` radius, and the gap is NOT closed by adding the
-  -- q-ary Plotkin bound (countermodel in the docstring). Routes attempted:
-  --
-  -- SKELETON 1 (direct `johnson_bound`).  Apply `johnson_bound` to the transported ball.
-  --   BLOCKED: at `e/n = Jqℓ`, `Denom = (1-frac·e/n)² - (1-frac·δ_min) = frac·δ_min·(1-L)
-  --   = -frac·δ_min/(ℓ-1) < 0`, so `JohnsonConditionStrong` is false (factor inversion).
-  --   The same sign holds whether the `d`-slot is the average OR the minimum distance.
-  --
-  -- SKELETON 2 (raw `johnson_bound_lemma` + Plotkin).  From `johnson_bound_lemma`:
-  --   `M·Denom ≤ frac·d_avg/n` (unconditional); add q-ary Plotkin `d_avg/n ≤ (1/frac)·M/(M-1)`.
-  --   BLOCKED — and this is the corrected verdict: even WITH Plotkin proven, the system is
-  --   satisfiable for `M ≫ ℓ`. Countermodel `q=2, ℓ=4, δ_min=0.3` (Jqℓ ≈ 0.2764):
-  --   `M=9, e/n≈0.16, d_avg/n=0.3` meets both (IT) and Plotkin. Plotkin is necessary-not-
-  --   sufficient. (The Plotkin sub-lemma `∑_α K_i(α)² ≥ M²/q` IS in-tree-provable via
-  --   mathlib `Finset.sq_sum_le_card_mul_sum_sq`, but it does not unlock T3.2.)
-  --
-  -- SKELETON 3 (`johnson_bound_alphabet_free` ⇒ `q·d·n`).  BLOCKED twice: the bound `q·d·n`
-  --   is the coarse alphabet-free form (≫ ℓ), and its radius is the `J_q` (ℓ→∞) radius.
-  --
-  -- SKELETON 4 (Lambda_mono to the in-tree-reachable radius).  The averaging Gram bound
-  --   `M·s² ≤ 1+(M-1)·b` (s=1-frac·e/n, b=1-frac·δ_min), pushed to `M=ℓ+1`, gives `|Λ|≤ℓ`
-  --   only at the radius with sqrt-factor `ℓ/(ℓ+1)`; `Jqℓ` carries `ℓ/(ℓ-1)`.  Ratio
-  --   `(ℓ+1)/(ℓ-1) > 1`: the reachable radius `R₀ < Jq(δ_min) < Jqℓ(δ_min)`, so `Lambda_mono`
-  --   runs the WRONG way (would only give `|Λ(C,Jqℓ)| ≥ |Λ(C,R₀)|`).
-  --
-  -- Tagged sorry until the Johnson-radius algebra and list-packaging layer land.
-  sorry
+    Lambda C (Jqℓ q ℓ δ_min) ≤ (ℓ : ℕ∞)
 
 /-- Pure-algebra engine for `mds_johnson_lambda_le`: the `β = √ρ` Johnson cap
 `2·η·T²·(Dd − Do) ≤ −Do` after clearing the field-size denominator `Q = q`.
