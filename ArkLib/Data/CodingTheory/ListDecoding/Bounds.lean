@@ -882,10 +882,36 @@ error-correcting code of rate `ρ` with `|Λ(C, δ)| ≤ ℓ`. Then:
 
 Equivalently, `δ ≤ ℓ/(ℓ+1) · (1-ρ)`. Admitted as an external result.
 
-**STATUS: NEEDS_CLASSICAL.** The generalized Singleton bound [ST20] is settled classical
-coding theory, but its proof is unformalized anywhere; mathlib has no Reed-Solomon,
-list-decoding, or Singleton-bound API. Discharging the `sorry` is a genuine ground-up
-formalization, not a port. See `research/formal/arklib-proof-research-2026-06.md`. -/
+**STATUS: NEEDS_CLASSICAL (external core) + DOCUMENTED INFIDELITY at the boundary.**
+
+1. *External core.* The genuine content of [ST20 Thm 1.2] is the dimension/rate bound
+   `dim C ≤ n - ⌊(ℓ+1)/ℓ·δ·n⌋` derived from `|Λ(C,δ)| ≤ ℓ`. Its proof is the ST20
+   plurality-center + ℓ-fold-agreement averaging argument: one finds `ℓ+1` codewords
+   pairwise agreeing on many coordinates (a linear-algebra pigeonhole on a large-dimension
+   code) and builds a plurality "center" word within relative distance `δ` of all `ℓ+1`,
+   contradicting `|Λ(C,δ)| ≤ ℓ`. Neither the ℓ-fold agreement pigeonhole nor the
+   plurality-center averaging is in mathlib or in-tree. In-tree `singleton_bound`
+   (`Basic/LinearCode.lean`) is only the `ℓ = 1` minimum-distance case and does NOT
+   generalise without this ST20 machinery. Genuinely external, settled-classical.
+   Given the core as `dim C + ⌊(ℓ+1)/ℓ·δ·n⌋ ≤ n`, the stated `|C| ≤ |F|^{n-s}` follows from
+   `Module.card_eq_pow_finrank` + `pow`/`rpow` monotonicity (the `singleton_bound`/
+   `SubspaceDesign` wrapper pattern).
+
+2. *Boundary infidelity (machine-checked countermodel).* The statement AS WRITTEN is FALSE
+   in the degenerate regime `s := ⌊(ℓ+1)/ℓ·δ·n⌋ > n`. Take `F = ZMod 2`, `ι = Fin 2`,
+   `C = ⊥` (zero code), `ℓ = 1`, `δ = 9/10`. Then `s = ⌊2·(9/10)·2⌋ = ⌊3.6⌋ = 3 > 2 = n`,
+   so RHS `= |F|^{2-3} = 2⁻¹ = 1/2`, while `|C| = ncard ⊥ = 1` and
+   `Lambda ⊥ δ = 1 ≤ ℓ = 1` (the zero code has one codeword, so every center's list ≤ 1).
+   The required conclusion `1 ≤ 1/2` is false. (All four facts verified in Lean; the
+   core dimension bound `dim C + s ≤ n` is likewise false here since `0 + 3 ≤ 2` fails,
+   so the core cannot be isolated as a true single residual without the guard below.)
+   The faithful repair is the regime guard `(ℓ+1)/ℓ·δ ≤ 1` (i.e. `δ ≤ ℓ/(ℓ+1)`, the only
+   regime ST20 Thm 1.2 is meaningful in), under which `s ≤ n` and RHS `≥ 1`. The guard is
+   NOT added here to preserve the external-admit signature tracked by the roadmap bridge;
+   adding it is the prerequisite to any honest discharge of the `sorry`.
+
+See `research/formal/arklib-proof-research-2026-06.md` and
+`research/proximity-prize/dispositions/pc-w1-ST20-singleton.md`. -/
 theorem linear_C_le_generalized_singleton_st20
     (C : Submodule F (ι → F)) (ℓ : ℕ) (δ : ℝ)
     (_hℓ_pos : 0 < ℓ) (_hℓ_lt : ℓ < Fintype.card F)
@@ -895,12 +921,14 @@ theorem linear_C_le_generalized_singleton_st20
       ≤ (Fintype.card F : ℝ) ^
           ((Fintype.card ι : ℝ)
             - (Nat.floor (((ℓ : ℝ) + 1) / ℓ * δ * Fintype.card ι) : ℝ)) := by
-  sorry -- ABF26-T3.9; external admit [ST20 Thm 1.2].
-  -- Missing ingredient: ST20's generalized Singleton bound for list decoding. Bounds |C| by
-  -- |F|^{n-⌊(ℓ+1)/ℓ·δ·n⌋} from |Λ(C,δ)|≤ℓ via a dimension/puncturing argument: the list-size
-  -- hypothesis forces a large "free coordinate" set on which C projects injectively. Needs the
-  -- ST20 puncturing/shortening dimension lemma (not in-tree; LinearCode.lean has finrank but
-  -- not the list-size⇒puncture-dimension bound). Genuinely external.
+  sorry -- ABF26-T3.9; external admit [ST20 Thm 1.2]. See docstring above.
+  -- Two blockers (full analysis + verified countermodel in the docstring):
+  --  (a) EXTERNAL CORE: the ST20 dimension bound `dim C + ⌊(ℓ+1)/ℓ·δ·n⌋ ≤ n` from
+  --      `|Λ(C,δ)| ≤ ℓ`, proved by the ST20 ℓ-fold-agreement pigeonhole + plurality-center
+  --      averaging — absent from mathlib and in-tree (`singleton_bound` is only the ℓ=1 case).
+  --  (b) BOUNDARY INFIDELITY: when `⌊(ℓ+1)/ℓ·δ·n⌋ > n` the statement is FALSE (zero code,
+  --      large δ); a faithful version needs the regime guard `δ ≤ ℓ/(ℓ+1)`. Not added here
+  --      so the external-admit signature stays bridge-stable.
 
 end LowerBounds_General
 

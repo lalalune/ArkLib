@@ -931,6 +931,126 @@ lemma B_coeff_weight_le (x₀ : F) (R : F[X][X][Y]) (i1 : ℕ) {m : ℕ}
   exact_mod_cast Nat.add_le_add_right
     (Nat.mul_le_mul_right _ hY) (Bivariate.degreeX p)
 
+/-! ### 4b″. The `Z`-degree (`degreeX`) sharpening to the paper's literal `(D−Σλ)` (WAVE 1 ext, P2-independent)
+
+This block sharpens the `+ degreeX p` term of `B_coeff_weight_le` to the paper's *literal*
+`(D−Σλ)` constant (BCIKS20 lines 2110–2111 / 4345: "the coefficient `Q_{ji}(Z)` of `X^i Y^j` is
+of degree at most `D − j` in `Z`"; the total `Y,Z`-degree of `Q_{ji}·X^i·Y^j` is `(D−j)+j ≤ D`).
+The `Z`-variable is the **innermost ground layer** (`Polynomial F` inside `F[X][X][Y]`); its degree
+is `Bivariate.degreeX` (of the post-`evalX` bivariate `p : F[X][Y]`).
+
+The bound `degreeX p ≤ D − Σλ` is a *pure degree fact*, fully P2-independent, requiring the genuine
+graded-`Z`-degree premise on `R` (the `Q_{ji}` structure): `∀ j, degreeX (R.coeff j) ≤ D − j`.
+It composes three degree-tracking facts, each proven below: `Δ_Y^{Σλ}` pulls coefficient `Y^n` from
+`R.coeff (n+Σλ)` (budget `D−(n+Σλ) ≤ D−Σλ`), and neither `Δ_X^{i1}` (middle-`X` Hasse) nor the lift
+substitution `evalX (C x₀)` (middle-`X` → ground constant) raises the `Z`-degree. -/
+
+set_option linter.unusedSectionVars false in
+/-- The `Y^n`-coefficient of `Δ_X^{i1} q` is `Polynomial.hasseDeriv i1` of the `Y^n`-coefficient of
+`q`: `Δ_X^{i1}` acts coefficient-wise through the outer `Y` layer, re-monomialising at the same
+`Y`-degree, so it commutes with taking the `Y`-coefficient. -/
+theorem hasseDerivX_coeff (i1 : ℕ) (q : F[X][X][Y]) (n : ℕ) :
+    (hasseDerivX i1 q).coeff n = Polynomial.hasseDeriv i1 (q.coeff n) := by
+  classical
+  unfold hasseDerivX
+  rw [Polynomial.coeff_sum, Polynomial.sum_def, Finset.sum_eq_single n]
+  · rw [Polynomial.coeff_monomial]; simp
+  · intro b _ hbn; rw [Polynomial.coeff_monomial]; simp [hbn]
+  · intro hn; rw [Polynomial.notMem_support_iff] at hn; simp [hn]
+
+set_option linter.unusedSectionVars false in
+/-- `Δ_X^{i1}` (the **middle-`X` Hasse derivative** on a `Y`-coefficient `b : F[X][X]`) never raises
+the **`Z`-degree** (`Bivariate.degreeX`): its `X`-coefficient at `k` is `↑((k+i1).choose i1)·b.coeff
+(k+i1)`, a ground-`ℕ`-cast scalar times an original `Z`-coefficient (`hasseDeriv_coeff`), so its
+`natDegree` is `≤ degreeX b`.  The middle-`X` Hasse lowers the middle-`X` degree but cannot touch the
+innermost `Z`-degree. -/
+theorem degreeX_hasseDeriv_le (i1 : ℕ) (b : F[X][X]) :
+    Bivariate.degreeX (Polynomial.hasseDeriv i1 b) ≤ Bivariate.degreeX b := by
+  classical
+  unfold Bivariate.degreeX
+  refine Finset.sup_le ?_
+  intro k _
+  rw [Polynomial.hasseDeriv_coeff]
+  exact (Polynomial.natDegree_C_mul_le _ _).trans (Bivariate.coeff_natDegree_le_degreeX b (k + i1))
+
+set_option linter.unusedSectionVars false in
+/-- A ground-`ℕ`-cast scalar multiple never raises the **`Z`-degree** (`Bivariate.degreeX`):
+`(↑c)·b = c • b`, and each `X`-coefficient `c • (b.coeff k)` has `natDegree ≤ (b.coeff k).natDegree
+≤ degreeX b` (`natDegree_smul_le`).  Used to discard the `(n+m).choose m` Hasse-coefficient scalar. -/
+theorem degreeX_natCast_mul_le (c : ℕ) (b : F[X][X]) :
+    Bivariate.degreeX ((c : F[X][X]) * b) ≤ Bivariate.degreeX b := by
+  classical
+  have hcast : (c : F[X][X]) = c • (1 : F[X][X]) := by simp
+  rw [hcast, smul_mul_assoc, one_mul]
+  unfold Bivariate.degreeX
+  refine Finset.sup_le ?_
+  intro k _
+  rw [Polynomial.coeff_smul]
+  exact (Polynomial.natDegree_smul_le _ _).trans (Bivariate.coeff_natDegree_le_degreeX b k)
+
+set_option linter.unusedSectionVars false in
+/-- Evaluating the **middle-`X` layer at the ground constant `C x₀`** (`Polynomial.eval (C x₀)`,
+the scalar-level core of `evalX (C x₀)`) never raises the **`Z`-degree**:
+`eval (C x₀) b = ∑_e (b.coeff e)·(C x₀)^e`, and each `(C x₀)^e` is a `Z`-constant
+(`natDegree = 0`), so every term has `natDegree ≤ (b.coeff e).natDegree ≤ degreeX b`. -/
+theorem natDegree_eval_C_le (x₀ : F) (b : F[X][X]) :
+    (Polynomial.eval (Polynomial.C x₀) b).natDegree ≤ Bivariate.degreeX b := by
+  classical
+  rw [Polynomial.eval_eq_sum, Polynomial.sum_def]
+  refine Polynomial.natDegree_sum_le_of_forall_le _ _ (fun e _ => ?_)
+  refine Polynomial.natDegree_mul_le.trans ?_
+  have h1 : (b.coeff e).natDegree ≤ Bivariate.degreeX b :=
+    Bivariate.coeff_natDegree_le_degreeX b e
+  have h2 : ((Polynomial.C x₀ : F[X]) ^ e).natDegree = 0 := by
+    rw [Polynomial.natDegree_pow, Polynomial.natDegree_C]; ring
+  omega
+
+set_option linter.unusedSectionVars false in
+/-- The `Y^n`-coefficient of `evalX (C x₀) q` is `Polynomial.eval (C x₀)` of the `Y^n`-coefficient of
+`q` (`evalX (C x₀) = map (evalRingHom (C x₀))`, `coeff_map`). -/
+theorem evalX_C_coeff (x₀ : F) (q : F[X][X][Y]) (n : ℕ) :
+    (Bivariate.evalX (Polynomial.C x₀) q).coeff n
+      = Polynomial.eval (Polynomial.C x₀) (q.coeff n) := by
+  rw [Bivariate.evalX_eq_map, Polynomial.coeff_map]; rfl
+
+set_option linter.unusedSectionVars false in
+/-- **The `Z`-degree (`degreeX`) bound — PROVEN, axiom-clean, P2-INDEPENDENT.**
+`degreeX (evalX (C x₀) (Δ_X^{i1} Δ_Y^{Σλ} R)) ≤ D − Σλ`, the paper's *literal* `(D−Σλ)` constant
+(BCIKS20 4345's `Q_{ji}` graded `Z`-degree), under the genuine graded-`Z`-degree premise on `R`:
+each `Y^j`-coefficient of `R` has `Z`-degree `≤ D − j` (BCIKS20 lines 2110–2111: `degZ Q_{ji} ≤ D−j`).
+
+Mechanism (each step above): the `Y^n`-coefficient of `Δ_Y^{Σλ} R` is `↑((n+Σλ).choose Σλ)·R.coeff
+(n+Σλ)` (`hasseDeriv_coeff`), whose `Z`-degree is `≤ degreeX (R.coeff (n+Σλ)) ≤ D−(n+Σλ) ≤ D−Σλ` by
+the premise; neither `Δ_X^{i1}` (`degreeX_hasseDeriv_le`, applied via `hasseDerivX_coeff`) nor the
+ground-`ℕ`-cast scalar (`degreeX_natCast_mul_le`) nor `evalX (C x₀)` (`natDegree_eval_C_le` via
+`evalX_C_coeff`) raises the `Z`-degree.  `degreeX p = sup_n (p.coeff n).natDegree ≤ D−Σλ`.
+
+This sharpens the `+ degreeX p` term of `B_coeff_weight_le` to the paper's literal `(D−Σλ)`.  It is a
+pure degree fact (no `H`, no `𝒪`, no `weight_Λ`); fully P2-independent and off the (P1)⇐(P2) path. -/
+theorem degreeX_hasseCoeffRepr_le (x₀ : F) (R : F[X][X][Y]) (i1 m D : ℕ)
+    (hR : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j) :
+    Bivariate.degreeX
+        (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R)))
+      ≤ D - m := by
+  classical
+  set p : F[X][Y] :=
+    Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R)) with hp
+  -- Bound every `Y`-coefficient's `Z`-degree (`natDegree`) by `D − m`.
+  have hcoeff : ∀ n, (p.coeff n).natDegree ≤ D - m := by
+    intro n
+    rw [hp, evalX_C_coeff]
+    refine (natDegree_eval_C_le x₀ _).trans ?_
+    rw [hasseDerivX_coeff]
+    refine (degreeX_hasseDeriv_le i1 _).trans ?_
+    unfold hasseDerivY
+    rw [Polynomial.hasseDeriv_coeff]
+    refine (degreeX_natCast_mul_le _ _).trans ?_
+    refine (hR (n + m)).trans ?_
+    omega
+  -- `degreeX p = sup` over the support `≤ D − m`.
+  unfold Bivariate.degreeX
+  exact Finset.sup_le (fun n _ => hcoeff n)
+
 /-- Every part of a *surviving* partition is `< k+1`: a `lam : Nat.Partition (k+1−i1)` with
 `(k+1) ∉ lam.parts` has all parts `l` positive and `≤ k+1−i1 ≤ k+1`, and `l ≠ k+1`, hence
 `l < k+1`.  This is the genuine well-foundedness witness for the `(A.1)` recursion: the guard
