@@ -10,6 +10,8 @@ import Mathlib.Data.Nat.Choose.Multinomial
 import ArkLib.Data.Polynomial.RationalFunctions
 
 set_option linter.style.longFile 1900
+-- This proof-note-heavy integration file contains many long paper-route doc lines.
+set_option linter.style.longLine false
 
 /-!
 # BCIKS20 Appendix A.4 — Hensel-lift numerator `β` : WAVE 1 FOUNDATION
@@ -1602,7 +1604,7 @@ theorem ClaimA2_α_mul_Wξ_eq_embedding_β (x₀ : F) (R : F[X][X][Y])
         * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1)
       = embeddingOf𝒪Into𝕃 H (ClaimA2.β R t) := by
   -- Unfold the definition of `α_t`; the `let W` in `ClaimA2.α` is `liftToFunctionField …`.
-  show embeddingOf𝒪Into𝕃 H (ClaimA2.β R t)
+  change embeddingOf𝒪Into𝕃 H (ClaimA2.β R t)
         / ((liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
             * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1))
         * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
