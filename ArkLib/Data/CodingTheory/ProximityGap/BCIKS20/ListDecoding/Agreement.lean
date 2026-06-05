@@ -3106,6 +3106,12 @@ noncomputable def lineValuePolynomial (u₀ u₁ : Fin n → F) (x : Fin n) : F[
 
 open Polynomial in
 omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+/-- The coordinate-indexed polynomial family `z ↦ u₀ x + z · u₁ x`. -/
+noncomputable def lineValuePolynomialFamily (u₀ u₁ : Fin n → F) : Fin n → F[X] :=
+  fun x => lineValuePolynomial (F := F) (n := n) u₀ u₁ x
+
+open Polynomial in
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
 lemma lineValuePolynomial_eval (u₀ u₁ : Fin n → F) (x : Fin n) (z : F) :
     (lineValuePolynomial (F := F) (n := n) u₀ u₁ x).eval z = u₀ x + z * u₁ x := by
   rw [lineValuePolynomial, Polynomial.eval_add, Polynomial.eval_mul,
@@ -3130,6 +3136,23 @@ lemma lineValuePolynomial_natDegree_lt_succ_succ (u₀ u₁ : Fin n → F) (x : 
   exact Nat.lt_succ_of_le (lineValuePolynomial_natDegree_le_one (F := F) u₀ u₁ x)
 
 open Polynomial in
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+lemma lineValuePolynomial_natDegree_lt_succ_of_pos (u₀ u₁ : Fin n → F) (x : Fin n)
+    (hk : 0 < k) :
+    (lineValuePolynomial (F := F) (n := n) u₀ u₁ x).natDegree < k + 1 := by
+  exact lt_of_le_of_lt
+    (lineValuePolynomial_natDegree_le_one (F := F) u₀ u₁ x)
+    (Nat.succ_lt_succ hk)
+
+open Polynomial in
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+lemma lineValuePolynomialFamily_natDegree_lt_succ_of_pos (u₀ u₁ : Fin n → F)
+    (hk : 0 < k) :
+    ∀ x, (lineValuePolynomialFamily (F := F) (n := n) u₀ u₁ x).natDegree < k + 1 := by
+  intro x
+  exact lineValuePolynomial_natDegree_lt_succ_of_pos (F := F) (n := n) (k := k) u₀ u₁ x hk
+
+open Polynomial in
 omit [DecidableEq (RatFunc F)] in
 /-- Membership in `matching_set_at_x` gives exactly the pointwise evaluation
 polynomial relation for the total close-polynomial family. -/
@@ -3144,6 +3167,36 @@ lemma PzFamily_eval_eq_lineValuePolynomial_eval_of_mem_matching_set_at_x
     ⟨_hzclose, hmatch⟩
   rw [lineValuePolynomial_eval]
   exact hmatch.symm
+
+open Polynomial in
+omit [DecidableEq (RatFunc F)] in
+/-- If a coordinate has the matching-set membership for a parameter `z`, then
+`PzFamily z` agrees there with the line-value polynomial family. -/
+lemma PzFamily_eval_eq_lineValuePolynomialFamily_eval_of_mem_matching_set_at_x
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) {x : Fin n} {z : F}
+    (hz : z ∈ matching_set_at_x k δ h_gs x) :
+    (PzFamily (F := F) (n := n) δ u₀ u₁ ωs k z).eval (ωs x) =
+      (lineValuePolynomialFamily (F := F) (n := n) u₀ u₁ x).eval z := by
+  exact PzFamily_eval_eq_lineValuePolynomial_eval_of_mem_matching_set_at_x
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs hz
+
+open Polynomial in
+omit [DecidableEq (RatFunc F)] in
+/-- Finite-domain version of the `PzFamily` evaluation-polynomial relation.
+This is the exact local shape used after Claim 5.11 selects the top coordinate
+set and Claim 5.10 supplies membership in each selected matching set. -/
+lemma PzFamily_eval_eq_lineValuePolynomialFamily_eval_on_matching_domain
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (Dtop : Finset (Fin n)) {z : F}
+    (hz : ∀ x ∈ Dtop, z ∈ matching_set_at_x k δ h_gs x) :
+    ∀ x ∈ Dtop,
+      (PzFamily (F := F) (n := n) δ u₀ u₁ ωs k z).eval (ωs x) =
+        (lineValuePolynomialFamily (F := F) (n := n) u₀ u₁ x).eval z := by
+  intro x hx
+  exact PzFamily_eval_eq_lineValuePolynomialFamily_eval_of_mem_matching_set_at_x
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs (hz x hx)
 
 omit [DecidableEq (RatFunc F)] in
 lemma matching_set_at_x_eq_matching_coords_image_univ
