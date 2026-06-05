@@ -866,9 +866,65 @@ theorem lambda_le_ggr11 {ι F : Type} [Fintype ι] [Field F] [DecidableEq F]
                   Real.log 2⌉₊
     Lambda (interleavedCodeSet (κ := Fin m) C) δ ≤
       ((b + r).choose r : ℕ∞) * (Lambda C δ) ^ r := by
-  -- REDUCED: residual is the external GGR11 list-recovery recursion (ABF26 L2.10);
-  -- all in-tree infra (interleavedCodeSet/Lambda/Lambda_mono/mem_interleavedCode_iff)
-  -- is proven. No in-tree list-recovery/column-pruning primitive exists to close it.
-  sorry
+  extract_lets η b r
+  -- The infinite-list case is genuinely true and proven here; the finite case is the
+  -- external GGR11 recursion. We discharge the `Lambda C δ = ⊤` case completely.
+  have hn_pos : 0 < Fintype.card ι := by
+    rcases Nat.eq_zero_or_pos (Fintype.card ι) with h0 | hpos
+    · exfalso; rw [h0, Nat.cast_zero, div_zero] at _hδ_ub; linarith
+    · exact hpos
+  haveI : Nonempty ι := Fintype.card_pos_iff.mp hn_pos
+  rcases eq_or_ne (Lambda C δ) (⊤ : ℕ∞) with hT | hT
+  · -- `Lambda C δ = ⊤`. We show this forces `δ > 0`, hence `r ≥ 1`, hence the RHS is `⊤`.
+    -- `δ ≠ 0`: at `δ = 0` every per-word list is a subsingleton, so `Lambda C 0 ≤ 1 ≠ ⊤`.
+    have hδ_pos : 0 < δ := by
+      rcases lt_or_eq_of_le _hδ_lb with h | h
+      · exact h
+      · exfalso
+        have hL0 : Lambda C 0 ≤ 1 := by
+          refine iSup_le (fun f => ?_)
+          have hsub : closeCodewordsRel C f 0 ⊆ {f} := by
+            intro c hc
+            obtain ⟨_, hball⟩ := hc
+            rw [relHammingBall, Set.mem_setOf_eq] at hball
+            have hz0 : (Code.relHammingDist f c : ℝ) = 0 :=
+              le_antisymm (by convert hball using 3) (by positivity)
+            have hz : Code.relHammingDist f c = 0 := by exact_mod_cast hz0
+            have hd0 : hammingDist f c = 0 := by
+              by_contra hne
+              have hpos : (0 : ℚ≥0) < Code.relHammingDist f c := by
+                unfold Code.relHammingDist; positivity
+              exact absurd hz (ne_of_gt hpos)
+            simpa [eq_comm] using (hammingDist_eq_zero.mp hd0)
+          have h1 : (closeCodewordsRel C f 0).ncard ≤ 1 := by
+            rw [← Set.ncard_singleton f]
+            exact Set.ncard_le_ncard hsub (Set.finite_singleton f)
+          exact_mod_cast h1
+        rw [← h] at hT
+        exact absurd (hT ▸ hL0) (by simp [top_le_iff])
+    -- `r ≥ 1` since `δ_C / η > 1` (as `0 < η < δ_C`), so `log₂(δ_C/η) > 0`.
+    have hη_pos : 0 < η := by simp only [η]; linarith [_hδ_ub]
+    have hr_pos : 1 ≤ r := by
+      simp only [r]
+      rw [Nat.one_le_ceil_iff]
+      apply div_pos
+      · apply Real.log_pos
+        rw [lt_div_iff₀ hη_pos, one_mul]
+        simp only [η]; linarith [hδ_pos]
+      · exact Real.log_pos (by norm_num)
+    -- RHS `= binom * ⊤^r = ⊤`.
+    rw [hT]
+    have hbinom : ((b + r).choose r : ℕ∞) ≠ 0 := by
+      simp only [ne_eq, Nat.cast_eq_zero]
+      exact (Nat.choose_pos (Nat.le_add_left r b)).ne'
+    have htop : (⊤ : ℕ∞) ^ r = ⊤ := by
+      obtain ⟨k, hk⟩ := Nat.exists_eq_succ_of_ne_zero (by omega : r ≠ 0)
+      rw [hk, pow_succ]; simp
+    rw [htop]
+    exact le_top.trans_eq (WithTop.mul_top hbinom).symm
+  · -- REDUCED: the finite-list case is the external GGR11 list-recovery recursion
+    -- (ABF26 L2.10): all in-tree infra is proven, but no in-tree list-recovery /
+    -- column-pruning primitive exists to close it. Genuine external wall.
+    sorry
 
 end InterleavedCode
