@@ -2,8 +2,8 @@ STATUS: ADVANCED — (P2) `βHensel_lift_identity` statement REPAIRED + PROVEN m
 
 # pc-w10-connect — connecting βHensel (A.1) to the genuine root gammaGenuine
 
-File: `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean`
-Branch: `proximity-prize-l217` (worktree `/home/shaw/arklib-prize`)
+File: `upstream/lean-research/ArkLib/ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean`
+Source: `lalalune/main`, upstream ArkLib source-of-truth checkout
 Compile: `lake env lean ArkLib/.../HenselNumerator.lean` → exit 0 (only the two expected `sorry`s).
 
 ## The problem with the old statement (documented statement repair)
