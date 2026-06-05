@@ -19,8 +19,6 @@ import ArkLib.Data.CodingTheory.ReedSolomon
 import Mathlib
 
 set_option linter.unusedSectionVars false
-set_option linter.unusedDecidableInType false
-set_option linter.unusedFintypeInType false
 set_option linter.unusedVariables false
 set_option linter.unusedSimpArgs false
 set_option linter.style.longLine false
@@ -73,13 +71,14 @@ namespace GHSZ02RS
 
 open CodingTheory ListDecodable
 
-variable {ι : Type} [Fintype ι] [DecidableEq ι]
+variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
 /-- Hamming ball volume around `x`: number of words within distance `r`. -/
 noncomputable def ballVolF (x : ι → F) (r : ℕ) : ℕ :=
   (Finset.univ.filter (fun y : ι → F => hammingDist x y ≤ r)).card
 
+/-- Hamming distance is translation-invariant on the right. -/
 theorem hammingDist_add_right (x y t : ι → F) :
     hammingDist (x + t) (y + t) = hammingDist x y := by
   classical
@@ -89,6 +88,7 @@ theorem hammingDist_add_right (x y t : ι → F) :
   · intro h hxy; exact h (by rw [hxy])
   · intro h hxy; exact h (by simpa using add_right_cancel hxy)
 
+/-- The Hamming-ball volume is independent of the center. -/
 theorem ballVolF_eq (x x' : ι → F) (r : ℕ) : ballVolF x r = ballVolF x' r := by
   classical
   unfold ballVolF
@@ -117,7 +117,7 @@ noncomputable def listAtF (C : Finset (ι → F)) (x : ι → F) (r : ℕ) : ℕ
   (C.filter (fun c => hammingDist x c ≤ r)).card
 
 /-- Double-counting: `∑_x |B(x,r) ∩ C| = |C| · V`. -/
-theorem sum_listAtF [Nonempty ι] (C : Finset (ι → F)) (r : ℕ) (x₀ : ι → F) :
+theorem sum_listAtF (C : Finset (ι → F)) (r : ℕ) (x₀ : ι → F) :
     (∑ x : ι → F, listAtF C x r) = C.card * ballVolF x₀ r := by
   classical
   unfold listAtF; simp_rw [Finset.card_filter]; rw [Finset.sum_comm]
@@ -136,7 +136,7 @@ theorem sum_listAtF [Nonempty ι] (C : Finset (ι → F)) (r : ℕ) (x₀ : ι �
   rw [Finset.sum_const, smul_eq_mul]
 
 /-- GHSZ02 Lemma 19 averaging existence (integer form). -/
-theorem exists_word_listAtF_ge [Nonempty ι] (C : Finset (ι → F)) (r : ℕ) :
+theorem exists_word_listAtF_ge (C : Finset (ι → F)) (r : ℕ) :
     ∃ x₀ : ι → F, C.card * ballVolF x₀ r ≤ (Fintype.card (ι → F)) * listAtF C x₀ r := by
   classical
   haveI : Nonempty (ι → F) := inferInstance
@@ -154,7 +154,6 @@ theorem exists_word_listAtF_ge [Nonempty ι] (C : Finset (ι → F)) (r : ℕ) :
 
 /-- Relative↔absolute radius bridge (same as Elias proof). -/
 theorem closeCodewordsRel_iff
-    [Nonempty ι]
     (C : Submodule F (ι → F)) (w : ι → F) (δ : ℝ) (hδ_nonneg : 0 ≤ δ) (c : ι → F) :
     (c ∈ closeCodewordsRel (↑C : Set (ι → F)) w δ)
       ↔ (c ∈ C ∧ hammingDist w c ≤ ⌊δ * Fintype.card ι⌋₊) := by
@@ -172,8 +171,7 @@ theorem closeCodewordsRel_iff
 For `C = ReedSolomon.code domain k`, `q=|F|`, `n=|ι|`, `k≤n`, `0<δ<1`: there is a word `w` with
 `q^k · C(n,⌊δn⌋) · (q-1)^⌊δn⌋  ≤  qⁿ · |Λ(C,δ,w)|`. -/
 theorem ghsz02_rs_averaging_core
-    [Nonempty ι]
-    (domain : ι ↪ F) (k : ℕ) (δ : ℝ) (hδ_pos : 0 < δ) (_hδ_lt : δ < 1)
+    (domain : ι ↪ F) (k : ℕ) (δ : ℝ) (hδ_pos : 0 < δ) (hδ_lt : δ < 1)
     (hk : k ≤ Fintype.card ι) :
     ∃ w : ι → F,
       (Fintype.card F) ^ k
@@ -204,11 +202,11 @@ theorem ghsz02_rs_averaging_core
   have hcard_words : Fintype.card (ι → F) = q ^ n := by rw [Fintype.card_fun, hq_def, hn_def]
   have hballvol_eq : ballVolF w r = hammingBallVolume q δ n := by
     have hb := hammingBallVolume_eq_ncard_hammingBall (F := F) (ι := ι) δ w
-    rw [show hammingBallVolume q δ n =
-        hammingBallVolume (Fintype.card F) δ (Fintype.card ι) from rfl, hb]
+    rw [show hammingBallVolume q δ n
+          = hammingBallVolume (Fintype.card F) δ (Fintype.card ι) from rfl, hb]
     unfold ballVolF; rw [← Set.ncard_coe_finset]; congr 1; ext y
-    simp only [Finset.coe_filter, Finset.mem_univ, true_and, Set.mem_setOf_eq,
-      ListDecodable.hammingBall]
+    simp only [Finset.coe_filter, Finset.mem_univ, true_and,
+      Set.mem_setOf_eq, ListDecodable.hammingBall]
     constructor
     · intro h; rw [hr_def, hn_def] at h; convert h using 2
     · intro h; rw [hr_def, hn_def]; convert h using 2
