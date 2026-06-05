@@ -11,7 +11,7 @@ import ArkLib.Data.Polynomial.RationalFunctions
 import ArkLib.Data.Polynomial.PowerSeriesComposition
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.GammaGenuine
 
-set_option linter.style.longFile 1900
+set_option linter.style.longFile 2100
 -- This proof-note-heavy integration file contains many long paper-route doc lines.
 set_option linter.style.longLine false
 
@@ -54,7 +54,16 @@ genuine `β` recursion of BCIKS20 (A.1) over the in-tree ring `𝒪 H`:
    induction + `βHensel_succ` + the over-`𝒪` weight calculus below), reduced to the **single**
    documented per-term residual `βHensel_succ_term_weight_le`.  WAVE 4 carries the paper's faithful
    regime hypothesis `2 ≤ natDegreeY R` (BCIKS20 `ξ = W^{d−2}·ζ`, `d ≥ 2`).
-9. `(P2) βHensel_lift_identity` — the irreducible BCIKS20 A.4 frontier, documented `sorry`.
+9. `(P2) βHensel_lift_identity` — REPAIRED against the *genuine* root `gammaGenuine`
+   (`GammaGenuine.lean`): `embedding (βHensel … t) = αGenuine t · W^{t+1} · ξ^{2t−1}` with
+   `αGenuine t = coeff t (gammaGenuine …)`, NOT the vacuous in-tree `ClaimA2.α` (the old statement
+   was provably FALSE at `t = 0`; see the §4f statement-repair note).  Now PROVEN modulo the SINGLE
+   residual `assembledSeries_isRoot` (`eval (βHenselAssembled) Q = 0`).  PROVEN unconditionally:
+   the base case `βHensel_lift_identity_zero` / `βHenselAssembled_constantCoeff` (`= α₀ = T/W`), the
+   denominator nonvanishing `ζ_ne_zero` / `embeddingOf𝒪Into𝕃_ξ_ne_zero` / `den_ne_zero`, and the
+   uniqueness reduction `βHenselAssembled_eq_gammaGenuine` /
+   `βHensel_lift_identity_of_assembledSeries_isRoot` (via `gammaGenuine_unique`).  The residual is
+   the Faà-di-Bruno bridge `coeff_eval ↔ B_coeff·partitionProd`.
 
 WAVE 3 SCOPE (§4c′ / 4d below).  The reusable **`Λ`-weight calculus over `𝒪 H`**, all PROVEN
 axiom-clean (`[propext, Classical.choice, Quot.sound]`, no `sorryAx`):
@@ -1613,20 +1622,6 @@ theorem βHensel_weight_bound (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypoth
 
 /-! ### 4e. (P2) the lift identity — the irreducible BCIKS20 A.4 frontier -/
 
-/-- **P2-facing genuine root coefficient data.**
-
-The genuine Hensel root has the base coefficient `α₀ = T/W`, and every coefficient of the
-recentered root equation vanishes.  This packages the two `GammaGenuine` facts in the
-`HenselNumerator` namespace, where the remaining `βHensel_lift_identity` work needs exactly this
-order-by-order root data before identifying the recursive numerator with the lifted coefficients. -/
-theorem gammaGenuine_P2_coefficient_data (x₀ : F) (R : F[X][X][Y])
-    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) :
-    PowerSeries.coeff 0 (gammaGenuine x₀ R H hHyp) = α₀ H ∧
-      PowerSeries.coeff t (Polynomial.eval (gammaGenuine x₀ R H hHyp) (Q x₀ R H)) = 0 := by
-  constructor
-  · rw [PowerSeries.coeff_zero_eq_constantCoeff_apply, gammaGenuine_constantCoeff hHyp]
-  · exact coeff_gammaGenuine_root hHyp t
-
 /-- **(P2) right-hand side, definitionally unfolded (PROVEN, axiom-clean).**
 
 The `(P2)` right-hand side `α_t · W^{t+1} · ξ^{2t−1}` is, by the *definition* of the in-tree
@@ -1741,33 +1736,198 @@ theorem β_embedding_eq_of_βHensel_lift_identity (x₀ : F) (R : F[X][X][Y])
       = embeddingOf𝒪Into𝕃 H (ClaimA2.β R t) := by
   exact (βHensel_lift_identity_iff_β_eq H x₀ R hHyp t hden).1 hlift
 
-/-- **(P2) lift identity — the IRREDUCIBLE FRONTIER (documented `sorry`).**
-`embeddingOf𝒪Into𝕃 (βHensel … t) = α_t · W^{t+1} · ξ^{2t−1}` (`α_t` is the in-tree
-`ClaimA2.α`).
+/-! ### 4f. (P2) the lift identity, REPAIRED against the *genuine* root `gammaGenuine`
 
-This is the BCIKS20 Appendix A.4 proof proper: it asserts that `βHensel` is the numerator of
-the genuine Hensel lift coefficient `α_t` of the power-series root `γ` of `R(X, γ, Z) = 0`.
-Establishing it requires the formal statement and proof that `γ` (defined at
-`RationalFunctions.lean:3036`) **is a root** of `R(X, ·, Z)` over the function field — the
-`R(X,γ,Z)=0` power-series root fact — which is unproven in tree and is the genuine
-mathematical content of A.4 (the Hensel-lift uniqueness/existence argument).  Out of scope
-for this wave; flagged as the irreducible frontier of ingredient D.
+#### Why the old statement was unprovable as stated (documented statement repair, house style)
 
-RESIDUAL LOCALISED (axiom-clean, above): `ClaimA2_α_mul_Wξ_eq_embedding_β` clears the
-`W^{t+1}·ξ^{2t−1}` denominator, so under that denominator's nonvanishing this identity is
-equivalent (`βHensel_lift_identity_iff_β_eq`) to `embeddingOf𝒪Into𝕃 (βHensel … t) =
-embeddingOf𝒪Into𝕃 (ClaimA2.β R t)`.  The irreducible content is thus exactly: the genuine
-recursive numerator `βHensel` agrees with the placeholder family `ClaimA2.β` (whose witness
-`β_regular`, `RationalFunctions.lean:3005`, is the vacuous `β = 0`).  That agreement is the
-A.4 root theory `R(X,γ,Z)=0`; it cannot be obtained from the denominator-clearing layer. -/
+The previous `βHensel_lift_identity` equated `embeddingOf𝒪Into𝕃 (βHensel … t)` with
+`ClaimA2.α x₀ R H hHyp t · W^{t+1} · ξ^{2t−1}`, where `ClaimA2.α` is the in-tree placeholder.
+**That statement is false-as-written, not merely deep.**  By definition
+(`RationalFunctions.lean`, `ClaimA2.α t = embedding (ClaimA2.β R t) / (W^{t+1}·ξ^{2t−1})`) and
+`ClaimA2.β R t = (β_regular …).choose`, whose existence witness is the **vacuous `β = 0` stub**
+(`β_regular := fun _ => ⟨0, by simp⟩`, the weight bound is satisfied by `0`).  Hence
+`embedding (ClaimA2.β R t) = 0`, so `ClaimA2.α t = 0`, so the right-hand side is `0` for every
+`t`, while the left-hand side at `t = 0` is `embedding (βHensel … 0) = T ≠ 0`
+(`embeddingOf𝒪Into𝕃_βHensel_zero`).  The lemma `βHensel_lift_identity_iff_β_eq` above already
+records this: the old statement is *equivalent* to `embedding (βHensel … t) = embedding (β R t)`,
+i.e. the genuine numerator equals the vacuous stub — provably false at `t = 0`.
+
+#### The genuine target (this file's `gammaGenuine`, BCIKS20 A.4 normalization)
+
+The faithful Hensel coefficient is `αGenuine t := PowerSeries.coeff t (gammaGenuine …)`, the
+`t`-th coefficient of the **genuine** Hensel-lift root `gammaGenuine : (𝕃 H)⟦X⟧` of
+`GammaGenuine.lean` (`constantCoeff = α₀ = T/W`, `eval gammaGenuine Q = 0` — the real
+`R(X,γ,Z)=0`), NOT the degenerate `ClaimA2.γ` built on the `β = 0` stub.  The A.4 normalization
+(BCIKS20 Claim A.2, fulltext lines ~3950–3965) is `α_t = β_t / (W^{t+1}·ξ^{e_t})` with
+`e_t = max(0, 2t−1)` (`e_0 = 0`, `e_t = 2t−1` for `t ≥ 1`).  In `ℕ`-truncated subtraction
+`2*t − 1` already realises `e_t` exactly (`2*0−1 = 0`), so the clearing powers `W^{t+1}`,
+`ξ^{2t−1}` are unchanged from the old statement; only the *coefficient* is repaired from the
+vacuous `ClaimA2.α` to the genuine `αGenuine`.  The repaired identity is therefore
+`embedding (βHensel … t) = αGenuine t · W^{t+1} · ξ^{2t−1}`. -/
+
+/-- **The genuine Hensel coefficient `α_t`** (A.4): the `t`-th coefficient of the genuine
+Hensel-lift root `gammaGenuine`.  Replaces the vacuous in-tree `ClaimA2.α` (built on `β = 0`).
+`αGenuine 0 = α₀ = T/W` (`αGenuine_zero`). -/
+noncomputable def αGenuine (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) :
+    𝕃 H :=
+  PowerSeries.coeff t (gammaGenuine x₀ R H hHyp)
+
+/-- `αGenuine 0 = α₀ = T/W`: the genuine order-0 coefficient is the base root (PROVEN,
+axiom-clean). -/
+theorem αGenuine_zero (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    αGenuine H x₀ R hHyp 0 = α₀ H := by
+  rw [αGenuine, PowerSeries.coeff_zero_eq_constantCoeff_apply, gammaGenuine_constantCoeff hHyp]
+
+/-- **`ζ ≠ 0` (PROVEN, axiom-clean).**  The genuine separability datum: `ζ R x₀ H` is a unit in
+the field `𝕃 H` because `eval α₀ (derivative Q₀) = ζ` (`eval_α₀_derivative_Q₀`) is a unit
+(`isUnit_eval_α₀_derivative_Q₀`, from `Separable.eval₂_derivative_ne_zero`).  This is the
+in-tree realisation of the simple-root hypothesis that drives the Hensel lift. -/
+theorem ζ_ne_zero (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    ClaimA2.ζ R x₀ H ≠ 0 := by
+  have hu : IsUnit (ClaimA2.ζ R x₀ H) := by
+    have := isUnit_eval_α₀_derivative_Q₀ (H := H) hHyp
+    rwa [eval_α₀_derivative_Q₀] at this
+  exact hu.ne_zero
+
+/-- **`embedding ξ ≠ 0` (PROVEN, axiom-clean).**  From `embedding ξ = W^{d−2}·ζ`
+(`embeddingOf𝒪Into𝕃_ξ`), `W ≠ 0` (`liftToFunctionField_leadingCoeff_ne_zero`) and `ζ ≠ 0`.
+This is the nonvanishing that makes the A.4 denominator `W^{t+1}·ξ^{e_t}` invertible. -/
+theorem embeddingOf𝒪Into𝕃_ξ_ne_zero (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp) ≠ 0 := by
+  rw [ClaimA2.embeddingOf𝒪Into𝕃_ξ]
+  exact mul_ne_zero (pow_ne_zero _ (liftToFunctionField_leadingCoeff_ne_zero (H := H)))
+    (ζ_ne_zero H x₀ R hHyp)
+
+/-- **The A.4 denominator `W^{t+1}·ξ^{2t−1}` is nonzero (PROVEN, axiom-clean).** -/
+theorem den_ne_zero (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) :
+    (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+      * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1) ≠ 0 :=
+  mul_ne_zero (pow_ne_zero _ (liftToFunctionField_leadingCoeff_ne_zero (H := H)))
+    (pow_ne_zero _ (embeddingOf𝒪Into𝕃_ξ_ne_zero H x₀ R hHyp))
+
+/-- **The assembled numerator series of `βHensel`.**  The `t`-th coefficient is the (A.4)
+*normalized* numerator `embedding (βHensel … t) / (W^{t+1}·ξ^{e_t})`.  By construction, the
+repaired lift identity at `t` holds iff this series' `t`-th coefficient equals `αGenuine t`; so
+proving the identity for all `t` is exactly proving `βHenselAssembled = gammaGenuine`.  This is
+the honest, machine-checkable localisation of BCIKS20's "consider the weight of `α_t`" route
+(line 4276): build the power series from the (A.1) numerators and identify it with the Hensel
+root by uniqueness. -/
+noncomputable def βHenselAssembled (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    PowerSeries (𝕃 H) :=
+  PowerSeries.mk (fun t =>
+    embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+      / ((liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+          * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1)))
+
+/-- **Order-0 of the assembled series (PROVEN, axiom-clean — the genuine base case `t = 0`).**
+`constantCoeff (βHenselAssembled …) = α₀`.  Computation: the `t = 0` coefficient is
+`embedding (βHensel … 0) / (W^{0+1}·ξ^{0}) = T / W = α₀`, using `embeddingOf𝒪Into𝕃_βHensel_zero`
+(`embedding (βHensel … 0) = T`), `e_0 = 2·0−1 = 0` in `ℕ`, and the definition `α₀ = T/W`.  This
+is the `t = 0` instance of the repaired lift identity, discharged in full. -/
+theorem βHenselAssembled_constantCoeff (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    PowerSeries.constantCoeff (βHenselAssembled H x₀ R hHyp) = α₀ H := by
+  rw [← PowerSeries.coeff_zero_eq_constantCoeff_apply, βHenselAssembled, PowerSeries.coeff_mk,
+    embeddingOf𝒪Into𝕃_βHensel_zero]
+  simp only [Nat.mul_zero, Nat.zero_sub, pow_zero, mul_one, zero_add, pow_one]
+  rw [α₀]
+
+/-- **(P2) base case — PROVEN, axiom-clean.**  The repaired lift identity at `t = 0`:
+`embedding (βHensel … 0) = αGenuine 0 · W^{1} · ξ^{0} = α₀ · W = (T/W)·W = T`. -/
+theorem βHensel_lift_identity_zero (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp 0)
+      = αGenuine H x₀ R hHyp 0
+          * (liftToFunctionField (H := H) H.leadingCoeff) ^ (0 + 1)
+          * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * 0 - 1) := by
+  rw [embeddingOf𝒪Into𝕃_βHensel_zero, αGenuine_zero, α₀]
+  simp only [Nat.mul_zero, Nat.zero_sub, pow_zero, mul_one, zero_add, pow_one]
+  rw [div_mul_cancel₀ _ (liftToFunctionField_leadingCoeff_ne_zero (H := H))]
+
+/-- **The assembled series is the genuine root, GIVEN it is a root of `Q` (PROVEN reduction,
+axiom-clean).**  By `gammaGenuine_unique`, any root of `Q` whose constant coefficient is `α₀`
+equals `gammaGenuine`.  The constant-coefficient side is the base case
+`βHenselAssembled_constantCoeff` (PROVEN); the root side is supplied as `hroot`.  This isolates
+the *entire* remaining mathematical content of (P2) into the single hypothesis
+`eval (βHenselAssembled …) Q = 0`. -/
+theorem βHenselAssembled_eq_gammaGenuine (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hroot : Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H) = 0) :
+    βHenselAssembled H x₀ R hHyp = gammaGenuine x₀ R H hHyp :=
+  gammaGenuine_unique hHyp (βHenselAssembled_constantCoeff H x₀ R hHyp) hroot
+
+/-- **(P2) full lift identity, GIVEN the assembled series is a root (PROVEN reduction,
+axiom-clean).**  Once `βHenselAssembled` is identified with `gammaGenuine` (via the proven
+base case + uniqueness, `βHenselAssembled_eq_gammaGenuine`), its `t`-th coefficient *is*
+`αGenuine t`, and clearing the (nonzero, `den_ne_zero`) denominator yields the identity for
+**every** `t` from the single root hypothesis. -/
+theorem βHensel_lift_identity_of_assembledSeries_isRoot (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hroot : Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H) = 0) (t : ℕ) :
+    embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+      = αGenuine H x₀ R hHyp t
+          * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+          * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1) := by
+  have hcoeff : αGenuine H x₀ R hHyp t
+      = embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+          / ((liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+              * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1)) := by
+    rw [αGenuine, ← βHenselAssembled_eq_gammaGenuine H x₀ R hHyp hroot, βHenselAssembled,
+      PowerSeries.coeff_mk]
+  rw [hcoeff, mul_assoc, div_mul_cancel₀ _ (den_ne_zero H x₀ R hHyp t)]
+
+/-- **(P2) the assembled series is a root of `Q` — THE SINGLE IRREDUCIBLE RESIDUAL
+(documented `sorry`).**
+
+`eval (βHenselAssembled …) Q = 0`, i.e. the genuine BCIKS20 A.4 statement that the power series
+assembled from the (A.1) numerators `βHensel` (normalized by `W^{t+1}·ξ^{e_t}`) is a root of the
+`X`-recentered `Y`-polynomial `Q` of `R`.  This is the deepest remaining step and the *only*
+residual of (P2): everything else (base case, denominator nonvanishing, the uniqueness reduction
+to `gammaGenuine`, and the clearing of the denominator for all `t`) is PROVEN above.
+
+WHY THIS IS THE GENUINE A.4 CONTENT.  The (A.1) recursion `βHensel_succ` was *built* so that the
+order-`(k+1)` coefficient of `R(X, γ, Z)` vanishes: comparing the `X^{k+1}` coefficient of
+`eval γ Q` to `0` and solving for the new numerator is exactly the literal `(A.1)` sum
+`−∑_{i1}∑_{λ} W^{…}·ξ^{…}·B_{i1,λ}·∏_l β_l^{λ_l}`.  Establishing `eval (βHenselAssembled) Q = 0`
+formally is the Faà-di-Bruno / multivariate-chain-rule expansion: `coeff_eval` of `Q`
+(`HenselSeriesCoeff.coeff_eval_eq_sum_range`) expands the order-`n` coefficient of `eval γ Q`
+into a sum over `Y`-degrees and over `X`-partitions of `n`, and `PowerSeriesComposition`'s
+`coeff_pow_eq_partitionSum` turns each `γ^j` factor into the partition sum whose shape is exactly
+`B_coeff · partitionProd` (the objects in this file were built to those shapes).  The match
+discharges every order `≥ 1`; order `0` is the base root `eval_α₀_Q₀_eq_zero`.
+
+This residual carries NO false content: it is a true statement (the genuine `gammaGenuine` IS a
+root, `gammaGenuine_root`, and the A.1 recursion reproduces its coefficients), and the only
+missing piece is the formal Faà-di-Bruno bridge `coeff_eval ↔ partition sums ↔ B_coeff·partitionProd`
+for the *assembled* series.  Carved as small as possible: a single root equality, with the
+remaining work entirely inside the already-built partition/coefficient calculus.  See
+`pc-w10-connect.md`. -/
+theorem assembledSeries_isRoot (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H) = 0 := by
+  -- IRREDUCIBLE FRONTIER: the Faà-di-Bruno expansion `coeff_eval ↔ B_coeff·partitionProd` that
+  -- shows the (A.1)-assembled series is a root of `Q`.  All surrounding scaffolding PROVEN above.
+  sorry
+
+/-- **(P2) lift identity — REPAIRED against the genuine root, PROVEN modulo the single residual
+`assembledSeries_isRoot`.**
+`embeddingOf𝒪Into𝕃 (βHensel … t) = αGenuine t · W^{t+1} · ξ^{2t−1}`, where
+`αGenuine t = coeff t (gammaGenuine …)` is the genuine Hensel coefficient of A.4 (NOT the vacuous
+in-tree `ClaimA2.α`; see the statement-repair note at §4f above).
+
+PROOF STATUS.  Fully reduced to the single root residual `assembledSeries_isRoot`:
+`βHensel_lift_identity_of_assembledSeries_isRoot` derives this for all `t` from
+`eval (βHenselAssembled) Q = 0`, using the PROVEN base case (`βHenselAssembled_constantCoeff`)
++ uniqueness (`gammaGenuine_unique`) + denominator clearing (`den_ne_zero`).  The `t = 0`
+instance is unconditionally PROVEN (`βHensel_lift_identity_zero`). -/
 theorem βHensel_lift_identity (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
     (t : ℕ) :
     embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
-      = ClaimA2.α x₀ R H hHyp t
+      = αGenuine H x₀ R hHyp t
           * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
-          * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1) := by
-  -- IRREDUCIBLE FRONTIER: the BCIKS20 A.4 Hensel-lift proof; needs `R(X,γ,Z)=0`.
-  sorry
+          * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1) :=
+  βHensel_lift_identity_of_assembledSeries_isRoot H x₀ R hHyp
+    (assembledSeries_isRoot H x₀ R hHyp) t
 
 end Wave2
 
