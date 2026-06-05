@@ -89,12 +89,13 @@ post-step witness `M_new` and asserts that `(v, μ_new, f_new)` is
 Type-aligned with `OutputStatement × (∀ i, OutputOracleStatement ι F i)
 × OutputWitness`, i.e. directly consumable by the L6.10 knowledge-
 soundness statement against `verifier.knowledgeSoundness`. -/
-def outputRelation (C : Set (ι → F)) (δ : ℝ≥0) :
+def outputRelationFor (encode : (Fin k → F) → (ι → F)) (δ : ℝ≥0) :
     Set ((OutputStatement (F := F) k × (∀ i, OutputOracleStatement ι F i)) ×
       OutputWitness (F := F) k) :=
-  fun input ↦
-    ToyProblem.relaxedRelation (k := k) (ℓ := 1) C δ input.1.1.1
-      ![input.1.1.2] (fun _ ↦ input.1.2 0)
+  fun input ↦ ∃ m : Fin k → F,
+    (∑ j, m j * input.1.1.1 j = input.1.1.2) ∧
+    ∃ S : Finset ι, (1 - (δ : ℝ)) * Fintype.card ι ≤ S.card ∧
+      ∀ j ∈ S, input.1.2 0 j = encode m j
 
 section Protocol
 variable [DecidableEq ι] [Fintype F] [DecidableEq F]
@@ -211,13 +212,14 @@ theorem simplifiedIOR_knowledgeSound
     {σ : Type} (init : ProbComp σ)
     (impl : QueryImpl []ₒ (StateT σ ProbComp))
     (C : Set (ι → F)) (δ : ℝ≥0)
+    (encode : (Fin k → F) → (ι → F))
     (_hδ_pos : 0 < δ)
     (_hδ_lt_min : δ < (minRelHammingDistCode C : ℝ≥0)) :
       (verifier (ι := ι) (F := F) (k := k)).knowledgeSoundness
         (WitOut := OutputWitness (F := F) k)
         init impl
-        (ToyProblem.Spec.outputRelation k C δ)
-        (outputRelation (ι := ι) (F := F) k C δ)
+        (ToyProblem.Spec.outputRelationFor k encode δ)
+        (outputRelationFor (ι := ι) (F := F) k encode δ)
         ((epsMCA (F := F) (A := F) C δ).toNNReal +
           ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
             / (Fintype.card F : ℝ≥0)) := by
