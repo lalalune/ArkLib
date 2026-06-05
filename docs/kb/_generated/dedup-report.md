@@ -31,7 +31,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def SendClaim.pSpec` [ArkLib/ProofSystem/Component/SendClaim.lean:31](../../../ArkLib/ProofSystem/Component/SendClaim.lean#L31) — (no docstring)
 - `def SendWitness.pSpec` [ArkLib/ProofSystem/Component/SendWitness.lean:39](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L39) — (no docstring)
 - `def Fri.Spec.FoldPhase.pSpec` [ArkLib/ProofSystem/Fri/Spec/SingleRound.lean:339](../../../ArkLib/ProofSystem/Fri/Spec/SingleRound.lean#L339) — Each round of the FRI protocol begins with the verifier sending a random field element as the challe
-- `def Fri.Spec.FinalFoldPhase.pSpec` [ArkLib/ProofSystem/Fri/Spec/SingleRound.lean:643](../../../ArkLib/ProofSystem/Fri/Spec/SingleRound.lean#L643) — The final folding round of the FRI protocol begins with the verifier sending a random field element
+- `def Fri.Spec.FinalFoldPhase.pSpec` [ArkLib/ProofSystem/Fri/Spec/SingleRound.lean:643](../../../ArkLib/ProofSystem/Fri/Spec/SingleRound.lean#L643) — The final folding round of the FRI protocol begins with the verifier sending a random field element 
 - `def Fri.Spec.QueryRound.pSpec` [ArkLib/ProofSystem/Fri/Spec/SingleRound.lean:953](../../../ArkLib/ProofSystem/Fri/Spec/SingleRound.lean#L953) — (no docstring)
 - `def Logup.pSpec` [ArkLib/ProofSystem/Logup/Protocol.lean:75](../../../ArkLib/ProofSystem/Logup/Protocol.lean#L75) — Protocol 2 transcript shape: the outer LogUp messages followed by ArkLib's generic sumcheck.
 - `def StirIOP.Round.pSpec` [ArkLib/ProofSystem/Stir/RoundProtocol.lean:60](../../../ArkLib/ProofSystem/Stir/RoundProtocol.lean#L60) — The protocol spec of one STIR fold round: the verifier first sends a folding challenge in `F` (`V_to
@@ -63,7 +63,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def Fri.Spec.OracleStatement` [ArkLib/ProofSystem/Fri/Spec/SingleRound.lean:89](../../../ArkLib/ProofSystem/Fri/Spec/SingleRound.lean#L89) — For the `i`-th round of the protocol, there will be `i + 1` oracle statements, one for the beginning
 - `abbrev Spartan.Spec.OracleStatement` [ArkLib/ProofSystem/Spartan/Basic.lean:60](../../../ArkLib/ProofSystem/Spartan/Basic.lean#L60) — This unfolds to `A, B, C : Matrix (Fin 2 ^ ℓ_m) (Fin 2 ^ ℓ_n) R`
 - `def StirIOP.OracleStatement` [ArkLib/ProofSystem/Stir/MainThm.lean:81](../../../ArkLib/ProofSystem/Stir/MainThm.lean#L81) — `OracleStatement` defines the oracle message type for a multi-indexed setting: given base input type
-- `def Sumcheck.Spec.OracleStatement` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:134](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L134) — Oracle statement for sum-check, which is a multivariate polynomial over `n` variables of individual
+- `def Sumcheck.Spec.OracleStatement` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:134](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L134) — Oracle statement for sum-check, which is a multivariate polynomial over `n` variables of individual 
 - `def ToyProblem.Spec.OracleStatement` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:88](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L88) — Oracle statements of Construction 6.2: the two purported codewords `f₁, f₂ : ι → F`. The verifier on
 - `def WhirIOP.OracleStatement` [ArkLib/ProofSystem/Whir/RBRSoundness.lean:146](../../../ArkLib/ProofSystem/Whir/RBRSoundness.lean#L146) — `OracleStatement` defines the oracle message type for a multi-indexed setting: given base input type
 
@@ -127,7 +127,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def MemoryChecking.ReadOnly.relation` [ArkLib/ProofSystem/ConstraintSystem/MemoryChecking.lean:128](../../../ArkLib/ProofSystem/ConstraintSystem/MemoryChecking.lean#L128) — The read-only memory checking relation. It takes a memory `mem` and a list of read operations `ops`.
 - `def MemoryChecking.ReadWrite.relation` [ArkLib/ProofSystem/ConstraintSystem/MemoryChecking.lean:161](../../../ArkLib/ProofSystem/ConstraintSystem/MemoryChecking.lean#L161) — The read-write memory checking relation. It takes an initial memory `startMem`, a final memory `fina
 - `def Plonk.relation` [ArkLib/ProofSystem/ConstraintSystem/Plonk.lean:193](../../../ArkLib/ProofSystem/ConstraintSystem/Plonk.lean#L193) — To define a relation based on the constraint system, we extend it with: - A natural number `ℓ ≤ m` r
-- `def R1CS.relation` [ArkLib/ProofSystem/ConstraintSystem/R1CS.lean:61](../../../ArkLib/ProofSystem/ConstraintSystem/R1CS.lean#L61) — The R1CS relation: `(A *ᵥ 𝕫) * (B *ᵥ 𝕫) = (C *ᵥ 𝕫)`, where `*` is understood to mean component-wise
+- `def R1CS.relation` [ArkLib/ProofSystem/ConstraintSystem/R1CS.lean:61](../../../ArkLib/ProofSystem/ConstraintSystem/R1CS.lean#L61) — The R1CS relation: `(A *ᵥ 𝕫) * (B *ᵥ 𝕫) = (C *ᵥ 𝕫)`, where `*` is understood to mean component-wise 
 - `abbrev Spartan.Spec.relation` [ArkLib/ProofSystem/Spartan/Basic.lean:68](../../../ArkLib/ProofSystem/Spartan/Basic.lean#L68) — This unfolds to `(A *ᵥ 𝕫) * (B *ᵥ 𝕫) = (C *ᵥ 𝕫)`, where `𝕫 = 𝕩 ‖ 𝕨`
 - `def ToyProblem.relation` [ArkLib/ProofSystem/ToyProblem/Definitions.lean:74](../../../ArkLib/ProofSystem/ToyProblem/Definitions.lean#L74) — **Definition 6.1 of [ABF26]** (toy problem relation `R_C^ℓ`). Given a base code `C ⊆ (ι → F)` (the p
 
@@ -149,7 +149,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def BatchedFri.Spec.BatchingRound.outputRelation` [ArkLib/ProofSystem/BatchedFri/Spec/SingleRound.lean:78](../../../ArkLib/ProofSystem/BatchedFri/Spec/SingleRound.lean#L78) — (no docstring)
 - `def Fri.Spec.outputRelation` [ArkLib/ProofSystem/Fri/Spec/General.lean:47](../../../ArkLib/ProofSystem/Fri/Spec/General.lean#L47) — (no docstring)
 - `def Fri.Spec.FoldPhase.outputRelation` [ArkLib/ProofSystem/Fri/Spec/SingleRound.lean:302](../../../ArkLib/ProofSystem/Fri/Spec/SingleRound.lean#L302) — The FRI non-final folding round output relation, with proximity parameter `0 < δ`, for the `i`-th ro
-- `def Fri.Spec.FinalFoldPhase.outputRelation` [ArkLib/ProofSystem/Fri/Spec/SingleRound.lean:611](../../../ArkLib/ProofSystem/Fri/Spec/SingleRound.lean#L611) — Output relation for the final folding round. After the final round the prover sends a polynomial in
+- `def Fri.Spec.FinalFoldPhase.outputRelation` [ArkLib/ProofSystem/Fri/Spec/SingleRound.lean:611](../../../ArkLib/ProofSystem/Fri/Spec/SingleRound.lean#L611) — Output relation for the final folding round. After the final round the prover sends a polynomial in 
 - `def Fri.Spec.QueryRound.outputRelation` [ArkLib/ProofSystem/Fri/Spec/SingleRound.lean:940](../../../ArkLib/ProofSystem/Fri/Spec/SingleRound.lean#L940) — (no docstring)
 - `def Logup.outputRelation` [ArkLib/ProofSystem/Logup/Common.lean:293](../../../ArkLib/ProofSystem/Logup/Common.lean#L293) — The full protocol has a trivial final relation: successful verification returns `Unit`.
 - `def Sumcheck.Spec.SingleRound.Simpler.outputRelation` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:365](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L365) — (no docstring)
@@ -194,7 +194,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `def disagreementSet` [ArkLib/Data/CodingTheory/ProximityGap/DG25/MainResults.lean:63](../../../ArkLib/Data/CodingTheory/ProximityGap/DG25/MainResults.lean#L63) — The set D = Δ^{2m}(U, V), columns where U₀≠V₀ or U₁≠V₁. Specialisation of the canonical `Code.disagr
 - `def Binius.BinaryBasefold.disagreementSet` [ArkLib/ProofSystem/Binius/BinaryBasefold/Prelude.lean:1781](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Prelude.lean#L1781) — Disagreement set Δ : The set of points where two functions disagree. For functions f^(i+ϑ) and g^(i+
-- `def Quotienting.disagreementSet` [ArkLib/ProofSystem/Stir/Quotienting.lean:109](../../../ArkLib/ProofSystem/Stir/Quotienting.lean#L109) — We define the set disagreementSet(f,ι,S,Ans) as the set of all points x ∈ ι that lie in S such that
+- `def Quotienting.disagreementSet` [ArkLib/ProofSystem/Stir/Quotienting.lean:109](../../../ArkLib/ProofSystem/Stir/Quotienting.lean#L109) — We define the set disagreementSet(f,ι,S,Ans) as the set of all points x ∈ ι that lie in S such that 
 - `def BlockRelDistance.disagreementSet` [ArkLib/ProofSystem/Whir/BlockRelDistance.lean:104](../../../ArkLib/ProofSystem/Whir/BlockRelDistance.lean#L104) — Let C be a smooth ReedSolomon code `C = RS[F, ι^(2ⁱ), φ', m]` and `f,g : ι^(2ⁱ) → F`, then the (i,k)
 
 ### `oracleVerifier_rbrKnowledgeSoundness` (4 declarations, 4 files)
@@ -230,7 +230,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `ratchet` (5 declarations, 3 files)
 
 - `def DomainSeparator.ratchet` [ArkLib/Data/Hash/DomainSep.lean:255](../../../ArkLib/Data/Hash/DomainSep.lean#L255) — Ratchet the state. Rust interface: ```rust pub fn ratchet(self) -> Self ```
-- `def DuplexSponge.ratchet` [ArkLib/Data/Hash/DuplexSponge.lean:612](../../../ArkLib/Data/Hash/DuplexSponge.lean#L612) — ### Ratchet the sponge state for domain separation Algorithm (from Rust implementation): 1. Permute
+- `def DuplexSponge.ratchet` [ArkLib/Data/Hash/DuplexSponge.lean:612](../../../ArkLib/Data/Hash/DuplexSponge.lean#L612) — ### Ratchet the sponge state for domain separation Algorithm (from Rust implementation): 1. Permute 
 - `def HashStateWithInstructions.ratchet` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/State.lean:221](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/State.lean#L221) — Perform a ratchet operation. Rust interface: ```rust pub fn ratchet(&mut self) -> Result<(), DomainS
 - `def FSVerifierState.ratchet` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/State.lean:352](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/State.lean#L352) — Signal the end of statement with ratcheting. Rust interface: ```rust pub fn ratchet(&mut self) -> Re
 - `def FSProverState.ratchet` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/State.lean:465](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/State.lean#L465) — Ratchet the protocol state. Rust interface: ```rust pub fn ratchet(&mut self) -> Result<(), DomainSe
@@ -268,7 +268,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def Fin.drop` [ArkLib/Data/Fin/Tuple/Defs.lean:60](../../../ArkLib/Data/Fin/Tuple/Defs.lean#L60) — Drop the first `m` elements of an `n`-tuple where `m ≤ n`, returning an `(n - m)`-tuple.
 - `def ProtocolSpec.drop` [ArkLib/OracleReduction/ProtocolSpec/Basic.lean:117](../../../ArkLib/OracleReduction/ProtocolSpec/Basic.lean#L117) — Drop the first `m ≤ n` rounds of a `ProtocolSpec n`
 - `abbrev ProtocolSpec.FullTranscript.drop` [ArkLib/OracleReduction/ProtocolSpec/Basic.lean:174](../../../ArkLib/OracleReduction/ProtocolSpec/Basic.lean#L174) — (no docstring)
-- `def SumcheckDomain.drop` [ArkLib/ProofSystem/Sumcheck/Domain.lean:133](../../../ArkLib/ProofSystem/Sumcheck/Domain.lean#L133) — Drop the first `j` coordinates, leaving the domain on the remaining `k - j` coordinates: coordinate
+- `def SumcheckDomain.drop` [ArkLib/ProofSystem/Sumcheck/Domain.lean:133](../../../ArkLib/ProofSystem/Sumcheck/Domain.lean#L133) — Drop the first `j` coordinates, leaving the domain on the remaining `k - j` coordinates: coordinate 
 
 ### `injOn` (4 declarations, 3 files)
 
@@ -331,7 +331,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `abbrev Binius.RingSwitching.SumcheckWitness` [ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean:226](../../../ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean#L226) — (no docstring)
 - `abbrev RingSwitching.SumcheckWitness` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:234](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L234) — (no docstring)
-- `structure Sumcheck.Structured.SumcheckWitness` [ArkLib/ProofSystem/Sumcheck/Structured.lean:231](../../../ArkLib/ProofSystem/Sumcheck/Structured.lean#L231) — Witness for the structured sumcheck at round `i`: - `t'` — the original multilinear polynomial (the
+- `structure Sumcheck.Structured.SumcheckWitness` [ArkLib/ProofSystem/Sumcheck/Structured.lean:231](../../../ArkLib/ProofSystem/Sumcheck/Structured.lean#L231) — Witness for the structured sumcheck at round `i`: - `t'` — the original multilinear polynomial (the 
 
 ### `Verifier` (3 declarations, 3 files)
 
@@ -361,7 +361,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem ProximityPrize.HenselExistence.coeff_pow_sub_below` [ArkLib/Data/Polynomial/HenselExistence.lean:70](../../../ArkLib/Data/Polynomial/HenselExistence.lean#L70) — Local copy of `NewtonLinearization.coeff_pow_sub_below` (truncation propagation).
 - `theorem ProximityPrize.HenselSeriesCoeff.coeff_pow_sub_below` [ArkLib/Data/Polynomial/HenselSeriesCoeff.lean:74](../../../ArkLib/Data/Polynomial/HenselSeriesCoeff.lean#L74) — **LEMMA A (truncation propagation).** Agreement below order `t` propagates to every power. Local cop
-- `theorem ProximityPrize.NewtonLinearization.coeff_pow_sub_below` [ArkLib/Data/Polynomial/NewtonLinearization.lean:60](../../../ArkLib/Data/Polynomial/NewtonLinearization.lean#L60) — **Truncation propagation.** If `γ₁ γ₂ : R⟦X⟧` agree at every coefficient `j < t`, then so do `γ₁^i`
+- `theorem ProximityPrize.NewtonLinearization.coeff_pow_sub_below` [ArkLib/Data/Polynomial/NewtonLinearization.lean:60](../../../ArkLib/Data/Polynomial/NewtonLinearization.lean#L60) — **Truncation propagation.** If `γ₁ γ₂ : R⟦X⟧` agree at every coefficient `j < t`, then so do `γ₁^i` 
 
 ### `commit` (3 declarations, 3 files)
 
@@ -461,7 +461,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `knowledgeStateFunction` (3 declarations, 3 files)
 
-- `def CheckClaim.knowledgeStateFunction` [ArkLib/ProofSystem/Component/CheckClaim.lean:127](../../../ArkLib/ProofSystem/Component/CheckClaim.lean#L127) — The knowledge state function for the `CheckClaim` reduction. Since there is no challenge round, the
+- `def CheckClaim.knowledgeStateFunction` [ArkLib/ProofSystem/Component/CheckClaim.lean:127](../../../ArkLib/ProofSystem/Component/CheckClaim.lean#L127) — The knowledge state function for the `CheckClaim` reduction. Since there is no challenge round, the 
 - `def RandomQuery.knowledgeStateFunction` [ArkLib/ProofSystem/Component/RandomQuery.lean:230](../../../ArkLib/ProofSystem/Component/RandomQuery.lean#L230) — The knowledge state function for the `RandomQuery` oracle reduction.
 - `def ReduceClaim.knowledgeStateFunction` [ArkLib/ProofSystem/Component/ReduceClaim.lean:137](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L137) — The knowledge state function for the `ReduceClaim` reduction.
 
@@ -605,7 +605,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def ReedSolomon.FftDomain.toList` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:287](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L287) — Convert an FFT domain into a list of all its members with proofs the members belong to the FFT domai
 - `def ReedSolomon.CosetFftDomain.toList` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:614](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L614) — (no docstring)
 - `def Domain.CosetFftDomainClass.toList` [ArkLib/Data/Domain/CosetFftDomain/ToList.lean:28](../../../ArkLib/Data/Domain/CosetFftDomain/ToList.lean#L28) — (no docstring)
-- `def Domain.CosetFftDomain.toList` [ArkLib/Data/Domain/CosetFftDomain/ToList.lean:43](../../../ArkLib/Data/Domain/CosetFftDomain/ToList.lean#L43) — Convert a coset FFT domain into a list of all its members with proofs the members belong to the FFT
+- `def Domain.CosetFftDomain.toList` [ArkLib/Data/Domain/CosetFftDomain/ToList.lean:43](../../../ArkLib/Data/Domain/CosetFftDomain/ToList.lean#L43) — Convert a coset FFT domain into a list of all its members with proofs the members belong to the FFT 
 - `def Domain.FftDomain.toList` [ArkLib/Data/Domain/CosetFftDomain/ToList.lean:54](../../../ArkLib/Data/Domain/CosetFftDomain/ToList.lean#L54) — Convert a FFT domain into a list of all its members with proofs the members belong to the FFT domain
 
 ### `cast_eq_dcast₂` (4 declarations, 2 files)
@@ -793,7 +793,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `ConstraintSystem` (2 declarations, 2 files)
 
 - `structure ConstraintSystem` [ArkLib/ProofSystem/ConstraintSystem/Basic.lean:49](../../../ArkLib/ProofSystem/ConstraintSystem/Basic.lean#L49) — A **constraint system** packages a family of indexed relations into a single bundle. For each `i : I
-- `def Plonk.ConstraintSystem` [ArkLib/ProofSystem/ConstraintSystem/Plonk.lean:116](../../../ArkLib/ProofSystem/ConstraintSystem/Plonk.lean#L116) — A Plonk constraint system is a vector of `numGates` gates, each parametrized by the underlying ring
+- `def Plonk.ConstraintSystem` [ArkLib/ProofSystem/ConstraintSystem/Plonk.lean:116](../../../ArkLib/ProofSystem/ConstraintSystem/Plonk.lean#L116) — A Plonk constraint system is a vector of `numGates` gates, each parametrized by the underlying ring 
 
 ### `CosetFftDomain` (2 declarations, 2 files)
 
@@ -852,7 +852,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `OracleReduction` (2 declarations, 2 files)
 
-- `structure Interaction.OracleDecoration.OracleReduction` [ArkLib/Interaction/Oracle/Core.lean:919](../../../ArkLib/Interaction/Oracle/Core.lean#L919) — Oracle reduction: pairs an oracle prover with a verifier that uses per-node monads (`Id` at sender,
+- `structure Interaction.OracleDecoration.OracleReduction` [ArkLib/Interaction/Oracle/Core.lean:919](../../../ArkLib/Interaction/Oracle/Core.lean#L919) — Oracle reduction: pairs an oracle prover with a verifier that uses per-node monads (`Id` at sender, 
 - `structure OracleReduction` [ArkLib/OracleReduction/Basic.lean:647](../../../ArkLib/OracleReduction/Basic.lean#L647) — An **interactive oracle reduction** for a given protocol specification `pSpec`, and relative to orac
 
 ### `OracleVerifier` (3 declarations, 2 files)
@@ -874,7 +874,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `ParamConditions` (2 declarations, 2 files)
 
 - `structure StirIOP.ParamConditions` [ArkLib/ProofSystem/Stir/MainThm.lean:52](../../../ArkLib/ProofSystem/Stir/MainThm.lean#L52) — **Conditions that protocol parameters must satisfy.** - `h_deg` : initial degree `deg` is a power of
-- `structure WhirIOP.ParamConditions` [ArkLib/ProofSystem/Whir/RBRSoundness.lean:66](../../../ArkLib/ProofSystem/Whir/RBRSoundness.lean#L66) — ** Conditions that protocol parameters must satisfy. ** h_m : m = varCount₀ h_sumkLt : ∑ i : Fin (M
+- `structure WhirIOP.ParamConditions` [ArkLib/ProofSystem/Whir/RBRSoundness.lean:66](../../../ArkLib/ProofSystem/Whir/RBRSoundness.lean#L66) — ** Conditions that protocol parameters must satisfy. ** h_m : m = varCount₀ h_sumkLt : ∑ i : Fin (M 
 
 ### `Proof` (2 declarations, 2 files)
 
@@ -908,8 +908,8 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `TensorAlgebra` (2 declarations, 2 files)
 
-- `abbrev Binius.RingSwitching.TensorAlgebra` [ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean:63](../../../ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean#L63) — Tensor Algebra A = L ⊗_K L. Based on the spec, it's viewed as (2^κ)x(2^κ) arrays of K-elements. The
-- `abbrev RingSwitching.TensorAlgebra` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:60](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L60) — Tensor Algebra A = L ⊗_K L. Based on the spec, it's viewed as (2^κ)x(2^κ) arrays of K-elements. The
+- `abbrev Binius.RingSwitching.TensorAlgebra` [ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean:63](../../../ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean#L63) — Tensor Algebra A = L ⊗_K L. Based on the spec, it's viewed as (2^κ)x(2^κ) arrays of K-elements. The 
+- `abbrev RingSwitching.TensorAlgebra` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:60](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L60) — Tensor Algebra A = L ⊗_K L. Based on the spec, it's viewed as (2^κ)x(2^κ) arrays of K-elements. The 
 
 ### `Verifier.run` (2 declarations, 2 files)
 
@@ -993,8 +993,8 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `check_rows_sum_eq_aeval` (2 declarations, 2 files)
 
-- `lemma Binius.RingSwitching.check_rows_sum_eq_aeval` [ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean:740](../../../ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean#L740) — **DP24 ring-switching capstone (sum form).** The verifier's row-decomposition check sum, applied to
-- `lemma RingSwitching.check_rows_sum_eq_aeval` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:1205](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L1205) — **DP24 ring-switching capstone (sum form).** The verifier's row-decomposition check sum, applied to
+- `lemma Binius.RingSwitching.check_rows_sum_eq_aeval` [ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean:740](../../../ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean#L740) — **DP24 ring-switching capstone (sum form).** The verifier's row-decomposition check sum, applied to 
+- `lemma RingSwitching.check_rows_sum_eq_aeval` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:1205](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L1205) — **DP24 ring-switching capstone (sum form).** The verifier's row-decomposition check sum, applied to 
 
 ### `coeffHom_apply` (2 declarations, 2 files)
 
@@ -1003,7 +1003,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `coeff_S_eq_zero_of_lt` (2 declarations, 2 files)
 
-- `theorem ProximityPrize.HenselExistence.coeff_S_eq_zero_of_lt` [ArkLib/Data/Polynomial/HenselExistence.lean:201](../../../ArkLib/Data/Polynomial/HenselExistence.lean#L201) — The `t`-th partial sum is supported on `[0, t]`: every coefficient above order `t` vanishes. (`S t`
+- `theorem ProximityPrize.HenselExistence.coeff_S_eq_zero_of_lt` [ArkLib/Data/Polynomial/HenselExistence.lean:201](../../../ArkLib/Data/Polynomial/HenselExistence.lean#L201) — The `t`-th partial sum is supported on `[0, t]`: every coefficient above order `t` vanishes. (`S t` 
 - `theorem ProximityPrize.HenselSeriesCoeff.coeff_S_eq_zero_of_lt` [ArkLib/Data/Polynomial/HenselSeriesCoeff.lean:278](../../../ArkLib/Data/Polynomial/HenselSeriesCoeff.lean#L278) — `S t` is supported on `[0, t]`: every coefficient above order `t` vanishes.
 
 ### `coeff_S_stable` (2 declarations, 2 files)
@@ -1024,7 +1024,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `coeff_aeval_sub_at` (2 declarations, 2 files)
 
 - `theorem ProximityPrize.HenselExistence.coeff_aeval_sub_at` [ArkLib/Data/Polynomial/HenselExistence.lean:145](../../../ArkLib/Data/Polynomial/HenselExistence.lean#L145) — Local copy of `NewtonLinearization.coeff_aeval_sub_at` (the `P'(c)`-linear response). For `P : R[X]`
-- `theorem ProximityPrize.NewtonLinearization.coeff_aeval_sub_at` [ArkLib/Data/Polynomial/NewtonLinearization.lean:184](../../../ArkLib/Data/Polynomial/NewtonLinearization.lean#L184) — **Newton/Hensel linearization of the composed series (P2 form).** For a polynomial `P` over `R` and
+- `theorem ProximityPrize.NewtonLinearization.coeff_aeval_sub_at` [ArkLib/Data/Polynomial/NewtonLinearization.lean:184](../../../ArkLib/Data/Polynomial/NewtonLinearization.lean#L184) — **Newton/Hensel linearization of the composed series (P2 form).** For a polynomial `P` over `R` and 
 
 ### `coeff_γ` (2 declarations, 2 files)
 
@@ -1044,7 +1044,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `computeRoundPoly` (2 declarations, 2 files)
 
 - `def Sumcheck.Structured.computeRoundPoly` [ArkLib/ProofSystem/Sumcheck/Structured.lean:130](../../../ArkLib/ProofSystem/Sumcheck/Structured.lean#L130) — The general round polynomial `H = P · Q(t)`, where `P = param.multpoly ctx` is the public multilinea
-- `def Sumcheck.Structured.Prismalinear.computeRoundPoly` [ArkLib/ProofSystem/Sumcheck/Structured/Prismalinear.lean:70](../../../ArkLib/ProofSystem/Sumcheck/Structured/Prismalinear.lean#L70) — The *prismalinear* round polynomial `H = P · Q(t)`, where `P = param.multpoly ctx` has per-variable
+- `def Sumcheck.Structured.Prismalinear.computeRoundPoly` [ArkLib/ProofSystem/Sumcheck/Structured/Prismalinear.lean:70](../../../ArkLib/ProofSystem/Sumcheck/Structured/Prismalinear.lean#L70) — The *prismalinear* round polynomial `H = P · Q(t)`, where `P = param.multpoly ctx` has per-variable 
 
 ### `compute_A_MLE` (2 declarations, 2 files)
 
@@ -1089,7 +1089,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `coreInteractionOracleVerifier_rbrKnowledgeSoundness` (2 declarations, 2 files)
 
 - `theorem coreInteractionOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean:726](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean#L726) — Round-by-round knowledge soundness for the core interaction oracle verifier
-- `theorem Binius.FRIBinius.CoreInteractionPhase.coreInteractionOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:923](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L923) — Round-by-round knowledge soundness for the core interaction oracle verifier. THREADED (2026-06-04):
+- `theorem Binius.FRIBinius.CoreInteractionPhase.coreInteractionOracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:923](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L923) — Round-by-round knowledge soundness for the core interaction oracle verifier. THREADED (2026-06-04): 
 
 ### `decoder` (2 declarations, 2 files)
 
@@ -1138,8 +1138,8 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `embedded_MLP_eval_eq_sum` (2 declarations, 2 files)
 
-- `lemma Binius.RingSwitching.embedded_MLP_eval_eq_sum` [ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean:523](../../../ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean#L523) — **DP24 packing expansion.** The prover's tensor `ŝ := φ₁(t')(φ₀(r_κ), …, φ₀(r_{ℓ-1}))` expands over
-- `lemma RingSwitching.embedded_MLP_eval_eq_sum` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:1148](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L1148) — **DP24 packing expansion.** The prover's tensor `ŝ := φ₁(t')(φ₀(r_κ), …, φ₀(r_{ℓ-1}))` expands over
+- `lemma Binius.RingSwitching.embedded_MLP_eval_eq_sum` [ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean:523](../../../ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean#L523) — **DP24 packing expansion.** The prover's tensor `ŝ := φ₁(t')(φ₀(r_κ), …, φ₀(r_{ℓ-1}))` expands over 
+- `lemma RingSwitching.embedded_MLP_eval_eq_sum` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:1148](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L1148) — **DP24 packing expansion.** The prover's tensor `ŝ := φ₁(t')(φ₀(r_κ), …, φ₀(r_{ℓ-1}))` expands over 
 
 ### `eqPoly_collapse` (2 declarations, 2 files)
 
@@ -1174,7 +1174,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `exists_coordinate_subset_with_many_nonbad_of_heavy_complement_card` (2 declarations, 2 files)
 
 - `lemma ProximityGap.exists_coordinate_subset_with_many_nonbad_of_heavy_complement_card` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean:5616](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean#L5616) — Complement-to-incidence form of the heavy-coordinate argument.  If a coordinate is not heavy for the
-- `lemma ArkLib.Claim511.exists_coordinate_subset_with_many_nonbad_of_heavy_complement_card` [ArkLib/ToMathlib/Claim511.lean:128](../../../ArkLib/ToMathlib/Claim511.lean#L128) — **Complement-to-incidence selection.** If at least `r` coordinates are *not* heavy (each bad for `<
+- `lemma ArkLib.Claim511.exists_coordinate_subset_with_many_nonbad_of_heavy_complement_card` [ArkLib/ToMathlib/Claim511.lean:128](../../../ArkLib/ToMathlib/Claim511.lean#L128) — **Complement-to-incidence selection.** If at least `r` coordinates are *not* heavy (each bad for `< 
 
 ### `exists_subset_card_eq_of_le_card` (2 declarations, 2 files)
 
@@ -1248,7 +1248,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `heavyCoords_card_mul_le` (2 declarations, 2 files)
 
-- `lemma ProximityGap.heavyCoords_card_mul_le` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean:5574](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean#L5574) — Generic double-counting brick for Claim 5.11. If each `z ∈ S` has at most `m` bad coordinates, then
+- `lemma ProximityGap.heavyCoords_card_mul_le` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean:5574](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean#L5574) — Generic double-counting brick for Claim 5.11. If each `z ∈ S` has at most `m` bad coordinates, then 
 - `lemma ArkLib.Claim511.heavyCoords_card_mul_le` [ArkLib/ToMathlib/Claim511.lean:77](../../../ArkLib/ToMathlib/Claim511.lean#L77) — **Double-counting brick.** If each `z ∈ S` has at most `m` bad coordinates, then the coordinates tha
 
 ### `hint` (2 declarations, 2 files)
@@ -1278,7 +1278,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `instOracleVerifierAppendCoherent` (2 declarations, 2 files)
 
-- `instance RingSwitching.BatchingPhase.instOracleVerifierAppendCoherent` [ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean:219](../../../ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean#L219) — The batching-phase oracle verifier passes every output oracle through to the unchanged input oracle
+- `instance RingSwitching.BatchingPhase.instOracleVerifierAppendCoherent` [ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean:219](../../../ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean#L219) — The batching-phase oracle verifier passes every output oracle through to the unchanged input oracle 
 - `instance Sumcheck.Spec.SingleRound.instOracleVerifierAppendCoherent` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:1318](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L1318) — The `i`-th-round oracle verifier routes its (single) output oracle to the (unchanged) input oracle (
 
 ### `instOstmtMLIOPCS` (2 declarations, 2 files)
@@ -1343,7 +1343,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `ofFinCoeff` (2 declarations, 2 files)
 
-- `def ArkLib.Lattices.CyclotomicModulus.Rq.ofFinCoeff` [ArkLib/Data/Lattices/CyclotomicRing/Rq.lean:184](../../../ArkLib/Data/Lattices/CyclotomicRing/Rq.lean#L184) — The reduced representative with prescribed finite coefficients `Σ_{k<N} cₖ Xᵏ`, valid when `N` does
+- `def ArkLib.Lattices.CyclotomicModulus.Rq.ofFinCoeff` [ArkLib/Data/Lattices/CyclotomicRing/Rq.lean:184](../../../ArkLib/Data/Lattices/CyclotomicRing/Rq.lean#L184) — The reduced representative with prescribed finite coefficients `Σ_{k<N} cₖ Xᵏ`, valid when `N` does 
 - `def CompPoly.CPolynomial.ofFinCoeff` [ArkLib/ToCompPoly/Univariate/Basic.lean:293](../../../ArkLib/ToCompPoly/Univariate/Basic.lean#L293) — The polynomial with prescribed finite coefficient function: `Σ_{k<N} cₖ Xᵏ`.
 
 ### `oracleVerifier_toVerifier_run` (2 declarations, 2 files)
@@ -1373,8 +1373,8 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `packMLE_repr_eval` (2 declarations, 2 files)
 
-- `lemma Binius.RingSwitching.packMLE_repr_eval` [ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean:575](../../../ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean#L575) — The basis coordinate of a packed evaluation recovers the small-field coefficient: `β.repr (t'(w)) u
-- `lemma RingSwitching.packMLE_repr_eval` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:689](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L689) — The basis coordinate of a packed evaluation recovers the small-field coefficient: `β.repr (t'(w)) u
+- `lemma Binius.RingSwitching.packMLE_repr_eval` [ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean:575](../../../ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean#L575) — The basis coordinate of a packed evaluation recovers the small-field coefficient: `β.repr (t'(w)) u 
+- `lemma RingSwitching.packMLE_repr_eval` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:689](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L689) — The basis coordinate of a packed evaluation recovers the small-field coefficient: `β.repr (t'(w)) u 
 
 ### `perfectlyCorrect` (2 declarations, 2 files)
 
@@ -1393,13 +1393,13 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `prod_concat_split` (2 declarations, 2 files)
 
-- `lemma Binius.RingSwitching.prod_concat_split` [ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean:627](../../../ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean#L627) — A product over `Fin (ℓ' + κ₀)` of a function defined by the κ/ℓ'-dichotomy splits as the product of
-- `lemma RingSwitching.prod_concat_split` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:717](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L717) — A product over `Fin (ℓ' + κ₀)` of a function defined by the κ/ℓ'-dichotomy splits as the product of
+- `lemma Binius.RingSwitching.prod_concat_split` [ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean:627](../../../ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean#L627) — A product over `Fin (ℓ' + κ₀)` of a function defined by the κ/ℓ'-dichotomy splits as the product of 
+- `lemma RingSwitching.prod_concat_split` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:717](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L717) — A product over `Fin (ℓ' + κ₀)` of a function defined by the κ/ℓ'-dichotomy splits as the product of 
 
 ### `proximityCondition` (2 declarations, 2 files)
 
 - `def MutualCorrAgreement.proximityCondition` [ArkLib/ProofSystem/Whir/MutualCorrAgreement.lean:56](../../../ArkLib/ProofSystem/Whir/MutualCorrAgreement.lean#L56) — For `parℓ` functions `fᵢ : ι → 𝔽`, distance `δ`, generator function `GenFun: 𝔽 → parℓ → 𝔽` and linea
-- `def Generator.proximityCondition` [ArkLib/ProofSystem/Whir/ProximityGen.lean:38](../../../ArkLib/ProofSystem/Whir/ProximityGen.lean#L38) — For `l` functions `fᵢ : ι → 𝔽`, distance `δ`, generator function `GenFun: 𝔽 → parℓ → 𝔽ˡ` and linear
+- `def Generator.proximityCondition` [ArkLib/ProofSystem/Whir/ProximityGen.lean:38](../../../ArkLib/ProofSystem/Whir/ProximityGen.lean#L38) — For `l` functions `fᵢ : ι → 𝔽`, distance `δ`, generator function `GenFun: 𝔽 → parℓ → 𝔽ˡ` and linear 
 
 ### `queryCodeword` (2 declarations, 2 files)
 
@@ -1574,7 +1574,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `toOracleSpec` (2 declarations, 2 files)
 
 - `def Interaction.Oracle.Spec.toOracleSpec` [ArkLib/Interaction/Oracle/Spec.lean:149](../../../ArkLib/Interaction/Oracle/Spec.lean#L149) — The oracle specification for querying oracle messages along a given `PublicTranscript` path. Maps ea
-- `def OracleInterface.toOracleSpec` [ArkLib/OracleReduction/OracleInterface.lean:92](../../../ArkLib/OracleReduction/OracleInterface.lean#L92) — Converts an indexed type family of oracle interfaces into an oracle specification. Notation: `[v]ₒ`
+- `def OracleInterface.toOracleSpec` [ArkLib/OracleReduction/OracleInterface.lean:92](../../../ArkLib/OracleReduction/OracleInterface.lean#L92) — Converts an indexed type family of oracle interfaces into an oracle specification. Notation: `[v]ₒ` 
 
 ### `twoNthRoot_correct_one` (2 declarations, 2 files)
 
@@ -1654,7 +1654,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `decodeLT_ne_of_val_ne` (2 declarations, 2 files)
 
-- `lemma OutOfDomSmpl.decodeLT_ne_of_val_ne` [ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean:87](../../../ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean#L87) — Distinct codewords decode to distinct polynomials: the decoded polynomial interpolates the codeword
+- `lemma OutOfDomSmpl.decodeLT_ne_of_val_ne` [ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean:87](../../../ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean#L87) — Distinct codewords decode to distinct polynomials: the decoded polynomial interpolates the codeword 
 - `lemma OutOfDomSmpl.decodeLT_ne_of_val_ne` [ArkLib/ProofSystem/Whir/OutofDomainSmpl.lean:183](../../../ArkLib/ProofSystem/Whir/OutofDomainSmpl.lean#L183) — Distinct smooth codewords decode to distinct univariate polynomials (the decoded polynomial interpol
 
 ### `finset_card_ge_of_pred_natCast_le_ennreal_lt` (2 declarations, 2 files)
@@ -1665,7 +1665,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `finset_card_gt_of_natCast_le_ennreal_lt` (2 declarations, 2 files)
 
 - `lemma ProximityGap.finset_card_gt_of_natCast_le_ennreal_lt` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean:104](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean#L104) — (no docstring)
-- `theorem ProximityGap.finset_card_gt_of_natCast_le_ennreal_lt` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/Assembly.lean:110](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/Assembly.lean#L110) — Convert an ENNReal lower bound on a finite set cardinality into a natural number strict cardinality
+- `theorem ProximityGap.finset_card_gt_of_natCast_le_ennreal_lt` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/Assembly.lean:110](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/Assembly.lean#L110) — Convert an ENNReal lower bound on a finite set cardinality into a natural number strict cardinality 
 
 ### `qEntropy_mul_log_eq_qaryEntropy` (2 declarations, 2 files)
 
@@ -1756,6 +1756,12 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **1.00** `Binius.BinaryBasefold.witnessStructuralInvariant` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:852](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L852) vs `RingSwitching.witnessStructuralInvariant` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:435](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L435)
     - a: This condition ensures that the witness polynomial `H` has the correct structure `eq(...) * t(...)`
     - b: This condition ensures that the witness polynomial `H` has the correct structure `A(...) * t'(...)`
+- **1.00** `Binius.FRIBinius.CoreInteractionPhase.coreInteractionOracleReduction` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:867](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L867) vs `coreInteractionOracleReduction` [ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean:669](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean#L669)
+    - a: The final oracle reduction that composes sumcheckFold with finalSumcheckStep
+    - b: The final oracle reduction that composes sumcheckFold with finalSumcheckStep
+- **1.00** `Binius.FRIBinius.CoreInteractionPhase.coreInteractionOracleVerifier` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:852](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L852) vs `coreInteractionOracleVerifier` [ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean:654](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/CoreInteractionPhase.lean#L654)
+    - a: The final oracle verifier that composes sumcheckFold with finalSumcheckStep
+    - b: The final oracle verifier that composes sumcheckFold with finalSumcheckStep
 - **1.00** `Binius.FRIBinius.CoreInteractionPhase.finalSumcheckKnowledgeError` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:716](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L716) vs `RingSwitching.SumcheckPhase.finalSumcheckRbrKnowledgeError` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:1187](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L1187)
     - a: RBR knowledge error for the final sumcheck step
     - b: RBR knowledge error for the final sumcheck step
@@ -1793,8 +1799,8 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
     - a: Ring-Switching multiplier parameter for sumcheck, using `A_MLE` as the multiplier.
     - b: Ring-Switching multiplier parameter for sumcheck, using `A_MLE` as the multiplier.
 - **1.00** `Binius.RingSwitching.TensorAlgebra` [ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean:63](../../../ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean#L63) vs `RingSwitching.TensorAlgebra` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:60](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L60)
-    - a: Tensor Algebra A = L ⊗_K L. Based on the spec, it's viewed as (2^κ)x(2^κ) arrays of K-elements. The
-    - b: Tensor Algebra A = L ⊗_K L. Based on the spec, it's viewed as (2^κ)x(2^κ) arrays of K-elements. The
+    - a: Tensor Algebra A = L ⊗_K L. Based on the spec, it's viewed as (2^κ)x(2^κ) arrays of K-elements. The 
+    - b: Tensor Algebra A = L ⊗_K L. Based on the spec, it's viewed as (2^κ)x(2^κ) arrays of K-elements. The 
 - **1.00** `Binius.RingSwitching.aeval_eqPolynomial_zeroOne` [ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean:683](../../../ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean#L683) vs `RingSwitching.aeval_eqPolynomial_zeroOne` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:771](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L771)
     - a: `aeval` of `eqPolynomial` at a Boolean coefficient vector lands in `L₀` as `eqTilde`.
     - b: `aeval` of `eqPolynomial` at a Boolean coefficient vector lands in `L₀` as `eqTilde`.
@@ -1811,8 +1817,8 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
     - a: **Pinned-`𝓑` Boolean-domain sumcheck sum.** When `𝓑` is pinned to the Boolean embedding (`𝓑 c = if c
     - b: **Pinned-`𝓑` Boolean-domain sumcheck sum.** When `𝓑` is pinned to the Boolean embedding (`𝓑 c = if c
 - **1.00** `Binius.RingSwitching.check_rows_sum_eq_aeval` [ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean:740](../../../ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean#L740) vs `RingSwitching.check_rows_sum_eq_aeval` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:1205](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L1205)
-    - a: **DP24 ring-switching capstone (sum form).** The verifier's row-decomposition check sum, applied to
-    - b: **DP24 ring-switching capstone (sum form).** The verifier's row-decomposition check sum, applied to
+    - a: **DP24 ring-switching capstone (sum form).** The verifier's row-decomposition check sum, applied to 
+    - b: **DP24 ring-switching capstone (sum form).** The verifier's row-decomposition check sum, applied to 
 - **1.00** `Binius.RingSwitching.componentWise_φ₁_embed_MLE` [ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean:171](../../../ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean#L171) vs `RingSwitching.componentWise_embed_MLE` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:168](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L168)
     - a: **Component-wise `φ₁` embedding**. Takes a polynomial `t'` with coefficients in `L` and embeds it in
     - b: **Component-wise `φ₁` embedding**. Takes a polynomial `t'` with coefficients in `L` and embeds it in
@@ -1844,8 +1850,8 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
     - a: Decompose `ŝ` into row components `(ŝ =: Σ_{u ∈ {0,1}^κ} β_u ⊗ ŝ_u)`. This views `L ⊗ L` as a module
     - b: Decompose `ŝ` into row components `(ŝ =: Σ_{u ∈ {0,1}^κ} β_u ⊗ ŝ_u)`. This views `L ⊗ L` as a module
 - **1.00** `Binius.RingSwitching.embedded_MLP_eval_eq_sum` [ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean:523](../../../ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean#L523) vs `RingSwitching.embedded_MLP_eval_eq_sum` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:1148](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L1148)
-    - a: **DP24 packing expansion.** The prover's tensor `ŝ := φ₁(t')(φ₀(r_κ), …, φ₀(r_{ℓ-1}))` expands over
-    - b: **DP24 packing expansion.** The prover's tensor `ŝ := φ₁(t')(φ₀(r_κ), …, φ₀(r_{ℓ-1}))` expands over
+    - a: **DP24 packing expansion.** The prover's tensor `ŝ := φ₁(t')(φ₀(r_κ), …, φ₀(r_{ℓ-1}))` expands over 
+    - b: **DP24 packing expansion.** The prover's tensor `ŝ := φ₁(t')(φ₀(r_κ), …, φ₀(r_{ℓ-1}))` expands over 
 - **1.00** `Binius.RingSwitching.eqPoly_collapse` [ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean:508](../../../ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean#L508) vs `RingSwitching.eqPoly_collapse` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:653](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L653)
     - a: The full `eqPolynomial` collapses through the mixed embedding to `φ₀` of its ordinary evaluation, by
     - b: The full `eqPolynomial` collapses through the mixed embedding to `φ₀` of its ordinary evaluation, by
@@ -1862,14 +1868,14 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
     - a: **Definition 2.1 (MLE packing)**. Packs a small-field multilinear `t` into a large-field multilinear
     - b: **Definition 2.1 (MLE packing)**. Packs a small-field multilinear `t` into a large-field multilinear
 - **1.00** `Binius.RingSwitching.packMLE_repr_eval` [ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean:575](../../../ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean#L575) vs `RingSwitching.packMLE_repr_eval` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:689](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L689)
-    - a: The basis coordinate of a packed evaluation recovers the small-field coefficient: `β.repr (t'(w)) u
-    - b: The basis coordinate of a packed evaluation recovers the small-field coefficient: `β.repr (t'(w)) u
+    - a: The basis coordinate of a packed evaluation recovers the small-field coefficient: `β.repr (t'(w)) u 
+    - b: The basis coordinate of a packed evaluation recovers the small-field coefficient: `β.repr (t'(w)) u 
 - **1.00** `Binius.RingSwitching.performCheckOriginalEvaluation_packMLE_iff` [ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean:805](../../../ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean#L805) vs `RingSwitching.performCheckOriginalEvaluation_packMLE_iff_binaryTower` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:1262](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L1262)
     - a: **DP24 ring-switching capstone (decision form).** The verifier's Step-2 check on the prover's honest
     - b: **DP24 ring-switching capstone (decision form).** The verifier's Step-2 check on the prover's honest
 - **1.00** `Binius.RingSwitching.prod_concat_split` [ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean:627](../../../ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean#L627) vs `RingSwitching.prod_concat_split` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:717](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L717)
-    - a: A product over `Fin (ℓ' + κ₀)` of a function defined by the κ/ℓ'-dichotomy splits as the product of
-    - b: A product over `Fin (ℓ' + κ₀)` of a function defined by the κ/ℓ'-dichotomy splits as the product of
+    - a: A product over `Fin (ℓ' + κ₀)` of a function defined by the κ/ℓ'-dichotomy splits as the product of 
+    - b: A product over `Fin (ℓ' + κ₀)` of a function defined by the κ/ℓ'-dichotomy splits as the product of 
 - **1.00** `Binius.RingSwitching.simulateQ_simOracle2_messageQuery` [ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean:953](../../../ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean#L953) vs `RingSwitching.simulateQ_simOracle2_messageQuery` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:1412](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L1412)
     - a: **`simOracle2` message-query collapse (`OracleComp` form).** Simulating, via `simOracle2 oSpec t₁ t₂
     - b: **`simOracle2` message-query collapse (`OracleComp` form).** Simulating, via `simOracle2 oSpec t₁ t₂
@@ -1894,6 +1900,12 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **1.00** `Binius.RingSwitching.witnessStructuralInvariant` [ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean:423](../../../ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean#L423) vs `RingSwitching.witnessStructuralInvariant` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:435](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L435)
     - a: This condition ensures that the witness polynomial `H` has the correct structure `A(...) * t'(...)`
     - b: This condition ensures that the witness polynomial `H` has the correct structure `A(...) * t'(...)`
+- **1.00** `Domain.FftDomain.toList` [ArkLib/Data/Domain/CosetFftDomain/ToList.lean:54](../../../ArkLib/Data/Domain/CosetFftDomain/ToList.lean#L54) vs `ReedSolomon.FftDomain.toList` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:287](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L287)
+    - a: Convert a FFT domain into a list of all its members with proofs the members belong to the FFT domain
+    - b: Convert an FFT domain into a list of all its members with proofs the members belong to the FFT domai
+- **1.00** `Finset.toListWithProof.` [ArkLib/ToMathlib/Finset/ToListWithProof.lean:17](../../../ArkLib/ToMathlib/Finset/ToListWithProof.lean#L17) vs `ReedSolomon.Finset.toListWithProof.` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:238](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L238)
+    - a: A helper to convert a finset into a list whose elements are the members of the finset, i.e. come wit
+    - b: A helper to convert a finset into a list whose elements are the members of the finset, i.e. come wit
 - **1.00** `Groups.exists_zmod_power_of_generator` [ArkLib/CommitmentScheme/KZG/Algebra.lean:105](../../../ArkLib/CommitmentScheme/KZG/Algebra.lean#L105) vs `KZG.CommitmentScheme.binding_exists_zmod_power_of_generator` [ArkLib/CommitmentScheme/KZG/Binding.lean:167](../../../ArkLib/CommitmentScheme/KZG/Binding.lean#L167)
     - a: Every element of a prime-order group is a `ZMod p` power of a nontrivial generator.
     - b: Every element of a prime-order group is a `ZMod p` power of a nontrivial generator.
@@ -1903,22 +1915,10 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **1.00** `KZG.CommitmentScheme.map_binding_instance_drag` [ArkLib/CommitmentScheme/KZG/Binding.lean:639](../../../ArkLib/CommitmentScheme/KZG/Binding.lean#L639) vs `KZG.CommitmentScheme.map_instance_drag` [ArkLib/CommitmentScheme/KZG/FunctionBinding/Basic.lean:534](../../../ArkLib/CommitmentScheme/KZG/FunctionBinding/Basic.lean#L534)
     - a: Transition 3: dragging the map into the probability event.
     - b: Transition 3: dragging the map into the probability event
-- **1.00** `Prover.processRoundFS` [ArkLib/OracleReduction/FiatShamir/Basic.lean:78](../../../ArkLib/OracleReduction/FiatShamir/Basic.lean#L78) vs `Prover.processRoundDSFS` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Defs.lean:167](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Defs.lean#L167)
+- **1.00** `Prover.processRoundDSFS` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Defs.lean:167](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Defs.lean#L167) vs `Prover.processRoundFS` [ArkLib/OracleReduction/FiatShamir/Basic.lean:78](../../../ArkLib/OracleReduction/FiatShamir/Basic.lean#L78)
     - a: Prover's function for processing the next round, given the current result of the previous round. Thi
     - b: Prover's function for processing the next round, given the current result of the previous round. Thi
 - **1.00** `Prover.runToRound` [ArkLib/OracleReduction/Execution.lean:103](../../../ArkLib/OracleReduction/Execution.lean#L103) vs `Prover.runToRoundDSFS` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Defs.lean:197](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Defs.lean#L197)
-    - a: Run the prover in an interactive reduction up to round index `i`, via first inputting the statement
-    - b: Run the prover in an interactive reduction up to round index `i`, via first inputting the statement
-- **1.00** `Prover.runToRound` [ArkLib/OracleReduction/Execution.lean:103](../../../ArkLib/OracleReduction/Execution.lean#L103) vs `Prover.runToRoundFS` [ArkLib/OracleReduction/FiatShamir/Basic.lean:100](../../../ArkLib/OracleReduction/FiatShamir/Basic.lean#L100)
-    - a: Run the prover in an interactive reduction up to round index `i`, via first inputting the statement
-    - b: Run the prover in an interactive reduction up to round index `i`, via first inputting the statement
-- **1.00** `Prover.runToRoundFS` [ArkLib/OracleReduction/FiatShamir/Basic.lean:100](../../../ArkLib/OracleReduction/FiatShamir/Basic.lean#L100) vs `Prover.runToRoundDSFS` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Defs.lean:197](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Defs.lean#L197)
-    - a: Run the prover in an interactive reduction up to round index `i`, via first inputting the statement
-    - b: Run the prover in an interactive reduction up to round index `i`, via first inputting the statement
-- **1.00** `ProximityGap.RS_goodCoeffsCurve_finCongr_core` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean:1066](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean#L1066) vs `ProximityGap.RS_goodCoeffsCurve_finCongr` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/Assembly.lean:184](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/Assembly.lean#L184)
-    - a: `RS_goodCoeffsCurve` is unchanged by a definitional reindexing of its `Fin (k + 1)` coefficient word
-    - b: `RS_goodCoeffsCurve` is unchanged by a definitional reindexing of its `Fin (k + 1)` coefficient word
-- **1.00** `ProximityPrize.HenselExistence.coeff_S_succ_of_le` [ArkLib/Data/Polynomial/HenselExistence.lean:195](../../../ArkLib/Data/Polynomial/HenselExistence.lean#L195) vs `ProximityPrize.HenselSeriesCoeff.coeff_S_succ_of_le` [ArkLib/Data/Polynomial/HenselSeriesCoeff.lean:273](../../../ArkLib/Data/Polynomial/HenselSeriesCoeff.lean#L273)
-    - a: Adding the order-`(t+1)` monomial leaves coefficients `≤ t` unchanged.
-    - b: Adding the order-`(t+1)` monomial leaves coefficients `≤ t` unchanged.
+    - a: Run the prover in an interactive reduction up to round index `i`, via first inputting the statement 
+    - b: Run the prover in an interactive reduction up to round index `i`, via first inputting the statement 
 
