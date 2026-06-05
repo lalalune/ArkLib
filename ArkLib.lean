@@ -301,7 +301,11 @@ import ArkLib.ProofSystem.Binius.FRIBinius.CoreInteractionPhase
 import ArkLib.ProofSystem.Binius.FRIBinius.General
 import ArkLib.ProofSystem.Binius.FRIBinius.Prelude
 import ArkLib.ProofSystem.Binius.RingSwitching.BBFSmallFieldIOPCS
+import ArkLib.ProofSystem.Binius.RingSwitching.BatchingPhase
+import ArkLib.ProofSystem.Binius.RingSwitching.General
 import ArkLib.ProofSystem.Binius.RingSwitching.Prelude
+import ArkLib.ProofSystem.Binius.RingSwitching.Spec
+import ArkLib.ProofSystem.Binius.RingSwitching.SumcheckPhase
 import ArkLib.ProofSystem.Component.CheckClaim
 import ArkLib.ProofSystem.Component.DoNothing
 import ArkLib.ProofSystem.Component.NoInteraction

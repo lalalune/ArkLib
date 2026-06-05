@@ -48,7 +48,7 @@ theorem div_two_pow_lt_two_pow (x i j : ℕ) (h_x_lt_2_pow_i : x < 2 ^ (i + j)):
   · simp only [h_i_eq_0, zero_add, pow_zero, Nat.lt_one_iff, Nat.div_eq_zero_iff, Nat.pow_eq_zero,
     OfNat.ofNat_ne_zero, ne_eq, false_and, false_or] at *;
     omega
-  · push_neg at h_i_eq_0
+  · push Not at h_i_eq_0
     apply Nat.div_lt_of_lt_mul (m:=x) (n:=2^j) (k:=2^i) (by
       have h_rhs_eq : 2^(i+j) = 2^j * 2^i := by
         rw [pow_add (a:=2) (m:=i) (n:=j), mul_comm]

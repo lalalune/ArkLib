@@ -134,10 +134,10 @@ def evalSetY [DecidableEq F] (f : F[X][Y]) (P : Finset F) [Nonempty P] : Finset 
   P.image (fun a => evalY a f)
 
 /-- If the multiplicity of a pair `(x, y)` is positive, then the pair is a root of `f`. -/
-theorem rootMultiplicity_some_implies_root [DecidableEq F]
-    {x y : F} {f : F[X][Y]} (h : 0 < (f.eval (C y)).rootMultiplicity x) :
+theorem rootMultiplicity_some_implies_root {R : Type} [Ring R]
+    {x y : R} {f : R[X][Y]} (h : 0 < (f.eval (C y)).rootMultiplicity x) :
     (f.eval (C y)).eval x = 0 := by
-  simp_all only [rootMultiplicity_pos', ne_eq, IsRoot.def]
+  exact (rootMultiplicity_pos'.mp (p := f.eval (C y)) (a := x) h).2
 
 /-- The bivariate quotient polynomial. -/
 def quotient (f g : F[X][Y]) : Prop := ∃ q : F[X][Y], g = q * f
