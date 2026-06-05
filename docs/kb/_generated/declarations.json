@@ -42426,9 +42426,405 @@
           "signature": "instance instance : [(pSpec\u2082).Challenge]\u2092 \u2282\u2092 [(pSpec\u2081 ++\u209a pSpec\u2082).Challenge]\u2092 where"
         },
         {
+          "doc": "Support lemma: PrvState of the appended prover matches `P\u2081`'s on the left half.",
+          "kind": "theorem",
+          "line": 1340,
+          "name": "Prover.append_PrvState_castLE",
+          "namespace": "Prover",
+          "short_name": "append_PrvState_castLE",
+          "signature": "theorem append_PrvState_castLE (j : Fin (m + 1)) :"
+        },
+        {
+          "doc": "Support lemma `append_Transcript_castLE`: the appended-protocol transcript type at a left-half round equals `pSpec\u2081`'s transcript type.",
+          "kind": "theorem",
+          "line": 1350,
+          "name": "Prover.append_Transcript_castLE",
+          "namespace": "Prover",
+          "short_name": "append_Transcript_castLE",
+          "signature": "theorem append_Transcript_castLE (j : Fin (m + 1)) :"
+        },
+        {
+          "doc": "Support lemma `append_input_heq`: the appended prover's `input` is heterogeneously equal to `P\u2081`'s `input`.",
+          "kind": "theorem",
+          "line": 1368,
+          "name": "Prover.append_input_heq",
+          "namespace": "Prover",
+          "short_name": "append_input_heq",
+          "signature": "theorem append_input_heq :"
+        },
+        {
+          "doc": "Support lemma `prodMk_heq`: heterogeneous congruence for pairs whose component types vary.",
+          "kind": "theorem",
+          "line": 1376,
+          "name": "Prover.prodMk_heq",
+          "namespace": "Prover",
+          "short_name": "prodMk_heq",
+          "signature": "theorem prodMk_heq {\u03b1 \u03b1' \u03b2 \u03b2' : Type _} {a : \u03b1} {a' : \u03b1'} {b : \u03b2} {b' : \u03b2'}"
+        },
+        {
+          "doc": "Support lemma `pure_heq_pure`: heterogeneous congruence for `pure` in `OracleComp`, lifting a HEq of values (over equal element types) to a HEq of the pure computations.",
+          "kind": "theorem",
+          "line": 1384,
+          "name": "Prover.pure_heq_pure",
+          "namespace": "Prover",
+          "short_name": "pure_heq_pure",
+          "signature": "theorem pure_heq_pure {\u03b9 : Type} {spec : OracleSpec \u03b9} {\u03b1 \u03b1' : Type _} {a : \u03b1} {a' : \u03b1'}"
+        },
+        {
+          "doc": "HEq congruence for `sendMessage`: equal message index and HEq state imply HEq results.",
+          "kind": "theorem",
+          "line": 1391,
+          "name": "Prover.sendMessage_heq_congr",
+          "namespace": "Prover",
+          "short_name": "sendMessage_heq_congr",
+          "signature": "theorem sendMessage_heq_congr {P : Prover oSpec Stmt\u2081 Wit\u2081 Stmt\u2082 Wit\u2082 pSpec\u2081}"
+        },
+        {
+          "doc": "HEq congruence for `receiveChallenge`: equal challenge index and HEq state imply HEq results.",
+          "kind": "theorem",
+          "line": 1399,
+          "name": "Prover.receiveChallenge_heq_congr",
+          "namespace": "Prover",
+          "short_name": "receiveChallenge_heq_congr",
+          "signature": "theorem receiveChallenge_heq_congr {P : Prover oSpec Stmt\u2081 Wit\u2081 Stmt\u2082 Wit\u2082 pSpec\u2081}"
+        },
+        {
+          "doc": "Split a HEq of pairs (over componentwise-equal types) into HEqs of the components.",
+          "kind": "theorem",
+          "line": 1407,
+          "name": "Prover.prod_heq_split",
+          "namespace": "Prover",
+          "short_name": "prod_heq_split",
+          "signature": "theorem prod_heq_split {\u03b1 \u03b1' \u03b2 \u03b2' : Type _} (h\u03b1 : \u03b1 = \u03b1') (h\u03b2 : \u03b2 = \u03b2')"
+        },
+        {
+          "doc": "HEq congruence for monadic `bind` in `OracleComp` where the element types may differ propositionally.  If the bound computations are HEq (over equal element types) and the continuations send HEq inputs to HEq outputs, the binds are HEq.",
+          "kind": "theorem",
+          "line": 1418,
+          "name": "Prover.bind_heq_congr",
+          "namespace": "Prover",
+          "short_name": "bind_heq_congr",
+          "signature": "theorem bind_heq_congr {\u03b9 : Type} {spec : OracleSpec \u03b9} {\u03b1 \u03b1' \u03b2 \u03b2' : Type _}"
+        },
+        {
+          "doc": "HEq congruence for `OracleComp.liftComp` (along the canonical query-level `MonadLiftT`): HEq inputs (over equal element types) give HEq lifts.  Unlike `liftM_heq_congr`, `liftComp` depends only on the *query-level* `MonadLiftT (OracleQuery spec) (OracleQuery superSpec)`, which is canonical, so this avoids the OracleComp-level `MonadLiftT` instance diamond.",
+          "kind": "theorem",
+          "line": 1433,
+          "name": "Prover.liftComp_heq_congr",
+          "namespace": "Prover",
+          "short_name": "liftComp_heq_congr",
+          "signature": "theorem liftComp_heq_congr {\u03b9 \u03b9' : Type} {spec : OracleSpec \u03b9} {superSpec : OracleSpec \u03b9'}"
+        },
+        {
+          "doc": "HEq congruence for `liftM` (along a fixed transitive `MonadLiftT` of `OracleComp`s): HEq inputs (over equal element types) give HEq lifts.",
+          "kind": "theorem",
+          "line": 1443,
+          "name": "Prover.liftM_heq_congr",
+          "namespace": "Prover",
+          "short_name": "liftM_heq_congr",
+          "signature": "theorem liftM_heq_congr {\u03b9 \u03b9' : Type} {spec : OracleSpec \u03b9} {superSpec : OracleSpec \u03b9'}"
+        },
+        {
+          "doc": "HEq congruence: `liftM` (the `OracleQuery \u2192 OracleComp` embedding over the SAME spec) of HEq queries (over equal response types) gives HEq computations.",
+          "kind": "theorem",
+          "line": 1452,
+          "name": "Prover.liftM_query_heq",
+          "namespace": "Prover",
+          "short_name": "liftM_query_heq",
+          "signature": "theorem liftM_query_heq {\u03b9s : Type} {spec : OracleSpec \u03b9s} {\u03b1 \u03b1' : Type}"
+        },
+        {
+          "doc": "HEq of two oracle queries over the same spec whose inputs agree and whose response types are propositionally equal, with HEq continuations.",
+          "kind": "theorem",
+          "line": 1459,
+          "name": "Prover.oracleQuery_heq",
+          "namespace": "Prover",
+          "short_name": "oracleQuery_heq",
+          "signature": "theorem oracleQuery_heq {\u03b9s : Type} {spec : OracleSpec \u03b9s} {\u03b1 \u03b1' : Type}"
+        },
+        {
+          "doc": "**OracleComp-level lift-coherence.**  Lifting `mx : OracleComp spec` first through an intermediate spec `midSpec` and then to `superSpec` agrees, as a *function*, with lifting it directly to `superSpec`, provided the two query-level `MonadLiftT`s cohere (`OracleQuery.liftM_eq_liftM_liftM`, which is `rfl` for the canonical `+`/transitive instances). Proved by induction on `mx`: the `query_bind` head reduces both sides to `q.cont <$> liftM (...)` where the inner lifts coincide by `hquery`. This is the bridge that defuses the `OracleComp`-level `MonadLiftT` instance diamond: the *transitive* inst",
+          "kind": "theorem",
+          "line": 1476,
+          "name": "Prover.liftComp_liftComp",
+          "namespace": "Prover",
+          "short_name": "liftComp_liftComp",
+          "signature": "theorem liftComp_liftComp {\u03b9\u2081 \u03b9\u2082 \u03b9\u2083 : Type} {spec : OracleSpec \u03b9\u2081} {midSpec : OracleSpec \u03b9\u2082}"
+        },
+        {
+          "doc": "`processRound` resolved at a message (`P_to_V`) round (mirror of the library's `processRound_challenge`).",
+          "kind": "theorem",
+          "line": 1505,
+          "name": "Prover.processRound_message",
+          "namespace": "Prover",
+          "short_name": "processRound_message",
+          "signature": "theorem processRound_message {\u03b9 : Type} {oSpec : OracleSpec \u03b9} {StmtIn WitIn StmtOut WitOut : Type}"
+        },
+        {
+          "doc": "Generic HEq congruence for `Fin.snoc` over dependent codomain families.  If the lengths agree, the codomain families are HEq, the tuples are HEq and the appended elements are HEq, the two snocs are HEq.",
+          "kind": "theorem",
+          "line": 1526,
+          "name": "Prover.Fin_snoc_heq",
+          "namespace": "Prover",
+          "short_name": "Fin_snoc_heq",
+          "signature": "theorem Fin_snoc_heq {N N' : \u2115} (hN : N = N')"
+        },
+        {
+          "doc": "Dependent function-application HEq congruence: HEq functions (over equal domain and HEq codomain families) applied to HEq arguments give HEq results.",
+          "kind": "theorem",
+          "line": 1537,
+          "name": "Prover.heq_app",
+          "namespace": "Prover",
+          "short_name": "heq_app",
+          "signature": "theorem heq_app {\u03b1 \u03b1' : Type _} {\u03b2 : \u03b1 \u2192 Type _} {\u03b2' : \u03b1' \u2192 Type _}"
+        },
+        {
+          "doc": "The appended-protocol message type at a left round equals `pSpec\u2081`'s.",
+          "kind": "theorem",
+          "line": 1547,
+          "name": "Prover.append_Message_castLE",
+          "namespace": "Prover",
+          "short_name": "append_Message_castLE",
+          "signature": "theorem append_Message_castLE (i : Fin m)"
+        },
+        {
+          "doc": "HEq congruence for `Transcript.concat` across left-round transcripts of the appended and the `pSpec\u2081` protocols.  `Transcript.concat = Fin.snoc`; compared as dependent functions on `Fin (\u00b7.succ)` via `Function.hfunext`, splitting each index into the appended `msg` (last) or an interior entry read from the transcript.",
+          "kind": "theorem",
+          "line": 1558,
+          "name": "Prover.concat_heq",
+          "namespace": "Prover",
+          "short_name": "concat_heq",
+          "signature": "theorem concat_heq (i : Fin m)"
+        },
+        {
+          "doc": "The appended protocol's direction at a left-half round matches `pSpec\u2081`'s.",
+          "kind": "theorem",
+          "line": 1595,
+          "name": "Prover.append_dir_castLE",
+          "namespace": "Prover",
+          "short_name": "append_dir_castLE",
+          "signature": "theorem append_dir_castLE (i : Fin m) :"
+        },
+        {
+          "doc": "State-type equality used to transport the appended prover's state into `P\u2081`'s state at the `castSucc` of a left round.",
+          "kind": "theorem",
+          "line": 1606,
+          "name": "Prover.append_PrvState_castSucc",
+          "namespace": "Prover",
+          "short_name": "append_PrvState_castSucc",
+          "signature": "theorem append_PrvState_castSucc (i : Fin m) :"
+        },
+        {
+          "doc": "State-type equality at the `succ` of a left round.",
+          "kind": "theorem",
+          "line": 1612,
+          "name": "Prover.append_PrvState_succ",
+          "namespace": "Prover",
+          "short_name": "append_PrvState_succ",
+          "signature": "theorem append_PrvState_succ (i : Fin m) :"
+        },
+        {
+          "doc": "Transcript-type equality at the `castSucc` of a left round.",
+          "kind": "theorem",
+          "line": 1618,
+          "name": "Prover.append_Transcript_castSucc",
+          "namespace": "Prover",
+          "short_name": "append_Transcript_castSucc",
+          "signature": "theorem append_Transcript_castSucc (i : Fin m) :"
+        },
+        {
+          "doc": "Transcript-type equality at the `succ` of a left round.",
+          "kind": "theorem",
+          "line": 1624,
+          "name": "Prover.append_Transcript_succ",
+          "namespace": "Prover",
+          "short_name": "append_Transcript_succ",
+          "signature": "theorem append_Transcript_succ (i : Fin m) :"
+        },
+        {
+          "doc": "**Left-round `sendMessage` reduction.**  The appended prover's `sendMessage` at a left round `i < m` reduces (heterogeneously) to `P\u2081`'s `sendMessage`.",
+          "kind": "theorem",
+          "line": 1631,
+          "name": "Prover.append_sendMessage_left",
+          "namespace": "Prover",
+          "short_name": "append_sendMessage_left",
+          "signature": "theorem append_sendMessage_left (i : Fin m)"
+        },
+        {
+          "doc": "**Left-round `receiveChallenge` reduction.**  The appended prover's `receiveChallenge` at a left round `i < m` reduces (heterogeneously) to `P\u2081`'s `receiveChallenge`.",
+          "kind": "theorem",
+          "line": 1649,
+          "name": "Prover.append_receiveChallenge_left",
+          "namespace": "Prover",
+          "short_name": "append_receiveChallenge_left",
+          "signature": "theorem append_receiveChallenge_left (i : Fin m)"
+        },
+        {
+          "doc": "**Left-round `getChallenge` reduction.**  The appended protocol's `getChallenge` at a left challenge round `i < m` is heterogeneously equal to the `liftM` (along the left challenge `SubSpec` `[pSpec\u2081.Challenge]\u2092 \u2282\u2092 [(pSpec\u2081 ++\u209a pSpec\u2082).Challenge]\u2092`) of `pSpec\u2081`'s `getChallenge`.  The two single queries coincide on the (value-equal) challenge index `i.castLE = ChallengeIdx.inl \u27e8i,_\u27e9`; the response types differ only by the propositional `range_challenge_append_inl` transport carried by the SubSpec `onResponse`, so the queries are HEq.",
+          "kind": "theorem",
+          "line": 1671,
+          "name": "Prover.append_getChallenge_left",
+          "namespace": "Prover",
+          "short_name": "append_getChallenge_left",
+          "signature": "theorem append_getChallenge_left (i : Fin m)"
+        },
+        {
+          "doc": "`processRound` resolved at a challenge (`V_to_P`) round (mirror of `processRound_message`).",
+          "kind": "theorem",
+          "line": 1720,
+          "name": "Prover.processRound_challenge'",
+          "namespace": "Prover",
+          "short_name": "processRound_challenge'",
+          "signature": "theorem processRound_challenge' {\u03b9 : Type} {oSpec : OracleSpec \u03b9}"
+        },
+        {
+          "doc": "**Left-round `processRound` compatibility (message branch).**  Working scratch lemma to inspect the message-round goal shape.",
+          "kind": "theorem",
+          "line": 1741,
+          "name": "Prover.append_processRound_left_message",
+          "namespace": "Prover",
+          "short_name": "append_processRound_left_message",
+          "signature": "theorem append_processRound_left_message (i : Fin m) (hDir\u2081 : pSpec\u2081.dir i = .P_to_V)"
+        },
+        {
+          "doc": "**Left-round `processRound` compatibility (challenge branch).**  The `V_to_P` analogue of `append_processRound_left_message`: at a left challenge round `i < m`, the appended prover's `processRound` (heterogeneously) equals the `liftM` of `P\u2081`'s, assuming the run-up-to inputs are HEq.  Mirrors the message branch, with `getChallenge` (`append_getChallenge_left`) and `receiveChallenge` (`append_receiveChallenge_left`) in place of `sendMessage`, plus the extra function-application of the `receiveChallenge` result to the sampled challenge.",
+          "kind": "theorem",
+          "line": 1838,
+          "name": "Prover.append_processRound_left_challenge",
+          "namespace": "Prover",
+          "short_name": "append_processRound_left_challenge",
+          "signature": "theorem append_processRound_left_challenge (i : Fin m) (hDir\u2081 : pSpec\u2081.dir i = .V_to_P)"
+        },
+        {
+          "doc": "**The corrected well-founded `append_runToRound_left`.**  Running the appended prover up to a left-half round `j \u2264 m` (embedded as `j.castLE` into `Fin (m + n + 1)`) is heterogeneously equal to the `liftM` (along the left challenge `SubSpec`) of running `P\u2081` up to round `j`.",
+          "kind": "theorem",
+          "line": 1933,
+          "name": "Prover.append_runToRound_left",
+          "namespace": "Prover",
+          "short_name": "append_runToRound_left",
+          "signature": "theorem append_runToRound_left (j : Fin (m + 1)) :"
+        },
+        {
+          "doc": "**Seam specialization of `append_runToRound_left`.**  Running the appended prover up to the *seam* round `m` (the last round of `pSpec\u2081`, embedded as `(Fin.last m).castLE` into the appended protocol) is heterogeneously equal to the `liftM` of running `P\u2081` to its last round \u2014 i.e. the full honest run of `P\u2081`'s message phase.  This is the entry point for assembling `Prover.append_run`: after the seam, the continuation runs `P\u2082` (rounds `m+1 .. m+n`) starting from `P\u2081.output`-fed `P\u2082.input`.",
+          "kind": "theorem",
+          "line": 1988,
+          "name": "Prover.append_runToRound_seam",
+          "namespace": "Prover",
+          "short_name": "append_runToRound_seam",
+          "signature": "theorem append_runToRound_seam :"
+        },
+        {
+          "doc": "PrvState of the appended prover at a *right interior* round `m + 1 + k` (`k : Fin n`) equals `P\u2082`'s state at round `k + 1`.  Mirror of `append_PrvState_castLE` via `Fin.append_right`/`Fin.tail` (here `Fin.tail P\u2082.PrvState \u2218 Fin.cast` reduces to `P\u2082.PrvState \u2218 Fin.succ` on the right).",
+          "kind": "theorem",
+          "line": 2005,
+          "name": "Prover.append_PrvState_natAdd_succ",
+          "namespace": "Prover",
+          "short_name": "append_PrvState_natAdd_succ",
+          "signature": "theorem append_PrvState_natAdd_succ (k : Fin n) :"
+        },
+        {
+          "doc": "The appended protocol's direction at a *right interior* round `Fin.natAdd m k` (`k : Fin n`) matches `pSpec\u2082`'s direction at `k`.  Mirror of `append_dir_castLE` via `Fin.append_right`.",
+          "kind": "theorem",
+          "line": 2016,
+          "name": "Prover.append_dir_natAdd",
+          "namespace": "Prover",
+          "short_name": "append_dir_natAdd",
+          "signature": "theorem append_dir_natAdd (k : Fin n) :"
+        },
+        {
+          "doc": "The appended-protocol message type at a right interior round equals `pSpec\u2082`'s.",
+          "kind": "theorem",
+          "line": 2022,
+          "name": "Prover.append_Message_natAdd",
+          "namespace": "Prover",
+          "short_name": "append_Message_natAdd",
+          "signature": "theorem append_Message_natAdd (k : Fin n)"
+        },
+        {
+          "doc": "The appended-protocol challenge type at a right interior round equals `pSpec\u2082`'s.",
+          "kind": "theorem",
+          "line": 2029,
+          "name": "Prover.append_Challenge_natAdd",
+          "namespace": "Prover",
+          "short_name": "append_Challenge_natAdd",
+          "signature": "theorem append_Challenge_natAdd (k : Fin n)"
+        },
+        {
+          "doc": "State-type equality: the appended prover's state at the seam-round `castSucc` index `m` (the state going INTO the seam round) equals `P\u2081`'s last state.",
+          "kind": "theorem",
+          "line": 2044,
+          "name": "Prover.append_PrvState_seam_castSucc",
+          "namespace": "Prover",
+          "short_name": "append_PrvState_seam_castSucc",
+          "signature": "theorem append_PrvState_seam_castSucc (hn : 0 < n) :"
+        },
+        {
+          "doc": "**Seam-round `sendMessage` reduction.**  At the seam round `m` (the `i = m` branch of `Prover.append.sendMessage`), the appended prover's `sendMessage` is heterogeneously equal to `P\u2081.output state >>= fun ctx => P\u2082.sendMessage \u27e80,_\u27e9 (P\u2082.input ctx)`.",
+          "kind": "theorem",
+          "line": 2054,
+          "name": "Prover.append_sendMessage_seam",
+          "namespace": "Prover",
+          "short_name": "append_sendMessage_seam",
+          "signature": "theorem append_sendMessage_seam (hn : 0 < n)"
+        },
+        {
+          "doc": "**Seam-round `receiveChallenge` reduction.**  The `V_to_P` analogue of `append_sendMessage_seam`: at the seam round `m`, the appended prover's `receiveChallenge` is heterogeneously equal to `P\u2081.output state >>= fun ctx => P\u2082.receiveChallenge \u27e80,_\u27e9 (P\u2082.input ctx)`.",
+          "kind": "theorem",
+          "line": 2080,
+          "name": "Prover.append_receiveChallenge_seam",
+          "namespace": "Prover",
+          "short_name": "append_receiveChallenge_seam",
+          "signature": "theorem append_receiveChallenge_seam (hn : 0 < n)"
+        },
+        {
+          "doc": "State-type equality: the appended prover's state at the interior right round `Fin.natAdd m k`'s `castSucc` (state going INTO interior round `k`, where `k > 0`) equals `P\u2082`'s state at `k`.",
+          "kind": "theorem",
+          "line": 2110,
+          "name": "Prover.append_PrvState_natAdd_castSucc",
+          "namespace": "Prover",
+          "short_name": "append_PrvState_natAdd_castSucc",
+          "signature": "theorem append_PrvState_natAdd_castSucc (k : Fin n) (hk : 0 < (k : \u2115)) :"
+        },
+        {
+          "doc": "State-type equality at the interior right round `succ` index (state AFTER interior round `k`, `k > 0`).  Equals `P\u2082.PrvState k.succ`.",
+          "kind": "theorem",
+          "line": 2122,
+          "name": "Prover.append_PrvState_natAdd_interior_succ",
+          "namespace": "Prover",
+          "short_name": "append_PrvState_natAdd_interior_succ",
+          "signature": "theorem append_PrvState_natAdd_interior_succ (k : Fin n) (hk : 0 < (k : \u2115)) :"
+        },
+        {
+          "doc": "**Right interior-round `sendMessage` reduction.**  At an interior right round `Fin.natAdd m k` (`k : Fin n`, `k > 0`, the `i > m` branch of `Prover.append.sendMessage`), the appended prover's `sendMessage` is heterogeneously equal to `P\u2082`'s `sendMessage` at round `k`.",
+          "kind": "theorem",
+          "line": 2132,
+          "name": "Prover.append_sendMessage_natAdd",
+          "namespace": "Prover",
+          "short_name": "append_sendMessage_natAdd",
+          "signature": "theorem append_sendMessage_natAdd (k : Fin n) (hk : 0 < (k : \u2115))"
+        },
+        {
+          "doc": "**Right interior-round `receiveChallenge` reduction.**  Mirror of `append_sendMessage_natAdd` for the `V_to_P` direction.",
+          "kind": "theorem",
+          "line": 2156,
+          "name": "Prover.append_receiveChallenge_natAdd",
+          "namespace": "Prover",
+          "short_name": "append_receiveChallenge_natAdd",
+          "signature": "theorem append_receiveChallenge_natAdd (k : Fin n) (hk : 0 < (k : \u2115))"
+        },
+        {
+          "doc": "States that running an appended prover `P\u2081.append P\u2082` with an initial statement `stmt\u2081` and witness `wit\u2081` behaves as expected: it first runs `P\u2081` to obtain an intermediate statement `stmt\u2082`, witness `wit\u2082`, and transcript `transcript\u2081`. Then, it runs `P\u2082` on `stmt\u2082` and `wit\u2082` to produce the final statement `stmt\u2083`, witness `wit\u2083`, and transcript `transcript\u2082`. The overall output is `stmt\u2083`, `wit\u2083`, and the combined transcript `transcript\u2081 ++\u209c transcript\u2082`.",
+          "kind": "theorem",
+          "line": 2185,
+          "name": "Prover.append_run",
+          "namespace": "Prover",
+          "short_name": "append_run",
+          "signature": "theorem append_run (stmt : Stmt\u2081) (wit : Wit\u2081) :"
+        },
+        {
           "doc": "Running the sequential composition of two verifiers on a transcript of the combined protocol is equivalent to running the first verifier on the first part of the transcript, and the second verifier on the second part of the transcript, and returning the final statement.",
           "kind": "theorem",
-          "line": 1347,
+          "line": 2245,
           "name": "Verifier.append_run",
           "namespace": "Verifier",
           "short_name": "append_run",
@@ -61606,9 +62002,18 @@
           "signature": "abbrev stirRoundIOR (\u03c6 : \u03b9 \u21aa F) (deg : \u2115) :"
         },
         {
+          "doc": "**Combine on a single function at its own degree is the identity.** Specializing STIR's `Combine.combine` (Definition 4.11) to the single-function family `![f]` with target degree `d* = deg` and degree list `![deg]` collapses to `f` itself: * `ri deg ![deg] r 0 = r ^ (0 + \u2211_{j<0} (deg - deg j)) = r ^ 0 = 1` (empty sum exponent), and * the inner geometric sum runs over `range (deg - deg + 1) = range 1 = {0}`, contributing the single term `(\u03c6 x * r) ^ 0 = 1`. Hence each summand is `1 * f x * 1 = f x`, and the outer `Fin 1` sum is `f x`.  This is the honest completeness fact for the one-round STI",
+          "kind": "theorem",
+          "line": 157,
+          "name": "StirIOP.Round.combine_single_self",
+          "namespace": "StirIOP.Round",
+          "short_name": "combine_single_self",
+          "signature": "theorem combine_single_self (\u03c6 : \u03b9 \u21aa F) (deg : \u2115) (r : F) (f : \u03b9 \u2192 F) :"
+        },
+        {
           "doc": "Input relation for the STIR fold round: the input oracle function is `\u03b4`-close to the Reed-Solomon codeword space `RS[F, \u03c6, deg]`.  (This is the completeness relation of the round, matching `StirIOP.stirRelation`.)",
           "kind": "def",
-          "line": 151,
+          "line": 172,
           "name": "StirIOP.Round.stirRoundInputRel",
           "namespace": "StirIOP.Round",
           "short_name": "stirRoundInputRel",
@@ -61617,7 +62022,7 @@
         {
           "doc": "Output relation for the STIR fold round: the folded oracle (`Combine.combine \u2026`) is `\u03b4`-close to the Reed-Solomon codeword space.  (The round folds `RS[F, \u03c6, deg]` into itself at the same domain in this single-domain model; the genuine multi-domain degree reduction is future work.)",
           "kind": "def",
-          "line": 158,
+          "line": 179,
           "name": "StirIOP.Round.stirRoundOutputRel",
           "namespace": "StirIOP.Round",
           "short_name": "stirRoundOutputRel",
@@ -61626,7 +62031,7 @@
         {
           "doc": "**Completeness of the real STIR fold-round object** (statement; proof owed). This is the completeness statement *rewritten against the genuine `stirRoundReduction` object* defined above \u2014 not against a nonexistent protocol.  The proof is `sorry`, but it is now an honest obligation about a real, sorry-free protocol object whose prover message is the actual STIR `Combine.combine` operation. Category status: the STIR directory previously had **no** protocol object at all; this statement is the first completeness claim attached to an actual STIR protocol object.",
           "kind": "theorem",
-          "line": 175,
+          "line": 196,
           "name": "StirIOP.Round.stirRoundReduction_completeness",
           "namespace": "StirIOP.Round",
           "short_name": "stirRoundReduction_completeness",
@@ -70009,7 +70414,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 7613,
+      "declarations": 7658,
       "files": 376
     }
   }
