@@ -1707,6 +1707,87 @@ lemma approximate_solution_is_exact_solution_coeffs_graph_of_beta_embedding_zero
       hx0 hsep hS_nonempty A hA hcount hlarge)
     (hemb t ht)
 
+open BCIKS20AppendixA in
+open BCIKS20AppendixA.ClaimA2 in
+omit [DecidableEq (RatFunc F)] in
+/-- Graph Claim 5.8 front door from the exact Appendix-A Lemma A.1 largeness
+condition. -/
+lemma approximate_solution_is_exact_solution_coeffs_graph_of_Sβ_large
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hx0 : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        Bivariate.evalX (Polynomial.C x₀) R ≠ 0)
+    (hsep : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        (Bivariate.evalX (Polynomial.C x₀) R).Separable)
+    (hS_nonempty :
+      (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).Nonempty)
+    (A : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ → Finset (Fin n))
+    (hA : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      ∀ i ∈ A z, (u₀ + z.1 • u₁) i =
+        (Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2).eval
+          (ωs i))
+    (hcount : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z.1) 1 k < m * (A z).card)
+    (hlarge :
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q)
+    (hlargeS : ∀ t ≥ k, ∃ D : ℕ,
+      D ≥ Bivariate.totalDegree
+        (H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+          hx0 hsep hS_nonempty A hA hcount hlarge) ∧
+        Set.ncard (S_β
+          (β
+            (H := H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+              hx0 hsep hS_nonempty A hA hcount hlarge)
+            (R_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+              hx0 hsep hS_nonempty A hA hcount hlarge) t)) >
+          weight_Λ_over_𝒪
+            (natDegree_H_graph_pos (F := F) (m := m) (n := n) k δ x₀ h_gs
+              hx0 hsep hS_nonempty A hA hcount hlarge)
+            (β
+              (H := H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+                hx0 hsep hS_nonempty A hA hcount hlarge)
+              (R_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+                hx0 hsep hS_nonempty A hA hcount hlarge) t) D *
+            (H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+              hx0 hsep hS_nonempty A hA hcount hlarge).natDegree) :
+    ∀ t ≥ k,
+    α'
+      x₀
+      (R_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+        hx0 hsep hS_nonempty A hA hcount hlarge)
+      (irreducible_H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+        hx0 hsep hS_nonempty A hA hcount hlarge)
+      (natDegree_H_graph_pos (F := F) (m := m) (n := n) k δ x₀ h_gs
+        hx0 hsep hS_nonempty A hA hcount hlarge)
+      (claimA2_hypotheses_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+        hx0 hsep hS_nonempty A hA hcount hlarge)
+      t
+    =
+    (0 : BCIKS20AppendixA.𝕃
+      (H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+        hx0 hsep hS_nonempty A hA hcount hlarge)) := by
+  exact approximate_solution_is_exact_solution_coeffs_graph_of_beta_embedding_zero
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) δ x₀ h_gs
+    hx0 hsep hS_nonempty A hA hcount hlarge
+    (fun t ht => by
+      obtain ⟨D, hD, hcard⟩ := hlargeS t ht
+      exact BCIKS20AppendixA.Lemma_A_1
+        (H := H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+          hx0 hsep hS_nonempty A hA hcount hlarge)
+        (natDegree_H_graph_pos (F := F) (m := m) (n := n) k δ x₀ h_gs
+          hx0 hsep hS_nonempty A hA hcount hlarge)
+        (β
+          (H := H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+            hx0 hsep hS_nonempty A hA hcount hlarge)
+          (R_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
+            hx0 hsep hS_nonempty A hA hcount hlarge) t)
+        D hD hcard)
+
 open BCIKS20AppendixA.ClaimA2 in
 omit [DecidableEq (RatFunc F)] in
 lemma approximate_solution_is_exact_solution_coeffs_graph_clear_of_beta_embedding_zero
@@ -3154,6 +3235,7 @@ noncomputable def matching_set
     (_h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) : Finset F :=
   coeffs_of_close_proximity k ωs δ u₀ u₁
 
+omit [DecidableEq (RatFunc F)] in
 /-- `matching_set` (BCIKS20's `S'`) is a subset of `S = coeffs_of_close_proximity` (here, equal by
 the `S' := S` over-approximation — see `matching_set`). -/
 lemma matching_set_is_a_sub_of_coeffs_of_close_proximity
