@@ -422,16 +422,7 @@ theorem correlatedAgreement_affine_curves_listDecoding_closed_of_strict_section5
           ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
       (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
       δ < 1 - ReedSolomon.sqrtRate deg domain →
-      Σ P₀ : F → Polynomial F,
-        Subtype (fun _d :
-          Section5StrictData (k := k) (deg := deg) (domain := domain) (δ := δ) u P₀ =>
-          ∀ P : F → Polynomial F,
-            (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
-              (P z).natDegree < deg ∧
-                δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
-                  (P z).eval ∘ domain) ≤ δ) →
-            ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
-              P z = P₀ z)
+      StrictCanonicalSection5Data (k := k) (deg := deg) (domain := domain) (δ := δ) u)
     (hBoundary : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
       Pr_{
         let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
@@ -445,8 +436,8 @@ theorem correlatedAgreement_affine_curves_listDecoding_closed_of_strict_section5
   refine correlatedAgreement_affine_curves_listDecoding_closed
     (deg := deg) (domain := domain) (δ := δ) hδ ?_ hBoundary
   intro u hprob hJ hsqrt P hP
-  obtain ⟨_, d⟩ := hCanonicalExtract u hprob hJ hsqrt
-  exact section5StrictDataOfEqOnGood d.val (d.property P hP)
+  let c := hCanonicalExtract u hprob hJ hsqrt
+  exact section5StrictDataOfEqOnGood c.section5 (c.unique P hP)
 
 end CorrelatedAgreementListDecodingClosed
 
