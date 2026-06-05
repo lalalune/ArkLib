@@ -164,6 +164,8 @@ import ArkLib.Data.Domain.FftDomain.Ops
 import ArkLib.Data.Domain.FftDomain.Subdomain
 import ArkLib.Data.Domain.FftDomain.ToSubgroup
 import ArkLib.Data.EllipticCurve.BN254
+import ArkLib.Data.FieldTheory.AdditiveNTT.Domain
+import ArkLib.Data.FieldTheory.BinaryField.Tower.TensorAlgebra
 import ArkLib.Data.FieldTheory.NonBinaryField.Basic
 import ArkLib.Data.Fin.Basic
 import ArkLib.Data.Fin.BigOperators
