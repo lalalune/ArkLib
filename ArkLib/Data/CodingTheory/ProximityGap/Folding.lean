@@ -843,8 +843,6 @@ theorem folding_preserves_distance
     have h_k_le_n : k ≤ n := by
       rw [←Nat.pow_le_pow_iff_right (a := 2) (by simp)]
       omega
-    letI : NeZero (d / (2 ^ k)) :=
-      ⟨Nat.ne_of_gt (Nat.div_pos h_k_d (by positivity))⟩
     have bound_tighter : 
       (↑δ) ≤ 1 - ReedSolomon.sqrtRate (d / (2 ^ k)) 
         (domain.subdomainNatReversed k : Fin (2 ^ (n - k)) ↪ F) := 
