@@ -697,6 +697,37 @@ theorem Lambda_le_of_real_radius_real_minDist_johnson_condition
     rw [Nat.cast_sub hmin_le]
   simpa [hB] using hcond
 
+/-- Lambda-level Johnson cap with the algebraic side condition divided by the
+block length. This relative-distance form is the natural target for the
+`Jqℓ` radius algebra: the minimum distance appears as `minDist(C)/n`, and the
+close-list radius appears as `δ` rather than `δ*n`. -/
+theorem Lambda_le_of_normalized_johnson_condition
+    {ι : Type} [Fintype ι] [DecidableEq ι] [Nonempty ι]
+    {α : Type} [Fintype α] [DecidableEq α]
+    (C : ListDecodable.Code ι α) {δ : ℝ} {ℓ : ℕ} {β : ℝ}
+    (hδ : 0 ≤ δ) (hq : 0 < Fintype.card α) (hβ : 0 ≤ β)
+    (hcond : ((1 - 1 / (Fintype.card α : ℝ)) * (1 + β ^ 2)
+        - 2 * β * ((1 - δ) - 1 / (Fintype.card α : ℝ)))
+      + (ℓ : ℝ) * (((1 - (Code.minDist C : ℝ) / (Fintype.card ι : ℝ))
+          - 1 / (Fintype.card α : ℝ))
+        - 2 * β * ((1 - δ) - 1 / (Fintype.card α : ℝ))
+        + β ^ 2 * (1 - 1 / (Fintype.card α : ℝ))) < 0) :
+    ListDecodable.Lambda C δ ≤ (ℓ : ℕ∞) := by
+  apply Lambda_le_of_real_radius_real_minDist_johnson_condition C hδ hq hβ
+  have hn_pos : 0 < (Fintype.card ι : ℝ) := by
+    exact_mod_cast Fintype.card_pos
+  have hscaled :
+      (Fintype.card ι : ℝ) *
+        (((1 - 1 / (Fintype.card α : ℝ)) * (1 + β ^ 2)
+          - 2 * β * ((1 - δ) - 1 / (Fintype.card α : ℝ)))
+        + (ℓ : ℝ) * (((1 - (Code.minDist C : ℝ) / (Fintype.card ι : ℝ))
+            - 1 / (Fintype.card α : ℝ))
+          - 2 * β * ((1 - δ) - 1 / (Fintype.card α : ℝ))
+          + β ^ 2 * (1 - 1 / (Fintype.card α : ℝ)))) < 0 :=
+    mul_neg_of_pos_of_neg hn_pos hcond
+  convert hscaled using 1
+  field_simp [hn_pos.ne']
+
 /-- A violated finite `Lambda` bound produces a concrete point-list whose average
 distance is controlled by the q-ary Plotkin bound.
 
