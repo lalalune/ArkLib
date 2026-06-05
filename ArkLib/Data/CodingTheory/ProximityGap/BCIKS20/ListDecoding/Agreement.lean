@@ -6200,6 +6200,39 @@ lemma close_proximity_subset_matching_set_on_points_of_large_matching_subset
     (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs x
     (lt_of_le_of_lt hcover (hlarge x hx))
 
+omit [DecidableEq (RatFunc F)] in
+/-- Graph-clear variant of
+`close_proximity_subset_matching_set_on_points_of_large_matching_subset`.
+
+This is the selected-domain coverage step with the honest graph-condition
+extractions `R_graph_clear`/`H_graph_clear`, rather than the legacy `R`/`H`
+chosen by the still-open Claim-5.7 surface. -/
+lemma close_proximity_subset_matching_set_on_points_of_large_matching_subset_graph_clear
+    [DecidableEq (Polynomial F)]
+    {ωs : Fin n ↪ F} {Dtop : Finset (Fin n)}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
+    {D : ℕ}
+    (hcover :
+      (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).card - 1 ≤
+        (2 * k + 1)
+          * (Bivariate.natDegreeY <| H_graph_clear k δ x₀ h_gs hcond)
+          * (Bivariate.natDegreeY <| R_graph_clear k δ x₀ h_gs hcond)
+          * D)
+    (hlarge : ∀ x ∈ Dtop,
+      (matching_set_at_x k δ h_gs x).card >
+        (2 * k + 1)
+          * (Bivariate.natDegreeY <| H_graph_clear k δ x₀ h_gs hcond)
+          * (Bivariate.natDegreeY <| R_graph_clear k δ x₀ h_gs hcond)
+          * D) :
+    ∀ x ∈ Dtop,
+      coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ ⊆
+        matching_set_at_x k δ h_gs x := by
+  intro x hx
+  exact close_proximity_subset_matching_set_at_x_of_pred_lt_card
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) h_gs x
+    (lt_of_le_of_lt hcover (hlarge x hx))
+
 /-- Claim-5.11-to-assembly bridge for any uniform integer bad-coordinate
 bound `E`: once double counting selects points with large fibers and the
 coverage arithmetic says that every close parameter must fit in such a fiber,
