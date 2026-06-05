@@ -74,6 +74,11 @@ lemma not_zero_mem :
   obtain ⟨i, contra⟩ := contra
   exact CosetFftDomainClass.ne_zero ω i (by simp_all)
 
+omit [DecidableEq ι] in
+@[simp high]
+lemma not_zero_mem_toFinset :
+  0 ∉ toFinset ω := by simp
+
 end CosetFftDomainClass
 
 instance {ω : CosetFftDomain ι F} : Inhabited ω.toFinset where
