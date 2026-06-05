@@ -1,8 +1,8 @@
 {
   "counts": {
-    "files_with_citations": 84,
-    "keys_cited": 27,
-    "total_citation_edges": 116
+    "files_with_citations": 104,
+    "keys_cited": 28,
+    "total_citation_edges": 137
   },
   "files": {
     "ArkLib/AGM/Basic.lean": [
@@ -142,6 +142,9 @@
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/UniqueDecoding.lean": [
       "BCIKS20"
     ],
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/GammaGenuine.lean": [
+      "BCIKS20"
+    ],
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean": [
       "BCIKS20"
     ],
@@ -165,6 +168,9 @@
     ],
     "ArkLib/Data/CodingTheory/ProximityGap/Folding.lean": [
       "ACFY24"
+    ],
+    "ArkLib/Data/CodingTheory/ProximityGap/Hab25Core.lean": [
+      "BCIKS20"
     ],
     "ArkLib/Data/CodingTheory/ReedSolomon.lean": [
       "ACFY24"
@@ -206,14 +212,24 @@
     "ArkLib/Data/Polynomial/FoldingPolynomial.lean": [
       "ACFY24"
     ],
+    "ArkLib/Data/Polynomial/GammaSubstObstruction.lean": [
+      "BCIKS20"
+    ],
     "ArkLib/Data/Polynomial/Indicator.lean": [
       "ACFY24"
+    ],
+    "ArkLib/Data/Polynomial/NewtonLinearization.lean": [
+      "BCIKS20"
     ],
     "ArkLib/Data/Polynomial/RationalFunctions.lean": [
       "BCIKS20"
     ],
     "ArkLib/Data/Polynomial/Trivariate.lean": [
       "BCIKS20"
+    ],
+    "ArkLib/OracleReduction/BCS/Basic.lean": [
+      "BCS16",
+      "ChiesaYogev2024"
     ],
     "ArkLib/OracleReduction/Basic.lean": [
       "BCS16"
@@ -229,8 +245,11 @@
     "ArkLib/ProofSystem/BatchedFri/Security.lean": [
       "BCIKS20"
     ],
-    "ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean": [
-      "DP24"
+    "ArkLib/ProofSystem/BatchedFri/Spec/General.lean": [
+      "FRI1216"
+    ],
+    "ArkLib/ProofSystem/BatchedFri/Spec/SingleRound.lean": [
+      "FRI1216"
     ],
     "ArkLib/ProofSystem/Binius/FRIBinius/General.lean": [
       "DP24"
@@ -288,6 +307,48 @@
     ],
     "ArkLib/ProofSystem/Whir/RBRSoundness.lean": [
       "ACFY24"
+    ],
+    "ArkLib/ToMathlib/BetaRecursion.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/ToMathlib/BetaToCurveCoeffPolys.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/ToMathlib/BetaWeightInduction.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/ToMathlib/BivariateDegreeToolkit.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/ToMathlib/Claim510Conditional.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/ToMathlib/Claim511.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/ToMathlib/CorrelatedAgreementListDecodingClosed.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/ToMathlib/HliftDvd.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/ToMathlib/MatchingExtractor.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/ToMathlib/MultiplicityDatum.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/ToMathlib/PowerSeriesHenselianA.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/ToMathlib/Prop55.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/ToMathlib/SbetaPackaging.lean": [
+      "BCIKS20"
+    ],
+    "ArkLib/ToMathlib/WeightLambdaCalculus.lean": [
+      "BCIKS20"
     ]
   },
   "keys": {
@@ -349,20 +410,39 @@
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/JointAgreement.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves/UniqueDecoding.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/GammaGenuine.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Extraction.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Guruswami.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ReedSolomonGap.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/WeightedAgreement.lean",
       "ArkLib/Data/CodingTheory/ProximityGap/Basic.lean",
+      "ArkLib/Data/CodingTheory/ProximityGap/Hab25Core.lean",
+      "ArkLib/Data/Polynomial/GammaSubstObstruction.lean",
+      "ArkLib/Data/Polynomial/NewtonLinearization.lean",
       "ArkLib/Data/Polynomial/RationalFunctions.lean",
       "ArkLib/Data/Polynomial/Trivariate.lean",
       "ArkLib/ProofSystem/BatchedFri/Security.lean",
       "ArkLib/ProofSystem/Fri/Spec/Soundness.lean",
       "ArkLib/ProofSystem/Stir/ProximityGap.lean",
-      "ArkLib/ProofSystem/Whir/ProximityGen.lean"
+      "ArkLib/ProofSystem/Whir/ProximityGen.lean",
+      "ArkLib/ToMathlib/BetaRecursion.lean",
+      "ArkLib/ToMathlib/BetaToCurveCoeffPolys.lean",
+      "ArkLib/ToMathlib/BetaWeightInduction.lean",
+      "ArkLib/ToMathlib/BivariateDegreeToolkit.lean",
+      "ArkLib/ToMathlib/Claim510Conditional.lean",
+      "ArkLib/ToMathlib/Claim511.lean",
+      "ArkLib/ToMathlib/CorrelatedAgreementListDecodingClosed.lean",
+      "ArkLib/ToMathlib/HliftDvd.lean",
+      "ArkLib/ToMathlib/MatchingExtractor.lean",
+      "ArkLib/ToMathlib/MultiplicityDatum.lean",
+      "ArkLib/ToMathlib/PowerSeriesHenselianA.lean",
+      "ArkLib/ToMathlib/Prop55.lean",
+      "ArkLib/ToMathlib/SbetaPackaging.lean",
+      "ArkLib/ToMathlib/WeightLambdaCalculus.lean"
     ],
     "BCS16": [
+      "ArkLib/OracleReduction/BCS/Basic.lean",
       "ArkLib/OracleReduction/Basic.lean",
       "ArkLib/OracleReduction/VectorIOR.lean"
     ],
@@ -375,8 +455,10 @@
       "ArkLib/CommitmentScheme/KZG/FunctionBinding/TauInQueries.lean",
       "ArkLib/CommitmentScheme/KZG/HardnessAssumptions.lean"
     ],
+    "ChiesaYogev2024": [
+      "ArkLib/OracleReduction/BCS/Basic.lean"
+    ],
     "DP24": [
-      "ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean",
       "ArkLib/ProofSystem/Binius/FRIBinius/General.lean",
       "ArkLib/ProofSystem/RingSwitching/General.lean"
     ],
@@ -384,6 +466,8 @@
       "ArkLib/OracleReduction/Security/CoordinateWiseSpecialSoundness.lean"
     ],
     "FRI1216": [
+      "ArkLib/ProofSystem/BatchedFri/Spec/General.lean",
+      "ArkLib/ProofSystem/BatchedFri/Spec/SingleRound.lean",
       "ArkLib/ProofSystem/Fri/Spec/SingleRound.lean"
     ],
     "GWZC19": [
