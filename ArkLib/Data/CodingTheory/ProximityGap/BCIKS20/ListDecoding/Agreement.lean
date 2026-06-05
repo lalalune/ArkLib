@@ -387,6 +387,32 @@ theorem Q_vanishes_on_close_codeword_graph [DecidableEq (Polynomial F)]
 /-! ### Side-condition-explicit Claim 5.7 helpers -/
 
 omit [DecidableEq (RatFunc F)] in
+/-- Restate graph vanishing through the `pg_eval_on_Z` accessor consumed by the extraction toolbox. -/
+theorem Q_vanishes_on_close_codeword_graph_pg [DecidableEq (Polynomial F)]
+    (k : ℕ) {z : F} (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hS : z ∈ coeffs_of_close_proximity k ωs δ u₀ u₁)
+    (hQz_ne : Trivariate.eval_on_Z Q z ≠ 0)
+    (A : Finset (Fin n))
+    (hA : ∀ i ∈ A, (u₀ + z • u₁) i = (Pz hS).eval (ωs i))
+    (hcount : Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z) 1 k < m * A.card) :
+    (pg_eval_on_Z (F := F) Q z).eval (Pz hS) = 0 := by
+  have hkey := Q_vanishes_on_close_codeword_graph (F := F) k h_gs hS hQz_ne A hA hcount
+  rwa [c57_eval_on_Z_eq_pg] at hkey
+
+omit [DecidableEq (RatFunc F)] in
+/-- A one-parameter graph-vanishing fact gives the linear-factor divisibility used by Claim 5.7. -/
+theorem Q_graph_factor_dvd [DecidableEq (Polynomial F)]
+    (k : ℕ) {z : F} (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hS : z ∈ coeffs_of_close_proximity k ωs δ u₀ u₁)
+    (hQz_ne : Trivariate.eval_on_Z Q z ≠ 0)
+    (A : Finset (Fin n))
+    (hA : ∀ i ∈ A, (u₀ + z • u₁) i = (Pz hS).eval (ωs i))
+    (hcount : Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z) 1 k < m * A.card) :
+    Polynomial.X - Polynomial.C (Pz hS) ∣ pg_eval_on_Z (F := F) Q z :=
+  Polynomial.dvd_iff_isRoot.mpr
+    (Q_vanishes_on_close_codeword_graph_pg (F := F) k h_gs hS hQz_ne A hA hcount)
+
+omit [DecidableEq (RatFunc F)] in
 /-- Convert the explicit graph-vanishing side conditions into the divisibility hypothesis consumed
 by `pg_exists_common_candidate_pair_of_dvd_card_natDegreeY`.
 
@@ -2953,6 +2979,92 @@ lemma solution_gamma_is_linear_in_Z_of_polynomial_representative_degreeX_le_one
     (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs)
     (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs)
     hrepr hP
+
+open BCIKS20AppendixA.ClaimA2 in
+/-- The polynomial represented by an explicit linearity witness for the base
+approximate solution.  Unlike `P`, this does not depend on the unsolved
+published Claim 5.9; the witness is supplied as a side condition. -/
+noncomputable def P_of_linear_witness
+    (δ : ℚ) (x₀ : F) (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    (hlin :
+      ∃ (v₀ v₁ : F[X]),
+        γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
+          (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs)
+          (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs) =
+            BCIKS20AppendixA.polyToPowerSeries𝕃 _
+              ((Polynomial.map Polynomial.C v₀) +
+                (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁))) : F[Z][X] :=
+  let v₀ := Classical.choose hlin
+  let v₁ := Classical.choose (Classical.choose_spec hlin)
+  (Polynomial.map Polynomial.C v₀) +
+    (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)
+
+open BCIKS20AppendixA.ClaimA2 in
+/-- The explicit-witness polynomial represents the base `γ'`. -/
+lemma gamma_eq_P_of_linear_witness
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    (hlin :
+      ∃ (v₀ v₁ : F[X]),
+        γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
+          (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs)
+          (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs) =
+            BCIKS20AppendixA.polyToPowerSeries𝕃 _
+              ((Polynomial.map Polynomial.C v₀) +
+                (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁))) :
+    γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
+      (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs)
+      (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs) =
+        BCIKS20AppendixA.polyToPowerSeries𝕃 _
+          (P_of_linear_witness k δ x₀ h_gs hlin) := by
+  exact Classical.choose_spec (Classical.choose_spec hlin)
+
+open BCIKS20AppendixA.ClaimA2 Polynomial in
+/-- Algebraic Claim 5.10 core for an explicit base linearity witness. -/
+lemma P_eval_eq_word_of_linear_witness_coeff_values
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    (hlin :
+      ∃ (v₀ v₁ : F[X]),
+        γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
+          (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs)
+          (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs) =
+            BCIKS20AppendixA.polyToPowerSeries𝕃 _
+              ((Polynomial.map Polynomial.C v₀) +
+                (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)))
+    (x : Fin n)
+    (h₀ : (Classical.choose hlin).eval (ωs x) = u₀ x)
+    (h₁ : (Classical.choose (Classical.choose_spec hlin)).eval (ωs x) = u₁ x) :
+    (P_of_linear_witness k δ x₀ h_gs hlin).eval (Polynomial.C (ωs x)) =
+      (Polynomial.C <| u₀ x) + u₁ x • Polynomial.X := by
+  unfold P_of_linear_witness
+  exact polynomial_representative_matches_word_of_linear_coeff_values
+    (F := F) (a := ωs x) (u₀ := u₀ x) (u₁ := u₁ x) rfl h₀ h₁
+
+open BCIKS20AppendixA.ClaimA2 Polynomial in
+/-- Scalar-evaluated algebraic Claim 5.10 core for an explicit base linearity
+witness. -/
+lemma P_eval_eval_eq_word_of_linear_witness_coeff_values
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    (hlin :
+      ∃ (v₀ v₁ : F[X]),
+        γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
+          (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs)
+          (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs) =
+            BCIKS20AppendixA.polyToPowerSeries𝕃 _
+              ((Polynomial.map Polynomial.C v₀) +
+                (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)))
+    (x : Fin n) (z : F)
+    (h₀ : (Classical.choose hlin).eval (ωs x) = u₀ x)
+    (h₁ : (Classical.choose (Classical.choose_spec hlin)).eval (ωs x) = u₁ x) :
+    ((P_of_linear_witness k δ x₀ h_gs hlin).eval (Polynomial.C (ωs x))).eval z =
+      u₀ x + z * u₁ x := by
+  rw [P_eval_eq_word_of_linear_witness_coeff_values
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+    h_gs hlin x h₀ h₁]
+  simp [mul_comm]
 
 open BCIKS20AppendixA.ClaimA2 in
 omit [DecidableEq (RatFunc F)] in
