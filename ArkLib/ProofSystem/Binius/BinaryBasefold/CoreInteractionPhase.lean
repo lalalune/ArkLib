@@ -375,11 +375,14 @@ def nonLastBlockOracleVerifier (bIdx : Fin (ℓ / ϑ - 1)) :
       (OStmtOut := OracleStatement 𝔽q β ϑ ⟨(bIdx + 1) * ϑ, bIdx_succ_mul_ϑ_lt_ℓ_succ bIdx⟩)
       (pSpec := pSpecFoldCommit 𝔽q β ⟨bIdx * ϑ + (ϑ - 1), h1⟩) := by
     have lastOV := lastOracleVerifier
+    simp only [Fin.succ_mk, Fin.castSucc_mk] at lastOV
     rw! (castMode := .all) [h] at lastOV
     exact lastOV
   letI V₂coh : OracleVerifier.Append.AppendCoherent V₂ := by
     show OracleVerifier.Append.AppendCoherent
-      (by have lastOV := lastOracleVerifier; rw! (castMode := .all) [h] at lastOV; exact lastOV)
+      (by have lastOV := lastOracleVerifier
+          simp only [Fin.succ_mk, Fin.castSucc_mk] at lastOV
+          rw! (castMode := .all) [h] at lastOV; exact lastOV)
     rw! (castMode := .all) [← h]
     exact instFoldCommitOracleVerifierAppendCoherent 𝔽q β (ϑ := ϑ)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Context := Context)
@@ -399,11 +402,23 @@ instance instNonLastBlockOracleVerifierAppendCoherent (bIdx : Fin (ℓ / ϑ - 1)
     OracleVerifier.Append.AppendCoherent
       (nonLastBlockOracleVerifier 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
         (Context := Context) bIdx) := by
-  -- both leaves (`V₁` the fold-relay `seqCompose`, `V₂` the re-indexed fold-commit) carry local
-  -- `AppendCoherent` instances inside the def; `unfold` exposes them and `infer_instance` assembles
-  -- the composite via `AppendCoherent.append`.
+  -- reconstruct the two leaf coherences (fold-relay prefix `seqCompose`; re-indexed fold-commit)
+  -- exactly as inside the def, then assemble via `AppendCoherent.append`.
+  letI cohFR : ∀ i : Fin (ϑ - 1),
+      OracleVerifier.Append.AppendCoherent
+        (foldRelayOracleVerifier (L:=L) 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (Context := Context)
+          ⟨bIdx * ϑ + i, bIdx_mul_ϑ_add_i_fin_ℓ_pred_lt_ℓ bIdx i⟩
+          (isNeCommitmentRound (r:=r) (ℓ:=ℓ) (𝓡:=𝓡) (ϑ:=ϑ) bIdx (x:=i.val) (hx:=by omega))) :=
+    fun i =>
+      instFoldRelayOracleVerifierAppendCoherent (L:=L) 𝔽q β (ϑ:=ϑ)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Context := Context)
+        ⟨bIdx * ϑ + i, bIdx_mul_ϑ_add_i_fin_ℓ_pred_lt_ℓ bIdx i⟩
+        (isNeCommitmentRound (r:=r) (ℓ:=ℓ) (𝓡:=𝓡) (ϑ:=ϑ) bIdx (x:=i.val) (hx:=by omega))
   unfold nonLastBlockOracleVerifier
-  infer_instance
+  refine OracleVerifier.Append.AppendCoherent.append _ _ (c₁ := ?_) (c₂ := ?_)
+  · infer_instance
+  · infer_instance
 
 def lastBlockOracleVerifier :=
   let bIdx := ℓ / ϑ - 1
