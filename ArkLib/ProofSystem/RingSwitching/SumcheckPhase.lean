@@ -588,11 +588,29 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
       obtain ⟨-, hWitStruct, hConsistSucc, hCompat⟩ := h_SumcheckStepRelOut
       refine ⟨⟨?_, ?_⟩, ?_, ?_, ?_⟩
       · -- WALL (1a) — `localizedRoundPolyCheck`: the prover's sent `h_i = getSumcheckRoundPoly i
-        -- witLast.H`. NOT derivable from `h_SumcheckStepRelOut` + the verifier check: the verifier
-        -- only checks `∑ h_i(b) = target`, never that `h_i` equals the ground-truth round poly, so
-        -- a malicious prover's `h_i` need not match. This conjunct belongs to the round's *bad
-        -- event*; closing it requires the multi-round KState redesign flagged in the mission (the
-        -- `getSumcheckRoundPoly` cube-sum identity is necessary but not sufficient). Open WIP.
+        -- witLast.H`. PROVABLY NOT derivable from `h_SumcheckStepRelOut` + the verifier check: the
+        -- verifier only checks `∑ h_i(b) = target`, never that `h_i` equals the ground-truth round
+        -- poly. The extractor reconstructs `witLast.H := projectToMidSumcheckPoly … (GROUND TRUTH,
+        -- from `witOut.t'`/`challenges`), independent of the transcript message `h_i`; so a malicious
+        -- prover's `h_i` need not equal `h_star = getSumcheckRoundPoly witLast.H`. No reconstruction
+        -- of the full *multivariate* `witLast.H` from the *univariate* `h_i` is possible, so this is a
+        -- DESIGN obstruction, not a missing leaf lemma.
+        --
+        -- HONEST RESOLUTION (assessed P12, lane-a, the #22 redesign): the standard sumcheck RBR-KS
+        -- avoids `h_i = h_star` entirely — the round-`i` state function is `∑ h_i(b) = s_i`
+        -- (claim-live), the round-`(i+1)` state is `h_i(r') = h_star(r')` (challenge-consistent), and
+        -- the bad event `(∑ h_i ≠ s_i) ∧ (h_i(r') = h_star(r'))` is the genuine degree-2
+        -- Schwartz–Zippel event bounded by `2/|L|` (`OracleInterface.distanceLE_polynomial_degreeLE`
+        -- root-count). BUT the repo has NO `probEvent`-over-`getChallenge` root-count lemma (every
+        -- *closed* RBR-KS here — `Simple.oracleVerifier_rbrKnowledgeSoundness`, BatchingPhase — instead
+        -- discharges its bound via `probEvent_eq_zero` on a strong, transcript-dependent KState whose
+        -- bad event is *vacuous*, NEVER realising the `deg/|L|` Schwartz–Zippel slack). With the
+        -- current strong KState, `iteratedSumcheck_rbr_badEvent_vacuous` (above) shows the bad event IS
+        -- vacuous and the probability endgame closes; the ONLY residue is this `toFun_full` `h_i=h_star`,
+        -- which the vacuity proof *consumes* but `toFun_full` cannot *produce*. Closing #22 sorry-free
+        -- therefore requires EITHER (i) the absent `probEvent`/root-count infrastructure (then redesign
+        -- to the weak KState), OR (ii) constraining the protocol so the verifier rejects `h_i ≠ h_star`
+        -- (changes the protocol). Both are out of leaf-proof scope; preserved as WIP per house rules.
         sorry
       · -- WALL (1b) — `nextSumcheckTargetCheck`: `h_i.eval r' = (getSumcheckRoundPoly i
         -- witLast.H).eval r'`. Follows from (1a) by congruence (`eval r'`). Blocked on (1a). Open WIP.
@@ -601,11 +619,13 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
         -- `witLast.H := projectToMidSumcheckPoly … i.castSucc stmtLast.challenges`.
         rfl
       · -- WALL (1c) — `sumcheckConsistencyProp (boolDomain (ℓ'-i.castSucc)) stmtLast.sumcheck_target
-        -- witLast.H`. Reconstruction from `hConsistSucc` (consistency at `i.succ` for `witOut.H`)
-        -- via the cons-step `projectToMid` advance + `getSumcheckRoundPoly_eval_eq_sum_snoc`: the
-        -- multi-round analog of `finalSumcheck_cube0_sum_eq`. Needs the dedicated round-transition
-        -- algebra lemma (`fixFirstVariablesOfMQP_projectToMid_step` chained with the cube marginal).
-        -- Open WIP.
+        -- witLast.H`, i.e. `stmtLast.sumcheck_target = ∑_{cube} witLast.H`. ALSO TRANSITIVELY BLOCKED
+        -- ON (1a): bridging `hConsistSucc` (i.succ) up to the round-i target uses the verifier check
+        -- `∑_{points i} h_i = stmtLast.sumcheck_target` and P9 `∑_{points i} h_star = ∑_{cube} witLast.H`
+        -- (`getSumcheckRoundPoly_points_sum_eq_cube`, PROVEN) — but joining them needs `h_i = h_star`
+        -- (1a). The cons-step round transition `fixFirstVariablesOfMQP_projectToMid_step` (PROVEN,
+        -- Prelude) advances the witness but does not supply the prover-honesty `h_i = h_star`. So all
+        -- three walls reduce to the single design obstruction (1a). Open WIP.
         sorry
       · -- `initialCompatibility (witLast.t', oStmtLast)`: `witLast.t' = witOut.t'` (extractor), and
         -- the verifier's `embed = Sum.inl` makes `oStmtOut = oStmtLast`, so this is `hCompat`.
