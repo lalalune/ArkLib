@@ -2361,11 +2361,13 @@ theorem coeffs_of_close_proximity_curve_finMapTwoWords_eq
     {k : ℕ} {ωs : Fin n ↪ F} (δ : ℚ≥0) (u₀ u₁ : Fin n → F) :
     coeffs_of_close_proximity_curve (F := F) (n := n) (l := 2)
         δ (Code.finMapTwoWords u₀ u₁) (ReedSolomon.toFinset ωs (k + 1)) =
-      coeffs_of_close_proximity (F := F) (n := n) (k := k) ωs (δ : ℚ) u₀ u₁ := by
+      coeffs_of_close_proximity k ωs (δ : ℚ) u₀ u₁ := by
   classical
-  simp [coeffs_of_close_proximity_curve, coeffs_of_close_proximity,
+  apply Finset.ext
+  intro z
+  simp [coeffs_of_close_proximity_curve, ProximityGap.coeffs_of_close_proximity,
     ReedSolomon.toFinset, ReedSolomon.RScodeSet, polynomialCurveEval_eq_sum_smul,
-    sum_finMapTwoWords_eq, ENNReal.coe_nnratCast]
+    sum_finMapTwoWords_eq]
 
 omit [NeZero n] in
 /-- The §6 close-parameter set specialized to a Reed-Solomon code is the same
