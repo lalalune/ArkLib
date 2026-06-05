@@ -851,6 +851,7 @@ theorem folding_preserves_distance
       @correlatedAgreement_affine_curves (Fin (2 ^ (n - k))) _ _ F _ _ _ 
         (2 ^ k - 1) (d / (2 ^ k)) 
         (domain := domain.subdomainNatReversed k) (δ := δ) 
+        (inferInstance : NeZero (d / (2 ^ k)))
         (hδ := bound_tighter)
     unfold foldWord δ_ε_correlatedAgreementCurves at *
     by_contra contra
@@ -867,7 +868,6 @@ theorem folding_preserves_distance
       rw [bijective_iff_has_inverse]
       exists cast'
       simp [LeftInverse, RightInverse, cast, cast']
-    specialize correlated_agreement (inferInstance : NeZero (d / (2 ^ k)))
     specialize correlated_agreement
       (Matrix.of (fun i j ↦ foldWordAuxCoeff domain f (2 ^ k) 
         (cast i) 
