@@ -3227,6 +3227,76 @@ lemma PzFamily_exists_eval_polys_on_matching_domain_subtype
 
 open Polynomial in
 omit [DecidableEq (RatFunc F)] in
+/-- Selected-domain canonical-family package for the §5-to-§6 bridge. Claim
+5.11 selects a coordinate set `Dtop`; once every close parameter matches every
+selected coordinate, `PzFamily` gives the decoded canonical representative and
+the evaluation-polynomial witnesses on that selected domain. -/
+lemma PzFamily_exists_canonical_eval_polys_on_matching_domain_and_unique
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (Dtop : Finset (Fin n))
+    (hk : 0 < k)
+    (hmatch : ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      ∀ x ∈ Dtop, z ∈ matching_set_at_x k δ h_gs x)
+    (hunique : ∀ P : F → F[X],
+      (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+        (P z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P z).eval ∘ ωs) ≤ δ) →
+      ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+        P z = PzFamily (F := F) (n := n) δ u₀ u₁ ωs k z) :
+    ∃ P₀ : F → F[X],
+      (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+        (P₀ z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P₀ z).eval ∘ ωs) ≤ δ) ∧
+      (∃ E : Dtop → F[X],
+        (∀ x, (E x).natDegree < k + 1) ∧
+          ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+            ∀ x : Dtop, (P₀ z).eval (ωs x.1) = (E x).eval z) ∧
+      ∀ P : F → F[X],
+        (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+          (P z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P z).eval ∘ ωs) ≤ δ) →
+        ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁, P z = P₀ z := by
+  refine ⟨PzFamily (F := F) (n := n) δ u₀ u₁ ωs k, ?_, ?_, ?_⟩
+  · exact PzFamily_decoded_on_close_set
+      (F := F) (n := n) (k := k) (δ := δ) (u₀ := u₀) (u₁ := u₁) (ωs := ωs)
+  · exact PzFamily_exists_eval_polys_on_matching_domain_subtype
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) h_gs Dtop hk hmatch
+  · intro P hP z hz
+    exact hunique P hP z hz
+
+open Polynomial in
+omit [DecidableEq (RatFunc F)] in
+/-- Subset-hypothesis form of the selected-domain canonical package. This is
+the direct shape returned after the double-counting step identifies a domain
+`Dtop` whose every coordinate contains the full close-parameter set. -/
+lemma PzFamily_exists_canonical_eval_polys_on_close_subset_and_unique
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (Dtop : Finset (Fin n))
+    (hk : 0 < k)
+    (hsubset : ∀ x ∈ Dtop,
+      coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ ⊆
+        matching_set_at_x k δ h_gs x)
+    (hunique : ∀ P : F → F[X],
+      (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+        (P z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P z).eval ∘ ωs) ≤ δ) →
+      ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+        P z = PzFamily (F := F) (n := n) δ u₀ u₁ ωs k z) :
+    ∃ P₀ : F → F[X],
+      (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+        (P₀ z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P₀ z).eval ∘ ωs) ≤ δ) ∧
+      (∃ E : Dtop → F[X],
+        (∀ x, (E x).natDegree < k + 1) ∧
+          ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+            ∀ x : Dtop, (P₀ z).eval (ωs x.1) = (E x).eval z) ∧
+      ∀ P : F → F[X],
+        (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+          (P z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P z).eval ∘ ωs) ≤ δ) →
+        ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁, P z = P₀ z :=
+  PzFamily_exists_canonical_eval_polys_on_matching_domain_and_unique
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) h_gs Dtop hk
+    (fun _ hz x hx => hsubset x hx hz) hunique
+
+open Polynomial in
+omit [DecidableEq (RatFunc F)] in
 /-- Full-domain evaluation-polynomial witness for `PzFamily`, conditional on
 the remaining assembly fact that every close parameter lies in every coordinate
 matching set.  This is the exact `E` witness expected by the §6

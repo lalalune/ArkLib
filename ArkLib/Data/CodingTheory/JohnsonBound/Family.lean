@@ -1224,6 +1224,27 @@ namespace CodingTheory
 open scoped NNReal
 open ListDecodable JohnsonBound
 
+/-- ABF26 Theorem 3.2 reduced to the pointwise close-list cap at the
+paper-facing `Jqℓ` radius.
+
+This is the final `Lambda`/`ℕ∞` packaging layer; the remaining hard theorem is
+the pointwise q-ary Plotkin/radius-algebra bound for each received word. -/
+theorem johnson_bound_lambda_le_ell_of_forall_closeCodewordsRelFinset_card_le
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {α : Type} [Fintype α] [DecidableEq α]
+    (C : Set (ι → α)) (ℓ : ℕ)
+    (hpoint :
+      ∀ f : ι → α,
+        (ListDecodable.closeCodewordsRelFinset C f
+          (Jqℓ (Fintype.card α : ℚ) ℓ
+            ((Code.minDist C : ℚ) / Fintype.card ι))).card ≤ ℓ) :
+    let q : ℚ := Fintype.card α
+    let δ_min : ℚ := Code.minDist C / Fintype.card ι
+    Lambda C (Jqℓ q ℓ δ_min) ≤ (ℓ : ℕ∞) := by
+  dsimp
+  exact Lambda_le_of_forall_closeCodewordsRelFinset_card_le_Jqℓ
+    (C := C) (ℓ := ℓ) hpoint
+
 /-- **ABF26 Theorem 3.2 [Joh62].** Johnson bound on list size. For any code
 `C ⊆ Σ^n` with `|Σ| = q`,
 
