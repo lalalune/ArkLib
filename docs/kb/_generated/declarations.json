@@ -14165,6 +14165,118 @@
         }
       ]
     },
+    "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AlphaWeight.lean": {
+      "declarations": [
+        {
+          "doc": "",
+          "kind": "structure",
+          "line": 69,
+          "name": "_anon_structure_69",
+          "namespace": "",
+          "short_name": "_anon_structure_69",
+          "signature": "structure structured bound)."
+        },
+        {
+          "doc": "The embedding of the `\ud835\udcaa`-element `W\ud835\udcaa` is the `\ud835\udd43`-element `liftToFunctionField H.leadingCoeff` (the `W` of the lift identity).",
+          "kind": "theorem",
+          "line": 101,
+          "name": "BCIKS20.HenselNumerator.embeddingOf\ud835\udcaaInto\ud835\udd43_W\ud835\udcaa",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "embeddingOf\ud835\udcaaInto\ud835\udd43_W\ud835\udcaa",
+          "signature": "theorem embeddingOf\ud835\udcaaInto\ud835\udd43_W\ud835\udcaa :"
+        },
+        {
+          "doc": "**The carved A.4 link (named gap), verbatim from `P1Conditional`.**  At order `t`, the genuine Hensel-root coefficient `\u03b1Genuine t` is the embedding of an `\ud835\udcaa`-element `a_t` of `\u039b_\ud835\udcaa`-weight `\u2264 1`. This is the formal content of BCIKS20's `\u039b(\u03b1_t) = \u039b(Y) = 1`.",
+          "kind": "def",
+          "line": 113,
+          "name": "BCIKS20.HenselNumerator.AlphaGenuineRegularWeightLe",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "AlphaGenuineRegularWeightLe",
+          "signature": "def AlphaGenuineRegularWeightLe (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
+        },
+        {
+          "doc": "**The `\ud835\udcaa`-level divisibility-with-weight form** of the carved link.  At order `t`, `\u03b2Hensel t` factors *in `\ud835\udcaa H`* as `a_t \u00b7 W\ud835\udcaa^{t+1} \u00b7 \u03be^{e_t}` with the quotient `a_t` of `\u039b_\ud835\udcaa`-weight `\u2264 1`.  This is `AlphaGenuineRegularWeightLe` transported to the world where `\u039b_\ud835\udcaa` actually lives (PROVEN equivalent to it given `hlift`, `alphaWeight_iff_divWeight`).  It exposes the genuine residual: a clearing divisibility `W\ud835\udcaa^{t+1}\u00b7\u03be^{e_t} \u2223 \u03b2Hensel t` in `\ud835\udcaa`, with the quotient at weight `1`.",
+          "kind": "def",
+          "line": 124,
+          "name": "BCIKS20.HenselNumerator.DivWeightLe",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "DivWeightLe",
+          "signature": "def DivWeightLe (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
+        },
+        {
+          "doc": "**Bridge, `\ud835\udd43 \u2192 \ud835\udcaa`.**  Given the (P2) lift identity at order `t` (`hlift_t`) and a carved `\ud835\udcaa`-preimage `a` of `\u03b1Genuine t` (`ha`), the `\u03b2Hensel t` factors, IN `\ud835\udcaa H`, as `\u03b2Hensel t = a \u00b7 W\ud835\udcaa^{t+1} \u00b7 \u03be^{2t\u22121}`.  The `\ud835\udd43`-level identity equals `embedding (a \u00b7 W\ud835\udcaa^{t+1} \u00b7 \u03be^{2t\u22121})` (ring-hom multiplicativity + the `W` bridge); injectivity of `embeddingOf\ud835\udcaaInto\ud835\udd43` descends it to `\ud835\udcaa`.",
+          "kind": "theorem",
+          "line": 138,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_138",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "_anon_theorem_138",
+          "signature": "theorem theorem \u03b2Hensel_eq_alpha_mul_of_lift (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
+        },
+        {
+          "doc": "**Bridge, `\ud835\udcaa \u2192 \ud835\udd43`.**  The reverse: given the `\ud835\udcaa`-level factorization `hfact` and the lift identity `hlift_t`, the quotient `a` embeds to `\u03b1Genuine t`.  Push `embedding` through `hfact` (`embedding (\u03b2_t) = embedding a \u00b7 W^{t+1} \u00b7 \u03be^{e_t}`), compare with `hlift_t`, and cancel the nonzero denominator `W^{t+1}\u00b7\u03be^{e_t}` (`den_ne_zero`) in the field `\ud835\udd43 H`.",
+          "kind": "theorem",
+          "line": 156,
+          "name": "BCIKS20.HenselNumerator.alpha_eq_embedding_of_fact",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "alpha_eq_embedding_of_fact",
+          "signature": "theorem alpha_eq_embedding_of_fact (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
+        },
+        {
+          "doc": "**Task 1, the FINDING.**  GIVEN the (P2) lift identity `hlift` (for all `t`), `AlphaGenuineRegularWeightLe` and the `\ud835\udcaa`-level `DivWeightLe` are *equivalent*.  This pins the genuine residual: it is the clearing divisibility `W\ud835\udcaa^{t+1}\u00b7\u03be^{e_t} \u2223 \u03b2Hensel t` in `\ud835\udcaa` with the quotient at weight `\u2264 1` \u2014 a fact about `\ud835\udcaa`-divisibility, distinct from (and strictly stronger than, see `\u03b2Hensel_weight_structured`) any `\u039b_\ud835\udcaa`-upper-bound on `\u03b2Hensel t`.",
+          "kind": "theorem",
+          "line": 185,
+          "name": "BCIKS20.HenselNumerator.alphaWeight_iff_divWeight",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "alphaWeight_iff_divWeight",
+          "signature": "theorem alphaWeight_iff_divWeight (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
+        },
+        {
+          "doc": "**(P1) the STRUCTURED INVARIANT, conditional.**  Given `hlift`, the carved link `h\u03b1`, and the `\u039b(\u03be)` bound `h\u03be` (`weight_\u03be_bound`, automatic under its regime), the structured invariant `\u039b_\ud835\udcaa(\u03b2Hensel l) \u2264 1 + (l+1)\u00b7\u039b(W) + e_l\u00b7\u039b(\u03be)` holds, with `\u039b(W) = (lc H).natDegree`, `\u039b(\u03be) \u2264 (d\u22121)\u00b7(D\u2212dH+1)`, `e_l = 2l\u22121` (\u2115-truncated).  Route: the link gives `\u03b2_l = a_l\u00b7W\ud835\udcaa^{l+1}\u00b7\u03be^{e_l}` (Task-1 `\ud835\udd43 \u2192 \ud835\udcaa`), then `weight_\u039b_over_\ud835\udcaa_mul_le`/`_pow_le`/`_W` + `nsmul_withBot_le` + `\u039b(a_l) \u2264 1`.",
+          "kind": "theorem",
+          "line": 215,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_215",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "_anon_theorem_215",
+          "signature": "theorem theorem \u03b2Hensel_weight_structured (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
+        },
+        {
+          "doc": "**(P1), the loose Claim-A.2 bound.**  From the structured invariant (under `hlift` + the carved link + the `\u039b(\u03be)` regime), the loose target `\u039b_\ud835\udcaa(\u03b2Hensel t) \u2264 (2t+1)\u00b7natDegreeY R\u00b7D` follows by the proven wave-5 arithmetic collapse `\u03b2Hensel_weight_bound_of_structured_weight`, under the paper's faithful regime `2 \u2264 d`, `dH \u2264 d`, `\u039b(W)+dH \u2264 D`.",
+          "kind": "theorem",
+          "line": 261,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_261",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "_anon_theorem_261",
+          "signature": "theorem theorem \u03b2Hensel_weight_bound_of_alphaWeight (x\u2080 : F) (R : F[X][X][Y])"
+        },
+        {
+          "doc": "**(P1)**, with `h\u03be` discharged by the proven `ClaimA2.weight_\u03be_bound` under its regime.  The sole remaining inputs are the (P2) lift identity `hlift` and the carved A.4 link `h\u03b1`.",
+          "kind": "theorem",
+          "line": 285,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_285",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "_anon_theorem_285",
+          "signature": "theorem theorem \u03b2Hensel_weight_bound_of_alphaWeight' (x\u2080 : F) (R : F[X][X][Y])"
+        },
+        {
+          "doc": "**The sharp `t = 0` obstruction (PROVEN, no `hlift`).**  From the proven base-case lift identity `\u03b2Hensel_lift_identity_zero` and a carved preimage `a` of `\u03b1Genuine 0 = \u03b1\u2080 = T/W`, injectivity of `embedding` gives `\u03b2Hensel 0 = a \u00b7 W\ud835\udcaa` in `\ud835\udcaa`.  So `AlphaGenuineRegularWeightLe` at `t = 0` is exactly the `\ud835\udcaa`-divisibility `W\ud835\udcaa \u2223 \u03b2Hensel 0` (with the quotient `a` at weight `\u2264 1`): the genuine, non-faked face of the residual.",
+          "kind": "theorem",
+          "line": 316,
+          "name": "BCIKS20.HenselNumerator.W\ud835\udcaa_dvd_\u03b2Hensel_zero_of_alpha",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "W\ud835\udcaa_dvd_\u03b2Hensel_zero_of_alpha",
+          "signature": "theorem W\ud835\udcaa_dvd_\u03b2Hensel_zero_of_alpha (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
+        },
+        {
+          "doc": "**Corollary: `W\ud835\udcaa \u2223 \u03b2Hensel 0` is *necessary* for `AlphaGenuineRegularWeightLe`.**  If the carved link holds (at the `t = 0` instance), then `W\ud835\udcaa` divides `\u03b2Hensel 0` in `\ud835\udcaa H`.  This is the precise, machine-checked statement of the `\u03b1\u2080 = T/W` regularity obstruction: the carve forces a clearing divisibility that the field-level lift identity alone does not.",
+          "kind": "theorem",
+          "line": 328,
+          "name": "BCIKS20.HenselNumerator.W\ud835\udcaa_dvd_\u03b2Hensel_zero_of_alphaWeight",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "W\ud835\udcaa_dvd_\u03b2Hensel_zero_of_alphaWeight",
+          "signature": "theorem W\ud835\udcaa_dvd_\u03b2Hensel_zero_of_alphaWeight (x\u2080 : F) (R : F[X][X][Y])"
+        }
+      ]
+    },
     "ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Curves.lean": {
       "declarations": [
         {
@@ -22052,16 +22164,16 @@
         {
           "doc": "",
           "kind": "structure",
-          "line": 61,
-          "name": "_anon_structure_61",
+          "line": 63,
+          "name": "_anon_structure_63",
           "namespace": "",
-          "short_name": "_anon_structure_61",
+          "short_name": "_anon_structure_63",
           "signature": "structure structured invariant via the wave-5 `structured_weight_collapse`"
         },
         {
           "doc": "The embedding of the `\ud835\udcaa`-element `W\ud835\udcaa` is the `\ud835\udd43`-element `liftToFunctionField H.leadingCoeff` (the `W` of the lift identity).",
           "kind": "theorem",
-          "line": 91,
+          "line": 93,
           "name": "BCIKS20.HenselNumerator.embeddingOf\ud835\udcaaInto\ud835\udd43_W\ud835\udcaa",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "embeddingOf\ud835\udcaaInto\ud835\udd43_W\ud835\udcaa",
@@ -22070,7 +22182,7 @@
         {
           "doc": "**The carved A.4 link (named gap).**  At order `t`, the genuine Hensel-root coefficient `\u03b1Genuine t` is the embedding of an `\ud835\udcaa`-element `a_t` of `\u039b_\ud835\udcaa`-weight `\u2264 1`.  This is the formal content of BCIKS20's `\u039b(\u03b1_t) = \u039b(Y) = 1` (\"consider the weight of `\u03b1_t`\", line 4276): `\u03b1_t` is, up to the `W^{t+1}\u00b7\u03be^{e_t}` clearing, the genuine root `\u03b3`'s `t`-th Taylor coefficient, whose weight is that of the variable `Y`.",
           "kind": "def",
-          "line": 105,
+          "line": 107,
           "name": "BCIKS20.HenselNumerator.AlphaGenuineRegularWeightLe",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "AlphaGenuineRegularWeightLe",
@@ -22079,46 +22191,46 @@
         {
           "doc": "**(P1) Task 1 \u2014 THE WEIGHT-FROM-IDENTITY LINK.**  Given the (P2) lift identity at order `t` (`hlift_t`) and a carved `\ud835\udcaa`-preimage `a` of `\u03b1Genuine t` (`ha`), the `\u03b2Hensel t` factors, IN `\ud835\udcaa H`, as `\u03b2Hensel t = a \u00b7 W\ud835\udcaa^{t+1} \u00b7 \u03be^{2t\u22121}`. The `\ud835\udd43`-level identity says `embedding (\u03b2_t) = embedding a \u00b7 embedding (W\ud835\udcaa)^{t+1} \u00b7 embedding \u03be^{2t\u22121} = embedding (a \u00b7 W\ud835\udcaa^{t+1} \u00b7 \u03be^{2t\u22121})` (ring-hom multiplicativity + the `W` bridge); injectivity of `embeddingOf\ud835\udcaaInto\ud835\udd43` (`embeddingOf\ud835\udcaaInto\ud835\udd43_injective`) descends it to `\ud835\udcaa`.  This is the genuine transport of the lift identity to the world where `\u039b_\ud835\udcaa` lives.",
           "kind": "theorem",
-          "line": 122,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_122",
+          "line": 124,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_124",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_122",
+          "short_name": "_anon_theorem_124",
           "signature": "theorem theorem \u03b2Hensel_eq_alpha_mul_of_lift (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
         },
         {
           "doc": "**(P1) Task 2 \u2014 the STRUCTURED INVARIANT, conditional.**  Given the (P2) lift identity `hlift`, the carved A.4 link `h\u03b1` (`\u03b1Genuine l` regular of weight `\u2264 1`), the genuine `\u039b(W)` bound (`weight_\u039b_over_\ud835\udcaa_W`, automatic) and the `\u039b(\u03be)` bound `h\u03be` (`weight_\u03be_bound`, under its regime), the structured invariant `\u039b_\ud835\udcaa(\u03b2Hensel l) \u2264 1 + (l+1)\u00b7\u039b(W) + e_l\u00b7\u039b(\u03be)`   for all `l` holds, with `\u039b(W) = (lc H).natDegree`, `\u039b(\u03be) \u2264 (d\u22121)\u00b7(D\u2212dH+1)`, `e_l = 2l\u22121` (\u2115-truncated: `e_0 = 0`, `e_l = 2l\u22121` for `l \u2265 1`). Proof per order `l`: the link gives `\u03b2_l = a_l \u00b7 W\ud835\udcaa^{l+1} \u00b7 \u03be^{e_l}` in `\ud835\udcaa` (Task 1); then the proven ov",
           "kind": "theorem",
-          "line": 152,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_152",
+          "line": 154,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_154",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_152",
+          "short_name": "_anon_theorem_154",
           "signature": "theorem theorem \u03b2Hensel_weight_structured (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
         },
         {
           "doc": "**(P1) Task 3 \u2014 the loose weight bound, conditional.**  From the structured invariant `\u03b2Hensel_weight_structured` (under the lift identity + carved A.4 link + \u03be-weight regime), the loose Claim-A.2 target `\u039b_\ud835\udcaa(\u03b2Hensel t) \u2264 (2t+1)\u00b7natDegreeY R \u00b7 D` follows by the proven `\u2115`-arithmetic collapse `structured_weight_collapse` (`= \u03b2Hensel_weight_bound_of_structured_weight`), under the paper's faithful regime `2 \u2264 d`, `dH \u2264 d`, `\u039b(W)+dH \u2264 D`.",
           "kind": "theorem",
-          "line": 206,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_206",
+          "line": 208,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_208",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_206",
+          "short_name": "_anon_theorem_208",
           "signature": "theorem theorem \u03b2Hensel_weight_bound_of_lift (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
         },
         {
           "doc": "**(P1) discharging `h\u03be` via the PROVEN `weight_\u03be_bound`.**  Under the `2 \u2264 d` regime and the two total-degree budgets of `weight_\u03be_bound`, the \u03be-weight hypothesis is automatic; so the conditional (P1) needs only `hlift` + the carved A.4 link `h\u03b1`.",
           "kind": "theorem",
-          "line": 236,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_236",
+          "line": 238,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_238",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_236",
+          "short_name": "_anon_theorem_238",
           "signature": "theorem theorem \u03b2Hensel_weight_bound_of_lift' (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
         },
         {
           "doc": "**AUTO-UNLOCK witness.**  Once `\u03b2Hensel_lift_identity` is axiom-clean (w16 vanishing landed), the `hlift` hypothesis is discharged unconditionally by the in-tree `\u03b2Hensel_lift_identity`.  This lemma exhibits that discharge: feeding `\u03b2Hensel_lift_identity` for `hlift`, the conditional (P1) needs ONLY the carved A.4 link `h\u03b1` (`\u039b(\u03b1_t) \u2264 1`) plus the paper's faithful regime hypotheses.",
           "kind": "theorem",
-          "line": 257,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_257",
+          "line": 259,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_259",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_257",
+          "short_name": "_anon_theorem_259",
           "signature": "theorem theorem \u03b2Hensel_weight_bound_unlocked (x\u2080 : F) (R : F[X][X][Y])"
         }
       ]
@@ -54152,7 +54264,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 24,
+          "line": 25,
           "name": "Binius.BinaryBasefold.div_add_one_eq_if_dvd",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "div_add_one_eq_if_dvd",
@@ -54161,7 +54273,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 30,
+          "line": 31,
           "name": "Binius.BinaryBasefold.toOutCodewordsCount",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "toOutCodewordsCount",
@@ -54170,7 +54282,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 34,
+          "line": 35,
           "name": "Binius.BinaryBasefold.isCommitmentRound",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "isCommitmentRound",
@@ -54179,7 +54291,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 38,
+          "line": 39,
           "name": "Binius.BinaryBasefold.toOutCodewordsCountOf0",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "toOutCodewordsCountOf0",
@@ -54188,16 +54300,16 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 44,
-          "name": "Binius.BinaryBasefold._anon_instance_44",
+          "line": 45,
+          "name": "Binius.BinaryBasefold._anon_instance_45",
           "namespace": "Binius.BinaryBasefold",
-          "short_name": "_anon_instance_44",
+          "short_name": "_anon_instance_45",
           "signature": "instance instance : \u2200 i, NeZero (toOutCodewordsCount \u2113 \u03d1 i) := by"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 58,
+          "line": 59,
           "name": "Binius.BinaryBasefold.toCodewordsCount_mul_\u03d1_le_i",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "toCodewordsCount_mul_\u03d1_le_i",
@@ -54206,7 +54318,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 90,
+          "line": 91,
           "name": "Binius.BinaryBasefold.toOutCodewordsCount_succ_eq_add_one_iff",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "toOutCodewordsCount_succ_eq_add_one_iff",
@@ -54215,7 +54327,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 246,
+          "line": 247,
           "name": "Binius.BinaryBasefold.toOutCodewordsCount_succ_eq",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "toOutCodewordsCount_succ_eq",
@@ -54224,7 +54336,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 283,
+          "line": 284,
           "name": "Binius.BinaryBasefold.toOutCodewordsCount_i_le_of_succ",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "toOutCodewordsCount_i_le_of_succ",
@@ -54233,7 +54345,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 290,
+          "line": 291,
           "name": "Binius.BinaryBasefold.toOutCodewordsCount_last",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "toOutCodewordsCount_last",
@@ -54242,7 +54354,7 @@
         {
           "doc": "If a new oracle is committed at round `i + 1` (i.e., `\u03d1 \u2223 i + 1`), then the index of this new oracle (which is the count of oracles from the previous round, `i`) multiplied by `\u03d1` equals the current round number `i + 1`. The proof uses the commitment-round hypothesis to recover divisibility at `i + 1`.",
           "kind": "lemma",
-          "line": 301,
+          "line": 302,
           "name": "Binius.BinaryBasefold.toOutCodewordsCount_mul_\u03d1_eq_i_succ",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "toOutCodewordsCount_mul_\u03d1_eq_i_succ",
@@ -54251,7 +54363,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 323,
+          "line": 324,
           "name": "Binius.BinaryBasefold.toCodewordsCount_mul_\u03d1_lt_\u2113",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "toCodewordsCount_mul_\u03d1_lt_\u2113",
@@ -54260,7 +54372,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 341,
+          "line": 342,
           "name": "Binius.BinaryBasefold.mkLastOracleIndex",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "mkLastOracleIndex",
@@ -54269,7 +54381,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 357,
+          "line": 358,
           "name": "Binius.BinaryBasefold.mkLastOracleIndex_last",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "mkLastOracleIndex_last",
@@ -54278,7 +54390,7 @@
         {
           "doc": "Computable multilinear polynomial from hypercube evaluations (`CMvPolynomial` / `CMLE'`). See `MvPolynomial.Computational.fromCMvPolynomial_CMLE'_eq_MLE'`.",
           "kind": "def",
-          "line": 377,
+          "line": 378,
           "name": "Binius.BinaryBasefold.MultilinearPoly.ofCMLEEvals",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "MultilinearPoly.ofCMLEEvals",
@@ -54287,7 +54399,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 384,
+          "line": 385,
           "name": "Binius.BinaryBasefold.MultilinearPoly.ofCMLEEvals_val",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "MultilinearPoly.ofCMLEEvals_val",
@@ -54296,7 +54408,7 @@
         {
           "doc": "Same carrier as `\u27e8MLE evals, MLE_mem_restrictDegree evals\u27e9`, built via `CMLE'`.",
           "kind": "def",
-          "line": 390,
+          "line": 391,
           "name": "Binius.BinaryBasefold.MultilinearPoly.ofHypercubeEvals",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "MultilinearPoly.ofHypercubeEvals",
@@ -54305,7 +54417,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 394,
+          "line": 395,
           "name": "Binius.BinaryBasefold.MultilinearPoly.ofHypercubeEvals_val",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "MultilinearPoly.ofHypercubeEvals_val",
@@ -54314,7 +54426,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 402,
+          "line": 403,
           "name": "Binius.BinaryBasefold.MultilinearPoly.ofCMLEEvals_eval_zeroOne",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "MultilinearPoly.ofCMLEEvals_eval_zeroOne",
@@ -54323,7 +54435,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 407,
+          "line": 408,
           "name": "Binius.BinaryBasefold.MultilinearPoly.ofCMLEEvals_cmEval_eq_val_eval",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "MultilinearPoly.ofCMLEEvals_cmEval_eq_val_eval",
@@ -54332,7 +54444,7 @@
         {
           "doc": "\u03d1 is positive",
           "kind": "lemma",
-          "line": 429,
+          "line": 430,
           "name": "Binius.BinaryBasefold.folding_steps_pos",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "folding_steps_pos",
@@ -54341,7 +54453,7 @@
         {
           "doc": "\u2113 - \u03d1 < \u2113 when both are positive",
           "kind": "lemma",
-          "line": 433,
+          "line": 434,
           "name": "Binius.BinaryBasefold.rounds_sub_steps_lt",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "rounds_sub_steps_lt",
@@ -54350,16 +54462,16 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 436,
-          "name": "Binius.BinaryBasefold._anon_lemma_436",
+          "line": 437,
+          "name": "Binius.BinaryBasefold._anon_lemma_437",
           "namespace": "Binius.BinaryBasefold",
-          "short_name": "_anon_lemma_436",
+          "short_name": "_anon_lemma_437",
           "signature": "lemma lemma \u03d1_sub_one_le_self : \u03d1 - 1 < \u03d1 := by"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 441,
+          "line": 442,
           "name": "Binius.BinaryBasefold.bIdx_mul_\u03d1_add_x_lt_\u2113_sub_\u03d1",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "bIdx_mul_\u03d1_add_x_lt_\u2113_sub_\u03d1",
@@ -54368,7 +54480,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 457,
+          "line": 458,
           "name": "Binius.BinaryBasefold.bIdx_mul_\u03d1_add_i_lt_\u2113_succ",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "bIdx_mul_\u03d1_add_i_lt_\u2113_succ",
@@ -54377,7 +54489,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 465,
+          "line": 466,
           "name": "Binius.BinaryBasefold.bIdx_mul_\u03d1_add_i_cast_lt_\u2113_succ",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "bIdx_mul_\u03d1_add_i_cast_lt_\u2113_succ",
@@ -54386,7 +54498,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 472,
+          "line": 473,
           "name": "Binius.BinaryBasefold.bIdx_mul_\u03d1_add_x_lt_\u2113_succ",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "bIdx_mul_\u03d1_add_x_lt_\u2113_succ",
@@ -54395,7 +54507,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 479,
+          "line": 480,
           "name": "Binius.BinaryBasefold.bIdx_mul_\u03d1_add_i_fin_\u2113_pred_lt_\u2113",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "bIdx_mul_\u03d1_add_i_fin_\u2113_pred_lt_\u2113",
@@ -54404,7 +54516,7 @@
         {
           "doc": "When the block size allows it, we can get a strict inequality",
           "kind": "lemma",
-          "line": 486,
+          "line": 487,
           "name": "Binius.BinaryBasefold.bIdx_succ_mul_\u03d1_lt_\u2113_succ",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "bIdx_succ_mul_\u03d1_lt_\u2113_succ",
@@ -54413,7 +54525,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 493,
+          "line": 494,
           "name": "Binius.BinaryBasefold.bIdx_succ_mul_\u03d1_le_\u2113_succ",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "bIdx_succ_mul_\u03d1_le_\u2113_succ",
@@ -54422,7 +54534,7 @@
         {
           "doc": "Statement for the final sumcheck step - includes the final constant c",
           "kind": "structure",
-          "line": 511,
+          "line": 512,
           "name": "Binius.BinaryBasefold.FinalSumcheckStatementOut",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "FinalSumcheckStatementOut",
@@ -54431,7 +54543,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 515,
+          "line": 516,
           "name": "Binius.BinaryBasefold.toStatement",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "toStatement",
@@ -54440,7 +54552,7 @@
         {
           "doc": "For the `i`-th round of the protocol, there will be oracle statements corresponding to all committed codewords. The verifier has oracle access to functions corresponding to the handles in committed_handles.",
           "kind": "def",
-          "line": 527,
+          "line": 528,
           "name": "Binius.BinaryBasefold.OracleStatement",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "OracleStatement",
@@ -54449,7 +54561,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 535,
+          "line": 536,
           "name": "Binius.BinaryBasefold.mapOStmtOutRelayStep",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "mapOStmtOutRelayStep",
@@ -54458,7 +54570,7 @@
         {
           "doc": "The round witness for round `i` of `t \u2208 L[\u2264 2][X Fin \u2113]` and `H\u1d62(X\u1d62, ..., X\u2097\u208b\u2081) := h(r\u2080', ..., r\u1d62\u208b\u2081', X\u1d62, X\u1d62\u208a\u2081, ..., X\u2097\u208b\u2081) \u2208 L[\u2264 2][X Fin (\u2113-i)]`. This ensures efficient computability and constraint on the structure of `H_i` according to `t`.",
           "kind": "structure",
-          "line": 548,
+          "line": 549,
           "name": "Binius.BinaryBasefold.Witness",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "Witness",
@@ -54467,7 +54579,7 @@
         {
           "doc": "The extractor that recovers the multilinear polynomial t from f^(i)",
           "kind": "def",
-          "line": 554,
+          "line": 555,
           "name": "Binius.BinaryBasefold.extractMLP",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "extractMLP",
@@ -54476,7 +54588,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 644,
+          "line": 645,
           "name": "Binius.BinaryBasefold.dummyLastWitness",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "dummyLastWitness",
@@ -54485,7 +54597,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 656,
+          "line": 657,
           "name": "Binius.BinaryBasefold.snoc_oracle",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "snoc_oracle",
@@ -54494,7 +54606,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 727,
+          "line": 728,
           "name": "Binius.BinaryBasefold.take_snoc_oracle",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "take_snoc_oracle",
@@ -54503,7 +54615,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 740,
+          "line": 741,
           "name": "Binius.BinaryBasefold.take_snoc_oracle_eq_oStmtIn",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "take_snoc_oracle_eq_oStmtIn",
@@ -54512,7 +54624,7 @@
         {
           "doc": "Extract the first oracle f^(0) from oracle statements",
           "kind": "def",
-          "line": 750,
+          "line": 751,
           "name": "Binius.BinaryBasefold.getFirstOracle",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "getFirstOracle",
@@ -54521,7 +54633,7 @@
         {
           "doc": "Helper to get the k-th challenge slice for folding",
           "kind": "def",
-          "line": 762,
+          "line": 763,
           "name": "Binius.BinaryBasefold.getFoldingChallenges",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "getFoldingChallenges",
@@ -54530,7 +54642,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 768,
+          "line": 769,
           "name": "Binius.BinaryBasefold.getFoldingChallenges_init_succ_eq",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "getFoldingChallenges_init_succ_eq",
@@ -54539,7 +54651,7 @@
         {
           "doc": "The base index k = j * \u03d1 is less than \u2113 for valid oracle indices",
           "kind": "lemma",
-          "line": 781,
+          "line": 782,
           "name": "Binius.BinaryBasefold.oracle_block_k_bound",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "oracle_block_k_bound",
@@ -54548,7 +54660,7 @@
         {
           "doc": "The next oracle index k + \u03d1 = (j+1) * \u03d1 is at most i",
           "kind": "lemma",
-          "line": 786,
+          "line": 787,
           "name": "Binius.BinaryBasefold.oracle_block_k_next_le",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "oracle_block_k_next_le",
@@ -54557,7 +54669,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 792,
+          "line": 793,
           "name": "Binius.BinaryBasefold.getNextOracle",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "getNextOracle",
@@ -54566,7 +54678,7 @@
         {
           "doc": "Folding consistency for round i",
           "kind": "def",
-          "line": 808,
+          "line": 809,
           "name": "Binius.BinaryBasefold.oracleFoldingConsistencyProp",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "oracleFoldingConsistencyProp",
@@ -54575,7 +54687,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 827,
+          "line": 828,
           "name": "Binius.BinaryBasefold.oracleFoldingConsistencyProp_relay_preserved",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "oracleFoldingConsistencyProp_relay_preserved",
@@ -54584,7 +54696,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 860,
+          "line": 861,
           "name": "Binius.BinaryBasefold.BBF_eq_multiplier",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "BBF_eq_multiplier",
@@ -54593,7 +54705,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 863,
+          "line": 864,
           "name": "Binius.BinaryBasefold.BBF_SumcheckMultiplierParam",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "BBF_SumcheckMultiplierParam",
@@ -54602,7 +54714,7 @@
         {
           "doc": "This condition ensures that the folding witness `f` is properly generated from `t`",
           "kind": "def",
-          "line": 871,
+          "line": 872,
           "name": "Binius.BinaryBasefold.getMidCodewords",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "getMidCodewords",
@@ -54611,7 +54723,7 @@
         {
           "doc": "This condition ensures that the witness polynomial `H` has the correct structure `eq(...) * t(...)`",
           "kind": "def",
-          "line": 891,
+          "line": 892,
           "name": "Binius.BinaryBasefold.witnessStructuralInvariant",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "witnessStructuralInvariant",
@@ -54620,7 +54732,7 @@
         {
           "doc": "First oracle witness consistency: the witness polynomial t, when projected to level 0 and evaluated on the initial domain S^(0), must be close within unique decoding radius to f^(0)",
           "kind": "def",
-          "line": 902,
+          "line": 903,
           "name": "Binius.BinaryBasefold.firstOracleWitnessConsistencyProp",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "firstOracleWitnessConsistencyProp",
@@ -54629,7 +54741,7 @@
         {
           "doc": "The bad folding event of `f\u1d62` exists RIGHT AFTER the V's challenge of sumcheck round `i+\u03d1-1`, this is the last point that `f\u1d62` is the last oracle being sent so far and both Statement & Witness are advanced to state `i+\u03d1`, while oracle is still at state `i+\u03d1-1`.",
           "kind": "def",
-          "line": 912,
+          "line": 913,
           "name": "Binius.BinaryBasefold.foldingBadEventAtBlock",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "foldingBadEventAtBlock",
@@ -54638,7 +54750,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 928,
+          "line": 929,
           "name": "Binius.BinaryBasefold.badEventExistsProp",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "badEventExistsProp",
@@ -54647,7 +54759,7 @@
         {
           "doc": "When `stmtIdx.val < \u2113`, the highest available oracle block `j = stmtIdx/\u03d1` has `j*\u03d1 + \u03d1 > stmtIdx`, so its per-block bad-folding guard fails and `foldingBadEventAtBlock` returns `True`. Hence `badEventExistsProp` (an existential over blocks) holds unconditionally: the most-recently-sent oracle has not yet been folded past the current statement index, so the \"bad event\" disjunct is vacuously available. This is the structural reason a relay/fold round in the interior of the protocol is always non-doomed via the bad-event branch.",
           "kind": "lemma",
-          "line": 941,
+          "line": 942,
           "name": "Binius.BinaryBasefold.badEventExistsProp_of_lt",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "badEventExistsProp_of_lt",
@@ -54656,7 +54768,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 965,
+          "line": 966,
           "name": "Binius.BinaryBasefold.nonDoomedFoldingProp",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "nonDoomedFoldingProp",
@@ -54665,7 +54777,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 975,
+          "line": 976,
           "name": "Binius.BinaryBasefold.firstOracleWitnessConsistencyProp_relay_preserved",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "firstOracleWitnessConsistencyProp_relay_preserved",
@@ -54674,7 +54786,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 995,
+          "line": 996,
           "name": "Binius.BinaryBasefold.nonDoomedFoldingProp_relay_preserved",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "nonDoomedFoldingProp_relay_preserved",
@@ -54683,7 +54795,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 1015,
+          "line": 1016,
           "name": "Binius.BinaryBasefold.oracleWitnessConsistency",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "oracleWitnessConsistency",
@@ -54692,7 +54804,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1034,
+          "line": 1035,
           "name": "Binius.BinaryBasefold.oracleWitnessConsistency_relay_preserved",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "oracleWitnessConsistency_relay_preserved",
@@ -54701,7 +54813,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1078,
+          "line": 1079,
           "name": "Binius.BinaryBasefold.foldingBadEventAtBlock_relay_preserved",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "foldingBadEventAtBlock_relay_preserved",
@@ -54710,7 +54822,7 @@
         {
           "doc": "The relay step's oracle relabeling preserves the bad-event existential, when both sides are evaluated against the *same* statement index `i.succ`. Both sides quantify the same per-block folding guard `j*\u03d1 + \u03d1 \u2264 i.succ` over equal block counts (`hNCR \u21d2 count i.castSucc = count i.succ`) on the identical oracle data (`mapOStmtOutRelayStep` is a pure reindex along that size equality), so the existentials coincide. This is the bad-event analogue of `oracleWitnessConsistency_relay_preserved`, and is what makes `foldStepRelOut` (with its repaired `stmtIdx := i.succ` bad event) equal to its relay imag",
           "kind": "lemma",
-          "line": 1099,
+          "line": 1100,
           "name": "Binius.BinaryBasefold.badEventExistsProp_relay_preserved",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "badEventExistsProp_relay_preserved",
@@ -54719,7 +54831,7 @@
         {
           "doc": "Before V's challenge of the `i-th` foldStep, we ignore the bad-folding-event of the `i-th` oracle if any and enable it after the next V's challenge, i.e. one round later. This is for the purpose of reasoning its RBR KS properly. Formally, = (oracleIdx = stmtIdx)`.",
           "kind": "def",
-          "line": 1128,
+          "line": 1129,
           "name": "Binius.BinaryBasefold.masterKStateProp",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "masterKStateProp",
@@ -54728,7 +54840,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 1141,
+          "line": 1142,
           "name": "Binius.BinaryBasefold.roundRelationProp",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "roundRelationProp",
@@ -54737,7 +54849,7 @@
         {
           "doc": "A modified version of roundRelationProp (i+1). STATEMENT REPAIR (2026-06-04): at *non-commitment* rounds the bad-event disjunct is evaluated at the statement index `i.succ` (the relay-step / `roundRelation i.succ` form) rather than at the oracle index `i.castSucc`. Why a per-round branch. `foldStepRelOut i` is the relOut of the fold step and the relIn of whichever single step consumes round `i` \u2014 the *commit* step when `isCommitmentRound \u2113 \u03d1 i`, the *relay* step otherwise (the two are mutually exclusive). These two consumers need *different* forms: * Commit rounds (`\u03d1 \u2223 i+1 \u2227 i+1 \u2260 \u2113`): `commi",
           "kind": "def",
-          "line": 1185,
+          "line": 1186,
           "name": "Binius.BinaryBasefold.foldStepRelOutProp",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "foldStepRelOutProp",
@@ -54746,7 +54858,7 @@
         {
           "doc": "This is a special case of nonDoomedFoldingProp for `i = \u2113`, where we support the consistency between the last oracle `\u2113 - \u03d1` and the final constant `c`",
           "kind": "def",
-          "line": 1210,
+          "line": 1211,
           "name": "Binius.BinaryBasefold.finalNonDoomedFoldingProp",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "finalNonDoomedFoldingProp",
@@ -54755,7 +54867,7 @@
         {
           "doc": "Input relation for round i: R_i must hold at the beginning of round i",
           "kind": "def",
-          "line": 1259,
+          "line": 1260,
           "name": "Binius.BinaryBasefold.foldStepRelOut",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "foldStepRelOut",
@@ -54764,7 +54876,7 @@
         {
           "doc": "Relation at step `i` of the CoreInteraction. `\u2200 i < \u2113, R_i` must hold at the beginning of ITERATION `i`. `R_\u2113` must hold after the last iteration and before sending the final constant.",
           "kind": "def",
-          "line": 1269,
+          "line": 1270,
           "name": "Binius.BinaryBasefold.roundRelation",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "roundRelation",
@@ -54773,7 +54885,7 @@
         {
           "doc": "Relation for final sumcheck step",
           "kind": "def",
-          "line": 1276,
+          "line": 1277,
           "name": "Binius.BinaryBasefold.finalSumcheckRelOutProp",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "finalSumcheckRelOutProp",
@@ -54782,7 +54894,7 @@
         {
           "doc": "Final sumcheck relation",
           "kind": "def",
-          "line": 1286,
+          "line": 1287,
           "name": "Binius.BinaryBasefold.finalSumcheckRelOut",
           "namespace": "Binius.BinaryBasefold",
           "short_name": "finalSumcheckRelOut",
@@ -74683,8 +74795,8 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 8119,
-      "files": 406
+      "declarations": 8131,
+      "files": 407
     }
   }
 }

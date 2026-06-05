@@ -6,6 +6,7 @@ Authors: Chung Thai Nguyen, Quang Dao
 
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Prelude
 import ArkLib.ProofSystem.Sumcheck.Structured
+import ArkLib.Data.MvPolynomial.MultilinearComputational
 
 noncomputable section
 namespace Binius.BinaryBasefold
