@@ -5487,7 +5487,7 @@
         {
           "doc": "Per-coordinate multiplicity: how many of the sets `A \u03b1` (for `\u03b1 \u2208 T`) contain `x`.",
           "kind": "def",
-          "line": 93,
+          "line": 95,
           "name": "GCXK25SecondMoment.mult",
           "namespace": "GCXK25SecondMoment",
           "short_name": "mult",
@@ -5496,7 +5496,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 96,
+          "line": 98,
           "name": "GCXK25SecondMoment.mult_eq_sum",
           "namespace": "GCXK25SecondMoment",
           "short_name": "mult_eq_sum",
@@ -5505,16 +5505,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 98,
-          "name": "GCXK25SecondMoment._anon_class_98",
+          "line": 100,
+          "name": "GCXK25SecondMoment._anon_class_100",
           "namespace": "GCXK25SecondMoment",
-          "short_name": "_anon_class_98",
+          "short_name": "_anon_class_100",
           "signature": "class classical"
         },
         {
           "doc": "",
           "kind": "theorem",
-          "line": 102,
+          "line": 104,
           "name": "GCXK25SecondMoment.card_eq_sum_indicator",
           "namespace": "GCXK25SecondMoment",
           "short_name": "card_eq_sum_indicator",
@@ -5523,16 +5523,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 104,
-          "name": "GCXK25SecondMoment._anon_class_104",
+          "line": 106,
+          "name": "GCXK25SecondMoment._anon_class_106",
           "namespace": "GCXK25SecondMoment",
-          "short_name": "_anon_class_104",
+          "short_name": "_anon_class_106",
           "signature": "class classical"
         },
         {
           "doc": "**Double counting (rows = columns).** Total size of the family equals the sum of per-coordinate multiplicities.",
           "kind": "theorem",
-          "line": 112,
+          "line": 114,
           "name": "GCXK25SecondMoment.sum_card_eq_sum_mult",
           "namespace": "GCXK25SecondMoment",
           "short_name": "sum_card_eq_sum_mult",
@@ -5541,16 +5541,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 114,
-          "name": "GCXK25SecondMoment._anon_class_114",
+          "line": 116,
+          "name": "GCXK25SecondMoment._anon_class_116",
           "namespace": "GCXK25SecondMoment",
-          "short_name": "_anon_class_114",
+          "short_name": "_anon_class_116",
           "signature": "class classical"
         },
         {
           "doc": "**Second moment = pairwise intersections.** `\u2211_\u03b1 \u2211_\u03b2 |A_\u03b1 \u2229 A_\u03b2| = \u2211_x d(x)\u00b2`.",
           "kind": "theorem",
-          "line": 124,
+          "line": 126,
           "name": "GCXK25SecondMoment.sum_sum_card_inter_eq_sum_mult_sq",
           "namespace": "GCXK25SecondMoment",
           "short_name": "sum_sum_card_inter_eq_sum_mult_sq",
@@ -5559,16 +5559,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 126,
-          "name": "GCXK25SecondMoment._anon_class_126",
+          "line": 128,
+          "name": "GCXK25SecondMoment._anon_class_128",
           "namespace": "GCXK25SecondMoment",
-          "short_name": "_anon_class_126",
+          "short_name": "_anon_class_128",
           "signature": "class classical"
         },
         {
           "doc": "**Cauchy\u2013Schwarz / Chebyshev second-moment bound (\u2115 form).** The square of the total size of the family is at most `n` times the sum of all pairwise intersection sizes. This is the first inequality `(5)\u2013(6)` of the GCXK25 second-moment count, packaged over the ambient coordinate set `\u03b9` (so the union bound `r \u2264 n` is automatic).",
           "kind": "theorem",
-          "line": 161,
+          "line": 163,
           "name": "GCXK25SecondMoment.sq_sum_card_le_card_mul_sum_sum_card_inter",
           "namespace": "GCXK25SecondMoment",
           "short_name": "sq_sum_card_le_card_mul_sum_sum_card_inter",
@@ -5577,16 +5577,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 164,
-          "name": "GCXK25SecondMoment._anon_class_164",
+          "line": 166,
+          "name": "GCXK25SecondMoment._anon_class_166",
           "namespace": "GCXK25SecondMoment",
-          "short_name": "_anon_class_164",
+          "short_name": "_anon_class_166",
           "signature": "class classical"
         },
         {
           "doc": "The total second moment splits into the diagonal (`\u2211 |A \u03b1|`) plus the off-diagonal pairwise intersections.",
           "kind": "theorem",
-          "line": 172,
+          "line": 174,
           "name": "GCXK25SecondMoment.sum_sum_card_inter_eq_diag_add_offdiag",
           "namespace": "GCXK25SecondMoment",
           "short_name": "sum_sum_card_inter_eq_diag_add_offdiag",
@@ -5595,16 +5595,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 176,
-          "name": "GCXK25SecondMoment._anon_class_176",
+          "line": 178,
+          "name": "GCXK25SecondMoment._anon_class_178",
           "namespace": "GCXK25SecondMoment",
-          "short_name": "_anon_class_176",
+          "short_name": "_anon_class_178",
           "signature": "class classical"
         },
         {
           "doc": "**Off-diagonal pairwise bound (\u2115 form).** If every distinct pair `\u03b1 \u2260 \u03b2` (both in `T`) has `|A \u03b1 \u2229 A \u03b2| \u2264 B`, the off-diagonal sum is at most `N\u00b7(N-1)\u00b7B`, where `N = |T|`.",
           "kind": "theorem",
-          "line": 184,
+          "line": 186,
           "name": "GCXK25SecondMoment.offdiag_le",
           "namespace": "GCXK25SecondMoment",
           "short_name": "offdiag_le",
@@ -5613,16 +5613,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 187,
-          "name": "GCXK25SecondMoment._anon_class_187",
+          "line": 189,
+          "name": "GCXK25SecondMoment._anon_class_189",
           "namespace": "GCXK25SecondMoment",
-          "short_name": "_anon_class_187",
+          "short_name": "_anon_class_189",
           "signature": "class classical"
         },
         {
           "doc": "**GCXK25 second-moment master inequality (real form).** Let `T` be a nonempty index set with `N := |T|` members, and `A : \u03ba \u2192 Finset \u03b9` a family of subsets of an ambient coordinate set of size `n`. Suppose * each member is large: `S \u2264 |A \u03b1|` for all `\u03b1 \u2208 T` (with `S \u2265 0`); * distinct members overlap little: `|A \u03b1 \u2229 A \u03b2| \u2264 B` for all distinct `\u03b1, \u03b2 \u2208 T`. Then `N \u00b7 S\u00b2 \u2264 n \u00b7 (S + (N \u2212 1) \u00b7 B)`. This is the inequality the GCXK25 proof of Lemma 3 extracts from Cauchy\u2013Schwarz right before substituting the Reed\u2013Solomon values `S = \u221a(1\u2212p+\u03b5)\u00b7n`, `B = (1\u2212p)\u00b7n` (which then yield `N < 1/\u03b5`). Proven via th",
           "kind": "theorem",
-          "line": 217,
+          "line": 219,
           "name": "GCXK25SecondMoment.card_le_of_second_moment",
           "namespace": "GCXK25SecondMoment",
           "short_name": "card_le_of_second_moment",
@@ -5631,16 +5631,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 224,
-          "name": "GCXK25SecondMoment._anon_class_224",
+          "line": 226,
+          "name": "GCXK25SecondMoment._anon_class_226",
           "namespace": "GCXK25SecondMoment",
-          "short_name": "_anon_class_224",
+          "short_name": "_anon_class_226",
           "signature": "class classical"
         },
         {
           "doc": "**GCXK25 Lemma 3 (second-moment count of bad second-part points).** Specialization of `card_le_of_second_moment` to the Reed\u2013Solomon values `S = \u221a(1\u2212p+\u03b5)\u00b7n` (member lower bound: a bad second-part point is at least `1\u2212\u221a(1\u2212p+\u03b5)`-close, so its `\u03b4`-agreement domain has `\u2265 \u221a(1\u2212p+\u03b5)\u00b7n` coordinates) and `B = (1\u2212p)\u00b7n` (distinct agreement domains share `\u2264 (1\u2212p)\u00b7n` coordinates). Under `0 < \u03b5`, `\u03b5 \u2264 p < 1`, and `0 < n`, `|T| \u00b7 \u03b5 < \u221a(1\u2212p+\u03b5) \u2212 (1\u2212p) + \u03b5 \u2264 1`, i.e. `|T| < 1/\u03b5`. This is exactly the bound `|Bad(\u03c0\u2081,\u03c0\u2082,\u03b4)\u00b2| < 1/\u03b5` of GCXK25 Lemma 3, packaged abstractly over the agree-domain family `T`. The hypo",
           "kind": "theorem",
-          "line": 330,
+          "line": 332,
           "name": "GCXK25SecondMoment.card_lt_inv_of_second_moment_rs",
           "namespace": "GCXK25SecondMoment",
           "short_name": "card_lt_inv_of_second_moment_rs",
@@ -5649,16 +5649,16 @@
         {
           "doc": "",
           "kind": "class",
-          "line": 338,
-          "name": "GCXK25SecondMoment._anon_class_338",
+          "line": 340,
+          "name": "GCXK25SecondMoment._anon_class_340",
           "namespace": "GCXK25SecondMoment",
-          "short_name": "_anon_class_338",
+          "short_name": "_anon_class_340",
           "signature": "class classical"
         },
         {
           "doc": "Reciprocal form of `card_lt_inv_of_second_moment_rs`, matching the usual statement `|Bad\u00b2| < 1 / \u03b5` of GCXK25 Lemma 3.",
           "kind": "theorem",
-          "line": 377,
+          "line": 379,
           "name": "GCXK25SecondMoment.card_lt_one_div_of_second_moment_rs",
           "namespace": "GCXK25SecondMoment",
           "short_name": "card_lt_one_div_of_second_moment_rs",
@@ -14685,7 +14685,7 @@
         {
           "doc": "Non-cyclic public wrapper for the closed list-decoding assembly theorem. `Curves.lean` cannot import `ArkLib.ToMathlib.CorrelatedAgreementListDecodingClosed` directly, because that file itself imports the curve front doors.  This module sits above both sides of the dependency graph, so it can expose the final canonical \u00a75 residual shape under the `ProximityGap` namespace.",
           "kind": "theorem",
-          "line": 454,
+          "line": 455,
           "name": "ProximityGap.correlatedAgreement_affine_curves_of_section5_canonical_data",
           "namespace": "ProximityGap",
           "short_name": "correlatedAgreement_affine_curves_of_section5_canonical_data",
@@ -16399,9 +16399,36 @@
           "signature": "theorem coeff_zero_eval_\u03b2HenselAssembled (x\u2080 : F) (R : F[X][X][Y])"
         },
         {
+          "doc": "**(P2) explicit-residual root reduction \u2014 PROVEN.** If the single successor-order residual is supplied as a hypothesis, then the assembled `\u03b2Hensel` series is a root of `Q`. This is the hypothesis-taking version of `assembledSeries_isRoot`; unlike that theorem, this declaration does not depend on the documented residual `sorry` and is the reusable API for any future proof of the Fa\u00e0-di-Bruno coefficient bridge.",
+          "kind": "theorem",
+          "line": 1905,
+          "name": "BCIKS20.HenselNumerator.assembledSeries_isRoot_of_coeff_succ_eval",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "assembledSeries_isRoot_of_coeff_succ_eval",
+          "signature": "theorem assembledSeries_isRoot_of_coeff_succ_eval (x\u2080 : F) (R : F[X][X][Y])"
+        },
+        {
+          "doc": "Conditional identification with the genuine Hensel root from the single successor-coefficient residual. Once the positive-order root coefficients vanish, `assembledSeries_isRoot_of_coeff_succ_eval` turns the assembled numerator series into a root of `Q`; the already-proven order-`0` coefficient then lets `gammaGenuine_unique` identify it with the genuine Hensel lift.",
+          "kind": "theorem",
+          "line": 1923,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1923",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "_anon_theorem_1923",
+          "signature": "theorem theorem \u03b2HenselAssembled_eq_gammaGenuine_of_coeff_succ_eval (x\u2080 : F) (R : F[X][X][Y])"
+        },
+        {
+          "doc": "**(P2) explicit-residual lift identity \u2014 PROVEN.** The repaired lift identity follows from the successor-coefficient vanishing residual. This combines the explicit-residual root reduction `assembledSeries_isRoot_of_coeff_succ_eval` with the already proven uniqueness and denominator-clearing theorem `\u03b2Hensel_lift_identity_of_assembledSeries_isRoot`.",
+          "kind": "theorem",
+          "line": 1938,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_1938",
+          "namespace": "BCIKS20.HenselNumerator",
+          "short_name": "_anon_theorem_1938",
+          "signature": "theorem theorem \u03b2Hensel_lift_identity_of_coeff_succ_eval (x\u2080 : F) (R : F[X][X][Y])"
+        },
+        {
           "doc": "**(P2) order-`(t+1)` vanishing \u2014 THE SINGLE IRREDUCIBLE RESIDUAL (documented `sorry`).** The successor-order coefficient of `eval (\u03b2HenselAssembled \u2026) Q` vanishes.  This is the genuine, minimally-carved BCIKS20 A.4 content: with the order-`0` half already PROVEN (`coeff_zero_eval_\u03b2HenselAssembled`) and the whole-series statement assembled from this by `PowerSeries.ext` (`assembledSeries_isRoot` below), the *entire* remaining mathematical content of (P2) is exactly this per-successor-order vanishing. WHY THIS IS THE GENUINE A.4 CONTENT.  The (A.1) recursion `\u03b2Hensel_succ` was *built* so that th",
           "kind": "theorem",
-          "line": 1933,
+          "line": 1986,
           "name": "BCIKS20.HenselNumerator.coeff_succ_eval_\u03b2HenselAssembled",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "coeff_succ_eval_\u03b2HenselAssembled",
@@ -16410,7 +16437,7 @@
         {
           "doc": "**(P2) the assembled series is a root of `Q` \u2014 PROVEN modulo the SINGLE per-successor-order residual `coeff_succ_eval_\u03b2HenselAssembled`.** `eval (\u03b2HenselAssembled \u2026) Q = 0`, the genuine BCIKS20 A.4 statement that the power series assembled from the (A.1) numerators `\u03b2Hensel` (normalized by `W^{t+1}\u00b7\u03be^{e_t}`) is a root of the `X`-recentered `Y`-polynomial `Q` of `R`.  Proved by `PowerSeries.ext`, splitting into the order-`0` vanishing `coeff_zero_eval_\u03b2HenselAssembled` (PROVEN) and the order-`(t+1)` vanishing `coeff_succ_eval_\u03b2HenselAssembled` (the single documented residual).  Everything else ",
           "kind": "theorem",
-          "line": 1953,
+          "line": 2006,
           "name": "BCIKS20.HenselNumerator.assembledSeries_isRoot",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "assembledSeries_isRoot",
@@ -16419,16 +16446,16 @@
         {
           "doc": "**(P2) lift identity \u2014 REPAIRED against the genuine root, PROVEN modulo the single per-successor-order residual `coeff_succ_eval_\u03b2HenselAssembled`.** `embeddingOf\ud835\udcaaInto\ud835\udd43 (\u03b2Hensel \u2026 t) = \u03b1Genuine t \u00b7 W^{t+1} \u00b7 \u03be^{2t\u22121}`, where `\u03b1Genuine t = coeff t (gammaGenuine \u2026)` is the genuine Hensel coefficient of A.4 (NOT the vacuous in-tree `ClaimA2.\u03b1`; see the statement-repair note at \u00a74f above). PROOF STATUS.  Reduced to the single per-successor-order residual `coeff_succ_eval_\u03b2HenselAssembled` (`coeff (t+1) (eval (\u03b2HenselAssembled) Q) = 0`): `assembledSeries_isRoot` assembles the full root `eval (\u03b2Hens",
           "kind": "theorem",
-          "line": 1975,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_1975",
+          "line": 2025,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_2025",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_1975",
+          "short_name": "_anon_theorem_2025",
           "signature": "theorem theorem \u03b2Hensel_lift_identity (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1991,
+          "line": 2041,
           "name": "BCIKS20.HenselNumerator.only",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "only",
@@ -16437,10 +16464,10 @@
         {
           "doc": "",
           "kind": "structure",
-          "line": 2013,
-          "name": "BCIKS20.HenselNumerator._anon_structure_2013",
+          "line": 2063,
+          "name": "BCIKS20.HenselNumerator._anon_structure_2063",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_structure_2013",
+          "short_name": "_anon_structure_2063",
           "signature": "structure structured invariant is itself UNDERIVABLE from the (A.1) recursion (sub-additivity forces a"
         }
       ]
@@ -23467,6 +23494,163 @@
           "namespace": "CodingTheory.ProximityGap.LineDecodingCounting",
           "short_name": "double_coverage_counterexample_arbitrarily_large",
           "signature": "theorem double_coverage_counterexample_arbitrarily_large (q : \u2115) (hq : 4 \u2264 q) :"
+        }
+      ]
+    },
+    "ArkLib/Data/CodingTheory/ProximityGap/LineDecodingRefutation.lean": {
+      "declarations": [
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 22,
+          "name": "as",
+          "namespace": "",
+          "short_name": "as",
+          "signature": "theorem as stated** \u2014 it requires a hypothesis repair (a proximity bound on `\u03b4`, e.g."
+        },
+        {
+          "doc": "`2` is prime, so `ZMod 2` is a field.",
+          "kind": "instance",
+          "line": 59,
+          "name": "CodingTheory.LineDecodingRefutation._anon_instance_59",
+          "namespace": "CodingTheory.LineDecodingRefutation",
+          "short_name": "_anon_instance_59",
+          "signature": "instance instance : Fact (Nat.Prime 2) := \u27e8Nat.prime_two\u27e9"
+        },
+        {
+          "doc": "The concrete refuting data: `\u03b9 = Fin 1`, `F = A = ZMod 2`, `C = \u22a5`, `\u03b4 = a = 0`.",
+          "kind": "abbrev",
+          "line": 62,
+          "name": "CodingTheory.LineDecodingRefutation._anon_abbrev_62",
+          "namespace": "CodingTheory.LineDecodingRefutation",
+          "short_name": "_anon_abbrev_62",
+          "signature": "abbrev abbrev \u03b9 : Type := Fin 1"
+        },
+        {
+          "doc": "",
+          "kind": "abbrev",
+          "line": 63,
+          "name": "CodingTheory.LineDecodingRefutation.F",
+          "namespace": "CodingTheory.LineDecodingRefutation",
+          "short_name": "F",
+          "signature": "abbrev F : Type := ZMod 2"
+        },
+        {
+          "doc": "",
+          "kind": "abbrev",
+          "line": 64,
+          "name": "CodingTheory.LineDecodingRefutation.A",
+          "namespace": "CodingTheory.LineDecodingRefutation",
+          "short_name": "A",
+          "signature": "abbrev A : Type := ZMod 2"
+        },
+        {
+          "doc": "The zero code `C = \u22a5`; its underlying set is `{0}`.",
+          "kind": "abbrev",
+          "line": 67,
+          "name": "CodingTheory.LineDecodingRefutation.Czero",
+          "namespace": "CodingTheory.LineDecodingRefutation",
+          "short_name": "Czero",
+          "signature": "abbrev Czero : ModuleCode \u03b9 F A := (\u22a5 : Submodule F (\u03b9 \u2192 A))"
+        },
+        {
+          "doc": "A word valued in the zero code is the zero word.",
+          "kind": "theorem",
+          "line": 70,
+          "name": "CodingTheory.LineDecodingRefutation.mem_Czero_iff",
+          "namespace": "CodingTheory.LineDecodingRefutation",
+          "short_name": "mem_Czero_iff",
+          "signature": "theorem mem_Czero_iff (x : \u03b9 \u2192 A) : x \u2208 (Czero : Set (\u03b9 \u2192 A)) \u2194 x = 0 := by"
+        },
+        {
+          "doc": "**Line-decodability holds for the zero code at every `(\u03b4, a)`.** The conclusion is satisfiable by the zero affine pair `(0,0)`, independently of the hypothesis, because `Pr_\u03b3[U \u03b3 = 0 + \u03b3 \u2022 0] = Pr_\u03b3[True] = 1 \u2265 (n+1)/|F|` once `U` is valued in `C = {0}`.",
+          "kind": "theorem",
+          "line": 76,
+          "name": "CodingTheory.LineDecodingRefutation.lineDecodable_Czero",
+          "namespace": "CodingTheory.LineDecodingRefutation",
+          "short_name": "lineDecodable_Czero",
+          "signature": "theorem lineDecodable_Czero (\u03b4 a : \u211d\u22650) :"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 78,
+          "name": "CodingTheory.LineDecodingRefutation._anon_class_78",
+          "namespace": "CodingTheory.LineDecodingRefutation",
+          "short_name": "_anon_class_78",
+          "signature": "class classical"
+        },
+        {
+          "doc": "The refuting stack: `u 0 = 0`, `u 1 = 1` (the all-ones word of `Fin 1 \u2192 ZMod 2`).",
+          "kind": "def",
+          "line": 113,
+          "name": "CodingTheory.LineDecodingRefutation.ubad",
+          "namespace": "CodingTheory.LineDecodingRefutation",
+          "short_name": "ubad",
+          "signature": "def ubad : WordStack A (Fin 2) \u03b9 := fun k _ => if k = 0 then 0 else 1"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 115,
+          "name": "CodingTheory.LineDecodingRefutation.ubad_zero",
+          "namespace": "CodingTheory.LineDecodingRefutation",
+          "short_name": "ubad_zero",
+          "signature": "theorem ubad_zero : ubad 0 = (0 : \u03b9 \u2192 A) := by"
+        },
+        {
+          "doc": "",
+          "kind": "theorem",
+          "line": 118,
+          "name": "CodingTheory.LineDecodingRefutation.ubad_one",
+          "namespace": "CodingTheory.LineDecodingRefutation",
+          "short_name": "ubad_one",
+          "signature": "theorem ubad_one : ubad 1 = (fun _ => (1 : A)) := by"
+        },
+        {
+          "doc": "**`mcaEvent` fires at `\u03b3 = 0` for the stack `ubad`** (with `\u03b4 = 0`). Witness set `S = {0}` (all of `\u03b9 = Fin 1`): `|S| = 1 \u2265 (1-0)\u00b71`; the zero codeword equals the line `ubad 0 + 0 \u2022 ubad 1 = 0` on `S`; and no codeword pair of `C = {0}` agrees with `(ubad 0, ubad 1) = (0, 1)` on `S`, since any pair is `(0,0)` and `0 \u2260 1`.",
+          "kind": "theorem",
+          "line": 125,
+          "name": "CodingTheory.LineDecodingRefutation.mcaEvent_ubad_zero",
+          "namespace": "CodingTheory.LineDecodingRefutation",
+          "short_name": "mcaEvent_ubad_zero",
+          "signature": "theorem mcaEvent_ubad_zero :"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 127,
+          "name": "CodingTheory.LineDecodingRefutation._anon_class_127",
+          "namespace": "CodingTheory.LineDecodingRefutation",
+          "short_name": "_anon_class_127",
+          "signature": "class classical"
+        },
+        {
+          "doc": "**`\u03b5_mca(C, \u03b4) \u2265 1/|F| > 0`** for the zero code at `\u03b4 = 0`: the `ubad` stack puts mass `\u2265 Pr[\u03b3 = 0] = 1/|F|` on `mcaEvent`, and `\u03b5_mca` is the supremum over stacks.",
+          "kind": "theorem",
+          "line": 148,
+          "name": "CodingTheory.LineDecodingRefutation.epsMCA_Czero_pos",
+          "namespace": "CodingTheory.LineDecodingRefutation",
+          "short_name": "epsMCA_Czero_pos",
+          "signature": "theorem epsMCA_Czero_pos :"
+        },
+        {
+          "doc": "",
+          "kind": "class",
+          "line": 150,
+          "name": "CodingTheory.LineDecodingRefutation._anon_class_150",
+          "namespace": "CodingTheory.LineDecodingRefutation",
+          "short_name": "_anon_class_150",
+          "signature": "class classical"
+        },
+        {
+          "doc": "**The black-box ABF26 Theorem 4.21 (`lineDecodable_imp_epsMCA_le`) is false as stated.** There is a concrete instance \u2014 the zero code `C = \u22a5` over `F = ZMod 2`, `\u03b9 = Fin 1`, `\u03b4 = a = 0` \u2014 that is `(\u03b4, a, |\u03b9|+1)`-line-decodable yet has `\u03b5_mca(C, \u03b4) > a / |F|`. So the conclusion of `lineDecodable_imp_epsMCA_le` does **not** follow from its hypothesis: the theorem requires a hypothesis repair (a proximity bound on `\u03b4` plus a nondegeneracy bound on `a` / `|\u03b9|`), not a leaf proof of the present form.",
+          "kind": "theorem",
+          "line": 178,
+          "name": "CodingTheory.LineDecodingRefutation.lineDecodable_imp_epsMCA_le_false",
+          "namespace": "CodingTheory.LineDecodingRefutation",
+          "short_name": "lineDecodable_imp_epsMCA_le_false",
+          "signature": "theorem lineDecodable_imp_epsMCA_le_false :"
         }
       ]
     },
@@ -70558,8 +70742,8 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 7674,
-      "files": 376
+      "declarations": 7694,
+      "files": 377
     }
   }
 }
