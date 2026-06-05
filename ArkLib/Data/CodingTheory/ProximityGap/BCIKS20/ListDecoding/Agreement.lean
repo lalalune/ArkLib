@@ -7,7 +7,7 @@ Authors: Quang Dao, Katerina Hristova, Frantisek Silvasi, Julian Sutherland,
 
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.RootClearing
 
-set_option linter.style.longFile 5300
+set_option linter.style.longFile 5600
 
 /-!
 # BCIKS20 list-decoding agreement compatibility module
@@ -4507,6 +4507,151 @@ lemma solution_gamma_matches_word_eval_if_subset_large_of_coeff_values
   rw [solution_gamma_matches_word_if_subset_large_of_coeff_values
     (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
     h_gs hD hx h₀ h₁]
+  simp [mul_comm]
+
+open BCIKS20AppendixA.ClaimA2 Polynomial in
+lemma solution_gamma_matches_word_if_subset_large_of_linear_witness
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    (hlin :
+      ∃ (v₀ v₁ : F[X]),
+        γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
+          (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs)
+          (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs) =
+            BCIKS20AppendixA.polyToPowerSeries𝕃 _
+              ((Polynomial.map Polynomial.C v₀) +
+                (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)))
+    {x : Fin n}
+    {D : ℕ}
+    (_hD : D ≥ Bivariate.totalDegree (H k δ x₀ h_gs))
+    (_hx : (matching_set_at_x k δ h_gs x).card >
+      (2 * k + 1)
+        * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+        * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+        * D)
+    (h₀ : (Classical.choose hlin).eval (ωs x) = u₀ x)
+    (h₁ : (Classical.choose (Classical.choose_spec hlin)).eval (ωs x) = u₁ x) :
+    (P_of_linear_witness k δ x₀ h_gs hlin).eval (Polynomial.C (ωs x)) =
+      (Polynomial.C <| u₀ x) + u₁ x • Polynomial.X :=
+  P_eval_eq_word_of_linear_witness_coeff_values
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+    h_gs hlin x h₀ h₁
+
+open BCIKS20AppendixA.ClaimA2 Polynomial in
+lemma solution_gamma_matches_word_eval_if_subset_large_of_linear_witness
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    (hlin :
+      ∃ (v₀ v₁ : F[X]),
+        γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
+          (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs)
+          (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs) =
+            BCIKS20AppendixA.polyToPowerSeries𝕃 _
+              ((Polynomial.map Polynomial.C v₀) +
+                (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)))
+    {x : Fin n}
+    {D : ℕ}
+    (hD : D ≥ Bivariate.totalDegree (H k δ x₀ h_gs))
+    (hx : (matching_set_at_x k δ h_gs x).card >
+      (2 * k + 1)
+        * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+        * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+        * D)
+    (z : F)
+    (h₀ : (Classical.choose hlin).eval (ωs x) = u₀ x)
+    (h₁ : (Classical.choose (Classical.choose_spec hlin)).eval (ωs x) = u₁ x) :
+    ((P_of_linear_witness k δ x₀ h_gs hlin).eval (Polynomial.C (ωs x))).eval z =
+      u₀ x + z * u₁ x := by
+  rw [solution_gamma_matches_word_if_subset_large_of_linear_witness
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+    h_gs hlin hD hx h₀ h₁]
+  simp [mul_comm]
+
+open BCIKS20AppendixA.ClaimA2 Polynomial in
+lemma solution_gamma_matches_word_if_subset_large_of_representative_degreeX_le_one
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    {Ppoly : F[Z][X]}
+    (hrepr :
+      γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
+        (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs)
+        (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs) =
+          BCIKS20AppendixA.polyToPowerSeries𝕃 _ Ppoly)
+    (hP : Bivariate.degreeX Ppoly ≤ 1)
+    {x : Fin n}
+    {D : ℕ}
+    (hD : D ≥ Bivariate.totalDegree (H k δ x₀ h_gs))
+    (hx : (matching_set_at_x k δ h_gs x).card >
+      (2 * k + 1)
+        * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+        * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+        * D)
+    (h₀ :
+      (Classical.choose
+        (solution_gamma_is_linear_in_Z_of_polynomial_representative_degreeX_le_one
+          (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀) h_gs
+          hrepr hP)).eval (ωs x) = u₀ x)
+    (h₁ :
+      (Classical.choose
+        (Classical.choose_spec
+          (solution_gamma_is_linear_in_Z_of_polynomial_representative_degreeX_le_one
+            (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀) h_gs
+            hrepr hP))).eval (ωs x) = u₁ x) :
+    (P_of_linear_witness k δ x₀ h_gs
+      (solution_gamma_is_linear_in_Z_of_polynomial_representative_degreeX_le_one
+        (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀) h_gs
+        hrepr hP)).eval (Polynomial.C (ωs x)) =
+      (Polynomial.C <| u₀ x) + u₁ x • Polynomial.X := by
+  exact solution_gamma_matches_word_if_subset_large_of_linear_witness
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+    h_gs
+    (solution_gamma_is_linear_in_Z_of_polynomial_representative_degreeX_le_one
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀) h_gs hrepr hP)
+    hD hx h₀ h₁
+
+open BCIKS20AppendixA.ClaimA2 Polynomial in
+lemma solution_gamma_matches_word_eval_if_subset_large_of_representative_degreeX_le_one
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    {Ppoly : F[Z][X]}
+    (hrepr :
+      γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
+        (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs)
+        (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs) =
+          BCIKS20AppendixA.polyToPowerSeries𝕃 _ Ppoly)
+    (hP : Bivariate.degreeX Ppoly ≤ 1)
+    {x : Fin n}
+    {D : ℕ}
+    (hD : D ≥ Bivariate.totalDegree (H k δ x₀ h_gs))
+    (hx : (matching_set_at_x k δ h_gs x).card >
+      (2 * k + 1)
+        * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+        * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+        * D)
+    (z : F)
+    (h₀ :
+      (Classical.choose
+        (solution_gamma_is_linear_in_Z_of_polynomial_representative_degreeX_le_one
+          (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀) h_gs
+          hrepr hP)).eval (ωs x) = u₀ x)
+    (h₁ :
+      (Classical.choose
+        (Classical.choose_spec
+          (solution_gamma_is_linear_in_Z_of_polynomial_representative_degreeX_le_one
+            (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀) h_gs
+            hrepr hP))).eval (ωs x) = u₁ x) :
+    ((P_of_linear_witness k δ x₀ h_gs
+      (solution_gamma_is_linear_in_Z_of_polynomial_representative_degreeX_le_one
+        (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀) h_gs
+        hrepr hP)).eval (Polynomial.C (ωs x))).eval z =
+      u₀ x + z * u₁ x := by
+  rw [solution_gamma_matches_word_if_subset_large_of_representative_degreeX_le_one
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+    h_gs hrepr hP hD hx h₀ h₁]
   simp [mul_comm]
 
 open BCIKS20AppendixA.ClaimA2 Polynomial in
