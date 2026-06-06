@@ -1053,9 +1053,6 @@ theorem oracleReduction_perfectCompleteness :
   simp only [liftM_pure, liftComp_pure, map_pure, pure_bind, bind_pure_comp,
     Functor.map_map, Function.comp_def, map_map, OptionT.run_pure, Option.getM,
     Transcript.concat, Fin.snoc_last, Fin.snoc_castSucc]
-  simp only [OptionT.run_bind, OptionT.run_map, OptionT.run_pure, Option.getM, Option.elimM,
-    pure_bind, map_pure]
-  simp only [ENNReal.coe_zero, tsub_zero]
   rw [ge_iff_le, one_le_probEvent_iff, probEvent_eq_one_iff]
   refine ⟨?_, ?_⟩
   all_goals
@@ -1074,31 +1071,30 @@ theorem oracleReduction_perfectCompleteness :
     apply probOutput_eq_zero_of_not_mem_support
     simp only [support_bind, Set.mem_iUnion, not_exists]
     intro s _ hmem
-    erw [simulateQ_bind] at hmem
-    simp only [StateT.run'_eq] at hmem
-    rw [StateT.run_bind] at hmem
-    rw [mem_support_bind_iff] at hmem
-    obtain ⟨⟨pr, s'⟩, _hpr, hmem⟩ := hmem
-    simp only [liftM_pure, map_pure, Option.getM, pure_bind] at hmem
-    erw [simulateQ_pure] at hmem
-    rw [StateT.run_pure] at hmem
-    simp only [support_pure, Set.mem_singleton_iff] at hmem
-    exact absurd (congr_arg Prod.fst hmem) (by simp)
+    rw [hOC] at hmem
+    simp only [StateT.run'_eq, support_map, Set.mem_image] at hmem
+    obtain ⟨⟨v, s'⟩, hmem, hv⟩ := hmem
+    erw [simulateQ_map] at hmem
+    rw [StateT.run_map] at hmem
+    simp only [support_map, Set.mem_image] at hmem
+    obtain ⟨⟨w, s''⟩, hw, heq⟩ := hmem
+    obtain ⟨rfl, rfl⟩ := Prod.mk.inj heq
+    simp [Function.comp_def] at hv
   · -- Event: holds for every sampled challenge by construction.
     intro x hx
     rw [OptionT.mem_support_iff] at hx
     simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
     obtain ⟨s, _, hx⟩ := hx
-    erw [simulateQ_bind] at hx
-    simp only [StateT.run'_eq] at hx
-    rw [StateT.run_bind] at hx
-    rw [mem_support_bind_iff] at hx
-    obtain ⟨⟨pr, s'⟩, hw, hx⟩ := hx
-    simp only [liftM_pure, map_pure, Option.getM, pure_bind] at hx
-    erw [simulateQ_pure] at hx
-    rw [StateT.run_pure] at hx
-    simp only [support_pure, Set.mem_singleton_iff, Prod.mk.injEq] at hx
-    obtain ⟨rfl, rfl⟩ := hx
+    rw [hOC] at hx
+    simp only [StateT.run'_eq, support_map, Set.mem_image] at hx
+    obtain ⟨⟨v, s'⟩, hx, hv⟩ := hx
+    erw [simulateQ_map] at hx
+    rw [StateT.run_map] at hx
+    simp only [support_map, Set.mem_image] at hx
+    obtain ⟨⟨w, s''⟩, hw, heq⟩ := hx
+    obtain ⟨rfl, rfl⟩ := Prod.mk.inj heq
+    simp only [Function.comp_def, Option.some.injEq] at hv
+    subst hv
     refine ⟨?_, ?_⟩
     · simp only [outputRelation, Set.mem_setOf_eq]
       rfl

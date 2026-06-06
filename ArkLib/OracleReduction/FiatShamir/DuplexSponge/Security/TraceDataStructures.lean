@@ -53,6 +53,12 @@ namespace DSTraceStorage
 abbrev DuplexSpongeTrace (StmtIn U : Type) [SpongeUnit U] [SpongeSize] :=
   QueryLog (duplexSpongeChallengeOracle StmtIn U)
 
+/-- A single query-answer entry of a `DuplexSpongeTrace`, i.e. one element of the underlying
+`QueryLog` for the `duplexSpongeChallengeOracle`. -/
+abbrev duplexSpongeTraceEntry (StartType U : Type) [SpongeUnit U] [SpongeSize] :=
+  (t : (duplexSpongeChallengeOracle StartType U).Domain) ×
+    (duplexSpongeChallengeOracle StartType U).Range t
+
 section TraceFilters
 
 variable {StmtIn U : Type} [SpongeUnit U] [SpongeSize]
@@ -254,10 +260,13 @@ private lemma hash_ms_foldl_inv
       have hIH := ih {init with h := TraceTableOps.add init.h stmt' a} hp
       have : ({init with h := TraceTableOps.add init.h stmt' a} :
           TraceNabla T_H T_P StmtIn U).h = TraceTableOps.add init.h stmt' a := rfl
-      rw [this, LawfulTraceTable.toMultiSet_add] at hIH
+      rw [this] at hIH
+      have key : LawfulTraceTable.toMultiSet (TraceTableOps.add init.h stmt' a)
+          = (stmt', a) ::ₘ LawfulTraceTable.toMultiSet init.h :=
+        LawfulTraceTable.toMultiSet_add init.h stmt' a
+      rw [key] at hIH
       rcases hIH with hMem | hIn
-      · rw [Multiset.mem_cons] at hMem
-        rcases hMem with hEq | hRest
+      · rcases Multiset.mem_cons.mp hMem with hEq | hRest
         · subst hEq; right; exact .head ..
         · exact Or.inl hRest
       · exact Or.inr (List.mem_cons_of_mem _ hIn)
@@ -306,10 +315,13 @@ private lemma perm_ms_foldl_inv
       have hIH := ih {init with p := TraceTableOps.add init.p sIn' a} hp
       have : ({init with p := TraceTableOps.add init.p sIn' a} :
           TraceNabla T_H T_P StmtIn U).p = TraceTableOps.add init.p sIn' a := rfl
-      rw [this, LawfulTraceTable.toMultiSet_add] at hIH
+      rw [this] at hIH
+      have key : LawfulTraceTable.toMultiSet (TraceTableOps.add init.p sIn' a)
+          = (sIn', a) ::ₘ LawfulTraceTable.toMultiSet init.p :=
+        LawfulTraceTable.toMultiSet_add init.p sIn' a
+      rw [key] at hIH
       rcases hIH with hMem | hIn
-      · rw [Multiset.mem_cons] at hMem
-        rcases hMem with hEq | hRest
+      · rcases Multiset.mem_cons.mp hMem with hEq | hRest
         · subst hEq; exact Or.inr (Or.inl (by exact .head ..))
         · exact Or.inl hRest
       · rcases hIn with h1 | h2
@@ -321,10 +333,13 @@ private lemma perm_ms_foldl_inv
       have hIH := ih {init with p := TraceTableOps.add init.p a sOut'} hp
       have : ({init with p := TraceTableOps.add init.p a sOut'} :
           TraceNabla T_H T_P StmtIn U).p = TraceTableOps.add init.p a sOut' := rfl
-      rw [this, LawfulTraceTable.toMultiSet_add] at hIH
+      rw [this] at hIH
+      have key : LawfulTraceTable.toMultiSet (TraceTableOps.add init.p a sOut')
+          = (a, sOut') ::ₘ LawfulTraceTable.toMultiSet init.p :=
+        LawfulTraceTable.toMultiSet_add init.p a sOut'
+      rw [key] at hIH
       rcases hIH with hMem | hIn
-      · rw [Multiset.mem_cons] at hMem
-        rcases hMem with hEq | hRest
+      · rcases Multiset.mem_cons.mp hMem with hEq | hRest
         · subst hEq; exact Or.inr (Or.inr (by exact .head ..))
         · exact Or.inl hRest
       · rcases hIn with h1 | h2
@@ -403,10 +418,13 @@ private lemma hash_ms_foldl_fwd_inv
       have hIH := ih {init with h := TraceTableOps.add init.h stmt' a} hp
       have : ({init with h := TraceTableOps.add init.h stmt' a} :
           TraceNabla T_H T_P StmtIn U).h = TraceTableOps.add init.h stmt' a := rfl
-      rw [this, LawfulTraceTable.toMultiSet_add] at hIH
+      rw [this] at hIH
+      have key : LawfulTraceTable.toMultiSet (TraceTableOps.add init.h stmt' a)
+          = (stmt', a) ::ₘ LawfulTraceTable.toMultiSet init.h :=
+        LawfulTraceTable.toMultiSet_add init.h stmt' a
+      rw [key] at hIH
       rcases hIH with hMem | hIn
-      · rw [Multiset.mem_cons] at hMem
-        rcases hMem with hEq | hRest
+      · rcases Multiset.mem_cons.mp hMem with hEq | hRest
         · subst hEq; right; exact .head ..
         · exact Or.inl hRest
       · exact Or.inr (List.mem_cons_of_mem _ hIn)
@@ -449,10 +467,13 @@ private lemma perm_ms_foldl_fwd_inv
       have hIH := ih {init with p := TraceTableOps.add init.p sIn' a} hp
       have : ({init with p := TraceTableOps.add init.p sIn' a} :
           TraceNabla T_H T_P StmtIn U).p = TraceTableOps.add init.p sIn' a := rfl
-      rw [this, LawfulTraceTable.toMultiSet_add] at hIH
+      rw [this] at hIH
+      have key : LawfulTraceTable.toMultiSet (TraceTableOps.add init.p sIn' a)
+          = (sIn', a) ::ₘ LawfulTraceTable.toMultiSet init.p :=
+        LawfulTraceTable.toMultiSet_add init.p sIn' a
+      rw [key] at hIH
       rcases hIH with hMem | hIn
-      · rw [Multiset.mem_cons] at hMem
-        rcases hMem with hEq | hRest
+      · rcases Multiset.mem_cons.mp hMem with hEq | hRest
         · subst hEq; exact Or.inr (Or.inl (by exact .head ..))
         · exact Or.inl hRest
       · rcases hIn with h1 | h2

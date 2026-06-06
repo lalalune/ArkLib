@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
 import ArkLib.ToMathlib.BetaToCurveCoeffPolys
+import ArkLib.ToMathlib.HcardDischarge
 
 -- This file is documentation-heavy (extended BCIKS §5 prose in the docstrings); the long-line
 -- style linter is disabled locally, matching the sibling `BetaToCurveCoeffPolys.lean`.
@@ -312,6 +313,37 @@ theorem correlatedAgreement_affine_curves_johnson_of_betaRec_strict
     (fun hk u hprob hJ P hP =>
       strictCoeffPolysResidual_of_betaRec hInput hk u hprob hJ hδ P hP)
 
+omit [DecidableEq ι] in
+/-- **Strict-radius keystone from the corrected finite-range §5 bundle.**
+
+This is the satisfiable replacement for the older `BetaCurveInput` front door: callers supply
+`Section5StrictDataFin` for each decoded family `P`, and the existing `HcardDischarge` path derives
+the coefficient-polynomial witness consumed by the BCIKS20 strict Johnson branch. -/
+theorem correlatedAgreement_affine_curves_johnson_of_section5DataFin_strict
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hδ : δ < 1 - ReedSolomon.sqrtRate deg domain)
+    (hInput : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      δ < 1 - ReedSolomon.sqrtRate deg domain →
+      ∀ P : F → Polynomial F,
+        (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+          (P z).natDegree < deg ∧
+            δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+              (P z).eval ∘ domain) ≤ δ) →
+        HcardDischarge.Section5StrictDataFin
+          (k := k) (deg := deg) (domain := domain) (δ := δ) u P) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
+  correlatedAgreement_affine_curves_of_strict_coeff_polys
+    (k := k) (deg := deg) (domain := domain) (δ := δ) hδ
+    (fun hk u hprob hJ P hP =>
+      HcardDischarge.hcoeffPoly_witness_of_section5DataFin
+        (hInput hk u hprob hJ hδ P hP))
+
 end KeystoneStrictResidual
 
 end ArkLib
@@ -323,3 +355,4 @@ end ArkLib
 #print axioms ArkLib.KeystoneStrictResidual.strictCoeffPolysResidual_of_betaRec
 #print axioms ArkLib.KeystoneStrictResidual.correlatedAgreement_affine_curves_johnson_of_betaRec
 #print axioms ArkLib.KeystoneStrictResidual.correlatedAgreement_affine_curves_johnson_of_betaRec_strict
+#print axioms ArkLib.KeystoneStrictResidual.correlatedAgreement_affine_curves_johnson_of_section5DataFin_strict

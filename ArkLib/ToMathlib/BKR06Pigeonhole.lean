@@ -31,17 +31,21 @@ list-size argument consumes (the `hfamily` residual of
 * **Top-coefficient pattern pigeonhole** (`BKR06.exists_pattern_fiber_family`):
   partition any finite family of polynomials by their coefficients in the window
   `[k, D]` (the "top coefficients above the cutoff `k`"); if the family is larger
-  than `(#K)^(D+1−k) · N`, some pattern-fiber contains `≥ N` polynomials, pairwise
+  than `(#K)^w · N`, some pattern-fiber contains `> N` polynomials, pairwise
   differing only below degree `k` — i.e. all pairwise differences lie in
-  `degreeLT K k`, and (when the originals are distinct) the polynomials remain
-  distinct.
+  `degreeLT K k`.
 
-* **Assembled family** (`BKR06.bkr06_pigeonhole_family`): combining the two above
-  with the proven `subspacePoly` degree facts, we produce an index type `ι`, a
+* **Assembled family** (`BKR06.bkr06_pigeonhole_family_card`): combining the two
+  above with the proven `subspacePoly` degree facts, we produce an index type `ι`, a
   family `𝓛 : ι → Submodule F K` of distinct `v`-dimensional subspaces, the
-  distinctness `hdistinct` and degree-cutoff `hsmall` facts in exactly the shape
+  distinctness and degree-cutoff facts in exactly the shape
   `rs_lambda_superpoly_extension_bkr06_of_family` consumes, together with a
-  cardinality lower bound `|ι|`.
+  cardinality lower bound `N < |ι|`.
+
+* **Real-exponent residual** (`BKR06.bkr06_hfamily_of_card`): the exact `hfamily`
+  inequality `q^{(α−β²)·log q} ≤ |ι|` consumed by
+  `rs_lambda_superpoly_extension_bkr06_of_family`, derived from the count above and a
+  single explicit, named arithmetic side condition `hexp`.
 
 ## Exponent bookkeeping and the honest residual
 
@@ -52,13 +56,13 @@ nonzero coefficients sit at the `q`-power exponents `q^0, …, q^v`, so the
 The linearized-support theorem (`subspacePoly` is supported on `{q^i}`) is itself a
 substantial additive-polynomial / Frobenius result *not present in mathlib*, so the
 in-tree pattern pigeonhole below uses the **generic** coefficient window of width
-`D + 1 − k` slots rather than the tight `v − u` slots.  Consequently the exponent
-delivered by the fully-proven pipeline is the generic
-`q^{v(m−v)} / (#K)^{D+1−k}`, and the bridge from that to the in-tree target
-`q^{(α−β²)·log q}` (which equals the tight `q^{(u+1)m − v²}` under BKR06's parameter
-choices `v ≈ βm`, `k = q^u`) is surfaced as a single explicit, named arithmetic
-hypothesis `hexp` of the assembled lemma.  This is the only residual: the count and
-the pigeonhole themselves are proven, `sorry`-free and axiom-clean.
+`w` slots rather than the tight `v − u` slots.  Consequently the count delivered by
+the fully-proven pipeline is the generic `N < q^{v(m−v)} / (#K)^w`, and the bridge
+from that to the in-tree target `q^{(α−β²)·log q}` (which equals the tight
+`q^{(u+1)m − v²}` under BKR06's parameter choices `v ≈ βm`, `k = q^u`) is surfaced as
+a single explicit, named arithmetic hypothesis `hexp` of `bkr06_hfamily_of_card`.
+This is the only residual: the count and the pigeonhole themselves are proven,
+`sorry`-free and axiom-clean.
 
 All declarations compile `sorry`/`axiom`-free and are axiom-clean
 (`[propext, Classical.choice, Quot.sound]`); see the in-file `#print axioms`.
@@ -218,8 +222,8 @@ end GraphCardinality
 
 For polynomials of `natDegree ≤ D`, two polynomials sharing all coefficients in the
 window `[k, D]` differ only below degree `k`, i.e. their difference lies in
-`degreeLT K k`.  There are at most `(#K)^(D+1−k)` such windows, so any family of
-more than `(#K)^(D+1−k)·N` polynomials has a window-fiber of size `≥ N`. -/
+`degreeLT K k`.  There are at most `(#K)^w` such windows, so any family of
+more than `(#K)^w·N` polynomials has a window-fiber of size `> N`. -/
 
 section Pattern
 
@@ -257,12 +261,11 @@ lemma sub_mem_degreeLT_of_topPattern_eq
         Polynomial.coeff_eq_zero_of_natDegree_lt (lt_of_le_of_lt hQ hnD)]
     ring
 
-/-- **Pattern pigeonhole.**  Let `g : ι → K[X]` be an injective family of
-polynomials, each of `natDegree ≤ D`, with the window covering `(D, ∞)`
-(`D < k + w`).  If `(#K)^w · N < |ι|`, then there is a sub-family of size `> N`
-(a nonempty finset `T`) on which all `g i` share the same top pattern above `k` —
-hence all pairwise differences `g i − g j` lie in `degreeLT K k`, and the `g i`
-remain pairwise distinct on `T`. -/
+/-- **Pattern pigeonhole.**  Let `g : ι → K[X]` be a family of polynomials, each of
+`natDegree ≤ D`, with the window covering `(D, ∞)` (`D < k + w`).  If
+`(#K)^w · N < |ι|`, then there is a sub-family of size `> N` (a finset `T`) on which
+all `g i` share the same top pattern above `k` — hence all pairwise differences
+`g i − g j` lie in `degreeLT K k`. -/
 theorem exists_pattern_fiber_family
     {ι : Type*} [Fintype ι] [DecidableEq ι]
     (g : ι → K[X]) (k w D N : ℕ)
@@ -356,14 +359,16 @@ pigeonhole, with window cutoff `k` and width `w` covering `(q^v, ∞)`
 There is an index type `ι` and a family `𝓛 : ι → Submodule F K` of `𝔽_q`-subspaces
 of `K` such that:
 
-* every member has dimension `v` (`hfin`);
-* the subspace polynomials are pairwise distinct (`hdistinct`), i.e. the members are
-  pairwise distinct subspaces;
-* all pairwise differences of subspace polynomials lie in `degreeLT K k`
-  (`hsmall`, the degree-cutoff agreement BKR06 needs);
-* the index type is strictly larger than `N` (`hcard`), provided
-  `(#K)^w · N < q^{v(m−v)}` and the window `[k, k+w)` covers `(q^v, ∞)`
-  (`hcov : q^v < k + w`).
+* the index type is strictly larger than `N` (provided `(#K)^w · N < q^{v(m−v)}` and
+  the window `[k, k+w)` covers `(q^v, ∞)`, i.e. `hcov : q^v < k + w`);
+* every member has dimension `v`;
+* the subspace polynomials are pairwise distinct, i.e. the members are pairwise
+  distinct subspaces;
+* all pairwise differences of subspace polynomials lie in `degreeLT K k` (the
+  degree-cutoff agreement BKR06 needs).
+
+The index type is realized as `Fin T.card` for the extracted fiber `T`, hence a
+`Type 0`, decoupling it from the (arbitrary) universe of `K`.
 
 This is the purely combinatorial engine of the `hfamily` residual; the real-exponent
 form is `bkr06_hfamily_of_card` below. -/
@@ -372,60 +377,54 @@ theorem bkr06_pigeonhole_family_card
     (k w N : ℕ)
     (hcov : (Fintype.card F) ^ v < k + w)
     (hbig : (Fintype.card K) ^ w * N < (Fintype.card F) ^ (v * (Module.finrank F K - v))) :
-    ∃ (ι : Type u) (_ : Fintype ι) (_ : DecidableEq ι) (𝓛 : ι → Submodule F K)
+      ∃ (ι : Type u) (_ : Fintype ι) (_ : DecidableEq ι) (𝓛 : ι → Submodule F K)
       (_ : ∀ i, Fintype (𝓛 i)),
       N < Fintype.card ι ∧
       (∀ i, Module.finrank F (𝓛 i) = v) ∧
       Function.Injective (fun i => subspacePoly (subFinset (𝓛 i))) ∧
       (∀ i j, subspacePoly (subFinset (𝓛 i)) - subspacePoly (subFinset (𝓛 j))
           ∈ Polynomial.degreeLT K k) := by
-    classical
-    -- Part 1: a large finset of distinct dimension-`v` subspaces.
-    have hcard_data := card_dimv_subspaces_ge (F := F) (K := K) v hv
-    rcases hcard_data with ⟨S, hScard, hSdim⟩
-    -- The subspace-polynomial map on the (typed) finset `S`.
-    have g : ↥S → K[X] := fun W =>
-      letI : Fintype ((W : Submodule F K)) := Fintype.ofFinite _
-      subspacePoly (subFinset (W : Submodule F K))
+  classical
+  -- Part 1: a large finset of distinct dimension-`v` subspaces.
+  obtain ⟨S, hScard, hSdim⟩ := card_dimv_subspaces_ge (F := F) (K := K) v hv
+  -- The subspace-polynomial map on the (typed) finset `S` (Fintype on members is the
+  -- ambient `instFintypeSubmodule`).
+  let g : {W : Submodule F K // W ∈ S} → K[X] := fun W => subspacePoly (subFinset W.val)
   -- It is injective: distinct subspaces ⇒ distinct subspace polynomials.
-  have hg_inj : Function.Injective g := by
-    intro W₁ W₂ hW
+  have hg_inj : Function.Injective g := fun W₁ W₂ hW => by
     by_contra hne
-    letI : Fintype ((W₁ : Submodule F K)) := Fintype.ofFinite _
-    letI : Fintype ((W₂ : Submodule F K)) := Fintype.ofFinite _
-    exact subspacePoly_ne_of_ne (W₁ : Submodule F K) (W₂ : Submodule F K)
-      (fun h => hne (Subtype.ext h)) hW
+    exact subspacePoly_ne_of_ne W₁.val W₂.val (fun h => hne (Subtype.ext h)) hW
   -- Each has degree `q^v` (members of `S` have dimension `v`).
-  have hg_deg : ∀ W : ↥S, (g W).natDegree ≤ (Fintype.card F) ^ v := by
+  have hg_deg : ∀ W : {W : Submodule F K // W ∈ S}, (g W).natDegree ≤ (Fintype.card F) ^ v := by
     intro W
-    letI : Fintype ((W : Submodule F K)) := Fintype.ofFinite _
-    have hdim : Module.finrank F (W : Submodule F K) = v := hSdim W.1 W.2
-    show (subspacePoly (subFinset (W : Submodule F K))).natDegree ≤ _
+    have hdim : Module.finrank F W.val = v := hSdim W.val W.2
+    show (subspacePoly (subFinset W.val)).natDegree ≤ (Fintype.card F) ^ v
     rw [subspacePoly_natDegree_eq_pow_finrank, hdim]
   -- Cardinality of the typed finset is `S.card ≥ q^{v(m−v)}`.
-  have hScard' : (Fintype.card F) ^ (v * (Module.finrank F K - v)) ≤ Fintype.card ↥S := by
+  have hScard' : (Fintype.card F) ^ (v * (Module.finrank F K - v))
+      ≤ Fintype.card {W : Submodule F K // W ∈ S} := by
     rw [Fintype.card_coe]; exact hScard
-  have hbig' : (Fintype.card K) ^ w * N < Fintype.card ↥S := lt_of_lt_of_le hbig hScard'
+  have hbig' : (Fintype.card K) ^ w * N
+      < Fintype.card {W : Submodule F K // W ∈ S} := lt_of_lt_of_le hbig hScard'
   -- Part 2: pattern pigeonhole extracts a sub-family `T` of size `> N`.
   obtain ⟨T, hTcard, hTsmall⟩ :=
     exists_pattern_fiber_family g k w ((Fintype.card F) ^ v) N hg_deg hcov hbig'
-  -- The surviving index type, reindexed through `Fin` to stay in the small universe.
-  let e : Fin (Fintype.card ↥T) ≃ ↥T := (Fintype.equivFin ↥T).symm
-  refine ⟨Fin (Fintype.card ↥T), inferInstance, inferInstance,
-    (fun i => ((e i : ↥S) : Submodule F K)),
-    (fun i => Fintype.ofFinite (((e i : ↥S) : Submodule F K))), ?_, ?_, ?_, ?_⟩
+  -- The surviving index type: the elements of `T`.
+  refine ⟨{t : {W : Submodule F K // W ∈ S} // t ∈ T}, inferInstance, inferInstance,
+    fun t => t.val.val, fun _ => inferInstance, ?_, ?_, ?_, ?_⟩
   · -- |ι| = T.card > N
-    simpa using hTcard
+    rw [Fintype.card_coe]
+    exact hTcard
   · -- each has dimension `v`
-    intro i
-    exact hSdim _ (e i).1.2
+    intro t
+    exact hSdim _ t.val.2
   · -- subspace polynomials are pairwise distinct on `T`
-    intro i j hij
-    have hSeq : (e i : ↥S) = (e j : ↥S) := hg_inj hij
-    exact e.injective (Subtype.ext hSeq)
+    intro t₁ t₂ ht
+    have hval : t₁.val = t₂.val := hg_inj ht
+    exact Subtype.ext hval
   · -- pairwise differences lie in `degreeLT K k`
-    intro i j
-    exact hTsmall (e i : ↥S) (e i).2 (e j : ↥S) (e j).2
+    intro t₁ t₂
+    exact hTsmall t₁.val t₁.2 t₂.val t₂.2
 
 /-- **BKR06 Lemma 3.5 family-size residual (real-exponent form).**
 
@@ -449,8 +448,8 @@ theorem bkr06_hfamily_of_card
     (hexp : (q : ℝ) ^ ((α - β ^ 2) * Real.log q) ≤ (N : ℝ) + 1) :
     (q : ℝ) ^ ((α - β ^ 2) * Real.log q) ≤ (Fintype.card ι : ℝ) := by
   have hNcard : (N : ℝ) + 1 ≤ (Fintype.card ι : ℝ) := by
-    have : N + 1 ≤ Fintype.card ι := hN
-    exact_mod_cast this
+    have hle : N + 1 ≤ Fintype.card ι := hN
+    exact_mod_cast hle
   exact le_trans hexp hNcard
 
 end Assemble

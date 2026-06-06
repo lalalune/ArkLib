@@ -182,6 +182,25 @@ theorem fullVanishes_of_restrictedMatch (x₀ : F) (R : F[X][X][Y])
     FaaDiBrunoFullSumVanishes H x₀ R hHyp :=
   (restrictedMatch_iff_fullVanishes H x₀ R hHyp).mp hmatch
 
+/-- **Legacy successor-sum residual from full vanishing (PROVEN bridge, axiom-clean).**
+The newer full-vanishing package is definitionally the same explicit successor-sum statement as
+`FaaDiBrunoSuccSumZeroResidual`; this exposes that compatibility for old callers. -/
+theorem faaDiBrunoSuccSumZeroResidual_of_fullVanishes (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hvan : FaaDiBrunoFullSumVanishes H x₀ R hHyp) :
+    FaaDiBrunoSuccSumZeroResidual H x₀ R hHyp :=
+  (fullVanishes_iff_succSumsVanish H x₀ R hHyp).mp hvan
+
+/-- **Legacy successor-sum residual from the carved P2 core (PROVEN bridge, axiom-clean).**
+This is the direct compatibility adapter from `RestrictedFaaDiBrunoMatch` to the older residual
+shape consumed by `HenselNumerator.lean`, `P1Conditional.lean`, and `S5Genuine.lean`. -/
+theorem faaDiBrunoSuccSumZeroResidual_of_restrictedMatch (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp) :
+    FaaDiBrunoSuccSumZeroResidual H x₀ R hHyp :=
+  faaDiBrunoSuccSumZeroResidual_of_fullVanishes H x₀ R hHyp
+    (fullVanishes_of_restrictedMatch H x₀ R hHyp hmatch)
+
 /-- **P2 fully closes from the carved core (PROVEN reduction, axiom-clean).**  Chaining
 `fullVanishes_of_restrictedMatch` into the imported `P2_closed_of_fullVanishes`: the carved core
 `RestrictedFaaDiBrunoMatch` discharges the assembled-series root AND the repaired lift identity for
@@ -209,6 +228,8 @@ section AxiomAudit
 #print axioms prefactorWeightMatch_holds
 #print axioms hasseDerivY_coeff
 #print axioms fullVanishes_of_restrictedMatch
+#print axioms faaDiBrunoSuccSumZeroResidual_of_fullVanishes
+#print axioms faaDiBrunoSuccSumZeroResidual_of_restrictedMatch
 #print axioms P2_closed_of_restrictedMatch
 end AxiomAudit
 

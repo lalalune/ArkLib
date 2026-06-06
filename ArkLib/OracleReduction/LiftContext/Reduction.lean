@@ -395,7 +395,7 @@ lemma StateT.run_pure_some_bind_map
         (fun a3 : Option (α × β) × σ => Option.map (fun z => f z.1 z.2) a3.1) <$>
           StateT.run (Option.map (fun y => (y, x)) <$> mx) a2.2) := by
   rw [StateT.run_pure]
-  simp [StateT.run_map, pure_bind, Functor.map_map]
+  simp [StateT.run_map, pure_bind, Functor.map_map, Function.comp]
 
 @[simp]
 lemma StateT.run_simulateQ_optiont_map

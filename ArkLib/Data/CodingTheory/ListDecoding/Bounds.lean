@@ -9,6 +9,7 @@ import ArkLib.Data.CodingTheory.Basic.Entropy
 import ArkLib.Data.CodingTheory.HammingBallVolume
 import ArkLib.Data.CodingTheory.ListDecoding.JH01
 import ArkLib.Data.CodingTheory.ListDecoding.CZ25CapacityReduction
+import ArkLib.Data.CodingTheory.ListDecoding.CZ25DesignToLambda
 import ArkLib.Data.CodingTheory.ListDecoding.BKR06SubspacePoly
 import ArkLib.ToMathlib.BKR06FiberCount
 import ArkLib.ToMathlib.BKR06Injection
@@ -1781,6 +1782,33 @@ def subspaceDesign_list_decoding_cz25
   -- design→list-size analysis (a dimension-counting bound on the close-codeword subspace),
   -- which rests on L2.17 (subspaceDesign_tau_lower — STILL an external admit). Blocked
   -- transitively on L2.17 + the CZ25 design→Λ conversion (absent). Genuinely external.
+
+/-- **ABF26 Theorem 3.4 [CZ25 Thm B.5] — honest reduction form.**
+
+The *full in-tree-provable content* of T3.4, with the single genuinely-external ingredient
+— the CZ25 / Guruswami–Kopparty **dimension-counting core** — surfaced as the explicit
+hypothesis `hDC : CZ25DimensionCount …`.
+
+`CZ25DimensionCount` (defined in `ListDecoding/CZ25DesignToLambda.lean`) is precisely the
+per-received-word real list-size bound `|Λ(C, δ, f)| ≤ (1 - τ(⌊1/η⌋))/η` obtained from the
+affine-span dimension count against the subspace-design budget. Everything else — the
+negative-radius degenerate regime (`δ < 0 ⟹ empty list`), the `ℝ`-membership bridge, and
+the packaging of the per-word `ncard` bounds into the maximised `Λ` through the
+`ENat`→`ENNReal.ofReal` coercion — is **proven with no `sorry` and no new axioms** in
+`subspaceDesign_list_decoding_cz25_of_dimensionCount`, to which this is a direct wrapper.
+This pins the genuine residual precisely inside `hDC` and discharges T3.4's own content.
+
+This derives the **exact** `Prop` body of `subspaceDesign_list_decoding_cz25` above; any
+caller holding the dimension-counting residual should route through this theorem. -/
+theorem subspaceDesign_list_decoding_cz25_of_residual
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (s : ℕ) (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
+    (h : IsSubspaceDesign s τ C)
+    (η : ℝ) (hη_pos : 0 < η)
+    (hDC : CZ25DimensionCount s τ C h η hη_pos) :
+    subspaceDesign_list_decoding_cz25 s τ C h η hη_pos :=
+  subspaceDesign_list_decoding_cz25_of_dimensionCount s τ C h η hη_pos hDC
 
 /-- **ABF26 Corollary 3.5 [CZ25 Cor 2.21] — honest reduction form.**
 

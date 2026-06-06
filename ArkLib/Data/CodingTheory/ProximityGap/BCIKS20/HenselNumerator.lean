@@ -2496,3 +2496,22 @@ end Wave2
 * iterated-Hasse Leibniz/product rule — needed only for (P2). -/
 
 end BCIKS20.HenselNumerator
+
+-- Axiom audit for the headline (P1)/(P2) deliverables of this file.  Each depends on exactly the
+-- three standard axioms `[propext, Classical.choice, Quot.sound]` (no `sorry`/`admit`/`axiom`/
+-- `native_decide`/`bv_decide`).  The genuine remaining BCIKS20 A.4 content is carried as the
+-- EXPLICIT hypothesis `FaaDiBrunoSuccSumZeroResidual` (a `Prop`, not a `sorry`), so the theorems
+-- below that consume it are clean conditional reductions, not unfinished proofs.
+#print axioms BCIKS20.HenselNumerator.βHensel_succ
+#print axioms BCIKS20.HenselNumerator.prefactor_eq_countPerms
+#print axioms BCIKS20.HenselNumerator.coeff_eval_Q_faaDiBruno
+#print axioms BCIKS20.HenselNumerator.βHensel_lift_identity_zero
+#print axioms BCIKS20.HenselNumerator.coeff_zero_eval_βHenselAssembled
+#print axioms BCIKS20.HenselNumerator.βHenselAssembled_constantCoeff
+#print axioms BCIKS20.HenselNumerator.βHenselAssembled_eq_gammaGenuine
+#print axioms BCIKS20.HenselNumerator.assembledSeries_isRoot_of_coeff_succ_eval
+#print axioms BCIKS20.HenselNumerator.βHensel_lift_identity_of_assembledSeries_isRoot
+#print axioms BCIKS20.HenselNumerator.faaDiBruno_succ_sum_eq_zero
+#print axioms BCIKS20.HenselNumerator.coeff_succ_eval_βHenselAssembled
+#print axioms BCIKS20.HenselNumerator.assembledSeries_isRoot
+#print axioms BCIKS20.HenselNumerator.βHensel_lift_identity

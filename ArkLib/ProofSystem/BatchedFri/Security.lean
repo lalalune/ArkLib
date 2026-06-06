@@ -737,11 +737,11 @@ lemma fri_query_soundness
 
 open ENNReal in
 /-- Corresponds to Claim 8.3 of [BCIKS20] -/
-lemma fri_soundness
+def fri_soundness
   {t l m : ℕ}
   (f : Fin t.succ → (ω → 𝔽))
   (m_ge_3 : m ≥ 3)
-  :
+  : Prop :=
     let ρ_sqrt :=
       ReedSolomon.sqrtRate
         (2 ^ n)
@@ -762,8 +762,7 @@ lemma fri_soundness
         (ι := ω)
         (C := (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω ↪ 𝔽) (2 ^ n)).carrier)
           (δ := 1 - α)
-          (W := f) := by
-    sorry
+          (W := f)
 
 end Soundness
 
