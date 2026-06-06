@@ -540,6 +540,70 @@ theorem seqCompose_knowledgeSoundness
         (∑ i, knowledgeError i) :=
   hSeqComposeKnowledgeSoundness
 
+/-- **Brick (issue #25): n-ary `Verifier.seqCompose` soundness reduces to the binary `append`
+keystone.** Same induction template as the completeness bricks: base case `Verifier.id_soundness`
+(error `0`, `∑ (i : Fin 0) = 0`); the step unfolds via `seqCompose_succ`, splits the error with
+`Fin.sum_univ_succ` into `soundnessError 0 + ∑ tail`, and applies the binary append soundness
+`hAppend` + the IH. Feeding the eventual unconditional binary `Verifier.append_soundness` as
+`hAppend` closes the n-ary statement. -/
+theorem seqCompose_soundness_of_append {m : ℕ}
+    (Stmt : Fin (m + 1) → Type)
+    {n : Fin m → ℕ} {pSpec : ∀ i, ProtocolSpec (n i)}
+    [∀ i, ∀ j, SampleableType ((pSpec i).Challenge j)]
+    (lang : (i : Fin (m + 1)) → Set (Stmt i))
+    (V : (i : Fin m) → Verifier oSpec (Stmt i.castSucc) (Stmt i.succ) (pSpec i))
+    (soundnessError : Fin m → ℝ≥0)
+    (hAppend : ∀ {S₁ S₂ S₃ : Type} {k₁ k₂ : ℕ}
+        {p₁ : ProtocolSpec k₁} {p₂ : ProtocolSpec k₂}
+        [∀ j, SampleableType (p₁.Challenge j)] [∀ j, SampleableType (p₂.Challenge j)]
+        (V₁ : Verifier oSpec S₁ S₂ p₁) (V₂ : Verifier oSpec S₂ S₃ p₂)
+        {l₁ : Set S₁} {l₂ : Set S₂} {l₃ : Set S₃} {e₁ e₂ : ℝ≥0},
+        V₁.soundness init impl l₁ l₂ e₁ → V₂.soundness init impl l₂ l₃ e₂ →
+        (V₁.append V₂).soundness init impl l₁ l₃ (e₁ + e₂))
+    (h : ∀ i, (V i).soundness init impl (lang i.castSucc) (lang i.succ) (soundnessError i)) :
+    (Verifier.seqCompose Stmt V).soundness init impl (lang 0) (lang (Fin.last m))
+      (∑ i, soundnessError i) := by
+  induction m with
+  | zero =>
+    rw [Verifier.seqCompose_zero, Fin.sum_univ_zero]
+    exact Verifier.id_soundness
+  | succ m ih =>
+    rw [Verifier.seqCompose_succ, Fin.sum_univ_succ]
+    exact hAppend (V 0) _ (h 0)
+      (ih (Stmt ∘ Fin.succ) (fun i => lang (Fin.succ i)) (fun i => V (Fin.succ i))
+        (fun i => soundnessError (Fin.succ i)) (fun i => h (Fin.succ i)))
+
+/-- **Brick (issue #25): n-ary `Verifier.seqCompose` knowledge soundness reduces to the binary
+`append` keystone.** Knowledge-soundness analogue of `seqCompose_soundness_of_append`; base case
+`Verifier.id_knowledgeSoundness`. Feeding the eventual unconditional binary
+`Verifier.append_knowledgeSoundness` as `hAppend` closes the n-ary statement. -/
+theorem seqCompose_knowledgeSoundness_of_append {m : ℕ}
+    (Stmt : Fin (m + 1) → Type) (Wit : Fin (m + 1) → Type)
+    {n : Fin m → ℕ} {pSpec : ∀ i, ProtocolSpec (n i)}
+    [∀ i, ∀ j, SampleableType ((pSpec i).Challenge j)]
+    (rel : (i : Fin (m + 1)) → Set (Stmt i × Wit i))
+    (V : (i : Fin m) → Verifier oSpec (Stmt i.castSucc) (Stmt i.succ) (pSpec i))
+    (knowledgeError : Fin m → ℝ≥0)
+    (hAppend : ∀ {S₁ W₁ S₂ W₂ S₃ W₃ : Type} {k₁ k₂ : ℕ}
+        {p₁ : ProtocolSpec k₁} {p₂ : ProtocolSpec k₂}
+        [∀ j, SampleableType (p₁.Challenge j)] [∀ j, SampleableType (p₂.Challenge j)]
+        (V₁ : Verifier oSpec S₁ S₂ p₁) (V₂ : Verifier oSpec S₂ S₃ p₂)
+        {r₁ : Set (S₁ × W₁)} {r₂ : Set (S₂ × W₂)} {r₃ : Set (S₃ × W₃)} {e₁ e₂ : ℝ≥0},
+        V₁.knowledgeSoundness init impl r₁ r₂ e₁ → V₂.knowledgeSoundness init impl r₂ r₃ e₂ →
+        (V₁.append V₂).knowledgeSoundness init impl r₁ r₃ (e₁ + e₂))
+    (h : ∀ i, (V i).knowledgeSoundness init impl (rel i.castSucc) (rel i.succ) (knowledgeError i)) :
+    (Verifier.seqCompose Stmt V).knowledgeSoundness init impl (rel 0) (rel (Fin.last m))
+      (∑ i, knowledgeError i) := by
+  induction m with
+  | zero =>
+    rw [Verifier.seqCompose_zero, Fin.sum_univ_zero]
+    exact Verifier.id_knowledgeSoundness
+  | succ m ih =>
+    rw [Verifier.seqCompose_succ, Fin.sum_univ_succ]
+    exact hAppend (V 0) _ (h 0)
+      (ih (Stmt ∘ Fin.succ) (Wit ∘ Fin.succ) (fun i => rel (Fin.succ i)) (fun i => V (Fin.succ i))
+        (fun i => knowledgeError (Fin.succ i)) (fun i => h (Fin.succ i)))
+
 /-- Reduction of `seqComposeChallengeIdxToSigma` along the `inl` embedding of a challenge index of
     the head protocol `pSpec 0`: it lands in the first component (`Fin 0`) with the original
     index. -/
