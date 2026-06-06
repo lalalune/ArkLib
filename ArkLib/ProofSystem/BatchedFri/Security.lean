@@ -66,7 +66,7 @@ abbrev evalDomainSigma {n k : ℕ} (s : Fin (k + 1) → ℕ+)
   ω.subdomain (∑ j' ∈ finRangeTo (k + 1) i, s j')
 
 def cosetEnum (s₀ : evalDomainSigma s ω i) (k_le_n : ∑ j', (s j').1 ≤ n)
-      (j : Fin (2 ^ (s i).1)) : evalDomainSigma s ω ↑i :=
+    (j : Fin (2 ^ (s i).1)) : evalDomainSigma s ω ↑i :=
   let r : {x | x ∈ ω.toFftDomain.subdomain (n - ↑(s i))} :=
     ⟨ω.toFftDomain.subdomain (n - (s i).1)
       ⟨j.1,
@@ -111,7 +111,7 @@ def cosetEnum (s₀ : evalDomainSigma s ω i) (k_le_n : ∑ j', (s j').1 ≤ n)
   ↑x
 
 def cosetG (s₀ : evalDomainSigma s ω ↑i)
-  : Finset (evalDomainSigma s ω ↑i) :=
+    : Finset (evalDomainSigma s ω ↑i) :=
   if k_le_n : ∑ j', (s j').1 ≤ n
   then
     (Finset.univ).image (cosetEnum n s s₀ k_le_n)
@@ -121,13 +121,13 @@ def pows (z : 𝔽) (ℓ : ℕ) : Matrix Unit (Fin ℓ) 𝔽 :=
   Matrix.of <| fun _ j => z ^ j.val
 
 def VDM (s₀ : evalDomainSigma s ω ↑i) :
-  Matrix (Fin (2 ^ (s i : ℕ))) (Fin (2 ^ (s i : ℕ))) 𝔽 :=
+    Matrix (Fin (2 ^ (s i : ℕ))) (Fin (2 ^ (s i : ℕ))) 𝔽 :=
   if k_le_n : (∑ j', (s j').1) ≤ n
   then Matrix.vandermonde (fun j => (cosetEnum n s s₀ k_le_n j).1)
   else 1
 
 def cosetEnum' (s₀ : evalDomainSigma s ω ↑i)
-  (k_le_n : ∑ j', (s j').1 ≤ n)
+    (k_le_n : ∑ j', (s j').1 ≤ n)
   (j : Fin (2 ^ (s i).1)) : cosetG n s s₀ :=
   ⟨
     cosetEnum n s s₀ k_le_n j,
@@ -285,7 +285,7 @@ omit [Fintype 𝔽] in
 
   Corresponds to Claim 8.1 of [BCIKS20] -/
 lemma fri_round_consistency_completeness
-  {f : ReedSolomon.code
+    {f : ReedSolomon.code
     (⟨fun x => x, by simp⟩ : evalDomainSigma s ω i ↪ 𝔽)
     (2 ^ (n - (∑ j' ∈ finRangeTo _ i, (s j' : ℕ))))}
   {z : 𝔽}
@@ -692,7 +692,7 @@ open ENNReal in
   Claim 8.3 residual `fri_soundness` is in the same state. Discharging it requires the query-round
   `OracleReduction.run` acceptance bound, exactly as for `fri_soundness`. -/
 def fri_query_soundness
-  {t : ℕ}
+    {t : ℕ}
   {α : ℝ≥0}
   (f : Fin t.succ → (ω.subdomain 0 → 𝔽))
   (h_agreement :
@@ -777,7 +777,7 @@ def fri_query_soundness
 open ENNReal in
 /-- Corresponds to Claim 8.3 of [BCIKS20] -/
 def fri_soundness
-  {t l m : ℕ}
+    {t l m : ℕ}
   (f : Fin t.succ → (ω → 𝔽))
   (m_ge_3 : m ≥ 3)
   : Prop :=

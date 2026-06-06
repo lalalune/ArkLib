@@ -58,14 +58,14 @@ def toSubgroup (ω : D) : Subgroup Fˣ where
   }
 
 lemma mem_subgroup_iff_mem_finset {x : Fˣ} :
-  x ∈ toSubgroup ω ↔ x.val ∈ CosetFftDomainClass.toFinset ω := by
+    x ∈ toSubgroup ω ↔ x.val ∈ CosetFftDomainClass.toFinset ω := by
   aesop
     (add simp [toSubgroup, CosetFftDomainClass.toFinset,
                 CosetFftDomainClass.mkSubgroupUnit, generator_eq_one])
 
 @[simp]
 lemma mem_subgroup_iff_mem_domain {ω : D} {x : Fˣ} :
-  x ∈ toSubgroup ω ↔ x.val ∈ ω := by simp [mem_subgroup_iff_mem_finset]
+    x ∈ toSubgroup ω ↔ x.val ∈ ω := by simp [mem_subgroup_iff_mem_finset]
 
 end FftDomainClass
 

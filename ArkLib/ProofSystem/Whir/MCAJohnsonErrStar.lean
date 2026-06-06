@@ -5,7 +5,8 @@ Authors: ArkLib Contributors
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.Sqrt
-import Mathlib.Tactic
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Positivity
 
 /-! Well-definedness of the MCA Johnson conjecture's errStar denominator.
 The conjecture's errStar(δ) = (parℓ−1)·2^{2m} / (|F|·(2·min(1−√ρ−δ, √ρ/20))^7);

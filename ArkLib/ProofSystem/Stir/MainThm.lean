@@ -115,7 +115,7 @@ def stirRelation
   - `query complexity to proof strings = Oₖ(log degree + secpar * log(log degree / log(1/ρ)))`
 -/
 def stir_main
-  (secpar : ℕ) [SampleableType F]
+    (secpar : ℕ) [SampleableType F]
   {ι : Type} [Fintype ι] [Nonempty ι]
   {φ : ι ↪ F} {degree : ℕ} [hsmooth : Smooth φ]
   {k proofLen qNumtoInput qNumtoProofstr : ℕ}

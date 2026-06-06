@@ -245,7 +245,7 @@ open Polynomial.Bivariate in
 open BerlekampWelch in
 omit [DecidableEq ι] in
 theorem RS_jointAgreement_of_goodCoeffsCurve_card_gt {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
-  [NeZero deg] (hk : 0 < k)
+    [NeZero deg] (hk : 0 < k)
     (hδ : δ ≤ relativeUniqueDecodingRadius (ι := ι) (F := F)
       (C := ReedSolomon.code domain deg))
     (u : WordStack F (Fin (k + 1)) ι)

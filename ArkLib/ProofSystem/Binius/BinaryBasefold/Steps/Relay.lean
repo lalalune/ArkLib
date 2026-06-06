@@ -66,12 +66,12 @@ noncomputable def relayOracleProver (i : Fin ℓ) (hNCR : ¬ isCommitmentRound �
       i hNCR oStmt⟩, wit⟩
 
 lemma h_oracle_size_eq_relay (i : Fin ℓ) (hNCR : ¬ isCommitmentRound ℓ ϑ i) :
-  toOutCodewordsCount ℓ ϑ i.castSucc =
+    toOutCodewordsCount ℓ ϑ i.castSucc =
       toOutCodewordsCount ℓ ϑ i.succ := by
   simp only [toOutCodewordsCount_succ_eq, hNCR, ↓reduceIte]
 
 def relayOracleVerifier_embed (i : Fin ℓ) (hNCR : ¬ isCommitmentRound ℓ ϑ i) :
-  Fin (toOutCodewordsCount ℓ ϑ i.succ) →
+    Fin (toOutCodewordsCount ℓ ϑ i.succ) →
     Fin (toOutCodewordsCount ℓ ϑ i.castSucc) ⊕ pSpecRelay.MessageIdx
   := fun j => Sum.inl ⟨j.val, by rw [h_oracle_size_eq_relay i hNCR]; omega⟩
 
@@ -269,7 +269,7 @@ noncomputable def relayRbrExtractor (i : Fin ℓ) :
   extractOut := fun _ _ witOut => witOut
 
 def relayKStateProp (i : Fin ℓ) (hNCR : ¬ isCommitmentRound ℓ ϑ i)
-  (stmtIn : Statement (L := L) Context i.succ)
+    (stmtIn : Statement (L := L) Context i.succ)
   (witMid : Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ)
   (oStmtIn : (∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j))
   : Prop :=

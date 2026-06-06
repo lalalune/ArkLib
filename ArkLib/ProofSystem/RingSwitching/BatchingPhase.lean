@@ -104,7 +104,7 @@ and other logic required by the protocol.
 
 /-- A dummy state returned by the verifier upon failure of Check 1. -/
 def failureState (stmt : BatchingStmtIn L ℓ) (s_hat : P.A) :
-  Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) 0 := {
+    Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) 0 := {
     ctx := {
       t_eval_point := stmt.t_eval_point,
       original_claim := stmt.original_claim
@@ -298,7 +298,7 @@ def batchingInputRelationProp (stmt : BatchingStmtIn L ℓ)
 /-- Input relation: the witness `t` and `t'` are consistent,
 and `t` satisfies the original claim. -/
 def batchingInputRelation :
-  Set ((BatchingStmtIn L ℓ × (∀ j, aOStmtIn.OStmtIn j)) × BatchingWitIn L K ℓ ℓ') :=
+    Set ((BatchingStmtIn L ℓ × (∀ j, aOStmtIn.OStmtIn j)) × BatchingWitIn L K ℓ ℓ') :=
   {⟨⟨stmt, oStmt⟩, wit⟩ | batchingInputRelationProp κ L K P ℓ ℓ' h_l aOStmtIn stmt oStmt wit }
 
 /-- Intermediate witness types for RBR knowledge soundness. -/
@@ -546,7 +546,7 @@ theorem batchingReduction_perfectCompleteness
 existing `IsDomain L`) is required by the round-0 knowledge-state conjunct's DP24 capstone; it
 holds in every real instantiation (e.g. `binaryTowerProfile` builds from a field `K`). -/
 theorem batchingOracleVerifier_rbrKnowledgeSoundness [IsDomain L] [IsDomain K] :
-  OracleVerifier.rbrKnowledgeSoundness
+    OracleVerifier.rbrKnowledgeSoundness
     (verifier := oracleVerifier κ L K P ℓ ℓ' h_l (aOStmtIn:=aOStmtIn))
     (init := init) (impl := impl)
     (relIn := batchingInputRelation κ L K P ℓ ℓ' h_l aOStmtIn)

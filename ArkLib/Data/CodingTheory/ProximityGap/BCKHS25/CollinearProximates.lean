@@ -5,7 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import Mathlib.InformationTheory.Hamming
-import Mathlib.Tactic
+import Mathlib.Tactic.Push
 
 /-!
 # Collinear proximates ([BCKHS25] Lemma 2.4)

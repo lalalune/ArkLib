@@ -45,7 +45,7 @@ value `(foldNth n f γ).eval (s₀^n)`. This establishes that the Lagrange inter
 the evaluation points matches the n-way folding operation at the challenge point.
 -/
 lemma generalised_round_consistency_completeness
-  {𝔽 : Type} [inst1 : Field 𝔽] [DecidableEq 𝔽] {f : Polynomial 𝔽}
+    {𝔽 : Type} [inst1 : Field 𝔽] [DecidableEq 𝔽] {f : Polynomial 𝔽}
   {n : ℕ} [inst : NeZero n]
   {γ : 𝔽}
   {s₀ : 𝔽}

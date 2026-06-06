@@ -54,12 +54,12 @@ lemma mem_def : x ∈ ω ↔ ∃ i, x = ω i := by aesop (add simp [Membership.m
 omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
 @[simp high]
 lemma mem_self {i : ι} :
-  ω i ∈ ω := by simp [mem_def]
+    ω i ∈ ω := by simp [mem_def]
 
 omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
 @[simp]
 lemma mem_toCosetFftDomain_iff_mem :
-  x ∈ toCosetFftDomain ω ↔ x ∈ ω := by
+    x ∈ toCosetFftDomain ω ↔ x ∈ ω := by
   aesop (add simp
           [mkSubgroupUnit,
             mem_def,
@@ -69,17 +69,17 @@ lemma mem_toCosetFftDomain_iff_mem :
 omit [DecidableEq ι] in
 @[simp]
 lemma mem_toFinset_iff_mem :
-  x ∈ toFinset ω ↔ x ∈ ω := by aesop (add simp [toFinset, mem_def])
+    x ∈ toFinset ω ↔ x ∈ ω := by aesop (add simp [toFinset, mem_def])
 
 omit [DecidableEq ι] in
 @[simp high]
 lemma mem_toFinset_self {i : ι} :
-  ω i ∈ toFinset ω := by simp
+    ω i ∈ toFinset ω := by simp
 
 omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
 @[simp]
 lemma not_zero_mem :
-  0 ∉ ω := fun contra ↦ by
+    0 ∉ ω := fun contra ↦ by
   rw [mem_def] at contra
   obtain ⟨i, contra⟩ := contra
   exact CosetFftDomainClass.ne_zero ω i (by simp_all)
@@ -99,23 +99,23 @@ variable {ω : CosetFftDomain ι F} {x : F}
 
 omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
 lemma mem_iff_exists_mul :
-  x ∈ ω ↔ ∃ i, x = ω.cosetGenerator * ω.subgroupDomain i := by
+    x ∈ ω ↔ ∃ i, x = ω.cosetGenerator * ω.subgroupDomain i := by
   aesop (add simp [Membership.mem])
 
 omit [DecidableEq ι] in
 lemma mem_toFinset_iff_exists_mul :
-  x ∈ ω.toFinset ↔ ∃ i, x = ω.cosetGenerator * ω.subgroupDomain i := by
+    x ∈ ω.toFinset ↔ ∃ i, x = ω.cosetGenerator * ω.subgroupDomain i := by
   aesop (add simp [CosetFftDomainClass.toFinset])
 
 omit [DecidableEq ι] in
 @[simp]
 lemma mem_toFinset_iff_mem :
-  x ∈ ω.toFinset ↔ x ∈ ω := CosetFftDomainClass.mem_toFinset_iff_mem
+    x ∈ ω.toFinset ↔ x ∈ ω := CosetFftDomainClass.mem_toFinset_iff_mem
 
 omit [DecidableEq ι] in
 @[simp high]
 lemma mem_toFinset_self {i : ι} :
-  ω i ∈ ω.toFinset := CosetFftDomainClass.mem_toFinset_self
+    ω i ∈ ω.toFinset := CosetFftDomainClass.mem_toFinset_self
 
 end CosetFftDomain
 

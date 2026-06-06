@@ -18,6 +18,8 @@ prover (`foldOracleProver`), verifier (`foldOracleVerifier`), and reduction
 knowledge extractor (`foldRbrExtractor`) and knowledge-state function (`foldKnowledgeStateFunction`).
 -/
 
+set_option linter.style.longFile 2000
+
 namespace Binius.BinaryBasefold.CoreInteraction
 noncomputable section
 open OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Polynomial MvPolynomial
@@ -80,7 +82,7 @@ noncomputable def foldOracleProver (i : Fin ℓ) :
 /-! The oracle verifier for the `i`-th round of Binary Foldfold. -/
 open Classical in
 def foldOracleVerifier (i : Fin ℓ) :
-  OracleVerifier
+    OracleVerifier
     (oSpec := []ₒ)
     (StmtIn := Statement (L := L) Context i.castSucc)
     (OStmtIn := OracleStatement 𝔽q β (ϑ := ϑ)
@@ -157,7 +159,7 @@ always succeeds (with probability 1) and produces valid outputs.
 open Classical in
 omit [DecidableEq 𝔽q] in
 theorem foldOracleReduction_perfectCompleteness (hInit : NeverFail init) (i : Fin ℓ)
-  :
+    :
     OracleReduction.perfectCompleteness
       (pSpec := pSpecFold (L := L))
       (relIn := strictRoundRelation 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)

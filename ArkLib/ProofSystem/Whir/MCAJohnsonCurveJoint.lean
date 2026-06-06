@@ -6,7 +6,8 @@ Authors: ArkLib Contributors
 import ArkLib.ProofSystem.Whir.MCAJohnsonCurveExtract
 import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Tactic
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
 
 /-! # Curve quantified joint agreement (general-parℓ MCA, capstone)
 

@@ -133,7 +133,7 @@ def getIteratedSumcheckProverFinalOutput (i : Fin ℓ')
 
 @[reducible]
 def iteratedSumcheckOracleProver (i : Fin ℓ') :
-  OracleProver (oSpec := []ₒ)
+    OracleProver (oSpec := []ₒ)
     (StmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) i.castSucc)
     (OStmtIn := aOStmtIn.OStmtIn)
     (WitIn := SumcheckWitness L ℓ' i.castSucc)
@@ -146,7 +146,7 @@ def iteratedSumcheckOracleProver (i : Fin ℓ') :
 
 @[reducible]
 def iteratedSumcheckOracleVerifier (i : Fin ℓ') :
-  OracleVerifier
+    OracleVerifier
     (oSpec := []ₒ)
     (StmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) i.castSucc)
     (OStmtIn := aOStmtIn.OStmtIn)
@@ -158,7 +158,7 @@ def iteratedSumcheckOracleVerifier (i : Fin ℓ') :
 
 @[reducible]
 def iteratedSumcheckOracleReduction (i : Fin ℓ') :
-  OracleReduction (oSpec := []ₒ)
+    OracleReduction (oSpec := []ₒ)
     (StmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) i.castSucc)
     (OStmtIn := aOStmtIn.OStmtIn)
     (WitIn := SumcheckWitness L ℓ' i.castSucc)
@@ -861,7 +861,7 @@ private lemma finalSumcheck_check_of_relIn [IsDomain L] [IsDomain K]
 
 /-- Perfect completeness for the final sumcheck step -/
 theorem finalSumcheckOracleReduction_perfectCompleteness [IsDomain L] [IsDomain K] {σ : Type}
-  (init : ProbComp σ)
+    (init : ProbComp σ)
   (impl : QueryImpl []ₒ (StateT σ ProbComp)) :
   OracleReduction.perfectCompleteness
     (pSpec := pSpecFinalSumcheck L)
@@ -1160,7 +1160,7 @@ instance instSumcheckLoopOracleVerifierAppendCoherent :
 /-- Composed oracle reduction for the SumcheckStep (seqCompose over ℓ') -/
 @[reducible]
 def sumcheckLoopOracleReduction :
-  OracleReduction (oSpec := []ₒ)
+    OracleReduction (oSpec := []ₒ)
     (StmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) 0)
     (OStmtIn := aOStmtIn.OStmtIn)
     (StmtOut := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) (Fin.last ℓ'))

@@ -452,7 +452,7 @@ instance largeFieldInvocationCtxLens_complete :
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
 
 theorem largeFieldInvocationOracleReduction_perfectCompleteness (hInit : NeverFail init) :
-  OracleReduction.perfectCompleteness
+    OracleReduction.perfectCompleteness
     (oracleReduction := largeFieldInvocationOracleReduction 𝔽q β γ_repetitions (𝓑 := 𝓑))
     (relIn := (bbfAbstractOStmtIn 𝔽q β
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ := ϑ)).toStrictRelInput)

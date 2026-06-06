@@ -488,7 +488,7 @@ This is modified for Fiat-Shamir, where we only accumulate the messages and not 
 -/
 @[inline, specialize]
 def Prover.processRoundDSFS [∀ i, VCVCompatible (pSpec.Challenge i)]
-     (j : Fin n)
+    (j : Fin n)
     (prover : Prover oSpec StmtIn WitIn StmtOut WitOut pSpec)
     (currentResult : OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U)
       (pSpec.MessagesUpTo j.castSucc ×

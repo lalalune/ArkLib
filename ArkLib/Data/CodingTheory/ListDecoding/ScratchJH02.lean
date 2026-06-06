@@ -8,7 +8,6 @@ import ArkLib.Data.CodingTheory.ListDecodability
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.CodingTheory.ProximityGap.RSDistinctness
 import ArkLib.Data.CodingTheory.ProximityPrizeLeaves2
-import Mathlib.Tactic
 
 /-! Scratch development of the faithful JH01 list-size separation. -/
 

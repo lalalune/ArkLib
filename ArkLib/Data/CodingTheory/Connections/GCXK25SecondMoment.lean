@@ -6,7 +6,10 @@ Authors: ArkLib Contributors
 
 import Mathlib.Algebra.Order.Chebyshev
 import Mathlib.Data.Finset.Card
-import Mathlib.Tactic
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Ring
 
 /-!
 # GCXK25 second-moment counting core (verified backbone of GCXK25 Lemma 3)

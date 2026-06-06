@@ -53,7 +53,7 @@ open scoped NNReal ProbabilityTheory
 
 omit [Fintype L] [DecidableEq L] [CharP L 2] in
 lemma multilinearWeight_bitsOfIndex_eq_indicator {n : ℕ} (j k : Fin (2 ^ n)) :
-  multilinearWeight (F := L) (r := bitsOfIndex k) (i := j) = if j = k then 1 else 0 := by
+    multilinearWeight (F := L) (r := bitsOfIndex k) (i := j) = if j = k then 1 else 0 := by
   set r_k := bitsOfIndex (L := L) k with h_r_k
   unfold multilinearWeight
   -- NOTE: maybe we can generalize this into a lemma?

@@ -87,7 +87,7 @@ def FinalStatement (F : Type) (k : ℕ) : Type := Fin (k + 1) → F
   round, we append the `i`-th message sent by the prover to the oracle statement. -/
 @[reducible]
 def OracleStatement {F : Type} [Field F] [DecidableEq F] [Fintype F]
-  (ω : SmoothCosetFftDomain n F)
+    (ω : SmoothCosetFftDomain n F)
   (i : Fin (k + 1)) : Fin (i.val + 1) → Type :=
   fun j ↦
     (ω.subdomain (∑ j' ∈ finRangeTo (k + 1) j.1, s j')).toFinset
@@ -95,7 +95,7 @@ def OracleStatement {F : Type} [Field F] [DecidableEq F] [Fintype F]
 
 @[reducible]
 def FinalOracleStatement
-  {F : Type} [Field F] [DecidableEq F] [Fintype F]
+    {F : Type} [Field F] [DecidableEq F] [Fintype F]
   (ω : SmoothCosetFftDomain n F)
   : Fin (k + 2) → Type :=
   fun j ↦
@@ -388,7 +388,7 @@ noncomputable instance {i : Fin k} : ∀ j, Fintype ((pSpec s (ω := ω) i).Chal
     then does an `s` degree split of this polynomial. Finally, it returns the evaluation of
     this polynomial on the next evaluation domain. -/
 def foldProver :
-  OracleProver []ₒ
+    OracleProver []ₒ
     (Statement F i.castSucc) (OracleStatement s ω i.castSucc) (Witness F s d i.castSucc.castSucc)
     (Statement F i.succ) (OracleStatement s ω i.succ) (Witness F s d i.castSucc.succ)
     (pSpec (ω := ω) s i) where
@@ -435,7 +435,7 @@ def foldProver :
 
 /-- The oracle verifier for the `i`-th non-final folding round of the FRI protocol. -/
 def foldVerifier :
-  OracleVerifier []ₒ
+    OracleVerifier []ₒ
     (Statement F i.castSucc) (OracleStatement s ω i.castSucc)
     (Statement F i.succ) (OracleStatement s ω i.succ)
     (pSpec (ω := ω) s i) where
@@ -514,7 +514,7 @@ instance instFoldVerifierAppendCoherent :
 /-- The oracle reduction that is the `i`-th round of the FRI protocol. -/
 @[reducible]
 def foldOracleReduction :
-  OracleReduction []ₒ
+    OracleReduction []ₒ
     (Statement F i.castSucc) (OracleStatement s ω i.castSucc) (Witness F s d i.castSucc.castSucc)
     (Statement F i.succ) (OracleStatement s ω i.succ) (Witness F s d i.succ.castSucc)
     (pSpec (ω := ω) s i) where
@@ -681,7 +681,7 @@ noncomputable instance : ∀ j, Fintype ((pSpec F).Challenge j) := by
 
 /- Prover for the final folding round of the FRI protocol. -/
 def finalFoldProver :
-  OracleProver []ₒ
+    OracleProver []ₒ
     (Statement F (Fin.last k)) (OracleStatement s ω (Fin.last k))
       (Witness F s d (Fin.last k).castSucc)
     (FinalStatement F k) (FinalOracleStatement s ω)
@@ -745,7 +745,7 @@ def getConst (F : Type) [NonBinaryField F] [DecidableEq F] :
 /-- The oracle verifier for the final folding round of the FRI protocol.
     Checks if the returned polynomial has degree less than `d`. -/
 def finalFoldVerifier :
-  OracleVerifier []ₒ
+    OracleVerifier []ₒ
     (Statement F (Fin.last k)) (OracleStatement s ω (Fin.last k))
     (FinalStatement F k) (FinalOracleStatement s ω)
     (pSpec F)  where
@@ -899,7 +899,7 @@ instance instFinalFoldVerifierAppendCoherent :
 /-- The oracle reduction that is the final folding round of the FRI protocol. -/
 @[reducible]
 def finalFoldOracleReduction :
-  OracleReduction []ₒ
+    OracleReduction []ₒ
     (Statement F (Fin.last k)) (OracleStatement s ω (Fin.last k))
       (Witness F s d (Fin.last k).castSucc)
     (FinalStatement F k) (FinalOracleStatement s ω)
@@ -992,7 +992,7 @@ noncomputable instance : ∀ j, Fintype ((pSpec (ω := ω) l).Challenge j) := by
    appropriate Merkle proofs against the commitments sent in the non final folding
    rounds. -/
 def queryProver :
-  OracleProver []ₒ
+    OracleProver []ₒ
     (FinalStatement F k) (FinalOracleStatement s ω) (Witness F s d (Fin.last (k + 1)))
     (FinalStatement F k) (FinalOracleStatement s ω) (Witness F s d (Fin.last (k + 1)))
     (pSpec (ω := ω) l) where
@@ -1014,7 +1014,7 @@ def queryProver :
 /- Used by the verified to query the `i`th oracle at `w`, a point of the
    appropriate evaluation domain. -/
 def queryCodeword (k : ℕ) (s : Fin (k + 1) → ℕ+) {i : Fin (k + 1)}
-      (w :
+    (w :
         (ω.subdomain
           (∑ j' ∈ finRangeTo (k + 1) i.1, (s j').1)).toFinset) :
     OracleComp [FinalOracleStatement s ω]ₒ F :=
@@ -1042,7 +1042,7 @@ open CosetFftDomain in
 open FftDomain in
 open CosetFftDomainClass in
 def queryVerifier (k_le_n : (∑ j', (s j').1) ≤ n) (l : ℕ) [DecidableEq F] :
-  OracleVerifier []ₒ
+    OracleVerifier []ₒ
     (FinalStatement F k) (FinalOracleStatement s ω)
     (FinalStatement F k) (FinalOracleStatement s ω)
     (pSpec (ω := ω) l) where
@@ -1132,7 +1132,7 @@ def queryVerifier (k_le_n : (∑ j', (s j').1) ≤ n) (l : ℕ) [DecidableEq F] 
 
 /- Query round oracle reduction. -/
 def queryOracleReduction [DecidableEq F] :
-  OracleReduction []ₒ
+    OracleReduction []ₒ
     (FinalStatement F k) (FinalOracleStatement s ω) (Witness F s d (Fin.last (k + 1)))
     (FinalStatement F k) (FinalOracleStatement s ω) (Witness F s d (Fin.last (k + 1)))
     (pSpec (ω := ω) l) where

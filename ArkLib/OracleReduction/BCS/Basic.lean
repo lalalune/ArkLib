@@ -13,7 +13,7 @@ import ArkLib.OracleReduction.Composition.Sequential.General
 This module formalizes the generalized Ben-Sasson–Chiesa–Spooner (BCS) compilation technique (TCC 2016)
 at the protocol specification and reduction levels. The BCS transform compiles an Interactive Oracle
 Reduction (IOR) into a standard Interactive Reduction (IR) (or interactive proof system) by replacing
-oracle messages with cryptographic commitments. 
+oracle messages with cryptographic commitments.
 
 In the compiled protocol, the prover sends commitments to each oracle message, and the verifier interacts
 with the prover to receive challenges. Finally, in the opening phase, the prover shows that the verifier's

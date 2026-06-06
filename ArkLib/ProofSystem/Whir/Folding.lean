@@ -630,7 +630,7 @@ omit [Pow ι ℕ] in
   the last step by the left inverse `linearMvExtension_powAlgHom` (valid since `partialEval` of a
   degreewise-linear polynomial is degreewise-linear, `partialEval_mem_restrictDegree`). -/
 lemma fold_f_g_poly
-  {S : Finset ι} {φ : ι ↪ F} {k m : ℕ}
+    {S : Finset ι} {φ : ι ↪ F} {k m : ℕ}
   {φ_0 : (indexPowT S φ 0) ↪ F} {φ_k : (indexPowT S φ k) ↪ F}
   [Fintype (indexPowT S φ 0)] [DecidableEq (indexPowT S φ 0)] [Smooth φ_0]
   [Fintype (indexPowT S φ k)] [DecidableEq (indexPowT S φ k)] [Smooth φ_k]
@@ -791,7 +791,7 @@ lemma Pr_set_ne_le_Pr_not_subset_of_subset {α β : Type} (D : PMF.{0} α)
 -- ingredient (`fold_f_g`/`fold_f_g_poly`, the fold tracks a degree-halving polynomial) is proven
 -- above; what remains is the probabilistic list-set equality, not a folding-algebra fact.
 def folding_listdecoding_if_genMutualCorrAgreement
-  [Fintype F] {S : Finset ι} {φ : ι ↪ F} [Fintype ι] [DecidableEq ι] [Smooth φ] {k m : ℕ}
+    [Fintype F] {S : Finset ι} {φ : ι ↪ F} [Fintype ι] [DecidableEq ι] [Smooth φ] {k m : ℕ}
   {S' : Finset (indexPowT S φ 0)} {φ' : (indexPowT S φ 0) ↪ F}
   [∀ i : ℕ, Fintype (indexPowT S φ i)] [DecidableEq (indexPowT S φ 0)] [Smooth φ']
   [h : ∀ {f : (indexPowT S φ 0) → F}, DecidableBlockDisagreement 0 k f S' φ']
@@ -874,7 +874,7 @@ def folding_listdecoding_if_genMutualCorrAgreement
   implication only*, never MCA itself. The hypotheses are non-vacuous (both are genuine
   satisfiable paper lemmas) and the conclusion is not trivialized. -/
 lemma folding_preserves_listdecoding_base
-  [Fintype F] {S : Finset ι} {k m : ℕ} (hm : 1 ≤ m) {φ : ι ↪ F}
+    [Fintype F] {S : Finset ι} {k m : ℕ} (hm : 1 ≤ m) {φ : ι ↪ F}
   [Fintype ι] [DecidableEq ι] [Smooth φ] {δ : ℝ≥0}
   {S_0 : Finset (indexPowT S φ 0)} {S_1 : Finset (indexPowT S φ 1)}
   {φ_0 : (indexPowT S φ 0) ↪ F} {φ_1 : (indexPowT S φ 1) ↪ F}
@@ -955,7 +955,7 @@ reverse-inclusion failure to WHIR's `proximityCondition`. Once those are supplie
 bound is a direct event-domination chain ending in `hmca`. The conclusion is `≤ errStarV δ`, matching
 the MCA API exactly; no artificial strict inequality is introduced. -/
 lemma folding_preserves_listdecoding_base_of_mca_bridge
-  [Fintype F] {S : Finset ι} {k m : ℕ} (hm : 1 ≤ m) {φ : ι ↪ F}
+    [Fintype F] {S : Finset ι} {k m : ℕ} (hm : 1 ≤ m) {φ : ι ↪ F}
   [Fintype ι] [DecidableEq ι] [Smooth φ] {δ : ℝ≥0}
   {S_0 : Finset (indexPowT S φ 0)} {S_1 : Finset (indexPowT S φ 1)}
   {φ_0 : (indexPowT S φ 0) ↪ F} {φ_1 : (indexPowT S φ 1) ↪ F}
@@ -1151,7 +1151,7 @@ lemma fold_disagreementSet_subset
   code-membership via the repaired single-step `foldf_step_mem_smoothCode`, and the block-distance
   contraction `fold_disagreementSet_subset` — are now both proven below, so this lemma is closed.) -/
 lemma folding_preserves_listdecoding_bound
-  {S : Finset ι} {k m : ℕ} (hm : 1 ≤ m) {φ : ι ↪ F} [Fintype ι] [DecidableEq ι] [Smooth φ]
+    {S : Finset ι} {k m : ℕ} (hm : 1 ≤ m) {φ : ι ↪ F} [Fintype ι] [DecidableEq ι] [Smooth φ]
   {δ : ℝ≥0} {f : (indexPowT S φ 0) → F}
   {S_0 : Finset (indexPowT S φ 0)} {S_1 : Finset (indexPowT S φ 1)}
   {φ_0 : (indexPowT S φ 0) ↪ F} {φ_1 : (indexPowT S φ 1) ↪ F}
@@ -1268,7 +1268,7 @@ lemma folding_preserves_listdecoding_bound
   MCA-delivered reverse bound is threaded in directly as `hrev`. See the docstring of
   `folding_preserves_listdecoding_base` for the full justification. -/
 lemma folding_preserves_listdecoding_base_ne_subset
-  [Fintype F] {S : Finset ι} {k m : ℕ} (hm : 1 ≤ m) {φ : ι ↪ F}
+    [Fintype F] {S : Finset ι} {k m : ℕ} (hm : 1 ≤ m) {φ : ι ↪ F}
   [Fintype ι] [DecidableEq ι] [Smooth φ] {δ : ℝ≥0}
   {S_0 : Finset (indexPowT S φ 0)} {S_1 : Finset (indexPowT S φ 1)}
   {φ_0 : (indexPowT S φ 0) ↪ F} {φ_1 : (indexPowT S φ 1) ↪ F}

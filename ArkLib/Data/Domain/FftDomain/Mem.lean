@@ -49,17 +49,17 @@ variable {ω : FftDomain ι F} {x : F}
 
 omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
 lemma mem_iff_exists :
-  x ∈ ω ↔ ∃ i, x = ω.subgroupDomain i := by
+    x ∈ ω ↔ ∃ i, x = ω.subgroupDomain i := by
   aesop (add simp [Membership.mem])
 
 omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
 lemma mem_iff_mem_toCosetFftDomain :
-  x ∈ ω ↔ x ∈ ω.toCosetFftDomain := by
+    x ∈ ω ↔ x ∈ ω.toCosetFftDomain := by
   simp [mem_iff_exists, mem_iff_exists_mul, ω.cosetGenerator_one]
 
 omit [DecidableEq ι] in
 lemma mem_toFinset_iff_exists :
-  x ∈ ω.toFinset ↔ ∃ i, x = ω.subgroupDomain i := by
+    x ∈ ω.toFinset ↔ ∃ i, x = ω.subgroupDomain i := by
   rw [CosetFftDomainClass.mem_toFinset_iff_mem,
       CosetFftDomainClass.mem_def]
   aesop
@@ -67,7 +67,7 @@ lemma mem_toFinset_iff_exists :
 omit [DecidableEq ι] in
 @[simp]
 lemma mem_toFinset_iff_mem :
-  x ∈ ω.toFinset ↔ x ∈ ω := by
+    x ∈ ω.toFinset ↔ x ∈ ω := by
   rw [CosetFftDomainClass.mem_toFinset_iff_mem,
       mem_iff_mem_toCosetFftDomain]
 

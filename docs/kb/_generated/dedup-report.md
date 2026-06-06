@@ -4,7 +4,7 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 538 files, 10608 declarations
+- `ArkLib` — 539 files, 10622 declarations
 
 ## Same short-name across multiple files (371 groups)
 
@@ -1427,7 +1427,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `exists_coordinate_subset_with_many_nonbad_of_heavy_complement_card` (2 declarations, 2 files)
 
-- `lemma ProximityGap.exists_coordinate_subset_with_many_nonbad_of_heavy_complement_card` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean:6664](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean#L6664) — Complement-to-incidence form of the heavy-coordinate argument.  If a coordinate is not heavy for the
+- `lemma ProximityGap.exists_coordinate_subset_with_many_nonbad_of_heavy_complement_card` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean:6648](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean#L6648) — Complement-to-incidence form of the heavy-coordinate argument.  If a coordinate is not heavy for the
 - `lemma ArkLib.Claim511.exists_coordinate_subset_with_many_nonbad_of_heavy_complement_card` [ArkLib/ToMathlib/Claim511.lean:129](../../../ArkLib/ToMathlib/Claim511.lean#L129) — **Complement-to-incidence selection.** If at least `r` coordinates are *not* heavy (each bad for `< 
 
 ### `exists_ne_zero_map_eq_zero` (2 declarations, 2 files)
@@ -1437,7 +1437,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `exists_subset_card_eq_of_le_card` (2 declarations, 2 files)
 
-- `lemma ProximityGap.exists_subset_card_eq_of_le_card` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean:6614](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean#L6614) — Select exactly `r` elements from a finite set once its cardinality is large enough.  This is the fin
+- `lemma ProximityGap.exists_subset_card_eq_of_le_card` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean:6598](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean#L6598) — Select exactly `r` elements from a finite set once its cardinality is large enough.  This is the fin
 - `lemma ArkLib.Claim511.exists_subset_card_eq_of_le_card` [ArkLib/ToMathlib/Claim511.lean:119](../../../ArkLib/ToMathlib/Claim511.lean#L119) — Select exactly `r` elements from a finite set once its cardinality is large enough.  Final selection
 
 ### `extractability` (2 declarations, 2 files)
@@ -1557,7 +1557,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `heavyCoords_card_mul_le` (2 declarations, 2 files)
 
-- `lemma ProximityGap.heavyCoords_card_mul_le` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean:6622](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean#L6622) — Generic double-counting brick for Claim 5.11. If each `z ∈ S` has at most `m` bad coordinates, then 
+- `lemma ProximityGap.heavyCoords_card_mul_le` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean:6606](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean#L6606) — Generic double-counting brick for Claim 5.11. If each `z ∈ S` has at most `m` bad coordinates, then 
 - `lemma ArkLib.Claim511.heavyCoords_card_mul_le` [ArkLib/ToMathlib/Claim511.lean:78](../../../ArkLib/ToMathlib/Claim511.lean#L78) — **Double-counting brick.** If each `z ∈ S` has at most `m` bad coordinates, then the coordinates tha
 
 ### `hint` (2 declarations, 2 files)

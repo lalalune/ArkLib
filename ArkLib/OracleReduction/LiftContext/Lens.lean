@@ -36,7 +36,7 @@ open OracleSpec OracleComp PFunctor
 -/
 @[inline, reducible]
 def Statement.Lens (OuterStmtIn OuterStmtOut InnerStmtIn InnerStmtOut : Type)
-  := PFunctor.Lens (OuterStmtIn X^ OuterStmtOut)
+    := PFunctor.Lens (OuterStmtIn X^ OuterStmtOut)
                    (InnerStmtIn X^ InnerStmtOut)
 
 namespace Statement.Lens
@@ -370,7 +370,7 @@ variable {OuterStmtIn OuterStmtOut InnerStmtIn InnerStmtOut
   context -/
 @[inline, reducible]
 def proj (lens : Extractor.Lens OuterStmtIn OuterStmtOut InnerStmtIn InnerStmtOut
-              OuterWitIn OuterWitOut InnerWitIn InnerWitOut) :
+    OuterWitIn OuterWitOut InnerWitIn InnerWitOut) :
     OuterStmtIn × OuterWitOut → InnerStmtIn × InnerWitOut :=
   fun ⟨stmtIn, witOut⟩ => ⟨lens.stmt.proj stmtIn, lens.wit.proj (stmtIn, witOut)⟩
 

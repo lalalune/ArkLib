@@ -7,7 +7,8 @@ import Mathlib.Algebra.Polynomial.Degree.Defs
 import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Data.Fintype.Card
-import Mathlib.Tactic
+import Mathlib.Tactic.Choose
+import Mathlib.Tactic.Push
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice
 

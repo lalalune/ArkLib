@@ -113,7 +113,7 @@ lemma fₑ_coeff {f : Polynomial F} {n : ℕ} :
   simp [fₑ_eq_fₑ']
 
 lemma f_eq_fₑ_plus_x_fₒ {f : Polynomial F} :
-  f = fₑ f + Polynomial.X * fₒ f := by
+    f = fₑ f + Polynomial.X * fₒ f := by
   apply Polynomial.ext
   intro n
   simp
@@ -184,7 +184,7 @@ lemma eq_evenize_deevenize {f : Polynomial F} (hEven : EvenPoly f):
   · rw [hEven _ (Nat.not_even_iff_odd.1 hPar)]
 
 lemma even_eval {f : Polynomial F} {s : F} (hEven : EvenPoly f) :
-  f.eval (-s) = f.eval s := by
+    f.eval (-s) = f.eval s := by
   rw [←eq_evenize_deevenize (f := f) hEven,
       evenize_eq_comp_x_squared]
   simp [Polynomial.eval_comp, Polynomial.eval_mul]

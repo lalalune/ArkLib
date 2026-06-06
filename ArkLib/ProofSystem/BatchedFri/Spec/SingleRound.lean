@@ -126,7 +126,7 @@ noncomputable instance : ∀ j, Fintype ((batchSpec F m).Challenge j) := by
 
 /-- The batching round oracle prover. -/
 def batchProver :
-  OracleProver []ₒ
+    OracleProver []ₒ
     Unit (OracleStatement m ω) (Witness F s d m)
     ((Fin m → F) × Fri.Spec.Statement F (0 : Fin (k + 1)))
       (OracleStatement m ω) (Fri.Spec.Witness F s d (0 : Fin (k + 2)))
@@ -208,7 +208,7 @@ def batchProver :
 
 /-- The batching round oracle verifier. -/
 def batchVerifier :
-  OracleVerifier []ₒ
+    OracleVerifier []ₒ
     Unit (OracleStatement m ω)
     ((Fin m → F) × Fri.Spec.Statement F (0 : Fin (k + 1)))
     (OracleStatement m ω)
@@ -224,7 +224,7 @@ def batchVerifier :
 /-- The batching round oracle reduction. -/
 @[reducible]
 def batchOracleReduction :
-  OracleReduction []ₒ
+    OracleReduction []ₒ
     Unit (OracleStatement m ω) (Witness F s d m)
     ((Fin m → F) × Fri.Spec.Statement F (0 : Fin (k + 1)))
     (OracleStatement m ω)

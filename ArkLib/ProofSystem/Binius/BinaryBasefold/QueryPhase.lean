@@ -26,6 +26,8 @@ The final verification phase (proximity testing) as an oracle reduction.
     `V` requires `c_ℓ ?= c`.
 -/
 
+set_option linter.style.longFile 3100
+
 namespace Binius.BinaryBasefold.QueryPhase
 
 noncomputable section
@@ -2363,7 +2365,7 @@ theorem queryPhaseLogicStep_isStronglyComplete :
 
 /-- Perfect completeness for the final query round (using the oracle queryProof). -/
 theorem queryOracleProof_perfectCompleteness {σ : Type}
-  (init : ProbComp σ) (hInit : NeverFail init)
+    (init : ProbComp σ) (hInit : NeverFail init)
   (impl : QueryImpl []ₒ (StateT σ ProbComp)) :
   OracleProof.perfectCompleteness
     (pSpec := pSpecQuery 𝔽q β γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
@@ -2603,7 +2605,7 @@ noncomputable def queryRbrExtractor :
   extractOut := fun _ _ _ => ()
 
 def queryKStateProp (m : Fin (1 + 1))
-  (tr : ProtocolSpec.Transcript m
+    (tr : ProtocolSpec.Transcript m
     (pSpecQuery 𝔽q β γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate)))
   (stmtIn : FinalSumcheckStatementOut (L := L) (ℓ := ℓ))
   (witMid : Unit)

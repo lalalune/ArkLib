@@ -50,11 +50,11 @@ def evalOnPointsRingHom [CommSemiring F] : F[X] →+* (ι → F) where
   map_mul'  := by aesop
 
 lemma evalOnPointsRingHom_eq_evalOnPoints [CommSemiring F] {p : F[X]} {domain : ι ↪ F} :
-  evalOnPointsRingHom domain p = evalOnPoints domain p := rfl
+    evalOnPointsRingHom domain p = evalOnPoints domain p := rfl
 
 @[simp]
 lemma evalOnPoints_mul [CommSemiring F] {domain : ι ↪ F} {p q : F[X]} :
-  evalOnPoints domain (p * q) = evalOnPoints domain p * evalOnPoints domain q := by
+    evalOnPoints domain (p * q) = evalOnPoints domain p * evalOnPoints domain q := by
   aesop (add unsafe (by rw [←evalOnPointsRingHom_eq_evalOnPoints]))
 
 /-- The Reed-Solomon code for polynomials of degree less than `deg` and evaluation points `domain`.
@@ -109,11 +109,11 @@ variable [Semiring F] {p : F[X]}
 
 @[simp]
 lemma evalOnPoints_C {domain : ι ↪ F} {a : F} :
-  evalOnPoints domain (Polynomial.C a) = fun _ ↦ a := by simp [evalOnPoints]
+    evalOnPoints domain (Polynomial.C a) = fun _ ↦ a := by simp [evalOnPoints]
 
 @[simp]
 lemma evalOnPoints_X {domain : ι ↪ F} :
-  evalOnPoints domain Polynomial.X = domain := by simp [evalOnPoints]
+    evalOnPoints domain Polynomial.X = domain := by simp [evalOnPoints]
 
 lemma natDegree_lt_of_mem_degreeLT [NeZero deg] (h : p ∈ degreeLT F deg) : p.natDegree < deg := by
   by_cases p = 0
@@ -162,7 +162,7 @@ section
 variable [Semiring F]
 
 lemma mem_code_of_polynomial_of_degree_lt_of_eval {n : ℕ} {α : ι ↪ F} {f : ι → F}
-  (p : Polynomial F)
+    (p : Polynomial F)
   (hdeg : p.degree < n) (heval : ∀ i, f i = p.eval (α i)) :
   f ∈ code α n := by
   aesop
@@ -171,7 +171,7 @@ lemma mem_code_of_polynomial_of_degree_lt_of_eval {n : ℕ} {α : ι ↪ F} {f :
                Polynomial.degree_lt_iff_coeff_zero])
 
 lemma mem_code_of_polynomial_of_natDegree_lt_of_eval {n : ℕ} {α : ι ↪ F} {f : ι → F}
-  (p : Polynomial F)
+    (p : Polynomial F)
   (hdeg : p.natDegree < n) (heval : ∀ i, f i = p.eval (α i)) :
   f ∈ code α n := by
   by_cases h0 : p = 0
@@ -181,7 +181,7 @@ lemma mem_code_of_polynomial_of_natDegree_lt_of_eval {n : ℕ} {α : ι ↪ F} {
     exact mem_code_of_polynomial_of_degree_lt_of_eval _ hdeg heval
 
 lemma mem_code_iff_exists_polynomial {n : ℕ} {α : ι ↪ F} {f : ι → F} :
-  f ∈ code α n ↔ ∃ p : Polynomial F, p.degree < n ∧ f = evalOnPoints α p := by
+    f ∈ code α n ↔ ∃ p : Polynomial F, p.degree < n ∧ f = evalOnPoints α p := by
   constructor <;>
     intro h <;>
     obtain ⟨p, h₁, h₂⟩ := h <;>
@@ -191,7 +191,7 @@ lemma mem_code_iff_exists_polynomial {n : ℕ} {α : ι ↪ F} {f : ι → F} :
              Polynomial.degree_lt_iff_coeff_zero])
 
 lemma mem_code_iff_exists_polynomial_of_ne_zero {n : ℕ} [ne : NeZero n] {α : ι ↪ F} {f : ι → F} :
-  f ∈ code α n ↔ ∃ p : Polynomial F, p.natDegree < n ∧ f = evalOnPoints α p := by
+    f ∈ code α n ↔ ∃ p : Polynomial F, p.natDegree < n ∧ f = evalOnPoints α p := by
   rw [mem_code_iff_exists_polynomial]
   have hne := ne.out
   constructor <;>
@@ -493,7 +493,7 @@ theorem minDist_eq' {ι : Type*} [Fintype ι] {F : Type*} [Field F] [DecidableEq
 
 /-- Reed-Solomon codes are maximum distance separable (MDS). -/
 lemma isMDS_code {ι : Type} [Fintype ι] {F : Type*} [Field F] [DecidableEq F]
-  {α : ι ↪ F} [NeZero n] (h : n ≤ Fintype.card ι) : LinearCode.IsMDS (ReedSolomon.code α n) := by
+    {α : ι ↪ F} [NeZero n] (h : n ≤ Fintype.card ι) : LinearCode.IsMDS (ReedSolomon.code α n) := by
   classical
   unfold IsMDS
   rw [length_eq_domain_card', dim_eq_deg_of_le' h, Code.dist_eq_minDist]

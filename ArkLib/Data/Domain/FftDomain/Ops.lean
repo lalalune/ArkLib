@@ -36,14 +36,14 @@ variable {ω : D} {i j : ι}
 
 @[simp]
 lemma apply_zero_eq_one :
-  ω 0 = 1 := generator_eq_one _
+    ω 0 = 1 := generator_eq_one _
 
 lemma apply_add_eq_mul :
-  ω (i + j) = ω i * ω j := by
+    ω (i + j) = ω i * ω j := by
   simp [CosetFftDomainClass.map_add]
 
 lemma mul_mem_of_mem
-  {x₁ x₂ : F} (hx₁ : x₁ ∈ ω) (hx₂ : x₂ ∈ ω) :
+    {x₁ x₂ : F} (hx₁ : x₁ ∈ ω) (hx₂ : x₂ ∈ ω) :
   x₁ * x₂ ∈ ω := by
   rw [CosetFftDomainClass.mem_def] at *
   obtain ⟨⟨i₁, hi₁⟩, ⟨i₂, hi₂⟩⟩ := hx₁, hx₂
@@ -52,14 +52,14 @@ lemma mul_mem_of_mem
 
 @[simp]
 lemma apply_neg_eq_inv :
-  ω (-i) = (ω i)⁻¹ := by
+    ω (-i) = (ω i)⁻¹ := by
   have h_def : ω (-i) * ω i = 1 := by
     rw [←apply_add_eq_mul]
     aesop
   exact eq_inv_of_mul_eq_one_left h_def
 
 lemma domain_sub_eq_div_domain :
-  ω (i - j) = ω i / ω j := by
+    ω (i - j) = ω i / ω j := by
   rw
     [sub_eq_add_neg,
       div_eq_mul_inv,
@@ -67,7 +67,7 @@ lemma domain_sub_eq_div_domain :
       apply_neg_eq_inv]
 
 lemma apply_nsmul {k : ℕ} :
-  ω (k • i) = (ω i) ^ k := by
+    ω (k • i) = (ω i) ^ k := by
   induction k with
   | zero => simp [pow_zero]
   | succ k ih => rw [succ_nsmul, apply_add_eq_mul, ih, pow_succ]
@@ -80,7 +80,7 @@ variable {ω : D}
 
 @[simp]
 lemma neg_one_mem_domain [nz : NeZero n] :
-  -1 ∈ ω := by
+    -1 ∈ ω := by
   have hn : n ≠ 0 := NeZero.ne _
   -- Let's denote this element as `k = 2^(i-1) : Fin (2^i)`.
   set k : Fin (2 ^ n) := ⟨2 ^ (n - 1), pow_lt_pow_right₀ (by decide) (by omega)⟩
@@ -121,18 +121,18 @@ private lemma val_eq_nsmul_one {n : ℕ} (i : Fin (2 ^ n)) :
     simp_all +decide [Fin.val_add]
 
 lemma apply_eq_pow_of_generator (i : Fin (2 ^ n)) :
-  ω i = (ω 1) ^ i.val := by
+    ω i = (ω 1) ^ i.val := by
   conv_lhs => rw [val_eq_nsmul_one i]
   simp [FftDomainClass.apply_nsmul]
 
 theorem eq_iff_generators_eq {ω₁ ω₂ : D} :
-  ω₁ = ω₂ ↔ ω₁ 1 = ω₂ 1 := by
+    ω₁ = ω₂ ↔ ω₁ 1 = ω₂ 1 := by
   constructor <;> (intro h; try rw [h])
   ext i
   aesop (add safe [(by rw [apply_eq_pow_of_generator i])])
 
 lemma domain_implies_char_ne_2 [NeZero n] (ω : D) :
-  ¬CharP F 2 := fun hchar ↦ by
+    ¬CharP F 2 := fun hchar ↦ by
   have hn : n ≠ 0 := NeZero.ne _
   set k : Fin (2 ^ n) := ⟨2 ^ (n - 1), pow_lt_pow_right₀ (by decide) (by omega)⟩
   have hk_ne_zero : k ≠ 0 := by simp [Fin.ext_iff, k]

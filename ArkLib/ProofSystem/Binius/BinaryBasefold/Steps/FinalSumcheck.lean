@@ -17,6 +17,8 @@ the prover (`finalSumcheckProver`), verifier (`finalSumcheckVerifier`), and redu
 knowledge extractor (`finalSumcheckRbrExtractor`) together with supporting evaluation lemmas.
 -/
 
+set_option linter.style.longFile 2100
+
 namespace Binius.BinaryBasefold.CoreInteraction
 noncomputable section
 open OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Polynomial MvPolynomial
@@ -137,7 +139,7 @@ noncomputable def finalSumcheckOracleReduction :
 /-! Perfect completeness for the final sumcheck step -/
 omit [DecidableEq 𝔽q] in
 theorem finalSumcheckOracleReduction_perfectCompleteness {σ : Type}
-  (init : ProbComp σ) (hInit : NeverFail init)
+    (init : ProbComp σ) (hInit : NeverFail init)
   (impl : QueryImpl []ₒ (StateT σ ProbComp)) :
   OracleReduction.perfectCompleteness
     (pSpec := pSpecFinalSumcheckStep (L := L))

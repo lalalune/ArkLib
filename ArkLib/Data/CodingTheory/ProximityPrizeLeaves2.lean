@@ -17,7 +17,9 @@ import Mathlib.Data.Nat.Factorial.Cast
 import Mathlib.Data.Real.Basic
 import Mathlib.InformationTheory.Hamming
 import Mathlib.LinearAlgebra.Lagrange
-import Mathlib.Tactic
+import Mathlib.Tactic.Choose
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Push
 import Mathlib.Tactic.Ring
 

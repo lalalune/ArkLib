@@ -1819,7 +1819,7 @@ def Claim57Residuals.ofGraphExtractionHypotheses
   hfactor := hfactor
 
 lemma exists_factors_with_large_common_root_set (δ : ℚ) (x₀ : F)
-  (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
   [hres : Claim57Residuals (F := F) k δ x₀ h_gs] :
   ∃ R H, R ∈ (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose ∧
     Irreducible H ∧ 0 < H.natDegree ∧ H ∣ (Bivariate.evalX (Polynomial.C x₀) R) ∧

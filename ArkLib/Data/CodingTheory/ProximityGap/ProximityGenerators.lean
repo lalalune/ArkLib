@@ -54,7 +54,7 @@ abbrev Generator (S ℓ F : Type) : Type := S → (ℓ → F)
 a zero output from a non-zero vector is bounded above by `ε_ze`.
 Definition 3.11 [BCGM25]. -/
 def IsZeroEvadingGenerator {S : Type} [Nonempty S] [Fintype S] (G : Generator S ℓ F) (ε_ze : I) :
-  Prop :=
+    Prop :=
   (sSup {y | ∃ v : ℓ → F, v ≠ 0 ∧ y = Pr_{let x ←$ᵖ S}[dotProduct (G x) v = 0]})
     ≤ ENNReal.ofReal ε_ze
 
@@ -67,7 +67,7 @@ def IsPolynomialGenerator {s : ℕ} (S : Fin s → Set F) (G : Generator (∀ i,
   ∀ x : (∀ i, S i), G x = MvPolynomial.eval (fun i ↦ (x i : F)) ∘ P
 
 def IsPolynomialGeneratorOf {s : ℕ} (S : Fin s → Set F) (G : Generator (∀ i, S i) ℓ F)
-  (P : ℓ → MvPolynomial (Fin s) F) : Prop :=
+    (P : ℓ → MvPolynomial (Fin s) F) : Prop :=
   LinearIndependent F P ∧ ∀ x : (∀ i, S i), G x = MvPolynomial.eval (fun i ↦ (x i : F)) ∘ P
 
 /-- A matrix whose rows are the outputs of the generator function.
@@ -82,11 +82,11 @@ noncomputable example {S : Type} [Nonempty S] [Fintype S] [DecidableEq F] (G : G
 function is a generator matrix for an MDS code.
 Definition 3.12 [BCGM25]. -/
 def IsMDSGenerator {S : Type} [Nonempty S] [Fintype S] [DecidableEq F] (G : Generator S ℓ F) :
-  Prop := LinearCode.IsMDS (LinearCode.fromColGenMat (M_G G))
+    Prop := LinearCode.IsMDS (LinearCode.fromColGenMat (M_G G))
 
 /-- The condition for MCA generator. -/
 def IsMCA {S : Type} [Nonempty S] [Fintype S] (G : Generator S ℓ F) (LC : LinearCode ι F)
-  (x : S) (U : ℓ → (ι → F)) (γ : I) : Prop :=
+    (x : S) (U : ℓ → (ι → F)) (γ : I) : Prop :=
   let v := Matrix.vecMul (G x) (U)
   ∃ (T : Finset ι), (T.card : ℝ) ≥ (Fintype.card ι) * (1 - γ) ∧
   projectedWord v T ∈ projectedCode LC T ∧
@@ -96,7 +96,7 @@ def IsMCA {S : Type} [Nonempty S] [Fintype S] (G : Generator S ℓ F) (LC : Line
 generator satisfies the MCA condition is bounded above by `ε_mca`.
 Definition 3.14 [BCGM25]. -/
 def IsMCAGenerator {S : Type} [Nonempty S] [Fintype S] (G : Generator S ℓ F) (ε_mca : I → I)
-  (LC : LinearCode ι F) : Prop :=
+    (LC : LinearCode ι F) : Prop :=
   ∀ U : ℓ → (ι → F), ∀ γ : I,
     Pr_{let x ←$ᵖ S}[(IsMCA G LC x U γ)] ≤ ENNReal.ofReal (ε_mca γ)
 
@@ -104,7 +104,7 @@ def IsMCAGenerator {S : Type} [Nonempty S] [Fintype S] (G : Generator S ℓ F) (
 `G ⊗ G′: S × S′→ F^ℓ ⊗ F^ℓ′` defined by `(x,x′) ↦ G(x) ⊗ G′(x′)`.
 Definition 4.3 [BCGM25]. -/
 def TensorGenerator {ℓ' : Type} [Fintype ℓ'] {S S' : Type}
-  (G : Generator S ℓ F) (G' : Generator S' ℓ' F) :
+    (G : Generator S ℓ F) (G' : Generator S' ℓ' F) :
   (S × S') → TensorProduct F (ℓ → F) (ℓ' → F)
 | (x, x') => TensorProduct.tmul F (G x) (G' x')
 
@@ -127,7 +127,7 @@ noncomputable def tensorProductPiFunEquiv (F : Type) [Field F] (ℓ ℓ' : Type)
 `TensorGenerator_Explicit` agree under the canonical isomorphism between
 `F^ℓ ⊗ F^ℓ′` and `(ℓ × ℓ') → F`. -/
 theorem TensorGenerator_eq_TensorGenerator_Explicit {ℓ' : Type} [Fintype ℓ'] [DecidableEq ℓ]
-  [DecidableEq ℓ'] {S S' : Type} (G : Generator S ℓ F) (G' : Generator S' ℓ' F) (p : S × S') :
+    [DecidableEq ℓ'] {S S' : Type} (G : Generator S ℓ F) (G' : Generator S' ℓ' F) (p : S × S') :
     tensorProductPiFunEquiv F ℓ ℓ' (TensorGenerator G G' p) = TensorGenerator_Explicit G G' p := by
   unfold tensorProductPiFunEquiv TensorGenerator TensorGenerator_Explicit
   convert (Pi.basisFun F ℓ).tensorProduct (Pi.basisFun F ℓ') |> fun b =>
@@ -185,7 +185,7 @@ one in terms of individual degrees, and one in terms of total degrees. We choose
 approach. Ultimately, the reasoning is the same. The difference is the version of Schwartz-Zippel
 used to obtain the upper bound. -/
 theorem poly_gen_is_zero_evading
-  {F : Type} [Field F] [Fintype F]
+    {F : Type} [Field F] [Fintype F]
   {ℓ : Type} [Fintype ℓ]
   {s : ℕ}
   {S : Fin s → Set F} [∀ i, Nonempty ↥(S i)]

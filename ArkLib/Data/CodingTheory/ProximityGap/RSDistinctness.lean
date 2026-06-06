@@ -5,7 +5,6 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineSpaces
-import Mathlib.Tactic
 
 /-! # Reed–Solomon distinctness (consumable for GS list-decoding counting)
 

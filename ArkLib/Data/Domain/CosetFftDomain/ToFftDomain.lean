@@ -42,7 +42,7 @@ def toFftDomain (ω : D) : FftDomain ι F where
   cosetGenerator_one := by rfl
 
 lemma eval_toFftDomain {ω : D} {i : ι} :
-  toFftDomain ω i = (ω 0)⁻¹ * ω i := by
+    toFftDomain ω i = (ω 0)⁻¹ * ω i := by
   aesop (add
     simp [
       toFftDomain,
@@ -51,7 +51,7 @@ lemma eval_toFftDomain {ω : D} {i : ι} :
       toCosetFftDomain, mkSubgroupUnit])
 
 lemma mem_toFftDomain_iff_mul_mem {ω : D} {x : F} :
-  x ∈ toFftDomain ω ↔ ω 0 * x ∈ ω := by
+    x ∈ toFftDomain ω ↔ ω 0 * x ∈ ω := by
   unfold toFftDomain
   rw [FftDomain.mem_iff_mem_toCosetFftDomain,
       CosetFftDomain.mem_iff_exists_mul]
@@ -63,7 +63,7 @@ lemma mem_toFftDomain_iff_mul_mem {ω : D} {x : F} :
     (add safe (by field_simp))
 
 lemma mul_mem_of_mem_toFftDomain_of_mem {ω : D} {x y : F}
-  (hx : x ∈ toFftDomain ω)
+    (hx : x ∈ toFftDomain ω)
   (hy : y ∈ ω) :
   x * y ∈ ω := by
   simp_all only
@@ -79,7 +79,7 @@ lemma mul_mem_of_mem_toFftDomain_of_mem {ω : D} {x y : F}
   rfl
 
 lemma mul_mem_of_mem_of_mem_toFftDomain {ω : D} {x y : F}
-  (hx : x ∈ ω)
+    (hx : x ∈ ω)
   (hy : y ∈ toFftDomain ω) :
   x * y ∈ ω := by
   rw [mul_comm]
@@ -87,7 +87,7 @@ lemma mul_mem_of_mem_of_mem_toFftDomain {ω : D} {x y : F}
 
 @[simp]
 lemma toFinset_image_toFftDomain_eq_toFinset [Fintype ι] [DecidableEq F] {ω : D} :
-  Finset.image (fun (w : F) ↦ ω 0 * w) (toFftDomain ω).toFinset =
+    Finset.image (fun (w : F) ↦ ω 0 * w) (toFftDomain ω).toFinset =
     CosetFftDomainClass.toFinset ω := by
   ext x
   constructor <;> rintro h
@@ -104,7 +104,7 @@ lemma toFinset_image_toFftDomain_eq_toFinset [Fintype ι] [DecidableEq F] {ω : 
     field_simp
 
 lemma card_toFinset_eq_card_toFftDomain_toFinset [Fintype ι] [DecidableEq F] {ω : D} :
-  Finset.card (toFinset ω) = Finset.card (toFftDomain ω).toFinset := by
+    Finset.card (toFinset ω) = Finset.card (toFftDomain ω).toFinset := by
   aesop (add simp [toFinset_image_toFftDomain_eq_toFinset])
 
 end CosetFftDomainClass
@@ -117,14 +117,14 @@ abbrev toFftDomain (ω : CosetFftDomain ι F) : FftDomain ι F :=
   CosetFftDomainClass.toFftDomain ω
 
 lemma mem_toFftDomain_iff_mul_mem :
-  x ∈ ω.toFftDomain ↔ ω.cosetGenerator * x ∈ ω := by
+    x ∈ ω.toFftDomain ↔ ω.cosetGenerator * x ∈ ω := by
   have : ω 0 = ω.cosetGenerator := by
     have : (0 : ι) = (1 : Multiplicative ι) := by rfl
     aesop (add simp [eval_coset_fft_domain_eq_eval_generator_mul_domain])
   aesop (add simp [CosetFftDomainClass.mem_toFftDomain_iff_mul_mem])
 
 lemma mul_mem_of_mem_toFftDomain_of_mem {y : F}
-  (hx : x ∈ ω.toFftDomain)
+    (hx : x ∈ ω.toFftDomain)
   (hy : y ∈ ω) :
   x * y ∈ ω := CosetFftDomainClass.mul_mem_of_mem_toFftDomain_of_mem hx hy
 
@@ -133,7 +133,7 @@ end CosetFftDomain
 namespace FftDomain
 
 lemma toFffDomain_eq_self {ω : FftDomain ι F} :
-  ω.toFftDomain = ω := by
+    ω.toFftDomain = ω := by
   ext i
   simp only [CosetFftDomainClass.toFftDomain,
     CosetFftDomainClass.toCosetFftDomain_of_CosetFftDomain,

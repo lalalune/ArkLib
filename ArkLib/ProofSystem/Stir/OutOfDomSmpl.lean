@@ -133,7 +133,7 @@ private lemma card_agreement_le {φ : ι ↪ F} {degree : ℕ} (u u' : code φ d
 
 /-- Lemma 4.5.1 -/
 lemma out_of_dom_smpl_1
-  {δ l : ℝ≥0} {s : ℕ} {f : ι → F} {degree : ℕ} {φ : ι ↪ F}
+    {δ l : ℝ≥0} {s : ℕ} {f : ι → F} {degree : ℕ} {φ : ι ↪ F}
   (C : Set (ι → F)) (hC : C = code φ degree)
   (h_decodable : listDecodable C δ l)
   (h_nonempty : Nonempty (domainComplement φ)) :
@@ -265,7 +265,7 @@ lemma out_of_dom_smpl_1
 
 /-- Lemma 4.5.2 -/
 lemma out_of_dom_smpl_2
-  {δ l : ℝ≥0} {s : ℕ} {f : ι → F} {degree : ℕ} {φ : ι ↪ F}
+    {δ l : ℝ≥0} {s : ℕ} {f : ι → F} {degree : ℕ} {φ : ι ↪ F}
   (C : Set (ι → F)) (hC : C = code φ degree)
   (h_decodable : listDecodable C δ l)
   (h_nonempty : Nonempty (domainComplement φ)) :

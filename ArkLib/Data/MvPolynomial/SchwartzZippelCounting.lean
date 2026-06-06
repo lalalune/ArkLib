@@ -125,7 +125,7 @@ lemma pmf_prob_le_one {α : Type} [Fintype α] [Nonempty α] (P : α → Prop) :
 is at most `d / m`, where `d` bounds the total degree and `m` bounds below the cardinality
 of each factor. This bridges `schwartz_zippel_counting` with the probability formulation. -/
 lemma prob_eval_zero_le_div
-  {F : Type} [Field F]
+    {F : Type} [Field F]
   {s : ℕ}
   {S : Fin s → Set F} [∀ i, Fintype ↥(S i)] [∀ i, Nonempty ↥(S i)]
   (f : MvPolynomial (Fin s) F) (hf : f ≠ 0)

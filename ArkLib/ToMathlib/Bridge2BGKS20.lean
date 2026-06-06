@@ -20,7 +20,7 @@ of characteristic 2. The construction in [BGKS20] demonstrates the existence of 
 "near-certain bad line": a stack of words $u = (u_0, u_1)$ that is not jointly close to any
 codeword in $C$, yet for which the linear combination $u_0 + \gamma u_1$ is close to $C$ for
 all but one scalar $\gamma \in F$. This yields a set of "good combiners" $\Gamma \subset F$
-of cardinality at least $|F| - 1$. 
+of cardinality at least $|F| - 1$.
 
 By utilizing the correlated agreement (CA) error framework, this construction establishes
 the lower bound:

@@ -83,7 +83,7 @@ private lemma even_add_odd_eq_of_not_charp_2
 /-- An explicit formula to compute `foldWordAux` when `k = 2`
   not involving Lagrange interpolation. -/
 lemma foldWordAux_of_k_2
-  [NeZero n]
+    [NeZero n]
   {i : Fin (2 ^ (n - 1))} :
   foldWordAux domain f 2 (domain.subdomainNatReversed 1 i) =
     let x : domain := CosetFftDomain.twoNthRoot (i := 1)
@@ -191,7 +191,7 @@ private lemma roots_of_x_in_domain_le_k
 /-- The natDegree of the auxiliary polynomial `foldWordAux`
   is less than k. -/
 lemma foldWordAux_natDegree {k : ℕ} {x : F}
-  [inst : NeZero k] :
+    [inst : NeZero k] :
   (foldWordAux domain f k x).natDegree < k := by
   have hne := NeZero.ne (h := inst)
   by_cases heq: foldWordAux domain f k x = 0
@@ -212,24 +212,24 @@ noncomputable def foldValue (domain : SmoothCosetFftDomain n F)
   (foldWordAux domain f (2 ^ k) x).eval α
 
 lemma foldValue_def {α : F} {x : F} :
-  foldValue domain f k α x = (foldWordAux domain f (2 ^ k) x).eval α := rfl
+    foldValue domain f k α x = (foldWordAux domain f (2 ^ k) x).eval α := rfl
 
 lemma foldValue_def' {α : F} {x : F} :
-  foldValue domain f k α x = (Lagrange.interpolate {i | domain i ^ (2 ^ k) = x}
+    foldValue domain f k α x = (Lagrange.interpolate {i | domain i ^ (2 ^ k) = x}
     (fun i => domain i) f).eval α := rfl
 
 @[simp]
 lemma foldValue_pow_x_k {i : Fin (2 ^ n)} :
-  foldValue domain f k (domain i) ((domain i) ^ (2 ^ k)) = f i :=
+    foldValue domain f k (domain i) ((domain i) ^ (2 ^ k)) = f i :=
   Lagrange.eval_interpolate_at_node _ (by simp) (by simp)
 
 @[simp]
 lemma foldValue_zero {k : ℕ} :
-  foldValue domain 0 k = 0 := by aesop (add simp [foldValue, foldWordAux])
+    foldValue domain 0 k = 0 := by aesop (add simp [foldValue, foldWordAux])
 
 /-- An explicit formula for `foldValue` when `k = 1`. -/
 lemma foldValue_k_1 [NeZero n] {i : Fin (2 ^ (n - 1))} {α : F} :
-  foldValue domain f 1 α (domain.subdomainNatReversed 1 i) =
+    foldValue domain f 1 α (domain.subdomainNatReversed 1 i) =
     let x : domain := CosetFftDomain.twoNthRoot (i := 1)
         ⟨domain.subdomainNatReversed 1 i, by simp⟩
     let i := domain.log x
@@ -248,12 +248,12 @@ noncomputable def foldWord (domain : SmoothCosetFftDomain n F)
 
 @[simp]
 lemma foldWord_zero {k : ℕ} :
-  foldWord domain 0 k = 0 := by aesop (add simp [foldWord])
+    foldWord domain 0 k = 0 := by aesop (add simp [foldWord])
 
 /-- An explicit formula for `foldWord` when `k = 1` that
   does not use Lagrange interpolation. -/
 theorem foldWord_k_1 [NeZero n] {i : Fin (2 ^ (n - 1))} {α : F} :
-  foldWord domain f 1 α i =
+    foldWord domain f 1 α i =
     let x : domain := CosetFftDomain.twoNthRoot (i := 1)
         ⟨domain.subdomainNatReversed 1 i, by simp⟩
     let i := domain.log x
@@ -263,7 +263,7 @@ theorem foldWord_k_1 [NeZero n] {i : Fin (2 ^ (n - 1))} {α : F} :
 
 /-- Function-level form of `foldWord_k_1`. -/
 theorem foldWord_k_1' [NeZero n] {α : F} :
-  foldWord domain f 1 α = fun i ↦
+    foldWord domain f 1 α = fun i ↦
     let x : domain := CosetFftDomain.twoNthRoot (i := 1)
         ⟨domain.subdomainNatReversed 1 i, by simp⟩
     let i := domain.log x
@@ -355,7 +355,7 @@ private lemma interpolate_eq_folding_poly_eval
   applying `polyFold` and then encoding.
 -/
 theorem foldWord_codeword {d : ℕ}
-  {α : F}
+    {α : F}
   (hk : k ≤ n)
   {p : ReedSolomon.code (domain : Fin (2 ^ n) ↪ F) d}
   :
@@ -775,7 +775,7 @@ private lemma folded_rate_div_eq_helper {d : ℕ}
 omit [DecidableEq F] in
 /-- The rate of the folded RS-code is the same. -/
 lemma folded_rate_eq {d : ℕ} (hkn : k ≤ n) (hkd : 2 ^ k ∣ d) :
-  LinearCode.rate
+    LinearCode.rate
       (ReedSolomon.code (domain.subdomainNatReversed k : Fin (2 ^ (n - k)) ↪ F) (d / (2 ^ k))) =
     LinearCode.rate (ReedSolomon.code (domain : Fin (2 ^ n) ↪ F) d) := by
   simp only [rateOfLinearCode_eq_min_div, Fintype.card_fin, min_def, Nat.cast_ite, Nat.cast_pow,
@@ -806,7 +806,7 @@ lemma folded_rate_eq {d : ℕ} (hkn : k ≤ n) (hkd : 2 ^ k ∣ d) :
 omit [DecidableEq F] in
 /-- The square root of the rate of the folded RS-code is the same. -/
 lemma folded_sqrtRate_eq {d : ℕ} (hkn : k ≤ n) (hkd : 2 ^ k ∣ d) :
-  ReedSolomon.sqrtRate
+    ReedSolomon.sqrtRate
      (d / (2 ^ k))
      (domain.subdomainNatReversed k : Fin (2 ^ (n - k)) ↪ F) =
     ReedSolomon.sqrtRate d (domain : Fin (2 ^ n) ↪ F) := by
@@ -829,7 +829,7 @@ the corresponding Reed–Solomon code except with probability controlled by
 `ProximityGap.errorBound`.
 -/
 theorem folding_preserves_distance
-  [Fintype F]
+    [Fintype F]
   {domain : SmoothCosetFftDomain n F} {f : Word F (Fin (2 ^ n))} {d k : ℕ}
   {δ : ℝ≥0}
   (k_div_d : 2 ^ k ∣ d)
@@ -987,7 +987,7 @@ Folding preservation with the strict Johnson coefficient-polynomial residual sup
 verified `betaRec` capsule for the folded Reed-Solomon domain.
 -/
 theorem folding_preserves_distance_johnson_of_betaRec
-  [Fintype F]
+    [Fintype F]
   {domain : SmoothCosetFftDomain n F} {f : Word F (Fin (2 ^ n))} {d k : ℕ}
   {δ : ℝ≥0}
   (k_div_d : 2 ^ k ∣ d)

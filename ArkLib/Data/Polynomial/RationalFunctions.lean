@@ -112,7 +112,7 @@ to recenter via `PowerSeries.mk (α …)` rather than `subst`.
 See `research/proximity-prize/dispositions/ingredient-D-{plan,result}.md` for the full
 construction spec. -/
 lemma β_regular (R : F[X][X][Y])
-                (H : F[X][Y]) [_H_irreducible : Fact (Irreducible H)]
+    (H : F[X][Y]) [_H_irreducible : Fact (Irreducible H)]
                 [_H_natDegree_pos : Fact (0 < H.natDegree)]
                 (hH : 0 < H.natDegree)
                 {D : ℕ} (_hD : D ≥ Bivariate.totalDegree H) :

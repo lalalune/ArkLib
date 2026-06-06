@@ -69,7 +69,7 @@ instance instNeZeroNatToOutCodewordsCount : ∀ i, NeZero (toOutCodewordsCount �
 
 omit [NeZero ϑ] [NeZero ℓ] hdiv in
 lemma toCodewordsCount_mul_ϑ_le_i (i : Fin (ℓ + 1)) :
-  ∀ j: Fin (toOutCodewordsCount ℓ ϑ i), j.val * ϑ ≤
+    ∀ j: Fin (toOutCodewordsCount ℓ ϑ i), j.val * ϑ ≤
     (if i.val < ℓ then i.val else ℓ - ϑ) := by
   intro j
   split_ifs with h_il
@@ -257,7 +257,7 @@ lemma toOutCodewordsCount_succ_eq_add_one_iff (i : Fin ℓ) :
 
 open Classical in
 lemma toOutCodewordsCount_succ_eq (i : Fin ℓ) :
-  (toOutCodewordsCount ℓ ϑ i.succ) =
+    (toOutCodewordsCount ℓ ϑ i.succ) =
     if isCommitmentRound ℓ ϑ i then (toOutCodewordsCount ℓ ϑ i.castSucc) + 1
     else (toOutCodewordsCount ℓ ϑ i.castSucc) := by
   have h_succ_val: i.succ.val = i.val + 1 := rfl
@@ -294,7 +294,7 @@ lemma toOutCodewordsCount_succ_eq (i : Fin ℓ) :
         exact False.elim (hv_div_succ (hdiv.out))
 
 lemma toOutCodewordsCount_i_le_of_succ (i : Fin ℓ) :
-  toOutCodewordsCount ℓ ϑ i.castSucc ≤ toOutCodewordsCount ℓ ϑ i.succ := by
+    toOutCodewordsCount ℓ ϑ i.castSucc ≤ toOutCodewordsCount ℓ ϑ i.succ := by
   rw [toOutCodewordsCount_succ_eq ℓ ϑ]
   split_ifs
   · omega
@@ -312,7 +312,7 @@ equals the current round number `i + 1`.
 The proof uses the commitment-round hypothesis to recover divisibility at `i + 1`.
 -/
 lemma toOutCodewordsCount_mul_ϑ_eq_i_succ (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i) :
-  (toOutCodewordsCount ℓ ϑ i.castSucc) * ϑ = i.val + 1 := by
+    (toOutCodewordsCount ℓ ϑ i.castSucc) * ϑ = i.val + 1 := by
   unfold toOutCodewordsCount
   simp only [Fin.coe_castSucc, i.isLt, ↓reduceIte]
   have h_mod : i.val % ϑ = ϑ - 1 := by
@@ -334,7 +334,7 @@ lemma toOutCodewordsCount_mul_ϑ_eq_i_succ (i : Fin ℓ) (hCR : isCommitmentRoun
   omega
 
 lemma toCodewordsCount_mul_ϑ_lt_ℓ (ℓ ϑ : ℕ) [NeZero ϑ] [NeZero ℓ] (i : Fin (ℓ + 1)) :
-  ∀ j: Fin (toOutCodewordsCount ℓ ϑ i), j.val * ϑ < ℓ := by
+    ∀ j: Fin (toOutCodewordsCount ℓ ϑ i), j.val * ϑ < ℓ := by
   intro j
   unfold toOutCodewordsCount
   have h_j_lt : j.val < i.val / ϑ + if i.val < ℓ then 1 else 0 := j.2
@@ -445,13 +445,13 @@ lemma mkLastOracleIndex_last : mkLastOracleIndex ℓ ϑ (Fin.last ℓ) = ℓ / �
   rfl
 
 def getLastOraclePositionIndex (i : Fin (ℓ + 1)) :
-  Fin (toOutCodewordsCount ℓ ϑ i) := by
+    Fin (toOutCodewordsCount ℓ ϑ i) := by
   let ne0 := (instNeZeroNatToOutCodewordsCount ℓ ϑ i).out
   exact ⟨(toOutCodewordsCount ℓ ϑ i) - 1, by omega⟩
 
 @[reducible]
 def getLastOracleDomainIndex (oracleFrontierIdx : Fin (ℓ + 1)) :
-  Fin (ℓ) :=
+    Fin (ℓ) :=
   oraclePositionToDomainIndex (positionIdx := (getLastOraclePositionIndex ℓ ϑ oracleFrontierIdx))
 
 lemma mkLastOracleIndex_eq_getLastOraclePositionIndex (i : Fin (ℓ + 1)) :
@@ -470,7 +470,7 @@ lemma mkLastOracleIndex_eq_getLastOraclePositionIndex (i : Fin (ℓ + 1)) :
     rw [h_eq]
 
 lemma getLastOraclePositionIndex_last : getLastOraclePositionIndex ℓ ϑ (Fin.last ℓ)
-  = ⟨ℓ / ϑ - 1, by
+    = ⟨ℓ / ϑ - 1, by
     dsimp only [toOutCodewordsCount, Fin.val_last, lt_self_iff_false];
     simp only [lt_self_iff_false,
       ↓reduceIte, add_zero, tsub_lt_self_iff, Nat.div_pos_iff, zero_lt_one, and_true]
@@ -483,7 +483,7 @@ lemma getLastOraclePositionIndex_last : getLastOraclePositionIndex ℓ ϑ (Fin.l
   rw [toOutCodewordsCount_last]
 
 lemma getLastOracleDomainIndex_last : getLastOracleDomainIndex ℓ ϑ (Fin.last ℓ)
-  = ⟨ℓ - ϑ, by
+    = ⟨ℓ - ϑ, by
     have h_ne_0 : 0 < ϑ := by exact pos_of_neZero ϑ
     have h_lt: ϑ ≤ ℓ := by apply Nat.le_of_dvd (by exact Nat.pos_of_neZero ℓ); exact hdiv.out
     omega⟩ := by

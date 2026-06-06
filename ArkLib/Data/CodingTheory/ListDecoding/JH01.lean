@@ -8,7 +8,11 @@ import ArkLib.Data.CodingTheory.ListDecodability
 import ArkLib.Data.CodingTheory.ProximityPrizeLeaves2
 import ArkLib.Data.CodingTheory.ReedSolomon
 import Mathlib.Algebra.IsPrimePow
-import Mathlib.Tactic
+import Mathlib.Tactic.Choose
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Push
+import Mathlib.Tactic.Ring
 
 /-!
 # JH01 List-Decoding Separation Helpers

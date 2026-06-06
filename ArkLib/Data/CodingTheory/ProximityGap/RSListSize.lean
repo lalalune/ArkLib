@@ -6,7 +6,6 @@ Authors: ArkLib Contributors
 
 import ArkLib.Data.CodingTheory.CodeGeometry
 import ArkLib.Data.CodingTheory.ProximityGap.RSDistinctness
-import Mathlib.Tactic
 
 /-! # Reed–Solomon list-size from pairwise distinctness
 

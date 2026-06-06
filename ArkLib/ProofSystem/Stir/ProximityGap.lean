@@ -69,7 +69,7 @@ namespace STIR
   lifts `correlatedAgreement_affine_curves`; then `proximity_gap` (monomial form) follows from
   the curves CA. No clean intermediate path exists today. -/
 def proximity_gap
-  {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
   {ι : Type} [Fintype ι] [Nonempty ι] {φ : ι ↪ F}
   {degree m : ℕ} {δ : ℝ≥0} {f : Fin m → ι → F} {GenFun : F → Fin m → F}
   -- Statement repair (verified defect): for an *arbitrary* `GenFun` the statement is FALSE —

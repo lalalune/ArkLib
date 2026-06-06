@@ -8,7 +8,6 @@ import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.Algebra.Polynomial.Degree.Definitions
 import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.Data.Finset.Insert
-import Mathlib.Tactic
 
 /-!
 # FRI Auxiliary Lemmas
@@ -23,7 +22,7 @@ namespace Aux
 variable {F: Type} [Field F]
 
 protected lemma eq_poly_deg_one {a b c d : F} {x₁ x₂ : F}
-  (h1 : a + b * x₁ = c + d * x₁)
+    (h1 : a + b * x₁ = c + d * x₁)
   (h2 : a + b * x₂ = c + d * x₂)
   (h1_2 : x₁ ≠ x₂):
   Polynomial.C a + Polynomial.C b * Polynomial.X
