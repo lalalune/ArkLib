@@ -46,10 +46,9 @@ open ListDecodable
 
 section JohnsonSide
 
-variable {F ι : Type} [Field F] [Fintype F] [DecidableEq F]
+variable {F ι : Type} [Fintype F] [DecidableEq F]
   [Fintype ι] [Nonempty ι] [DecidableEq ι]
 
-omit [Field F] in
 /-- The per-centre radical-free Johnson cap lifts to the maximised list size `Λ`. -/
 theorem Lambda_le_of_johnson_condition
     (C : Code ι F) (δ : ℝ) {ℓ : ℕ} {β : ℝ}
@@ -140,28 +139,27 @@ end JohnsonSide
 
 section CapacitySide
 
-variable {F ι : Type} [Field F] [Fintype F] [DecidableEq F]
-  [Fintype ι] [Nonempty ι] [DecidableEq ι]
+variable {F ι : Type} [Field F] [Fintype ι] [DecidableEq ι]
 
 open Polynomial
 
 /-- If two words agree on `T`, their relative Hamming distance is at most
 `(n - |T|)/n` (as reals).  Stated instance-generically in the alphabet so it applies
 under the classical instances baked into `relHammingBall`. -/
-omit [DecidableEq ι] in
-lemma relHammingDist_coe_le_of_agree_on {A : Type*} [DecidableEq A] (y x : ι → A)
+lemma relHammingDist_coe_le_of_agree_on [Nonempty ι]
+    {A : Type*} [DecidableEq A] (y x : ι → A)
     (T : Finset ι) (hagree : ∀ i ∈ T, y i = x i) :
     ((Code.relHammingDist y x : ℚ≥0) : ℝ) ≤
       ((Fintype.card ι - T.card : ℕ) : ℝ) / (Fintype.card ι : ℝ) := by
   have hnpos : 0 < Fintype.card ι := Fintype.card_pos
   have hham : hammingDist y x ≤ Fintype.card ι - T.card := by
-    rw [hammingDist, Set.ncard_le_iff]
-    refine ⟨Fintype.card ι - T.card, ?_, ?_⟩
-    · exact Set.ncard_le_ncard (fun i hi => ?_) (Set.toFinite _)
-    · rw [Set.ncard_coe_finset, Finset.card_sdiff (Finset.subset_univ T), Finset.card_univ]
-    · rw [Set.mem_setOf_eq] at hi
-      rw [Finset.coe_sdiff, Finset.coe_univ, Set.mem_diff, Set.mem_univ, true_and]
-      exact fun hiT => hi (hagree i hiT)
+    rw [Code.hammingDist_eq_disagreementCols_card]
+    refine le_trans (Finset.card_le_card (t := Finset.univ \ T) ?_) ?_
+    · intro i hi
+      rw [Code.mem_disagreementCols] at hi
+      rw [Finset.mem_sdiff]
+      exact ⟨Finset.mem_univ i, fun hiT => hi (hagree i hiT)⟩
+    · rw [Finset.card_univ_diff]
   have hrel : (Code.relHammingDist y x : ℚ≥0) =
       (hammingDist y x : ℚ≥0) / (Fintype.card ι : ℚ≥0) := rfl
   rw [hrel, show (((hammingDist y x : ℚ≥0) / (Fintype.card ι : ℚ≥0) : ℚ≥0) : ℝ)
@@ -169,7 +167,6 @@ lemma relHammingDist_coe_le_of_agree_on {A : Type*} [DecidableEq A] (y x : ι �
   apply div_le_div_of_nonneg_right ?_ (by positivity)
   exact_mod_cast hham
 
-omit [Fintype F] [DecidableEq F] [Nonempty ι] in
 /-- The scaled vanishing family: for `|T| < deg ≤ n`, the evaluations of
 `c · ∏_{t ∈ T}(X - x_t)` over `c : F` are `|F|` distinct codewords of
 `RS[F, domain, deg]`, all vanishing on `T`. -/
@@ -219,7 +216,8 @@ lemma exists_family_vanishing_on (domain : ι ↪ F) {deg : ℕ} (T : Finset ι)
 /-- **Beyond capacity the interleaved list blows up**: at any grid radius `j/n` with
 `j > n - deg`, the radius-`j/n` interleaved list at the zero word already has `|F|`
 elements. -/
-lemma card_le_Lambda_of_gt_capacity (domain : ι ↪ F) {deg j m : ℕ}
+lemma card_le_Lambda_of_gt_capacity [Fintype F] [Nonempty ι]
+    (domain : ι ↪ F) {deg j m : ℕ}
     (hdegn : deg ≤ Fintype.card ι) (hm : m ≠ 0)
     (hj : Fintype.card ι - deg < j) (hjn : j ≤ Fintype.card ι) :
     (Fintype.card F : ℕ∞) ≤
@@ -258,7 +256,8 @@ lemma card_le_Lambda_of_gt_capacity (domain : ι ↪ F) {deg j m : ℕ}
       exact hmem c
     · -- distance bound: differing columns avoid `T`
       simp only [relHammingBall, Set.mem_setOf_eq]
-      have hdist := relHammingDist_coe_le_of_agree_on
+      have hdist := @relHammingDist_coe_le_of_agree_on ι _ _ _ (Fin m → F)
+        (fun a b => Classical.propDecidable (a = b))
         (fun _ _ => (0 : F)) (ψ c) T (fun i hi => by
           funext k
           simp [hψ, hvan c i hi])
@@ -266,7 +265,7 @@ lemma card_le_Lambda_of_gt_capacity (domain : ι ↪ F) {deg j m : ℕ}
       -- (n - |T|)/n ≤ j/n
       rw [show ((((j : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0)) : ℝ) =
           ((j : ℝ)) / ((Fintype.card ι : ℝ)) by push_cast; ring]
-      apply div_le_div_of_nonneg_right ?_ (by exact_mod_cast hnpos)
+      apply div_le_div_of_nonneg_right ?_ (by exact_mod_cast Nat.zero_le (Fintype.card ι))
       have : Fintype.card ι - T.card ≤ j := by omega
       exact_mod_cast this
   -- count the family
@@ -285,7 +284,8 @@ lemma card_le_Lambda_of_gt_capacity (domain : ι ↪ F) {deg j m : ℕ}
 /-- **Capacity-side upper bound on the genuine threshold** (unconditional): for every
 Reed–Solomon instance with `deg ≤ n`, `m ≥ 1`, `ε* < 1`, the genuine lattice threshold
 is at most `n - deg`; in δ-units, the capacity radius `1 - ρ` is a hard ceiling. -/
-theorem listLatticeThreshold_le_capacity (domain : ι ↪ F) {deg m : ℕ}
+theorem listLatticeThreshold_le_capacity [Fintype F] [Nonempty ι]
+    (domain : ι ↪ F) {deg m : ℕ}
     (hdegn : deg ≤ Fintype.card ι) (hm : m ≠ 0)
     {ε_star : ℝ≥0} (hε : ε_star < 1)
     (hne : (GrandChallenges.listLatticeSet (ReedSolomon.code domain deg : Set (ι → F)) m ε_star).Nonempty) :
