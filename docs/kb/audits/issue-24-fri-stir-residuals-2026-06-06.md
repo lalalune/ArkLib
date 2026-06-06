@@ -111,6 +111,11 @@ rg -n 'accounting placeholders|sorryAx-tainted|Honest residual|Open proof|residu
 
 Observed hits on 2026-06-06:
 
+> Superseded raw-line note: the `AffineLines/Main.lean:40` references in this
+> preserved command output are historical breadcrumbs. Current proximity-gap
+> ownership is by the named `StrictCoeffPolysResidual`, `BoundaryCardResidual`,
+> and `BoundaryCardLatticeResidual` interfaces plus their focused issues.
+
 ```text
 ArkLib/ProofSystem/Fri/Spec/Soundness.lean:19:soundness theorem — they are accounting placeholders pending the sequential
 ArkLib/ProofSystem/Stir/MainThm.lean:150:  -- full chain). Honest residual: this is a major protocol-formalisation effort gated on (1) the

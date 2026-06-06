@@ -26,7 +26,7 @@ closures for these surfaces:
 - `protocol62_knowledgeSound_residual`, `protocol62_rbrKnowledgeSound_residual`,
   and `simplifiedIOR_knowledgeSound_residual` are all reducible aliases for the
   single straightline-from-rewinding bridge
-  `Extractor.Bridge.StraightlineOfRewinding`.
+  `Bridge.StraightlineOfRewinding`.
 - `winningSetSoundness_le_toySoundnessError_residual` remains the ABF26 Lemma
   6.10 upper-bound obligation, exposed as an explicit `Prop`.
 - The KoalaBear leaderboard carrier now uses `KoalaBear.rsCodeSet`; the old
@@ -51,7 +51,7 @@ rg -n 'residual|Residual|opaque koalaCode|StraightlineOfRewinding|winningSetSoun
    list-decoding data, discharging `simplified_iop_soundness_listDecoding_lb_residual`.
 2. Prove the framework bridge from the already-proven rewinding extractor
    predicate to the straightline and round-by-round knowledge-soundness APIs,
-   discharging the three `Extractor.Bridge.StraightlineOfRewinding` consumers.
+   discharging the three `Bridge.StraightlineOfRewinding` consumers.
 3. Prove ABF26 Lemma 6.10 for the simplified IOR, or replace it with a repaired
    Johnson-radius / MCA-safe theorem matching the current code comments,
    discharging `winningSetSoundness_le_toySoundnessError_residual`.

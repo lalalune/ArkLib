@@ -11,11 +11,12 @@ import Mathlib.LinearAlgebra.Basis.Defs
 /-!
 # Extension fields and extension codes (ABF26 §2.6)
 
-Definitions and one external-admit lemma from ABF26 §2.6 (Arnon-Boneh-Fenzi,
-*Open Problems in List Decoding and Correlated Agreement*, 2026, page 11):
-extension-field presentations, extension codes obtained by base-change, and the
-relation `|Λ(C_F, δ)| = |Λ(C_B^e, δ)|` between the list size of an extension code
-and the list size of the corresponding interleaved base code.
+Definitions and the in-tree extension-code list-size bridge from ABF26 §2.6
+(Arnon-Boneh-Fenzi, *Open Problems in List Decoding and Correlated Agreement*,
+2026, page 11): extension-field presentations, extension codes obtained by
+base-change, and the relation `|Λ(C_F, δ)| = |Λ(C_B^e, δ)|` between the list
+size of an extension code and the list size of the corresponding interleaved
+base code.
 
 ## Main definitions
 

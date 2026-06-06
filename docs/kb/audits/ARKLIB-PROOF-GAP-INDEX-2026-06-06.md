@@ -12,6 +12,18 @@ Raw proof holes and project-level assumptions:
 rg -n --glob '*.lean' '^\s*(sorry|admit)\b|:=\s*(by\s+)?(sorry|admit)\b|by\s+(sorry|admit)\b|\baxiom\s+[A-Za-z_]|opaque\s+[A-Za-z_]' ArkLib
 ```
 
+Current clean-tree census (2026-06-06, `python3 scripts/sorry_census.py`):
+
+```json
+{
+  "total_tokens": 310,
+  "holes": 0,
+  "doc_mentions": 310,
+  "files_with_holes": 0,
+  "decls_with_holes": 0
+}
+```
+
 Named residual APIs:
 
 ```sh
@@ -77,6 +89,18 @@ rg -n --glob '*.lean' 'opaque\s+\w+|placeholder|stub|TODO|FIXME|named residual|e
 | Proximity Prize betaRec-to-hcoeffPoly keystone assembly | #61 |
 | BCS compiler beyond statement-level scaffolding | #62 |
 | ArkLib SNARK/proof-system completion obligations | #63 |
+| BCIKS20 exact lattice boundary residual for the closed Johnson branch | #64 |
+| Grand MCA J1 radius-1/n finite-algebra bad-scalar cap | #65 |
+| Grand MCA beyond-UDR GS-row mass bound and faithfulness bridge | #66 |
+| ABF26 T5.1 GKL24/GCXK25 first-moment bad-gamma residual | #67 |
+| Hab25 Johnson-range MCA GS-over-F(Z) algebraic residual bundle | #68 |
+| Grand LD faithful list-lattice threshold after the RIM refutation | #69 |
+| Grand MCA four-rate faithful lattice-threshold numeric gap | #70 |
+| ABF26 random RS uniform size-n subset probability primitive | #71 |
+| ABF26/proximity-prize stale audit-doc refresh | #72 |
+| GGR11 Erase-Decode tree structure for interleaved list-size bounds | #73 |
+| ABF26 §3 external list-decoding theorem families | #74 |
+| ABF26 §4 CapacityBounds CA/MCA theorem families | #75 |
 
 Closed second-pass issues (#37, #40-#43, #46-#47, #53) are recorded in the refreshed
 proximity-prize index; see "Related indexes" below.

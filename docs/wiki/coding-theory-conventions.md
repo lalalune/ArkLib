@@ -143,28 +143,30 @@ downstream proof becomes hard to read because of this choice.
 - `Real.rpow x y` for non-integer real exponents; `^` desugars to this when
   both base and exponent are `ℝ`.
 
-## Tagged sorry comments
+## Residual and external-Prop comments
 
-External-admit theorems use the canonical comment shape:
+Do not add raw `sorry` proof holes for paper imports. External or not-yet
+formalized paper content should be represented as an explicit `Prop`, a named
+`*Residual*` hypothesis, or a proved reduction theorem consuming such a
+residual. Use the canonical marker shape in the surrounding docstring or
+residual comment:
 
 ```
-sorry -- ABF26-X.Y; <classification> [Citation].
+ABF26-X.Y; <classification> [Citation].
 ```
 
-- `<classification>` ∈ `{external admit, bridge, derived, in-tree admit}`.
+- `<classification>` ∈ `{external Prop, residual, bridge, derived}`.
 - `[Citation]` matches the paper-bibliography key (`[GG25 Cor 4.9]`,
   `[BCHKS25 Thm 1.3]`, etc.). For derived items, the antecedent IDs
   (`derived from R4.2 + T4.9.2`).
 
-Most tagged sorries map 1-to-1 to a row in
+Most ABF26 residual markers map 1-to-1 to a row in
 [`../kb/audits/open-problems-list-decoding-and-correlated-agreement.md`](../kb/audits/open-problems-list-decoding-and-correlated-agreement.md);
-exceptions are sub-sorries inside bridge lemmas (e.g. the partial proof of
-`hammingBallVolume_eq_ncard_hammingBall` decomposes into
-`card_filter_hammingDist_eq` and a small Set/Finset conversion). These are
-tracked in the local working notes instead.
+exceptions are sub-residuals inside bridge lemmas. These are tracked in the
+local working notes instead.
 
-Reviewers should expect the `ABF26-X.Y` tag in the comment to match an audit-doc
-row.
+Reviewers should expect the `ABF26-X.Y` marker to match an audit-doc row and
+`scripts/sorry_census.py` to remain at zero raw holes.
 
 ## File and namespace layout
 
