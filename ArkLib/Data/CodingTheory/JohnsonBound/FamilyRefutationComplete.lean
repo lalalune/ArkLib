@@ -9,16 +9,20 @@ import ArkLib.Data.CodingTheory.JohnsonBound.Family
 /-!
 # `johnson_bound_lambda_le_ell` is *false* as stated (Finding-26 style refutation)
 
-`ArkLib/Data/CodingTheory/JohnsonBound/Family.lean` carries a documented `sorry` for
-`johnson_bound_lambda_le_ell` (ABF26 Theorem 3.2):
+`ArkLib/Data/CodingTheory/JohnsonBound/Family.lean` exposes `johnson_bound_lambda_le_ell`
+(ABF26 Theorem 3.2) as a `Prop`-valued predicate (NOT a `theorem`, NOT a `sorry`):
 
   for any code `C ⊆ Σ^n` with `|Σ| = q` and `ℓ ≥ 2`,
   `|Λ(C, J_{q,ℓ}(δ_min(C)))| ≤ ℓ`,  where  `δ_min(C) = minDist(C)/n`.
 
 This file proves the statement is **not a theorem as stated** by exhibiting a concrete
-instance whose conclusion fails (`johnson_bound_lambda_le_ell_false`). The documented
-`sorry` therefore cannot be honestly discharged — the statement needs a hypothesis repair
-(a proximity bound keeping the square-root argument of `Jqℓ` nonnegative).
+instance whose conclusion fails (`johnson_bound_lambda_le_ell_false`). The predicate
+therefore cannot be honestly upgraded to a theorem — it needs a hypothesis repair
+(a proximity bound keeping the square-root argument of `Jqℓ` nonnegative). The usable
+Johnson outputs that carry that constraint are `mds_johnson_lambda_le` (proved sorry-free
+in `Family.lean`) and the squared form in
+`ProximityGap/GrandChallengeLDThresholdJohnsonSq.lean`. See disposition
+`docs/kb/audits/proximity-prize/dispositions/issue-49-johnson-family.md`.
 
 ## Why it is false
 
@@ -182,12 +186,11 @@ theorem johnson_bound_lambda_le_ell_false :
   intro hle
   exact absurd (le_trans three_le_Lambda hle) (by decide)
 
-/-- **Direct contradiction with the named theorem.**  If `johnson_bound_lambda_le_ell` (ABF26
-T3.2, the documented `sorry` in `Family.lean`) were a theorem, instantiating it at the witness
-`C`, `ℓ = 2`, `(le_refl 2 : 2 ≤ 2)` would prove exactly the proposition refuted by
+/-- **Direct contradiction with the named statement.**  If `johnson_bound_lambda_le_ell` (ABF26
+T3.2, the refuted `Prop`-valued predicate in `Family.lean`) were a theorem, instantiating it at
+the witness `C`, `ℓ = 2`, `(le_refl 2 : 2 ≤ 2)` would prove exactly the proposition refuted by
 `johnson_bound_lambda_le_ell_false`.  This is packaged as an implication so the file does not
-itself depend on the (still-`sorry`'d) upstream theorem: any honest proof of the hypothesis
-yields `False`. -/
+itself assume the (false) upstream statement: any honest proof of the hypothesis yields `False`. -/
 theorem upstream_theorem_is_inconsistent
     (johnson_bound_lambda_le_ell :
       ∀ {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]

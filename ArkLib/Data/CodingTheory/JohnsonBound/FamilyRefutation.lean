@@ -12,6 +12,9 @@ import ArkLib.Data.CodingTheory.JohnsonBound.Family
 This file records the concrete three-word binary code used to audit
 `johnson_bound_lambda_le_ell`.  The full Lambda contradiction is intentionally not asserted here:
 the current kernel-clean artifact is the finite witness and its minimum-distance computation.
+The *complete* machine-checked refutation (the `Λ ≥ 3 > 2 = ℓ` contradiction and the
+inconsistency implication) lives in `FamilyRefutationComplete.lean`; see disposition
+`docs/kb/audits/proximity-prize/dispositions/issue-49-johnson-family.md` (lalalune/ArkLib#49).
 -/
 
 set_option linter.unusedSectionVars false

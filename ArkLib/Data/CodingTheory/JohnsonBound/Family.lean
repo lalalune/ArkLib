@@ -1253,7 +1253,16 @@ theorem johnson_bound_lambda_le_ell_of_forall_closeCodewordsRelFinset_card_le
   `|Λ(C, J_{q,ℓ}(δ_min(C)))| ≤ ℓ`
 
 where `δ_min(C) = minDist(C) / n` is the relative minimum distance and `J_{q,ℓ}`
-is the paper's q-ary ℓ-radius Johnson function. **Admitted (tagged sorry).**
+is the paper's q-ary ℓ-radius Johnson function. **REFUTED as stated — exposed as a
+`Prop`-valued predicate, NOT a theorem (no `sorry`).** The unconditioned statement is
+false: see `JohnsonBound/FamilyRefutationComplete.lean`
+(`johnson_bound_lambda_le_ell_false`, an explicit `Fin 2` counterexample, axiom-audited
+with no `sorryAx`). It needs a proximity hypothesis keeping the `Jqℓ` radicand
+nonnegative. The MDS/Reed-Solomon corollary the prize threshold actually consumes,
+`mds_johnson_lambda_le`, IS proved sorry-free below; the radical-free squared form wired
+into the lattice threshold lives in `ProximityGap/GrandChallengeLDThresholdJohnsonSq.lean`.
+Disposition: `docs/kb/audits/proximity-prize/dispositions/issue-49-johnson-family.md`
+(lalalune/ArkLib#49).
 
 **Why the in-tree `johnson_bound` does NOT reach this radius (verified, 2026-06-04).**
 A prior triage suggested "plug `e/n = J_{q,ℓ}` into the in-tree `johnson_bound`; its
@@ -1303,21 +1312,21 @@ Moreover the pure real Gram matrix of `M` correlation vectors at the `Jqℓ` rad
 positive-semidefinite for ALL `M` (numerically verified): the bound is *not* a geometric
 fact about real inner products — it relies on the q-ary integrality of the column counts
 `K_i(α) ∈ ℕ`, `∑_α K_i(α) = M`, in a way the in-tree second-moment chain discards when it
-passes to the average. Closing T3.2 at `Jqℓ` therefore requires the full discrete
-ℓ-Johnson development ([Joh62]; Guruswami thesis Thm 3.1; MacWilliams–Sloane Ch. 17),
-which is a genuine ground-up formalization, not a ~200-line dual of `almost_johnson`.
-See `research/proximity-prize/dispositions/pc-w1-T3.2-johnson.md` for the full analysis.
+passes to the average. Closing T3.2 at `Jqℓ` *as stated* is moreover impossible —
+the unconditioned statement is false (see `FamilyRefutationComplete.lean`); a faithful
+ℓ-Johnson development ([Joh62]; Guruswami thesis Thm 3.1; MacWilliams–Sloane Ch. 17)
+would need the missing proximity hypothesis on the radicand. The prize threshold instead
+uses the MDS corollary `mds_johnson_lambda_le` (proved below) and the radical-free
+squared form in `ProximityGap/GrandChallengeLDThresholdJohnsonSq.lean`. Full analysis:
+`docs/kb/audits/proximity-prize/dispositions/issue-49-johnson-family.md` (lalalune/ArkLib#49).
 
-**Remaining mechanical gaps**:
-- *Alphabet*: this statement is over a bare alphabet `α` (`Fintype + DecidableEq`, no
-  `Field`), but every in-tree Johnson lemma — including `johnson_bound_alphabet_free` —
-  carries `[Field F]`. The Plotkin bridge itself is alphabet-generic, but the older
-  `johnson_bound_lemma` route is field-shaped.
-- *List packaging*: a pointwise finite-list bound must be constructed for
-  `closeCodewordsRel C f (Jqℓ q ℓ δ_min)` and then passed through
-  `ListDecodable.Lambda_le_natCast_of_forall_ncard_le`.
-- *Radius algebra*: the final `Jqℓ` inequality still has to be expressed in the exact
-  rational/real shape consumed by the Johnson proof skeleton.
+**Historical "remaining gaps" (moot — the statement is refuted, not pending).** An
+earlier triage listed alphabet-genericity, list packaging, and radius algebra as the
+mechanical work to discharge this as a theorem. That work cannot succeed because the
+*as-stated* claim is false (see `FamilyRefutationComplete.lean`); the notes are retained
+only to explain why the in-tree second-moment route does not reach `Jqℓ`. The usable
+Johnson outputs (`mds_johnson_lambda_le` and the squared form) carry the proximity
+constraint the bare predicate omits.
 
 Tracked in `docs/kb/ABF26_PLAN.md` and the audit log.
 

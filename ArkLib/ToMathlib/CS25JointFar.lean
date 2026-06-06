@@ -182,6 +182,35 @@ theorem deepHoleJointFar_holds
   -- `0 = −1` is a contradiction in a field: `−1 = 0` gives `1 = 0`.
   exact one_ne_zero (neg_eq_zero.mp hga.symm)
 
+/-! ### Direct instantiation of `DeepHoleProbResidual` (Issue #22, criterion 1)
+
+The probabilistic residual `DeepHoleProbResidual` (defined in `CS25DeepHoleFinish.lean`) is now
+instantiated by a **single named result with no extra geometric side condition** — the only
+hypothesis is the documented arithmetic rate condition `k < n − ⌊δ·n⌋`, which is the genuine
+parameter regime `δ < 1 − k/n`, not a residual. This composes the joint-far discharge
+(`deepHoleProbResidual_of_jointFar`, proven in `CS25DeepHoleFinish2.lean`) with the
+minimum-distance proof of the joint-far property (`deepHoleJointFar_holds`, above). -/
+
+/-- **`DeepHoleProbResidual` discharged (Issue #22).** For any received word `u` and degree-`< k+1`
+polynomial family `p`, the CS25 deep-hole probability residual holds at every sampling point with
+**no remaining geometric/probabilistic side condition** — only the arithmetic rate condition
+`k < n − ⌊δ.toNNReal·n⌋`.
+
+This is the explicit answer to Issue #22's first criterion ("identify the smallest remaining
+statement needed to instantiate `DeepHoleProbResidual` without extra side conditions"): that
+statement is the rate condition `hkS`, and the deep-hole probability bound follows from the proven
+minimum-distance argument `deepHoleJointFar_holds`. -/
+theorem deepHoleProbResidual_holds
+    (domain : ι ↪ F) (u : ι → F) {k L : ℕ} {δ : ℝ}
+    (p : Fin L → F[X]) (hδ0 : 0 ≤ δ)
+    (hkS : k < Fintype.card ι - Nat.floor (δ.toNNReal * Fintype.card ι)) :
+    DeepHoleProbResidual domain k L δ
+      (epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F)))
+        δ.toNNReal δ.toNNReal).toReal u p :=
+  deepHoleProbResidual_of_jointFar domain u p hδ0
+    (fun a ha => deepHoleJointFar_holds domain u a k δ
+      (mem_sampleSet_imp_off_domain ha) hkS)
+
 /-! ### The fully-discharged final theorem -/
 
 /-- **ABF26 Theorem 5.3 [CS25 Theorem 2] — fully discharged.**
@@ -228,5 +257,6 @@ end CodingTheory.CS25.DeepHole
 
 section AxiomAudit
 #print axioms CodingTheory.CS25.DeepHole.deepHoleJointFar_holds
+#print axioms CodingTheory.CS25.DeepHole.deepHoleProbResidual_holds
 #print axioms CodingTheory.CS25.DeepHole.rs_epsCA_implies_lambda_extended_cs25_complete
 end AxiomAudit
