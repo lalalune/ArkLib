@@ -675,7 +675,7 @@ lemma val_le_i {ℓ : ℕ} (i : Fin (ℓ + 1)) (oracleIdx : OracleFrontierIndex 
 
 @[simp]
 lemma val_mkFromStmtIdxCastSuccOfSucc_eq_mkFromStmtIdx {ℓ : ℕ} (i : Fin ℓ) :
-    (mkFromStmtIdxCastSuccOfSucc i).val = (mkFromStmtIdx i.castSucc).val := by rfl
+    (mkFromStmtIdxCastSuccOfSucc i).val = (mkFromStmtIdx (ℓ := ℓ) i.castSucc).val := by rfl
 
 end OracleFrontierIndex
 
@@ -838,10 +838,11 @@ def dummyLastWitness :
 -- Removed as part of the post-extraction cleanup.
 
 open Classical in
-def snoc_oracle {i : Fin ℓ}
+def snoc_oracle {i : Fin ℓ} {destIdx : Fin r}
+    (h_destIdx : destIdx = ⟨i.val + 1, by omega⟩)
     (oStmtIn : ∀ j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc),
       OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)
-    (newOracleFn : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ) :
+    (newOracleFn : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx) :
     ∀ j : Fin (toOutCodewordsCount ℓ ϑ i.succ),
       OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.succ j := fun j =>
   have h_succ_val: i.succ.val = i.val + 1 := rfl
@@ -877,7 +878,11 @@ def snoc_oracle {i : Fin ℓ}
       by
         simp only [OracleStatement]
         simp_rw [h_commit_round]
-        exact newOracleFn -- where fᵢ is the oracle for round i+1
+        have h_idx : destIdx = ⟨j.val * ϑ, by omega⟩ := by
+          apply Fin.eq_of_val_eq
+          rw [h_destIdx]
+          exact h_commit_round.symm
+        exact fun y => newOracleFn (cast (by rw [h_idx]) y)
     else by
       simp only [OracleStatement]
       have h := toOutCodewordsCount_succ_eq ℓ ϑ i
@@ -912,10 +917,11 @@ def snoc_oracle {i : Fin ℓ}
 def take_snoc_oracle (i : Fin ℓ)
     (oStmtIn : (j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc)) →
       OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)
-    (newOracleFn : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ) :
+    {destIdx : Fin r} (h_destIdx : destIdx = ⟨i.val + 1, by omega⟩)
+    (newOracleFn : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx) :
     (j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc)) → -- We specify range type so Lean won't be stuck
       OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j
-    := fun j => snoc_oracle 𝔽q β oStmtIn newOracleFn ⟨j, by
+    := fun j => snoc_oracle 𝔽q β h_destIdx oStmtIn newOracleFn ⟨j, by
       have h : (toOutCodewordsCount ℓ ϑ i.castSucc) ≤ toOutCodewordsCount ℓ ϑ i.succ := by
         exact toOutCodewordsCount_i_le_of_succ ℓ ϑ i
       omega
@@ -925,8 +931,9 @@ omit [CharP L 2] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 [NeZero 𝓡] in
 lemma take_snoc_oracle_eq_oStmtIn (i : Fin ℓ)
     (oStmtIn : (j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc)) →
       OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)
-    (newOracleFn : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ) :
-    (take_snoc_oracle 𝔽q β i oStmtIn newOracleFn) = oStmtIn := by
+    {destIdx : Fin r} (h_destIdx : destIdx = ⟨i.val + 1, by omega⟩)
+    (newOracleFn : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx) :
+    (take_snoc_oracle 𝔽q β i oStmtIn h_destIdx newOracleFn) = oStmtIn := by
   unfold take_snoc_oracle
   unfold snoc_oracle
   simp
@@ -1091,7 +1098,7 @@ def witnessStructuralInvariant {i : Fin (ℓ + 1)} (stmt : Statement (L := L) Co
 hypercube of dimension `k` (embedded via `𝓑`). This is the protocol-level `(𝓑)` form consumed
 throughout BinaryBasefold (Relations, ReductionLogic, Steps/*). -/
 def sumcheckConsistencyProp {k : ℕ} (sumcheckTarget : L) (H : MultiquadraticPoly L k) : Prop :=
-  sumcheckTarget = ∑ x ∈ (univ.map 𝓑) ^ᶠ k, (MultiquadraticPoly.val H).eval x
+  sumcheckTarget = ∑ x ∈ (univ.map 𝓑) ^ᶠ k, H.val.eval x
 
 /-- First oracle witness consistency: the witness polynomial t, when projected to level 0 and
     evaluated on the initial domain S^(0), must be close within unique decoding radius to f^(0) -/
@@ -1117,7 +1124,9 @@ noncomputable def foldingBadEventAtBlock
   if hj: j.val * ϑ + ϑ ≤ stmtIdx then
     let f_k := oStmt j
     Binius.BinaryBasefold.foldingBadEvent (i := ⟨j.val * ϑ, by omega⟩) (steps := ϑ)
-      (h_i_add_steps := by simp only; omega) (f_i := f_k) (challenges :=
+      (destIdx := ⟨j.val * ϑ + ϑ, by omega⟩)
+      (h_destIdx := by rfl) (h_destIdx_le := by simp only [Fin.mk_le_mk]; omega)
+      (f_i := f_k) (r_challenges :=
         getFoldingChallenges (r := r) (𝓡 := 𝓡) stmtIdx challenges (k := j.val * ϑ) (h := hj))
   else True
 
@@ -1236,9 +1245,9 @@ lemma oracleWitnessConsistency_relay_preserved
     (stmt : Statement (L := L) Context i.succ)
     (wit : Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ)
     (oStmt : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j) :
-    oracleWitnessConsistency (mp := mp) 𝔽q β i.succ i.castSucc
+    oracleWitnessConsistency (mp := mp) (𝓑 := 𝓑) 𝔽q β i.succ i.castSucc
       (le_succ ↑i.castSucc) stmt wit oStmt =
-    oracleWitnessConsistency (mp := mp) 𝔽q β i.succ i.succ (by rfl) stmt wit
+    oracleWitnessConsistency (mp := mp) (𝓑 := 𝓑) 𝔽q β i.succ i.succ (by rfl) stmt wit
       (mapOStmtOutRelayStep 𝔽q β i hNCR oStmt) := by
   unfold oracleWitnessConsistency
   simp only
@@ -1331,7 +1340,7 @@ def masterKStateProp (stmtIdx : Fin (ℓ + 1))
     (wit : Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmtIdx)
     (oStmt : ∀ j, (OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ (i := oracleIdx) j))
     (localChecks : Prop := True) : Prop :=
-  let oracleWitnessConsistency: Prop := oracleWitnessConsistency (mp := mp) 𝔽q β
+  let oracleWitnessConsistency: Prop := oracleWitnessConsistency (mp := mp) (𝓑 := 𝓑) 𝔽q β
     stmtIdx oracleIdx h_le stmt wit oStmt
   let badEventExists := badEventExistsProp (ϑ := ϑ) 𝔽q β oracleIdx
     (challenges := Fin.take (m := oracleIdx) (v := stmt.challenges) (h := by omega))
@@ -1390,7 +1399,7 @@ def foldStepRelOutProp (i : Fin ℓ)
   let oStmt := input.1.2
   let wit := input.2
   let oracleWitnessConsistency : Prop :=
-    oracleWitnessConsistency (mp := mp) 𝔽q β
+    oracleWitnessConsistency (mp := mp) (𝓑 := 𝓑) 𝔽q β
       (stmtIdx := i.succ) (oracleIdx := i.castSucc)
       (h_le := Nat.le_of_lt (Fin.castSucc_lt_succ)) stmt wit oStmt
   let badEventExists : Prop :=
@@ -1432,8 +1441,10 @@ def finalNonDoomedFoldingProp {h_le : ϑ ≤ ℓ}
   have h_k_add_ϑ: k + ϑ = ℓ := by rw [h_k]; apply Nat.sub_add_cancel; omega
   let finalOracleFoldingConsistency: Prop := by
     -- folding consistency between two adjacent oracles `j` & `j + ϑ`
-    exact isCompliant (i := ⟨k, by rw [h_k]; exact rounds_sub_steps_lt⟩) (steps := ϑ)
-      (h_i_add_steps := by simp only; exact Nat.le_of_eq h_k_add_ϑ) (f_i := f_k)
+    exact isCompliant (i := ⟨k, by rw [h_k]; omega⟩) (steps := ϑ)
+      (destIdx := ⟨ℓ, by omega⟩)
+      (h_destIdx := by apply Fin.eq_of_val_eq; simp only [Fin.val_add, Fin.val_mk]; omega)
+      (h_destIdx_le := by simp only [Fin.mk_le_mk]; omega) (f_i := f_k)
       (f_i_plus_steps := by simp only [h_k_add_ϑ]; exact f_ℓ) (challenges := challenges)
 
   -- If oracleFoldingConsistency is true, then we can extract the original
@@ -1444,9 +1455,11 @@ def finalNonDoomedFoldingProp {h_le : ϑ ≤ ℓ}
     ∧ finalOracleFoldingConsistency
 
   let finalFoldingBadEvent : Prop :=
-    Binius.BinaryBasefold.foldingBadEvent (i := ⟨k, by rw [h_k]; exact rounds_sub_steps_lt⟩)
-      (steps := ϑ) (h_i_add_steps := by simp only; exact Nat.le_of_eq h_k_add_ϑ) (f_i := f_k)
-      (challenges := challenges)
+    Binius.BinaryBasefold.foldingBadEvent (i := ⟨k, by rw [h_k]; omega⟩)
+      (steps := ϑ) (destIdx := ⟨ℓ, by omega⟩)
+      (h_destIdx := by apply Fin.eq_of_val_eq; simp only [Fin.val_add, Fin.val_mk]; omega)
+      (h_destIdx_le := by simp only [Fin.mk_le_mk]; omega) (f_i := f_k)
+      (r_challenges := challenges)
 
   -- All bad folding events are fully formed across the sum-check rounds,
     -- no new bad event at the final sumcheck step
