@@ -418,6 +418,7 @@ import ArkLib.ProofSystem.Whir.BlockRelDistance
 import ArkLib.ProofSystem.Whir.Folding
 import ArkLib.ProofSystem.Whir.FoldingScratchDev
 import ArkLib.ProofSystem.Whir.MCAAffineLineGenerator
+import ArkLib.ProofSystem.Whir.MCAConjectureStatus
 import ArkLib.ProofSystem.Whir.MCAJohnsonCurveExtract
 import ArkLib.ProofSystem.Whir.MCAJohnsonCurveJoint
 import ArkLib.ProofSystem.Whir.MCAJohnsonEnvelope
