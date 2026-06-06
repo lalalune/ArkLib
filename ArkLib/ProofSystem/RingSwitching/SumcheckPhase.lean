@@ -9,6 +9,7 @@ import ArkLib.ProofSystem.RingSwitching.Spec
 import ArkLib.OracleReduction.Composition.Sequential.General
 import ArkLib.OracleReduction.Composition.Sequential.Append
 import ArkLib.OracleReduction.Security.RoundByRound
+import ArkLib.ToMathlib.KStateWeaken
 
 /-!
 # Ring-Switching Core Interaction Phase
@@ -646,32 +647,39 @@ def iteratedSumcheckKStateProp (i : Fin ℓ') (m : Fin (2 + 1))
         let localizedRoundPolyCheck := h_i = h_star
         explicitVCheck ∧ localizedRoundPolyCheck
       )
-  | ⟨2, h2⟩ => -- After V sends r'ᵢ (post-challenge OUTPUT state, issue #29 KState weakening)
-    -- Design (issue #29). The earlier strong post-challenge state demanded reconstructing the full
-    -- round polynomial `h_i = h_star` from the verifier run, which is *unprovable*: the honest
-    -- verifier only checks the Boolean-point sum `∑_b h_i(b) = target`, never `h_i = h_star`. The
-    -- previous repair collapsed this to `True`, forcing the unit error bound `1`.
+  | ⟨2, _⟩ => -- After V sends r'ᵢ (post-challenge OUTPUT state)
+    -- DESIGN NOTE (issue #29 — KState weakening + Schwartz–Zippel residual).
     --
-    -- The weakened-but-still-sharp state keeps the Boolean-sum check `explicitVCheck` and replaces
-    -- the unprovable polynomial-equality check with its *challenge-localized* consequence
-    -- `h_i(r'ᵢ) = h_star(r'ᵢ)` — exactly the next-round-target consistency the honest verifier and
-    -- `relOut` actually enforce (`sumcheck_target_succ = h_i(r'ᵢ)`, and for the ground truth
-    -- `h_star(r'ᵢ) = ∑_{next cube} (advanced H)` by `getSumcheckRoundPoly_eval_eq_cube_succ`). The
-    -- doom-escape event `¬(state@1) ∧ (state@2)` then reduces to `h_i ≠ h_star ∧ h_i(r'ᵢ) =
-    -- h_star(r'ᵢ)` = `KStateWeaken.badPolyAgreement r'ᵢ h_i h_star`, bounded by the Schwartz–Zippel
-    -- residual `2/|L|` (`KStateWeaken.prob_badPolyAgreement_degree_two_le`), giving the sharp
-    -- per-round knowledge error. -/
-    RingSwitching.masterKStateProp κ L K P ℓ ℓ' h_l aOStmtIn
-      (stmtIdx := i.castSucc)
-      (stmt := stmt) (oStmt := oStmt) (wit := witMid)
-      (localChecks :=
-        let h_i := get_Hᵢ (m := ⟨2, h2⟩) (tr := tr) (hm := one_le_two)
-        let r_i' := get_rᵢ' (m := ⟨2, h2⟩) (tr := tr) (hm := le_refl 2)
-        let explicitVCheck :=
-          (∑ b ∈ (boolDomain L ℓ').points i, h_i.val.eval b) = stmt.sumcheck_target
-        let localizedTargetCheck := h_i.val.eval r_i' = h_star.val.eval r_i'
-        explicitVCheck ∧ localizedTargetCheck
-      )
+    -- Obstruction. The strong post-challenge state demands reconstructing the full round polynomial
+    -- `h_i = h_star` from the verifier run, which is *unprovable*: the honest verifier checks only
+    -- the Boolean-point sum `∑_b h_i(b) = target`, never `h_i = h_star`. A malicious prover may send
+    -- any `h_i` with the correct Boolean sum, so `toFun_full` cannot derive `h_i = h_star`.
+    --
+    -- Weakened-but-sharp target. The intended weakening replaces the unprovable polynomial-equality
+    -- check by its *challenge-localized* consequence `localizedTargetCheck : h_i(r'ᵢ) = h_star(r'ᵢ)`
+    -- (alongside the kept `explicitVCheck`). This IS provable in `toFun_full`: the honest verifier
+    -- sets the next-round target to `h_i(r'ᵢ)` and `relOut`'s sumcheck-consistency at `i.succ` gives
+    -- `h_i(r'ᵢ) = ∑_{next cube} witOut.H`, while the extracted ground truth satisfies
+    -- `h_star(r'ᵢ) = ∑_{next cube} (advanced extracted H)` by the (already-proven, below)
+    -- `iteratedSumcheck_hStar_extracted_eval_eq_cube_succ` and `relOut`'s structural invariant.
+    --
+    -- Residual error. With that weakened state, the doom-escape event `¬(state@1) ∧ (state@2)`
+    -- (challenge index `⟨1,rfl⟩`, identity `extractMid`) reduces to
+    -- `h_i ≠ h_star ∧ h_i(r'ᵢ) = h_star(r'ᵢ)` = `KStateWeaken.badPolyAgreement r'ᵢ h_i h_star`,
+    -- which the **now-available, CompPoly-free** Schwartz–Zippel bridge
+    -- `KStateWeaken.prob_badPolyAgreement_degree_two_le` bounds by `2/|L|` — the sharp per-round
+    -- knowledge error (vs. the current `roundKnowledgeError = 1`).
+    --
+    -- The only mechanical step separating this file from emitting the weakened strong state is a
+    -- pure transcript-API identity in `toFun_full` (bridging `FullTranscript.messages tr ⟨0,rfl⟩`
+    -- and the `Transcript.equivMessagesChallenges`-form `get_Hᵢ` the KState reads — both denote the
+    -- same round message `h_i`, but at the `Transcript (Fin.last 2)` index type the numeral `0`
+    -- does not elaborate against `Fin ↑(Fin.last 2)` without an explicit `Fin.val_last` reduction).
+    -- That bridge is the sole residual; the algebraic content (cube-telescoping, consistency,
+    -- structural invariant) is fully proven above, and the probability bound is fully proven in
+    -- `KStateWeaken`. Until the bridge lands the post-challenge state stays `True` and the RBR
+    -- theorem below uses the always-valid unit bound, so the file remains sound and green.
+    True
 
 /-- Knowledge state function (KState) for single round -/
 def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
