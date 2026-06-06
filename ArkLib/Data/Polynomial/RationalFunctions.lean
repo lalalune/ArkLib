@@ -13,7 +13,7 @@ import Mathlib.RingTheory.Polynomial.GaussLemma
 import Mathlib.RingTheory.PowerSeries.Substitution
 
 /-!
-# Definitions and Theorems about Function Fields and Rings of Regular Functions
+# Function Fields and Rings of Regular Functions
 
 We define the notions of Appendix A of [BCIKS20].
 
@@ -24,11 +24,9 @@ We define the notions of Appendix A of [BCIKS20].
   Computer Science (FOCS), 2020. Full paper: https://eprint.iacr.org/2020/654,
   version 20210703:203025.
 
-## Main Definitions
-
 -/
 
-set_option linter.style.longFile 1700
+set_option linter.style.longFile 2000
 
 open Polynomial Polynomial.Bivariate ToRatFunc Ideal
 
@@ -38,8 +36,8 @@ section
 
 variable {F : Type} [CommRing F] [IsDomain F]
 
-/-- Construction of the monisized polynomial `H_tilde` in Appendix A.1 of [BCIKS20].
-Note: Here `H ∈ F[X][Y]` translates to `H ∈ F[Z][Y]` in [BCIKS20] and H_tilde in
+/-- Construction of the monicized polynomial `H_tilde` in Appendix A.1 of [BCIKS20].
+Note: Here `H ∈ F[X][Y]` translates to `H ∈ F[Z][Y]` in [BCIKS20], and `H_tilde` in
 `Polynomial (RatFunc F)` translates to `H_tilde ∈ F(Z)[T]` in [BCIKS20]. -/
 noncomputable def H_tilde (H : F[X][Y]) : Polynomial (RatFunc F) :=
   let hᵢ (i : ℕ) := H.coeff i
@@ -132,48 +130,38 @@ lemma irreducibleHTildeOfIrreducible_of_natDegree_pos
 
 end FieldIrreducibility
 
-/-- The monisized version `H_tilde` is irreducible if the original polynomial `H` is irreducible
+/-- The monicized version `H_tilde` is irreducible if the original polynomial `H` is irreducible
 and has positive degree in `Y`, as assumed in Appendix A.1 of [BCIKS20]. -/
 lemma irreducibleHTildeOfIrreducible {F : Type} [Field F] {H : Polynomial (Polynomial F)}
     (hHdeg : 0 < H.natDegree) :
     Irreducible H → Irreducible (H_tilde H) :=
   irreducibleHTildeOfIrreducible_of_natDegree_pos hHdeg
 
-/-- The function field `𝕃 ` from Appendix A.1 of [BCIKS20]. -/
+/-- The function field `𝕃` from Appendix A.1 of [BCIKS20]. -/
 abbrev 𝕃 (H : F[X][Y]) : Type :=
   (Polynomial (RatFunc F)) ⧸ (Ideal.span {H_tilde H})
 
-/-- The function field `𝕃 ` is indeed a field if and only if the generator of the ideal we quotient
-by is an irreducible polynomial. -/
+/-- The function field `𝕃` is a field when `H` is irreducible and has positive `Y`-degree. -/
 lemma isField_of_irreducible_of_natDegree_pos {F : Type} [Field F] {H : F[X][Y]}
     (hHdeg : 0 < H.natDegree) (hH : Irreducible H) : IsField (𝕃 H) := by
   unfold 𝕃
-  erw
-    [
-      ← Ideal.Quotient.maximal_ideal_iff_isField_quotient,
-      principal_is_maximal_iff_irred
-    ]
+  erw [← Ideal.Quotient.maximal_ideal_iff_isField_quotient, principal_is_maximal_iff_irred]
   exact irreducibleHTildeOfIrreducible_of_natDegree_pos hHdeg hH
 
-/-- The function field `𝕃 ` is indeed a field when the generator of the ideal we quotient by is
-irreducible and has positive degree in `Y`. -/
+/-- The function field `𝕃` is a field under the standard Appendix A irreducibility hypothesis. -/
 lemma isField_of_irreducible {F : Type} [Field F] {H : F[X][Y]} (hHdeg : 0 < H.natDegree) :
     Irreducible H → IsField (𝕃 H) := by
-  intros h
+  intro h
   unfold 𝕃
-  erw
-    [
-      ← Ideal.Quotient.maximal_ideal_iff_isField_quotient,
-      principal_is_maximal_iff_irred
-    ]
+  erw [← Ideal.Quotient.maximal_ideal_iff_isField_quotient, principal_is_maximal_iff_irred]
   exact irreducibleHTildeOfIrreducible hHdeg h
 
-/-- The function field `𝕃` as defined above is a field. -/
+/-- The function field `𝕃` is a field under positive-degree irreducibility assumptions. -/
 noncomputable instance {F : Type} [Field F] {H : F[X][Y]} [hHdeg : Fact (0 < H.natDegree)]
     [inst : Fact (Irreducible H)] : Field (𝕃 H) :=
   IsField.toField (isField_of_irreducible hHdeg.out inst.out)
 
-/-- The monisized polynomial `H_tilde` is in fact an element of `F[X][Y]`. -/
+/-- The integral monicized polynomial corresponding to `H_tilde`, with coefficients in `F[X]`. -/
 noncomputable def H_tilde' (H : F[X][Y]) : F[X][Y] :=
   if H.natDegree = 0 then
     Polynomial.C (H.coeff 0)
@@ -261,7 +249,7 @@ private lemma monicize_leading_term {K : Type} [Field K] (a : K) (d : ℕ)
 
 /-- The polynomial `H_tilde'` agrees with the monicization `H_tilde` after embedding into
 `Polynomial (RatFunc F)`. -/
-lemma H_tilde_equiv_H_tilde' (H : F[X][Y]) : (H_tilde' H).map univPolyHom = H_tilde H := by
+lemma map_H_tilde'_eq_H_tilde (H : F[X][Y]) : (H_tilde' H).map univPolyHom = H_tilde H := by
   classical
   by_cases hdeg : H.natDegree = 0
   · simp only [H_tilde', hdeg, ↓reduceIte, map_C]
@@ -346,7 +334,7 @@ lemma H_tilde_equiv_H_tilde' (H : F[X][Y]) : (H_tilde' H).map univPolyHom = H_ti
             Polynomial.X ^ H.natDegree := by
               rw [add_comm]
 
-section FieldIrreducibility
+section IntegralIrreducibility
 
 variable {F : Type} [Field F]
 
@@ -356,33 +344,34 @@ lemma irreducibleHTilde'OfIrreducible {H : F[X][Y]} (hHdeg : 0 < H.natDegree)
     (hH : Irreducible H) :
     Irreducible (H_tilde' H) := by
   have hmap : Irreducible ((H_tilde' H).map (univPolyHom (F := F))) := by
-    simpa [H_tilde_equiv_H_tilde'] using
+    simpa [map_H_tilde'_eq_H_tilde] using
       irreducibleHTildeOfIrreducible_of_natDegree_pos hHdeg hH
   exact (H_tilde'_monic H hHdeg).isPrimitive.irreducible_of_irreducible_map_of_injective
     (univPolyHom_injective (F := F)) hmap
 
-end FieldIrreducibility
+end IntegralIrreducibility
 
 /-- The ring of regular elements `𝒪` from Appendix A.1 of [BCIKS20]. -/
 abbrev 𝒪 (H : F[X][Y]) : Type :=
   (Polynomial (Polynomial F)) ⧸ (Ideal.span {H_tilde' H})
 
-/-- The ring of regular elements field `𝒪` is a indeed a ring. -/
+/-- The ring of regular elements `𝒪` is a ring. -/
 noncomputable instance {H : F[X][Y]} : Ring (𝒪 H) :=
   Ideal.Quotient.ring (Ideal.span {H_tilde' H})
 
 /-- The ring homomorphism defining the embedding of `𝒪` into `𝕃`. -/
 noncomputable def embeddingOf𝒪Into𝕃 (H : F[X][Y]) : 𝒪 H →+* 𝕃 H :=
   Ideal.quotientMap
-        (I := Ideal.span {H_tilde' H}) (Ideal.span {H_tilde H})
-        bivPolyHom (by
-          rw [Ideal.span_le]
-          intro x hx
-          rw [Set.mem_singleton_iff] at hx; subst hx
-          change bivPolyHom (H_tilde' H) ∈ span {H_tilde H}
-          rw [show bivPolyHom (H_tilde' H) = (H_tilde' H).map univPolyHom from rfl,
-              H_tilde_equiv_H_tilde']
-          exact Ideal.subset_span rfl)
+    (I := Ideal.span {H_tilde' H}) (Ideal.span {H_tilde H})
+    bivPolyHom (by
+      rw [Ideal.span_le]
+      intro x hx
+      rw [Set.mem_singleton_iff] at hx
+      subst hx
+      change bivPolyHom (H_tilde' H) ∈ span {H_tilde H}
+      rw [show bivPolyHom (H_tilde' H) = (H_tilde' H).map univPolyHom from rfl,
+        map_H_tilde'_eq_H_tilde]
+      exact Ideal.subset_span rfl)
 
 section FieldEmbedding
 
@@ -396,7 +385,7 @@ private lemma H_tilde'_dvd_of_map_dvd_H_tilde {H p : F[X][Y]} (hHdeg : 0 < H.nat
   rw [← Polynomial.modByMonic_eq_zero_iff_dvd hqmonic]
   rw [← Polynomial.map_eq_zero_iff (univPolyHom_injective (F := F))]
   have hqmap_dvd_p : q.map (univPolyHom (F := F)) ∣ p.map (univPolyHom (F := F)) := by
-    simpa [q, H_tilde_equiv_H_tilde'] using hp
+    simpa [q, map_H_tilde'_eq_H_tilde] using hp
   have hqmap_dvd_rem :
       q.map (univPolyHom (F := F)) ∣
         (p %ₘ q).map (univPolyHom (F := F)) := by
@@ -440,64 +429,64 @@ end FieldEmbedding
 
 /-- The set of regular elements inside `𝕃 H`, i.e. the set of elements of `𝕃 H`
 that in fact lie in `𝒪 H`. -/
-def regularElms_set (H : F[X][Y]) : Set (𝕃 H) :=
+def regularElementsSet (H : F[X][Y]) : Set (𝕃 H) :=
   {a : 𝕃 H | ∃ b : 𝒪 H, a = embeddingOf𝒪Into𝕃 _ b}
 
 /-- The regular elements inside `𝕃 H`, i.e. the elements of `𝕃 H` that in fact lie in `𝒪 H`
 as Type. -/
-def regularElms (H : F[X][Y]) : Type :=
+def regularElements (H : F[X][Y]) : Type :=
   {a : 𝕃 H // ∃ b : 𝒪 H, a = embeddingOf𝒪Into𝕃 _ b}
 
 /-- Zero is regular. -/
 @[simp]
-lemma regularElms_set_zero (H : F[X][Y]) : (0 : 𝕃 H) ∈ regularElms_set H :=
+lemma regularElementsSet_zero (H : F[X][Y]) : (0 : 𝕃 H) ∈ regularElementsSet H :=
   ⟨0, by simp⟩
 
 /-- One is regular. -/
 @[simp]
-lemma regularElms_set_one (H : F[X][Y]) : (1 : 𝕃 H) ∈ regularElms_set H :=
+lemma regularElementsSet_one (H : F[X][Y]) : (1 : 𝕃 H) ∈ regularElementsSet H :=
   ⟨1, by simp⟩
 
 /-- The regular elements are closed under addition. -/
-lemma regularElms_set_add {H : F[X][Y]} {a b : 𝕃 H}
-    (ha : a ∈ regularElms_set H) (hb : b ∈ regularElms_set H) :
-    a + b ∈ regularElms_set H := by
+lemma regularElementsSet_add {H : F[X][Y]} {a b : 𝕃 H}
+    (ha : a ∈ regularElementsSet H) (hb : b ∈ regularElementsSet H) :
+    a + b ∈ regularElementsSet H := by
   rcases ha with ⟨a', rfl⟩
   rcases hb with ⟨b', rfl⟩
   exact ⟨a' + b', by simp⟩
 
 /-- The regular elements are closed under negation. -/
-lemma regularElms_set_neg {H : F[X][Y]} {a : 𝕃 H}
-    (ha : a ∈ regularElms_set H) : -a ∈ regularElms_set H := by
+lemma regularElementsSet_neg {H : F[X][Y]} {a : 𝕃 H}
+    (ha : a ∈ regularElementsSet H) : -a ∈ regularElementsSet H := by
   rcases ha with ⟨a', rfl⟩
   exact ⟨-a', by simp⟩
 
 /-- The regular elements are closed under subtraction. -/
-lemma regularElms_set_sub {H : F[X][Y]} {a b : 𝕃 H}
-    (ha : a ∈ regularElms_set H) (hb : b ∈ regularElms_set H) :
-    a - b ∈ regularElms_set H := by
-  simpa [sub_eq_add_neg] using regularElms_set_add ha (regularElms_set_neg hb)
+lemma regularElementsSet_sub {H : F[X][Y]} {a b : 𝕃 H}
+    (ha : a ∈ regularElementsSet H) (hb : b ∈ regularElementsSet H) :
+    a - b ∈ regularElementsSet H := by
+  simpa [sub_eq_add_neg] using regularElementsSet_add ha (regularElementsSet_neg hb)
 
 /-- The regular elements are closed under multiplication. -/
-lemma regularElms_set_mul {H : F[X][Y]} {a b : 𝕃 H}
-    (ha : a ∈ regularElms_set H) (hb : b ∈ regularElms_set H) :
-    a * b ∈ regularElms_set H := by
+lemma regularElementsSet_mul {H : F[X][Y]} {a b : 𝕃 H}
+    (ha : a ∈ regularElementsSet H) (hb : b ∈ regularElementsSet H) :
+    a * b ∈ regularElementsSet H := by
   rcases ha with ⟨a', rfl⟩
   rcases hb with ⟨b', rfl⟩
   exact ⟨a' * b', by simp⟩
 
 /-- The regular elements are closed under natural powers. -/
-lemma regularElms_set_pow {H : F[X][Y]} {a : 𝕃 H}
-    (ha : a ∈ regularElms_set H) (n : ℕ) : a ^ n ∈ regularElms_set H := by
+lemma regularElementsSet_pow {H : F[X][Y]} {a : 𝕃 H}
+    (ha : a ∈ regularElementsSet H) (n : ℕ) : a ^ n ∈ regularElementsSet H := by
   induction n with
   | zero => simp
   | succ n ih =>
-      simpa [pow_succ] using regularElms_set_mul ih ha
+      simpa [pow_succ] using regularElementsSet_mul ih ha
 
 /-- The regular elements are closed under finite sums. -/
-lemma regularElms_set_sum {ι : Type} {H : F[X][Y]} (s : Finset ι) {f : ι → 𝕃 H}
-    (hf : ∀ i ∈ s, f i ∈ regularElms_set H) :
-    (∑ i ∈ s, f i) ∈ regularElms_set H := by
+lemma regularElementsSet_sum {ι : Type} {H : F[X][Y]} (s : Finset ι) {f : ι → 𝕃 H}
+    (hf : ∀ i ∈ s, f i ∈ regularElementsSet H) :
+    (∑ i ∈ s, f i) ∈ regularElementsSet H := by
   classical
   revert hf
   refine Finset.induction_on s ?_ ?_
@@ -505,7 +494,7 @@ lemma regularElms_set_sum {ι : Type} {H : F[X][Y]} (s : Finset ι) {f : ι → 
     simp
   · intro a s ha ih hf
     rw [Finset.sum_insert ha]
-    exact regularElms_set_add
+    exact regularElementsSet_add
       (hf a (by simp [ha]))
       (ih fun i hi => hf i (by simp [hi]))
 
@@ -517,11 +506,13 @@ def rationalRoot (H : F[X][Y]) (z : F) : Type :=
 /-- The rational substitution `π_z` from Appendix A.3 defined on the whole ring of
 bivariate polynomials. -/
 noncomputable def π_z_lift {H : F[X][Y]} (z : F) (root : rationalRoot (H_tilde' H) z) :
-  F[X][Y] →+* F := Polynomial.evalEvalRingHom z root.1
+    F[X][Y] →+* F :=
+  Polynomial.evalEvalRingHom z root.1
 
 /-- The rational substitution `π_z` from Appendix A.3 of [BCIKS20] is a well-defined map on the
 quotient ring `𝒪`. -/
-noncomputable def π_z {H : F[X][Y]} (z : F) (root : rationalRoot (H_tilde' H) z) : 𝒪 H →+* F :=
+noncomputable def π_z {H : F[X][Y]} (z : F) (root : rationalRoot (H_tilde' H) z) :
+    𝒪 H →+* F :=
   Ideal.Quotient.lift (Ideal.span {H_tilde' H}) (π_z_lift z root) (by
     intro a ha
     rw [Ideal.mem_span_singleton] at ha
@@ -619,8 +610,8 @@ lemma weight_Λ_zero (H : F[X][Y]) (D : ℕ) :
     weight_Λ (0 : F[X][Y]) H D = ⊥ := by
   simp [weight_Λ]
 
-/-- The weight function `Λ` on the ring of regular elements `𝒪` is defined as the weight their
-canonical representatives in `F[X][Y]`. -/
+/-- The weight function `Λ` on regular elements is the weight of their canonical representatives
+in `F[X][Y]`. -/
 noncomputable def weight_Λ_over_𝒪 {H : F[X][Y]} (hH : 0 < H.natDegree) (f : 𝒪 H) (D : ℕ) :
     WithBot ℕ := weight_Λ (canonicalRepOf𝒪 hH f) H D
 
@@ -739,25 +730,27 @@ lemma weight_Λ_add_le (f g H : F[X][Y]) (D : ℕ) :
   -- The contribution at `n` to weight_Λ (f + g) is bounded by f's or g's contribution.
   have hcoeff : (f + g).coeff n = f.coeff n + g.coeff n := Polynomial.coeff_add _ _ _
   have hsum_ne : f.coeff n + g.coeff n ≠ 0 := by
-    rw [← hcoeff]; exact Polynomial.mem_support_iff.mp hn
+    rw [← hcoeff]
+    exact Polynomial.mem_support_iff.mp hn
   by_cases hf : f.coeff n = 0
   · -- f.coeff n = 0, so g.coeff n ≠ 0
     have hg : g.coeff n ≠ 0 := by simpa [hf] using hsum_ne
     have hng : n ∈ g.support := Polynomial.mem_support_iff.mpr hg
     have heq : (f + g).coeff n = g.coeff n := by simp [hcoeff, hf]
-    show (WithBot.some _ : WithBot ℕ) ≤ _
+    change (WithBot.some _ : WithBot ℕ) ≤ _
     rw [heq]
     exact (le_weight_Λ_of_mem_support hng).trans (le_max_right _ _)
   · have hnf : n ∈ f.support := Polynomial.mem_support_iff.mpr hf
     by_cases hg : g.coeff n = 0
     · have heq : (f + g).coeff n = f.coeff n := by simp [hcoeff, hg]
-      show (WithBot.some _ : WithBot ℕ) ≤ _
+      change (WithBot.some _ : WithBot ℕ) ≤ _
       rw [heq]
       exact (le_weight_Λ_of_mem_support hnf).trans (le_max_left _ _)
     · have hng : n ∈ g.support := Polynomial.mem_support_iff.mpr hg
       have hdeg : ((f + g).coeff n).natDegree ≤
           max (f.coeff n).natDegree (g.coeff n).natDegree := by
-        rw [hcoeff]; exact Polynomial.natDegree_add_le _ _
+        rw [hcoeff]
+        exact Polynomial.natDegree_add_le _ _
       rcases le_total (f.coeff n).natDegree (g.coeff n).natDegree with h | h
       · -- bound by g's contribution
         have hbound : ((f + g).coeff n).natDegree ≤ (g.coeff n).natDegree :=
@@ -899,6 +892,17 @@ lemma natDegree_H_tilde' {H : F[X][Y]} (hH : 0 < H.natDegree) :
   apply Polynomial.natDegree_eq_of_degree_eq_some
   rw [Polynomial.degree_add_eq_right_of_degree_lt (hsum_deg.trans_eq hX_deg.symm), hX_deg]
 
+/-- The canonical representative has `Y`-degree strictly smaller than `H`. -/
+lemma canonicalRepOf𝒪_natDegree_lt_H {H : F[X][Y]} (hH : 0 < H.natDegree) (β : 𝒪 H) :
+    (canonicalRepOf𝒪 hH β).natDegree < H.natDegree := by
+  classical
+  by_cases hβ : canonicalRepOf𝒪 hH β = 0
+  · simp [hβ, hH]
+  · have hdeg := canonicalRepOf𝒪_degree_lt hH β
+    have hq_ne : H_tilde' H ≠ 0 := (H_tilde'_monic H hH).ne_zero
+    rw [Polynomial.degree_eq_natDegree hβ, Polynomial.degree_eq_natDegree hq_ne] at hdeg
+    exact_mod_cast (by simpa [natDegree_H_tilde' hH] using hdeg)
+
 omit [IsDomain F] in
 /-- The `Λ`-weight of `H_tilde' H` is bounded by `d_H · m`, where `d_H = H.natDegree`. -/
 lemma weight_Λ_H_tilde'_le {H : F[X][Y]} {D : ℕ}
@@ -1003,27 +1007,96 @@ lemma weight_Λ_sub_leadingCoeff_mul_H_tilde'_le {p H : F[X][Y]} {D : ℕ}
       rw [← Nat.add_mul, hsum]
     linarith [hadd_mul]
 
+/-- Reduction modulo `H_tilde' H` does not increase `Λ`-weight. -/
+lemma weight_Λ_modByMonic_H_tilde'_le {H : F[X][Y]} {D : ℕ}
+    (hD : Bivariate.totalDegree H ≤ D) (hH : 0 < H.natDegree) :
+    ∀ p : F[X][Y], weight_Λ (p %ₘ H_tilde' H) H D ≤ weight_Λ p H D
+  | p => by
+      classical
+      have hq : (H_tilde' H).Monic := H_tilde'_monic H hH
+      unfold Polynomial.modByMonic Polynomial.divModByMonicAux
+      rw [dif_pos hq]
+      by_cases h : (H_tilde' H).degree ≤ p.degree ∧ p ≠ 0
+      · have _wf := Polynomial.div_wf_lemma h hq
+        simp only [ne_eq, dite_eq_ite, ge_iff_le, p, h]
+        let z := Polynomial.C p.leadingCoeff *
+          Polynomial.X ^ (p.natDegree - (H_tilde' H).natDegree)
+        have ih := weight_Λ_modByMonic_H_tilde'_le hD hH (p - H_tilde' H * z)
+        have ih' :
+            weight_Λ ((Polynomial.divModByMonicAux (p - H_tilde' H * z) hq).2) H D ≤
+              weight_Λ (p - H_tilde' H * z) H D := by
+          simpa [Polynomial.modByMonic, hq, z] using ih
+        have hqnat : (H_tilde' H).natDegree = H.natDegree := natDegree_H_tilde' hH
+        have hp_deg : H.natDegree ≤ p.natDegree := by
+          have hdeg := h.1
+          rw [Polynomial.degree_eq_natDegree h.2, Polynomial.degree_eq_natDegree hq.ne_zero]
+            at hdeg
+          exact_mod_cast (by simpa [hqnat] using hdeg)
+        have hstep0 :=
+          weight_Λ_sub_leadingCoeff_mul_H_tilde'_le (p := p) (H := H) hD hH hp_deg
+        have hstep : weight_Λ (p - H_tilde' H * z) H D ≤ weight_Λ p H D := by
+          have hz :
+              z = Polynomial.C p.leadingCoeff * Polynomial.X ^ (p.natDegree - H.natDegree) := by
+            simp [z, hqnat]
+          rw [hz]
+          convert hstep0 using 1
+          ring_nf
+        exact ih'.trans hstep
+      · simp only [ne_eq, dite_eq_ite, ge_iff_le, p, h]
+        exact le_rfl
+termination_by p => p
+
+/-- The `𝒪`-weight of a quotient constructor is bounded by any representative's `Λ`-weight. -/
+lemma weight_Λ_over_𝒪_mk_le {H : F[X][Y]} {D : ℕ}
+    (hD : Bivariate.totalDegree H ≤ D) (hH : 0 < H.natDegree) (p : F[X][Y]) :
+    weight_Λ_over_𝒪 hH (Ideal.Quotient.mk (Ideal.span {H_tilde' H}) p : 𝒪 H) D ≤
+      weight_Λ p H D := by
+  rw [weight_Λ_over_𝒪_mk]
+  exact weight_Λ_modByMonic_H_tilde'_le hD hH p
+
 /-- The set `S_β` from the statement of Lemma A.1 in Appendix A of [BCIKS20].
 Note: Here `F[X][Y]` is `F[Z][T]`. -/
 noncomputable def S_β {H : F[X][Y]} (β : 𝒪 H) : Set F :=
   {z : F | ∃ root : rationalRoot (H_tilde' H) z, (π_z z root) β = 0}
 
+omit [IsDomain F] in
+/-- The rational substitution `π_z` can be computed on the canonical representative. -/
+lemma π_z_eq_eval_canonicalRepOf𝒪 {H : F[X][Y]} (hH : 0 < H.natDegree)
+    (z : F) (root : rationalRoot (H_tilde' H) z) (β : 𝒪 H) :
+    (π_z z root) β = Polynomial.evalEvalRingHom z root.1 (canonicalRepOf𝒪 hH β) := by
+  conv_lhs => rw [← mk_canonicalRepOf𝒪 hH β]
+  rfl
+
+end
+
+section LemmaA1
+
+variable {F : Type} [Field F]
+
 /-- The statement of Lemma A.1 in Appendix A.3 of [BCIKS20]. -/
-lemma Lemma_A_1 {H : F[X][Y]} [hHirreducible : Fact (Irreducible H)]
+lemma lemmaA1_embedding_eq_zero_of_many_rational_roots {H : F[X][Y]}
+    [hHirreducible : Fact (Irreducible H)]
     (hH : 0 < H.natDegree) (β : 𝒪 H) (D : ℕ)
     (hD : D ≥ Bivariate.totalDegree H)
     (S_β_card : Set.ncard (S_β β) > (weight_Λ_over_𝒪 hH β D) * H.natDegree) :
   embeddingOf𝒪Into𝕃 _ β = 0 := by sorry
 
-/-- The embeddining of the coefficients of a bivarite polynomial into the bivariate polynomial ring
+end LemmaA1
+
+section
+
+variable {F : Type} [CommRing F] [IsDomain F]
+
+/-- The embedding of the coefficients of a bivariate polynomial into the bivariate polynomial ring
 with rational coefficients. -/
 noncomputable def coeffAsRatFunc : F[X] →+* Polynomial (RatFunc F) :=
   RingHom.comp bivPolyHom Polynomial.C
 
-/-- The embeddining of the coefficients of a bivarite polynomial into the function field `𝕃`. -/
+/-- The embedding of coefficient polynomials into the function field `𝕃`. -/
 noncomputable def liftToFunctionField {H : F[X][Y]} : F[X] →+* 𝕃 H :=
   RingHom.comp (Ideal.Quotient.mk (Ideal.span {H_tilde H})) coeffAsRatFunc
 
+/-- The embedding of bivariate polynomials into the function field `𝕃`. -/
 noncomputable def liftBivariate {H : F[X][Y]} : F[X][Y] →+* 𝕃 H :=
   RingHom.comp (Ideal.Quotient.mk (Ideal.span {H_tilde H})) bivPolyHom
 
@@ -1044,8 +1117,8 @@ lemma regular_liftBivariate (H : F[X][Y]) (p : F[X][Y]) :
   ⟨Ideal.Quotient.mk (Ideal.span {H_tilde' H}) p, by simp⟩
 
 /-- Bivariate-polynomial images are regular elements of the function field. -/
-lemma regularElms_set_liftBivariate (H : F[X][Y]) (p : F[X][Y]) :
-    liftBivariate (H := H) p ∈ regularElms_set H := by
+lemma regularElementsSet_liftBivariate (H : F[X][Y]) (p : F[X][Y]) :
+    liftBivariate (H := H) p ∈ regularElementsSet H := by
   rcases regular_liftBivariate H p with ⟨pre, hpre⟩
   exact ⟨pre, hpre.symm⟩
 
@@ -1055,9 +1128,9 @@ lemma regular_liftToFunctionField (H : F[X][Y]) (p : F[X]) :
   regular_liftBivariate H (Polynomial.C p)
 
 /-- Coefficient-polynomial images are regular elements of the function field. -/
-lemma regularElms_set_liftToFunctionField (H : F[X][Y]) (p : F[X]) :
-    liftToFunctionField (H := H) p ∈ regularElms_set H := by
-  simpa using regularElms_set_liftBivariate H (Polynomial.C p)
+lemma regularElementsSet_liftToFunctionField (H : F[X][Y]) (p : F[X]) :
+    liftToFunctionField (H := H) p ∈ regularElementsSet H := by
+  simpa using regularElementsSet_liftBivariate H (Polynomial.C p)
 
 /-- Nonzero coefficient polynomials remain nonzero after embedding into the function field. -/
 lemma liftToFunctionField_ne_zero {F : Type} [Field F] {H : F[X][Y]}
@@ -1088,10 +1161,10 @@ lemma liftToFunctionField_leadingCoeff_ne_zero {F : Type} [Field F] {H : F[X][Y]
     (Polynomial.leadingCoeff_ne_zero.mpr (Polynomial.ne_zero_of_natDegree_gt H_natDegree_pos.out))
 
 /-- If `q ∣ p` in `F[X]`, then `p / q` is regular after embedding into `𝕃`. -/
-lemma regularElms_set_liftToFunctionField_div_of_dvd {F : Type} [Field F] {H : F[X][Y]}
+lemma regularElementsSet_liftToFunctionField_div_of_dvd {F : Type} [Field F] {H : F[X][Y]}
     [H_irreducible : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)]
     {p q : F[X]} (hq : q ≠ 0) (hdiv : q ∣ p) :
-    liftToFunctionField (H := H) p / liftToFunctionField (H := H) q ∈ regularElms_set H := by
+    liftToFunctionField (H := H) p / liftToFunctionField (H := H) q ∈ regularElementsSet H := by
   rcases hdiv with ⟨r, rfl⟩
   have hq_lift : liftToFunctionField (H := H) q ≠ 0 := liftToFunctionField_ne_zero hq
   have heq :
@@ -1100,16 +1173,16 @@ lemma regularElms_set_liftToFunctionField_div_of_dvd {F : Type} [Field F] {H : F
     rw [map_mul]
     field_simp [hq_lift]
   rw [heq]
-  exact regularElms_set_liftToFunctionField H r
+  exact regularElementsSet_liftToFunctionField H r
 
 /-- If `W = H.leadingCoeff` divides `p`, then `p / W` is regular after embedding into `𝕃`. -/
-lemma regularElms_set_liftToFunctionField_div_leadingCoeff_of_dvd {F : Type} [Field F]
+lemma regularElementsSet_liftToFunctionField_div_leadingCoeff_of_dvd {F : Type} [Field F]
     {H : F[X][Y]} [H_irreducible : Fact (Irreducible H)]
     [H_natDegree_pos : Fact (0 < H.natDegree)] {p : F[X]}
     (hdiv : H.leadingCoeff ∣ p) :
     liftToFunctionField (H := H) p / liftToFunctionField (H := H) H.leadingCoeff ∈
-      regularElms_set H := by
-  exact regularElms_set_liftToFunctionField_div_of_dvd
+      regularElementsSet H := by
+  exact regularElementsSet_liftToFunctionField_div_of_dvd
     (Polynomial.leadingCoeff_ne_zero.mpr (Polynomial.ne_zero_of_natDegree_gt H_natDegree_pos.out))
     hdiv
 
@@ -1162,7 +1235,8 @@ lemma W_pow_mul_eval₂_div_eq_sum {F : Type} [Field F] {H : F[X][Y]}
   congr 1
   · refine Finset.sum_congr rfl (fun i hi => ?_)
     have hi_le : i ≤ k := by
-      have := Finset.mem_range.mp hi; omega
+      have hi_lt := Finset.mem_range.mp hi
+      omega
     exact mul_pow_mul_div_pow_eq_lower (W := W) (T := T)
       (a := liftToFunctionField (H := H) (P.coeff i)) hW hi_le
   · exact mul_pow_mul_div_pow_succ_eq_top (W := W) (T := T)
@@ -1175,20 +1249,21 @@ lemma liftBivariate_X {H : F[X][Y]} :
   simp [liftBivariate, functionFieldT, bivPolyHom]
 
 /-- The function-field variable `T` is regular. -/
-lemma regularElms_set_functionFieldT (H : F[X][Y]) :
-    functionFieldT (H := H) ∈ regularElms_set H := by
-  simpa using regularElms_set_liftBivariate H (Polynomial.X : F[X][Y])
+lemma regularElementsSet_functionFieldT (H : F[X][Y]) :
+    functionFieldT (H := H) ∈ regularElementsSet H := by
+  simpa using regularElementsSet_liftBivariate H (Polynomial.X : F[X][Y])
 
 /-- A linear polynomial evaluated at `T / W` is regular when its linear coefficient is divisible by
 `W = H.leadingCoeff`. -/
-lemma regularElms_set_eval₂_linear_of_coeff_one_dvd {F : Type} [Field F] {H : F[X][Y]}
+lemma regularElementsSet_eval₂_linear_of_coeff_one_dvd {F : Type} [Field F] {H : F[X][Y]}
     [H_irreducible : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)]
     {P : F[X][Y]} (hP : P.natDegree ≤ 1) (hdiv : H.leadingCoeff ∣ P.coeff 1) :
     Polynomial.eval₂ liftToFunctionField
       (functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff) P ∈
-      regularElms_set H := by
+      regularElementsSet H := by
   rw [Polynomial.eq_X_add_C_of_natDegree_le_one hP]
-  simp only [Polynomial.eval₂_add, Polynomial.eval₂_mul, Polynomial.eval₂_C, Polynomial.eval₂_X]
+  simp only [Polynomial.eval₂_add, Polynomial.eval₂_mul, Polynomial.eval₂_C,
+    Polynomial.eval₂_X]
   have hterm :
       liftToFunctionField (H := H) (P.coeff 1) *
           (functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff) =
@@ -1197,15 +1272,15 @@ lemma regularElms_set_eval₂_linear_of_coeff_one_dvd {F : Type} [Field F] {H : 
     rw [div_eq_mul_inv, div_eq_mul_inv]
     ring
   rw [hterm]
-  exact regularElms_set_add
-    (regularElms_set_mul
-      (regularElms_set_liftToFunctionField_div_leadingCoeff_of_dvd hdiv)
-      (regularElms_set_functionFieldT H))
-    (regularElms_set_liftToFunctionField H (P.coeff 0))
+  exact regularElementsSet_add
+    (regularElementsSet_mul
+      (regularElementsSet_liftToFunctionField_div_leadingCoeff_of_dvd hdiv)
+      (regularElementsSet_functionFieldT H))
+    (regularElementsSet_liftToFunctionField H (P.coeff 0))
 
 /-- Clearing denominators in `P(T / W)`: if `P` has degree at most `k + 1` and its top
 coefficient is divisible by `W = H.leadingCoeff`, then `W^k * P(T/W)` is regular. -/
-lemma regularElms_set_mul_pow_eval₂_div_of_natDegree_le_succ_of_coeff_succ_dvd
+lemma regularElementsSet_mul_pow_eval₂_div_of_natDegree_le_succ_of_coeff_succ_dvd
     {F : Type} [Field F] {H : F[X][Y]}
     [H_irreducible : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)]
     {P : F[X][Y]} {k : ℕ} (hP : P.natDegree ≤ k + 1)
@@ -1213,37 +1288,38 @@ lemma regularElms_set_mul_pow_eval₂_div_of_natDegree_le_succ_of_coeff_succ_dvd
     liftToFunctionField (H := H) H.leadingCoeff ^ k *
       Polynomial.eval₂ liftToFunctionField
         (functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff) P ∈
-      regularElms_set H := by
+      regularElementsSet H := by
   let W : 𝕃 H := liftToFunctionField (H := H) H.leadingCoeff
   let T : 𝕃 H := functionFieldT (H := H)
   have hW : W ≠ 0 := by
     simpa [W] using (liftToFunctionField_leadingCoeff_ne_zero (H := H))
   have hP_lt : P.natDegree < k + 2 := by omega
-  change W ^ k * Polynomial.eval₂ liftToFunctionField (T / W) P ∈ regularElms_set H
+  change W ^ k * Polynomial.eval₂ liftToFunctionField (T / W) P ∈ regularElementsSet H
   rw [Polynomial.eval₂_eq_sum_range' liftToFunctionField hP_lt (T / W)]
   rw [Finset.mul_sum]
   rw [show k + 2 = k + 1 + 1 by omega, Finset.sum_range_succ]
-  refine regularElms_set_add ?_ ?_
-  · refine regularElms_set_sum (Finset.range (k + 1)) ?_
+  refine regularElementsSet_add ?_ ?_
+  · refine regularElementsSet_sum (Finset.range (k + 1)) ?_
     intro i hi
     have hi_lt : i < k + 1 := Finset.mem_range.mp hi
     have hi_le : i ≤ k := by omega
     rw [mul_pow_mul_div_pow_eq_lower (W := W) (T := T)
       (a := liftToFunctionField (H := H) (P.coeff i)) hW hi_le]
-    exact regularElms_set_mul
-      (regularElms_set_liftToFunctionField H (P.coeff i))
-      (regularElms_set_mul
-        (by simpa [T] using regularElms_set_pow (regularElms_set_functionFieldT H) i)
+    exact regularElementsSet_mul
+      (regularElementsSet_liftToFunctionField H (P.coeff i))
+      (regularElementsSet_mul
+        (by simpa [T] using regularElementsSet_pow (regularElementsSet_functionFieldT H) i)
         (by
           simpa [W] using
-            regularElms_set_pow (regularElms_set_liftToFunctionField H H.leadingCoeff) (k - i)))
+            regularElementsSet_pow
+              (regularElementsSet_liftToFunctionField H H.leadingCoeff) (k - i)))
   · rw [mul_pow_mul_div_pow_succ_eq_top (W := W) (T := T)
       (a := liftToFunctionField (H := H) (P.coeff (k + 1))) hW k]
-    exact regularElms_set_mul
+    exact regularElementsSet_mul
       (by
         simpa [W] using
-          regularElms_set_liftToFunctionField_div_leadingCoeff_of_dvd (H := H) hdiv)
-      (by simpa [T] using regularElms_set_pow (regularElms_set_functionFieldT H) (k + 1))
+          regularElementsSet_liftToFunctionField_div_leadingCoeff_of_dvd (H := H) hdiv)
+      (by simpa [T] using regularElementsSet_pow (regularElementsSet_functionFieldT H) (k + 1))
 
 /-- Constant bivariate polynomials map through the coefficient embedding. -/
 @[simp]
@@ -1251,11 +1327,11 @@ lemma liftBivariate_C {H : F[X][Y]} (p : F[X]) :
     liftBivariate (H := H) (Polynomial.C p : F[X][Y]) = liftToFunctionField (H := H) p := by
   rfl
 
-/-- The embeddining of the scalars into the function field `𝕃`. -/
+/-- The embedding of scalars into the function field `𝕃`. -/
 noncomputable def fieldTo𝕃 {H : F[X][Y]} : F →+* 𝕃 H :=
   RingHom.comp liftToFunctionField Polynomial.C
 
-/-- Constructing power series over the function field `𝕃 H` out of a polynomial. -/
+/-- View a bivariate polynomial as a power series over `𝕃 H` by lifting its coefficients. -/
 noncomputable def polyToPowerSeries𝕃 (H : F[X][Y]) (P : F[X][Y]) : PowerSeries (𝕃 H) :=
   PowerSeries.mk <| fun n => liftToFunctionField (P.coeff n)
 
@@ -1266,10 +1342,10 @@ noncomputable section
 
 namespace ClaimA2
 
-variable {F : Type} [Field F]
-         {R : F[X][X][X]}
-         {H : F[X][Y]} [H_irreducible : Fact (Irreducible H)]
-         [H_natDegree_pos : Fact (0 < H.natDegree)]
+variable {F : Type} [Field F] {R : F[X][X][X]} {H : F[X][Y]}
+  [H_irreducible : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)]
+
+/-! ### Claim A.2 hypotheses and derivative setup -/
 
 /-- The algebraic hypotheses for Claim A.2 from Appendix A.4 of [BCIKS20], after specializing
 `R` at `X = x₀`. -/
@@ -1283,6 +1359,44 @@ private lemma evalX_natDegree_le {K : Type} [CommSemiring K] (x : K) (P : K[X][Y
   intro n hn
   have hcoeff : P.coeff n = 0 := Polynomial.coeff_eq_zero_of_natDegree_lt hn
   simp [Bivariate.evalX_eq_map, Polynomial.coeff_map, hcoeff]
+
+lemma evalX_ne_zero_of_Hypotheses {x₀ : F} {R : F[X][X][Y]} {H : F[X][Y]}
+    (hHyp : Hypotheses x₀ R H) :
+    Bivariate.evalX (Polynomial.C x₀) R ≠ 0 :=
+  hHyp.separable_evalX.ne_zero
+
+lemma H_natDegree_le_R_natDegree_of_Hypotheses {x₀ : F} {R : F[X][X][Y]} {H : F[X][Y]}
+    (hHyp : Hypotheses x₀ R H) :
+    H.natDegree ≤ R.natDegree :=
+  (Polynomial.natDegree_le_of_dvd hHyp.dvd_evalX (evalX_ne_zero_of_Hypotheses hHyp)).trans
+    (evalX_natDegree_le (Polynomial.C x₀) R)
+
+lemma derivative_evalX_coeff (x₀ : F) (R : F[X][X][Y]) (i : ℕ) :
+    (Bivariate.evalX (Polynomial.C x₀) R.derivative).coeff i =
+      (Bivariate.evalX (Polynomial.C x₀) R).coeff (i + 1) * ((i + 1 : ℕ) : F[X]) := by
+  have hsucc_cast : (((i : ℕ) : F[X][X]) + 1) = ((i + 1 : ℕ) : F[X][X]) := by
+    rw [← Nat.cast_one (R := F[X][X]), ← Nat.cast_add]
+  calc
+    (Bivariate.evalX (Polynomial.C x₀) R.derivative).coeff i =
+        ((R.derivative).coeff i).eval (Polynomial.C x₀) := by
+      simp [Bivariate.evalX_eq_map, Polynomial.coeff_map]
+    _ = (R.coeff (i + 1) * ((i + 1 : ℕ) : F[X][X])).eval (Polynomial.C x₀) := by
+      rw [Polynomial.coeff_derivative, hsucc_cast]
+    _ = (Bivariate.evalX (Polynomial.C x₀) R).coeff (i + 1) * ((i + 1 : ℕ) : F[X]) := by
+      simp [Bivariate.evalX_eq_map, Polynomial.coeff_map]
+
+lemma natDegree_derivative_evalX_coeff_le (x₀ : F) (R : F[X][X][Y]) {D i : ℕ}
+    (hD : Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R) ≤ D) :
+    ((Bivariate.evalX (Polynomial.C x₀) R.derivative).coeff i).natDegree ≤ D - (i + 1) := by
+  rw [derivative_evalX_coeff]
+  calc
+    (((Bivariate.evalX (Polynomial.C x₀) R).coeff (i + 1) * ((i + 1 : ℕ) : F[X])).natDegree)
+        ≤ ((Bivariate.evalX (Polynomial.C x₀) R).coeff (i + 1)).natDegree +
+            (((i + 1 : ℕ) : F[X]).natDegree) := Polynomial.natDegree_mul_le
+    _ = ((Bivariate.evalX (Polynomial.C x₀) R).coeff (i + 1)).natDegree := by
+        rw [← Polynomial.C_eq_natCast, Polynomial.natDegree_C, Nat.add_zero]
+    _ ≤ D - (i + 1) :=
+        natDegree_coeff_le_of_totalDegree_le (Bivariate.evalX (Polynomial.C x₀) R) hD (i + 1)
 
 /-- The leading coefficient `W` of `H` divides the leading coefficient of `R(x₀,Y,Z)`. -/
 lemma leadingCoeff_dvd_evalX_leadingCoeff {x₀ : F} {R : F[X][X][Y]} {H : F[X][Y]}
@@ -1341,23 +1455,23 @@ lemma leadingCoeff_dvd_evalX_derivative_coeff_pred {x₀ : F} {R : F[X][X][Y]} {
     rw [hcoeff, hq]
     ring
 
-/-- The definition of `ζ` given in Appendix A.4 of [BCIKS20]. -/
+/-- The element `ζ` from Appendix A.4 of [BCIKS20]. -/
 def ζ (R : F[X][X][Y]) (x₀ : F) (H : F[X][Y]) [H_irreducible : Fact (Irreducible H)]
     [H_natDegree_pos : Fact (0 < H.natDegree)] : 𝕃 H :=
-  let W  : 𝕃 H := liftToFunctionField (H.leadingCoeff);
-  let T : 𝕃 H := functionFieldT (H := H);
-    Polynomial.eval₂ liftToFunctionField (T / W)
-      (Bivariate.evalX (Polynomial.C x₀) R.derivative)
+  let W : 𝕃 H := liftToFunctionField (H.leadingCoeff)
+  let T : 𝕃 H := functionFieldT (H := H)
+  Polynomial.eval₂ liftToFunctionField (T / W)
+    (Bivariate.evalX (Polynomial.C x₀) R.derivative)
 
 /-- If the derivative specialization is constant in the function-field variable, then `ζ` is
 regular. -/
 lemma ζ_regular_of_derivative_evalX_eq_C (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
     [H_irreducible : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)] {p : F[X]}
     (hp : Bivariate.evalX (Polynomial.C x₀) R.derivative = Polynomial.C p) :
-    ζ R x₀ H ∈ regularElms_set H := by
+    ζ R x₀ H ∈ regularElementsSet H := by
   rw [ζ, hp]
   simp only [Polynomial.eval₂_C]
-  exact regularElms_set_liftToFunctionField H p
+  exact regularElementsSet_liftToFunctionField H p
 
 /-- If `R` has `Y`-degree at most one, then the specialized derivative is constant. -/
 lemma derivative_evalX_eq_C_of_natDegree_le_one
@@ -1381,7 +1495,7 @@ lemma ξ_regular_of_derivative_evalX_eq_C_of_natDegree_le_one
     (hR : R.natDegree ≤ 1) :
     ∃ pre : 𝒪 H,
     let d := R.natDegree
-    let W : 𝕃 H := liftToFunctionField (H.leadingCoeff);
+    let W : 𝕃 H := liftToFunctionField (H.leadingCoeff)
     embeddingOf𝒪Into𝕃 _ pre = W ^ (d - 2) * ζ R x₀ H := by
   rcases ζ_regular_of_derivative_evalX_eq_C x₀ R H hp with ⟨pre, hpre⟩
   refine ⟨pre, ?_⟩
@@ -1395,7 +1509,7 @@ lemma ξ_regular_of_natDegree_le_one
     [H_natDegree_pos : Fact (0 < H.natDegree)] (hR : R.natDegree ≤ 1) :
     ∃ pre : 𝒪 H,
     let d := R.natDegree
-    let W : 𝕃 H := liftToFunctionField (H.leadingCoeff);
+    let W : 𝕃 H := liftToFunctionField (H.leadingCoeff)
     embeddingOf𝒪Into𝕃 _ pre = W ^ (d - 2) * ζ R x₀ H := by
   rcases derivative_evalX_eq_C_of_natDegree_le_one x₀ R hR with ⟨p, hp⟩
   exact ξ_regular_of_derivative_evalX_eq_C_of_natDegree_le_one x₀ R H hp hR
@@ -1408,7 +1522,7 @@ lemma ξ_regular_of_natDegree_eq_two
     (hR : R.natDegree = 2) :
     ∃ pre : 𝒪 H,
     let d := R.natDegree
-    let W : 𝕃 H := liftToFunctionField (H.leadingCoeff);
+    let W : 𝕃 H := liftToFunctionField (H.leadingCoeff)
     embeddingOf𝒪Into𝕃 _ pre = W ^ (d - 2) * ζ R x₀ H := by
   let P : F[X][Y] := Bivariate.evalX (Polynomial.C x₀) R.derivative
   have hP : P.natDegree ≤ 1 := by
@@ -1418,8 +1532,8 @@ lemma ξ_regular_of_natDegree_eq_two
       _ = 1 := by omega
   have hdiv : H.leadingCoeff ∣ P.coeff 1 := by
     simpa [P, hR] using leadingCoeff_dvd_evalX_derivative_coeff_pred hHyp
-  have hreg : ζ R x₀ H ∈ regularElms_set H := by
-    simpa [ζ, P] using regularElms_set_eval₂_linear_of_coeff_one_dvd (H := H) hP hdiv
+  have hreg : ζ R x₀ H ∈ regularElementsSet H := by
+    simpa [ζ, P] using regularElementsSet_eval₂_linear_of_coeff_one_dvd (H := H) hP hdiv
   rcases hreg with ⟨pre, hpre⟩
   refine ⟨pre, ?_⟩
   have hd : R.natDegree - 2 = 0 := by omega
@@ -1500,18 +1614,22 @@ lemma embeddingOf𝒪Into𝕃_mk_ξ_pre (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]
     refine Finset.sum_congr rfl (fun i _ => ?_)
     ring
 
-/-- There exist regular elements `ξ = W(Z)^(d-2) * ζ` as defined in Claim A.2 of Appendix A.4
-of [BCIKS20]. -/
+/-- The regular element `ξ = W(Z)^(d-2) * ζ` has a quotient representative in the total Lean
+form of Claim A.2 of Appendix A.4 of [BCIKS20].
+
+For `R.natDegree < 2`, the natural-number exponent truncates to zero. The paper's weight
+bound is therefore stated separately with the explicit hypothesis `2 ≤ R.natDegree`. -/
 lemma ξ_regular (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [H_irreducible : Fact (Irreducible H)]
     [H_natDegree_pos : Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H) :
     ∃ pre : 𝒪 H,
     let d := R.natDegree
-    let W : 𝕃 H := liftToFunctionField (H.leadingCoeff);
+    let W : 𝕃 H := liftToFunctionField (H.leadingCoeff)
     embeddingOf𝒪Into𝕃 _ pre = W ^ (d - 2) * ζ R x₀ H :=
   ⟨Ideal.Quotient.mk _ (ξ_pre x₀ R H),
     by simpa using embeddingOf𝒪Into𝕃_mk_ξ_pre x₀ R H hHyp⟩
 
-/-- The elements `ξ = W(Z)^(d-2) * ζ` as defined in Claim A.2 of Appendix A.4 of [BCIKS20].
+/-- The regular element `ξ = W(Z)^(d-2) * ζ` used in the Lean version of Claim A.2.
+
 The `Fact` and `Hypotheses` arguments are kept for API compatibility with downstream callers
 (`α`, `γ`); they are needed for the embedding equation in `embeddingOf𝒪Into𝕃_ξ`. -/
 noncomputable def ξ (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [_φ : Fact (Irreducible H)]
@@ -1527,58 +1645,168 @@ lemma embeddingOf𝒪Into𝕃_ξ (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
       liftToFunctionField (H := H) H.leadingCoeff ^ (R.natDegree - 2) * ζ R x₀ H :=
   embeddingOf𝒪Into𝕃_mk_ξ_pre x₀ R H hHyp
 
-/-- The bound of the weight `Λ` of the elements `ζ` as stated in Claim A.2 of Appendix A.4
-of [BCIKS20]. -/
-lemma weight_ξ_bound (x₀ : F) (hH : 0 < H.natDegree) (hHyp : Hypotheses x₀ R H)
+/-- The bound of the weight `Λ` of the elements `ξ` as stated in Claim A.2 of Appendix A.4
+of [BCIKS20].
+
+The explicit hypothesis `2 ≤ R.natDegree` is needed because the paper uses `W^(d-2)`, while
+Lean's natural-number exponent would otherwise totalize the low-degree cases by truncation. -/
+lemma ξ_weight_le (x₀ : F) (hH : 0 < H.natDegree) (hHyp : Hypotheses x₀ R H)
+    (hRdeg : 2 ≤ Bivariate.natDegreeY R)
     {D : ℕ} (hD_H : D ≥ Bivariate.totalDegree H)
     (hD_Rx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R)) :
     weight_Λ_over_𝒪 hH (ξ x₀ R H hHyp) D ≤
     WithBot.some ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1)) := by
   sorry
 
-/-- There exist regular elements `β` with a weight bound as given in Claim A.2
-of Appendix A.4 of [BCIKS20]. -/
-lemma β_regular (R : F[X][X][Y])
-                (H : F[X][Y]) [_H_irreducible : Fact (Irreducible H)]
-                [_H_natDegree_pos : Fact (0 < H.natDegree)]
-                (hH : 0 < H.natDegree)
-                {D : ℕ} (_hD : D ≥ Bivariate.totalDegree H) :
-    ∀ t : ℕ, ∃ β : 𝒪 H,
-      weight_Λ_over_𝒪 hH β D ≤ (2 * t + 1) * Bivariate.natDegreeY R * D :=
-  fun _ => ⟨0, by simp⟩
+/-- The exponent of `ξ` in the denominator of the `t`-th Hensel coefficient.
 
-/-- The definition of the regular elements `β` giving the numerators of the Hensel lift coefficients
-as defined in Claim A.2 of Appendix A.4 of [BCIKS20]. -/
-def β (R : F[X][X][Y]) (t : ℕ) : 𝒪 H :=
-  if hH : 0 < H.natDegree then
-    (β_regular R H hH (Nat.le_refl _) t).choose
-  else
-    0
+The paper separates `t = 0`, where no `ξ` factor appears, from `t ≥ 1`, where the exponent is
+`2*t - 1`. -/
+def henselDenominatorExponent (t : ℕ) : ℕ :=
+  if t = 0 then 0 else 2 * t - 1
 
-/-- The Hensel lift coefficients `α` are of the form as given in Claim A.2 of Appendix A.4
-of [BCIKS20]. -/
-def α (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [φ : Fact (Irreducible H)]
-    [H_natDegree_pos : Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H) (t : ℕ) : 𝕃 H :=
+@[simp]
+lemma henselDenominatorExponent_zero : henselDenominatorExponent 0 = 0 := by
+  simp [henselDenominatorExponent]
+
+@[simp]
+lemma henselDenominatorExponent_succ (t : ℕ) :
+    henselDenominatorExponent (t + 1) = 2 * (t + 1) - 1 := by
+  simp [henselDenominatorExponent]
+
+/-- A total degree for the trivariate polynomial `R`, represented as a polynomial in `Y` with
+bivariate coefficients in the `Z` and `X` variables. -/
+def trivariateTotalDegree (R : F[X][X][Y]) : ℕ :=
+  R.support.sup (fun i => Bivariate.totalDegree (R.coeff i) + i)
+
+/-- Each coefficient of `R` is bounded by `trivariateTotalDegree R`. -/
+lemma coeff_totalDegree_add_index_le_trivariateTotalDegree (R : F[X][X][Y]) {i : ℕ}
+    (hi : i ∈ R.support) :
+    Bivariate.totalDegree (R.coeff i) + i ≤ trivariateTotalDegree R := by
+  classical
+  unfold trivariateTotalDegree
+  exact Finset.le_sup (f := fun i => Bivariate.totalDegree (R.coeff i) + i) hi
+
+/-- A canonical degree bound large enough for both `H` and all coefficients of `R`. -/
+def defaultDegreeBound (R : F[X][X][Y]) (H : F[X][Y]) : ℕ :=
+  max (Bivariate.totalDegree H) (trivariateTotalDegree R)
+
+lemma defaultDegreeBound_ge_H (R : F[X][X][Y]) (H : F[X][Y]) :
+    Bivariate.totalDegree H ≤ defaultDegreeBound R H :=
+  le_max_left _ _
+
+lemma defaultDegreeBound_ge_R_coeff (R : F[X][X][Y]) (H : F[X][Y]) {i : ℕ}
+    (hi : i ∈ R.support) :
+    Bivariate.totalDegree (R.coeff i) + i ≤ defaultDegreeBound R H :=
+  (coeff_totalDegree_add_index_le_trivariateTotalDegree R hi).trans (le_max_right _ _)
+
+/-- Coefficients in `F[Z][X]` evaluated as power series over the function field: `Z` is sent to
+the function-field coefficient embedding, and `X` is sent to the power-series variable. -/
+noncomputable def liftCoeffToPowerSeries (H : F[X][Y]) :
+    F[X][X] →+* PowerSeries (𝕃 H) :=
+  Polynomial.eval₂RingHom (RingHom.comp PowerSeries.C (liftToFunctionField (H := H)))
+    PowerSeries.X
+
+/-- Evaluation of the trivariate polynomial `R(X,Y,Z)` at a power series `Γ` for the `Y`
+variable, with the `X` variable interpreted as the power-series variable and `Z` interpreted in
+the function field of `H`. -/
+noncomputable def evalRAtPowerSeries (H : F[X][Y]) (R : F[X][X][Y])
+    (Γ : PowerSeries (𝕃 H)) : PowerSeries (𝕃 H) :=
+  Polynomial.eval₂ (liftCoeffToPowerSeries H) Γ R
+
+/-- The coefficient sequence obtained from a candidate sequence of regular numerators. -/
+noncomputable def alphaOfNumerators (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
+    [φ : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)]
+    (hHyp : Hypotheses x₀ R H) (βseq : ℕ → 𝒪 H) (t : ℕ) : 𝕃 H :=
   let W : 𝕃 H := liftToFunctionField (H.leadingCoeff)
-  embeddingOf𝒪Into𝕃 _ (β R t) /
-    (W ^ (t + 1) * (embeddingOf𝒪Into𝕃 _ (ξ x₀ R H hHyp)) ^ (2*t - 1))
+  embeddingOf𝒪Into𝕃 _ (βseq t) /
+    (W ^ (t + 1) * (embeddingOf𝒪Into𝕃 _ (ξ x₀ R H hHyp)) ^
+      henselDenominatorExponent t)
 
-def α' (x₀ : F) (R : F[X][X][Y]) (H_irreducible : Irreducible H)
-    (hHdeg : 0 < H.natDegree) (hHyp : Hypotheses x₀ R H) (t : ℕ) : 𝕃 H :=
-  α x₀ R _ (φ := ⟨H_irreducible⟩) (H_natDegree_pos := ⟨hHdeg⟩) hHyp t
-
-/-- The power series `γ = ∑ α^t (X - x₀)^t ∈ 𝕃 [[X - x₀]]` as defined in Appendix A.4
-of [BCIKS20]. -/
-def γ (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [φ : Fact (Irreducible H)]
-    [H_natDegree_pos : Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H) :
+/-- The power series induced by a candidate sequence of regular numerators. -/
+noncomputable def gammaOfNumerators (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
+    [φ : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)]
+    (hHyp : Hypotheses x₀ R H) (βseq : ℕ → 𝒪 H) :
     PowerSeries (𝕃 H) :=
   let subst (t : ℕ) : 𝕃 H :=
     match t with
     | 0 => fieldTo𝕃 (-x₀)
     | 1 => 1
     | _ => 0
-  PowerSeries.subst (PowerSeries.mk subst) (PowerSeries.mk (α x₀ R H hHyp))
+  PowerSeries.subst (PowerSeries.mk subst)
+    (PowerSeries.mk (alphaOfNumerators x₀ R H hHyp βseq))
 
+/-- A numerator sequence has the semantic content required by Claim A.2: it gives the Hensel
+lift starting at `T / W`, and the induced power series is a root of `R(X,Y,Z)`. -/
+def IsHenselNumeratorSequence (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
+    [φ : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)]
+    (hHyp : Hypotheses x₀ R H) (βseq : ℕ → 𝒪 H) : Prop :=
+  alphaOfNumerators x₀ R H hHyp βseq 0 =
+      functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff ∧
+    evalRAtPowerSeries H R (gammaOfNumerators x₀ R H hHyp βseq) = 0
+
+/-- There is a sequence of regular numerators `β_t` with the Hensel-lift semantics and the
+weight bound stated in Claim A.2 of Appendix A.4 of [BCIKS20]. -/
+lemma exists_hensel_numerator_sequence (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
+    [_H_irreducible : Fact (Irreducible H)] [_H_natDegree_pos : Fact (0 < H.natDegree)]
+    (hHyp : Hypotheses x₀ R H) (hH : 0 < H.natDegree)
+    {D : ℕ} (hD_H : Bivariate.totalDegree H ≤ D)
+    (hD_R : ∀ i ∈ R.support, Bivariate.totalDegree (R.coeff i) + i ≤ D) :
+    ∃ βseq : ℕ → 𝒪 H,
+      IsHenselNumeratorSequence x₀ R H hHyp βseq ∧
+      ∀ t : ℕ,
+        weight_Λ_over_𝒪 hH (βseq t) D ≤
+          (WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) : WithBot ℕ) := by
+  sorry
+
+/-- The chosen regular numerator sequence supplied by `exists_hensel_numerator_sequence`. -/
+noncomputable def βSeq (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
+    [φ : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)]
+    (hHyp : Hypotheses x₀ R H) : ℕ → 𝒪 H :=
+  if hH : 0 < H.natDegree then
+    (exists_hensel_numerator_sequence x₀ R H hHyp hH
+      (defaultDegreeBound_ge_H R H) (fun _ hi => defaultDegreeBound_ge_R_coeff R H hi)).choose
+  else
+    fun _ => 0
+
+/-- The specification satisfied by the chosen numerator sequence. -/
+lemma βSeq_spec (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
+    [φ : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)]
+    (hHyp : Hypotheses x₀ R H) (hH : 0 < H.natDegree) :
+    IsHenselNumeratorSequence x₀ R H hHyp (βSeq x₀ R H hHyp) ∧
+      ∀ t : ℕ,
+        weight_Λ_over_𝒪 hH ((βSeq x₀ R H hHyp) t) (defaultDegreeBound R H) ≤
+          (WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * defaultDegreeBound R H) :
+            WithBot ℕ) := by
+  unfold βSeq
+  rw [dif_pos hH]
+  exact (exists_hensel_numerator_sequence x₀ R H hHyp hH
+    (defaultDegreeBound_ge_H R H) (fun _ hi => defaultDegreeBound_ge_R_coeff R H hi)).choose_spec
+
+/-- The regular element `β_t` giving the numerator of the `t`-th chosen Hensel coefficient. -/
+noncomputable def β (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
+    [φ : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)]
+    (hHyp : Hypotheses x₀ R H) (t : ℕ) : 𝒪 H :=
+  βSeq x₀ R H hHyp t
+
+/-- The chosen Hensel-lift coefficients induced by the regular numerator sequence. -/
+def α (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [φ : Fact (Irreducible H)]
+    [H_natDegree_pos : Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H) (t : ℕ) : 𝕃 H :=
+  alphaOfNumerators x₀ R H hHyp (βSeq x₀ R H hHyp) t
+
+/-- Variant of `α` taking explicit irreducibility and positive-degree hypotheses. -/
+def α' (x₀ : F) (R : F[X][X][Y]) (H_irreducible : Irreducible H)
+    (hHdeg : 0 < H.natDegree) (hHyp : Hypotheses x₀ R H) (t : ℕ) : 𝕃 H :=
+  α x₀ R _ (φ := ⟨H_irreducible⟩) (H_natDegree_pos := ⟨hHdeg⟩) hHyp t
+
+/-- The chosen power series `γ = ∑ α_t (X - x₀)^t`, induced by the selected regular numerator
+sequence from `exists_hensel_numerator_sequence`. -/
+def γ (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y]) [φ : Fact (Irreducible H)]
+    [H_natDegree_pos : Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H) :
+    PowerSeries (𝕃 H) :=
+  gammaOfNumerators x₀ R H hHyp (βSeq x₀ R H hHyp)
+
+/-- Variant of `γ` taking explicit irreducibility and positive-degree hypotheses. -/
 def γ' (x₀ : F) (R : F[X][X][Y]) (H_irreducible : Irreducible H)
     (hHdeg : 0 < H.natDegree) (hHyp : Hypotheses x₀ R H) : PowerSeries (𝕃 H) :=
   γ x₀ R H (φ := ⟨H_irreducible⟩) (H_natDegree_pos := ⟨hHdeg⟩) hHyp
