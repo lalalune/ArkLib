@@ -295,6 +295,7 @@ import ArkLib.OracleReduction.Composition.Sequential.General
 import ArkLib.OracleReduction.Equiv
 import ArkLib.OracleReduction.Execution
 import ArkLib.OracleReduction.FiatShamir.Basic
+import ArkLib.OracleReduction.FiatShamir.DuplexSponge
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Basic
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Defs
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Preliminaries
@@ -323,6 +324,7 @@ import ArkLib.OracleReduction.Salt
 import ArkLib.OracleReduction.Security.Basic
 import ArkLib.OracleReduction.Security.CoordinateWiseSpecialSoundness
 import ArkLib.OracleReduction.Security.Implications
+import ArkLib.OracleReduction.Security.OracleDistribution
 import ArkLib.OracleReduction.Security.Rewinding
 import ArkLib.OracleReduction.Security.RoundByRound
 import ArkLib.OracleReduction.Security.SpecialSoundness
@@ -399,6 +401,7 @@ import ArkLib.ProofSystem.Plonk.Basic
 import ArkLib.ProofSystem.Plonk.PermutationCheck
 import ArkLib.ProofSystem.RingSwitching.BatchingPhase
 import ArkLib.ProofSystem.RingSwitching.General
+import ArkLib.ProofSystem.RingSwitching.Issue19Scratch
 import ArkLib.ProofSystem.RingSwitching.Prelude
 import ArkLib.ProofSystem.RingSwitching.Profile
 import ArkLib.ProofSystem.RingSwitching.Scratch
@@ -445,6 +448,7 @@ import ArkLib.ProofSystem.Whir.MutualCorrAgreement
 import ArkLib.ProofSystem.Whir.OutofDomainSmpl
 import ArkLib.ProofSystem.Whir.ProximityGen
 import ArkLib.ProofSystem.Whir.RBRSoundness
+import ArkLib.ProofSystem.ZkVMBoundary
 import ArkLib.ToCompPoly.Univariate.Basic
 import ArkLib.ToCompPoly.Univariate.Lagrange
 import ArkLib.ToMathlib.AppendHelpers
@@ -458,6 +462,7 @@ import ArkLib.ToMathlib.BetaInputSupply
 import ArkLib.ToMathlib.BetaMatchingVanishes
 import ArkLib.ToMathlib.BetaRecursion
 import ArkLib.ToMathlib.BetaToCurveCoeffPolys
+import ArkLib.ToMathlib.BetaToCurveCoeffPolysOffcentre
 import ArkLib.ToMathlib.BetaWeightCollapse
 import ArkLib.ToMathlib.BetaWeightInduction
 import ArkLib.ToMathlib.BigOperators.Fin

@@ -1930,10 +1930,10 @@ private def newAPI_liftPoint {i : Fin r} {destIdx : Fin r} {steps : ℕ}
     (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
     (y : (sDomain 𝔽q β h_ℓ_add_R_rate) destIdx) :
     (sDomain 𝔽q β h_ℓ_add_R_rate)
-      (⟨i.val + steps, Nat.lt_trans (newAPI_i_add_steps_lt 𝔽q β h_destIdx h_destIdx_le)
+      (⟨i.val + steps, Nat.lt_trans (newAPI_i_add_steps_lt h_destIdx h_destIdx_le)
         h_ℓ_add_R_rate⟩ : Fin r) :=
   ⟨y.val, by
-    have hidx : (⟨i.val + steps, Nat.lt_trans (newAPI_i_add_steps_lt 𝔽q β h_destIdx h_destIdx_le)
+    have hidx : (⟨i.val + steps, Nat.lt_trans (newAPI_i_add_steps_lt h_destIdx h_destIdx_le)
         h_ℓ_add_R_rate⟩ : Fin r) = destIdx := Fin.eq_of_val_eq h_destIdx.symm
     rw [hidx]; exact y.property⟩
 
@@ -1944,7 +1944,7 @@ noncomputable def foldMatrix (i : Fin r) {destIdx : Fin r} (steps : ℕ)
     (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
     (y : (sDomain 𝔽q β h_ℓ_add_R_rate) destIdx) :
     Matrix (Fin (2 ^ steps)) (Fin (2 ^ steps)) L :=
-  foldMatrixNat 𝔽q β i steps (newAPI_i_add_steps_lt 𝔽q β h_destIdx h_destIdx_le)
+  foldMatrixNat 𝔽q β i steps (newAPI_i_add_steps_lt h_destIdx h_destIdx_le)
     (newAPI_liftPoint 𝔽q β h_destIdx h_destIdx_le y)
 
 /-- **Fiber evaluations** `[f(x_0), …, f(x_{2^steps-1})]` of `f` over the iterated-quotient fiber
@@ -1956,7 +1956,7 @@ noncomputable def fiberEvaluations (i : Fin r) {destIdx : Fin r} (steps : ℕ)
     (y : (sDomain 𝔽q β h_ℓ_add_R_rate) destIdx) : Fin (2 ^ steps) → L :=
   fun idx =>
     f (qMap_total_fiber 𝔽q β (i := i) (steps := steps)
-      (h_i_add_steps := newAPI_i_add_steps_lt 𝔽q β h_destIdx h_destIdx_le)
+      (h_i_add_steps := newAPI_i_add_steps_lt h_destIdx h_destIdx_le)
       (y := newAPI_liftPoint 𝔽q β h_destIdx h_destIdx_le y) idx)
 
 /-- **Single-point localized fold matrix form** (canonical new-API):
