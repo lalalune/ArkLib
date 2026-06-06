@@ -13,14 +13,6 @@ import ArkLib.ProofSystem.Component.RandomQuery
 import ArkLib.ProofSystem.Component.ReduceClaim
 import ArkLib.Data.Fin.Basic
 
-set_option linter.flexible false
-set_option linter.unusedSimpArgs false
-set_option linter.unusedSectionVars false
-set_option linter.unnecessarySimpa false
-set_option linter.unusedDecidableInType false
-set_option linter.style.longLine false
-set_option linter.style.longFile 0
-
 /-!
 # Single round of the Sum-check Protocol
 
@@ -1080,11 +1072,13 @@ theorem oracleReduction_perfectCompleteness :
     cases proverResult with
     | none =>
         rw [OptionT.liftM_eq_mk_map_some] at hProver
-        rw [OptionT.run_mk] at hProver
+        change (none, s') ∈ _root_.support
+          (StateT.run (simulateQ (impl.addLift challengeQueryImpl)
+            ((some <$> _) : OracleComp _ (Option _))) s) at hProver
         erw [simulateQ_map] at hProver
         rw [StateT.run_map] at hProver
-        rw [support_map, Set.mem_image] at hProver
-        obtain ⟨⟨_, _⟩, _, hEq⟩ := hProver
+        simp only [support_map, Set.mem_image, Prod.exists, Option.some.injEq] at hProver
+        obtain ⟨_, _, _, _, _, _, _, hEq⟩ := hProver
         cases hEq
     | some proverResult =>
         simp only [liftM_pure] at hmem
@@ -1103,11 +1097,13 @@ theorem oracleReduction_perfectCompleteness :
     cases proverResult with
     | none =>
         rw [OptionT.liftM_eq_mk_map_some] at hw
-        rw [OptionT.run_mk] at hw
+        change (none, s') ∈ _root_.support
+          (StateT.run (simulateQ (impl.addLift challengeQueryImpl)
+            ((some <$> _) : OracleComp _ (Option _))) s) at hw
         erw [simulateQ_map] at hw
         rw [StateT.run_map] at hw
-        rw [support_map, Set.mem_image] at hw
-        obtain ⟨⟨_, _⟩, _, hEq⟩ := hw
+        simp only [support_map, Set.mem_image, Prod.exists, Option.some.injEq] at hw
+        obtain ⟨_, _, _, _, _, _, _, hEq⟩ := hw
         cases hEq
     | some proverResult =>
         simp only [liftM_pure] at hx
@@ -1147,10 +1143,18 @@ theorem oracleReduction_perfectCompleteness :
         obtain ⟨⟨challenge, sch⟩, _, hchallenge⟩ := hleft
         obtain ⟨rfl, rfl⟩ := Prod.mk.inj hchallenge
         obtain ⟨hmain, rfl⟩ := Prod.mk.inj hmap
-        obtain ⟨hmain, rfl⟩ := Prod.mk.inj hmain
-        obtain ⟨rfl, rfl⟩ := Prod.mk.inj hmain
+        obtain ⟨htr, hrest⟩ := Prod.mk.inj hmain
+        subst tr1
+        obtain ⟨hpoly, hchal⟩ := Prod.mk.inj hrest
+        subst polyLE
+        subst chal
         simp [FullTranscript.challenges, FullTranscript.messages, Transcript.concat,
-          Fin.snoc, pSpec, oracleVerifier]
+          Fin.snoc_last, Fin.snoc_castSucc, pSpec, oracleVerifier]
+        simp [Fin.snoc, pSpec]
+        constructor
+        · constructor <;> rfl
+        · ext x
+          rfl
 
 /-- Trivial round-by-round extractor (all witnesses are `Unit`). -/
 private def simpleRbrExtractor : Extractor.RoundByRound oSpec
