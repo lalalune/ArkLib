@@ -728,14 +728,14 @@ theorem exists_rsJohnsonJumpWitness_of_bchks25
     (ε : ℝ≥0) (hε : 0 < ε)
     (h : rs_epsCA_johnson_jump_bchks25 (FC := FC) ε hε) :
     ∃ (ιC : Type) (_ : Fintype ιC) (_ : Nonempty ιC) (_ : DecidableEq ιC),
-      RSJohnsonJumpWitness (FC := FC) ε ιC := by
+      Nonempty (RSJohnsonJumpWitness (FC := FC) ε ιC) := by
   rcases h with ⟨ιC, hFintype, hNonempty, hDecEq, domain, k,
     hcard_lower, hcard_upper, hminDist, heps⟩
   letI := hFintype
   letI := hNonempty
   letI := hDecEq
   exact ⟨ιC, hFintype, hNonempty, hDecEq,
-    ⟨domain, k, hcard_lower, hcard_upper, hminDist, heps⟩⟩
+    ⟨⟨domain, k, hcard_lower, hcard_upper, hminDist, heps⟩⟩⟩
 
 end ReedSolomon
 

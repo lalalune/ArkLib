@@ -502,9 +502,11 @@ theorem j1_unique_gamma_of_nonExtendableOn
     (extendable_iff_cT_eq_zero domain hTcard (u₀ + γ • u₁)).mpr (hγ T hTS hTcard)
   obtain ⟨w₂, hw₂mem, hw₂⟩ :=
     (extendable_iff_cT_eq_zero domain hTcard (u₀ + γ' • u₁)).mpr (hγ' T hTS hTcard)
-  refine unique_gamma_of_nonExtendable (u₀ := u₀) domain hneT hw₁mem hw₂mem ?_ ?_
-  · intro i hi; rw [hw₁ i hi]; rfl
-  · intro i hi; rw [hw₂ i hi]; rfl
+  have h₁' : ∀ i ∈ T, w₁ i = u₀ i + γ • u₁ i := by
+    intro i hi; simpa using hw₁ i hi
+  have h₂' : ∀ i ∈ T, w₂ i = u₀ i + γ' • u₁ i := by
+    intro i hi; simpa using hw₂ i hi
+  exact unique_gamma_of_nonExtendable domain hneT hw₁mem hw₂mem h₁' h₂'
 
 end Exact
 
