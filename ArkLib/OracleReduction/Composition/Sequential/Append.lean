@@ -2534,6 +2534,21 @@ theorem append_PrvState_natAdd_interior_succ (k : Fin n) (hk : 0 < (k : ℕ)) :
         = (Fin.natAdd (m + 1) k).cast (by omega) from by ext; simp; omega]
   exact this
 
+/-- **State-type equality at the final appended round.**  For a non-empty right block (`0 < n`), the
+appended prover's state type at the last round `Fin.last (m + n)` is `P₂`'s state at its own last
+round `Fin.last n`.  Specialisation of `append_PrvState_natAdd_succ` at `k = ⟨n-1, _⟩`
+(`(natAdd (m+1) ⟨n-1,_⟩).cast = Fin.last (m+n)`, `⟨n-1,_⟩.succ = Fin.last n`); mirror of
+`append_PrvState_natAdd_castSucc`.  The state transport needed by the right-block `output` assembly. -/
+theorem append_PrvState_last (hn : 0 < n) :
+    (P₁.append P₂).PrvState (Fin.last (m + n)) = P₂.PrvState (Fin.last n) := by
+  have hpred : (⟨n - 1, by omega⟩ : Fin n).succ = Fin.last n := by ext; simp; omega
+  have h := append_PrvState_natAdd_succ (P₁ := P₁) (P₂ := P₂) (⟨n - 1, by omega⟩ : Fin n)
+  rw [hpred] at h
+  rw [show (Fin.last (m + n) : Fin (m + n + 1))
+        = (Fin.natAdd (m + 1) (⟨n - 1, by omega⟩ : Fin n)).cast (by omega) from by
+        ext; simp; omega]
+  exact h
+
 /-- **Right interior-round `sendMessage` reduction.**  At an interior right round `Fin.natAdd m k`
 (`k : Fin n`, `k > 0`, the `i > m` branch of `Prover.append.sendMessage`), the appended prover's
 `sendMessage` is heterogeneously equal to `P₂`'s `sendMessage` at round `k`. -/

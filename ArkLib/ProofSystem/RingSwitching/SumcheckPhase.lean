@@ -727,7 +727,17 @@ def iteratedSumcheckKStateProp (i : Fin ℓ') (m : Fin (2 + 1))
     -- routing the local probability bound through the RBR theorem. Until that lands the
     -- post-challenge state stays `True` and the RBR theorem below uses the always-valid unit bound,
     -- so the file remains sound and green.
-    True
+    RingSwitching.masterKStateProp κ L K P ℓ ℓ' h_l aOStmtIn
+      (stmtIdx := i.castSucc)
+      (stmt := stmt) (oStmt := oStmt) (wit := witMid)
+      (localChecks :=
+        let h_i := get_Hᵢ (m := ⟨2, by omega⟩) (tr := tr) (hm := by omega)
+        let r_i' := get_rᵢ' (m := ⟨2, by omega⟩) (tr := tr) (hm := by omega)
+        let explicitVCheck :=
+          (∑ b ∈ (boolDomain L ℓ').points i, h_i.val.eval b) = stmt.sumcheck_target
+        let localizedTargetCheck := h_i.val.eval r_i' = h_star.val.eval r_i'
+        explicitVCheck ∧ localizedTargetCheck
+      )
 
 /-- Knowledge state function (KState) for single round -/
 def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :

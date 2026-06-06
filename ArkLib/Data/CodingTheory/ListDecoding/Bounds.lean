@@ -1454,6 +1454,16 @@ noncomputable def randomLinearLambdaLowerProbability
     Pr_{let G ← uniformRandomLinearGeneratorMatrix F k ι}[
       randomLinearLambdaLowerEvent (F := F) (ι := ι) q k δ ε ρ G]
 
+/-- Pointwise GLMRSW22 first-moment residual at fixed field, blocklength, generator dimension,
+and rate target: the random-generator-matrix success probability is positive.
+
+The paper proves a stronger high-probability estimate.  This residual names the exact positivity
+input needed by ArkLib's existential-code front door. -/
+noncomputable def randomLinearLambdaLowerFirstMomentResidual
+    (F : Type) [Field F] [Fintype F] [DecidableEq F]
+    (ι : Type) [Fintype ι] (q k : ℕ) (δ ε ρ : ℝ) : Prop :=
+  0 < randomLinearLambdaLowerProbability F ι q k δ ε ρ
+
 /-- A positive success probability supplies a concrete good generator matrix. -/
 theorem exists_randomLinearLambdaLowerEvent_of_probability_pos
     {F : Type} [Field F] [Fintype F] [DecidableEq F]
@@ -1498,6 +1508,22 @@ theorem exists_code_of_randomLinearLambdaLowerEvent
   refine ⟨randomLinearCodeOfGeneratorMatrix G, ?_, ?_⟩
   · simpa [LinearCode.dim] using hG.1
   · simpa using hG.2
+
+/-- The pointwise first-moment residual supplies the legacy existential-code witness. -/
+theorem exists_code_of_randomLinearLambdaLowerFirstMomentResidual
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    {ι : Type} [Fintype ι] {q k : ℕ} {δ ε ρ : ℝ}
+    (hprob : randomLinearLambdaLowerFirstMomentResidual F ι q k δ ε ρ) :
+    ∃ C : Submodule F (ι → F),
+      (Module.finrank F C : ℝ) / Fintype.card ι ≥ ρ ∧
+        (Lambda ((C : Set (ι → F))) δ : ENNReal) >
+          ((Nat.floor (qEntropy q δ / (1 - qEntropy q δ - ρ) - ε) : ℕ) : ENNReal) := by
+  rcases exists_randomLinearLambdaLowerEvent_of_probability_pos
+      (F := F) (ι := ι) (q := q) (k := k) (δ := δ) (ε := ε) (ρ := ρ)
+      hprob with
+    ⟨G, hG⟩
+  exact exists_code_of_randomLinearLambdaLowerEvent
+    (F := F) (ι := ι) (q := q) (k := k) (δ := δ) (ε := ε) (ρ := ρ) hG
 
 /-- **ABF26 Theorem 3.11 [GLMRSW22 Thm 4.1].** Random linear code lower bound. Fix a
 prime `q`, `δ ∈ (0, 1 - 1/q)`, and `ε ∈ (0, 1)`. There exists `γ > 0` such that for all
@@ -2182,8 +2208,10 @@ end SubspaceDesignUpperBounds
 #print axioms CodingTheory.uniformRandomLinearCode
 #print axioms CodingTheory.randomLinearLambdaLowerEvent
 #print axioms CodingTheory.randomLinearLambdaLowerProbability
+#print axioms CodingTheory.randomLinearLambdaLowerFirstMomentResidual
 #print axioms CodingTheory.exists_randomLinearLambdaLowerEvent_of_probability_pos
 #print axioms CodingTheory.exists_code_of_randomLinearLambdaLowerEvent
+#print axioms CodingTheory.exists_code_of_randomLinearLambdaLowerFirstMomentResidual
 #print axioms CodingTheory.random_linear_lambda_lower_glmrsw22_random_generator_matrix
 #print axioms CodingTheory.rs_lambda_superpoly_extension_bkr06
 #print axioms CodingTheory.rs_lambda_large_prime_ghsz02

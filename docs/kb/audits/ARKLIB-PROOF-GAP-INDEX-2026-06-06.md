@@ -101,6 +101,15 @@ rg -n --glob '*.lean' 'opaque\s+\w+|placeholder|stub|TODO|FIXME|named residual|e
 | GGR11 Erase-Decode tree structure for interleaved list-size bounds | #73 |
 | ABF26 §3 external list-decoding theorem families | #74 |
 | ABF26 §4 CapacityBounds CA/MCA theorem families | #75 |
+| DG25 L4.19 covering-radius sampling lower bound for `epsCA` | #77 |
+| BCHKS25+KK25 T4.16 near-capacity `epsCA` lower bound | #81 |
+| CS25 T4.17 qEntropy RS-ball-count lower witness | #82 |
+| BCHKS25 T4.18 `epsCA` Johnson-jump witness family | #83 |
+| GKL24/BGKS20 T4.11 1.5-Johnson CA/MCA theorem pair | #84 |
+| BCHKS25 T4.12 Johnson-range RS `epsMCA` bound | #85 |
+| GG25 T4.13/T4.14 subspace-design and folded-RS MCA up to capacity | #86 |
+| BCHKS25 T4.9.2/R4.10 RS `epsCA` item-2 and small-loss corollary | #87 |
+| AHIV17/AHIV22 T4.8 row-span to affine-line specialization | #88 |
 
 Closed second-pass issues (#37, #40-#43, #46-#47, #53) are recorded in the refreshed
 proximity-prize index; see "Related indexes" below.

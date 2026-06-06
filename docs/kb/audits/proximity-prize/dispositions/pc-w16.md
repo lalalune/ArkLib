@@ -14,10 +14,13 @@ ArkLib/.../P2Vanish.lean` → exit 0.
 `FaaDiBrunoFullSumVanishes H x₀ R hHyp` := `∀ t, faaDiBrunoFullSum (t+1) = 0`, equivalently (by the
 PROVEN `faaDiBrunoFullSum_eq_coeff`) `coeff (t+1) (eval (βHenselAssembled) Q) = 0`.
 
-## Outcome: (b) bijection reindex PROVEN + ONE named weight identity left; (c) PRECISE mismatch FINDING
+## Outcome: (b) bijection reindex PROVEN + local weight identity PROVEN; current frontier corrected
 
-I did **not** fake a closure. The genuine residual is a single binomial-keying mismatch in the
-in-tree `B_coeff` `prefactor` (the `prefactor_eq_paper` WALL). What I PROVED — the two
+I did **not** fake a closure. The original wave note below identified a binomial-keying mismatch in
+the then-current `B_coeff` `prefactor`; that was later repaired in `HenselNumerator.lean`, where
+`prefactor i i1 λ = λ.parts.countPerms`. The current genuine residual is the full term-level
+`RestrictedFaaDiBrunoMatch` equality of sums, not a standalone prefactor definition. What I PROVED
+— the two
 load-bearing *connective* facts the paper's match rests on, previously hidden inside that opaque
 WALL — are axiom-clean:
 
@@ -160,27 +163,23 @@ theorem P2_closed_of_restrictedMatch (x₀ : F) (R : F[X][X][Y])
   P2_closed_of_fullVanishes H x₀ R hHyp (fullVanishes_of_restrictedMatch H x₀ R hHyp hmatch)
 ```
 
-## THE FINDING (precise, minimal form of `prefactor_eq_paper`)
+## THE FINDING (2026-06-06 correction)
 
 The full Faà-di-Bruno weight at Y-degree `j` with positives `λ` (`Σλ = cardλ`) is
 **`C(j, Σλ) · multinomial λ`** (§1 + §4: `C(j, Σλ)` from `Δ_Y^{Σλ}`, `multinomial λ` from the
-positive orderings). The in-tree `prefactor i i1 λ := C(i, i1) · multinomial λ`
-(`HenselNumerator.lean:411`) carries the binomial **`C(R.natDegree, i1)`** keyed to the X-Taylor
-order `i1` and the *leading-coefficient degree* `R.natDegree` — an object with **no dependence on
-`(j, Σλ)`**. The two agree iff `C(R.natDegree, i1) = C(j, Σλ)` along the bijection, which is NOT an
-identity of the in-tree `prefactor` (e.g. `j=2, Σλ=1` needs `2`, while `C(R.natDegree, i1)` is
-independent of `j`). The genuine A.4 weight requires `prefactor` re-keyed to the **Y-Hasse binomial
-`C(j, Σλ)`**, an `i1`-independent factor.
+positive orderings). The current in-tree `prefactor` is already just the positive-ordering factor:
+`prefactor i i1 λ = λ.parts.countPerms` (`prefactor_eq_countPerms`). The Y-Hasse binomial
+`C(j, Σλ)` is emitted by `hasseDerivY_coeff`, and `prefactorWeightMatch_holds` proves the local
+zero-peeling identity.
 
-This is a one-line definitional re-keying of `prefactor`/`B_coeff` in the TRACKED `HenselNumerator.lean`
-— off-limits in this worktree (harness hard-resets tracked files). It is the irreducible frontier:
-everything *connective* (the bijection reindex, the exponent telescope, the Y-Hasse binomial source)
-is now PROVEN and axiom-clean in `P2Vanish.lean`. Closing P2 requires only that the in-tree
-`prefactor` binomial be corrected from `C(R.natDegree, i1)` to `C(j, Σλ)` (then the match is the
-identity `prefactorWeightMatch_holds`).
+Therefore the remaining frontier is no longer "re-key `prefactor`". It is to derive
+`RestrictedFaaDiBrunoMatch` term-by-term from the definitions: line up the restricted
+Faà-di-Bruno index set with the `(A.1)` recursion, invoke `coeff_Q_eq_B`, transport the
+positive-part `prefactor` through `B_coeff`, apply `hasseDerivY_coeff`, and check the `W`/`ξ`/`ζ`
+clearing and sign conventions.
 
 ## Wire-in (one line, NOT made here; for the owner)
 
-Once `prefactor` is re-keyed to `C(j, Σλ)`, `RestrictedFaaDiBrunoMatch` is discharged term-by-term
-by `prefactorWeightMatch_holds` (combinatorics) + `exponent_balance_{ξ,W}` (telescope) +
-`hasseDerivY_coeff` (Y-Hasse), and `P2_closed_of_restrictedMatch` closes all of P2 with no new axioms.
+Once `RestrictedFaaDiBrunoMatch` is proven, `prefactorWeightMatch_holds` (combinatorics) +
+`exponent_balance_{ξ,W}` (telescope) + `hasseDerivY_coeff` (Y-Hasse) provide the local ingredients,
+and `P2_closed_of_restrictedMatch` closes all of P2 with no new axioms.

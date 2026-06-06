@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLDThresholdElias
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLDThresholdHalfDist
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice
 
 /-!
@@ -151,6 +152,49 @@ theorem listPrizeLattice_bracketed_of_johnson_sq_and_elias
     (C := ReedSolomon.code domain ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊)
     (m := m) (j_lo := τ_lo r) (j_hi := τ_hi r) (ℓ := ℓ r)
     hm (hlo_le r) (hhi_pos r) (hhi_lt r) hq1 (hP r) (hsq r) (hpow r) (hvol r) (hne r)
+
+/-! ## Fully unconditional four-rate sandwich
+
+The Johnson/Elias bracket above is the sharpest current route but still needs
+per-rate numeric certificates.  The half-distance floor and capacity ceiling from
+`GrandChallengeLDThresholdHalfDist.lean` are weaker but unconditional once the
+degree side conditions and the prize budget are in force.  The next theorem exposes
+that completely discharged sandwich directly on the four ABF26 prize rates.
+-/
+
+/-- **Four-rate faithful LD sandwich from half distance and capacity.**
+
+For every ABF26 prize rate `r`, with degree
+`k_r = ⌊prizeRates r · |ι|⌋₊`, the canonical faithful list-decoding lattice threshold of
+`RS(k_r)` lies between half the RS minimum-distance radius and the capacity radius:
+
+`(|ι| - k_r) / 2 ≤ listLatticeThreshold RS(k_r) m ε* ≤ |ι| - k_r`.
+
+This is weaker than the Johnson/Elias post-RIM frontier, but unlike that frontier it is
+fully unconditional after the standard degree, interleaving, and budget side conditions. -/
+theorem listPrizeLattice_bracketed_between_halfDist_and_capacity
+    (domain : ι ↪ F) (m : ℕ)
+    (hdeg_pos : ∀ r : Fin 4,
+      0 < ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊)
+    (hdeg_le : ∀ r : Fin 4,
+      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ ≤ Fintype.card ι)
+    (hm : m ≠ 0)
+    (hbudget : 1 ≤ (epsStar : ENNReal) * (Fintype.card F : ENNReal))
+    (hε : epsStar < 1) :
+    ∀ r : Fin 4,
+      let k := ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊
+      let hne := listLatticeSet_nonempty_rs domain (hdeg_pos r).ne' (hdeg_le r) hbudget
+      (Fintype.card ι - k) / 2 ≤
+          GrandChallenges.listLatticeThreshold
+            (ReedSolomon.code domain k : Set (ι → F)) m epsStar hne ∧
+        GrandChallenges.listLatticeThreshold
+            (ReedSolomon.code domain k : Set (ι → F)) m epsStar hne ≤
+          Fintype.card ι - k := by
+  intro r
+  exact listLatticeThreshold_rs_between_halfDist_and_capacity
+    (domain := domain)
+    (deg := ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊)
+    (m := m) (hdeg_pos r).ne' (hdeg_le r) hm hbudget hε
 
 /-! ## Post-RIM frontier surface
 
@@ -300,6 +344,7 @@ theorem demo_elias_volume_n4_q3 :
 #print axioms ProximityGap.ListJohnsonSqLowerCore
 #print axioms ProximityGap.ListEliasVolumeUpperCore
 #print axioms ProximityGap.PostRIMListThresholdFrontier
+#print axioms ProximityGap.listPrizeLattice_bracketed_between_halfDist_and_capacity
 #print axioms ProximityGap.listLatticeThreshold_bracketed_of_johnson_sq_and_elias_core
 #print axioms ProximityGap.listPrizeLattice_bracketed_of_postRIM_frontier
 

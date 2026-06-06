@@ -65,7 +65,8 @@ genuine `β` recursion of BCIKS20 (A.1) over the in-tree ring `𝒪 H`:
    `βHenselAssembled_eq_gammaGenuine` / `βHensel_lift_identity_of_assembledSeries_isRoot` (via
    `gammaGenuine_unique`).  The residual is the order-`≥1` Faà-di-Bruno bridge
    `coeff_eval ↔ B_coeff·partitionProd` (equivalently the (A.1)-recursion ↔ Newton-correction
-   match), gated on the STATED-NOT-PROVEN combinatorial reconciliation `prefactor_eq_paper`.
+   match), now narrowed to the named term-level residual `RestrictedFaaDiBrunoMatch` in
+   `P2Close.lean`/`P2Vanish.lean`.
 
 WAVE 3 SCOPE (§4c′ / 4d below).  The reusable **`Λ`-weight calculus over `𝒪 H`**, all PROVEN
 axiom-clean (`[propext, Classical.choice, Quot.sound]`, no `sorryAx`):
@@ -405,15 +406,13 @@ theorem partitionProd_mul {m : ℕ} (lam : Nat.Partition m) (b c : ℕ → M) :
       = partitionProd lam b * partitionProd lam c := by
   rw [partitionProd, partitionProd, partitionProd, ← Multiset.prod_map_mul]
 
-/-- The combinatorial **prefactor** of BCIKS20's `A_{i1,λ}` coefficient (lines 4042–4080),
-as an explicit natural number: the binomial `C(i, i1)` times the multinomial over the parts of
-`λ` together with the order-0 multiplicity.  Here it is rendered as
-`Nat.choose i i1 * Nat.multinomial (lam.parts.toFinset) (lam.parts.count)` — the genuine
-`multinomial(λ₁, …, λ_l, …)` over distinct part-multiplicities.
+/-- The explicit combinatorial **prefactor** in BCIKS20's `A_{i1,λ}` coefficient (lines
+4042-4080): the multinomial over the positive parts of `λ`.
 
-WALL (deferred to a later wave): the *matching lemma* equating this with the exact
-paper combinatorial factor (reconciling the Hasse-derivative's intrinsic `C(j, Σλ)` weight
-against the paper's `multinomial(j0, λ)`) is `prefactor_eq_paper` below — STATED, not proven. -/
+The Hasse binomial weights are emitted by `hasseDerivX`/`hasseDerivY` coefficient extraction; they
+are not stored in this scalar. Earlier campaign notes described this definition as
+`Nat.choose i i1 * Nat.multinomial ...`; that was repaired on 2026-06-05. The arguments `i` and
+`i1` remain only for signature stability with older callers. -/
 def prefactor {m : ℕ} (_i _i1 : ℕ) (lam : Nat.Partition m) : ℕ :=
   -- **DEFINITIONAL REPAIR (2026-06-05, campaign bug #5, kernel-grounded — see P2Vanish.lean):**
   -- the previous form carried an extra explicit binomial `Nat.choose i i1`. The genuine
@@ -423,8 +422,8 @@ def prefactor {m : ℕ} (_i _i1 : ℕ) (lam : Nat.Partition m) : ℕ :=
   -- recursion is the partition multinomial. Args retained for signature stability.
   Nat.multinomial lam.parts.toFinset (fun l => lam.parts.count l)
 
-/-- The prefactor is genuinely positive whenever the binomial part is (so it is never a
-secretly-zero placeholder): `Nat.multinomial` is always `> 0`. -/
+/-- The prefactor is genuinely positive (so it is never a secretly-zero placeholder):
+`Nat.multinomial` is always `> 0`. -/
 theorem prefactor_pos {m : ℕ} (i i1 : ℕ) (lam : Nat.Partition m) (_hi : i1 ≤ i) :
     0 < prefactor i i1 lam := by
   rw [prefactor]
@@ -437,9 +436,9 @@ theorem countPerms_parts_eq_multinomial {m : ℕ} (lam : Nat.Partition m) :
       Nat.multinomial lam.parts.toFinset (fun l => lam.parts.count l) :=
   ArkLib.PowerSeriesComposition.countPerms_eq_multinomial lam.parts
 
-/-- `prefactor` as the binomial Hasse weight times the composition fiber-count
-`countPerms`.  This is the direct bridge from
-`PowerSeriesComposition.coeff_pow_eq_partitionSum` to the `B_coeff` normalization. -/
+/-- `prefactor` is exactly the positive-part composition fiber-count `countPerms`.
+This is the direct bridge from `PowerSeriesComposition.coeff_pow_eq_partitionSum` to the `B_coeff`
+normalization; no explicit Hasse binomial is included in the scalar. -/
 theorem prefactor_eq_countPerms {m : ℕ} (i i1 : ℕ) (lam : Nat.Partition m) :
     prefactor i i1 lam = lam.parts.countPerms := by
   rw [prefactor, countPerms_parts_eq_multinomial]
@@ -2496,8 +2495,9 @@ This residual carries NO false content: it is a true statement (the genuine `gam
 root, `gammaGenuine_root`, and the A.1 recursion reproduces its coefficients), and the only
 missing piece is the formal Faà-di-Bruno bridge
 `coeff_eval ↔ partition sums ↔ B_coeff·partitionProd`
-for the *assembled* series, which is gated on the STATED-NOT-PROVEN combinatorial reconciliation
-`prefactor_eq_paper` (the Hasse-intrinsic `C(j,Σλ)` weight vs the paper's `multinomial(j0,λ)`).
+for the *assembled* series, now isolated as `RestrictedFaaDiBrunoMatch` in `P2Close.lean`.
+The local zero-peel/Y-Hasse weight identity is already proven in `P2Vanish.lean`; the open work is
+the full term-by-term equality of sums, including the `ζ` sign and denominator clearing.
 Carved as small as possible: a single per-successor-order coefficient equality, with the order-`0`
 base case, the extensionality assembly, the denominator clearing, and the uniqueness reduction to
 `gammaGenuine` all PROVEN.  See `pc-w11-bridge.md`. -/
@@ -2555,10 +2555,11 @@ end Wave2
 
 /-! ## 5. Staged specifications still deferred (honest WALLs)
 
-* `prefactor_eq_paper` : `prefactor i i1 lam = <paper combinatorial factor>`.
-  WALL: reconcile the Hasse-derivative's intrinsic `C(j, Σλ)` weight against the paper's
-  `multinomial(j0, λ)`.  (The `B_coeff` definition uses `prefactor` directly; the matching
-  lemma only affects the exact embedding identity, not the genuineness of the object.)
+* `RestrictedFaaDiBrunoMatch`: prove the term-level equality between the restricted
+  Faà-di-Bruno expansion and the `(A.1)` `B_coeff · partitionProd` recursion.  The old
+  `prefactor_eq_paper` wording was historical: current `prefactor` is already
+  `lam.parts.countPerms`, and the local `C(j, Σλ)` zero-peel/Y-Hasse weight identity is proven in
+  `P2Vanish.lean`.  What remains is the full reindexing and value equality of the two sums.
 
 * `B_coeff` weight + embedding lemmas (the (a-residual), §4b/§4b′) — feed (P1)'s per-term WALL
   `βHensel_succ_term_weight_le`.  FULLY PROVEN (wave 6, axiom-clean, P2-independent):

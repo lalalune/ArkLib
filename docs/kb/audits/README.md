@@ -30,3 +30,5 @@ Current audit pages:
   - FRI/STIR soundness and proximity-gap residual surfaces.
 - [`issue-25-oracle-reduction-residuals-2026-06-06.md`](issue-25-oracle-reduction-residuals-2026-06-06.md)
   - OracleReduction sequential-composition and Fiat-Shamir residual surfaces.
+- [`issue-62-bcs-merkle-branch-harvest-2026-06-06.md`](issue-62-bcs-merkle-branch-harvest-2026-06-06.md)
+  - BCS/Merkle branch-harvest note for stale `origin/merkle-tree-soundness`.

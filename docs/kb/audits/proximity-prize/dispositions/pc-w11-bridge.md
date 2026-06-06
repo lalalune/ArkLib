@@ -61,11 +61,11 @@ Closing `coeff_succ_eval_βHenselAssembled` is the genuine BCIKS20 A.4 Faà-di-B
 chain-rule expansion for the *normalized* assembled series:
 `coeff_eval_eq_sum_range` (convolution) ↦ `coeff_pow_eq_partitionSum` (per-`γ^j` partition sums)
 ↦ match against `B_coeff · partitionProd` with the `W`/`ξ` clearing powers telescoping. The
-partition-sum machinery (`PowerSeriesComposition.lean`) IS fully sorry-free, but the final match
-is gated on the **STATED-NOT-PROVEN** combinatorial reconciliation `prefactor_eq_paper`
-(the Hasse-derivative's intrinsic `C(j,Σλ)` weight vs the paper's `multinomial(j0,λ)`), which the
-file itself flags as a deferred WALL (§5). That reconciliation is months-scale and cannot be
-faked.
+partition-sum machinery (`PowerSeriesComposition.lean`) IS fully sorry-free, and the local
+zero-peel/Y-Hasse weight identity is now proven in `P2Vanish.lean`. The final match is gated on
+the term-level residual `RestrictedFaaDiBrunoMatch`: aligning the restricted Faà-di-Bruno index set
+with the `(A.1)` `B_coeff · partitionProd` sum, including `ζ` sign and denominator clearing. That
+reconciliation is substantial and cannot be faked.
 
 ## Alternative strategy evaluated (`βHenselAssembled = gammaGenuine` first), and why it is NOT shorter
 
