@@ -258,6 +258,26 @@ theorem ggr11_treeStructure_of_le_exp [Fintype F] [Nonempty ι]
     intro r'; simp only; rw [pow_succ, mul_comm]
   · -- Pascal: Λ^(r'+1) ≤ Λ^(r'+1) + Λ · Λ^(r')
     intro b' r'; simp only; exact le_add_right (le_refl _)
+/-- If the base list size is infinite and the GGR11 exponent is positive, the per-word residual is
+automatic: the RHS is `⊤`. This discharges the infinite-list edge case and leaves only the finite
+list-recovery recursion as genuine external content. -/
+theorem ggr11_perWordBound_of_Lambda_top
+    {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ}
+    (hr : 0 < r) (hL : Lambda C δ = ⊤) :
+    GGR11PerWordBound C δ m b r := by
+  intro f
+  rw [hL]
+  cases r with
+  | zero => cases hr
+  | succ r =>
+      have hchoose_pos : 0 < (b + (r + 1)).choose (r + 1) :=
+        Nat.choose_pos (Nat.le_add_left (r + 1) b)
+      have hchoose_ne :
+          (((b + (r + 1)).choose (r + 1) : ℕ) : ℕ∞) ≠ 0 := by
+        exact_mod_cast (Nat.ne_of_gt hchoose_pos)
+      rw [show (⊤ : ℕ∞) ^ (r + 1) = ⊤ by simp]
+      rw [ENat.mul_top hchoose_ne]
+      exact le_top
 
 set_option linter.unusedFintypeInType false in
 /-- Over a *finite* field the in-tree elementary product bound discharges the
