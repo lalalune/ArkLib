@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Data.Finset.Card
 import Mathlib.Tactic.Push
 
@@ -43,7 +45,7 @@ theorem exists_heavy_coordinate (M : κ → ι → Prop) [∀ k x, Decidable (M 
   have htot : Fintype.card κ * a ≤ ∑ x : ι, (Finset.univ.filter (fun k => M k x)).card := by
     rw [← sum_rows_eq_sum_cols]
     calc Fintype.card κ * a = ∑ _k : κ, a := by
-            rw [Finset.sum_const, Finset.card_univ, smul_eq_mul]
+            rw [Finset.sum_const, Finset.card_univ, Nat.nsmul_eq_mul]
       _ ≤ ∑ k : κ, (Finset.univ.filter (fun x => M k x)).card :=
         Finset.sum_le_sum (fun k _ => hrow k)
   -- averaging: some column ≥ average, i.e. |ι|·(col x) ≥ Σ ≥ |κ|·a
@@ -61,7 +63,7 @@ theorem exists_heavy_coordinate (M : κ → ι → Prop) [∀ k x, Decidable (M 
           · exact Finset.univ_nonempty_iff.mpr (Fintype.card_pos_iff.mp hι)
           · intro x _; exact hbound x
       _ = Fintype.card ι * (Fintype.card κ * a) := by
-          rw [Finset.sum_const, Finset.card_univ, smul_eq_mul]
+          rw [Finset.sum_const, Finset.card_univ, Nat.nsmul_eq_mul]
   have : Fintype.card ι * (Fintype.card κ * a)
       ≤ Fintype.card ι * (∑ x : ι, (Finset.univ.filter (fun k => M k x)).card) :=
     Nat.mul_le_mul_left _ htot

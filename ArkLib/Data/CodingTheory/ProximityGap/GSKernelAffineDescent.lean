@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import Mathlib.Algebra.Polynomial.Degree.SmallDegree
+import Mathlib.Algebra.Polynomial.Degree.Lemmas
 import Mathlib.Algebra.Polynomial.Eval.Degree
 import Mathlib.Tactic.Ring
 
