@@ -124,15 +124,17 @@ theorem mcaThreshold_eq_capacityPredPred_unconditional (domain : ι ↪ F) {k : 
   -- Upper witness: `mcaThreshold < latticeIndexOf (1 - (k+1)/n)`.
   have hupper := mcaThreshold_lt_capacityPred_of_subsetSums domain hk1 hsmall hne
   -- Lattice index values.
+  -- `latticeIndexOf … .val = ⌊…⌋₊` first (strips the dependent `≤ 1` proof arg, so the
+  -- subsequent `(k:ℝ≥0)+j → ↑(k+j)` cast rewrite has a type-correct motive).
   have hlo_val :
       (latticeIndexOf (ι := ι) (1 - ((k : ℝ≥0) + 2) / (Fintype.card ι : ℝ≥0)) hdlo_le).val =
         Fintype.card ι - (k + 2) := by
-    rw [hcast2]; exact latticeIndexOf_one_sub_div_val (k + 2) hk2
+    rw [latticeIndexOf_val, hcast2, one_sub_div_mul_cast (k + 2) hk2, Nat.floor_natCast]
   have hhi_val :
       (latticeIndexOf (ι := ι) (1 - ((k : ℝ≥0) + 1) / (Fintype.card ι : ℝ≥0)) tsub_le_self).val =
         Fintype.card ι - (k + 1) := by
     have hcast1 : ((k : ℝ≥0) + 1) = ((k + 1 : ℕ) : ℝ≥0) := by push_cast; ring
-    rw [hcast1]; exact latticeIndexOf_one_sub_div_val (k + 1) hk1
+    rw [latticeIndexOf_val, hcast1, one_sub_div_mul_cast (k + 1) hk1, Nat.floor_natCast]
   -- Sandwich the `Fin` value: `n-(k+2) ≤ thr.val < n-(k+1) = (n-(k+2)) + 1`.
   have hle_val := (Fin.le_iff_val_le_val).mp hlower
   have hlt_val := (Fin.lt_iff_val_lt_val).mp hupper

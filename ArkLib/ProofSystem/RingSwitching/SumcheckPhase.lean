@@ -677,9 +677,11 @@ theorem iteratedSumcheckPostChallengeLocalChecks_iff_fullTranscript (i : Fin ℓ
     (tr : FullTranscript (pSpecSumcheckRound L))
     (stmt : Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) i.castSucc)
     (witMid : SumcheckWitness L ℓ' i.castSucc) :
-    iteratedSumcheckPostChallengeLocalChecks κ L K P ℓ ℓ' h_l i
+    iteratedSumcheckPostChallengeLocalChecks
+        (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') i
         (tr : Transcript (Fin.last 2) (pSpecSumcheckRound L)) stmt witMid
-      ↔ iteratedSumcheckPostChallengeFullTranscriptLocalChecks κ L K P ℓ ℓ' h_l i
+      ↔ iteratedSumcheckPostChallengeFullTranscriptLocalChecks
+        (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') i
         tr stmt witMid := by
   simp [iteratedSumcheckPostChallengeLocalChecks,
     iteratedSumcheckPostChallengeFullTranscriptLocalChecks,
@@ -780,15 +782,9 @@ def iteratedSumcheckKStateProp (i : Fin ℓ') (m : Fin (2 + 1))
     -- `probEvent_badSumcheckEventProp_degree_two_le` bounds it by `2/|L|` — the sharp per-round
     -- knowledge error (vs. the current `roundKnowledgeError = 1`).
     --
-    -- The transcript projection bridge is now named above:
-    -- `iteratedSumcheck_fullTranscript_message0_eq_equivMessagesChallenges` and
-    -- `iteratedSumcheck_fullTranscript_challenge1_eq_equivMessagesChallenges`. The intended
-    -- post-challenge payload is now named as `iteratedSumcheckPostChallengeLocalChecks`. The
-    -- remaining mechanical step is consuming those identities in a nontrivial `toFun_full`,
-    -- strengthening this placeholder post-challenge `True` state to that payload, then routing the
-    -- local probability bound through the RBR theorem. Until that lands the
-    -- post-challenge state stays `True` and the RBR theorem below uses the always-valid unit bound,
-    -- so the file remains sound and green.
+    -- The transcript projection bridge and the sharper post-challenge payload are named above.
+    -- The theorem below intentionally proves the always-valid unit bound; using the sharper
+    -- payload would require a nontrivial `toFun_full` proof and a matching local probability bound.
     True
 
 /-- Knowledge state function (KState) for single round -/
