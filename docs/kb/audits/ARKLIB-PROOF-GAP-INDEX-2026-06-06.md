@@ -51,6 +51,7 @@ rg -n --glob '*.lean' 'opaque\s+\w+|placeholder|stub|TODO|FIXME|named residual|e
 | LogUp Protocol 2 completeness and soundness residuals | #13 |
 | Batched FRI query-round soundness residuals | #14 |
 | Duplex-sponge Fiat-Shamir statistical-distance placeholder | #15 |
+| Zero-knowledge and HVZK definitions / FS transfer surface | #112 |
 | ToyProblem KoalaBear concrete carrier replacement | #16 (closed; see #18/#30 for remaining anchors) |
 | SendWitness knowledge-soundness placeholder reductions | #17 |
 | ToyProblem protocol and leaderboard residual anchors | #18 |
@@ -60,6 +61,7 @@ rg -n --glob '*.lean' 'opaque\s+\w+|placeholder|stub|TODO|FIXME|named residual|e
 | CS25/BCHKS/BGKS bridges and deep-hole probability inputs | #22 |
 | Historical proximity-prize docs and inventories | #23 |
 | FRI/STIR soundness accounting and proximity-gap residuals | #24 |
+| Composed FRI folding reduction perfect completeness | #117 |
 | OracleReduction sequential composition and Fiat-Shamir run equality | #25 |
 | Commitment/folding placeholder modules | #26 |
 | Merkle probabilistic RO-collision binding and simulation-based salted hiding | #119 |
@@ -87,12 +89,14 @@ rg -n --glob '*.lean' 'opaque\s+\w+|placeholder|stub|TODO|FIXME|named residual|e
 | Grand LD four-rate numeric Johnson/Elias certificates | #56 |
 | Grand MCA faithful lattice-threshold brackets at four rates | #57 |
 | Grand challenges singular/plural lattice encoding bridges | #58 |
+| Proximity Prize apex four-rate `mcaPrize` / `listDecodingPrize` deliverable | #120 |
 | Proximity-prize audit doc refresh (this index family) | #59 |
 | Root build / validation regressions after #36 | #60 |
 | Proximity Prize betaRec-to-hcoeffPoly keystone assembly | #61 |
 | BCIKS20 Section 5 `hPz` supplier from per-z Hensel/matching data | #91 |
 | BCS compiler beyond statement-level scaffolding | #62 |
 | ArkLib SNARK/proof-system completion obligations | #63 |
+| Algebraic Group Model foundational lemmas and AGM-to-GGM transfer | #118 |
 | BCIKS20 exact lattice boundary residual for the closed Johnson branch | #64 |
 | Grand MCA J1 radius-1/n finite-algebra bad-scalar cap | #65 |
 | Grand MCA beyond-UDR GS-row mass bound and faithfulness bridge | #66 |
