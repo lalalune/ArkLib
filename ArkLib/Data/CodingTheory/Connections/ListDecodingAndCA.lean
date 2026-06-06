@@ -214,6 +214,45 @@ theorem linear_listSize_to_epsMCA_gcxk25_firstMoment_of_gkl24_residual
     ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
     (by positivity) hres
 
+/-- **ABF26 T5.1 front door from the GKL24 first-moment residual.** This wires the
+count-level adapter `ProximityGap.mcaBad_card_le_t51_firstMoment_of_gkl24_residual` into the
+T5.1 consumer `linear_listSize_to_epsMCA_gcxk25_of_bad_count`.
+
+The theorem is deliberately conditional on `GKL24FirstMomentResidual`; it does not prove the
+GCXK25/GKL24 `|Bad¹| ≤ δ·n` theorem. Once that residual is supplied at the Johnson-lifted MCA
+radius with `B_T = L²` and `b = δ·n`, the first-moment bad-count bound is padded by the nonnegative
+`1 / η` slack to match the exact ABF26 T5.1 RHS. -/
+theorem linear_listSize_to_epsMCA_gcxk25_of_gkl24_firstMoment_residual
+    (C : LinearCode ι F) (L : ℕ) (δ η : ℝ)
+    (hδ_pos : 0 < δ) (hδ_lt : δ < 1)
+    (hη_pos : 0 < η) (hη_lt : η < 1) (hη_le_δ : η ≤ δ)
+    (hΛ : Lambda ((C : Set (ι → F))) δ ≤ (L : ℕ∞))
+    (hres :
+        ProximityGap.GKL24FirstMomentResidual C
+          ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
+          ((L : ℝ) ^ 2) (δ * (Fintype.card ι : ℝ))) :
+    epsMCA (F := F) (A := F) ((C : Set (ι → F)))
+        ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal) ≤
+      ENNReal.ofReal
+        (((L : ℝ) ^ 2 * δ * Fintype.card ι + 1 / η) / Fintype.card F) :=
+  linear_listSize_to_epsMCA_gcxk25_of_bad_count C L δ η
+    hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ
+    (fun u => by
+      have hfirst :
+          ((ProximityGap.mcaBad (F := F) ((C : Set (ι → F)))
+              ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal) (u 0) (u 1)).card : ℝ) ≤
+            (L : ℝ) ^ 2 * (δ * (Fintype.card ι : ℝ)) :=
+        ProximityGap.mcaBad_card_le_t51_firstMoment_of_gkl24_residual C
+          ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
+          (by positivity) hres u
+      calc
+        ((ProximityGap.mcaBad (F := F) ((C : Set (ι → F)))
+              ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal) (u 0) (u 1)).card : ℝ)
+            ≤ (L : ℝ) ^ 2 * (δ * (Fintype.card ι : ℝ)) := hfirst
+        _ = (L : ℝ) ^ 2 * δ * Fintype.card ι := by ring
+        _ ≤ (L : ℝ) ^ 2 * δ * Fintype.card ι + 1 / η :=
+          le_add_of_nonneg_right (by positivity))
+
 /-- **ABF26 Theorem 5.1 [GCXK25 Theorem 3] — unconditional in-tree first-moment
 relaxation.**  This is the same first-moment plumbing as
 `linear_listSize_to_epsMCA_gcxk25_firstMoment_of_gkl24_residual`, but with the genuinely proven
@@ -340,6 +379,21 @@ theorem linear_listSize_to_epsMCA_gcxk25_of_bad_count_prop
       hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ :=
   linear_listSize_to_epsMCA_gcxk25_of_bad_count C L δ η
     hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ hBadCount
+
+/-- Prop-level wrapper for T5.1 from the GKL24 first-moment residual front door. -/
+theorem linear_listSize_to_epsMCA_gcxk25_of_gkl24_firstMoment_residual_prop
+    (C : LinearCode ι F) (L : ℕ) (δ η : ℝ)
+    (hδ_pos : 0 < δ) (hδ_lt : δ < 1)
+    (hη_pos : 0 < η) (hη_lt : η < 1) (hη_le_δ : η ≤ δ)
+    (hΛ : Lambda ((C : Set (ι → F))) δ ≤ (L : ℕ∞))
+    (hres :
+        ProximityGap.GKL24FirstMomentResidual C
+          ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
+          ((L : ℝ) ^ 2) (δ * (Fintype.card ι : ℝ))) :
+    linear_listSize_to_epsMCA_gcxk25 C L δ η
+      hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ :=
+  linear_listSize_to_epsMCA_gcxk25_of_gkl24_firstMoment_residual C L δ η
+    hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ hres
 
 end ListImpliesMCA
 
