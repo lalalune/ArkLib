@@ -286,7 +286,7 @@ theorem duplexSpongeFiatShamir_completeness_unroll_of_run_eq
       simulateQ (fun t => liftM (OracleSpec.query t))
         (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn).run
     rw [← QueryImpl.simulateQ_compose]
-    refine congrFun (congrArg _ ?_) _
+    congr 1
     funext t
     rcases t with t | t <;> rfl
   rw [hcollapse]
