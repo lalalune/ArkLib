@@ -164,6 +164,11 @@ theorem splitSum_embedSum {m : ℕ} {n : Fin m → ℕ} (i : Fin m) (j : Fin (n 
       · simpa using congrArg Fin.succ hfst
       · simpa using hsnd
 
+@[simp]
+theorem splitSum_embedSum_fst {m : ℕ} {n : Fin m → ℕ} (i : Fin m) (j : Fin (n i)) :
+    (splitSum (embedSum i j)).1 = i :=
+  congrArg Sigma.fst (splitSum_embedSum i j)
+
 def finSum'FinEquiv' {m : ℕ} {n : Fin m → ℕ} : (i : Fin m) × Fin (n i) ≃ Fin (vsum n) where
   toFun := fun ij => embedSum ij.1 ij.2
   invFun := splitSum
