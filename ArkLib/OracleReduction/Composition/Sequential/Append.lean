@@ -509,7 +509,12 @@ four `OracleVerifier.append_*` security theorems (their `convert … ; simp [app
 theorem router₁_compose (oStmt : ∀ i, OStmt₁ i) (transcript : (pSpec₁ ++ₚ pSpec₂).FullTranscript) :
     ((OracleInterface.simOracle2 oSpec oStmt transcript.messages) ∘ₛ router₁ (pSpec₂ := pSpec₂)) =
       OracleInterface.simOracle2 oSpec oStmt transcript.fst.messages := by
-  sorry
+  funext q
+  rcases q with t | (t | ⟨i, q⟩)
+  · rfl
+  · rfl
+  · simp only [QueryImpl.apply_compose, router₁, emitMessageInl, emitMessageQuery]
+    rfl
 
 theorem router₂_compose (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
     [coh : AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
@@ -519,7 +524,19 @@ theorem router₂_compose (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ 
         | Sum.inl j => (V₁.hEq i ▸ h ▸ oStmt j)
         | Sum.inr j => (V₁.hEq i ▸ h ▸ transcript.fst.messages j))
         transcript.snd.messages := by
-  sorry
+  funext q
+  rcases q with t | (t | ⟨i, q⟩)
+  · rfl
+  · dsimp only [QueryImpl.apply_compose, router₂, emitOStmt₂Query]
+    cases h : V₁.embed i with
+    | inl k =>
+        simp only [emitOStmtQueryInl]
+        rfl
+    | inr k =>
+        simp only [emitOStmtQueryInr, emitMessageInl, emitMessageQuery]
+        rfl
+  · simp only [QueryImpl.apply_compose, router₂, emitMessageInr, emitMessageQuery]
+    rfl
 
 theorem oStmt_append_congr (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
     [coh : AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]

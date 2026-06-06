@@ -8,18 +8,43 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Defs
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.TraceDataStructures
 
 /-!
-# Backtracking sequence family and procedure
+# Backtracking Sequence Family and Extraction Procedure
 
-This file contains the backtracking sequence family and procedure for the analysis of duplex sponge
-Fiat-Shamir, following Section 5.2 in the paper.
+This module formalizes the backtracking sequence family $S_{\mathrm{BT}}(\mathrm{tr}, s)$ and the associated
+backtracking extraction algorithm $\mathsf{BackTrack}(\mathrm{tr}, s)$ as detailed in CO25, Section 5.2.
 
-- `BacktrackSequence`: a single backtrack sequence
-- `S_BT/BacktrackSequenceFamily`: a set of lawful backtrack sequences of a `(h,p,p⁻¹)`-trace
-  - `BacktrackSequenceFamily.backtrackCompute`: the backtrack algorithm to compute all backtrack
-    sequences from the query trace `tr`.
-- `J_BT`: the set of occurence index sequences of `S_BT`
-  - `BacktrackSequence.Index`: compute the index sequence of a single backtrack sequence.
-- `backTrack`: the core backtrack algorithm
+## Theoretical Context
+
+The backtracking sequence is a critical analytical tool used in the soundness analysis of the Fiat-Shamir
+reduction for duplex-sponge-based proof systems. Given an execution trace $\mathrm{tr}$ containing hash and
+permutation queries, and a target sponge state $s$, a backtracking sequence reconstructs the historical path
+(the "chain" of states) that could have led to $s$ under the sponge construction.
+
+1. **Backtracking Chain (Def 5.3)**: A backtracking sequence consists of an input statement $\mathbb{x}$, a list of
+   input sponge states $(s_{\mathrm{in},\iota})_{\iota=0}^{m}$, and a list of output sponge states $(s_{\mathrm{out},\iota})_{\iota=0}^{m-1}$
+   such that:
+   - The final input state in the chain is the target state: $s_{\mathrm{in},m} = s$,
+   - The initial capacity is anchored by a recorded hash query: $(h, \mathbb{x}, \mathrm{cap}(s_{\mathrm{in},0})) \in \mathrm{tr}$,
+   - Every transition pair $(s_{\mathrm{in},\iota}, s_{\mathrm{out},\iota})$ is validated by a permutation or inverse permutation query
+     recorded in the trace,
+   - The output capacity of each step matches the input capacity of the next step (shared capacity segment), and
+   - The capacity segments are non-trivially modified at each step ($\mathrm{cap}(s_{\mathrm{in},\iota}) \neq \mathrm{cap}(s_{\mathrm{out},\iota})$)
+     to exclude cyclic loops.
+
+2. **The Backtracking Family $S_{\mathrm{BT}}$**: This is the set of all valid backtracking backtracking sequences ending in $s$
+   satisfying a maximality condition (no sequence in the family is a subsequence of another).
+
+3. **Occurrence Indices $J_{\mathrm{BT}}$**: For each backtracking sequence, we associate an index list
+   recording the first occurrence of each query in the trace. This forms the set $J_{\mathrm{BT}}(\mathrm{tr}, s)$, which
+   is used in the bad-event analysis to bound the probability of soundness failure.
+
+## Algorithmic Implementation
+
+The formal extraction algorithm $\mathsf{BackTrack}$ searches for a unique backtracking path in the trace.
+Analogous to the lookahead extraction, we optimize this via a linear backward scan (`linearScanBackwards`) from the target state $s$.
+If a fork (multiple candidate predecessors) is detected in the permutation or hash tables, the algorithm immediately
+aborts with `.forkErr`, which simplifies execution while preserving soundness bounds since a scan-time fork is a subset
+of the bad event $E_{\mathrm{fork}}$.
 -/
 
 open OracleComp OracleSpec ProtocolSpec
@@ -36,17 +61,19 @@ variable {StmtIn : Type}
 
 noncomputable section CoreDefinitions
 
-/-- A backtracking sequence (Definition 5.3) for a given hash-duplex-sponge oracle trace `tr` and
-  final duplex-sponge state `s` consists of the following data:
-- An input statement `𝕩`
-- A list `inputState = [sᵢₙ, ...]` of input states
-- A list `outputState = [sₒᵤₜ, ...]` of output states
+/-- A backtracking sequence (CO25, Definition 5.3) reconstructed from a query trace `tr`
+and ending at a target sponge state $s$. It consists of:
+- `stmt`: The input statement $\mathbb{x}$ anchoring the sponge execution.
+- `inputState`: A sequence of input states $(s_{\mathrm{in},\iota})_{\iota=0}^{m}$.
+- `outputState`: A sequence of output states $(s_{\mathrm{out},\iota})_{\iota=0}^{m-1}$.
 
-subject to the following conditions:
-- The last of the input states is the given final state
-- There is one more input state than output state
-- The statement is queried with the hash, and returns the capacity of the first input state
-  `(hash, 𝕩, inputState[0].capacitySegment) ∈ tr` -/
+Subject to the following structural and semantic invariants:
+1. The chain terminates at $s$: $s_{\mathrm{in},m} = s$.
+2. The initial capacity segment is the output of the hash query on the statement:
+   $(h, \mathbb{x}, \mathrm{cap}(s_{\mathrm{in},0})) \in \mathrm{tr}$.
+3. State transitions correspond to permutation or inverse-permutation queries in the trace.
+4. Capacity segments match across consecutive steps: $\mathrm{cap}(s_{\mathrm{out},\iota}) = \mathrm{cap}(s_{\mathrm{in},\iota+1})$.
+5. Trivial self-loops are avoided: $\mathrm{cap}(s_{\mathrm{in},\iota}) \neq \mathrm{cap}(s_{\mathrm{out},\iota})$. -/
 structure BacktrackSequence (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (state : CanonicalSpongeState U) where
   /-- `𝕩^(k) ∈ {0,1}^≤n` — input statement for this backtracking sequence. -/
@@ -84,7 +111,7 @@ structure BacktrackSequence (trace : QueryLog (duplexSpongeChallengeOracle StmtI
   capacitySegment_input_ne_output : ∀ i : Fin outputState.length,
     inputState[i].capacitySegment ≠ outputState[i].capacitySegment
 
-/-- First-occurrence index of an entry in a trace. -/
+/-- Computes the index of the first occurrence of a specific query entry in the trace. -/
 private def firstOccurrenceIndex
     (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (entry : duplexSpongeTraceEntry)
@@ -93,7 +120,7 @@ private def firstOccurrenceIndex
   exact ⟨trace.findIdx (fun x => decide (x = entry)), List.findIdx_lt_length_of_exists
     ⟨entry, hEntry, decide_eq_true rfl⟩⟩
 
-/-- First-occurrence index of EITHER entryA or entryB in a trace. -/
+/-- Computes the index of the first occurrence of either of two query entries in the trace. -/
 private def firstOccurrenceOfEither
     (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (entryA entryB : duplexSpongeTraceEntry)
@@ -105,8 +132,9 @@ private def firstOccurrenceOfEither
       · exact ⟨entryA, hA, decide_eq_true (Or.inl rfl)⟩
       · exact ⟨entryB, hB, decide_eq_true (Or.inr rfl)⟩)⟩
 
-/-- The associated indices (first occurrences in the trace) for a backtracking sequence
-This calculate `J_BT(tr,s)` from a lawful backtracking sequence `S_BT(tr,s)`. -/
+/-- Computes the sequence of first-occurrence indices in the trace for all queries comprising
+a given backtracking sequence. This map underpins the construction of $J_{\mathrm{BT}}(\mathrm{tr}, s)$
+from $S_{\mathrm{BT}}(\mathrm{tr}, s)$ (CO25, Definition 5.4). -/
 def BacktrackSequence.Index (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (state : CanonicalSpongeState U) (seq : BacktrackSequence trace state) :
     Fin trace.length × (Fin seq.inputState.length → Fin (trace.length + 1)) :=
@@ -141,16 +169,14 @@ def BacktrackSequence.Index (trace : QueryLog (duplexSpongeChallengeOracle StmtI
       else
         ⟨trace.length, Nat.lt_succ_self trace.length⟩) -- last pair
 
-/-- CO25 Def 5.3 `S_BT(tr, s)` — maximal family of backtrack sequences
-(Eq. 8 & BackTrack §5.2 Step 2, Eq. 10): a finite set of `BacktrackSequence` pairs
-`(s_{in,ι}, s_{out,ι})` starting at an initial `StmtIn` and ending at sponge state `s`,
-with no sequence strictly containing another. -/
+/-- The backtracking sequence family $S_{\mathrm{BT}}(\mathrm{tr}, s)$ (CO25, Definition 5.3).
+This represents the set of all maximal backtracking sequences starting from some statement and terminating
+at the target state $s$, where maximality prevents one sequence from being a strict subsequence of another. -/
 structure BacktrackSequenceFamily (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (state : CanonicalSpongeState U) where
   /-- `S_BT(tr, s)` — finite set of backtrack sequences (CO25 Def 5.3). -/
   seqFamily : Finset (BacktrackSequence trace state)
-  /-- Maximality: no `s ≠ s'` with `s ⊆ s'` both in `S_BT` (CO25 Def 5.3 maximality). -/
-  -- TODO: write the correct `subsequence` condition
+  /-- Maximality: no sequence in the family is a strict subsequence of another. -/
   maximality : ∀ s ∈ seqFamily, ∀ s' ∈ seqFamily, s ≠ s' →
     ¬ (s.stmt = s'.stmt ∧ s.inputState ⊆ s'.inputState ∧ s.outputState ⊆ s'.outputState)
 
@@ -168,8 +194,9 @@ abbrev BacktrackIndexList
   Fin trace.length × (Fin seq.inputState.length → Fin (trace.length + 1))
 
 open Classical in
-/-- Definition 5.4: `J_BT(tr,s)` — the image of `S_BT(tr,s)` under `BacktrackSequence.Index`.
-Every sequence in `S_BT` is paired with its unique index list; no sequence is omitted. -/
+/-- The index-mapped backtracking family $J_{\mathrm{BT}}(\mathrm{tr}, s)$ (CO25, Definition 5.4).
+It is defined as the image of the backtracking family $S_{\mathrm{BT}}(\mathrm{tr}, s)$ under the
+first-occurrence index mapping `BacktrackSequence.Index`. -/
 noncomputable def J_BT
     {trace : QueryLog (duplexSpongeChallengeOracle StmtIn U)}
     {state : CanonicalSpongeState U}
@@ -199,13 +226,9 @@ private inductive BuildBacktrackResult (U : Type) [SpongeUnit U] [SpongeSize] wh
   | err
   | ok (stepFamilies : List (List (CanonicalSpongeState U × CanonicalSpongeState U)))
 
-/-- Paper §5.2 partial-cap-segment matching for `BackTrack`: enumerate all `(stateIn, stateOut)`
-pairs in `tr_∇.p` whose `stateOut.capacitySegment` equals `nextInput.capacitySegment`, with the
-no-loop guard `stateIn.cap ≠ stateOut.cap`.
-
-Black-box over `[LawfulTraceTable T_P ...]` via `TraceTableOps.entries`; both forward and inverse
-permutation directions already collapse into the same bidirectional `tr_∇.p`
-(cf. `TraceNabla.ofQueryLog` dispatch). -/
+/-- Identifies all candidate predecessor transitions in the permutation table $\mathrm{tr}_{\nabla}.p$
+whose output capacity segment matches the input capacity segment of the next state.
+Both forward and inverse queries are unified under this lookup. -/
 private def predecessorCandidates
     (trΔ : TraceNabla T_H T_P StmtIn U)
     (nextInputCap : Vector U SpongeSize.C) :
@@ -217,13 +240,13 @@ private def predecessorCandidates
     else
       none
 
-/-! ### Linear-scan helpers (CO25 §5.2 BackTrack "look for at most one element" optimization)
+/-! ### Optimized Linear Backwards Scan (CO25, Section 5.2, line 1056)
 
-The paper's Algorithm 1 enumerates all maximal sequences then post-filters. CO25 line 1056 notes
-the procedure can equivalently `look for at most one element` — i.e. abort on scan-time forks.
-A scan-time fork strictly implies an `E_fork,p`/`E_fork,h,p`/`E_fork` event, so returning `err`
-on a fork is a strict over-approximation of the paper's post-filter `err` condition and the
-soundness bound of CO25 Theorem 5.19 is preserved. -/
+Rather than enumerating the entire family $S_{\mathrm{BT}}(\mathrm{tr}, s)$ and applying a post-filter,
+the backtracking extraction can be optimized to "look for at most one element". We implement this as a
+linear backward scan from the target state. Any branching (multiple predecessor candidates or multiple hash anchors)
+indicates a trace collision (a subset of $E_{\mathrm{fork}}$), which immediately aborts with `.forkErr`.
+This preserves the soundness bounds of Theorem 5.19 as it represents a strict over-approximation of the failure events. -/
 
 /-- Three-way classification of lookup results, used to detect scan-time forks. -/
 private inductive LookupResult (α : Type _) where
@@ -237,8 +260,8 @@ private def classifyLookup {α : Type _} (xs : List α) : LookupResult α :=
   | [a] => .unique a
   | _ :: _ :: _ => .conflict
 
-/-- Paper §5.2 Step 4 hash anchor lookup: filter `tr_∇.h.entries` for statements whose stored
-capacity matches the chain's initial capacity. Multiple matches indicate `E_fork,h,p`. -/
+/-- Identifies all candidate hash queries in the table $\mathrm{tr}_{\nabla}.h$ whose output capacity
+matches the capacity segment at the head of the backtracking chain. -/
 private def hashAnchorCandidates
     (trΔ : TraceNabla T_H T_P StmtIn U)
     (cap : Vector U SpongeSize.C) : List StmtIn := by
@@ -253,9 +276,9 @@ is equivalent to membership in the abstract multiset model. By `toMultiSet_add`,
 each fold step adds exactly one pair to the multiset. So induction on the trace
 connects multiset membership back to the original trace entry. -/
 
-/-- An intermediate data structure representing a partially constructed backtrack sequence.
-It carries all incremental properties of a valid chain from `head` to `targetState`, without the hash anchor.
-This allows us to construct the sequence iteratively via prepending (`::`), making structural induction proofs trivial. -/
+/-- An auxiliary data structure representing a partially constructed backtracking sequence.
+It formalizes the properties of a valid chain from a intermediate state `head` to the final `targetState`,
+omitting the hash anchor. This allows inductive construction of the chain by prepending transitions. -/
 private structure PartialBacktrackSequence (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (head targetState : CanonicalSpongeState U) where
   inputState : List (CanonicalSpongeState U)
@@ -444,11 +467,11 @@ private inductive LinearScanResult (trace : QueryLog (duplexSpongeChallengeOracl
   | noResult
   | done (seq : BacktrackSequence trace targetState)
 
-/-- CO25 §5.2 BackTrack linear backwards scan: from `currentState`, classify the predecessor
-candidates in `tr_∇.p`. `[]` ends the scan; `[pred]` continues; `_::_::_` is a fork → `.forkErr`.
-Loops in capacity segment are detected using `vCap` and result in `.forkErr`.
-Structurally recursive on `fuel`; the caller supplies `fuel = depthBound`.
-Uses a tail-recursive accumulator `acc` to build the sequence by prepending. -/
+/-- Performs the optimized linear backward scan from `currentState` to reconstruct the backtracking chain.
+At each step:
+- If no predecessor is found in the permutation table, we check for a unique hash anchor in $\mathrm{tr}_{\nabla}.h$ to complete the sequence.
+- If a unique predecessor is found, we extend the accumulator and recurse.
+- If multiple candidates are found at any lookup, or a cycle/loop is detected, the scan aborts with `.forkErr`. -/
 private def linearScanBackwards
     (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (trΔ : TraceNabla T_H T_P StmtIn U)
@@ -665,12 +688,8 @@ private lemma Lδ_le_inputState_length
     exact_mod_cast this
   exact this
 
-/-- BackTrack §5.2 Step 4(a).iii.A — assemble the encoded i-th prover message:
-  `α̂_i^(k) := concat_rate_segs(s_{R,in,L_ptr(i)}, …, s_{R,in,L_ptr(i)+L_P(i)-1})[0 : ℓ_P(i)]
-              ∈ Σ^{ℓ_P(i)}`  (CO25 Eq. 11).
-
-Char-based view: take the rate chars from `L_P(i)` consecutive input states (each
-contributing `r` chars), then keep the first `ℓ_P(i)` chars of the concatenation. -/
+/-- Reconstructs the encoded prover message $\hat{\alpha}_i$ of length $\ell_P(i)$ by concatenating
+the rate segments of $L_P(i)$ consecutive input states in the chain starting at the given block pointer. -/
 private def BacktrackSequence.assembleEncodedMessage
     {trace : QueryLog (duplexSpongeChallengeOracle StmtIn U)}
     {state : CanonicalSpongeState U}
@@ -683,12 +702,9 @@ private def BacktrackSequence.assembleEncodedMessage
   let ⟨v, _⟩ ← vectorOfListExact (U := U) (messageSize msgIdx) blockUnits
   return v
 
-/-- BackTrack §5.2 Step 4(a).iii.E — verifier squeeze window check.
-
-Char-based view: for a verifier squeeze starting at block `squeezeStart` of length
-`lvCur` blocks (= `lvCur · r` chars), consecutive squeeze blocks must agree on their
-rate segments — i.e. for each `k' ∈ [lvCur)`,
-  `s_{R,out, squeezeStart+k'}  =  s_{R,in, squeezeStart+k'+1}`. -/
+/-- Validates the verifier squeeze window of length $L_V(i)$ starting at the specified index.
+Verifies that the rate segments of the output states match the input rate segments of the subsequent states,
+which is a necessary condition for honest verifier squeezing. -/
 private def BacktrackSequence.checkSqueezeWindow
     {trace : QueryLog (duplexSpongeChallengeOracle StmtIn U)}
     {state : CanonicalSpongeState U}
@@ -704,13 +720,10 @@ private def BacktrackSequence.checkSqueezeWindow
     | _, _ => ok := false
   return ok
 
-/-- BackTrack §5.2 Step 3 (per-sequence): extract candidate salt `∈ U^δ` and validate
-the rate-suffix consistency of the last absorb block.
-
-- Concatenates the rate segments of all input states `[s_{in,0}, …, s_{in,m_k}]` and
-  slices off exactly `δ` elements.  Returns `none` if length is insufficient.
-- When `δ > r`, additionally checks `s_{R,in,L_δ-1}[δ mod r : r] = s_{R,out,L_δ-2}[δ mod r : r]`
-  (CO25 Step 3 remainder condition).  Returns `none` if the check fails. -/
+/-- Implements Step 3 of the BackTrack procedure (CO25, Section 5.2).
+Extracts the candidate salt of length $\delta$ from the concatenated rate segments of the input states.
+If $\delta > r$, it performs the non-overwritten rate suffix consistency check on the final absorbed block,
+ensuring the unused parts of the input and output rate segments match. -/
 private def BacktrackSequence.constructCandidateSalt
     {trace : QueryLog (duplexSpongeChallengeOracle StmtIn U)}
     {state : CanonicalSpongeState U}
@@ -742,7 +755,8 @@ private def BacktrackSequence.constructCandidateSalt
     else
       none
 
-/-- BackTrack §5.2 Step 4: Parse the protocol rounds to extract and validate messages. -/
+/-- Parses the protocol rounds over a reconstructed backtracking sequence to extract and validate the
+entire sequence of prover messages and verify the consistency of the squeeze windows (CO25, Section 5.2, Step 4). -/
 private def BacktrackSequence.extractCandidate
     (state : CanonicalSpongeState U)
     (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
@@ -826,17 +840,7 @@ private def BacktrackSequence.extractCandidate
   -- Exhausted all rounds without hitting Step D — sequence is invalid.
   return none
 
-/-- CO25 §5.2 BackTrack with the line-1056 "look for at most one element" optimization.
-
-Performs a single backwards linear scan from `state` along `tr_∇.p`:
-- `predecessorCandidates` empty → terminate scan at the current state (chain start).
-- `predecessorCandidates` singleton → continue.
-- `predecessorCandidates` two or more → scan-time fork → return `err`.
-
-After the scan, `hashAnchorCandidates` is classified the same way over `tr_∇.h`. Finally the
-existing `constructCandidateSalt` + `extractCandidate` extractors are run; their `none` becomes
-`noResult`. Scan-time forks are a strict over-approximation of CO25 `E_fork,p ∪ E_fork,h,p ⊆
-E_fork`, so the soundness bound of Theorem 5.19 is preserved. -/
+/-- Runs the optimized backtracking extraction procedure on a trace using the linear backward scan. -/
 private noncomputable def linearBackTrack
     (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (trΔ : TraceNabla T_H T_P StmtIn U)
@@ -858,19 +862,14 @@ private noncomputable def linearBackTrack
           | some out => ExperimentOutput.some out
 
 open Classical in
-/-- The backtracking procedure in Section 5.2, which takes in:
-- the query-answer trace for the oracle `(h, p, p⁻¹)`
-- a state (vector of `N` units)
+/-- The primary entry point for the backtracking extraction procedure $\mathsf{BackTrack}(\mathrm{tr}, s)$
+(CO25, Section 5.2).
 
-And returns one of the following:
-- `ExperimentOutput.noResult` — paper-`none` (no elements found in Outs)
-- `ExperimentOutput.err` — paper-`err` (multiple elements in Outs, ambiguous)
-- `ExperimentOutput.some out` — paper-success (unique tuple `(i, 𝕩, τ, (α̂_1, …, α̂_i))` in Outs)
-
-Implementation: delegates to `linearBackTrack` (CO25 §5.2 line 1056 optimization). The paper-spec
-maximal family `S_BT(tr, s)` (`BacktrackSequenceFamily` / `J_BT`) remains available for downstream
-proofs (BadEvents, AbortAnalysis) which quantify over `S_BT.seqFamily`; the executable surface here
-uses the linear scan, which is a strict over-approximation under the bad-event analysis. -/
+### Returns
+- `ExperimentOutput.noResult`: If no valid backtracking sequence can be reconstructed.
+- `ExperimentOutput.err`: If multiple conflicting backtracking paths exist.
+- `ExperimentOutput.some out`: If a unique sequence is successfully extracted, returning the associated
+  statement, salt, and reconstructed messages. -/
 def backTrack
     (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (trΔ : TraceNabla T_H T_P StmtIn U)

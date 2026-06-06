@@ -8,29 +8,45 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Defs
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.TraceDataStructures
 
 /-!
-# Lookahead sequence family and procedure
+# Lookahead Sequence Family and Extraction Procedure
 
-This file contains the lookahead sequence family `S_LA(tr_∇.p, s, i)` and the procedure
-`LookAhead(tr_∇.p, s, i)` from CO25 §5.3.
+This module formalizes the lookahead sequence family $S_{\mathrm{LA}}(\mathrm{tr}_{\nabla}.p, s, i)$
+and the lookahead extraction procedure $\mathsf{LookAhead}(\mathrm{tr}_{\nabla}.p, s, i)$ as defined in
+CO25, Section 5.3.
 
-## Declaration order (top-to-bottom, matching CO25 §5.3 Algorithm 2)
+## Mathematical Formulation
 
-1. **Paper structures** — `LookaheadSequence` (Eq. 13 chain), `LookaheadSequenceFamily`
-   (the maximal family), and the abbrev `S_LA(tr_∇.p, s, i)`.
-2. **§5.3 Step 1** — `linearScanForwards` walks `tr_∇.p` from the initial state to recover the
-   (unique, when well-formed) maximal lookahead chain underlying `S_LA(tr_∇.p, s, i)`.
-   Internal helpers: `successorCandidates`, `singletonLookaheadSequence`,
-   `prependLookaheadSequence`.
-3. **§5.3 Step 2** — `lookAhead` dispatches on `|S_LA|`: `err` (multiple), `none` (empty),
-   or a sampled `Vector U (challengeSize i)` (single).  Internal helpers: `sampleArrayExact`,
-   `sampleRateVector`, `sampleRateVectorsExact`, `takeVector`, plus the size lemma
-   `challengeSize_le_Lvi_mul_R`.
+In the soundness analysis of Fiat-Shamir applied to interactive oracle reductions (IORs) in the
+duplex-sponge model, a key challenge is extracting a verifier challenge $\hat{\rho}_i$ for a round $i$
+from a partial query-answer trace. The lookahead sequence formalizes the forward propagation of the
+sponge state under permutation queries starting from a given state $s$.
 
-## Paper-faithful black-box `tr_∇.p` access
+1. **Lookahead Chains (Eq. 13)**: A lookahead sequence of length $m$ over a permutation table $\mathrm{tr}_{\nabla}.p$
+   is a sequence of query-answer pairs $((s_{\mathrm{in},\iota}, s_{\mathrm{out},\iota}))_{\iota=0}^{m-1}$ such that:
+   - $s_{\mathrm{in},0} = s$ (the initial state),
+   - Each pair is recorded in the permutation table $\mathrm{tr}_{\nabla}.p$,
+   - The output state of a step matches the input state of the next step ($s_{\mathrm{out},\iota-1} = s_{\mathrm{in},\iota}$), and
+   - The capacity segments are non-trivially modified ($\mathrm{cap}(s_{\mathrm{in},\iota}) \neq \mathrm{cap}(s_{\mathrm{out},\iota})$)
+     to prevent trivial cyclic/identity loops.
 
-`LookAhead` enumerates the query-answer entries in the simulator's permutation table `tr_∇.p`.
-This preserves the paper's branching behavior: zero successors means `none`, while multiple
-maximal successor chains survive into `S_LA` and make Step 2 return `err`.
+2. **The Lookahead Family $S_{\mathrm{LA}}$**: This is the family of maximal lookahead chains of length at most
+   $L_V(i)$ (the number of permutation calls allocated to round $i$). Maximality ensures that no chain in the family
+   is a prefix/sub-chain of another.
+
+3. **Extraction & Sampling (Step 2)**: The lookahead extraction procedure $\mathsf{LookAhead}$ dispatches on
+   the size of the family $S_{\mathrm{LA}}$:
+   - If $|S_{\mathrm{LA}}| > 1$, a collision/fork in the forward evaluation is detected, returning $\mathsf{err}$.
+   - If $S_{\mathrm{LA}} = \emptyset$, it returns $\mathsf{noResult}$.
+   - If $S_{\mathrm{LA}}$ contains a unique maximal chain of length $m_1$, the missing $L_V(i) - m_1$ rate blocks are
+     sampled uniformly at random. The concatenation of the known output rate blocks and these fresh samples yields the
+     extracted challenge $\hat{\rho}_i \in \Sigma^{\ell_V(i)}$.
+
+## Algorithmic Optimization
+
+While the paper defines $S_{\mathrm{LA}}$ as a static mathematical family, this module implements a linear forward
+scan (`linearScanForwards`) starting at the state $s$ to efficiently extract the unique maximal sequence. If at any
+point multiple forward candidates are found, the scan immediately aborts with `.forkErr`, which is a paper-faithful
+optimization since a scan-time fork coincides with the bad event $E_{\mathrm{fork},p}$.
 -/
 
 open OracleComp OracleSpec ProtocolSpec
@@ -48,17 +64,14 @@ noncomputable section
 
 /-! ## §5.3 paper structures — `LookaheadSequence`, `S_LA(tr_∇.p, s, i)` -/
 
-/-- A look-ahead sequence (Equation 13) over a black-box permutation table `tr_∇.p` and an
-  initial state, consists of:
-- A list of `(s_in, s_out)` query-answer pairs,
-
-subject to the following conditions:
-- The list is nonempty
-- The first input state is the given initial state
-- Every pair appears in the query-answer entries of `tr_∇.p`
-- Consecutive pairs are linked by output/input equality
-- No-loop: `cap(s_in) ≠ cap(s_out)` at every step
--/
+/-- A look-ahead sequence (CO25, Equation 13) over a black-box permutation table `tr_∇.p`
+and an initial state $s$. A lookahead sequence is a non-empty chain of sponge state transition pairs
+$((s_{\mathrm{in},\iota}, s_{\mathrm{out},\iota}))_{\iota=0}^{m-1}$ such that:
+- The first input state is the given starting state: $s_{\mathrm{in},0} = s$,
+- Every transition pair is present in the permutation table: $(s_{\mathrm{in},\iota}, s_{\mathrm{out},\iota}) \in \mathrm{tr}_{\nabla}.p$,
+- Consecutive transitions are chained: $s_{\mathrm{out},\iota-1} = s_{\mathrm{in},\iota}$ for $\iota \geq 1$, and
+- The capacity segment changes at each transition: $\mathrm{cap}(s_{\mathrm{in},\iota}) \neq \mathrm{cap}(s_{\mathrm{out},\iota})$,
+  guaranteeing that the chain does not contain trivial loops. -/
 structure LookaheadSequence
     {T_P : Type}
     [LawfulTraceTable T_P (CanonicalSpongeState U) (CanonicalSpongeState U)]
@@ -100,11 +113,12 @@ lemma LookaheadSequence.inputState_length_eq_outputState_length
     seq.inputState.length = seq.outputState.length := by
   simp [LookaheadSequence.inputState, LookaheadSequence.outputState]
 
-/-- A family of look-ahead sequences (Equation 13), parametrized by a black-box permutation
-  table `tr_∇.p`, an initial state, and a challenge round index `i`, is defined as a finite set
-  of look-ahead sequences such that:
-- no two sequences are strict subsets of each other
-- the length of any sequence is at most `Lᵥ(i)` (number of permutation calls for round `i`) -/
+/-- A family of look-ahead sequences (CO25, Equation 13), parameterized by a black-box
+permutation table `tr_∇.p`, an initial state $s$, and a challenge round index $i$.
+The family $S_{\mathrm{LA}}(\mathrm{tr}_{\nabla}.p, s, i)$ is a finite set of lookahead sequences satisfying:
+- **Maximality**: No sequence in the family is a strict subset of another, ensuring each represents a maximal path.
+- **Length Bound**: The length of any sequence in the family is at most $L_V(i)$, the verifier's permutation query bound
+  for challenge round $i$. -/
 structure LookaheadSequenceFamily
     (trΔp : T_P)
     (state : CanonicalSpongeState U) (i : pSpec.ChallengeIdx) where
@@ -117,10 +131,9 @@ structure LookaheadSequenceFamily
   /-- `m_k ≤ L_V(i)` — LookAhead §5.3 Step 1(a) length bound. -/
   length_le_numPermQueriesChallenge : ∀ s ∈ seqFamily, s.inputState.length ≤ pSpec.Lᵥᵢ i
 
-/-- CO25 §5.3 abbreviation: `S_LA(tr_∇.p, s, i)`, the maximal lookahead
-sequence family produced by LookAhead Step 1.
-
-Parallel to `S_BT(tr, s)` in `Backtrack.lean`. -/
+/-- The maximal lookahead sequence family $S_{\mathrm{LA}}(\mathrm{tr}_{\nabla}.p, s, i)$
+produced by the LookAhead extraction procedure (CO25, Section 5.3, Step 1). This is the dual structure
+to the backtracking sequence family $S_{\mathrm{BT}}(\mathrm{tr}, s)$ defined in `Backtrack.lean`. -/
 abbrev S_LA
     (trΔp : T_P)
     (state : CanonicalSpongeState U) (i : pSpec.ChallengeIdx) :=
@@ -128,10 +141,10 @@ abbrev S_LA
 
 /-! ## §5.3 Step 1 — Parse `tr_∇.p` into the maximal family `S_LA(tr_∇.p, s, i)` (Eq. 13) -/
 
-/-- Successor candidates from the query-answer entries of `tr_∇.p`.
-
-Unlike `TraceTableOps.inlu`, this keeps all forward matches so multiple successor chains reach
-`S_LA` and are reported as paper-`err` by Step 2. -/
+/-- Computes all candidate successor states from the query-answer table $\mathrm{tr}_{\nabla}.p$
+for a given state `current`. Unlike `TraceTableOps.inlu`, which assumes a single deterministic map,
+this returns all forward matches in the table. This is necessary to detect branching (forks),
+which must lead to an error state during extraction. -/
 private def successorCandidates
     (trΔp : T_P) (current : CanonicalSpongeState U) :
     List (CanonicalSpongeState U) := by
@@ -260,9 +273,11 @@ private lemma length_flatten_vector_toList (blocks : List (Vector U SpongeSize.R
 private def takeVector (n : Nat) (xs : List U) (h : n ≤ xs.length) : Vector U n :=
   Vector.ofFn (fun j => xs[j.1]'(Nat.lt_of_lt_of_le j.2 h))
 
-/-- CO25 §5.3 Step 2(c) — given a single maximal lookahead sequence of length `m₁ ≤ L_V(i)`,
-sample the `L_V(i) - m₁` missing rate blocks uniformly from `Σ^r`, concatenate with the known
-output-rate blocks, and return the first `ℓ_V(i)` units as `ρ̂_i ∈ Σ^{ℓ_V(i)}`. -/
+/-- Implements Step 2(c) of the LookAhead extraction procedure (CO25, Section 5.3).
+Given a unique maximal lookahead sequence of length $m_1 \leq L_V(i)$, this function samples the
+remaining $L_V(i) - m_1$ rate blocks uniformly at random from $\Sigma^r$. It then concatenates the known
+output-rate blocks from the sequence with the freshly sampled blocks, extracting the prefix of length
+$\ell_V(i)$ as the challenge $\hat{\rho}_i \in \Sigma^{\ell_V(i)}$. -/
 private def sampleChallengeFromSequence
     {trΔp : T_P}
     {state : CanonicalSpongeState U}
@@ -332,21 +347,27 @@ private lemma successor_singleton_mem_entries
       rw [hPairEq'] at hPairMem; exact hPairMem
   · contradiction
 
-/-! ### Linear-scan helpers (CO25 §5.3 Algorithm 2 line 1107 "search stops on conflicting chains")
+/-! ### Optimized Linear Forwards Scan (CO25, Section 5.3, Algorithm 2)
 
-The paper's Algorithm 2 enumerates the maximal family then post-filters. CO25 line 1107 states
-"the search stops if it encounters two conflicting chains" — i.e. scan-time fork → return `err`
-directly. This is paper-faithful: scan-time fork detection coincides with `E_fork,p`. -/
+Algorithm 2 in the paper is specified via an exhaustive enumeration of the maximal sequence family
+followed by a filtering step. However, as noted in the text (line 1107), "the search stops if it encounters
+two conflicting chains". We optimize this by performing a single linear forward scan. Finding multiple
+successors at any step indicates a fork (corresponding to the event $E_{\mathrm{fork},p}$), allowing us to
+abort immediately and return an error. -/
 
 
-/-- Output of linear forwards scan: either a fork was detected, or scan terminated with an optional sequence. -/
+/-- The result of a linear forward scan. Represents either a detected branch/fork (`forkErr`)
+or a successful scan returning an optional lookahead sequence (`done`). -/
 private inductive LinearForwardScanResult {T_P : Type} [LawfulTraceTable T_P (CanonicalSpongeState U) (CanonicalSpongeState U)]
     (trΔp : T_P) (state : CanonicalSpongeState U) where
   | forkErr
   | done (seq? : Option (LookaheadSequence trΔp state))
 
-/-- CO25 §5.3 LookAhead linear forwards scan: from `current`, classify successor candidates in
-`tr_∇.p`. `[]` ends scan; `[next]` continues; `_::_::_` → `.forkErr`. -/
+/-- Performs a linear forward scan along the permutation table $\mathrm{tr}_{\nabla}.p$ starting from `current`.
+At each step:
+- If no successor candidates exist, the scan terminates.
+- If a unique successor `next` is found, the scan continues recursively (after checking for capacity segment loops).
+- If multiple successors exist, a fork is detected, and the scan aborts with `.forkErr`. -/
 private def linearScanForwards
     (trΔp : T_P) (fuel : Nat) (current : CanonicalSpongeState U) :
     LinearForwardScanResult (U := U) trΔp current :=
@@ -411,9 +432,8 @@ private lemma linearScanForwards_seq_length_le
       · -- succs = _ :: _ :: _: .forkErr, contradiction
         simp at hScan
 
-/-- `linearLookAhead` uses the linear scan to return either a challenge vector or
-`err` directly (paper-faithful). This is the executable surface, replacing an exhaustive maximal
-family enumeration of `S_LA`. -/
+/-- The executable entry point for lookahead extraction. It runs the optimized linear scan
+to extract a unique sequence, and if successful, samples any missing rate blocks to output the challenge vector. -/
 private def linearLookAhead
     (trΔp : T_P) (state : CanonicalSpongeState U) (i : pSpec.ChallengeIdx) :
     OracleComp (Unit →ₒ U) (ExperimentOutput (Vector U (challengeSize i))) := do
@@ -430,24 +450,19 @@ private def linearLookAhead
         (seq := seq) (i := i) (hInputLenLe := hLen)
       pure (ExperimentOutput.some rhoHat)
 
-/-- CO25 §5.3 Algorithm 2 — `LookAhead(tr_∇.p, s, i)`, polymorphic over any
-`[LawfulTraceTable T_P ...]` for `tr_∇.p`.
+/-- The formal lookahead extraction procedure $\mathsf{LookAhead}(\mathrm{tr}_{\nabla}.p, s, i)$
+(CO25, Section 5.3, Algorithm 2).
 
-Inputs:
-- `trΔp` — the simulator's permutation table `tr_∇.p`,
-- `state` — initial permutation state `s = (s_R, s_C) ∈ Σ^{r+c}`,
-- `i` — challenge round index `i ∈ [k]`.
+### Parameters
+- `trΔp`: The simulator's permutation table $\mathrm{tr}_{\nabla}.p$.
+- `state`: The initial permutation state $s \in \Sigma^{r+c}$.
+- `i`: The challenge round index.
 
-Output: a probabilistic computation returning either
-- `ExperimentOutput.err` — multiple maximal lookahead sequences (paper Step 2(a)),
-- `ExperimentOutput.noResult` — empty `S_LA` (paper Step 2(b)),
-- `ExperimentOutput.some ρ̂_i` — single maximal sequence; the missing rate blocks
-  `s_{R,out,m_1}, …, s_{R,out,L_V(i)-1}` are sampled uniformly from `Σ^r` and the prefix
-  of length `ℓ_V(i)` is returned (paper Step 2(c)).
-
-Implementation: delegates to `linearLookAhead`, which performs CO25 line-1107's scan-time
-fork-detection optimization. The paper-spec maximal family `S_LA` (`LookaheadSequenceFamily`)
-remains available for downstream proofs (BadEvents, AbortAnalysis). -/
+### Returns
+- `ExperimentOutput.err`: If multiple conflicting maximal lookahead sequences exist.
+- `ExperimentOutput.noResult`: If no lookahead sequences are found starting at $s$.
+- `ExperimentOutput.some \hat{\rho}_i`: If a unique maximal sequence is found; the missing rate blocks
+  are completed via uniform sampling and the resulting challenge vector is returned. -/
 def lookAhead
     (trΔp : T_P)
     (state : CanonicalSpongeState U) (i : pSpec.ChallengeIdx) :
