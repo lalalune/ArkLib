@@ -374,6 +374,25 @@ theorem ggr11_perWordBound_of_le_exp [Fintype F] [Nonempty ι]
     _ ≤ ((b + r).choose r : ℕ∞) * (Lambda C δ) ^ r := by
           gcongr
 
+/-- Generic end-to-end elementary regime: if the Red budget already dominates the
+interleaving factor, the in-tree product bound proves the GGR11 list-size conclusion. -/
+theorem lambda_le_ggr11_of_le_exp [Fintype F] [Nonempty ι]
+    {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ}
+    (hmr : m ≤ r) (hL : 1 ≤ Lambda C δ) :
+    Lambda (interleavedCodeSet (κ := Fin m) C) δ
+      ≤ ((b + r).choose r : ℕ∞) * (Lambda C δ) ^ r :=
+  lambda_le_ggr11_of_perWordBound (ggr11_perWordBound_of_le_exp hmr hL)
+
+/-- Generic end-to-end infinite-list regime: if the base list size is infinite and the
+Red budget is positive, the right-hand side is `⊤`, so the GGR11 list-size conclusion is
+automatic. -/
+theorem lambda_le_ggr11_of_Lambda_top
+    {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ}
+    (hr : 0 < r) (hL : Lambda C δ = ⊤) :
+    Lambda (interleavedCodeSet (κ := Fin m) C) δ
+      ≤ ((b + r).choose r : ℕ∞) * (Lambda C δ) ^ r :=
+  lambda_le_ggr11_of_perWordBound (ggr11_perWordBound_of_Lambda_top hr hL)
+
 -- Axiom audit: generic frontier/reassembly surfaces for the GGR11 tree residual.
 #print axioms treeStructure_of_frontier
 #print axioms frontier_of_treeStructure
@@ -381,5 +400,10 @@ theorem ggr11_perWordBound_of_le_exp [Fintype F] [Nonempty ι]
 #print axioms perWordBound_of_treeFrontier
 #print axioms lambda_le_ggr11_of_treeStructure
 #print axioms lambda_le_ggr11_of_treeFrontier
+#print axioms ggr11_treeStructure_of_le_exp
+#print axioms ggr11_perWordBound_of_Lambda_top
+#print axioms ggr11_perWordBound_of_le_exp
+#print axioms lambda_le_ggr11_of_le_exp
+#print axioms lambda_le_ggr11_of_Lambda_top
 
 end InterleavedCode.GGR11
