@@ -71,6 +71,23 @@ evaluate to `(1+ω²)(1-ω²) = 1 - ω⁴ = 2`, at `±ω` the polynomial `p₀` 
   determinant zero (via the explicit kernel vector `rimKernelVec`), over every field with
   `ω⁴ = -1`; `rimMatrix_det_eq_zero_zmod17` instantiates it over `F₁₇`.
 
+## Post-refutation state of the Grand LD value question (issue #40)
+
+The refutation kills the AGL24/GZ *route*, not the threshold bracket: the faithful
+`listLatticeThreshold` bounds (unique-decoding floor, capacity ceiling, parameterized
+Johnson floor / Elias ceiling in `GrandChallengeLDThreshold*.lean`) are unchanged, and
+the value question for `μ_{2^t}` remains open in both directions.  What is now *known
+exactly* (machine-verified, parent repo `conj3-proof/INVOLUTION-STRUCTURE-2026-06-06.md`):
+the failure landscape of the k-wpc rigidity property at the gateway parameters is
+completely classified by a Möbius-involution law — the global dihedral symmetries
+`t ↦ -t`, `t ↦ ξ/t` of `μ_n` plus a Beukers–Smyth-bounded sporadic remainder — with
+failure count `Θ(n⁴)`, polynomially negligible against the prize budget `ε*·|F|`.
+The old CONJ-A/CONJ-3 notes are superseded (banners in the parent research dossiers);
+`mu8_list_three` below records the stable structural anchor: `μ_8` *saturates* the
+`L = 2` generalized-Singleton boundary (a 3-element list at agreement 4 for `n = 8,
+k = 3`, where generic evaluation points admit only 2) — a boundary witness, not a
+threshold mover.
+
 The companion computations (exact symbolic determinant
 `D(q) = q⁸(q-1)⁶(q+1)⁴ Φ₄(q)³ Φ₈(q)`, mod-p rank checks, and the exhaustive
 failure-landscape classification via the Desargues involution criterion) live in
@@ -339,5 +356,86 @@ theorem rimMatrix_det_eq_zero (hω : ω ^ 4 = -1) : (rimMatrix ω).det = 0 :=
 /-- `F₁₇` instantiation of the determinant drop (`ω = 9`, an element of order 8). -/
 theorem rimMatrix_det_eq_zero_zmod17 : (rimMatrix (9 : ZMod 17)).det = 0 :=
   rimMatrix_det_eq_zero (9 : ZMod 17) (by decide)
+
+/-! ## The boundary list-of-three witness (issue #40)
+
+`μ_8` saturates the `L = 2` generalized-Singleton boundary: three pairwise distinct
+codewords of degree `< 3` and a received word, each pair agreeing on (at least) 4 of the
+8 points of `μ_8` — i.e. a list of size 3 at radius `n − t = 4`, where
+`⌊(n−k+1)/(t−k+1)⌋ = 3` is the ST20 ceiling and *generic* points admit only 2
+(the `L = 2` random-RS guarantee `δn ≤ (2/3)(n−k+1) = 4` is exactly the boundary).
+This does not violate ST20 — it shows `μ_n` *attains* it through the same dihedral
+mechanism that kills the RIM route. -/
+
+/-- The received word (indexed by the geometric coordinate `i ↦ ω^i`): value `2` at
+`±1` (coordinates 0, 4), value `0` at `±ω, ±ω²` (coordinates 1, 5, 2, 6), junk `1`
+at the two unused coordinates 3, 7. -/
+def receivedWord : Fin 8 → F := ![2, 0, 0, 1, 2, 0, 0, 1]
+
+/-- **Boundary saturation witness.**  Over any field with `ω⁴ = -1` and `2 ≠ 0`,
+there are three pairwise distinct polynomials of degree `≤ 2` each agreeing with
+`receivedWord` on an explicit 4-element subset of the geometric coordinates of `μ_8`. -/
+theorem mu8_list_three (hω : ω ^ 4 = -1) (h2 : (2 : F) ≠ 0) :
+    ∃ f : Fin 3 → F[X], (∀ j, (f j).natDegree ≤ 2) ∧ Function.Injective f ∧
+      ∀ j : Fin 3, ∃ S : Finset (Fin 8), 4 ≤ S.card ∧
+        ∀ i ∈ S, (f j).eval (ω ^ (i : ℕ)) = receivedWord i := by
+  have h8 := omega_pow_eight ω hω
+  have hu : (1 : F) + ω ^ 2 ≠ 0 := by
+    intro h
+    apply h2
+    have hsq : ω ^ 2 = -1 := by linear_combination h
+    linear_combination hω + (1 - ω ^ 2) * hsq
+  -- distinguishing evaluations, typed at the `p`-level via defeq with `cert`
+  have hp01 : (p₀ ω).eval (ω ^ 1) = 0 := eval_edge02 ω hω 1 (Or.inl rfl) 0 (by decide)
+  have hp00 : (p₀ ω).eval (ω ^ 0) = 2 := eval_edge01 ω hω 0 (Or.inl rfl) 0 (by decide)
+  refine ⟨cert ω, cert_natDegree_le ω, ?_, ?_⟩
+  · -- pairwise distinctness via distinguishing evaluations
+    have h01 : p₀ ω ≠ p₁ := by
+      intro h
+      have he : (0 : F) = (p₁ : F[X]).eval (ω ^ 1) := by rw [← hp01, h]
+      simp only [p₁, eval_add, eval_pow, eval_X, eval_C] at he
+      exact hu (by linear_combination -he)
+    have h0z : p₀ ω ≠ 0 := by
+      intro h
+      rw [h] at hp00
+      simp at hp00
+      exact h2 hp00.symm
+    have h1z : (p₁ : F[X]) ≠ 0 := by
+      intro h
+      have he : (p₁ : F[X]).eval 0 = (0 : F) := by rw [h]; simp
+      simp [p₁] at he
+    intro a b hab
+    fin_cases a <;> fin_cases b <;>
+      first
+        | rfl
+        | (exact absurd hab (by simpa [cert] using h01))
+        | (exact absurd hab (by simpa [cert] using h01.symm))
+        | (exact absurd hab (by simpa [cert] using h0z))
+        | (exact absurd hab (by simpa [cert] using h0z.symm))
+        | (exact absurd hab (by simpa [cert] using h1z))
+        | (exact absurd hab (by simpa [cert] using h1z.symm))
+  · -- agreement sets
+    intro j
+    fin_cases j
+    · -- p₀ agrees at {0, 1, 4, 5}
+      refine ⟨{0, 1, 4, 5}, by decide, ?_⟩
+      intro i hi
+      fin_cases hi
+      · exact eval_edge01 ω hω 0 (Or.inl rfl) 0 (by decide)
+      · exact eval_edge02 ω hω 1 (Or.inl rfl) 0 (by decide)
+      · exact eval_edge01 ω hω 4 (Or.inr rfl) 0 (by decide)
+      · exact eval_edge02 ω hω 5 (Or.inr rfl) 0 (by decide)
+    · -- p₁ agrees at {0, 2, 4, 6}
+      refine ⟨{0, 2, 4, 6}, by decide, ?_⟩
+      intro i hi
+      fin_cases hi
+      · exact eval_edge01 ω hω 0 (Or.inl rfl) 1 (by decide)
+      · exact eval_edge12 ω hω 2 (Or.inl rfl) 1 (by decide)
+      · exact eval_edge01 ω hω 4 (Or.inr rfl) 1 (by decide)
+      · exact eval_edge12 ω hω 6 (Or.inr rfl) 1 (by decide)
+    · -- the zero codeword agrees at {1, 2, 5, 6}
+      refine ⟨{1, 2, 5, 6}, by decide, ?_⟩
+      intro i hi
+      fin_cases hi <;> simp [cert, receivedWord]
 
 end MuTwoPowDerandRefutation
