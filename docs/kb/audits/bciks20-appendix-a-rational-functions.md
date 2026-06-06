@@ -16,9 +16,19 @@ Downstream users include the BCIKS20 list-decoding agreement files under
 ## Status Legend
 
 - `present`: the item is formalized without a local `sorry`.
-- `present-but-incomplete`: the declaration exists but still has a local `sorry`.
+- `present-but-incomplete`: the declaration exists, but its current Lean surface still depends on
+  an explicit residual hypothesis, named `def : Prop` residual, or external theorem family. This
+  status does **not** imply a raw `sorry`/`admit` proof hole in the current tree; the
+  Appendix-A residuals below (`βHenselSuccTermWeightResidual`, `FaaDiBrunoSuccSumZeroResidual`,
+  etc.) are honest named residuals, not holes. Use `scripts/sorry_census.py` for the raw-hole
+  census.
 - `infrastructure`: supporting API is present, but it is not itself a paper theorem.
 - `missing`: no close declaration was found.
+
+> 2026-06-06 residualization check: on clean `lalalune/main`, `python3 scripts/sorry_census.py`
+> reports `holes = 0`, `files_with_holes = 0`, `decls_with_holes = 0`. The
+> `present-but-incomplete` rows below therefore describe residualized surfaces (named `def : Prop`
+> residuals / explicit-hypothesis bundles), not raw proof holes.
 
 ## Appendix A Matrix
 
