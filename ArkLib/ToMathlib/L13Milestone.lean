@@ -17,8 +17,8 @@ single irreducible residual was the **numerator-identification** `β R t = betaR
 (`GammaFromBeta.alpha_eq_alphaFromBeta_of_betaEq`), equivalently its embedding-level form
 `BetaIdentify.BetaEmbedEq`.  It was *irreducible* only because the legacy in-tree numerator `β` is
 the opaque `Exists.choose` of the weight-only `β_regular` (route (a) of `BetaIdentify`): `0`,
-`betaRec`, and infinitely many others satisfy its sole defining inequality, so the embedding identity
-is unprovable.
+`betaRec`, and infinitely many others satisfy its sole defining inequality, so the embedding
+identity is unprovable.
 
 With the `L13` split (`RationalFunctionsCore.lean` carrying the machinery, `BetaRecursion.lean`
 importing *Core*, the import cycle gone), `RationalFunctionsStrong.lean` could finally define the
@@ -32,8 +32,9 @@ power-series identifications that previously *consumed* the residual as a hypoth
 * `alpha_strong_eq_alphaFromBeta` — `α_strong … t = BetaToCurveCoeffPolys.αFromBeta … t`, with **no
   `hβ`/`BetaEmbedEq` hypothesis**.  This is exactly `GammaFromBeta.alpha_eq_alphaFromBeta_of_betaEq`
   with its residual hypothesis *removed* — the strong definition supplies it.
-* `gamma_strong` / `gamma_strong_eq_γ'` — the strong power series `γ_strong`, and its **unconditional**
-  equality to the `betaRec`-built `GammaFromBeta.γ'`.  The numerator identification `hβ` that
+* `gamma_strong` / `gamma_strong_eq_γ'` — the strong power series `γ_strong`, and its
+  **unconditional** equality to the `betaRec`-built `GammaFromBeta.γ'`.  The numerator
+  identification `hβ` that
   `GammaFromBeta.intree_gamma_eq_γ'` needed is gone.
 * `betaEmbedEqStrong` — the strong analogue of `BetaIdentify.BetaEmbedEq`, **proved with no
   hypothesis** (it is `beta_strong_embedEq` packaged as the `∀ t` predicate).
@@ -67,12 +68,14 @@ variable {F : Type} [Field F]
 `GammaFromBeta.alpha_eq_alphaFromBeta_of_betaEq` proved `α t = αFromBeta t` *from* the residual
 `hβ : ∀ t, β R t = betaRec … t`.  For the strong numerator that hypothesis is unnecessary: the
 embedding of `β_strong` is pinned to `betaRec`'s by definition (`beta_strong_embedEq`), and the
-`α_strong`/`αFromBeta` denominators are literally identical, so the identification is unconditional. -/
+`α_strong`/`αFromBeta` denominators are literally identical, so the identification is
+unconditional. -/
 
 /-- **`α_strong = αFromBeta`, with no β-identification residual.**  The strong Hensel-lift
 coefficient equals the genuine `betaRec`-built coefficient pointwise — *unconditionally*.  Compare
-`GammaFromBeta.alpha_eq_alphaFromBeta_of_betaEq`, which needed the residual `hβ` as a hypothesis; here
-the residual is supplied by `beta_strong_embedEq` (the defining property of `β_strong`). -/
+`GammaFromBeta.alpha_eq_alphaFromBeta_of_betaEq`, which needed the residual `hβ` as a
+hypothesis; here the residual is supplied by `beta_strong_embedEq` (the defining property of
+`β_strong`). -/
 theorem alpha_strong_eq_alphaFromBeta (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
     [Fact (Irreducible H)] [Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H)
     (Bcoeff : (i₁ : ℕ) → {m : ℕ} → Nat.Partition m → 𝒪 H) (t : ℕ) :
@@ -90,8 +93,8 @@ noncomputable def gamma_strong (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
 
 /-- **`γ_strong = γ'`, with no β-identification residual.**  The strong power series equals the
 genuine `betaRec`-built `GammaFromBeta.γ'` — *unconditionally*.  Compare
-`GammaFromBeta.intree_gamma_eq_γ'`, which needed the residual `hβ`; here the coefficient agreement is
-`alpha_strong_eq_alphaFromBeta`, supplied by definition. -/
+`GammaFromBeta.intree_gamma_eq_γ'`, which needed the residual `hβ`; here the coefficient
+agreement is `alpha_strong_eq_alphaFromBeta`, supplied by definition. -/
 theorem gamma_strong_eq_γ' (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
     [Fact (Irreducible H)] [Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H)
     (Bcoeff : (i₁ : ℕ) → {m : ℕ} → Nat.Partition m → 𝒪 H) :
@@ -102,9 +105,10 @@ theorem gamma_strong_eq_γ' (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
     rw [PowerSeries.coeff_mk, PowerSeries.coeff_mk,
       alpha_strong_eq_alphaFromBeta x₀ R H hHyp Bcoeff]
 
-/-- **`γ_strong` is definitionally the `betaRec` substitution form (the `hγ`-field shape).**  Chaining
-`gamma_strong_eq_γ'` with `GammaFromBeta.γ'_eq_subst_shiftSeries`: the strong power series is the
-substitution of the `betaRec`-built coefficient series — the exact shape every `Section5StrictData.hγ`
+/-- **`γ_strong` is definitionally the `betaRec` substitution form (the `hγ`-field shape).**
+Chaining `gamma_strong_eq_γ'` with `GammaFromBeta.γ'_eq_subst_shiftSeries`: the strong power
+series is the substitution of the `betaRec`-built coefficient series — the exact shape every
+`Section5StrictData.hγ`
 field requires, now with **no** residual hypothesis. -/
 theorem gamma_strong_eq_subst_shiftSeries (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
     [Fact (Irreducible H)] [Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H)
@@ -126,7 +130,8 @@ def BetaEmbedEqStrong (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
 
 /-- **`BetaEmbedEqStrong` holds with no hypothesis.**  This is `beta_strong_embedEq` packaged as the
 `∀ t` predicate: the numerator-identification residual that `BetaIdentify.BetaEmbedEq` threaded as a
-*hypothesis* through the entire §5 chain is, for the strong (betaRec-routed) numerator, a *theorem*. -/
+*hypothesis* through the entire §5 chain is, for the strong (betaRec-routed) numerator, a
+*theorem*. -/
 theorem betaEmbedEqStrong_holds (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
     [Fact (Irreducible H)] [Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H)
     (Bcoeff : (i₁ : ℕ) → {m : ℕ} → Nat.Partition m → 𝒪 H) :
@@ -137,8 +142,9 @@ end L13Milestone
 
 /-! ## The §5 keystone milestone with a residual-free hypothesis list
 
-`δ_ε_correlatedAgreementCurves` reached through the `betaRec`-native front door.  Its hypothesis list
-contains **no β-identification residual**: the only input is the genuine geometric per-received-word
+`δ_ε_correlatedAgreementCurves` reached through the `betaRec`-native front door.  Its
+hypothesis list contains **no β-identification residual**: the only input is the genuine
+geometric per-received-word
 `BetaCurveInputFin` bundle (built from `betaRec`), with the closed boundary ruled out by the strict
 square-root radius.  This is the milestone the `L13` definition makes residual-free — the numerator
 identification is no longer a hypothesis anywhere on the path. -/
@@ -157,8 +163,9 @@ omit [DecidableEq ι] in
 
 The BCIKS20 keystone goal `δ_ε_correlatedAgreementCurves` holds in the strict square-root Johnson
 regime, with the Johnson branch driven by the per-received-word `betaRec` input bundle
-`KeystoneStrictResidual.BetaCurveInputFin`.  Crucially, **no hypothesis is a numerator-identification
-residual** (`hβ`/`BetaEmbedEq`): the bundle is the genuine §5/App-A.4 geometric input built from the
+`KeystoneStrictResidual.BetaCurveInputFin`.  Crucially, **no hypothesis is a
+numerator-identification residual** (`hβ`/`BetaEmbedEq`): the bundle is the genuine
+§5/App-A.4 geometric input built from the
 real recursion `betaRec`, and the L13 strengthening (`betaEmbedEqStrong_holds`,
 `alpha_strong_eq_alphaFromBeta`, `gamma_strong_eq_γ'`) shows the in-tree strong numerator coincides
 with `betaRec` *by definition*, so nothing on this path assumes the identification.
@@ -222,10 +229,11 @@ omit [DecidableEq ι] in
 residual discharged from explicit boundary-card data.
 
 This is the same endpoint as
-`correlatedAgreement_affine_curves_strongBeta_of_betaRecFin_lattice_residual`, but callers supply the
-concrete boundary facts: good-set cardinality bounds plus the coefficient-polynomial extraction.
-`BoundaryDischarge.boundaryCardLatticeResidual_of_boundary_cards_and_coeffPolys` converts those facts
-to the smaller lattice residual isolated by the quantization split. -/
+`correlatedAgreement_affine_curves_strongBeta_of_betaRecFin_lattice_residual`, but callers
+supply the concrete boundary facts: good-set cardinality bounds plus the
+coefficient-polynomial extraction.
+`BoundaryDischarge.boundaryCardLatticeResidual_of_boundary_cards_and_coeffPolys` converts
+those facts to the smaller lattice residual isolated by the quantization split. -/
 theorem correlatedAgreement_affine_curves_strongBeta_of_betaRecFin_boundaryData
     {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
     (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)

@@ -154,9 +154,9 @@ theorem capacityPred_le_succ_hyp (k : ℕ) :
   · -- `(k+1)/n > 1`, i.e. `n < k+1`: then `(1 - (1 - x)) * n ≤ 1 * n = n ≤ k+1`.
     push Not at hle
     have hn_le : (Fintype.card ι : ℝ≥0) ≤ ((k : ℝ≥0) + 1) := by
-      have := le_of_lt hle
-      rw [div_le_one_iff] at hle
-      · exact le_of_lt (by simpa using hle)
+      have h1n := (lt_div_iff₀ hn_pos).mp hle
+      rw [one_mul] at h1n
+      exact h1n.le
     calc ((1 : ℝ≥0) - (1 - ((k : ℝ≥0) + 1) / (Fintype.card ι : ℝ≥0))) *
             (Fintype.card ι : ℝ≥0)
         ≤ 1 * (Fintype.card ι : ℝ≥0) := by
@@ -290,14 +290,17 @@ theorem mcaEvent_prob_le_choose_div (domain : ι ↪ F) (k : ℕ) (δ : ℝ≥0)
   have hmaps : Set.MapsTo Sf (↑Bad) (↑(Finset.univ.powersetCard m : Finset (Finset ι))) := by
     intro γ hγ
     have hγ' : γ ∈ Bad := hγ
-    rw [Finset.coe_powersetCard]
-    exact ⟨Finset.subset_univ _, hSfcard γ hγ'⟩
+    exact Finset.mem_coe.mpr
+      (Finset.mem_powersetCard.mpr ⟨Finset.subset_univ _, hSfcard γ hγ'⟩)
   have hcard_le : Bad.card ≤ (Finset.univ.powersetCard m : Finset (Finset ι)).card :=
     Finset.card_le_card_of_injOn Sf hmaps hinj
   rw [Finset.card_powersetCard, Finset.card_univ] at hcard_le
-  -- Push to `ENNReal` division.
+  -- Push to `ENNReal` division (align the two `ℕ → ENNReal` cast routes first).
+  have hden : (↑(↑(Fintype.card F) : ℝ≥0) : ENNReal) = (↑(Fintype.card F) : ENNReal) := by
+    push_cast; rfl
+  rw [hden]
   gcongr
-  · exact_mod_cast hcard_le
+  exact_mod_cast hcard_le
 
 /-- **The canonical-witness window bound.** For every RS code and every radius `δ`:
 
