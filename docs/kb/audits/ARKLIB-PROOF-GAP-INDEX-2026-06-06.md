@@ -43,6 +43,8 @@ rg -n --glob '*.lean' 'opaque\s+\w+|placeholder|stub|TODO|FIXME|named residual|e
 | BCIKS20 correlated agreement: `StrictCoeffPolysResidual`, `BoundaryCardResidual` | #7 |
 | BCIKS20 Claim 5.7 graph/count/factorization residuals | #8 |
 | BCIKS20 Appendix-A Hensel term weights and Faà-di-Bruno vanishing | #9 |
+| BCIKS20 Appendix-A P1 `DivWeightLe` / structured βHensel weight invariant | #89 |
+| BCIKS20 Appendix-A P2 `RestrictedFaaDiBrunoMatch` / `B_coeff` prefactor re-keying | #90 |
 | Hab25 Johnson MCA residuals | #10 |
 | ABF26 Lemma 4.6 hard direction | #11 |
 | GG25 line-decodability multi-gamma coverage | #12 |
