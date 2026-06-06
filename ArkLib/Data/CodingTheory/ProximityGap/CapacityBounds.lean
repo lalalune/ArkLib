@@ -457,6 +457,47 @@ theorem rs_epsCA_small_loss_r4_10_of_no_boundary_crossing_prop
     h_dmin hγ_pos hγ_lt hT492 ?_ hbound
   exact r4_10_floor_collapse_of_no_boundary_crossing (ι := ι) δ_fld γ hcross
 
+/-- The nearby internal radius used in R4.10 is strictly above `δ_fld` when `γ > 0`. -/
+lemma r4_10_delta_lt_nearby
+    (δ_fld γ : ℝ≥0) (hγ_pos : 0 < γ) :
+    δ_fld < δ_fld + γ / (Fintype.card ι : ℝ≥0) := by
+  have hnpos : 0 < (Fintype.card ι : ℝ≥0) := by
+    exact_mod_cast Fintype.card_pos
+  exact lt_add_of_pos_right δ_fld (div_pos hγ_pos hnpos)
+
+/-- Public T4.9.2-to-R4.10 adapter.
+
+This wrapper consumes the actual `rs_epsCA_bchks25_item2` proposition at the nearby internal
+radius `δ_fld + γ/n`, then routes it through the already-checked R4.10 no-boundary-crossing
+reduction.  The hard external input is exactly BCHKS25 T4.9.2; the remaining hypotheses are
+the explicit floor-collapse and real-bound side conditions already isolated above. -/
+theorem rs_epsCA_small_loss_r4_10_of_item2_no_boundary_crossing_prop
+    (domain : ι ↪ F) (k : ℕ) (δ_fld : ℝ≥0) (γ : ℝ≥0)
+    (h_dmin : (Code.minDist ((ReedSolomon.code domain k : Set (ι → F))) : ℝ)
+                / Fintype.card ι / 3 ≤ δ_fld)
+    (hγ_pos : 0 < γ) (hγ_lt : (γ : ℝ) < 1)
+    (hδ_lt : δ_fld < δ_fld + γ / (Fintype.card ι : ℝ≥0))
+    (hT492 : rs_epsCA_bchks25_item2 domain k δ_fld
+      (δ_fld + γ / (Fintype.card ι : ℝ≥0)) h_dmin hδ_lt)
+    (hcross : δ_fld * (Fintype.card ι : ℝ≥0) + γ <
+        (Nat.floor (δ_fld * (Fintype.card ι : ℝ≥0)) : ℝ≥0) + 1)
+    (hbound :
+      let δ_int : ℝ≥0 := δ_fld + γ / (Fintype.card ι : ℝ≥0)
+      let n : ℝ := Fintype.card ι
+      let ρ : ℝ := k / n
+      let t492Bound : ℝ :=
+        max ((1 - ρ - δ_fld) / (δ_fld * (1 - ρ - 2 * δ_fld) * Fintype.card F))
+            ((δ_int : ℝ) / (((δ_int : ℝ) - (δ_fld : ℝ)) * Fintype.card F))
+      let smallBound : ℝ :=
+        max ((1 - ρ - δ_fld) / (δ_fld * (1 - ρ - 2 * δ_fld) * Fintype.card F))
+            ((n * δ_fld + γ) / (γ * Fintype.card F))
+      t492Bound ≤ smallBound) :
+    rs_epsCA_small_loss_r4_10 domain k δ_fld γ h_dmin hγ_pos hγ_lt := by
+  refine rs_epsCA_small_loss_r4_10_of_no_boundary_crossing_prop
+    (domain := domain) (k := k) (δ_fld := δ_fld) (γ := γ)
+    h_dmin hγ_pos hγ_lt hcross ?_ hbound
+  simpa [rs_epsCA_bchks25_item2] using hT492
+
 /-- The currently stated `0 < γ < 1` hypotheses do not by themselves imply the
 floor-collapse side condition needed in `rs_epsCA_small_loss_r4_10`.
 
@@ -911,5 +952,7 @@ def subspaceDesign_epsCA_curves_polynomial_generators_bcgm25
   -- shadow). Blocked on #489 + T4.13. Genuinely external.
 
 end SubspaceDesignFRS
+
+#print axioms CodingTheory.rs_epsCA_small_loss_r4_10_of_item2_no_boundary_crossing_prop
 
 end CodingTheory
