@@ -216,7 +216,22 @@ lemma constFunc_mem_BBFCode {i : Fin r} (h_i : i ≤ ℓ) (c : L) :
 
 lemma constFunc_UDRClose {i : Fin r} (h_i : i ≤ ℓ) (c : L) :
   UDRClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i (fun _ => c) := by
-  sorry
+  unfold UDRClose
+  have hdist_zero :
+      Δ₀((fun _ => c),
+        (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i :
+          Set ((sDomain 𝔽q β h_ℓ_add_R_rate) i → L))) = 0 := by
+    apply le_antisymm
+    · exact le_trans
+        (distFromCode_le_dist_to_mem (fun _ => c) (fun _ => c)
+          (constFunc_mem_BBFCode 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) h_i c))
+        (by simp)
+    · exact bot_le
+  rw [hdist_zero]
+  rw [BBF_CodeDistance_eq 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (i := i) (h_i := h_i)]
+  norm_num
+  omega
 
 end ConstantFunctions
 omit [CharP L 2] [DecidableEq 𝔽q] h_β₀_eq_1 in

@@ -8,6 +8,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeRadiusOneExact
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointLower
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointUpper
+import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumRadiusOne
 
 /-!
 # Decision of the formalized §1 Grand MCA Prize at both field-size extremes
@@ -26,7 +27,7 @@ ABF26 §1 MCA prize predicate outside an explicit middle band of field sizes:
 * `epsMCA_one_bracket` — inside the remaining band the radius-one value is bracketed
   by `min(n-k, q)/q` and `2ⁿ/q`; `GrandChallengeRadiusOneExact.epsMCA_one_eq_choose_div`
   pins it exactly (to `C(n, k+1)/q`) once `q > C(C(n,k+1), 2)`, and
-  `SubsetSumRadiusOne` (if present) raises the floor to `|Σ_{k+1}(L)|/q` unconditionally.
+  `SubsetSumRadiusOne` raises the floor to `|Σ_{k+1}(L)|/q` unconditionally.
 
 Together with `grandMCAChallenge_iff_choose_le` and `not_listDecodingPrize`, this
 completes the resolution of the *formalized* §1 grand-challenge predicates up to the

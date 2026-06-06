@@ -1077,7 +1077,7 @@ theorem oracleReduction_perfectCompleteness :
             ((some <$> _) : OracleComp _ (Option _))) s) at hProver
         erw [simulateQ_map] at hProver
         rw [StateT.run_map] at hProver
-        simp only [support_map, Set.mem_image, Prod.exists, Option.some.injEq] at hProver
+        simp only [support_map, Set.mem_image, Prod.exists] at hProver
         obtain ⟨_, _, _, _, _, _, _, hEq⟩ := hProver
         cases hEq
     | some proverResult =>
@@ -1102,7 +1102,7 @@ theorem oracleReduction_perfectCompleteness :
             ((some <$> _) : OracleComp _ (Option _))) s) at hw
         erw [simulateQ_map] at hw
         rw [StateT.run_map] at hw
-        simp only [support_map, Set.mem_image, Prod.exists, Option.some.injEq] at hw
+        simp only [support_map, Set.mem_image, Prod.exists] at hw
         obtain ⟨_, _, _, _, _, _, _, hEq⟩ := hw
         cases hEq
     | some proverResult =>
@@ -1118,7 +1118,6 @@ theorem oracleReduction_perfectCompleteness :
         rw [mem_support_bind_iff] at hw
         obtain ⟨⟨g1, sg⟩, hg1, hw⟩ := hw
         rcases g1 with ⟨tr1, polyLE, chal⟩
-        simp only [liftM_pure] at hw
         erw [simulateQ_pure] at hw
         rw [StateT.run_pure] at hw
         simp only [support_pure, Set.mem_singleton_iff, Prod.mk.injEq] at hw
@@ -1148,9 +1147,8 @@ theorem oracleReduction_perfectCompleteness :
         obtain ⟨hpoly, hchal⟩ := Prod.mk.inj hrest
         subst polyLE
         subst chal
-        simp [FullTranscript.challenges, FullTranscript.messages, Transcript.concat,
-          Fin.snoc_last, Fin.snoc_castSucc, pSpec, oracleVerifier]
-        simp [Fin.snoc, pSpec]
+        simp [FullTranscript.challenges, FullTranscript.messages, oracleVerifier]
+        simp [Fin.snoc]
         constructor
         · constructor <;> rfl
         · ext x
