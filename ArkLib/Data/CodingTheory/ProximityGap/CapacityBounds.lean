@@ -5,6 +5,7 @@ Authors: Alexander Hicks
 -/
 
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
+import ArkLib.Data.CodingTheory.ProximityGap.ProximityGenerators
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.CodingTheory.Basic.Entropy
 import ArkLib.Data.CodingTheory.HammingBallVolume
@@ -129,16 +130,19 @@ dischargeable by any in-tree upper-bound machinery):
   the `≤ 1` half is trivial.
 - `rs_epsCA_johnson_jump_bchks25` (T4.18) — char-2 Johnson-jump witness family.
 
-*SHADOW* (placeholder pending a canonical formalization elsewhere):
+*BCGM25 polynomial-generator MCA* (generator-native API plus compatibility shadow):
 
-- `subspaceDesign_epsCA_curves_polynomial_generators_bcgm25` — restate via `IsMCAGenerator`
-  once PR #489 lands; do not prove as-is.
+- `polynomialGenerator_isMCAGenerator_bcgm25` — canonical BCGM25 statement surface using
+  `CoreDefinitions.IsPolynomialGenerator` and `CoreDefinitions.IsMCAGenerator`.
+- `subspaceDesign_epsCA_curves_polynomial_generators_bcgm25` — retained only as the old
+  ABF26 survey-ledger `epsCA_curves` compatibility shadow; do not prove as-is.
 
 **No statement in this file is disproven.**  The two repaired items are R4.10 (the naive
 `0 < γ < 1` floor-collapse shortcut is refuted in-tree by
 `r4_10_floor_collapse_hypotheses_insufficient`; the corrected reduction carries an explicit
-no-boundary-crossing hypothesis) and the BCGM25 entry (deliberately a curve-CA shadow of the
-real mutual-correlated-agreement statement; see its docstring).  Related *statement-level*
+no-boundary-crossing hypothesis) and the BCGM25 compatibility entry (deliberately a curve-CA
+shadow beside the real mutual-correlated-agreement statement; see its docstring).  Related
+*statement-level*
 breakdowns of capacity-reading conjectures (CS25/BCHKS25 "capacity false" results) are
 recorded here as the *constructions* T4.16–T4.18 — they are inputs that bound the Grand MCA
 threshold from above, not defects of these statements.
@@ -186,7 +190,7 @@ set_option linter.unusedSectionVars false
 namespace CodingTheory
 
 open scoped NNReal ProbabilityTheory
-open ProximityGap
+open ProximityGap unitInterval
 
 /-! ## General linear codes — ABF26 §4 1.5-Johnson family ([GKL24], [BGKS20])
 
@@ -799,10 +803,13 @@ end Sampling
 
 /-! ## Subspace-design / FRS MCA up to capacity — ABF26 §4.2.2 ([GG25], [BCGM25])
 
-Disposition (issue #48): T4.13 is a DIRECT PORT (GG25 line-stitching/list-decoding pipeline;
-its list-decoding input is tracked by #53); T4.14 is a DERIVED COROLLARY of T4.13 + T2.18
-(checked reduction `frs_epsMCA_capacity_gg25_of_residuals` in-tree); the BCGM25 entry is a
-SHADOW to be restated via `IsMCAGenerator` once PR #489 lands — do not prove as-is. T4.13 /
+Disposition (issue #48, refined by #76): T4.13 is a DIRECT PORT (GG25
+line-stitching/list-decoding pipeline; its list-decoding input is tracked by #53); T4.14 is a
+DERIVED COROLLARY of T4.13 + T2.18 (checked reduction
+`frs_epsMCA_capacity_gg25_of_residuals` in-tree). The BCGM25 polynomial-generator item is now
+split between the canonical generator-native surface
+`polynomialGenerator_isMCAGenerator_bcgm25` and the old `epsCA_curves` survey-ledger
+compatibility shadow `subspaceDesign_epsCA_curves_polynomial_generators_bcgm25`. T4.13 /
 T4.14 are the priority lower-witness feeders (`MCALowerWitness.ofLe`) realizing MCA up to
 capacity. See the file-level disposition ledger. -/
 
@@ -1057,8 +1064,34 @@ noncomputable def random_rs_mca
   -- over `n`-element domains is now formalized; the line-stitching/list-decoding/probability
   -- argument that supplies the concrete `bound` and `failure` values remains external.
 
-/-- **ABF26 BCGM25 extension to T4.13 / T4.14 (polynomial generators preserve
-correlated agreement).**
+/-- **BCGM25 polynomial-generator MCA — canonical generator-native statement surface.**
+
+This is the public API that supersedes the old `epsCA_curves` survey shadow below. It keeps
+BCGM25 in the vocabulary introduced by `ProximityGenerators.lean`: a
+`CoreDefinitions.Generator` is first identified as a polynomial generator, and the paper's MCA
+conclusion is stated as `CoreDefinitions.IsMCAGenerator`.
+
+The concrete BCGM25/BSGM25 constants are represented by the explicit error profile
+`ε_mca`. This declaration is still an external theorem front door; it does not prove the
+polynomial-generator construction. -/
+def polynomialGenerator_isMCAGenerator_bcgm25
+    {ι : Type} [Fintype ι]
+    {F : Type} [Field F]
+    {ℓ : Type} [Fintype ℓ]
+    {seedDim : ℕ}
+    (S : Fin seedDim → Set F)
+    [Nonempty (∀ i, S i)] [Fintype (∀ i, S i)]
+    (G : CoreDefinitions.Generator (∀ i, S i) ℓ F)
+    (ε_mca : I → I)
+    (LC : LinearCode ι F)
+    (_hPoly : CoreDefinitions.IsPolynomialGenerator S G) : Prop :=
+  CoreDefinitions.IsMCAGenerator G ε_mca LC
+  -- Missing ingredient: BCGM25/BSGM25's theorem that the relevant polynomial-generator
+  -- families satisfy MCA for the target linear code with the paper's explicit error profile.
+  -- The framework declarations (`Generator`, `IsPolynomialGenerator`, `IsMCAGenerator`) are
+  -- in-tree; the paper theorem itself remains external.
+
+/-- **ABF26 BCGM25 extension to T4.13 / T4.14 — compatibility `epsCA_curves` shadow.**
 
 [BCGM25] shows that the correlated/mutual agreement of subspace-design codes is
 preserved not only under affine line combinations `u₀ + γ · u₁` but under arbitrary
@@ -1067,23 +1100,20 @@ of functions called "polynomial generators". Stated in ABF26 §4.2.2 (subsection
 "subspace-design codes") and footnote 2 of the introduction; not separately numbered
 as `T4.x`, but materially extends the reach of T4.13 / T4.14.
 
-**Canonical formalization lives elsewhere — this is the survey-ledger shadow.** The
-genuine polynomial-generator MCA framework (the `Generator` / `IsMCAGenerator` / `IsMCA`
-abstraction, formalizing [BSGM25] Lemmas 4.1, 4.2 and Definition 4.3) is being built in
-`ProximityGap/MCAGenerator.lean` and `ProximityGap/ProximityGenerators.lean` by PR #489
-(`Katy/MCAgens`). Once that lands on `main` and merges into this branch, **this entry
-should be restated in terms of `IsMCAGenerator` (or removed in favour of it)** rather than
-the affine-style `epsCA`/`epsMCA` errors here. Do not grow a parallel polynomial-generator
-notion under `CapacityBounds`.
+**Canonical formalization is `polynomialGenerator_isMCAGenerator_bcgm25`.** This declaration is
+kept only for compatibility with the ABF26 survey ledger, which historically recorded the
+polynomial-generator item as a power-curve correlated-agreement error. Do not grow a parallel
+polynomial-generator notion under `CapacityBounds`.
 
 **What this placeholder captures meanwhile.** Unlike T4.13 (`subspaceDesign_epsMCA_gg25`),
 the left-hand side is the **power-curve** correlated-agreement error `epsCA_curves … k`
 (combinations `∑ i : Fin (k+1), γ^i · uᵢ`) — the genuine polynomial-generator family, so
 this is not a copy of T4.13. Two honesty caveats: (i) [BSGM25] proves *mutual* correlated
-agreement; this shadow uses the *correlated-agreement* curve error because the ABF26 branch
-has no curve-MCA notion yet (PR #489 supplies the real one); (ii) the RHS reuses the GG25
-affine bound shape `(t·n + 4t²)/|F|`, with the precise polynomial-generator constants as
-in [BSGM25]. Admitted as an external result. -/
+agreement through `IsMCAGenerator`; this compatibility shadow uses the *correlated-agreement*
+curve error because the ABF26 ledger has no curve-MCA bridge from the scalar-code generator API
+to vector-alphabet `epsCA_curves`; (ii) the RHS reuses the GG25 affine bound shape
+`(t·n + 4t²)/|F|`, with the precise polynomial-generator constants left to the canonical
+generator-native theorem. Admitted as an external result. -/
 def subspaceDesign_epsCA_curves_polynomial_generators_bcgm25
     {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
     {F : Type} [Field F] [Fintype F] [DecidableEq F]
@@ -1096,10 +1126,9 @@ def subspaceDesign_epsCA_curves_polynomial_generators_bcgm25
       ENNReal.ofReal (((t : ℝ) * Fintype.card ι + 4 * t ^ 2) / Fintype.card F)
   -- Missing ingredient: BCGM25's polynomial-generator MCA preservation for subspace-design
   -- codes. This bounds the CURVE error epsCA_curves (∑ γ^i·uᵢ), not the affine epsCA of
-  -- T4.13, so it is NOT a copy. The genuine framework (IsMCAGenerator) is being built in
-  -- ProximityGap/MCAGenerator.lean + ProximityGenerators.lean by PR #489; per the docstring
-  -- this admit should be RESTATED in terms of IsMCAGenerator once #489 lands (do not prove the
-  -- shadow). Blocked on #489 + T4.13. Genuinely external.
+  -- T4.13, so it is NOT a copy. The generator-native front door above is the canonical API;
+  -- this compatibility shadow stays external until there is a checked bridge from
+  -- IsMCAGenerator to this vector-alphabet curve-error formulation. Genuinely external.
 
 end SubspaceDesignFRS
 
