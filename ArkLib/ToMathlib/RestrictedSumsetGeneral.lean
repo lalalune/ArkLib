@@ -11,6 +11,7 @@ import Mathlib.Data.Nat.Choose.Dvd
 import Mathlib.LinearAlgebra.Vandermonde
 import Mathlib.RingTheory.Polynomial.Pochhammer
 import Mathlib.Data.Nat.Prime.Factorial
+import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumRadiusOne
 
 /-!
 # Polynomial infrastructure for the general Erdős–Heilbronn / Dias da Silva–Hamidoune bound
@@ -40,7 +41,7 @@ on tuples with distinct coordinates the column sum lies in `Σ_h(A) ⊆ C'`, kil
 in `Q` equals its coefficient in the leading part `Vandermonde · (∑_k X k)^m`, which expands, via
 the determinant (permutation) form of the Vandermonde polynomial, into the alternating sum
 
-  `coeff t = ∑_{σ ∈ Perm (Fin h)} sign σ · multinomial(t − permExp σ)`            (`coeff_vdmX_mul_sumPow`)
+  `coeff t = ∑_{σ ∈ Perm (Fin h)} sign σ · multinomial(t − permExp σ)`   (`coeff_vdmX_mul_sumPow`)
 
 a `± m!·(superfactorial/∏ factorial)` ballot/standard-Young-tableau number. The Nullstellensatz is
 then applied exactly as in the `h = 2` file.
@@ -114,7 +115,8 @@ lemma vdmX_eq_prod (h : ℕ) :
 /-- **Permutation (determinant) form** of the Vandermonde polynomial. -/
 lemma vdmX_eq_perm_sum (h : ℕ) :
     vdmX (F := F) h
-      = ∑ σ : Equiv.Perm (Fin h), (Equiv.Perm.sign σ : ℤ) • monomial (permExp σ) (1 : F) := by
+      = ∑ σ : Equiv.Perm (Fin h),
+          (Equiv.Perm.sign σ : ℤ) • monomial (permExp σ) (1 : F) := by
   rw [vdmX, Matrix.det_apply]
   apply Finset.sum_congr rfl
   intro σ _
@@ -359,7 +361,7 @@ lemma eval_ehQ_eq_zero {Cset : Finset F} (s : Fin h → F)
       obtain ⟨i, j, hij, hne⟩ := hni
       apply Matrix.det_zero_of_row_eq hne
       funext c
-      show eval s (Matrix.vandermonde (fun i => (X i : MvPolynomial (Fin h) F)) i c) =
+      change eval s (Matrix.vandermonde (fun i => (X i : MvPolynomial (Fin h) F)) i c) =
            eval s (Matrix.vandermonde (fun i => (X i : MvPolynomial (Fin h) F)) j c)
       rw [Matrix.vandermonde_apply, Matrix.vandermonde_apply, map_pow, map_pow, eval_X, eval_X, hij]
     rw [this, zero_mul]
@@ -397,7 +399,8 @@ lemma term_factorial (t : Fin h →₀ ℕ) (M : ℕ) (σ : Equiv.Perm (Fin h))
     rw [sum_permExp] at hadd; omega
   have hmeq : (t - permExp σ).multinomial = Nat.multinomial Finset.univ (t - permExp σ) :=
     Finsupp.multinomial_eq_of_support_subset (Finset.subset_univ _)
-  have hspec : (∏ k, ((t - permExp σ) k).factorial) * (t - permExp σ).multinomial = M.factorial := by
+  have hspec : (∏ k, ((t - permExp σ) k).factorial) * (t - permExp σ).multinomial
+      = M.factorial := by
     rw [hmeq]
     have hh := Nat.multinomial_spec (Finset.univ) (fun k => (t - permExp σ) k)
     rw [hsumd] at hh; exact hh
@@ -472,8 +475,8 @@ lemma coeff_closed_form (t : Fin h →₀ ℕ) (M : ℕ)
       exact hle (Finsupp.le_def.mpr (fun k => by have := hc k; rw [permExp_apply]; omega))
     obtain ⟨k, hk⟩ := hex
     have hzero :
-        ∏ j, (Matrix.of (fun k j : Fin h => (((t k).descFactorial (j : ℕ) : ℕ) : F))) j (σ.symm j)
-          = 0 := by
+        ∏ j, (Matrix.of (fun k j : Fin h =>
+            (((t k).descFactorial (j : ℕ) : ℕ) : F))) j (σ.symm j) = 0 := by
       apply Finset.prod_eq_zero (Finset.mem_univ k)
       rw [Matrix.of_apply, Nat.descFactorial_eq_zero_iff_lt.mpr hk, Nat.cast_zero]
     rw [hzero, smul_zero, mul_zero]
@@ -524,6 +527,10 @@ lemma coeff_ehTarget_ne_zero {p : ℕ} (hp : p.Prime) (hchar : ringChar F = p)
 end General
 
 section Main
+
+-- `[Fintype F]` is genuinely needed in the proofs (the padding step uses `Fintype.card F`);
+-- the linter's preference for `[Finite F]` is suppressed here.
+set_option linter.unusedFintypeInType false
 
 variable {F : Type*} [Field F] [Fintype F] [DecidableEq F]
 
@@ -643,3 +650,98 @@ theorem erdos_heilbronn {p : ℕ} (hp : p.Prime) (hchar : ringChar F = p)
 end Main
 
 end MvPolynomial
+
+/-! ## Reed–Solomon MCA corollary at general degree `k`
+
+Combining the general Erdős–Heilbronn / Dias da Silva–Hamidoune bound (`h = k + 1`) with the
+unconditional subset-sum floor `ProximityGap.epsMCA_one_ge_card_subsetSums` gives a lower bound
+with explicit additive content for `ε_mca(RS[F, domain, k], 1)`, mirroring the `k = 1` result
+`ProximityGap.epsMCA_one_ge_erdos_heilbronn`. -/
+
+namespace ProximityGap
+
+open scoped BigOperators ENNReal
+
+-- The section variables carry typeclass instances used uniformly across the bridge; suppress the
+-- linters as in the sibling file `SubsetSumErdosHeilbronn.lean`.
+set_option linter.unusedSectionVars false
+set_option linter.unusedDecidableInType false
+set_option linter.unusedFintypeInType false
+
+section EHGeneral
+
+variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
+
+/-- The restricted `(k+1)`-sumset of an injective evaluation domain's image is contained in the
+`(k+1)`-subset-sum set of the domain. -/
+lemma restrictedSumset_subset_subsetSumsKplus1 (domain : ι ↪ F) (k : ℕ) :
+    MvPolynomial.restrictedSumset (Finset.image (fun i => domain i) Finset.univ) (k + 1)
+      ⊆ subsetSumsKplus1 domain k := by
+  classical
+  intro γ hγ
+  rw [MvPolynomial.restrictedSumset, Finset.mem_image] at hγ
+  obtain ⟨S, hS, rfl⟩ := hγ
+  rw [Finset.mem_powersetCard] at hS
+  obtain ⟨hSsub, hScard⟩ := hS
+  -- Each element of `S` is `domain i` for a unique `i`; pull `S` back to a subset `T ⊆ ι`.
+  set T : Finset ι := Finset.univ.filter (fun i => domain i ∈ S) with hT
+  have hTimage : T.image (fun i => domain i) = S := by
+    apply Finset.Subset.antisymm
+    · intro x hx
+      rw [Finset.mem_image] at hx
+      obtain ⟨i, hi, rfl⟩ := hx
+      rw [hT, Finset.mem_filter] at hi
+      exact hi.2
+    · intro x hx
+      have := hSsub hx
+      rw [Finset.mem_image] at this
+      obtain ⟨i, -, rfl⟩ := this
+      rw [Finset.mem_image]
+      exact ⟨i, by rw [hT, Finset.mem_filter]; exact ⟨Finset.mem_univ _, hx⟩, rfl⟩
+  have hTcard : T.card = k + 1 := by
+    have : (T.image (fun i => domain i)).card = T.card :=
+      Finset.card_image_of_injective _ domain.injective
+    rw [hTimage] at this
+    omega
+  rw [subsetSumsKplus1, Finset.mem_image]
+  refine ⟨T, ?_, ?_⟩
+  · rw [Finset.mem_powersetCard]; exact ⟨Finset.subset_univ _, hTcard⟩
+  · rw [← hTimage, Finset.sum_image (fun a _ b _ hab => domain.injective hab)]
+
+/-- The image of an injective `domain` has cardinality `n := |ι|`. -/
+lemma card_image_domain' (domain : ι ↪ F) :
+    (Finset.image (fun i => domain i) Finset.univ).card = Fintype.card ι := by
+  rw [Finset.card_image_of_injective _ domain.injective, Finset.card_univ]
+
+/-- **Erdős–Heilbronn / Dias da Silva–Hamidoune floor for `ε_mca(RS, 1)` at general `k`.**
+For `RS[F, domain, k]` over a finite field `F` of prime characteristic `p`, with `n := |ι|`,
+`k + 1 ≤ n ≤ p`, and `(k+1)(n - (k+1)) < p`:
+
+  `ε_mca(RS[F, domain, k], 1) ≥ ((k+1)(n - k - 1) + 1) / q`. -/
+theorem epsMCA_one_ge_erdos_heilbronn_general (domain : ι ↪ F) {p : ℕ} (hp : p.Prime)
+    (hchar : ringChar F = p) {k : ℕ} (hk : k + 1 ≤ Fintype.card ι) (hnp : Fintype.card ι ≤ p)
+    (hsmall : (k + 1) * (Fintype.card ι - (k + 1)) < p) :
+    (((k + 1) * (Fintype.card ι - (k + 1)) + 1 : ℕ) : ENNReal) / (Fintype.card F : ENNReal) ≤
+      epsMCA (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F)) 1 := by
+  classical
+  set n := Fintype.card ι with hn_def
+  set A : Finset F := Finset.image (fun i => domain i) Finset.univ with hA
+  have hAcard : A.card = n := card_image_domain' domain
+  -- the general Erdős–Heilbronn bound at `h = k + 1`
+  have hEH : (k + 1) * (n - (k + 1)) + 1
+      ≤ (MvPolynomial.restrictedSumset A (k + 1)).card := by
+    have := MvPolynomial.erdos_heilbronn (F := F) hp hchar A (k + 1) (by omega)
+      (by rw [hAcard]; exact hk) (by rw [hAcard]; exact hnp) (by rw [hAcard]; exact hsmall)
+    rwa [hAcard] at this
+  have hsubset : (k + 1) * (n - (k + 1)) + 1 ≤ (subsetSumsKplus1 domain k).card :=
+    le_trans hEH (Finset.card_le_card (restrictedSumset_subset_subsetSumsKplus1 domain k))
+  have hfloor := epsMCA_one_ge_card_subsetSums (F := F) domain (k := k) (by omega)
+  refine le_trans ?_ hfloor
+  have hnum : (((k + 1) * (n - (k + 1)) + 1 : ℕ) : ENNReal)
+      ≤ ((subsetSumsKplus1 domain k).card : ENNReal) := by exact_mod_cast hsubset
+  exact ENNReal.div_le_div_right hnum _
+
+end EHGeneral
+
+end ProximityGap

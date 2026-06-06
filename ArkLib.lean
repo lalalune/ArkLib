@@ -158,6 +158,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointLower
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointUpper
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGS
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGenerator
+import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityFiber
+import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityZMod
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGapP
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGenerators
 import ArkLib.Data.CodingTheory.ProximityGap.RSDistinctness
@@ -482,6 +484,7 @@ import ArkLib.ToMathlib.PowerSeriesSubstCoeff
 import ArkLib.ToMathlib.Prop55
 import ArkLib.ToMathlib.RatFuncDegreeCalculus
 import ArkLib.ToMathlib.RestrictedSumset
+import ArkLib.ToMathlib.RestrictedSumsetGeneral
 import ArkLib.ToMathlib.SbetaPackaging
 import ArkLib.ToMathlib.SiegelInterpolation
 import ArkLib.ToMathlib.SubstFieldCaveat
