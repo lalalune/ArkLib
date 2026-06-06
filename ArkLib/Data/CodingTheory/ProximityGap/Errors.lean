@@ -255,6 +255,32 @@ theorem epsCA_le_one (C : Set (ι → A)) (δ_fld δ_int : ℝ≥0) :
     exact Pr_le_one ($ᵖ F) fun γ => δᵣ(u 0 + γ • u 1, C) ≤ δ_fld
 
 open Classical in
+/-- **Covering ⟹ complete CA breakdown (the `≥ 1` half).**
+
+If a stack `u` is *not* jointly `δ_int`-close to `C`, yet **every** point of its affine line
+`u 0 + γ • u 1` is `δ_fld`-close to `C`, then `1 ≤ ε_ca(C, δ_fld, δ_int)`.  The `u`-term of the
+`epsCA` supremum is `Pr_γ[δᵣ(u 0 + γ • u 1, C) ≤ δ_fld]`, which is `1` because the event holds
+for *every* `γ` (the indicator is constantly `1`, so the mass is the full `∑' γ, ($ᵖ F) γ = 1`).
+
+This isolates the CS25 complete-breakdown content (ABF26 T4.17, issue #82) as a single
+*covering* fact — "the whole random line lands in the `δ`-neighbourhood of `C`" — separated from
+the supremum mechanics; the remaining work is to exhibit such a non-jointly-close, line-covered
+stack in the entropy band (CS25's probabilistic covering, feeding the proven entropy/ball-count
+input `linear_lambda_ge_entropy_volume`). -/
+theorem one_le_epsCA_of_line_covered (C : Set (ι → A)) (δ_fld δ_int : ℝ≥0)
+    (u : WordStack A (Fin 2) ι) (hu : ¬ jointProximity (C := C) (u := u) δ_int)
+    (hcover : ∀ γ : F, δᵣ(u 0 + γ • u 1, C) ≤ δ_fld) :
+    1 ≤ epsCA (F := F) C δ_fld δ_int := by
+  unfold epsCA
+  refine le_trans ?_ (le_iSup _ u)
+  rw [if_neg hu, prob_tsum_form_singleton]
+  have h : (∑' γ : F, ($ᵖ F) γ * (if δᵣ(u 0 + γ • u 1, C) ≤ δ_fld then (1 : ENNReal) else 0))
+      = ∑' γ : F, ($ᵖ F) γ :=
+    tsum_congr fun γ => by rw [if_pos (hcover γ), mul_one]
+  rw [h]
+  exact ($ᵖ F).tsum_coe.ge
+
+open Classical in
 /-- The MCA error is bounded by the total probability mass. -/
 theorem epsMCA_le_one (C : Set (ι → A)) (δ : ℝ≥0) :
     epsMCA (F := F) C δ ≤ 1 := by
