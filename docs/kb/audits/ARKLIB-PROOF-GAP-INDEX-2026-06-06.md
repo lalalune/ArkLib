@@ -73,6 +73,10 @@ rg -n --glob '*.lean' 'opaque\s+\w+|placeholder|stub|TODO|FIXME|named residual|e
 | Grand MCA faithful lattice-threshold brackets at four rates | #57 |
 | Grand challenges singular/plural lattice encoding bridges | #58 |
 | Proximity-prize audit doc refresh (this index family) | #59 |
+| Root build / validation regressions after #36 | #60 |
+| Proximity Prize betaRec-to-hcoeffPoly keystone assembly | #61 |
+| BCS compiler beyond statement-level scaffolding | #62 |
+| ArkLib SNARK/proof-system completion obligations | #63 |
 
 Closed second-pass issues (#37, #40-#43, #46-#47, #53) are recorded in the refreshed
 proximity-prize index; see "Related indexes" below.
