@@ -216,6 +216,7 @@ a single-run `Extractor.Straightline` with no re-invocation handle, so the 2-spe
 *rewinding* extractor this lemma needs is not expressible against it. The rewinding extractor is the
 *same* one as for Construction 6.2 (it extracts the input message pair `(u₁, u₂)` to the `R̃²`
 relation `ToyProblem.Spec.outputRelation` — exactly this lemma's `relIn`), so we reuse the proven
+`protocol62_knowledgeSoundnessViaRewinding`. -/
 theorem simplifiedIOR_knowledgeSound
     [SampleableType F] [Nonempty ι] [Nonempty F]
     (C : Set (ι → F)) (δ : ℝ≥0)
