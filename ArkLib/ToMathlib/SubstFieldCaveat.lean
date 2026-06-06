@@ -147,6 +147,7 @@ theorem shiftSeries_eq_X_sub_C (x₀ : F) :
   | 1 => simp
   | (n + 2) => simp
 
+omit [Fact (Irreducible H)] [Fact (0 < H.natDegree)] in
 set_option synthInstance.maxHeartbeats 400000 in
 -- The `aeval`/power-series instances are expensive to synthesize in the linear recentering proof.
 /-- **Recentering preserves the affine-curve (linear) structure.**  Applying the off-center
