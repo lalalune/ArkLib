@@ -1770,14 +1770,16 @@ theorem probEvent_eval_eq_degree_two_le {L : Type} [CommRing L] [IsDomain L]
   exact probEvent_eval_eq_le p q hpq 2
     (le_trans (Polynomial.natDegree_sub_le p q) (max_le hp hq))
 
-/-- **Degree-2 bad-agreement event bound for weakened KState (issue #29).**
+/-- **Bad-agreement event bound from a difference-degree budget.**
 This is the exact doom-escape event described by the weakened KState design: the prover's round
-polynomial is not the ground truth, but both agree at the verifier's fresh challenge. -/
-theorem probEvent_badAgreement_degree_two_le {L : Type} [CommRing L] [IsDomain L]
+polynomial is not the ground truth, but both agree at the verifier's fresh challenge. The theorem
+separates the event-level weakening from the source of the degree bound, so later KState plumbing can
+use either a direct bound on `(p - q).natDegree` or one derived from common polynomial carriers. -/
+theorem probEvent_badAgreement_of_sub_degree_le {L : Type} [CommRing L] [IsDomain L]
     [Fintype L] [DecidableEq L] [SampleableType L]
-    (p q : L[X]) (hp : p.natDegree ≤ 2) (hq : q.natDegree ≤ 2) :
+    (p q : L[X]) (d : ℕ) (hd : (p - q).natDegree ≤ d) :
     Pr[fun x => p ≠ q ∧ p.eval x = q.eval x | ($ᵗ L)] ≤
-      (2 : ENNReal) / (Fintype.card L) := by
+      (d : ENNReal) / (Fintype.card L) := by
   by_cases hpq : p = q
   · rw [probEvent_uniformSample]
     have hfilter :
@@ -1789,7 +1791,27 @@ theorem probEvent_badAgreement_degree_two_le {L : Type} [CommRing L] [IsDomain L
     simp
   · exact le_trans
       (probEvent_mono (mx := ($ᵗ L)) (fun _ _ hbad => hbad.2))
-      (probEvent_eval_eq_degree_two_le p q hpq hp hq)
+      (probEvent_eval_eq_le p q hpq d hd)
+
+/-- **Bad-agreement event bound from common degree budgets.**
+If both polynomials have degree at most `d`, then the weakened-KState bad-agreement event has
+probability at most `d / |L|`. -/
+theorem probEvent_badAgreement_le {L : Type} [CommRing L] [IsDomain L]
+    [Fintype L] [DecidableEq L] [SampleableType L]
+    (p q : L[X]) (d : ℕ) (hp : p.natDegree ≤ d) (hq : q.natDegree ≤ d) :
+    Pr[fun x => p ≠ q ∧ p.eval x = q.eval x | ($ᵗ L)] ≤
+      (d : ENNReal) / (Fintype.card L) := by
+  exact probEvent_badAgreement_of_sub_degree_le p q d
+    (le_trans (Polynomial.natDegree_sub_le p q) (max_le hp hq))
+
+/-- **Degree-2 bad-agreement event bound for weakened KState (issue #29).**
+The degree-`≤ 2` specialization for ring-switching round polynomials. -/
+theorem probEvent_badAgreement_degree_two_le {L : Type} [CommRing L] [IsDomain L]
+    [Fintype L] [DecidableEq L] [SampleableType L]
+    (p q : L[X]) (hp : p.natDegree ≤ 2) (hq : q.natDegree ≤ 2) :
+    Pr[fun x => p ≠ q ∧ p.eval x = q.eval x | ($ᵗ L)] ≤
+      (2 : ENNReal) / (Fintype.card L) := by
+  exact probEvent_badAgreement_le p q 2 hp hq
 
 end SchwartzZippelRootBound
 
