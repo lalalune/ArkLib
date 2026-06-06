@@ -220,6 +220,46 @@ def MCALowerWitness.ofGSMassFrontier (C : LinearCode ι F) (δ ε_star : ℝ≥0
   MCALowerWitness.ofGSMassBound C δ ε_star hδ
     frontier.listFamily frontier.faithful frontier.mass
 
+/-- Packaged #66 pivot/list-size frontier for producing a faithful GS mass frontier.
+
+This keeps the remaining GS decoder obligations visible as hypotheses: a uniform list-size
+bound, pivot coverage for every stack, faithfulness against the abstract MCA event, and the
+numeric check that the resulting `ℓ / |F|` mass clears `ε*`. -/
+structure GSPivotLowerWitnessFrontier (C : LinearCode ι F) (δ ε_star : ℝ≥0) where
+  listFamily : WordStack F (Fin 2) ι → Finset (ι → F)
+  listSize : ℕ
+  faithful : FaithfulGSFamily (F := F) (C : Set (ι → F)) δ listFamily
+  covering : ∀ u, PivotCovering (F := F) (C : Set (ι → F)) δ listFamily u
+  sizeBound : ∀ u, (listFamily u).card ≤ listSize
+  clearsTarget : (listSize : ENNReal) / (Fintype.card F : ENNReal) ≤ (ε_star : ENNReal)
+
+/-- The pivot/list-size frontier supplies the mass frontier consumed by the lower-witness API. -/
+def GSPivotLowerWitnessFrontier.toGSMassLowerWitnessFrontier
+    (C : LinearCode ι F) (δ ε_star : ℝ≥0)
+    (frontier : GSPivotLowerWitnessFrontier (F := F) C δ ε_star) :
+    GSMassLowerWitnessFrontier (F := F) C δ ε_star where
+  listFamily := frontier.listFamily
+  faithful := frontier.faithful
+  mass := epsMCAgsMassBound_of_pivotCovering
+    (F := F) (C := (C : Set (ι → F))) δ frontier.listFamily frontier.listSize
+    frontier.covering frontier.sizeBound frontier.clearsTarget
+
+/-- A faithful pivot/list-size frontier bounds the actual Grand MCA error by `ε*`. -/
+theorem epsMCA_le_of_pivot_frontier (C : LinearCode ι F) (δ ε_star : ℝ≥0)
+    (frontier : GSPivotLowerWitnessFrontier (F := F) C δ ε_star) :
+    epsMCA (F := F) (A := F) (C : Set (ι → F)) δ ≤ (ε_star : ENNReal) :=
+  epsMCA_le_of_faithful_mass (F := F) (C := (C : Set (ι → F))) δ frontier.listFamily
+    frontier.faithful
+    (GSPivotLowerWitnessFrontier.toGSMassLowerWitnessFrontier C δ ε_star frontier).mass
+
+/-- Reassemble a Grand MCA lower witness from the packaged pivot/list-size frontier. -/
+def MCALowerWitness.ofGSPivotFrontier (C : LinearCode ι F) (δ ε_star : ℝ≥0)
+    (hδ : δ ≤ 1)
+    (frontier : GSPivotLowerWitnessFrontier (F := F) C δ ε_star) :
+    GrandChallenges.MCALowerWitness (C : Set (ι → F)) ε_star :=
+  MCALowerWitness.ofGSMassFrontier C δ ε_star hδ
+    (GSPivotLowerWitnessFrontier.toGSMassLowerWitnessFrontier C δ ε_star frontier)
+
 end MCAGS
 
 end ProximityGap
