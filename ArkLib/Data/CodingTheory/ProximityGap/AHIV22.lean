@@ -8,6 +8,8 @@ Authors: Katerina Hristova, František Silváši, Chung Thai Nguyen, Elias Judin
 import ArkLib.Data.CodingTheory.ProximityGap.AHIV22Support
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
 
+set_option linter.style.longFile 1600
+
 /-!
 ## Main Definitions
 - Statements of proximity results for Reed Solomon codes (`Lemma 4.3`, `Lemma 4.4` and `Lemma 4.5`
@@ -1473,6 +1475,18 @@ lemma prob_of_bad_pts
 
 /-! ## ABF26-facing `epsCA` wrapper for AHIV17/AHIV22 -/
 
+/-- Named residual for the AHIV17/AHIV22 source-to-interface gap.
+
+The current in-tree AHIV22 proof is the row-span probability theorem `prob_of_bad_pts`; ABF26
+T4.8 needs this affine-line correlated-agreement predicate for Reed-Solomon codes before the
+generic `epsCA` bridge applies.  This `Prop` names that remaining specialization target
+without claiming it is already proved by the row-span theorem. -/
+def ahiv17_affineLine_correlatedAgreement_residual
+    [Nonempty ι]
+    (deg : ℕ) (α : ι ↪ F) (δ ε : ℝ≥0) : Prop :=
+  ProximityGap.δ_ε_correlatedAgreementAffineLines
+    (F := F) (A := F) (C := RScodeSet α deg) δ ε
+
 /-- **ABF26 Theorem 4.8 / AHIV17 unique-decoding bound — `epsCA` interface wrapper.**
 
 The current AHIV22 development proves the unique-decoding row-span probability theorem
@@ -1486,14 +1500,26 @@ The remaining theorem-port work, if any, is therefore the source-level specializ
 row-span AHIV22 lemma to `δ_ε_correlatedAgreementAffineLines`; this declaration does not
 pretend that step is already hidden in `prob_of_bad_pts`. -/
 theorem ahiv17_epsCA_bound
-    [Nonempty ι] [DecidableEq ι]
+    [Nonempty ι]
     {deg : ℕ} {α : ι ↪ F} {δ ε : ℝ≥0}
     (hAHIV : ProximityGap.δ_ε_correlatedAgreementAffineLines
       (F := F) (A := F) (C := RScodeSet α deg) δ ε) :
     ProximityGap.epsCA (F := F) (A := F) (RScodeSet α deg) δ δ ≤ (ε : ENNReal) :=
-  (ProximityGap.δ_ε_correlatedAgreementAffineLines_iff_epsCA_le
-    (F := F) (A := F) (C := RScodeSet α deg) δ ε).mp hAHIV
+  by
+    classical
+    exact (ProximityGap.δ_ε_correlatedAgreementAffineLines_iff_epsCA_le
+      (F := F) (A := F) (C := RScodeSet α deg) δ ε).mp hAHIV
 
+/-- ABF26 T4.8 `epsCA` wrapper from the named AHIV17/AHIV22 affine-line residual. -/
+theorem ahiv17_epsCA_bound_of_affineLine_residual
+    [Nonempty ι]
+    {deg : ℕ} {α : ι ↪ F} {δ ε : ℝ≥0}
+    (hAHIV : ahiv17_affineLine_correlatedAgreement_residual deg α δ ε) :
+    ProximityGap.epsCA (F := F) (A := F) (RScodeSet α deg) δ δ ≤ (ε : ENNReal) :=
+  ahiv17_epsCA_bound (deg := deg) (α := α) (δ := δ) (ε := ε) hAHIV
+
+#print axioms ProximityToRS.ahiv17_affineLine_correlatedAgreement_residual
 #print axioms ProximityToRS.ahiv17_epsCA_bound
+#print axioms ProximityToRS.ahiv17_epsCA_bound_of_affineLine_residual
 end ProximityToRS
 end
