@@ -115,7 +115,14 @@ theorem epsCA_ge_one_sub_inv_of_nearCertainWitness
 A code $C$ admits a "near-certain bad line" if there exists a stack $u$ of two words which is
 not jointly $\delta_{\mathrm{int}}$-close to $C$, yet there is a subset of combining coefficients
 $\Gamma \subset F$ of size at least $|F| - 1$ for which every combination $u_0 + \gamma u_1$ is
-$\delta_{\mathrm{fld}}$-close to $C$. -/
+$\delta_{\mathrm{fld}}$-close to $C$.
+
+**Issue #22 disposition — EXTERNAL (open, not closeable in-tree).** This residual is the
+characteristic-2 construction of BGKS20 (Lemma 3.3): the explicit rate-`1/8` stack whose line is
+close to `C` for all but one scalar. It is *not* derivable from the in-tree
+`epsCA`/`Lambda`/`ReedSolomon` API; only the ε-arithmetic plumbing is proven here
+(`ofReal_one_sub_inv_le_card_div`, `epsCA_ge_one_sub_inv_of_nearCertainWitness`,
+`epsCA_separation_bridge_of_residual`). Closing it requires a full port of BGKS20's construction. -/
 def NearCertainBadLine (C : Set (ι → A)) (δ_fld δ_int : ℝ≥0) : Prop :=
   ∃ u : WordStack A (Fin 2) ι,
     ¬ jointProximity (C := C) (u := u) δ_int ∧

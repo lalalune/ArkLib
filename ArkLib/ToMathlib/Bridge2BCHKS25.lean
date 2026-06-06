@@ -132,7 +132,15 @@ stack `(u 0, u 1)` not jointly `δ_int`-close, with a finite set `Γ` of good co
 (line `δ_fld`-close to `C`) numbering at least `|F|/(2n)`.
 
 This is the precise geometric content the in-tree `epsCA`/`Lambda` API cannot manufacture; it is
-BCHKS25's `|F|`-codewords-imply-bad-line interpolation count. -/
+BCHKS25's `|F|`-codewords-imply-bad-line interpolation count.
+
+**Issue #22 disposition — EXTERNAL (open, not closeable in-tree).** This residual is the main
+geometric theorem of BCHKS25 (Theorem 1.9): the affine-shift interpolation construction that turns
+`|F|` close codewords into a bad combining line. It is *not* derivable from the in-tree
+`epsCA`/`Lambda`/`ReedSolomon` API; only the ε-arithmetic plumbing around it is proven here
+(`epsCA_ge_half_inv_n_of_badLineWitness`, `epsCA_badLine_bridge_of_residual`,
+`hBadLine_of_provBadLine`). Closing it requires a full port of BCHKS25's construction. Consumers:
+`Connections/ListDecodingAndCA.rs_epsCA_small_implies_lambda_lt_F_bchks25_of_residuals`. -/
 def BadLineWitness (C : Set (ι → A)) (δ_fld δ_int : ℝ≥0) : Prop :=
   ∃ u : WordStack A (Fin 2) ι,
     ¬ jointProximity (C := C) (u := u) δ_int ∧

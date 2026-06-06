@@ -29,10 +29,17 @@ We split this into two parts, exactly as [CS25] does:
    `u^{(1)}_i = −1/(x_i − a)`, and the polynomial-remainder identity `RS[k] ⊂ RS[k+1]`, to a
    family of degree-`< k+1` polynomials `p` on a sampling set `T = F ∖ D` of size `s`, such
    that *every* distinct combining value `p^{(j)}(a)` yields a line point `δ`-close to
-   `RS[k]` and therefore the distinct-value count is bounded by `ε·q`.  This is the genuinely
-   external geometric content (deep-hole construction + minimum-distance joint-far argument +
-   the `epsCA`-probability lower bound).  It is **not** manufacturable from the in-tree
-   `epsCA` / `Lambda` / `ReedSolomon.code` definitions and is surfaced as a hypothesis.
+   `RS[k]` and therefore the distinct-value count is bounded by `ε·q`.  This is the deep-hole
+   geometric content (deep-hole construction + minimum-distance joint-far argument +
+   the `epsCA`-probability lower bound), surfaced here as a hypothesis.
+
+   **Issue #22 update — this `hDeepHole` step is now CLOSED in-tree.** The deep-hole probability
+   bound was subsequently proven, not left external: `CS25DeepHoleFinish.DeepHoleProbResidual`
+   packages it, and `CS25JointFar.deepHoleProbResidual_holds` discharges it via the proven
+   minimum-distance joint-far argument (`deepHoleJointFar_holds`), leaving only the arithmetic
+   rate condition `k < n − ⌊δ·n⌋`. The fully-discharged top-level bound is
+   `CS25JointFar.rs_epsCA_implies_lambda_extended_cs25_complete`. The "external" framing below
+   is the historical surfacing; the content itself is no longer an open residual.
 
 2. **The combinatorial count** (`CS25.cs25_claim4_strict_margin`): on that family there is a
    point `a` whose distinct-value count *strictly* exceeds `E(L0)`.  **Fully proven** here via

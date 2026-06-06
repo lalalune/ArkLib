@@ -247,7 +247,18 @@ polynomial family `p`, on the sampling set `T = F ∖ range domain`, every point
 count is bounded by `ε·q`.  Its genuine justification (deep-hole line construction + proven
 closeness transfer `relHammingDist_deepHoleLine_eq`, the joint-far side condition that the pair
 `(u⁰, u¹)` is not jointly `δ`-close, and the uniform-`γ` counting lemma
-`prob_uniform_eq_card_filter_div_card`) is the external probabilistic argument. -/
+`prob_uniform_eq_card_filter_div_card`) is the probabilistic argument.
+
+**Issue #22 disposition — CLOSED (no remaining external input).** This residual is fully
+discharged in-tree:
+- `CS25DeepHoleFinish2.deepHoleProbResidual_of_jointFar` reduces it to the geometric joint-far
+  property `DeepHoleJointFar`;
+- `CS25JointFar.deepHoleJointFar_holds` proves `DeepHoleJointFar` outright by the
+  minimum-distance argument, leaving only the arithmetic rate condition `k < n − ⌊δ·n⌋`;
+- `CS25JointFar.deepHoleProbResidual_holds` composes both, instantiating `DeepHoleProbResidual`
+  with **no extra side condition** beyond that rate condition.
+The joint-far line probability and counting lemmas referenced above are therefore all proven
+in-tree, not external. -/
 def DeepHoleProbResidual
     (domain : ι ↪ F) (k L : ℕ) (δ ε : ℝ) (u : ι → F) (p : Fin L → F[X]) : Prop :=
   (∀ j, p j ∈ Polynomial.degreeLT F (k + 1)) →
