@@ -7,7 +7,6 @@ Authors: ArkLib Contributors
 import Mathlib.Algebra.Order.Chebyshev
 import Mathlib.Data.Finset.Card
 import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring

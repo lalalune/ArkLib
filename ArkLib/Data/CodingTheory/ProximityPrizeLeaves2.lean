@@ -20,7 +20,6 @@ import Mathlib.LinearAlgebra.Lagrange
 import Mathlib.Tactic.Choose
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.Push
 import Mathlib.Tactic.Ring
 

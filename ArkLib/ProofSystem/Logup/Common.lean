@@ -11,7 +11,6 @@ import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.NormCast
 import ArkLib.OracleReduction.Composition.Sequential.Append
 import ArkLib.OracleReduction.Basic
 

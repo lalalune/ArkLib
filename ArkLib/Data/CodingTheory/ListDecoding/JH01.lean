@@ -10,7 +10,6 @@ import ArkLib.Data.CodingTheory.ReedSolomon
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.Tactic.Choose
 import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Push
 import Mathlib.Tactic.Ring
