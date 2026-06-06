@@ -1006,14 +1006,13 @@ codeword of the `i`-th code produces a codeword of the `destIdx = i + 1`-st code
 Proven by reduction to the explicit `FoldPreservesBBFCodeMembershipResidual` hypothesis (see that
 class for the full port-debt rationale). -/
 theorem fold_preserves_BBF_Code_membership
-    [h : FoldPreservesBBFCodeMembershipResidual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
     (i : Fin r) {destIdx : Fin r}
     (h_destIdx : destIdx.val = i.val + 1) (h_destIdx_le : destIdx ≤ ℓ)
     (f : (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)) (r_chal : L) :
     (fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (destIdx := destIdx)
       h_destIdx h_destIdx_le (f := f) (r_chal := r_chal)) ∈
       (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx) :=
-  h.holds i h_destIdx h_destIdx_le f r_chal
+  FoldPreservesBBFCodeMembershipResidual.holds i h_destIdx h_destIdx_le f r_chal
 
 /-- The unique fiberwise closest codeword is represented by the UDR decoded codeword. -/
 lemma exists_unique_fiberwiseClosestCodeword_within_UDR (i : Fin r) {destIdx : Fin r}
