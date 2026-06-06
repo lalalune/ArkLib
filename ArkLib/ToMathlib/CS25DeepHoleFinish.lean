@@ -165,8 +165,12 @@ theorem lambda_violation_polyFamily
       ReedSolomon.evalOnPoints domain q = c j := by
     intro j
     have hmem : c j ∈ (ReedSolomon.code domain (k + 1) : Set (ι → F)) := (hcmem j).1
-    rw [ReedSolomon.mem_code_iff_exists_polynomial] at hmem
-    obtain ⟨q, hdeg, heval⟩ := hmem
+    have hmem' :
+        ∃ q : F[X], q.degree < k + 1 ∧ c j = ReedSolomon.evalOnPoints domain q := by
+      simpa using
+        (ReedSolomon.mem_code_iff_exists_polynomial (n := k + 1) (α := domain)
+          (f := c j)).mp hmem
+    obtain ⟨q, hdeg, heval⟩ := hmem'
     exact ⟨q, Polynomial.mem_degreeLT.mpr hdeg, heval.symm⟩
   choose p hpdeg hpeval using hpoly
   refine ⟨u, p, ?_, hpdeg, ?_⟩
