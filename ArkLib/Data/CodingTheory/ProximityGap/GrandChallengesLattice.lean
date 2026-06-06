@@ -2872,6 +2872,40 @@ theorem ordinaryRSCapacityAtPrizeRates_of_pointwise
       (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ))
     (ℓ := ℓ r) (hPointwise r)
 
+/-- A maximised `Λ` cap gives the equivalent pointwise finite close-list bound. -/
+theorem ordinaryRSCapacityPointwiseAtPrizeRates_of_capacity
+    (domain : ι ↪ F)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1))
+    (ℓ : Fin 4 → ℕ)
+    (hCapacity : OrdinaryRSCapacityAtPrizeRates domain τ ℓ) :
+    OrdinaryRSCapacityPointwiseAtPrizeRates domain τ ℓ := by
+  intro r f
+  let C : Set (ι → F) := ReedSolomon.code domain
+    ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊
+  let δ : ℝ := (((((τ r).val : ℕ) : ℝ≥0) /
+    (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)
+  have hpoint_le_lambda :
+      ((closeCodewordsRel C f δ).ncard : ℕ∞) ≤ Lambda C δ := by
+    unfold Lambda
+    exact le_iSup
+      (fun y : ι → F => ((closeCodewordsRel C y δ).ncard : ℕ∞)) f
+  have hcard_enat :
+      ((closeCodewordsRelFinset C f δ).card : ℕ∞) ≤ (ℓ r : ℕ∞) := by
+    rw [card_closeCodewordsRelFinset_eq_ncard]
+    exact le_trans hpoint_le_lambda (by simpa [C, δ] using hCapacity r)
+  exact_mod_cast hcard_enat
+
+/-- The prize-rate ordinary-RS `Λ` cap and the pointwise finite-list cap are equivalent. -/
+theorem ordinaryRSCapacityAtPrizeRates_iff_pointwise
+    (domain : ι ↪ F)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1))
+    (ℓ : Fin 4 → ℕ) :
+    OrdinaryRSCapacityAtPrizeRates domain τ ℓ ↔
+      OrdinaryRSCapacityPointwiseAtPrizeRates domain τ ℓ := by
+  constructor
+  · exact ordinaryRSCapacityPointwiseAtPrizeRates_of_capacity domain τ ℓ
+  · exact ordinaryRSCapacityAtPrizeRates_of_pointwise domain τ ℓ
+
 /-- Per-rate adjacent base-code `Λ` caps and Elias certificates resolve the faithful
 four-rate list-decoding lattice prize directly.
 
