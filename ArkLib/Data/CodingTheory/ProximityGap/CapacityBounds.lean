@@ -514,6 +514,59 @@ def frs_epsMCA_capacity_gg25
   -- bound collapse to 2n/(η|F|)+24/(η³|F|)). Blocked on T4.13 (above) + T2.18 (external admit
   -- in SubspaceDesign.lean). No independent external content beyond those two.
 
+/-- **ABF26 Theorem 4.14 [GG25 Cor 4.10] — checked reduction form.**
+
+This discharges the theorem's *corollary* content.  Given:
+
+* the FRS subspace-design instance (T2.18 / GK16),
+* the general subspace-design MCA theorem (T4.13 / GG25),
+* the radius identification from the chosen integer `t`, and
+* the real arithmetic comparison collapsing `(t·n+4t²)/|F|` to
+  `2n/(η|F|)+24/(η³|F|)`,
+
+the exact in-tree T4.14 target follows.  The last two hypotheses are the formalized shape of the
+paper's informal choice `t ≈ 1/η`; they are explicit so this theorem does not smuggle in
+unproved floor/ceiling arithmetic. -/
+theorem frs_epsMCA_capacity_gg25_of_residuals
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (η : ℝ) (t : ℕ) (ht : 0 < t)
+    (hT218 : IsSubspaceDesign s
+        (fun r ↦ if r ∈ Finset.Icc 1 s then
+            (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - r + 1) else 1)
+        (ReedSolomon.Folded.frsCode domain k s ω))
+    (hT413 : ∀ (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F)),
+        IsSubspaceDesign s τ C → ∀ t' : ℕ, 0 < t' →
+        epsMCA (F := F) (A := Fin s → F) ((C : Set (ι → Fin s → F)))
+            ((1 - τ (t' + 1) - 3 / (2 * t')).toNNReal) ≤
+          ENNReal.ofReal (((t' : ℝ) * Fintype.card ι + 4 * t' ^ 2) / Fintype.card F))
+    (hRadius :
+      let n : ℝ := Fintype.card ι
+      let ρ : ℝ := k / n
+      ((1 - ρ - η).toNNReal : ℝ≥0) =
+        (1 -
+            (fun r ↦ if r ∈ Finset.Icc 1 s then
+              (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - r + 1) else 1) (t + 1)
+            - 3 / (2 * t)).toNNReal)
+    (hBound :
+      let n : ℝ := Fintype.card ι
+      ((t : ℝ) * n + 4 * t ^ 2) / Fintype.card F ≤
+        2 * n / (η * Fintype.card F) + 24 / (η ^ 3 * Fintype.card F)) :
+    let n : ℝ := Fintype.card ι
+    let ρ : ℝ := k / n
+    epsMCA (F := F) (A := Fin s → F)
+        ((ReedSolomon.Folded.frsCode domain k s ω : Set (ι → Fin s → F)))
+        ((1 - ρ - η).toNNReal) ≤
+      ENNReal.ofReal (2 * n / (η * Fintype.card F)
+        + 24 / (η ^ 3 * Fintype.card F)) := by
+  intro n ρ
+  set τ : ℕ → ℝ := fun r ↦ if r ∈ Finset.Icc 1 s then
+      (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - r + 1) else 1
+  have h413 := hT413 τ (ReedSolomon.Folded.frsCode domain k s ω) hT218 t ht
+  rw [hRadius]
+  exact le_trans h413 (ENNReal.ofReal_le_ofReal hBound)
+
 /-- **ABF26 BCGM25 extension to T4.13 / T4.14 (polynomial generators preserve
 correlated agreement).**
 
