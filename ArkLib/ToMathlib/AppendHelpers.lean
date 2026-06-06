@@ -88,9 +88,12 @@ theorem verifier_output_mem_run_support
               -- OptionT membership `compatStatement` needs.
               rw [OptionT.mem_support_iff]
               have hLift := hstmtOut
-              rw [OptionT.liftM_eq_mk_map_some, OptionT.run_mk, support_map,
-        OracleComp.support_liftComp] at hLift
-              rw [Set.mem_image] at hLift
+              simp only [OptionT.run_monadLift, support_map, Set.mem_image] at hLift
+              rw [show (monadLift (reduction.verifier.run stmt proverResult.1).run :
+                    OracleComp (oSpec + [pSpec.Challenge]ₒ) (Option StmtOut))
+                  = OracleComp.liftComp (reduction.verifier.run stmt proverResult.1).run
+                      (oSpec + [pSpec.Challenge]ₒ) from rfl,
+                  OracleComp.support_liftComp] at hLift
               obtain ⟨w, hw, hwEq⟩ := hLift
               rw [Option.some.injEq] at hwEq
               rwa [← hwEq]
