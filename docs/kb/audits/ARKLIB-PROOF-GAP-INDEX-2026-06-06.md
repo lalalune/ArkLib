@@ -62,6 +62,7 @@ rg -n --glob '*.lean' 'opaque\s+\w+|placeholder|stub|TODO|FIXME|named residual|e
 | FRI/STIR soundness accounting and proximity-gap residuals | #24 |
 | OracleReduction sequential composition and Fiat-Shamir run equality | #25 |
 | Commitment/folding placeholder modules | #26 |
+| Merkle probabilistic RO-collision binding and simulation-based salted hiding | #119 |
 | L13 beta existence with `betaRec` witness | #27 |
 | ToyProblem rewinding-extractor framework | #28 |
 | RingSwitching KState weakening | #29 |
