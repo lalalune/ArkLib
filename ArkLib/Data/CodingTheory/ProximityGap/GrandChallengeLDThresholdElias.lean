@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLDThresholdJohnsonSq
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLDThreshold
 import ArkLib.Data.CodingTheory.ListDecoding.Bounds
 
 /-!
