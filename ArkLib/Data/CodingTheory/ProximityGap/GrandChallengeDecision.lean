@@ -51,6 +51,26 @@ open scoped NNReal ENNReal
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
+/-! ## Formal list-decoding predicate decision -/
+
+/-- **Complete negative decision of the formal §1 list-decoding prize predicate.**
+
+For every positive interleaving parameter and every evaluation domain with at least two points,
+the existence-form `GrandChallenges.listDecodingPrize` predicate is false.  This is the direct
+decision-theorem wrapper around `GrandChallengeCollapse.not_listDecodingPrize`: the encoded
+`∃ δ*` challenge collapses to radius `1`, where Reed-Solomon constants already force a list of
+size at least `|F|`, contradicting `ε* < 1`. -/
+theorem listDecodingPrize_decided_false (domain : ι ↪ F) {m : ℕ}
+    (hm : 0 < m) (hι : 2 ≤ Fintype.card ι) :
+    ¬ GrandChallenges.listDecodingPrize domain m :=
+  not_listDecodingPrize domain hm hι
+
+/-- Equivalent Boolean-shaped form of `listDecodingPrize_decided_false`. -/
+theorem listDecodingPrize_iff_false (domain : ι ↪ F) {m : ℕ}
+    (hm : 0 < m) (hι : 2 ≤ Fintype.card ι) :
+    GrandChallenges.listDecodingPrize domain m ↔ False :=
+  iff_false_intro (listDecodingPrize_decided_false domain hm hι)
+
 /-- **Huge-field decision (positive direction).** For `q ≥ 2^(n+128)` the formal §1 MCA
 prize predicate holds: by the endpoint collapse it suffices to bound `ε_mca(·, 1)` at each
 prize rate, and the universal pinning bound `2ⁿ/q ≤ 2⁻¹²⁸` does so uniformly. -/

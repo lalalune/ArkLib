@@ -1135,7 +1135,7 @@ theorem finalSumcheckOracleReduction_perfectCompleteness [IsDomain L] [IsDomain 
     simp only [support_bind, Set.mem_iUnion] at hx
     obtain ⟨s, _, hx⟩ := hx
     simp only [StateT.run'_eq, support_map, Set.mem_image] at hx
-    obtain ⟨⟨some y, _⟩, _, hy⟩ := hx
+    obtain ⟨⟨(some y), _⟩, _, hy⟩ := hx
     cases hy
     refine ⟨?_, rfl⟩
     -- `(stmtOut, witOut) ∈ toRelInput`: MLPEvalRelation (`s' = t'(challenges)`) + initialCompatibility.

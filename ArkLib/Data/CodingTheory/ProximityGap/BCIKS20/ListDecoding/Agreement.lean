@@ -2667,8 +2667,7 @@ lemma approximate_solution_is_exact_solution_coeffs_graph_clear_of_beta_embeddin
   exact approximate_solution_is_exact_solution_coeffs_graph_clear_of_beta_embedding_zero
     (F := F) (m := m) (n := n) (k := k) (Q := Q) δ x₀ h_gs hcond hemb
 
-open BCIKS20AppendixA in
-open BCIKS20AppendixA.ClaimA2 in
+open BCIKS20AppendixA BCIKS20AppendixA.ClaimA2 in
 omit [DecidableEq (RatFunc F)] in
 /-- Graph-clear Claim 5.8 front door from the exact Appendix-A Lemma A.1
 largeness condition and explicit graph-extraction data, without requiring an
@@ -2747,8 +2746,7 @@ lemma approximate_solution_alpha_powerSeries_eq_trunc_of_beta_embedding_zero
       (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
       h_gs hemb)
 
-open BCIKS20AppendixA in
-open BCIKS20AppendixA.ClaimA2 in
+open BCIKS20AppendixA BCIKS20AppendixA.ClaimA2 in
 /-- Alpha-series truncation from the exact Appendix-A Lemma A.1 largeness
 condition. -/
 lemma approximate_solution_alpha_powerSeries_eq_trunc_of_Sβ_large

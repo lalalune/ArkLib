@@ -266,7 +266,11 @@ theorem duplexSpongeFiatShamir_completeness_unroll_of_run_eq
     convert simulateQ_add_run_liftM_left impl
       (QueryImpl.liftTarget (StateT σ ProbComp)
         (challengeQueryImpl (pSpec := ⟨!v[Direction.P_to_V], !v[pSpec.Messages]⟩)))
-      (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn) using 3
+      (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn) using 2
+    -- Residual `(liftM honest).run = (liftM honest).run` where the two `liftM`s differ only by the
+    -- (definitionally equal) intermediate-spec associativity used to build the lift instance.
+    -- `liftM_OptionT_eq` collapses each lift to the canonical `simulateQ` form, which depends only
+    -- on the common source/target spec.
     simp only [liftM_OptionT_eq]
   rw [hcollapse]
 

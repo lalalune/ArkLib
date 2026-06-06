@@ -44,7 +44,7 @@ collinear line through z}`. The target Theorem 2 is `|E| ≤ (ℓ⁷/3)·(ρn)²
 * **S1 (Fold-as-RS-word).** For each `z ∈ F`, `f_z = f₀ + z·f₁` is a word over `D`; if it is
   `δ`-close to `RS[F,D,k]` then by GS list-decoding (`gs_existence`/`gs_divisibility`) there
   is a degree-`<k` polynomial `p_z` with `Δ(f_z, p_z|_D) ≤ δ·n`, and `(X − C p_z) ∣ Q_z` for
-  the GS interpolant `Q_z` of `f_z`.  [substrate: `GuruswamiSudan.gs_divisibility`]  PROVEN-SUBSTRATE
+  the GS interpolant `Q_z` of `f_z`.  [substrate: `GuruswamiSudan.gs_divisibility`]  PROVEN
 
 * **S2 (Lift to `K = F(Z)`).** Build a *single* Guruswami–Sudan interpolation polynomial
   `Q(X,Y,Z)` of the generic fold `f₀ + Z·f₁` over `K`, with multiplicity `m` at each
