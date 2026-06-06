@@ -9,6 +9,7 @@ import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Data.Fintype.Card
 import Mathlib.Tactic
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice
 
 set_option linter.unusedSectionVars false
 -- The Johnson-range MCA skeleton (below) carries `[DecidableEq ι]`/`[DecidableEq F]` section
@@ -424,6 +425,41 @@ def mcaLowerWitness_ofHab25Johnson
     MCALowerWitness (ReedSolomon.code domain k : Set (ι → F)) ε_star :=
   MCALowerWitness.ofLe hδ_le_one
     (le_trans (hab25_mca_johnson_bound domain k η δ hη hδ hCA hGS) hle)
+
+/-- **Hab25 Johnson residuals also make the faithful MCA lattice threshold exist.**
+
+This rounds the certified Johnson radius down to its Hamming lattice point, so downstream code
+can move directly from the Hab25 residuals to the faithful lattice threshold without manually
+constructing the intermediate `MCALowerWitness`. -/
+theorem mcaThresholdExists_ofHab25Johnson
+    (domain : ι ↪ F) (k : ℕ) (η δ ε_star : ℝ≥0)
+    (hη : 0 < η) (hδ : InJohnsonRange domain k η δ) (hδ_le_one : δ ≤ 1)
+    (hCA : Hab25CAInput domain k η δ)
+    (hGS : Hab25GSInterpolation domain k η δ hη hδ)
+    (hle : ENNReal.ofReal (johnsonBoundReal domain k η δ) ≤ (ε_star : ENNReal)) :
+    GrandChallengesLattice.mcaThresholdExists
+      (ReedSolomon.code domain k : Set (ι → F)) ε_star :=
+  ⟨GrandChallengesLattice.latticeIndexOf (ι := ι) δ hδ_le_one, by
+    unfold GrandChallengesLattice.mcaSatisfies
+    rw [← GrandChallengesLattice.epsMCA_eq_at_latticeIndex
+      (ReedSolomon.code domain k : Set (ι → F)) δ hδ_le_one]
+    exact le_trans (hab25_mca_johnson_bound domain k η δ hη hδ hCA hGS) hle⟩
+
+/-- The faithful MCA threshold created from Hab25 Johnson residuals satisfies the MCA bound. -/
+theorem mcaThreshold_spec_ofHab25Johnson
+    (domain : ι ↪ F) (k : ℕ) (η δ ε_star : ℝ≥0)
+    (hη : 0 < η) (hδ : InJohnsonRange domain k η δ) (hδ_le_one : δ ≤ 1)
+    (hCA : Hab25CAInput domain k η δ)
+    (hGS : Hab25GSInterpolation domain k η δ hη hδ)
+    (hle : ENNReal.ofReal (johnsonBoundReal domain k η δ) ≤ (ε_star : ENNReal)) :
+    let hne := mcaThresholdExists_ofHab25Johnson domain k η δ ε_star hη hδ hδ_le_one hCA hGS hle
+    GrandChallengesLattice.mcaSatisfies
+      (ReedSolomon.code domain k : Set (ι → F)) ε_star
+      (GrandChallengesLattice.mcaThreshold
+        (ReedSolomon.code domain k : Set (ι → F)) ε_star hne) :=
+  GrandChallengesLattice.mcaThreshold_spec
+    (ReedSolomon.code domain k : Set (ι → F)) ε_star
+    (mcaThresholdExists_ofHab25Johnson domain k η δ ε_star hη hδ hδ_le_one hCA hGS hle)
 
 /-- **Same bridge stated against the in-tree `MCALowerWitness.ofJohnsonBCHKS25` RHS.**
 
