@@ -320,6 +320,11 @@ section Assemble
 variable {K : Type*} [Field K] [Fintype K] [DecidableEq K]
 variable {F : Type*} [Field F] [Fintype F] [Module F K]
 
+/-- A submodule of a finite vector space is finite: a local `Fintype` instance used to
+form the subspace polynomials of the pigeonhole family (subspace membership is not
+decidable in general, so this instance is `noncomputable` via `Fintype.ofFinite`). -/
+local instance instFintypeSubmodule (W : Submodule F K) : Fintype W := Fintype.ofFinite W
+
 /-- For finite `𝔽`-subspaces `W₁ ≠ W₂`, the subspace polynomials differ. -/
 lemma subspacePoly_ne_of_ne
     (W₁ W₂ : Submodule F K) [Fintype W₁] [Fintype W₂] (h : W₁ ≠ W₂) :
@@ -375,48 +380,48 @@ theorem bkr06_pigeonhole_family_card
   classical
   -- Part 1: a large finset of distinct dimension-`v` subspaces.
   obtain ⟨S, hScard, hSdim⟩ := card_dimv_subspaces_ge (F := F) (K := K) v hv
-  -- Endow each member with a `Fintype` instance (K is finite).
-  letI instFin : ∀ W : Submodule F K, Fintype W := fun W => Fintype.ofFinite W
-  -- The subspace-polynomial map on the (typed) finset `S`.
-  let g : (S : Finset (Submodule F K)) → K[X] :=
-    fun W => subspacePoly (subFinset (W : Submodule F K))
+    -- The subspace-polynomial map on the (typed) finset `S`.
+    let g : ↥S → K[X] :=
+      fun W =>
+        letI : Fintype ((W : Submodule F K)) := Fintype.ofFinite _
+        subspacePoly (subFinset (W : Submodule F K))
   -- It is injective: distinct subspaces ⇒ distinct subspace polynomials.
-  have hg_inj : Function.Injective g := by
-    intro W₁ W₂ hW
-    by_contra hne
-    exact subspacePoly_ne_of_ne (W₁ : Submodule F K) (W₂ : Submodule F K)
-      (fun h => hne (Subtype.ext h)) hW
+    have hg_inj : Function.Injective g := by
+      intro W₁ W₂ hW
+      by_contra hne
+      letI : Fintype ((W₁ : Submodule F K)) := Fintype.ofFinite _
+      letI : Fintype ((W₂ : Submodule F K)) := Fintype.ofFinite _
+      exact subspacePoly_ne_of_ne (W₁ : Submodule F K) (W₂ : Submodule F K)
+        (fun h => hne (Subtype.ext h)) hW
   -- Each has degree `q^v` (members of `S` have dimension `v`).
-  have hg_deg : ∀ W : (S : Finset (Submodule F K)), (g W).natDegree
-      ≤ (Fintype.card F) ^ v := by
-    intro W
-    have hdim : Module.finrank F (W : Submodule F K) = v := hSdim W.1 W.2
-    rw [g, subspacePoly_natDegree_eq_pow_finrank, hdim]
+    have hg_deg : ∀ W : ↥S, (g W).natDegree ≤ (Fintype.card F) ^ v := by
+      intro W
+      letI : Fintype ((W : Submodule F K)) := Fintype.ofFinite _
+      have hdim : Module.finrank F (W : Submodule F K) = v := hSdim W.1 W.2
+      show (subspacePoly (subFinset (W : Submodule F K))).natDegree ≤ _
+    rw [subspacePoly_natDegree_eq_pow_finrank, hdim]
   -- Cardinality of the typed finset is `S.card ≥ q^{v(m−v)}`.
-  have hScard' : (Fintype.card F) ^ (v * (Module.finrank F K - v))
-      ≤ Fintype.card (S : Finset (Submodule F K)) := by
+  have hScard' : (Fintype.card F) ^ (v * (Module.finrank F K - v)) ≤ Fintype.card ↥S := by
     rw [Fintype.card_coe]; exact hScard
-  have hbig' : (Fintype.card K) ^ w * N
-      < Fintype.card (S : Finset (Submodule F K)) := lt_of_lt_of_le hbig hScard'
+  have hbig' : (Fintype.card K) ^ w * N < Fintype.card ↥S := lt_of_lt_of_le hbig hScard'
   -- Part 2: pattern pigeonhole extracts a sub-family `T` of size `> N`.
   obtain ⟨T, hTcard, hTsmall⟩ :=
     exists_pattern_fiber_family g k w ((Fintype.card F) ^ v) N hg_deg hcov hbig'
   -- The surviving index type: the elements of `T`.
-  refine ⟨(T : Finset (S : Finset (Submodule F K))), inferInstance, inferInstance,
-    fun t => ((t : (S : Finset (Submodule F K))) : Submodule F K), fun _ => instFin _, ?_, ?_, ?_, ?_⟩
+    refine ⟨↥T, inferInstance, inferInstance,
+      (fun t => ((t : ↥S) : Submodule F K)),
+      (fun t => Fintype.ofFinite (((t : ↥S) : Submodule F K))), ?_, ?_, ?_, ?_⟩
   · -- |ι| = T.card > N
     rw [Fintype.card_coe]; exact hTcard
   · -- each has dimension `v`
     intro t; exact hSdim _ (t.1).2
   · -- subspace polynomials are pairwise distinct on `T`
     intro t₁ t₂ ht
-    have : (t₁ : (S : Finset (Submodule F K))) = (t₂ : (S : Finset (Submodule F K))) :=
-      hg_inj ht
-    exact Subtype.ext this
+    have hSeq : (t₁ : ↥S) = (t₂ : ↥S) := hg_inj ht
+    exact Subtype.ext hSeq
   · -- pairwise differences lie in `degreeLT K k`
     intro t₁ t₂
-    exact hTsmall (t₁ : (S : Finset (Submodule F K))) t₁.2
-      (t₂ : (S : Finset (Submodule F K))) t₂.2
+    exact hTsmall (t₁ : ↥S) t₁.2 (t₂ : ↥S) t₂.2
 
 /-- **BKR06 Lemma 3.5 family-size residual (real-exponent form).**
 

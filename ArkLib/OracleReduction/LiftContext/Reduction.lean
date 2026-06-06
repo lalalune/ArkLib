@@ -750,10 +750,6 @@ theorem liftContext_runWithLog
   simp [runWithLog, liftContext, Prover.liftContext_runWithLog, Verifier.liftContext,
     Verifier.run, Function.uncurry, OptionT.run_bind, OptionT.run_map, Functor.map_map]
   congr 1
-  funext x
-  congr 1
-  funext x_1
-  cases x_1.1 <;> rfl
 
 end Reduction
 
