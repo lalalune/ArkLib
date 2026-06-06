@@ -94,6 +94,17 @@ theorem lambda_le_ggr11_of_treeStructure
     InterleavedCode.lambda_le_ggr11 C δ m hm hδ_lb hδ_ub :=
   (lambda_le_ggr11_iff C δ m hm hδ_lb hδ_ub).mpr (GGR11.lambda_le_ggr11_of_treeStructure h)
 
+/-- **Reconnect (named frontier form).** The bare bound follows from the granular
+per-received-word `GGR11TreeFrontier` at the concrete GGR11 budgets. This is the budget-specific
+adapter for the named frontier exposed in `GGR11Interleaved.lean`. -/
+theorem lambda_le_ggr11_of_treeFrontier
+    (C : Set (ι → F)) (δ : ℝ) (m : ℕ) (hm : 1 ≤ m)
+    (hδ_lb : 0 ≤ δ) (hδ_ub : δ < (Code.minDist C : ℝ) / Fintype.card ι)
+    (h : GGR11.GGR11TreeFrontier C δ m (ggr11BlueBudget C δ) (ggr11RedBudget C δ)) :
+    InterleavedCode.lambda_le_ggr11 C δ m hm hδ_lb hδ_ub :=
+  lambda_le_ggr11_of_treeStructure C δ m hm hδ_lb hδ_ub
+    (GGR11.treeStructure_of_frontier h)
+
 /-- **Reconnect (per-word form).** The bare bound follows from the (coarser)
 per-received-word residual `GGR11PerWordBound` at the GGR11 budgets. -/
 theorem lambda_le_ggr11_of_perWordBound
@@ -162,6 +173,13 @@ example (hm : 1 ≤ m) (hδ_lb : 0 ≤ δ)
     InterleavedCode.lambda_le_ggr11 C δ m hm hδ_lb hδ_ub :=
   lambda_le_ggr11_of_treeStructure C δ m hm hδ_lb hδ_ub h
 
+/-- The named frontier form also composes to the headline `lambda_le_ggr11` bound. -/
+example (hm : 1 ≤ m) (hδ_lb : 0 ≤ δ)
+    (hδ_ub : δ < (Code.minDist C : ℝ) / Fintype.card ι)
+    (h : GGR11.GGR11TreeFrontier C δ m (ggr11BlueBudget C δ) (ggr11RedBudget C δ)) :
+    InterleavedCode.lambda_le_ggr11 C δ m hm hδ_lb hδ_ub :=
+  lambda_le_ggr11_of_treeFrontier C δ m hm hδ_lb hδ_ub h
+
 /-- Regression: the bare definition is *propositionally identical* to the explicit
 GGR11-budget bound, so the budget abbreviations track the `let`-bindings inside
 `InterleavedCode.lambda_le_ggr11`. -/
@@ -180,5 +198,6 @@ end Regression
 #print axioms lambda_le_ggr11_of_le_exp
 #print axioms lambda_le_ggr11_of_Lambda_top
 #print axioms lambda_le_ggr11_of_treeStructure
+#print axioms lambda_le_ggr11_of_treeFrontier
 
 end InterleavedCode.GGR11Reconnect
