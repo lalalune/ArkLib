@@ -167,7 +167,7 @@ theorem winningSetRatio_le_winningSetSoundness {k : ℕ} {C : Set (ι → F)} {�
 /-- The simplified-IOR soundness scalar is a genuine probability bound: it is at most `1`. -/
 theorem winningSetSoundness_le_one {k : ℕ} (C : Set (ι → F)) (δ : ℝ≥0) :
     winningSetSoundness (k := k) C δ ≤ 1 := by
-  exact ciSup_le fun x : ViolatingInstance C δ k => winningSetRatio_le_one x
+  exact ciSup_le' fun x : ViolatingInstance C δ k => winningSetRatio_le_one x
 
 /-- **The correlated-agreement attack lower-bounds the simplified-IOR soundness**
 (the §6.4.2 attack chain, end-to-end and machine-checked). For a linear code
@@ -710,7 +710,7 @@ free, `norm_num` only), turning each owed obligation into a pure coding-theory
 fact about a *winning-set cardinality*. -/
 
 /-- Backward-compatible name for the genuine KoalaBear-sextic anchor. -/
-abbrev koalaIRSConcrete : ToyParams := koalaIRS
+noncomputable abbrev koalaIRSConcrete : ToyParams := koalaIRS
 
 /-- The genuine carrier's field is the KoalaBear-sextic field, of size
 `p^6 ≈ 2^186`. -/
@@ -756,7 +756,9 @@ theorem winningSetSoundness_concrete_ge_of_card
   -- `winningSetRatio x ≤ winningSetSoundness`; bound `2^(-116) ≤ winningSetRatio x`.
   refine le_trans ?_ (winningSetRatio_le_winningSetSoundness x)
   -- `winningSetRatio x = |Ω| / |F|` with `|F| = card Sextic`.
-  rw [winningSetRatio, two_rpow_neg_natCast]
+  rw [winningSetRatio]
+  rw [show (2 : ℝ≥0) ^ (-(116 : ℝ)) = ((2 : ℝ≥0) ^ 116)⁻¹ by
+    exact two_rpow_neg_natCast 116]
   -- Abbreviate the winning-set cardinality.
   set Ncard : ℕ := (winningSet KoalaBear.rsCodeSet (3 / 10) x.v x.μ₁ x.μ₂ x.f₁ x.f₂).ncard
     with hN
@@ -841,7 +843,15 @@ arithmetic over `ℝ≥0` (`(7/10)^128 ≈ 2^(-65.9)`); cross-multiplied to inte
 and closed by `norm_num`. This is the binding numeric cap of the provable side. -/
 theorem spotCheck_le_two_pow_neg_64 :
     ((1 : ℝ≥0) - 3 / 10) ^ (128 : ℕ) ≤ (2 : ℝ≥0) ^ (-(64 : ℝ)) := by
-  rw [two_rpow_neg_natCast, show (1 : ℝ≥0) - 3 / 10 = 7 / 10 by norm_num]
+  rw [show (2 : ℝ≥0) ^ (-(64 : ℝ)) = ((2 : ℝ≥0) ^ 64)⁻¹ by
+    exact two_rpow_neg_natCast 64]
+  have hsub : (1 : ℝ≥0) - 3 / 10 = 7 / 10 := by
+    apply NNReal.coe_injective
+    have hle : (3 / 10 : ℝ≥0) ≤ 1 := by
+      exact_mod_cast (by norm_num : (3 / 10 : ℝ) ≤ 1)
+    rw [NNReal.coe_sub hle]
+    norm_num
+  rw [hsub]
   -- `(7/10)^128 = 7^128 / 10^128 ≤ (2^64)⁻¹ = 1 / 2^64`  ⇔  `7^128 · 2^64 ≤ 10^128`.
   rw [div_pow, show ((2 : ℝ≥0) ^ 64)⁻¹ = 1 / (2 : ℝ≥0) ^ 64 by rw [one_div],
     div_le_div_iff₀ (by positivity) (by positivity), one_mul]

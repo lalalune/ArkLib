@@ -342,7 +342,7 @@ def MCALowerWitness.ofBadCountLe
 /-- Radius-`1/n` bad-count upper bounds, such as the J1 algebraic theorem, packaged as an
 MCA lower witness.  The only remaining inputs are the uniform bad-scalar count bound and the
 normalisation inequality `B / |F| ≤ ε*`. -/
-def MCALowerWitness.ofBadCountLe_j1
+noncomputable def MCALowerWitness.ofBadCountLe_j1
     (C : Set (ι → F)) {ε_star : ℝ≥0} {B : ENNReal}
     (hcard : ∀ u : WordStack F (Fin 2) ι,
       let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
@@ -358,32 +358,6 @@ def MCALowerWitness.ofBadCountLe_j1
   exact MCALowerWitness.ofBadCountLe C
     (mcaLatticePoint_le_one (Fintype.card ι) j1)
     (by simpa [j1] using hcard) hB
-
-/-- Radius-`1/n` bad-count upper bounds directly give the faithful MCA threshold lower
-bracket `1 ≤ δ*_C`.  This is the Lean-facing endpoint needed by the J1 route before pairing
-with an adjacent upper witness. -/
-theorem one_le_mcaThreshold_of_badCountLe_j1
-    (C : Set (ι → F)) {ε_star : ℝ≥0} {B : ENNReal}
-    (hcard : ∀ u : WordStack F (Fin 2) ι,
-      let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
-        have hn : 0 < Fintype.card ι := Fintype.card_pos
-        omega⟩
-      (mcaBadCount (F := F) C (mcaLatticePoint (Fintype.card ι) j1)
-        (u 0) (u 1) : ENNReal) ≤ B)
-    (hB : B / (Fintype.card F : ENNReal) ≤ (ε_star : ENNReal)) :
-    let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
-      have hn : 0 < Fintype.card ι := Fintype.card_pos
-      omega⟩
-    let w : MCALowerWitness C ε_star := MCALowerWitness.ofBadCountLe_j1 C hcard hB
-    let hne := mcaThresholdExists_of_MCALowerWitness C ε_star w
-    j1 ≤ mcaThreshold C ε_star hne := by
-  let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
-    have hn : 0 < Fintype.card ι := Fintype.card_pos
-    omega⟩
-  let w : MCALowerWitness C ε_star := MCALowerWitness.ofBadCountLe_j1 C hcard hB
-  let hne := mcaThresholdExists_of_MCALowerWitness C ε_star w
-  have hle := MCALowerWitness_le_mcaThreshold C ε_star hne w
-  simpa [w, MCALowerWitness.ofBadCountLe_j1, j1] using hle
 
 /-- `ε_mca` at a real radius equals `ε_mca` at its lattice point `⌊δ·n⌋/n` (step structure):
 the radius enters only through `⌊δ·n⌋`. -/
@@ -414,6 +388,36 @@ theorem mcaThresholdExists_of_MCALowerWitness (C : Set (ι → F)) (ε_star : �
     unfold mcaSatisfies
     rw [← epsMCA_eq_at_latticeIndex C w.δ w.le_one]
     exact w.bound⟩
+
+/-- Radius-`1/n` bad-count upper bounds directly give the faithful MCA threshold lower
+bracket `1 ≤ δ*_C`.  This is the Lean-facing endpoint needed by the J1 route before pairing
+with an adjacent upper witness. -/
+theorem one_le_mcaThreshold_of_badCountLe_j1
+    (C : Set (ι → F)) {ε_star : ℝ≥0} {B : ENNReal}
+    (hcard : ∀ u : WordStack F (Fin 2) ι,
+      let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+        have hn : 0 < Fintype.card ι := Fintype.card_pos
+        omega⟩
+      (mcaBadCount (F := F) C (mcaLatticePoint (Fintype.card ι) j1)
+        (u 0) (u 1) : ENNReal) ≤ B)
+    (hB : B / (Fintype.card F : ENNReal) ≤ (ε_star : ENNReal)) :
+    let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+      have hn : 0 < Fintype.card ι := Fintype.card_pos
+      omega⟩
+    let w : MCALowerWitness C ε_star := MCALowerWitness.ofBadCountLe_j1 C hcard hB
+    let hne := mcaThresholdExists_of_MCALowerWitness C ε_star w
+    j1 ≤ mcaThreshold C ε_star hne := by
+  let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+    have hn : 0 < Fintype.card ι := Fintype.card_pos
+    omega⟩
+  let w : MCALowerWitness C ε_star := MCALowerWitness.ofBadCountLe_j1 C hcard hB
+  let hne := mcaThresholdExists_of_MCALowerWitness C ε_star w
+  have hle := MCALowerWitness_le_mcaThreshold C ε_star hne w
+  have hidx :
+      latticeIndexOf (ι := ι) w.δ w.le_one = j1 := by
+    simp [w, MCALowerWitness.ofBadCountLe_j1, MCALowerWitness.ofBadCountLe,
+      MCALowerWitness.ofLe, latticeIndexOf_mcaLatticePoint, j1]
+  simpa [hidx] using hle
 
 /-- The faithful MCA threshold obtained from a lower witness satisfies the MCA bound. -/
 theorem mcaThreshold_spec_of_MCALowerWitness (C : Set (ι → F)) (ε_star : ℝ≥0)
