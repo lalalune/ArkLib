@@ -22,19 +22,13 @@ With `A := (1−β)/α`, `P := (p:ℝ)`, `L := log p`, `r := ⌊δ·P⌋₊`, `a
 
 * `C(p,r) = C(p,a)` (symmetry) `≥ (p+1−a)^a/a! ≥ (P/2)^a/a^a` (`Nat.pow_le_choose` via the
   in-tree `choose_real_ge_pow_div`, `Nat.factorial_le_pow`, and `a ≤ P/2`);
-* `(P−1)^r = P^r·(1−1/P)^r ≥ P^r·(1−1/P)^p ≥ P^r·e^{−1}/2`
+* `(P−1)^r = P^r·(1−1/P)^r ≥ P^r·(1−1/P)^p ≥ P^r·(e^{−1}/2)`
   (`GHSZ02Core.one_sub_inv_pow_ge_inv_e`);
 * taking logs and cancelling `P^p = P^a·P^r`, the inequality reduces to the **ledger**
-  `(P^α·β/2)·L + a·log(2a) + (1 + log 2) ≤ k·L`;
-* `a·log(2a) ≤ (A·P^α+1)·(log(4A) + α·L)`, and since `α·A = 1−β` the head term
-  `(1−β)·P^α·L` cancels against `k·L ≥ (P^α−1)·L`, leaving `(β/2)·P^α·L` of room, of which
-  the two threshold hypotheses `hT1`/`hT2` each consume `(β/4)·P^α·L`.
-
-`ghsz02LargeN_thresholds_eventually` (brick B) shows the thresholds hold for all `p` past an
-explicit `p₀` (Archimedean/`Real.exp`-based), and
-`rs_lambda_large_prime_ghsz02_proven` (brick C) discharges the bare ABF26 T3.13 front door
-`CodingTheory.rs_lambda_large_prime_ghsz02` through the in-tree reduction
-`hcount_of_largeN` with the uniform Ω-constant `c = 1/2`.
+  `(P^α·β/2)·L + a·log 2 + a·log a + (1 + log 2) ≤ k·L`;
+* `a·(log 2 + log a) = a·log(2a) ≤ (A·P^α+1)·(log(4A) + α·L)`, and since `α·A = 1−β` the
+  head term `(1−β)·P^α·L` cancels against `k·L ≥ (P^α−1)·L`, leaving `(β/2)·P^α·L` of
+  room, of which the threshold hypotheses `hT1`/`hT2` each consume `(β/4)·P^α·L`.
 
 All declarations compile `sorry`/`axiom`-free and are axiom-clean
 (`[propext, Classical.choice, Quot.sound]`).
@@ -50,8 +44,8 @@ open CodingTheory ListDecodable
 namespace GHSZ02LargeNProof
 
 /-- **Brick A: the ledger reduction.**  `GHSZ02LargeN α β p δ` at the front-door radius
-`δ = 1 − ((1−β)/α)·p^{α−1}`, from four explicit numeric threshold hypotheses (each of which
-holds for all `p` large enough — brick B). -/
+`δ = 1 − ((1−β)/α)·p^{α−1}`, from explicit numeric threshold hypotheses (each of which
+holds for all `p` large enough). -/
 theorem ghsz02LargeN_of_thresholds
     (α β : ℝ) (p : ℕ) (hp2 : 2 ≤ p)
     (hα0 : 0 < α) (hβ1 : β < 1)
@@ -64,7 +58,7 @@ theorem ghsz02LargeN_of_thresholds
     GHSZ02LargeN α β p (1 - (1 - β) / α * (p : ℝ) ^ (α - 1)) := by
   classical
   unfold GHSZ02LargeN
-  -- ## Setup and abbreviations
+  -- ## Setup
   have hP0 : (0 : ℝ) < (p : ℝ) := by exact_mod_cast Nat.lt_of_lt_of_le Nat.zero_lt_two hp2
   have hP1 : (1 : ℝ) < (p : ℝ) := by exact_mod_cast Nat.lt_of_lt_of_le Nat.one_lt_two hp2
   have hP2 : (2 : ℝ) ≤ (p : ℝ) := by exact_mod_cast hp2
@@ -72,9 +66,10 @@ theorem ghsz02LargeN_of_thresholds
   set A : ℝ := (1 - β) / α with hAdef
   set P : ℝ := (p : ℝ) with hPdef
   set L : ℝ := Real.log p with hLdef
-  have hA0 : 0 < A := div_pos (by linarith) hα0
+  have hA0 : 0 < A := by
+    rw [hAdef]; exact div_pos (by linarith) hα0
   have hPα0 : (0 : ℝ) < P ^ α := Real.rpow_pos_of_pos hP0 α
-  -- ## The floor argument rewrite: `δ·P = P − A·P^α`
+  -- ## The floor-argument rewrite `δ·P = P − A·P^α`
   have hδP : (1 - A * P ^ (α - 1)) * P = P - A * P ^ α := by
     have hsplit : P ^ (α - 1) = P ^ α / P := by
       rw [Real.rpow_sub hP0, Real.rpow_one]
@@ -84,7 +79,6 @@ theorem ghsz02LargeN_of_thresholds
   set r : ℕ := ⌊P - A * P ^ α⌋₊ with hrdef
   set k : ℕ := ⌊P ^ α⌋₊ with hkdef
   -- ## Floor bookkeeping
-  have hAPα_le : A * P ^ α ≤ P / 2 - 1 := by linarith
   have hPA_nonneg : (0 : ℝ) ≤ P - A * P ^ α := by nlinarith
   have hr_le : (r : ℝ) ≤ P - A * P ^ α := Nat.floor_le hPA_nonneg
   have hr_gt : P - A * P ^ α < (r : ℝ) + 1 := Nat.lt_floor_add_one _
@@ -122,8 +116,111 @@ theorem ghsz02LargeN_of_thresholds
     rw [← hchoose_symm]
     have h1 := GHSZ02Cor20.choose_real_ge_pow_div a p
     have h2 : (P / 2) ^ a / (a : ℝ) ^ a ≤ ((p + 1 - a : ℕ) : ℝ) ^ a / (a : ℝ) ^ a := by
-      apply div_le_div_of_le_left_fail
-    sorry
-  sorry
+      gcongr
+      · linarith
+      · exact hbase_ge
+    have h3 : ((p + 1 - a : ℕ) : ℝ) ^ a / (a : ℝ) ^ a
+        ≤ ((p + 1 - a : ℕ) : ℝ) ^ a / (Nat.factorial a : ℝ) :=
+      div_le_div_of_nonneg_left (by positivity) hfac_pos hfac_le
+    exact le_trans h2 (le_trans h3 h1)
+  -- ## The `(P−1)^r` bound
+  have hinvP : (1 : ℝ) / P ≤ 1 / 2 := by
+    apply one_div_le_one_div_of_le (by norm_num) hP2
+  have h1P : (0 : ℝ) ≤ 1 - 1 / P := by linarith
+  have h1P' : 1 - 1 / P ≤ 1 := by
+    have : (0 : ℝ) < 1 / P := by positivity
+    linarith
+  have hhalfP : (1 : ℝ) / 2 ≤ 1 - 1 / P := by linarith
+  have hexpbrick : Real.exp (-1) ≤ (1 - 1 / P) ^ (p - 1) :=
+    GHSZ02Core.one_sub_inv_pow_ge_inv_e hp2
+  have hp_pow : (1 - 1 / P) ^ p = (1 - 1 / P) ^ (p - 1) * (1 - 1 / P) := by
+    conv_lhs => rw [show p = (p - 1) + 1 by omega]
+    rw [pow_succ]
+  have hppow_ge : Real.exp (-1) / 2 ≤ (1 - 1 / P) ^ p := by
+    rw [hp_pow]
+    calc Real.exp (-1) / 2 = Real.exp (-1) * (1 / 2) := by ring
+      _ ≤ (1 - 1 / P) ^ (p - 1) * (1 - 1 / P) :=
+          mul_le_mul hexpbrick hhalfP (by norm_num)
+            (le_trans (Real.exp_pos _).le hexpbrick)
+  have hrp_pow : (1 - 1 / P) ^ p ≤ (1 - 1 / P) ^ r :=
+    pow_le_pow_of_le_one h1P h1P' hr_le_p
+  have hPm1_eq : P - 1 = P * (1 - 1 / P) := by field_simp
+  have hPm1_ge : P ^ r * (Real.exp (-1) / 2) ≤ (P - 1) ^ r := by
+    rw [hPm1_eq, mul_pow]
+    exact mul_le_mul_of_nonneg_left (le_trans hppow_ge hrp_pow) (by positivity)
+  -- ## RHS assembly
+  have hRHS : P ^ k * ((P / 2) ^ a / (a : ℝ) ^ a * (P ^ r * (Real.exp (-1) / 2)))
+      ≤ P ^ k * ((Nat.choose p r : ℝ) * (P - 1) ^ r) := by
+    apply mul_le_mul_of_nonneg_left _ (by positivity)
+    exact mul_le_mul hchoose_ge hPm1_ge (by positivity) (by positivity)
+  refine le_trans ?_ hRHS
+  -- ## The main multiplicative bound, via logs
+  have hLHS_pos : (0 : ℝ) < P ^ p * P ^ (P ^ α * β / 2) := by positivity
+  have hQ_pos : (0 : ℝ) < (P / 2) ^ a / (a : ℝ) ^ a := by positivity
+  have hR_pos : (0 : ℝ) < P ^ r * (Real.exp (-1) / 2) := by positivity
+  have hRHS_pos : (0 : ℝ)
+      < P ^ k * ((P / 2) ^ a / (a : ℝ) ^ a * (P ^ r * (Real.exp (-1) / 2))) := by
+    positivity
+  rw [← Real.log_le_log_iff hLHS_pos hRHS_pos]
+  -- expand both logs into linear form
+  rw [Real.log_mul (by positivity) (by positivity),
+    Real.log_mul (by positivity) (by positivity),
+    Real.log_mul (by positivity) (by positivity),
+    Real.log_mul (by positivity) (by positivity),
+    Real.log_div (by positivity) (by positivity),
+    Real.log_div (by positivity) (by positivity),
+    Real.log_div (ne_of_gt (Real.exp_pos _)) (by norm_num),
+    Real.log_pow, Real.log_pow, Real.log_pow, Real.log_pow,
+    Real.log_rpow hP0, Real.log_exp]
+  -- ## The ledger
+  -- `p = a + r` as a real coefficient identity
+  have hParL : P * L = (a : ℝ) * L + (r : ℝ) * L := by
+    have hpar : P = (a : ℝ) + (r : ℝ) := by
+      rw [hPdef]
+      exact_mod_cast har.symm
+    rw [hpar]; ring
+  -- `k·L ≥ (P^α − 1)·L`
+  have hk_gt : P ^ α - 1 < (k : ℝ) := by
+    have := Nat.lt_floor_add_one (P ^ α)
+    rw [← hkdef] at this
+    linarith
+  have hkL : (P ^ α - 1) * L ≤ (k : ℝ) * L :=
+    mul_le_mul_of_nonneg_right hk_gt.le hL0.le
+  -- `a·log(2a) ≤ (A·P^α + 1)·(log(4A) + α·L)`
+  have h2a_ub : 2 * (a : ℝ) ≤ 4 * A * P ^ α := by nlinarith
+  have hlog2a_le : Real.log (2 * (a : ℝ)) ≤ Real.log (4 * A) + α * L := by
+    have hstep : Real.log (2 * (a : ℝ)) ≤ Real.log (4 * A * P ^ α) :=
+      Real.log_le_log (by positivity) h2a_ub
+    have hsplit : Real.log (4 * A * P ^ α) = Real.log (4 * A) + α * L := by
+      rw [Real.log_mul (by positivity) (ne_of_gt hPα0), Real.log_rpow hP0]
+    linarith
+  have hlog2a_nonneg : 0 ≤ Real.log (2 * (a : ℝ)) := by
+    apply Real.log_nonneg
+    linarith
+  have haln : (a : ℝ) * Real.log (2 * (a : ℝ))
+      ≤ (A * P ^ α + 1) * (Real.log (4 * A) + α * L) := by
+    have hmul1 : (a : ℝ) * Real.log (2 * (a : ℝ))
+        ≤ (a : ℝ) * (Real.log (4 * A) + α * L) :=
+      mul_le_mul_of_nonneg_left hlog2a_le ha0R.le
+    have hpos : 0 ≤ Real.log (4 * A) + α * L := le_trans hlog2a_nonneg hlog2a_le
+    have hmul2 : (a : ℝ) * (Real.log (4 * A) + α * L)
+        ≤ (A * P ^ α + 1) * (Real.log (4 * A) + α * L) :=
+      mul_le_mul_of_nonneg_right ha_ub.le hpos
+    linarith
+  -- split `log(2a)` and expand the product
+  have hsplit2a : (a : ℝ) * Real.log (2 * (a : ℝ))
+      = (a : ℝ) * Real.log 2 + (a : ℝ) * Real.log (a : ℝ) := by
+    rw [Real.log_mul (by norm_num) (ne_of_gt ha0R)]
+    ring
+  have hexpand : (A * P ^ α + 1) * (Real.log (4 * A) + α * L)
+      = Real.log (4 * A) * (A * P ^ α + 1) + (α * A) * (P ^ α * L) + α * L := by
+    ring
+  have hαA : α * A = 1 - β := by
+    rw [hAdef]
+    field_simp
+  have hαAsub : (α * A) * (P ^ α * L) = (1 - β) * (P ^ α * L) := by rw [hαA]
+  -- close the ledger
+  nlinarith [hkL, haln, hsplit2a, hexpand, hαAsub, hParL, hT1, hT2, hL0,
+    mul_pos hPα0 hL0]
 
 end GHSZ02LargeNProof

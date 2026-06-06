@@ -64,6 +64,9 @@ The radius `1/n` is the first nonzero MCA lattice point, `mcaLatticePoint n 1`.
   `mcaPrizeLatticeResolved_j1_of_interiorJ1_and_spikeJ2` — exact J1 threshold resolution in
   the adjacent band `2/q ≤ ε* < 3/q`, using the exact J1 value and the `3`-spike obstruction at
   lattice index J2.
+* `mcaPrizeLatticeResolved_j1_of_interiorJ1_and_card_between` — the same adjacent-band
+  resolution specialized to the formal prize threshold `ε* = 2⁻¹²⁸`, using the field-size band
+  `2·2¹²⁸ ≤ q < 3·2¹²⁸`.
 -/
 
 set_option linter.unusedSectionVars false
@@ -485,6 +488,85 @@ theorem mcaPrizeLatticeResolved_j1_of_interiorJ1_and_spikeJ2
   simpa [C, j1] using
     (mcaThreshold_eq_j1_of_interiorJ1_and_spikeJ2
       domain (hk r) hq3 hJ1 hJ2 hne)
+
+/-! ## Concrete `ε* = 2⁻¹²⁸` field-size specialization -/
+
+/-- Field-size lower band for the J1 side of the formal prize threshold:
+`2/q ≤ 2⁻¹²⁸` follows from `2·2¹²⁸ ≤ q`. -/
+theorem two_div_card_le_epsStar_of_card_ge_two_mul_two_pow
+    (hcard : (2 : ℕ) * 2 ^ (128 : ℕ) ≤ Fintype.card F) :
+    (2 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ≤ (epsStar : ℝ≥0∞) := by
+  set q := Fintype.card F with hq_def
+  have heps : (epsStar : ℝ≥0∞) = (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ := by
+    rw [epsStar]
+    push_cast
+    rw [one_div]
+  rw [heps]
+  have hq0 : (q : ℝ≥0∞) ≠ 0 := by
+    simp only [ne_eq, Nat.cast_eq_zero]
+    rw [hq_def]
+    exact Fintype.card_ne_zero
+  have hqtop : (q : ℝ≥0∞) ≠ ⊤ := ENNReal.natCast_ne_top q
+  rw [ENNReal.div_le_iff hq0 hqtop]
+  have hpow_ne_zero : (2 ^ (128 : ℕ) : ℝ≥0∞) ≠ 0 := by positivity
+  have hpow_ne_top : (2 ^ (128 : ℕ) : ℝ≥0∞) ≠ ⊤ := by finiteness
+  rw [← ENNReal.div_eq_inv_mul]
+  rw [ENNReal.le_div_iff_mul_le (Or.inl hpow_ne_zero) (Or.inl hpow_ne_top)]
+  have hcast :
+      (((2 : ℕ) * 2 ^ (128 : ℕ) : ℕ) : ℝ≥0∞) ≤ (q : ℝ≥0∞) := by
+    exact_mod_cast (by simpa [hq_def] using hcard)
+  calc (2 : ℝ≥0∞) * (2 ^ (128 : ℕ) : ℝ≥0∞)
+      = (((2 : ℕ) * 2 ^ (128 : ℕ) : ℕ) : ℝ≥0∞) := by push_cast; ring
+    _ ≤ (q : ℝ≥0∞) := hcast
+
+/-- Field-size upper band for the J2 spike obstruction at the formal prize threshold:
+`2⁻¹²⁸ < 3/q` follows from `q < 3·2¹²⁸`. -/
+theorem epsStar_lt_three_div_card_of_card_lt_three_mul_two_pow
+    (hcard : Fintype.card F < (3 : ℕ) * 2 ^ (128 : ℕ)) :
+    (epsStar : ℝ≥0∞) < (3 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) := by
+  set q := Fintype.card F with hq_def
+  have heps : (epsStar : ℝ≥0∞) = (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ := by
+    rw [epsStar]
+    push_cast
+    rw [one_div]
+  rw [heps]
+  have hq0 : (q : ℝ≥0∞) ≠ 0 := by
+    simp only [ne_eq, Nat.cast_eq_zero]
+    rw [hq_def]
+    exact Fintype.card_ne_zero
+  have hqtop : (q : ℝ≥0∞) ≠ ⊤ := ENNReal.natCast_ne_top q
+  rw [ENNReal.lt_div_iff_mul_lt (Or.inl hq0) (Or.inl hqtop)]
+  have hpow_ne_zero : (2 ^ (128 : ℕ) : ℝ≥0∞) ≠ 0 := by positivity
+  have hpow_ne_top : (2 ^ (128 : ℕ) : ℝ≥0∞) ≠ ⊤ := by finiteness
+  rw [← ENNReal.div_eq_inv_mul]
+  rw [ENNReal.div_lt_iff (Or.inl hpow_ne_zero) (Or.inl hpow_ne_top)]
+  have hcast :
+      (q : ℝ≥0∞) < (((3 : ℕ) * 2 ^ (128 : ℕ) : ℕ) : ℝ≥0∞) := by
+    exact_mod_cast (by simpa [hq_def] using hcard)
+  calc (q : ℝ≥0∞)
+      < (((3 : ℕ) * 2 ^ (128 : ℕ) : ℕ) : ℝ≥0∞) := hcast
+    _ = (3 : ℝ≥0∞) * (2 ^ (128 : ℕ) : ℝ≥0∞) := by push_cast; ring
+
+/-- **Formal-prize adjacent J1/J2 field-size band.**
+
+If every prize-rate RS code has a genuine J1 window and
+`2·2¹²⁸ ≤ |F| < 3·2¹²⁸`, then the faithful MCA prize lattice is exactly the constant J1
+assignment at the formal threshold `ε* = 2⁻¹²⁸`. -/
+theorem mcaPrizeLatticeResolved_j1_of_interiorJ1_and_card_between
+    (domain : ι ↪ F)
+    (hk : ∀ r : Fin 4,
+      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ + 3 ≤ Fintype.card ι)
+    (hcard_lo : (2 : ℕ) * 2 ^ (128 : ℕ) ≤ Fintype.card F)
+    (hcard_hi : Fintype.card F < (3 : ℕ) * 2 ^ (128 : ℕ)) :
+    mcaPrizeLatticeResolved domain
+      (fun _ : Fin 4 => ⟨1, by
+        have hn : 0 < Fintype.card ι := Fintype.card_pos
+        omega⟩) := by
+  have hq3 : 3 ≤ Fintype.card F :=
+    le_trans (by norm_num : 3 ≤ (2 : ℕ) * 2 ^ (128 : ℕ)) hcard_lo
+  exact mcaPrizeLatticeResolved_j1_of_interiorJ1_and_spikeJ2 domain hk hq3
+    (two_div_card_le_epsStar_of_card_ge_two_mul_two_pow (F := F) hcard_lo)
+    (epsStar_lt_three_div_card_of_card_lt_three_mul_two_pow (F := F) hcard_hi)
 
 end GrandChallengesLattice
 

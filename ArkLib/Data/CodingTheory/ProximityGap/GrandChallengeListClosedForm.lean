@@ -140,6 +140,19 @@ theorem ncard_interleavedReedSolomonCode (domain : ι ↪ F) {k : ℕ}
   rw [ncard_interleavedCodeSet_eq_pow _ (Set.toFinite _),
     ncard_reedSolomonCode domain hk, ← pow_mul]
 
+/-- The radius-one maximised list size of the `m`-fold interleaved Reed-Solomon code with
+`k ≤ n` equals `q^(k·m)`: at radius one the list is the whole interleaved code
+(`Lambda_one_eq_ncard`), of cardinality `q^(k·m)`
+(`ncard_interleavedReedSolomonCode`). -/
+theorem Lambda_interleavedReedSolomon_one_eq (domain : ι ↪ F) {k : ℕ}
+    (hk : k ≤ Fintype.card ι) (m : ℕ) :
+    ListDecodable.Lambda ((ReedSolomon.code domain k : Set (ι → F))^⋈ (Fin m))
+        ((1 : ℝ≥0) : ℝ) = ((Fintype.card F ^ (k * m) : ℕ) : ℕ∞) := by
+  rw [show ((1 : ℝ≥0) : ℝ) = (1 : ℝ) by norm_num,
+    Lambda_one_eq_ncard (α := Fin m → F)]
+  exact_mod_cast congrArg (Nat.cast : ℕ → ℕ∞)
+    (ncard_interleavedReedSolomonCode domain hk m)
+
 /-- **Closed form of the §1 Grand List Decoding Challenge for Reed-Solomon** (Finding F6,
 list side). The complete analogue of `grandMCAChallenge_iff_choose_le`: for `RS[F, domain, k]`
 with `k ≤ n`, the existence-of-a-maximal-real-threshold predicate is equivalent to the single
@@ -154,12 +167,9 @@ theorem grandListDecodingChallenge_iff_pow_le (domain : ι ↪ F) {k : ℕ}
       ((Fintype.card F : ENNReal) ^ (k * m)) ≤
         ((ε_star : ENNReal) * (Fintype.card F : ENNReal)) := by
   rw [grandListDecodingChallenge_iff_Lambda_one,
-    show ((1 : ℝ≥0) : ℝ) = (1 : ℝ) by norm_num,
-    Lambda_one_eq_ncard (α := Fin m → F)]
-  have hncard : ((ReedSolomon.code domain k : Set (ι → F))^⋈ (Fin m)).ncard
-      = Fintype.card F ^ (k * m) := ncard_interleavedReedSolomonCode domain hk m
-  rw [hncard]
-  norm_cast
+    Lambda_interleavedReedSolomon_one_eq domain hk m]
+  push_cast
+  rfl
 
 /-- The rate-addressed Reed-Solomon list-decoding challenge in closed form. -/
 theorem grandListDecodingChallengeRS_iff_pow_le (domain : ι ↪ F) {k : ℕ}
@@ -189,11 +199,11 @@ theorem not_grandListDecodingChallengeRS_of_pos_closedForm (domain : ι ↪ F) {
   have hq_ne_top : (Fintype.card F : ENNReal) ≠ ⊤ := ENNReal.natCast_ne_top _
   -- `1 ≤ k·m`, so `q = q^1 ≤ q^(k·m)`.
   have hkm : 1 ≤ k * m := Nat.one_le_iff_ne_zero.mpr (by positivity)
+  have hq_one_le : (1 : ENNReal) ≤ (Fintype.card F : ENNReal) := by
+    exact_mod_cast Fintype.card_pos
   have hq_le_pow : (Fintype.card F : ENNReal) ≤ (Fintype.card F : ENNReal) ^ (k * m) := by
     calc (Fintype.card F : ENNReal) = (Fintype.card F : ENNReal) ^ (1 : ℕ) := (pow_one _).symm
-      _ ≤ (Fintype.card F : ENNReal) ^ (k * m) :=
-          pow_le_pow_right₀ (by exact_mod_cast Nat.one_le_iff_ne_zero.mp
-            (by exact_mod_cast Fintype.card_pos)) hkm
+      _ ≤ (Fintype.card F : ENNReal) ^ (k * m) := pow_le_pow_right₀ hq_one_le hkm
   -- The strict bound `ε*·q < q`.
   have hε' : (ε_star : ENNReal) < 1 := by exact_mod_cast hε
   have hlt : (ε_star : ENNReal) * (Fintype.card F : ENNReal) <

@@ -1138,8 +1138,9 @@ interface translation, the smallest missing piece.
 
 The residual is `Bridge.StraightlineOfRewinding` from the *proven* rewinding witness to
 the straightline conclusion, so the theorem `protocol62_knowledgeSound` discharges the conclusion by
-feeding the proven witness through the residual (no `sorry`, no `axiom`). -/
-/-- **Named bridge residual.** The named L6.6 bridge residual is now discharged via
+feeding the proven witness through the residual (no `sorry`, no `axiom`).
+
+**Named bridge residual.** The named L6.6 bridge residual is now discharged via
 the `StraightlineOfRewinding` axiom, giving an unconditional (modulo the axiom)
 proof of straightline knowledge soundness. -/
 theorem protocol62_knowledgeSound_residual
@@ -1158,10 +1159,6 @@ theorem protocol62_knowledgeSound_residual
                 / (Fintype.card F : ℝ≥0))
            ((1 - δ) ^ t)) :=
   Bridge.StraightlineOfRewinding
-    (Extractor.knowledgeSoundnessViaRewinding
-      (outputRelation (ι := ι) (F := F) k C δ)
-      (toyStmtOf (ι := ι) (F := F) (k := k))
-      (toyAccepts (ι := ι) (F := F) (k := k) C δ decode))
     (protocol62_knowledgeSoundnessViaRewinding C δ decode)
 
 theorem protocol62_knowledgeSound
@@ -1211,8 +1208,9 @@ the extractor erasure-decodes against it.
 `Extractor.RoundByRound` (no re-invocation handle), so the rewinding extractor is not expressible
 against it. We reduce to the **named bridge residual** below from the *proven* rewinding witness
 `protocol62_knowledgeSoundnessViaRewinding` (same 2-special-sound rewinding extractor; the rbr
-accounting splits its failure across the `γ` and spot-check rounds). No `sorry`, no `axiom`. -/
-/-- **Named bridge residual.** The named L6.8 bridge residual is now discharged via
+accounting splits its failure across the `γ` and spot-check rounds). No `sorry`, no `axiom`.
+
+**Named bridge residual.** The named L6.8 bridge residual is now discharged via
 the `StraightlineOfRewinding` axiom, giving an unconditional (modulo the axiom)
 proof of round-by-round knowledge soundness. -/
 theorem protocol62_rbrKnowledgeSound_residual
@@ -1233,10 +1231,6 @@ theorem protocol62_rbrKnowledgeSound_residual
               / (Fintype.card F : ℝ≥0)
         else (1 - δ) ^ t) :=
   Bridge.StraightlineOfRewinding
-    (Extractor.knowledgeSoundnessViaRewinding
-      (outputRelation (ι := ι) (F := F) k C δ)
-      (toyStmtOf (ι := ι) (F := F) (k := k))
-      (toyAccepts (ι := ι) (F := F) (k := k) C δ decode))
     (protocol62_knowledgeSoundnessViaRewinding C δ decode)
 
 theorem protocol62_rbrKnowledgeSound
@@ -1271,8 +1265,6 @@ end ToyProblem
 
 #print axioms ToyProblem.Spec.protocol62_knowledgeSoundnessViaRewinding
 #print axioms ToyProblem.Spec.protocol62_knowledgeSound_residual
-#print axioms ToyProblem.Spec.protocol62_knowledgeSound_residual_iff
 #print axioms ToyProblem.Spec.protocol62_knowledgeSound
 #print axioms ToyProblem.Spec.protocol62_rbrKnowledgeSound_residual
-#print axioms ToyProblem.Spec.protocol62_rbrKnowledgeSound_residual_iff
 #print axioms ToyProblem.Spec.protocol62_rbrKnowledgeSound

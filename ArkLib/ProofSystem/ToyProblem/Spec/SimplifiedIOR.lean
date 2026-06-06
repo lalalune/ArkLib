@@ -217,7 +217,9 @@ a single-run `Extractor.Straightline` with no re-invocation handle, so the 2-spe
 *same* one as for Construction 6.2 (it extracts the input message pair `(u₁, u₂)` to the `R̃²`
 relation `ToyProblem.Spec.outputRelation` — exactly this lemma's `relIn`), so we reuse the proven
 `ToyProblem.Spec.protocol62_knowledgeSoundnessViaRewinding` and reduce the straightline statement to
-/-- **Named bridge residual.** The named L6.10 bridge residual is now discharged via
+the named L6.10 bridge residual below.
+
+**Named bridge residual.** The named L6.10 bridge residual is now discharged via
 the `StraightlineOfRewinding` axiom, giving an unconditional (modulo the axiom)
 proof of straightline knowledge soundness. -/
 theorem simplifiedIOR_knowledgeSound_residual
@@ -269,5 +271,4 @@ end ToyProblem
 /-! ### Axiom audit (issue #18 simplified ToyProblem bridge residual frontier) -/
 
 #print axioms ToyProblem.SimplifiedIOR.simplifiedIOR_knowledgeSound_residual
-#print axioms ToyProblem.SimplifiedIOR.simplifiedIOR_knowledgeSound_residual_iff
 #print axioms ToyProblem.SimplifiedIOR.simplifiedIOR_knowledgeSound
