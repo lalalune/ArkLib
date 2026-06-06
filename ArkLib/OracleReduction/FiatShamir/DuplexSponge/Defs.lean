@@ -609,7 +609,6 @@ def Verifier.duplexSpongeFiatShamir (V : Verifier oSpec StmtIn StmtOut pSpec) :
     let ⟨_, transcript⟩ ← (messages.deriveTranscriptDSFS (oSpec := oSpec) (U := U) stmtIn)
     let v ← (V.verify stmtIn transcript).run
     v.getM
-    -- Option.getM (← (V.verify stmtIn transcript).run)
 
 /-- The paper-facing salted duplex-sponge Fiat-Shamir transformation for the verifier. -/
 def Verifier.duplexSpongeFiatShamirSalted {δ : Nat}

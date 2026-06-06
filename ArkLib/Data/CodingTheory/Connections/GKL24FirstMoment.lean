@@ -232,41 +232,45 @@ theorem epsMCA_le_ofReal_of_listFactor
 
 /-- **The single named GKL24 first-moment residual.** This is the *one* genuinely-external
 ingredient that the in-tree substrate cannot supply: the sharpening of the per-codeword count from
-`|support u₁| ≤ n` (proven above) to GCXK25's agree-domain count `δ·n`, *uniformly* over the
-relevant close-codeword carrier `T u`. Concretely: there is a list-size factor `B_T` such that
-every stack `u` admits a carrier `T u` of codewords of size `≤ B_T`, each codeword `w ∈ T u`
-witnessing at most `δ·n` bad combining points.
+`|support u₁| ≤ n` (proven above) to GCXK25's agree-domain count `b`, *uniformly* over the relevant
+close-codeword carrier. Concretely: there is a list-size factor `B_T` and a per-codeword count `b`
+such that every stack `u` admits a carrier `T u` of codewords of size `≤ B_T`, each codeword
+`w ∈ T u` witnessing at most `b` bad combining points.
+
+The count `b` is left abstract precisely because GCXK25's first-moment value is `b = p·n` with `p`
+the **list-decoding** radius of `Λ(C, p) ≤ L` — *not* the (Johnson-lifted) MCA radius `δ` at which
+`mcaBadWitness` is taken. Decoupling `b` from `δ` keeps the statement faithful: the caller
+instantiates `b := δ_list · n` and `B_T := L²` to obtain T5.1's `L²·δ·n` first-moment summand.
 
 This isolates exactly [GKL24]'s maximal-correlated-agree-domain intersection content (GCXK25's
-`|Bad¹| ≤ p·n`, p = δ): a *global* charging argument over the line family `{u₀ + γ·u₁}` that a
-single fixed codeword `w` in isolation does not determine. With `B_T = L²` it is GCXK25's exact
-first-moment statement. -/
-def GKL24FirstMomentResidual (MC : Submodule F (ι → F)) (δ : ℝ≥0) (B_T n : ℝ) : Prop :=
+`|Bad¹| ≤ p·n`): a *global* charging argument over the line family `{u₀ + γ·u₁}` that a single
+fixed codeword `w` in isolation does not determine (the in-tree count only gives `b = n`). -/
+def GKL24FirstMomentResidual (MC : Submodule F (ι → F)) (δ : ℝ≥0) (B_T b : ℝ) : Prop :=
   ∀ u : WordStack F (Fin 2) ι,
     ∃ T : Finset (ι → F), (∀ w ∈ (MC : Set (ι → F)), w ∈ T) ∧ (T.card : ℝ) ≤ B_T ∧
-      ∀ w ∈ T, ((mcaBadWitness (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) w).card : ℝ) ≤ δ * n
+      ∀ w ∈ T, ((mcaBadWitness (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) w).card : ℝ) ≤ b
 
 open CodingTheory.Bridge in
-/-- **Conditional strengthening: the exact `L²·δ·n` first-moment shape from the GKL24 residual.**
-Given the single named residual `GKL24FirstMomentResidual MC δ B_T n` (with `n = |ι|`), the
-`ε_mca` first-moment bound takes GCXK25's published shape
+/-- **Conditional strengthening: the `B_T · b` first-moment shape from the GKL24 residual.**
+Given the single named residual `GKL24FirstMomentResidual MC δ B_T b` with `b ≥ 0`,
 
-  `ε_mca(MC, δ) ≤ ENNReal.ofReal ((B_T · δ · n) / |F|)`.
+  `ε_mca(MC, δ) ≤ ENNReal.ofReal ((B_T · b) / |F|)`.
 
-With `B_T = L²` this is the `L²·δ·n` summand of ABF26 T5.1; adding the in-tree second-moment
+Instantiating `B_T = L²` and `b = δ_list · n` (GCXK25's `|Bad¹| ≤ p·n` first-moment count, `p` the
+list-decoding radius) gives the `L²·δ·n` summand of ABF26 T5.1; adding the in-tree second-moment
 `1/η` summand (`GCXK25SecondMoment.card_lt_one_div_of_second_moment_rs`) recovers the full
 `(L²·δ·n + 1/η)/|F|` bound. The proof is the in-tree union-bound + supremum-to-count glue; the
 *only* unproven input is the named residual. -/
 theorem epsMCA_le_ofReal_of_gkl24_residual
-    (MC : Submodule F (ι → F)) (δ : ℝ≥0) {B_T : ℝ}
-    (hres : GKL24FirstMomentResidual MC δ B_T (Fintype.card ι : ℝ)) :
+    (MC : Submodule F (ι → F)) (δ : ℝ≥0) {B_T b : ℝ} (hb0 : 0 ≤ b)
+    (hres : GKL24FirstMomentResidual MC δ B_T b) :
     epsMCA (F := F) (A := F) (MC : Set (ι → F)) δ ≤
-      ENNReal.ofReal ((B_T * (δ * Fintype.card ι)) / Fintype.card F) := by
+      ENNReal.ofReal ((B_T * b) / Fintype.card F) := by
   refine epsMCA_le_ofReal_of_forall_mcaBad_card_le (MC : Set (ι → F)) δ ?_
   intro u
   obtain ⟨T, hT, hcard, hper⟩ := hres u
   exact mcaBad_card_le_listFactor_mul_perCodeword (MC : Set (ι → F)) δ (u 0) (u 1) T hT
-    (by positivity) hcard hper
+    hb0 hcard hper
 
 end Compose
 

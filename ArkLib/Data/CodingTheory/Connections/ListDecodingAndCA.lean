@@ -9,6 +9,7 @@ import ArkLib.Data.CodingTheory.ListDecodability
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.ToMathlib.BridgeListDecodingCA
 import ArkLib.Data.CodingTheory.Connections.EpsMCABadGlue
+import ArkLib.Data.CodingTheory.Connections.GKL24FirstMoment
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
@@ -164,6 +165,40 @@ theorem linear_listSize_to_epsMCA_gcxk25_of_bad_count
     ((C : Set (ι → F)))
     ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
     hBadCount
+
+/-- **ABF26 Theorem 5.1 [GCXK25 Theorem 3] — first-moment summand from the in-tree GKL24
+brick.** This derives the *first-moment* part of T5.1,
+
+  `ε_mca(C, 1 − √(1 − δ + η)) ≤ ENNReal.ofReal ((L²·δ·n) / |F|)`,
+
+from the single named residual `ProximityGap.GKL24FirstMomentResidual` (the GKL24
+agree-domain / `|Bad¹| ≤ p·n` first-moment count, uniformly over a size-`L²` close-codeword
+carrier), via the *fully in-tree* per-codeword determinacy brick proven in
+`Connections/GKL24FirstMoment.lean` (`epsMCA_le_ofReal_of_gkl24_residual`).
+
+This is strictly sharper plumbing than `linear_listSize_to_epsMCA_gcxk25_of_bad_count`: there the
+whole per-stack count `L²·δ·n + 1/η` was a single opaque residual, whereas here the per-codeword
+*first-moment* count is reduced to its honest GKL24 core — the combining point of any single
+witness codeword is determined by the support of `u₁` (proven in-tree), so the only external input
+left in this summand is GKL24's sharpening of that support count to `δ·n`. The `1/η` second-moment
+summand is supplied separately by `GCXK25SecondMoment.card_lt_one_div_of_second_moment_rs`. -/
+theorem linear_listSize_to_epsMCA_gcxk25_firstMoment_of_gkl24_residual
+    (C : LinearCode ι F) (L : ℕ) (δ η : ℝ)
+    (_hδ_pos : 0 < δ) (_hδ_lt : δ < 1)
+    (_hη_pos : 0 < η) (_hη_lt : η < 1) (_hη_le_δ : η ≤ δ)
+    (_hΛ : Lambda ((C : Set (ι → F))) δ ≤ (L : ℕ∞))
+    -- The GKL24 first-moment agree-domain residual (the genuine external content), at the
+    -- Johnson-lifted radius and with list-size factor `B_T = L²`:
+    (hres :
+        ProximityGap.GKL24FirstMomentResidual C
+          ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
+          ((L : ℝ) ^ 2) (Fintype.card ι : ℝ)) :
+    epsMCA (F := F) (A := F) ((C : Set (ι → F)))
+        ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal) ≤
+      ENNReal.ofReal
+        (((L : ℝ) ^ 2 * (δ * Fintype.card ι)) / Fintype.card F) :=
+  ProximityGap.epsMCA_le_ofReal_of_gkl24_residual C
+    ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal) hres
 
 /-- **ABF26 Theorem 5.1 [GCXK25 Theorem 3].** List decoding implies MCA.
 

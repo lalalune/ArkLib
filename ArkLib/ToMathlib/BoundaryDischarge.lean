@@ -107,7 +107,7 @@ The probability hypothesis at the boundary is `Pr[…] > k · 0 = 0`, which yiel
 positivity of the good-coefficient set.  No cardinality lower bound large enough to drive the
 `jointAgreement` assembly is available. -/
 
-omit [DecidableEq ι] in
+omit [Nonempty ι] [DecidableEq ι] in
 /-- **The exact in-tree boundary fact.**  At the closed boundary, the front-door probability
 hypothesis implies *only* `0 < (RS_goodCoeffsCurve …).card`.  This is strictly weaker than the
 `card ≥ (|ι| + 1) · k` required by the assembly bridge, so route (i) cannot reach `jointAgreement`

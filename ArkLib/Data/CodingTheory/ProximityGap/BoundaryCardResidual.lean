@@ -246,6 +246,82 @@ theorem boundaryCardResidual_of_lattice_residual {k deg : ℕ} {domain : ι ↪ 
       hk u hδeq hcardPos
   · exact hLattice hk u hδeq heq hcardPos
 
+/-! ## Characterising the lattice case: the boundary is a `1/n`-point iff `√ρ · n ∈ ℕ` -/
+
+omit [Nonempty ι] [DecidableEq ι] [Fintype F] in
+/-- **The boundary lattice condition is `√ρ · n ∈ ℕ`.**  At the boundary `δ = 1 − √ρ` (with
+`√ρ ≤ 1`, which always holds for a Reed–Solomon code), `δ · n = n − √ρ · n`, so `δ · n` is an
+integer *iff* `√ρ · n` is.  Since `√ρ · n = n·√(deg/n) = √(deg · n)` (for `deg ≤ n`), the
+genuine lattice case is exactly `deg · n` a perfect square — the rational-`√ρ` case flagged in the
+task brief.  This lemma records the field-level equivalence; the perfect-square reading is the
+arithmetic of `√ρ · n`. -/
+theorem boundary_lattice_iff_sqrtRate_mul_card_mem {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    (hδeq : δ = 1 - ReedSolomon.sqrtRate deg domain)
+    (hsqrt_le : ReedSolomon.sqrtRate deg domain ≤ 1) :
+    ((Nat.floor (δ * Fintype.card ι) : ℝ≥0) = δ * Fintype.card ι)
+      ↔ ∃ m : ℕ, ReedSolomon.sqrtRate deg domain * Fintype.card ι
+          = (Fintype.card ι : ℝ≥0) - (m : ℝ≥0) ∧ (m : ℝ≥0) ≤ Fintype.card ι := by
+  subst hδeq
+  set s : ℝ≥0 := ReedSolomon.sqrtRate deg domain with hs
+  set n : ℝ≥0 := (Fintype.card ι : ℝ≥0) with hn
+  have hsn_le : s * n ≤ n := by
+    calc s * n ≤ 1 * n := by gcongr
+      _ = n := one_mul n
+  -- `(1 − s) · n = n − s·n`.
+  have hdistrib : (1 - s) * n = n - s * n := by
+    rw [tsub_mul, one_mul]
+  constructor
+  · intro hfloor
+    -- `δ·n = n − s·n` is an integer `j`; take `m := n − j` so `s·n = n − m`.
+    refine ⟨Nat.floor ((1 - s) * n), ?_, ?_⟩
+    · -- `s·n = n − (1−s)·n`.
+      rw [hfloor, hdistrib]
+      rw [tsub_tsub_cancel_of_le hsn_le]
+    · rw [hdistrib, ← hfloor]
+      exact tsub_le_self
+  · rintro ⟨m, hm, hmle⟩
+    -- `s·n = n − m` ⇒ `(1−s)·n = m`, an integer, so its floor equals itself.
+    have hval : (1 - s) * n = (m : ℝ≥0) := by
+      rw [hdistrib, hm, tsub_tsub_cancel_of_le hmle]
+    rw [hval, Nat.floor_natCast]
+
+/-! ## The strengthened keystone corollary consuming the isolated lattice residual -/
+
+omit [DecidableEq ι] in
+/-- **[BCIKS20] Theorem 1.5, with the boundary residual reduced by quantization.**
+
+This is `ProximityGap.correlatedAgreement_affine_curves` re-stated so that the closed-boundary
+input is no longer the full `BoundaryCardResidual` but the *strictly smaller* surface produced by
+the quantization analysis:
+
+* `hStrictCoeff` — the strict Johnson §5 extraction (`StrictCoeffPolysResidual`), unchanged;
+* `hStrict` — a strict-interior `jointAgreement` producer (the §5-covered regime `δ' < δ`), which
+  is what the non-lattice bulk of the boundary reduces to;
+* `hLattice` — the precisely isolated genuine `BoundaryCardLatticeResidual` (only the
+  `1/n`-lattice-point boundary, i.e. `deg·n` a perfect square).
+
+The boundary `BoundaryCardResidual` is reconstructed from `hStrict` and `hLattice` via
+`boundaryCardResidual_of_lattice_residual` and fed to the keystone.  Compared to the bare keystone,
+this corollary moves the entire non-lattice boundary into the strict-interior obligation that §5
+already discharges, leaving `hLattice` as the only genuinely boundary-specific datum. -/
+theorem correlatedAgreement_affine_curves_of_lattice_residual {k deg : ℕ} {domain : ι ↪ F}
+    {δ : ℝ≥0} [NeZero deg]
+    (hStrictCoeff :
+      ProximityGap.StrictCoeffPolysResidual (k := k) (deg := deg) (domain := domain) (δ := δ))
+    (hStrict : ∀ (u : WordStack F (Fin (k + 1)) ι) (δ' : ℝ≥0),
+      δ' < δ →
+      Nat.floor (δ' * Fintype.card ι) = Nat.floor (δ * Fintype.card ι) →
+      0 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ').card →
+      jointAgreement (C := ReedSolomon.code domain deg) (δ := δ') (W := u))
+    (hLattice : BoundaryCardLatticeResidual (k := k) (deg := deg) (domain := domain) (δ := δ))
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
+  ProximityGap.correlatedAgreement_affine_curves
+    (deg := deg) (domain := domain) (δ := δ) hStrictCoeff
+    (boundaryCardResidual_of_lattice_residual (deg := deg) (domain := domain) hLattice hStrict)
+    hδ
+
 end BoundaryCardResidual
 
 end ArkLib
@@ -257,3 +333,5 @@ with no `sorry`/`admit`/`axiom`/`native_decide`. -/
 #print axioms ArkLib.BoundaryCardResidual.exists_lt_floor_eq_of_floor_lt
 #print axioms ArkLib.BoundaryCardResidual.boundaryCardResidual_of_not_lattice
 #print axioms ArkLib.BoundaryCardResidual.boundaryCardResidual_of_lattice_residual
+#print axioms ArkLib.BoundaryCardResidual.boundary_lattice_iff_sqrtRate_mul_card_mem
+#print axioms ArkLib.BoundaryCardResidual.correlatedAgreement_affine_curves_of_lattice_residual
