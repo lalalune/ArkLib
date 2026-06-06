@@ -346,6 +346,24 @@ def MCALowerWitness.ofLineDecodingTarget
     MCALowerWitness (C : Set (ι → F)) ε_star :=
   MCALowerWitness.ofLe hδ_le_one (le_trans hTarget hle)
 
+/-- **Bridge from ABF26 Theorem 4.16 [BCHKS25, KK25].** A packaged near-capacity
+`ε_ca` lower-bound witness gives an MCA upper witness once its explicit lower bound clears
+`ε*`, via the generic `ε_ca ≤ ε_mca` connector. -/
+noncomputable def MCAUpperWitness.ofLowerCapacityBCHKS25KK25
+    {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
+    {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC]
+    (c ρ ε_star : ℝ≥0)
+    (W : CodingTheory.RSLowerCapacityWitness c ρ ιC FC)
+    (hgt :
+      (ε_star : ENNReal) <
+        ((Fintype.card ιC : ENNReal) ^ (c : ℝ)) / (Fintype.card FC : ENNReal)) :
+    MCAUpperWitness (ι := ιC) (F := FC)
+      (ReedSolomon.code W.domain W.k : Set (ιC → FC)) ε_star :=
+  MCAUpperWitness.ofEpsCAGt (MC := ReedSolomon.code W.domain W.k)
+    (ε_star := ε_star) (δ := 1 - ρ - W.slack) (lt_of_lt_of_le hgt W.epsCA_lower)
+
+#print axioms ProximityGap.GrandChallenges.MCAUpperWitness.ofLowerCapacityBCHKS25KK25
+
 /-- **Bridge from ABF26 Theorem 4.17 [CS25 Cor 1].** In the complete CA-breakdown regime
 `ε_ca(RS, δ, δ) = 1`; any threshold `ε* < 1` therefore gives an MCA upper witness at `δ`.
 This is the direct witness-form connector from the CS25 capacity-side lower bound. -/

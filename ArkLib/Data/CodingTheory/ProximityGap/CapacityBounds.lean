@@ -604,6 +604,63 @@ def rs_epsCA_lower_capacity_bchks25_kk25
   -- wrong direction; no in-tree generator manufactures the witness code/stack. Genuinely
   -- external (also needs a smooth-domain existence witness for the ∃-binder).
 
+/-- Fixed-code payload for the BCHKS25+KK25 near-capacity lower-bound construction.
+
+The public T4.16 statement is existential over the domain, field, and smooth RS code. This
+package exposes the same data once those types are fixed, so downstream Grand-MCA code can
+consume a concrete near-capacity CA lower-bound witness without unpacking the full existential
+statement. -/
+structure RSLowerCapacityWitness
+    (c ρ : ℝ≥0)
+    (ιC : Type) [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
+    (FC : Type) [Field FC] [Fintype FC] [DecidableEq FC] where
+  domain : ιC ↪ FC
+  smooth : ReedSolomon.Smooth domain
+  k : ℕ
+  slack : ℝ≥0
+  primeField : ∃ p : ℕ, p.Prime ∧ CharP FC p ∧ Fintype.card FC = p
+  fieldPolyBound : ∃ a b : ℕ, Fintype.card FC ≤ a * (Fintype.card ιC) ^ b
+  rate_eq : (k : ℝ) / Fintype.card ιC = ρ
+  epsCA_lower :
+    ((Fintype.card ιC : ENNReal) ^ (c : ℝ)) / (Fintype.card FC : ENNReal) ≤
+      epsCA (F := FC) (A := FC) ((ReedSolomon.code domain k : Set (ιC → FC)))
+        (1 - ρ - slack) (1 - ρ - slack)
+
+/-- A packaged near-capacity witness reassembles the external T4.16 statement. -/
+theorem rs_epsCA_lower_capacity_bchks25_kk25_of_witness
+    (c : ℝ≥0) (hc : 0 < c) (ρ : ℝ≥0) (hρ_pos : 0 < ρ)
+    (hρ_lt : ρ < (1 / 2 : ℝ≥0))
+    {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
+    {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC]
+    (W : RSLowerCapacityWitness c ρ ιC FC) :
+    rs_epsCA_lower_capacity_bchks25_kk25 c hc ρ hρ_pos hρ_lt := by
+  exact ⟨ιC, inferInstance, inferInstance, inferInstance,
+    FC, inferInstance, inferInstance, inferInstance,
+    W.domain, W.smooth, W.k, W.slack,
+    W.primeField, W.fieldPolyBound, W.rate_eq, W.epsCA_lower⟩
+
+/-- Conversely, the existential T4.16 statement yields a named witness package for one
+domain/field pair. -/
+theorem exists_rsLowerCapacityWitness_of_bchks25_kk25
+    (c : ℝ≥0) (hc : 0 < c) (ρ : ℝ≥0) (hρ_pos : 0 < ρ)
+    (hρ_lt : ρ < (1 / 2 : ℝ≥0))
+    (h : rs_epsCA_lower_capacity_bchks25_kk25 c hc ρ hρ_pos hρ_lt) :
+    ∃ (ιC : Type) (_ : Fintype ιC) (_ : Nonempty ιC) (_ : DecidableEq ιC)
+      (FC : Type) (_ : Field FC) (_ : Fintype FC) (_ : DecidableEq FC),
+      Nonempty (RSLowerCapacityWitness c ρ ιC FC) := by
+  rcases h with ⟨ιC, hFintypeι, hNonemptyι, hDecEqι,
+    FC, hField, hFintypeF, hDecEqF, domain, hsmooth, k, slack,
+    hprime, hpoly, hrate, heps⟩
+  letI := hFintypeι
+  letI := hNonemptyι
+  letI := hDecEqι
+  letI := hField
+  letI := hFintypeF
+  letI := hDecEqF
+  exact ⟨ιC, hFintypeι, hNonemptyι, hDecEqι,
+    FC, hField, hFintypeF, hDecEqF,
+    ⟨⟨domain, hsmooth, k, slack, hprime, hpoly, hrate, heps⟩⟩⟩
+
 /-- **ABF26 Theorem 4.17 [CS25 Cor 1].** Complete CA breakdown for Reed-Solomon codes.
 Let `C := RS[F, L, k]` with `q = |F| ≥ 10`, rate `ρ`, and `δ` satisfying:
 
@@ -1211,5 +1268,7 @@ end SubspaceDesignFRS
 #print axioms CodingTheory.johnsonJumpRadius_le_internalRadius
 #print axioms CodingTheory.rs_epsCA_johnson_jump_bchks25_of_witness
 #print axioms CodingTheory.exists_rsJohnsonJumpWitness_of_bchks25
+#print axioms CodingTheory.rs_epsCA_lower_capacity_bchks25_kk25_of_witness
+#print axioms CodingTheory.exists_rsLowerCapacityWitness_of_bchks25_kk25
 
 end CodingTheory
