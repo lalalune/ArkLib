@@ -514,6 +514,27 @@ theorem r4_10_floor_collapse_hypotheses_insufficient :
   have hbad := h (9 / 100 : ℝ≥0) (1 / 5 : ℝ≥0) (by norm_num) (by norm_num)
   norm_num at hbad
 
+/-- The closed-form real RHS of the BCHKS25/Hab25 Johnson-range RS MCA bound.
+
+This is the value wrapped by `ENNReal.ofReal` in `rs_epsMCA_johnson_range_bchks25`; it is named
+separately so Hab25 residual surfaces and Grand-MCA consumers can share the exact same numeric
+target without duplicating the expression. -/
+noncomputable def rs_epsMCA_johnson_range_boundReal
+    (_domain : ι ↪ F) (k : ℕ) (η δ : ℝ≥0) : ℝ :=
+  let n : ℝ := Fintype.card ι
+  let ρ_plus : ℝ := k / n + 1 / n
+  let m : ℝ := max ⌈(ρ_plus ^ ((1 : ℝ) / 2)) / (2 * η)⌉ 3
+  ((2 * (m + 1/2) ^ 5 + 3 * (m + 1/2) * δ * ρ_plus)
+      / (3 * ρ_plus ^ ((3 : ℝ) / 2)) * n
+    + (m + 1/2) / ρ_plus ^ ((1 : ℝ) / 2))
+     / (Fintype.card F : ℝ)
+
+/-- The Johnson-range side condition used by BCHKS25/Hab25 T4.12. -/
+def rs_epsMCA_johnson_range_condition
+    (_domain : ι ↪ F) (k : ℕ) (η δ : ℝ≥0) : Prop :=
+  (δ : ℝ) <
+    1 - (((k : ℝ) / Fintype.card ι + 1 / Fintype.card ι) ^ ((1 : ℝ) / 2)) - (η : ℝ)
+
 /-- **ABF26 Theorem 4.12 [BCHKS25 Thm 4.6].** For `C := RS[F, L, k]` with rate `ρ` and
 `η > 0`, letting `ρ_plus := ρ + 1/n` and `m := max(⌈√ρ_plus/(2η)⌉, 3)`, for
 `δ < 1 - √ρ_plus - η`:
@@ -532,23 +553,23 @@ needs the tighter bound. -/
 def rs_epsMCA_johnson_range_bchks25
     (domain : ι ↪ F) (k : ℕ) (η δ : ℝ≥0)
     (_hη : 0 < η)
-    (_hδ :
-        (δ : ℝ) <
-          1 - (((k : ℝ) / Fintype.card ι + 1 / Fintype.card ι) ^ ((1 : ℝ) / 2))
-            - (η : ℝ)) : Prop :=
+    (_hδ : rs_epsMCA_johnson_range_condition domain k η δ) : Prop :=
     epsMCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F))) δ ≤
-      ENNReal.ofReal
-        (let n : ℝ := Fintype.card ι
-         let ρ_plus : ℝ := k / n + 1 / n
-         let m : ℝ := max ⌈(ρ_plus ^ ((1 : ℝ) / 2)) / (2 * η)⌉ 3
-         ((2 * (m + 1/2) ^ 5 + 3 * (m + 1/2) * δ * ρ_plus)
-            / (3 * ρ_plus ^ ((3 : ℝ) / 2)) * n
-          + (m + 1/2) / ρ_plus ^ ((1 : ℝ) / 2))
-           / (Fintype.card F : ℝ))
+      ENNReal.ofReal (rs_epsMCA_johnson_range_boundReal domain k η δ)
   -- Missing ingredient: BCHKS25 Thm 4.6's explicit RS MCA bound in the Johnson range
   -- δ<1-√ρ₊-η. The (m+½)⁵ / ρ₊^{3/2} polynomial in the multiplicity parameter
   -- m=max(⌈√ρ₊/(2η)⌉,3) comes from the BCHKS25 multiplicity-coded RS list-decoder analysis;
   -- needs the m-multiplicity RS interpolation bound (not in-tree). Genuinely external.
+
+/-- Public T4.12 wrapper from the named closed-form Johnson-range bound. -/
+theorem rs_epsMCA_johnson_range_bchks25_of_bound
+    (domain : ι ↪ F) (k : ℕ) (η δ : ℝ≥0)
+    (hη : 0 < η) (hδ : rs_epsMCA_johnson_range_condition domain k η δ)
+    (hbound :
+      epsMCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F))) δ ≤
+        ENNReal.ofReal (rs_epsMCA_johnson_range_boundReal domain k η δ)) :
+    rs_epsMCA_johnson_range_bchks25 domain k η δ hη hδ := by
+  simpa [rs_epsMCA_johnson_range_bchks25] using hbound
 
 /-- **ABF26 Theorem 4.16 [BCHKS25, KK25].** Existence: for every `c > 0` and rate
 `ρ ∈ (0, 1/2)` there exists a power-of-two `n ∈ ℕ` and a Reed-Solomon code
@@ -728,14 +749,14 @@ theorem exists_rsJohnsonJumpWitness_of_bchks25
     (ε : ℝ≥0) (hε : 0 < ε)
     (h : rs_epsCA_johnson_jump_bchks25 (FC := FC) ε hε) :
     ∃ (ιC : Type) (_ : Fintype ιC) (_ : Nonempty ιC) (_ : DecidableEq ιC),
-      RSJohnsonJumpWitness (FC := FC) ε ιC := by
+      Nonempty (RSJohnsonJumpWitness (FC := FC) ε ιC) := by
   rcases h with ⟨ιC, hFintype, hNonempty, hDecEq, domain, k,
     hcard_lower, hcard_upper, hminDist, heps⟩
   letI := hFintype
   letI := hNonempty
   letI := hDecEq
   exact ⟨ιC, hFintype, hNonempty, hDecEq,
-    ⟨domain, k, hcard_lower, hcard_upper, hminDist, heps⟩⟩
+    ⟨⟨domain, k, hcard_lower, hcard_upper, hminDist, heps⟩⟩⟩
 
 end ReedSolomon
 
@@ -1084,5 +1105,6 @@ end SubspaceDesignFRS
 
 #print axioms CodingTheory.rs_epsCA_small_loss_r4_10_of_item2_no_boundary_crossing_prop
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_subspaceDesign_prop
+#print axioms CodingTheory.rs_epsMCA_johnson_range_bchks25_of_bound
 
 end CodingTheory

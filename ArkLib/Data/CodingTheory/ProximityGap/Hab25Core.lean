@@ -333,13 +333,7 @@ identical expression.
   `( (2(m+½)⁵ + 3(m+½)·δ·ρ₊) / (3·ρ₊^{3/2}) · n + (m+½)/√ρ₊ ) / |F|`. -/
 noncomputable def johnsonBoundReal
     (_domain : ι ↪ F) (k : ℕ) (η δ : ℝ≥0) : ℝ :=
-  let n : ℝ := Fintype.card ι
-  let ρ_plus : ℝ := k / n + 1 / n
-  let m : ℝ := max ⌈(ρ_plus ^ ((1 : ℝ) / 2)) / (2 * η)⌉ 3
-  ((2 * (m + 1/2) ^ 5 + 3 * (m + 1/2) * δ * ρ_plus)
-      / (3 * ρ_plus ^ ((3 : ℝ) / 2)) * n
-    + (m + 1/2) / ρ_plus ^ ((1 : ℝ) / 2))
-     / (Fintype.card F : ℝ)
+  CodingTheory.rs_epsMCA_johnson_range_boundReal _domain k η δ
 
 /-- The Johnson-range side condition `δ < 1 − √ρ₊ − η` on the radius, in real form. Matches
 the `_hδ` hypothesis of `rs_epsMCA_johnson_range_bchks25`. -/
