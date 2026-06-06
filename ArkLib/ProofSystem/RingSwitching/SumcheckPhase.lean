@@ -594,7 +594,8 @@ private theorem iteratedSumcheck_hStar_extracted_eval_eq_cube_succ (i : Fin ℓ'
           (projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := t')
             (m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly (ctx := ctx))
             (i := i.succ) (challenges := Fin.cons r' challenges)).val.eval z :=
-  getSumcheckRoundPoly_eval_eq_cube_succ κ L K P ℓ ℓ' h_l aOStmtIn i t'
+  getSumcheckRoundPoly_eval_eq_cube_succ (κ := κ) (L := L) (K := K) (P := P)
+    (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn) i t'
     ((RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly (ctx := ctx)) challenges r'
 
 /-- This follows the KState of `foldKStateProp` -/
