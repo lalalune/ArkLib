@@ -87,3 +87,6 @@ def proximity_gap
     ∀ i : Fin m, ∃ u : ι → F, u ∈ (code φ degree) ∧ ∀ x ∈ S, f i x = u x
 
 end STIR
+
+/- Axiom audit for the STIR proximity-gap residual front door (#24). -/
+#print axioms STIR.proximity_gap

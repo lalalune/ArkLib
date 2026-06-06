@@ -729,3 +729,6 @@ theorem combine_theorem
         exact hv
 
 end Combine
+
+/- Axiom audit for the STIR combine residual front door (#24). -/
+#print axioms Combine.combine_theorem
