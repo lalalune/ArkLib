@@ -3,6 +3,7 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Match
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Reindex
 
 /-!
 # BCIKS20 Appendix A.4 — P2 finale, part 3: the full-sum vanishing, carved to ONE weight identity
@@ -62,66 +63,9 @@ variable (H : F[X][Y]) [Fact (Irreducible H)] [Fact (0 < H.natDegree)]
 
 /-! ## 1. The zero-peeling reindex (PROVEN, axiom-clean)
 
-The combinatorial weight of the `m ↔ (j0 zeros, λ positives)` bijection. -/
-
-/-- **Zero-peeling for `countPerms`.**  A value-multiset `replicate j0 0 + λ` (with `0 ∉ λ`, i.e.
-`λ` the positive entries) has permutation count `C(j0+cardλ, j0)·countPerms λ`.  This is the exact
-weight carried by the `m ↔ (j0, λ)` bijection between full Faà-di-Bruno value-multisets and the
-`(A.1)` recursion's partitions: the `C(card, #zeros)` factor counts the placements of the zero
-slots, `countPerms λ = multinomial λ` the orderings of the positive parts. -/
-theorem countPerms_replicate_zero_add (j0 : ℕ) (lam : Multiset ℕ) (h0 : (0 : ℕ) ∉ lam) :
-    (Multiset.replicate j0 0 + lam).countPerms
-      = (j0 + lam.card).choose j0 * lam.countPerms := by
-  classical
-  set m : Multiset ℕ := Multiset.replicate j0 0 + lam with hm
-  have hcount0 : m.count 0 = j0 := by
-    rw [hm, Multiset.count_add, Multiset.count_replicate_self,
-      Multiset.count_eq_zero_of_notMem h0, add_zero]
-  have hcountv : ∀ v, v ≠ 0 → m.count v = lam.count v := by
-    intro v hv
-    rw [hm, Multiset.count_add, Multiset.count_replicate, if_neg (by simpa [eq_comm] using hv),
-      zero_add]
-  rw [countPerms_eq_multinomial, countPerms_eq_multinomial]
-  by_cases hj : j0 = 0
-  · subst hj
-    simp only [Multiset.replicate_zero, zero_add] at hm
-    rw [hm]; simp
-  · have h0nf : (0 : ℕ) ∉ lam.toFinset := by rwa [Multiset.mem_toFinset]
-    have htf : m.toFinset = insert 0 lam.toFinset := by
-      rw [hm]
-      ext x
-      simp only [Multiset.toFinset_add, Finset.mem_union, Multiset.mem_toFinset,
-        Multiset.mem_replicate, Finset.mem_insert]
-      constructor
-      · rintro (⟨_, rfl⟩ | h)
-        · exact Or.inl rfl
-        · exact Or.inr h
-      · rintro (rfl | h)
-        · exact Or.inl ⟨hj, rfl⟩
-        · exact Or.inr h
-    rw [htf, Nat.multinomial_insert h0nf]
-    have hsum : ∑ i ∈ lam.toFinset, m.count i = lam.card := by
-      rw [Finset.sum_congr rfl (fun v hv => hcountv v (by rintro rfl; exact h0nf hv))]
-      rw [← Multiset.toFinset_sum_count_eq lam]
-    rw [hcount0, hsum]
-    congr 1
-    refine Nat.multinomial_congr ?_
-    intro v hv
-    exact hcountv v (by rintro rfl; exact h0nf hv)
-
-/-- **Zero-peeling, re-keyed to the Y-Hasse binomial (PROVEN, axiom-clean).**  With `j = card m =
-j0 + cardλ` the full Faà-di-Bruno Y-degree and `sl = cardλ = Σλ`, the zero-placement binomial
-`C(j, j0) = C(j, j−sl) = C(j, sl)` (`Nat.choose_symm`).  Hence the full-sum value-multiset weight is
-exactly `countPerms m = C(j, Σλ)·countPerms λ` — the **Y-Hasse binomial** `C(j, Σλ)` times the
-positive-part multinomial.  This is the shape the `(A.1)` recursion's `Δ_Y^{Σλ}` step produces. -/
-theorem countPerms_replicate_zero_add_choose_sl (j0 : ℕ) (lam : Multiset ℕ) (h0 : (0 : ℕ) ∉ lam) :
-    (Multiset.replicate j0 0 + lam).countPerms
-      = (j0 + lam.card).choose lam.card * lam.countPerms := by
-  rw [countPerms_replicate_zero_add j0 lam h0]
-  congr 1
-  rw [← Nat.choose_symm (Nat.le_add_left lam.card j0)]
-  congr 1
-  omega
+The combinatorial weight of the `m ↔ (j0 zeros, λ positives)` bijection is provided by
+`P2Reindex`: `countPerms_replicate_zero_add` and
+`countPerms_replicate_zero_add_choose_sl`. -/
 
 /-! ## 2. The W/ξ exponent-balance telescope (PROVEN, axiom-clean)
 

@@ -14,6 +14,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.GammaGenuine
 set_option linter.style.longFile 2600
 -- This proof-note-heavy integration file contains many long paper-route doc lines.
 set_option linter.style.longLine false
+set_option linter.unusedVariables false
 
 /-!
 # BCIKS20 Appendix A.4 — Hensel-lift numerator `β` : WAVE 1 FOUNDATION
@@ -1551,21 +1552,22 @@ progress on each is recorded below; the residual after wave 4 is item (c).
 PROVEN above and reusable: the IH-fed product bound `partitionProd_βHensel_weight_le`, the over-`𝒪`
 calculus `_neg`/`_sum_le`/`_mul`/`_pow`/`_W`/`_nsmul`, `B_coeff_weight_le_hasse`,
 `hasseCoeffRepr𝒪_natDegreeY_le` (wave 4), `surviving_parts_lt`, `sum_map_two_mul_succ`. -/
-theorem βHensel_succ_term_weight_le (x₀ : F) (R : F[X][X][Y])
+def βHenselSuccTermWeightResidual (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
     (hDH : Bivariate.totalDegree H ≤ D) (hdR2 : 2 ≤ Bivariate.natDegreeY R) (k : ℕ)
     (hIH : ∀ l, l < k + 1 →
       weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp l) D
         ≤ WithBot.some ((2 * l + 1) * Bivariate.natDegreeY R * D))
     (i1 : ℕ) (_hi1 : i1 ∈ Finset.range (k + 2))
-    (lam : Nat.Partition (k + 1 - i1)) (_hlam : (k + 1) ∉ lam.parts) :
+    (lam : Nat.Partition (k + 1 - i1)) (_hlam : (k + 1) ∉ lam.parts) : Prop :=
     weight_Λ_over_𝒪 hH
         ((W𝒪 H) ^ (i1 + deltaSave i1 - 1)
           * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * i1 + sigmaLambda lam - 2)
           * B_coeff H x₀ R i1 lam
           * partitionProd lam
               (fun l => if _h : l < k + 1 then βHensel H x₀ R hHyp l else 0)) D
-      ≤ WithBot.some ((2 * (k + 1) + 1) * Bivariate.natDegreeY R * D) := by
+      ≤ WithBot.some ((2 * (k + 1) + 1) * Bivariate.natDegreeY R * D)
+/-!
   -- WALL (documented, NOT faked): the genuine BCIKS20 per-term telescoping (paper lines
   -- 4264–4280).  Wave-4 progress: (b) the `2 ≤ d_R` ξ-regime is a documented faithful hypothesis
   -- (`hdR2`, matching the paper's `ξ = W^{d−2}·ζ`); (a) the `B_coeff` Y-degree drop is PROVEN
@@ -1592,7 +1594,17 @@ theorem βHensel_succ_term_weight_le (x₀ : F) (R : F[X][X][Y])
   -- and `nsmul_withBot_le` (the `WithBot ℕ` power-bound descent).  So (P1) is gated *solely* on the
   -- structured IH, which is gated on (P2).  Closing this `sorry` with the loose IH would be a FALSE
   -- step (rigorously impossible); it is left open by design.  See `ingredientD-wave5.md`.
-  sorry
+  --
+  -- EXACT MISSING INGREDIENTS FOR THIS STATEMENT:
+  -- 1. A theorem upgrading the available loose IH to the paper's structured invariant
+  --    `weight_Λ_over_𝒪 β_l ≤ 1 + (l+1) * Λ(W) + (2*l-1) * Λ(ξ)` for every recursive coefficient
+  --    appearing in `partitionProd`; the existing loose IH is not strong enough to prove this term.
+  -- 2. Equivalently, the A.4 regularity/divisibility bridge for genuine Hensel-root coefficients:
+  --    each `αGenuine l` must be represented by an `𝒪`-element of weight at most `1`, so that
+  --    `β_l = a_l * W𝒪^(l+1) * ξ^(2*l-1)` holds in `𝒪`.
+  -- 3. That bridge is gated by the P2 full Faà-di-Bruno vanishing / prefactor match below; importing
+  --    the conditional files would only move the same residual and would make this proof circular.
+-/
 
 /-- **(P1) full weight bound.**  `weight_Λ_over_𝒪 hH (βHensel … t) D ≤ (2t+1)·natDegreeY R·D`.
 
@@ -1609,7 +1621,15 @@ Hensel-lift regime of Appendix A.4.  This matches the paper; it is not a silent 
 `t = 0` case needs only `1 ≤ d_R`, derived from `hdR2`. -/
 theorem βHensel_weight_bound (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
     (hH : 0 < H.natDegree) {D : ℕ} (_hDH : Bivariate.totalDegree H ≤ D)
-    (hdR2 : 2 ≤ Bivariate.natDegreeY R) (t : ℕ) :
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hterm : ∀ (k : ℕ)
+      (hIH : ∀ l, l < k + 1 →
+        weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp l) D
+          ≤ WithBot.some ((2 * l + 1) * Bivariate.natDegreeY R * D))
+      (i1 : ℕ) (hi1 : i1 ∈ Finset.range (k + 2))
+      (lam : Nat.Partition (k + 1 - i1)) (hlam : (k + 1) ∉ lam.parts),
+        βHenselSuccTermWeightResidual H x₀ R hHyp hH _hDH hdR2 k hIH i1 hi1 lam hlam)
+    (t : ℕ) :
     weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
       ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) := by
   classical
@@ -1628,8 +1648,8 @@ theorem βHensel_weight_bound (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypoth
         refine le_trans (weight_Λ_over_𝒪_sum_le H hH _hDH _ _) ?_
         refine Finset.sup_le (fun lam hlam => ?_)
         -- Per-term bound, with the IH for `βHensel … l` (`l < k+1`) supplied by strong induction.
-        exact βHensel_succ_term_weight_le H x₀ R hHyp hH _hDH hdR2 k
-          (fun l hl => hIH l (by omega)) i1 hi1 lam (Finset.mem_filter.mp hlam).2
+        exact hterm k (fun l hl => hIH l (by omega)) i1 hi1 lam
+          (Finset.mem_filter.mp hlam).2
 
 /-! ### 4e. (P2) the lift identity — the irreducible BCIKS20 A.4 frontier -/
 
@@ -2312,14 +2332,34 @@ theorem coeff_eval_Q_faaDiBruno (x₀ : F) (R : F[X][X][Y])
   congr 1
   exact coeff_Q_eq_B H x₀ R i ab.1
 
-/-- **(P2) the single named combinatorial residual (documented `sorry`).**
+/-- **(P2) the single named combinatorial residual, as an explicit hypothesis.**
+
+This is the local form of the remaining Faà-di-Bruno / `(A.1)` combinatorial reconciliation. It is
+a `Prop`, not an asserted theorem: callers must supply the vanishing of the explicit full
+partition/`countPerms` sum. -/
+def FaaDiBrunoSuccSumZeroResidual (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) : Prop :=
+  ∀ t : ℕ,
+    (∑ i ∈ Finset.range ((Q x₀ R H).natDegree + 1),
+        ∑ ab ∈ Finset.antidiagonal (t + 1),
+          (liftToFunctionField (H := H)
+              ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX ab.1 R)).coeff i))
+          * (∑ m ∈ (Finset.finsuppAntidiag (Finset.range i) ab.2).image
+                    (ArkLib.PowerSeriesComposition.valueMultiset (Finset.range i)),
+              (Multiset.countPerms m) •
+                ((m.map (fun j =>
+                  PowerSeries.coeff j (βHenselAssembled H x₀ R hHyp))).prod))) = 0
+
+/-- **(P2) the single named combinatorial residual — reduced to the explicit local
+hypothesis `FaaDiBrunoSuccSumZeroResidual`.**
 
 After the proven Faà-di-Bruno expansion `coeff_eval_Q_faaDiBruno`, the order-`(t+1)` coefficient
 of `eval (βHenselAssembled ...) Q` is this explicit partition/`countPerms` sum. Its vanishing is
 the isolated BCIKS20 A.4 content: the combinatorial-weight reconciliation that the weighted
 Faà-di-Bruno sum collapses, against the `(A.1)` recursion `βHensel_succ`, to `0`. -/
 theorem faaDiBruno_succ_sum_eq_zero (x₀ : F) (R : F[X][X][Y])
-    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) :
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hzero : FaaDiBrunoSuccSumZeroResidual H x₀ R hHyp) (t : ℕ) :
     (∑ i ∈ Finset.range ((Q x₀ R H).natDegree + 1),
         ∑ ab ∈ Finset.antidiagonal (t + 1),
           (liftToFunctionField (H := H)
@@ -2329,9 +2369,7 @@ theorem faaDiBruno_succ_sum_eq_zero (x₀ : F) (R : F[X][X][Y])
               (Multiset.countPerms m) •
                 ((m.map (fun j =>
                   PowerSeries.coeff j (βHenselAssembled H x₀ R hHyp))).prod))) = 0 := by
-  -- IRREDUCIBLE FRONTIER: the combinatorial-weight reconciliation `prefactor_eq_paper`.
-  -- Everything connective is proven above.
-  sorry
+  exact hzero t
 
 /-- **(P2) order-`(t+1)` vanishing — reduced to the single named combinatorial residual
 `faaDiBruno_succ_sum_eq_zero`.**
@@ -2370,12 +2408,13 @@ Carved as small as possible: a single per-successor-order coefficient equality, 
 base case, the extensionality assembly, the denominator clearing, and the uniqueness reduction to
 `gammaGenuine` all PROVEN.  See `pc-w11-bridge.md`. -/
 theorem coeff_succ_eval_βHenselAssembled (x₀ : F) (R : F[X][X][Y])
-    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) :
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hzero : FaaDiBrunoSuccSumZeroResidual H x₀ R hHyp) (t : ℕ) :
     PowerSeries.coeff (t + 1) (Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H)) = 0 := by
   -- REDUCED: the proven Faà-di-Bruno expansion lays this coefficient bare as the explicit
   -- partition/`countPerms` sum; its vanishing is the single named residual.
   rw [coeff_eval_Q_faaDiBruno]
-  exact faaDiBruno_succ_sum_eq_zero H x₀ R hHyp t
+  exact faaDiBruno_succ_sum_eq_zero H x₀ R hHyp hzero t
 
 /-- **(P2) the assembled series is a root of `Q` — PROVEN modulo the SINGLE per-successor-order
 residual `coeff_succ_eval_βHenselAssembled`.**
@@ -2388,10 +2427,12 @@ order-`0` vanishing `coeff_zero_eval_βHenselAssembled` (PROVEN) and the order-`
 (base case `βHenselAssembled_constantCoeff`, denominator nonvanishing `den_ne_zero`, the
 uniqueness reduction to `gammaGenuine` `βHenselAssembled_eq_gammaGenuine`, and the denominator
 clearing for all `t`) is PROVEN above. -/
-theorem assembledSeries_isRoot (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) :
+theorem assembledSeries_isRoot (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hzero : FaaDiBrunoSuccSumZeroResidual H x₀ R hHyp) :
     Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H) = 0 := by
   exact assembledSeries_isRoot_of_coeff_succ_eval H x₀ R hHyp
-    (coeff_succ_eval_βHenselAssembled H x₀ R hHyp)
+    (coeff_succ_eval_βHenselAssembled H x₀ R hHyp hzero)
 
 /-- **(P2) lift identity — REPAIRED against the genuine root, PROVEN modulo the single
 per-successor-order residual `coeff_succ_eval_βHenselAssembled`.**
@@ -2408,13 +2449,13 @@ the PROVEN base case (`βHenselAssembled_constantCoeff`) + uniqueness (`gammaGen
 denominator clearing (`den_ne_zero`).  The `t = 0` instance is unconditionally PROVEN
 (`βHensel_lift_identity_zero`). -/
 theorem βHensel_lift_identity (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
-    (t : ℕ) :
+    (hzero : FaaDiBrunoSuccSumZeroResidual H x₀ R hHyp) (t : ℕ) :
     embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
       = αGenuine H x₀ R hHyp t
           * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
           * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1) :=
   βHensel_lift_identity_of_assembledSeries_isRoot H x₀ R hHyp
-    (assembledSeries_isRoot H x₀ R hHyp) t
+    (assembledSeries_isRoot H x₀ R hHyp hzero) t
 
 end Wave2
 

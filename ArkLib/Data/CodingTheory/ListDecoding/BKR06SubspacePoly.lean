@@ -236,6 +236,33 @@ theorem subspacePoly_natDegree_eq_pow_finrank
     simp [Set.toFinset_card]
   rw [hcard, Module.card_eq_pow_finrank (K := F) (V := W)]
 
+/-! ## Arithmetic bridge toward the BKR06 list-size lower bound (ABF26 T3.12)
+
+The BKR06 list-decoding construction produces, for an `𝔽_q`-subspace `L ⊆ 𝕂 = 𝔽_{q^m}`
+of dimension `d`, a Reed–Solomon close-codeword family whose size is at least the number
+of roots of the subspace polynomial `P_L`, i.e. `q^d` (Lemma 3.5 of BKR06; the genuine
+list-size→roots conversion is the still-external counting step).  ABF26 T3.12 asks for the
+list size `≥ q^{(α-β²)·log q}`.  The *purely arithmetic* part — that `q^d` dominates the
+target whenever the dimension `d` meets the threshold `d ≥ (α-β²)·log q` — is proven here,
+isolating exactly the non-arithmetic residual (the roots→close-codewords count). -/
+
+open scoped Real
+
+/-- **BKR06 degree/count arithmetic bridge.**  The number of roots of the subspace
+polynomial of a `d`-dimensional `𝔽_q`-subspace is `(subspacePoly L).natDegree = q^d`, and
+this dominates the ABF26 T3.12 target `q^{(α-β²)·log q}` whenever the dimension meets the
+threshold `d ≥ (α-β²)·log q` (with `q ≥ 1`).  Pure real-exponent monotonicity; the only
+non-arithmetic input is the threshold dimension bound supplied by the caller. -/
+theorem subspacePoly_natDegree_ge_target
+    [Fintype F] (W : Submodule F K) [Fintype W]
+    (q : ℕ) (hq : Fintype.card F = q) (hq1 : (1 : ℝ) ≤ q)
+    (target : ℝ) (hthr : target ≤ (Module.finrank F W : ℝ)) :
+    (q : ℝ) ^ target
+      ≤ ((subspacePoly (subFinset W)).natDegree : ℝ) := by
+  rw [subspacePoly_natDegree_eq_pow_finrank, hq]
+  rw [Nat.cast_pow, ← Real.rpow_natCast (q : ℝ) (Module.finrank F W)]
+  exact Real.rpow_le_rpow_of_exponent_le hq1 hthr
+
 end BKR06
 
 -- Axiom audit (in-file, on the freshly elaborated declarations).
@@ -246,3 +273,4 @@ end BKR06
 #print axioms BKR06.subspacePoly_eval_add_submodule
 #print axioms BKR06.subspacePolyHom
 #print axioms BKR06.subspacePoly_natDegree_eq_pow_finrank
+#print axioms BKR06.subspacePoly_natDegree_ge_target

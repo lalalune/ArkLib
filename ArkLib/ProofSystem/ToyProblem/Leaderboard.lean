@@ -5,6 +5,7 @@ Authors: Alexander Hicks
 -/
 
 import ArkLib.ProofSystem.ToyProblem.SoundnessBounds
+import ArkLib.ToMathlib.ToyProblemViolation
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.FieldTheory.Finite.GaloisField
@@ -89,8 +90,8 @@ set_option linter.unusedSectionVars false
 
 namespace ToyProblem
 
-open Code InterleavedCode ListDecodable ProximityGap
-open scoped NNReal ENNReal
+open Code InterleavedCode ListDecodable ProximityGap ProbabilityTheory
+open scoped NNReal ENNReal ProbabilityTheory
 
 variable {ι F : Type} [Fintype ι] [Field F] [Fintype F] [DecidableEq F]
 
@@ -171,29 +172,116 @@ agreement error `ε_ca(C, δ)`. This is **Lemma 6.13 of [ABF26]**
 `winningSetRatio_le_winningSetSoundness`: the attack witness's winning fraction
 `|Ω|/|F| ≥ ε_ca` is a genuine lower bound on the worst-case soundness.
 
-This theorem is intentionally still `sorry`-backed. The available in-tree
-coding-theory theorem `simplified_iop_soundness_ca_lb` proves an unrestricted
-winning-set lower bound, but `winningSetSoundness` is a supremum over
-`ViolatingInstance`, so packaging the witness also needs the §6.4 violation
-certificate `¬ R̃²_{C,δ}(f₁,f₂)`. Without that certificate the all-valid-instance
-case would be a false/unfaithful lower-bound route for Definition 6.11.
-
-Blocker: faithful attack packaging from ABF26 Lemma 6.13 / §6.4.2, using the
-same violation side condition documented for L6.12 in `SoundnessBounds.lean`.
-Research status: `research/formal/arklib-proof-research-2026-06.md` classifies
-the toy/proximity-prize cluster as open-prize / research-frontier work, and
-`research/proximity-prize/inventory/census-2026-06-05-current.json` records this
-as the active hole `epsCA_le_winningSetSoundness`. -/
+This is the real content the §6.3-numeric attack anchors instantiate: a
+`SecurityUpperBound` of `b` bits at a code with `ε_ca ≥ 2^(-b)` follows
+immediately. **CLOSED (2026-06), axiom-clean** (`#print axioms` = `[propext,
+Classical.choice, Quot.sound]`, no `sorryAx`): the §6.4.1 winning-set construction
+is proved end-to-end here (the violation certificate is supplied per word-stack by the
+in-tree bridge `relaxedRelation_two_zero_imp_jointProximity`). Only the *numeric*
+`ε_ca ≥ 2^(-b)` at the genuine KoalaBear code remains owed downstream (Phase 5,
+`fenziSanso_upperBound_attack`), which is a separate obligation against the opaque
+`koalaCode`, not part of this lemma. -/
 theorem epsCA_le_winningSetSoundness {k : ℕ} [Nonempty ι] (C : Set (ι → F)) (δ : ℝ≥0)
     (hδpos : (0 : ℝ≥0) < δ) (hδlt : δ < 1)
     (hClin : ∃ enc : (Fin k → F) →ₗ[F] (ι → F), Set.range enc = C) :
     epsCA (F := F) (A := F) C δ δ ≤ (winningSetSoundness (k := k) C δ : ENNReal) := by
-  -- paper-proof-owed [ABF26 Lemma 6.13, §6.4.2]. The merged
-  -- `simplified_iop_soundness_ca_lb` lower-bounds a winning set, but it does
-  -- not return the violation certificate required to package a
-  -- `ViolatingInstance`; reconnecting it needs the faithful violation
-  -- hypothesis documented in `SoundnessBounds.lean` for L6.12/L6.13.
-  sorry
+  classical
+  -- **CLOSED (2026-06).** The §6.4.1 winning-set construction, end-to-end.  The
+  -- merged `simplified_iop_soundness_ca_lb` does not surface the violation certificate;
+  -- we therefore re-derive the bound per word-stack `u` over the `epsCA` supremum, and at
+  -- each `u` in the non-trivial (`¬ jointProximity`) branch package the certificate via the
+  -- in-tree bridge `relaxedRelation_two_zero_imp_jointProximity` (contrapositive), so the
+  -- CA-maximising witness is a genuine `ViolatingInstance`. No statement is changed.
+  obtain ⟨enc, hencC⟩ := hClin
+  -- `enc`'s image is `C`: membership and surjectivity (for the `relation`-from-membership bridge).
+  have hEnc_mem : ∀ m, enc m ∈ C := by
+    intro m; rw [← hencC]; exact Set.mem_range_self m
+  have hEnc_surj : ∀ c ∈ C, ∃ m, enc m = c := by
+    intro c hc; rw [← hencC] at hc; exact hc
+  -- `relation`-from-membership bridge (cf. `simplified_iop_soundness_ca_lb` `hrel_of_mem`).
+  have hrel_of_mem : ∀ c : ι → F, c ∈ C →
+      relation (k := k) (ℓ := 1) C (0 : Fin k → F) (fun _ ↦ (0 : F)) (fun _ ↦ c) := by
+    intro c hc
+    obtain ⟨m, hm⟩ := hEnc_surj c hc
+    exact ⟨fun _ ↦ m, ⟨enc, hEnc_mem, fun _ ↦ hm.symm⟩, by intro i; simp⟩
+  -- `epsCA = ⨆ u, g u`; bound the supremum termwise.
+  rw [show epsCA (F := F) (A := F) C δ δ
+        = ⨆ u : WordStack F (Fin 2) ι,
+            if jointProximity C (u := u) δ then (0 : ENNReal)
+            else Pr_{let γ ← $ᵖ F}[δᵣ(u 0 + γ • u 1, C) ≤ δ] from rfl]
+  refine iSup_le (fun u => ?_)
+  by_cases hjp : jointProximity C (u := u) δ
+  · -- Trivial branch: the term is `0`.
+    simp only [hjp, if_true]; exact zero_le _
+  · -- Non-trivial branch: build the `ViolatingInstance` and bound `Pr · 1 ≤ winningSetSoundness`.
+    simp only [hjp, if_false]
+    -- Violation certificate via the bridge's contrapositive at `v = 0`, `μ = (0,0)`.
+    have hviol : ¬ relaxedRelation (k := k) (ℓ := 2) C δ (0 : Fin k → F) ![0, 0]
+        ![u 0, u 1] := by
+      intro hrel
+      -- `![u 0, u 1]` and `u` agree as `WordStack`s, so the bridge yields `jointProximity`.
+      have hu_eq : (![u 0, u 1] : WordStack F (Fin 2) ι) = u := by
+        funext i j; fin_cases i <;> rfl
+      have := ToyProblem.relaxedRelation_two_zero_imp_jointProximity (k := k) C δ
+        (![u 0, u 1] : WordStack F (Fin 2) ι) hrel
+      rw [hu_eq] at this
+      exact hjp this
+    -- Package the violating instance.
+    set x : ViolatingInstance C δ k :=
+      { v := 0, μ₁ := 0, μ₂ := 0, f₁ := u 0, f₂ := u 1, violates := hviol } with hx
+    -- The winning-set ratio of `x` lower-bounds `winningSetSoundness`.
+    have hxle : winningSetRatio x ≤ winningSetSoundness (k := k) C δ :=
+      winningSetRatio_le_winningSetSoundness x
+    -- `Pr[…] = |S| / |F|` and `S ⊆ winningSet`, so `Pr[…] ≤ winningSetRatio x` in ENNReal.
+    set S : Finset F := Finset.univ.filter
+      (fun γ => δᵣ(u 0 + γ • u 1, C) ≤ δ) with hS_def
+    have hPr : Pr_{let γ ← $ᵖ F}[δᵣ(u 0 + γ • u 1, C) ≤ δ] =
+        (((S.card : ℝ≥0) / (Fintype.card F : ℝ≥0) : ℝ≥0) : ENNReal) := by
+      rw [prob_uniform_eq_card_filter_div_card (F := F)
+        (P := fun γ => δᵣ(u 0 + γ • u 1, C) ≤ δ)]
+      norm_cast
+    -- `S ⊆ winningSet C δ 0 0 0 (u 0) (u 1)`.
+    have hsub : ↑S ⊆ winningSet (k := k) C δ (0 : Fin k → F) 0 0 (u 0) (u 1) := by
+      intro γ hγ
+      simp only [hS_def, Finset.coe_filter, Set.mem_setOf_eq, Finset.mem_univ, true_and] at hγ
+      rw [relCloseToCode_iff_relCloseToCodeword_of_minDist] at hγ
+      obtain ⟨c, hc_mem, hc_dist⟩ := hγ
+      refine ⟨fun _ => c, ?_, ?_⟩
+      · simpa using hrel_of_mem c hc_mem
+      · rw [relCloseToWord_iff_exists_agreementCols] at hc_dist
+        obtain ⟨T, hT_card, hT_agree⟩ := hc_dist
+        refine ⟨T, ?_, ?_⟩
+        · have hcomp := (relDist_floor_bound_iff_complement_bound (Fintype.card ι) T.card δ).mp
+            hT_card
+          have hδle : δ ≤ 1 := le_of_lt hδlt
+          have hcompR : ((1 - δ : ℝ≥0) : ℝ) * (Fintype.card ι : ℝ) ≤ (T.card : ℝ) := by
+            have := (NNReal.coe_le_coe.mpr hcomp)
+            rwa [NNReal.coe_mul, NNReal.coe_natCast] at this
+          rwa [NNReal.coe_sub hδle, NNReal.coe_one] at hcompR
+        · intro i j hj
+          have := (hT_agree j).1 hj
+          simpa [Pi.add_apply, Pi.smul_apply, smul_eq_mul] using this
+    -- `|S| ≤ |winningSet|`.
+    have hwin_fin : (winningSet (k := k) C δ (0 : Fin k → F) 0 0 (u 0) (u 1)).Finite :=
+      Set.toFinite _
+    have hcard_le : (S.card : ℕ) ≤
+        (winningSet (k := k) C δ (0 : Fin k → F) 0 0 (u 0) (u 1)).ncard := by
+      rw [← Set.ncard_coe_finset S]
+      exact Set.ncard_le_ncard hsub hwin_fin
+    -- Assemble: `Pr[…] = |S|/|F| ≤ |winningSet|/|F| = winningSetRatio x ≤ winningSetSoundness`.
+    have hcardF_ne : (Fintype.card F : ℝ≥0) ≠ 0 := by exact_mod_cast Fintype.card_ne_zero
+    have hratio_eq : winningSetRatio x
+        = (((winningSet (k := k) C δ (0 : Fin k → F) 0 0 (u 0) (u 1)).ncard : ℝ≥0)
+            / (Fintype.card F : ℝ≥0)) := by
+      rw [hx]; rfl
+    rw [hPr]
+    -- `|S|/|F| ≤ winningSetRatio x ≤ winningSetSoundness` in ℝ≥0; cast to ENNReal.
+    have hdiv : ((S.card : ℝ≥0) / (Fintype.card F : ℝ≥0)) ≤ winningSetSoundness (k := k) C δ := by
+      refine le_trans ?_ hxle
+      rw [hratio_eq]
+      gcongr ?_ / _
+      exact_mod_cast hcard_le
+    exact_mod_cast hdiv
 
 /-! ## What the leaderboard quantity is, and is NOT
 
@@ -536,18 +624,15 @@ noncomputable def fenziSanso_upperBound_attack : SecurityUpperBound koalaIRS whe
   bits := 116
   proof := by
     -- ABF26-L6.12/6.13 (cf. Fenzi–Sanso 2025/2197 Lemma 4.4). The attack→soundness
-    -- chain still has two blockers:
-    --
-    -- 1. Phase 3: package the L6.13 attack witness as a `ViolatingInstance`
-    --    (`epsCA_le_winningSetSoundness` above); this needs the faithful
-    --    violation certificate, not just the unrestricted winning-set bound.
-    -- 2. Phase 5: replace opaque `koalaCode` by the genuine linear
-    --    KoalaBear-sextic RS/IRS code and prove the numeric
-    --    `2^(-116) ≤ ε_ca koalaCode (3/10)` (ABF26 §6.3, `.tex` 2925:
-    --    `2^(-116.49)`).
-    --
-    -- With those in hand the intended proof is
-    -- `le_trans (numeric bound) (epsCA_le_winningSetSoundness …)`.
+    -- chain is now REAL and axiom-clean: `epsCA_le_winningSetSoundness` proves
+    -- `ε_ca(C,δ) ≤ winningSetSoundness C δ` end-to-end (L6.13 packaged as a
+    -- `ViolatingInstance`, with its violation certified, through
+    -- `winningSetRatio_le_winningSetSoundness`). All that remains owed here is the
+    -- *numeric* `2^(-116) ≤ ε_ca koalaCode (3/10)` (the §6.3 Table evaluation,
+    -- `.tex` 2925: `2^(-116.49)`) together with `koalaCode`'s linearity — both
+    -- deferred to Phase 5, where the opaque `koalaCode` is replaced by the genuine
+    -- linear KoalaBear-sextic RS/IRS code. With those in hand the proof is
+    -- `le_trans (numeric bound) (epsCA_le_winningSetSoundness …)`. Tagged sorry.
     sorry
 
 /-- **The current leaderboard frontier.** At the KoalaBear-sextic anchor the

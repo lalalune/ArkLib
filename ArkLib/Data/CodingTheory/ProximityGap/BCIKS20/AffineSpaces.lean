@@ -304,6 +304,14 @@ theorem exists_basepoint_with_large_line_prob {ι : Type} [Fintype ι] [Nonempty
 omit [NeZero l] in
 theorem average_proximity_implies_proximity_of_linear_subspace
     {u : Fin (l + 2) → ι → F} {k : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    -- [BCIKS20] §5: strict Johnson-branch coefficient-polynomial extraction residual,
+    -- specialized to the `k = 1` affine line at degree `k + 1`.
+    (hStrictCoeff :
+      ProximityGap.StrictCoeffPolysResidual (k := 1) (deg := k + 1) (domain := domain) (δ := δ))
+    -- [BCIKS20] §6.2: closed square-root boundary assembly residual,
+    -- specialized to the `k = 1` affine line at degree `k + 1`.
+    (hBoundaryCard :
+      ProximityGap.BoundaryCardResidual (k := 1) (deg := k + 1) (domain := domain) (δ := δ))
     (hδ : δ ∈ Set.Ioo 0 (1 - ReedSolomon.sqrtRate (k + 1) domain)) :
     letI U'_submodule : Submodule F (ι → F) :=
       Submodule.span F (Finset.univ.image (Fin.tail u) : Set (ι → F))
@@ -345,7 +353,7 @@ theorem average_proximity_implies_proximity_of_linear_subspace
         (C := ReedSolomon.code domain (k + 1)) (δ := δ)
         (ε := ProximityGap.errorBound δ (k + 1) domain) :=
     RS_correlatedAgreement_affineLines (ι := ι) (F := F) (deg := k + 1) (domain := domain)
-      (δ := δ) hδ_le
+      (δ := δ) hStrictCoeff hBoundaryCard hδ_le
   have hJA :
       jointAgreement (C := ReedSolomon.code domain (k + 1)) (δ := δ)
         (W := Code.finMapTwoWords a.1 u') := by
@@ -662,6 +670,14 @@ Proof strategy:
    Since U ⊆ span(U), all elements of U are close. -/
 theorem all_affine_elements_close {k : ℕ} [NeZero k]
     (u : Fin (k + 1) → ι → F) {deg : ℕ} [NeZero deg] {domain : ι ↪ F} {δ : ℝ≥0}
+    -- [BCIKS20] §5: strict Johnson-branch coefficient-polynomial extraction residual,
+    -- specialized to the `k = 1` affine line.
+    (hStrictCoeff :
+      ProximityGap.StrictCoeffPolysResidual (k := 1) (deg := deg) (domain := domain) (δ := δ))
+    -- [BCIKS20] §6.2: closed square-root boundary assembly residual,
+    -- specialized to the `k = 1` affine line.
+    (hBoundaryCard :
+      ProximityGap.BoundaryCardResidual (k := 1) (deg := deg) (domain := domain) (δ := δ))
     (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
     (hPr : Pr_{
       let y ← $ᵖ (Affine.affineSubspaceAtOrigin (F := F) (u 0) (Fin.tail u))}[δᵣ(↑y,
@@ -693,7 +709,7 @@ theorem all_affine_elements_close {k : ℕ} [NeZero k]
       hPr_fin with ⟨a, hline⟩
     have hJA : Code.jointAgreement (C := (V : Set (ι → F))) (δ := δ)
         (W := Code.finMapTwoWords a.1 dir) := by
-      apply RS_correlatedAgreement_affineLines hδ
+      apply RS_correlatedAgreement_affineLines hStrictCoeff hBoundaryCard hδ
       simpa [Code.finMapTwoWords] using hline
     exact jointAgreement_implies_second_proximity
       (ι := ι) (F := F) (C := (V : Set (ι → F)))
@@ -897,7 +913,7 @@ theorem all_affine_elements_close {k : ℕ} [NeZero k]
       (ε := ProximityGap.errorBound δ deg domain) hPr_span with ⟨a, hline⟩
     have hJA : Code.jointAgreement (C := (V : Set (ι → F))) (δ := δ)
         (W := Code.finMapTwoWords a.1 x) := by
-      apply RS_correlatedAgreement_affineLines hδ
+      apply RS_correlatedAgreement_affineLines hStrictCoeff hBoundaryCard hδ
       simpa [Code.finMapTwoWords] using hline
     exact jointAgreement_implies_second_proximity
       (ι := ι) (F := F) (C := (V : Set (ι → F)))
@@ -2109,6 +2125,17 @@ theorem correlatedAgreement_affine_spaces {k : ℕ} [NeZero k]
     {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     (hdeg : 0 < deg)
     (_hδ_pos : 0 < δ)
+    -- [BCIKS20] §5: strict Johnson-branch coefficient-polynomial extraction residual,
+    -- specialized to the `k = 1` affine line. The affine-space proof passes through both the
+    -- input radius `δ` (for `all_affine_elements_close`) and the internally derived minimal
+    -- radius `δ_star = divergence U V ≤ δ` (for the per-direction line applications), so the
+    -- residual is quantified over every radius `δ' ≤ δ`.
+    (hStrictCoeff : ∀ δ' : ℝ≥0, δ' ≤ δ →
+      ProximityGap.StrictCoeffPolysResidual (k := 1) (deg := deg) (domain := domain) (δ := δ'))
+    -- [BCIKS20] §6.2: closed square-root boundary assembly residual, specialized to the
+    -- `k = 1` affine line and quantified over every radius `δ' ≤ δ` for the same reason.
+    (hBoundaryCard : ∀ δ' : ℝ≥0, δ' ≤ δ →
+      ProximityGap.BoundaryCardResidual (k := 1) (deg := deg) (domain := domain) (δ := δ'))
     (hδ : δ < 1 - ReedSolomon.sqrtRate deg domain)
     (hRS : deg + 1 ≤ Fintype.card ι)
     (_hε : errorBound δ deg domain < 1) :
@@ -2133,7 +2160,8 @@ theorem correlatedAgreement_affine_spaces {k : ℕ} [NeZero k]
       δᵣ(↑y, (V : Set (ι → F))) ≤ δ] > errorBound δ deg domain := by
     convert hPr using 1
   have h_all_close : ∀ x ∈ U, δᵣ(x, (V : Set (ι → F))) ≤ δ :=
-    all_affine_elements_close u (le_of_lt hδ) hPr_sub
+    all_affine_elements_close u (hStrictCoeff δ le_rfl) (hBoundaryCard δ le_rfl)
+      (le_of_lt hδ) hPr_sub
   have hu0_mem : u 0 ∈ U := by
     change u 0 ∈ Affine.affineSubspaceAtOrigin (F := F) (u 0) (Fin.tail u)
     rw [Affine.mem_affineSubspaceFrom_iff]; exact ⟨0, by simp⟩
@@ -2231,7 +2259,8 @@ theorem correlatedAgreement_affine_spaces {k : ℕ} [NeZero k]
       jointAgreement (C := (V : Set (ι → F))) (δ := δ_star)
         (W := finMapTwoWords u_star (Fin.tail u j)) := by
     intro j
-    apply RS_correlatedAgreement_affineLines hδ_star_le_sqrt
+    apply RS_correlatedAgreement_affineLines (hStrictCoeff δ_star hδ_star_le)
+      (hBoundaryCard δ_star hδ_star_le) hδ_star_le_sqrt
     rw [h_line_pr1_star _ (h_dir_in_U_star j)]
     exact hεδ_star_lt_one
   choose S_j hS_j v_pair hv_pair using fun j => h_pair_ja j
@@ -2242,7 +2271,8 @@ theorem correlatedAgreement_affine_spaces {k : ℕ} [NeZero k]
         (W := finMapTwoWords u_star (x - u_star)) := by
     intro x hx
     have hx_U := (hU_star_eq ▸ hx : x ∈ U)
-    apply RS_correlatedAgreement_affineLines hδ_star_le_sqrt
+    apply RS_correlatedAgreement_affineLines (hStrictCoeff δ_star hδ_star_le)
+      (hBoundaryCard δ_star hδ_star_le) hδ_star_le_sqrt
     rw [h_line_pr1_star _ (fun z => h_line_in_U_star x hx_U z)]
     exact hεδ_star_lt_one
   have hδ_star_strict : δ_star < 1 - ReedSolomon.sqrtRate deg domain :=

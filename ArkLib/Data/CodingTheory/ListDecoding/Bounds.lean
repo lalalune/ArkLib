@@ -8,6 +8,10 @@ import ArkLib.Data.CodingTheory.ListDecodability
 import ArkLib.Data.CodingTheory.Basic.Entropy
 import ArkLib.Data.CodingTheory.HammingBallVolume
 import ArkLib.Data.CodingTheory.ListDecoding.JH01
+import ArkLib.Data.CodingTheory.ListDecoding.CZ25CapacityReduction
+import ArkLib.Data.CodingTheory.ListDecoding.BKR06SubspacePoly
+import ArkLib.ToMathlib.BKR06FiberCount
+import ArkLib.ToMathlib.BKR06Injection
 import ArkLib.Data.CodingTheory.SubspaceDesign
 import ArkLib.Data.CodingTheory.ReedSolomon
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
@@ -19,15 +23,16 @@ import Mathlib.Analysis.Real.Pi.Bounds
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
-set_option linter.style.longFile 1600
+set_option linter.style.longFile 2000
 
 /-!
 # List-decoding bounds from ABF26 §3
 
-External-admit *statements* for the §3 list-decoding bounds from ABF26
+External *proposition statements* for the §3 list-decoding bounds from ABF26
 (Arnon-Boneh-Fenzi, *Open Problems in List Decoding and Correlated Agreement*, 2026).
-Each theorem is admitted as an external result with a tagged `sorry`, matching the
-pattern established by `ProximityGap.CapacityBounds`. The statements use the
+The external-paper results are recorded as named `Prop` definitions, not as proved
+theorems, so downstream developments must take them as explicit hypotheses until the
+paper proofs are formalized. The statements use the
 `ListDecodable.Lambda` function (block-maximised list size) introduced in
 `ListDecodability.lean`, plus `qEntropy` from `Basic/Entropy.lean` and
 `hammingBallVolume` from `HammingBallVolume.lean`.
@@ -1272,8 +1277,9 @@ classical list-decoding theory whose proof is unformalized anywhere; mathlib lac
 Reed-Solomon / generalized-Singleton / list-decoding API the argument depends on.
 Ground-up formalization task, not a port.
 See `research/formal/arklib-proof-research-2026-06.md`. -/
-theorem large_alphabet_barrier_bdg24_agl23
+def large_alphabet_barrier_bdg24_agl23
     (ℓ : ℕ) (_hℓ_ge : 2 ≤ ℓ) (ρ : ℝ) (_hρ_pos : 0 < ρ) (_hρ_lt : ρ < 1) :
+    Prop :=
     ∃ α : ℝ, 0 < α ∧
       ∀ (η : ℝ), 0 < η →
         ∃ n₀ : ℕ,
@@ -1283,8 +1289,8 @@ theorem large_alphabet_barrier_bdg24_agl23
             n₀ ≤ Fintype.card ι →
             (Module.finrank F C : ℝ) ≥ ρ * Fintype.card ι →
             Lambda ((C : Set (ι → F))) ((ℓ : ℝ) / (ℓ + 1) * (1 - ρ - η)) ≤ (ℓ : ℕ∞) →
-            (Fintype.card F : ℝ) ≥ (2 : ℝ) ^ (α / η) := by
-  sorry -- ABF26-T3.10; external admit [BDG24, AGL23].
+            (Fintype.card F : ℝ) ≥ (2 : ℝ) ^ (α / η)
+  -- ABF26-T3.10; external statement [BDG24, AGL23].
   -- Missing ingredient: BDG24/AGL23's large-alphabet barrier. Shows codes attaining the
   -- generalized Singleton bound up to η-slack need |F|≥2^{α/η}. The proof is a probabilistic
   -- /pigeonhole lower bound on |F| from the list-decodability hypothesis at the near-optimal
@@ -1313,10 +1319,11 @@ formalization, not a port. (Secondary DESIGN_OBSTRUCTION: the paper's `1 - q^{-�
 probabilistic guarantee is downgraded here to a bare existential witness because ArkLib
 has no probability distribution over linear codes; a faithful statement would need that
 distribution added first.) See `research/formal/arklib-proof-research-2026-06.md`. -/
-theorem random_linear_lambda_lower_glmrsw22
+def random_linear_lambda_lower_glmrsw22
     (q : ℕ) (_hq_pp : IsPrimePow q)
     (δ : ℝ) (_hδ_pos : 0 < δ) (_hδ_lt : δ < 1 - 1 / q)
     (ε : ℝ) (_hε_pos : 0 < ε) (_hε_lt : ε < 1) :
+    Prop :=
     ∃ γ : ℝ, 0 < γ ∧
       ∀ ρ : ℝ, 1 - qEntropy q δ - γ < ρ → ρ < 1 - qEntropy q δ →
         ∃ n₀ : ℕ,
@@ -1331,8 +1338,8 @@ theorem random_linear_lambda_lower_glmrsw22
             ∃ C : Submodule F (ι → F),
               (Module.finrank F C : ℝ) / Fintype.card ι ≥ ρ ∧
               (Lambda ((C : Set (ι → F))) δ : ENNReal) >
-                ((Nat.floor (qEntropy q δ / (1 - qEntropy q δ - ρ) - ε) : ℕ) : ENNReal) := by
-  sorry -- ABF26-T3.11; external admit [GLMRSW22 Thm 4.1].
+                ((Nat.floor (qEntropy q δ / (1 - qEntropy q δ - ρ) - ε) : ℕ) : ENNReal)
+  -- ABF26-T3.11; external statement [GLMRSW22 Thm 4.1].
   -- Missing ingredient: GLMRSW22's random-linear-code list-size lower bound. Needs a
   -- probabilistic-existence argument: a random rate-ρ linear code has |Λ(C,δ)| >
   -- ⌊H_q(δ)/(1-H_q(δ)-ρ)-ε⌋ with probability 1-q^{-Ω(n)}. ArkLib has no probability
@@ -1343,6 +1350,193 @@ theorem random_linear_lambda_lower_glmrsw22
 end RandomLinear
 
 section ReedSolomonBounds
+
+/-- **ABF26 Theorem 3.12 [BKR06 Cor 2.2] — honest reduction form (per-instance).**
+
+The *in-tree-provable arithmetic content* of the BKR06 superpolynomial RS bound, with the
+single genuinely-external ingredient surfaced as an explicit hypothesis (never faked).
+
+BKR06's construction (Lemma 3.5) exhibits, for the RS code `RS[F_q, F_q, ⌊q^α⌋]`, a word
+`w` whose close-codeword set is at least as large as the root count of the subspace
+polynomial `P_W` of an `𝔽_q`-subspace `W ⊆ F_q` of dimension `d`.  That count equals
+`(BKR06.subspacePoly (BKR06.subFinset W)).natDegree = q^d` (proven, axiom-clean, in
+`BKR06SubspacePoly.lean`).  The residual `hcount` is exactly the BKR06 roots→close-codewords
+conversion; the dimension threshold `hdim : (α - β²)·log q ≤ d` is BKR06's parameter choice.
+
+Given those two, the target bound `q^{(α-β²)·log q} ≤ ncard` follows by the proven
+`BKR06.subspacePoly_natDegree_ge_target` arithmetic bridge.  This pins the genuine residual
+precisely inside `hcount`/`hdim` and discharges the corollary's own arithmetic honestly. -/
+theorem rs_lambda_superpoly_extension_bkr06_of_residuals
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (α β : ℝ) (q : ℕ) (hq : Fintype.card F = q) (hq1 : (1 : ℝ) ≤ q)
+    (domain : ι ↪ F) (w : ι → F) (δ : ℝ)
+    (W : Submodule F F) [Fintype W]
+    -- BKR06's parameter choice: the subspace dimension meets the T3.12 threshold.
+    (hdim : (α - β ^ 2) * Real.log q ≤ (Module.finrank F W : ℝ))
+    -- BKR06 Lemma 3.5 (roots → close-codewords), the genuine external count: the
+    -- close-codeword set is at least as large as the subspace polynomial's root count.
+    (hcount :
+        ((BKR06.subspacePoly (BKR06.subFinset W)).natDegree : ℝ) ≤
+          ((closeCodewordsRel
+              ((ReedSolomon.code domain (Nat.floor ((q : ℝ) ^ α)) : Set (ι → F))) w δ).ncard : ℝ)) :
+    ((closeCodewordsRel
+        ((ReedSolomon.code domain (Nat.floor ((q : ℝ) ^ α)) : Set (ι → F))) w δ).ncard : ℝ) ≥
+      (q : ℝ) ^ ((α - β ^ 2) * Real.log q) := by
+  have hbridge :=
+    BKR06.subspacePoly_natDegree_ge_target (F := F) (K := F) W q hq hq1
+      ((α - β ^ 2) * Real.log q) hdim
+  exact le_trans hbridge hcount
+
+/-- **ABF26 Theorem 3.12 [BKR06 Cor 2.2] — narrowed-residual form (fiber-count consuming).**
+
+A strictly *smaller* residual than `rs_lambda_superpoly_extension_bkr06_of_residuals`'s
+`hcount`.  Rather than assuming the close-codeword *count* `≥ q^d` outright, this form
+assumes only the genuine *geometric* step of BKR06 Lemma 3.5: an **injection**
+`encode : F → (ι → F)` that sends the `q^d` roots of the subspace polynomial (the carrier
+of the subspace `W`) to *distinct close codewords* (`hmaps` + `hinj`).  The cardinality
+arithmetic — that such an injection forces `≥ q^d = (subspacePoly W).natDegree` close
+codewords — is then discharged here, axiom-clean, via `Set.ncard_le_ncard_of_injOn` and
+the proven value-fiber count engine in `ArkLib.ToMathlib.BKR06FiberCount`
+(`BKR06.subspacePoly_natDegree`, the zero-fiber `= subFinset W` identity).
+
+This pins the genuine external residual to its irreducible geometric core: the *existence*
+of the BKR06 roots→distinct-close-codewords encoding.  Everything counting-theoretic is
+now proven in-tree.
+
+**PARAMETER DEFECT (do not discharge this form by BKR06; use the corrected form below).**
+This statement is parameterized by `W : Submodule F F` — an `F`-submodule of the *alphabet
+field itself*.  Such a submodule has `Module.finrank F W ∈ {0, 1}` (only `⊥` and `⊤`), so
+its "`q^d`" collapses to `q^0 = 1` or `q^1 = q`, and the dimension threshold `hdim`
+together with the geometric encoding *cannot be discharged by the BKR06 construction at any
+meaningful dimension*.  BKR06 genuinely lives at the *extension* parameters: base field
+`F_q`, extension `K = F_{q^m}` (`m ≥ 2`), `W` an `F_q`-subspace of `K` of dimension
+`2 ≤ d ≤ m`, evaluation domain inside `K`.  Over `K = F = F_q` the subspace-polynomial
+structure is degenerate.  Moreover the list size in BKR06 comes from *varying* the subspace
+`L` over a pigeonhole *family* `𝓛` (the `|𝓛| ≥ q^{(u+1)m − v²}` distinct subspaces), not
+from the `q^d` agreements of one fixed `W`.  The form is *not unsound* (it merely *takes*
+`encode` as a hypothesis), it simply cannot be discharged at its own parameters.  Use the
+corrected extension/family form `rs_lambda_superpoly_extension_bkr06_of_family` below, which
+is stated where the construction actually applies and consumes exactly the output of
+`BKR06.bkr06_family_close_codewords_card_ge`.  (Campaign convention: never delete, document.)
+-/
+theorem rs_lambda_superpoly_extension_bkr06_of_injection
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (α β : ℝ) (q : ℕ) (hq : Fintype.card F = q) (hq1 : (1 : ℝ) ≤ q)
+    (domain : ι ↪ F) (w : ι → F) (δ : ℝ)
+    (W : Submodule F F) [Fintype W]
+    (hdim : (α - β ^ 2) * Real.log q ≤ (Module.finrank F W : ℝ))
+    -- The genuine BKR06 Lemma-3.5 geometric residual: an encoding of the roots of the
+    -- subspace polynomial (= carrier of `W`) into the close-codeword set …
+    (encode : F → (ι → F))
+    (hmaps : ∀ v ∈ W,
+        encode v ∈
+          closeCodewordsRel
+            ((ReedSolomon.code domain (Nat.floor ((q : ℝ) ^ α)) : Set (ι → F))) w δ)
+    -- … and that this encoding is injective on `W` (distinct roots ↦ distinct codewords).
+    (hinj : Set.InjOn encode (W : Set F)) :
+    ((closeCodewordsRel
+        ((ReedSolomon.code domain (Nat.floor ((q : ℝ) ^ α)) : Set (ι → F))) w δ).ncard : ℝ) ≥
+      (q : ℝ) ^ ((α - β ^ 2) * Real.log q) := by
+  -- The injection gives `|W| ≤ |closeCodewords|` …
+  have hncard_le :
+      (W : Set F).ncard ≤
+        (closeCodewordsRel
+          ((ReedSolomon.code domain (Nat.floor ((q : ℝ) ^ α)) : Set (ι → F))) w δ).ncard :=
+    Set.ncard_le_ncard_of_injOn encode hmaps hinj (Set.toFinite _)
+  -- … and `|W| = |subFinset W| = (subspacePoly W).natDegree = q^{finrank}` via the proven brick.
+  have hWcard : (W : Set F).ncard = (BKR06.subspacePoly (BKR06.subFinset W)).natDegree := by
+    rw [BKR06.subspacePoly_natDegree]
+    have hcard : (BKR06.subFinset W).card = Fintype.card W := by
+      rw [BKR06.subFinset]; simp [Set.toFinset_card]
+    rw [hcard, Set.ncard_eq_toFinset_card' (W : Set F)]
+    simp [Set.toFinset_card]
+  -- Convert to the `hcount`-shaped inequality and reuse the proven arithmetic bridge.
+  have hcount :
+      ((BKR06.subspacePoly (BKR06.subFinset W)).natDegree : ℝ) ≤
+        ((closeCodewordsRel
+            ((ReedSolomon.code domain (Nat.floor ((q : ℝ) ^ α)) : Set (ι → F))) w δ).ncard : ℝ) := by
+    rw [← hWcard]; exact_mod_cast hncard_le
+  exact rs_lambda_superpoly_extension_bkr06_of_residuals α β q hq hq1 domain w δ W hdim hcount
+
+/-- **ABF26 Theorem 3.12 [BKR06 Cor 2.2] — corrected extension/family reduction form.**
+
+The genuine, dischargeable shape of the BKR06 superpolynomial RS bound, stated at the
+parameters where the construction actually lives (cf. the PARAMETER DEFECT note on
+`rs_lambda_superpoly_extension_bkr06_of_injection`): a base field `F` (the `𝔽_q`), a
+*proper extension* `K = 𝔽_{q^m}` carrying an `F`-module structure, the full evaluation
+domain `K ↪ K` (BKR06's `domain = id`, surjective), and a *family* `𝓛 : ι → Submodule F K`
+of `F_q`-subspaces of `K` whose subspace polynomials all agree with a common pivot above
+degree `k` and are pairwise distinct.
+
+This consumes **exactly** the hypotheses of (and routes through) the proven construction
+`BKR06.bkr06_family_close_codewords_card_ge`:
+* `hsmall`   — each `pivot − P_{𝓛 i}` has degree `< |K|` (so the agreement-on-all-points
+  injectivity applies);
+* `hdistinct`— the subspace polynomials are pairwise distinct (the pigeonhole family is
+  genuinely a family of distinct codewords);
+* `hclose`   — each constructed codeword lies in the close-codeword set of the received word
+  `w = evalOnPoints domain pivot` (the only numeric residual: BKR06 discharges this from
+  `agree ≥ q^v`, turning the agreement count into the relative-distance bound `δ`).
+
+The list-size lower bound then chains:
+  `q^{(α − β²)·log q}  ≤  |ι|  ≤  ncard (close codewords)`,
+where the left inequality is the **pigeonhole family-size residual** `hfamily` (BKR06
+Lemma 3.5: there are `|ι| = |𝓛| ≥ q^{(u+1)m − v²}` distinct subspaces sharing top
+coefficients — the genuinely external combinatorial input, see below), and the right
+inequality is `BKR06.bkr06_family_close_codewords_card_ge`, fully proven in-tree.
+
+**Residual surface after this reduction** (each a named, honest hypothesis of a *proven*
+reduction — no `sorry`, no silent weakening):
+* `(a)` `hclose` — agreement-count `≥ q^v` → relative-distance `δ` conversion;
+* `(b)` `hfamily` — the pigeonhole family existence/size `q^{(α−β²)log q} ≤ |ι|`
+  (subspaces of `K` of fixed dimension `v` sharing the top coefficients of their subspace
+  polynomials; counted via Gaussian binomials against the number of top-coefficient
+  patterns — left as a named residual here, see the module/PARAMETER-DEFECT note);
+* the "infinitely many prime powers" sequence still lives only in the bare external `Prop`
+  `rs_lambda_superpoly_extension_bkr06`.
+
+Compared to `_of_residuals`/`_of_injection`, this is the *first* form that can actually be
+fed by BKR06: the subspace lives in a real extension `K`, so `Module.finrank F (𝓛 i)` is
+no longer pinned to `{0,1}`, and the list size comes from the *family cardinality* `|ι|`,
+not from one fixed subspace. -/
+theorem rs_lambda_superpoly_extension_bkr06_of_family
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    {K : Type} [Field K] [Fintype K] [DecidableEq K]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F] [Module F K]
+    (α β : ℝ) (q : ℕ) (_hq : Fintype.card F = q)
+    (domain : K ↪ K) (hsurj : Function.Surjective domain)
+    (pivot : Polynomial K) (k : ℕ) (δ : ℝ)
+    (𝓛 : ι → Submodule F K) [∀ i, Fintype (𝓛 i)]
+    (hsmall : ∀ i,
+        (pivot - BKR06.subspacePoly (BKR06.subFinset (𝓛 i))).natDegree < Fintype.card K)
+    (hdistinct : Function.Injective (fun i => BKR06.subspacePoly (BKR06.subFinset (𝓛 i))))
+    -- BKR06 Lemma 3.5 numeric closeness residual (agreement count → relative distance `δ`).
+    (hclose : ∀ i,
+        ReedSolomon.evalOnPoints domain
+            (pivot - BKR06.subspacePoly (BKR06.subFinset (𝓛 i)))
+          ∈ closeCodewordsRel
+              ((ReedSolomon.code domain k : Set (K → K)))
+              (ReedSolomon.evalOnPoints domain pivot) δ)
+    -- BKR06 Lemma 3.5 pigeonhole family-size residual: there are at least
+    -- `q^{(α−β²)·log q}` distinct subspaces in the family `𝓛`.
+    (hfamily : (q : ℝ) ^ ((α - β ^ 2) * Real.log q) ≤ (Fintype.card ι : ℝ)) :
+    ((closeCodewordsRel
+        ((ReedSolomon.code domain k : Set (K → K)))
+        (ReedSolomon.evalOnPoints domain pivot) δ).ncard : ℝ) ≥
+      (q : ℝ) ^ ((α - β ^ 2) * Real.log q) := by
+  -- The proven construction supplies `|ι| ≤ ncard (close codewords)` directly.
+  have hcard_le :
+      (Fintype.card ι : ℕ) ≤
+        (closeCodewordsRel
+            ((ReedSolomon.code domain k : Set (K → K)))
+            (ReedSolomon.evalOnPoints domain pivot) δ).ncard :=
+    BKR06.bkr06_family_close_codewords_card_ge domain hsurj pivot k δ 𝓛 hsmall hdistinct hclose
+  -- Chain `q^{(α−β²)log q} ≤ |ι| ≤ ncard`.
+  calc (q : ℝ) ^ ((α - β ^ 2) * Real.log q)
+      ≤ (Fintype.card ι : ℝ) := hfamily
+    _ ≤ _ := by exact_mod_cast hcard_le
 
 /-- **ABF26 Theorem 3.12 [BKR06 Cor 2.2].** Reed-Solomon superpolynomial list-size over
 extension fields. Fix `0 < α < β < 1`. For infinitely many prime powers `q` there exists
@@ -1356,9 +1550,27 @@ Admitted as an external result.
 list-decoding theory, but mathlib has no Reed-Solomon list-decoding / superpolynomial
 list-size API; this result is unformalized anywhere. Discharging the `sorry` is a
 ground-up formalization, not a port.
-See `research/formal/arklib-proof-research-2026-06.md`. -/
-theorem rs_lambda_superpoly_extension_bkr06
+See `research/formal/arklib-proof-research-2026-06.md`.
+
+**HONEST REDUCTION AVAILABLE.** The arithmetic core (the subspace-polynomial root count
+`q^d` dominating the target `q^{(α-β²)log q}` under BKR06's dimension threshold) is fully
+proven, `sorry`-free and axiom-clean, in `rs_lambda_superpoly_extension_bkr06_of_residuals`
+(above), which derives the per-instance bound from the BKR06 Lemma-3.5 roots→close-codewords
+count (`hcount`) and the dimension threshold (`hdim`) as explicit hypotheses. The subspace
+polynomial's additivity and degree `q^d` are proven in `BKR06SubspacePoly.lean`.
+
+**RESIDUAL NARROWED.** `rs_lambda_superpoly_extension_bkr06_of_injection` (above) shrinks the
+residual further: it assumes only the genuine *geometric* step — an injective encoding of the
+`q^d` roots of the subspace polynomial into the close-codeword set — and discharges *all* of
+the counting arithmetic in-tree via `Set.ncard_le_ncard_of_injOn` together with the proven
+value-fiber engine in `ArkLib.ToMathlib.BKR06FiberCount`
+(`BKR06.card_subspacePolyHom_fiber_eq_natDegree`: a degree-`q^d` linearized polynomial takes
+each value in its image exactly `q^d` times). The statement below remains an external `Prop`
+only because the *unhypothesized* in-tree statement cannot supply that geometric encoding nor
+the "infinitely many `q`" prime-power witness sequence. -/
+def rs_lambda_superpoly_extension_bkr06
     (α β : ℝ) (_hα_pos : 0 < α) (_hα_lt : α < β) (_hβ_lt : β < 1) :
+    Prop :=
     -- `qs` carries the prime-power requirement as a *conjunct* alongside
     -- `StrictMono`. The previous shape `∀ i, IsPrimePow (qs i) → P i` was
     -- vacuously satisfied by any non-prime-power sequence; we now require
@@ -1374,13 +1586,94 @@ theorem rs_lambda_superpoly_extension_bkr06
             let δ : ℝ := 1 - (q : ℝ) ^ (β - 1)
             let C := ReedSolomon.code domain k
             ((closeCodewordsRel ((C : Set (ι → F))) w δ).ncard : ℝ) ≥
-              (q : ℝ) ^ ((α - β ^ 2) * Real.log q) := by
-  sorry -- ABF26-T3.12; external admit [BKR06 Cor 2.2].
+              (q : ℝ) ^ ((α - β ^ 2) * Real.log q)
+  -- ABF26-T3.12; external statement [BKR06 Cor 2.2].
   -- Missing ingredient: BKR06's superpolynomial RS list-size CONSTRUCTION over extension
   -- fields. Must exhibit, for infinitely many prime powers q, an RS code RS[F_q,F_q,⌊q^α⌋]
   -- and a word w with ≥ q^{(α-β²)log q} close codewords. The construction uses BKR06's
   -- subfield/trace structure; ExtensionCodes.lean L2.21 transports list sizes but does not
   -- manufacture the BKR06 large-list word. LOWER bound — genuinely external.
+
+/-- **ABF26 Theorem 3.13 [GHSZ02 Cor 20] — honest reduction form (per-instance).**
+
+The *in-tree-provable content* of the GHSZ02 prime-field RS bound, with the single
+genuinely-external ingredient surfaced as an explicit hypothesis (never faked).
+
+GHSZ02's construction builds, for a large prime `p`, a word `w` whose close-codeword set has
+*at least* `p^{p^α·β/2}` elements (the high-multiplicity polynomial-family count, `hcount`).
+The Ω-form target `> c · p^{p^α·β/2}` (with the `Ω`-constant existentially bound as `0 < c`)
+then follows with the explicit witness `c = 1/2`, since `(1/2)·X < X ≤ ncard` for the
+strictly-positive `X = p^{p^α·β/2}`.  This pins the genuine residual precisely inside
+`hcount` and discharges the Ω-constant + strict-inequality bookkeeping honestly. -/
+theorem rs_lambda_large_prime_ghsz02_of_residuals
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (α β : ℝ) (p : ℕ) (hp1 : (1 : ℝ) ≤ p)
+    (domain : ι ↪ F) (w : ι → F) (δ : ℝ)
+    -- GHSZ02 high-multiplicity count (the genuine external lower bound):
+    (hcount :
+        (p : ℝ) ^ ((p : ℝ) ^ α * β / 2) ≤
+          ((closeCodewordsRel
+              ((ReedSolomon.code domain (Nat.floor ((p : ℝ) ^ α)) : Set (ι → F))) w δ).ncard : ℝ)) :
+    ∃ c : ℝ, 0 < c ∧
+      ((closeCodewordsRel
+          ((ReedSolomon.code domain (Nat.floor ((p : ℝ) ^ α)) : Set (ι → F))) w δ).ncard : ℝ) >
+        c * (p : ℝ) ^ ((p : ℝ) ^ α * β / 2) := by
+  refine ⟨1 / 2, by norm_num, ?_⟩
+  have hpow_pos : (0 : ℝ) < (p : ℝ) ^ ((p : ℝ) ^ α * β / 2) :=
+    Real.rpow_pos_of_pos (by linarith) _
+  calc (1 / 2 : ℝ) * (p : ℝ) ^ ((p : ℝ) ^ α * β / 2)
+      < (p : ℝ) ^ ((p : ℝ) ^ α * β / 2) := by linarith
+    _ ≤ _ := hcount
+
+/-- **ABF26 Theorem 3.13 [GHSZ02 Cor 20] — narrowed-residual (injection) form.**
+
+A strictly *smaller* residual than `rs_lambda_large_prime_ghsz02_of_residuals`'s `hcount`.
+Rather than assuming the close-codeword *count* `≥ p^{p^α·β/2}` outright, this form assumes
+only the genuine GHSZ02 Cor-20 *geometric* step: an index type `S` of the right size
+(`hS : (Fintype.card S : ℝ) = p^{p^α·β/2}`, the high-multiplicity polynomial-family index)
+together with an **injection** `encode : S → (ι → F)` placing each member of the family at a
+*distinct close codeword* (`hmaps` + `hinj`).  The cardinality arithmetic — that this forces
+`≥ p^{p^α·β/2}` close codewords, hence the Ω-bound — is discharged here, axiom-clean, via
+`Set.ncard_le_ncard_of_injOn`.  This pins the residual to its irreducible core: the
+*existence* of the GHSZ02 high-multiplicity family as distinct close codewords. -/
+theorem rs_lambda_large_prime_ghsz02_of_injection
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (α β : ℝ) (p : ℕ) (hp1 : (1 : ℝ) ≤ p)
+    (domain : ι ↪ F) (w : ι → F) (δ : ℝ)
+    -- The GHSZ02 high-multiplicity family index, of the target cardinality.
+    {S : Type} [Fintype S]
+    (hS : (Fintype.card S : ℝ) = (p : ℝ) ^ ((p : ℝ) ^ α * β / 2))
+    -- The genuine GHSZ02 Cor-20 geometric residual: the family lands injectively in the
+    -- close-codeword set.
+    (encode : S → (ι → F))
+    (hmaps : ∀ s : S,
+        encode s ∈
+          closeCodewordsRel
+            ((ReedSolomon.code domain (Nat.floor ((p : ℝ) ^ α)) : Set (ι → F))) w δ)
+    (hinj : Function.Injective encode) :
+    ∃ c : ℝ, 0 < c ∧
+      ((closeCodewordsRel
+          ((ReedSolomon.code domain (Nat.floor ((p : ℝ) ^ α)) : Set (ι → F))) w δ).ncard : ℝ) >
+        c * (p : ℝ) ^ ((p : ℝ) ^ α * β / 2) := by
+  -- `|S| ≤ |closeCodewords|` from the injection on the (finite) universe of `S`.
+  have hncard_le :
+      (Set.univ : Set S).ncard ≤
+        (closeCodewordsRel
+          ((ReedSolomon.code domain (Nat.floor ((p : ℝ) ^ α)) : Set (ι → F))) w δ).ncard :=
+    Set.ncard_le_ncard_of_injOn encode (fun s _ => hmaps s)
+      (fun a _ b _ h => hinj h) (Set.toFinite _)
+  have hcount :
+      (p : ℝ) ^ ((p : ℝ) ^ α * β / 2) ≤
+        ((closeCodewordsRel
+            ((ReedSolomon.code domain (Nat.floor ((p : ℝ) ^ α)) : Set (ι → F)))
+              w δ).ncard : ℝ) := by
+    rw [← hS]
+    have huniv : (Set.univ : Set S).ncard = Fintype.card S := by
+      rw [Set.ncard_univ, Nat.card_eq_fintype_card]
+    rw [← huniv]; exact_mod_cast hncard_le
+  exact rs_lambda_large_prime_ghsz02_of_residuals α β p hp1 domain w δ hcount
 
 /-- **ABF26 Theorem 3.13 [GHSZ02 Cor 20].** Reed-Solomon large list-size over prime
 fields. Fix `0 < α, β < 1`. For all sufficiently large primes `p`, there exists
@@ -1393,9 +1686,23 @@ Admitted as an external result.
 **STATUS: NEEDS_CLASSICAL.** [GHSZ02 Cor 20] is settled classical Reed-Solomon
 list-decoding theory over prime fields, but unformalized anywhere; mathlib has no
 Reed-Solomon list-decoding API. Discharging the `sorry` is a ground-up formalization,
-not a port. See `research/formal/arklib-proof-research-2026-06.md`. -/
-theorem rs_lambda_large_prime_ghsz02
+not a port. See `research/formal/arklib-proof-research-2026-06.md`.
+
+**HONEST REDUCTION AVAILABLE.** The Ω-constant + strict-inequality bookkeeping is fully
+proven, `sorry`-free and axiom-clean, in `rs_lambda_large_prime_ghsz02_of_residuals`
+(above), which derives the per-instance `> c · p^{p^α·β/2}` bound from the GHSZ02
+high-multiplicity count `hcount` as an explicit hypothesis.
+
+**RESIDUAL NARROWED.** `rs_lambda_large_prime_ghsz02_of_injection` (above) shrinks the
+residual to its geometric core: it assumes only an index type `S` of cardinality
+`p^{p^α·β/2}` (the high-multiplicity polynomial-family index) and an injection placing the
+family at distinct close codewords, discharging *all* of the counting/Ω arithmetic in-tree
+via `Set.ncard_le_ncard_of_injOn`. The statement below remains an external `Prop` only
+because the *unhypothesized* in-tree statement cannot supply that high-multiplicity
+construction nor the `p₀` threshold. -/
+def rs_lambda_large_prime_ghsz02
     (α β : ℝ) (_hα_pos : 0 < α) (_hα_lt : α < 1) (_hβ_pos : 0 < β) (_hβ_lt : β < 1) :
+    Prop :=
     ∃ (c : ℝ) (_ : 0 < c) (p₀ : ℕ),
       ∀ p : ℕ, Nat.Prime p → p₀ ≤ p →
         ∀ {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
@@ -1406,8 +1713,8 @@ theorem rs_lambda_large_prime_ghsz02
             let δ : ℝ := 1 - ((1 - β) / α) * (p : ℝ) ^ (α - 1)
             let C := ReedSolomon.code domain k
             ((closeCodewordsRel ((C : Set (ι → F))) w δ).ncard : ℝ) >
-              c * (p : ℝ) ^ ((p : ℝ) ^ α * β / 2) := by
-  sorry -- ABF26-T3.13; external admit [GHSZ02 Cor 20].
+              c * (p : ℝ) ^ ((p : ℝ) ^ α * β / 2)
+  -- ABF26-T3.13; external statement [GHSZ02 Cor 20].
   -- Missing ingredient: GHSZ02's large RS list-size CONSTRUCTION over prime fields. Must
   -- exhibit, for all large primes p, an RS[F_p,F_p,⌊p^α⌋] and word w with > Ω(p^{p^α·β/2})
   -- close codewords. GHSZ02 builds the bad word from a high-multiplicity polynomial family;
@@ -1459,21 +1766,64 @@ result holds (cf. "Optimal Proximity Gap for Folded RS via Subspace Designs",
 arXiv 2601.10047). It is simply unformalized: mathlib has no subspace-design /
 Reed-Solomon / list-decoding API, so discharging the `sorry` is a ground-up formalization
 task, not a port. See `research/formal/arklib-proof-research-2026-06.md`. -/
-theorem subspaceDesign_list_decoding_cz25
+def subspaceDesign_list_decoding_cz25
     {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
     {F : Type} [Field F] [Fintype F] [DecidableEq F]
     (s : ℕ) (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
     (_h : IsSubspaceDesign s τ C)
-    (η : ℝ) (_hη_pos : 0 < η) :
+    (η : ℝ) (_hη_pos : 0 < η) : Prop :=
     (Lambda ((C : Set (ι → Fin s → F)))
         (1 - τ (Nat.floor (1 / η)) - η) : ENNReal) ≤
-      ENNReal.ofReal ((1 - τ (Nat.floor (1 / η))) / η) := by
-  sorry -- ABF26-T3.4; external admit [CZ25 Thm B.5].
+      ENNReal.ofReal ((1 - τ (Nat.floor (1 / η))) / η)
+  -- ABF26-T3.4; external statement [CZ25 Thm B.5].
   -- Missing ingredient: CZ25 Thm B.5's subspace-design list-decoding-up-to-capacity bound.
   -- |Λ(C,1-τ(1/η)-η)|≤(1-τ(1/η))/η follows from IsSubspaceDesign (in-tree D2.16) PLUS CZ25's
   -- design→list-size analysis (a dimension-counting bound on the close-codeword subspace),
   -- which rests on L2.17 (subspaceDesign_tau_lower — STILL an external admit). Blocked
   -- transitively on L2.17 + the CZ25 design→Λ conversion (absent). Genuinely external.
+
+/-- **ABF26 Corollary 3.5 [CZ25 Cor 2.21] — honest reduction form.**
+
+The *full in-tree-provable content* of C3.5, with the two genuinely-external ingredients
+surfaced as explicit hypotheses (never faked):
+
+* `hT218` — ABF26 T2.18 [GK16] (`frs_is_subspaceDesign_gk16`): FRS is τ-subspace-design.
+* `hT34` — ABF26 T3.4 [CZ25 B.5] (`subspaceDesign_list_decoding_cz25`), in its *general*
+  in-tree shape (quantified over every τ-subspace-design code).
+* `hηnat` — the documented floor/real reconciliation `1/η = ⌊1/η⌋` (provable whenever
+  `η = 1/m`), reconciling the real-`1/η` C3.5 statement with the floor-faithful T3.4
+  instance T3.4 actually evaluates τ at.
+
+Everything else (the τ-substitution at `τ(r) = sρ/(s-r+1)`, the bound algebra
+`(1-τ)/η = (s(1-ρ)+1-t)/(η(s+1-t))`, the floor/real reconciliation) is **proven with no
+`sorry` and no new axioms** in `CZ25CapacityReduction.frs_list_decoding_capacity_cz25_of_T34_T218`,
+to which this is a direct wrapper. This pins the genuine residual precisely inside
+`hT218`/`hT34` and discharges the corollary's own content honestly. -/
+theorem frs_list_decoding_capacity_cz25_of_residuals
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (hs_pos : 0 < s)
+    (η : ℝ) (hη_pos : 0 < η) (hη_lt_s : 1 / η < s)
+    (hT218 : IsSubspaceDesign s
+        (fun r ↦ if r ∈ Finset.Icc 1 s then
+            (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - r + 1) else 1)
+        (ReedSolomon.Folded.frsCode domain k s ω))
+    (hT34 : ∀ (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F)),
+        IsSubspaceDesign s τ C → ∀ η' : ℝ, 0 < η' →
+        (Lambda ((C : Set (ι → Fin s → F)))
+            (1 - τ (Nat.floor (1 / η')) - η') : ENNReal) ≤
+          ENNReal.ofReal ((1 - τ (Nat.floor (1 / η'))) / η'))
+    (hηnat : (1 : ℝ) / η = (Nat.floor (1 / η) : ℕ)) :
+    let n : ℝ := Fintype.card ι
+    let ρ : ℝ := k / n
+    let δ : ℝ := 1 - ρ * s / (s - 1 / η + 1) - η
+    let bound : ℝ := (s * (1 - ρ) + 1 - 1 / η) / (η * (s + 1 - 1 / η))
+    (Lambda ((ReedSolomon.Folded.frsCode domain k s ω : Set (ι → Fin s → F))) δ :
+        ENNReal) ≤
+      ENNReal.ofReal bound :=
+  frs_list_decoding_capacity_cz25_of_T34_T218
+    domain k s ω hs_pos η hη_pos hη_lt_s hT218 hT34 hηnat
 
 /-- **ABF26 Corollary 3.5 [CZ25 Corollary 2.21].** Folded Reed-Solomon codes are
 list-decodable up to capacity. Let `C := FRS[F, L, k, s, ω]` be a folded RS code of
@@ -1491,26 +1841,39 @@ FALSE per eprint.iacr.org/2025/2046 and live elsewhere). Folded RS attains capac
 subspace-design argument (arXiv 2601.10047). It is unformalized: mathlib has no folded-RS /
 subspace-design / list-decoding API, so the `sorry` is a ground-up formalization task, not
 a port, and follows once T3.4 + T2.18 are formalized.
-See `research/formal/arklib-proof-research-2026-06.md`. -/
-theorem frs_list_decoding_capacity_cz25
+See `research/formal/arklib-proof-research-2026-06.md`.
+
+**HONEST REDUCTION AVAILABLE.** The corollary's *own* content (τ-substitution + bound
+algebra + floor/real reconciliation) is fully proven, `sorry`-free and axiom-clean, in
+`frs_list_decoding_capacity_cz25_of_residuals` (above), which derives this exact
+conclusion from T2.18, the general T3.4, and `hηnat : 1/η = ⌊1/η⌋` as explicit
+hypotheses. The bare `sorry` below remains only because the *unhypothesized* in-tree
+statement cannot supply those two external admits; it is the documented spec, and any
+caller with the residuals in hand should route through `_of_residuals` instead. -/
+def frs_list_decoding_capacity_cz25
     {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
     {F : Type} [Field F] [Fintype F] [DecidableEq F]
     (domain : ι ↪ F) (k s : ℕ) (ω : F)
     (_hs_pos : 0 < s)
-    (η : ℝ) (_hη_pos : 0 < η) (_hη_lt_s : 1 / η < s) :
+    (η : ℝ) (_hη_pos : 0 < η) (_hη_lt_s : 1 / η < s) : Prop :=
     let n : ℝ := Fintype.card ι
     let ρ : ℝ := k / n
     let δ : ℝ := 1 - ρ * s / (s - 1 / η + 1) - η
     let bound : ℝ := (s * (1 - ρ) + 1 - 1 / η) / (η * (s + 1 - 1 / η))
     (Lambda ((ReedSolomon.Folded.frsCode domain k s ω : Set (ι → Fin s → F))) δ :
         ENNReal) ≤
-      ENNReal.ofReal bound := by
-  sorry -- ABF26-C3.5; external admit [CZ25 Cor 2.21].
+      ENNReal.ofReal bound
+  -- ABF26-C3.5; external statement [CZ25 Cor 2.21].
   -- Missing ingredient: this is a COROLLARY of T3.4 via T2.18 (frs_is_subspaceDesign_gk16:
   -- FRS is τ-subspace-design). Once T3.4 and T2.18 are proven, C3.5 closes by instantiating
   -- T3.4 at the FRS τ(r)=sρ/(s-r+1) and simplifying with 1/η<s. Blocked on T3.4 (above) +
   -- T2.18 (external admit in SubspaceDesign.lean). No independent external content.
 
 end SubspaceDesignUpperBounds
+
+-- Axiom audit on the corrected BKR06 extension/family reduction (and the bridges it chains).
+#print axioms CodingTheory.rs_lambda_superpoly_extension_bkr06_of_family
+#print axioms CodingTheory.rs_lambda_superpoly_extension_bkr06_of_residuals
+#print axioms CodingTheory.rs_lambda_superpoly_extension_bkr06_of_injection
 
 end CodingTheory

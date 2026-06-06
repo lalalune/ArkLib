@@ -9,7 +9,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.RootClearing
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.HenselNumerator
 import ArkLib.ToMathlib.Claim511
 
-set_option linter.style.longFile 7100
+set_option linter.style.longFile 7400
 set_option linter.unusedSectionVars false
 
 /-!
@@ -119,13 +119,14 @@ than discharged with `sorry`-laundering. No statement is weakened.
 - 5.8' (`…_coeffs'`): would follow from 5.8 by `PowerSeries.subst` bookkeeping on `γ = subst …
   (mk α)`, but 5.8 is itself blocked, so 5.8' cannot stand alone.
 - 5.9 (`solution_gamma_is_linear_in_Z`): consumes 5.8' (truncation of `γ` to degree `< k`,
-  combined with the `degreeX P ≤ 1` output of Prop 5.5); blocked transitively.
+  combined with the `degreeX P ≤ 1` output of the Prop 5.5 specialization); blocked transitively.
 - 5.10 (`solution_gamma_matches_word_if_subset_large`): its hypothesis `hx` bounds
   `(matching_set_at_x …).card`, but converting that into the `S_β`-largeness that `Lemma_A_1`
   consumes is exactly ingredient C; blocked.
-- 5.11 (`exists_points_with_large_matching_subset`): double-counting over the matching set,
-  which is `.choose` of the still-`sorry` Prop 5.5 (`exists_a_set_and_a_matching_polynomial`);
-  blocked on that upstream `sorry` plus ingredient C.
+- 5.11 (`exists_points_with_large_matching_subset`): double-counting over the matching set.
+  The abstract Prop 5.5 pigeonhole core is now `tagged_fiber_pigeonhole` in `Guruswami.lean`;
+  what remains is the specialization from the Guruswami multiplicity/factor data to the required
+  tagged-factor map, plus ingredient C.
 
 Closing any of these honestly requires first landing (i) an `#S` lower-bound hypothesis on
 `ModifiedGuruswami` (or on Claim 5.7), (ii) the Lemma-5.3 `Z`-curve divisibility bridge, and
@@ -1731,8 +1732,61 @@ lemma claimA2_hypotheses_graph
     evalX_R_graph_separable (F := F) (m := m) (n := n) k δ x₀ h_gs
       hx0 hsep hS_nonempty A hA hcount hlarge⟩
 
+/-- Named residual bundle for BCIKS20 Claim 5.7.
+
+The bare Claim-5.7 front door needs the graph/count data below plus the bridge from the graph
+extraction API to the legacy factorization list. -/
+class Claim57Residuals (k : ℕ) (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) where
+  hx0 : ∀ R : F[Z][X][Y],
+    R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs →
+      Bivariate.evalX (Polynomial.C x₀) R ≠ 0
+  hsep : ∀ R : F[Z][X][Y],
+    R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs →
+      (Bivariate.evalX (Polynomial.C x₀) R).Separable
+  hS_nonempty : (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).Nonempty
+  A : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ → Finset (Fin n)
+  hA : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+    ∀ i ∈ A z, (u₀ + z.1 • u₁) i =
+      (Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2).eval (ωs i)
+  hcount : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+    Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z.1) 1 k < m * (A z).card
+  hlarge : #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+      2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q
+  hfactor : ∀ R : F[Z][X][Y],
+    R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs →
+      R ∈ (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose
+
+/-- Build the legacy Claim-5.7 residual bundle from the proved graph-extraction
+side-condition package plus the only extra legacy bridge: membership in the
+`pg_Rset` factor set implies membership in the Eq-5.12 factorization list. -/
+@[reducible]
+def Claim57Residuals.ofGraphExtractionHypotheses
+    [DecidableEq (Polynomial F)]
+    {δ : ℚ} {x₀ : F}
+    {h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁}
+    (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
+    (hfactor : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        R ∈ (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose) :
+    Claim57Residuals (F := F) (m := m) (n := n) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) k δ x₀ h_gs where
+  hx0 := hcond.hx0
+  hsep := hcond.hsep
+  hS_nonempty := hcond.hS_nonempty
+  A := hcond.A
+  hA := hcond.hA
+  hcount := hcond.hcount
+  hlarge := hcond.hlarge
+  hfactor := hfactor
+
 lemma exists_factors_with_large_common_root_set (δ : ℚ) (x₀ : F)
-  (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
+  (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+  [hres : Claim57Residuals (F := F) k δ x₀ h_gs] :
   ∃ R H, R ∈ (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose ∧
     Irreducible H ∧ 0 < H.natDegree ∧ H ∣ (Bivariate.evalX (Polynomial.C x₀) R) ∧
     (Bivariate.evalX (Polynomial.C x₀) R).Separable ∧
@@ -1743,58 +1797,70 @@ lemma exists_factors_with_large_common_root_set (δ : ℚ) (x₀ : F)
         (@Fintype.ofFinite _ Subtype.finite))
     ≥ #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q)
     ∧ #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
-      2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q := by sorry
+      2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q := by
+  classical
+  obtain ⟨R, H, hR, _hRirr, hHirr, hHdeg, hHdvd, hRsep, hcard, hlarge'⟩ :=
+    exists_pg_factors_with_large_common_root_set_setToFinset_of_graph_conditions
+      (F := F) (k := k) (δ := δ) (x₀ := x₀) (h_gs := h_gs)
+      hres.hx0 hres.hsep hres.hS_nonempty hres.A hres.hA hres.hcount hres.hlarge
+  exact ⟨R, H, hres.hfactor R hR, hHirr, hHdeg, hHdvd, hRsep, hcard, hlarge'⟩
 
-/-- Claim 5.7 establishes existens of a polynomial `R`. his is the extraction of this polynomial. -/
-noncomputable def R (δ : ℚ) (x₀ : F) (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) : F[Z][X][Y] :=
- (exists_factors_with_large_common_root_set k δ x₀ h_gs).choose
+/-- Claim 5.7 establishes existence of a polynomial `R`. This is the extraction of this polynomial. -/
+noncomputable def R (δ : ℚ) (x₀ : F) (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs] : F[Z][X][Y] :=
+ (exists_factors_with_large_common_root_set (F := F) (m := m) (n := n) (k := k)
+    (Q := Q) (ωs := ωs) (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs).choose
 
-/-- Claim 5.7 establishes existens of a polynomial `H`. This is the extraction of this polynomial.
--/
-noncomputable def H (δ : ℚ) (x₀ : F) (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) : F[Z][X] :=
-(exists_factors_with_large_common_root_set k δ x₀ h_gs).choose_spec.choose
+/-- Claim 5.7 establishes existence of a polynomial `H`. This is the extraction of this polynomial. -/
+noncomputable def H (δ : ℚ) (x₀ : F) (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs] : F[Z][X] :=
+(exists_factors_with_large_common_root_set (F := F) (m := m) (n := n) (k := k)
+  (Q := Q) (ωs := ωs) (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs).choose_spec.choose
 
-/-- An important property of the polynomial `H` extracted from Claim 5.7 is that it is irreducible.
--/
-lemma irreducible_H (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) : Irreducible (H k δ x₀ h_gs) :=
-  (exists_factors_with_large_common_root_set k δ x₀ h_gs).choose_spec.choose_spec.2.1
+/-- An important property of the polynomial `H` extracted from Claim 5.7 is that it is irreducible. -/
+lemma irreducible_H (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs] : Irreducible (H k δ x₀ h_gs) :=
+  (exists_factors_with_large_common_root_set (F := F) (m := m) (n := n) (k := k)
+    (Q := Q) (ωs := ωs) (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs).choose_spec.choose_spec.2.1
 
-/-- The `Fact` form of `irreducible_H`, for Appendix-A declarations with typeclass
-hypotheses. -/
-instance fact_irreducible_H (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
+instance fact_irreducible_H (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs] :
     Fact (Irreducible (H k δ x₀ h_gs)) :=
-  ⟨irreducible_H k h_gs⟩
+  ⟨irreducible_H (F := F) (m := m) (n := n) (k := k) (Q := Q)
+    (ωs := ωs) (u₀ := u₀) (u₁ := u₁) (δ := δ) (x₀ := x₀) h_gs⟩
 
-/-- The factor `H` extracted from Claim 5.7 has positive degree in the `Y` variable, matching the
-Appendix A hypotheses needed for the function field construction. -/
-lemma natDegree_H_pos (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
+lemma natDegree_H_pos (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs] :
     0 < (H k δ x₀ h_gs).natDegree :=
-  (exists_factors_with_large_common_root_set k δ x₀ h_gs).choose_spec.choose_spec.2.2.1
+  (exists_factors_with_large_common_root_set (F := F) (m := m) (n := n) (k := k)
+    (Q := Q) (ωs := ωs) (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs).choose_spec.choose_spec.2.2.1
 
-/-- The `Fact` form of `natDegree_H_pos`, for downstream declarations that take the
-positivity as an instance. -/
-instance fact_natDegree_H_pos (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
+instance fact_natDegree_H_pos (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs] :
     Fact (0 < (H k δ x₀ h_gs).natDegree) :=
-  ⟨natDegree_H_pos k h_gs⟩
+  ⟨natDegree_H_pos (F := F) (m := m) (n := n) (k := k) (Q := Q)
+    (ωs := ωs) (u₀ := u₀) (u₁ := u₁) (δ := δ) (x₀ := x₀) h_gs⟩
 
-/-- The extracted `H` divides `R(x₀, Y, Z)`, as required for the Hensel setup in Claim A.2. -/
-lemma H_dvd_evalX_R (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
+lemma H_dvd_evalX_R (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs] :
     H k δ x₀ h_gs ∣ Bivariate.evalX (Polynomial.C x₀) (R k δ x₀ h_gs) :=
-  (exists_factors_with_large_common_root_set k δ x₀ h_gs).choose_spec.choose_spec.2.2.2.1
+  (exists_factors_with_large_common_root_set (F := F) (m := m) (n := n) (k := k)
+    (Q := Q) (ωs := ωs) (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs).choose_spec.choose_spec.2.2.2.1
 
-/-- The specialization `R(x₀, Y, Z)` is separable in `Y`, as required for Claim A.2. -/
-lemma evalX_R_separable (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
+lemma evalX_R_separable (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs] :
     (Bivariate.evalX (Polynomial.C x₀) (R k δ x₀ h_gs)).Separable :=
-  (exists_factors_with_large_common_root_set k δ x₀ h_gs).choose_spec.choose_spec.2.2.2.2.1
+  (exists_factors_with_large_common_root_set (F := F) (m := m) (n := n) (k := k)
+    (Q := Q) (ωs := ωs) (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs).choose_spec.choose_spec.2.2.2.2.1
 
 open BCIKS20AppendixA.ClaimA2 in
-/-- The Claim A.2 hypotheses satisfied by the `R,H` pair extracted from Claim 5.7. -/
-lemma claimA2_hypotheses (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
+lemma claimA2_hypotheses (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs] :
     Hypotheses x₀ (R k δ x₀ h_gs) (H k δ x₀ h_gs) :=
   ⟨H_dvd_evalX_R k h_gs, evalX_R_separable k h_gs⟩
 
 lemma powerSeries_eq_truncate_of_coeff_zero_ge
-    {R : Type} [Semiring R] (f : PowerSeries R) {k : ℕ}
+    {S : Type} [Semiring S] (f : PowerSeries S) {k : ℕ}
     (hzero : ∀ t, t ≥ k → PowerSeries.coeff t f = 0) :
     f = PowerSeries.mk (fun t => if t ≥ k then 0 else PowerSeries.coeff t f) := by
   ext t
@@ -1803,9 +1869,9 @@ lemma powerSeries_eq_truncate_of_coeff_zero_ge
   · simp [ht]
 
 lemma powerSeries_eq_coe_trunc_of_coeff_zero_ge
-    {R : Type} [CommSemiring R] (f : PowerSeries R) {k : ℕ}
+    {S : Type} [CommSemiring S] (f : PowerSeries S) {k : ℕ}
     (hzero : ∀ t, t ≥ k → PowerSeries.coeff t f = 0) :
-    f = (f.trunc k : PowerSeries R) := by
+    f = (f.trunc k : PowerSeries S) := by
   ext t
   by_cases ht : t < k
   · simp [PowerSeries.coeff_trunc, ht]
@@ -1813,17 +1879,17 @@ lemma powerSeries_eq_coe_trunc_of_coeff_zero_ge
     simp [PowerSeries.coeff_trunc, ht, hzero t htk]
 
 lemma powerSeries_mk_eq_coe_trunc_of_tail_zero
-    {R : Type} [CommSemiring R] (a : ℕ → R) {k : ℕ}
+    {S : Type} [CommSemiring S] (a : ℕ → S) {k : ℕ}
     (hzero : ∀ t, t ≥ k → a t = 0) :
-    PowerSeries.mk a = ((PowerSeries.mk a).trunc k : PowerSeries R) :=
+    PowerSeries.mk a = ((PowerSeries.mk a).trunc k : PowerSeries S) :=
   powerSeries_eq_coe_trunc_of_coeff_zero_ge (PowerSeries.mk a)
     (by
       intro t ht
       simpa using hzero t ht)
 
 lemma powerSeries_subst_coe_polynomial
-    {R : Type} [CommRing R] (a : PowerSeries R) (p : Polynomial R) :
-    PowerSeries.subst a (p : PowerSeries R) = Polynomial.aeval a p := by
+    {S : Type} [CommRing S] (a : PowerSeries S) (p : Polynomial S) :
+    PowerSeries.subst a (p : PowerSeries S) = Polynomial.aeval a p := by
   rw [Polynomial.toPowerSeries_toMvPowerSeries]
   rw [PowerSeries.subst_def]
   rw [MvPowerSeries.subst_coe]
@@ -1832,8 +1898,8 @@ lemma powerSeries_subst_coe_polynomial
   | monomial n r => simp [Polynomial.aeval_def]
 
 lemma polynomial_aeval_coe_eq_coe_comp
-    {R : Type} [CommRing R] (p q : Polynomial R) :
-    Polynomial.aeval (q : PowerSeries R) p = ((p.comp q : Polynomial R) : PowerSeries R) := by
+    {S : Type} [CommRing S] (p q : Polynomial S) :
+    Polynomial.aeval (q : PowerSeries S) p = ((p.comp q : Polynomial S) : PowerSeries S) := by
   induction p using Polynomial.induction_on' with
   | add p r hp hr =>
       rw [Polynomial.add_comp]
@@ -1843,26 +1909,26 @@ lemma polynomial_aeval_coe_eq_coe_comp
       rw [← Polynomial.C_mul_X_pow_eq_monomial]
       simp
 
-lemma natDegree_C_add_X_le_one {R : Type} [CommRing R] (c : R) :
-    (Polynomial.C c + Polynomial.X : Polynomial R).natDegree ≤ 1 := by
+lemma natDegree_C_add_X_le_one {S : Type} [CommRing S] (c : S) :
+    (Polynomial.C c + Polynomial.X : Polynomial S).natDegree ≤ 1 := by
   calc
-    (Polynomial.C c + Polynomial.X : Polynomial R).natDegree
-        ≤ max (Polynomial.C c : Polynomial R).natDegree (Polynomial.X : Polynomial R).natDegree :=
+    (Polynomial.C c + Polynomial.X : Polynomial S).natDegree
+        ≤ max (Polynomial.C c : Polynomial S).natDegree (Polynomial.X : Polynomial S).natDegree :=
           Polynomial.natDegree_add_le _ _
     _ ≤ 1 := by
       apply max_le
       · simp [Polynomial.natDegree_C]
       · exact Polynomial.natDegree_X_le
 
-lemma powerSeries_trunc_zero {R : Type} [Semiring R] (f : PowerSeries R) :
-    f.trunc 0 = (0 : Polynomial R) := by
+lemma powerSeries_trunc_zero {S : Type} [Semiring S] (f : PowerSeries S) :
+    f.trunc 0 = (0 : Polynomial S) := by
   ext n
   simp
 
 lemma coeff_aeval_affine_trunc_eq_zero_of_ge
-    {R : Type} [CommRing R] (f : PowerSeries R) (c : R) {k t : ℕ} (ht : t ≥ k) :
+    {S : Type} [CommRing S] (f : PowerSeries S) (c : S) {k t : ℕ} (ht : t ≥ k) :
     PowerSeries.coeff t
-      (Polynomial.aeval (((Polynomial.C c + Polynomial.X : Polynomial R) : PowerSeries R))
+      (Polynomial.aeval (((Polynomial.C c + Polynomial.X : Polynomial S) : PowerSeries S))
         (f.trunc k)) = 0 := by
   rw [polynomial_aeval_coe_eq_coe_comp]
   rw [Polynomial.coeff_coe]
@@ -1873,15 +1939,15 @@ lemma coeff_aeval_affine_trunc_eq_zero_of_ge
   · have hdegp : (f.trunc k).natDegree < k := by
       obtain ⟨j, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hk
       simpa using PowerSeries.natDegree_trunc_lt f j
-    have hdegq : (Polynomial.C c + Polynomial.X : Polynomial R).natDegree ≤ 1 :=
+    have hdegq : (Polynomial.C c + Polynomial.X : Polynomial S).natDegree ≤ 1 :=
       natDegree_C_add_X_le_one c
     have hdegcomp_le :
-        ((f.trunc k).comp (Polynomial.C c + Polynomial.X : Polynomial R)).natDegree
+        ((f.trunc k).comp (Polynomial.C c + Polynomial.X : Polynomial S)).natDegree
           ≤ (f.trunc k).natDegree := by
       calc
-        ((f.trunc k).comp (Polynomial.C c + Polynomial.X : Polynomial R)).natDegree
+        ((f.trunc k).comp (Polynomial.C c + Polynomial.X : Polynomial S)).natDegree
             ≤ (f.trunc k).natDegree
-                * (Polynomial.C c + Polynomial.X : Polynomial R).natDegree :=
+                * (Polynomial.C c + Polynomial.X : Polynomial S).natDegree :=
               Polynomial.natDegree_comp_le
         _ ≤ (f.trunc k).natDegree * 1 := Nat.mul_le_mul_left _ hdegq
         _ = (f.trunc k).natDegree := Nat.mul_one _
@@ -1889,9 +1955,9 @@ lemma coeff_aeval_affine_trunc_eq_zero_of_ge
       (lt_of_le_of_lt hdegcomp_le (lt_of_lt_of_le hdegp ht))
 
 set_option linter.unusedSimpArgs false in
-lemma affine_shift_powerSeries_eq_coe_C_add_X {R : Type} [CommRing R] (c : R) :
+lemma affine_shift_powerSeries_eq_coe_C_add_X {S : Type} [CommRing S] (c : S) :
     PowerSeries.mk (fun t => match t with | 0 => c | 1 => 1 | _ => 0) =
-      ((Polynomial.C c + Polynomial.X : Polynomial R) : PowerSeries R) := by
+      ((Polynomial.C c + Polynomial.X : Polynomial S) : PowerSeries S) := by
   ext t
   cases t with
   | zero => simp [PowerSeries.coeff_X, Polynomial.coeff_coe, Polynomial.coeff_add,
@@ -2037,6 +2103,7 @@ lemma alpha'_eq_zero_of_embedding_beta_eq_zero
 open BCIKS20AppendixA.ClaimA2 in
 lemma approximate_solution_is_exact_solution_coeffs_of_beta_embedding_zero
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     (hemb : ∀ t ≥ k,
       BCIKS20AppendixA.embeddingOf𝒪Into𝕃 (H k δ x₀ h_gs)
@@ -2062,6 +2129,7 @@ lemma approximate_solution_is_exact_solution_coeffs_of_beta_embedding_zero
 open BCIKS20AppendixA.ClaimA2 in
 lemma approximate_solution_is_exact_solution_coeffs_of_βHensel_embedding_zero
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     (hcompat : ∀ t ≥ k,
       BCIKS20AppendixA.embeddingOf𝒪Into𝕃 (H k δ x₀ h_gs)
@@ -2100,6 +2168,7 @@ If the real Hensel numerator has the Appendix-A `S_β` largeness needed by
 `β`, then the approximate solution coefficients vanish in degrees `≥ k`. -/
 lemma approximate_solution_is_exact_solution_coeffs_of_βHensel_Sβ_large
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     (hcompat : ∀ t ≥ k,
       BCIKS20AppendixA.embeddingOf𝒪Into𝕃 (H k δ x₀ h_gs)
@@ -2153,6 +2222,7 @@ The new `βHensel_weight_bound_of_structured_weight` theorem turns a structured
 numeric target is automatically larger than the actual Appendix-A weight. -/
 lemma βHensel_Sβ_large_of_structured_weight
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     (hlarge : ∀ t ≥ k, ∃ D : ℕ,
       D ≥ Bivariate.totalDegree (H k δ x₀ h_gs) ∧
@@ -2213,6 +2283,7 @@ statement: denominator nonvanishing, the denominator-cleared Hensel lift
 identity, and `S_β` largeness for the recursive numerator. -/
 lemma approximate_solution_is_exact_solution_coeffs_of_βHensel_lift_identity_Sβ_large
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     (hden : ∀ t ≥ k,
       (liftToFunctionField (H := H k δ x₀ h_gs)
@@ -2270,6 +2341,7 @@ index `t ≥ k`, it is enough to produce a degree bound `D` and prove that
 `S_β (β R t)` is larger than `Λ(β R t) * deg H`. -/
 lemma approximate_solution_is_exact_solution_coeffs_of_Sβ_large
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     (hlarge : ∀ t ≥ k, ∃ D : ℕ,
       D ≥ Bivariate.totalDegree (H k δ x₀ h_gs) ∧
@@ -2300,6 +2372,7 @@ omit [DecidableEq (RatFunc F)] in
 lemma approximate_solution_is_exact_solution_coeffs_graph_of_beta_embedding_zero
     [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hx0 : ∀ R : F[Z][X][Y],
       R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
           (u₀ := u₀) (u₁ := u₁) h_gs →
@@ -2364,6 +2437,7 @@ condition. -/
 lemma approximate_solution_is_exact_solution_coeffs_graph_of_Sβ_large
     [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hx0 : ∀ R : F[Z][X][Y],
       R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
           (u₀ := u₀) (u₁ := u₁) h_gs →
@@ -2442,6 +2516,7 @@ omit [DecidableEq (RatFunc F)] in
 lemma approximate_solution_is_exact_solution_coeffs_graph_clear_of_beta_embedding_zero
     [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
     (hemb : ∀ t ≥ k,
       BCIKS20AppendixA.embeddingOf𝒪Into𝕃
@@ -2479,6 +2554,7 @@ pipeline. -/
 lemma approximate_solution_is_exact_solution_coeffs_graph_clear_of_Sβ_large
     [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
     (hlarge : ∀ t ≥ k, ∃ D : ℕ,
       D ≥ Bivariate.totalDegree
@@ -2521,6 +2597,7 @@ lemma approximate_solution_is_exact_solution_coeffs_graph_clear_of_Sβ_large
 open BCIKS20AppendixA.ClaimA2 in
 lemma approximate_solution_alpha_powerSeries_eq_trunc_of_beta_embedding_zero
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     (hemb : ∀ t ≥ k,
       BCIKS20AppendixA.embeddingOf𝒪Into𝕃 (H k δ x₀ h_gs)
@@ -2555,6 +2632,7 @@ open BCIKS20AppendixA.ClaimA2 in
 condition. -/
 lemma approximate_solution_alpha_powerSeries_eq_trunc_of_Sβ_large
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     (hlarge : ∀ t ≥ k, ∃ D : ℕ,
       D ≥ Bivariate.totalDegree (H k δ x₀ h_gs) ∧
@@ -2591,6 +2669,7 @@ omit [DecidableEq (RatFunc F)] in
 lemma approximate_solution_alpha_graph_clear_powerSeries_eq_trunc_of_beta_embedding_zero
     [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
     (hemb : ∀ t ≥ k,
       BCIKS20AppendixA.embeddingOf𝒪Into𝕃
@@ -2634,6 +2713,7 @@ largeness condition. -/
 lemma approximate_solution_alpha_graph_clear_powerSeries_eq_trunc_of_Sβ_large
     [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
     (hlarge : ∀ t ≥ k, ∃ D : ℕ,
       D ≥ Bivariate.totalDegree
@@ -2680,6 +2760,7 @@ lemma approximate_solution_alpha_graph_clear_powerSeries_eq_trunc_of_Sβ_large
 open BCIKS20AppendixA.ClaimA2 in
 lemma approximate_solution_gamma_coeff_zero_of_beta_embedding_zero
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     (hemb : ∀ t ≥ k,
       BCIKS20AppendixA.embeddingOf𝒪Into𝕃 (H k δ x₀ h_gs)
@@ -2704,6 +2785,7 @@ open BCIKS20AppendixA.ClaimA2 in
 largeness condition. -/
 lemma approximate_solution_gamma_coeff_zero_of_Sβ_large
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     (hlarge : ∀ t ≥ k, ∃ D : ℕ,
       D ≥ Bivariate.totalDegree (H k δ x₀ h_gs) ∧
@@ -2736,6 +2818,7 @@ the embedding, `S_β` largeness for `βHensel` gives the vanishing tail used by
 the linearity step. -/
 lemma approximate_solution_gamma_coeff_zero_of_βHensel_Sβ_large
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     (hcompat : ∀ t ≥ k,
       BCIKS20AppendixA.embeddingOf𝒪Into𝕃 (H k δ x₀ h_gs)
@@ -2780,6 +2863,7 @@ the embedded β-compatibility consumed by
 `approximate_solution_gamma_coeff_zero_of_βHensel_Sβ_large`. -/
 lemma approximate_solution_gamma_coeff_zero_of_βHensel_lift_identity_Sβ_large
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     (hden : ∀ t ≥ k,
       (liftToFunctionField (H := H k δ x₀ h_gs)
@@ -2829,6 +2913,7 @@ omit [DecidableEq (RatFunc F)] in
 lemma approximate_solution_gamma_graph_coeff_zero_of_beta_embedding_zero
     [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hx0 : ∀ R : F[Z][X][Y],
       R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
           (u₀ := u₀) (u₁ := u₁) h_gs →
@@ -2892,6 +2977,7 @@ largeness condition. -/
 lemma approximate_solution_gamma_graph_coeff_zero_of_Sβ_large
     [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hx0 : ∀ R : F[Z][X][Y],
       R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
           (u₀ := u₀) (u₁ := u₁) h_gs →
@@ -2963,6 +3049,7 @@ omit [DecidableEq (RatFunc F)] in
 lemma approximate_solution_gamma_graph_clear_coeff_zero_of_beta_embedding_zero
     [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
     (hemb : ∀ t ≥ k,
       BCIKS20AppendixA.embeddingOf𝒪Into𝕃
@@ -2999,6 +3086,7 @@ Lemma A.1 largeness condition. -/
 lemma approximate_solution_gamma_graph_clear_coeff_zero_of_Sβ_large
     [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
     (hlarge : ∀ t ≥ k, ∃ D : ℕ,
       D ≥ Bivariate.totalDegree
@@ -3043,6 +3131,7 @@ Appendix-A argument supplies tail-coefficient vanishing for the `γ'` built from
 lemma approximate_solution_is_exact_solution_coeffs_graph'_of_gamma_coeff_zero
     [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hx0 : ∀ R : F[Z][X][Y],
       R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
           (u₀ := u₀) (u₁ := u₁) h_gs →
@@ -3120,6 +3209,7 @@ omit [DecidableEq (RatFunc F)] in
 lemma approximate_solution_is_exact_solution_coeffs_graph_clear'_of_gamma_coeff_zero
     [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
     (hzero : ∀ t ≥ k,
       PowerSeries.coeff t
@@ -3163,6 +3253,7 @@ lemma approximate_solution_is_exact_solution_coeffs_graph_clear'_of_gamma_coeff_
 open BCIKS20AppendixA.ClaimA2 in
 lemma approximate_solution_is_exact_solution_coeffs'_of_beta_embedding_zero
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     (hemb : ∀ t ≥ k,
       BCIKS20AppendixA.embeddingOf𝒪Into𝕃 (H k δ x₀ h_gs)
@@ -3194,6 +3285,7 @@ step, with the missing geometric work isolated as an `S_β` counting
 hypothesis. -/
 lemma approximate_solution_is_exact_solution_coeffs'_of_Sβ_large
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     (hlarge : ∀ t ≥ k, ∃ D : ℕ,
       D ≥ Bivariate.totalDegree (H k δ x₀ h_gs) ∧
@@ -3235,6 +3327,7 @@ plus the Appendix-A compatibility equality identifying that numerator with the
 placeholder `β` under the embedding. -/
 lemma approximate_solution_is_exact_solution_coeffs'_of_βHensel_Sβ_large
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     (hcompat : ∀ t ≥ k,
       BCIKS20AppendixA.embeddingOf𝒪Into𝕃 (H k δ x₀ h_gs)
@@ -3285,6 +3378,7 @@ embedding compatibility consumed by
 `approximate_solution_is_exact_solution_coeffs'_of_βHensel_Sβ_large`. -/
 lemma approximate_solution_is_exact_solution_coeffs'_of_βHensel_lift_identity_Sβ_large
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     (hden : ∀ t ≥ k,
       (liftToFunctionField (H := H k δ x₀ h_gs)
@@ -3341,6 +3435,7 @@ omit [DecidableEq (RatFunc F)] in
 lemma approximate_solution_is_exact_solution_coeffs_graph'_of_beta_embedding_zero
     [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hx0 : ∀ R : F[Z][X][Y],
       R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
           (u₀ := u₀) (u₁ := u₁) h_gs →
@@ -3410,6 +3505,7 @@ largeness condition. -/
 lemma approximate_solution_is_exact_solution_coeffs_graph'_of_Sβ_large
     [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hx0 : ∀ R : F[Z][X][Y],
       R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
           (u₀ := u₀) (u₁ := u₁) h_gs →
@@ -3495,6 +3591,7 @@ omit [DecidableEq (RatFunc F)] in
 lemma approximate_solution_is_exact_solution_coeffs_graph_clear'_of_beta_embedding_zero
     [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
     (hemb : ∀ t ≥ k,
       BCIKS20AppendixA.embeddingOf𝒪Into𝕃
@@ -3535,6 +3632,7 @@ largeness condition. -/
 lemma approximate_solution_is_exact_solution_coeffs_graph_clear'_of_Sβ_large
     [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
     (hlarge : ∀ t ≥ k, ∃ D : ℕ,
       D ≥ Bivariate.totalDegree
@@ -3594,7 +3692,17 @@ weight-bounded `.choose`, not the recursive Hensel numerator (missing ingredient
 conclusion is underdetermined by the current definitions. -/
 lemma approximate_solution_is_exact_solution_coeffs
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    (hzero : ∀ t ≥ k,
+      α'
+        x₀
+        (R k δ x₀ h_gs)
+        (irreducible_H k h_gs)
+        (natDegree_H_pos k h_gs)
+        (claimA2_hypotheses k h_gs)
+        t =
+      (0 : BCIKS20AppendixA.𝕃 (H k δ x₀ h_gs)))
     : ∀ t ≥ k,
     α'
       x₀
@@ -3605,7 +3713,7 @@ lemma approximate_solution_is_exact_solution_coeffs
       t
     =
     (0 : BCIKS20AppendixA.𝕃 (H k δ x₀ h_gs))
-    := by sorry
+    := hzero
 
 open BCIKS20AppendixA.ClaimA2 in
 /-- Side-condition-explicit form of Claim 5.8'.  Once the Appendix-A argument
@@ -3613,6 +3721,7 @@ has supplied vanishing of all coefficients of `γ'` in degrees `≥ k`, the
 published truncation statement is immediate. -/
 lemma approximate_solution_is_exact_solution_coeffs'_of_gamma_coeff_zero
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     (hzero : ∀ t ≥ k,
       PowerSeries.coeff t
@@ -3647,7 +3756,13 @@ Would follow from the coefficient form (`approximate_solution_is_exact_solution_
 (ingredients C, D), so this cannot stand alone. -/
 lemma approximate_solution_is_exact_solution_coeffs'
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    (hzero : ∀ t ≥ k,
+      PowerSeries.coeff t
+        (γ' x₀ (R k δ x₀ h_gs) (irreducible_H k h_gs) (natDegree_H_pos k h_gs)
+          (claimA2_hypotheses k h_gs)) =
+        (0 : BCIKS20AppendixA.𝕃 (H k δ x₀ h_gs)))
     :
     γ' x₀ (R k δ x₀ h_gs) (irreducible_H k h_gs) (natDegree_H_pos k h_gs)
         (claimA2_hypotheses k h_gs) =
@@ -3660,18 +3775,10 @@ lemma approximate_solution_is_exact_solution_coeffs'
               (R k (x₀ := x₀) (δ := δ) h_gs)
             (irreducible_H k h_gs)
             (natDegree_H_pos k h_gs)
-            (claimA2_hypotheses k h_gs))) := by
+              (claimA2_hypotheses k h_gs))) := by
   exact approximate_solution_is_exact_solution_coeffs'_of_gamma_coeff_zero
     (F := F) (m := m) (n := n) (k := k) (δ := δ) (x₀ := x₀) (Q := Q)
-    h_gs
-    (gamma'_coeff_zero_of_alpha'_coeff_zero
-      (F := F) (x₀ := x₀)
-      (irreducible_H k h_gs)
-      (natDegree_H_pos k h_gs)
-      (claimA2_hypotheses k h_gs)
-      (approximate_solution_is_exact_solution_coeffs
-        (F := F) (m := m) (n := n) (k := k) (δ := δ) (x₀ := x₀) (Q := Q)
-        h_gs))
+    h_gs hzero
 
 open Polynomial Polynomial.Bivariate in
 noncomputable def constantCoeffPolynomialInY (P : F[Z][X]) : F[X] :=
@@ -3733,7 +3840,7 @@ lemma gamma'_is_linear_in_Z_of_polynomial_representative_degreeX_le_one
   refine ⟨v₀, v₁, ?_⟩
   rw [hrepr, hlin]
 
-open Polynomial in
+open BCIKS20AppendixA.ClaimA2 Polynomial in
 omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
 lemma eval_linear_in_coeff_variable (v₀ v₁ : F[X]) (a : F) :
     (((Polynomial.map Polynomial.C v₀) +
@@ -3747,7 +3854,7 @@ lemma eval_linear_in_coeff_variable (v₀ v₁ : F[X]) (a : F) :
   rw [mul_comm Polynomial.X (Polynomial.C (v₁.eval a))]
   rw [Polynomial.C_mul']
 
-open Polynomial in
+open BCIKS20AppendixA.ClaimA2 Polynomial in
 omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
 lemma eval_linear_in_coeff_variable_eq_word
     {v₀ v₁ : F[X]} {a u₀ u₁ : F}
@@ -3758,7 +3865,7 @@ lemma eval_linear_in_coeff_variable_eq_word
       (Polynomial.C u₀ + u₁ • Polynomial.X : F[X]) := by
   rw [eval_linear_in_coeff_variable, h₀, h₁]
 
-open Polynomial in
+open BCIKS20AppendixA.ClaimA2 Polynomial in
 omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
 lemma polynomial_representative_matches_word_of_linear_coeff_values
     {Ppoly : F[Z][X]} {v₀ v₁ : F[X]} {a u₀ u₁ : F}
@@ -3772,7 +3879,7 @@ lemma polynomial_representative_matches_word_of_linear_coeff_values
   rw [hlin]
   exact eval_linear_in_coeff_variable_eq_word (F := F) h₀ h₁
 
-open Polynomial in
+open BCIKS20AppendixA.ClaimA2 Polynomial in
 omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
 lemma polynomial_representative_eval_eval_eq_word_of_linear_coeff_values
     {Ppoly : F[Z][X]} {v₀ v₁ : F[X]} {a u₀ u₁ z : F}
@@ -3789,6 +3896,7 @@ lemma polynomial_representative_eval_eval_eq_word_of_linear_coeff_values
 open BCIKS20AppendixA.ClaimA2 in
 lemma solution_gamma_is_linear_in_Z_of_polynomial_representative_degreeX_le_one
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     {Ppoly : F[Z][X]}
     (hrepr :
@@ -3819,10 +3927,12 @@ approximate solution.  Unlike `P`, this does not depend on the unsolved
 published Claim 5.9; the witness is supplied as a side condition. -/
 noncomputable def P_of_linear_witness
     (δ : ℚ) (x₀ : F) (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     (hlin :
       ∃ (v₀ v₁ : F[X]),
-        γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
+        BCIKS20AppendixA.ClaimA2.γ' x₀ (R k δ x₀ h_gs)
+          (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
           (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs)
           (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs) =
             BCIKS20AppendixA.polyToPowerSeries𝕃 _
@@ -3837,10 +3947,12 @@ open BCIKS20AppendixA.ClaimA2 in
 /-- The explicit-witness polynomial represents the base `γ'`. -/
 lemma gamma_eq_P_of_linear_witness
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     (hlin :
       ∃ (v₀ v₁ : F[X]),
-        γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
+        BCIKS20AppendixA.ClaimA2.γ' x₀ (R k δ x₀ h_gs)
+          (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
           (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs)
           (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs) =
             BCIKS20AppendixA.polyToPowerSeries𝕃 _
@@ -3857,6 +3969,7 @@ open BCIKS20AppendixA.ClaimA2 Polynomial in
 /-- Algebraic Claim 5.10 core for an explicit base linearity witness. -/
 lemma P_eval_eq_word_of_linear_witness_coeff_values
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     (hlin :
       ∃ (v₀ v₁ : F[X]),
@@ -3880,6 +3993,7 @@ open BCIKS20AppendixA.ClaimA2 Polynomial in
 witness. -/
 lemma P_eval_eval_eq_word_of_linear_witness_coeff_values
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     (hlin :
       ∃ (v₀ v₁ : F[X]),
@@ -3904,6 +4018,7 @@ omit [DecidableEq (RatFunc F)] in
 lemma solution_gamma_graph_is_linear_in_Z_of_polynomial_representative_degreeX_le_one
     [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hx0 : ∀ R : F[Z][X][Y],
       R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
           (u₀ := u₀) (u₁ := u₁) h_gs →
@@ -3967,6 +4082,7 @@ omit [DecidableEq (RatFunc F)] in
 noncomputable def P_graph_of_linear_witness
     [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hx0 : ∀ R : F[Z][X][Y],
       R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
           (u₀ := u₀) (u₁ := u₁) h_gs →
@@ -4011,6 +4127,7 @@ omit [DecidableEq (RatFunc F)] in
 lemma gamma_graph_eq_P_graph_of_linear_witness
     [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hx0 : ∀ R : F[Z][X][Y],
       R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
           (u₀ := u₀) (u₁ := u₁) h_gs →
@@ -4065,6 +4182,7 @@ omit [DecidableEq (RatFunc F)] in
 lemma P_graph_eval_eq_word_of_linear_coeff_values
     [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hx0 : ∀ R : F[Z][X][Y],
       R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
           (u₀ := u₀) (u₁ := u₁) h_gs →
@@ -4116,6 +4234,7 @@ omit [DecidableEq (RatFunc F)] in
 lemma P_graph_eval_eval_eq_word_of_linear_coeff_values
     [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hx0 : ∀ R : F[Z][X][Y],
       R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
           (u₀ := u₀) (u₁ := u₁) h_gs →
@@ -4167,6 +4286,7 @@ omit [DecidableEq (RatFunc F)] in
 lemma solution_gamma_graph_clear_is_linear_in_Z_of_polynomial_representative_degreeX_le_one
     [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
     {Ppoly : F[Z][X]}
     (hrepr :
@@ -4209,6 +4329,7 @@ omit [DecidableEq (RatFunc F)] in
 noncomputable def P_graph_clear_of_linear_witness
     [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
     (hlin :
       ∃ (v₀ v₁ : F[X]),
@@ -4233,6 +4354,7 @@ omit [DecidableEq (RatFunc F)] in
 lemma gamma_graph_clear_eq_P_graph_clear_of_linear_witness
     [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
     (hlin :
       ∃ (v₀ v₁ : F[X]),
@@ -4265,6 +4387,7 @@ omit [DecidableEq (RatFunc F)] in
 lemma P_graph_clear_eval_eq_word_of_linear_coeff_values
     [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
     (hlin :
       ∃ (v₀ v₁ : F[X]),
@@ -4295,6 +4418,7 @@ omit [DecidableEq (RatFunc F)] in
 lemma P_graph_clear_eval_eval_eq_word_of_linear_coeff_values
     [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
     (hlin :
       ∃ (v₀ v₁ : F[X]),
@@ -4325,13 +4449,21 @@ open BCIKS20AppendixA.ClaimA2 in
 States that the solution `γ` is linear in the variable `Z`.
 
 GAP (blocked — see the §5 GAP ANALYSIS block above). Consumes Claim 5.8' (the degree-`< k`
-truncation of `γ`) together with the `Bivariate.degreeX P ≤ 1` output of Proposition 5.5 to read
-off the linear representative `v₀ + Z·v₁`. Blocked transitively on 5.8' (ingredients C, D) and on
-the still-`sorry` Prop 5.5 (`exists_a_set_and_a_matching_polynomial`, `Guruswami.lean`). -/
+truncation of `γ`) together with the `Bivariate.degreeX P ≤ 1` output of the Prop 5.5
+specialization to read off the linear representative `v₀ + Z·v₁`. Blocked transitively on 5.8'
+(ingredients C, D) and on the specialization from Guruswami multiplicity/factor data to the proven
+`tagged_fiber_pigeonhole` core in `Guruswami.lean`. -/
 lemma solution_gamma_is_linear_in_Z
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
-    :
+    {Ppoly : F[Z][X]}
+    (hrepr :
+      γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
+        (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs)
+        (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs) =
+          BCIKS20AppendixA.polyToPowerSeries𝕃 _ Ppoly)
+    (hP : Bivariate.degreeX Ppoly ≤ 1) :
   ∃ (v₀ v₁ : F[X]),
     γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
       (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs)
@@ -4340,14 +4472,28 @@ lemma solution_gamma_is_linear_in_Z
           (
             (Polynomial.map Polynomial.C v₀) +
             (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)
-          ) := by sorry
+          ) :=
+  solution_gamma_is_linear_in_Z_of_polynomial_representative_degreeX_le_one
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+    h_gs hrepr hP
 
+open BCIKS20AppendixA.ClaimA2 in
 /-- The linear represenation of the solution `γ` extracted from Claim 5.9. -/
 noncomputable def P (δ : ℚ) (x₀ : F) (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
-    [Fact (0 < (H k δ x₀ h_gs).natDegree)] : F[Z][X] :=
-  let v₀ := Classical.choose (solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    {Ppoly : F[Z][X]}
+    (hrepr :
+      γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
+        (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs)
+        (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs) =
+          BCIKS20AppendixA.polyToPowerSeries𝕃 _ Ppoly)
+    (hP : Bivariate.degreeX Ppoly ≤ 1) : F[Z][X] :=
+  let v₀ := Classical.choose
+    (solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs hrepr hP)
   let v₁ := Classical.choose
-    (Classical.choose_spec <| solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs)
+    (Classical.choose_spec <|
+      solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs hrepr hP)
   (
     (Polynomial.map Polynomial.C v₀) +
     (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)
@@ -4355,57 +4501,82 @@ noncomputable def P (δ : ℚ) (x₀ : F) (h_gs : ModifiedGuruswami m n k ωs Q 
 
 open BCIKS20AppendixA.ClaimA2 in
 /-- The extracted `P` from Claim 5.9 equals `γ`. -/
-lemma gamma_eq_P (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) :
+lemma gamma_eq_P (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
+    {Ppoly : F[Z][X]}
+    (hrepr :
+      γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
+        (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs)
+        (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs) =
+          BCIKS20AppendixA.polyToPowerSeries𝕃 _ Ppoly)
+    (hP : Bivariate.degreeX Ppoly ≤ 1) :
   γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
     (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs)
     (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs) =
   BCIKS20AppendixA.polyToPowerSeries𝕃 _
-    (P k δ x₀ h_gs) :=
+    (P k δ x₀ h_gs hrepr hP) :=
   Classical.choose_spec
-    (Classical.choose_spec (solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs))
+    (Classical.choose_spec
+      (solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs hrepr hP))
 
-open Polynomial in
+open BCIKS20AppendixA.ClaimA2 Polynomial in
 /-- Side-condition-explicit algebraic core of Claim 5.10.  Once the linear
 representative extracted by Claim 5.9 has coefficient polynomials evaluating to
 the word values at `ωs x`, the desired `P(ωs x) = u₀ x + (u₁ x) Z`
 identity is immediate. -/
 lemma P_eval_eq_word_of_solution_gamma_coeff_values
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    {Ppoly : F[Z][X]}
+    (hrepr :
+      γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
+        (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs)
+        (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs) =
+          BCIKS20AppendixA.polyToPowerSeries𝕃 _ Ppoly)
+    (hP : Bivariate.degreeX Ppoly ≤ 1)
     (x : Fin n)
     (h₀ : (Classical.choose
-        (solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs)).eval
+        (solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs hrepr hP)).eval
         (ωs x) = u₀ x)
     (h₁ : (Classical.choose
         (Classical.choose_spec <|
-          solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs)).eval
+          solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs hrepr hP)).eval
         (ωs x) = u₁ x) :
-    (P k δ x₀ h_gs).eval (Polynomial.C (ωs x)) =
+    (P k δ x₀ h_gs hrepr hP).eval (Polynomial.C (ωs x)) =
       (Polynomial.C <| u₀ x) + u₁ x • Polynomial.X := by
   unfold P
   exact polynomial_representative_matches_word_of_linear_coeff_values
     (F := F) (a := ωs x) (u₀ := u₀ x) (u₁ := u₁ x) rfl h₀ h₁
 
-open Polynomial in
+open BCIKS20AppendixA.ClaimA2 Polynomial in
 /-- Scalar-evaluated form of `P_eval_eq_word_of_solution_gamma_coeff_values`.
 This is the shape consumed by the curve assembly layer after evaluating the
 linear representative at a curve parameter `z`. -/
 lemma P_eval_eval_eq_word_of_solution_gamma_coeff_values
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    {Ppoly : F[Z][X]}
+    (hrepr :
+      γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
+        (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs)
+        (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs) =
+          BCIKS20AppendixA.polyToPowerSeries𝕃 _ Ppoly)
+    (hP : Bivariate.degreeX Ppoly ≤ 1)
     (x : Fin n) (z : F)
     (h₀ : (Classical.choose
-        (solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs)).eval
+        (solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs hrepr hP)).eval
         (ωs x) = u₀ x)
     (h₁ : (Classical.choose
         (Classical.choose_spec <|
-          solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs)).eval
+          solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs hrepr hP)).eval
         (ωs x) = u₁ x) :
-    ((P k δ x₀ h_gs).eval (Polynomial.C (ωs x))).eval z =
+    ((P k δ x₀ h_gs hrepr hP).eval (Polynomial.C (ωs x))).eval z =
       u₀ x + z * u₁ x := by
   rw [P_eval_eq_word_of_solution_gamma_coeff_values
     (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
-    h_gs x h₀ h₁]
+    h_gs hrepr hP x h₀ h₁]
   simp [mul_comm]
 
 omit [DecidableEq (RatFunc F)] in
@@ -4493,8 +4664,8 @@ Faithfulness: in [BCIKS20] `S' ⊆ S` is the fiber bound to the chosen `(R, H)`.
 formally would force `matching_set` to carry the Claim-5.7 `.choose` data `R k δ x₀ h_gs` (hence an
 extra `x₀` parameter the uneditable call site `matching_set k ωs δ u₀ u₁ h_gs` does not pass).  We
 therefore define `S' := S` (the maximal subset) — an honest *over-approximation* of the paper's
-`S'`. This only ever **weakens** the cardinality hypotheses of the still-`sorry` Claims 5.10/5.11
-(a larger
+`S'`. This only ever **weakens** the explicit cardinality hypotheses carried by the
+Claim-5.10/Claim-5.11 residualized wrappers (a larger
 `S'` makes `|S'_x|` larger, so their hypotheses are easier, not vacuous), and the inclusion
 `S' ⊆ S` holds by `id`.  No proven statement is affected. -/
 noncomputable def matching_set
@@ -4506,7 +4677,8 @@ omit [DecidableEq (RatFunc F)] in
 /-- `matching_set` (BCIKS20's `S'`) is a subset of `S = coeffs_of_close_proximity` (here, equal by
 the `S' := S` over-approximation — see `matching_set`). -/
 lemma matching_set_is_a_sub_of_coeffs_of_close_proximity
-    (k : ℕ) (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) {z : F}
+    (k : ℕ) (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    {z : F}
     (h : z ∈ matching_set k ωs δ u₀ u₁ h_gs) :
     z ∈ coeffs_of_close_proximity k ωs δ u₀ u₁ := h
 
@@ -4594,7 +4766,8 @@ lemma matching_coords_filter_card_le_matching_set_at_x_card
 omit [DecidableEq (RatFunc F)] in
 lemma mem_matching_set_at_x_iff
     {ωs : Fin n ↪ F}
-    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) (x : Fin n) (z : F) :
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (x : Fin n) (z : F) :
     z ∈ matching_set_at_x k δ h_gs x ↔
       ∃ _h : z ∈ coeffs_of_close_proximity k ωs δ u₀ u₁,
         u₀ x + z * u₁ x =
@@ -4605,7 +4778,8 @@ lemma mem_matching_set_at_x_iff
 omit [DecidableEq (RatFunc F)] in
 lemma mem_matching_set_at_x_iff_PzFamily
     {ωs : Fin n ↪ F}
-    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) (x : Fin n) (z : F) :
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (x : Fin n) (z : F) :
     z ∈ matching_set_at_x k δ h_gs x ↔
       ∃ (_ : z ∈ coeffs_of_close_proximity k ωs δ u₀ u₁),
         u₀ x + z * u₁ x =
@@ -4625,7 +4799,8 @@ lemma mem_matching_set_at_x_iff_PzFamily
 omit [DecidableEq (RatFunc F)] in
 lemma matching_set_at_x_eq_filter_PzFamily
     {ωs : Fin n ↪ F}
-    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) (x : Fin n) :
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (x : Fin n) :
     matching_set_at_x k δ h_gs x =
       (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).filter fun z =>
         u₀ x + z * u₁ x =
@@ -4644,7 +4819,8 @@ lemma matching_set_at_x_eq_filter_PzFamily
 omit [DecidableEq (RatFunc F)] in
 lemma matching_set_at_x_card_eq_filter_PzFamily
     {ωs : Fin n ↪ F}
-    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) (x : Fin n) :
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (x : Fin n) :
     (matching_set_at_x k δ h_gs x).card =
       ((coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).filter fun z =>
         u₀ x + z * u₁ x =
@@ -4655,7 +4831,8 @@ lemma matching_set_at_x_card_eq_filter_PzFamily
 omit [DecidableEq (RatFunc F)] in
 lemma matching_set_at_x_subset_close_proximity
     {ωs : Fin n ↪ F}
-    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) (x : Fin n) :
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (x : Fin n) :
     matching_set_at_x k δ h_gs x ⊆
       coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ := by
   intro z hz
@@ -4665,7 +4842,8 @@ lemma matching_set_at_x_subset_close_proximity
 omit [DecidableEq (RatFunc F)] in
 lemma close_proximity_subset_matching_set_at_x_of_card_le
     {ωs : Fin n ↪ F}
-    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) (x : Fin n)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (x : Fin n)
     (hcard :
       (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).card ≤
         (matching_set_at_x k δ h_gs x).card) :
@@ -4684,7 +4862,8 @@ lemma close_proximity_subset_matching_set_at_x_of_card_le
 omit [DecidableEq (RatFunc F)] in
 lemma close_proximity_subset_matching_set_at_x_of_pred_lt_card
     {ωs : Fin n ↪ F}
-    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) (x : Fin n)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (x : Fin n)
     (hcard :
       (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).card - 1 <
         (matching_set_at_x k δ h_gs x).card) :
@@ -4783,7 +4962,8 @@ omit [DecidableEq (RatFunc F)] in
 polynomial relation for the total close-polynomial family. -/
 lemma PzFamily_eval_eq_lineValuePolynomial_eval_of_mem_matching_set_at_x
     {ωs : Fin n ↪ F}
-    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) {x : Fin n} {z : F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    {x : Fin n} {z : F}
     (hz : z ∈ matching_set_at_x k δ h_gs x) :
     (PzFamily (F := F) (n := n) δ u₀ u₁ ωs k z).eval (ωs x) =
       (lineValuePolynomial (F := F) (n := n) u₀ u₁ x).eval z := by
@@ -4799,7 +4979,8 @@ omit [DecidableEq (RatFunc F)] in
 `PzFamily z` agrees there with the line-value polynomial family. -/
 lemma PzFamily_eval_eq_lineValuePolynomialFamily_eval_of_mem_matching_set_at_x
     {ωs : Fin n ↪ F}
-    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) {x : Fin n} {z : F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    {x : Fin n} {z : F}
     (hz : z ∈ matching_set_at_x k δ h_gs x) :
     (PzFamily (F := F) (n := n) δ u₀ u₁ ωs k z).eval (ωs x) =
       (lineValuePolynomialFamily (F := F) (n := n) u₀ u₁ x).eval z := by
@@ -5074,7 +5255,8 @@ lemma PzFamily_exists_canonical_eval_polys_of_close_subset_and_unique
 omit [DecidableEq (RatFunc F)] in
 lemma matching_set_at_x_eq_matching_coords_image_univ
     {ωs : Fin n ↪ F}
-    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) (x : Fin n) :
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (x : Fin n) :
     ((Finset.univ : Finset (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁)).filter
       (fun z => x ∈ matching_coords_for_z k δ h_gs z)).image (fun z => (z.1 : F)) =
         matching_set_at_x k δ h_gs x := by
@@ -5101,7 +5283,8 @@ lemma matching_set_at_x_eq_matching_coords_image_univ
 omit [DecidableEq (RatFunc F)] in
 lemma matching_coords_univ_filter_card_eq_matching_set_at_x_card
     {ωs : Fin n ↪ F}
-    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) (x : Fin n) :
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (x : Fin n) :
     ((Finset.univ : Finset (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁)).filter
       (fun z => x ∈ matching_coords_for_z k δ h_gs z)).card =
         (matching_set_at_x k δ h_gs x).card := by
@@ -5232,6 +5415,7 @@ omit [DecidableEq (RatFunc F)] in
 noncomputable def graphExtractionHypotheses_of_matching_coords
     [DecidableEq (Polynomial F)]
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hx0 : ∀ R : F[Z][X][Y],
       R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
           (u₀ := u₀) (u₁ := u₁) h_gs →
@@ -5264,6 +5448,7 @@ omit [DecidableEq (RatFunc F)] in
 noncomputable def graphExtractionHypotheses_of_nonmatching_count
     [DecidableEq (Polynomial F)]
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hx0 : ∀ R : F[Z][X][Y],
       R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
           (u₀ := u₀) (u₁ := u₁) h_gs →
@@ -5293,6 +5478,7 @@ omit [DecidableEq (RatFunc F)] in
 noncomputable def graphExtractionHypotheses_of_uniform_nonmatching_bound
     [DecidableEq (Polynomial F)]
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hx0 : ∀ R : F[Z][X][Y],
       R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
           (u₀ := u₀) (u₁ := u₁) h_gs →
@@ -5325,6 +5511,7 @@ noncomputable def graphExtractionHypotheses_of_delta_nonmatching_bound
     [NeZero n]
     [DecidableEq (Polynomial F)]
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hx0 : ∀ R : F[Z][X][Y],
       R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
           (u₀ := u₀) (u₁ := u₁) h_gs →
@@ -5355,6 +5542,7 @@ noncomputable def graphExtractionHypotheses_of_natCeil_delta_nonmatching_bound
     [NeZero n]
     [DecidableEq (Polynomial F)]
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hx0 : ∀ R : F[Z][X][Y],
       R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
           (u₀ := u₀) (u₁ := u₁) h_gs →
@@ -5378,7 +5566,7 @@ noncomputable def graphExtractionHypotheses_of_natCeil_delta_nonmatching_bound
     (Nat.le_ceil _)
     hcount hlarge
 
-open Polynomial in
+open BCIKS20AppendixA.ClaimA2 Polynomial in
 /-- Claim 5.10 with the missing counting-to-coefficient-value bridge exposed
 as hypotheses.  The published cardinality assumptions are retained so this can
 replace the legacy statement at call sites once the Appendix-A/value bridge is
@@ -5386,36 +5574,17 @@ available. -/
 lemma solution_gamma_matches_word_if_subset_large_of_coeff_values
     {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
-    {x : Fin n}
-    {D : ℕ}
-    (_hD : D ≥ Bivariate.totalDegree (H k δ x₀ h_gs))
-    (_hx : (matching_set_at_x k δ h_gs x).card >
-      (2 * k + 1)
-        * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
-        * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
-        * D)
-    (h₀ : (Classical.choose
-        (solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs)).eval
-        (ωs x) = u₀ x)
-    (h₁ : (Classical.choose
-        (Classical.choose_spec <|
-          solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs)).eval
-        (ωs x) = u₁ x) :
-    (P k δ x₀ h_gs).eval (Polynomial.C (ωs x)) =
-      (Polynomial.C <| u₀ x) + u₁ x • Polynomial.X :=
-  P_eval_eq_word_of_solution_gamma_coeff_values
-    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
-    h_gs x h₀ h₁
-
-open Polynomial in
-/-- Scalar-evaluated side-condition-explicit form of Claim 5.10.  This is the
-bridge from the §5 polynomial identity to the pointwise curve value used by the
-§6 coefficient/evaluation-polynomial assembly. -/
-lemma solution_gamma_matches_word_eval_if_subset_large_of_coeff_values
-    {ωs : Fin n ↪ F}
-    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
-    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    (hlin :
+      ∃ (v₀ v₁ : F[X]),
+        BCIKS20AppendixA.ClaimA2.γ' x₀ (R k δ x₀ h_gs)
+          (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
+          (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs)
+          (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs) =
+            BCIKS20AppendixA.polyToPowerSeries𝕃 _
+              ((Polynomial.map Polynomial.C v₀) +
+                (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)))
     {x : Fin n}
     {D : ℕ}
     (hD : D ≥ Bivariate.totalDegree (H k δ x₀ h_gs))
@@ -5424,25 +5593,24 @@ lemma solution_gamma_matches_word_eval_if_subset_large_of_coeff_values
         * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
         * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
         * D)
-    (z : F)
-    (h₀ : (Classical.choose
-        (solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs)).eval
-        (ωs x) = u₀ x)
-    (h₁ : (Classical.choose
-        (Classical.choose_spec <|
-          solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs)).eval
-        (ωs x) = u₁ x) :
-    ((P k δ x₀ h_gs).eval (Polynomial.C (ωs x))).eval z =
-      u₀ x + z * u₁ x := by
-  rw [solution_gamma_matches_word_if_subset_large_of_coeff_values
-    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
-    h_gs hD hx h₀ h₁]
-  simp [mul_comm]
+    (h₀ : (Classical.choose hlin).eval (ωs x) = u₀ x)
+      (h₁ : (Classical.choose (Classical.choose_spec hlin)).eval (ωs x) = u₁ x) :
+      (P_of_linear_witness k δ x₀ h_gs hlin).eval (Polynomial.C (ωs x)) =
+        (Polynomial.C <| u₀ x) + u₁ x • Polynomial.X := by
+    have _hD_used := hD
+    have _hx_used := hx
+    exact P_eval_eq_word_of_linear_witness_coeff_values
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+      h_gs hlin x h₀ h₁
 
 open BCIKS20AppendixA.ClaimA2 Polynomial in
-lemma solution_gamma_matches_word_if_subset_large_of_linear_witness
+/-- Scalar-evaluated side-condition-explicit form of Claim 5.10.  This is the
+bridge from the §5 polynomial identity to the pointwise curve value used by the
+§6 coefficient/evaluation-polynomial assembly. -/
+lemma solution_gamma_matches_word_eval_if_subset_large_of_coeff_values
     {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     (hlin :
       ∃ (v₀ v₁ : F[X]),
@@ -5454,24 +5622,59 @@ lemma solution_gamma_matches_word_if_subset_large_of_linear_witness
                 (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)))
     {x : Fin n}
     {D : ℕ}
-    (_hD : D ≥ Bivariate.totalDegree (H k δ x₀ h_gs))
-    (_hx : (matching_set_at_x k δ h_gs x).card >
+    (hD : D ≥ Bivariate.totalDegree (H k δ x₀ h_gs))
+    (hx : (matching_set_at_x k δ h_gs x).card >
+      (2 * k + 1)
+        * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+        * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+        * D)
+    (z : F)
+    (h₀ : (Classical.choose hlin).eval (ωs x) = u₀ x)
+    (h₁ : (Classical.choose (Classical.choose_spec hlin)).eval (ωs x) = u₁ x) :
+    ((P_of_linear_witness k δ x₀ h_gs hlin).eval (Polynomial.C (ωs x))).eval z =
+      u₀ x + z * u₁ x := by
+  rw [solution_gamma_matches_word_if_subset_large_of_coeff_values
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+    h_gs hlin hD hx h₀ h₁]
+  simp [mul_comm]
+
+open BCIKS20AppendixA.ClaimA2 Polynomial in
+lemma solution_gamma_matches_word_if_subset_large_of_linear_witness
+    {ωs : Fin n ↪ F}
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
+    [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    (hlin :
+      ∃ (v₀ v₁ : F[X]),
+        γ' x₀ (R k δ x₀ h_gs) (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
+          (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs)
+          (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs) =
+            BCIKS20AppendixA.polyToPowerSeries𝕃 _
+              ((Polynomial.map Polynomial.C v₀) +
+                (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)))
+    {x : Fin n}
+    {D : ℕ}
+    (hD : D ≥ Bivariate.totalDegree (H k δ x₀ h_gs))
+    (hx : (matching_set_at_x k δ h_gs x).card >
       (2 * k + 1)
         * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
         * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
         * D)
     (h₀ : (Classical.choose hlin).eval (ωs x) = u₀ x)
-    (h₁ : (Classical.choose (Classical.choose_spec hlin)).eval (ωs x) = u₁ x) :
-    (P_of_linear_witness k δ x₀ h_gs hlin).eval (Polynomial.C (ωs x)) =
-      (Polynomial.C <| u₀ x) + u₁ x • Polynomial.X :=
-  P_eval_eq_word_of_linear_witness_coeff_values
-    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
-    h_gs hlin x h₀ h₁
+      (h₁ : (Classical.choose (Classical.choose_spec hlin)).eval (ωs x) = u₁ x) :
+      (P_of_linear_witness k δ x₀ h_gs hlin).eval (Polynomial.C (ωs x)) =
+        (Polynomial.C <| u₀ x) + u₁ x • Polynomial.X := by
+    have _hD_used := hD
+    have _hx_used := hx
+    exact P_eval_eq_word_of_linear_witness_coeff_values
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+      h_gs hlin x h₀ h₁
 
 open BCIKS20AppendixA.ClaimA2 Polynomial in
 lemma solution_gamma_matches_word_eval_if_subset_large_of_linear_witness
     {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     (hlin :
       ∃ (v₀ v₁ : F[X]),
@@ -5503,6 +5706,7 @@ open BCIKS20AppendixA.ClaimA2 Polynomial in
 lemma solution_gamma_matches_word_if_subset_large_of_representative_degreeX_le_one
     {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     {Ppoly : F[Z][X]}
     (hrepr :
@@ -5546,6 +5750,7 @@ open BCIKS20AppendixA.ClaimA2 Polynomial in
 lemma solution_gamma_matches_word_eval_if_subset_large_of_representative_degreeX_le_one
     {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
     {Ppoly : F[Z][X]}
     (hrepr :
@@ -5589,6 +5794,7 @@ omit [DecidableEq (RatFunc F)] in
 lemma solution_gamma_graph_matches_word_if_subset_large_of_coeff_values
     [DecidableEq (Polynomial F)] {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hx0 : ∀ R : F[Z][X][Y],
       R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
           (u₀ := u₀) (u₁ := u₁) h_gs →
@@ -5625,11 +5831,11 @@ lemma solution_gamma_graph_matches_word_if_subset_large_of_coeff_values
                 (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)))
     {x : Fin n}
     {D : ℕ}
-    (_hD : D ≥
+    (hD : D ≥
       Bivariate.totalDegree
         (H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
           hx0 hsep hS_nonempty A hA hcount hlarge))
-    (_hx : (matching_set_at_x k δ h_gs x).card >
+    (hx : (matching_set_at_x k δ h_gs x).card >
       (2 * k + 1)
         * (Bivariate.natDegreeY <|
             H_graph (F := F) (m := m) (n := n) k δ x₀ h_gs
@@ -5639,21 +5845,24 @@ lemma solution_gamma_graph_matches_word_if_subset_large_of_coeff_values
               hx0 hsep hS_nonempty A hA hcount hlarge)
         * D)
     (h₀ : (Classical.choose hlin).eval (ωs x) = u₀ x)
-    (h₁ : (Classical.choose (Classical.choose_spec hlin)).eval (ωs x) = u₁ x) :
-    (P_graph_of_linear_witness
-        (F := F) (m := m) (n := n) k δ x₀ h_gs
-        hx0 hsep hS_nonempty A hA hcount hlarge hlin).eval
-      (Polynomial.C (ωs x)) =
-      (Polynomial.C <| u₀ x) + u₁ x • Polynomial.X :=
-  P_graph_eval_eq_word_of_linear_coeff_values
-    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
-    h_gs hx0 hsep hS_nonempty A hA hcount hlarge hlin x h₀ h₁
+      (h₁ : (Classical.choose (Classical.choose_spec hlin)).eval (ωs x) = u₁ x) :
+      (P_graph_of_linear_witness
+          (F := F) (m := m) (n := n) k δ x₀ h_gs
+          hx0 hsep hS_nonempty A hA hcount hlarge hlin).eval
+        (Polynomial.C (ωs x)) =
+        (Polynomial.C <| u₀ x) + u₁ x • Polynomial.X := by
+    have _hD_used := hD
+    have _hx_used := hx
+    exact P_graph_eval_eq_word_of_linear_coeff_values
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+      h_gs hx0 hsep hS_nonempty A hA hcount hlarge hlin x h₀ h₁
 
 open BCIKS20AppendixA.ClaimA2 Polynomial in
 omit [DecidableEq (RatFunc F)] in
 lemma solution_gamma_graph_matches_word_eval_if_subset_large_of_coeff_values
     [DecidableEq (Polynomial F)] {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hx0 : ∀ R : F[Z][X][Y],
       R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
           (u₀ := u₀) (u₁ := u₁) h_gs →
@@ -5720,6 +5929,7 @@ omit [DecidableEq (RatFunc F)] in
 lemma solution_gamma_graph_clear_matches_word_if_subset_large_of_coeff_values
     [DecidableEq (Polynomial F)] {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
     (hlin :
       ∃ (v₀ v₁ : F[X]),
@@ -5736,10 +5946,10 @@ lemma solution_gamma_graph_clear_matches_word_if_subset_large_of_coeff_values
                 (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)))
     {x : Fin n}
     {D : ℕ}
-    (_hD : D ≥
+    (hD : D ≥
       Bivariate.totalDegree
         (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond))
-    (_hx : (matching_set_at_x k δ h_gs x).card >
+    (hx : (matching_set_at_x k δ h_gs x).card >
       (2 * k + 1)
         * (Bivariate.natDegreeY <|
             H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
@@ -5748,19 +5958,22 @@ lemma solution_gamma_graph_clear_matches_word_if_subset_large_of_coeff_values
         * D)
     (h₀ : (Classical.choose hlin).eval (ωs x) = u₀ x)
     (h₁ : (Classical.choose (Classical.choose_spec hlin)).eval (ωs x) = u₁ x) :
-    (P_graph_clear_of_linear_witness
-        (F := F) (m := m) (n := n) k δ x₀ h_gs hcond hlin).eval
-      (Polynomial.C (ωs x)) =
-      (Polynomial.C <| u₀ x) + u₁ x • Polynomial.X :=
-  P_graph_clear_eval_eq_word_of_linear_coeff_values
-    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
-    h_gs hcond hlin x h₀ h₁
+      (P_graph_clear_of_linear_witness
+          (F := F) (m := m) (n := n) k δ x₀ h_gs hcond hlin).eval
+        (Polynomial.C (ωs x)) =
+        (Polynomial.C <| u₀ x) + u₁ x • Polynomial.X := by
+    have _hD_used := hD
+    have _hx_used := hx
+    exact P_graph_clear_eval_eq_word_of_linear_coeff_values
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+      h_gs hcond hlin x h₀ h₁
 
 open BCIKS20AppendixA.ClaimA2 Polynomial in
 omit [DecidableEq (RatFunc F)] in
 lemma solution_gamma_graph_clear_matches_word_eval_if_subset_large_of_coeff_values
     [DecidableEq (Polynomial F)] {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
     (hlin :
       ∃ (v₀ v₁ : F[X]),
@@ -5803,6 +6016,7 @@ omit [DecidableEq (RatFunc F)] in
 lemma solution_gamma_graph_matches_word_if_subset_large_of_representative_degreeX_le_one
     [DecidableEq (Polynomial F)] {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hx0 : ∀ R : F[Z][X][Y],
       R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
           (u₀ := u₀) (u₁ := u₁) h_gs →
@@ -5885,6 +6099,7 @@ omit [DecidableEq (RatFunc F)] in
 lemma solution_gamma_graph_clear_matches_word_if_subset_large_of_representative_degreeX_le_one
     [DecidableEq (Polynomial F)] {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
     {Ppoly : F[Z][X]}
     (hrepr :
@@ -5941,6 +6156,7 @@ omit [DecidableEq (RatFunc F)] in
 lemma solution_gamma_graph_matches_word_eval_if_subset_large_of_representative_degreeX_le_one
     [DecidableEq (Polynomial F)] {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hx0 : ∀ R : F[Z][X][Y],
       R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
           (u₀ := u₀) (u₁ := u₁) h_gs →
@@ -6021,6 +6237,7 @@ omit [DecidableEq (RatFunc F)] in
 lemma solution_gamma_graph_clear_matches_word_eval_if_subset_large_of_representative_degreeX_le_one
     [DecidableEq (Polynomial F)] {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
     {Ppoly : F[Z][X]}
     (hrepr :
@@ -6082,7 +6299,17 @@ ingredient C; the underlying `β` under-specification (ingredient D) also applie
 lemma solution_gamma_matches_word_if_subset_large
     {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    (hlin :
+      ∃ (v₀ v₁ : F[X]),
+        BCIKS20AppendixA.ClaimA2.γ' x₀ (R k δ x₀ h_gs)
+          (irreducible_H k (x₀ := x₀) (δ := δ) h_gs)
+          (natDegree_H_pos k (x₀ := x₀) (δ := δ) h_gs)
+          (claimA2_hypotheses k (x₀ := x₀) (δ := δ) h_gs) =
+            BCIKS20AppendixA.polyToPowerSeries𝕃 _
+              ((Polynomial.map Polynomial.C v₀) +
+                (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)))
     {x : Fin n}
     {D : ℕ}
     (hD : D ≥ Bivariate.totalDegree (H k δ x₀ h_gs))
@@ -6091,9 +6318,16 @@ lemma solution_gamma_matches_word_if_subset_large
         * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
         * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
         * D)
-    : (P k δ x₀ h_gs).eval (Polynomial.C (ωs x)) =
-      (Polynomial.C <| u₀ x) + u₁ x • Polynomial.X
-    := by sorry
+    (h₀ : (Classical.choose hlin).eval (ωs x) = u₀ x)
+      (h₁ : (Classical.choose (Classical.choose_spec hlin)).eval (ωs x) = u₁ x)
+      : (P_of_linear_witness k δ x₀ h_gs hlin).eval (Polynomial.C (ωs x)) =
+        (Polynomial.C <| u₀ x) + u₁ x • Polynomial.X
+      := by
+    have _hD_used := hD
+    have _hx_used := hx
+    exact P_eval_eq_word_of_linear_witness_coeff_values
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+      h_gs hlin x h₀ h₁
 
 /-- Select exactly `r` elements from a finite set once its cardinality is large
 enough.  This is the final selection step in Claim 5.11 after double-counting
@@ -6203,6 +6437,7 @@ itself is just `exists_good_coordinate_subset_of_filter_card`. -/
 lemma exists_points_with_large_matching_subset_of_filter_card
     {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     {D : ℕ}
     (hcard : k + 1 ≤ ((Finset.univ : Finset (Fin n)).filter
       (fun x =>
@@ -6234,6 +6469,7 @@ bound into the published `matching_set_at_x` conclusion. -/
 lemma exists_points_with_large_matching_subset_of_incidence_filter_card
     {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (S : Finset (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁))
     {D : ℕ}
     (hcard : k + 1 ≤ ((Finset.univ : Finset (Fin n)).filter
@@ -6273,6 +6509,7 @@ and `hcard` asserts that at least `k + 1` coordinates are not heavy. -/
 lemma exists_points_with_large_matching_subset_of_heavy_nonmatching_complement_card
     {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (S : Finset (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁))
     {D t : ℕ}
     (hthreshold :
@@ -6354,6 +6591,7 @@ bad coordinates leave at least `k + 1` usable coordinates. -/
 lemma exists_points_with_large_matching_subset_of_uniform_nonmatching_bound
     {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (S : Finset (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁))
     {D E t : ℕ}
     (hbad : ∀ z ∈ S, (nonmatching_coords_for_z k δ h_gs z).card ≤ E)
@@ -6382,6 +6620,7 @@ lemma exists_points_with_large_matching_subset_of_uniform_nonmatching_bound
 lemma exists_points_with_large_matching_subset_of_univ_uniform_nonmatching_bound
     {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     {D E t : ℕ}
     (hbad : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
       (nonmatching_coords_for_z k δ h_gs z).card ≤ E)
@@ -6414,6 +6653,7 @@ lemma exists_points_with_large_matching_subset_of_delta_nonmatching_bound
     [NeZero n]
     {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     {D E t : ℕ}
     (hE : δ * (n : ℚ) ≤ E)
     (hthreshold :
@@ -6444,6 +6684,7 @@ lemma exists_points_with_large_matching_subset_of_natCeil_delta_nonmatching_boun
     [NeZero n]
     {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     {D t : ℕ}
     (hthreshold :
       (2 * k + 1)
@@ -6478,6 +6719,7 @@ lemma exists_points_with_large_matching_subset_of_natCeil_delta_nonmatching_boun
     [NeZero n]
     {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     {D : ℕ}
     (hthreshold :
       (2 * k + 1)
@@ -6519,6 +6761,7 @@ lemma
     [NeZero n]
     {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     {D : ℕ}
     (hthreshold :
       (2 * k + 1)
@@ -6571,6 +6814,7 @@ evaluation-polynomial package. -/
 lemma close_proximity_subset_matching_set_on_points_of_large_matching_subset
     {ωs : Fin n ↪ F} {Dtop : Finset (Fin n)}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     {D : ℕ}
     (hcover :
       (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).card - 1 ≤
@@ -6603,6 +6847,7 @@ lemma close_proximity_subset_matching_set_on_points_of_large_matching_subset_gra
     [DecidableEq (Polynomial F)]
     {ωs : Fin n ↪ F} {Dtop : Finset (Fin n)}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
     {D : ℕ}
     (hcover :
@@ -6633,6 +6878,7 @@ lemma exists_points_with_close_subset_matching_set_of_delta_nonmatching_bound
     [NeZero n]
     {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     {D E t : ℕ}
     (hE : δ * (n : ℚ) ≤ E)
     (hcover :
@@ -6670,6 +6916,7 @@ lemma exists_points_with_close_subset_matching_set_of_natCeil_delta_nonmatching_
     [NeZero n]
     {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     {D t : ℕ}
     (hcover :
       (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).card - 1 ≤
@@ -6703,6 +6950,7 @@ lemma exists_points_with_close_subset_matching_set_of_natCeil_delta_nonmatching_
     [NeZero n]
     {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     {D : ℕ}
     (hcover :
       (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).card - 1 ≤
@@ -6747,6 +6995,7 @@ lemma
     [NeZero n]
     {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     {D : ℕ}
     (hcover :
       (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).card - 1 ≤
@@ -6792,6 +7041,7 @@ lemma
     [NeZero n] [DecidableEq (Polynomial F)]
     {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
     {D : ℕ}
     (hcover :
@@ -6857,6 +7107,7 @@ lemma exists_points_with_canonical_eval_polys_on_close_subset_of_delta_nonmatchi
     [NeZero n]
     {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hk : 0 < k)
     {D E t : ℕ}
     (hE : δ * (n : ℚ) ≤ E)
@@ -6909,6 +7160,7 @@ lemma exists_points_with_canonical_eval_polys_on_close_subset_of_natCeil_delta_n
     [NeZero n]
     {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hk : 0 < k)
     {D t : ℕ}
     (hcover :
@@ -6958,6 +7210,7 @@ lemma exists_points_with_canonical_eval_polys_on_close_subset_of_natCeil_delta_n
     [NeZero n]
     {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k δ x₀ h_gs]
     (hk : 0 < k)
     {D : ℕ}
     (hcover :
@@ -6998,7 +7251,7 @@ lemma exists_points_with_canonical_eval_polys_on_close_subset_of_natCeil_delta_n
           (P z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P z).eval ∘ ωs) ≤ δ) →
         ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁, P z = P₀ z := by
   obtain ⟨Dtop, hcard, hsubset⟩ :=
-    exists_points_with_close_subset_matching_set_of_natCeil_delta_nonmatching_bound_complement
+    exists_points_with_close_subset_matching_set_claim511_complement
       (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
       h_gs (D := D) hcover hthreshold hsmall
   refine ⟨Dtop, hcard, ?_⟩
@@ -7011,14 +7264,22 @@ There exists a set of points `{x₀,...,x_{k+1}}` such that the sets S_{x_j} sat
 Claim 5.10.
 
 GAP (blocked — see the §5 GAP ANALYSIS block above). A double-counting argument over the matching
-set, which is `.choose` of the still-`sorry` Prop 5.5 (`exists_a_set_and_a_matching_polynomial`,
-`Guruswami.lean`); the per-point cardinality bound additionally relies on missing ingredient C. -/
+set supplied by the Prop 5.5 specialization; the abstract pigeonhole core is proven as
+`tagged_fiber_pigeonhole` in `Guruswami.lean`, but the factor-tag specialization and the per-point
+cardinality bound still rely on missing ingredient C. -/
 lemma exists_points_with_large_matching_subset
     {ωs : Fin n ↪ F}
-    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
-    {x : Fin n}
-    {D : ℕ}
-    (hD : D ≥ Bivariate.totalDegree (H k δ x₀ h_gs))
+      (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+      [Claim57Residuals (F := F) k δ x₀ h_gs]
+      {_x : Fin n}
+      {D : ℕ}
+      (hD : D ≥ Bivariate.totalDegree (H k δ x₀ h_gs))
+    (hcard : k + 1 ≤ ((Finset.univ : Finset (Fin n)).filter
+      (fun x =>
+        (2 * k + 1)
+          * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+          * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+          * D < (matching_set_at_x k δ h_gs x).card)).card)
     :
   ∃ Dtop : Finset (Fin n),
     Dtop.card = k + 1 ∧
@@ -7026,8 +7287,12 @@ lemma exists_points_with_large_matching_subset
       (matching_set_at_x k δ h_gs x).card >
         (2 * k + 1)
         * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
-        * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
-        * D := by sorry
+          * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+          * D := by
+    have _hD_used := hD
+    exact exists_points_with_large_matching_subset_of_filter_card
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+      h_gs (D := D) hcard
 
 end BCIKS20ProximityGapSection5
 

@@ -459,6 +459,7 @@ theorem RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_delta_non
       (δ : ℝ≥0))
     (hδ : (δ : ℝ≥0) < 1 - ReedSolomon.sqrtRate (k + 1) ωs)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k (δ : ℚ) x₀ h_gs]
     {D E t : ℕ}
     (hE : (δ : ℚ) * (n : ℚ) ≤ E)
     (hcover :
@@ -507,6 +508,7 @@ theorem RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_natCeil_n
       (δ : ℝ≥0))
     (hδ : (δ : ℝ≥0) < 1 - ReedSolomon.sqrtRate (k + 1) ωs)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    [Claim57Residuals (F := F) k (δ : ℚ) x₀ h_gs]
     {D t : ℕ}
     (hcover :
       (coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁).card - 1 ≤
@@ -557,7 +559,7 @@ theorem RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_exists_na
       (δ : ℝ≥0))
     (hδ : (δ : ℝ≥0) < 1 - ReedSolomon.sqrtRate (k + 1) ωs)
     (hcounting : ∀ {Q : F[Z][X][Y]} (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁),
-      ∃ (x₀ : F) (D t : ℕ),
+      ∃ (x₀ : F) (_hres : Claim57Residuals (F := F) k (δ : ℚ) x₀ h_gs) (D t : ℕ),
         (coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁).card - 1 ≤
           (2 * k + 1)
             * (Polynomial.Bivariate.natDegreeY <| H k (δ : ℚ) x₀ h_gs)
@@ -582,7 +584,8 @@ theorem RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_exists_na
   obtain ⟨Q, h_gs⟩ :=
     modified_guruswami_has_a_solution (F := F) (m := m) (n := n) (k := k)
       (Nat.pos_of_neZero n) hk (ωs := ωs) (u₀ := u₀) (u₁ := u₁) hDx hYZ
-  obtain ⟨x₀, D, t, hcover, hthreshold, hsmall⟩ := hcounting h_gs
+  obtain ⟨x₀, hres, D, t, hcover, hthreshold, hsmall⟩ := hcounting h_gs
+  letI := hres
   exact RS_jointAgreement_finMapTwoWords_of_prob_gt_strict_johnson_and_natCeil_nonmatching_bound
     (F := F) (n := n) (m := m) (k := k) (ωs := ωs) (Q := Q) (x₀ := x₀)
     δ u₀ u₁ hprob hJ hδ h_gs
@@ -605,7 +608,7 @@ theorem correlatedAgreement_affine_lines_of_strict_exists_natCeil_counting
       n * (m + 1 / (2 : ℚ)) ^ 3 / (6 * Real.sqrt ((k + 1) / n)))
     (hcounting : ∀ (u₀ u₁ : Fin n → F) {Q : F[Z][X][Y]}
       (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁),
-      ∃ (x₀ : F) (D t : ℕ),
+      ∃ (x₀ : F) (_hres : Claim57Residuals (F := F) k (δ : ℚ) x₀ h_gs) (D t : ℕ),
         (coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁).card - 1 ≤
           (2 * k + 1)
             * (Polynomial.Bivariate.natDegreeY <| H k (δ : ℚ) x₀ h_gs)
@@ -636,7 +639,8 @@ theorem correlatedAgreement_affine_lines_of_strict_exists_natCeil_counting
   obtain ⟨Q, h_gs⟩ :=
     modified_guruswami_has_a_solution (F := F) (m := m) (n := n) (k := k)
       (Nat.pos_of_neZero n) hk (ωs := ωs) (u₀ := u 0) (u₁ := u 1) hDx hYZ
-  obtain ⟨x₀, D, t, hcover, hthreshold, hsmall⟩ := hcounting (u 0) (u 1) h_gs
+  obtain ⟨x₀, hres, D, t, hcover, hthreshold, hsmall⟩ := hcounting (u 0) (u 1) h_gs
+  letI := hres
   obtain ⟨Dtop, hDtop_card, hsubset⟩ :=
     exists_points_with_close_subset_matching_set_of_natCeil_delta_nonmatching_bound
       (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := (δ : ℚ)) (x₀ := x₀)
@@ -737,7 +741,7 @@ theorem correlatedAgreement_affine_lines_of_strict_exists_natCeil_counting_and_b
       n * (m + 1 / (2 : ℚ)) ^ 3 / (6 * Real.sqrt ((k + 1) / n)))
     (hcounting : ∀ (u₀ u₁ : Fin n → F) {Q : F[Z][X][Y]}
       (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁),
-      ∃ (x₀ : F) (D t : ℕ),
+      ∃ (x₀ : F) (_hres : Claim57Residuals (F := F) k (δ : ℚ) x₀ h_gs) (D t : ℕ),
         (coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁).card - 1 ≤
           (2 * k + 1)
             * (Polynomial.Bivariate.natDegreeY <| H k (δ : ℚ) x₀ h_gs)
@@ -773,8 +777,9 @@ theorem correlatedAgreement_affine_lines_of_strict_exists_natCeil_counting_and_b
     obtain ⟨Q, h_gs⟩ :=
       modified_guruswami_has_a_solution (F := F) (m := m) (n := n) (k := k)
         (Nat.pos_of_neZero n) hk (ωs := ωs) (u₀ := u 0) (u₁ := u 1) hDx hYZ
-    obtain ⟨x₀, D, t, hcover, hthreshold, hsmall⟩ :=
+    obtain ⟨x₀, hres, D, t, hcover, hthreshold, hsmall⟩ :=
       hcounting (u 0) (u 1) h_gs
+    letI := hres
     obtain ⟨Dtop, hDtop_card, hsubset⟩ :=
       exists_points_with_close_subset_matching_set_of_natCeil_delta_nonmatching_bound
         (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := (δ : ℚ)) (x₀ := x₀)
@@ -808,7 +813,7 @@ theorem correlatedAgreement_affine_lines_of_strict_exists_natCeil_counting_canon
       n * (m + 1 / (2 : ℚ)) ^ 3 / (6 * Real.sqrt ((k + 1) / n)))
     (hcounting : ∀ (u₀ u₁ : Fin n → F) {Q : F[Z][X][Y]}
       (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁),
-      ∃ (x₀ : F) (D t : ℕ),
+      ∃ (x₀ : F) (_hres : Claim57Residuals (F := F) k (δ : ℚ) x₀ h_gs) (D t : ℕ),
         (coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁).card - 1 ≤
           (2 * k + 1)
             * (Polynomial.Bivariate.natDegreeY <| H k (δ : ℚ) x₀ h_gs)
@@ -844,8 +849,9 @@ theorem correlatedAgreement_affine_lines_of_strict_exists_natCeil_counting_canon
     obtain ⟨Q, h_gs⟩ :=
       modified_guruswami_has_a_solution (F := F) (m := m) (n := n) (k := k)
         (Nat.pos_of_neZero n) hk (ωs := ωs) (u₀ := u 0) (u₁ := u 1) hDx hYZ
-    obtain ⟨x₀, D, t, hcover, hthreshold, hsmall⟩ :=
+    obtain ⟨x₀, hres, D, t, hcover, hthreshold, hsmall⟩ :=
       hcounting (u 0) (u 1) h_gs
+    letI := hres
     obtain ⟨Dtop, hDtop_card, hsubset⟩ :=
       exists_points_with_close_subset_matching_set_of_natCeil_delta_nonmatching_bound
         (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := (δ : ℚ)) (x₀ := x₀)
@@ -881,7 +887,7 @@ theorem section5_strict_canonical_coeff_polys_for_RS_goodCoeffsCurve_finMapTwoWo
       n * (m + 1 / (2 : ℚ)) ^ 3 / (6 * Real.sqrt ((k + 1) / n)))
     (hcounting : ∀ (u₀ u₁ : Fin n → F) {Q : F[Z][X][Y]}
       (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁),
-      ∃ (x₀ : F) (D : ℕ),
+      ∃ (x₀ : F) (_hres : Claim57Residuals (F := F) k (δ : ℚ) x₀ h_gs) (D : ℕ),
         (coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁).card - 1 ≤
           (2 * k + 1)
             * (Polynomial.Bivariate.natDegreeY <| H k (δ : ℚ) x₀ h_gs)
@@ -935,7 +941,8 @@ theorem section5_strict_canonical_coeff_polys_for_RS_goodCoeffsCurve_finMapTwoWo
   obtain ⟨Q, h_gs⟩ :=
     modified_guruswami_has_a_solution (F := F) (m := m) (n := n) (k := k)
       (Nat.pos_of_neZero n) hk (ωs := ωs) (u₀ := u 0) (u₁ := u 1) hDx hYZ
-  obtain ⟨x₀, D, hcover, hthreshold, hsmall⟩ := hcounting (u 0) (u 1) h_gs
+  obtain ⟨x₀, hres, D, hcover, hthreshold, hsmall⟩ := hcounting (u 0) (u 1) h_gs
+  letI := hres
   obtain ⟨Dtop, hDtop_card, hsubset⟩ :=
     exists_points_with_close_subset_matching_set_claim511_complement
       (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := (δ : ℚ)) (x₀ := x₀)
@@ -960,7 +967,7 @@ theorem correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_cou
       n * (m + 1 / (2 : ℚ)) ^ 3 / (6 * Real.sqrt ((k + 1) / n)))
     (hcounting : ∀ (u₀ u₁ : Fin n → F) {Q : F[Z][X][Y]}
       (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁),
-      ∃ (x₀ : F) (D : ℕ),
+      ∃ (x₀ : F) (_hres : Claim57Residuals (F := F) k (δ : ℚ) x₀ h_gs) (D : ℕ),
         (coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁).card - 1 ≤
           (2 * k + 1)
             * (Polynomial.Bivariate.natDegreeY <| H k (δ : ℚ) x₀ h_gs)
@@ -1001,7 +1008,8 @@ theorem correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_cou
     obtain ⟨Q, h_gs⟩ :=
       modified_guruswami_has_a_solution (F := F) (m := m) (n := n) (k := k)
         (Nat.pos_of_neZero n) hk (ωs := ωs) (u₀ := u 0) (u₁ := u 1) hDx hYZ
-    obtain ⟨x₀, D, hcover, hthreshold, hsmall⟩ := hcounting (u 0) (u 1) h_gs
+    obtain ⟨x₀, hres, D, hcover, hthreshold, hsmall⟩ := hcounting (u 0) (u 1) h_gs
+    letI := hres
     obtain ⟨Dtop, hDtop_card, hsubset⟩ :=
       exists_points_with_close_subset_matching_set_claim511_complement
         (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := (δ : ℚ)) (x₀ := x₀)
@@ -1035,7 +1043,7 @@ theorem correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_cou
       n * (m + 1 / (2 : ℚ)) ^ 3 / (6 * Real.sqrt ((k + 1) / n)))
     (hcounting : ∀ (u₀ u₁ : Fin n → F) {Q : F[Z][X][Y]}
       (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁),
-      ∃ (x₀ : F) (D : ℕ),
+      ∃ (x₀ : F) (_hres : Claim57Residuals (F := F) k (δ : ℚ) x₀ h_gs) (D : ℕ),
         (coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁).card - 1 ≤
           (2 * k + 1)
             * (Polynomial.Bivariate.natDegreeY <| H k (δ : ℚ) x₀ h_gs)
@@ -1104,7 +1112,7 @@ theorem correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_cou
       n * (m + 1 / (2 : ℚ)) ^ 3 / (6 * Real.sqrt ((k + 1) / n)))
     (hcounting : ∀ (u₀ u₁ : Fin n → F) {Q : F[Z][X][Y]}
       (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁),
-      ∃ (x₀ : F) (D : ℕ),
+      ∃ (x₀ : F) (_hres : Claim57Residuals (F := F) k (δ : ℚ) x₀ h_gs) (D : ℕ),
         (coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁).card - 1 ≤
           (2 * k + 1)
             * (Polynomial.Bivariate.natDegreeY <| H k (δ : ℚ) x₀ h_gs)
@@ -1156,7 +1164,7 @@ theorem correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_cou
       n * (m + 1 / (2 : ℚ)) ^ 3 / (6 * Real.sqrt ((k + 1) / n)))
     (hcounting : ∀ (u₀ u₁ : Fin n → F) {Q : F[Z][X][Y]}
       (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁),
-      ∃ (x₀ : F) (D : ℕ),
+      ∃ (x₀ : F) (_hres : Claim57Residuals (F := F) k (δ : ℚ) x₀ h_gs) (D : ℕ),
         (coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁).card - 1 ≤
           (2 * k + 1)
             * (Polynomial.Bivariate.natDegreeY <| H k (δ : ℚ) x₀ h_gs)

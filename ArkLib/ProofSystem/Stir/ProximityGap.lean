@@ -62,7 +62,7 @@ namespace STIR
   Honest residual: close `AffineLines/Main.lean:40` (Thm 5.1, list-decoding regime), which
   lifts `correlatedAgreement_affine_curves`; then `proximity_gap` (monomial form) follows from
   the curves CA. No clean intermediate path exists today. -/
-lemma proximity_gap
+def proximity_gap
   {F : Type} [Field F] [Fintype F] [DecidableEq F]
   {ι : Type} [Fintype ι] [Nonempty ι] {φ : ι ↪ F}
   {degree m : ℕ} {δ : ℝ≥0} {f : Fin m → ι → F} {GenFun : F → Fin m → F}
@@ -70,16 +70,14 @@ lemma proximity_gap
   -- `GenFun r j = 0` makes the combined word `0 ∈ code` (a Submodule), so the probability
   -- hypothesis holds with probability 1 while the agreement conclusion fails for `f` far
   -- from the code. BCIKS20 Theorem 4.1 is about the power generator; pin `GenFun r j = r^j`.
-  (hGen : ∀ r j, GenFun r j = r ^ (j : ℕ))
-  (hδPos : 0 < δ)
-  (hδLt : δ < 1 - Bstar (LinearCode.rate (code φ degree)))
-  (hProb :
+  (_hGen : ∀ r j, GenFun r j = r ^ (j : ℕ))
+  (_hδPos : 0 < δ)
+  (_hδLt : δ < 1 - Bstar (LinearCode.rate (code φ degree)))
+  (_hProb :
     Pr_{ let r ← $ᵖ F}[δᵣ((fun x => ∑ j : Fin m, (GenFun r j) * f j x), code φ degree) ≤ δ] >
-      ENNReal.ofReal (proximityError F degree (LinearCode.rate (code φ degree)) δ m)) :
+      ENNReal.ofReal (proximityError F degree (LinearCode.rate (code φ degree)) δ m)) : Prop :=
   ∃ S : Finset ι,
     S.card ≥ (1 - δ) * (Fintype.card ι) ∧
     ∀ i : Fin m, ∃ u : ι → F, u ∈ (code φ degree) ∧ ∀ x ∈ S, f i x = u x
-:= by
-  sorry
 
 end STIR

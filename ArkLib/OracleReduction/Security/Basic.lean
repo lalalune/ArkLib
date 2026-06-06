@@ -63,6 +63,41 @@ namespace Reduction
 
 section Completeness
 
+/-- A generalized completeness predicate parameterized by an arbitrary honest execution experiment.
+
+This is the right abstraction when the verifier-side challenge process is not the default
+`challengeQueryImpl`, for example when challenges are derived from a cached Fiat-Shamir function or
+from the duplex-sponge oracle used by DSFS. -/
+def completenessFromRun
+    {ιᵣ : Type} {runSpec : OracleSpec ιᵣ} {σᵣ : Type} {Trace : Type}
+    (runInit : ProbComp σᵣ)
+    (runImpl : QueryImpl runSpec (StateT σᵣ ProbComp))
+    -- generalized V's challenge query implementation that handles all oracle queries made during
+      -- the honest execution (run). E.g. it can be lifted `challengeQueryImpl`
+      -- for interactive protocols, or FS-derived/DSFS-derived challenge oracles for NARG
+    (relIn : Set (StmtIn × WitIn))
+    (relOut : Set (StmtOut × WitOut))
+    (run : (stmtIn : StmtIn) → (witIn : WitIn) →
+      OptionT (OracleComp runSpec) ((Trace × StmtOut × WitOut) × StmtOut))
+    (completenessError : ℝ≥0) : Prop :=
+  ∀ stmtIn : StmtIn,
+  ∀ witIn : WitIn,
+  (stmtIn, witIn) ∈ relIn →
+    Pr[fun ⟨⟨_, (prvStmtOut, witOut)⟩, stmtOut⟩ =>
+        ((stmtOut, witOut) ∈ relOut ∧ prvStmtOut = stmtOut) | OptionT.mk do
+          (simulateQ runImpl (run stmtIn witIn).run).run' (← runInit)] ≥ 1 - completenessError
+
+/-- Perfect completeness for an arbitrary honest execution experiment. -/
+def perfectCompletenessFromRun
+    {ιᵣ : Type} {runSpec : OracleSpec ιᵣ} {σᵣ : Type} {Trace : Type}
+    (runInit : ProbComp σᵣ)
+    (runImpl : QueryImpl runSpec (StateT σᵣ ProbComp))
+    (relIn : Set (StmtIn × WitIn))
+    (relOut : Set (StmtOut × WitOut))
+    (run : (stmtIn : StmtIn) → (witIn : WitIn) →
+      OptionT (OracleComp runSpec) ((Trace × StmtOut × WitOut) × StmtOut)) : Prop :=
+  completenessFromRun runInit runImpl relIn relOut run 0
+
 /-- A reduction satisfies **completeness** with regards to:
   - an initialization function `init : ProbComp σ` for some ambient state `σ`,
   - a stateful query implementation `impl` (in terms of `StateT σ ProbComp`)
@@ -83,19 +118,41 @@ def completeness (relIn : Set (StmtIn × WitIn))
     (relOut : Set (StmtOut × WitOut))
     (reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
     (completenessError : ℝ≥0) : Prop :=
-  ∀ stmtIn : StmtIn,
-  ∀ witIn : WitIn,
-  (stmtIn, witIn) ∈ relIn →
-    let pImpl : QueryImpl (oSpec + [pSpec.Challenge]ₒ) (StateT σ ProbComp) :=
-      QueryImpl.addLift impl challengeQueryImpl
-    Pr[fun ⟨⟨_, (prvStmtOut, witOut)⟩, stmtOut⟩ =>
-        ((stmtOut, witOut) ∈ relOut ∧ prvStmtOut = stmtOut) | OptionT.mk do
-          (simulateQ pImpl (reduction.run stmtIn witIn).run).run' (← init)] ≥ 1 - completenessError
+  completenessFromRun init
+    (QueryImpl.addLift impl challengeQueryImpl)
+    relIn relOut reduction.run completenessError
 
 /-- A reduction satisfies **perfect completeness** if it satisfies completeness with error `0`. -/
 def perfectCompleteness (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut × WitOut))
     (reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec) : Prop :=
   completeness init impl relIn relOut reduction 0
+
+/-- `Reduction.completeness` is the specialization of `completenessFromRun` to the standard
+interactive execution with fresh verifier challenges from `challengeQueryImpl`. -/
+@[simp]
+theorem completeness_iff_completenessFromRun
+    (relIn : Set (StmtIn × WitIn))
+    (relOut : Set (StmtOut × WitOut))
+    (reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (completenessError : ℝ≥0) :
+    reduction.completeness init impl relIn relOut completenessError ↔
+      completenessFromRun init
+        (QueryImpl.addLift impl challengeQueryImpl)
+        relIn relOut reduction.run completenessError := by
+  rfl
+
+/-- `Reduction.perfectCompleteness` is the specialization of `perfectCompletenessFromRun` to the
+standard interactive execution with fresh verifier challenges from `challengeQueryImpl`. -/
+@[simp]
+theorem perfectCompleteness_iff_perfectCompletenessFromRun
+    (relIn : Set (StmtIn × WitIn))
+    (relOut : Set (StmtOut × WitOut))
+    (reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec) :
+    reduction.perfectCompleteness init impl relIn relOut ↔
+      perfectCompletenessFromRun init
+        (QueryImpl.addLift impl challengeQueryImpl)
+        relIn relOut reduction.run := by
+  rfl
 
 /-- Type class for completeness for a reduction -/
 class IsComplete (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut × WitOut))
@@ -164,9 +221,9 @@ theorem perfectCompleteness_eq_prob_one :
       Pr[fun ⟨⟨_, (prvStmtOut, witOut)⟩, stmtOut⟩ =>
           ((stmtOut, witOut) ∈ relOut ∧ prvStmtOut = stmtOut)
         | OptionT.mk do (simulateQ pImpl (reduction.run stmtIn witIn)).run' (← init)] = 1 := by
-  simp only [perfectCompleteness, completeness, ENNReal.coe_zero, tsub_zero]
-  exact forall_congr' fun _ => forall_congr' fun _ => imp_congr_right fun _ =>
-    ⟨fun h => le_antisymm probEvent_le_one (ge_iff_le.mp h),
+  simp only [perfectCompleteness, completeness, completenessFromRun, ENNReal.coe_zero, tsub_zero]
+  refine forall_congr' fun _ => forall_congr' fun _ => imp_congr_right fun _ => ?_
+  exact ⟨fun h => le_antisymm probEvent_le_one (ge_iff_le.mp h),
      fun h => ge_of_eq h⟩
 
 -- /-- For a reduction without shared oracles (i.e. `oSpec = []ₒ`), perfect completeness occurs
@@ -485,7 +542,7 @@ section Trivial
 @[simp]
 theorem Reduction.id_perfectCompleteness {rel : Set (StmtIn × WitIn)} :
     (Reduction.id : Reduction oSpec _ _ _ _ _).perfectCompleteness init impl rel rel := by
-  simp only [perfectCompleteness, completeness, ENNReal.coe_zero, tsub_zero]
+  simp only [perfectCompleteness, completeness, completenessFromRun, ENNReal.coe_zero, tsub_zero]
   intro stmtIn witIn hIn
   simp only [Reduction.id_run]
   rw [ge_iff_le, one_le_probEvent_iff, probEvent_eq_one_iff]

@@ -1,0 +1,162 @@
+/-
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
+
+import ArkLib.Data.CodingTheory.ProximityGap.Errors
+import ArkLib.Data.CodingTheory.ListDecodability
+import ArkLib.Data.CodingTheory.ReedSolomon
+import ArkLib.Data.MvPolynomial.SchwartzZippelCounting
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
+
+/-!
+# Bridge lemmas for the list-decoding ↔ correlated-agreement connection (ABF26 §5)
+
+Reusable helper lemmas supporting
+`ArkLib/Data/CodingTheory/Connections/ListDecodingAndCA.lean`.
+
+The four ABF26 §5 theorems (`linear_listSize_to_epsMCA_gcxk25`,
+`rs_epsCA_small_implies_lambda_lt_F_bchks25`, `rs_epsCA_implies_lambda_extended_cs25`,
+`rs_epsCA_separation_bgks20`) bridge the *Grand List-Decoding Challenge* and the *Grand
+MCA Challenge*.  Each cites a substantial external counting/probabilistic argument over a
+*specific* code construction (deep holes, Frobenius/subfield structure, maximal correlated
+agreement domains) whose code-theoretic core is not yet available in-tree.
+
+This file provides:
+
+1. **Trivial-direction error bounds** (`epsCA_le_one`, `epsMCA_le_one`).  Both `ε_ca` and
+   `ε_mca` are suprema of PMF probabilities (or `0`), hence bounded by `1`.  These are
+   genuine, fully-proven facts reused below.
+
+2. **The CS25 (ABF26 T5.3) contradiction arithmetic** (`cs25_qeps_le_E`).  This is the
+   *clean* half of CS25 Theorem 2: given the two numeric hypotheses on `ε := ε_ca.toReal`
+   and the slack `η`, the list-size threshold algebra closes.  The genuinely external half
+   (the deep-hole + Schwartz–Zippel construction relating `ε_ca` of `RS[k]` to the list of
+   `RS[k+1]`, the paper's "Claim 3") is isolated as a named residual hypothesis in the
+   companion `_of_residuals` theorem in `ListDecodingAndCA.lean`.
+
+## References
+
+- [ABF26] Arnon, Boneh, Fenzi. *Open Problems in List Decoding and Correlated Agreement*. 2026.
+- [CS25]  Crites, Stewart. eprint 2025/2046, Theorem 2.
+- [GCXK25] Gao, Cai, Xu, Kan. eprint 2025/870, Theorem 3.
+-/
+
+set_option linter.unusedFintypeInType false
+set_option linter.unusedDecidableInType false
+set_option linter.unusedSectionVars false
+
+namespace CodingTheory.Bridge
+
+open scoped NNReal
+open ProximityGap
+
+section ErrorLeOne
+
+variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
+variable {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
+
+/-- **`ε_ca ≤ 1`.** The correlated-agreement error is a supremum of values each of which is
+either `0` or a PMF probability, hence at most `1`. -/
+theorem epsCA_le_one (C : Set (ι → A)) (δ_fld δ_int : ℝ≥0) :
+    epsCA (F := F) (A := A) C δ_fld δ_int ≤ 1 := by
+  classical
+  unfold epsCA
+  refine iSup_le fun u => ?_
+  by_cases h : Code.jointProximity C (u := u) δ_int
+  · rw [if_pos h]; exact zero_le_one
+  · rw [if_neg h]
+    exact pmf_prob_le_one (α := F) _
+
+/-- **`ε_mca ≤ 1`.** The mutual-correlated-agreement error is a supremum of PMF
+probabilities, hence at most `1`. -/
+theorem epsMCA_le_one (C : Set (ι → A)) (δ : ℝ≥0) :
+    epsMCA (F := F) (A := A) C δ ≤ 1 := by
+  classical
+  unfold epsMCA
+  refine iSup_le fun u => ?_
+  exact pmf_prob_le_one (α := F) _
+
+end ErrorLeOne
+
+section CS25Arithmetic
+
+/-- **CS25 / ABF26 T5.3 contradiction arithmetic.**
+
+Let `s, m, k : ℝ` with `0 < s`, `1 ≤ k`, `1 ≤ m`, and `0 ≤ η < 1`.  Suppose
+`ε` (the real CA error) satisfies the two ABF26 T5.3 numeric hypotheses, rewritten with
+`s = q - n`, `q = |F|`:
+
+- `q·ε ≤ η·s/k`   (from `ε ≤ η·(1/k − n/(k·q)) = η·(q−n)/(k·q)`), and
+- `q·ε ≤ (1 − η)·m`   (from `m ≥ ⌈q·ε/(1−η)⌉ ≥ q·ε/(1−η)`).
+
+Then `q·ε ≤ E` where `E := m·s/(m·k + s)` is CS25's Claim-3 lower bound on the number of
+`λ`-points (divided by `q`).  This is the algebraic heart of the CS25 contradiction:
+combining the two caps via `q·ε·(k/s + 1/m) ≤ η + (1 − η) = 1`. -/
+theorem cs25_qeps_le_E
+    {s m k η qε : ℝ}
+    (hs : 0 < s) (hk : (1 : ℝ) ≤ k) (hm : (1 : ℝ) ≤ m)
+    (_hη0 : 0 ≤ η) (_hη1 : η < 1)
+    (hcap1 : qε ≤ η * s / k)
+    (hcap2 : qε ≤ (1 - η) * m) :
+    qε ≤ m * s / (m * k + s) := by
+  have hmpos : 0 < m := lt_of_lt_of_le one_pos hm
+  have hkpos : 0 < k := lt_of_lt_of_le one_pos hk
+  have hden : 0 < m * k + s := by positivity
+  -- From hcap1: qε ≤ η*s/k  ⇒  k * qε ≤ η * s.
+  have h1 : k * qε ≤ η * s := by
+    have h := mul_le_mul_of_nonneg_left hcap1 (le_of_lt hkpos)
+    have he : k * (η * s / k) = η * s := by field_simp
+    rwa [he] at h
+  -- From hcap2: qε / m ≤ 1 - η  ⇒  qε ≤ (1 - η) * m  (already have).
+  -- Combine: k*qε/s + qε/m ≤ η + (1-η) = 1, i.e. qε*(k*m + s) ≤ m*s.
+  have key : qε * (m * k + s) ≤ m * s := by
+    -- k*qε ≤ η*s  and  qε ≤ (1-η)*m
+    -- multiply first by m, second by s? Use: qε*(m*k+s) = m*(k*qε) + s*qε
+    have hA : m * (k * qε) ≤ m * (η * s) := by
+      exact mul_le_mul_of_nonneg_left h1 (le_of_lt hmpos)
+    have hB : s * qε ≤ s * ((1 - η) * m) := by
+      exact mul_le_mul_of_nonneg_left hcap2 (le_of_lt hs)
+    calc qε * (m * k + s)
+        = m * (k * qε) + s * qε := by ring
+      _ ≤ m * (η * s) + s * ((1 - η) * m) := by linarith [hA, hB]
+      _ = m * s := by ring
+  -- Divide by the positive denominator.
+  rw [le_div_iff₀ hden]
+  linarith [key]
+
+/-- Strict variant: if additionally `q·ε < (1 − η)·m` (which holds when the ceiling is a
+*strict* over-estimate, i.e. `m > q·ε/(1−η)`), then `q·ε < E`.  CS25's contradiction needs
+strictness; in the in-tree statement the strictness is supplied by the residual hypothesis,
+but this lemma records that the arithmetic itself is strict whenever the second cap is. -/
+theorem cs25_qeps_lt_E
+    {s m k η qε : ℝ}
+    (hs : 0 < s) (hk : (1 : ℝ) ≤ k) (hm : (1 : ℝ) ≤ m)
+    (_hη0 : 0 ≤ η) (_hη1 : η < 1)
+    (hcap1 : qε ≤ η * s / k)
+    (hcap2 : qε < (1 - η) * m) :
+    qε < m * s / (m * k + s) := by
+  have hmpos : 0 < m := lt_of_lt_of_le one_pos hm
+  have hkpos : 0 < k := lt_of_lt_of_le one_pos hk
+  have hden : 0 < m * k + s := by positivity
+  have h1 : k * qε ≤ η * s := by
+    have h := mul_le_mul_of_nonneg_left hcap1 (le_of_lt hkpos)
+    have he : k * (η * s / k) = η * s := by field_simp
+    rwa [he] at h
+  have key : qε * (m * k + s) < m * s := by
+    have hA : m * (k * qε) ≤ m * (η * s) :=
+      mul_le_mul_of_nonneg_left h1 (le_of_lt hmpos)
+    have hB : s * qε < s * ((1 - η) * m) :=
+      mul_lt_mul_of_pos_left hcap2 hs
+    calc qε * (m * k + s)
+        = m * (k * qε) + s * qε := by ring
+      _ < m * (η * s) + s * ((1 - η) * m) := by linarith [hA, hB]
+      _ = m * s := by ring
+  rw [lt_div_iff₀ hden]
+  linarith [key]
+
+end CS25Arithmetic
+
+end CodingTheory.Bridge

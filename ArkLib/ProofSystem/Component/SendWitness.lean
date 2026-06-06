@@ -85,7 +85,7 @@ open Classical in
 @[simp]
 theorem reduction_completeness :
     (reduction oSpec Statement Witness).perfectCompleteness init impl relIn (toRelOut relIn) := by
-  simp only [Reduction.perfectCompleteness, Reduction.completeness, ENNReal.coe_zero, tsub_zero]
+  simp only [Reduction.perfectCompleteness, Reduction.completeness, Reduction.completenessFromRun, ENNReal.coe_zero, tsub_zero]
   intro stmtIn witIn hIn
   rw [reduction_run]
   simp only [OptionT.run_pure, simulateQ_pure, StateT.run'_eq, StateT.run_pure, map_pure]
@@ -276,7 +276,7 @@ theorem oracleReduction_completeness (h : NeverFail init) :
     (oracleReduction oSpec Statement OStatement Witness).perfectCompleteness init impl oRelIn
     (toORelOut oRelIn) := by
   simp only [OracleReduction.perfectCompleteness, Reduction.perfectCompleteness,
-    Reduction.completeness, ENNReal.coe_zero, tsub_zero]
+    Reduction.completeness, Reduction.completenessFromRun, ENNReal.coe_zero, tsub_zero]
   intro ⟨stmt, oStmt⟩ wit hIn
   have _inst : ProverOnly (oraclePSpec Witness) := { prover_first' := by simp }
   simp only [OracleReduction.toReduction, oracleReduction]

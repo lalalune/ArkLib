@@ -271,8 +271,8 @@ theorem foldWord_k_1' [NeZero n] {α : F} :
   aesop (add simp [foldWord_k_1])
 
 omit [DecidableEq F] in
-/-- TODO: this will go once this https://github.com/Verified-zkEVM/CompPoly/pull/203
-  is merged. -/
+/-- Local compatibility lemma for commuting the two polynomial evaluations. This can be
+replaced by the upstream CompPoly theorem once that dependency exports the matching API. -/
 private lemma eval_comm {f : Polynomial (Polynomial F)} {a x : F} :
   (f.eval (Polynomial.C a)).eval x = (Polynomial.map (evalRingHom x) f).eval a := by
   simp only [Polynomial.eval_map]
@@ -812,9 +812,6 @@ lemma folded_sqrtRate_eq {d : ℕ} (hkn : k ≤ n) (hkd : 2 ^ k ∣ d) :
   aesop (add simp [ReedSolomon.sqrtRate, folded_rate_eq])
 
 
-set_option linter.unusedVariables false in -- linter complains about `δ_gt_0`
-                                           -- which is a result of it missing
-                                           -- from the proximity gap theorem args.
 /--
 Folding preserves distance from Reed–Solomon codes.
 
@@ -837,7 +834,13 @@ theorem folding_preserves_distance
   (k_div_d : 2 ^ k ∣ d)
   (hd0 : 0 < d)
   (h_d_n : d ≤ 2 ^ n)
-  (δ_gt_0 : 0 < δ) -- this one is not used but should be.
+  (hStrictCoeff : StrictCoeffPolysResidual
+    (k := 2 ^ k - 1) (deg := d / (2 ^ k))
+    (domain := (domain.subdomainNatReversed k : Fin (2 ^ (n - k)) ↪ F)) (δ := δ))
+  (hBoundaryCard : BoundaryCardResidual
+    (k := 2 ^ k - 1) (deg := d / (2 ^ k))
+    (domain := (domain.subdomainNatReversed k : Fin (2 ^ (n - k)) ↪ F)) (δ := δ))
+  (δ_gt_0 : 0 < δ)
   (δ_lt : δ < min (δᵣ(f, ReedSolomon.code (domain : Fin (2 ^ n) ↪ F) d))
     (1 - (ReedSolomon.sqrtRate d (domain : Fin (2 ^ n) ↪ F)))) :
     Pr_{ let r ←$ᵖ F}[δᵣ(foldWord domain f k r, 
@@ -845,11 +848,10 @@ theorem folding_preserves_distance
       (d / (2 ^ k))) ≤ δ] ≤
         ((2 ^ k) - 1) * ProximityGap.errorBound δ (d / (2 ^ k)) 
         (domain.subdomainNatReversed k : Fin (2 ^ (n - k)) ↪ F) := by
-    have h_k_d : 2 ^ k ≤ d := by exact Nat.le_of_dvd (by omega) k_div_d
-    haveI h_d_div_ne_zero : NeZero (d / (2 ^ k)) := by
-      refine ⟨?_⟩
-      rw [Nat.div_ne_zero_iff]
-      exact ⟨by positivity, h_k_d⟩
+    have h_k_d : 2 ^ k ≤ d := by
+      by_cases hδ0 : δ = 0
+      · exact (ne_of_gt δ_gt_0 hδ0).elim
+      · exact Nat.le_of_dvd (by omega) k_div_d
     have h_k_le_n : k ≤ n := by
       rw [←Nat.pow_le_pow_iff_right (a := 2) (by simp)]
       omega
@@ -861,12 +863,12 @@ theorem folding_preserves_distance
           (add safe [(by rw [folded_sqrtRate_eq])])
           (add safe [(by grind)])
           (add safe (by norm_cast at *))
+    letI : NeZero (d / 2 ^ k) := ⟨by rw [Nat.div_ne_zero_iff]; omega⟩
     have correlated_agreement :=
-      @correlatedAgreement_affine_curves (Fin (2 ^ (n - k))) _ _ F _ _ _ 
-        (2 ^ k - 1) (d / (2 ^ k)) 
-        (domain := domain.subdomainNatReversed k) (δ := δ) 
-        h_d_div_ne_zero
-        (hδ := bound_tighter)
+      correlatedAgreement_affine_curves
+        (k := 2 ^ k - 1) (deg := d / (2 ^ k))
+        (domain := (domain.subdomainNatReversed k : Fin (2 ^ (n - k)) ↪ F))
+        (δ := δ) hStrictCoeff hBoundaryCard bound_tighter
     unfold foldWord δ_ε_correlatedAgreementCurves at *
     by_contra contra
     simp only [not_le, foldValue_eq_sum_of_foldAuxCoeff_mul_pow_alpha, bind_pure_comp, Functor.map, 
@@ -882,7 +884,7 @@ theorem folding_preserves_distance
       rw [bijective_iff_has_inverse]
       exists cast'
       simp [LeftInverse, RightInverse, cast, cast']
-    specialize correlated_agreement
+    specialize correlated_agreement 
       (Matrix.of (fun i j ↦ foldWordAuxCoeff domain f (2 ^ k) 
         (cast i) 
         (domain.subdomainNatReversed k j)))

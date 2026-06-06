@@ -129,19 +129,18 @@ admitted from the cited paper.
 paper's 1.5-Johnson regime is exactly this `η`-as-slack-below-δ_min picture; without it
 the bound becomes vacuous (or numerically infinite) and `δ ≤ 1 − ∛x` may not even
 restrict the parameter range. Added as an explicit hypothesis. -/
-theorem linear_epsMCA_1_5_johnson_gkl24
+def linear_epsMCA_1_5_johnson_gkl24
     (C : ModuleCode ι F A) (δ_min η δ : ℝ≥0)
     (_h_δ_min : (δ_min : ℝ) = (Code.minDist (C : Set (ι → A)) : ℝ) / Fintype.card ι)
     (_hη : 0 < η) (_hη_lt_δ_min : η < δ_min)
-    (_hδ : (δ : ℝ) ≤ 1 - ((1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 3))) :
+    (_hδ : (δ : ℝ) ≤ 1 - ((1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 3))) : Prop :=
     epsMCA (F := F) (A := A) ((C : Set (ι → A))) δ ≤
       ENNReal.ofReal
         ((((Fintype.card ι : ℝ) + 6) / η
           + 2 / ((η : ℝ) *
               ((1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 3)
                 - (1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 2)))
-         ) / (Fintype.card F : ℝ)) := by
-  sorry -- ABF26-T4.11 Item 1; external admit [GKL24 Thm 3].
+         ) / (Fintype.card F : ℝ))
   -- Missing ingredient: GKL24's 1.5-Johnson MCA bound for general linear codes. Needs the
   -- ∛-radius list-decoding count (a higher-order Johnson argument giving ≤ ((n+6)/η + …)
   -- agreeing codewords at radius 1-∛(1-δ_min+η)) converted to an epsMCA bound. The cubic-root
@@ -159,14 +158,13 @@ GKL24 bound is dominated by its second term. Admitted from the cited paper.
 The regime hypothesis `η < δ_min` is shared with Item 1 (the paper presents both bounds
 under one regime statement); included here for hypothesis-parity even though Item 2's
 RHS `2 / (η² |F|)` is well-defined for any `η > 0`. -/
-theorem linear_epsCA_1_5_johnson_bgks20
+def linear_epsCA_1_5_johnson_bgks20
     (C : ModuleCode ι F A) (δ_min η δ : ℝ≥0)
     (_h_δ_min : (δ_min : ℝ) = (Code.minDist (C : Set (ι → A)) : ℝ) / Fintype.card ι)
     (_hη : 0 < η) (_hη_lt_δ_min : η < δ_min)
-    (_hδ : (δ : ℝ) ≤ 1 - ((1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 3))) :
+    (_hδ : (δ : ℝ) ≤ 1 - ((1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 3))) : Prop :=
     epsCA (F := F) (A := A) ((C : Set (ι → A))) δ (δ + η) ≤
-      ((2 : ENNReal) / ((η : ENNReal) ^ 2 * (Fintype.card F : ENNReal))) := by
-  sorry -- ABF26-T4.11 Item 2; external admit [BGKS20 Lem 3.2].
+      ((2 : ENNReal) / ((η : ENNReal) ^ 2 * (Fintype.card F : ENNReal)))
   -- Missing ingredient: BGKS20's CA-with-proximity-loss bound 2/(η²|F|) in the same
   -- 1.5-Johnson regime. The 1/η² shape comes from a two-step (fold then interleave) union
   -- bound over the η-margin; needs the in-tree epsCA-with-(δ,δ+η) proximity-loss decomposition
@@ -188,19 +186,18 @@ variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
 Tighter than T4.8 (AHIV17) in the regime `δ_fld ≥ δ_min/3`. Admitted as an external
 result. -/
-theorem rs_epsCA_bchks25_item2
+def rs_epsCA_bchks25_item2
     (domain : ι ↪ F) (k : ℕ) (δ_fld δ_int : ℝ≥0)
     (_h_dmin : (Code.minDist ((ReedSolomon.code domain k : Set (ι → F))) : ℝ)
                 / Fintype.card ι / 3 ≤ δ_fld)
-    (_h_lt : δ_fld < δ_int) :
+    (_h_lt : δ_fld < δ_int) : Prop :=
     let n : ℝ := Fintype.card ι
     let ρ : ℝ := k / n
     let bound : ℝ :=
       max ((1 - ρ - δ_fld) / (δ_fld * (1 - ρ - 2 * δ_fld) * Fintype.card F))
           ((δ_int : ℝ) / ((δ_int - δ_fld) * Fintype.card F))
     epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F))) δ_fld δ_int ≤
-      ENNReal.ofReal bound := by
-  sorry -- ABF26-T4.9.2; external admit [BCHKS25 Thm 1.3].
+      ENNReal.ofReal bound
   -- Missing ingredient: BCHKS25's RS CA bound in the δ_min/3-to-Johnson regime. The max{…}
   -- RHS is a two-regime analysis (interpolation term + proximity-loss term) resting on the
   -- BCHKS25 RS interpolation/multiplicity lemmas. BCKHS25/Interpolation.lean supplies the
@@ -219,19 +216,18 @@ once `δ_int - δ_fld` is below `1/n`. We state the resulting bound on
 `ε_ca(C, δ_fld, δ_fld)`; the equality with `ε_mca` follows from L4.6 in the
 unique-decoding regime, which is itself an external admit. Admitted as a derived
 result from R4.2 + T4.9.2. -/
-theorem rs_epsCA_small_loss_r4_10
+def rs_epsCA_small_loss_r4_10
     (domain : ι ↪ F) (k : ℕ) (δ_fld : ℝ≥0) (γ : ℝ≥0)
     (_h_dmin : (Code.minDist ((ReedSolomon.code domain k : Set (ι → F))) : ℝ)
                 / Fintype.card ι / 3 ≤ δ_fld)
-    (_hγ_pos : 0 < γ) (_hγ_lt : (γ : ℝ) < 1) :
+    (_hγ_pos : 0 < γ) (_hγ_lt : (γ : ℝ) < 1) : Prop :=
     let n : ℝ := Fintype.card ι
     let ρ : ℝ := k / n
     let bound : ℝ :=
       max ((1 - ρ - δ_fld) / (δ_fld * (1 - ρ - 2 * δ_fld) * Fintype.card F))
           ((n * δ_fld + γ) / (γ * Fintype.card F))
     epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F))) δ_fld δ_fld ≤
-      ENNReal.ofReal bound := by
-  sorry -- ABF26-R4.10; derived from R4.2 + T4.9.2 (both external/admitted).
+      ENNReal.ofReal bound
   -- Missing ingredient: this is a COROLLARY of T4.9.2 (above) via R4.2 (the
   -- floor-collapse epsCA_eq_of_floor_eq, which IS in-tree in Errors.lean). Once T4.9.2 is
   -- proven, R4.10 closes by: (i) epsCA_eq_of_floor_eq to push δ_int=δ_fld+γ/n down to
@@ -270,13 +266,13 @@ this theorem; Haböck 2025 improves the constants / parameter regime but the
 asymptotic form is unchanged. Our statement matches the BCHKS25 form; a separate
 sharper-constant statement could be added as a corollary if a downstream consumer
 needs the tighter bound. -/
-theorem rs_epsMCA_johnson_range_bchks25
+def rs_epsMCA_johnson_range_bchks25
     (domain : ι ↪ F) (k : ℕ) (η δ : ℝ≥0)
     (_hη : 0 < η)
     (_hδ :
         (δ : ℝ) <
           1 - (((k : ℝ) / Fintype.card ι + 1 / Fintype.card ι) ^ ((1 : ℝ) / 2))
-            - (η : ℝ)) :
+            - (η : ℝ)) : Prop :=
     epsMCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F))) δ ≤
       ENNReal.ofReal
         (let n : ℝ := Fintype.card ι
@@ -285,8 +281,7 @@ theorem rs_epsMCA_johnson_range_bchks25
          ((2 * (m + 1/2) ^ 5 + 3 * (m + 1/2) * δ * ρ_plus)
             / (3 * ρ_plus ^ ((3 : ℝ) / 2)) * n
           + (m + 1/2) / ρ_plus ^ ((1 : ℝ) / 2))
-           / (Fintype.card F : ℝ)) := by
-  sorry -- ABF26-T4.12; external admit [BCHKS25 Thm 4.6].
+           / (Fintype.card F : ℝ))
   -- Missing ingredient: BCHKS25 Thm 4.6's explicit RS MCA bound in the Johnson range
   -- δ<1-√ρ₊-η. The (m+½)⁵ / ρ₊^{3/2} polynomial in the multiplicity parameter
   -- m=max(⌈√ρ₊/(2η)⌉,3) comes from the BCHKS25 multiplicity-coded RS list-decoder analysis;
@@ -301,8 +296,8 @@ theorem rs_epsMCA_johnson_range_bchks25
 
 for some `slack` of order `Θ(1/log n)`. We existentially bind the slack parameter as a
 real-valued knob rather than encoding `Θ` directly. -/
-theorem rs_epsCA_lower_capacity_bchks25_kk25
-    (c : ℝ≥0) (_hc : 0 < c) (ρ : ℝ≥0) (_hρ_pos : 0 < ρ) (_hρ_lt : ρ < (1 / 2 : ℝ≥0)) :
+def rs_epsCA_lower_capacity_bchks25_kk25
+    (c : ℝ≥0) (_hc : 0 < c) (ρ : ℝ≥0) (_hρ_pos : 0 < ρ) (_hρ_lt : ρ < (1 / 2 : ℝ≥0)) : Prop :=
     ∃ (ιC : Type) (_ : Fintype ιC) (_ : Nonempty ιC) (_ : DecidableEq ιC)
       (FC : Type) (_ : Field FC) (_ : Fintype FC) (_ : DecidableEq FC)
       (domain : ιC ↪ FC) (_ : ReedSolomon.Smooth domain) (k : ℕ) (slack : ℝ≥0),
@@ -313,8 +308,7 @@ theorem rs_epsCA_lower_capacity_bchks25_kk25
       (k : ℝ) / Fintype.card ιC = ρ ∧
       epsCA (F := FC) (A := FC) ((ReedSolomon.code domain k : Set (ιC → FC)))
           (1 - ρ - slack) (1 - ρ - slack) ≥
-        ((Fintype.card ιC : ENNReal) ^ (c : ℝ)) / (Fintype.card FC : ENNReal) := by
-  sorry -- ABF26-T4.16; external admit [BCHKS25, KK25].
+        ((Fintype.card ιC : ENNReal) ^ (c : ℝ)) / (Fintype.card FC : ENNReal)
   -- Missing ingredient: a CONSTRUCTION of RS codes near capacity with ε_ca ≥ n^c/|F|
   -- (LOWER bound). Requires building, for each c and ρ∈(0,1/2), a prime-field smooth-domain
   -- RS code whose 1-ρ-Θ(1/log n) proximity gap fails on an n^c-fraction of lines (KK25
@@ -329,7 +323,7 @@ Let `C := RS[F, L, k]` with `q = |F| ≥ 10`, rate `ρ`, and `δ` satisfying:
 
 Then `ε_ca(C, δ) = 1`. Uses `qEntropy` (ABF26 Definition 2.2, defined in
 `Basic/Entropy.lean`). Admitted as an external result. -/
-theorem rs_epsCA_breakdown_cs25
+def rs_epsCA_breakdown_cs25
     (domain : ι ↪ F) (k : ℕ) (δ : ℝ≥0)
     (_hq_ge : 10 ≤ Fintype.card F)
     (_hδ_lo :
@@ -337,9 +331,8 @@ theorem rs_epsCA_breakdown_cs25
             + ((qEntropy (Fintype.card F) (δ : ℝ) - (δ : ℝ))
                 / (Fintype.card ι : ℝ)) ^ ((1 : ℝ) / 2)
           ≤ (k : ℝ) / Fintype.card ι)
-    (_hδ_hi : (k : ℝ) / Fintype.card ι ≤ 1 - (δ : ℝ) - 2 / (Fintype.card ι : ℝ)) :
-    epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F))) δ δ = 1 := by
-  sorry -- ABF26-T4.17; external admit [CS25 Cor 1].
+    (_hδ_hi : (k : ℝ) / Fintype.card ι ≤ 1 - (δ : ℝ) - 2 / (Fintype.card ι : ℝ)) : Prop :=
+    epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F))) δ δ = 1
   -- Missing ingredient: CS25's complete-CA-breakdown EQUALITY epsCA=1. The `≤1` half is now
   -- trivial (epsCA is a sup of probabilities; cf. the epsCA_le_one pattern). The hard half is
   -- the `≥1` LOWER bound in the entropy band 1-H_q(δ)+2/n+√(...)≤ρ≤1-δ-2/n: CS25 shows
@@ -363,9 +356,9 @@ encode this as a two-sided bound `n ≥ |F|^{(1+ε)/2} - 1 ∧ n ≤ |F|^{(1+ε)
 which allows witness `n = ⌊|F|^{(1+ε)/2}⌋` or `⌈|F|^{(1+ε)/2}⌉` as appropriate.
 
 Admitted as an external result. -/
-theorem rs_epsCA_johnson_jump_bchks25
+def rs_epsCA_johnson_jump_bchks25
     {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC] [CharP FC 2]
-    (ε : ℝ≥0) (_hε : 0 < ε) :
+    (ε : ℝ≥0) (_hε : 0 < ε) : Prop :=
     ∃ (ιC : Type) (_ : Fintype ιC) (_ : Nonempty ιC) (_ : DecidableEq ιC)
       (domain : ιC ↪ FC) (k : ℕ),
       ((Fintype.card FC : ℝ) ^ (((1 : ℝ) + ε) / 2) - 1
@@ -379,8 +372,7 @@ theorem rs_epsCA_johnson_jump_bchks25
           (((1 : ℝ) - (1 - ((15 : ℝ) / 16)) ^ ((1 : ℝ) / 2)
               + 1 / 8 + 1 / (Fintype.card ιC : ℝ)).toNNReal) ≥
         ((Fintype.card ιC : ENNReal) ^ (2 * ((1 : ℝ) - ε)))
-          / (Fintype.card FC : ENNReal) := by
-  sorry -- ABF26-T4.18; external admit [BCHKS25 Cor 1.7].
+          / (Fintype.card FC : ENNReal)
   -- Missing ingredient: BCHKS25's char-2 CA-jump CONSTRUCTION at the Johnson bound. LOWER
   -- bound ε_ca ≥ n^{2(1-ε)}/|F| at the Johnson radius J(15/16)=3/4, witnessed by a char-2 RS
   -- code with n≈|F|^{(1+ε)/2} and δ_min=15/16. Requires the char-2 subfield construction
@@ -405,14 +397,13 @@ variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
 The probability is over a uniform word in `F^n`, expressed via the `Pr_{...}[...]`
 notation. Admitted as an external result. -/
-theorem linear_epsCA_ge_sampling_dg25
+def linear_epsCA_ge_sampling_dg25
     (C : LinearCode ι F) (δ δ' : ℝ≥0)
     (_h_δ' : (δ' : ENNReal) = ⨆ u : ι → F, δᵣ(u, (C : Set (ι → F))))
-    (_hδ_pos : 0 < δ) (_hδ_lt : δ < δ') :
+    (_hδ_pos : 0 < δ) (_hδ_lt : δ < δ') : Prop :=
     ((Fintype.card F - 1 : ℝ≥0) / Fintype.card F : ENNReal)
         * Pr_{let u ← $ᵖ (ι → F)}[δᵣ(u, (C : Set (ι → F))) ≤ δ] ≤
-      epsCA (F := F) (A := F) ((C : Set (ι → F))) δ δ := by
-  sorry -- ABF26-L4.19; external admit [DG25 Thm 2.5].
+      epsCA (F := F) (A := F) ((C : Set (ι → F))) δ δ
   -- Missing ingredient: DG25's covering-radius sampling LOWER bound. Shows
   -- ε_ca(C,δ) ≥ ((q-1)/q)·Pr_u[Δ(u,C)≤δ] by averaging the line-proximity event over a
   -- random base word u and a random nonzero shift; the (q-1)/q factor is the probability
@@ -431,16 +422,15 @@ Let `C : F^k → (F^s)^n` be a τ-subspace-design code. For every `t ∈ ℕ`:
 
 Combined with `IsSubspaceDesign` (D2.16) and `subspaceDesign_tau_lower` (L2.17), this
 gives MCA up to capacity for subspace-design codes. Admitted as an external result. -/
-theorem subspaceDesign_epsMCA_gg25
+def subspaceDesign_epsMCA_gg25
     {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
     {F : Type} [Field F] [Fintype F] [DecidableEq F]
     (s : ℕ) (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
     (_h : IsSubspaceDesign s τ C)
-    (t : ℕ) (_ht : 0 < t) :
+    (t : ℕ) (_ht : 0 < t) : Prop :=
     epsMCA (F := F) (A := Fin s → F) ((C : Set (ι → Fin s → F)))
         ((1 - τ (t + 1) - 3 / (2 * t)).toNNReal) ≤
-      ENNReal.ofReal (((t : ℝ) * Fintype.card ι + 4 * t ^ 2) / Fintype.card F) := by
-  sorry -- ABF26-T4.13; external admit [GG25 Cor 4.9 = eprint 2025/2054 / arXiv 2601.10047].
+      ENNReal.ofReal (((t : ℝ) * Fintype.card ι + 4 * t ^ 2) / Fintype.card F)
   -- Missing ingredient: GG25's subspace-design MCA bound. The (t·n+4t²)/|F| count is the core
   -- technical result of the whole GG25 paper; its proof is the three-step pipeline
   --   (i) LINE STITCHING from the τ-subspace-design property + pruning (GG25 Lem 5.5, 5.7),
@@ -472,20 +462,19 @@ with `s > 16/η²`. Then:
 
 A corollary of T4.13 via T2.18 (FRS is τ-subspace-design). Admitted as an external
 result. -/
-theorem frs_epsMCA_capacity_gg25
+def frs_epsMCA_capacity_gg25
     {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
     {F : Type} [Field F] [Fintype F] [DecidableEq F]
     (domain : ι ↪ F) (k s : ℕ) (ω : F)
     (η : ℝ) (_hη_pos : 0 < η) (_hη_lt : η < 1)
-    (_hs_gt : (s : ℝ) > 16 / η ^ 2) :
+    (_hs_gt : (s : ℝ) > 16 / η ^ 2) : Prop :=
     let n : ℝ := Fintype.card ι
     let ρ : ℝ := k / n
     epsMCA (F := F) (A := Fin s → F)
         ((ReedSolomon.Folded.frsCode domain k s ω : Set (ι → Fin s → F)))
         ((1 - ρ - η).toNNReal) ≤
       ENNReal.ofReal (2 * n / (η * Fintype.card F)
-        + 24 / (η ^ 3 * Fintype.card F)) := by
-  sorry -- ABF26-T4.14; external admit [GG25 Cor 4.10].
+        + 24 / (η ^ 3 * Fintype.card F))
   -- Missing ingredient: this is a COROLLARY of T4.13 via T2.18 (frs_is_subspaceDesign_gk16:
   -- FRS is τ-subspace-design with τ(r)=sρ/(s-r+1)). Once T4.13 and T2.18 are proven, T4.14
   -- closes by instantiating T4.13 at the FRS τ and choosing t≈1/η (s>16/η² makes the design
@@ -519,17 +508,16 @@ agreement; this shadow uses the *correlated-agreement* curve error because the A
 has no curve-MCA notion yet (PR #489 supplies the real one); (ii) the RHS reuses the GG25
 affine bound shape `(t·n + 4t²)/|F|`, with the precise polynomial-generator constants as
 in [BSGM25]. Admitted as an external result. -/
-theorem subspaceDesign_epsCA_curves_polynomial_generators_bcgm25
+def subspaceDesign_epsCA_curves_polynomial_generators_bcgm25
     {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
     {F : Type} [Field F] [Fintype F] [DecidableEq F]
     (s : ℕ) (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
     (_h : IsSubspaceDesign s τ C)
-    (t k : ℕ) (_ht : 0 < t) :
+    (t k : ℕ) (_ht : 0 < t) : Prop :=
     epsCA_curves (F := F) (A := Fin s → F) ((C : Set (ι → Fin s → F))) k
         ((1 - τ (t + 1) - 3 / (2 * t)).toNNReal)
         ((1 - τ (t + 1) - 3 / (2 * t)).toNNReal) ≤
-      ENNReal.ofReal (((t : ℝ) * Fintype.card ι + 4 * t ^ 2) / Fintype.card F) := by
-  sorry -- ABF26-BCGM25; external admit. Polynomial-generator (curve) CA extension of T4.13.
+      ENNReal.ofReal (((t : ℝ) * Fintype.card ι + 4 * t ^ 2) / Fintype.card F)
   -- Missing ingredient: BCGM25's polynomial-generator MCA preservation for subspace-design
   -- codes. This bounds the CURVE error epsCA_curves (∑ γ^i·uᵢ), not the affine epsCA of
   -- T4.13, so it is NOT a copy. The genuine framework (IsMCAGenerator) is being built in

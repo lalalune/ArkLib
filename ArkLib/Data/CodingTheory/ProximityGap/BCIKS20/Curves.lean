@@ -2484,85 +2484,89 @@ theorem correlatedAgreement_affine_curves_of_strict_canonical_coeff_polys {k : �
     (u := u) P₀ hCoeff₀ huniq P hP
 
 omit [DecidableEq ι] in
+/-- Explicit residual for the strict Johnson list-decoding extraction needed by the final
+correlated-agreement keystone. -/
+def StrictCoeffPolysResidual {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} : Prop :=
+  ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+    Pr_{
+      let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+        ReedSolomon.code domain deg) ≤ δ] >
+        ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+    (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+    δ < 1 - ReedSolomon.sqrtRate deg domain →
+    ∀ P : F → Polynomial F,
+      (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+        ∃ B : ℕ → Polynomial F,
+          (∀ j < deg, (B j).natDegree < k + 1) ∧
+            ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              ∀ j < deg, (P z).coeff j = (B j).eval z
+
+/-- Explicit residual for the closed square-root boundary assembly needed by the final
+correlated-agreement keystone. -/
+def BoundaryCardResidual {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} : Prop :=
+  ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+    δ = 1 - ReedSolomon.sqrtRate deg domain →
+    0 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card →
+    jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u)
+
+/-- Theorem 1.5 (Correlated agreement for low-degree parameterised curves) in [BCIKS20].
+
+This theorem is fully proved from two explicit list-decoding residuals:
+`StrictCoeffPolysResidual` for the strict Johnson branch and `BoundaryCardResidual` for the
+closed square-root boundary. -/
+theorem correlatedAgreement_affine_curves {k : ℕ}
+    {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    -- `deg = 0` makes the statement false: `errorBound`'s Johnson
+    -- branch vacates the threshold at deg = 0; counterexample in upstream-issues.md).
+    [NeZero deg]
+    (hStrictCoeff : StrictCoeffPolysResidual (k := k) (deg := deg) (domain := domain) (δ := δ))
+    (hBoundaryCard : BoundaryCardResidual (k := k) (deg := deg) (domain := domain) (δ := δ))
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  exact correlatedAgreement_affine_curves_of_strict_coeff_polys_and_boundary_card
+    (deg := deg) (domain := domain) (δ := δ) hδ hStrictCoeff hBoundaryCard
+
+omit [DecidableEq ι] in
 /-- Theorem 1.5 (Correlated agreement for low-degree parameterised curves) in [BCIKS20].
 
 Take a Reed-Solomon code of length `ι` and degree `deg`, a proximity-error parameter
 pair `(δ, ε)` and a curve passing through words `u₀, ..., uκ`, such that
 the probability that a random point on the curve is `δ`-close to the Reed-Solomon code
 is at most `ε`. Then, the words `u₀, ..., uκ` have correlated agreement. -/
-theorem correlatedAgreement_affine_curves {k : ℕ}
+theorem correlatedAgreement_affine_curves_legacy_statement {k : ℕ}
     {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     -- `deg = 0` makes the statement false: `errorBound`'s Johnson
     -- branch vacates the threshold at deg = 0; counterexample in upstream-issues.md).
-    [NeZero deg]
-    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain) :
-    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
-      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
-  classical
-  rcases Nat.eq_zero_or_pos k with hk0 | hkpos
-  · subst hk0
-    exact RS_correlatedAgreement_curves_k_zero (deg := deg) (domain := domain) (δ := δ)
-  · by_cases hUDR : δ ≤ Code.relativeUniqueDecodingRadius (ι := ι) (F := F)
-        (C := ReedSolomon.code domain deg)
-    · -- Unique-decoding regime: PROVEN ([BCIKS20] Theorem 6.1, all curve degrees).
-      exact RS_correlatedAgreement_curves_uniqueDecodingRegime hkpos hUDR
-    · -- List-decoding regime: Theorem 6.2 ([BCIKS20] §6.2 / §5 chain).
-      unfold δ_ε_correlatedAgreementCurves
-      intro u hprob
-      by_cases hJ :
-          (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ
-      · -- List-decoding branch proper.  All threshold arithmetic is discharged
-        -- by the front doors below; the residual obligations are the §5
-        -- list-decoding extraction outputs, isolated here in their exact shape.
-        by_cases hsqrt : δ < 1 - ReedSolomon.sqrtRate deg domain
-        · -- STRICT Johnson branch.  `RS_jointAgreement_of_prob_gt_strict_johnson_and_coeff_polys`
-          -- discharges *both* probability-threshold side conditions from `hJ` and
-          -- `hsqrt` (via `errorBound_ge_const` and `errorBound_ge_succ_const_of_strict_johnson`).
-          -- The single remaining input is the §5 coefficient-polynomial extraction
-          -- witness `hcoeffPoly`: for every selector `P` decoding `RS_goodCoeffsCurve`,
-          -- the coefficients `(P z).coeff j` depend polynomially on the curve
-          -- parameter `z` through low-degree (`< k+1`) coefficient polynomials `B j`.
-          --
-          -- FRONTIER (genuine mathematical gap, NOT a connective gap).  This witness
-          -- is the output of the §5 Guruswami–Sudan list-decoding chain
-          -- (`ListDecoding/`), which is formalized only for degree-one curves
-          -- (`k = 1`, `Code.finMapTwoWords`, `ι = Fin n`) and is itself blocked on the
-          -- three documented §5 ingredients (A: an `#S` lower bound as a standing
-          -- regime hypothesis; C: the Appendix-A ↔ §5 specialization bridge; D: the
-          -- recursive Hensel-lift definition of `β`) — see the GAP ANALYSIS block in
-          -- `ListDecoding/Agreement.lean`.  No general-`k`, general-`domain` producer
-          -- of `hcoeffPoly` exists in the tree, so the bare capstone (which supplies
-          -- no §5 obligation) cannot reach `jointAgreement` here.  The reduction below
-          -- pins the obligation to its exact §5 shape; closing it requires the §5
-          -- extraction, characterized precisely in the lane report.
-          refine RS_jointAgreement_of_prob_gt_strict_johnson_and_coeff_polys
-            (deg := deg) (domain := domain) (δ := δ) hkpos u hprob hJ hsqrt ?_
-          sorry
-        · -- CLOSED square-root boundary branch (`δ = 1 - sqrtRate`).  Here
-          -- `errorBound δ deg domain = 0` (`errorBound_eq_zero_of_johnson_not_lt_sqrt`),
-          -- so the probability hypothesis only yields a NONEMPTY good-coefficient set
-          -- (`goodCoeffsCurve_card_pos_of_prob_gt_johnson_boundary`), not the
-          -- `> k` / `≥ (|ι|+1)·k` cardinality lower bounds that the list-agreement
-          -- assembly (Lemma 7.6) consumes.
-          --
-          -- FRONTIER (genuine mathematical gap).  At the closed Johnson boundary the
-          -- §5 list size is exactly at the radius, so the agreement-on-curves count
-          -- is not strictly large enough for the integral-weight assembly; in
-          -- [BCIKS20] this boundary case is handled by the limiting/refined argument
-          -- of §6.2, which is not formalized.  Every `_of_…_and_boundary` capstone in
-          -- this file leaves precisely this `hBoundary` obligation explicit and
-          -- unproven, confirming it is a standing frontier, not a connective gap.
-          have _hcard_pos :
-              0 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card :=
-            goodCoeffsCurve_card_pos_of_prob_gt_johnson_boundary
-              (deg := deg) (domain := domain) (δ := δ) u hprob hJ hsqrt
-          sorry
-      · -- Closed rate-half branch: for Reed-Solomon codes this is still inside
-        -- the relative unique-decoding radius, contradicting the outer split.
-        push Not at hJ
-        exact False.elim (hUDR
-          (RS_le_relativeUniqueDecodingRadius_of_le_rate_half
-            (deg := deg) (domain := domain) (δ := δ) hJ))
+      [NeZero deg]
+      (hStrictCoeff : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+        Pr_{
+          let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            ReedSolomon.code domain deg) ≤ δ] >
+            ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+        (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+        δ < 1 - ReedSolomon.sqrtRate deg domain →
+        ∀ P : F → Polynomial F,
+          (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+            (P z).natDegree < deg ∧
+              δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+                (P z).eval ∘ domain) ≤ δ) →
+            ∃ B : ℕ → Polynomial F,
+              (∀ j < deg, (B j).natDegree < k + 1) ∧
+                ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+                  ∀ j < deg, (P z).coeff j = (B j).eval z)
+      (hBoundaryCard : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+        δ = 1 - ReedSolomon.sqrtRate deg domain →
+        0 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card →
+        jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u))
+      (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain) :
+      δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+        (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  exact correlatedAgreement_affine_curves_of_strict_coeff_polys_and_boundary_card
+      (deg := deg) (domain := domain) (δ := δ) hδ hStrictCoeff hBoundaryCard
 
 end CoreResults
 

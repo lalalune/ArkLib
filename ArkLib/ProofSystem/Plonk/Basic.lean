@@ -116,7 +116,8 @@ open Classical in
 theorem gateCheck_perfectCompleteness :
     (gateCheckReduction (𝓡 := 𝓡) (numWires := numWires) (numGates := numGates)).perfectCompleteness
       init impl gateCheckRelIn gateCheckRelOut := by
-  simp only [Reduction.perfectCompleteness, Reduction.completeness, ENNReal.coe_zero, tsub_zero]
+  simp only [Reduction.perfectCompleteness, Reduction.completeness, Reduction.completenessFromRun,
+    ENNReal.coe_zero, tsub_zero]
   intro cs w hIn
   simp only [gateCheckRelIn, Set.mem_setOf_eq] at hIn
   have hrun : (gateCheckReduction (𝓡 := 𝓡) (numWires := numWires)

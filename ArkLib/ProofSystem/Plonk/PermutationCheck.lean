@@ -137,7 +137,7 @@ open Classical in
 theorem permCheck_perfectCompleteness :
     (permCheckReduction (𝓡 := 𝓡) (numWires := numWires) (numGates := numGates)).perfectCompleteness
       init impl permCheckRelIn permCheckRelOut := by
-  simp only [Reduction.perfectCompleteness, Reduction.completeness, ENNReal.coe_zero, tsub_zero]
+  simp only [Reduction.perfectCompleteness, Reduction.completeness, Reduction.completenessFromRun, ENNReal.coe_zero, tsub_zero]
   intro cs f hIn
   simp only [permCheckRelIn, Set.mem_setOf_eq] at hIn
   have hrun : (permCheckReduction (𝓡 := 𝓡) (numWires := numWires)

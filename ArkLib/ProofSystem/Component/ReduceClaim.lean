@@ -67,7 +67,8 @@ theorem reduction_completeness --(h : init.neverFails)
     (hRel : ∀ stmtIn witIn, (stmtIn, witIn) ∈ relIn ↔
       (mapStmt stmtIn, mapWit stmtIn witIn) ∈ relOut) :
     (reduction oSpec mapStmt mapWit).perfectCompleteness init impl relIn relOut := by
-  simp only [Reduction.perfectCompleteness, Reduction.completeness, ENNReal.coe_zero, tsub_zero]
+  simp only [Reduction.perfectCompleteness, Reduction.completeness, Reduction.completenessFromRun,
+    ENNReal.coe_zero, tsub_zero]
   intro stmtIn witIn hIn
   have hrun : (reduction oSpec mapStmt mapWit).run stmtIn witIn =
       (pure ((default, (mapStmt stmtIn, mapWit stmtIn witIn)), mapStmt stmtIn) :
@@ -236,7 +237,7 @@ theorem oracleReduction_completeness
     (oracleReduction oSpec mapStmt mapWit embedIdx hEq).perfectCompleteness init impl
       relIn relOut := by
   simp only [OracleReduction.perfectCompleteness, Reduction.perfectCompleteness,
-    Reduction.completeness, ENNReal.coe_zero, tsub_zero]
+    Reduction.completeness, Reduction.completenessFromRun, ENNReal.coe_zero, tsub_zero]
   intro ⟨stmtIn, oStmtIn⟩ witIn hIn
   -- Reduce the run to a deterministic `pure` of the expected output.
   have hrun : (oracleReduction oSpec mapStmt mapWit embedIdx hEq).toReduction.run
@@ -477,7 +478,7 @@ theorem oracleReductionO_completeness (hMap : MapCoherent mapStmtO mapStmtO_spec
         (mapWit := mapWit) (embedIdx := embedIdx) (hEq := hEq)).perfectCompleteness
       init impl relIn relOut := by
   simp only [OracleReduction.perfectCompleteness, Reduction.perfectCompleteness,
-    Reduction.completeness, ENNReal.coe_zero, tsub_zero]
+    Reduction.completeness, Reduction.completenessFromRun, ENNReal.coe_zero, tsub_zero]
   intro ⟨stmtIn, oStmtIn⟩ witIn hIn
   simp only [oracleReductionO_run hMap]
   rw [ge_iff_le, one_le_probEvent_iff, probEvent_eq_one_iff]

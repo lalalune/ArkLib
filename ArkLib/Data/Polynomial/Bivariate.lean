@@ -133,6 +133,17 @@ in a set of univariate polynomials in `X`. -/
 def evalSetY [DecidableEq F] (f : F[X][Y]) (P : Finset F) [Nonempty P] : Finset (Polynomial F) :=
   P.image (fun a => evalY a f)
 
+/-- If the multiplicity of a pair `(x, y)` is positive, then the pair is a root of `f`. -/
+theorem rootMultiplicity_some_implies_root {R : Type} [CommRing R]
+    {x y : R} {f : R[X][Y]} (h : 0 < (f.eval (C y)).rootMultiplicity x) :
+    (f.eval (C y)).eval x = 0 := by
+  have hp : f.eval (C y) ≠ 0 := by
+    intro hp
+    rw [hp] at h
+    simp at h
+  simpa [Polynomial.IsRoot.def] using
+    (Polynomial.rootMultiplicity_pos (p := f.eval (C y)) hp (x := x)).mp h
+
 /-- The bivariate quotient polynomial. -/
 def quotient (f g : F[X][Y]) : Prop := ∃ q : F[X][Y], g = q * f
 

@@ -3,6 +3,7 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.HenselNumerator
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Vanish
 
 /-!
 # BCIKS20 §5.2.6–5.2.7 — the RE-ANCHORED Claims 5.8 / 5.8' / 5.9 (genuine objects)
@@ -31,8 +32,8 @@ The **genuine** objects now exist (`GammaGenuine.lean` / `HenselNumerator.lean`,
 * `βHensel x₀ R hHyp t : 𝒪 H` — the genuine (A.1) recursive numerator;
 * `βHensel_lift_identity` (in-tree) — the lift identity
   `embedding (βHensel … t) = αGenuine t · W^{t+1} · ξ^{2t−1}`, the genuine repair of the old
-  identity (against `αGenuine`, NOT the vacuous `ClaimA2.α`), PROVEN modulo its single residual
-  `coeff_succ_eval_βHenselAssembled` (so it currently carries an inherited `sorryAx`); and
+  identity (against `αGenuine`, NOT the vacuous `ClaimA2.α`), PROVEN from the explicit
+  `FaaDiBrunoSuccSumZeroResidual`; and
 * `Lemma_A_1` (`RationalFunctions.lean`, PROVEN, axiom-clean) — `#(S_β β') > Λ(β')·d_H ⟹
   embedding β' = 0`, the terminal vanishing the §5 claims consume.
 
@@ -67,8 +68,8 @@ nonzero (`den_ne_zero`, from `ζ_ne_zero` / `embeddingOf𝒪Into𝕃_ξ_ne_zero`
 
 All statements carry the documented re-anchoring hypotheses; nothing is faked.  The hypothesis-form
 claims are axiom-clean (`[propext, Classical.choice, Quot.sound]`, no `sorryAx`); the `…_via_intree`
-wrappers discharge the lift identity from the in-tree theorem and inherit its documented residual
-`sorryAx`.  No `sorry`/`admit`/`native_decide`/`bv_decide` is used in this file.
+wrappers discharge the lift identity from the in-tree conditional theorem using the explicit
+`FaaDiBrunoSuccSumZeroResidual`.  No `sorry`/`admit`/`native_decide`/`bv_decide` is used in this file.
 -/
 
 set_option linter.style.longLine false
@@ -104,15 +105,15 @@ def SβLargeAt (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) 
 The genuine lift identity `embedding (βHensel … t) = αGenuine t · W^{t+1} · ξ^{2t−1}` connecting
 the (A.1) numerator to the genuine coefficient `αGenuine t = coeff t (gammaGenuine …)`.  In-tree
 this is `HenselNumerator.βHensel_lift_identity`, which is **PROVEN modulo the single
-per-successor-order residual** `coeff_succ_eval_βHenselAssembled` — that residual is the only
-remaining unproven piece, so the in-tree theorem currently carries an inherited `sorryAx`.
+per-successor-order residual** `FaaDiBrunoSuccSumZeroResidual` — that residual is the only
+remaining unproven piece, and it is carried as an explicit hypothesis rather than a hidden axiom.
 
 Per the §5 re-anchoring spec, we therefore take the per-`t` lift identity as an **explicit
 documented hypothesis** `LiftIdentityAt` (the bridge the §5 callers supply, exactly as the paper's
 Claim A.2 normalization `α_t = β_t / (W^{t+1}·ξ^{e_t})` provides).  The §5 claims below are then
 **fully axiom-clean** relative to this hypothesis: they introduce no `sorryAx` of their own.  The
 convenience wrappers `…_via_intree` discharge it from `βHensel_lift_identity` and consequently
-inherit that theorem's `sorryAx` — this is documented, not hidden. -/
+require the same explicit residual — this is documented, not hidden. -/
 
 /-- The per-`t` lift identity bridge, as a documented hypothesis the §5 callers supply:
 `embedding (βHensel … t) = αGenuine t · W^{t+1} · ξ^{2t−1}` (the `(P2)` Claim-A.2 normalization). -/
@@ -166,15 +167,35 @@ theorem claim58_genuine {x₀ : F} {R : F[X][X][Y]}
   exact (mul_eq_zero.mp hprod).resolve_right (den_ne_zero H x₀ R hHyp t)
 
 /-- **Claim 5.8 (genuine), discharging the lift-identity hypothesis from the in-tree theorem.**
-Convenience wrapper: supplies `hlift` from `HenselNumerator.βHensel_lift_identity`.  WARNING
-(HONESTY): `βHensel_lift_identity` is PROVEN only modulo its single residual
-`coeff_succ_eval_βHenselAssembled`, so it currently carries an inherited `sorryAx`; this wrapper
-therefore inherits that `sorryAx`.  Prefer `claim58_genuine` with an explicit `hlift` for an
-axiom-clean result. -/
+Convenience wrapper: supplies `hlift` from `HenselNumerator.βHensel_lift_identity`, requiring the
+same explicit residual `FaaDiBrunoSuccSumZeroResidual`.  Prefer `claim58_genuine` with an explicit
+`hlift` when callers already have the per-index bridge. -/
 theorem claim58_genuine_via_intree {x₀ : F} {R : F[X][X][Y]}
-    (hHyp : ClaimA2.Hypotheses x₀ R H) {t : ℕ} (hlarge : SβLargeAt H x₀ R hHyp t) :
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hzero : FaaDiBrunoSuccSumZeroResidual H x₀ R hHyp)
+    {t : ℕ} (hlarge : SβLargeAt H x₀ R hHyp t) :
     αGenuine H x₀ R hHyp t = 0 :=
-  claim58_genuine H hHyp hlarge (βHensel_lift_identity H x₀ R hHyp t)
+  claim58_genuine H hHyp hlarge (βHensel_lift_identity H x₀ R hHyp hzero t)
+
+/-- **Claim 5.8 (genuine), using the full P2 vanishing identity.**
+This wrapper consumes the sharper `FaaDiBrunoFullSumVanishes` P2 endpoint from `P2Match`,
+which already proves the lift identity required by `claim58_genuine`. -/
+theorem claim58_genuine_via_fullVanishes {x₀ : F} {R : F[X][X][Y]}
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hvan : FaaDiBrunoFullSumVanishes H x₀ R hHyp)
+    {t : ℕ} (hlarge : SβLargeAt H x₀ R hHyp t) :
+    αGenuine H x₀ R hHyp t = 0 :=
+  claim58_genuine H hHyp hlarge ((P2_closed_of_fullVanishes H x₀ R hHyp hvan).2 t)
+
+/-- **Claim 5.8 (genuine), using the restricted P2 match.**
+This is the smallest currently-carved P2 bridge: `RestrictedFaaDiBrunoMatch` discharges the
+assembled-series root and the lift identity, so the §5 largeness argument can proceed directly. -/
+theorem claim58_genuine_via_restrictedMatch {x₀ : F} {R : F[X][X][Y]}
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp)
+    {t : ℕ} (hlarge : SβLargeAt H x₀ R hHyp t) :
+    αGenuine H x₀ R hHyp t = 0 :=
+  claim58_genuine H hHyp hlarge ((P2_closed_of_restrictedMatch H x₀ R hHyp hmatch).2 t)
 
 /-! ## Claim 5.8' (genuine): `γ` is a polynomial of X-degree `< k`
 
@@ -223,14 +244,35 @@ theorem claim58prime_genuine {x₀ : F} {R : F[X][X][Y]}
     rw [this, htail t hge]
 
 /-- **Claim 5.8' (genuine), discharging the lift-identity hypotheses from the in-tree theorem.**
-As `claim58prime_genuine`, supplying `hlift` from `βHensel_lift_identity`.  WARNING (HONESTY): this
-inherits `βHensel_lift_identity`'s residual `sorryAx` (see `claim58_genuine_via_intree`). -/
+As `claim58prime_genuine`, supplying `hlift` from `βHensel_lift_identity` and requiring the explicit
+`FaaDiBrunoSuccSumZeroResidual` used by that theorem. -/
 theorem claim58prime_genuine_via_intree {x₀ : F} {R : F[X][X][Y]}
-    (hHyp : ClaimA2.Hypotheses x₀ R H) {k : ℕ}
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hzero : FaaDiBrunoSuccSumZeroResidual H x₀ R hHyp) {k : ℕ}
     (hlarge : ∀ t ≥ k, SβLargeAt H x₀ R hHyp t) :
     gammaGenuine x₀ R H hHyp
       = (↑(PowerSeries.trunc k (gammaGenuine x₀ R H hHyp)) : (𝕃 H)⟦X⟧) :=
-  claim58prime_genuine H hHyp hlarge (fun t _ => βHensel_lift_identity H x₀ R hHyp t)
+  claim58prime_genuine H hHyp hlarge (fun t _ => βHensel_lift_identity H x₀ R hHyp hzero t)
+
+/-- **Claim 5.8' (genuine), using the full P2 vanishing identity.** -/
+theorem claim58prime_genuine_via_fullVanishes {x₀ : F} {R : F[X][X][Y]}
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hvan : FaaDiBrunoFullSumVanishes H x₀ R hHyp) {k : ℕ}
+    (hlarge : ∀ t ≥ k, SβLargeAt H x₀ R hHyp t) :
+    gammaGenuine x₀ R H hHyp
+      = (↑(PowerSeries.trunc k (gammaGenuine x₀ R H hHyp)) : (𝕃 H)⟦X⟧) :=
+  claim58prime_genuine H hHyp hlarge
+    (fun t _ => (P2_closed_of_fullVanishes H x₀ R hHyp hvan).2 t)
+
+/-- **Claim 5.8' (genuine), using the restricted P2 match.** -/
+theorem claim58prime_genuine_via_restrictedMatch {x₀ : F} {R : F[X][X][Y]}
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp) {k : ℕ}
+    (hlarge : ∀ t ≥ k, SβLargeAt H x₀ R hHyp t) :
+    gammaGenuine x₀ R H hHyp
+      = (↑(PowerSeries.trunc k (gammaGenuine x₀ R H hHyp)) : (𝕃 H)⟦X⟧) :=
+  claim58prime_genuine H hHyp hlarge
+    (fun t _ => (P2_closed_of_restrictedMatch H x₀ R hHyp hmatch).2 t)
 
 /-- **Claim 5.8' (genuine, X-degree bound on the truncation).**  Companion to `claim58prime_genuine`:
 the degree-`< k` witness polynomial `PowerSeries.trunc k γ` has `natDegree < k` (when `k > 0`),
@@ -298,7 +340,7 @@ theorem gammaGenuine_Z_linear_of_coeffs_Z_linear {x₀ : F} {R : F[X][X][Y]}
     -- `coeff t (C(T) * v₁) = T · coeff t v₁` since `C(T)` is a constant series.
     rw [map_add, PowerSeries.coeff_mk, PowerSeries.coeff_C_mul, PowerSeries.coeff_mk]
     -- LHS `coeff t γ = αGenuine t`, then use the per-coefficient hypothesis.
-    show αGenuine H x₀ R hHyp t = _
+    change αGenuine H x₀ R hHyp t = _
     rw [hc t]
   · intro t
     exact ⟨c₀ t, c₁ t, by rw [PowerSeries.coeff_mk], by rw [PowerSeries.coeff_mk]⟩
@@ -313,9 +355,8 @@ ambient `[propext, Classical.choice, Quot.sound]` — **no `sorryAx`**, no
 documented hypothesis `LiftIdentityAt`.
 
 The `…_via_intree` wrappers discharge `hlift` from `HenselNumerator.βHensel_lift_identity`, which is
-PROVEN only modulo its single residual `coeff_succ_eval_βHenselAssembled` and so currently carries
-an inherited `sorryAx`.  These wrappers therefore show `sorryAx` — this is **documented, not
-hidden**, and is the only place a `sorryAx` appears in this file (it originates entirely upstream).
+PROVEN from the explicit residual `FaaDiBrunoSuccSumZeroResidual`.  These wrappers therefore remain
+axiom-clean relative to that hypothesis; no hidden `sorryAx` is introduced here.
 
 These `#print axioms` lines are checked at compile time. -/
 
@@ -327,8 +368,12 @@ These `#print axioms` lines are checked at compile time. -/
 #print axioms embedding_βHensel_eq_zero_of_SβLarge
 #print axioms gammaGenuine_Z_linear_of_coeffs_Z_linear
 
--- Inherits βHensel_lift_identity's upstream residual sorryAx (documented):
+-- Conditional wrappers using βHensel_lift_identity and its explicit residual:
 #print axioms claim58_genuine_via_intree
 #print axioms claim58prime_genuine_via_intree
+#print axioms claim58_genuine_via_fullVanishes
+#print axioms claim58prime_genuine_via_fullVanishes
+#print axioms claim58_genuine_via_restrictedMatch
+#print axioms claim58prime_genuine_via_restrictedMatch
 
 end BCIKS20.HenselNumerator.S5Genuine

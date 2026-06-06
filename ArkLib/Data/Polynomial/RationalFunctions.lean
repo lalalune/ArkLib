@@ -3001,12 +3001,39 @@ the witness used here (`fun _ => ⟨0, by simp⟩`). It is therefore a true but
 Hensel-lift numerator of [BCIKS20] (A.1), and carries no functional relation to
 `R`/`x₀`. The genuine numerator additionally satisfies the lift identity
 `embeddingOf𝒪Into𝕃 (β t) = α_t · W^{t+1} · ξ^{e_t}` that Claims 5.8/5.8'/5.9 read off
-(`α' t = 0 ⟺ embedding (β t) = 0` via `Lemma_A_1`); constructing it requires recursive
-multivariate-Hasse / integer-partition / multinomial infrastructure not present in this
-tree or in mathlib. This is the irreducible in-tree frontier of the BCIKS20 §5 chain.
+(`α' t = 0 ⟺ embedding (β t) = 0` via `Lemma_A_1`).
+
+**Status update (L13 / ingredient D).** The genuine recursive numerator *has now been
+constructed*: `ArkLib.betaRec` (`ArkLib/ToMathlib/BetaRecursion.lean`) is the App-A.4
+recursion (A.1), kernel-clean, defined+terminating, landing in `𝒪 H`, with the weight
+bound `betaRec_weight_le_concrete ≤ (2t+1)·d_R·D` (`BetaWeightInduction` +
+`BetaWeightCollapse`) and the ingredient-C vanishing `betaRec_embedding_eq_zero_of_
+matchingSet_large` (`BetaMatchingVanishes`).  The end-to-end §5 capsule
+`ArkLib.BetaToCurveCoeffPolys.curveCoeffPolys_of_betaRec` derives the front-door
+per-coefficient datum from `betaRec` (β load-bearing), and
+`ArkLib.KeystoneStrictResidual.correlatedAgreement_affine_curves_johnson_of_betaRec`
+wires that genuine β into the keystone `ProximityGap.correlatedAgreement_affine_curves`.
+
+**Why this stub is not yet replaced in place (the L13 cross-file obstruction).**
+`BetaRecursion.lean` imports *this* file, so `β_regular`/`β` cannot reference `betaRec`
+without an import cycle; and the genuine recursion needs a strengthened signature
+(`x₀ : F`, `hHyp : Hypotheses x₀ R H`, the Hasse-numerator family `Bcoeff`) that the
+current callers in `…/ListDecoding/Agreement.lean` do not yet thread.  The drop-in is
+therefore performed *one layer up*, in `ToMathlib/BetaToCurveCoeffPolys.lean` /
+`ToMathlib/KeystoneStrictResidual.lean`, where the genuine β replaces this trivial
+witness for the keystone front door.  Replacing this stub *here* is the remaining
+cross-file `L13` step (signature surgery on `β_regular`/`β` + caller updates in
+`Agreement.lean`), tracked in `research/proximity-prize/GRIND-LEDGER.md`.
+
+**F1 caveat.** The in-tree `γ` below uses `PowerSeries.subst` of the shift series
+`X ↦ X − x₀`, which is only a valid substitution when `x₀ = 0`
+(`HasSubst (shiftSeries x₀ H) ↔ x₀ = 0`, kernel-proven in
+`ArkLib/ToMathlib/SubstFieldCaveat.lean`).  The keystone wiring carries this as the
+explicit hypothesis `hsubst`/`hγ` (automatic in the centred case); the off-centre fix is
+to recenter via `PowerSeries.mk (α …)` rather than `subst`.
+
 See `research/proximity-prize/dispositions/ingredient-D-{plan,result}.md` for the full
-construction spec. The signature is also missing `x₀`/`hHyp`, so it structurally cannot
-yet reference `α₀ = T/W`; a genuine numerator needs a strengthened signature. -/
+construction spec. -/
 lemma β_regular (R : F[X][X][Y])
                 (H : F[X][Y]) [_H_irreducible : Fact (Irreducible H)]
                 [_H_natDegree_pos : Fact (0 < H.natDegree)]

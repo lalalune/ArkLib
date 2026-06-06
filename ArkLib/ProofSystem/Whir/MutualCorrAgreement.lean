@@ -263,20 +263,19 @@ lemma mca_linearCode_udrFree
   left as an open obligation rather than fake-proved. See `research/formal/arklib-proof-research-2026-06.md`.
 -/
 
-lemma mca_rsc
-  (α : F) (φ : ι ↪ F) (m : ℕ) [Smooth φ]
-  (parℓ_type : Type) [Fintype parℓ_type] (exp : parℓ_type ↪ ℕ) :
+def mca_rsc
+  (_α : F) (φ : ι ↪ F) (m : ℕ) [Smooth φ]
+  (parℓ_type : Type) [Fintype parℓ_type] (exp : parℓ_type ↪ ℕ) : Prop :=
   let Gen := RSGenerator.genRSC parℓ_type φ m exp
-  let : Fintype Gen.parℓ := Gen.hℓ
+  haveI : Fintype Gen.parℓ := Gen.hℓ
   hasMutualCorrAgreement
     -- Generator
     Gen
     -- BStar
     ((1 + Gen.rate) / 2)
     -- errStar
-    (fun δ => ENNReal.ofReal
+    (fun _δ => ENNReal.ofReal
         ((Fintype.card parℓ_type - 1) * (2^m / (Gen.rate * (Fintype.card F)))))
-  := by sorry
 
 
 /-- Conjecture 4.12 (Johnson Bound)
@@ -293,10 +292,10 @@ lemma mca_rsc
   See `research/formal/arklib-proof-research-2026-06.md`.
 -/
 def mca_johnson_bound_CONJECTURE
-  (α : F) (φ : ι ↪ F) (m : ℕ) [Smooth φ]
+  (_α : F) (φ : ι ↪ F) (m : ℕ) [Smooth φ]
   (parℓ_type : Type) [Fintype parℓ_type] (exp : parℓ_type ↪ ℕ) : Prop :=
   let Gen := RSGenerator.genRSC parℓ_type φ m exp
-  let : Fintype Gen.parℓ := Gen.hℓ
+  haveI : Fintype Gen.parℓ := Gen.hℓ
   hasMutualCorrAgreement Gen
     -- Conjectured BStar = √ρ
     (Real.sqrt Gen.rate)

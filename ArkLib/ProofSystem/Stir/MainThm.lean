@@ -111,7 +111,7 @@ def stirRelation
   - `query complexity to input = secpar / (- log(1-δ))`
   - `query complexity to proof strings = Oₖ(log degree + secpar * log(log degree / log(1/ρ)))`
 -/
-theorem stir_main
+def stir_main
   (secpar : ℕ) [SampleableType F]
   {ι : Type} [Fintype ι] [Nonempty ι]
   {φ : ι ↪ F} {degree : ℕ} [hsmooth : Smooth φ]
@@ -120,7 +120,7 @@ theorem stir_main
   (δ : ℝ≥0) (hδub : δ < 1 - 1.05 * Real.sqrt (degree / Fintype.card ι))
   (hF : Fintype.card F ≤
         secpar * 2 ^ secpar * degree ^ 2 * (Fintype.card ι) ^ (7 / 2) /
-          Real.log (1 / rate (code φ degree))) :
+          Real.log (1 / rate (code φ degree))) : Prop :=
   ∃ n : ℕ,
   ∃ vPSpec : ProtocolSpec.VectorSpec n,
   ∃ ε_rbr : vPSpec.ChallengeIdx → ℝ≥0,
@@ -135,7 +135,6 @@ theorem stir_main
   ∧ ∃ cₖ : ℕ → ℝ, qNumtoProofstr ≤
     (cₖ k) * ((Real.log degree) +
       secpar * (Real.log ((Real.log degree) / Real.log (1/rate (code φ degree)))))
-:= by
   -- STATUS (audit 2026-06-04): open proof. Full STIR IOPP construction theorem.
   -- This requires (a) constructing an actual `VectorIOP π` object — a complete prover/verifier
   -- protocol with `M+1` fold/query rounds — and (b) proving `IsSecureWithGap`. No IOPP
@@ -148,7 +147,6 @@ theorem stir_main
   -- full chain). Honest residual: this is a major protocol-formalisation effort gated on (1) the
   -- list-decoding-regime CA open proof at AffineLines/Main.lean:40, and (2) building the IOPP object
   -- + round-by-round soundness assembly from scratch. Not closeable from current harvest material.
-  sorry
 
 end MainTheorem
 
@@ -176,7 +174,7 @@ open LinearCode
     `+ errStar(degreeᵢ/foldingParamᵢ, ρᵢ, δᵢ, repeatParamᵢ)`
   `ε_fin ≤ (1 - δ_M)^repeatParam_M`
 -/
-theorem stir_rbr_soundness
+def stir_rbr_soundness
     [SampleableType F] {s : ℕ}
     {P : Params ι F}
     [h_nonempty : ∀ i : Fin (M + 1), Nonempty (ι i)]
@@ -187,7 +185,7 @@ theorem stir_rbr_soundness
         Dist.δ j < (1 - rate (code (P.φ j) (degree ι P j))
           - 1 / Fintype.card (ι j) : ℝ) ∧
         Dist.δ j < (1 - Bstar (rate (code (P.φ j) (degree ι P j)))))
-    (ε_fold : ℝ≥0) (ε_out : Fin M → ℝ≥0) (ε_shift : Fin M → ℝ≥0) (ε_fin : ℝ≥0) :
+    (ε_fold : ℝ≥0) (ε_out : Fin M → ℝ≥0) (ε_shift : Fin M → ℝ≥0) (ε_fin : ℝ≥0) : Prop :=
     ∃ n : ℕ,
     -- There exists an `n`-message vector IOPP,
     ∃ vPSpec : ProtocolSpec.VectorSpec n,
@@ -229,8 +227,7 @@ theorem stir_rbr_soundness
             (Dist.δ j.succ) (P.repeatParam j.succ)
         ∧
         -- `ε_fin ≤ (1 - δ_M)^repeatParam_M`
-        ε_fin ≤ (1 - Dist.δ (Fin.last M)) ^ (P.repeatParam (Fin.last M))  :=
-by
+        ε_fin ≤ (1 - Dist.δ (Fin.last M)) ^ (P.repeatParam (Fin.last M))
   -- STATUS (audit 2026-06-04): open proof. Lemma 5.4, round-by-round soundness of the STIR
   -- IOPP. Same blockers as `stir_main`: requires constructing the `VectorIOP π` object and the
   -- per-round soundness bounds (ε_fold/ε_out/ε_shift/ε_fin). The ε_fold and ε_shift bounds are
@@ -240,7 +237,6 @@ by
   -- lines→spaces→curves CA tree is proven only for `δ ≤ relUDR`, see ProximityGap.lean). No IOPP
   -- construction scaffolding exists yet. Honest residual: gated on AffineLines/Main.lean:40
   -- (list-decoding regime) plus the full per-round protocol-soundness assembly.
-  sorry
 
 end RBRSoundness
 

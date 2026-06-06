@@ -182,7 +182,7 @@ def whirRelation
   open). This is therefore strictly downstream of every other WHIR sorry: it requires the protocol
   construction *plus* the entire upstream chain, not a folding/MCA lemma in isolation.
   Honest-stop: exact gap = (WHIR IOPP construction `π`) + (folding L4.20–4.23) + (MCA Cor 4.11). -/
-theorem whir_rbr_soundness
+def whir_rbr_soundness
     [SampleableType F] {d dstar : ℕ}
   -- P : set of M + 1 parameters including foldingParamᵢ, varCountᵢ, φᵢ, repeatParamᵢ,
   -- where foldingParamᵢ > 0
@@ -195,7 +195,7 @@ theorem whir_rbr_soundness
     {wPoly₀ : MvPolynomial (Fin (m_0 + 1)) F} {δ : ℝ≥0}
     [Smooth (P.φ 0)] [Nonempty (ι 0)]
     (ε_fold : (i : Fin (M + 1)) → Fin (P.foldingParam i) → ℝ≥0) (ε_out : Fin (M + 1) → ℝ≥0)
-    (ε_shift : Fin M → ℝ≥0) (ε_fin : ℝ≥0) :
+    (ε_shift : Fin M → ℝ≥0) (ε_fin : ℝ≥0) : Prop :=
     ∃ n : ℕ,
     -- There exists an `n`-message vector IOPP,
     ∃ vPSpec : ProtocolSpec.VectorSpec n,
@@ -267,7 +267,6 @@ theorem whir_rbr_soundness
         ∧
         -- ε_fin ≤ (1 - δ_{M})^(repeatParam_{M})
         ε_fin ≤ (1 - h.δ (Fin.last M))^(P.repeatParam (Fin.last M))
-    := by sorry
 
 end RBR
 

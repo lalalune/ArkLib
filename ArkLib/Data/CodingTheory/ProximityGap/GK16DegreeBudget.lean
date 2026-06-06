@@ -44,9 +44,25 @@ This file closes the **degree-counting spine** of GK16 §4. The two ingredients
 *not* yet formalized (genuine, named gaps), both deep:
 
 1. **GK16 Lemma 12, hard direction** — `LinearIndependent F P → foldedWronskian P ω ≠ 0`
-   (needs `ω` of multiplicative order ≥ `v`; proof = Gaussian reduction to a
-   triangular trailing-monomial system + a Vandermonde monomial base case). Only
-   the *easy* direction (`≠ 0 → LinearIndependent`) is in `GK16Wronskian.lean`
+   (needs `ω` of multiplicative order ≥ `v`). **Now substantially closed** in
+   `GK16Lemma12.lean`:
+   - The **distinct-degree case is fully proven, axiom-clean**:
+     `ArkLib.FRS.GK16.foldedWronskian_ne_zero_of_distinct_natDegree` — for any family
+     with pairwise-distinct degrees, nonzero entries, and `ω` separating the degrees, the
+     folded Wronskian is nonzero. The engine is the exact top-coefficient identity
+     `coeff (foldedWronskian P ω) (∑ j, (P j).natDegree)
+        = (∏ j, leadingCoeff (P j)) · det (vandermonde (ω ^ (P ·).natDegree))`
+     (`ArkLib.FRS.GK16.coeff_foldedWronskian_sum_natDegree`), built on the
+     variable-degree product-coefficient lemma
+     `Polynomial.coeff_prod_sum_of_natDegree_le` (`ToMathlib/GK16BudgetCoeff.lean`).
+   - The **general case is reduced** to a single named echelon residual
+     `ArkLib.FRS.GK16.GK16Lemma12HardResidual` (an independent family admits a
+     distinct-degree, invertible recombination), with a **proven** reduction
+     `ArkLib.FRS.GK16.GK16Lemma12HardResidual_reduces_hard` from it to the full hard
+     direction via the change-of-basis identity. This replaces the previously deep
+     "non-cancellation / majorization on echelon support" gap with routine Gaussian
+     elimination on degrees.
+   Only the *easy* direction (`≠ 0 → LinearIndependent`) is in `GK16Wronskian.lean`
    (`gk16_folded_wronskian_nonvanishing`).
 2. **GK16 Claim 16** — `rootMultiplicity (domain i) L ≥ dim (A ⊓ ker(eval_i))`,
    the link from a vanishing subspace to a high-order root of `L`, via the

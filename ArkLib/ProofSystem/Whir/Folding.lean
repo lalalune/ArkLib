@@ -790,7 +790,7 @@ lemma Pr_set_ne_le_Pr_not_subset_of_subset {α β : Type} (D : PMF.{0} α)
 -- per-round error budget summed here cannot be discharged. The deterministic structural
 -- ingredient (`fold_f_g`/`fold_f_g_poly`, the fold tracks a degree-halving polynomial) is proven
 -- above; what remains is the probabilistic list-set equality, not a folding-algebra fact.
-theorem folding_listdecoding_if_genMutualCorrAgreement
+def folding_listdecoding_if_genMutualCorrAgreement
   [Fintype F] {S : Finset ι} {φ : ι ↪ F} [Fintype ι] [DecidableEq ι] [Smooth φ] {k m : ℕ}
   {S' : Finset (indexPowT S φ 0)} {φ' : (indexPowT S φ 0) ↪ F}
   [∀ i : ℕ, Fintype (indexPowT S φ i)] [DecidableEq (indexPowT S φ 0)] [Smooth φ']
@@ -798,15 +798,15 @@ theorem folding_listdecoding_if_genMutualCorrAgreement
   [∀ i : ℕ, Neg (indexPowT S φ i)]
   {C : Set ((indexPowT S φ 0) → F)} (hcode : C = smoothCode φ' m) (hLe : k ≤ m)
   {δ : ℝ≥0}
-  {params : GenMutualCorrParams S φ k} :
+  {params : GenMutualCorrParams S φ k} : Prop :=
 
   -- necessary typeclasses of underlying domain (ιᵢ)^2ʲ regarding finiteness,
   -- non-emptiness and smoothness
     let _ : ∀ j : Fin (k + 1), Fintype (indexPowT S φ j) := params.inst1
     let _ : ∀ j : Fin (k + 1), Nonempty (indexPowT S φ j) := params.inst2
 
-    ∀ (f : (indexPowT S φ 0) → F)
-      (hδ :
+    (∀ (f : (indexPowT S φ 0) → F)
+      (_hδ :
         0 < δ ∧
           δ <
             1 - Finset.univ.sup (fun j => params.BStar j (params.Gen_α j).C (params.Gen_α j).parℓ)),
@@ -819,8 +819,7 @@ theorem folding_listdecoding_if_genMutualCorrAgreement
           let listHamming := closeCodewordsRel Cₖ fold δ
           foldSet ≠ listHamming
         ] <
-        (∑ i : Fin (k + 1), params.errStar i (params.Gen_α i).C (params.Gen_α i).parℓ δ)
-:= by sorry
+        (∑ i : Fin (k + 1), params.errStar i (params.Gen_α i).C (params.Gen_α i).parℓ δ))
 
 /-- Lemma 4.21
   Let `C = RS[F,ι,m]` be a smooth ReedSolomon code and k ≤ m

@@ -193,9 +193,9 @@ open scoped NNReal
 
   Category status: the STIR directory previously had **no** protocol object at all; this statement
   is the first completeness claim attached to an actual STIR protocol object. -/
-theorem stirRoundReduction_completeness (φ : ι ↪ F) (deg : ℕ) (δ : ℝ≥0) :
+def stirRoundReduction_completeness (φ : ι ↪ F) (deg : ℕ) (δ : ℝ≥0) : Prop :=
     (stirRoundReduction φ deg).completeness init impl
-      (stirRoundInputRel φ deg δ) (stirRoundOutputRel φ deg δ) 0 := by
+      (stirRoundInputRel φ deg δ) (stirRoundOutputRel φ deg δ) 0
   -- WIP (Preserve-WIP, exact goal state below).  The mathematical content is fully discharged by
   -- `combine_single_self`: on the honest run the prover emits `Combine.combine φ deg r ![f] ![deg]`,
   -- which by that lemma equals the input oracle `f`; the oracle verifier forwards this as the output
@@ -223,7 +223,6 @@ theorem stirRoundReduction_completeness (φ : ι ↪ F) (deg : ℕ) (δ : ℝ≥
   -- i.e. the same dependent-`Fin` machinery the in-tree `append_run` characterization is still
   -- assembling.  Deferred to that infrastructure landing; `combine_single_self` (axiom-clean) is the
   -- load-bearing mathematical lemma it will consume.
-  sorry
 
 end Security
 

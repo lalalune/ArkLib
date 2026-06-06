@@ -21,22 +21,19 @@ Completeness therefore follows from `OracleReduction.append_completeness`, suppl
   correct).
 
 Both sub-facts, and the composition lemma `OracleReduction.append_completeness` itself, are blocked
-by `sorryAx` introduced *outside* `ArkLib/ProofSystem/Logup/**`, which this development is not
-permitted to modify:
+by missing upstream security lemmas introduced *outside* `ArkLib/ProofSystem/Logup/**`, which this
+development is not permitted to modify:
 
-* `OracleVerifier.Append.emitOStmt₂Query`
-  (`ArkLib/OracleReduction/Composition/Sequential/Append.lean:277`) is a `sorry` — the
-  "instance-coherence gap (#433)" for routing the first verifier's output-oracle queries. Because
-  `logupVerifier = OracleVerifier.append outerVerifier sumcheckVerifier` and the generic sumcheck
-  verifier `Sumcheck.Spec.oracleVerifier` is itself `OracleVerifier.seqCompose` (built recursively
-  from `OracleVerifier.append`), `logupOracleReduction` *itself* depends on `sorryAx`. Any theorem
-  whose statement mentions `logupOracleReduction` consequently reports `sorryAx`, independent of how
-  it is proved.
-* `Reduction.append_completeness`
-  (`ArkLib/OracleReduction/Composition/Sequential/Append.lean:1097`) is a `sorry`; the oracle-level
+* `Reduction.reduction_append_completeness`
+  (`ArkLib/OracleReduction/Composition/Sequential/Append.lean:675`) is a `sorry`; the oracle-level
   `OracleReduction.append_completeness` reduces to it.
-* `Sumcheck.Spec.oracleVerifier` / `Sumcheck.Spec.oracleReduction` carry `sorryAx` via the same
-  `OracleVerifier.append` route, so embedded-sumcheck completeness is not yet provable in-tree.
+* No full generic `Sumcheck.Spec.oracleReduction` completeness theorem exists in-tree. The generic
+  single-round sumcheck reduction has `oracleReduction_perfectCompleteness`, but
+  `Sumcheck.Spec.oracleReduction` is the `seqCompose` of those rounds and no seq-compose
+  completeness theorem is available for this use.
+* Lifting the generic sumcheck reduction through `logupSumcheckContextLens` would additionally
+  require the lens completeness instance demanded by
+  `OracleReduction.liftContext_completeness`.
 
 Consequently `logup_completeness` is closed via the genuine composition skeleton, with a single
 residual `sorry` (`subPhaseCompleteness`) standing for the two upstream-blocked sub-completeness
@@ -153,17 +150,19 @@ theorem logupOracleReduction_eq_append :
   fails.
 * The embedded sumcheck (`sumcheckOracleReduction`) is complete with error `0`.
 
-WALL (upstream `sorryAx`, outside `ArkLib/ProofSystem/Logup/**`, not modifiable here):
+WALL (upstream security/composition gaps, outside `ArkLib/ProofSystem/Logup/**`, not modifiable
+here):
 
 * Outer completeness requires unfolding `Reduction.run (outerOracleReduction …)`. The prover and
   verifier of the outer phase are themselves `sorryAx`-free, and the failure event is exactly the
   pole event bounded by `probEvent_pole_le`. This direction is in principle closable in-tree but is
   not finished here.
 * Sumcheck completeness is blocked: `sumcheckOracleReduction` is a `liftContext` of
-  `Sumcheck.Spec.oracleReduction`, whose verifier `Sumcheck.Spec.oracleVerifier` is built from
-  `OracleVerifier.seqCompose`/`OracleVerifier.append` and depends on the `sorry` at
-  `ArkLib/OracleReduction/Composition/Sequential/Append.lean:277`
-  (`OracleVerifier.Append.emitOStmt₂Query`). No `Sumcheck.Spec` completeness theorem exists in-tree.
+  `Sumcheck.Spec.oracleReduction`. No full `Sumcheck.Spec` completeness theorem exists in-tree, and
+  the lift also needs the corresponding `OracleContext.Lens.IsComplete` instance for
+  `logupSumcheckContextLens`.
+* The top-level composition step uses `OracleReduction.append_completeness`, which still reduces to
+  the upstream `Reduction.reduction_append_completeness` sorry.
 
 Hence this single residual `sorry`. -/
 theorem subPhaseCompleteness :

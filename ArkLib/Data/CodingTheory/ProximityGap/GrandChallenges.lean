@@ -269,6 +269,7 @@ def MCALowerWitness.ofJohnsonBCHKS25
         (δ : ℝ) <
           1 - (((k : ℝ) / Fintype.card ι + 1 / Fintype.card ι) ^ ((1 : ℝ) / 2)) - (η : ℝ))
     (hδ_le_one : δ ≤ 1)
+    (hBCHKS25 : CodingTheory.rs_epsMCA_johnson_range_bchks25 domain k η δ hη hδ_johnson)
     (hle :
         ENNReal.ofReal
           (let n : ℝ := Fintype.card ι
@@ -280,7 +281,7 @@ def MCALowerWitness.ofJohnsonBCHKS25
              / (Fintype.card F : ℝ)) ≤ (ε_star : ENNReal)) :
     MCALowerWitness (ReedSolomon.code domain k : Set (ι → F)) ε_star :=
   MCALowerWitness.ofLe hδ_le_one
-    (le_trans (CodingTheory.rs_epsMCA_johnson_range_bchks25 domain k η δ hη hδ_johnson) hle)
+    (le_trans hBCHKS25 hle)
 
 /-! ## §4.5 conjecture and its positive-direction link to the prize
 

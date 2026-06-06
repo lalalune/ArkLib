@@ -261,6 +261,37 @@ theorem hBoundary_of_boundary_cards_and_coeffPolys
   exact boundary_jointAgreement_of_cards_and_coeffPolys
     (deg := deg) (domain := domain) (δ := δ) hk u hcardLt hcardGe hcoeffPoly
 
+omit [DecidableEq ι] in
+/-- **Exact `BoundaryCardResidual` adapter.**  The public keystone in `Curves.lean`
+does not ask for the probability/J-boundary hypotheses used by
+`hBoundary_of_boundary_cards_and_coeffPolys`; it asks for the sharper closed-boundary
+interface `BoundaryCardResidual`, where `δ = 1 - sqrtRate` and positive good-set
+cardinality are already exposed.  This theorem packages the same assembly bridge
+into that exact residual shape from the smallest explicit boundary data: the two
+cardinality bounds and the coefficient-polynomial extraction. -/
+theorem boundaryCardResidual_of_boundary_cards_and_coeffPolys
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hBoundaryData : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      δ = 1 - ReedSolomon.sqrtRate deg domain →
+      0 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card →
+      ((RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k) ∧
+      ((RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card ≥
+        (Fintype.card ι + 1) * k) ∧
+      (∀ P : F → Polynomial F,
+        (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+          (P z).natDegree < deg ∧
+            δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+              (P z).eval ∘ domain) ≤ δ) →
+          ∃ B : ℕ → Polynomial F,
+            (∀ j < deg, (B j).natDegree < k + 1) ∧
+              ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+                ∀ j < deg, (P z).coeff j = (B j).eval z)) :
+    ProximityGap.BoundaryCardResidual (k := k) (deg := deg) (domain := domain) (δ := δ) := by
+  intro hk u hδeq hcardPos
+  obtain ⟨hcardLt, hcardGe, hcoeffPoly⟩ := hBoundaryData hk u hδeq hcardPos
+  exact boundary_jointAgreement_of_cards_and_coeffPolys
+    (deg := deg) (domain := domain) (δ := δ) hk u hcardLt hcardGe hcoeffPoly
+
 end BoundaryDischarge
 
 end ArkLib
@@ -272,3 +303,4 @@ end ArkLib
 #print axioms ArkLib.BoundaryDischarge.boundary_param_consistent_iff
 #print axioms ArkLib.BoundaryDischarge.boundary_jointAgreement_of_cards_and_coeffPolys
 #print axioms ArkLib.BoundaryDischarge.hBoundary_of_boundary_cards_and_coeffPolys
+#print axioms ArkLib.BoundaryDischarge.boundaryCardResidual_of_boundary_cards_and_coeffPolys

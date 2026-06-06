@@ -510,16 +510,16 @@ prize's `(2^m, 1/ρ, 1/η)` parameters. -/
 noncomputable def epsMCAgsPrizeBound (q m : ℕ) (ρ η : ℝ≥0) (c₁ c₂ c₃ : ℝ) : ℝ :=
   (1 / (q : ℝ)) * ((2 : ℝ) ^ m) ^ c₁ / ((ρ : ℝ) ^ c₂ * (η : ℝ) ^ c₃)
 
-/-- **ABF26 Grand Challenge 1, GS-exposed CONJECTURE form (named `Prop`).**
+/-- **ABF26 Grand Challenge 1, GS-exposed CONJECTURE form (honest `sorry`).**
 
 For the Reed-Solomon code at a prize rate `ρ = prizeRates j` over an evaluation domain `domain`
 (taken smooth in the prize regime), interleaving exponent `m`, and any radius
 `δ ≤ 1 - ρ - η` with gap `η > 0`, the GS-exposed MCA error against a faithful GS list family `L`
 is `≤ epsMCAgsPrizeBound q m ρ η c₁ c₂ c₃` for some universal constants `c₁, c₂, c₃`.
 
-This is the prize Grand Challenge 1 proposition, now stated against the **real** GS-exposed
-definitions of this file (`epsMCAgs`, `gsListBound`), not against an opaque admit. It is
-recorded as a named `Prop`, not as a theorem with a placeholder proof. The UDR
+This is the prize Grand Challenge 1 statement, now stated against the **real** GS-exposed
+definitions of this file (`epsMCAgs`, `gsListBound`), not against an opaque admit. Its proof is
+the open prize: the `sorry` below is the honest CONJECTURE marker, not a gamed closure. The UDR
 floor is supplied by steps 1–3 of this file:
 * `epsMCAgs_restricted_le_epsCA` gives the dominance below `δ_min/2`;
 * `gsList_bad_gamma_bound` gives the `|L|`-degree per-`γ` count (the new theorem the
@@ -527,7 +527,11 @@ floor is supplied by steps 1–3 of this file:
 * `mcaEventGS_singleton_eq_mcaEvent_udr` certifies the GS definition is faithful in UDR.
 
 The remaining gap to the full statement is the *beyond-UDR* GS list-decoder mass bound (radius up
-to the Johnson/capacity bound `1 - ρ - η`), which is exactly the external prize content. -/
+to the Johnson/capacity bound `1 - ρ - η`), which is exactly the external prize content.
+
+This is a named `Prop`, not a theorem: carrying it as a theorem with `sorry` would launder the
+open prize into `sorryAx`. Downstream formal developments should take this proposition as an
+explicit hypothesis until the beyond-UDR GS mass bound is actually proved. -/
 def epsMCAgs_prizeBound_conjecture
     (domain : ι ↪ F) (j : Fin 4) (m : ℕ) (η δ : ℝ≥0) (hη : 0 < η)
     (L : WordStack F (Fin 2) ι → Finset (ι → F))

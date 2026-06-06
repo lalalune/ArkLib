@@ -91,6 +91,10 @@ added on top of this file's definitions. Each is in scope for Phase 1 of the pla
 set_option linter.unusedFintypeInType false
 set_option linter.unusedDecidableInType false
 set_option linter.unusedSectionVars false
+-- This file's L4.6 quantitative-residual block (the `jointlyProximate*_udr` count bounds toward
+-- ABF26 Lemma 4.6) pushes it past the default 1500-line cap; matching the precedent of other
+-- large ProximityGap files (e.g. `BCIKS20/AffineSpaces.lean`).
+set_option linter.style.longFile 1800
 
 namespace ProximityGap
 
@@ -1053,6 +1057,243 @@ noncomputable def jointlyProximateContribution (C : Set (ι → A)) (δ : ℝ≥
       Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ]
     else (0 : ENNReal)
 
+/-! ## Quantitative bound on the jointly-proximate contribution (toward ABF26 Lemma 4.6)
+
+The hard direction of L4.6 reduces (via `epsMCA_le_max_epsCA_jointlyProximateContribution`)
+to `jointlyProximateContribution C δ ≤ ε_ca(C, δ, δ)`. The pointwise event-implication route is
+provably false on jointly-close stacks (see `eq_of_relDist_le_of_two_mul_lt_dist`'s docstring),
+so we instead bound the jointly-proximate contribution *numerically*.
+
+The lemmas below pin the per-stack jointly-proximate `mcaEvent` mass to `⌊δ·n⌋ / |F|`. The
+mechanism is the [AHIV17, BKS18] / [Hab25, Lemma 1] coordinate-level count: under UDR the
+`mcaEvent` witness `w` is forced to the unique combined codeword `p₀ + γ·p₁`, so a `γ` admitting
+an `mcaEvent` must solve a *single-coordinate* affine equation `γ • (u 1 − p₁) i = −(u 0 − p₀) i`
+at some disagreement coordinate `i ∈ univ \ S'` where `(u 1 − p₁) i ≠ 0`. Because `Σ` is an
+`F`-module with no zero `smul`-divisors (`Σ = Fˢ` in the paper), each such `i` is solved by **at
+most one** `γ`, so the bad-`γ` set injects into `univ \ S'`, whose size is `≤ ⌊δ·n⌋`.
+
+This sharpens the documented external residual from the opaque `jointlyProximateContribution ≤
+ε_ca` to the explicit numeric dominance `⌊δ·n⌋ / |F| ≤ ε_ca(C, δ, δ)` — which is exactly
+[ACFY25, Lemma 4.10] / the [BCIKS20]/[Hab25] Guruswami–Sudan rearrangement, and is genuinely
+external (`ε_ca` admits no matching in-tree lower bound; e.g. a code with no non-jointly-close
+near-codewords has `ε_ca = 0` while the count can be positive).
+
+The hypothesis `[NoZeroSMulDivisors F A]` is faithful, not a weakening: the paper's alphabet
+`Σ = Fˢ` is a finite `F`-vector space, for which the instance is automatic. It is added only to
+these quantitative lemmas; the public `epsMCA_eq_epsCA_below_udr` signature is unchanged. -/
+
+open Classical in
+/-- **Coordinate-level forcing for the jointly-proximate `mcaEvent` (UDR).**
+
+Fix a jointly-`δ`-close stack `u` with `γ`-independent witnesses `(p₀, p₁)` on a set `S'` of
+size `≥ (1-δ)·n`. Under UDR, every `γ` admitting an `mcaEvent` for `u` has a disagreement
+coordinate `i ∈ univ \ S'` at which the difference row is nonzero and the affine equation
+`γ • (u 1 − p₁) i = −(u 0 − p₀) i` holds. This is [Hab25, Lemma 1] at coordinate level. -/
+theorem jointlyProximate_mcaEvent_exists_bad_coord_udr
+    (C : Submodule F (ι → A)) (δ : ℝ≥0) (u : WordStack A (Fin 2) ι)
+    (h_udr : 2 * δ * (Fintype.card ι : ℝ≥0) < (Code.dist ((C : Set (ι → A))) : ℝ≥0))
+    {p₀ p₁ : ι → A} (hp₀_mem : p₀ ∈ (C : Set (ι → A))) (hp₁_mem : p₁ ∈ (C : Set (ι → A)))
+    {S' : Finset ι} (hS'_card : (S'.card : ℝ≥0) ≥ (1 - δ) * Fintype.card ι)
+    (h_agree_S' : ∀ j ∈ S', p₀ j = u 0 j ∧ p₁ j = u 1 j)
+    {γ : F} (h_event : mcaEvent (C : Set (ι → A)) δ (u 0) (u 1) γ) :
+    ∃ i ∈ (Finset.univ \ S'),
+      (u 1 i - p₁ i ≠ 0) ∧ γ • (u 1 i - p₁ i) = -(u 0 i - p₀ i) := by
+  classical
+  obtain ⟨S, hS_card, ⟨w, hw_mem, hw_line⟩, hno_pair⟩ := h_event
+  -- Forcing: `w = p₀ + γ • p₁` everywhere (the unique combined codeword). Derived inline with the
+  -- *supplied* `(p₀, p₁)` via the union-of-complements argument (cf.
+  -- `mcaEvent_witness_eq_combined_of_jointProximity_udr`).
+  have hcomb_mem : (p₀ + γ • p₁) ∈ (C : Set (ι → A)) := C.add_mem hp₀_mem (C.smul_mem γ hp₁_mem)
+  set e : ℕ := Nat.floor (δ * (Fintype.card ι : ℝ≥0)) with he
+  have hScompl : (Finset.univ \ S).card ≤ e := by
+    have hsub : Fintype.card ι - e ≤ S.card := by
+      have := (Code.relDist_floor_bound_iff_complement_bound (Fintype.card ι) S.card δ).mpr hS_card
+      simpa [he] using this
+    have hle : S.card ≤ Fintype.card ι := Finset.card_le_univ S
+    rw [← Finset.compl_eq_univ_sdiff, Finset.card_compl]; omega
+  have hS'compl : (Finset.univ \ S').card ≤ e := by
+    have hsub : Fintype.card ι - e ≤ S'.card := by
+      have := (Code.relDist_floor_bound_iff_complement_bound (Fintype.card ι) S'.card δ).mpr
+        hS'_card
+      simpa [he] using this
+    have hle : S'.card ≤ Fintype.card ι := Finset.card_le_univ S'
+    rw [← Finset.compl_eq_univ_sdiff, Finset.card_compl]; omega
+  have h_dis_sub :
+      Finset.univ.filter (fun i ↦ w i ≠ (p₀ + γ • p₁) i) ⊆
+        (Finset.univ \ S) ∪ (Finset.univ \ S') := by
+    intro i hi
+    rw [Finset.mem_filter] at hi
+    by_contra hni
+    rw [Finset.mem_union] at hni
+    push Not at hni
+    obtain ⟨hiS, hiS'⟩ := hni
+    have hiS_mem : i ∈ S := by
+      by_contra h; exact hiS (Finset.mem_sdiff.mpr ⟨Finset.mem_univ i, h⟩)
+    have hiS'_mem : i ∈ S' := by
+      by_contra h; exact hiS' (Finset.mem_sdiff.mpr ⟨Finset.mem_univ i, h⟩)
+    obtain ⟨hp0i, hp1i⟩ := h_agree_S' i hiS'_mem
+    have : w i = (p₀ + γ • p₁) i := by
+      rw [hw_line i hiS_mem]; simp [Pi.add_apply, Pi.smul_apply, hp0i, hp1i]
+    exact hi.2 this
+  have h_ham_le : Δ₀(w, p₀ + γ • p₁) ≤ 2 * e := by
+    refine le_trans (le_trans (by unfold hammingDist; exact Finset.card_le_card h_dis_sub)
+      (Finset.card_union_le _ _)) ?_
+    omega
+  have h_lt : Δ₀(w, p₀ + γ • p₁) < Code.dist (C : Set (ι → A)) := by
+    have he_le : (e : ℝ≥0) ≤ δ * (Fintype.card ι : ℝ≥0) := by
+      rw [he]; exact Nat.floor_le (zero_le _)
+    have h2e : (2 * e : ℝ≥0) ≤ 2 * δ * (Fintype.card ι : ℝ≥0) := by
+      have : (2 : ℝ≥0) * (e : ℝ≥0) ≤ 2 * (δ * (Fintype.card ι : ℝ≥0)) := by gcongr
+      simpa [mul_assoc] using this
+    have h2e' : ((Δ₀(w, p₀ + γ • p₁) : ℕ) : ℝ≥0) < (Code.dist (C : Set (ι → A)) : ℝ≥0) := by
+      have hcast : ((Δ₀(w, p₀ + γ • p₁) : ℕ) : ℝ≥0) ≤ (2 * e : ℝ≥0) := by exact_mod_cast h_ham_le
+      exact lt_of_le_of_lt (le_trans hcast h2e) h_udr
+    exact_mod_cast h2e'
+  have hpw' : w = p₀ + γ • p₁ := eq_of_lt_dist hw_mem hcomb_mem h_lt
+  -- `(p₀, p₁)` is *not* a joint pair on `S`, so it disagrees with `(u 0, u 1)` at some `i ∈ S`.
+  have h_exists_dis : ∃ i ∈ S, ¬ (p₀ i = u 0 i ∧ p₁ i = u 1 i) := by
+    by_contra h_all
+    push Not at h_all
+    exact hno_pair ⟨p₀, hp₀_mem, p₁, hp₁_mem, fun i hi ↦ h_all i hi⟩
+  obtain ⟨i, hiS, hi_dis⟩ := h_exists_dis
+  -- That `i` lies off `S'` (on `S'` the pair agrees), and satisfies the combined equation.
+  have hi_notS' : i ∉ S' := fun hiS' ↦ hi_dis (h_agree_S' i hiS')
+  have hi_mem : i ∈ (Finset.univ \ S') := Finset.mem_sdiff.mpr ⟨Finset.mem_univ i, hi_notS'⟩
+  -- Combined equation at `i`: from `w i = u 0 i + γ•u 1 i` (on `S`) and `w = p₀ + γ•p₁` globally.
+  have heq_comb : (u 0 i - p₀ i) + γ • (u 1 i - p₁ i) = 0 := by
+    have hwi_u : w i = u 0 i + γ • u 1 i := hw_line i hiS
+    have hwi_p : w i = p₀ i + γ • p₁ i := by rw [hpw']; simp [Pi.add_apply, Pi.smul_apply]
+    have heq : u 0 i + γ • u 1 i = p₀ i + γ • p₁ i := by rw [← hwi_u, hwi_p]
+    rw [smul_sub]
+    have hrearr : u 0 i - p₀ i + (γ • u 1 i - γ • p₁ i)
+        = (u 0 i + γ • u 1 i) - (p₀ i + γ • p₁ i) := by abel
+    rw [hrearr, heq, sub_self]
+  have heq_lin : γ • (u 1 i - p₁ i) = -(u 0 i - p₀ i) := by
+    have := heq_comb
+    rw [add_comm] at this
+    exact eq_neg_of_add_eq_zero_left this
+  -- The difference row is nonzero at `i`: if it were `0`, then `u 0 i = p₀ i` and `u 1 i = p₁ i`,
+  -- contradicting the disagreement at `i`.
+  have hrow_ne : u 1 i - p₁ i ≠ 0 := by
+    intro hz
+    apply hi_dis
+    have h1 : p₁ i = u 1 i := (sub_eq_zero.mp hz).symm
+    have h0 : p₀ i = u 0 i := by
+      have hneg : -(u 0 i - p₀ i) = 0 := by rw [← heq_lin, hz, smul_zero]
+      rw [neg_eq_zero, sub_eq_zero] at hneg; exact hneg.symm
+    exact ⟨h0, h1⟩
+  exact ⟨i, hi_mem, hrow_ne, heq_lin⟩
+
+open Classical in
+/-- **Per-stack count bound on the jointly-proximate `mcaEvent` mass (UDR).**
+
+For a jointly-`δ`-close stack `u` under UDR (with `Σ = A` having no zero `smul`-divisors),
+`Pr_γ[mcaEvent C δ (u 0) (u 1) γ] ≤ ⌊δ·n⌋ / |F|`.
+
+The bad-`γ` filter injects into the disagreement-coordinate set `univ \ S'` (size `≤ ⌊δ·n⌋`):
+the map `γ ↦ (a witnessing coordinate i)` is injective because two scalars `γ, γ'` mapping to the
+same `i` satisfy `γ • d₁ i = −d₀ i = γ' • d₁ i` with `d₁ i ≠ 0`, forcing `γ = γ'` by
+`NoZeroSMulDivisors`. Then `prob_uniform_eq_card_filter_div_card` + `gcongr`. -/
+theorem jointlyProximate_mcaEvent_Pr_le_card_div_udr [NoZeroSMulDivisors F A]
+    (C : Submodule F (ι → A)) (δ : ℝ≥0) (u : WordStack A (Fin 2) ι)
+    (h_udr : 2 * δ * (Fintype.card ι : ℝ≥0) < (Code.dist ((C : Set (ι → A))) : ℝ≥0))
+    (h_jp : jointProximity (C := (C : Set (ι → A))) (u := u) δ) :
+    Pr_{let γ ← $ᵖ F}[mcaEvent (C : Set (ι → A)) δ (u 0) (u 1) γ] ≤
+      (Nat.floor (δ * (Fintype.card ι : ℝ≥0)) : ENNReal) / (Fintype.card F : ENNReal) := by
+  classical
+  -- Extract the `γ`-independent witnesses `(p₀, p₁)` on `S'`.
+  have h_jp' := h_jp
+  rw [← jointAgreement_iff_jointProximity] at h_jp'
+  obtain ⟨S', hS'_card, p, hp⟩ := h_jp'
+  set p₀ := p 0 with hp₀_def
+  set p₁ := p 1 with hp₁_def
+  have hp₀_mem : p₀ ∈ (C : Set (ι → A)) := (hp 0).1
+  have hp₁_mem : p₁ ∈ (C : Set (ι → A)) := (hp 1).1
+  have h_agree_S' : ∀ j ∈ S', p₀ j = u 0 j ∧ p₁ j = u 1 j := by
+    intro j hj
+    refine ⟨?_, ?_⟩
+    · have : j ∈ Finset.filter (fun k ↦ p 0 k = u 0 k) Finset.univ := (hp 0).2 hj
+      exact (Finset.mem_filter.mp this).2
+    · have : j ∈ Finset.filter (fun k ↦ p 1 k = u 1 k) Finset.univ := (hp 1).2 hj
+      exact (Finset.mem_filter.mp this).2
+  -- Choose, for each bad `γ`, a witnessing coordinate `i ∈ univ \ S'`.
+  set badFilter : Finset F :=
+    Finset.univ.filter (fun γ ↦ mcaEvent (C : Set (ι → A)) δ (u 0) (u 1) γ) with hbad
+  -- Injection `badFilter → univ \ S'`.
+  have h_choice : ∀ γ ∈ badFilter, ∃ i ∈ (Finset.univ \ S'),
+      (u 1 i - p₁ i ≠ 0) ∧ γ • (u 1 i - p₁ i) = -(u 0 i - p₀ i) := by
+    intro γ hγ
+    have h_event : mcaEvent (C : Set (ι → A)) δ (u 0) (u 1) γ :=
+      (Finset.mem_filter.mp hγ).2
+    exact jointlyProximate_mcaEvent_exists_bad_coord_udr C δ u h_udr hp₀_mem hp₁_mem
+      hS'_card h_agree_S' h_event
+  choose coord hcoord_mem hcoord_ne hcoord_eq using h_choice
+  -- The choice map is injective into `univ \ S'`.
+  have h_card_le : badFilter.card ≤ (Finset.univ \ S').card := by
+    refine Finset.card_le_card_of_injOn (fun γ ↦ if hγ : γ ∈ badFilter then coord γ hγ else
+      Classical.arbitrary _) ?_ ?_
+    · intro γ hγ
+      simp only [Finset.mem_coe] at hγ
+      simp only [dif_pos hγ]
+      exact hcoord_mem γ hγ
+    · intro γ₁ hγ₁ γ₂ hγ₂ heq
+      simp only [Finset.mem_coe] at hγ₁ hγ₂
+      simp only [hγ₁, hγ₂, dif_pos] at heq
+      -- `coord γ₁ = coord γ₂ =: i`, with `d₁ i ≠ 0` and `γⱼ • d₁ i = -d₀ i`.
+      set i := coord γ₁ hγ₁ with hi_def
+      have he₁ : γ₁ • (u 1 i - p₁ i) = -(u 0 i - p₀ i) := hcoord_eq γ₁ hγ₁
+      have he₂ : γ₂ • (u 1 (coord γ₂ hγ₂) - p₁ (coord γ₂ hγ₂))
+          = -(u 0 (coord γ₂ hγ₂) - p₀ (coord γ₂ hγ₂)) := hcoord_eq γ₂ hγ₂
+      rw [← heq] at he₂
+      have hne : u 1 i - p₁ i ≠ 0 := hcoord_ne γ₁ hγ₁
+      have : γ₁ • (u 1 i - p₁ i) = γ₂ • (u 1 i - p₁ i) := by rw [he₁, he₂]
+      have hsub : (γ₁ - γ₂) • (u 1 i - p₁ i) = 0 := by rw [sub_smul, this, sub_self]
+      rcases smul_eq_zero.mp hsub with h | h
+      · exact sub_eq_zero.mp h
+      · exact absurd h hne
+  -- Convert the card bound to the probability bound.
+  have hcompl_le : (Finset.univ \ S').card ≤ Nat.floor (δ * (Fintype.card ι : ℝ≥0)) := by
+    have hsub : Fintype.card ι - Nat.floor (δ * (Fintype.card ι : ℝ≥0)) ≤ S'.card := by
+      have := (Code.relDist_floor_bound_iff_complement_bound (Fintype.card ι) S'.card δ).mpr
+        hS'_card
+      simpa using this
+    have hle : S'.card ≤ Fintype.card ι := Finset.card_le_univ S'
+    rw [← Finset.compl_eq_univ_sdiff, Finset.card_compl]; omega
+  have hbad_le : badFilter.card ≤ Nat.floor (δ * (Fintype.card ι : ℝ≥0)) :=
+    le_trans h_card_le hcompl_le
+  -- `|badFilter| / |F| ≤ ⌊δn⌋ / |F|`: same denominator, numerator bound via `hbad_le`.
+  rw [prob_uniform_eq_card_filter_div_card]
+  have hnum : ((Finset.filter (fun γ ↦ mcaEvent (C : Set (ι → A)) δ (u 0) (u 1) γ)
+        (Finset.univ : Finset F)).card : ℝ≥0) ≤
+      (Nat.floor (δ * (Fintype.card ι : ℝ≥0)) : ℝ≥0) := by
+    rw [← hbad]; exact_mod_cast hbad_le
+  have hcast : ((Nat.floor (δ * (Fintype.card ι : ℝ≥0)) : ℝ≥0) : ENNReal)
+      = (Nat.floor (δ * (Fintype.card ι : ℝ≥0)) : ENNReal) := by
+    simp [ENNReal.coe_natCast]
+  rw [← hcast]
+  exact ENNReal.div_le_div_right (h := by exact_mod_cast hnum) _
+
+open Classical in
+/-- **Sup form: the jointly-proximate contribution is bounded by the coordinate count (UDR).**
+
+`jointlyProximateContribution C δ ≤ ⌊δ·n⌋ / |F|` for a `Submodule` `C` under UDR with
+`[NoZeroSMulDivisors F A]`. This is the explicit numeric residual the hard direction of L4.6
+reduces to: combined with `epsMCA_le_max_epsCA_jointlyProximateContribution` it gives
+`ε_mca(C, δ) ≤ max(ε_ca(C, δ, δ), ⌊δ·n⌋/|F|)`, so the only remaining fact is the
+[ACFY25, Lemma 4.10] dominance `⌊δ·n⌋/|F| ≤ ε_ca(C, δ, δ)` (genuinely external). -/
+theorem jointlyProximateContribution_le_card_div_udr [NoZeroSMulDivisors F A]
+    (C : Submodule F (ι → A)) (δ : ℝ≥0)
+    (h_udr : 2 * δ * (Fintype.card ι : ℝ≥0) < (Code.dist ((C : Set (ι → A))) : ℝ≥0)) :
+    jointlyProximateContribution (F := F) (C : Set (ι → A)) δ ≤
+      (Nat.floor (δ * (Fintype.card ι : ℝ≥0)) : ENNReal) / (Fintype.card F : ENNReal) := by
+  unfold jointlyProximateContribution
+  apply iSup_le
+  intro u
+  by_cases hjp : jointProximity (C := (C : Set (ι → A))) (u := u) δ
+  · rw [if_pos hjp]
+    exact jointlyProximate_mcaEvent_Pr_le_card_div_udr C δ u h_udr hjp
+  · rw [if_neg hjp]; exact zero_le _
+
 open Classical in
 /-- **Decomposition of `ε_mca` (audited intermediate toward ABF26 Lemma 4.6).**
 
@@ -1150,6 +1391,28 @@ theorem epsMCA_le_max_epsCA_jointlyProximateContribution (C : Set (ι → A)) (�
       else Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ]) u)
     rw [if_neg hjp]
 
+/-- **Unconditional `max`-form quantitative bound on `ε_mca` below UDR.**
+
+`ε_mca(C, δ) ≤ max (ε_ca(C, δ, δ)) (⌊δ·n⌋ / |F|)` for a `Submodule` `C` under UDR with
+`[NoZeroSMulDivisors F A]` (the paper's `Σ = Fˢ` always satisfies the instance).
+
+This is the strongest *unconditional* (no residual hypothesis) statement toward ABF26 Lemma 4.6
+available in-tree: it combines the audited decomposition
+`epsMCA_le_max_epsCA_jointlyProximateContribution` with the kernel-checked coordinate count
+`jointlyProximateContribution_le_card_div_udr`. The full equality `ε_mca = ε_ca` follows from this
+the moment the genuinely-external dominance `⌊δ·n⌋ / |F| ≤ ε_ca(C, δ, δ)` ([ACFY25, Lemma 4.10] /
+the [BCIKS20]/[Hab25] Guruswami–Sudan rearrangement) is supplied — see `epsMCA_eq_epsCA_below_udr`,
+whose residual `diffStackMCAResidualBelowUDR` is exactly that dominance in per-stack form. -/
+theorem epsMCA_le_max_epsCA_card_div_udr [NoZeroSMulDivisors F A]
+    (C : Submodule F (ι → A)) (δ : ℝ≥0)
+    (h_udr : 2 * δ * (Fintype.card ι : ℝ≥0) < (Code.dist ((C : Set (ι → A))) : ℝ≥0)) :
+    epsMCA (F := F) (A := A) ((C : Set (ι → A))) δ ≤
+      max (epsCA (F := F) (A := A) ((C : Set (ι → A))) δ δ)
+        ((Nat.floor (δ * (Fintype.card ι : ℝ≥0)) : ENNReal) / (Fintype.card F : ENNReal)) := by
+  refine le_trans (epsMCA_le_max_epsCA_jointlyProximateContribution
+    (F := F) (C := (C : Set (ι → A))) δ) ?_
+  exact max_le_max (le_refl _) (jointlyProximateContribution_le_card_div_udr C δ h_udr)
+
 /-- **Named residual for ABF26 Lemma 4.6's hard direction.**
 
 For every jointly-`δ`-close stack `u` and every codeword pair `(p₀, p₁) ∈ C²`, the MCA mass of
@@ -1170,6 +1433,19 @@ def diffStackMCAResidualBelowUDR (C : Submodule F (ι → A)) (δ : ℝ≥0) : P
 /-- **ABF26 Lemma 4.6, conditional on its named GS/list-decoding residual.**
 In the unique-decoding regime `δ < δ_min(C)/2`, `ε_mca` and `ε_ca` coincide once the
 difference-stack residual `diffStackMCAResidualBelowUDR` is supplied.
+
+**Quantitative sharpening (now in-tree).** The jointly-proximate contribution is bounded
+*numerically* by `jointlyProximateContribution_le_card_div_udr`:
+`jointlyProximateContribution C δ ≤ ⌊δ·n⌋ / |F|` (kernel-checked, axiom-clean, needs only the
+faithful `[NoZeroSMulDivisors F A]` instance that `Σ = Fˢ` satisfies automatically). Hence
+`epsMCA_le_max_epsCA_card_div_udr` gives the **unconditional** bound
+`ε_mca(C, δ) ≤ max(ε_ca(C, δ, δ), ⌊δ·n⌋/|F|)`. The full equality therefore reduces to the single
+*numeric* dominance `⌊δ·n⌋/|F| ≤ ε_ca(C, δ, δ)` — which is [ACFY25, Lemma 4.10] (the
+[BCIKS20]/[Hab25] Guruswami–Sudan rearrangement) and is genuinely external: `ε_ca` admits no
+matching in-tree lower bound (e.g. a code with no non-jointly-close near-codewords has
+`ε_ca = 0` while the count `⌊δ·n⌋/|F|` can be positive), so the count alone cannot dominate
+`ε_ca` from the correct side. This is why the residual is retained as the hypothesis
+`diffStackMCAResidualBelowUDR` (its per-stack form of the same dominance) below.
 
 The unique-decoding hypothesis is expressed as `2 · δ · n < δ_min(C) · n = ‖C‖₀` to avoid
 fractional arithmetic in ℕ — equivalent to the paper's `δ < δ_min(C)/2`.
