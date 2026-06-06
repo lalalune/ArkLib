@@ -751,6 +751,32 @@ theorem rs_epsCA_breakdown_cs25_of_entropyBallLowerWitness
     rs_epsCA_breakdown_cs25 domain k δ hq_ge hδ_lo hδ_hi :=
   rs_epsCA_breakdown_cs25_of_lower_bound domain k δ hq_ge hδ_lo hδ_hi hlower
 
+/-- **Reduction of the #82 entropy-ball lower witness to a covered bad-line stack.**
+
+Wires `ProximityGap.one_le_epsCA_of_line_covered` (Errors.lean) into the CS25 breakdown
+residual: the witness `1 ≤ ε_ca(RS)` follows from any stack `u` that is *not* jointly `δ`-close
+to the RS code yet whose entire affine line `u 0 + γ • u 1` is `δ`-close to it.  This relocates
+the genuine open content of #82 to the named hypotheses `hu`/`hcover` — the CS25 *covering*
+construction in the entropy band (still absent in-tree; to be fed by the proven
+`linear_lambda_ge_entropy_volume`).  It does **not** close #82. -/
+theorem rs_epsCA_breakdown_cs25_entropyBallLowerWitness_of_covered_stack
+    (domain : ι ↪ F) (k : ℕ) (δ : ℝ≥0)
+    (hq_ge : 10 ≤ Fintype.card F)
+    (hδ_lo :
+        1 - qEntropy (Fintype.card F) (δ : ℝ) + 2 / (Fintype.card ι : ℝ)
+            + ((qEntropy (Fintype.card F) (δ : ℝ) - (δ : ℝ))
+                / (Fintype.card ι : ℝ)) ^ ((1 : ℝ) / 2)
+          ≤ (k : ℝ) / Fintype.card ι)
+    (hδ_hi : (k : ℝ) / Fintype.card ι ≤ 1 - (δ : ℝ) - 2 / (Fintype.card ι : ℝ))
+    (u : Fin 2 → ι → F)
+    (hu : ¬ Code.jointProximity (C := (ReedSolomon.code domain k : Set (ι → F))) (u := u) δ)
+    (hcover : ∀ γ : F,
+        δᵣ(u 0 + γ • u 1, (ReedSolomon.code domain k : Set (ι → F))) ≤ δ) :
+    rs_epsCA_breakdown_cs25_entropyBallLowerWitness domain k δ hq_ge hδ_lo hδ_hi := by
+  unfold rs_epsCA_breakdown_cs25_entropyBallLowerWitness
+  exact ProximityGap.one_le_epsCA_of_line_covered
+    (ReedSolomon.code domain k : Set (ι → F)) δ δ u hu hcover
+
 /-- The ABF26 T4.18 Johnson radius for the fixed relative distance `15/16`.  This is kept
 as a named expression so the existential construction and Grand-MCA adapters use the same
 radius literal. -/
