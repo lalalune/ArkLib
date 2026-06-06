@@ -609,9 +609,10 @@ lemma incrementalBadEventExistsProp_commit_step_backward (i : Fin ℓ) (hCR : is
         (f_block_start := snoc_oracle 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
           (h_destIdx := rfl) oStmtIn newOracle j)
         (r_challenges := fun cId => challenges ⟨j.val * ϑ + cId.val, by
-          have h0 := cId.isLt
-          rw [hk] at h0
-          exact absurd h0 (Nat.not_lt_zero _)⟩)) hj_bad
+          -- `cId : Fin (min …)` is vacuous (`hk : min … = 0`); omega closes from the
+          -- contradictory bound (a `rw` at the hypothesis hits a motive dependency).
+          have h0 : (cId : ℕ) < min ϑ (i.succ.val - j.val * ϑ) := cId.isLt
+          omega⟩)) hj_bad
 
 lemma oracleFoldingConsistencyProp_commit_step_backward (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i)
     (challenges : Fin i.succ.val → L)
