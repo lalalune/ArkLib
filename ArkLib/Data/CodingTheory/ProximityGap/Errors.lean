@@ -1065,7 +1065,7 @@ theorem jointProximity_mcaEvent_imp_diffStack_mcaEvent_udr
     refine ⟨p₀ + c₀, C.add_mem hp₀_mem hc₀_mem, p₁ + c₁, C.add_mem hp₁_mem hc₁_mem, ?_⟩
     intro i hi
     obtain ⟨hd0, hd1⟩ := h_agree_d i hi
-    -- `(p₀+c₀) i = p₀ i + c₀ i = p₀ i + (u0-p₀) i = u0 i` ; likewise for index 1.
+    -- `(p₀+c₀) i = p₀ i + c₀ i = p₀ i + (u0-p₀) i = u0 i`; likewise for index 1.
     refine ⟨?_, ?_⟩
     · have hc : c₀ i = u 0 i - p₀ i := by simpa [Pi.sub_apply] using hd0
       simp only [Pi.add_apply]

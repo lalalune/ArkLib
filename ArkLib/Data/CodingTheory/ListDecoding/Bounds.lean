@@ -375,7 +375,7 @@ theorem core_stirling_add {k j : ℕ} (hk : 1 ≤ k) (hj : 1 ≤ j) :
     -- ss1 * ss1 = e²/2 = 2·ss2
     have hsum2 : (1:ℕ) + 1 = 2 := rfl
     rw [hsum2, stirlingSeq_one, ss2_eq]
-    -- e/√2 * (e/√2) = e²/2 = 2 * (e²/4)  ; exact equality
+    -- e/√2 * (e/√2) = e²/2 = 2 * (e²/4); exact equality
     have h2 : √(2:ℝ) ^ 2 = 2 := Real.sq_sqrt (by norm_num)
     have h2pos : 0 < √(2:ℝ) := Real.sqrt_pos.mpr (by norm_num)
     have heq : Real.exp 1 / √2 * (Real.exp 1 / √2) = 2 * (Real.exp 1 ^ 2 / 4) := by
@@ -410,7 +410,7 @@ theorem core_stirling_add {k j : ℕ} (hk : 1 ≤ k) (hj : 1 ≤ j) :
       ring
     rw [hLeq, hReq]
     rw [div_le_div_iff₀ (by positivity) (by positivity)]
-    -- e³ * (9√6) ≤ (4 e³) * (4 √2) = 16 e³ √2  ;  use hrad and e³ ≥ 0
+    -- e³ * (9√6) ≤ (4 e³) * (4 √2) = 16 e³ √2;  use hrad and e³ ≥ 0
     nlinarith [hrad, he3, mul_le_mul_of_nonneg_left hrad he3.le]
   -- generic case: 1/k + 1/j ≤ 4/3
   · have hkr : (1 : ℝ) ≤ (k : ℝ) := by exact_mod_cast hk
@@ -433,7 +433,7 @@ theorem core_stirling_add {k j : ℕ} (hk : 1 ≤ k) (hj : 1 ≤ j) :
         -- enumerate the non-corner cases
         rcases Nat.lt_or_ge k 3 with hk3 | hk3
         · interval_cases k
-          · -- k = 1 ; then j ≥ 3 (since not (1,1),(1,2))
+          · -- k = 1; then j ≥ 3 (since not (1,1),(1,2))
             have hj3 : 3 ≤ j := by
               rcases Nat.lt_or_ge j 3 with hj3 | hj3
               · interval_cases j
@@ -446,7 +446,7 @@ theorem core_stirling_add {k j : ℕ} (hk : 1 ≤ k) (hj : 1 ≤ j) :
               linarith
             simp only [Nat.cast_one, div_one]
             linarith
-          · -- k = 2 ; then j ≥ 2 (since not (2,1))
+          · -- k = 2; then j ≥ 2 (since not (2,1))
             have hj2 : 2 ≤ j := by
               rcases Nat.lt_or_ge j 2 with hj2 | hj2
               · interval_cases j
@@ -459,7 +459,7 @@ theorem core_stirling_add {k j : ℕ} (hk : 1 ≤ k) (hj : 1 ≤ j) :
             have hcast2 : ((2:ℕ):ℝ) = 2 := by norm_num
             rw [hcast2]
             linarith
-        · -- k ≥ 3 ; 1/k ≤ 1/3, 1/j ≤ 1
+        · -- k ≥ 3; 1/k ≤ 1/3, 1/j ≤ 1
           have hk3r : (3:ℝ) ≤ (k:ℝ) := by exact_mod_cast hk3
           have h1 : (1:ℝ)/(k:ℝ) ≤ 1/3 := by
             rw [div_le_div_iff₀ hkpos (by norm_num)]; linarith
@@ -602,7 +602,7 @@ theorem master_eq (K j : ℕ) (hK : 1 ≤ K) (hj : 1 ≤ j) :
   set eK : ℝ := ((K:ℝ) / Real.exp 1) ^ K with heK
   set ej : ℝ := ((j:ℝ) / Real.exp 1) ^ j with hej
   -- now LHS = d * (ss(K+j) * (c * (P * (eK * ej))) / (ss K * (a * eK) * (ss j * (b * ej))))
-  -- RHS = 2 ss(K+j)/(ss K ss j) * P ; hrad : d * c = 2*(a*b)
+  -- RHS = 2 ss(K+j)/(ss K ss j) * P; hrad : d * c = 2*(a*b)
   have heK_ne : eK ≠ 0 := by rw [heK]; positivity
   have hej_ne : ej ≠ 0 := by rw [hej]; positivity
   -- field_simp clears the (now-opaque) factors; relation hrad : d*c = 2*(a*b)

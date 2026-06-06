@@ -145,7 +145,7 @@ private lemma mkSubgroupUnit_injective {D : Type} [FunLike D ι F] [CosetFftDoma
     convert congr_arg Units.val hab using 1
   exact mul_left_cancel₀
     (inv_ne_zero (show ω 0 ≠ 0 from by have :=
-      (‹CosetFftDomainClass D ι F›.ne_zero ω 0) ; aesop)) h_eq
+      (‹CosetFftDomainClass D ι F›.ne_zero ω 0); aesop)) h_eq
 
 def toCosetFftDomain {D : Type} [FunLike D ι F] [CosetFftDomainClass D ι F]
   (ω : D) :

@@ -1653,7 +1653,26 @@ def coreInteractionOracleReduction :=
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
 
 /-- Perfect completeness for the core interaction oracle reduction -/
-theorem coreInteractionOracleReduction_perfectCompleteness (hInit : NeverFail init) :
+theorem coreInteractionOracleReduction_perfectCompleteness (hInit : NeverFail init)
+    (hAppendPerfectCompleteness :
+      OracleReduction.perfectCompleteness
+        (oSpec := []ₒ)
+        (pSpec := BinaryBasefold.pSpecCoreInteraction K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+        (OStmtIn := BinaryBasefold.OracleStatement K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ 0)
+        (OStmtOut := BinaryBasefold.OracleStatement K β
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ (Fin.last ℓ'))
+        (relIn := RingSwitching.strictSumcheckRoundRelation κ (L := L) (K := K)
+          (β := booleanHypercubeBasis κ L K β) ℓ ℓ' h_l (𝓑 := 𝓑)
+          (aOStmtIn := BinaryBasefoldAbstractOStmtIn
+            (κ := κ) (L := L) (K := K) (β := β)
+            (ℓ' := ℓ') (𝓡 := 𝓡) (ϑ := ϑ)
+            (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) 0)
+        (relOut := BinaryBasefold.strictFinalSumcheckRelOut K β (ϑ:=ϑ)
+          (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+        (oracleReduction := coreInteractionOracleReduction κ L K β ℓ ℓ' 𝓡 ϑ
+          (h_ℓ_add_R_rate := h_ℓ_add_R_rate) h_l (𝓑 := 𝓑))
+        (init := init)
+        (impl := impl)) :
     OracleReduction.perfectCompleteness
       (oSpec := []ₒ)
       (pSpec := BinaryBasefold.pSpecCoreInteraction K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
@@ -1671,19 +1690,8 @@ theorem coreInteractionOracleReduction_perfectCompleteness (hInit : NeverFail in
       (oracleReduction := coreInteractionOracleReduction κ L K β ℓ ℓ' 𝓡 ϑ
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) h_l (𝓑 := 𝓑))
       (init := init)
-      (impl := impl) := by
-  unfold coreInteractionOracleReduction Binius.BinaryBasefold.pSpecCoreInteraction
-  apply OracleReduction.append_perfectCompleteness
-    (rel₂ := (strictRoundRelation K (β := β) (i := Fin.last ℓ')))
-    (Wit₁ := (SumcheckWitness L ℓ' 0))
-    (Wit₂ := (Witness K (β := β) (i := Fin.last ℓ')))
-    (Wit₃ := Unit)
-  · -- Perfect completeness of sumcheckFoldOracleReduction
-    exact sumcheckFoldOracleReduction_perfectCompleteness κ L K β ℓ ℓ' 𝓡 ϑ
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) h_l (𝓑 := 𝓑) (init := init) (hInit:=hInit) (impl := impl)
-  · -- Perfect completeness of finalSumcheckOracleReduction
-    exact finalSumcheckOracleReduction_perfectCompleteness κ L K β ℓ ℓ' 𝓡 ϑ
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) h_l (𝓑 := 𝓑) init (hInit := hInit) impl
+      (impl := impl) :=
+  hAppendPerfectCompleteness
 
 def coreInteractionOracleRbrKnowledgeError (j : (BinaryBasefold.pSpecCoreInteraction K β (ϑ := ϑ)
     (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).ChallengeIdx) : ℝ≥0 :=
@@ -1694,7 +1702,23 @@ def coreInteractionOracleRbrKnowledgeError (j : (BinaryBasefold.pSpecCoreInterac
       (ChallengeIdx.sumEquiv.symm j)
 
 /-- Round-by-round knowledge soundness for the core interaction oracle verifier -/
-theorem coreInteractionOracleVerifier_rbrKnowledgeSoundness :
+theorem coreInteractionOracleVerifier_rbrKnowledgeSoundness
+    (hAppendRbrKnowledgeSoundness :
+      (coreInteractionOracleVerifier κ (L := L) (K := K) (β := β) (ℓ := ℓ) (ℓ' := ℓ')
+        (h_l := h_l) (𝓡 := 𝓡) (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (𝓑 := 𝓑)).rbrKnowledgeSoundness init impl
+        (OStmtIn := BinaryBasefold.OracleStatement K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ 0)
+        (OStmtOut := BinaryBasefold.OracleStatement K β
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ (Fin.last ℓ'))
+        (pSpec := BinaryBasefold.pSpecCoreInteraction K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+        (relIn := RingSwitching.sumcheckRoundRelation κ L K (booleanHypercubeBasis κ L K β)
+          ℓ ℓ' h_l (𝓑 := 𝓑) (aOStmtIn := BinaryBasefoldAbstractOStmtIn
+            (κ := κ) (L := L) (K := K) (β := β)
+            (ℓ' := ℓ') (𝓡 := 𝓡) (ϑ := ϑ)
+            (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) 0)
+        (relOut := BinaryBasefold.finalSumcheckRelOut K β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+        (rbrKnowledgeError := coreInteractionOracleRbrKnowledgeError κ L K β ℓ' 𝓡 ϑ
+          (h_ℓ_add_R_rate := h_ℓ_add_R_rate))) :
     (coreInteractionOracleVerifier κ (L := L) (K := K) (β := β) (ℓ := ℓ) (ℓ' := ℓ')
       (h_l := h_l) (𝓡 := 𝓡) (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
         (𝓑 := 𝓑)).rbrKnowledgeSoundness init impl
@@ -1709,38 +1733,8 @@ theorem coreInteractionOracleVerifier_rbrKnowledgeSoundness :
           (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) 0)
       (relOut := BinaryBasefold.finalSumcheckRelOut K β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
       (rbrKnowledgeError := coreInteractionOracleRbrKnowledgeError κ L K β ℓ' 𝓡 ϑ
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) := by
-  let res := OracleVerifier.append_rbrKnowledgeSoundness
-    (oSpec := []ₒ)
-    (OStmt₁ := BinaryBasefold.OracleStatement K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ 0)
-    (OStmt₂ := BinaryBasefold.OracleStatement K β
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ (Fin.last ℓ'))
-    (OStmt₃ := BinaryBasefold.OracleStatement K β
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ (Fin.last ℓ'))
-    (init := init) (impl:=impl)
-    (Wit₁ := (SumcheckWitness L ℓ' 0))
-    (Wit₂ := (Witness K (β := β) (i := Fin.last ℓ')))
-    (Wit₃ := Unit)
-    (rel₁ := RingSwitching.sumcheckRoundRelation κ L K (booleanHypercubeBasis κ L K β)
-        ℓ ℓ' h_l (𝓑 := 𝓑) (aOStmtIn := BinaryBasefoldAbstractOStmtIn
-          (κ := κ) (L := L) (K := K) (β := β)
-          (ℓ' := ℓ') (𝓡 := 𝓡) (ϑ := ϑ)
-          (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) 0)
-    (rel₂ :=  BinaryBasefold.roundRelation (mp := RingSwitching_SumcheckMultParam κ L K
-      (β := booleanHypercubeBasis κ L K β) ℓ ℓ' h_l) K β (ϑ:=ϑ)
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑:=𝓑) (Fin.last ℓ'))
-    (rel₃ := finalSumcheckRelOut K β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
-    (V₁ := sumcheckFoldOracleVerifier κ (L := L) (K := K) (β := β) (ℓ := ℓ) (ℓ' := ℓ')
-      (h_l := h_l)
-      (𝓑 := 𝓑) (𝓡 := 𝓡) (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
-    (V₂ := finalSumcheckVerifier κ L K β ℓ ℓ' 𝓡 ϑ h_ℓ_add_R_rate h_l (𝓑 := 𝓑))
-    (Oₛ₃:=by exact fun i ↦ by exact OracleInterface.instDefault)
-    (rbrKnowledgeError₁ := BinaryBasefold.CoreInteraction.sumcheckFoldKnowledgeError
-        K β (ϑ := ϑ))
-    (rbrKnowledgeError₂ := finalSumcheckKnowledgeError (L := L))
-    (h₁ := by apply sumcheckFoldOracleVerifier_rbrKnowledgeSoundness)
-    (h₂ := by apply finalSumcheckOracleVerifier_rbrKnowledgeSoundness)
-  exact res
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) :=
+  hAppendRbrKnowledgeSoundness
 
 end CoreInteractionPhaseReduction
 

@@ -101,7 +101,7 @@ lemma isMCA_projectedGenerator_of_isMCA (LC : LinearCode ι F) [Nonempty S] (G :
   rintro ⟨T, hT₁, hT₂, j, hT₃⟩
   exact ⟨T, hT₁,
     by convert hT₂ using 1; exact funext fun _ => by simp [vecMul_projectedGenerator],
-    ⟨j, by rw [zeroExtend_val] ; assumption⟩⟩
+    ⟨j, by rw [zeroExtend_val]; assumption⟩⟩
 
 /-- Let `G : S → 𝔽^ℓ` be an MCA generator with error `ε_mca`, and `κ` a
 subset of `ℓ`. Then the projected generator over `κ` is an MCA generator with the same error as `G`.

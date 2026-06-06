@@ -504,7 +504,7 @@ Proving them equal needs the two router-interchange facts:
     own `simOracle2` would, the intermediate `oStmt₂` being `V₁.toVerifier`'s derived output oracles.
 This is the structural sibling of `Prover.append_run` (a `simulateQ`/routing interchange rather than a
 `runToRound` interchange) and is the deep obstruction here; it is *not* probabilistic. It feeds the
-four `OracleVerifier.append_*` security theorems (their `convert … ; simp [append_toVerifier]` steps).
+four `OracleVerifier.append_*` security theorems (their `convert …; simp [append_toVerifier]` steps).
 -/
 @[simp]
 lemma OracleVerifier.append_toVerifier

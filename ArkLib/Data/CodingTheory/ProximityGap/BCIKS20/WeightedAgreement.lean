@@ -367,7 +367,7 @@ lemma sufficiently_large_list_agreement_on_curve_implies_correlated_agreement
         Curve.polynomialCurveEval (F := F) (A := F) u z i
           = Curve.polynomialCurveEval (F := F) (A := F) v z i) with hs_def
       rw [mu_set_eq_div μ n hn s] at h1 ⊢
-      -- h1 : ↑α ≤ (∑ n)/K ;  goal : β ≤ (∑ n)/K
+      -- h1 : ↑α ≤ (∑ n)/K;  goal : β ≤ (∑ n)/K
       rw [← hK_def] at h1 ⊢
       rw [hβ_def, div_le_div_iff_of_pos_right hK_pos]
       -- goal : j ≤ ∑ n   (over ℝ, but both integers)

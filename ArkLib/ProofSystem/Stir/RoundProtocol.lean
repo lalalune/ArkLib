@@ -105,7 +105,7 @@ def stirRoundProver (φ : ι ↪ F) (deg : ℕ) :
   sendMessage
   | ⟨0, h⟩ => nomatch h
   | ⟨1, _⟩ => fun st =>
-      -- st : ((Unit × (∀ i, OStmt ι F i)) × Unit) × F ; recover f and r and combine
+      -- st : ((Unit × (∀ i, OStmt ι F i)) × Unit) × F; recover f and r and combine
       let f : ι → F := st.1.1.2 ()
       let r : F := st.2
       pure ⟨Combine.combine φ deg r (fun _ : Fin 1 => f) (fun _ : Fin 1 => deg), st⟩
