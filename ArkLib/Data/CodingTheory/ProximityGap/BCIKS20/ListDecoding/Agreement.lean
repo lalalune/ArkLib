@@ -119,13 +119,14 @@ than discharged with `sorry`-laundering. No statement is weakened.
 - 5.8' (`…_coeffs'`): would follow from 5.8 by `PowerSeries.subst` bookkeeping on `γ = subst …
   (mk α)`, but 5.8 is itself blocked, so 5.8' cannot stand alone.
 - 5.9 (`solution_gamma_is_linear_in_Z`): consumes 5.8' (truncation of `γ` to degree `< k`,
-  combined with the `degreeX P ≤ 1` output of Prop 5.5); blocked transitively.
+  combined with the `degreeX P ≤ 1` output of the Prop 5.5 specialization); blocked transitively.
 - 5.10 (`solution_gamma_matches_word_if_subset_large`): its hypothesis `hx` bounds
   `(matching_set_at_x …).card`, but converting that into the `S_β`-largeness that `Lemma_A_1`
   consumes is exactly ingredient C; blocked.
-- 5.11 (`exists_points_with_large_matching_subset`): double-counting over the matching set,
-  which is `.choose` of the still-`sorry` Prop 5.5 (`exists_a_set_and_a_matching_polynomial`);
-  blocked on that upstream `sorry` plus ingredient C.
+- 5.11 (`exists_points_with_large_matching_subset`): double-counting over the matching set.
+  The abstract Prop 5.5 pigeonhole core is now `tagged_fiber_pigeonhole` in `Guruswami.lean`;
+  what remains is the specialization from the Guruswami multiplicity/factor data to the required
+  tagged-factor map, plus ingredient C.
 
 Closing any of these honestly requires first landing (i) an `#S` lower-bound hypothesis on
 `ModifiedGuruswami` (or on Claim 5.7), (ii) the Lemma-5.3 `Z`-curve divisibility bridge, and
@@ -4331,9 +4332,10 @@ open BCIKS20AppendixA.ClaimA2 in
 States that the solution `γ` is linear in the variable `Z`.
 
 GAP (blocked — see the §5 GAP ANALYSIS block above). Consumes Claim 5.8' (the degree-`< k`
-truncation of `γ`) together with the `Bivariate.degreeX P ≤ 1` output of Proposition 5.5 to read
-off the linear representative `v₀ + Z·v₁`. Blocked transitively on 5.8' (ingredients C, D) and on
-the still-`sorry` Prop 5.5 (`exists_a_set_and_a_matching_polynomial`, `Guruswami.lean`). -/
+truncation of `γ`) together with the `Bivariate.degreeX P ≤ 1` output of the Prop 5.5
+specialization to read off the linear representative `v₀ + Z·v₁`. Blocked transitively on 5.8'
+(ingredients C, D) and on the specialization from Guruswami multiplicity/factor data to the proven
+`tagged_fiber_pigeonhole` core in `Guruswami.lean`. -/
 lemma solution_gamma_is_linear_in_Z
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
@@ -7029,8 +7031,9 @@ There exists a set of points `{x₀,...,x_{k+1}}` such that the sets S_{x_j} sat
 Claim 5.10.
 
 GAP (blocked — see the §5 GAP ANALYSIS block above). A double-counting argument over the matching
-set, which is `.choose` of the still-`sorry` Prop 5.5 (`exists_a_set_and_a_matching_polynomial`,
-`Guruswami.lean`); the per-point cardinality bound additionally relies on missing ingredient C. -/
+set supplied by the Prop 5.5 specialization; the abstract pigeonhole core is proven as
+`tagged_fiber_pigeonhole` in `Guruswami.lean`, but the factor-tag specialization and the per-point
+cardinality bound still rely on missing ingredient C. -/
 lemma exists_points_with_large_matching_subset
     {ωs : Fin n ↪ F}
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
