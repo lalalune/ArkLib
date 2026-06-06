@@ -763,7 +763,8 @@ theorem reduction_perfectCompleteness :
   -- 5. After full simplification, the computation should be OptionT-free
   -- Prove Pr[event | comp] ≥ 1
   simp only [ENNReal.coe_zero, tsub_zero]
-  rw [ge_iff_le, one_le_probEvent_iff, probEvent_eq_one_iff]
+  rw [ge_iff_le]
+  rw [one_le_probEvent_iff, probEvent_eq_one_iff]
   refine ⟨?_, ?_⟩
   · -- No failure
     rw [OptionT.probFailure_eq, OptionT.run_mk]
@@ -1053,70 +1054,107 @@ theorem oracleReduction_perfectCompleteness :
   simp only [liftM_pure, liftComp_pure, map_pure, pure_bind, bind_pure_comp,
     Functor.map_map, Function.comp_def, map_map, OptionT.run_pure, Option.getM,
     Transcript.concat, Fin.snoc_last, Fin.snoc_castSucc]
-  rw [ge_iff_le, one_le_probEvent_iff, probEvent_eq_one_iff]
+  simp only [OptionT.run_map, OptionT.run_mk]
+  simp only [OptionT.run_pure, Option.map_some, liftM_pure, pure_bind, bind_pure_comp]
+  simp only [ENNReal.coe_zero, tsub_zero]
+  rw [ge_iff_le]
+  rw [one_le_probEvent_iff, probEvent_eq_one_iff]
   refine ⟨?_, ?_⟩
-  all_goals
-    have hOC : ∀ {ι' : Type} {spec' : OracleSpec ι'} {α γ : Type} (g : α → γ)
-        (X : OracleComp spec' α),
-        ((g <$> (liftM X : OptionT (OracleComp spec') α)) : OptionT (OracleComp spec') γ)
-          = OptionT.mk ((some ∘ g) <$> X) := by
-      intro ι' spec' α γ g X
-      refine OptionT.ext ?_
-      rw [OptionT.run_map]
-      show Option.map g <$> (some <$> X) = _
-      simp [Functor.map_map, Function.comp_def]
   · -- No failure: the computation is a `some`-producing map over the challenge sample.
     rw [OptionT.probFailure_eq, OptionT.run_mk]
     simp only [probFailure_eq_zero, zero_add]
     apply probOutput_eq_zero_of_not_mem_support
     simp only [support_bind, Set.mem_iUnion, not_exists]
     intro s _ hmem
-    rw [hOC] at hmem
-    simp only [StateT.run'_eq, support_map, Set.mem_image] at hmem
-    obtain ⟨⟨v, s'⟩, hmem, hv⟩ := hmem
-    erw [simulateQ_map] at hmem
-    rw [StateT.run_map] at hmem
-    simp only [support_map, Set.mem_image] at hmem
-    obtain ⟨⟨w, s''⟩, hw, heq⟩ := hmem
-    obtain ⟨rfl, rfl⟩ := Prod.mk.inj heq
-    simp [Function.comp_def] at hv
+    erw [simulateQ_bind] at hmem
+    rw [StateT.run'_bind_lib, mem_support_bind_iff] at hmem
+    obtain ⟨⟨proverResult, s'⟩, hProver, hmem⟩ := hmem
+    cases proverResult with
+    | none =>
+        rw [OptionT.liftM_eq_mk_map_some] at hProver
+        change (none, s') ∈ _root_.support
+          (StateT.run (simulateQ (impl.addLift challengeQueryImpl)
+            ((some <$> _) : OracleComp _ (Option _))) s) at hProver
+        erw [simulateQ_map] at hProver
+        rw [StateT.run_map] at hProver
+        simp only [support_map, Set.mem_image, Prod.exists, Option.some.injEq] at hProver
+        obtain ⟨_, _, _, _, _, _, _, hEq⟩ := hProver
+        cases hEq
+    | some proverResult =>
+        simp only [liftM_pure] at hmem
+        erw [simulateQ_pure] at hmem
+        rw [StateT.run'_pure_lib] at hmem
+        simp only [support_pure, Set.mem_singleton_iff] at hmem
+        cases hmem
   · -- Event: holds for every sampled challenge by construction.
     intro x hx
     rw [OptionT.mem_support_iff] at hx
     simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
     obtain ⟨s, _, hx⟩ := hx
-    rw [hOC] at hx
-    simp only [StateT.run'_eq, support_map, Set.mem_image] at hx
-    obtain ⟨⟨v, s'⟩, hx, hv⟩ := hx
-    erw [simulateQ_map] at hx
-    rw [StateT.run_map] at hx
-    simp only [support_map, Set.mem_image] at hx
-    obtain ⟨⟨w, s''⟩, hw, heq⟩ := hx
-    obtain ⟨rfl, rfl⟩ := Prod.mk.inj heq
-    simp only [Function.comp_def, Option.some.injEq] at hv
-    subst hv
-    refine ⟨?_, ?_⟩
-    · simp only [outputRelation, Set.mem_setOf_eq]
-      rfl
-    · -- Pin the prover result's structure from `hw`.
-      erw [simulateQ_bind] at hw
-      rw [StateT.run_bind] at hw
-      rw [mem_support_bind_iff] at hw
-      obtain ⟨⟨g1, sg⟩, hg1, hw⟩ := hw
-      rcases g1 with ⟨tr1, polyLE, chal⟩
-      simp only [liftM_pure, map_pure] at hw
-      erw [simulateQ_pure] at hw
-      rw [StateT.run_pure] at hw
-      simp only [support_pure, Set.mem_singleton_iff, Prod.mk.injEq] at hw
-      obtain ⟨⟨rfl, rfl⟩, -⟩ := hw
-      -- Peel `hg1`: the challenge sample pins the transcript.
-      erw [simulateQ_map] at hg1
-      rw [StateT.run_map] at hg1
-      simp only [support_map, Set.mem_image] at hg1
-      obtain ⟨⟨c, sc⟩, -, heqc⟩ := hg1
-      simp only [Prod.mk.injEq] at heqc
-      obtain ⟨⟨rfl, rfl, rfl⟩, rfl⟩ := heqc
-      rfl
+    erw [simulateQ_bind] at hx
+    rw [StateT.run'_bind_lib, mem_support_bind_iff] at hx
+    obtain ⟨⟨proverResult, s'⟩, hw, hx⟩ := hx
+    cases proverResult with
+    | none =>
+        rw [OptionT.liftM_eq_mk_map_some] at hw
+        change (none, s') ∈ _root_.support
+          (StateT.run (simulateQ (impl.addLift challengeQueryImpl)
+            ((some <$> _) : OracleComp _ (Option _))) s) at hw
+        erw [simulateQ_map] at hw
+        rw [StateT.run_map] at hw
+        simp only [support_map, Set.mem_image, Prod.exists, Option.some.injEq] at hw
+        obtain ⟨_, _, _, _, _, _, _, hEq⟩ := hw
+        cases hEq
+    | some proverResult =>
+        simp only [liftM_pure] at hx
+        erw [simulateQ_pure] at hx
+        rw [StateT.run'_pure_lib] at hx
+        simp only [support_pure, Set.mem_singleton_iff, Option.some.injEq] at hx
+        subst x
+        simp only [outputRelation, Set.mem_setOf_eq]
+        refine ⟨rfl, ?_⟩
+        erw [simulateQ_bind] at hw
+        rw [StateT.run_bind] at hw
+        rw [mem_support_bind_iff] at hw
+        obtain ⟨⟨g1, sg⟩, hg1, hw⟩ := hw
+        rcases g1 with ⟨tr1, polyLE, chal⟩
+        simp only [liftM_pure] at hw
+        erw [simulateQ_pure] at hw
+        rw [StateT.run_pure] at hw
+        simp only [support_pure, Set.mem_singleton_iff, Prod.mk.injEq] at hw
+        obtain ⟨⟨rfl, rfl⟩, -⟩ := hw
+        erw [simulateQ_map] at hg1
+        rw [StateT.run_map] at hg1
+        simp only [support_map, Set.mem_image] at hg1
+        obtain ⟨⟨c, sc⟩, hleft, hmap⟩ := hg1
+        erw [simulateQ_bind] at hleft
+        rw [StateT.run_bind] at hleft
+        rw [mem_support_bind_iff] at hleft
+        obtain ⟨⟨d, sd⟩, hd, hleft⟩ := hleft
+        erw [simulateQ_map] at hd
+        erw [simulateQ_pure] at hd
+        rw [StateT.run_map, StateT.run_pure] at hd
+        simp only [support_map, support_pure, Set.mem_image, Set.mem_singleton_iff] at hd
+        obtain ⟨_, rfl, hd⟩ := hd
+        obtain ⟨rfl, rfl⟩ := Prod.mk.inj hd
+        erw [simulateQ_map] at hleft
+        rw [StateT.run_map] at hleft
+        simp only [support_map, Set.mem_image] at hleft
+        obtain ⟨⟨challenge, sch⟩, _, hchallenge⟩ := hleft
+        obtain ⟨rfl, rfl⟩ := Prod.mk.inj hchallenge
+        obtain ⟨hmain, rfl⟩ := Prod.mk.inj hmap
+        obtain ⟨htr, hrest⟩ := Prod.mk.inj hmain
+        subst tr1
+        obtain ⟨hpoly, hchal⟩ := Prod.mk.inj hrest
+        subst polyLE
+        subst chal
+        simp [FullTranscript.challenges, FullTranscript.messages, Transcript.concat,
+          Fin.snoc_last, Fin.snoc_castSucc, pSpec, oracleVerifier]
+        simp [Fin.snoc, pSpec]
+        constructor
+        · constructor <;> rfl
+        · ext x
+          rfl
 
 /-- Trivial round-by-round extractor (all witnesses are `Unit`). -/
 private def simpleRbrExtractor : Extractor.RoundByRound oSpec
