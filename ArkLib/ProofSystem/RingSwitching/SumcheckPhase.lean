@@ -594,8 +594,7 @@ private theorem iteratedSumcheck_hStar_extracted_eval_eq_cube_succ (i : Fin ℓ'
           (projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := t')
             (m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly (ctx := ctx))
             (i := i.succ) (challenges := Fin.cons r' challenges)).val.eval z :=
-  getSumcheckRoundPoly_eval_eq_cube_succ (κ := κ) (L := L) (K := K) (P := P)
-    (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l) (aOStmtIn := aOStmtIn) i t'
+  getSumcheckRoundPoly_eval_eq_cube_succ i t'
     ((RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly (ctx := ctx)) challenges r'
 
 /-- This follows the KState of `foldKStateProp` -/
@@ -665,8 +664,8 @@ def iteratedSumcheckKStateProp (i : Fin ℓ') (m : Fin (2 + 1))
       (stmtIdx := i.castSucc)
       (stmt := stmt) (oStmt := oStmt) (wit := witMid)
       (localChecks :=
-        let h_i := get_Hᵢ (m := ⟨2, h2⟩) (tr := tr) (hm := by decide)
-        let r_i' := get_rᵢ' (m := ⟨2, h2⟩) (tr := tr) (hm := by simp only [le_refl])
+        let h_i := get_Hᵢ (m := ⟨2, h2⟩) (tr := tr) (hm := one_le_two)
+        let r_i' := get_rᵢ' (m := ⟨2, h2⟩) (tr := tr) (hm := le_refl 2)
         let explicitVCheck :=
           (∑ b ∈ (boolDomain L ℓ').points i, h_i.val.eval b) = stmt.sumcheck_target
         let localizedTargetCheck := h_i.val.eval r_i' = h_star.val.eval r_i'
@@ -696,9 +695,85 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
     · -- m = 1: dir 1 = V_to_P, contradicts hDir
       simp [pSpecSumcheckRound] at hDir
   toFun_full := fun ⟨stmtLast, oStmtLast⟩ tr witOut => by
-    intro _
-    unfold iteratedSumcheckKStateProp
-    trivial
+    -- (A) Support extraction. Turn the relOut `> 0` probability into a support element of the
+    -- verifier run, then collapse the 2-message verifier to the closed `if` form via the shared
+    -- `iteratedSumcheckOracleVerifier_verify_collapse` lemma. Pin the transcript message `h_i` and
+    -- challenge `r'`.
+    intro hProb
+    set h_i : ↥L⦃≤ 2⦄[X] := FullTranscript.messages tr ⟨0, rfl⟩ with h_i_def
+    set r' : L := FullTranscript.challenges tr ⟨1, rfl⟩ with hr'_def
+    rw [gt_iff_lt, probEvent_pos_iff] at hProb
+    obtain ⟨⟨stmtOut, oStmtOut⟩, hx, hrel⟩ := hProb
+    rw [OptionT.mem_support_iff] at hx
+    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+    obtain ⟨s, _, hx⟩ := hx
+    -- Collapse `simulateQ (simOracle2 …) (verify …)` to the `if` form.
+    simp only [Verifier.run, OracleVerifier.toVerifier, bind_pure_comp] at hx
+    rw [iteratedSumcheckOracleVerifier_verify_collapse (i := i) stmtLast oStmtLast tr] at hx
+    -- (B) Case split on the Boolean-sum check (the only verifier check).
+    by_cases hcheck :
+        (∑ b ∈ (boolDomain L ℓ').points i, h_i.val.eval b) = stmtLast.sumcheck_target
+    · -- ACCEPT branch. The verifier outputs the advanced statement; pin it from the support element.
+      rw [if_pos hcheck] at hx
+      simp only [map_pure, simulateQ_pure, StateT.run'_eq, StateT.run_pure, support_pure,
+        Set.mem_singleton_iff, Option.some.injEq, Prod.mk.injEq] at hx
+      obtain ⟨hstmtOut_eq, hoStmtOut_eq⟩ := hx
+      -- `hrel : (stmtOut, witOut) ∈ relOut` at `i.succ`. Unfold to its `masterKStateProp` conjuncts.
+      simp only [sumcheckRoundRelation, sumcheckRoundRelationProp, masterKStateProp,
+        Set.mem_setOf_eq] at hrel
+      obtain ⟨-, hWitStruct, hConsist, hCompat⟩ := hrel
+      -- The forwarded statement fields (from `verify_collapse`): `sumcheck_target := h_i(r')`,
+      -- `challenges := cons r' stmtLast.challenges`, `ctx := stmtLast.ctx`.
+      subst hstmtOut_eq
+      -- (C) Build the m=2 KState. `extractOut` gives `H = projectToMid i.castSucc challenges`, so
+      -- `h_star = getSumcheckRoundPoly i (projectToMid i.castSucc challenges)`.
+      simp only [iteratedSumcheckKStateProp, masterKStateProp, iteratedSumcheckRbrExtractor,
+        Fin.isValue]
+      refine ⟨⟨?_, ?_⟩, ?_, ?_, ?_⟩
+      · -- explicitVCheck: exactly the verifier check `hcheck`.
+        simpa [h_i_def] using hcheck
+      · -- localizedTargetCheck: `h_i(r') = h_star(r')`. Chain through the relOut consistency.
+        -- `hConsist : stmtOut.sumcheck_target = ∑_{i.succ cube} witOut.H`, and
+        -- `stmtOut.sumcheck_target = h_i(r')` (forwarded), and
+        -- `h_star(r') = ∑_{i.succ cube} (projectToMid i.succ (cons r' challenges))` (cube_succ),
+        -- and `witOut.H = projectToMid i.succ (cons r' challenges)` (hWitStruct).
+        unfold sumcheckConsistencyProp at hConsist
+        -- LHS target field is `h_i(r')`.
+        have htarget : h_i.val.eval r' = ∑ z ∈ (boolDomain L (ℓ' - ↑i.succ)).cube, witOut.H.val.eval z
+            := by simpa [h_i_def, hr'_def] using hConsist
+        -- ground-truth telescoping for the extracted witness.
+        have hstar :=
+          iteratedSumcheck_hStar_extracted_eval_eq_cube_succ (i := i)
+            witOut.t' stmtLast.ctx stmtLast.challenges r'
+        -- structural invariant in relOut: `witOut.H = projectToMid i.succ (cons r' challenges)`.
+        unfold witnessStructuralInvariant at hWitStruct
+        rw [htarget, hstar]
+        refine Finset.sum_congr rfl fun z _ => ?_
+        rw [hWitStruct]
+      · -- witnessStructuralInvariant for the extracted witness at `i.castSucc` (by `rfl` of
+        -- `extractOut.H`).
+        unfold witnessStructuralInvariant
+        rfl
+      · -- sumcheckConsistencyProp for the extracted witness at `i.castSucc`. Folds back to the input
+        -- via `getSumcheckRoundPoly_points_sum_eq_cube` and the verifier check `hcheck`.
+        unfold sumcheckConsistencyProp
+        rw [← getSumcheckRoundPoly_points_sum_eq_cube (i := i)
+          (H := projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := witOut.t')
+            (m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly
+              (ctx := stmtLast.ctx))
+            (i := i.castSucc) (challenges := stmtLast.challenges))]
+        exact hcheck.symm
+      · -- initialCompatibility: forwarded oStmt equals input oStmt; `t'` unchanged by `extractOut`.
+        have : oStmtOut = oStmtLast := hoStmtOut_eq.symm
+        simpa [this] using hCompat
+    · -- REJECT branch. The guard-emitting verifier produces `failure`; its run' support has no
+      -- `some`, so the support hypothesis is contradictory.
+      exfalso
+      rw [if_neg hcheck] at hx
+      rw [show (failure : OptionT (OracleComp []ₒ) _)
+            = (pure none : OracleComp []ₒ _) from rfl] at hx
+      simp only [simulateQ_pure, StateT.run'_eq, StateT.run_pure, map_pure, support_pure,
+        Set.mem_singleton_iff] at hx
 
 /-- RBR knowledge soundness for one sumcheck round under the current weak post-challenge state.
 The bound is intentionally `1` until the challenge-level root-count bridge is available. -/

@@ -891,7 +891,6 @@ lemma exists_unique_fiberwiseClosestCodeword_within_UDR (i : Fin r) {destIdx : F
     rw [h_g_eq_UDRCodeword]
     rw [hy_mem_C_i.2.2]
 
-omit [CharP L 2] in
 /-- **Lemma: Single Step BBF_Code membership preservation**
 It establishes that folding a codeword from the i-th code produces a codeword in the (i+1)-th code.
 This relies on **Lemma 4.13** that 1-step folding advances the evaluation polynomial. -/
@@ -1013,7 +1012,7 @@ private lemma iterated_fold_preserves_BBF_Code_membership_nat
   induction steps generalizing destIdx with
   | zero =>
       have h_destIdx_eq_i : destIdx = i := Fin.eq_of_val_eq (by simpa using h_destIdx)
-      subst h_destIdx_eq_i
+      subst destIdx
       have h_fold_eq :
           iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
             (i := i) (steps := 0) (destIdx := i)
@@ -1057,7 +1056,7 @@ private lemma iterated_fold_preserves_BBF_Code_membership_nat
         (i := i) (midIdx := midIdx) (destIdx := destIdx) (steps := n)
         (h_midIdx := h_midIdx) (h_destIdx := by omega)
         (h_destIdx_le := h_destIdx_le) (f := f) (r_challenges := r_challenges)]
-      exact fold_preserves_BBF_Code_membership 𝔽q β
+      exact Binius.BinaryBasefold.fold_preserves_BBF_Code_membership 𝔽q β
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := midIdx) (destIdx := destIdx)
         (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le)
         (f := f_mid) (r_chal := r_challenges (Fin.last n))
