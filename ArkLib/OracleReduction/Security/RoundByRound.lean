@@ -690,7 +690,7 @@ def KnowledgeStateFunctionOneShot.toKnowledgeStateFunction
         (probEvent_mono (mx := oa)
           (p := fun stmtOut => (stmtOut, witOut) ∈ relOut)
           (q := fun stmtOut => stmtOut ∈ relOut.language)
-          (fun _ _ hRel => ⟨witOut, hRel⟩))
+          (fun stmtOut _ hRel => (Set.mem_language_iff relOut stmtOut).2 ⟨witOut, hRel⟩))
     have hstF : stF.toFun (.last n) stmtIn tr := by
       by_contra hnot
       have hzero := stF.toFun_full stmtIn tr hnot

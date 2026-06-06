@@ -167,7 +167,8 @@ def mk' {n : ℕ} (pSpec : ProtocolSpec n) (U : Type)
 
 The semantic obligations now live directly inside the `Codec` class fields (`decode_isBiased`,
 `decode_surjective`), so `IsLawful` is satisfied automatically for any `Codec`. It is retained as a
-`Prop` alias so the paper-facing `LawfulCodec` alias in `DuplexSponge/Basic.lean` keeps resolving. -/
+`Prop` alias so the paper-facing `LawfulCodec` alias in `DuplexSponge/Basic.lean` keeps
+resolving. -/
 class IsLawful [c : Codec pSpec U] : Prop where
   decode_surjective : ∀ i, Function.Surjective (c.decode i) := c.decode_surjective
 

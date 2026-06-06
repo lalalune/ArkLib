@@ -250,7 +250,8 @@ lemma mca_linearCode_udrFree
   (`BCIKS20/ReedSolomonGap.lean`, sorry-free), the RS `(δ,ε)`-proximity gap up to the Johnson
   radius — is the right ingredient but does **not** close this directly:
   * it bounds the BCIKS20 event `δᵣ(∑ⱼ rⱼ·fⱼ, C) ≤ δ` over *affine-span* collections, whereas
-    `hasMutualCorrAgreement` here uses the **asymmetric per-row** `proximityCondition` (clause (iii):
+    `hasMutualCorrAgreement` here uses the **asymmetric per-row** `proximityCondition` (clause
+    (iii):
     "some `fᵢ` is unmatched by any single codeword on `S`"), a strictly different/stronger event;
   * it yields a plain proximity gap, not the *mutual correlated agreement* strengthening;
   * its `errorBound` must be reconciled with the `(parℓ-1)·2ᵐ/(ρ·|F|)` form claimed here.
@@ -260,7 +261,8 @@ lemma mca_linearCode_udrFree
   reconciliation (the existing `Pr_proximityCondition_le_epsMCA` bridge is one-way and `epsMCA`-side
   only). That CA→MCA machinery is being built concurrently (`ProximityGap/BCIKS20`,
   `MCAGenerator.lean`); this is a multi-step formalization, not a port of existing assets, so it is
-  left as an open obligation rather than fake-proved. See `research/formal/arklib-proof-research-2026-06.md`.
+  left as an open obligation rather than fake-proved. See
+  `research/formal/arklib-proof-research-2026-06.md`.
 -/
 
 def mca_rsc

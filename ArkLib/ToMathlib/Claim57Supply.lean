@@ -9,8 +9,10 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Agreement
 # Instantiation lemma for the Claim-5.7 residual bundle `Claim57Residuals`
 
 `ProximityGap.Claim57Residuals` (`Agreement.lean`) is the typed residual bundle carrying the
-BCIKS20 Claim-5.7 graph-extraction data: the Claim-5.6 specialization side conditions (`hx0`/`hsep`),
-the close-proximity coefficient set largeness (`hS_nonempty`/`hlarge`), the per-`z` agreement set `A`
+BCIKS20 Claim-5.7 graph-extraction data: the Claim-5.6 specialization side conditions
+(`hx0`/`hsep`),
+the close-proximity coefficient set largeness (`hS_nonempty`/`hlarge`), the per-`z` agreement set
+`A`
 with its matching bridge `hA` and the Johnson-regime counting inequality `hcount`, and the legacy
 factor-list bridge `hfactor`.
 
@@ -33,7 +35,8 @@ gone (derived from `hlarge`), and the genuine Johnson side condition is isolated
 
 Unlike the in-tree `graphExtractionHypotheses_of_*` producers (`Agreement.lean`), these lemmas do
 **not** carry a spurious ambient `[Claim57Residuals]` instance: they reconstruct the
-`GraphExtractionHypotheses` package directly through `GraphExtractionHypotheses.ofLarge`, so they are
+`GraphExtractionHypotheses` package directly through `GraphExtractionHypotheses.ofLarge`, so they
+are
 genuinely non-circular instantiation lemmas.
 
 No `sorry`/`axiom`/`native_decide`; `#print axioms` at the bottom shows only
@@ -105,10 +108,12 @@ noncomputable def graphExtractionHypotheses_of_johnson
 omit [DecidableEq (RatFunc F)] in
 /-- **`GraphExtractionHypotheses` from the `⌈δ·n⌉` nonmatching bound.**
 
-The most primitive Johnson form: instead of a per-`z` matching-set bound, supply the per-`z` bound on
+The most primitive Johnson form: instead of a per-`z` matching-set bound, supply the per-`z` bound
+on
 the *nonmatching* coordinates implied by `δ`-closeness (`#nonmatching ≤ ⌈δ·n⌉`, proven in tree from
 `δᵣ ≤ δ`), together with the degree budget `natWeightedDegree(eval_on_Z Q z) 1 k < m·(n − ⌈δ·n⌉)`.
-This is the Johnson-radius regime entering literally: enough coordinates agree because few disagree. -/
+This is the Johnson-radius regime entering literally: enough coordinates agree because few disagree.
+-/
 noncomputable def graphExtractionHypotheses_of_natCeil_johnson
     [NeZero n] [DecidableEq (Polynomial F)] [DecidableEq (RatFunc F)] (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
@@ -149,10 +154,12 @@ graph package except the legacy factor-list bridge `hfactor` (kept as a document
 omit [DecidableEq (RatFunc F)] in
 /-- **The Claim-5.7 residual bundle from the Johnson counting input.**
 
-Produces `ProximityGap.Claim57Residuals (F := F) k δ x₀ h_gs` from genuine geometric / Johnson-regime
+Produces `ProximityGap.Claim57Residuals (F := F) k δ x₀ h_gs` from genuine geometric /
+Johnson-regime
 hypotheses only:
 * `hx0`/`hsep` — the Claim-5.6 specialization side conditions;
-* `hcount` — the **Johnson side condition** `natWeightedDegree(eval_on_Z Q z) 1 k < m·#matchingCoords`
+* `hcount` — the **Johnson side condition** `natWeightedDegree(eval_on_Z Q z) 1 k <
+m·#matchingCoords`
   (the canonical agreement set `matching_coords_for_z` makes the field's `A`/`hA` automatic);
 * `hlarge` — the close-set largeness / degree-budget condition (also discharges `hS_nonempty`);
 * `hfactor` — the legacy bridge `R ∈ pg_Rset ⟹ R` is in the Eq-5.12 factorization list.

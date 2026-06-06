@@ -16,7 +16,8 @@ in the recurrence.
 
 ## Mathematical Context
 
-Let $F$ be a field, and let $H \in F[X][Y]$ be an irreducible polynomial defining an algebraic curve.
+Let $F$ be a field, and let $H \in F[X][Y]$ be an irreducible polynomial defining an algebraic
+curve.
 In the Hensel lifting context, uniqueness properties establish the equality of two power series
 $$a_\beta = a_P$$
 under a specialization map $\pi_z$.
@@ -29,7 +30,8 @@ $$\pi_z(\text{betaRec}(t)) = 0$$
 
 ## Key Formalizations
 * `coeff_extract_scalar`: Distills the coefficient extraction process to bare field arithmetic.
-* `coeff_extract_betaRec`: Connects the algebraic relation of $\alpha_t$ with the specialized power series,
+* `coeff_extract_betaRec`: Connects the algebraic relation of $\alpha_t$ with the specialized power
+series,
   yielding the vanishing of the recurrence term.
 * `MatchingPoint.mk_coeffExtract`: A constructor wrapper for matching point verification in the
   proximity gap argument.
@@ -104,7 +106,8 @@ theorem MatchingPoint.mk_coeffExtract
     aβ = aP → (π_z z root) (betaRec x₀ R H hHyp Bcoeff t) = 0 :=
   coeff_extract_betaRec hαβ hw hx haP
 
-/-- Combines Hensel uniqueness and coefficient extraction to deduce the vanishing of the specialized recurrence term. -/
+/-- Combines Hensel uniqueness and coefficient extraction to deduce the vanishing of the specialized
+recurrence term. -/
 theorem pi_z_betaRec_eq_zero_of_bridge
     {aβ aP : PowerSeries F} {w x : F} {a e : ℕ}
     (hαβ : PowerSeries.coeff t aβ =

@@ -6,7 +6,8 @@ Authors: ArkLib Contributors
 import Mathlib
 
 /-!
-# Arithmetic envelope lemma toward the MCA Johnson conjecture (ABF26 Conjecture 4.12, Johnson variant)
+# Arithmetic envelope lemma toward the MCA Johnson conjecture (ABF26 Conjecture 4.12, Johnson
+variant)
 
 This file is a self-contained, sorry-free, axiom-clean development of the **largest genuinely
 provable arithmetic facts** about the conjecture's error term

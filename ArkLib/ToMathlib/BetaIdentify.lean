@@ -35,13 +35,16 @@ bound `weight_Λ_over_𝒪 hH β D ≤ (2t+1)·d_R·D` (and `β_regular` is prov
 `fun _ => ⟨0, by simp⟩`).
 
 * **Route (a) — uniqueness — is impossible.**  The defining property is a weight *inequality*, not a
-  Hensel-lift identity.  It does not pin `β` uniquely: `0` satisfies it (the trivial witness), and so
-  does `betaRec … t` (its weight bound is exactly `betaRec_weight_le_concrete`), and so do infinitely
+  Hensel-lift identity.  It does not pin `β` uniquely: `0` satisfies it (the trivial witness), and
+  so
+  does `betaRec … t` (its weight bound is exactly `betaRec_weight_le_concrete`), and so do
+  infinitely
   many others.  So there is no `∀ b, definingProperty b → b = betaRec`, and the HenselUniqueness
   brick has no simple-root datum to bite on here — the defining property carries none.  Moreover
   `Exists.choose` of a `Classical`-backed existence is opaque: `(⟨0, h⟩).choose` is **not** provably
   `0`, so even the value of `β R t` is inaccessible.  `beta_eq_betaRec` (mod-`H` or exact) is
-  therefore unprovable from the in-tree data.  We *record* the one honest fact `choose_spec` yields —
+  therefore unprovable from the in-tree data.  We *record* the one honest fact `choose_spec` yields
+  —
   the weight bound `β_weight_le` below — and document the blockage there.
 
 * **Route (b) — full restatement / elimination — is blocked by file ownership, not by mathematics.**
@@ -49,8 +52,10 @@ bound `weight_Λ_over_𝒪 hH β D ≤ (2t+1)·d_R·D` (and `β_regular` is prov
   `Section5StrictData`/`Section5StrictDataFin` (read-only) hard-code the *in-tree* `γ`
   (`γ x₀ R H hHyp`, built from the opaque `β` via `α`) in **three** fields — `hγ`, `hrep`, `hPz`.
   Because the in-tree `γ` is built from the opaque `β`, the only bridge from it to the genuine
-  `betaRec`-built series `subst (mk (αFromBeta …))` is the numerator identification itself.  There is
-  no proof-theoretic shortcut.  A `hγ_field_of_betaRec` with **no** β-residual would require redefining
+  `betaRec`-built series `subst (mk (αFromBeta …))` is the numerator identification itself.  There
+  is
+  no proof-theoretic shortcut.  A `hγ_field_of_betaRec` with **no** β-residual would require
+  redefining
   the in-tree `γ` to be `betaRec`-built (the deferred cross-file `L13` edit), which would change the
   read-only structures.
 
@@ -72,7 +77,8 @@ hβemb : ∀ t, embeddingOf𝒪Into𝕃 H (β R t) = embeddingOf𝒪Into𝕃 H (
 
 This is the residual that lives at the level where `α`/`αFromBeta` actually compute.  We
 
-1. prove `hβemb ↔ hβ` (`betaEmbedEq_iff_betaEq`) — the embedding map `embeddingOf𝒪Into𝕃 H` is injective
+1. prove `hβemb ↔ hβ` (`betaEmbedEq_iff_betaEq`) — the embedding map `embeddingOf𝒪Into𝕃 H` is
+injective
    for `0 < H.natDegree` (`embeddingOf𝒪Into𝕃_injective`), so the two residuals are *equivalent*; a
    future supplier may discharge whichever is more convenient (the genuine §5/App-A.4 lift identity
    `embedding(β t) = α_t·W^{t+1}·ξ^{e_t}` produces the embedding form directly, so `hβemb` is the
@@ -116,9 +122,11 @@ does not determine `β`, so no uniqueness-style `beta_eq_betaRec` is available. 
 
 /-- **The only honest fact about the opaque in-tree `β` (route-(a) blockage record).**  From
 `Exists.choose_spec` of `β_regular`, the in-tree numerator `β R t` satisfies the weight upper bound
-`weight_Λ_over_𝒪 hH (β R t) D ≤ (2t+1)·d_R·D`.  This is the *entire* defining content of `β`: a weight
+`weight_Λ_over_𝒪 hH (β R t) D ≤ (2t+1)·d_R·D`.  This is the *entire* defining content of `β`: a
+weight
 *inequality*, satisfied equally by `0` (the trivial `β_regular` witness) and by `betaRec … t`
-(`BetaWeightCollapse.betaRec_weight_le_concrete`).  It therefore does **not** pin `β` uniquely, so no
+(`BetaWeightCollapse.betaRec_weight_le_concrete`).  It therefore does **not** pin `β` uniquely, so
+no
 uniqueness route can prove `β = betaRec`; the identification is a genuine, irreducible residual. -/
 theorem β_weight_le (R : F[X][X][Y]) {H : F[X][Y]}
     [Fact (Irreducible H)] [Fact (0 < H.natDegree)] (hH : 0 < H.natDegree) (t : ℕ) :
@@ -148,9 +156,11 @@ def BetaEmbedEq (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
   ∀ t, embeddingOf𝒪Into𝕃 H (β (H := H) R t)
         = embeddingOf𝒪Into𝕃 H (betaRec x₀ R H hHyp Bcoeff t)
 
-/-- **`hβemb ↔ hβ`.**  The embedding-level residual `BetaEmbedEq` is *equivalent* to the element-level
+/-- **`hβemb ↔ hβ`.**  The embedding-level residual `BetaEmbedEq` is *equivalent* to the
+element-level
 residual `hβ : ∀ t, β R t = betaRec … t`, because `embeddingOf𝒪Into𝕃 H` is injective for
-`0 < H.natDegree` (`embeddingOf𝒪Into𝕃_injective`).  A future supplier may discharge whichever form is
+`0 < H.natDegree` (`embeddingOf𝒪Into𝕃_injective`).  A future supplier may discharge whichever form
+is
 more convenient; the embedding form is the honest target of the App-A.4 lift identity. -/
 theorem betaEmbedEq_iff_betaEq (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
     [Fact (Irreducible H)] [Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H)
@@ -174,12 +184,14 @@ theorem betaEmbedEq_of_betaEq (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
 
 /-! ## The discharge chain re-derived from the embedding-level residual `hβemb`
 
-These mirror `GammaFromBeta.{alpha_eq_alphaFromBeta_of_betaEq, intree_gamma_eq_γ', hγ_field_of_betaEq}`
+These mirror `GammaFromBeta.{alpha_eq_alphaFromBeta_of_betaEq, intree_gamma_eq_γ',
+hγ_field_of_betaEq}`
 but consume `BetaEmbedEq` directly, working at the `𝕃 H` level where `α`/`αFromBeta` compute. -/
 
 /-- **Embedding identification ⟹ Hensel-coefficient identification.**  If the *embeddings* of the
 in-tree numerator `β R t` and the genuine recursion `betaRec … t` agree (`BetaEmbedEq`), then the
-in-tree Hensel coefficient `α` equals `αFromBeta` pointwise: the denominators are literally identical,
+in-tree Hensel coefficient `α` equals `αFromBeta` pointwise: the denominators are literally
+identical,
 and `α`/`αFromBeta` apply `embeddingOf𝒪Into𝕃 H` to their numerators, so this is `unfold` + `rw`. -/
 theorem alpha_eq_alphaFromBeta_of_betaEmbedEq (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
     [Fact (Irreducible H)] [Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H)
@@ -202,7 +214,8 @@ theorem intree_gamma_eq_γ'_of_betaEmbedEq (x₀ : F) (R : F[X][X][Y]) (H : F[X]
     rw [PowerSeries.coeff_mk, PowerSeries.coeff_mk,
       alpha_eq_alphaFromBeta_of_betaEmbedEq x₀ R H hHyp Bcoeff hβemb]
 
-/-- **The `Section5StrictData.hγ` field, discharged from the embedding-level residual `hβemb`.**  This
+/-- **The `Section5StrictData.hγ` field, discharged from the embedding-level residual `hβemb`.**
+This
 is the embedding-level analogue of `GammaFromBeta.hγ_field_of_betaEq`: under the *strictly smaller*
 residual `BetaEmbedEq`, the in-tree `γ` equals the `betaRec`-built substitution form — literally the
 `hγ` field of `Section5StrictData`/`BetaCurveInput`/`BetaCurveInputFin`.  No `sorry`, no `axiom`. -/
@@ -216,9 +229,11 @@ theorem hγ_field_of_betaEmbedEq (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
   rw [intree_gamma_eq_γ'_of_betaEmbedEq x₀ R H hHyp Bcoeff hβemb,
     GammaFromBeta.γ'_eq_subst_shiftSeries]
 
-/-- Cross-check: the embedding-level discharge agrees with the in-tree element-level discharge.  When
+/-- Cross-check: the embedding-level discharge agrees with the in-tree element-level discharge.
+When
 `hβ` holds, both `hγ_field_of_betaEmbedEq` (via `betaEmbedEq_of_betaEq`) and
-`GammaFromBeta.hγ_field_of_betaEq` produce the *same* proof of the `hγ` field (it is a `Prop`, so this
+`GammaFromBeta.hγ_field_of_betaEq` produce the *same* proof of the `hγ` field (it is a `Prop`, so
+this
 is `rfl`-grade proof irrelevance — recorded for documentation). -/
 theorem hγ_field_betaEmbedEq_eq_betaEq (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
     [Fact (Irreducible H)] [Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H)
@@ -251,8 +266,10 @@ variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
 /-- **`Section5StrictData` from the embedding-level residual.**  The `…_betaEmb` analogue of
-`CorrelatedAgreementListDecodingClosed.section5StrictData_of_betaEq`: it takes every field except `hγ`
-plus `BetaEmbedEq` (in place of `hβ`), recovering the element-level `hβ` the proven builder expects via
+`CorrelatedAgreementListDecodingClosed.section5StrictData_of_betaEq`: it takes every field except
+`hγ`
+plus `BetaEmbedEq` (in place of `hβ`), recovering the element-level `hβ` the proven builder expects
+via
 `betaEmbedEq_iff_betaEq`. -/
 noncomputable def section5StrictData_of_betaEmbedEq {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     {u : WordStack F (Fin (k + 1)) ι} {P : F → Polynomial F}
@@ -296,7 +313,8 @@ variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
 /-- **`BetaCurveInput` from the embedding-level residual.**  The `…_betaEmb` analogue of
-`BetaInputSupply.betaCurveInput_of_section5`, with `BetaEmbedEq` in place of the element-level `hβ`. -/
+`BetaInputSupply.betaCurveInput_of_section5`, with `BetaEmbedEq` in place of the element-level `hβ`.
+-/
 noncomputable def betaCurveInput_of_section5_betaEmb {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     {u : WordStack F (Fin (k + 1)) ι}
     (R : F[X][X][Y]) (H : F[X][Y])
@@ -398,7 +416,8 @@ variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 /-- **The §5 milestone from the embedding-level residual.**  The `…_betaEmb` analogue of
 `Section5Concrete.correlatedAgreement_affine_curves_johnson_concrete`: the literal BCIKS20 keystone
 goal `δ_ε_correlatedAgreementCurves` holds in the strict square-root Johnson regime, with the single
-numerator residual now the strictly-smaller, provably-equivalent **embedding-level** `BetaEmbedEq` in
+numerator residual now the strictly-smaller, provably-equivalent **embedding-level** `BetaEmbedEq`
+in
 place of the element-level `hβ`.  Everything else is forwarded verbatim to the proven milestone. -/
 theorem correlatedAgreement_affine_curves_johnson_concrete_betaEmb
     {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]

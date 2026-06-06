@@ -30,17 +30,20 @@ $$\varepsilon_{\mathrm{ca}}(C, \delta_{\mathrm{fld}}, \delta_{\mathrm{int}}) \ge
 
 * `ofReal_one_sub_inv_le_card_div`: An analytic lemma bridging real division and `ENNReal`-valued
   bounds: if $|F| - 1 \le m$, then $1 - 1/|F| \le m/|F|$ in `ENNReal`.
-* `epsCA_ge_one_sub_inv_of_nearCertainWitness`: Establishes the lower bound on $\varepsilon_{\mathrm{ca}}$
+* `epsCA_ge_one_sub_inv_of_nearCertainWitness`: Establishes the lower bound on
+$\varepsilon_{\mathrm{ca}}$
   given a stack $u$ and a subset of good combining coefficients $\Gamma \subset F$ of size
   at least $|F| - 1$.
-* `NearCertainBadLine`: Defines the geometric predicate certifying the existence of a stack $u$ which is
+* `NearCertainBadLine`: Defines the geometric predicate certifying the existence of a stack $u$
+which is
   not jointly close, yet has at least $|F| - 1$ good combining lines.
 * `epsCA_separation_bridge_of_residual`: Proves that the existence of a `NearCertainBadLine` implies
   the correlated agreement error lower bound $\varepsilon_{\mathrm{ca}} \ge 1 - 1/|F|$.
 
 ## References
 * [ABF26] Arnon, Boneh, Fenzi. *Open Problems in List Decoding and Correlated Agreement*, 2026.
-* [BGKS20] Ben-Sasson, Goldreich, Kopparty, Saraf. *Bounds on the List Decodability of Reed-Solomon Codes*, 2020.
+* [BGKS20] Ben-Sasson, Goldreich, Kopparty, Saraf. *Bounds on the List Decodability of Reed-Solomon
+Codes*, 2020.
 -/
 
 set_option linter.unusedFintypeInType false
@@ -61,7 +64,8 @@ variable {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
 /-- Conversional lemma mapping real arithmetic bounds to `ENNReal`.
 Specifically, shows that if the cardinality of the good combining coefficients $\Gamma$ satisfies
 $|F| - 1 \le m$, then the corresponding real ratio satisfies $1 - 1/|F| \le m / |F|$, converting the
-combiner bound into the standard `ENNReal` scale used in the correlated agreement error framework. -/
+combiner bound into the standard `ENNReal` scale used in the correlated agreement error framework.
+-/
 theorem ofReal_one_sub_inv_le_card_div
     (m : ℕ) (hm : (Fintype.card F : ℝ) - 1 ≤ m) :
     ENNReal.ofReal (1 - 1 / Fintype.card F) ≤
@@ -90,9 +94,12 @@ theorem ofReal_one_sub_inv_le_card_div
   rw [hrhs]
   exact ENNReal.ofReal_le_ofReal hreal
 
-/-- The separation bridge mapping a combiner witness to a lower bound on the correlated agreement error.
-If a stack $u$ is not jointly $\delta_{\mathrm{int}}$-close to the code $C$, but there exists a subset
-$\Gamma \subset F$ of size at least $|F| - 1$ such that $u_0 + \gamma u_1$ is $\delta_{\mathrm{fld}}$-close
+/-- The separation bridge mapping a combiner witness to a lower bound on the correlated agreement
+error.
+If a stack $u$ is not jointly $\delta_{\mathrm{int}}$-close to the code $C$, but there exists a
+subset
+$\Gamma \subset F$ of size at least $|F| - 1$ such that $u_0 + \gamma u_1$ is
+$\delta_{\mathrm{fld}}$-close
 to $C$ for all $\gamma \in \Gamma$, then the correlated agreement error satisfies
 $\varepsilon_{\mathrm{ca}}(C, \delta_{\mathrm{fld}}, \delta_{\mathrm{int}}) \ge 1 - 1/|F|$. -/
 theorem epsCA_ge_one_sub_inv_of_nearCertainWitness
@@ -116,7 +123,8 @@ def NearCertainBadLine (C : Set (ι → A)) (δ_fld δ_int : ℝ≥0) : Prop :=
       (Fintype.card F : ℝ) - 1 ≤ Γ.card
 
 /-- The reduction showing that the existence of a `NearCertainBadLine` implies the correlated
-agreement error lower bound $\varepsilon_{\mathrm{ca}}(C, \delta_{\mathrm{fld}}, \delta_{\mathrm{int}}) \ge 1 - 1/|F|$. -/
+agreement error lower bound $\varepsilon_{\mathrm{ca}}(C, \delta_{\mathrm{fld}},
+\delta_{\mathrm{int}}) \ge 1 - 1/|F|$. -/
 theorem epsCA_separation_bridge_of_residual
     (C : Set (ι → A)) (δ_fld δ_int : ℝ≥0)
     (h : NearCertainBadLine (F := F) C δ_fld δ_int) :

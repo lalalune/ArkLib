@@ -148,7 +148,8 @@ def stir_main
   -- machinery (`Combine.combine_theorem`, `STIR.proximity_gap`), which is `sorryAx`-tainted in
   -- the required √ρ regime via `correlatedAgreement_affine_curves` (see ProximityGap.lean for the
   -- full chain). Honest residual: this is a major protocol-formalisation effort gated on (1) the
-  -- list-decoding-regime CA open proof at AffineLines/Main.lean:40, and (2) building the IOPP object
+  -- list-decoding-regime CA open proof at AffineLines/Main.lean:40, and (2) building the IOPP
+  -- object
   -- + round-by-round soundness assembly from scratch. Not closeable from current harvest material.
 
 end MainTheorem

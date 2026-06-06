@@ -154,7 +154,8 @@ lemma lemma_4_24_dist_folded_ge_of_last_noncompliant (i_star : Fin ℓ) (steps :
     (i := ⟨i_star, by omega⟩) (steps := steps) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f_star)
   -- Case 1: Fiberwise Close (d < d_next / 2)
   · let h_fw_dist_lt := h_fw_close -- This gives 2 * fiber_dist < d_next
-    -- Define f_bar_star (the unique decoded codeword for f_star) to be the **fiberwise**-close codeword to f_star
+    -- Define f_bar_star (the unique decoded codeword for f_star) to be the **fiberwise**-close
+    -- codeword to f_star
     obtain ⟨f_bar_star, ⟨h_f_bar_star_mem, h_f_bar_star_min_card, h_f_bar_star_eq_UDRCodeword⟩, h_unique⟩ := exists_unique_fiberwiseClosestCodeword_within_UDR 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i_star, by omega⟩) (steps := steps) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f_star) (h_fw_close := h_fw_close)
     have h_fw_dist_f_g_eq : #(fiberwiseDisagreementSet 𝔽q β ⟨i_star, by omega⟩ steps h_destIdx h_destIdx_le f_star f_bar_star) = d_fw := by
       unfold d_fw
@@ -178,7 +179,8 @@ lemma lemma_4_24_dist_folded_ge_of_last_noncompliant (i_star : Fin ℓ) (steps :
       -- Condition 3: folded decoding equals next decoding
       simp only
       rw [←h_f_bar_star_eq_UDRCodeword]
-      -- ⊢ iterated_fold ⟨i*, ⋯⟩ steps ⋯ f_bar_star r_challenges = UDRCodeword 𝔽q β ⟨i* + steps, ⋯⟩ f_next h_next_close
+      -- ⊢ iterated_fold ⟨i*, ⋯⟩ steps ⋯ f_bar_star r_challenges
+      --     = UDRCodeword 𝔽q β ⟨i* + steps, ⋯⟩ f_next h_next_close
       exact id (Eq.symm h_eq)
     -- Since they are distinct codewords, their distance is at least `d_next`.
     have h_ineq_1 : Δ₀(f_bar_next, folded_f_bar_star) ≥ d_next := by

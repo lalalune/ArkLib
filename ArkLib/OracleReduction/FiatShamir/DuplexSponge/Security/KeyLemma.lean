@@ -10,16 +10,18 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Defs
 /-!
 # Key Lemma for Duplex-Sponge Fiat-Shamir Security (Lemma 5.1)
 
-This module formalizes the core statistical indistinguishability result (Lemma 5.1 in Chiesa-Orrù [CO25])
-bridging the Duplex-Sponge Fiat-Shamir (DSFS) transformation and the basic Fiat-Shamir transformation.
+This module formalizes the core statistical indistinguishability result (Lemma 5.1 in
+Chiesa-Orrù [CO25]) bridging the Duplex-Sponge Fiat-Shamir (DSFS) transformation and the basic
+Fiat-Shamir transformation.
 
 The key lemma asserts that the security games for basic Fiat-Shamir and duplex-sponge Fiat-Shamir
-yield statistically indistinguishable distributions on their output transcripts (up to a small simulation
-error $\eta^*$), provided that the malicious prover and query-answer traces are mapped via the
+yield statistically indistinguishable distributions on their output transcripts (up to a small
+simulation error $\eta^*$), provided that the malicious prover and query-answer traces are mapped
+via the
 appropriate trace and prover transformations.
 
-From this result, preservation of both soundness and knowledge soundness under the DSFS transformation
-follows directly.
+From this result, preservation of both soundness and knowledge soundness under the DSFS
+transformation follows directly.
 -/
 
 open OracleComp OracleSpec ProtocolSpec

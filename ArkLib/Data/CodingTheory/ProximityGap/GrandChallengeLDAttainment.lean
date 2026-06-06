@@ -34,8 +34,8 @@ already give `Λ(C^⋈m, 1) ≥ |F| > ε*·|F|` for `ε* < 1`), whence
 
 * `not_grandListDecodingChallengeRS` : the formalized challenge is **false** for every
   RS code with `k ≥ 1`, `m ≥ 1`, `ε* < 1`;
-* `not_listDecodingPrize_of_two_le_card` : the formalized prize statement is **false** for every domain
-  (named to coexist with the convergent `GrandChallengeCollapse.not_listDecodingPrize`)
+* `not_listDecodingPrize_of_two_le_card` : the formalized prize statement is **false** for every
+  domain (named to coexist with the convergent `GrandChallengeCollapse.not_listDecodingPrize`)
   with at least 2 points and every interleaving `m ≥ 1`.
 
 ## What this does and does not mean

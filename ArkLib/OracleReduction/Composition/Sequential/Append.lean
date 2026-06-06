@@ -487,113 +487,6 @@ instance AppendCoherent.append
         (instAppend_inr_heq (pSpec₁ := pSpec₁) j).symm
 
 end OracleVerifier.Append
-
-/-- **NAMED RESIDUAL (deep, structural router/`simulateQ` interchange).** The plain verifier extracted
-from the composite oracle verifier equals the composition of the two extracted plain verifiers.
-
-The LHS `(OracleVerifier.append V₁ V₂).toVerifier` runs the router-composed `OracleVerifier.Append.verify`
-(`V₁` via `router₁`, then `V₂` via `router₂ V₁`) under a *single* `simulateQ (simOracle2 oSpec oStmt₁
-(messages over the appended spec))`. The RHS runs `V₁.toVerifier` (its own `simulateQ` over
-`OStmt₁`/`pSpec₁.Message`) then `V₂.toVerifier` (its own `simulateQ` over `OStmt₂`/`pSpec₂.Message`).
-Proving them equal needs the two router-interchange facts:
-  * `simulateQ (simOracle2 … appendedMsgs) ∘ simulateQ router₁` collapses to
-    `simulateQ (simOracle2 oSpec oStmt₁ pSpec₁.messages)` — i.e. `router₁` followed by the appended
-    message oracle answers `pSpec₁`-messages at `MessageIdx.inl` exactly as `V₁`'s own oracle would
-    (using `instAppend_inl_heq`/`Message_inl`);
-  * likewise `router₂ V₁` followed by the appended oracle answers `pSpec₂`-messages at `MessageIdx.inr`
-    (via `instAppend_inr_heq`) and `OStmt₂`-queries via `emitOStmt₂Query` — which, under the
-    `AppendCoherent` instance, route to `V₁`'s output oracle statements exactly as `V₂.toVerifier`'s
-    own `simOracle2` would, the intermediate `oStmt₂` being `V₁.toVerifier`'s derived output oracles.
-This is the structural sibling of `Prover.append_run` (a `simulateQ`/routing interchange rather than a
-`runToRound` interchange) and is the deep obstruction here; it is *not* probabilistic. It feeds the
-four `OracleVerifier.append_*` security theorems (their `convert …; simp [append_toVerifier]` steps).
--/
-theorem router₁_compose (oStmt : ∀ i, OStmt₁ i) (transcript : (pSpec₁ ++ₚ pSpec₂).FullTranscript) :
-    ((OracleInterface.simOracle2 oSpec oStmt transcript.messages) ∘ₛ router₁ (pSpec₂ := pSpec₂)) =
-      OracleInterface.simOracle2 oSpec oStmt transcript.fst.messages := by
-  funext q
-  rcases q with t | (t | ⟨i, q⟩)
-  · rfl
-  · rfl
-  · simp only [QueryImpl.apply_compose, router₁, emitMessageInl, emitMessageQuery]
-    rfl
-
-theorem router₂_compose (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
-    [coh : AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
-    (oStmt : ∀ i, OStmt₁ i) (transcript : (pSpec₁ ++ₚ pSpec₂).FullTranscript) :
-    ((OracleInterface.simOracle2 oSpec oStmt transcript.messages) ∘ₛ router₂ V₁) =
-      OracleInterface.simOracle2 oSpec (fun i => match h : V₁.embed i with
-        | Sum.inl j => (V₁.hEq i ▸ h ▸ oStmt j)
-        | Sum.inr j => (V₁.hEq i ▸ h ▸ transcript.fst.messages j))
-        transcript.snd.messages := by
-  funext q
-  rcases q with t | (t | ⟨i, q⟩)
-  · rfl
-  · dsimp only [QueryImpl.apply_compose, router₂, emitOStmt₂Query]
-    cases h : V₁.embed i with
-    | inl k =>
-        simp only [emitOStmtQueryInl]
-        rfl
-    | inr k =>
-        simp only [emitOStmtQueryInr, emitMessageInl, emitMessageQuery]
-        rfl
-  · simp only [QueryImpl.apply_compose, router₂, emitMessageInr, emitMessageQuery]
-    rfl
-
-theorem oStmt_append_congr (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
-    [coh : AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
-    (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂)
-    (oStmt : ∀ i, OStmt₁ i) (transcript : (pSpec₁ ++ₚ pSpec₂).FullTranscript) (i : ιₛ₃) :
-    (match h : (OracleVerifier.append V₁ V₂).embed i with
-      | Sum.inl j => ((OracleVerifier.append V₁ V₂).hEq i ▸ h ▸ oStmt j : OStmt₃ i)
-      | Sum.inr j => ((OracleVerifier.append V₁ V₂).hEq i ▸ h ▸ transcript.messages j : OStmt₃ i))
-    =
-    (match h : V₂.embed i with
-      | Sum.inl j => (V₂.hEq i ▸ h ▸ match h' : V₁.embed j with
-          | Sum.inl k => (V₁.hEq j ▸ h' ▸ oStmt k : OStmt₂ j)
-          | Sum.inr k => (V₁.hEq j ▸ h' ▸ transcript.fst.messages k : OStmt₂ j) : OStmt₃ i)
-      | Sum.inr j => (V₂.hEq i ▸ h ▸ transcript.snd.messages j : OStmt₃ i)) := by
-  rw [append_embed_eq]
-  cases h₂ : V₂.embed i with
-  | inl j =>
-      cases h₁ : V₁.embed j with
-      | inl k =>
-          simp [h₂, h₁, OracleVerifier.append]
-      | inr k =>
-          simp [h₂, h₁, OracleVerifier.append, MessageIdx.inl]
-  | inr j =>
-      simp [h₂, OracleVerifier.append, MessageIdx.inr]
-
-@[simp]
-lemma OracleVerifier.append_toVerifier
-    (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
-    [coh : OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
-    (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂) :
-      (OracleVerifier.append V₁ V₂).toVerifier =
-        Verifier.append V₁.toVerifier V₂.toVerifier := by
-  ext ⟨stmt, oStmt⟩ transcript
-  apply OptionT.ext
-  simp only [OracleVerifier.append, Verifier.append, OracleVerifier.toVerifier, OptionT.run_bind,
-    OracleVerifier.Append.verify]
-  dsimp only
-  rw [simulateQ_optionT_bind']
-  rw [QueryImpl.simulateQ_compose, QueryImpl.simulateQ_compose]
-  rw [router₁_compose, router₂_compose]
-  dsimp only
-  congr 1
-  refine bind_congr fun x => ?_
-  rcases x with _ | stmt₂
-  · rfl
-  · dsimp only
-    congr 1
-    refine bind_congr fun y => ?_
-    rcases y with _ | stmt₃
-    · rfl
-    · dsimp only
-      congr 1
-      funext i
-      exact oStmt_append_congr V₁ V₂ oStmt transcript i
-
 /-- Sequential composition of oracle reductions is just the sequential composition of the oracle
   provers and oracle verifiers. -/
 def OracleReduction.append (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
@@ -615,15 +508,6 @@ instance OracleVerifier.Append.AppendCoherent.oracleReductionAppend
       (Oₘ₁ := instOracleInterfaceMessageAppend (pSpec₁ := pSpec₁) (pSpec₂ := pSpec₂))
       (OracleReduction.append (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) R₁ R₂).verifier :=
   OracleVerifier.Append.AppendCoherent.append R₁.verifier R₂.verifier
-
-@[simp]
-lemma OracleReduction.append_toReduction
-    (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
-    [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) R₁.verifier]
-    (R₂ : OracleReduction oSpec Stmt₂ OStmt₂ Wit₂ Stmt₃ OStmt₃ Wit₃ pSpec₂) :
-      (OracleReduction.append R₁ R₂).toReduction =
-        Reduction.append R₁.toReduction R₂.toReduction := by
-  ext : 1 <;> simp [toReduction, OracleReduction.append, Reduction.append]
 
 end OracleProtocol
 

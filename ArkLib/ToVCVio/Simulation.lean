@@ -2051,7 +2051,7 @@ lemma OptionT.exists_rel_path_of_mem_support_forIn_stateful {ι : Type} {spec : 
     res h_mem
 /-- Distributes `simulateQ` over `List.mapM`, showing that the monad morphism
     `simulateQ so` commutes with mapping a monadic action over a list. -/
-lemma simulateQ_list_mapM {ι ι' : Type} {spec : OracleSpec ι} {superSpec : OracleSpec ι'}
+lemma simulateQ_list_mapM_stateless {ι ι' : Type} {spec : OracleSpec ι} {superSpec : OracleSpec ι'}
     (so : SimOracle.Stateless spec superSpec)
     {α β : Type} (f : α → OracleComp spec β) :
     ∀ xs : List α, simulateQ so (xs.mapM f) = xs.mapM (fun x ↦ simulateQ so (f x)) := by
@@ -2066,7 +2066,7 @@ lemma simulateQ_array_mapM {ι ι' : Type} {spec : OracleSpec ι} {superSpec : O
     {α β : Type} (f : α → OracleComp spec β) (xs : Array α) :
     simulateQ so (xs.mapM f) = xs.mapM (fun x ↦ simulateQ so (f x)) := by
   rw [Array.mapM_eq_mapM_toList, Array.mapM_eq_mapM_toList]
-  simp [simulateQ_list_mapM]
+  simp [simulateQ_list_mapM_stateless]
 
 omit [spec.Fintype] [spec.Inhabited] in
 lemma singleton_mapM_gen

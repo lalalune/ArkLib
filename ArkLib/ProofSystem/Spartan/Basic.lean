@@ -82,7 +82,8 @@ instance : ∀ i, OracleInterface (OracleStatement R pp i) :=
 -- For the input witness, we define its oracle interface to be the polynomial evaluation oracle of
 -- its multilinear extension.
 
--- Future work: define an `OracleInterface.ofEquiv` definition that transfers the oracle interface across
+-- Future work: define an `OracleInterface.ofEquiv` definition that transfers the oracle interface
+-- across
 -- an equivalence of types.
 instance : OracleInterface (Witness R pp) where
   Query := Fin pp.ℓ_w → R
@@ -548,7 +549,8 @@ def linearCombinationVerifier :
   hEq := fun _ => rfl
 
 /-- STATEMENT REPAIR (2026-06-04): `linearCombination` is now realized (no `sorry`) with the
-corrected input oracle family `AfterSendEvalClaim`. It is a clean identity-oracle challenge round. -/
+corrected input oracle family `AfterSendEvalClaim`. It is a clean identity-oracle challenge round.
+-/
 def oracleReduction.linearCombination :
     OracleReduction oSpec
       (Statement.AfterSendEvalClaim R pp) (OracleStatement.AfterSendEvalClaim R pp) Unit

@@ -241,7 +241,8 @@ omit [DecidableEq ι] in
 /-- **`BoundaryCardResidual` from the non-lattice reduction plus the isolated lattice residual.**
 
 The boundary `δ · n` is either an integer (lattice case, handled by `hLattice`) or not (non-lattice
-case, handled by the strict-interior producer `hStrict` through `boundaryCardResidual_of_not_lattice`).
+case, handled by the strict-interior producer `hStrict` through
+`boundaryCardResidual_of_not_lattice`).
 A single `lt_or_eq` on `⌊δ·n⌋ ≤ δ·n` discharges the whole `BoundaryCardResidual`.
 
 This is the exact `BoundaryCardResidual` shape consumed by the keystone

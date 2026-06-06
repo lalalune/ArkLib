@@ -28,9 +28,10 @@ In App.-A.4 the Hasse-derivative coefficient that the β-recursion multiplies/su
 
 with `α₀ = T/W ∈ 𝕃` the canonical root, `W = liftToFunctionField H.leadingCoeff`, `d = R.natDegree`,
 `δ_{0,0} = 1` (else `0`), `Σλ` the size of the `Y`-Hasse-derivative, numerator `B_{i₁,λ} ∈ 𝒪`.
-The `i₁ = 0` line was proven in full in `HasseDerivNumeratorConcrete`; here we name the **inner-`X`**
-Hasse derivative (order `i₁`) that the general term applies *before* the `X`-specialization, prove its
-degree-and-coefficient facts kernel-clean, and feed the two genuine inputs to the brick-L2b derivation
+The `i₁ = 0` line was proven in full in `HasseDerivNumeratorConcrete`; here we name the
+**inner-`X`** Hasse derivative (order `i₁`) that the general term applies *before* the
+`X`-specialization, prove its degree-and-coefficient facts kernel-clean, and feed the two
+genuine inputs to the brick-L2b derivation
 `genHasseCoeff_hasWPowerNumerator_of_clearing` (re-used from `HasseDerivNumeratorConcrete`).
 
 The mixed-derivative numerator is
@@ -43,23 +44,27 @@ The mixed-derivative numerator is
 i.e. apply the inner-`X` Hasse derivative `∆^{i₁}_X` (coefficient-wise on the `Y`-layer, on the `X`
 variable that is then specialized), specialize `X = x₀`, then take the outer-`Y` Hasse derivative
 `∆^{σ}_Y`.  Evaluating this `F[X][Y]` at `α₀ = T/W` realizes `∆^{i₁}_X ∆^{σ}_Y R(x₀, α₀, Z)`.  This
-strictly generalizes the line numerator: `genHasseDerivNumerPoly x₀ R 0 σ = hasseDerivYNumerPoly x₀ R σ`
+strictly generalizes the line numerator:
+`genHasseDerivNumerPoly x₀ R 0 σ = hasseDerivYNumerPoly x₀ R σ`
 (`hasseDeriv 0 = id`).
 
 ### What is proven (all kernel-clean, no `sorry`/`admit`/`axiom`/`native_decide`)
 
-* `innerXHasse_coeff`, `innerXHasse_natDegree_le`, `innerXHasse_zero` — the inner-`X` Hasse derivative
-  acts coefficient-wise on the `Y`-layer (`(innerXHasse i₁ p).coeff n = hasseDeriv i₁ (p.coeff n)`),
+* `innerXHasse_coeff`, `innerXHasse_natDegree_le`, `innerXHasse_zero` — the inner-`X` Hasse
+  derivative acts coefficient-wise on the `Y`-layer
+  (`(innerXHasse i₁ p).coeff n = hasseDeriv i₁ (p.coeff n)`),
   does not raise the `Y`-degree, and reduces to the identity at order `0`.
 * `genHasseDerivNumerPoly_natDegree_le` — the `Y`-degree bound `d − σ` after the mixed derivative
   (both variables handled by mathlib `Polynomial.natDegree_hasseDeriv_le`).
 * `genHasseDerivNumerPoly_coeff_top` — the relevant cleared coefficient at index `d − σ` equals
   `(d choose σ) · evalX(x₀)(∆^{i₁}_X R).coeff d`, exposing the single `W`-divisibility obligation.
 * `genHasseDerivNumerPoly_eq_line_of_zero` — the `i₁ = 0` reduction to the verified line numerator.
-* `genHasseCoeff` — the concrete general coefficient `A_{i₁,σ} ∈ 𝕃` (single-block multinomial `= 1`).
-* `genHasseCoeff_hasWPowerNumerator_of_dvd_top` — **the general `W`-power-numerator theorem**: given the
-  one genuine App-A divisibility input (`W ∣` the inner-`X`-derived top `Y`-coefficient — the
-  `W^{i₁+δ}` prefactor save of recursion (A.1)), it produces `HasWPowerNumerator (A_{i₁,σ}) (d−σ−1)`.
+* `genHasseCoeff` — the concrete general coefficient `A_{i₁,σ} ∈ 𝕃` (single-block
+  multinomial `= 1`).
+* `genHasseCoeff_hasWPowerNumerator_of_dvd_top` — **the general `W`-power-numerator
+  theorem**: given the one genuine App-A divisibility input (`W ∣` the inner-`X`-derived top
+  `Y`-coefficient — the `W^{i₁+δ}` prefactor save of recursion (A.1)), it produces
+  `HasWPowerNumerator (A_{i₁,σ}) (d−σ−1)`.
 * `genHasseCoeff_mem_regularElms_set_of_dvd` / `genHasseCoeff_mem_regularElms_set` — the L7-facing
   `hA`/`Bcoeff` composition, threading the recursion's `𝒪`-side divisibility witness to land in `𝒪`.
 
@@ -67,7 +72,8 @@ strictly generalizes the line numerator: `genHasseDerivNumerPoly x₀ R 0 σ = h
 
 The single residual is the App-A `W`-divisibility of the inner-`X`-derived top `Y`-coefficient
 `hdvd_top : H.leadingCoeff ∣ (Bivariate.evalX (C x₀) (innerXHasse i₁ R)).coeff R.natDegree`.  In the
-`i₁ = 0` line case this is *exactly* `Hypotheses.leadingCoeff_dvd_evalX_coeff_natDegree` (so the line
+`i₁ = 0` line case this is *exactly* `Hypotheses.leadingCoeff_dvd_evalX_coeff_natDegree`
+(so the line
 theorem `lineHasseCoeff_hasWPowerNumerator` is recovered with the hypothesis discharged from
 `Hypotheses`, see `genHasseCoeff_zero_hasWPowerNumerator`).  For `i₁ > 0` it is the genuine
 trivariate content (the `W^{i₁+δ}·ξ^{2i₁+Σλ−2}` prefactor of (A.1)); we take it as an explicit named
@@ -84,8 +90,9 @@ variable {F : Type} [Field F]
 
 /-! ### The inner-`X` Hasse derivative (coefficient-wise on the `Y`-layer)
 
-`R : F[X][X][Y]` is `((F[X])[X])[Y]`: its `Y`-coefficients live in `(F[X])[X]`, whose `X` variable is
-the one specialized by `Bivariate.evalX (C x₀)`.  The inner-`X` Hasse derivative `∆^{i₁}_X` of (A.1)
+`R : F[X][X][Y]` is `((F[X])[X])[Y]`: its `Y`-coefficients live in `(F[X])[X]`, whose `X`
+variable is the one specialized by `Bivariate.evalX (C x₀)`.  The inner-`X` Hasse derivative
+`∆^{i₁}_X` of (A.1)
 acts on *that* `X` variable, i.e. coefficient-wise (in the `Y`-layer) by `hasseDeriv i₁` on each
 `(F[X])[X]`-coefficient.  We name it generically over a commutative semiring `S` (instantiated at
 `S = F[X]`) so the coefficient/degree lemmas are the plain mathlib `Polynomial` facts. -/
@@ -171,8 +178,9 @@ lemma genHasseDerivNumerPoly_natDegree_le (x₀ : F) (R : F[X][X][Y]) (i₁ σ :
 /-- The relevant cleared coefficient of the mixed numerator, at the App-A index `R.natDegree − σ`:
 `(∆^σ_Y (∆^{i₁}_X R)(x₀,·,Z)).coeff (R.natDegree − σ)
   = (R.natDegree choose σ) · (∆^{i₁}_X R)(x₀,·,Z).coeff R.natDegree`.
-This exposes the single `W`-divisibility obligation: it suffices that `W` divides the inner-`X`-derived
-top `Y`-coefficient `(Bivariate.evalX (C x₀) (∆^{i₁}_X R)).coeff R.natDegree`.  (For `i₁ = 0`,
+This exposes the single `W`-divisibility obligation: it suffices that `W` divides the
+inner-`X`-derived top `Y`-coefficient
+`(Bivariate.evalX (C x₀) (∆^{i₁}_X R)).coeff R.natDegree`.  (For `i₁ = 0`,
 `∆^{0}_X R = R`, and this is the line-case coefficient `Hypotheses` provides.) -/
 lemma genHasseDerivNumerPoly_coeff_top (x₀ : F) (R : F[X][X][Y]) (i₁ σ : ℕ) (hσ : σ ≤ R.natDegree) :
     (genHasseDerivNumerPoly x₀ R i₁ σ).coeff (R.natDegree - σ) =
@@ -204,8 +212,9 @@ lemma genHasseCoeff_eq_line_of_zero {x₀ : F} {R : F[X][X][Y]} {H : F[X][Y]}
   rw [genHasseDerivNumerPoly_eq_line_of_zero]
 
 /-- **Main general theorem.**  Given the one genuine App-A `W`-divisibility input — that `W`
-(`= H.leadingCoeff`) divides the inner-`X`-derived top `Y`-coefficient (the `W^{i₁+δ}` prefactor save
-of recursion (A.1)) — the general mixed Hasse-derivative coefficient `A_{i₁,σ}` has the
+(`= H.leadingCoeff`) divides the inner-`X`-derived top `Y`-coefficient (the `W^{i₁+δ}`
+prefactor save of recursion (A.1)) — the general mixed Hasse-derivative coefficient
+`A_{i₁,σ}` has the
 `W`-power-numerator form at the App-A exponent `d − δ − Σλ = R.natDegree − 1 − σ` (with `δ = 1`,
 `Σλ = σ`):
 
@@ -233,8 +242,9 @@ lemma genHasseCoeff_hasWPowerNumerator_of_dvd_top {x₀ : F} {R : F[X][X][Y]} {H
     exact ⟨((R.natDegree).choose σ : F[X]) * q, by rw [hq]; ring⟩
 
 /-- **Line-case discharge.**  For `i₁ = 0` the residual divisibility input is *exactly*
-`Hypotheses.leadingCoeff_dvd_evalX_coeff_natDegree`, so the general theorem recovers the verified line
-result with the hypothesis discharged from `Hypotheses` (no residual): for `i₁ = 0`,
+`Hypotheses.leadingCoeff_dvd_evalX_coeff_natDegree`, so the general theorem recovers the
+verified line result with the hypothesis discharged from `Hypotheses` (no residual): for
+`i₁ = 0`,
 `HasWPowerNumerator (genHasseCoeff x₀ R H 0 σ) (R.natDegree − σ − 1)`. -/
 lemma genHasseCoeff_zero_hasWPowerNumerator {x₀ : F} {R : F[X][X][Y]} {H : F[X][Y]}
     [H_irreducible : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)]
@@ -247,8 +257,9 @@ lemma genHasseCoeff_zero_hasWPowerNumerator {x₀ : F} {R : F[X][X][Y]} {H : F[X
 
 /-! ### L7-facing composition (`hA` / `Bcoeff` interface)
 
-L7's `betaRec_succ_mem_of_term_numerators` needs, per recursion term, the per-term `𝕃`-side numerator
-form together with the `𝒪`-side divisibility witness the recursion supplies (its `W^{i₁+δ}·ξ^{…}`
+L7's `betaRec_succ_mem_of_term_numerators` needs, per recursion term, the per-term
+`𝕃`-side numerator form together with the `𝒪`-side divisibility witness the recursion
+supplies (its `W^{i₁+δ}·ξ^{…}`
 prefactor).  We thread the concrete general `A_{i₁,σ}` numerator through L2's closure fact
 `hasWPowerNumerator.mem_regularElms_set_of_dvd`. -/
 
@@ -264,8 +275,9 @@ lemma genHasseCoeff_mem_regularElms_set_of_dvd {x₀ : F} {R : F[X][X][Y]} {H : 
     genHasseCoeff x₀ R H i₁ σ ∈ regularElms_set H :=
   hasWPowerNumerator.mem_regularElms_set_of_dvd hB hdvd
 
-/-- **Fully packaged L7 entry point.**  The general coefficient *is* a `HasWPowerNumerator` (from the
-main general theorem, given the App-A `W`-divisibility input `hdvd_top`), and given the recursion's
+/-- **Fully packaged L7 entry point.**  The general coefficient *is* a `HasWPowerNumerator`
+(from the main general theorem, given the App-A `W`-divisibility input `hdvd_top`), and
+given the recursion's
 `𝒪`-side divisibility witness on its numerator it lands in `𝒪`.  This bundles the existence of the
 numerator `B` with the membership closure, matching L7's `hA`/`Bcoeff` interface in one shot. -/
 lemma genHasseCoeff_mem_regularElms_set {x₀ : F} {R : F[X][X][Y]} {H : F[X][Y]}
@@ -282,7 +294,8 @@ lemma genHasseCoeff_mem_regularElms_set {x₀ : F} {R : F[X][X][Y]} {H : F[X][Y]
 
 end ArkLib
 
--- Axiom audit: every claimed-done lemma must rest only on `[propext, Classical.choice, Quot.sound]`.
+-- Axiom audit: every claimed-done lemma must rest only on
+-- `[propext, Classical.choice, Quot.sound]`.
 #print axioms ArkLib.innerXHasse_coeff
 #print axioms ArkLib.innerXHasse_natDegree_le
 #print axioms ArkLib.innerXHasse_zero

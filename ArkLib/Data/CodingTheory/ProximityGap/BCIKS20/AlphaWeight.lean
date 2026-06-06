@@ -9,8 +9,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1Conditional
 /-!
 # (P1, A.4) `AlphaGenuineRegularWeightLe` — analysis, equivalence, structured closure, obstruction
 
-This module imports only `HenselNumerator` (whose `.olean` builds; `GammaGenuine`/`RationalFunctions`
-are transitive).  It is the careful working-out of the carved A.4 link
+This module imports only `HenselNumerator` (whose `.olean` builds;
+`GammaGenuine`/`RationalFunctions` are transitive).  It is the careful working-out of the carved
+A.4 link
 
   `AlphaGenuineRegularWeightLe`:  `∀ t, ∃ a_t ∈ 𝒪, embedding a_t = αGenuine t ∧ Λ_𝒪(a_t) ≤ 1`
 
@@ -34,40 +35,45 @@ The (P2) lift identity lives in the FIELD `𝕃 H`:
 i.e. `βHensel t` is *divisible in `𝒪`* by the clearing product `W𝒪^{t+1}·ξ^{e_t}`, with the quotient
 of `Λ_𝒪`-weight `≤ 1`.  The forward direction is injectivity of `embedding` applied to `hlift`
 (`βHensel_eq_alpha_mul_of_lift`); the reverse is pushing `embedding` through the factorization and
-cancelling the nonzero denominator (`den_ne_zero`).  So the genuine A.4 content, transported to where
-`Λ_𝒪` lives, is exactly this divisibility-with-weight.
+cancelling the nonzero denominator (`den_ne_zero`).  So the genuine A.4 content, transported to
+where `Λ_𝒪` lives, is exactly this divisibility-with-weight.
 
 **It is NOT circular with the structured invariant.**  `AlphaGenuineRegularWeightLe (⟺ DivWeightLe)`
-*implies* the structured invariant `Λ_𝒪(β_t) ≤ 1 + (t+1)Λ(W) + e_t·Λ(ξ)` (`βHensel_weight_structured`,
-PROVEN below: factor, then sub-multiplicative `Λ_𝒪` calculus).  The converse FAILS:
-`weight_Λ_over_𝒪` is only *sub*-additive (`Λ(ab) ≤ Λ(a)+Λ(b)`, `weight_Λ_over_𝒪_mul_le`), so a weight
-*upper* bound on `βHensel t` cannot be "divided through" to manufacture either the `𝒪`-divisibility
-(`a_t` existing) or the *sharp* `Λ(a_t) ≤ 1` (you cannot subtract in a sub-additive valuation).  Hence
+*implies* the structured invariant `Λ_𝒪(β_t) ≤ 1 + (t+1)Λ(W) + e_t·Λ(ξ)`
+(`βHensel_weight_structured`, PROVEN below: factor, then sub-multiplicative `Λ_𝒪` calculus).  The
+converse FAILS: `weight_Λ_over_𝒪` is only *sub*-additive (`Λ(ab) ≤ Λ(a)+Λ(b)`,
+`weight_Λ_over_𝒪_mul_le`), so a weight *upper* bound on `βHensel t` cannot be "divided through" to
+manufacture either the `𝒪`-divisibility (`a_t` existing) or the *sharp* `Λ(a_t) ≤ 1` (you cannot
+subtract in a sub-additive valuation).  Hence
 `AlphaGenuineRegularWeightLe` is *strictly stronger* than the structured invariant — it is genuine
 extra input, packaging a divisibility fact, and `P1Conditional` is NOT a hidden circularity.  The
 honest residual after this file is precisely `DivWeightLe`.
 
 ## The sharp `t = 0` obstruction (`W𝒪_dvd_βHensel_zero_of_alpha`, PROVEN)
 
-At `t = 0`, `αGenuine 0 = α₀ = T/W` (`αGenuine_zero`) and the lift identity is the PROVEN, axiom-clean
-`βHensel_lift_identity_zero` (`embedding (βHensel 0) = α₀·W = T`).  Any `AlphaGenuineRegularWeightLe`
+At `t = 0`, `αGenuine 0 = α₀ = T/W` (`αGenuine_zero`) and the lift identity is the PROVEN,
+axiom-clean `βHensel_lift_identity_zero` (`embedding (βHensel 0) = α₀·W = T`).  Any
+`AlphaGenuineRegularWeightLe`
 witness `a_0` therefore forces, by injectivity,
 
   `βHensel 0 = a_0 · W𝒪`     in `𝒪 H`,
 
 i.e. `W𝒪 ∣ βHensel 0` in `𝒪`.  This is the concrete face of the residual: `T/W = α₀` is regular
 (`∈ image embedding`) **iff** `W𝒪 ∣ βHensel 0` (equivalently `W𝒪 ∣ mk X = functionFieldT`'s
-representative).  The genuine A.4 content `Λ(α_t) = 1` is exactly that this clearing divisibility holds
-at every order with the quotient at weight `1`.  We prove the `t = 0` direction unconditionally (it uses
-only the proven `βHensel_lift_identity_zero` + injectivity); we do not fake the general divisibility.
+representative).  The genuine A.4 content `Λ(α_t) = 1` is exactly that this clearing divisibility
+holds at every order with the quotient at weight `1`.  We prove the `t = 0` direction
+unconditionally (it uses only the proven `βHensel_lift_identity_zero` + injectivity); we do not
+fake the general divisibility.
 
-## Outcome (disposition (a) on the *forward* direction + (b) equivalence FINDING + precise obstruction)
+## Outcome (disposition (a) forward direction + (b) equivalence FINDING + precise obstruction)
 
-* `βHensel_eq_alpha_mul_of_lift`, `alpha_eq_embedding_of_fact` — the two halves of the `𝕃 ↔ 𝒪` bridge.
-* `alphaWeight_iff_divWeight` — the EQUIVALENCE `AlphaGenuineRegularWeightLe ⟺ DivWeightLe` given `hlift`
-  (the circularity FINDING: the genuine content is the `𝒪`-divisibility-with-weight, distinct from the
-  structured bound).
-* `βHensel_weight_structured` — the STRUCTURED INVARIANT, PROVEN from `AlphaGenuineRegularWeightLe`+`hlift`
+* `βHensel_eq_alpha_mul_of_lift`, `alpha_eq_embedding_of_fact` — the two halves of the `𝕃 ↔ 𝒪`
+  bridge.
+* `alphaWeight_iff_divWeight` — the EQUIVALENCE `AlphaGenuineRegularWeightLe ⟺ DivWeightLe` given
+  `hlift` (the circularity FINDING: the genuine content is the `𝒪`-divisibility-with-weight,
+  distinct from the structured bound).
+* `βHensel_weight_structured` — the STRUCTURED INVARIANT, PROVEN from
+  `AlphaGenuineRegularWeightLe`+`hlift`
   (so P1 truly closes when the lift identity lands and `DivWeightLe` is supplied).
 * `βHensel_weight_bound_of_alphaWeight` — (P1) loose bound `Λ_𝒪(β_t) ≤ (2t+1)·natDegreeY R·D`.
 * `W𝒪_dvd_βHensel_zero_of_alpha` — the sharp, PROVEN `t = 0` divisibility obstruction.
@@ -103,9 +109,10 @@ Identical to `P1Conditional.AlphaGenuineRegularWeightLe`: the genuine Hensel-roo
 `AlphaGenuineRegularWeightLe` is imported from `P1Conditional`. -/
 
 /-- **The `𝒪`-level divisibility-with-weight form** of the carved link.  At order `t`, `βHensel t`
-factors *in `𝒪 H`* as `a_t · W𝒪^{t+1} · ξ^{e_t}` with the quotient `a_t` of `Λ_𝒪`-weight `≤ 1`.  This
-is `AlphaGenuineRegularWeightLe` transported to the world where `Λ_𝒪` actually lives (PROVEN equivalent
-to it given `hlift`, `alphaWeight_iff_divWeight`).  It exposes the genuine residual: a clearing
+factors *in `𝒪 H`* as `a_t · W𝒪^{t+1} · ξ^{e_t}` with the quotient `a_t` of `Λ_𝒪`-weight `≤ 1`.
+This is `AlphaGenuineRegularWeightLe` transported to the world where `Λ_𝒪` actually lives (PROVEN
+equivalent to it given `hlift`, `alphaWeight_iff_divWeight`).  It exposes the genuine residual: a
+clearing
 divisibility `W𝒪^{t+1}·ξ^{e_t} ∣ βHensel t` in `𝒪`, with the quotient at weight `1`. -/
 def DivWeightLe (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
     (hH : 0 < H.natDegree) (D : ℕ) : Prop :=
@@ -118,10 +125,10 @@ def DivWeightLe (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
 
 The `𝕃 → 𝒪` half `βHensel_eq_alpha_mul_of_lift` is imported from `P1Conditional`. -/
 
-/-- **Bridge, `𝒪 → 𝕃`.**  The reverse: given the `𝒪`-level factorization `hfact` and the lift identity
-`hlift_t`, the quotient `a` embeds to `αGenuine t`.  Push `embedding` through `hfact`
-(`embedding (β_t) = embedding a · W^{t+1} · ξ^{e_t}`), compare with `hlift_t`, and cancel the nonzero
-denominator `W^{t+1}·ξ^{e_t}` (`den_ne_zero`) in the field `𝕃 H`. -/
+/-- **Bridge, `𝒪 → 𝕃`.**  The reverse: given the `𝒪`-level factorization `hfact` and the lift
+identity `hlift_t`, the quotient `a` embeds to `αGenuine t`.  Push `embedding` through `hfact`
+(`embedding (β_t) = embedding a · W^{t+1} · ξ^{e_t}`), compare with `hlift_t`, and cancel the
+nonzero denominator `W^{t+1}·ξ^{e_t}` (`den_ne_zero`) in the field `𝕃 H`. -/
 theorem alpha_eq_embedding_of_fact (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
     (t : ℕ) {a : 𝒪 H}
     (hfact : βHensel H x₀ R hHyp t
@@ -142,13 +149,15 @@ theorem alpha_eq_embedding_of_fact (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.H
 
 /-! ### 2. THE CIRCULARITY FINDING — `AlphaGenuineRegularWeightLe ⟺ DivWeightLe` given `hlift`
 
-The genuine A.4 content, transported to where `Λ_𝒪` lives, is exactly the `𝒪`-divisibility-with-weight
-`DivWeightLe`.  Each `t`-instance of the equivalence is the two bridge halves, with the weight bound
+The genuine A.4 content, transported to where `Λ_𝒪` lives, is exactly the
+`𝒪`-divisibility-with-weight `DivWeightLe`.  Each `t`-instance of the equivalence is the two bridge
+halves, with the weight bound
 carried verbatim (it is the same `a`). -/
 
 /-- **Task 1, the FINDING.**  GIVEN the (P2) lift identity `hlift` (for all `t`),
-`AlphaGenuineRegularWeightLe` and the `𝒪`-level `DivWeightLe` are *equivalent*.  This pins the genuine
-residual: it is the clearing divisibility `W𝒪^{t+1}·ξ^{e_t} ∣ βHensel t` in `𝒪` with the quotient at
+`AlphaGenuineRegularWeightLe` and the `𝒪`-level `DivWeightLe` are *equivalent*.  This pins the
+genuine residual: it is the clearing divisibility `W𝒪^{t+1}·ξ^{e_t} ∣ βHensel t` in `𝒪` with the
+quotient at
 weight `≤ 1` — a fact about `𝒪`-divisibility, distinct from (and strictly stronger than, see
 `βHensel_weight_structured`) any `Λ_𝒪`-upper-bound on `βHensel t`. -/
 theorem alphaWeight_iff_divWeight (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
@@ -171,8 +180,9 @@ theorem alphaWeight_iff_divWeight (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hy
 
 /-! ### 3. The STRUCTURED INVARIANT — PROVEN from `AlphaGenuineRegularWeightLe` + `hlift`
 
-This is the genuine forward closure: the carved link + the lift identity yield the paper's structured
-weight invariant, via the `𝒪`-level factorization + the proven sub-multiplicative `Λ_𝒪` calculus.  It
+This is the genuine forward closure: the carved link + the lift identity yield the paper's
+structured weight invariant, via the `𝒪`-level factorization + the proven sub-multiplicative `Λ_𝒪`
+calculus.  It
 shows `AlphaGenuineRegularWeightLe` is at least as strong as the structured invariant (and, by §2's
 sub-additivity remark, strictly stronger).  `βHensel_weight_structured` is imported from
 `P1Conditional`. -/
@@ -203,10 +213,10 @@ theorem βHensel_weight_bound_of_alphaWeight (x₀ : F) (R : F[X][X][Y])
   have hstructured := βHensel_weight_structured H x₀ R hHyp hH hDH hlift hα hξ t
   exact βHensel_weight_bound_of_structured_weight H x₀ R hHyp hH hdR2 hdHR hW t hstructured
 
-/-! ### 4′. Discharging `hξ` via the PROVEN `weight_ξ_bound` (the SOLE residual is `hlift` + `hα`) -/
+/-! ### 4′. Discharging `hξ` via the PROVEN `weight_ξ_bound` (SOLE residual: `hlift` + `hα`) -/
 
-/-- **(P1)**, with `hξ` discharged by the proven `ClaimA2.weight_ξ_bound` under its regime.  The sole
-remaining inputs are the (P2) lift identity `hlift` and the carved A.4 link `hα`. -/
+/-- **(P1)**, with `hξ` discharged by the proven `ClaimA2.weight_ξ_bound` under its regime.  The
+sole remaining inputs are the (P2) lift identity `hlift` and the carved A.4 link `hα`. -/
 theorem βHensel_weight_bound_of_alphaWeight' (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
     (hDH : Bivariate.totalDegree H ≤ D)
@@ -235,8 +245,8 @@ holds.  We do NOT need `hlift` here — only the proven base case + injectivity.
 
 /-- **The sharp `t = 0` obstruction (PROVEN, no `hlift`).**  From the proven base-case lift identity
 `βHensel_lift_identity_zero` and a carved preimage `a` of `αGenuine 0 = α₀ = T/W`, injectivity of
-`embedding` gives `βHensel 0 = a · W𝒪` in `𝒪`.  So `AlphaGenuineRegularWeightLe` at `t = 0` is exactly
-the `𝒪`-divisibility `W𝒪 ∣ βHensel 0` (with the quotient `a` at weight `≤ 1`): the genuine,
+`embedding` gives `βHensel 0 = a · W𝒪` in `𝒪`.  So `AlphaGenuineRegularWeightLe` at `t = 0` is
+exactly the `𝒪`-divisibility `W𝒪 ∣ βHensel 0` (with the quotient `a` at weight `≤ 1`): the genuine,
 non-faked face of the residual. -/
 theorem W𝒪_dvd_βHensel_zero_of_alpha (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
     (hH : 0 < H.natDegree) {a : 𝒪 H}

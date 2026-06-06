@@ -42,7 +42,8 @@ the per-term arithmetic to the target `wβ (t+1)`.
 ## What is delivered (all kernel-clean: no `sorry`/`admit`/`axiom`/`native_decide`)
 
 * `weight_Λ_over_𝒪_prod_le_of_le` / `weight_Λ_over_𝒪_prod_le_of_le_attach` — the missing **finite
-  product** weight lemma (L3 only had `mul`/`pow`/`sum`): the weight of `∏ i ∈ s, f i` is `≤` the sum
+  product** weight lemma (L3 only had `mul`/`pow`/`sum`): the weight of `∏ i ∈ s, f i` is `≤` the
+  sum
   of per-factor `ℕ`-budgets.  This is what bounds the recursion's `∏_l β_l^{λ_l}` product.
 
 * `betaProd_weight_le` — the weight of the recursive product `∏_{l ∈ λ.parts} β_l^{λ_l}` is bounded
@@ -57,13 +58,16 @@ the per-term arithmetic to the target `wβ (t+1)`.
 * `betaRec_weight_le` — **the strong-induction theorem (brick L9)**: with the per-term collapse
   hypothesis `htele`, `weight_Λ_over_𝒪 (betaRec … t) D ≤ wβ t` for all `t`.  The induction structure
   (strong recursion on `t`, IH applied at every `l < t+1` via `recursionStep_lt`, reduction to the
-  per-term budgets via `betaRec_weightBound_of_term_bounds`, base case via L3's `weight_Λ_over_𝒪_T_le`)
+  per-term budgets via `betaRec_weightBound_of_term_bounds`, base case via L3's
+  `weight_Λ_over_𝒪_T_le`)
   is fully discharged; only the App-A telescoping arithmetic is the named hypothesis.
 
 ## The isolated interface hypotheses (the genuine L9 residuals — explicit, never `sorry`)
 
-* `bW`, `bξ`, `bB`, `wβ : ℕ → ℕ` — the explicit `ℕ`-budgets for `Λ(W)`, `Λ(ξ)`, `Λ(B_{i₁,λ})` and the
-  target `Λ(β_t)`.  The first three are realised by L3 (`Λ(W) ≤ D−d_H`), L5 (`weight_ξ_bound`) and L4
+* `bW`, `bξ`, `bB`, `wβ : ℕ → ℕ` — the explicit `ℕ`-budgets for `Λ(W)`, `Λ(ξ)`, `Λ(B_{i₁,λ})` and
+the
+  target `Λ(β_t)`.  The first three are realised by L3 (`Λ(W) ≤ D−d_H`), L5 (`weight_ξ_bound`) and
+  L4
   (`Λ(B)` bound); supplied as hypotheses so this file is independent of their exact numerals.
 * `hbW`, `hbξ`, `hbB` — that those budgets genuinely bound `Λ(W)`, `Λ(ξ)`, `Λ(B_{i₁,λ})`.
 * `hβ0` — the base-case budget `Λ(β_0) ≤ wβ 0` (App-A: `weight(T) = D+1−d_H ≤ wβ 0`).
@@ -195,7 +199,8 @@ lemma betaTerm_weight_le (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
 
 The Claim-A.2 bound `Λ(β_t) ≤ wβ t` by strong induction on `t`.  The induction is genuine: at the
 `(t+1)`-step every recursive call `betaRec … l` is at a part `l < t+1` (`recursionStep_lt`), so the
-strong-induction hypothesis applies and supplies `Λ(β_l) ≤ wβ l` per part; `betaTerm_weight_le` turns
+strong-induction hypothesis applies and supplies `Λ(β_l) ≤ wβ l` per part; `betaTerm_weight_le`
+turns
 that into the per-term budget; `betaRec_weightBound_of_term_bounds` (L7/L9 skeleton) sums them.  The
 **only** numerical residual — the App-A collapse of each per-term arithmetic to `wβ (t+1)` — is the
 explicit hypothesis `htele`. -/

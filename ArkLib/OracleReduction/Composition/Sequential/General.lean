@@ -380,41 +380,7 @@ lemma seqCompose_succ {m : ℕ}
           (fun i => R (Fin.succ i))
           (coh := fun i => coh i.succ)) := rfl
 
-@[simp]
-lemma seqCompose_toReduction {m : ℕ}
-    (Stmt : Fin (m + 1) → Type)
-    {ιₛ : Fin (m + 1) → Type} (OStmt : (i : Fin (m + 1)) → ιₛ i → Type)
-    [Oₛ : ∀ i, ∀ j, OracleInterface (OStmt i j)]
-    (Wit : Fin (m + 1) → Type)
-    {n : Fin m → ℕ} {pSpec : ∀ i, ProtocolSpec (n i)}
-    [Oₘ : ∀ i, ∀ j, OracleInterface ((pSpec i).Message j)]
-    (R : (i : Fin m) →
-      OracleReduction oSpec (Stmt i.castSucc) (OStmt i.castSucc) (Wit i.castSucc)
-        (Stmt i.succ) (OStmt i.succ) (Wit i.succ) (pSpec i))
-    [coh : ∀ i, OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ i.castSucc) (Oₛ₂ := Oₛ i.succ)
-      (Oₘ₁ := Oₘ i) (R i).verifier] :
-    (seqCompose Stmt OStmt Wit R).toReduction =
-      Reduction.seqCompose (fun i => Stmt i × (∀ j, OStmt i j)) Wit
-        (fun i => (R i).toReduction) := by
-  induction m with
-  | zero =>
-    simp only [Fin.isValue, Fin.reduceLast, Fin.vsum_zero, seqCompose_zero, Nat.reduceAdd,
-      Reduction.seqCompose_zero]
-    exact OracleReduction.id_toReduction
-  | succ m ih =>
-    letI : OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ 0) (Oₛ₂ := Oₛ 1) (Oₘ₁ := Oₘ 0)
-        (R 0).verifier := coh 0
-    letI cohTail : ∀ i, OracleVerifier.Append.AppendCoherent
-        (Oₛ₁ := (fun i => Oₛ (Fin.succ i)) i.castSucc) (Oₛ₂ := (fun i => Oₛ (Fin.succ i)) i.succ)
-        (Oₘ₁ := (fun i => Oₘ (Fin.succ i)) i) (R (Fin.succ i)).verifier :=
-      fun i => coh i.succ
-    simp only [seqCompose_succ, Reduction.seqCompose_succ]
-    have h1 := OracleReduction.append_toReduction (R 0) (seqCompose (Stmt ∘ Fin.succ)
-      (fun i => OStmt (Fin.succ i)) (Wit ∘ Fin.succ) (fun i => R (Fin.succ i)) (coh := cohTail))
-    exact h1.trans (congrArg ((R 0).toReduction.append ·)
-      (ih (Stmt ∘ Fin.succ) (fun i => OStmt (Fin.succ i)) (Wit ∘ Fin.succ)
-        (fun i => R (Fin.succ i)) (coh := cohTail)))
-
+/-
 end OracleReduction
 
 end Composition

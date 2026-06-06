@@ -237,7 +237,8 @@ end Completeness
 
 end Reduction
 
--- Future work: state-restoration (knowledge) soundness implies (knowledge) soundness after Fiat-Shamir
+-- Future work: state-restoration (knowledge) soundness implies (knowledge) soundness after
+-- Fiat-Shamir
 
 end
 

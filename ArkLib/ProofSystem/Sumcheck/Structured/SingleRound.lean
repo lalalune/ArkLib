@@ -108,7 +108,8 @@ def getSumcheckRoundPoly {d : ℕ} (i : Fin ℓ) (h : ↥L⦃≤ d⦄[X Fin (ℓ
 /-- **Round-univariate evaluation as a survivor-cube sum (last-variable / `snoc` form).** Evaluating
 the prover's round univariate `getSumcheckRoundPoly ℓ D i h` at any point `r` equals the sum, over
 the next round's survivor cube `(D.drop (i.castSucc+1)).cube`, of the full round polynomial `H = h`
-with the **last** surviving variable fixed to `r` (via `Fin.snoc`). Proven from the marginal identity
+with the **last** surviving variable fixed to `r` (via `Fin.snoc`). Proven from the marginal
+identity
 `RingSwitching.roundPoly_eval_eq_sum_snoc` (Prelude). `curH` is `h.val` transported across
 `getSumcheckRoundPoly`'s internal index equality `ℓ-i.castSucc = (ℓ-i.castSucc-1)+1`, supplied via a
 `HEq`. This is the degree-generic generalisation of `RingSwitching`'s boolDomain-specialised
@@ -333,7 +334,8 @@ def roundOracleReduction (i : Fin ℓ) :
   verifier := roundOracleVerifier (L := L) ℓ D Context (OStmtIn := OStmtIn) d i
 
 /-- The structured per-round oracle verifier routes every output oracle straight to the unchanged
-input oracle (`embed = Sum.inl`, `OStmtIn = OStmtOut`, `hEq = rfl`) and exposes no message oracle, so
+input oracle (`embed = Sum.inl`, `OStmtIn = OStmtOut`, `hEq = rfl`) and exposes no message oracle,
+so
 its `AppendCoherent` coherence holds by `rfl`. Needed to `seqCompose` the rounds (e.g. for the
 ring-switching/Binius sumcheck loops). -/
 instance instRoundOracleVerifierAppendCoherent [Oₛ : ∀ i, OracleInterface (OStmtIn i)] (i : Fin ℓ) :

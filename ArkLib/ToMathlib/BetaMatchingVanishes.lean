@@ -21,14 +21,16 @@ L14 (`ArkLib.IngredientC.MatchingVanishes`).
 ```
 MatchingVanishes matchingSet root β  :=  ∀ z ∈ matchingSet, π_z z (root z) β = 0
 ```
-i.e. for every geometric matching point `z`, the rational specialization `π_z` of `β` vanishes.  Once
+i.e. for every geometric matching point `z`, the rational specialization `π_z` of `β` vanishes.
+Once
 this holds for `β := betaRec … t` with a matching set larger than the L9 weight bound `Λ·d`, brick
 L14 (`embedding_eq_zero_of_matchingSet_large`) fires and we get `embedding(betaRec … t) = 0`, which
 is the engine of Claims 5.8–5.11.
 
 ## How `betaRec`'s specialization vanishes (App-A §5.2.6)
 
-For a fixed matching point `z` the §5 geometry produces, over the power-series ring `F⟦X⟧` (centred at
+For a fixed matching point `z` the §5 geometry produces, over the power-series ring `F⟦X⟧` (centred
+at
 the matching coordinate `x₀`), a *matching polynomial* `f_z` (the specialization `R(X, ·, Z)`) and a
 *proximate root* power series `P_z` (the GS-factor approximate root, ingredient B).  The Hensel-lift
 coefficients `α_t` assemble into the power series `γ`, whose specialization `π_z(γ)` is **another
@@ -45,7 +47,8 @@ Reading off the `(X−x₀)^t` coefficient gives `π_z(α_t) = 0`, hence — via
 ## What this file delivers
 
 The two substantive steps are (i) the power-series **root equality** `π_z(γ) = P_z` (which IS
-`hensel_root_unique`), and (ii) the `(X−x₀)^t` **coefficient extraction** carrying that equality down
+`hensel_root_unique`), and (ii) the `(X−x₀)^t` **coefficient extraction** carrying that equality
+down
 to the scalar fact `π_z z (root z) (betaRec … t) = 0`.  Step (ii) genuinely requires `betaRec`'s
 defining equation threaded through the `subst`/`coeff` algebra of `γ` and the L12 identity; per the
 brick spec we **isolate it as an explicit per-point hypothesis** (`coeffExtract` in `MatchingPoint`
@@ -55,11 +58,14 @@ hypotheses about `betaRec`'s specialization**, exactly the shape L13 (with the r
 * `MatchingPoint t z` — the per-point datum: the matching polynomial `f_z`, the proximate root power
   series `aP`, the specialization-as-power-series `aβ` of `betaRec … t`, the §5 approximation `a₀`,
   the two `IsRoot` + two congruence facts, the unit-derivative (separability) fact, and the residual
-  `coeffExtract` hypothesis (the `(X−x₀)^t` extraction).  All of these are *about `betaRec`*; none is
+  `coeffExtract` hypothesis (the `(X−x₀)^t` extraction).  All of these are *about `betaRec`*; none
+  is
   a `sorry`.
-* `MatchingPoint.pi_z_eq_zero` — the per-point conclusion `π_z z root (betaRec … t) = 0`, obtained by
+* `MatchingPoint.pi_z_eq_zero` — the per-point conclusion `π_z z root (betaRec … t) = 0`, obtained
+by
   firing `hensel_root_unique` (`aβ = aP`) and feeding the equality to `coeffExtract`.
-* `betaRec_matchingVanishes` — **the deliverable**: a section `mp : ∀ z ∈ matchingSet, MatchingPoint`
+* `betaRec_matchingVanishes` — **the deliverable**: a section `mp : ∀ z ∈ matchingSet,
+MatchingPoint`
   yields `MatchingVanishes matchingSet root (betaRec … t)`.
 * `betaRec_embedding_eq_zero_of_matchingSet_large` — the L14-composed corollary: with the per-point
   data *and* the L9 weight bound (`#matchingSet > Λ·d`), `embedding(betaRec … t) = 0` — i.e. Claim
@@ -92,7 +98,8 @@ point*, in the form Hensel uniqueness consumes.  The crucial fields are:
   `(X−x₀)^t` coefficient is `π_z(α_t)`-related), and `aP` — the proximate-root power series `P_z`;
 * the four congruence/root facts and the unit-derivative (separability) fact — exactly the
   hypotheses of `hensel_root_unique`;
-* `coeffExtract` — the residual `(X−x₀)^t` coefficient extraction (App-A §5.2.6 + L12 identity): once
+* `coeffExtract` — the residual `(X−x₀)^t` coefficient extraction (App-A §5.2.6 + L12 identity):
+once
   Hensel uniqueness pins `aβ = aP`, this carries the equality down to the scalar vanishing
   `π_z z root (betaRec … t) = 0`.  THIS is the genuine `betaRec`-defining-equation content, isolated
   as a clean hypothesis (never a `sorry`), to be supplied by L13's real β-construction.
@@ -101,7 +108,8 @@ point*, in the form Hensel uniqueness consumes.  The crucial fields are:
 /-- **Per-point matching datum** for `betaRec … t` at the matching point `z`.
 
 Bundles the power-series-level Hensel data (matching polynomial `f`, the two roots `aβ`, `aP`, the
-approximation `a₀`, the root/congruence/unit facts) together with the residual `(X−x₀)^t` coefficient
+approximation `a₀`, the root/congruence/unit facts) together with the residual `(X−x₀)^t`
+coefficient
 extraction `coeffExtract` that carries the Hensel equality `aβ = aP` down to the scalar conclusion
 `π_z z root (betaRec … t) = 0`. -/
 structure MatchingPoint (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
@@ -129,7 +137,8 @@ structure MatchingPoint (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
   /-- **The residual `(X−x₀)^t` coefficient extraction.**  Once Hensel uniqueness pins the
   specialization `aβ` of `betaRec … t` equal to the proximate root `aP`, the `(X−x₀)^t`-coefficient
   reading (App-A §5.2.6 + the L12 identity `α_t = embedding(β_rec … t) / (W^{t+1} ξ^{e_t})`, using
-  `π_z(W), π_z(ξ) ≠ 0`) yields the scalar vanishing.  This is the genuine `betaRec`-defining-equation
+  `π_z(W), π_z(ξ) ≠ 0`) yields the scalar vanishing.  This is the genuine
+  `betaRec`-defining-equation
   content, supplied as an explicit hypothesis. -/
   coeffExtract : aβ = aP → (π_z z root) (betaRec x₀ R H hHyp Bcoeff t) = 0
 
@@ -165,14 +174,16 @@ end MatchingPoint
 
 A per-point section `mp : ∀ z ∈ matchingSet, MatchingPoint …` (the §5 geometry's output, point by
 point) yields the ingredient-C property `MatchingVanishes matchingSet root (betaRec … t)`.  Each
-point is discharged by `MatchingPoint.pi_z_eq_zero` (Hensel uniqueness + the residual extraction). -/
+point is discharged by `MatchingPoint.pi_z_eq_zero` (Hensel uniqueness + the residual extraction).
+-/
 
 /-- **L12 → L14 keystone.**  Given a per-point matching datum at every point of `matchingSet`, the
 recursion `betaRec … t` satisfies the ingredient-C property `MatchingVanishes`: its specialization
 `π_z` vanishes at every geometric matching point.
 
 This reduces `MatchingVanishes (betaRec … t)` to **clean per-point hypotheses about `betaRec`'s
-specialization** (`MatchingPoint`), exactly the shape L13's real β-construction discharges via Hensel
+specialization** (`MatchingPoint`), exactly the shape L13's real β-construction discharges via
+Hensel
 uniqueness and the `(X−x₀)^t` extraction.  Combined with L9's weight bound, L14 then fires (see
 `betaRec_embedding_eq_zero_of_matchingSet_large`). -/
 theorem betaRec_matchingVanishes (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
@@ -191,13 +202,15 @@ With the per-point data *and* the L9 weight bound `#matchingSet > Λ·d`, the ve
 
 /-- **`betaRec` discharges Claim 5.8's `Lemma_A_1` hypothesis.**
 
-Given the per-point matching data (`MatchingPoint` at every point of `matchingSet`) and the L9 weight
+Given the per-point matching data (`MatchingPoint` at every point of `matchingSet`) and the L9
+weight
 bound `#matchingSet > weight_Λ_over_𝒪 (betaRec … t) D * H.natDegree`, we conclude
 `embeddingOf𝒪Into𝕃 H (betaRec … t) = 0`.
 
 This composes the L12→L14 keystone (`betaRec_matchingVanishes`) with the verified converse-bridge
 deliverable `IngredientC.embedding_eq_zero_of_matchingSet_large` (which routes through `Lemma_A_1`'s
-counting step).  It is exactly the `embedding(β R t) = 0` conclusion that drives Claims 5.8–5.11; the
+counting step).  It is exactly the `embedding(β R t) = 0` conclusion that drives Claims 5.8–5.11;
+the
 remaining inputs (the per-point `MatchingPoint` data and the `Λ·d` largeness) are L13's outputs. -/
 theorem betaRec_embedding_eq_zero_of_matchingSet_large (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
     [Fact (Irreducible H)] [Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H)

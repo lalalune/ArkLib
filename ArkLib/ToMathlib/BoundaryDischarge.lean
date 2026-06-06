@@ -20,7 +20,8 @@ At the boundary `δ = 1 − √ρ` the error parameter degenerates to `errorBoun
 (`ProximityGap.errorBound_eq_zero_of_johnson_not_lt_sqrt`, `Curves.lean:1379`), so the front-door
 probability hypothesis `Pr[curve δ-close] > k · errorBound = k · 0 = 0` collapses to *strict
 positivity*.  Positivity yields only
-`0 < (RS_goodCoeffsCurve …).card` (`ProximityGap.goodCoeffsCurve_card_pos_of_prob_gt_johnson_boundary`,
+`0 < (RS_goodCoeffsCurve …).card`
+(`ProximityGap.goodCoeffsCurve_card_pos_of_prob_gt_johnson_boundary`,
 `Curves.lean:1410`).  We restate this as `boundary_card_only_pos` to make the gap explicit.
 
 The `jointAgreement` assembly bridge
@@ -34,19 +35,23 @@ requires *three* inputs:
 In the **strict** branch all three are supplied: the two cardinality bounds come from the
 *quantitative* threshold `Pr[…] > k · errorBound` with `errorBound > 0`
 (`ProximityGap.goodCoeffsCurve_card_bounds_of_prob_threshold`), and the extraction from the §5
-chain.  At the **boundary** `errorBound = 0` kills the quantitative threshold, so neither cardinality
-bound nor the extraction is delivered by `hprob` alone.  This is precisely why the boundary `hBoundary`
+chain.  At the **boundary** `errorBound = 0` kills the quantitative threshold, so neither
+cardinality
+bound nor the extraction is delivered by `hprob` alone.  This is precisely why the boundary
+`hBoundary`
 stays a residual: it needs the *same* §5 input as the strict branch *plus* the cardinality lower
 bound, which `hprob` cannot give once `errorBound = 0`.
 
 ## Disposition of the three candidate routes (from the task brief)
 
 * **(i) "card > 0 + assembly".**  FALSE as stated for the front-door hypotheses alone: the assembly
-  bridge consumes `card ≥ (|ι| + 1) · k`, not `card > 0`, and the §5 extraction.  `boundary_card_only_pos`
+  bridge consumes `card ≥ (|ι| + 1) · k`, not `card > 0`, and the §5 extraction.
+  `boundary_card_only_pos`
   proves the front door gives exactly `card > 0` and no more.
 * **(ii) "the boundary is vacuous under `hprob`/`hJ`".**  FALSE in general.  At `δ = 1 − √ρ` the
   Johnson hypothesis `hJ : (1 − ρ)/2 < δ` reduces to `(1 − √ρ)² > 0`, i.e. `√ρ ≠ 1`, which holds for
-  every non-full code (`ρ < 1`).  `boundary_param_consistent_iff` makes this exact: the boundary case
+  every non-full code (`ρ < 1`).  `boundary_param_consistent_iff` makes this exact: the boundary
+  case
   is reachable (non-contradictory) precisely when `√ρ ≠ 1`, so it cannot be discharged by vacuity.
 * **(iii) "ε-monotonicity / limiting from the strict case".**  Does not close the kernel obligation:
   there is no in-tree limiting principle transporting `jointAgreement` from `δ' < 1 − √ρ` to the
@@ -55,10 +60,13 @@ bound, which `hprob` cannot give once `errorBound = 0`.
 
 ## What is therefore TRUE and proved here
 
-The honest, kernel-clean result is the **reduction** `boundary_jointAgreement_of_cards_and_coeffPolys`:
-at the boundary, `jointAgreement` follows from the smallest explicit residual that is *not* the goal —
+The honest, kernel-clean result is the **reduction**
+`boundary_jointAgreement_of_cards_and_coeffPolys`:
+at the boundary, `jointAgreement` follows from the smallest explicit residual that is *not* the goal
+—
 the two good-set cardinality lower bounds and the §5 coefficient-polynomial extraction — by the
-in-tree assembly bridge.  Packaged into the exact `hBoundary` shape consumed by the keystone, this is
+in-tree assembly bridge.  Packaged into the exact `hBoundary` shape consumed by the keystone, this
+is
 `hBoundary_of_boundary_cards_and_coeffPolys`.  The boundary residual is thereby reduced to *exactly*
 the strict-branch inputs (cardinality + §5 extraction), discharging it modulo that explicit datum.
 
@@ -94,7 +102,8 @@ theorem boundary_eq {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
 omit [Nonempty ι] [DecidableEq ι] [DecidableEq F] in
 /-- At the closed boundary the error parameter degenerates: `errorBound = 0`.  This is the
 load-bearing structural fact — it is exactly what removes the *quantitative* probability threshold
-that the strict branch relies on.  (Restated from `ProximityGap.errorBound_eq_zero_of_johnson_not_lt_sqrt`.) -/
+that the strict branch relies on.  (Restated from
+`ProximityGap.errorBound_eq_zero_of_johnson_not_lt_sqrt`.) -/
 theorem errorBound_eq_zero_at_boundary {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     (hJ : (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ)
     (hnot : ¬δ < 1 - ReedSolomon.sqrtRate deg domain) :
@@ -190,7 +199,8 @@ omit [DecidableEq ι] in
 extraction.**  This is the in-tree assembly bridge
 `ProximityGap.goodCoeffsCurve_coeff_polys_implies_jointAgreement_of_pos_core`, specialised to the
 boundary, with `k = (k - 1) + 1`.  The hypotheses are the smallest honest explicit residual:
-the two cardinality lower bounds (which `hprob` cannot deliver at the boundary because `errorBound = 0`)
+the two cardinality lower bounds (which `hprob` cannot deliver at the boundary because `errorBound =
+0`)
 and the §5 coefficient-polynomial extraction.  None of them is `jointAgreement`. -/
 theorem boundary_jointAgreement_of_cards_and_coeffPolys
     {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
@@ -218,14 +228,17 @@ omit [DecidableEq ι] in
 /-- **The boundary residual `hBoundary`, discharged from the explicit boundary datum.**
 
 This produces *exactly* the `hBoundary` shape consumed by
-`ProximityGap.correlatedAgreement_affine_curves_of_strict_coeff_polys_and_boundary` (`Curves.lean:1740`)
+`ProximityGap.correlatedAgreement_affine_curves_of_strict_coeff_polys_and_boundary`
+(`Curves.lean:1740`)
 and by `correlatedAgreement_affine_curves_listDecoding_closed`, given a single explicit residual
-`hBoundaryData`: for each curve `u` in the boundary case, the two good-set cardinality lower bounds and
+`hBoundaryData`: for each curve `u` in the boundary case, the two good-set cardinality lower bounds
+and
 the §5 coefficient-polynomial extraction.  These are the *same* inputs the strict branch consumes;
 they are the smallest honest residual because, at the boundary, `errorBound = 0` removes the
 quantitative threshold that would otherwise supply the cardinality bounds.
 
-`hBoundaryData` is *not* the goal: it is a per-curve cardinality + per-`P` extraction datum, from which
+`hBoundaryData` is *not* the goal: it is a per-curve cardinality + per-`P` extraction datum, from
+which
 `jointAgreement` is derived by the assembly bridge. -/
 theorem hBoundary_of_boundary_cards_and_coeffPolys
     {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]

@@ -11,32 +11,36 @@ import ArkLib.ToMathlib.CorrelatedAgreementListDecodingClosed
 /-!
 # BetaRec-Built Power Series and Correlated Agreement Integration
 
-This module defines the power series $\gamma'$ constructed directly from the Hensel recurrence relation
-$\text{betaRec}$, and establishes its relation to the in-tree power series $\gamma$. This provides
-the integration bridge for correlated agreement proofs in Section 5 of [BCIKS20].
+This module defines the power series $\gamma'$ constructed directly from the Hensel
+recurrence relation $\text{betaRec}$, and establishes its relation to the in-tree power
+series $\gamma$. This provides the integration bridge for correlated agreement proofs in
+Section 5 of [BCIKS20].
 
 ## Mathematical Context
 
-Let $F$ be a field and $H \in F[X][Y]$ be an irreducible polynomial. The power series $\gamma'$ is defined by
-substituting the shift series $X \mapsto X - x_0$ into the series $\alpha_{\mathrm{fromBeta}}$, whose
-coefficients are given by:
+Let $F$ be a field and $H \in F[X][Y]$ be an irreducible polynomial. The power series
+$\gamma'$ is defined by substituting the shift series $X \mapsto X - x_0$ into the series
+$\alpha_{\mathrm{fromBeta}}$, whose coefficients are given by:
 $$\alpha_{\mathrm{fromBeta}}(t) = \frac{\phi(\text{betaRec}(t))}{W^{t+1} \cdot \xi^{e_t}}$$
 where $\phi: \mathcal{O}_H \to \mathbb{L}_H$ is the canonical embedding.
 
-We show that if the opaque in-tree numerator $\beta(t)$ coincides with the recurrence $\text{betaRec}(t)$,
-then the in-tree coefficients $\alpha(t)$ coincide with $\alpha_{\mathrm{fromBeta}}(t)$, and hence the
-power series $\gamma$ is equal to $\gamma'$. This allows us to automatically satisfy the power series
-substitution relation needed for the correlated agreement list-decoding results.
+We show that if the opaque in-tree numerator $\beta(t)$ coincides with the recurrence
+$\text{betaRec}(t)$, then the in-tree coefficients $\alpha(t)$ coincide with
+$\alpha_{\mathrm{fromBeta}}(t)$, and hence the power series $\gamma$ is equal to $\gamma'$.
+This allows us to automatically satisfy the power series substitution relation needed for
+the correlated agreement list-decoding results.
 
 ## Key Formalizations
 * `γ'`: The power series constructed from the $\text{betaRec}$ coefficients.
-* `alpha_eq_alphaFromBeta_of_betaEq`: pointwise equivalence of the coefficients under numerator identification.
+* `alpha_eq_alphaFromBeta_of_betaEq`: pointwise equivalence of the coefficients under
+  numerator identification.
 * `intree_gamma_eq_γ'`: equivalence of the power series $\gamma$ and $\gamma'$.
-* `section5StrictData_of_betaEq`: A constructor for the Section 5 correlated agreement data that automatically
-  discharges the substitution relation given numerator equivalence.
+* `section5StrictData_of_betaEq`: A constructor for the Section 5 correlated agreement data
+  that automatically discharges the substitution relation given numerator equivalence.
 
 ## References
-* [BCIKS20] Binswood, Crites, Iyer, Kamara, Stewart. *Solving Algebraic Equations over Power Series*, 2020.
+* [BCIKS20] Binswood, Crites, Iyer, Kamara, Stewart. *Solving Algebraic Equations over
+  Power Series*, 2020.
 -/
 
 open Polynomial Polynomial.Bivariate BCIKS20AppendixA BCIKS20AppendixA.ClaimA2 ToRatFunc Ideal
@@ -78,7 +82,8 @@ theorem alpha_eq_alphaFromBeta_of_betaEq (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y
   unfold α BetaToCurveCoeffPolys.αFromBeta
   rw [hβ t]
 
-/-- Equivalence of the in-tree power series $\gamma$ and the constructed series $\gamma'$ under numerator identification. -/
+/-- Equivalence of the in-tree power series $\gamma$ and the constructed series $\gamma'$
+under numerator identification. -/
 theorem intree_gamma_eq_γ' (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
     [Fact (Irreducible H)] [Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H)
     (Bcoeff : (i₁ : ℕ) → {m : ℕ} → Nat.Partition m → 𝒪 H)
@@ -90,7 +95,8 @@ theorem intree_gamma_eq_γ' (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
     rw [PowerSeries.coeff_mk, PowerSeries.coeff_mk,
       alpha_eq_alphaFromBeta_of_betaEq x₀ R H hHyp Bcoeff hβ]
 
-/-- Proves the substitution relation required for Section 5 correlated agreement from the numerator identification. -/
+/-- Proves the substitution relation required for Section 5 correlated agreement from the
+numerator identification. -/
 theorem hγ_field_of_betaEq (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
     [Fact (Irreducible H)] [Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H)
     (Bcoeff : (i₁ : ℕ) → {m : ℕ} → Nat.Partition m → 𝒪 H)
@@ -116,8 +122,8 @@ variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
 /-- Constructor for the Section 5 correlated agreement data.
-Takes the numerator equivalence $\beta(t) = \text{betaRec}(t)$ as a hypothesis and automatically supplies
-the required substitution relation for the power series $\gamma$. -/
+Takes the numerator equivalence $\beta(t) = \text{betaRec}(t)$ as a hypothesis and
+automatically supplies the required substitution relation for the power series $\gamma$. -/
 noncomputable def section5StrictData_of_betaEq {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     {u : WordStack F (Fin (k + 1)) ι} {P : F → Polynomial F}
     (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])

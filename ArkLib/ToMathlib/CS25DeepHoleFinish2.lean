@@ -9,16 +9,20 @@ import ArkLib.ToMathlib.CS25DeepHoleFinish
 /-!
 # CS25 "Claim 3" Deep-Hole Probability Accounting
 
-This module completes the proof of the proximity gap reduction step for Reed-Solomon codes, specifically
+This module completes the proof of the proximity gap reduction step for Reed-Solomon codes,
+specifically
 discharging the probabilistic residual (`DeepHoleProbResidual`) from Theorem 2 ("Claim 3") of [CS25]
 (Crites–Stewart, 2025). We show that the probabilistic bound is controlled by a single geometric
 condition: the "joint-far" property of the deep-hole stack.
 
 ## Mathematical Formulation
 
-Let $\iota$ be a finite set of evaluation points, $F$ a finite field, and $C = \mathrm{RS}[k] \subset F^\iota$
-be the Reed-Solomon code of rate $k/n$. Let $u: \iota \to F$ be a received word, and $a \in F \setminus \mathrm{range}(\text{domain})$
-be a deep hole. Let $\{p_j\}_{j=1}^L \subset F[X]$ be a list of polynomials of degree less than $k+1$
+Let $\iota$ be a finite set of evaluation points, $F$ a finite field, and $C = \mathrm{RS}[k]
+\subset F^\iota$
+be the Reed-Solomon code of rate $k/n$. Let $u: \iota \to F$ be a received word, and $a \in F
+\setminus \mathrm{range}(\text{domain})$
+be a deep hole. Let $\{p_j\}_{j=1}^L \subset F[X]$ be a list of polynomials of degree less than
+$k+1$
 whose evaluations are close to $u$ in relative Hamming distance.
 
 The **deep-hole stack** $u_{\mathrm{dh}} = (u_0, u_1)$ is defined by:
@@ -28,10 +32,13 @@ $$u_0 + \gamma u_1 = \frac{u + \gamma}{\text{domain} - a}$$
 which corresponds to the deep-hole line at $\gamma$.
 
 By relating the closeness of $u$ to the list $\{p_j\}$ with the closeness of the deep-hole line
-to the code $\mathrm{RS}[k]$, we prove that the uniform probability of the deep-hole line being close
+to the code $\mathrm{RS}[k]$, we prove that the uniform probability of the deep-hole line being
+close
 to the code is bounded below by:
-$$\text{Pr}_{\gamma \leftarrow F} [\delta_{\mathrm{r}}(u_0 + \gamma u_1, \mathrm{RS}[k]) \le \delta] \ge \frac{\text{numDistinct}(p, a)}{|F|}$$
-where $\text{numDistinct}(p, a)$ is the number of distinct evaluations of the polynomials at the hole $a$.
+$$\text{Pr}_{\gamma \leftarrow F} [\delta_{\mathrm{r}}(u_0 + \gamma u_1, \mathrm{RS}[k]) \le \delta]
+\ge \frac{\text{numDistinct}(p, a)}{|F|}$$
+where $\text{numDistinct}(p, a)$ is the number of distinct evaluations of the polynomials at the
+hole $a$.
 
 Under the hypothesis that the deep-hole stack is not jointly close to the code (packaged as the
 `DeepHoleJointFar` predicate), this probability is bounded above by the correlated agreement error
@@ -57,11 +64,13 @@ variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
 /-! ### The deep-hole stack and its line identity -/
 
-/-- The first component of the deep-hole stack, defined by $u_0(i) = \frac{u(i)}{\text{domain}(i) - a}$. -/
+/-- The first component of the deep-hole stack, defined by $u_0(i) = \frac{u(i)}{\text{domain}(i) -
+a}$. -/
 noncomputable def dhWord0 (domain : ι ↪ F) (u : ι → F) (a : F) : ι → F :=
   fun i => u i / (domain i - a)
 
-/-- The second component of the deep-hole stack, defined by $u_1(i) = \frac{1}{\text{domain}(i) - a}$. -/
+/-- The second component of the deep-hole stack, defined by $u_1(i) = \frac{1}{\text{domain}(i) -
+a}$. -/
 noncomputable def dhWord1 (domain : ι ↪ F) (a : F) : ι → F :=
   fun i => 1 / (domain i - a)
 
@@ -125,7 +134,8 @@ theorem deepHoleLine_relClose_of_mem_ball
 
 /-! ### The CA line-close event and the distinct-combiner count -/
 
-/-- The event that the deep-hole line at combining coefficient $\gamma$ is $\delta$-close to the code. -/
+/-- The event that the deep-hole line at combining coefficient $\gamma$ is $\delta$-close to the
+code. -/
 def caCloseEvent (domain : ι ↪ F) (u : ι → F) (a : F) (k : ℕ) (δ : ℝ) (γ : F) : Prop :=
   δᵣ(deepHoleLine domain u a γ, (ReedSolomon.code domain k : Set (ι → F))) ≤ δ.toNNReal
 

@@ -38,7 +38,8 @@ The **first arrow is exactly the ingredient-C core that Claim 5.8 already reduce
 extraction, and the final interpolation `P(ωs x) = C(u₀ x) + (u₁ x)·X` — lives in `Agreement.lean`
 and is the genuinely β-resident, §5-specific algebra.
 
-`Agreement.lean` is **hot** (concurrently edited) and must not be read or imported here.  We therefore
+`Agreement.lean` is **hot** (concurrently edited) and must not be read or imported here.  We
+therefore
 **isolate the entire Agreement-resident, β-gated downstream as a single explicit hypothesis** (NOT a
 `sorry`): a function
 
@@ -57,7 +58,8 @@ by feeding `embedding_eq_zero_of_matchingSet_large` into `gammaMatchesOfEmbeddin
 That makes the reduction **literally identical** to Claim 5.8's: both bottom out at
 `embeddingOf𝒪Into𝕃 β = 0` produced from `MatchingVanishes` + large `matchingSet`.  The only extra
 datum Claim 5.10 needs over Claim 5.8 is `gammaMatchesOfEmbeddingZero`, which is the published
-Agreement-side `…_of_coeff_values` chain — exactly the part that is *not* β-gated by ingredient D and
+Agreement-side `…_of_coeff_values` chain — exactly the part that is *not* β-gated by ingredient D
+and
 is already proven in `Agreement.lean` modulo the `embedding = 0` input.
 
 ## Main results
@@ -70,7 +72,8 @@ is already proven in `Agreement.lean` modulo the `embedding = 0` input.
 * `ArkLib.Claim510.reduces_to_embedding_zero` — records explicitly that Claim 5.10 and Claim 5.8
   share the *same* core: both consume `embeddingOf𝒪Into𝕃 β = 0`, and that single datum is produced
   by the identical ingredient-C bridge.
-* `ArkLib.Claim510.embedding_zero_of_core` — the shared core, re-exported under this namespace, so the
+* `ArkLib.Claim510.embedding_zero_of_core` — the shared core, re-exported under this namespace, so
+the
   reduction's pivot point is named in one place.
 
 ## Residual hypotheses (what stays open, honestly)
@@ -198,7 +201,8 @@ shape, so the instantiation typechecks without importing the hot file. -/
 `Pωs : F[X]` equals the affine word polynomial `C u₀x + u₁x • X`.
 
 This is the literal goal of Claim 5.10 (the `…_of_coeff_values` form at `Agreement.lean:3625`
-delivers it from `v₀(ωs x) = u₀ x` and `v₁(ωs x) = u₁ x`); we surface it as a standalone `Prop` so the
+delivers it from `v₀(ωs x) = u₀ x` and `v₁(ωs x) = u₁ x`); we surface it as a standalone `Prop` so
+the
 deliverable can be instantiated at it. -/
 def WordMatchConclusion (Pωs : F[X]) (u₀x u₁x : F) : Prop :=
   Pωs = Polynomial.C u₀x + u₁x • (Polynomial.X : F[X])

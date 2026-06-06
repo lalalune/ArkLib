@@ -17,7 +17,8 @@ parameters of a code to its correlated agreement (CA) / multi-correlated agreeme
 as detailed in Theorem 3 of [GCXK25] (corresponding to Theorem 5.1 of [ABF26]).
 
 In the proximity gap reduction, we bound the MCA error:
-$$\varepsilon_{\mathrm{mca}}(C, 1 - \sqrt{1 - \delta + \eta}) \le \frac{L^2 \delta n + 1/\eta}{|F|}$$
+$$\varepsilon_{\mathrm{mca}}(C, 1 - \sqrt{1 - \delta + \eta}) \le \frac{L^2 \delta n +
+1/\eta}{|F|}$$
 by analyzing the set of "bad" combining scalars $\gamma \in F$ for a given stack $u = (u_0, u_1)$.
 A combining scalar $\gamma$ is bad if there exists a large agreement witness set $S \subset \iota$
 on which the line $u_0 + \gamma u_1$ agrees with some codeword $w \in C$, but $u$ is not jointly
@@ -25,9 +26,12 @@ close to $C$ on $S$.
 
 Rather than treating this bad scalar count monolithically, this file implements the union bound
 decomposition:
-1. We define the set of bad combining scalars associated with a *fixed* codeword $w \in C$ (`mcaBadWitness`).
-2. We prove that any bad combining scalar in `mcaBad` must be associated with at least one codeword $w$
-   in the list of close codewords, establishing the containment `mcaBad ⊆ ⋃_{w ∈ C} mcaBadWitness w`.
+1. We define the set of bad combining scalars associated with a *fixed* codeword $w \in C$
+(`mcaBadWitness`).
+2. We prove that any bad combining scalar in `mcaBad` must be associated with at least one codeword
+$w$
+   in the list of close codewords, establishing the containment `mcaBad ⊆ ⋃_{w ∈ C} mcaBadWitness
+   w`.
 3. We deduce the corresponding union bound and the card-based scaling bounds.
 
 ## References
@@ -50,10 +54,14 @@ variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 variable {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
 
 open Classical in
-/-- For a fixed stack $u = (u_0, u_1)$, agreement parameter $\delta$, and a specific codeword $w \in C$,
-`mcaBadWitness` is the set of combining scalars $\gamma \in F$ for which the multi-correlated agreement (MCA)
-event is witnessed by $w$. That is, there exists a subset $S \subset \iota$ of size at least $(1 - \delta)n$
-on which $w$ agrees with the line $u_0 + \gamma u_1$, yet no joint codeword pair of $C$ agrees with $u$ on $S$. -/
+/-- For a fixed stack $u = (u_0, u_1)$, agreement parameter $\delta$, and a specific codeword $w \in
+C$,
+`mcaBadWitness` is the set of combining scalars $\gamma \in F$ for which the multi-correlated
+agreement (MCA)
+event is witnessed by $w$. That is, there exists a subset $S \subset \iota$ of size at least $(1 -
+\delta)n$
+on which $w$ agrees with the line $u_0 + \gamma u_1$, yet no joint codeword pair of $C$ agrees with
+$u$ on $S$. -/
 noncomputable def mcaBadWitness (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A) (w : ι → A) :
     Finset F :=
   Finset.univ.filter (fun γ : F =>
@@ -81,7 +89,8 @@ theorem mcaBad_subset_biUnion_mcaBadWitness
 
 open Classical in
 /-- Cardinality union bound for bad combining scalars.
-The size of `mcaBad` is bounded by the sum of the cardinalities of the per-codeword witness sets `mcaBadWitness w`
+The size of `mcaBad` is bounded by the sum of the cardinalities of the per-codeword witness sets
+`mcaBadWitness w`
 for all $w$ in the finite set of codewords $T$. -/
 theorem mcaBad_card_le_sum_mcaBadWitness_card
     (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A)
@@ -96,8 +105,10 @@ theorem mcaBad_card_le_sum_mcaBadWitness_card
 
 open Classical in
 /-- Reduction of the bad combining scalar count to a per-codeword bound.
-Assuming the set of candidate witness codewords is bounded by a list size factor $|T|$, and each individual
-codeword $w \in T$ yields at most $b$ bad combining scalars, the total number of bad combining scalars
+Assuming the set of candidate witness codewords is bounded by a list size factor $|T|$, and each
+individual
+codeword $w \in T$ yields at most $b$ bad combining scalars, the total number of bad combining
+scalars
 is at most $|T| \cdot b$. -/
 theorem mcaBad_card_le_of_per_codeword
     (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A)

@@ -12,40 +12,41 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.TraceTransform
 /-!
 # Prover Transformation and Query Simulation
 
-This module implements the prover transformation via query simulation for the security analysis of the
-duplex-sponge Fiat-Shamir reduction, corresponding to Section 5.4 in the paper (CO25).
+This module implements the prover transformation via query simulation for the security analysis of
+the duplex-sponge Fiat-Shamir reduction, corresponding to Section 5.4 in the paper (CO25).
 
 ## Overview
 
-The prover transformation constructs a simulated prover $\mathsf{D2SAlgo}^f(\mathcal{P})$ that targets the
-standard single-salt Fiat-Shamir verifier $\mathcal{V}_{\mathrm{std}}^f$, starting from a malicious prover $\mathcal{P}$
-operating in the random oracle model. This is achieved by running the adversary against a stateful query simulator
-$\mathsf{D2SQuery}$ which intercepts the duplex-sponge challenge oracle queries ($h$, $p$, and $p^{-1}$) and translates
-them.
+The prover transformation constructs a simulated prover $\mathsf{D2SAlgo}^f(\mathcal{P})$ that
+targets the standard single-salt Fiat-Shamir verifier $\mathcal{V}_{\mathrm{std}}^f$, starting from
+a malicious prover $\mathcal{P}$ operating in the random oracle model. This is achieved by running
+the adversary against a stateful query simulator $\mathsf{D2SQuery}$ which intercepts the
+duplex-sponge challenge oracle queries ($h$, $p$, and $p^{-1}$) and translates them.
 
 ### Key Components
 
 1. **Stateful Wrapper (`D2SQueryState`)**:
-   Monitors the query-answer log `trace` ($tr$), maintains a cache `cacheP` ($\mathrm{Cache}_p$) of transitions to satisfy
-   lookahead queries, and keeps a deduplicated indexing structure `trΔ` ($tr_{\nabla}$) for efficient lookups.
+   Monitors the query-answer log `trace` ($tr$), maintains a cache `cacheP` ($\mathrm{Cache}_p$) of
+   transitions to satisfy lookahead queries, and keeps a deduplicated indexing structure `trΔ`
+   ($tr_{\nabla}$) for efficient lookups.
 
 2. **Branching Logic & Backtracking**:
-   When the adversary queries the permutation oracle $p$ on $s_{\mathrm{in}}$, $\mathsf{D2SQuery}$ runs the
-   backtracking extraction procedure:
-   - If backtracking succeeds and reconstructs a valid path ending at $s_{\mathrm{in}}$ with messages in the
-     codec's image, the simulator issues an query to the challenge-generating family $g_i$.
+   When the adversary queries the permutation oracle $p$ on $s_{\mathrm{in}}$, $\mathsf{D2SQuery}$
+   runs the backtracking extraction procedure:
+   - If backtracking succeeds and reconstructs a valid path ending at $s_{\mathrm{in}}$ with messages
+     in the codec's image, the simulator issues an query to the challenge-generating family $g_i$.
    - If backtracking detects an ambiguous path, it aborts.
    - If no path is found, it falls back to standard caching or fresh sampling.
 
 3. **Codec Bridge (`d2sCodecBridgeImpl`)**:
-   Translates $g_i$ queries into standard FS challenge queries by decoding messages ($\phi^{-1}$), querying the basic
-   FS challenge oracle at the binarized salt $\mathrm{bin}(\tau)$, and sampling a uniform preimage under the verifier's
-   decoder $\psi_i^{-1}$.
+   Translates $g_i$ queries into standard FS challenge queries by decoding messages ($\phi^{-1}$),
+   querying the basic FS challenge oracle at the binarized salt $\mathrm{bin}(\tau)$, and sampling a
+   uniform preimage under the verifier's decoder $\psi_i^{-1}$.
 
 4. **Memoization Table (`D2SAlgoMemo`)**:
-   Maintains a global memo table $tr_i$ mapping $g_i$-query keys to their sampled responses. This ensures response
-   consistency when identical backtracking chains are traversed multiple times, ensuring simulator determinism as required
-   by CO25, Section 5.4, Item 3.
+   Maintains a global memo table $tr_i$ mapping $g_i$-query keys to their sampled responses. This
+   ensures response consistency when identical backtracking chains are traversed multiple times,
+   ensuring simulator determinism as required by CO25, Section 5.4, Item 3.
 -/
 
 open OracleComp OracleSpec ProtocolSpec

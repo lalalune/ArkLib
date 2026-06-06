@@ -20,7 +20,8 @@ representative.
 
 Let $F$ be a field, and let $H \in F[X][Y]$ be an irreducible polynomial defining the algebraic
 curve. The substitution series $\gamma$ is defined via the BCIKS substitution $X \mapsto X - x_0$.
-Given the tail-vanishing hypothesis of the coefficients $\alpha_t$ of the power series for $t \ge k$,
+Given the tail-vanishing hypothesis of the coefficients $\alpha_t$ of the power series for $t \ge
+k$,
 we can write $\gamma$ as the evaluation of a truncated polynomial of degree less than $k$.
 
 We prove that if $\gamma$ admits a bivariate polynomial representative $P \in F[X][Y]$ such that the
@@ -30,7 +31,8 @@ for some polynomials $v_0, v_1 \in F[X]$, where $\phi$ is the canonical map from
 the power series ring.
 
 ## References
-* [BCIKS20] Binswood, Crites, Iyer, Kamara, Stewart. *Solving Algebraic Equations over Power Series*, 2020.
+* [BCIKS20] Binswood, Crites, Iyer, Kamara, Stewart. *Solving Algebraic Equations over Power
+Series*, 2020.
 -/
 
 set_option linter.style.longLine false
@@ -55,7 +57,8 @@ noncomputable def shiftSeries (x₀ : F) (H : F[X][Y]) : PowerSeries (𝕃 H) :=
     | 1 => 1
     | _ => 0
 
-/-- Unfolding lemma expressing $\gamma$ as the substitution of the shift series into the power series $\alpha$. -/
+/-- Unfolding lemma expressing $\gamma$ as the substitution of the shift series into the power
+series $\alpha$. -/
 theorem gamma_eq_subst_shiftSeries (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
     [Fact (Irreducible H)] [Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H) :
     γ x₀ R H hHyp =
@@ -65,7 +68,8 @@ theorem gamma_eq_subst_shiftSeries (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
 /-! ### Truncation of the Power Series -/
 
 /-- Truncation lemma showing that if the tail of the coefficients $\alpha_t$ vanishes for $t \ge k$,
-then the substituted power series $\gamma$ is equal to the algebraic evaluation of the truncated polynomial of degree less than $k$. -/
+then the substituted power series $\gamma$ is equal to the algebraic evaluation of the truncated
+polynomial of degree less than $k$. -/
 theorem gamma_eq_aeval_trunc_of_tail_zero
     (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
     [Fact (Irreducible H)] [Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H)

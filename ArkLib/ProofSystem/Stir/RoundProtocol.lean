@@ -197,8 +197,10 @@ def stirRoundReduction_completeness (φ : ι ↪ F) (deg : ℕ) (δ : ℝ≥0) :
     (stirRoundReduction φ deg).completeness init impl
       (stirRoundInputRel φ deg δ) (stirRoundOutputRel φ deg δ) 0
   -- WIP (Preserve-WIP, exact goal state below).  The mathematical content is fully discharged by
-  -- `combine_single_self`: on the honest run the prover emits `Combine.combine φ deg r ![f] ![deg]`,
-  -- which by that lemma equals the input oracle `f`; the oracle verifier forwards this as the output
+  -- `combine_single_self`: on the honest run the prover emits `Combine.combine φ deg r ![f]
+  -- ![deg]`,
+  -- which by that lemma equals the input oracle `f`; the oracle verifier forwards this as the
+  -- output
   -- oracle and always `pure ()`-accepts, so the output relation
   -- `relDistFromCode (combine …) (code φ deg) ≤ δ` reduces *definitionally* (via the combine
   -- identity) to the input relation `relDistFromCode f (code φ deg) ≤ δ`, which is `hIn`.
@@ -216,12 +218,15 @@ def stirRoundReduction_completeness (φ : ι ↪ F) (deg : ℕ) (δ : ℝ≥0) :
   -- Peeling `continueFromTo` one round (`continueFromTo_succ_of_ne` at
   -- `Fin.last 2 = (Fin.last 1).succ`, then `processRound_eq_bind`) succeeds; the *second* peel is
   -- blocked: `processRound (Fin.last 1) cont` fixes its argument's type to the index
-  -- `(Fin.last 1).castSucc`, so rewriting `(Fin.last 1).castSucc = (0 : Fin 1).succ` to continue the
-  -- peel produces an ill-typed motive (the `pure r` argument carries `Transcript _a × PrvState _a`).
+  -- `(Fin.last 1).castSucc`, so rewriting `(Fin.last 1).castSucc = (0 : Fin 1).succ` to continue
+  -- the
+  -- peel produces an ill-typed motive (the `pure r` argument carries `Transcript _a × PrvState
+  -- _a`).
   -- Closing this needs the `HEq`-based round-peeling infrastructure used by
   -- `Prover.append_runToRound_left` (heterogeneous `processRound` challenge/message branch lemmas),
   -- i.e. the same dependent-`Fin` machinery the in-tree `append_run` characterization is still
-  -- assembling.  Deferred to that infrastructure landing; `combine_single_self` (axiom-clean) is the
+  -- assembling.  Deferred to that infrastructure landing; `combine_single_self` (axiom-clean) is
+  -- the
   -- load-bearing mathematical lemma it will consume.
 
 end Security
