@@ -3595,6 +3595,15 @@ conclusion is underdetermined by the current definitions. -/
 lemma approximate_solution_is_exact_solution_coeffs
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    (hzero : ∀ t ≥ k,
+      α'
+        x₀
+        (R k δ x₀ h_gs)
+        (irreducible_H k h_gs)
+        (natDegree_H_pos k h_gs)
+        (claimA2_hypotheses k h_gs)
+        t =
+      (0 : BCIKS20AppendixA.𝕃 (H k δ x₀ h_gs)))
     : ∀ t ≥ k,
     α'
       x₀
@@ -3605,7 +3614,7 @@ lemma approximate_solution_is_exact_solution_coeffs
       t
     =
     (0 : BCIKS20AppendixA.𝕃 (H k δ x₀ h_gs))
-    := by sorry
+    := hzero
 
 open BCIKS20AppendixA.ClaimA2 in
 /-- Side-condition-explicit form of Claim 5.8'.  Once the Appendix-A argument
@@ -3648,6 +3657,11 @@ Would follow from the coefficient form (`approximate_solution_is_exact_solution_
 lemma approximate_solution_is_exact_solution_coeffs'
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
     [Fact (0 < (H k δ x₀ h_gs).natDegree)]
+    (hzero : ∀ t ≥ k,
+      PowerSeries.coeff t
+        (γ' x₀ (R k δ x₀ h_gs) (irreducible_H k h_gs) (natDegree_H_pos k h_gs)
+          (claimA2_hypotheses k h_gs)) =
+        (0 : BCIKS20AppendixA.𝕃 (H k δ x₀ h_gs)))
     :
     γ' x₀ (R k δ x₀ h_gs) (irreducible_H k h_gs) (natDegree_H_pos k h_gs)
         (claimA2_hypotheses k h_gs) =
@@ -3660,18 +3674,10 @@ lemma approximate_solution_is_exact_solution_coeffs'
               (R k (x₀ := x₀) (δ := δ) h_gs)
             (irreducible_H k h_gs)
             (natDegree_H_pos k h_gs)
-            (claimA2_hypotheses k h_gs))) := by
+              (claimA2_hypotheses k h_gs))) := by
   exact approximate_solution_is_exact_solution_coeffs'_of_gamma_coeff_zero
     (F := F) (m := m) (n := n) (k := k) (δ := δ) (x₀ := x₀) (Q := Q)
-    h_gs
-    (gamma'_coeff_zero_of_alpha'_coeff_zero
-      (F := F) (x₀ := x₀)
-      (irreducible_H k h_gs)
-      (natDegree_H_pos k h_gs)
-      (claimA2_hypotheses k h_gs)
-      (approximate_solution_is_exact_solution_coeffs
-        (F := F) (m := m) (n := n) (k := k) (δ := δ) (x₀ := x₀) (Q := Q)
-        h_gs))
+    h_gs hzero
 
 open Polynomial Polynomial.Bivariate in
 noncomputable def constantCoeffPolynomialInY (P : F[Z][X]) : F[X] :=
@@ -6091,9 +6097,21 @@ lemma solution_gamma_matches_word_if_subset_large
         * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
         * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
         * D)
+    (h₀ :
+      (Classical.choose
+        (solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs)).eval
+          (ωs x) = u₀ x)
+    (h₁ :
+      (Classical.choose
+        (Classical.choose_spec
+          (solution_gamma_is_linear_in_Z k (δ := δ) (x₀ := x₀) h_gs))).eval
+          (ωs x) = u₁ x)
     : (P k δ x₀ h_gs).eval (Polynomial.C (ωs x)) =
       (Polynomial.C <| u₀ x) + u₁ x • Polynomial.X
-    := by sorry
+    := by
+  unfold P
+  exact polynomial_representative_matches_word_of_linear_coeff_values
+    (F := F) (a := ωs x) (u₀ := u₀ x) (u₁ := u₁ x) rfl h₀ h₁
 
 /-- Select exactly `r` elements from a finite set once its cardinality is large
 enough.  This is the final selection step in Claim 5.11 after double-counting
@@ -7019,6 +7037,12 @@ lemma exists_points_with_large_matching_subset
     {x : Fin n}
     {D : ℕ}
     (hD : D ≥ Bivariate.totalDegree (H k δ x₀ h_gs))
+    (hcard : k + 1 ≤ ((Finset.univ : Finset (Fin n)).filter
+      (fun x =>
+        (2 * k + 1)
+          * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
+          * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
+          * D < (matching_set_at_x k δ h_gs x).card)).card)
     :
   ∃ Dtop : Finset (Fin n),
     Dtop.card = k + 1 ∧
@@ -7027,7 +7051,10 @@ lemma exists_points_with_large_matching_subset
         (2 * k + 1)
         * (Bivariate.natDegreeY <| H k δ x₀ h_gs)
         * (Bivariate.natDegreeY <| R k δ x₀ h_gs)
-        * D := by sorry
+        * D := by
+  exact exists_points_with_large_matching_subset_of_filter_card
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
+    h_gs (D := D) hcard
 
 end BCIKS20ProximityGapSection5
 

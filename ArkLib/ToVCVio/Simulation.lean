@@ -464,7 +464,7 @@ lemma support_challengeQueryImpl_eq {n : ℕ} {pSpec : ProtocolSpec n}
       OracleComp ([pSpec.Challenge]ₒ'challengeOracleInterface) _) := by
   unfold challengeQueryImpl
   simp only [ChallengeIdx, Challenge, support_query]
-  simp [QueryImpl.mapQuery, support_uniformSample]
+  exact support_uniformSample
 
 end SimulationSafety
 
@@ -680,7 +680,9 @@ lemma support_challengeQueryImpl_run_eq {n : ℕ} {pSpec : ProtocolSpec n} {σ :
   change Prod.fst '' (support ((fun a => (a, s)) <$> _)) = _
   rw [support_map, Set.image_image]
   simp only [Set.image_id']
-  simp [OracleQuery.cont_apply, liftM_map, support_map, support_uniformSample]
+  simp only [OracleQuery.cont_apply, liftM_map, support_map]
+  rw [support_uniformSample]
+  exact Set.image_univ
 
 /-- **Helper: Support of run' for stateful simulateQ**
 
@@ -2271,10 +2273,8 @@ lemma OptionT.simulateQ_array_mapM_eq {ι ι' : Type} {spec : OracleSpec ι}
     (simulateQ so (xs.mapM (m := OptionT (OracleComp spec)) f) :
       OptionT (OracleComp superSpec) (Array β)) =
       xs.mapM (m := OptionT (OracleComp superSpec)) (fun x ↦ simulateQ so (f x)) := by
-  exact (OptionT.simulateQ_array_mapM (so := so) (f := f) (xs := xs) :
-    (simulateQ so (xs.mapM (m := OptionT (OracleComp spec)) f) :
-      OptionT (OracleComp superSpec) (Array β)) =
-      xs.mapM (m := OptionT (OracleComp superSpec)) (fun x ↦ simulateQ so (f x)))
+  rw [Array.mapM_eq_mapM_toList, Array.mapM_eq_mapM_toList]
+  simp [OptionT.simulateQ_list_mapM]
 
 lemma OptionT.simulateQ_vector_mapM_eq {ι ι' : Type} {spec : OracleSpec ι}
     {superSpec : OracleSpec ι'} (so : SimOracle.Stateless spec superSpec)

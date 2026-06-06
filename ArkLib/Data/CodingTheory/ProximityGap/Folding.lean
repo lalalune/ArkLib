@@ -846,10 +846,6 @@ theorem folding_preserves_distance
         ((2 ^ k) - 1) * ProximityGap.errorBound δ (d / (2 ^ k)) 
         (domain.subdomainNatReversed k : Fin (2 ^ (n - k)) ↪ F) := by
     have h_k_d : 2 ^ k ≤ d := by exact Nat.le_of_dvd (by omega) k_div_d
-    haveI h_d_div_ne_zero : NeZero (d / (2 ^ k)) := by
-      refine ⟨?_⟩
-      rw [Nat.div_ne_zero_iff]
-      exact ⟨by positivity, h_k_d⟩
     have h_k_le_n : k ≤ n := by
       rw [←Nat.pow_le_pow_iff_right (a := 2) (by simp)]
       omega
@@ -865,7 +861,6 @@ theorem folding_preserves_distance
       @correlatedAgreement_affine_curves (Fin (2 ^ (n - k))) _ _ F _ _ _ 
         (2 ^ k - 1) (d / (2 ^ k)) 
         (domain := domain.subdomainNatReversed k) (δ := δ) 
-        h_d_div_ne_zero
         (hδ := bound_tighter)
     unfold foldWord δ_ε_correlatedAgreementCurves at *
     by_contra contra
@@ -882,7 +877,7 @@ theorem folding_preserves_distance
       rw [bijective_iff_has_inverse]
       exists cast'
       simp [LeftInverse, RightInverse, cast, cast']
-    specialize correlated_agreement
+    specialize correlated_agreement 
       (Matrix.of (fun i j ↦ foldWordAuxCoeff domain f (2 ^ k) 
         (cast i) 
         (domain.subdomainNatReversed k j)))
