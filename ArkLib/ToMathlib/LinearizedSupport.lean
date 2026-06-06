@@ -60,6 +60,8 @@ All declarations compile `sorry`/`axiom`-free and are axiom-clean
 -/
 
 set_option linter.unusedSectionVars false
+set_option linter.unusedDecidableInType false
+set_option linter.unusedFintypeInType false
 
 noncomputable section
 
@@ -419,8 +421,8 @@ theorem bkr06_tight_pigeonhole_family_card
   have hg_deg : ∀ W : {W : Submodule F K // W ∈ S}, (g W).natDegree ≤ q ^ v := by
     intro W
     have hdim : Module.finrank F W.val = v := hSdim W.val W.2
-    show (subspacePoly (subFinset W.val)).natDegree ≤ q ^ v
-    rw [subspacePoly_natDegree_eq_pow_finrank, hdim, hqcard]
+    have hge : (g W).natDegree = (subspacePoly (subFinset W.val)).natDegree := rfl
+    rw [hge, subspacePoly_natDegree_eq_pow_finrank, hdim, hqcard]
   -- Each is `q`-linearized (the named residual, instantiated at dimension `v`).
   have hg_lin : ∀ W : {W : Submodule F K // W ∈ S}, IsQLinearized q (g W) := by
     intro W; exact hlin W.val (hSdim W.val W.2)

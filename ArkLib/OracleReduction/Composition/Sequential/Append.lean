@@ -695,6 +695,21 @@ end Reduction
 
 namespace Verifier
 
+/-- **NAMED RESIDUAL (deep, arbitrary-prover seam decomposition).** Sequential composition preserves
+soundness with the additive error `soundnessError₁ + soundnessError₂`.
+
+The remaining obstruction is *not* `Prover.append_run` (which only factors an *honest* `P₁.append P₂`):
+soundness quantifies over an *arbitrary malicious* prover `P` over `pSpec₁ ++ₚ pSpec₂`, so the proof
+must decompose `P` at the seam round `m` into a `pSpec₁`-phase malicious prover `P↾₁` (running rounds
+`0..m-1`, with `P`'s round-`m` output context as its `output`) and a `pSpec₂`-phase malicious prover
+`P↾₂` (resuming from that context). Then:
+1. `Verifier.append_run` (proven, `rfl`) splits `(V₁.append V₂).run = V₁.run tr.fst >>= V₂.run tr.snd`.
+2. The bad event `stmtOut ∈ lang₃` decomposes through the intermediate statement `stmt₂`:
+   either `stmt₂ ∉ lang₂` (bounded by `h₁` applied to `P↾₁`, since `stmt₁ ∉ lang₁`) or
+   `stmt₂ ∈ lang₂` and `stmtOut ∈ lang₃` (bounded by `h₂` applied to `P↾₂`).
+3. A union bound over these two events gives `soundnessError₁ + soundnessError₂`.
+The genuinely new content is the malicious-prover seam decomposition (no analogue of the honest
+`Prover.append` exists in the codebase yet) plus the probabilistic union bound; both are deep. -/
 theorem append_soundness {lang₁ : Set Stmt₁} {lang₂ : Set Stmt₂} {lang₃ : Set Stmt₃}
     (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁) (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
     {soundnessError₁ soundnessError₂ : ℝ≥0}

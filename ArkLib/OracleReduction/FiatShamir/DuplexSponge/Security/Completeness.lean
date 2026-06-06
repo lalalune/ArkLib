@@ -171,6 +171,23 @@ def duplexSpongeFiatShamir_run_eq_honestExecution
     (R.duplexSpongeFiatShamir (U := U)).run stmtIn witIn =
       liftM (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn)
 
+local instance dsfsProverOnly :
+    ProtocolSpec.ProverOnly ⟨!v[Direction.P_to_V], !v[pSpec.Messages]⟩ where
+  prover_first' := by simp
+
+set_option maxHeartbeats 1000000 in
+theorem scratch_run_eq
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (stmtIn : StmtIn) (witIn : WitIn) :
+    (R.duplexSpongeFiatShamir (U := U)).run stmtIn witIn =
+      liftM (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn) := by
+  rw [Reduction.run_of_prover_first]
+  simp only [Reduction.duplexSpongeFiatShamir, Prover.duplexSpongeFiatShamir,
+    Reduction.duplexSpongeFiatShamirHonestExecution,
+    Reduction.duplexSpongeFiatShamirHonestRun, Verifier.run]
+  trace_state
+  sorry
+
 /-- The transformed salted DSFS run is the lifted explicit honest execution. -/
 def duplexSpongeFiatShamirSalted_run_eq_honestExecution {δ : Nat}
     (sampleSalt : OracleComp oSpec (Vector U δ))

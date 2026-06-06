@@ -147,6 +147,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLDThresholdJohnsonSq
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLattice
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeRadiusOne
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeRadiusOneExact
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeResolutionWitness
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Core
@@ -251,6 +252,7 @@ import ArkLib.Data.Polynomial.NewtonLinearization
 import ArkLib.Data.Polynomial.PowerSeriesComposition
 import ArkLib.Data.Polynomial.Prelims
 import ArkLib.Data.Polynomial.RationalFunctions
+import ArkLib.Data.Polynomial.RationalFunctionsCore
 import ArkLib.Data.Polynomial.SplitFold
 import ArkLib.Data.Polynomial.Trivariate
 import ArkLib.Data.Probability.Combinatorial

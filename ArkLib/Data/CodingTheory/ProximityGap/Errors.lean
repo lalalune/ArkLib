@@ -625,6 +625,42 @@ theorem line_close_probability_le_epsCA_of_not_jointProximity
         else Pr_{let γ ← $ᵖ F}[δᵣ(u 0 + γ • u 1, C) ≤ δ_fld])
       u)
 
+open Classical in
+/-- **Lower-bound plumbing for `ε_ca` from an explicit good-`γ` set (sampling-style witness).**
+
+The dual of `line_close_probability_le_epsCA_of_not_jointProximity`: a stack `u` that is **not**
+jointly `δ_int`-close *and* exhibits an explicit finite set `Γ` of scalars at each of which the
+line `u 0 + γ • u 1` is `δ_fld`-close to `C` certifies the **lower** bound
+`ε_ca(C, δ_fld, δ_int) ≥ |Γ| / |F|`.
+
+This is the in-tree front door for every Guruswami–Sudan / BCIKS20 Prop 1.1-style witness lower
+bound on `ε_ca`: the `epsCA` body at `u` is `Pr_γ[line δ_fld-close]` (because `¬ jointProximity`
+selects the non-zero branch), and `prob_uniform_eq_card_filter_div_card` turns that probability
+into `|{γ : line δ_fld-close}| / |F| ≥ |Γ| / |F|` since `Γ` injects into the closeness filter.
+The numerator `|Γ|` is exactly the count of "good combiners" a witness construction produces; for
+the GS/deep-hole RS witness this count is `≥ ⌊δ·n⌋` (one good `γ` per close codeword in the
+decoding list), which is the `⌊δ·n⌋ / |F|` lower bound the L4.6 hard-direction residual needs. -/
+theorem epsCA_ge_card_good_gamma_div_card
+    (C : Set (ι → A)) (δ_fld δ_int : ℝ≥0) (u : WordStack A (Fin 2) ι)
+    (hjp : ¬ jointProximity (C := C) (u := u) δ_int)
+    (Γ : Finset F) (hΓ : ∀ γ ∈ Γ, δᵣ(u 0 + γ • u 1, C) ≤ δ_fld) :
+    ((Γ.card : ℝ≥0) : ENNReal) / (Fintype.card F : ENNReal) ≤
+      epsCA (F := F) C δ_fld δ_int := by
+  classical
+  -- The `epsCA` body at `u` is one term of the supremum, and `¬ jointProximity` selects the
+  -- non-zero `Pr_γ[line δ_fld-close]` branch.
+  refine le_trans ?_ (line_close_probability_le_epsCA_of_not_jointProximity C δ_fld δ_int u hjp)
+  -- `Pr_γ[line δ_fld-close] = |filter| / |F|`; `Γ ⊆ filter` gives `|Γ| ≤ |filter|`.
+  rw [prob_uniform_eq_card_filter_div_card]
+  -- Reduce to the numerator inequality `|Γ| ≤ |filter|` (same denominator).
+  apply ENNReal.div_le_div_right
+  refine ENNReal.coe_le_coe.mpr ?_
+  refine Nat.cast_le.mpr ?_
+  apply Finset.card_le_card
+  intro γ hγ
+  rw [Finset.mem_filter]
+  exact ⟨Finset.mem_univ _, hΓ γ hγ⟩
+
 /-- Direct per-stack `mcaEvent` domination by `ε_ca` on the non-jointly-close branch.
 
 This packages the fully-proven half of the MCA-to-CA comparison in the form most useful to

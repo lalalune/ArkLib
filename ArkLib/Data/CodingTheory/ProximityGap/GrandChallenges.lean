@@ -48,6 +48,25 @@ Resolution paths:
 The two challenges sit at the centre of the dependency graph of the paper: §3 list-decoding
 bounds feed into the list-decoding challenge directly, and §4 / §5 results bound `ε_mca`
 either above (for the upper-bound direction) or below (for the lower-bound direction).
+
+## Companion lattice files
+
+The real-valued, strict-failure encodings here collapse to radius-one statements
+(`GrandChallengeCollapse.lean`, Finding F6), so the faithful "determine the largest
+threshold" content lives on the `1/n`-lattice. Two complementary lattice encodings exist:
+
+* `GrandChallengeLattice.lean` (singular) — `Finset ℕ`-indexed lattice set/threshold in
+  this `GrandChallenges` namespace (`mcaLatticeSet`/`listLatticeSet`,
+  `mcaLatticeThreshold`/`listLatticeThreshold`). Its `listLatticeThreshold` is the object
+  the downstream LD-threshold bracket files
+  (`GrandChallengeLDThreshold{,Elias,JohnsonSq,HalfDist}.lean`) bound.
+* `GrandChallengesLattice.lean` (plural) — `Fin (n+1)`-indexed lattice threshold in its own
+  `GrandChallengesLattice` namespace, plus the step-function bridge that lets the one-sided
+  witnesses (`MCALowerWitness`/`MCAUpperWitness`, `ListLowerWitness`/`ListUpperWitness`)
+  bracket the lattice threshold (`*_bracketed`).
+
+See the `GrandChallengeLattice.lean` header for why the two `Finset` representations cannot
+collapse into a single re-export.
 -/
 
 -- Several framework lemmas use only a subset of the `ι`/`F` typeclass instances in their
