@@ -289,6 +289,28 @@ theorem correlatedAgreement_affine_curves_johnson_of_betaRec
   correlatedAgreement_affine_curves (k := k) (deg := deg) (domain := domain) (δ := δ)
     (strictCoeffPolysResidual_of_betaRec hInput) hBoundaryCard hδ
 
+/-- **Strict-radius keystone with the Johnson branch driven by the real `betaRec`.**
+
+In the strict square-root range, the closed-boundary branch of the BCIKS20 keystone is impossible,
+so the β-driven Johnson branch is the only residual input needed. -/
+theorem correlatedAgreement_affine_curves_johnson_of_betaRec_strict
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hδ : δ < 1 - ReedSolomon.sqrtRate deg domain)
+    (hInput : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      δ < 1 - ReedSolomon.sqrtRate deg domain →
+      BetaCurveInput (k := k) (deg := deg) (domain := domain) (δ := δ) u) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
+  correlatedAgreement_affine_curves_of_strict_coeff_polys
+    (k := k) (deg := deg) (domain := domain) (δ := δ) hδ
+    (fun hk u hprob hJ P hP =>
+      strictCoeffPolysResidual_of_betaRec hInput hk u hprob hJ hδ P hP)
+
 end KeystoneStrictResidual
 
 end ArkLib
@@ -299,3 +321,4 @@ end ArkLib
 #print axioms ArkLib.KeystoneStrictResidual.hcoeffPoly_of_betaRec
 #print axioms ArkLib.KeystoneStrictResidual.strictCoeffPolysResidual_of_betaRec
 #print axioms ArkLib.KeystoneStrictResidual.correlatedAgreement_affine_curves_johnson_of_betaRec
+#print axioms ArkLib.KeystoneStrictResidual.correlatedAgreement_affine_curves_johnson_of_betaRec_strict

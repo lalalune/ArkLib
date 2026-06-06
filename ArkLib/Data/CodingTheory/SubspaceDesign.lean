@@ -7,6 +7,7 @@ Authors: Alexander Hicks
 import ArkLib.Data.CodingTheory.ReedSolomon.Folded
 import ArkLib.Data.CodingTheory.ProximityGap.GK16DegreeBudget
 import ArkLib.Data.CodingTheory.ProximityGap.GK16Lemma12
+import ArkLib.Data.CodingTheory.ProximityGap.GK16FrsTransport
 import ArkLib.ToMathlib.GK16Claim16Witness
 import Mathlib.FieldTheory.Finiteness
 
@@ -676,6 +677,94 @@ theorem frs_is_subspaceDesign_gk16
       by_cases hk0 : k = 0
       · -- `k = 0`: the code is `⊥`, so `A = ⊥` and every `dim A_i = 0`.
         subst hk0
+        have hC0 : ReedSolomon.Folded.frsCode domain 0 s ω = ⊥ := by
+          have hdLT : Polynomial.degreeLT F 0 = ⊥ := by
+            rw [eq_bot_iff]
+            intro p hp
+            rw [Polynomial.mem_degreeLT] at hp
+            rw [Submodule.mem_bot, ← Polynomial.degree_eq_bot]
+            exact Nat.WithBot.lt_zero_iff.mp (by simpa using hp)
+          unfold ReedSolomon.Folded.frsCode
+          rw [hdLT, Submodule.map_bot]
+        have hAbot : A = ⊥ := le_bot_iff.mp (hA_le.trans hC0.le)
+        have hzero : ∀ i, Module.finrank F (Ai i) = 0 := by
+          intro i
+          have : Ai i = ⊥ := by rw [hAi, hAbot]; simp
+          rw [this]; simp
+        have hAr : Module.finrank F A = 0 := by rw [hAbot]; simp
+        simp [hzero, hAr]
+      · have hk1 : 1 ≤ k := Nat.one_le_iff_ne_zero.mpr hk0
+        calc (∑ i : ι, (Module.finrank F (Ai i) : ℝ))
+            = ((∑ i : ι, Module.finrank F (Ai i) : ℕ) : ℝ) := by push_cast; rfl
+          _ ≤ ((Module.finrank F A * (k - 1) : ℕ) : ℝ) := by exact_mod_cast hbudget
+          _ = (Module.finrank F A : ℝ) * ((k : ℝ) - 1) := by
+                push_cast [Nat.cast_sub hk1]; ring
+    rw [div_le_iff₀ hn_posR]
+    calc (∑ i : ι, (Module.finrank F (Ai i) : ℝ))
+        ≤ (Module.finrank F A : ℝ) * ((k : ℝ) - 1) := hbudgetR
+      _ = (Module.finrank F A : ℝ) * ((k - 1 : ℝ) / Fintype.card ι) * Fintype.card ι := by
+            field_simp
+  · -- Range `r ∉ [s]`: `τ(r) = 1`, proven unconditionally from `A_i ≤ A`.
+    simp only [τ, if_neg hr, mul_one]
+    rw [div_le_iff₀ hn_posR]
+    calc (∑ i : ι, (Module.finrank F (Ai i) : ℝ))
+        ≤ (∑ _i : ι, (Module.finrank F A : ℝ)) := by
+          refine Finset.sum_le_sum (fun i _ => ?_)
+          exact_mod_cast hAi_rank_le i
+      _ = (Module.finrank F A : ℝ) * Fintype.card ι := by
+          rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul, mul_comm]
+
+/-- **ABF26 Theorem 2.18 [GK16], FRS half — residual `GK16DegreeBudget` discharged.**
+The folded RS code is τ-subspace-design for `τ(r) = (k-1)/n` on `[s]` (and `1` off `[s]`),
+*unconditionally on the degree-budget residual*, given only:
+
+* `hEinj` — injectivity of the FRS encoder `frsEvalOnPoints domain s ω` on `degreeLT F k`
+  (the encoder-isomorphism side condition; holds for `(L, s)`-admissible `ω` with
+  `k ≤ s·|L|`);
+* `hω_sep` — the degree-separation admissibility of `ω` (exactly the genuinely-necessary
+  hypothesis of GK16 Lemma 12, `foldedWronskian_ne_zero_of_linearIndependent`).
+
+In contrast to `frs_is_subspaceDesign_gk16` (which assumes the bundled residual
+`GK16DegreeBudget`), here the budget is **proven**: for every `A ≤ frsCode` in the design
+range `finrank A ≤ s` (which is exactly the `r ∈ [s]` branch, since there
+`finrank A ≤ r ≤ s`), the encoder-transport theorem
+`ReedSolomon.Folded.frs_degreeBudget_of_finrank_le` supplies
+`∑_i dim A_i ≤ (dim A)·(k-1)` by realizing `A` as an independent degree-`< k` polynomial
+family and feeding the proven Claim-16 multiplicity engine an adapted recombination per
+coordinate. The `r ∉ [s]` branch (`τ = 1`) is unconditional. -/
+theorem frs_is_subspaceDesign_gk16_of_injective
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (hEinj : Function.Injective (ReedSolomon.Folded.frsEvalOnPoints domain s ω))
+    (hω_sep : ∀ {n : ℕ} (Q : Fin n → Polynomial F), (∀ j, Q j ≠ 0) →
+        Function.Injective (fun j => (Q j).natDegree) →
+        Function.Injective (fun j => ω ^ (Q j).natDegree)) :
+    let τ : ℕ → ℝ := fun r ↦
+      if r ∈ Finset.Icc 1 s then (k - 1 : ℝ) / Fintype.card ι else 1
+    IsSubspaceDesign s τ (ReedSolomon.Folded.frsCode domain k s ω) := by
+  intro τ r A hA_le hA_rank
+  have hn_pos : 0 < Fintype.card ι := Fintype.card_pos
+  have hn_posR : (0 : ℝ) < Fintype.card ι := by exact_mod_cast hn_pos
+  haveI : FiniteDimensional F (ι → Fin s → F) := inferInstance
+  set Ai : ι → Submodule F (ι → Fin s → F) := fun i =>
+    A ⊓ (LinearMap.ker
+      (LinearMap.proj (R := F) (φ := fun _ : ι ↦ Fin s → F) i)) with hAi
+  have hAi_rank_le : ∀ i, Module.finrank F (Ai i) ≤ Module.finrank F A := fun i =>
+    Submodule.finrank_mono (inf_le_left)
+  by_cases hr : r ∈ Finset.Icc 1 s
+  · -- Range `r ∈ [s]`: `finrank A ≤ r ≤ s`, so the proven encoder budget applies.
+    simp only [τ, if_pos hr]
+    obtain ⟨_, hrs⟩ := Finset.mem_Icc.mp hr
+    have hAs : Module.finrank F A ≤ s := le_trans hA_rank hrs
+    have hbudget : (∑ i : ι, Module.finrank F (Ai i)) ≤ Module.finrank F A * (k - 1) :=
+      ReedSolomon.Folded.frs_degreeBudget_of_finrank_le A hEinj hA_le hAs
+        (fun Q => hω_sep Q)
+    have hbudgetR :
+        (∑ i : ι, (Module.finrank F (Ai i) : ℝ)) ≤
+          (Module.finrank F A : ℝ) * ((k : ℝ) - 1) := by
+      by_cases hk0 : k = 0
+      · subst hk0
         have hC0 : ReedSolomon.Folded.frsCode domain 0 s ω = ⊥ := by
           have hdLT : Polynomial.degreeLT F 0 = ⊥ := by
             rw [eq_bot_iff]
