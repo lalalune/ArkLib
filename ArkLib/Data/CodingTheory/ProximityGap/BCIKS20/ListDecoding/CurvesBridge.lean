@@ -10,6 +10,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.Assembly
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Agreement
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Guruswami
 import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.AffineLineJointAgreement
+import ArkLib.ToMathlib.Section5ConcreteJohnson
 
 -- This bridge exposes paper-aligned theorem names that exceed the style line limit.
 set_option linter.style.longLine false
@@ -649,6 +650,82 @@ theorem correlatedAgreement_affine_lines_of_strict_exists_natCeil_counting
   exact hcoeffPoly_goodCoeffsCurve_finMapTwoWords_of_selected_matching_domain
     (F := F) (n := n) (m := m) (k := k) (ωs := ωs) (Q := Q)
     δ (u 0) (u 1) h_gs Dtop hDtop_card hsubset (hunique (u 0) (u 1) h_gs) P hP
+
+set_option linter.style.longLine false in
+/-- Strict Johnson §6 correlated-agreement front door with the Claim-5.7 residual bundle
+constructed from the concrete §5 Johnson inputs for the chosen GS interpolant. -/
+theorem correlatedAgreement_affine_lines_of_strict_gsInterpolant_johnson_counting
+    {m k : ℕ} (hk : 0 < k) {ωs : Fin n ↪ F}
+    [DecidableEq (RatFunc F)]
+    (δ : ℚ≥0)
+    (hδ : (δ : ℝ≥0) < 1 - ReedSolomon.sqrtRate (k + 1) ωs)
+    (hDx : ((gsDpg n m k : ℕ) : ℝ) < D_X ((k + 1) / (n : ℚ)) n m)
+    (hYZ : ((gsDpg n m k + gsZCap n m k : ℕ) : ℝ) ≤
+      n * (m + 1 / (2 : ℚ)) ^ 3 / (6 * Real.sqrt ((k + 1) / n)))
+    (hsection5 : ∀ (u₀ u₁ : Fin n → F) {Q : F[Z][X][Y]}
+      (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁),
+      ∃ (x₀ : F) (D t : ℕ)
+        (hx0 : ∀ R : F[Z][X][Y],
+          R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+              (u₀ := u₀) (u₁ := u₁) h_gs →
+            Polynomial.Bivariate.evalX (Polynomial.C x₀) R ≠ 0)
+        (hsep : ∀ R : F[Z][X][Y],
+          R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+              (u₀ := u₀) (u₁ := u₁) h_gs →
+            (Polynomial.Bivariate.evalX (Polynomial.C x₀) R).Separable)
+        (hJohnson : Polynomial.Bivariate.natWeightedDegree Q 1 k <
+          m * (n - ⌈(δ : ℚ) * (n : ℚ)⌉₊))
+        (hlarge : #(coeffs_of_close_proximity k ωs (δ : ℚ) u₀ u₁) /
+            (Polynomial.Bivariate.natDegreeY Q) >
+          2 * Trivariate.D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) *
+            Trivariate.D_YZ Q)
+        (hfactor : ∀ R : F[Z][X][Y],
+          R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+              (u₀ := u₀) (u₁ := u₁) h_gs →
+            R ∈ (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose),
+        let hres : Claim57Residuals (F := F) (m := m) (n := n) (Q := Q)
+              (ωs := ωs) (u₀ := u₀) (u₁ := u₁) k (δ : ℚ) x₀ h_gs :=
+          claim57Residuals_of_gsInterpolant (F := F) (m := m) (n := n) (k := k)
+            (Q := Q) (ωs := ωs) (u₀ := u₀) (u₁ := u₁) (δ : ℚ) x₀ h_gs
+            hx0 hsep hJohnson hlarge hfactor
+        letI : Claim57Residuals (F := F) (m := m) (n := n) (Q := Q)
+              (ωs := ωs) (u₀ := u₀) (u₁ := u₁) k (δ : ℚ) x₀ h_gs := hres
+        (coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁).card - 1 ≤
+            (2 * k + 1)
+              * (Polynomial.Bivariate.natDegreeY <| H k (δ : ℚ) x₀ h_gs)
+              * (Polynomial.Bivariate.natDegreeY <| R k (δ : ℚ) x₀ h_gs)
+              * D ∧
+          (2 * k + 1)
+            * (Polynomial.Bivariate.natDegreeY <| H k (δ : ℚ) x₀ h_gs)
+            * (Polynomial.Bivariate.natDegreeY <| R k (δ : ℚ) x₀ h_gs)
+            * D + t ≤ #(coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁) ∧
+          ⌈(δ : ℚ) * (n : ℚ)⌉₊ *
+              #(coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁) <
+            (n - k) * t)
+    (hunique : ∀ (u₀ u₁ : Fin n → F) {Q : F[Z][X][Y]}
+      (_h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) (P : F → Polynomial F),
+      (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+        (P z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P z).eval ∘ ωs) ≤ (δ : ℚ)) →
+      ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+        P z = PzFamily (F := F) (n := n) (δ : ℚ) u₀ u₁ ωs k z) :
+    δ_ε_correlatedAgreementCurves (k := 1) (A := F) (F := F) (ι := Fin n)
+      (C := ReedSolomon.code ωs (k + 1)) (δ := (δ : ℝ≥0))
+      (ε := errorBound (δ : ℝ≥0) (k + 1) ωs) := by
+  classical
+  refine correlatedAgreement_affine_lines_of_strict_exists_natCeil_counting
+    (F := F) (n := n) (m := m) (k := k) hk (ωs := ωs) δ hδ hDx hYZ ?_ hunique
+  intro u₀ u₁ Q h_gs
+  obtain ⟨x₀, D, t, hx0, hsep, hJohnson, hlarge, hfactor, hcount⟩ :=
+    hsection5 u₀ u₁ h_gs
+  let hres : Claim57Residuals (F := F) (m := m) (n := n) (Q := Q)
+      (ωs := ωs) (u₀ := u₀) (u₁ := u₁) k (δ : ℚ) x₀ h_gs :=
+    claim57Residuals_of_gsInterpolant (F := F) (m := m) (n := n) (k := k)
+      (Q := Q) (ωs := ωs) (u₀ := u₀) (u₁ := u₁) (δ : ℚ) x₀ h_gs
+      hx0 hsep hJohnson hlarge hfactor
+  letI := hres
+  obtain ⟨hcover, hthreshold, hsmall⟩ := hcount
+  refine ⟨x₀, ?_, D, t, hcover, hthreshold, hsmall⟩
+  exact hres
 
 /-- Strict Johnson §6 joint-agreement front door specialized to the §5
 degree-one affine-line setup.  The remaining hypotheses are exactly the §5
