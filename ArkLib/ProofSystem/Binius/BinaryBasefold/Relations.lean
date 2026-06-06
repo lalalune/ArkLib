@@ -93,8 +93,7 @@ lemma getMidCodewords_succ (t : L⦃≤ 1⦄[X Fin ℓ]) (i : Fin ℓ)
     -- a higher-order pattern, so `simp`/`rw`/bare-term unification all fail without it.)
     funext z
     rw [iterated_fold_zero_steps]
-    have hch : Fin.init (Fin.snoc challenges r_i') = challenges :=
-      Fin.init_snoc (α := fun _ => L) (x := r_i') (p := challenges)
+    have hch := Fin.init_snoc (α := fun _ => L) (x := r_i') (p := challenges)
     rw [hch]
     rfl
   · -- Challenge: `snoc challenges r_i' (last _) = r_i'` (the right side beta-reduces).
