@@ -584,7 +584,7 @@ theorem bkr06_tight_family_hfamily
   -- the tight family at this N (rewrite the size hypothesis into card form)
   have hbig_card : (Fintype.card K) ^ (v - u) * N
       < (Fintype.card F) ^ (v * (Module.finrank F K - v)) := by
-    rw [hqcard, hKcard, ← hm]; exact hbig
+    rw [hqcard, ← hm]; exact hbig
   obtain ⟨ι, hFin, hDec, 𝓛, hFinL, hcard, hdim, hinj, hagree⟩ :=
     bkr06_tight_pigeonhole_family_card q hq hqcard v u hv huv N hlin hbig_card
   refine ⟨ι, hFin, hDec, 𝓛, hFinL, hdim, hinj, hagree, ?_⟩
