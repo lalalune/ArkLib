@@ -289,6 +289,7 @@ theorem correlatedAgreement_affine_curves_johnson_of_betaRec
   correlatedAgreement_affine_curves (k := k) (deg := deg) (domain := domain) (δ := δ)
     (strictCoeffPolysResidual_of_betaRec hInput) hBoundaryCard hδ
 
+omit [DecidableEq ι] in
 /-- **Strict-radius keystone with the Johnson branch driven by the real `betaRec`.**
 
 In the strict square-root range, the closed-boundary branch of the BCIKS20 keystone is impossible,

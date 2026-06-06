@@ -280,7 +280,7 @@ theorem exists_pattern_fiber_family
   -- there is a fiber of size > N
   have key : ∃ y : (Fin w → K), N < (fiber y).card := by
     by_contra hcon
-    push_neg at hcon
+    push Not at hcon
     -- if every fiber ≤ N, then |ι| ≤ #patterns * N
     have hsum : (Fintype.card ι) ≤ (Fintype.card (Fin w → K)) * N := by
       have hpart : ∑ y : (Fin w → K), (fiber y).card = Fintype.card ι := by

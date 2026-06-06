@@ -6,6 +6,7 @@ cd "$repo_dir"
 
 remote="${ARKLIB_SYNC_REMOTE:-fork}"
 target_branch="${ARKLIB_SYNC_TARGET_BRANCH:-main}"
+codex_conflict_timeout="${ARKLIB_SYNC_CODEX_TIMEOUT:-300}"
 lock_dir="$repo_dir/.codex/arklib-auto-sync.lock"
 
 if ! mkdir "$lock_dir" 2>/dev/null; then
@@ -25,10 +26,16 @@ fix_conflicts_with_codex() {
   conflict_stamp="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
   printf '[%s] merge conflicts detected; asking Codex to fix them\n' "$conflict_stamp"
   git status --short
-  codex exec \
+  set +e
+  timeout "$codex_conflict_timeout" codex exec \
     --cd "$repo_dir" \
     --dangerously-bypass-approvals-and-sandbox \
     "fix all conflicts in this ArkLib repository intelligently. Preserve both sides' useful proof/code changes where possible, do not use blanket ours/theirs resolution, resolve every Git conflict marker, run targeted checks if practical, then leave the merge ready to commit."
+  codex_status=$?
+  set -e
+  if [ "$codex_status" -ne 0 ]; then
+    printf '[%s] Codex conflict fixer exited with status %s; checking whether conflicts were still resolved\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "$codex_status"
+  fi
   if git diff --name-only --diff-filter=U | grep -q .; then
     printf '[%s] Codex returned but unresolved conflicts remain; leaving merge for next cycle\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
     git status --short
