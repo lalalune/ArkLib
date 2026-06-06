@@ -29,8 +29,17 @@ theorem support_liftComp {τ : Type} {superSpec : OracleSpec τ} {α : Type}
     [MonadLift (OracleQuery oSpec) (OracleQuery superSpec)]
     (mx : OracleComp oSpec α) :
     support (OracleComp.liftComp mx superSpec) = support mx := by
-  ext y
-  rw [← mem_support_evalDist_iff, ← mem_support_evalDist_iff, evalDist_liftComp]
+  induction mx using OracleComp.inductionOn with
+  | pure x => simp
+  | query_bind t oa ih =>
+      rw [OracleComp.liftComp_bind, OracleComp.liftComp_query]
+      ext y
+      simp only [support_bind, Set.mem_iUnion]
+      constructor
+      · rintro ⟨u, _hu, hy⟩
+        exact ⟨u, mem_support_query t u, (ih u) ▸ hy⟩
+      · rintro ⟨u, _hu, hy⟩
+        exact ⟨u, by simp, (ih u).symm ▸ hy⟩
 
 end OracleComp
 
@@ -68,24 +77,25 @@ theorem verifier_output_mem_run_support
       | none => simp at hx
       | some vOutOpt =>
           cases vOutOpt with
-          | none =>
-              simp only [Option.elim_some, Option.getM_none, OptionT.run_failure,
-                support_failure, Set.mem_empty_iff_false] at hx
+          | none => simp [Option.getM] at hx
           | some vOut =>
-              simp only [Option.elim_some, Option.getM_some, bind_pure_comp, OptionT.run_map,
-                support_map, OptionT.run_pure, support_pure, Set.image_singleton,
-                Set.mem_singleton_iff] at hx
-              rw [Option.map_some, Option.some.injEq] at hx
+              simp only [Option.elim_some, Option.getM_some, OptionT.run_pure, pure_bind,
+                Option.elim_some, support_pure, Set.mem_singleton_iff, Option.some.injEq] at hx
               have hx2 : x.2 = vOut := congrArg Prod.snd hx
               have hx11 : x.1.1 = proverResult.1 := congrArg (Prod.fst ∘ Prod.fst) hx
               rw [hx2, hx11]
               -- Transfer reachability of `some vOut` from the lifted verifier run to the original.
+              -- `hstmtOut : some (some vOut) ∈ support (liftM (V.run …).run).run`; the outer `some` is
+              -- from `OptionT.run`, the inner from `V`'s optional verifier output.
               have hLift :
-                  some vOut ∈ support
-                    (OracleComp.liftComp (reduction.verifier.run stmt proverResult.1).run
+                  some (some vOut) ∈ support
+                    (OracleComp.liftComp (reduction.verifier.run stmt proverResult.1).run.run
                       (oSpec + [pSpec.Challenge]ₒ)) := by
                 simpa [liftComp_eq_liftM] using hstmtOut
               rw [OracleComp.support_liftComp] at hLift
-              exact (OptionT.mem_support_iff _ _).2 hLift
+              -- `support (V.run …).run.run` is `support (V.run …).run`'s lift; recover the OptionT mem.
+              have : some vOut ∈ support (reduction.verifier.run stmt proverResult.1).run := by
+                simpa using hLift
+              exact (OptionT.mem_support_iff _ _).2 this
 
 end Reduction
