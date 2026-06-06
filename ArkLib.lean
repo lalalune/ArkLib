@@ -401,6 +401,7 @@ import ArkLib.ProofSystem.Plonk.Basic
 import ArkLib.ProofSystem.Plonk.PermutationCheck
 import ArkLib.ProofSystem.RingSwitching.BatchingPhase
 import ArkLib.ProofSystem.RingSwitching.General
+import ArkLib.ProofSystem.RingSwitching.Issue19Scratch
 import ArkLib.ProofSystem.RingSwitching.Prelude
 import ArkLib.ProofSystem.RingSwitching.Profile
 import ArkLib.ProofSystem.RingSwitching.Scratch
@@ -509,6 +510,7 @@ import ArkLib.ToMathlib.HenselDatumProducer
 import ArkLib.ToMathlib.HenselUniqueness
 import ArkLib.ToMathlib.HliftDvd
 import ArkLib.ToMathlib.IngredientCBridge
+import ArkLib.ToMathlib.KStateWeaken
 import ArkLib.ToMathlib.KeystoneAssembly
 import ArkLib.ToMathlib.KeystoneCapstone
 import ArkLib.ToMathlib.KeystoneStrictResidual

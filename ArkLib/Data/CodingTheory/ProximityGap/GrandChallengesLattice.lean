@@ -296,6 +296,87 @@ def j1RatioConstraint (domain : ι ↪ F) (k : ℕ) (u₀ u₁ : ι → F) (γ :
     (∀ T : Finset ι, T ⊆ S → T.card = k + 1 →
       cT domain k T (u₀ + γ • u₁) = 0)
 
+/-- A J1 ratio constraint can always be witnessed on a one-point-omitted window.  The full-window
+case contains a nonextendable `(k+1)`-subset; when `k+3 ≤ n` there is a coordinate outside that
+subset, and enlarging the subset to the corresponding omitted window preserves non-extendability. -/
+theorem j1RatioConstraint_to_omitted
+    (domain : ι ↪ F) {k : ℕ} (hk : k + 3 ≤ Fintype.card ι)
+    {u₀ u₁ : ι → F} {γ : F}
+    (hγ : j1RatioConstraint domain k u₀ u₁ γ) :
+    ∃ i : ι,
+      NonExtendableOn (ReedSolomon.code domain k : Set (ι → F))
+        (Finset.univ.erase i) u₁ ∧
+      ∀ T : Finset ι, T ⊆ Finset.univ.erase i → T.card = k + 1 →
+        cT domain k T (u₀ + γ • u₁) = 0 := by
+  classical
+  rcases hγ with ⟨S, hshape, hneS, hconstraints⟩
+  rcases hshape with rfl | ⟨i, rfl⟩
+  · obtain ⟨T₀, hT₀sub, hT₀card, hneT₀⟩ :=
+      exists_card_eq_subset_nonExtendable domain hneS
+    have hT₀lt : T₀.card < (Finset.univ : Finset ι).card := by
+      rw [hT₀card, Finset.card_univ]
+      omega
+    obtain ⟨i, _hiuniv, hiT₀⟩ :=
+      Finset.exists_mem_notMem_of_card_lt_card hT₀lt
+    have hT₀_erase : T₀ ⊆ Finset.univ.erase i := by
+      intro x hx
+      rw [Finset.mem_erase]
+      exact ⟨fun hxi => hiT₀ (hxi ▸ hx), Finset.mem_univ x⟩
+    refine ⟨i, ?_, ?_⟩
+    · rintro ⟨v, hvC, hvagree⟩
+      exact hneT₀ ⟨v, hvC, fun x hx => hvagree x (hT₀_erase hx)⟩
+    · intro T hTsub hTcard
+      exact hconstraints T (Finset.subset_univ T) hTcard
+  · exact ⟨i, hneS, hconstraints⟩
+
+/-- If every `(k+1)`-subset of a window has vanishing `cT`, then the word extends to an
+RS codeword on the whole window.  This is the contrapositive of the existing
+`exists_card_eq_subset_nonExtendable` gluing lemma. -/
+theorem extendableOn_of_forall_cT_eq_zero
+    (domain : ι ↪ F) {k : ℕ} {S : Finset ι} {u : ι → F}
+    (hvanish : ∀ T : Finset ι, T ⊆ S → T.card = k + 1 →
+      cT domain k T u = 0) :
+    ∃ w ∈ (ReedSolomon.code domain k : Set (ι → F)), ∀ i ∈ S, w i = u i := by
+  classical
+  by_contra hne
+  have hneS : NonExtendableOn (ReedSolomon.code domain k : Set (ι → F)) S u := by
+    simpa [NonExtendableOn] using hne
+  obtain ⟨T, hTS, hTcard, hneT⟩ := exists_card_eq_subset_nonExtendable domain hneS
+  exact hneT ((extendable_iff_cT_eq_zero domain hTcard u).mpr (hvanish T hTS hTcard))
+
+/-- High-coefficient bridge from local `cT` constraints.  Once all `(k+1)`-subset
+coefficients vanish, the window interpolant is the degree-`< k` RS polynomial extending the word,
+so every coefficient of degree at least `k` is zero. -/
+theorem cT_vanish_on_window_highCoeff_zero
+    (domain : ι ↪ F) {k : ℕ} {S : Finset ι} {u : ι → F}
+    (hkS : k ≤ S.card)
+    (hvanish : ∀ T : Finset ι, T ⊆ S → T.card = k + 1 →
+      cT domain k T u = 0)
+    {d : ℕ} (hkd : k ≤ d) :
+    (Lagrange.interpolate S (fun i => domain i) u).coeff d = 0 := by
+  classical
+  obtain ⟨w, hwC, hwagree⟩ := extendableOn_of_forall_cT_eq_zero domain hvanish
+  rw [SetLike.mem_coe, ReedSolomon.mem_code_iff_exists_polynomial] at hwC
+  obtain ⟨p, hpdeg, hp⟩ := hwC
+  have hinj : Set.InjOn (fun i => domain i) (↑S : Set ι) :=
+    fun _ _ _ _ h => domain.injective h
+  have hpdegS : p.degree < (S.card : WithBot ℕ) :=
+    lt_of_lt_of_le hpdeg (by exact_mod_cast hkS)
+  have hpeval : ∀ i ∈ S, p.eval (domain i) = u i := by
+    intro i hi
+    have hw_eval : w i = p.eval (domain i) := by
+      have := congrFun hp i
+      simpa [ReedSolomon.evalOnPoints] using this
+    rw [← hw_eval, hwagree i hi]
+  have hinterp :
+      Lagrange.interpolate S (fun i => domain i) u = p :=
+    (Lagrange.eq_interpolate_of_eval_eq
+      (v := fun i => domain i) (r := u) (s := S) (f := p)
+      hinj hpdegS hpeval).symm
+  rw [hinterp]
+  exact Polynomial.coeff_eq_zero_of_degree_lt
+    (lt_of_lt_of_le hpdeg (by exact_mod_cast hkd))
+
 open Classical in
 /-- The finite scalar set cut out by the J1 window ratio constraints.
 
