@@ -509,10 +509,8 @@ theorem mcaThresholdExists_ofHab25Johnson_viaBCHKS25
              / (Fintype.card F : ℝ)) ≤ (ε_star : ENNReal)) :
     GrandChallengesLattice.mcaThresholdExists
       (ReedSolomon.code domain k : Set (ι → F)) ε_star :=
-  GrandChallengesLattice.mcaThresholdExists_of_MCALowerWitness
-    (ReedSolomon.code domain k : Set (ι → F)) ε_star
-    (mcaLowerWitness_ofHab25Johnson_viaBCHKS25 domain k η δ ε_star hη hδ_johnson
-      hδ_le_one hGS hle)
+  GrandChallengesLattice.mcaThresholdExists_ofJohnsonBCHKS25 domain k η δ ε_star hη
+    hδ_johnson hδ_le_one hGS hle
 
 /-- The faithful MCA threshold created from the Hab25/BCHKS25-compatible witness path satisfies
 the MCA bound. -/
@@ -543,6 +541,35 @@ theorem mcaThreshold_spec_ofHab25Johnson_viaBCHKS25
     (ReedSolomon.code domain k : Set (ι → F)) ε_star
     (mcaThresholdExists_ofHab25Johnson_viaBCHKS25 domain k η δ ε_star hη hδ_johnson
       hδ_le_one hGS hle)
+
+/-- The Hab25 Step-2 residual supplies the direct BCHKS25 lattice-threshold wrapper.  This is the
+same endpoint as `mcaThreshold_spec_ofHab25Johnson_viaBCHKS25`, but routed through the canonical
+Grand-MCA lattice bridge rather than reconstructing the generic threshold spec. -/
+theorem mcaThreshold_spec_ofHab25Johnson_directBCHKS25
+    (domain : ι ↪ F) (k : ℕ) (η δ ε_star : ℝ≥0)
+    (hη : 0 < η)
+    (hδ_johnson :
+        (δ : ℝ) <
+          1 - (((k : ℝ) / Fintype.card ι + 1 / Fintype.card ι) ^ ((1 : ℝ) / 2)) - (η : ℝ))
+    (hδ_le_one : δ ≤ 1)
+    (hGS : Hab25GSInterpolation domain k η δ hη hδ_johnson)
+    (hle :
+        ENNReal.ofReal
+          (let n : ℝ := Fintype.card ι
+           let ρ_plus : ℝ := k / n + 1 / n
+           let m : ℝ := max ⌈(ρ_plus ^ ((1 : ℝ) / 2)) / (2 * η)⌉ 3
+           ((2 * (m + 1/2) ^ 5 + 3 * (m + 1/2) * δ * ρ_plus)
+              / (3 * ρ_plus ^ ((3 : ℝ) / 2)) * n
+            + (m + 1/2) / ρ_plus ^ ((1 : ℝ) / 2))
+             / (Fintype.card F : ℝ)) ≤ (ε_star : ENNReal)) :
+    let hne := GrandChallengesLattice.mcaThresholdExists_ofJohnsonBCHKS25
+      domain k η δ ε_star hη hδ_johnson hδ_le_one hGS hle
+    GrandChallengesLattice.mcaSatisfies
+      (ReedSolomon.code domain k : Set (ι → F)) ε_star
+      (GrandChallengesLattice.mcaThreshold
+        (ReedSolomon.code domain k : Set (ι → F)) ε_star hne) :=
+  GrandChallengesLattice.mcaThreshold_spec_ofJohnsonBCHKS25 domain k η δ ε_star hη
+    hδ_johnson hδ_le_one hGS hle
 
 end Hab25Johnson
 
