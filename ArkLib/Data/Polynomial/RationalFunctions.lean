@@ -414,6 +414,11 @@ lemma H_tilde_equiv_H_tilde' (H : F[X][Y]) : (H_tilde' H).map univPolyHom = H_ti
             Polynomial.X ^ H.natDegree := by
               rw [add_comm]
 
+/-- The polynomial `H_tilde'` agrees with the monicization `H_tilde` after embedding into
+`Polynomial (RatFunc F)`. This is the forward-named alias used by later Appendix A proofs. -/
+lemma map_H_tilde'_eq_H_tilde (H : F[X][Y]) : (H_tilde' H).map univPolyHom = H_tilde H :=
+  H_tilde_equiv_H_tilde' H
+
 section FieldIrreducibility
 
 variable {F : Type} [Field F]
@@ -1183,6 +1188,13 @@ lemma weight_Λ_modByMonic_le {H : F[X][Y]} {D : ℕ}
       rw [hself]
   termination_by p => p.degree
   decreasing_by exact hdeg_lt
+
+/-- Complete reduction modulo `H_tilde' H` never increases `Λ`-weight. Forward-named alias for
+the Appendix A monic-reduction bound. -/
+lemma weight_Λ_modByMonic_H_tilde'_le {H : F[X][Y]} {D : ℕ}
+    (hD : Bivariate.totalDegree H ≤ D) (hH : 0 < H.natDegree) (p : F[X][Y]) :
+    weight_Λ (p %ₘ H_tilde' H) H D ≤ weight_Λ p H D :=
+  weight_Λ_modByMonic_le hD hH p
 
 /-- Any polynomial representative bounds the `𝒪`-weight of the element it represents: if
 `⟦r⟧ = a` then `weight_Λ_over_𝒪 hH a D ≤ weight_Λ r H D`. This combines the canonical-representative
