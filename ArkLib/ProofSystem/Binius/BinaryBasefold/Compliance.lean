@@ -146,7 +146,10 @@ lemma fold_error_containment_of_UDRClose (i : Fin r) {destIdx : Fin r} (steps : 
       exact not_not.mp (by
         intro hx
         exact hnone ⟨x, hx⟩)
-    rw [h_eq] at hy
+    -- Rewrite in the generalizing direction (composite `UDRCodeword …` term ↦ the variable
+    -- `f_i`): the forward direction's motive is not type correct because the codeword's
+    -- `h_within_radius` argument itself mentions `f_i`.
+    rw [← h_eq] at hy
     simpa [disagreementSet] using hy
   simpa [fiberwiseDisagreementSet, h_steps_ne, h_exists]
 
@@ -290,7 +293,8 @@ lemma incrementalFoldingBadEvent_eq_foldingBadEvent_of_k_eq_ϑ
     foldingBadEvent 𝔽q β (i := block_start_idx) (steps := ϑ)
       (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
       f_block_start r_challenges := by
-  simp [incrementalFoldingBadEvent]
+  have hϑ : ϑ ≠ 0 := NeZero.ne ϑ
+  simp [incrementalFoldingBadEvent, hϑ, Fin.cast_refl]
 
 end SoundnessTools
 end Binius.BinaryBasefold
