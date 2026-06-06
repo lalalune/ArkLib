@@ -273,6 +273,26 @@ theorem mcaThreshold_spec_ofLineDecodingTarget
   mcaThreshold_spec (C : Set (ι → F)) ε_star
     (mcaThresholdExists_ofLineDecodingTarget C δ a ε_star hδ_le_one hLD hTarget hle)
 
+/-- Under the §4.5 MCA conjecture, the conjectural lower-witness link also makes the faithful
+MCA lattice threshold exist. -/
+theorem mcaThresholdExists_of_mcaConjecture (h : mcaConjecture) :
+    ∃ c₁ c₂ c₃ : ℝ,
+      ∀ {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
+        {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC]
+        (domain : ιC ↪ FC) (k : ℕ) (ε_star δ : ℝ≥0),
+        0 < k →
+        (δ : ℝ) < 1 - (k : ℝ) / Fintype.card ιC → δ ≤ 1 →
+        ENNReal.ofReal
+            (mcaConjectureBound (Fintype.card ιC) (Fintype.card FC) k δ c₁ c₂ c₃) ≤
+          (ε_star : ENNReal) →
+        mcaThresholdExists (ReedSolomon.code domain k : Set (ιC → FC)) ε_star := by
+  obtain ⟨c₁, c₂, c₃, hw⟩ := nonempty_mcaLowerWitness_of_mcaConjecture h
+  refine ⟨c₁, c₂, c₃, ?_⟩
+  intro ιC _ _ _ FC _ _ _ domain k ε_star δ hk hδ hδ1 hle
+  rcases hw domain k ε_star δ hk hδ hδ1 hle with ⟨w⟩
+  exact mcaThresholdExists_of_MCALowerWitness
+    (ReedSolomon.code domain k : Set (ιC → FC)) ε_star w
+
 /-- **Upper bracket.** An `MCAUpperWitness` at a radius `δ ≤ 1` forces
 `mcaThreshold < ⌊δ·n⌋`: its lattice point already exceeds `ε*`, so the threshold is strictly
 below it. -/
