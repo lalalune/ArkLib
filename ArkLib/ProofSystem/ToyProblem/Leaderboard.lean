@@ -171,17 +171,28 @@ agreement error `ε_ca(C, δ)`. This is **Lemma 6.13 of [ABF26]**
 `winningSetRatio_le_winningSetSoundness`: the attack witness's winning fraction
 `|Ω|/|F| ≥ ε_ca` is a genuine lower bound on the worst-case soundness.
 
-This is the real content the §6.3-numeric attack anchors instantiate: a
-`SecurityUpperBound` of `b` bits at a code with `ε_ca ≥ 2^(-b)` follows
-immediately. Axiom-clean (no `sorryAx`); only the *numeric* `ε_ca ≥ 2^(-b)` at
-the genuine KoalaBear code remains owed (Phase 5). -/
+This theorem is intentionally still `sorry`-backed. The available in-tree
+coding-theory theorem `simplified_iop_soundness_ca_lb` proves an unrestricted
+winning-set lower bound, but `winningSetSoundness` is a supremum over
+`ViolatingInstance`, so packaging the witness also needs the §6.4 violation
+certificate `¬ R̃²_{C,δ}(f₁,f₂)`. Without that certificate the all-valid-instance
+case would be a false/unfaithful lower-bound route for Definition 6.11.
+
+Blocker: faithful attack packaging from ABF26 Lemma 6.13 / §6.4.2, using the
+same violation side condition documented for L6.12 in `SoundnessBounds.lean`.
+Research status: `research/formal/arklib-proof-research-2026-06.md` classifies
+the toy/proximity-prize cluster as open-prize / research-frontier work, and
+`research/proximity-prize/inventory/census-2026-06-05-current.json` records this
+as the active hole `epsCA_le_winningSetSoundness`. -/
 theorem epsCA_le_winningSetSoundness {k : ℕ} [Nonempty ι] (C : Set (ι → F)) (δ : ℝ≥0)
     (hδpos : (0 : ℝ≥0) < δ) (hδlt : δ < 1)
     (hClin : ∃ enc : (Fin k → F) →ₗ[F] (ι → F), Set.range enc = C) :
     epsCA (F := F) (A := F) C δ δ ≤ (winningSetSoundness (k := k) C δ : ENNReal) := by
-  -- paper-proof-owed: the merged `simplified_iop_soundness_ca_lb` lower-bounds a winning set but
-  -- no longer returns the violation certificate required to package a `ViolatingInstance`.
-  -- Reconnecting those statements needs the faithful violation hypothesis documented there.
+  -- paper-proof-owed [ABF26 Lemma 6.13, §6.4.2]. The merged
+  -- `simplified_iop_soundness_ca_lb` lower-bounds a winning set, but it does
+  -- not return the violation certificate required to package a
+  -- `ViolatingInstance`; reconnecting it needs the faithful violation
+  -- hypothesis documented in `SoundnessBounds.lean` for L6.12/L6.13.
   sorry
 
 /-! ## What the leaderboard quantity is, and is NOT
@@ -525,15 +536,18 @@ noncomputable def fenziSanso_upperBound_attack : SecurityUpperBound koalaIRS whe
   bits := 116
   proof := by
     -- ABF26-L6.12/6.13 (cf. Fenzi–Sanso 2025/2197 Lemma 4.4). The attack→soundness
-    -- chain is now REAL and axiom-clean: `epsCA_le_winningSetSoundness` proves
-    -- `ε_ca(C,δ) ≤ winningSetSoundness C δ` end-to-end (L6.13 packaged as a
-    -- `ViolatingInstance`, with its violation certified, through
-    -- `winningSetRatio_le_winningSetSoundness`). All that remains owed here is the
-    -- *numeric* `2^(-116) ≤ ε_ca koalaCode (3/10)` (the §6.3 Table evaluation,
-    -- `.tex` 2925: `2^(-116.49)`) together with `koalaCode`'s linearity — both
-    -- deferred to Phase 5, where the opaque `koalaCode` is replaced by the genuine
-    -- linear KoalaBear-sextic RS/IRS code. With those in hand the proof is
-    -- `le_trans (numeric bound) (epsCA_le_winningSetSoundness …)`. Tagged sorry.
+    -- chain still has two blockers:
+    --
+    -- 1. Phase 3: package the L6.13 attack witness as a `ViolatingInstance`
+    --    (`epsCA_le_winningSetSoundness` above); this needs the faithful
+    --    violation certificate, not just the unrestricted winning-set bound.
+    -- 2. Phase 5: replace opaque `koalaCode` by the genuine linear
+    --    KoalaBear-sextic RS/IRS code and prove the numeric
+    --    `2^(-116) ≤ ε_ca koalaCode (3/10)` (ABF26 §6.3, `.tex` 2925:
+    --    `2^(-116.49)`).
+    --
+    -- With those in hand the intended proof is
+    -- `le_trans (numeric bound) (epsCA_le_winningSetSoundness …)`.
     sorry
 
 /-- **The current leaderboard frontier.** At the KoalaBear-sextic anchor the

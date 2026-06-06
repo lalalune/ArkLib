@@ -604,8 +604,21 @@ def sumcheckFoldKnowledgeError := fun j : (pSpecSumcheckFold 𝔽q β (ϑ:=ϑ)
         -- The ℓ challenges (`ℓ/ϑ` blocks × ϑ each) map bijectively onto fold rounds `0..ℓ-1`
         -- via `s = 1,3,…,2ϑ-1 ↦ s/2 = 0,…,ϑ-1`, so the faithful index drops the `+1`.
         ⟨j / NBlockMessages (ϑ:=ϑ) * ϑ + (j % NBlockMessages (ϑ:=ϑ)) / 2, by
-          -- TODO: restore the block-layout arithmetic proof after the protocol scaffold is repaired.
-          sorry⟩ ⟨1, rfl⟩
+          have hlt := j.1.isLt
+          simp only [pSpecSumcheckFold, pSpecNonLastBlocks, ProtocolSpec.append,
+            ProtocolSpec.seqCompose, Fin.vappend_eq_append] at hlt
+          have hblocks :
+              (Fin.vsum fun _bIdx : Fin (ℓ / ϑ - 1) =>
+                (Fin.vsum fun _x : Fin (ϑ - 1) => 2) + 3) =
+                (ℓ / ϑ - 1) * ((ϑ - 1) * 2 + 3) := by
+            simp only [Fin.vsum_eq_univ_sum, Finset.sum_const, Finset.card_univ,
+              Fintype.card_fin, smul_eq_mul]
+          have hlast : (Fin.vsum fun _x : Fin ϑ => 2) = ϑ * 2 := by
+            simp only [Fin.vsum_eq_univ_sum, Finset.sum_const, Finset.card_univ,
+              Fintype.card_fin, smul_eq_mul]
+          rw [hblocks, hlast] at hlt
+          unfold NBlockMessages at hlt ⊢
+          omega⟩ ⟨1, rfl⟩
     else 0 -- this case never happens
 
 /-- Round-by-round knowledge soundness for the sumcheck fold oracle verifier -/

@@ -292,9 +292,9 @@ lemma mca_rsc
   API exists upstream) — so this is a genuine ground-up formalization task, not a port.
   See `research/formal/arklib-proof-research-2026-06.md`.
 -/
-theorem mca_johnson_bound_CONJECTURE
+def mca_johnson_bound_CONJECTURE
   (α : F) (φ : ι ↪ F) (m : ℕ) [Smooth φ]
-  (parℓ_type : Type) [Fintype parℓ_type] (exp : parℓ_type ↪ ℕ) :
+  (parℓ_type : Type) [Fintype parℓ_type] (exp : parℓ_type ↪ ℕ) : Prop :=
   let Gen := RSGenerator.genRSC parℓ_type φ m exp
   let : Fintype Gen.parℓ := Gen.hℓ
   hasMutualCorrAgreement Gen
@@ -308,7 +308,6 @@ theorem mca_johnson_bound_CONJECTURE
         ((Fintype.card F) * (2 * min_val)^7)
       )
     )
-  := by sorry
 
 /-- Conjecture 4.12 (Capacity Bound)
   The function `Gen(parℓ,α)={1,α,..,α ^ parℓ-1}` is a proximity generator with
