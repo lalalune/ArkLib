@@ -216,19 +216,22 @@ lemma constFunc_mem_BBFCode {i : Fin r} (h_i : i ≤ ℓ) (c : L) :
 
 lemma constFunc_UDRClose {i : Fin r} (h_i : i ≤ ℓ) (c : L) :
   UDRClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i (fun _ => c) := by
-  -- A constant function is itself a codeword (`constFunc_mem_BBFCode`), so its distance to the
-  -- code is `0`; hence `2 * 0 = 0`, which is strictly below the (positive) code distance.
   unfold UDRClose
-  -- Δ₀(const, C) = 0 since the constant function lies in the code.
-  rw [Code.distFromCode_of_mem _
-    (SetLike.mem_coe.mpr (constFunc_mem_BBFCode 𝔽q β h_i c))]
-  -- Goal: `2 * 0 < (BBF_CodeDistance ... i : ℕ∞)`.
-  rw [mul_zero]
-  -- The code distance is positive: `2 ^ (ℓ + 𝓡 - i) - 2 ^ (ℓ - i) + 1 ≥ 1`.
-  have h_pos : 0 < BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) := by
-    rw [BBF_CodeDistance_eq 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (h_i := h_i)]
-    omega
-  exact_mod_cast Nat.cast_pos.mpr h_pos
+  have hdist_zero :
+      Δ₀((fun _ => c),
+        (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i :
+          Set ((sDomain 𝔽q β h_ℓ_add_R_rate) i → L))) = 0 := by
+    apply le_antisymm
+    · exact le_trans
+        (distFromCode_le_dist_to_mem (fun _ => c) (fun _ => c)
+          (constFunc_mem_BBFCode 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) h_i c))
+        (by simp)
+    · exact bot_le
+  rw [hdist_zero]
+  rw [BBF_CodeDistance_eq 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (i := i) (h_i := h_i)]
+  norm_num
+  omega
 
 end ConstantFunctions
 omit [CharP L 2] [DecidableEq 𝔽q] h_β₀_eq_1 in

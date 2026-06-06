@@ -10,6 +10,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GK16Lemma12
 import ArkLib.Data.CodingTheory.ProximityGap.GK16FrsTransport
 import ArkLib.Data.CodingTheory.ProximityGap.GK16Admissible
 import ArkLib.ToMathlib.GK16Claim16Witness
+import ArkLib.ToMathlib.GK16Structural
 import Mathlib.FieldTheory.Finiteness
 
 /-!
@@ -553,6 +554,45 @@ theorem gk16DegreeBudget_of_structuralData
   gk16DegreeBudget_of_claim16WitnessIndep domain k s ω C
     (gk16Claim16WitnessIndep_of_structuralData domain k s ω C hdata)
 
+/-- **Residual ② CLOSED — the structural-transport residual is now a theorem.** The named
+residual `GK16Claim16StructuralData domain k s ω (frsCode …)` is **discharged** (built, not
+assumed) under the genuine, documented side conditions:
+
+* `hinj` — the FRS-encoder isomorphism hypothesis (injectivity of `frsEvalOnPoints`, the
+  `dim_frsCode` hypothesis; for `(L, s)`-admissible `ω` use its restricted form, see
+  `frs_is_subspaceDesign_gk16_of_admissible`);
+* `hω_sep` — the `ω`-degree-separation admissibility (the genuinely-necessary hypothesis of
+  GK16 Lemma 12, `foldedWronskian_ne_zero_of_linearIndependent`);
+* `hCs : finrank C ≤ s` — the design-range side condition `dim A ≤ s` (here pushed onto the
+  whole code so that *every* subspace `A ≤ C` is in range; on the live design path this is
+  the per-`A` range `dim A ≤ r ≤ s` of the `r ∈ [s]` branch, cf.
+  `frs_is_subspaceDesign_gk16_of_injective`).
+
+The per-`A` construction is `ArkLib.FRS.GK16.gk16Claim16StructuralData_at`
+(`ToMathlib/GK16Structural.lean`): the realizing family is a basis of the polynomial
+pre-image `A' := comap encoder A ⊓ degreeLT F k` (encoder isomorphism `A' ≃ A`), and per
+coordinate the adapted invertible recombination extends a basis of the pre-image
+`A'_i := comap encoder (A ⊓ ker(eval_i)) ⊓ degreeLT F k` to a basis of `A'`, whose
+`dim A_i = dim A'_i` distinguished members vanish on the whole `s`-fold orbit of `domain i`
+(`dim A ≤ s` makes the `dim A` dilation exponents genuine fold indices `< s`). Axiom-clean,
+`sorry`-free. Composed with `gk16DegreeBudget_of_structuralData` this discharges the entire
+`GK16DegreeBudget` residual on the design range. -/
+theorem gk16Claim16StructuralData_holds
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    {F : Type} [Field F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (hinj : Function.Injective (ReedSolomon.Folded.frsEvalOnPoints domain s ω))
+    (hk : 1 ≤ k)
+    (hω_sep : ∀ {n : ℕ} (Q : Fin n → Polynomial F), (∀ j, Q j ≠ 0) →
+        Function.Injective (fun j => (Q j).natDegree) →
+        Function.Injective (fun j => ω ^ (Q j).natDegree))
+    (hCs : Module.finrank F (ReedSolomon.Folded.frsCode domain k s ω) ≤ s) :
+    GK16Claim16StructuralData domain k s ω (ReedSolomon.Folded.frsCode domain k s ω) := by
+  intro A hA_le
+  have hAs : Module.finrank F A ≤ s := le_trans (Submodule.finrank_mono hA_le) hCs
+  exact ArkLib.FRS.GK16.gk16Claim16StructuralData_at domain k s ω hinj hk A hA_le hAs
+    (fun Q => hω_sep Q)
+
 /-- **ABF26 Theorem 2.18 [GK16], FRS half** (reduced to the GK16 §4 degree-budget
 residual `GK16DegreeBudget`; `s`-factor rate bug repaired). Folded Reed-Solomon codes are
 τ-subspace-design for
@@ -590,7 +630,10 @@ which chains `ArkLib.FRS.GK16.natDegree_foldedWronskian_le` (`deg L ≤ s·(k-1)
 `ProximityPrizeLeaves.lean`) with `Polynomial.sum_rootMultiplicity_le_natDegree`
 (`∑ over distinct points of rootMultiplicity ≤ natDegree`, `GK16RootCounting.lean`).
 
-**One deep gap remains** (residual ②). Residual ① (GK16 Lemma 12) is now **fully closed**:
+**Both deep gaps are now closed.** Residual ① (GK16 Lemma 12) and residual ② (GK16 Claim 16,
+including the structural encoder-isomorphism + adapted-basis transport) are both proven,
+axiom-clean — so the FRS half is unconditional on the residual via the `_of_*` theorems below.
+Residual ① (GK16 Lemma 12) is **fully closed**:
 
 ① **GK16 Lemma 12, hard direction** — `LinearIndependent F P → foldedWronskian P ω ≠ 0`,
    needed to know `L ≠ 0`. **NOW A THEOREM** (`GK16Lemma12.lean`, all axiom-clean,
@@ -634,18 +677,35 @@ which chains `ArkLib.FRS.GK16.natDegree_foldedWronskian_le` (`deg L ≤ s·(k-1)
    change-of-basis constant (`foldedWronskian_change_basis`, `rootMultiplicity_C_mul`)
    yields the bound for `foldedWronskian P ω`.
 
-The single remaining gap is the **structural encoder-isomorphism + adapted-basis transport**
+The last structural gap — the **encoder-isomorphism + adapted-basis transport**
 (`A ≤ frsCode ↔ U ⊆ degreeLT F k`, carrying `finrank (A ⊓ ker(eval_i)) = dim (U ∩ H_{domain
 i})` and supplying, per `i`, the adapted invertible recombination `Q^{(i)}` with its
-`dim A_i`-element orbit-vanishing index set — presupposing the design-range side condition
-`dim A ≤ s`), which is routine but unwritten. It is isolated precisely as the named residual
-`GK16Claim16StructuralData`. With residual ① (Lemma 12) **and the Claim-16 multiplicity
-engine** both discharged as theorems, the budget reduces to this single structural residual,
-via `gk16DegreeBudget_of_structuralData`; once it is formalized the hypothesis becomes a
-theorem and this result is unconditional. The intermediate witness `GK16Claim16WitnessIndep`
-(no longer assuming `L ≠ 0`) is discharged from `GK16Claim16StructuralData` by
-`gk16Claim16WitnessIndep_of_structuralData`, and feeds the budget via
-`gk16DegreeBudget_of_claim16WitnessIndep`. -/
+`dim A_i`-element orbit-vanishing index set, presupposing the design-range side condition
+`dim A ≤ s`) — is now **CLOSED** (written, axiom-clean), in two independent forms:
+
+* `ArkLib.FRS.GK16.gk16Claim16StructuralData_at` (`ToMathlib/GK16Structural.lean`) constructs,
+  for each `A ≤ frsCode` with `dim A ≤ s`, exactly the per-`A` existential body of the named
+  residual `GK16Claim16StructuralData` (realizing family = basis of the polynomial pre-image
+  `A' := comap encoder A ⊓ degreeLT F k`; per coordinate, the adapted recombination extends a
+  basis of the pre-image `A'_i` to a basis of `A'`, with orbit-vanishing on the `dim A ≤ s`
+  dilation range), under the two documented side conditions (encoder injectivity `hinj`,
+  design range `dim A ≤ s`) and the genuinely-necessary `ω`-degree separation `hω_sep`.
+* `ReedSolomon.Folded.frs_degreeBudget_of_finrank_le` /
+  `…frs_degreeBudget_of_finrank_le_admissible` (`GK16FrsTransport.lean`, `GK16Admissible.lean`)
+  package the same transport directly into the per-`A` budget `∑_i dim A_i ≤ (dim A)(k-1)` on
+  the `dim A ≤ s` range, feeding the proven Claim-16 engine `claim16_rootMultiplicity_ge`.
+
+Consequently the budget hypothesis is **no longer needed** on the design range and the FRS
+half is **unconditional on the residual**: `frs_is_subspaceDesign_gk16_of_injective` (under
+restricted encoder injectivity + bounded `hω_sep`) and `frs_is_subspaceDesign_gk16_of_admissible`
+(under `Admissible L s ω` + `ω ≠ 0` + `k ≤ s·|ι|` + `k ≤ orderOf ω`) prove `IsSubspaceDesign`
+with the budget supplied from the transport above on the `r ∈ [s]` (i.e. `dim A ≤ s`) branch
+and `τ = 1` unconditionally off `[s]`. This `frs_is_subspaceDesign_gk16` theorem retains the
+abstract residual hypothesis `GK16DegreeBudget` for callers that wish to supply it directly;
+for the discharged statements use the two `_of_*` theorems. The abstract reduction chain
+`GK16Claim16StructuralData → GK16DegreeBudget` (via `gk16DegreeBudget_of_structuralData`) and
+the intermediate witness `GK16Claim16WitnessIndep` (discharged by
+`gk16Claim16WitnessIndep_of_structuralData`) remain available. -/
 theorem frs_is_subspaceDesign_gk16
     {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
     {F : Type} [Field F] [Fintype F] [DecidableEq F]

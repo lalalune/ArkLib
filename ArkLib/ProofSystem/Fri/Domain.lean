@@ -303,7 +303,6 @@ private lemma gen_def {i : ℕ} :
 /- Proof that the `i`th subgroup has order `2 ^ (n - i)` -/
 instance {i : ℕ} : SmoothPowerOfTwo (n - i) (evalDomain D i) where
   smooth := by
-    simp
     rw [gen_def]
     by_cases h : i ≤ n
     · have : (2 ^ n).gcd (2 ^ i) = 2 ^ i := by

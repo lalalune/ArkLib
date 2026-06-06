@@ -137,7 +137,7 @@ noncomputable def subsetSumsKplus1 (domain : ι ↪ F) (k : ℕ) : Finset F :=
 
 where `Σ_{k+1}(L)` is the `(k+1)`-subset-sum set of the evaluation domain. No hypothesis on `q`. -/
 theorem epsMCA_one_ge_card_subsetSums (domain : ι ↪ F) {k : ℕ}
-    (hk : k + 1 ≤ Fintype.card ι) :
+    (_hk : k + 1 ≤ Fintype.card ι) :
     ((subsetSumsKplus1 domain k).card : ENNReal) / (Fintype.card F : ENNReal) ≤
       epsMCA (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F)) 1 := by
   classical

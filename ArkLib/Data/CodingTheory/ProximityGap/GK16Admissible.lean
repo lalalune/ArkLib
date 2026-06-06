@@ -70,7 +70,7 @@ whole polynomial ring: `F[X]` is infinite-dimensional, the target is finite-dime
 so the vanishing polynomial over the (finitely many) fold points is a nonzero kernel
 element. The genuinely-true statement is injectivity restricted to `degreeLT F k`, below. -/
 theorem frsEvalOnPoints_not_injective [Nonempty ι]
-    (domain : ι ↪ F) {s : ℕ} (hs : 0 < s) (ω : F) :
+    (domain : ι ↪ F) (s : ℕ) (ω : F) :
     ¬ Function.Injective (frsEvalOnPoints domain s ω) := by
   classical
   intro hinj
@@ -154,7 +154,7 @@ theorem mulPow_injective_of_admissible
 
 /-! ## Restricted-encoder injectivity (the genuinely-true `hEinj`) -/
 
-/-- **`Admissible` + `ω ≠ 0` + `k ≤ s·|ι|` ⟹ the FRS encoder is injective on `degreeLT F k`.**
+/-- **`Admissible` + `ω ≠ 0` + `k ≤ s·|ι|` ⟹ the FRS encoder is injective on `degreeLT`.**
 A degree-`< k` polynomial whose folded evaluations all vanish is zero: it vanishes on the
 `s · |ι|` distinct fold points (distinct by `mulPow_injective_of_admissible`), and a nonzero
 degree-`< k` polynomial has fewer than `k ≤ s·|ι|` roots.
@@ -259,7 +259,7 @@ lemma finrank_frsPullback_eq_injOn {A : Submodule F (ι → Fin s → F)}
         (finrank_map_eq_of_le_of_injOn _ _ hEinj _ hle).symm
     _ = Module.finrank F A := by rw [frsPullback_map_eq hA]
 
-/-- `finrank (frsVanish … i) = finrank (A ⊓ ker(proj i))`, from injectivity on `degreeLT F k`. -/
+/-- `finrank (frsVanish … i) = finrank (A ⊓ ker(proj i))`, from injectivity on `degreeLT`. -/
 lemma finrank_frsVanish_eq_injOn {A : Submodule F (ι → Fin s → F)}
     (hEinj : Function.Injective
       ((frsEvalOnPoints domain s ω).domRestrict (Polynomial.degreeLT F k)))
@@ -433,4 +433,3 @@ theorem frs_degreeBudget_of_finrank_le_admissible [Fintype F]
         ArkLib.FRS.GK16.sum_rootMultiplicity_foldedWronskian_le P ω hP_deg hL_ne _
 
 end ReedSolomon.Folded
-

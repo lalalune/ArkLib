@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.ToMathlib.KeystoneStrictResidual
+import ArkLib.ToMathlib.KeystoneAssembly
 import ArkLib.ToMathlib.GammaFromBeta
 import ArkLib.ToMathlib.HPzBridge
 import ArkLib.ToMathlib.MpProducer
+import ArkLib.ToMathlib.HenselDatumProducer
 import ArkLib.ToMathlib.BetaWeightCollapse
 import ArkLib.ToMathlib.IngredientCBridge
 import ArkLib.ToMathlib.SubstFieldCaveat
@@ -105,13 +107,10 @@ two nat-coercions is the nat-coercion of the product.  Proven by `WithBot` casew
 nontrivial branch is `a = some a₀`, where it reduces to `Nat.mul_le_mul_right`). -/
 private theorem withBot_mul_right_le {a : WithBot ℕ} {c d : ℕ}
     (h : a ≤ (c : WithBot ℕ)) : a * (d : WithBot ℕ) ≤ ((c * d : ℕ) : WithBot ℕ) := by
-  induction a with
-  | bot =>
-      simpa using (bot_le : (⊥ : WithBot ℕ) ≤ ((c * d : ℕ) : WithBot ℕ))
-  | coe a₀ =>
-      have hac : a₀ ≤ c := by exact_mod_cast h
-      change ((a₀ * d : ℕ) : WithBot ℕ) ≤ ((c * d : ℕ) : WithBot ℕ)
-      exact WithBot.coe_le_coe.mpr (Nat.mul_le_mul_right d hac)
+  have hcd : ((c * d : ℕ) : WithBot ℕ) = (c : WithBot ℕ) * (d : WithBot ℕ) := by
+    push_cast; ring
+  rw [hcd]
+  gcongr
 
 omit [Fintype F] [DecidableEq F] in
 /-- **The concrete `hcard` bridge (per index `t`).**  Under the App-A weight-budget inputs of
@@ -148,6 +147,106 @@ theorem hcard_of_concrete (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
     ring
   rw [this]
   exact hconcrete
+
+omit [Fintype F] [DecidableEq F] in
+/-- **The finite-range concrete `hcardFin` bridge.**  This is the corrected F5-compatible variant of
+`hcard_of_concrete`: a concrete arithmetic cardinality bound only on the finite range `[k,T]` yields
+the exact `Section5StrictDataFin.hcardFin` field consumed by `KeystoneAssembly`. -/
+theorem hcardFin_of_concrete (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
+    [Fact (Irreducible H)] [Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H)
+    (Bcoeff : (i₁ : ℕ) → {m : ℕ} → Nat.Partition m → 𝒪 H)
+    {D d k T : ℕ} (hD : Bivariate.totalDegree H ≤ D) (hH : 0 < H.natDegree)
+    (hd1 : 1 ≤ d) (hdH_le : H.natDegree ≤ d) (hdH_D : H.natDegree ≤ D)
+    (hbB : ∀ (i₁ : ℕ) {m : ℕ} (p : Nat.Partition m),
+        weight_Λ_over_𝒪 hH (Bcoeff i₁ p) D
+          ≤ (WithBot.some ((D - Multiset.card p.parts)
+              + (d - betaδ i₁ - Multiset.card p.parts) * (D - H.natDegree)) : WithBot ℕ))
+    (hBzero : ∀ (i₁ : ℕ) {m : ℕ} (p : Nat.Partition m),
+        d - betaδ i₁ < Multiset.card p.parts → Bcoeff i₁ p = 0)
+    (hbξ : weight_Λ_over_𝒪 hH (ξ x₀ R H hHyp) D
+        ≤ (WithBot.some ((d - 1) * (D - H.natDegree + 1)) : WithBot ℕ))
+    {matchingSet : Finset F}
+    (hconcreteFin : ∀ t, k ≤ t → t ≤ T → (↑matchingSet.card : WithBot ℕ)
+        > (((2 * t + 1) * d * D * H.natDegree : ℕ) : WithBot ℕ)) :
+    ∀ t, k ≤ t → t ≤ T → (↑matchingSet.card : WithBot ℕ)
+      > weight_Λ_over_𝒪 hH (betaRec x₀ R H hHyp Bcoeff t) D * H.natDegree := by
+  intro t hkt htT
+  exact hcard_of_concrete x₀ R H hHyp Bcoeff hD hH hd1 hdH_le hdH_D
+    hbB hBzero hbξ (hconcreteFin t hkt htT)
+
+/-! ## Corrected finite §5 bundle from centered concrete inputs
+
+The final strict path consumes `HcardDischarge.Section5StrictDataFin`, not the older infinite-tail
+`BetaCurveInput`.  The wrapper below is the centered, concrete-cardinality version of
+`KeystoneAssembly.section5DataFin_of_producers`: it discharges `hsubst` at `x₀ = 0`, converts the
+finite arithmetic L9/L10 bound with `hcardFin_of_concrete`, and accepts the smaller
+`SepHenselInput` surface for `hPz`. -/
+
+/-- **Centered concrete finite §5 input supply.**
+
+Builds the corrected `Section5StrictDataFin` bundle consumed by
+`KeystoneAssembly.keystone_of_section5Inputs_strict` from primitive centered §5 data.  Compared with
+`KeystoneAssembly.section5DataFin_of_producers`, this wrapper removes two plumbing fields:
+
+* `hsubst`, supplied by `hsubst_field_of_centre`;
+* opaque `hcardFin`, supplied from the concrete finite cardinality inequality via
+  `hcardFin_of_concrete`.
+
+It also lowers the Hensel input from raw `HPzBridge.HenselDatum` to the separable
+`HenselDatumProducer.SepHenselInput`, using `HenselDatumProducer.henselDatum_of_sepInput`. -/
+noncomputable def section5DataFin_of_centered_concrete {k deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0}
+    {u : WordStack F (Fin (k + 1)) ι} {P : F → Polynomial F}
+    (b : GSFactorData.Bundle (F := F) (0 : F))
+    [_inst_hIrr : Fact (Irreducible b.H)] [_inst_hPos : Fact (0 < b.H.natDegree)]
+    (Bcoeff : (i₁ : ℕ) → {m : ℕ} → Nat.Partition m → 𝒪 b.H)
+    (matchingSet : Finset F)
+    (root : (z : F) → rationalRoot (H_tilde' b.H) z)
+    -- the Prop-5.5 linear representative of `γ` (fixes `T := Ppoly.natDegree`):
+    (Ppoly : F[X][Y])
+    (hrep : polyToPowerSeries𝕃 b.H Ppoly = γ (0 : F) b.R b.H b.hHyp)
+    (hdegX : Polynomial.Bivariate.degreeX Ppoly ≤ 1)
+    -- finite-range per-point matching producer:
+    (mpPoint : ∀ t, k ≤ t → t ≤ Ppoly.natDegree → ∀ z ∈ matchingSet,
+      BetaMatchingVanishes.MatchingPoint (0 : F) b.R b.H b.hHyp Bcoeff t z (root z))
+    -- concrete finite L9/L10 weight-collapse inputs (`d = b.R.natDegree`):
+    (hd1 : 1 ≤ b.R.natDegree) (hdH_le : b.H.natDegree ≤ b.R.natDegree)
+    (hdH_D : b.H.natDegree ≤ b.D)
+    (hbB : ∀ (i₁ : ℕ) {m : ℕ} (p : Nat.Partition m),
+        weight_Λ_over_𝒪 b.hH (Bcoeff i₁ p) b.D
+          ≤ (WithBot.some ((b.D - Multiset.card p.parts)
+              + (b.R.natDegree - betaδ i₁ - Multiset.card p.parts)
+                * (b.D - b.H.natDegree)) : WithBot ℕ))
+    (hBzero : ∀ (i₁ : ℕ) {m : ℕ} (p : Nat.Partition m),
+        b.R.natDegree - betaδ i₁ < Multiset.card p.parts → Bcoeff i₁ p = 0)
+    (hbξ : weight_Λ_over_𝒪 b.hH (ξ (0 : F) b.R b.H b.hHyp) b.D
+        ≤ (WithBot.some ((b.R.natDegree - 1) * (b.D - b.H.natDegree + 1)) : WithBot ℕ))
+    (hcardConcreteFin : ∀ t, k ≤ t → t ≤ Ppoly.natDegree →
+        (↑matchingSet.card : WithBot ℕ)
+          > (((2 * t + 1) * b.R.natDegree * b.D * b.H.natDegree : ℕ) : WithBot ℕ))
+    -- the numerator residual replacing `hγ`:
+    (hβ : ∀ t, β (H := b.H) b.R t = betaRec (0 : F) b.R b.H b.hHyp Bcoeff t)
+    -- per-`z` separable Hensel input + degree bounds (yielding `hPz`):
+    (hSep : ∀ v₀ v₁ : F[X],
+      γ (0 : F) b.R b.H b.hHyp = polyToPowerSeries𝕃 b.H
+        ((Polynomial.map Polynomial.C v₀)
+          + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)) →
+      HenselDatumProducer.SepHenselInput
+        (k := k) (deg := deg) (domain := domain) (δ := δ) u P v₀ v₁)
+    (hdeg : ∀ v₀ v₁ : F[X],
+      γ (0 : F) b.R b.H b.hHyp = polyToPowerSeries𝕃 b.H
+        ((Polynomial.map Polynomial.C v₀)
+          + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)) →
+      v₀.natDegree < k + 1 ∧ v₁.natDegree < k + 1) :
+    Section5StrictDataFin (k := k) (deg := deg) (domain := domain) (δ := δ) u P :=
+  KeystoneAssembly.section5DataFin_of_producers
+    (k := k) (deg := deg) (domain := domain) (δ := δ) (u := u) (P := P)
+    (x₀ := (0 : F)) b Bcoeff matchingSet root Ppoly hrep hdegX mpPoint
+    (hcardFin_of_concrete (0 : F) b.R b.H b.hHyp Bcoeff b.hD b.hH
+      hd1 hdH_le hdH_D hbB hBzero hbξ hcardConcreteFin)
+    hsubst_field_of_centre hβ
+    (fun v₀ v₁ hlin => HenselDatumProducer.henselDatum_of_sepInput (hSep v₀ v₁ hlin))
+    hdeg
 
 /-! ## The assembly: `betaCurveInput_of_section5`
 
@@ -253,4 +352,6 @@ end ArkLib
 `[propext, Classical.choice, Quot.sound]`, no `sorry`/`admit`/`axiom`/`native_decide`. -/
 #print axioms ArkLib.BetaInputSupply.hsubst_field_of_centre
 #print axioms ArkLib.BetaInputSupply.hcard_of_concrete
+#print axioms ArkLib.BetaInputSupply.hcardFin_of_concrete
+#print axioms ArkLib.BetaInputSupply.section5DataFin_of_centered_concrete
 #print axioms ArkLib.BetaInputSupply.betaCurveInput_of_section5
