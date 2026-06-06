@@ -5,7 +5,6 @@ Authors: Alexander Hicks
 -/
 
 import ArkLib.ToMathlib.KoalaBearField
-import ArkLib.Data.CodingTheory.ReedSolomon
 
 /-!
 # The genuine KoalaBear-sextic Reed–Solomon code (ABF26 §6.3 prize regime)
@@ -14,20 +13,20 @@ This file makes the Proximity-Prize leaderboard's *opaque* `koalaCode`
 concrete, as the genuine **Reed–Solomon code over the KoalaBear-sextic field**
 at the prize rate `ρ = k/n = 2/4 = 1/2`.
 
-* `KoalaBear.rsDomain : Fin 4 ↪ Sextic` — four distinct evaluation points
-  (the natural images of `0, 1, 2, 3` in `F_{p^6}`; distinct because the
-  characteristic `p = 2^31 - 2^24 + 1` exceeds `4`).
-* `KoalaBear.rsCode : Submodule Sextic (Fin 4 → Sextic)` — `ReedSolomon.code`
-  of degree `< 2` on `rsDomain`: the genuine rate-`1/2` RS code over the
-  KoalaBear-sextic field.
-* `KoalaBear.rsCodeSet : Set (Fin 4 → Sextic)` — the underlying `Set`, the
-  drop-in concrete replacement for the leaderboard's `opaque koalaCode`.
+The RS code of degree `< 2` is the set of evaluations of *affine* polynomials
+`m₀ + m₁·X` on the evaluation points. We present it directly through its
+generator (the `F`-linear evaluation encoder), so its `F`-linearity — the one
+structural fact the leaderboard's attack chain
+(`epsCA_le_winningSetSoundness`, hypothesis `hClin`) requires and the opaque
+stand-in could not supply — holds **by construction** (`rsCode_isLinear` is
+literally `⟨rsEncoder, rfl⟩`).
 
-The leaderboard's attack chain (`epsCA_le_winningSetSoundness`) needs the code
-to be the image of an `F`-linear encoder; an RS code is a `Submodule`, so
-`rsCodeSet` carries that structure *by construction* — `rsCode_isLinear`
-discharges exactly the `hClin : ∃ enc, range enc = C` hypothesis. This is the
-structure the opaque stand-in could not supply.
+* `KoalaBear.rsPoint : Fin 4 → Sextic` — four evaluation points, the canonical
+  casts of `0,1,2,3` into `F_{p^6}`.
+* `KoalaBear.rsEncoder : (Fin 2 → Sextic) →ₗ[Sextic] (Fin 4 → Sextic)` — the
+  rate-`1/2` RS evaluation encoder `m ↦ (j ↦ m 0 + m 1 · rsPoint j)`.
+* `KoalaBear.rsCodeSet : Set (Fin 4 → Sextic)` — its range, the genuine
+  rate-`1/2` KoalaBear-sextic RS code, drop-in for `opaque koalaCode`.
 
 ## References
 
@@ -37,51 +36,32 @@ structure the opaque stand-in could not supply.
 
 namespace KoalaBear
 
-open scoped Classical
+/-- Four evaluation points in the KoalaBear-sextic field: the canonical casts of
+`0, 1, 2, 3 : ℕ`. (Pairwise distinct since the characteristic is the KoalaBear
+prime `p = 2^31 - 2^24 + 1 > 4`; the prize-regime soundness anchors only need
+linearity, so distinctness is not used below.) -/
+noncomputable def rsPoint : Fin 4 → Sextic := fun j => (j.val : Sextic)
 
-noncomputable instance : DecidableEq Sextic := Classical.decEq _
+/-- The genuine **rate-`1/2` KoalaBear-sextic Reed–Solomon evaluation encoder**:
+a message `m : Fin 2 → F` (the coefficients of the affine polynomial
+`m₀ + m₁·X`, i.e. degree `< 2`) maps to its evaluation vector
+`j ↦ m 0 + m 1 · rsPoint j` on the four points. Manifestly `F`-linear. -/
+noncomputable def rsEncoder : (Fin 2 → Sextic) →ₗ[Sextic] (Fin 4 → Sextic) where
+  toFun := fun m j => m 0 + m 1 * rsPoint j
+  map_add' := by intro m m'; funext j; simp; ring
+  map_smul' := by intro c m; funext j; simp; ring
 
-/-- Four distinct evaluation points in the KoalaBear-sextic field: the images
-of `0, 1, 2, 3 : ℕ` under the canonical `ℕ`-cast. They are distinct because the
-field's characteristic is the KoalaBear prime `p = 2^31 - 2^24 + 1`, which far
-exceeds `4`, so the casts `(0 : F), (1 : F), (2 : F), (3 : F)` are pairwise
-unequal. -/
-noncomputable def rsDomain : Fin 4 ↪ Sextic where
-  toFun := fun i => (i.val : Sextic)
-  inj' := by
-    -- `Nat.cast` is injective on `{0,1,2,3}` because `ringChar F = p > 4`.
-    intro i j hij
-    have hchar : ringChar Sextic = fieldSize := by
-      -- `GaloisField p n` has characteristic `p`.
-      have : CharP Sextic fieldSize := by
-        haveI : Fact (Nat.Prime fieldSize) := inferInstance
-        infer_instance
-      exact (ringChar.eq Sextic fieldSize this)
-    have hcast : (Nat.cast : ℕ → Sextic).Injective := by
-      apply Nat.cast_injective_of_lt_ringChar
-      · rw [hchar, fieldSize_eq]; intro a ha; omega
-    sorry
+/-- The genuine **KoalaBear-sextic Reed–Solomon code** at the prize rate: the
+range of the evaluation encoder (rate `k/n = 2/4 = 1/2` over `F_{p^6}`). This is
+the concrete drop-in for the leaderboard's `opaque koalaCode`. -/
+noncomputable def rsCodeSet : Set (Fin 4 → Sextic) := Set.range rsEncoder
 
-/-- The genuine **KoalaBear-sextic Reed–Solomon code** at the prize rate:
-polynomials of degree `< 2` evaluated on `rsDomain` (four points), i.e. a
-rate-`1/2` (`k = 2`, `n = 4`) RS code over `F_{p^6}`. A `Submodule`, hence the
-image of an `F`-linear encoder. -/
-noncomputable def rsCode : Submodule Sextic (Fin 4 → Sextic) :=
-  ReedSolomon.code rsDomain 2
-
-/-- The KoalaBear-sextic RS code as a plain `Set` — the concrete drop-in for
-the leaderboard's `opaque koalaCode`. -/
-noncomputable def rsCodeSet : Set (Fin 4 → Sextic) := (rsCode : Set (Fin 4 → Sextic))
-
-/-- The concrete code is the image of an `F`-linear encoder. This is exactly the
-`hClin` hypothesis of `epsCA_le_winningSetSoundness` — supplied here *by
-construction* (RS codes are `Submodule`s), which the opaque stand-in could not
-provide. -/
+/-- The concrete code is the image of an `F`-linear encoder — exactly the
+`hClin` hypothesis of `epsCA_le_winningSetSoundness`. True **by construction**
+(the code is *defined* as the encoder's range), so this is `⟨rsEncoder, rfl⟩`.
+This is the structure the opaque `koalaCode` stand-in could not provide. -/
 theorem rsCode_isLinear :
-    ∃ enc : (Fin 2 → Sextic) →ₗ[Sextic] (Fin 4 → Sextic), Set.range enc = rsCodeSet := by
-  -- A submodule is the range of its subtype inclusion precomposed with a basis
-  -- iso; more simply, `rsCode.subtype` followed by any surjection onto `Fin 2`
-  -- coords. We instead exhibit the generator-matrix encoder.
-  sorry
+    ∃ enc : (Fin 2 → Sextic) →ₗ[Sextic] (Fin 4 → Sextic), Set.range enc = rsCodeSet :=
+  ⟨rsEncoder, rfl⟩
 
 end KoalaBear
