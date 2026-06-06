@@ -96,21 +96,9 @@ lemma getMidCodewords_succ (t : L⦃≤ 1⦄[X Fin ℓ]) (i : Fin ℓ)
     funext z
     rw [iterated_fold_zero_steps]
     have hch := Fin.init_snoc (n := i.val) (α := fun _ => L) (x := r_i') (p := challenges)
-    -- Matcher-free transport of `hch` (`rw`/`simp`/`generalize` all fail to abstract the
-    -- occurrence even though it is alpha-identical): congruence with an explicit motive,
-    -- so only defeq checking is involved, then the remaining transport is definitional.
-    -- All proofs are hoisted out of the motive (in-lambda `by`-blocks break elaboration).
-    have hdid : (⟨i.val, hmid_lt⟩ : Fin r).val = (0 : Fin r).val + i.val := by simp
-    have hdle : (⟨i.val, hmid_lt⟩ : Fin r) ≤ ℓ := by
-      simp only [Fin.mk_le_mk, Fin.val_mk]; omega
-    have hℓr : ℓ ≤ r := by omega
-    refine Eq.trans (congrFun (congrArg (fun ch =>
-      iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        (i := 0) (steps := i.val) (destIdx := ⟨i.val, hmid_lt⟩)
-        (h_destIdx := hdid) (h_destIdx_le := hdle)
-        (f := fun x => ((polynomialFromNovelCoeffsF₂ 𝔽q β ℓ hℓr
-          (fun ω => t.val.eval ω)).val).eval x.val)
-        (r_challenges := ch)) hch) z) ?_
+    -- `hch` is a closed equation, so `simp only [hch]` matches first-order (the general
+    -- `Fin.init_snoc` cannot fire: `Fin.snoc`'s dependent motive is not an HO pattern).
+    simp only [hch]
     rfl
   · -- Challenge: `snoc challenges r_i' (last _) = r_i'` (the right side beta-reduces).
     exact Fin.snoc_last (n := i.val) (α := fun _ => L) (x := r_i') (p := challenges)
