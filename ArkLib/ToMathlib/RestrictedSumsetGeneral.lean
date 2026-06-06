@@ -111,6 +111,38 @@ lemma vdmX_eq_perm_sum (h : ℕ) :
   intro i _
   simp [Matrix.vandermonde_apply, X_pow_eq_monomial]
 
+/-- The Vandermonde polynomial has total degree at most `C(h,2)`. -/
+lemma totalDegree_vdmX_le (h : ℕ) :
+    (vdmX (F := F) h).totalDegree ≤ h.choose 2 := by
+  classical
+  rw [vdmX_eq_prod]
+  refine (totalDegree_finset_prod _ _).trans ?_
+  have hstep : ∀ i : Fin h,
+      (∏ j ∈ Finset.Ioi i, (X j - X i : MvPolynomial (Fin h) F)).totalDegree
+        ≤ (Finset.Ioi i).card := by
+    intro i
+    refine (totalDegree_finset_prod _ _).trans ?_
+    calc ∑ j ∈ Finset.Ioi i, (X j - X i : MvPolynomial (Fin h) F).totalDegree
+        ≤ ∑ _j ∈ Finset.Ioi i, 1 := by
+          apply Finset.sum_le_sum
+          intro j _
+          refine (totalDegree_sub _ _).trans ?_
+          apply max_le <;> simp [totalDegree_X]
+      _ = (Finset.Ioi i).card := by rw [Finset.sum_const, smul_eq_mul, mul_one]
+  calc ∑ i : Fin h, (∏ j ∈ Finset.Ioi i, (X j - X i : MvPolynomial (Fin h) F)).totalDegree
+      ≤ ∑ i : Fin h, (Finset.Ioi i).card := Finset.sum_le_sum (fun i _ => hstep i)
+    _ = ∑ i : Fin h, (h - 1 - (i : ℕ)) := by
+        apply Finset.sum_congr rfl; intro i _; rw [Fin.card_Ioi]
+    _ = h.choose 2 := by
+        have : ∑ i : Fin h, (h - 1 - (i : ℕ)) = ∑ i ∈ Finset.range h, i := by
+          rw [Fin.sum_univ_eq_sum_range (fun i => h - 1 - i)]
+          rw [← Finset.sum_range_reflect (fun i => h - 1 - i) h]
+          apply Finset.sum_congr rfl
+          intro i hi
+          rw [Finset.mem_range] at hi
+          omega
+        rw [this, Finset.sum_range_id, Nat.choose_two_right]
+
 /-! ### The leading-part coefficient as an alternating multinomial sum -/
 
 /-- **Core coefficient identity.** The coefficient of a monomial `t` in the leading part
@@ -193,6 +225,49 @@ lemma totalDegree_prod_sub_pow_le (s : Finset F) :
       rw [totalDegree_C, zero_add]
       exact totalDegree_sumX_pow_le h _
 
+/-! ### The target monomial -/
+
+/-- The target monomial exponent vector `t` with `t i = n - 1 - i`, of total degree `C(h,2) + m`
+and with every per-variable degree `< n`. -/
+noncomputable def ehTarget (h n : ℕ) : Fin h →₀ ℕ :=
+  ∑ i : Fin h, Finsupp.single i (n - 1 - (i : ℕ))
+
+@[simp]
+lemma ehTarget_apply (h n : ℕ) (k : Fin h) : ehTarget h n k = n - 1 - (k : ℕ) := by
+  rw [ehTarget, Finsupp.finset_sum_apply]
+  rw [Finset.sum_eq_single k]
+  · rw [Finsupp.single_eq_same]
+  · intro b _ hb; rw [Finsupp.single_eq_of_ne (Ne.symm hb)]
+  · intro hk; exact absurd (Finset.mem_univ _) hk
+
+/-- The total degree of the target monomial is `C(h,2) + h(n - h)` when `h ≤ n`. -/
+lemma ehTarget_degree {h n : ℕ} (hhn : h ≤ n) :
+    (ehTarget h n).degree = h.choose 2 + h * (n - h) := by
+  classical
+  rw [Finsupp.degree_eq_sum]
+  have hval : ∑ i : Fin h, (ehTarget h n) i = ∑ i : Fin h, (n - 1 - (i : ℕ)) := by
+    apply Finset.sum_congr rfl; intro i _; rw [ehTarget_apply]
+  rw [hval]
+  -- `∑_{i:Fin h}(n-1-i) = ∑_{i∈range h}(n-1-i)`, a "staircase" sum.
+  rw [Fin.sum_univ_eq_sum_range (fun i => n - 1 - i)]
+  -- split `n-1-i = (n-h) + (h-1-i)` (valid for `i < h ≤ n`).
+  have hsplit : ∑ i ∈ Finset.range h, (n - 1 - i)
+      = ∑ i ∈ Finset.range h, ((n - h) + (h - 1 - i)) := by
+    apply Finset.sum_congr rfl
+    intro i hi; rw [Finset.mem_range] at hi; omega
+  rw [hsplit, Finset.sum_add_distrib, Finset.sum_const, Finset.card_range, smul_eq_mul]
+  -- `∑_{i∈range h}(h-1-i) = ∑_{i∈range h} i = C(h,2)`.
+  have hrefl : ∑ i ∈ Finset.range h, (h - 1 - i) = ∑ i ∈ Finset.range h, i := by
+    rw [← Finset.sum_range_reflect (fun i => h - 1 - i) h]
+    apply Finset.sum_congr rfl
+    intro i hi; rw [Finset.mem_range] at hi; omega
+  rw [hrefl, Finset.sum_range_id, Nat.choose_two_right]
+  ring
+
+/-- Every per-variable degree of the target monomial is `< n` when `1 ≤ n`. -/
+lemma ehTarget_lt {h n : ℕ} (hn : 1 ≤ n) (k : Fin h) : ehTarget h n k < n := by
+  rw [ehTarget_apply]; omega
+
 /-! ### The Erdős–Heilbronn polynomial -/
 
 /-- **The general Erdős–Heilbronn polynomial** for a padded sumset `C'`. -/
@@ -203,7 +278,7 @@ noncomputable def ehQ (h : ℕ) (Cset : Finset F) : MvPolynomial (Fin h) F :=
 smaller total degree above the Vandermonde degree. -/
 lemma coeff_ehQ_eq_leading {Cset : Finset F} {n : ℕ} (t : Fin h →₀ ℕ)
     (hCcard : Cset.card = h * (n - h))
-    (htdeg : t.degree = (vdmX (F := F) h).totalDegree + h * (n - h)) :
+    (htdeg : (vdmX (F := F) h).totalDegree + h * (n - h) ≤ t.degree) :
     coeff t (ehQ h Cset)
       = coeff t (vdmX (F := F) h * (∑ k : Fin h, X k) ^ (h * (n - h))) := by
   classical
@@ -225,7 +300,8 @@ lemma coeff_ehQ_eq_leading {Cset : Finset F} {n : ℕ} (t : Fin h →₀ ℕ)
       rw [hQdiff, this, mul_zero, coeff_zero]
     · -- `m ≥ 1`: a total-degree argument.
       apply coeff_eq_zero_of_totalDegree_lt
-      rw [← Finsupp.degree_apply, htdeg]
+      rw [← Finsupp.degree_apply]
+      refine lt_of_lt_of_le ?_ htdeg
       rw [hQdiff]
       refine lt_of_le_of_lt (totalDegree_mul _ _) ?_
       have h2 : (P' - ehY h ^ m : MvPolynomial (Fin h) F).totalDegree ≤ m - 1 := by
@@ -270,7 +346,9 @@ lemma eval_ehQ_eq_zero {Cset : Finset F} (s : Fin h → F)
       obtain ⟨i, j, hij, hne⟩ := hni
       apply Matrix.det_zero_of_row_eq hne
       funext c
-      simp only [Matrix.map_apply, Matrix.vandermonde_apply, map_pow, eval_X, hij]
+      show eval s (Matrix.vandermonde (fun i => (X i : MvPolynomial (Fin h) F)) i c) =
+           eval s (Matrix.vandermonde (fun i => (X i : MvPolynomial (Fin h) F)) j c)
+      rw [Matrix.vandermonde_apply, Matrix.vandermonde_apply, map_pow, map_pow, eval_X, eval_X, hij]
     rw [this, zero_mul]
   · have : eval s (∏ c ∈ Cset, (ehY h - C c) : MvPolynomial (Fin h) F) = 0 := by
       rw [eval_prod]
@@ -279,5 +357,104 @@ lemma eval_ehQ_eq_zero {Cset : Finset F} (s : Fin h → F)
     rw [this, mul_zero]
 
 end General
+
+section Main
+
+variable {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+
+/-- The restricted `h`-sumset `Σ_h(A) = { ∑_{a ∈ S} a : S ⊆ A, |S| = h }`. -/
+def restrictedSumset (A : Finset F) (h : ℕ) : Finset F :=
+  (A.powersetCard h).image (fun S => ∑ a ∈ S, a)
+
+omit [Fintype F] in
+/-- For an injective tuple `s : Fin h → F` with all coordinates in `A`, the coordinate sum is an
+`h`-subset sum. -/
+lemma sum_mem_restrictedSumset {A : Finset F} {h : ℕ} {s : Fin h → F}
+    (hinj : Function.Injective s) (hmem : ∀ k, s k ∈ A) :
+    (∑ k, s k) ∈ restrictedSumset A h := by
+  classical
+  rw [restrictedSumset, Finset.mem_image]
+  refine ⟨Finset.univ.image s, ?_, ?_⟩
+  · rw [Finset.mem_powersetCard]
+    refine ⟨?_, ?_⟩
+    · intro x hx
+      rw [Finset.mem_image] at hx
+      obtain ⟨k, -, rfl⟩ := hx
+      exact hmem k
+    · rw [Finset.card_image_of_injective _ hinj, Finset.card_univ, Fintype.card_fin]
+  · rw [Finset.sum_image (fun a _ b _ h => hinj h)]
+
+/-- **General Erdős–Heilbronn / Dias da Silva–Hamidoune, modulo the coefficient nonvanishing.**
+
+Let `F` be a finite field of prime characteristic `p`, `A : Finset F` with `n := |A|`, and
+`1 ≤ h ≤ n`, `h(n - h) < p`. If the coefficient of the target monomial `t = ∏_i X_i^{n-1-i}` in the
+leading part `vdmX · (∑ X)^{h(n-h)}` is nonzero in `F`, then
+
+  `h(n - h) + 1 ≤ |Σ_h(A)|`.
+
+The coefficient is exhibited in closed form by `coeff_vdmX_mul_sumPow`; its nonvanishing is the
+classical Frobenius / Vandermonde-in-factorials arithmetic fact (a `± m!·∏(a_i−a_j)/∏ a_i!`
+ballot number, nonzero mod `p` in the stated regime). -/
+theorem erdos_heilbronn_of_coeff {p : ℕ} (hp : p.Prime) (hchar : ringChar F = p)
+    (A : Finset F) (h : ℕ) (h1 : 1 ≤ h) (hhA : h ≤ A.card) (hsmall : h * (A.card - h) < p)
+    (hcoeff : coeff (ehTarget h A.card)
+        ((vdmX (F := F) h) * (∑ k : Fin h, X k) ^ (h * (A.card - h))) ≠ 0) :
+    h * (A.card - h) + 1 ≤ (restrictedSumset A h).card := by
+  classical
+  set n := A.card with hncard
+  set m := h * (n - h) with hm
+  by_contra hcon
+  push Not at hcon
+  have hle : (restrictedSumset A h).card ≤ m := by omega
+  -- Pad `Σ_h(A)` to a set `C'` of size exactly `m`.
+  have hp_le_card : p ≤ Fintype.card F := by
+    haveI : Fact p.Prime := ⟨hp⟩
+    have hdvd : p ∣ Fintype.card F := by
+      rw [← prime_dvd_char_iff_dvd_card (R := F) p, hchar]
+    exact Nat.le_of_dvd Fintype.card_pos hdvd
+  have hm_le_card : m ≤ Fintype.card F := le_trans (le_of_lt hsmall) hp_le_card
+  obtain ⟨C', hC'sub, -, hC'card⟩ := Finset.exists_subsuperset_card_eq
+    (Finset.subset_univ (restrictedSumset A h)) hle (by rw [Finset.card_univ]; exact hm_le_card)
+  set t := ehTarget h n with ht
+  set f := ehQ h C' with hf
+  -- coeff of `t` in `f` is nonzero (equals coeff in the leading part).
+  have hdeg_t : t.degree = h.choose 2 + m := by rw [ht]; exact ehTarget_degree hhA
+  have hle_deg : (vdmX (F := F) h).totalDegree + m ≤ t.degree := by
+    rw [hdeg_t]
+    have := totalDegree_vdmX_le (F := F) h
+    omega
+  have hcoeff_f : coeff t f ≠ 0 := by
+    rw [hf, coeff_ehQ_eq_leading (n := n) t hC'card hle_deg]
+    exact hcoeff
+  -- total degree of `f` equals `t.degree`.
+  have htotalDeg : f.totalDegree = t.degree := by
+    refine le_antisymm ?_ ?_
+    · rw [hdeg_t, hf]
+      refine le_trans (totalDegree_ehQ_le C') ?_
+      rw [hC'card]
+      have := totalDegree_vdmX_le (F := F) h
+      omega
+    · have hmem : t ∈ f.support := mem_support_iff.mpr hcoeff_f
+      rw [Finsupp.degree_apply]
+      exact le_totalDegree (p := f) hmem
+  -- degree condition `t i < #(S i) = n`.
+  set S : Fin h → Finset F := fun _ => A with hS
+  have htS : ∀ i, t i < (S i).card := by
+    intro i
+    rw [hS, ← hncard, ht]
+    exact ehTarget_lt (by omega) i
+  -- Apply the Combinatorial Nullstellensatz.
+  obtain ⟨s, hsA, hsne⟩ := combinatorial_nullstellensatz_exists_eval_nonzero
+    f t hcoeff_f htotalDeg S htS
+  -- But `f` vanishes on `A^h`.
+  apply hsne
+  rw [hf]
+  apply eval_ehQ_eq_zero
+  by_cases hinj : Function.Injective s
+  · refine Or.inr (hC'sub ?_)
+    exact sum_mem_restrictedSumset hinj (fun k => hsA k)
+  · exact Or.inl hinj
+
+end Main
 
 end MvPolynomial

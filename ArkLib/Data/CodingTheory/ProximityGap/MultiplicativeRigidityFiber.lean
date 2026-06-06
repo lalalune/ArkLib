@@ -49,6 +49,7 @@ open Finset
 
 namespace ProximityGap.MultiplicativeRigidity
 
+open scoped Classical in
 /-- **Lemma 1 (monomial agreement / coset rigidity).**
 
 In a finite cyclic commutative group `G` of order `n = Fintype.card G`, for any exponent
@@ -87,6 +88,7 @@ theorem pow_eq_card_eq_zero_or_gcd
     rintro x _ hx
     exact hc ⟨x, by simpa [powMonoidHom_apply] using hx⟩
 
+open scoped Classical in
 /-- **Corollary (binomial monomial-agreement bound).**
 
 For a finite cyclic commutative group `G` of order `n`, constants `c₁ c₂ : G` and exponents
@@ -123,6 +125,7 @@ theorem binomial_agreement_card
   rw [key]
   exact pow_eq_card_eq_zero_or_gcd (a - b) (c₂ * c₁⁻¹)
 
+open scoped Classical in
 /-- The `≤ a - b` leg of the binomial corollary: the agreement count is at most `a - b`.
 
 This is immediate from `binomial_agreement_card` since `Nat.gcd (a - b) n ≤ a - b`
@@ -137,6 +140,7 @@ theorem binomial_agreement_card_le
   · rw [h]
     exact Nat.le_of_dvd (Nat.sub_pos_of_lt hba) (Nat.gcd_dvd_left _ _)
 
+open scoped Classical in
 /-- **Binomial separation.**
 
 If `0 < b < a ≤ k`, then two distinct monomials `c₁ * X ^ a` and `c₂ * X ^ b` agree on

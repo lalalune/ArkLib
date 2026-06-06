@@ -20,7 +20,7 @@ empty or has cardinality *exactly* `Nat.gcd d n`.
   `0` or `Nat.gcd (a - b) n`, obtained by dividing through by the unit `x ^ b`.
 * `MultiplicativeRigidity.binomial_agree_card_le` — its `≤ a - b` consumable form.
 * `MultiplicativeRigidity.binomial_separation` — the rigidity packaged as `agreement < k`
-  whenever `b < a ≤ k`.
+  whenever `b < a < k` (exponents drawn from degree-`< k` data).
 
 The proof route is purely group-theoretic: the `d`-th power map is `powMonoidHom d`, its fibers are
 cosets of its kernel (`MonoidHom.fiberEquivKer`), so every non-empty fiber has the same size as the
@@ -34,8 +34,9 @@ open Finset
 section Hom
 
 variable {G : Type*} [CommGroup G] [Fintype G] [IsCyclic G] [DecidableEq G]
-variable {M : Type*} [CommMonoid M] [DecidableEq M]
+variable {M : Type*} [CommGroup M] [DecidableEq M]
 
+omit [CommGroup G] [IsCyclic G] [DecidableEq G] [CommGroup M] [DecidableEq M] in
 /-- Bridge: for any evaluation function `e : G → M`, the `Finset.filter` count of `e x = γ`
 equals `Nat.card` of the fiber `e ⁻¹' {γ}`. Stated for a bare function (not a `MonoidHom`
 application) so the `DecidablePred` instance is supplied by `Classical` and never needs to match. -/
@@ -49,6 +50,7 @@ private theorem card_filter_eq_card_fiber (e : G → M) (γ : M)
   simp only [Set.mem_toFinset, Set.mem_preimage, Set.mem_singleton_iff, mem_filter, mem_univ,
     true_and]
 
+omit [DecidableEq G] in
 /-- **Coset rigidity through an injective evaluation.**
 
 Generalization of `pow_eq_card_eq_zero_or_gcd` where the `d`-th power is post-composed with an
@@ -74,9 +76,9 @@ theorem pow_map_card_eq_zero_or_gcd (ι : G →* M) (hι : Function.Injective ι
   · right
     obtain ⟨a, ha⟩ := hγ
     have hpre : (f : G → M) ⁻¹' {γ} = (f : G → M) ⁻¹' {f a} := by rw [(ha : f a = γ)]
+    have hequiv : ((f : G → M) ⁻¹' {f a}) ≃ f.ker := MonoidHom.fiberEquivKer f a
     have hcard : Nat.card ((f : G → M) ⁻¹' {γ}) = Nat.card f.ker := by
-      rw [hpre]
-      exact Nat.card_eq_of_bijective (f.fiberEquivKer a) (f.fiberEquivKer a).bijective
+      rw [hpre]; exact Nat.card_congr hequiv
     rw [hcard, hker, IsCyclic.card_powMonoidHom_ker G d, Nat.card_eq_fintype_card, Nat.gcd_comm]
   · left
     rw [Set.not_nonempty_iff_eq_empty] at hγ
@@ -133,15 +135,9 @@ theorem binomial_agree_card
     rw [map_pow, Subgroup.coe_subtype]
     have hsplit : (x : Fˣ) ^ a = (x : Fˣ) ^ (a - b) * (x : Fˣ) ^ b := by
       rw [← pow_add, Nat.sub_add_cancel hba.le]
-    constructor
-    · intro h
-      have h' : (c₁ * (x : Fˣ) ^ (a - b)) * (x : Fˣ) ^ b = c₂ * (x : Fˣ) ^ b := by
-        rw [mul_assoc, ← hsplit]; exact h
-      have hcancel : c₁ * (x : Fˣ) ^ (a - b) = c₂ := mul_right_cancel h'
-      rw [eq_comm, ← hcancel, ← mul_assoc, inv_mul_cancel, one_mul]
-    · intro h
-      rw [hsplit, ← mul_assoc, h]
-      rw [mul_comm c₂ c₁⁻¹, mul_assoc, mul_comm c₂, ← mul_assoc, mul_inv_cancel, one_mul]
+    -- Cancel the unit `x ^ b`, leaving `c₁ * x^(a-b) = c₂`, then isolate `x^(a-b)`.
+    rw [hsplit, ← mul_assoc, mul_left_inj, mul_comm c₁ ((x : Fˣ) ^ (a - b)),
+      eq_mul_inv_iff_mul_eq]
   -- Rewrite the filter predicate and invoke `pow_map_card_eq_zero_or_gcd` for `ι = H.subtype`.
   have hfilter : (univ.filter fun x : H => c₁ * (x : Fˣ) ^ a = c₂ * (x : Fˣ) ^ b)
       = (univ.filter fun x : H => (H.subtype) (x ^ (a - b)) = c₂ * c₁⁻¹) :=
@@ -158,22 +154,23 @@ theorem binomial_agree_card_le
     (univ.filter fun x : H => c₁ * (x : Fˣ) ^ a = c₂ * (x : Fˣ) ^ b).card ≤ a - b := by
   have hab : a - b ≠ 0 := by omega
   have hgcd : Nat.gcd (a - b) (Fintype.card H) ≤ a - b := Nat.le_of_dvd (by omega) (Nat.gcd_dvd_left _ _)
-  rcases binomial_agree_card c₁ c₂ hba with h | h
+  rcases binomial_agree_card (H := H) c₁ c₂ hba with h | h
   · rw [h]; exact Nat.zero_le _
   · rw [h]; exact hgcd
 
 /-- **Binomial separation.**
 
-Packaging of coset rigidity in the form the dossier consumes: if `b < a ≤ k`, then the binomial
-`c₁ * x ^ a = c₂ * x ^ b` is satisfied by *strictly fewer than `k`* points of the finite cyclic
-subgroup `H ≤ Fˣ`. -/
+Packaging of coset rigidity in the form the dossier consumes: if `b < a < k` (both exponents come
+from degree-`< k` data, so `a ≤ k - 1`), then the binomial `c₁ * x ^ a = c₂ * x ^ b` is satisfied
+by *strictly fewer than `k`* points of the finite cyclic subgroup `H ≤ Fˣ`. -/
 theorem binomial_separation
     {H : Subgroup Fˣ} [Fintype H] [IsCyclic H] [DecidableEq H]
-    (c₁ c₂ : Fˣ) {a b k : ℕ} (hba : b < a) (hak : a ≤ k) :
+    (c₁ c₂ : Fˣ) {a b k : ℕ} (hba : b < a) (hak : a < k) :
     (univ.filter fun x : H => c₁ * (x : Fˣ) ^ a = c₂ * (x : Fˣ) ^ b).card < k := by
-  have h := binomial_agree_card_le c₁ c₂ hba
+  have h := binomial_agree_card_le (H := H) c₁ c₂ hba
   omega
 
 end Subgroup
 
 end MultiplicativeRigidity
+
