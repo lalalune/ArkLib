@@ -187,7 +187,8 @@ end L13Milestone
 end ArkLib
 
 /-! ## Axiom audit — every declaration must rest only on
-`[propext, Classical.choice, Quot.sound]`, no `sorry`/`admit`/`axiom`/`native_decide`. -/
+`[propext, Classical.choice, Quot.sound]`, no `sorry`/`admit`/`axiom`/`native_decide`.
+(L13 milestone keystone: `correlatedAgreement_affine_curves_strongBeta_of_betaRecFin`.) -/
 #print axioms ArkLib.L13Milestone.alpha_strong_eq_alphaFromBeta
 #print axioms ArkLib.L13Milestone.gamma_strong
 #print axioms ArkLib.L13Milestone.gamma_strong_eq_γ'
