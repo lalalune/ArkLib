@@ -76,7 +76,7 @@ namespace Trim
 
 -- characterize .last_nonzero
 theorem last_nonzero_none [LawfulBEq R] {p : UniPoly R} :
-  (∀ i, (hi : i < p.size) → p[i] = 0) → p.last_nonzero = none
+    (∀ i, (hi : i < p.size) → p[i] = 0) → p.last_nonzero = none
 := by
   intro h
   apply Array.findIdxRev?_eq_none
@@ -85,11 +85,11 @@ theorem last_nonzero_none [LawfulBEq R] {p : UniPoly R} :
   apply_assumption
 
 theorem last_nonzero_some [LawfulBEq R] {p : UniPoly R} {i} (hi : i < p.size) (h : p[i] ≠ 0) :
-  ∃ k, p.last_nonzero = some k
+    ∃ k, p.last_nonzero = some k
 := Array.findIdxRev?_eq_some ⟨i, hi, bne_iff_ne.mpr h⟩
 
 theorem last_nonzero_spec [LawfulBEq R] {p : UniPoly R} {k} :
-  p.last_nonzero = some k
+    p.last_nonzero = some k
   → p[k] ≠ 0 ∧ (∀ j, (hj : j < p.size) → j > k → p[j] = 0)
 := by
   intro (h : p.last_nonzero = some k)
@@ -107,7 +107,7 @@ def last_nonzero_prop {p : UniPoly R} (k : Fin p.size) : Prop :=
   p[k] ≠ 0 ∧ (∀ j, (hj : j < p.size) → j > k → p[j] = 0)
 
 lemma last_nonzero_unique {p : UniPoly Q} {k k' : Fin p.size} :
-  last_nonzero_prop k → last_nonzero_prop k' → k = k'
+    last_nonzero_prop k → last_nonzero_prop k' → k = k'
 := by
   suffices weaker : ∀ k k', last_nonzero_prop k → last_nonzero_prop k' → k ≤ k' by
     intro h h'
@@ -118,7 +118,7 @@ lemma last_nonzero_unique {p : UniPoly Q} {k k' : Fin p.size} :
   contradiction
 
 theorem last_nonzero_some_iff [LawfulBEq R] {p : UniPoly R} {k} :
-  p.last_nonzero = some k ↔ (p[k] ≠ 0 ∧ (∀ j, (hj : j < p.size) → j > k → p[j] = 0))
+    p.last_nonzero = some k ↔ (p[k] ≠ 0 ∧ (∀ j, (hj : j < p.size) → j > k → p[j] = 0))
 := by
   constructor
   · apply last_nonzero_spec
@@ -135,7 +135,7 @@ theorem last_nonzero_some_iff [LawfulBEq R] {p : UniPoly R} {k} :
   ```
 -/
 theorem last_nonzero_induct [LawfulBEq R] {motive : UniPoly R → Prop}
-  (case1 : ∀ p, p.last_nonzero = none → (∀ i, (hi : i < p.size) → p[i] = 0) → motive p)
+    (case1 : ∀ p, p.last_nonzero = none → (∀ i, (hi : i < p.size) → p[i] = 0) → motive p)
   (case2 : ∀ p : UniPoly R, ∀ k : Fin p.size, p.last_nonzero = some k → p[k] ≠ 0 →
     (∀ j : ℕ, (hj : j < p.size) → j > k → p[j] = 0) → motive p)
   (p : UniPoly R) : motive p
@@ -155,7 +155,7 @@ theorem last_nonzero_induct [LawfulBEq R] {motive : UniPoly R → Prop}
   ```
 -/
 theorem induct [LawfulBEq R] {motive : UniPoly R → Prop}
-  (case1 : ∀ p, p.trim = #[] → (∀ i, (hi : i < p.size) → p[i] = 0) → motive p)
+    (case1 : ∀ p, p.trim = #[] → (∀ i, (hi : i < p.size) → p[i] = 0) → motive p)
   (case2 : ∀ p : UniPoly R, ∀ k : Fin p.size, p.trim = p.extract 0 (k + 1)
     → p[k] ≠ 0 → (∀ j : ℕ, (hj : j < p.size) → j > k → p[j] = 0) → motive p)
   (p : UniPoly R) : motive p
@@ -197,7 +197,7 @@ theorem size_le_size (p : UniPoly R) : p.trim.size ≤ p.size := by
 attribute [simp] Array.getElem?_eq_none
 
 theorem coeff_eq_getElem_of_lt [LawfulBEq R] {p : UniPoly R} {i} (hi : i < p.size) :
-  p.trim.coeff i = p[i] := by
+    p.trim.coeff i = p[i] := by
   induction p using induct with
   | case1 p h_empty h_all_zero =>
     specialize h_all_zero i hi
@@ -216,7 +216,7 @@ theorem coeff_eq_getElem_of_lt [LawfulBEq R] {p : UniPoly R} {i} (hi : i < p.siz
       simp only [zero_add]
 
 theorem coeff_eq_coeff [LawfulBEq R] (p : UniPoly R) (i : ℕ) :
-  p.trim.coeff i = p.coeff i := by
+    p.trim.coeff i = p.coeff i := by
   rcases (Nat.lt_or_ge i p.size) with hi | hi
   · rw [coeff_eq_getElem_of_lt hi]
     simp [hi]
@@ -224,7 +224,7 @@ theorem coeff_eq_coeff [LawfulBEq R] (p : UniPoly R) (i : ℕ) :
     simp [hi, hi']
 
 lemma coeff_eq_getElem {p : UniPoly Q} {i} (hp : i < p.size) :
-  p.coeff i = p[i] := by
+    p.coeff i = p[i] := by
   simp [hp]
 
 /-- Two polynomials are equivalent if they have the same `Nat` coefficients. -/
@@ -297,7 +297,7 @@ theorem canonical_of_size_zero {p : UniPoly R} : p.size = 0 → p.trim = p := by
   exact Array.eq_empty_of_size_eq_zero h
 
 theorem canonical_nonempty_iff [LawfulBEq R] {p : UniPoly R} (hp : p.size > 0) :
-  p.trim = p ↔ p.last_nonzero = some ⟨ p.size - 1, Nat.pred_lt_self hp ⟩
+    p.trim = p ↔ p.last_nonzero = some ⟨ p.size - 1, Nat.pred_lt_self hp ⟩
 := by
   unfold trim
   induction p using last_nonzero_induct with
@@ -323,7 +323,7 @@ theorem canonical_nonempty_iff [LawfulBEq R] {p : UniPoly R} (hp : p.size > 0) :
       exact le_refl _
 
 theorem last_nonzero_last_iff [LawfulBEq R] {p : UniPoly R} (hp : p.size > 0) :
-  p.last_nonzero = some ⟨ p.size - 1, Nat.pred_lt_self hp ⟩ ↔ p.getLast hp ≠ 0
+    p.last_nonzero = some ⟨ p.size - 1, Nat.pred_lt_self hp ⟩ ↔ p.getLast hp ≠ 0
 := by
   induction p using last_nonzero_induct with
   | case1 => simp [Array.getLast, *]
@@ -344,7 +344,7 @@ theorem last_nonzero_last_iff [LawfulBEq R] {p : UniPoly R} (hp : p.size > 0) :
         linarith
 
 theorem canonical_iff [LawfulBEq R] {p : UniPoly R} :
-   p.trim = p ↔ ∀ hp : p.size > 0, p.getLast hp ≠ 0
+    p.trim = p ↔ ∀ hp : p.size > 0, p.getLast hp ≠ 0
 := by
   constructor
   · intro h hp
@@ -356,7 +356,7 @@ theorem canonical_iff [LawfulBEq R] {p : UniPoly R} :
       exact h hp
 
 theorem non_zero_map [LawfulBEq R] (f : R → R) (hf : ∀ r, f r = 0 → r = 0) (p : UniPoly R) :
-  let fp := UniPoly.mk (p.map f);
+    let fp := UniPoly.mk (p.map f);
   p.trim = p → fp.trim = fp
 := by
   intro fp p_canon
@@ -564,7 +564,7 @@ theorem add_size {p q : UniPoly Q} : (add_raw p q).size = max p.size q.size := b
   rw [zipWith_size matchSize_size_eq, matchSize_size]
 
 theorem add_coeff {p q : UniPoly Q} {i : ℕ} (hi : i < (add_raw p q).size) :
-  (add_raw p q)[i] = p.coeff i + q.coeff i
+    (add_raw p q)[i] = p.coeff i + q.coeff i
 := by
   unfold add_raw coeff
   change (Array.zipWith _ _ _)[i] = _
@@ -572,7 +572,7 @@ theorem add_coeff {p q : UniPoly Q} {i : ℕ} (hi : i < (add_raw p q).size) :
   rw [Array.rightpad_getElem_eq_getD, Array.rightpad_getElem_eq_getD]
 
 theorem add_coeff? (p q : UniPoly Q) (i : ℕ) :
-  (add_raw p q).coeff i = p.coeff i + q.coeff i
+    (add_raw p q).coeff i = p.coeff i + q.coeff i
 := by
   rcases (Nat.lt_or_ge i (add_raw p q).size) with h_lt | h_ge
   · rw [← add_coeff h_lt]; simp [h_lt]
@@ -603,7 +603,7 @@ def smul_equiv : ∀ (i : ℕ) (r : R),
     rcases (Nat.lt_or_ge i p.size) with hi | hi <;> simp [hi]
 
 def nsmul_raw_equiv [LawfulBEq R] : ∀ (n i : ℕ),
-  (nsmul_raw n p).trim.coeff i = n * p.trim.coeff i := by
+    (nsmul_raw n p).trim.coeff i = n * p.trim.coeff i := by
   intro n i
   unfold nsmul_raw
   repeat rw [Trim.coeff_eq_coeff]
@@ -616,7 +616,7 @@ def mulPowX_coeff_lt : ∀ {i j : ℕ}, j < i → (mulPowX i p).coeff j = 0 := b
   simp [Array.getD, h]
 
 def mulPowX_coeff_add : ∀ (i j : ℕ),
-  (mulPowX i p).coeff (i + j) = p.coeff j := by
+    (mulPowX i p).coeff (i + j) = p.coeff j := by
   intro i j
   unfold mulPowX coeff mk
   simp [Array.getD]
@@ -667,7 +667,7 @@ theorem nsmul_zero [LawfulBEq R] (p : UniPoly R) : nsmul 0 p = 0 := by
   simp only [Nat.cast_zero, zero_mul, Array.getElem_map]
 
 theorem nsmul_raw_succ (n : ℕ) (p : UniPoly Q) :
-  nsmul_raw (n + 1) p = add_raw (nsmul_raw n p) p := by
+    nsmul_raw (n + 1) p = add_raw (nsmul_raw n p) p := by
   unfold nsmul_raw
   ext
   · simp [add_size]
@@ -949,7 +949,7 @@ def QuotientUniPoly (R : Type*) [Ring R] [BEq R] := Quotient (@instSetoidUniPoly
 namespace QuotientUniPoly
 
 lemma pow_equiv : ∀ (p : UniPoly R) (n : ℕ),
-  (p.mul^[n + 1] (C 1)) ≈ (p.mul (p.mul^[n] (C 1))) := by
+    (p.mul^[n + 1] (C 1)) ≈ (p.mul (p.mul^[n] (C 1))) := by
   intro p n
   rw [Function.iterate_succ_apply']
 
@@ -958,7 +958,7 @@ def add_descending (p q : UniPoly R) : QuotientUniPoly R :=
   Quotient.mk _ (add p q)
 
 lemma add_descends [LawfulBEq R] (a₁ b₁ a₂ b₂ : UniPoly R) :
-  equiv a₁ a₂ → equiv b₁ b₂ → add_descending a₁ b₁ = add_descending a₂ b₂ := by
+    equiv a₁ a₂ → equiv b₁ b₂ → add_descending a₁ b₁ = add_descending a₂ b₂ := by
   intros heq_a heq_b
   unfold add_descending
   apply Quotient.sound
@@ -978,7 +978,7 @@ def smul_descending (r : R) (p : UniPoly R) : QuotientUniPoly R :=
   Quotient.mk _ (smul r p)
 
 lemma smul_descends [LawfulBEq R] (r : R) (p₁ p₂ : UniPoly R) :
-  equiv p₁ p₂ → smul_descending r p₁ = smul_descending r p₂ := by
+    equiv p₁ p₂ → smul_descending r p₁ = smul_descending r p₂ := by
   unfold equiv smul_descending
   intro heq
   apply Quotient.sound
@@ -988,7 +988,7 @@ lemma smul_descends [LawfulBEq R] (r : R) (p₁ p₂ : UniPoly R) :
 
 @[inline, specialize]
 def smul {R : Type*} [Ring R] [BEq R] [LawfulBEq R] (r : R) (p : QuotientUniPoly R)
-  : QuotientUniPoly R :=
+    : QuotientUniPoly R :=
   Quotient.lift (smul_descending r) (smul_descends r) p
 
 -- Scalar multiplication: nsmul_raw descends to `QuotientUniPoly`
@@ -996,7 +996,7 @@ def nsmul_descending (n : ℕ) (p : UniPoly R) : QuotientUniPoly R :=
   Quotient.mk _ (nsmul n p)
 
 lemma nsmul_descends [LawfulBEq R] (n : ℕ) (p₁ p₂ : UniPoly R) :
-  equiv p₁ p₂ → nsmul_descending n p₁ = nsmul_descending n p₂ := by
+    equiv p₁ p₂ → nsmul_descending n p₁ = nsmul_descending n p₂ := by
   unfold equiv
   intro heq
   unfold nsmul_descending
@@ -1008,7 +1008,7 @@ lemma nsmul_descends [LawfulBEq R] (n : ℕ) (p₁ p₂ : UniPoly R) :
 
 @[inline, specialize]
 def nsmul {R : Type*} [Ring R] [BEq R] [LawfulBEq R] (n : ℕ) (p : QuotientUniPoly R)
-  : QuotientUniPoly R :=
+    : QuotientUniPoly R :=
   Quotient.lift (nsmul_descending n) (nsmul_descends n) p
 
 -- Negation: neg descends to `QuotientUniPoly`
@@ -1031,7 +1031,7 @@ def sub_descending (p q : UniPoly R) : QuotientUniPoly R :=
   Quotient.mk _ (sub p q)
 
 lemma sub_descends [LawfulBEq R] (a₁ b₁ a₂ b₂ : UniPoly R) :
-  equiv a₁ a₂ → equiv b₁ b₂ → sub_descending a₁ b₁ = sub_descending a₂ b₂ := by
+    equiv a₁ a₂ → equiv b₁ b₂ → sub_descending a₁ b₁ = sub_descending a₂ b₂ := by
   unfold equiv sub_descending
   intros heq_a heq_b
   apply Quotient.sound
@@ -1053,7 +1053,7 @@ def mulPowX_descending (i : ℕ) (p : UniPoly R) : QuotientUniPoly R :=
   Quotient.mk _ (mulPowX i p)
 
 lemma mulPowX_descends (i : ℕ) (p₁ p₂ : UniPoly R) :
-  equiv p₁ p₂ → mulPowX_descending i p₁ = mulPowX_descending i p₂ := by
+    equiv p₁ p₂ → mulPowX_descending i p₁ = mulPowX_descending i p₂ := by
   unfold equiv
   intro heq
   unfold mulPowX_descending
@@ -1076,7 +1076,7 @@ def mul_descending (p q : UniPoly R) : QuotientUniPoly R :=
   Quotient.mk _ (mul p.trim q.trim)
 
 lemma mul_descends [LawfulBEq R] (a₁ b₁ a₂ b₂ : UniPoly R) :
-  equiv a₁ a₂ → equiv b₁ b₂ → mul_descending a₁ b₁ = mul_descending a₂ b₂ := by
+    equiv a₁ a₂ → equiv b₁ b₂ → mul_descending a₁ b₁ = mul_descending a₂ b₂ := by
   unfold mul_descending
   intros heq_a heq_b
   rw [Trim.eq_of_equiv heq_a, Trim.eq_of_equiv heq_b]
@@ -1090,7 +1090,7 @@ def pow_descending (p : UniPoly R) (n : ℕ) : QuotientUniPoly R :=
   Quotient.mk _ (pow p.trim n)
 
 lemma pow_descends [LawfulBEq R] (n : ℕ) (p₁ p₂ : UniPoly R) :
-  equiv p₁ p₂ → pow_descending p₁ n = pow_descending p₂ n := by
+    equiv p₁ p₂ → pow_descending p₁ n = pow_descending p₂ n := by
   intro heq
   unfold pow_descending
   rw [Trim.eq_of_equiv heq]

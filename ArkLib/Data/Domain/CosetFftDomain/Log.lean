@@ -46,7 +46,7 @@ def log (ω : D) (x : ω) : Fin (2 ^ n) := logAux ω x (2 ^ n)
 
 @[simp]
 lemma log_right_inverse' {ω : D} {x : ω} :
-  ω (log ω x) = x := by
+    ω (log ω x) = x := by
   have h_log : ∃ i : Fin (2 ^ n), ω i = x := by
     exact Finset.mem_image.mp x.2 |> fun ⟨i, _, hi⟩ ↦ ⟨i, hi⟩
   obtain ⟨i, hi⟩ := h_log
@@ -62,10 +62,10 @@ lemma log_right_inverse' {ω : D} {x : ω} :
   exact h_log_aux _ _ (Fin.is_lt i) hi
 
 lemma log_right_inverse {ω : D} :
-  Function.RightInverse (log ω) (fun x ↦ ⟨ω x, by simp⟩) := fun x ↦ by simp
+    Function.RightInverse (log ω) (fun x ↦ ⟨ω x, by simp⟩) := fun x ↦ by simp
 
 lemma log_left_inverse {ω : D} :
-  Function.LeftInverse (log ω) (fun x ↦ ⟨ω x, by simp⟩) :=
+    Function.LeftInverse (log ω) (fun x ↦ ⟨ω x, by simp⟩) :=
     fun x ↦ CosetFftDomainClass.injective (ω := ω) (by simp)
 
 end CosetFftDomainClass

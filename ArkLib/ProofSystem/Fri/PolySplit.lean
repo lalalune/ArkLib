@@ -104,7 +104,7 @@ example {n : ℕ} (f : 𝔽[X]) [inst : NeZero n] :
         intros h'
         split_ifs with h''
         · exact notMem_support_iff.mp h'
-        . rfl
+        · rfl
     · have {α : Type} {a b : α} : ∀ m, (if e = n * m then a else b) = b := by aesop
       conv =>
         lhs

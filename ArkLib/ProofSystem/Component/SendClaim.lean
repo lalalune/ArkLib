@@ -90,7 +90,7 @@ The input has no statement or witness, but one `OStatement`.
 The output is also no statement or witness, but two `OStatement`s.
 -/
 def oracleReduction : OracleReduction oSpec
-      Statement OStatement Unit
+    Statement OStatement Unit
       Unit (OStatement ⊕ᵥ OStatement) Unit (pSpec OStatement) where
   prover := oracleProver oSpec Statement OStatement
   verifier := oracleVerifier oSpec Statement OStatement relComp

@@ -272,7 +272,7 @@ instance {i : ℕ} : IsCyclicWithGen (evalDomain D i) := by
 
 omit [Finite F] in
 lemma pow_2_pow_i_mem_Di_of_mem_D :
-  ∀ {x : Fˣ} (i : ℕ),
+    ∀ {x : Fˣ} (i : ℕ),
     x ∈ D → x ^ (2 ^ i) ∈ evalDomain D i := by
   intros x i h
   simp only [evalDomain]
@@ -290,7 +290,7 @@ lemma pow_2_pow_i_mem_Di_of_mem_D :
 
 omit [Finite F] in
 lemma sqr_mem_D_succ_i_of_mem_D_i : ∀ {x : Fˣ} {i : ℕ},
-  x ∈ evalDomain D i → x ^ 2 ∈ evalDomain D (i + 1) := by
+    x ∈ evalDomain D i → x ^ 2 ∈ evalDomain D (i + 1) := by
   intros x i h
   simp only [evalDomain] at h
   simp only [evalDomain]
@@ -497,7 +497,7 @@ omit [Finite F] in
 lemma D_def : evalDomain D x 0 = x • D := by simp [Domain.D_def D]
 
 lemma pow_2_pow_i_mem_Di_of_mem_D {F : Type} [NonBinaryField F] [Finite F] {D : Subgroup Fˣ}
-  [DIsCyclicC : IsCyclicWithGen ↥D] {x : Fˣ} :
+    [DIsCyclicC : IsCyclicWithGen ↥D] {x : Fˣ} :
   ∀ {a : Fˣ} (i : ℕ),
     a ∈ evalDomain D x 0 → a ^ (2 ^ i) ∈ evalDomain D x i := by
   unfold evalDomain
@@ -577,7 +577,7 @@ lemma neg_mem_dom_of_mem_dom : ∀ {a : Fˣ} (i : Fin n),
 
 omit [Finite F] in
 lemma mul_root_of_unity {x : Fˣ} :
-  ∀ {a b : Fˣ} {i j : ℕ},
+    ∀ {a b : Fˣ} {i j : ℕ},
     i ≤ j → a ∈ evalDomain D x i → b ∈ Domain.evalDomain D j →
       a * b ∈ evalDomain D x i := by
   intros a b i j i_le_j a_in b_in

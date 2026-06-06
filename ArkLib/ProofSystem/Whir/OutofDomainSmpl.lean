@@ -44,7 +44,7 @@ variable {F : Type} [Field F] [DecidableEq F]
   `X 0 * rename Fin.succ (eqPolynomial (r i))` (the original statement read the value variable
   at `Fin.last m` while the assignment provides it at `0`). -/
 lemma crs_equiv_rs_random_point_agreement
-  {f : ι → F} {m s : ℕ} {φ : ι ↪ F} [Smooth φ] :
+    {f : ι → F} {m s : ℕ} {φ : ι ↪ F} [Smooth φ] :
   ∀ (r : Fin s → Fin m → F) (δ : ℝ≥0) (_hδLe : δ ≤ 1),
     (∃ u u' : smoothCode φ m,
       u.val ≠ u'.val ∧

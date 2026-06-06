@@ -264,7 +264,7 @@ lemma mca_linearCode_udrFree
 -/
 
 def mca_rsc
-  (_α : F) (φ : ι ↪ F) (m : ℕ) [Smooth φ]
+    (_α : F) (φ : ι ↪ F) (m : ℕ) [Smooth φ]
   (parℓ_type : Type) [Fintype parℓ_type] (exp : parℓ_type ↪ ℕ) : Prop :=
   let Gen := RSGenerator.genRSC parℓ_type φ m exp
   haveI : Fintype Gen.parℓ := Gen.hℓ
@@ -292,7 +292,7 @@ def mca_rsc
   See `research/formal/arklib-proof-research-2026-06.md`.
 -/
 def mca_johnson_bound_CONJECTURE
-  (_α : F) (φ : ι ↪ F) (m : ℕ) [Smooth φ]
+    (_α : F) (φ : ι ↪ F) (m : ℕ) [Smooth φ]
   (parℓ_type : Type) [Fintype parℓ_type] (exp : parℓ_type ↪ ℕ) : Prop :=
   let Gen := RSGenerator.genRSC parℓ_type φ m exp
   haveI : Fintype Gen.parℓ := Gen.hℓ
@@ -336,7 +336,7 @@ faithful record of the (refuted) conjecture, usable in hypothetical reasoning.
 Blast radius: zero (no in-tree consumers; grep-verified). The provable replacement
 remains `mca_johnson_bound_CONJECTURE` above. -/
 def mca_capacity_bound_CONJECTURE
-  (α : F) (φ : ι ↪ F) (m : ℕ) [Smooth φ]
+    (α : F) (φ : ι ↪ F) (m : ℕ) [Smooth φ]
   (parℓ_type : Type) [Fintype parℓ_type] (exp : parℓ_type ↪ ℕ) : Prop :=
   let Gen := RSGenerator.genRSC parℓ_type φ m exp
   let _ : Fintype Gen.parℓ := Gen.hℓ
@@ -361,7 +361,7 @@ open ListDecodable
   `List(C, ∑ⱼ rⱼ * fⱼ, δ) ≠ `
   `{ ∑ⱼ rⱼ * uⱼ, where {u₀,..u_{parℓ-1}} ∈ Λᵢ({f₀,..,f_{parℓ-1}}, IC, δ) }` -/
 def proximityListDecodingCondition (C : LinearCode ι F)
-  [Fintype ι] [Nonempty ι]
+    [Fintype ι] [Nonempty ι]
   (r : parℓ → F) [Fintype parℓ]
   (δ : ℝ≥0) (fs : Matrix parℓ ι F) : Prop := -- fs is a WordStack
       let f_r := fun x => ∑ j, r j * fs j x

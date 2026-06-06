@@ -69,7 +69,7 @@ and other logic required by the protocol.
 
 /-- A dummy state returned by the verifier upon failure of Check 1. -/
 def failureState (stmt : BatchingStmtIn L ℓ) (s_hat : TensorAlgebra K L) :
-  Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ) 0 := {
+    Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ) 0 := {
     ctx := {
       t_eval_point := stmt.t_eval_point,
       original_claim := stmt.original_claim
@@ -95,12 +95,12 @@ def strictBatchingInputRelationProp (stmt : BatchingStmtIn L ℓ)
 /-- Input relation: the witness `t` and `t'` are consistent,
 and `t` satisfies the original claim. -/
 def batchingInputRelation :
-  Set ((BatchingStmtIn L ℓ × (∀ j, aOStmtIn.OStmtIn j)) × BatchingWitIn L K ℓ ℓ') :=
+    Set ((BatchingStmtIn L ℓ × (∀ j, aOStmtIn.OStmtIn j)) × BatchingWitIn L K ℓ ℓ') :=
   {⟨⟨stmt, oStmt⟩, wit⟩ | batchingInputRelationProp κ L K β ℓ ℓ' h_l aOStmtIn stmt oStmt wit }
 
 /-- Strict input relation for completeness proofs. -/
 def strictBatchingInputRelation :
-  Set ((BatchingStmtIn L ℓ × (∀ j, aOStmtIn.OStmtIn j)) × BatchingWitIn L K ℓ ℓ') :=
+    Set ((BatchingStmtIn L ℓ × (∀ j, aOStmtIn.OStmtIn j)) × BatchingWitIn L K ℓ ℓ') :=
   {⟨⟨stmt, oStmt⟩, wit⟩ |
     strictBatchingInputRelationProp κ L K β ℓ ℓ' h_l aOStmtIn stmt oStmt wit }
 
@@ -646,7 +646,7 @@ always succeeds (with probability 1) and produces valid outputs.
 - Apply the logic properties to complete the proof
 -/
 theorem batchingReduction_perfectCompleteness (hInit : init.neverFails) :
-  OracleReduction.perfectCompleteness
+    OracleReduction.perfectCompleteness
     (oracleReduction := batchingOracleReduction κ L K β ℓ ℓ' h_l (𝓑:=𝓑) (aOStmtIn:=aOStmtIn))
     (relIn := strictBatchingInputRelation κ L K β ℓ ℓ' h_l aOStmtIn)
     (relOut := strictSumcheckRoundRelation κ L K β ℓ ℓ' h_l (𝓑:=𝓑) aOStmtIn 0)
@@ -1217,7 +1217,7 @@ lemma batching_doom_escape_probability_bound
 
 /-- RBR knowledge soundness for the batching phase oracle verifier. -/
 theorem batchingOracleVerifier_rbrKnowledgeSoundness :
-  OracleVerifier.rbrKnowledgeSoundness
+    OracleVerifier.rbrKnowledgeSoundness
     (verifier := oracleVerifier κ L K β ℓ ℓ' h_l (𝓑:=𝓑) (aOStmtIn:=aOStmtIn))
     (init := init) (impl := impl)
     (relIn := batchingInputRelation κ L K β ℓ ℓ' h_l aOStmtIn)

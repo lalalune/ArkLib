@@ -51,7 +51,7 @@ variable [hdiv : Fact (ϑ ∣ ℓ)]
 section GenericLogic
 
 def hEq {ιₒᵢ ιₒₒ : Type} {OracleIn : ιₒᵢ → Type}
-  {OracleOut : ιₒₒ → Type} {n : ℕ} {pSpec : ProtocolSpec n}
+    {OracleOut : ιₒₒ → Type} {n : ℕ} {pSpec : ProtocolSpec n}
   (embed : ιₒₒ ↪ ιₒᵢ ⊕ pSpec.MessageIdx) :=
   ∀ i, OracleOut i =
     match embed i with
@@ -437,7 +437,7 @@ end FoldStep
 section CommitStep
 
 def commitStepLogic_embedFn (i : Fin ℓ) :
-  (Fin (toOutCodewordsCount ℓ ϑ i.succ)) → Fin (toOutCodewordsCount ℓ ϑ i.castSucc) ⊕ (pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i).MessageIdx :=
+    (Fin (toOutCodewordsCount ℓ ϑ i.succ)) → Fin (toOutCodewordsCount ℓ ϑ i.castSucc) ⊕ (pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i).MessageIdx :=
   fun j => by
   if hj : j.val < toOutCodewordsCount ℓ ϑ i.castSucc then
     exact Sum.inl ⟨j.val, hj⟩
@@ -461,7 +461,7 @@ def commitStepLogic_embed_inj (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i) :
 
 /- the CommitStep is a 1-message oracle reduction to place the conditional oracle message -/
 def commitStepLogic_embed (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i) :
-Fin (toOutCodewordsCount ℓ ϑ i.succ) ↪ Fin (toOutCodewordsCount ℓ ϑ i.castSucc) ⊕ (pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i).MessageIdx := ⟨
+    Fin (toOutCodewordsCount ℓ ϑ i.succ) ↪ Fin (toOutCodewordsCount ℓ ϑ i.castSucc) ⊕ (pSpecCommit 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i).MessageIdx := ⟨
   commitStepLogic_embedFn  𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ := ϑ) i
   , commitStepLogic_embed_inj 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ := ϑ) i hCR
   ⟩
@@ -474,7 +474,7 @@ Fin (toOutCodewordsCount ℓ ϑ i.succ) ↪ Fin (toOutCodewordsCount ℓ ϑ i.ca
 --     | Sum.inr j => (pSpecCommit 𝔽q β i).Message j
 
 def commitStepHEq (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i) :
-  hEq (OracleIn := OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc)
+    hEq (OracleIn := OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc)
     (OracleOut := OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.succ)
     (ιₒᵢ := Fin (toOutCodewordsCount ℓ ϑ i.castSucc)) (ιₒₒ := Fin (toOutCodewordsCount ℓ ϑ i.succ))
     (pSpec := pSpecCommit 𝔽q β i) (embed := commitStepLogic_embed 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ := ϑ) i hCR)

@@ -39,7 +39,7 @@ noncomputable def toList (ω : D) : List (toFinset ω) :=
 
 set_option linter.unusedSimpArgs false in -- false alert
 lemma toList_eq_finset_toList {ω : D} :
-  (toList ω).map (fun x ↦ x.1) = (toFinset ω).toList := by simp [toList, mem_def]
+    (toList ω).map (fun x ↦ x.1) = (toFinset ω).toList := by simp [toList, mem_def]
 
 end CosetFftDomainClass
 

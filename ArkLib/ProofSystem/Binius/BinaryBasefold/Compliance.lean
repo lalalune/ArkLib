@@ -45,7 +45,7 @@ the oracle `f_i` is compliant if it's close to the code fiber-wise, the next ora
 with folding.
 -/
 def isCompliant (i : Fin r) {destIdx : Fin r} (steps : ℕ)
-  (h_destIdx : destIdx = i + steps) (h_destIdx_le : destIdx ≤ ℓ) [NeZero steps]
+    (h_destIdx : destIdx = i + steps) (h_destIdx_le : destIdx ≤ ℓ) [NeZero steps]
   (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
   (f_i_plus_steps : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx)
   (challenges : Fin steps → L) : Prop :=
@@ -71,7 +71,7 @@ compliant. This follows directly from the contrapositive of
 `fiberwise_dist_lt_imp_dist_lt`.
 -/
 lemma farness_implies_non_compliance (i : Fin r) {destIdx : Fin r} (steps : ℕ)
-  (h_destIdx : destIdx = i + steps) (h_destIdx_le : destIdx ≤ ℓ) [NeZero steps]
+    (h_destIdx : destIdx = i + steps) (h_destIdx_le : destIdx ≤ ℓ) [NeZero steps]
   (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
   (f_i_plus_steps : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx)
   (challenges : Fin steps → L)
@@ -120,7 +120,7 @@ each tuple of folding challenges `(rᵢ', ..., r_{i+steps-1}') ∈ L^steps`, we 
   `fold(f̄⁽ⁱ⁾)`.
 -/
 lemma fold_error_containment_of_UDRClose (i : Fin r) {destIdx : Fin r} (steps : ℕ)
-  (h_destIdx : destIdx = i + steps) (h_destIdx_le : destIdx ≤ ℓ) [NeZero steps]
+    (h_destIdx : destIdx = i + steps) (h_destIdx_le : destIdx ≤ ℓ) [NeZero steps]
   (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
   (challenges : Fin steps → L)
   (h_UDRClose : UDRClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (h_i := by omega)
@@ -180,7 +180,7 @@ For `i ∈ {0, ..., ℓ - steps}`,
   `d(fold(f⁽ⁱ⁾, rᵢ', ..., rᵢ₊steps₋₁'), C⁽ⁱ⁺steps⁾) < dᵢ₊steps / 2`, i.e. foldedUDRClose
 -/
 def foldingBadEvent (i : Fin r) {destIdx : Fin r} (steps : ℕ)
-  (h_destIdx : destIdx = i + steps) (h_destIdx_le : destIdx ≤ ℓ) [NeZero steps]
+    (h_destIdx : destIdx = i + steps) (h_destIdx_le : destIdx ≤ ℓ) [NeZero steps]
   (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
   (r_challenges : Fin steps → L) : Prop :=
   let folded_f_i := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)

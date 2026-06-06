@@ -2392,4 +2392,4 @@ end CoreResults
 
 end ProximityGap
 
-set_option linter.style.longFile 2400
+set_option linter.style.longFile 2500

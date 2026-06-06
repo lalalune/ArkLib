@@ -56,7 +56,7 @@ with a left  pseudoinverse. Then the generator `G'` obtained from `G` by right m
 is an MCA generator with the same error `ε_mca` as `G`.
 Lemma 4.1 [BCGM25]. -/
 lemma pseudoinverseGen [DecidableEq ℓ'] [Nonempty S] (G : Generator S ℓ F) (ε_mca : I → I)
-  (LC : LinearCode ι F) (hGMCA : IsMCAGenerator G ε_mca LC)
+    (LC : LinearCode ι F) (hGMCA : IsMCAGenerator G ε_mca LC)
   (A : Matrix ℓ ℓ' F) (hA : HasLeftPseudoInverse A) :
     IsMCAGenerator (generatorByRightMul G A) ε_mca LC := by
   intro U γ
@@ -107,7 +107,7 @@ lemma isMCA_projectedGenerator_of_isMCA (LC : LinearCode ι F) [Nonempty S] (G :
 subset of `ℓ`. Then the projected generator over `κ` is an MCA generator with the same error as `G`.
 Corollary 4.2 [BCGM25]. -/
 lemma generatorSubset [Nonempty S] (G : Generator S ℓ F) (ε_mca : I → I) (LC : LinearCode ι F)
-(hGMCA : IsMCAGenerator G ε_mca LC) (κ : Set ℓ) [Fintype κ] :
+    (hGMCA : IsMCAGenerator G ε_mca LC) (κ : Set ℓ) [Fintype κ] :
   IsMCAGenerator (projectedGenerator G κ) ε_mca LC := by
   intro U γ
   exact le_trans (Pr_le_Pr_of_implies ($ᵖ S) _ _

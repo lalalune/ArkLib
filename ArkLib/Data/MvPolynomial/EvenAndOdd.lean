@@ -193,7 +193,7 @@ private lemma formula_generic
   simp [mul_sub, Finset.mul_sum]
 
 lemma even_and_odd_formula
-  (hchar : ¬CharP R 2)
+    (hchar : ¬CharP R 2)
   {p : R⦃≤ 1⦄[X (Fin n)]} :
   (even p).1 + (MvPolynomial.X 0) * (odd p).1 = p.1 := formula_generic
     (by aesop (add simp [CharP.charP_iff_prime_eq_zero, Nat.prime_two])) p.1 p.2
@@ -297,7 +297,7 @@ lemma aeval_shift_monomial_mem {n : ℕ} [NeZero n]
   · rw [aeval_shift_monomial_zero_case m c hm h0]; exact zero_mem _
 
 lemma aeval_shift_mem_restrictDegree
-  (q : MvPolynomial (Fin n) R) (hq : q ∈ restrictDegree (Fin n) R 1) :
+    (q : MvPolynomial (Fin n) R) (hq : q ∈ restrictDegree (Fin n) R 1) :
   q.aeval (fun i ↦ if h : i = (0 : Fin n) then (0 : MvPolynomial (Fin (n - 1)) R)
     else X ⟨i.val - 1, by omega⟩) ∈ restrictDegree (Fin (n - 1)) R 1 := by
   rw [MvPolynomial.as_sum q, map_sum]
@@ -317,7 +317,7 @@ noncomputable def odd_pred (p : R⦃≤ 1⦄[X (Fin n)]) : R⦃≤ 1⦄[X (Fin (
       by exact aeval_shift_mem_restrictDegree (odd p).1 (odd p).2⟩
 
 lemma even_and_odd_formula'
-  (hchar : ¬CharP R 2)
+    (hchar : ¬CharP R 2)
   {p : R⦃≤ 1⦄[X (Fin n)]} :
   (even_pred p).1.aeval
     (fun i ↦ X (⟨i.val + 1, by omega⟩ : Fin n)) +
@@ -330,7 +330,7 @@ lemma even_and_odd_formula'
   exact even_and_odd_formula hchar
 
 lemma even_and_odd_eval
-  (hchar : ¬CharP R 2)
+    (hchar : ¬CharP R 2)
   {p : R⦃≤ 1⦄[X (Fin n)]}
   {α : R} :
   p.1.aeval
@@ -347,7 +347,7 @@ noncomputable def shiftedPowAlgHom :
 omit [NeZero n] in
 open LinearMvExtension in
 lemma shiftedPowAlgHom_eq_powAlgHom_comp_sq_x
-  {p : MvPolynomial (Fin (n - 1)) R} :
+    {p : MvPolynomial (Fin (n - 1)) R} :
   shiftedPowAlgHom p = (powAlgHom p).comp (Polynomial.X ^ 2) := by
   induction p using MvPolynomial.induction_on
     <;> aesop
@@ -365,7 +365,7 @@ private lemma powAlgHom_aeval_shift (q : MvPolynomial (Fin (n - 1)) R) :
 
 open LinearMvExtension in
 lemma powAlgHom_eq_even_add_odd
-  (hchar : ¬CharP R 2)
+    (hchar : ¬CharP R 2)
   {p : R⦃≤ 1⦄[X (Fin n)]} :
   powAlgHom p.1 =
     shiftedPowAlgHom (even_pred p).1 +
@@ -378,7 +378,7 @@ lemma powAlgHom_eq_even_add_odd
 
 open LinearMvExtension in
 lemma powAlgHom_eq_even_add_odd_powAlgHom
-  (hchar : ¬CharP R 2)
+    (hchar : ¬CharP R 2)
   {p : R⦃≤ 1⦄[X (Fin n)]} :
   powAlgHom p.1 =
     (powAlgHom (even_pred p).1).comp (Polynomial.X ^ 2) +

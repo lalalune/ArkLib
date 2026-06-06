@@ -58,14 +58,14 @@ def indexPowT (S : Finset ι) (φ : ι ↪ F) (k : ℕ) := { y : F // ∃ x ∈ 
   Example i = 1 : powFiberT 1 k S' φ' y = { x^2 ∈ S' | (x^2)^(2^(k-1)) = y }.
 -/
 def powFiberT (i : ℕ) {k : ℕ} {S : Finset ι} {φ : ι ↪ F} (S' : Finset (indexPowT S φ i))
-  (φ' : (indexPowT S φ i) ↪ F) (y : indexPowT S φ k) :=
+    (φ' : (indexPowT S φ i) ↪ F) (y : indexPowT S φ k) :=
   { x : (indexPowT S φ i) // x ∈ S' ∧ (φ' x) ^ (2^(k-i)) = y.val }
 
 /-- Definition 4.16
   For `ι` be a smooth evaluation domain, `k` be a folding parameter, `z ∈ (ι^(2ᵏ))`,
   Block is the set of elements `{ y ∈ S', y ^ 2^(k-i) = z }`, for `S' : Finset ι^(2ⁱ)`. -/
 def block (i : ℕ) {k : ℕ} {S : Finset ι} {φ : ι ↪ F}
-  (S' : Finset (indexPowT S φ i))
+    (S' : Finset (indexPowT S φ i))
   (φ' : (indexPowT S φ i) ↪ F) (z : indexPowT S φ k)
   [DecidableEq F] [DecidableEq ι] [Smooth φ] :=
     powFiberT i S' φ' z
@@ -137,7 +137,7 @@ disagreement.
 the power domain sits inside `F` directly); for an arbitrary embedding the blocks are unrelated
 to the points and the claim fails. -/
 lemma blockRelDistance_eq_relHammingDist_of_k_eq_i -- Renamed for clarity
-  (i : ℕ) {S : Finset ι} {φ : ι ↪ F}
+    (i : ℕ) {S : Finset ι} {φ : ι ↪ F}
   [DecidableEq F] [DecidableEq ι] [Smooth φ]
   -- The Fintype instance is now declared before it is needed by `hS'`.
   [h_fintype : ∀ i : ℕ, Fintype (indexPowT S φ i)]
@@ -238,7 +238,7 @@ omit [Pow ι ℕ] in
   by `card_i = 2^(k-i) * card_k` gives `δᵣ(f,g) ≤ Δᵣ`.
 -/
 lemma relHammingDist_le_blockRelDistance
-  (i k : ℕ) {S : Finset ι} {φ : ι ↪ F} {φ' : (indexPowT S φ i) ↪ F}
+    (i k : ℕ) {S : Finset ι} {φ : ι ↪ F} {φ' : (indexPowT S φ i) ↪ F}
   [DecidableEq F] [DecidableEq ι] [Smooth φ]
   (f g : (indexPowT S φ i) → F) (S' : Finset (indexPowT S φ i))
   [h_fintype : ∀ i : ℕ, Fintype (indexPowT S φ i)]
@@ -338,7 +338,7 @@ omit [Pow ι ℕ] in
   same paper-faithful hypotheses (`hS'`, `hφ'`, `hik`, `hcard`); see that lemma's docstring for the
   full justification. Both are otherwise-unused leaf lemmas in this file. -/
 lemma listBlock_subset_listHamming
-  (i k : ℕ) {S : Finset ι} {φ : ι ↪ F} {φ' : (indexPowT S φ i) ↪ F}
+    (i k : ℕ) {S : Finset ι} {φ : ι ↪ F} {φ' : (indexPowT S φ i) ↪ F}
   {m : ℕ} [DecidableEq F] [DecidableEq ι] [Smooth φ]
   (f : (indexPowT S φ i) → F) (S' : Finset (indexPowT S φ i))
   [h_fintype : ∀ i : ℕ, Fintype (indexPowT S φ i)] [DecidableEq (indexPowT S φ i)] [Smooth φ']

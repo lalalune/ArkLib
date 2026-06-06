@@ -1185,7 +1185,7 @@ To show `Pr[⊥ | forIn l init f] = 0`, it suffices to show that each step
 `Pr[⊥ | f x s] = 0` is safe for all elements and all states.
 -/
 lemma probFailure_forIn_eq_zero_of_body_safe
-  {m : Type _ → Type _} [Monad m] [HasEvalSPMF m]
+    {m : Type _ → Type _} [Monad m] [HasEvalSPMF m]
     (l : List α) (init : σ) (f : α → σ → m (ForInStep σ))
     (h : ∀ x ∈ l, ∀ s, Pr[⊥ | f x s] = 0) :
     Pr[⊥ | forIn l init f] = 0 := by

@@ -631,7 +631,7 @@ variable [DecidableEq R] [SampleableType R]
 
 /-- The verifier for the simple description of a single round of sum-check -/
 def verifier : Verifier oSpec (StmtIn R × (∀ i, OStmtIn R deg i))
-                              (StmtOut R × (∀ i, OStmtOut R deg i)) (pSpec R deg) where
+    (StmtOut R × (∀ i, OStmtOut R deg i)) (pSpec R deg) where
   verify := fun ⟨target, oStmt⟩ transcript => do
     letI polyLE := transcript 0
     guard (∑ x ∈ (univ.map D), polyLE.val.eval x = target)
@@ -640,7 +640,7 @@ def verifier : Verifier oSpec (StmtIn R × (∀ i, OStmtIn R deg i))
 
 /-- The reduction for the simple description of a single round of sum-check -/
 def reduction : Reduction oSpec (StmtIn R × (∀ i, OStmtIn R deg i)) Unit
-                                (StmtOut R × (∀ i, OStmtOut R deg i)) Unit (pSpec R deg) where
+    (StmtOut R × (∀ i, OStmtOut R deg i)) Unit (pSpec R deg) where
   prover := prover R deg oSpec
   verifier := verifier R deg D oSpec
 
@@ -719,7 +719,7 @@ def oracleVerifier : OracleVerifier oSpec (StmtIn R) (OStmtIn R deg) (StmtOut R)
   hEq := fun i => by simp [pSpec]; rfl
 
 def oracleReduction : OracleReduction oSpec (StmtIn R) (OStmtIn R deg) Unit
-                                            (StmtOut R) (OStmtOut R deg) Unit (pSpec R deg) where
+    (StmtOut R) (OStmtOut R deg) Unit (pSpec R deg) where
   prover := prover R deg oSpec
   verifier := oracleVerifier R deg D oSpec
 

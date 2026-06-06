@@ -196,7 +196,7 @@ lemma relHammingDist_cast_ennreal {ι' : Type*} [Fintype ι'] [Nonempty ι'] {G 
     determined by their evaluations on the domain) requires the degree budget to fit; STIR
     always operates at rate `< 1`. -/
 lemma quotienting {degree : ℕ} {domain : ι ↪ F} [Nonempty ι]
-  (hdom : ∀ x, domain x = x.val) (hdeg_le : degree ≤ ι.card)
+    (hdom : ∀ x, domain x = x.val) (hdeg_le : degree ≤ ι.card)
   (S : Finset F) (hS_lt : S.card < degree) (_r : F)
   (f : ι → F) (Ans Fill : S → F) (δ : ℝ≥0) (_hδPos : δ > 0) (_hδLt : δ < 1)
   (h : ∀ u : code domain degree, u.val ∈ (closeCodewordsRel ↑(code domain degree) f δ) →

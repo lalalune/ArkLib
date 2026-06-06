@@ -72,7 +72,7 @@ def batchingCoreReduction :=
 /-- The reduction for the full Binary Basefold protocol -/
 @[reducible]
 def fullOracleReduction :
-  OracleReduction (oSpec:=[]ₒ)
+    OracleReduction (oSpec:=[]ₒ)
     (StmtIn := BatchingStmtIn (L:=L) (ℓ := ℓ)) (StmtOut := Bool)
     (OStmtIn:= mlIOPCS.OStmtIn)
     (OStmtOut := fun _ : Empty => Unit)
@@ -84,7 +84,7 @@ def fullOracleReduction :
 /-- The full Binary Basefold protocol as a Proof -/
 @[reducible]
 def fullOracleProof :
-  OracleProof []ₒ
+    OracleProof []ₒ
     (Statement := BatchingStmtIn (L:=L) (ℓ := ℓ))
     (OStatement := mlIOPCS.OStmtIn)
     (Witness := BatchingWitIn (L:=L) (K:=K) (ℓ := ℓ) (ℓ' := ℓ'))
@@ -195,7 +195,7 @@ def batchingCoreRbrKnowledgeError
     (ChallengeIdx.sumEquiv.symm i)
 
 def fullRbrKnowledgeError (i : (fullPspec κ L K ℓ' mlIOPCS).ChallengeIdx) : ℝ≥0
-  := Sum.elim (f:=batchingCoreRbrKnowledgeError κ L K ℓ')
+    := Sum.elim (f:=batchingCoreRbrKnowledgeError κ L K ℓ')
   (g:=mlIOPCS.rbrKnowledgeError)
   (ChallengeIdx.sumEquiv.symm i)
 

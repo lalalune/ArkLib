@@ -358,7 +358,7 @@ noncomputable def commitRbrExtractor (i : Fin ℓ) :
 /-! Note : stmtIn and witMid already advances to state `(i+1)` from the fold step,
 while oStmtIn is not. -/
 def commitKStateProp (i : Fin ℓ) (m : Fin (1 + 1))
-  (stmtIn : Statement (L := L) Context i.succ)
+    (stmtIn : Statement (L := L) Context i.succ)
   (witMid : Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ)
   (oStmtIn : (i_1 : Fin (toOutCodewordsCount ℓ ϑ i.castSucc)) →
     OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc i_1)

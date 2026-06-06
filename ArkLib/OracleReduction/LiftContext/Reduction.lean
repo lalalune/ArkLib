@@ -1908,13 +1908,13 @@ def testStmtLens :
 
 @[simp]
 def testLens : Context.Lens OuterStmtIn_Test OuterStmtOut_Test InnerStmtIn_Test InnerStmtOut_Test
-                Unit Unit Unit Unit where
+    Unit Unit Unit Unit where
   stmt := testStmtLens
   wit := Witness.Lens.id
 
 @[simp]
 def testLensE : Extractor.Lens OuterStmtIn_Test OuterStmtOut_Test InnerStmtIn_Test InnerStmtOut_Test
-                Unit Unit Unit Unit where
+    Unit Unit Unit Unit where
   stmt := testStmtLens
   wit := Witness.InvLens.id
 
@@ -1929,7 +1929,7 @@ instance instTestLensComplete : testLens.IsComplete
     simp [← hRelOut', ← hCompat]
 
 def instTestLensKnowledgeSound : testLensE.IsKnowledgeSound
-      outerRelIn_Test innerRelIn_Test outerRelOut_Test innerRelOut_Test
+    outerRelIn_Test innerRelIn_Test outerRelOut_Test innerRelOut_Test
       (fun ⟨p, q, _⟩ ⟨f, _⟩ => p * q = f) (fun _ _ => True) where
   proj_knowledgeSound := fun ⟨p, q, t⟩ ⟨f, t', r⟩ _ h h' => by
     simp_all only [outerRelOut_Test, eval_mul, Statement.Lens.lift,

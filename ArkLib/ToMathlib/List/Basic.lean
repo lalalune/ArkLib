@@ -15,4 +15,4 @@ Small `List` utility lemmas extending Mathlib's API.
 
 @[simp, grind =]
 theorem List.take_one_eq_head.{u} {α : Type u} {l : List α} (h : l ≠ []) :
-  l.take 1 = [l.head h] := by grind [cases List]
+    l.take 1 = [l.head h] := by grind [cases List]

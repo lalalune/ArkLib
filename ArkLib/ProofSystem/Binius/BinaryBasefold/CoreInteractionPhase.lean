@@ -213,7 +213,7 @@ section FoldCommitRound -- foldRound + commit
 
 @[reducible]
 def foldCommitOracleVerifier (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i) :
-  OracleVerifier []ₒ
+    OracleVerifier []ₒ
     (StmtIn := Statement (L := L) Context i.castSucc)
     (OStmtIn := OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc)
     (StmtOut := Statement (L := L) Context i.succ)
@@ -409,7 +409,7 @@ def nonLastSingleBlockOracleVerifier (bIdx : Fin (ℓ / ϑ - 1)) :=
   nonLastSingleBlockOracleVerifier
 
 def nonLastBlocksOracleVerifier :
-  OracleVerifier []ₒ
+    OracleVerifier []ₒ
     (StmtIn := Statement (L := L) (ℓ := ℓ) Context ⟨0 * ϑ, by omega⟩)
     (OStmtIn := OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ ⟨0 * ϑ, by omega⟩)
     (StmtOut := Statement (L := L) (ℓ := ℓ) Context ⟨(ℓ / ϑ - 1) * ϑ, by
@@ -659,7 +659,7 @@ def nonLastSingleBlockOracleReduction (bIdx : Fin (ℓ / ϑ - 1)) :=
   nonLastSingleBlockOracleReduction
 
 def nonLastBlocksOracleReduction :
-  OracleReduction []ₒ
+    OracleReduction []ₒ
     (StmtIn := Statement (L := L) (ℓ := ℓ) Context ⟨0 * ϑ, by omega⟩)
     (OStmtIn := OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ ⟨0 * ϑ, by omega⟩)
     (WitIn := Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ:=ℓ) ⟨0 * ϑ, by omega⟩)
@@ -1197,7 +1197,7 @@ lemma x_lt_two_pow (x : ℕ) : x < 2 ^ x := by
       _ = 2 ^ (x + 1) := by ring
 
 lemma sum_powers (x B : ℕ) (hB : 1 ≤ B) :
-  x * ∑ y ∈ Finset.range B, 2 ^ (y * x) ≤ 2 ^ (B * x) - 2 ^ x + x := by
+    x * ∑ y ∈ Finset.range B, 2 ^ (y * x) ≤ 2 ^ (B * x) - 2 ^ x + x := by
   induction B with
   | zero => omega
   | succ B IH =>

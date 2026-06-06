@@ -246,7 +246,7 @@ def getRoundProverFinalOutput (i : Fin ℓ)
 the round polynomial `H_i`. `receiveChallenge 1` stores the verifier's challenge `r'_i`.
 `output` advances the witness via `getRoundProverFinalOutput`. -/
 def roundOracleProver (i : Fin ℓ) :
-  OracleProver (oSpec := []ₒ)
+    OracleProver (oSpec := []ₒ)
     (StmtIn := Statement (L := L) (ℓ := ℓ) Context i.castSucc)
     (OStmtIn := OStmtIn)
     (WitIn := SumcheckWitness L ℓ i.castSucc d)
@@ -284,7 +284,7 @@ Receives the degree-`d` univariate `h_i(X)` from the prover, checks
 domain, to match how the prover builds it; for the boolean hypercube this is `h_i(0) + h_i(1)`),
 samples `r'_i ∈ L`, and outputs the updated statement with `s_{i+1} := h_i(r'_i)`. -/
 def roundOracleVerifier (i : Fin ℓ) :
-  OracleVerifier
+    OracleVerifier
     (oSpec := []ₒ)
     (StmtIn := Statement (L := L) (ℓ := ℓ) Context i.castSucc)
     (OStmtIn := OStmtIn)
@@ -321,7 +321,7 @@ def roundOracleVerifier (i : Fin ℓ) :
 
 /-- The oracle reduction bundling the per-round prover and verifier. -/
 def roundOracleReduction (i : Fin ℓ) :
-  OracleReduction (oSpec := []ₒ)
+    OracleReduction (oSpec := []ₒ)
     (StmtIn := Statement (L := L) (ℓ := ℓ) Context i.castSucc)
     (OStmtIn := OStmtIn)
     (WitIn := SumcheckWitness L ℓ i.castSucc d)

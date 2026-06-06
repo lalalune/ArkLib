@@ -37,7 +37,7 @@ section SecurityRelations
 -- `destIdx` `iterated_fold` signature that does not exist in the current module split, so it
 -- did not type-check; this restores the in-tree signature.)
 lemma getMidCodewords_succ (t : L⦃≤ 1⦄[X Fin ℓ]) (i : Fin ℓ)
-  (challenges : Fin i.castSucc → L) (r_i' : L) :
+    (challenges : Fin i.castSucc → L) (r_i' : L) :
   (getMidCodewords 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
     (i := i.succ) (t := t) (challenges := Fin.snoc challenges r_i')) =
   (iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
@@ -561,7 +561,7 @@ end CommitStepPreservationLemmas
 end SingleStepRelationPreservationLemmas
 -- (moved to Basic.lean) declarations canonicalized in Basic: removed duplicates here.
 def finalSumcheckStepOracleConsistencyProp {h_le : ϑ ≤ ℓ}
-  (stmtOut : FinalSumcheckStatementOut (L := L) (ℓ := ℓ))
+    (stmtOut : FinalSumcheckStatementOut (L := L) (ℓ := ℓ))
   (oStmtOut : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ
     (Fin.last ℓ) j) : Prop :=
   let j := getLastOraclePositionIndex (ℓ := ℓ) (ϑ := ϑ) (Fin.last ℓ)

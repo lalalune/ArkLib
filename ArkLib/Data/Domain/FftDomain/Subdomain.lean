@@ -45,22 +45,22 @@ def subdomain (ω : D) (i : ℕ) : SmoothFftDomain (n - i) F :=
   (CosetFftDomainClass.subdomain ω i).toFftDomain
 
 lemma mem_fft_subdomain_iff_mem_coset_subdomain {i : ℕ} :
-  x ∈ subdomain ω i ↔ x ∈ CosetFftDomainClass.subdomain ω i := by
+    x ∈ subdomain ω i ↔ x ∈ CosetFftDomainClass.subdomain ω i := by
   simp [subdomain, mem_toFftDomain_iff_mul_mem, CosetFftDomain.map_0_eq_coset_generator]
 
 lemma mem_subdomain_of_mem_subdomain_of_le {i j : ℕ} (h : x ∈ subdomain ω i) (hji : j ≤ i) :
-  x ∈ subdomain ω j := by
+    x ∈ subdomain ω j := by
     aesop
       (add simp [mem_fft_subdomain_iff_mem_coset_subdomain])
       (add unsafe forward [mem_subdomain_of_le_of_mem_subdomain])
 
 lemma subdomain_toFinset_subset_subdomain_toFinset_of_le [DecidableEq F]
-  {i j : ℕ} (hji : j ≤ i) :
+    {i j : ℕ} (hji : j ≤ i) :
   (subdomain ω i).toFinset ⊆ (subdomain ω j).toFinset := fun x hx ↦ by
   aesop (add unsafe [mem_subdomain_of_mem_subdomain_of_le])
 
 lemma subdomain_toSubgroup_subset_subdomain_toSubgroup_of_le [DecidableEq F]
-  {i j : ℕ} (hji : j ≤ i) :
+    {i j : ℕ} (hji : j ≤ i) :
   (subdomain ω i).toSubgroup ≤ (subdomain ω j).toSubgroup := fun x hx ↦ by
   aesop (add unsafe [mem_subdomain_of_mem_subdomain_of_le])
 
@@ -73,7 +73,7 @@ variable {D : Type} [FunLike D (Fin (2 ^ n)) F] [CosetFftDomainClass D (Fin (2 ^
 variable {ω : D}
 
 lemma subdomain_toFftDomain_comm {i : ℕ} :
-  (subdomain ω i).toFftDomain = FftDomainClass.subdomain (toFftDomain ω) i := by
+    (subdomain ω i).toFftDomain = FftDomainClass.subdomain (toFftDomain ω) i := by
   ext u
   rw [eval_toFftDomain]
   conv_rhs =>
@@ -107,7 +107,7 @@ lemma subdomain_toFftDomain_comm {i : ℕ} :
     simp
 
 lemma mem_subdomain_of_mem_subdomain_of_mem_fft_subdomain
-   {i j : ℕ} (hji : j ≤ i)
+    {i j : ℕ} (hji : j ≤ i)
   {a b : F}
   (ha : a ∈ subdomain ω j)
   (hb : b ∈ FftDomainClass.subdomain (toFftDomain ω) i) :
@@ -118,7 +118,7 @@ lemma mem_subdomain_of_mem_subdomain_of_mem_fft_subdomain
                   mul_mem_of_mem_of_mem_toFftDomain])
 
 lemma mem_subdomain_of_mem_fft_subdomain_of_mem_subdomain
-  {i j : ℕ} (hji : j ≤ i)
+    {i j : ℕ} (hji : j ≤ i)
   {a b : F}
   (ha : a ∈ FftDomainClass.subdomain (toFftDomain ω) i)
   (hb : b ∈ subdomain ω j) :

@@ -84,7 +84,7 @@ where
 
 /-- if findIdxRev? finds an index, the condition is satisfied on that element -/
 def findIdxRev?_def {cond} {as : Array α} {k : Fin as.size} :
-  findIdxRev? cond as = some k → cond as[k] := by
+    findIdxRev? cond as = some k → cond as[k] := by
   suffices aux : ∀ i, findIdxRev?.find cond as i = some k → cond as[k] by apply aux
   intro i
   unfold findIdxRev?.find
@@ -95,7 +95,7 @@ def findIdxRev?_def {cond} {as : Array α} {k : Fin as.size} :
 
 /-- if findIdxRev? finds an index, then for every greater index the condition doesn't hold -/
 def findIdxRev?_maximal {cond} {as : Array α} {k : Fin as.size} :
-  findIdxRev? cond as = some k → ∀ j : Fin as.size, j > k → ¬ cond as[j] := by
+    findIdxRev? cond as = some k → ∀ j : Fin as.size, j > k → ¬ cond as[j] := by
   suffices aux : ∀ i, findIdxRev?.find cond as i = some k →
     ∀ j : Fin as.size, j > k → j.val < i → ¬ cond as[j] by
     intro h j j_gt_k
@@ -120,7 +120,7 @@ def findIdxRev?_maximal {cond} {as : Array α} {k : Fin as.size} :
 
 /-- if the condition is false on all elements, then findIdxRev? finds nothing -/
 theorem findIdxRev?_eq_none {cond} {as : Array α} (h : ∀ i, (hi : i < as.size) → ¬ cond as[i]) :
-  findIdxRev? cond as = none
+    findIdxRev? cond as = none
 := by
   apply aux
 where
@@ -138,7 +138,7 @@ where
       apply aux
 
 theorem findIdxRev?_emtpy_none {cond} {as : Array α} (h : as = #[]) :
-  findIdxRev? cond as = none
+    findIdxRev? cond as = none
 := by
   rw [h]
   apply findIdxRev?_eq_none
@@ -146,7 +146,7 @@ theorem findIdxRev?_emtpy_none {cond} {as : Array α} (h : as = #[]) :
 
 /-- if the condition is true on some element, then findIdxRev? finds something -/
 theorem findIdxRev?_eq_some {cond} {as : Array α} (h : ∃ i, ∃ hi : i < as.size, cond as[i]) :
-  ∃ k : Fin as.size, findIdxRev? cond as = some k
+    ∃ k : Fin as.size, findIdxRev? cond as = some k
 := by
   obtain ⟨ i, hi, hcond ⟩ := h
   apply aux ⟨ as.size, Nat.lt_succ_self _ ⟩ ⟨ .mk i hi, hi, hcond ⟩

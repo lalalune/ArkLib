@@ -89,7 +89,7 @@ open Module
 This views `L ⊗ L` as a module over `L` (left action)
 and finds the coordinates of `ŝ` with respect to the basis lifted from `β`. -/
 def decompose_tensor_algebra_rows {σ : Type*} (β : Basis σ K L)
-  (s_hat : TensorAlgebra K L) : σ → L :=
+    (s_hat : TensorAlgebra K L) : σ → L :=
   fun u =>
     (β.baseChange L).repr s_hat u
 
@@ -257,7 +257,7 @@ structure AbstractOStmtIn where
   initialCompatibility : (MultilinearPoly L ℓ') × (∀ j, OStmtIn j) → Prop
 
 def AbstractOStmtIn.toRelInput (aOStmtIn : AbstractOStmtIn L ℓ') :
-  Set (((MLPEvalStatement L ℓ') × (∀ j, aOStmtIn.OStmtIn j)) × (WitMLP L ℓ')) :=
+    Set (((MLPEvalStatement L ℓ') × (∀ j, aOStmtIn.OStmtIn j)) × (WitMLP L ℓ')) :=
   {input |
     MLPEvalRelation L ℓ' aOStmtIn.ιₛᵢ aOStmtIn.OStmtIn input
     ∧ aOStmtIn.initialCompatibility ⟨input.2.t, input.1.2⟩}
@@ -326,7 +326,7 @@ variable (h_l : ℓ = ℓ' + κ)
 
 /-- Compute the tensor value ŝ := φ₁(t')(φ₀(r_κ), ..., φ₀(r_{ℓ-1})) -/
 def embedded_MLP_eval (t' : MultilinearPoly L ℓ') (r : Fin ℓ → L) :
-  P.A :=
+    P.A :=
   -- This implements the identity:
   -- ŝ = Σ_{w ∈ {0,1}^ℓ'} eq̃(r_suffix, w) ⊗ t'(w)
   let r_suffix : Fin ℓ' → L :=
@@ -375,7 +375,7 @@ def compute_A_func (original_r_eval_suffix : Fin ℓ' → L)
 
 /-- Step 4b: P writes `A(X_0, ..., X_{ℓ'-1})` for its multilinear extension of `A_func`. -/
 def compute_A_MLE
-  (original_r_eval_suffix : Fin ℓ' → L) (r''_batching : Fin κ → L) :
+    (original_r_eval_suffix : Fin ℓ' → L) (r''_batching : Fin κ → L) :
   MultilinearPoly L ℓ' :=
   let A_func := compute_A_func κ L K P ℓ' original_r_eval_suffix r''_batching
   let A_MLE: MultilinearPoly L ℓ' := ⟨MvPolynomial.MLE A_func, MLE_mem_restrictDegree A_func⟩
@@ -386,7 +386,7 @@ def getEvaluationPointSuffix (r : Fin ℓ → L) : Fin ℓ' → L :=
 
 /-- Ring-Switching multiplier parameter for sumcheck, using `A_MLE` as the multiplier. -/
 def RingSwitching_SumcheckMultParam :
-  SumcheckMultiplierParam L ℓ' (RingSwitchingBaseContext κ L K ℓ P) :=
+    SumcheckMultiplierParam L ℓ' (RingSwitchingBaseContext κ L K ℓ P) :=
 { multpoly := fun ctx => -- This is supposed to be (r_κ, …, r_{ℓ-1})
     compute_A_MLE κ L K P ℓ' (original_r_eval_suffix :=
       getEvaluationPointSuffix κ L ℓ ℓ' h_l (r := ctx.t_eval_point))
@@ -459,7 +459,7 @@ def sumcheckRoundRelationProp (aOStmtIn : AbstractOStmtIn L ℓ') (i : Fin (ℓ'
 
 /-- Input relation for single round: proper sumcheck statement -/
 def sumcheckRoundRelation (aOStmtIn : AbstractOStmtIn L ℓ') (i : Fin (ℓ' + 1)) :
-  Set (((Statement (L := L) (RingSwitchingBaseContext κ L K ℓ P) i) ×
+    Set (((Statement (L := L) (RingSwitchingBaseContext κ L K ℓ P) i) ×
     (∀ j, aOStmtIn.OStmtIn j)) × SumcheckWitness L ℓ' i) :=
   { ((stmt, oStmt), wit) | sumcheckRoundRelationProp κ L K P ℓ ℓ' h_l
     aOStmtIn i stmt oStmt wit }

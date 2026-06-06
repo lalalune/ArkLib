@@ -77,7 +77,7 @@ def inputRelation [DecidableEq F] (_δ : ℝ≥0) :
       batched polynomials
 -/
 def liftingLens :
-  OracleContext.Lens
+    OracleContext.Lens
     ((Fin m → F) × Fri.Spec.Statement F (0 : Fin (k + 1))) (Fri.Spec.FinalStatement F k)
     (Fri.Spec.Statement F (0 : Fin (k + 1))) (Fri.Spec.FinalStatement F k)
     (OracleStatement m ω) (Fri.Spec.FinalOracleStatement s ω)
@@ -211,7 +211,7 @@ def batchedFRIOracleLens [DecidableEq F] :
       exact hV
 
 def liftedFRI [DecidableEq F] :
-  OracleReduction []ₒ
+    OracleReduction []ₒ
     ((Fin m → F) × Fri.Spec.Statement F (0 : Fin (k + 1)))
       (OracleStatement m ω) (Fri.Spec.Witness F s d 0)
     (Fri.Spec.FinalStatement F k)
@@ -253,7 +253,7 @@ instance instBatchFRIreductionChallengeOI : ∀ j,
 /- Oracle reduction of the batched FRI protocol. -/
 @[reducible]
 def batchedFRIreduction [DecidableEq F]
- :=
+    :=
   OracleReduction.append
     (BatchingRound.batchOracleReduction s d m)
     (liftedFRI (ω := ω) k s d dom_size_cond l m)

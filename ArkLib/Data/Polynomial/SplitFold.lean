@@ -253,7 +253,7 @@ lemma splitNth_degree_le {n : ℕ} {f : 𝔽[X]} [inst : NeZero n] :
     when `q = X ^ n`. -/
 @[simp]
 lemma folding_polynomial_eq_sum_splitNth {𝔽 : Type} [Field 𝔽]
-  {f : Polynomial 𝔽} {n : ℕ}
+    {f : Polynomial 𝔽} {n : ℕ}
   [inst : NeZero n] :
   FoldingPolynomial.foldingPolynomial (X ^ n) f =
     ∑ i, C (splitNth f n i) * (X ^ i.val) := by
@@ -300,7 +300,7 @@ lemma folding_polynomial_eq_sum_splitNth {𝔽 : Type} [Field 𝔽]
 /-- `polyFold` in terms of `splitNth`. -/
 @[simp]
 lemma polyFold_eq_sum_of_splitNth {𝔽 : Type} [Field 𝔽]
-  {f : 𝔽[X]} {n : ℕ} {r : 𝔽}
+    {f : 𝔽[X]} {n : ℕ} {r : 𝔽}
   [inst : NeZero n] :
   FoldingPolynomial.polyFold f n r =
     ∑ i, C (r ^ i.val) * splitNth f n i := by

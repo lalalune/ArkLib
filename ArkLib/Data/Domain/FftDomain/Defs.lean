@@ -59,7 +59,7 @@ namespace FftDomain
 
 omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
 lemma eval_fft_domain_eq_eval_domain
-  {fftDomain : FftDomain ι F} {i : ι} :
+    {fftDomain : FftDomain ι F} {i : ι} :
   fftDomain i = fftDomain.subgroupDomain i := rfl
 
 end FftDomain
@@ -98,7 +98,7 @@ namespace FftDomain
 
 omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
 lemma eval_fft_domain_eq_eval_coset_fft_domain
-  {ω : FftDomain ι F} {i : ι} :
+    {ω : FftDomain ι F} {i : ι} :
   ω i = ω.toCosetFftDomain i := by
   simp [eval_fft_domain_eq_eval_domain,
       CosetFftDomain.eval_coset_fft_domain_eq_eval_generator_mul_domain,
@@ -110,11 +110,11 @@ namespace FftDomain
 
 omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
 lemma injective {ω : FftDomain ι F} :
-  Function.Injective ω := CosetFftDomainClass.injective _
+    Function.Injective ω := CosetFftDomainClass.injective _
 
 omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
 lemma injOn {ω : FftDomain ι F} {s : Set ι} :
-  Set.InjOn ω s := fun _ _ _ _ h ↦ ω.injective h
+    Set.InjOn ω s := fun _ _ _ _ h ↦ ω.injective h
 
 end FftDomain
 

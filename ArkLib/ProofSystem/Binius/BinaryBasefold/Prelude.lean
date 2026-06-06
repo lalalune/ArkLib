@@ -22,6 +22,8 @@ friends), and the fiber-coefficient maps (`fiber_coeff`, `qMap_total_fiber`) rel
 points across folding levels.
 -/
 
+set_option linter.style.longFile 2500
+
 namespace Binius.BinaryBasefold
 
 open OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Polynomial MvPolynomial
@@ -687,7 +689,7 @@ omit [CharP L 2] [NeZero ℓ] in
 /-- The images of `qMap_total_fiber` over distinct quotient points `y₁ ≠ y₂` are
 disjoint -/
 theorem qMap_total_fiber_disjoint
-  (i : Fin ℓ) (steps : ℕ) (h_i_add_steps : i + steps ≤ ℓ)
+    (i : Fin ℓ) (steps : ℕ) (h_i_add_steps : i + steps ≤ ℓ)
   {y₁ y₂ : sDomain 𝔽q β h_ℓ_add_R_rate ⟨i.val + steps, by omega⟩}
   (hy_ne : y₁ ≠ y₂) :
   Disjoint
@@ -865,7 +867,7 @@ lemma foldMatrixNat_one (i : Fin r) (h_i_add_steps : i.val + 1 < ℓ + 𝓡)
 
 /-- Iterated fold over `steps` steps starting at domain index `i`. -/
 def iterated_fold (i : Fin r) (steps : Fin (ℓ + 1)) (h_i_add_steps : i.val + steps < ℓ + 𝓡)
-  (f : sDomain 𝔽q β h_ℓ_add_R_rate (i := i) → L) (r_challenges : Fin steps → L) :
+    (f : sDomain 𝔽q β h_ℓ_add_R_rate (i := i) → L) (r_challenges : Fin steps → L) :
     sDomain 𝔽q β h_ℓ_add_R_rate
       (⟨i + steps.val, Nat.lt_trans (m := ℓ + 𝓡) (h_i_add_steps) h_ℓ_add_R_rate⟩) → L := by
   let domain_type := sDomain 𝔽q β h_ℓ_add_R_rate
@@ -1289,7 +1291,7 @@ where the right-hand vector's values `(x_0, ..., x_{2 ^ steps-1})` represent the
 `(q^(i+steps-1) ∘ ... ∘ q^(i))⁻¹({y}) ⊂ S^(i)`.
 -/
 def localized_fold_matrix_form (i : Fin ℓ) (steps : ℕ) (h_i_add_steps : i.val + steps ≤ ℓ)
-  (r_challenges : Fin steps → L)
+    (r_challenges : Fin steps → L)
   (y : (sDomain 𝔽q β h_ℓ_add_R_rate) ⟨↑i + steps, by omega⟩)
   (fiber_eval_mapping : Fin (2 ^ steps) → L) :
   L := by
@@ -1555,7 +1557,7 @@ omit [CharP L 2] [NeZero ℓ] in
   is evaluation of P⁽ⁱ⁺¹⁾(X) over S⁽ⁱ⁺¹⁾. At level `i = ℓ`, we have P⁽ˡ⁾ =
 -/
 theorem fold_advances_evaluation_poly
-  (i : Fin (ℓ)) (h_i_succ_lt : i + 1 < ℓ + 𝓡)
+    (i : Fin (ℓ)) (h_i_succ_lt : i + 1 < ℓ + 𝓡)
   (coeffs : Fin (2 ^ (ℓ - ↑i)) → L) (r_chal : L) :
   let P_i : L[X] := intermediateEvaluationPoly 𝔽q β h_ℓ_add_R_rate (i := ⟨i, by
     exact Nat.lt_trans (n := i) (k := ℓ+1) (m := ℓ) (h₁ := i.isLt) (by exact Nat.lt_add_one ℓ)

@@ -44,7 +44,7 @@ lemma apply_zero : ω 0 = ω.cosetGenerator := by
 
 omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
 lemma apply_add_eq_inv_mul_mul :
-  ω (i + j) = ω.cosetGenerator⁻¹ * ω i * ω j := by cases ω with
+    ω (i + j) = ω.cosetGenerator⁻¹ * ω i * ω j := by cases ω with
   | mk x ω =>
     have : i + j = Multiplicative.ofAdd i * Multiplicative.ofAdd j := by rfl
     aesop
@@ -53,7 +53,7 @@ lemma apply_add_eq_inv_mul_mul :
 
 omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
 lemma apply_neg_eq_sq_mul_inv :
-  ω (-i) = ω.cosetGenerator ^ 2 * (ω i)⁻¹ := by cases ω with
+    ω (-i) = ω.cosetGenerator ^ 2 * (ω i)⁻¹ := by cases ω with
   | mk x ω =>
   have : -i = (Multiplicative.ofAdd i)⁻¹ := by rfl
   aesop
@@ -62,7 +62,7 @@ lemma apply_neg_eq_sq_mul_inv :
 
 omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
 lemma apply_sub_eq_mul_div :
-  ω (i - j) = ω.cosetGenerator * ω i / ω j := by cases ω with
+    ω (i - j) = ω.cosetGenerator * ω i / ω j := by cases ω with
   | mk x ω =>
   have : (i - j) = Multiplicative.ofAdd i / Multiplicative.ofAdd j := by rfl
   aesop
@@ -81,14 +81,14 @@ variable {ω : D} {x : F}
 
 omit [DecidableEq F] in
 theorem neg_mem_domain_of_mem [nz : NeZero n] (h : x ∈ ω) :
-  -x ∈ ω := by
+    -x ∈ ω := by
   rw [show -x = (-1) * x by simp]
   exact CosetFftDomainClass.mul_mem_of_mem_toFftDomain_of_mem (by simp) h
 
 omit [DecidableEq F] in
 @[simp]
 lemma neg_mem_domain_iff_mem [nz : NeZero n] :
-  -x ∈ ω ↔ x ∈ ω := by
+    -x ∈ ω ↔ x ∈ ω := by
   constructor <;> intro h
   · rw [show x = -(-x) by simp]
     exact neg_mem_domain_of_mem h
@@ -96,7 +96,7 @@ lemma neg_mem_domain_iff_mem [nz : NeZero n] :
 
 omit [DecidableEq F] in
 lemma domain_implies_char_ne_2 [NeZero n] (ω : D) :
-  ¬CharP F 2 := FftDomainClass.domain_implies_char_ne_2 (toFftDomain ω)
+    ¬CharP F 2 := FftDomainClass.domain_implies_char_ne_2 (toFftDomain ω)
 
 end Smooth
 
