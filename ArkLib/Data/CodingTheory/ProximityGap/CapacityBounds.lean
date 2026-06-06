@@ -268,6 +268,35 @@ theorem rs_epsCA_small_loss_r4_10_of_residuals
   rw [heq]
   exact le_trans hT492 (ENNReal.ofReal_le_ofReal hbound)
 
+/-- Prop-level wrapper for the corrected R4.10 reduction.
+
+Use this when the target is the external statement `rs_epsCA_small_loss_r4_10` itself: after
+unfolding that statement, the checked reduction is exactly
+`rs_epsCA_small_loss_r4_10_of_residuals`. -/
+theorem rs_epsCA_small_loss_r4_10_of_residuals_prop
+    (domain : ι ↪ F) (k : ℕ) (δ_fld : ℝ≥0) (γ : ℝ≥0)
+    (h_dmin : (Code.minDist ((ReedSolomon.code domain k : Set (ι → F))) : ℝ)
+                / Fintype.card ι / 3 ≤ δ_fld)
+    (hγ_pos : 0 < γ) (hγ_lt : (γ : ℝ) < 1) :
+    let δ_int : ℝ≥0 := δ_fld + γ / (Fintype.card ι : ℝ≥0)
+    let n : ℝ := Fintype.card ι
+    let ρ : ℝ := k / n
+    let t492Bound : ℝ :=
+      max ((1 - ρ - δ_fld) / (δ_fld * (1 - ρ - 2 * δ_fld) * Fintype.card F))
+          ((δ_int : ℝ) / (((δ_int : ℝ) - (δ_fld : ℝ)) * Fintype.card F))
+    let smallBound : ℝ :=
+      max ((1 - ρ - δ_fld) / (δ_fld * (1 - ρ - 2 * δ_fld) * Fintype.card F))
+          ((n * δ_fld + γ) / (γ * Fintype.card F))
+    epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F))) δ_fld δ_int ≤
+        ENNReal.ofReal t492Bound →
+    Nat.floor (δ_fld * Fintype.card ι) = Nat.floor (δ_int * Fintype.card ι) →
+    t492Bound ≤ smallBound →
+    rs_epsCA_small_loss_r4_10 domain k δ_fld γ h_dmin hγ_pos hγ_lt := by
+  intro δ_int n ρ t492Bound smallBound hT492 hfloor hbound
+  exact rs_epsCA_small_loss_r4_10_of_residuals
+    (domain := domain) (k := k) (δ_fld := δ_fld) (γ := γ)
+    hT492 hfloor hbound
+
 /-- The currently stated `0 < γ < 1` hypotheses do not by themselves imply the
 floor-collapse side condition needed in `rs_epsCA_small_loss_r4_10`.
 
@@ -566,6 +595,43 @@ theorem frs_epsMCA_capacity_gg25_of_residuals
   have h413 := hT413 τ (ReedSolomon.Folded.frsCode domain k s ω) hT218 t ht
   rw [hRadius]
   exact le_trans h413 (ENNReal.ofReal_le_ofReal hBound)
+
+/-- Prop-level wrapper for T4.14.
+
+This closes the external statement `frs_epsMCA_capacity_gg25` from the checked residual bundle,
+leaving no extra independent content in the corollary statement. -/
+theorem frs_epsMCA_capacity_gg25_of_residuals_prop
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (η : ℝ) (hη_pos : 0 < η) (hη_lt : η < 1)
+    (hs_gt : (s : ℝ) > 16 / η ^ 2)
+    (t : ℕ) (ht : 0 < t)
+    (hT218 : IsSubspaceDesign s
+        (fun r ↦ if r ∈ Finset.Icc 1 s then
+            (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - r + 1) else 1)
+        (ReedSolomon.Folded.frsCode domain k s ω))
+    (hT413 : ∀ (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F)),
+        IsSubspaceDesign s τ C → ∀ t' : ℕ, 0 < t' →
+        epsMCA (F := F) (A := Fin s → F) ((C : Set (ι → Fin s → F)))
+            ((1 - τ (t' + 1) - 3 / (2 * t')).toNNReal) ≤
+          ENNReal.ofReal (((t' : ℝ) * Fintype.card ι + 4 * t' ^ 2) / Fintype.card F))
+    (hRadius :
+      let n : ℝ := Fintype.card ι
+      let ρ : ℝ := k / n
+      ((1 - ρ - η).toNNReal : ℝ≥0) =
+        (1 -
+            (fun r ↦ if r ∈ Finset.Icc 1 s then
+              (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - r + 1) else 1) (t + 1)
+            - 3 / (2 * t)).toNNReal)
+    (hBound :
+      let n : ℝ := Fintype.card ι
+      ((t : ℝ) * n + 4 * t ^ 2) / Fintype.card F ≤
+        2 * n / (η * Fintype.card F) + 24 / (η ^ 3 * Fintype.card F)) :
+    frs_epsMCA_capacity_gg25 domain k s ω η hη_pos hη_lt hs_gt := by
+  exact frs_epsMCA_capacity_gg25_of_residuals
+    (domain := domain) (k := k) (s := s) (ω := ω) (η := η) (t := t) ht
+    hT218 hT413 hRadius hBound
 
 /-- **ABF26 BCGM25 extension to T4.13 / T4.14 (polynomial generators preserve
 correlated agreement).**
