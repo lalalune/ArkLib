@@ -790,6 +790,40 @@ structure GraphExtractionHypotheses
     #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
       2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q
 
+omit [DecidableEq (RatFunc F)] in
+/-- Candidate-pair extraction from the packaged graph-extraction side
+conditions.  This is the short, hypothesis-explicit replacement for the legacy
+Claim 5.7 extractor below; it targets the current `pg_Rset` factor API rather
+than the stale Eq. 5.12 `.choose_spec.choose` list. -/
+lemma exists_pg_factors_with_large_common_root_set_of_hypotheses
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) (k := k)
+      (Q := Q) (ωs := ωs) (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs) :
+    ∃ R H,
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs ∧
+      Irreducible R ∧
+      Irreducible H ∧
+      0 < H.natDegree ∧
+      H ∣ (Bivariate.evalX (Polynomial.C x₀) R) ∧
+      (Bivariate.evalX (Polynomial.C x₀) R).Separable ∧
+        #(Finset.univ.filter
+            (fun z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ =>
+              (Trivariate.eval_on_Z R z.1).eval
+                  (Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2) = 0 ∧
+                (Bivariate.evalX z.1 H).eval
+                  ((Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2).eval x₀)
+                  = 0))
+        ≥ #(Finset.univ : Finset (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁)) /
+          Bivariate.natDegreeY Q ∧
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q :=
+  exists_pg_factors_with_large_common_root_set_of_graph_conditions
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+    (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs
+    hcond.hx0 hcond.hsep hcond.hS_nonempty hcond.A hcond.hA hcond.hcount hcond.hlarge
+
 /-- Build the graph-extraction side-condition package while deriving close-set
 nonemptiness from the large-set inequality. -/
 def GraphExtractionHypotheses.ofLarge
@@ -1805,19 +1839,19 @@ lemma exists_factors_with_large_common_root_set (δ : ℚ) (x₀ : F)
       hres.hx0 hres.hsep hres.hS_nonempty hres.A hres.hA hres.hcount hres.hlarge
   exact ⟨R, H, hres.hfactor R hR, hHirr, hHdeg, hHdvd, hRsep, hcard, hlarge'⟩
 
-/-- Claim 5.7 establishes existence of a polynomial `R`. This is the extraction of this polynomial. -/
+/-- Claim 5.7 establishes existence of `R`; this extracts it. -/
 noncomputable def R (δ : ℚ) (x₀ : F) (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
     [Claim57Residuals (F := F) k δ x₀ h_gs] : F[Z][X][Y] :=
  (exists_factors_with_large_common_root_set (F := F) (m := m) (n := n) (k := k)
     (Q := Q) (ωs := ωs) (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs).choose
 
-/-- Claim 5.7 establishes existence of a polynomial `H`. This is the extraction of this polynomial. -/
+/-- Claim 5.7 establishes existence of `H`; this extracts it. -/
 noncomputable def H (δ : ℚ) (x₀ : F) (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
     [Claim57Residuals (F := F) k δ x₀ h_gs] : F[Z][X] :=
 (exists_factors_with_large_common_root_set (F := F) (m := m) (n := n) (k := k)
   (Q := Q) (ωs := ωs) (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs).choose_spec.choose
 
-/-- An important property of the polynomial `H` extracted from Claim 5.7 is that it is irreducible. -/
+/-- The polynomial `H` extracted from Claim 5.7 is irreducible. -/
 lemma irreducible_H (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
     [Claim57Residuals (F := F) k δ x₀ h_gs] : Irreducible (H k δ x₀ h_gs) :=
   (exists_factors_with_large_common_root_set (F := F) (m := m) (n := n) (k := k)
