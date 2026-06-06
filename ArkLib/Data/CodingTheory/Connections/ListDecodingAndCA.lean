@@ -39,6 +39,16 @@ implication "list-decoding ⇒ CA" cannot be tight in general.
   codes with rate `1/8` have `ε_ca(C, 1 - ρ^{1/3}) ≥ 1 - 1/|F|`, separating list
   decoding from CA.
 
+## Issue #22 bridge disposition
+
+The CS25 deep-hole probability residual is no longer an external input: see
+`ArkLib.ToMathlib.CS25JointFar.deepHoleProbResidual_holds`, which supplies
+`DeepHoleProbResidual` from the in-tree joint-far/minimum-distance argument under the explicit
+rate condition. The remaining #22 external bridge constructors are the geometric witnesses
+`Bridge.BadLineWitness` (BCHKS25 bad-line construction) and `Bridge.NearCertainBadLine`
+(BGKS20 characteristic-2 near-certain bad-line construction). The `_of_residuals` wrappers below
+keep those witness constructors explicit while the ENNReal/CA plumbing is proven in-tree.
+
 ## Coercion conventions
 
 Each statement bounds an `ENNReal`-valued `ε_ca` or `ε_mca` (or `Lambda`) in terms of a
