@@ -1287,5 +1287,6 @@ end SubspaceDesignFRS
 #print axioms CodingTheory.exists_rsJohnsonJumpWitness_of_bchks25
 #print axioms CodingTheory.rs_epsCA_lower_capacity_bchks25_kk25_of_witness
 #print axioms CodingTheory.exists_rsLowerCapacityWitness_of_bchks25_kk25
+#print axioms CodingTheory.linear_epsCA_ge_sampling_dg25_of_mass_bound
 
 end CodingTheory
