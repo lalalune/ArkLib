@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.Polynomial.RationalFunctionsStrong
+import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidual
 import ArkLib.ToMathlib.GammaFromBeta
 import ArkLib.ToMathlib.BetaIdentify
 
@@ -178,6 +179,42 @@ theorem correlatedAgreement_affine_curves_strongBeta_of_betaRecFin
       (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
   correlatedAgreement_affine_curves_johnson_of_betaRecFin_strict
     (k := k) (deg := deg) (domain := domain) (δ := δ) hδ hInput
+
+omit [DecidableEq ι] in
+/-- **The closed-radius §5 keystone, β-identification-residual-free, with the boundary quantized.**
+
+This is the non-strict companion to
+`correlatedAgreement_affine_curves_strongBeta_of_betaRecFin`.  The strict Johnson branch is still
+driven by the `betaRec`-native `BetaCurveInputFin` bundle, so there is no `hβ` /
+`BetaEmbedEq` numerator-identification residual.  The closed square-root boundary is reconstructed
+from the quantization split in `BoundaryCardResidual.lean`: the non-lattice part is moved to a
+strict subradius by `hStrictBoundary`, and the exact `1/n` lattice points are isolated in
+`BoundaryCardLatticeResidual`. -/
+theorem correlatedAgreement_affine_curves_strongBeta_of_betaRecFin_lattice_residual
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hInput : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      δ < 1 - ReedSolomon.sqrtRate deg domain →
+      BetaCurveInputFin (k := k) (deg := deg) (domain := domain) (δ := δ) u)
+    (hStrictBoundary : ∀ (u : WordStack F (Fin (k + 1)) ι) (δ' : ℝ≥0),
+      δ' < δ →
+      Nat.floor (δ' * Fintype.card ι) = Nat.floor (δ * Fintype.card ι) →
+      0 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ').card →
+      jointAgreement (C := ReedSolomon.code domain deg) (δ := δ') (W := u))
+    (hLattice :
+      BoundaryCardResidual.BoundaryCardLatticeResidual
+        (k := k) (deg := deg) (domain := domain) (δ := δ)) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
+  correlatedAgreement_affine_curves_johnson_of_betaRecFin
+    (k := k) (deg := deg) (domain := domain) (δ := δ) hδ hInput
+    (BoundaryCardResidual.boundaryCardResidual_of_lattice_residual
+      (k := k) (deg := deg) (domain := domain) (δ := δ) hLattice hStrictBoundary)
 
 end L13Milestone
 
