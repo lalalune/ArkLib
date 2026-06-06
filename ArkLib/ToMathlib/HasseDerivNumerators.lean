@@ -101,8 +101,9 @@ lemma embeddingOf𝒪Into𝕃_W_𝒪_pow (H : F[X][Y]) (a : ℕ) :
 
 The set `regularElms_set H = {a : 𝕃 H | ∃ b : 𝒪 H, a = embedding b}` is the image of the integral
 ring `𝒪` inside the function field `𝕃`.  The in-tree file already proves it is closed under
-`0`, `1`, `+`, `-`, `*`, `^`, `∑` (`regularElms_set_{zero,one,add,neg,mul,pow,sum}`).  Here we add the facts the A.4
-numerator-clearing argument needs on top of those: closure under multiplication by `W`-powers and
+`0`, `1`, `+`, `-`, `*`, `^`, `∑` (`regularElms_set_{zero,one,add,neg,mul,pow,sum}`).  Here
+we add the facts the A.4 numerator-clearing argument needs on top of those: closure under
+multiplication by `W`-powers and
 by `canonicalRepOf𝒪` images, and the divisibility fact `embedding(B)/W^j ∈ 𝒪`. -/
 
 /-- The `𝕃`-denominator `W` is integral. -/
@@ -205,8 +206,9 @@ lemma hasWPowerNumerator_mul {H : F[X][Y]} {A₁ A₂ : 𝕃 H} {j₁ j₂ : ℕ
   rw [map_mul, ← hB₁, ← hB₂, ← W_𝕃_pow_mul_pow]
   ring
 
-/-- **`W`-multiplication bookkeeping.**  Multiplying a numerator form by `W^a` *lowers* the effective
-denominator exponent by `a` (when `a ≤ j`): `W^a · (B/W^j) = B/W^{j−a}`.  This realises the
+/-- **`W`-multiplication bookkeeping.**  Multiplying a numerator form by `W^a` *lowers* the
+effective denominator exponent by `a` (when `a ≤ j`): `W^a · (B/W^j) = B/W^{j−a}`.  This
+realises the
 `W^{i₁+δ}` and `ξ^{2i₁+Σλ−2}` prefactor absorption in recursion (A.1). -/
 lemma hasWPowerNumerator_W_𝕃_pow_mul {H : F[X][Y]} {A : 𝕃 H} {j a : ℕ}
     (hA : HasWPowerNumerator A j) (ha : a ≤ j) :
@@ -239,7 +241,8 @@ lemma hasWPowerNumerator.mem_regularElms_set_of_dvd {H : F[X][Y]}
   -- Extract the `𝒪`-cofactor: `B = W^j · C`, so `embedding B = W^j · embedding C`.
   rcases hdvd with ⟨C, rfl⟩
   refine ⟨C, ?_⟩
-  -- From `A · W^j = embedding(W^j · C) = W^j · embedding C` and `W^j ≠ 0`, conclude `A = embedding C`.
+  -- From `A · W^j = embedding(W^j · C) = W^j · embedding C` and `W^j ≠ 0`, conclude
+  -- `A = embedding C`.
   rw [map_mul, embeddingOf𝒪Into𝕃_W_𝒪_pow] at hB
   have : A * W_𝕃 H ^ j = embeddingOf𝒪Into𝕃 H C * W_𝕃 H ^ j := by
     rw [hB]; ring
@@ -265,7 +268,7 @@ arbitrary `A : 𝕃 H` satisfying only `A · W^j = embedding B`: the equation de
 the cleared `W`-power), so the honest closure fact L7 threads is the *conditional*
 `mem_regularElms_set_of_dvd` above, which is sorry-free.  Establishing the unconditional version for
 the *specific* A.4 coefficients requires naming the Hasse-derivative numerator and proving its
-`W`-divisibility — that is brick L7's input and is left as the residual (it is **not** stated here as
-a false unconditional lemma). -/
+`W`-divisibility — that is brick L7's input and is left as the residual (it is **not**
+stated here as a false unconditional lemma). -/
 
 end ArkLib

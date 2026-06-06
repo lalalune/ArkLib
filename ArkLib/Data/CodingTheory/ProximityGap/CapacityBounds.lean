@@ -310,12 +310,15 @@ lemma r4_10_floor_collapse_of_no_boundary_crossing
         (Nat.floor (δ_fld * (Fintype.card ι : ℝ≥0)) : ℝ≥0) + 1) :
     Nat.floor (δ_fld * Fintype.card ι) =
       Nat.floor ((δ_fld + γ / (Fintype.card ι : ℝ≥0)) * Fintype.card ι) := by
-  set n : ℝ≥0 := Fintype.card ι with hn
+  set n : ℝ≥0 := (Fintype.card ι : ℝ≥0) with hn
   have hnpos : 0 < n := by
     rw [hn]
     exact_mod_cast Fintype.card_pos
   have hle_arg : δ_fld * n ≤ (δ_fld + γ / n) * n := by
-    calc δ_fld * n ≤ (δ_fld + γ / n) * n := by gcongr; exact le_add_of_nonneg_right (zero_le _)
+    -- (was a single-step `calc … := by …`, which the v4.30 calc-step parser swallows the
+    -- following tactic lines into; stated directly instead)
+    gcongr
+    exact le_add_of_nonneg_right (zero_le _)
   have hfloor_le :
       Nat.floor (δ_fld * n) ≤ Nat.floor ((δ_fld + γ / n) * n) :=
     Nat.floor_le_floor hle_arg
@@ -325,11 +328,10 @@ lemma r4_10_floor_collapse_of_no_boundary_crossing
       Nat.floor ((δ_fld + γ / n) * n) < Nat.floor (δ_fld * n) + 1 := by
     rw [Nat.floor_lt (zero_le _)]
     rw [hmul]
-    exact hcross
+    exact_mod_cast hcross
   have hfloor_le' :
       Nat.floor ((δ_fld + γ / n) * n) ≤ Nat.floor (δ_fld * n) := by
     omega
-  rw [hn] at hfloor_le hfloor_le'
   omega
 
 /-- Prop-level R4.10 reduction with the floor-collapse side condition discharged by the

@@ -10,21 +10,22 @@ import ArkLib.OracleReduction.Composition.Sequential.General
 /-!
 # The Generalized Ben-Sasson–Chiesa–Spooner (BCS) Compiler
 
-This module formalizes the generalized Ben-Sasson–Chiesa–Spooner (BCS) compilation technique (TCC 2016)
-at the protocol specification and reduction levels. The BCS transform compiles an Interactive Oracle
-Reduction (IOR) into a standard Interactive Reduction (IR) (or interactive proof system) by replacing
-oracle messages with cryptographic commitments.
+This module formalizes the generalized Ben-Sasson–Chiesa–Spooner (BCS) compilation technique
+(TCC 2016) at the protocol specification and reduction levels. The BCS transform compiles an
+Interactive Oracle Reduction (IOR) into a standard Interactive Reduction (IR) (or interactive proof
+system) by replacing oracle messages with cryptographic commitments.
 
-In the compiled protocol, the prover sends commitments to each oracle message, and the verifier interacts
-with the prover to receive challenges. Finally, in the opening phase, the prover shows that the verifier's
-oracle queries are consistent with the sent commitments using interactive opening arguments. This compiles
-oracle-dependent protocols into concrete protocols, capturing both the classical Merkle-tree compilation
-of IOPs and modern polynomial commitment compilers (e.g., Marlin, Plonk) for polynomial IOPs.
+In the compiled protocol, the prover sends commitments to each oracle message, and the verifier
+interacts with the prover to receive challenges. Finally, in the opening phase, the prover shows
+that the verifier's oracle queries are consistent with the sent commitments using interactive
+opening arguments. This compiles oracle-dependent protocols into concrete protocols, capturing both
+the classical Merkle-tree compilation of IOPs and modern polynomial commitment compilers
+(e.g., Marlin, Plonk) for polynomial IOPs.
 
 The transformation establishes a composition where:
 1. Every oracle message type is replaced with a commitment type (via `renameMessage`).
-2. An opening phase consisting of the sequential composition of the per-message commitment-opening protocol
-   specifications is appended.
+2. An opening phase consisting of the sequential composition of the per-message commitment-opening
+   protocol specifications is appended.
 -/
 
   ## What this file states (ArkLib#2: "initial attempt to state the BCS transform")
@@ -94,9 +95,10 @@ def renameMessage (pSpec : ProtocolSpec n) (NewMessage : pSpec.MessageIdx → Ty
   The opening phase is the sequential composition (`ProtocolSpec.seqCompose`) of the per-message
   opening specs. Since `seqCompose` composes a `Fin m`-indexed family while the opening specs are
   indexed by `pSpec.MessageIdx`, we take an explicit ordering equivalence
-  `e : pSpec.MessageIdx ≃ Fin m` as a parameter. This makes the order of the opening phase explicit:
-  as noted in the module docstring, the BCS transform has a genuine degree of freedom in the order in
-  which the opening arguments are run, and `e` records that choice. (Taking `e` as a parameter rather
+  `e : pSpec.MessageIdx ≃ Fin m` as a parameter. This makes the order of the opening phase
+  explicit: as noted in the module docstring, the BCS transform has a genuine degree of freedom in
+  the order in which the opening arguments are run, and `e` records that choice. (Taking `e` as a
+  parameter rather
   than the canonical `Fintype.equivFin` also keeps the definition computable.) -/
 
 /-- The opening phase of the BCS transform: the sequential composition of the per-message
@@ -188,18 +190,18 @@ variable {StmtIn StmtOut WitIn WitOut : Type}
      `pSpec.renameMessage CommitmentType` — morally the original oracle reduction with every prover
      message replaced by a commitment to it — and
   2. an **opening phase** `opening`, an interactive reduction over
-     `pSpec.BCSOpeningPhase pSpecCom e` — morally the verifier's evaluation queries discharged by the
-     per-message opening proofs (see `Reduction.bcsMessageOpening`), composed in the order `e`.
+     `pSpec.BCSOpeningPhase pSpecCom e` — morally the verifier's evaluation queries discharged by
+     the per-message opening proofs (see `Reduction.bcsMessageOpening`), composed in the order `e`.
 
   The honest construction of the **interaction phase** from the input oracle `reduction` and the
   commitment schemes (the prover commits to each message via `scheme.commit` instead of sending it,
   and the verifier checks the renamed transcript) and the honest construction of the **opening
   phase** from the verifier's query log (which queries to discharge, in which order, with which
-  witnesses) are precisely the parts that require the dependent-type plumbing over query logs. These,
-  together with the proofs that the transform preserves completeness / soundness / knowledge
-  soundness / HVZK, are deferred to the core oracle-reduction rewrite (ArkLib#433). We therefore take
-  the two phases as inputs and record the resulting type-level statement of the transform; this is
-  the "initial attempt to state the BCS transform" called for by ArkLib#2.
+  witnesses) are precisely the parts that require the dependent-type plumbing over query logs.
+  These, together with the proofs that the transform preserves completeness / soundness / knowledge
+  soundness / HVZK, are deferred to the core oracle-reduction rewrite (ArkLib#433). We therefore
+  take the two phases as inputs and record the resulting type-level statement of the transform;
+  this is the "initial attempt to state the BCS transform" called for by ArkLib#2.
 
   The fully general transform (no separate-phase inputs) is sketched in the design comment below. -/
 
@@ -208,8 +210,9 @@ variable {StmtIn StmtOut WitIn WitOut : Type}
   proofs run in sequence), over the BCS-transformed protocol spec
   `ProtocolSpec.BCSTransform pSpecCom CommitmentType e`.
 
-  Here `StmtMid`/`WitMid` are the intermediate statement/witness handed from the interaction phase to
-  the opening phase (it carries, e.g., the commitments, the queried points, and the openings needed
+  Here `StmtMid`/`WitMid` are the intermediate statement/witness handed from the interaction phase
+  to the opening phase (it carries, e.g., the commitments, the queried points, and the openings
+  needed
   by the opening phase). -/
 def BCSTransform {StmtMid WitMid : Type} {CommitmentType : pSpec.MessageIdx → Type}
     (e : pSpec.MessageIdx ≃ Fin m)

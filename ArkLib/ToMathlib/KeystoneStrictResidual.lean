@@ -24,7 +24,8 @@ predicate.
 We show that under the $\text{betaRec}$ input configuration (which bundles the specialized
 Guruswami-Sudan factor multiplicities and Hensel-lifted recurrences), the pointwise curve-polynomial
 datum:
-$$\forall j < \text{deg}, \exists B_j \in F[X], \quad \text{deg}(B_j) < k+1 \quad \text{and} \quad \forall z \in S, \quad P_z(j) = B_j(z)$$
+$$\forall j < \text{deg}, \exists B_j \in F[X], \quad \text{deg}(B_j) < k+1$$
+$$\text{and} \quad \forall z \in S, \quad P_z(j) = B_j(z)$$
 can be bundled into a single polynomial map $B: \mathbb{N} \to F[X]$ satisfying the joint degree and
 evaluation bounds demanded by the correlated agreement curves front door.
 
@@ -127,7 +128,8 @@ structure BetaCurveInput {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
 attribute [instance] BetaCurveInput.hHirr BetaCurveInput.hHpos
 
 omit [Nonempty ι] [DecidableEq ι] in
-/-- Proves the existence of the coefficient polynomial map under the infinite-range input configuration. -/
+/-- Proves the existence of the coefficient polynomial map under the infinite-range input
+configuration. -/
 theorem hcoeffPoly_of_betaRec
     {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     {u : WordStack F (Fin (k + 1)) ι}
@@ -204,7 +206,8 @@ theorem betaCurveInputFin_hcardFin_satisfiable
   exact_mod_cast hlt
 
 omit [Nonempty ι] [DecidableEq ι] in
-/-- Proves the existence of the coefficient polynomial map under the finite-range input configuration. -/
+/-- Proves the existence of the coefficient polynomial map under the finite-range input
+configuration. -/
 theorem hcoeffPoly_of_betaRecFin
     {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     {u : WordStack F (Fin (k + 1)) ι}
@@ -228,7 +231,8 @@ theorem hcoeffPoly_of_betaRecFin
 /-! ### Strict Coefficient Polynomial Residual Discharge -/
 
 omit [Nonempty ι] [DecidableEq ι] in
-/-- Discharges the strict coefficient polynomial residual using the infinite-range input configuration. -/
+/-- Discharges the strict coefficient polynomial residual using the infinite-range input
+configuration. -/
 theorem strictCoeffPolysResidual_of_betaRec
     {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     (hInput : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
@@ -244,7 +248,8 @@ theorem strictCoeffPolysResidual_of_betaRec
   exact hcoeffPoly_of_betaRec (hInput hk u hprob hJ hsqrt) P
 
 omit [Nonempty ι] [DecidableEq ι] in
-/-- Discharges the strict coefficient polynomial residual using the finite-range input configuration. -/
+/-- Discharges the strict coefficient polynomial residual using the finite-range input
+configuration. -/
 theorem strictCoeffPolysResidual_of_betaRecFin
     {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     (hInput : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
@@ -327,7 +332,8 @@ theorem correlatedAgreement_affine_curves_johnson_of_betaRecFin
     (strictCoeffPolysResidual_of_betaRecFin hInput) hBoundaryCard hδ
 
 omit [DecidableEq ι] in
-/-- Proves the strict correlated agreement curves bound using the finite-range input configuration. -/
+/-- Proves the strict correlated agreement curves bound using the finite-range input
+configuration. -/
 theorem correlatedAgreement_affine_curves_johnson_of_betaRecFin_strict
     {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
     (hδ : δ < 1 - ReedSolomon.sqrtRate deg domain)

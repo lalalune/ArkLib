@@ -1741,7 +1741,8 @@ theorem coreInteractionOracleVerifier_rbrKnowledgeSoundness
 end CoreInteractionPhaseReduction
 
 /-- Sum of the per-round RBR knowledge error over core interaction challenges is **at most**
-`2 * ℓ' / |L| + 2^(ℓ' + 𝓡) / |L|` (see `BinaryBasefold.CoreInteraction.sumcheckFoldKnowledgeError_le`). -/
+`2 * ℓ' / |L| + 2^(ℓ' + 𝓡) / |L|`
+(see `BinaryBasefold.CoreInteraction.sumcheckFoldKnowledgeError_le`). -/
 theorem coreInteractionOracleRbrKnowledgeError_le :
     (∑ i : (BinaryBasefold.pSpecCoreInteraction K β (ϑ := ϑ)
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).ChallengeIdx,

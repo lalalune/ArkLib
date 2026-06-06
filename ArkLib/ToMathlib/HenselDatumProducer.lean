@@ -14,8 +14,8 @@ under the condition of separability, an approximate root of a polynomial yields 
 
 ## Mathematical Context
 
-Let $F$ be a field, and $f \in F⟦X⟧[Y]$ be a polynomial in $Y$ with coefficients in the power series ring.
-Let $a_0 \in F⟦X⟧$ be an approximate root of $f$, meaning:
+Let $F$ be a field, and $f \in F⟦X⟧[Y]$ be a polynomial in $Y$ with coefficients in the
+power series ring. Let $a_0 \in F⟦X⟧$ be an approximate root of $f$, meaning:
 $$f(a_0) \equiv 0 \pmod X$$
 or equivalently, $f(a_0) \in (X)$.
 
@@ -25,17 +25,20 @@ Evaluating this identity at $Y = a_0$ and examining the constant coefficient sho
 $$\text{constantCoeff}(f'(a_0)) \neq 0$$
 which implies that $f'(a_0)$ is a unit in $F⟦X⟧$.
 
-We package this algebraic fact to construct the `HenselDatum` structure, which certifies that the matching
-polynomial has a unique Hensel lift.
+We package this algebraic fact to construct the `HenselDatum` structure, which certifies
+that the matching polynomial has a unique Hensel lift.
 
 ## Key Formalizations
 * `eval_sub_mem_span_X_of_congr`: Shows that polynomial evaluation preserves modular congruences.
-* `approxRoot_of_isRoot_of_congr`: Certifies that closeness to an exact root implies being an approximate root.
-* `isUnit_derivative_eval_of_separable`: Proves that separability implies a unit derivative at an approximate root.
+* `approxRoot_of_isRoot_of_congr`: Certifies that closeness to an exact root implies being
+  an approximate root.
+* `isUnit_derivative_eval_of_separable`: Proves that separability implies a unit derivative
+  at an approximate root.
 * `henselDatum_of_sepInput`: Constructs the `HenselDatum` from a separable input configuration.
 
 ## References
-* [BCIKS20] Ben-Sasson, Carmon, Ishai, Kopparty, Saraf. *Proximity Gaps for Reed–Solomon Codes*, eprint 2020.
+* [BCIKS20] Ben-Sasson, Carmon, Ishai, Kopparty, Saraf. *Proximity Gaps for Reed–Solomon
+  Codes*, eprint 2020.
 -/
 
 open Polynomial Polynomial.Bivariate BCIKS20AppendixA BCIKS20AppendixA.ClaimA2
@@ -57,7 +60,8 @@ theorem eval_sub_mem_span_X_of_congr (f : Polynomial (PowerSeries F)) {a b : Pow
   rw [Ideal.mem_span_singleton] at h ⊢
   exact h.trans (Polynomial.sub_dvd_eval_sub a b f)
 
-/-- Certifies that if $a_0$ is congruent to an exact root of $f$ modulo $X$, then $a_0$ is an approximate root. -/
+/-- Certifies that if $a_0$ is congruent to an exact root of $f$ modulo $X$, then $a_0$ is
+an approximate root. -/
 theorem approxRoot_of_isRoot_of_congr (f : Polynomial (PowerSeries F)) {r a₀ : PowerSeries F}
     (hroot : f.IsRoot r)
     (hcongr : r - a₀ ∈ Ideal.span {(PowerSeries.X : PowerSeries F)}) :
@@ -72,7 +76,8 @@ theorem approxRoot_of_isRoot_of_congr (f : Polynomial (PowerSeries F)) {r a₀ :
 
 /-! ### Separability and Unit Derivative -/
 
-/-- Theorem showing that the derivative of a separable polynomial is a unit when evaluated at an approximate root. -/
+/-- Theorem showing that the derivative of a separable polynomial is a unit when evaluated
+at an approximate root. -/
 theorem isUnit_derivative_eval_of_separable (f : Polynomial (PowerSeries F))
     {a₀ : PowerSeries F} (hsep : f.Separable)
     (h0 : f.eval a₀ ∈ Ideal.span {(PowerSeries.X : PowerSeries F)}) :
@@ -191,7 +196,8 @@ namespace HenselDatumProducer
 
 /-! ### Roots from Divisibility -/
 
-/-- Construct a `HenselDatum` when root properties are expressed as factor divisibility statements. -/
+/-- Construct a `HenselDatum` when root properties are expressed as factor divisibility
+statements. -/
 def henselDatum_of_matchingDvd_and_sep {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     {u : WordStack F (Fin (k + 1)) ι} {P : F → Polynomial F} {v₀ v₁ : F[X]}
     (f : F → Polynomial (PowerSeries F)) (a₀ : F → PowerSeries F)

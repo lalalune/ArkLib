@@ -9,12 +9,12 @@ import ArkLib.OracleReduction.ProtocolSpec.Basic
 /-!
 # Dependent Casting for Protocol Specifications
 
-This module formalizes dependent casting functions and equivalence relations for `ProtocolSpec` and its
-associated components across round-count and specification equalities. In interactive oracle proofs,
-reductions are often defined over varying parameterizations of the protocol structure (e.g., varying
-round counts or message spaces). Dependent casting allows safe transport of message indices (`MessageIdx`),
-challenge indices (`ChallengeIdx`), and transcripts (`Transcript`, `FullTranscript`) between structurally
-isomorphic specifications.
+This module formalizes dependent casting functions and equivalence relations for `ProtocolSpec` and
+its associated components across round-count and specification equalities. In interactive oracle
+proofs, reductions are often defined over varying parameterizations of the protocol structure (e.g.,
+varying round counts or message spaces). Dependent casting allows safe transport of message indices
+(`MessageIdx`), challenge indices (`ChallengeIdx`), and transcripts (`Transcript`, `FullTranscript`)
+between structurally isomorphic specifications.
 -/
 
 open OracleComp

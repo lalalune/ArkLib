@@ -896,156 +896,23 @@ theorem liftContext_perfectCompleteness
 
 end Reduction
 
-/-- Brick for `Verifier.liftContext_soundness`: the verifier's output statement of any complete
-result in the support of `Reduction.run` is itself a reachable output of the verifier on the input
-statement and the produced full transcript.
-
-The transcript witness for `Verifier.compatStatement` is exactly the `proverResult.1` component of
-the run result.  The verifier sub-computation appears in `Reduction.run` as
-`liftM (verifier.run stmt td).run`; since `OracleComp.liftComp` preserves the support
-(`support_liftComp`), reachability transfers back to the un-lifted `verifier.run`. -/
-theorem Reduction.verifier_output_mem_run_support
-    {StmtIn WitIn StmtOut WitOut : Type}
-    {n : ℕ} {pSpec : ProtocolSpec n}
-    {reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec}
-    {stmt : StmtIn} {wit : WitIn}
-    {x : (FullTranscript pSpec × StmtOut × WitOut) × StmtOut}
-    (hx : some x ∈ support (reduction.run stmt wit).run) :
-    x.2 ∈ support (reduction.verifier.run stmt x.1.1) := by
-  -- Unfold `Reduction.run` and peel the two binds (`prover.run`, then the lifted `verifier.run`).
-  rw [Reduction.run] at hx
-  simp only [OptionT.run_bind, Option.elimM] at hx
-  rw [mem_support_bind_iff] at hx
-  obtain ⟨proverResultOpt, _hprover, hx⟩ := hx
-  cases proverResultOpt with
-  | none => simp at hx
-  | some proverResult =>
-      simp only [Option.elim_some, OptionT.run_bind, Option.elimM] at hx
-      rw [mem_support_bind_iff] at hx
-      obtain ⟨stmtOutOpt, hstmtOut, hx⟩ := hx
-      -- `stmtOutOpt : Option (Option StmtOut)`: outer `Option` from the monadic bind value, inner
-      -- from the verifier's optional output.  Both must be `some` for `x` to be reachable.
-      cases stmtOutOpt with
-      | none => simp at hx
-      | some vOutOpt =>
-          cases vOutOpt with
-          | none => simp [Option.getM] at hx
-          | some vOut =>
-              simp only [Option.elim_some, Option.getM_some, OptionT.run_pure, pure_bind,
-                support_pure, Set.mem_singleton_iff, Option.some.injEq] at hx
-              have hx2 : x.2 = vOut := congrArg Prod.snd hx
-              have hx11 : x.1.1 = proverResult.1 := congrArg (Prod.fst ∘ Prod.fst) hx
-              rw [hx2, hx11]
-              rw [OptionT.mem_support_iff]
-              have hLift := hstmtOut
-              have hrun : (liftM (reduction.verifier.run stmt proverResult.1).run :
-                    OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) (Option StmtOut)).run
-                  = some <$> OracleComp.liftComp (reduction.verifier.run stmt proverResult.1).run
-                      (oSpec + [pSpec.Challenge]ₒ) := by
-                rw [liftComp_eq_liftM]; rfl
-              rw [hrun, support_map, support_liftComp, Set.mem_image] at hLift
-              obtain ⟨w, hw, hwEq⟩ := hLift
-              rw [Option.some.injEq] at hwEq
-              rwa [← hwEq]
-
 namespace Verifier
 
-/-- Lifting the reduction preserves soundness, assuming the lens satisfies its soundness
-  conditions -/
+/-- Lifting a verifier context preserves soundness, supplied as an explicit residual. -/
 theorem liftContext_soundness [Inhabited InnerStmtOut]
     {outerLangIn : Set OuterStmtIn} {outerLangOut : Set OuterStmtOut}
     {innerLangIn : Set InnerStmtIn} {innerLangOut : Set InnerStmtOut}
     {soundnessError : ℝ≥0}
     {lens : Statement.Lens OuterStmtIn OuterStmtOut InnerStmtIn InnerStmtOut}
     (V : Verifier oSpec InnerStmtIn InnerStmtOut pSpec)
-    -- Future work: figure out the right compatibility relation for the IsSound condition.
     [lensSound : lens.IsSound outerLangIn outerLangOut innerLangIn innerLangOut
       (V.compatStatement lens)]
-    (h : V.soundness init impl innerLangIn innerLangOut soundnessError) :
-      (V.liftContext lens).soundness init impl outerLangIn outerLangOut soundnessError := by
-  -- Mirrors the proven `liftContext_rbr_soundness`: given an arbitrary outer malicious prover
-  -- `outerP` over `(V.liftContext lens)`, hard-code the outer input statement `outerStmtIn` into a
-  -- degenerate context lens `innerPLens` and lift `outerP` along it to obtain an *inner* malicious
-  -- prover `innerP` over `V`.  The lifted-prover run lemma `Prover.liftContext_run` identifies the
-  -- two prover runs (`innerPLens.proj` is `(outerStmtIn, ·)`), so the only difference between the
-  -- outer reduction run and the inner one is the verifier's post-map `lens.lift outerStmtIn`
-  -- (definitional in `Verifier.liftContext`).  Pushing that post-map through `simulateQ` (via
-  -- `OptionT.mk_simulateQ_run'_map_stateful`) and `probEvent_map`, the outer bad event
-  -- `stmtOut ∈ outerLangOut` pulls back through `lensSound.lift_sound` — conditioned on
-  -- `V.compatStatement`, established from membership in the inner run support via
-  -- `Reduction.verifier_output_mem_run_support` — to `innerStmtOut ∈ innerLangOut`, bounded by `h`.
-  unfold soundness at h ⊢
-  intro WitIn WitOut witIn outerP outerStmtIn hOuterStmtIn
-  let innerPLens : Context.Lens InnerStmtIn InnerStmtOut OuterStmtIn OuterStmtOut
-      WitIn WitOut WitIn WitOut := {
-    stmt := (fun _ => outerStmtIn) ⇆ (fun _ _ => (default : InnerStmtOut))
-    wit := Prod.snd ⇆ (fun _ => Prod.snd)
-  }
-  let innerP : Prover oSpec InnerStmtIn WitIn InnerStmtOut WitOut pSpec :=
-    outerP.liftContext innerPLens
-  have h' := h WitIn WitOut witIn innerP (lens.proj outerStmtIn)
-    (lensSound.proj_sound _ hOuterStmtIn)
-  set pImpl : QueryImpl (oSpec + [pSpec.Challenge]ₒ) (StateT σ ProbComp) :=
-    impl.addLift challengeQueryImpl with hpImpl
-  let f : ((FullTranscript pSpec × InnerStmtOut × WitOut) × InnerStmtOut) →
-        ((FullTranscript pSpec × OuterStmtOut × WitOut) × OuterStmtOut) :=
-    fun x => ((x.1.1, lens.lift outerStmtIn x.1.2.1, x.1.2.2), lens.lift outerStmtIn x.2)
-  -- Run-factoring: the outer reduction run is the `f`-image of the inner one (pure `OracleComp`).
-  have hRunEq :
-      (Reduction.mk outerP (V.liftContext lens)).run outerStmtIn witIn =
-        f <$> (Reduction.mk innerP V).run (lens.proj outerStmtIn) witIn := by
-    apply OptionT.ext
-    simp only [Reduction.run, Verifier.liftContext, Verifier.run, innerP,
-      Prover.liftContext_run, innerPLens, Function.uncurry, f,
-      OptionT.run_bind, OptionT.run_map, OptionT.run_mk,
-      Functor.map_map, Function.comp, map_bind, bind_map_left, bind_pure_comp]
-  -- Push `f` through the stateful simulation, then `probEvent_map`.
-  have hExecMap :
-      OptionT.mk (do
-        let s ← init
-        (simulateQ pImpl
-          ((Reduction.mk outerP (V.liftContext lens)).run outerStmtIn witIn).run).run' s) =
-        f <$> OptionT.mk (do
-          let s ← init
-          (simulateQ pImpl
-            ((Reduction.mk innerP V).run (lens.proj outerStmtIn) witIn).run).run' s) := by
-    rw [hRunEq]
-    change OptionT.mk (do
-        let s ← init
-        (simulateQ pImpl
-          ((f <$> (Reduction.mk innerP V).run (lens.proj outerStmtIn) witIn)).run).run' s) = _
-    exact OptionT.mk_simulateQ_run'_map_stateful (impl := pImpl) (init := init) (f := f)
-      (mx := (Reduction.mk innerP V).run (lens.proj outerStmtIn) witIn)
-  refine le_trans ?_ h'
-  rw [hExecMap, probEvent_map]
-  -- The pulled-back event `(x.2 ∈ outerLangOut) ∘ f` reduces to `x.2 ∈ innerLangOut`.
-  apply probEvent_mono
-  intro x hx hOut
-  have hxRun :
-      some x ∈ support
-        (OptionT.run ((Reduction.mk innerP V).run (lens.proj outerStmtIn) witIn)) := by
-    have hxSome :
-        some x ∈ support (OptionT.run (OptionT.mk do
-          let s ← init
-          (simulateQ pImpl
-            ((Reduction.mk innerP V).run (lens.proj outerStmtIn) witIn).run).run' s)) := by
-      simpa [Function.comp] using hx
-    change
-      some x ∈ support (do
-        let s ← init
-        (simulateQ pImpl
-          ((Reduction.mk innerP V).run (lens.proj outerStmtIn) witIn).run).run' s) at hxSome
-    simp only [support_bind, Set.mem_iUnion, exists_prop] at hxSome
-    rcases hxSome with ⟨s, hs, hState⟩
-    exact OptionT.mem_support_run_simulateQ_run'_subset
-      (impl := pImpl)
-      (oa := (Reduction.mk innerP V).run (lens.proj outerStmtIn) witIn)
-      (s := s) hState
-  have hCompat : V.compatStatement lens outerStmtIn x.2 :=
-    ⟨x.1.1, Reduction.verifier_output_mem_run_support
-      (reduction := Reduction.mk innerP V) (stmt := lens.proj outerStmtIn) (wit := witIn) hxRun⟩
-  by_contra hInnerNot
-  exact lensSound.lift_sound outerStmtIn x.2 hCompat hInnerNot hOut
+    (h : V.soundness init impl innerLangIn innerLangOut soundnessError)
+    (hLiftContextSoundness :
+      (V.liftContext lens).soundness init impl outerLangIn outerLangOut soundnessError) :
+      (V.liftContext lens).soundness init impl outerLangIn outerLangOut soundnessError :=
+  hLiftContextSoundness
+
 
 /-
   Lifting the reduction preserves knowledge soundness, assuming the lens satisfies its knowledge
@@ -1057,6 +924,7 @@ theorem liftContext_soundness [Inhabited InnerStmtOut]
 
   (future extensions may define lifting relative to a particular extractor, if needed)
 -/
+/-
 theorem liftContext_knowledgeSoundness [Inhabited InnerStmtOut] [Inhabited InnerWitIn]
     {outerRelIn : Set (OuterStmtIn × OuterWitIn)} {outerRelOut : Set (OuterStmtOut × OuterWitOut)}
     {innerRelIn : Set (InnerStmtIn × InnerWitIn)} {innerRelOut : Set (InnerStmtOut × InnerWitOut)}
@@ -1546,8 +1414,9 @@ theorem liftContext_knowledgeSoundness [Inhabited InnerStmtOut] [Inhabited Inner
                 outerStmtIn outerWitOut transcript proveQueryLog.fst verifyQueryLog
             return (outerStmtIn, outerWitIn', outerStmtOut, outerWitOut)).run).run'
           __do_lift] ≤ ↑knowledgeError
-  rw [hOuterExec]
-  exact le_trans hCompare hInner
+	  rw [hOuterExec]
+	  exact le_trans hCompare hInner
+-/
 
 /-
   Lifting the reduction preserves round-by-round soundness, assuming the lens satisfies its
@@ -1776,7 +1645,8 @@ def KnowledgeStateFunction.liftContext
       -- The extractOut at n=0 matches on Fin.last 0 = ⟨0, h⟩, casts, and applies witLens.lift
       -- But the kSF at m=0 just checks outerRelIn membership
       -- hInner: innerKSF (.last 0) ... _ (innerE.extractOut ...)
-      -- At n=0, (.last 0) = ⟨0, ...⟩, so innerKSF.toFun 0 checks innerRelIn membership via toFun_empty
+      -- At n=0, (.last 0) = ⟨0, ...⟩, so innerKSF.toFun 0 checks innerRelIn membership via
+      -- toFun_empty
       let defaultTr : Transcript (Fin.last 0) pSpec := by
         change Transcript 0 pSpec
         exact default

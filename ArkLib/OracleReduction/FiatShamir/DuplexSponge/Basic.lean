@@ -14,16 +14,18 @@ import ArkLib.OracleReduction.Security.Rewinding
 # Substrate for Duplex-Sponge Fiat-Shamir
 
 This module provides the unified API and paper-facing aliases for the cryptographic primitives,
-security definitions, and transformations established in Section 3 and Section 4 of Chiesa-Orrù [CO25]
-for Duplex-Sponge Fiat-Shamir (DSFS) interactive oracle reductions.
+security definitions, and transformations established in Section 3 and Section 4 of Chiesa-Orrù
+[CO25] for Duplex-Sponge Fiat-Shamir (DSFS) interactive oracle reductions.
 
 ## Overview
 
 - **Section 3.2**: Core uniform preimage sampling lemmas (`DuplexSpongeFS.lemma_3_2`).
 - **Section 3.3**: Sponge and permutation API abstractions (`SpongeState`, `Sponge`).
 - **Section 3.4**: High-level aliases for Non-Interactive Argument (NARG) security properties,
-  including completeness, soundness, failure probabilities, and straightline/rewinding knowledge soundness.
-- **Section 4**: The core DSFS transformation definitions, including unsalted, salted, and generalized
+  including completeness, soundness, failure probabilities, and straightline/rewinding knowledge
+  soundness.
+- **Section 4**: The core DSFS transformation definitions, including unsalted, salted, and
+  generalized
   explicit salt source variants for both the prover and verifier.
 -/
 

@@ -5,11 +5,15 @@ Authors: ArkLib Contributors
 -/
 
 import Mathlib.Data.Finset.Image
+import Mathlib.Data.Fin.VecNotation
 import Mathlib.Algebra.Polynomial.Eval.Defs
 import Mathlib.Algebra.Polynomial.Degree.Lemmas
 import Mathlib.Data.ZMod.Basic
+import Mathlib.Algebra.Field.ZMod
 import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.NormNum.Prime
 import Mathlib.Tactic.Ring
 
 /-! # Refutation of the μ_{2^t} derandomization property for k-wpc agreement hypergraphs
@@ -98,8 +102,19 @@ at `1, 5` (points `±ω`), edge `{1,2}` at `2, 6` (points `±ω²`), empty at `3
 def badHypergraph : Fin 8 → Finset (Fin 3) :=
   ![{0, 1}, {0, 2}, {1, 2}, ∅, {0, 1}, {0, 2}, {1, 2}, ∅]
 
-/-- The ±-pair hypergraph is 3-weakly-partition-connected. -/
-theorem badHypergraph_kwpc : IsWeaklyPartitionConnected badHypergraph 3 := by decide
+/-- The ±-pair hypergraph is 3-weakly-partition-connected.  The labeling space is
+enumerated through value triples `![a, b, c]` so that the kernel can evaluate the
+27 cases by `decide` (the generic `Fintype` instance on `Fin 3 → Fin 3` reduces
+through `Multiset.Pi` and gets stuck). -/
+theorem badHypergraph_kwpc : IsWeaklyPartitionConnected badHypergraph 3 := by
+  have h : ∀ a b c : Fin 3,
+      3 * ((Finset.univ.image ![a, b, c]).card - 1) ≤ labelWeight badHypergraph ![a, b, c] := by
+    decide
+  intro f
+  have hf : f = ![f 0, f 1, f 2] := by
+    funext x; fin_cases x <;> rfl
+  rw [hf]
+  exact h (f 0) (f 1) (f 2)
 
 /-! ## The certificate -/
 
@@ -153,7 +168,7 @@ theorem eval_edge01 (i : ℕ) (hi : i = 0 ∨ i = 4) :
     rcases hi with rfl | rfl <;>
       simp only [p₀, eval_mul, eval_sub, eval_pow, eval_X, eval_C]
     · linear_combination (-1 : F) * hω
-    · linear_combination (-1 : F) * hω + ω ^ 2 * h8
+    · linear_combination (-1 : F) * hω + (1 + ω ^ 2) * h8
   · -- vertex 1 : (ω^i)² + 1 = 2
     show (p₁ : F[X]).eval (ω ^ i) = 2
     rcases hi with rfl | rfl <;>
@@ -198,20 +213,20 @@ theorem certificate_eval_agree :
       ((cert ω) u).eval (ω ^ (i : ℕ)) = ((cert ω) v).eval (ω ^ (i : ℕ)) := by
   intro i u hu v hv
   fin_cases i
-  · rw [show badHypergraph 0 = {0, 1} from rfl] at hu hv
+  · show ((cert ω) u).eval (ω ^ (0 : ℕ)) = ((cert ω) v).eval (ω ^ (0 : ℕ))
     rw [eval_edge01 ω hω 0 (Or.inl rfl) u hu, eval_edge01 ω hω 0 (Or.inl rfl) v hv]
-  · rw [show badHypergraph 1 = {0, 2} from rfl] at hu hv
+  · show ((cert ω) u).eval (ω ^ (1 : ℕ)) = ((cert ω) v).eval (ω ^ (1 : ℕ))
     rw [eval_edge02 ω hω 1 (Or.inl rfl) u hu, eval_edge02 ω hω 1 (Or.inl rfl) v hv]
-  · rw [show badHypergraph 2 = {1, 2} from rfl] at hu hv
+  · show ((cert ω) u).eval (ω ^ (2 : ℕ)) = ((cert ω) v).eval (ω ^ (2 : ℕ))
     rw [eval_edge12 ω hω 2 (Or.inl rfl) u hu, eval_edge12 ω hω 2 (Or.inl rfl) v hv]
-  · exact absurd (by simpa [badHypergraph] using hu) (Finset.not_mem_empty u).elim
-  · rw [show badHypergraph 4 = {0, 1} from rfl] at hu hv
+  · exact absurd (show u ∈ (∅ : Finset (Fin 3)) from hu) (Finset.notMem_empty u)
+  · show ((cert ω) u).eval (ω ^ (4 : ℕ)) = ((cert ω) v).eval (ω ^ (4 : ℕ))
     rw [eval_edge01 ω hω 4 (Or.inr rfl) u hu, eval_edge01 ω hω 4 (Or.inr rfl) v hv]
-  · rw [show badHypergraph 5 = {0, 2} from rfl] at hu hv
+  · show ((cert ω) u).eval (ω ^ (5 : ℕ)) = ((cert ω) v).eval (ω ^ (5 : ℕ))
     rw [eval_edge02 ω hω 5 (Or.inr rfl) u hu, eval_edge02 ω hω 5 (Or.inr rfl) v hv]
-  · rw [show badHypergraph 6 = {1, 2} from rfl] at hu hv
+  · show ((cert ω) u).eval (ω ^ (6 : ℕ)) = ((cert ω) v).eval (ω ^ (6 : ℕ))
     rw [eval_edge12 ω hω 6 (Or.inr rfl) u hu, eval_edge12 ω hω 6 (Or.inr rfl) v hv]
-  · exact absurd (by simpa [badHypergraph] using hu) (Finset.not_mem_empty u).elim
+  · exact absurd (show u ∈ (∅ : Finset (Fin 3)) from hu) (Finset.notMem_empty u)
 
 end Identities
 
@@ -245,6 +260,8 @@ theorem not_kwpc_rigidity (hω : ω ^ 4 = -1) :
 
 /-- Non-vacuity over a concrete prize-shaped prime field: `ω = 9` satisfies
 `9⁴ = 6561 ≡ -1 (mod 17)` (an element of order 8 in `ZMod 17`). -/
+private instance : Fact (Nat.Prime 17) := ⟨by norm_num⟩
+
 theorem not_kwpc_rigidity_zmod17 :
     ¬ ∀ (E : Fin 8 → Finset (Fin 3)), IsWeaklyPartitionConnected E 3 →
         ∀ p : Fin 3 → (ZMod 17)[X],

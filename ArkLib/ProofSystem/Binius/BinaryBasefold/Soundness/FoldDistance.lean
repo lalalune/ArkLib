@@ -194,7 +194,8 @@ lemma lemma_4_24_dist_folded_ge_of_last_noncompliant (i_star : Fin ℓ) (steps :
     have h_fiber_dist_lt_half :
         2 * (fiberwiseDisagreementSet 𝔽q β (i := ⟨i_star, by omega⟩) steps h_destIdx h_destIdx_le f_star f_bar_star).card < d_next := by
       rw [Nat.two_mul_lt_iff_le_half_of_sub_one (h_b_pos := by omega)]
-      -- ⊢ #(fiberwiseDisagreementSet 𝔽q β i_star steps h_destIdx h_destIdx_le f_star f_bar_star) ≤ (d_next - 1) / 2
+      -- ⊢ #(fiberwiseDisagreementSet 𝔽q β i_star steps h_destIdx h_destIdx_le f_star f_bar_star)
+      --     ≤ (d_next - 1) / 2
       rw [h_fw_dist_f_g_eq]
       rw [←Nat.two_mul_lt_iff_le_half_of_sub_one (h_b_pos := by omega)]
       unfold d_fw

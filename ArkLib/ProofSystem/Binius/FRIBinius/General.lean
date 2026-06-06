@@ -289,8 +289,8 @@ def concreteFRIBiniusKnowledgeError : ℝ≥0 :=
     + querySingleRepetitionError (𝓡 := 𝓡) ^ γ_repetitions
 
 /-- `∑ᵢ εᵢ` for the full verifier is at most **DP24 §5.2 eq. (43)** (same decomposition as
-**Theorem 4.17** / **Propositions 4.23–4.24** in the soundness analysis of **Construction 4.12**, plus
-the **Theorem 3.5** / ring-switching front encoded in batching+core RBR errors).
+**Theorem 4.17** / **Propositions 4.23–4.24** in the soundness analysis of **Construction 4.12**,
+plus the **Theorem 3.5** / ring-switching front encoded in batching+core RBR errors).
 
 Proof sketch:
 - Batching contributes `κ / |L|` (single challenge round in `pSpecBatching`)
@@ -478,8 +478,8 @@ theorem fullRbrKnowledgeError_sum_le_concrete :
 
 /-- Scalar KS for the full stack with error **`concreteFRIBiniusKnowledgeError`**, i.e. **DP24 §5.2
 (43)** / **Construction 5.1** concrete soundness (lifted to KS via OracleReduction; Diamond–Posen
-ePrint 2024/504). Aligns with §5.2 “Concrete soundness” (Theorems **3.5**, **4.17**; **Propositions 4.23**,
-**4.24**).
+ePrint 2024/504). Aligns with §5.2 “Concrete soundness” (Theorems **3.5**, **4.17**;
+**Propositions 4.23**, **4.24**).
 
 Proof strategy:
 1. `fullOracleVerifier_rbrKnowledgeSoundness` gives RBR-KS (on OracleVerifier)
@@ -495,7 +495,8 @@ theorem fullOracleVerifier_knowledgeSoundness :
       (BinaryBasefoldAbstractOStmtIn κ L K β ℓ' 𝓡 ϑ h_ℓ_add_R_rate))
     (relOut := acceptRejectOracleRel)
     (knowledgeError := concreteFRIBiniusKnowledgeError κ L ℓ' 𝓡 γ_repetitions) := by
-  -- Same `relIn` / `fullOracleVerifier` / error spine as the elaborated `fullOracleVerifier_rbrKnowledgeSoundness`.
+  -- Same `relIn` / `fullOracleVerifier` / error spine as the elaborated
+  -- `fullOracleVerifier_rbrKnowledgeSoundness`.
   let relInFull :=
     BatchingPhase.batchingInputRelation κ L K (booleanHypercubeBasis κ L K β) ℓ ℓ' h_l
       (BinaryBasefoldAbstractOStmtIn κ L K β ℓ' 𝓡 ϑ h_ℓ_add_R_rate)
@@ -508,7 +509,8 @@ theorem fullOracleVerifier_knowledgeSoundness :
       (κ := κ) (L := L) (K := K) (β := β) (ℓ := ℓ) (ℓ' := ℓ') (𝓡 := 𝓡) (ϑ := ϑ)
       (γ_repetitions := γ_repetitions) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (h_l := h_l)
       (𝓑 := 𝓑) (init := init) (impl := impl)
-  -- Step 2: `rbrKS ⇒ KS` is a function `(rbrKS → KS)` after fixing `relIn`, `relOut`, `verifier`, `ε`.
+  -- Step 2: `rbrKS ⇒ KS` is a function `(rbrKS → KS)` after fixing `relIn`, `relOut`, `verifier`,
+  -- `ε`.
   have h_ks : fullV.toVerifier.knowledgeSoundness init impl relInFull acceptRejectOracleRel
       (∑ i, εFull i) :=
     (Verifier.rbrKnowledgeSoundness_implies_knowledgeSoundness (init := init) (impl := impl)

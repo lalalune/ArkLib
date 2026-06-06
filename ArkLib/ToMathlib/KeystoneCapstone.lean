@@ -33,21 +33,23 @@ The verified-brick chain (all kernel-clean, `#print axioms = [propext, Classical
 Quot.sound]`) closes the **abstract function-field core** of §5:
 
   `betaRec` (App-A.4 recursion, defined+terminating+lands-in-𝒪, `BetaRecursion`)
-    → `betaRec_weight_le_concrete ≤ (2t+1)·d_R·D`        (`BetaWeightInduction` + `BetaWeightCollapse`)
+    → `betaRec_weight_le_concrete ≤ (2t+1)·d_R·D`     (`BetaWeightInduction` + `BetaWeightCollapse`)
     → `betaRec_matchingVanishes` (Hensel uniqueness)      (`BetaMatchingVanishes` + `CoeffExtract`)
     → `embeddingOf𝒪Into𝕃 (betaRec t) = 0`                 (`IngredientCBridge`, ingredient C)
-    → curve `γ` is linear-in-`Z`, coefficients per-point   (`Claim59Conditional`/`Claim510Conditional`)
+    → curve `γ` is linear-in-`Z`, coeffs per-point   (`Claim59Conditional`/`Claim510Conditional`)
 
 The chain bottoms out, per the grind ledger's authoritative final state, on a **single genuine §5
 math datum** (shared by obligations (1)+(4)): the Guruswami–Sudan interpolant's
-multiplicity-vanishing at the centre, valid in the Johnson radius `δ ≤ δ₀`; plus a handful of in-tree
-degree facts.  The remaining work to *physically* reach Curves.lean:1819 is the cross-file `L13`
+multiplicity-vanishing at the centre, valid in the Johnson radius `δ ≤ δ₀`; plus a handful
+of in-tree degree facts.  The remaining work to *physically* reach Curves.lean:1819 is the
+cross-file `L13`
 drop-in (replacing the trivial in-tree `β_regular` with `betaRec` inside `RationalFunctions.lean`)
 and the `F1` recentering fix — both edits to live-session-owned files, deferred by design.
 
 This capstone therefore packages the §5 list-decoding output as **one explicit bridge hypothesis**
-— the per-coefficient curve-polynomial datum `hCurvePolys` (exactly what the abstract chain produces:
-each coefficient index `j` carries a degree-`< k+1` interpolant agreeing on the good set) — and
+— the per-coefficient curve-polynomial datum `hCurvePolys` (exactly what the abstract chain
+produces: each coefficient index `j` carries a degree-`< k+1` interpolant agreeing on the
+good set) — and
 *proves*, kernel-clean with no `sorry`, that it yields the bundled `hcoeffPoly` witness and hence
 `jointAgreement`.  The honest measure of "how close the verified-brick composition reaches
 Curves:1819" is precisely: the conclusion is the real front-door goal, and the *only* residual
@@ -103,8 +105,8 @@ and discharging both the degree bound and the eval identity simultaneously. -/
 omit [Nonempty ι] [DecidableEq ι] in
 /-- **Bundling lemma (proven, kernel-clean).**  The per-coefficient curve-polynomial datum
 `CurveCoeffPolys` yields the bundled `hcoeffPoly` existential the front door consumes: a single
-`B : ℕ → Polynomial F` with `(B j).natDegree < k+1` for all `j < deg` and `(P z).coeff j = (B j).eval z`
-on the good set. -/
+`B : ℕ → Polynomial F` with `(B j).natDegree < k+1` for all `j < deg` and
+`(P z).coeff j = (B j).eval z` on the good set. -/
 theorem hcoeffPoly_witness_of_curveCoeffPolys
     {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     (u : WordStack F (Fin (k + 1)) ι) (P : F → Polynomial F)
@@ -176,10 +178,11 @@ theorem hcoeffPoly_of_johnson_regime
 /-! ## End-to-end: `jointAgreement` through the front door
 
 To confirm the capstone's conclusion is exactly the front-door `hcoeffPoly`, we feed it to
-`ProximityGap.RS_jointAgreement_of_prob_gt_and_errorBound_lower_bounds` (Curves.lean:1199) and obtain
-`jointAgreement`.  This type-checks the capstone against the *real* keystone front door: every
-hypothesis other than `hcoeffPoly` is the standard probability-threshold input the front door already
-takes (`hprob`, `hεsmall`, `hεlarge`), so the list-decoding branch of Curves:1819 is, under
+`ProximityGap.RS_jointAgreement_of_prob_gt_and_errorBound_lower_bounds` (Curves.lean:1199)
+and obtain `jointAgreement`.  This type-checks the capstone against the *real* keystone
+front door: every hypothesis other than `hcoeffPoly` is the standard probability-threshold
+input the front door already takes (`hprob`, `hεsmall`, `hεlarge`), so the list-decoding
+branch of Curves:1819 is, under
 `Section55CurveCoeffOutput`, a front-door compatibility check. -/
 omit [DecidableEq ι] in
 theorem jointAgreement_of_johnson_regime

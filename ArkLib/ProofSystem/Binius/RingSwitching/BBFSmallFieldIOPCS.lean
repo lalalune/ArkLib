@@ -29,7 +29,8 @@ in contrast to `FRIBinius/CoreInteractionPhase.lean` which fuses the sumcheck-fo
 - `bbfMLIOPCS`: Binary Basefold instantiated as an `MLIOPCS L ℓ'`
 - `bbf_fullOracleReduction_perfectCompleteness`: Perfect completeness of the composed protocol
 - `bbf_fullOracleVerifier_rbrKnowledgeSoundness`: RBR knowledge soundness of the composed protocol
-- `bbfSmallFieldConcreteKnowledgeError`: closed-form scalar error (ring-switching front + BBF (43)-style tail)
+- `bbfSmallFieldConcreteKnowledgeError`: closed-form scalar error
+  (ring-switching front + BBF (43)-style tail)
 - `bbf_fullOracleVerifier_knowledgeSoundness`: Scalar KS for the composed verifier via
   `FullRingSwitching.fullOracleVerifier_knowledgeSoundness` and
   `FullBinaryBasefold.fullRbrKnowledgeError_sum_le_concrete` (PCS RBR-error sum).
@@ -896,7 +897,8 @@ theorem bbf_fullOracleVerifier_rbrKnowledgeSoundness
 
 /-- Closed-form scalar knowledge-soundness error: **Protocol 3.1** front
 `(2ℓ' + κ)/|L|` plus `concreteBinaryBasefoldKnowledgeError` for the
-large-field Binary Basefold MLIOPCS tail (same decomposition as `fullRingSwitchingConcreteKnowledgeError`). -/
+large-field Binary Basefold MLIOPCS tail (same decomposition as
+`fullRingSwitchingConcreteKnowledgeError`). -/
 noncomputable def bbfSmallFieldConcreteKnowledgeError (κ : ℕ) (L : Type) [Fintype L]
     (ℓ' 𝓡 γ_rep : ℕ) : ℝ≥0 :=
   FullRingSwitching.fullRingSwitchingConcreteKnowledgeError κ L ℓ'

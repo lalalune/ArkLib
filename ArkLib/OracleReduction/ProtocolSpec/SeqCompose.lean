@@ -10,16 +10,19 @@ import ArkLib.OracleReduction.ProtocolSpec.Cast
 /-!
 # Sequential Composition of Protocol Specifications
 
-This module formalizes the algebraic and structural operations required for the sequential composition
-of protocol specifications (`ProtocolSpec`). Given a collection of protocol specifications representing
-individual sub-protocols, sequential composition models their execution in sequence: the prover and
-verifier run the first protocol to completion, generating a transcript, and then proceed to the next
-protocol, potentially using the accumulated transcript state to determine inputs for subsequent phases.
+This module formalizes the algebraic and structural operations required for the sequential
+composition of protocol specifications (`ProtocolSpec`). Given a collection of protocol
+specifications representing individual sub-protocols, sequential composition models their execution
+in sequence: the prover and verifier run the first protocol to completion, generating a transcript,
+and then proceed to the next protocol, potentially using the accumulated transcript state to
+determine inputs for subsequent phases.
 
 We define:
 1. Binary concatenation (`append` / `++ₚ`) of two specifications.
-2. N-ary sequential composition (`seqCompose`) over a family of specifications indexed by a finite type.
-3. Relevant structures for partitioning, casting, and translating transcripts, messages, and challenges across composed boundaries.
+2. N-ary sequential composition (`seqCompose`) over a family of specifications indexed by a finite
+   type.
+3. Relevant structures for partitioning, casting, and translating transcripts, messages, and
+   challenges across composed boundaries.
 -/
 
 universe u v

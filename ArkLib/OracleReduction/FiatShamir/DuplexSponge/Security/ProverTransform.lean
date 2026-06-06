@@ -33,8 +33,9 @@ duplex-sponge challenge oracle queries ($h$, $p$, and $p^{-1}$) and translates t
 2. **Branching Logic & Backtracking**:
    When the adversary queries the permutation oracle $p$ on $s_{\mathrm{in}}$, $\mathsf{D2SQuery}$
    runs the backtracking extraction procedure:
-   - If backtracking succeeds and reconstructs a valid path ending at $s_{\mathrm{in}}$ with messages
-     in the codec's image, the simulator issues an query to the challenge-generating family $g_i$.
+   - If backtracking succeeds and reconstructs a valid path ending at $s_{\mathrm{in}}$ with
+     messages in the codec's image, the simulator issues an query to the challenge-generating
+     family $g_i$.
    - If backtracking detects an ambiguous path, it aborts.
    - If no path is found, it falls back to standard caching or fresh sampling.
 
@@ -78,7 +79,8 @@ variable [DecidableEq StmtIn] [DecidableEq U]
 
 /-- The internal mutable state of the $\mathsf{D2SQuery}$ simulator (CO25, Section 5.4, Item 1).
 - `trace`: An ordered log of all hash ($h$) and permutation ($p / p^{-1}$) query-answer pairs.
-- `cacheP`: A cache of $(s_{\mathrm{in}}, s_{\mathrm{out}})$ permutation pairs sorted by input, used to chain forward squeezes.
+- `cacheP`: A cache of $(s_{\mathrm{in}}, s_{\mathrm{out}})$ permutation pairs sorted by input, used
+  to chain forward squeezes.
 - `trΔ`: A deduplicated trace index used for efficient lookups (CO25, Definition 5.2).
 - `h_inv`: A proof showing that `trΔ` is indeed a subset of the historical query log `trace`. -/
 structure D2SQueryState where
@@ -107,8 +109,8 @@ private def messageInSerializeImage
     (encoded : Vector U (messageSize msgIdx)) : Bool := by
   exact decide (∃ msg : pSpec.Message msgIdx, Serialize.serialize msg = encoded)
 
-/-- Evaluates whether all reconstructed messages up to the current round roundIdx lie in the image of
-the codec's serialization function. -/
+/-- Evaluates whether all reconstructed messages up to the current round roundIdx lie in the image
+of the codec's serialization function. -/
 def backtrackOutputMessagesInImage
     (inImage : (msgIdx : pSpec.MessageIdx) → Vector U (messageSize msgIdx) → Bool)
     (out : BacktrackOutput (δ := δ) (StmtIn := StmtIn) (pSpec := pSpec) (U := U)) : Bool :=
@@ -117,7 +119,8 @@ def backtrackOutputMessagesInImage
     let hlt := (Finset.mem_filter.mp (Finset.mem_toList.mp hj)).2
     inImage j (out.encodedMessages ⟨j, hlt⟩)
 
-/-- The predicate checking if all extracted messages belong to the codec's serialization image (CO25, Section 5.4, Items 4(d)/(e)). -/
+/-- The predicate checking if all extracted messages belong to the codec's serialization image
+(CO25, Section 5.4, Items 4(d)/(e)). -/
 private noncomputable def d2sInCodecImagePredicate
     (out : BacktrackOutput (δ := δ) (StmtIn := StmtIn) (pSpec := pSpec) (U := U)) : Bool :=
   backtrackOutputMessagesInImage
@@ -174,7 +177,8 @@ variable [DecidableEq StmtIn] [DecidableEq U]
   [∀ i, DecidableEq (pSpec.Message i)]
 
 
-/-- Defines the finite preimage set $\{ \hat{\rho} \in \Sigma^{\ell_V(i)} \mid \psi_i(\hat{\rho}) = \rho \}$
+/-- Defines the finite preimage set
+$\{ \hat{\rho} \in \Sigma^{\ell_V(i)} \mid \psi_i(\hat{\rho}) = \rho \}$
 of a verifier challenge $\rho$ under the decoder $\psi_i$. -/
 noncomputable def deserializePreimageFinset
     {i : pSpec.ChallengeIdx}
@@ -200,8 +204,8 @@ def sampleFromList {α κ : Type} {challengeSpec : OracleSpec κ} [SpongeUnit U]
     simpa [hlen_eq] using idxRaw.2⟩
   pure (l.get idx)
 
-/-- Uniformly samples a challenge preimage $\hat{\rho} \leftarrow \psi_i^{-1}(\rho)$ from the preimage set
-of the decoded challenge under $\psi_i$ (CO25, Section 5.4 & 5.8). -/
+/-- Uniformly samples a challenge preimage $\hat{\rho} \leftarrow \psi_i^{-1}(\rho)$ from the
+preimage set of the decoded challenge under $\psi_i$ (CO25, Section 5.4 & 5.8). -/
 noncomputable def uniformDeserializePreimage
     {κ : Type} {challengeSpec : OracleSpec κ}
     [Fintype U] [DecidableEq U]
@@ -234,8 +238,8 @@ section D2SQuery
 
 variable [DecidableEq StmtIn] [DecidableEq U] [Fintype U]
 
-/-- The oracle specification for the query simulator, composed of the challenge-generating family $g_i$,
-a uniform unit sampler, and a preimage selection oracle. -/
+/-- The oracle specification for the query simulator, composed of the challenge-generating family
+$g_i$, a uniform unit sampler, and a preimage selection oracle. -/
 abbrev d2sQueryOracles :=
   D2SChallengePlusUnitOracle
     (U := U) (challengeSpec := gSpec (U := U) StmtIn pSpec δ)
@@ -353,8 +357,8 @@ variable {T_H : Type} {T_P : Type}
   [∀ i, DecidableEq (pSpec.Message i)]
 
 /-- Handles hash oracle queries ($h$) in the query simulator (CO25, Section 5.4, Item 2).
-If a cached result exists, it is reused; otherwise, a fresh capacity segment is sampled, added to `trΔ.h`,
-and logged in `trace`. -/
+If a cached result exists, it is reused; otherwise, a fresh capacity segment is sampled, added to
+`trΔ.h`, and logged in `trace`. -/
 private def d2sHandleHashQuery
     (stmt : StmtIn) :
     StateT
@@ -386,9 +390,9 @@ private def d2sHandleHashQuery
       set { st with trace := trace', trΔ := trΔ', h_inv := h_inv' }
       return sampled
 
-/-- Handles inverse permutation oracle queries ($p^{-1}$) in the query simulator (CO25, Section 5.4, Item 3).
-If a cached transition exists, it is reused; otherwise, a fresh input state is sampled, added to `trΔ.p`,
-and logged in `trace`. -/
+/-- Handles inverse permutation oracle queries ($p^{-1}$) in the query simulator (CO25, Section 5.4,
+Item 3). If a cached transition exists, it is reused; otherwise, a fresh input state is sampled,
+added to `trΔ.p`, and logged in `trace`. -/
 private def d2sHandleInversePermQuery
     (stateOut : CanonicalSpongeState U) :
     StateT
@@ -420,8 +424,9 @@ private def d2sHandleInversePermQuery
       set { st with trace := trace', trΔ := trΔ', h_inv := h_inv' }
       return sampled
 
-/-- Handles the permutation query when backtracking fails to find a path (CO25, Section 5.4, Item 4(c)).
-Attempts to lookup the input in the cache or the permutation table, falling back to fresh sampling. -/
+/-- Handles the permutation query when backtracking fails to find a path (CO25, Section 5.4,
+Item 4(c)). Attempts to lookup the input in the cache or the permutation table, falling back to
+fresh sampling. -/
 private def d2sHandleBacktrackNoResult
     (stateIn : CanonicalSpongeState U) :
     StateT
@@ -500,9 +505,10 @@ private def d2sSynthesizeStateFromRateBlocks
             chainPairsFrom (U := U) synthesized_s_out extraStates
           pure (synthesized_s_out, st.cacheP ++ extraPairs)
 
-/-- Handles the permutation query when backtracking successfully reconstructs a path (CO25, Section 5.4, Items 4(d) & 4(e)).
-If the messages are in the codec's image, it queries $g_i$ and synthesizes the output state from the response.
-Otherwise, it falls back to a table lookup or fresh sampling. -/
+/-- Handles the permutation query when backtracking successfully reconstructs a path (CO25,
+Section 5.4, Items 4(d) & 4(e)). If the messages are in the codec's image, it queries $g_i$ and
+synthesizes the output state from the response. Otherwise, it falls back to a table lookup or fresh
+sampling. -/
 private def d2sHandleBacktrackSome
     (stateIn : CanonicalSpongeState U)
     (backtrackOut : BacktrackOutput
@@ -622,8 +628,8 @@ end StepImpl
 
 /-! ### `d2sQueryImpl` — generalization with a caller-supplied `gᵢ` realization
 
-Parameterizes the $\mathsf{D2SQuery}$ simulator over arbitrary implementations of the challenge-generation
-family $g_i$ and auxiliary sampling oracles. -/
+Parameterizes the $\mathsf{D2SQuery}$ simulator over arbitrary implementations of the
+challenge-generation family $g_i$ and auxiliary sampling oracles. -/
 
 section WithOracle
 
@@ -666,8 +672,9 @@ end D2SQuery
 
 /-! ## Codec bridge `gᵢ = ψᵢ⁻¹ ∘ fᵢ ∘ φᵢ⁻¹`
 
-Implements the codec bridge $g_i = \psi_i^{-1} \circ f_i \circ \phi_i^{-1}$ (CO25, Section 5.4, Eq. 16).
-It decodes the prefix of messages, queries the FS challenge oracle at the binarized salt, and samples a uniform preimage. -/
+Implements the codec bridge $g_i = \psi_i^{-1} \circ f_i \circ \phi_i^{-1}$ (CO25, Section 5.4,
+Eq. 16). It decodes the prefix of messages, queries the FS challenge oracle at the binarized salt,
+and samples a uniform preimage. -/
 
 section CodecBridge
 
@@ -743,7 +750,8 @@ variable [∀ i, Fintype (pSpec.Challenge i)] [∀ i, DecidableEq (pSpec.Challen
   [∀ i, Fintype (pSpec.Message i)] [∀ i, DecidableEq (pSpec.Message i)]
   {Salt : Type} [SaltCodec U δ Salt]
 
-/-- An entry in the global memoization table $tr_i$ for the codec bridge (CO25, Section 5.4, D2SAlgo Item 3). -/
+/-- An entry in the global memoization table $tr_i$ for the codec bridge (CO25, Section 5.4,
+D2SAlgo Item 3). -/
 structure D2SAlgoMemoEntry
     (StmtIn : Type) (U : Type) (δ : ℕ) (Salt : Type) {n : ℕ} (pSpec : ProtocolSpec n)
     [HasMessageSize pSpec] [HasChallengeSize pSpec] where
@@ -786,7 +794,8 @@ def insertD2SAlgoMemo
     D2SAlgoMemo StmtIn U δ Salt pSpec :=
   memo ++ [entry]
 
-/-- The memoized codec bridge implementation, ensuring response consistency across identical queries. -/
+/-- The memoized codec bridge implementation, ensuring response consistency across identical
+queries. -/
 noncomputable def d2sCodecBridgeImplMemo :
     GImpl (U := U) (StmtIn := StmtIn) (pSpec := pSpec) (δ := δ)
       (fsChallengeOracle (StmtIn × Salt) pSpec)
@@ -870,7 +879,8 @@ noncomputable def d2fOuterImpl
             OptionT (OracleComp
               (D2SChallengePlusUnitOracle (U := U) challengeSpec)) _)))
 
-/-- Evaluates a computation under the simulated query oracle while preserving the final stateful traces. -/
+/-- Evaluates a computation under the simulated query oracle while preserving the final stateful
+traces. -/
 noncomputable def d2fRaw
     {α : Type}
     {κ : Type} {challengeSpec : OracleSpec κ}
@@ -924,7 +934,8 @@ variable {T_H : Type} {T_P : Type}
   [∀ i, DecidableEq (pSpec.Challenge i)]
   {Salt : Type} [SaltCodec U δ Salt]
 
-/-- Implements the simulated prover surface operating with a duplex-sponge-form salt (CO25, Section 5.4, Items 1-3). -/
+/-- Implements the simulated prover surface operating with a duplex-sponge-form salt (CO25,
+Section 5.4, Items 1-3). -/
 noncomputable def D2FQueryProver
     (𝒜 : MaliciousProver oSpec pSpec StmtIn U δ) :
     AbortComp (oSpec +
@@ -940,8 +951,9 @@ noncomputable def D2FQueryProver
         (Salt := Salt))
       𝒜 default)
 
-/-- The complete simulated prover $\mathsf{D2SAlgo}^f(\mathcal{A})$ targeting the standard FS verifier,
-applying salt binarization post-processing to the output of `D2FQueryProver` (CO25, Section 5.4, Items 1-6). -/
+/-- The complete simulated prover $\mathsf{D2SAlgo}^f(\mathcal{A})$ targeting the standard FS
+verifier, applying salt binarization post-processing to the output of `D2FQueryProver` (CO25,
+Section 5.4, Items 1-6). -/
 noncomputable def d2sAlgo
     (𝒜 : MaliciousProver oSpec pSpec StmtIn U δ) :
     AbortComp (oSpec +

@@ -11,18 +11,20 @@ import ArkLib.OracleReduction.OracleInterface
 /-!
 # Interactive and Oracle Protocol Specifications
 
-This module formalizes the structural specifications of interactive and interactive oracle proof protocols.
-In a multi-round interactive setting, a protocol specification dictates the communication topology
+This module formalizes the structural specifications of interactive and interactive oracle proof
+protocols. In a multi-round interactive setting, a protocol specification dictates the communication
+topology
 between a Prover and a Verifier. We represent this via the `ProtocolSpec` structure, which models
 the protocol as a sequence of discrete communication steps (or rounds).
 
 For each step $i \in \{0, \dots, n-1\}$, the specification defines:
-1. The direction of communication (`Direction`), distinguishing between prover-to-verifier messages (`.P_to_V`)
-   and verifier-to-prover challenges (`.V_to_P`).
-2. The message space (`«Type»`), which is the set of all possible messages or challenges transmittable at step $i$.
+1. The direction of communication (`Direction`), distinguishing between prover-to-verifier messages
+   (`.P_to_V`) and verifier-to-prover challenges (`.V_to_P`).
+2. The message space (`«Type»`), which is the set of all possible messages or challenges
+   transmittable at step $i$.
 
-We define projections and operations on partial and full transcripts of these communication protocols,
-facilitating the formalization of round-by-round and straightline extractors.
+We define projections and operations on partial and full transcripts of these communication
+protocols, facilitating the formalization of round-by-round and straightline extractors.
 -/
 
 universe u v

@@ -83,7 +83,8 @@ theorem hensel_root_unique (f : Polynomial (PowerSeries k))
   -- `X ∣ a - b`, and (symmetrically) `X ∣ b - a₀`.
   have hXab : (X : PowerSeries k) ∣ (a - b) := X_dvd_sub_of_sub_mem_span ha hb
   -- `f'(b)` is a unit: `b ≡ a₀ mod X`, and the derivative-unit is preserved under congruence.
-  -- `isUnit_eval_of_X_dvd` needs `X ∣ a₀ - b` to transport `IsUnit (f'.eval a₀) → IsUnit (f'.eval b)`.
+  -- `isUnit_eval_of_X_dvd` needs `X ∣ a₀ - b` to transport
+  -- `IsUnit (f'.eval a₀) → IsUnit (f'.eval b)`.
   have hXa₀b : (X : PowerSeries k) ∣ (a₀ - b) := by
     rw [Ideal.mem_span_singleton] at hb
     have : a₀ - b = -(b - a₀) := by ring

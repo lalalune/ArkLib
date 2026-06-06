@@ -21,8 +21,8 @@ probability bounds.
 
 ## Mathematical Context
 
-Let $C \subset F^\iota$ be a Reed-Solomon code of rate $\rho$. The goal of the proximity gap keystone
-is to establish a bound on the multi-correlated agreement (MCA) error:
+Let $C \subset F^\iota$ be a Reed-Solomon code of rate $\rho$. The goal of the proximity gap
+keystone is to establish a bound on the multi-correlated agreement (MCA) error:
 $$\varepsilon_{\mathrm{ca}}(C, \delta, \varepsilon)$$
 under the Johnson bound regime $\delta \le 1 - \sqrt{\rho}$.
 
@@ -39,9 +39,12 @@ This file wires the individual modular steps into a unified, clean assembly, est
 
 ## Key Formalizations
 * `htailDeg_field`: Adapts the tail degree truncation bounds to the finite-range datum.
-* `section5DataFin_of_producers`: Constructor integrating the modular sub-reduces into `Section5StrictDataFin`.
-* `correlatedAgreement_listDecoding_closed_fin`: Front-door theorem proving the correlated agreement curve bounds from the finite-range datum.
-* `keystone_of_section5Inputs`: The end-to-end assembly theorem discharging all intermediate residuals.
+* `section5DataFin_of_producers`: Constructor integrating the modular sub-reduces into
+  `Section5StrictDataFin`.
+* `correlatedAgreement_listDecoding_closed_fin`: Front-door theorem proving the correlated
+  agreement curve bounds from the finite-range datum.
+* `keystone_of_section5Inputs`: The end-to-end assembly theorem discharging all intermediate
+  residuals.
 
 ## References
 * [BCIKS20] Ben-Sasson, Carmon, Ishai, Kopparty, Saraf, *Proximity Gaps for Reed–Solomon Codes*,
@@ -79,7 +82,8 @@ theorem htailDeg_field {x₀ : F} {R : F[X][X][Y]} {H : F[X][Y]}
 
 /-! ### Assembly of Section 5 Finite Data -/
 
-/-- Constructs the `Section5StrictDataFin` instance by integrating the various modular sub-reductions. -/
+/-- Constructs the `Section5StrictDataFin` instance by integrating the various modular
+sub-reductions. -/
 noncomputable def section5DataFin_of_producers {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     {u : WordStack F (Fin (k + 1)) ι} {P : F → Polynomial F}
     {x₀ : F} (b : GSFactorData.Bundle (F := F) x₀)
@@ -87,7 +91,8 @@ noncomputable def section5DataFin_of_producers {k deg : ℕ} {domain : ι ↪ F}
     (Bcoeff : (i₁ : ℕ) → {m : ℕ} → Nat.Partition m → 𝒪 b.H)
     (matchingSet : Finset F)
     (root : (z : F) → rationalRoot (H_tilde' b.H) z)
-    -- the Prop-5.5 linear representative of `γ` (fixes the truncation index `T := Ppoly.natDegree`):
+    -- the Prop-5.5 linear representative of `γ`
+    -- (fixes the truncation index `T := Ppoly.natDegree`):
     (Ppoly : F[X][Y])
     (hrep : polyToPowerSeries𝕃 b.H Ppoly = γ x₀ b.R b.H b.hHyp)
     (hdegX : Polynomial.Bivariate.degreeX Ppoly ≤ 1)

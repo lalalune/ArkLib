@@ -234,7 +234,8 @@ def rewindingKnowledgeSoundness
         -- `ℰ` runs in expected time `et_NARG(λ, t, n, δ_𝒫̃(λ, n), τ_𝒫̃(λ, n))`
         extractor.expectedCostBound prover costModel val
           (timeBound prover queryBound failureError)
-          -- Future work: double check this `extractor.expectedCostBound` separate bound, should we move it to param
+          -- Future work: double check this `extractor.expectedCostBound` separate bound, should we
+          -- move it to param
 
 end NonInteractive
 
