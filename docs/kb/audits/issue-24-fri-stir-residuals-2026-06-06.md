@@ -35,6 +35,18 @@ old finite-range diagnostic scratch block after `fri_query_soundness` has been
 removed; the declaration itself remains the faithful non-`True` Claim 8.2
 residual, namely the query-round route to `Code.jointAgreement`.
 
+Current source also exposes the #14 split frontier:
+
+- `FriQuerySoundnessParts` separates the Claim 8.2 proof boundary into the
+  query-round acceptance bound, the batching/oracle-lens reduction, and the
+  correlated-agreement-to-joint-agreement coding step.
+- `fri_query_soundness_of_parts` reassembles the faithful
+  `fri_query_soundness` residual from those three named ingredients.
+
+This is an API narrowing, not a proof of Claim 8.2. The actual probabilistic
+query-round theorem and the coding-theoretic bridge into `Code.jointAgreement`
+remain open proof work.
+
 ### STIR proximity gap
 
 `ArkLib/ProofSystem/Stir/ProximityGap.lean` is intentionally inert today. Its
@@ -103,12 +115,16 @@ ArkLib/ProofSystem/Stir/ProximityGap.lean:68:  Honest residual: close `AffineLin
 ArkLib/ProofSystem/Stir/RoundProtocol.lean:132: The STIR fold-round oracle reduction
 ArkLib/ProofSystem/Stir/RoundProtocol.lean:187: Completeness of the real STIR fold-round object
 ArkLib/ProofSystem/BatchedFri/Security.lean:695:def fri_query_soundness
+ArkLib/ProofSystem/BatchedFri/Security.lean:726:structure FriQuerySoundnessParts
+ArkLib/ProofSystem/BatchedFri/Security.lean:749:theorem fri_query_soundness_of_parts
 ```
 
 ## Remaining proof tracks
 
-1. FRI: add sequential-composition soundness infrastructure, then prove that
-   `totalError` bounds the verifier failure probability.
+1. FRI: add sequential-composition soundness infrastructure, prove the
+   query-round acceptance/lens/coding ingredients exposed by
+   `FriQuerySoundnessParts`, then prove that `totalError` bounds the verifier
+   failure probability.
 2. BCIKS20/STIR proximity gap: close the affine-lines correlated-agreement
    theorem in the list-decoding regime, then lift through affine spaces and
    curves to the repaired monomial proximity-gap statement.
