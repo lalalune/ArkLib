@@ -6,6 +6,8 @@ Authors: ArkLib Contributors
 
 import ArkLib.ToMathlib.BetaMatchingVanishes
 
+set_option linter.style.longLine false
+
 /-!
 # The `(X−x₀)^t` coefficient extraction discharging `coeffExtract` (brick **L12**)
 

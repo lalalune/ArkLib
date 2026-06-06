@@ -165,8 +165,12 @@ theorem lambda_violation_polyFamily
       ReedSolomon.evalOnPoints domain q = c j := by
     intro j
     have hmem : c j ∈ (ReedSolomon.code domain (k + 1) : Set (ι → F)) := (hcmem j).1
-    rw [ReedSolomon.mem_code_iff_exists_polynomial] at hmem
-    obtain ⟨q, hdeg, heval⟩ := hmem
+    have hmem' :
+        ∃ q : F[X], q.degree < k + 1 ∧ c j = ReedSolomon.evalOnPoints domain q := by
+      simpa using
+        (ReedSolomon.mem_code_iff_exists_polynomial (n := k + 1) (α := domain)
+          (f := c j)).mp hmem
+    obtain ⟨q, hdeg, heval⟩ := hmem'
     exact ⟨q, Polynomial.mem_degreeLT.mpr hdeg, heval.symm⟩
   choose p hpdeg hpeval using hpoly
   refine ⟨u, p, ?_, hpdeg, ?_⟩
@@ -182,5 +186,140 @@ theorem lambda_violation_polyFamily
     have hball : c j ∈ relHammingBall u δ := (hcmem j).2
     rw [hpeval j]
     exact hball
+
+/-! ### The sampling set `T = F ∖ range domain` -/
+
+/-- The CS25 deep-hole **sampling set** `T = F ∖ range domain` of points outside the evaluation
+domain.  Each `a ∈ T` is a genuine "hole" (`domain i ≠ a` for all `i`), the precondition of every
+deep-hole brick in `CS25DeepHole.lean`. -/
+noncomputable def sampleSet (domain : ι ↪ F) : Finset F :=
+  Finset.univ \ Finset.univ.image domain
+
+/-- Every point of the sampling set is outside the evaluation domain. -/
+theorem mem_sampleSet_imp_off_domain {domain : ι ↪ F} {a : F}
+    (ha : a ∈ sampleSet domain) : ∀ i, domain i ≠ a := by
+  intro i hi
+  unfold sampleSet at ha
+  rw [Finset.mem_sdiff] at ha
+  exact ha.2 (Finset.mem_image.mpr ⟨i, Finset.mem_univ i, hi⟩)
+
+/-- The sampling set has real cardinality `s = q − n`. -/
+theorem sampleSet_card (domain : ι ↪ F) :
+    (sampleSet domain).card = Fintype.card F - Fintype.card ι := by
+  classical
+  unfold sampleSet
+  rw [Finset.card_sdiff_of_subset (Finset.subset_univ _)]
+  rw [Finset.card_univ, Finset.card_image_of_injective _ domain.injective, Finset.card_univ]
+
+/-- The real cardinality identity used by the `hDeepHole` shape. -/
+theorem sampleSet_card_real (domain : ι ↪ F)
+    (hs_pos : (0 : ℝ) < Fintype.card F - Fintype.card ι) :
+    ((sampleSet domain).card : ℝ) = (Fintype.card F : ℝ) - (Fintype.card ι : ℝ) := by
+  rw [sampleSet_card]
+  have hle : Fintype.card ι ≤ Fintype.card F := by
+    by_contra h
+    push_neg at h
+    have : (Fintype.card F : ℝ) - (Fintype.card ι : ℝ) < 0 := by
+      have : (Fintype.card F : ℝ) < (Fintype.card ι : ℝ) := by exact_mod_cast h
+      linarith
+    linarith
+  rw [Nat.cast_sub hle]
+
+/-- The sampling set is nonempty (needed for the `hDeepHole` shape). -/
+theorem sampleSet_nonempty (domain : ι ↪ F)
+    (hs_pos : (0 : ℝ) < Fintype.card F - Fintype.card ι) :
+    (sampleSet domain).Nonempty := by
+  rw [← Finset.card_pos]
+  have : (0 : ℝ) < (sampleSet domain).card := by
+    rw [sampleSet_card_real domain hs_pos]; exact hs_pos
+  exact_mod_cast this
+
+/-! ### The remaining genuinely-probabilistic residual
+
+The deep-hole probability bound `numDistinct p a ≤ ε·q` is the only piece of `hDeepHole` that is
+**not** manufacturable from the in-tree `Lambda` / `ReedSolomon` definitions; it is the external
+content already flagged in the `CS25DeepHole.lean` docstring.  We surface it as a named residual,
+stated for the extracted polynomial family and the explicit sampling set, so that the assembly
+below is a clean, `sorry`-free reduction.
+
+`DeepHoleProbResidual domain k δ ε u p` says: for the deep-hole word `u`, the degree-`< k+1`
+polynomial family `p`, on the sampling set `T = F ∖ range domain`, every point's distinct-value
+count is bounded by `ε·q`.  Its genuine justification (deep-hole line construction + proven
+closeness transfer `relHammingDist_deepHoleLine_eq`, the joint-far side condition that the pair
+`(u⁰, u¹)` is not jointly `δ`-close, and the uniform-`γ` counting lemma
+`prob_uniform_eq_card_filter_div_card`) is the external probabilistic argument. -/
+def DeepHoleProbResidual
+    (domain : ι ↪ F) (k L : ℕ) (δ ε : ℝ) (u : ι → F) (p : Fin L → F[X]) : Prop :=
+  (∀ j, p j ∈ Polynomial.degreeLT F (k + 1)) →
+  (∀ j, ReedSolomon.evalOnPoints domain (p j) ∈ relHammingBall u δ) →
+  ∀ a ∈ sampleSet domain, (numDistinct p a : ℝ) ≤ ε * (Fintype.card F : ℝ)
+
+/-! ### Assembling `hDeepHole` -/
+
+/-- **Assembled `hDeepHole`.**  Combining Component 1 (Λ-violation injection), Component 2
+(polynomial lift) and the named probabilistic residual `DeepHoleProbResidual`, we produce the
+exact `hDeepHole` data demanded by `claim3_of_deepHole` / the in-tree reduction: from
+`¬ (Λ(RS[k+1], δ) ≤ L0)`, an injective degree-`< k+1` family `p : Fin (L0 + 1) → F[X]` and the
+sampling set `T = F ∖ range domain` of real size `s`, with `numDistinct p a ≤ ε·q` on `T`.
+
+The only external input is `DeepHoleProbResidual` for the extracted data — everything else
+(extraction, lift, sampling-set cardinality / nonemptiness) is proven. -/
+theorem hDeepHole_of_probResidual
+    (domain : ι ↪ F) (k : ℕ) (δ ε : ℝ) (L0 : ℕ) (s : ℝ)
+    (hkn : k + 1 ≤ Fintype.card ι)
+    (hs_pos : (0 : ℝ) < Fintype.card F - Fintype.card ι)
+    (hsdef : s = (Fintype.card F : ℝ) - (Fintype.card ι : ℝ))
+    (hres : ∀ (u : ι → F) (p : Fin (L0 + 1) → F[X]),
+      DeepHoleProbResidual domain k (L0 + 1) δ ε u p)
+    (hviol : ¬ (Lambda ((ReedSolomon.code domain (k + 1) : Set (ι → F))) δ ≤ (L0 : ℕ∞))) :
+    ∃ (p : Fin (L0 + 1) → F[X]) (T : Finset F),
+      (∀ j, p j ∈ Polynomial.degreeLT F (k + 1)) ∧
+      Function.Injective p ∧
+      T.Nonempty ∧
+      (T.card : ℝ) = s ∧
+      (∀ a ∈ T, (numDistinct p a : ℝ) ≤ ε * (Fintype.card F : ℝ)) := by
+  obtain ⟨u, p, hpinj, hpdeg, hpclose⟩ :=
+    lambda_violation_polyFamily domain k δ L0 hkn hviol
+  refine ⟨p, sampleSet domain, hpdeg, hpinj, sampleSet_nonempty domain hs_pos, ?_, ?_⟩
+  · rw [sampleSet_card_real domain hs_pos, hsdef]
+  · exact hres u p hpdeg hpclose
+
+/-- **ABF26 Theorem 5.3 [CS25 Theorem 2] — final assembled form.**
+
+The full list-size bound, consuming the proven reduction
+`rs_epsCA_implies_lambda_extended_cs25_proved` (whose only residual was `hDeepHole`) with
+`hDeepHole` discharged via `hDeepHole_of_probResidual`.  The single remaining external input is
+the genuinely-probabilistic `DeepHoleProbResidual` (deep-hole probability bound + joint-far side
+condition), plus the standard parameter side conditions `k + 1 ≤ |ι|` and `0 < |F| − |ι|`. -/
+theorem rs_epsCA_implies_lambda_extended_cs25_final
+    (domain : ι ↪ F) (k : ℕ) (δ : ℝ) (η : ℝ)
+    (hk_pos : 0 < k)
+    (hη_lo : 0 ≤ η) (hη_lt : η < 1)
+    (hkn : k + 1 ≤ Fintype.card ι)
+    (hs_pos : (0 : ℝ) < Fintype.card F - Fintype.card ι)
+    (hε_ca :
+        (epsCA (F := F) (A := F)
+            ((ReedSolomon.code domain k : Set (ι → F)))
+            δ.toNNReal δ.toNNReal).toReal ≤
+          η * (1 / k - Fintype.card ι / (k * Fintype.card F)))
+    (hres :
+      let ε := (epsCA (F := F) (A := F)
+                  ((ReedSolomon.code domain k : Set (ι → F)))
+                  δ.toNNReal δ.toNNReal).toReal
+      let L0 : ℕ := Nat.ceil ((Fintype.card F : ℝ) / (1 - η) * ε)
+      ∀ (u : ι → F) (p : Fin (L0 + 1) → F[X]),
+        DeepHoleProbResidual domain k (L0 + 1) δ ε u p) :
+    Lambda ((ReedSolomon.code domain (k + 1) : Set (ι → F))) δ ≤
+      (Nat.ceil
+        ((Fintype.card F : ℝ) / (1 - η)
+          * (epsCA (F := F) (A := F)
+                ((ReedSolomon.code domain k : Set (ι → F)))
+                δ.toNNReal δ.toNNReal).toReal) : ℕ∞) := by
+  apply rs_epsCA_implies_lambda_extended_cs25_proved
+    domain k δ η hk_pos hη_lo hη_lt hs_pos hε_ca
+  -- Discharge `hDeepHole` (the `let ε; let L0; let s; (¬… → ∃…)` goal) via the assembly.
+  -- Introduce the three `let`-bindings (`ε`, `L0`, `s`) and the negated-list hypothesis.
+  intro ε L0 s hviol
+  exact hDeepHole_of_probResidual domain k δ ε L0 s hkn hs_pos rfl hres hviol
 
 end CodingTheory.CS25.DeepHole

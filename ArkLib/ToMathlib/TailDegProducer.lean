@@ -236,14 +236,3 @@ theorem htailDeg_with_bound {x₀ : F} {R : F[X][X][Y]}
 end TailDegProducer
 
 end ArkLib
-
-/-! ## Axiom audit — every declaration here rests only on
-`[propext, Classical.choice, Quot.sound]`, with no `sorry`/`admit`/`axiom`/`native_decide`. -/
-#print axioms ArkLib.TailDegProducer.constantCoeff_shiftSeries_eq_zero
-#print axioms ArkLib.TailDegProducer.shiftSeries_eq_X
-#print axioms ArkLib.TailDegProducer.subst_X_eq_self
-#print axioms ArkLib.TailDegProducer.gamma_eq_mk_alphaFromBeta
-#print axioms ArkLib.TailDegProducer.mk_alphaFromBeta_eq_polyToPowerSeries
-#print axioms ArkLib.TailDegProducer.alphaFromBeta_eq_lift_coeff
-#print axioms ArkLib.TailDegProducer.htailDeg_of_polynomial_representative
-#print axioms ArkLib.TailDegProducer.htailDeg_with_bound

@@ -8,6 +8,8 @@ import ArkLib.ToMathlib.BetaRecursion
 import ArkLib.ToMathlib.IngredientCBridge
 import ArkLib.ToMathlib.HenselUniqueness
 
+set_option linter.style.longLine false
+
 /-!
 # `betaRec` satisfies ingredient-C `MatchingVanishes` (brick **L12 → L14**)
 

@@ -2348,6 +2348,34 @@ theorem correlatedAgreement_affine_spaces {k : ℕ} [NeZero k]
     rw [show i = Fin.succ j from (Fin.succ_pred i hi).symm]
     exact this
 
+/-- Theorem 1.7 front door with the affine-line Johnson residual supplied by the verified
+`betaRec` capsule at every radius `δ' ≤ δ` used internally by the affine-space proof. -/
+theorem correlatedAgreement_affine_spaces_johnson_of_betaRec {k : ℕ} [NeZero k]
+    {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    (hdeg : 0 < deg)
+    (hδ_pos : 0 < δ)
+    (hInput : ∀ δ' : ℝ≥0, δ' ≤ δ →
+      ∀ (_hk : 0 < 1) (u : WordStack F (Fin 2) ι),
+        Pr_{
+          let z ← $ᵖ F}[δᵣ(∑ t : Fin 2, (z ^ (t : ℕ)) • u t,
+            ReedSolomon.code domain deg) ≤ δ'] >
+            (((1 : ℕ) : ENNReal) * (errorBound δ' deg domain : ENNReal)) →
+        (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ' →
+        δ' < 1 - ReedSolomon.sqrtRate deg domain →
+        ArkLib.KeystoneStrictResidual.BetaCurveInput
+          (k := 1) (deg := deg) (domain := domain) (δ := δ') u)
+    (hδ : δ < 1 - ReedSolomon.sqrtRate deg domain)
+    (hRS : deg + 1 ≤ Fintype.card ι)
+    (hε : errorBound δ deg domain < 1) :
+    δ_ε_correlatedAgreementAffineSpaces (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
+  correlatedAgreement_affine_spaces (ι := ι) (F := F) (k := k) (deg := deg)
+    (domain := domain) (δ := δ) hdeg hδ_pos
+    (fun δ' hδ'_le =>
+      ArkLib.KeystoneStrictResidual.strictCoeffPolysResidual_of_betaRec
+        (k := 1) (deg := deg) (domain := domain) (δ := δ') (hInput δ' hδ'_le))
+    hδ hRS hε
+
 end CoreResults
 
 end ProximityGap

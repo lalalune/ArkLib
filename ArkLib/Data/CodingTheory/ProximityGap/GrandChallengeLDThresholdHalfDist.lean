@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 
-import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLattice
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLDThreshold
 import ArkLib.Data.CodingTheory.ReedSolomon
+
+set_option linter.unusedSectionVars false
 
 /-!
 # Unconditional half-distance floor for the genuine list-decoding threshold
@@ -174,5 +176,31 @@ theorem half_minDist_le_listLatticeThreshold
   apply Finset.le_max'
   apply mem_listLatticeSet_of_lt_half_minDist domain hdeg hdegn ?_ hbudget
   omega
+
+/-- **Fully discharged RS list-threshold sandwich.**
+
+The nonemptiness proof for `listLatticeThreshold` is constructed internally from the radius-`0`
+half-distance point, so callers only supply the genuine mathematical side conditions:
+positive degree, `deg ≤ n`, positive interleaving, budget `1 ≤ ε*·|F|`, and `ε* < 1`.
+
+This is the direct faithful-list-decoding analogue of the collapsed Prop refutation: it states
+the actual lattice-threshold information that survives after replacing the broken real-threshold
+encoding by the finite grid threshold. -/
+theorem listLatticeThreshold_rs_between_halfDist_and_capacity
+    [Fintype F] [Nonempty ι]
+    (domain : ι ↪ F) {deg m : ℕ} (hdeg : deg ≠ 0) (hdegn : deg ≤ Fintype.card ι)
+    (hm : m ≠ 0) {ε_star : ℝ≥0}
+    (hbudget : 1 ≤ (ε_star : ENNReal) * (Fintype.card F : ENNReal))
+    (hε : ε_star < 1) :
+    let hne := listLatticeSet_nonempty_rs domain hdeg hdegn hbudget
+    (Fintype.card ι - deg) / 2 ≤
+        GrandChallenges.listLatticeThreshold
+          (ReedSolomon.code domain deg : Set (ι → F)) m ε_star hne ∧
+      GrandChallenges.listLatticeThreshold
+          (ReedSolomon.code domain deg : Set (ι → F)) m ε_star hne ≤
+        Fintype.card ι - deg := by
+  intro hne
+  exact ⟨half_minDist_le_listLatticeThreshold domain hdeg hdegn hbudget hne,
+    listLatticeThreshold_le_capacity domain hdegn hm hε hne⟩
 
 end ProximityGap

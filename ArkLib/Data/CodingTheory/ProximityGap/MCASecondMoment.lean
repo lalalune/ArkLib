@@ -327,12 +327,44 @@ lemma epsStar_lt_second_moment_value {M' q : ℕ} (hq : 0 < q)
   -- `(M' - M'²/Q) = (D : ℝ≥0∞)/Q`.
   have hMq : ((M' * q : ℕ) : ℝ≥0∞) / Q = (M' : ℝ≥0∞) := by
     rw [hQ]; push_cast; rw [mul_div_assoc, ENNReal.div_self hQne hQtop, mul_one]
+<<<<<<< HEAD
   have hDcast : (D : ℝ≥0∞) = ((M' * q : ℕ) : ℝ≥0∞) - ((M' * M' : ℕ) : ℝ≥0∞) := by
     rw [hD]; exact Nat.cast_sub hle
+||||||| 75d3622ca
+  have hDcast : (D : ℝ≥0∞) = (M' * q : ℕ) - (M' * M' : ℕ) := by
+    rw [hD, Nat.cast_sub hle]
+=======
+  have hDcast : (D : ℝ≥0∞) =
+      ((M' * q : ℕ) : ℝ≥0∞) - ((M' * M' : ℕ) : ℝ≥0∞) := by
+    simp [hD]
+>>>>>>> fork/main
   have hval : (M' : ℝ≥0∞) - (M' * M' : ℝ≥0∞) / Q = (D : ℝ≥0∞) / Q := by
     rw [hDcast, ENNReal.sub_div (by intro _ _; exact hQne), hMq]
+<<<<<<< HEAD
     norm_num
+||||||| 75d3622ca
+    push_cast
+=======
+    push_cast
+    rfl
+>>>>>>> fork/main
   rw [hval]
+<<<<<<< HEAD
+||||||| 75d3622ca
+  -- `(D/Q)/Q = D/(Q*Q)`.
+  rw [div_div]
+  set QQ : ℝ≥0∞ := Q * Q with hQQ
+  have hQQne : QQ ≠ 0 := mul_ne_zero hQne hQne
+  have hQQtop : QQ ≠ ⊤ := ENNReal.mul_ne_top hQtop hQtop
+=======
+  -- `(D/Q)/Q = D/(Q*Q)`.
+  rw [div_eq_mul_inv, div_eq_mul_inv, mul_assoc,
+    ← ENNReal.mul_inv (a := Q) (b := Q) (Or.inl hQne) (Or.inl hQtop),
+    ← div_eq_mul_inv]
+  set QQ : ℝ≥0∞ := Q * Q with hQQ
+  have hQQne : QQ ≠ 0 := mul_ne_zero hQne hQne
+  have hQQtop : QQ ≠ ⊤ := ENNReal.mul_ne_top hQtop hQtop
+>>>>>>> fork/main
   -- `ε* = (2^128)⁻¹`.
   have hepsStar : (ProximityGap.epsStar : ℝ≥0∞) = (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ := by
     rw [ProximityGap.epsStar]; push_cast; rw [one_div]
@@ -352,10 +384,22 @@ lemma epsStar_lt_second_moment_value {M' q : ℕ} (hq : 0 < q)
       _ = (2 ^ (128 : ℕ) : ℝ≥0∞) * (D : ℝ≥0∞) := by push_cast; ring
   have hinvne : (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ ≠ 0 := ENNReal.inv_ne_zero.mpr hpow_ne_top
   have hinvtop : (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ ≠ ⊤ := ENNReal.inv_ne_top.mpr hpow_ne_zero
+<<<<<<< HEAD
   calc (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ * Q * Q
       = (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ * (Q * Q) := by rw [mul_assoc]
     _ < (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ * ((2 ^ (128 : ℕ) : ℝ≥0∞) * (D : ℝ≥0∞)) :=
         ENNReal.mul_lt_mul_right hinvne hinvtop hcast
+||||||| 75d3622ca
+  calc (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ * QQ
+      < (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ * ((2 ^ (128 : ℕ) : ℝ≥0∞) * (D : ℝ≥0∞)) :=
+        ENNReal.mul_lt_mul_left hinvne hinvtop hcast
+=======
+  calc (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ * QQ
+      < (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ * ((2 ^ (128 : ℕ) : ℝ≥0∞) * (D : ℝ≥0∞)) :=
+        by
+          simpa [mul_comm, mul_left_comm, mul_assoc] using
+            ENNReal.mul_lt_mul_left hinvne hinvtop hcast
+>>>>>>> fork/main
     _ = (D : ℝ≥0∞) := by
         rw [← mul_assoc, ENNReal.inv_mul_cancel hpow_ne_zero hpow_ne_top, one_mul]
 

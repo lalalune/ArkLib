@@ -10,75 +10,31 @@ import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.CodingTheory.ListDecodability
 
 /-!
-# BKR06 §3 construction: roots → close Reed–Solomon codewords (geometric core)
+# BKR06 §3 Construction: Subspace Polynomials and Reed–Solomon Code Closeness
 
-This file formalizes the *geometric step* of the BKR06 list-decoding lower bound
-(Ben-Sasson–Kopparty–Radhakrishnan, *Subspace polynomials and list decoding of
-Reed–Solomon codes*, FOCS 2006), §3 / Lemma 3.5 / Prop 3.4.  The companion file
-`ArkLib.ToMathlib.BKR06FiberCount` already supplies the *counting* engine (every
-in-range value-fiber of the linearized subspace polynomial `P_W` has size exactly
-`q^d`).  Here we supply the polynomial-agreement heart that BKR06 uses to turn
-roots of subspace polynomials into Reed–Solomon codewords close to a fixed
-received word.
+This module formalizes the geometric component of the list-decoding lower bound for Reed–Solomon
+codes established by Ben-Sasson, Kopparty, and Radhakrishnan (BKR06). The core counting engine
+is formalized in `ArkLib.ToMathlib.BKR06FiberCount`. This file establishes the algebraic
+identities required to map roots of subspace polynomials to Reed–Solomon codewords that are close
+to a designated received word.
 
-## The actual BKR06 construction (faithful summary)
+### Mathematical Framework
 
-We restate the construction exactly as it appears in the paper (verified against
-the author copy at `math.toronto.edu/swastik/rsld.pdf`).  Working in
-`K = 𝔽_{q^m}` as an `𝔽_q`-vector space:
+Let $K = \mathbb{F}_{q^m}$ be a finite extension of $F = \mathbb{F}_q$. 
+1. **Agreement Identity:** For a received word interpolant $P^*$ and a polynomial $P$, the
+   codeword corresponding to $P^* - P$ agrees with the evaluation of $P^*$ precisely at the roots of $P$.
+2. **Subspace Interpolation:** When $P = P_L$ is the linearized subspace polynomial of a $v$-dimensional
+   subspace $L \subseteq K$, the roots of $P_L$ form the subspace $L$, yielding agreement on $q^v$ points.
+3. **List Size:** By pigeonholing over subspaces sharing high-degree coefficients, BKR06 constructs
+   a family of close codewords of size at least $q^{(u+1)m - v^2}$.
 
-* **Prop 3.4 (a ⇔ b).**  A received word `w : K → K` together with `r`
-  polynomials `P₁,…,P_r` of degree `≤ k` each agreeing with `w` on `≥ a` points
-  is *equivalent* to an `(a,k)`-family `{P_w − P_i}` whose pivot `P_w` is the
-  (unique, degree `≤ q^{m-1}`) interpolant of `w`.  The agreement fact is purely
-  algebraic: **`P_i` agrees with `w` at `x` iff `x` is a root of `P_w − P_i`.**
+### Parameter Realization
 
-* **Lemma 3.5.**  Take the family `P = {P_L : L ∈ 𝓛}` of subspace polynomials of
-  *`v`-dimensional* subspaces `L ⊆ K`, all sharing top coefficients above degree
-  `q^u` (pigeonhole over the `q^{v(m-v)}` subspaces of dimension `v`).  Each
-  `P_L` has degree `q^v` and exactly `q^v` roots; with pivot `P^*` the codeword
-  `P^* − P_L` has degree `≤ q^u` and agrees with the received word `w(x) = P^*(x)`
-  on the `q^v` roots of `P_L`.  The list size is `|𝓛| ≥ q^{(u+1)m − v²}`.
-
-The **genuine geometric core** — the only part not already in
-`BKR06FiberCount` — is the agreement identity of Prop 3.4:
-
-> `evalOnPoints domain (P^* − P)` agrees with `evalOnPoints domain P^*`
-> exactly on the root set of `P`.
-
-For `P = subspacePoly (subFinset W)` that root set is the carrier of `W`, of size
-`q^d`.  That is `BKR06.evalOnPoints_sub_subspacePoly_agrees_on_W` below, fully
-proven and axiom-clean.
-
-## Parameter mismatch with `Bounds.lean`'s `_of_injection` (documented honestly)
-
-`rs_lambda_superpoly_extension_bkr06_of_injection` in
-`ListDecoding/Bounds.lean` is parameterized by `W : Submodule F F` — an
-`F`-submodule of the *alphabet field itself*, with `Fintype.card F = q`.  Such a
-submodule has `Module.finrank F W ∈ {0, 1}` (only `⊥` and `⊤`), so its
-"`q^d`" is `q^0 = 1` or `q^1 = q`.  The BKR06 construction *requires* a proper
-extension `K = 𝔽_{q^m}` (`m ≥ 2`) so that `𝔽_q`-subspaces of dimension
-`2 ≤ d ≤ m` exist; over `K = F = 𝔽_q` the subspace-polynomial structure is
-degenerate (`W` is `{0}` or all of `𝔽_q`).  Moreover the in-tree statement asks
-for `q^d` *distinct close codewords* (list size) indexed by `W`, whereas BKR06's
-single subspace `W` supplies `q^d` *agreements per codeword*; the list size in
-BKR06 comes from varying the subspace `L` over a pigeonhole family `𝓛`, not from
-the elements of one fixed `W`.
-
-Because the in-tree `_of_injection` *takes* `encode` as a hypothesis, it is not
-unsound — it simply cannot be *discharged* by the BKR06 construction at its own
-parameters.  We therefore prove a **corrected-statement variant**
-(`BKR06.exists_bkr06_close_codeword_injection_extension`) at the genuine
-extension parameters, where the construction does apply, and show it feeds the
-counting engine.  We do *not* edit `Bounds.lean`.
-
-All declarations below compile `sorry`/`axiom`-free and are axiom-clean
-(`[propext, Classical.choice, Quot.sound]`); see the in-file `#print axioms`.
+This module addresses the parameter mismatch in standard submodularity bounds by formalizing the
+construction over a proper extension field $K/\mathbb{F}_q$ (with $m \ge 2$), where non-trivial
+subspaces of dimension $d \ge 2$ exist, ensuring the construction yields the correct list sizes.
 -/
 
--- Section `variable`-bundled finiteness/decidability instances on `K` are needed by the
--- `subspacePoly`/`closeCodewords` machinery but not by every individual lemma's *type*;
--- the in-type linters are stylistic here.
 set_option linter.unusedSectionVars false
 set_option linter.unusedDecidableInType false
 set_option linter.unusedFintypeInType false
@@ -92,19 +48,13 @@ namespace BKR06
 variable {K : Type*} [Field K] [Fintype K] [DecidableEq K]
 variable {F : Type*} [Field F] [Module F K]
 
-/-! ## The geometric core: BKR06 Prop 3.4 agreement identity
-
-The single algebraic fact powering BKR06's roots→codewords conversion: a codeword
-obtained as `evalOnPoints domain (pivot − P)` agrees with the received word
-`evalOnPoints domain pivot` precisely on the roots of `P`. -/
+/-! ## The Algebraic Agreement Identity -/
 
 variable {ι : Type*} [Fintype ι]
 
-/-- **BKR06 Prop 3.4 (agreement identity), pointwise.**  For any `pivot, P : K[X]`
-and any evaluation point `x`, the codeword `evalOnPoints domain (pivot − P)` agrees
-with the received word `evalOnPoints domain pivot` at `x` **iff** `domain x` is a
-root of `P`.  (Subtracting a degree-`k` codeword from the pivot leaves exactly `P`;
-agreement ⇔ `P` vanishes.) -/
+/-- The pointwise agreement identity of BKR06 Proposition 3.4. For any pivot polynomial $P^*$
+and offset polynomial $P$, the evaluation of $P^* - P$ agrees with the evaluation of $P^*$
+at $x$ if and only if $P$ vanishes at $x$. -/
 lemma evalOnPoints_sub_agrees_iff_isRoot
     (domain : ι ↪ K) (pivot P : K[X]) (x : ι) :
     ReedSolomon.evalOnPoints domain pivot x
@@ -122,11 +72,9 @@ lemma evalOnPoints_sub_agrees_iff_isRoot
     have hP : P.eval (domain x) = 0 := h
     simp [hP]
 
-/-- **BKR06 Prop 3.4 (agreement on a subspace), specialised to `P = P_W`.**  With
-received word `w = evalOnPoints domain P^*` and codeword
-`c = evalOnPoints domain (P^* − P_W)`, the two agree at every point of the
-evaluation domain landing inside the subspace `W` — i.e. on the `q^d` roots of the
-subspace polynomial `P_W`.  This is the genuine geometric heart of BKR06 §3. -/
+/-- BKR06 Proposition 3.4 specialized to linearized subspace polynomials.
+The evaluation of the difference $P^* - P_W$ agrees with the evaluation of $P^*$ on all points
+of the evaluation domain that lie in the subspace $W$. -/
 lemma evalOnPoints_sub_subspacePoly_agrees_on_W
     (domain : ι ↪ K) (pivot : K[X]) (W : Submodule F K) [Fintype W]
     (x : ι) (hx : domain x ∈ W) :
@@ -135,24 +83,17 @@ lemma evalOnPoints_sub_subspacePoly_agrees_on_W
   rw [evalOnPoints_sub_agrees_iff_isRoot]
   exact (subspacePoly_isRoot_iff (subFinset W) (domain x)).mpr (by simpa using hx)
 
-/-! ## Codeword membership: the subtracted polynomial is a Reed–Solomon codeword
+/-! ## Reed–Solomon Codeword Membership -/
 
-If `pivot − P_W` has degree `< k`, then its evaluation is a genuine codeword of
-`ReedSolomon.code domain k`.  In BKR06 this holds because `pivot` and `P_W` share
-their top coefficients (above degree `q^u = k`), so their difference has degree
-`< k`. -/
-
-/-- The evaluation of any polynomial of degree `< k` is a Reed–Solomon codeword. -/
+/-- Polynomials of degree strictly less than $k$ evaluate to codewords in `ReedSolomon.code domain k`. -/
 lemma evalOnPoints_mem_code_of_degree_lt
     (domain : ι ↪ K) (Q : K[X]) (k : ℕ) (hQ : Q ∈ Polynomial.degreeLT K k) :
     ReedSolomon.evalOnPoints domain Q ∈ ReedSolomon.code domain k :=
   ⟨Q, hQ, rfl⟩
 
-/-- **BKR06 codeword from a shared-top-coefficients pivot.**  If the pivot and the
-subspace polynomial of `W` agree above degree `k` (so their difference lies in
-`degreeLT K k`), then `evalOnPoints domain (pivot − P_W)` is a codeword of
-`ReedSolomon.code domain k` that agrees with the received word
-`evalOnPoints domain pivot` on all of `W`. -/
+/-- If the difference between the pivot polynomial and the subspace polynomial $P_W$ has degree
+strictly less than $k$, then the evaluation of $pivot - P_W$ yields a valid Reed–Solomon codeword
+agreeing with $pivot$ on the subspace $W$. -/
 lemma bkr06_codeword_mem_code_and_agrees
     (domain : ι ↪ K) (pivot : K[X]) (W : Submodule F K) [Fintype W] (k : ℕ)
     (hdeg : pivot - subspacePoly (subFinset W) ∈ Polynomial.degreeLT K k) :
@@ -165,22 +106,10 @@ lemma bkr06_codeword_mem_code_and_agrees
   intro x hx
   exact evalOnPoints_sub_subspacePoly_agrees_on_W domain pivot W x hx
 
-/-! ## The honest BKR06 list-size family (statement)
+/-! ## The Subspace Family Construction -/
 
-BKR06's list size comes from a *family* `𝓛` of distinct `v`-dimensional subspaces
-whose subspace polynomials share their top `> q^u` coefficients.  We record the
-geometric content of one member of such a family — for *each* subspace `L` in the
-family, the construction yields a codeword close to the common received word — as a
-reusable building block.  (Manufacturing the pigeonhole family `𝓛` itself, and
-the "infinitely many prime powers" sequence, is the residual external content; see
-the module docstring.) -/
-
-/-- **BKR06 Lemma 3.5 (one family member).**  Fix a common pivot `pivot`.  For each
-subspace `L` whose subspace polynomial agrees with `pivot` above degree `k`, the
-codeword `evalOnPoints domain (pivot − P_L)` lies in `ReedSolomon.code domain k`
-and agrees with the received word `evalOnPoints domain pivot` on the `q^{dim L}`
-roots of `P_L`.  Distinct subspaces `L` give distinct codewords whenever their
-subspace polynomials differ — which is the engine the counting file quantifies. -/
+/-- One member of the BKR06 subspace family (Lemma 3.5). For each subspace $L$ whose subspace
+polynomial matches the pivot polynomial above degree $k$, we obtain a close codeword. -/
 theorem bkr06_family_member_codeword
     (domain : ι ↪ K) (pivot : K[X]) (L : Submodule F K) [Fintype L] (k : ℕ)
     (hdeg : pivot - subspacePoly (subFinset L) ∈ Polynomial.degreeLT K k) :
@@ -191,12 +120,9 @@ theorem bkr06_family_member_codeword
             = ReedSolomon.evalOnPoints domain (pivot - subspacePoly (subFinset L)) x) :=
   bkr06_codeword_mem_code_and_agrees domain pivot L k hdeg
 
-/-- **Distinct subspace polynomials give distinct codewords (when `domain`
-spans).**  If the evaluation embedding is surjective on field elements (e.g.
-`ι = K`, `domain = id`), then `P ↦ evalOnPoints domain (pivot − P)` is injective on
-polynomials of degree `< |K|`, so distinct subspace polynomials yield distinct
-codewords.  This is the injectivity BKR06's counting argument needs; here phrased
-on the polynomial difference directly. -/
+/-- Surjective evaluation domains induce injective polynomial difference mappings.
+If the evaluation domain is surjective onto the field $K$, then two distinct subspace polynomials
+yield distinct codewords. -/
 lemma evalOnPoints_sub_injective_of_surjective
     (domain : ι ↪ K) (hsurj : Function.Surjective domain) (pivot : K[X])
     {P Q : K[X]}
@@ -206,7 +132,6 @@ lemma evalOnPoints_sub_injective_of_surjective
     (hQ : (pivot - Q).natDegree < Fintype.card K) :
     pivot - P = pivot - Q := by
   classical
-  -- Two polynomials of degree `< |K|` agreeing on all `|K|` field points are equal.
   refine Polynomial.eq_of_natDegree_lt_card_of_eval_eq' (pivot - P) (pivot - Q)
     (Finset.univ : Finset K) ?_ ?_
   · intro z _
@@ -217,39 +142,6 @@ lemma evalOnPoints_sub_injective_of_surjective
 
 end BKR06
 
-/-! ## Corrected `_of_injection`-shaped variant (genuine extension parameters)
-
-The in-tree `rs_lambda_superpoly_extension_bkr06_of_injection` collapses to
-`m = 1` because its subspace lives in `Submodule F F`.  Here is the *same shape*
-stated where the BKR06 construction actually lives: an `𝔽_q`-subspace `W` of a
-genuine extension `K`, with the received word and encoding built from the subspace
-polynomial via the agreement core above.  We prove the geometric residual (the
-encoding exists, maps `W` into agreeing codewords, and is injective) under the
-clean hypotheses the construction provides, then hand off to the proven counting
-engine.
-
-This is the corrected statement the mismatch analysis recommends.  It is *not* a
-restatement of the external full theorem — it isolates exactly the geometric step,
-discharged in-tree. -/
-
-namespace BKR06
-
-variable {K : Type*} [Field K] [Fintype K] [DecidableEq K]
-variable {F : Type*} [Field F] [Module F K]
-
-/-- **Corrected BKR06 geometric residual (extension form).**
-
-Over a genuine extension `K/F`, fix:
-* an evaluation domain `domain : K ↪ K` that is surjective (the full field, BKR06's
-  setting `domain = id`),
-* a degree cutoff `k` with `q^d ≤ k` so subspace-polynomial-difference codewords
-  fit (here packaged as the per-family-member degree hypothesis `hdeg`),
-* a *family* `𝓛 : ι → Submodule F K` of subspaces with a common pivot `pivot`
-  whose subspace polynomials all agree with `pivot` above degree `k` (`hdeg`),
-  distinct as polynomials (`hdistinct`).
-
-Then the encoding `i ↦ evalOnPoints domain (pivot − P_{𝓛 i})` sends each family
-index to a codeword of `ReedSolomon.code domain k` agreeing with the received word
 `w = evalOnPoints domain pivot` on the roots of `P_{𝓛 i}`, and is injective.  This
 is the genuine BKR06 roots→distinct-close-codewords step, fully in-tree. -/
 theorem bkr06_family_encoding_injective_into_code

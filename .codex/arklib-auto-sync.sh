@@ -77,5 +77,24 @@ if ! git diff --cached --quiet; then
   git commit -m "auto-sync: post-merge cleanup ${stamp}"
 fi
 
-git push "$remote" "HEAD:${target_branch}"
-printf '[%s] sync pushed HEAD to %s/%s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "$remote" "$target_branch"
+for push_attempt in 1 2 3; do
+  if git push "$remote" "HEAD:${target_branch}"; then
+    printf '[%s] sync pushed HEAD to %s/%s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "$remote" "$target_branch"
+    exit 0
+  fi
+  printf '[%s] push attempt %s failed; fetching and merging latest %s/%s before retry\n' \
+    "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "$push_attempt" "$remote" "$target_branch"
+  git fetch "$remote" "$target_branch"
+  if ! git merge --no-edit "$remote/$target_branch"; then
+    fix_conflicts_with_codex
+    git add -A
+    git commit --no-edit || git commit -m "auto-sync: merge ${remote}/${target_branch} after push race ${stamp}"
+  fi
+  git add -A
+  if ! git diff --cached --quiet; then
+    git commit -m "auto-sync: post-push-race cleanup ${stamp}"
+  fi
+done
+
+printf '[%s] failed to push after retries\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+exit 1

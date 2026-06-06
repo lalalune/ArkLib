@@ -9,7 +9,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.RootClearing
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.HenselNumerator
 import ArkLib.ToMathlib.Claim511
 
-set_option linter.style.longFile 7400
+set_option linter.style.longFile 7600
 set_option linter.unusedSectionVars false
 
 /-!
@@ -789,6 +789,40 @@ structure GraphExtractionHypotheses
   hlarge :
     #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
       2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q
+
+omit [DecidableEq (RatFunc F)] in
+/-- Candidate-pair extraction from the packaged graph-extraction side
+conditions.  This is the short, hypothesis-explicit replacement for the legacy
+Claim 5.7 extractor below; it targets the current `pg_Rset` factor API rather
+than the stale Eq. 5.12 `.choose_spec.choose` list. -/
+lemma exists_pg_factors_with_large_common_root_set_of_hypotheses
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) (k := k)
+      (Q := Q) (ωs := ωs) (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs) :
+    ∃ R H,
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs ∧
+      Irreducible R ∧
+      Irreducible H ∧
+      0 < H.natDegree ∧
+      H ∣ (Bivariate.evalX (Polynomial.C x₀) R) ∧
+      (Bivariate.evalX (Polynomial.C x₀) R).Separable ∧
+        #(Finset.univ.filter
+            (fun z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ =>
+              (Trivariate.eval_on_Z R z.1).eval
+                  (Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2) = 0 ∧
+                (Bivariate.evalX z.1 H).eval
+                  ((Pz (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2).eval x₀)
+                  = 0))
+        ≥ #(Finset.univ : Finset (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁)) /
+          Bivariate.natDegreeY Q ∧
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q :=
+  exists_pg_factors_with_large_common_root_set_of_graph_conditions
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+    (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs
+    hcond.hx0 hcond.hsep hcond.hS_nonempty hcond.A hcond.hA hcond.hcount hcond.hlarge
 
 /-- Build the graph-extraction side-condition package while deriving close-set
 nonemptiness from the large-set inequality. -/
@@ -1805,19 +1839,19 @@ lemma exists_factors_with_large_common_root_set (δ : ℚ) (x₀ : F)
       hres.hx0 hres.hsep hres.hS_nonempty hres.A hres.hA hres.hcount hres.hlarge
   exact ⟨R, H, hres.hfactor R hR, hHirr, hHdeg, hHdvd, hRsep, hcard, hlarge'⟩
 
-/-- Claim 5.7 establishes existence of a polynomial `R`. This is the extraction of this polynomial. -/
+/-- Claim 5.7 establishes existence of `R`; this extracts it. -/
 noncomputable def R (δ : ℚ) (x₀ : F) (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
     [Claim57Residuals (F := F) k δ x₀ h_gs] : F[Z][X][Y] :=
  (exists_factors_with_large_common_root_set (F := F) (m := m) (n := n) (k := k)
     (Q := Q) (ωs := ωs) (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs).choose
 
-/-- Claim 5.7 establishes existence of a polynomial `H`. This is the extraction of this polynomial. -/
+/-- Claim 5.7 establishes existence of `H`; this extracts it. -/
 noncomputable def H (δ : ℚ) (x₀ : F) (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
     [Claim57Residuals (F := F) k δ x₀ h_gs] : F[Z][X] :=
 (exists_factors_with_large_common_root_set (F := F) (m := m) (n := n) (k := k)
   (Q := Q) (ωs := ωs) (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs).choose_spec.choose
 
-/-- An important property of the polynomial `H` extracted from Claim 5.7 is that it is irreducible. -/
+/-- The polynomial `H` extracted from Claim 5.7 is irreducible. -/
 lemma irreducible_H (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
     [Claim57Residuals (F := F) k δ x₀ h_gs] : Irreducible (H k δ x₀ h_gs) :=
   (exists_factors_with_large_common_root_set (F := F) (m := m) (n := n) (k := k)
@@ -2595,6 +2629,92 @@ lemma approximate_solution_is_exact_solution_coeffs_graph_clear_of_Sβ_large
         D hD hcard)
 
 open BCIKS20AppendixA.ClaimA2 in
+omit [DecidableEq (RatFunc F)] in
+/-- Graph-clear Claim 5.8 front door from explicit graph-extraction data plus
+the factor-list bridge, without requiring an ambient `[Claim57Residuals]`
+instance. -/
+lemma approximate_solution_is_exact_solution_coeffs_graph_clear_of_beta_embedding_zero_of_graphExtraction
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
+    (hfactor : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        R ∈ (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose)
+    (hemb : ∀ t ≥ k,
+      BCIKS20AppendixA.embeddingOf𝒪Into𝕃
+          (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+        (β
+          (H := H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+          (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond) t) = 0) :
+    ∀ t ≥ k,
+    α'
+      x₀
+      (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+      (irreducible_H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+      (natDegree_H_graph_clear_pos (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+      (claimA2_hypotheses_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+      t
+    =
+    (0 : BCIKS20AppendixA.𝕃
+      (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)) := by
+  letI : Claim57Residuals (F := F) (m := m) (n := n) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) k δ x₀ h_gs :=
+    Claim57Residuals.ofGraphExtractionHypotheses
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) (δ := δ) (x₀ := x₀) (h_gs := h_gs)
+      hcond hfactor
+  exact approximate_solution_is_exact_solution_coeffs_graph_clear_of_beta_embedding_zero
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) δ x₀ h_gs hcond hemb
+
+open BCIKS20AppendixA BCIKS20AppendixA.ClaimA2 in
+omit [DecidableEq (RatFunc F)] in
+/-- Graph-clear Claim 5.8 front door from the exact Appendix-A Lemma A.1
+largeness condition and explicit graph-extraction data, without requiring an
+ambient `[Claim57Residuals]` instance. -/
+lemma approximate_solution_is_exact_solution_coeffs_graph_clear_of_Sβ_large_of_graphExtraction
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
+    (hfactor : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        R ∈ (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose)
+    (hlarge : ∀ t ≥ k, ∃ D : ℕ,
+      D ≥ Bivariate.totalDegree
+        (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond) ∧
+        Set.ncard (S_β
+          (β
+            (H := H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+            (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond) t)) >
+          weight_Λ_over_𝒪
+            (natDegree_H_graph_clear_pos
+              (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+            (β
+              (H := H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+              (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond) t) D *
+            (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond).natDegree) :
+    ∀ t ≥ k,
+    α'
+      x₀
+      (R_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+      (irreducible_H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+      (natDegree_H_graph_clear_pos (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+      (claimA2_hypotheses_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)
+      t
+    =
+    (0 : BCIKS20AppendixA.𝕃
+      (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)) := by
+  letI : Claim57Residuals (F := F) (m := m) (n := n) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) k δ x₀ h_gs :=
+    Claim57Residuals.ofGraphExtractionHypotheses
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) (δ := δ) (x₀ := x₀) (h_gs := h_gs)
+      hcond hfactor
+  exact approximate_solution_is_exact_solution_coeffs_graph_clear_of_Sβ_large
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) δ x₀ h_gs hcond hlarge
+
+open BCIKS20AppendixA.ClaimA2 in
 lemma approximate_solution_alpha_powerSeries_eq_trunc_of_beta_embedding_zero
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
     [Claim57Residuals (F := F) k δ x₀ h_gs]
@@ -2626,8 +2746,7 @@ lemma approximate_solution_alpha_powerSeries_eq_trunc_of_beta_embedding_zero
       (F := F) (m := m) (n := n) (k := k) (Q := Q) (δ := δ) (x₀ := x₀)
       h_gs hemb)
 
-open BCIKS20AppendixA in
-open BCIKS20AppendixA.ClaimA2 in
+open BCIKS20AppendixA BCIKS20AppendixA.ClaimA2 in
 /-- Alpha-series truncation from the exact Appendix-A Lemma A.1 largeness
 condition. -/
 lemma approximate_solution_alpha_powerSeries_eq_trunc_of_Sβ_large

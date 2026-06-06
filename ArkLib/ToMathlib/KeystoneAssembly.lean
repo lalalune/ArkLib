@@ -231,6 +231,32 @@ theorem correlatedAgreement_listDecoding_closed_fin {k deg : ℕ}
   intro hk u hprob hJ hsqrt P hP
   exact hcoeffPoly_witness_of_section5DataFin (hExtractFin u hprob hJ hsqrt P hP)
 
+omit [DecidableEq ι] in
+/-- **The strict list-decoding keystone, from the corrected Fin bundle.**
+
+In the strict Johnson range, the boundary branch of the closed theorem is impossible.  This
+front door therefore consumes only the corrected §5 finite extraction datum. -/
+theorem correlatedAgreement_listDecoding_strict_fin {k deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hδ : δ < 1 - ReedSolomon.sqrtRate deg domain)
+    (hExtractFin : ∀ (u : WordStack F (Fin (k + 1)) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      ∀ P : F → Polynomial F,
+        (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+          (P z).natDegree < deg ∧
+            δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t, (P z).eval ∘ domain) ≤ δ) →
+        Section5StrictDataFin (k := k) (deg := deg) (domain := domain) (δ := δ) u P) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  refine correlatedAgreement_affine_curves_of_strict_coeff_polys
+    (deg := deg) (domain := domain) (δ := δ) hδ ?_
+  intro hk u hprob hJ P hP
+  exact hcoeffPoly_witness_of_section5DataFin (hExtractFin u hprob hJ P hP)
+
 /-! ## Step 4 — `keystone_of_section5Inputs`: the final theorem from genuine standing inputs
 
 This is the headline deliverable.  Every field of the corrected §5 bundle is assembled, per
@@ -299,6 +325,28 @@ theorem keystone_of_section5Inputs {k deg : ℕ}
     (BoundaryDischarge.hBoundary_of_boundary_cards_and_coeffPolys
       (k := k) (deg := deg) (domain := domain) (δ := δ) hBoundaryData)
 
+omit [DecidableEq ι] in
+/-- **Strict final assembly.**  This is the boundary-free final theorem for the strict Johnson
+range.  It keeps the genuine corrected §5 standing input and discharges the coefficient-polynomial
+front door through `Section5StrictDataFin`, with no `BoundaryDischarge` datum. -/
+theorem keystone_of_section5Inputs_strict {k deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hδ : δ < 1 - ReedSolomon.sqrtRate deg domain)
+    (hSection5 : ∀ (u : WordStack F (Fin (k + 1)) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      ∀ P : F → Polynomial F,
+        (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+          (P z).natDegree < deg ∧
+            δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t, (P z).eval ∘ domain) ≤ δ) →
+        Section5StrictDataFin (k := k) (deg := deg) (domain := domain) (δ := δ) u P) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
+  correlatedAgreement_listDecoding_strict_fin hδ hSection5
+
 end KeystoneAssembly
 
 end ArkLib
@@ -307,4 +355,6 @@ end ArkLib
 #print axioms ArkLib.KeystoneAssembly.htailDeg_field
 #print axioms ArkLib.KeystoneAssembly.section5DataFin_of_producers
 #print axioms ArkLib.KeystoneAssembly.correlatedAgreement_listDecoding_closed_fin
+#print axioms ArkLib.KeystoneAssembly.correlatedAgreement_listDecoding_strict_fin
 #print axioms ArkLib.KeystoneAssembly.keystone_of_section5Inputs
+#print axioms ArkLib.KeystoneAssembly.keystone_of_section5Inputs_strict

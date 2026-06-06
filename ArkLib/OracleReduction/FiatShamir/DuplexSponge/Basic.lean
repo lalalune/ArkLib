@@ -11,20 +11,20 @@ import ArkLib.OracleReduction.Security.Basic
 import ArkLib.OracleReduction.Security.Rewinding
 
 /-!
-# Duplex Sponge Fiat-Shamir Substrate
+# Substrate for Duplex-Sponge Fiat-Shamir
 
-This module packages the paper-facing Section 3 and Section 4 substrate for the CO25
-duplex-sponge Fiat-Shamir formalization:
+This module provides the unified API and paper-facing aliases for the cryptographic primitives,
+security definitions, and transformations established in Section 3 and Section 4 of Chiesa-Orrù [CO25]
+for Duplex-Sponge Fiat-Shamir (DSFS) interactive oracle reductions.
 
-- Section 3.2: `DuplexSpongeFS.lemma_3_2`
-- Section 3.3: the duplex-sponge API from `ArkLib.Data.Hash.DuplexSponge`
-- Section 3.4: paper-facing aliases for the NARG security definitions already present in
-  `ArkLib.OracleReduction.Security.Basic`
-- Section 4: the duplex-sponge Fiat-Shamir transformation from
-  `ArkLib.OracleReduction.FiatShamir.DuplexSponge.Defs`
+## Overview
 
-Zero-knowledge definitions are intentionally not included here, because ArkLib does not yet provide
-the generic Section 7 substrate needed for the CO25 ZK development.
+- **Section 3.2**: Core uniform preimage sampling lemmas (`DuplexSpongeFS.lemma_3_2`).
+- **Section 3.3**: Sponge and permutation API abstractions (`SpongeState`, `Sponge`).
+- **Section 3.4**: High-level aliases for Non-Interactive Argument (NARG) security properties,
+  including completeness, soundness, failure probabilities, and straightline/rewinding knowledge soundness.
+- **Section 4**: The core DSFS transformation definitions, including unsalted, salted, and generalized
+  explicit salt source variants for both the prover and verifier.
 -/
 
 noncomputable section
@@ -201,10 +201,13 @@ end NARG
 /-- Paper-facing alias for CO25 Definition 4.1 codecs. -/
 abbrev Codec {n : ℕ} (pSpec : ProtocolSpec n) (U : Type) := ProtocolSpec.Codec pSpec U
 
-/-- Paper-facing alias for the semantic codec obligations from CO25 Definition 4.1. -/
+/-- Paper-facing alias for the semantic codec obligations from CO25 Definition 4.1.
+
+`IsLawful` is a `Prop`-valued class taking the `Codec` as an instance argument, so the codec
+is passed via `(c := codec)`. -/
 abbrev LawfulCodec {n : ℕ} {pSpec : ProtocolSpec n} {U : Type}
     (codec : ProtocolSpec.Codec pSpec U) : Prop :=
-  ProtocolSpec.Codec.IsLawful codec
+  ProtocolSpec.Codec.IsLawful (c := codec)
 
 section Section4
 

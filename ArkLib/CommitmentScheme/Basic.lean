@@ -206,20 +206,8 @@ def extractability (scheme : Scheme oSpec Data Commitment Decommitment ComKey Ve
   ∀ adversary : ExtractabilityAdversary oSpec Data Commitment AuxState,
   ∀ prover : Prover oSpec (Commitment × (q : O.Query) × O.Response q) AuxState Bool Unit pSpec,
     False
-    -- [ fun ⟨b, d, q, r⟩ ↦ b ∧ O.answer d q = r | do
-    --     let result ← liftM (simulate loggingOracle ∅ adversary)
-    --     let ⟨⟨cm, query, response, st⟩, queryLog⟩ := result
-    --     let proof : Proof pSpec oSpec (Commitment × O.Query × O.Response) AuxState :=
-    --       ⟨prover, scheme.opening.verifier⟩
-    --     let ⟨accept, _⟩ ← proof.run ⟨cm, query, response⟩ st
-    --     letI data := extractor cm queryLog
-    --     return (accept, data, query, response)] ≤ extractabilityError
 
 set_option linter.unusedVariables true
-
--- Variant: choose the query according to some public coin.
-
--- Variant: multi-instance versions.
 
 /-- An adversary in the function binding game returns a commitment `cm`, and for each index in
   `Fin L`, a query, a claimed response to the query, and an auxiliary private state (to be passed

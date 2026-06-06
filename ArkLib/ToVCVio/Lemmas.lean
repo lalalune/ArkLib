@@ -2,7 +2,7 @@ import VCVio
 
 open OracleComp OracleSpec
 
-section simp_lemmas -- Some extra lemmas that still need to move to vcv
+section simp_lemmas
 
 universe u v w
 
@@ -10,8 +10,6 @@ variable {ι : Type u} {spec : OracleSpec ι} {α β γ ω : Type u}
 
 variable {m : Type u → Type v} [Monad m]
 variable [HasEvalSPMF m] {mx : m α} {p q : α → Prop}
-
--- probFailure_bind_eq_zero_iff and loggingOracle.probFailure_simulateQ are in VCVio
 
 /-- Direct support form: if `none` has zero probability, then `none` is not in support. -/
 lemma not_mem_support_none_of_probOutput_none_eq_zero
@@ -433,7 +431,8 @@ lemma run_liftComp_eq {ι' : Type w} {spec : OracleSpec ι} {superSpec : OracleS
   rfl
 
 set_option maxHeartbeats 200000 in
--- Bound this normalization lemma to avoid long elaboration loops on nested lifts.
+/-- We increase elaboration heartbeats here to prevent compilation timeouts
+    during the normalization of nested monadic lift operations. -/
 lemma run_liftM_run {α} {ι₁ ι₂ : Type} {spec₁ : OracleSpec ι₁}
     {spec₂ : OracleSpec ι₂} [MonadLift (OracleQuery spec₁) (OracleQuery spec₂)]
     (x : OptionT (OracleComp spec₁) α) :
@@ -466,7 +465,8 @@ lemma probFailure_liftComp_of_OracleComp_Option {ι' : Type w} {spec : OracleSpe
       (liftComp oa superSpec : OracleComp superSpec (Option α))) =
     probFailure (m := OracleComp spec) (mx := oa.run)
     + probOutput (m := OracleComp spec) (mx := oa.run) (x := none) := by
-  conv_lhs => -- MUST BE explicit about `m` like this
+  conv_lhs =>
+    -- Explicitly provide the monad parameter `m` to ensure correct typeclass resolution.
     rw [OptionT.probFailure_eq (m := (OracleComp superSpec))]
   simp only [HasEvalPMF.probFailure_eq_zero, zero_add]
   change probOutput (m := OracleComp superSpec) (mx := OptionT.run (liftComp oa superSpec))

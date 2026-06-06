@@ -23,10 +23,10 @@ agreement (MCA) bound.
 
 ## Main statements
 
-- `CodingTheory.lineDecodable_imp_epsMCA_le` — ABF26 Theorem 4.21 [GG25 Thm 3.5]:
-  `(δ, a, n+1)`-line-decodability gives an MCA bound `ε_mca(C, δ) ≤ a / |F|`.
-  Admitted as an external result; the proof in GG25 routes through the line-decoder's
-  alignment guarantee and a `Δ_S = 0`-witness argument.
+- `CodingTheory.lineDecodable_imp_epsMCA_le_target` — the black-box theorem shape once
+  considered for ABF26 Theorem 4.21 [GG25 Thm 3.5]. It is kept only as a named target
+  proposition because the unconstrained black-box statement is formally refuted in
+  `LineDecodingRefutation.lean`.
 
 ## References
 
@@ -167,11 +167,13 @@ that repair lands (it touches `LineDecodable`'s signature and the downstream MCA
 the multi-γ coverage count stays the sole admit and the U-construction reduction above is
 machine-checked.
 
-Admitted residual: the GG25 multi-γ coverage count (precisely characterized as a wall above;
-the counting reduction is refuted by `LineDecodingCounting.double_coverage_counterexample`,
-the faithful route needs the GS-degree statement repair). The U-construction reduction is
-machine-checked. -/
-def lineDecodable_imp_epsMCA_le
+Named target for the **false** black-box form of ABF26 Theorem 4.21.
+
+This is intentionally a proposition, not a theorem.  The old theorem-like name
+`lineDecodable_imp_epsMCA_le` was misleading: `LineDecodingRefutation.lean` proves a concrete
+counterexample to the unconstrained statement.  A usable replacement must expose the
+Guruswami--Sudan interpolation/list-size data in its hypotheses. -/
+def lineDecodable_imp_epsMCA_le_target
     (C : ModuleCode ι F A) (δ : ℝ≥0) (a : ℝ≥0)
     (_h : LineDecodable (F := F) ((C : Set (ι → A))) δ a
             ((Fintype.card ι : ℝ≥0) + 1)) : Prop :=

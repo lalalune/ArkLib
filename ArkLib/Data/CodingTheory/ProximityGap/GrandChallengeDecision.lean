@@ -24,6 +24,9 @@ ABF26 §1 MCA prize predicate outside an explicit middle band of field sizes:
 * `not_mcaPrize_of_spike_band` — for `q < 2¹²⁸ · (n - ⌊n/16⌋)` (and `n ≥ 16`) the
   formal prize predicate is **false**: at the rate-`1/16` instance the radius-one MCA
   error already exceeds `2⁻¹²⁸`.
+* `not_mcaPrize_of_subsetSums` — a stronger domain-sensitive negative criterion: at any
+  prize-rate index `j`, if `q < 2¹²⁸ · |Σ_{k_j+1}(L)|`, then the radius-one MCA error
+  already exceeds `2⁻¹²⁸`.
 * `epsMCA_one_bracket` — inside the remaining band the radius-one value is bracketed
   by `min(n-k, q)/q` and `2ⁿ/q`; `GrandChallengeRadiusOneExact.epsMCA_one_eq_choose_div`
   pins it exactly (to `C(n, k+1)/q`) once `q > C(C(n,k+1), 2)`, and
@@ -47,6 +50,26 @@ open scoped NNReal ENNReal
 
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
+
+/-! ## Formal list-decoding predicate decision -/
+
+/-- **Complete negative decision of the formal §1 list-decoding prize predicate.**
+
+For every positive interleaving parameter and every evaluation domain with at least two points,
+the existence-form `GrandChallenges.listDecodingPrize` predicate is false.  This is the direct
+decision-theorem wrapper around `GrandChallengeCollapse.not_listDecodingPrize`: the encoded
+`∃ δ*` challenge collapses to radius `1`, where Reed-Solomon constants already force a list of
+size at least `|F|`, contradicting `ε* < 1`. -/
+theorem listDecodingPrize_decided_false (domain : ι ↪ F) {m : ℕ}
+    (hm : 0 < m) (hι : 2 ≤ Fintype.card ι) :
+    ¬ GrandChallenges.listDecodingPrize domain m :=
+  not_listDecodingPrize domain hm hι
+
+/-- Equivalent Boolean-shaped form of `listDecodingPrize_decided_false`. -/
+theorem listDecodingPrize_iff_false (domain : ι ↪ F) {m : ℕ}
+    (hm : 0 < m) (hι : 2 ≤ Fintype.card ι) :
+    GrandChallenges.listDecodingPrize domain m ↔ False :=
+  iff_false_intro (listDecodingPrize_decided_false domain hm hι)
 
 /-- **Huge-field decision (positive direction).** For `q ≥ 2^(n+128)` the formal §1 MCA
 prize predicate holds: by the endpoint collapse it suffices to bound `ε_mca(·, 1)` at each
@@ -144,6 +167,27 @@ private lemma prizeRate_floor_add_one_le (j : Fin 4) (hn : 2 ≤ Fintype.card ι
           rw [← add_mul]
           norm_num
   exact_mod_cast hcast
+
+/-- **Domain-sensitive small-field decision via subset sums.**
+For any prize-rate index `j`, let
+`k_j = ⌊prizeRates j · |ι|⌋₊`. If the field size is below
+`2^128 · |Σ_{k_j+1}(domain)|`, then the formal §1 MCA prize predicate is false:
+the unconditional subset-sum floor already forces
+`ε_mca(RS[k_j], 1) > ε*`, contradicting the radius-one endpoint collapse. -/
+theorem not_mcaPrize_of_subsetSums (domain : ι ↪ F) (j : Fin 4)
+    (hn : 2 ≤ Fintype.card ι)
+    (hq : Fintype.card F < 2 ^ (128 : ℕ) *
+      (subsetSumsKplus1 domain
+        ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊).card) :
+    ¬ GrandChallenges.mcaPrize domain := by
+  intro hprize
+  set k := ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ with hk_def
+  have hk_add : k + 1 ≤ Fintype.card ι := by
+    rw [hk_def]
+    exact prizeRate_floor_add_one_le j hn
+  have hj := (mcaPrize_iff_forall_epsMCA_one domain).mp hprize j
+  exact absurd hj
+    (not_le.mpr (epsStar_lt_epsMCA_one_of_subsetSums domain hk_add (by simpa [hk_def] using hq)))
 
 /-- **Complete decision of the formal §1 MCA prize above the quadratic field threshold.**
 Whenever `q > C(C(n, k_j+1), 2)` for each prize rate (so the radius-one value is *exactly*

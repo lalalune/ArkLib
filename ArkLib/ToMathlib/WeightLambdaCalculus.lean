@@ -28,7 +28,7 @@ reduces to the in-tree polynomial calculus.
 All names live in `namespace ArkLib`; the in-tree objects are opened from
 `BCIKS20AppendixA`. This file does **not** edit the (0-sorry) `RationalFunctions.lean`.
 -/
-import ArkLib.Data.Polynomial.RationalFunctions
+import ArkLib.Data.Polynomial.RationalFunctionsCore
 import Mathlib
 
 namespace ArkLib

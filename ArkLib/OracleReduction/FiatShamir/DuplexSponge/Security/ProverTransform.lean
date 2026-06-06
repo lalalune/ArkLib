@@ -899,11 +899,18 @@ noncomputable def d2fOuterImpl
   QueryImpl.addLift (QueryImpl.id oSpec)
     (d2sQueryImpl (δ := δ) (T_H := T_H) (T_P := T_P)
       (StmtIn := StmtIn) (pSpec := pSpec) (U := U)
+      (m := StateT M (OptionT (OracleComp
+        (D2SChallengePlusUnitOracle (U := U) challengeSpec))))
       (gImpl := gImpl)
       (auxImpl := fun aux =>
-        liftM (query
-          (spec := D2SChallengePlusUnitOracle (U := U) challengeSpec)
-          (Sum.inr aux))))
+        MonadLift.monadLift
+          (MonadLift.monadLift
+            (query
+              (spec := D2SChallengePlusUnitOracle (U := U) challengeSpec)
+              (Sum.inr aux) :
+                OracleComp (D2SChallengePlusUnitOracle (U := U) challengeSpec) _) :
+            OptionT (OracleComp
+              (D2SChallengePlusUnitOracle (U := U) challengeSpec)) _)))
 
 /-- CO25 §5.4 Eq. 16 RHS — generic raw pipeline for `comp^{D2SQuery^{gImpl}}`, keeping the
 post-run `D2SQueryState` and inner `M`.

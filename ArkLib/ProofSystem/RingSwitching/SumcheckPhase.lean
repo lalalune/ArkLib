@@ -1128,15 +1128,14 @@ theorem finalSumcheckOracleReduction_perfectCompleteness [IsDomain L] [IsDomain 
     simp only [support_bind, Set.mem_iUnion, not_exists]
     intro s _ h
     simp only [StateT.run'_eq, support_map, Set.mem_image] at h
-    obtain ⟨⟨some _, _⟩, _, hnone⟩ := h
-    cases hnone
+    obtain ⟨⟨(_ | _), _⟩, _, hnone⟩ := h <;> cases hnone
   · -- Every output satisfies the event (relOut = toRelInput, and prvStmtOut = stmtOut).
     intro x hx
     rw [OptionT.mem_support_iff, OptionT.run_mk] at hx
     simp only [support_bind, Set.mem_iUnion] at hx
     obtain ⟨s, _, hx⟩ := hx
     simp only [StateT.run'_eq, support_map, Set.mem_image] at hx
-    obtain ⟨⟨some y, _⟩, _, hy⟩ := hx
+    obtain ⟨⟨(some y), _⟩, _, hy⟩ := hx
     cases hy
     refine ⟨?_, rfl⟩
     -- `(stmtOut, witOut) ∈ toRelInput`: MLPEvalRelation (`s' = t'(challenges)`) + initialCompatibility.

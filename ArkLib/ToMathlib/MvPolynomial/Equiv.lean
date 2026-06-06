@@ -1,5 +1,7 @@
 
 import Mathlib.Algebra.MvPolynomial.Equiv
+import Mathlib.Data.Finset.Image
+import Mathlib.Tactic
 import ArkLib.ToMathlib.Finsupp.Fin
 
 namespace MvPolynomial
@@ -93,7 +95,7 @@ theorem eval_eq_eval_mv_eval_finSuccEquivNth (s : Fin n → R) (y : R)
     (f : MvPolynomial (Fin (n + 1)) R) :
       eval (Fin.insertNth p y s : Fin (n + 1) → R) f =
         Polynomial.eval y (Polynomial.map (eval s) (finSuccEquivNth R p f)) := by
-  show
+  change
     aeval (Fin.insertNth p y s : Fin (n + 1) → R) f = (Polynomial.aeval y).comp
       ((Polynomial.mapAlgHom (aeval s)).comp (finSuccEquivNth R p).toAlgHom) f
   congr 2
@@ -131,6 +133,7 @@ theorem totalDegree_coeff_finSuccEquivNth_add_le (f : MvPolynomial (Fin (n + 1))
   · rw [totalDegree, hσ2, sum_insertNth _ _ p, add_comm]
   · rwa [← support_coeff_finSuccEquivNth]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The support of `finSuccEquivNth R p f` equals the support of `f` projected onto the `p`-th
 variable. -/
 theorem support_finSuccEquivNth (f : MvPolynomial (Fin (n + 1)) R) :
@@ -168,7 +171,7 @@ theorem image_support_finSuccEquivNth {f : MvPolynomial (Fin (n + 1)) R} {i : �
     exact ⟨h, by rw [insertNth_apply_same]⟩
   · intro h
     use m.removeNth p
-    rw [← h.2, insertNth_removeNth]
+    rw [← h.2, insertNth_self_removeNth]
     simp [h.1]
 
 lemma mem_image_support_coeff_finSuccEquivNth {f : MvPolynomial (Fin (n + 1)) R} {i : ℕ} {x} :

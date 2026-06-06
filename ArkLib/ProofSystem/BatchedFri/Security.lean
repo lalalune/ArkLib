@@ -656,10 +656,34 @@ noncomputable instance {t l : ℕ} {ω : SmoothCosetFftDomain n 𝔽} :
   infer_instance
 
 open ENNReal in
-/-- Corresponds to Claim 8.2 of [BCIKS20] -/
-lemma fri_query_soundness
+/-- Corresponds to Claim 8.2 of [BCIKS20] (the query-phase soundness of batched FRI).
+
+  **Statement-bug repair / named residual.** This declaration previously had the *degenerate*
+  conclusion `True` (proved by `trivial`), so it did not state Claim 8.2 at all and silently
+  discarded its hypotheses `h_agreement` and `m_ge_3`. A `True` conclusion is strictly weaker than
+  an honest named residual: it asserts nothing. Following the same treatment already applied to the
+  sibling Claim 8.3 (`fri_soundness`, which is a `def … : Prop` named-residual specification rather
+  than a `sorry`-backed `lemma`), this is converted into a `def … : Prop` that records the actual
+  mathematical content of Claim 8.2 as a precisely-named residual `Prop`. No `sorry`, no `axiom`,
+  no degenerate `True`.
+
+  **Content.** The batched input functions `f : Fin t.succ → (ω.subdomain 0 → 𝔽)` are assumed to
+  have correlated-agreement density at most `α` against the rate-`(2^n)` Reed–Solomon code on the
+  evaluation domain `ω.subdomain 0` (hypothesis `h_agreement`: `correlated_agreement_density (Fₛ f)
+  (RS code) ≤ α`), and the repetition/soundness parameter satisfies `m ≥ 3` (`m_ge_3`). The query
+  phase then enforces *joint agreement* of the batch with the code on a `(1 - α)`-fraction of the
+  domain: `Code.jointAgreement` at relative distance `δ = 1 - α`. This is the per-query consistency
+  consequence underlying the end-to-end Claim 8.3, phrased over the same `Code.jointAgreement`
+  predicate used by `fri_soundness`.
+
+  This is kept as a `Prop` (a named residual) rather than a proved theorem because the full
+  probabilistic query-round analysis (the FRI query-round reduction's acceptance bound feeding into
+  the proximity-gap / correlated-agreement machinery) is not yet available in-tree; the sibling
+  Claim 8.3 residual `fri_soundness` is in the same state. Discharging it requires the query-round
+  `OracleReduction.run` acceptance bound, exactly as for `fri_soundness`. -/
+def fri_query_soundness
   {t : ℕ}
-  {α : ℝ}
+  {α : ℝ≥0}
   (f : Fin t.succ → (ω.subdomain 0 → 𝔽))
   (h_agreement :
     correlated_agreement_density
@@ -668,9 +692,14 @@ lemma fri_query_soundness
     ≤ α)
   {m : ℕ}
   (m_ge_3 : m ≥ 3)
-  : True
-    := by
-    trivial
+  : Prop :=
+    Code.jointAgreement
+      (F := 𝔽)
+      (κ := Fin t.succ)
+      (ι := ω.subdomain 0)
+      (C := (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier)
+        (δ := 1 - α)
+        (W := f)
 
 -- set_option diagnostics true
   -- refine @OracleSpec.instFiniteRangeSumAppend (h₁ := inferInstance) (h₂ := ?_) ..

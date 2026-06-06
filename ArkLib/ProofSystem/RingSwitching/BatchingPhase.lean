@@ -529,16 +529,31 @@ theorem batchingReduction_perfectCompleteness :
   -- The honest prover's computations are deterministic. If the input relation holds,
   -- the prover correctly computes ŝ, h, and s₀, so the output relation will also hold.
   --
-  -- BLOCKED (free-`𝓑` orientation bug). On the honest run the Step-2 check passes (capstone
-  -- `performCheckOriginalEvaluation_packMLE_iff`), so there is no failure branch; but `relOut`
-  -- then demands the sumcheck consistency
-  --   `compute_s0 κ L K β ŝ r'' = ∑ x ∈ (univ.map 𝓑) ^ᶠ ℓ', H.eval x`,
-  -- with `H = projectToMidSumcheckPoly t' (A_MLE …) 0 Fin.elim0 = A_MLE · t'`. The LHS is
-  -- `𝓑`-independent, the RHS is `𝓑`-dependent, and `𝓑 : Fin 2 ↪ L` is a free variable here with
-  -- NO constraint pinning it to the Boolean embedding. See `Prelude.sumcheckSum_X0_eq` /
-  -- `Prelude.sumcheckTarget_domain_indep`: this identity is unsatisfiable for a free `𝓑`. Closing
-  -- it honestly requires pinning `𝓑 0 = 0, 𝓑 1 = 1` (or reorienting `compute_s0`), which alters
-  -- existing free declarations. Documented as a failing instance per the honest-completion stance.
+  -- STATEMENT-BUG CORRECTION (the old "free-`𝓑` orientation bug" note was STALE). The previous WIP
+  -- note claimed the consistency RHS was `∑ x ∈ (univ.map 𝓑) ^ᶠ ℓ', H.eval x` over a *free*
+  -- `𝓑 : Fin 2 ↪ L`, hence unsatisfiable (`Prelude.sumcheckTarget_domain_indep`). That is no longer
+  -- the statement: `sumcheckConsistencyProp` (Structured.lean) / `masterKStateProp` (Prelude) now
+  -- use the PINNED `boolDomain L _` (= `SumcheckDomain.uniform (boolEmbedding L)`, the canonical
+  -- `0 ↦ 0, 1 ↦ 1` embedding) — there is NO free `𝓑` variable in scope in this module. So the
+  -- consistency identity the honest run must establish is the concrete, satisfiable
+  --   `compute_s0 κ L K P ŝ r'' = ∑ x ∈ (boolDomain L ℓ').cube, H.val.eval x`,
+  -- with `H = projectToMidSumcheckPoly t' (A_MLE …) 0 Fin.elim0 = A_MLE · t'`.
+  --
+  -- REDUCTION (proven bricks, see `ArkLib.ToMathlib.RSPhases`). The RHS simplifies via the proven,
+  -- axiom-clean brick `RingSwitching.Phases.sum_cube_MLE_mul` (Boolean-cube sum of `MLE A · p`
+  -- reads `∑_b A b · eval (boolEmbedding ∘ b) p`), so the whole consistency conjunct reduces to the
+  -- single NAMED residual `RingSwitching.Phases.BatchingConsistencyResidual A_func tEvals s₀`
+  -- (`s₀ = ∑_b A_func b · t'(boolEmbedding ∘ b)`), discharged by
+  -- `RingSwitching.Phases.batchingConsistency_of_residual`. That residual is the genuinely-DP24
+  -- row-decomposition content: relating `compute_s0` (the eq-weighted `decomposeRows ŝ` sum over
+  -- `{0,1}^κ`, with `ŝ = embedded_MLP_eval t' t_eval_point` from the input relation) to the
+  -- `ℓ'`-cube sum `∑_b A_func(b) · t'(b)`. It is out of leaf scope (needs the DP24 §2.5 row/column
+  -- decomposition algebra), so it is preserved as the single residual `sorry` below.
+  --
+  -- BUILD NOTE: this module currently cannot reach `lake build` exit 0 regardless, because the
+  -- transitive dependency `ArkLib.ProofSystem.Sumcheck.Spec.SingleRound` has an unowned API-drift
+  -- regression (a failing `rw` at line ~1056, NOT a sorry). The RSPhases bricks above are verified
+  -- independently (they avoid that import chain).
   unfold OracleReduction.perfectCompleteness
   sorry
 

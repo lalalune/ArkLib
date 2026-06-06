@@ -195,7 +195,7 @@ lemma cT_sub_ne_zero (domain : ι ↪ F) {k : ℕ} {T T' : Finset ι}
   -- pick i₀ ∈ T \ T'  (cards equal, sets distinct ⇒ some element of T not in T')
   have hexists : ∃ i₀ ∈ T, i₀ ∉ T' := by
     by_contra h
-    push_neg at h
+    push Not at h
     -- T ⊆ T' and equal cards ⇒ T = T'
     exact hne (Finset.eq_of_subset_of_card_le h (le_of_eq (hT'.trans hT.symm)))
   obtain ⟨i₀, hi₀T, hi₀T'⟩ := hexists
@@ -254,7 +254,7 @@ lemma card_ker_eq (φ : (ι → F) →ₗ[F] F) (hφ : φ ≠ 0) :
     -- pick u₀ with φ u₀ ≠ 0, then a = φ ((a / φ u₀) • u₀)
     obtain ⟨u₀, hu₀⟩ : ∃ u₀, φ u₀ ≠ 0 := by
       by_contra h
-      push_neg at h
+      push Not at h
       exact hφ (LinearMap.ext h)
     intro a
     refine ⟨(a / φ u₀) • u₀, ?_⟩
@@ -393,7 +393,7 @@ lemma exists_u0_injOn_cT (domain : ι ↪ F) {k : ℕ} (hk : k + 1 ≤ Fintype.c
       _ = Fintype.card F ^ n := by rw [← pow_succ', hn1]
   -- card bad < card univ ⇒ ∃ u₀ ∉ bad
   by_contra hcon
-  push_neg at hcon
+  push Not at hcon
   have hbeq : bad = Finset.univ := Finset.eq_univ_of_forall hcon
   rw [hbeq, hcard_univ] at hstrict
   exact lt_irrefl _ hstrict
@@ -401,9 +401,7 @@ lemma exists_u0_injOn_cT (domain : ι ↪ F) {k : ℕ} (hk : k + 1 ≤ Fintype.c
 /-- **Lower-bound counting.** With the deep-hole second word and a first word `u₀` separating all
 the `c_T`, the bad `γ`-set contains the `C(n,k+1)` distinct values `γ_T = -c_T(u₀)`, so
 `Pr_γ[mcaEvent] ≥ C(n,k+1)/q`. -/
-lemma mcaEvent_prob_ge (domain : ι ↪ F) {k : ℕ} (hk : k + 1 ≤ Fintype.card ι)
-    (hq : (Nat.choose (Fintype.card ι) (k + 1)).choose 2 < Fintype.card F)
-    {u₀ : ι → F}
+lemma mcaEvent_prob_ge (domain : ι ↪ F) {k : ℕ} {u₀ : ι → F}
     (hu₀ : ∀ T ∈ (Finset.univ : Finset ι).powersetCard (k + 1),
       ∀ T' ∈ (Finset.univ : Finset ι).powersetCard (k + 1),
         cT domain k T u₀ = cT domain k T' u₀ → T = T') :
@@ -449,7 +447,7 @@ theorem epsMCA_one_ge_choose_div (domain : ι ↪ F) {k : ℕ} (hk : k + 1 ≤ F
     (Nat.choose (Fintype.card ι) (k + 1) : ENNReal) / (Fintype.card F : ENNReal) ≤
       epsMCA (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F)) 1 := by
   obtain ⟨u₀, hu₀⟩ := exists_u0_injOn_cT domain hk hq
-  have hpr := mcaEvent_prob_ge domain hk hq hu₀
+  have hpr := mcaEvent_prob_ge domain hu₀
   refine le_trans hpr ?_
   unfold epsMCA
   exact le_iSup (fun u : WordStack F (Fin 2) ι =>

@@ -8,10 +8,22 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Backtrack
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.Lookahead
 
 /-!
-# Trace Transformations
+# Trace Transformations for Duplex-Sponge Fiat-Shamir
 
-This file contains the trace transformations for duplex sponge Fiat-Shamir, following CO25
-Section 5.5.
+This module implements the trace-mapping operators used in the security reduction for the
+Duplex-Sponge Fiat-Shamir (DSFS) transformation, corresponding to Section 5.5 of Chiesa-Orrù [CO25].
+
+## Mathematical Role of Trace Transforms
+
+In the security reduction, we must simulate the environment of a basic Fiat-Shamir (FS) adversary
+using a malicious DSFS prover. This requires translating query-answer traces from the duplex-sponge
+challenger oracle space (containing hash queries $h$, permutation queries $p$, and inverse permutation
+queries $p^{-1}$) into basic FS challenge oracle traces.
+
+We implement:
+- **Standard Trace Generation** (`stdTraceEntries`): Synthesizes a virtual FS-standard trace $\text{tr}_{\text{std}}$ by scanning the DSFS trace using the backtracking (`BackTrack`) and lookahead (`LookAhead`) procedures.
+- **Trace Remapping** (`d2sTrace`, `d2sTraceSalted`): Remaps the synthesized traces into basic-FS challenge logs, checking codec preimages and filtering out elements not in the codec image.
+- **Hybrid-Game Trace Remapping** (`hyb1Line4Trace`, `hyb2Line4Trace`): Translates query traces within the hybrid game sequence ($\text{Hyb}_1$ to $\text{Hyb}_4$) used in the proof of the Key Lemma.
 -/
 
 open OracleComp OracleSpec ProtocolSpec

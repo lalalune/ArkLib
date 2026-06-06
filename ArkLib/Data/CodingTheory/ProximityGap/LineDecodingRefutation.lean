@@ -10,13 +10,13 @@ import Mathlib.Algebra.Field.ZMod
 /-!
 # The black-box form of ABF26 Theorem 4.21 is *false* (statement-level refutation)
 
-`ArkLib/Data/CodingTheory/ProximityGap/LineDecoding.lean` carries a documented `sorry`
-for `lineDecodable_imp_epsMCA_le`, whose docstring (the "WALL" note) argues that the
+`ArkLib/Data/CodingTheory/ProximityGap/LineDecoding.lean` carries the named target proposition
+`lineDecodable_imp_epsMCA_le_target`, whose docstring (the "WALL" note) explains that the
 *counting reduction* of GG25 / ABF26 Theorem 4.21 cannot close the goal for a black-box
 proximity parameter `a` and an unconstrained radius `δ`, and that the faithful route needs a
 Guruswami–Sudan statement repair.
 
-This file proves the stronger fact that the conclusion of `lineDecodable_imp_epsMCA_le` does
+This file proves the stronger fact that the conclusion of `lineDecodable_imp_epsMCA_le_target` does
 **not** follow from its hypothesis at all: there is a concrete instance where the code is
 `(δ, a, n+1)`-line-decodable yet `ε_mca(C, δ) > a / |F|`. Hence the target theorem is **not a
 theorem as stated** — it requires a hypothesis repair (a proximity bound on `δ`, e.g.
@@ -172,9 +172,9 @@ theorem epsMCA_Czero_pos :
 
 There is a concrete instance — the zero code `C = ⊥` over `F = ZMod 2`, `ι = Fin 1`,
 `δ = a = 0` — that is `(δ, a, |ι|+1)`-line-decodable yet has `ε_mca(C, δ) > a / |F|`. So the
-conclusion of `lineDecodable_imp_epsMCA_le` does **not** follow from its hypothesis: the
-theorem requires a hypothesis repair (a proximity bound on `δ` plus a nondegeneracy bound on
-`a` / `|ι|`), not a leaf proof of the present form. -/
+conclusion of `lineDecodable_imp_epsMCA_le_target` does **not** follow from its hypothesis: the
+theorem requires a hypothesis repair exposing the Guruswami--Sudan interpolation/list-size
+structure, not a leaf proof of the present form. -/
 theorem lineDecodable_imp_epsMCA_le_false :
     LineDecodable (F := F) ((Czero : Set (ι → A))) (0 : ℝ≥0) (0 : ℝ≥0)
         ((Fintype.card ι : ℝ≥0) + 1) ∧

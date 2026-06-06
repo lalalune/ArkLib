@@ -15,6 +15,7 @@ import ArkLib.Data.Finset.PickSubset
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
 import ArkLib.Data.CodingTheory.ReedSolomon.FftDomain
 import ArkLib.Data.Polynomial.Indicator
+import ArkLib.ToMathlib.KeystoneStrictResidual
 import ArkLib.ToMathlib.Polynomial.EvalExt
 import ArkLib.ToMathlib.Polynomial.NatDegreeOfSum
 
@@ -980,6 +981,53 @@ theorem folding_preserves_distance
         norm_cast
     simp only [lt_inf_iff] at δ_lt
     simpa using lt_of_lt_of_le δ_lt.1 contradiction 
+
+/--
+Folding preservation with the strict Johnson coefficient-polynomial residual supplied by the
+verified `betaRec` capsule for the folded Reed-Solomon domain.
+-/
+theorem folding_preserves_distance_johnson_of_betaRec
+  [Fintype F]
+  {domain : SmoothCosetFftDomain n F} {f : Word F (Fin (2 ^ n))} {d k : ℕ}
+  {δ : ℝ≥0}
+  (k_div_d : 2 ^ k ∣ d)
+  (hd0 : 0 < d)
+  (h_d_n : d ≤ 2 ^ n)
+  (hInput : ∀ (_hk : 0 < 2 ^ k - 1)
+    (u : WordStack F (Fin ((2 ^ k - 1) + 1)) (Fin (2 ^ (n - k)))),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin ((2 ^ k - 1) + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code
+            (domain.subdomainNatReversed k : Fin (2 ^ (n - k)) ↪ F) (d / (2 ^ k))) ≤ δ] >
+          (((2 ^ k - 1) : ℕ) : ENNReal) *
+            (ProximityGap.errorBound δ (d / (2 ^ k))
+              (domain.subdomainNatReversed k : Fin (2 ^ (n - k)) ↪ F) : ENNReal) →
+      (1 -
+          (LinearCode.rate
+            (ReedSolomon.code
+              (domain.subdomainNatReversed k : Fin (2 ^ (n - k)) ↪ F) (d / (2 ^ k))) :
+            ℝ≥0)) / 2 < δ →
+      δ < 1 - ReedSolomon.sqrtRate (d / (2 ^ k))
+        (domain.subdomainNatReversed k : Fin (2 ^ (n - k)) ↪ F) →
+      ArkLib.KeystoneStrictResidual.BetaCurveInput
+        (k := 2 ^ k - 1) (deg := d / (2 ^ k))
+        (domain := (domain.subdomainNatReversed k : Fin (2 ^ (n - k)) ↪ F))
+        (δ := δ) u)
+  (δ_gt_0 : 0 < δ)
+  (δ_lt : δ < min (δᵣ(f, ReedSolomon.code (domain : Fin (2 ^ n) ↪ F) d))
+    (1 - (ReedSolomon.sqrtRate d (domain : Fin (2 ^ n) ↪ F)))) :
+    Pr_{ let r ←$ᵖ F}[δᵣ(foldWord domain f k r,
+      ReedSolomon.code (domain.subdomainNatReversed k : Fin (2 ^ (n - k)) ↪ F)
+      (d / (2 ^ k))) ≤ δ] ≤
+        ((2 ^ k) - 1) * ProximityGap.errorBound δ (d / (2 ^ k))
+        (domain.subdomainNatReversed k : Fin (2 ^ (n - k)) ↪ F) :=
+  folding_preserves_distance (domain := domain) (f := f) (d := d) (k := k)
+    (δ := δ) k_div_d hd0 h_d_n
+    (ArkLib.KeystoneStrictResidual.strictCoeffPolysResidual_of_betaRec
+      (k := 2 ^ k - 1) (deg := d / (2 ^ k))
+      (domain := (domain.subdomainNatReversed k : Fin (2 ^ (n - k)) ↪ F))
+      (δ := δ) hInput)
+    δ_gt_0 δ_lt
 
 end
     

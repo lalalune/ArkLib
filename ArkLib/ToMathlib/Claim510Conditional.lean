@@ -223,9 +223,3 @@ theorem gamma_matches_word_concrete {H : F[X][Y]} [Fact (Irreducible H)]
 end Claim510
 
 end ArkLib
-
-#print axioms ArkLib.Claim510.embedding_zero_of_core
-#print axioms ArkLib.Claim510.gamma_matches_word_of_matchingSet_large
-#print axioms ArkLib.Claim510.gamma_matches_word_of_ncard_lower_bound
-#print axioms ArkLib.Claim510.reduces_to_embedding_zero
-#print axioms ArkLib.Claim510.gamma_matches_word_concrete

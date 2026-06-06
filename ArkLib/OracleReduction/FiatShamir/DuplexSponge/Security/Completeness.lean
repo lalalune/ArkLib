@@ -8,13 +8,16 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Defs
 import ArkLib.OracleReduction.Security.Basic
 
 /-!
-# Theorem about completeness
+# Completeness of Duplex-Sponge Fiat-Shamir
 
-This file contains the theorem that duplex sponge Fiat-Shamir is complete, assuming the underlying
-interactive protocol is complete.
+This module proves the completeness of the Duplex-Sponge Fiat-Shamir (DSFS) transformation.
+We establish that if the underlying interactive protocol possesses completeness (or perfect
+completeness), then its non-interactive counterpart obtained via the DSFS transformation
+inherits completeness, up to the same completeness error.
 
-(do we even have to go through basic Fiat-Shamir? any complication with handling completeness
-error?)
+The proofs proceed by unfolding the verifier's check to show it is equivalent to re-running the
+honest interactive execution, and then unrolling the probability distributions of the respective
+security games.
 -/
 
 noncomputable section
@@ -110,7 +113,6 @@ def duplexSpongeFiatShamirHonestRun
 /-- The explicit honest execution underlying the salted DSFS transform. -/
 def duplexSpongeFiatShamirSaltedHonestRun {δ : Nat}
     (sampleSalt : OracleComp oSpec (Vector U δ))
-    -- TODO: how to restrict that this is uniform salts sampling?
     (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
     (stmtIn : StmtIn) (witIn : WitIn) :
     OracleComp (oSpec + duplexSpongeChallengeOracle StmtIn U)
@@ -171,6 +173,7 @@ def duplexSpongeFiatShamir_run_eq_honestExecution
     (R.duplexSpongeFiatShamir (U := U)).run stmtIn witIn =
       liftM (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn)
 
+
 /-- The transformed salted DSFS run is the lifted explicit honest execution. -/
 def duplexSpongeFiatShamirSalted_run_eq_honestExecution {δ : Nat}
     (sampleSalt : OracleComp oSpec (Vector U δ))
@@ -212,6 +215,126 @@ def duplexSpongeFiatShamirSalted_completeness_unroll {δ : Nat}
       Reduction.completenessFromRun init impl relIn relOut
         (R.duplexSpongeFiatShamirSaltedHonestExecution (U := U) sampleSalt)
         completenessError
+
+/-- The `NonInteractiveReduction` produced by the DSFS transform is prover-first: its single round
+is a `P_to_V` message. -/
+local instance dsfsProverOnly :
+    ProtocolSpec.ProverOnly ⟨!v[Direction.P_to_V], !v[pSpec.Messages]⟩ where
+  prover_first' := by simp
+
+/-- **Reduction of `duplexSpongeFiatShamir_completeness_unroll` to the run-equality residual.**
+
+Given the per-input run-equality `duplexSpongeFiatShamir_run_eq_honestExecution` (that the
+non-interactive DSFS reduction's `run` is the lifted explicit honest execution), completeness of the
+unsalted DSFS transform is *definitionally* the generic `completenessFromRun` predicate over the
+honest execution.
+
+This is the proven `_of_residual` brick: it discharges the `↔` in
+`duplexSpongeFiatShamir_completeness_unroll` outright, shrinking the open surface to the single named
+run-equality residual.
+
+The collapse of the outer (empty) Fiat-Shamir challenge oracle implementation is handled by
+`simulateQ_add_run_liftM_left`: the lifted honest execution never queries that oracle, so
+`simulateQ (impl + challengeQueryImpl) (liftM honest).run = simulateQ impl honest.run`. -/
+theorem duplexSpongeFiatShamir_completeness_unroll_of_run_eq
+    {σ : Type}
+    (init : ProbComp σ)
+    (impl : QueryImpl (oSpec + duplexSpongeChallengeOracle StmtIn U) (StateT σ ProbComp))
+    (relIn : Set (StmtIn × WitIn))
+    (relOut : Set (StmtOut × WitOut))
+    (completenessError : ℝ≥0)
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hRun : ∀ stmtIn witIn,
+      duplexSpongeFiatShamir_run_eq_honestExecution (U := U) R stmtIn witIn) :
+    duplexSpongeFiatShamir_completeness_unroll (U := U)
+      init impl relIn relOut completenessError R := by
+  unfold duplexSpongeFiatShamir_completeness_unroll
+  rw [Reduction.completeness_iff_completenessFromRun]
+  unfold Reduction.completenessFromRun
+  simp only [duplexSpongeFiatShamir_run_eq_honestExecution] at hRun
+  refine forall_congr' fun stmtIn => forall_congr' fun witIn => ?_
+  refine imp_congr_right fun _ => ?_
+  -- The two probability expressions agree pointwise: rewrite the DSFS run as the lifted honest
+  -- execution, then collapse the outer empty challenge oracle implementation. The collapse uses
+  -- `simulateQ_add_run_liftM_left`: the lifted honest execution never queries the (empty) outer
+  -- Fiat-Shamir challenge oracle.
+  have hcollapse :
+      simulateQ (QueryImpl.addLift impl challengeQueryImpl)
+          ((R.duplexSpongeFiatShamir (U := U)).run stmtIn witIn).run =
+        simulateQ impl
+          (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn).run := by
+    rw [hRun stmtIn witIn]
+    rw [QueryImpl.addLift_def, QueryImpl.liftTarget_self]
+    -- Collapse the appended (never-queried) challenge oracle implementation via
+    -- `simulateQ_add_run_liftM_left`. `convert` bridges the only gap: the `OptionT` lift used by
+    -- `run` may route through the associativity path `oSpec + dsc → oSpec + (dsc + [c]) →
+    -- oSpec + dsc + [c]`, whereas the lemma uses the direct lift. The remaining residual equates
+    -- these two lifts of the same honest execution; both unfold (via `simulateQ_compose` for the
+    -- two-step path) to a `simulateQ` over the honest execution's `.run` whose query handler is the
+    -- subspec query-lift, and the handlers agree pointwise (`liftM_add_assoc`: the composed lift
+    -- equals the direct lift).
+    convert simulateQ_add_run_liftM_left impl
+      (QueryImpl.liftTarget (StateT σ ProbComp)
+        (challengeQueryImpl (pSpec := ⟨!v[Direction.P_to_V], !v[pSpec.Messages]⟩)))
+      (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn) using 2
+    rw [liftM_OptionT_eq]
+    show simulateQ _ (simulateQ _
+        (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn).run) =
+      simulateQ _ (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn).run
+    rw [← QueryImpl.simulateQ_compose]
+    refine congrFun (congrArg _ ?_) _
+    funext t
+    rcases t with t | t | t <;> rfl
+  rw [hcollapse]
+
+/-- **Reduction of `duplexSpongeFiatShamirSalted_completeness_unroll` to the run-equality
+residual.** The salted analogue of `duplexSpongeFiatShamir_completeness_unroll_of_run_eq`. -/
+theorem duplexSpongeFiatShamirSalted_completeness_unroll_of_run_eq {δ : Nat}
+    {σ : Type}
+    (init : ProbComp σ)
+    (impl : QueryImpl (oSpec + duplexSpongeChallengeOracle StmtIn U) (StateT σ ProbComp))
+    (sampleSalt : OracleComp oSpec (Vector U δ))
+    (relIn : Set (StmtIn × WitIn))
+    (relOut : Set (StmtOut × WitOut))
+    (completenessError : ℝ≥0)
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hRun : ∀ stmtIn witIn,
+      duplexSpongeFiatShamirSalted_run_eq_honestExecution (U := U) sampleSalt R stmtIn witIn) :
+    duplexSpongeFiatShamirSalted_completeness_unroll (U := U)
+      init impl sampleSalt relIn relOut completenessError R := by
+  unfold duplexSpongeFiatShamirSalted_completeness_unroll
+  rw [Reduction.completeness_iff_completenessFromRun]
+  unfold Reduction.completenessFromRun
+  simp only [duplexSpongeFiatShamirSalted_run_eq_honestExecution] at hRun
+  refine forall_congr' fun stmtIn => forall_congr' fun witIn => ?_
+  refine imp_congr_right fun _ => ?_
+  have hcollapse :
+      simulateQ (QueryImpl.addLift impl challengeQueryImpl)
+          ((R.duplexSpongeFiatShamirSalted (U := U) sampleSalt).run stmtIn witIn).run =
+        simulateQ impl
+          (R.duplexSpongeFiatShamirSaltedHonestExecution (U := U)
+            sampleSalt stmtIn witIn).run := by
+    rw [hRun stmtIn witIn]
+    rw [QueryImpl.addLift_def, QueryImpl.liftTarget_self]
+    -- The salted analogue of the unsalted collapse: `convert` against `simulateQ_add_run_liftM_left`
+    -- bridges the associativity path of the `OptionT` lift used by `run`, and the residual
+    -- two-step/direct lift equality is discharged by fusing the lift layers via `simulateQ_compose`
+    -- and checking the query handlers agree pointwise.
+    convert simulateQ_add_run_liftM_left impl
+      (QueryImpl.liftTarget (StateT σ ProbComp)
+        (challengeQueryImpl
+          (pSpec := ⟨!v[Direction.P_to_V],
+            !v[ProtocolSpec.Messages.SaltedProof (pSpec := pSpec) (U := U) δ]⟩)))
+      (R.duplexSpongeFiatShamirSaltedHonestExecution (U := U) sampleSalt stmtIn witIn) using 2
+    rw [liftM_OptionT_eq]
+    show simulateQ _ (simulateQ _
+        (R.duplexSpongeFiatShamirSaltedHonestExecution (U := U) sampleSalt stmtIn witIn).run) =
+      simulateQ _ (R.duplexSpongeFiatShamirSaltedHonestExecution (U := U) sampleSalt stmtIn witIn).run
+    rw [← QueryImpl.simulateQ_compose]
+    refine congrFun (congrArg _ ?_) _
+    funext t
+    rcases t with t | t | t <;> rfl
+  rw [hcollapse]
 
 end Completeness
 

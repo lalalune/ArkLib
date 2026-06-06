@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import Mathlib
 
+set_option linter.style.longLine false
+
 /-! # Coefficients of power-series substitutions and γ-truncation bookkeeping
 
 This file collects clean, generic lemmas about `PowerSeries.subst` and `PowerSeries.coeff`

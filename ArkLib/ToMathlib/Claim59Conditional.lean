@@ -7,6 +7,8 @@ import ArkLib.Data.Polynomial.RationalFunctions
 import ArkLib.ToMathlib.PowerSeriesSubstCoeff
 import ArkLib.ToMathlib.FiniteSeriesToPoly
 
+set_option linter.style.longLine false
+
 /-!
 # Conditional Claim 5.9 — `γ` is linear in `Z` given the 5.8' tail-vanishing output (brick L18)
 

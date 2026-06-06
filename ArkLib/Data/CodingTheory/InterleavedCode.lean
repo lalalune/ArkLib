@@ -866,22 +866,34 @@ codeword in a relative Hamming ball projects, row-wise, to a codeword of `C`.
 
 The residual is the **Gopalan–Guruswami–Raghavendra (GGR11)** combinatorial
 list-recovery recursion (RANDOM 2011, "List Decoding Tensor Products and Interleaved
-Codes"; ABF26 Lemma 2.10): given that every column of an interleaved word lies in a
-list of size ≤ `|Λ(C,δ)|`, a budget/covering argument over the columns selects `r`
-"pivot" columns and shows the joint list embeds into the product of the per-pivot
-lists, yielding the `(b+r choose r)·|Λ(C,δ)|^r` bound with `b,r` as defined. This
-recursion has **no in-tree analogue** — ArkLib presently has neither a list-recovery
-primitive nor the column-pruning / iterated-projection lemmas it needs — so the full
-port is *not reachable* from current in-tree leaf lemmas; it is a genuine
-external-paper obstruction, not a missing local proof.
+Codes"; ABF26 Lemma 2.10).  This `def` only *states* the bound (it is `Prop`-valued,
+not proven here); the proof is carried out, modulo a precisely named residual, in
+`ArkLib.ToMathlib.GGR11Interleaved`, where the GGR11 §3 argument is split into two
+parts:
+
+* **(Leaf counting — now fully in-tree.)**  A rooted tree whose root→leaf paths use
+  at most `b` Blue and `r` Red edges, with at most one Blue and `≤ |Λ(C,δ)|` Red
+  out-edges per node, has at most `(b+r choose r)·|Λ(C,δ)|^r` leaves (GGR11
+  Theorem 3.6).  This is proved sorry-free as
+  `InterleavedCode.GGR11.ggr11_tree_count_le` (double induction on the Pascal
+  recursion `t(b,r) ≤ t(b-1,r) + L·t(b,r-1)`).
+
+* **(Tree construction — the remaining named residual.)**  The Erase-Decode tree
+  (GGR11 Algorithm 1, Lemmas 3.3–3.5) with those Blue/Red budgets exists and
+  dominates the per-word close-codeword set.  This is the list-recovery /
+  erasure-decoding content that has **no in-tree analogue** (ArkLib has neither a
+  list-recovery primitive nor the column-pruning lemmas it needs).  It is named
+  `InterleavedCode.GGR11.GGR11TreeStructure`, and the chain
+  `GGR11TreeStructure → GGR11PerWordBound → (this bound)` is fully proven there.
 
 Note also `F` is only `[Field F]` (not `[Fintype F]`), so over an infinite field
 `Lambda C δ` can be `⊤`, in which case the RHS is `⊤` and the bound is trivially true;
 but the universally-quantified statement is governed by the finite-list case, which is
-exactly the GGR11 recursion above. The `sorry` below is therefore a precisely
-characterised external wall.
+exactly the GGR11 recursion above.  This `def` is `Prop`-valued and contains **no
+`sorry`**; the precisely characterised external wall is `GGR11TreeStructure`.
 
-Residual external lemma: GGR11 interleaved/tensor list-size recursion. -/
+Residual external lemma: GGR11 Erase-Decode tree existence
+(`InterleavedCode.GGR11.GGR11TreeStructure`). -/
 def lambda_le_ggr11 {ι F : Type} [Fintype ι] [Field F] [DecidableEq F]
     (C : Set (ι → F)) (δ : ℝ) (m : ℕ) (_hm : 1 ≤ m)
     (_hδ_lb : 0 ≤ δ)

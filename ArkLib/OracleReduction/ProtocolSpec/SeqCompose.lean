@@ -7,10 +7,20 @@ Authors: Quang Dao
 import ArkLib.Data.Fin.Sigma
 import ArkLib.OracleReduction.ProtocolSpec.Cast
 
-/-! # Sequential Composition of Protocol Specifications
+/-!
+# Sequential Composition of Protocol Specifications
 
-This file collects all definitions and theorems about sequentially composing `ProtocolSpec`s and
-their associated data. -/
+This module formalizes the algebraic and structural operations required for the sequential composition
+of protocol specifications (`ProtocolSpec`). Given a collection of protocol specifications representing
+individual sub-protocols, sequential composition models their execution in sequence: the prover and
+verifier run the first protocol to completion, generating a transcript, and then proceed to the next
+protocol, potentially using the accumulated transcript state to determine inputs for subsequent phases.
+
+We define:
+1. Binary concatenation (`append` / `++ₚ`) of two specifications.
+2. N-ary sequential composition (`seqCompose`) over a family of specifications indexed by a finite type.
+3. Relevant structures for partitioning, casting, and translating transcripts, messages, and challenges across composed boundaries.
+-/
 
 universe u v
 
@@ -175,19 +185,7 @@ theorem concat_append_right (T₁ : FullTranscript pSpec₁) (T₂ : FullTranscr
   unfold FullTranscript.concat FullTranscript.append
   exact (Fin.happend_hconcat_eq T₁ T₂ msg).symm
 
--- @[simp]
--- theorem append_cast_left {n m : ℕ} {pSpec₁ pSpec₂ : ProtocolSpec n} {pSpec' : ProtocolSpec m}
---     {T₁ : FullTranscript pSpec₁} {T₂ : FullTranscript pSpec'} (n' : ℕ)
---     (h : n + m = n' + m) (hSpec : dcast h pSpec₁ = pSpec₂) :
---       dcast₂ h (by simp) (T₁ ++ₜ T₂) = (dcast₂ (Nat.add_right_cancel h) (by simp) T₁) ++ₜ T₂ :=
--- by
---   simp [append, dcast₂, ProtocolSpec.cast, Fin.append_cast_left]
 
--- @[simp]
--- theorem append_cast_right {n m : ℕ} (pSpec : ProtocolSpec n) (pSpec' : ProtocolSpec m) (m' : ℕ)
---     (h : n + m = n + m') :
---       dcast h (pSpec ++ₚ pSpec') = pSpec ++ₚ (dcast (Nat.add_left_cancel h) pSpec') := by
---   simp [append, dcast, ProtocolSpec.cast, Fin.append_cast_right]
 
 @[simp]
 theorem take_append_left (T : FullTranscript pSpec₁) (T' : FullTranscript pSpec₂) :
@@ -430,47 +428,7 @@ instance [O₁ : ∀ i, OracleInterface (pSpec₁.Message i)]
 
 instance : ∀ i, OracleInterface ((pSpec₁ ++ₚ pSpec₂).Challenge i) := challengeOracleInterface
 
--- @[simp]
--- lemma challengeOracleInterface_append_domain_inl (j : pSpec₁.ChallengeIdx) :
---     [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ.domain (.inl j) = Unit := by
---   simp [OracleSpec.domain, ChallengeIdx.inl, ProtocolSpec.append, OracleInterface.toOracleSpec,
---     instOracleInterfaceChallengeAppend, challengeOracleInterface]
-
--- @[simp]
--- lemma challengeOracleInterface_append_range_inl (j : pSpec₁.ChallengeIdx) :
---     [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ.range (.inl j) = pSpec₁.Challenge j := by
---   simp [OracleSpec.range, ChallengeIdx.inl, ProtocolSpec.append, OracleInterface.toOracleSpec,
---     instOracleInterfaceChallengeAppend, challengeOracleInterface]
-
--- @[simp]
--- lemma challengeOracleInterface_append_domain_inr (j : pSpec₂.ChallengeIdx) :
---     [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ.domain (.inr j) = Unit := by
---   simp [OracleSpec.domain, ChallengeIdx.inr, ProtocolSpec.append, OracleInterface.toOracleSpec,
---     instOracleInterfaceChallengeAppend, challengeOracleInterface]
-
--- @[simp]
--- lemma challengeOracleInterface_append_range_inr (j : pSpec₂.ChallengeIdx) :
---     [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ.range (.inr j) = pSpec₂.Challenge j := by
---   simp [OracleSpec.range, ChallengeIdx.inr, ProtocolSpec.append, OracleInterface.toOracleSpec,
---     instOracleInterfaceChallengeAppend, challengeOracleInterface]
-
 variable [∀ i, SampleableType (pSpec₁.Challenge i)] [∀ i, SampleableType (pSpec₂.Challenge i)]
-
--- instance instSubSpecOfProtocolSpecAppendChallenge :
---     SubSpec ([pSpec₁.Challenge]ₒ + [pSpec₂.Challenge]ₒ) ([(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) where
---   monadLift | q => match q.1 with
---     | Sum.inl j => by
---       simpa using query (spec := [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) ⟨j.2, ()⟩
---     | Sum.inr j => by
---       simpa using query (spec := [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) j.inr ()
-
--- instance : SubSpec [pSpec₁.Challenge]ₒ ([(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) where
---   monadLift | query i t =>
---     instSubSpecOfProtocolSpecAppendChallenge.monadLift (query (Sum.inl i) t)
-
--- instance : SubSpec [pSpec₂.Challenge]ₒ ([(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) where
---   monadLift | query i t =>
---     instSubSpecOfProtocolSpecAppendChallenge.monadLift (query (Sum.inr i) t)
 
 end Append
 

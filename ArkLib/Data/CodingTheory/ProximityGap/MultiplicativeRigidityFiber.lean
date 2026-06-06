@@ -60,7 +60,7 @@ Proof (Route B): the set is a fiber of `powMonoidHom d`.  Either `c` is not in t
 (empty fiber, card `0`) or it is, in which case the fiber is equinumerous with the fiber
 over `1`, i.e. with the kernel `{x | x ^ d = 1}`, whose cardinality is `Nat.gcd d n`. -/
 theorem pow_eq_card_eq_zero_or_gcd
-    {G : Type*} [CommGroup G] [Fintype G] [IsCyclic G] (d : ℕ) (c : G) :
+    {G : Type*} [CommGroup G] [Fintype G] [DecidableEq G] [IsCyclic G] (d : ℕ) (c : G) :
     (Finset.univ.filter fun x : G => x ^ d = c).card = 0 ∨
     (Finset.univ.filter fun x : G => x ^ d = c).card = Nat.gcd d (Fintype.card G) := by
   classical
@@ -98,7 +98,7 @@ has cardinality exactly `Nat.gcd (a - b) n`.
 Derived from `pow_eq_card_eq_zero_or_gcd` by dividing by `x ^ b` (`x` is a group element,
 hence invertible): the equation is equivalent to `x ^ (a - b) = c₂ * c₁⁻¹`. -/
 theorem binomial_agreement_card
-    {G : Type*} [CommGroup G] [Fintype G] [IsCyclic G]
+    {G : Type*} [CommGroup G] [Fintype G] [DecidableEq G] [IsCyclic G]
     (c₁ c₂ : G) (a b : ℕ) (hba : b < a) :
     (Finset.univ.filter fun x : G => c₁ * x ^ a = c₂ * x ^ b).card = 0 ∨
     (Finset.univ.filter fun x : G => c₁ * x ^ a = c₂ * x ^ b).card
@@ -131,7 +131,7 @@ open scoped Classical in
 This is immediate from `binomial_agreement_card` since `Nat.gcd (a - b) n ≤ a - b`
 whenever `a - b ≠ 0`, which holds because `b < a`. -/
 theorem binomial_agreement_card_le
-    {G : Type*} [CommGroup G] [Fintype G] [IsCyclic G]
+    {G : Type*} [CommGroup G] [Fintype G] [DecidableEq G] [IsCyclic G]
     (c₁ c₂ : G) (a b : ℕ) (hba : b < a) :
     (Finset.univ.filter fun x : G => c₁ * x ^ a = c₂ * x ^ b).card ≤ a - b := by
   classical
@@ -151,7 +151,7 @@ agreement count is bounded by `a - b`, and `a - b < k` is pure arithmetic from
 `0 < b`, `b < a`, `a ≤ k`.  (The hypothesis `0 < b` is necessary for the *strict* bound:
 when `b = 0` one only gets `a - b = a ≤ k`.) -/
 theorem binomial_separation
-    {G : Type*} [CommGroup G] [Fintype G] [IsCyclic G]
+    {G : Type*} [CommGroup G] [Fintype G] [DecidableEq G] [IsCyclic G]
     (c₁ c₂ : G) (a b k : ℕ) (hb : 0 < b) (hba : b < a) (hak : a ≤ k) :
     (Finset.univ.filter fun x : G => c₁ * x ^ a = c₂ * x ^ b).card < k := by
   have hcard := binomial_agreement_card_le c₁ c₂ a b hba

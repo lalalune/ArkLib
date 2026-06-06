@@ -184,6 +184,35 @@ theorem P2_closed_of_faaDiBruno_succ_sum_eq_zero (x₀ : F) (R : F[X][X][Y])
   P2_closed_of_fullVanishes H x₀ R hHyp
     (fullVanishes_of_faaDiBruno_succ_sum_eq_zero H x₀ R hHyp hzero)
 
+/-- The carved restricted Faà-di-Bruno match follows directly from the legacy explicit
+successor-sum residual.  This is the tight compatibility form for callers that need the
+`P2Close.lean` core rather than the final paired capstone. -/
+theorem restrictedFaaDiBrunoMatch_of_faaDiBruno_succ_sum_eq_zero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hzero : FaaDiBrunoSuccSumZeroResidual H x₀ R hHyp) :
+    RestrictedFaaDiBrunoMatch H x₀ R hHyp :=
+  restrictedFaaDiBrunoMatch_of_fullVanishes H x₀ R hHyp
+    (fullVanishes_of_faaDiBruno_succ_sum_eq_zero H x₀ R hHyp hzero)
+
+/-- The assembled numerator series is a root of `Q` directly from the legacy explicit
+successor-sum residual. -/
+theorem assembledSeries_isRoot_of_faaDiBruno_succ_sum_eq_zero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hzero : FaaDiBrunoSuccSumZeroResidual H x₀ R hHyp) :
+    Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H) = 0 :=
+  (P2_closed_of_faaDiBruno_succ_sum_eq_zero H x₀ R hHyp hzero).1
+
+/-- The repaired P2 lift identity, exposed per order, directly from the legacy explicit
+successor-sum residual. -/
+theorem βHensel_lift_identity_of_faaDiBruno_succ_sum_eq_zero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hzero : FaaDiBrunoSuccSumZeroResidual H x₀ R hHyp) (t : ℕ) :
+    embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+      = αGenuine H x₀ R hHyp t
+          * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+          * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1) :=
+  (P2_closed_of_faaDiBruno_succ_sum_eq_zero H x₀ R hHyp hzero).2 t
+
 -- In-file axiom audit (edited, unbuilt source: must audit IN-FILE, not via import).
 section AxiomAudit
 #print axioms faaDiBrunoFullSum_eq_coeff
@@ -193,6 +222,9 @@ section AxiomAudit
 #print axioms restrictedFaaDiBrunoMatch_of_fullVanishes
 #print axioms assembledSeries_isRoot_of_fullVanishes
 #print axioms P2_closed_of_fullVanishes
+#print axioms restrictedFaaDiBrunoMatch_of_faaDiBruno_succ_sum_eq_zero
+#print axioms assembledSeries_isRoot_of_faaDiBruno_succ_sum_eq_zero
+#print axioms βHensel_lift_identity_of_faaDiBruno_succ_sum_eq_zero
 end AxiomAudit
 
 end BCIKS20.HenselNumerator

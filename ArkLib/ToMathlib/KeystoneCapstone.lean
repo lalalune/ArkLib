@@ -7,6 +7,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
 import ArkLib.ToMathlib.CoeffExtract
 import ArkLib.ToMathlib.IngredientCBridge
 
+set_option linter.style.longLine false
+set_option linter.style.whitespace false
+
 /-!
 # Keystone capstone — the `hcoeffPoly` witness for the Johnson list-decoding branch
 
@@ -121,22 +124,26 @@ theorem hcoeffPoly_witness_of_curveCoeffPolys
     simp only [hj, dif_pos]
     exact (hCurvePolys j hj).choose_spec.2 z hz
 
-/-! ## The §5 multiplicity / Johnson-regime datum, as an explicit hypothesis
+/-! ## The old front-door output shape
 
-`Section55Output` packages the genuine remaining input to the list-decoding branch: for **every**
-candidate decoding `P` of the curve that is good on the good set (each `P z` of degree `< deg` and
-within radius `δ`), the per-coefficient curve polynomials exist (`CurveCoeffPolys`).  This is exactly
-the conclusion of the BCIKS §5 list-decoding section.  Per the grind ledger's authoritative final
-state, the verified-brick chain reduces this to:
+`Section55CurveCoeffOutput` packages the literal output shape of the list-decoding branch: for
+**every** candidate decoding `P` of the curve that is good on the good set (each `P z` of degree
+`< deg` and within radius `δ`), the per-coefficient curve polynomials exist (`CurveCoeffPolys`).
+This is exactly the front-door `hcoeffPoly` obligation, so it is not the canonical residual
+input for the finished keystone path. The smaller current route is
+`KeystoneAssembly.keystone_of_section5Inputs`, whose residual is the corrected
+`Section5StrictDataFin` producer bundle.
+
+Historically this capstone described the remaining §5 work as:
 
 * `hMult` — the Guruswami–Sudan interpolant's multiplicity-vanishing at the centre
   (in-tree `ModifiedGuruswami.Q_multiplicity` / `gsQ_multiplicity`), the single genuine §5 datum;
 * `hδ₀`  — the Johnson radius condition `δ ≤ δ₀` under which that multiplicity holds;
 * degree facts (`d_H ≤ d_R ≤ D`, available in-tree from `weight_ξ_bound`/`hH`).
 
-We expose these abstractly as the proposition `Section55Output`, the literal output type of §5, so the
-capstone is a finite composition under one explicit regime hypothesis. -/
-def Section55Output {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+Those facts are now routed through smaller producer bundles elsewhere; this file keeps the old
+output-shaped proposition only as a compatibility target for the front-door bundling lemmas. -/
+def Section55CurveCoeffOutput {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     (u : WordStack F (Fin (k + 1)) ι) : Prop :=
   ∀ P : F → Polynomial F,
     (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
@@ -144,17 +151,17 @@ def Section55Output {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
         δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t, (P z).eval ∘ domain) ≤ δ) →
     CurveCoeffPolys (k := k) (deg := deg) (domain := domain) (δ := δ) u P
 
-/-! ## The capstone: `hcoeffPoly` from the §5 regime datum
+/-! ## The capstone: `hcoeffPoly` from the old output-shaped target
 
-This is the deliverable.  Its conclusion is *literally* the front-door `hcoeffPoly` hypothesis shape
-(Curves.lean:1214-1222), and its only hypothesis is the §5 list-decoding output `Section55Output`
-— the §5 multiplicity datum + `δ ≤ δ₀` + degree facts, repackaged.  The proof is the bundling lemma
-applied pointwise: a finite composition of the verified bricks under one explicit regime hypothesis. -/
+This compatibility lemma confirms that the old output-shaped proposition is exactly enough to feed
+the front-door `hcoeffPoly` hypothesis (Curves.lean:1214-1222). It should not be mistaken for the
+canonical residual input; use `KeystoneAssembly.keystone_of_section5Inputs` for the smaller producer
+interface. -/
 omit [Nonempty ι] [DecidableEq ι] in
 theorem hcoeffPoly_of_johnson_regime
     {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     (u : WordStack F (Fin (k + 1)) ι)
-    (hSec55 : Section55Output (k := k) (deg := deg) (domain := domain) (δ := δ) u) :
+    (hSec55 : Section55CurveCoeffOutput (k := k) (deg := deg) (domain := domain) (δ := δ) u) :
     ∀ P : F → Polynomial F,
       (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
         (P z).natDegree < deg ∧
@@ -173,7 +180,7 @@ To confirm the capstone's conclusion is exactly the front-door `hcoeffPoly`, we 
 `jointAgreement`.  This type-checks the capstone against the *real* keystone front door: every
 hypothesis other than `hcoeffPoly` is the standard probability-threshold input the front door already
 takes (`hprob`, `hεsmall`, `hεlarge`), so the list-decoding branch of Curves:1819 is, under
-`Section55Output`, a finite composition of verified bricks. -/
+`Section55CurveCoeffOutput`, a front-door compatibility check. -/
 omit [DecidableEq ι] in
 theorem jointAgreement_of_johnson_regime
     {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
@@ -188,7 +195,7 @@ theorem jointAgreement_of_johnson_regime
       (Fintype.card ι : ℝ≥0) / (Fintype.card F : ℝ≥0) ≤ errorBound δ deg domain)
     (hεlarge :
       ((Fintype.card ι + 1 : ℕ) : ℝ≥0) / (Fintype.card F : ℝ≥0) ≤ errorBound δ deg domain)
-    (hSec55 : Section55Output (k := k) (deg := deg) (domain := domain) (δ := δ) u) :
+    (hSec55 : Section55CurveCoeffOutput (k := k) (deg := deg) (domain := domain) (δ := δ) u) :
     jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u) :=
   RS_jointAgreement_of_prob_gt_and_errorBound_lower_bounds
     (deg := deg) (domain := domain) (δ := δ) hk u hprob hεsmall hεlarge

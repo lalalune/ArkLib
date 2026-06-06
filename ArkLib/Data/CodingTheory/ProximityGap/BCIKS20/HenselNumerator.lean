@@ -409,7 +409,7 @@ as an explicit natural number: the binomial `C(i, i1)` times the multinomial ove
 WALL (deferred to a later wave): the *matching lemma* equating this with the exact
 paper combinatorial factor (reconciling the Hasse-derivative's intrinsic `C(j, Σλ)` weight
 against the paper's `multinomial(j0, λ)`) is `prefactor_eq_paper` below — STATED, not proven. -/
-def prefactor {m : ℕ} (i i1 : ℕ) (lam : Nat.Partition m) : ℕ :=
+def prefactor {m : ℕ} (_i _i1 : ℕ) (lam : Nat.Partition m) : ℕ :=
   -- **DEFINITIONAL REPAIR (2026-06-05, campaign bug #5, kernel-grounded — see P2Vanish.lean):**
   -- the previous form carried an extra explicit binomial `Nat.choose i i1`. The genuine
   -- BCIKS20 (A.1) weights are emitted INTRINSICALLY by the X-/Y-Hasse extractions
@@ -1676,13 +1676,19 @@ theorem ClaimA2_α_mul_Wξ_eq_embedding_β (x₀ : F) (R : F[X][X][Y])
         * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
         * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1)
       = embeddingOf𝒪Into𝕃 H (ClaimA2.β R t) := by
+  have hexp : ClaimA2.henselDenominatorExponent t = 2 * t - 1 := by
+    by_cases ht : t = 0
+    · simp [ClaimA2.henselDenominatorExponent, ht]
+    · simp [ClaimA2.henselDenominatorExponent, ht]
   -- Unfold the definition of `α_t`; the `let W` in `ClaimA2.α` is `liftToFunctionField …`.
   change embeddingOf𝒪Into𝕃 H (ClaimA2.β R t)
         / ((liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
-            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1))
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^
+                ClaimA2.henselDenominatorExponent t)
         * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
         * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1)
       = embeddingOf𝒪Into𝕃 H (ClaimA2.β R t)
+  rw [hexp]
   rw [mul_assoc]
   exact div_mul_cancel₀ _ hden
 
@@ -1926,7 +1932,7 @@ theorem coeff_zero_eval_βHenselAssembled (x₀ : F) (R : F[X][X][Y])
 If the single successor-order residual is supplied as a hypothesis, then the assembled
 `βHensel` series is a root of `Q`. This is the hypothesis-taking version of
 `assembledSeries_isRoot`; unlike that theorem, this declaration does not depend on the
-documented residual `sorry` and is the reusable API for any future proof of the Faà-di-Bruno
+documented residual and is the reusable API for any future proof of the Faà-di-Bruno
 coefficient bridge. -/
 theorem assembledSeries_isRoot_of_coeff_succ_eval (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H)

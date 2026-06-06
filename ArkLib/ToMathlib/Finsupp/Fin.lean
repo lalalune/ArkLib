@@ -1,20 +1,33 @@
+/-
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
+
+import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.Finsupp.Basic
 import Mathlib.Data.Finset.Image
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Tactic
+
+/-!
+# Fin-indexed `Finsupp` insertion/removal helpers
+
+Thin wrappers around `Fin.insertNth` and `Fin.removeNth` for finitely supported functions whose
+domain is finite.
+-/
 
 namespace Finsupp
 
 variable {n : ℕ}
 
-/-- Insert one coordinate into a finitely-supported tuple indexed by `Fin`. -/
+/-- Insert one coordinate into a finitely supported tuple indexed by `Fin`. -/
 noncomputable def insertNth (p : Fin (n + 1)) (i : ℕ) (m : Fin n →₀ ℕ) :
     Fin (n + 1) →₀ ℕ :=
   onFinset Finset.univ (Fin.insertNth p i m) (fun _ _ => Finset.mem_univ _)
 
-/-- Remove one coordinate from a finitely-supported tuple indexed by `Fin`. -/
-noncomputable def removeNth (p : Fin (n + 1)) (m : Fin (n + 1) →₀ ℕ) : Fin n →₀ ℕ :=
+/-- Remove one coordinate from a finitely supported tuple indexed by `Fin`. -/
+noncomputable def removeNth (p : Fin (n + 1)) (m : Fin (n + 1) →₀ ℕ) :
+    Fin n →₀ ℕ :=
   onFinset Finset.univ (p.removeNth m) (fun _ _ => Finset.mem_univ _)
 
 @[simp]

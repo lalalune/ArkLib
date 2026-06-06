@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chung Thai Nguyen, Quang Dao
 -/
 
-import ArkLib.ProofSystem.Binius.BinaryBasefold.Prelude
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Compliance
 import ArkLib.ProofSystem.Sumcheck.Structured
 import ArkLib.Data.MvPolynomial.MultilinearComputational
 
@@ -42,7 +42,7 @@ lemma toOutCodewordsCountOf0 : toOutCodewordsCount ℓ ϑ 0 = 1 := by
     nonpos_iff_eq_zero, zero_ne_one, imp_false]
   exact NeZero.ne ℓ
 
-instance : ∀ i, NeZero (toOutCodewordsCount ℓ ϑ i) := by
+instance instNeZeroNatToOutCodewordsCount : ∀ i, NeZero (toOutCodewordsCount ℓ ϑ i) := by
   intro i
   have h_ne_0: toOutCodewordsCount ℓ ϑ i ≠ 0 := by
     simp only [toOutCodewordsCount]
@@ -339,6 +339,77 @@ lemma toCodewordsCount_mul_ϑ_lt_ℓ (ℓ ϑ : ℕ) [NeZero ϑ] [NeZero ℓ] (i 
         · exact pos_of_neZero ℓ
         · exact pos_of_neZero ϑ
 
+omit hdiv in
+/-- The base index k = j * ϑ is less than ℓ for valid oracle indices -/
+@[simp]
+lemma oracle_block_k_bound (i : Fin (ℓ + 1)) (j : Fin (toOutCodewordsCount ℓ ϑ i)) :
+    j.val * ϑ < ℓ :=
+  toCodewordsCount_mul_ϑ_lt_ℓ ℓ ϑ i j
+
+omit [NeZero ℓ] [NeZero ϑ] hdiv in
+/-- The base index k = j * ϑ is less than or equal to i -/
+@[simp]
+lemma oracle_block_k_le_i (i : Fin (ℓ + 1)) (j : Fin (toOutCodewordsCount ℓ ϑ i))
+    : j.val * ϑ ≤ i := by
+  have h := toCodewordsCount_mul_ϑ_le_i ℓ ϑ i j
+  by_cases hi : i < ℓ <;> simp only [hi, ↓reduceIte] at h <;> omega
+
+/-- The next oracle index k + ϑ = (j+1) * ϑ is at most i -/
+@[simp]
+lemma oracle_block_k_next_le_i (i : Fin (ℓ + 1)) (j : Fin (toOutCodewordsCount ℓ ϑ i))
+    (hj : j.val + 1 < toOutCodewordsCount ℓ ϑ i) : j.val * ϑ + ϑ ≤ i := by
+  have h := toCodewordsCount_mul_ϑ_le_i ℓ ϑ i (j + 1)
+  rw [Fin.val_add_one' (h_a_add_1:=hj), Nat.add_mul, Nat.one_mul] at h
+  by_cases hi : i < ℓ <;> simp only [hi, ↓reduceIte] at h <;> omega
+
+omit [NeZero ℓ] [NeZero ϑ] in
+/-- For any oracle position j, the domain index j*ϑ plus ϑ steps is at most ℓ.
+This is a key bound for proving fiber-wise closeness requirements. -/
+@[simp]
+lemma oracle_index_add_steps_le_ℓ (i : Fin (ℓ + 1))
+    (j : Fin (toOutCodewordsCount ℓ ϑ i)) :
+    j.val * ϑ + ϑ ≤ ℓ := by
+  unfold toOutCodewordsCount
+  by_cases h : i < ℓ
+  · -- Case: i < ℓ, so toOutCodewordsCount = i/ϑ + 1
+    have hj_bound : j.val < i / ϑ + 1 := by
+      have : toOutCodewordsCount ℓ ϑ i = i / ϑ + 1 := by simp [toOutCodewordsCount, h]
+      rw [← this]; exact j.isLt
+    rw [← Nat.add_one_mul]
+    apply Nat.le_trans (Nat.mul_le_mul_right ϑ (Nat.succ_le_of_lt hj_bound))
+    apply Nat.mul_le_of_le_div
+    apply Nat.succ_le_of_lt
+    apply Nat.div_lt_of_lt_mul; rw [mul_comm]
+    rw [Nat.div_mul_cancel hdiv.out]
+    exact h
+  · -- Case: i ≥ ℓ, so toOutCodewordsCount = i/ϑ
+    have hj_bound : j.val < i / ϑ := by
+      have : toOutCodewordsCount ℓ ϑ i = i / ϑ := by simp [toOutCodewordsCount, h]
+      rw [← this]; exact j.isLt
+    calc j.val * ϑ + ϑ
+        = (j.val + 1) * ϑ := by rw [Nat.add_mul, Nat.one_mul]
+      _ ≤ (i / ϑ) * ϑ := by gcongr; omega
+      _ ≤ i := Nat.div_mul_le_self i ϑ
+      _ ≤ ℓ := Fin.is_le i
+
+omit [NeZero ℓ] [NeZero ϑ] in
+/-- For any oracle position j, the domain index j*ϑ is at most ℓ.
+This is a key bound for proving fiber-wise closeness requirements. -/
+@[simp]
+lemma oracle_index_le_ℓ (i : Fin (ℓ + 1))
+    (j : Fin (toOutCodewordsCount ℓ ϑ i)) :
+    j.val * ϑ ≤ ℓ := by
+  have h_le := oracle_index_add_steps_le_ℓ ℓ ϑ i j
+  omega
+
+/-- Convert oracle position index to oracle domain index by multiplying by ϑ.
+The position index j corresponds to the j-th oracle in the list of committed oracles,
+and the domain index is j*ϑ, which is the actual index in the Fin ℓ domain. -/
+@[reducible]
+def oraclePositionToDomainIndex {i : Fin (ℓ + 1)}
+    (positionIdx : Fin (toOutCodewordsCount ℓ ϑ i)) : Fin ℓ :=
+  ⟨positionIdx.val * ϑ, oracle_block_k_bound ℓ ϑ i positionIdx⟩
+
 def mkLastOracleIndex (i : Fin (ℓ + 1)) : Fin (toOutCodewordsCount ℓ ϑ i) := by
   have hv: ϑ ∣ ℓ := by exact hdiv.out
   rw [toOutCodewordsCount]
@@ -360,6 +431,60 @@ lemma mkLastOracleIndex_last : mkLastOracleIndex ℓ ϑ (Fin.last ℓ) = ℓ / �
     eq_mpr_eq_cast, cast_eq]
   simp only [lt_self_iff_false, ↓reduceDIte]
   rfl
+
+def getLastOraclePositionIndex (i : Fin (ℓ + 1)) :
+  Fin (toOutCodewordsCount ℓ ϑ i) := by
+  let ne0 := (instNeZeroNatToOutCodewordsCount ℓ ϑ i).out
+  exact ⟨(toOutCodewordsCount ℓ ϑ i) - 1, by omega⟩
+
+@[reducible]
+def getLastOracleDomainIndex (oracleFrontierIdx : Fin (ℓ + 1)) :
+  Fin (ℓ) :=
+  oraclePositionToDomainIndex (positionIdx := (getLastOraclePositionIndex ℓ ϑ oracleFrontierIdx))
+
+lemma mkLastOracleIndex_eq_getLastOraclePositionIndex (i : Fin (ℓ + 1)) :
+    mkLastOracleIndex ℓ ϑ i = getLastOraclePositionIndex ℓ ϑ i := by
+  unfold mkLastOracleIndex getLastOraclePositionIndex
+  apply Fin.eq_of_val_eq
+  by_cases hi : i.val < ℓ
+  · simp only [hi, ↓reduceDIte]
+    unfold toOutCodewordsCount
+    simp only [hi, ↓reduceIte]
+    rfl
+  · simp only [hi, ↓reduceDIte]
+    unfold toOutCodewordsCount
+    simp only [hi, eq_mpr_eq_cast, cast_eq, ↓reduceIte, add_zero];
+    have h_eq: i.val = ℓ := by omega
+    rw [h_eq]
+
+lemma getLastOraclePositionIndex_last : getLastOraclePositionIndex ℓ ϑ (Fin.last ℓ)
+  = ⟨ℓ / ϑ - 1, by
+    dsimp only [toOutCodewordsCount, Fin.val_last, lt_self_iff_false];
+    simp only [lt_self_iff_false,
+      ↓reduceIte, add_zero, tsub_lt_self_iff, Nat.div_pos_iff, zero_lt_one, and_true]
+    constructor
+    · exact pos_of_neZero ϑ
+    · apply Nat.le_of_dvd (by exact Nat.pos_of_neZero ℓ); exact hdiv.out
+    ⟩ := by
+  apply Fin.eq_of_val_eq
+  dsimp only [getLastOraclePositionIndex, Fin.val_last, lt_self_iff_false, Lean.Elab.WF.paramLet]
+  rw [toOutCodewordsCount_last]
+
+lemma getLastOracleDomainIndex_last : getLastOracleDomainIndex ℓ ϑ (Fin.last ℓ)
+  = ⟨ℓ - ϑ, by
+    have h_ne_0 : 0 < ϑ := by exact pos_of_neZero ϑ
+    have h_lt: ϑ ≤ ℓ := by apply Nat.le_of_dvd (by exact Nat.pos_of_neZero ℓ); exact hdiv.out
+    omega⟩ := by
+  apply Fin.eq_of_val_eq
+  dsimp only [getLastOracleDomainIndex]
+  rw [getLastOraclePositionIndex_last]; simp only;
+  rw [Nat.sub_mul, Nat.one_mul]
+  rw [Nat.div_mul_cancel (hdiv.out)]
+
+lemma getLastOracleDomainIndex_add_ϑ_le (i : Fin (ℓ + 1)) :
+    (getLastOracleDomainIndex ℓ ϑ i).val + ϑ ≤ ℓ := by
+  rw [getLastOracleDomainIndex, oraclePositionToDomainIndex]
+  simp only [oracle_index_add_steps_le_ℓ]
 
 end OracleStatementIndex
 
@@ -422,6 +547,7 @@ variable (β : Fin r → L) [hβ_lin_indep : Fact (LinearIndependent 𝔽q β)]
   [h_β₀_eq_1 : Fact (β 0 = 1)]
 variable {ℓ 𝓡 ϑ : ℕ} (γ_repetitions : ℕ) [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] -- Should we allow ℓ = 0?
 variable {h_ℓ_add_R_rate : ℓ + 𝓡 < r} -- ℓ ∈ {1, ..., r-1}
+variable {𝓑 : Fin 2 ↪ L}
 variable [hdiv : Fact (ϑ ∣ ℓ)]
 
 section IndexBounds
@@ -494,6 +620,52 @@ lemma bIdx_succ_mul_ϑ_lt_ℓ_succ (bIdx : Fin (ℓ / ϑ - 1)) :
 lemma bIdx_succ_mul_ϑ_le_ℓ_succ (bIdx : Fin (ℓ / ϑ - 1)) : (↑bIdx + 1) * ϑ ≤ ℓ + 1 := by
   exact Nat.le_of_lt (bIdx_succ_mul_ϑ_lt_ℓ_succ bIdx)
 end IndexBounds
+
+/-- Oracle frontier index: captures valid oracle indices for a given statement index.
+    In Binary Basefold, the oracle can be at most 1 index behind the statement index.
+    - At statement index `i+1`, the oracle can be at `i` (after fold) or `i+1` (after commit)
+-/
+def OracleFrontierIndex {ℓ : ℕ} (stmtIdx : Fin (ℓ + 1)) :=
+  { val : Fin (ℓ + 1) // val.val ≤ stmtIdx.val ∧ stmtIdx.val ≤ val.val + 1 }
+
+namespace OracleFrontierIndex
+
+/-- Create oracle frontier index equal to statement index (synchronized case) -/
+def mkFromStmtIdx {ℓ : ℕ} (stmtIdx : Fin (ℓ + 1)) :
+    OracleFrontierIndex stmtIdx :=
+  ⟨stmtIdx, by constructor <;> omega⟩
+
+/-- Create oracle frontier index for statement i.succ with oracle at i (lagging case).
+    Used after fold step where stmtIdx advances but oracle hasn't committed yet. -/
+def mkFromStmtIdxCastSuccOfSucc {ℓ : ℕ} (i : Fin ℓ) :
+    OracleFrontierIndex i.succ :=
+  ⟨i.castSucc, by
+    constructor
+    · exact Nat.le_of_lt (by exact Nat.lt_add_one (i.castSucc).val)
+    · simp only [Fin.val_succ, Fin.val_castSucc, le_refl]
+  ⟩
+
+@[simp]
+lemma val_mkFromStmtIdx {ℓ : ℕ} (stmtIdx : Fin (ℓ + 1)) :
+    (mkFromStmtIdx stmtIdx).val = stmtIdx := rfl
+
+@[simp]
+lemma val_mkFromStmtIdxCastSuccOfSucc {ℓ : ℕ} (i : Fin ℓ) :
+    (mkFromStmtIdxCastSuccOfSucc i).val = i.castSucc := rfl
+
+@[simp]
+lemma val_le_i {ℓ : ℕ} (i : Fin (ℓ + 1)) (oracleIdx : OracleFrontierIndex i) :
+    oracleIdx.val ≤ i := by
+  unfold OracleFrontierIndex at oracleIdx
+  let h := oracleIdx.property
+  cases h
+  · exact h.left
+
+@[simp]
+lemma val_mkFromStmtIdxCastSuccOfSucc_eq_mkFromStmtIdx {ℓ : ℕ} (i : Fin ℓ) :
+    (mkFromStmtIdxCastSuccOfSucc i).val = (mkFromStmtIdx i.castSucc).val := by rfl
+
+end OracleFrontierIndex
 
 section OracleReductionComponents
 -- In this section, we use notation `ϑ` for the folding steps, along with `(hdiv : ϑ ∣ ℓ)`
@@ -757,6 +929,20 @@ def getFirstOracle {i : Fin (ℓ + 1)}
   ⟩
   simp only [OracleStatement, zero_mul, Fin.mk_zero'] at rawf₀
   exact rawf₀
+
+/-- Extract the last (most recently committed) oracle `f^(getLastOracleDomainIndex)` from the
+oracle statements at frontier index `oracleFrontierIdx`, reindexed to the requested `destIdx`. -/
+def getLastOracle {oracleFrontierIdx : Fin (ℓ + 1)} {destIdx : Fin r}
+    (h_destIdx : destIdx.val = getLastOracleDomainIndex ℓ ϑ oracleFrontierIdx)
+    (oStmt : (∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ
+      (i := oracleFrontierIdx) j)) :
+    OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx :=
+  let res := oStmt ⟨getLastOraclePositionIndex ℓ ϑ oracleFrontierIdx, by omega⟩
+  have h_lt : getLastOracleDomainIndex ℓ ϑ oracleFrontierIdx < r := by omega
+  have h_eq : destIdx = ⟨getLastOracleDomainIndex ℓ ϑ oracleFrontierIdx, h_lt⟩
+    := Fin.eq_of_val_eq (by omega)
+  fun y => res (cast (by rw [h_eq]) y)
+
 section SecurityRelations
 
 /-- Helper to get the k-th challenge slice for folding -/
@@ -777,52 +963,43 @@ lemma getFoldingChallenges_init_succ_eq (i : Fin ℓ)
   ext cId
   simp only [Fin.init, Fin.coe_castSucc, Fin.castSucc_mk, Fin.val_succ]
 
-omit hdiv in
-/-- The base index k = j * ϑ is less than ℓ for valid oracle indices -/
-lemma oracle_block_k_bound (i : Fin (ℓ + 1)) (j : Fin (toOutCodewordsCount ℓ ϑ i)) :
-    j.val * ϑ < ℓ :=
-  toCodewordsCount_mul_ϑ_lt_ℓ ℓ ϑ i j
-
-/-- The next oracle index k + ϑ = (j+1) * ϑ is at most i -/
-lemma oracle_block_k_next_le (i : Fin (ℓ + 1)) (j : Fin (toOutCodewordsCount ℓ ϑ i))
-    (hj : j.val + 1 < toOutCodewordsCount ℓ ϑ i) : j.val * ϑ + ϑ ≤ i := by
-  have h := toCodewordsCount_mul_ϑ_le_i ℓ ϑ i (j + 1)
-  rw [Fin.val_add_one' (h_a_add_1:=hj), Nat.add_mul, Nat.one_mul] at h
-  by_cases hi : i < ℓ <;> simp only [hi, ↓reduceIte] at h <;> omega
-
 def getNextOracle (i : Fin (ℓ + 1))
     (oStmt : ∀ j, (OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i) j)
-    (j : Fin (toOutCodewordsCount ℓ ϑ i)) (hj : j.val + 1 < toOutCodewordsCount ℓ ϑ i) :
-    OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨j.val * ϑ + ϑ, by
-    apply Nat.lt_succ_of_le;
-    let h_k_next_le_i := oracle_block_k_next_le (ℓ := ℓ) (ϑ := ϑ) (i := i) (j := j) (hj := hj)
-    calc _ ≤ i.val := h_k_next_le_i
-      _ ≤ ℓ := Fin.is_le i
-  ⟩ := by
-    let res := oStmt ⟨j.val + 1, hj⟩
-    have h: j.val * ϑ + ϑ = (j.val + 1) * ϑ := by
-      rw [Nat.add_mul, one_mul]
-    rw! [h]
-    exact res
+    (j : Fin (toOutCodewordsCount ℓ ϑ i)) (hj : j.val + 1 < toOutCodewordsCount ℓ ϑ i)
+    {destDomainIdx : Fin r} (h_destDomainIdx : destDomainIdx = j.val * ϑ + ϑ) :
+    OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destDomainIdx :=
+  let res := oStmt ⟨j.val + 1, hj⟩
+  have h : j.val * ϑ + ϑ = (j.val + 1) * ϑ := by
+    rw [Nat.add_mul, one_mul]
+  have h_lt : (j.val + 1) * ϑ < r := by
+    omega
+  have h_eq : destDomainIdx = ⟨(j.val + 1) * ϑ, h_lt⟩ :=
+    Fin.eq_of_val_eq (by
+      simp only
+      omega)
+  fun y => res (cast (by rw [h_eq]) y)
 
-/-- Folding consistency for round i -/
+/-- Folding consistency for round i (where i is the oracleIdx) -/
 def oracleFoldingConsistencyProp (i : Fin (ℓ + 1)) (challenges : Fin i → L)
     (oStmt : ∀ j, (OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i) j) : Prop :=
-  ∀ (j : Fin (toOutCodewordsCount ℓ ϑ i)) (hj : j.val + 1 < toOutCodewordsCount ℓ ϑ i),
-    -- let k is j.val * ϑ
+  (∀ (j : Fin (toOutCodewordsCount ℓ ϑ i)) (hj : j.val + 1 < toOutCodewordsCount ℓ ϑ i),
     have h_k_bound := oracle_block_k_bound (ℓ := ℓ) (ϑ := ϑ) (i := i) (j := j)
-    have h_k_next_le_i := oracle_block_k_next_le (ℓ := ℓ) (ϑ := ϑ) (i := i) (j := j) (hj := hj)
-    -- Explicitly type the oracle functions
-    isCompliant (i := ⟨j.val * ϑ, by exact h_k_bound⟩) (steps := ϑ)
-      (h_i_add_steps := by
-        simp only;
-        calc _ ≤ i.val := h_k_next_le_i
-          _ ≤ ℓ := Fin.is_le i
-      )
-      (f_i := oStmt ⟨j.val, by exact j.isLt⟩)
-      (f_i_plus_steps := getNextOracle 𝔽q β i oStmt j hj)
+    have h_k_next_le_i := oracle_block_k_next_le_i (ℓ := ℓ) (ϑ := ϑ) (i := i) (j := j) (hj := hj)
+    let destIdx : Fin r := ⟨oraclePositionToDomainIndex (positionIdx := j) + ϑ, by
+      have h_le := oracle_index_add_steps_le_ℓ ℓ ϑ (i := i) (j := j)
+      dsimp only [oraclePositionToDomainIndex]
+      omega
+    ⟩
+    isCompliant 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := ⟨oraclePositionToDomainIndex (positionIdx := j), by omega⟩) (steps := ϑ)
+      (destIdx := destIdx) (by rfl) (by
+        dsimp only [destIdx]; simp only [oracle_index_add_steps_le_ℓ])
+      (f_i := by
+        simpa [OracleStatement, oraclePositionToDomainIndex] using oStmt j)
+      (f_i_plus_steps := getNextOracle 𝔽q β i oStmt j hj (destDomainIdx := destIdx)
+        (h_destDomainIdx := by rfl))
       (challenges := getFoldingChallenges (r := r) (𝓡 := 𝓡) i challenges (k := j.val * ϑ)
-        (h := h_k_next_le_i))
+        (h := h_k_next_le_i)))
 
 omit [CharP L 2] in
 lemma oracleFoldingConsistencyProp_relay_preserved (i : Fin ℓ)
@@ -894,9 +1071,11 @@ def witnessStructuralInvariant {i : Fin (ℓ + 1)} (stmt : Statement (L := L) Co
   wit.H = projectToMidSumcheckPoly ℓ wit.t (m:=mp.multpoly stmt.ctx) i stmt.challenges ∧
   wit.f = getMidCodewords 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) wit.t stmt.challenges
 
--- `sumcheckConsistencyProp` now lives in `ArkLib.ProofSystem.Sumcheck.Structured`.
--- Re-exported so existing references — qualified or unqualified — continue to resolve.
-export Sumcheck.Structured (sumcheckConsistencyProp)
+/-- Sumcheck consistency: the claimed sumcheck target equals the sum of `H` over the boolean
+hypercube of dimension `k` (embedded via `𝓑`). This is the protocol-level `(𝓑)` form consumed
+throughout BinaryBasefold (Relations, ReductionLogic, Steps/*). -/
+def sumcheckConsistencyProp {k : ℕ} (sumcheckTarget : L) (H : MultiquadraticPoly L k) : Prop :=
+  sumcheckTarget = ∑ x ∈ (univ.map 𝓑) ^ᶠ k, (MultiquadraticPoly.val H).eval x
 
 /-- First oracle witness consistency: the witness polynomial t, when projected to level 0 and
     evaluated on the initial domain S^(0), must be close within unique decoding radius to f^(0) -/
@@ -1021,7 +1200,7 @@ def oracleWitnessConsistency
   ϑ (i := oracleIdx) j)) : Prop :=
   let witnessStructuralInvariant: Prop := witnessStructuralInvariant (mp := mp) (i:=stmtIdx) 𝔽q β
     (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmt wit
-  let sumCheckConsistency: Prop := sumcheckConsistencyProp (boolDomain L _)
+  let sumCheckConsistency: Prop := sumcheckConsistencyProp (𝓑 := 𝓑)
     stmt.sumcheck_target wit.H
   let firstOracleConsistency: Prop := firstOracleWitnessConsistencyProp 𝔽q β
     wit.t (getFirstOracle 𝔽q β oStmt)

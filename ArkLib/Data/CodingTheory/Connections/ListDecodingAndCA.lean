@@ -9,6 +9,7 @@ import ArkLib.Data.CodingTheory.ListDecodability
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.ToMathlib.BridgeListDecodingCA
 import ArkLib.Data.CodingTheory.Connections.EpsMCABadGlue
+import ArkLib.Data.CodingTheory.Connections.GKL24FirstMoment
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
@@ -165,6 +166,42 @@ theorem linear_listSize_to_epsMCA_gcxk25_of_bad_count
     ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
     hBadCount
 
+/-- **ABF26 Theorem 5.1 [GCXK25 Theorem 3] — first-moment summand from the in-tree GKL24
+brick.** This derives the *first-moment* part of T5.1,
+
+  `ε_mca(C, 1 − √(1 − δ + η)) ≤ ENNReal.ofReal ((L²·δ·n) / |F|)`,
+
+from the single named residual `ProximityGap.GKL24FirstMomentResidual` (the GKL24
+agree-domain / `|Bad¹| ≤ p·n` first-moment count, uniformly over a size-`L²` close-codeword
+carrier), via the *fully in-tree* per-codeword determinacy brick proven in
+`Connections/GKL24FirstMoment.lean` (`epsMCA_le_ofReal_of_gkl24_residual`).
+
+This is strictly sharper plumbing than `linear_listSize_to_epsMCA_gcxk25_of_bad_count`: there the
+whole per-stack count `L²·δ·n + 1/η` was a single opaque residual, whereas here the per-codeword
+*first-moment* count is reduced to its honest GKL24 core — the combining point of any single
+witness codeword is determined by the support of `u₁` (proven in-tree), so the only external input
+left in this summand is GKL24's sharpening of that support count to `δ·n`. The `1/η` second-moment
+summand is supplied separately by `GCXK25SecondMoment.card_lt_one_div_of_second_moment_rs`. -/
+theorem linear_listSize_to_epsMCA_gcxk25_firstMoment_of_gkl24_residual
+    (C : LinearCode ι F) (L : ℕ) (δ η : ℝ)
+    (hδ_pos : 0 < δ) (_hδ_lt : δ < 1)
+    (_hη_pos : 0 < η) (_hη_lt : η < 1) (_hη_le_δ : η ≤ δ)
+    (_hΛ : Lambda ((C : Set (ι → F))) δ ≤ (L : ℕ∞))
+    -- The GKL24 first-moment agree-domain residual (the genuine external content): at the
+    -- Johnson-lifted MCA radius, with list-size factor `B_T = L²` and per-codeword count
+    -- `b = δ·n` (`δ` the *list-decoding* radius, GCXK25's `|Bad¹| ≤ p·n`):
+    (hres :
+        ProximityGap.GKL24FirstMomentResidual C
+          ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
+          ((L : ℝ) ^ 2) (δ * Fintype.card ι)) :
+    epsMCA (F := F) (A := F) ((C : Set (ι → F)))
+        ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal) ≤
+      ENNReal.ofReal
+        (((L : ℝ) ^ 2 * (δ * Fintype.card ι)) / Fintype.card F) :=
+  ProximityGap.epsMCA_le_ofReal_of_gkl24_residual C
+    ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
+    (by positivity) hres
+
 /-- **ABF26 Theorem 5.1 [GCXK25 Theorem 3].** List decoding implies MCA.
 
 Let `C ⊆ F^n` be a linear code and let `δ, η ∈ (0, 1)`. If `|Λ(C, δ)| ≤ L`, then
@@ -214,6 +251,40 @@ def linear_listSize_to_epsMCA_gcxk25
   -- `Bad(π₁,π₂,δ)` count to the arbitrary stack's `mcaBad`. The in-tree second-moment count
   -- `|Bad²| < 1/ε` (`GCXK25SecondMoment`) supplies the `1/η` summand of that residual.
   -- Genuinely external pending the first-moment / agree-domain piece.
+
+/-- Prop-level wrapper for T5.1 from the per-stack probability residual. -/
+theorem linear_listSize_to_epsMCA_gcxk25_of_residuals_prop
+    (C : LinearCode ι F) (L : ℕ) (δ η : ℝ)
+    (hδ_pos : 0 < δ) (hδ_lt : δ < 1)
+    (hη_pos : 0 < η) (hη_lt : η < 1) (hη_le_δ : η ≤ δ)
+    (hΛ : Lambda ((C : Set (ι → F))) δ ≤ (L : ℕ∞))
+    (hPerStack :
+        ∀ u : Code.WordStack F (Fin 2) ι,
+          Pr_{let γ ← $ᵖ F}[mcaEvent (F := F)
+              ((C : Set (ι → F)))
+              ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal) (u 0) (u 1) γ] ≤
+            ENNReal.ofReal
+              (((L : ℝ) ^ 2 * δ * Fintype.card ι + 1 / η) / Fintype.card F)) :
+    linear_listSize_to_epsMCA_gcxk25 C L δ η
+      hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ :=
+  linear_listSize_to_epsMCA_gcxk25_of_residuals C L δ η
+    hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ hPerStack
+
+/-- Prop-level wrapper for T5.1 from the sharper bad-`γ` count residual. -/
+theorem linear_listSize_to_epsMCA_gcxk25_of_bad_count_prop
+    (C : LinearCode ι F) (L : ℕ) (δ η : ℝ)
+    (hδ_pos : 0 < δ) (hδ_lt : δ < 1)
+    (hη_pos : 0 < η) (hη_lt : η < 1) (hη_le_δ : η ≤ δ)
+    (hΛ : Lambda ((C : Set (ι → F))) δ ≤ (L : ℕ∞))
+    (hBadCount :
+        ∀ u : Code.WordStack F (Fin 2) ι,
+          ((ProximityGap.mcaBad (F := F) ((C : Set (ι → F)))
+              ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal) (u 0) (u 1)).card : ℝ) ≤
+            (L : ℝ) ^ 2 * δ * Fintype.card ι + 1 / η) :
+    linear_listSize_to_epsMCA_gcxk25 C L δ η
+      hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ :=
+  linear_listSize_to_epsMCA_gcxk25_of_bad_count C L δ η
+    hδ_pos hδ_lt hη_pos hη_lt hη_le_δ hΛ hBadCount
 
 end ListImpliesMCA
 
@@ -290,6 +361,28 @@ def rs_epsCA_small_implies_lambda_lt_F_bchks25
   -- forcing `epsCA(δ_fld=δ+2/n, δ_int=1-ρ-1/n) ≥ 1/(2n)`. This requires the RS-specific
   -- interpolation lemma (BCKHS25/Interpolation.lean has the collinear-proximates engine but
   -- not the |F|-codewords⇒bad-line counting). Genuinely external.
+
+/-- Prop-level wrapper for T5.2. -/
+theorem rs_epsCA_small_implies_lambda_lt_F_bchks25_of_residuals_prop
+    (domain : ι ↪ F) (k : ℕ) (δ : ℝ)
+    (hδ_pos : 0 < δ)
+    (hδ_lt : (δ : ℝ) < 1 - (k : ℝ) / Fintype.card ι)
+    (hε_ca :
+        epsCA (F := F) (A := F)
+            ((ReedSolomon.code domain k : Set (ι → F)))
+            ((δ + 2 / Fintype.card ι).toNNReal)
+            ((1 - (k : ℝ) / Fintype.card ι - 1 / Fintype.card ι).toNNReal) <
+          ENNReal.ofReal (1 / (2 * Fintype.card ι)))
+    (hBadLine :
+        ¬ (Lambda ((ReedSolomon.code domain k : Set (ι → F))) δ < (Fintype.card F : ℕ∞)) →
+          ENNReal.ofReal (1 / (2 * Fintype.card ι)) ≤
+            epsCA (F := F) (A := F)
+              ((ReedSolomon.code domain k : Set (ι → F)))
+              ((δ + 2 / Fintype.card ι).toNNReal)
+              ((1 - (k : ℝ) / Fintype.card ι - 1 / Fintype.card ι).toNNReal)) :
+    rs_epsCA_small_implies_lambda_lt_F_bchks25 domain k δ hδ_pos hδ_lt hε_ca :=
+  rs_epsCA_small_implies_lambda_lt_F_bchks25_of_residuals
+    domain k δ hδ_pos hδ_lt hε_ca hBadLine
 
 /-- **ABF26 Theorem 5.3 [CS25 Theorem 2] — honest reduction form.**
 
@@ -474,6 +567,34 @@ def rs_epsCA_implies_lambda_extended_cs25
   -- the CS25 multiplicity bound (not in-tree; ReedSolomon.lean has the code but not the
   -- degree-lift list correspondence). Genuinely external.
 
+/-- Prop-level wrapper for T5.3. -/
+theorem rs_epsCA_implies_lambda_extended_cs25_of_residuals_prop
+    (domain : ι ↪ F) (k : ℕ) (δ : ℝ) (η : ℝ)
+    (hk_pos : 0 < k)
+    (hδ_pos : 0 < δ)
+    (hδ_min :
+        (δ : ℝ) < Code.minDist ((ReedSolomon.code domain k : Set (ι → F)))
+                    / Fintype.card ι)
+    (hη_lo : 0 ≤ η) (hη_lt : η < 1)
+    (hε_ca :
+        (epsCA (F := F) (A := F)
+            ((ReedSolomon.code domain k : Set (ι → F)))
+            δ.toNNReal δ.toNNReal).toReal ≤
+          η * (1 / k - Fintype.card ι / (k * Fintype.card F)))
+    (hs_pos : (0 : ℝ) < Fintype.card F - Fintype.card ι)
+    (hClaim3 :
+        let ε := (epsCA (F := F) (A := F)
+                    ((ReedSolomon.code domain k : Set (ι → F)))
+                    δ.toNNReal δ.toNNReal).toReal
+        let L0 : ℕ := Nat.ceil ((Fintype.card F : ℝ) / (1 - η) * ε)
+        let s : ℝ := Fintype.card F - Fintype.card ι
+        ¬ (Lambda ((ReedSolomon.code domain (k + 1) : Set (ι → F))) δ ≤ (L0 : ℕ∞)) →
+          (L0 : ℝ) * s / ((L0 : ℝ) * k + s) < ε * Fintype.card F) :
+    rs_epsCA_implies_lambda_extended_cs25 domain k δ η
+      hk_pos hδ_pos hδ_min hη_lo hη_lt hε_ca :=
+  rs_epsCA_implies_lambda_extended_cs25_of_residuals
+    domain k δ η hk_pos hη_lo hη_lt hs_pos hε_ca hClaim3
+
 end CAImpliesList
 
 section ListVsCAseparation
@@ -573,6 +694,32 @@ def rs_epsCA_separation_bgks20
   -- uses the char-2 Frobenius/subfield structure of RS[F,F,|F|/8] (BGKS20 §3.3). This is a
   -- code-CONSTRUCTION lower bound (the trivial `epsCA ≤ 1` gives the wrong direction); no
   -- in-tree machinery manufactures the bad stack. Genuinely external.
+
+/-- Prop-level wrapper for T5.4. -/
+theorem rs_epsCA_separation_bgks20_of_residuals_prop
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F] [CharP F 2]
+    (hF_eq_ι : Fintype.card F = Fintype.card ι)
+    (hF_ge : 8 ≤ Fintype.card F)
+    (domain : ι ↪ F)
+    (hMain :
+        let k : ℕ := Fintype.card F / 8
+        let ρ : ℝ := 1 / 8
+        let C := ReedSolomon.code domain k
+        (epsCA (F := F) (A := F) ((C : Set (ι → F)))
+            ((1 - ρ ^ ((1 : ℝ) / 3)).toNNReal)
+            ((1 - ρ ^ ((1 : ℝ) / 3)).toNNReal)) ≥
+          ENNReal.ofReal (1 - 1 / Fintype.card F))
+    (hLoss :
+        let k : ℕ := Fintype.card F / 8
+        let ρ : ℝ := 1 / 8
+        let C := ReedSolomon.code domain k
+        (epsCA (F := F) (A := F) ((C : Set (ι → F)))
+            ((1 - ρ ^ ((1 : ℝ) / 3)).toNNReal)
+            ((1 - ρ ^ ((2 : ℝ) / 3)).toNNReal)) ≥
+          ENNReal.ofReal (1 - 1 / Fintype.card F)) :
+    rs_epsCA_separation_bgks20 hF_eq_ι hF_ge domain :=
+  rs_epsCA_separation_bgks20_of_residuals hF_eq_ι hF_ge domain hMain hLoss
 
 end ListVsCAseparation
 

@@ -843,7 +843,9 @@ instance [h : VerifierFirst pSpec] : IsEmpty (pSpec.MessageIdx) where
   false | ⟨0, h'⟩ => by have := h.verifier_first'; simp_all
 
 instance [ProverFirst pSpec] : ∀ i, VCVCompatible (pSpec.Challenge i) := isEmptyElim
+instance [ProverFirst pSpec] : ∀ i, OracleInterface (pSpec.Challenge i) := isEmptyElim
 instance [VerifierFirst pSpec] : ∀ i, OracleInterface (pSpec.Message i) := isEmptyElim
+instance [VerifierFirst pSpec] : ∀ i, VCVCompatible (pSpec.Message i) := isEmptyElim
 
 instance [ProverFirst pSpec] [h : OracleInterface (pSpec.«Type» 0)] :
     ∀ i, OracleInterface (pSpec.Message i)

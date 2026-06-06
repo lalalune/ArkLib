@@ -9,6 +9,7 @@ import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Data.Fintype.Card
 import Mathlib.Tactic
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice
 
 set_option linter.unusedSectionVars false
 -- The Johnson-range MCA skeleton (below) carries `[DecidableEq ι]`/`[DecidableEq F]` section
@@ -316,7 +317,7 @@ follows mechanically*. -/
 namespace Hab25Johnson
 
 open _root_.ProximityGap _root_.ProximityGap.GrandChallenges
-open scoped NNReal ENNReal
+open scoped NNReal ENNReal ProbabilityTheory
 
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
@@ -425,6 +426,41 @@ def mcaLowerWitness_ofHab25Johnson
   MCALowerWitness.ofLe hδ_le_one
     (le_trans (hab25_mca_johnson_bound domain k η δ hη hδ hCA hGS) hle)
 
+/-- **Hab25 Johnson residuals also make the faithful MCA lattice threshold exist.**
+
+This rounds the certified Johnson radius down to its Hamming lattice point, so downstream code
+can move directly from the Hab25 residuals to the faithful lattice threshold without manually
+constructing the intermediate `MCALowerWitness`. -/
+theorem mcaThresholdExists_ofHab25Johnson
+    (domain : ι ↪ F) (k : ℕ) (η δ ε_star : ℝ≥0)
+    (hη : 0 < η) (hδ : InJohnsonRange domain k η δ) (hδ_le_one : δ ≤ 1)
+    (hCA : Hab25CAInput domain k η δ)
+    (hGS : Hab25GSInterpolation domain k η δ hη hδ)
+    (hle : ENNReal.ofReal (johnsonBoundReal domain k η δ) ≤ (ε_star : ENNReal)) :
+    GrandChallengesLattice.mcaThresholdExists
+      (ReedSolomon.code domain k : Set (ι → F)) ε_star :=
+  ⟨GrandChallengesLattice.latticeIndexOf (ι := ι) δ hδ_le_one, by
+    unfold GrandChallengesLattice.mcaSatisfies
+    rw [← GrandChallengesLattice.epsMCA_eq_at_latticeIndex
+      (ReedSolomon.code domain k : Set (ι → F)) δ hδ_le_one]
+    exact le_trans (hab25_mca_johnson_bound domain k η δ hη hδ hCA hGS) hle⟩
+
+/-- The faithful MCA threshold created from Hab25 Johnson residuals satisfies the MCA bound. -/
+theorem mcaThreshold_spec_ofHab25Johnson
+    (domain : ι ↪ F) (k : ℕ) (η δ ε_star : ℝ≥0)
+    (hη : 0 < η) (hδ : InJohnsonRange domain k η δ) (hδ_le_one : δ ≤ 1)
+    (hCA : Hab25CAInput domain k η δ)
+    (hGS : Hab25GSInterpolation domain k η δ hη hδ)
+    (hle : ENNReal.ofReal (johnsonBoundReal domain k η δ) ≤ (ε_star : ENNReal)) :
+    let hne := mcaThresholdExists_ofHab25Johnson domain k η δ ε_star hη hδ hδ_le_one hCA hGS hle
+    GrandChallengesLattice.mcaSatisfies
+      (ReedSolomon.code domain k : Set (ι → F)) ε_star
+      (GrandChallengesLattice.mcaThreshold
+        (ReedSolomon.code domain k : Set (ι → F)) ε_star hne) :=
+  GrandChallengesLattice.mcaThreshold_spec
+    (ReedSolomon.code domain k : Set (ι → F)) ε_star
+    (mcaThresholdExists_ofHab25Johnson domain k η δ ε_star hη hδ hδ_le_one hCA hGS hle)
+
 /-- **Same bridge stated against the in-tree `MCALowerWitness.ofJohnsonBCHKS25` RHS.**
 
 `johnsonBoundReal` is *definitionally* the value inside `ENNReal.ofReal` of
@@ -451,6 +487,209 @@ def mcaLowerWitness_ofHab25Johnson_viaBCHKS25
              / (Fintype.card F : ℝ)) ≤ (ε_star : ENNReal)) :
     MCALowerWitness (ReedSolomon.code domain k : Set (ι → F)) ε_star :=
   MCALowerWitness.ofJohnsonBCHKS25 domain k η δ ε_star hη hδ_johnson hδ_le_one hGS hle
+
+/-- The Hab25/BCHKS25-compatible witness path also makes the faithful MCA lattice threshold
+exist. -/
+theorem mcaThresholdExists_ofHab25Johnson_viaBCHKS25
+    (domain : ι ↪ F) (k : ℕ) (η δ ε_star : ℝ≥0)
+    (hη : 0 < η)
+    (hδ_johnson :
+        (δ : ℝ) <
+          1 - (((k : ℝ) / Fintype.card ι + 1 / Fintype.card ι) ^ ((1 : ℝ) / 2)) - (η : ℝ))
+    (hδ_le_one : δ ≤ 1)
+    (hGS : Hab25GSInterpolation domain k η δ hη hδ_johnson)
+    (hle :
+        ENNReal.ofReal
+          (let n : ℝ := Fintype.card ι
+           let ρ_plus : ℝ := k / n + 1 / n
+           let m : ℝ := max ⌈(ρ_plus ^ ((1 : ℝ) / 2)) / (2 * η)⌉ 3
+           ((2 * (m + 1/2) ^ 5 + 3 * (m + 1/2) * δ * ρ_plus)
+              / (3 * ρ_plus ^ ((3 : ℝ) / 2)) * n
+            + (m + 1/2) / ρ_plus ^ ((1 : ℝ) / 2))
+             / (Fintype.card F : ℝ)) ≤ (ε_star : ENNReal)) :
+    GrandChallengesLattice.mcaThresholdExists
+      (ReedSolomon.code domain k : Set (ι → F)) ε_star :=
+  GrandChallengesLattice.mcaThresholdExists_ofJohnsonBCHKS25 domain k η δ ε_star hη
+    hδ_johnson hδ_le_one hGS hle
+
+/-- The faithful MCA threshold created from the Hab25/BCHKS25-compatible witness path satisfies
+the MCA bound. -/
+theorem mcaThreshold_spec_ofHab25Johnson_viaBCHKS25
+    (domain : ι ↪ F) (k : ℕ) (η δ ε_star : ℝ≥0)
+    (hη : 0 < η)
+    (hδ_johnson :
+        (δ : ℝ) <
+          1 - (((k : ℝ) / Fintype.card ι + 1 / Fintype.card ι) ^ ((1 : ℝ) / 2)) - (η : ℝ))
+    (hδ_le_one : δ ≤ 1)
+    (hGS : Hab25GSInterpolation domain k η δ hη hδ_johnson)
+    (hle :
+        ENNReal.ofReal
+          (let n : ℝ := Fintype.card ι
+           let ρ_plus : ℝ := k / n + 1 / n
+           let m : ℝ := max ⌈(ρ_plus ^ ((1 : ℝ) / 2)) / (2 * η)⌉ 3
+           ((2 * (m + 1/2) ^ 5 + 3 * (m + 1/2) * δ * ρ_plus)
+              / (3 * ρ_plus ^ ((3 : ℝ) / 2)) * n
+            + (m + 1/2) / ρ_plus ^ ((1 : ℝ) / 2))
+             / (Fintype.card F : ℝ)) ≤ (ε_star : ENNReal)) :
+    let hne := mcaThresholdExists_ofHab25Johnson_viaBCHKS25 domain k η δ ε_star hη
+      hδ_johnson hδ_le_one hGS hle
+    GrandChallengesLattice.mcaSatisfies
+      (ReedSolomon.code domain k : Set (ι → F)) ε_star
+      (GrandChallengesLattice.mcaThreshold
+        (ReedSolomon.code domain k : Set (ι → F)) ε_star hne) :=
+  GrandChallengesLattice.mcaThreshold_spec
+    (ReedSolomon.code domain k : Set (ι → F)) ε_star
+    (mcaThresholdExists_ofHab25Johnson_viaBCHKS25 domain k η δ ε_star hη hδ_johnson
+      hδ_le_one hGS hle)
+
+/-- The Hab25 Step-2 residual supplies the direct BCHKS25 lattice-threshold wrapper.  This is the
+same endpoint as `mcaThreshold_spec_ofHab25Johnson_viaBCHKS25`, but routed through the canonical
+Grand-MCA lattice bridge rather than reconstructing the generic threshold spec. -/
+theorem mcaThreshold_spec_ofHab25Johnson_directBCHKS25
+    (domain : ι ↪ F) (k : ℕ) (η δ ε_star : ℝ≥0)
+    (hη : 0 < η)
+    (hδ_johnson :
+        (δ : ℝ) <
+          1 - (((k : ℝ) / Fintype.card ι + 1 / Fintype.card ι) ^ ((1 : ℝ) / 2)) - (η : ℝ))
+    (hδ_le_one : δ ≤ 1)
+    (hGS : Hab25GSInterpolation domain k η δ hη hδ_johnson)
+    (hle :
+        ENNReal.ofReal
+          (let n : ℝ := Fintype.card ι
+           let ρ_plus : ℝ := k / n + 1 / n
+           let m : ℝ := max ⌈(ρ_plus ^ ((1 : ℝ) / 2)) / (2 * η)⌉ 3
+           ((2 * (m + 1/2) ^ 5 + 3 * (m + 1/2) * δ * ρ_plus)
+              / (3 * ρ_plus ^ ((3 : ℝ) / 2)) * n
+            + (m + 1/2) / ρ_plus ^ ((1 : ℝ) / 2))
+             / (Fintype.card F : ℝ)) ≤ (ε_star : ENNReal)) :
+    let hne := GrandChallengesLattice.mcaThresholdExists_ofJohnsonBCHKS25
+      domain k η δ ε_star hη hδ_johnson hδ_le_one hGS hle
+    GrandChallengesLattice.mcaSatisfies
+      (ReedSolomon.code domain k : Set (ι → F)) ε_star
+      (GrandChallengesLattice.mcaThreshold
+        (ReedSolomon.code domain k : Set (ι → F)) ε_star hne) :=
+  GrandChallengesLattice.mcaThreshold_spec_ofJohnsonBCHKS25 domain k η δ ε_star hη
+    hδ_johnson hδ_le_one hGS hle
+
+/-- The Hab25 Step-2 residual and any capacity-side `ε_ca` upper witness bracket the faithful
+MCA lattice threshold directly. -/
+theorem mcaThresholdLattice_bracketed_ofHab25Johnson_and_epsCAGt
+    (domain : ι ↪ F) (k : ℕ) (η δ_lo δ_hi ε_star : ℝ≥0)
+    (hη : 0 < η)
+    (hδ_johnson :
+        (δ_lo : ℝ) <
+          1 - (((k : ℝ) / Fintype.card ι + 1 / Fintype.card ι) ^ ((1 : ℝ) / 2)) - (η : ℝ))
+    (hδlo_le_one : δ_lo ≤ 1)
+    (hGS : Hab25GSInterpolation domain k η δ_lo hη hδ_johnson)
+    (hle :
+        ENNReal.ofReal
+          (let n : ℝ := Fintype.card ι
+           let ρ_plus : ℝ := k / n + 1 / n
+           let m : ℝ := max ⌈(ρ_plus ^ ((1 : ℝ) / 2)) / (2 * η)⌉ 3
+           ((2 * (m + 1/2) ^ 5 + 3 * (m + 1/2) * δ_lo * ρ_plus)
+              / (3 * ρ_plus ^ ((3 : ℝ) / 2)) * n
+            + (m + 1/2) / ρ_plus ^ ((1 : ℝ) / 2))
+             / (Fintype.card F : ℝ)) ≤ (ε_star : ENNReal))
+    (hhi :
+      epsCA (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F)) δ_hi δ_hi >
+        (ε_star : ENNReal))
+    (hδhi : δ_hi ≤ 1) :
+    let hne := GrandChallengesLattice.mcaThresholdExists_ofJohnsonBCHKS25
+      domain k η δ_lo ε_star hη hδ_johnson hδlo_le_one hGS hle
+    GrandChallengesLattice.latticeIndexOf (ι := ι) δ_lo hδlo_le_one ≤
+        GrandChallengesLattice.mcaThreshold
+          (ReedSolomon.code domain k : Set (ι → F)) ε_star hne ∧
+      GrandChallengesLattice.mcaThreshold
+          (ReedSolomon.code domain k : Set (ι → F)) ε_star hne <
+        GrandChallengesLattice.latticeIndexOf (ι := ι) δ_hi hδhi :=
+  GrandChallengesLattice.mcaThresholdLattice_bracketed_ofJohnsonBCHKS25_and_epsCAGt
+    domain k η δ_lo δ_hi ε_star hη hδ_johnson hδlo_le_one hGS hle hhi hδhi
+
+/-- The Hab25 Step-2 residual and the CS25 complete-CA-breakdown lower bound bracket the
+faithful MCA lattice threshold directly. -/
+theorem mcaThresholdLattice_bracketed_ofHab25Johnson_and_RSBreakdownCS25
+    (domain : ι ↪ F) (k : ℕ) (η δ_lo δ_hi ε_star : ℝ≥0)
+    (hη : 0 < η)
+    (hδ_johnson :
+        (δ_lo : ℝ) <
+          1 - (((k : ℝ) / Fintype.card ι + 1 / Fintype.card ι) ^ ((1 : ℝ) / 2)) -
+            (η : ℝ))
+    (hδlo_le_one : δ_lo ≤ 1)
+    (hGS : Hab25GSInterpolation domain k η δ_lo hη hδ_johnson)
+    (hle :
+        ENNReal.ofReal
+          (let n : ℝ := Fintype.card ι
+           let ρ_plus : ℝ := k / n + 1 / n
+           let m : ℝ := max ⌈(ρ_plus ^ ((1 : ℝ) / 2)) / (2 * η)⌉ 3
+           ((2 * (m + 1/2) ^ 5 + 3 * (m + 1/2) * δ_lo * ρ_plus)
+              / (3 * ρ_plus ^ ((3 : ℝ) / 2)) * n
+            + (m + 1/2) / ρ_plus ^ ((1 : ℝ) / 2))
+             / (Fintype.card F : ℝ)) ≤ (ε_star : ENNReal))
+    (hδhi : δ_hi ≤ 1)
+    (hq_ge : 10 ≤ Fintype.card F)
+    (hδ_cs_lo :
+        1 - CodingTheory.qEntropy (Fintype.card F) (δ_hi : ℝ) + 2 / (Fintype.card ι : ℝ)
+            + ((CodingTheory.qEntropy (Fintype.card F) (δ_hi : ℝ) - (δ_hi : ℝ))
+                / (Fintype.card ι : ℝ)) ^ ((1 : ℝ) / 2)
+          ≤ (k : ℝ) / Fintype.card ι)
+    (hδ_cs_hi : (k : ℝ) / Fintype.card ι ≤ 1 - (δ_hi : ℝ) - 2 / (Fintype.card ι : ℝ))
+    (hCS25 : CodingTheory.rs_epsCA_breakdown_cs25 domain k δ_hi hq_ge hδ_cs_lo hδ_cs_hi)
+    (hε : (ε_star : ENNReal) < 1) :
+    let hne := GrandChallengesLattice.mcaThresholdExists_ofJohnsonBCHKS25
+      domain k η δ_lo ε_star hη hδ_johnson hδlo_le_one hGS hle
+    GrandChallengesLattice.latticeIndexOf (ι := ι) δ_lo hδlo_le_one ≤
+        GrandChallengesLattice.mcaThreshold
+          (ReedSolomon.code domain k : Set (ι → F)) ε_star hne ∧
+      GrandChallengesLattice.mcaThreshold
+          (ReedSolomon.code domain k : Set (ι → F)) ε_star hne <
+        GrandChallengesLattice.latticeIndexOf (ι := ι) δ_hi hδhi :=
+  GrandChallengesLattice.mcaThresholdLattice_bracketed_ofJohnsonBCHKS25_and_RSBreakdownCS25
+    domain k η δ_lo δ_hi ε_star hη hδ_johnson hδlo_le_one hGS hle hδhi hq_ge
+    hδ_cs_lo hδ_cs_hi hCS25 hε
+
+/-- The Hab25 Step-2 residual and the DG25 sampling lower bound bracket the faithful MCA
+lattice threshold directly for Reed-Solomon codes. -/
+theorem mcaThresholdLattice_bracketed_ofHab25Johnson_and_SamplingDG25
+    (domain : ι ↪ F) (k : ℕ) (η δ_lo δ_hi δ' ε_star : ℝ≥0)
+    (hη : 0 < η)
+    (hδ_johnson :
+        (δ_lo : ℝ) <
+          1 - (((k : ℝ) / Fintype.card ι + 1 / Fintype.card ι) ^ ((1 : ℝ) / 2)) -
+            (η : ℝ))
+    (hδlo_le_one : δ_lo ≤ 1)
+    (hGS : Hab25GSInterpolation domain k η δ_lo hη hδ_johnson)
+    (hle :
+        ENNReal.ofReal
+          (let n : ℝ := Fintype.card ι
+           let ρ_plus : ℝ := k / n + 1 / n
+           let m : ℝ := max ⌈(ρ_plus ^ ((1 : ℝ) / 2)) / (2 * η)⌉ 3
+           ((2 * (m + 1/2) ^ 5 + 3 * (m + 1/2) * δ_lo * ρ_plus)
+              / (3 * ρ_plus ^ ((3 : ℝ) / 2)) * n
+            + (m + 1/2) / ρ_plus ^ ((1 : ℝ) / 2))
+             / (Fintype.card F : ℝ)) ≤ (ε_star : ENNReal))
+    (hδhi : δ_hi ≤ 1)
+    (hδ' : (δ' : ENNReal) =
+      ⨆ u : ι → F, δᵣ(u, (ReedSolomon.code domain k : Set (ι → F))))
+    (hδ_pos : 0 < δ_hi) (hδ_lt : δ_hi < δ')
+    (hDG25 : CodingTheory.linear_epsCA_ge_sampling_dg25
+      (ReedSolomon.code domain k) δ_hi δ' hδ' hδ_pos hδ_lt)
+    (hgt :
+      ((Fintype.card F - 1 : ℝ≥0) / Fintype.card F : ENNReal)
+          * Pr_{
+              let u ← $ᵖ (ι → F)
+              }[δᵣ(u, (ReedSolomon.code domain k : Set (ι → F))) ≤ δ_hi] >
+        (ε_star : ENNReal)) :
+    let hne := GrandChallengesLattice.mcaThresholdExists_ofJohnsonBCHKS25
+      domain k η δ_lo ε_star hη hδ_johnson hδlo_le_one hGS hle
+    GrandChallengesLattice.latticeIndexOf (ι := ι) δ_lo hδlo_le_one ≤
+        GrandChallengesLattice.mcaThreshold
+          (ReedSolomon.code domain k : Set (ι → F)) ε_star hne ∧
+      GrandChallengesLattice.mcaThreshold
+          (ReedSolomon.code domain k : Set (ι → F)) ε_star hne <
+        GrandChallengesLattice.latticeIndexOf (ι := ι) δ_hi hδhi :=
+  GrandChallengesLattice.mcaThresholdLattice_bracketed_ofJohnsonBCHKS25_and_SamplingDG25
+    domain k η δ_lo δ_hi δ' ε_star hη hδ_johnson hδlo_le_one hGS hle hδhi hδ'
+    hδ_pos hδ_lt hDG25 hgt
 
 end Hab25Johnson
 

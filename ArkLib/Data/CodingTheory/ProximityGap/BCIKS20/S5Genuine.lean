@@ -5,6 +5,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.HenselNumerator
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Vanish
 
+set_option linter.style.longLine false
+
 /-!
 # BCIKS20 §5.2.6–5.2.7 — the RE-ANCHORED Claims 5.8 / 5.8' / 5.9 (genuine objects)
 
@@ -71,8 +73,6 @@ claims are axiom-clean (`[propext, Classical.choice, Quot.sound]`, no `sorryAx`)
 wrappers discharge the lift identity from the in-tree conditional theorem using the explicit
 `FaaDiBrunoSuccSumZeroResidual`.  No `sorry`/`admit`/`native_decide`/`bv_decide` is used in this file.
 -/
-
-set_option linter.style.longLine false
 
 noncomputable section
 

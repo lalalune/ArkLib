@@ -69,11 +69,14 @@ This file does **not** edit the (0-sorry) `RationalFunctions.lean`; all names li
 ArkLib`, the in-tree objects opened from `BCIKS20AppendixA` / `…ClaimA2`.
 -/
 
-import ArkLib.Data.Polynomial.RationalFunctions
+import ArkLib.Data.Polynomial.RationalFunctionsCore
 import ArkLib.ToMathlib.PartitionRecursion
 import ArkLib.ToMathlib.HasseDerivNumerators
 import ArkLib.ToMathlib.WeightLambdaCalculus
 import Mathlib
+
+set_option linter.style.longLine false
+set_option linter.unusedVariables false
 
 namespace ArkLib
 

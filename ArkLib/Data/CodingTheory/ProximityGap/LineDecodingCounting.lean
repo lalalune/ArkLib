@@ -10,8 +10,9 @@ import Mathlib.Data.Fintype.Card
 /-!
 # Refutation of the double-coverage counting reduction (GG25 / ABF26 Thm 4.21 wall)
 
-`ArkLib/Data/CodingTheory/ProximityGap/LineDecoding.lean` reduces the residual `sorry` of
-`lineDecodable_imp_epsMCA_le` to a **pure-`Nat` double-coverage count**: an aligned-and-
+`ArkLib/Data/CodingTheory/ProximityGap/LineDecoding.lean` documents that the target proposition
+`lineDecodable_imp_epsMCA_le_target` would need a **pure-`Nat` double-coverage count** in the
+black-box route: an aligned-and-
 `mcaEvent` index finset `H` with `|H| ≥ n+1`, a per-index witness set `S γ` each missing at
 most `m := ⌊δ·n⌋` positions of a fixed target set `T := S_{γ₀}`, should force *every* position
 of `T` to be covered by `≥ 2` indices of `H` (two distinct zeros of the affine
@@ -23,10 +24,10 @@ double coverage of the *full* `T`, not merely most of it.
 
 This file proves that reduction target is **false** for every `m ≥ 1` (equivalently `δ ≥ 1/n`,
 the only non-degenerate proximity regime): a single shared missed position defeats it for an
-arbitrarily large `H`. Hence the residual `sorry` is a precisely-characterized wall, not a
-missing leaf proof; the faithful route requires exposing the Guruswami–Sudan interpolation
-degree in the statement of `LineDecodable` (a documented statement repair), per the in-file
-analysis in `LineDecoding.lean`.
+arbitrarily large `H`. Hence the black-box target is blocked by a precisely-characterized wall,
+not a missing leaf proof; the faithful route requires exposing the Guruswami–Sudan
+interpolation degree in the statement of `LineDecodable` (a documented statement repair), per
+the in-file analysis in `LineDecoding.lean`.
 
 This is a refutation artifact, not a closure of the target theorem.
 -/

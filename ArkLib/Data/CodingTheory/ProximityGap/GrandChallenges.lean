@@ -6,6 +6,7 @@ Authors: Alexander Hicks
 
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBounds
+import ArkLib.Data.CodingTheory.ProximityGap.LineDecoding
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.CodingTheory.ListDecodability
 
@@ -48,6 +49,25 @@ Resolution paths:
 The two challenges sit at the centre of the dependency graph of the paper: §3 list-decoding
 bounds feed into the list-decoding challenge directly, and §4 / §5 results bound `ε_mca`
 either above (for the upper-bound direction) or below (for the lower-bound direction).
+
+## Companion lattice files
+
+The real-valued, strict-failure encodings here collapse to radius-one statements
+(`GrandChallengeCollapse.lean`, Finding F6), so the faithful "determine the largest
+threshold" content lives on the `1/n`-lattice. Two complementary lattice encodings exist:
+
+* `GrandChallengeLattice.lean` (singular) — `Finset ℕ`-indexed lattice set/threshold in
+  this `GrandChallenges` namespace (`mcaLatticeSet`/`listLatticeSet`,
+  `mcaLatticeThreshold`/`listLatticeThreshold`). Its `listLatticeThreshold` is the object
+  the downstream LD-threshold bracket files
+  (`GrandChallengeLDThreshold{,Elias,JohnsonSq,HalfDist}.lean`) bound.
+* `GrandChallengesLattice.lean` (plural) — `Fin (n+1)`-indexed lattice threshold in its own
+  `GrandChallengesLattice` namespace, plus the step-function bridge that lets the one-sided
+  witnesses (`MCALowerWitness`/`MCAUpperWitness`, `ListLowerWitness`/`ListUpperWitness`)
+  bracket the lattice threshold (`*_bracketed`).
+
+See the `GrandChallengeLattice.lean` header for why the two `Finset` representations cannot
+collapse into a single re-export.
 -/
 
 -- Several framework lemmas use only a subset of the `ι`/`F` typeclass instances in their
@@ -59,7 +79,7 @@ set_option linter.unusedSectionVars false
 
 namespace ProximityGap
 
-open scoped NNReal
+open scoped NNReal ProbabilityTheory
 
 universe u
 
@@ -283,6 +303,61 @@ def MCALowerWitness.ofJohnsonBCHKS25
   MCALowerWitness.ofLe hδ_le_one
     (le_trans hBCHKS25 hle)
 
+/-- **Bridge from a repaired line-decoding target.** If a code satisfies the named
+line-decoding-to-MCA target at radius `δ`, and the resulting `a/|F|` bound is within
+`ε*`, then the target certifies an `MCALowerWitness`.
+
+This deliberately consumes `lineDecodable_imp_epsMCA_le_target` as an explicit hypothesis:
+the unconstrained black-box theorem shape is known to be false, so callers must first supply
+the repaired GG25/GS interpolation content needed to prove that target. -/
+def MCALowerWitness.ofLineDecodingTarget
+    (C : ModuleCode ι F F) (δ a ε_star : ℝ≥0)
+    (hδ_le_one : δ ≤ 1)
+    (hLD : CodingTheory.LineDecodable (F := F) (A := F) (C : Set (ι → F)) δ a
+      ((Fintype.card ι : ℝ≥0) + 1))
+    (hTarget : CodingTheory.lineDecodable_imp_epsMCA_le_target (F := F) (A := F)
+      C δ a hLD)
+    (hle : (a : ENNReal) / (Fintype.card F : ENNReal) ≤ (ε_star : ENNReal)) :
+    MCALowerWitness (C : Set (ι → F)) ε_star :=
+  MCALowerWitness.ofLe hδ_le_one (le_trans hTarget hle)
+
+/-- **Bridge from ABF26 Theorem 4.17 [CS25 Cor 1].** In the complete CA-breakdown regime
+`ε_ca(RS, δ, δ) = 1`; any threshold `ε* < 1` therefore gives an MCA upper witness at `δ`.
+This is the direct witness-form connector from the CS25 capacity-side lower bound. -/
+noncomputable def MCAUpperWitness.ofRSBreakdownCS25
+    (domain : ι ↪ F) (k : ℕ) (δ ε_star : ℝ≥0)
+    (hq_ge : 10 ≤ Fintype.card F)
+    (hδ_lo :
+        1 - CodingTheory.qEntropy (Fintype.card F) (δ : ℝ) + 2 / (Fintype.card ι : ℝ)
+            + ((CodingTheory.qEntropy (Fintype.card F) (δ : ℝ) - (δ : ℝ))
+                / (Fintype.card ι : ℝ)) ^ ((1 : ℝ) / 2)
+          ≤ (k : ℝ) / Fintype.card ι)
+    (hδ_hi : (k : ℝ) / Fintype.card ι ≤ 1 - (δ : ℝ) - 2 / (Fintype.card ι : ℝ))
+    (hCS25 : CodingTheory.rs_epsCA_breakdown_cs25 domain k δ hq_ge hδ_lo hδ_hi)
+    (hε : (ε_star : ENNReal) < 1) :
+    MCAUpperWitness (ReedSolomon.code domain k : Set (ι → F)) ε_star :=
+  MCAUpperWitness.ofEpsCAGt (MC := ReedSolomon.code domain k) (ε_star := ε_star) (δ := δ) <| by
+    rw [hCS25]
+    exact hε
+
+/-- **Bridge from ABF26 Lemma 4.19 [DG25 Thm 2.5].** A sampling lower bound on `ε_ca`,
+combined with a numeric comparison showing that sampling lower bound exceeds `ε*`, gives an
+MCA upper witness through `ε_ca ≤ ε_mca`. -/
+noncomputable def MCAUpperWitness.ofSamplingDG25
+    (C : LinearCode ι F) (δ δ' ε_star : ℝ≥0)
+    (hδ' : (δ' : ENNReal) = ⨆ u : ι → F, δᵣ(u, (C : Set (ι → F))))
+    (hδ_pos : 0 < δ) (hδ_lt : δ < δ')
+    (hDG25 : CodingTheory.linear_epsCA_ge_sampling_dg25 C δ δ' hδ' hδ_pos hδ_lt)
+    (hgt :
+      ((Fintype.card F - 1 : ℝ≥0) / Fintype.card F : ENNReal)
+          * Pr_{
+              let u ← $ᵖ (ι → F)
+              }[δᵣ(u, (C : Set (ι → F))) ≤ δ] >
+        (ε_star : ENNReal)) :
+    MCAUpperWitness (C : Set (ι → F)) ε_star :=
+  MCAUpperWitness.ofEpsCAGt (MC := C) (ε_star := ε_star) (δ := δ)
+    (lt_of_lt_of_le hgt hDG25)
+
 /-! ## §4.5 conjecture and its positive-direction link to the prize
 
 ABF26 Conjecture `conj:mca-conjecture` posits a uniform polynomial upper bound on `ε_mca`
@@ -342,6 +417,25 @@ theorem nonempty_mcaLowerWitness_of_mcaConjecture (h : mcaConjecture) :
   refine ⟨c₁, c₂, c₃, ?_⟩
   intro ιC _ _ _ FC _ _ _ domain k ε_star δ hk hδ hδ1 hle
   exact ⟨⟨δ, hδ1, le_trans (hbound domain k δ hk hδ) hle⟩⟩
+
+/-- Same positive-direction link as `nonempty_mcaLowerWitness_of_mcaConjecture`, but exposing
+the witness as an ordinary existential for easier downstream composition. -/
+theorem exists_mcaLowerWitness_of_mcaConjecture (h : mcaConjecture) :
+    ∃ c₁ c₂ c₃ : ℝ,
+      ∀ {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
+        {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC]
+        (domain : ιC ↪ FC) (k : ℕ) (ε_star δ : ℝ≥0),
+        0 < k →
+        (δ : ℝ) < 1 - (k : ℝ) / Fintype.card ιC → δ ≤ 1 →
+        ENNReal.ofReal
+            (mcaConjectureBound (Fintype.card ιC) (Fintype.card FC) k δ c₁ c₂ c₃) ≤
+          (ε_star : ENNReal) →
+        ∃ w : MCALowerWitness (ReedSolomon.code domain k : Set (ιC → FC)) ε_star,
+          w.δ = δ := by
+  obtain ⟨c₁, c₂, c₃, hbound⟩ := h
+  refine ⟨c₁, c₂, c₃, ?_⟩
+  intro ιC _ _ _ FC _ _ _ domain k ε_star δ hk hδ hδ1 hle
+  exact ⟨⟨δ, hδ1, le_trans (hbound domain k δ hk hδ) hle⟩, rfl⟩
 
 /-! ## Witness-carrying resolutions for the Grand List Decoding Challenge
 
@@ -413,6 +507,50 @@ theorem ListUpperWitness.δStar_le {C : Set (ι → F)} {m : ℕ} {ε_star : ℝ
   by_contra h
   push Not at h
   exact absurd (le_trans (lambda_coe_mono (le_of_lt h)) R.bound) (not_le.mpr w.exceeds)
+
+/-- **Bridge (list-size upper bound ⇒ list lower witness).** Any radius `δ ≤ 1` whose
+maximised list size is at most `ε*·|F|` is a `ListLowerWitness`. -/
+def ListLowerWitness.ofLe {C : Set (ι → F)} {m : ℕ} {ε_star δ : ℝ≥0}
+    (hδ : δ ≤ 1)
+    (h : (ListDecodable.Lambda (C^⋈ (Fin m)) (δ : ℝ) : ENNReal) ≤
+      ((ε_star : ENNReal) * (Fintype.card F : ENNReal))) :
+    ListLowerWitness C m ε_star :=
+  ⟨δ, hδ, h⟩
+
+/-- **Bridge from real-radius list bounds.** Many list-decoding theorems state their radius as
+a real expression.  Once that expression is identified with a nonnegative radius `δnn ≤ 1`,
+the real-radius bound gives a `ListLowerWitness`. -/
+def ListLowerWitness.ofRealLe {C : Set (ι → F)} {m : ℕ} {ε_star : ℝ≥0}
+    {δ : ℝ} (δnn : ℝ≥0) (hδ_eq : (δnn : ℝ) = δ) (hδ : δnn ≤ 1)
+    (h : (ListDecodable.Lambda (C^⋈ (Fin m)) δ : ENNReal) ≤
+      ((ε_star : ENNReal) * (Fintype.card F : ENNReal))) :
+    ListLowerWitness C m ε_star :=
+  let h' : (ListDecodable.Lambda (C^⋈ (Fin m)) (δnn : ℝ) : ENNReal) ≤
+      ((ε_star : ENNReal) * (Fintype.card F : ENNReal)) := by
+    rw [hδ_eq]
+    exact h
+  ListLowerWitness.ofLe hδ h'
+
+/-- **Bridge (list-size lower bound ⇒ list upper witness).** Any radius where the
+maximised list size already exceeds `ε*·|F|` is a `ListUpperWitness`. -/
+def ListUpperWitness.ofGt {C : Set (ι → F)} {m : ℕ} {ε_star δ : ℝ≥0}
+    (h : (ListDecodable.Lambda (C^⋈ (Fin m)) (δ : ℝ) : ENNReal) >
+      ((ε_star : ENNReal) * (Fintype.card F : ENNReal))) :
+    ListUpperWitness C m ε_star :=
+  ⟨δ, h⟩
+
+/-- **Bridge from real-radius lower bounds.** A real-radius strict lower bound becomes a
+`ListUpperWitness` once the real radius is identified with a nonnegative radius. -/
+def ListUpperWitness.ofRealGt {C : Set (ι → F)} {m : ℕ} {ε_star : ℝ≥0}
+    {δ : ℝ} (δnn : ℝ≥0) (hδ_eq : (δnn : ℝ) = δ)
+    (h : (ListDecodable.Lambda (C^⋈ (Fin m)) δ : ENNReal) >
+      ((ε_star : ENNReal) * (Fintype.card F : ENNReal))) :
+    ListUpperWitness C m ε_star :=
+  let h' : (ListDecodable.Lambda (C^⋈ (Fin m)) (δnn : ℝ) : ENNReal) >
+      ((ε_star : ENNReal) * (Fintype.card F : ENNReal)) := by
+    rw [hδ_eq]
+    exact h
+  ListUpperWitness.ofGt h'
 
 /-- A list lower witness remains valid when the list-size threshold is relaxed. -/
 def ListLowerWitness.monoThreshold {C : Set (ι → F)} {m : ℕ} {ε_star ε_star' : ℝ≥0}

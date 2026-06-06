@@ -7,38 +7,27 @@ Authors: Chung Thai Nguyen
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Defs
 
 /-!
-# CO25 Definition 5.2 — Trace data structures
+# Trace Data Structures for Duplex-Sponge Simulation (CO25 Definition 5.2)
 
-Generic trace-table interface for the duplex-sponge simulator's `tr_∇` (CO25 Definition 5.2),
-together with a list-backed default instantiation and refinement-model laws via `Multiset`.
+This module implements the generic trace-table interface for the duplex-sponge simulator's query trace
+index $\text{tr}_{\nabla}$ (corresponding to Chiesa-Orrù [CO25, Definition 5.2]). We provide a polymorphic
+interface that formalizes both the hash-query table ($\text{tr}_{\nabla}.h$) and the bidirectional
+permutation table ($\text{tr}_{\nabla}.p$).
 
-## Design: polymorphism via refinement model
+## Refinement-Model and Lawfulness
 
-We define a **single** operations class `TraceTableOps T K V` covering both the hash-query table
-(`tr_∇.h`) and the bidirectional permutation table (`tr_∇.p`). Both have the same four-operation
-shape: `empty`, `add`, `inlu` (forward lookup), `outlu` (backward lookup).
+Rather than hard-coding a specific database implementation, we define a polymorphic typeclass `TraceTableOps T K V`
+specifying the core operational API: `empty`, `add`, `inlu` (forward lookup), and `outlu` (backward lookup).
+We specify correctness invariants via `LawfulTraceTable T K V`, which defines lookups using a refinement model
+backed by a `Multiset (K × V)`:
+- `inlu t k = some v` if and only if the key-value pair $(k, v)$ occurs exactly once in the multiset, and no other
+  value $v'$ exists in the table associated with $k$.
+- `outlu t v = some k` if and only if $(k, v)$ occurs exactly once in the multiset, and no other key $k'$ is associated
+  with $v$.
 
-The lawful class `LawfulTraceTable` uses a `Multiset (K × V)` model:
-
-- `inlu t k = some v` iff `(k, v)` occurs exactly once in the multiset and no conflicting
-  value `v'` exists.
-- `outlu t v = some k` iff `(k, v)` occurs exactly once in the multiset and no conflicting
-  key `k'` exists.
-
-Duplicate entries, even identical duplicate `(k, v)` entries, are treated as multiple matches and
-therefore lookup failure, matching CO25 Definition 5.2's sorted-list lookup semantics.
-
-By parameterizing algorithms (`BackTrack`, `LookAhead`) over `TraceTableOps`, we can swap in an
-`O(log N)` or `O(1)` implementation later without touching algorithms or security proofs.
-
-## Structures
-
-- `DuplexSpongeTrace` — type alias for the paper's `(h, p, p⁻¹)`-trace (CO25 Definition 5.2).
-- `TraceTableOps T K V` — generic operations typeclass.
-- `LawfulTraceTable T K V` — extends `TraceTableOps` with `Multiset`-based laws.
-- `TraceNabla` — paper's `tr_∇ = (h, p)`, parameterized over any `LawfulTraceTable` instances.
-- `ListBacked.ListTraceTable K V` — concrete list implementation; `add` is pure `O(1)` cons;
-  however lookup takes `O(N)`
+This ensures that lookups match the deterministic, sorted-list lookup semantics specified in [CO25].
+We also provide a concrete, executable list-backed implementation (`ListBacked.ListTraceTable K V`) and prove its
+lawfulness under the multiset-based refinement interface.
 -/
 
 open OracleComp OracleSpec
@@ -52,6 +41,12 @@ namespace DSTraceStorage
 /-- The canonical duplex-sponge `(h, p, p⁻¹)`-trace in Definition 5.2 -/
 abbrev DuplexSpongeTrace (StmtIn U : Type) [SpongeUnit U] [SpongeSize] :=
   QueryLog (duplexSpongeChallengeOracle StmtIn U)
+
+/-- A single query-answer entry of a `DuplexSpongeTrace`, i.e. one element of the underlying
+`QueryLog` for the `duplexSpongeChallengeOracle`. -/
+abbrev duplexSpongeTraceEntry (StartType U : Type) [SpongeUnit U] [SpongeSize] :=
+  (t : (duplexSpongeChallengeOracle StartType U).Domain) ×
+    (duplexSpongeChallengeOracle StartType U).Range t
 
 section TraceFilters
 
@@ -254,10 +249,13 @@ private lemma hash_ms_foldl_inv
       have hIH := ih {init with h := TraceTableOps.add init.h stmt' a} hp
       have : ({init with h := TraceTableOps.add init.h stmt' a} :
           TraceNabla T_H T_P StmtIn U).h = TraceTableOps.add init.h stmt' a := rfl
-      rw [this, LawfulTraceTable.toMultiSet_add] at hIH
+      rw [this] at hIH
+      have key : LawfulTraceTable.toMultiSet (TraceTableOps.add init.h stmt' a)
+          = (stmt', a) ::ₘ LawfulTraceTable.toMultiSet init.h :=
+        LawfulTraceTable.toMultiSet_add init.h stmt' a
+      rw [key] at hIH
       rcases hIH with hMem | hIn
-      · rw [Multiset.mem_cons] at hMem
-        rcases hMem with hEq | hRest
+      · rcases Multiset.mem_cons.mp hMem with hEq | hRest
         · subst hEq; right; exact .head ..
         · exact Or.inl hRest
       · exact Or.inr (List.mem_cons_of_mem _ hIn)
@@ -306,10 +304,13 @@ private lemma perm_ms_foldl_inv
       have hIH := ih {init with p := TraceTableOps.add init.p sIn' a} hp
       have : ({init with p := TraceTableOps.add init.p sIn' a} :
           TraceNabla T_H T_P StmtIn U).p = TraceTableOps.add init.p sIn' a := rfl
-      rw [this, LawfulTraceTable.toMultiSet_add] at hIH
+      rw [this] at hIH
+      have key : LawfulTraceTable.toMultiSet (TraceTableOps.add init.p sIn' a)
+          = (sIn', a) ::ₘ LawfulTraceTable.toMultiSet init.p :=
+        LawfulTraceTable.toMultiSet_add init.p sIn' a
+      rw [key] at hIH
       rcases hIH with hMem | hIn
-      · rw [Multiset.mem_cons] at hMem
-        rcases hMem with hEq | hRest
+      · rcases Multiset.mem_cons.mp hMem with hEq | hRest
         · subst hEq; exact Or.inr (Or.inl (by exact .head ..))
         · exact Or.inl hRest
       · rcases hIn with h1 | h2
@@ -321,10 +322,13 @@ private lemma perm_ms_foldl_inv
       have hIH := ih {init with p := TraceTableOps.add init.p a sOut'} hp
       have : ({init with p := TraceTableOps.add init.p a sOut'} :
           TraceNabla T_H T_P StmtIn U).p = TraceTableOps.add init.p a sOut' := rfl
-      rw [this, LawfulTraceTable.toMultiSet_add] at hIH
+      rw [this] at hIH
+      have key : LawfulTraceTable.toMultiSet (TraceTableOps.add init.p a sOut')
+          = (a, sOut') ::ₘ LawfulTraceTable.toMultiSet init.p :=
+        LawfulTraceTable.toMultiSet_add init.p a sOut'
+      rw [key] at hIH
       rcases hIH with hMem | hIn
-      · rw [Multiset.mem_cons] at hMem
-        rcases hMem with hEq | hRest
+      · rcases Multiset.mem_cons.mp hMem with hEq | hRest
         · subst hEq; exact Or.inr (Or.inr (by exact .head ..))
         · exact Or.inl hRest
       · rcases hIn with h1 | h2
@@ -403,10 +407,13 @@ private lemma hash_ms_foldl_fwd_inv
       have hIH := ih {init with h := TraceTableOps.add init.h stmt' a} hp
       have : ({init with h := TraceTableOps.add init.h stmt' a} :
           TraceNabla T_H T_P StmtIn U).h = TraceTableOps.add init.h stmt' a := rfl
-      rw [this, LawfulTraceTable.toMultiSet_add] at hIH
+      rw [this] at hIH
+      have key : LawfulTraceTable.toMultiSet (TraceTableOps.add init.h stmt' a)
+          = (stmt', a) ::ₘ LawfulTraceTable.toMultiSet init.h :=
+        LawfulTraceTable.toMultiSet_add init.h stmt' a
+      rw [key] at hIH
       rcases hIH with hMem | hIn
-      · rw [Multiset.mem_cons] at hMem
-        rcases hMem with hEq | hRest
+      · rcases Multiset.mem_cons.mp hMem with hEq | hRest
         · subst hEq; right; exact .head ..
         · exact Or.inl hRest
       · exact Or.inr (List.mem_cons_of_mem _ hIn)
@@ -449,10 +456,13 @@ private lemma perm_ms_foldl_fwd_inv
       have hIH := ih {init with p := TraceTableOps.add init.p sIn' a} hp
       have : ({init with p := TraceTableOps.add init.p sIn' a} :
           TraceNabla T_H T_P StmtIn U).p = TraceTableOps.add init.p sIn' a := rfl
-      rw [this, LawfulTraceTable.toMultiSet_add] at hIH
+      rw [this] at hIH
+      have key : LawfulTraceTable.toMultiSet (TraceTableOps.add init.p sIn' a)
+          = (sIn', a) ::ₘ LawfulTraceTable.toMultiSet init.p :=
+        LawfulTraceTable.toMultiSet_add init.p sIn' a
+      rw [key] at hIH
       rcases hIH with hMem | hIn
-      · rw [Multiset.mem_cons] at hMem
-        rcases hMem with hEq | hRest
+      · rcases Multiset.mem_cons.mp hMem with hEq | hRest
         · subst hEq; exact Or.inr (Or.inl (by exact .head ..))
         · exact Or.inl hRest
       · rcases hIn with h1 | h2
@@ -771,8 +781,8 @@ instance instLawfulTraceNablaImplListBased [SpongeUnit U] [SpongeSize]
       StmtIn U :=
   ⟨instLawfulListBasedTraceTable, instLawfulListBasedTraceTable⟩
 
-/-- The default (list-backed) `tr_∇`. In fact we want to use a more optimized data structure
-for efficient storage and query complexity. -/
+/-- The canonical (list-backed) instantiation of `tr_∇`. While lookup is linear-time in the size of the trace,
+this default implementation provides a computable reference for correctness proofs and refinement models. -/
 abbrev DefaultTraceDelta (StmtIn U : Type) [SpongeUnit U] [SpongeSize]
   [DecidableEq StmtIn] [DecidableEq U] :=
   TraceNabla

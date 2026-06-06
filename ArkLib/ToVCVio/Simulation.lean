@@ -2047,14 +2047,8 @@ lemma OptionT.exists_rel_path_of_mem_support_forIn_stateful {ι : Type} {spec : 
     (fun j => by exact Fin.elim0 j)
     (fun j => by have : j = 0 := Fin.eq_zero j; subst this; simpa using h_start)
     res h_mem
-/-- Distributes `simulateQ` over `Vector.mapM`.
-
-TODO: This proof is non-trivial because `Vector.mapM` is implemented via an auxiliary
-`mapM.go` function that doesn't decompose cleanly. Attempted approaches:
-- Vector induction produces `insertIdx` terms that don't match `mapM` structure
-- toArray representation doesn't work since we're proving equality of `OracleComp` values
-- Need either: (1) a lemma relating `simulateQ` to Array.mapM, or
-  (2) a custom induction principle, or (3) direct reasoning about `mapM.go`. -/
+/-- Distributes `simulateQ` over `List.mapM`, showing that the monad morphism
+    `simulateQ so` commutes with mapping a monadic action over a list. -/
 lemma simulateQ_list_mapM {ι ι' : Type} {spec : OracleSpec ι} {superSpec : OracleSpec ι'}
     (so : SimOracle.Stateless spec superSpec)
     {α β : Type} (f : α → OracleComp spec β) :
