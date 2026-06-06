@@ -152,16 +152,125 @@ theorem listPrizeLattice_bracketed_of_johnson_sq_and_elias
     (m := m) (j_lo := τ_lo r) (j_hi := τ_hi r) (ℓ := ℓ r)
     hm (hlo_le r) (hhi_pos r) (hhi_lt r) hq1 (hP r) (hsq r) (hpow r) (hvol r) (hne r)
 
+/-! ## Post-RIM frontier surface
+
+The theorem above is the current faithful-LD value interface after the smooth-domain
+RIM/AGL24 route has been refuted: future work should provide stronger lower and upper
+certificates for the same lattice threshold, not a resurrection of the false universal
+RIM full-rank premise.  The following small wrappers give that post-refutation target a
+stable name and split the numeric cores out from the assembler theorem.
+-/
+
+/-- Numeric core of the squared-Johnson lower certificate at lattice index `j`.
+
+This is the exact hypothesis consumed by
+`listLatticeThreshold_bracketed_of_johnson_sq_and_elias`, named so post-RIM threshold
+frontiers can target it without duplicating the full assembler statement. -/
+def ListJohnsonSqLowerCore (C : Set (ι → F)) (j ℓ : ℕ) : Prop :=
+  ((ℓ : ℝ) + 1)
+      * ((((Fintype.card ι - j : ℕ) : ℝ)) -
+          (Fintype.card ι : ℝ) / (Fintype.card F : ℝ)) ^ 2
+    > ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card F : ℝ)))
+      * ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card F : ℝ))
+          + (ℓ : ℝ) * (((Fintype.card ι - Code.minDist C : ℕ) : ℝ) -
+              (Fintype.card ι : ℝ) / (Fintype.card F : ℝ)))
+
+/-- Numeric core of the Elias-volume upper certificate at lattice index `j`. -/
+def ListEliasVolumeUpperCore (C : Submodule F (ι → F)) (j : ℕ)
+    (ε_star : ℝ≥0) : Prop :=
+  (ε_star : ENNReal) * (Fintype.card F : ENNReal) <
+    ENNReal.ofReal
+      ((CodingTheory.hammingBallVolume (Fintype.card F)
+          (((j : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)
+          (Fintype.card ι) : ℝ)
+        / (Fintype.card F : ℝ) ^
+            ((Fintype.card ι : ℝ) - Module.finrank F C))
+
+/-- Single-code bracket using the named post-RIM numeric cores. -/
+theorem listLatticeThreshold_bracketed_of_johnson_sq_and_elias_core
+    (C : Submodule F (ι → F)) {m j_lo j_hi ℓ : ℕ}
+    (hm : m ≠ 0)
+    (hlo_le : j_lo ≤ Fintype.card ι)
+    (hhi_pos : 0 < j_hi) (hhi_lt : j_hi < Fintype.card ι)
+    (hq1 : 1 < Fintype.card F)
+    (hP : (Fintype.card ι : ℝ) / (Fintype.card F : ℝ) ≤
+      ((Fintype.card ι - j_lo : ℕ) : ℝ))
+    (hsq : ListJohnsonSqLowerCore (C : Set (ι → F)) j_lo ℓ)
+    {ε_star : ℝ≥0}
+    (hpow : ((ℓ : ENNReal)) ^ m ≤ (ε_star : ENNReal) * (Fintype.card F : ENNReal))
+    (hvol : ListEliasVolumeUpperCore C j_hi ε_star)
+    (hne : (GrandChallenges.listLatticeSet (C : Set (ι → F)) m ε_star).Nonempty) :
+    j_lo ≤ GrandChallenges.listLatticeThreshold (C : Set (ι → F)) m ε_star hne ∧
+      GrandChallenges.listLatticeThreshold (C : Set (ι → F)) m ε_star hne < j_hi :=
+  listLatticeThreshold_bracketed_of_johnson_sq_and_elias
+    (C := C) (m := m) (j_lo := j_lo) (j_hi := j_hi) (ℓ := ℓ)
+    hm hlo_le hhi_pos hhi_lt hq1 hP hsq hpow hvol hne
+
+/-- **Post-refutation four-rate LD threshold frontier.**
+
+This packages the current honest route around the refuted smooth-domain RIM full-rank
+program: a per-rate Johnson-side lower core, a per-rate Elias-side upper core, and the
+budget/range hypotheses needed to bracket the faithful `listLatticeThreshold`.  It is a
+frontier, not a resolution; proving sharper lower/upper fields here is the remaining
+post-RIM Grand LD value work. -/
+structure PostRIMListThresholdFrontier (domain : ι ↪ F) (m : ℕ) where
+  τ_lo : Fin 4 → ℕ
+  τ_hi : Fin 4 → ℕ
+  ℓ : Fin 4 → ℕ
+  hm : m ≠ 0
+  hlo_le : ∀ r : Fin 4, τ_lo r ≤ Fintype.card ι
+  hhi_pos : ∀ r : Fin 4, 0 < τ_hi r
+  hhi_lt : ∀ r : Fin 4, τ_hi r < Fintype.card ι
+  hq1 : 1 < Fintype.card F
+  hP : ∀ r : Fin 4,
+    (Fintype.card ι : ℝ) / (Fintype.card F : ℝ) ≤
+      ((Fintype.card ι - τ_lo r : ℕ) : ℝ)
+  hsq : ∀ r : Fin 4,
+    ListJohnsonSqLowerCore
+      (ReedSolomon.code domain
+        ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      (τ_lo r) (ℓ r)
+  hpow : ∀ r : Fin 4,
+    ((ℓ r : ENNReal)) ^ m ≤ (epsStar : ENNReal) * (Fintype.card F : ENNReal)
+  hvol : ∀ r : Fin 4,
+    ListEliasVolumeUpperCore
+      (ReedSolomon.code domain ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊)
+      (τ_hi r) epsStar
+  hne : ∀ r : Fin 4,
+    (GrandChallenges.listLatticeSet
+      (ReedSolomon.code domain
+        ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      m epsStar).Nonempty
+
+/-- A post-RIM frontier gives the current certified four-rate faithful LD bracket. -/
+theorem listPrizeLattice_bracketed_of_postRIM_frontier
+    (domain : ι ↪ F) (m : ℕ)
+    (frontier : PostRIMListThresholdFrontier domain m) :
+    ∀ r : Fin 4,
+      frontier.τ_lo r ≤ GrandChallenges.listLatticeThreshold
+          (ReedSolomon.code domain
+            ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+          m epsStar (frontier.hne r) ∧
+        GrandChallenges.listLatticeThreshold
+          (ReedSolomon.code domain
+            ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+          m epsStar (frontier.hne r) < frontier.τ_hi r :=
+  listPrizeLattice_bracketed_of_johnson_sq_and_elias
+    (domain := domain) (m := m) (τ_lo := frontier.τ_lo)
+    (τ_hi := frontier.τ_hi) (ℓ := frontier.ℓ) frontier.hm frontier.hlo_le
+    frontier.hhi_pos frontier.hhi_lt frontier.hq1 frontier.hP frontier.hsq
+    frontier.hpow frontier.hvol frontier.hne
+
 /-! ## Non-vacuity: the certificate inequalities are concretely dischargeable
 
 The per-rate hypotheses above are not vacuous: for a `[4, 2, 3]` code over `𝔽₃`
 (`n = 4`, `q = 3`, `minDist = 3`, hence `n − minDist = k − 1 = 1`, `finrank = 2`), the
 squared-Johnson inequality holds at lattice index `1` and the Elias-volume inequality holds
 at index `2` (with `ℓ = 2`, `m = 1`, budget `ε* = 2/3`, so `ε*·q = 2 = ℓ^m`).  These are
-*adjacent*, so on this instance the exact resolver `listLatticeThreshold_eq_of_johnson_sq_and_elias_next`
-would pin the threshold to `1`.  The two witnesses below discharge the numeric cores by
-`norm_num` — including evaluating the genuine `hammingBallVolume` definition — confirming the
-machinery fires.
+*adjacent*, so on this instance the exact resolver
+`listLatticeThreshold_eq_of_johnson_sq_and_elias_next` would pin the threshold to `1`.
+The two witnesses below discharge the numeric cores by `norm_num` — including evaluating
+the genuine `hammingBallVolume` definition — confirming the machinery fires.
 
 At the *prize* rates `ρ ∈ {1/2, 1/4, 1/8, 1/16}` with `ε* = 2^{-128}` the Johnson floor
 (`≈ 1 − √ρ`) and the Elias ceiling (`≈ 1 − H_q(ρ) < 1 − ρ`) are a constant fraction of `n`
@@ -187,5 +296,11 @@ theorem demo_elias_volume_n4_q3 :
     norm_num
   rw [CodingTheory.hammingBallVolume, hfloor]
   norm_num [Finset.sum_range_succ, Nat.choose]
+
+#print axioms ProximityGap.ListJohnsonSqLowerCore
+#print axioms ProximityGap.ListEliasVolumeUpperCore
+#print axioms ProximityGap.PostRIMListThresholdFrontier
+#print axioms ProximityGap.listLatticeThreshold_bracketed_of_johnson_sq_and_elias_core
+#print axioms ProximityGap.listPrizeLattice_bracketed_of_postRIM_frontier
 
 end ProximityGap
