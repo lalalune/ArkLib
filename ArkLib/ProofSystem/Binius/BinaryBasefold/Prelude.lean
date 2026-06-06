@@ -938,6 +938,42 @@ def iterated_fold_steps (i : Fin r) (steps : Fin (ℓ + 1)) (h_i_add_steps : i.v
     have fSucc : α ⟨i.succ, by omega⟩ := fold_step i accF
     fSucc) (init := f)
 
+/-- **Iterated fold (canonical new-API form).** Fold `f : S⁽ⁱ⁾ → L` over `steps : ℕ` rounds,
+landing in `S⁽ᵈᵉˢᵗ⁾` for `destIdx.val = i + steps`. This is the entry point consumed by
+`Code`/`Compliance`/`Relations`/`QueryPhase`/`Soundness`; it is `iterated_fold_steps` with the
+`ℕ`-valued `steps` packaged into `Fin (ℓ + 1)` and the result re-indexed to the
+propositionally-equal `destIdx`. The `h_destIdx_le : destIdx ≤ ℓ` hypothesis records the
+in-range constraint (and supplies the legacy `i + steps < ℓ + 𝓡` bound, since `𝓡 > 0`). -/
+def iterated_fold (i : Fin r) (steps : ℕ) {destIdx : Fin r}
+    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) (r_challenges : Fin steps → L) :
+    OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx :=
+  fun y =>
+    have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡)
+    have h_dest_le : destIdx.val ≤ ℓ := h_destIdx_le
+    have h_steps_lt : steps < ℓ + 1 := by omega
+    have h_i_add_steps : i.val + steps < ℓ + 𝓡 := by omega
+    iterated_fold_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
+      (steps := ⟨steps, h_steps_lt⟩) (h_i_add_steps := by simpa using h_i_add_steps) f r_challenges
+      ⟨y.val, by
+        have hy := y.property
+        have h_eq : destIdx = (⟨i.val + steps, by omega⟩ : Fin r) := Fin.eq_of_val_eq (by omega)
+        rw [h_eq] at hy
+        simpa using hy⟩
+
+/-- `iterated_fold` agrees with `iterated_fold_steps` pointwise (the canonical bridge used to
+port legacy iterated-folding lemmas to the new `(steps : ℕ) {destIdx}` API). -/
+theorem iterated_fold_eq_iterated_fold_steps (i : Fin r) (steps : ℕ)
+    (h_steps : steps < ℓ + 1) (h_i_add_steps : i.val + steps < ℓ + 𝓡) (h_destIdx_le : (⟨i.val + steps, by omega⟩ : Fin r) ≤ ℓ)
+    (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) (r_challenges : Fin steps → L)
+    (y : (sDomain 𝔽q β h_ℓ_add_R_rate) (⟨i.val + steps, by omega⟩)) :
+    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps)
+      (destIdx := ⟨i.val + steps, by omega⟩) (h_destIdx := rfl) (h_destIdx_le := h_destIdx_le)
+      f r_challenges y =
+    iterated_fold_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
+      (steps := ⟨steps, h_steps⟩) (h_i_add_steps := by simpa using h_i_add_steps) f r_challenges y := by
+  rfl
+
 set_option maxHeartbeats 1000000 in
 seal sDomain qMap_total_fiber normalizedW intermediateEvaluationPoly in
 /-- **Peel the last fold step from `iterated_fold`.** Folding `n + 1` steps starting at

@@ -42,8 +42,9 @@ Both sub-facts are blocked by missing upstream security lemmas introduced *outsi
   completeness and round-by-round knowledge-soundness infrastructure, but no full plain soundness
   theorem for `Sumcheck.Spec.oracleVerifier` at the shape needed here, and the lift also requires
   the `logupSumcheckContextLens` / `logupSumcheckOracleLens` soundness conditions.
-* `OracleVerifier.append_soundness` itself reduces to the upstream
-  `Verifier.append_soundness` `sorry` (`ArkLib/OracleReduction/Composition/Sequential/Append.lean`).
+* `OracleVerifier.append_soundness` currently exposes the sequential-composition soundness theorem
+  as an explicit `hAppendSoundness` hypothesis. This keeps the obstruction as a named residual
+  interface instead of hiding it behind `sorryAx`.
 
 Hence this single residual `subPhaseSoundness`. The final output language is `Set.univ`
 (`outputRelation_language`), so this is a nontrivial acceptance-probability bound, not a vacuous
@@ -106,8 +107,8 @@ theorem logupVerifier_eq_append :
 
 WALL (upstream security/composition gaps, outside `ArkLib/ProofSystem/Logup/**`, not modifiable
 here): no in-tree outer LogUp soundness theorem; no full plain `Sumcheck.Spec` soundness theorem at
-the lifted shape; and `OracleVerifier.append_soundness` itself reduces to the upstream
-`Verifier.append_soundness` sorry. See the module docstring.
+the lifted shape; and `OracleVerifier.append_soundness` carries the append-soundness theorem as an
+explicit hypothesis. See the module docstring.
 
 This is therefore kept as an explicit named residual `Prop` (no `sorry`); the main theorem
 `logup_soundness_of_residual` consumes it. -/
@@ -119,8 +120,9 @@ def SubPhaseSoundnessResidual (sumcheckSoundnessError : ℝ≥0) : Prop :=
         (midLanguage F n M params) outputRelation.language sumcheckSoundnessError
 
 /-- Main ArkLib soundness theorem for LogUp Protocol 2, **reduced to the named residual**
-`SubPhaseSoundnessResidual` through the genuine sequential-composition soundness lemma
-`OracleVerifier.append_soundness` (itself upstream-blocked by `sorryAx`; see the module docstring).
+`SubPhaseSoundnessResidual` through the genuine sequential-composition soundness interface
+`OracleVerifier.append_soundness` (whose append theorem is an explicit residual hypothesis; see the
+module docstring).
 
 The soundness error `logupSoundnessError F n M params s = outerSoundnessError F n M params + s`
 is exactly the `soundnessError₁ + soundnessError₂` produced by `append_soundness`. This reduction's
