@@ -783,6 +783,143 @@ theorem mcaThreshold_eq_latticeIndexOf_lowerWitness_of_adjacent
   ext
   exact hval
 
+/-- Adjacent BCHKS25 lower and CS25 upper witnesses determine the faithful MCA lattice
+threshold exactly. -/
+theorem mcaThreshold_eq_ofJohnsonBCHKS25_and_RSBreakdownCS25_adjacent
+    (domain : ι ↪ F) (k : ℕ) (η δ_lo δ_hi ε_star : ℝ≥0)
+    (hη : 0 < η)
+    (hδ_johnson :
+        (δ_lo : ℝ) <
+          1 - (((k : ℝ) / Fintype.card ι + 1 / Fintype.card ι) ^ ((1 : ℝ) / 2)) -
+            (η : ℝ))
+    (hδlo_le_one : δ_lo ≤ 1)
+    (hBCHKS25 : CodingTheory.rs_epsMCA_johnson_range_bchks25 domain k η δ_lo
+      hη hδ_johnson)
+    (hle :
+        ENNReal.ofReal
+            (let n : ℝ := Fintype.card ι
+             let ρ_plus : ℝ := k / n + 1 / n
+             let m : ℝ := max ⌈(ρ_plus ^ ((1 : ℝ) / 2)) / (2 * η)⌉ 3
+             ((2 * (m + 1 / 2) ^ 5 + 3 * (m + 1 / 2) * δ_lo * ρ_plus) /
+                    (3 * ρ_plus ^ ((3 : ℝ) / 2)) *
+                  n +
+                (m + 1 / 2) / ρ_plus ^ ((1 : ℝ) / 2)) /
+               (Fintype.card F : ℝ)) ≤
+          (ε_star : ENNReal))
+    (hδhi : δ_hi ≤ 1)
+    (hq_ge : 10 ≤ Fintype.card F)
+    (hδ_cs_lo :
+        1 - CodingTheory.qEntropy (Fintype.card F) (δ_hi : ℝ) + 2 / (Fintype.card ι : ℝ)
+            + ((CodingTheory.qEntropy (Fintype.card F) (δ_hi : ℝ) - (δ_hi : ℝ))
+                / (Fintype.card ι : ℝ)) ^ ((1 : ℝ) / 2)
+          ≤ (k : ℝ) / Fintype.card ι)
+    (hδ_cs_hi : (k : ℝ) / Fintype.card ι ≤ 1 - (δ_hi : ℝ) - 2 / (Fintype.card ι : ℝ))
+    (hCS25 : CodingTheory.rs_epsCA_breakdown_cs25 domain k δ_hi hq_ge hδ_cs_lo hδ_cs_hi)
+    (hε : (ε_star : ENNReal) < 1)
+    (hadj :
+      (latticeIndexOf (ι := ι) δ_hi hδhi).val =
+        (latticeIndexOf (ι := ι) δ_lo hδlo_le_one).val + 1) :
+    let hne := mcaThresholdExists_ofJohnsonBCHKS25 domain k η δ_lo ε_star hη
+      hδ_johnson hδlo_le_one hBCHKS25 hle
+    mcaThreshold (ReedSolomon.code domain k : Set (ι → F)) ε_star hne =
+      latticeIndexOf (ι := ι) δ_lo hδlo_le_one := by
+  let wlo := MCALowerWitness.ofJohnsonBCHKS25 domain k η δ_lo ε_star hη hδ_johnson
+    hδlo_le_one hBCHKS25 hle
+  let whi := MCAUpperWitness.ofRSBreakdownCS25 domain k δ_hi ε_star hq_ge
+    hδ_cs_lo hδ_cs_hi hCS25 hε
+  exact mcaThreshold_eq_latticeIndexOf_lowerWitness_of_adjacent
+    (ReedSolomon.code domain k : Set (ι → F)) ε_star wlo whi hδhi hadj
+
+/-- Adjacent BCHKS25 lower and DG25 sampling upper witnesses determine the faithful MCA
+lattice threshold exactly. -/
+theorem mcaThreshold_eq_ofJohnsonBCHKS25_and_SamplingDG25_adjacent
+    (domain : ι ↪ F) (k : ℕ) (η δ_lo δ_hi δ' ε_star : ℝ≥0)
+    (hη : 0 < η)
+    (hδ_johnson :
+        (δ_lo : ℝ) <
+          1 - (((k : ℝ) / Fintype.card ι + 1 / Fintype.card ι) ^ ((1 : ℝ) / 2)) -
+            (η : ℝ))
+    (hδlo_le_one : δ_lo ≤ 1)
+    (hBCHKS25 : CodingTheory.rs_epsMCA_johnson_range_bchks25 domain k η δ_lo
+      hη hδ_johnson)
+    (hle :
+        ENNReal.ofReal
+            (let n : ℝ := Fintype.card ι
+             let ρ_plus : ℝ := k / n + 1 / n
+             let m : ℝ := max ⌈(ρ_plus ^ ((1 : ℝ) / 2)) / (2 * η)⌉ 3
+             ((2 * (m + 1 / 2) ^ 5 + 3 * (m + 1 / 2) * δ_lo * ρ_plus) /
+                    (3 * ρ_plus ^ ((3 : ℝ) / 2)) *
+                  n +
+                (m + 1 / 2) / ρ_plus ^ ((1 : ℝ) / 2)) /
+               (Fintype.card F : ℝ)) ≤
+          (ε_star : ENNReal))
+    (hδhi : δ_hi ≤ 1)
+    (hδ' : (δ' : ENNReal) =
+      ⨆ u : ι → F, δᵣ(u, (ReedSolomon.code domain k : Set (ι → F))))
+    (hδ_pos : 0 < δ_hi) (hδ_lt : δ_hi < δ')
+    (hDG25 : CodingTheory.linear_epsCA_ge_sampling_dg25
+      (ReedSolomon.code domain k) δ_hi δ' hδ' hδ_pos hδ_lt)
+    (hgt :
+      ((Fintype.card F - 1 : ℝ≥0) / Fintype.card F : ENNReal)
+          * Pr_{
+              let u ← $ᵖ (ι → F)
+              }[δᵣ(u, (ReedSolomon.code domain k : Set (ι → F))) ≤ δ_hi] >
+        (ε_star : ENNReal))
+    (hadj :
+      (latticeIndexOf (ι := ι) δ_hi hδhi).val =
+        (latticeIndexOf (ι := ι) δ_lo hδlo_le_one).val + 1) :
+    let hne := mcaThresholdExists_ofJohnsonBCHKS25 domain k η δ_lo ε_star hη
+      hδ_johnson hδlo_le_one hBCHKS25 hle
+    mcaThreshold (ReedSolomon.code domain k : Set (ι → F)) ε_star hne =
+      latticeIndexOf (ι := ι) δ_lo hδlo_le_one := by
+  let wlo := MCALowerWitness.ofJohnsonBCHKS25 domain k η δ_lo ε_star hη hδ_johnson
+    hδlo_le_one hBCHKS25 hle
+  let whi := MCAUpperWitness.ofSamplingDG25 (ReedSolomon.code domain k) δ_hi δ' ε_star
+    hδ' hδ_pos hδ_lt hDG25 hgt
+  exact mcaThreshold_eq_latticeIndexOf_lowerWitness_of_adjacent
+    (ReedSolomon.code domain k : Set (ι → F)) ε_star wlo whi hδhi hadj
+
+/-- Adjacent BCHKS25 lower and generic capacity-side `ε_ca` upper witnesses determine the
+faithful MCA lattice threshold exactly. -/
+theorem mcaThreshold_eq_ofJohnsonBCHKS25_and_epsCAGt_adjacent
+    (domain : ι ↪ F) (k : ℕ) (η δ_lo δ_hi ε_star : ℝ≥0)
+    (hη : 0 < η)
+    (hδ_johnson :
+        (δ_lo : ℝ) <
+          1 - (((k : ℝ) / Fintype.card ι + 1 / Fintype.card ι) ^ ((1 : ℝ) / 2)) -
+            (η : ℝ))
+    (hδlo_le_one : δ_lo ≤ 1)
+    (hBCHKS25 : CodingTheory.rs_epsMCA_johnson_range_bchks25 domain k η δ_lo
+      hη hδ_johnson)
+    (hle :
+        ENNReal.ofReal
+            (let n : ℝ := Fintype.card ι
+             let ρ_plus : ℝ := k / n + 1 / n
+             let m : ℝ := max ⌈(ρ_plus ^ ((1 : ℝ) / 2)) / (2 * η)⌉ 3
+             ((2 * (m + 1 / 2) ^ 5 + 3 * (m + 1 / 2) * δ_lo * ρ_plus) /
+                    (3 * ρ_plus ^ ((3 : ℝ) / 2)) *
+                  n +
+                (m + 1 / 2) / ρ_plus ^ ((1 : ℝ) / 2)) /
+               (Fintype.card F : ℝ)) ≤
+          (ε_star : ENNReal))
+    (hhi :
+      epsCA (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F)) δ_hi δ_hi >
+        (ε_star : ENNReal))
+    (hδhi : δ_hi ≤ 1)
+    (hadj :
+      (latticeIndexOf (ι := ι) δ_hi hδhi).val =
+        (latticeIndexOf (ι := ι) δ_lo hδlo_le_one).val + 1) :
+    let hne := mcaThresholdExists_ofJohnsonBCHKS25 domain k η δ_lo ε_star hη
+      hδ_johnson hδlo_le_one hBCHKS25 hle
+    mcaThreshold (ReedSolomon.code domain k : Set (ι → F)) ε_star hne =
+      latticeIndexOf (ι := ι) δ_lo hδlo_le_one := by
+  let wlo := MCALowerWitness.ofJohnsonBCHKS25 domain k η δ_lo ε_star hη hδ_johnson
+    hδlo_le_one hBCHKS25 hle
+  let whi := MCAUpperWitness.ofEpsCAGt
+    (MC := ReedSolomon.code domain k) (ε_star := ε_star) (δ := δ_hi) hhi
+  exact mcaThreshold_eq_latticeIndexOf_lowerWitness_of_adjacent
+    (ReedSolomon.code domain k : Set (ι → F)) ε_star wlo whi hδhi hadj
+
 
 /-! ## The list-decoding lattice threshold
 
