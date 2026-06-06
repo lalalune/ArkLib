@@ -12,10 +12,6 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.ReductionLogic
 import ArkLib.Data.FieldTheory.BinaryField.Tower.TensorAlgebra
 import ArkLib.Data.Probability.Instances
 
-open OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Polynomial MvPolynomial
-  Module Binius.BinaryBasefold TensorProduct Nat Matrix ProbabilityTheory
-open scoped NNReal
-
 /-!
 # Ring-Switching IOP Batching Phase
 
@@ -47,6 +43,10 @@ Input: `witIn =  BatchingWitIn, stmtIn = BatchingStmtIn, oStmt = aOStmtIn.OStmtI
 Output: `witOut = (Statement (L := L) (ℓ := ℓ')`
   `(RingSwitchingBaseContext κ L K ℓ) 0) × (SumcheckWitness L ℓ' 0), oStmt = aOStmtIn.OStmtIn`
 -/
+
+open OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Polynomial MvPolynomial
+  Module Binius.BinaryBasefold TensorProduct Nat Matrix ProbabilityTheory
+open scoped NNReal
 
 noncomputable section
 namespace Binius.RingSwitching.BatchingPhase

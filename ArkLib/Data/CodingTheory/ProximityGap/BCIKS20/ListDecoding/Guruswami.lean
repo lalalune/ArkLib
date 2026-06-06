@@ -11,6 +11,18 @@ import ArkLib.Data.CodingTheory.GuruswamiSudan.GuruswamiSudan
 import ArkLib.Data.Polynomial.Trivariate
 import Mathlib.Combinatorics.Pigeonhole
 
+/-!
+# BCIKS20 §5 trivariate Guruswami–Sudan interpolation
+
+This file builds the trivariate Guruswami–Sudan interpolation machinery used by the [BCIKS20]
+§5 proximity-gap list-decoding argument (Claim 5.4 and surrounding).  Working with
+`Q : F[Z][X][Y]` over the coefficient ring `S = F[Z]` (an integral domain, not a field), it
+re-establishes the order-`m` vanishing criterion `triv_rootMultiplicity_ge_of_shift_zero` over
+any domain, develops generic weighted-degree sub-additivity and trivariate monomial degree
+facts, sets up the Guruswami–Sudan linear system together with its box/budget counting
+inequality and `Z`-degree budget, and proves existence of a nonzero kernel element.
+-/
+
 namespace ProximityGap
 
 -- Decidability/Fintype instances are threaded through the sections for the §5 machinery;

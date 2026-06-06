@@ -13,11 +13,11 @@ import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.Order.CompletePartialOrder
 import Mathlib.RingTheory.Henselian
 
-set_option linter.all false
-
 /-!
 # Monomial basis for algebra extensions
 -/
+
+set_option linter.all false
 
 namespace Polynomial
 

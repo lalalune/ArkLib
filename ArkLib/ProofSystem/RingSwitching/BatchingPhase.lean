@@ -9,11 +9,6 @@ import ArkLib.ProofSystem.RingSwitching.Spec
 import ArkLib.OracleReduction.Basic
 import CompPoly.Fields.Binary.Tower.TensorAlgebra
 
-open OracleSpec OracleComp ProtocolSpec Finset Polynomial MvPolynomial
-  Module TensorProduct Nat Matrix
-open scoped NNReal
-open Sumcheck.Structured
-
 /-!
 # Ring-Switching IOP Batching Phase
 
@@ -45,6 +40,11 @@ Input: `witIn = BatchingWitIn, stmtIn = BatchingStmtIn, oStmt = aOStmtIn.OStmtIn
 Output: `witOut = (Statement (L := L) (ℓ := ℓ')`
   `(RingSwitchingBaseContext κ L K ℓ P) 0) × (SumcheckWitness L ℓ' 0), oStmt = aOStmtIn.OStmtIn`
 -/
+
+open OracleSpec OracleComp ProtocolSpec Finset Polynomial MvPolynomial
+  Module TensorProduct Nat Matrix
+open scoped NNReal
+open Sumcheck.Structured
 
 noncomputable section
 namespace RingSwitching.BatchingPhase

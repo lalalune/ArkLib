@@ -1,12 +1,11 @@
 /-
 Copyright (c) 2025 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.HenselNumerator
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Vanish
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeight
-
-set_option linter.style.longLine false
 
 /-!
 # (P1) CONDITIONAL UNLOCK — the structured weight invariant and the P1 collapse, GIVEN the lift identity
@@ -71,6 +70,8 @@ capstone, supply the carved `α_t`-regularity, and the regime hypotheses.
 
 NO `axiom`/`admit`/`native_decide`/`bv_decide`/`sorry`.  Audited in-file via `#print axioms`.
 -/
+
+set_option linter.style.longLine false
 
 namespace BCIKS20.HenselNumerator
 

@@ -5,6 +5,15 @@ Authors: Chung Thai Nguyen, Quang Dao
 -/
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Steps.Fold
 
+/-!
+# Binary Basefold Commit Step
+
+The commitment round of the Binary Basefold core interaction as an oracle reduction. Defines the
+prover (`commitOracleProver`), verifier (`commitOracleVerifier`), and reduction
+(`commitOracleReduction`), proves its perfect completeness, and provides the round-by-round
+knowledge extractor (`commitRbrExtractor`) and knowledge-state function.
+-/
+
 namespace Binius.BinaryBasefold.CoreInteraction
 noncomputable section
 open OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Polynomial MvPolynomial

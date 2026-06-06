@@ -10,15 +10,16 @@ import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Tactic.IntervalCases
 
+/-!
+# More lemmas about Fin and big operators
+
+Auxiliary `Fin`/`Nat` arithmetic and big-operator lemmas (e.g. `mul_two_add_bit_lt_two_pow`)
+supporting bit-decomposition and FFT-style index manipulation elsewhere in the library.
+-/
+
 set_option linter.all false
 set_option linter.deprecated false
 set_option linter.unusedSimpArgs false
-
-/-!
-
-# More lemmas about Fin and big operators
-
--/
 
 theorem mul_two_add_bit_lt_two_pow (a b c : ℕ) (i : Fin 2)
     (h_a : a < 2 ^ b) (h_b : b < c) :

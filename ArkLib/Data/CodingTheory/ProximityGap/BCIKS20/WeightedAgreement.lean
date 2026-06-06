@@ -7,6 +7,19 @@ Authors: Quang Dao, Katerina Hristova, František Silváši, Julian Sutherland,
 
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ErrorBound
 
+/-!
+# BCIKS20 weighted agreement on polynomial curves
+
+This file develops the weighted (`μ`-fractional) agreement bookkeeping behind the [BCIKS20]
+proximity-gap argument on polynomial curves.  It collects the basic facts about a weight
+function `μ : ι → [0,1]` and the curve difference polynomial (`diffPoly_natDegree_le`,
+`diffPoly_eval`, `diffPoly_ne_zero`), bounds the number of coordinates on which two curves
+match (`badCoord_match_card_le`, `card_le_natDegree_of_eval_zero`), and proves that list
+agreement along a curve forces a correlated-agreement bound
+(`list_agreement_on_curve_implies_correlated_agreement_bound` and its sufficiently-large
+list variant).
+-/
+
 namespace ProximityGap
 
 namespace WeightedAgreement

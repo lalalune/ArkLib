@@ -8,9 +8,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidual
 import ArkLib.ToMathlib.GammaFromBeta
 import ArkLib.ToMathlib.BetaIdentify
 
-set_option linter.style.longLine false
-set_option linter.unusedSectionVars false
-
 /-!
 # `L13Milestone` — the numerator-identification residual *supplied by definition*
 
@@ -52,6 +49,9 @@ power-series identifications that previously *consumed* the residual as a hypoth
 * [BCIKS20] Ben-Sasson, Carmon, Ishai, Kopparty, Saraf, *Proximity Gaps for Reed–Solomon Codes*,
   §5 (list-decoding agreement chain), Appendix A.4 (the `W`-power-numerator recursion (A.1)).
 -/
+
+set_option linter.style.longLine false
+set_option linter.unusedSectionVars false
 
 open Polynomial Polynomial.Bivariate BCIKS20AppendixA BCIKS20AppendixA.ClaimA2 ToRatFunc Ideal
 

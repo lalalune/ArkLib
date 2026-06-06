@@ -9,14 +9,18 @@ import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Data.Nat.Bitwise
 
-set_option linter.all false
-set_option linter.deprecated false
-set_option linter.unusedSimpArgs false
-
 /-!
 # Bit operations on natural numbers
 
+Helpers for extracting and reasoning about individual bits of a natural number, centered on
+`Nat.getBit k n` (the `k`-th least significant bit) together with its basic facts
+(`getBit_lt_2`, `getBit_zero_eq_zero`, `getBit_eq_zero_or_one`, ...), used for binary
+decomposition `j = Σ k, jₖ * 2ᵏ`.
 -/
+
+set_option linter.all false
+set_option linter.deprecated false
+set_option linter.unusedSimpArgs false
 
 namespace Nat
 

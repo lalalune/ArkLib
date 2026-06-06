@@ -1,5 +1,21 @@
+/-
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
+
 import ArkLib.Data.CodingTheory.ListDecodability
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+
+/-!
+# AGL23 list-decoding-capacity barrier helpers
+
+Small standalone helpers toward the [AGL23] alphabet-size barrier (ABF26 §T3.10). This file
+proves the pigeonhole core `restriction_image_card_le` (the number of distinct restrictions of a
+finite set of words to a coordinate subset `I` is at most `|F|^|I|`) and the analytic descent
+step `descent` (from `2^(c·n) ≤ q^(η·n)` conclude the alphabet lower bound `2^(c/η) ≤ q`), with a
+connector to the [ABF26 T3.10] statement shape.
+-/
 
 open Real
 open ListDecodable

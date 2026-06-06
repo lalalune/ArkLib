@@ -12,6 +12,19 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Field
 
+/-!
+# Coset FFT domains
+
+This file defines coset FFT domains: evaluation domains of the form `x · G` for an FFT
+subgroup domain `G`.  The data is packaged as a structure `CosetFftDomain` (an injective
+group embedding `Multiplicative ι →* Fˣ` together with a coset generator) and an
+abstract interface `CosetFftDomainClass` characterizing such maps via `map_zero_unit`,
+`map_add`, and `map_neg`.  It provides the `FunLike` instance, the evaluation identity
+`eval_coset_fft_domain_eq_eval_generator_mul_domain`, conversions between the structure and
+the class (`mkSubgroupUnit`, `toCosetFftDomain`), injectivity lemmas, the `SmoothCosetFftDomain`
+abbreviation, and the underlying `Finset` of evaluation points (`toFinset`, `card_toFinset`).
+-/
+
 namespace Domain
 
 open Function

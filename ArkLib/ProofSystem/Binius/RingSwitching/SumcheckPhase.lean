@@ -12,10 +12,6 @@ import ArkLib.OracleReduction.Security.RoundByRound
 import ArkLib.ProofSystem.Binius.BinaryBasefold.ReductionLogic
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness
 
-open OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Polynomial MvPolynomial
-  Module Binius.BinaryBasefold TensorProduct Nat Matrix ProbabilityTheory
-open scoped NNReal
-
 /-!
 # Ring-Switching Core Interaction Phase
 
@@ -44,6 +40,10 @@ source of RBR knowledge soundness error.
     decomposes `e =: Σ_{u ∈ {0,1}^κ} β_u ⊗ e_u`.
 9. `V` requires `s_{ℓ'} ?= (Σ_{u ∈ {0,1}^κ} eq̃(u_0, ..., u_{κ-1}, r''_0, ..., r''_{κ-1}) ⋅ e_u) ⋅ s'`.
 -/
+
+open OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Polynomial MvPolynomial
+  Module Binius.BinaryBasefold TensorProduct Nat Matrix ProbabilityTheory
+open scoped NNReal
 
 namespace Binius.RingSwitching.SumcheckPhase
 noncomputable section

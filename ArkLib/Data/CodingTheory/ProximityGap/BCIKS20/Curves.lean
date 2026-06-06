@@ -13,6 +13,21 @@ import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.ToMathlib.Polynomial.EvalExt
 import ArkLib.ToMathlib.Polynomial.NatDegreeOfSum
 
+/-!
+# BCIKS20 §6 — correlated agreement over low-degree curves
+
+This file develops the curve (parametrized-family) machinery of [BCIKS20] §6 used to lift
+proximity bounds from affine lines to low-degree curves. It relates the probability that a
+random curve is close to the Reed-Solomon code to the cardinality of the good-coefficient set
+(`prob_close_curve_eq_card_goodCoeffsCurve_div_card` and the threshold/cardinality bounds
+`goodCoeffsCurve_threshold_mul_card_lt_card_of_prob_gt`,
+`goodCoeffsCurve_card_bounds_of_prob_threshold`), splitting the small- and large-error regimes
+(`prob_threshold_small_of_strict_johnson`, `prob_threshold_large_of_errorBound_ge_succ_const`).
+
+The headline result `weighted_list_agreement_on_curves_implies_correlated_agreement` packages
+these into correlated agreement on curves.
+-/
+
 set_option linter.style.longFile 2900
 
 namespace ProximityGap

@@ -12,6 +12,17 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Guruswami
 import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.AffineLineJointAgreement
 import ArkLib.ToMathlib.Section5ConcreteJohnson
 
+/-!
+# BCIKS20 §5 → §6 list-decoding bridge for degree-one curves
+
+This file bridges the [BCIKS20] §5 affine-line correlated-agreement statements and the §6
+curve-based proximity-gap formulation in the two-row (`Fin 2`) case.  For degree-one curves
+through two words it identifies the §6 close-parameter set with the §5 affine-line close
+set, via `coeffs_of_close_proximity_curve_finMapTwoWords_eq_close_proximity`, after the
+two helper word-stack identities `wordStack_fin_two_eq_finMapTwoWords` and
+`lineWordStack_eq_finMapTwoWords` reconcile the BCKHS25 line stack with the §5 bridge stack.
+-/
+
 -- This bridge exposes paper-aligned theorem names that exceed the style line limit.
 set_option linter.style.longLine false
 set_option linter.style.longFile 1600

@@ -8,6 +8,15 @@ import ArkLib.ToVCVio.Oracle
 import ArkLib.ToVCVio.Simulation
 import ArkLib.OracleReduction.Completeness
 
+/-!
+# Binary Basefold Final Sumcheck Step
+
+The final sum-check round of the Binary Basefold core interaction as an oracle reduction. Defines
+the prover (`finalSumcheckProver`), verifier (`finalSumcheckVerifier`), and reduction
+(`finalSumcheckOracleReduction`), proves its perfect completeness, and provides the round-by-round
+knowledge extractor (`finalSumcheckRbrExtractor`) together with supporting evaluation lemmas.
+-/
+
 namespace Binius.BinaryBasefold.CoreInteraction
 noncomputable section
 open OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Polynomial MvPolynomial

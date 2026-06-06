@@ -9,6 +9,18 @@ import CompPoly.Data.MvPolynomial.Notation
 import CompPoly.Univariate.Lagrange
 import CompPoly.Univariate.ToPoly.Impl
 
+/-!
+# Quotienting for STIR
+
+This file develops the polynomial quotienting machinery used by STIR.
+
+* `Quotienting.ansPoly` — the unique interpolating polynomial of degree `< |S|` through a given
+  answer function `Ans : S → F`.
+* `Quotienting.vanishingPoly` — the vanishing polynomial `∏ s ∈ S, (X - s)` on a finset `S`.
+* `vanishingPoly_eval_eq_zero` / `vanishingPoly_eval_ne_zero` — the vanishing polynomial is zero
+  exactly on the points of `S`.
+-/
+
 open Polynomial NNReal ReedSolomon ListDecodable Code
 
 namespace Quotienting

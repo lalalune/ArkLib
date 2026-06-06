@@ -12,6 +12,18 @@ import CompPoly.Data.MvPolynomial.Notation
 import ArkLib.Data.MvPolynomial.Interpolation
 import ArkLib.Data.MvPolynomial.LinearMvExtension
 
+/-!
+# Even and odd parts of multilinear polynomials
+
+For a multilinear polynomial `p` (degree `≤ 1` in each variable) in the first variable, we define
+its `even` and `odd` components and prove the splitting formulas `even_and_odd_formula` /
+`even_and_odd_formula'` together with their evaluation form `even_and_odd_eval`. The reduced-arity
+versions `even_pred` / `odd_pred` drop the split-off variable.
+
+We also study the squared-shift algebra map `shiftedPowAlgHom` and relate it to the even/odd
+decomposition via `powAlgHom_eq_even_add_odd` and `powAlgHom_eq_even_add_odd_powAlgHom`.
+-/
+
 namespace MvPolynomial
 
 open BigOperators Fintype Finset

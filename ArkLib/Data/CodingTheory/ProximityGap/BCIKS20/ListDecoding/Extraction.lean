@@ -8,6 +8,19 @@ Authors: Quang Dao, Katerina Hristova, František Silváši, Julian Sutherland,
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Guruswami
 import ArkLib.Data.Polynomial.RationalFunctions
 
+/-!
+# BCIKS20 §5 list decoding: factor extraction and discriminant non-vanishing
+
+This file develops the trivariate factor-extraction machinery behind the [BCIKS20] §5
+proximity-gap list-decoding argument (Eq. 5.12, Claims 5.4–5.6).  It records the
+product-indexing defect of the current Eq. 5.12 form (`eq512_cartesian_product_blowup`,
+`eq512_strong_separable_unsat`), the separable contraction and fraction-field descent of
+irreducible factors (`eq512_separable_contraction_over_fraction_field`, `eq512_content_expand`,
+`eq512_factor_descent`), and the discriminant non-vanishing / bad-set avoidance lemmas
+(`discr_y_ne_zero_of_sep`, `c56_exists_avoiding`).  It assembles the irreducible candidate set
+`pg_Rset` and the `pg_candidatePairs` used by the §5 list-decoding extraction.
+-/
+
 set_option linter.style.longFile 1700
 
 namespace ProximityGap

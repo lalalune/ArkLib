@@ -7,6 +7,15 @@ Authors: OpenAI
 import ArkLib.Data.Polynomial.Bivariate
 import Mathlib.Algebra.Polynomial.BigOperators
 
+/-!
+# Clearing denominators in a bivariate substitution
+
+We define `clearDenomY W e P`, which clears denominators for the substitution `Y ↦ W * Y` in a
+bivariate polynomial `P : F[X][Y]` using total exponent `e`. The lemma `evalEval_clearDenomY`
+gives its evaluation in terms of `P`, and `evalEval_clearDenomY_eq_zero_of_evalEval_eq_zero`
+transfers vanishing of `P` to the cleared polynomial.
+-/
+
 open Polynomial
 open scoped BigOperators Polynomial.Bivariate
 

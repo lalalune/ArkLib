@@ -7,6 +7,19 @@ Authors: OpenAI
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Extraction
 import ArkLib.Data.Polynomial.ClearDenomY
 
+/-!
+# BCIKS20 §5 list decoding: root clearing across the `Z`-specialization
+
+This file relates roots of the trivariate candidate `Q : F[Z][X][Y]` along the `Z`-evaluation
+to common roots of its denominator-cleared form.  It proves the evaluation transport identity
+`pg_eval_on_Z_eval_eval_eq_evalEval_evalX` and uses it to turn candidate roots into common
+roots of the cleared polynomial (`candidate_eval_roots_to_common_roots_cleared` and the
+`pg_candidate_roots_to_common_roots_cleared` variants), bounds the candidate fiber image
+(`pg_candidate_fiber_image_card_eq`), and derives the divisibility statements
+`embedding_clearDenomY_of_large_candidate_fiber` and
+`H_tilde'_dvd_clearDenomY_of_large_candidate_fiber` for a sufficiently large candidate fiber.
+-/
+
 namespace ProximityGap
 
 open Polynomial Polynomial.Bivariate

@@ -11,14 +11,6 @@ import Mathlib.Tactic
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice
 
-set_option linter.unusedSectionVars false
--- The Johnson-range MCA skeleton (below) carries `[DecidableEq ι]`/`[DecidableEq F]` section
--- instances that several `ε_mca`-vocabulary statements need only at proof time, not in their
--- types; suppress the noisy `unused...InType` warnings file-wide, matching the idiom in the
--- sibling `Errors.lean` and `GrandChallenges.lean`.
-set_option linter.unusedFintypeInType false
-set_option linter.unusedDecidableInType false
-
 /-!
 # Hab25 core: from collinearity to correlated agreement (Lemma 1, [AHIV17/BKS18])
 
@@ -78,6 +70,14 @@ the discriminant non-vanishing, the Hensel lift, and the irreducible-factor deco
 with the elementary tradition and reuses at the very end. See the disposition note
 `research/proximity-prize/dispositions/pc-w5-hab25.md` for the full tree and classification.
 -/
+
+set_option linter.unusedSectionVars false
+-- The Johnson-range MCA skeleton (below) carries `[DecidableEq ι]`/`[DecidableEq F]` section
+-- instances that several `ε_mca`-vocabulary statements need only at proof time, not in their
+-- types; suppress the noisy `unused...InType` warnings file-wide, matching the idiom in the
+-- sibling `Errors.lean` and `GrandChallenges.lean`.
+set_option linter.unusedFintypeInType false
+set_option linter.unusedDecidableInType false
 
 namespace CodingTheory.ProximityGap.Hab25Core
 

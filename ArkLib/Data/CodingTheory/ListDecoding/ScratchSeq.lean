@@ -1,5 +1,18 @@
+/-
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
+
 import Mathlib.Tactic
 import Mathlib.Algebra.IsPrimePow
+
+/-!
+# Scratch: a prime-power test sequence
+
+A scratch sanity check that the sequence `qs i = 2 ^ (i + n)` (for `n ≥ 1`) is strictly
+monotone, consists entirely of prime powers, and is bounded below by `2 ^ n`.
+-/
 
 -- Test the prime-power sequence: qs i = 2 ^ (i + n) is strictly mono, all prime powers, all ≥ 2^n.
 

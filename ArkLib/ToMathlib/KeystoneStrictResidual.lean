@@ -7,14 +7,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
 import ArkLib.ToMathlib.BetaToCurveCoeffPolys
 import ArkLib.ToMathlib.HcardDischarge
 
--- This file is documentation-heavy (extended BCIKS §5 prose in the docstrings); the long-line
--- style linter is disabled locally, matching the sibling `BetaToCurveCoeffPolys.lean`.
-set_option linter.style.longLine false
-
--- The keystone wrapper carries `[DecidableEq ι]` because `correlatedAgreement_affine_curves`'s
--- proof needs it.
-set_option linter.unusedDecidableInType false
-
 /-!
 # Keystone Front-Door Wiring for Strict Coefficient Polynomials
 
@@ -55,6 +47,14 @@ avoids cardinality bounds issues on the matching sets.
 * [BCIKS20] Ben-Sasson, Carmon, Ishai, Kopparty, Saraf, *Proximity Gaps for Reed–Solomon Codes*,
   §5 (list-decoding agreement), Appendix A.4 (the `W`-power-numerator recursion (A.1)).
 -/
+
+-- This file is documentation-heavy (extended BCIKS §5 prose in the docstrings); the long-line
+-- style linter is disabled locally, matching the sibling `BetaToCurveCoeffPolys.lean`.
+set_option linter.style.longLine false
+
+-- The keystone wrapper carries `[DecidableEq ι]` because `correlatedAgreement_affine_curves`'s
+-- proof needs it.
+set_option linter.unusedDecidableInType false
 
 open Polynomial Polynomial.Bivariate BCIKS20AppendixA BCIKS20AppendixA.ClaimA2 ToRatFunc Ideal
 open ProximityGap Polynomial Code NNReal Finset Function ProbabilityTheory

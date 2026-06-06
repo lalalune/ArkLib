@@ -6,6 +6,16 @@ Authors: Chung Thai Nguyen, Quang Dao
 
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Prelude
 
+/-!
+# Binary Basefold Codes and Soundness Tools
+
+Defines the Reed-Solomon codes `BBF_Code` underlying the Binary Basefold protocol and the
+machinery used in its soundness analysis: unique-decoding-radius closeness (`UDRClose`),
+codeword extraction (`extractUDRCodeword`), disagreement and fiberwise-distance notions
+(`disagreementSet`, `fiberwiseDistance`, `fiberwiseClose`), and lemmas relating Hamming distance
+across folding steps.
+-/
+
 set_option maxHeartbeats 400000
 
 namespace Binius.BinaryBasefold

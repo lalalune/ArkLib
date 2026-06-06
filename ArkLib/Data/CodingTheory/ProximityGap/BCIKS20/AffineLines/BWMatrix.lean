@@ -8,6 +8,15 @@ Authors: Quang Dao, Katerina Hristova, František Silváši, Julian Sutherland,
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Prelude
 import ArkLib.Data.CodingTheory.ReedSolomon
 
+/-!
+# BCIKS20 affine lines — the Berlekamp-Welch homogeneous matrix
+
+This file defines `BW_homMatrix`, the homogeneous Berlekamp-Welch matrix over a commutative ring,
+and proves the structural facts about its entries used to build interpolating polynomials from
+proximity data over affine lines. The engine lemmas compute entry degrees in the polynomial
+specialization (e.g. `BW_homMatrix_entry_natDegree_eq_zero_of_ge` and its commuted variant),
+supporting the kernel / determinant arguments in `GoodCoeffs` and `JointAgreement`.
+-/
 
 set_option linter.style.longFile 2000
 

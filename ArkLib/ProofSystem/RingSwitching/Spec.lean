@@ -6,12 +6,12 @@ Authors: Chung Thai Nguyen, Quang Dao
 import ArkLib.ProofSystem.RingSwitching.Prelude
 import ArkLib.ProofSystem.Sumcheck.Structured.SingleRound
 
-namespace RingSwitching
-
 /-! ## Protocol Specs for Ring-Switching
 This module contains the protocol specs, oracle index bounds,
 instances of OracleInterface and SampleableType for the Ring Switching protocol.
 -/
+
+namespace RingSwitching
 
 noncomputable section
 open OracleSpec OracleComp ProtocolSpec Finset Polynomial MvPolynomial

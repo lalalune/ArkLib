@@ -5,10 +5,6 @@ Authors: Eliza
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Core
 
-set_option linter.unusedSectionVars false
-set_option linter.unusedFintypeInType false
-set_option linter.unusedDecidableInType false
-
 /-!
 # Hab25 §3 endgame: Claim 1 → Theorem 2, the Johnson-radius MCA upgrade for RS codes
 
@@ -114,6 +110,10 @@ This is the honest refinement: the monolithic `Hab25GSInterpolation` of `Hab25Co
 *opened up*, its combinatorial half **proven**, its algebraic half left as precisely-named
 residuals.
 -/
+
+set_option linter.unusedSectionVars false
+set_option linter.unusedFintypeInType false
+set_option linter.unusedDecidableInType false
 
 namespace CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 
