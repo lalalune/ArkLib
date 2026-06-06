@@ -559,6 +559,37 @@ def rs_epsCA_breakdown_cs25
   -- RS-ball-count bridge (absent; qEntropy is defined but unconnected to hammingBallVolume /
   -- RS code counts). Genuinely external.
 
+/-- Checked bridge for the CS25 breakdown statement.
+
+Since `epsCA` is always at most `1`, the complete-breakdown equality is reduced to the
+paper's hard lower-bound half in the entropy band. -/
+theorem rs_epsCA_breakdown_cs25_of_lower_bound
+    (domain : ι ↪ F) (k : ℕ) (δ : ℝ≥0)
+    (hq_ge : 10 ≤ Fintype.card F)
+    (hδ_lo :
+        1 - qEntropy (Fintype.card F) (δ : ℝ) + 2 / (Fintype.card ι : ℝ)
+            + ((qEntropy (Fintype.card F) (δ : ℝ) - (δ : ℝ))
+                / (Fintype.card ι : ℝ)) ^ ((1 : ℝ) / 2)
+          ≤ (k : ℝ) / Fintype.card ι)
+    (hδ_hi : (k : ℝ) / Fintype.card ι ≤ 1 - (δ : ℝ) - 2 / (Fintype.card ι : ℝ))
+    (hlower :
+        1 ≤ epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F))) δ δ) :
+    rs_epsCA_breakdown_cs25 domain k δ hq_ge hδ_lo hδ_hi := by
+  classical
+  refine le_antisymm ?_ hlower
+  unfold epsCA
+  refine iSup_le fun u => ?_
+  by_cases hjp :
+      Code.jointProximity (C := ((ReedSolomon.code domain k : Set (ι → F)))) (u := u) δ
+  · rw [if_pos hjp]
+    exact zero_le _
+  · rw [if_neg hjp]
+    rw [prob_tsum_form_singleton]
+    exact le_trans (ENNReal.tsum_le_tsum fun γ => by
+      by_cases hγ : δᵣ(u 0 + γ • u 1,
+          (ReedSolomon.code domain k : Set (ι → F))) ≤ δ <;> simp [hγ])
+      (PMF.tsum_coe (PMF.uniformOfFintype F)).le
+
 /-- **ABF26 Theorem 4.18 [BCHKS25 Cor 1.7].** CA jump at the Johnson bound. Fix `ε > 0`,
 let `δ := 15/16`. Then for all `F` of characteristic 2 there exists a Reed-Solomon code
 `C := RS[F, L, k]` with `n ≈ |F|^{(1+ε)/2}` and `δ_min(C) = 15/16` such that:

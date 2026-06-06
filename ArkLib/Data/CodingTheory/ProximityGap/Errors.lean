@@ -232,6 +232,36 @@ noncomputable def epsMCA (C : Set (ι → A)) (δ : ℝ≥0) : ENNReal :=
   ⨆ u : WordStack A (Fin 2) ι,
     Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ]
 
+/-! ## Basic probability upper bounds -/
+
+open Classical in
+/-- Any event under a PMF has probability at most `1`. -/
+theorem Pr_le_one {α : Type} (D : PMF α) (P : α → Prop) [DecidablePred P] :
+    Pr_{let x ← D}[P x] ≤ (1 : ENNReal) := by
+  rw [prob_tsum_form_singleton]
+  exact le_trans (ENNReal.tsum_le_tsum fun x => by
+    by_cases hx : P x <;> simp [hx]) D.tsum_coe.le
+
+open Classical in
+/-- The CA error is bounded by the total probability mass. -/
+theorem epsCA_le_one (C : Set (ι → A)) (δ_fld δ_int : ℝ≥0) :
+    epsCA (F := F) C δ_fld δ_int ≤ 1 := by
+  unfold epsCA
+  refine iSup_le fun u => ?_
+  by_cases hjp : jointProximity (C := C) (u := u) δ_int
+  · rw [if_pos hjp]
+    exact zero_le _
+  · rw [if_neg hjp]
+    exact Pr_le_one ($ᵖ F) fun γ => δᵣ(u 0 + γ • u 1, C) ≤ δ_fld
+
+open Classical in
+/-- The MCA error is bounded by the total probability mass. -/
+theorem epsMCA_le_one (C : Set (ι → A)) (δ : ℝ≥0) :
+    epsMCA (F := F) C δ ≤ 1 := by
+  unfold epsMCA
+  refine iSup_le fun u => ?_
+  exact Pr_le_one ($ᵖ F) fun γ => mcaEvent C δ (u 0) (u 1) γ
+
 /-! ## Monotonicity of `epsCA` (ABF26 Definition 4.1 sub-tasks 4–5)
 
 These two lemmas, together with `epsCA_eq_of_floor_eq`, characterize how `epsCA` varies
