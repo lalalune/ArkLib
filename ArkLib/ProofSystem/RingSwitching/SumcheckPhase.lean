@@ -701,8 +701,12 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
     -- `iteratedSumcheckOracleVerifier_verify_collapse` lemma. Pin the transcript message `h_i` and
     -- challenge `r'`.
     intro hProb
-    set h_i : ↥L⦃≤ 2⦄[X] := FullTranscript.messages tr ⟨0, rfl⟩ with h_i_def
-    set r' : L := FullTranscript.challenges tr ⟨1, rfl⟩ with hr'_def
+    -- `tr : Transcript (Fin.last 2)` is definitionally a `FullTranscript`; name that view so the
+    -- `verify_collapse` lemma (stated over `FullTranscript`) and the index `⟨0,rfl⟩`/`⟨1,rfl⟩`
+    -- extractions typecheck.
+    have tr' : FullTranscript (pSpecSumcheckRound L) := tr
+    set h_i : ↥L⦃≤ 2⦄[X] := FullTranscript.messages tr' ⟨0, rfl⟩ with h_i_def
+    set r' : L := FullTranscript.challenges tr' ⟨1, rfl⟩ with hr'_def
     rw [gt_iff_lt, probEvent_pos_iff] at hProb
     obtain ⟨⟨stmtOut, oStmtOut⟩, hx, hrel⟩ := hProb
     rw [OptionT.mem_support_iff] at hx
