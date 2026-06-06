@@ -112,6 +112,43 @@ theorem mem_listLatticeSet_of_johnson
         rfl
     _ ≤ (ε_star : ENNReal) * (Fintype.card F : ENNReal) := hpow
 
+/-- **Johnson-side lower witness for the list-decoding challenge.**  A lattice
+radius `j/n` with a budget-clearing Johnson cap is immediately a
+`ListLowerWitness`, not only a member of the faithful lattice set. -/
+noncomputable def listLowerWitness_of_johnson
+    (C : Set (ι → F)) {m j : ℕ} (hjn : j ≤ Fintype.card ι)
+    {ℓ : ℕ} {β : ℝ} (hq : 0 < Fintype.card F) (hβ : 0 ≤ β)
+    (hcond : ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card F : ℝ)) * (1 + β ^ 2)
+        - 2 * β * (((Fintype.card ι -
+              ⌊(((j : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)
+                * (Fintype.card ι : ℝ)⌋₊ : ℕ) : ℝ)
+          - (Fintype.card ι : ℝ) / (Fintype.card F : ℝ)))
+      + (ℓ : ℝ) * ((((Fintype.card ι - Code.minDist C : ℕ) : ℝ)
+          - (Fintype.card ι : ℝ) / (Fintype.card F : ℝ))
+        - 2 * β * (((Fintype.card ι -
+              ⌊(((j : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)
+                * (Fintype.card ι : ℝ)⌋₊ : ℕ) : ℝ)
+          - (Fintype.card ι : ℝ) / (Fintype.card F : ℝ))
+        + β ^ 2 * (Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card F : ℝ))) < 0)
+    {ε_star : ℝ≥0}
+    (hpow : ((ℓ : ENNReal)) ^ m ≤ (ε_star : ENNReal) * (Fintype.card F : ENNReal)) :
+    GrandChallenges.ListLowerWitness C m ε_star := by
+  classical
+  let δ : ℝ≥0 := (j : ℝ≥0) / (Fintype.card ι : ℝ≥0)
+  have hδ_le : δ ≤ 1 := by
+    have hn0 : (Fintype.card ι : ℝ≥0) ≠ 0 := by
+      exact_mod_cast (Fintype.card_ne_zero (α := ι))
+    calc
+      δ = (j : ℝ≥0) / (Fintype.card ι : ℝ≥0) := rfl
+      _ ≤ (Fintype.card ι : ℝ≥0) / (Fintype.card ι : ℝ≥0) := by
+        exact div_le_div_of_nonneg_right (by exact_mod_cast hjn) (by positivity)
+      _ = 1 := div_self hn0
+  have hmem := mem_listLatticeSet_of_johnson
+    (C := C) (m := m) (j := j) hjn (ℓ := ℓ) (β := β) hq hβ hcond hpow
+  rw [GrandChallenges.listLatticeSet, Finset.mem_filter, Finset.mem_range] at hmem
+  exact GrandChallenges.ListLowerWitness.ofLe (C := C) (m := m)
+    (ε_star := ε_star) (δ := δ) hδ_le hmem.2
+
 /-- **Johnson-side lower bound on the genuine threshold.**  Any lattice radius `j/n`
 with a budget-clearing Johnson cap lower-bounds `GrandChallenges.listLatticeThreshold`. -/
 theorem le_listLatticeThreshold_of_johnson

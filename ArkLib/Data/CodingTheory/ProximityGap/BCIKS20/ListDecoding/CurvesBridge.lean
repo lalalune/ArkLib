@@ -11,7 +11,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Agreement
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Guruswami
 import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.AffineLineJointAgreement
 import ArkLib.ToMathlib.Section5ConcreteJohnson
-
 /-!
 # BCIKS20 §5 → §6 list-decoding bridge for degree-one curves
 
@@ -25,7 +24,7 @@ two helper word-stack identities `wordStack_fin_two_eq_finMapTwoWords` and
 
 -- This bridge exposes paper-aligned theorem names that exceed the style line limit.
 set_option linter.style.longLine false
-set_option linter.style.longFile 1600
+set_option linter.style.longFile 1700
 
 namespace ProximityGap
 
@@ -1290,6 +1289,61 @@ theorem correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_cou
         hunique u hprob hJ hsqrt
   · intro _hk _u _hprob _hJ hnot
     exact False.elim (hnot hδ)
+
+/-- Public affine-line version of
+`correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_counting_canonical_coeff_assembled`.
+
+This is the top-level strict square-root-radius §5-to-§6 bridge in the native
+affine-line predicate: the concrete Claim-5.11 complement-counting package
+supplies the strict list-decoding branch, and the strict radius makes the closed
+boundary branch impossible. -/
+theorem RS_correlatedAgreement_affineLines_of_strict_exists_natCeil_complement_counting_canonical_coeff_assembled
+    {m k : ℕ} (hk : 0 < k) {ωs : Fin n ↪ F}
+    [DecidableEq (RatFunc F)]
+    (δ : ℚ≥0)
+    (hδ : (δ : ℝ≥0) < 1 - ReedSolomon.sqrtRate (k + 1) ωs)
+    (hDx : ((gsDpg n m k : ℕ) : ℝ) < D_X ((k + 1) / (n : ℚ)) n m)
+    (hYZ : ((gsDpg n m k + gsZCap n m k : ℕ) : ℝ) ≤
+      n * (m + 1 / (2 : ℚ)) ^ 3 / (6 * Real.sqrt ((k + 1) / n)))
+    (hcounting : ∀ (u₀ u₁ : Fin n → F) {Q : F[Z][X][Y]}
+      (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁),
+      ∃ (x₀ : F) (_hres : Claim57Residuals (F := F) k (δ : ℚ) x₀ h_gs) (D : ℕ),
+        (coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁).card - 1 ≤
+          (2 * k + 1)
+            * (Polynomial.Bivariate.natDegreeY <| H k (δ : ℚ) x₀ h_gs)
+            * (Polynomial.Bivariate.natDegreeY <| R k (δ : ℚ) x₀ h_gs)
+            * D ∧
+        (2 * k + 1)
+          * (Polynomial.Bivariate.natDegreeY <| H k (δ : ℚ) x₀ h_gs)
+          * (Polynomial.Bivariate.natDegreeY <| R k (δ : ℚ) x₀ h_gs)
+          * D ≤ #(coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁) ∧
+        ⌈(δ : ℚ) * (n : ℚ)⌉₊ *
+            #(coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁) <
+          (n - k) *
+            (#(coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁) -
+              (2 * k + 1)
+                * (Polynomial.Bivariate.natDegreeY <| H k (δ : ℚ) x₀ h_gs)
+                * (Polynomial.Bivariate.natDegreeY <| R k (δ : ℚ) x₀ h_gs)
+                * D))
+    (hunique : ∀ (u₀ u₁ : Fin n → F) {Q : F[Z][X][Y]}
+      (_h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) (P : F → Polynomial F),
+      (∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+        (P z).natDegree < k + 1 ∧ δᵣ(u₀ + z • u₁, (P z).eval ∘ ωs) ≤ (δ : ℚ)) →
+      ∀ z ∈ coeffs_of_close_proximity (F := F) k ωs (δ : ℚ) u₀ u₁,
+        P z = PzFamily (F := F) (n := n) (δ : ℚ) u₀ u₁ ωs k z) :
+    δ_ε_correlatedAgreementAffineLines (A := F) (F := F) (ι := Fin n)
+      (C := ReedSolomon.code ωs (k + 1)) (δ := (δ : ℝ≥0))
+      (ε := errorBound (δ : ℝ≥0) (k + 1) ωs) := by
+  classical
+  have hcurves :=
+    correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_counting_canonical_coeff_assembled
+      (F := F) (n := n) (m := m) (k := k) hk (ωs := ωs) δ hδ hDx hYZ
+      hcounting hunique
+  unfold δ_ε_correlatedAgreementAffineLines
+  intro u hprob
+  unfold δ_ε_correlatedAgreementCurves at hcurves
+  exact hcurves u (by
+    simpa [one_mul, Fin.sum_univ_two] using hprob)
 
 /-- Strict Johnson canonical-evaluation supplier for the §6 curve front doors,
 specialized to §5 affine lines represented as `Code.finMapTwoWords`.
