@@ -377,6 +377,100 @@ theorem cT_vanish_on_window_highCoeff_zero
   exact Polynomial.coeff_eq_zero_of_degree_lt
     (lt_of_lt_of_le hpdeg (by exact_mod_cast hkd))
 
+/-- Omitted-window interpolation is obtained from the full interpolant by cancelling its top
+coefficient with the omitted-window nodal polynomial.  This is the division-free form of the
+J1 high-coefficient bridge. -/
+theorem interpolate_univ_erase_eq_full_sub_topCoeff_mul_nodal
+    (domain : ι ↪ F) (i : ι) (u : ι → F) :
+    Lagrange.interpolate (Finset.univ.erase i) (fun a => domain a) u =
+      Lagrange.interpolate Finset.univ (fun a => domain a) u -
+        Polynomial.C ((Lagrange.interpolate Finset.univ (fun a => domain a) u).coeff
+          (Fintype.card ι - 1)) *
+          Lagrange.nodal (Finset.univ.erase i) (fun a => domain a) := by
+  classical
+  let W : Finset ι := Finset.univ.erase i
+  let P : Polynomial F := Lagrange.interpolate Finset.univ (fun a => domain a) u
+  let Z : Polynomial F := Lagrange.nodal W (fun a => domain a)
+  let R : Polynomial F := P - Polynomial.C (P.coeff (Fintype.card ι - 1)) * Z
+  have hWcard : W.card = Fintype.card ι - 1 := by
+    dsimp [W]
+    rw [Finset.card_erase_of_mem (Finset.mem_univ i), Finset.card_univ]
+  have hinjUniv : Set.InjOn (fun a => domain a) (↑(Finset.univ : Finset ι) : Set ι) :=
+    fun _ _ _ _ h => domain.injective h
+  have hinjW : Set.InjOn (fun a => domain a) (↑W : Set ι) :=
+    fun _ _ _ _ h => domain.injective h
+  have hPdeg : P.degree < (Fintype.card ι : WithBot ℕ) := by
+    dsimp [P]
+    simpa [Finset.card_univ] using
+      (Lagrange.degree_interpolate_lt
+        (s := (Finset.univ : Finset ι)) (v := fun a => domain a) (r := u) hinjUniv)
+  have hZnat : Z.natDegree = Fintype.card ι - 1 := by
+    simp [Z, hWcard]
+  have hZmonic : Z.Monic := by
+    dsimp [Z]
+    exact Lagrange.nodal_monic
+  have hZtop : Z.coeff (Fintype.card ι - 1) = 1 := by
+    simpa [hZnat] using (Polynomial.Monic.coeff_natDegree hZmonic)
+  have hZdeg : Z.degree = (W.card : WithBot ℕ) := by
+    dsimp [Z]
+    exact Lagrange.degree_nodal
+  have hRdeg : R.degree < (W.card : WithBot ℕ) := by
+    rw [Polynomial.degree_lt_iff_coeff_zero]
+    intro m hm
+    by_cases hm_top : m = Fintype.card ι - 1
+    · subst hm_top
+      dsimp [R]
+      rw [Polynomial.coeff_sub, Polynomial.coeff_C_mul, hZtop]
+      ring
+    · have hmW : W.card < m :=
+        lt_of_le_of_ne hm (fun h => hm_top (h.symm.trans hWcard))
+      have hnle : Fintype.card ι ≤ m := by
+        rw [hWcard] at hmW
+        have hnpos : 0 < Fintype.card ι := Fintype.card_pos
+        omega
+      have hPzero : P.coeff m = 0 :=
+        Polynomial.coeff_eq_zero_of_degree_lt
+          (lt_of_lt_of_le hPdeg (by exact_mod_cast hnle))
+      have hZzero : Z.coeff m = 0 := by
+        refine Polynomial.coeff_eq_zero_of_degree_lt ?_
+        rw [hZdeg]
+        exact_mod_cast hmW
+      dsimp [R]
+      rw [Polynomial.coeff_sub, Polynomial.coeff_C_mul, hPzero, hZzero, mul_zero, sub_zero]
+  have hReval : ∀ a ∈ W, R.eval (domain a) = u a := by
+    intro a ha
+    have hPeval : P.eval (domain a) = u a := by
+      dsimp [P]
+      simpa using
+        (Lagrange.eval_interpolate_at_node
+          (s := (Finset.univ : Finset ι)) (v := fun a => domain a) (r := u)
+          (i := a) hinjUniv (Finset.mem_univ a))
+    have hZeval : Z.eval (domain a) = 0 := by
+      dsimp [Z]
+      simpa using
+        (Lagrange.eval_nodal_at_node (s := W) (v := fun a => domain a) (i := a) ha)
+    dsimp [R]
+    rw [Polynomial.eval_sub, Polynomial.eval_mul, Polynomial.eval_C, hPeval, hZeval,
+      mul_zero, sub_zero]
+  have hRinterp :
+      R = Lagrange.interpolate W (fun a => domain a) u :=
+    Lagrange.eq_interpolate_of_eval_eq
+      (v := fun a => domain a) (r := u) (s := W) (f := R) hinjW hRdeg hReval
+  change Lagrange.interpolate W (fun a => domain a) u = R
+  exact hRinterp.symm
+
+/-- Coefficient form of
+`interpolate_univ_erase_eq_full_sub_topCoeff_mul_nodal`. -/
+theorem interpolate_univ_erase_coeff_eq_full_sub_topCoeff_mul_nodal_coeff
+    (domain : ι ↪ F) (i : ι) (u : ι → F) (d : ℕ) :
+    (Lagrange.interpolate (Finset.univ.erase i) (fun a => domain a) u).coeff d =
+      (Lagrange.interpolate Finset.univ (fun a => domain a) u).coeff d -
+        (Lagrange.interpolate Finset.univ (fun a => domain a) u).coeff
+          (Fintype.card ι - 1) *
+        (Lagrange.nodal (Finset.univ.erase i) (fun a => domain a)).coeff d := by
+  rw [interpolate_univ_erase_eq_full_sub_topCoeff_mul_nodal domain i u,
+    Polynomial.coeff_sub, Polynomial.coeff_C_mul]
+
 /-- J1 omitted-window high-coefficient bridge in the exact two-top-coefficient form needed for
 the quadratic eliminant. -/
 theorem cT_vanish_on_j1_window_two_top_coeffs
@@ -396,6 +490,42 @@ theorem cT_vanish_on_j1_window_two_top_coeffs
   · exact cT_vanish_on_window_highCoeff_zero domain hkS hvanish (by omega)
   · exact cT_vanish_on_window_highCoeff_zero domain hkS hvanish (by omega)
 
+/-- Full-interpolant coefficient equations forced by J1 local vanishing on an omitted window. -/
+theorem cT_vanish_on_j1_window_full_top_coeff_equations
+    (domain : ι ↪ F) {k : ℕ} {i : ι} {u : ι → F}
+    (hk : k + 3 ≤ Fintype.card ι)
+    (hvanish : ∀ T : Finset ι, T ⊆ Finset.univ.erase i → T.card = k + 1 →
+      cT domain k T u = 0) :
+    let P := Lagrange.interpolate Finset.univ (fun a => domain a) u
+    let Zᵢ := Lagrange.nodal (Finset.univ.erase i) (fun a => domain a)
+    P.coeff (Fintype.card ι - 2) - P.coeff (Fintype.card ι - 1) * Zᵢ.coeff
+        (Fintype.card ι - 2) = 0 ∧
+    P.coeff (Fintype.card ι - 3) - P.coeff (Fintype.card ι - 1) * Zᵢ.coeff
+        (Fintype.card ι - 3) = 0 := by
+  classical
+  obtain ⟨h₂, h₃⟩ := cT_vanish_on_j1_window_two_top_coeffs domain hk hvanish
+  constructor
+  · change
+      (Lagrange.interpolate Finset.univ (fun a => domain a) u).coeff
+          (Fintype.card ι - 2) -
+        (Lagrange.interpolate Finset.univ (fun a => domain a) u).coeff
+          (Fintype.card ι - 1) *
+        (Lagrange.nodal (Finset.univ.erase i) (fun a => domain a)).coeff
+          (Fintype.card ι - 2) = 0
+    exact
+      (interpolate_univ_erase_coeff_eq_full_sub_topCoeff_mul_nodal_coeff
+        domain i u (Fintype.card ι - 2)).symm.trans h₂
+  · change
+      (Lagrange.interpolate Finset.univ (fun a => domain a) u).coeff
+          (Fintype.card ι - 3) -
+        (Lagrange.interpolate Finset.univ (fun a => domain a) u).coeff
+          (Fintype.card ι - 1) *
+        (Lagrange.nodal (Finset.univ.erase i) (fun a => domain a)).coeff
+          (Fintype.card ι - 3) = 0
+    exact
+      (interpolate_univ_erase_coeff_eq_full_sub_topCoeff_mul_nodal_coeff
+        domain i u (Fintype.card ι - 3)).symm.trans h₃
+
 /-- Direct coefficient form of a J1 ratio constraint: every constrained scalar has an omitted
 window where `u₁` is non-extendable and the line word has the two top omitted-window coefficients
 equal to zero. -/
@@ -413,6 +543,26 @@ theorem j1RatioConstraint_exists_omitted_two_top_coeffs
   classical
   obtain ⟨i, hne, hvanish⟩ := j1RatioConstraint_to_omitted domain hk hγ
   exact ⟨i, hne, cT_vanish_on_j1_window_two_top_coeffs domain hk hvanish⟩
+
+/-- Full-interpolant coefficient form of a J1 ratio constraint.  This is the form used by the
+remaining quadratic eliminant: the two top omitted-window vanishing equations become equations
+in the full interpolant and the omitted-window nodal coefficients. -/
+theorem j1RatioConstraint_exists_omitted_full_top_coeff_equations
+    (domain : ι ↪ F) {k : ℕ} (hk : k + 3 ≤ Fintype.card ι)
+    {u₀ u₁ : ι → F} {γ : F}
+    (hγ : j1RatioConstraint domain k u₀ u₁ γ) :
+    ∃ i : ι,
+      NonExtendableOn (ReedSolomon.code domain k : Set (ι → F))
+        (Finset.univ.erase i) u₁ ∧
+      (let P := Lagrange.interpolate Finset.univ (fun a => domain a) (u₀ + γ • u₁)
+       let Zᵢ := Lagrange.nodal (Finset.univ.erase i) (fun a => domain a)
+       P.coeff (Fintype.card ι - 2) -
+           P.coeff (Fintype.card ι - 1) * Zᵢ.coeff (Fintype.card ι - 2) = 0 ∧
+       P.coeff (Fintype.card ι - 3) -
+           P.coeff (Fintype.card ι - 1) * Zᵢ.coeff (Fintype.card ι - 3) = 0) := by
+  classical
+  obtain ⟨i, hne, hvanish⟩ := j1RatioConstraint_to_omitted domain hk hγ
+  exact ⟨i, hne, cT_vanish_on_j1_window_full_top_coeff_equations domain hk hvanish⟩
 
 open Classical in
 /-- The finite scalar set cut out by the J1 window ratio constraints.

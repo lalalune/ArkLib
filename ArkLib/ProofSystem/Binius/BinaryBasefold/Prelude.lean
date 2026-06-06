@@ -2070,10 +2070,15 @@ theorem iterated_fold_last (i : Fin r) {midIdx destIdx : Fin r} (steps : ℕ)
   rw [iterated_fold_succ_last_gen 𝔽q β (i := i) (n := steps)
     (h_steps := by omega)
     (h_i_add_steps := by
-      have hle : i.val + steps + 1 ≤ ℓ := by
-        simpa only [Fin.coe_mk] using h_destIdx_le
+      -- after the `subst`s, `h_destIdx_le : ↑(⟨i.val + steps + 1, _⟩ : Fin r) ≤ ℓ` is
+      -- definitionally the bare arithmetic bound (mk-projection reduction).
+      have hle : i.val + steps + 1 ≤ ℓ := h_destIdx_le
       have h𝓡 : 0 < 𝓡 := Nat.pos_of_neZero 𝓡
       omega)]
+  -- Both sides are now the same `fold_legacy` of the `steps`-fold: the challenge
+  -- reindexings (`castSucc`-of-`mk` vs `mk`-of-`castSucc`), the `Fin.last` instances,
+  -- and the subtype re-`mk` of `y` are all definitional.
+  rfl
 
 /-- **Lemma 4.9 (new-API).** The exported new-API localized fold form is definitionally the
 new-API iterated fold. The raw matrix expression is kept separately as

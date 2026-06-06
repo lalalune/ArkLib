@@ -427,3 +427,15 @@ theorem rewindingKS_of_extractor
 end Bridge
 
 end Extractor
+
+-- Top-level alias namespace so the bridge declarations are reachable both as
+-- `Extractor.Bridge.*` (their canonical home, nested under `Extractor`) and as the
+-- shorter `Bridge.*`. Downstream consumers (the ToyProblem spec files) use both
+-- spellings; this `export` makes them denote the same declarations rather than two
+-- separate copies.
+namespace Bridge
+
+export Extractor.Bridge
+  (StraightlineOfRewinding knowledgeSound_of_rewinding rewindingKS_of_extractor)
+
+end Bridge
