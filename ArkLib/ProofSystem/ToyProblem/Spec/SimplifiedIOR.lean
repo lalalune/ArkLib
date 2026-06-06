@@ -216,40 +216,6 @@ a single-run `Extractor.Straightline` with no re-invocation handle, so the 2-spe
 *rewinding* extractor this lemma needs is not expressible against it. The rewinding extractor is the
 *same* one as for Construction 6.2 (it extracts the input message pair `(u₁, u₂)` to the `R̃²`
 relation `ToyProblem.Spec.outputRelation` — exactly this lemma's `relIn`), so we reuse the proven
-`ToyProblem.Spec.protocol62_knowledgeSoundnessViaRewinding` and reduce the straightline statement to
-the named L6.10 bridge residual below.
-
-**Named bridge residual.** The named L6.10 bridge residual is carried as the explicit hypothesis
-`hBridge`; no global axiom is introduced. -/
-theorem simplifiedIOR_knowledgeSound_residual
-    [SampleableType F] [Nonempty ι] [Nonempty F]
-    {σ : Type} (init : ProbComp σ)
-    (impl : QueryImpl []ₒ (StateT σ ProbComp))
-    (C : Set (ι → F)) (δ : ℝ≥0)
-    (encode : (Fin k → F) → (ι → F))
-    (decode : ToyProblem.Spec.ToyPrefix ι F k → (Fin k → F) × (Fin k → F))
-    (hBridge :
-      Bridge.StraightlineOfRewinding
-        (ToyProblem.Spec.protocol62_knowledgeSoundnessViaRewinding C δ decode)
-        ((verifier (ι := ι) (F := F) (k := k)).knowledgeSoundness
-          (WitOut := OutputWitness (F := F) k)
-          init impl
-          (ToyProblem.Spec.outputRelation (ι := ι) (F := F) k C δ)
-          (outputRelationFor (ι := ι) (F := F) k encode δ)
-          ((epsMCA (F := F) (A := F) C δ).toNNReal +
-            ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
-              / (Fintype.card F : ℝ≥0)))) :
-      (verifier (ι := ι) (F := F) (k := k)).knowledgeSoundness
-        (WitOut := OutputWitness (F := F) k)
-        init impl
-        (ToyProblem.Spec.outputRelation (ι := ι) (F := F) k C δ)
-        (outputRelationFor (ι := ι) (F := F) k encode δ)
-        ((epsMCA (F := F) (A := F) C δ).toNNReal +
-          ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
-            / (Fintype.card F : ℝ≥0)) :=
-  Bridge.knowledgeSound_of_rewinding hBridge
-    (ToyProblem.Spec.protocol62_knowledgeSoundnessViaRewinding C δ decode)
-
 theorem simplifiedIOR_knowledgeSound
     [SampleableType F] [Nonempty ι] [Nonempty F]
     (C : Set (ι → F)) (δ : ℝ≥0)
