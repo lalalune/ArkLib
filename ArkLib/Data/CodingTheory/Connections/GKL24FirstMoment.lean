@@ -360,7 +360,3 @@ kernel-clean apart from the standard Lean foundations (`propext`, `Classical.cho
 #print axioms ProximityGap.mcaBad_card_le_t51_firstMoment_of_gkl24_residual
 #print axioms ProximityGap.epsMCA_le_ofReal_of_gkl24_residual
 #print axioms ProximityGap.epsMCA_le_ofReal_inTree_firstMoment_card
-
--- TEMP AUDIT
-#print axioms ProximityGap.mcaBadWitness_card_le_card
-#print axioms ProximityGap.epsMCA_le_ofReal_of_listFactor
