@@ -41,8 +41,6 @@ explicit-power arithmetic in `Leaderboard.lean` consumes `card_sextic`.
 
 namespace KoalaBear
 
-open scoped Classical
-
 /-- The genuine **KoalaBear-sextic field** `F_{p^6}`, where `p = 2^31 - 2^24 + 1`
 is the KoalaBear prime. This is the extension field over which ABF26 §6.3
 instantiates the §6 toy IOR's Reed–Solomon code at the prize regime. It is a
