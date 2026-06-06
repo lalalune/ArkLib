@@ -645,6 +645,41 @@ def iteratedSumcheckPostChallengeLocalChecks (i : Fin ℓ')
   let localizedTargetCheck := h_i.val.eval r_i' = h_star.val.eval r_i'
   explicitVCheck ∧ localizedTargetCheck
 
+/-- Direct-`FullTranscript` form of the post-challenge local KState payload.
+
+This is definitionally aligned with `iteratedSumcheckOracleVerifier_verify_collapse`, whose verifier
+run reads `FullTranscript.messages tr ⟨0, rfl⟩` and `FullTranscript.challenges tr ⟨1, rfl⟩`
+directly. The bridge theorem below connects it back to the `Transcript.equivMessagesChallenges`
+form used by the KState API. -/
+def iteratedSumcheckPostChallengeFullTranscriptLocalChecks (i : Fin ℓ')
+    (tr : FullTranscript (pSpecSumcheckRound L))
+    (stmt : Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) i.castSucc)
+    (witMid : SumcheckWitness L ℓ' i.castSucc) : Prop :=
+  let h_star : ↥L⦃≤ 2⦄[X] := getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i)
+    (h := witMid.H)
+  let h_i : L⦃≤ 2⦄[X] := FullTranscript.messages tr ⟨0, rfl⟩
+  let r_i' : L := FullTranscript.challenges tr ⟨1, rfl⟩
+  let explicitVCheck :=
+    (∑ b ∈ (boolDomain L ℓ').points i, h_i.val.eval b) = stmt.sumcheck_target
+  let localizedTargetCheck := h_i.val.eval r_i' = h_star.val.eval r_i'
+  explicitVCheck ∧ localizedTargetCheck
+
+/-- The post-challenge KState payload's `equivMessagesChallenges` form is equivalent to the direct
+`FullTranscript` form used by verifier-run collapse. This is the concrete #29 bridge consumed by the
+eventual nontrivial `toFun_full` proof. -/
+theorem iteratedSumcheckPostChallengeLocalChecks_iff_fullTranscript (i : Fin ℓ')
+    (tr : FullTranscript (pSpecSumcheckRound L))
+    (stmt : Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) i.castSucc)
+    (witMid : SumcheckWitness L ℓ' i.castSucc) :
+    iteratedSumcheckPostChallengeLocalChecks κ L K P ℓ ℓ' h_l i
+        (tr : Transcript (Fin.last 2) (pSpecSumcheckRound L)) stmt witMid
+      ↔ iteratedSumcheckPostChallengeFullTranscriptLocalChecks κ L K P ℓ ℓ' h_l i
+        tr stmt witMid := by
+  simp [iteratedSumcheckPostChallengeLocalChecks,
+    iteratedSumcheckPostChallengeFullTranscriptLocalChecks,
+    iteratedSumcheck_fullTranscript_message0_eq_equivMessagesChallenges,
+    iteratedSumcheck_fullTranscript_challenge1_eq_equivMessagesChallenges]
+
 /-- **Extracted-witness ground-truth telescoping (issue #29).** For the iterated-round RBR extractor
 (`extractOut`), whose extracted last witness has `H = projectToMidSumcheckPoly … i.castSucc
 challenges`, the ground-truth round univariate `h_star = getSumcheckRoundPoly i (extractedH)`

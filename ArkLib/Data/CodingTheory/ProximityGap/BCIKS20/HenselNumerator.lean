@@ -117,7 +117,7 @@ binomial-weighted shift (its weight is genuinely positive, see `mvBinom_pos` /
 genuine multiplicity.
 -/
 
-set_option linter.style.longFile 2600
+set_option linter.style.longFile 2800
 -- This proof-note-heavy integration file contains many long paper-route doc lines.
 set_option linter.style.longLine false
 set_option linter.unusedVariables false
@@ -1657,7 +1657,7 @@ This is the honest remaining per-term obligation after the wave-5 arithmetic: pr
 def βHenselSuccTermStructuredWeightResidual (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
     (hDH : Bivariate.totalDegree H ≤ D) (hdR2 : 2 ≤ Bivariate.natDegreeY R) (k : ℕ)
-    (hStructured : βHenselStructuredWeightInvariant H x₀ R hHyp hH k)
+    (hStructured : βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k)
     (i1 : ℕ) (_hi1 : i1 ∈ Finset.range (k + 2))
     (lam : Nat.Partition (k + 1 - i1)) (_hlam : (k + 1) ∉ lam.parts) : Prop :=
     weight_Λ_over_𝒪 hH
@@ -1681,7 +1681,7 @@ theorem βHenselSuccTermWeightResidual_of_structured
     (hIH : ∀ l, l < k + 1 →
       weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp l) D
         ≤ WithBot.some ((2 * l + 1) * Bivariate.natDegreeY R * D))
-    (hStructured : βHenselStructuredWeightInvariant H x₀ R hHyp hH k)
+    (hStructured : βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k)
     (hterm : ∀ (i1 : ℕ) (hi1 : i1 ∈ Finset.range (k + 2))
       (lam : Nat.Partition (k + 1 - i1)) (hlam : (k + 1) ∉ lam.parts),
         βHenselSuccTermStructuredWeightResidual H x₀ R hHyp hH hDH hdR2
