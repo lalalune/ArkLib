@@ -100,8 +100,7 @@ example {n : ℕ} (f : 𝔽[X]) [inst : NeZero n] :
           rw [h']
           exact Nat.eq_div_of_mul_eq_right inst.out rfl
         simp [this]
-      ·
-        intros h'
+      · intros h'
         split_ifs with h''
         · exact notMem_support_iff.mp h'
         · rfl

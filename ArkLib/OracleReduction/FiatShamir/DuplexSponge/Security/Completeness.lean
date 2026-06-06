@@ -230,8 +230,8 @@ unsalted DSFS transform is *definitionally* the generic `completenessFromRun` pr
 honest execution.
 
 This is the proven `_of_residual` brick: it discharges the `↔` in
-`duplexSpongeFiatShamir_completeness_unroll` outright, shrinking the open surface to the single named
-run-equality residual.
+`duplexSpongeFiatShamir_completeness_unroll` outright, shrinking the open surface to the single
+named run-equality residual.
 
 The collapse of the outer (empty) Fiat-Shamir challenge oracle implementation is handled by
 `simulateQ_add_run_liftM_left`: the lifted honest execution never queries that oracle, so
@@ -322,7 +322,8 @@ theorem duplexSpongeFiatShamirSalted_completeness_unroll_of_run_eq {δ : Nat}
             sampleSalt stmtIn witIn).run := by
     rw [hRun stmtIn witIn]
     rw [QueryImpl.addLift_def, QueryImpl.liftTarget_self]
-    -- The salted analogue of the unsalted collapse: `convert` against `simulateQ_add_run_liftM_left`
+    -- The salted analogue of the unsalted collapse: `convert` against
+    -- `simulateQ_add_run_liftM_left`
     -- bridges the associativity path of the `OptionT` lift used by `run`, and the residual
     -- two-step/direct lift equality is discharged by fusing the lift layers via `simulateQ_compose`
     -- and checking the query handlers agree pointwise.

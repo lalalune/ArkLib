@@ -17,10 +17,11 @@ systems programming and the clean, functional oracle reductions of our core prot
 
 ## State Abstractions
 
-- `HashStateWithInstructions`: Tracks the sequence of sponge operations (absorbing/squeezing/ratcheting)
-  against a FIFO queue of expected domain-separated operations, preventing out-of-order execution.
-- `FSVerifierState`: Represents the verifier's operational state, combining the stateful hash context
-  with a read-only transcript segment (NARG string).
+- `HashStateWithInstructions`: Tracks the sequence of sponge operations
+  (absorbing/squeezing/ratcheting) against a FIFO queue of expected domain-separated operations,
+  preventing out-of-order execution.
+- `FSVerifierState`: Represents the verifier's operational state, combining the stateful hash
+  context with a read-only transcript segment (NARG string).
 - `FSProverState`: Extends the verifier state with the prover's private random number generator,
   reconstructed to derive randomness deterministically bound to the transcript.
 -/

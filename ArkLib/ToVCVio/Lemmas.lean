@@ -546,7 +546,7 @@ lemma support_liftComp {ι' : Type w} {superSpec : OracleSpec ι'}
     rw [hq, hq', Set.biUnion_univ, Set.biUnion_univ]
     simp_rw [ih]
 
-alias liftComp_support := support_liftComp
+alias liftComp_support := _root_.support_liftComp
 
 @[simp]
 lemma liftComp_id

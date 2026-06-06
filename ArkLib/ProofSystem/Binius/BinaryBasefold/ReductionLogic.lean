@@ -202,7 +202,8 @@ def OracleAwareReductionLogicStep.IsStronglyCompleteUnderSimulation
     {n : ℕ} {pSpec : ProtocolSpec n}
     [Oₛᵢ : ∀ i, OracleInterface (OracleIn i)]
     [Oₘ : ∀ i, OracleInterface (pSpec.Message i)]
-    -- The step uses oSpec as its base oracle; internally it accesses oSpec ++ₒ ([OracleIn]ₒ ++ₒ [pSpec.Message]ₒ)
+    -- The step uses oSpec as its base oracle; internally it accesses
+    -- oSpec ++ₒ ([OracleIn]ₒ ++ₒ [pSpec.Message]ₒ)
     (step : OracleAwareReductionLogicStep oSpec
       StmtIn WitIn OracleIn OracleOut StmtOut WitOut pSpec) : Prop :=
   ∀ (stmtIn : StmtIn) (witIn : WitIn) (oStmtIn : ∀ i, OracleIn i) (challenges : pSpec.Challenges),
@@ -497,7 +498,8 @@ def commitStepHEq (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i) :
       simp only [Fin.mk.injEq]; rw [h]
 
 /-- The Logic Instance for the commit step.
-This is a trivial 1-message protocol where the prover just sends an oracle and the verifier accepts it. -/
+This is a trivial 1-message protocol where the prover just sends an oracle and the verifier
+accepts it. -/
 def commitStepLogic (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i) :
     ReductionLogicStep
       (Statement (L := L) Context i.succ)
@@ -550,7 +552,8 @@ computes using `OracleVerifier.mkVerifierOStmtOut` with the commit step's embedd
 
 The key insight:
 - For indices `j < toOutCodewordsCount ℓ ϑ i.castSucc`: embed maps to `Sum.inl j` (old oracle)
-- For index `j = toOutCodewordsCount ℓ ϑ i.castSucc`: embed maps to `Sum.inr 0` (new oracle from message)
+- For index `j = toOutCodewordsCount ℓ ϑ i.castSucc`: embed maps to `Sum.inr 0`
+  (new oracle from message)
 -/
 lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
     (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i)
@@ -628,10 +631,12 @@ lemma getFirstOracle_snoc_oracle
 /-- Oracle folding consistency is preserved when adding a new oracle in a commit step.
 
 This lemma shows that if `oStmtIn` satisfies `oracleFoldingConsistencyProp` at round `i.castSucc`,
-then `oStmtOut` (constructed via `mkVerifierOStmtOut` with commit step's embed/hEq) satisfies it at `i.succ`.
+then `oStmtOut` (constructed via `mkVerifierOStmtOut` with commit step's embed/hEq) satisfies it
+at `i.succ`.
 
 **Key insight**: In a commit step:
-- The oracle frontier index values are equal: `(mkFromStmtIdxCastSuccOfSucc i).val = (mkFromStmtIdx i.succ).val`
+- The oracle frontier index values are equal:
+  `(mkFromStmtIdxCastSuccOfSucc i).val = (mkFromStmtIdx i.succ).val`
 - The challenges don't change (commit step has no verifier challenges)
 - Therefore oracle folding consistency trivially carries over
 -/
@@ -683,7 +688,8 @@ lemma strictOracleFoldingConsistency_commitStep
   -- Key observations:
   -- 1. (mkFromStmtIdxCastSuccOfSucc i).val = i.castSucc.val = i.val
   -- 2. (mkFromStmtIdx i.succ).val = i.succ.val = i.val + 1
-  -- 3. toOutCodewordsCount ℓ ϑ i.succ = toOutCodewordsCount ℓ ϑ i.castSucc + 1 (when isCommitmentRound)
+  -- 3. toOutCodewordsCount ℓ ϑ i.succ = toOutCodewordsCount ℓ ϑ i.castSucc + 1
+  --    (when isCommitmentRound)
   -- 4. verifierStmtOut = stmtIn (commit step doesn't change statement)
   -- 5. verifierOStmtOut extends oStmtIn with the new oracle witIn.f
 
@@ -734,7 +740,8 @@ lemma strictOracleFoldingConsistency_commitStep
     -- Use input hypothesis: oStmtIn j = iterated_fold ... (with challenges from i.castSucc)
     have h_old_eq := h_oracle_folding_In ⟨j.val, hj⟩
     rw [h_old_eq]
-    -- Show that iterated_fold with challenges from i.castSucc equals iterated_fold with challenges from i.succ
+    -- Show that iterated_fold with challenges from i.castSucc equals iterated_fold with
+    -- challenges from i.succ
     -- when j * ϑ < i.val (which holds since j < toOutCodewordsCount i.castSucc)
     rfl
   · -- Case B: New oracle (j = toOutCodewordsCount i.castSucc)
@@ -924,7 +931,8 @@ def finalSumcheckStepLogic :
 
   completeness_relOut := fun ((stmtOut, oStmtOut), witOut) =>
     -- For strict relations, we need t from the input witness
-    -- In completeness proofs, this will be extracted from h_relIn via strictOracleWitnessConsistency
+    -- In completeness proofs, this will be extracted from h_relIn via
+    -- strictOracleWitnessConsistency
       ((stmtOut, oStmtOut), witOut) ∈ strictFinalSumcheckRelOut 𝔽q β (ϑ := ϑ)
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
 
@@ -1058,7 +1066,8 @@ lemma iterated_fold_to_const_strict
       (j := (getLastOraclePositionIndex ℓ ϑ (Fin.last ℓ)))
     --   h_f_last_consistency : oStmtIn (getLastOraclePositionIndex ℓ ϑ (Fin.last ℓ)) =
     -- iterated_fold 𝔽q β 0 (↑(getLastOraclePositionIndex ℓ ϑ (Fin.last ℓ)) * ϑ) ⋯ ⋯
-    --   (polyToOracleFunc 𝔽q β ↑(polynomialFromNovelCoeffsF₂ 𝔽q β ℓ ⋯ fun ω ↦ (MvPolynomial.eval ↑↑ω) ↑witIn.t))
+    --   (polyToOracleFunc 𝔽q β ↑(polynomialFromNovelCoeffsF₂ 𝔽q β ℓ ⋯
+    --     fun ω ↦ (MvPolynomial.eval ↑↑ω) ↑witIn.t))
     --   (getFoldingChallenges (Fin.last ℓ) (Fin.take ℓ ⋯ stmtIn.challenges) 0 ⋯)
 
     rw [h_VOStmtOut_eq]
@@ -1266,7 +1275,8 @@ lemma finalSumcheckStep_verifierCheck_passed
     dsimp only [getMidCodewords, Fin.coe_ofNat_eq_mod] at h_f_eq_getMidCodewords_t
     rw [congr_fun h_f_eq_getMidCodewords_t ⟨0, by simp only [zero_mem]⟩]
     --   ⊢ iterated_fold 𝔽q β 0 ℓ ⋯
-    --   (fun x ↦ Polynomial.eval ↑x ↑(polynomialFromNovelCoeffsF₂ 𝔽q β ℓ ⋯ fun ω ↦ (MvPolynomial.eval ↑↑ω) ↑witIn.t))
+    --   (fun x ↦ Polynomial.eval ↑x ↑(polynomialFromNovelCoeffsF₂ 𝔽q β ℓ ⋯
+    --     fun ω ↦ (MvPolynomial.eval ↑↑ω) ↑witIn.t))
     --   stmtIn.challenges ⟨↑⟨0, ⋯⟩, ⋯⟩ =
     -- (MvPolynomial.eval stmtIn.challenges) ↑witIn.t
     -- have h_eq : @Fin.mk r (0 % ℓ) (isLt := by exact Nat.pos_of_ne_zero (by omega)) = 0 := by
@@ -1344,11 +1354,14 @@ lemma finalSumcheckStep_verifierCheck_passed
 
 /-- Final sumcheck step logic is strongly complete.
 **Key Proof Obligations:**
-1. **Verifier Check**: Show that `stmtIn.sumcheck_target = eq_tilde_eval * c` where `c = wit.f ⟨0, ...⟩`
+1. **Verifier Check**: Show that `stmtIn.sumcheck_target = eq_tilde_eval * c`
+   where `c = wit.f ⟨0, ...⟩`
    - This should follow from `h_relIn` (roundRelation) which includes `oracleWitnessConsistency`
    - The `oracleWitnessConsistency` includes:
-     * `witnessStructuralInvariant`: `wit.H = projectToMidSumcheckPoly ...` and `wit.f = getMidCodewords ...`
-     * `sumcheckConsistencyProp`: `stmt.sumcheck_target = ∑ x ∈ (univ.map 𝓑) ^ᶠ (ℓ - ℓ), wit.H.val.eval x`
+     * `witnessStructuralInvariant`: `wit.H = projectToMidSumcheckPoly ...`
+       and `wit.f = getMidCodewords ...`
+     * `sumcheckConsistencyProp`:
+       `stmt.sumcheck_target = ∑ x ∈ (univ.map 𝓑) ^ᶠ (ℓ - ℓ), wit.H.val.eval x`
        For `i = Fin.last ℓ`, we have `ℓ - ℓ = 0`, so this is a sum over 0 variables
    - Need to connect these properties to show the verifier check passes
 

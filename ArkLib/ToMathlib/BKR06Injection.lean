@@ -22,9 +22,12 @@ to a designated received word.
 
 Let $K = \mathbb{F}_{q^m}$ be a finite extension of $F = \mathbb{F}_q$.
 1. **Agreement Identity:** For a received word interpolant $P^*$ and a polynomial $P$, the
-   codeword corresponding to $P^* - P$ agrees with the evaluation of $P^*$ precisely at the roots of $P$.
-2. **Subspace Interpolation:** When $P = P_L$ is the linearized subspace polynomial of a $v$-dimensional
-   subspace $L \subseteq K$, the roots of $P_L$ form the subspace $L$, yielding agreement on $q^v$ points.
+   codeword corresponding to $P^* - P$ agrees with the evaluation of $P^*$ precisely at the roots of
+   $P$.
+2. **Subspace Interpolation:** When $P = P_L$ is the linearized subspace polynomial of a
+$v$-dimensional
+   subspace $L \subseteq K$, the roots of $P_L$ form the subspace $L$, yielding agreement on $q^v$
+   points.
 3. **List Size:** By pigeonholing over subspaces sharing high-degree coefficients, BKR06 constructs
    a family of close codewords of size at least $q^{(u+1)m - v^2}$.
 
@@ -85,7 +88,8 @@ lemma evalOnPoints_sub_subspacePoly_agrees_on_W
 
 /-! ## Reed–Solomon Codeword Membership -/
 
-/-- Polynomials of degree strictly less than $k$ evaluate to codewords in `ReedSolomon.code domain k`. -/
+/-- Polynomials of degree strictly less than $k$ evaluate to codewords in `ReedSolomon.code domain
+k`. -/
 lemma evalOnPoints_mem_code_of_degree_lt
     (domain : ι ↪ K) (Q : K[X]) (k : ℕ) (hQ : Q ∈ Polynomial.degreeLT K k) :
     ReedSolomon.evalOnPoints domain Q ∈ ReedSolomon.code domain k :=

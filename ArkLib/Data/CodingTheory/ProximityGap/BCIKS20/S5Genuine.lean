@@ -70,7 +70,8 @@ nonzero (`den_ne_zero`, from `ζ_ne_zero` / `embeddingOf𝒪Into𝕃_ξ_ne_zero`
 All statements carry the documented re-anchoring hypotheses; nothing is faked.  The hypothesis-form
 claims are axiom-clean (`[propext, Classical.choice, Quot.sound]`, no `sorryAx`); the `…_via_intree`
 wrappers discharge the lift identity from the in-tree conditional theorem using the explicit
-`FaaDiBrunoSuccSumZeroResidual`.  No `sorry`/`admit`/`native_decide`/`bv_decide` is used in this file.
+`FaaDiBrunoSuccSumZeroResidual`.  No `sorry`/`admit`/`native_decide`/`bv_decide` is used in this
+file.
 -/
 
 set_option linter.style.longLine false
@@ -217,7 +218,8 @@ theorem claim58prime_genuine_tail {x₀ : F} {R : F[X][X][Y]}
   fun t ht => claim58_genuine H hHyp (hlarge t ht) (hlift t ht)
 
 /-- **Claim 5.8' (genuine, polynomial form).**  `γ = γ_k`: the genuine Hensel root `gammaGenuine`
-*equals the coercion of its degree-`< k` truncation polynomial* `PowerSeries.trunc k (gammaGenuine)`.
+*equals the coercion of its degree-`< k` truncation polynomial*
+`PowerSeries.trunc k (gammaGenuine)`.
 This is the machine-checkable "γ is a polynomial of X-degree `< k`" (`γ = γ_k ∈ L[X]`,
 fulltext 1695): for every coefficient index `t`, the series and the (coerced) truncation agree —
 below `k` by `coeff_trunc`, at/above `k` because both are `0` (the truncation by `coeff_trunc`, the
@@ -275,8 +277,9 @@ theorem claim58prime_genuine_via_restrictedMatch {x₀ : F} {R : F[X][X][Y]}
   claim58prime_genuine H hHyp hlarge
     (fun t _ => (P2_closed_of_restrictedMatch H x₀ R hHyp hmatch).2 t)
 
-/-- **Claim 5.8' (genuine, X-degree bound on the truncation).**  Companion to `claim58prime_genuine`:
-the degree-`< k` witness polynomial `PowerSeries.trunc k γ` has `natDegree < k` (when `k > 0`),
+/-- **Claim 5.8' (genuine, X-degree bound on the truncation).**  Companion to
+`claim58prime_genuine`: the degree-`< k` witness polynomial `PowerSeries.trunc k γ` has
+`natDegree < k` (when `k > 0`),
 certifying the X-degree bound `deg_X γ_k < k` (i.e. `≤ k − 1`).  `PowerSeries.natDegree_trunc_lt`
 gives `natDegree (trunc (n+1) f) < n+1`; here phrased for `k = n+1 > 0`. -/
 theorem claim58prime_genuine_natDegree_lt {x₀ : F} {R : F[X][X][Y]}

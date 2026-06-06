@@ -27,7 +27,8 @@ weight_Λ_over_𝒪 hH (betaRec … t) D ≤ (2t+1)·d_R·D     (where d_R = R.n
 * `bξ := (d_R − 1)·(D − d_H + 1)` — `Λ(ξ)` (`weight_ξ_bound`, `RationalFunctions.lean:2708`).
 * `bB i₁ p := (D − Σλ) + (d_R − δ − Σλ)·(D − d_H)` (App.-A line 131/2929/2933), **and `= 0` when the
   Hasse derivative vanishes (`Σλ > d_R − δ`)**, the case in which `Bcoeff i₁ p = 0`.
-* the **tight** target `wβ_tight t := 1 + (t+1)·bW + e_t·bξ`, `e_t = max(0, 2t−1)` (App.-A Claim A.2),
+* the **tight** target `wβ_tight t := 1 + (t+1)·bW + e_t·bξ`, `e_t = max(0, 2t−1)` (App.-A Claim
+A.2),
   which telescopes term-by-term; the loose `(2t+1)·d_R·D` is the *final* collapse.
 
 ## What is proved (all kernel-clean: no `sorry`/`admit`/`axiom`/`native_decide`)
@@ -45,8 +46,10 @@ weight_Λ_over_𝒪 hH (betaRec … t) D ≤ (2t+1)·d_R·D     (where d_R = R.n
   `betaWExp(i₁)·bW + betaξExp(i₁,p)·bξ + bB i₁ p + Σ_l count·wβ_tight(l) ≤ wβ_tight(t+1)`
   (with explicit slack `d_R − d_H ≥ 0`).
 
-* `betaRec_weight_le_tight` — the **strong-induction theorem with the concrete tight budget**: routed
-  through the L9 skeleton (`betaRec_weightBound_of_term_bounds` + `betaTerm_weight_le`), splitting per
+* `betaRec_weight_le_tight` — the **strong-induction theorem with the concrete tight budget**:
+routed
+  through the L9 skeleton (`betaRec_weightBound_of_term_bounds` + `betaTerm_weight_le`), splitting
+  per
   term into (forbidden ⟹ `0`), (Hasse-vanishing `Σλ > d_R − δ` ⟹ `Bcoeff = 0 ⟹ betaTerm = 0`), and
   the genuine case discharged by `betaTele_tight`.
 
@@ -330,7 +333,8 @@ lemma betaTele_tight {D d dH : ℕ} (hdH_le : dH ≤ d) (hdH_D : dH ≤ D) (hd1 
   -- abbreviate `m = t + 1 - i₁`; since `i₁ ≤ t+1`, `m + i₁ = t + 1`.
   have hm_eq : (t + 1 - i₁) + i₁ = t + 1 := by omega
   -- `N ≥ 1` (a non-empty partition for non-forbidden terms): every term has at least one part since
-  -- if `m = 0` the only partition is empty, but then `N = 0`; we must show `N ≥ 1` only where needed.
+  -- if `m = 0` the only partition is empty, but then `N = 0`; we must show `N ≥ 1` only where
+  -- needed.
   -- For the bound we instead use `1 ≤ N` from the non-forbidden structure when `m ≥ 1`, and handle
   -- `m = 0` (i.e. `i₁ = t+1`) directly.
   -- Determine `δ` and the exponent values by casing on `i₁`.
@@ -366,7 +370,8 @@ lemma betaTele_tight {D d dH : ℕ} (hdH_le : dH ≤ d) (hdH_D : dH ≤ D) (hd1 
     have hN_le_d : N ≤ d - 1 := by rw [hδ] at hNd; exact hNd
     have hNm : N ≤ t + 1 := by rw [hN]; exact betaRec_card_le p
     unfold wβ_tight
-    -- `i₁ = 0`: `betaWExp = 0`, so the `bW`-power factor drops; the inequality is then linear in `bW`
+    -- `i₁ = 0`: `betaWExp = 0`, so the `bW`-power factor drops; the inequality is then linear in
+    -- `bW`
     -- after expanding `bξ`.  The `#parts ≤ sum` fact (`hNm`) keeps `2(t+1) − N` exact.
     exact betaTele_core_zero hdH_le hdH_D hN2 hN_le_d hNm
   · -- `i₁ ≥ 1`: `δ = 0`, `betaWExp i₁ = i₁ − 1`, `betaξExp = 2i₁ + N − 2` (≥ 0 since `2i₁ ≥ 2`).
@@ -382,7 +387,8 @@ lemma betaTele_tight {D d dH : ℕ} (hdH_le : dH ≤ d) (hdH_D : dH ≤ D) (hd1 
 
 /-! ### The L10 collapse `wβ_tight ≤ (2t+1)·d_R·D`
 
-The final numerical step (App.-A line 2879–2881): the tight budget `1 + (t+1)(D−d_H) + e_t(d−1)(D−d_H+1)`
+The final numerical step (App.-A line 2879–2881): the tight budget `1 + (t+1)(D−d_H) +
+e_t(d−1)(D−d_H+1)`
 is bounded by the loose `(2t+1)·d_R·D`.  Over `ℕ` (with `1 ≤ d_H ≤ d_R`, `d_H ≤ D`) the slack is a
 polynomial with non-negative coefficients in the slack variables `D−d_H`, `d_R−d_H`, `d_H−1`, so the
 inequality holds by an explicit `ring`-rewrite plus `Nat.le_add_right`. -/
@@ -414,8 +420,10 @@ lemma wβ_tight_le_loose {D d dH : ℕ} (hdH1 : 1 ≤ dH) (hdH_le : dH ≤ d) (h
 
 /-! ### The strong-induction theorem with the concrete tight budget (brick L10)
 
-The Claim-A.2 bound with the **concrete** tight budget `wβ_tight`, proved by strong induction on `t`,
-routed through the L9 *skeleton* `betaRec_weightBound_of_term_bounds` with the forbidden split handled
+The Claim-A.2 bound with the **concrete** tight budget `wβ_tight`, proved by strong induction on
+`t`,
+routed through the L9 *skeleton* `betaRec_weightBound_of_term_bounds` with the forbidden split
+handled
 correctly (avoiding the over-strong `htele` of `betaRec_weight_le`).  Per term:
 
 * forbidden `(0, {t+1})` ⟹ `betaTerm = 0` (weight `⊥`);
@@ -506,8 +514,10 @@ Composing the tight strong-induction theorem with the L10 collapse `wβ_tight �
 /-- **Brick L10 — the concrete Claim-A.2 weight collapse.**
 
 `weight_Λ_over_𝒪 hH (betaRec … t) D ≤ (2t+1)·d·D`, with `d = d_R = R.natDegree` plugged in via the
-`weight_ξ_bound` hypotheses, under the standing App.-A degree facts.  The genuine isolated inputs are
-the `B`-numerator weight budget `hbB` (App.-A line 131; brick L2b/L4) and its Hasse-support vanishing
+`weight_ξ_bound` hypotheses, under the standing App.-A degree facts.  The genuine isolated inputs
+are
+the `B`-numerator weight budget `hbB` (App.-A line 131; brick L2b/L4) and its Hasse-support
+vanishing
 `hBzero`; the prefactor budgets `Λ(W) ≤ D − d_H`, `Λ(ξ) ≤ (d−1)(D − d_H + 1)` are realised in-tree
 (L3, `weight_ξ_bound`). -/
 theorem betaRec_weight_le_concrete (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])

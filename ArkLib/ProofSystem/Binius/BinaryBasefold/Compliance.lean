@@ -174,7 +174,8 @@ open Classical in
 random folding challenges undermine the protocol's soundness checks.
 For `i ∈ {0, ..., ℓ - steps}`,
 - In case `d⁽ⁱ⁾(f⁽ⁱ⁾, C⁽ⁱ⁾) < dᵢ₊steps / 2` (fiberwise close):
-  `Δ⁽ⁱ⁾(f⁽ⁱ⁾, f̄⁽ⁱ⁾) ⊄ Δ(fold(f⁽ⁱ⁾, rᵢ', ..., r_{i+steps-1}'), fold(f̄⁽ⁱ⁾, rᵢ', ..., r_{i+steps-1}'))`,
+  `Δ⁽ⁱ⁾(f⁽ⁱ⁾, f̄⁽ⁱ⁾) ⊄ Δ(fold(f⁽ⁱ⁾, rᵢ', ..., r_{i+steps-1}'),`
+  `fold(f̄⁽ⁱ⁾, rᵢ', ..., r_{i+steps-1}'))`,
   i.e. fiberwiseDisagreementSet ⊄ foldedDisagreementSet
 - In case `d⁽ⁱ⁾(f⁽ⁱ⁾, C⁽ⁱ⁾) ≥ dᵢ₊steps / 2`  (fiberwise far):
   `d(fold(f⁽ⁱ⁾, rᵢ', ..., rᵢ₊steps₋₁'), C⁽ⁱ⁺steps⁾) < dᵢ₊steps / 2`, i.e. foldedUDRClose
@@ -204,7 +205,8 @@ def foldingBadEvent (i : Fin r) {destIdx : Fin r} (steps : ℕ)
 open Classical in
 /-- **Definition 4.20.2** (Incremental Bad Events extending Definition 4.20).
 For block start index `block_start_idx`, block size `ϑ`, and **partial step count**
-`k ≤ ϑ`, with `destIdx = block_start_idx + ϑ` (the block destination), `E(block_start_idx, k)` is defined as follows:
+`k ≤ ϑ`, with `destIdx = block_start_idx + ϑ` (the block destination),
+`E(block_start_idx, k)` is defined as follows:
 
 - If `k = 0`: Returns `False` (no challenges consumed yet).
 - Case 1 (fiberwise close at block level):

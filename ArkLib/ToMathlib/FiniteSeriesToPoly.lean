@@ -17,11 +17,13 @@ equations over power series correspond to honest bivariate polynomials with boun
 ## Mathematical Formulation
 
 Let $k$ be a commutative ring. A power series $\varphi \in k[[X]]$ is finitely supported if
-there exists $N \in \mathbb{N}$ such that for all $n \ge N$, the coefficient $\text{coeff}_n(\varphi) = 0$.
+there exists $N \in \mathbb{N}$ such that for all $n \ge N$, the coefficient
+$\text{coeff}_n(\varphi) = 0$.
 Under this condition, $\varphi$ coincides with its truncation polynomial:
 $$P(X) = \sum_{i=0}^{N-1} \text{coeff}_i(\varphi) X^i \in k[X]$$
 
-In the bivariate setting, let $F$ be a field and $P \in F[X][Y]$ be a bivariate polynomial. We relate the
+In the bivariate setting, let $F$ be a field and $P \in F[X][Y]$ be a bivariate polynomial. We
+relate the
 degree bounds of the coefficients $P_n(X) \in F[X]$ to the total degree properties. Specifically,
 we formalize that the bivariate degree satisfies $\text{degree}_X(P) \le 1$ if and only if
 every coefficient polynomial has degree at most 1, which allows us to decompose $P$ as:
@@ -30,8 +32,10 @@ for some polynomials $v_0, v_1$.
 
 ## Key Formalizations
 * `truncPoly`: The canonical polynomial truncation of a power series.
-* `exists_polynomial_coe_of_coeff_eq_zero_ge`: Realizes the equivalence between finitely supported power series and polynomials.
-* `exists_linear_decomposition_of_degreeX_le_one`: Proves that a bivariate polynomial of degree at most 1 in $X$ decomposes linearly.
+* `exists_polynomial_coe_of_coeff_eq_zero_ge`: Realizes the equivalence between finitely supported
+power series and polynomials.
+* `exists_linear_decomposition_of_degreeX_le_one`: Proves that a bivariate polynomial of degree at
+most 1 in $X$ decomposes linearly.
 -/
 
 open Polynomial
@@ -92,7 +96,8 @@ theorem natDegree_truncPoly_le (φ : PowerSeries k) (N : ℕ) :
   rw [coeff_truncPoly]
   rw [if_neg (by omega)]
 
-/-- A finitely supported power series is equal to the canonical coercion of its truncation polynomial. -/
+/-- A finitely supported power series is equal to the canonical coercion of its truncation
+polynomial. -/
 theorem coe_truncPoly_eq_of_coeff_eq_zero_ge (φ : PowerSeries k) {N : ℕ}
     (h : ∀ n, N ≤ n → PowerSeries.coeff n φ = 0) :
     ((truncPoly φ N : k[X]) : PowerSeries k) = φ := by
@@ -102,7 +107,8 @@ theorem coe_truncPoly_eq_of_coeff_eq_zero_ge (φ : PowerSeries k) {N : ℕ}
   · rw [if_pos hn]
   · rw [if_neg hn, (h n (by omega)).symm]
 
-/-- A finitely supported power series is the coercion of some polynomial of degree strictly less than $N$. -/
+/-- A finitely supported power series is the coercion of some polynomial of degree strictly less
+than $N$. -/
 theorem exists_polynomial_coe_of_coeff_eq_zero_ge (φ : PowerSeries k) {N : ℕ}
     (hN : 0 < N) (h : ∀ n, N ≤ n → PowerSeries.coeff n φ = 0) :
     ∃ p : k[X], p.natDegree < N ∧ ((p : k[X]) : PowerSeries k) = φ :=
@@ -148,7 +154,8 @@ theorem degreeX_le_one_iff_forall_coeff_natDegree_le_one (P : F[X][Y]) :
   ⟨fun h n => le_trans (coeff_natDegree_le_degreeX P n) h,
     fun h => degreeX_le_of_forall_coeff_natDegree_le h⟩
 
-/-- Decomposition of a bivariate polynomial into a linear combination when high-degree terms vanish. -/
+/-- Decomposition of a bivariate polynomial into a linear combination when high-degree terms vanish.
+-/
 theorem exists_linear_decomposition_of_coeff_high_X_eq_zero
     {P : F[X][Y]}
     (h : ∀ n, ∀ j, 2 ≤ j → (P.coeff n).coeff j = 0) :
@@ -183,7 +190,8 @@ theorem exists_linear_decomposition_of_coeff_high_X_eq_zero
   · have hp0 : P.coeff n = 0 := Polynomial.notMem_support_iff.mp hn
     simp [hn, hp0]
 
-/-- Linear decomposition of a bivariate polynomial when the degree with respect to $X$ is at most 1. -/
+/-- Linear decomposition of a bivariate polynomial when the degree with respect to $X$ is at most 1.
+-/
 theorem exists_linear_decomposition_of_degreeX_le_one
     {P : F[X][Y]} (hP : Polynomial.Bivariate.degreeX P ≤ 1) :
     ∃ v₀ v₁ : F[X],

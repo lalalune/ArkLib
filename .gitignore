@@ -72,3 +72,6 @@ references/
 # Generated documentation and temporary comparison
 /home_page/docs/
 /home_page/docs_original/
+
+# Generated codedb index snapshot (regenerate locally; not repo content)
+/codedb.snapshot

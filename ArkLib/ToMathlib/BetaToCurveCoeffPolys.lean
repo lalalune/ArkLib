@@ -12,7 +12,8 @@ import ArkLib.ToMathlib.Claim59Conditional
 # Curve Coefficient Polynomial Reconstruction from the Beta Recursion
 
 This module formalizes the end-to-end reconstruction of the curve coefficient polynomials
-$\text{CurveCoeffPolys}$ from the Hensel-lift numerator recurrence $\beta_t$, completing the list-decoding
+$\text{CurveCoeffPolys}$ from the Hensel-lift numerator recurrence $\beta_t$, completing the
+list-decoding
 agreement chain of [BCIKS20] §5.
 
 ### Reconstructive Chain
@@ -48,7 +49,8 @@ variable {F : Type} [Field F]
 
 /-! ## Step A — the in-tree $\alpha$-formula, threaded through `betaRec`
 
-The in-tree Hensel-lift coefficient is given by $\alpha_t = \text{embedding}(\beta_t) / (W^{t+1} \cdot \text{embedding}(\xi)^{2t-1})$.
+The in-tree Hensel-lift coefficient is given by $\alpha_t = \text{embedding}(\beta_t) / (W^{t+1}
+\cdot \text{embedding}(\xi)^{2t-1})$.
 We define the same quotient using the recursive numerator `betaRec`, denoted `αFromBeta`.
 If the embedding of the numerator vanishes, then $\alpha_t = 0$. -/
 
@@ -61,7 +63,8 @@ noncomputable def αFromBeta (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
     (W ^ (t + 1) *
       (embeddingOf𝒪Into𝕃 H (ξ x₀ R H hHyp)) ^ henselDenominatorExponent t)
 
-/-- If the embedding of `betaRec t` vanishes, then the Hensel-lift coefficient `αFromBeta t` vanishes. -/
+/-- If the embedding of `betaRec t` vanishes, then the Hensel-lift coefficient `αFromBeta t`
+vanishes. -/
 theorem alphaFromBeta_eq_zero_of_embedding_zero (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
     [Fact (Irreducible H)] [Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H)
     (Bcoeff : (i₁ : ℕ) → {m : ℕ} → Nat.Partition m → 𝒪 H) {t : ℕ}
@@ -91,7 +94,8 @@ theorem tail_zero_of_betaRec_embedding_zero (x₀ : F) (R : F[X][X][Y]) (H : F[X
 
 /-! ## The §5 list-decoding output, as the per-index curve-coefficient datum -/
 
-/-- Asserts that each coefficient of the decoded polynomial $P(z)$ at index $j < deg$ is interpolated
+/-- Asserts that each coefficient of the decoded polynomial $P(z)$ at index $j < deg$ is
+interpolated
 by a polynomial $B_j(z)$ of degree less than $k+1$ over the agreement set. -/
 def CurveCoeffPolys (k deg : ℕ) (good : Finset F) (P : F → Polynomial F) : Prop :=
   ∀ j < deg, ∃ Bj : Polynomial F, Bj.natDegree < k + 1 ∧
@@ -115,7 +119,8 @@ theorem eval_linear_representative (v₀ v₁ : F[X]) (z : F) :
   rw [smul_eq_C_mul]
   ring
 
-/-- The $j$-th coefficient of $C(a) + b \cdot X$ is $a$ for $j=0$, $b$ for $j=1$, and $0$ otherwise. -/
+/-- The $j$-th coefficient of $C(a) + b \cdot X$ is $a$ for $j=0$, $b$ for $j=1$, and $0$ otherwise.
+-/
 theorem coeff_C_add_smul_X (a b : F) :
     ∀ j, (Polynomial.C a + b • (Polynomial.X : F[X])).coeff j
       = if j = 0 then a else if j = 1 then b else 0 := by

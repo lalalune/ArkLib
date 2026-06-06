@@ -25,8 +25,10 @@ The chain feeds the real front door
 
 ```
 Section5StrictDatum u P        (the genuine §5 per-decoding extraction data: betaRec setup +
-                                ingredient-C matching + Prop-5.5 representative + specialisation bridge)
-  ──BetaToCurveCoeffPolys.curveCoeffPolys_of_betaRec──►          (betaRec ⟹ CurveCoeffPolys; uses βRec)
+                                ingredient-C matching + Prop-5.5 representative + specialisation
+                                bridge)
+  ──BetaToCurveCoeffPolys.curveCoeffPolys_of_betaRec──►          (betaRec ⟹ CurveCoeffPolys; uses
+  βRec)
 CurveCoeffPolys k deg (RS_goodCoeffsCurve …) P
   ──KeystoneCapstone.hcoeffPoly_witness_of_curveCoeffPolys──►    (bundle per-index ⟹ ∃ B : ℕ → …)
 ∃ B, (∀ j<deg, (B j).natDegree < k+1) ∧ ∀ z ∈ good, ∀ j<deg, (P z).coeff j = (B j).eval z
@@ -37,7 +39,8 @@ jointAgreement
 ```
 
 `betaRec` appears in the proof term via `curveCoeffPolys_of_betaRec` (which routes
-`tail_zero_of_betaRec_embedding_zero` ⟹ `αFromBeta` ⟹ `betaRec_embedding_eq_zero_of_matchingSet_large`).
+`tail_zero_of_betaRec_embedding_zero` ⟹ `αFromBeta` ⟹
+`betaRec_embedding_eq_zero_of_matchingSet_large`).
 
 ## The smallest honest residual hypotheses (NEVER a `sorry`/`axiom`)
 
@@ -49,12 +52,14 @@ jointAgreement
    `curveCoeffPolys_of_betaRec`; it is the genuine §5 list-decoding extraction, NOT the conclusion
    (the per-coefficient identity `(P z).coeff j = Bj.eval z` is *derived*, never assumed).
 
-2. `hBoundary` — the closed square-root boundary discharge (`¬δ < 1 - sqrtRate`).  In-tree this gives
+2. `hBoundary` — the closed square-root boundary discharge (`¬δ < 1 - sqrtRate`).  In-tree this
+gives
    only `0 < (RS_goodCoeffsCurve …).card`
    (`goodCoeffsCurve_card_pos_of_prob_gt_closed_sqrt_boundary`); reaching `jointAgreement` there
    needs the same §5 input, so it stays an explicit residual.
 
-Neither residual is `≡` the front-door `hcoeffPoly`/the goal: `hStrictData` is a per-`P` *function-field
+Neither residual is `≡` the front-door `hcoeffPoly`/the goal: `hStrictData` is a per-`P`
+*function-field
 extraction* (about `γ`, `betaRec`, the representative), from which the per-coefficient conclusion is
 *proven* here.
 
@@ -208,7 +213,8 @@ theorem curveCoeffPolys_of_section5Data {k deg : ℕ} {domain : ι ↪ F} {δ : 
 /-! ## Step 2 — bundle into the front-door `hcoeffPoly` shape
 
 `BetaToCurveCoeffPolys.CurveCoeffPolys k deg good P` is *defeq* to
-`KeystoneCapstone.CurveCoeffPolys u P` once `good := RS_goodCoeffsCurve … u δ`, so the bundling lemma
+`KeystoneCapstone.CurveCoeffPolys u P` once `good := RS_goodCoeffsCurve … u δ`, so the bundling
+lemma
 `KeystoneCapstone.hcoeffPoly_witness_of_curveCoeffPolys` applies directly to produce the single
 `B : ℕ → Polynomial F` the front door consumes. -/
 
@@ -230,7 +236,8 @@ theorem hcoeffPoly_witness_of_section5Data {k deg : ℕ} {domain : ι ↪ F} {δ
 
 The front door's `hcoeffPoly` is `∀ P, (P good) → ∃ B, …`.  The genuine residual is therefore a
 *per-`P`* §5 extraction: for every good `P`, the §5 datum exists.  This is the honest minimal
-hypothesis (it is `∀ P, (P good) → Section5StrictData u P`, never the per-coefficient conclusion). -/
+hypothesis (it is `∀ P, (P good) → Section5StrictData u P`, never the per-coefficient conclusion).
+-/
 
 omit [Nonempty ι] [DecidableEq ι] in
 /-- If every good decoding `P` carries the §5 extraction datum, then the front-door `hcoeffPoly`
@@ -255,7 +262,8 @@ theorem hcoeffPoly_of_section5Extraction {k deg : ℕ} {domain : ι ↪ F} {δ :
 
 /-! ## The closed keystone
 
-We feed the assembled `hcoeffPoly` to the real strict-Johnson front door and the boundary residual to
+We feed the assembled `hcoeffPoly` to the real strict-Johnson front door and the boundary residual
+to
 `ProximityGap.correlatedAgreement_affine_curves_of_strict_coeff_polys_and_boundary`, obtaining the
 keystone goal `δ_ε_correlatedAgreementCurves`.  No `sorry`. -/
 

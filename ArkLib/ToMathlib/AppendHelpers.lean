@@ -11,7 +11,8 @@ import ArkLib.OracleReduction.Execution
 
 This module establishes the core algebraic and support-level transport lemmas required for
 the sequential composition and context lifting of oracle reductions, specifically supporting
-`OracleReduction/Composition/Sequential/Append.lean` and `OracleReduction/LiftContext/Reduction.lean`.
+`OracleReduction/Composition/Sequential/Append.lean` and
+`OracleReduction/LiftContext/Reduction.lean`.
 
 By isolating the support-transport reasoning from the larger security reductions, we maintain
 modularity and avoid re-deriving the invariance of monadic supports under spec extensions.
@@ -56,7 +57,8 @@ reachable outcome of the verifier's execution when run on the statement and the 
 
 This provides the transcript witness for `Verifier.compatStatement`: the witness transcript is
 the `proverResult.1` component of the run result. The verifier sub-computation is lifted as
-`liftM (verifier.run stmt td).run`; because `OracleComp.liftComp` preserves supports, the reachability
+`liftM (verifier.run stmt td).run`; because `OracleComp.liftComp` preserves supports, the
+reachability
 relation transports back to the un-lifted execution. -/
 theorem verifier_output_mem_run_support
     {reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec}
@@ -87,9 +89,12 @@ theorem verifier_output_mem_run_support
               have hx2 : x.2 = vOut := congrArg Prod.snd hx
               have hx11 : x.1.1 = proverResult.1 := congrArg (Prod.fst ∘ Prod.fst) hx
               rw [hx2, hx11]
-              -- Transport the reachability of `some vOut` from the lifted verifier run to the original.
-              -- `hstmtOut` asserts `some (some vOut) ∈ support (liftM (V.run …).run).run`. Since the lift
-              -- is `OptionT.lift ∘ liftComp`, we decompose the lift as `some <$> liftComp (V.run).run`.
+              -- Transport the reachability of `some vOut` from the lifted verifier run to the
+              -- original.
+              -- `hstmtOut` asserts `some (some vOut) ∈ support (liftM (V.run …).run).run`. Since
+              -- the lift
+              -- is `OptionT.lift ∘ liftComp`, we decompose the lift as `some <$> liftComp
+              -- (V.run).run`.
               rw [OptionT.mem_support_iff]
               have hLift := hstmtOut
               have hrun : (liftM (reduction.verifier.run stmt proverResult.1).run :

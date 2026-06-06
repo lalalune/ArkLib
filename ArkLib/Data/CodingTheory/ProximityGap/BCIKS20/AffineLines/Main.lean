@@ -182,7 +182,8 @@ omit [DecidableEq ι] in
 Compared with `RS_correlatedAgreement_affineLines_johnson_of_betaRec`, this consumes the smaller
 boundary surface:
 * a strict-subradius positive-good-set producer for the non-lattice boundary levels;
-* the isolated lattice residual `BoundaryCardLatticeResidual` for the exact `1/n` boundary points. -/
+* the isolated lattice residual `BoundaryCardLatticeResidual` for the exact `1/n` boundary points.
+-/
 theorem RS_correlatedAgreement_affineLines_johnson_of_betaRec_lattice_residual
     {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
     (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)

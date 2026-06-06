@@ -348,8 +348,8 @@ def GK16Claim16Witness {ι : Type} [Fintype ι] [DecidableEq ι]
 /-- **GK16 Claim 16 witness, Lemma-12-discharged form (residual ② only).** Identical to
 `GK16Claim16Witness` except that the *nonvanishing* clause `foldedWronskian P ω ≠ 0` is
 **replaced** by its now-proven cause: the underlying family `P` is `F`-linearly
-independent, together with the order/degree-separation admissibility of `ω`
-(`hω_sep`, exactly the hypothesis of `ArkLib.FRS.GK16.foldedWronskian_ne_zero_of_linearIndependent`).
+independent, together with the order/degree-separation admissibility of `ω` (`hω_sep`, exactly
+the hypothesis of `ArkLib.FRS.GK16.foldedWronskian_ne_zero_of_linearIndependent`).
 
 Since GK16 Lemma 12 (hard direction) is now an unconditional theorem in ArkLib
 (`ArkLib.FRS.GK16.foldedWronskian_ne_zero_of_linearIndependent`,

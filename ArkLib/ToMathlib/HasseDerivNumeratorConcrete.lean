@@ -25,15 +25,17 @@ In App.-A.4 the Hasse-derivative coefficient the β-recursion multiplies/sums is
 ```
 
 with `α₀ = T/W ∈ 𝕃` the canonical root, `W = liftToFunctionField H.leadingCoeff`, `d = R.natDegree`,
-`δ_{0,0} = 1` (else `0`), `Σλ` the size of the `Y`-Hasse-derivative, and the numerator `B_{i₁,λ} ∈ 𝒪`
-(the *integral* subring).  The `W`-divisibility that lands `B` back in `𝒪` comes from the
-`W^{i₁+δ}·ξ^{2i₁+Σλ−2}` prefactor of (A.1) — concretely (BCIKS20 App-A line ~2931) from the fact that
+`δ_{0,0} = 1` (else `0`), `Σλ` the size of the `Y`-Hasse-derivative, and the numerator
+`B_{i₁,λ} ∈ 𝒪` (the *integral* subring).  The `W`-divisibility that lands `B` back in `𝒪`
+comes from the `W^{i₁+δ}·ξ^{2i₁+Σλ−2}` prefactor of (A.1) — concretely (BCIKS20 App-A line
+~2931) from the fact that
 `W = H.leadingCoeff` divides the top `Y`-coefficient of `R(x₀,·,Z)` (`Hypotheses.dvd_evalX`).
 
 We formalize the **`i₁ = 0` line case** in full, kernel-clean:
 
-* `hasseDerivYNumerPoly x₀ R σ := Polynomial.hasseDeriv σ (Bivariate.evalX (C x₀) R)` — the order-`σ`
-  (outer-`Y`) Hasse derivative of the `X`-specialization `R(x₀,·,Z)`, a `F[X][Y]` whose evaluation at
+* `hasseDerivYNumerPoly x₀ R σ := Polynomial.hasseDeriv σ (Bivariate.evalX (C x₀) R)` —
+  the order-`σ` (outer-`Y`) Hasse derivative of the `X`-specialization `R(x₀,·,Z)`, a
+  `F[X][Y]` whose evaluation at
   `α₀ = T/W` is `∆^{0}_X ∆^{σ}_Y R(x₀, α₀, Z)`.
 * `lineHasseCoeff x₀ R H σ := eval₂ liftToFunctionField (T/W) (hasseDerivYNumerPoly x₀ R σ) ∈ 𝕃` —
   the concrete `A_{0,σ}` (with the multinomial scalar `= 1` since `λ = (σ)` is a single block).
@@ -41,7 +43,8 @@ We formalize the **`i₁ = 0` line case** in full, kernel-clean:
   `HasWPowerNumerator (lineHasseCoeff x₀ R H σ) (R.natDegree − σ − 1)`, i.e. the App-A exponent
   `d − δ − Σλ` with `δ = 1`, `Σλ = σ` for the `i₁ = 0` line.  Proven via the in-tree denominator-
   clearing machine `regularElms_set_mul_pow_eval₂_div_of_natDegree_le_succ_of_coeff_succ_dvd`, whose
-  `W ∣ top-coeff` hypothesis is discharged from `Hypotheses` (the `leadingCoeff_dvd_evalX_*` "save").
+  `W ∣ top-coeff` hypothesis is discharged from `Hypotheses` (the `leadingCoeff_dvd_evalX_*`
+  "save").
 * **Composition with L7** `lineHasseCoeff_mem_regularElms_set_of_dvd`: given the `𝒪`-side
   divisibility witness `W_𝒪^{d−σ−1} ∣ B` that L7's recursion supplies, L2's
   `hasWPowerNumerator.mem_regularElms_set_of_dvd` fires and `A_{0,σ} ∈ 𝒪`.  This is exactly the

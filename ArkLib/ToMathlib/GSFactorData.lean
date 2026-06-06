@@ -49,13 +49,15 @@ Extraction.lean ~325/709).
 
 The GS-factor fields are *independent* of the per-decoding witness `(u, P)`.  The remaining
 `Section5StrictData` fields — `Bcoeff`, `matchingSet`, `root`, `mp`, `hcard`, `hsubst`, `hγ`,
-`Ppoly`, `hrep`, `hdegX`, `hPz` — are the ingredient-C matching data, the Prop-5.5 representative and
-the specialisation bridge; they are *per-`(u, P)`* and are NOT addressed here.  The
+`Ppoly`, `hrep`, `hdegX`, `hPz` — are the ingredient-C matching data, the Prop-5.5
+representative and the specialisation bridge; they are *per-`(u, P)`* and are NOT addressed
+here.  The
 `section5StrictData_of_gsFactorData_and_residuals` assembler below takes them as explicit residual
 hypotheses (each `≠` the goal) and shows the GS-factor bundle slots into the full structure.
 
 The graph side-conditions `hx0 / hsep / hS_nonempty / A / hA / hcount / hlarge` are the documented
-§5 standing inputs of the graph-condition extraction (`exists_pg_factors_with_large_common_root_set_of_graph_conditions`);
+§5 standing inputs of the graph-condition extraction
+(`exists_pg_factors_with_large_common_root_set_of_graph_conditions`);
 they are taken as inputs, not assumed away.
 
 ## References
@@ -135,8 +137,9 @@ noncomputable def of_section5Inputs
 
 /-! ## Slotting the bundle into the full `Section5StrictData`
 
-The GS-factor bundle is the `(u, P)`-independent head of `Section5StrictData`.  Given the per-`(u, P)`
-residual fields (ingredient-C matching, Prop-5.5 representative, specialisation bridge), the full
+The GS-factor bundle is the `(u, P)`-independent head of `Section5StrictData`.  Given the
+per-`(u, P)` residual fields (ingredient-C matching, Prop-5.5 representative, specialisation
+bridge), the full
 structure is assembled with the bundle's GS-factor fields supplied verbatim.  This is the explicit
 record that the bundle discharges *exactly* the GS-factor fields and nothing else. -/
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι] [Fintype F]

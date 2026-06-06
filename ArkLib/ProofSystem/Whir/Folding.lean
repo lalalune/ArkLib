@@ -539,7 +539,8 @@ lemma fold_f_g_core
     exact f.2
   | succ k ih =>
     intro αs hk
-    -- Peel the outermost fold: `fold_k_core … (k+1) αs = foldf … (fold_k_core … k (αs∘succ)) (αs 0)`.
+    -- Peel the outermost fold: `fold_k_core … (k+1) αs = foldf … (fold_k_core … k (αs∘succ)) (αs
+    -- 0)`.
     have hk' : k ≤ m := Nat.le_of_succ_le hk
     -- Inner fold is a smooth codeword over level `k` of degree bound `m - k`.
     have hinner : fold_k_core (f : indexPowT S φ 0 → F) k (fun i => αs (Fin.succ i))
@@ -626,7 +627,8 @@ omit [Pow ι ℕ] in
   (`decodeLT g = powAlgHom (partialEval (mVdecode f) αs hk)`) — the polynomial-level shadow of the
   function-level identity `g = fold_k(f, αs)` established by `fold_f_g`. The proof then re-extends
   this univariate identity: `mVdecode g = linearMvExtension (decodeLT g)
-  = linearMvExtension (powAlgHom (partialEval (mVdecode f) αs hk)) = partialEval (mVdecode f) αs hk`,
+  = linearMvExtension (powAlgHom (partialEval (mVdecode f) αs hk)) = partialEval (mVdecode f) αs
+  hk`,
   the last step by the left inverse `linearMvExtension_powAlgHom` (valid since `partialEval` of a
   degreewise-linear polynomial is degreewise-linear, `partialEval_mem_restrictDegree`). -/
 lemma fold_f_g_poly
@@ -949,10 +951,12 @@ function that could be set to zero independently of the protocol. Instead it is 
 level-1 proximity generator `Gen'` and a hypothesis
 `hmca : hasMutualCorrAgreement Gen' BStarV errStarV`.
 
-The proof keeps the same two honest obligations as the repaired `folding_preserves_listdecoding_base`:
+The proof keeps the same two honest obligations as the repaired
+`folding_preserves_listdecoding_base`:
 the deterministic forward inclusion `hsub`, and the real ABF26 §4 bridge `hbridge` from
 reverse-inclusion failure to WHIR's `proximityCondition`. Once those are supplied, the probability
-bound is a direct event-domination chain ending in `hmca`. The conclusion is `≤ errStarV δ`, matching
+bound is a direct event-domination chain ending in `hmca`. The conclusion is `≤ errStarV δ`,
+matching
 the MCA API exactly; no artificial strict inequality is introduced. -/
 lemma folding_preserves_listdecoding_base_of_mca_bridge
     [Fintype F] {S : Finset ι} {k m : ℕ} (hm : 1 ≤ m) {φ : ι ↪ F}
@@ -1099,7 +1103,8 @@ lemma fold_disagreementSet_subset
     simp only [foldf, ← hxPow, h1', h2']
   -- The square-root relation: `w.val.val = xPow.val ^ 2`.
   have hsq : w.val.val = (xPow.val) ^ 2 := extract_x_val_sq 0 w.val
-  -- `w` lives in `block 1`, so `(φ_1 w.val) ^ (2^(k-1)) = z.val`, i.e. `w.val.val^(2^(k-1)) = z.val`.
+  -- `w` lives in `block 1`, so `(φ_1 w.val) ^ (2^(k-1)) = z.val`, i.e. `w.val.val^(2^(k-1)) =
+  -- z.val`.
   have hwblock : (w.val.val) ^ (2 ^ (k - 1)) = z.val := by
     have := w.property.2
     rwa [hφ1] at this
@@ -1149,7 +1154,8 @@ lemma fold_disagreementSet_subset
 
   (Supersedes the earlier wave3 "open" disposition: the two pieces it cited as missing — fold
   code-membership via the repaired single-step `foldf_step_mem_smoothCode`, and the block-distance
-  contraction `fold_disagreementSet_subset` — are now both proven below, so this lemma is closed.) -/
+  contraction `fold_disagreementSet_subset` — are now both proven below, so this lemma is closed.)
+  -/
 lemma folding_preserves_listdecoding_bound
     {S : Finset ι} {k m : ℕ} (hm : 1 ≤ m) {φ : ι ↪ F} [Fintype ι] [DecidableEq ι] [Smooth φ]
   {δ : ℝ≥0} {f : (indexPowT S φ 0) → F}

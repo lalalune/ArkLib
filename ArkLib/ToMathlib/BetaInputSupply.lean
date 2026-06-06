@@ -16,7 +16,8 @@ import ArkLib.ToMathlib.SubstFieldCaveat
 /-!
 # Instantiation lemmas for the §5 input bundle `BetaCurveInput`
 
-The keystone front door `KeystoneStrictResidual.correlatedAgreement_affine_curves_johnson_of_betaRec`
+The keystone front door
+`KeystoneStrictResidual.correlatedAgreement_affine_curves_johnson_of_betaRec`
 consumes, per received curve `u`, the genuine BCIKS20 §5 / App-A.4 *input* bundle
 `KeystoneStrictResidual.BetaCurveInput u` (`KeystoneStrictResidual.lean`).  That bundle has many
 fields; this file builds it **field by field from more primitive §5 data**, discharging or reducing
@@ -84,7 +85,8 @@ variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
 Over the field `𝕃 H` the BCIKS shift series `X ↦ X − x₀` has constant coefficient `fieldTo𝕃 (-x₀)`,
 which is nilpotent (= zero, the ring being reduced) iff `x₀ = 0`.  Centring the GS lift therefore
-makes the `hsubst` field automatic — `SubstFieldCaveat.shiftSeries` and `Claim59Conditional.shiftSeries`
+makes the `hsubst` field automatic — `SubstFieldCaveat.shiftSeries` and
+`Claim59Conditional.shiftSeries`
 are the same definition, so the proof transfers definitionally. -/
 
 omit [Fintype F] [DecidableEq F] in
@@ -270,7 +272,8 @@ Discharged / reduced fields:
 * **`x₀ = 0`** — the F1 centring; makes `hsubst` automatic via `hsubst_field_of_centre`;
 * `hβ` (the numerator identification) replaces the `hγ` field, discharged by
   `GammaFromBeta.hγ_field_of_betaEq`;
-* `mp` is supplied directly (already in `MatchingPoint` shape — callers use `MpProducer.mkMatchingPoint`
+* `mp` is supplied directly (already in `MatchingPoint` shape — callers use
+`MpProducer.mkMatchingPoint`
   to build each point from the smallest Hensel inputs);
 * `hcardConcrete` (a *concrete arithmetic* per-`t` cardinality bound) plus the App-A weight budgets
   `hbB`/`hBzero`/`hbξ` produce the genuine `hcard` field via `hcard_of_concrete`;
@@ -358,10 +361,12 @@ remaining `∀-t` blowup — see `KeystoneStrictResidual.betaCurveInputFin_hcard
 
 /-- **The F5-corrected §5 input-bundle instantiation lemma (satisfiable).**
 
-Builds `KeystoneStrictResidual.BetaCurveInputFin (k := k) (deg := deg) (domain := domain) (δ := δ) u`
+Builds `KeystoneStrictResidual.BetaCurveInputFin (k := k) (deg := deg) (domain := domain) (δ := δ)
+u`
 from the reduced, per-field primitive data, with the finite-range counting interface that makes the
 weight budget satisfiable.  Differs from `betaCurveInput_of_section5` only in:
-* a truncation index `T` with finite-range `mpFin`/`hcardConcreteFin` (vs. infinite-range `mp`/`hcardConcrete`);
+* a truncation index `T` with finite-range `mpFin`/`hcardConcreteFin` (vs. infinite-range
+`mp`/`hcardConcrete`);
 * the explicit algebraic-degree datum `htailDeg` covering `t > T`. -/
 noncomputable def betaCurveInputFin_of_section5 {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     {u : WordStack F (Fin (k + 1)) ι}
@@ -392,7 +397,8 @@ noncomputable def betaCurveInputFin_of_section5 {k deg : ℕ} {domain : ι ↪ F
         R.natDegree - betaδ i₁ < Multiset.card p.parts → Bcoeff i₁ p = 0)
     (hbξ : weight_Λ_over_𝒪 hH (ξ (0 : F) R H hHyp) D
         ≤ (WithBot.some ((R.natDegree - 1) * (D - H.natDegree + 1)) : WithBot ℕ))
-    -- the **finite-range** concrete cardinality bound (satisfiable for a fixed large `matchingSet`):
+    -- the **finite-range** concrete cardinality bound (satisfiable for a fixed large
+    -- `matchingSet`):
     (hcardConcreteFin : ∀ t, k ≤ t → t ≤ T → (↑matchingSet.card : WithBot ℕ)
         > (((2 * t + 1) * R.natDegree * D * H.natDegree : ℕ) : WithBot ℕ))
     -- the algebraic-degree datum: beyond `T` the Hensel coefficients vanish (bounded `Z`-degree):

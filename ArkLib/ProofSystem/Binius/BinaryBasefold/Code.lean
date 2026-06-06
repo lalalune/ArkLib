@@ -847,7 +847,8 @@ lemma exists_unique_fiberwiseClosestCodeword_within_UDR (i : Fin r) {destIdx : F
     unfold d_fw at h_g_min_card
     rw [h_g_min_card] at h_fw_close
     rw [Code.uniqueDecodingRadius, ←Nat.two_mul_lt_iff_le_half_of_sub_one (a := #(fiberwiseDisagreementSet 𝔽q β i steps h_destIdx h_destIdx_le f g)) (h_b_pos := by exact Nat.pos_of_neZero (n := ‖(C_i_next : Set (S_i_next → L))‖₀))] at h_fw_close
-    -- h_fw_close : 2 * #(fiberwiseDisagreementSet 𝔽q β i steps h_destIdx h_destIdx_le f g) < ‖↑(BBF_Code 𝔽q β ⟨↑i + steps, ⋯⟩)‖₀
+    -- h_fw_close : 2 * #(fiberwiseDisagreementSet 𝔽q β i steps h_destIdx h_destIdx_le f g)
+    --   < ‖↑(BBF_Code 𝔽q β ⟨↑i + steps, ⋯⟩)‖₀
     rw [Code.uniqueDecodingRadius, ←Nat.two_mul_lt_iff_le_half_of_sub_one (a := Δ₀(f,g)) (h_b_pos := by exact Nat.pos_of_neZero (n := ‖(C_i : Set (S_i → L))‖₀))]
     -- 2 * Δ₀(f, g) < ‖↑(C_i)‖₀
     let res := pairUDRClose_of_pairFiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) steps h_destIdx h_destIdx_le (f := f) (g := g) (h_fw_dist_lt := by

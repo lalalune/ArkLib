@@ -1299,15 +1299,18 @@ def sumPoint (i : Fin n) (pt : R) (stmtIn : StatementRound R n i.castSucc)
     (fun k => if hk : (k : ℕ) < (i : ℕ) then stmtIn.challenges ⟨k, by simpa using hk⟩ else y k))
     ∘ Fin.cast h
 
-/-- The concrete sum-check **oracle-routing lens** instantiating the new `OracleStatement.OracleLens`
+/-- The concrete sum-check **oracle-routing lens** instantiating the new
+`OracleStatement.OracleLens`
 API (#433). The value layer reuses the existing value-level lens `oStmtLens` verbatim (so all the
 soundness / completeness machinery still applies via `toLens`). The routing data is:
 
-- `projStmt`/`liftStmt`: the non-oracle projection (drop to the round `target`) and lift (snoc the new
+- `projStmt`/`liftStmt`: the non-oracle projection (drop to the round `target`) and lift (snoc the
+new
   challenge onto the running challenge vector), matching `oStmtLens.toFunB`'s statement shape.
 - `simOStmt`: answers each inner univariate evaluation query `⟨(), pt⟩` against the *outer*
   multivariate oracle by `∑ y ∈ (univ.map D) ^ᶠ (n - 1), outerPoly.eval (sumPoint i pt stmtIn y)` —
-  the virtual `|D|^(n-1)`-fold summation, reading the prior `challenges` from the outer statement via
+  the virtual `|D|^(n-1)`-fold summation, reading the prior `challenges` from the outer statement
+  via
   `ReaderT`.
 - `embedOStmt`/`hEqOStmt`: the single output oracle is the (unchanged) input oracle, so we draw it
   from the input side (`.inl`) with definitional type coherence. -/
@@ -1620,7 +1623,8 @@ where
     simp only [Reduction.run, OptionT.run_bind, Option.elimM] at hout
     rw [mem_support_bind_iff] at hout
     obtain ⟨proverResOpt, hprover, _hout⟩ := hout
-    -- `out.1 = proverResOpt`, and `heq` pins `out.1.2`, so `proverResOpt.2.1 = ((newTarget, chal), oStmt')`
+    -- `out.1 = proverResOpt`, and `heq` pins `out.1.2`, so `proverResOpt.2.1 = ((newTarget, chal),
+    -- oStmt')`
     have hout1 : out.1 = proverResOpt := by
       simp only [support_bind, Set.mem_iUnion] at _hout
       obtain ⟨_, _, _hout⟩ := _hout
@@ -1685,7 +1689,8 @@ where
     simp only [Reduction.run, OptionT.run_bind, Option.elimM] at hout
     rw [mem_support_bind_iff] at hout
     obtain ⟨proverResOpt, hprover, _hout⟩ := hout
-    -- `out.1 = proverResOpt`, and `heq` pins `out.1.2`, so `proverResOpt.2.1 = ((newTarget, chal), oStmt')`
+    -- `out.1 = proverResOpt`, and `heq` pins `out.1.2`, so `proverResOpt.2.1 = ((newTarget, chal),
+    -- oStmt')`
     have hout1 : out.1 = proverResOpt := by
       simp only [support_bind, Set.mem_iUnion] at _hout
       obtain ⟨_, _, _hout⟩ := _hout
@@ -1893,13 +1898,15 @@ def verifier (i : Fin n) : Verifier oSpec
     pure ⟨⟨p_i.eval r_i, Fin.snoc challenges r_i⟩, oStmt⟩
 
 -- /-- The oracle verifier for the `i`-th round, where `i < n + 1` -/
--- def oracleVerifier --[Inhabited ((i : (pSpec R deg).MessageIdx) × OracleInterface.Query ((pSpec R deg).Message i))]
+-- def oracleVerifier --[Inhabited ((i : (pSpec R deg).MessageIdx) × OracleInterface.Query ((pSpec R
+-- deg).Message i))]
 --     (i : Fin n) : OracleVerifier oSpec
 --     (StatementRound R n i.castSucc) (OracleStatement R n deg)
 --     (StatementRound R n i.succ) (OracleStatement R n deg) (pSpec R deg) where
 --   -- Queries for the evaluations of the polynomial at all points in `D`,
 --   -- plus one query for the evaluation at the challenge `r_i`
---   -- Check that the sum of the evaluations equals the target, and updates the statement accordingly
+--   -- Check that the sum of the evaluations equals the target, and updates the statement
+-- accordingly
 --   -- (the new target is the evaluation of the polynomial at the challenge `r_i`)
 --   verify := fun ⟨target, challenges⟩ chal => do
 --     let evals : List R ← (List.finRange m).mapM

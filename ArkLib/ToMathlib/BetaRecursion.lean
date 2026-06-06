@@ -12,7 +12,8 @@ import Mathlib
 /-!
 # The BCIKS20 Appendix-A.4 Hensel-lift numerator recursion `β_t` (brick **L7**)
 
-This file defines the **genuine** Appendix-A.4 recursion (A.1) of [BCIKS20] (eprint 2020/654) for the
+This file defines the **genuine** Appendix-A.4 recursion (A.1) of [BCIKS20] (eprint 2020/654) for
+the
 Hensel-lift numerators `β_t : 𝒪 H`, replacing the trivial `β = 0` placeholder of
 `RationalFunctions.lean` with the real well-founded recursion, and proves its two structural
 invariants (termination and landing-in-`𝒪`).
@@ -33,12 +34,14 @@ trivial partition (a single part `t`), `Σλ = Multiset.card λ.parts` is the nu
 `δ = δ_{i₁,0}` is `1` if `i₁ = 0` else `0`, `W = liftToFunctionField H.leadingCoeff` (realised in
 `𝒪` by `W_𝒪`), `ξ` is the in-tree Claim-A.2 element, and `B_{i₁,λ} ∈ 𝒪` is the *regular numerator*
 of the Hasse-derivative coefficient
-`A_{i₁,λ} = B_{i₁,λ} / W^{d−δ−Σλ}` (App.-A.4; the concrete trivariate Hasse derivative is brick L2b).
+`A_{i₁,λ} = B_{i₁,λ} / W^{d−δ−Σλ}` (App.-A.4; the concrete trivariate Hasse derivative is brick
+L2b).
 
 ## What is delivered (all kernel-clean: no `sorry`/`admit`/`axiom`/`native_decide`)
 
 * `recursionStep_lt` — the self-contained strict-decrease lemma for every recursive call of the
-  `(t+1)`-step (`l < t+1`), built on `PartitionRecursion.parts_lt_of_ne_indiscrete`. No `i₁` bound is
+  `(t+1)`-step (`l < t+1`), built on `PartitionRecursion.parts_lt_of_ne_indiscrete`. No `i₁` bound
+  is
   needed (the `i₁ > t+1` branch has empty parts). This discharges the `decreasing_by` obligation.
 
 * `betaRec` — **the genuine well-founded recursion** `β_t : 𝒪 H`, parameterised on the App.-A.4
@@ -90,7 +93,8 @@ variable {F : Type} [Field F]
 
 Every recursive call `β_l` appearing in the `β_{t+1}` step of (A.1) is at index `l ∈ p.parts` for a
 partition `p : Partition (t+1−i₁)`, excluding the single trivial pair `(i₁=0, λ=λ^(t+1))`. We show
-`l < t+1` for every such `l`, with **no upper bound on `i₁`** (the `i₁ > t+1` branch has `t+1−i₁ = 0`
+`l < t+1` for every such `l`, with **no upper bound on `i₁`** (the `i₁ > t+1` branch has `t+1−i₁ =
+0`
 whose only partition is empty, so the claim is vacuous there). This is exactly the obligation
 `decreasing_by` discharges, and it is built on `PartitionRecursion.parts_lt_of_ne_indiscrete`. -/
 
@@ -111,9 +115,11 @@ theorem recursionStep_lt {t i₁ : ℕ} (p : Nat.Partition (t + 1 - i₁))
 
 /-! ### Exponent bookkeeping (App.-A.4)
 
-The `W`- and `ξ`-prefactor exponents of recursion (A.1). `δ = δ_{i₁,0}` is `1` at `i₁ = 0`, else `0`.
+The `W`- and `ξ`-prefactor exponents of recursion (A.1). `δ = δ_{i₁,0}` is `1` at `i₁ = 0`, else
+`0`.
 The `W`-exponent is `i₁ + δ − 1` and the `ξ`-exponent is `2i₁ + Σλ − 2`; both are non-negative (in
-the `ℕ`-truncated sense, which agrees with the genuine value) — see `betaTerm_W_exp_eq`/`…_xi_exp`. -/
+the `ℕ`-truncated sense, which agrees with the genuine value) — see `betaTerm_W_exp_eq`/`…_xi_exp`.
+-/
 
 /-- The Kronecker-`δ_{i₁,0}` prefactor of recursion (A.1): `1` at `i₁ = 0`, else `0`. -/
 def betaδ (i₁ : ℕ) : ℕ := if i₁ = 0 then 1 else 0
@@ -211,7 +217,8 @@ theorem betaRec_mem (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
 /-! ### Invariant 1, the substantive `𝕃`-side version (L2b numerator interface)
 
 The genuine App.-A.4 content is that, *even when the recursion is written on the `𝕃` side* with the
-Hasse-derivative coefficients `A_{i₁,λ} = B_{i₁,λ}/W^{d−δ−Σλ}` carrying `W`-power denominators, every
+Hasse-derivative coefficients `A_{i₁,λ} = B_{i₁,λ}/W^{d−δ−Σλ}` carrying `W`-power denominators,
+every
 term lands back in the integral part `regularElms_set H`. This holds precisely because each per-term
 numerator carries the `W`-divisibility witness (App.-A line 2931, the `W ∣ leadingCoeff Rx0` save) —
 the documented `W^{i₁+δ}·ξ^{…}` prefactor of (A.1). We isolate that per-term witness as the explicit
@@ -251,7 +258,8 @@ theorem term_mem_regularElms_set_of_numerator {H : F[X][Y]}
 
 The Claim-A.2 weight bound `weight_Λ_over_𝒪 (β_t) D ≤ (2t+1)·d_R·D` is proven in the paper by strong
 induction on `t` over recursion (A.1): each term's weight telescopes via L3's sub-multiplicativity.
-Here we deliver the **structural reduction** of the bound on `β_{t+1}` to per-term `WithBot ℕ`-budget
+Here we deliver the **structural reduction** of the bound on `β_{t+1}` to per-term `WithBot
+ℕ`-budget
 hypotheses, using L3's sum sub-additivity (`weight_Λ_over_𝒪_sum_le`). The per-term numerical budgets
 (the partition-indexed telescoping, App.-A line 2877–2881) are the genuine L9 content, isolated as
 the explicit hypothesis `hterm_bound`. -/
