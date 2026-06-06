@@ -27,6 +27,9 @@ import ArkLib.Data.Misc.Basic
   - V verifies : `s_ℓ = eqTilde(r, r') * c`
   => `c` should be equal to `t(r'_0, ..., r'_{ℓ-1})`
 -/
+
+set_option maxHeartbeats 400000
+namespace Binius.BinaryBasefold.CoreInteraction
 noncomputable section
 open OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Polynomial MvPolynomial
 open Binius.BinaryBasefold

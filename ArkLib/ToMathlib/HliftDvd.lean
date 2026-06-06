@@ -2,7 +2,11 @@
 Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
+-/
+import ArkLib.Data.Polynomial.RationalFunctions
+import ArkLib.ToMathlib.MultiplicityDatum
 
+/-!
 # Discharging the residual GS-factor divisibility `Hlift H ∣ R` (obligation 1, App-A)
 
 The brick `ArkLib.MultiplicityDatum.hdvd_C_of_Hlift_dvd`
@@ -68,9 +72,6 @@ All results rest only on `[propext, Classical.choice, Quot.sound]`; `#print axio
   §5 (`pg_Rset`, Eq. 5.12 factorization) and Appendix A.4 (Claim A.2, the `Hypotheses` structure
   and the `W`-power numerator recursion).
 -/
-
-import ArkLib.Data.Polynomial.RationalFunctions
-import ArkLib.ToMathlib.MultiplicityDatum
 
 open Polynomial Polynomial.Bivariate
 

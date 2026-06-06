@@ -16,6 +16,15 @@ import ArkLib.Data.Domain.CosetFftDomain.Mem
 import ArkLib.Data.Domain.FftDomain.Defs
 import ArkLib.ToMathlib.Finset.ToListWithProof
 
+/-!
+# Membership for FFT domains
+
+We specialize the coset membership theory to FFT domains: `one_mem`, the existence
+characterizations `mem_iff_exists` and `mem_iff_mem_toCosetFftDomain`, and their `toFinset`
+counterparts (`mem_toFinset_iff_exists`, `mem_toFinset_iff_mem`). A `Decidable (x ∈ ω)` instance
+is also provided.
+-/
+
 namespace Domain
 
 variable {ι : Type} [Fintype ι] [AddCommGroup ι] [DecidableEq ι]
