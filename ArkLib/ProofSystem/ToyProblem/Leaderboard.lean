@@ -352,8 +352,9 @@ is now the explicit residual proposition
 soundness is bounded by the first (`γ`-round) branch of `toySoundnessError`.
 This is an explicit paper-proof obligation, not a Lean proof hidden behind a
 hole. -/
-def winningSetSoundness_le_toySoundnessError_residual {k : ℕ}
+def winningSetSoundness_le_toySoundnessError_mcaSafe_residual {k : ℕ} [Nonempty ι]
     (C : Set (ι → F)) (δ : ℝ≥0) : Prop :=
+  δ < (minRelHammingDistCode C : ℝ≥0) →
   winningSetSoundness (k := k) C δ ≤
     (epsMCA (F := F) (A := F) C δ).toNNReal +
       ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
@@ -366,11 +367,12 @@ simplified IOR's worst-case winning fraction is at most the `γ`-round error
 first branch of the `max`. The X side routes through this to turn an
 `ε_mca`/`Λ` bound (and the `(1-δ)^t` spot-check cap) into a provable security
 lower bound. -/
-theorem winningSetSoundness_le_toySoundnessError {k : ℕ}
+theorem winningSetSoundness_le_toySoundnessError {k : ℕ} [Nonempty ι]
     (C : Set (ι → F)) (δ : ℝ≥0) (t : ℕ)
-    (hL610 : winningSetSoundness_le_toySoundnessError_residual (k := k) C δ) :
+    (hL610 : winningSetSoundness_le_toySoundnessError_mcaSafe_residual (k := k) C δ)
+    (hδ : δ < (minRelHammingDistCode C : ℝ≥0)) :
     winningSetSoundness (k := k) C δ ≤ toySoundnessError C δ t := by
-  exact le_trans hL610 (le_max_left _ _)
+  exact le_trans (hL610 hδ) (le_max_left _ _)
 
 /-! ## Bits of security -/
 
@@ -471,11 +473,12 @@ noncomputable def ToyParams.toySoundnessError (p : ToyParams) : ℝ≥0 :=
 
 /-- `soundnessError ≤ toySoundnessError` at a parameter point, conditional on
 the explicit Lemma 6.10 residual for that parameter point. -/
-theorem ToyParams.soundnessError_le_toySoundnessError (p : ToyParams)
-    (hL610 : _root_.ToyProblem.winningSetSoundness_le_toySoundnessError_residual
-      (k := p.k) p.C p.δ) :
+theorem ToyParams.soundnessError_le_toySoundnessError (p : ToyParams) [Nonempty p.ι]
+    (hL610 : _root_.ToyProblem.winningSetSoundness_le_toySoundnessError_mcaSafe_residual
+      (k := p.k) p.C p.δ)
+    (hδ : p.δ < (minRelHammingDistCode p.C : ℝ≥0)) :
     p.soundnessError ≤ p.toySoundnessError :=
-  _root_.ToyProblem.winningSetSoundness_le_toySoundnessError (k := p.k) p.C p.δ p.t hL610
+  _root_.ToyProblem.winningSetSoundness_le_toySoundnessError (k := p.k) p.C p.δ p.t hL610 hδ
 
 /-! ## The two leaderboard interfaces
 
@@ -625,9 +628,10 @@ research/formal/arklib-proof-research-2026-06.md.
 ABF26 Lemma 6.10 at `koalaIRS` plus the §6.3 numeric evaluation of the RBR
 bound. -/
 def arklib_lowerBound_irs_t128_residual : Prop :=
-  winningSetSoundness_le_toySoundnessError_residual
+  winningSetSoundness_le_toySoundnessError_mcaSafe_residual
       (k := koalaIRS.k) koalaIRS.C koalaIRS.δ ∧
-    koalaIRS.toySoundnessError ≤ (2 : ℝ≥0) ^ (-(64 : ℝ))
+  koalaIRS.δ < (minRelHammingDistCode koalaIRS.C : ℝ≥0) ∧
+  koalaIRS.toySoundnessError ≤ (2 : ℝ≥0) ^ (-(64 : ℝ))
 
 /-- **ArkLib provable lower bound (≈64 bits) at the IRS/KoalaBear/`t=128`
 point.** Cites **Lemmas 6.10 / 6.6 / 6.8 of [ABF26]**: the simplified-IOR
@@ -643,7 +647,8 @@ noncomputable def arklib_lowerBound_irs_t128
     (h : arklib_lowerBound_irs_t128_residual) : SecurityLowerBound koalaIRS where
   bits := 64
   proof := by
-    exact le_trans (koalaIRS.soundnessError_le_toySoundnessError h.1) h.2
+    haveI : Nonempty koalaIRS.ι := inferInstance
+    exact le_trans (koalaIRS.soundnessError_le_toySoundnessError h.1 h.2.1) h.2.2
 
 /-- **Winning-set attack upper bound (≈116 bits) at the IRS/KoalaBear/`t=128`
 point.** Cites **Lemma 6.12 of [ABF26]** (§6.4.1; a similar observation appears
