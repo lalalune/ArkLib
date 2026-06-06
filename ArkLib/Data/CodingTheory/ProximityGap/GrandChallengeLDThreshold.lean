@@ -126,6 +126,36 @@ theorem mem_listLatticeSet_of_johnson
         rfl
     _ ≤ (ε_star : ENNReal) * (Fintype.card F : ENNReal) := hpow
 
+/-- **Generic lower certificate for the list-decoding lattice set.**  Any base-code
+`Λ(C, j/n) ≤ ℓ` cap whose `m`-th power clears the prize budget puts the lattice index `j`
+in the faithful list-decoding lattice set.  This is the Johnson-side wrapper with the hard
+list-size theorem factored out as the hypothesis `hLambda`; capacity-style RS residuals can
+target exactly that hypothesis. -/
+theorem mem_listLatticeSet_of_Lambda_le
+    (C : Set (ι → F)) {m j ℓ : ℕ} (hjn : j ≤ Fintype.card ι)
+    (hLambda :
+      Lambda C (((j : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) ≤ (ℓ : ℕ∞))
+    {ε_star : ℝ≥0}
+    (hpow : ((ℓ : ENNReal)) ^ m ≤ (ε_star : ENNReal) * (Fintype.card F : ENNReal)) :
+    j ∈ GrandChallenges.listLatticeSet C m ε_star := by
+  classical
+  rw [GrandChallenges.listLatticeSet, Finset.mem_filter, Finset.mem_range]
+  refine ⟨Nat.lt_succ_of_le hjn, ?_⟩
+  have hint : Lambda (C^⋈ (Fin m)) (((j : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) ≤
+      (Lambda C (((j : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)) ^ m := by
+    show Lambda (Code.interleavedCodeSet (κ := Fin m) C)
+        (((j : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) ≤ _
+    exact InterleavedCode.ListSize.Lambda_interleaved_le_pow (m := m) C _
+  have hpowENat : Lambda (C^⋈ (Fin m)) (((j : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) ≤
+      ((ℓ : ℕ∞)) ^ m :=
+    le_trans hint (pow_le_pow_left' hLambda m)
+  calc (Lambda (C^⋈ (Fin m)) (((j : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) : ENNReal)
+      ≤ (((ℓ : ℕ∞) ^ m : ℕ∞) : ENNReal) := by exact_mod_cast hpowENat
+    _ = ((ℓ : ENNReal)) ^ m := by
+        push_cast
+        rfl
+    _ ≤ (ε_star : ENNReal) * (Fintype.card F : ENNReal) := hpow
+
 /-- **Johnson-side lower witness for the list-decoding challenge.**  A lattice
 radius `j/n` with a budget-clearing Johnson cap is immediately a
 `ListLowerWitness`, not only a member of the faithful lattice set. -/
@@ -185,6 +215,20 @@ theorem le_listLatticeThreshold_of_johnson
     (hne : (GrandChallenges.listLatticeSet C m ε_star).Nonempty) :
     j ≤ GrandChallenges.listLatticeThreshold C m ε_star hne :=
   Finset.le_max' _ _ (mem_listLatticeSet_of_johnson C hjn hq hβ hcond hpow)
+
+/-- **Generic lower bound on the genuine list threshold from a base `Λ` cap.**
+This is the conditional residual wrapper needed by capacity-style ordinary-RS routes: once
+one proves `Λ(C, j/n) ≤ ℓ`, the existing interleaving product bound and budget inequality
+give `j ≤ listLatticeThreshold C m ε*`. -/
+theorem le_listLatticeThreshold_of_Lambda_le
+    (C : Set (ι → F)) {m j ℓ : ℕ} (hjn : j ≤ Fintype.card ι)
+    (hLambda :
+      Lambda C (((j : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) ≤ (ℓ : ℕ∞))
+    {ε_star : ℝ≥0}
+    (hpow : ((ℓ : ENNReal)) ^ m ≤ (ε_star : ENNReal) * (Fintype.card F : ENNReal))
+    (hne : (GrandChallenges.listLatticeSet C m ε_star).Nonempty) :
+    j ≤ GrandChallenges.listLatticeThreshold C m ε_star hne :=
+  Finset.le_max' _ _ (mem_listLatticeSet_of_Lambda_le C hjn hLambda hpow)
 
 end JohnsonSide
 
