@@ -93,6 +93,12 @@ lemma getMidCodewords_succ (t : L⦃≤ 1⦄[X Fin ℓ]) (i : Fin ℓ)
 section FoldStepLogic
 variable {Context : Type} {mp : SumcheckMultiplierParam L ℓ Context}
 
+-- API MIGRATION (issue #32 handoff (b)): the stale CompBinius-blob round-message type
+-- `FoldMessage L` (with its `FoldMessage.eval`) is the degree-`≤ 2` sumcheck round univariate
+-- on this branch — exactly the first message type of `pSpecFold = ⟨…, ![L⦃≤ 2⦄[X], L]⟩`. So
+-- `FoldMessage L ↦ ↥L⦃≤ 2⦄[X]` and `FoldMessage.eval msg x ↦ msg.val.eval x`. The fold-step
+-- prover/verifier kernels below are stated against that branch surface so that their downstream
+-- consumers (`ReductionLogic.foldStepLogic`, `Steps/Fold.lean`) resolve.
 def foldPrvState (i : Fin ℓ) : Fin (2 + 1) → Type := fun
   | ⟨0, _⟩ => (Statement (L := L) Context i.castSucc ×
     (∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j) ×
@@ -100,22 +106,11 @@ def foldPrvState (i : Fin ℓ) : Fin (2 + 1) → Type := fun
   | ⟨1, _⟩ => Statement (L := L) Context i.castSucc ×
     (∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j) ×
     Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.castSucc ×
-      FoldMessage L
+      (↥L⦃≤ 2⦄[X])
   | _ => Statement (L := L) Context i.castSucc ×
     (∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j) ×
     Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.castSucc ×
-      FoldMessage L × L
-
-private def foldPointToGlobalIndex
-    (domainIdx : Fin r)
-    (x : AdditiveNTT.Comp.sDomain (𝔽q := 𝔽q) (β := β) (ℓ := ℓ) (R_rate := 𝓡)
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) domainIdx) :
-    Fin (2 ^ (ℓ + 𝓡)) :=
-  match (List.finRange (2 ^ (ℓ + 𝓡))).find? (fun vIdx =>
-      decide ((AdditiveNTT.Comp.indexToSDomain (𝔽q := 𝔽q) (β := β) (ℓ := ℓ) (R_rate := 𝓡)
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := domainIdx) vIdx).1 = x.1)) with
-  | some vIdx => vIdx
-  | none => 0
+      (↥L⦃≤ 2⦄[X]) × L
 
 @[reducible]
 def getFoldProverFinalOutput (i : Fin ℓ)
@@ -128,27 +123,18 @@ def getFoldProverFinalOutput (i : Fin ℓ)
   let (stmtIn, oStmtIn, witIn, h_i, r_i') := finalPrvState
   let stmtOut : Statement (L := L) Context i.succ := {
     ctx := stmtIn.ctx,
-    sumcheck_target := FoldMessage.eval h_i r_i',
+    sumcheck_target := h_i.val.eval r_i',
     challenges := Fin.snoc stmtIn.challenges r_i'
   }
-  let sourceIdx : Fin r := ⟨i.val, by omega⟩
-  let destIdx : Fin r := ⟨i.succ.val, by omega⟩
-  have h_source_plus_one_le : sourceIdx.val + 1 ≤ ℓ + 𝓡 := by
-    dsimp [sourceIdx]
-    omega
+  -- The folded witness oracle: one extra `iterated_fold` step over `witIn.f`. Stated in the exact
+  -- `(i := ⟨i, _⟩) (steps := 1) (destIdx := ⟨i.val + 1, _⟩)` shape of `getMidCodewords_succ`, so
+  -- that `ReductionLogic`'s witness-structural-invariant proof closes via `←getMidCodewords_succ`.
   let fᵢ_succ : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (domainIdx := destIdx) :=
-    fun y =>
-      let yIdx := foldPointToGlobalIndex (𝔽q := 𝔽q) (β := β) (ℓ := ℓ) (𝓡 := 𝓡)
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx y
-      let x₀ := getFiberPointCompFromIndex (𝔽q := 𝔽q) (β := β) (ℓ := ℓ) (𝓡 := 𝓡)
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (vIdx := yIdx) (i := sourceIdx) (steps := 1)
-        (h_i_steps_le := h_source_plus_one_le) 0
-      let x₁ := getFiberPointCompFromIndex (𝔽q := 𝔽q) (β := β) (ℓ := ℓ) (𝓡 := 𝓡)
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (vIdx := yIdx) (i := sourceIdx) (steps := 1)
-        (h_i_steps_le := h_source_plus_one_le) 1
-      witIn.f x₀ * ((1 - r_i') * x₁.val - r_i') +
-        witIn.f x₁ * (r_i' - (1 - r_i') * x₀.val)
+      (domainIdx := ⟨i.val + 1, by omega⟩) :=
+    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := ⟨i, by omega⟩) (steps := 1) (destIdx := ⟨i.val + 1, by omega⟩)
+      (h_destIdx := rfl) (h_destIdx_le := by simp only [Fin.mk_le_mk]; omega)
+      (f := witIn.f) (r_challenges := fun _ => r_i')
   let projectedH := projectToNextSumcheckPoly (L := L) (ℓ := ℓ)
     (i := i) (Hᵢ := witIn.H) (rᵢ := r_i')
   let witOut : Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) i.succ := {
@@ -161,24 +147,24 @@ def getFoldProverFinalOutput (i : Fin ℓ)
 @[reducible]
 def foldProverComputeMsg (i : Fin ℓ)
     (witIn : Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.castSucc) :
-    FoldMessage L :=
+    ↥L⦃≤ 2⦄[X] :=
   getSumcheckRoundPoly (L := L) (ℓ := ℓ) (𝓑 := 𝓑) (i := i) witIn.H
 
 @[reducible]
 def foldVerifierCheck (i : Fin ℓ)
     (stmtIn : Statement (L := L) Context i.castSucc)
-    (msg0 : FoldMessage L) : Prop :=
-  FoldMessage.eval msg0 (𝓑 0) + FoldMessage.eval msg0 (𝓑 1) = stmtIn.sumcheck_target
+    (msg0 : ↥L⦃≤ 2⦄[X]) : Prop :=
+  msg0.val.eval (𝓑 0) + msg0.val.eval (𝓑 1) = stmtIn.sumcheck_target
 
 @[reducible]
 def foldVerifierStmtOut (i : Fin ℓ)
     (stmtIn : Statement (L := L) Context i.castSucc)
-    (msg0 : FoldMessage L)
+    (msg0 : ↥L⦃≤ 2⦄[X])
     (chal1 : L) :
     Statement (L := L) Context i.succ :=
   {
     ctx := stmtIn.ctx,
-    sumcheck_target := FoldMessage.eval msg0 chal1,
+    sumcheck_target := msg0.val.eval chal1,
     challenges := Fin.snoc stmtIn.challenges chal1
   }
 

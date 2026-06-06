@@ -471,6 +471,81 @@ theorem interpolate_univ_erase_coeff_eq_full_sub_topCoeff_mul_nodal_coeff
   rw [interpolate_univ_erase_eq_full_sub_topCoeff_mul_nodal domain i u,
     Polynomial.coeff_sub, Polynomial.coeff_C_mul]
 
+/-- The next-to-top coefficient of an omitted-window nodal polynomial is affine in the omitted
+node, with constant term supplied by the full nodal polynomial. -/
+theorem nodal_univ_erase_coeff_card_sub_two
+    (domain : ι ↪ F) (i : ι) (hn : 2 ≤ Fintype.card ι) :
+    (Lagrange.nodal (Finset.univ.erase i) (fun a => domain a)).coeff
+        (Fintype.card ι - 2) =
+      (Lagrange.nodal Finset.univ (fun a => domain a)).coeff
+        (Fintype.card ι - 1) + domain i := by
+  classical
+  let W : Finset ι := Finset.univ.erase i
+  let Z : Polynomial F := Lagrange.nodal W (fun a => domain a)
+  let N : Polynomial F := Lagrange.nodal Finset.univ (fun a => domain a)
+  have hWcard : W.card = Fintype.card ι - 1 := by
+    dsimp [W]
+    rw [Finset.card_erase_of_mem (Finset.mem_univ i), Finset.card_univ]
+  have hZnat : Z.natDegree = Fintype.card ι - 1 := by
+    simp [Z, hWcard]
+  have hZmonic : Z.Monic := by
+    dsimp [Z]
+    exact Lagrange.nodal_monic
+  have hZtop : Z.coeff (Fintype.card ι - 1) = 1 := by
+    simpa [hZnat] using (Polynomial.Monic.coeff_natDegree hZmonic)
+  have hfactor : N = (Polynomial.X - Polynomial.C (domain i)) * Z := by
+    dsimp [N, Z, W]
+    exact Lagrange.nodal_eq_mul_nodal_erase (s := (Finset.univ : Finset ι))
+      (v := fun a => domain a) (i := i) (Finset.mem_univ i)
+  have hidx : Fintype.card ι - 2 + 1 = Fintype.card ι - 1 := by omega
+  have hcoeff := congrArg
+    (fun p : Polynomial F => p.coeff (Fintype.card ι - 2 + 1)) hfactor
+  change N.coeff (Fintype.card ι - 2 + 1) =
+      ((Polynomial.X - Polynomial.C (domain i)) * Z).coeff
+        (Fintype.card ι - 2 + 1) at hcoeff
+  rw [Polynomial.coeff_X_sub_C_mul] at hcoeff
+  have hcoeff' : N.coeff (Fintype.card ι - 1) =
+      Z.coeff (Fintype.card ι - 2) - domain i * Z.coeff (Fintype.card ι - 1) := by
+    simpa [hidx] using hcoeff
+  rw [hZtop, mul_one] at hcoeff'
+  change Z.coeff (Fintype.card ι - 2) = N.coeff (Fintype.card ι - 1) + domain i
+  rw [hcoeff']
+  ring
+
+/-- The second next-to-top coefficient of an omitted-window nodal polynomial satisfies the
+recurrence obtained from `nodal univ = (X - C (domain i)) * nodal (univ.erase i)`. -/
+theorem nodal_univ_erase_coeff_card_sub_three
+    (domain : ι ↪ F) (i : ι) (hn : 3 ≤ Fintype.card ι) :
+    (Lagrange.nodal (Finset.univ.erase i) (fun a => domain a)).coeff
+        (Fintype.card ι - 3) =
+      (Lagrange.nodal Finset.univ (fun a => domain a)).coeff
+        (Fintype.card ι - 2) +
+      domain i *
+        (Lagrange.nodal (Finset.univ.erase i) (fun a => domain a)).coeff
+          (Fintype.card ι - 2) := by
+  classical
+  let W : Finset ι := Finset.univ.erase i
+  let Z : Polynomial F := Lagrange.nodal W (fun a => domain a)
+  let N : Polynomial F := Lagrange.nodal Finset.univ (fun a => domain a)
+  have hfactor : N = (Polynomial.X - Polynomial.C (domain i)) * Z := by
+    dsimp [N, Z, W]
+    exact Lagrange.nodal_eq_mul_nodal_erase (s := (Finset.univ : Finset ι))
+      (v := fun a => domain a) (i := i) (Finset.mem_univ i)
+  have hidx : Fintype.card ι - 3 + 1 = Fintype.card ι - 2 := by omega
+  have hcoeff := congrArg
+    (fun p : Polynomial F => p.coeff (Fintype.card ι - 3 + 1)) hfactor
+  change N.coeff (Fintype.card ι - 3 + 1) =
+      ((Polynomial.X - Polynomial.C (domain i)) * Z).coeff
+        (Fintype.card ι - 3 + 1) at hcoeff
+  rw [Polynomial.coeff_X_sub_C_mul] at hcoeff
+  have hcoeff' : N.coeff (Fintype.card ι - 2) =
+      Z.coeff (Fintype.card ι - 3) - domain i * Z.coeff (Fintype.card ι - 2) := by
+    simpa [hidx] using hcoeff
+  change Z.coeff (Fintype.card ι - 3) =
+    N.coeff (Fintype.card ι - 2) + domain i * Z.coeff (Fintype.card ι - 2)
+  rw [hcoeff']
+  ring
+
 /-- J1 omitted-window high-coefficient bridge in the exact two-top-coefficient form needed for
 the quadratic eliminant. -/
 theorem cT_vanish_on_j1_window_two_top_coeffs
@@ -526,6 +601,89 @@ theorem cT_vanish_on_j1_window_full_top_coeff_equations
       (interpolate_univ_erase_coeff_eq_full_sub_topCoeff_mul_nodal_coeff
         domain i u (Fintype.card ι - 3)).symm.trans h₃
 
+/-- The two full-interpolant equations from an omitted J1 window imply a single universal
+quadratic relation among the full interpolant's top three coefficients.  The omitted coordinate
+has been eliminated. -/
+theorem full_top_quadratic_relation_of_j1_window_equations
+    (domain : ι ↪ F) {i : ι} {u : ι → F}
+    (hn : 3 ≤ Fintype.card ι)
+    (h₂ :
+      (Lagrange.interpolate Finset.univ (fun a => domain a) u).coeff
+          (Fintype.card ι - 2) -
+        (Lagrange.interpolate Finset.univ (fun a => domain a) u).coeff
+          (Fintype.card ι - 1) *
+        (Lagrange.nodal (Finset.univ.erase i) (fun a => domain a)).coeff
+          (Fintype.card ι - 2) = 0)
+    (h₃ :
+      (Lagrange.interpolate Finset.univ (fun a => domain a) u).coeff
+          (Fintype.card ι - 3) -
+        (Lagrange.interpolate Finset.univ (fun a => domain a) u).coeff
+          (Fintype.card ι - 1) *
+        (Lagrange.nodal (Finset.univ.erase i) (fun a => domain a)).coeff
+          (Fintype.card ι - 3) = 0) :
+    let P := Lagrange.interpolate Finset.univ (fun a => domain a) u
+    let N := Lagrange.nodal Finset.univ (fun a => domain a)
+    P.coeff (Fintype.card ι - 2) * P.coeff (Fintype.card ι - 2) -
+        N.coeff (Fintype.card ι - 1) * P.coeff (Fintype.card ι - 1) *
+          P.coeff (Fintype.card ι - 2) +
+      N.coeff (Fintype.card ι - 2) * P.coeff (Fintype.card ι - 1) *
+          P.coeff (Fintype.card ι - 1) -
+      P.coeff (Fintype.card ι - 1) * P.coeff (Fintype.card ι - 3) = 0 := by
+  classical
+  let P := Lagrange.interpolate Finset.univ (fun a => domain a) u
+  let N := Lagrange.nodal Finset.univ (fun a => domain a)
+  let Zᵢ := Lagrange.nodal (Finset.univ.erase i) (fun a => domain a)
+  have hZ₂ : Zᵢ.coeff (Fintype.card ι - 2) =
+      N.coeff (Fintype.card ι - 1) + domain i := by
+    dsimp [Zᵢ, N]
+    exact nodal_univ_erase_coeff_card_sub_two domain i (by omega)
+  have hZ₃ : Zᵢ.coeff (Fintype.card ι - 3) =
+      N.coeff (Fintype.card ι - 2) + domain i * Zᵢ.coeff (Fintype.card ι - 2) := by
+    dsimp [Zᵢ, N]
+    exact nodal_univ_erase_coeff_card_sub_three domain i hn
+  have h₂₀ : P.coeff (Fintype.card ι - 2) -
+      P.coeff (Fintype.card ι - 1) * Zᵢ.coeff (Fintype.card ι - 2) = 0 := by
+    dsimp [P, Zᵢ]
+    exact h₂
+  have h₃₀ : P.coeff (Fintype.card ι - 3) -
+      P.coeff (Fintype.card ι - 1) * Zᵢ.coeff (Fintype.card ι - 3) = 0 := by
+    dsimp [P, Zᵢ]
+    exact h₃
+  have h₂' : P.coeff (Fintype.card ι - 2) =
+      P.coeff (Fintype.card ι - 1) * Zᵢ.coeff (Fintype.card ι - 2) :=
+    sub_eq_zero.mp h₂₀
+  have h₃' : P.coeff (Fintype.card ι - 3) =
+      P.coeff (Fintype.card ι - 1) * Zᵢ.coeff (Fintype.card ι - 3) :=
+    sub_eq_zero.mp h₃₀
+  change
+    P.coeff (Fintype.card ι - 2) * P.coeff (Fintype.card ι - 2) -
+        N.coeff (Fintype.card ι - 1) * P.coeff (Fintype.card ι - 1) *
+          P.coeff (Fintype.card ι - 2) +
+      N.coeff (Fintype.card ι - 2) * P.coeff (Fintype.card ι - 1) *
+          P.coeff (Fintype.card ι - 1) -
+      P.coeff (Fintype.card ι - 1) * P.coeff (Fintype.card ι - 3) = 0
+  rw [h₂', h₃', hZ₃, hZ₂]
+  ring
+
+/-- J1 local vanishing on an omitted window implies the universal full-interpolant quadratic
+relation. -/
+theorem cT_vanish_on_j1_window_full_top_quadratic_relation
+    (domain : ι ↪ F) {k : ℕ} {i : ι} {u : ι → F}
+    (hk : k + 3 ≤ Fintype.card ι)
+    (hvanish : ∀ T : Finset ι, T ⊆ Finset.univ.erase i → T.card = k + 1 →
+      cT domain k T u = 0) :
+    let P := Lagrange.interpolate Finset.univ (fun a => domain a) u
+    let N := Lagrange.nodal Finset.univ (fun a => domain a)
+    P.coeff (Fintype.card ι - 2) * P.coeff (Fintype.card ι - 2) -
+        N.coeff (Fintype.card ι - 1) * P.coeff (Fintype.card ι - 1) *
+          P.coeff (Fintype.card ι - 2) +
+      N.coeff (Fintype.card ι - 2) * P.coeff (Fintype.card ι - 1) *
+          P.coeff (Fintype.card ι - 1) -
+      P.coeff (Fintype.card ι - 1) * P.coeff (Fintype.card ι - 3) = 0 := by
+  classical
+  obtain ⟨h₂, h₃⟩ := cT_vanish_on_j1_window_full_top_coeff_equations domain hk hvanish
+  exact full_top_quadratic_relation_of_j1_window_equations domain (by omega) h₂ h₃
+
 /-- Direct coefficient form of a J1 ratio constraint: every constrained scalar has an omitted
 window where `u₁` is non-extendable and the line word has the two top omitted-window coefficients
 equal to zero. -/
@@ -563,6 +721,28 @@ theorem j1RatioConstraint_exists_omitted_full_top_coeff_equations
   classical
   obtain ⟨i, hne, hvanish⟩ := j1RatioConstraint_to_omitted domain hk hγ
   exact ⟨i, hne, cT_vanish_on_j1_window_full_top_coeff_equations domain hk hvanish⟩
+
+/-- Universal quadratic relation forced by a J1 ratio constraint.  The omitted witness is still
+returned for the nonextendability side condition, but the displayed polynomial relation no longer
+contains the omitted coordinate. -/
+theorem j1RatioConstraint_exists_omitted_full_top_quadratic_relation
+    (domain : ι ↪ F) {k : ℕ} (hk : k + 3 ≤ Fintype.card ι)
+    {u₀ u₁ : ι → F} {γ : F}
+    (hγ : j1RatioConstraint domain k u₀ u₁ γ) :
+    ∃ i : ι,
+      NonExtendableOn (ReedSolomon.code domain k : Set (ι → F))
+        (Finset.univ.erase i) u₁ ∧
+      (let P := Lagrange.interpolate Finset.univ (fun a => domain a) (u₀ + γ • u₁)
+       let N := Lagrange.nodal Finset.univ (fun a => domain a)
+       P.coeff (Fintype.card ι - 2) * P.coeff (Fintype.card ι - 2) -
+           N.coeff (Fintype.card ι - 1) * P.coeff (Fintype.card ι - 1) *
+             P.coeff (Fintype.card ι - 2) +
+         N.coeff (Fintype.card ι - 2) * P.coeff (Fintype.card ι - 1) *
+             P.coeff (Fintype.card ι - 1) -
+         P.coeff (Fintype.card ι - 1) * P.coeff (Fintype.card ι - 3) = 0) := by
+  classical
+  obtain ⟨i, hne, hvanish⟩ := j1RatioConstraint_to_omitted domain hk hγ
+  exact ⟨i, hne, cT_vanish_on_j1_window_full_top_quadratic_relation domain hk hvanish⟩
 
 open Classical in
 /-- The finite scalar set cut out by the J1 window ratio constraints.
