@@ -41,8 +41,8 @@ mathematical content — the 2-special-sound rewinding extractor — is supplied
 **fully proven** as `protocol62_knowledgeSoundnessViaRewinding` (the framework
 predicate `Extractor.knowledgeSoundnessViaRewinding`), and each straightline
 lemma is reduced to a single **named bridge residual**
-`Extractor.Bridge.StraightlineOfRewinding` (taken as an explicit hypothesis),
-discharged by `Extractor.Bridge.knowledgeSound_of_rewinding`. There are **no**
+`Bridge.StraightlineOfRewinding` (taken as an explicit hypothesis),
+discharged by `Bridge.knowledgeSound_of_rewinding`. There are **no**
 `sorry`/`axiom` terms: the residual is a named, documented interface gap, not an
 admitted proof. The IOR scaffolding is exactly what is needed downstream.
 
@@ -296,7 +296,9 @@ interfaces. This is the documented wall in
 We therefore supply the genuine mathematical content — the 2-special-sound rewinding extractor for
 the toy protocol — as a **fully-proven** `Extractor.knowledgeSoundnessViaRewinding` witness (the
 rewinding-flavoured analogue of `Verifier.knowledgeSoundness`), and reduce the straightline holes
-below to a single named bridge residual `Extractor.Bridge.StraightlineOfRewinding`. -/
+below to a single named bridge residual `Bridge.StraightlineOfRewinding`. -/
+
+variable {k}
 
 open Extractor in
 /-- The combination map `g = u₁ + γ·u₂` (pointwise on `Fin k`): the honest prover's claim at
@@ -1134,18 +1136,19 @@ genuine content as `protocol62_knowledgeSoundnessViaRewinding` (the framework pr
 statement to the **single named bridge residual** below — the precise straightline↔rewinding
 interface translation, the smallest missing piece.
 
-The residual is `Extractor.Bridge.StraightlineOfRewinding` from the *proven* rewinding witness to
+The residual is `Bridge.StraightlineOfRewinding` from the *proven* rewinding witness to
 the straightline conclusion, so the theorem `protocol62_knowledgeSound` discharges the conclusion by
 feeding the proven witness through the residual (no `sorry`, no `axiom`). -/
 @[reducible]
 def protocol62_knowledgeSound_residual
     [SampleableType F] [SampleableType ι] [Nonempty ι] [Nonempty F]
+    (t : ℕ)
     {σ : Type} (init : ProbComp σ)
     (impl : QueryImpl []ₒ (StateT σ ProbComp))
     (C : Set (ι → F)) (δ : ℝ≥0)
     (encode : (Fin k → F) → (ι → F))
     (decode : ToyPrefix ι F k → (Fin k → F) × (Fin k → F)) : Prop :=
-  Extractor.Bridge.StraightlineOfRewinding
+  Bridge.StraightlineOfRewinding
     -- proven rewinding side (`protocol62_knowledgeSoundnessViaRewinding`)
     (Extractor.knowledgeSoundnessViaRewinding
       (outputRelation (ι := ι) (F := F) k C δ)
@@ -1159,6 +1162,34 @@ def protocol62_knowledgeSound_residual
               ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
                 / (Fintype.card F : ℝ≥0))
            ((1 - δ) ^ t)))
+
+/-- Since the rewinding-side witness is already proven, the named L6.6 bridge
+residual is equivalent to the straightline knowledge-soundness target itself.
+This records that the residual adds no hidden mathematical premise beyond the
+straightline-from-rewinding interface translation. -/
+theorem protocol62_knowledgeSound_residual_iff
+    [SampleableType F] [SampleableType ι] [Nonempty ι] [Nonempty F]
+    {σ : Type} (init : ProbComp σ)
+    (impl : QueryImpl []ₒ (StateT σ ProbComp))
+    (C : Set (ι → F)) (δ : ℝ≥0)
+    (encode : (Fin k → F) → (ι → F))
+    (decode : ToyPrefix ι F k → (Fin k → F) × (Fin k → F)) :
+    protocol62_knowledgeSound_residual (k := k) (t := t) init impl C δ encode decode ↔
+      (verifier (k := k) (t := t) encode).knowledgeSoundness (WitOut := OutputWitness)
+        init impl (outputRelation k C δ)
+        (Set.univ : Set (OutputStatement × OutputWitness))
+        (max ((epsMCA (F := F) (A := F) C δ).toNNReal +
+                ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
+                  / (Fintype.card F : ℝ≥0))
+             ((1 - δ) ^ t)) := by
+  constructor
+  · intro residual
+    exact Bridge.knowledgeSound_of_rewinding residual
+      (protocol62_knowledgeSoundnessViaRewinding C δ decode)
+  · intro h
+    dsimp [protocol62_knowledgeSound_residual, Bridge.StraightlineOfRewinding]
+    intro _hRewinding
+    exact h
 
 theorem protocol62_knowledgeSound
     [SampleableType F] [SampleableType ι] [Nonempty ι] [Nonempty F]
@@ -1179,7 +1210,7 @@ theorem protocol62_knowledgeSound
                   / (Fintype.card F : ℝ≥0))
              ((1 - δ) ^ t)) :=
   -- ABF26-L6.6: feed the *proven* rewinding witness through the named bridge residual.
-  Extractor.Bridge.knowledgeSound_of_rewinding residual
+  Bridge.knowledgeSound_of_rewinding residual
     (protocol62_knowledgeSoundnessViaRewinding C δ decode)
 
 /-- **Remark 6.7 of [ABF26]**: the L6.6 soundness argument depends on
@@ -1213,12 +1244,13 @@ accounting splits its failure across the `γ` and spot-check rounds). No `sorry`
 @[reducible]
 def protocol62_rbrKnowledgeSound_residual
     [SampleableType F] [SampleableType ι] [Nonempty ι] [Nonempty F]
+    (t : ℕ)
     {σ : Type} (init : ProbComp σ)
     (impl : QueryImpl []ₒ (StateT σ ProbComp))
     (C : Set (ι → F)) (δ : ℝ≥0)
     (encode : (Fin k → F) → (ι → F))
     (decode : ToyPrefix ι F k → (Fin k → F) × (Fin k → F)) : Prop :=
-  Extractor.Bridge.StraightlineOfRewinding
+  Bridge.StraightlineOfRewinding
     (Extractor.knowledgeSoundnessViaRewinding
       (outputRelation (ι := ι) (F := F) k C δ)
       (toyStmtOf (ι := ι) (F := F) (k := k))
@@ -1232,6 +1264,36 @@ def protocol62_rbrKnowledgeSound_residual
             ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
               / (Fintype.card F : ℝ≥0)
         else (1 - δ) ^ t))
+
+/-- Since the rewinding-side witness is already proven, the named L6.8 bridge
+residual is equivalent to the round-by-round knowledge-soundness target itself.
+This keeps the remaining obligation focused on the straightline/rbr framework
+translation rather than on the toy-protocol extractor. -/
+theorem protocol62_rbrKnowledgeSound_residual_iff
+    [SampleableType F] [SampleableType ι] [Nonempty ι] [Nonempty F]
+    {σ : Type} (init : ProbComp σ)
+    (impl : QueryImpl []ₒ (StateT σ ProbComp))
+    (C : Set (ι → F)) (δ : ℝ≥0)
+    (encode : (Fin k → F) → (ι → F))
+    (decode : ToyPrefix ι F k → (Fin k → F) × (Fin k → F)) :
+    protocol62_rbrKnowledgeSound_residual (k := k) (t := t) init impl C δ encode decode ↔
+      (verifier (k := k) (t := t) encode).rbrKnowledgeSoundness (WitOut := OutputWitness)
+        init impl (outputRelation k C δ)
+        (Set.univ : Set (OutputStatement × OutputWitness))
+        (fun i ↦
+          if i.1 = 0 then
+            (epsMCA (F := F) (A := F) C δ).toNNReal +
+              ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
+                / (Fintype.card F : ℝ≥0)
+          else (1 - δ) ^ t) := by
+  constructor
+  · intro residual
+    exact Bridge.knowledgeSound_of_rewinding residual
+      (protocol62_knowledgeSoundnessViaRewinding C δ decode)
+  · intro h
+    dsimp [protocol62_rbrKnowledgeSound_residual, Bridge.StraightlineOfRewinding]
+    intro _hRewinding
+    exact h
 
 theorem protocol62_rbrKnowledgeSound
     [SampleableType F] [SampleableType ι] [Nonempty ι] [Nonempty F]
@@ -1256,7 +1318,7 @@ theorem protocol62_rbrKnowledgeSound
                 / (Fintype.card F : ℝ≥0)
           else (1 - δ) ^ t) :=
   -- ABF26-L6.8: feed the *proven* rewinding witness through the named bridge residual.
-  Extractor.Bridge.knowledgeSound_of_rewinding residual
+  Bridge.knowledgeSound_of_rewinding residual
     (protocol62_knowledgeSoundnessViaRewinding C δ decode)
 
 end Protocol
