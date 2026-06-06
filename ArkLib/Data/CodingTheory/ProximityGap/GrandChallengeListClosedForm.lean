@@ -156,7 +156,9 @@ theorem grandListDecodingChallenge_iff_pow_le (domain : ι ↪ F) {k : ℕ}
   rw [grandListDecodingChallenge_iff_Lambda_one,
     show ((1 : ℝ≥0) : ℝ) = (1 : ℝ) by norm_num,
     Lambda_one_eq_ncard (α := Fin m → F)]
-  rw [ncard_interleavedReedSolomonCode domain hk m]
+  have hncard : ((ReedSolomon.code domain k : Set (ι → F))^⋈ (Fin m)).ncard
+      = Fintype.card F ^ (k * m) := ncard_interleavedReedSolomonCode domain hk m
+  rw [hncard]
   norm_cast
 
 /-- The rate-addressed Reed-Solomon list-decoding challenge in closed form. -/
