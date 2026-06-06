@@ -9,7 +9,6 @@ import ArkLib.ProofSystem.RingSwitching.Spec
 import ArkLib.OracleReduction.Composition.Sequential.General
 import ArkLib.OracleReduction.Composition.Sequential.Append
 import ArkLib.OracleReduction.Security.RoundByRound
-import ArkLib.ToMathlib.KStateWeaken
 
 /-!
 # Ring-Switching Core Interaction Phase
