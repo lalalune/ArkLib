@@ -299,14 +299,14 @@ theorem pg_RsetDescended_comp_dvd_Q
   intro R hR
   classical
   have hRl := (mem_pg_RsetDescended_iff_mem_list (k := k) h_gs R).1 hR
-  set L := (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose with hLdef
   obtain ⟨i, hi, hget⟩ := List.mem_iff_getElem.1 hRl
   -- `getD i 1 = R` at this index
-  have hgetD : L.getD i 1 = R := by
-    rw [List.getD_eq_getElem L 1 hi]; exact hget
+  have hgetD :
+      (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose.getD i 1 = R := by
+    rw [List.getD_eq_getElem _ 1 hi]; exact hget
   refine ⟨(irreducible_factorization_of_gs_solution h_gs).choose_spec.choose_spec.choose.getD i 0,
     ?_⟩
-  have hdvd := pg_RsetDescended_comp_getD_dvd_Q (k := k) h_gs i (by rw [← hLdef]; exact hi)
+  have hdvd := pg_RsetDescended_comp_getD_dvd_Q (k := k) h_gs i hi
   rwa [hgetD] at hdvd
 
 /-! ## Nonemptiness

@@ -273,7 +273,3 @@ open ProximityGap.GrandChallengesLattice
 #print axioms epsMCA_interiorJ2_ge
 #print axioms mcaThreshold_lt_two_of_interiorJ2_gt
 end AxiomAudit
-
--- TEMP AUDIT
-#print axioms ProximityGap.affineMatrix_det_natDegree_le
-#print axioms ProximityGap.epsMCA_interiorJ2_ge

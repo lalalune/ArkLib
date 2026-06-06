@@ -559,9 +559,9 @@ lemma incrementalBadEventExistsProp_commit_step_backward (i : Fin ℓ) (hCR : is
       simp only [toOutCodewordsCount_succ_eq, hCR, ↓reduceIte]
     have hj_eq : j.val = toOutCodewordsCount ℓ ϑ i.castSucc := by
       have hj_le : j.val ≤ toOutCodewordsCount ℓ ϑ i.castSucc := by
-        -- (`.succ` vs `+ 1` is defeq-only under rc2; rewrite the count first so omega
-        -- sees one atom.)
-        have h1 := j.isLt
+        -- (`.succ` vs `+ 1` and the `OracleFrontierIndex` coercion are defeq-only under
+        -- rc2; restate `j.isLt` at the plain count so omega sees one atom.)
+        have h1 : j.val < toOutCodewordsCount ℓ ϑ i.succ := j.isLt
         rw [h_count_succ] at h1
         omega
       have hj_ge : toOutCodewordsCount ℓ ϑ i.castSucc ≤ j.val := by
@@ -573,32 +573,44 @@ lemma incrementalBadEventExistsProp_commit_step_backward (i : Fin ℓ) (hCR : is
     have hk : min ϑ (i.succ.val - j.val * ϑ) = 0 := by
       rw [h_domain]
       simp
+    -- Every bound/proof is pre-bound OUTSIDE the application below: in-application
+    -- tactic blocks elaborate against the full unification context and time out.
+    have hℓr : ℓ < r := ℓ_lt_r (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    have h_le_ℓ : j.val * ϑ + ϑ ≤ ℓ :=
+      oracle_index_add_steps_le_ℓ ℓ ϑ
+        (i := (OracleFrontierIndex.mkFromStmtIdx i.succ).val) (j := j)
+    have h_bs_lt : (oraclePositionToDomainIndex (ℓ := ℓ) (ϑ := ϑ)
+        (positionIdx := j) : ℕ) < r :=
+      Nat.lt_trans (oraclePositionToDomainIndex (ℓ := ℓ) (ϑ := ϑ)
+        (positionIdx := j)).isLt hℓr
+    have h_mid_lt : j.val * ϑ + min ϑ (i.succ.val - j.val * ϑ) < r := by
+      rw [hk]; omega
+    have h_dest_lt : j.val * ϑ + ϑ < r := by omega
+    have h_midIdx_val : (⟨j.val * ϑ + min ϑ (i.succ.val - j.val * ϑ), h_mid_lt⟩ : Fin r).val
+        = (⟨(oraclePositionToDomainIndex (ℓ := ℓ) (ϑ := ϑ)
+            (positionIdx := j) : ℕ), h_bs_lt⟩ : Fin r).val := by
+      dsimp only [oraclePositionToDomainIndex, Fin.val_mk]
+      omega
+    have h_f_block := by
+      simpa [OracleStatement, oraclePositionToDomainIndex, snoc_oracle, hj_lt, hCR]
+        using (snoc_oracle 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (h_destIdx := rfl) oStmtIn newOracle j)
+    -- The challenge function is over `Fin (min …) = Fin 0` (by `hk`): eliminate.
     exact
       (incrementalFoldingBadEvent_of_k_eq_0_is_false 𝔽q β
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
         (ϑ := ϑ)
-        (block_start_idx := ⟨oraclePositionToDomainIndex (ℓ := ℓ) (ϑ := ϑ)
-          (positionIdx := j), by omega⟩)
+        (block_start_idx := ⟨(oraclePositionToDomainIndex (ℓ := ℓ) (ϑ := ϑ)
+          (positionIdx := j) : ℕ), h_bs_lt⟩)
         (k := min ϑ (i.succ.val - j.val * ϑ))
         (h_k := hk)
-        (midIdx := ⟨j.val * ϑ + min ϑ (i.succ.val - j.val * ϑ), by omega⟩)
-        (destIdx := ⟨j.val * ϑ + ϑ, by
-          dsimp only [oraclePositionToDomainIndex]
-          omega⟩)
-        (h_midIdx := by dsimp [oraclePositionToDomainIndex]; omega)
+        (midIdx := ⟨j.val * ϑ + min ϑ (i.succ.val - j.val * ϑ), h_mid_lt⟩)
+        (destIdx := ⟨j.val * ϑ + ϑ, h_dest_lt⟩)
+        (h_midIdx := h_midIdx_val)
         (h_destIdx := rfl)
-        (h_destIdx_le := oracle_index_add_steps_le_ℓ ℓ ϑ
-          (i := (OracleFrontierIndex.mkFromStmtIdx i.succ).val) (j := j))
-        (f_block_start := by
-          simpa [OracleStatement, oraclePositionToDomainIndex, snoc_oracle, hj_lt, hCR]
-            using (snoc_oracle 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-              (h_destIdx := rfl) oStmtIn newOracle j))
-        (r_challenges := fun cId => challenges ⟨j.val * ϑ + cId.val, by
-          have h_k_le_stmt :
-              min ϑ (i.succ.val - j.val * ϑ) ≤ i.succ.val - j.val * ϑ :=
-            Nat.min_le_right ϑ (i.succ.val - j.val * ϑ)
-          have h_cId_lt_k : cId.val < min ϑ (i.succ.val - j.val * ϑ) := cId.isLt
-          omega⟩)) hj_bad
+        (h_destIdx_le := h_le_ℓ)
+        (f_block_start := h_f_block)
+        (r_challenges := fun cId => absurd (hk ▸ cId.isLt) (Nat.not_lt_zero _))) hj_bad
 
 lemma oracleFoldingConsistencyProp_commit_step_backward (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i)
     (challenges : Fin i.succ.val → L)
