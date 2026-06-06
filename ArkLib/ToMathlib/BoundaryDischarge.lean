@@ -398,6 +398,33 @@ theorem boundaryProbabilityResidual_of_lattice_data
     hStrict
 
 omit [DecidableEq ι] in
+/-- The affine-curves keystone can consume the exact lattice branch through the smaller
+`BoundaryCardLatticeData` surface. This is the direct front-door adapter: the strict Johnson
+coefficient-polynomial residual and strict-subradius producer are unchanged, while the exact
+lattice branch is supplied through `BoundaryCardLatticeData` rather than the older
+`BoundaryCardLatticeResidual`. -/
+theorem correlatedAgreement_affine_curves_of_lattice_data
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hStrictCoeff :
+      ProximityGap.StrictCoeffPolysResidual (k := k) (deg := deg) (domain := domain) (δ := δ))
+    (hLatticeData :
+      BoundaryCardResidual.BoundaryCardLatticeData
+        (k := k) (deg := deg) (domain := domain) (δ := δ))
+    (hStrict : ∀ (u : WordStack F (Fin (k + 1)) ι) (δ' : ℝ≥0),
+      δ' < δ →
+      Nat.floor (δ' * Fintype.card ι) = Nat.floor (δ * Fintype.card ι) →
+      0 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ').card →
+      jointAgreement (C := ReedSolomon.code domain deg) (δ := δ') (W := u))
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
+  BoundaryCardResidual.correlatedAgreement_affine_curves_of_lattice_residual
+    (deg := deg) (domain := domain) (δ := δ) hStrictCoeff hStrict
+    (boundaryCardLatticeResidual_of_lattice_data
+      (k := k) (deg := deg) (domain := domain) (δ := δ) hLatticeData)
+    hδ
+
+omit [DecidableEq ι] in
 /-- The closed-boundary residual is vacuous for `k = 0`, since its first argument is
 `0 < k`. This removes an unnecessary residual hypothesis from degenerate callers. -/
 theorem boundaryCardResidual_zero
@@ -422,4 +449,5 @@ end ArkLib
 #print axioms ArkLib.BoundaryDischarge.boundaryCardLatticeResidual_of_lattice_data
 #print axioms ArkLib.BoundaryDischarge.boundaryCardResidual_of_lattice_data
 #print axioms ArkLib.BoundaryDischarge.boundaryProbabilityResidual_of_lattice_data
+#print axioms ArkLib.BoundaryDischarge.correlatedAgreement_affine_curves_of_lattice_data
 #print axioms ArkLib.BoundaryDischarge.boundaryCardResidual_zero
