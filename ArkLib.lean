@@ -458,6 +458,7 @@ import ArkLib.ToMathlib.Finset.ToListWithProof
 import ArkLib.ToMathlib.Finsupp.Fin
 import ArkLib.ToMathlib.FrobeniusFactorHelpers
 import ArkLib.ToMathlib.GGR11Interleaved
+import ArkLib.ToMathlib.GHSZ02Cor20
 import ArkLib.ToMathlib.GK16BudgetCoeff
 import ArkLib.ToMathlib.GK16Claim16Core
 import ArkLib.ToMathlib.GK16Claim16Witness

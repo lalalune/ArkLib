@@ -797,5 +797,3 @@ end Soundness
 
 end Fri
 end Fri
-
-#print axioms Fri.Fri.fri_query_soundness

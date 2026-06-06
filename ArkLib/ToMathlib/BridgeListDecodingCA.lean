@@ -164,7 +164,7 @@ end CS25Arithmetic
 section GCXK25UnionBound
 
 open ProximityGap Code
-open scoped BigOperators
+open scoped BigOperators ProbabilityTheory
 
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
@@ -218,6 +218,28 @@ theorem epsMCA_le_ofReal_of_per_codeword_count
   intro u
   obtain ⟨T, hT, hcard, hper⟩ := hcount u
   exact mcaBad_card_le_listFactor_mul_perCodeword C δ (u 0) (u 1) T hT hb0 hcard hper
+
+/-- **Exact-shape connector to the read-only `hPerStack` residual of ABF26 Theorem 5.1.**
+
+`linear_listSize_to_epsMCA_gcxk25_of_residuals` (in `Connections/ListDecodingAndCA.lean`) takes a
+residual `hPerStack u : Pr_γ[mcaEvent] ≤ ENNReal.ofReal (B/|F|)` for *every* stack `u`. This
+connector produces exactly that per-stack probability bound from a *per-codeword* bad-`γ` count
+(GCXK25's union bound over the close-codeword list): if a finite carrier `T u ⊇ C` of size `≤ B_T`
+has each codeword witnessing at most `b` bad `γ`, then `Pr_γ[mcaEvent] ≤ ofReal((B_T·b)/|F|)`.
+
+Composing the union-bound brick with the per-stack probability glue
+(`ProximityGap.mcaEvent_prob_le_of_mcaBad_card_le`), this reduces the caller's GCXK25 residual
+to the per-codeword agree-domain count `b` and the list-size factor `B_T` — exactly the two
+combinatorial parts (`|Bad¹| ≤ pn` first-moment and the `L²` list-size factor) of GCXK25 Thm 3. -/
+theorem mcaEvent_prob_le_ofReal_of_per_codeword_count
+    (C : Set (ι → A)) (δ : ℝ≥0) (u : WordStack A (Fin 2) ι)
+    {b B_T : ℝ} (hb0 : 0 ≤ b)
+    (T : Finset (ι → A)) (hT : ∀ w ∈ C, w ∈ T) (hcard : (T.card : ℝ) ≤ B_T)
+    (hper : ∀ w ∈ T, ((mcaBadWitness (F := F) C δ (u 0) (u 1) w).card : ℝ) ≤ b) :
+    Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ] ≤
+      ENNReal.ofReal ((B_T * b) / Fintype.card F) :=
+  ProximityGap.mcaEvent_prob_le_of_mcaBad_card_le C δ (u 0) (u 1)
+    (mcaBad_card_le_listFactor_mul_perCodeword C δ (u 0) (u 1) T hT hb0 hcard hper)
 
 end GCXK25UnionBound
 

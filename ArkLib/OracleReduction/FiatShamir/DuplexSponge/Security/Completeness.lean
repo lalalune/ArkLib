@@ -232,7 +232,7 @@ This is the proven `_of_residual` brick: it discharges the `↔` in
 run-equality residual.
 
 The collapse of the outer (empty) Fiat-Shamir challenge oracle implementation is handled by
-`Reduction.simulateQ_add_run_liftM_left`: the lifted honest execution never queries that oracle, so
+`simulateQ_add_run_liftM_left`: the lifted honest execution never queries that oracle, so
 `simulateQ (impl + challengeQueryImpl) (liftM honest).run = simulateQ impl honest.run`. -/
 theorem duplexSpongeFiatShamir_completeness_unroll_of_run_eq
     {σ : Type}
@@ -254,8 +254,8 @@ theorem duplexSpongeFiatShamir_completeness_unroll_of_run_eq
   refine imp_congr_right fun _ => ?_
   -- The two probability expressions agree pointwise: rewrite the DSFS run as the lifted honest
   -- execution, then collapse the outer empty challenge oracle implementation.
-  simp only [hRun, QueryImpl.addLift_def, QueryImpl.liftTarget_self,
-    Reduction.simulateQ_add_run_liftM_left]
+  rw [hRun, QueryImpl.addLift_def, QueryImpl.liftTarget_self,
+    simulateQ_add_run_liftM_left]
 
 /-- **Reduction of `duplexSpongeFiatShamirSalted_completeness_unroll` to the run-equality
 residual.** The salted analogue of `duplexSpongeFiatShamir_completeness_unroll_of_run_eq`. -/
@@ -278,8 +278,8 @@ theorem duplexSpongeFiatShamirSalted_completeness_unroll_of_run_eq {δ : Nat}
   simp only [duplexSpongeFiatShamirSalted_run_eq_honestExecution] at hRun
   refine forall_congr' fun stmtIn => forall_congr' fun witIn => ?_
   refine imp_congr_right fun _ => ?_
-  simp only [hRun, QueryImpl.addLift_def, QueryImpl.liftTarget_self,
-    Reduction.simulateQ_add_run_liftM_left]
+  rw [hRun, QueryImpl.addLift_def, QueryImpl.liftTarget_self,
+    simulateQ_add_run_liftM_left]
 
 end Completeness
 

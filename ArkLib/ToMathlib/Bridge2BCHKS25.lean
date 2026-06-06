@@ -150,6 +150,19 @@ theorem epsCA_badLine_bridge_of_residual
   obtain ⟨u, hjp, Γ, hΓ, hcard⟩ := h
   exact epsCA_ge_half_inv_n_of_badLineWitness C δ_fld δ_int u hjp Γ hΓ hcard
 
+/-- **Exact-shape connector to the read-only `hBadLine` residual of ABF26 Theorem 5.2.**
+
+`rs_epsCA_small_implies_lambda_lt_F_bchks25_of_residuals` (in `Connections/ListDecodingAndCA.lean`)
+takes a residual `hBadLine : ¬ (Λ(C, δ) < |F|) → ε_ca ≥ 1/(2n)`. This connector produces exactly
+that shape from a `BadLineWitness`-valued function of the negated list-size hypothesis. The
+caller's remaining (genuinely external BCHKS25) obligation is therefore reduced to: *from
+`¬ (Λ(C, δ) < |F|)`, build the bad combining line* (`provBadLine`). -/
+theorem hBadLine_of_provBadLine
+    (C : Set (ι → A)) (δ_fld δ_int : ℝ≥0) {P : Prop}
+    (provBadLine : P → BadLineWitness (F := F) C δ_fld δ_int) :
+    P → ENNReal.ofReal (1 / (2 * Fintype.card ι)) ≤ epsCA (F := F) C δ_fld δ_int :=
+  fun hp => epsCA_badLine_bridge_of_residual C δ_fld δ_int (provBadLine hp)
+
 end BadLine
 
 end CodingTheory.Bridge
