@@ -147,6 +147,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GSKernelAffineDescent
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeDecision
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLDAttainment
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLDFourRate
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLDThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLDThresholdElias
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLDThresholdHalfDist
