@@ -843,3 +843,12 @@ end Soundness
 
 end Fri
 end Fri
+
+/-! ### Axiom audit (issues #14/#24 FRI soundness frontier) -/
+
+#print axioms Fri.fri_query_soundness
+#print axioms Fri.FriQuerySoundnessParts
+#print axioms Fri.fri_query_soundness_of_parts
+#print axioms Fri.fri_soundness
+#print axioms Fri.FriSoundnessParts
+#print axioms Fri.fri_soundness_of_parts

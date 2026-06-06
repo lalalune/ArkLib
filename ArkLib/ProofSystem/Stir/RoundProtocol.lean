@@ -234,3 +234,12 @@ end Security
 end Round
 
 end StirIOP
+
+/-! ### Axiom audit (issue #24 STIR one-round frontier) -/
+
+#print axioms StirIOP.Round.stirRoundReduction
+#print axioms StirIOP.Round.stirRoundIOR
+#print axioms StirIOP.Round.combine_single_self
+#print axioms StirIOP.Round.stirRoundInputRel
+#print axioms StirIOP.Round.stirRoundOutputRel
+#print axioms StirIOP.Round.stirRoundReduction_completeness
