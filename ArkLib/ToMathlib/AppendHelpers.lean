@@ -24,25 +24,7 @@ variable {ι : Type} {oSpec : OracleSpec ι}
 
 namespace OracleComp
 
-/-- The monadic lifting operation `liftComp` preserves the support of a computation.
-Specifically, for any oracle spec extension `superSpec` that embeds `oSpec`, the set of reachable
-outcomes of `liftComp mx superSpec` is identical to the support of the original computation `mx`.
-This constitutes the support-level projection of the distributional identity `evalDist_liftComp`. -/
-theorem support_liftComp {τ : Type} {superSpec : OracleSpec τ} {α : Type}
-    [MonadLift (OracleQuery oSpec) (OracleQuery superSpec)]
-    (mx : OracleComp oSpec α) :
-    support (OracleComp.liftComp mx superSpec) = support mx := by
-  induction mx using OracleComp.inductionOn with
-  | pure x => simp
-  | query_bind t oa ih =>
-      rw [OracleComp.liftComp_bind, OracleComp.liftComp_query]
-      ext y
-      simp only [support_bind, Set.mem_iUnion, support_map, Set.mem_image,
-        OracleComp.support_query, Set.mem_univ, true_and, exists_eq, exists_const,
-        OracleQuery.cont_query, OracleQuery.input_query, id_eq, ih]
-      constructor
-      · rintro ⟨i, -, hi⟩; exact ⟨i, hi⟩
-      · rintro ⟨i, hi⟩; exact ⟨i, ⟨i, by simp, rfl⟩, hi⟩
+-- `support_liftComp` is now provided upstream by VCVio (`OracleComp.support_liftComp`).
 
 end OracleComp
 

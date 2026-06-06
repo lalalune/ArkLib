@@ -226,4 +226,6 @@ theorem ghsz02LargeN_of_thresholds
   nlinarith [hkL, haln, hsplit2a, hexpand, hαAsub, hParL, hT1, hT2, hL0, hLP,
     mul_pos hPα0 hL0]
 
+#print axioms GHSZ02LargeNProof.ghsz02LargeN_of_thresholds
+
 end GHSZ02LargeNProof

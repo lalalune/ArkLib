@@ -241,26 +241,35 @@ theorem pg_RsetDescended_comp_getD_dvd_Q
           ((irreducible_factorization_of_gs_solution h_gs).choose_spec.choose_spec.choose.getD i 0)))
       ∣ Q := by
   classical
-  set hsol := irreducible_factorization_of_gs_solution h_gs with hsoldef
-  set C₀ := hsol.choose with hC₀
-  set L := hsol.choose_spec.choose with hLdef
-  set f := hsol.choose_spec.choose_spec.choose with hfdef
-  set e := hsol.choose_spec.choose_spec.choose_spec.choose with hedef
-  obtain ⟨hlen1, _hlen2, he, _hsep, _hirr, _hpos, hfact⟩ :=
-    hsol.choose_spec.choose_spec.choose_spec.choose_spec
-  -- abbreviate the body and the product
-  set body : ℕ → F[Z][X][Y] := fun j =>
-    ((L.getD j 1).comp ((Polynomial.X : F[Z][X][Y]) ^ (f.getD j 0))) ^ (e.getD j 0) with hbody
+  -- read off the length / multiplicity / factorization facts first, then abbreviate
+  obtain ⟨hlen1, hlen2, he, _hsep, _hirr, _hpos, hfact⟩ :=
+    (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose_spec.choose_spec.choose_spec
+  -- abbreviations for the chosen content and three chosen lists (fold into `hfact`)
+  set C₀ := (irreducible_factorization_of_gs_solution h_gs).choose with hC₀
+  set L := (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose with hLdef
+  set f := (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose_spec.choose with hfdef
+  set e := (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose_spec.choose_spec.choose
+    with hedef
+  -- the per-index factor body
+  let body : ℕ → F[Z][X][Y] := fun j =>
+    ((L.getD j 1).comp ((Polynomial.X : F[Z][X][Y]) ^ (f.getD j 0))) ^ (e.getD j 0)
+  have hbody : ∀ j, body j =
+      ((L.getD j 1).comp ((Polynomial.X : F[Z][X][Y]) ^ (f.getD j 0))) ^ (e.getD j 0) :=
+    fun _ => rfl
   have hmem : i ∈ Finset.range L.length := Finset.mem_range.mpr hi
   -- the `i`-th body divides the full range product
   have hdvd_prod : body i ∣ ∏ j ∈ Finset.range L.length, body j :=
     Finset.dvd_prod_of_mem body hmem
   -- the product divides Q (Q = C C₀ * product)
+  have hprodeq : (∏ j ∈ Finset.range L.length, body j)
+      = ∏ i ∈ Finset.range L.length,
+          ((L.getD i 1).comp ((Polynomial.X : F[Z][X][Y]) ^ f.getD i 0)) ^ e.getD i 0 := rfl
   have hprod_dvd_Q : (∏ j ∈ Finset.range L.length, body j) ∣ Q := by
     refine ⟨Polynomial.C C₀, ?_⟩
-    rw [hfact]; ring
+    rw [hprodeq, hfact]
+    ring
   -- the (e i)-th power of the comp divides body i, since e i ≥ 1
-  have hlen_e : e.length = L.length := by rw [← _hlen2, ← hlen1]
+  have hlen_e : e.length = L.length := by rw [← hlen2, ← hlen1]
   have hie : i < e.length := by rw [hlen_e]; exact hi
   have hei : 1 ≤ e.getD i 0 := by
     have hmem_e : e.getD i 0 ∈ e := by
@@ -269,7 +278,7 @@ theorem pg_RsetDescended_comp_getD_dvd_Q
     exact he _ hmem_e
   have hcomp_dvd_body : ((L.getD i 1).comp ((Polynomial.X : F[Z][X][Y]) ^ (f.getD i 0)))
       ∣ body i := by
-    rw [hbody]
+    rw [hbody i]
     exact dvd_pow_self _ (by omega)
   exact dvd_trans hcomp_dvd_body (dvd_trans hdvd_prod hprod_dvd_Q)
 
@@ -595,10 +604,10 @@ noncomputable def Claim57Residuals.ofDescended (δ : ℚ) (x₀ : F)
       (u₀ := u₀) (u₁ := u₁) k δ x₀ h_gs where
   hx0 := by
     intro R hR
-    exact hres.hx0 R (hcoincide ▸ hR)
+    exact hres.hx0 R (hcoincide.symm ▸ hR)
   hsep := by
     intro R hR
-    exact hres.hsep R (hcoincide ▸ hR)
+    exact hres.hsep R (hcoincide.symm ▸ hR)
   hS_nonempty := hres.hS_nonempty
   A := hres.A
   hA := hres.hA
@@ -606,7 +615,7 @@ noncomputable def Claim57Residuals.ofDescended (δ : ℚ) (x₀ : F)
   hlarge := hres.hlarge
   hfactor := by
     intro R hR
-    exact pg_RsetDescended_hfactor (k := k) h_gs R (hcoincide ▸ hR)
+    exact pg_RsetDescended_hfactor (k := k) h_gs R (hcoincide.symm ▸ hR)
 
 end ProximityGap
 
