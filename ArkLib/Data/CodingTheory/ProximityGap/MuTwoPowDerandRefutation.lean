@@ -10,6 +10,9 @@ import Mathlib.Algebra.Polynomial.Eval.Defs
 import Mathlib.Algebra.Polynomial.Degree.Lemmas
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Algebra.Field.ZMod
+import Mathlib.LinearAlgebra.Matrix.Notation
+import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
+import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.NormNum
@@ -63,6 +66,10 @@ evaluate to `(1+ω²)(1-ω²) = 1 - ω⁴ = 2`, at `±ω` the polynomial `p₀` 
   that every 3-wpc hypergraph on 8 geometric coordinates admits only the zero certificate.
 * `MuTwoPowDerandRefutation.not_kwpc_rigidity_zmod17` — concrete instantiation over
   `ZMod 17` (`ω = 9`), witnessing non-vacuity of the hypothesis class.
+* `MuTwoPowDerandRefutation.rimMatrix_det_eq_zero` — the **matrix-level statement**: the
+  explicit 6×6 reduced intersection matrix of `badHypergraph` at the geometric point has
+  determinant zero (via the explicit kernel vector `rimKernelVec`), over every field with
+  `ω⁴ = -1`; `rimMatrix_det_eq_zero_zmod17` instantiates it over `F₁₇`.
 
 The companion computations (exact symbolic determinant
 `D(q) = q⁸(q-1)⁶(q+1)⁴ Φ₄(q)³ Φ₈(q)`, mod-p rank checks, and the exhaustive
@@ -270,5 +277,67 @@ theorem not_kwpc_rigidity_zmod17 :
             (p u).eval ((9 : ZMod 17) ^ (i : ℕ)) = (p v).eval ((9 : ZMod 17) ^ (i : ℕ))) →
           ∀ v, p v = 0 :=
   not_kwpc_rigidity (9 : ZMod 17) (by decide)
+
+/-! ## The matrix-level statement: the explicit RIM and its vanishing determinant -/
+
+/-- The reduced intersection matrix of `badHypergraph` at the geometric point `Xᵢ = ω^i`
+(`k = 3`; column blocks for vertices 0 and 1, reference vertex 2 dropped; one row per
+busy edge, in coordinate order `0, 1, 2, 4, 5, 6`).  The row for edge `{j₁, j₂}` at
+coordinate `i` carries the Vandermonde row `(1, ω^i, ω^{2i})` in block `j₁` and its
+negation in block `j₂` (a reference block contributes nothing). -/
+def rimMatrix : Matrix (Fin 6) (Fin 6) F :=
+  !![1, 1, 1, -1, -1, -1;
+     1, ω, ω ^ 2, 0, 0, 0;
+     0, 0, 0, 1, ω ^ 2, ω ^ 4;
+     1, ω ^ 4, ω ^ 8, -1, -ω ^ 4, -ω ^ 8;
+     1, ω ^ 5, ω ^ 10, 0, 0, 0;
+     0, 0, 0, 1, ω ^ 6, ω ^ 12]
+
+/-- The kernel vector: the coefficient vector `(c₀, c₁, c₂, d₀, d₁, d₂)` of the
+certificate `(p₀, p₁) = ((1+ω²)(X²-ω²), X²+1)`. -/
+def rimKernelVec : Fin 6 → F :=
+  ![-((1 + ω ^ 2) * ω ^ 2), 0, 1 + ω ^ 2, 1, 0, 1]
+
+theorem rimKernelVec_ne_zero : rimKernelVec ω ≠ 0 := by
+  intro h
+  have h3 := congrFun h 3
+  simp [rimKernelVec] at h3
+
+/-- The certificate coefficient vector lies in the kernel of the RIM. -/
+theorem rimMatrix_mulVec_eq_zero (hω : ω ^ 4 = -1) :
+    (rimMatrix ω).mulVec (rimKernelVec ω) = 0 := by
+  have h8 := omega_pow_eight ω hω
+  funext i
+  fin_cases i
+  · -- row 0 (edge {0,1} at ω⁰):  p₀(1) − p₁(1) = 0
+    simp [rimMatrix, rimKernelVec, Matrix.mulVec, dotProduct, Fin.sum_univ_six]
+    linear_combination (-1 : F) * hω
+  · -- row 1 (edge {0,2} at ω¹):  p₀(ω) = 0, a ring identity
+    simp [rimMatrix, rimKernelVec, Matrix.mulVec, dotProduct, Fin.sum_univ_six]
+    ring
+  · -- row 2 (edge {1,2} at ω²):  p₁(ω²) = ω⁴ + 1 = 0
+    simp [rimMatrix, rimKernelVec, Matrix.mulVec, dotProduct, Fin.sum_univ_six]
+    linear_combination hω
+  · -- row 3 (edge {0,1} at ω⁴):  p₀(ω⁴) − p₁(ω⁴) = 0
+    simp [rimMatrix, rimKernelVec, Matrix.mulVec, dotProduct, Fin.sum_univ_six]
+    linear_combination (-1 : F) * hω + ω ^ 2 * h8
+  · -- row 4 (edge {0,2} at ω⁵):  p₀(ω⁵) = 0
+    simp [rimMatrix, rimKernelVec, Matrix.mulVec, dotProduct, Fin.sum_univ_six]
+    linear_combination (1 + ω ^ 2) * ω ^ 2 * h8
+  · -- row 5 (edge {1,2} at ω⁶):  p₁(ω⁶) = ω¹² + 1 = 0
+    simp [rimMatrix, rimKernelVec, Matrix.mulVec, dotProduct, Fin.sum_univ_six]
+    linear_combination hω + ω ^ 4 * h8
+
+/-- **The determinant/rank drop.**  The explicit reduced intersection matrix of the
+3-wpc `badHypergraph` is singular at the geometric point, over every field containing
+`ω` with `ω⁴ = -1` — the concrete matrix witness that the `μ_{2^t}` RIM full-rank
+derandomization target of AGL24/GZ is false. -/
+theorem rimMatrix_det_eq_zero (hω : ω ^ 4 = -1) : (rimMatrix ω).det = 0 :=
+  Matrix.exists_mulVec_eq_zero_iff.mp
+    ⟨rimKernelVec ω, rimKernelVec_ne_zero ω, rimMatrix_mulVec_eq_zero ω hω⟩
+
+/-- `F₁₇` instantiation of the determinant drop (`ω = 9`, an element of order 8). -/
+theorem rimMatrix_det_eq_zero_zmod17 : (rimMatrix (9 : ZMod 17)).det = 0 :=
+  rimMatrix_det_eq_zero (9 : ZMod 17) (by decide)
 
 end MuTwoPowDerandRefutation
