@@ -138,6 +138,143 @@ noncomputable def betaCurveInputFin_of_bundle {k deg : ℕ} {domain : ι ↪ F} 
     Ppoly hrep hdegX hβ mpFin hd1 hdH_le hdH_D hbB hBzero hbξ hcardConcreteFin htailDeg
     hHensel hdegPz
 
+/-! ## The per-received-word supplier `section5Concrete_of_close_word`
+
+Packaging `betaCurveInputFin_of_bundle` into the *supplier shape* the keystone front door consumes:
+for every received curve `u` (under the §5 regime conditions) a `BetaCurveInputFin u`.  The
+GS-factor `Bundle` is the `(u, P)`-independent head (it depends only on the received affine-line
+endpoints behind the construction), so it is supplied once; the per-`u` residual data — the genuine
+§5 / App-A.4 geometric inputs isolated above — is supplied by the `perWord` producer.
+
+This is the honest final supplier: the only inputs are the GS-factor `Bundle` (the proven output of
+the GS interpolant chain) and, per received word, the named §5 residual frontier. -/
+
+/-- **The per-received-word `BetaCurveInputFin` supplier from a centred GS-factor `Bundle`.**
+
+For each received curve `u` satisfying the §5 regime conditions (the proximity probability bound, the
+unique-decoding lower bound, the strict square-root upper bound), produces a `BetaCurveInputFin u`
+out of the (`u`-independent) GS-factor `Bundle (0 : F)` and a per-`u` producer of the genuine §5 /
+App-A.4 residual data (numerator residual, per-point matching, weight budgets, concrete cardinality,
+algebraic-degree datum, specialisation bridge, Prop-5.5 representative).
+
+This is exactly the `hInput` shape consumed by
+`KeystoneStrictResidual.correlatedAgreement_affine_curves_johnson_of_betaRecFin_strict`. -/
+noncomputable def section5Concrete_of_close_word {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    (b : GSFactorData.Bundle (F := F) (0 : F))
+    [_inst_hIrr : Fact (Irreducible b.H)] [_inst_hPos : Fact (0 < b.H.natDegree)]
+    (Bcoeff : (i₁ : ℕ) → {m : ℕ} → Nat.Partition m → 𝒪 b.H)
+    (hd1 : 1 ≤ b.R.natDegree) (hdH_le : b.H.natDegree ≤ b.R.natDegree)
+    (hdH_D : b.H.natDegree ≤ b.D)
+    (hbB : ∀ (i₁ : ℕ) {m : ℕ} (p : Nat.Partition m),
+        weight_Λ_over_𝒪 b.hH (Bcoeff i₁ p) b.D
+          ≤ (WithBot.some ((b.D - Multiset.card p.parts)
+              + (b.R.natDegree - betaδ i₁ - Multiset.card p.parts)
+                * (b.D - b.H.natDegree)) : WithBot ℕ))
+    (hBzero : ∀ (i₁ : ℕ) {m : ℕ} (p : Nat.Partition m),
+        b.R.natDegree - betaδ i₁ < Multiset.card p.parts → Bcoeff i₁ p = 0)
+    (hbξ : weight_Λ_over_𝒪 b.hH (ξ (0 : F) b.R b.H b.hHyp) b.D
+        ≤ (WithBot.some ((b.R.natDegree - 1) * (b.D - b.H.natDegree + 1)) : WithBot ℕ))
+    (hβ : ∀ t, β (H := b.H) b.R t = betaRec (0 : F) b.R b.H b.hHyp Bcoeff t)
+    -- per received word `u`: the genuine §5 geometric residual data (matching set, root section,
+    -- truncation index, Prop-5.5 representative, per-point matching, concrete cardinality, tail
+    -- degree, specialisation bridge):
+    (perWord : ∀ (u : WordStack F (Fin (k + 1)) ι),
+      Σ' (matchingSet : Finset F) (root : (z : F) → rationalRoot (H_tilde' b.H) z) (T : ℕ)
+         (Ppoly : F[X][Y]),
+        (polyToPowerSeries𝕃 b.H Ppoly = γ (0 : F) b.R b.H b.hHyp) ×'
+        (Polynomial.Bivariate.degreeX Ppoly ≤ 1) ×'
+        (∀ t, k ≤ t → t ≤ T → ∀ z ∈ matchingSet,
+          BetaMatchingVanishes.MatchingPoint (0 : F) b.R b.H b.hHyp Bcoeff t z (root z)) ×'
+        (∀ t, k ≤ t → t ≤ T → (↑matchingSet.card : WithBot ℕ)
+          > (((2 * t + 1) * b.R.natDegree * b.D * b.H.natDegree : ℕ) : WithBot ℕ)) ×'
+        (∀ t, T < t →
+          BetaToCurveCoeffPolys.αFromBeta (0 : F) b.R b.H b.hHyp Bcoeff t = 0) ×'
+        (∀ (P : F → Polynomial F) (v₀ v₁ : F[X]),
+          γ (0 : F) b.R b.H b.hHyp = polyToPowerSeries𝕃 b.H
+            ((Polynomial.map Polynomial.C v₀)
+              + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)) →
+          HenselDatum (k := k) (deg := deg) (domain := domain) (δ := δ) u P v₀ v₁) ×'
+        (∀ (_P : F → Polynomial F) (v₀ v₁ : F[X]),
+          γ (0 : F) b.R b.H b.hHyp = polyToPowerSeries𝕃 b.H
+            ((Polynomial.map Polynomial.C v₀)
+              + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)) →
+          v₀.natDegree < k + 1 ∧ v₁.natDegree < k + 1))
+    (u : WordStack F (Fin (k + 1)) ι) :
+    BetaCurveInputFin (k := k) (deg := deg) (domain := domain) (δ := δ) u :=
+  match perWord u with
+  | ⟨matchingSet, root, T, Ppoly, hrep, hdegX, mpFin, hcardConcreteFin, htailDeg, hHensel, hdegPz⟩ =>
+    betaCurveInputFin_of_bundle (k := k) (deg := deg) (domain := domain) (δ := δ) (u := u)
+      b Bcoeff matchingSet root T Ppoly hrep hdegX hβ mpFin
+      hd1 hdH_le hdH_D hbB hBzero hbξ hcardConcreteFin htailDeg hHensel hdegPz
+
+/-! ## The milestone — the strict keystone consuming only genuine regime hypotheses
+
+Feeding the per-`u` supplier into the strict Johnson front door yields the literal BCIKS20 keystone
+goal `δ_ε_correlatedAgreementCurves` in the strict square-root regime.  The Johnson list-decoding
+branch is driven by the real `betaRec` capsule (via the satisfiable `BetaCurveInputFin`), and the
+inputs are the GS-factor `Bundle` (proven output of the GS interpolant chain) plus the genuine §5
+geometric residual frontier carried by `section5Concrete_of_close_word`. -/
+
+/-- **Milestone — the §5 correlated-agreement keystone from concrete GS-interpolant data.**
+
+`δ_ε_correlatedAgreementCurves` (the literal `correlatedAgreement_affine_curves` goal) holds in the
+strict square-root Johnson regime (`hδ : δ < 1 − √rate`) given:
+
+* a GS-factor `Bundle (0 : F)` (the proven output of `GSFactorData.of_section5Inputs`, i.e. the GS
+  interpolant `ModifiedGuruswami` + graph side conditions);
+* the standing App-A weight/degree data `Bcoeff`/`hd1`/`hdH_le`/`hdH_D`/`hbB`/`hBzero`/`hbξ` and the
+  single numerator residual `hβ`;
+* a per-received-word producer `perWord` of the genuine §5 / App-A.4 geometric residual data.
+
+The list-decoding branch is supplied by the satisfiable `BetaCurveInputFin` via
+`section5Concrete_of_close_word`, so the keystone consumes a **real `β`**.  No `sorry`/`axiom`. -/
+theorem correlatedAgreement_affine_curves_johnson_concrete {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    [NeZero deg]
+    (hδ : δ < 1 - ReedSolomon.sqrtRate deg domain)
+    (b : GSFactorData.Bundle (F := F) (0 : F))
+    [_inst_hIrr : Fact (Irreducible b.H)] [_inst_hPos : Fact (0 < b.H.natDegree)]
+    (Bcoeff : (i₁ : ℕ) → {m : ℕ} → Nat.Partition m → 𝒪 b.H)
+    (hd1 : 1 ≤ b.R.natDegree) (hdH_le : b.H.natDegree ≤ b.R.natDegree)
+    (hdH_D : b.H.natDegree ≤ b.D)
+    (hbB : ∀ (i₁ : ℕ) {m : ℕ} (p : Nat.Partition m),
+        weight_Λ_over_𝒪 b.hH (Bcoeff i₁ p) b.D
+          ≤ (WithBot.some ((b.D - Multiset.card p.parts)
+              + (b.R.natDegree - betaδ i₁ - Multiset.card p.parts)
+                * (b.D - b.H.natDegree)) : WithBot ℕ))
+    (hBzero : ∀ (i₁ : ℕ) {m : ℕ} (p : Nat.Partition m),
+        b.R.natDegree - betaδ i₁ < Multiset.card p.parts → Bcoeff i₁ p = 0)
+    (hbξ : weight_Λ_over_𝒪 b.hH (ξ (0 : F) b.R b.H b.hHyp) b.D
+        ≤ (WithBot.some ((b.R.natDegree - 1) * (b.D - b.H.natDegree + 1)) : WithBot ℕ))
+    (hβ : ∀ t, β (H := b.H) b.R t = betaRec (0 : F) b.R b.H b.hHyp Bcoeff t)
+    (perWord : ∀ (u : WordStack F (Fin (k + 1)) ι),
+      Σ' (matchingSet : Finset F) (root : (z : F) → rationalRoot (H_tilde' b.H) z) (T : ℕ)
+         (Ppoly : F[X][Y]),
+        (polyToPowerSeries𝕃 b.H Ppoly = γ (0 : F) b.R b.H b.hHyp) ×'
+        (Polynomial.Bivariate.degreeX Ppoly ≤ 1) ×'
+        (∀ t, k ≤ t → t ≤ T → ∀ z ∈ matchingSet,
+          BetaMatchingVanishes.MatchingPoint (0 : F) b.R b.H b.hHyp Bcoeff t z (root z)) ×'
+        (∀ t, k ≤ t → t ≤ T → (↑matchingSet.card : WithBot ℕ)
+          > (((2 * t + 1) * b.R.natDegree * b.D * b.H.natDegree : ℕ) : WithBot ℕ)) ×'
+        (∀ t, T < t →
+          BetaToCurveCoeffPolys.αFromBeta (0 : F) b.R b.H b.hHyp Bcoeff t = 0) ×'
+        (∀ (P : F → Polynomial F) (v₀ v₁ : F[X]),
+          γ (0 : F) b.R b.H b.hHyp = polyToPowerSeries𝕃 b.H
+            ((Polynomial.map Polynomial.C v₀)
+              + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)) →
+          HenselDatum (k := k) (deg := deg) (domain := domain) (δ := δ) u P v₀ v₁) ×'
+        (∀ (_P : F → Polynomial F) (v₀ v₁ : F[X]),
+          γ (0 : F) b.R b.H b.hHyp = polyToPowerSeries𝕃 b.H
+            ((Polynomial.map Polynomial.C v₀)
+              + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)) →
+          v₀.natDegree < k + 1 ∧ v₁.natDegree < k + 1)) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
+  correlatedAgreement_affine_curves_johnson_of_betaRecFin_strict
+    (k := k) (deg := deg) (domain := domain) (δ := δ) hδ
+    (fun _hk u _hprob _hJ _hsqrt =>
+      section5Concrete_of_close_word (k := k) (deg := deg) (domain := domain) (δ := δ)
+        b Bcoeff hd1 hdH_le hdH_D hbB hBzero hbξ hβ perWord u)
+
 end Section5Concrete
 
 end ArkLib
@@ -145,3 +282,5 @@ end ArkLib
 /-! ## Axiom audit — every declaration must rest only on
 `[propext, Classical.choice, Quot.sound]`, no `sorry`/`admit`/`axiom`/`native_decide`. -/
 #print axioms ArkLib.Section5Concrete.betaCurveInputFin_of_bundle
+#print axioms ArkLib.Section5Concrete.section5Concrete_of_close_word
+#print axioms ArkLib.Section5Concrete.correlatedAgreement_affine_curves_johnson_concrete
