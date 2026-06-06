@@ -60,7 +60,7 @@ set_option linter.unusedSectionVars false
 
 namespace ProximityGap
 
-open scoped NNReal
+open scoped NNReal ProbabilityTheory
 
 universe u
 
@@ -301,6 +301,41 @@ def MCALowerWitness.ofLineDecodingTarget
     (hle : (a : ENNReal) / (Fintype.card F : ENNReal) ≤ (ε_star : ENNReal)) :
     MCALowerWitness (C : Set (ι → F)) ε_star :=
   MCALowerWitness.ofLe hδ_le_one (le_trans hTarget hle)
+
+/-- **Bridge from ABF26 Theorem 4.17 [CS25 Cor 1].** In the complete CA-breakdown regime
+`ε_ca(RS, δ, δ) = 1`; any threshold `ε* < 1` therefore gives an MCA upper witness at `δ`.
+This is the direct witness-form connector from the CS25 capacity-side lower bound. -/
+noncomputable def MCAUpperWitness.ofRSBreakdownCS25
+    (domain : ι ↪ F) (k : ℕ) (δ ε_star : ℝ≥0)
+    (hq_ge : 10 ≤ Fintype.card F)
+    (hδ_lo :
+        1 - CodingTheory.qEntropy (Fintype.card F) (δ : ℝ) + 2 / (Fintype.card ι : ℝ)
+            + ((CodingTheory.qEntropy (Fintype.card F) (δ : ℝ) - (δ : ℝ))
+                / (Fintype.card ι : ℝ)) ^ ((1 : ℝ) / 2)
+          ≤ (k : ℝ) / Fintype.card ι)
+    (hδ_hi : (k : ℝ) / Fintype.card ι ≤ 1 - (δ : ℝ) - 2 / (Fintype.card ι : ℝ))
+    (hCS25 : CodingTheory.rs_epsCA_breakdown_cs25 domain k δ hq_ge hδ_lo hδ_hi)
+    (hε : (ε_star : ENNReal) < 1) :
+    MCAUpperWitness (ReedSolomon.code domain k : Set (ι → F)) ε_star :=
+  MCAUpperWitness.ofEpsCAGt (MC := ReedSolomon.code domain k) (ε_star := ε_star) (δ := δ) <| by
+    rw [hCS25]
+    exact hε
+
+/-- **Bridge from ABF26 Lemma 4.19 [DG25 Thm 2.5].** A sampling lower bound on `ε_ca`,
+combined with a numeric comparison showing that sampling lower bound exceeds `ε*`, gives an
+MCA upper witness through `ε_ca ≤ ε_mca`. -/
+noncomputable def MCAUpperWitness.ofSamplingDG25
+    (C : LinearCode ι F) (δ δ' ε_star : ℝ≥0)
+    (hδ' : (δ' : ENNReal) = ⨆ u : ι → F, δᵣ(u, (C : Set (ι → F))))
+    (hδ_pos : 0 < δ) (hδ_lt : δ < δ')
+    (hDG25 : CodingTheory.linear_epsCA_ge_sampling_dg25 C δ δ' hδ' hδ_pos hδ_lt)
+    (hgt :
+      ((Fintype.card F - 1 : ℝ≥0) / Fintype.card F : ENNReal)
+          * Pr_{let u ← $ᵖ (ι → F)}[δᵣ(u, (C : Set (ι → F))) ≤ δ] >
+        (ε_star : ENNReal)) :
+    MCAUpperWitness (C : Set (ι → F)) ε_star :=
+  MCAUpperWitness.ofEpsCAGt (MC := C) (ε_star := ε_star) (δ := δ)
+    (lt_of_lt_of_le hgt hDG25)
 
 /-! ## §4.5 conjecture and its positive-direction link to the prize
 
