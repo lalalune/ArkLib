@@ -277,7 +277,12 @@ theorem duplexSpongeFiatShamir_completeness_unroll_of_run_eq
       (QueryImpl.liftTarget (StateT σ ProbComp)
         (challengeQueryImpl (pSpec := ⟨!v[Direction.P_to_V], !v[pSpec.Messages]⟩)))
       (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn) using 2
-    rfl
+    simp only [liftM_OptionT_eq, ← QueryImpl.simulateQ_compose]
+    congr 1
+    funext t
+    rcases t with t | t <;>
+      simp only [QueryImpl.apply_compose, simulateQ_spec_query, simulateQ_query,
+        Functor.map_map, id_map, id_eq, Function.comp]
   rw [hcollapse]
 
 /-- **Reduction of `duplexSpongeFiatShamirSalted_completeness_unroll` to the run-equality
