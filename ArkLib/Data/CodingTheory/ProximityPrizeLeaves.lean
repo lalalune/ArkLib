@@ -82,7 +82,7 @@ theorem natDegree_dilateMatrix_det_le {F : Type*} [CommRing F] {s k : ℕ}
         intro a _ha
         exact (natDegree_comp_dilate_le (P a) (q (σ a)) (hq (σ a))).trans (hP a)
     _ = s * (k - 1) := by
-        rw [Finset.sum_const, Finset.card_univ, Fintype.card_fin, smul_eq_mul]
+        rw [Finset.sum_const, Finset.card_univ, Fintype.card_fin, Nat.nsmul_eq_mul]
 
 /-- The folded Wronskian satisfies the GK16 degree bound: if every `P j` has degree
 `< k`, then `natDegree (foldedWronskian P ω) ≤ s · (k - 1)`. -/

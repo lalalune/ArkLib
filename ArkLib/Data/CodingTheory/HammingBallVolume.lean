@@ -145,7 +145,7 @@ lemma card_filter_hammingDist_eq
     rw [h_prod_eq, Finset.prod_ite, Finset.prod_const, Finset.prod_const_one, mul_one]
     -- `(univ.filter (· ∈ S)).card = S.card = i`.
     rw [Finset.filter_univ_mem]; exact congrArg _ hS.2
-  rw [Finset.sum_congr rfl h_fiber, Finset.sum_const, smul_eq_mul,
+  rw [Finset.sum_congr rfl h_fiber, Finset.sum_const, Nat.nsmul_eq_mul,
       Finset.card_powersetCard, Finset.card_univ]
 
 /-- **Bridge to `hammingBall`.** The volume function counts the cardinality of the
