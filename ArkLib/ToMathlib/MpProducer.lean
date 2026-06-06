@@ -65,8 +65,9 @@ is the only field reconstructed from in-tree facts rather than assumed.
 
 * `mkMatchingPoint` — the constructor: from the genuine §5 per-`z` Hensel geometry (the nine
   isolated root/congruence/derivative facts) together with the four π_z-specialized bridging facts
-  for `coeffExtract`, it produces a `BetaMatchingVanishes.MatchingPoint x₀ R H hHyp Bcoeff t z root`.
-  The `coeffExtract` field is filled by `MatchingPoint.mk_coeffExtract` (in-tree); the other nine are
+  for `coeffExtract`, it produces a
+  `BetaMatchingVanishes.MatchingPoint x₀ R H hHyp Bcoeff t z root`.  The `coeffExtract` field
+  is filled by `MatchingPoint.mk_coeffExtract` (in-tree); the other nine are
   the isolated explicit inputs.
 * `mkMatchingPoint_pi_z_eq_zero` — sanity: the constructed bundle fires
   `MatchingPoint.pi_z_eq_zero`, giving `(π_z z root) (betaRec … t) = 0`.
@@ -152,7 +153,8 @@ def mkMatchingPoint
 
 /-- **Sanity: the constructed bundle yields the per-point conclusion.**  Firing
 `BetaMatchingVanishes.MatchingPoint.pi_z_eq_zero` on `mkMatchingPoint` (Hensel uniqueness +
-the in-tree `coeffExtract`) gives the geometric matching vanishing `(π_z z root)(betaRec … t) = 0`. -/
+the in-tree `coeffExtract`) gives the geometric matching vanishing
+`(π_z z root)(betaRec … t) = 0`. -/
 theorem mkMatchingPoint_pi_z_eq_zero
     (f : Polynomial (PowerSeries F)) (aβ aP a₀ : PowerSeries F)
     (haβ_root : f.IsRoot aβ) (haP_root : f.IsRoot aP)

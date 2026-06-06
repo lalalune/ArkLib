@@ -237,7 +237,8 @@ namespace FoldPhase
 --     (x₀ : F) : Prop :=
 --   ∀ s₀ : evalDomain D x (∑ j' ∈ (List.take j.1 (List.finRange (k + 1))).toFinset, s j'),
 --       let queries :
---           List (evalDomain D x (∑ j' ∈ (List.take j.1 (List.finRange (k + 1))).toFinset, s j')) :=
+--           List (evalDomain D x
+--             (∑ j' ∈ (List.take j.1 (List.finRange (k + 1))).toFinset, s j')) :=
 --             List.map
 --               (
 --                 fun r =>
@@ -502,7 +503,8 @@ instance instFoldVerifierAppendCoherent :
     apply eq_of_heq
     refine HEq.trans ?_ (cast_heq _ _).symm
     -- The message interface at `⟨1,_⟩` is `instFunction` of the codeword carrier with exponent
-    -- `finRangeTo (k+1) (i.val+1)`; bridge to it, then match the output oracle at `a` (`a.val = i.val+1`).
+    -- `finRangeTo (k+1) (i.val+1)`; bridge to it, then match the output oracle at `a`
+    --   (`a.val = i.val+1`).
     have hmsg : HEq (instOracleInterfaceMessagePSpec (ω := ω) s (i := i) ⟨1, by simp⟩)
         (@OracleInterface.instFunction
           (↥((ω.subdomain (∑ j' ∈ finRangeTo (k+1) (i.1+1), (s j':ℕ))).toFinset)) F) := by rfl
@@ -778,7 +780,8 @@ Unlike the non-final rounds, the *output* interface family `FinalOracleStatement
 hand-built `finalOracleStatementInterface` (a `dite`/`ite` on `j.val = k+1`), while the *input*
 `OracleStatement` carries the canonical `instFunction` and the message carries
 `OracleInterface.instDefault`. So even when the underlying carrier types coincide the registered
-`OracleInterface` *structures* are only propositionally (not definitionally) equal — exactly the free
+`OracleInterface` *structures* are only propositionally (not definitionally) equal — exactly the
+free
 `Oₛ₂` parameter the coherence class is designed to capture. The cast in each coherence field is
 discharged by `OracleInterface.ext`, reducing to a `Query` (type) equality and a heterogeneous
 `toOC` equality; the latter descends through `OracleContext`/`OracleSpec`/`QueryImpl` via the

@@ -340,7 +340,8 @@ end RandomQuery
 --   Random query where we throw away the second oracle, and replace with the response:
 --   - The input relation is `{ ⟨⟨_, 𝒪⟩, _⟩ | 𝒪 0 = 𝒪 1 }`.
 --   - The output relation is `{ ⟨⟨q, r⟩, 𝒪⟩, _⟩ | oracle (𝒪 0) q = r }`.
---   - The (oracle) verifier sends a single random query `q` to the prover, queries the oracle `𝒪 1` at
+--   - The (oracle) verifier sends a single random query `q` to the prover, queries the oracle
+--     `𝒪 1` at
 --     `q` to get response `r`, returns `(q, r)` as the output statement, and drop `𝒪 1` from the
 --     output oracle statement.
 
@@ -361,8 +362,8 @@ end RandomQuery
 --   oracles 0 = oracles 1
 
 -- /--
--- The final relation states that the first oracle `oStmt ()` agrees with the response `r` at the query
--- `q`.
+-- The final relation states that the first oracle `oStmt ()` agrees with the response `r` at the
+-- query `q`.
 -- -/
 -- @[reducible, simp]
 -- def relOut : (StmtOut OStatement × ∀ i, OStmtOut OStatement i) → WitOut → Prop :=

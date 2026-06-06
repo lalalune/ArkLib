@@ -508,8 +508,9 @@ theorem take_succ_eq_concat {pSpec : ProtocolSpec n} (tr : pSpec.FullTranscript)
 
 omit [∀ i, SampleableType (pSpec.Challenge i)] in
 /-- **State-function first-crossing on the realized transcript.**  Specialization of
-`exists_challenge_flip_of_false_zero_true_last` to a `StateFunction`: if the input statement is *not*
-in `langIn` (so the state function is `false` on the empty round-`0` prefix) and the state function
+`exists_challenge_flip_of_false_zero_true_last` to a `StateFunction`: if the input statement is
+*not* in `langIn` (so the state function is `false` on the empty round-`0` prefix) and the state
+function
 is `true` on the *full* transcript `tr` (round `last n`), then there is a challenge round `i` at
 which the state function flips on prefixes of `tr` — in the exact `(prefix, prefix.concat (tr i))`
 shape consumed by the round-by-round soundness game.
@@ -672,7 +673,8 @@ def KnowledgeStateFunctionOneShot.toKnowledgeStateFunction
       rcases h with hstF | hrel
       · exfalso
         -- At round 0 the `stF.toFun` disjunct is impossible: generalize the index to expose the
-        -- `Transcript 0` subsingleton, then `stF.toFun 0 stmtIn default` is `False` by `toFun_empty`.
+        -- `Transcript 0` subsingleton, then `stF.toFun 0 stmtIn default` is `False` by
+        -- `toFun_empty`.
         have h0 : ¬ stF.toFun m.castSucc stmtIn tr := by
           have key : ∀ (k : Fin (n + 1)), k = 0 → ∀ (t : Transcript k pSpec),
               ¬ stF.toFun k stmtIn t := by

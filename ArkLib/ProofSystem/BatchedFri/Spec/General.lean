@@ -49,14 +49,15 @@ variable {ω : SmoothCosetFftDomain n F}
 
 -- DEFINITION COMPLETED (2026-06-04): whole-protocol batched-FRI input relation. The protocol input
 -- is a batch of `m + 1` purported codewords on the full evaluation domain `ω`, each committed to a
--- low-degree witness polynomial (degree `< 2 ^ (∑ s) * d`). Following [BCIKS20 §8]/[FRI1216] this is
--- the batched proximity relation: each oracle is the honest evaluation of its witness polynomial AND
+-- low-degree witness polynomial (degree `< 2 ^ (∑ s) * d`). Following [BCIKS20 §8]/[FRI1216] this
+-- is the batched proximity relation: each oracle is the honest evaluation of its witness polynomial
+-- AND
 -- is within relative Hamming distance `δ` of the Reed–Solomon code on `ω` of degree `2 ^ (∑ s) * d`
 -- (`δᵣ(fⱼ, RS) ≤ δ`). The witness/agreement half is exactly `BatchingRound.inputRelation`; the δ-
 -- proximity half is the soundness target the batching+FRI reduction tests.
 
-/-- The full-domain Reed–Solomon code on `ω` of degree `2 ^ (∑ s) * d`, the batched FRI degree bound;
-  uses the `Subtype.val` embedding of `ω.toFinset` into `F`. -/
+/-- The full-domain Reed–Solomon code on `ω` of degree `2 ^ (∑ s) * d`, the batched FRI degree
+  bound; uses the `Subtype.val` embedding of `ω.toFinset` into `F`. -/
 noncomputable def batchCode : Submodule F (ω.toFinset → F) :=
   ReedSolomon.code
     (⟨fun x => x.1, fun _ _ h => Subtype.ext h⟩ : ω.toFinset ↪ F)
@@ -221,8 +222,9 @@ def liftedFRI [DecidableEq F] :
       Fri.Spec.FinalFoldPhase.pSpec F ++ₚ
       Fri.Spec.QueryRound.pSpec (ω := ω) l
     ) :=
-    -- MIGRATED (2026-06-04): OracleLens 2-lens API — the value-level context lens drives the prover,
-    -- the oracle-routing `stmtLens := batchedFRIOracleLens` supplies `simOStmt`/`embedOStmt`.
+    -- MIGRATED (2026-06-04): OracleLens 2-lens API — the value-level context lens drives the
+    -- prover, the oracle-routing `stmtLens := batchedFRIOracleLens` supplies
+    -- `simOStmt`/`embedOStmt`.
     OracleReduction.liftContext
       (liftingLens k s d m)
       (batchedFRIOracleLens k s d dom_size_cond l m)

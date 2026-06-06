@@ -260,7 +260,8 @@ lemma oracleVerifier_verify_collapse
   erw [OptionT.run_bind_lift]
   erw [pure_bind]
   -- The `instDefault` answer is the message itself: reduce `answer m () = m` FIRST so the two
-  -- `if`-conditions coincide, then push `simulateQ`/`OptionT.run` through the query-free `if`/`pure`s.
+  -- `if`-conditions coincide, then push `simulateQ`/`OptionT.run` through the query-free
+  --   `if`/`pure`s.
   rw [answer_instDefault]
   simp only [apply_ite, bind_pure_comp, map_pure]
   -- Both `if`-conditions are now identical; collapse the nested `if` and `simulateQ (pure …)`.
@@ -325,7 +326,8 @@ noncomputable def batchingRbrExtractor :
 
 /-- RBR knowledge soundness error for the batching phase.
 The only verifier randomness is `r''`. A collision has probability related to `κ/|L|`.
-The current local theorem uses the always-valid unit bound until the DP24/SZ bridge is formalized. -/
+The current local theorem uses the always-valid unit bound until the DP24/SZ bridge is
+formalized. -/
 def batchingRBRKnowledgeError (i : (pSpecBatching (κ := κ) (L := L) (K := K) (P := P)).ChallengeIdx) : ℝ≥0 :=
   -- Repaired local bound: the sharp `κ / |L|` claim needs the missing DP24/SZ bridge from
   -- `compute_s0` to a nonzero polynomial root count. The unit bound is always available.
@@ -471,7 +473,8 @@ noncomputable def batchingKnowledgeStateFunction :
     -- `simulateQ (OracleInterface.simOracle2 …)` it collapses, via the support lemma
     -- `Prelude.simulateQ_simOracle2_query`, to `pure (answer s_hat)`. Threaded through
     -- `oracleVerifier_verify_collapse`, the whole `verifier.run` reduces to a single deterministic
-    -- `pure (if performCheck … then stmtOutAccept else failureState, oStmtOut)`; the proof then runs
+    -- `pure (if performCheck … then stmtOutAccept else failureState, oStmtOut)`; the proof then
+    --   runs
     -- `probEvent_pos_iff` → `OptionT.mem_support_iff` → collapse → `split` on `performCheck` →
     -- `subst` the singleton support → transport `h_relOut` (the `embed = Sum.inl` map gives
     -- `oStmtOut = oStmt`). The same `Prelude` support lemma serves the analogous message-querying
@@ -486,7 +489,8 @@ noncomputable def batchingKnowledgeStateFunction :
       support_map, Set.mem_image, Prod.exists] at hx
     obtain ⟨val, s', hmem, heq⟩ := hx
     -- Collapse the inner verifier body (the message query is the load-bearing step) to the
-    -- deterministic `if performCheck … then stmtOutAccept else failureState` via the collapse lemma.
+    -- deterministic `if performCheck … then stmtOutAccept else failureState` via the collapse
+    --   lemma.
     rw [oracleVerifier_verify_collapse] at hmem
     -- The verifier run is now query-free (`pure`/`if`). Case-split the verifier's accept/reject
     -- decision (`split`), then collapse each `pure` branch to a singleton support.
@@ -507,10 +511,12 @@ noncomputable def batchingKnowledgeStateFunction :
         Transcript.toMessagesUpTo, Transcript.toChallengesUpTo, FullTranscript.messages,
         FullTranscript.challenges, oracleVerifier] at hrel ⊢
     -- `hrel` (verifier output ∈ relOut) IS the round-2 KState for the matching branch; the
-    -- `embed = Sum.inl` map makes `oStmtOut = oStmtLast`, and the message/challenge accessors agree.
+    -- `embed = Sum.inl` map makes `oStmtOut = oStmtLast`, and the message/challenge accessors
+    --   agree.
     all_goals dsimp only [Fin.last, Fin.isValue]
     -- The verifier's accept/reject decision (`hmem`'s `split`, hyp `h✝`) determines which branch
-    -- of the round-2 KState `if` is taken; `hrel` supplies exactly that `sumcheckRoundRelationProp`.
+    -- of the round-2 KState `if` is taken; `hrel` supplies exactly that
+    --   `sumcheckRoundRelationProp`.
     -- The `embed = Sum.inl` map gives `oStmtOut = oStmtLast`, so `hrel` matches up to that cast.
     · rw [if_pos (by assumption)]
       convert hrel using 3

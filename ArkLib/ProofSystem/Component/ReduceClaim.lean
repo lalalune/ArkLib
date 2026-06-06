@@ -129,7 +129,8 @@ lemma support_mk (m : Type _ → Type _) [Monad m] [HasEvalSet m]
     {α} (mx : m (Option α)) :
     support (OptionT.mk mx) = {x | some x ∈ support mx} := by
   -- `OptionT.mk` packages an `m (Option α)` into `OptionT m α`; the standalone instance gives
-  -- `support (OptionT.mk mx) = some ⁻¹' support (OptionT.run (OptionT.mk mx)) = some ⁻¹' support mx`,
+  -- `support (OptionT.mk mx) = some ⁻¹' support (OptionT.run (OptionT.mk mx))
+  --   = some ⁻¹' support mx`,
   -- which is exactly the set described by the RHS.
   rw [OptionT.support_def]
   ext x; simp
@@ -365,7 +366,8 @@ section OracleReductionO
 DEFINITION ADDED (2026-06-04): The plain `ReduceClaim.oracleReduction` above transforms the output
 statement by a **pure** map `mapStmt : StmtIn → StmtOut` with no oracle access. Some consumers (e.g.
 a single round of sum-check, where the new target `b := q.eval r` is the evaluation of an *oracle*
-polynomial `q`) need the output statement to be computed by **querying the input oracle statements**.
+polynomial `q`) need the output statement to be computed by
+**querying the input oracle statements**.
 
 This variant adds an *oracle-aware* statement map. An oracle reduction's verifier is allowed oracle
 access (its `verify` returns an `OracleComp` over `oSpec + ([OStmtIn]ₒ + [pSpec.Message]ₒ)`), so we
@@ -524,7 +526,8 @@ theorem oracleReductionO_completeness (hMap : MapCoherent mapStmtO mapStmtO_spec
 variable {mapWitInv : (StmtIn × (∀ i, OStmtIn i)) → WitOut → WitIn}
 
 /-- The knowledge state function for the oracle-aware `ReduceClaim` variant. Mirrors
-  `oracleKnowledgeStateFunction` but routes the verifier through `oracleVerifierO_toVerifier_run`. -/
+  `oracleKnowledgeStateFunction` but routes the verifier through
+  `oracleVerifierO_toVerifier_run`. -/
 def oracleKnowledgeStateFunctionO (hMap : MapCoherent mapStmtO mapStmtO_spec)
     (hRel : ∀ stmtIn oStmtIn witOut,
       ((mapStmtO_spec stmtIn oStmtIn, mapOStmt embedIdx hEq oStmtIn), witOut) ∈ relOut →

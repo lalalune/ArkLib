@@ -27,22 +27,29 @@ is captured by the `PlaceGeometry` structure. This packages:
 5. Separability of the matching polynomial.
 
 We show that:
-* Under the separability condition, the derivative $f_z'(a_0)$ is a unit. This discharges the unit-derivative
-  obligation of the matching point family from the algebraic properties of the curve.
-* A single place geometry configuration can be reused at every index $t \in [k, T]$ in the finite range,
-  requiring only the pointwise specialized coefficient readings (`BridgeData`) to vary with $t$.
-* If the root membership is supplied as factor divisibility $(Y - a_P) \mid f_z$ (e.g. from the Guruswami-Sudan factor),
-  it is converted to the root membership condition.
+* Under the separability condition, the derivative $f_z'(a_0)$ is a unit. This discharges
+  the unit-derivative obligation of the matching point family from the algebraic properties
+  of the curve.
+* A single place geometry configuration can be reused at every index $t \in [k, T]$ in the
+  finite range, requiring only the pointwise specialized coefficient readings (`BridgeData`)
+  to vary with $t$.
+* If the root membership is supplied as factor divisibility $(Y - a_P) \mid f_z$ (e.g. from
+  the Guruswami-Sudan factor), it is converted to the root membership condition.
 
 ## Key Formalizations
 * `PlaceGeometry`: Packages the $t$-uniform coordinate place geometry.
-* `BridgeData`: Packages the specialized coefficient readings at the truncation index $t$ and place $z$.
-* `mkMatchingPoint_of_graph_vanishing`: Constructs the matching point instance from place geometry and bridging data.
-* `mpFin_of_close_word`: Threads the place geometry family over the finite counting range $[k, T]$.
-* `placeGeometry_of_matchingDvd`: Constructor for `PlaceGeometry` when root membership is supplied as factor divisibility.
+* `BridgeData`: Packages the specialized coefficient readings at the truncation index $t$
+  and place $z$.
+* `mkMatchingPoint_of_graph_vanishing`: Constructs the matching point instance from place
+  geometry and bridging data.
+* `mpFin_of_close_word`: Threads the place geometry family over the finite counting range
+  $[k, T]$.
+* `placeGeometry_of_matchingDvd`: Constructor for `PlaceGeometry` when root membership is
+  supplied as factor divisibility.
 
 ## References
-* [BCIKS20] Ben-Sasson, Carmon, Ishai, Kopparty, Saraf. *Proximity Gaps for Reed–Solomon Codes*, eprint 2020.
+* [BCIKS20] Ben-Sasson, Carmon, Ishai, Kopparty, Saraf. *Proximity Gaps for Reed–Solomon
+  Codes*, eprint 2020.
 -/
 
 -- Documentation-heavy file (BCIKS §5 / App-A.4 prose in the docstrings); the long-line style
@@ -139,7 +146,8 @@ theorem mkMatchingPoint_of_graph_vanishing_pi_z_eq_zero
 
 /-! ### Finite-Range Matching Point Assembly -/
 
-/-- Constructs the finite-range matching point family from place geometry and bridging data producers. -/
+/-- Constructs the finite-range matching point family from place geometry and bridging data
+producers. -/
 def mpFin_of_close_word {k T : ℕ} {matchingSet : Finset F}
     {root : (z : F) → rationalRoot (H_tilde' H) z}
     (geom : (z : F) → z ∈ matchingSet → PlaceGeometry (F := F) z)
@@ -153,7 +161,8 @@ def mpFin_of_close_word {k T : ℕ} {matchingSet : Finset F}
 
 /-! ### Root Membership from Factor Divisibility -/
 
-/-- Constructs a `PlaceGeometry` instance when the root condition is supplied as a factor divisibility. -/
+/-- Constructs a `PlaceGeometry` instance when the root condition is supplied as a factor
+divisibility. -/
 def placeGeometry_of_matchingDvd {z : F}
     (f : Polynomial (PowerSeries F)) (aβ aP a₀ : PowerSeries F)
     (haβ_root : f.IsRoot aβ)
@@ -172,7 +181,8 @@ def placeGeometry_of_matchingDvd {z : F}
   haP_cong := haP_cong
   hsep := hsep
 
-/-- Constructs the finite-range matching point family when root conditions are supplied as factor divisibility statements. -/
+/-- Constructs the finite-range matching point family when root conditions are supplied as
+factor divisibility statements. -/
 def mpFin_of_graph_vanishing_dvd {k T : ℕ} {matchingSet : Finset F}
     {root : (z : F) → rationalRoot (H_tilde' H) z}
     (f : (z : F) → Polynomial (PowerSeries F))

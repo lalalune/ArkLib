@@ -466,7 +466,8 @@ theorem seqCompose_knowledgeSoundness
   hSeqComposeKnowledgeSoundness
 
 /-- Reduction of `seqComposeChallengeIdxToSigma` along the `inl` embedding of a challenge index of
-    the head protocol `pSpec 0`: it lands in the first component (`Fin 0`) with the original index. -/
+    the head protocol `pSpec 0`: it lands in the first component (`Fin 0`) with the original
+    index. -/
 private theorem seqComposeIdx_inl {m : ℕ} {n : Fin (m + 1) → ℕ} {pSpec : ∀ i, ProtocolSpec (n i)}
     (s : (pSpec 0).ChallengeIdx) :
     seqComposeChallengeIdxToSigma (pSpec := pSpec)
@@ -525,8 +526,8 @@ private theorem seqComposeIdx_inr {m : ℕ} {n : Fin (m + 1) → ℕ} {pSpec : �
 /-- The RBR error of a sequential composition, expressed via `seqComposeChallengeIdxToSigma` over
     the *global* challenge index, equals the appended-form error built from the head error and the
     tail's `seqCompose` error transported by `ChallengeIdx.sumEquiv.symm`. This is the combinatorial
-    bridge identifying the two indexings of the composed protocol's challenges, used to discharge the
-    challenge-index transport goals left by `convert append_rbr…`. -/
+    bridge identifying the two indexings of the composed protocol's challenges, used to discharge
+    the challenge-index transport goals left by `convert append_rbr…`. -/
 private theorem seqComposeError_eq_append {m : ℕ} {n : Fin (m + 1) → ℕ}
     {pSpec : ∀ i, ProtocolSpec (n i)} (f : ∀ i, (pSpec i).ChallengeIdx → ℝ≥0)
     (a : (pSpec 0 ++ₚ ProtocolSpec.seqCompose (fun i => pSpec i.succ)).ChallengeIdx) :

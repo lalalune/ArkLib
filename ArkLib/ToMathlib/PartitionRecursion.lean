@@ -34,8 +34,9 @@ that **sum to `n`**. The dictionary to the BCIKS20 notation is:
 | `λ^(t)` (trivial partition, single part `t`) | `Nat.Partition.indiscrete t` |
 | "`l` in support of `λ`" (a part `l`) | `l ∈ p.parts` |
 
-Finiteness of `P(n)` is `Nat.Partition`'s `Fintype` instance, so `Finset.univ : Finset (Partition n)`
-is the finite index set the outer sum of (A.1) ranges over.
+Finiteness of `P(n)` is `Nat.Partition`'s `Fintype` instance, so
+`Finset.univ : Finset (Partition n)` is the finite index set the outer sum of (A.1) ranges
+over.
 
 ## The key export (what L7's `termination_by` needs)
 

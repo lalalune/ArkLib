@@ -422,7 +422,8 @@ def compute_final_eq_value (r_eval : Fin ℓ → L)
   -- Soundness fix (defect #10, dual of the #8 performCheck fix): the final eq-value must read
   -- the COLUMN components of the eq-tensor. Term-by-term derivation (via
   -- `MLE_eval_eq_sum_eqTilde` + `eqTilde_tensor_expand` + the atomic extraction laws):
-  -- `decomposeColumns (eqTilde(φ₀∘r_suf, φ₁∘ch)) v = Σ_w β.repr(eqTilde(w,r_suf)) v • eqTilde(w,ch)`,
+  -- `decomposeColumns (eqTilde(φ₀∘r_suf, φ₁∘ch)) v
+  --   = Σ_w β.repr(eqTilde(w,r_suf)) v • eqTilde(w,ch)`,
   -- which matches `A_MLE.eval ch` after eqTilde symmetry; the rows form yields the transposed
   -- bilinear pairing, which is NOT symmetric — the A_MLE identity is false for rows.
   let e_u : (Fin κ → Fin 2) → L := P.decomposeColumns e_tensor
@@ -829,8 +830,8 @@ The lemmas above are stated for the concrete `binaryTowerProfile`; here we lift 
 (`P.basis`), row decomposition (`P.decomposeRows`), and its extraction laws (`decomposeRows_add` /
 `decomposeRows_φ₀_mul_φ₁`, via the generic helper `decomposeRows_sum`). The Boolean-literal collapse
 of the `eq`-factor (`singleEq_collapse'` / `eqPoly_collapse'`) holds for *any* pair of ring homs
-because both agree on `{0, 1}`. These need only `CommRing + IsDomain` (not `Field`), so they apply in
-the batching phase. Each reduces to its concrete counterpart at `P := binaryTowerProfile β`. -/
+because both agree on `{0, 1}`. These need only `CommRing + IsDomain` (not `Field`), so they apply
+in the batching phase. Each reduces to its concrete counterpart at `P := binaryTowerProfile β`. -/
 
 variable (P : RingSwitchingProfile K₀ L₀ κ₀)
 
@@ -1673,7 +1674,8 @@ H {r'})` is FALSE, because `fixFirstVariablesOfMQP` fixes the *last* variable wh
 `getSumcheckRoundPoly` marginalises variable `0`; for an asymmetric `H` the two marginals differ.
 Counterexample (`L = ZMod 7`, `H = X 0 + 3·X 1` over `Fin 2`, `r' = 2`):
 `getSumcheckRoundPoly H` (var 0) at `2` is `H(2,0)+H(2,1) = 2+5 = 0`, whereas
-`∑ (fix-last H {2})` is `(0+6)+(1+6) = 6 ≠ 0`. Hence (b) holds only for the variable-`0` marginal. -/
+`∑ (fix-last H {2})` is `(0+6)+(1+6) = 6 ≠ 0`. Hence (b) holds only for the variable-`0`
+marginal. -/
 theorem roundPoly_eval_eq_sum_cons {k : ℕ} {ι : Type*} (S : Finset ι) (pt : ι → (Fin k → L))
     (H : MvPolynomial (Fin (k + 1)) L) (r' : L) :
     Polynomial.eval r' (∑ x ∈ S, Polynomial.map (eval (pt x)) (finSuccEquivNth L 0 H))
@@ -1684,11 +1686,12 @@ theorem roundPoly_eval_eq_sum_cons {k : ℕ} {ι : Type*} (S : Finset ι) (pt : 
 
 /-- **Round-polynomial marginal identity (LAST-variable form, defect-#20 repair).** The last-variable
 analog of `roundPoly_eval_eq_sum_cons`: evaluating, at `r'`, the sum over `S` of the partial
-evaluations `Polynomial.map (eval (pt x)) (finSuccEquivNth L (Fin.last k) H)` equals the sum over `S`
-of the full evaluations of `H` with the **last** variable fixed to `r'` (the survivors set by `pt x`,
-via `Fin.snoc (pt x) r'`). This is the marginal that the repaired `getSumcheckRoundPoly` computes: it
-keeps the *last* variable as the round indeterminate (`finSuccEquivNth L (Fin.last k)`, i.e.
-`Fin.insertNth (Fin.last k) = Fin.snoc`), matching the witness advance `fixFirstVariablesOfMQP … {r'}`
+evaluations `Polynomial.map (eval (pt x)) (finSuccEquivNth L (Fin.last k) H)` equals the sum over
+`S` of the full evaluations of `H` with the **last** variable fixed to `r'` (the survivors set by
+`pt x`, via `Fin.snoc (pt x) r'`). This is the marginal that the repaired `getSumcheckRoundPoly`
+computes: it keeps the *last* variable as the round indeterminate (`finSuccEquivNth L (Fin.last k)`,
+i.e. `Fin.insertNth (Fin.last k) = Fin.snoc`), matching the witness advance
+`fixFirstVariablesOfMQP … {r'}`
 (which also fixes the last surviving variable) and the `Fin.cons`-form round transition. -/
 theorem roundPoly_eval_eq_sum_snoc {k : ℕ} {ι : Type*} (S : Finset ι) (pt : ι → (Fin k → L))
     (H : MvPolynomial (Fin (k + 1)) L) (r' : L) :

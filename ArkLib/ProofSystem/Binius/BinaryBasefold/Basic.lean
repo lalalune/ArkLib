@@ -1191,7 +1191,8 @@ lemma nonDoomedFoldingProp_relay_preserved (i : Fin ℓ) (hNCR : ¬ isCommitment
     :
     nonDoomedFoldingProp 𝔽q β i.castSucc (Fin.init challenges) oStmt ↔
     nonDoomedFoldingProp 𝔽q β i.succ challenges (mapOStmtOutRelayStep 𝔽q β i hNCR oStmt) := by
-  -- Both sides reduce to `True` via their bad-event disjunct, since both statement indices are `< ℓ`.
+  -- Both sides reduce to `True` via their bad-event disjunct, since both statement indices are
+  -- `< ℓ`.
   constructor
   · intro _
     refine Or.inr ?_

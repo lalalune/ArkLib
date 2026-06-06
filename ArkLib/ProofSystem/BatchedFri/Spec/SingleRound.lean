@@ -77,9 +77,10 @@ def inputRelation :
 -- DEFINITION COMPLETED (2026-06-04): batching-round output relation. After the verifier sends the
 -- random batching coefficients, the protocol hands off to the FRI round-0 reduction on the single
 -- batched codeword. The relation is the FRI round-0 well-formedness clause: the (single) round-0
--- oracle on `ω = subdomainNatReversed 0` is the honest evaluation of the batched witness polynomial.
--- This is exactly the witness/oracle-agreement half of `Fri.Spec.FoldPhase.inputRelation` at `i = 0`,
--- so the batching reduction composes with FRI (the random-linear-combination batching of the `m + 1`
+-- oracle on `ω = subdomainNatReversed 0` is the honest evaluation of the batched witness
+-- polynomial. This is exactly the witness/oracle-agreement half of
+-- `Fri.Spec.FoldPhase.inputRelation` at `i = 0`, so the batching reduction composes with FRI (the
+-- random-linear-combination batching of the `m + 1`
 -- oracles is realised in `liftingLens.stmt`).
 def outputRelation :
     Set

@@ -27,8 +27,8 @@ hypotheses:
 1. **`HasOrderAt` ⟸ root multiplicity (obligation 4).**  `GuruswamiSudan.HasOrderAt` unfolds to
    "every shifted coefficient of total degree `< m` vanishes".  This is exactly the **easy**
    direction of the multiplicity criterion, and it follows from the *proven* root-multiplicity lower
-   bound `m ≤ rootMultiplicity Qz (ωs i) (Pz.eval (ωs i))` — the field-side datum produced in tree by
-   `GuruswamiSudan.gsQ_multiplicity` / the `gapB_transport_mult` transport behind
+   bound `m ≤ rootMultiplicity Qz (ωs i) (Pz.eval (ωs i))` — the field-side datum produced
+   in tree by `GuruswamiSudan.gsQ_multiplicity` / the `gapB_transport_mult` transport behind
    `Q_vanishes_on_close_codeword_graph`.  The conversion is the public, kernel-checked
    `GuruswamiSudan.rootMultiplicity_le_of_coeff_ne_zero` (its contrapositive), re-derived here
    standalone (the same inline step performed inside `GuruswamiSudan.dvd_property`).  No Johnson /
@@ -47,8 +47,8 @@ hypotheses:
 
    Separately, the **value projection** `W ∣ (R.coeff R.natDegree).eval (C x₀)` (the `i₁ = 0` line
    fact / `hdvd_top_zero` input) is discharged **with no residual at all** from the *proven*
-   `Hypotheses x₀ R H` multiplicity/separability structure (`leadingCoeff_dvd_evalX_coeff_natDegree`)
-   — see `hdvd_C_value_of_hypotheses`.
+   `Hypotheses x₀ R H` multiplicity/separability structure
+   (`leadingCoeff_dvd_evalX_coeff_natDegree`) — see `hdvd_C_value_of_hypotheses`.
 
 The Johnson-radius regime condition `δ ≤ δ₀` is *not* introduced by this file: it is the genuine
 side condition under which the in-tree producers (`gsQ_multiplicity`, `Q_vanishes_*`,

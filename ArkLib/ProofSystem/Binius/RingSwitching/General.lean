@@ -290,10 +290,11 @@ theorem fullOracleVerifier_rbrKnowledgeSoundness
 
 The large-field tail is abstract (`MLIOPCS`). For the ring-switching **evaluation** layer, the paper
 states explicitly: the **soundness error of Protocol 3.1** is \((2 \cdot \ell' + \kappa)/|L|\)
-(Diamond–Posen ePrint 2024/504). Algebraically that is \((\kappa + 2\ell')/|L|\), i.e. the sum of the
-two explicit terms below. The tail `ε_pcs` must bound the large-field IOPCS RBR sum (security of
-the underlying `Π'` in **Theorem 3.5**). **§5.2 eq. (43)** for **Construction 5.1** then combines this
-front with the BaseFold+FRI+query analysis (**Theorem 4.17**, **Propositions 4.23–4.24**); those
+(Diamond–Posen ePrint 2024/504). Algebraically that is \((\kappa + 2\ell')/|L|\), i.e. the sum
+of the two explicit terms below. The tail `ε_pcs` must bound the large-field IOPCS RBR sum
+(security of the underlying `Π'` in **Theorem 3.5**). **§5.2 eq. (43)** for **Construction 5.1**
+then combines this front with the BaseFold+FRI+query analysis (**Theorem 4.17**,
+**Propositions 4.23–4.24**); those
 closed forms are not inlined here—see `Binius.FRIBinius.FullFRIBinius`.
 
 Important audit note: DP24 states this scalar as a **soundness** error. Here we prove the stronger
@@ -306,7 +307,8 @@ lemmas, and `Verifier.knowledgeSoundness_error_mono`.
 /-- `((2 * ℓ' + κ)/ |L| + ε_pcs)`: **Protocol 3.1** soundness front `((2 * ℓ' + κ)/ |L|)`
 plus an explicit budget `ε_pcs` for the abstract `MLIOPCS` tail.
 
-Written as `κ/|L| + 2ℓ'/|L| + ε_pcs` (same ℝ≥0 value). `L` explicit for `Fintype.card` under `∑ … ≤ …`. -/
+Written as `κ/|L| + 2ℓ'/|L| + ε_pcs` (same ℝ≥0 value). `L` explicit for `Fintype.card` under
+`∑ … ≤ …`. -/
 noncomputable def fullRingSwitchingConcreteKnowledgeError
     (κ : ℕ) (L : Type) [Fintype L] (ℓ' : ℕ) (ε_pcs : ℝ≥0) : ℝ≥0 :=
   (κ : ℝ≥0) / (Fintype.card L : ℝ≥0)

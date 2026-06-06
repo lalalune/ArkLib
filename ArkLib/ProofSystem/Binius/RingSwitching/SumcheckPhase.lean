@@ -38,7 +38,8 @@ source of RBR knowledge soundness error.
 7. `P` computes `s' := t'(r'_0, ..., r'_{ℓ'-1})` and sends `V` `s'`.
 8. `V` sets `e := eq̃(φ₀(r_κ), ..., φ₀(r_{ℓ-1}), φ₁(r'_0), ..., φ₁(r'_{ℓ'-1}))` and
     decomposes `e =: Σ_{u ∈ {0,1}^κ} β_u ⊗ e_u`.
-9. `V` requires `s_{ℓ'} ?= (Σ_{u ∈ {0,1}^κ} eq̃(u_0, ..., u_{κ-1}, r''_0, ..., r''_{κ-1}) ⋅ e_u) ⋅ s'`.
+9. `V` requires
+   `s_{ℓ'} ?= (Σ_{u ∈ {0,1}^κ} eq̃(u_0, ..., u_{κ-1}, r''_0, ..., r''_{κ-1}) ⋅ e_u) ⋅ s'`.
 -/
 
 set_option linter.style.longFile 2000
@@ -522,8 +523,9 @@ theorem iteratedSumcheckOracleReduction_perfectCompleteness
 
 def iteratedSumcheckRoundKnowledgeError (_ : Fin ℓ') : ℝ≥0 := (2 : ℝ≥0) / (Fintype.card L)
 
-/-- Witness type at each message index for the iterated sumcheck step (counterpart of BBF `foldWitMid`).
-  At m=0,1 we have input-round witness; at m=2 we have output-round witness so extractOut can be identity. -/
+/-- Witness type at each message index for the iterated sumcheck step (counterpart of BBF
+  `foldWitMid`). At m=0,1 we have input-round witness; at m=2 we have output-round witness so
+  extractOut can be identity. -/
 def iteratedSumcheckWitMid (i : Fin ℓ') : Fin (2 + 1) → Type :=
   fun m => match m with
   | ⟨0, _⟩ => SumcheckWitness L ℓ' i.castSucc
@@ -555,7 +557,8 @@ noncomputable def iteratedSumcheckRbrExtractor (i : Fin ℓ') :
 /-- KState for the iterated sumcheck step, matching the structure of Binary Basefold's `foldKStateProp`:
 - m=0: same as relIn (masterKStateProp at i.castSucc with sumcheckConsistencyProp)
 - m=1: after P sends hᵢ(X), before V sends r'ᵢ (explicitVCheck ∧ localizedRoundPolyCheck)
-- m=2: after V sends r'ᵢ — OUTPUT state (masterKStateProp at i.succ with stmtOut, witMid, sumcheckConsistencyProp)
+- m=2: after V sends r'ᵢ — OUTPUT state
+  (masterKStateProp at i.succ with stmtOut, witMid, sumcheckConsistencyProp)
   At m=2, witMid has type SumcheckWitness i.succ (via iteratedSumcheckWitMid). -/
 def iteratedSumcheckKStateProp (i : Fin ℓ') (m : Fin (2 + 1))
     (tr : Transcript m (pSpecSumcheckRound L))
@@ -937,7 +940,8 @@ theorem iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness (i : Fin ℓ') :
     -- Convert the sum domain from [pSpecFold.Challenge]ₒ.range to L using h_L_eq
     conv_lhs => change (∑' (x_1 : L), _)
     rw [OracleReduction.tsum_uniform_Pr_eq_Pr (L := L) (P := P (FullTranscript.mk1 x.1.1))]
-    -- Apply the per-transcript bound (Ring-switching counterpart of foldStep_doom_escape_probability_bound)
+    -- Apply the per-transcript bound (Ring-switching counterpart of
+    --   foldStep_doom_escape_probability_bound)
     exact iteratedSumcheck_doom_escape_probability_bound (κ := κ) (L := L) (K := K) (ℓ := ℓ) (ℓ' := ℓ')
       (𝓑 := 𝓑) (β := β) (h_l := h_l) (aOStmtIn := aOStmtIn) (i := i) (stmtOStmtIn := stmtOStmtIn)
       (h_i := x.1.1)
@@ -1134,12 +1138,15 @@ lemma finalSumcheckStep_verifierCheck_passed
 
 /-- Final sumcheck step logic is strongly complete.
 **Key Proof Obligations:**
-1. **Verifier Check**: Show that `stmtIn.sumcheck_target = eq_tilde_eval * s'` where `s' = witIn.t'.val.eval stmtIn.challenges`
+1. **Verifier Check**: Show that `stmtIn.sumcheck_target = eq_tilde_eval * s'`
+   where `s' = witIn.t'.val.eval stmtIn.challenges`
    - This should follow from `h_relIn` (sumcheckRoundRelation) which includes `masterKStateProp`
    - The `masterKStateProp` includes:
      * `witnessStructuralInvariant`: `wit.H = projectToMidSumcheckPoly ...`
-     * `sumcheckConsistencyProp`: `stmt.sumcheck_target = ∑ x ∈ (univ.map 𝓑) ^ᶠ (ℓ' - Fin.last ℓ'), wit.H.val.eval x`
-       For `i = Fin.last ℓ'`, we have `ℓ' - Fin.last ℓ' = 0`, so this is a sum over 0 variables (a constant)
+     * `sumcheckConsistencyProp`:
+       `stmt.sumcheck_target = ∑ x ∈ (univ.map 𝓑) ^ᶠ (ℓ' - Fin.last ℓ'), wit.H.val.eval x`
+       For `i = Fin.last ℓ'`, we have `ℓ' - Fin.last ℓ' = 0`, so this is a sum over 0 variables
+       (a constant)
    - Need to connect these properties to show the verifier check passes
 
 2. **Relation Out**: Show that the output satisfies `aOStmtIn.toStrictRelInput`
@@ -1540,7 +1547,8 @@ noncomputable def finalSumcheckKnowledgeStateFunction {σ : Type} (init : ProbCo
     -- m=1 gives: sumcheckFinalCheck ∧ finalEvalCheck ∧ oracleCompatProp ∧ witnessStructProp
     obtain ⟨h_sumcheckFinalCheck, h_finalEvalCheck, h_oracleCompat, h_witStruct⟩ := h_kState_round1
 
-    -- Goal: masterKStateProp at m=0 = sumcheckConsistencyProp ∧ witnessStructuralInvariant ∧ initialCompatibility
+    -- Goal: masterKStateProp at m=0 = sumcheckConsistencyProp ∧ witnessStructuralInvariant ∧
+    --   initialCompatibility
     unfold RingSwitching.masterKStateProp
     constructor
     · -- sumcheckConsistencyProp: at Fin.last ℓ' the sum is a single term witMid.H.val.eval (fun _ => 0)

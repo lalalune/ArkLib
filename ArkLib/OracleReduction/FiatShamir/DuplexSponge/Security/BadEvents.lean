@@ -15,8 +15,8 @@ of a Duplex-Sponge Fiat-Shamir (DSFS) execution trace, following Section 5.6 of 
 
 These bad events capture conditions under which the simulator deviates from the ideal interaction,
 such as capacity segment collisions or inconsistent query evaluations. We establish the logical
-implications between these events (e.g., that the combined bad event $E$ bounds other failure modes like
-permutation inconsistency or out-of-order execution).
+implications between these events (e.g., that the combined bad event $E$ bounds other failure modes
+like permutation inconsistency or out-of-order execution).
 -/
 
 open OracleComp OracleSpec ProtocolSpec
@@ -46,7 +46,8 @@ section DuplexSpongeFS
 variable {StmtIn : Type} {n : ℕ} {pSpec : ProtocolSpec n}
   {U : Type} [SpongeUnit U] [SpongeSize]
 
-/-- The definition of a redundant entry in a duplex sponge challenge oracle trace (Definition 5.5 in [CO25]).
+/-- The definition of a redundant entry in a duplex sponge challenge oracle trace
+(Definition 5.5 in [CO25]).
 An entry is redundant if it represents a duplicate query that has been answered in a prior step. -/
 def redundantEntryDS (log : QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (idx : Fin log.length) : Prop :=
@@ -95,8 +96,11 @@ variable (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U)) (state : Cano
 
 /-!
 We define the main simulator failure conditions (the "bad events" of CO25 Section 5.6):
-1. **Capacity collision** ($E_{\text{dup}}$): Duplicate occurrences of capacity segments in the reduced trace.
-2. **Permutation inconsistency** ($E_{\text{func}}$): Conflicting evaluations of the permutation oracle, where the same input yields different outputs or the forward and inverse permutation directions conflict.
+1. **Capacity collision** ($E_{\text{dup}}$): Duplicate occurrences of capacity segments in the
+   reduced trace.
+2. **Permutation inconsistency** ($E_{\text{func}}$): Conflicting evaluations of the permutation
+   oracle, where the same input yields different outputs or the forward and inverse permutation
+   directions conflict.
 -/
 
 def capacitySegmentDupHash : Prop :=
@@ -312,7 +316,8 @@ theorem lemma_5_10 (h : ¬ E trace) : ¬ E_prp trace :=
   not_collisionPerm_of_not_combined (trace := trace) h
 
 /-- The inversion bad event ($E_{\text{inv}}$), indicating that the backtrack procedure
-encountered a state loop. This is conservatively tracked as a subevent of the combined bad event $E$. -/
+encountered a state loop. This is conservatively tracked as a subevent of the combined bad event
+$E$. -/
 def inv : Prop :=
   E trace ∧ state = 0
 

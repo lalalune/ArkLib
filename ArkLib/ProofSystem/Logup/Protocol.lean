@@ -306,7 +306,8 @@ noncomputable def outerOracleReduction :
   verifier := outerVerifier oSpec F n M params
 
 /-- The outer oracle *reduction*'s verifier is definitionally `outerVerifier`, so it inherits the
-`AppendCoherent` coherence needed to `OracleReduction.append` it with the embedded sumcheck phase. -/
+`AppendCoherent` coherence needed to `OracleReduction.append` it with the embedded sumcheck
+phase. -/
 noncomputable instance instOuterOracleReductionAppendCoherent :
     OracleVerifier.Append.AppendCoherent (outerOracleReduction oSpec F n M params).verifier :=
   instOuterVerifierAppendCoherent oSpec F n M params
