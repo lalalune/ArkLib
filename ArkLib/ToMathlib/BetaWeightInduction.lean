@@ -1,7 +1,15 @@
 /-
 Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
+import ArkLib.ToMathlib.BetaRecursion
+import ArkLib.ToMathlib.WeightLambdaCalculus
+import ArkLib.ToMathlib.HasseDerivNumerators
+import ArkLib.Data.Polynomial.RationalFunctions
+import Mathlib
 
+/-!
 # The App.-A.4 weight induction for the Hensel-lift numerators `β_t` (brick **L9**)
 
 This file proves the **Claim-A.2 weight bound** of [BCIKS20] (eprint 2020/654) Appendix-A.4 for the
@@ -66,12 +74,6 @@ the per-term arithmetic to the target `wβ (t+1)`.
 This file does **not** edit the (0-sorry) `RationalFunctions.lean`; all names live in `namespace
 ArkLib`, the in-tree objects opened from `BCIKS20AppendixA` / `…ClaimA2`.
 -/
-
-import ArkLib.ToMathlib.BetaRecursion
-import ArkLib.ToMathlib.WeightLambdaCalculus
-import ArkLib.ToMathlib.HasseDerivNumerators
-import ArkLib.Data.Polynomial.RationalFunctions
-import Mathlib
 
 namespace ArkLib
 

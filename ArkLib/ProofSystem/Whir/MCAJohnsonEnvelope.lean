@@ -1,4 +1,12 @@
 /-
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Tactic
+
+/-!
 # Conditional `errStar` envelope: BCHKS25 T4.6 ≤ §4.5 conjecture `errStar`
 
 **Goal.** The unconditional comparison "the BCHKS25 Theorem 4.6 RS multiplicity-coded
@@ -36,8 +44,6 @@ and prove the envelope `B ≤ E` from it (plus the standard regime hypotheses).
 
 Everything below is Mathlib-only real arithmetic; no `sorry`/`admit`/`native_decide`.
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Tactic
 
 open Real
 

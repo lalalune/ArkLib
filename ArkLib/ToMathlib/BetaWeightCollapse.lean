@@ -1,7 +1,16 @@
 /-
 Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
+import ArkLib.ToMathlib.BetaWeightInduction
+import ArkLib.ToMathlib.BetaRecursion
+import ArkLib.ToMathlib.WeightLambdaCalculus
+import ArkLib.ToMathlib.HasseDerivNumerators
+import ArkLib.Data.Polynomial.RationalFunctions
+import Mathlib
 
+/-!
 # The App.-A.4 weight collapse for the Hensel-lift numerators `β_t` (brick **L10**)
 
 This file discharges the **L10** residual of brick L9 (`ArkLib.ToMathlib.BetaWeightInduction`): it
@@ -63,13 +72,6 @@ hypothesis is stated for **all** pairs `(i₁, p)`, yet is false on the single f
 so this file re-derives the bound directly from the L9 *skeleton* with the forbidden split handled
 correctly, rather than instantiating the over-strong `htele`.
 -/
-
-import ArkLib.ToMathlib.BetaWeightInduction
-import ArkLib.ToMathlib.BetaRecursion
-import ArkLib.ToMathlib.WeightLambdaCalculus
-import ArkLib.ToMathlib.HasseDerivNumerators
-import ArkLib.Data.Polynomial.RationalFunctions
-import Mathlib
 
 namespace ArkLib
 

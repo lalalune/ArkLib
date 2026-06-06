@@ -9,12 +9,6 @@ import ArkLib.ToMathlib.Section5ConcreteJohnson
 import ArkLib.ToMathlib.MpProducer
 import ArkLib.ToMathlib.KeystoneStrictResidual
 
--- Documentation-heavy file (BCIKS §5 / App-A.4 prose in the docstrings); the long-line style
--- linter is disabled locally, matching the sibling supply files.
-set_option linter.style.longLine false
-set_option linter.unusedSectionVars false
-set_option linter.unusedDecidableInType false
-
 /-!
 # The final §5 concrete assembly — `BetaCurveInputFin` from the GS interpolant + a received word
 
@@ -68,6 +62,12 @@ No `sorry`/`axiom`/`native_decide`; `#print axioms` at the bottom shows only
 * [BCIKS20] Ben-Sasson, Carmon, Ishai, Kopparty, Saraf, *Proximity Gaps for Reed–Solomon Codes*,
   §5 (list-decoding agreement), Appendix A.2/A.4.
 -/
+
+-- Documentation-heavy file (BCIKS §5 / App-A.4 prose in the docstrings); the long-line style
+-- linter is disabled locally, matching the sibling supply files.
+set_option linter.style.longLine false
+set_option linter.unusedSectionVars false
+set_option linter.unusedDecidableInType false
 
 open Polynomial Polynomial.Bivariate BCIKS20AppendixA BCIKS20AppendixA.ClaimA2
 

@@ -617,7 +617,7 @@ def OracleMessages (pSpec : ProtocolSpec n) [OracleInterfaces pSpec] : Type :=
 
 end OracleInterfaces
 
-  This is the default instance for the challenge oracle interface. It may be overridden by
+/-- This is the default instance for the challenge oracle interface. It may be overridden by
   `challengeOracleInterface{SR/FS}` for state-restoration and/or Fiat-Shamir. -/
 @[reducible, inline, specialize]
 instance challengeOracleInterface {pSpec : ProtocolSpec n} :
@@ -799,5 +799,4 @@ alias deriveTranscriptFS := deriveTranscriptSR
 end Messages
 
 end ProtocolSpec
-
 

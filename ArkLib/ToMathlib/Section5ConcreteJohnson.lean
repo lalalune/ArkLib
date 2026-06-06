@@ -7,12 +7,6 @@ import ArkLib.ToMathlib.Claim57Supply
 import ArkLib.ToMathlib.GSFactorData
 import ArkLib.ToMathlib.BivariateDegreeToolkit
 
--- Documentation-heavy file (BCIKS §5 prose in the docstrings); the long-line style linter is
--- disabled locally, matching the sibling supply files.
-set_option linter.style.longLine false
-set_option linter.unusedSectionVars false
-set_option linter.unusedDecidableInType false
-
 /-!
 # Concrete §5 assembly — the Johnson side (Claim 5.7 residuals from the GS interpolant)
 
@@ -58,6 +52,12 @@ No `sorry`/`axiom`/`native_decide`; `#print axioms` at the bottom shows only
 * [BCIKS20] Ben-Sasson, Carmon, Ishai, Kopparty, Saraf, *Proximity Gaps for Reed–Solomon Codes*,
   §5 (Claims 5.6–5.7, list-decoding agreement), Lemma 5.3 (Johnson-radius GS parameter bound).
 -/
+
+-- Documentation-heavy file (BCIKS §5 prose in the docstrings); the long-line style linter is
+-- disabled locally, matching the sibling supply files.
+set_option linter.style.longLine false
+set_option linter.unusedSectionVars false
+set_option linter.unusedDecidableInType false
 
 namespace ProximityGap
 

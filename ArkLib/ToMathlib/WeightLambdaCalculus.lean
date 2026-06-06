@@ -1,7 +1,12 @@
 /-
 Copyright (c) 2025 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
+import ArkLib.Data.Polynomial.RationalFunctionsCore
+import Mathlib
 
+/-!
 # `Λ`-weight calculus on the ring of regular elements `𝒪`
 
 This file builds the arithmetic toolkit for the bivariate `Λ`-weight on the ring of regular
@@ -28,8 +33,6 @@ reduces to the in-tree polynomial calculus.
 All names live in `namespace ArkLib`; the in-tree objects are opened from
 `BCIKS20AppendixA`. This file does **not** edit the (0-sorry) `RationalFunctions.lean`.
 -/
-import ArkLib.Data.Polynomial.RationalFunctionsCore
-import Mathlib
 
 namespace ArkLib
 
