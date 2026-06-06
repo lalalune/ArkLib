@@ -298,3 +298,9 @@ end Protocol
 end SimplifiedIOR
 
 end ToyProblem
+
+/-! ### Axiom audit (issue #18 simplified ToyProblem bridge residual frontier) -/
+
+#print axioms ToyProblem.SimplifiedIOR.simplifiedIOR_knowledgeSound_residual
+#print axioms ToyProblem.SimplifiedIOR.simplifiedIOR_knowledgeSound_residual_iff
+#print axioms ToyProblem.SimplifiedIOR.simplifiedIOR_knowledgeSound

@@ -1326,3 +1326,13 @@ end Protocol
 end Spec
 
 end ToyProblem
+
+/-! ### Axiom audit (issue #18 ToyProblem bridge residual frontiers) -/
+
+#print axioms ToyProblem.Spec.protocol62_knowledgeSoundnessViaRewinding
+#print axioms ToyProblem.Spec.protocol62_knowledgeSound_residual
+#print axioms ToyProblem.Spec.protocol62_knowledgeSound_residual_iff
+#print axioms ToyProblem.Spec.protocol62_knowledgeSound
+#print axioms ToyProblem.Spec.protocol62_rbrKnowledgeSound_residual
+#print axioms ToyProblem.Spec.protocol62_rbrKnowledgeSound_residual_iff
+#print axioms ToyProblem.Spec.protocol62_rbrKnowledgeSound
