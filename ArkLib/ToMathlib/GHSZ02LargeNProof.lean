@@ -277,7 +277,7 @@ lemma thresholds_eventually (α β : ℝ) (hα0 : 0 < α) (hα1 : α < 1)
   have h3a : Tendsto (fun p : ℕ => β / 4 * Real.log p - A * Real.log (4 * A))
       atTop atTop :=
     (tendsto_atTop_add_const_right atTop (-(A * Real.log (4 * A)))
-      (hlog.const_mul_atTop (by positivity))).congr (fun p => by ring)
+      (hlog.const_mul_atTop (show (0:ℝ) < β / 4 by positivity))).congr (fun p => by ring)
   have h3b : Tendsto
       (fun p : ℕ => (p : ℝ) ^ α * (β / 4 * Real.log p - A * Real.log (4 * A))
         - Real.log (4 * A)) atTop atTop :=
@@ -292,7 +292,7 @@ lemma thresholds_eventually (α β : ℝ) (hα0 : 0 < α) (hα1 : α < 1)
   -- (4): `(β/4)·p^α·L − ((1+α)·L + (1 + log 2)) → ∞`
   have h4a : Tendsto (fun p : ℕ => β / 4 * (p : ℝ) ^ α - (1 + α)) atTop atTop :=
     (tendsto_atTop_add_const_right atTop (-(1 + α))
-      (hPα.const_mul_atTop (by positivity))).congr (fun p => by ring)
+      (hPα.const_mul_atTop (show (0:ℝ) < β / 4 by positivity))).congr (fun p => by ring)
   have h4b : Tendsto
       (fun p : ℕ => Real.log p * (β / 4 * (p : ℝ) ^ α - (1 + α)) - (1 + Real.log 2))
       atTop atTop :=
