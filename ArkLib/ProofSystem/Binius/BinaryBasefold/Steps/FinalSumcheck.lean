@@ -1871,7 +1871,8 @@ noncomputable def finalSumcheckKnowledgeStateFunction {σ : Type} (init : ProbCo
       · -- First conjunct: sumcheck_target = eqTilde r challenges * c
         exact h_V_check
       · -- Second conjunct:
-        -- finalSumcheckStepFoldingStateProp ({ toStatement := stmtIn, final_constant := c }, oStmtIn)
+        -- finalSumcheckStepFoldingStateProp
+        --   ({ toStatement := stmtIn, final_constant := c }, oStmtIn)
         rw [h_oStmtOut_eq_oStmtIn] at h_relOut
         exact h_relOut
     · simp only [Fin.isValue, h_V_check, ↓reduceIte, OptionT.run_failure, simulateQ_pure,

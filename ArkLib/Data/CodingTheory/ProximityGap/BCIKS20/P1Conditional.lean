@@ -8,12 +8,12 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Vanish
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeight
 
 /-!
-# (P1) CONDITIONAL UNLOCK — the structured weight invariant and the P1 collapse, GIVEN the lift identity
+# (P1) CONDITIONAL UNLOCK — the structured weight invariant and the P1 collapse, given lift identity
 
 This file closes the **(P1)** Hensel-numerator weight bound
 `Λ_𝒪(βHensel t) ≤ (2t+1)·natDegreeY R · D` of BCIKS20 Claim A.2, *conditional on the (P2) lift
-identity* `βHensel_lift_identity`.  It imports `HenselNumerator` plus the shared A.4 infrastructure in
-`AlphaWeight`.
+identity* `βHensel_lift_identity`.  It imports `HenselNumerator` plus the shared A.4 infrastructure
+in `AlphaWeight`.
 
 ## The wall, restated (wave-5 analysis, recorded in `HenselNumerator.lean`)
 
@@ -31,8 +31,9 @@ target's constant is `1`; the gap `D−1` is exactly the multiplicative cancella
 
 ## The weight-from-identity link, and where the gap REALLY is (Task 1)
 
-The lift identity `embeddingOf𝒪Into𝕃 (βHensel t) = αGenuine t · W^{t+1} · ξ^{e_t}` lives in the FIELD
-`𝕃 H`, whereas `Λ_𝒪` is the weight of the canonical `F[X][Y]`-representative of `βHensel t ∈ 𝒪 H`
+The lift identity `embeddingOf𝒪Into𝕃 (βHensel t) = αGenuine t · W^{t+1} · ξ^{e_t}` lives in the
+FIELD `𝕃 H`, whereas `Λ_𝒪` is the weight of the canonical `F[X][Y]`-representative of
+`βHensel t ∈ 𝒪 H`
 (`weight_Λ_over_𝒪 = weight_Λ ∘ canonicalRepOf𝒪`), an `𝒪`-intrinsic quantity, NOT an `𝕃`-invariant.
 
 The genuine bridge: `W^{t+1} = embedding (W𝒪)^{t+1}` and `ξ^{e_t} = embedding ξ^{e_t}` are *already*
@@ -40,16 +41,18 @@ embeddings of `𝒪`-elements (`W𝒪`, `ClaimA2.ξ ∈ 𝒪 H`).  Hence the ENT
 embedding of an `𝒪`-element **iff** `αGenuine t` is — and the identity says it equals
 `embedding (βHensel t)`, so it is.  The one missing fact is precisely the genuine A.4 content:
 
-  `αGenuine t = embedding a_t` for some `a_t ∈ 𝒪 H` with `Λ_𝒪(a_t) ≤ 1`   (i.e. `Λ(α_t) = Λ(Y) = 1`).
+  `αGenuine t = embedding a_t` for some `a_t ∈ 𝒪 H` with `Λ_𝒪(a_t) ≤ 1`
+  (i.e. `Λ(α_t) = Λ(Y) = 1`).
 
-GIVEN that (the carved hypothesis `AlphaGenuineRegularWeightLe`), we PROVE — via the *injectivity* of
-`embeddingOf𝒪Into𝕃` (`embeddingOf𝒪Into𝕃_injective`) — the `𝒪`-LEVEL factorization
+GIVEN that (the carved hypothesis `AlphaGenuineRegularWeightLe`), we PROVE — via the *injectivity*
+of `embeddingOf𝒪Into𝕃` (`embeddingOf𝒪Into𝕃_injective`) — the `𝒪`-LEVEL factorization
 
   `βHensel t = a_t · W𝒪^{t+1} · ξ^{e_t}`   in `𝒪 H`,
 
 and then read off `Λ_𝒪(βHensel t) ≤ Λ_𝒪(a_t) + (t+1)Λ(W) + e_t·Λ(ξ)` by the PROVEN over-`𝒪` weight
-calculus (`weight_Λ_over_𝒪_mul_le`, `_pow_le`, `_W`, `nsmul_withBot_le`) — so `hlift` and injectivity
-are genuinely load-bearing, and the gap is reduced to the SHARP, minimal A.4 fact `Λ(α_t) ≤ 1` (plus
+calculus (`weight_Λ_over_𝒪_mul_le`, `_pow_le`, `_W`, `nsmul_withBot_le`) — so `hlift` and
+injectivity are genuinely load-bearing, and the gap is reduced to the SHARP, minimal A.4 fact
+`Λ(α_t) ≤ 1` (plus
 `α_t` regular).  This is the precise, non-faked location of the residual.
 
 ## What this file proves (the three tasks)
@@ -87,14 +90,14 @@ variable (H : F[X][Y]) [Fact (Irreducible H)] [Fact (0 < H.natDegree)]
 /-! ### 0. Shared A.4 infrastructure — imported from `AlphaWeight`
 
 `embeddingOf𝒪Into𝕃_W𝒪`, `AlphaGenuineRegularWeightLe`, `βHensel_eq_alpha_mul_of_lift`, and
-`βHensel_weight_structured` were originally re-stated here verbatim. Now that both modules are tracked
-and registered, those four declarations are supplied by the canonical superset
+`βHensel_weight_structured` were originally re-stated here verbatim. Now that both modules are
+tracked and registered, those four declarations are supplied by the canonical superset
 `AlphaWeight.lean` (imported above), which restates them identically and adds the `DivWeightLe`
 equivalence and the sharp `t = 0` obstruction. This file keeps only the genuinely-unique conditional
 (P1) assembly below (`βHensel_weight_bound_of_lift`, `…'`, and the auto-unlock witness
 `βHensel_weight_bound_unlocked`), which resolve the shared names from that import. -/
 
-/-! ### 3. (P1) the loose weight bound — proven from the structured invariant by the wave-5 collapse -/
+/-! ### 3. (P1) the loose weight bound — from the structured invariant by the wave-5 collapse -/
 
 /-- **(P1) Task 3 — the loose weight bound, conditional.**  From the structured invariant
 `βHensel_weight_structured` (under the lift identity + carved A.4 link + ξ-weight regime), the loose

@@ -947,7 +947,7 @@ theorem finalSumcheckOracleReduction_perfectCompleteness [IsDomain L] [IsDomain 
     simp only [support_bind, Set.mem_iUnion] at hx
     obtain ⟨s, _, hx⟩ := hx
     simp only [StateT.run'_eq, support_map, Set.mem_image] at hx
-    obtain ⟨⟨(some y), _⟩, _, hy⟩ := hx
+    obtain ⟨⟨some y, _⟩, _, hy⟩ := hx
     cases hy
     refine ⟨?_, rfl⟩
     -- `(stmtOut, witOut) ∈ toRelInput`: MLPEvalRelation (`s' = t'(challenges)`) +
@@ -1292,6 +1292,16 @@ theorem coreInteraction_perfectCompleteness [IsDomain L] [IsDomain K]
         (relOut := aOStmtIn.toRelInput)
         (init := init)
         (impl := impl)) :
+    (hSeqComposePerfectCompleteness :
+      OracleReduction.perfectCompleteness
+        (oracleReduction :=
+          OracleReduction.seqCompose (Statement (RingSwitchingBaseContext κ L K ℓ P))
+            (fun _ => aOStmtIn.OStmtIn) (SumcheckWitness L ℓ')
+            (fun i => iteratedSumcheckOracleReduction κ L K P ℓ ℓ' aOStmtIn i))
+        (relIn := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn 0)
+        (relOut := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn (Fin.last ℓ'))
+        (init := init)
+        (impl := impl)) :
   OracleReduction.perfectCompleteness
     (oracleReduction := coreInteractionOracleReduction κ L K P ℓ ℓ' h_l aOStmtIn)
     (StmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) 0)
@@ -1308,6 +1318,7 @@ theorem coreInteraction_perfectCompleteness [IsDomain L] [IsDomain K]
   apply OracleReduction.append_perfectCompleteness
     (hAppendPerfectCompleteness := hAppendPerfectCompleteness)
   · apply OracleReduction.seqCompose_perfectCompleteness
+      (hSeqComposePerfectCompleteness := hSeqComposePerfectCompleteness)
       (rel := fun i => sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i)
       (R := fun i => iteratedSumcheckOracleReduction κ L K P ℓ ℓ' aOStmtIn i)
       (h := fun i =>
@@ -1326,7 +1337,7 @@ def coreInteractionRbrKnowledgeError (j : (pSpecCoreInteraction L ℓ').Challeng
   Sum.elim
     (f := fun i =>
       letI ij := seqComposeChallengeIdxToSigma i
-      iteratedSumcheckRoundKnowledgeError L ℓ' ij.1)
+      iteratedSumcheckRoundKnowledgeError ij.1)
     (g := fun _ => finalSumcheckRbrKnowledgeError (L := L))
     (ChallengeIdx.sumEquiv.symm j)
 
@@ -1371,13 +1382,13 @@ theorem coreInteraction_rbrKnowledgeSoundness [IsDomain L] [IsDomain K]
     (Oₛ₃ := by exact fun _ => OracleInterface.instDefault)
     (rbrKnowledgeError₁ := fun i =>
       letI ij := seqComposeChallengeIdxToSigma i
-      iteratedSumcheckRoundKnowledgeError L ℓ' ij.1)
+      iteratedSumcheckRoundKnowledgeError ij.1)
     (rbrKnowledgeError₂ := fun _ => finalSumcheckRbrKnowledgeError (L := L))
     (h₁ := by
       apply OracleVerifier.seqCompose_rbrKnowledgeSoundness
         (rel := fun i => sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i)
         (V := fun i => iteratedSumcheckOracleVerifier κ L K P ℓ ℓ' aOStmtIn i)
-        (rbrKnowledgeError := fun i _ => iteratedSumcheckRoundKnowledgeError L ℓ' i)
+        (rbrKnowledgeError := fun i _ => iteratedSumcheckRoundKnowledgeError i)
         (h := fun i =>
           iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness (κ:=κ) (L:=L) (K:=K)
             (P:=P) (ℓ:=ℓ) (ℓ':=ℓ') (h_l:=h_l) (aOStmtIn:=aOStmtIn)

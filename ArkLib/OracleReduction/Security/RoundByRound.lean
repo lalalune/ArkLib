@@ -52,8 +52,9 @@ def RoundByRoundOneShot
 -- the precise (and only) ingredient the converter is missing — see
 -- `toKnowledgeStateFunction` and docs/kb/audits/gh-issues-campaign-2026-06-04.md (Blocker-C).
 /-- A one-shot round-by-round extractor is **monotone** (with respect to an input relation `relIn`)
-  if, whenever the extracted input witness at round `m.succ` on a transcript `tr.concat msg` is valid
-  for `relIn`, then the extracted input witness at the prefix round `m.castSucc` on `tr` is also
+  if, whenever the extracted input witness at round `m.succ` on a transcript `tr.concat msg` is
+  valid for `relIn`, then the extracted input witness at the prefix round `m.castSucc` on `tr` is
+  also
   valid for `relIn`.
 
   This is the round-by-round (transcript-prefix) monotonicity that the conversion
@@ -282,9 +283,10 @@ theorem probEvent_bind_trailing_le {m : Type → Type*} [Monad m] [LawfulMonad m
     _ = Pr[p | (pure (h x) : m β)] := one_mul _
 
 /-- **`OptionT` probEvent as a success-conjunction on the underlying computation.**  An
-`OptionT ProbComp` event probability equals the probability, on the underlying `ProbComp (Option α)`,
-of *succeeding with* a value satisfying `p` (failure `none` does NOT count toward the event).  This
-is the characterization the `rbrSoundness → soundness` per-round bound consumes: the soundness game's
+`OptionT ProbComp` event probability equals the probability, on the underlying
+`ProbComp (Option α)`, of *succeeding with* a value satisfying `p` (failure `none` does NOT count
+toward the event).  This is the characterization the `rbrSoundness → soundness` per-round bound
+consumes: the soundness game's
 flip event must hold on a genuine (non-failing) verifier accept, so failure mass introduced by
 trailing computations only *lowers* the event probability (the failure-monotone direction). -/
 theorem probEvent_optionT_mk_eq_elim {α : Type}
@@ -308,8 +310,9 @@ theorem probEvent_optionT_mk_eq_elim {α : Type}
   exact WithTop.add_right_cancel probOutput_ne_top h
 
 /-- **Heterogeneous bind-monotone over a shared prefix.**  A `probEvent_bind_mono` variant that
-allows the post-bind events to differ (different result types `β`, `β'` and predicates `q`, `q'`): if
-on the support of the shared prefix `mx` each per-element event probability of `q` under `my x` is
+allows the post-bind events to differ (different result types `β`, `β'` and predicates `q`, `q'`):
+if on the support of the shared prefix `mx` each per-element event probability of `q` under `my x`
+is
 bounded by that of `q'` under `oc x`, then so are the bound probabilities.  Used to chain the
 soundness game's flip event (on the `Option`-wrapped full result) to the round-by-round game's flip
 event (on the `(transcript, challenge)` pair), both threaded over the shared `init` sample. -/
@@ -336,8 +339,8 @@ only add failure mass, which only lowers the event probability.
 
 This is the missing connective of the `rbrSoundness → soundness` marginal bridge: it lets the
 trailing `receiveChallenge`/`sendMessage`/`output`/verifier steps of the full run be dropped (one
-`probEvent ≤` at a time) while keeping the same arbitrary `impl`/state thread that both the soundness
-game and the round-by-round game share. -/
+`probEvent ≤` at a time) while keeping the same arbitrary `impl`/state thread that both the
+soundness game and the round-by-round game share. -/
 theorem probEvent_simulateQ_run'_bind_trailing_le {α β γ : Type}
     (so : QueryImpl spec (StateT σ ProbComp)) (s : σ)
     (mx : OracleComp spec α) (gb : α → OracleComp spec γ) (h : α → β) (p : β → Prop) :
@@ -370,8 +373,9 @@ theorem probEvent_simulateQ_run'_bind_trailing_le {α β γ : Type}
 
 /-- **Failure-monotone drop of an arbitrary `Option`-valued trailing continuation.**  The most
 general `Option`-level trailing drop: after `ma` produces `some a`, the soundness game runs an
-*arbitrary* trailing continuation `cont a : OracleComp spec (Option β)` (which may itself fail, return
-`none`, or succeed) whose output is the final result; we replace it by `pure (Option.map h oa)`.  The
+*arbitrary* trailing continuation `cont a : OracleComp spec (Option β)` (which may itself fail,
+return `none`, or succeed) whose output is the final result; we replace it by
+`pure (Option.map h oa)`.  The
 only hypothesis is that on the (raw) support of `cont a`, every *successful* output `some b` that
 satisfies the event `p` forces `p (h a)` too — i.e. `cont a` cannot manufacture a `p`-satisfying
 success that the prefix value `h a` does not already witness.  Then dropping `cont a` (whose success

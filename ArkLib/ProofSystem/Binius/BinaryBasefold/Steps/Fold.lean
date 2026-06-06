@@ -15,7 +15,8 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness
 The folding round of the Binary Basefold core interaction as an oracle reduction. Defines the
 prover (`foldOracleProver`), verifier (`foldOracleVerifier`), and reduction
 (`foldOracleReduction`), proves its perfect completeness, and provides the round-by-round
-knowledge extractor (`foldRbrExtractor`) and knowledge-state function (`foldKnowledgeStateFunction`).
+knowledge extractor (`foldRbrExtractor`) and knowledge-state function
+(`foldKnowledgeStateFunction`).
 -/
 
 set_option linter.style.longFile 2000

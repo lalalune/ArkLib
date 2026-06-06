@@ -53,8 +53,9 @@ that the §5 decoder guarantees):
   coordinate power-series lifts `↑(P z)` and `↑(lift.eval (C z))` are both roots of a common
   separable matching polynomial `f_z : (PowerSeries F)[Y]`, both congruent mod `X` to a common
   approximation `a₀` at which `f_z'(a₀)` is a unit, then `P z = lift.eval (C z)`.  Proof:
-  `hensel_root_unique` pins the two power series equal, then `Polynomial.coe_injective` descends back
-  to `F[X]`.  This is the [BCIKS20] §6.2 "`π_z(γ) = P_z` by Hensel uniqueness" applied to the two
+  `hensel_root_unique` pins the two power series equal, then `Polynomial.coe_injective`
+  descends back to `F[X]`.  This is the [BCIKS20] §6.2 "`π_z(γ) = P_z` by Hensel uniqueness"
+  applied to the two
   competing degree-`< deg` close polynomials.
 
 * `HenselDatum` — bundles the per-`z` Hensel root datum for a *given* representative `(v₀, v₁)`.
@@ -147,8 +148,9 @@ theorem decoded_eq_specialization_of_matchesGraph_unique
 
 /-! ## The per-`z` Hensel datum and the assembly of `hPz` -/
 
-/-- **The genuine per-`z` uniqueness datum**, bundled for a *given* linear representative `(v₀, v₁)`.
-For every good `z`, it provides the matching polynomial `f z`, the approximation `a₀ z`, the two
+/-- **The genuine per-`z` uniqueness datum**, bundled for a *given* linear representative
+`(v₀, v₁)`. For every good `z`, it provides the matching polynomial `f z`, the approximation
+`a₀ z`, the two
 root facts (for `P z` and for the specialised lift `lift.eval (C z)`), the two congruences, and the
 unit-derivative — exactly the input of `decoded_eq_specialization_of_hensel`.
 
@@ -201,9 +203,10 @@ theorem eval_identity_of_henselDatum {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ
 
 /-! ## The deliverable: building the `hPz` field
 
-`hPz` quantifies over *all* `(v₀, v₁)` with the `γ`-hypothesis, and demands the per-`z` identity plus
-the degree bounds.  The genuine residual is therefore: for the representative `(v₀, v₁)` the §5 chain
-produces, the per-`z` Hensel datum exists and the degree bounds hold.  We package it so the consumer
+`hPz` quantifies over *all* `(v₀, v₁)` with the `γ`-hypothesis, and demands the per-`z`
+identity plus the degree bounds.  The genuine residual is therefore: for the representative
+`(v₀, v₁)` the §5 chain produces, the per-`z` Hensel datum exists and the degree bounds
+hold.  We package it so the consumer
 (`curveCoeffPolys_of_betaRec`, which feeds the *same* `(v₀, v₁)` derived from the Prop-5.5
 representative) gets exactly the `hPz` field. -/
 

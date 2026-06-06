@@ -71,10 +71,12 @@ lemma multilinearWeight_bitsOfIndex_eq_indicator {n : ℕ} (j k : Fin (2 ^ n)) :
     simp_rw [h_eq]
     simp only [prod_const_one]
   · simp only [h_eq, ↓reduceIte]
-    -- ⊢ (∏ x, if (↑x).getBit ↑j = 1 then if (↑x).getBit ↑k = 1 then 1 else 0 else 1 - if (↑x).getBit ↑k = 1 then 1 else 0) = 0
+    -- ⊢ (∏ x, if (↑x).getBit ↑j = 1 then if (↑x).getBit ↑k = 1 then 1 else 0
+    --     else 1 - if (↑x).getBit ↑k = 1 then 1 else 0) = 0
     rw [Finset.prod_eq_zero_iff]
     --         ⊢ ∃ a ∈ univ,
-    -- (if (↑a).getBit ↑j = 1 then if (↑a).getBit ↑k = 1 then 1 else 0 else 1 - if (↑a).getBit ↑k = 1 then 1 else 0) = 0
+    -- (if (↑a).getBit ↑j = 1 then if (↑a).getBit ↑k = 1 then 1 else 0
+    --   else 1 - if (↑a).getBit ↑k = 1 then 1 else 0) = 0
     let exists_bit_diff_idx := Nat.exist_bit_diff_if_diff (a := j) (b := k) (h_a_ne_b := h_eq)
     rcases exists_bit_diff_idx with ⟨bit_diff_idx, h_bit_diff_idx⟩
     have h_getBit_of_j_lt_2 : Nat.getBit (k := bit_diff_idx.val) (n := j) < 2 := by
@@ -190,7 +192,8 @@ lemma preTensorCombine_is_interleavedCodeword_of_codeword (i : Fin ℓ) (steps :
     (f : BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩) :
     (⋈|(preTensorCombine_WordStack 𝔽q β i steps h_destIdx h_destIdx_le f)) ∈
       (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx ^⋈ (Fin (2 ^ steps))) := by
-  -- 1. Interleaved Code Definition: "A word is in the interleaved code iff every row is in the base code"
+  -- 1. Interleaved Code Definition: "A word is in the interleaved code iff every row is in the
+  --    base code"
   set S_next := sDomain 𝔽q β h_ℓ_add_R_rate destIdx with h_S_next
   set u := (⋈|(preTensorCombine_WordStack 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i steps h_destIdx h_destIdx_le f)) with h_u
   set C_next := BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := destIdx)
@@ -203,7 +206,8 @@ lemma preTensorCombine_is_interleavedCodeword_of_codeword (i : Fin ℓ) (steps :
   -- 2. Setup: Define the specific challenge 'r' corresponding to row index 'rowIdx'
   let r_binary : Fin steps → L := bitsOfIndex rowIdx
   -- 3. Geometric Equivalence:
-  -- Show that the `rowIdx`-th row of preTensorCombine is exactly `iterated_fold` of u with challenge r
+  -- Show that the `rowIdx`-th row of preTensorCombine is exactly `iterated_fold` of u with
+  -- challenge r
   -- We rely on Lemma 4.9 (Matrix Form) which states: M_y * vals = iterated_fold(u, r, y)
   let preTensorCombine_Row: S_next → L := preTensorCombine_WordStack 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i steps
     h_destIdx h_destIdx_le (f_i := f) rowIdx
@@ -542,7 +546,8 @@ lemma fiberwise_disagreement_isomorphism (i : Fin ℓ) (steps : ℕ) {destIdx : 
     intro h_col_eq
     apply h_vec_diff
     -- ⊢ f_vals = g_vals
-    -- h_col_eq: WordStack.getSymbol (preTensorCombine_WordStack ... f) y = WordStack.getSymbol (preTensorCombine_WordStack ... g) y
+    -- h_col_eq: WordStack.getSymbol (preTensorCombine_WordStack ... f) y
+    --   = WordStack.getSymbol (preTensorCombine_WordStack ... g) y
     -- This means: M_y *ᵥ f_vals = M_y *ᵥ g_vals
     -- Rewrite as: M_y *ᵥ (f_vals - g_vals) = 0
     have h_mulVec_sub_eq_zero : M_y *ᵥ (f_vals - g_vals) = 0 := by

@@ -33,21 +33,23 @@ The verified-brick chain (all kernel-clean, `#print axioms = [propext, Classical
 Quot.sound]`) closes the **abstract function-field core** of §5:
 
   `betaRec` (App-A.4 recursion, defined+terminating+lands-in-𝒪, `BetaRecursion`)
-    → `betaRec_weight_le_concrete ≤ (2t+1)·d_R·D`        (`BetaWeightInduction` + `BetaWeightCollapse`)
+    → `betaRec_weight_le_concrete ≤ (2t+1)·d_R·D`     (`BetaWeightInduction` + `BetaWeightCollapse`)
     → `betaRec_matchingVanishes` (Hensel uniqueness)      (`BetaMatchingVanishes` + `CoeffExtract`)
     → `embeddingOf𝒪Into𝕃 (betaRec t) = 0`                 (`IngredientCBridge`, ingredient C)
-    → curve `γ` is linear-in-`Z`, coefficients per-point   (`Claim59Conditional`/`Claim510Conditional`)
+    → curve `γ` is linear-in-`Z`, coeffs per-point   (`Claim59Conditional`/`Claim510Conditional`)
 
 The chain bottoms out, per the grind ledger's authoritative final state, on a **single genuine §5
 math datum** (shared by obligations (1)+(4)): the Guruswami–Sudan interpolant's
-multiplicity-vanishing at the centre, valid in the Johnson radius `δ ≤ δ₀`; plus a handful of in-tree
-degree facts.  The remaining work to *physically* reach Curves.lean:1819 is the cross-file `L13`
+multiplicity-vanishing at the centre, valid in the Johnson radius `δ ≤ δ₀`; plus a handful
+of in-tree degree facts.  The remaining work to *physically* reach Curves.lean:1819 is the
+cross-file `L13`
 drop-in (replacing the trivial in-tree `β_regular` with `betaRec` inside `RationalFunctions.lean`)
 and the `F1` recentering fix — both edits to live-session-owned files, deferred by design.
 
 This capstone therefore packages the §5 list-decoding output as **one explicit bridge hypothesis**
-— the per-coefficient curve-polynomial datum `hCurvePolys` (exactly what the abstract chain produces:
-each coefficient index `j` carries a degree-`< k+1` interpolant agreeing on the good set) — and
+— the per-coefficient curve-polynomial datum `hCurvePolys` (exactly what the abstract chain
+produces: each coefficient index `j` carries a degree-`< k+1` interpolant agreeing on the
+good set) — and
 *proves*, kernel-clean with no `sorry`, that it yields the bundled `hcoeffPoly` witness and hence
 `jointAgreement`.  The honest measure of "how close the verified-brick composition reaches
 Curves:1819" is precisely: the conclusion is the real front-door goal, and the *only* residual

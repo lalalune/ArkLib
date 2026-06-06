@@ -133,7 +133,8 @@ lemma prop_4_21_case_1_fiberwise_close (i : Fin ℓ) (steps : ℕ) [NeZero steps
       conv_rhs =>
         simp only [mul_comm]
         rw [←Finset.mul_sum]
-      -- ⊢ (↑(Fintype.card L) ^ steps)⁻¹ * ↑(#left_set) ≤ (↑(Fintype.card L) ^ steps)⁻¹ * ∑ i ∈ Δ_fiber.toFinset, ↑(#(right_set i))
+      -- ⊢ (↑(Fintype.card L) ^ steps)⁻¹ * ↑(#left_set)
+      --     ≤ (↑(Fintype.card L) ^ steps)⁻¹ * ∑ i ∈ Δ_fiber.toFinset, ↑(#(right_set i))
       let left_le_right_if := (ENNReal.mul_le_mul_left (a := ((Fintype.card L : ENNReal) ^ steps)⁻¹) (b := (#left_set)) (c := ∑ i ∈ Δ_fiber.toFinset, (#(right_set i))) (h0 := by simp only [ne_eq,
         ENNReal.inv_eq_zero, ENNReal.pow_eq_top_iff, ENNReal.natCast_ne_top, false_and,
         not_false_eq_true]) (hinf := by simp only [ne_eq, ENNReal.inv_eq_top, pow_eq_zero_iff',
@@ -200,7 +201,8 @@ lemma prop_4_21_case_1_fiberwise_close (i : Fin ℓ) (steps : ℕ) [NeZero steps
       unfold v_diff
       have h_exists_diff_point: ∃ x: Fin (2 ^ steps), vals_f x ≠ vals_f_bar x := by
         dsimp only [fiberwiseDisagreementSet, ne_eq, Δ_fiber] at hy
-        -- ∃ x, iteratedQuotientMap 𝔽q β h_ℓ_add_R_rate ⟨i, by omega⟩ (k := steps) h_destIdx h_destIdx_le x = y ∧ f_i x ≠ f_bar_i x
+        -- ∃ x, iteratedQuotientMap 𝔽q β h_ℓ_add_R_rate ⟨i, by omega⟩ (k := steps) h_destIdx
+        --   h_destIdx_le x = y ∧ f_i x ≠ f_bar_i x
         simp only [Subtype.exists, coe_filter, mem_univ, true_and, Set.mem_setOf_eq] at hy
         -- rcases hy with ⟨xL, h_quot, h_ne⟩
         rcases hy with ⟨xL, h_prop_xL⟩
@@ -320,7 +322,8 @@ lemma prop_4_21_case_1_fiberwise_close (i : Fin ℓ) (steps : ℕ) [NeZero steps
         · -- deg(C * X) ≤ 1
           apply (MvPolynomial.totalDegree_mul _ _).trans
           -- simp [MvPolynomial.totalDegree_C, MvPolynomial.totalDegree_X]
-          -- ⊢ (1 - MvPolynomial.C (bitsOfIndex k i)).totalDegree + (1 - MvPolynomial.X i).totalDegree ≤ 1
+          -- ⊢ (1 - MvPolynomial.C (bitsOfIndex k i)).totalDegree
+          --     + (1 - MvPolynomial.X i).totalDegree ≤ 1
           calc
             _ ≤ ((1 : L[X Fin steps]) - MvPolynomial.X i).totalDegree := by
               have h_left_le := MvPolynomial.totalDegree_sub_C_le (p := (1 : L[X Fin steps])) (r := bitsOfIndex k i)
@@ -347,9 +350,11 @@ lemma prop_4_21_case_1_fiberwise_close (i : Fin ℓ) (steps : ℕ) [NeZero steps
       rw [hP_eval]
       rw [Matrix.dotProduct_mulVec]
       simp only
-      -- ⊢ challengeTensorExpansion steps r ᵥ* foldMatrix 𝔽q β ⟨↑i, ⋯⟩ steps ⋯ y ⬝ᵥ fiberEvaluations 𝔽q β ⟨↑i, ⋯⟩ steps ⋯ f_i y =
+      -- ⊢ challengeTensorExpansion steps r ᵥ* foldMatrix 𝔽q β ⟨↑i, ⋯⟩ steps ⋯ y ⬝ᵥ
+      --     fiberEvaluations 𝔽q β ⟨↑i, ⋯⟩ steps ⋯ f_i y =
       --     challengeTensorExpansion steps r ⬝ᵥ
-      --       foldMatrix 𝔽q β ⟨↑i, ⋯⟩ steps ⋯ y *ᵥ fiberEvaluations 𝔽q β ⟨↑i, ⋯⟩ steps ⋯ f_bar_i y ↔
+      --       foldMatrix 𝔽q β ⟨↑i, ⋯⟩ steps ⋯ y *ᵥ
+      --         fiberEvaluations 𝔽q β ⟨↑i, ⋯⟩ steps ⋯ f_bar_i y ↔
       --   challengeTensorExpansion steps r ⬝ᵥ w = 0
       rw [←sub_eq_zero]
       -- Transform LHS: u ⬝ (M * a) - u ⬝ (M * b) = u ⬝ (M * a - M * b)

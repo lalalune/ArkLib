@@ -380,7 +380,6 @@ lemma seqCompose_succ {m : ℕ}
           (fun i => R (Fin.succ i))
           (coh := fun i => coh i.succ)) := rfl
 
-/-
 end OracleReduction
 
 end Composition

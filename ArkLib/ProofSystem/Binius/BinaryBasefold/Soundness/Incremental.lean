@@ -151,40 +151,54 @@ The fresh event at step `k` is
 #### **Case 1: FiberwiseClose**
 
 **Hypothesis:** `d^{(i)}(f^{(i)}, C^{(i)}) < d_{i+ϑ} / 2`.
-**Condition:** We assume the bad event has *not* happened up to step `k` (i.e., `¬ E(i, k)` holds). This implies:
+**Condition:** We assume the bad event has *not* happened up to step `k` (i.e., `¬ E(i, k)`
+holds). This implies:
 `Δ^{(i)}(f^{(i)}, f_bar^{(i)}) ⊆ Δ^{(i+k)}(fold_k(f^{(i)}), fold_k(f_bar^{(i)}))`
 where `Δ^{(i+k)}` is the disagreement set projected to the destination domain `S^{i+ϑ}`.
 
-We must bound the probability that a quotient point `y ∈ Δ^{(i+k)}` "vanishes" from the disagreement set in the next step `k+1`, i.e. `y ∉ Δ^{(i+k+1)}(fold(fold_k(f^{(i)}), r), fold(fold_k(f_bar^{(i)}), r))`. Let `f_k := fold_k(f^{(i)})` and `f_bar_k := fold_k(f_bar^{(i)})`.
+We must bound the probability that a quotient point `y ∈ Δ^{(i+k)}` "vanishes" from the
+disagreement set in the next step `k+1`, i.e.
+`y ∉ Δ^{(i+k+1)}(fold(fold_k(f^{(i)}), r), fold(fold_k(f_bar^{(i)}), r))`.
+Let `f_k := fold_k(f^{(i)})` and `f_bar_k := fold_k(f_bar^{(i)})`.
 
 Fix any `y ∈ Δ^{(i+k)}`.
 
-* By definition, there exists at least one point `z` in the fiber of `y` (within the current domain `S^{i+k}`) such that `f_k(z) ≠ f_bar_k(z)` (by definition of `Δ^{(i+k)}`).
+* By definition, there exists at least one point `z` in the fiber of `y` (within the current
+  domain `S^{i+k}`) such that `f_k(z) ≠ f_bar_k(z)` (by definition of `Δ^{(i+k)}`).
 
-Consider the folding step `S^{i+k} → S^{i+k+1}`. The map `q` pairs points in `S^{i+k}` (say `x₀, x₁`) to a single point `w` in `S^{i+k+1}`.
+Consider the folding step `S^{i+k} → S^{i+k+1}`. The map `q` pairs points in `S^{i+k}`
+(say `x₀, x₁`) to a single point `w` in `S^{i+k+1}`.
 The folded value at `w` is defined as (Definition 4.6):
 `fold(f_k, r)(w) = [1-r, r] · M · [f_k(x₀), f_k(x₁)]ᵀ`
 where `M = [[x₁, -x₀], [-1, 1]]` is an invertible matrix.
 
-Let `E_y(r)(w)` (where `y ∈ Δ^{(i+k)}(fold_k(f^{(i)}), fold_k(f_bar^{(i)}))`) be the difference between the folded values of `f_k` and `f_bar_k` in `S^{i+k+1}` at `w`:
+Let `E_y(r)(w)` (where `y ∈ Δ^{(i+k)}(fold_k(f^{(i)}), fold_k(f_bar^{(i)}))`) be the difference
+between the folded values of `f_k` and `f_bar_k` in `S^{i+k+1}` at `w`:
 `E_y(r)(w) := fold(f_k, r)(w) - fold(f_bar_k, r)(w)`
 
 Linearity allows us to rewrite this as:
 `E_y(r)(w) = [1-r, r] · M · [f_k(x₀) - f_bar_k(x₀), f_k(x₁) - f_bar_k(x₁)]ᵀ`
 
-Since `y ∈ Δ^{(i+k)} ⊂ S^{i+ϑ}`, the difference vector `v_vec = [f_k(x₀) - f_bar_k(x₀), f_k(x₁) - f_bar_k(x₁)]ᵀ` is non-zero for at least one pair `(x₀, x₁)` in the fiber of `y` (otherwise `f_k` is equal to `f_bar_k` at all points in `S^{i+k}`, contradicting the definition of `Δ^{(i+k)}`).
+Since `y ∈ Δ^{(i+k)} ⊂ S^{i+ϑ}`, the difference vector
+`v_vec = [f_k(x₀) - f_bar_k(x₀), f_k(x₁) - f_bar_k(x₁)]ᵀ` is non-zero for at least one pair
+`(x₀, x₁)` in the fiber of `y` (otherwise `f_k` is equal to `f_bar_k` at all points in `S^{i+k}`,
+contradicting the definition of `Δ^{(i+k)}`).
 
-Because `M` is invertible, the vector `v_vec' = M · v_vec` is also **non-zero**. Let `v_vec' = [a, b]ᵀ`. Then:
+Because `M` is invertible, the vector `v_vec' = M · v_vec` is also **non-zero**.
+Let `v_vec' = [a, b]ᵀ`. Then:
 `E_y(r)(w) = a(1-r) + br = a + (b-a)r`
 
-This is a polynomial in `r` of degree at most 1. Since `v_vec' ≠ 0`, the **coefficients `a` and `b` cannot both be zero**.
+This is a polynomial in `r` of degree at most 1. Since `v_vec' ≠ 0`, the **coefficients `a` and
+`b` cannot both be zero**.
 
 * If `b ≠ a`, `E_y(r)(w)` has exactly one root.
 * If `b = a ≠ 0`, `E_y(r)(w) = a ≠ 0`, so it has no roots.
 
-Thus, `E_y(r)(w) = 0` (i.e. **the case where the point `y` disappears from `Δ^{i+k+1}`, though it was assumed to be in `Δ^{i+k}**`) with probability at most `1 / |L|` (**Schwartz-Zippel Lemma**).
+Thus, `E_y(r)(w) = 0` (i.e. **the case where the point `y` disappears from `Δ^{i+k+1}`, though it
+was assumed to be in `Δ^{i+k}**`) with probability at most `1 / |L|` (**Schwartz-Zippel Lemma**).
 
-If `E_y(r)(w) ≠ 0`, then `w ∈ Δ^{(i+k+1)}`, meaning `y` is preserved in the projected disagreement set, so it's not the case we care.
+If `E_y(r)(w) ≠ 0`, then `w ∈ Δ^{(i+k+1)}`, meaning `y` is preserved in the projected disagreement
+set, so it's not the case we care.
 
 Applying the Union Bound over all `y ∈ Δ^{(i)} ⊆ S^{i+ϑ}` (noting that `|Δ^{(i)}| ≤ |S^{i+ϑ}|`):
 `Pr[∃ y ∈ Δ^{(i)}, y ∉ Δ^{(i+k+1)}] ≤ ∑_{y ∈ Δ^{(i)}} 1 / |L| ≤ |S^{i+ϑ}| / |L|`
@@ -252,7 +266,8 @@ lemma prop_4_21_2_case_1_fiberwise_close_incremental
     simp only [PMF.monad_pure_eq_pure, PMF.monad_bind_eq_bind, PMF.bind_const, PMF.pure_apply,
       eq_iff_iff, iff_false, not_true_eq_false, ↓reduceIte, _root_.zero_le];
   · -- pos case
-    -- From here: h_not_Ek : Δ_fiber ⊆ fiberwiseDisagreementSet(midIdx_i, ϑ-k, fold_k_f, fold_k_f_bar)
+    -- From here: h_not_Ek : Δ_fiber ⊆
+    --   fiberwiseDisagreementSet(midIdx_i, ϑ-k, fold_k_f, fold_k_f_bar)
     -- Use prob_mono to drop the ¬E(k) conjunct (it's deterministically true).
     apply le_trans (Pr_le_Pr_of_implies ($ᵖ L) _ _ (fun r_new h => h.2))
     -- ────────────────────────────────────────────────────────
@@ -296,7 +311,8 @@ lemma prop_4_21_2_case_1_fiberwise_close_incremental
       --    = fold(fold_k, r_new)   via iterated_fold_last
       -- ════════════════════════════════════════════════════════
       -- A1. iterated_fold(k+1, snoc r_prefix r_new) pointwise equals
-      --     fold(iterated_fold(k, Fin.init (snoc r_prefix r_new)), snoc r_prefix r_new (Fin.last k))
+      --     fold(iterated_fold(k, Fin.init (snoc r_prefix r_new)),
+      --       snoc r_prefix r_new (Fin.last k))
       have h_decomp_f : ∀ r_new : L,
           iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
             (i := block_start_idx) (steps := k + 1)
@@ -526,11 +542,13 @@ lemma prop_4_21_2_case_1_fiberwise_close_incremental
         -- In particular, w is in y's fiber (by hw_in_fiber), so values agree at w.
         -- Rewrite iterated_fold(k+1) as fold(fold_k, r_val)
         rw [h_decomp_f r_val, h_decomp_f_bar r_val] at h_not_in
-        -- h_not_in : y ∉ fiberwiseDisagreementSet(midIdx_i_succ, ϑ-(k+1), ..., fold(fold_k_f, r_val), fold(fold_k_f̄, r_val))
+        -- h_not_in : y ∉ fiberwiseDisagreementSet(midIdx_i_succ, ϑ-(k+1), ...,
+        --   fold(fold_k_f, r_val), fold(fold_k_f̄, r_val))
         -- Unfold fiberwiseDisagreementSet
         simp only [fiberwiseDisagreementSet, Finset.mem_filter, Finset.mem_univ,
           true_and, not_exists, not_and] at h_not_in
-        -- h_not_in : ∀ z, iteratedQuotientMap z = y → fold(fold_k_f, r_val)(z) = fold(fold_k_f̄, r_val)(z)
+        -- h_not_in : ∀ z, iteratedQuotientMap z = y →
+        --   fold(fold_k_f, r_val)(z) = fold(fold_k_f̄, r_val)(z)
         exact not_not.mp (h_not_in w hw_in_fiber)
       -- E4. From fold agreement → polynomial = 0 → apply injectivity
       have h_agree_a := h_agree_at_w a ha

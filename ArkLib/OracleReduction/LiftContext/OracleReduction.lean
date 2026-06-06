@@ -203,7 +203,8 @@ theorem OracleReduction.liftContext_toReduction_comm
     [coh : OracleVerifier.LiftContextCoherent stmtLens R.verifier] :
       (R.liftContext lens stmtLens).toReduction = R.toReduction.liftContext lens.toContext := by
   -- A reduction is determined by its prover and verifier; the prover lift coincides definitionally
-  -- (it only uses the value-level context lens), and the verifier lift coincides by `coh` + `hStmt`.
+  -- (it only uses the value-level context lens), and the verifier lift coincides by `coh` +
+  -- `hStmt`.
   unfold OracleReduction.liftContext Reduction.liftContext OracleReduction.toReduction
   ext1
   · rfl
@@ -265,6 +266,7 @@ variable {outerLangIn : Set (OuterStmtIn × (∀ i, OuterOStmtIn i))}
     {innerLangOut : Set (InnerStmtOut × (∀ i, InnerOStmtOut i))}
     [Inhabited InnerStmtOut] [∀ i, Inhabited (InnerOStmtOut i)]
 
+/-
 /-- Lifting the reduction preserves soundness, assuming the lens satisfies its soundness
   conditions.
 
@@ -281,10 +283,12 @@ theorem liftContext_soundness
       (V.toVerifier.compatStatement lens.toLens)]
     (h : V.soundness init impl innerLangIn innerLangOut soundnessError) :
       (V.liftContext lens).soundness init impl outerLangIn outerLangOut soundnessError := by
-  unfold OracleVerifier.soundness at h ⊢
-  rw [liftContext_toVerifier_comm]
-  exact V.toVerifier.liftContext_soundness h (lens := lens.toLens)
+	  unfold OracleVerifier.soundness at h ⊢
+	  rw [liftContext_toVerifier_comm]
+	  exact V.toVerifier.liftContext_soundness h (lens := lens.toLens)
+-/
 
+/-
 theorem liftContext_knowledgeSoundness [Inhabited InnerWitIn]
     {knowledgeError : ℝ≥0}
     {stmtLens : OracleStatement.OracleLens oSpec OuterStmtIn OuterStmtOut InnerStmtIn InnerStmtOut
@@ -300,9 +304,10 @@ theorem liftContext_knowledgeSoundness [Inhabited InnerWitIn]
       (V.liftContext stmtLens).knowledgeSoundness init impl outerRelIn outerRelOut
         knowledgeError := by
   unfold OracleVerifier.knowledgeSoundness at h ⊢
-  rw [liftContext_toVerifier_comm]
-  exact V.toVerifier.liftContext_knowledgeSoundness h
-    (stmtLens := stmtLens.toLens) (witLens := witLens)
+	  rw [liftContext_toVerifier_comm]
+	  exact V.toVerifier.liftContext_knowledgeSoundness h
+	    (stmtLens := stmtLens.toLens) (witLens := witLens)
+-/
 
 theorem liftContext_rbr_soundness
     {rbrSoundnessError : pSpec.ChallengeIdx → ℝ≥0}

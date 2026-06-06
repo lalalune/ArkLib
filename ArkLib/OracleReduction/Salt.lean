@@ -167,7 +167,8 @@ def Verifier.addSalt (V : Verifier oSpec StmtIn StmtOut pSpec) :
 -- STATEMENT REPAIR (2026-06-04): the original `OracleVerifier.addSalt` carried an unfillable
 -- `hEq := sorry` (present since the upstream commit that introduced the file).  The defect is
 -- structural and provable-false, not a missing proof: an `OracleVerifier` records, for each output
--- oracle statement `i`, a *type equality* `hEq i : OStmtOut i = (embed-target type)`.  When `embed i`
+-- oracle statement `i`, a *type equality* `hEq i : OStmtOut i = (embed-target type)`.  When
+-- `embed i`
 -- points at a prover message `j`, the target type in the *salted* protocol is
 -- `(pSpec.addSalt Salt).Message j = pSpec.Message j × Salt j` (see `addSalt_Message`), whereas the
 -- only available fact is `V.hEq i : OStmtOut i = pSpec.Message j`.  These force

@@ -999,7 +999,8 @@ theorem soundness_unroll_runToRound_1_P_to_V_pSpec_2
 /-- **Unroll Soundness Computation: 1 Round (V → P)**
 
 Variant when the first message (index 0) is verifier-to-prover: unrolls `runToRound 1` into
-explicit `getChallenge` and `receiveChallenge` calls. Useful for ProtocolSpec 2 where dir 0 = V_to_P.
+explicit `getChallenge` and `receiveChallenge` calls. Useful for ProtocolSpec 2 where
+dir 0 = V_to_P.
 
 **Usage:** `rw [soundness_unroll_runToRound_1_V_to_P_pSpec_2]` -/
 theorem soundness_unroll_runToRound_1_V_to_P_pSpec_2
@@ -1135,8 +1136,9 @@ This can be converted to `Pr_` notation: `[= x | $ᵗ L] = Pr_{ let y ← $ᵖ L
 
 This version uses the existing `evalDist_uniformOfFintype` lemma to derive the hypothesis.
 
-**Note**: The `[Inhabited L]` requirement is necessary because `evalDist_uniformOfFintype` requires it.
-For field types `L`, this is automatically satisfied since `Field L` implies `Inhabited L` (via `Zero`).
+**Note**: The `[Inhabited L]` requirement is necessary because `evalDist_uniformOfFintype` requires
+it. For field types `L`, this is automatically satisfied since `Field L` implies `Inhabited L`
+(via `Zero`).
 -/
 theorem probOutput_uniformOfFintype_eq_Pr
     {L : Type} [Fintype L] [Nonempty L] [DecidableEq L] [SampleableType L] [Inhabited L]
@@ -1164,8 +1166,9 @@ theorem tsum_uniform_Pr_eq_Pr
 
 Converts `[P | (comp : StateT σ ProbComp α).run' s]` to a sum form using `probEvent_eq_tsum_ite`.
 
-**Note**: `ProbComp = OracleComp unifSpec`. The `probEvent` notation measures `Option.some '' {x | P x}`
-in `PMF (Option α)`, which is equivalent to summing `[= x | comp.run' s]` over `α` where `P x` holds.
+**Note**: `ProbComp = OracleComp unifSpec`. The `probEvent` notation measures
+`Option.some '' {x | P x}` in `PMF (Option α)`, which is equivalent to summing
+`[= x | comp.run' s]` over `α` where `P x` holds.
 
 This is useful for further manipulation, e.g., applying probability bounds. Note that we cannot
 directly convert to `Pr_` notation because `evalDist` returns `PMF (Option α)`, not `PMF α`.

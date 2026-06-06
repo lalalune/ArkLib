@@ -449,7 +449,8 @@ def batchingKStateProp {m : Fin (2 + 1)}
       -- `V's check: s ?= Σ_{v ∈ {0,1}^κ} eqTilde(v, r_{0..κ-1}) ⋅ ŝ_v.`
       ∧ performCheckOriginalEvaluation κ L K β ℓ ℓ' h_l stmt.original_claim
         stmt.t_eval_point s_hat -- local V check
-      -- The passed-through oracle compatibility condition of `t'`, i.e. carried through the whole ring-switching protocol
+      -- The passed-through oracle compatibility condition of `t'`, i.e. carried through the whole
+      -- ring-switching protocol
       ∧ aOStmtIn.initialCompatibility ⟨witMid.t', oStmt⟩
   | ⟨2, _⟩ => by -- implied by relOut
     simp only [batchingWitMid] at witMid
@@ -1227,7 +1228,8 @@ theorem batchingOracleVerifier_rbrKnowledgeSoundness :
   -- -- Proof follows by constructing the extractor and knowledge state function.
   -- use batchingWitMid L K ℓ ℓ'
   -- use batchingRbrExtractor κ L K β ℓ ℓ' h_l (aOStmtIn:=aOStmtIn)
-  -- use batchingKnowledgeStateFunction κ L K β ℓ ℓ' h_l (aOStmtIn:=aOStmtIn) (init:=init) (impl:=impl)
+  -- use batchingKnowledgeStateFunction κ L K β ℓ ℓ' h_l (aOStmtIn:=aOStmtIn) (init:=init)
+  --   (impl:=impl)
   -- intro stmtIn witIn prover iChal
   -- -- `KState 1 = (t' = packMLE t) ∧ (ŝ := φ₁(t')(φ₀(r_κ), ..., φ₀(r_{ℓ-1})))`
   --   -- `∧ (s ?= Σ_{v ∈ {0,1}^κ} eqTilde(v, r_{0..κ-1}) ⋅ ŝ_v.`
