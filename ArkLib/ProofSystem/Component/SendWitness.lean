@@ -391,7 +391,7 @@ theorem oracleReduction_rbr_knowledge_soundness :
       simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
       obtain ⟨s, _, hx⟩ := hx
       simp only [oracleReduction] at hx
-      rw [oracleVerifier_toVerifier_run, simulateQ_optionT_pure_run'] at hx
+      erw [oracleVerifier_toVerifier_run, simulateQ_optionT_pure_run'] at hx
       simp only [support_pure, Set.mem_singleton_iff] at hx
       cases (Option.some.inj hx)
       -- `hrel : (⟨stmt, Sum.rec oStmt (fun _ => tr 0)⟩, witOut) ∈ toORelOut oRelIn`, whose
