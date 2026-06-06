@@ -41,10 +41,6 @@ variable {𝓑 : Fin 2 ↪ L}
 def bitsOfIndex {n : ℕ} (k : Fin (2 ^ n)) : Fin n → L :=
   fun j => if Nat.getBit j.val k.val = 1 then 1 else 0
 
-/-- Tensor expansion of a challenge vector. -/
-def challengeTensorExpansion (n : ℕ) (r : Fin n → L) : Fin (2 ^ n) → L :=
-  fun j => multilinearWeight (F := L) (r := r) (i := j)
-
 omit [Fintype L] [DecidableEq L] [CharP L 2] in
 lemma multilinearWeight_bitsOfIndex_eq_indicator {n : ℕ} (j k : Fin (2 ^ n)) :
     True := by
