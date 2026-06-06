@@ -176,8 +176,8 @@ section RandomReedSolomon
 
 /-- **ABF26 Theorem 3.6 [AGL24 Thm 1.1], statement front door.**
 
-For a finite field `F`, a length `n ≤ |F|`, and a uniformly sampled size-`n` evaluation
-domain `L ⊆ F`, the random Reed-Solomon code `RS[F,L,k]` is list-decodable at the
+For a finite field `F`, a positive length `n ≤ |F|`, and a uniformly sampled size-`n`
+evaluation domain `L ⊆ F`, the random Reed-Solomon code `RS[F,L,k]` is list-decodable at the
 capacity-near radius `1 - k/n - η` with failure probability at most `failure`.
 
 The theorem's quantitative choices for `listBound` and `failure` are intentionally explicit
@@ -186,7 +186,7 @@ while the AGL24 first-moment/probabilistic proof remains external. -/
 noncomputable def random_rs_list_decoding
     (F : Type*) [Field F] [Fintype F] [DecidableEq F]
     (n k listBound : ℕ) (η : ℝ) (failure : ENNReal)
-    (hn : n ≤ Fintype.card F) : Prop := by
+    (_hn_pos : 0 < n) (hn : n ≤ Fintype.card F) : Prop := by
   classical
   exact
     Pr_{let L ← Probability.uniformSizeSubsetOfLe F n hn}[

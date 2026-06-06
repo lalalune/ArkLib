@@ -1,8 +1,9 @@
-# Current ArkLib residualized tree audit (2026-06-06)
+# ArkLib residualized tree audit snapshot (2026-06-06)
 
-This is the current source-of-truth index for the proximity-prize audit notes in this ArkLib
-checkout. Older notes in this directory preserve campaign history and may mention old raw-hole line
-numbers such as `Curves.lean:1819`; treat those as historical breadcrumbs, not current locations.
+This is a source-map snapshot for the proximity-prize audit notes in this ArkLib checkout, not a
+live GitHub issue-status ledger. Older notes in this directory preserve campaign history and may
+mention old raw-hole line numbers such as `Curves.lean:1819`; treat those as historical
+breadcrumbs, not current locations.
 
 ## Current shape
 
@@ -10,11 +11,16 @@ The live ArkLib tree mostly exposes unfinished work as named residual APIs, expl
 bundles, documentation-only roadmap notes, or opaque stand-ins. The old "single raw sorry at a line"
 framing is no longer accurate for the BCIKS20/FRI/STIR/WHIR proximity-gap campaign.
 
-## Current tracking issues
+## Historical tracking issue map
 
-Use focused GitHub issues as the active work index. This table was refreshed after the
-grand-challenge second pass (issues #39-#59); states are as of 2026-06-06 — check
-`gh issue list -R lalalune/ArkLib --state all` for live status.
+Use focused GitHub issues as the active work index. The tables below preserve the campaign issue
+map from the first and second audit passes; their `State` cells are historical and may be stale
+after later issue splits such as #64-#75. For live ownership, run:
+
+```sh
+gh issue list -R lalalune/ArkLib --state open --limit 100
+gh issue list -R lalalune/ArkLib --state all --limit 200 --json number,title,state
+```
 
 ### Proximity-prize residual buckets (#6-#23, first pass)
 

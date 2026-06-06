@@ -843,8 +843,8 @@ theorem frs_epsMCA_capacity_gg25_of_residuals_prop
 
 /-- **ABF26 Theorem 4.15 [GG25 Thm 5.15], statement front door.**
 
-For a finite field `F`, a length `n ≤ |F|`, and a uniformly sampled size-`n` evaluation
-domain `L ⊆ F`, the random Reed-Solomon code `RS[F,L,k]` has MCA error at the
+For a finite field `F`, a positive length `n ≤ |F|`, and a uniformly sampled size-`n`
+evaluation domain `L ⊆ F`, the random Reed-Solomon code `RS[F,L,k]` has MCA error at the
 capacity-near radius `1 - k/n - η` bounded by `bound`, except with probability at most
 `failure`.
 
@@ -853,13 +853,16 @@ so this definition only claims the now-available random-domain statement surface
 noncomputable def random_rs_mca
     (F : Type*) [Field F] [Fintype F] [DecidableEq F]
     (n k : ℕ) (η : ℝ) (bound failure : ENNReal)
-    (hn : n ≤ Fintype.card F) : Prop := by
+    (hn_pos : 0 < n) (hn : n ≤ Fintype.card F) : Prop := by
   classical
   exact
+    let goodDomain : Probability.SizeSubset F n → Prop := fun L =>
+      letI : Nonempty L := Probability.SizeSubset.nonempty_coe L hn_pos
+      epsMCA (F := F) (A := F)
+        ((ReedSolomon.code (Probability.SizeSubset.toEmbedding L) k : Set (L → F)))
+        ((1 - (k : ℝ) / (n : ℝ) - η).toNNReal) ≤ bound
     Pr_{let L ← Probability.uniformSizeSubsetOfLe F n hn}[
-      ¬ (epsMCA (F := F) (A := F)
-          ((ReedSolomon.code (Probability.SizeSubset.toEmbedding L) k : Set (L → F)))
-          ((1 - (k : ℝ) / (n : ℝ) - η).toNNReal) ≤ bound)] ≤ failure
+      ¬ goodDomain L] ≤ failure
   -- Missing ingredient: GG25 Thm 5.15's random-RS MCA probability bound.  The sample space
   -- over `n`-element domains is now formalized; the line-stitching/list-decoding/probability
   -- argument that supplies the concrete `bound` and `failure` values remains external.

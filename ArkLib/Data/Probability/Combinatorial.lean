@@ -70,6 +70,15 @@ theorem val_card (s : SizeSubset α n) :
     (s : Finset α).card = n :=
   Set.powersetCard.card_eq s
 
+/-- A positive-cardinality sample carries a nonempty subtype of its elements. -/
+theorem nonempty_coe (s : SizeSubset α n) (hn : 0 < n) :
+    Nonempty s := by
+  classical
+  obtain ⟨x, hx⟩ : (s : Finset α).Nonempty := by
+    rw [← Finset.card_pos, val_card]
+    exact hn
+  exact ⟨⟨x, hx⟩⟩
+
 /-- The canonical embedding from a size-`n` subset into its ambient type. -/
 noncomputable def toEmbedding (s : SizeSubset α n) : s ↪ α where
   toFun x := x.1
