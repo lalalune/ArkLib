@@ -15,7 +15,7 @@ framing is no longer accurate for the BCIKS20/FRI/STIR/WHIR proximity-gap campai
 
 Use focused GitHub issues as the active work index. The tables below preserve the campaign issue
 map from the first and second audit passes; their `State` cells are historical and may be stale
-after later issue splits such as #64-#75. For live ownership, run:
+after later issue splits such as #64-#83. For live ownership, run:
 
 ```sh
 gh issue list -R lalalune/ArkLib --state open --limit 100
