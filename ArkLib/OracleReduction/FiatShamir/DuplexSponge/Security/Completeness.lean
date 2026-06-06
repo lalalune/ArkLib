@@ -268,10 +268,10 @@ theorem duplexSpongeFiatShamir_completeness_unroll_of_run_eq
         (challengeQueryImpl (pSpec := ⟨!v[Direction.P_to_V], !v[pSpec.Messages]⟩)))
       (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn) using 2
     -- Residual `(liftM honest).run = (liftM honest).run` where the two `liftM`s differ only by the
-    -- (definitionally equal) intermediate-spec associativity used to build the lift instance.
-    -- `liftM_OptionT_eq` collapses each lift to the canonical `simulateQ` form, which depends only
-    -- on the common source/target spec.
-    simp only [liftM_OptionT_eq]
+    -- (propositionally equal) intermediate-spec associativity used to build the lift instance.
+    -- Both lifts of an `OracleComp` are the subspec lift `liftComp`, so they agree after
+    -- normalizing through `liftM_OptionT_eq`.
+    simp only [liftM_OptionT_eq, OptionT.run, ← liftComp_eq_liftM]
   rw [hcollapse]
 
 /-- **Reduction of `duplexSpongeFiatShamirSalted_completeness_unroll` to the run-equality

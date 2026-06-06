@@ -105,13 +105,15 @@ consumer of it below) genuinely *uses* `betaRec`. -/
 /-- The Hensel-lift coefficient `α_t` of [BCIKS20] Appendix A.4, with the **genuine** App-A.4
 recursion `betaRec` as the regular numerator (replacing the in-tree trivial `β = 0`).  Definitionally
 identical in shape to the in-tree `α` (`RationalFunctions.lean:2874`):
-`α_t = embedding(betaRec t) / (W^{t+1} · embedding(ξ)^{2t-1})`. -/
+`α_t = embedding(betaRec t) / (W^{t+1} · embedding(ξ)^e_t)`, where
+`e_t = henselDenominatorExponent t`. -/
 noncomputable def αFromBeta (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
     [Fact (Irreducible H)] [Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H)
     (Bcoeff : (i₁ : ℕ) → {m : ℕ} → Nat.Partition m → 𝒪 H) (t : ℕ) : 𝕃 H :=
   let W : 𝕃 H := liftToFunctionField H.leadingCoeff
   embeddingOf𝒪Into𝕃 H (betaRec x₀ R H hHyp Bcoeff t) /
-    (W ^ (t + 1) * (embeddingOf𝒪Into𝕃 H (ξ x₀ R H hHyp)) ^ (2 * t - 1))
+    (W ^ (t + 1) *
+      (embeddingOf𝒪Into𝕃 H (ξ x₀ R H hHyp)) ^ henselDenominatorExponent t)
 
 /-- **Step A (genuine, uses `betaRec`).**  If the embedding of `betaRec … t` vanishes, then the
 Hensel-lift coefficient `αFromBeta … t` vanishes.  This is the in-tree

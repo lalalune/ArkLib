@@ -1013,8 +1013,18 @@ theorem liftContext_soundness [Inhabited InnerStmtOut]
           ((f <$> (Reduction.mk innerP V).run (lens.proj outerStmtIn) witIn)).run).run' s) = _
     exact OptionT.mk_simulateQ_run'_map_stateful (impl := pImpl) (init := init) (f := f)
       (mx := (Reduction.mk innerP V).run (lens.proj outerStmtIn) witIn)
-  refine le_trans ?_ h'
-  rw [hExecMap, probEvent_map]
+  refine le_trans (le_of_eq ?_) h'
+  rw [show
+      Pr[fun x ↦ x.2 ∈ outerLangOut | OptionT.mk do
+          let s ← init
+          (simulateQ pImpl
+            ((Reduction.mk outerP (V.liftContext lens)).run outerStmtIn witIn).run).run' s]
+        = Pr[fun x ↦ x.2 ∈ outerLangOut | f <$> OptionT.mk do
+          let s ← init
+          (simulateQ pImpl
+            ((Reduction.mk innerP V).run (lens.proj outerStmtIn) witIn).run).run' s]
+      from by rw [hExecMap]]
+  rw [probEvent_map]
   -- The pulled-back event `(x.2 ∈ outerLangOut) ∘ f` reduces to `x.2 ∈ innerLangOut`.
   apply probEvent_mono
   intro x hx hOut
@@ -1066,8 +1076,6 @@ theorem liftContext_knowledgeSoundness [Inhabited InnerStmtOut] [Inhabited Inner
     (h : V.knowledgeSoundness init impl innerRelIn innerRelOut knowledgeError) :
       (V.liftContext stmtLens).knowledgeSoundness init impl outerRelIn outerRelOut
         knowledgeError := by
-  sorry
-/-
   unfold knowledgeSoundness at h ⊢
   obtain ⟨E, hE⟩ := h
   refine ⟨E.liftContext ⟨stmtLens, witLens⟩, ?_⟩
@@ -1547,7 +1555,6 @@ theorem liftContext_knowledgeSoundness [Inhabited InnerStmtOut] [Inhabited Inner
           __do_lift] ≤ ↑knowledgeError
   rw [hOuterExec]
   exact le_trans hCompare hInner
--/
 
 /-
   Lifting the reduction preserves round-by-round soundness, assuming the lens satisfies its

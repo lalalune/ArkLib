@@ -201,10 +201,13 @@ end NARG
 /-- Paper-facing alias for CO25 Definition 4.1 codecs. -/
 abbrev Codec {n : ℕ} (pSpec : ProtocolSpec n) (U : Type) := ProtocolSpec.Codec pSpec U
 
-/-- Paper-facing alias for the semantic codec obligations from CO25 Definition 4.1. -/
+/-- Paper-facing alias for the semantic codec obligations from CO25 Definition 4.1.
+
+`IsLawful` is a `Prop`-valued class taking the `Codec` as an instance argument, so the codec
+is passed via `(c := codec)`. -/
 abbrev LawfulCodec {n : ℕ} {pSpec : ProtocolSpec n} {U : Type}
     (codec : ProtocolSpec.Codec pSpec U) : Prop :=
-  ProtocolSpec.Codec.IsLawful codec
+  ProtocolSpec.Codec.IsLawful (c := codec)
 
 section Section4
 
