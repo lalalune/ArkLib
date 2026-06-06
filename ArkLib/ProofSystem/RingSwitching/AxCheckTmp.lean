@@ -1,7 +1,0 @@
-import ArkLib.ProofSystem.RingSwitching.SumcheckPhase
-import ArkLib.ToMathlib.KStateWeaken
-open RingSwitching.SumcheckPhase KStateWeaken
-#print axioms iteratedSumcheck_hStar_extracted_eval_eq_cube_succ
-#print axioms prob_badPolyAgreement_degree_two_le
-#print axioms badPolyAgreement
-#print axioms iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness
