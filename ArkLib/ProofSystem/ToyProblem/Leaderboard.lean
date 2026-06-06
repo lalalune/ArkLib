@@ -888,3 +888,23 @@ theorem koalaIRSConcrete_spotCheck_le_two_pow_neg_64 :
   simpa [koalaIRSConcrete] using spotCheck_le_two_pow_neg_64
 
 end ToyProblem
+
+-- Source-audit anchors for issue #18. These are the remaining ToyProblem
+-- Lemma 6.10 / leaderboard residual fronts and their concrete-anchor adapters.
+#print axioms ToyProblem.winningSetSoundness_le_toySoundnessError_residual
+#print axioms ToyProblem.winningSetSoundness_le_toySoundnessError
+#print axioms ToyProblem.arklib_lowerBound_irs_t128_residual
+#print axioms ToyProblem.arklib_lowerBound_irs_t128
+#print axioms ToyProblem.fenziSanso_upperBound_attack_residual
+#print axioms ToyProblem.fenziSanso_upperBound_attack
+#print axioms ToyProblem.securityGap_koalaIRS_anchors
+#print axioms ToyProblem.securityGap_koalaIRS_anchors_nonneg
+#print axioms ToyProblem.winningSetSoundness_concrete_ge_of_card
+#print axioms ToyProblem.epsCA_le_winningSetSoundness_concrete
+#print axioms ToyProblem.fenziSanso_upperBound_attack_concrete_residual
+#print axioms ToyProblem.fenziSanso_upperBound_attack_concrete
+#print axioms ToyProblem.fenziSanso_upperBound_attack_residual_of_concrete
+#print axioms ToyProblem.koalaIRSConcrete_bitsOfSecurity_le_116
+#print axioms ToyProblem.koalaIRSConcrete_bitsOfSecurity_mem_Iic_116
+#print axioms ToyProblem.spotCheck_le_two_pow_neg_64
+#print axioms ToyProblem.koalaIRSConcrete_spotCheck_le_two_pow_neg_64

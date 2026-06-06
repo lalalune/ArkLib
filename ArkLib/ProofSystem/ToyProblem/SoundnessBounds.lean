@@ -660,3 +660,10 @@ theorem simplified_iop_soundness_ca_lb {k : ℕ} [Nonempty ι]
     exact_mod_cast hcard_le
 
 end ToyProblem
+
+-- Source-audit anchors for issue #18. These are the live ABF26 §6 Step-4 /
+-- CA-lower-bound fronts; the first residual remains the owed construction.
+#print axioms ToyProblem.simplified_iop_soundness_listDecoding_target_nonneg
+#print axioms ToyProblem.simplified_iop_soundness_listDecoding_lb_residual
+#print axioms ToyProblem.simplified_iop_soundness_listDecoding_lb
+#print axioms ToyProblem.simplified_iop_soundness_ca_lb
