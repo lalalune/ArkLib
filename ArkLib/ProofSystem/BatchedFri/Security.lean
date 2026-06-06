@@ -712,68 +712,11 @@ def fri_query_soundness
         (δ := 1 - α)
         (W := f)
 
--- set_option diagnostics true
-  -- refine @OracleSpec.instFiniteRangeSumAppend (h₁ := inferInstance) (h₂ := ?_) ..
-  -- refine @instFinRangeOfAppend _ _ _ _ ?_ ?_
-  -- · unfold BatchedFri.Spec.BatchingRound.batchSpec Challenge OracleInterface.toOracleSpec
-  --   simp only [Fin.vcons_fin_zero, Nat.reduceAdd, ChallengeIdx]
-  --   constructor
-  --   · intros i
-  --     unfold OracleSpec.range
-  --     simp only
-  --     rcases i with ⟨i, h⟩
-  --     have : i = 0 := by omega
-  --     subst this
-  --     simp
-  --     unfold OracleInterface.Response challengeOracleInterface
-  --     simp only
-  --     unfold Challenge
-  --     simp
-  --     haveI : Inhabited 𝔽 := ⟨0⟩
-  --     infer_instance
-  --   · intros i
-  --     unfold OracleSpec.range
-  --     simp only
-  --     rcases i with ⟨i, h⟩
-  --     have : i = 0 := by omega
-  --     subst this
-  --     simp
-  --     unfold OracleInterface.Response challengeOracleInterface
-  --     simp only
-  --     unfold Challenge
-  --     simp
-  --     haveI : Inhabited 𝔽 := ⟨0⟩
-  --     infer_instance
-  -- · refine @instFinRangeOfAppend _ _ _ _ ?_ ?_
-  --   · refine @instFinRangeOfAppend _ _ _ _ ?_ ?_
-  --     unfold Spec.pSpecFold Challenge OracleInterface.toOracleSpec
-  --     constructor
-  --     · intros i
-  --       unfold OracleSpec.range
-  --       simp only
-  --       rcases i with ⟨i, h⟩
-  --       have : i = 0 := by omega
-  --       subst this
-  --       simp
-  --       unfold OracleInterface.Response challengeOracleInterface
-  --       simp only
-  --       unfold Challenge
-  --       simp
-  --       haveI : Inhabited 𝔽 := ⟨0⟩
-  --       infer_instance
-
-
-
-
-
-
-
-
-  -- refine { range_inhabited' := ?_, range_fintype' := ?_ }
-  -- refine fun i ↦ ?_
-  -- rcases i with i | i
-  -- · rcases i
-  -- ·
+/-
+The old finite-range instance diagnostic scratch block has been removed.  The remaining
+Claim 8.2 work is the query-round acceptance analysis described in the docstring above
+and in `docs/kb/audits/issue-14-batched-fri-query-soundness-2026-06-06.md`.
+-/
 
 open ENNReal in
 /-- Corresponds to Claim 8.3 of [BCIKS20] -/
