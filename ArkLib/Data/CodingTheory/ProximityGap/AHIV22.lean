@@ -7,6 +7,7 @@ Authors: Katerina Hristova, František Silváši, Chung Thai Nguyen, Elias Judin
 
 import ArkLib.Data.CodingTheory.ProximityGap.AHIV22Support
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.UniqueDecoding
 
 set_option linter.style.longFile 1600
 
@@ -1518,8 +1519,34 @@ theorem ahiv17_epsCA_bound_of_affineLine_residual
     ProximityGap.epsCA (F := F) (A := F) (RScodeSet α deg) δ δ ≤ (ε : ENNReal) :=
   ahiv17_epsCA_bound (deg := deg) (α := α) (δ := δ) (ε := ε) hAHIV
 
+/-- **#80 (unique-decoding regime, proven).** In the unique-decoding regime
+`δ ≤ relUDR(RS)`, the AHIV17/T4.8 affine-line correlated-agreement residual holds at
+`ε = errorBound δ deg α`, discharged by the BCIKS20 affine-lines base case.
+
+This lands the BCIKS20 unique-decoding bound `errorBound δ deg α`; the tighter AHIV17 `‖RS‖₀/q`
+bound remains the separate row-span-to-affine-line specialization work. -/
+theorem ahiv17_affineLine_correlatedAgreement_residual_uniqueDecodingRegime
+    [Nonempty ι] (deg : ℕ) (α : ι ↪ F) {δ : ℝ≥0}
+    (hδ : δ ≤ relativeUniqueDecodingRadius (C := ReedSolomon.code α deg)) :
+    ahiv17_affineLine_correlatedAgreement_residual deg α δ (ProximityGap.errorBound δ deg α) :=
+  ProximityGap.RS_correlatedAgreement_affineLines_uniqueDecodingRegime hδ
+
+/-- ABF26 T4.8 `epsCA` bound for Reed-Solomon in the unique-decoding regime, with no residual
+hypothesis for `δ ≤ relUDR`. -/
+theorem ahiv17_epsCA_bound_uniqueDecodingRegime
+    [Nonempty ι] (deg : ℕ) (α : ι ↪ F) {δ : ℝ≥0}
+    (hδ : δ ≤ relativeUniqueDecodingRadius (C := ReedSolomon.code α deg)) :
+    ProximityGap.epsCA (F := F) (A := F) (RScodeSet α deg) δ δ
+      ≤ (ProximityGap.errorBound δ deg α : ENNReal) :=
+  ahiv17_epsCA_bound_of_affineLine_residual
+    (ahiv17_affineLine_correlatedAgreement_residual_uniqueDecodingRegime deg α hδ)
+
 #print axioms ProximityToRS.ahiv17_affineLine_correlatedAgreement_residual
 #print axioms ProximityToRS.ahiv17_epsCA_bound
 #print axioms ProximityToRS.ahiv17_epsCA_bound_of_affineLine_residual
+#print axioms ProximityToRS.ahiv17_affineLine_correlatedAgreement_residual_uniqueDecodingRegime
+#print axioms ProximityToRS.ahiv17_epsCA_bound_uniqueDecodingRegime
+#print axioms ProximityToRS.ahiv17_affineLine_correlatedAgreement_residual_uniqueDecodingRegime
+#print axioms ProximityToRS.ahiv17_epsCA_bound_uniqueDecodingRegime
 end ProximityToRS
 end
