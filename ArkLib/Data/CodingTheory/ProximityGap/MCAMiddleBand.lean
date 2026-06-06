@@ -167,10 +167,3 @@ theorem choose_six_two_eq_choose_six_four : Nat.choose 6 2 = Nat.choose 6 4 := b
 end ThresholdLawDefect
 
 end ProximityGap
-
--- TEMP AXIOM AUDIT (to be removed)
-#print axioms ProximityGap.mcaBadCount_le_card_field
-#print axioms ProximityGap.mcaBadCount_le_min
-#print axioms ProximityGap.mcaThresholdLawC0
-#print axioms ProximityGap.mcaThresholdLawC0_refuted
-#print axioms ProximityGap.choose_six_two_eq_choose_six_four
