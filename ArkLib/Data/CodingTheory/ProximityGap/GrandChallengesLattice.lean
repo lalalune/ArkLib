@@ -312,6 +312,27 @@ open Classical in
       j1RatioConstraint domain k u₀ u₁ γ := by
   simp [j1RatioConstraintBadScalars]
 
+/-- Finite-set form of the remaining J1 algebraic core: it is enough to rule out three
+distinct scalars satisfying the J1 ratio constraint. -/
+theorem j1RatioConstraintBadScalars_card_le_two_of_not_three
+    (domain : ι ↪ F) {k : ℕ} (u₀ u₁ : ι → F)
+    (hno : ¬ ∃ γ₀ γ₁ γ₂ : F,
+      γ₀ ≠ γ₁ ∧ γ₀ ≠ γ₂ ∧ γ₁ ≠ γ₂ ∧
+      j1RatioConstraint domain k u₀ u₁ γ₀ ∧
+      j1RatioConstraint domain k u₀ u₁ γ₁ ∧
+      j1RatioConstraint domain k u₀ u₁ γ₂) :
+    (j1RatioConstraintBadScalars domain k u₀ u₁).card ≤ 2 := by
+  classical
+  by_contra hle
+  have hgt : 2 < (j1RatioConstraintBadScalars domain k u₀ u₁).card :=
+    Nat.lt_of_not_ge hle
+  rw [Finset.two_lt_card_iff] at hgt
+  rcases hgt with ⟨γ₀, γ₁, γ₂, hγ₀, hγ₁, hγ₂, h01, h02, h12⟩
+  rw [mem_j1RatioConstraintBadScalars] at hγ₀
+  rw [mem_j1RatioConstraintBadScalars] at hγ₁
+  rw [mem_j1RatioConstraintBadScalars] at hγ₂
+  exact hno ⟨γ₀, γ₁, γ₂, h01, h02, h12, hγ₀, hγ₁, hγ₂⟩
+
 /-- Conditional J1 bad-count cap.  Once the independent finite-algebra theorem
 `(j1RatioConstraintBadScalars domain k u₀ u₁).card ≤ 2` is proved, every actual bad scalar
 at radius `1/n` injects into that constraint set. -/
@@ -334,6 +355,25 @@ theorem mcaBadCount_j1_le_two_of_ratioConstraint_card_le_two
   rcases mcaEvent_j1_exists_window_ratio_constraints domain hγ.2 with
     ⟨S, hshape, hneS, hconstraints, _T, _hTS, _hTcard, _hne0, _hγ⟩
   exact ⟨S, hshape, hneS, hconstraints⟩
+
+/-- Conditional J1 bad-count cap in the cleaner no-three form.  The remaining algebra can now
+target `not_three_j1_ratioConstraints` directly. -/
+theorem mcaBadCount_j1_le_two_of_not_three_ratioConstraints
+    (domain : ι ↪ F) {k : ℕ} (u₀ u₁ : ι → F)
+    (hno : ¬ ∃ γ₀ γ₁ γ₂ : F,
+      γ₀ ≠ γ₁ ∧ γ₀ ≠ γ₂ ∧ γ₁ ≠ γ₂ ∧
+      j1RatioConstraint domain k u₀ u₁ γ₀ ∧
+      j1RatioConstraint domain k u₀ u₁ γ₁ ∧
+      j1RatioConstraint domain k u₀ u₁ γ₂) :
+    mcaBadCount (F := F)
+      (ReedSolomon.code domain k : Set (ι → F))
+      (mcaLatticePoint (Fintype.card ι)
+        (⟨1, by
+          have hn : 0 < Fintype.card ι := Fintype.card_pos
+          omega⟩ : Fin (Fintype.card ι + 1)))
+      u₀ u₁ ≤ 2 :=
+  mcaBadCount_j1_le_two_of_ratioConstraint_card_le_two domain u₀ u₁
+    (j1RatioConstraintBadScalars_card_le_two_of_not_three domain u₀ u₁ hno)
 
 /-- `ε_mca(C, j/n) ≤ ε*` at the lattice radius `j/n`. Decidable so the satisfying set is a
 `Finset`. -/

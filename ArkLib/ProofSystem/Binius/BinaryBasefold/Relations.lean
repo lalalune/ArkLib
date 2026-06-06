@@ -35,9 +35,13 @@ section SecurityRelations
 -- This lemma is stated against that same new-API signature (one extra fold step,
 -- `steps := 1`, `destIdx := ⟨i.val + 1, _⟩`) so that it stays in sync with
 -- `Basic.getMidCodewords` (issue #37: the legacy `Fin (ℓ+1)`-stepped signature is now
--- `iterated_fold_steps`, Prelude-internal only). While `iterated_fold` carries the #32
--- transitional stub body both sides reduce definitionally; once the cast-based body lands,
--- restore the `Fin.dfoldl_succ_last` peel (via `iterated_fold_succ_last_gen`) here.
+-- `iterated_fold_steps`, Prelude-internal only).  Proof route (#32 handoff item (c)): peel
+-- the last step on both sides with the new-API peel `iterated_fold_last` at the shared mid
+-- index `⟨i.val, _⟩`, then reconcile — `Fin.init_snoc`/`Fin.snoc_last` on the challenge
+-- vectors and `iterated_fold_zero_steps` for the right-hand inner zero-step fold (whose
+-- index transport is definitional by proof irrelevance).  `Eq.trans` instances are used
+-- instead of `rw` because the `↑(i.succ)`/`↑i.castSucc` step-count indices only reduce to
+-- `i.val + 1`/`i.val` definitionally, which keyed rewriting cannot see.
 lemma getMidCodewords_succ (t : L⦃≤ 1⦄[X Fin ℓ]) (i : Fin ℓ)
     (challenges : Fin i.castSucc → L) (r_i' : L) :
   (getMidCodewords 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
@@ -52,9 +56,34 @@ lemma getMidCodewords_succ (t : L⦃≤ 1⦄[X Fin ℓ]) (i : Fin ℓ)
       (i := i.castSucc) (t := t) (challenges := challenges))
     (r_challenges := fun _ => r_i'))
   := by
-  ext y
-  unfold getMidCodewords iterated_fold
-  rfl
+  -- Peel the last of the `i.val + 1` left-hand steps (defeq to `↑(i.succ)`).
+  refine Eq.trans
+    (iterated_fold_last 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := 0)
+      (midIdx := ⟨i.val, by omega⟩) (destIdx := ⟨i.val + 1, by omega⟩) (steps := i.val)
+      (h_midIdx := by simp) (h_destIdx := by simp)
+      (h_destIdx_le := by simp only [Fin.mk_le_mk]; omega)
+      (f := _) (r_challenges := _)) ?_
+  -- Peel the single right-hand step (`steps = 0 + 1`).
+  refine Eq.trans ?_
+    (iterated_fold_last 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i.val, by omega⟩)
+      (midIdx := ⟨i.val, by omega⟩) (destIdx := ⟨i.val + 1, by omega⟩) (steps := 0)
+      (h_midIdx := by simp) (h_destIdx := by simp)
+      (h_destIdx_le := by simp only [Fin.mk_le_mk]; omega)
+      (f := _) (r_challenges := _)).symm
+  -- Both sides are now a single `fold` at the same indices; reconcile the folded
+  -- function (`init_snoc` + the definitional zero-step transport) and the challenge.
+  refine congrArg₂ (fun f c =>
+    fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i.val, by omega⟩)
+      (destIdx := ⟨i.val + 1, by omega⟩) (h_destIdx := by simp)
+      (h_destIdx_le := by simp only [Fin.mk_le_mk]; omega) (f := f) (r_chal := c)) ?_ ?_
+  · -- folded function: `i.val`-step fold of `f₀` over `init (snoc challenges r_i')`
+    -- equals the zero-step fold of `getMidCodewords i.castSucc challenges`.
+    funext z
+    rw [iterated_fold_zero_steps]
+    simp only [Fin.init_snoc]
+    rfl
+  · -- challenge: `snoc challenges r_i' (last i.val) = r_i'`.
+    simpa using Fin.snoc_last (α := fun _ => L) r_i' challenges
 
 section FoldStepLogic
 variable {Context : Type} {mp : SumcheckMultiplierParam L ℓ Context}

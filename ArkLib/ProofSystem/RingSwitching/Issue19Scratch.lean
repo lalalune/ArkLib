@@ -21,7 +21,7 @@ variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ Pro
 
 /-!
 This scratch file used to contain an attempted proof of the iterated sumcheck round
-perfect-completeness residual.  The actual source module now exposes that obligation as the named
+perfect-completeness residual. The actual source module now exposes that obligation as the named
 `Prop` `iteratedSumcheckOracleReduction_perfectCompleteness_residual`, so keeping a duplicate
 scratch theorem with executable holes made the root sorry census fail without adding a usable API.
 

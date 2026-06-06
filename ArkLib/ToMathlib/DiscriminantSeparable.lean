@@ -156,22 +156,21 @@ theorem separable_of_discr_ne_zero {K : Type*} [Field K] {f : K[X]}
   have hfdeg : 0 < f.degree := natDegree_pos_iff_degree_pos.mp hdeg
   have hfne : f ≠ 0 := fun h => by rw [h, natDegree_zero] at hdeg; exact absurd hdeg (lt_irrefl 0)
   have hlc_ne : f.leadingCoeff ≠ 0 := leadingCoeff_ne_zero.mpr hfne
-  -- the `(natDegree, natDegree-1)` resultant is nonzero.
-  set c : K := resultant f f.derivative f.natDegree (f.natDegree - 1) with hc
-  have hc_ne : c ≠ 0 := by
-    rw [hc, resultant_deriv hfdeg]
-    exact mul_ne_zero (mul_ne_zero (pow_ne_zero _ (by norm_num)) hlc_ne) hdiscr
-  -- Bézout identity from the resultant at these size arguments.
+  -- Bézout identity from the resultant at the size arguments `(natDegree, natDegree-1)`.
   obtain ⟨p, q, _hp, _hq, he⟩ :=
     exists_mul_add_mul_eq_C_resultant f f.derivative (le_refl f.natDegree)
       (natDegree_derivative_le f) (Or.inl (by omega))
-  rw [← hc] at he
+  -- the resultant produced equals the discriminant up to a nonzero unit, hence is nonzero.
+  have hc_ne : resultant f f.derivative f.natDegree (f.natDegree - 1) ≠ 0 := by
+    rw [resultant_deriv hfdeg]
+    exact mul_ne_zero (mul_ne_zero (pow_ne_zero _ (by norm_num)) hlc_ne) hdiscr
+  set c : K := resultant f f.derivative f.natDegree (f.natDegree - 1) with hc
   -- scale by `C c⁻¹` to get the unit Bézout identity, hence coprimality, hence separability.
   rw [separable_def]
   refine ⟨C c⁻¹ * p, C c⁻¹ * q, ?_⟩
-  have : C c⁻¹ * (f * p + f.derivative * q) = C c⁻¹ * C c := by rw [he]
-  rw [mul_add, ← C_mul, inv_mul_cancel₀ hc_ne, C_1] at this
-  rw [← this]; ring
+  have hscale : C c⁻¹ * (f * p + f.derivative * q) = C c⁻¹ * C c := by rw [he]
+  rw [mul_add, ← C_mul, inv_mul_cancel₀ hc_ne, C_1] at hscale
+  rw [← hscale]; ring
 
 /-! ## Lemma 3 — the payoff bridge (`Polynomial.discr` level)
 
