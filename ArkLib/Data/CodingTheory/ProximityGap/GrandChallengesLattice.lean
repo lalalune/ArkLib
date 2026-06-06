@@ -523,6 +523,32 @@ theorem listThreshold_lt_ListUpperWitness (C : Set (ι → F)) (m : ℕ) (ε_sta
   rw [← Lambda_eq_at_latticeIndex C m w.δ hδ] at hb
   exact absurd hb (not_le.mpr w.exceeds)
 
+/-- A strict `Λ` lower bound gives a lattice upper bracket on the faithful list threshold. -/
+theorem listThreshold_lt_ofLambdaGt (C : Set (ι → F)) (m : ℕ) {ε_star δ : ℝ≥0}
+    (hne : listThresholdExists C m ε_star)
+    (h : (Lambda (C^⋈ (Fin m)) (δ : ℝ) : ENNReal) >
+      ((ε_star : ENNReal) * (Fintype.card F : ENNReal)))
+    (hδ : δ ≤ 1) :
+    listThreshold C m ε_star hne < latticeIndexOf (ι := ι) δ hδ :=
+  listThreshold_lt_ListUpperWitness C m ε_star hne
+    (GrandChallenges.ListUpperWitness.ofGt h) hδ
+
+/-- A lower list witness and a strict `Λ` upper-side bound bracket the faithful list lattice
+threshold directly. -/
+theorem listThresholdLattice_bracketed_of_lowerWitness_and_LambdaGt
+    (C : Set (ι → F)) (m : ℕ) {ε_star δ_hi : ℝ≥0}
+    (wlo : GrandChallenges.ListLowerWitness C m ε_star)
+    (hhi : (Lambda (C^⋈ (Fin m)) (δ_hi : ℝ) : ENNReal) >
+      ((ε_star : ENNReal) * (Fintype.card F : ENNReal)))
+    (hδhi : δ_hi ≤ 1) :
+    let hne := listThresholdExists_of_ListLowerWitness C m ε_star wlo
+    latticeIndexOf (ι := ι) wlo.δ wlo.le_one ≤ listThreshold C m ε_star hne ∧
+      listThreshold C m ε_star hne < latticeIndexOf (ι := ι) δ_hi hδhi :=
+  ⟨ListLowerWitness_le_listThreshold C m ε_star
+      (listThresholdExists_of_ListLowerWitness C m ε_star wlo) wlo,
+    listThreshold_lt_ofLambdaGt C m
+      (listThresholdExists_of_ListLowerWitness C m ε_star wlo) hhi hδhi⟩
+
 /-- **Lattice bracketing of the list-decoding threshold (faithful prize-progress edge).**
 A lower witness and an upper witness (at a radius `≤ 1`) bracket the lattice threshold:
 `⌊δ_lo·n⌋ ≤ listThreshold < ⌊δ_hi·n⌋`. The list-decoding mirror of
