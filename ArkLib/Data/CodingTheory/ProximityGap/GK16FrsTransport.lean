@@ -6,7 +6,7 @@ Authors: ArkLib Contributors
 
 import ArkLib.Data.CodingTheory.ReedSolomon.Folded
 import ArkLib.Data.CodingTheory.ProximityGap.GK16Claim16Transport
-import ArkLib.Data.CodingTheory.ProximityGap.GK16Claim16Core
+import ArkLib.ToMathlib.GK16Claim16Witness
 import ArkLib.Data.CodingTheory.ProximityGap.GK16Lemma12
 
 /-!
