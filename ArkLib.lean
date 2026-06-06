@@ -254,6 +254,7 @@ import ArkLib.Data.Polynomial.PowerSeriesComposition
 import ArkLib.Data.Polynomial.Prelims
 import ArkLib.Data.Polynomial.RationalFunctions
 import ArkLib.Data.Polynomial.RationalFunctionsCore
+import ArkLib.Data.Polynomial.RationalFunctionsStrong
 import ArkLib.Data.Polynomial.SplitFold
 import ArkLib.Data.Polynomial.Trivariate
 import ArkLib.Data.Probability.Combinatorial
@@ -479,6 +480,7 @@ import ArkLib.ToMathlib.IngredientCBridge
 import ArkLib.ToMathlib.KeystoneAssembly
 import ArkLib.ToMathlib.KeystoneCapstone
 import ArkLib.ToMathlib.KeystoneStrictResidual
+import ArkLib.ToMathlib.L13Milestone
 import ArkLib.ToMathlib.L46GSLowerBound
 import ArkLib.ToMathlib.LinearizedSupport
 import ArkLib.ToMathlib.List.Basic

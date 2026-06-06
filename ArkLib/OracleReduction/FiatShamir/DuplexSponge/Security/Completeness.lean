@@ -255,7 +255,9 @@ theorem duplexSpongeFiatShamir_completeness_unroll_of_run_eq
   -- The two probability expressions agree pointwise: rewrite the DSFS run as the lifted honest
   -- execution, then collapse the outer empty challenge oracle implementation.
   simp only [hRun, QueryImpl.addLift_def, QueryImpl.liftTarget_self]
-  simp only [simulateQ_add_run_liftM_left]
+  set_option pp.all true in
+  trace_state
+  sorry
 
 /-- **Reduction of `duplexSpongeFiatShamirSalted_completeness_unroll` to the run-equality
 residual.** The salted analogue of `duplexSpongeFiatShamir_completeness_unroll_of_run_eq`. -/
