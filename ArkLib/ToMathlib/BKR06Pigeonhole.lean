@@ -197,7 +197,7 @@ theorem card_dimv_subspaces_ge
     Fintype.ofInjective (fun L : V₀ →ₗ[F] W₀ => fun x => L x) (by
       intro L L' hLL
       ext x
-      exact congrFun hLL x)
+      exact congrArg Subtype.val (congrFun hLL x))
   refine ⟨Finset.image (graphSubspace V₀ W₀) (Finset.univ : Finset (V₀ →ₗ[F] W₀)), ?_, ?_⟩
   · -- cardinality: injective image, #(V₀ →ₗ W₀) = q^{v(m-v)}
     rw [Finset.card_image_of_injective _ (graphSubspace_injective V₀ W₀ hcompl)]

@@ -479,3 +479,13 @@ theorem grandMCAChallenge_iff_choose_le (domain : ι ↪ F) {k : ℕ} (hk : k + 
 end Exact
 
 end ProximityGap
+
+section AxiomCheck
+#print axioms ProximityGap.epsMCA_one_eq_choose_div
+#print axioms ProximityGap.grandMCAChallenge_iff_choose_le
+#print axioms ProximityGap.epsMCA_one_ge_choose_div
+#print axioms ProximityGap.exists_u0_injOn_cT
+#print axioms ProximityGap.card_ker_eq
+#print axioms ProximityGap.cT_deepHole
+#print axioms ProximityGap.extendable_iff_cT_eq_zero
+end AxiomCheck

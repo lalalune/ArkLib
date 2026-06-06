@@ -132,3 +132,5 @@ theorem exists_adapted_recombination {n d : ℕ} [Module.Finite F M]
     intro l
     rw [← bU.sum_toMatrix_smul_self ⇑bQ l]
     rfl
+
+end ArkLib.FRS.GK16
