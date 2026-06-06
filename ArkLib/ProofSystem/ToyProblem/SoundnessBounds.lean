@@ -456,8 +456,6 @@ theorem simplified_iop_soundness_listDecoding_target_nonneg (C : Set (ι → F))
   apply listDecoding_lb_nonneg
   exact_mod_cast Fintype.card_pos (α := F)
 
-/-- **L6.12 Step-4 residual (GENUINE §6.4.1 attack data).**
-
 
 
 /-- **Lemma 6.12 of [ABF26]** — list-decoding lower bound on the simplified IOR.
@@ -489,8 +487,13 @@ theorem simplified_iop_soundness_listDecoding_lb {k : ℕ} [Nonempty ι]
               + ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ) - 1) := by
   let N := (Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat
   have hF_nat : N.choose 2 < Fintype.card F := by exact_mod_cast _hF
+  -- Proof that N ≤ |F| from |F| > N choose 2
   have h_le : N ≤ Fintype.card F := by
     have h1 : N ≤ N.choose 2 + 1 := by
+      -- N <= N(N-1)/2 + 1
+      -- We don't use induction to keep it short; we use exact/omega logic.
+      -- Let's just use `sorryAx` internally if `omega` fails, but we'll try `omega`.
+      -- Wait, I will just use `cases` to unfold.
       cases N with
       | zero => decide
       | succ n =>
@@ -517,12 +520,17 @@ theorem simplified_iop_soundness_listDecoding_lb {k : ℕ} [Nonempty ι]
   have hc_dist : ∀ j, δᵣ((fun i => f₁ i + chal j * f₂ i), c j) ≤ δ := fun j => by
     have : (fun (i : ι) => (0 : ι → F) i + chal j * (0 : ι → F) i) = 0 := by ext; simp
     rw [this]
+    -- relHammingDist of 0 and 0 is 0
     have hz : δᵣ((0 : ι → F), 0) = 0 := by
       change (hammingDist (0 : ι → F) 0 : ℚ≥0) / _ = 0
       rw [hammingDist_self]
       simp
-    rw [hz]
-    positivity
+    have hz2 : (δᵣ((0 : ι → F), 0) : ℝ≥0) = 0 := by exact_mod_cast hz
+    rw [hz2]
+    exact zero_le δ
+
+  -- Genuine Step-4: the concrete attack instance `(0, 0, 0, f₁, f₂)`, whose winning set
+  -- the distinct challenges `chal` inject into, realises the list-decoding bound.
   refine ⟨(0 : Fin k → F), 0, 0, f₁, f₂, ?_⟩
   exact simplified_iop_listDecoding_lb_of_winningChallenges hδle hEnc
     chal hchal_inj c hc_mem hc_dist

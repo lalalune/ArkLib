@@ -385,26 +385,27 @@ namespace Extractor
 
 namespace Bridge
 
-/-- **Named axiom.** The single remaining ingredient to land `protocol62_knowledgeSound`:
+/-- **Named bridge residual.** The single remaining ingredient to land `protocol62_knowledgeSound`:
 a translation from the rewinding knowledge-soundness predicate (this file) to the straightline
 `Verifier.knowledgeSoundness` predicate, packaged as the probability-accounting glue that converts
 the per-prefix forking guarantee into the averaged failure bound. This is the precise wall recorded
-in `oraclereduction-leftovers.md` residual (1)+(2) — formulated as an axiom since the current
-verifier interface is straightline-only.
+in `oraclereduction-leftovers.md` residual (1)+(2) — formulated as an explicit proposition since
+the current verifier interface is straightline-only.
 
 `StraightlineOfRewinding RewindingKS straightlineKS` assumes the rewinding predicate `RewindingKS`
 *certifies* the straightline knowledge-soundness bound `straightlineKS`. -/
-axiom StraightlineOfRewinding {RewindingKS straightlineKS : Prop} :
+def StraightlineOfRewinding (RewindingKS straightlineKS : Prop) : Prop :=
   RewindingKS → straightlineKS
 
-/-- **Bridge reduction skeleton (proven).** Modulo the named axiom `StraightlineOfRewinding`, a
+/-- **Bridge reduction skeleton (proven).** Given the named residual `StraightlineOfRewinding`, a
 rewinding knowledge-soundness witness yields the straightline statement. This is a trivial-by-design
 *adapter*: its purpose is to fix the exact interface a follow-up must implement, with the rewinding
 side already populated by `knowledgeSoundnessViaRewinding` from this file. -/
 theorem knowledgeSound_of_rewinding
     {RewindingKS straightlineKS : Prop}
+    (hBridge : StraightlineOfRewinding RewindingKS straightlineKS)
     (hRew : RewindingKS) : straightlineKS :=
-  StraightlineOfRewinding hRew
+  hBridge hRew
 
 /-- **Bridge witness shape (proven).** Demonstrates that the rewinding side of the bridge is
 *populated*, not vacuous: any 2-special-sound rewinding extractor for Construction 6.2's carriers
