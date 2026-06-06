@@ -215,6 +215,42 @@ theorem RS_correlatedAgreement_affineLines_johnson_of_betaRec_lattice_residual
     hδ
 
 omit [DecidableEq ι] in
+/-- Closed-boundary affine-line capstone with the exact lattice branch supplied through
+`BoundaryCardLatticeData`.
+
+This is the adapter-only front door for callers that have reduced the genuine `1/n` lattice case
+to concrete good-set cardinality and coefficient-polynomial data, rather than the older
+`BoundaryCardLatticeResidual` surface.  The non-lattice boundary levels are still handled by
+`hStrictBoundary`; this theorem does not prove or assume the exact lattice data. -/
+theorem RS_correlatedAgreement_affineLines_johnson_of_betaRec_lattice_data
+    {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hInput : ∀ (_hk : 0 < 1) (u : WordStack F (Fin 2) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin 2, (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          (((1 : ℕ) : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      δ < 1 - ReedSolomon.sqrtRate deg domain →
+      ArkLib.KeystoneStrictResidual.BetaCurveInput
+        (k := 1) (deg := deg) (domain := domain) (δ := δ) u)
+    (hStrictBoundary : ∀ (u : WordStack F (Fin 2) ι) (δ' : ℝ≥0),
+      δ' < δ →
+      Nat.floor (δ' * Fintype.card ι) = Nat.floor (δ * Fintype.card ι) →
+      0 < (RS_goodCoeffsCurve (k := 1) (deg := deg) (domain := domain) u δ').card →
+      jointAgreement (C := ReedSolomon.code domain deg) (δ := δ') (W := u))
+    (hLatticeData :
+      ArkLib.BoundaryCardResidual.BoundaryCardLatticeData
+        (k := 1) (deg := deg) (domain := domain) (δ := δ)) :
+  δ_ε_correlatedAgreementAffineLines (A := F) (F := F) (ι := ι)
+    (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
+  RS_correlatedAgreement_affineLines_johnson_of_betaRec_lattice_residual
+    (ι := ι) (F := F) (deg := deg) (domain := domain) (δ := δ)
+    hδ hInput hStrictBoundary
+    (ArkLib.BoundaryDischarge.boundaryCardLatticeResidual_of_lattice_data
+      (k := 1) (deg := deg) (domain := domain) (δ := δ) hLatticeData)
+
+omit [DecidableEq ι] in
 /-- Strict square-root-radius affine-line capstone with the §5 Johnson branch supplied by the
 finite-range `betaRec` capsule. -/
 theorem RS_correlatedAgreement_affineLines_johnson_of_betaRecFin_strict
@@ -311,6 +347,37 @@ theorem RS_correlatedAgreement_affineLines_johnson_of_betaRecFin_lattice_residua
     (ArkLib.BoundaryCardResidual.boundaryCardResidual_of_lattice_residual
       (k := 1) (deg := deg) (domain := domain) (δ := δ) hLattice hStrictBoundary)
     hδ
+
+omit [DecidableEq ι] in
+/-- Closed-boundary affine-line capstone with the finite-range `betaRec` capsule and the exact
+lattice branch supplied through `BoundaryCardLatticeData`. -/
+theorem RS_correlatedAgreement_affineLines_johnson_of_betaRecFin_lattice_data
+    {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hInput : ∀ (_hk : 0 < 1) (u : WordStack F (Fin 2) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin 2, (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          (((1 : ℕ) : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      δ < 1 - ReedSolomon.sqrtRate deg domain →
+      ArkLib.KeystoneStrictResidual.BetaCurveInputFin
+        (k := 1) (deg := deg) (domain := domain) (δ := δ) u)
+    (hStrictBoundary : ∀ (u : WordStack F (Fin 2) ι) (δ' : ℝ≥0),
+      δ' < δ →
+      Nat.floor (δ' * Fintype.card ι) = Nat.floor (δ * Fintype.card ι) →
+      0 < (RS_goodCoeffsCurve (k := 1) (deg := deg) (domain := domain) u δ').card →
+      jointAgreement (C := ReedSolomon.code domain deg) (δ := δ') (W := u))
+    (hLatticeData :
+      ArkLib.BoundaryCardResidual.BoundaryCardLatticeData
+        (k := 1) (deg := deg) (domain := domain) (δ := δ)) :
+  δ_ε_correlatedAgreementAffineLines (A := F) (F := F) (ι := ι)
+    (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
+  RS_correlatedAgreement_affineLines_johnson_of_betaRecFin_lattice_residual
+    (ι := ι) (F := F) (deg := deg) (domain := domain) (δ := δ)
+    hδ hInput hStrictBoundary
+    (ArkLib.BoundaryDischarge.boundaryCardLatticeResidual_of_lattice_data
+      (k := 1) (deg := deg) (domain := domain) (δ := δ) hLatticeData)
 
 end CoreResults
 
