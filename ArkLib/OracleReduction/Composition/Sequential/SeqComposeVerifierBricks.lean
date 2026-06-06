@@ -57,7 +57,9 @@ theorem seqCompose_soundness_of_append {m : ℕ}
   induction m with
   | zero =>
     rw [Verifier.seqCompose_zero, Fin.sum_univ_zero]
-    simpa using Verifier.id_soundness init impl (lang := lang 0)
+    change (Verifier.id : Verifier oSpec (Stmt 0) (Stmt 0) !p[]).soundness
+      init impl (lang 0) (lang 0) 0
+    exact Verifier.id_soundness init impl
   | succ m ih =>
     rw [Verifier.seqCompose_succ, Fin.sum_univ_succ]
     exact hAppend (V 0) _ (h 0)
@@ -85,7 +87,9 @@ theorem seqCompose_knowledgeSoundness_of_append {m : ℕ}
   induction m with
   | zero =>
     rw [Verifier.seqCompose_zero, Fin.sum_univ_zero]
-    simpa using Verifier.id_knowledgeSoundness init impl (rel := rel 0)
+    change (Verifier.id : Verifier oSpec (Stmt 0) (Stmt 0) !p[]).knowledgeSoundness
+      init impl (rel 0) (rel 0) 0
+    exact Verifier.id_knowledgeSoundness init impl
   | succ m ih =>
     rw [Verifier.seqCompose_succ, Fin.sum_univ_succ]
     exact hAppend (V 0) _ (h 0)
