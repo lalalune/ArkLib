@@ -45,7 +45,7 @@ full-rank property at the geometric point `Xᵢ = ωⁱ` — is *refuted*, not m
 `MuTwoPowDerandRefutation.not_kwpc_rigidity` exhibits a 3-weakly-partition-connected
 agreement hypergraph with a nonzero agreement certificate over every field containing
 `ω` with `ω⁴ = -1` (every prize-legal field; concretely `ZMod 17`, `ω = 9`, in
-`not_kwpc_rigidity_zmod17`), and `MuTwoPowDerandRefutation.rim_rank_drop` packages the
+`not_kwpc_rigidity_zmod17`), and `MuTwoPowDerandRefutation.rimMatrix_rank_drop` packages the
 matrix-level determinant/rank drop.  See
 `ArkLib.Data.CodingTheory.ProximityGap.MuTwoPowDerandRefutation`,
 `ArkLib.Data.CodingTheory.ProximityGap.MuTwoPowDerandRIMRank`, and the dead-route index

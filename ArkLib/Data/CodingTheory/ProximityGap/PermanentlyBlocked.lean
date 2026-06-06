@@ -31,8 +31,9 @@ stubs carrying `sorry`.
 `mu_{2^t}` reduced-intersection-matrix full-rank derandomization route.  The counterexample
 is already formalized in ArkLib for `k = 3`, three vertices, and eight geometric coordinates.
 The matrix-level form — the explicit 6×6 reduced intersection matrix, its kernel
-certificate, and the determinant/rank drop (`rim_det_eq_zero`, `rim_rank_lt_six`,
-`rim_rank_drop`, with `ZMod 17` instances) — lives in
+certificate, and the determinant/rank drop (`rimMatrix_det_eq_zero`, `rimMatrix_rank_lt_six`,
+`rimMatrix_rank_drop`, with `ZMod 17` instances; the determinant form lives in
+`MuTwoPowDerandRefutation`) — lives in
 `ArkLib.Data.CodingTheory.ProximityGap.MuTwoPowDerandRIMRank`.
 Future work on the Grand List Decoding value question must account for this evenness /
 plus-minus-pair obstruction instead of attempting to prove the false universal RIM statement.

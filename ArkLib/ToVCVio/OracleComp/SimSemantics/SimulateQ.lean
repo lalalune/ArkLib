@@ -9,7 +9,11 @@ import ArkLib.ToVCVio.OracleComp.Coercions.SubSpec
 import ArkLib.ToVCVio.ToMathlib.Control.StateT
 import VCVio.EvalDist.Defs.NeverFails
 import VCVio.OracleComp.QueryTracking.RandomOracle.Basic
-import VCVio.OracleComp.SimSemantics.StateT
+import VCVio.OracleComp.SimSemantics.StateT.Basic
+import VCVio.OracleComp.SimSemantics.StateT.BundledSemantics
+import VCVio.OracleComp.SimSemantics.StateT.PreservesInv
+import VCVio.OracleComp.SimSemantics.StateT.StateProjection
+import VCVio.OracleComp.SimSemantics.StateT.StateSeparating
 
 /-!
 # Additions to VCV-io's `OracleComp.SimSemantics.SimulateQ`
