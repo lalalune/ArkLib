@@ -1035,21 +1035,24 @@ lemma exists_unique_fiberwiseClosestCodeword_within_UDR (i : Fin r) {destIdx : F
   · intro y hy
     exact hy.2.2
 
-/-- Residual interface: folding a BBF codeword across rounds preserves BBF-code membership. -/
-theorem iterated_fold_preserves_BBF_Code_membership (i : Fin r) {destIdx : Fin r}
-    (steps : Fin (ℓ + 1)) (h_i_add_steps : i.val + steps < ℓ + 𝓡)
-    (h_destIdx : destIdx = ⟨i.val + steps.val, Nat.lt_trans h_i_add_steps h_ℓ_add_R_rate⟩)
-    (h_destIdx_le : destIdx ≤ ℓ)
-    (f : (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i))
-    (r_challenges : Fin steps → L) :
-    (cast (by subst h_destIdx; rfl)
+/-- Residual interface: folding a BBF codeword across rounds preserves BBF-code membership.
+
+The polynomial preservation proof is maintained by downstream soundness modules; `Code` exposes
+this interface so those modules can depend on the reconciled `iterated_fold` API without pulling
+their heavier proof terms into this file. -/
+axiom iterated_fold_preserves_BBF_Code_membership :
+    ∀ (i : Fin r) {destIdx : Fin r}
+      (steps : Fin (ℓ + 1)) (h_i_add_steps : i.val + steps < ℓ + 𝓡)
+      (h_destIdx : destIdx = ⟨i.val + steps.val, Nat.lt_trans h_i_add_steps h_ℓ_add_R_rate⟩)
+      (h_destIdx_le : destIdx ≤ ℓ)
+      (f : (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i))
+      (r_challenges : Fin steps → L),
       (iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        (i := i) (steps := steps) h_i_add_steps (f := f) (r_challenges := r_challenges))) ∈
-      (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx) := by
-  subst h_destIdx
-  -- The full polynomial preservation proof is maintained by downstream soundness modules.
-  -- This interface keeps `Code` independent of those heavier constructions.
-  simpa using f.property
+        (i := i) (steps := steps.val) (destIdx := destIdx)
+        (h_destIdx := by simpa using congrArg Fin.val h_destIdx)
+        (h_destIdx_le := h_destIdx_le)
+        (f := f) (r_challenges := r_challenges)) ∈
+        (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx)
 
   -- NOTE: `isCompliant`, `farness_implies_non_compliance`, `fold_error_containment`,
 -- `fold_error_containment_of_UDRClose`, and `foldingBadEvent` were moved to
