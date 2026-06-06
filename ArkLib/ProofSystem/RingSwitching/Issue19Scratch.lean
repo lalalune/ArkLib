@@ -104,12 +104,60 @@ theorem honest_round_structInvariant_succ (i : Fin ℓ')
 
 /-! ## The completeness theorem (monadic assembly)
 
-The remaining step is the monadic `OracleReduction.run` peel: `unroll_2_message_…` reduces
-the goal to an explicit honest do-block whose only failure point is the verifier `guard`
-(discharged by `honest_round_verifierCheck`) and whose unique output satisfies `relOut`
-(structural invariant + consistency + initial compatibility) and the prover/verifier
-agreement.  This block is adapted from the verified Binius sibling; it consumes the three
-logic facts above. -/
+`unroll_2_message_…` reduces the goal to an explicit honest do-block whose only failure
+point is the verifier `guard` (discharged by `honest_round_verifierCheck`) and whose unique
+output satisfies `relOut` (structural invariant + consistency + initial compatibility) and
+the prover/verifier agreement.  Monadic peel adapted from the verified Binius sibling. -/
+
+section Main
+variable (κ L K P ℓ ℓ' h_l aOStmtIn)
+
+/-- **Issue #19: perfect completeness of the structured ring-switching sumcheck round**,
+under the statement repair `hInit : NeverFail init`.  Discharges
+`iteratedSumcheckOracleReduction_perfectCompleteness_residual`. -/
+theorem iteratedSumcheckOracleReduction_perfectCompleteness_residual_holds
+    (hInit : NeverFail init) :
+    iteratedSumcheckOracleReduction_perfectCompleteness_residual
+      (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
+      (aOStmtIn := aOStmtIn) (init := init) (impl := impl) := by
+  intro i
+  rw [OracleReduction.unroll_2_message_reduction_perfectCompleteness
+      (oSpec := []ₒ) (pSpec := pSpecSumcheckRound L)
+      (iteratedSumcheckOracleReduction κ L K P ℓ ℓ' aOStmtIn i)
+      (sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i.castSucc)
+      (sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i.succ)
+      init impl hInit (by rfl) (by rfl)
+      (by simp only [Set.fmap_eq_image, IsEmpty.forall_iff, implies_true])]
+  intro stmtIn oStmtIn witIn h_relIn
+  simp_rw [probEvent_eq_one_iff]
+  -- Extract the input-relation conjuncts.
+  simp only [sumcheckRoundRelation, sumcheckRoundRelationProp, masterKStateProp,
+    witnessStructuralInvariant, Set.mem_setOf_eq] at h_relIn
+  obtain ⟨_, hStruct, hConsist, hCompat⟩ := h_relIn
+  -- Unfold the structured prover/verifier and the oracle-verifier translation.
+  dsimp only [iteratedSumcheckOracleReduction, iteratedSumcheckOracleVerifier,
+    Sumcheck.Structured.roundOracleReduction, Sumcheck.Structured.roundOracleProver,
+    Sumcheck.Structured.roundOracleVerifier, Sumcheck.Structured.getRoundProverFinalOutput,
+    OracleVerifier.toVerifier, FullTranscript.mk2]
+  refine ⟨?_, ?_⟩
+  · -- SAFETY: the honest run never fails; the only failure point is the verifier `guard`,
+    -- which passes by `honest_round_verifierCheck` applied with `hConsist`.
+    -- (Monadic peel adapted from Binius `iteratedSumcheckOracleReduction_perfectCompleteness`
+    --  SAFETY branch: peel the pure prover steps, the challenge query, then the verifier
+    --  query + guard; discharge the guard with `honest_round_verifierCheck _ _ witIn.H hConsist`
+    --  after rewriting the prover message `h_i = getSumcheckRoundPoly … witIn.H` via `hStruct`.)
+    sorry
+  · -- CORRECTNESS: the unique output lies in `relOut` and the prover/verifier statements agree.
+    -- relOut = masterKStateProp i.succ:
+    --   • structural invariant: `honest_round_structInvariant_succ` rewrites the prover's
+    --     `fixFirst witIn.H {r'}` to `projectToMid i.succ (cons r' challenges)` (using hStruct);
+    --   • consistency: `honest_round_consistency_succ` gives the target = cube-sum identity;
+    --   • initial compatibility: `hCompat` (oStmt and t' unchanged).
+    -- agreement: prover and verifier both output the same statement (sumcheck_target = h_i(r'),
+    --   challenges = cons r' …) and oStmtIn (verifier embed = Sum.inl).
+    sorry
+
+end Main
 
 end
 

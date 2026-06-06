@@ -1024,7 +1024,7 @@ private lemma iterated_fold_preserves_BBF_Code_membership_nat
         rw [iterated_fold_zero_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
           (i := i) (destIdx := i) (h_destIdx := by omega)
           (h_destIdx_le := h_destIdx_le) (f := f) (r_challenges := r_challenges) y]
-        simp only [Fin.eq_of_val_eq_self, eq_mp_eq_cast, cast_eq]
+        simp only [eq_mp_eq_cast, cast_eq]
       rw [h_fold_eq]
       exact f.property
   | succ n ih =>
@@ -1044,14 +1044,14 @@ private lemma iterated_fold_preserves_BBF_Code_membership_nat
       have h_folded_n_mem :
           (iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
             (i := i) (steps := n) (destIdx := midIdx)
-            (h_destIdx := by omega) (h_destIdx_le := h_midIdx_le)
+            (h_destIdx := by omega) (h_destIdx_le := by omega)
             (f := f) (r_challenges := Fin.init r_challenges)) ∈
             (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) midIdx) := by
-        exact ih (destIdx := midIdx) (by omega) h_midIdx_le (Fin.init r_challenges)
+        simpa using ih (destIdx := midIdx) (by omega) h_midIdx_le (Fin.init r_challenges)
       let f_mid : (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) midIdx) :=
         ⟨iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
           (i := i) (steps := n) (destIdx := midIdx)
-          (h_destIdx := by omega) (h_destIdx_le := h_midIdx_le)
+          (h_destIdx := by omega) (h_destIdx_le := by omega)
           (f := f) (r_challenges := Fin.init r_challenges), h_folded_n_mem⟩
       rw [iterated_fold_last 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
         (i := i) (midIdx := midIdx) (destIdx := destIdx) (steps := n)
