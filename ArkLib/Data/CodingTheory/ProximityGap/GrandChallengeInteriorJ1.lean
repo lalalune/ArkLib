@@ -489,14 +489,3 @@ theorem mcaPrizeLatticeResolved_j1_of_interiorJ1_and_spikeJ2
 end GrandChallengesLattice
 
 end ProximityGap
-
-namespace ProximityGap.GrandChallengesLattice
-#print axioms epsMCA_interiorJ1_eq
-#print axioms epsMCA_interiorJ1_le
-#print axioms epsMCA_interiorJ1_ge
-#print axioms j1FullTopQuadratic_natDegree_le_two
-#print axioms j1RatioConstraintBadScalars_card_le_two_via_quadratic
-#print axioms mcaBadCount_j1_le_two_via_quadratic
-#print axioms mcaThreshold_eq_j1_of_interiorJ1_and_spikeJ2
-#print axioms mcaPrizeLatticeResolved_j1_of_interiorJ1_and_spikeJ2
-end ProximityGap.GrandChallengesLattice
