@@ -11647,7 +11647,34 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 70,
+          "line": 71,
+          "name": "ProximityGap.even_add_odd_eq_of_2_ne_0",
+          "namespace": "ProximityGap",
+          "short_name": "even_add_odd_eq_of_2_ne_0",
+          "signature": "lemma even_add_odd_eq_of_2_ne_0"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 76,
+          "name": "ProximityGap.even_add_odd_eq_of_not_charp_2",
+          "namespace": "ProximityGap",
+          "short_name": "even_add_odd_eq_of_not_charp_2",
+          "signature": "lemma even_add_odd_eq_of_not_charp_2"
+        },
+        {
+          "doc": "An explicit formula to compute `foldWordAux` when `k = 2` not involving Lagrange interpolation.",
+          "kind": "lemma",
+          "line": 84,
+          "name": "ProximityGap.foldWordAux_of_k_2",
+          "namespace": "ProximityGap",
+          "short_name": "foldWordAux_of_k_2",
+          "signature": "lemma foldWordAux_of_k_2"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 162,
           "name": "ProximityGap.roots_of_x_in_domain_eq",
           "namespace": "ProximityGap",
           "short_name": "roots_of_x_in_domain_eq",
@@ -11656,7 +11683,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 81,
+          "line": 173,
           "name": "ProximityGap.roots_of_x_in_domain_card",
           "namespace": "ProximityGap",
           "short_name": "roots_of_x_in_domain_card",
@@ -11665,7 +11692,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 89,
+          "line": 181,
           "name": "ProximityGap.roots_of_x_in_domain_le_k",
           "namespace": "ProximityGap",
           "short_name": "roots_of_x_in_domain_le_k",
@@ -11674,7 +11701,7 @@
         {
           "doc": "The natDegree of the auxiliary polynomial `foldWordAux` is less than k.",
           "kind": "lemma",
-          "line": 100,
+          "line": 192,
           "name": "ProximityGap.foldWordAux_natDegree",
           "namespace": "ProximityGap",
           "short_name": "foldWordAux_natDegree",
@@ -11683,7 +11710,7 @@
         {
           "doc": "Compute value of the folded word. Takes the auxiliary polynomial `foldWordAux` and evaluates it on `a`, the folding randomness.",
           "kind": "def",
-          "line": 116,
+          "line": 208,
           "name": "ProximityGap.foldValue",
           "namespace": "ProximityGap",
           "short_name": "foldValue",
@@ -11692,7 +11719,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 121,
+          "line": 213,
           "name": "ProximityGap.foldValue_def",
           "namespace": "ProximityGap",
           "short_name": "foldValue_def",
@@ -11701,7 +11728,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 124,
+          "line": 216,
           "name": "ProximityGap.foldValue_def'",
           "namespace": "ProximityGap",
           "short_name": "foldValue_def'",
@@ -11710,7 +11737,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 129,
+          "line": 221,
           "name": "ProximityGap.foldValue_pow_x_k",
           "namespace": "ProximityGap",
           "short_name": "foldValue_pow_x_k",
@@ -11719,16 +11746,25 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 134,
+          "line": 226,
           "name": "ProximityGap.foldValue_zero",
           "namespace": "ProximityGap",
           "short_name": "foldValue_zero",
           "signature": "lemma foldValue_zero {k : \u2115} :"
         },
         {
+          "doc": "An explicit formula for `foldValue` when `k = 1`.",
+          "kind": "lemma",
+          "line": 230,
+          "name": "ProximityGap.foldValue_k_1",
+          "namespace": "ProximityGap",
+          "short_name": "foldValue_k_1",
+          "signature": "lemma foldValue_k_1 [NeZero n] {i : Fin (2 ^ (n - 1))} {\u03b1 : F} :"
+        },
+        {
           "doc": "Fold a word. Takes a word `f` over `Fin (2 ^ n)` and randomness `a`, and returns a word over `Fin (2 ^ (n - k))`.",
           "kind": "def",
-          "line": 139,
+          "line": 243,
           "name": "ProximityGap.foldWord",
           "namespace": "ProximityGap",
           "short_name": "foldWord",
@@ -11737,16 +11773,25 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 145,
+          "line": 249,
           "name": "ProximityGap.foldWord_zero",
           "namespace": "ProximityGap",
           "short_name": "foldWord_zero",
           "signature": "lemma foldWord_zero {k : \u2115} :"
         },
         {
+          "doc": "An explicit formula for `foldWord` when `k = 1` that does not use Lagrange interpolation.",
+          "kind": "theorem",
+          "line": 254,
+          "name": "ProximityGap.foldWord_k_1",
+          "namespace": "ProximityGap",
+          "short_name": "foldWord_k_1",
+          "signature": "theorem foldWord_k_1 [NeZero n] {i : Fin (2 ^ (n - 1))} {\u03b1 : F} :"
+        },
+        {
           "doc": "TODO: this will go once this https://github.com/Verified-zkEVM/CompPoly/pull/203 is merged.",
           "kind": "lemma",
-          "line": 151,
+          "line": 266,
           "name": "ProximityGap.eval_comm",
           "namespace": "ProximityGap",
           "short_name": "eval_comm",
@@ -11755,7 +11800,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 160,
+          "line": 275,
           "name": "ProximityGap.roots_in_domain_card_eq_if_x_in_domain",
           "namespace": "ProximityGap",
           "short_name": "roots_in_domain_card_eq_if_x_in_domain",
@@ -11764,7 +11809,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 182,
+          "line": 297,
           "name": "ProximityGap.interpolate_eq_folding_poly_eval",
           "namespace": "ProximityGap",
           "short_name": "interpolate_eq_folding_poly_eval",
@@ -11773,7 +11818,7 @@
         {
           "doc": "Perfect completeness of folding: folding a codeword is the same as applying `polyFold` and then encoding.",
           "kind": "theorem",
-          "line": 231,
+          "line": 346,
           "name": "ProximityGap.foldWord_codeword",
           "namespace": "ProximityGap",
           "short_name": "foldWord_codeword",
@@ -11782,7 +11827,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 245,
+          "line": 360,
           "name": "ProximityGap.foldWordAuxCoeff",
           "namespace": "ProximityGap",
           "short_name": "foldWordAuxCoeff",
@@ -11791,7 +11836,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 249,
+          "line": 364,
           "name": "ProximityGap.foldWordAux_coeff_eq_foldWordAuxCoeff_fin",
           "namespace": "ProximityGap",
           "short_name": "foldWordAux_coeff_eq_foldWordAuxCoeff_fin",
@@ -11800,7 +11845,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 254,
+          "line": 369,
           "name": "ProximityGap.foldWordAux_coeff_eq_foldWordAuxCoeff_nat",
           "namespace": "ProximityGap",
           "short_name": "foldWordAux_coeff_eq_foldWordAuxCoeff_nat",
@@ -11809,7 +11854,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 266,
+          "line": 381,
           "name": "ProximityGap.foldWordAux_eq_sum_of_foldWordAuxCoeff",
           "namespace": "ProximityGap",
           "short_name": "foldWordAux_eq_sum_of_foldWordAuxCoeff",
@@ -11818,7 +11863,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 280,
+          "line": 395,
           "name": "ProximityGap.foldValue_eq_sum_of_foldAuxCoeff_mul_pow_alpha",
           "namespace": "ProximityGap",
           "short_name": "foldValue_eq_sum_of_foldAuxCoeff_mul_pow_alpha",
@@ -11827,7 +11872,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 290,
+          "line": 405,
           "name": "ProximityGap.indicatedPolynomial",
           "namespace": "ProximityGap",
           "short_name": "indicatedPolynomial",
@@ -11836,7 +11881,7 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 300,
+          "line": 415,
           "name": "ProximityGap.card_ne_zero",
           "namespace": "ProximityGap",
           "short_name": "card_ne_zero",
@@ -11845,7 +11890,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 303,
+          "line": 418,
           "name": "ProximityGap.indicated_polynomial_degree_x_lt",
           "namespace": "ProximityGap",
           "short_name": "indicated_polynomial_degree_x_lt",
@@ -11854,7 +11899,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 313,
+          "line": 428,
           "name": "ProximityGap.indicated_polynomial_degree_y_lt",
           "namespace": "ProximityGap",
           "short_name": "indicated_polynomial_degree_y_lt",
@@ -11863,7 +11908,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 324,
+          "line": 439,
           "name": "ProximityGap.indicated_polynomial_eq_foldAux",
           "namespace": "ProximityGap",
           "short_name": "indicated_polynomial_eq_foldAux",
@@ -11872,7 +11917,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 334,
+          "line": 449,
           "name": "ProximityGap.indicated_polynomial_eval_eq_combination_of_correlated",
           "namespace": "ProximityGap",
           "short_name": "indicated_polynomial_eval_eq_combination_of_correlated",
@@ -11881,7 +11926,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 347,
+          "line": 462,
           "name": "ProximityGap.indicated_polynomial_eq_combination_of_correlated",
           "namespace": "ProximityGap",
           "short_name": "indicated_polynomial_eq_combination_of_correlated",
@@ -11890,7 +11935,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 370,
+          "line": 485,
           "name": "ProximityGap.indicated_polynomial_eq_foldAux'",
           "namespace": "ProximityGap",
           "short_name": "indicated_polynomial_eq_foldAux'",
@@ -11899,7 +11944,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 402,
+          "line": 517,
           "name": "ProximityGap.foldWordAux_poly_sum",
           "namespace": "ProximityGap",
           "short_name": "foldWordAux_poly_sum",
@@ -11908,7 +11953,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 409,
+          "line": 524,
           "name": "ProximityGap.indicated_polynomial_comp_x_k_natDegree",
           "namespace": "ProximityGap",
           "short_name": "indicated_polynomial_comp_x_k_natDegree",
@@ -11917,7 +11962,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 441,
+          "line": 556,
           "name": "ProximityGap.eval_comp_x_pow_map_eq",
           "namespace": "ProximityGap",
           "short_name": "eval_comp_x_pow_map_eq",
@@ -11926,7 +11971,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 457,
+          "line": 572,
           "name": "ProximityGap.hammingDistComplementBound",
           "namespace": "ProximityGap",
           "short_name": "hammingDistComplementBound",
@@ -11935,7 +11980,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 465,
+          "line": 580,
           "name": "ProximityGap.hammingDistBound",
           "namespace": "ProximityGap",
           "short_name": "hammingDistBound",
@@ -11944,7 +11989,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 470,
+          "line": 585,
           "name": "ProximityGap.contradictory_hamming_dist_zero",
           "namespace": "ProximityGap",
           "short_name": "contradictory_hamming_dist_zero",
@@ -11953,7 +11998,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 475,
+          "line": 590,
           "name": "ProximityGap.contradictory_hamming_dist_formula",
           "namespace": "ProximityGap",
           "short_name": "contradictory_hamming_dist_formula",
@@ -11962,7 +12007,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 539,
+          "line": 654,
           "name": "ProximityGap.correlated_agreement_implies_contradictory_hamm_dist",
           "namespace": "ProximityGap",
           "short_name": "correlated_agreement_implies_contradictory_hamm_dist",
@@ -11971,7 +12016,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 606,
+          "line": 721,
           "name": "ProximityGap.dist_from_code_bound_of_correlated_agreement",
           "namespace": "ProximityGap",
           "short_name": "dist_from_code_bound_of_correlated_agreement",
@@ -11980,7 +12025,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 638,
+          "line": 753,
           "name": "ProximityGap.folded_rate_div_eq_helper",
           "namespace": "ProximityGap",
           "short_name": "folded_rate_div_eq_helper",
@@ -11989,7 +12034,7 @@
         {
           "doc": "The rate of the folded RS-code is the same.",
           "kind": "lemma",
-          "line": 651,
+          "line": 766,
           "name": "ProximityGap.folded_rate_eq",
           "namespace": "ProximityGap",
           "short_name": "folded_rate_eq",
@@ -11998,7 +12043,7 @@
         {
           "doc": "The square root of the rate of the folded RS-code is the same.",
           "kind": "lemma",
-          "line": 682,
+          "line": 797,
           "name": "ProximityGap.folded_sqrtRate_eq",
           "namespace": "ProximityGap",
           "short_name": "folded_sqrtRate_eq",
@@ -12007,7 +12052,7 @@
         {
           "doc": "Folding preserves distance from Reed\u2013Solomon codes. For any word `f` over the smooth coset FFT domain, degree parameter `d`, folding parameter `k`, and distance threshold `\u03b4` satisfying `0 < \u03b4 < min (\u03b4\u1d63(f, RS[d])) (1 - sqrtRate(d))`, the probability over a uniformly random folding challenge `r : F` that the folded word is within relative distance `\u03b4` of the Reed\u2013Solomon code of reduced degree `d / 2^k` on the folded subdomain is bounded by the proximity-gap error term. This is Lemma 4.9 from [ACFY24]: a random `2^k`-folding step preserves distance from the corresponding Reed\u2013Solomon code excep",
           "kind": "theorem",
-          "line": 708,
+          "line": 823,
           "name": "ProximityGap.folding_preserves_distance",
           "namespace": "ProximityGap",
           "short_name": "folding_preserves_distance",
@@ -12757,7 +12802,7 @@
         {
           "doc": "An FFT domain is an injective group homomorphism whose codomain is the multiplicative group of a field.",
           "kind": "structure",
-          "line": 141,
+          "line": 142,
           "name": "ReedSolomon.FftDomain",
           "namespace": "ReedSolomon",
           "short_name": "FftDomain",
@@ -12766,7 +12811,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 149,
+          "line": 150,
           "name": "ReedSolomon.FftDomain.eq_iff_domains_eq",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "eq_iff_domains_eq",
@@ -12775,16 +12820,16 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 156,
-          "name": "ReedSolomon._anon_instance_156",
+          "line": 157,
+          "name": "ReedSolomon._anon_instance_157",
           "namespace": "ReedSolomon",
-          "short_name": "_anon_instance_156",
+          "short_name": "_anon_instance_157",
           "signature": "instance instance : FunLike (FftDomain \u03b9 F) \u03b9 F where"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 165,
+          "line": 166,
           "name": "ReedSolomon.FftDomain.eval_fft_domain_eq_eval_domain",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "eval_fft_domain_eq_eval_domain",
@@ -12793,25 +12838,25 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 171,
-          "name": "ReedSolomon._anon_instance_171",
+          "line": 172,
+          "name": "ReedSolomon._anon_instance_172",
           "namespace": "ReedSolomon",
-          "short_name": "_anon_instance_171",
+          "short_name": "_anon_instance_172",
           "signature": "instance instance : Coe (FftDomain \u03b9 F) (\u03b9 \u21aa F) where"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 178,
-          "name": "ReedSolomon._anon_instance_178",
+          "line": 179,
+          "name": "ReedSolomon._anon_instance_179",
           "namespace": "ReedSolomon",
-          "short_name": "_anon_instance_178",
+          "short_name": "_anon_instance_179",
           "signature": "instance instance : Membership F (FftDomain \u03b9 F) where"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 183,
+          "line": 184,
           "name": "ReedSolomon.FftDomain.toFinset",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "toFinset",
@@ -12820,52 +12865,52 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 185,
-          "name": "ReedSolomon.FftDomain._anon_instance_185",
+          "line": 186,
+          "name": "ReedSolomon.FftDomain._anon_instance_186",
           "namespace": "ReedSolomon.FftDomain",
-          "short_name": "_anon_instance_185",
+          "short_name": "_anon_instance_186",
           "signature": "instance instance"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 193,
-          "name": "ReedSolomon._anon_instance_193",
+          "line": 194,
+          "name": "ReedSolomon._anon_instance_194",
           "namespace": "ReedSolomon",
-          "short_name": "_anon_instance_193",
+          "short_name": "_anon_instance_194",
           "signature": "instance instance {\u03c9 : FftDomain \u03b9 F} : Inhabited \u03c9.toFinset where"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 194,
-          "name": "ReedSolomon._anon_def_194",
+          "line": 195,
+          "name": "ReedSolomon._anon_def_195",
           "namespace": "ReedSolomon",
-          "short_name": "_anon_def_194",
+          "short_name": "_anon_def_195",
           "signature": "def default := \u27e8\u03c9 0, by simp [FftDomain.toFinset]\u27e9"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 196,
-          "name": "ReedSolomon._anon_instance_196",
+          "line": 197,
+          "name": "ReedSolomon._anon_instance_197",
           "namespace": "ReedSolomon",
-          "short_name": "_anon_instance_196",
+          "short_name": "_anon_instance_197",
           "signature": "instance instance {\u03c9 : FftDomain \u03b9 F} : Inhabited \u03c9 where"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 197,
-          "name": "ReedSolomon._anon_def_197",
+          "line": 198,
+          "name": "ReedSolomon._anon_def_198",
           "namespace": "ReedSolomon",
-          "short_name": "_anon_def_197",
+          "short_name": "_anon_def_198",
           "signature": "def default := \u27e8\u03c9 0, by simp [FftDomain.toFinset]\u27e9"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 202,
+          "line": 203,
           "name": "ReedSolomon.FftDomain.mem_domain_iff_exists",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "mem_domain_iff_exists",
@@ -12874,7 +12919,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 207,
+          "line": 208,
           "name": "ReedSolomon.FftDomain.mem_domain_self",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "mem_domain_self",
@@ -12883,7 +12928,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 211,
+          "line": 212,
           "name": "ReedSolomon.FftDomain.mem_finset_iff_exists",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "mem_finset_iff_exists",
@@ -12892,7 +12937,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 216,
+          "line": 217,
           "name": "ReedSolomon.FftDomain.mem_finset_iff_mem_domain",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "mem_finset_iff_mem_domain",
@@ -12901,7 +12946,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 221,
+          "line": 222,
           "name": "ReedSolomon.FftDomain.mem_domain_finset_self",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "mem_domain_finset_self",
@@ -12910,16 +12955,16 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 228,
-          "name": "ReedSolomon._anon_instance_228",
+          "line": 229,
+          "name": "ReedSolomon._anon_instance_229",
           "namespace": "ReedSolomon",
-          "short_name": "_anon_instance_228",
+          "short_name": "_anon_instance_229",
           "signature": "instance instance {x : F} {\u03c9 : FftDomain \u03b9 F} : Decidable (x \u2208 \u03c9) :="
         },
         {
           "doc": "A helper to convert a finset into a list whose elements are the members of the finset, i.e. come with a proof that they belong to the finset.",
           "kind": "def",
-          "line": 237,
+          "line": 238,
           "name": "ReedSolomon.Finset.toListWithProof.",
           "namespace": "ReedSolomon.Finset",
           "short_name": "toListWithProof.",
@@ -12928,7 +12973,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 244,
+          "line": 245,
           "name": "ReedSolomon.Finset.toListWithProof_empty.",
           "namespace": "ReedSolomon.Finset",
           "short_name": "toListWithProof_empty.",
@@ -12937,7 +12982,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 248,
+          "line": 249,
           "name": "ReedSolomon.Finset.toListWithProof_mem.",
           "namespace": "ReedSolomon.Finset",
           "short_name": "toListWithProof_mem.",
@@ -12946,7 +12991,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 255,
+          "line": 256,
           "name": "ReedSolomon.Finset.list_reduceOption_helper",
           "namespace": "ReedSolomon.Finset",
           "short_name": "list_reduceOption_helper",
@@ -12955,7 +13000,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 271,
+          "line": 272,
           "name": "ReedSolomon.Finset.toListWithProof_eq_toList.",
           "namespace": "ReedSolomon.Finset",
           "short_name": "toListWithProof_eq_toList.",
@@ -12964,7 +13009,7 @@
         {
           "doc": "Convert an FFT domain into a list of all its members with proofs the members belong to the FFT domain. Computable for FFT domains indexed by `Fin m`, by enumerating via `List.finRange m`.",
           "kind": "def",
-          "line": 286,
+          "line": 287,
           "name": "ReedSolomon.FftDomain.toList",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "toList",
@@ -12973,7 +13018,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 290,
+          "line": 291,
           "name": "ReedSolomon.FftDomain.toList_eq_finset_toList",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "toList_eq_finset_toList",
@@ -12982,7 +13027,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 295,
+          "line": 296,
           "name": "ReedSolomon.FftDomain.toSubgroup",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "toSubgroup",
@@ -12991,7 +13036,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 317,
+          "line": 318,
           "name": "ReedSolomon.FftDomain.mem_subgroup_iff_mem_finset",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "mem_subgroup_iff_mem_finset",
@@ -13000,7 +13045,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 323,
+          "line": 324,
           "name": "ReedSolomon.FftDomain.mem_subgroup_iff_mem_domain",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "mem_subgroup_iff_mem_domain",
@@ -13009,25 +13054,25 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 328,
-          "name": "ReedSolomon._anon_instance_328",
+          "line": 329,
+          "name": "ReedSolomon._anon_instance_329",
           "namespace": "ReedSolomon",
-          "short_name": "_anon_instance_328",
+          "short_name": "_anon_instance_329",
           "signature": "instance instance : CoeOut (FftDomain \u03b9 F) (Finset F) where"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 331,
-          "name": "ReedSolomon._anon_instance_331",
+          "line": 332,
+          "name": "ReedSolomon._anon_instance_332",
           "namespace": "ReedSolomon",
-          "short_name": "_anon_instance_331",
+          "short_name": "_anon_instance_332",
           "signature": "instance instance : CoeOut (FftDomain \u03b9 F) (Subgroup F\u02e3) where"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 339,
+          "line": 340,
           "name": "ReedSolomon.FftDomain.injective",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "injective",
@@ -13036,7 +13081,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 344,
+          "line": 345,
           "name": "ReedSolomon.FftDomain.injOn",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "injOn",
@@ -13045,7 +13090,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 347,
+          "line": 348,
           "name": "ReedSolomon.FftDomain.domain_elem_invertible",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "domain_elem_invertible",
@@ -13054,7 +13099,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 351,
+          "line": 352,
           "name": "ReedSolomon.FftDomain.zero_is_not_in_domain",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "zero_is_not_in_domain",
@@ -13063,7 +13108,16 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 359,
+          "line": 360,
+          "name": "ReedSolomon.FftDomain.domain_ne_zero",
+          "namespace": "ReedSolomon.FftDomain",
+          "short_name": "domain_ne_zero",
+          "signature": "lemma domain_ne_zero {\u03c9 : FftDomain \u03b9 F} {i : \u03b9} :"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 366,
           "name": "ReedSolomon.FftDomain.domain_zero_eq_one",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "domain_zero_eq_one",
@@ -13072,7 +13126,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 365,
+          "line": 372,
           "name": "ReedSolomon.FftDomain.domain_add_eq_mul_domain",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "domain_add_eq_mul_domain",
@@ -13081,7 +13135,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 372,
+          "line": 379,
           "name": "ReedSolomon.FftDomain.mul_mem_domain_of_mem",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "mul_mem_domain_of_mem",
@@ -13090,7 +13144,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 381,
+          "line": 388,
           "name": "ReedSolomon.FftDomain.domain_neg_eq_inv_domain",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "domain_neg_eq_inv_domain",
@@ -13099,7 +13153,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 388,
+          "line": 395,
           "name": "ReedSolomon.FftDomain.domain_sub_eq_div_domain",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "domain_sub_eq_div_domain",
@@ -13108,7 +13162,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 398,
+          "line": 405,
           "name": "ReedSolomon.FftDomain.ext",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "ext",
@@ -13117,7 +13171,7 @@
         {
           "doc": "A smooth FFT domain is an FFT domain whose domain (i.e. LHS) is a finite additive cyclic group, which up to isomorphis is `Fin n`.",
           "kind": "abbrev",
-          "line": 406,
+          "line": 413,
           "name": "ReedSolomon.SmoothFftDomain",
           "namespace": "ReedSolomon",
           "short_name": "SmoothFftDomain",
@@ -13126,7 +13180,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 412,
+          "line": 419,
           "name": "ReedSolomon.FftDomain.neg_one_mem_domain",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "neg_one_mem_domain",
@@ -13135,7 +13189,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 445,
+          "line": 452,
           "name": "ReedSolomon.FftDomain.neg_mem_domain_of_mem",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "neg_mem_domain_of_mem",
@@ -13144,7 +13198,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 453,
+          "line": 460,
           "name": "ReedSolomon.FftDomain.neg_mem_domain_iff_mem",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "neg_mem_domain_iff_mem",
@@ -13153,7 +13207,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 462,
+          "line": 469,
           "name": "ReedSolomon.FftDomain.size_of_smooth_fft_domain_eq_pow_of_2",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "size_of_smooth_fft_domain_eq_pow_of_2",
@@ -13162,7 +13216,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 467,
+          "line": 474,
           "name": "ReedSolomon.FftDomain.domain_nsmul",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "domain_nsmul",
@@ -13171,7 +13225,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 474,
+          "line": 481,
           "name": "ReedSolomon.FftDomain.val_eq_nsmul_one",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "val_eq_nsmul_one",
@@ -13180,7 +13234,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 484,
+          "line": 491,
           "name": "ReedSolomon.FftDomain.domain_eq_pow_of_generator",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "domain_eq_pow_of_generator",
@@ -13189,7 +13243,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 490,
+          "line": 497,
           "name": "ReedSolomon.FftDomain.eq_iff_generators_eq",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "eq_iff_generators_eq",
@@ -13198,7 +13252,7 @@
         {
           "doc": "A coset FFT domain is a domain of the form `x \u00b7 G` for an FFT domain `G`.",
           "kind": "structure",
-          "line": 500,
+          "line": 507,
           "name": "ReedSolomon.CosetFftDomain",
           "namespace": "ReedSolomon",
           "short_name": "CosetFftDomain",
@@ -13207,7 +13261,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 508,
+          "line": 515,
           "name": "ReedSolomon.CosetFftDomain.eq_iff_domains_and_gen_eq",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "eq_iff_domains_and_gen_eq",
@@ -13216,16 +13270,16 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 515,
-          "name": "ReedSolomon._anon_instance_515",
+          "line": 522,
+          "name": "ReedSolomon._anon_instance_522",
           "namespace": "ReedSolomon",
-          "short_name": "_anon_instance_515",
+          "short_name": "_anon_instance_522",
           "signature": "instance instance : FunLike (CosetFftDomain \u03b9 F) \u03b9 F where"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 526,
+          "line": 533,
           "name": "ReedSolomon.CosetFftDomain.eval_coset_fft_domain_eq_eval_x_mul_domain",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "eval_coset_fft_domain_eq_eval_x_mul_domain",
@@ -13234,25 +13288,25 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 532,
-          "name": "ReedSolomon._anon_instance_532",
+          "line": 539,
+          "name": "ReedSolomon._anon_instance_539",
           "namespace": "ReedSolomon",
-          "short_name": "_anon_instance_532",
+          "short_name": "_anon_instance_539",
           "signature": "instance instance : Coe (CosetFftDomain \u03b9 F) (\u03b9 \u21aa F) where"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 540,
-          "name": "ReedSolomon._anon_instance_540",
+          "line": 547,
+          "name": "ReedSolomon._anon_instance_547",
           "namespace": "ReedSolomon",
-          "short_name": "_anon_instance_540",
+          "short_name": "_anon_instance_547",
           "signature": "instance instance : Membership F (CosetFftDomain \u03b9 F) where"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 545,
+          "line": 552,
           "name": "ReedSolomon.CosetFftDomain.toFinset",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "toFinset",
@@ -13261,52 +13315,52 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 548,
-          "name": "ReedSolomon.CosetFftDomain._anon_instance_548",
+          "line": 555,
+          "name": "ReedSolomon.CosetFftDomain._anon_instance_555",
           "namespace": "ReedSolomon.CosetFftDomain",
-          "short_name": "_anon_instance_548",
+          "short_name": "_anon_instance_555",
           "signature": "instance instance"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 556,
-          "name": "ReedSolomon._anon_instance_556",
+          "line": 563,
+          "name": "ReedSolomon._anon_instance_563",
           "namespace": "ReedSolomon",
-          "short_name": "_anon_instance_556",
+          "short_name": "_anon_instance_563",
           "signature": "instance instance {\u03c9 : CosetFftDomain \u03b9 F} : Inhabited \u03c9.toFinset where"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 557,
-          "name": "ReedSolomon._anon_def_557",
+          "line": 564,
+          "name": "ReedSolomon._anon_def_564",
           "namespace": "ReedSolomon",
-          "short_name": "_anon_def_557",
+          "short_name": "_anon_def_564",
           "signature": "def default := \u27e8\u03c9 0, by simp [CosetFftDomain.toFinset]\u27e9"
         },
         {
           "doc": "",
           "kind": "instance",
-          "line": 559,
-          "name": "ReedSolomon._anon_instance_559",
+          "line": 566,
+          "name": "ReedSolomon._anon_instance_566",
           "namespace": "ReedSolomon",
-          "short_name": "_anon_instance_559",
+          "short_name": "_anon_instance_566",
           "signature": "instance instance {\u03c9 : CosetFftDomain \u03b9 F} : Inhabited \u03c9 where"
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 560,
-          "name": "ReedSolomon._anon_def_560",
+          "line": 567,
+          "name": "ReedSolomon._anon_def_567",
           "namespace": "ReedSolomon",
-          "short_name": "_anon_def_560",
+          "short_name": "_anon_def_567",
           "signature": "def default := \u27e8\u03c9 0, by simp [CosetFftDomain.toFinset]\u27e9"
         },
         {
           "doc": "",
           "kind": "lemma",
-          "line": 565,
+          "line": 572,
           "name": "ReedSolomon.CosetFftDomain.mem_coset_def",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "mem_coset_def",
@@ -13315,7 +13369,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 570,
+          "line": 577,
           "name": "ReedSolomon.CosetFftDomain.mem_coset",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "mem_coset",
@@ -13324,7 +13378,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 576,
+          "line": 583,
           "name": "ReedSolomon.CosetFftDomain.mem_coset_domain",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "mem_coset_domain",
@@ -13333,7 +13387,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 584,
+          "line": 591,
           "name": "ReedSolomon.CosetFftDomain.mem_coset_domain_self",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "mem_coset_domain_self",
@@ -13342,7 +13396,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 589,
+          "line": 596,
           "name": "ReedSolomon.CosetFftDomain.mem_coset_finset_iff_mem_coset_domain",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "mem_coset_finset_iff_mem_coset_domain",
@@ -13351,7 +13405,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 595,
+          "line": 602,
           "name": "ReedSolomon.CosetFftDomain.mem_coset_finset_self",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "mem_coset_finset_self",
@@ -13360,16 +13414,16 @@
         {
           "doc": "",
           "kind": "instance",
-          "line": 602,
-          "name": "ReedSolomon._anon_instance_602",
+          "line": 609,
+          "name": "ReedSolomon._anon_instance_609",
           "namespace": "ReedSolomon",
-          "short_name": "_anon_instance_602",
+          "short_name": "_anon_instance_609",
           "signature": "instance instance {x : F} {\u03c9 : CosetFftDomain \u03b9 F} : Decidable (x \u2208 \u03c9) :="
         },
         {
           "doc": "",
           "kind": "def",
-          "line": 607,
+          "line": 614,
           "name": "ReedSolomon.CosetFftDomain.toList",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "toList",
@@ -13378,7 +13432,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 612,
+          "line": 619,
           "name": "ReedSolomon.CosetFftDomain.toList_eq_finset_toList",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "toList_eq_finset_toList",
@@ -13387,7 +13441,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 618,
+          "line": 625,
           "name": "ReedSolomon.CosetFftDomain.coset_domain_eq_image",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "coset_domain_eq_image",
@@ -13396,7 +13450,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 624,
+          "line": 631,
           "name": "ReedSolomon.CosetFftDomain.card_eq_fft_domain_card",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "card_eq_fft_domain_card",
@@ -13405,7 +13459,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 632,
+          "line": 639,
           "name": "ReedSolomon.CosetFftDomain.injective",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "injective",
@@ -13414,7 +13468,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 639,
+          "line": 646,
           "name": "ReedSolomon.CosetFftDomain.injOn",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "injOn",
@@ -13423,7 +13477,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 644,
+          "line": 651,
           "name": "ReedSolomon.CosetFftDomain.zero_is_not_in_domain",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "zero_is_not_in_domain",
@@ -13432,7 +13486,16 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 654,
+          "line": 661,
+          "name": "ReedSolomon.CosetFftDomain.coset_domain_ne_zero",
+          "namespace": "ReedSolomon.CosetFftDomain",
+          "short_name": "coset_domain_ne_zero",
+          "signature": "lemma coset_domain_ne_zero {\u03c9 : CosetFftDomain \u03b9 F} {i : \u03b9} :"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 668,
           "name": "ReedSolomon.CosetFftDomain.coset_domain_zero_eq_x",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "coset_domain_zero_eq_x",
@@ -13441,7 +13504,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 660,
+          "line": 674,
           "name": "ReedSolomon.CosetFftDomain.coset_domain_add_eq_mul_domain",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "coset_domain_add_eq_mul_domain",
@@ -13450,7 +13513,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 671,
+          "line": 685,
           "name": "ReedSolomon.CosetFftDomain.coset_domain_neg_eq_inv_domain",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "coset_domain_neg_eq_inv_domain",
@@ -13459,7 +13522,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 679,
+          "line": 693,
           "name": "ReedSolomon.CosetFftDomain.coset_domain_sub_eq_div_domain",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "coset_domain_sub_eq_div_domain",
@@ -13468,7 +13531,7 @@
         {
           "doc": "",
           "kind": "theorem",
-          "line": 689,
+          "line": 703,
           "name": "ReedSolomon.CosetFftDomain.ext",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "ext",
@@ -13477,7 +13540,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 700,
+          "line": 714,
           "name": "ReedSolomon.CosetFftDomain.x_mul_mem_coset_iff",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "x_mul_mem_coset_iff",
@@ -13486,7 +13549,7 @@
         {
           "doc": "A smooth coset FFT domain is a coset FFT domain whose underlying FFT domain is smooth.",
           "kind": "abbrev",
-          "line": 708,
+          "line": 722,
           "name": "ReedSolomon.SmoothCosetFftDomain",
           "namespace": "ReedSolomon",
           "short_name": "SmoothCosetFftDomain",
@@ -13495,7 +13558,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 713,
+          "line": 727,
           "name": "ReedSolomon.FftDomain.logAux",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "logAux",
@@ -13504,7 +13567,7 @@
         {
           "doc": "Finds a preimage of `x` under the mapping `\u03c9`.",
           "kind": "def",
-          "line": 723,
+          "line": 737,
           "name": "ReedSolomon.FftDomain.log",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "log",
@@ -13513,7 +13576,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 727,
+          "line": 741,
           "name": "ReedSolomon.FftDomain.log_right_inverse'",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "log_right_inverse'",
@@ -13522,7 +13585,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 743,
+          "line": 757,
           "name": "ReedSolomon.FftDomain.log_right_inverse",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "log_right_inverse",
@@ -13531,7 +13594,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 746,
+          "line": 760,
           "name": "ReedSolomon.FftDomain.log_left_inverse",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "log_left_inverse",
@@ -13539,8 +13602,26 @@
         },
         {
           "doc": "",
+          "kind": "lemma",
+          "line": 765,
+          "name": "ReedSolomon.FftDomain.log_injective",
+          "namespace": "ReedSolomon.FftDomain",
+          "short_name": "log_injective",
+          "signature": "lemma log_injective {n : \u2115} {\u03c9 : SmoothFftDomain n F} :"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 771,
+          "name": "ReedSolomon.FftDomain.log_injOn",
+          "namespace": "ReedSolomon.FftDomain",
+          "short_name": "log_injOn",
+          "signature": "lemma log_injOn {n : \u2115} {\u03c9 : SmoothFftDomain n F} {s : Set \u03c9.toFinset} :"
+        },
+        {
+          "doc": "",
           "kind": "def",
-          "line": 750,
+          "line": 774,
           "name": "ReedSolomon.FftDomain.subdomain_embed",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "subdomain_embed",
@@ -13549,7 +13630,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 760,
+          "line": 784,
           "name": "ReedSolomon.FftDomain.subdomain_embed_add",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "subdomain_embed_add",
@@ -13558,7 +13639,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 769,
+          "line": 793,
           "name": "ReedSolomon.FftDomain.subdomain_embed_zero",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "subdomain_embed_zero",
@@ -13567,7 +13648,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 774,
+          "line": 798,
           "name": "ReedSolomon.FftDomain.subdomain_embed_injective",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "subdomain_embed_injective",
@@ -13576,7 +13657,7 @@
         {
           "doc": "Given a smooth FFT domain `\u03c9` of log-order `n` this function returns its subdomain of log-order `i`.",
           "kind": "def",
-          "line": 782,
+          "line": 806,
           "name": "ReedSolomon.FftDomain.subdomain",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "subdomain",
@@ -13585,7 +13666,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 794,
+          "line": 818,
           "name": "ReedSolomon.FftDomain.mem_subdomain_of_eq_vals",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "mem_subdomain_of_eq_vals",
@@ -13594,7 +13675,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 801,
+          "line": 825,
           "name": "ReedSolomon.FftDomain.subdomain_0",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "subdomain_0",
@@ -13603,7 +13684,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 810,
+          "line": 834,
           "name": "ReedSolomon.FftDomain.subdomain_0'",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "subdomain_0'",
@@ -13612,7 +13693,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 818,
+          "line": 842,
           "name": "ReedSolomon.FftDomain.subdomain_embed_last",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "subdomain_embed_last",
@@ -13621,7 +13702,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 824,
+          "line": 848,
           "name": "ReedSolomon.FftDomain.subdomain_last",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "subdomain_last",
@@ -13630,7 +13711,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 838,
+          "line": 862,
           "name": "ReedSolomon.FftDomain.subdomain_last'",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "subdomain_last'",
@@ -13639,7 +13720,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 849,
+          "line": 873,
           "name": "ReedSolomon.FftDomain.subdomain_embed_of_le",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "subdomain_embed_of_le",
@@ -13648,7 +13729,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 861,
+          "line": 885,
           "name": "ReedSolomon.FftDomain.subdomain_le",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "subdomain_le",
@@ -13657,7 +13738,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 872,
+          "line": 896,
           "name": "ReedSolomon.FftDomain.subdomain_le_finset",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "subdomain_le_finset",
@@ -13666,7 +13747,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 885,
+          "line": 909,
           "name": "ReedSolomon.FftDomain.subdomain_le_mem",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "subdomain_le_mem",
@@ -13675,7 +13756,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 894,
+          "line": 918,
           "name": "ReedSolomon.FftDomain.subdomain_embed_pow_eq",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "subdomain_embed_pow_eq",
@@ -13684,7 +13765,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 921,
+          "line": 945,
           "name": "ReedSolomon.FftDomain.subdomain_eval",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "subdomain_eval",
@@ -13693,7 +13774,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 929,
+          "line": 953,
           "name": "ReedSolomon.FftDomain.subdomain_pow_property_aux",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "subdomain_pow_property_aux",
@@ -13702,7 +13783,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 937,
+          "line": 961,
           "name": "ReedSolomon.FftDomain.subdomain_pow_property",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "subdomain_pow_property",
@@ -13711,7 +13792,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 962,
+          "line": 986,
           "name": "ReedSolomon.FftDomain.subdomain_pow_property'",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "subdomain_pow_property'",
@@ -13720,7 +13801,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 968,
+          "line": 992,
           "name": "ReedSolomon.FftDomain.subdomain_roots_card",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "subdomain_roots_card",
@@ -13729,7 +13810,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1051,
+          "line": 1075,
           "name": "ReedSolomon.FftDomain.subdomain_root_exists",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "subdomain_root_exists",
@@ -13738,16 +13819,25 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1066,
+          "line": 1090,
           "name": "ReedSolomon.FftDomain.subdomain_subdomain_eq_subdomain",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "subdomain_subdomain_eq_subdomain",
           "signature": "lemma subdomain_subdomain_eq_subdomain {n} {\u03c9 : SmoothFftDomain n F}"
         },
         {
+          "doc": "",
+          "kind": "lemma",
+          "line": 1109,
+          "name": "ReedSolomon.FftDomain.subdomain_implies_char_ne_2",
+          "namespace": "ReedSolomon.FftDomain",
+          "short_name": "subdomain_implies_char_ne_2",
+          "signature": "lemma subdomain_implies_char_ne_2 {n} [NeZero n] (\u03c9 : SmoothFftDomain n F) :"
+        },
+        {
           "doc": "Same as `subdomain` but takes a natural number.",
           "kind": "def",
-          "line": 1085,
+          "line": 1135,
           "name": "ReedSolomon.FftDomain.subdomainNat",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "subdomainNat",
@@ -13756,7 +13846,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1091,
+          "line": 1141,
           "name": "ReedSolomon.FftDomain.subdomainNat_zero",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "subdomainNat_zero",
@@ -13765,7 +13855,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1100,
+          "line": 1150,
           "name": "ReedSolomon.FftDomain.subdomainNat_n",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "subdomainNat_n",
@@ -13774,7 +13864,7 @@
         {
           "doc": "Same as `subdomain` but takes a natural number and reverses the order of subdomains.",
           "kind": "def",
-          "line": 1109,
+          "line": 1159,
           "name": "ReedSolomon.FftDomain.subdomainNatReversed",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "subdomainNatReversed",
@@ -13783,7 +13873,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1114,
+          "line": 1164,
           "name": "ReedSolomon.FftDomain.mem_subdomainNatReversed_of_eq",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "mem_subdomainNatReversed_of_eq",
@@ -13792,7 +13882,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1124,
+          "line": 1174,
           "name": "ReedSolomon.FftDomain.subdomainNatReversed_zero",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "subdomainNatReversed_zero",
@@ -13801,7 +13891,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1134,
+          "line": 1184,
           "name": "ReedSolomon.FftDomain.subdomainNatReversed_n",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "subdomainNatReversed_n",
@@ -13810,7 +13900,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1141,
+          "line": 1191,
           "name": "ReedSolomon.FftDomain.subdomainNatReversed_sub",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "subdomainNatReversed_sub",
@@ -13819,7 +13909,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1156,
+          "line": 1206,
           "name": "ReedSolomon.FftDomain.subdomainNatReversed_root_exists",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "subdomainNatReversed_root_exists",
@@ -13828,7 +13918,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1190,
+          "line": 1240,
           "name": "ReedSolomon.FftDomain.subdomainNatReversed_mem_of_eq",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "subdomainNatReversed_mem_of_eq",
@@ -13837,7 +13927,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 1196,
+          "line": 1246,
           "name": "ReedSolomon.FftDomain.twoNthRootAux",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "twoNthRootAux",
@@ -13846,7 +13936,7 @@
         {
           "doc": "Finds a `2 ^ n`th root of `x`.",
           "kind": "def",
-          "line": 1208,
+          "line": 1258,
           "name": "ReedSolomon.FftDomain.twoNthRoot",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "twoNthRoot",
@@ -13855,7 +13945,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1212,
+          "line": 1262,
           "name": "ReedSolomon.FftDomain.twoNthRootAux_correct",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "twoNthRootAux_correct",
@@ -13864,7 +13954,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1224,
+          "line": 1274,
           "name": "ReedSolomon.FftDomain.twoNthRoot_correct",
           "namespace": "ReedSolomon.FftDomain",
           "short_name": "twoNthRoot_correct",
@@ -13873,7 +13963,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1247,
+          "line": 1297,
           "name": "ReedSolomon.CosetFftDomain.neg_mem_domain_of_mem",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "neg_mem_domain_of_mem",
@@ -13882,7 +13972,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1258,
+          "line": 1308,
           "name": "ReedSolomon.CosetFftDomain.neg_mem_domain_iff_mem",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "neg_mem_domain_iff_mem",
@@ -13891,7 +13981,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1267,
+          "line": 1317,
           "name": "ReedSolomon.CosetFftDomain.size_of_smooth_coset_domain_eq_pow_of_2",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "size_of_smooth_coset_domain_eq_pow_of_2",
@@ -13900,7 +13990,7 @@
         {
           "doc": "",
           "kind": "def",
-          "line": 1272,
+          "line": 1322,
           "name": "ReedSolomon.CosetFftDomain.logAux",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "logAux",
@@ -13909,7 +13999,7 @@
         {
           "doc": "Finds a preimage of `x` under the mapping `\u03c9`.",
           "kind": "def",
-          "line": 1282,
+          "line": 1332,
           "name": "ReedSolomon.CosetFftDomain.log",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "log",
@@ -13918,7 +14008,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1286,
+          "line": 1336,
           "name": "ReedSolomon.CosetFftDomain.log_right_inverse'",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "log_right_inverse'",
@@ -13927,7 +14017,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1302,
+          "line": 1352,
           "name": "ReedSolomon.CosetFftDomain.log_right_inverse",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "log_right_inverse",
@@ -13936,16 +14026,34 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1305,
+          "line": 1355,
           "name": "ReedSolomon.CosetFftDomain.log_left_inverse",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "log_left_inverse",
           "signature": "lemma log_left_inverse {n : \u2115} {\u03c9 : SmoothCosetFftDomain n F} :"
         },
         {
+          "doc": "",
+          "kind": "lemma",
+          "line": 1360,
+          "name": "ReedSolomon.CosetFftDomain.log_injective",
+          "namespace": "ReedSolomon.CosetFftDomain",
+          "short_name": "log_injective",
+          "signature": "lemma log_injective {n : \u2115} {\u03c9 : SmoothCosetFftDomain n F} :"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 1366,
+          "name": "ReedSolomon.CosetFftDomain.log_injOn",
+          "namespace": "ReedSolomon.CosetFftDomain",
+          "short_name": "log_injOn",
+          "signature": "lemma log_injOn {n : \u2115} {\u03c9 : SmoothCosetFftDomain n F} {s : Set \u03c9.toFinset} :"
+        },
+        {
           "doc": "Given a smooth coset FFT domain `\u03c9` of log-order `n` returns a subdomain of log-order `i`.",
           "kind": "def",
-          "line": 1311,
+          "line": 1371,
           "name": "ReedSolomon.CosetFftDomain.subdomain",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "subdomain",
@@ -13954,7 +14062,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1316,
+          "line": 1376,
           "name": "ReedSolomon.CosetFftDomain.mem_subdomain_of_eq_vals",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "mem_subdomain_of_eq_vals",
@@ -13963,7 +14071,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1324,
+          "line": 1384,
           "name": "ReedSolomon.CosetFftDomain.subdomain_x",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "subdomain_x",
@@ -13972,7 +14080,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1329,
+          "line": 1389,
           "name": "ReedSolomon.CosetFftDomain.subdomain_fftDomain",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "subdomain_fftDomain",
@@ -13981,7 +14089,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1333,
+          "line": 1393,
           "name": "ReedSolomon.CosetFftDomain.subdomain_0",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "subdomain_0",
@@ -13990,7 +14098,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1342,
+          "line": 1402,
           "name": "ReedSolomon.CosetFftDomain.subdomain_n",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "subdomain_n",
@@ -13999,7 +14107,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1351,
+          "line": 1411,
           "name": "ReedSolomon.CosetFftDomain.subdomain_n'",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "subdomain_n'",
@@ -14008,7 +14116,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1365,
+          "line": 1425,
           "name": "ReedSolomon.CosetFftDomain.subdomain_pow_property",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "subdomain_pow_property",
@@ -14017,7 +14125,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1396,
+          "line": 1456,
           "name": "ReedSolomon.CosetFftDomain.subdomain_pow_property'",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "subdomain_pow_property'",
@@ -14026,7 +14134,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1405,
+          "line": 1465,
           "name": "ReedSolomon.CosetFftDomain.card_filter_mod_eq'",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "card_filter_mod_eq'",
@@ -14035,7 +14143,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1421,
+          "line": 1481,
           "name": "ReedSolomon.CosetFftDomain.subdomain_roots_card",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "subdomain_roots_card",
@@ -14044,7 +14152,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1468,
+          "line": 1528,
           "name": "ReedSolomon.CosetFftDomain.subdomain_root_exists",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "subdomain_root_exists",
@@ -14053,16 +14161,61 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1483,
+          "line": 1543,
           "name": "ReedSolomon.CosetFftDomain.mul_property",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "mul_property",
           "signature": "lemma mul_property {n : \u2115} {\u03c9 : SmoothCosetFftDomain n F}"
         },
         {
+          "doc": "",
+          "kind": "lemma",
+          "line": 1563,
+          "name": "ReedSolomon.CosetFftDomain.subdomain_implies_char_ne_2",
+          "namespace": "ReedSolomon.CosetFftDomain",
+          "short_name": "subdomain_implies_char_ne_2",
+          "signature": "lemma subdomain_implies_char_ne_2 {n} [NeZero n] (\u03c9 : SmoothCosetFftDomain n F) :"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 1567,
+          "name": "ReedSolomon.CosetFftDomain.y_ne_neg_y_of_mem_coset",
+          "namespace": "ReedSolomon.CosetFftDomain",
+          "short_name": "y_ne_neg_y_of_mem_coset",
+          "signature": "lemma y_ne_neg_y_of_mem_coset {n} [NeZero n]"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 1581,
+          "name": "ReedSolomon.CosetFftDomain.filter_sq_subset",
+          "namespace": "ReedSolomon.CosetFftDomain",
+          "short_name": "filter_sq_subset",
+          "signature": "lemma filter_sq_subset {\u03c9 : CosetFftDomain \u03b9 F}"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 1586,
+          "name": "ReedSolomon.CosetFftDomain.sq_root_mem_subdomain",
+          "namespace": "ReedSolomon.CosetFftDomain",
+          "short_name": "sq_root_mem_subdomain",
+          "signature": "lemma sq_root_mem_subdomain {n} [NeZero n] {\u03c9 : SmoothCosetFftDomain n F}"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 1606,
+          "name": "ReedSolomon.CosetFftDomain.subdomain_square_roots_explicit",
+          "namespace": "ReedSolomon.CosetFftDomain",
+          "short_name": "subdomain_square_roots_explicit",
+          "signature": "lemma subdomain_square_roots_explicit {n} [NeZero n] {\u03c9 : SmoothCosetFftDomain n F}"
+        },
+        {
           "doc": "Same as `subdomain` but takes a natural number.",
           "kind": "def",
-          "line": 1503,
+          "line": 1624,
           "name": "ReedSolomon.CosetFftDomain.subdomainNat",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "subdomainNat",
@@ -14071,7 +14224,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1509,
+          "line": 1630,
           "name": "ReedSolomon.CosetFftDomain.subdomainNat_zero",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "subdomainNat_zero",
@@ -14080,7 +14233,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1530,
+          "line": 1651,
           "name": "ReedSolomon.CosetFftDomain.subdomainNat_n",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "subdomainNat_n",
@@ -14089,7 +14242,7 @@
         {
           "doc": "Same as `subdomain` but takes a natural number and reverses the order of subdomains.",
           "kind": "def",
-          "line": 1539,
+          "line": 1660,
           "name": "ReedSolomon.CosetFftDomain.subdomainNatReversed",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "subdomainNatReversed",
@@ -14098,7 +14251,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1544,
+          "line": 1665,
           "name": "ReedSolomon.CosetFftDomain.mem_subdomainNatReversed_of_eq",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "mem_subdomainNatReversed_of_eq",
@@ -14107,7 +14260,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1553,
+          "line": 1674,
           "name": "ReedSolomon.CosetFftDomain.subdomainNatReversed_x",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "subdomainNatReversed_x",
@@ -14116,7 +14269,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1564,
+          "line": 1685,
           "name": "ReedSolomon.CosetFftDomain.subdomainNatReversed_zero",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "subdomainNatReversed_zero",
@@ -14125,7 +14278,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1573,
+          "line": 1694,
           "name": "ReedSolomon.CosetFftDomain.subdomainNatReversed_n",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "subdomainNatReversed_n",
@@ -14134,7 +14287,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1583,
+          "line": 1704,
           "name": "ReedSolomon.CosetFftDomain.subdomainNatReversed_sub",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "subdomainNatReversed_sub",
@@ -14143,7 +14296,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1599,
+          "line": 1720,
           "name": "ReedSolomon.CosetFftDomain.subdomainNatReversed_pow_property'",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "subdomainNatReversed_pow_property'",
@@ -14152,7 +14305,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1625,
+          "line": 1746,
           "name": "ReedSolomon.CosetFftDomain.subdomainNatReversed_pow_property_main_domain",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "subdomainNatReversed_pow_property_main_domain",
@@ -14161,7 +14314,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1652,
+          "line": 1773,
           "name": "ReedSolomon.CosetFftDomain.subdomainNatReversed_pow_property_main_domain_toFinset",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "subdomainNatReversed_pow_property_main_domain_toFinset",
@@ -14170,7 +14323,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1660,
+          "line": 1781,
           "name": "ReedSolomon.CosetFftDomain.subdomainNat_mul_property",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "subdomainNat_mul_property",
@@ -14179,7 +14332,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1674,
+          "line": 1795,
           "name": "ReedSolomon.CosetFftDomain.subdomainNatReversed_mul_property",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "subdomainNatReversed_mul_property",
@@ -14188,7 +14341,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1696,
+          "line": 1817,
           "name": "ReedSolomon.CosetFftDomain.subdomainNatReversed_roots_card",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "subdomainNatReversed_roots_card",
@@ -14197,7 +14350,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1718,
+          "line": 1839,
           "name": "ReedSolomon.CosetFftDomain.subdomainNatReversed_root_exists",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "subdomainNatReversed_root_exists",
@@ -14206,7 +14359,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1752,
+          "line": 1873,
           "name": "ReedSolomon.CosetFftDomain.subdomainNatReversed_mem_of_eq",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "subdomainNatReversed_mem_of_eq",
@@ -14214,8 +14367,17 @@
         },
         {
           "doc": "",
+          "kind": "lemma",
+          "line": 1879,
+          "name": "ReedSolomon.CosetFftDomain.subdomainNatReversed_square_roots_explicit",
+          "namespace": "ReedSolomon.CosetFftDomain",
+          "short_name": "subdomainNatReversed_square_roots_explicit",
+          "signature": "lemma subdomainNatReversed_square_roots_explicit {n} [NeZero n] {\u03c9 : SmoothCosetFftDomain n F}"
+        },
+        {
+          "doc": "",
           "kind": "def",
-          "line": 1760,
+          "line": 1897,
           "name": "ReedSolomon.CosetFftDomain.twoNthRootAux",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "twoNthRootAux",
@@ -14224,7 +14386,7 @@
         {
           "doc": "Finds a `2 ^ n`th root of `x`.",
           "kind": "def",
-          "line": 1772,
+          "line": 1909,
           "name": "ReedSolomon.CosetFftDomain.twoNthRoot",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "twoNthRoot",
@@ -14233,7 +14395,7 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1776,
+          "line": 1913,
           "name": "ReedSolomon.CosetFftDomain.twoNthRootAux_correct",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "twoNthRootAux_correct",
@@ -14242,11 +14404,20 @@
         {
           "doc": "",
           "kind": "lemma",
-          "line": 1788,
+          "line": 1925,
           "name": "ReedSolomon.CosetFftDomain.twoNthRoot_correct",
           "namespace": "ReedSolomon.CosetFftDomain",
           "short_name": "twoNthRoot_correct",
           "signature": "lemma twoNthRoot_correct {n i : \u2115} {\u03c9 : SmoothCosetFftDomain n F}"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 1940,
+          "name": "ReedSolomon.CosetFftDomain.twoNthRoot_correct_one",
+          "namespace": "ReedSolomon.CosetFftDomain",
+          "short_name": "twoNthRoot_correct_one",
+          "signature": "lemma twoNthRoot_correct_one {n : \u2115} {\u03c9 : SmoothCosetFftDomain n F}"
         }
       ]
     },
@@ -37236,11 +37407,11 @@
         {
           "doc": "Fact 4.10 Geometric series formula in a field, for a unit `r : F`.",
           "kind": "lemma",
-          "line": 31,
+          "line": 36,
           "name": "Combine.geometric_sum_units",
           "namespace": "Combine",
           "short_name": "geometric_sum_units",
-          "signature": "lemma geometric_sum_units {F : Type*} [Field F] [DecidableEq F] {r : F\u02e3} {a : \u2115} :"
+          "signature": "lemma geometric_sum_units {r : F\u02e3} {a : \u2115} :"
         },
         {
           "doc": "",
@@ -37254,25 +37425,151 @@
         {
           "doc": "Definition 4.11.1 Combine(d*, r, (f_0, d_0), \u2026, (f_{m-1}, d_{m-1}))(x) := sum_{i < m} r_i * f_i(x) * ( sum_{l < (d* - d_i + 1)} (r * \u03c6(x))^l )",
           "kind": "def",
-          "line": 57,
+          "line": 54,
           "name": "Combine.combine",
           "namespace": "Combine",
           "short_name": "combine",
           "signature": "def combine"
         },
         {
+          "doc": "",
+          "kind": "lemma",
+          "line": 60,
+          "name": "Combine.combine_dstar_zero",
+          "namespace": "Combine",
+          "short_name": "combine_dstar_zero",
+          "signature": "lemma combine_dstar_zero"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 65,
+          "name": "Combine.geom_sum_cases",
+          "namespace": "Combine",
+          "short_name": "geom_sum_cases",
+          "signature": "lemma geom_sum_cases (q : F) (n : \u2115) :"
+        },
+        {
           "doc": "Definition 4.11.2 Combine(d*, r, (f_0, d_0), \u2026, (f_{m-1}, d_{m-1}))(x) := if (r * \u03c6(x)) = 1 then sum_{i < m} r_i * f_i(x) * (dstar - degree + 1) else sum_{i < m} r_i * f_i(x) * (1 - r * \u03c6(x)^(dstar - degree + 1)) / (1 - r * \u03c6(x))",
           "kind": "lemma",
-          "line": 66,
+          "line": 78,
           "name": "Combine.combine_eq_cases",
           "namespace": "Combine",
           "short_name": "combine_eq_cases",
           "signature": "lemma combine_eq_cases {F \u03b9 : Type*} [Field F] [DecidableEq F]"
         },
         {
+          "doc": "",
+          "kind": "def",
+          "line": 98,
+          "name": "Combine.block_size",
+          "namespace": "Combine",
+          "short_name": "block_size",
+          "signature": "def block_size (dstar : \u2115) (degs : Fin m \u2192 \u2115) (i : Fin m) := dstar - degs i + 1"
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 99,
+          "name": "Combine.block_start",
+          "namespace": "Combine",
+          "short_name": "block_start",
+          "signature": "def block_start (dstar : \u2115) (degs : Fin m \u2192 \u2115) (i : Fin m) :="
+        },
+        {
+          "doc": "",
+          "kind": "def",
+          "line": 101,
+          "name": "Combine.total_terms",
+          "namespace": "Combine",
+          "short_name": "total_terms",
+          "signature": "def total_terms (dstar : \u2115) (degs : Fin m \u2192 \u2115) := \u2211 i, block_size dstar degs i"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 103,
+          "name": "Combine.block_start_monotone",
+          "namespace": "Combine",
+          "short_name": "block_start_monotone",
+          "signature": "lemma block_start_monotone"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 111,
+          "name": "Combine.block_start_zero",
+          "namespace": "Combine",
+          "short_name": "block_start_zero",
+          "signature": "lemma block_start_zero"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 115,
+          "name": "Combine.block_start_filter_nonempty",
+          "namespace": "Combine",
+          "short_name": "block_start_filter_nonempty",
+          "signature": "lemma block_start_filter_nonempty"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 121,
+          "name": "Combine.block_idx_eq_max",
+          "namespace": "Combine",
+          "short_name": "block_idx_eq_max",
+          "signature": "lemma block_idx_eq_max"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 148,
+          "name": "Combine.combine_eq_flat",
+          "namespace": "Combine",
+          "short_name": "combine_eq_flat",
+          "signature": "lemma combine_eq_flat"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 302,
+          "name": "Combine.combine_eq_flat'",
+          "namespace": "Combine",
+          "short_name": "combine_eq_flat'",
+          "signature": "lemma combine_eq_flat'"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 322,
+          "name": "Combine.combine_eq_flat''",
+          "namespace": "Combine",
+          "short_name": "combine_eq_flat''",
+          "signature": "lemma combine_eq_flat''"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 336,
+          "name": "Combine.combine_eq_flat'''",
+          "namespace": "Combine",
+          "short_name": "combine_eq_flat'''",
+          "signature": "lemma combine_eq_flat'''"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 380,
+          "name": "Combine.combine_eq_flat_final",
+          "namespace": "Combine",
+          "short_name": "combine_eq_flat_final",
+          "signature": "lemma combine_eq_flat_final"
+        },
+        {
           "doc": "Definition 4.12.1 DegCor(d*, r, f, degree)(x) := f(x) * ( sum_{ l < d* - d + 1 } (r * \u03c6(x))^l )",
           "kind": "def",
-          "line": 110,
+          "line": 403,
           "name": "Combine.degCor",
           "namespace": "Combine",
           "short_name": "degCor",
@@ -37281,20 +37578,47 @@
         {
           "doc": "Definition 4.12.2 DegCor(d*, r, f, d)(x) := f(x) * conditionalExp(x)",
           "kind": "lemma",
-          "line": 116,
+          "line": 409,
           "name": "Combine.degreeCor_eq",
           "namespace": "Combine",
           "short_name": "degreeCor_eq",
           "signature": "lemma degreeCor_eq {F : Type u_1} [Field F] [DecidableEq F] {\u03b9 : Type u_2} (\u03c6 : \u03b9 \u21aa F)"
         },
         {
-          "doc": "Lemma 4.13 Let `dstar` be the target degree, `f\u2081,...,f_{m-1} : \u03b9 \u2192 F`, `0 < degs\u2081,...,degs_{m-1} < dstar` be degrees and `\u03b4 \u2208 (0, min{(1-BStar(\u03c1)), (1-\u03c1-1/|\u03b9|)})` be a distance parameter, then Pr_{r \u2190 F} [\u03b4\u1d63(Combine(dstar,r,(f\u2081,degs\u2081),...,(f\u2098,degs\u2098)))] > err' (dstar, \u03c1, \u03b4, m * (dstar + 1) - \u2211 i degs\u1d62)",
+          "doc": "",
           "kind": "lemma",
-          "line": 158,
+          "line": 424,
+          "name": "Combine.glorious_lemma",
+          "namespace": "Combine",
+          "short_name": "glorious_lemma",
+          "signature": "lemma glorious_lemma"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 435,
+          "name": "Combine.even_more_glorious_lemma",
+          "namespace": "Combine",
+          "short_name": "even_more_glorious_lemma",
+          "signature": "lemma even_more_glorious_lemma"
+        },
+        {
+          "doc": "",
+          "kind": "lemma",
+          "line": 448,
+          "name": "Combine.master_lemma",
+          "namespace": "Combine",
+          "short_name": "master_lemma",
+          "signature": "lemma master_lemma"
+        },
+        {
+          "doc": "Lemma 4.13 Let `dstar` be the target degree, `f\u2081,...,f_{m-1} : \u03b9 \u2192 F`, `0 < degs\u2081,...,degs_{m-1} < dstar` be degrees and `\u03b4 \u2208 (0, min{(1-BStar(\u03c1)), (1-\u03c1-1/|\u03b9|)})` be a distance parameter, then Pr_{r \u2190 F} [\u03b4\u1d63(Combine(dstar,r,(f\u2081,degs\u2081),...,(f\u2098,degs\u2098)))] > err' (dstar, \u03c1, \u03b4, m * (dstar + 1) - \u2211 i degs\u1d62)",
+          "kind": "theorem",
+          "line": 550,
           "name": "Combine.combine_theorem",
           "namespace": "Combine",
           "short_name": "combine_theorem",
-          "signature": "lemma combine_theorem"
+          "signature": "theorem combine_theorem"
         }
       ]
     },
@@ -39576,7 +39900,7 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 4298,
+      "declarations": 4334,
       "files": 226
     }
   }

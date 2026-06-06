@@ -4,7 +4,7 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 226 files, 4298 declarations
+- `ArkLib` — 226 files, 4334 declarations
 
 ## Same short-name across multiple files (120 groups)
 
@@ -511,8 +511,8 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `toFinset` (3 declarations, 2 files)
 
 - `def ReedSolomon.toFinset` [ArkLib/Data/CodingTheory/ReedSolomon.lean:97](../../../ArkLib/Data/CodingTheory/ReedSolomon.lean#L97) — (no docstring)
-- `def ReedSolomon.FftDomain.toFinset` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:183](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L183) — (no docstring)
-- `def ReedSolomon.CosetFftDomain.toFinset` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:545](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L545) — (no docstring)
+- `def ReedSolomon.FftDomain.toFinset` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:184](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L184) — (no docstring)
+- `def ReedSolomon.CosetFftDomain.toFinset` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:552](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L552) — (no docstring)
 
 ### `ChallengeIdx` (2 declarations, 2 files)
 
