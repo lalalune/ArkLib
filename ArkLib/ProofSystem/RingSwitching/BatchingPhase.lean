@@ -567,3 +567,8 @@ theorem batchingOracleVerifier_rbrKnowledgeSoundness [IsDomain L] [IsDomain K] :
 
 end BatchingPhase
 end RingSwitching
+
+/-! ### Axiom audit (issue #19 batching completeness frontier) -/
+
+#print axioms RingSwitching.BatchingPhase.batchingReduction_perfectCompleteness_residual
+#print axioms RingSwitching.BatchingPhase.batchingReduction_perfectCompleteness

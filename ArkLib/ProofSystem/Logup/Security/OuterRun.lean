@@ -242,3 +242,9 @@ theorem simulateQ_outerVerify_eq (stmt : StmtIn F n M) (oStmt : ∀ i, OStmtIn F
 end OuterRun
 
 end Logup
+
+/- Axiom audit for the compiled outer LogUp verifier closed form. -/
+#print axioms Logup.answer_signPoint
+#print axioms Logup.forIn_guard_eq'
+#print axioms Logup.simulateQ_optionT_forIn'
+#print axioms Logup.simulateQ_outerVerify_eq
