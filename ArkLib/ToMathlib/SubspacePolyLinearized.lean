@@ -491,11 +491,14 @@ theorem bkr06_tight_family_hfamily_param_free
   obtain ⟨ι, hF, hD, 𝓛, hFL, h1, h2, h3, h4⟩ :=
     bkr06_tight_family_hfamily_unconditional
       (α := ((Module.finrank F K : ℝ) * u - (v : ℝ) ^ 2) / Real.log q) (β := 0)
-      q hq hqcard v u hv huv hexp_nonneg (by field_simp)
+      q hq hqcard v u hv huv hexp_nonneg (by
+        field_simp [hlogq]
+        ring)
   refine ⟨ι, hF, hD, 𝓛, hFL, h1, h2, h3, ?_⟩
   have hexp : (((Module.finrank F K : ℝ) * u - (v : ℝ) ^ 2) / Real.log q - 0 ^ 2)
       * Real.log q = (Module.finrank F K : ℝ) * u - (v : ℝ) ^ 2 := by
-    field_simp
+    field_simp [hlogq]
+    ring
   rwa [hexp] at h4
 
 /-- **α/β-form connector (`hparam` discharged at explicit `α`).**  For *any* `β : ℝ`,
@@ -519,7 +522,9 @@ theorem bkr06_tight_family_hfamily_alpha_of_beta
   have hlogq : Real.log q ≠ 0 := (Real.log_pos hq1).ne'
   exact bkr06_tight_family_hfamily_unconditional
     (α := β ^ 2 + ((Module.finrank F K : ℝ) * u - (v : ℝ) ^ 2) / Real.log q) (β := β)
-    q hq hqcard v u hv huv hexp_nonneg (by field_simp)
+    q hq hqcard v u hv huv hexp_nonneg (by
+      field_simp [hlogq]
+      ring)
 
 /-- **Fully explicit tight family: all side conditions discharged.**  At the explicit
 cutoff `u := bkr06CutoffIndex m v = ⌈v²/m⌉`, the only remaining inputs are `2 ≤ q`,

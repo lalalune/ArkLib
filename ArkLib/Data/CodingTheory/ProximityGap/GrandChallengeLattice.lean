@@ -46,12 +46,13 @@ duplicate** — keep both:
   `ListLowerWitness`/`ListUpperWitness` framework (`latticeIndexOf`, `*_bracketed`,
   uniqueness), which this file does not.
 
-The two representations are structurally incompatible (`Finset ℕ` vs `Finset (Fin (n+1))`),
-so neither can be replaced by a re-export of the other without rewriting the downstream
-proofs. The MCA-side definitions of this file (`mcaLatticeSet`, `mcaLatticeThreshold`,
-`mcaLatticeThreshold_spec`) are the earlier, `Finset ℕ`-form analogue of the plural file's
-`mcaThreshold`; they have no current downstream consumer but are kept proven and green for
-symmetry with the list-decoding side that *is* consumed.
+The bridge API in `GrandChallengesLattice.lean`
+(`*_val_eq_*LatticeThreshold`, `val_mem_*LatticeSet_iff_*Satisfies`, and
+`*PrizeLatticeResolved_of_canonical_*LatticeThreshold_eq`) proves that the two
+representations agree under `Fin.val`. The MCA-side definitions of this file
+(`mcaLatticeSet`, `mcaLatticeThreshold`, `mcaLatticeThreshold_spec`) are the `Finset ℕ`-form
+analogue of the plural file's `mcaThreshold`; they are kept proven and green for symmetry
+with the list-decoding side that downstream LD-threshold files consume.
 
 ## Main definitions and results
 
