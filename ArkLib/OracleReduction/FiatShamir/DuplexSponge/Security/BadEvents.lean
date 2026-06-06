@@ -307,6 +307,11 @@ lemma not_collisionPerm_of_not_combined (h : ¬ E trace) : ¬ E_prp trace := by
       right; left
       exact ⟨⟨j, hj⟩, h_lt, sO', sI, hgj, rfl⟩
 
+/-- CO25 Lemma 5.10, current trace-event form. If the combined bad event `E(tr)` does
+not occur, then the permutation-consistency event `E_prp(tr)` does not occur. -/
+theorem lemma_5_10 (h : ¬ E trace) : ¬ E_prp trace :=
+  not_collisionPerm_of_not_combined (trace := trace) h
+
 /- Note: these events / predicates depend on the definition of backtracking sequence family and
 indices -/
 
@@ -319,6 +324,11 @@ alias E_inv := inv
 lemma not_inv_of_not_combined (h : ¬ E trace) : ¬ E_inv trace state :=
   fun hinv => h hinv.1
 
+/-- CO25 Lemma 5.12, current trace-event form. If `E(tr)` does not occur, then the
+inverse-step event is absent for every sponge state. -/
+theorem lemma_5_12 (h : ¬ E trace) : ¬ E_inv trace state :=
+  not_inv_of_not_combined (trace := trace) (state := state) h
+
 def fork : Prop :=
   -- Conservatively track this as a subevent of the combined event.
   E trace ∧ state = 0
@@ -327,6 +337,11 @@ alias E_fork := fork
 
 lemma not_fork_of_not_combined (h : ¬ E trace) : ¬ E_fork trace state :=
   fun hfork => h hfork.1
+
+/-- CO25 Lemma 5.14, current trace-event form. If `E(tr)` does not occur, then the
+BackTrack fork event is absent for every sponge state. -/
+theorem lemma_5_14 (h : ¬ E trace) : ¬ E_fork trace state :=
+  not_fork_of_not_combined (trace := trace) (state := state) h
 
 
 def outOfOrderHash : Prop :=
@@ -348,6 +363,11 @@ alias E_time := outOfOrder
 
 lemma not_outOfOrder_of_not_combined (h : ¬ E trace) : ¬ E_time trace state :=
   fun htime => htime.elim (fun hh => h hh.1) (fun hp => h hp.1)
+
+/-- CO25 Lemma 5.16, current trace-event form. If `E(tr)` does not occur, then the
+BackTrack ordering event is absent for every sponge state. -/
+theorem lemma_5_16 (h : ¬ E trace) : ¬ E_time trace state :=
+  not_outOfOrder_of_not_combined (trace := trace) (state := state) h
 
 end BadEventDS
 
