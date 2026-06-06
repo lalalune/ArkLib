@@ -370,7 +370,7 @@ theorem bkr06_pigeonhole_family_card
     (k w N : ℕ)
     (hcov : (Fintype.card F) ^ v < k + w)
     (hbig : (Fintype.card K) ^ w * N < (Fintype.card F) ^ (v * (Module.finrank F K - v))) :
-    ∃ (ι : Type) (_ : Fintype ι) (_ : DecidableEq ι) (𝓛 : ι → Submodule F K)
+    ∃ (ι : Type*) (_ : Fintype ι) (_ : DecidableEq ι) (𝓛 : ι → Submodule F K)
       (_ : ∀ i, Fintype (𝓛 i)),
       N < Fintype.card ι ∧
       (∀ i, Module.finrank F (𝓛 i) = v) ∧
@@ -380,25 +380,25 @@ theorem bkr06_pigeonhole_family_card
   classical
   -- Part 1: a large finset of distinct dimension-`v` subspaces.
   obtain ⟨S, hScard, hSdim⟩ := card_dimv_subspaces_ge (F := F) (K := K) v hv
-    -- The subspace-polynomial map on the (typed) finset `S`.
-    let g : ↥S → K[X] :=
-      fun W =>
-        letI : Fintype ((W : Submodule F K)) := Fintype.ofFinite _
-        subspacePoly (subFinset (W : Submodule F K))
-  -- It is injective: distinct subspaces ⇒ distinct subspace polynomials.
-    have hg_inj : Function.Injective g := by
-      intro W₁ W₂ hW
-      by_contra hne
-      letI : Fintype ((W₁ : Submodule F K)) := Fintype.ofFinite _
-      letI : Fintype ((W₂ : Submodule F K)) := Fintype.ofFinite _
-      exact subspacePoly_ne_of_ne (W₁ : Submodule F K) (W₂ : Submodule F K)
-        (fun h => hne (Subtype.ext h)) hW
-  -- Each has degree `q^v` (members of `S` have dimension `v`).
-    have hg_deg : ∀ W : ↥S, (g W).natDegree ≤ (Fintype.card F) ^ v := by
-      intro W
+  -- The subspace-polynomial map on the (typed) finset `S`.
+  let g : ↥S → K[X] :=
+    fun W =>
       letI : Fintype ((W : Submodule F K)) := Fintype.ofFinite _
-      have hdim : Module.finrank F (W : Submodule F K) = v := hSdim W.1 W.2
-      show (subspacePoly (subFinset (W : Submodule F K))).natDegree ≤ _
+      subspacePoly (subFinset (W : Submodule F K))
+  -- It is injective: distinct subspaces ⇒ distinct subspace polynomials.
+  have hg_inj : Function.Injective g := by
+    intro W₁ W₂ hW
+    by_contra hne
+    letI : Fintype ((W₁ : Submodule F K)) := Fintype.ofFinite _
+    letI : Fintype ((W₂ : Submodule F K)) := Fintype.ofFinite _
+    exact subspacePoly_ne_of_ne (W₁ : Submodule F K) (W₂ : Submodule F K)
+      (fun h => hne (Subtype.ext h)) hW
+  -- Each has degree `q^v` (members of `S` have dimension `v`).
+  have hg_deg : ∀ W : ↥S, (g W).natDegree ≤ (Fintype.card F) ^ v := by
+    intro W
+    letI : Fintype ((W : Submodule F K)) := Fintype.ofFinite _
+    have hdim : Module.finrank F (W : Submodule F K) = v := hSdim W.1 W.2
+    show (subspacePoly (subFinset (W : Submodule F K))).natDegree ≤ _
     rw [subspacePoly_natDegree_eq_pow_finrank, hdim]
   -- Cardinality of the typed finset is `S.card ≥ q^{v(m−v)}`.
   have hScard' : (Fintype.card F) ^ (v * (Module.finrank F K - v)) ≤ Fintype.card ↥S := by
@@ -408,9 +408,9 @@ theorem bkr06_pigeonhole_family_card
   obtain ⟨T, hTcard, hTsmall⟩ :=
     exists_pattern_fiber_family g k w ((Fintype.card F) ^ v) N hg_deg hcov hbig'
   -- The surviving index type: the elements of `T`.
-    refine ⟨↥T, inferInstance, inferInstance,
-      (fun t => ((t : ↥S) : Submodule F K)),
-      (fun t => Fintype.ofFinite (((t : ↥S) : Submodule F K))), ?_, ?_, ?_, ?_⟩
+  refine ⟨↥T, inferInstance, inferInstance,
+    (fun t => ((t : ↥S) : Submodule F K)),
+    (fun t => Fintype.ofFinite (((t : ↥S) : Submodule F K))), ?_, ?_, ?_, ?_⟩
   · -- |ι| = T.card > N
     rw [Fintype.card_coe]; exact hTcard
   · -- each has dimension `v`
