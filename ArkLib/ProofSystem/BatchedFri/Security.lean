@@ -764,6 +764,9 @@ theorem fri_query_soundness_of_parts
     fri_query_soundness (ω := ω) f h_agreement m_ge_3 :=
   parts.pieces_imply_claim h_query h_lens h_ca
 
+#print axioms Fri.FriQuerySoundnessParts
+#print axioms Fri.fri_query_soundness_of_parts
+
 /-
 The old finite-range instance diagnostic scratch block has been removed.  The remaining
 Claim 8.2 work is the query-round acceptance analysis described in the docstring above
@@ -838,6 +841,9 @@ theorem fri_soundness_of_parts
     fri_soundness (n := n) (s := s) (d := d) (ω := ω) (l := l)
       (domain_size_cond := domain_size_cond) f m_ge_3 :=
   parts.pieces_imply_claim h_query h_seq h_total
+
+#print axioms Fri.FriSoundnessParts
+#print axioms Fri.fri_soundness_of_parts
 
 end Soundness
 
