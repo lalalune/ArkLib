@@ -251,6 +251,9 @@ theorem probEvent_badSumcheckEventProp_degree_two_le [IsDomain L]
     (_root_.RingSwitching.probEvent_badAgreement_degree_two_le
       (p := h_i.val) (q := h_star.val) h_i_deg h_star_deg)
 
+#print axioms RingSwitching.SumcheckPhase.badSumcheckEventProp
+#print axioms RingSwitching.SumcheckPhase.probEvent_badSumcheckEventProp_degree_two_le
+
 omit [NeZero κ] [Fintype L] [DecidableEq L] [SampleableType L] [NeZero ℓ] [NeZero ℓ'] in
 /-- **Target (b): `getSumcheckRoundPoly` value as a cube sum (LAST-variable/`snoc` form, defect-#20
 repair).** The round univariate `getSumcheckRoundPoly ℓ (boolDomain L ℓ) i H` evaluated at the
