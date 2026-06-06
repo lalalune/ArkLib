@@ -6,6 +6,7 @@ Authors: Alexander Hicks
 
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBounds
+import ArkLib.Data.CodingTheory.ProximityGap.LineDecoding
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.CodingTheory.ListDecodability
 
@@ -282,6 +283,24 @@ def MCALowerWitness.ofJohnsonBCHKS25
     MCALowerWitness (ReedSolomon.code domain k : Set (ι → F)) ε_star :=
   MCALowerWitness.ofLe hδ_le_one
     (le_trans hBCHKS25 hle)
+
+/-- **Bridge from a repaired line-decoding target.** If a code satisfies the named
+line-decoding-to-MCA target at radius `δ`, and the resulting `a/|F|` bound is within
+`ε*`, then the target certifies an `MCALowerWitness`.
+
+This deliberately consumes `lineDecodable_imp_epsMCA_le_target` as an explicit hypothesis:
+the unconstrained black-box theorem shape is known to be false, so callers must first supply
+the repaired GG25/GS interpolation content needed to prove that target. -/
+def MCALowerWitness.ofLineDecodingTarget
+    (C : ModuleCode ι F F) (δ a ε_star : ℝ≥0)
+    (hδ_le_one : δ ≤ 1)
+    (hLD : CodingTheory.LineDecodable (F := F) (A := F) (C : Set (ι → F)) δ a
+      ((Fintype.card ι : ℝ≥0) + 1))
+    (hTarget : CodingTheory.lineDecodable_imp_epsMCA_le_target (F := F) (A := F)
+      C δ a hLD)
+    (hle : (a : ENNReal) / (Fintype.card F : ENNReal) ≤ (ε_star : ENNReal)) :
+    MCALowerWitness (C : Set (ι → F)) ε_star :=
+  MCALowerWitness.ofLe hδ_le_one (le_trans hTarget hle)
 
 /-! ## §4.5 conjecture and its positive-direction link to the prize
 
