@@ -84,6 +84,7 @@ which is nilpotent (= zero, the ring being reduced) iff `x₀ = 0`.  Centring th
 makes the `hsubst` field automatic — `SubstFieldCaveat.shiftSeries` and `Claim59Conditional.shiftSeries`
 are the same definition, so the proof transfers definitionally. -/
 
+omit [Fintype F] [DecidableEq F] in
 /-- **`hsubst` at the centre.**  For `x₀ = 0` the BCIKS substitution underlying `γ` is valid: the
 `hsubst` field of `BetaCurveInput` holds for free.  (`SubstFieldCaveat.hasSubst_shiftSeries_zero`
 applied to the defeq `Claim59Conditional.shiftSeries 0 H`.) -/
@@ -105,13 +106,12 @@ nontrivial branch is `a = some a₀`, where it reduces to `Nat.mul_le_mul_right`
 private theorem withBot_mul_right_le {a : WithBot ℕ} {c d : ℕ}
     (h : a ≤ (c : WithBot ℕ)) : a * (d : WithBot ℕ) ≤ ((c * d : ℕ) : WithBot ℕ) := by
   induction a with
-  | bot => simpa using bot_le
+  | bot =>
+      simpa using (bot_le : (⊥ : WithBot ℕ) ≤ ((c * d : ℕ) : WithBot ℕ))
   | coe a₀ =>
-      rw [show ((c * d : ℕ) : WithBot ℕ) = (c : WithBot ℕ) * (d : WithBot ℕ) by
-        rw [Nat.cast_mul]]
-      rw [← WithBot.coe_mul, ← WithBot.coe_mul, WithBot.coe_le_coe]
       have hac : a₀ ≤ c := by exact_mod_cast h
-      exact Nat.mul_le_mul_right d hac
+      change ((a₀ * d : ℕ) : WithBot ℕ) ≤ ((c * d : ℕ) : WithBot ℕ)
+      exact WithBot.coe_le_coe.mpr (Nat.mul_le_mul_right d hac)
 
 omit [Fintype F] [DecidableEq F] in
 /-- **The concrete `hcard` bridge (per index `t`).**  Under the App-A weight-budget inputs of
@@ -213,7 +213,7 @@ noncomputable def betaCurveInput_of_section5 {k deg : ℕ} {domain : ι ↪ F} {
         ((Polynomial.map Polynomial.C v₀)
           + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)) →
       HenselDatum (k := k) (deg := deg) (domain := domain) (δ := δ) u P v₀ v₁)
-    (hdegPz : ∀ (P : F → Polynomial F) (v₀ v₁ : F[X]),
+    (hdegPz : ∀ (_P : F → Polynomial F) (v₀ v₁ : F[X]),
       γ (0 : F) R H hHyp = polyToPowerSeries𝕃 H
         ((Polynomial.map Polynomial.C v₀)
           + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)) →

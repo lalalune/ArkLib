@@ -35,16 +35,16 @@ distinct fold points). This is `ReedSolomon.Folded.frsEvalOnPoints_injOn_degreeL
 Likewise the literal `hω_sep` quantifying over *arbitrary-degree* families is false in any
 finite field (take degrees `0` and `orderOf ω`: then `ω^0 = ω^(orderOf ω) = 1`). The
 genuinely-true, and the only one the consumer needs, is the bounded version
-`hω_sep_of_lt_orderOf`: degree separation for families whose degrees stay below `orderOf ω`,
-which under `k ≤ orderOf ω` covers all the recombinations the budget engine produces (their
-degrees are `< k`).
+`pow_natDegree_injective_of_lt_orderOf`: degree separation for families whose degrees stay
+below `orderOf ω`, which under `k ≤ orderOf ω` covers all the recombinations the budget
+engine produces (their degrees are `< k`).
 
 ## Main results
 
-* `ReedSolomon.Folded.mulPow_injective_of_admissible` — `Admissible` makes the fold-point
-  map `(x, j) ↦ domain x · ω^j` injective on `ι × Fin s`.
+* `ReedSolomon.Folded.mulPow_injective_of_admissible` — `Admissible` (+ `ω ≠ 0`) makes the
+  fold-point map `(x, j) ↦ domain x · ω^j` injective on `ι × Fin s`.
 * `ReedSolomon.Folded.frsEvalOnPoints_injOn_degreeLT` — restricted encoder injectivity.
-* `ReedSolomon.Folded.hω_sep_of_lt_orderOf` — bounded degree separation.
+* `ReedSolomon.Folded.pow_natDegree_injective_of_lt_orderOf` — bounded degree separation.
 * `ReedSolomon.Folded.frs_degreeBudget_of_finrank_le_admissible` — the GK16 §4 budget on the
   `finrank A ≤ s` range, from `Admissible` + `k ≤ s·|ι|` + `k ≤ orderOf ω`.
 
@@ -53,6 +53,8 @@ The final subspace-design assembly `frs_is_subspaceDesign_gk16_of_admissible` li
 -/
 
 set_option linter.unusedSectionVars false
+set_option linter.unusedFintypeInType false
+set_option linter.unusedDecidableInType false
 
 open Polynomial Module
 
@@ -432,13 +434,3 @@ theorem frs_degreeBudget_of_finrank_le_admissible [Fintype F]
 
 end ReedSolomon.Folded
 
-#print axioms ReedSolomon.Folded.frsEvalOnPoints_not_injective
-#print axioms ReedSolomon.Folded.mulPow_injective_of_admissible
-#print axioms ReedSolomon.Folded.frsEvalOnPoints_injOn_degreeLT
-#print axioms ReedSolomon.Folded.pow_natDegree_injective_of_lt_orderOf
-#print axioms ReedSolomon.Folded.finrank_map_eq_of_le_of_injOn
-#print axioms ReedSolomon.Folded.finrank_frsPullback_eq_injOn
-#print axioms ReedSolomon.Folded.finrank_frsVanish_eq_injOn
-#print axioms ReedSolomon.Folded.orderOf_pos_of_ne_zero
-#print axioms ReedSolomon.Folded.foldedWronskian_ne_zero_of_linearIndependent_of_natDegree_lt
-#print axioms ReedSolomon.Folded.frs_degreeBudget_of_finrank_le_admissible

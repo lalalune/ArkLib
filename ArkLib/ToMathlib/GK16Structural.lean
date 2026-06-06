@@ -102,6 +102,8 @@ end LinearAlgebra
 
 /-! ## Recombination of two bases of a polynomial submodule -/
 
+section Recombination
+
 variable {F : Type*} [Field F]
 
 /-- **Two bases of a polynomial submodule are an invertible recombination.** Given two
@@ -127,5 +129,97 @@ theorem exists_recombination_of_bases {n : ℕ} (A' : Submodule F (Polynomial F)
     rw [map_sum] at h2
     simp only [map_smul, Submodule.subtype_apply] at h2
     exact h2.symm
+
+/-! ## The polynomial pre-image subspace (encoder-isomorphism side) -/
+
+open ReedSolomon.Folded
+
+variable {ι : Type} [Fintype ι] [DecidableEq ι] [DecidableEq F]
+
+/-- The polynomial pre-image subspace of a code subspace `A ≤ frsCode` inside `degreeLT F k`:
+`A' := comap encoder A ⊓ degreeLT F k`. Under encoder injectivity, `A' ≃ A` (so
+`finrank A' = finrank A`) and `A'.map encoder = A`. -/
+noncomputable def preimageSubspace (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (A : Submodule F (ι → Fin s → F)) : Submodule F (Polynomial F) :=
+  A.comap (frsEvalOnPoints domain s ω) ⊓ Polynomial.degreeLT F k
+
+/-- `(preimageSubspace A).map encoder = A` for `A ≤ frsCode` (every codeword is the
+encoding of a degree-`< k` polynomial in the pre-image). -/
+theorem preimageSubspace_map (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (A : Submodule F (ι → Fin s → F)) (hA_le : A ≤ frsCode domain k s ω) :
+    (preimageSubspace domain k s ω A).map (frsEvalOnPoints domain s ω) = A := by
+  apply le_antisymm
+  · calc (preimageSubspace domain k s ω A).map (frsEvalOnPoints domain s ω)
+          ≤ (A.comap (frsEvalOnPoints domain s ω)).map (frsEvalOnPoints domain s ω) :=
+            Submodule.map_mono inf_le_left
+      _ ≤ A := by rw [Submodule.map_comap_eq]; exact inf_le_right
+  · intro x hx
+    have hx' : x ∈ frsCode domain k s ω := hA_le hx
+    rw [frsCode, Submodule.mem_map] at hx'
+    obtain ⟨p, hp, rfl⟩ := hx'
+    exact ⟨p, ⟨hx, hp⟩, rfl⟩
+
+/-- Finite-dimensionality of the pre-image subspace (it is isomorphic to the finite-
+dimensional code subspace `A` via the injective encoder). -/
+theorem preimageSubspace_finiteDimensional (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (hinj : Function.Injective (frsEvalOnPoints domain s ω))
+    (A : Submodule F (ι → Fin s → F)) (hA_le : A ≤ frsCode domain k s ω) :
+    FiniteDimensional F (preimageSubspace domain k s ω A) := by
+  have e : (preimageSubspace domain k s ω A) ≃ₗ[F]
+      ((preimageSubspace domain k s ω A).map (frsEvalOnPoints domain s ω)) :=
+    Submodule.equivMapOfInjective _ hinj _
+  rw [preimageSubspace_map domain k s ω A hA_le] at e
+  exact Module.Finite.equiv e.symm
+
+/-- `finrank (preimageSubspace A) = finrank A` under encoder injectivity. -/
+theorem preimageSubspace_finrank (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (hinj : Function.Injective (frsEvalOnPoints domain s ω))
+    (A : Submodule F (ι → Fin s → F)) (hA_le : A ≤ frsCode domain k s ω) :
+    finrank F (preimageSubspace domain k s ω A) = finrank F A := by
+  have h := (Submodule.equivMapOfInjective (frsEvalOnPoints domain s ω) hinj
+      (preimageSubspace domain k s ω A)).finrank_eq
+  rw [preimageSubspace_map domain k s ω A hA_le] at h
+  exact h
+
+omit [DecidableEq ι] [DecidableEq F] in
+theorem preimageSubspace_le_degreeLT (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (A : Submodule F (ι → Fin s → F)) :
+    preimageSubspace domain k s ω A ≤ Polynomial.degreeLT F k := inf_le_right
+
+omit [DecidableEq ι] [DecidableEq F] in
+theorem preimageSubspace_mono (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    {A B : Submodule F (ι → Fin s → F)} (h : A ≤ B) :
+    preimageSubspace domain k s ω A ≤ preimageSubspace domain k s ω B :=
+  inf_le_inf_right _ (Submodule.comap_mono h)
+
+omit [DecidableEq F] in
+/-- A polynomial in the pre-image of the per-coordinate vanishing subspace `A ⊓ ker(eval_i)`
+vanishes on the whole `s`-fold orbit `{domain i · ω^j : j < s}` of `domain i`. -/
+theorem preimage_vanishes_on_orbit (domain : ι ↪ F) (k s : ℕ) (ω : F) (i : ι)
+    (A : Submodule F (ι → Fin s → F)) (p : Polynomial F)
+    (hp : p ∈ preimageSubspace domain k s ω (A ⊓ (LinearMap.ker
+      (LinearMap.proj (R := F) (φ := fun _ : ι ↦ Fin s → F) i)))) :
+    ∀ j : Fin s, p.eval (domain i * ω ^ (j : ℕ)) = 0 := by
+  intro j
+  have hcomap : frsEvalOnPoints domain s ω p ∈ (A ⊓ (LinearMap.ker
+      (LinearMap.proj (R := F) (φ := fun _ : ι ↦ Fin s → F) i))) := hp.1
+  have hker : frsEvalOnPoints domain s ω p ∈ (LinearMap.ker
+      (LinearMap.proj (R := F) (φ := fun _ : ι ↦ Fin s → F) i)) := hcomap.2
+  rw [LinearMap.mem_ker] at hker
+  have hzero : (frsEvalOnPoints domain s ω p) i = 0 := hker
+  have h2 : (frsEvalOnPoints domain s ω p) i j = 0 := by rw [hzero]; rfl
+  simpa [frsEvalOnPoints] using h2
+
+omit [DecidableEq ι] in
+/-- Degree bound: a polynomial in `degreeLT F k` (with `k ≥ 1`) has `natDegree ≤ k - 1`. -/
+theorem natDegree_le_of_mem_degreeLT {k : ℕ} (hk : 1 ≤ k) {p : Polynomial F}
+    (hp : p ∈ Polynomial.degreeLT F k) : p.natDegree ≤ k - 1 := by
+  rw [Polynomial.mem_degreeLT] at hp
+  by_cases hp0 : p = 0
+  · simp [hp0]
+  · have hlt : (p.natDegree : WithBot ℕ) < (k : WithBot ℕ) := by
+      rwa [← Polynomial.degree_eq_natDegree hp0]
+    have h2 : p.natDegree < k := by exact_mod_cast hlt
+    omega
 
 end ArkLib.FRS.GK16

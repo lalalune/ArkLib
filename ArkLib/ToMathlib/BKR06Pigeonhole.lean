@@ -398,8 +398,8 @@ theorem bkr06_pigeonhole_family_card
   have hg_deg : ∀ W : {W : Submodule F K // W ∈ S}, (g W).natDegree ≤ (Fintype.card F) ^ v := by
     intro W
     have hdim : Module.finrank F W.val = v := hSdim W.val W.2
-    show (subspacePoly (subFinset W.val)).natDegree ≤ (Fintype.card F) ^ v
-    rw [subspacePoly_natDegree_eq_pow_finrank, hdim]
+    have : (g W).natDegree = (subspacePoly (subFinset W.val)).natDegree := rfl
+    rw [this, subspacePoly_natDegree_eq_pow_finrank, hdim]
   -- Cardinality of the typed finset is `S.card ≥ q^{v(m−v)}`.
   have hScard' : (Fintype.card F) ^ (v * (Module.finrank F K - v))
       ≤ Fintype.card {W : Submodule F K // W ∈ S} := by

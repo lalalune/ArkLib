@@ -272,18 +272,16 @@ theorem pr_caCloseEvent_le_epsCA
       epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F)))
         δ.toNNReal δ.toNNReal := by
   classical
-  -- Rewrite the CA-close event as the `epsCA` body's line-close event for the deep-hole stack.
-  have hbody :
-      (fun γ : F => caCloseEvent domain u a k δ γ) =
-        (fun γ : F => δᵣ(dhStack domain u a 0 + γ • dhStack domain u a 1,
-            (ReedSolomon.code domain k : Set (ι → F))) ≤ δ.toNNReal) := by
-    funext γ
-    unfold caCloseEvent
-    rw [dhStack_line_eq]
-  rw [hbody]
-  -- The line-close probability on the non-jointly-close branch is `≤ ε_ca`.
-  exact line_close_probability_le_epsCA_of_not_jointProximity
-    ((ReedSolomon.code domain k : Set (ι → F))) δ.toNNReal δ.toNNReal (dhStack domain u a) hjf
+  -- The CA-close event coincides with the `epsCA` body's line-close event for the deep-hole
+  -- stack (`dhStack_line_eq`), so the two probabilities are equal; bound via the supremum.
+  refine le_trans (Pr_le_Pr_of_implies _ _ _ ?_)
+    (line_close_probability_le_epsCA_of_not_jointProximity
+      ((ReedSolomon.code domain k : Set (ι → F))) δ.toNNReal δ.toNNReal
+      (dhStack domain u a) hjf)
+  intro γ hγ
+  -- `caCloseEvent γ → δᵣ(dhStack line, C) ≤ δ` (equal events via the line identity).
+  rw [dhStack_line_eq]
+  exact hγ
 
 /-- **`numDistinct ≤ ε·q` under the joint-far side condition.**  Chaining the probability
 accounting (`numDistinct/q ≤ Pr`) with the `epsCA` bound (`Pr ≤ ε_ca`) gives the deep-hole
@@ -301,27 +299,103 @@ theorem numDistinct_le_eps_of_jointFar
       (epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F)))
         δ.toNNReal δ.toNNReal).toReal * (Fintype.card F : ℝ) := by
   classical
-  set ε∞ := epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F)))
-      δ.toNNReal δ.toNNReal with hε∞def
+  set eCA := epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F)))
+      δ.toNNReal δ.toNNReal with heCAdef
   -- `ε_ca ≤ 1 < ⊤`.
-  have hεne : ε∞ ≠ ⊤ := by
-    rw [hε∞def]
-    exact ne_top_of_le_ne_top one_ne_top (Bridge.epsCA_le_one _ _ _)
+  have hεne : eCA ≠ ⊤ := by
+    rw [heCAdef]
+    exact ne_top_of_le_ne_top ENNReal.one_ne_top (Bridge.epsCA_le_one _ _ _)
   -- `numDistinct/q ≤ Pr.toNNReal ≤ ε_ca.toNNReal`.
   have h1 := numDistinct_div_card_le_pr domain u a p hδ0 hdeg hdom hclose
-  have h2 : (Pr_{let γ ← $ᵖ F}[caCloseEvent domain u a k δ γ]).toNNReal ≤ ε∞.toNNReal := by
-    rw [hε∞def]
+  have h2 : (Pr_{let γ ← $ᵖ F}[caCloseEvent domain u a k δ γ]).toNNReal ≤ eCA.toNNReal := by
+    rw [heCAdef]
     exact ENNReal.toNNReal_mono hεne (pr_caCloseEvent_le_epsCA domain u a k δ hjf)
-  have hchain : ((numDistinct p a : ℝ≥0) / (Fintype.card F : ℝ≥0)) ≤ ε∞.toNNReal :=
+  have hchain : ((numDistinct p a : ℝ≥0) / (Fintype.card F : ℝ≥0)) ≤ eCA.toNNReal :=
     le_trans h1 h2
   -- Move to `ℝ` and clear the denominator.
   have hqpos : (0 : ℝ) < (Fintype.card F : ℝ) := by exact_mod_cast Fintype.card_pos
-  have hchainR : (numDistinct p a : ℝ) / (Fintype.card F : ℝ) ≤ (ε∞.toNNReal : ℝ) := by
+  have hchainR : (numDistinct p a : ℝ) / (Fintype.card F : ℝ) ≤ (eCA.toNNReal : ℝ) := by
     have := (NNReal.coe_le_coe.mpr hchain)
     rwa [NNReal.coe_div, NNReal.coe_natCast, NNReal.coe_natCast] at this
   rw [div_le_iff₀ hqpos] at hchainR
-  -- `(ε∞.toNNReal : ℝ) = ε∞.toReal`.
+  -- `(eCA.toNNReal : ℝ) = eCA.toReal`.
   rw [ENNReal.coe_toNNReal_eq_toReal] at hchainR
   exact hchainR
 
+/-! ### Assembling `DeepHoleProbResidual` from the joint-far side condition -/
+
+/-- **`DeepHoleProbResidual` discharged from the joint-far side condition.**  Combining the
+probability accounting with the joint-far side condition (required at every sampling point of
+`T = F ∖ range domain`), the genuinely-probabilistic `DeepHoleProbResidual` of
+`CS25DeepHoleFinish.lean` holds with `ε = (ε_ca(RS[k], δ, δ)).toReal`.
+
+The side condition is packaged as: for every off-domain hole `a` in the sampling set, the
+deep-hole stack `(u⁰, u¹)` at `a` is not jointly `δ`-close to `RS[k]`.  This is the *only*
+external input — the rest is the proven probability accounting. -/
+theorem deepHoleProbResidual_of_jointFar
+    (domain : ι ↪ F) (u : ι → F) {k L : ℕ} {δ : ℝ}
+    (p : Fin L → F[X]) (hδ0 : 0 ≤ δ)
+    (hjf : ∀ a ∈ sampleSet domain, DeepHoleJointFar domain u a k δ) :
+    DeepHoleProbResidual domain k L δ
+      (epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F)))
+        δ.toNNReal δ.toNNReal).toReal u p := by
+  intro hdeg hclose a ha
+  exact numDistinct_le_eps_of_jointFar domain u a p hδ0 hdeg
+    (mem_sampleSet_imp_off_domain ha) hclose (hjf a ha)
+
+/-- **ABF26 Theorem 5.3 [CS25 Theorem 2] — joint-far final form.**
+
+The full list-size bound, consuming the proven reduction
+`rs_epsCA_implies_lambda_extended_cs25_final` (whose only residual was `DeepHoleProbResidual`),
+with that residual now discharged via `deepHoleProbResidual_of_jointFar` down to the **single
+documented side condition** `DeepHoleJointFar` (the CS25 minimum-distance joint-far property of
+the deep-hole stack at every sampling point).
+
+Side conditions:
+- `hk_pos`, `hη_lo`, `hη_lt` — the standard CS25 parameter regime.
+- `hkn : k + 1 ≤ |ι|`, `hs_pos : 0 < |F| − |ι|` — the standard parameter side conditions.
+- `hδ0 : 0 ≤ δ` — non-negativity of the proximity radius.
+- `hε_ca` — the CA-error cap.
+- `hjf` — the one genuine geometric side condition (joint-far). -/
+theorem rs_epsCA_implies_lambda_extended_cs25_jointFar
+    (domain : ι ↪ F) (k : ℕ) (δ : ℝ) (η : ℝ)
+    (hk_pos : 0 < k)
+    (hη_lo : 0 ≤ η) (hη_lt : η < 1)
+    (hkn : k + 1 ≤ Fintype.card ι)
+    (hs_pos : (0 : ℝ) < Fintype.card F - Fintype.card ι)
+    (hδ0 : 0 ≤ δ)
+    (hε_ca :
+        (epsCA (F := F) (A := F)
+            ((ReedSolomon.code domain k : Set (ι → F)))
+            δ.toNNReal δ.toNNReal).toReal ≤
+          η * (1 / k - Fintype.card ι / (k * Fintype.card F)))
+    (hjf :
+      let ε := (epsCA (F := F) (A := F)
+                  ((ReedSolomon.code domain k : Set (ι → F)))
+                  δ.toNNReal δ.toNNReal).toReal
+      let L0 : ℕ := Nat.ceil ((Fintype.card F : ℝ) / (1 - η) * ε)
+      ∀ (u : ι → F) (a : F), a ∈ sampleSet domain → DeepHoleJointFar domain u a k δ) :
+    Lambda ((ReedSolomon.code domain (k + 1) : Set (ι → F))) δ ≤
+      (Nat.ceil
+        ((Fintype.card F : ℝ) / (1 - η)
+          * (epsCA (F := F) (A := F)
+                ((ReedSolomon.code domain k : Set (ι → F)))
+                δ.toNNReal δ.toNNReal).toReal) : ℕ∞) := by
+  apply rs_epsCA_implies_lambda_extended_cs25_final
+    domain k δ η hk_pos hη_lo hη_lt hkn hs_pos hε_ca
+  -- Discharge the `DeepHoleProbResidual` (the `let ε; let L0; ∀ u p, …` goal).
+  intro ε L0 u p
+  exact deepHoleProbResidual_of_jointFar domain u p hδ0 (fun a ha => hjf u a ha)
+
 end CodingTheory.CS25.DeepHole
+
+section AxiomAudit
+#print axioms CodingTheory.CS25.DeepHole.dhStack_line_eq
+#print axioms CodingTheory.CS25.DeepHole.deepHoleLine_relClose_of_mem_ball
+#print axioms CodingTheory.CS25.DeepHole.numDistinct_le_card_caGood
+#print axioms CodingTheory.CS25.DeepHole.numDistinct_div_card_le_pr
+#print axioms CodingTheory.CS25.DeepHole.pr_caCloseEvent_le_epsCA
+#print axioms CodingTheory.CS25.DeepHole.numDistinct_le_eps_of_jointFar
+#print axioms CodingTheory.CS25.DeepHole.deepHoleProbResidual_of_jointFar
+#print axioms CodingTheory.CS25.DeepHole.rs_epsCA_implies_lambda_extended_cs25_jointFar
+end AxiomAudit
