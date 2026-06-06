@@ -31,6 +31,8 @@ exactly the BCIKS20 hypothesis on the shift series.  The substitution lemmas are
 `PowerSeries.subst` of a *univariate* target (`g : S⟦X⟧`), which is the form `γ` actually uses.
 -/
 
+set_option linter.style.longLine false
+
 namespace ArkLib
 
 open PowerSeries
