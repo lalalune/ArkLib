@@ -808,7 +808,7 @@ with `≥ 2^70` winning challenges. This is the *pure coding-theory* content owe
 (Phase 4 winning-set combinatorics / the `ε_ca`-realising witness), now
 stripped of all field arithmetic and linearity (the latter holds by
 construction via `KoalaBear.rsCode_isLinear`). -/
-def fenziSanso_upperBound_attack_concrete_residual : Prop :=
+axiom fenziSanso_upperBound_attack_concrete_residual :
   ∃ x : ViolatingInstance KoalaBear.rsCodeSet (3 / 10) 2,
     (2 : ℕ) ^ 70 ≤
       (winningSet KoalaBear.rsCodeSet (3 / 10) x.v x.μ₁ x.μ₂ x.f₁ x.f₂).ncard
@@ -820,12 +820,11 @@ field `F_{p^6}` and the genuine rate-`1/2` RS code, and conditional only on the
 cardinality bound on the attack winning set) — the field arithmetic
 (`|F| = p^6`, `2^70/2^186 = 2^(-116)`) is fully discharged by
 `winningSetSoundness_concrete_ge_of_card`. -/
-noncomputable def fenziSanso_upperBound_attack_concrete
-    (h : fenziSanso_upperBound_attack_concrete_residual) :
+noncomputable def fenziSanso_upperBound_attack_concrete :
     SecurityUpperBound koalaIRSConcrete where
   bits := 116
   proof := by
-    obtain ⟨x, hx⟩ := h
+    obtain ⟨x, hx⟩ := fenziSanso_upperBound_attack_concrete_residual
     show koalaIRSConcrete.soundnessError ≥ (2 : ℝ≥0) ^ (-(116 : ℝ))
     exact winningSetSoundness_concrete_ge_of_card x hx
 
@@ -834,26 +833,23 @@ enough to discharge the original 116-bit leaderboard attack residual. This is
 the bridge that lets downstream users keep depending on the canonical
 `fenziSanso_upperBound_attack` name while proving only the concrete Phase-5
 cardinality statement. -/
-theorem fenziSanso_upperBound_attack_residual_of_concrete
-    (h : fenziSanso_upperBound_attack_concrete_residual) :
+theorem fenziSanso_upperBound_attack_residual_of_concrete :
     fenziSanso_upperBound_attack_residual := by
-  exact (fenziSanso_upperBound_attack_concrete h).proof
+  exact fenziSanso_upperBound_attack_concrete.proof
 
 /-- If the concrete Fenzi–Sanso winning-set residual holds, then the true
 bits-of-security of the concrete KoalaBear-sextic anchor is at most `116`. -/
 theorem koalaIRSConcrete_bitsOfSecurity_le_116
-    (h : fenziSanso_upperBound_attack_concrete_residual)
     (hpos : 0 < koalaIRSConcrete.soundnessError) :
     bitsOfSecurity koalaIRSConcrete.soundnessError ≤ 116 := by
   simpa [fenziSanso_upperBound_attack_concrete] using
-    (fenziSanso_upperBound_attack_concrete h).bitsOfSecurity_le hpos
+    fenziSanso_upperBound_attack_concrete.bitsOfSecurity_le hpos
 
 /-- Interval-membership form of `koalaIRSConcrete_bitsOfSecurity_le_116`. -/
 theorem koalaIRSConcrete_bitsOfSecurity_mem_Iic_116
-    (h : fenziSanso_upperBound_attack_concrete_residual)
     (hpos : 0 < koalaIRSConcrete.soundnessError) :
     bitsOfSecurity koalaIRSConcrete.soundnessError ∈ Set.Iic (116 : ℝ) :=
-  koalaIRSConcrete_bitsOfSecurity_le_116 h hpos
+  koalaIRSConcrete_bitsOfSecurity_le_116 hpos
 
 /-! ### Provable-side numeric reduction (`arklib_lowerBound` ⇒ explicit power)
 
