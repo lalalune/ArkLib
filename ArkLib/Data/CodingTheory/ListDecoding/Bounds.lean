@@ -2175,6 +2175,16 @@ end SubspaceDesignUpperBounds
 -- turning the external paper statements into fake theorems.
 #print axioms CodingTheory.large_alphabet_barrier_bdg24_agl23
 #print axioms CodingTheory.random_linear_lambda_lower_glmrsw22
+#print axioms CodingTheory.uniformRandomLinearGeneratorMatrix
+#print axioms CodingTheory.support_uniformRandomLinearGeneratorMatrix
+#print axioms CodingTheory.mem_support_uniformRandomLinearGeneratorMatrix
+#print axioms CodingTheory.randomLinearCodeOfGeneratorMatrix
+#print axioms CodingTheory.uniformRandomLinearCode
+#print axioms CodingTheory.randomLinearLambdaLowerEvent
+#print axioms CodingTheory.randomLinearLambdaLowerProbability
+#print axioms CodingTheory.exists_randomLinearLambdaLowerEvent_of_probability_pos
+#print axioms CodingTheory.exists_code_of_randomLinearLambdaLowerEvent
+#print axioms CodingTheory.random_linear_lambda_lower_glmrsw22_random_generator_matrix
 #print axioms CodingTheory.rs_lambda_superpoly_extension_bkr06
 #print axioms CodingTheory.rs_lambda_large_prime_ghsz02
 #print axioms CodingTheory.subspaceDesign_list_decoding_cz25
