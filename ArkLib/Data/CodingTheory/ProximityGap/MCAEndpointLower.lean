@@ -112,7 +112,7 @@ lemma choose_e (j : Fin t) (hex : ∃ j', e j' = e j) : hex.choose = j :=
     spikeWord₁ (F := F) e i = 0 := by simp [spikeWord₁, hi]
 
 lemma spikeWord₁_ej (j : Fin t) : spikeWord₁ (F := F) e (e j) = 1 := by
-  simp [spikeWord₁_apply_mem e (ej_mem_spikeSet e j)]
+  simp
 
 lemma spikeWord₀_apply_not_mem {i : ι} (hi : i ∉ spikeSet e) :
     spikeWord₀ e g i = 0 := by
@@ -129,16 +129,16 @@ lemma spikeWord₀_ej (j : Fin t) : spikeWord₀ e g (e j) = -(g j) := by
 def spikeWitness (j : Fin t) : Finset ι :=
   (Finset.univ \ spikeSet e) ∪ {e j}
 
-lemma card_spikeSet (ht : t ≤ Fintype.card ι) : (spikeSet e).card = t := by
+lemma card_spikeSet : (spikeSet e).card = t := by
   rw [spikeSet, Finset.card_image_of_injective _ e.injective, Finset.card_univ,
     Fintype.card_fin]
 
 /-- `|S_j| = n - t + 1`. -/
-lemma card_spikeWitness (ht : t ≤ Fintype.card ι) (j : Fin t) :
+lemma card_spikeWitness (j : Fin t) :
     (spikeWitness e j).card = Fintype.card ι - t + 1 := by
   classical
   have hcompl : (Finset.univ \ spikeSet e).card = Fintype.card ι - t := by
-    rw [Finset.card_univ_diff, card_spikeSet e ht]
+    rw [Finset.card_univ_diff, card_spikeSet e]
   have hdisj : Disjoint (Finset.univ \ spikeSet e) ({e j} : Finset ι) := by
     rw [Finset.disjoint_singleton_right]
     simp [ej_mem_spikeSet e j]
@@ -218,7 +218,7 @@ lemma not_pairJointAgreesOn_spike
     rw [this, spikeWord₁_apply_not_mem e hi']
   -- `|ι \ T| = n - t ≥ k`.
   have hcompl_card : (Finset.univ \ spikeSet e).card = Fintype.card ι - t := by
-    rw [Finset.card_univ_diff, card_spikeSet e (by omega)]
+    rw [Finset.card_univ_diff, card_spikeSet e]
   have hk_le : k ≤ (Finset.univ \ spikeSet e).card := by rw [hcompl_card]; omega
   -- Hence `v₁ = 0`.
   have hv₁_zero : v₁ = 0 :=
@@ -244,7 +244,7 @@ lemma mcaEvent_spike
       (spikeWord₀ e g) (spikeWord₁ (F := F) e) (g j) := by
   refine ⟨spikeWitness e j, ?_, ?_, ?_⟩
   · -- size: `(1 - δ)·n ≤ |S_j| = n - t + 1`.
-    rw [card_spikeWitness e (by omega) j]
+    rw [card_spikeWitness e j]
     exact hδ
   · -- the line equals the zero codeword on `S_j`.
     refine ⟨0, (ReedSolomon.code domain k).zero_mem, ?_⟩
@@ -381,7 +381,7 @@ theorem epsMCA_one_ge (domain : ι ↪ F) (k : ℕ) (hk : k ≤ Fintype.card ι)
 (with `k ≥ 1`, `n ≥ k + 1`), then `ε* = 2^(-128) < ε_mca(RS[F, domain, k], 1)`. Together with
 the endpoint-collapse finding this rules out any admissible prize threshold `δ* ≤ 1`. -/
 theorem epsStar_lt_epsMCA_one_of_field_small (domain : ι ↪ F) (k : ℕ)
-    (hk : 1 ≤ k) (hn : k + 1 ≤ Fintype.card ι)
+    (_hk : 1 ≤ k) (hn : k + 1 ≤ Fintype.card ι)
     (hsmall : Fintype.card F < 2 ^ (128 : ℕ) * (Fintype.card ι - k)) :
     (ProximityGap.epsStar : ℝ≥0∞) <
       epsMCA (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F)) 1 := by
@@ -410,7 +410,7 @@ theorem epsStar_lt_epsMCA_one_of_field_small (domain : ι ↪ F) (k : ℕ)
     rw [ENNReal.inv_lt_one]
     exact one_lt_pow₀ ENNReal.one_lt_two (by norm_num)
   · -- Case `q > n - k`: take `t := n - k`; floor `(n-k)/q > 2^(-128) ⟺ q < 2^128·(n-k)`.
-    push_neg at hcase
+    push Not at hcase
     have hmin : min (n - k) q = n - k := by rw [min_eq_left (le_of_lt hcase)]
     have hfloor := epsMCA_one_ge (F := F) domain k (by omega)
     rw [hmin] at hfloor
