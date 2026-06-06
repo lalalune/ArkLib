@@ -5,7 +5,7 @@ Authors: Tobias Rothmann
 -/
 import ArkLib.Data.Lattices.CyclotomicRing.Rq
 import ArkLib.Data.Lattices.CyclotomicRing.Vectors
-import VCVio
+import VCVio.OracleComp.Constructions.SampleableType
 
 /-!
 # Module Short Integer Solution (Module-SIS) over the Cyclotomic Ring
