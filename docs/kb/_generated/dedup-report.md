@@ -4,9 +4,9 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 407 files, 8131 declarations
+- `ArkLib` — 408 files, 8135 declarations
 
-## Same short-name across multiple files (298 groups)
+## Same short-name across multiple files (296 groups)
 
 Each group lists declarations sharing a short name across ≥2 files. Most are legitimate (overloaded interface, paper-shape vs general form), but the list is the right anchor to look for duplicates.
 
@@ -1686,11 +1686,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma BCIKS20.HenselNumerator.weight_Λ_over_𝒪_sum_le` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean:660](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean#L660) — `Λ_𝒪(∑ᵢ f i) ≤ sup of Λ_𝒪(f i)`: the `𝒪`-weight of a finite sum is bounded by the sup of the summand
 - `lemma ArkLib.weight_Λ_over_𝒪_sum_le` [ArkLib/ToMathlib/WeightLambdaCalculus.lean:129](../../../ArkLib/ToMathlib/WeightLambdaCalculus.lean#L129) — The `𝒪`-weight of a finite sum is bounded by the `sup` of the summands' weights.
 
-### `AlphaGenuineRegularWeightLe` (2 declarations, 2 files)
-
-- `def BCIKS20.HenselNumerator.AlphaGenuineRegularWeightLe` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AlphaWeight.lean:113](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AlphaWeight.lean#L113) — **The carved A.4 link (named gap), verbatim from `P1Conditional`.**  At order `t`, the genuine Hense
-- `def BCIKS20.HenselNumerator.AlphaGenuineRegularWeightLe` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P1Conditional.lean:107](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P1Conditional.lean#L107) — **The carved A.4 link (named gap).**  At order `t`, the genuine Hensel-root coefficient `αGenuine t`
-
 ### `OracleInterface` (3 declarations, 2 files)
 
 - `structure OracleInterface` [ArkLib/OracleReduction/Basic.lean:88](../../../ArkLib/OracleReduction/Basic.lean#L88) — (no docstring)
@@ -1716,11 +1711,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `lemma OutOfDomSmpl.decodeLT_ne_of_val_ne` [ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean:87](../../../ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean#L87) — Distinct codewords decode to distinct polynomials: the decoded polynomial interpolates the codeword 
 - `lemma OutOfDomSmpl.decodeLT_ne_of_val_ne` [ArkLib/ProofSystem/Whir/OutofDomainSmpl.lean:183](../../../ArkLib/ProofSystem/Whir/OutofDomainSmpl.lean#L183) — Distinct smooth codewords decode to distinct univariate polynomials (the decoded polynomial interpol
-
-### `embeddingOf𝒪Into𝕃_W𝒪` (2 declarations, 2 files)
-
-- `theorem BCIKS20.HenselNumerator.embeddingOf𝒪Into𝕃_W𝒪` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AlphaWeight.lean:101](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AlphaWeight.lean#L101) — The embedding of the `𝒪`-element `W𝒪` is the `𝕃`-element `liftToFunctionField H.leadingCoeff` (the `
-- `theorem BCIKS20.HenselNumerator.embeddingOf𝒪Into𝕃_W𝒪` [ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P1Conditional.lean:93](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/P1Conditional.lean#L93) — The embedding of the `𝒪`-element `W𝒪` is the `𝕃`-element `liftToFunctionField H.leadingCoeff` (the `
 
 ### `finset_card_ge_of_pred_natCast_le_ennreal_lt` (2 declarations, 2 files)
 

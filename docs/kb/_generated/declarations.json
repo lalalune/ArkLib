@@ -14179,7 +14179,7 @@
         {
           "doc": "The embedding of the `\ud835\udcaa`-element `W\ud835\udcaa` is the `\ud835\udd43`-element `liftToFunctionField H.leadingCoeff` (the `W` of the lift identity).",
           "kind": "theorem",
-          "line": 101,
+          "line": 100,
           "name": "BCIKS20.HenselNumerator.embeddingOf\ud835\udcaaInto\ud835\udd43_W\ud835\udcaa",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "embeddingOf\ud835\udcaaInto\ud835\udd43_W\ud835\udcaa",
@@ -14188,7 +14188,7 @@
         {
           "doc": "**The carved A.4 link (named gap), verbatim from `P1Conditional`.**  At order `t`, the genuine Hensel-root coefficient `\u03b1Genuine t` is the embedding of an `\ud835\udcaa`-element `a_t` of `\u039b_\ud835\udcaa`-weight `\u2264 1`. This is the formal content of BCIKS20's `\u039b(\u03b1_t) = \u039b(Y) = 1`.",
           "kind": "def",
-          "line": 113,
+          "line": 112,
           "name": "BCIKS20.HenselNumerator.AlphaGenuineRegularWeightLe",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "AlphaGenuineRegularWeightLe",
@@ -14197,7 +14197,7 @@
         {
           "doc": "**The `\ud835\udcaa`-level divisibility-with-weight form** of the carved link.  At order `t`, `\u03b2Hensel t` factors *in `\ud835\udcaa H`* as `a_t \u00b7 W\ud835\udcaa^{t+1} \u00b7 \u03be^{e_t}` with the quotient `a_t` of `\u039b_\ud835\udcaa`-weight `\u2264 1`.  This is `AlphaGenuineRegularWeightLe` transported to the world where `\u039b_\ud835\udcaa` actually lives (PROVEN equivalent to it given `hlift`, `alphaWeight_iff_divWeight`).  It exposes the genuine residual: a clearing divisibility `W\ud835\udcaa^{t+1}\u00b7\u03be^{e_t} \u2223 \u03b2Hensel t` in `\ud835\udcaa`, with the quotient at weight `1`.",
           "kind": "def",
-          "line": 124,
+          "line": 123,
           "name": "BCIKS20.HenselNumerator.DivWeightLe",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "DivWeightLe",
@@ -14206,16 +14206,16 @@
         {
           "doc": "**Bridge, `\ud835\udd43 \u2192 \ud835\udcaa`.**  Given the (P2) lift identity at order `t` (`hlift_t`) and a carved `\ud835\udcaa`-preimage `a` of `\u03b1Genuine t` (`ha`), the `\u03b2Hensel t` factors, IN `\ud835\udcaa H`, as `\u03b2Hensel t = a \u00b7 W\ud835\udcaa^{t+1} \u00b7 \u03be^{2t\u22121}`.  The `\ud835\udd43`-level identity equals `embedding (a \u00b7 W\ud835\udcaa^{t+1} \u00b7 \u03be^{2t\u22121})` (ring-hom multiplicativity + the `W` bridge); injectivity of `embeddingOf\ud835\udcaaInto\ud835\udd43` descends it to `\ud835\udcaa`.",
           "kind": "theorem",
-          "line": 138,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_138",
+          "line": 137,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_137",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_138",
+          "short_name": "_anon_theorem_137",
           "signature": "theorem theorem \u03b2Hensel_eq_alpha_mul_of_lift (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
         },
         {
           "doc": "**Bridge, `\ud835\udcaa \u2192 \ud835\udd43`.**  The reverse: given the `\ud835\udcaa`-level factorization `hfact` and the lift identity `hlift_t`, the quotient `a` embeds to `\u03b1Genuine t`.  Push `embedding` through `hfact` (`embedding (\u03b2_t) = embedding a \u00b7 W^{t+1} \u00b7 \u03be^{e_t}`), compare with `hlift_t`, and cancel the nonzero denominator `W^{t+1}\u00b7\u03be^{e_t}` (`den_ne_zero`) in the field `\ud835\udd43 H`.",
           "kind": "theorem",
-          "line": 156,
+          "line": 155,
           "name": "BCIKS20.HenselNumerator.alpha_eq_embedding_of_fact",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "alpha_eq_embedding_of_fact",
@@ -14224,7 +14224,7 @@
         {
           "doc": "**Task 1, the FINDING.**  GIVEN the (P2) lift identity `hlift` (for all `t`), `AlphaGenuineRegularWeightLe` and the `\ud835\udcaa`-level `DivWeightLe` are *equivalent*.  This pins the genuine residual: it is the clearing divisibility `W\ud835\udcaa^{t+1}\u00b7\u03be^{e_t} \u2223 \u03b2Hensel t` in `\ud835\udcaa` with the quotient at weight `\u2264 1` \u2014 a fact about `\ud835\udcaa`-divisibility, distinct from (and strictly stronger than, see `\u03b2Hensel_weight_structured`) any `\u039b_\ud835\udcaa`-upper-bound on `\u03b2Hensel t`.",
           "kind": "theorem",
-          "line": 185,
+          "line": 184,
           "name": "BCIKS20.HenselNumerator.alphaWeight_iff_divWeight",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "alphaWeight_iff_divWeight",
@@ -14233,34 +14233,34 @@
         {
           "doc": "**(P1) the STRUCTURED INVARIANT, conditional.**  Given `hlift`, the carved link `h\u03b1`, and the `\u039b(\u03be)` bound `h\u03be` (`weight_\u03be_bound`, automatic under its regime), the structured invariant `\u039b_\ud835\udcaa(\u03b2Hensel l) \u2264 1 + (l+1)\u00b7\u039b(W) + e_l\u00b7\u039b(\u03be)` holds, with `\u039b(W) = (lc H).natDegree`, `\u039b(\u03be) \u2264 (d\u22121)\u00b7(D\u2212dH+1)`, `e_l = 2l\u22121` (\u2115-truncated).  Route: the link gives `\u03b2_l = a_l\u00b7W\ud835\udcaa^{l+1}\u00b7\u03be^{e_l}` (Task-1 `\ud835\udd43 \u2192 \ud835\udcaa`), then `weight_\u039b_over_\ud835\udcaa_mul_le`/`_pow_le`/`_W` + `nsmul_withBot_le` + `\u039b(a_l) \u2264 1`.",
           "kind": "theorem",
-          "line": 215,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_215",
+          "line": 214,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_214",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_215",
+          "short_name": "_anon_theorem_214",
           "signature": "theorem theorem \u03b2Hensel_weight_structured (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
         },
         {
           "doc": "**(P1), the loose Claim-A.2 bound.**  From the structured invariant (under `hlift` + the carved link + the `\u039b(\u03be)` regime), the loose target `\u039b_\ud835\udcaa(\u03b2Hensel t) \u2264 (2t+1)\u00b7natDegreeY R\u00b7D` follows by the proven wave-5 arithmetic collapse `\u03b2Hensel_weight_bound_of_structured_weight`, under the paper's faithful regime `2 \u2264 d`, `dH \u2264 d`, `\u039b(W)+dH \u2264 D`.",
           "kind": "theorem",
-          "line": 261,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_261",
+          "line": 260,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_260",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_261",
+          "short_name": "_anon_theorem_260",
           "signature": "theorem theorem \u03b2Hensel_weight_bound_of_alphaWeight (x\u2080 : F) (R : F[X][X][Y])"
         },
         {
           "doc": "**(P1)**, with `h\u03be` discharged by the proven `ClaimA2.weight_\u03be_bound` under its regime.  The sole remaining inputs are the (P2) lift identity `hlift` and the carved A.4 link `h\u03b1`.",
           "kind": "theorem",
-          "line": 285,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_285",
+          "line": 284,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_284",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_285",
+          "short_name": "_anon_theorem_284",
           "signature": "theorem theorem \u03b2Hensel_weight_bound_of_alphaWeight' (x\u2080 : F) (R : F[X][X][Y])"
         },
         {
           "doc": "**The sharp `t = 0` obstruction (PROVEN, no `hlift`).**  From the proven base-case lift identity `\u03b2Hensel_lift_identity_zero` and a carved preimage `a` of `\u03b1Genuine 0 = \u03b1\u2080 = T/W`, injectivity of `embedding` gives `\u03b2Hensel 0 = a \u00b7 W\ud835\udcaa` in `\ud835\udcaa`.  So `AlphaGenuineRegularWeightLe` at `t = 0` is exactly the `\ud835\udcaa`-divisibility `W\ud835\udcaa \u2223 \u03b2Hensel 0` (with the quotient `a` at weight `\u2264 1`): the genuine, non-faked face of the residual.",
           "kind": "theorem",
-          "line": 316,
+          "line": 315,
           "name": "BCIKS20.HenselNumerator.W\ud835\udcaa_dvd_\u03b2Hensel_zero_of_alpha",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "W\ud835\udcaa_dvd_\u03b2Hensel_zero_of_alpha",
@@ -14269,7 +14269,7 @@
         {
           "doc": "**Corollary: `W\ud835\udcaa \u2223 \u03b2Hensel 0` is *necessary* for `AlphaGenuineRegularWeightLe`.**  If the carved link holds (at the `t = 0` instance), then `W\ud835\udcaa` divides `\u03b2Hensel 0` in `\ud835\udcaa H`.  This is the precise, machine-checked statement of the `\u03b1\u2080 = T/W` regularity obstruction: the carve forces a clearing divisibility that the field-level lift identity alone does not.",
           "kind": "theorem",
-          "line": 328,
+          "line": 327,
           "name": "BCIKS20.HenselNumerator.W\ud835\udcaa_dvd_\u03b2Hensel_zero_of_alphaWeight",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "W\ud835\udcaa_dvd_\u03b2Hensel_zero_of_alphaWeight",
@@ -16492,7 +16492,7 @@
           "name": "BCIKS20.HenselNumerator.prefactor",
           "namespace": "BCIKS20.HenselNumerator",
           "short_name": "prefactor",
-          "signature": "def prefactor {m : \u2115} (i i1 : \u2115) (lam : Nat.Partition m) : \u2115 :="
+          "signature": "def prefactor {m : \u2115} (_i _i1 : \u2115) (lam : Nat.Partition m) : \u2115 :="
         },
         {
           "doc": "The prefactor is genuinely positive whenever the binomial part is (so it is never a secretly-zero stub): `Nat.multinomial` is always `> 0`.",
@@ -22171,66 +22171,30 @@
           "signature": "structure structured invariant via the wave-5 `structured_weight_collapse`"
         },
         {
-          "doc": "The embedding of the `\ud835\udcaa`-element `W\ud835\udcaa` is the `\ud835\udd43`-element `liftToFunctionField H.leadingCoeff` (the `W` of the lift identity).",
-          "kind": "theorem",
-          "line": 93,
-          "name": "BCIKS20.HenselNumerator.embeddingOf\ud835\udcaaInto\ud835\udd43_W\ud835\udcaa",
-          "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "embeddingOf\ud835\udcaaInto\ud835\udd43_W\ud835\udcaa",
-          "signature": "theorem embeddingOf\ud835\udcaaInto\ud835\udd43_W\ud835\udcaa :"
-        },
-        {
-          "doc": "**The carved A.4 link (named gap).**  At order `t`, the genuine Hensel-root coefficient `\u03b1Genuine t` is the embedding of an `\ud835\udcaa`-element `a_t` of `\u039b_\ud835\udcaa`-weight `\u2264 1`.  This is the formal content of BCIKS20's `\u039b(\u03b1_t) = \u039b(Y) = 1` (\"consider the weight of `\u03b1_t`\", line 4276): `\u03b1_t` is, up to the `W^{t+1}\u00b7\u03be^{e_t}` clearing, the genuine root `\u03b3`'s `t`-th Taylor coefficient, whose weight is that of the variable `Y`.",
-          "kind": "def",
-          "line": 107,
-          "name": "BCIKS20.HenselNumerator.AlphaGenuineRegularWeightLe",
-          "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "AlphaGenuineRegularWeightLe",
-          "signature": "def AlphaGenuineRegularWeightLe (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
-        },
-        {
-          "doc": "**(P1) Task 1 \u2014 THE WEIGHT-FROM-IDENTITY LINK.**  Given the (P2) lift identity at order `t` (`hlift_t`) and a carved `\ud835\udcaa`-preimage `a` of `\u03b1Genuine t` (`ha`), the `\u03b2Hensel t` factors, IN `\ud835\udcaa H`, as `\u03b2Hensel t = a \u00b7 W\ud835\udcaa^{t+1} \u00b7 \u03be^{2t\u22121}`. The `\ud835\udd43`-level identity says `embedding (\u03b2_t) = embedding a \u00b7 embedding (W\ud835\udcaa)^{t+1} \u00b7 embedding \u03be^{2t\u22121} = embedding (a \u00b7 W\ud835\udcaa^{t+1} \u00b7 \u03be^{2t\u22121})` (ring-hom multiplicativity + the `W` bridge); injectivity of `embeddingOf\ud835\udcaaInto\ud835\udd43` (`embeddingOf\ud835\udcaaInto\ud835\udd43_injective`) descends it to `\ud835\udcaa`.  This is the genuine transport of the lift identity to the world where `\u039b_\ud835\udcaa` lives.",
-          "kind": "theorem",
-          "line": 124,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_124",
-          "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_124",
-          "signature": "theorem theorem \u03b2Hensel_eq_alpha_mul_of_lift (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
-        },
-        {
-          "doc": "**(P1) Task 2 \u2014 the STRUCTURED INVARIANT, conditional.**  Given the (P2) lift identity `hlift`, the carved A.4 link `h\u03b1` (`\u03b1Genuine l` regular of weight `\u2264 1`), the genuine `\u039b(W)` bound (`weight_\u039b_over_\ud835\udcaa_W`, automatic) and the `\u039b(\u03be)` bound `h\u03be` (`weight_\u03be_bound`, under its regime), the structured invariant `\u039b_\ud835\udcaa(\u03b2Hensel l) \u2264 1 + (l+1)\u00b7\u039b(W) + e_l\u00b7\u039b(\u03be)`   for all `l` holds, with `\u039b(W) = (lc H).natDegree`, `\u039b(\u03be) \u2264 (d\u22121)\u00b7(D\u2212dH+1)`, `e_l = 2l\u22121` (\u2115-truncated: `e_0 = 0`, `e_l = 2l\u22121` for `l \u2265 1`). Proof per order `l`: the link gives `\u03b2_l = a_l \u00b7 W\ud835\udcaa^{l+1} \u00b7 \u03be^{e_l}` in `\ud835\udcaa` (Task 1); then the proven ov",
-          "kind": "theorem",
-          "line": 154,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_154",
-          "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_154",
-          "signature": "theorem theorem \u03b2Hensel_weight_structured (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
-        },
-        {
           "doc": "**(P1) Task 3 \u2014 the loose weight bound, conditional.**  From the structured invariant `\u03b2Hensel_weight_structured` (under the lift identity + carved A.4 link + \u03be-weight regime), the loose Claim-A.2 target `\u039b_\ud835\udcaa(\u03b2Hensel t) \u2264 (2t+1)\u00b7natDegreeY R \u00b7 D` follows by the proven `\u2115`-arithmetic collapse `structured_weight_collapse` (`= \u03b2Hensel_weight_bound_of_structured_weight`), under the paper's faithful regime `2 \u2264 d`, `dH \u2264 d`, `\u039b(W)+dH \u2264 D`.",
           "kind": "theorem",
-          "line": 208,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_208",
+          "line": 105,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_105",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_208",
+          "short_name": "_anon_theorem_105",
           "signature": "theorem theorem \u03b2Hensel_weight_bound_of_lift (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
         },
         {
           "doc": "**(P1) discharging `h\u03be` via the PROVEN `weight_\u03be_bound`.**  Under the `2 \u2264 d` regime and the two total-degree budgets of `weight_\u03be_bound`, the \u03be-weight hypothesis is automatic; so the conditional (P1) needs only `hlift` + the carved A.4 link `h\u03b1`.",
           "kind": "theorem",
-          "line": 238,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_238",
+          "line": 135,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_135",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_238",
+          "short_name": "_anon_theorem_135",
           "signature": "theorem theorem \u03b2Hensel_weight_bound_of_lift' (x\u2080 : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x\u2080 R H)"
         },
         {
           "doc": "**AUTO-UNLOCK witness.**  Once `\u03b2Hensel_lift_identity` is axiom-clean (w16 vanishing landed), the `hlift` hypothesis is discharged unconditionally by the in-tree `\u03b2Hensel_lift_identity`.  This lemma exhibits that discharge: feeding `\u03b2Hensel_lift_identity` for `hlift`, the conditional (P1) needs ONLY the carved A.4 link `h\u03b1` (`\u039b(\u03b1_t) \u2264 1`) plus the paper's faithful regime hypotheses.",
           "kind": "theorem",
-          "line": 259,
-          "name": "BCIKS20.HenselNumerator._anon_theorem_259",
+          "line": 156,
+          "name": "BCIKS20.HenselNumerator._anon_theorem_156",
           "namespace": "BCIKS20.HenselNumerator",
-          "short_name": "_anon_theorem_259",
+          "short_name": "_anon_theorem_156",
           "signature": "theorem theorem \u03b2Hensel_weight_bound_unlocked (x\u2080 : F) (R : F[X][X][Y])"
         }
       ]
@@ -72607,6 +72571,82 @@
         }
       ]
     },
+    "ArkLib/ToMathlib/HenselDatumProducer.lean": {
+      "declarations": [
+        {
+          "doc": "If `a \u2261 b` modulo `X` (their difference lies in `span {X}`), then `f.eval a \u2261 f.eval b` modulo `X` for any `f : (F\u27e6X\u27e7)[Y]`.  `a \u2212 b \u2223 f.eval a \u2212 f.eval b` (`sub_dvd_eval_sub`), and `X \u2223 a \u2212 b`, so `X \u2223 f.eval a \u2212 f.eval b`.",
+          "kind": "theorem",
+          "line": 94,
+          "name": "ArkLib.HenselDatumProducer.eval_sub_mem_span_X_of_congr",
+          "namespace": "ArkLib.HenselDatumProducer",
+          "short_name": "eval_sub_mem_span_X_of_congr",
+          "signature": "theorem eval_sub_mem_span_X_of_congr (f : Polynomial (PowerSeries F)) {a b : PowerSeries F}"
+        },
+        {
+          "doc": "**The approximation is an approximate root.**  From an exact root `f.IsRoot r` and the congruence `r \u2261 a\u2080 mod X`, the approximation `a\u2080` is an *approximate* root of `f`: `f.eval a\u2080 \u2208 span {X}`.  (This is what an order-`0` Hensel approximation means.)",
+          "kind": "theorem",
+          "line": 103,
+          "name": "ArkLib.HenselDatumProducer.approxRoot_of_isRoot_of_congr",
+          "namespace": "ArkLib.HenselDatumProducer",
+          "short_name": "approxRoot_of_isRoot_of_congr",
+          "signature": "theorem approxRoot_of_isRoot_of_congr (f : Polynomial (PowerSeries F)) {r a\u2080 : PowerSeries F}"
+        },
+        {
+          "doc": "**Separability \u27f9 unit derivative (the produced `hderiv` field).**  If `f : (F\u27e6X\u27e7)[Y]` is separable and `a\u2080` is an approximate root (`f.eval a\u2080 \u2208 span {X}`), then the derivative `f'(a\u2080)` is a unit.  This is the App-A \u00a75.2.6 simple-root datum, derived from separability \u2014 *not* assumed.",
+          "kind": "theorem",
+          "line": 126,
+          "name": "ArkLib.HenselDatumProducer.isUnit_derivative_eval_of_separable",
+          "namespace": "ArkLib.HenselDatumProducer",
+          "short_name": "isUnit_derivative_eval_of_separable",
+          "signature": "theorem isUnit_derivative_eval_of_separable (f : Polynomial (PowerSeries F))"
+        },
+        {
+          "doc": "**`hderiv` from separability + a root + a congruence (the form the datum needs).**  Combines the two derivations: `r` an exact root and `r \u2261 a\u2080 mod X` make `a\u2080` an approximate root, at which separability of `f` forces `f'(a\u2080)` to be a unit.",
+          "kind": "theorem",
+          "line": 149,
+          "name": "ArkLib.HenselDatumProducer.isUnit_derivative_of_separable_of_isRoot_of_congr",
+          "namespace": "ArkLib.HenselDatumProducer",
+          "short_name": "isUnit_derivative_of_separable_of_isRoot_of_congr",
+          "signature": "theorem isUnit_derivative_of_separable_of_isRoot_of_congr (f : Polynomial (PowerSeries F))"
+        },
+        {
+          "doc": "**The isolated \u00a75 per-`z` residual** for a given linear representative `(v\u2080, v\u2081)`. This is the smallest explicit input from which `HPzBridge.HenselDatum` is *produced*: it is the `HenselDatum` minus the unit-derivative, *plus* per-`z` separability of the matching polynomial.  The unit-derivative is then derived (`henselDatum_of_sepInput`), so this bundle is strictly weaker \u2014 it never mentions `IsUnit`. Every field is a genuine \u00a75 regime datum (none is the per-`z` polynomial identity `hPz` derives): * `f`, `a\u2080`             \u2014 the GS matching polynomial specialised at `z` over `F\u27e6X\u27e7`, and the \u00a75 ",
+          "kind": "structure",
+          "line": 185,
+          "name": "ArkLib.HenselDatumProducer.SepHenselInput",
+          "namespace": "ArkLib.HenselDatumProducer",
+          "short_name": "SepHenselInput",
+          "signature": "structure SepHenselInput {k deg : \u2115} {domain : \u03b9 \u21aa F} {\u03b4 : \u211d\u22650}"
+        },
+        {
+          "doc": "**THE PRODUCER.**  From the isolated \u00a75 residual `SepHenselInput`, produce the per-`z` Hensel root datum `HPzBridge.HenselDatum` consumed by `HPzBridge.hPz_of_henselDatum`. The `f`/`a\u2080` data and the four root/congruence facts are passed through; the **unit-derivative field is constructed** from per-`z` separability via `isUnit_derivative_of_separable_of_isRoot_of_congr` (`hsep z` + `hProot z` + `hPapprox z`).",
+          "kind": "def",
+          "line": 219,
+          "name": "ArkLib.HenselDatumProducer.henselDatum_of_sepInput",
+          "namespace": "ArkLib.HenselDatumProducer",
+          "short_name": "henselDatum_of_sepInput",
+          "signature": "def henselDatum_of_sepInput {k deg : \u2115} {domain : \u03b9 \u21aa F} {\u03b4 : \u211d\u22650}"
+        },
+        {
+          "doc": "**`hPz` from the \u00a75 per-`z` residual (end-to-end).**  For every linear representative `(v\u2080, v\u2081)` consistent with the `\u03b3`-hypothesis, the \u00a75 residual `SepHenselInput` together with the degree bounds yields the full `hPz` field \u2014 the producer `henselDatum_of_sepInput` builds the `HenselDatum`, and `HPzBridge.hPz_of_henselDatum` derives the per-`z` identity from it (via Hensel uniqueness) and attaches the degree bounds. This is exactly the input shape `KeystoneAssembly.section5DataFin_of_producers` threads as `hHensel` / `hdeg`, with the unit-derivative obligation discharged from separability rat",
+          "kind": "theorem",
+          "line": 245,
+          "name": "ArkLib.hPz_of_sepHenselInput",
+          "namespace": "ArkLib",
+          "short_name": "hPz_of_sepHenselInput",
+          "signature": "theorem hPz_of_sepHenselInput {k deg : \u2115} {domain : \u03b9 \u21aa F} {\u03b4 : \u211d\u22650}"
+        },
+        {
+          "doc": "**The producer, `MatchingExtractor`/divisibility route.**  Identical to `henselDatum_of_sepInput` except the two root facts arrive as the GS matching-factor divisibilities `(X \u2212 C \u2191(P z)) \u2223 f z` and `(X \u2212 C \u2191(lift.eval (C z))) \u2223 f z` (`Polynomial.X` is the outer variable `Y`); each is converted to an `IsRoot` by `Polynomial.dvd_iff_isRoot`, and the unit-derivative is again produced from separability.  This is the shape the bricks `MatchingExtractor.matchingFactor_dvd_of_orderM_and_count` (with the per-`z` multiplicity from `MultiplicityDatum.hord_of_rootMultiplicity_ge`) deliver, transported t",
+          "kind": "def",
+          "line": 289,
+          "name": "ArkLib.HenselDatumProducer.henselDatum_of_matchingDvd_and_sep",
+          "namespace": "ArkLib.HenselDatumProducer",
+          "short_name": "henselDatum_of_matchingDvd_and_sep",
+          "signature": "def henselDatum_of_matchingDvd_and_sep {k deg : \u2115} {domain : \u03b9 \u21aa F} {\u03b4 : \u211d\u22650}"
+        }
+      ]
+    },
     "ArkLib/ToMathlib/HenselUniqueness.lean": {
       "declarations": [
         {
@@ -74795,8 +74835,8 @@
   },
   "stats": {
     "ArkLib": {
-      "declarations": 8131,
-      "files": 407
+      "declarations": 8135,
+      "files": 408
     }
   }
 }

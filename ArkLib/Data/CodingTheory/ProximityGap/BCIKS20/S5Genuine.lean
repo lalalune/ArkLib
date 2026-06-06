@@ -298,7 +298,7 @@ theorem gammaGenuine_Z_linear_of_coeffs_Z_linear {x₀ : F} {R : F[X][X][Y]}
     -- `coeff t (C(T) * v₁) = T · coeff t v₁` since `C(T)` is a constant series.
     rw [map_add, PowerSeries.coeff_mk, PowerSeries.coeff_C_mul, PowerSeries.coeff_mk]
     -- LHS `coeff t γ = αGenuine t`, then use the per-coefficient hypothesis.
-    show αGenuine H x₀ R hHyp t = _
+    change αGenuine H x₀ R hHyp t = _
     rw [hc t]
   · intro t
     exact ⟨c₀ t, c₁ t, by rw [PowerSeries.coeff_mk], by rw [PowerSeries.coeff_mk]⟩

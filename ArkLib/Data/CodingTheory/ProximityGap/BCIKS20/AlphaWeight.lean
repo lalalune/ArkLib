@@ -4,20 +4,20 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.HenselNumerator
 
+set_option linter.style.longLine false
+
 /-!
 # (P1, A.4) `AlphaGenuineRegularWeightLe` — analysis, equivalence, structured closure, obstruction
 
-This is a NEW, untracked file (so the harness's hard reset of the tracked tree cannot clobber it).
-It imports only `HenselNumerator` (whose `.olean` builds; `GammaGenuine`/`RationalFunctions` are
-transitive).  It is the careful working-out of the carved A.4 link
+This module imports only `HenselNumerator` (whose `.olean` builds; `GammaGenuine`/`RationalFunctions`
+are transitive).  It is the careful working-out of the carved A.4 link
 
   `AlphaGenuineRegularWeightLe`:  `∀ t, ∃ a_t ∈ 𝒪, embedding a_t = αGenuine t ∧ Λ_𝒪(a_t) ≤ 1`
 
 — the formal content of BCIKS20's `Λ(α_t) = Λ(Y) = 1` ("consider the weight of `α_t`", line ~4276)
 on the genuine Hensel root `gammaGenuine` (`αGenuine t := coeff t gammaGenuine`).  The statement is
-verbatim the one carved in `P1Conditional.lean` (`def AlphaGenuineRegularWeightLe`); we re-state it
-here because the harness reset the tracked `P1Conditional.lean` to an earlier `StructuredWeightFromLift`
-form, so it cannot be imported.
+verbatim the one first carved in `P1Conditional.lean` (`def AlphaGenuineRegularWeightLe`).  It now
+lives here as the canonical shared A.4 infrastructure imported by the conditional P1 assembly.
 
 ## Task 1 — is `AlphaGenuineRegularWeightLe` circular with the structured invariant given `hlift`?
 
@@ -75,7 +75,6 @@ only the proven `βHensel_lift_identity_zero` + injectivity); we do not fake the
 NO `axiom`/`admit`/`native_decide`/`bv_decide`/`sorry`.  Audited in-file via `#print axioms`.
 -/
 
-set_option linter.style.longLine false
 set_option linter.unusedSectionVars false
 
 namespace BCIKS20.HenselNumerator

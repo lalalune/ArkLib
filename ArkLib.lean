@@ -374,6 +374,7 @@ import ArkLib.ToMathlib.HasseDerivNumeratorGeneral
 import ArkLib.ToMathlib.HasseDerivNumerators
 import ArkLib.ToMathlib.HcardDischarge
 import ArkLib.ToMathlib.HdvdTop
+import ArkLib.ToMathlib.HenselDatumProducer
 import ArkLib.ToMathlib.HenselUniqueness
 import ArkLib.ToMathlib.HliftDvd
 import ArkLib.ToMathlib.IngredientCBridge
