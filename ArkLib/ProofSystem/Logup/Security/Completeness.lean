@@ -40,9 +40,12 @@ development is not permitted to modify:
   require the lens completeness instance demanded by
   `OracleReduction.liftContext_completeness`.
 
-Consequently `logup_completeness` is closed via the genuine composition skeleton, with a single
-named residual `Prop` (`SubPhaseCompletenessResidual`) standing for the upstream-blocked
-sub-completeness facts. The pole-probability lemmas it relies on are fully proven.
+Consequently `logup_completeness` is closed via the genuine composition skeleton, with a named
+residual `Prop` (`SubPhaseCompletenessResidual`) standing for the upstream-blocked
+sub-completeness facts. For callers that can discharge only one side at a time,
+`Security/SubPhaseSplit.lean` exposes the same residual as `OuterCompletenessResidual` and
+`SumcheckCompletenessResidual`. The pole-probability lemmas the outer half relies on are fully
+proven.
 -/
 
 open scoped NNReal ENNReal

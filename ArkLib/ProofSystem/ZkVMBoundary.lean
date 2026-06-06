@@ -15,6 +15,12 @@ ArkLib proves proof-system and oracle-reduction components. A whole-zkVM theorem
 must additionally connect an accepted concrete verifier execution to a valid VM
 execution trace and public output. The structures below name those interfaces as
 assumptions rather than hiding them in prose.
+
+For the current whole-zkVM roadmap, `Verified-zkEVM/evm-asm` is the named
+guest-program semantics provider: it should supply RV64/EVM execution,
+public-input/output, halting, and guest-program correctness theorems. ArkLib
+consumes that work only through the abstract relation and boundary assumptions
+below.
 -/
 
 namespace ArkLib

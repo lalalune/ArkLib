@@ -24,9 +24,11 @@ probability lemma, whose `AppendCoherent` side condition for `outerVerifier` is 
   `outerSoundnessError` (the two LogUp algebraic-check terms), and
 * embedded-sumcheck soundness for `sumcheckVerifier`, with error `sumcheckSoundnessError`.
 
-These two sub-verifier soundness facts are collected into the single named residual
+These two sub-verifier soundness facts are collected into the named residual
 `subPhaseSoundness`, and the top-level `logup_soundness` is reduced to it through
-`OracleVerifier.append_soundness` in `logup_soundness_of_residual` (no `sorry`). The error
+`OracleVerifier.append_soundness` in `logup_soundness_of_residual` (no `sorry`). For callers that
+can discharge only one side at a time, `Security/SubPhaseSplit.lean` exposes the same residual as
+the independent halves `OuterSoundnessResidual` and `SumcheckSoundnessResidual`. The error
 reconciliation `outerSoundnessError + sumcheckSoundnessError = logupSoundnessError …` holds by
 `rfl` because `logupSoundnessError` is *defined* as that sum.
 
@@ -46,9 +48,9 @@ Both sub-facts are blocked by missing upstream security lemmas introduced *outsi
   as an explicit `hAppendSoundness` hypothesis. This keeps the obstruction as a named residual
   interface instead of hiding it behind `sorryAx`.
 
-Hence this single residual `subPhaseSoundness`. The final output language is `Set.univ`
-(`outputRelation_language`), so this is a nontrivial acceptance-probability bound, not a vacuous
-language inclusion.
+Hence this residual remains explicit, with a split front door in `Security/SubPhaseSplit.lean` for
+the outer and sumcheck halves. The final output language is `Set.univ` (`outputRelation_language`),
+so this is a nontrivial acceptance-probability bound, not a vacuous language inclusion.
 -/
 
 open scoped NNReal

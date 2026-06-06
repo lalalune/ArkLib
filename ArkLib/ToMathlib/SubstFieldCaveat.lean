@@ -120,6 +120,46 @@ theorem not_hasSubst_shiftSeries_of_ne_zero {x₀ : F} (hx₀ : x₀ ≠ 0) :
     ¬ PowerSeries.HasSubst (shiftSeries x₀ H) :=
   fun h => hx₀ ((hasSubst_shiftSeries_iff_eq_zero x₀).mp h)
 
+/-! ### The substitution-free recentering description (F1)
+
+`SubstFieldCaveat` above shows the BCIKS shift series is `PowerSeries.subst`-substitutable
+**iff** `x₀ = 0`.  For an off-center expansion (`x₀ ≠ 0`) the keystone must therefore avoid
+`PowerSeries.subst`.  The substitution-free route is the *polynomial recentering*
+`Polynomial.aeval (shiftSeries x₀ H) p`: this is the value of the numerator polynomial `p`
+at the series `X - x₀` and is well-defined for **every** `x₀` (no `HasSubst`/nilpotent-constant
+requirement), because evaluating a *finite* polynomial needs no convergence condition.  When the
+numerator is tail-zero (the genuine `betaRec` output), it *is* such a finite polynomial
+(`PowerSeries.trunc k (mk α)`), so this is the correct off-center replacement for the invalid
+`(mk α).subst (shiftSeries x₀ H)`.
+
+The two facts below make that precise and show the affine-curve (linear) structure is preserved
+under recentering — exactly the `degreeX ≤ 1` payload the curve-coefficient extraction reads off. -/
+
+/-- The shift series is the recentering map `X ↦ X - x₀`, exhibited as the substitution-free
+power series `X - C (fieldTo𝕃 x₀)`. -/
+theorem shiftSeries_eq_X_sub_C (x₀ : F) :
+    shiftSeries x₀ H = PowerSeries.X - PowerSeries.C (𝕃 H) (fieldTo𝕃 x₀) := by
+  ext t
+  rw [shiftSeries, PowerSeries.coeff_mk, map_sub, PowerSeries.coeff_X, PowerSeries.coeff_C]
+  match t with
+  | 0 => simp [map_neg]
+  | 1 => simp
+  | (n + 2) => simp
+
+/-- **Recentering preserves the affine-curve (linear) structure.**  Applying the off-center
+shift `aeval (shiftSeries x₀ H) ·` to a linear numerator `C a + b·X` returns the linear series
+`C (a − b·x₀) + b·X`: the `X`-coefficient `b` is unchanged and only the constant term is shifted.
+This is the substitution-free, all-`x₀` version of the `degreeX ≤ 1` preservation consumed by the
+curve-coefficient-polynomial extraction. -/
+theorem aeval_shiftSeries_linear (x₀ : F) (a b : 𝕃 H) :
+    Polynomial.aeval (shiftSeries x₀ H)
+        (Polynomial.C a + Polynomial.C b * Polynomial.X)
+      = PowerSeries.C (𝕃 H) (a - b * fieldTo𝕃 x₀)
+        + PowerSeries.C (𝕃 H) b * PowerSeries.X := by
+  rw [map_add, map_mul, Polynomial.aeval_C, Polynomial.aeval_C, Polynomial.aeval_X,
+    shiftSeries_eq_X_sub_C, map_sub]
+  ring
+
 end SubstFieldCaveat
 
 end ArkLib

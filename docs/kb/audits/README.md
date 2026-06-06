@@ -19,6 +19,8 @@ Current audit pages:
   - current goal and validation coordination note for the proof swarm.
 - [`bciks20-appendix-a-rational-functions.md`](bciks20-appendix-a-rational-functions.md)
   - Appendix A rational-function and Hensel-lifting status for `BCIKS20`.
+- [`issue-8-claim57-residuals-2026-06-06.md`](issue-8-claim57-residuals-2026-06-06.md)
+  - Claim 5.7 residual-class and graph-extraction front-door audit for `BCIKS20`.
 - [`open-problems-list-decoding-and-correlated-agreement.md`](open-problems-list-decoding-and-correlated-agreement.md)
   - theorem/status matrix for `paper.pdf`.
 - [`issue-18-toyproblem-residuals-2026-06-06.md`](issue-18-toyproblem-residuals-2026-06-06.md)

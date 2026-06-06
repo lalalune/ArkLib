@@ -442,7 +442,7 @@ theorem mcaThresholdLattice_bracketed_of_residuals_and_upperWitness
     hη hδ hδlo_le_one R hle
   simpa [wlo, mcaThresholdExists_of_residuals] using
     (GrandChallengesLattice.mcaThresholdLattice_bracketed_of_witnesses
-      (C := ReedSolomon.code domain k : Set (ι₀ → F₀)) (ε_star := ε_star)
+      (C := (ReedSolomon.code domain k : Set (ι₀ → F₀))) (ε_star := ε_star)
       wlo whi hδhi)
 
 /-- **Adjacent upper witness closes the refined Hab25 lower bound to an exact lattice
@@ -467,7 +467,7 @@ theorem mcaThreshold_eq_latticeIndexOf_residuals_and_upperWitness_adjacent
     hη hδ hδlo_le_one R hle
   simpa [wlo, mcaThresholdExists_of_residuals] using
     (GrandChallengesLattice.mcaThreshold_eq_latticeIndexOf_lowerWitness_of_adjacent
-      (C := ReedSolomon.code domain k : Set (ι₀ → F₀)) (ε_star := ε_star)
+      (C := (ReedSolomon.code domain k : Set (ι₀ → F₀))) (ε_star := ε_star)
       wlo whi hδhi hadj)
 
 /-- **Adjacent `ε_ca` upper witness closes the refined Hab25 lower bound to an exact lattice
@@ -541,12 +541,22 @@ theorem mcaPrizeLatticeResolved_of_residuals_and_upperWitness_adjacent
         (GrandChallengesLattice.latticeIndexOf (ι := ι₀) (δ_lo j) (hδlo_le_one j)).val + 1) :
   GrandChallengesLattice.mcaPrizeLatticeResolved domain
       (fun j => GrandChallengesLattice.latticeIndexOf (ι := ι₀) (δ_lo j) (hδlo_le_one j)) := by
-  refine GrandChallengesLattice.mcaPrizeLatticeResolved_of_adjacent_witnesses
-    domain ?_ whi hδhi hadj
-  intro j
-  exact mcaLowerWitness_of_residuals domain
-    ⌊prizeRates j * (Fintype.card ι₀ : ℝ≥0)⌋₊ (η j) (δ_lo j) epsStar
-    (hη j) (hδ j) (hδlo_le_one j) (R j) (hle j)
+  let wlo : ∀ j : Fin 4,
+      MCALowerWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι₀ : ℝ≥0)⌋₊ : Set (ι₀ → F₀))
+        epsStar := fun j =>
+    mcaLowerWitness_of_residuals domain
+      ⌊prizeRates j * (Fintype.card ι₀ : ℝ≥0)⌋₊ (η j) (δ_lo j) epsStar
+      (hη j) (hδ j) (hδlo_le_one j) (R j) (hle j)
+  have hadj' : ∀ j : Fin 4,
+      (GrandChallengesLattice.latticeIndexOf (ι := ι₀) (whi j).δ (hδhi j)).val =
+        (GrandChallengesLattice.latticeIndexOf (ι := ι₀) (wlo j).δ (wlo j).le_one).val + 1 := by
+    intro j
+    simpa [wlo, mcaLowerWitness_of_residuals, MCALowerWitness.ofLe] using hadj j
+  simpa [wlo, mcaLowerWitness_of_residuals, MCALowerWitness.ofLe] using
+    (GrandChallengesLattice.mcaPrizeLatticeResolved_of_adjacent_witnesses
+      domain wlo whi hδhi hadj')
 
 end Reduction
 
