@@ -568,10 +568,8 @@ theorem rs_closeCodewords_ncard_transport
         relHammingDist_comp_equiv e w c
       have hgoal : ((Code.relHammingDist (w ∘ ⇑e) (c ∘ ⇑e) : ℚ≥0) : ℝ) ≤ δ := by
         rw [hd]
-        convert hball using 2
-        congr!
-      convert hgoal using 2
-      congr!
+        convert hball using 2 <;> congr!
+      convert hgoal using 2 <;> congr!
   · intro c₁ _ c₂ _ h
     funext x
     have := congrFun h (e.symm x)
