@@ -941,6 +941,99 @@ theorem listThresholdLattice_bracketed_of_witnesses (C : Set (ι → F)) (m : �
   listThresholdLattice_bracketed C m ε_star
     (listThresholdExists_of_ListLowerWitness C m ε_star wlo) wlo whi hδhi
 
+/-! ## Faithful prize-resolution targets
+
+The collapse-broken `GrandChallenges.mcaPrize` / `GrandChallenges.listDecodingPrize` predicates
+ask only for existence of real thresholds.  The lattice formulation exposes the actual finite
+quantities the paper asks to determine: one lattice index for each prize rate.  The predicates
+below let a downstream proof state "these are the four thresholds" and immediately unfold that
+claim to the verified satisfy/maximality characterization. -/
+
+/-- A proposed solution of the MCA prize lattice problem: for every prize rate, the faithful
+MCA lattice threshold is the supplied index `τ j`. -/
+def mcaPrizeLatticeResolved (domain : ι ↪ F)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1)) : Prop :=
+  ∀ j : Fin 4,
+    ∃ hne : mcaThresholdExists
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar,
+      mcaThreshold
+          (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ :
+            Set (ι → F))
+          epsStar hne = τ j
+
+/-- The faithful MCA prize-resolution predicate is exactly the per-rate statement that the
+proposed lattice index satisfies the MCA bound and is maximal among satisfying lattice points. -/
+theorem mcaPrizeLatticeResolved_iff (domain : ι ↪ F)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1)) :
+    mcaPrizeLatticeResolved domain τ ↔
+      ∀ j : Fin 4,
+        let C : Set (ι → F) :=
+          ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+        ∃ _ : mcaThresholdExists C epsStar,
+          mcaSatisfies C epsStar (τ j) ∧
+            ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j := by
+  constructor
+  · intro h j
+    rcases h j with ⟨hne, heq⟩
+    refine ⟨hne, ?_, ?_⟩
+    · simpa [heq] using mcaThreshold_spec
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar hne
+    · intro i hi
+      simpa [heq] using le_mcaThreshold
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar hne hi
+  · intro h j
+    rcases h j with ⟨hne, hsat, hmax⟩
+    refine ⟨hne, ?_⟩
+    exact (mcaThreshold_unique
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      epsStar hne (τ j) hsat hmax).symm
+
+/-- A proposed solution of the list-decoding prize lattice problem at interleaving `m`: for
+every prize rate, the faithful list-decoding lattice threshold is the supplied index `τ j`. -/
+def listPrizeLatticeResolved (domain : ι ↪ F) (m : ℕ)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1)) : Prop :=
+  ∀ j : Fin 4,
+    ∃ hne : listThresholdExists
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        m epsStar,
+      listThreshold
+          (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ :
+            Set (ι → F))
+          m epsStar hne = τ j
+
+/-- The faithful list-prize resolution predicate is exactly the per-rate statement that the
+proposed lattice index satisfies the list-size bound and is maximal among satisfying lattice
+points. -/
+theorem listPrizeLatticeResolved_iff (domain : ι ↪ F) (m : ℕ)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1)) :
+    listPrizeLatticeResolved domain m τ ↔
+      ∀ j : Fin 4,
+        let C : Set (ι → F) :=
+          ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+        ∃ _ : listThresholdExists C m epsStar,
+          listSatisfies C m epsStar (τ j) ∧
+            ∀ i : Fin (Fintype.card ι + 1), listSatisfies C m epsStar i → i ≤ τ j := by
+  constructor
+  · intro h j
+    rcases h j with ⟨hne, heq⟩
+    refine ⟨hne, ?_, ?_⟩
+    · simpa [heq] using listThreshold_spec
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        m epsStar hne
+    · intro i hi
+      simpa [heq] using le_listThreshold
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        m epsStar hne hi
+  · intro h j
+    rcases h j with ⟨hne, hsat, hmax⟩
+    refine ⟨hne, ?_⟩
+    exact (listThreshold_unique
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      m epsStar hne (τ j) hsat hmax).symm
+
 end GrandChallengesLattice
 
 end ProximityGap
