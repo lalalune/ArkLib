@@ -779,10 +779,16 @@ theorem qMap_total_fiber_disjoint
 
   exact hy_ne (h_map_x_eq_y₁.symm.trans h_map_x_eq_y₂)
 
-/-- Single-step fold : Given `f : S⁽ⁱ⁾ → L` and challenge `r`, produce `S⁽ⁱ⁺¹⁾ → L`, where
-`f⁽ⁱ⁺¹⁾ = fold(f⁽ⁱ⁾, r) : y ↦ [1-r, r] · [[x₁, -x₀], [-1, 1]] · [f⁽ⁱ⁾(x₀), f⁽ⁱ⁾(x₁)]`
--/
-def fold (i : Fin r) (h_i : i + 1 < ℓ + 𝓡) (f : (sDomain 𝔽q β
+/-- Single-step fold (LEGACY signature). Given `f : S⁽ⁱ⁾ → L` and challenge `r`, produce
+`S⁽ⁱ⁺¹⁾ → L`, where
+`f⁽ⁱ⁺¹⁾ = fold(f⁽ⁱ⁾, r) : y ↦ [1-r, r] · [[x₁, -x₀], [-1, 1]] · [f⁽ⁱ⁾(x₀), f⁽ⁱ⁾(x₁)]`.
+
+DEPRECATED naming: this is the pre-split single-step fold keyed only on `(h_i : i + 1 < ℓ + 𝓡)`
+with output index hard-wired to `⟨i + 1, _⟩`. The canonical, externally-consumed entry point is
+`fold` (below), which takes `{destIdx : Fin r} (h_destIdx : destIdx = i + 1) (h_destIdx_le)`.
+All Prelude-internal recursion/proofs continue to use `fold_legacy`; external callers
+(`Code`/`Compliance`/`Relations`/`QueryPhase`/`Soundness`) use the new `fold`. -/
+def fold_legacy (i : Fin r) (h_i : i + 1 < ℓ + 𝓡) (f : (sDomain 𝔽q β
     h_ℓ_add_R_rate) i → L) (r_chal : L) :
     (sDomain 𝔽q β h_ℓ_add_R_rate) (⟨i + 1, by omega⟩) → L :=
   fun y => by

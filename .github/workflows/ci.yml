@@ -70,6 +70,10 @@ jobs:
         with:
           python-version: "3.12"
 
+      # ── Issue #47 gate 1: fast precheck (no Lean needed) ───────────
+      - name: Reject native_decide / bv_decide / custom axioms (precheck)
+        run: python3 scripts/forbidden_tokens.py
+
       - name: Set up Lean environment
         uses: leanprover/lean-action@v1.5.0
         with:
@@ -97,6 +101,14 @@ jobs:
         run: |
           bash scripts/build_timing_report.sh run test_path "$BUILD_TIMING_RESULTS" -- \
             bash -eo pipefail -c './scripts/validate.sh'
+
+      # ── Issue #47 gate 2: sorry census (needs built .olean) ────────
+      - name: Sorry census (zero live holes)
+        run: python3 scripts/sorry_census.py --fail-on-holes
+
+      # ── Issue #47 gate 3: axiom audit over flagship theorems ───────
+      - name: Axiom audit (flagship theorems)
+        run: python3 scripts/axiom_audit.py
 
       - name: Save Lean cache
         if: success() && steps.lake-cache.outputs.cache-hit != 'true'

@@ -113,8 +113,8 @@ theorem reduction_rbr_knowledge_soundness :
   -- Construct the round-by-round extractor: WitMid = fun _ => Witness
   refine ⟨fun _ => Witness, {
     eqIn := rfl
-    -- extractMid at round 0: read witness from the transcript (the only message)
-    extractMid := fun ⟨0, _⟩ _stmt tr _witMid => tr ⟨0, by omega⟩
+    -- extractMid at round 0: pass through the intermediate witness (identity)
+    extractMid := fun ⟨0, _⟩ _stmt _tr witMid => witMid
     -- extractOut: read witness from the full transcript
     extractOut := fun _stmt tr _ => tr ⟨0, by omega⟩
   }, {
@@ -358,7 +358,7 @@ theorem oracleReduction_rbr_knowledge_soundness :
   -- Construct the round-by-round extractor: WitMid = fun _ => Witness
   refine ⟨fun _ => Witness, {
     eqIn := rfl
-    extractMid := fun ⟨0, _⟩ _stmt tr _witMid => tr ⟨0, by omega⟩
+    extractMid := fun ⟨0, _⟩ _stmt _tr witMid => witMid
     extractOut := fun _stmt tr _ => tr ⟨0, by omega⟩
   }, {
     toFun := fun _ stmt _tr wit =>

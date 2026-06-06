@@ -406,4 +406,139 @@ theorem bkr06_tight_family_hfamily_unconditional
     (fun W hW => subspacePoly_isQLinearized_of_finrank q hqcard v W hW)
     hparam
 
+/-! ## Side-condition discharge: explicit cutoff index and explicit `α`
+
+`bkr06_tight_family_hfamily_unconditional` still carries two parameter side conditions —
+the nonnegativity `hexp_nonneg : v² ≤ m·u` (together with `huv : u ≤ v`) and the
+parameter identity `hparam : (m·u − v² : ℝ) = (α − β²)·log q`.  Both are pure
+bookkeeping, discharged here:
+
+* `bkr06CutoffIndex` — the explicit cutoff `u := ⌈v²/m⌉` (BKR06's `k = q^u` window
+  convention); `le_mul_bkr06CutoffIndex` and `bkr06CutoffIndex_le` prove `v² ≤ m·u`
+  and `u ≤ v` from `v ≤ m` alone.
+* `bkr06_tight_family_hfamily_param_free` — `hparam` *eliminated*: instantiating
+  `α := (m·u − v²)/log q` (with `β = 0`; `log q ≠ 0` from `2 ≤ q`) makes the identity
+  true by algebra, and the conclusion is restated with the concrete tight exponent
+  `q^{m·u − v²}`.
+* `bkr06_tight_family_hfamily_alpha_of_beta` — the α/β-form connector: for *any*
+  `β`, the explicit `α := β² + (m·u − v²)/log q` satisfies `hparam` by algebra, and
+  the conclusion keeps the bare statement's `q^{(α−β²)·log q}` exponent shape.
+* `bkr06_tight_family_explicit` — everything discharged at once: the only remaining
+  inputs are `2 ≤ q`, `#F = q`, and `v ≤ m`.
+-/
+
+/-- **Explicit BKR06 cutoff index** `u := ⌈v²/m⌉` (computed as `(v² + m − 1)/m`).
+This is the smallest cutoff making the tight exponent `m·u − v²` nonnegative; the two
+side conditions `v² ≤ m·u` (`le_mul_bkr06CutoffIndex`) and `u ≤ v`
+(`bkr06CutoffIndex_le`, from `v ≤ m`) then hold automatically. -/
+def bkr06CutoffIndex (m v : ℕ) : ℕ := (v ^ 2 + m - 1) / m
+
+/-- The explicit cutoff makes the tight exponent nonnegative: `v² ≤ m·⌈v²/m⌉`. -/
+lemma le_mul_bkr06CutoffIndex (m v : ℕ) (hm : 0 < m) :
+    v ^ 2 ≤ m * bkr06CutoffIndex m v := by
+  unfold bkr06CutoffIndex
+  have hdm := Nat.div_add_mod (v ^ 2 + m - 1) m
+  have hmod : (v ^ 2 + m - 1) % m < m := Nat.mod_lt _ hm
+  -- abstract the nonlinear atoms so the remaining problem is linear arithmetic
+  set p := m * ((v ^ 2 + m - 1) / m) with hp
+  set r := (v ^ 2 + m - 1) % m with hr
+  set s := v ^ 2 with hs
+  omega
+
+/-- The explicit cutoff stays below the dimension: `⌈v²/m⌉ ≤ v` whenever `v ≤ m`. -/
+lemma bkr06CutoffIndex_le (m v : ℕ) (hm : 0 < m) (hvm : v ≤ m) :
+    bkr06CutoffIndex m v ≤ v := by
+  unfold bkr06CutoffIndex
+  have hvv : v ^ 2 ≤ v * m := by
+    have h := Nat.mul_le_mul_left v hvm
+    simpa [pow_two] using h
+  have hlt : v ^ 2 + m - 1 < (v + 1) * m := by
+    have hexp : (v + 1) * m = v * m + m := by ring
+    rw [hexp]
+    set s := v ^ 2 with hs
+    set t := v * m with ht
+    omega
+  exact Nat.lt_succ_iff.mp ((Nat.div_lt_iff_lt_mul hm).mpr hlt)
+
+/-- The extension degree is positive: `K` is a nontrivial finite `F`-module, so
+`#K = q^m ≥ 2` forces `m ≥ 1`. -/
+lemma finrank_pos : 0 < Module.finrank F K := by
+  by_contra h
+  push_neg at h
+  have h0 : Module.finrank F K = 0 := by omega
+  have hcard := Module.card_eq_pow_finrank (K := F) (V := K)
+  rw [h0, pow_zero] at hcard
+  exact absurd hcard Fintype.one_lt_card.ne'
+
+/-- **Tight family, parameter-free form (`hparam` eliminated).**  Identical family
+conclusion to `bkr06_tight_family_hfamily_unconditional`, with the size bound stated
+at the concrete tight exponent `q^{m·u − v²}`.  The parameter identity is discharged
+internally by instantiating `α := (m·u − v²)/log q`, `β := 0` (`log q ≠ 0` from
+`2 ≤ q`); no `α`/`β` hypothesis remains. -/
+theorem bkr06_tight_family_hfamily_param_free
+    (q : ℕ) (hq : 2 ≤ q) (hqcard : Fintype.card F = q)
+    (v u : ℕ) (hv : v ≤ Module.finrank F K) (huv : u ≤ v)
+    (hexp_nonneg : v ^ 2 ≤ Module.finrank F K * u) :
+    ∃ (ι : Type u) (_ : Fintype ι) (_ : DecidableEq ι) (𝓛 : ι → Submodule F K)
+      (_ : ∀ i, Fintype (𝓛 i)),
+      (∀ i, Module.finrank F (𝓛 i) = v) ∧
+      Function.Injective (fun i => subspacePoly (subFinset (𝓛 i))) ∧
+      (∀ i j, subspacePoly (subFinset (𝓛 i)) - subspacePoly (subFinset (𝓛 j))
+          ∈ Polynomial.degreeLT K (q ^ u + 1)) ∧
+      (q : ℝ) ^ ((Module.finrank F K : ℝ) * u - (v : ℝ) ^ 2) ≤ (Fintype.card ι : ℝ) := by
+  have hq1 : (1 : ℝ) < q := by exact_mod_cast Nat.lt_of_lt_of_le one_lt_two hq
+  have hlogq : Real.log q ≠ 0 := (Real.log_pos hq1).ne'
+  obtain ⟨ι, hF, hD, 𝓛, hFL, h1, h2, h3, h4⟩ :=
+    bkr06_tight_family_hfamily_unconditional
+      (α := ((Module.finrank F K : ℝ) * u - (v : ℝ) ^ 2) / Real.log q) (β := 0)
+      q hq hqcard v u hv huv hexp_nonneg (by field_simp)
+  refine ⟨ι, hF, hD, 𝓛, hFL, h1, h2, h3, ?_⟩
+  have hexp : (((Module.finrank F K : ℝ) * u - (v : ℝ) ^ 2) / Real.log q - 0 ^ 2)
+      * Real.log q = (Module.finrank F K : ℝ) * u - (v : ℝ) ^ 2 := by
+    field_simp
+  rwa [hexp] at h4
+
+/-- **α/β-form connector (`hparam` discharged at explicit `α`).**  For *any* `β : ℝ`,
+the explicit `α := β² + (m·u − v²)/log q` satisfies the parameter identity by algebra,
+so the tight-family conclusion holds in the bare statement's `q^{(α−β²)·log q}`
+exponent form with no parameter hypothesis.  (This is the exact `α`/`β` bookkeeping
+BKR06 performs under `v ≈ β·m` and the `k = q^u` cutoff convention.) -/
+theorem bkr06_tight_family_hfamily_alpha_of_beta
+    (β : ℝ) (q : ℕ) (hq : 2 ≤ q) (hqcard : Fintype.card F = q)
+    (v u : ℕ) (hv : v ≤ Module.finrank F K) (huv : u ≤ v)
+    (hexp_nonneg : v ^ 2 ≤ Module.finrank F K * u) :
+    ∃ (ι : Type u) (_ : Fintype ι) (_ : DecidableEq ι) (𝓛 : ι → Submodule F K)
+      (_ : ∀ i, Fintype (𝓛 i)),
+      (∀ i, Module.finrank F (𝓛 i) = v) ∧
+      Function.Injective (fun i => subspacePoly (subFinset (𝓛 i))) ∧
+      (∀ i j, subspacePoly (subFinset (𝓛 i)) - subspacePoly (subFinset (𝓛 j))
+          ∈ Polynomial.degreeLT K (q ^ u + 1)) ∧
+      (q : ℝ) ^ (((β ^ 2 + ((Module.finrank F K : ℝ) * u - (v : ℝ) ^ 2) / Real.log q)
+          - β ^ 2) * Real.log q) ≤ (Fintype.card ι : ℝ) := by
+  have hq1 : (1 : ℝ) < q := by exact_mod_cast Nat.lt_of_lt_of_le one_lt_two hq
+  have hlogq : Real.log q ≠ 0 := (Real.log_pos hq1).ne'
+  exact bkr06_tight_family_hfamily_unconditional
+    (α := β ^ 2 + ((Module.finrank F K : ℝ) * u - (v : ℝ) ^ 2) / Real.log q) (β := β)
+    q hq hqcard v u hv huv hexp_nonneg (by field_simp)
+
+/-- **Fully explicit tight family: all side conditions discharged.**  At the explicit
+cutoff `u := bkr06CutoffIndex m v = ⌈v²/m⌉`, the only remaining inputs are `2 ≤ q`,
+`#F = q`, and the dimension range `v ≤ m`; the conclusion carries the concrete tight
+exponent `q^{m·u − v²}`. -/
+theorem bkr06_tight_family_explicit
+    (q : ℕ) (hq : 2 ≤ q) (hqcard : Fintype.card F = q)
+    (v : ℕ) (hv : v ≤ Module.finrank F K) :
+    ∃ (ι : Type u) (_ : Fintype ι) (_ : DecidableEq ι) (𝓛 : ι → Submodule F K)
+      (_ : ∀ i, Fintype (𝓛 i)),
+      (∀ i, Module.finrank F (𝓛 i) = v) ∧
+      Function.Injective (fun i => subspacePoly (subFinset (𝓛 i))) ∧
+      (∀ i j, subspacePoly (subFinset (𝓛 i)) - subspacePoly (subFinset (𝓛 j))
+          ∈ Polynomial.degreeLT K
+              (q ^ (bkr06CutoffIndex (Module.finrank F K) v) + 1)) ∧
+      (q : ℝ) ^ ((Module.finrank F K : ℝ) * (bkr06CutoffIndex (Module.finrank F K) v)
+          - (v : ℝ) ^ 2) ≤ (Fintype.card ι : ℝ) :=
+  bkr06_tight_family_hfamily_param_free q hq hqcard v _ hv
+    (bkr06CutoffIndex_le _ _ (finrank_pos (F := F) (K := K)) hv)
+    (le_mul_bkr06CutoffIndex _ _ (finrank_pos (F := F) (K := K)))
+
 end BKR06
