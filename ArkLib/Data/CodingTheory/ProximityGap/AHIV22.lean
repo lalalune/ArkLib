@@ -1611,6 +1611,7 @@ theorem ahiv17_affineLine_correlatedAgreement_residual_uniqueDecodingRegime
     ahiv17_affineLine_correlatedAgreement_residual deg α δ (ProximityGap.errorBound δ deg α) :=
   ahiv17_affineLine_residual_uniqueDecodingRegime hδ
 
+#print axioms ProximityToRS.prob_of_bad_pts
 #print axioms ProximityToRS.ahiv17_affineLine_correlatedAgreement_residual
 #print axioms ProximityToRS.ahiv17_epsCA_bound
 #print axioms ProximityToRS.ahiv17_epsCA_bound_of_affineLine_residual
