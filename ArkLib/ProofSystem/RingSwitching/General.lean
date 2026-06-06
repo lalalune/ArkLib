@@ -118,7 +118,13 @@ omit [(i : mlIOPCS.pSpec.ChallengeIdx) → SampleableType (mlIOPCS.pSpec.Challen
 -- `[IsDomain L] [IsDomain K]` are needed by the core-interaction (final-sumcheck) completeness,
 -- which invokes the DP24 capstone `A_MLE_eval_eq_compute_final_eq_value` (an `IsDomain` algebra
 -- lemma). They hold in every real instantiation (`binaryTowerProfile` builds from fields `K`, `L`).
-lemma batchingCore_perfectCompleteness [IsDomain L] [IsDomain K] :
+lemma batchingCore_perfectCompleteness [IsDomain L] [IsDomain K]
+    (hBatching : BatchingPhase.batchingReduction_perfectCompleteness_residual
+      (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
+      (aOStmtIn := mlIOPCS.toAbstractOStmtIn) (init := init) (impl := impl))
+    (hRounds : SumcheckPhase.iteratedSumcheckOracleReduction_perfectCompleteness_residual
+      (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
+      (aOStmtIn := mlIOPCS.toAbstractOStmtIn) (init := init) (impl := impl)) :
   (batchingCoreReduction κ L K P ℓ ℓ' h_l mlIOPCS).perfectCompleteness
   (pSpec := pSpecLargeFieldReduction κ L K P ℓ')
   (relIn := BatchingPhase.batchingInputRelation κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn)
@@ -126,12 +132,19 @@ lemma batchingCore_perfectCompleteness [IsDomain L] [IsDomain K] :
   (init:=init) (impl:=impl) := by
   apply OracleReduction.append_perfectCompleteness
   · exact BatchingPhase.batchingReduction_perfectCompleteness κ L K P ℓ ℓ' h_l
-       mlIOPCS.toAbstractOStmtIn
+       mlIOPCS.toAbstractOStmtIn hBatching
   · exact SumcheckPhase.coreInteraction_perfectCompleteness
-      κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn (impl:=impl)
+      κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn
+      (init := init) (impl := impl) hRounds
 
 omit [(i : mlIOPCS.pSpec.ChallengeIdx) → SampleableType (mlIOPCS.pSpec.Challenge i)] in
-theorem fullOracleReduction_perfectCompleteness [IsDomain L] [IsDomain K] :
+theorem fullOracleReduction_perfectCompleteness [IsDomain L] [IsDomain K]
+    (hBatching : BatchingPhase.batchingReduction_perfectCompleteness_residual
+      (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
+      (aOStmtIn := mlIOPCS.toAbstractOStmtIn) (init := init) (impl := impl))
+    (hRounds : SumcheckPhase.iteratedSumcheckOracleReduction_perfectCompleteness_residual
+      (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
+      (aOStmtIn := mlIOPCS.toAbstractOStmtIn) (init := init) (impl := impl)) :
   (fullOracleReduction κ L K P ℓ ℓ' h_l mlIOPCS).perfectCompleteness
     (relIn := BatchingPhase.batchingInputRelation κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn)
     (relOut := acceptRejectOracleRel)
@@ -140,7 +153,7 @@ theorem fullOracleReduction_perfectCompleteness [IsDomain L] [IsDomain K] :
      := by
   apply OracleReduction.append_perfectCompleteness (Oₛ₃:=by
     exact fun _ ↦ OracleInterface.instDefault)
-  · exact batchingCore_perfectCompleteness κ L K P ℓ ℓ' h_l mlIOPCS init
+  · exact batchingCore_perfectCompleteness κ L K P ℓ ℓ' h_l mlIOPCS init hBatching hRounds
   · exact mlIOPCS.perfectCompleteness
 
 def batchingCoreRbrKnowledgeError

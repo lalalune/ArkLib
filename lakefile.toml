@@ -14,8 +14,8 @@ linter.style.longFile = 1500
 
 [[require]]
 name = "VCVio"
-git = "https://github.com/Verified-zkEVM/VCV-io"
-rev = "f85df0b4ec3ef4249876996da28a07c38e9137c2"
+git = "https://github.com/lalalune/VCV-io"
+rev = "b87119da538df85375ab4893a5535ec76dcbcd41"
 
 [[require]]
 name = "«doc-gen4»"
@@ -29,7 +29,8 @@ rev = "lean4.18.0"
 
 [[require]]
 name = "CompPoly"
-path = "../CompPoly"
+git = "https://github.com/lalalune/CompPoly"
+rev = "14ff20a0c9212d520844e07a3630861894bed7d6"
 
 [[lean_lib]]
 name = "ArkLib"

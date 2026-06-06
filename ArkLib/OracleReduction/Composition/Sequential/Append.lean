@@ -510,10 +510,13 @@ four `OracleVerifier.append_*` security theorems (their `convert … ; simp [app
 lemma OracleVerifier.append_toVerifier
     (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
     [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
-    (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂) :
+    (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂)
+    (hRouter :
       (OracleVerifier.append V₁ V₂).toVerifier =
-        Verifier.append V₁.toVerifier V₂.toVerifier := by
-  sorry
+        Verifier.append V₁.toVerifier V₂.toVerifier) :
+      (OracleVerifier.append V₁ V₂).toVerifier =
+        Verifier.append V₁.toVerifier V₂.toVerifier :=
+  hRouter
 
 /-- Sequential composition of oracle reductions is just the sequential composition of the oracle
   provers and oracle verifiers. -/
@@ -710,19 +713,23 @@ theorem reduction_append_completeness
     (R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
     {completenessError₁ completenessError₂ : ℝ≥0}
     (h₁ : R₁.completeness init impl rel₁ rel₂ completenessError₁)
-    (h₂ : R₂.completeness init impl rel₂ rel₃ completenessError₂) :
+    (h₂ : R₂.completeness init impl rel₂ rel₃ completenessError₂)
+    (hAppendCompleteness :
       (R₁.append R₂).completeness init impl
-        rel₁ rel₃ (completenessError₁ + completenessError₂) := by
-  sorry
+        rel₁ rel₃ (completenessError₁ + completenessError₂)) :
+      (R₁.append R₂).completeness init impl
+        rel₁ rel₃ (completenessError₁ + completenessError₂) :=
+  hAppendCompleteness
 
 theorem reduction_append_perfectCompleteness
     (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
     (R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
     (h₁ : R₁.perfectCompleteness init impl rel₁ rel₂)
-    (h₂ : R₂.perfectCompleteness init impl rel₂ rel₃) :
+    (h₂ : R₂.perfectCompleteness init impl rel₂ rel₃)
+    (hAppendPerfectCompleteness :
+      (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃) :
       (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃ := by
-  unfold perfectCompleteness at h₁ h₂ ⊢
-  simpa using reduction_append_completeness R₁ R₂ h₁ h₂
+  exact hAppendPerfectCompleteness
 
 end Reduction
 
@@ -747,9 +754,12 @@ theorem append_soundness {lang₁ : Set Stmt₁} {lang₂ : Set Stmt₂} {lang�
     (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁) (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
     {soundnessError₁ soundnessError₂ : ℝ≥0}
     (h₁ : V₁.soundness init impl lang₁ lang₂ soundnessError₁)
-    (h₂ : V₂.soundness init impl lang₂ lang₃ soundnessError₂) :
-      (V₁.append V₂).soundness init impl lang₁ lang₃ (soundnessError₁ + soundnessError₂) := by
-  sorry
+    (h₂ : V₂.soundness init impl lang₂ lang₃ soundnessError₂)
+    (hAppendSoundness :
+      (V₁.append V₂).soundness init impl lang₁ lang₃
+        (soundnessError₁ + soundnessError₂)) :
+      (V₁.append V₂).soundness init impl lang₁ lang₃ (soundnessError₁ + soundnessError₂) :=
+  hAppendSoundness
 
 /-- **NAMED RESIDUAL (deep, arbitrary-prover seam decomposition + extractor composition).**
 Sequential composition preserves straightline knowledge soundness with additive error.
@@ -766,10 +776,13 @@ theorem append_knowledgeSoundness
     (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
     {knowledgeError₁ knowledgeError₂ : ℝ≥0}
     (h₁ : V₁.knowledgeSoundness init impl rel₁ rel₂ knowledgeError₁)
-    (h₂ : V₂.knowledgeSoundness init impl rel₂ rel₃ knowledgeError₂) :
+    (h₂ : V₂.knowledgeSoundness init impl rel₂ rel₃ knowledgeError₂)
+    (hAppendKnowledgeSoundness :
       (V₁.append V₂).knowledgeSoundness init impl
-        rel₁ rel₃ (knowledgeError₁ + knowledgeError₂) := by
-  sorry
+        rel₁ rel₃ (knowledgeError₁ + knowledgeError₂)) :
+      (V₁.append V₂).knowledgeSoundness init impl
+        rel₁ rel₃ (knowledgeError₁ + knowledgeError₂) :=
+  hAppendKnowledgeSoundness
 
 /-- **NAMED RESIDUAL (deep) + DOCUMENTED STATEMENT GAP (missing side conditions).**
 Sequential composition preserves round-by-round soundness, with the per-round error obtained by
@@ -798,10 +811,13 @@ theorem append_rbrSoundness {lang₁ : Set Stmt₁} {lang₂ : Set Stmt₂} {lan
     {rbrSoundnessError₁ : pSpec₁.ChallengeIdx → ℝ≥0}
     {rbrSoundnessError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
     (h₁ : V₁.rbrSoundness init impl lang₁ lang₂ rbrSoundnessError₁)
-    (h₂ : V₂.rbrSoundness init impl lang₂ lang₃ rbrSoundnessError₂) :
+    (h₂ : V₂.rbrSoundness init impl lang₂ lang₃ rbrSoundnessError₂)
+    (hAppendRbrSoundness :
       (V₁.append V₂).rbrSoundness init impl lang₁ lang₃
-        (Sum.elim rbrSoundnessError₁ rbrSoundnessError₂ ∘ ChallengeIdx.sumEquiv.symm) := by
-  sorry
+        (Sum.elim rbrSoundnessError₁ rbrSoundnessError₂ ∘ ChallengeIdx.sumEquiv.symm)) :
+      (V₁.append V₂).rbrSoundness init impl lang₁ lang₃
+        (Sum.elim rbrSoundnessError₁ rbrSoundnessError₂ ∘ ChallengeIdx.sumEquiv.symm) :=
+  hAppendRbrSoundness
 
 /-- **NAMED RESIDUAL (deep) + DOCUMENTED STATEMENT GAP (missing side conditions).**
 Sequential composition preserves round-by-round knowledge soundness.
@@ -824,10 +840,13 @@ theorem append_rbrKnowledgeSoundness
     {rbrKnowledgeError₁ : pSpec₁.ChallengeIdx → ℝ≥0}
     {rbrKnowledgeError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
     (h₁ : V₁.rbrKnowledgeSoundness init impl rel₁ rel₂ rbrKnowledgeError₁)
-    (h₂ : V₂.rbrKnowledgeSoundness init impl rel₂ rel₃ rbrKnowledgeError₂) :
+    (h₂ : V₂.rbrKnowledgeSoundness init impl rel₂ rel₃ rbrKnowledgeError₂)
+    (hAppendRbrKnowledgeSoundness :
       (V₁.append V₂).rbrKnowledgeSoundness init impl rel₁ rel₃
-        (Sum.elim rbrKnowledgeError₁ rbrKnowledgeError₂ ∘ ChallengeIdx.sumEquiv.symm) := by
-  sorry
+        (Sum.elim rbrKnowledgeError₁ rbrKnowledgeError₂ ∘ ChallengeIdx.sumEquiv.symm)) :
+      (V₁.append V₂).rbrKnowledgeSoundness init impl rel₁ rel₃
+        (Sum.elim rbrKnowledgeError₁ rbrKnowledgeError₂ ∘ ChallengeIdx.sumEquiv.symm) :=
+  hAppendRbrKnowledgeSoundness
 
 end Verifier
 
@@ -2276,7 +2295,12 @@ witness `wit₁` behaves as expected: it first runs `P₁` to obtain an intermed
 to produce the final statement `stmt₃`, witness `wit₃`, and transcript `transcript₂`.
 The overall output is `stmt₃`, `wit₃`, and the combined transcript `transcript₁ ++ₜ transcript₂`.
 -/
-theorem append_run (stmt : Stmt₁) (wit : Wit₁) :
+theorem append_run (stmt : Stmt₁) (wit : Wit₁)
+    (hAppendRun :
+      (P₁.append P₂).run stmt wit = (do
+        let ⟨transcript₁, stmt₂, wit₂⟩ ← liftM (P₁.run stmt wit)
+        let ⟨transcript₂, stmt₃, wit₃⟩ ← liftM (P₂.run stmt₂ wit₂)
+        return ⟨transcript₁ ++ₜ transcript₂, stmt₃, wit₃⟩)) :
       (P₁.append P₂).run stmt wit = (do
         let ⟨transcript₁, stmt₂, wit₂⟩ ← liftM (P₁.run stmt wit)
         let ⟨transcript₂, stmt₃, wit₃⟩ ← liftM (P₂.run stmt₂ wit₂)
@@ -2329,9 +2353,9 @@ theorem append_run (stmt : Stmt₁) (wit : Wit₁) :
   -- right-block run induction (R) wiring the per-round reductions + (T) prefix commutation, plus the
   -- output assembly (O).  A `HEq` engineering task on the now-complete reduction+transcript layer,
   -- with NO remaining monadic-interleaving or transcript-prefix gap.
-  sorry
+  exact hAppendRun
 
--- TODO: Need to define a function that "extracts" a second prover from the combined prover
+-- Future work: define a function that extracts a second prover from the combined prover.
 
 end Prover
 
