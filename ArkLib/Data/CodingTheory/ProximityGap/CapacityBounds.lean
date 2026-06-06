@@ -687,32 +687,6 @@ def rs_epsCA_breakdown_cs25
   -- RS-ball-count bridge (absent; qEntropy is defined but unconnected to hammingBallVolume /
   -- RS code counts). Genuinely external.
 
-/-- **Covering ⟹ complete CA breakdown (deterministic step toward #82 / CS25 T4.17).**
-
-If some stack `u` is *not* jointly `δ`-close to `C`, yet **every** point of its affine line
-`u 0 + γ • u 1` is `δ`-close to `C`, then `ε_ca(C, δ, δ) = 1` (its nontrivial `≥ 1` half).
-
-This isolates the genuine remaining content of the CS25 breakdown lower bound
-(`rs_epsCA_breakdown_cs25_entropyBallLowerWitness`) as the *covering* fact "the whole random
-line lands in the `δ`-neighbourhood of `C`", cleanly separated from the `epsCA`-supremum
-mechanics: the term at `u` is `Pr_γ[δᵣ(u 0 + γ • u 1, C) ≤ δ] = 1` (the event holds for every
-`γ` since the uniform sample over `F` never fails and has full support), so the supremum is
-`≥ 1`. The remaining #82 work is therefore exactly to exhibit, in the entropy band, a
-non-jointly-close stack whose line is fully covered (CS25's probabilistic covering argument over
-the size-`n` subset sample space), feeding the already-proven entropy/ball-count input
-`linear_lambda_ge_entropy_volume`. -/
-theorem epsCA_ge_one_of_line_covered
-    (C : Set (ι → F)) (δ : ℝ≥0) (u : WordStack (A := F) (Fin 2) ι)
-    (hu : ¬ Code.jointProximity (A := F) C (u := u) δ)
-    (hcover : ∀ γ : F, δᵣ(u 0 + γ • u 1, C) ≤ δ) :
-    1 ≤ ProximityGap.epsCA (F := F) (A := F) C δ δ := by
-  classical
-  refine le_trans ?_ (le_iSup _ u)
-  rw [if_neg hu, one_le_probEvent_iff, probEvent_eq_one_iff]
-  refine ⟨by simp, ?_⟩
-  intro γ _
-  exact hcover γ
-
 /-- The hard lower-bound half of CS25 complete CA breakdown.
 
 This is the current epsCA-facing target for the missing qEntropy/RS-ball-count argument:
