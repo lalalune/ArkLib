@@ -1,0 +1,10 @@
+import ArkLib.ProofSystem.ToyProblem.SoundnessBounds
+
+open ToyProblem
+
+#print axioms simplified_iop_soundness_listDecoding_lb
+#print axioms simplified_iop_listDecoding_lb_of_winningChallenges
+#print axioms winningChal_mem_winningSet
+#print axioms winningSet_ncard_ge_of_inj
+#print axioms winningSet_card_ge_of_inj
+#print axioms listDecoding_lb_le_listSize
