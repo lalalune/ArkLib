@@ -610,3 +610,41 @@ theorem BCSCompilerFrontierReady.ofOpeningLogBridge {StmtMid WitMid : Type}
   refactor. -/
 
 end OracleReduction
+
+/-! ## Axiom audit — BCS transform/frontier declarations.
+
+These lines are regression anchors for the current interface boundary only. They do not prove the
+generic compiler construction or the completeness/soundness preservation theorems. -/
+#print axioms ProtocolSpec.renameMessage
+#print axioms ProtocolSpec.BCSOpeningPhase
+#print axioms ProtocolSpec.BCSTransform
+#print axioms Reduction.bcsMessageOpening
+#print axioms OracleReduction.BCSTransform
+#print axioms OracleReduction.BCSCompiledPhases
+#print axioms OracleReduction.BCSOpeningRequest
+#print axioms OracleReduction.BCSOpeningSchedule
+#print axioms OracleReduction.BCSOpeningLogFrontier
+#print axioms OracleReduction.BCSOpeningLogFrontierSatisfied
+#print axioms OracleReduction.BCSOpeningLogFrontierSatisfied.intro
+#print axioms OracleReduction.BCSOpeningLogFrontierSatisfied.queryLog
+#print axioms OracleReduction.BCSOpeningLogFrontierSatisfied.retainedWitnesses
+#print axioms OracleReduction.BCSOpeningLogBridge
+#print axioms OracleReduction.BCSCompiledPhases.toReduction
+#print axioms OracleReduction.BCSPhaseRealizationFrontier
+#print axioms OracleReduction.BCSPhaseRealizationFrontier.interaction
+#print axioms OracleReduction.BCSPhaseRealizationFrontier.opening
+#print axioms OracleReduction.BCSPhaseRealizationFrontier.ofOpeningLogBridge
+#print axioms OracleReduction.BCSCompiledPhases.toReduction_eq_BCSTransform
+#print axioms OracleReduction.BCSSecurityFrontier
+#print axioms OracleReduction.BCSCompilerFrontierSatisfied
+#print axioms OracleReduction.BCSCompilerFrontierSatisfied.interaction_realizes_oracle_messages
+#print axioms OracleReduction.BCSCompilerFrontierSatisfied.opening_realizes_query_log
+#print axioms OracleReduction.BCSCompilerFrontierSatisfied.commitment_correctness_available
+#print axioms OracleReduction.BCSCompilerFrontierSatisfied.commitment_binding_or_extractability_available
+#print axioms OracleReduction.BCSCompilerFrontierSatisfied.completeness_preservation_target
+#print axioms OracleReduction.BCSCompilerFrontierSatisfied.soundness_preservation_target
+#print axioms OracleReduction.BCSCompilerFrontierSatisfied.knowledge_soundness_preservation_target
+#print axioms OracleReduction.BCSCompilerFrontierReady
+#print axioms OracleReduction.BCSCompilerFrontierReady.intro
+#print axioms OracleReduction.BCSCompilerFrontierReady.phase
+#print axioms OracleReduction.BCSCompilerFrontierReady.ofOpeningLogBridge
