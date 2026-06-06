@@ -8,8 +8,10 @@ Scope:
 - `origin/completeness-of-binius`
 - `origin/soundness-binarybasefold`
 - `origin/binarybasefold-proofs`
+- `origin/tensor-algebra`
 - `ArkLib/ProofSystem/Binius/**`
 - `ArkLib/Data/FieldTheory/AdditiveNTT/**`
+- `ArkLib/Data/FieldTheory/BinaryField/Tower/TensorAlgebra.lean`
 
 ## Result
 
@@ -36,6 +38,20 @@ related files.
 `origin/soundness-binarybasefold` and `origin/binarybasefold-proofs` are also not mergeable. They
 still contain live `sorry` bodies and `stop` commands in AdditiveNTT, BinaryBasefold, Steps,
 Spec, QueryPhase, and RingSwitching files. They should be treated as old proof sketches only.
+
+`origin/tensor-algebra` has useful historical tensor-product and binary-tower material, but the
+salvage already happened in the dependency layer. Current `main` keeps
+`ArkLib/Data/FieldTheory/BinaryField/Tower/TensorAlgebra.lean` as a compatibility re-export of
+`CompPoly.Fields.Binary.Tower.TensorAlgebra`, and the current CompPoly file contains the branch's
+key standalone declarations:
+
+- `comm_map_smul_tmul`;
+- `commSEquiv`;
+- `Basis.baseChangeRight`;
+- `Basis.baseChangeRight_repr_tmul`;
+- `Basis.baseChangeRight_apply`.
+
+Do not duplicate that code back into ArkLib unless the dependency strategy changes.
 
 `origin/completeness-of-binius` is the highest-value reference branch. It has proof bodies for:
 
