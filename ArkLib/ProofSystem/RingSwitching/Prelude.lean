@@ -1770,6 +1770,27 @@ theorem probEvent_eval_eq_degree_two_le {L : Type} [CommRing L] [IsDomain L]
   exact probEvent_eval_eq_le p q hpq 2
     (le_trans (Polynomial.natDegree_sub_le p q) (max_le hp hq))
 
+/-- **Degree-2 bad-agreement event bound for weakened KState (issue #29).**
+This is the exact doom-escape event described by the weakened KState design: the prover's round
+polynomial is not the ground truth, but both agree at the verifier's fresh challenge. -/
+theorem probEvent_badAgreement_degree_two_le {L : Type} [CommRing L] [IsDomain L]
+    [Fintype L] [DecidableEq L] [SampleableType L]
+    (p q : L[X]) (hp : p.natDegree ≤ 2) (hq : q.natDegree ≤ 2) :
+    Pr[fun x => p ≠ q ∧ p.eval x = q.eval x | ($ᵗ L)] ≤
+      (2 : ENNReal) / (Fintype.card L) := by
+  by_cases hpq : p = q
+  · rw [probEvent_uniformSample]
+    have hfilter :
+        (Finset.univ.filter (fun x => p ≠ q ∧ p.eval x = q.eval x)) = ∅ := by
+      apply Finset.filter_false_of_mem
+      intro x _ hbad
+      exact hbad.1 hpq
+    rw [hfilter]
+    simp
+  · exact le_trans
+      (probEvent_mono (mx := ($ᵗ L)) (fun _ _ hbad => hbad.2))
+      (probEvent_eval_eq_degree_two_le p q hpq hp hq)
+
 end SchwartzZippelRootBound
 
 end RingSwitching
