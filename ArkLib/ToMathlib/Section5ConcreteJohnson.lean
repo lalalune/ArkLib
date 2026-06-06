@@ -139,9 +139,10 @@ noncomputable def claim57Residuals_of_gsInterpolant
 
 /-! ## The matching `GSFactorData.Bundle` from the same interpolant (keystone branch head)
 
-For the keystone branch the same GS interpolant produces the R/H factorization `Bundle`.  We re-expose
-`GSFactorData.of_section5Inputs` here under a name that pairs with the Johnson assembler above, so the
-top-level §5 concrete assembler can produce both branch heads from one `h_gs`.  (This is a thin
+For the keystone branch the same GS interpolant produces the R/H factorization `Bundle`.  We
+re-expose `GSFactorData.of_section5Inputs` here under a name that pairs with the Johnson
+assembler above, so the top-level §5 concrete assembler can produce both branch heads from
+one `h_gs`.  (This is a thin
 re-export — `of_section5Inputs` is already PROVEN in `GSFactorData.lean`.) -/
 
 noncomputable def gsFactorBundle_of_gsInterpolant
@@ -171,8 +172,9 @@ noncomputable def gsFactorBundle_of_gsInterpolant
 
 /-! ## Paired §5 heads from one GS interpolant
 
-The Johnson branch (`Claim57Residuals`) and keystone branch (`GSFactorData.Bundle`) are produced from
-the same GS interpolant and specialization side conditions.  This paired wrapper keeps the two heads
+The Johnson branch (`Claim57Residuals`) and keystone branch (`GSFactorData.Bundle`) are
+produced from the same GS interpolant and specialization side conditions.  This paired
+wrapper keeps the two heads
 together for later top-level §5 assemblers. -/
 
 /-- **Both concrete §5 heads from the same GS interpolant.**

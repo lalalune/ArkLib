@@ -25,8 +25,8 @@ Boolean hypercube $\mathbb{F}_2^k$ (embedded into a ring $R$) coincide with poin
   to the hypercube defined in `SumcheckDomain`.
 * `sum_boolDomain_cube`: Reindexes a summation over the embedding of the Boolean hypercube
   as a direct sum over the index set `Fin k → Fin 2`.
-* `MLE_eval_boolEmbedding`: Evaluates the multilinear extension of a function $A : \mathbb{F}_2^k \to R$
-  at a Boolean point, yielding the function value $A(b)$.
+* `MLE_eval_boolEmbedding`: Evaluates the multilinear extension of a function
+  $A : \mathbb{F}_2^k \to R$ at a Boolean point, yielding the function value $A(b)$.
 * `sum_cube_MLE_mul_MLE`: Proves that the summation over the Boolean cube of the product of two
   multilinear extensions equals the pointwise inner product of their coefficient vectors.
 * `sum_cube_MLE_mul`: Evaluates the sum of the product of a multilinear extension and an

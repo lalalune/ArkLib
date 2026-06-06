@@ -346,7 +346,9 @@ theorem erdos_heilbronn_two {p : ℕ} (hp : p.Prime) (hchar : ringChar F = p)
     2 * (A.card - 2) + 1 ≤ (restrictedSumset2 A).card := by
   classical
   set n := A.card with hncard
-  /- For the base case $n = 2$, the bound reduces to $1 \le |\Sigma_2(A)|$, which holds since $A$ has cardinality 2, implying there exists at least one pair of distinct elements whose sum is in $\Sigma_2(A)$. -/
+  /- For the base case $n = 2$, the bound reduces to $1 \le |\Sigma_2(A)|$, which holds
+     since $A$ has cardinality 2, implying there exists at least one pair of distinct
+     elements whose sum is in $\Sigma_2(A)$. -/
   rcases Nat.lt_or_ge n 3 with hlt | hge
   · -- Case $n = 2$.
     have hn2 : n = 2 := by omega
@@ -363,7 +365,8 @@ theorem erdos_heilbronn_two {p : ℕ} (hp : p.Prime) (hchar : ringChar F = p)
     push Not at hcon
     have hle : (restrictedSumset2 A).card ≤ 2 * (n - 2) := by omega
     set m := 2 * (n - 2) with hm
-    /- Since $p \le |F|$ and $m < p$, we have $m < |F|$, allowing us to pad the restricted sumset to a set of size $m$. -/
+    /- Since $p \le |F|$ and $m < p$, we have $m < |F|$, allowing us to pad the restricted
+       sumset to a set of size $m$. -/
     have hp_le_card : p ≤ Fintype.card F := by
       haveI : Fact p.Prime := ⟨hp⟩
       have hdvd : p ∣ Fintype.card F := by
@@ -394,7 +397,8 @@ theorem erdos_heilbronn_two {p : ℕ} (hp : p.Prime) (hchar : ringChar F = p)
         rw [← Finset.sum_subset (Finset.subset_univ t.support)
           (fun i _ hi => Finsupp.notMem_support_iff.mp hi)]
         exact MvPolynomial.le_totalDegree (p := f) hmem
-    -- Confirm that the degree of the monomial $t$ in each variable $X_i$ is strictly less than $|A| = n$.
+    -- Confirm that the degree of the monomial $t$ in each variable $X_i$ is strictly less
+    -- than $|A| = n$.
     set S : Fin 2 → Finset F := fun _ => A with hS
     have htS : ∀ i, t i < (S i).card := by
       intro i

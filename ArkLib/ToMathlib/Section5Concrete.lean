@@ -41,8 +41,8 @@ inputs reduced to the genuine §5 geometric frontier.
 ## What stays a named residual (the true mathematical frontier)
 
 Per the honest-fallback discipline, the deepest construction steps that touch live-session-owned
-files or the deferred `L13`/`F1` drop-ins are isolated as **named hypotheses of the supplier**, never
-`sorry` and never `≡` the conclusion:
+files or the deferred `L13`/`F1` drop-ins are isolated as **named hypotheses of the
+supplier**, never `sorry` and never `≡` the conclusion:
 
 * the GS interpolant `h_gs : ModifiedGuruswami …` (Prop 5.5; satisfiable in regime via
   `modified_guruswami_has_a_solution`) and the graph side conditions `hx0`/`hsep`/`hS_nonempty`/
@@ -93,7 +93,8 @@ GS-interpolant output drive the keystone Johnson branch without re-stating the c
 /-- **`BetaCurveInputFin` from a centred GS-factor `Bundle`.**
 
 Lifts a `GSFactorData.Bundle (0 : F)` (the Appendix-A.2 curve datum produced by the GS interpolant)
-into the keystone input bundle `BetaCurveInputFin u`, by supplying the bundle's function-field fields
+into the keystone input bundle `BetaCurveInputFin u`, by supplying the bundle's
+function-field fields
 to `BetaInputSupply.betaCurveInputFin_of_section5` and carrying the remaining genuine §5 / App-A.4
 residuals as explicit arguments. -/
 noncomputable def betaCurveInputFin_of_bundle {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
@@ -151,8 +152,9 @@ the GS interpolant chain) and, per received word, the named §5 residual frontie
 
 /-- **The per-received-word `BetaCurveInputFin` supplier from a centred GS-factor `Bundle`.**
 
-For each received curve `u` satisfying the §5 regime conditions (the proximity probability bound, the
-unique-decoding lower bound, the strict square-root upper bound), produces a `BetaCurveInputFin u`
+For each received curve `u` satisfying the §5 regime conditions (the proximity probability
+bound, the unique-decoding lower bound, the strict square-root upper bound), produces a
+`BetaCurveInputFin u`
 out of the (`u`-independent) GS-factor `Bundle (0 : F)` and a per-`u` producer of the genuine §5 /
 App-A.4 residual data (numerator residual, per-point matching, weight budgets, concrete cardinality,
 algebraic-degree datum, specialisation bridge, Prop-5.5 representative).

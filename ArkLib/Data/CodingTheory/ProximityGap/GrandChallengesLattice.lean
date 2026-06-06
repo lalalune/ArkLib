@@ -1231,16 +1231,25 @@ theorem mcaThreshold_eq_top_of_epsMCA_one_le
     let top : Fin (Fintype.card ι + 1) := ⟨Fintype.card ι, Nat.lt_succ_self _⟩
     let hne : mcaThresholdExists C ε_star := ⟨top, by
       unfold mcaSatisfies
-      simpa using hone⟩
+      have h1 : mcaLatticePoint (Fintype.card ι) top = 1 := by
+        unfold mcaLatticePoint
+        exact div_self (Nat.cast_ne_zero.mpr Fintype.card_pos.ne')
+      rw [h1]
+      exact hone⟩
     mcaThreshold C ε_star hne = top := by
   classical
   let top : Fin (Fintype.card ι + 1) := ⟨Fintype.card ι, Nat.lt_succ_self _⟩
+  have h1 : mcaLatticePoint (Fintype.card ι) top = 1 := by
+    unfold mcaLatticePoint
+    exact div_self (Nat.cast_ne_zero.mpr Fintype.card_pos.ne')
   let hne : mcaThresholdExists C ε_star := ⟨top, by
     unfold mcaSatisfies
-    simpa [top] using hone⟩
+    rw [h1]
+    exact hone⟩
   have hsat : mcaSatisfies C ε_star top := by
     unfold mcaSatisfies
-    simpa [top] using hone
+    rw [h1]
+    exact hone
   have hmax : ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C ε_star i → i ≤ top := by
     intro i _hi
     rw [Fin.le_iff_val_le_val]

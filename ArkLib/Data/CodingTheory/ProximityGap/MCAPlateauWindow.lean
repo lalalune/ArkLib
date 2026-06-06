@@ -148,7 +148,7 @@ theorem capacityPred_le_succ_hyp (k : ℕ) :
     calc ((1 : ℝ≥0) - (1 - ((k : ℝ≥0) + 1) / (Fintype.card ι : ℝ≥0))) *
             (Fintype.card ι : ℝ≥0)
         ≤ (((k : ℝ≥0) + 1) / (Fintype.card ι : ℝ≥0)) * (Fintype.card ι : ℝ≥0) := by
-          exact mul_le_mul_right' h1 _
+          exact mul_le_mul_left h1 _
       _ = ((k : ℝ≥0) + 1) := by
           rw [div_mul_cancel₀]
           exact hn_pos.ne'
@@ -161,7 +161,7 @@ theorem capacityPred_le_succ_hyp (k : ℕ) :
     calc ((1 : ℝ≥0) - (1 - ((k : ℝ≥0) + 1) / (Fintype.card ι : ℝ≥0))) *
             (Fintype.card ι : ℝ≥0)
         ≤ 1 * (Fintype.card ι : ℝ≥0) := by
-          exact mul_le_mul_right' (tsub_le_self.trans le_rfl) _
+          exact mul_le_mul_left (tsub_le_self.trans le_rfl) _
       _ = (Fintype.card ι : ℝ≥0) := one_mul _
       _ ≤ ((k : ℝ≥0) + 1) := hn_le
 
