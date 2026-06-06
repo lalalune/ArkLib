@@ -431,6 +431,42 @@ theorem seqCompose_perfectCompleteness
         init impl (rel 0) (rel (Fin.last m)) :=
   hSeqComposePerfectCompleteness
 
+/-- **Brick (issue #25): n-ary `seqCompose` perfect completeness reduces to the binary `append`
+keystone.** By induction on `m`: the base case `m = 0` is the identity reduction
+(`Reduction.id_perfectCompleteness`); the inductive step unfolds `seqCompose` to a binary `append`
+of the head reduction `R 0` with the tail's `seqCompose` (`seqCompose_succ`) and discharges it with
+the binary append perfect-completeness `hAppend` together with the inductive hypothesis.
+
+`hAppend` is exactly the (universally quantified) binary append perfect-completeness statement, so
+once the binary keystone `reduction_append_perfectCompleteness` is proved unconditionally, feeding
+it as `hAppend` closes the n-ary statement. Until then, this isolates the *only* remaining content
+as the binary append case — modeled on the proven `seqCompose'_appendCoherent` induction. -/
+theorem seqCompose_perfectCompleteness_of_append {m : ℕ}
+    (Stmt : Fin (m + 1) → Type) (Wit : Fin (m + 1) → Type)
+    {n : Fin m → ℕ} {pSpec : ∀ i, ProtocolSpec (n i)}
+    [∀ i, ∀ j, SampleableType ((pSpec i).Challenge j)]
+    (R : (i : Fin m) →
+      Reduction oSpec (Stmt i.castSucc) (Wit i.castSucc) (Stmt i.succ) (Wit i.succ) (pSpec i))
+    (rel : (i : Fin (m + 1)) → Set (Stmt i × Wit i))
+    (hAppend : ∀ {S₁ W₁ S₂ W₂ S₃ W₃ : Type} {k₁ k₂ : ℕ}
+        {p₁ : ProtocolSpec k₁} {p₂ : ProtocolSpec k₂}
+        [∀ j, SampleableType (p₁.Challenge j)] [∀ j, SampleableType (p₂.Challenge j)]
+        (R₁ : Reduction oSpec S₁ W₁ S₂ W₂ p₁) (R₂ : Reduction oSpec S₂ W₂ S₃ W₃ p₂)
+        {r₁ : Set (S₁ × W₁)} {r₂ : Set (S₂ × W₂)} {r₃ : Set (S₃ × W₃)},
+        R₁.perfectCompleteness init impl r₁ r₂ → R₂.perfectCompleteness init impl r₂ r₃ →
+        (R₁.append R₂).perfectCompleteness init impl r₁ r₃)
+    (h : ∀ i, (R i).perfectCompleteness init impl (rel i.castSucc) (rel i.succ)) :
+    (seqCompose Stmt Wit R).perfectCompleteness init impl (rel 0) (rel (Fin.last m)) := by
+  induction m with
+  | zero =>
+    rw [seqCompose_zero]
+    exact Reduction.id_perfectCompleteness
+  | succ m ih =>
+    rw [seqCompose_succ]
+    exact hAppend (R 0) _ (h 0)
+      (ih (Stmt ∘ Fin.succ) (Wit ∘ Fin.succ) (fun i => R (Fin.succ i))
+        (fun i => rel (Fin.succ i)) (fun i => h (Fin.succ i)))
+
 end Reduction
 
 namespace Verifier

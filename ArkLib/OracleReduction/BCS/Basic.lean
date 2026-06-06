@@ -278,6 +278,46 @@ structure BCSOpeningLogFrontier (CommitmentType : pSpec.MessageIdx → Type) whe
   schedule_realizes_query_log : Prop
   schedule_has_retained_witnesses : Prop
 
+/-- The typed opening-log obligations needed before an abstract BCS opening phase can be read as
+faithfully discharging the source verifier's oracle queries. -/
+def BCSOpeningLogFrontierSatisfied {CommitmentType : pSpec.MessageIdx → Type}
+    (log : BCSOpeningLogFrontier (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType) : Prop :=
+  log.schedule_realizes_query_log ∧ log.schedule_has_retained_witnesses
+
+/-- Package the two opening-log obligations from their independent proof bricks. -/
+theorem BCSOpeningLogFrontierSatisfied.intro {CommitmentType : pSpec.MessageIdx → Type}
+    {log : BCSOpeningLogFrontier (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType}
+    (hQueryLog : log.schedule_realizes_query_log)
+    (hWitnesses : log.schedule_has_retained_witnesses) :
+    BCSOpeningLogFrontierSatisfied log :=
+  ⟨hQueryLog, hWitnesses⟩
+
+/-- Project the query-log realization brick from the typed opening-log frontier. -/
+theorem BCSOpeningLogFrontierSatisfied.queryLog {CommitmentType : pSpec.MessageIdx → Type}
+    {log : BCSOpeningLogFrontier (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType}
+    (h : BCSOpeningLogFrontierSatisfied log) :
+    log.schedule_realizes_query_log :=
+  h.1
+
+/-- Project the retained-witness brick from the typed opening-log frontier. -/
+theorem BCSOpeningLogFrontierSatisfied.retainedWitnesses
+    {CommitmentType : pSpec.MessageIdx → Type}
+    {log : BCSOpeningLogFrontier (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType}
+    (h : BCSOpeningLogFrontierSatisfied log) :
+    log.schedule_has_retained_witnesses :=
+  h.2
+
+/-- The remaining bridge from a discharged typed opening log to the abstract opening-phase
+realization field carried by `BCSCompiledPhases`.  The eventual generic compiler should prove this
+from the query-log API and the construction of the opening phase. -/
+def BCSOpeningLogBridge {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    (phases : BCSCompiledPhases (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) CommitmentType e)
+    (log : BCSOpeningLogFrontier (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType) : Prop :=
+  BCSOpeningLogFrontierSatisfied log → phases.opening_realizes_query_log
+
 /-- Interpret a packaged BCS compiler-frontier object as the currently available transformed
 reduction.  This is definitionally the `Reduction.append` composition used by `BCSTransform`. -/
 def BCSCompiledPhases.toReduction {StmtMid WitMid : Type}
@@ -320,6 +360,20 @@ theorem BCSPhaseRealizationFrontier.opening {StmtMid WitMid : Type}
     (h : BCSPhaseRealizationFrontier phases) :
     phases.opening_realizes_query_log :=
   h.2
+
+/-- Build the phase-realization frontier from an interaction-realization proof and a discharged
+typed opening-log frontier, provided the remaining opening-log bridge is available. -/
+theorem BCSPhaseRealizationFrontier.ofOpeningLogBridge {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    {phases : BCSCompiledPhases (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) CommitmentType e}
+    {log : BCSOpeningLogFrontier (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType}
+    (hInteraction : phases.interaction_realizes_oracle_messages)
+    (hLog : BCSOpeningLogFrontierSatisfied log)
+    (hBridge : BCSOpeningLogBridge phases log) :
+    BCSPhaseRealizationFrontier phases :=
+  ⟨hInteraction, hBridge hLog⟩
 
 /-- `BCSCompiledPhases.toReduction` is exactly the appended BCS transform on the packaged
 interaction and opening phases. This small bridge lets downstream code unfold the current compiler

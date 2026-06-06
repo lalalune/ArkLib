@@ -271,6 +271,32 @@ theorem simplifiedIOR_knowledgeSound_residual_iff
     intro _hRewinding
     exact h
 
+/-- The simplified IOR bridge residual is definitionally exactly the
+straightline-from-rewinding bridge from the proven rewinding statement to the public straightline
+knowledge-soundness target. -/
+theorem simplifiedIOR_knowledgeSound_residual_iff_bridge
+    [SampleableType F] [Nonempty ι] [Nonempty F]
+    {σ : Type} (init : ProbComp σ)
+    (impl : QueryImpl []ₒ (StateT σ ProbComp))
+    (C : Set (ι → F)) (δ : ℝ≥0)
+    (encode : (Fin k → F) → (ι → F))
+    (decode : ToyProblem.Spec.ToyPrefix ι F k → (Fin k → F) × (Fin k → F)) :
+    simplifiedIOR_knowledgeSound_residual (k := k) init impl C δ encode decode ↔
+      Extractor.Bridge.StraightlineOfRewinding
+        (Extractor.knowledgeSoundnessViaRewinding
+          (ToyProblem.Spec.outputRelation (ι := ι) (F := F) k C δ)
+          (ToyProblem.Spec.toyStmtOf (ι := ι) (F := F) (k := k))
+          (ToyProblem.Spec.toyAccepts (ι := ι) (F := F) (k := k) C δ decode))
+        ((verifier (ι := ι) (F := F) (k := k)).knowledgeSoundness
+          (WitOut := OutputWitness (F := F) k)
+          init impl
+          (ToyProblem.Spec.outputRelation (ι := ι) (F := F) k C δ)
+          (outputRelationFor (ι := ι) (F := F) k encode δ)
+          ((epsMCA (F := F) (A := F) C δ).toNNReal +
+            ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
+              / (Fintype.card F : ℝ≥0))) := by
+  rfl
+
 theorem simplifiedIOR_knowledgeSound
     [SampleableType F] [Nonempty ι] [Nonempty F]
     {σ : Type} (init : ProbComp σ)

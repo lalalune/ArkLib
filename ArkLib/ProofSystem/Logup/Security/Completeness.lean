@@ -139,6 +139,19 @@ The numerator `|Hypercube n|` is exactly the pole count bounded by `card_poleSet
 noncomputable def logupCompletenessError (F : Type) [Fintype F] (n : ℕ) : ℝ≥0 :=
   (Fintype.card (Hypercube n) : ℝ≥0) / (Fintype.card F)
 
+/-- Paper-shaped form of `probEvent_pole_le`: the outer-phase pole event is bounded by the
+same `logupCompletenessError` constant consumed by `OuterCompletenessResidual`.
+
+This is only the probabilistic front door for the outer completeness proof; it does not discharge
+the run-unfolding, sumcheck, or append-composition residuals. -/
+theorem probEvent_pole_le_logupCompletenessError (oStmt : ∀ i, OStmtIn F n M i)
+    [DecidablePred
+      (fun x : F => ∃ u : Hypercube n, x + evalOnHypercube (tableOracle oStmt) u = 0)] :
+    probEvent (uniformSample F)
+      (fun x : F => ∃ u : Hypercube n, x + evalOnHypercube (tableOracle oStmt) u = 0)
+      ≤ (logupCompletenessError F n : ℝ≥0∞) := by
+  simpa [logupCompletenessError] using (probEvent_pole_le F n M oStmt)
+
 /-- The trivial intermediate relation threaded between the outer LogUp phase and the embedded
 sumcheck (the outer phase carries no witness obligation into the sumcheck). -/
 def midRelation : Set ((StmtAfterOuter F n M params ×
