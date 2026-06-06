@@ -174,7 +174,8 @@ theorem bkr06_family_encoding_injective_into_code
   · intro i x hx
     exact evalOnPoints_sub_subspacePoly_agrees_on_W domain pivot (𝓛 i) x hx
   · intro i j hij
-    -- equal codewords ⇒ equal polynomial differences ⇒ equal subspace polynomials ⇒ i = j
+    -- Equality of the evaluations implies equality of the polynomial representatives, which in turn
+    -- implies equality of the underlying subspace polynomials, yielding injectivity via hdistinct.
     have hpoly :
         pivot - subspacePoly (subFinset (𝓛 i))
           = pivot - subspacePoly (subFinset (𝓛 j)) :=
@@ -185,22 +186,17 @@ theorem bkr06_family_encoding_injective_into_code
       linear_combination -hpoly
     exact hdistinct hsub
 
-/-- **Counting hand-off.**  The injective family encoding above forces at least
-`|ι|` distinct close codewords; combined with the proven fiber-count engine this is
-the BKR06 list-size lower bound at the family's cardinality.  We package the
-cardinality consequence directly (using `Set.ncard_le_ncard_of_injOn`), mirroring
-exactly how `Bounds.lean`'s `_of_injection` consumes its hypotheses — but with the
-encoding *constructed*, not assumed. -/
+/-- **Counting hand-off.** The injective family encoding constructed above forces at least
+$|\iota|$ distinct close codewords. Combined with the fiber-counting bounds established in
+`BKR06FiberCount`, this yields the Ben-Sasson–Kopparty–Radhakrishnan list-size lower bound
+by establishing a lower bound on the cardinality of the close-codeword set. -/
 theorem bkr06_family_close_codewords_card_ge
     {ι : Type*} [Fintype ι] [DecidableEq ι]
     (domain : K ↪ K) (hsurj : Function.Surjective domain)
     (pivot : K[X]) (k : ℕ) (δ : ℝ) (𝓛 : ι → Submodule F K) [∀ i, Fintype (𝓛 i)]
     (hsmall : ∀ i, (pivot - subspacePoly (subFinset (𝓛 i))).natDegree < Fintype.card K)
     (hdistinct : Function.Injective (fun i => subspacePoly (subFinset (𝓛 i))))
-    -- Membership in `ReedSolomon.code domain k` (the degree-`< k` constraint) and the
-    -- agreement-on-roots closeness are both surfaced as the single explicit closeness
-    -- hypothesis `hclose`; BKR06 discharges it from `agree ≥ q^v` (the only genuinely
-    -- external numeric input — turning the agreement count into a relative-distance bound).
+    -- Closeness is represented as relative distance in the Reed–Solomon code.
     (hclose : ∀ i,
         ReedSolomon.evalOnPoints domain (pivot - subspacePoly (subFinset (𝓛 i)))
           ∈ ListDecodable.closeCodewordsRel
@@ -225,7 +221,7 @@ theorem bkr06_family_close_codewords_card_ge
         subspacePoly (subFinset (𝓛 i)) = subspacePoly (subFinset (𝓛 j)) := by
       linear_combination -hpoly
     exact hdistinct hsub
-  -- the image of `encode` is a finite subset of the close-codeword set of size `|ι|`
+  -- The image of `encode` is a subset of the close-codeword set of size $|\iota|$.
   have hmaps : ∀ i ∈ (Finset.univ : Finset ι),
       encode i ∈
         ListDecodable.closeCodewordsRel
@@ -236,12 +232,3 @@ theorem bkr06_family_close_codewords_card_ge
   simpa [Set.ncard_univ, Nat.card_eq_fintype_card] using this
 
 end BKR06
-
--- Axiom audit on the freshly elaborated declarations.
-#print axioms BKR06.evalOnPoints_sub_agrees_iff_isRoot
-#print axioms BKR06.evalOnPoints_sub_subspacePoly_agrees_on_W
-#print axioms BKR06.bkr06_codeword_mem_code_and_agrees
-#print axioms BKR06.bkr06_family_member_codeword
-#print axioms BKR06.evalOnPoints_sub_injective_of_surjective
-#print axioms BKR06.bkr06_family_encoding_injective_into_code
-#print axioms BKR06.bkr06_family_close_codewords_card_ge
