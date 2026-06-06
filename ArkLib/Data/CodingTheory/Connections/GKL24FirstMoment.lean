@@ -350,3 +350,13 @@ theorem epsMCA_le_ofReal_inTree_firstMoment_card
 end Compose
 
 end ProximityGap
+
+/- Axiom audit for the GKL24 first-moment bridge surfaces.  These should remain
+kernel-clean apart from the standard Lean foundations (`propext`, `Classical.choice`,
+`Quot.sound`). -/
+#print axioms ProximityGap.GKL24FirstMomentResidual_inTree_card
+#print axioms ProximityGap.mcaBad_card_le_of_gkl24_residual
+#print axioms ProximityGap.mcaEvent_prob_le_ofReal_of_gkl24_residual
+#print axioms ProximityGap.mcaBad_card_le_t51_firstMoment_of_gkl24_residual
+#print axioms ProximityGap.epsMCA_le_ofReal_of_gkl24_residual
+#print axioms ProximityGap.epsMCA_le_ofReal_inTree_firstMoment_card

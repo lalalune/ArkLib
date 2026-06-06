@@ -925,3 +925,17 @@ theorem rs_epsCA_separation_bgks20_of_nearCertainBadLines
 end ListVsCAseparation
 
 end CodingTheory
+
+/- Axiom audit for the ABF26 T5.1 / GCXK25 front-door wrappers.  These entries cover the
+checked plumbing from per-stack/probability residuals and the GKL24 first-moment residual into
+the public T5.1 proposition. -/
+#print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_residuals
+#print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_bad_count
+#print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_of_gkl24_residual
+#print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_gkl24_firstMoment_residual
+#print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_card
+#print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_univ
+#print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25
+#print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_residuals_prop
+#print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_bad_count_prop
+#print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_gkl24_firstMoment_residual_prop
