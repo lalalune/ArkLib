@@ -1137,3 +1137,9 @@ lemma iterated_fold_preserves_BBF_Code_membership
 
 end SoundnessTools
 end Binius.BinaryBasefold
+
+/- Axiom audit for the explicit #33 BBF code-membership residual surface. -/
+#print axioms Binius.BinaryBasefold.UDRClose_of_fiberwiseClose
+#print axioms Binius.BinaryBasefold.FoldPreservesBBFCodeMembershipResidual
+#print axioms Binius.BinaryBasefold.fold_preserves_BBF_Code_membership
+#print axioms Binius.BinaryBasefold.iterated_fold_preserves_BBF_Code_membership
