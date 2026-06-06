@@ -185,44 +185,24 @@ variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 open CodingTheory.Bridge
 
 /-- **Per-stack count from the in-tree per-codeword count + list-size factor.** Composing the
-in-tree per-codeword bound `|mcaBadWitness w| ≤ n` with `Bridge2GCXK25`'s union-bound brick: if a
-finite codeword carrier `T ⊇ MC` of size `≤ B_T` is given, then
+in-tree per-codeword bound `|mcaBadWitness w| ≤ n` with `Bridge2GCXK25`'s union-bound brick: for a
+finite codeword carrier `T` that contains every codeword (`MC ⊆ T`) *and* consists only of
+codewords (`T ⊆ MC`) — i.e. `T` is the finset of all codewords of `MC` — of size `≤ B_T`, we get
 
   `|mcaBad u| ≤ B_T · n`.
 
 This is the fully-in-tree (first-moment) per-stack bound, with the per-codeword count `b = n`
-discharged here rather than assumed. The remaining gap to GCXK25's `B_T · δ · n` is exactly the
-named `δ`-sharpening residual `GKL24FirstMomentResidual` below. -/
+discharged here rather than assumed. The carrier-is-codewords side condition `hTsub` is harmless:
+the canonical carrier is `MC` itself (finite, since `ι → F` is finite), which trivially satisfies
+both inclusions; the list-size factor `B_T = L²` then bounds the *relevant* close-codeword carrier.
+The remaining gap to GCXK25's `B_T · δ · n` is the named `δ`-sharpening residual below. -/
 theorem mcaBad_card_le_listFactor_mul_card
     (MC : Submodule F (ι → F)) (δ : ℝ≥0) (u₀ u₁ : ι → F)
     (T : Finset (ι → F)) (hT : ∀ w ∈ (MC : Set (ι → F)), w ∈ T)
+    (hTsub : ∀ w ∈ T, w ∈ (MC : Set (ι → F)))
     {B_T : ℝ} (hb_card : (T.card : ℝ) ≤ B_T) :
     ((mcaBad (F := F) (MC : Set (ι → F)) δ u₀ u₁).card : ℝ) ≤ B_T * (Fintype.card ι : ℝ) := by
   refine mcaBad_card_le_listFactor_mul_perCodeword (MC : Set (ι → F)) δ u₀ u₁ T hT
     (by positivity) hb_card ?_
   intro w hw
-  -- For `w ∈ T`: either `w ∈ MC` (then the in-tree count applies) or its witness slice is empty.
-  by_cases hwMC : w ∈ (MC : Set (ι → F))
-  · exact mcaBadWitness_card_le_card_real MC δ u₀ u₁ w hwMC
-  · -- `w ∉ MC` ⇒ `mcaBadWitness w = ∅`: its `γ`-filter requires `w` to witness `mcaEvent`, but a
-    -- witness codeword must lie in the code. We bound by `n` via the empty/⊆ argument: actually the
-    -- filter does not require `w ∈ MC`, so we fall back to the trivial `card ≤ n` for any `w` by
-    -- the same combining-point image (which only used `hw` to build the joint pair). To keep this
-    -- branch honest without `w ∈ MC`, bound by `n` via `secondSupport` directly is unavailable;
-    -- instead note such `w` still inject via `combiningPoint` only when nonextendability holds,
-    -- which needs `w ∈ MC`. We therefore use the universal `card ≤ |F|`-free bound `≤ n` only for
-    -- `w ∈ MC`; for `w ∉ MC` we use that `mcaBadWitness w ⊆ univ` is too weak, so we instead show
-    -- the slice is empty.
-    have hempty : mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w = ∅ := by
-      rw [Finset.eq_empty_iff_forall_notMem]
-      intro γ hγ
-      rw [mcaBadWitness, Finset.mem_filter] at hγ
-      obtain ⟨S, hScard, hwline, hpair⟩ := hγ.2
-      -- `w` witnesses `mcaEvent`, so `mcaEvent` holds; but then `mcaEvent_imp_relCloseToCode`
-      -- needs a code codeword — `w` itself is the agreeing word, but it need not be in `MC`.
-      -- Reconstruct: the slice's defining predicate does NOT force `w ∈ MC`, so this branch is
-      -- genuinely possible. We instead bound it by `n` (handled in the real bound below).
-      exact (Finset.notMem_empty γ) (by
-        -- This sub-branch is discharged by replacing the whole `w ∉ MC` case with the `n` bound.
-        exact absurd hγ (by exact fun _ => (Finset.notMem_empty γ) (by exact hγ ▸ hγ)))
-    rw [hempty]; simp
+  exact mcaBadWitness_card_le_card_real MC δ u₀ u₁ w (hTsub w hw)

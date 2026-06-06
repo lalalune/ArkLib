@@ -35,8 +35,8 @@ theorem support_liftComp {τ : Type} {superSpec : OracleSpec τ} {α : Type}
       rw [OracleComp.liftComp_bind, OracleComp.liftComp_query]
       ext y
       simp only [support_bind, Set.mem_iUnion, support_map, Set.mem_image,
-        OracleComp.support_liftM, Set.mem_range, OracleQuery.cont_query, OracleQuery.input_query,
-        exists_exists_eq_and, ih]
+        OracleComp.support_query, Set.mem_univ, true_and, exists_eq, exists_const,
+        OracleQuery.cont_query, OracleQuery.input_query, id_eq, ih]
 
 end OracleComp
 
