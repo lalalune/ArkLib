@@ -1,0 +1,193 @@
+/-
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
+
+import ArkLib.Data.CodingTheory.ProximityGap.MCAGS
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges
+
+/-!
+# Reducing the GS-exposed Grand MCA conjecture to a named list-decoding bound (Issue #52)
+
+`MCAGS.lean` builds the GS-exposed MCA framework and proves its UDR floor (Steps 1–3), but
+leaves the prize-range statement `epsMCAgs_prizeBound_conjecture` as a bare named `Prop`:
+its proof *is* the open beyond-UDR GS list-decoder mass bound. The mass bound stays open.
+
+This file does the honest, closeable work the issue asks for:
+
+1. **Reduce the conjecture to a precisely-named GS list-decoding theorem.**
+   `epsMCAgsMassBound` names the per-stack beyond-UDR content (each stack's GS-row bad-`γ`
+   probability is within the prize RHS), and `epsMCAgs_prizeBound_of_massBound` proves the
+   conjecture's existential follows from it by the supremum plumbing. The open content is now
+   one explicit hypothesis, not a `sorry`.
+
+2. **Connect the proven Step-3 count to the error.** `MCAGS.gsList_bad_gamma_bound` (the
+   `|L|`-pinning of bad `γ`) was proved in isolation; `epsMCAgs_le_listSize_div_of_pivotCovering`
+   wires it into an actual `epsMCAgs ≤ |L|/q` bound under the GS-row *pivot-covering* condition
+   (each stack has a `u₁`-active coordinate lying in every GS-row bad `γ`'s witness set — the
+   shape a genuine GS decoder produces). This makes the mass bound a consequence of a
+   list-size + coverage statement, the precisely-named external GS theorem.
+
+3. **Connect to the `GrandChallenges` lower-witness API.** `MCALowerWitness.ofGSMassBound`:
+   when a faithful GS family makes `epsMCAgs = epsMCA` (the faithfulness hypothesis, supplied
+   in UDR by the singleton bridge) and the mass bound clears `ε*`, the radius is a verified
+   `MCALowerWitness` for the actual Grand MCA Challenge.
+
+Everything here is `sorry`-free plumbing; the genuinely open prize content is isolated into the
+explicit hypotheses (`epsMCAgsMassBound`, the pivot-covering family, the faithfulness equality).
+
+## References
+
+- [ABF26] §1 Grand MCA Challenge; §4.3.
+-/
+
+set_option linter.unusedFintypeInType false
+set_option linter.unusedDecidableInType false
+set_option linter.unusedSectionVars false
+
+namespace ProximityGap
+
+open NNReal Code
+open scoped ProbabilityTheory BigOperators
+
+namespace MCAGS
+
+variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
+
+/-! ## Step 1: the named per-stack mass bound, and the conjecture reduction -/
+
+/-- **The beyond-UDR GS-row mass bound, as a named per-stack hypothesis.** For each line
+stack `u`, the GS-row bad-`γ` probability against the stack's GS list `L u` is within the
+target `bound`. This is exactly the per-instance shape a GS list decoder proves; the
+conjecture's supremum form is its `iSup`. -/
+def epsMCAgsMassBound (C : Set (ι → F)) (δ : ℝ≥0)
+    (L : WordStack F (Fin 2) ι → Finset (ι → F)) (bound : ENNReal) : Prop :=
+  ∀ u : WordStack F (Fin 2) ι,
+    Pr_{let γ ← $ᵖ F}[mcaEventGSrow (L u) C δ (u 0) (u 1) γ] ≤ bound
+
+/-- **The mass bound bounds the GS-exposed error.** `epsMCAgs` is the supremum of the
+per-stack GS-row probabilities, so a uniform per-stack bound bounds it. -/
+theorem epsMCAgs_le_of_massBound (C : Set (ι → F)) (δ : ℝ≥0)
+    (L : WordStack F (Fin 2) ι → Finset (ι → F)) {bound : ENNReal}
+    (h : epsMCAgsMassBound (F := F) C δ L bound) :
+    epsMCAgs (F := F) C δ L ≤ bound := by
+  unfold epsMCAgs
+  exact iSup_le h
+
+/-- **Reduction of the GS-exposed prize conjecture to the named mass bound (Issue #52 ask 2).**
+Given constants `c₁, c₂, c₃` for which the per-stack GS-row mass bound holds at the prize RHS,
+the conjecture `epsMCAgs_prizeBound_conjecture` follows. The open beyond-UDR content is now the
+single explicit hypothesis `hMass`; the rest is the supremum plumbing. -/
+theorem epsMCAgs_prizeBound_of_massBound
+    (domain : ι ↪ F) (j : Fin 4) (m : ℕ) (η δ : ℝ≥0) (hη : 0 < η)
+    (L : WordStack F (Fin 2) ι → Finset (ι → F))
+    (hδ : (δ : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η : ℝ))
+    (c₁ c₂ c₃ : ℝ)
+    (hMass : epsMCAgsMassBound (F := F)
+      ((ReedSolomon.code (domain := domain)
+        ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)))
+      δ L
+      (ENNReal.ofReal
+        (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j) η c₁ c₂ c₃))) :
+    epsMCAgs_prizeBound_conjecture domain j m η δ hη L hδ := by
+  refine ⟨c₁, c₂, c₃, ?_⟩
+  exact epsMCAgs_le_of_massBound _ _ _ hMass
+
+/-! ## Step 2: the Step-3 count, wired into an `epsMCAgs` bound
+
+`gsList_bad_gamma_bound` pins the bad `γ` by `|L|`, but only under the *pivot-covering*
+condition: a `u₁`-active coordinate `x` lying in every bad `γ`'s witness set. We package that
+condition per stack and turn the count into a probability bound. -/
+
+open Classical in
+/-- **Per-stack pivot covering.** Stack `u` has a `u₁`-active coordinate `x` such that every
+GS-row bad `γ` carries a list codeword matching the line at `x`. This is the hypothesis under
+which the per-`γ` count collapses to the sharp `|L|` (rather than `|L|²·d`); a genuine GS
+decoder over the affine pivot produces exactly this. -/
+def PivotCovering (C : Set (ι → F)) (δ : ℝ≥0)
+    (L : WordStack F (Fin 2) ι → Finset (ι → F)) (u : WordStack F (Fin 2) ι) : Prop :=
+  ∃ x : ι, u 1 x ≠ 0 ∧
+    ∀ γ : F, mcaEventGSrow (L u) C δ (u 0) (u 1) γ →
+      ∃ w ∈ L u, w x = u 0 x + γ * u 1 x
+
+open Classical in
+/-- **Step-3 count ⟹ per-stack probability bound.** Under pivot covering, the GS-row bad-`γ`
+probability is at most `|L u| / q`. Wires `gsList_bad_gamma_bound` (the `|L|`-pinning) into the
+probability. -/
+theorem mcaEventGSrow_prob_le_listSize_div (C : Set (ι → F)) (δ : ℝ≥0)
+    (L : WordStack F (Fin 2) ι → Finset (ι → F)) (u : WordStack F (Fin 2) ι)
+    (hcov : PivotCovering (F := F) C δ L u) :
+    Pr_{let γ ← $ᵖ F}[mcaEventGSrow (L u) C δ (u 0) (u 1) γ] ≤
+      ((L u).card : ENNReal) / (Fintype.card F : ENNReal) := by
+  classical
+  obtain ⟨x, hx, hcover⟩ := hcov
+  rw [prob_uniform_eq_card_filter_div_card]
+  set S := Finset.univ.filter (fun γ : F => mcaEventGSrow (L u) C δ (u 0) (u 1) γ) with hS
+  -- bad-`γ` set injects into the list via the pivot pinning
+  have hScard : S.card ≤ (L u).card := by
+    refine gsList_bad_gamma_bound (L u) (u 0) (u 1) x hx S ?_
+    intro γ hγ
+    rw [hS, Finset.mem_filter] at hγ
+    exact hcover γ hγ.2
+  have hden : (↑(↑(Fintype.card F) : ℝ≥0) : ENNReal) = (↑(Fintype.card F) : ENNReal) := by
+    push_cast; rfl
+  rw [hden]
+  gcongr
+  exact_mod_cast hScard
+
+open Classical in
+/-- **Step 2 packaged (Issue #52 ask 2): `epsMCAgs ≤ ℓ/q` from a uniform list-size + covering.**
+If every stack is pivot-covered and its GS list has size `≤ ℓ`, then the GS-exposed error is at
+most `ℓ/q`. This is the GS list-decoder error bound, now a genuine consequence of the proven
+Step-3 count — the file previously left them disconnected. -/
+theorem epsMCAgs_le_listSize_div_of_pivotCovering (C : Set (ι → F)) (δ : ℝ≥0)
+    (L : WordStack F (Fin 2) ι → Finset (ι → F)) (ℓ : ℕ)
+    (hcov : ∀ u, PivotCovering (F := F) C δ L u)
+    (hsize : ∀ u, (L u).card ≤ ℓ) :
+    epsMCAgs (F := F) C δ L ≤ (ℓ : ENNReal) / (Fintype.card F : ENNReal) := by
+  unfold epsMCAgs
+  refine iSup_le fun u => ?_
+  refine le_trans (mcaEventGSrow_prob_le_listSize_div C δ L u (hcov u)) ?_
+  gcongr
+  exact_mod_cast hsize u
+
+/-- **Mass bound from list-size + covering.** Combines the previous bound with a numeric check
+`ℓ/q ≤ bound` to produce the named mass bound — closing the chain
+`(GS list size ℓ + covering) ⟹ mass bound ⟹ prize conjecture`. -/
+theorem epsMCAgsMassBound_of_pivotCovering (C : Set (ι → F)) (δ : ℝ≥0)
+    (L : WordStack F (Fin 2) ι → Finset (ι → F)) (ℓ : ℕ) {bound : ENNReal}
+    (hcov : ∀ u, PivotCovering (F := F) C δ L u)
+    (hsize : ∀ u, (L u).card ≤ ℓ)
+    (hle : (ℓ : ENNReal) / (Fintype.card F : ENNReal) ≤ bound) :
+    epsMCAgsMassBound (F := F) C δ L bound := by
+  intro u
+  refine le_trans (mcaEventGSrow_prob_le_listSize_div C δ L u (hcov u)) (le_trans ?_ hle)
+  gcongr
+  exact_mod_cast hsize u
+
+/-! ## Step 3: connection to the `GrandChallenges` lower-witness API
+
+A *faithful* GS family makes the GS-exposed error agree with the abstract `ε_mca` (the
+singleton bridge supplies this in UDR; in general it is the open list-coverage statement). When
+faithfulness holds and the GS error clears `ε*`, the radius is a genuine `MCALowerWitness`. -/
+
+/-- **Lower witness from a faithful GS mass bound (Issue #52 ask 3).** If a GS family `L` is
+faithful at radius `δ` (`epsMCA ≤ epsMCAgs` — the abstract error is captured by the GS-exposed
+one) and the mass bound clears `ε*`, then `δ` is a verified `MCALowerWitness` for the actual
+Grand MCA Challenge: `δ* ≥ δ`. The faithfulness hypothesis is the precisely-named open content
+(discharged in UDR by `mcaEventGS_singleton_eq_mcaEvent_udr`). -/
+def MCALowerWitness.ofGSMassBound (C : LinearCode ι F) (δ ε_star : ℝ≥0)
+    (hδ : δ ≤ 1)
+    (L : WordStack F (Fin 2) ι → Finset (ι → F))
+    (hfaithful : epsMCA (F := F) (A := F) (C : Set (ι → F)) δ ≤
+      epsMCAgs (F := F) (C : Set (ι → F)) δ L)
+    (hMass : epsMCAgsMassBound (F := F) (C : Set (ι → F)) δ L (ε_star : ENNReal)) :
+    GrandChallenges.MCALowerWitness (C : Set (ι → F)) ε_star :=
+  GrandChallenges.MCALowerWitness.ofLe hδ
+    (le_trans hfaithful (epsMCAgs_le_of_massBound _ _ _ hMass))
+
+end MCAGS
+
+end ProximityGap
