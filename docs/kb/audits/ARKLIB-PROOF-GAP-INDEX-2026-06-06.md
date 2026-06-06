@@ -37,7 +37,7 @@ rg -n --glob '*.lean' 'opaque\s+\w+|placeholder|stub|TODO|FIXME|named residual|e
 | LogUp Protocol 2 completeness and soundness residuals | #13 |
 | Batched FRI query-round soundness residuals | #14 |
 | Duplex-sponge Fiat-Shamir statistical-distance placeholder | #15 |
-| ToyProblem KoalaBear opaque code placeholder | #16 |
+| ToyProblem KoalaBear concrete carrier replacement | #16 (closed; see #18/#30 for remaining anchors) |
 | SendWitness knowledge-soundness placeholder reductions | #17 |
 | ToyProblem protocol and leaderboard residual anchors | #18 |
 | RingSwitching and Binius completeness plumbing | #19 |

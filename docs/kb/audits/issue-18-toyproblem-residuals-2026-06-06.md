@@ -32,7 +32,11 @@ closures for these surfaces:
 - The KoalaBear leaderboard carrier now uses `KoalaBear.rsCodeSet`; the old
   opaque carrier path is not the live blocker. The concrete attack-side anchor
   reduces to `fenziSanso_upperBound_attack_concrete_residual`, a winning-set
-  cardinality witness of size at least `2^70`.
+  cardinality witness of size at least `2^70`.  The bridge theorem
+  `fenziSanso_upperBound_attack_residual_of_concrete` now feeds that concrete
+  residual back into the canonical `fenziSanso_upperBound_attack_residual`, so
+  downstream code can keep the original 116-bit attack anchor name while proving
+  only the concrete Phase-5 cardinality statement.
 
 ## Audit command
 
@@ -52,9 +56,9 @@ rg -n 'residual|Residual|opaque koalaCode|StraightlineOfRewinding|winningSetSoun
    Johnson-radius / MCA-safe theorem matching the current code comments,
    discharging `winningSetSoundness_le_toySoundnessError_residual`.
 4. Prove the concrete KoalaBear winning-set cardinality witness behind
-   `fenziSanso_upperBound_attack_concrete_residual`; the field-cardinality and
-   explicit-power arithmetic around the `2^(-116)` anchor is already separated
-   from this coding-theory obligation.
+   `fenziSanso_upperBound_attack_concrete_residual`.  The field-cardinality,
+   explicit-power arithmetic, and canonical-attack-anchor bridge around the
+   `2^(-116)` target are already separated from this coding-theory obligation.
 
 This audit does not close issue #18. It records the live residual surface so the
 next repair can target the remaining mathematical and framework obligations
