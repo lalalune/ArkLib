@@ -325,4 +325,8 @@ noncomputable def listUpperWitness_of_elias_volume
     _ ≤ (Lambda ((C : Set (ι → F))^⋈ (Fin m)) (δ : ℝ) : ENNReal) := by
         exact_mod_cast hdiag
 
+#print axioms ProximityGap.ListLatticeThresholdLambdaEliasFrontier
+#print axioms ProximityGap.listLatticeThreshold_eq_of_lambda_elias_frontier
+#print axioms ProximityGap.listUpperWitness_of_elias_volume
+
 end ProximityGap
