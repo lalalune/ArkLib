@@ -34,7 +34,7 @@ We define the notions of Appendix A of [BCIKS20].
 
 -/
 
-set_option linter.style.longFile 3200
+set_option linter.style.longFile 3300
 
 open Polynomial Polynomial.Bivariate ToRatFunc Ideal
 
@@ -1017,6 +1017,17 @@ lemma natDegree_H_tilde' {H : F[X][Y]} (hH : 0 < H.natDegree) :
   apply Polynomial.natDegree_eq_of_degree_eq_some
   rw [Polynomial.degree_add_eq_right_of_degree_lt (hsum_deg.trans_eq hX_deg.symm), hX_deg]
 
+/-- The canonical representative has `Y`-degree strictly smaller than `H`. -/
+lemma canonicalRepOf𝒪_natDegree_lt_H {H : F[X][Y]} (hH : 0 < H.natDegree) (β : 𝒪 H) :
+    (canonicalRepOf𝒪 hH β).natDegree < H.natDegree := by
+  classical
+  by_cases hβ : canonicalRepOf𝒪 hH β = 0
+  · simp [hβ, hH]
+  · have hdeg := canonicalRepOf𝒪_degree_lt hH β
+    have hq_ne : H_tilde' H ≠ 0 := (H_tilde'_monic H hH).ne_zero
+    rw [Polynomial.degree_eq_natDegree hβ, Polynomial.degree_eq_natDegree hq_ne] at hdeg
+    exact_mod_cast (by simpa [natDegree_H_tilde' hH] using hdeg)
+
 /-- The `Λ`-weight of `H_tilde' H` is bounded by `d_H · m`, where `d_H = H.natDegree`. -/
 lemma weight_Λ_H_tilde'_le {H : F[X][Y]} {D : ℕ}
     (hD : Bivariate.totalDegree H ≤ D) (hH : 0 < H.natDegree) :
@@ -1192,6 +1203,13 @@ noncomputable def S_β {H : F[X][Y]} (β : 𝒪 H) : Set F :=
 section LemmaA1
 
 variable {F : Type} [Field F]
+
+/-- The rational substitution `π_z` can be computed on the canonical representative. -/
+lemma π_z_eq_eval_canonicalRepOf𝒪 {H : F[X][Y]} (hH : 0 < H.natDegree)
+    (z : F) (root : rationalRoot (H_tilde' H) z) (β : 𝒪 H) :
+    (π_z z root) β = Polynomial.evalEvalRingHom z root.1 (canonicalRepOf𝒪 hH β) := by
+  conv_lhs => rw [← mk_canonicalRepOf𝒪 hH β]
+  rfl
 
 /-- Applying the specialization `π_z` to a quotient constructor evaluates the representative at the
 point `(z, t_z)`. -/
