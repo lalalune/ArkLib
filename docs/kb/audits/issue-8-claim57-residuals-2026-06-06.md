@@ -6,6 +6,8 @@ list-decoding agreement stack. The legacy bundle lives in
 the newer discharge layers live in `ArkLib/ToMathlib/Claim57Supply.lean`,
 `ArkLib/ToMathlib/Section5ConcreteJohnson.lean`, and
 `ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Claim57FieldDischarge.lean`.
+The mathlib-only discriminant/separability bridge for the good-specialization side condition lives
+in `ArkLib/ToMathlib/DiscriminantSeparable.lean`.
 
 ## Legacy Front Door
 
@@ -81,13 +83,27 @@ It proves the honest irreducibility fragment of `hfactor`, proves the discrimina
 substrate for the specialization point, and assembles the legacy bundle from the minimal current
 inputs.
 
+`DiscriminantSeparable.lean` supplies the mathlib-level payoff bridge for the `hx0` / `hsep`
+side condition:
+
+```lean
+Polynomial.discr_map_of_natDegree_preserved
+Polynomial.separable_of_discr_ne_zero
+Polynomial.ne_zero_and_separable_of_specialized_discr_ne_zero
+Polynomial.ne_zero_and_separable_of_specialized_base_discr_ne_zero
+```
+
+This proves that nonvanishing specialized discriminant data gives both nonzero specialized factors
+and separability, provided the specialization preserves `natDegree`. It deliberately stays out of
+the `CompPoly` `discr_y` / `evalX` stack while that layer is under repair.
+
 ## Current Minimal Surface
 
 After the current discharge layers, the remaining Claim 5.7 proof surface is:
 
 | Field | Current status |
 | --- | --- |
-| `hx0` / `hsep` | Reduced to the discriminant-nonvanishing substrate over `pg_Rset`. The missing bridge is the specialization/discriminant commutation plus `discr ≠ 0 → Separable`, in the exact `evalX (Polynomial.C x₀)` field shape. |
+| `hx0` / `hsep` | Reduced to discriminant-nonvanishing plus the mathlib bridge in `DiscriminantSeparable.lean`. The remaining bridge is the same-variable `CompPoly` wiring: match the `Claim57FieldDischarge` producer to the `evalX (Polynomial.C x₀)` consumer shape, account for the `discr_y = unit * discr` normalization, and supply the explicit `natDegree`-preservation / leading-coefficient-survival side condition. The previous natural-looking `X`/`Z` commutation is documented as false. |
 | `hJohnson` | The single Johnson weighted-degree budget feeding `hcount_natCeil_of_johnson_budget`; not a class field, but still an explicit input to `claim57Residuals_of_gsInterpolant` and `Claim57Residuals.ofInTree`. |
 | `hlarge` | The close-set largeness / field-size budget input. It also derives `hS_nonempty`. |
 | `hfactor` | Not provable as currently stated in full generality: `pg_Rset` is built from `normalizedFactors Q`, while the Eq. 5.12 list contains descended primitive separable factors. The proven fragment is `claim57_hfactor_irreducible_of_pg_Rset`. |
@@ -122,6 +138,10 @@ This audit was checked against the current anchors:
 - `claim57_hfactor_irreducible_of_pg_Rset`
 - `exists_good_x₀_evalX_discr_y_ne`
 - `Claim57Residuals.ofInTree`
+- `Polynomial.discr_map_of_natDegree_preserved`
+- `Polynomial.separable_of_discr_ne_zero`
+- `Polynomial.ne_zero_and_separable_of_specialized_discr_ne_zero`
+- `Polynomial.ne_zero_and_separable_of_specialized_base_discr_ne_zero`
 
 Full focused Lean verification of these modules is currently blocked before the BCIKS20 targets by
 the live manifest-pinned `CompPoly` dependency failures on `fork/main`.

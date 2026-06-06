@@ -226,3 +226,10 @@ theorem ne_zero_and_separable_of_specialized_base_discr_ne_zero
   exact ne_zero_and_separable_of_specialized_discr_ne_zero hdeg hmap this
 
 end Polynomial
+
+/-! ## Axiom audit — mathlib-level discriminant/separability bridge for issue #8. -/
+#print axioms Polynomial.map_ne_zero_of_natDegree_preserved
+#print axioms Polynomial.discr_map_of_natDegree_preserved
+#print axioms Polynomial.separable_of_discr_ne_zero
+#print axioms Polynomial.ne_zero_and_separable_of_specialized_discr_ne_zero
+#print axioms Polynomial.ne_zero_and_separable_of_specialized_base_discr_ne_zero
