@@ -20,13 +20,32 @@ printf '[%s] sync start\n' "$stamp"
 git config rerere.enabled true
 git config pull.rebase false
 
+fix_conflicts_with_codex() {
+  local conflict_stamp
+  conflict_stamp="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+  printf '[%s] merge conflicts detected; asking Codex to fix them\n' "$conflict_stamp"
+  git status --short
+  codex exec \
+    --cd "$repo_dir" \
+    --dangerously-bypass-approvals-and-sandbox \
+    "fix all conflicts in this ArkLib repository intelligently. Preserve both sides' useful proof/code changes where possible, do not use blanket ours/theirs resolution, resolve every Git conflict marker, run targeted checks if practical, then leave the merge ready to commit."
+  if git diff --name-only --diff-filter=U | grep -q .; then
+    printf '[%s] Codex returned but unresolved conflicts remain; leaving merge for next cycle\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+    git status --short
+    exit 1
+  fi
+}
+
 if [ -d .git/rebase-merge ] || [ -d .git/rebase-apply ]; then
   printf '[%s] rebase in progress; refusing to continue\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
   exit 1
 fi
 
 if [ -f .git/MERGE_HEAD ]; then
-  printf '[%s] merge in progress; staging resolved files and committing if possible\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+  printf '[%s] merge in progress; checking for conflicts\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+  if git diff --name-only --diff-filter=U | grep -q .; then
+    fix_conflicts_with_codex
+  fi
   git add -A
   git commit --no-edit || true
 fi
@@ -40,16 +59,8 @@ fi
 
 git fetch "$remote" "$target_branch"
 
-if ! git merge --no-edit -X ours "$remote/$target_branch"; then
-  printf '[%s] merge reported conflicts; applying local-preferred resolution\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
-  conflicted="$(git diff --name-only --diff-filter=U || true)"
-  if [ -n "$conflicted" ]; then
-    printf '%s\n' "$conflicted" | while IFS= read -r path; do
-      [ -n "$path" ] || continue
-      git checkout --ours -- "$path" || true
-      git add -- "$path"
-    done
-  fi
+if ! git merge --no-edit "$remote/$target_branch"; then
+  fix_conflicts_with_codex
   git add -A
   git commit --no-edit || git commit -m "auto-sync: merge ${remote}/${target_branch} ${stamp}"
 fi

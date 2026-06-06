@@ -837,9 +837,6 @@ theorem folding_preserves_distance
   (hStrictCoeff : StrictCoeffPolysResidual
     (k := 2 ^ k - 1) (deg := d / (2 ^ k))
     (domain := (domain.subdomainNatReversed k : Fin (2 ^ (n - k)) ↪ F)) (δ := δ))
-  (hBoundaryCard : BoundaryCardResidual
-    (k := 2 ^ k - 1) (deg := d / (2 ^ k))
-    (domain := (domain.subdomainNatReversed k : Fin (2 ^ (n - k)) ↪ F)) (δ := δ))
   (δ_gt_0 : 0 < δ)
   (δ_lt : δ < min (δᵣ(f, ReedSolomon.code (domain : Fin (2 ^ n) ↪ F) d))
     (1 - (ReedSolomon.sqrtRate d (domain : Fin (2 ^ n) ↪ F)))) :
@@ -855,20 +852,20 @@ theorem folding_preserves_distance
     have h_k_le_n : k ≤ n := by
       rw [←Nat.pow_le_pow_iff_right (a := 2) (by simp)]
       omega
-    have bound_tighter : 
-      (↑δ) ≤ 1 - ReedSolomon.sqrtRate (d / (2 ^ k)) 
-        (domain.subdomainNatReversed k : Fin (2 ^ (n - k)) ↪ F) := 
-      le_of_lt <| by
+    have bound_tighter :
+      δ < 1 - ReedSolomon.sqrtRate (d / (2 ^ k))
+        (domain.subdomainNatReversed k : Fin (2 ^ (n - k)) ↪ F) := by
         aesop 
           (add safe [(by rw [folded_sqrtRate_eq])])
           (add safe [(by grind)])
           (add safe (by norm_cast at *))
     letI : NeZero (d / 2 ^ k) := ⟨by rw [Nat.div_ne_zero_iff]; omega⟩
     have correlated_agreement :=
-      correlatedAgreement_affine_curves
+      correlatedAgreement_affine_curves_of_strict_coeff_polys
         (k := 2 ^ k - 1) (deg := d / (2 ^ k))
         (domain := (domain.subdomainNatReversed k : Fin (2 ^ (n - k)) ↪ F))
-        (δ := δ) hStrictCoeff hBoundaryCard bound_tighter
+        (δ := δ) bound_tighter
+        (fun hk u hprob hJ P hP => hStrictCoeff hk u hprob hJ bound_tighter P hP)
     unfold foldWord δ_ε_correlatedAgreementCurves at *
     by_contra contra
     simp only [not_le, foldValue_eq_sum_of_foldAuxCoeff_mul_pow_alpha, bind_pure_comp, Functor.map, 

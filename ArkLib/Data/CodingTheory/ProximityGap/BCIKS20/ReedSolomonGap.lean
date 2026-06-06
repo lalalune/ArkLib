@@ -41,10 +41,6 @@ theorem proximity_gap_RSCodes {k t : ℕ} [NeZero k] [NeZero t] {deg : ℕ} {dom
     -- as required by `correlatedAgreement_affine_spaces` (Theorem 1.7).
     (hStrictCoeff : ∀ δ' : ℝ≥0, δ' ≤ δ →
       ProximityGap.StrictCoeffPolysResidual (k := 1) (deg := deg) (domain := domain) (δ := δ'))
-    -- [BCIKS20] §6.2: closed square-root boundary assembly residual, specialized to the
-    -- `k = 1` affine line and quantified over every radius `δ' ≤ δ`.
-    (hBoundaryCard : ∀ δ' : ℝ≥0, δ' ≤ δ →
-      ProximityGap.BoundaryCardResidual (k := 1) (deg := deg) (domain := domain) (δ := δ'))
     (hδ : δ < 1 - ReedSolomon.sqrtRate deg domain)
     (hε : errorBound δ deg domain < 1) :
     δ_ε_proximityGap
@@ -234,7 +230,7 @@ theorem proximity_gap_RSCodes {k t : ℕ} [NeZero k] [NeZero t] {deg : ℕ} {dom
       -- Apply Thm 1.7 at k := m + 1 to get jointAgreement (W := u').
       have hja_u' : jointAgreement (C := (ReedSolomon.code domain deg : Set (ι → F)))
           (δ := δ) (W := u') :=
-        correlatedAgreement_affine_spaces (k := m + 1) hdeg _hδ_pos hStrictCoeff hBoundaryCard
+        correlatedAgreement_affine_spaces (k := m + 1) hdeg _hδ_pos hStrictCoeff
           hδ hRS hε u' hPr_aff
       -- Convert jointAgreement (W := u') → jointAgreement (W := C i).
       -- Witnesses: v_0 for C i 0 stays, v_{j+1} + v_0 ∈ RS.code (submodule closure)
