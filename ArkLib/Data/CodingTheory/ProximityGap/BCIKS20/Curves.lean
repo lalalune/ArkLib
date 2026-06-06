@@ -2519,6 +2519,49 @@ def StrictCoeffPolysResidual {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} : 
             ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
               ∀ j < deg, (P z).coeff j = (B j).eval z
 
+omit [DecidableEq ι] in
+/-- Canonical-family form of the strict Johnson extraction residual. This is
+strictly more structured than `StrictCoeffPolysResidual`: the §5 side supplies
+one decoded family, coefficient-polynomial witnesses for that family, and
+uniqueness for every other decoded family on the same good-coefficient set. -/
+def StrictCanonicalCoeffPolysResidual {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} :
+    Prop :=
+  ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+    Pr_{
+      let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+        ReedSolomon.code domain deg) ≤ δ] >
+        ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+    (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+    δ < 1 - ReedSolomon.sqrtRate deg domain →
+    ∃ P₀ : F → Polynomial F,
+      (∃ B : ℕ → Polynomial F,
+        (∀ j < deg, (B j).natDegree < k + 1) ∧
+          ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+            ∀ j < deg, (P₀ z).coeff j = (B j).eval z) ∧
+      ∀ P : F → Polynomial F,
+        (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+          (P z).natDegree < deg ∧
+            δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+              (P z).eval ∘ domain) ≤ δ) →
+        ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+          P z = P₀ z
+
+omit [DecidableEq ι] in
+/-- The canonical-family extraction residual discharges the raw
+coefficient-polynomial residual by transporting the canonical coefficient
+witnesses across uniqueness of decoded families. -/
+theorem strictCoeffPolysResidual_of_strictCanonicalCoeffPolysResidual
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    (hCanonical :
+      StrictCanonicalCoeffPolysResidual (k := k) (deg := deg) (domain := domain) (δ := δ)) :
+    StrictCoeffPolysResidual (k := k) (deg := deg) (domain := domain) (δ := δ) := by
+  intro hk u hprob hJ hsqrt P hP
+  obtain ⟨P₀, hCoeff₀, huniq⟩ := hCanonical hk u hprob hJ hsqrt
+  exact coeff_polys_for_all_decoded_of_canonical_agreement
+    (deg := deg) (domain := domain) (δ := δ)
+    (S := RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ)
+    (u := u) P₀ hCoeff₀ huniq P hP
+
 /-- Explicit residual for the closed square-root boundary assembly needed by the final
 correlated-agreement keystone. -/
 def BoundaryCardResidual {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} : Prop :=
@@ -2527,23 +2570,91 @@ def BoundaryCardResidual {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} : Prop
     0 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card →
     jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u)
 
+omit [DecidableEq ι] in
+/-- Exact residual needed by the non-strict boundary branch of the list-decoding
+assembly. Unlike `BoundaryCardResidual`, this retains the probability and
+Johnson-side hypotheses available at the branch point, so callers do not have
+to prove `jointAgreement` for every merely nonempty good-coefficient set. -/
+def BoundaryProbabilityResidual {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} : Prop :=
+  ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+    Pr_{
+      let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+        ReedSolomon.code domain deg) ≤ δ] >
+        ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+    (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+    ¬δ < 1 - ReedSolomon.sqrtRate deg domain →
+    jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u)
+
+omit [DecidableEq ι] in
+/-- The older closed-boundary cardinality residual implies the sharper
+probability-branch residual by extracting boundary equality and nonemptiness
+from the branch hypotheses. -/
+theorem boundaryProbabilityResidual_of_boundaryCardResidual
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hBoundaryCard :
+      BoundaryCardResidual (k := k) (deg := deg) (domain := domain) (δ := δ)) :
+    BoundaryProbabilityResidual (k := k) (deg := deg) (domain := domain) (δ := δ) := by
+  intro hk u hprob hJ hnot
+  obtain ⟨hδeq, hcard⟩ :=
+    goodCoeffsCurve_card_pos_of_prob_gt_closed_sqrt_boundary
+      (deg := deg) (domain := domain) (δ := δ) u hδ hprob hJ hnot
+  exact hBoundaryCard hk u hδeq hcard
+
 /-- Theorem 1.5 (Correlated agreement for low-degree parameterised curves) in [BCIKS20].
 
 This theorem is fully proved from two explicit list-decoding residuals:
-`StrictCoeffPolysResidual` for the strict Johnson branch and `BoundaryCardResidual` for the
-closed square-root boundary. -/
+`StrictCoeffPolysResidual` for the strict Johnson branch and
+`BoundaryProbabilityResidual` for the closed square-root boundary branch. The
+older `BoundaryCardResidual` still implies this boundary residual via
+`boundaryProbabilityResidual_of_boundaryCardResidual`. -/
 theorem correlatedAgreement_affine_curves {k : ℕ}
     {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     -- `deg = 0` makes the statement false: `errorBound`'s Johnson
     -- branch vacates the threshold at deg = 0; counterexample in upstream-issues.md).
     [NeZero deg]
     (hStrictCoeff : StrictCoeffPolysResidual (k := k) (deg := deg) (domain := domain) (δ := δ))
+    (hBoundary : BoundaryProbabilityResidual (k := k) (deg := deg) (domain := domain) (δ := δ))
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  exact correlatedAgreement_affine_curves_of_strict_coeff_polys_and_boundary
+    (deg := deg) (domain := domain) (δ := δ) hδ hStrictCoeff hBoundary
+
+omit [DecidableEq ι] in
+/-- Compatibility wrapper for callers that still carry the older
+closed-boundary cardinality residual. -/
+theorem correlatedAgreement_affine_curves_of_boundaryCardResidual {k : ℕ}
+    {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    [NeZero deg]
+    (hStrictCoeff : StrictCoeffPolysResidual (k := k) (deg := deg) (domain := domain) (δ := δ))
     (hBoundaryCard : BoundaryCardResidual (k := k) (deg := deg) (domain := domain) (δ := δ))
     (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain) :
     δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
       (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
-  exact correlatedAgreement_affine_curves_of_strict_coeff_polys_and_boundary_card
-    (deg := deg) (domain := domain) (δ := δ) hδ hStrictCoeff hBoundaryCard
+  exact correlatedAgreement_affine_curves
+    (deg := deg) (domain := domain) (δ := δ) hStrictCoeff
+    (boundaryProbabilityResidual_of_boundaryCardResidual
+      (deg := deg) (domain := domain) (δ := δ) hδ hBoundaryCard)
+    hδ
+
+omit [DecidableEq ι] in
+/-- Canonical strict-branch compatibility wrapper for the sharpened final
+residual surface. -/
+theorem correlatedAgreement_affine_curves_of_strictCanonicalCoeffPolysResidual {k : ℕ}
+    {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    [NeZero deg]
+    (hStrictCanonical :
+      StrictCanonicalCoeffPolysResidual (k := k) (deg := deg) (domain := domain) (δ := δ))
+    (hBoundary : BoundaryProbabilityResidual (k := k) (deg := deg) (domain := domain) (δ := δ))
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  exact correlatedAgreement_affine_curves
+    (deg := deg) (domain := domain) (δ := δ)
+    (strictCoeffPolysResidual_of_strictCanonicalCoeffPolysResidual
+      (deg := deg) (domain := domain) (δ := δ) hStrictCanonical)
+    hBoundary hδ
 
 omit [DecidableEq ι] in
 /-- Theorem 1.5 (Correlated agreement for low-degree parameterised curves) in [BCIKS20].

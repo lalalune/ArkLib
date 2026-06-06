@@ -67,7 +67,7 @@ theorem RS_correlatedAgreement_affineLines {deg : ℕ} {domain : ι ↪ F} {δ :
     δ ≤ Code.relativeUniqueDecodingRadius (ι := ι) (F := F) (C := ReedSolomon.code domain deg)
   · exact RS_correlatedAgreement_affineLines_uniqueDecodingRegime (hδ := hδ_uniqueDecodingRegime)
   · classical
-    have hcurves := correlatedAgreement_affine_curves (k := 1) (deg := deg)
+    have hcurves := correlatedAgreement_affine_curves_of_boundaryCardResidual (k := 1) (deg := deg)
       (domain := domain) (δ := δ) hStrictCoeff hBoundaryCard hδ
     unfold δ_ε_correlatedAgreementAffineLines
     intro u hprob

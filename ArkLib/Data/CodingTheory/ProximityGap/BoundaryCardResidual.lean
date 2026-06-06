@@ -338,7 +338,7 @@ theorem correlatedAgreement_affine_curves_of_lattice_residual {k deg : ℕ} {dom
     (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain) :
     δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
       (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
-  ProximityGap.correlatedAgreement_affine_curves
+  ProximityGap.correlatedAgreement_affine_curves_of_boundaryCardResidual
     (deg := deg) (domain := domain) (δ := δ) hStrictCoeff
     (boundaryCardResidual_of_lattice_residual (deg := deg) (domain := domain) hLattice hStrict)
     hδ

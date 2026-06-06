@@ -290,7 +290,8 @@ theorem correlatedAgreement_affine_curves_johnson_of_betaRec
     (hBoundaryCard : BoundaryCardResidual (k := k) (deg := deg) (domain := domain) (δ := δ)) :
     δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
       (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
-  correlatedAgreement_affine_curves (k := k) (deg := deg) (domain := domain) (δ := δ)
+  correlatedAgreement_affine_curves_of_boundaryCardResidual
+    (k := k) (deg := deg) (domain := domain) (δ := δ)
     (strictCoeffPolysResidual_of_betaRec hInput) hBoundaryCard hδ
 
 omit [DecidableEq ι] in
@@ -328,7 +329,8 @@ theorem correlatedAgreement_affine_curves_johnson_of_betaRecFin
     (hBoundaryCard : BoundaryCardResidual (k := k) (deg := deg) (domain := domain) (δ := δ)) :
     δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
       (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
-  correlatedAgreement_affine_curves (k := k) (deg := deg) (domain := domain) (δ := δ)
+  correlatedAgreement_affine_curves_of_boundaryCardResidual
+    (k := k) (deg := deg) (domain := domain) (δ := δ)
     (strictCoeffPolysResidual_of_betaRecFin hInput) hBoundaryCard hδ
 
 omit [DecidableEq ι] in
@@ -382,5 +384,4 @@ theorem correlatedAgreement_affine_curves_johnson_of_section5DataFin_strict
 end KeystoneStrictResidual
 
 end ArkLib
-
 
