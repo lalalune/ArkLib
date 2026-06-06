@@ -558,6 +558,32 @@ theorem BCSCompilerFrontierReady.phase {StmtMid WitMid : Type}
     (h : BCSCompilerFrontierReady phases frontier) :
     BCSPhaseRealizationFrontier phases :=
   ⟨h.1, h.2.1⟩
+
+/-- Build the full ready checklist from a discharged typed opening log plus the remaining
+security-frontier fields. This is the direct adapter expected from the current BCS interface:
+`BCSPhaseRealizationFrontier.ofOpeningLogBridge` supplies the phase half, and
+`BCSCompilerFrontierReady.intro` adds the commitment/security obligations. -/
+theorem BCSCompilerFrontierReady.ofOpeningLogBridge {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    {phases : BCSCompiledPhases (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) CommitmentType e}
+    {frontier : BCSSecurityFrontier (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) phases}
+    {log : BCSOpeningLogFrontier (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType}
+    (hInteraction : phases.interaction_realizes_oracle_messages)
+    (hLog : BCSOpeningLogFrontierSatisfied log)
+    (hBridge : BCSOpeningLogBridge phases log)
+    (hCorrect : frontier.commitment_correctness_available)
+    (hBindingOrExtract : frontier.commitment_binding_or_extractability_available)
+    (hComplete : frontier.completeness_preservation_target)
+    (hSound : frontier.soundness_preservation_target)
+    (hKS : frontier.knowledge_soundness_preservation_target) :
+    BCSCompilerFrontierReady phases frontier :=
+  BCSCompilerFrontierReady.intro
+    (BCSPhaseRealizationFrontier.ofOpeningLogBridge hInteraction hLog hBridge)
+    hCorrect hBindingOrExtract hComplete hSound hKS
 /-! #### Design note: the fully general transform
 
   In full generality (deferred to ArkLib#433), the transform should take
