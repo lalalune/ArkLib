@@ -3,6 +3,12 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 
+import ArkLib.Data.Polynomial.RationalFunctionsCore
+import ArkLib.ToMathlib.PartitionRecursion
+import ArkLib.ToMathlib.HasseDerivNumerators
+import ArkLib.ToMathlib.WeightLambdaCalculus
+import Mathlib
+
 /-!
 # The Hensel-Lift Numerator Recursion $\beta_t$
 
@@ -27,12 +33,6 @@ This module proves:
 2. Invariance of the recurrence outputs under the regular elements ring $\mathcal{O}$ (integrality of the numerators).
 3. The total degree/weight bounds of the recursion outputs under the $\Lambda$-weight filtration.
 -/
-
-import ArkLib.Data.Polynomial.RationalFunctionsCore
-import ArkLib.ToMathlib.PartitionRecursion
-import ArkLib.ToMathlib.HasseDerivNumerators
-import ArkLib.ToMathlib.WeightLambdaCalculus
-import Mathlib
 
 set_option linter.style.longLine false
 set_option linter.unusedVariables false
