@@ -882,7 +882,7 @@ theorem j1RatioConstraint_eval_j1FullTopQuadratic_eq_zero
              P.coeff (Fintype.card ι - 2) +
          N.coeff (Fintype.card ι - 2) * P.coeff (Fintype.card ι - 1) *
              P.coeff (Fintype.card ι - 1) -
-         P.coeff (Fintype.card ι - 1) * P.coeff (Fintype.card ι - 3) = 0)
+       P.coeff (Fintype.card ι - 1) * P.coeff (Fintype.card ι - 3) = 0)
     exact hrel
   have hpoly :
       (j1FullTopQuadratic domain u₀ u₁).eval γ =
@@ -2870,6 +2870,41 @@ theorem listPrizeLatticeResolved_of_Lambda_le_and_elias_next
       ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊)
     (m := m) (j := (τ r).val) (ℓ := ℓ r)
     hm (hnext r) (hLambda r) (hpow r) (hvol_next r) (hne r)
+
+/-- **Packaged four-rate Lambda/Elias exact frontier for the faithful LD prize.**
+
+For every prize rate, this stores the current post-RIM exact closing surface from
+`ListLatticeThresholdLambdaEliasFrontier`: a base-code list-size cap at the proposed
+threshold index, the interleaving budget, and the adjacent Elias-volume failure certificate.
+The nonemptiness field is the representation bridge needed to state the prize-facing
+`listPrizeLatticeResolved` predicate. -/
+structure ListPrizeLambdaEliasFrontier (domain : ι ↪ F) (m : ℕ) where
+  τ : Fin 4 → Fin (Fintype.card ι + 1)
+  ℓ : Fin 4 → ℕ
+  frontier : ∀ r : Fin 4,
+    ListLatticeThresholdLambdaEliasFrontier
+      (ReedSolomon.code domain ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊)
+      m (τ r).val (ℓ r) epsStar
+  hne : ∀ r : Fin 4,
+    (GrandChallenges.listLatticeSet
+      (ReedSolomon.code domain
+        ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      m epsStar).Nonempty
+
+/-- A packaged four-rate Lambda/Elias frontier resolves the faithful list-decoding lattice
+prize at its proposed threshold indices. -/
+theorem listPrizeLatticeResolved_of_lambda_elias_frontier
+    (domain : ι ↪ F) (m : ℕ)
+    (frontier : ListPrizeLambdaEliasFrontier domain m) :
+    listPrizeLatticeResolved domain m frontier.τ := by
+  refine listPrizeLatticeResolved_of_canonical_listLatticeThreshold_eq
+    domain m frontier.τ frontier.hne ?_
+  intro r
+  exact ProximityGap.listLatticeThreshold_eq_of_lambda_elias_frontier
+    (C := ReedSolomon.code domain
+      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊)
+    (m := m) (j := (frontier.τ r).val) (ℓ := frontier.ℓ r)
+    (frontier.frontier r) (frontier.hne r)
 
 /-- Per-rate adjacent Johnson-square/Elias certificates resolve the faithful four-rate
 list-decoding lattice prize directly.
