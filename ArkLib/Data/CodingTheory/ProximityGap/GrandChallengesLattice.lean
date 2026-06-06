@@ -185,14 +185,16 @@ theorem mcaEventWitness_card_pred_le_j1
         (⟨1, by omega⟩ : Fin (n + 1))) * (n : ℝ≥0) =
         ((n - 1 : ℕ) : ℝ≥0) := by
     have hn0 : (n : ℝ≥0) ≠ 0 := by exact_mod_cast hn.ne'
+    have h1n : (1 : ℕ) ≤ n := Nat.one_le_iff_ne_zero.mpr hn.ne'
     unfold mcaLatticePoint
-    simp only [Fin.val_mk, Nat.cast_one]
+    simp only [Nat.cast_one]
     -- `(1 - 1/n) * n = 1*n - (1/n)*n = n - 1` in `ℝ≥0` (truncated sub, `n ≥ 1`).
     rw [tsub_mul, one_mul, one_div, inv_mul_cancel₀ hn0]
-    simp only [Nat.cast_sub (Nat.one_le_iff_ne_zero.mpr hn.ne'), Nat.cast_one]
-  have hnn : ((n - 1 : ℕ) : ℝ≥0) ≤ (S.card : ℝ≥0) := by
-    rw [← hmul]
-    simpa [n] using hS
+    -- `↑n - 1 = ↑(n-1)` in `ℝ≥0` (no `Nat.cast_sub` for monus); via `↑(n-1) + 1 = ↑n`.
+    have hadd : ((n - 1 : ℕ) : ℝ≥0) + 1 = (n : ℝ≥0) := by
+      exact_mod_cast (Nat.sub_add_cancel h1n)
+    exact (eq_tsub_of_add_eq hadd).symm
+  have hnn : ((n - 1 : ℕ) : ℝ≥0) ≤ (S.card : ℝ≥0) := hmul.symm.trans_le hS
   exact_mod_cast hnn
 
 /-! ## The MCA lattice threshold

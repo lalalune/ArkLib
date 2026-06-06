@@ -27,29 +27,33 @@ local instance : (([]ₒ : OracleSpec PEmpty).Fintype) where
   fintype_B q := nomatch q
 
 local instance : ∀ j, OracleInterface ((pSpecSumcheckRound L).Challenge j) :=
-  fun _ => OracleInterface.instDefault
+  ProtocolSpec.challengeOracleInterface
 
 local instance : ([(pSpecSumcheckRound L).Challenge]ₒ).Inhabited := by
   refine { inhabited_B := ?_ }
   intro q
-  rcases q with ⟨⟨i, hi⟩, _⟩
+  rcases q with ⟨⟨i, hi⟩, query⟩
   have hi_one : i = 1 := by
     fin_cases i
-    · simp [pSpecSumcheckRound, Sumcheck.Structured.pSpecSumcheckRound] at hi
+    · simp at hi
     · rfl
   subst i
-  simp [ProtocolSpec.Challenge, pSpecSumcheckRound, Sumcheck.Structured.pSpecSumcheckRound]
+  cases query
+  change Inhabited L
+  exact ⟨0⟩
 
 local instance : ([(pSpecSumcheckRound L).Challenge]ₒ).Fintype := by
   refine { fintype_B := ?_ }
   intro q
-  rcases q with ⟨⟨i, hi⟩, _⟩
+  rcases q with ⟨⟨i, hi⟩, query⟩
   have hi_one : i = 1 := by
     fin_cases i
-    · simp [pSpecSumcheckRound, Sumcheck.Structured.pSpecSumcheckRound] at hi
+    · simp at hi
     · rfl
   subst i
-  simp [ProtocolSpec.Challenge, pSpecSumcheckRound, Sumcheck.Structured.pSpecSumcheckRound]
+  cases query
+  change Fintype L
+  infer_instance
 
 theorem iteratedSumcheckOracleReduction_perfectCompleteness_residual_holds
     (hInit : NeverFail init) :
@@ -57,6 +61,8 @@ theorem iteratedSumcheckOracleReduction_perfectCompleteness_residual_holds
       (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
       (aOStmtIn := aOStmtIn) (init := init) (impl := impl) := by
   intro i
+  letI : ([(pSpecSumcheckRound L).Challenge]ₒ).Inhabited := inferInstance
+  letI : ([(pSpecSumcheckRound L).Challenge]ₒ).Fintype := inferInstance
   have key := OracleReduction.unroll_2_message_reduction_perfectCompleteness
     (oSpec := []ₒ) (pSpec := pSpecSumcheckRound L)
     (iteratedSumcheckOracleReduction κ L K P ℓ ℓ' aOStmtIn i)
@@ -70,8 +76,10 @@ theorem iteratedSumcheckOracleReduction_perfectCompleteness_residual_holds
   dsimp only [iteratedSumcheckOracleReduction, iteratedSumcheckOracleProver,
     iteratedSumcheckOracleVerifier, OracleVerifier.toVerifier, FullTranscript.mk2]
   refine ⟨?_, ?_⟩
-  · sorry
-  · sorry
+  · trace_state
+    sorry
+  · trace_state
+    sorry
 
 end
 end RingSwitching.SumcheckPhase

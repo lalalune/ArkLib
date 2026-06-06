@@ -631,10 +631,10 @@ lemma bIdx_succ_mul_ϑ_le_ℓ_succ (bIdx : Fin (ℓ / ϑ - 1)) : (↑bIdx + 1) *
   exact Nat.le_of_lt (bIdx_succ_mul_ϑ_lt_ℓ_succ bIdx)
 end IndexBounds
 
-omit [NeZero r] [Field L] [Fintype L] [DecidableEq L] [CharP L 2] [Field 𝔽q]
-  [Fintype 𝔽q] [DecidableEq 𝔽q] h_Fq_char_prime hF₂ [Algebra 𝔽q L] β
-  hβ_lin_indep h_β₀_eq_1 [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑
-  hdiv in
+omit r L 𝔽q ℓ 𝓡 ϑ γ_repetitions [NeZero r] [Field L] [Fintype L]
+  [DecidableEq L] [CharP L 2] [Field 𝔽q] [Fintype 𝔽q] [DecidableEq 𝔽q]
+  h_Fq_char_prime hF₂ [Algebra 𝔽q L] β hβ_lin_indep h_β₀_eq_1 [NeZero ℓ]
+  [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑 hdiv in
 /-- Oracle frontier index: captures valid oracle indices for a given statement index.
     In Binary Basefold, the oracle can be at most 1 index behind the statement index.
     - At statement index `i+1`, the oracle can be at `i` (after fold) or `i+1` (after commit)
@@ -644,10 +644,10 @@ def OracleFrontierIndex {m : ℕ} (stmtIdx : Fin (m + 1)) :=
 
 namespace OracleFrontierIndex
 
-omit [NeZero r] [Field L] [Fintype L] [DecidableEq L] [CharP L 2] [Field 𝔽q]
-  [Fintype 𝔽q] [DecidableEq 𝔽q] h_Fq_char_prime hF₂ [Algebra 𝔽q L] β
-  hβ_lin_indep h_β₀_eq_1 [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑
-  hdiv in
+omit r L 𝔽q ℓ 𝓡 ϑ γ_repetitions [NeZero r] [Field L] [Fintype L]
+  [DecidableEq L] [CharP L 2] [Field 𝔽q] [Fintype 𝔽q] [DecidableEq 𝔽q]
+  h_Fq_char_prime hF₂ [Algebra 𝔽q L] β hβ_lin_indep h_β₀_eq_1 [NeZero ℓ]
+  [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑 hdiv in
 /-- Create oracle frontier index equal to statement index (synchronized case) -/
 def mkFromStmtIdx {m : ℕ} (stmtIdx : Fin (m + 1)) :
     OracleFrontierIndex stmtIdx :=
@@ -657,10 +657,10 @@ def mkFromStmtIdx {m : ℕ} (stmtIdx : Fin (m + 1)) :
     · exact Nat.le_succ stmtIdx.val
   ⟩
 
-omit [NeZero r] [Field L] [Fintype L] [DecidableEq L] [CharP L 2] [Field 𝔽q]
-  [Fintype 𝔽q] [DecidableEq 𝔽q] h_Fq_char_prime hF₂ [Algebra 𝔽q L] β
-  hβ_lin_indep h_β₀_eq_1 [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑
-  hdiv in
+omit r L 𝔽q ℓ 𝓡 ϑ γ_repetitions [NeZero r] [Field L] [Fintype L]
+  [DecidableEq L] [CharP L 2] [Field 𝔽q] [Fintype 𝔽q] [DecidableEq 𝔽q]
+  h_Fq_char_prime hF₂ [Algebra 𝔽q L] β hβ_lin_indep h_β₀_eq_1 [NeZero ℓ]
+  [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑 hdiv in
 /-- Create oracle frontier index for statement i.succ with oracle at i (lagging case).
     Used after fold step where stmtIdx advances but oracle hasn't committed yet. -/
 def mkFromStmtIdxCastSuccOfSucc {m : ℕ} (i : Fin m) :
@@ -671,27 +671,24 @@ def mkFromStmtIdxCastSuccOfSucc {m : ℕ} (i : Fin m) :
     · simp only [Fin.val_succ, Fin.val_castSucc, le_refl]
   ⟩
 
-@[simp]
-omit [NeZero r] [Field L] [Fintype L] [DecidableEq L] [CharP L 2] [Field 𝔽q]
-  [Fintype 𝔽q] [DecidableEq 𝔽q] h_Fq_char_prime hF₂ [Algebra 𝔽q L] β
-  hβ_lin_indep h_β₀_eq_1 [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑
-  hdiv in
+omit r L 𝔽q ℓ 𝓡 ϑ γ_repetitions [NeZero r] [Field L] [Fintype L]
+  [DecidableEq L] [CharP L 2] [Field 𝔽q] [Fintype 𝔽q] [DecidableEq 𝔽q]
+  h_Fq_char_prime hF₂ [Algebra 𝔽q L] β hβ_lin_indep h_β₀_eq_1 [NeZero ℓ]
+  [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑 hdiv in
 lemma val_mkFromStmtIdx {m : ℕ} (stmtIdx : Fin (m + 1)) :
-    (mkFromStmtIdx (r := r) (ℓ := ℓ) (𝓡 := 𝓡) (m := m) stmtIdx).val = stmtIdx := rfl
+    (mkFromStmtIdx (m := m) stmtIdx).val = stmtIdx := rfl
 
-@[simp]
-omit [NeZero r] [Field L] [Fintype L] [DecidableEq L] [CharP L 2] [Field 𝔽q]
-  [Fintype 𝔽q] [DecidableEq 𝔽q] h_Fq_char_prime hF₂ [Algebra 𝔽q L] β
-  hβ_lin_indep h_β₀_eq_1 [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑
-  hdiv in
+omit r L 𝔽q ℓ 𝓡 ϑ γ_repetitions [NeZero r] [Field L] [Fintype L]
+  [DecidableEq L] [CharP L 2] [Field 𝔽q] [Fintype 𝔽q] [DecidableEq 𝔽q]
+  h_Fq_char_prime hF₂ [Algebra 𝔽q L] β hβ_lin_indep h_β₀_eq_1 [NeZero ℓ]
+  [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑 hdiv in
 lemma val_mkFromStmtIdxCastSuccOfSucc {m : ℕ} (i : Fin m) :
     (mkFromStmtIdxCastSuccOfSucc (m := m) i).val = i.castSucc := rfl
 
-@[simp]
-omit [NeZero r] [Field L] [Fintype L] [DecidableEq L] [CharP L 2] [Field 𝔽q]
-  [Fintype 𝔽q] [DecidableEq 𝔽q] h_Fq_char_prime hF₂ [Algebra 𝔽q L] β
-  hβ_lin_indep h_β₀_eq_1 [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑
-  hdiv in
+omit r L 𝔽q ℓ 𝓡 ϑ γ_repetitions [NeZero r] [Field L] [Fintype L]
+  [DecidableEq L] [CharP L 2] [Field 𝔽q] [Fintype 𝔽q] [DecidableEq 𝔽q]
+  h_Fq_char_prime hF₂ [Algebra 𝔽q L] β hβ_lin_indep h_β₀_eq_1 [NeZero ℓ]
+  [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑 hdiv in
 lemma val_le_i {m : ℕ} (i : Fin (m + 1)) (oracleIdx : OracleFrontierIndex i) :
     oracleIdx.val ≤ i := by
   unfold OracleFrontierIndex at oracleIdx
@@ -699,14 +696,16 @@ lemma val_le_i {m : ℕ} (i : Fin (m + 1)) (oracleIdx : OracleFrontierIndex i) :
   cases h
   · exact h.left
 
-@[simp]
-omit [NeZero r] [Field L] [Fintype L] [DecidableEq L] [CharP L 2] [Field 𝔽q]
-  [Fintype 𝔽q] [DecidableEq 𝔽q] h_Fq_char_prime hF₂ [Algebra 𝔽q L] β
-  hβ_lin_indep h_β₀_eq_1 [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑
-  hdiv in
+omit r L 𝔽q ℓ 𝓡 ϑ γ_repetitions [NeZero r] [Field L] [Fintype L]
+  [DecidableEq L] [CharP L 2] [Field 𝔽q] [Fintype 𝔽q] [DecidableEq 𝔽q]
+  h_Fq_char_prime hF₂ [Algebra 𝔽q L] β hβ_lin_indep h_β₀_eq_1 [NeZero ℓ]
+  [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑 hdiv in
 lemma val_mkFromStmtIdxCastSuccOfSucc_eq_mkFromStmtIdx {m : ℕ} (i : Fin m) :
     (mkFromStmtIdxCastSuccOfSucc (m := m) i).val =
-      (mkFromStmtIdx (r := r) (ℓ := ℓ) (𝓡 := 𝓡) (m := m) i.castSucc).val := by rfl
+      (mkFromStmtIdx (m := m) i.castSucc).val := by rfl
+
+attribute [simp] val_mkFromStmtIdx val_mkFromStmtIdxCastSuccOfSucc val_le_i
+  val_mkFromStmtIdxCastSuccOfSucc_eq_mkFromStmtIdx
 
 end OracleFrontierIndex
 
