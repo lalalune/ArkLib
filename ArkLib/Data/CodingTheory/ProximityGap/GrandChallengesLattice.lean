@@ -1604,6 +1604,31 @@ theorem mcaThreshold_lt_ofSamplingDG25
     (MCAUpperWitness.ofSamplingDG25 C δ δ' ε_star hδ' hδ_pos hδ_lt hDG25 hgt)
     hδle
 
+/-- The fixed BCHKS25 Johnson-jump radius is a valid faithful MCA lattice radius. -/
+theorem johnsonJumpRadius_le_one : CodingTheory.johnsonJumpRadius ≤ 1 := by
+  rw [CodingTheory.johnsonJumpRadius_eq_three_fourths]
+  exact_mod_cast (show (3 / 4 : ℝ) ≤ 1 by norm_num)
+
+/-- The packaged BCHKS25 Johnson-jump witness gives a direct upper bracket on the faithful
+MCA lattice threshold at the fixed Johnson radius. -/
+theorem mcaThreshold_lt_ofJohnsonJumpBCHKS25AutoRadius [CharP F 2]
+    (ε ε_star : ℝ≥0)
+    (W : CodingTheory.RSJohnsonJumpWitness (FC := F) ε ι)
+    (hne : mcaThresholdExists (ReedSolomon.code W.domain W.k : Set (ι → F)) ε_star)
+    (hgt :
+      (ε_star : ENNReal) <
+        ((Fintype.card ι : ENNReal) ^ (2 * ((1 : ℝ) - ε)))
+          / (Fintype.card F : ENNReal)) :
+    mcaThreshold (ReedSolomon.code W.domain W.k : Set (ι → F)) ε_star hne <
+      latticeIndexOf (ι := ι) CodingTheory.johnsonJumpRadius johnsonJumpRadius_le_one :=
+  mcaThreshold_lt_MCAUpperWitness
+    (ReedSolomon.code W.domain W.k : Set (ι → F)) ε_star hne
+    (MCAUpperWitness.ofJohnsonJumpBCHKS25AutoRadius ε ε_star W hgt)
+    johnsonJumpRadius_le_one
+
+#print axioms ProximityGap.GrandChallengesLattice.johnsonJumpRadius_le_one
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_lt_ofJohnsonJumpBCHKS25AutoRadius
+
 /-- The arbitrary-radius spike lower bound gives a direct upper bracket on the faithful MCA
 lattice threshold.  Unlike the endpoint floor, this excludes every lattice point at or above
 the chosen radius `δ` whenever the spike value `t / |F|` already exceeds the MCA budget. -/

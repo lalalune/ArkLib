@@ -334,3 +334,8 @@ theorem rs_epsCA_implies_lambda_extended_cs25_final
   exact hDeepHole_of_probResidual domain k δ ε L0 s hkn hs_pos rfl hres hviol
 
 end CodingTheory.CS25.DeepHole
+
+/- Axiom audit for the CS25 deep-hole residual assembly surface (#22). -/
+#print axioms CodingTheory.CS25.DeepHole.DeepHoleProbResidual
+#print axioms CodingTheory.CS25.DeepHole.hDeepHole_of_probResidual
+#print axioms CodingTheory.CS25.DeepHole.rs_epsCA_implies_lambda_extended_cs25_final

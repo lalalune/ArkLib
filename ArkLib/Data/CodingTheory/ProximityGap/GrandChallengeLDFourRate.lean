@@ -196,6 +196,103 @@ theorem listPrizeLattice_bracketed_between_halfDist_and_capacity
     (deg := ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊)
     (m := m) (hdeg_pos r).ne' (hdeg_le r) hm hbudget hε
 
+/-- Every ABF26 prize rate is at least `1/16`. -/
+lemma one_sixteenth_le_prizeRates (r : Fin 4) : (1 / 16 : ℝ≥0) ≤ prizeRates r := by
+  unfold prizeRates
+  rw [show (16 : ℝ≥0) = 2 ^ (4 : ℕ) by norm_num]
+  have hpow : (2 : ℝ≥0) ^ (r.val + 1) ≤ 2 ^ (4 : ℕ) :=
+    pow_le_pow_right₀ one_le_two (by omega)
+  exact div_le_div_of_nonneg_left (by norm_num) (by positivity) hpow
+
+/-- Every ABF26 prize rate is at most `1/2`. -/
+lemma prizeRates_le_half (r : Fin 4) : prizeRates r ≤ 1 / 2 := by
+  unfold prizeRates
+  have hpow : (2 : ℝ≥0) ^ (1 : ℕ) ≤ 2 ^ (r.val + 1) :=
+    pow_le_pow_right₀ one_le_two (by omega)
+  rw [pow_one] at hpow
+  exact div_le_div_of_nonneg_left (by norm_num) (by norm_num) hpow
+
+omit [Nonempty ι] [DecidableEq ι] in
+/-- If the evaluation domain has at least two points, each prize degree is strictly
+below the block length in the form `k_r + 1 ≤ n`. -/
+lemma prizeRate_floor_add_one_le (r : Fin 4) (hn : 2 ≤ Fintype.card ι) :
+    ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ + 1 ≤ Fintype.card ι := by
+  set k := ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ with hk_def
+  have hkr : (k : ℝ≥0) ≤ (1 / 2) * (Fintype.card ι : ℝ≥0) := by
+    rw [hk_def]
+    refine le_trans (Nat.floor_le (zero_le _)) ?_
+    gcongr
+    exact prizeRates_le_half r
+  have hcast : ((k + 1 : ℕ) : ℝ≥0) ≤ (Fintype.card ι : ℝ≥0) := by
+    push_cast
+    calc (k : ℝ≥0) + 1
+        ≤ (1 / 2) * (Fintype.card ι : ℝ≥0) + 1 := by gcongr
+      _ ≤ (1 / 2) * (Fintype.card ι : ℝ≥0) +
+            (1 / 2) * (Fintype.card ι : ℝ≥0) := by
+          gcongr
+          calc (1 : ℝ≥0) = (1 / 2) * 2 := by norm_num
+            _ ≤ (1 / 2) * (Fintype.card ι : ℝ≥0) := by
+                gcongr
+                exact_mod_cast hn
+      _ = (Fintype.card ι : ℝ≥0) := by
+          rw [← add_mul]
+          norm_num
+  exact_mod_cast hcast
+
+omit [Nonempty ι] [DecidableEq ι] in
+/-- If the evaluation domain has at least sixteen points, every ABF26 prize degree is
+positive. -/
+lemma prizeRate_floor_pos_of_card_ge_sixteen (r : Fin 4) (hn : 16 ≤ Fintype.card ι) :
+    0 < ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ := by
+  have hprod : ((1 : ℕ) : ℝ≥0) ≤ prizeRates r * (Fintype.card ι : ℝ≥0) := by
+    push_cast
+    calc (1 : ℝ≥0) = (1 / 16) * 16 := by norm_num
+      _ ≤ prizeRates r * (Fintype.card ι : ℝ≥0) := by
+          gcongr
+          · exact one_sixteenth_le_prizeRates r
+          · exact_mod_cast hn
+  exact lt_of_lt_of_le Nat.zero_lt_one (Nat.le_floor hprod)
+
+omit [Nonempty ι] [DecidableEq ι] in
+/-- If the evaluation domain has at least two points, every ABF26 prize degree is at most
+the block length. -/
+lemma prizeRate_floor_le_card_of_two_le (r : Fin 4) (hn : 2 ≤ Fintype.card ι) :
+    ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ ≤ Fintype.card ι :=
+  Nat.le_of_succ_le (prizeRate_floor_add_one_le r hn)
+
+/-- **Four-rate faithful LD sandwich with prize-degree side conditions discharged.**
+
+When `16 ≤ |ι|`, all four prize degrees are positive and at most the block length.  Thus the
+unconditional half-distance/capacity sandwich needs only the interleaving, budget, and
+`ε* < 1` hypotheses. -/
+theorem exists_listPrizeLattice_bracketed_between_halfDist_and_capacity_of_card_ge_sixteen
+    (domain : ι ↪ F) (m : ℕ) (hn : 16 ≤ Fintype.card ι)
+    (hm : m ≠ 0)
+    (hbudget : 1 ≤ (epsStar : ENNReal) * (Fintype.card F : ENNReal))
+    (hε : epsStar < 1) :
+    ∀ r : Fin 4,
+      let k := ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊
+      ∃ hne : (GrandChallenges.listLatticeSet
+          (ReedSolomon.code domain k : Set (ι → F)) m epsStar).Nonempty,
+        (Fintype.card ι - k) / 2 ≤
+            GrandChallenges.listLatticeThreshold
+              (ReedSolomon.code domain k : Set (ι → F)) m epsStar hne ∧
+          GrandChallenges.listLatticeThreshold
+              (ReedSolomon.code domain k : Set (ι → F)) m epsStar hne ≤
+            Fintype.card ι - k := by
+  intro r
+  let k := ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊
+  have hpos : 0 < k := by
+    dsimp [k]
+    exact prizeRate_floor_pos_of_card_ge_sixteen r hn
+  have hle : k ≤ Fintype.card ι := by
+    dsimp [k]
+    exact prizeRate_floor_le_card_of_two_le r (by omega)
+  let hne := listLatticeSet_nonempty_rs (m := m) domain hpos.ne' hle hbudget
+  refine ⟨hne, ?_⟩
+  exact listLatticeThreshold_rs_between_halfDist_and_capacity
+    (domain := domain) (deg := k) (m := m) hpos.ne' hle hm hbudget hε
+
 /-! ## Post-RIM frontier surface
 
 The theorem above is the current faithful-LD value interface after the smooth-domain
@@ -345,6 +442,7 @@ theorem demo_elias_volume_n4_q3 :
 #print axioms ProximityGap.ListEliasVolumeUpperCore
 #print axioms ProximityGap.PostRIMListThresholdFrontier
 #print axioms ProximityGap.listPrizeLattice_bracketed_between_halfDist_and_capacity
+#print axioms ProximityGap.exists_listPrizeLattice_bracketed_between_halfDist_and_capacity_of_card_ge_sixteen
 #print axioms ProximityGap.listLatticeThreshold_bracketed_of_johnson_sq_and_elias_core
 #print axioms ProximityGap.listPrizeLattice_bracketed_of_postRIM_frontier
 

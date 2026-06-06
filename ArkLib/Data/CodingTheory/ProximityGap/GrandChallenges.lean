@@ -385,6 +385,8 @@ noncomputable def MCAUpperWitness.ofRSBreakdownCS25
     rw [hCS25]
     exact hε
 
+#print axioms ProximityGap.GrandChallenges.MCAUpperWitness.ofRSBreakdownCS25
+
 /-- **Bridge from ABF26 Lemma 4.19 [DG25 Thm 2.5].** A sampling lower bound on `ε_ca`,
 combined with a named sampling-mass comparison showing that the lower bound exceeds `ε*`,
 gives an MCA upper witness through `ε_ca ≤ ε_mca`. -/

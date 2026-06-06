@@ -192,6 +192,8 @@ end Split
 end Logup
 
 /- Axiom audit for the split #13 LogUp residual front doors. -/
+#print axioms Logup.SubPhaseSoundnessResidual
+#print axioms Logup.logup_soundness_of_residual
 #print axioms Logup.OuterSoundnessResidual
 #print axioms Logup.SumcheckSoundnessResidual
 #print axioms Logup.subPhaseSoundnessResidual_iff_split
@@ -199,6 +201,8 @@ end Logup
 #print axioms Logup.AppendSoundnessResidual
 #print axioms Logup.LogupSoundnessBrickResidual
 #print axioms Logup.logup_soundness_of_bricks
+#print axioms Logup.SubPhaseCompletenessResidual
+#print axioms Logup.logup_completeness_of_residual
 #print axioms Logup.OuterCompletenessResidual
 #print axioms Logup.SumcheckCompletenessResidual
 #print axioms Logup.subPhaseCompletenessResidual_iff_split
