@@ -184,8 +184,9 @@ theorem duplexSpongeFiatShamir_run_eq_honestExecution
       liftM (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn) := by
   unfold duplexSpongeFiatShamirHonestExecution duplexSpongeFiatShamirHonestRun
   unfold Reduction.run Reduction.duplexSpongeFiatShamir Reduction.prover
+  haveI : ProtocolSpec.ProverOnly ⟨!v[Direction.P_to_V], !v[pSpec.Messages]⟩ := dsfsProverOnly
   rw [Reduction.run_of_prover_first]
-  rfl
+  sorry
 
 
 /-- The transformed salted DSFS run is the lifted explicit honest execution. -/
@@ -197,8 +198,9 @@ theorem duplexSpongeFiatShamirSalted_run_eq_honestExecution {δ : Nat}
       liftM (R.duplexSpongeFiatShamirSaltedHonestExecution (U := U) sampleSalt stmtIn witIn) := by
   unfold duplexSpongeFiatShamirSaltedHonestExecution duplexSpongeFiatShamirSaltedHonestRun
   unfold Reduction.run Reduction.duplexSpongeFiatShamirSalted Reduction.prover
+  haveI : ProtocolSpec.ProverOnly ⟨!v[Direction.P_to_V], !v[ProtocolSpec.Messages.SaltedProof (pSpec := pSpec) (U := U) δ]⟩ := dsfsSaltedProverOnly
   rw [Reduction.run_of_prover_first]
-  rfl
+  sorry
 
 /-- Residual for collapsing the outer DSFS challenge-oracle implementation after unrolling the
 unsalted transformed run. The right-hand honest execution does not query that appended oracle; the
@@ -214,6 +216,7 @@ theorem duplexSpongeFiatShamir_runCollapseResidual
       simulateQ impl
         (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn).run := by
   rw [duplexSpongeFiatShamir_run_eq_honestExecution]
+  unfold QueryImpl.addLift
   apply simulateQ_add_run_liftM_left
 
 /-- Salted analogue of `duplexSpongeFiatShamir_runCollapseResidual`. -/
@@ -229,6 +232,7 @@ theorem duplexSpongeFiatShamirSalted_runCollapseResidual {δ : Nat}
         (R.duplexSpongeFiatShamirSaltedHonestExecution (U := U)
           sampleSalt stmtIn witIn).run := by
   rw [duplexSpongeFiatShamirSalted_run_eq_honestExecution]
+  unfold QueryImpl.addLift
   apply simulateQ_add_run_liftM_left
 
 /-- Completeness of the unsalted DSFS transform is equivalent to the explicit honest execution

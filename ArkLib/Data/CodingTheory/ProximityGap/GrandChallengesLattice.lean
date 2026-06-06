@@ -3107,6 +3107,96 @@ theorem not_ordinaryRSCapacityPointwiseAtPrizeRates_of_Lambda_gt
   exact not_ordinaryRSCapacityAtPrizeRates_of_Lambda_gt domain τ ℓ r hgt
     (ordinaryRSCapacityAtPrizeRates_of_pointwise domain τ ℓ hPointwise)
 
+/-- `ENNReal` comparison form of `not_ordinaryRSCapacityAtPrizeRates_of_Lambda_gt`.
+
+Many analytic lower bounds, including Elias volume, are stated after coercing `Λ` to
+`ENNReal`.  If that coerced value already exceeds the proposed finite cap, the capacity
+predicate is impossible. -/
+theorem not_ordinaryRSCapacityAtPrizeRates_of_Lambda_toENNReal_gt
+    (domain : ι ↪ F)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1))
+    (ℓ : Fin 4 → ℕ) (r : Fin 4)
+    (hgt :
+      (ℓ r : ENNReal) <
+        (Lambda
+          (ReedSolomon.code domain
+            ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+          (((((τ r).val : ℕ) : ℝ≥0) /
+            (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) : ENNReal)) :
+    ¬ OrdinaryRSCapacityAtPrizeRates domain τ ℓ := by
+  intro hCapacity
+  exact (not_le_of_gt hgt) (by exact_mod_cast hCapacity r)
+
+/-- Elias-volume obstruction to a proposed ordinary-RS prize-rate capacity cap.
+
+At a prize rate `r`, if the Elias volume lower bound at the proposed lattice radius
+`(τ r).val / n` is already larger than `ℓ r`, then
+`OrdinaryRSCapacityAtPrizeRates domain τ ℓ` is false.  The hypotheses `hτ0` and `hτn`
+put the radius in the open interval required by the Elias theorem. -/
+theorem not_ordinaryRSCapacityAtPrizeRates_of_elias_volume_gt
+    (domain : ι ↪ F)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1))
+    (ℓ : Fin 4 → ℕ) (r : Fin 4)
+    (hτ0 : 0 < (τ r).val)
+    (hτn : (τ r).val < Fintype.card ι)
+    (hvol :
+      (ℓ r : ENNReal) <
+        ENNReal.ofReal
+          ((CodingTheory.hammingBallVolume (Fintype.card F)
+              (((((τ r).val : ℕ) : ℝ≥0) /
+                (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)
+              (Fintype.card ι) : ℝ)
+            / (Fintype.card F : ℝ) ^
+                ((Fintype.card ι : ℝ) -
+                  Module.finrank F
+                    (ReedSolomon.code domain
+                      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ :
+                        Submodule F (ι → F))))) :
+    ¬ OrdinaryRSCapacityAtPrizeRates domain τ ℓ := by
+  classical
+  let C : Submodule F (ι → F) :=
+    ReedSolomon.code domain ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊
+  let δ : ℝ := (((((τ r).val : ℕ) : ℝ≥0) /
+    (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)
+  have hδpos : (0 : ℝ) < δ := by
+    dsimp [δ]
+    push_cast
+    positivity
+  have hδlt : δ < 1 := by
+    dsimp [δ]
+    push_cast
+    rw [div_lt_one (by positivity)]
+    exact_mod_cast hτn
+  have helias := CodingTheory.linear_lambda_ge_elias_volume_eli57 C δ hδpos hδlt
+  have hgt_lambda :
+      (ℓ r : ENNReal) <
+        (Lambda
+          (ReedSolomon.code domain
+            ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+          (((((τ r).val : ℕ) : ℝ≥0) /
+            (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) : ENNReal) := by
+    calc (ℓ r : ENNReal)
+        < ENNReal.ofReal
+            ((CodingTheory.hammingBallVolume (Fintype.card F)
+                (((((τ r).val : ℕ) : ℝ≥0) /
+                  (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)
+                (Fintype.card ι) : ℝ)
+              / (Fintype.card F : ℝ) ^
+                  ((Fintype.card ι : ℝ) -
+                    Module.finrank F
+                      (ReedSolomon.code domain
+                        ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ :
+                          Submodule F (ι → F)))) := hvol
+      _ ≤ (Lambda (C : Set (ι → F)) δ : ENNReal) := helias
+      _ =
+          (Lambda
+            (ReedSolomon.code domain
+              ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+            (((((τ r).val : ℕ) : ℝ≥0) /
+              (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) : ENNReal) := by
+        rfl
+  exact not_ordinaryRSCapacityAtPrizeRates_of_Lambda_toENNReal_gt domain τ ℓ r hgt_lambda
+
 /-- Per-rate adjacent base-code `Λ` caps and Elias certificates resolve the faithful
 four-rate list-decoding lattice prize directly.
 

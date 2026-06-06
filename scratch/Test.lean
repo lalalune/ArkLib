@@ -24,21 +24,9 @@ theorem run_eq_honestExecution
   unfold Reduction.duplexSpongeFiatShamirHonestRun
   unfold Reduction.duplexSpongeFiatShamir
   unfold Reduction.prover Reduction.verifier
-  unfold Prover.runToRoundDSFS
-  -- Push liftM inside
-  rw [OptionT.ext_iff]
-  simp [liftComp_eq_liftM]
-  congr
-  ext x
-  cases x
-  rename_i msg state
-  congr
-  ext ctxOut
-  congr
-  ext stmtOut
-  congr
-  ext v
-  cases v
-  · rfl
-  · rfl
-
+  unfold Prover.duplexSpongeFiatShamir
+  unfold Prover.sendMessage
+  unfold Prover.output
+  unfold Verifier.duplexSpongeFiatShamir
+  unfold Verifier.verify
+  rfl

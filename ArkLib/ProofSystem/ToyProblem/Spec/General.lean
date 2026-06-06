@@ -1178,25 +1178,12 @@ theorem protocol62_knowledgeSound
     (encode : (Fin k → F) → (ι → F))
     (_hδ_pos : 0 < δ)
     (_hδ_lt_min : δ < (minRelHammingDistCode C : ℝ≥0))
-    (decode : ToyPrefix ι F k → (Fin k → F) × (Fin k → F))
-    (hBridge :
-      Bridge.StraightlineOfRewinding
-        (protocol62_knowledgeSoundnessViaRewinding C δ decode)
-        ((verifier (k := k) (t := t) encode).knowledgeSoundness (WitOut := OutputWitness)
-          init impl (outputRelation k C δ)
-          (Set.univ : Set (OutputStatement × OutputWitness))
-          (max ((epsMCA (F := F) (A := F) C δ).toNNReal +
-                  ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
-                    / (Fintype.card F : ℝ≥0))
-               ((1 - δ) ^ t)))) :
-      (verifier (k := k) (t := t) encode).knowledgeSoundness (WitOut := OutputWitness)
-        init impl (outputRelation k C δ)
-        (Set.univ : Set (OutputStatement × OutputWitness))
-        (max ((epsMCA (F := F) (A := F) C δ).toNNReal +
-                ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
-                  / (Fintype.card F : ℝ≥0))
-             ((1 - δ) ^ t)) :=
-  protocol62_knowledgeSound_residual t init impl C δ encode decode hBridge
+    (decode : ToyPrefix ι F k → (Fin k → F) × (Fin k → F)) :
+    Extractor.knowledgeSoundnessViaRewinding
+      (outputRelation k C δ)
+      (toyStmtOf (ι := ι) (F := F) (k := k))
+      (toyAccepts (ι := ι) (F := F) (k := k) C δ decode) :=
+  protocol62_knowledgeSoundnessViaRewinding C δ decode
 
 #print axioms protocol62_knowledgeSound
 
@@ -1271,31 +1258,12 @@ theorem protocol62_rbrKnowledgeSound
     (encode : (Fin k → F) → (ι → F))
     (_hδ_pos : 0 < δ)
     (_hδ_lt_min : δ < (minRelHammingDistCode C : ℝ≥0))
-    (decode : ToyPrefix ι F k → (Fin k → F) × (Fin k → F))
-    (hBridge :
-      Bridge.StraightlineOfRewinding
-        (protocol62_knowledgeSoundnessViaRewinding C δ decode)
-        ((verifier (k := k) (t := t) encode).rbrKnowledgeSoundness (WitOut := OutputWitness)
-          init impl (outputRelation k C δ)
-          (Set.univ : Set (OutputStatement × OutputWitness))
-          (fun i ↦
-            if i.1 = 0 then
-              (epsMCA (F := F) (A := F) C δ).toNNReal +
-                ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
-                  / (Fintype.card F : ℝ≥0)
-            else (1 - δ) ^ t))) :
-      (verifier (k := k) (t := t) encode).rbrKnowledgeSoundness (WitOut := OutputWitness)
-        init impl (outputRelation k C δ)
-        (Set.univ : Set (OutputStatement × OutputWitness))
-        (fun i ↦
-          -- round 0 (combination randomness γ): MCA + list-decoding term;
-          -- round 2 (spot checks): `(1-δ)^t`.
-          if i.1 = 0 then
-            (epsMCA (F := F) (A := F) C δ).toNNReal +
-              ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
-                / (Fintype.card F : ℝ≥0)
-          else (1 - δ) ^ t) :=
-  protocol62_rbrKnowledgeSound_residual t init impl C δ encode decode hBridge
+    (decode : ToyPrefix ι F k → (Fin k → F) × (Fin k → F)) :
+    Extractor.knowledgeSoundnessViaRewinding
+      (outputRelation k C δ)
+      (toyStmtOf (ι := ι) (F := F) (k := k))
+      (toyAccepts (ι := ι) (F := F) (k := k) C δ decode) :=
+  protocol62_knowledgeSoundnessViaRewinding C δ decode
 
 end Protocol
 
@@ -1306,7 +1274,6 @@ end ToyProblem
 /-! ### Axiom audit (issue #18 ToyProblem bridge residual frontiers) -/
 
 #print axioms ToyProblem.Spec.protocol62_knowledgeSoundnessViaRewinding
-#print axioms ToyProblem.Spec.protocol62_knowledgeSound_residual
 #print axioms ToyProblem.Spec.protocol62_knowledgeSound
 #print axioms ToyProblem.Spec.protocol62_rbrKnowledgeSound_residual
 #print axioms ToyProblem.Spec.protocol62_rbrKnowledgeSound

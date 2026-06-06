@@ -77,7 +77,7 @@ coding-theoretic reduction: a determinant of affine (`natDegree ≤ 1`) polynomi
 degree bounded by the matrix size.  This is the `(j+1)×(j+1)`-minor degree bound of Lemma
 ELIMj, valid for every `j` (with `m := j + 1`). -/
 
-variable {F : Type*} [Field F]
+variable {F : Type} [Field F]
 
 /-- **The general `(j+1)`-minor degree bound.**  For any `m×m` matrix `M` over `F[X]` whose
 every entry has `natDegree ≤ 1`, the determinant has `natDegree ≤ m`.
@@ -196,6 +196,7 @@ theorem epsMCA_interiorJ2_ge
 MCA bound is to hold (`mcaSatisfies` at index `2`), then `3/q ≤ ε*` is necessary — because
 the `3`-spike plant forces `ε_mca(C, 2/n) ≥ 3/q`.  Contrapositively, when `ε* < 3/q` the
 faithful threshold is strictly below J2. -/
+set_option maxHeartbeats 800000 in
 theorem mcaThreshold_lt_two_of_interiorJ2_gt
     (domain : ι ↪ F) {k : ℕ} (hk : k + 4 ≤ Fintype.card ι) (hq : 3 ≤ Fintype.card F)
     {ε_star : ℝ≥0}
@@ -205,10 +206,8 @@ theorem mcaThreshold_lt_two_of_interiorJ2_gt
       have hn : 0 < Fintype.card ι := Fintype.card_pos
       omega⟩
     mcaThreshold (ReedSolomon.code domain k : Set (ι → F)) ε_star hne < j2 := by
-  let C : Set (ι → F) := ReedSolomon.code domain k
-  let j2 : Fin (Fintype.card ι + 1) := ⟨2, by
-    have hn : 0 < Fintype.card ι := Fintype.card_pos
-    omega⟩
+  intro j2
+  set C : Set (ι → F) := ReedSolomon.code domain k with hC
   by_contra hnot
   have hj2_le : j2 ≤ mcaThreshold C ε_star hne := not_lt.mp hnot
   have hsat_threshold : mcaSatisfies C ε_star (mcaThreshold C ε_star hne) :=
@@ -216,11 +215,11 @@ theorem mcaThreshold_lt_two_of_interiorJ2_gt
   have hsat_j2 : mcaSatisfies C ε_star j2 :=
     mcaSatisfies_downward_closed C ε_star hj2_le hsat_threshold
   have hge : (3 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ≤
-      epsMCA (F := F) (A := F) C (mcaLatticePoint (Fintype.card ι) j2) :=
-    epsMCA_interiorJ2_ge domain hk hq
-  have : (3 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ≤ (ε_star : ℝ≥0∞) :=
+      epsMCA (F := F) (A := F) C (mcaLatticePoint (Fintype.card ι) j2) := by
+    rw [hC]; exact epsMCA_interiorJ2_ge domain hk hq
+  have hchain : (3 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ≤ (ε_star : ℝ≥0∞) :=
     le_trans hge hsat_j2
-  exact (not_le_of_gt hbad) this
+  exact (not_le_of_gt hbad) hchain
 
 end GrandChallengesLattice
 
