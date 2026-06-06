@@ -277,6 +277,7 @@ theorem duplexSpongeFiatShamir_completeness_unroll_of_run_eq
       (QueryImpl.liftTarget (StateT σ ProbComp)
         (challengeQueryImpl (pSpec := ⟨!v[Direction.P_to_V], !v[pSpec.Messages]⟩)))
       (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn) using 2
+    rfl
   rw [hcollapse]
 
 /-- **Reduction of `duplexSpongeFiatShamirSalted_completeness_unroll` to the run-equality
@@ -319,6 +320,7 @@ theorem duplexSpongeFiatShamirSalted_completeness_unroll_of_run_eq {δ : Nat}
           (pSpec := ⟨!v[Direction.P_to_V],
             !v[ProtocolSpec.Messages.SaltedProof (pSpec := pSpec) (U := U) δ]⟩)))
       (R.duplexSpongeFiatShamirSaltedHonestExecution (U := U) sampleSalt stmtIn witIn) using 2
+    rfl
   rw [hcollapse]
 
 end Completeness
