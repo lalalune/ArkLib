@@ -90,16 +90,13 @@ theorem verifier_output_mem_run_support
               -- `support_liftComp` removes the spec-lift, giving `some vOut ∈ support (V.run …).run`.
               rw [OptionT.mem_support_iff]
               have hLift := hstmtOut
-              -- `liftM = monadLift`; rewrite via `OptionT.run_monadLift` to expose `some <$> …`.
-              change some (some vOut) ∈ support
-                (monadLift (reduction.verifier.run stmt proverResult.1).run :
-                  OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) (Option StmtOut)).run at hLift
-              rw [OptionT.run_monadLift] at hLift
-              rw [show (monadLift (reduction.verifier.run stmt proverResult.1).run :
-                      OracleComp (oSpec + [pSpec.Challenge]ₒ) (Option StmtOut))
-                    = OracleComp.liftComp (reduction.verifier.run stmt proverResult.1).run
-                        (oSpec + [pSpec.Challenge]ₒ) from liftComp_eq_liftM.symm] at hLift
-              rw [support_map, OracleComp.support_liftComp, Set.mem_image] at hLift
+              -- `liftM = monadLift`; expose the lift as `some <$> liftComp (V.run).run`.
+              have hrun : (liftM (reduction.verifier.run stmt proverResult.1).run :
+                    OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) (Option StmtOut)).run
+                  = some <$> OracleComp.liftComp (reduction.verifier.run stmt proverResult.1).run
+                      (oSpec + [pSpec.Challenge]ₒ) := by
+                rw [liftComp_eq_liftM]; rfl
+              rw [hrun, support_map, OracleComp.support_liftComp, Set.mem_image] at hLift
               obtain ⟨w, hw, hwEq⟩ := hLift
               rw [Option.some.injEq] at hwEq
               rwa [← hwEq]
