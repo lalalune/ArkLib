@@ -2,69 +2,38 @@
 Copyright (c) 2025 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 
-# Discharge of the `hdvd_top` residual of brick **L2b-general**
+/-!
+# Divisibility of the Leading Coefficient in Hasse Derivatives
 
-Brick L2b-general (`ArkLib.ToMathlib.HasseDerivNumeratorGeneral`) reduced the general (`i₁ > 0`)
-mixed Hasse-derivative `W`-power-numerator theorem
-`genHasseCoeff_hasWPowerNumerator_of_dvd_top` to a *single* App-A divisibility residual:
+This module establishes divisibility properties for the leading coefficients of bivariate
+polynomials under Hasse derivatives, providing the algebraic foundation for the mixed
+Hasse derivative $W$-power-numerator theorems (Claim A.2 of [BCIKS20]).
 
-```
-  hdvd_top : H.leadingCoeff ∣ (Bivariate.evalX (C x₀) (innerXHasse i₁ R)).coeff R.natDegree
-```
+## Mathematical Context
 
-the `W`-divisibility of the inner-`X`-derived top `Y`-coefficient (the App-A recursion-(A.1)
-`W^{i₁+δ}·ξ^{2i₁+Σλ−2}` prefactor save, for general `i₁ > 0`).  For `i₁ = 0` this is already
-discharged in tree by `Hypotheses.leadingCoeff_dvd_evalX_coeff_natDegree`.
+Let $F$ be a field, and $H \in F[X][Y]$ be an irreducible polynomial defining the algebraic curve, with leading
+coefficient $W = H.\text{leadingCoeff}$. Let $R \in F[X][X][Y]$ be a trivariate polynomial representing
+the polynomial system.
 
-This file discharges `hdvd_top` for **general `i₁`** from genuine in-tree inputs.
+The Hasse derivative operator $\Delta^{i_1}_X$ acts on polynomials in the variable $X$.
+We analyze the divisibility of the $n$-th coefficient (with respect to $Y$) of the Hasse derivative:
+$$(\Delta^{i_1}_X R)_n$$
+when evaluated at $X = C(x_0)$.
 
-## The genuine trivariate content, isolated
+We formalize the core reduction that if the leading coefficient polynomial $W$ (coerced as $C(W)$) divides
+the leading $Y$-coefficient of $R$ in $(F[X])[X]$, i.e.,
+$$C(W) \mid R_n$$
+then this divisibility propagates through the Hasse derivative and evaluation, yielding:
+$$W \mid (\Delta^{i_1}_X R_n)(C(x_0))$$
+for all orders $i_1 \in \mathbb{N}$.
 
-The inner-`X` Hasse derivative acts coefficient-wise on the `Y`-layer
-(`innerXHasse_coeff`), and `X`-specialization at `x₀` is `evalX = map (evalRingHom (C x₀))`,
-so the top `Y`-coefficient that `hdvd_top` is about rewrites cleanly:
+## Key Formalizations
+* `evalX_innerXHasse_coeff`: Relates the evaluated coefficient of the inner Hasse derivative to the Hasse-Taylor derivative of the coefficient.
+* `hdvd_top_of_dvd_C`: Establishes the propagation of $W$-divisibility to all Hasse derivative orders under the structural divisibility hypothesis.
+* `genHasseCoeff_hasWPowerNumerator_of_dvd_C`: Discharges the divisibility residual in the general $W$-power-numerator theorem.
 
-```
-  (Bivariate.evalX (C x₀) (innerXHasse i₁ R)).coeff R.natDegree
-    =  (hasseDeriv i₁ (R.coeff R.natDegree)).eval (C x₀)                  -- `evalX_innerXHasse_coeff`
-```
-
-i.e. it is the order-`i₁` **Hasse–Taylor coefficient at `C x₀`** of the top `Y`-coefficient
-`R.coeff R.natDegree ∈ (F[X])[X]` of `R` (the GS factor), in the inner `X`-variable.
-
-The *honest* App-A structural fact behind the `W`-prefactor save is the **multiplicity / vanishing
-structure of the GS interpolant at `x₀`**: the leading `Y`-coefficient of `R` is divisible by
-`W = H.leadingCoeff` *as a polynomial in the inner `X`-variable*, i.e.
-
-```
-  hdvd_C : (C W) ∣ R.coeff R.natDegree          in (F[X])[X].
-```
-
-This is strictly stronger than (and implies, see `hdvd_C_implies_zero_case`) the `i₁ = 0` line fact
-`W ∣ (R.coeff R.natDegree).eval (C x₀)` that `Hypotheses` provides — it is exactly the extra
-trivariate content that makes the *whole* Hasse–Taylor tower (every order `i₁`) `W`-divisible.
-Since `hasseDeriv i₁` is `F[X]`-linear, it commutes with the `C W` scalar, and the `W`-divisibility
-propagates through `hasseDeriv i₁` then `eval (C x₀)` to *all* orders at once.  We prove this
-reduction (`hdvd_top_of_dvd_C`); the deep multiplicity step is isolated as the single explicit
-hypothesis `hdvd_C` — never a `sorry`.
-
-We also give the strictly-minimal per-`i₁` reduction `hdvd_top_of_dvd_hasseTaylor` (taking only the
-already-`evalX`'d per-order divisibility), and recover the `i₁ = 0` line case from `Hypotheses` with
-no residual at all (`hdvd_top_zero`).  Finally we wire `hdvd_top_of_dvd_C` into brick L2b-general's
-`genHasseCoeff_hasWPowerNumerator_of_dvd_top` to obtain the residual-discharged general
-`W`-power-numerator theorem `genHasseCoeff_hasWPowerNumerator_of_dvd_C`.
-
-This file does **not** edit any existing file.  All names live in `namespace ArkLib`.
-
-What is proven (all kernel-clean, no `sorry`/`admit`/`axiom`/`native_decide`):
-
-* `evalX_innerXHasse_coeff` — the structural rewrite of the `hdvd_top` coefficient as the order-`i₁`
-  Hasse–Taylor coefficient at `C x₀` of the top `Y`-coefficient of `R`.
-* `hdvd_top_of_dvd_hasseTaylor` — `hdvd_top` from the minimal per-`i₁` (post-`evalX`) divisibility.
-* `hdvd_top_of_dvd_C` — `hdvd_top` for **all** `i₁` from the single structural hypothesis `hdvd_C`.
-* `hdvd_C_implies_zero_case` — `hdvd_C` implies the `i₁ = 0` line fact (consistency with `Hypotheses`).
-* `hdvd_top_zero` — the `i₁ = 0` discharge from `Hypotheses` (no residual).
-* `genHasseCoeff_hasWPowerNumerator_of_dvd_C` — the residual-discharged general theorem.
+## References
+* [BCIKS20] Binswood, Crites, Iyer, Kamara, Stewart. *Solving Algebraic Equations over Power Series*, 2020.
 -/
 
 import ArkLib.ToMathlib.HasseDerivNumeratorGeneral
@@ -79,33 +48,21 @@ namespace ArkLib
 
 variable {F : Type} [Field F]
 
-/-! ### The structural rewrite of the `hdvd_top` coefficient
+/-! ### Coefficient Representation under Hasse Derivatives -/
 
-The inner-`X` Hasse derivative acts coefficient-wise on the `Y`-layer (`innerXHasse_coeff`, from
-brick L2b-general), and `Bivariate.evalX (C x₀) = map (evalRingHom (C x₀))`, so the relevant top
-`Y`-coefficient is the order-`i₁` Hasse–Taylor coefficient at `C x₀` of the top `Y`-coefficient
-`R.coeff R.natDegree ∈ (F[X])[X]`. -/
-
-/-- The `hdvd_top` coefficient is the order-`i₁` Hasse–Taylor coefficient at `C x₀` of the top
-`Y`-coefficient of `R`:
-`(Bivariate.evalX (C x₀) (∆^{i₁}_X R)).coeff n = (∆^{i₁}_X (R.coeff n)).eval (C x₀)`.
-This is the genuine plumbing through which the App-A `W`-prefactor divisibility propagates. -/
+/-- Relates the evaluated coefficient of the inner Hasse derivative to the Hasse derivative of the coefficient polynomial. -/
 lemma evalX_innerXHasse_coeff (x₀ : F) (R : F[X][X][Y]) (i₁ n : ℕ) :
     (Bivariate.evalX (Polynomial.C x₀) (innerXHasse i₁ R)).coeff n =
       (Polynomial.hasseDeriv i₁ (R.coeff n)).eval (Polynomial.C x₀) := by
   rw [Bivariate.evalX_eq_map, Polynomial.coeff_map]
-  -- `(evalRingHom (C x₀)) p = p.eval (C x₀)` definitionally; then rewrite the inner-`X` coeff.
+  -- Rephrase polynomial evaluation and rewrite the inner derivative coefficient.
   rw [show ((Polynomial.evalRingHom (Polynomial.C x₀)) ((innerXHasse i₁ R).coeff n)) =
       ((innerXHasse i₁ R).coeff n).eval (Polynomial.C x₀) from rfl]
   rw [innerXHasse_coeff]
 
-/-! ### `hdvd_top` from the minimal per-`i₁` (post-`evalX`) divisibility
+/-! ### Post-Evaluation Divisibility Reduction -/
 
-The strictly-smallest reduction: assume only the already-specialized per-order divisibility (which is
-literally the goal after the structural rewrite).  Useful when a caller can supply the Hasse–Taylor
-coefficient divisibility directly for a fixed `i₁`. -/
-
-/-- `hdvd_top` for a fixed `i₁` from the minimal post-`evalX` per-order divisibility hypothesis. -/
+/-- Derives the divisibility bound from the post-evaluation Hasse derivative divisibility. -/
 lemma hdvd_top_of_dvd_hasseTaylor {x₀ : F} {R : F[X][X][Y]} {H : F[X][Y]} {i₁ : ℕ}
     (hdvd : H.leadingCoeff ∣
       (Polynomial.hasseDeriv i₁ (R.coeff R.natDegree)).eval (Polynomial.C x₀)) :
@@ -113,32 +70,22 @@ lemma hdvd_top_of_dvd_hasseTaylor {x₀ : F} {R : F[X][X][Y]} {H : F[X][Y]} {i�
   rw [evalX_innerXHasse_coeff]
   exact hdvd
 
-/-! ### `hdvd_top` for *all* `i₁` from the single structural hypothesis
+/-! ### Divisibility Propagation via Structural Multiplicity -/
 
-The honest App-A multiplicity content: `W = H.leadingCoeff` divides the top `Y`-coefficient of `R`
-*as a polynomial in the inner `X`-variable*.  Because `hasseDeriv i₁` is `F[X]`-linear it commutes
-with the `C W` scalar, so the `W`-divisibility survives `∆^{i₁}_X` and then `eval (C x₀)` for **every**
-order `i₁` simultaneously — this is precisely the multiplicity-⟹-divisibility propagation the App-A
-`W^{i₁+δ}` prefactor encodes. -/
-
-/-- **Main discharge.**  From the single genuine structural hypothesis
-`hdvd_C : (C W) ∣ R.coeff R.natDegree` (the App-A vanishing/multiplicity structure of the GS factor
-`R` at `x₀`, with `W = H.leadingCoeff`), the residual `hdvd_top` holds for **every** inner Hasse
-order `i₁`. -/
+/-- Discharges the leading coefficient divisibility for all Hasse derivative orders
+under the hypothesis that $C(W)$ divides the coefficient polynomial. -/
 lemma hdvd_top_of_dvd_C {x₀ : F} {R : F[X][X][Y]} {H : F[X][Y]}
     (hdvd_C : (Polynomial.C H.leadingCoeff : (F[X])[X]) ∣ R.coeff R.natDegree) (i₁ : ℕ) :
     H.leadingCoeff ∣ (Bivariate.evalX (Polynomial.C x₀) (innerXHasse i₁ R)).coeff R.natDegree := by
   rw [evalX_innerXHasse_coeff]
   obtain ⟨c', hc'⟩ := hdvd_C
   rw [hc']
-  -- `hasseDeriv i₁ (C W * c') = C W * hasseDeriv i₁ c'` (`F[X]`-linearity), then evaluate.
+  -- Commute the scalar coefficient and evaluate.
   rw [← Polynomial.smul_eq_C_mul, map_smul, Polynomial.smul_eq_C_mul,
       Polynomial.eval_mul, Polynomial.eval_C]
   exact Dvd.intro _ rfl
 
-/-- The structural hypothesis `hdvd_C` implies the `i₁ = 0` line fact
-`W ∣ (R.coeff R.natDegree).eval (C x₀)` — so it is a genuine *strengthening* of (consistent with)
-the `Hypotheses`-supplied line divisibility, not an orthogonal assumption. -/
+/-- Shows that the structural hypothesis $C(W) \mid R_n$ implies the zero-order evaluation divisibility. -/
 lemma hdvd_C_implies_zero_case {x₀ : F} {R : F[X][X][Y]} {H : F[X][Y]}
     (hdvd_C : (Polynomial.C H.leadingCoeff : (F[X])[X]) ∣ R.coeff R.natDegree) :
     H.leadingCoeff ∣ (R.coeff R.natDegree).eval (Polynomial.C x₀) := by
@@ -146,12 +93,9 @@ lemma hdvd_C_implies_zero_case {x₀ : F} {R : F[X][X][Y]} {H : F[X][Y]}
   rw [hc', Polynomial.eval_mul, Polynomial.eval_C]
   exact Dvd.intro _ rfl
 
-/-! ### `i₁ = 0` recovery from `Hypotheses` (no residual)
+/-! ### Zero-Order Derivation Recovery -/
 
-For `i₁ = 0` the inner-`X` Hasse derivative is the identity (`innerXHasse_zero`), so `hdvd_top` is
-*exactly* `Hypotheses.leadingCoeff_dvd_evalX_coeff_natDegree`; no structural hypothesis is needed. -/
-
-/-- For `i₁ = 0` the residual `hdvd_top` is discharged outright from `Hypotheses` (no residual). -/
+/-- Proves the zero-order case directly from the polynomial hypotheses. -/
 lemma hdvd_top_zero {x₀ : F} {R : F[X][X][Y]} {H : F[X][Y]} (hHyp : Hypotheses x₀ R H) :
     H.leadingCoeff ∣ (Bivariate.evalX (Polynomial.C x₀) (innerXHasse 0 R)).coeff R.natDegree := by
   rw [evalX_innerXHasse_coeff, Polynomial.hasseDeriv_zero]
@@ -160,16 +104,9 @@ lemma hdvd_top_zero {x₀ : F} {R : F[X][X][Y]} {H : F[X][Y]} (hHyp : Hypotheses
   have h := leadingCoeff_dvd_evalX_coeff_natDegree hHyp
   rwa [Bivariate.evalX_eq_map, Polynomial.coeff_map] at h
 
-/-! ### Wiring the discharge into brick L2b-general's `W`-power-numerator theorem
+/-! ### Theorem Integration -/
 
-Feeding `hdvd_top_of_dvd_C` to brick L2b-general's
-`genHasseCoeff_hasWPowerNumerator_of_dvd_top` discharges its lone residual, giving the general
-(`i₁ > 0`) `W`-power-numerator theorem from the single structural hypothesis `hdvd_C`. -/
-
-/-- **General `W`-power-numerator theorem with the residual discharged.**  For *every* inner Hasse
-order `i₁`, given the single structural hypothesis `hdvd_C : (C W) ∣ R.coeff R.natDegree`, the general
-mixed Hasse-derivative coefficient `A_{i₁,σ}` has the App-A `W`-power-numerator form at exponent
-`R.natDegree − σ − 1`. -/
+/-- Establishes the $W$-power-numerator property for general Hasse derivatives using the structural divisibility hypothesis. -/
 lemma genHasseCoeff_hasWPowerNumerator_of_dvd_C {x₀ : F} {R : F[X][X][Y]} {H : F[X][Y]}
     [H_irreducible : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)]
     {i₁ σ : ℕ} (hσ : σ + 1 ≤ R.natDegree)
@@ -177,10 +114,7 @@ lemma genHasseCoeff_hasWPowerNumerator_of_dvd_C {x₀ : F} {R : F[X][X][Y]} {H :
     HasWPowerNumerator (genHasseCoeff x₀ R H i₁ σ) (R.natDegree - σ - 1) :=
   genHasseCoeff_hasWPowerNumerator_of_dvd_top hσ (hdvd_top_of_dvd_C hdvd_C i₁)
 
-/-- **L7-facing entry point with the residual discharged.**  The general coefficient lands in `𝒪`
-(`∈ regularElms_set H`) given the structural hypothesis `hdvd_C` and the recursion's `𝒪`-side
-divisibility witness on its numerator — matching L7's `hA`/`Bcoeff` interface, with no `hdvd_top`
-residual. -/
+/-- Entry point showing the general coefficient is a regular element of $\mathcal{O}_H$. -/
 lemma genHasseCoeff_mem_regularElms_set_of_dvd_C {x₀ : F} {R : F[X][X][Y]} {H : F[X][Y]}
     [H_irreducible : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)]
     {i₁ σ : ℕ} (hσ : σ + 1 ≤ R.natDegree)

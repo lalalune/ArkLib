@@ -6,35 +6,31 @@ import Mathlib
 import CompPoly.ToMathlib.Polynomial.BivariateDegree
 
 /-!
-# Finite power series ⟹ polynomial representative (brick L18a)
+# Polynomial Representation of Finitely Supported Power Series
 
-This file is the `[MATHLIB]`-substrate brick **L18a** of the proximity-gap
-ingredient-D DAG (`research/proximity-prize/ingredient-D-DAG-2026-06-05.md`).
+This module establishes the algebraic correspondence between finitely supported power series
+and polynomials, and analyzes the degree properties of their bivariate representatives.
+This provides the mathematical foundation for showing that truncated solutions to algebraic
+equations over power series correspond to honest bivariate polynomials with bounded degree.
 
-The downstream consumer is BCIKS20 Claim 5.9
-(`solution_gamma_is_linear_in_Z`): once the truncated Hensel coefficient series
-`γ` is known to have only finitely many nonzero `(X − x₀)`-coefficients, it must
-come from an honest *polynomial* representative, and that representative inherits
-a `degreeX ≤ 1` bound from the structure `R = Y − P` with `deg_Z P ≤ 1`.
+## Mathematical Formulation
 
-The brick splits into two genuinely generic, kernel-clean pieces:
+Let $k$ be a commutative ring. A power series $\varphi \in k[[X]]$ is finitely supported if
+there exists $N \in \mathbb{N}$ such that for all $n \ge N$, the coefficient $\text{coeff}_n(\varphi) = 0$.
+Under this condition, $\varphi$ coincides with its truncation polynomial:
+$$P(X) = \sum_{i=0}^{N-1} \text{coeff}_i(\varphi) X^i \in k[X]$$
 
-* **Univariate truncation.** If `φ : PowerSeries k` satisfies
-  `∀ n ≥ N, coeff n φ = 0`, then the finite truncation
-  `p = ∑ i ∈ range N, C (coeff i φ) • X ^ i : k[X]`
-  coerces back to `φ` and has `natDegree < N` (`natDegree ≤ N - 1`).  This is
-  `PowerSeries.exists_polynomial_coe_of_coeff_eq_zero_ge` and friends.
+In the bivariate setting, let $F$ be a field and $P \in F[X][Y]$ be a bivariate polynomial. We relate the
+degree bounds of the coefficients $P_n(X) \in F[X]$ to the total degree properties. Specifically,
+we formalize that the bivariate degree satisfies $\text{degree}_X(P) \le 1$ if and only if
+every coefficient polynomial has degree at most 1, which allows us to decompose $P$ as:
+$$P(X,Y) = v_0(Y) + X \cdot v_1(Y)$$
+for some polynomials $v_0, v_1$.
 
-* **Degree-≤1 representative.** The `degreeX ≤ 1` shape that Claim 5.9 needs:
-  a bivariate polynomial all of whose coefficients (univariate in `X`) have
-  `natDegree ≤ 1` has `Polynomial.Bivariate.degreeX ≤ 1`, and consequently
-  decomposes as `a + X • b`.  We package this both for the abstract
-  "all `X`-coefficients of index `≥ 2` vanish" hypothesis and in the exact
-  `degreeX` shape the existing
-  `exists_linear_in_coeff_variable_of_degreeX_le_one` consumes.
-
-Nothing here references the App-A `𝒪 / 𝕃 / weight_Λ / π_z` machinery; it is pure
-`PowerSeries` / `Polynomial` substrate, deliberately upstreamable.
+## Key Formalizations
+* `truncPoly`: The canonical polynomial truncation of a power series.
+* `exists_polynomial_coe_of_coeff_eq_zero_ge`: Realizes the equivalence between finitely supported power series and polynomials.
+* `exists_linear_decomposition_of_degreeX_le_one`: Proves that a bivariate polynomial of degree at most 1 in $X$ decomposes linearly.
 -/
 
 open Polynomial
@@ -50,13 +46,11 @@ section Univariate
 
 variable {k : Type*} [CommRing k]
 
-/-- The finite truncation of a power series `φ` at degree `N`, viewed as a
-polynomial: `∑ i ∈ range N, C (coeff i φ) * X ^ i`. -/
+/-- The finite truncation of a power series $\varphi$ at degree $N$, viewed as a polynomial. -/
 noncomputable def truncPoly (φ : PowerSeries k) (N : ℕ) : k[X] :=
   ∑ i ∈ Finset.range N, Polynomial.C (PowerSeries.coeff i φ) * X ^ i
 
-/-- The `n`-th coefficient of the truncation is `coeff n φ` for `n < N` and `0`
-otherwise. -/
+/-- The coefficients of the truncation polynomial. -/
 theorem coeff_truncPoly (φ : PowerSeries k) (N n : ℕ) :
     (truncPoly φ N).coeff n =
       if n < N then PowerSeries.coeff n φ else 0 := by
@@ -79,7 +73,7 @@ theorem coeff_truncPoly (φ : PowerSeries k) (N n : ℕ) :
     have : b < N := Finset.mem_range.mp hb
     rw [if_neg (by omega)]
 
-/-- The truncation has `natDegree < N` whenever `0 < N`. -/
+/-- The degree of the truncation polynomial is strictly bounded by $N$ for positive $N$. -/
 theorem natDegree_truncPoly_lt (φ : PowerSeries k) {N : ℕ} (hN : 0 < N) :
     (truncPoly φ N).natDegree < N := by
   classical
@@ -88,7 +82,7 @@ theorem natDegree_truncPoly_lt (φ : PowerSeries k) {N : ℕ} (hN : 0 < N) :
   rw [coeff_truncPoly]
   rw [if_neg (by omega)]
 
-/-- The truncation has `natDegree ≤ N - 1` (no positivity hypothesis needed). -/
+/-- The degree of the truncation polynomial is bounded by $N - 1$. -/
 theorem natDegree_truncPoly_le (φ : PowerSeries k) (N : ℕ) :
     (truncPoly φ N).natDegree ≤ N - 1 := by
   classical
@@ -97,8 +91,7 @@ theorem natDegree_truncPoly_le (φ : PowerSeries k) (N : ℕ) :
   rw [coeff_truncPoly]
   rw [if_neg (by omega)]
 
-/-- **L18a core.** If a power series `φ` has all coefficients of index `≥ N`
-equal to zero, then it is the coercion of its degree-`< N` truncation. -/
+/-- A finitely supported power series is equal to the canonical coercion of its truncation polynomial. -/
 theorem coe_truncPoly_eq_of_coeff_eq_zero_ge (φ : PowerSeries k) {N : ℕ}
     (h : ∀ n, N ≤ n → PowerSeries.coeff n φ = 0) :
     ((truncPoly φ N : k[X]) : PowerSeries k) = φ := by
@@ -108,16 +101,14 @@ theorem coe_truncPoly_eq_of_coeff_eq_zero_ge (φ : PowerSeries k) {N : ℕ}
   · rw [if_pos hn]
   · rw [if_neg hn, (h n (by omega)).symm]
 
-/-- **L18a, existence form (the brick exactly as stated in the DAG).**
-If `φ : PowerSeries k` satisfies `∀ n ≥ N, coeff n φ = 0`, then there is a
-polynomial `p` with `p.natDegree < N` whose coercion to power series is `φ`. -/
+/-- A finitely supported power series is the coercion of some polynomial of degree strictly less than $N$. -/
 theorem exists_polynomial_coe_of_coeff_eq_zero_ge (φ : PowerSeries k) {N : ℕ}
     (hN : 0 < N) (h : ∀ n, N ≤ n → PowerSeries.coeff n φ = 0) :
     ∃ p : k[X], p.natDegree < N ∧ ((p : k[X]) : PowerSeries k) = φ :=
   ⟨truncPoly φ N, natDegree_truncPoly_lt φ hN,
     coe_truncPoly_eq_of_coeff_eq_zero_ge φ h⟩
 
-/-- A clean restatement using the more idiomatic `∀ n ≥ N` form. -/
+/-- Variant of the polynomial existence lemma using the standard inequality condition. -/
 theorem exists_polynomial_coe_of_coeff_eq_zero_ge' (φ : PowerSeries k) {N : ℕ}
     (hN : 0 < N) (h : ∀ n ≥ N, PowerSeries.coeff n φ = 0) :
     ∃ p : k[X], p.natDegree < N ∧ ((p : k[X]) : PowerSeries k) = φ :=
@@ -131,10 +122,8 @@ section DegreeBound
 
 variable {F : Type*} [CommRing F]
 
-/-- If every coefficient (a univariate polynomial in `X`) of a bivariate
-polynomial `P : F[X][Y]` has `natDegree ≤ d`, then `Polynomial.Bivariate.degreeX P ≤ d`.
-This is the bridge from a "per-coefficient degree bound" to the in-tree
-`degreeX` predicate consumed by Claim 5.9. -/
+/-- If the coefficients of a bivariate polynomial $P$ have degree at most $d$, then the total degree
+in the corresponding variable is bounded by $d$. -/
 theorem degreeX_le_of_forall_coeff_natDegree_le
     {P : F[X][Y]} {d : ℕ}
     (h : ∀ n, (P.coeff n).natDegree ≤ d) :
@@ -145,28 +134,20 @@ theorem degreeX_le_of_forall_coeff_natDegree_le
   intro n _
   exact h n
 
-/-- Every `X`-coefficient is bounded by `degreeX` (the in-tree CompPoly lemma,
-re-exported here for convenience). -/
+/-- The degree of each coefficient polynomial is bounded by the total degree in that variable. -/
 theorem coeff_natDegree_le_degreeX (P : F[X][Y]) (n : ℕ) :
     (P.coeff n).natDegree ≤ Polynomial.Bivariate.degreeX P :=
   Polynomial.Bivariate.coeff_natDegree_le_degreeX P n
 
-/-- `degreeX P ≤ 1` is equivalent to every `X`-coefficient having degree `≤ 1`,
-i.e. to every `X`-coefficient of index `≥ 2` (within each `Y`-coefficient)
-vanishing.  This is the abstract "finite power series, X-coeffs of index ≥ 2 are
-zero" hypothesis instantiated to the `degreeX` API. -/
+/-- A bivariate polynomial has degree at most 1 in $X$ if and only if each of its coefficient
+polynomials has degree at most 1. -/
 theorem degreeX_le_one_iff_forall_coeff_natDegree_le_one (P : F[X][Y]) :
     Polynomial.Bivariate.degreeX P ≤ 1 ↔
       ∀ n, (P.coeff n).natDegree ≤ 1 :=
   ⟨fun h n => le_trans (coeff_natDegree_le_degreeX P n) h,
     fun h => degreeX_le_of_forall_coeff_natDegree_le h⟩
 
-/-- **L18a degree-≤1 representative, abstract X-coefficient form.**
-If every coefficient of `P : F[X][Y]` (a univariate polynomial in `X`) has its
-`X`-coefficients of index `≥ 2` vanishing, then `P = a + X • b` for univariate
-`a b : F[X]`, where `a`, `b` are read off coefficient-wise.  The decomposition is
-in the exact shape `(map C v₀) + (C X) * (map C v₁)` consumed by
-`exists_linear_in_coeff_variable_of_degreeX_le_one`. -/
+/-- Decomposition of a bivariate polynomial into a linear combination when high-degree terms vanish. -/
 theorem exists_linear_decomposition_of_coeff_high_X_eq_zero
     {P : F[X][Y]}
     (h : ∀ n, ∀ j, 2 ≤ j → (P.coeff n).coeff j = 0) :
@@ -201,10 +182,7 @@ theorem exists_linear_decomposition_of_coeff_high_X_eq_zero
   · have hp0 : P.coeff n = 0 := Polynomial.notMem_support_iff.mp hn
     simp [hn, hp0]
 
-/-- **L18a degree-≤1 representative, `degreeX` form.**
-Exactly the hypothesis/conclusion shape of the in-tree
-`exists_linear_in_coeff_variable_of_degreeX_le_one`, reproduced from the
-self-contained substrate above: `degreeX P ≤ 1 ⟹ P = (map C v₀) + (C X) * (map C v₁)`. -/
+/-- Linear decomposition of a bivariate polynomial when the degree with respect to $X$ is at most 1. -/
 theorem exists_linear_decomposition_of_degreeX_le_one
     {P : F[X][Y]} (hP : Polynomial.Bivariate.degreeX P ≤ 1) :
     ∃ v₀ v₁ : F[X],
@@ -230,13 +208,9 @@ section Combined
 
 variable {F : Type*} [CommRing F]
 
-/-- **L18a, end-to-end form.**  Let `φ : PowerSeries F[X]` be a power series in the
-top variable, with coefficients on the `F[X]` line.  Suppose all of its
-coefficients of index `≥ N` vanish (finite truncation) and the resulting
-truncation has `degreeX ≤ 1`.  Then there is a bivariate polynomial
-`p : F[X][Y]` with `p.natDegree < N`, `(p : PowerSeries F[X]) = φ`, and
-`p = (map C v₀) + (C X) * (map C v₁)` for some `v₀ v₁ : F[X]` (i.e. `p` is linear
-along the `Z`-line). -/
+/-- Combined end-to-end representation theorem.
+If a power series $\varphi$ over $F[X]$ has finite support and its truncation is linear in $X$,
+then it corresponds to a bivariate polynomial $P$ of degree less than $N$ which is linear in $X$. -/
 theorem exists_linear_polynomial_coe_of_finite_and_degreeX_le_one
     (φ : PowerSeries F[X]) {N : ℕ} (hN : 0 < N)
     (hfin : ∀ n, N ≤ n → PowerSeries.coeff n φ = 0)
