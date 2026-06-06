@@ -506,6 +506,48 @@ theorem mcaThreshold_eq_latticeIndexOf_residuals_and_epsCAGt_adjacent
     (mcaThreshold_eq_latticeIndexOf_residuals_and_upperWitness_adjacent
       domain k η δ_lo ε_star hη hδ hδlo_le_one R hle whi hδhi' hadj')
 
+/-- Per-rate refined Hab25 lower witnesses and adjacent MCA upper witnesses resolve the
+faithful four-rate MCA lattice prize directly.
+
+This is the prize-facing wrapper for
+`mcaThreshold_eq_latticeIndexOf_residuals_and_upperWitness_adjacent`: at each prize rate, the
+opened Hab25 residual bundle supplies the lower witness and the supplied upper witness lands on
+the next lattice point. -/
+theorem mcaPrizeLatticeResolved_of_residuals_and_upperWitness_adjacent
+    (domain : ι₀ ↪ F₀)
+    (η δ_lo : Fin 4 → ℝ≥0)
+    (hη : ∀ j : Fin 4, 0 < η j)
+    (hδ : ∀ j : Fin 4,
+      InJohnsonRange domain
+        ⌊prizeRates j * (Fintype.card ι₀ : ℝ≥0)⌋₊ (η j) (δ_lo j))
+    (hδlo_le_one : ∀ j : Fin 4, δ_lo j ≤ 1)
+    (R : ∀ j : Fin 4,
+      Hab25JohnsonResiduals domain
+        ⌊prizeRates j * (Fintype.card ι₀ : ℝ≥0)⌋₊ (η j) (δ_lo j)
+        (hη j) (hδ j))
+    (hle : ∀ j : Fin 4,
+      ENNReal.ofReal
+          (johnsonBoundReal domain
+            ⌊prizeRates j * (Fintype.card ι₀ : ℝ≥0)⌋₊ (η j) (δ_lo j))
+        ≤ (epsStar : ENNReal))
+    (whi : ∀ j : Fin 4,
+      MCAUpperWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι₀ : ℝ≥0)⌋₊ : Set (ι₀ → F₀))
+        epsStar)
+    (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1)
+    (hadj : ∀ j : Fin 4,
+      (GrandChallengesLattice.latticeIndexOf (ι := ι₀) (whi j).δ (hδhi j)).val =
+        (GrandChallengesLattice.latticeIndexOf (ι := ι₀) (δ_lo j) (hδlo_le_one j)).val + 1) :
+  GrandChallengesLattice.mcaPrizeLatticeResolved domain
+      (fun j => GrandChallengesLattice.latticeIndexOf (ι := ι₀) (δ_lo j) (hδlo_le_one j)) := by
+  refine GrandChallengesLattice.mcaPrizeLatticeResolved_of_adjacent_witnesses
+    domain ?_ whi hδhi hadj
+  intro j
+  exact mcaLowerWitness_of_residuals domain
+    ⌊prizeRates j * (Fintype.card ι₀ : ℝ≥0)⌋₊ (η j) (δ_lo j) epsStar
+    (hη j) (hδ j) (hδlo_le_one j) (R j) (hle j)
+
 end Reduction
 
 end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
