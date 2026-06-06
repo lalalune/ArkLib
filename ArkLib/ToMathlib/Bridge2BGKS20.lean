@@ -142,3 +142,10 @@ theorem epsCA_separation_bridge_of_residual
 end Separation
 
 end CodingTheory.Bridge
+
+/-! ### Axiom audit (issue #22 bridge surface) -/
+
+#print axioms CodingTheory.Bridge.ofReal_one_sub_inv_le_card_div
+#print axioms CodingTheory.Bridge.epsCA_ge_one_sub_inv_of_nearCertainWitness
+#print axioms CodingTheory.Bridge.NearCertainBadLine
+#print axioms CodingTheory.Bridge.epsCA_separation_bridge_of_residual

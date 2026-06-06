@@ -174,3 +174,12 @@ theorem hBadLine_of_provBadLine
 end BadLine
 
 end CodingTheory.Bridge
+
+/-! ### Axiom audit (issue #22 bridge surface) -/
+
+#print axioms CodingTheory.Bridge.ofReal_le_card_div_of_card_mul_le
+#print axioms CodingTheory.Bridge.epsCA_ge_inv_of_badLineWitness
+#print axioms CodingTheory.Bridge.epsCA_ge_half_inv_n_of_badLineWitness
+#print axioms CodingTheory.Bridge.BadLineWitness
+#print axioms CodingTheory.Bridge.epsCA_badLine_bridge_of_residual
+#print axioms CodingTheory.Bridge.hBadLine_of_provBadLine

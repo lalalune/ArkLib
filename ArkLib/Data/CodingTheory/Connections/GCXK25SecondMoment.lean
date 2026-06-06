@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import Mathlib.Algebra.Order.Chebyshev
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Data.Finset.Card
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormNum
