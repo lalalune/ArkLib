@@ -229,6 +229,29 @@ The sharp `2 / |L|` statement needs the unavailable challenge-level root-count b
 honest always-valid probability upper bound used below. -/
 abbrev roundKnowledgeError (L : Type) [Fintype L] (ℓ : ℕ) (i : Fin ℓ) : NNReal := 1
 
+/-- **Named weakened-KState bad event for one ring-switching sumcheck round.**
+The prover's degree-`≤ 2` round polynomial is not the ground-truth round polynomial, but both agree
+at the verifier's fresh challenge. The inequality is phrased on `.val`, matching the polynomial
+root-counting bridge and avoiding a dependency on the Binius BinaryBasefold event wrapper. -/
+def badSumcheckEventProp (r : L) (h_i h_star : L⦃≤ 2⦄[X]) : Prop :=
+  h_i.val ≠ h_star.val ∧ h_i.val.eval r = h_star.val.eval r
+
+omit [NeZero κ] [Nontrivial L] [Fintype K] [DecidableEq K] [NeZero ℓ] [NeZero ℓ'] in
+/-- **Probability bound for the named weakened-KState bad event.**
+This packages the local sumcheck event in the same `probEvent` language as the generic
+RingSwitching Schwartz-Zippel bridge. -/
+theorem probEvent_badSumcheckEventProp_degree_two_le [IsDomain L]
+    (h_i h_star : L⦃≤ 2⦄[X]) :
+    Pr[fun r => badSumcheckEventProp (L := L) r h_i h_star | ($ᵗ L)] ≤
+      (2 : ENNReal) / (Fintype.card L) := by
+  have h_i_deg : h_i.val.natDegree ≤ 2 :=
+    Polynomial.natDegree_le_of_degree_le (Polynomial.mem_degreeLE.1 h_i.property)
+  have h_star_deg : h_star.val.natDegree ≤ 2 :=
+    Polynomial.natDegree_le_of_degree_le (Polynomial.mem_degreeLE.1 h_star.property)
+  simpa [badSumcheckEventProp] using
+    (_root_.RingSwitching.probEvent_badAgreement_degree_two_le
+      (p := h_i.val) (q := h_star.val) h_i_deg h_star_deg)
+
 omit [NeZero κ] [Fintype L] [DecidableEq L] [SampleableType L] [NeZero ℓ] [NeZero ℓ'] in
 /-- **Target (b): `getSumcheckRoundPoly` value as a cube sum (LAST-variable/`snoc` form, defect-#20
 repair).** The round univariate `getSumcheckRoundPoly ℓ (boolDomain L ℓ) i H` evaluated at the
@@ -665,9 +688,9 @@ def iteratedSumcheckKStateProp (i : Fin ℓ') (m : Fin (2 + 1))
     --
     -- Residual error. With that weakened state, the doom-escape event `¬(state@1) ∧ (state@2)`
     -- (challenge index `⟨1,rfl⟩`, identity `extractMid`) reduces to
-    -- `h_i ≠ h_star ∧ h_i(r'ᵢ) = h_star(r'ᵢ)` = `KStateWeaken.badPolyAgreement r'ᵢ h_i h_star`,
-    -- which the **now-available, CompPoly-free** Schwartz–Zippel bridge
-    -- `KStateWeaken.prob_badPolyAgreement_degree_two_le` bounds by `2/|L|` — the sharp per-round
+    -- `h_i ≠ h_star ∧ h_i(r'ᵢ) = h_star(r'ᵢ)`, the local `badSumcheckEventProp` surface. The
+    -- **now-available, CompPoly-free** Schwartz–Zippel bridge
+    -- `probEvent_badSumcheckEventProp_degree_two_le` bounds it by `2/|L|` — the sharp per-round
     -- knowledge error (vs. the current `roundKnowledgeError = 1`).
     --
     -- The only mechanical step separating this file from emitting the weakened strong state is a
@@ -676,9 +699,9 @@ def iteratedSumcheckKStateProp (i : Fin ℓ') (m : Fin (2 + 1))
     -- same round message `h_i`, but at the `Transcript (Fin.last 2)` index type the numeral `0`
     -- does not elaborate against `Fin ↑(Fin.last 2)` without an explicit `Fin.val_last` reduction).
     -- That bridge is the sole residual; the algebraic content (cube-telescoping, consistency,
-    -- structural invariant) is fully proven above, and the probability bound is fully proven in
-    -- `KStateWeaken`. Until the bridge lands the post-challenge state stays `True` and the RBR
-    -- theorem below uses the always-valid unit bound, so the file remains sound and green.
+    -- structural invariant) is fully proven above, and the probability bound is now local to this
+    -- file. Until the bridge lands the post-challenge state stays `True` and the RBR theorem below
+    -- uses the always-valid unit bound, so the file remains sound and green.
     True
 
 /-- Knowledge state function (KState) for single round -/
