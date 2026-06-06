@@ -511,20 +511,16 @@ theorem bkr06_tight_N_realizes
   have hqpos : 0 < q := hq
   -- exact factorization: q^{v(m-v)} = q^{m(v-u)} · q^{mu - v²}, since both exponents add up.
   have hexp_add : m * (v - u) + (m * u - v ^ 2) = v * (m - v) := by
-    -- m(v-u) + (mu - v²) = mv - mu + mu - v² = mv - v² = v(m-v)
     have h1 : m * u ≤ m * v := Nat.mul_le_mul_left m huv
     have h2 : v * v ≤ m * v := Nat.mul_le_mul_right v hvm
-    -- v² = v*v
     have hv2 : v ^ 2 = v * v := sq v
     rw [hv2] at hexp_nonneg ⊢
-    -- now pure Nat omega after expanding the products' monotonicity facts
-    have hmv_uv : m * (v - u) = m * v - m * u := Nat.mul_sub_le ▸ (Nat.left_distrib m v u ▸ by
-      rw [Nat.mul_sub_left])
-    have hvmv : v * (m - v) = v * m - v * v := by rw [Nat.mul_sub_left]
+    have hmv_uv : m * (v - u) = m * v - m * u := Nat.mul_sub_left_distrib m v u
+    have hvmv : v * (m - v) = v * m - v * v := Nat.mul_sub_left_distrib v m v
     rw [hmv_uv, hvmv]
     omega
   have hNcount : N + 1 = q ^ (m * u - v ^ 2) := by
-    have hpos : 0 < q ^ (m * u - v ^ 2) := Nat.pos_pow_of_pos _ hqpos
+    have hpos : 0 < q ^ (m * u - v ^ 2) := Nat.pow_pos hqpos
     simp only [N]
     omega
   refine ⟨?_, hNcount⟩
@@ -532,10 +528,9 @@ theorem bkr06_tight_N_realizes
   rw [hKcard, ← pow_mul]
   have hfull : q ^ (m * (v - u)) * (N + 1) = q ^ (v * (m - v)) := by
     rw [hNcount, ← pow_add, hexp_add]
-  have hKvu_pos : 0 < q ^ (m * (v - u)) := Nat.pos_pow_of_pos _ hqpos
+  have hKvu_pos : 0 < q ^ (m * (v - u)) := Nat.pow_pos hqpos
   calc q ^ (m * (v - u)) * N
-      < q ^ (m * (v - u)) * (N + 1) := by
-        apply Nat.mul_lt_mul_left hKvu_pos; omega
+      < q ^ (m * (v - u)) * (N + 1) := Nat.mul_lt_mul_of_pos_left (by omega) hKvu_pos
     _ = q ^ (v * (m - v)) := hfull
 
 end BKR06
