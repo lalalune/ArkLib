@@ -463,16 +463,60 @@ theorem simplified_iop_soundness_listDecoding_target_nonneg (C : Set (ι → F))
   apply listDecoding_lb_nonneg
   exact_mod_cast Fintype.card_pos (α := F)
 
-def simplified_iop_soundness_listDecoding_lb_residual {k : ℕ}
-    (C : Set (ι → F)) (δ : ℝ≥0) : Prop :=
-  ∃ (v : Fin k → F) (μ₁ μ₂ : F) (f₁ f₂ : ι → F),
-    ((winningSet C δ v μ₁ μ₂ f₁ f₂).ncard : ℝ) ≥
-      (((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ)
-          * Fintype.card F)
-        / (Fintype.card F
-            + ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ) - 1)
+/-- **L6.12 Step-4 residual (GENUINE §6.4.1 attack data).**
 
-theorem simplified_iop_soundness_listDecoding_lb {k : ℕ}
+This is the faithful residual: *not* the conclusion (that would be the vacuous discharge
+of the faithfulness note), but the genuine §6.4.1 attack witness — the data from which the
+winning-set cardinality bound is now *derived* (in `simplified_iop_soundness_listDecoding_lb`,
+via `ToyProblem.simplified_iop_listDecoding_lb_of_winningChallenges` in
+`ArkLib/ToMathlib/ToyStep4.lean`).
+
+Writing `N := |Λ(C^{≡2}, δ)|`, it asks for:
+
+* `δ ≤ 1` (the relative-distance regime);
+* the linear-encoder hypothesis `hEnc` on `C` (ABF26's standing assumption — exactly the
+  same repair as `simplified_iop_soundness_ca_lb`; the `relation` predicate demands it);
+* a received word pair `(f₁, f₂)` together with an **injective** family of `N` challenges
+  `chal : Fin N → F` (the §6.4.1 distinct passing challenges, one per list element, distinct
+  under the field-size regime `|F| > binom(N, 2)` via the proven per-pair separation of
+  Steps 2–3) and, for each `j`, a codeword `c j ∈ C` to which the line `f₁ + (chal j)·f₂`
+  is `δ`-close (the `j`-th list element realised at its challenge).
+
+What remains genuinely owed (`paper-proof-owed`, step 4 only) is *constructing* this
+distinct-challenge family from the list-decoding data — the B.1 / CS25 image-separation
+combinatorics. The winning-set cardinality bound itself is no longer assumed: Steps 1–3
+plus this attack data yield it by the proven injection
+`simplified_iop_listDecoding_lb_of_winningChallenges` (each distinct `chal j` is a distinct
+winning challenge, and `N·|F|/(|F|+N−1) ≤ N ≤ |Ω|`). -/
+def simplified_iop_soundness_listDecoding_lb_residual {k : ℕ} [Nonempty ι]
+    (C : Set (ι → F)) (δ : ℝ≥0) : Prop :=
+  δ ≤ 1 ∧
+  (∃ encode : (Fin k → F) →ₗ[F] (ι → F),
+    (∀ m, encode m ∈ C) ∧ ∀ c ∈ C, ∃ m, encode m = c) ∧
+  ∃ (f₁ f₂ : ι → F)
+    (chal : Fin (Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat → F),
+    Function.Injective chal ∧
+    ∃ c : Fin (Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat → (ι → F),
+      (∀ j, c j ∈ C) ∧
+        ∀ j, δᵣ((fun i => f₁ i + (chal j) * f₂ i), c j) ≤ δ
+
+/-- **Lemma 6.12 of [ABF26]** — list-decoding lower bound on the simplified IOR, now
+**closed** by the genuine §6.4.1 Step-4 injection.
+
+Given the genuine attack data `hStep4` (the §6.4.1 distinct passing challenges from the
+list `Λ(C^{≡2}, δ)`; see `simplified_iop_soundness_listDecoding_lb_residual`), the winning
+set of the concrete attack instance `(0, 0, 0, f₁, f₂)` has at least
+`N·|F| / (|F| + N − 1)` elements, where `N := |Λ(C^{≡2}, δ)|`.
+
+The cardinality bound is **derived**, not assumed: the proof calls the proven Step-4
+injection `ToyProblem.simplified_iop_listDecoding_lb_of_winningChallenges`
+(`ArkLib/ToMathlib/ToyStep4.lean`), which turns the `N` distinct winning challenges into the
+cardinality lower bound via `N·|F|/(|F|+N−1) ≤ N ≤ |Ω|`. This replaces the previous
+vacuous `exact hStep4` (which smuggled the conclusion) with the genuine list→challenge
+injection demanded by the faithfulness note. The remaining `paper-proof-owed` content is
+only the *construction* of the distinct-challenge family (Steps 2–3's image separation),
+now isolated in the residual. -/
+theorem simplified_iop_soundness_listDecoding_lb {k : ℕ} [Nonempty ι]
     (C : Set (ι → F)) (δ : ℝ≥0) (_hδ_pos : (0 : ℝ≥0) < δ) (_hδ_lt : δ < 1)
     (_hF : (Fintype.card F : ℝ) >
       ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat).choose 2)
@@ -483,7 +527,12 @@ theorem simplified_iop_soundness_listDecoding_lb {k : ℕ}
             * Fintype.card F)
           / (Fintype.card F
               + ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ) - 1) := by
-  exact hStep4
+  obtain ⟨hδle, hEnc, f₁, f₂, chal, hchal_inj, c, hc_mem, hc_dist⟩ := hStep4
+  -- Genuine Step-4: the concrete attack instance `(0, 0, 0, f₁, f₂)`, whose winning set
+  -- the distinct challenges `chal` inject into, realises the list-decoding bound.
+  refine ⟨(0 : Fin k → F), 0, 0, f₁, f₂, ?_⟩
+  exact simplified_iop_listDecoding_lb_of_winningChallenges hδle hEnc
+    chal hchal_inj c hc_mem hc_dist
 
 /-- **Lemma 6.13 of [ABF26]** (correlated-agreement lower bound on the simplified IOR).
 
