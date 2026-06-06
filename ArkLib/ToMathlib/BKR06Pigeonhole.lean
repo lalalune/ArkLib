@@ -402,20 +402,25 @@ theorem bkr06_pigeonhole_family_card
   -- Part 2: pattern pigeonhole extracts a sub-family `T` of size `> N`.
   obtain ⟨T, hTcard, hTsmall⟩ :=
     exists_pattern_fiber_family g k w ((Fintype.card F) ^ v) N hg_deg hcov hbig'
-  -- The surviving index type: the elements of `T`.
-  refine ⟨{ t : {W : Submodule F K // W ∈ S} // t ∈ T }, inferInstance, inferInstance,
-    fun t => t.val.val, fun _ => instFin _, ?_, ?_, ?_, ?_⟩
+  -- The surviving index type: `Fin T.card` (a `Type 0`), bijecting onto the elements of `T`
+  -- via `e`.  This decouples the universe of `K` from the small index type the statement asks for.
+  let e : Fin T.card ≃ {t : {W : Submodule F K // W ∈ S} // t ∈ T} :=
+    (T.equivFin).symm
+  refine ⟨Fin T.card, inferInstance, inferInstance,
+    fun i => ((e i).val.val), fun _ => instFin _, ?_, ?_, ?_, ?_⟩
   · -- |ι| = T.card > N
-    rw [Fintype.card_coe]; exact hTcard
+    simpa using hTcard
   · -- each has dimension `v`
-    intro t; exact hSdim _ t.val.2
+    intro i; exact hSdim _ (e i).val.2
   · -- subspace polynomials are pairwise distinct on `T`
-    intro t₁ t₂ ht
-    have hval : t₁.val = t₂.val := hg_inj ht
-    exact Subtype.ext (Subtype.ext (congrArg Subtype.val hval))
+    intro i₁ i₂ hi
+    -- `g` is injective and `e` is injective, so the indices coincide.
+    have hval : (e i₁).val = (e i₂).val := hg_inj hi
+    have : e i₁ = e i₂ := Subtype.ext hval
+    exact e.injective this
   · -- pairwise differences lie in `degreeLT K k`
-    intro t₁ t₂
-    exact hTsmall t₁.val t₁.val.2 t₂.val t₂.val.2
+    intro i₁ i₂
+    exact hTsmall (e i₁).val (e i₁).2 (e i₂).val (e i₂).2
 
 /-- **BKR06 Lemma 3.5 family-size residual (real-exponent form).**
 

@@ -249,6 +249,17 @@ theorem foldOracleReduction_perfectCompleteness (i : Fin ℓ) :
   unfold OracleReduction.perfectCompleteness
   intro stmtIn witIn h_relIn
   simp only
+  -- RESIDUAL (statement false as written): `OracleReduction.perfectCompleteness` unfolds to
+  -- `Pr[success | OptionT.mk do (simulateQ pImpl (reduction.run ..)).run' (← init)] = 1`
+  -- (see `Reduction.perfectCompleteness_eq_prob_one`). The honest run begins with `(← init)`;
+  -- if `init` fails with positive mass, the `OptionT` bind short-circuits to `none` and the
+  -- success predicate is false there, forcing `Pr[success] ≤ 1 - Pr[⊥|init] < 1`.
+  -- COUNTERMODEL: take `init := failure : ProbComp σ`. Then `Pr[⊥|init] = 1`, so `Pr[success] = 0 ≠ 1`.
+  -- The theorem is therefore unprovable without `hInit : NeverFail init`. Every proven sibling in
+  -- the codebase carries exactly this hypothesis: `General.lean:111` (`init.neverFails`),
+  -- `FRIBinius/General.lean:191`, and the entire `Steps/Fold.lean` refactor
+  -- (`unroll_2_message_reduction_perfectCompleteness` cannot even be applied without `hInit`).
+  -- Per honesty rules, the missing hypothesis is NOT silently added; sorry retained.
   sorry
 
 open scoped NNReal
@@ -387,8 +398,16 @@ def foldKnowledgeStateFunction (i : Fin ℓ) :
       ⟨stmtLast, oStmtLast⟩ tr witOut
     simp only [Fin.reduceLast, Fin.isValue]
     -- ⊢ foldKStateProp 𝔽q β 2 tr stmtLast witLast oStmtLast
-    -- TODO : prove this via the relations between stmtLast & stmtOut,
-      -- witLast & witOut, oStmtLast & oStmtOut
+    -- RESIDUAL (missing/divergent infrastructure): closing `h_oStmt` requires unfolding the
+    -- VCVio support set of the fold verifier's honest run from `h_simulateQ` (`h_conj.1`) — the
+    -- exact `OptionT.mem_support_iff` / `simulateQ_*` / `OracleInterface.answer` peel done in the
+    -- proven refactor `Steps/Fold.lean:510-640`. The second goal `foldKStateProp 2 …` then needs the
+    -- algebraic invariant chain (`getSumcheckRoundPoly_sum_eq` analog) over the `Basic.lean`
+    -- `masterKStateProp = localChecks ∧ (badEventExists ∨ oracleWitnessConsistency)` formulation.
+    -- That refactor proves the structurally DIFFERENT `Relations.lean` formulation
+    -- (`badEventExists ∨ (localChecks ∧ structural ∧ initial ∧ oracleFoldingConsistency)`,
+    -- with `OracleFrontierIndex`, `witnessStructuralInvariant`, `oracleFoldingConsistencyProp`),
+    -- so its proof is NOT portable to this `Spec→Basic` import closure. Sorry retained.
     have h_oStmt : oStmtLast = oStmtOut := by sorry
     sorry
 
@@ -406,6 +425,15 @@ theorem foldOracleVerifier_rbrKnowledgeSoundness (i : Fin ℓ) :
   use foldKnowledgeStateFunction (mp:=mp) 𝔽q β (ϑ := ϑ)
     (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i
   intro stmtIn witIn prover j
+  -- RESIDUAL (missing/divergent infrastructure): `pSpecFold` has a genuine V_to_P challenge at
+  -- index 1, so (unlike the commit/relay cases, discharged by `absurd j.2`) the goal here is the
+  -- full RBR probabilistic bound `Pr[…] ≤ foldKnowledgeError … j` over the prover's run plus the
+  -- sampled challenge. Closing it requires `OracleReduction.unroll_rbrKnowledgeSoundness`
+  -- (from `OracleReduction/Completeness.lean`, not imported here) and the tsum-factorization +
+  -- bad-event-bound machinery developed across `Steps/Fold.lean:1731+` (≈1700 lines), built on the
+  -- `Relations.lean` invariants (`strictRoundRelation`, `incrementalBadEventExistsProp`,
+  -- `foldStep_is_logic_complete`) — none available against this `Basic.lean` formulation.
+  -- Sorry retained.
   sorry
 
 end FoldStep
@@ -618,6 +646,12 @@ theorem commitOracleReduction_perfectCompleteness (i : Fin ℓ)
       (impl := impl) := by
   unfold OracleReduction.perfectCompleteness
   intro stmtIn witIn h_relIn
+  -- RESIDUAL (statement false as written): same defect as `foldOracleReduction_perfectCompleteness`.
+  -- `perfectCompleteness` reduces to a `Pr[… | … (← init)] = 1` over the honest run, which begins
+  -- by drawing from `init`. COUNTERMODEL: `init := failure : ProbComp σ` gives `Pr[success] = 0 ≠ 1`.
+  -- Provable only with `hInit : NeverFail init`; the proven refactor `Steps/Commit.lean:139` carries
+  -- it and proceeds via `unroll_1_message_reduction_perfectCompleteness_P_to_V (hInit := hInit)`.
+  -- Hypothesis NOT silently added; sorry retained.
   sorry
 
 open scoped NNReal
@@ -678,6 +712,16 @@ def commitKState (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i) :
       (relOut := roundRelation (mp := mp) 𝔽q β (ϑ := ϑ)
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.succ)
       (extractor := commitRbrExtractor 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) := by
+  -- RESIDUAL (missing/divergent infrastructure): this builds an entire `KnowledgeStateFunction`
+  -- (`toFun_empty/toFun_next/toFun_full`). `toFun_full` requires the VCVio support-set peel of the
+  -- commit verifier's run, and `toFun_next` (though the challenge set of `pSpecCommit` is empty)
+  -- and `toFun_empty` must match `commitKStateProp`/`masterKStateProp`. The proven refactor
+  -- `Steps/Commit.lean:375` does this in ≈150 lines over the `Relations.lean` formulation
+  -- (`𝓑`, `OracleFrontierIndex`, `incrementalBadEventExistsProp_commit_step_backward`,
+  -- `oracleFoldingConsistencyProp_commit_step_backward`, `witnessStructuralInvariant`).
+  -- This file's `commitKStateProp`/`masterKStateProp` use the older `Basic.lean` shape
+  -- (`localChecks ∧ (badEvent ∨ oracleWitnessConsistency)`), for which those backward lemmas and
+  -- the `𝓑` carrier do not exist; the refactor's proof is not portable. Sorry retained.
   sorry
 
 /-- RBR knowledge soundness for a single round oracle verifier -/
@@ -1148,6 +1192,12 @@ theorem finalSumcheckOracleReduction_perfectCompleteness {σ : Type}
   unfold OracleReduction.perfectCompleteness
   intro stmtIn witIn h_relIn
   simp only
+  -- RESIDUAL (statement false as written): same defect as the fold/commit completeness theorems.
+  -- `perfectCompleteness` reduces to `Pr[… | … (← init)] = 1`; with `init := failure : ProbComp σ`
+  -- (COUNTERMODEL) the success probability is 0 ≠ 1. Provable only with `hInit : NeverFail init`;
+  -- the proven refactor `Steps/FinalSumcheck.lean:130` carries it and applies
+  -- `unroll_1_message_reduction_perfectCompleteness_P_to_V (hInit := hInit)`.
+  -- Hypothesis NOT silently added; sorry retained.
   sorry
 
 /-- RBR knowledge error for the final sumcheck step -/
@@ -1239,10 +1289,21 @@ noncomputable def finalSumcheckKnowledgeStateFunction {σ : Type} (init : ProbCo
        (tr := tr) (stmt := stmt) (witMid := witMid) (oStmt := oStmt)
   toFun_empty := fun stmt witMid => by simp only; rfl
   toFun_next := fun m hDir stmt tr msg witMid h => by
-    -- Either bad events exist, or (oracleFoldingConsistency is true so
-      -- the extractor can construct a satisfying witness)
+    -- RESIDUAL (missing/divergent infrastructure): `toFun_next` must transport the round-`m.succ`
+    -- `finalSumcheckKStateProp` (which packs `sumcheckFinalCheck ∧ finalNonDoomedFoldingProp` over
+    -- the extracted `t`) back to round `m.castSucc`, using the extractor's `extractMLP` decode and
+    -- the bad-event/folding-consistency dichotomy. The proven refactor
+    -- `Steps/FinalSumcheck.lean:1701` does this over the `Relations.lean` invariants (`𝓑`,
+    -- `incrementalBadEventExistsProp`, `oracleFoldingConsistencyProp`); the backward-transport
+    -- lemmas it needs do not exist for this file's `Basic.lean`/`masterKStateProp` shape, so the
+    -- proof is not portable. Sorry retained.
     sorry
   toFun_full := fun stmt tr witOut h => by
+    -- RESIDUAL (missing/divergent infrastructure): `toFun_full` requires the VCVio support-set peel
+    -- of the final-sumcheck verifier's run to extract `stmtOut`/`oStmtOut` equalities, then proving
+    -- `finalSumcheckKStateProp 1` from `finalSumcheckRelOut`. Proven in `Steps/FinalSumcheck.lean:1776`
+    -- over the `Relations.lean` formulation; not portable to this `Spec→Basic` import closure
+    -- (different `masterKStateProp`, no `𝓑` carrier, missing support-peel lemmas). Sorry retained.
     sorry
 
 /-- Round-by-round knowledge soundness for the final sumcheck step -/
