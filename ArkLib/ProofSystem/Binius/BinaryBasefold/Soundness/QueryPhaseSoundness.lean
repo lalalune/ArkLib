@@ -24,7 +24,7 @@ This file packages:
 
 namespace Binius.BinaryBasefold
 
-set_option maxHeartbeats 200000
+set_option maxHeartbeats 400000
 
 open OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Polynomial MvPolynomial
   Binius.BinaryBasefold
@@ -58,14 +58,14 @@ lemma goodBlock_implies_currentUDRClose
     (oStmtIn : ∀ j, OracleStatement 𝔽q β (ϑ := ϑ)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Fin.last ℓ) j)
     (j : Fin (nBlocks (ℓ := ℓ) (ϑ := ϑ)))
-    (h_good : ¬ badBlockProp (ϑ := ϑ) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmtIn oStmtIn j) :
+    (h_good : ¬ badBlockProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmtIn oStmtIn j) :
     UDRClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (queryBlockSourceIdx (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j)
       (queryBlockSourceIdx_le
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j)
       (oStmtIn j) := by
   have h_close :=
-    goodBlock_implies_UDRClose (ϑ := ϑ) (𝔽q := 𝔽q) (β := β)
+    goodBlock_implies_UDRClose (𝔽q := 𝔽q) (β := β)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (stmtIn := stmtIn)
       (oStmtIn := oStmtIn) (j := j) h_good
       (destIdx := queryBlockSourceIdx
@@ -80,7 +80,7 @@ abbrev goodBlockCodeword
     (oStmtIn : ∀ j, OracleStatement 𝔽q β (ϑ := ϑ)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Fin.last ℓ) j)
     (j : Fin (nBlocks (ℓ := ℓ) (ϑ := ϑ)))
-    (h_good : ¬ badBlockProp (ϑ := ϑ) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmtIn oStmtIn j) :
+    (h_good : ¬ badBlockProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmtIn oStmtIn j) :
     OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (queryBlockSourceIdx (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j) :=
   UDRCodeword 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
@@ -98,7 +98,7 @@ lemma no_foldingBadEvent_of_no_bad_global
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Fin.last ℓ) j)
     (stmtIn : FinalSumcheckStatementOut (L := L) (ℓ := ℓ))
     (j : Fin (nBlocks (ℓ := ℓ) (ϑ := ϑ)))
-    (h_no_bad_global : ¬ blockBadEventExistsProp (ϑ := ϑ) 𝔽q β (stmtIdx := Fin.last ℓ)
+    (h_no_bad_global : ¬ blockBadEventExistsProp 𝔽q β (stmtIdx := Fin.last ℓ)
       (oracleIdx := OracleFrontierIndex.mkFromStmtIdx (Fin.last ℓ))
       (oStmt := oStmtIn) (challenges := stmtIn.challenges)) :
     ¬ foldingBadEvent 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
@@ -131,7 +131,7 @@ lemma goodBlock_intermediate_isCompliant
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Fin.last ℓ) j)
     (j : Fin (nBlocks (ℓ := ℓ) (ϑ := ϑ)))
     (hj : j.val + 1 < nBlocks (ℓ := ℓ) (ϑ := ϑ))
-    (h_good : ¬ badBlockProp (ϑ := ϑ) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmtIn oStmtIn j) :
+    (h_good : ¬ badBlockProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmtIn oStmtIn j) :
     isCompliant 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (i := queryBlockSourceIdx
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j)
@@ -168,7 +168,7 @@ lemma goodBlock_last_isCompliant
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Fin.last ℓ) j)
     (j : Fin (nBlocks (ℓ := ℓ) (ϑ := ϑ)))
     (hj : ¬ j.val + 1 < nBlocks (ℓ := ℓ) (ϑ := ϑ))
-    (h_good : ¬ badBlockProp (ϑ := ϑ) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmtIn oStmtIn j) :
+    (h_good : ¬ badBlockProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmtIn oStmtIn j) :
     isCompliant 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (i := queryBlockSourceIdx
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j)
@@ -204,7 +204,7 @@ lemma goodBlockCodeword_eq_of_fiberwiseClose
     (oStmtIn : ∀ j, OracleStatement 𝔽q β (ϑ := ϑ)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Fin.last ℓ) j)
     (j : Fin (nBlocks (ℓ := ℓ) (ϑ := ϑ)))
-    (h_good : ¬ badBlockProp (ϑ := ϑ) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmtIn oStmtIn j)
+    (h_good : ¬ badBlockProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmtIn oStmtIn j)
     (h_fw : fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (i := queryBlockSourceIdx
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j)
@@ -256,8 +256,7 @@ lemma point_disagreement_mem_fiberwiseDisagreement
     (oStmtIn : ∀ j, OracleStatement 𝔽q β (ϑ := ϑ)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Fin.last ℓ) j)
     (j : Fin (nBlocks (ℓ := ℓ) (ϑ := ϑ)))
-    (v : AdditiveNTT.Comp.sDomain (𝔽q := 𝔽q) (β := β) (ℓ := ℓ) (R_rate := 𝓡)
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0)
+    (v : sDomain 𝔽q β h_ℓ_add_R_rate 0)
     (g : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (queryBlockSourceIdx (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j))
     (h_point_ne :
@@ -276,47 +275,13 @@ lemma point_disagreement_mem_fiberwiseDisagreement
       (h_destIdx_le := queryBlockDestIdx_le
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j)
       (oStmtIn j) g := by
-  sorry
-/-
-
- -/
-set_option maxHeartbeats 200000 in
-lemma goodBlock_point_disagreement_step
-    (stmtIn : FinalSumcheckStatementOut (L := L) (ℓ := ℓ))
-    (oStmtIn : ∀ j, OracleStatement 𝔽q β (ϑ := ϑ)
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Fin.last ℓ) j)
-    (j : Fin (nBlocks (ℓ := ℓ) (ϑ := ϑ)))
-    (hj : j.val + 1 < nBlocks (ℓ := ℓ) (ϑ := ϑ))
-    (h_good : ¬ badBlockProp (ϑ := ϑ) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmtIn oStmtIn j)
-    (h_next_good : ¬ badBlockProp (ϑ := ϑ) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      stmtIn oStmtIn ⟨j.val + 1, hj⟩)
-    (h_no_bad_global : ¬ blockBadEventExistsProp (ϑ := ϑ) 𝔽q β (stmtIdx := Fin.last ℓ)
-      (oracleIdx := OracleFrontierIndex.mkFromStmtIdx (Fin.last ℓ))
-      (oStmt := oStmtIn) (challenges := stmtIn.challenges))
-    (v : AdditiveNTT.Comp.sDomain (𝔽q := 𝔽q) (β := β) (ℓ := ℓ) (R_rate := 𝓡)
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0)
-    (h_accept : logical_checkSingleRepetition (ϑ := ϑ) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      oStmtIn v stmtIn stmtIn.final_constant)
-    (h_point_ne :
-      (oStmtIn j)
-        (queryBlockSourceSuffix (𝔽q := 𝔽q) (β := β)
-          (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j v) ≠
-      goodBlockCodeword (𝔽q := 𝔽q) (β := β)
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        (stmtIn := stmtIn) (oStmtIn := oStmtIn) (j := j) h_good
-        (queryBlockSourceSuffix (𝔽q := 𝔽q) (β := β)
-          (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j v)) :
-    let j_next : Fin (nBlocks (ℓ := ℓ) (ϑ := ϑ)) := ⟨j.val + 1, hj⟩
-    (oStmtIn j_next)
-      (queryBlockSourceSuffix (𝔽q := 𝔽q) (β := β)
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j_next v) ≠
-    goodBlockCodeword (𝔽q := 𝔽q) (β := β)
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (stmtIn := stmtIn) (oStmtIn := oStmtIn) (j := j_next) h_next_good
-      (queryBlockSourceSuffix (𝔽q := 𝔽q) (β := β)
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j_next v) := by
-  sorry
-/-
+  simp only [fiberwiseDisagreementSet, Finset.mem_filter, Finset.mem_univ, true_and]
+  refine ⟨queryBlockSourceSuffix (𝔽q := 𝔽q) (β := β)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j v,
+    queryBlockSourceSuffix_maps_to_destSuffix
+      (𝔽q := 𝔽q) (β := β) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (ℓ := ℓ) (ϑ := ϑ) (j := j) (v := v),
+    h_point_ne⟩
 
 set_option maxHeartbeats 200000 in
 lemma goodBlock_point_disagreement_step
@@ -325,15 +290,14 @@ lemma goodBlock_point_disagreement_step
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Fin.last ℓ) j)
     (j : Fin (nBlocks (ℓ := ℓ) (ϑ := ϑ)))
     (hj : j.val + 1 < nBlocks (ℓ := ℓ) (ϑ := ϑ))
-    (h_good : ¬ badBlockProp (ϑ := ϑ) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmtIn oStmtIn j)
-    (h_next_good : ¬ badBlockProp (ϑ := ϑ) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (h_good : ¬ badBlockProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmtIn oStmtIn j)
+    (h_next_good : ¬ badBlockProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       stmtIn oStmtIn ⟨j.val + 1, hj⟩)
-    (h_no_bad_global : ¬ blockBadEventExistsProp (ϑ := ϑ) 𝔽q β (stmtIdx := Fin.last ℓ)
+    (h_no_bad_global : ¬ blockBadEventExistsProp 𝔽q β (stmtIdx := Fin.last ℓ)
       (oracleIdx := OracleFrontierIndex.mkFromStmtIdx (Fin.last ℓ))
       (oStmt := oStmtIn) (challenges := stmtIn.challenges))
-    (v : AdditiveNTT.Comp.sDomain (𝔽q := 𝔽q) (β := β) (ℓ := ℓ) (R_rate := 𝓡)
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0)
-    (h_accept : logical_checkSingleRepetition (ϑ := ϑ) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (v : sDomain 𝔽q β h_ℓ_add_R_rate 0)
+    (h_accept : logical_checkSingleRepetition 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       oStmtIn v stmtIn stmtIn.final_constant)
     (h_point_ne :
       (oStmtIn j)
@@ -596,8 +560,6 @@ lemma goodBlock_point_disagreement_step
   apply h_point_ne_transport
   exact h_eq.trans h_codeword_transport_eval.symm
 
- -/
-
 /-- **Lemma 4.26** (Query rejection from disagreement suffix).
 
 If the verifier's query point `v` has its suffix in the disagreement set between
@@ -646,26 +608,26 @@ theorem lemma_4_25_reject_if_suffix_in_disagreement
     (h_next_close : UDRClose 𝔽q β destIdx h_destIdx_le f_next)
     -- All blocks after j* are compliant (consequence of maximality of j*)
     (h_good_after : ∀ j : Fin (nBlocks (ℓ := ℓ) (ϑ := ϑ)), j_star < j →
-      ¬ badBlockProp (ϑ := ϑ) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmtIn oStmtIn j)
+      ¬ badBlockProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmtIn oStmtIn j)
     -- No bad events globally (for the inductive step at subsequent blocks)
-    (h_no_bad_global : ¬ blockBadEventExistsProp (ϑ := ϑ) 𝔽q β (stmtIdx := Fin.last ℓ)
+    (h_no_bad_global : ¬ blockBadEventExistsProp 𝔽q β (stmtIdx := Fin.last ℓ)
       (oracleIdx := OracleFrontierIndex.mkFromStmtIdx (Fin.last ℓ))
       (oStmt := oStmtIn) (challenges := stmtIn.challenges))
-    (v : AdditiveNTT.Comp.sDomain (𝔽q := 𝔽q) (β := β) (ℓ := ℓ) (R_rate := 𝓡)
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0) :
+    (v : sDomain 𝔽q β h_ℓ_add_R_rate 0) :
     let f_star := oStmtIn j_star
     let folded_f := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       ⟨j_star.val * ϑ, by omega⟩ ϑ h_destIdx h_destIdx_le f_star (r_challenges := r_challenges)
     let f_bar_next := UDRCodeword 𝔽q β destIdx h_destIdx_le
       (f := f_next) (h_within_radius := h_next_close)
     let v_suffix :=
-      extractSuffixFromChallenge 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        (v := v) (destIdx := destIdx) (h_destIdx_le := h_destIdx_le)
+      iteratedQuotientMap 𝔽q β h_ℓ_add_R_rate (i := (0 : Fin r)) (destIdx := destIdx)
+        (k := destIdx.val)
+        (h_destIdx := by simp only [Fin.coe_ofNat_eq_mod, zero_mod, zero_add])
+        (h_destIdx_le := h_destIdx_le) (x := v)
     v_suffix ∈ disagreementSet 𝔽q β (i := destIdx) (destIdx := destIdx) (h_destIdx := rfl) (f := folded_f) (g := f_bar_next) →
-    ¬ logical_checkSingleRepetition (ϑ := ϑ) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    ¬ logical_checkSingleRepetition 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
         oStmtIn v stmtIn stmtIn.final_constant := by
-  sorry
-/-
+  classical
   -- Proof per BinaryBasefold.md, Lemma 4.26.
   -- We show: assuming all step conditions pass, the fold value at the last step
   -- disagrees with `final_constant`, contradicting the final step condition.
@@ -858,7 +820,7 @@ theorem lemma_4_25_reject_if_suffix_in_disagreement
           apply h_base_ne
           exact h_first_guard.trans h_eq
         have h_jfirst_good :
-            ¬ badBlockProp (ϑ := ϑ) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmtIn oStmtIn j_first := by
+            ¬ badBlockProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmtIn oStmtIn j_first := by
           apply h_good_after
           exact Fin.lt_iff_val_lt_val.mpr (by
             dsimp [j_first]
@@ -872,6 +834,14 @@ theorem lemma_4_25_reject_if_suffix_in_disagreement
             queryBlockDestIdx_eq_queryBlockSourceIdx_succ
               (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ)
               (j := j_star) (hj := h_more)
+        have h_idx_cast :
+            ↥(sDomain 𝔽q β h_ℓ_add_R_rate
+              (queryBlockDestIdx (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+                (ℓ := ℓ) (ϑ := ϑ) j_star)) =
+            ↥(sDomain 𝔽q β h_ℓ_add_R_rate
+              (queryBlockSourceIdx (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+                (ℓ := ℓ) (ϑ := ϑ) j_next)) := by
+          exact congrArg (fun i => ↥(sDomain 𝔽q β h_ℓ_add_R_rate i)) h_idx_eq
         have h_getNext_eq :
             getNextOracle 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ := ϑ)
               (i := Fin.last ℓ) (oStmt := oStmtIn) (j := j_star) (hj := by
@@ -880,16 +850,14 @@ theorem lemma_4_25_reject_if_suffix_in_disagreement
               (destDomainIdx := queryBlockDestIdx
                 (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j_star)
               (h_destDomainIdx := by rfl) =
-            fun y => (oStmtIn j_next)
-              (cast (by rw [h_idx_eq]) y) := by
+            fun y => (oStmtIn j_next) (cast (by rw [h_idx_eq]) y) := by
           simpa [j_next, j_first] using
             getNextOracle_eq_oracleStatement (𝔽q := 𝔽q) (β := β)
               (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
               (oStmt := oStmtIn) (j := j_star) (hj := h_more)
         have h_f_next_cast_eq :
             f_next =
-              fun y => (oStmtIn j_next)
-                (cast (by rw [h_idx_eq]) y) := by
+              fun y => (oStmtIn j_next) (cast h_idx_cast y) := by
           rw [h_f_next_oracle, h_getNext_eq]
         have h_jfirst_close :
             UDRClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
@@ -908,7 +876,7 @@ theorem lemma_4_25_reject_if_suffix_in_disagreement
                 (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j_star)
               (queryBlockDestIdx_le
                 (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j_star)
-              (fun y => (oStmtIn j_next) (cast (by rw [h_idx_eq]) y)) := by
+              (fun y => (oStmtIn j_next) (cast h_idx_cast y)) := by
           rw [← h_f_next_cast_eq]
           exact h_next_close
         have h_first_codeword_eq :
@@ -922,12 +890,11 @@ theorem lemma_4_25_reject_if_suffix_in_disagreement
           have h_fbar_eq :
               f_bar_next =
                 UDRCodeword 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-                (queryBlockDestIdx
-                  (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j_star)
-                (queryBlockDestIdx_le
-                  (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j_star)
-                  (f := fun y => (oStmtIn j_next)
-                    (cast (by rw [h_idx_eq]) y))
+                  (queryBlockDestIdx
+                    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j_star)
+                  (queryBlockDestIdx_le
+                    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j_star)
+                  (f := fun y => (oStmtIn j_next) (cast h_idx_cast y))
                   (h_within_radius := h_jfirst_close_stmt) := by
             cases h_f_next_cast_eq
             exact
@@ -937,7 +904,7 @@ theorem lemma_4_25_reject_if_suffix_in_disagreement
                   (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j_star)
                 (h_i := queryBlockDestIdx_le
                   (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j_star)
-                (f := fun y => (oStmtIn j_next) (cast (by rw [h_idx_eq]) y))
+                (f := fun y => (oStmtIn j_next) (cast h_idx_cast y))
                 h_next_close h_jfirst_close_stmt
           have h_left := congrFun h_fbar_eq v_suffix
           have h_transport :=
@@ -958,7 +925,7 @@ theorem lemma_4_25_reject_if_suffix_in_disagreement
                     (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j_star)
                   (queryBlockDestIdx_le
                     (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j_star)
-                  (f := fun y => (oStmtIn j_next) (cast (by rw [h_idx_eq]) y))
+                  (f := fun y => (oStmtIn j_next) (cast h_idx_cast y))
                   (h_within_radius := h_jfirst_close_stmt)
                   (queryBlockDestSuffix (𝔽q := 𝔽q) (β := β)
                     (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j_star v) := h_left
@@ -996,7 +963,7 @@ theorem lemma_4_25_reject_if_suffix_in_disagreement
         have h_good_of_ge :
             ∀ j : Fin (nBlocks (ℓ := ℓ) (ϑ := ϑ)),
               j_first.val ≤ j.val →
-              ¬ badBlockProp (ϑ := ϑ) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmtIn oStmtIn j := by
+              ¬ badBlockProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmtIn oStmtIn j := by
           intro j h_ge
           have hlt : j_star < j := Fin.lt_def.mpr (by
             have h_ge' := h_ge
@@ -1063,11 +1030,11 @@ theorem lemma_4_25_reject_if_suffix_in_disagreement
                   omega
                 exact lt_of_le_of_lt h_le j_last.isLt
               have h_prev_good :
-                  ¬ badBlockProp (ϑ := ϑ) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmtIn oStmtIn
+                  ¬ badBlockProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmtIn oStmtIn
                     j_prev := by
                 exact h_good_of_ge j_prev h_prev_ge
               have h_cur_good :
-                  ¬ badBlockProp (ϑ := ϑ) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmtIn oStmtIn
+                  ¬ badBlockProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmtIn oStmtIn
                     j_cur := by
                 exact h_good_of_ge j_cur h_cur_ge
               have h_step :=
@@ -1115,7 +1082,7 @@ theorem lemma_4_25_reject_if_suffix_in_disagreement
             ¬ j_end.val + 1 < nBlocks (ℓ := ℓ) (ϑ := ϑ) := by
           simpa [h_jend_eq_jlast] using h_no_last_succ_last
         have h_jlast_good :
-            ¬ badBlockProp (ϑ := ϑ) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmtIn oStmtIn j_end := by
+            ¬ badBlockProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmtIn oStmtIn j_end := by
           exact h_good_of_ge j_end (by
             dsimp [j_end]
             rw [Nat.add_sub_of_le h_jfirst_le_jlast]
@@ -1289,8 +1256,6 @@ theorem lemma_4_25_reject_if_suffix_in_disagreement
   -- Step 3: Contradiction.
   exact h_fold_ne_const h_final
 
- -/
-
 open Classical in
 /-- **Proposition 4.24** (Query-phase soundness, assuming no bad events).
 
@@ -1302,22 +1267,20 @@ theorem prop_4_23_singleRepetition_proximityCheck_bound
     (stmtIn : FinalSumcheckStatementOut (L := L) (ℓ := ℓ))
     (oStmtIn : ∀ j, OracleStatement 𝔽q β (ϑ := ϑ)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Fin.last ℓ) j)
-    (h_not_consistent : ¬ finalSumcheckStepOracleConsistencyProp (ϑ := ϑ) 𝔽q β
+    (h_not_consistent : ¬ finalSumcheckStepOracleConsistencyProp 𝔽q β
       (h_le := h_le) (stmtOut := stmtIn) (oStmtOut := oStmtIn))
-    (h_no_bad : ¬ blockBadEventExistsProp (ϑ := ϑ) 𝔽q β (stmtIdx := Fin.last ℓ)
+    (h_no_bad : ¬ blockBadEventExistsProp 𝔽q β (stmtIdx := Fin.last ℓ)
       (oracleIdx := OracleFrontierIndex.mkFromStmtIdx (Fin.last ℓ))
       (oStmt := oStmtIn) (challenges := stmtIn.challenges)) :
-    Pr_{ let v ←$ᵖ (AdditiveNTT.Comp.sDomain (𝔽q := 𝔽q) (β := β) (ℓ := ℓ)
-      (R_rate := 𝓡) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0) }[
-      logical_checkSingleRepetition (ϑ := ϑ) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    Pr_{ let v ←$ᵖ (sDomain 𝔽q β h_ℓ_add_R_rate 0) }[
+      logical_checkSingleRepetition 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
         oStmtIn v stmtIn stmtIn.final_constant
     ] ≤ ((1/2 : ℝ≥0) + (1 : ℝ≥0) / (2 * 2^𝓡)) := by
-  sorry
-/-
+  classical
   -- Extract a concrete bad block from `h_not_consistent`.
   have h_exists_badBlock :
       ∃ j : Fin (nBlocks (ℓ := ℓ) (ϑ := ϑ)),
-        badBlockProp (ϑ := ϑ) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        badBlockProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
           (stmtIn := stmtIn) (oStmtIn := oStmtIn) j := by
     -- Define final-step compliance as in `badBlockProp`'s last branch.
     let j_last := getLastOraclePositionIndex ℓ ϑ (Fin.last ℓ)
@@ -1464,16 +1427,16 @@ theorem prop_4_23_singleRepetition_proximityCheck_bound
       exact h_final_ok'
   -- Pick the highest bad block.
   let j_star :=
-    highestBadBlock (ϑ := ϑ) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    highestBadBlock 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (stmtIn := stmtIn) (oStmtIn := oStmtIn) h_exists_badBlock
   have h_j_star_bad :
-      badBlockProp (ϑ := ϑ) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      badBlockProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
         (stmtIn := stmtIn) (oStmtIn := oStmtIn) j_star := by
     exact
       highestBadBlock_is_bad 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
         (stmtIn := stmtIn) (oStmtIn := oStmtIn) h_exists_badBlock
   have h_good_of_lt {j : Fin (nBlocks (ℓ := ℓ) (ϑ := ϑ))} (hlt : j_star < j) :
-      ¬ badBlockProp (ϑ := ϑ) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      ¬ badBlockProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
           (stmtIn := stmtIn) (oStmtIn := oStmtIn) j :=
     not_badBlock_of_lt_highest 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (stmtIn := stmtIn) (oStmtIn := oStmtIn) h_exists_badBlock hlt
@@ -1552,7 +1515,7 @@ theorem prop_4_23_singleRepetition_proximityCheck_bound
         exact h_j_star_bad'
       let j_next : Fin (nBlocks (ℓ := ℓ) (ϑ := ϑ)) := ⟨j_star.val + 1, h_last⟩
       have h_next_good :
-          ¬ badBlockProp (ϑ := ϑ) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          ¬ badBlockProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
               (stmtIn := stmtIn) (oStmtIn := oStmtIn) j_next := by
         have hlt : j_star < j_next := by
           exact Fin.lt_iff_val_lt_val.mpr (by simp [j_next])
@@ -1565,7 +1528,7 @@ theorem prop_4_23_singleRepetition_proximityCheck_bound
           omega
         have h_idx : (⟨↑j_next * ϑ, h_j_next_mul_lt_r⟩ : Fin r) = destIdx := by
           apply Fin.ext; simp only [j_next, destIdx]; ring
-        have h_udr := goodBlock_implies_UDRClose (ϑ := ϑ) 𝔽q β stmtIn oStmtIn j_next h_next_good
+        have h_udr := goodBlock_implies_UDRClose 𝔽q β stmtIn oStmtIn j_next h_next_good
           (h_idx := h_idx) (h_le := h_destIdx_le)
         exact h_udr
       exact ⟨f_next, h_not_compliant, h_next_close, Or.inl ⟨h_last, rfl⟩⟩
@@ -1692,9 +1655,8 @@ theorem prop_4_23_singleRepetition_proximityCheck_bound
     exact h'
   -- Acceptance implies the suffix is NOT in the disagreement set.
   have h_accept_subset :
-      ∀ v : AdditiveNTT.Comp.sDomain (𝔽q := 𝔽q) (β := β) (ℓ := ℓ)
-        (R_rate := 𝓡) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0,
-        logical_checkSingleRepetition (ϑ := ϑ) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      ∀ v : sDomain 𝔽q β h_ℓ_add_R_rate 0,
+        logical_checkSingleRepetition 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
           oStmtIn v stmtIn stmtIn.final_constant →
         extractSuffixFromChallenge 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
           (v := v) (destIdx := destIdx) (h_destIdx_le := h_destIdx_le) ∉ D := by
@@ -1717,13 +1679,11 @@ theorem prop_4_23_singleRepetition_proximityCheck_bound
       exact h_mem) h_accept
   -- Probability bound via monotonicity.
   have h_prob_accept_le :
-      Pr_{ let v ←$ᵖ (AdditiveNTT.Comp.sDomain (𝔽q := 𝔽q) (β := β) (ℓ := ℓ)
-        (R_rate := 𝓡) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0) }[
-        logical_checkSingleRepetition (ϑ := ϑ) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      Pr_{ let v ←$ᵖ (sDomain 𝔽q β h_ℓ_add_R_rate 0) }[
+        logical_checkSingleRepetition 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
           oStmtIn v stmtIn stmtIn.final_constant
       ] ≤
-      Pr_{ let v ←$ᵖ (AdditiveNTT.Comp.sDomain (𝔽q := 𝔽q) (β := β) (ℓ := ℓ)
-        (R_rate := 𝓡) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0) }[
+      Pr_{ let v ←$ᵖ (sDomain 𝔽q β h_ℓ_add_R_rate 0) }[
         extractSuffixFromChallenge 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
           (v := v) (destIdx := destIdx) (h_destIdx_le := h_destIdx_le) ∉ D
       ] := by
@@ -1731,14 +1691,12 @@ theorem prop_4_23_singleRepetition_proximityCheck_bound
     exact h_accept_subset
   -- Evaluate the suffix probability for the complement set.
   have h_prob_suffix_not :
-      Pr_{ let v ←$ᵖ (AdditiveNTT.Comp.sDomain (𝔽q := 𝔽q) (β := β) (ℓ := ℓ)
-        (R_rate := 𝓡) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0) }[
+      Pr_{ let v ←$ᵖ (sDomain 𝔽q β h_ℓ_add_R_rate 0) }[
         extractSuffixFromChallenge 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
           (v := v) (destIdx := destIdx) (h_destIdx_le := h_destIdx_le) ∉ D
       ] =
       ((Dᶜ).card : ENNReal) /
-        Fintype.card (AdditiveNTT.Comp.sDomain (𝔽q := 𝔽q) (β := β) (ℓ := ℓ)
-          (R_rate := 𝓡) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx) := by
+        Fintype.card (sDomain 𝔽q β h_ℓ_add_R_rate destIdx) := by
     have h :=
       prob_uniform_suffix_mem (𝔽q := 𝔽q) (β := β) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
         (destIdx := destIdx) (h_destIdx_le := h_destIdx_le) (D := Dᶜ)
@@ -1747,16 +1705,14 @@ theorem prop_4_23_singleRepetition_proximityCheck_bound
   -- Bound the complement probability using the distance bound.
   have h_prob_bound :
       ((Dᶜ).card : ENNReal) /
-        Fintype.card (AdditiveNTT.Comp.sDomain (𝔽q := 𝔽q) (β := β) (ℓ := ℓ)
-          (R_rate := 𝓡) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx)
+        Fintype.card (sDomain 𝔽q β h_ℓ_add_R_rate destIdx)
         ≤ ((1/2 : ℝ≥0) + (1 : ℝ≥0) / (2 * 2^𝓡)) := by
     -- Set up notation.
-    let Sdest := AdditiveNTT.Comp.sDomain (𝔽q := 𝔽q) (β := β) (ℓ := ℓ)
-      (R_rate := 𝓡) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx
+    let Sdest := sDomain 𝔽q β h_ℓ_add_R_rate destIdx
     let n : ℕ := Fintype.card Sdest
     have h_card_Sdest :
         n = 2 ^ (ℓ + 𝓡 - destIdx.val) := by
-      have h := (AdditiveNTT.Comp.compSDomain_card 𝔽q β h_ℓ_add_R_rate (i := destIdx)
+      have h := (sDomain_card 𝔽q β h_ℓ_add_R_rate (i := destIdx)
           (h_i := Sdomain_bound (by omega)))
       simp only [n, hF₂.out] at h ⊢
       exact h
@@ -1872,7 +1828,6 @@ theorem prop_4_23_singleRepetition_proximityCheck_bound
     rw [h_prob_suffix_not]
     exact h_prob_bound
   exact le_trans h_prob_accept_le h_prob_suffix_not'
--/
 
 end QueryPhaseSoundnessStatements
 
