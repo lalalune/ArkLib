@@ -166,6 +166,20 @@ theorem exists_lt_floor_eq_of_floor_lt (n : ℕ) {δ : ℝ≥0} (hn : 0 < n)
 /-! ## The boundary residual on the non-lattice part of parameter space -/
 
 omit [DecidableEq ι] in
+/-- **The strict-interior supply used by the quantization split.**
+
+For every stack `u`, this says that a strict sub-radius `δ' < δ` with the same integer distance
+level as `δ` already has the desired `jointAgreement` conclusion whenever its good-coefficient set
+is nonempty.  This is the non-lattice input consumed by `boundaryCardResidual_of_not_lattice`;
+the exact lattice endpoint is tracked separately by `BoundaryCardLatticeResidual`. -/
+def BoundaryCardStrictInteriorResidual {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} : Prop :=
+  ∀ (u : WordStack F (Fin (k + 1)) ι) (δ' : ℝ≥0),
+    δ' < δ →
+    Nat.floor (δ' * Fintype.card ι) = Nat.floor (δ * Fintype.card ι) →
+    0 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ').card →
+    jointAgreement (C := ReedSolomon.code domain deg) (δ := δ') (W := u)
+
+omit [DecidableEq ι] in
 /-- **The closed boundary residual, reduced to the strict interior on the non-lattice part.**
 
 Suppose the boundary radius `δ = 1 − √ρ` is *not* a `1/n`-lattice point — concretely, the floor
@@ -263,6 +277,28 @@ theorem boundaryCardLatticeResidual_zero
   omega
 
 omit [DecidableEq ι] in
+/-- The exact residual package produced by the boundary quantization split: the strict-interior
+supply for non-lattice boundary levels, plus the genuine lattice endpoint residual. -/
+def BoundaryCardQuantizationResiduals {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} : Prop :=
+  BoundaryCardStrictInteriorResidual (k := k) (deg := deg) (domain := domain) (δ := δ) ∧
+  BoundaryCardLatticeResidual (k := k) (deg := deg) (domain := domain) (δ := δ)
+
+omit [DecidableEq ι] in
+/-- Projection of the strict-interior, non-lattice side of the boundary quantization package. -/
+theorem BoundaryCardQuantizationResiduals.strictInterior {k deg : ℕ} {domain : ι ↪ F}
+    {δ : ℝ≥0}
+    (h : BoundaryCardQuantizationResiduals (k := k) (deg := deg) (domain := domain) (δ := δ)) :
+    BoundaryCardStrictInteriorResidual (k := k) (deg := deg) (domain := domain) (δ := δ) :=
+  h.1
+
+omit [DecidableEq ι] in
+/-- Projection of the exact `1/n`-lattice endpoint side of the boundary quantization package. -/
+theorem BoundaryCardQuantizationResiduals.lattice {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    (h : BoundaryCardQuantizationResiduals (k := k) (deg := deg) (domain := domain) (δ := δ)) :
+    BoundaryCardLatticeResidual (k := k) (deg := deg) (domain := domain) (δ := δ) :=
+  h.2
+
+omit [DecidableEq ι] in
 /-- **`BoundaryCardResidual` from the non-lattice reduction plus the isolated lattice residual.**
 
 The boundary `δ · n` is either an integer (lattice case, handled by `hLattice`) or not (non-lattice
@@ -292,6 +328,16 @@ theorem boundaryCardResidual_of_lattice_residual {k deg : ℕ} {domain : ι ↪ 
   · exact hLattice hk u hδeq heq hcardPos
 
 omit [DecidableEq ι] in
+/-- Reconstruct the original `BoundaryCardResidual` from the quantified strict-interior supply
+and the isolated lattice endpoint residual. -/
+theorem BoundaryCardQuantizationResiduals.toBoundaryCardResidual {k deg : ℕ} {domain : ι ↪ F}
+    {δ : ℝ≥0}
+    (h : BoundaryCardQuantizationResiduals (k := k) (deg := deg) (domain := domain) (δ := δ)) :
+    BoundaryCardResidual (k := k) (deg := deg) (domain := domain) (δ := δ) :=
+  boundaryCardResidual_of_lattice_residual
+    (deg := deg) (domain := domain) (δ := δ) h.lattice h.strictInterior
+
+omit [DecidableEq ι] in
 /-- The sharper boundary-probability residual used by the curve keystone follows from the
 isolated lattice residual plus the strict-interior producer.
 
@@ -314,6 +360,20 @@ theorem boundaryProbabilityResidual_of_lattice_residual {k deg : ℕ} {domain : 
     (deg := deg) (domain := domain) (δ := δ) hδ
     (boundaryCardResidual_of_lattice_residual
       (deg := deg) (domain := domain) (δ := δ) hLattice hStrict)
+
+omit [DecidableEq ι] in
+/-- The boundary-probability residual follows from the packaged quantization residuals.  This is
+the downstream-facing form of `boundaryProbabilityResidual_of_lattice_residual`: callers can prove
+the two exact leaves once, package them as `BoundaryCardQuantizationResiduals`, and recover the
+probability residual consumed by the curve keystone. -/
+theorem BoundaryCardQuantizationResiduals.toBoundaryProbabilityResidual {k deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (h : BoundaryCardQuantizationResiduals (k := k) (deg := deg) (domain := domain) (δ := δ))
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain) :
+    ProximityGap.BoundaryProbabilityResidual
+      (k := k) (deg := deg) (domain := domain) (δ := δ) :=
+  boundaryProbabilityResidual_of_lattice_residual
+    (deg := deg) (domain := domain) (δ := δ) hδ h.lattice h.strictInterior
 
 /-! ## Characterising the lattice case: the boundary is a `1/n`-point iff `√ρ · n ∈ ℕ` -/
 
@@ -392,6 +452,23 @@ theorem correlatedAgreement_affine_curves_of_lattice_residual {k deg : ℕ} {dom
     (boundaryCardResidual_of_lattice_residual (deg := deg) (domain := domain) hLattice hStrict)
     hδ
 
+omit [DecidableEq ι] in
+/-- [BCIKS20] Theorem 1.5 using the packaged boundary quantization residuals.  This is equivalent
+to `correlatedAgreement_affine_curves_of_lattice_residual`, but makes the exact remaining boundary
+surface a single reusable input. -/
+theorem correlatedAgreement_affine_curves_of_quantization_residuals {k deg : ℕ} {domain : ι ↪ F}
+    {δ : ℝ≥0} [NeZero deg]
+    (hStrictCoeff :
+      ProximityGap.StrictCoeffPolysResidual (k := k) (deg := deg) (domain := domain) (δ := δ))
+    (hBoundary :
+      BoundaryCardQuantizationResiduals (k := k) (deg := deg) (domain := domain) (δ := δ))
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
+  correlatedAgreement_affine_curves_of_lattice_residual
+    (deg := deg) (domain := domain) (δ := δ)
+    hStrictCoeff hBoundary.strictInterior hBoundary.lattice hδ
+
 end BoundaryCardResidual
 
 end ArkLib
@@ -404,6 +481,9 @@ with no `sorry`/`admit`/`axiom`/`native_decide`. -/
 #print axioms ArkLib.BoundaryCardResidual.boundaryCardResidual_of_not_lattice
 #print axioms ArkLib.BoundaryCardResidual.BoundaryCardLatticeData
 #print axioms ArkLib.BoundaryCardResidual.boundaryCardLatticeResidual_zero
+#print axioms ArkLib.BoundaryCardResidual.BoundaryCardQuantizationResiduals.toBoundaryCardResidual
 #print axioms ArkLib.BoundaryCardResidual.boundaryCardResidual_of_lattice_residual
+#print axioms ArkLib.BoundaryCardResidual.BoundaryCardQuantizationResiduals.toBoundaryProbabilityResidual
 #print axioms ArkLib.BoundaryCardResidual.boundary_lattice_iff_sqrtRate_mul_card_mem
 #print axioms ArkLib.BoundaryCardResidual.correlatedAgreement_affine_curves_of_lattice_residual
+#print axioms ArkLib.BoundaryCardResidual.correlatedAgreement_affine_curves_of_quantization_residuals

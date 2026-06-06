@@ -386,12 +386,6 @@ theorem dappend_dempty {motive : Fin (m + 0) → Sort u} (v : (i : Fin m) → mo
 @[simp]
 theorem vappend_vempty (v : Fin m → α) : vappend v !v[] = v := rfl
 
-theorem dappend_assoc {p : ℕ} {motive : Fin (m + n + p) → Sort u}
-    (_u : (i : Fin m) → motive (castAdd p (castAdd n i)))
-    (_v : (i : Fin n) → motive (castAdd p (natAdd m i)))
-    (_w : (i : Fin p) → motive (natAdd (m + n) i)) : True := by
-      simp_all only
-
 theorem vappend_assoc {p : ℕ} (u : Fin m → α) (v : Fin n → α) (w : Fin p → α) :
     (vappend (vappend u v) w) = (vappend u (vappend v w)) ∘ Fin.cast (add_assoc m n p) := by
   simp [vappend_eq_append, append_assoc]
@@ -949,18 +943,35 @@ theorem hcons_fin_zero {α : Sort u} {β : Fin 0 → Sort u} (a : α) (v : (i : 
   ext i; rfl
 
 theorem hconcat_hcons {α : Sort u} {β : Fin n → Sort u} {γ : Sort u}
-    (_a : α) (_v : (i : Fin n) → β i) (_c : γ) :
-    True := by
-    simp_all only
+    (a : α) (v : (i : Fin n) → β i) (c : γ) :
+    HEq (hconcat (hcons a v) c) (hcons a (hconcat v c)) := by
+  induction n with
+  | zero => exact heq_of_eq rfl
+  | succ _ _ => exact heq_of_eq rfl
 
 -- Init/concat properties
-theorem dinit_hconcat {α : Fin n → Sort u} {β : Sort u} (_v : (i : Fin n) → α i) (_b : β) :
-    True := by
-  simp_all only
+theorem dinit_hconcat {α : Fin n → Sort u} {β : Sort u} (v : (i : Fin n) → α i) (b : β) :
+    HEq (fun i => hconcat v b (castSucc i)) v := by
+  apply Function.hfunext rfl
+  intro i j hij
+  have : i = j := by ext; exact (Fin.heq_ext_iff rfl).mp hij
+  subst this
+  rw [hconcat_castSucc]
+  exact cast_heq _ _
 
-theorem hconcat_init_self {α : Fin n.succ → Sort u} (_v : (i : Fin (n + 1)) → α i) :
-    True := by
-  simp_all only
+theorem hconcat_init_self {α : Fin n.succ → Sort u} (v : (i : Fin (n + 1)) → α i) :
+    HEq (hconcat (fun i => v (castSucc i)) (v (last n))) v := by
+  apply Function.hfunext rfl
+  intro i j hij
+  have : i = j := by ext; exact (Fin.heq_ext_iff rfl).mp hij
+  subst this
+  by_cases h : i.val < n
+  · have hi : i = castSucc ⟨i.val, h⟩ := by ext; simp
+    rw [hi, hconcat_castSucc]
+    exact cast_heq _ _
+  · have hi : i = last n := by ext; simp; omega
+    rw [hi, hconcat_last]
+    exact cast_heq _ _
 
 -- Injectivity properties for concat (from functorial versions)
 theorem hconcat_injective2 {α : Fin n → Sort u} {β : Sort u} :
@@ -1077,12 +1088,6 @@ theorem happend_assoc {α : Fin m → Sort u} {β : Fin n → Sort u} {p : ℕ} 
       rw [hl, hr]
       simp only [happend_right, cast_heq, heq_cast_iff_heq]
 
--- Relationship with cons/concat
-theorem happend_hcons {β : Fin m → Sort u} {γ : Fin n → Sort u}
-    (_a : α) (_u : (i : Fin m) → β i) (_v : (i : Fin n) → γ i) :
-    True := by
-    simp_all only
-
 /-- HEq congruence for `hconcat` across (possibly) distinct lengths/codomains: equal lengths, HEq
 type families, equal last-element types, HEq prefix tuples and HEq last elements give HEq
 concats. -/
@@ -1135,11 +1140,6 @@ theorem happend_hconcat_eq {α : Fin m → Sort u} {β : Fin n → Sort u} {γ :
     rw [hconcat_last]; exact (cast_heq _ _)
 
 -- Compatibility lemmas
-theorem happend_left_eq_hcons {α : Fin 1 → Sort u} {β : Fin n → Sort u}
-    (_a : (i : Fin 1) → α i) (_v : (i : Fin n) → β i) :
-    True := by
-    simp_all only
-
 theorem happend_right_eq_hconcat {α : Fin m → Sort u} {β : Fin 1 → Sort u}
     (u : (i : Fin m) → α i) (a : (i : Fin 1) → β i) :
     happend u a = hconcat u (a 0) := by
@@ -1165,18 +1165,9 @@ theorem dext_iff {α : Fin n → Sort u} {v w : (i : Fin n) → α i} :
   aesop
 
 -- Interaction between operations
-theorem hcons_happend_comm {β : Fin m → Sort u} {γ : Fin n → Sort u}
-    (_a : α) (_u : (i : Fin m) → β i) (_v : (i : Fin n) → γ i) :
-    True := by
-    simp_all only
-
-theorem happend_singleton {α : Fin m → Sort u} {β : Sort u} (_u : (i : Fin m) → α i) (_a : β) :
-    True := by
-    simp_all only
-
-theorem singleton_happend {β : Fin n → Sort u} (_a : α) (_v : (i : Fin n) → β i) :
-    True := by
-    simp_all only
+theorem happend_singleton {α : Fin m → Sort u} {β : Sort u} (u : (i : Fin m) → α i) (a : β) :
+    happend u (hcons a (Fin.dempty : (i : Fin 0) → Fin.vempty i)) = hconcat u a :=
+  rfl
 
 instance {α : Fin 0 → Sort u} : Unique ((i : Fin 0) → α i) where
   default := fun i => elim0 i

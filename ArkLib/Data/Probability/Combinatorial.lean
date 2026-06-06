@@ -70,6 +70,13 @@ theorem val_card (s : SizeSubset α n) :
     (s : Finset α).card = n :=
   Set.powersetCard.card_eq s
 
+/-- The canonical embedding from a size-`n` subset into its ambient type. -/
+noncomputable def toEmbedding (s : SizeSubset α n) : s ↪ α where
+  toFun x := x.1
+  inj' := by
+    intro x y h
+    exact Subtype.ext h
+
 variable {β : Type*}
 
 /-- Transport a size-`n` subset across an equivalence of ambient types. -/

@@ -9,6 +9,7 @@ import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.CodingTheory.Basic.Entropy
 import ArkLib.Data.CodingTheory.HammingBallVolume
 import ArkLib.Data.CodingTheory.SubspaceDesign
+import ArkLib.Data.Probability.Combinatorial
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
@@ -79,14 +80,14 @@ is either:
   has explicit `ε_mca` bound at `1 - τ(t+1) - 3/(2t)`.
 - `frs_epsMCA_capacity_gg25` — ABF26 T4.14 [GG25 Cor 4.10]: folded RS up to capacity
   has `ε_mca(C, 1 - ρ - η) ≤ O(n/(η|F|) + 1/(η³|F|))`.
+- `random_rs_mca` — ABF26 T4.15 [GG25 Thm 5.15]: random Reed-Solomon domains have
+  MCA up to capacity with high probability, stated over `Probability.uniformSizeSubsetOfLe`.
 
 ## Deferred statements
 
-- ABF26 Theorem 4.15 [GG25 Thm 5.15] (random RS MCA up to capacity) — blocked on a
-  uniform distribution over size-`n` subsets of `F`.
-
-These are tracked in `docs/kb/ABF26_PLAN.md` §7 and will be stated alongside the corresponding
-code-family definitions in Phase 3.
+- No §4.2.2 statement is blocked on the random-domain probability space anymore; T4.15 is
+  present below as a Prop-valued external statement. Its GG25 probabilistic proof and concrete
+  parameter instantiation remain external.
 
 ## Disposition ledger (issue #48)
 
@@ -107,6 +108,9 @@ machinery); *SHADOW* = placeholder pending a canonical formalization elsewhere.
 - `linear_epsCA_ge_sampling_dg25` (L4.19) — covering-radius sampling identity absent.
 - `subspaceDesign_epsMCA_gg25` (T4.13) — GG25 line-stitching/list-decoding pipeline; its
   list-decoding input is tracked by #53.
+- `random_rs_mca` (T4.15 [GG25 Thm 5.15]) — random-domain RS MCA up-to-capacity
+  bound absent in-tree; the probability space is now the canonical
+  `Probability.uniformSizeSubsetOfLe`.
 
 *DERIVED COROLLARIES* (blocked solely on other named statements; corollary content checked
 in-tree):
@@ -181,7 +185,7 @@ set_option linter.unusedSectionVars false
 
 namespace CodingTheory
 
-open scoped NNReal
+open scoped NNReal ProbabilityTheory
 open ProximityGap
 
 /-! ## General linear codes — ABF26 §4 1.5-Johnson family ([GKL24], [BGKS20])
@@ -559,6 +563,37 @@ def rs_epsCA_breakdown_cs25
   -- RS-ball-count bridge (absent; qEntropy is defined but unconnected to hammingBallVolume /
   -- RS code counts). Genuinely external.
 
+/-- Checked bridge for the CS25 breakdown statement.
+
+Since `epsCA` is always at most `1`, the complete-breakdown equality is reduced to the
+paper's hard lower-bound half in the entropy band. -/
+theorem rs_epsCA_breakdown_cs25_of_lower_bound
+    (domain : ι ↪ F) (k : ℕ) (δ : ℝ≥0)
+    (hq_ge : 10 ≤ Fintype.card F)
+    (hδ_lo :
+        1 - qEntropy (Fintype.card F) (δ : ℝ) + 2 / (Fintype.card ι : ℝ)
+            + ((qEntropy (Fintype.card F) (δ : ℝ) - (δ : ℝ))
+                / (Fintype.card ι : ℝ)) ^ ((1 : ℝ) / 2)
+          ≤ (k : ℝ) / Fintype.card ι)
+    (hδ_hi : (k : ℝ) / Fintype.card ι ≤ 1 - (δ : ℝ) - 2 / (Fintype.card ι : ℝ))
+    (hlower :
+        1 ≤ epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F))) δ δ) :
+    rs_epsCA_breakdown_cs25 domain k δ hq_ge hδ_lo hδ_hi := by
+  classical
+  refine le_antisymm ?_ hlower
+  unfold epsCA
+  refine iSup_le fun u => ?_
+  by_cases hjp :
+      Code.jointProximity (C := ((ReedSolomon.code domain k : Set (ι → F)))) (u := u) δ
+  · rw [if_pos hjp]
+    exact zero_le _
+  · rw [if_neg hjp]
+    rw [prob_tsum_form_singleton]
+    exact le_trans (ENNReal.tsum_le_tsum fun γ => by
+      by_cases hγ : δᵣ(u 0 + γ • u 1,
+          (ReedSolomon.code domain k : Set (ι → F))) ≤ δ <;> simp [hγ])
+      (PMF.tsum_coe (PMF.uniformOfFintype F)).le
+
 /-- **ABF26 Theorem 4.18 [BCHKS25 Cor 1.7].** CA jump at the Johnson bound. Fix `ε > 0`,
 let `δ := 15/16`. Then for all `F` of characteristic 2 there exists a Reed-Solomon code
 `C := RS[F, L, k]` with `n ≈ |F|^{(1+ε)/2}` and `δ_min(C) = 15/16` such that:
@@ -803,6 +838,31 @@ theorem frs_epsMCA_capacity_gg25_of_residuals_prop
   exact frs_epsMCA_capacity_gg25_of_residuals
     (domain := domain) (k := k) (s := s) (ω := ω) (η := η) (t := t) ht
     hT218 hT413 hRadius hBound
+
+/-! ### Random Reed-Solomon MCA up to capacity — ABF26 T4.15 ([GG25]) -/
+
+/-- **ABF26 Theorem 4.15 [GG25 Thm 5.15], statement front door.**
+
+For a finite field `F`, a length `n ≤ |F|`, and a uniformly sampled size-`n` evaluation
+domain `L ⊆ F`, the random Reed-Solomon code `RS[F,L,k]` has MCA error at the
+capacity-near radius `1 - k/n - η` bounded by `bound`, except with probability at most
+`failure`.
+
+The theorem's concrete GG25 asymptotic RHS is represented by the explicit `bound` parameter
+so this definition only claims the now-available random-domain statement surface. -/
+noncomputable def random_rs_mca
+    (F : Type*) [Field F] [Fintype F] [DecidableEq F]
+    (n k : ℕ) (η : ℝ) (bound failure : ENNReal)
+    (hn : n ≤ Fintype.card F) : Prop := by
+  classical
+  exact
+    Pr_{let L ← Probability.uniformSizeSubsetOfLe F n hn}[
+      ¬ (epsMCA (F := F) (A := F)
+          ((ReedSolomon.code (Probability.SizeSubset.toEmbedding L) k : Set (L → F)))
+          ((1 - (k : ℝ) / (n : ℝ) - η).toNNReal) ≤ bound)] ≤ failure
+  -- Missing ingredient: GG25 Thm 5.15's random-RS MCA probability bound.  The sample space
+  -- over `n`-element domains is now formalized; the line-stitching/list-decoding/probability
+  -- argument that supplies the concrete `bound` and `failure` values remains external.
 
 /-- **ABF26 BCGM25 extension to T4.13 / T4.14 (polynomial generators preserve
 correlated agreement).**

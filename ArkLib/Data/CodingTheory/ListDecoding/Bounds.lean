@@ -15,6 +15,7 @@ import ArkLib.ToMathlib.BKR06FiberCount
 import ArkLib.ToMathlib.BKR06Injection
 import ArkLib.Data.CodingTheory.SubspaceDesign
 import ArkLib.Data.CodingTheory.ReedSolomon
+import ArkLib.Data.Probability.Combinatorial
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.FieldTheory.Finiteness
 import Mathlib.Algebra.Order.Floor.Extended
@@ -82,11 +83,12 @@ codes, and "sufficiently large `n`". We capture these uniformly as follows:
   codes are list-decodable up to capacity.
 - `frs_list_decoding_capacity_cz25` — ABF26 C3.5 [CZ25 Cor 2.21]: folded RS codes
   are list-decodable up to capacity (corollary of T3.4 via T2.18).
+- `random_rs_list_decoding` — ABF26 T3.6 [AGL24 Thm 1.1]: random Reed-Solomon
+  domains are list-decodable near capacity with high probability, stated over
+  `Probability.uniformSizeSubsetOfLe`.
 
 ## Deferred statements
 
-- ABF26 T3.6 [AGL24 Thm 1.1] — random Reed-Solomon list decoding near capacity; blocked
-  on a uniform distribution over size-`n` subsets of `F` (same blocker as T4.15).
 - ABF26 T3.15 [CW07] — algorithmic hardness barrier (discrete-log reduction). Out of
   scope per `docs/kb/ABF26_PLAN.md` §7 D2 (we formalise combinatorial statements only).
 
@@ -116,6 +118,9 @@ subspace-design (#53); the CZ25 §3.1 upper bounds below are tracked under **#53
   absent in-tree.
 - `random_linear_lambda_lower_glmrsw22` (T3.11 [GLMRSW22 Thm 4.1]) — first-moment count over
   random generator matrices absent in-tree.
+- `random_rs_list_decoding` (T3.6 [AGL24 Thm 1.1]) — random-domain RS list-decoding
+  bound absent in-tree; the probability space is now the canonical
+  `Probability.uniformSizeSubsetOfLe`.
 
 *EXTERNAL ADMIT, COUNTING DISCHARGED — narrowed to an irreducible geometric/asymptotic core*
 (`def … : Prop` + proven `_of_residuals` reduction; the arithmetic side conditions issue #54
@@ -162,8 +167,38 @@ set_option linter.unusedSectionVars false
 
 namespace CodingTheory
 
-open scoped NNReal
+open scoped NNReal ProbabilityTheory
 open ListDecodable
+
+/-! ## Random Reed-Solomon domains — ABF26 §3.1 ([AGL24]) -/
+
+section RandomReedSolomon
+
+/-- **ABF26 Theorem 3.6 [AGL24 Thm 1.1], statement front door.**
+
+For a finite field `F`, a length `n ≤ |F|`, and a uniformly sampled size-`n` evaluation
+domain `L ⊆ F`, the random Reed-Solomon code `RS[F,L,k]` is list-decodable at the
+capacity-near radius `1 - k/n - η` with failure probability at most `failure`.
+
+The theorem's quantitative choices for `listBound` and `failure` are intentionally explicit
+parameters here: this definition records the faithful probability space and RS-family target,
+while the AGL24 first-moment/probabilistic proof remains external. -/
+noncomputable def random_rs_list_decoding
+    (F : Type*) [Field F] [Fintype F] [DecidableEq F]
+    (n k listBound : ℕ) (η : ℝ) (failure : ENNReal)
+    (hn : n ≤ Fintype.card F) : Prop := by
+  classical
+  exact
+    Pr_{let L ← Probability.uniformSizeSubsetOfLe F n hn}[
+      ¬ (Lambda
+          ((ReedSolomon.code (Probability.SizeSubset.toEmbedding L) k : Set (L → F)))
+          (1 - (k : ℝ) / (n : ℝ) - η) ≤ (listBound : ℕ∞))] ≤ failure
+  -- Missing ingredient: AGL24's random-RS near-capacity list-decoding theorem.  The
+  -- probability space is now in-tree (`uniformSizeSubsetOfLe`), but the proof bounding the
+  -- bad-domain probability and instantiating the paper's concrete `listBound`/`failure`
+  -- parameters is still external.
+
+end RandomReedSolomon
 
 section LowerBounds_General
 

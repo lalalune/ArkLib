@@ -474,6 +474,38 @@ theorem grandMCAChallenge_iff_choose_le (domain : ι ↪ F) {k : ℕ} (hk : k + 
         ≤ (ε_star : ENNReal) := by
   rw [grandMCAChallenge_iff_epsMCA_one, epsMCA_one_eq_choose_div domain hk hq]
 
+/-- **Per-window γ-uniqueness (reducible half of the radius-`1/n` J1 bad-scalar cap, issue #65).**
+
+Fix a window `S` on which `u₁` is non-extendable for the degree-`<k` Reed–Solomon code.  Then at
+most one scalar `γ` makes the line word `u₀ + γ • u₁` locally extendable on every `(k+1)`-subset
+of `S` — i.e. satisfies `∀ T ⊆ S, T.card = k+1 → cT T (u₀ + γ • u₁) = 0`.
+
+So each non-extendable window pins the J1 ratio scalar uniquely: the J1 bad-scalar set
+(`GrandChallengesLattice.j1RatioConstraintBadScalars`) injects into the set of non-extendable
+windows via `γ ↦ S`.  The remaining (genuinely harder) core of the `card ≤ 2` cap is bounding the
+number of *contributing* windows among `univ` and the `n` one-point-deleted windows
+`univ.erase i`.
+
+Proof: from non-extendability extract a `(k+1)`-subset `T ⊆ S` with `u₁` non-extendable on `T`
+(`exists_card_eq_subset_nonExtendable`); `cT T (u₀ + γ • u₁) = 0` then yields, via
+`extendable_iff_cT_eq_zero`, an RS codeword agreeing with the line on `T`, and
+`unique_gamma_of_nonExtendable` pins `γ`. -/
+theorem j1_unique_gamma_of_nonExtendableOn
+    (domain : ι ↪ F) {k : ℕ} {S : Finset ι} {u₀ u₁ : ι → F}
+    (hne : NonExtendableOn (ReedSolomon.code domain k : Set (ι → F)) S u₁)
+    {γ γ' : F}
+    (hγ : ∀ T : Finset ι, T ⊆ S → T.card = k + 1 → cT domain k T (u₀ + γ • u₁) = 0)
+    (hγ' : ∀ T : Finset ι, T ⊆ S → T.card = k + 1 → cT domain k T (u₀ + γ' • u₁) = 0) :
+    γ = γ' := by
+  obtain ⟨T, hTS, hTcard, hneT⟩ := exists_card_eq_subset_nonExtendable domain hne
+  obtain ⟨w₁, hw₁mem, hw₁⟩ :=
+    (extendable_iff_cT_eq_zero domain hTcard (u₀ + γ • u₁)).mpr (hγ T hTS hTcard)
+  obtain ⟨w₂, hw₂mem, hw₂⟩ :=
+    (extendable_iff_cT_eq_zero domain hTcard (u₀ + γ' • u₁)).mpr (hγ' T hTS hTcard)
+  refine unique_gamma_of_nonExtendable domain hneT hw₁mem hw₂mem ?_ ?_
+  · intro i hi; rw [hw₁ i hi]; rfl
+  · intro i hi; rw [hw₂ i hi]; rfl
+
 end Exact
 
 end ProximityGap

@@ -263,10 +263,24 @@ internally. Fields:
 * `Edis`, `hcover` — the mutual disagreement set and its per-factor cover `E = ⋃ E_{i,j}` (S4);
 * `hImprove` — the Hensel-uniqueness consequence: every exceptional scalar of a factor matches
   the fold at a coordinate of that factor's disagreement set  (S6 → S8 hypothesis);
-* `hNumeric` — the integer→real numeric edge S11: the scaled integer disagreement count
-  `(ℓ·n)/|F|` is dominated by the closed-form `johnsonBoundReal`, *and* this bounds `ε_mca`.
-  (This is the in-tree `rs_epsMCA_johnson_range_bchks25` numeric shape; it remains residual.) -/
-structure Hab25JohnsonResiduals
+* `hNumeric` — the separately named integer→real numeric edge S11:
+  `JohnsonNumericBound`. -/
+
+/-- The final Hab25 numeric edge: the `ε_mca` value is bounded by the closed-form Johnson-range
+expression. This is separated from the algebraic factor/Hensel data so the remaining
+GS-over-`F(Z)` construction can be targeted independently from the final scaled probability
+bound. -/
+def JohnsonNumericBound
+    (domain : ι₀ ↪ F₀) (k : ℕ) (η δ : ℝ≥0) : Prop :=
+  epsMCA (F := F₀) (A := F₀) ((ReedSolomon.code domain k : Set (ι₀ → F₀))) δ ≤
+    ENNReal.ofReal (johnsonBoundReal domain k η δ)
+
+/-- The Hab25 §3 algebraic/factorisation data before the final numeric `ε_mca` edge.
+
+This packages the GS-over-`F(Z)` factor index set, the `D_Y < ℓ` bound, the Hensel-produced
+difference vectors, and the cover/improvement hypotheses. The in-tree integer endgame consumes
+exactly this data to prove `|E| ≤ ℓ·n`. -/
+structure Hab25JohnsonAlgebraicData
     (domain : ι₀ ↪ F₀) (k : ℕ) (η δ : ℝ≥0)
     (hη : 0 < η) (hδ : InJohnsonRange domain k η δ) where
   /-- Index type of the irreducible factors `R_{i,j}` of the GS interpolant over `K = F(Z)`. -/
@@ -293,12 +307,56 @@ structure Hab25JohnsonResiduals
       fold at a coordinate of that factor's disagreement set. -/
   hImprove : ∀ ij ∈ Index, ∀ z ∈ Efactor ij,
     ∃ x ∈ disagreeSet (d₀ ij) (d₁ ij), affineGap (d₀ ij) (d₁ ij) z x = 0
+
+/-- **The Hab25 §3 DEEP residual bundle.**
+
+This extends `Hab25JohnsonAlgebraicData` with the separately named final numeric edge. -/
+structure Hab25JohnsonResiduals
+    (domain : ι₀ ↪ F₀) (k : ℕ) (η δ : ℝ≥0)
+    (hη : 0 < η) (hδ : InJohnsonRange domain k η δ)
+    extends Hab25JohnsonAlgebraicData domain k η δ hη hδ where
   /-- The integer→real numeric edge (S11): the scaled disagreement count is within the
       closed-form Johnson bound, and that closed form bounds `ε_mca`. Residual: this is the
       in-tree `rs_epsMCA_johnson_range_bchks25` numeric shape, not re-derived here. -/
-  hNumeric :
-    epsMCA (F := F₀) (A := F₀) ((ReedSolomon.code domain k : Set (ι₀ → F₀))) δ ≤
-      ENNReal.ofReal (johnsonBoundReal domain k η δ)
+  hNumeric : JohnsonNumericBound domain k η δ
+
+/-- Build the full residual bundle from algebraic Hab25 data plus the final numeric edge. -/
+def Hab25JohnsonResiduals.ofAlgebraicData
+    {domain : ι₀ ↪ F₀} {k : ℕ} {η δ : ℝ≥0}
+    {hη : 0 < η} {hδ : InJohnsonRange domain k η δ}
+    (A : Hab25JohnsonAlgebraicData domain k η δ hη hδ)
+    (hNumeric : JohnsonNumericBound domain k η δ) :
+    Hab25JohnsonResiduals domain k η δ hη hδ where
+  Idx := A.Idx
+  decIdx := A.decIdx
+  Index := A.Index
+  ℓ := A.ℓ
+  hYbound := A.hYbound
+  d₀ := A.d₀
+  d₁ := A.d₁
+  Edis := A.Edis
+  Efactor := A.Efactor
+  hcover := A.hcover
+  hImprove := A.hImprove
+  hNumeric := hNumeric
+
+/-- Extract the algebraic Hab25 data from the full residual bundle. -/
+def Hab25JohnsonResiduals.toAlgebraicData
+    {domain : ι₀ ↪ F₀} {k : ℕ} {η δ : ℝ≥0}
+    {hη : 0 < η} {hδ : InJohnsonRange domain k η δ}
+    (R : Hab25JohnsonResiduals domain k η δ hη hδ) :
+    Hab25JohnsonAlgebraicData domain k η δ hη hδ where
+  Idx := R.Idx
+  decIdx := R.decIdx
+  Index := R.Index
+  ℓ := R.ℓ
+  hYbound := R.hYbound
+  d₀ := R.d₀
+  d₁ := R.d₁
+  Edis := R.Edis
+  Efactor := R.Efactor
+  hcover := R.hcover
+  hImprove := R.hImprove
 
 /-- **Proven integer-level Theorem-2 bound extracted from the residual bundle.**
 
@@ -306,14 +364,22 @@ The combinatorial heart: from the residual bundle's algebraic data (factor index
 affine pairs, cover) the **proven** endgame `claim1_theorem2_integer` gives
 `|E| ≤ ℓ · n` with *zero* additional assumptions. This is the concrete witness that the
 combinatorial half of Hab25 §3 is genuinely discharged, not assumed. -/
+theorem Hab25JohnsonAlgebraicData.disagree_card_le
+    {domain : ι₀ ↪ F₀} {k : ℕ} {η δ : ℝ≥0}
+    {hη : 0 < η} {hδ : InJohnsonRange domain k η δ}
+    (A : Hab25JohnsonAlgebraicData domain k η δ hη hδ) :
+    A.Edis.card ≤ A.ℓ * Fintype.card ι₀ :=
+  letI := A.decIdx
+  claim1_theorem2_integer A.Edis A.Index A.Efactor A.ℓ A.d₀ A.d₁
+    A.hYbound A.hcover A.hImprove
+
+/-- The full residual bundle still exposes the proven integer-level Hab25 bound. -/
 theorem Hab25JohnsonResiduals.disagree_card_le
     {domain : ι₀ ↪ F₀} {k : ℕ} {η δ : ℝ≥0}
     {hη : 0 < η} {hδ : InJohnsonRange domain k η δ}
     (R : Hab25JohnsonResiduals domain k η δ hη hδ) :
     R.Edis.card ≤ R.ℓ * Fintype.card ι₀ :=
-  letI := R.decIdx
-  claim1_theorem2_integer R.Edis R.Index R.Efactor R.ℓ R.d₀ R.d₁
-    R.hYbound R.hcover R.hImprove
+  R.toAlgebraicData.disagree_card_le
 
 /-- **Conditional Hab25 Johnson-range MCA theorem (silver).**
 

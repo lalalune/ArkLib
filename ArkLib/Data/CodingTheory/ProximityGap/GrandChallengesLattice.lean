@@ -2222,6 +2222,36 @@ theorem mcaPrizeLatticeResolved_of_adjacent_witnesses
   exact mcaThreshold_eq_latticeIndexOf_lowerWitness_of_adjacent
     C epsStar (wlo j) (whi j) (hδhi j) (hadj j)
 
+/-- Packaged four-rate frontier for an exact faithful MCA lattice-prize resolution.
+
+The fields are the reusable input surface of #70: a chosen lower witness, upper witness,
+upper-radius lattice proof, and adjacent-index proof for each prize rate.  Proving or selecting
+those witnesses is still the numeric/content work; this structure only names the assembled
+frontier consumed by `mcaPrizeLatticeResolved_of_adjacent_witnesses`. -/
+structure MCAPrizeAdjacentWitnessFrontier (domain : ι ↪ F) where
+  lower : ∀ j : Fin 4,
+    GrandChallenges.MCALowerWitness
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      epsStar
+  upper : ∀ j : Fin 4,
+    GrandChallenges.MCAUpperWitness
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      epsStar
+  upper_le_one : ∀ j : Fin 4, (upper j).δ ≤ 1
+  adjacent : ∀ j : Fin 4,
+    (latticeIndexOf (ι := ι) (upper j).δ (upper_le_one j)).val =
+      (latticeIndexOf (ι := ι) (lower j).δ (lower j).le_one).val + 1
+
+/-- Reassemble the faithful four-rate MCA lattice-prize resolution from the packaged
+adjacent-witness frontier. -/
+theorem mcaPrizeLatticeResolved_of_adjacent_frontier
+    (domain : ι ↪ F)
+    (frontier : MCAPrizeAdjacentWitnessFrontier (F := F) domain) :
+    mcaPrizeLatticeResolved domain
+      (fun j => latticeIndexOf (ι := ι) (frontier.lower j).δ (frontier.lower j).le_one) :=
+  mcaPrizeLatticeResolved_of_adjacent_witnesses domain
+    frontier.lower frontier.upper frontier.upper_le_one frontier.adjacent
+
 /-- Exact values for the canonical `Finset ℕ` MCA threshold resolve the four-rate faithful
 MCA prize predicate in the `Fin (n+1)` lattice representation. -/
 theorem mcaPrizeLatticeResolved_of_canonical_mcaLatticeThreshold_eq

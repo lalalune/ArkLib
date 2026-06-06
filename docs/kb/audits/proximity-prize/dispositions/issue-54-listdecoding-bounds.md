@@ -32,6 +32,9 @@ PROVEN in-tree (`theorem`, `sorry`-free):
   `ListDecoding.JH01`.
 
 EXTERNAL ADMIT, NEEDS_CLASSICAL (`def … : Prop`; genuine paper content, no in-tree route):
+* `random_rs_list_decoding` — T3.6 [AGL24 Thm 1.1]. The random-domain probability
+  space is in-tree (`Probability.uniformSizeSubsetOfLe`); the AGL24 probability bound
+  and parameter instantiation remain external.
 * `large_alphabet_barrier_bdg24_agl23` — T3.10 [BDG24, AGL23].
 * `random_linear_lambda_lower_glmrsw22` — T3.11 [GLMRSW22 Thm 4.1].
 
@@ -56,7 +59,6 @@ TRACKED UNDER #53 (GK16/CZ25), recorded for completeness:
   `frs_list_decoding_capacity_cz25_of_residuals_prop`.
 
 DEFERRED (out of §3 list-bounds scope, recorded in the file header):
-* T3.6 [AGL24 Thm 1.1] — blocked on a uniform distribution over size-`n` subsets of `F`.
 * T3.15 [CW07] — algorithmic hardness barrier, out of scope per ABF26_PLAN §7 D2.
 
 ## Disposition: verify + record (no new theorems, no duplicate ledger)

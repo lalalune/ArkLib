@@ -96,7 +96,18 @@ def fold_error_containment (i : Fin r) {destIdx : Fin r} (steps : ℕ)
     (h_destIdx : destIdx = i + steps) (h_destIdx_le : destIdx ≤ ℓ)
     (f f_bar : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
     (r_challenges : Fin steps → L) : Prop :=
-  True
+  let folded_f := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (i := i) (steps := steps) (destIdx := destIdx) (h_destIdx := by omega)
+    (h_destIdx_le := h_destIdx_le) f r_challenges
+  let folded_f_bar := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (i := i) (steps := steps) (destIdx := destIdx) (h_destIdx := by omega)
+    (h_destIdx_le := h_destIdx_le) f_bar r_challenges
+  disagreementSet 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (i := destIdx) (destIdx := destIdx) (h_destIdx := rfl)
+    (f := folded_f) (g := folded_f_bar) ⊆
+  fiberwiseDisagreementSet 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (i := i) (steps := steps) (destIdx := destIdx)
+    (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le) f f_bar
 
 /-! **Lemma 4.19.** For each `i ∈ {0, steps, ..., ℓ-steps}`, if `f⁽ⁱ⁾` is `UDR-close`, then, for
 each tuple of folding challenges `(rᵢ', ..., r_{i+steps-1}') ∈ L^steps`, we have that
@@ -120,7 +131,24 @@ lemma fold_error_containment_of_UDRClose (i : Fin r) {destIdx : Fin r} (steps : 
   fold_error_containment 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps)
     (destIdx := destIdx) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
     (f := f_i) (f_bar := f_bar) (r_challenges := challenges) := by
-  trivial
+  classical
+  dsimp [fold_error_containment]
+  intro y hy
+  have h_steps_ne : steps ≠ 0 := NeZero.ne steps
+  have h_exists : ∃ x, f_i x ≠
+      UDRCodeword 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (h_i := by omega)
+        (f := f_i) (h_within_radius := h_UDRClose) x := by
+    by_contra hnone
+    have h_eq : f_i =
+        UDRCodeword 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (h_i := by omega)
+          (f := f_i) (h_within_radius := h_UDRClose) := by
+      funext x
+      exact not_not.mp (by
+        intro hx
+        exact hnone ⟨x, hx⟩)
+    rw [h_eq] at hy
+    simpa [disagreementSet] using hy
+  simpa [fiberwiseDisagreementSet, h_steps_ne, h_exists]
 
 open Classical in
 /-- **Definition 4.20** Bad event for folding : This event captures two scenarios where the
@@ -137,7 +165,33 @@ def foldingBadEvent (i : Fin r) {destIdx : Fin r} (steps : ℕ)
     (h_destIdx : destIdx = i + steps) (h_destIdx_le : destIdx ≤ ℓ) [NeZero steps]
   (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
   (r_challenges : Fin steps → L) : Prop :=
-  False
+  if h_close : fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := i) (steps := steps) (destIdx := destIdx)
+      (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le) (f := f_i) then
+    let f_bar_i := UDRCodeword 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := i) (h_i := by omega) (f := f_i)
+      (h_within_radius :=
+        UDRClose_of_fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (i := i) (steps := steps) (destIdx := destIdx)
+          (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le) f_i h_close)
+    let folded_f_i := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := i) (steps := steps) (destIdx := destIdx)
+      (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le) f_i r_challenges
+    let folded_f_bar_i := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := i) (steps := steps) (destIdx := destIdx)
+      (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le) f_bar_i r_challenges
+    ¬ (fiberwiseDisagreementSet 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := i) (steps := steps) (destIdx := destIdx)
+        (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le) f_i f_bar_i ⊆
+      disagreementSet 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := destIdx) (destIdx := destIdx) (h_destIdx := rfl)
+        (f := folded_f_i) (g := folded_f_bar_i))
+  else
+    let folded_f_i := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := i) (steps := steps) (destIdx := destIdx)
+      (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le) f_i r_challenges
+    UDRClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := destIdx) (h_i := h_destIdx_le) (f := folded_f_i)
 
 open Classical in
 /-- **Definition 4.20.2** (Incremental Bad Events extending Definition 4.20).
@@ -160,7 +214,50 @@ def incrementalFoldingBadEvent
     (h_destIdx : destIdx = block_start_idx + ϑ) (h_destIdx_le : destIdx ≤ ℓ)
     (f_block_start : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) block_start_idx)
     (r_challenges : Fin k → L) : Prop :=
-  False
+  if h_zero : k = 0 then
+    False
+  else if h_done : k = ϑ then
+    foldingBadEvent 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := block_start_idx) (steps := ϑ) (destIdx := destIdx)
+      (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+      f_block_start (fun j : Fin ϑ => r_challenges (Fin.cast h_done.symm j))
+  else if h_block_close : fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := block_start_idx) (steps := ϑ) (destIdx := destIdx)
+      (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f_block_start) then
+    let f_bar_block_start := UDRCodeword 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := block_start_idx) (h_i := by omega) (f := f_block_start)
+      (h_within_radius :=
+        UDRClose_of_fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (i := block_start_idx) (steps := ϑ) (destIdx := destIdx)
+          (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+          f_block_start h_block_close)
+    let Δ_fiber := fiberwiseDisagreementSet 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := block_start_idx) (steps := ϑ) (destIdx := destIdx)
+      (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
+      f_block_start f_bar_block_start
+    let fold_k_f := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := block_start_idx) (steps := k) (destIdx := midIdx)
+      (h_destIdx := by omega) (h_destIdx_le := by omega)
+      f_block_start r_challenges
+    let fold_k_f_bar := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := block_start_idx) (steps := k) (destIdx := midIdx)
+      (h_destIdx := by omega) (h_destIdx_le := by omega)
+      f_bar_block_start r_challenges
+    ¬ (Δ_fiber ⊆
+      fiberwiseDisagreementSet 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := midIdx) (steps := ϑ - k) (destIdx := destIdx)
+        (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le)
+        fold_k_f fold_k_f_bar)
+  else
+    haveI : NeZero (ϑ - k) := ⟨by omega⟩
+    let fold_k_f := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := block_start_idx) (steps := k) (destIdx := midIdx)
+      (h_destIdx := by omega) (h_destIdx_le := by omega)
+      f_block_start r_challenges
+    fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := midIdx) (steps := ϑ - k) (destIdx := destIdx)
+      (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le) (f := fold_k_f)
 
 /-- When all folding steps have been applied (`k = ϑ`), the incremental bad event
 coincides with the full `foldingBadEvent`. -/
@@ -175,8 +272,7 @@ lemma incrementalFoldingBadEvent_of_k_eq_0_is_false
       (k := k) (h_k_le := by omega) (midIdx := midIdx) (destIdx := destIdx)
       (h_midIdx := by omega) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
       f_block_start r_challenges) := by
-  intro h
-  exact h
+  simp [incrementalFoldingBadEvent, h_k]
 
 /-- When all folding steps have been applied (`k = ϑ`), the incremental bad event
 coincides with the full `foldingBadEvent`. -/
@@ -194,7 +290,7 @@ lemma incrementalFoldingBadEvent_eq_foldingBadEvent_of_k_eq_ϑ
     foldingBadEvent 𝔽q β (i := block_start_idx) (steps := ϑ)
       (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
       f_block_start r_challenges := by
-  simp [incrementalFoldingBadEvent, foldingBadEvent]
+  simp [incrementalFoldingBadEvent]
 
 end SoundnessTools
 end Binius.BinaryBasefold
