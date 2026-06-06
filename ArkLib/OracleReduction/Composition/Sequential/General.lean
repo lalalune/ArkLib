@@ -436,6 +436,7 @@ keystone.** By induction on `m`: base case `Reduction.id_perfectCompleteness`; s
 `seqCompose_succ` and discharges the binary `append` with `hAppend` + the IH. Feeding the eventual
 unconditional binary `reduction_append_perfectCompleteness` as `hAppend` closes the n-ary statement.
 Modeled on the proven `seqCompose'_appendCoherent` induction. -/
+set_option maxHeartbeats 1000000 in
 theorem seqCompose_perfectCompleteness_of_append {m : ℕ}
     (Stmt : Fin (m + 1) → Type) (Wit : Fin (m + 1) → Type)
     {n : Fin m → ℕ} {pSpec : ∀ i, ProtocolSpec (n i)}
@@ -455,7 +456,9 @@ theorem seqCompose_perfectCompleteness_of_append {m : ℕ}
   induction m with
   | zero =>
     rw [seqCompose_zero]
-    exact Reduction.id_perfectCompleteness
+    -- `Fin.last 0` is definitionally `0`; supplying `init`/`impl` explicitly lets
+    -- unification assign `rel 0` before the (cheap, m = 0) defeq check on the indices.
+    exact Reduction.id_perfectCompleteness init impl
   | succ m ih =>
     rw [seqCompose_succ]
     exact hAppend (R 0) _ (h 0)
@@ -466,6 +469,7 @@ theorem seqCompose_perfectCompleteness_of_append {m : ℕ}
 Error-bearing analogue of `seqCompose_perfectCompleteness_of_append`: base case
 `Reduction.id_perfectCompleteness` (= completeness with error `0`) and `∑ (i : Fin 0) = 0`; step
 splits the error with `Fin.sum_univ_succ` into `completenessError 0 + ∑ tail` and applies `hAppend`. -/
+set_option maxHeartbeats 1000000 in
 theorem seqCompose_completeness_of_append {m : ℕ}
     (Stmt : Fin (m + 1) → Type) (Wit : Fin (m + 1) → Type)
     {n : Fin m → ℕ} {pSpec : ∀ i, ProtocolSpec (n i)}
@@ -487,7 +491,7 @@ theorem seqCompose_completeness_of_append {m : ℕ}
   induction m with
   | zero =>
     rw [seqCompose_zero, Fin.sum_univ_zero]
-    exact Reduction.id_perfectCompleteness
+    exact Reduction.id_perfectCompleteness init impl
   | succ m ih =>
     rw [seqCompose_succ, Fin.sum_univ_succ]
     exact hAppend (R 0) _ (h 0)

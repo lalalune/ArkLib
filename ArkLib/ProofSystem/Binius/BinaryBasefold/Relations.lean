@@ -47,7 +47,11 @@ seal sDomain qMap_total_fiber normalizedW intermediateEvaluationPoly in
 lemma getMidCodewords_succ (t : L⦃≤ 1⦄[X Fin ℓ]) (i : Fin ℓ)
     (challenges : Fin i.castSucc → L) (r_i' : L) :
   (getMidCodewords 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-    (i := i.succ) (t := t) (challenges := Fin.snoc challenges r_i')) =
+    (i := i.succ) (t := t)
+    -- `n`/`α` pinned so every later `Fin.init`/`Fin.last` occurrence (all at `n = i.val`,
+    -- from the peel) shares this snoc's exact spelling — mixed defeq-but-not-syntactic
+    -- motives otherwise make `init_snoc`/`snoc_last` unusable.
+    (challenges := Fin.snoc (n := i.val) (α := fun _ => L) challenges r_i')) =
   (iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
     (i := ⟨i, by omega⟩)
     (steps := 1)

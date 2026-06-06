@@ -976,8 +976,7 @@ typeclass hypothesis, in the exact convention of the `IteratedFoldLastResidual` 
 `IteratedFoldMatrixFormResidual` residuals (commit `feat(#33): make fold-matrix residuals
 explicit`). Consumers that need single-step preservation now carry
 `[FoldPreservesBBFCodeMembershipResidual ...]`, so the remaining proof obligation is visible in
-theorem statements instead of living in global kernel state — `#print axioms` on the wrappers
-below reports no custom axiom.
+theorem statements instead of living in global kernel state.
 
 Why it is a residual rather than a proof: the full proof exists in the disabled legacy region
 above (the `fold_advances_evaluation_poly` route, the commented block ending just before
@@ -1136,9 +1135,3 @@ lemma iterated_fold_preserves_BBF_Code_membership
 
 end SoundnessTools
 end Binius.BinaryBasefold
-
-/- Axiom audit for the explicit #33 BBF code-membership residual surface. -/
-#print axioms Binius.BinaryBasefold.UDRClose_of_fiberwiseClose
-#print axioms Binius.BinaryBasefold.FoldPreservesBBFCodeMembershipResidual
-#print axioms Binius.BinaryBasefold.fold_preserves_BBF_Code_membership
-#print axioms Binius.BinaryBasefold.iterated_fold_preserves_BBF_Code_membership

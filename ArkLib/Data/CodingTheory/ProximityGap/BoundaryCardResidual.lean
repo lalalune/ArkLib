@@ -453,12 +453,11 @@ theorem correlatedAgreement_affine_curves_of_lattice_residual {k deg : ℕ} {dom
     (boundaryCardResidual_of_lattice_residual (deg := deg) (domain := domain) hLattice hStrict)
     hδ
 
-omit [DecidableEq ι] in
 /-- [BCIKS20] Theorem 1.5 using the packaged boundary quantization residuals.  This is equivalent
 to `correlatedAgreement_affine_curves_of_lattice_residual`, but makes the exact remaining boundary
 surface a single reusable input. -/
 theorem correlatedAgreement_affine_curves_of_quantization_residuals {k deg : ℕ} {domain : ι ↪ F}
-    {δ : ℝ≥0} [NeZero deg]
+    {δ : ℝ≥0} [NeZero deg] [DecidableEq ι]
     (hStrictCoeff :
       ProximityGap.StrictCoeffPolysResidual (k := k) (deg := deg) (domain := domain) (δ := δ))
     (hBoundary :

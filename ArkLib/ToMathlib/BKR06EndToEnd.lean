@@ -511,6 +511,75 @@ lemma bkr06_band_choice_exponent (m : ℕ) (α β L : ℝ)
     nlinarith
   exact ⟨u, v, hvm, huv, hv2, hum, hv_lb, hwindow, hexp⟩
 
+/-! ## Index transport along an equivalence (gap (2))
+
+The bare T3.12 statement quantifies over abstract index types `ι` with `#ι = #F`; the
+construction lives at `ι = K`, `domain = refl`.  Precomposition with an equivalence
+`e : ι ≃ K` relabels coordinates: codeword membership transports through
+`evalOnPoints`, ball membership through the index-relabeling invariance of the
+(relative) Hamming distance, and the count follows by injectivity. -/
+
+/-- Index relabeling preserves the Hamming distance.  (Mathlib's `hammingDist_comp`
+is codomain-side composition; this is the index-side counterpart.) -/
+lemma hammingDist_comp_equiv {ι κ F' : Type*} [Fintype ι] [Fintype κ] [DecidableEq F']
+    (e : ι ≃ κ) (w c : κ → F') :
+    hammingDist (w ∘ e) (c ∘ e) = hammingDist w c := by
+  classical
+  simp only [hammingDist]
+  apply Finset.card_nbij' (fun i => e i) (fun x => e.symm x)
+  · intro i hi
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and, Function.comp_apply] at hi ⊢
+    exact hi
+  · intro x hx
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and, Function.comp_apply,
+      Equiv.apply_symm_apply] at hx ⊢
+    exact hx
+  · intro i _
+    simp
+  · intro x _
+    simp
+
+/-- Index relabeling preserves the relative Hamming distance (the index cardinalities
+agree via the equivalence). -/
+lemma relHammingDist_comp_equiv {ι κ F' : Type*} [Fintype ι] [Fintype κ]
+    [Nonempty ι] [Nonempty κ] [DecidableEq F']
+    (e : ι ≃ κ) (w c : κ → F') :
+    Code.relHammingDist (w ∘ e) (c ∘ e) = Code.relHammingDist w c := by
+  unfold Code.relHammingDist
+  rw [hammingDist_comp_equiv e w c, Fintype.card_congr e]
+
+/-- **Count transport along `e : ι ≃ K`.**  The close-codeword count of
+`RS[K, refl, k]` around `w` injects (by precomposition) into the count of
+`RS[K, e.toEmbedding, k]` around `w ∘ e` over the abstract index type `ι`. -/
+theorem rs_closeCodewords_ncard_transport
+    {ι : Type*} [Fintype ι] [Nonempty ι]
+    (e : ι ≃ K) (k : ℕ) (w : K → K) (δ : ℝ) :
+    (ListDecodable.closeCodewordsRel
+        ((ReedSolomon.code (Function.Embedding.refl K) k : Set (K → K))) w δ).ncard ≤
+      (ListDecodable.closeCodewordsRel
+        ((ReedSolomon.code e.toEmbedding k : Set (ι → K))) (w ∘ e) δ).ncard := by
+  classical
+  apply Set.ncard_le_ncard_of_injOn (fun c => c ∘ e)
+  · rintro c ⟨hcode, hball⟩
+    refine ⟨?_, ?_⟩
+    · -- codeword membership transports through `evalOnPoints`
+      obtain ⟨p, hp, hpc⟩ := hcode
+      refine ⟨p, hp, ?_⟩
+      funext i
+      have h2 := congrFun hpc (e i)
+      simp only [ReedSolomon.evalOnPoints, LinearMap.coe_mk, AddHom.coe_mk,
+        Function.Embedding.refl_apply] at h2
+      simpa [ReedSolomon.evalOnPoints, LinearMap.coe_mk, AddHom.coe_mk,
+        Equiv.coe_toEmbedding] using h2
+    · -- ball membership transports through the distance equality
+      simp only [ListDecodable.relHammingBall, Set.mem_setOf_eq] at hball ⊢
+      rwa [relHammingDist_comp_equiv e w c]
+  · intro c₁ _ c₂ _ h
+    funext x
+    have := congrFun h (e.symm x)
+    simpa using this
+  · exact Set.toFinite _
+
 #print axioms BKR06.bkr06_param_ineq_extension
 #print axioms BKR06.agreement_count_ge_card
 #print axioms BKR06.mem_closeCodewordsRel_of_subspace
@@ -521,5 +590,8 @@ lemma bkr06_band_choice_exponent (m : ℕ) (α β L : ℝ)
 #print axioms BKR06.rs_window_le_floor
 #print axioms BKR06.bkr06_band_choice
 #print axioms BKR06.bkr06_band_choice_exponent
+#print axioms BKR06.hammingDist_comp_equiv
+#print axioms BKR06.relHammingDist_comp_equiv
+#print axioms BKR06.rs_closeCodewords_ncard_transport
 
 end BKR06

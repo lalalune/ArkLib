@@ -159,7 +159,7 @@ theorem aeval_shiftSeries_linear (x₀ : F) (a b : 𝕃 H) :
         + PowerSeries.C b * PowerSeries.X := by
   rw [map_add, map_mul, Polynomial.aeval_C, Polynomial.aeval_C, Polynomial.aeval_X,
     shiftSeries_eq_X_sub_C, map_sub]
-  simp only [map_sub, map_mul]
+  simp only [map_sub, map_mul, PowerSeries.algebraMap_eq]
   ring
 
 end SubstFieldCaveat
