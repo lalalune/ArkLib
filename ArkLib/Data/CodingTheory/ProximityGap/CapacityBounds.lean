@@ -704,6 +704,36 @@ noncomputable def johnsonJumpInternalRadius (n : ℕ) : ℝ≥0 :=
   (((1 : ℝ) - (1 - ((15 : ℝ) / 16)) ^ ((1 : ℝ) / 2)
       + 1 / 8 + 1 / (n : ℝ)).toNNReal)
 
+/-- The fixed ABF26 T4.18 Johnson radius is `J(15/16) = 3/4`. -/
+theorem johnsonJumpRadius_eq_three_fourths :
+    johnsonJumpRadius = (3 / 4 : ℝ≥0) := by
+  rw [johnsonJumpRadius]
+  have hsqrt :
+      ((1 : ℝ) - ((15 : ℝ) / 16)) ^ ((1 : ℝ) / 2) = (1 / 4 : ℝ) := by
+    rw [← Real.sqrt_eq_rpow]
+    have hbase : (1 - (15 : ℝ) / 16) = (1 / 4 : ℝ) ^ 2 := by norm_num
+    rw [hbase, Real.sqrt_sq_eq_abs]
+    norm_num
+  rw [hsqrt]
+  apply NNReal.coe_injective
+  change (((1 : ℝ) - 1 / 4).toNNReal : ℝ) = (3 / 4 : ℝ)
+  rw [Real.coe_toNNReal ((1 : ℝ) - 1 / 4) (by norm_num)]
+  norm_num
+
+/-- The ABF26 T4.18 internal radius is `7/8 + 1/n` after simplifying `J(15/16)`. -/
+theorem johnsonJumpInternalRadius_eq_seven_eighths_add_inv (n : ℕ) :
+    johnsonJumpInternalRadius n = (((7 : ℝ) / 8 + 1 / (n : ℝ)).toNNReal) := by
+  rw [johnsonJumpInternalRadius]
+  have hsqrt :
+      ((1 : ℝ) - ((15 : ℝ) / 16)) ^ ((1 : ℝ) / 2) = (1 / 4 : ℝ) := by
+    rw [← Real.sqrt_eq_rpow]
+    have hbase : (1 - (15 : ℝ) / 16) = (1 / 4 : ℝ) ^ 2 := by norm_num
+    rw [hbase, Real.sqrt_sq_eq_abs]
+    norm_num
+  rw [hsqrt]
+  congr
+  ring
+
 /-- The no-loss Johnson-jump radius is always below the proximity-loss internal radius. -/
 theorem johnsonJumpRadius_le_internalRadius (n : ℕ) :
     johnsonJumpRadius ≤ johnsonJumpInternalRadius n := by
@@ -1176,6 +1206,8 @@ end SubspaceDesignFRS
 #print axioms CodingTheory.rs_epsCA_small_loss_r4_10_of_item2_no_boundary_crossing_prop
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_subspaceDesign_prop
 #print axioms CodingTheory.rs_epsMCA_johnson_range_bchks25_of_bound
+#print axioms CodingTheory.johnsonJumpRadius_eq_three_fourths
+#print axioms CodingTheory.johnsonJumpInternalRadius_eq_seven_eighths_add_inv
 #print axioms CodingTheory.johnsonJumpRadius_le_internalRadius
 #print axioms CodingTheory.rs_epsCA_johnson_jump_bchks25_of_witness
 #print axioms CodingTheory.exists_rsJohnsonJumpWitness_of_bchks25
