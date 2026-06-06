@@ -336,6 +336,68 @@ theorem boundaryCardLatticeResidual_of_boundary_cards_and_coeffPolys
     (deg := deg) (domain := domain) (δ := δ) hk u hcardLt hcardGe hcoeffPoly
 
 omit [DecidableEq ι] in
+/-- **Exact lattice-data adapter.**  The #64 lattice residual is reduced to its concrete
+cardinality/coefficient-polynomial data surface:
+`BoundaryCardResidual.BoundaryCardLatticeData`.  This keeps the lattice witnesses explicit and
+uses the same in-tree boundary assembly bridge as the non-lattice-compatible cardinality adapter. -/
+theorem boundaryCardLatticeResidual_of_lattice_data
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hLatticeData :
+      BoundaryCardResidual.BoundaryCardLatticeData
+        (k := k) (deg := deg) (domain := domain) (δ := δ)) :
+    BoundaryCardResidual.BoundaryCardLatticeResidual
+      (k := k) (deg := deg) (domain := domain) (δ := δ) := by
+  intro hk u hδeq hfloor hcardPos
+  obtain ⟨hcardLt, hcardGe, hcoeffPoly⟩ := hLatticeData hk u hδeq hfloor hcardPos
+  exact boundary_jointAgreement_of_cards_and_coeffPolys
+    (deg := deg) (domain := domain) (δ := δ) hk u hcardLt hcardGe hcoeffPoly
+
+omit [DecidableEq ι] in
+/-- The full closed-boundary cardinality residual follows from the quantization split when the
+exact lattice branch is supplied as `BoundaryCardLatticeData`.  The non-lattice part still comes
+from the strict-subradius producer; this does not widen the residual back to the old
+`BoundaryCardResidual` surface. -/
+theorem boundaryCardResidual_of_lattice_data
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hLatticeData :
+      BoundaryCardResidual.BoundaryCardLatticeData
+        (k := k) (deg := deg) (domain := domain) (δ := δ))
+    (hStrict : ∀ (u : WordStack F (Fin (k + 1)) ι) (δ' : ℝ≥0),
+      δ' < δ →
+      Nat.floor (δ' * Fintype.card ι) = Nat.floor (δ * Fintype.card ι) →
+      0 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ').card →
+      jointAgreement (C := ReedSolomon.code domain deg) (δ := δ') (W := u)) :
+    ProximityGap.BoundaryCardResidual (k := k) (deg := deg) (domain := domain) (δ := δ) :=
+  BoundaryCardResidual.boundaryCardResidual_of_lattice_residual
+    (deg := deg) (domain := domain) (δ := δ)
+    (boundaryCardLatticeResidual_of_lattice_data
+      (k := k) (deg := deg) (domain := domain) (δ := δ) hLatticeData)
+    hStrict
+
+omit [DecidableEq ι] in
+/-- The sharper probability-branch residual follows from the exact lattice data plus the existing
+strict-subradius producer.  This is the direct #64 adapter into the final curve-keystone boundary
+surface. -/
+theorem boundaryProbabilityResidual_of_lattice_data
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hLatticeData :
+      BoundaryCardResidual.BoundaryCardLatticeData
+        (k := k) (deg := deg) (domain := domain) (δ := δ))
+    (hStrict : ∀ (u : WordStack F (Fin (k + 1)) ι) (δ' : ℝ≥0),
+      δ' < δ →
+      Nat.floor (δ' * Fintype.card ι) = Nat.floor (δ * Fintype.card ι) →
+      0 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ').card →
+      jointAgreement (C := ReedSolomon.code domain deg) (δ := δ') (W := u)) :
+    ProximityGap.BoundaryProbabilityResidual
+      (k := k) (deg := deg) (domain := domain) (δ := δ) :=
+  BoundaryCardResidual.boundaryProbabilityResidual_of_lattice_residual
+    (deg := deg) (domain := domain) (δ := δ) hδ
+    (boundaryCardLatticeResidual_of_lattice_data
+      (k := k) (deg := deg) (domain := domain) (δ := δ) hLatticeData)
+    hStrict
+
+omit [DecidableEq ι] in
 /-- The closed-boundary residual is vacuous for `k = 0`, since its first argument is
 `0 < k`. This removes an unnecessary residual hypothesis from degenerate callers. -/
 theorem boundaryCardResidual_zero
@@ -357,4 +419,7 @@ end ArkLib
 #print axioms ArkLib.BoundaryDischarge.hBoundary_of_boundary_cards_and_coeffPolys
 #print axioms ArkLib.BoundaryDischarge.boundaryCardResidual_of_boundary_cards_and_coeffPolys
 #print axioms ArkLib.BoundaryDischarge.boundaryCardLatticeResidual_of_boundary_cards_and_coeffPolys
+#print axioms ArkLib.BoundaryDischarge.boundaryCardLatticeResidual_of_lattice_data
+#print axioms ArkLib.BoundaryDischarge.boundaryCardResidual_of_lattice_data
+#print axioms ArkLib.BoundaryDischarge.boundaryProbabilityResidual_of_lattice_data
 #print axioms ArkLib.BoundaryDischarge.boundaryCardResidual_zero

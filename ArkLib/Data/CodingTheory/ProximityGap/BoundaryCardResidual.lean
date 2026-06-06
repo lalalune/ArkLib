@@ -227,6 +227,31 @@ def BoundaryCardLatticeResidual {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     0 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card →
     jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u)
 
+/-- **The smaller concrete data needed for the exact lattice case.**
+
+This splits `BoundaryCardLatticeResidual` into the three non-goal inputs consumed by the in-tree
+boundary assembly bridge: two good-set cardinality lower bounds and the §5 coefficient-polynomial
+extraction.  It keeps the exact lattice witnesses (`δ = 1 - sqrtRate` and
+`⌊δ · n⌋ = δ · n`) visible, so downstream work can target the genuine square-root lattice branch
+without restating `jointAgreement` itself. -/
+def BoundaryCardLatticeData {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} : Prop :=
+  ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+    δ = 1 - ReedSolomon.sqrtRate deg domain →
+    (Nat.floor (δ * Fintype.card ι) : ℝ≥0) = δ * Fintype.card ι →
+    0 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card →
+    ((RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k) ∧
+    ((RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card ≥
+      (Fintype.card ι + 1) * k) ∧
+    (∀ P : F → Polynomial F,
+      (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+        ∃ B : ℕ → Polynomial F,
+          (∀ j < deg, (B j).natDegree < k + 1) ∧
+            ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              ∀ j < deg, (P z).coeff j = (B j).eval z)
+
 omit [DecidableEq ι] in
 /-- The isolated lattice-boundary residual is vacuous for `k = 0`, since its first hypothesis is
 `0 < k`. This mirrors `BoundaryDischarge.boundaryCardResidual_zero` for the sharper residual
@@ -377,6 +402,7 @@ with no `sorry`/`admit`/`axiom`/`native_decide`. -/
 #print axioms ArkLib.BoundaryCardResidual.jointAgreement_iff_of_floor_eq
 #print axioms ArkLib.BoundaryCardResidual.exists_lt_floor_eq_of_floor_lt
 #print axioms ArkLib.BoundaryCardResidual.boundaryCardResidual_of_not_lattice
+#print axioms ArkLib.BoundaryCardResidual.BoundaryCardLatticeData
 #print axioms ArkLib.BoundaryCardResidual.boundaryCardLatticeResidual_zero
 #print axioms ArkLib.BoundaryCardResidual.boundaryCardResidual_of_lattice_residual
 #print axioms ArkLib.BoundaryCardResidual.boundary_lattice_iff_sqrtRate_mul_card_mem
