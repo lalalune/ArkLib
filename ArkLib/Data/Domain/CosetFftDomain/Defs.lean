@@ -11,7 +11,7 @@ import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Field
- 
+
 namespace Domain
 
 open Function
@@ -25,14 +25,14 @@ structure CosetFftDomain (ι : Type) [AddCommGroup ι]
   (F : Type) [Field F] where
   subgroupDomain : Multiplicative ι →* Fˣ
   subgroupDomain_inj : Injective subgroupDomain
-  cosetGenerator : Fˣ 
+  cosetGenerator : Fˣ
 
 class CosetFftDomainClass.{u, v}
   (D : Type u) (ι : outParam (Type v)) [AddCommGroup ι]
   (F : outParam (Type v)) [Field F] [FunLike D ι F] where
   map_zero_unit (ω : D) : IsUnit (ω 0)
   map_add (ω : D) (i j : ι) : ω (i + j) = (ω 0)⁻¹ * ω i * ω j
-  map_neg (ω : D) (i : ι) : ω (-i) = (ω 0) ^ 2 * (ω i)⁻¹ 
+  map_neg (ω : D) (i : ι) : ω (-i) = (ω 0) ^ 2 * (ω i)⁻¹
   injective (ω : D) : Injective ω
 
 namespace CosetFftDomainClass
@@ -54,7 +54,7 @@ namespace CosetFftDomain
 
 omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
 private lemma eq_iff_gen_and_domains_eq {φ₁ φ₂ : CosetFftDomain ι F} :
-  φ₁ = φ₂ ↔ φ₁.cosetGenerator = φ₂.cosetGenerator ∧ 
+  φ₁ = φ₂ ↔ φ₁.cosetGenerator = φ₂.cosetGenerator ∧
     φ₁.subgroupDomain = φ₂.subgroupDomain := by
   rcases φ₁ with ⟨f₁, h₁⟩
   aesop
@@ -62,7 +62,7 @@ private lemma eq_iff_gen_and_domains_eq {φ₁ φ₂ : CosetFftDomain ι F} :
 end CosetFftDomain
 
 instance : FunLike (CosetFftDomain ι F) ι F where
-  coe cosetDomain i := 
+  coe cosetDomain i :=
     cosetDomain.cosetGenerator * cosetDomain.subgroupDomain i
   coe_injective' φ₁ φ₂ h := by
     simp only at h
@@ -91,26 +91,26 @@ lemma eval_coset_fft_domain_eq_eval_generator_mul_domain
 end CosetFftDomain
 
 instance : CosetFftDomainClass (CosetFftDomain ι F) ι F where
-  map_zero_unit ω := by 
+  map_zero_unit ω := by
     aesop (add simp [CosetFftDomain.eval_coset_fft_domain_eq_eval_generator_mul_domain])
-  map_add ω i j := by 
-    have : 
-      (i + j) = ((Multiplicative.ofAdd i) * (Multiplicative.ofAdd j) : Multiplicative ι) := by rfl 
+  map_add ω i j := by
+    have :
+      (i + j) = ((Multiplicative.ofAdd i) * (Multiplicative.ofAdd j) : Multiplicative ι) := by rfl
     have : ω.subgroupDomain (0 : ι) = 1 := by
       simp [show (0 : ι) = (1 : Multiplicative ι) from rfl]
-    aesop 
-      (add simp 
-        [CosetFftDomain.eval_coset_fft_domain_eq_eval_generator_mul_domain, 
-          Multiplicative.ofAdd]) 
+    aesop
+      (add simp
+        [CosetFftDomain.eval_coset_fft_domain_eq_eval_generator_mul_domain,
+          Multiplicative.ofAdd])
       (add safe (by field_simp))
-  map_neg ω i := by     
+  map_neg ω i := by
     have h₁ : (-i : ι) = (Multiplicative.ofAdd i)⁻¹ := by rfl
     have h₂ : (0 : ι) = (Multiplicative.ofAdd 0 : Multiplicative ι) := by rfl
-    aesop 
+    aesop
       (add simp [sq, CosetFftDomain.eval_coset_fft_domain_eq_eval_generator_mul_domain])
       (add safe (by field_simp))
   injective ω x y h := ω.subgroupDomain_inj <| by
-    aesop 
+    aesop
       (add simp [CosetFftDomain.eval_coset_fft_domain_eq_eval_generator_mul_domain])
 
 namespace CosetFftDomainClass
@@ -133,7 +133,7 @@ private lemma mkSubgroupUnit_mul {D : Type} [FunLike D ι F] [CosetFftDomainClas
     (ω : D) (a b : ι) :
     mkSubgroupUnit ω (a + b) = mkSubgroupUnit ω a * mkSubgroupUnit ω b := by
   unfold mkSubgroupUnit
-  have := (‹CosetFftDomainClass D ι F›.map_add ω a b) 
+  have := (‹CosetFftDomainClass D ι F›.map_add ω a b)
   aesop (add safe (by grind))
 
 omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
@@ -143,13 +143,13 @@ private lemma mkSubgroupUnit_injective {D : Type} [FunLike D ι F] [CosetFftDoma
   apply (‹CosetFftDomainClass D ι F›.injective ω)
   have h_eq : (ω 0)⁻¹ * ω a = (ω 0)⁻¹ * ω b := by
     convert congr_arg Units.val hab using 1
-  exact mul_left_cancel₀ 
-    (inv_ne_zero (show ω 0 ≠ 0 from by have := 
+  exact mul_left_cancel₀
+    (inv_ne_zero (show ω 0 ≠ 0 from by have :=
       (‹CosetFftDomainClass D ι F›.ne_zero ω 0) ; aesop)) h_eq
 
 def toCosetFftDomain {D : Type} [FunLike D ι F] [CosetFftDomainClass D ι F]
   (ω : D) :
-  CosetFftDomain ι F where 
+  CosetFftDomain ι F where
   subgroupDomain := {
     toFun := fun i ↦ mkSubgroupUnit ω (Multiplicative.toAdd i)
     map_one' := by
@@ -170,24 +170,24 @@ omit [DecidableEq ι] [DecidableEq F] [Fintype ι] in
 lemma toCosetFftDomain_of_CosetFftDomain {ω : CosetFftDomain ι F} :
   toCosetFftDomain ω = ω := by
   simp only [toCosetFftDomain, CosetFftDomain.eq_iff_gen_and_domains_eq]
-  constructor 
+  constructor
   · have h : (0 : ι) = (Multiplicative.ofAdd 0 : Multiplicative ι) := by rfl
     aesop (add simp [CosetFftDomain.eval_coset_fft_domain_eq_eval_generator_mul_domain])
-  · have h : (0 : ι) = (Multiplicative.ofAdd 0 : Multiplicative ι) := by rfl 
+  · have h : (0 : ι) = (Multiplicative.ofAdd 0 : Multiplicative ι) := by rfl
     ext i
-    aesop 
+    aesop
       (add simp [CosetFftDomain.eval_coset_fft_domain_eq_eval_generator_mul_domain, mkSubgroupUnit])
 
 omit [DecidableEq ι] [DecidableEq F] [Fintype ι] in
 lemma toCosetFftDomain_apply_self {ω : CosetFftDomain ι F} {i : ι} :
   toCosetFftDomain ω i = ω i := by
   rw [CosetFftDomain.eval_coset_fft_domain_eq_eval_generator_mul_domain]
-  aesop 
+  aesop
     (add simp [toCosetFftDomain, mkSubgroupUnit])
 
 end CosetFftDomainClass
 
-instance {D : Type} [FunLike D ι F] [CosetFftDomainClass D ι F] : 
+instance {D : Type} [FunLike D ι F] [CosetFftDomainClass D ι F] :
   CoeOut D (ι ↪ F) where
   coe ω := ⟨ω, fun _ _ h ↦ CosetFftDomainClass.injective ω h⟩
 
@@ -225,7 +225,7 @@ end CosetFftDomain
 abbrev SmoothCosetFftDomain (n : ℕ) (F : Type) [Field F] : Type :=
   CosetFftDomain (Fin (2 ^ n)) F
 
-namespace CosetFftDomainClass 
+namespace CosetFftDomainClass
 def toFinset {D : Type} [FunLike D ι F] [CosetFftDomainClass D ι F]
   (ω : D) : Finset F := Finset.image ω Finset.univ
 
@@ -234,7 +234,7 @@ omit [DecidableEq ι] in
 lemma card_toFinset {D : Type} [FunLike D ι F] [CosetFftDomainClass D ι F]
   {ω : D} :
   Finset.card (CosetFftDomainClass.toFinset ω) = Fintype.card ι := by
-  aesop 
+  aesop
     (add simp [CosetFftDomainClass.toFinset, Finset.card_image_of_injective,
                 CosetFftDomainClass.injective])
 
@@ -242,9 +242,9 @@ end CosetFftDomainClass
 
 namespace CosetFftDomain
 
-abbrev toFinset (ω : CosetFftDomain ι F) : Finset F := 
+abbrev toFinset (ω : CosetFftDomain ι F) : Finset F :=
   CosetFftDomainClass.toFinset ω
- 
+
 end CosetFftDomain
 
 end Domain

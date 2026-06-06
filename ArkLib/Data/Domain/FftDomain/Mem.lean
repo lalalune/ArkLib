@@ -11,7 +11,7 @@ import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Field
- 
+
 import ArkLib.Data.Domain.CosetFftDomain.Mem
 import ArkLib.Data.Domain.FftDomain.Defs
 import ArkLib.ToMathlib.Finset.ToListWithProof
@@ -21,7 +21,7 @@ namespace Domain
 variable {ι : Type} [Fintype ι] [AddCommGroup ι] [DecidableEq ι]
 variable {F : Type} [Field F] [DecidableEq F]
 
-namespace FftDomainClass 
+namespace FftDomainClass
 
 variable {D : Type} [FunLike D ι F] [FftDomainClass D ι F]
 variable {ω : D}
@@ -49,16 +49,16 @@ lemma mem_iff_mem_toCosetFftDomain :
   simp [mem_iff_exists, mem_iff_exists_mul, ω.cosetGenerator_one]
 
 omit [DecidableEq ι] in
-lemma mem_toFinset_iff_exists : 
+lemma mem_toFinset_iff_exists :
   x ∈ ω.toFinset ↔ ∃ i, x = ω.subgroupDomain i := by
-  rw [CosetFftDomainClass.mem_toFinset_iff_mem, 
+  rw [CosetFftDomainClass.mem_toFinset_iff_mem,
       CosetFftDomainClass.mem_def]
-  aesop 
+  aesop
 
 omit [DecidableEq ι] in
 @[simp]
 lemma mem_toFinset_iff_mem :
-  x ∈ ω.toFinset ↔ x ∈ ω := by 
+  x ∈ ω.toFinset ↔ x ∈ ω := by
   rw [CosetFftDomainClass.mem_toFinset_iff_mem,
       mem_iff_mem_toCosetFftDomain]
 

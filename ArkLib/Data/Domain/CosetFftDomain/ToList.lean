@@ -34,7 +34,7 @@ lemma toList_eq_finset_toList {ω : D} :
 
 end CosetFftDomainClass
 
-namespace CosetFftDomain 
+namespace CosetFftDomain
 
 /-- Convert a coset FFT domain into a list of all its members
   with proofs the members belong to the FFT domain.

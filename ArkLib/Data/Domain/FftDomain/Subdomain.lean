@@ -29,7 +29,7 @@ variable {ω : D} {x : F}
 
 open CosetFftDomainClass
 
-def subdomain (ω : D) (i : ℕ) : SmoothFftDomain (n - i) F := 
+def subdomain (ω : D) (i : ℕ) : SmoothFftDomain (n - i) F :=
   (CosetFftDomainClass.subdomain ω i).toFftDomain
 
 lemma mem_fft_subdomain_iff_mem_coset_subdomain {i : ℕ} :
@@ -37,8 +37,8 @@ lemma mem_fft_subdomain_iff_mem_coset_subdomain {i : ℕ} :
   simp [subdomain, mem_toFftDomain_iff_mul_mem, CosetFftDomain.map_0_eq_coset_generator]
 
 lemma mem_subdomain_of_mem_subdomain_of_le {i j : ℕ} (h : x ∈ subdomain ω i) (hji : j ≤ i) :
-  x ∈ subdomain ω j := by 
-    aesop 
+  x ∈ subdomain ω j := by
+    aesop
       (add simp [mem_fft_subdomain_iff_mem_coset_subdomain])
       (add unsafe forward [mem_subdomain_of_le_of_mem_subdomain])
 
@@ -63,10 +63,10 @@ variable {ω : D}
 lemma subdomain_toFftDomain_comm {i : ℕ} :
   (subdomain ω i).toFftDomain = FftDomainClass.subdomain (toFftDomain ω) i := by
   ext u
-  rw [eval_toFftDomain] 
+  rw [eval_toFftDomain]
   conv_rhs =>
     simp [FftDomainClass.subdomain]
-  rw [eval_toFftDomain] 
+  rw [eval_toFftDomain]
   conv_rhs =>
     rw [CosetFftDomain.map_0_eq_coset_generator]
   rw [subdomain_generator_pow_generator]
@@ -85,10 +85,10 @@ lemma subdomain_toFftDomain_comm {i : ℕ} :
     conv_lhs =>
       rhs
       simp only [
-        subdomain, mkSubgroupUnit, 
-        CosetFftDomainClass.subdomain_embed, 
-        ge_iff_le, inv_pow, 
-        CosetFftDomain.eval_coset_fft_domain_eq_eval_generator_mul_domain, 
+        subdomain, mkSubgroupUnit,
+        CosetFftDomainClass.subdomain_embed,
+        ge_iff_le, inv_pow,
+        CosetFftDomain.eval_coset_fft_domain_eq_eval_generator_mul_domain,
         h, ↓reduceDIte, MonoidHom.coe_mk, OneHom.coe_mk]
     rw [CosetFftDomain.map_0_eq_coset_generator,
         CosetFftDomainClass.subdomain_generator_pow_generator]
@@ -99,8 +99,8 @@ lemma mem_subdomain_of_mem_subdomain_of_mem_fft_subdomain
   {a b : F}
   (ha : a ∈ subdomain ω j)
   (hb : b ∈ FftDomainClass.subdomain (toFftDomain ω) i) :
-  a * b ∈ subdomain ω j := by 
-  aesop 
+  a * b ∈ subdomain ω j := by
+  aesop
     (add simp [subdomain_toFftDomain_comm])
     (add unsafe [FftDomainClass.mem_subdomain_of_mem_subdomain_of_le,
                   mul_mem_of_mem_of_mem_toFftDomain])
@@ -110,14 +110,14 @@ lemma mem_subdomain_of_mem_fft_subdomain_of_mem_subdomain
   {a b : F}
   (ha : a ∈ FftDomainClass.subdomain (toFftDomain ω) i)
   (hb : b ∈ subdomain ω j) :
-  a * b ∈ subdomain ω j := by 
+  a * b ∈ subdomain ω j := by
   rw [mul_comm]
   exact mem_subdomain_of_mem_subdomain_of_mem_fft_subdomain hji hb ha
 
 
 end CosetFftDomainClass
 
-namespace FftDomain 
+namespace FftDomain
 
 abbrev subdomain {n : ℕ} (ω : SmoothFftDomain n F) (i : ℕ) : SmoothFftDomain (n - i) F :=
   FftDomainClass.subdomain ω i

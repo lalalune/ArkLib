@@ -14,14 +14,14 @@ import Mathlib.Tactic.Field
 
 import ArkLib.Data.Domain.CosetFftDomain.Defs
 
-namespace Domain 
+namespace Domain
 
 variable {ι : Type} [Fintype ι] [AddCommGroup ι] [DecidableEq ι]
 variable {F : Type} [Field F] [DecidableEq F]
 
 structure FftDomain (ι : Type) [AddCommGroup ι]
   (F : Type) [Field F] extends CosetFftDomain ι F where
-  cosetGenerator_one : cosetGenerator = 1 
+  cosetGenerator_one : cosetGenerator = 1
 
 namespace FftDomain
 
@@ -35,12 +35,12 @@ private lemma eq_iff_domains_eq {φ₁ φ₂ : FftDomain ι F} :
 end FftDomain
 
 instance : FunLike (FftDomain ι F) ι F where
-  coe fftDomain i := 
+  coe fftDomain i :=
     fftDomain.subgroupDomain i
   coe_injective' φ₁ φ₂ h := by
     simp only [FftDomain.eq_iff_domains_eq]
     ext i
-    have h := congrFun h i 
+    have h := congrFun h i
     simpa [Multiplicative.ofAdd] using h
 
 namespace FftDomain
@@ -53,22 +53,22 @@ lemma eval_fft_domain_eq_eval_domain
 end FftDomain
 
 instance : CosetFftDomainClass (FftDomain ι F) ι F where
-  map_zero_unit ω := by 
+  map_zero_unit ω := by
     have : (0 : ι) = (1 : Multiplicative ι) := by rfl
     aesop (add simp [FftDomain.eval_fft_domain_eq_eval_domain])
-  map_add ω i j := by 
+  map_add ω i j := by
     have : (0 : ι) = (1 : Multiplicative ι) := by rfl
     have : (i + j : ι) = (Multiplicative.ofAdd i) * (Multiplicative.ofAdd j) := by rfl
-    aesop 
+    aesop
       (add simp [FftDomain.eval_fft_domain_eq_eval_domain])
-  map_neg ω i := by 
+  map_neg ω i := by
     have : (0 : ι) = (1 : Multiplicative ι) := by rfl
     have : (-i) = (Multiplicative.ofAdd i)⁻¹ := by rfl
-    aesop 
+    aesop
       (add simp [FftDomain.eval_fft_domain_eq_eval_domain,
                  Multiplicative.ofAdd])
       (add safe (by field_simp))
-  injective ω x y h := ω.subgroupDomain_inj <| by aesop 
+  injective ω x y h := ω.subgroupDomain_inj <| by aesop
 
 class FftDomainClass.{u, v}
   (D : Type u) (ι : outParam (Type v)) [AddCommGroup ι]
@@ -77,12 +77,12 @@ class FftDomainClass.{u, v}
   generator_eq_one (ω : D) : ω 0 = 1
 
 instance : FftDomainClass (FftDomain ι F) ι F where
-  generator_eq_one ω := by 
+  generator_eq_one ω := by
     have : (0 : ι) = (1 : Multiplicative ι) := by rfl
-    aesop 
+    aesop
       (add simp [FftDomain.eval_fft_domain_eq_eval_domain])
 
-namespace FftDomain 
+namespace FftDomain
 
 omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
 lemma eval_fft_domain_eq_eval_coset_fft_domain
@@ -111,7 +111,7 @@ abbrev SmoothFftDomain (n : ℕ) (F : Type) [Field F] : Type :=
 
 namespace FftDomain
 
-abbrev toFinset (ω : FftDomain ι F) : Finset F := 
+abbrev toFinset (ω : FftDomain ι F) : Finset F :=
   CosetFftDomainClass.toFinset ω
 
 end FftDomain

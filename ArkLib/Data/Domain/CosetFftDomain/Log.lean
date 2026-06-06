@@ -21,10 +21,10 @@ variable {D : Type} [FunLike D (Fin (2 ^ n)) F]
 variable [CosetFftDomainClass D (Fin (2 ^ n)) F]
 
 private def logAux (ω : D)
-  (x : ω) (fuel : ℕ) : Fin (2 ^ n) := 
+  (x : ω) (fuel : ℕ) : Fin (2 ^ n) :=
   match fuel with
   | 0 => default
-  | fuel + 1 => 
+  | fuel + 1 =>
     if h : fuel < 2 ^ n then
       if ω ⟨fuel, h⟩ = x then ⟨fuel, h⟩ else logAux ω x fuel
     else logAux ω x fuel
@@ -34,26 +34,26 @@ def log (ω : D) (x : ω) : Fin (2 ^ n) := logAux ω x (2 ^ n)
 
 @[simp]
 lemma log_right_inverse' {ω : D} {x : ω} :
-  ω (log ω x) = x := by 
+  ω (log ω x) = x := by
   have h_log : ∃ i : Fin (2 ^ n), ω i = x := by
     exact Finset.mem_image.mp x.2 |> fun ⟨i, _, hi⟩ ↦ ⟨i, hi⟩
   obtain ⟨i, hi⟩ := h_log
-  have h_log_aux : 
-    ∀ (fuel : ℕ) (i : Fin (2 ^ n)), 
+  have h_log_aux :
+    ∀ (fuel : ℕ) (i : Fin (2 ^ n)),
       i.val < fuel → ω i = x → ω (logAux ω x fuel) = x := by
     intro fuel i hi hx
-    induction fuel generalizing i with 
-    | zero => simp_all 
-    | succ fuel ih => 
+    induction fuel generalizing i with
+    | zero => simp_all
+    | succ fuel ih =>
       simp [logAux]
       grind
   exact h_log_aux _ _ (Fin.is_lt i) hi
 
-lemma log_right_inverse {ω : D} : 
+lemma log_right_inverse {ω : D} :
   Function.RightInverse (log ω) (fun x ↦ ⟨ω x, by simp⟩) := fun x ↦ by simp
 
-lemma log_left_inverse {ω : D} : 
-  Function.LeftInverse (log ω) (fun x ↦ ⟨ω x, by simp⟩) := 
+lemma log_left_inverse {ω : D} :
+  Function.LeftInverse (log ω) (fun x ↦ ⟨ω x, by simp⟩) :=
     fun x ↦ CosetFftDomainClass.injective (ω := ω) (by simp)
 
 end CosetFftDomainClass
@@ -61,14 +61,14 @@ end CosetFftDomainClass
 namespace CosetFftDomain
 
 abbrev log {n : ℕ} (ω : SmoothCosetFftDomain n F) (x : ω) : Fin (2 ^ n) :=
-  CosetFftDomainClass.log ω x 
+  CosetFftDomainClass.log ω x
 
 end CosetFftDomain
 
 namespace FftDomain
 
 abbrev log {n : ℕ} (ω : SmoothFftDomain n F) (x : ω) : Fin (2 ^ n) :=
-  CosetFftDomainClass.log ω x 
+  CosetFftDomainClass.log ω x
 
 end FftDomain
 

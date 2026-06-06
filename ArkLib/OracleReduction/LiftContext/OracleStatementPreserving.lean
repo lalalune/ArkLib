@@ -70,7 +70,7 @@ lemma liftContextStmt_verify
 
 -- (An auxiliary / commutation lemma holds but
 -- requires the OptionT/simulateQ map-distribution machinery; omitted here as
--- the security properties are inherited via the existing 
+-- the security properties are inherited via the existing
 -- ported lemmas in .)
 
 end OracleVerifier

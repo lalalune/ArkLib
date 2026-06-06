@@ -20,7 +20,7 @@ to a designated received word.
 
 ### Mathematical Framework
 
-Let $K = \mathbb{F}_{q^m}$ be a finite extension of $F = \mathbb{F}_q$. 
+Let $K = \mathbb{F}_{q^m}$ be a finite extension of $F = \mathbb{F}_q$.
 1. **Agreement Identity:** For a received word interpolant $P^*$ and a polynomial $P$, the
    codeword corresponding to $P^* - P$ agrees with the evaluation of $P^*$ precisely at the roots of $P$.
 2. **Subspace Interpolation:** When $P = P_L$ is the linearized subspace polynomial of a $v$-dimensional

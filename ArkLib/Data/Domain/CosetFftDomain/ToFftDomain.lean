@@ -25,7 +25,7 @@ namespace CosetFftDomainClass
 
 variable {D : Type} [FunLike D ι F] [CosetFftDomainClass D ι F]
 
-def toFftDomain (ω : D) : FftDomain ι F where  
+def toFftDomain (ω : D) : FftDomain ι F where
   subgroupDomain := (CosetFftDomainClass.toCosetFftDomain ω).subgroupDomain
   subgroupDomain_inj := (CosetFftDomainClass.toCosetFftDomain ω).subgroupDomain_inj
   cosetGenerator := 1
@@ -45,10 +45,10 @@ lemma mem_toFftDomain_iff_mul_mem {ω : D} {x : F} :
   unfold toFftDomain
   rw [FftDomain.mem_iff_mem_toCosetFftDomain,
       CosetFftDomain.mem_iff_exists_mul]
-  aesop 
-    (add simp 
-      [CosetFftDomainClass.mem_def, 
-       CosetFftDomainClass.toCosetFftDomain, 
+  aesop
+    (add simp
+      [CosetFftDomainClass.mem_def,
+       CosetFftDomainClass.toCosetFftDomain,
        CosetFftDomainClass.mkSubgroupUnit])
     (add safe (by field_simp))
 
@@ -56,11 +56,11 @@ lemma mul_mem_of_mem_toFftDomain_of_mem {ω : D} {x y : F}
   (hx : x ∈ toFftDomain ω)
   (hy : y ∈ ω) :
   x * y ∈ ω := by
-  simp_all only 
+  simp_all only
     [FftDomain.mem_iff_exists, Multiplicative.exists, toFftDomain, Multiplicative.ofAdd]
   obtain ⟨a, rfl⟩ := hy
   obtain ⟨b, rfl⟩ := hx
-  simp only [Equiv.coe_fn_mk, toCosetFftDomain, mkSubgroupUnit, 
+  simp only [Equiv.coe_fn_mk, toCosetFftDomain, mkSubgroupUnit,
               MonoidHom.coe_mk, OneHom.coe_mk]
   exists (a + b)
   have : a + b = Multiplicative.ofAdd a * Multiplicative.ofAdd b := by rfl
@@ -74,10 +74,10 @@ lemma mul_mem_of_mem_of_mem_toFftDomain {ω : D} {x y : F}
   x * y ∈ ω := by
   rw [mul_comm]
   exact mul_mem_of_mem_toFftDomain_of_mem hy hx
-  
+
 @[simp]
 lemma toFinset_image_toFftDomain_eq_toFinset [Fintype ι] [DecidableEq F] {ω : D} :
-  Finset.image (fun (w : F) ↦ ω 0 * w) (toFftDomain ω).toFinset = 
+  Finset.image (fun (w : F) ↦ ω 0 * w) (toFftDomain ω).toFinset =
     CosetFftDomainClass.toFinset ω := by
   ext x
   constructor <;> rintro h
@@ -85,12 +85,12 @@ lemma toFinset_image_toFftDomain_eq_toFinset [Fintype ι] [DecidableEq F] {ω : 
     obtain ⟨a, h₁, h₂⟩ := h
     rw [←h₂, mul_comm]
     exact mul_mem_of_mem_toFftDomain_of_mem h₁ (by simp)
-  · simp_all only [mem_toFinset_iff_mem, Finset.mem_image] 
+  · simp_all only [mem_toFinset_iff_mem, Finset.mem_image]
     obtain ⟨a, h⟩ := h
     have : (ω 0)⁻¹ * x ∈ toFftDomain ω := by
-      rw [mem_toFftDomain_iff_mul_mem] 
+      rw [mem_toFftDomain_iff_mul_mem]
       aesop
-    exists _, this 
+    exists _, this
     field_simp
 
 lemma card_toFinset_eq_card_toFftDomain_toFinset [Fintype ι] [DecidableEq F] {ω : D} :
@@ -103,8 +103,8 @@ namespace CosetFftDomain
 
 variable {ω : CosetFftDomain ι F} {x : F}
 
-abbrev toFftDomain (ω : CosetFftDomain ι F) : FftDomain ι F := 
-  CosetFftDomainClass.toFftDomain ω 
+abbrev toFftDomain (ω : CosetFftDomain ι F) : FftDomain ι F :=
+  CosetFftDomainClass.toFftDomain ω
 
 lemma mem_toFftDomain_iff_mul_mem :
   x ∈ ω.toFftDomain ↔ ω.cosetGenerator * x ∈ ω := by
@@ -130,7 +130,7 @@ lemma toFffDomain_eq_self {ω : FftDomain ι F} :
     eval_fft_domain_eq_eval_coset_fft_domain,
     CosetFftDomain.eval_coset_fft_domain_eq_eval_generator_mul_domain, Units.val_one, one_mul,
     ne_eq, Units.ne_zero, not_false_eq_true, right_eq_mul₀, Units.val_eq_one]
-  exact ω.cosetGenerator_one 
+  exact ω.cosetGenerator_one
 
 end FftDomain
 

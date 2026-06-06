@@ -32,8 +32,8 @@ def toSubgroup (ω : D) : Subgroup Fˣ where
     rcases ha, hb with ⟨⟨x, rfl⟩, ⟨y, rfl⟩⟩
     exists (x + y)
     ext
-    simp [CosetFftDomainClass.mkSubgroupUnit, 
-          CosetFftDomainClass.map_add, 
+    simp [CosetFftDomainClass.mkSubgroupUnit,
+          CosetFftDomainClass.map_add,
           FftDomainClass.generator_eq_one]
   }
   one_mem' := by {
@@ -51,8 +51,8 @@ def toSubgroup (ω : D) : Subgroup Fˣ where
 
 lemma mem_subgroup_iff_mem_finset {x : Fˣ} :
   x ∈ toSubgroup ω ↔ x.val ∈ CosetFftDomainClass.toFinset ω := by
-  aesop 
-    (add simp [toSubgroup, CosetFftDomainClass.toFinset, 
+  aesop
+    (add simp [toSubgroup, CosetFftDomainClass.toFinset,
                 CosetFftDomainClass.mkSubgroupUnit, generator_eq_one])
 
 @[simp]

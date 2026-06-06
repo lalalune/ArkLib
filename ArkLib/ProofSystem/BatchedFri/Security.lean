@@ -32,7 +32,7 @@ import Mathlib.Algebra.Ring.NonZeroDivisors
 namespace Fri
 section Fri
 
-open OracleComp OracleSpec ProtocolSpec ReedSolomon Domain 
+open OracleComp OracleSpec ProtocolSpec ReedSolomon Domain
 open NNReal Finset Function ProbabilityTheory
 
 variable {𝔽 : Type} [NonBinaryField 𝔽] [Fintype 𝔽] [DecidableEq 𝔽] [Nontrivial 𝔽]
@@ -90,9 +90,9 @@ def cosetEnum (s₀ : evalDomainSigma s ω i) (k_le_n : ∑ j', (s j').1 ≤ n)
           apply Finset.sum_le_sum_of_subset
           simp
       })  (by {
-        rcases s₀ with ⟨s₀, hs₀⟩ 
+        rcases s₀ with ⟨s₀, hs₀⟩
         simp only
-        simp only [evalDomainSigma] at hs₀ 
+        simp only [evalDomainSigma] at hs₀
         rw [CosetFftDomain.mem_toFinset_iff_mem] at hs₀
         exact hs₀
       }) r.2
@@ -132,7 +132,7 @@ noncomputable def fin_equiv_coset (s₀ : evalDomainSigma s ω ↑i)
   unfold Function.Bijective
   apply And.intro
   · intros a b h
-    simp only [finRangeTo.eq_1, Subtype.mk.injEq] at h 
+    simp only [finRangeTo.eq_1, Subtype.mk.injEq] at h
     have h := congr_arg Subtype.val h
     simp only [mul_eq_mul_left_iff] at h
     rcases h with h | h
@@ -141,7 +141,7 @@ noncomputable def fin_equiv_coset (s₀ : evalDomainSigma s ω ↑i)
     · rcases s₀ with ⟨s₀, hs₀⟩
       subst h
       simp only [finRangeTo.eq_1, evalDomainSigma] at hs₀
-      rw [CosetFftDomainClass.mem_toFinset_iff_mem] at hs₀ 
+      rw [CosetFftDomainClass.mem_toFinset_iff_mem] at hs₀
       have hs₀ := CosetFftDomainClass.not_zero_mem hs₀
       simp at hs₀
   · rintro ⟨⟨y, h'⟩, h⟩
@@ -221,9 +221,9 @@ noncomputable def f_succ'
       s₀.1 ^ (2 ^ (s i).1) = s₀'.1 := by
     rcases s₀' with ⟨s₀', hs₀'⟩
     simp only [Fin.val_natCast]
-    simp only [evalDomainSigma] at hs₀' 
+    simp only [evalDomainSigma] at hs₀'
     rw [CosetFftDomain.mem_toFinset_iff_mem] at hs₀'
-    rw [CosetFftDomainClass.mem_subdomain_of_eq_vals 
+    rw [CosetFftDomainClass.mem_subdomain_of_eq_vals
       (ω := ω)
       (j := (∑ j' ∈ finRangeTo (k + 1) ↑i, (s j').1 + (s i).1))
       (by {
@@ -240,7 +240,7 @@ noncomputable def f_succ'
         apply (swap le_trans) k_le_n
         apply Finset.sum_le_sum_of_subset (by simp)
       })
-      hs₀' 
+      hs₀'
     rcases h with ⟨y, ⟨h1, h2⟩⟩
     exists ⟨y, by {
       rw [CosetFftDomain.mem_toFinset_iff_mem]
@@ -310,7 +310,7 @@ noncomputable def correlated_agreement_density {ι : Type} [Fintype ι]
   haveI : Fintype Fₛ.carrier := Set.Finite.fintype (Set.toFinite _)
   haveI : Fintype V.carrier := Set.Finite.fintype (Set.toFinite _)
   let Fc := Fₛ.carrier.toFinset
-  let Vc := V.carrier.toFinset  
+  let Vc := V.carrier.toFinset
   (Fc ∩ Vc).card / Fc.card
 
 open Polynomial
