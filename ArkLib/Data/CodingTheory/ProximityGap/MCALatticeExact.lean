@@ -142,3 +142,19 @@ theorem mcaThreshold_eq_capacityPredPred_unconditional (domain : ι ↪ F) {k : 
   rw [hhi_val] at hlt_val
   -- `n-(k+2) ≤ thr.val < n-(k+1)` with `k+2 ≤ n` forces `thr.val = n - k - 2`.
   omega
+
+/-- **Radius form of the unconditional exact threshold.** The faithful maximal good radius
+`δ*` (the lattice point at the threshold index) equals `(n-k-2)/n` in the band — the value a
+protocol-soundness caller consumes directly. -/
+theorem mcaThreshold_latticePoint_eq_capacityPredPred_unconditional (domain : ι ↪ F) {k : ℕ}
+    (hk2 : k + 2 ≤ Fintype.card ι)
+    (hlo : ((Fintype.card ι).choose (k + 2) : ENNReal) / (Fintype.card F : ENNReal) ≤
+      (ProximityGap.epsStar : ENNReal))
+    (hsmall : Fintype.card F < 2 ^ (128 : ℕ) * (subsetSumsKplus1 domain k).card)
+    (hne : mcaThresholdExists (ReedSolomon.code domain k : Set (ι → F))
+      ProximityGap.epsStar) :
+    mcaLatticePoint (Fintype.card ι)
+        (mcaThreshold (ReedSolomon.code domain k : Set (ι → F)) ProximityGap.epsStar hne) =
+      ((Fintype.card ι - k - 2 : ℕ) : ℝ≥0) / (Fintype.card ι : ℝ≥0) := by
+  unfold mcaLatticePoint
+  rw [mcaThreshold_eq_capacityPredPred_unconditional domain hk2 hlo hsmall hne]

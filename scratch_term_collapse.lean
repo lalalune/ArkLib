@@ -24,9 +24,9 @@ theorem structured_term_collapse (d dH D wW k i1 sl : ℕ)
     · omega
   -- Step B: the two wW-coefficients add to ≤ k+1+sl.
   have hWcoef : (i1 + (if i1 = 0 then 1 else 0) - 1) + ((k + 1 - i1) + sl) ≤ k + 1 + sl := by
-    rcases Nat.eq_zero_or_pos i1 with h | h
-    · subst h; simp only [if_pos rfl]; omega
-    · rw [if_neg (by omega)]; omega
+    split_ifs with hh
+    · subst hh; omega
+    · omega
   -- Abbreviate the ξ-weight atom and the truncated coefficients (so `ring` can regroup).
   set X := (d - 1) * (D - dH + 1) with hX
   set DdH := D + 1 - dH with hDdH
@@ -42,8 +42,8 @@ theorem structured_term_collapse (d dH D wW k i1 sl : ℕ)
         = (eW + mw) * wW + (eξ + mσ) * X + (dσ * DdH + Dσ) + sl := by ring
   rw [hreg, hXcoef]
   -- Bound the regrouped coefficients.
-  have hb1 : (eW + mw) * wW ≤ (k + 1 + sl) * wW := Nat.mul_le_mul_right _ hWcoef
-  have hb2 : dσ * DdH ≤ d * DdH := Nat.mul_le_mul_right _ (Nat.sub_le d sl)
+  have hb1 : (eW + mw) * wW ≤ (k + 1 + sl) * wW := Nat.mul_le_mul hWcoef (le_refl wW)
+  have hb2 : dσ * DdH ≤ d * DdH := Nat.mul_le_mul (Nat.sub_le d sl) (le_refl DdH)
   have hb3 : Dσ ≤ D := Nat.sub_le D sl
   refine le_trans (by
     refine Nat.add_le_add (Nat.add_le_add (Nat.add_le_add hb1 le_rfl)
@@ -51,16 +51,19 @@ theorem structured_term_collapse (d dH D wW k i1 sl : ℕ)
   -- Now: (k+1+sl)*wW + 2*k*X + (d*DdH + D) + sl ≤ (2(k+1)+1)*d*D.
   -- Unfold atoms and eliminate truncated subtraction with additive witnesses.
   simp only [hX, hDdH]
-  have hDdH_ge : dH ≤ D := by omega
   obtain ⟨r, rfl⟩ : ∃ r, D = dH + r := ⟨D - dH, by omega⟩
   obtain ⟨c, rfl⟩ : ∃ c, d = c + 2 := ⟨d - 2, by omega⟩
+  obtain ⟨e, rfl⟩ : ∃ e, dH = e + 1 := ⟨dH - 1, by omega⟩
   have hwWr : wW ≤ r := by omega
   have hσk : sl ≤ k + 1 := by omega
   have hd1 : (c + 2) - 1 = c + 1 := by omega
-  have hr1 : (dH + r) - dH + 1 = r + 1 := by omega
-  have hrD : (dH + r) + 1 - dH = r + 1 := by omega
+  have hr1 : (e + 1 + r) - (e + 1) + 1 = r + 1 := by omega
+  have hrD : (e + 1 + r) + 1 - (e + 1) = r + 1 := by omega
   rw [hd1, hr1, hrD]
-  nlinarith [hwWr, hσk, Nat.mul_le_mul_right (r + 1) hwWr,
-    Nat.mul_le_mul hσk (le_refl (r + 1)),
-    Nat.zero_le (k * c), Nat.zero_le (k * r), Nat.zero_le (c * r),
-    Nat.zero_le (k * c * r), Nat.zero_le (dH * c), Nat.zero_le (k * dH)]
+  -- The wW-term collapses against `wW ≤ r` and `sl ≤ k+1`.
+  have hwwterm : (k + 1 + sl) * wW ≤ (2 * k + 2) * r :=
+    le_trans (Nat.mul_le_mul (le_refl (k + 1 + sl)) hwWr)
+      (Nat.mul_le_mul (by omega) (le_refl r))
+  nlinarith [hwwterm, hσk, Nat.zero_le k, Nat.zero_le c, Nat.zero_le r, Nat.zero_le e,
+    Nat.zero_le (k * c), Nat.zero_le (k * r), Nat.zero_le (c * r), Nat.zero_le (k * c * r),
+    Nat.zero_le (c * e), Nat.zero_le (k * e), Nat.zero_le (k * c * e), Nat.zero_le (r * e)]

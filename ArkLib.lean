@@ -45,6 +45,7 @@ import ArkLib.Data.CodingTheory.BerlekampWelch.Condition
 import ArkLib.Data.CodingTheory.BerlekampWelch.ElocPoly
 import ArkLib.Data.CodingTheory.BerlekampWelch.Existence
 import ArkLib.Data.CodingTheory.BerlekampWelch.Sorries
+import ArkLib.Data.CodingTheory.BinomialEntropyBound
 import ArkLib.Data.CodingTheory.CodeGeometry
 import ArkLib.Data.CodingTheory.Connections.EpsMCABadGlue
 import ArkLib.Data.CodingTheory.Connections.GCXK25SecondMoment
@@ -296,7 +297,6 @@ import ArkLib.OracleReduction.Completeness
 import ArkLib.OracleReduction.Composition.Parallel.Basic
 import ArkLib.OracleReduction.Composition.Sequential.Append
 import ArkLib.OracleReduction.Composition.Sequential.General
-import ArkLib.OracleReduction.Composition.Sequential.SeqComposeVerifierBricks
 import ArkLib.OracleReduction.Equiv
 import ArkLib.OracleReduction.Execution
 import ArkLib.OracleReduction.FiatShamir.Basic

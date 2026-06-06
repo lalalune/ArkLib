@@ -683,13 +683,14 @@ theorem iteratedSumcheckPostChallengeLocalChecks_iff_fullTranscript (i : Fin ℓ
       ↔ iteratedSumcheckPostChallengeFullTranscriptLocalChecks
         (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') i
         tr stmt witMid := by
-  simp [iteratedSumcheckPostChallengeLocalChecks,
-    iteratedSumcheckPostChallengeFullTranscriptLocalChecks,
-    ProtocolSpec.Transcript.equivMessagesChallenges,
-    ProtocolSpec.Transcript.toMessagesChallenges,
-    ProtocolSpec.Transcript.toMessagesUpTo,
-    ProtocolSpec.Transcript.toChallengesUpTo,
-    ProtocolSpec.FullTranscript.messages, ProtocolSpec.FullTranscript.challenges]
+  constructor <;> intro h <;>
+    simpa [iteratedSumcheckPostChallengeLocalChecks,
+      iteratedSumcheckPostChallengeFullTranscriptLocalChecks,
+      ProtocolSpec.Transcript.equivMessagesChallenges,
+      ProtocolSpec.Transcript.toMessagesChallenges,
+      ProtocolSpec.Transcript.toMessagesUpTo,
+      ProtocolSpec.Transcript.toChallengesUpTo,
+      ProtocolSpec.FullTranscript.messages, ProtocolSpec.FullTranscript.challenges] using h
 
 /-- **Extracted-witness ground-truth telescoping (issue #29).** For the iterated-round RBR extractor
 (`extractOut`), whose extracted last witness has `H = projectToMidSumcheckPoly … i.castSucc
@@ -1418,7 +1419,7 @@ theorem coreInteraction_rbrKnowledgeSoundness [IsDomain L] [IsDomain K]
         (impl := impl)
         (relIn := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn 0)
         (relOut := aOStmtIn.toRelInput)
-        (rbrKnowledgeError := coreInteractionRbrKnowledgeError (L:=L) (ℓ':=ℓ'))) :
+        (rbrKnowledgeError := coreInteractionRbrKnowledgeError (L := L) (ℓ' := ℓ'))) :
   OracleVerifier.rbrKnowledgeSoundness
     (verifier := coreInteractionOracleVerifier κ L K P ℓ ℓ' h_l aOStmtIn)
     (StmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) 0)
@@ -1431,7 +1432,7 @@ theorem coreInteraction_rbrKnowledgeSoundness [IsDomain L] [IsDomain K]
     (impl := impl)
     (relIn := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn 0)
     (relOut := aOStmtIn.toRelInput)
-    (rbrKnowledgeError := coreInteractionRbrKnowledgeError (L:=L) (ℓ':=ℓ')) := by
+    (rbrKnowledgeError := coreInteractionRbrKnowledgeError (L := L) (ℓ' := ℓ')) := by
   exact hAppendRbrKnowledgeSoundness
 
 end LargeFieldReduction
