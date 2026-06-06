@@ -914,18 +914,18 @@ theorem iterated_fold_succ_last (i : Fin ℓ) (n : ℕ)
     (f : sDomain 𝔽q β h_ℓ_add_R_rate (i := ⟨i, by omega⟩) → L)
     (r_challenges : Fin (n + 1) → L)
     (y : sDomain 𝔽q β h_ℓ_add_R_rate (i := ⟨i.val + (n + 1), by omega⟩)) :
-    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i, by omega⟩)
+    iterated_fold_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i, by omega⟩)
       (steps := ⟨n + 1, by omega⟩)
       (by simp only; exact fin_ℓ_steps_lt_ℓ_add_R i (n + 1) h_i_add_steps) f r_challenges y =
     fold 𝔽q β (i := ⟨i.val + n, by omega⟩)
       (h_i := by simp only; have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡); omega)
-      (f := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i, by omega⟩)
+      (f := iterated_fold_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i, by omega⟩)
         (steps := ⟨n, by omega⟩)
         (by simp only; exact fin_ℓ_steps_lt_ℓ_add_R i n (by omega)) f
         (fun j => r_challenges j.castSucc))
       (r_chal := r_challenges (Fin.last n))
       ⟨y.val, by have hy := y.property; simpa only [Nat.add_assoc] using hy⟩ := by
-  unfold iterated_fold
+  unfold iterated_fold_steps
   rw [Fin.dfoldl_succ_last]
   rfl
 
@@ -943,17 +943,17 @@ theorem iterated_fold_succ_last_gen (i : Fin r) (n : ℕ)
     (r_challenges : Fin (n + 1) → L)
     (y : sDomain 𝔽q β h_ℓ_add_R_rate
       (i := ⟨i.val + (n + 1), Nat.lt_trans h_i_add_steps h_ℓ_add_R_rate⟩)) :
-    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
+    iterated_fold_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
       (steps := ⟨n + 1, h_steps⟩) h_i_add_steps f r_challenges y =
     fold 𝔽q β (i := ⟨i.val + n, by omega⟩)
       (h_i := by simp only; omega)
-      (f := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
+      (f := iterated_fold_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
         (steps := ⟨n, by omega⟩)
         (by simp only; omega) f
         (fun j => r_challenges j.castSucc))
       (r_chal := r_challenges (Fin.last n))
       ⟨y.val, by have hy := y.property; simpa only [Nat.add_assoc] using hy⟩ := by
-  unfold iterated_fold
+  unfold iterated_fold_steps
   rw [Fin.dfoldl_succ_last]
   rfl
 
@@ -1011,12 +1011,12 @@ lemma iterated_fold_transitivity_castfree
     (f : sDomain 𝔽q β h_ℓ_add_R_rate (i := i) → L)
     (r_challenges₁ : Fin s1 → L) (r_challenges₂ : Fin s2 → L)
     (y : sDomain 𝔽q β h_ℓ_add_R_rate (i := ⟨i.val + s1 + s2, by omega⟩)) :
-    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    iterated_fold_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (i := ⟨i.val + s1, by omega⟩) (steps := ⟨s2, hs2⟩)
       (h_i_add_steps := by simp only; have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡); omega)
-      (iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := ⟨s1, hs1⟩)
+      (iterated_fold_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := ⟨s1, hs1⟩)
         (h_i_add_steps := by simp only; have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡); omega) f r_challenges₁) r_challenges₂ y =
-    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
+    iterated_fold_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
       (steps := ⟨s1 + s2, hs12⟩)
       (h_i_add_steps := by simp only; have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡); omega)
       f (Fin.append r_challenges₁ r_challenges₂)
@@ -1045,14 +1045,14 @@ lemma iterated_fold_transitivity_castfree
     -- equation's LHS is stated as the goal's RHS term verbatim so `rw [hrhs]` matches; the
     -- `iterated_fold_succ_last_gen` proof goes through by defeq (`s1+(n+1) ≡ (s1+n)+1`).
     have hrhs :
-        iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
+        iterated_fold_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
           (steps := ⟨s1 + (n + 1), hs12⟩)
           (by simp only; have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡); omega)
           f (Fin.append r_challenges₁ r_challenges₂)
           ⟨y.val, by have hy := y.property; simpa only [Nat.add_assoc] using hy⟩ =
         fold 𝔽q β (i := ⟨i.val + (s1 + n), by omega⟩)
           (h_i := by simp only; have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡); omega)
-          (f := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
+          (f := iterated_fold_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
             (steps := ⟨s1 + n, by omega⟩)
             (by simp only; have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡); omega) f
             (fun j => (Fin.append r_challenges₁ r_challenges₂) j.castSucc))
@@ -1119,17 +1119,17 @@ lemma iterated_fold_transitivity
     have hi12 : steps₁ + steps₂ < ℓ + 1 := by
       apply Nat.lt_succ_of_le; rw [Nat.add_assoc] at h_bounds;
       exact Nat.le_of_add_left_le h_bounds
-    let lhs := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    let lhs := iterated_fold_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (i := ⟨i.val + steps₁, by -- ⊢ ↑i + ↑steps₁ < r
         apply Nat.lt_of_le_of_lt (m := ℓ) (hi1) (ℓ_lt_r (h_ℓ_add_R_rate := h_ℓ_add_R_rate))⟩)
       (steps := steps₂)
       (h_i_add_steps := by simp only; apply Nat.lt_add_of_pos_right_of_le; exact h_bounds)
       (f := by
-        exact iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps₁)
+        exact iterated_fold_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps₁)
           (h_i_add_steps := by apply Nat.lt_add_of_pos_right_of_le; exact hi1) (f := f)
           (r_challenges := r_challenges₁)
       ) r_challenges₂
-    let rhs := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
+    let rhs := iterated_fold_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
       (steps := ⟨steps₁ + steps₂, hi12⟩)
       (h_i_add_steps := by
         simp only; rw [←Nat.add_assoc]; apply Nat.lt_add_of_pos_right_of_le; exact h_bounds)
@@ -1549,7 +1549,7 @@ theorem iterated_fold_eq_matrix_form (i : Fin ℓ) (steps : ℕ) (h_i_add_steps 
     (f : (sDomain 𝔽q β h_ℓ_add_R_rate) ⟨i, by omega⟩ → L)
     (r_challenges : Fin steps → L)
     (y : (sDomain 𝔽q β h_ℓ_add_R_rate) ⟨↑i + steps, by omega⟩) :
-    (iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+    (iterated_fold_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (steps := ⟨steps, by apply Nat.lt_succ_of_le; exact Nat.le_of_add_left_le h_i_add_steps⟩)
       (i := ⟨i, by omega⟩)
       (h_i_add_steps := by simp only; exact fin_ℓ_steps_lt_ℓ_add_R i steps h_i_add_steps) f

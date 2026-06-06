@@ -895,7 +895,7 @@ theorem spotCheck_le_two_pow_neg_64 :
   rw [two_rpow_neg_natCast, show (1 : ℝ≥0) - 3 / 10 = 7 / 10 by norm_num]
   -- `(7/10)^128 = 7^128 / 10^128 ≤ (2^64)⁻¹ = 1 / 2^64`  ⇔  `7^128 · 2^64 ≤ 10^128`.
   rw [div_pow, show ((2 : ℝ≥0) ^ 64)⁻¹ = 1 / (2 : ℝ≥0) ^ 64 by rw [one_div],
-    div_le_div_iff (by positivity) (by positivity), one_mul]
+    div_le_div_iff₀ (by positivity) (by positivity), one_mul]
   norm_num
 
 /-- Concrete-anchor form of the spot-check cap: `koalaIRSConcrete` has

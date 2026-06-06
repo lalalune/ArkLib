@@ -59,8 +59,9 @@ while IFS= read -r entry; do
   fi
 
   if [[ ! -f "$FILE_PATH" ]]; then
-    echo "⚠️  File not found, skipping: $FILE_PATH"
-    SKIPPED=$((SKIPPED + 1))
+    echo "❌ FAIL: $THEOREM_NAME — pinned file not found: $FILE_PATH"
+    echo "   (update scripts/flagship-theorems.txt if the module moved)"
+    FAILURES=$((FAILURES + 1))
     continue
   fi
 
@@ -83,10 +84,12 @@ while IFS= read -r entry; do
     continue
   fi
 
-  # Check for unknown constant errors
+  # Unknown constant = pinned theorem no longer exists (rename or deletion).
+  # Hard fail: silently skipping would let the gate be laundered by renaming.
   if echo "$OUTPUT" | grep -qiE "Unknown constant|unknownIdentifier"; then
-    echo "⚠️  SKIP: $THEOREM_NAME — unknown identifier (may need rebuild)"
-    SKIPPED=$((SKIPPED + 1))
+    echo "❌ FAIL: $THEOREM_NAME — unknown identifier (renamed or deleted?)"
+    echo "   (update scripts/flagship-theorems.txt if the theorem was renamed)"
+    FAILURES=$((FAILURES + 1))
     continue
   fi
 
@@ -100,8 +103,9 @@ while IFS= read -r entry; do
       SUCCESSES=$((SUCCESSES + 1))
       continue
     fi
-    echo "⚠️  SKIP: $THEOREM_NAME — could not parse axiom output"
-    SKIPPED=$((SKIPPED + 1))
+    echo "❌ FAIL: $THEOREM_NAME — could not parse axiom output"
+    echo "$OUTPUT" | head -10 | sed 's/^/   /'
+    FAILURES=$((FAILURES + 1))
     continue
   fi
 

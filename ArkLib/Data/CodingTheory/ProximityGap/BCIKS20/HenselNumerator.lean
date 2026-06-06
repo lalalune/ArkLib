@@ -1080,8 +1080,9 @@ the premise; neither `Δ_X^{i1}` (`degreeX_hasseDeriv_le`, applied via `hasseDer
 ground-`ℕ`-cast scalar (`degreeX_natCast_mul_le`) nor `evalX (C x₀)` (`natDegree_eval_C_le` via
 `evalX_C_coeff`) raises the `Z`-degree.  `degreeX p = sup_n (p.coeff n).natDegree ≤ D−Σλ`.
 
-This sharpens the `+ degreeX p` term of `B_coeff_weight_le` to the paper's literal `(D−Σλ)`.  It is a
-pure degree fact (no `H`, no `𝒪`, no `weight_Λ`); fully P2-independent and off the (P1)⇐(P2) path. -/
+This sharpens the `+ degreeX p` term of `B_coeff_weight_le` to the paper's literal `(D−Σλ)`.  It is
+a pure degree fact (no `H`, no `𝒪`, no `weight_Λ`); fully P2-independent and off the (P1)⇐(P2)
+path. -/
 theorem degreeX_hasseCoeffRepr_le (x₀ : F) (R : F[X][X][Y]) (i1 m D : ℕ)
     (hR : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j) :
     Bivariate.degreeX
@@ -1237,7 +1238,8 @@ the partition product weight is `≤ (2·(k+1−i1) + Σλ)·d_R·D`.
 
 This fully discharges the product half of the BCIKS20 telescoping: the guard always fires
 (`surviving_parts_lt`), `partitionProd_weight_le` gives the multiset-sum bound, `hIH` bounds each
-factor, and `sum_map_two_mul_succ` evaluates `∑_{l∈parts}(2l+1)·d_R·D = (2·parts.sum + parts.card)·d_R·D`
+factor, and `sum_map_two_mul_succ` evaluates
+`∑_{l∈parts}(2l+1)·d_R·D = (2·parts.sum + parts.card)·d_R·D`
 with `parts.sum = k+1−i1`, `parts.card = Σλ`.  No `sorry`. -/
 theorem partitionProd_βHensel_weight_le (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
@@ -1313,8 +1315,8 @@ THE WALL, PRECISELY (anti-fake, three rigorous facts):
 
 2. **The loose IH `Λ(β_l) ≤ (2l+1)·d·D` does NOT close the loose target.**  Even per-term, the
    product factor alone is `(2(k+1−i1)+Σλ)·d·D`, and `Σλ` can exceed `2i1+1` (witness
-   `d=2,D=3,k=1,i1=0,λ=[1,1]`: product `=36 > 30=`target).  Proven in `partitionProd_βHensel_weight_le`
-   and re-verified in wave 4.
+   `d=2,D=3,k=1,i1=0,λ=[1,1]`: product `=36 > 30=`target).  Proven in
+   `partitionProd_βHensel_weight_le` and re-verified in wave 4.
 
 3. **The structured IH `Λ(β_l) ≤ 1+(l+1)Λ(W)+e_l·Λ(ξ)` DOES close the loose target per-term.**
    With the structured IH on the inner `β_l`, the partition constraint `Σ_l l·λ_l = k+1−i1` makes
@@ -1324,8 +1326,8 @@ THE WALL, PRECISELY (anti-fake, three rigorous facts):
    `structured_weight_collapse`).
 
 So (P1) is gated on the structured IH, the structured IH is gated on (P2), and (P2) is the
-irreducible BCIKS20 A.4 frontier (`R(X,γ,Z)=0`).  This wave adds the genuine arithmetic so that, once
-the structured IH is available (via P2), the per-term collapse is mechanical. -/
+irreducible BCIKS20 A.4 frontier (`R(X,γ,Z)=0`).  This wave adds the genuine arithmetic so that,
+once the structured IH is available (via P2), the per-term collapse is mechanical. -/
 
 /-- **WAVE 5 — the structured per-part weight sum (genuine `ℕ` telescoping).**  For a multiset `ms`
 of *positive* parts (a `Nat.Partition`'s parts), the per-part structured weight
@@ -1361,7 +1363,8 @@ theorem sum_map_structured (ms : Multiset ℕ) (w x : ℕ) (hpos : ∀ l ∈ ms,
       exact key
 
 /-- **WAVE 5 — the final `ℕ`-arithmetic collapse of the structured bound to the loose target.**
-`1 + (t+1)·wW + e_t·((d−1)·(D−dH+1)) ≤ (2t+1)·d·D`, with `e_t = 2t−1` (`ℕ` truncated, `= max(0,2t−1)`),
+`1 + (t+1)·wW + e_t·((d−1)·(D−dH+1)) ≤ (2t+1)·d·D`, with `e_t = 2t−1`
+(`ℕ` truncated, `= max(0,2t−1)`),
 under the genuine in-tree relations `wW + dH ≤ D` (`Λ(W) = (lc H).natDegree`, and
 `(lc H).natDegree + dH ≤ totalDegree H ≤ D`), `2 ≤ d` (`= natDegreeY R`, the paper's regime),
 `1 ≤ dH ≤ d` (`dH = natDegreeY H`).  Here `wW` bounds `Λ(W)` and `(d−1)·(D−dH+1)` bounds `Λ(ξ)`
@@ -1530,11 +1533,14 @@ WALL (documented, NOT faked).  Closing this term requires three genuine ingredie
 progress on each is recorded below; the residual after wave 4 is item (c).
 
   (a) the **`B_coeff` weight** bound — FULLY PROVEN, axiom-clean, P2-independent (wave 6).
-      `B_coeff_weight_le` : `Λ_𝒪(B_coeff … i1 λ) ≤ (natDegreeY R − Σλ)·(D+1−natDegreeY H) + degreeX p`
-      (`p = evalX (C x₀) (Δ_X^{i1} Δ_Y^{Σλ} R)`).  Components: `B_coeff_weight_le_hasse` (prefactor),
+      `B_coeff_weight_le` :
+      `Λ_𝒪(B_coeff … i1 λ) ≤ (natDegreeY R − Σλ)·(D+1−natDegreeY H) + degreeX p`
+      (`p = evalX (C x₀) (Δ_X^{i1} Δ_Y^{Σλ} R)`).  Components: `B_coeff_weight_le_hasse`
+      (prefactor),
       the `Y`-degree drop `hasseCoeffRepr𝒪_natDegreeY_le` (the `−Σλ`, wave 4), the `Y`/`X` weight
       split `weight_Λ_le_natDegreeY_mul_add_degreeX`, and the `W`-clearing embedding identity
-      `embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared` (`embedding ⟦cleared⟧ = W^{natDegreeY p}·hasseEvalAtRoot`).
+      `embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared`
+      (`embedding ⟦cleared⟧ = W^{natDegreeY p}·hasseEvalAtRoot`).
       The (a-residual) is CLOSED.  (Only sharpening: `degreeX p ≤ D−Σλ` for the paper's exact
       constant — a pure degree fact, off the (P1)⇐(P2) path.)
 
@@ -1554,11 +1560,14 @@ progress on each is recorded below; the residual after wave 4 is item (c).
       factor alone can exceed the target `(2(k+1)+1)·d_R·D`, and the positive `W`/`ξ`/`B` factors
       only worsen it.  Hence the per-term bound is UNPROVABLE through the loose IH — it is the loss
       in collapsing the paper's *structured* per-coefficient weight `Λ(β_l) ≤ 1+(l+1)Λ(W)+e_l·Λ(ξ)`
-      (with `e_l = max(0,2l−1)`, BCIKS20 line 3962) to `(2l+1)·d_R·D` that destroys the cancellation.
+      (with `e_l = max(0,2l−1)`, BCIKS20 line 3962) to `(2l+1)·d_R·D` that destroys the
+      cancellation.
       The honest closure of (P1) therefore requires carrying the **structured invariant** as the IH
       (so the partition constraint `Σ_l l·λ_l = k+1−i1` makes the `Σλ` growth cancel against the
-      `ξ`/`B` negative exponents) — exactly why BCIKS20 says "an easier way is to consider the weight
-      of `α_t`" (line 4276): the paper bounds `α_t` (weight `Λ(Y)=1`) and reads `β_t = α_t·W^{t+1}·ξ^{e_t}`
+      `ξ`/`B` negative exponents) — exactly why BCIKS20 says "an easier way is to consider the
+      weight
+      of `α_t`" (line 4276): the paper bounds `α_t` (weight `Λ(Y)=1`) and reads
+      `β_t = α_t·W^{t+1}·ξ^{e_t}`
       off the closed form, sidestepping the (A.1) recursion entirely.  This is the genuine content
       of the wall and is documented, not exploited with a false step.
 
@@ -1588,22 +1597,26 @@ def βHenselSuccTermWeightResidual (x₀ : F) (R : F[X][X][Y])
   --
   -- WAVE-5 RIGOROUS DIAGNOSIS (anti-fake, numerically re-verified, see `ingredientD-wave5.md`):
   -- this per-term lemma is UNPROVABLE through the loose IH `Λ(β_l) ≤ (2l+1)·d_R·D` supplied here —
-  -- the product factor alone (`partitionProd_βHensel_weight_le`) is `(2(k+1−i1)+Σλ)·d_R·D`, and `Σλ`
-  -- can exceed `2·i1+1` (e.g. `λ` all-ones: `d=2,D=3,k=1,i1=0,λ=[1,1]` gives product `36 > 30`), so it
-  -- already exceeds the target and the positive W/ξ/B factors worsen it.
+  -- the product factor alone (`partitionProd_βHensel_weight_le`) is `(2(k+1−i1)+Σλ)·d_R·D`, and
+  -- `Σλ` can exceed `2·i1+1` (e.g. `λ` all-ones: `d=2,D=3,k=1,i1=0,λ=[1,1]` gives product
+  -- `36 > 30`), so it already exceeds the target and the positive W/ξ/B factors worsen it.
   --
-  -- Moreover the natural fix — carry the paper's STRUCTURED invariant `Λ(β_l) ≤ 1+(l+1)Λ(W)+e_l·Λ(ξ)`
-  -- (`e_l = max(0,2l−1)`) as the strong-induction IH — is itself UNPROVABLE *from the (A.1) recursion*:
+  -- Moreover the natural fix — carry the paper's STRUCTURED invariant
+  -- `Λ(β_l) ≤ 1+(l+1)Λ(W)+e_l·Λ(ξ)`
+  -- (`e_l = max(0,2l−1)`) as the strong-induction IH — is itself UNPROVABLE *from the (A.1)
+  -- recursion*:
   -- the sub-additive calculus forces a constant (`Λ(W)^0Λ(ξ)^0`) contribution of `Σλ + (D−Σλ) = D`,
   -- whereas the structured target's constant is `1` (gap `D−1`, irreducible — sub-additivity adds
   -- constants, it cannot realise the multiplicative cancellation `β_t = α_t·W^{t+1}·ξ^{e_t}` with
   -- `Λ(α_t)=Λ(Y)=1`).  Obtaining `Λ(α_t)=1` is the content of (P2) (`R(X,γ,Z)=0`).  This is exactly
   -- BCIKS20's "an easier way is to consider the weight of `α_t`" (line 4276).
   --
-  -- WAVE-5 PROGRESS (axiom-clean, above): GIVEN the structured IH, the per-term collapse to this loose
-  -- target IS provable — `partitionProd_βHensel_weight_structured_le` (structured product half),
+  -- WAVE-5 PROGRESS (axiom-clean, above): GIVEN the structured IH, the per-term collapse to this
+  -- loose target IS provable — `partitionProd_βHensel_weight_structured_le` (structured product
+  -- half),
   -- `sum_map_structured` (the `Σ_l λ_l·(…)` telescoping), `structured_weight_collapse` (the final
-  -- `1+(t+1)wW+e_t·xξ ≤ (2t+1)dD` arithmetic, verified `0` failures over `d∈[2,7],dH∈[1,d],D,t∈[0,8]`),
+  -- `1+(t+1)wW+e_t·xξ ≤ (2t+1)dD` arithmetic, verified `0` failures over
+  -- `d∈[2,7],dH∈[1,d],D,t∈[0,8]`),
   -- and `nsmul_withBot_le` (the `WithBot ℕ` power-bound descent).  So (P1) is gated *solely* on the
   -- structured IH, which is gated on (P2).  Closing this `sorry` with the loose IH would be a FALSE
   -- step (rigorously impossible); it is left open by design.  See `ingredientD-wave5.md`.
@@ -1615,7 +1628,8 @@ def βHenselSuccTermWeightResidual (x₀ : F) (R : F[X][X][Y])
   -- 2. Equivalently, the A.4 regularity/divisibility bridge for genuine Hensel-root coefficients:
   --    each `αGenuine l` must be represented by an `𝒪`-element of weight at most `1`, so that
   --    `β_l = a_l * W𝒪^(l+1) * ξ^(2*l-1)` holds in `𝒪`.
-  -- 3. That bridge is gated by the P2 full Faà-di-Bruno vanishing / prefactor match below; importing
+  -- 3. That bridge is gated by the P2 full Faà-di-Bruno vanishing / prefactor match below;
+  --    importing
   --    the conditional files would only move the same residual and would make this proof circular.
 -/
 
@@ -1794,8 +1808,8 @@ The previous `βHensel_lift_identity` equated `embeddingOf𝒪Into𝕃 (βHensel
 `ClaimA2.α x₀ R H hHyp t · W^{t+1} · ξ^{2t−1}`, where `ClaimA2.α` is the in-tree placeholder.
 **That statement is false-as-written, not merely deep.**  By definition
 (`RationalFunctions.lean`, `ClaimA2.α t = embedding (ClaimA2.β R t) / (W^{t+1}·ξ^{2t−1})`) and
-`ClaimA2.β R t = (β_regular …).choose`, whose existence witness is the **vacuous `β = 0` placeholder**
-(`β_regular := fun _ => ⟨0, by simp⟩`, the weight bound is satisfied by `0`).  Hence
+`ClaimA2.β R t = (β_regular …).choose`, whose existence witness is the **vacuous `β = 0`
+placeholder** (`β_regular := fun _ => ⟨0, by simp⟩`, the weight bound is satisfied by `0`).  Hence
 `embedding (ClaimA2.β R t) = 0`, so `ClaimA2.α t = 0`, so the right-hand side is `0` for every
 `t`, while the left-hand side at `t = 0` is `embedding (βHensel … 0) = T ≠ 0`
 (`embeddingOf𝒪Into𝕃_βHensel_zero`).  The lemma `βHensel_lift_identity_iff_β_eq` above already
@@ -1807,7 +1821,8 @@ i.e. the genuine numerator equals the vacuous placeholder — provably false at 
 The faithful Hensel coefficient is `αGenuine t := PowerSeries.coeff t (gammaGenuine …)`, the
 `t`-th coefficient of the **genuine** Hensel-lift root `gammaGenuine : (𝕃 H)⟦X⟧` of
 `GammaGenuine.lean` (`constantCoeff = α₀ = T/W`, `eval gammaGenuine Q = 0` — the real
-`R(X,γ,Z)=0`), NOT the degenerate `ClaimA2.γ` built on the `β = 0` placeholder.  The A.4 normalization
+`R(X,γ,Z)=0`), NOT the degenerate `ClaimA2.γ` built on the `β = 0` placeholder.  The A.4
+normalization
 (BCIKS20 Claim A.2, fulltext lines ~3950–3965) is `α_t = β_t / (W^{t+1}·ξ^{e_t})` with
 `e_t = max(0, 2t−1)` (`e_0 = 0`, `e_t = 2t−1` for `t ≥ 1`).  In `ℕ`-truncated subtraction
 `2*t − 1` already realises `e_t` exactly (`2*0−1 = 0`), so the clearing powers `W^{t+1}`,
@@ -2420,7 +2435,8 @@ partial-sum construction `HenselSeriesCoeff.S` at every order — the term-by-te
 
 This residual carries NO false content: it is a true statement (the genuine `gammaGenuine` IS a
 root, `gammaGenuine_root`, and the A.1 recursion reproduces its coefficients), and the only
-missing piece is the formal Faà-di-Bruno bridge `coeff_eval ↔ partition sums ↔ B_coeff·partitionProd`
+missing piece is the formal Faà-di-Bruno bridge
+`coeff_eval ↔ partition sums ↔ B_coeff·partitionProd`
 for the *assembled* series, which is gated on the STATED-NOT-PROVEN combinatorial reconciliation
 `prefactor_eq_paper` (the Hasse-intrinsic `C(j,Σλ)` weight vs the paper's `multinomial(j0,λ)`).
 Carved as small as possible: a single per-successor-order coefficient equality, with the order-`0`
@@ -2496,8 +2512,8 @@ end Wave2
   no-divisibility clearing sum `W_pow_mul_eval₂_div_eq_liftBivariate`); and
   (iv) the full weight bound `B_coeff_weight_le`
   (`weight_Λ_over_𝒪 hH (B_coeff …) D ≤ (natDegreeY R − Σλ)·(D+1−natDegreeY H) + degreeX p`, via the
-  `Y`/`X` weight split `weight_Λ_le_natDegreeY_mul_add_degreeX`).  The ONLY remaining sharpening — to
-  the paper's exact `(D−Σλ)` constant — is the pure P2-independent degree-tracking lemma
+  `Y`/`X` weight split `weight_Λ_le_natDegreeY_mul_add_degreeX`).  The ONLY remaining sharpening —
+  to the paper's exact `(D−Σλ)` constant — is the pure P2-independent degree-tracking lemma
   `degreeX p ≤ D − Σλ` (the `Z`-degree of `evalX (C x₀) (Δ_X^{i1} Δ_Y^{Σλ} R)` under a `totalDegree`
   premise on `R`); it is NOT on the (P1)⇐(P2) path.  The `weight_ξ_bound` `2 ≤ d_R` regime is
   RESOLVED (wave 4): a documented faithful hypothesis on (P1), matching BCIKS20's `ξ = W^{d−2}·ζ`.
