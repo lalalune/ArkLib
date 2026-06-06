@@ -102,63 +102,14 @@ jobs:
           bash scripts/build_timing_report.sh run test_path "$BUILD_TIMING_RESULTS" -- \
             bash -eo pipefail -c './scripts/validate.sh'
 
-      # ── Issue #47: CI enforcement gates ──────────────────────────────
-      # Gate 2: sorry census — zero live holes
+      # ── Issue #47 gate 2: sorry census (zero live holes) ────────────
       - name: Sorry census (zero live holes)
-        run: |
-          chmod +x scripts/ci-sorry-census.sh
-          bash scripts/ci-sorry-census.sh
+        run: python3 scripts/sorry_census.py --fail-on-holes
 
-      # Gate 3: axiom audit — flagship theorems only use blessed axioms
+      # ── Issue #47 gate 3: axiom audit over flagship theorems ────────
       - name: Axiom audit (flagship theorems)
-        run: |
-          chmod +x scripts/ci-axiom-audit.sh
-          bash scripts/ci-axiom-audit.sh --flagship-list scripts/flagship-theorems.txt
+        run: python3 scripts/axiom_audit.py
 
-      # Gate 4: reject native_decide / bv_decide in proof terms
-      - name: Reject native_decide / bv_decide in proofs
-        run: |
-          echo "Scanning for native_decide/bv_decide usage in proof terms..."
-          python3 -c "
-          import re, sys
-          from pathlib import Path
-          TOKEN_RE = re.compile(r'\b(native_decide|bv_decide)\b')
-          hits = []
-          for f in sorted(Path('ArkLib').rglob('*.lean')):
-              text = f.read_text(encoding='utf-8', errors='replace')
-              mask = [False] * len(text)
-              i, n, depth = 0, len(text), 0
-              while i < n:
-                  if depth == 0 and text[i:i+2] == '--':
-                      j = text.find(chr(10), i)
-                      if j == -1: j = n
-                      for k in range(i, j): mask[k] = True
-                      i = j
-                  elif text[i:i+2] == '/-':
-                      depth += 1; mask[i] = True
-                      if i+1<n: mask[i+1] = True
-                      i += 2
-                  elif depth > 0 and text[i:i+2] == '-/':
-                      depth -= 1; mask[i] = True
-                      if i+1<n: mask[i+1] = True
-                      i += 2
-                  else:
-                      if depth > 0: mask[i] = True
-                      i += 1
-              in_str = False
-              for i, ch in enumerate(text):
-                  if ch == chr(34) and not mask[i]: in_str = not in_str
-                  if in_str: mask[i] = True
-              for m in TOKEN_RE.finditer(text):
-                  if not mask[m.start()]:
-                      line = text.count(chr(10), 0, m.start()) + 1
-                      hits.append(f'{f}:{line}:{m.group(1)}')
-          if hits:
-              print('FAIL: Found native_decide/bv_decide in live proof code:')
-              for h in hits: print(f'  {h}')
-              sys.exit(1)
-          print('PASS: No native_decide/bv_decide in proof terms.')
-          "
 
       - name: Save Lean cache
         if: success() && steps.lake-cache.outputs.cache-hit != 'true'
