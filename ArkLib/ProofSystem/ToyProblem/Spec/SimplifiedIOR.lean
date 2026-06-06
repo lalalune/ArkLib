@@ -258,7 +258,7 @@ theorem simplifiedIOR_knowledgeSound
           ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
             / (Fintype.card F : ℝ≥0)) :=
   -- ABF26-L6.10: fed the *proven* rewinding witness through the named bridge residual.
-  simplifiedIOR_knowledgeSound_residual init impl C δ encode decode
+  simplifiedIOR_knowledgeSound_residual (k := k) init impl C δ encode decode
 
 #print axioms simplifiedIOR_knowledgeSound_residual
 
