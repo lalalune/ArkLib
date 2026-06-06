@@ -50,9 +50,12 @@ threshold.
 list-size body.  We supply a concrete such sequence — `qs i = 2^(i+1)` — together
 with its `StrictMono` and prime-power proofs (`bkr06PrimePowSeq_strictMono`,
 `bkr06PrimePowSeq_isPrimePow`), and the *instantiation lemma*
-`rs_lambda_superpoly_extension_bkr06_of_per_instance`: it discharges the bare
-external `Prop` **modulo** the still-open per-instance family residual `hfamily`
-(BKR06 Lemma 3.5's pigeonhole list-size construction, the genuinely external input).
+`exists_primePow_seq_of_body`: it discharges the bare external `Prop`'s existential
+skeleton `∃ qs, StrictMono qs ∧ (∀ i, IsPrimePow (qs i)) ∧ ∀ i, P qs i` **modulo**
+the still-open per-instance family residual `hbody` (BKR06 Lemma 3.5's pigeonhole
+list-size construction at the witness sequence, the genuinely external input).  Usage:
+`unfold rs_lambda_superpoly_extension_bkr06`, then apply `exists_primePow_seq_of_body`
+to the per-instance residual (verified to typecheck against the bare `def`).
 
 The witness sequence is chosen as powers of two so that *every* term is a prime
 power (`2^(i+1)`), which is exactly what the bare statement's
@@ -220,3 +223,4 @@ lemma exists_primePow_seq_of_body
 end PrimePowerWitness
 
 end BKR06Close
+

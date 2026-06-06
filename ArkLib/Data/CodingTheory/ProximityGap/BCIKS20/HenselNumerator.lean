@@ -763,7 +763,7 @@ lemma weight_Λ_over_𝒪_nsmul_le (hH : 0 < H.natDegree) (hDH : Bivariate.total
     weight_Λ_over_𝒪 hH (n • a) D ≤ weight_Λ_over_𝒪 hH a D := by
   set ra := canonicalRepOf𝒪 hH a with hra
   have hmk : (Ideal.Quotient.mk (Ideal.span {H_tilde' H}) (n • ra) : 𝒪 H) = n • a := by
-    rw [map_nsmul, hra, mk_canonicalRepOf𝒪]
+    rw [map_nsmul (Ideal.Quotient.mk (Ideal.span {H_tilde' H})), hra, mk_canonicalRepOf𝒪]
   refine le_trans (weight_Λ_over_𝒪_le_of_mk_eq hDH hH hmk) ?_
   refine le_trans (weight_Λ_nsmul_le H n ra) ?_
   exact le_of_eq (by rw [weight_Λ_over_𝒪, ← hra])

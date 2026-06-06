@@ -146,11 +146,8 @@ example (W₀ : Submodule F K) (hq : 2 ≤ Fintype.card F) (x : K) :
             ≤ (C (a ^ (q - 1))).natDegree + f.natDegree := Polynomial.natDegree_mul_le
           _ = f.natDegree := by rw [natDegree_C, zero_add]
     _ < q * f.natDegree := by
-        have : 1 * f.natDegree < q * f.natDegree := by
-          apply Nat.mul_lt_mul_right
-          · rw [hfdeg]; exact hcard_pos
-          · omega
-        simpa using this
+        have hfdpos : 0 < f.natDegree := by rw [hfdeg]; exact hcard_pos
+        nlinarith [hfdpos, hq]
 
 /-- RHS is monic. -/
 example (W₀ : Submodule F K) (hq : 2 ≤ Fintype.card F) (x : K) :
@@ -169,9 +166,32 @@ example (W₀ : Submodule F K) (hq : 2 ≤ Fintype.card F) (x : K) :
     calc (C (a ^ (q - 1)) * f).natDegree
         ≤ f.natDegree := le_trans Polynomial.natDegree_mul_le (by rw [natDegree_C, zero_add])
       _ < q * f.natDegree := by
-          have : 1 * f.natDegree < q * f.natDegree :=
-            Nat.mul_lt_mul_right (by rw [hfdeg]; exact hcard_pos) (by omega)
-          simpa using this
+          have hfdpos : 0 < f.natDegree := by rw [hfdeg]; exact hcard_pos
+          nlinarith [hfdpos, hq]
   exact (hfmon.pow q).sub_of_left hsub_deg
+
+/-! ### Cardinality of the doubled subspace -/
+
+/-- `card subFinset (W₀ ⊔ span{x}) = q * card subFinset W₀` when `x ∉ W₀`. -/
+example (W₀ : Submodule F K) (x : K) (hx : x ∉ W₀) :
+    (subFinset (W₀ ⊔ Submodule.span F {x})).card
+      = Fintype.card F * (subFinset W₀).card := by
+  have hdisj : Disjoint W₀ (Submodule.span F {x}) :=
+    Submodule.disjoint_span_singleton_of_notMem hx
+  have hx0 : x ≠ 0 := fun h => hx (h ▸ W₀.zero_mem)
+  have hfr : Module.finrank F (W₀ ⊔ Submodule.span F {x})
+      = Module.finrank F W₀ + 1 := by
+    have aux := Submodule.finrank_sup_add_finrank_inf_eq W₀ (Submodule.span F {x})
+    rw [hdisj.eq_bot, finrank_bot, add_zero, finrank_span_singleton hx0] at aux
+    omega
+  have hcardW : (subFinset (W₀ ⊔ Submodule.span F {x})).card
+      = Fintype.card F ^ (Module.finrank F (W₀ ⊔ Submodule.span F {x})) := by
+    rw [subFinset]; simp only [Set.toFinset_card]
+    exact Module.card_eq_pow_finrank (K := F) (V := _)
+  have hcardW0 : (subFinset W₀).card = Fintype.card F ^ (Module.finrank F W₀) := by
+    rw [subFinset]; simp only [Set.toFinset_card]
+    exact Module.card_eq_pow_finrank (K := F) (V := W₀)
+  rw [hcardW, hfr, hcardW0, pow_succ]
+  ring
 
 end BKR06

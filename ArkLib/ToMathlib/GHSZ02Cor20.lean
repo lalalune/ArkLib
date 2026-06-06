@@ -51,10 +51,13 @@ critical path here.
 * `GHSZ02Cor20.choose_real_ge_pow_div` — **proven brick**. The elementary binomial bound
   `(n+1−r)^r / r! ≤ C(n,r)` real-valued (from Mathlib `Nat.pow_le_choose`).
 * `GHSZ02LargeN` — **named residual**. The single `for large enough p` asymptotic estimate that
-  GHSZ02 Cor 20 proves (`a^a ≤ p^{(1−γ/2)p^ε}` ⟹ averaged count `≥ p^{p^α·β/2}`), stated as the
-  one real inequality `q^n · p^{p^α·β/2} ≤ q^k · (C(n,r)·(q−1)^r)`.
-* `GHSZ02Cor20.hcount_of_largeN` — **proven reduction**. Bricks + residual ⟹ the exact `hcount`
-  hypothesis of `CodingTheory.rs_lambda_large_prime_ghsz02_of_residuals`, hence the full Ω-form.
+  GHSZ02 Cor 20 proves (`a^a ≤ p^{(1−γ/2)p^ε}` plus the `(1−1/p)^{n−a} ≥ 1/e` constant absorbed
+  into the exponent slack), stated as the one real inequality
+  `q^n · p^{p^α·β/2} ≤ q^k · (C(n,r)·(q−1)^r)`. See its docstring for the exact constant tracking.
+* `CodingTheory.hcount_of_largeN` — **proven reduction**. Bricks + residual ⟹ the exact `hcount`
+  hypothesis of `CodingTheory.rs_lambda_large_prime_ghsz02_of_residuals`.
+* `CodingTheory.omega_listsize_of_largeN` — **proven end-to-end front door**. Residual ⟹ the full
+  ABF26 T3.13 per-instance Ω list-size bound `|Λ| > c · p^{p^α·β/2}` (`c = 1/2`).
 
 The residual surface is thereby shrunk from "construct the GHSZ02 bad word + count its close
 codewords" to "the explicit real inequality `p^n·p^{p^α·β/2} ≤ p^k·C(n,r)·(p−1)^r`", with the
@@ -268,8 +271,3 @@ theorem omega_listsize_of_largeN
   exact ⟨w, c, hc_pos, hc⟩
 
 end CodingTheory
-
-#print axioms GHSZ02Cor20.averaging_real
-#print axioms GHSZ02Cor20.choose_real_ge_pow_div
-#print axioms CodingTheory.hcount_of_largeN
-#print axioms CodingTheory.omega_listsize_of_largeN
