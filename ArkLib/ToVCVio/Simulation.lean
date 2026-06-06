@@ -2271,7 +2271,10 @@ lemma OptionT.simulateQ_array_mapM_eq {ι ι' : Type} {spec : OracleSpec ι}
     (simulateQ so (xs.mapM (m := OptionT (OracleComp spec)) f) :
       OptionT (OracleComp superSpec) (Array β)) =
       xs.mapM (m := OptionT (OracleComp superSpec)) (fun x ↦ simulateQ so (f x)) := by
-  exact OptionT.simulateQ_array_mapM (so := so) (f := f) xs
+  exact (OptionT.simulateQ_array_mapM (so := so) (f := f) (xs := xs) :
+    (simulateQ so (xs.mapM (m := OptionT (OracleComp spec)) f) :
+      OptionT (OracleComp superSpec) (Array β)) =
+      xs.mapM (m := OptionT (OracleComp superSpec)) (fun x ↦ simulateQ so (f x)))
 
 lemma OptionT.simulateQ_vector_mapM_eq {ι ι' : Type} {spec : OracleSpec ι}
     {superSpec : OracleSpec ι'} (so : SimOracle.Stateless spec superSpec)
