@@ -6,14 +6,15 @@ Authors: Alexander Hicks
 
 import Mathlib.Probability.ProbabilityMassFunction.Basic
 import Mathlib.Algebra.Order.Chebyshev
+import Mathlib.Data.Set.PowersetCard
 import ArkLib.Data.Probability.Notation
 
 /-!
 # Probabilistic combinatorics
 
 Stand-alone probabilistic-combinatorics statements used elsewhere in ArkLib.
-Currently this module hosts `exists_large_image_of_pairwise_collision_bound`,
-which is Claim B.1 of [ABF26].
+This includes the fixed-cardinality subset sample space needed for random Reed-Solomon domains and
+`exists_large_image_of_pairwise_collision_bound`, which is Claim B.1 of [ABF26].
 
 ## References
 
@@ -24,6 +25,83 @@ which is Claim B.1 of [ABF26].
 namespace Probability
 
 open Finset NNReal ENNReal ProbabilityTheory
+
+/-! ## Uniform fixed-cardinality subsets
+
+ABF26 T3.6 and T4.15 sample a Reed-Solomon evaluation domain uniformly from the size-`n`
+subsets of a finite field.  Mathlib already provides the exact sample space as
+`Set.powersetCard α n`; the definitions below expose the ArkLib-facing probability primitive and
+basic cardinality facts without asserting any of the random-RS bounds themselves. -/
+
+/-- The sample space of finite subsets of `α` with cardinality exactly `n`.
+
+This is a thin ArkLib-facing name for Mathlib's `Set.powersetCard α n`. -/
+abbrev SizeSubset (α : Type*) (n : ℕ) :=
+  Set.powersetCard α n
+
+namespace SizeSubset
+
+variable {α : Type*} {n : ℕ}
+
+/-- The number of size-`n` subsets of a finite type is `|α| choose n`. -/
+theorem card [Fintype α] :
+    Nat.card (SizeSubset α n) = (Fintype.card α).choose n := by
+  simpa [SizeSubset, Nat.card_eq_fintype_card] using
+    (Set.powersetCard.card (α := α) (n := n))
+
+/-- Fintype-cardinality form of `SizeSubset.card`. -/
+theorem fintype_card [Fintype α] :
+    Fintype.card (SizeSubset α n) = (Fintype.card α).choose n := by
+  rw [Fintype.card_eq_nat_card, card]
+
+/-- If `n ≤ |α|`, then the size-`n` subset sample space is nonempty. -/
+theorem nonempty_of_le [Fintype α] (h : n ≤ Fintype.card α) :
+    Nonempty (SizeSubset α n) := by
+  classical
+  have hNonempty :
+      (Finset.powersetCard n (Finset.univ : Finset α)).Nonempty :=
+    Finset.powersetCard_nonempty.mpr (by simpa using h)
+  rcases hNonempty with ⟨s, hs⟩
+  exact ⟨⟨s, (Finset.mem_powersetCard.mp hs).2⟩⟩
+
+/-- Every sample in `SizeSubset α n` has cardinality `n`. -/
+@[simp]
+theorem val_card (s : SizeSubset α n) :
+    (s : Finset α).card = n :=
+  Set.powersetCard.card_eq s
+
+end SizeSubset
+
+/-- Uniform distribution on the size-`n` subsets of a finite type. -/
+noncomputable def uniformSizeSubset (α : Type*) [Fintype α] (n : ℕ)
+    [Nonempty (SizeSubset α n)] : PMF (SizeSubset α n) :=
+  PMF.uniformOfFintype (SizeSubset α n)
+
+/-- Uniform distribution on size-`n` subsets, using `n ≤ |α|` to provide nonemptiness. -/
+noncomputable def uniformSizeSubsetOfLe (α : Type*) [Fintype α] (n : ℕ)
+    (h : n ≤ Fintype.card α) : PMF (SizeSubset α n) := by
+  letI : Nonempty (SizeSubset α n) := SizeSubset.nonempty_of_le (α := α) (n := n) h
+  exact uniformSizeSubset α n
+
+/-- Point mass of the uniform size-`n` subset distribution. -/
+theorem uniformSizeSubset_apply {α : Type*} [Fintype α] {n : ℕ}
+    [Nonempty (SizeSubset α n)] (s : SizeSubset α n) :
+    uniformSizeSubset α n s = (Fintype.card (SizeSubset α n) : ENNReal)⁻¹ := by
+  simp [uniformSizeSubset, PMF.uniformOfFintype_apply]
+
+/-- Point mass of the uniform size-`n` subset distribution, with the denominator rewritten as
+`|α| choose n`. -/
+theorem uniformSizeSubset_apply_choose {α : Type*} [Fintype α] {n : ℕ}
+    [Nonempty (SizeSubset α n)] (s : SizeSubset α n) :
+    uniformSizeSubset α n s = ((Fintype.card α).choose n : ENNReal)⁻¹ := by
+  rw [uniformSizeSubset_apply, SizeSubset.fintype_card]
+
+/-- Point mass of `uniformSizeSubsetOfLe`, with the denominator rewritten as `|α| choose n`. -/
+theorem uniformSizeSubsetOfLe_apply {α : Type*} [Fintype α] {n : ℕ}
+    (h : n ≤ Fintype.card α) (s : SizeSubset α n) :
+    uniformSizeSubsetOfLe α n h s = ((Fintype.card α).choose n : ENNReal)⁻¹ := by
+  classical
+  simp [uniformSizeSubsetOfLe, uniformSizeSubset_apply_choose]
 
 /-! ## Colliding-pair helpers (ABF26 Appendix B counting)
 
