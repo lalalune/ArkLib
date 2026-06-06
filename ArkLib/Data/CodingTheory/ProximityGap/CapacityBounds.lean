@@ -1177,5 +1177,7 @@ end SubspaceDesignFRS
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_subspaceDesign_prop
 #print axioms CodingTheory.rs_epsMCA_johnson_range_bchks25_of_bound
 #print axioms CodingTheory.johnsonJumpRadius_le_internalRadius
+#print axioms CodingTheory.rs_epsCA_johnson_jump_bchks25_of_witness
+#print axioms CodingTheory.exists_rsJohnsonJumpWitness_of_bchks25
 
 end CodingTheory
