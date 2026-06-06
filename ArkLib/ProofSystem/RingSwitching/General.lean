@@ -225,8 +225,12 @@ omit [(i : mlIOPCS.pSpec.ChallengeIdx) → SampleableType (mlIOPCS.pSpec.Challen
 /-- Round-by-round knowledge soundness for the full ring-switching oracle verifier.
 `IsDomain K` (with the existing `IsDomain L`) is inherited from the batching phase's knowledge
 soundness, where it backs the DP24 row-extraction capstone; it holds in every real instantiation
-(`binaryTowerProfile` builds from a field `K`). -/
-theorem fullOracleVerifier_rbrKnowledgeSoundness [IsDomain L] [IsDomain K] {𝓑 : Fin 2 ↪ L}
+(`binaryTowerProfile` builds from a field `K`).
+
+The generic RingSwitching wrapper no longer carries a free Boolean-domain embedding `𝓑`. The
+current local KState repairs use the always-valid unit error bounds in the batching and iterated
+sumcheck phases until the separate DP24/Schwartz-Zippel root-count residual is proved. -/
+theorem fullOracleVerifier_rbrKnowledgeSoundness [IsDomain L] [IsDomain K]
     (hCoreInteractionAppendRbrKnowledgeSoundness :
       (SumcheckPhase.coreInteractionOracleVerifier κ L K P ℓ ℓ' h_l
         mlIOPCS.toAbstractOStmtIn).rbrKnowledgeSoundness

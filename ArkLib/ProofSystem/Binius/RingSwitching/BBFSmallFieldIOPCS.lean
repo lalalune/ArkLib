@@ -888,7 +888,6 @@ theorem bbf_fullOracleVerifier_rbrKnowledgeSoundness
         (bbfMLIOPCS 𝔽q β γ_repetitions
           (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)) i) :=
   FullRingSwitching.fullOracleVerifier_rbrKnowledgeSoundness κ L K β_rs ℓ ℓ' h_l
-    (𝓑 := 𝓑)
     (bbfMLIOPCS 𝔽q β γ_repetitions
       (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑))
     init
