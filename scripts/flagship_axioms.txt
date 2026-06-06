@@ -1,0 +1,9 @@
+# Pinned flagship declarations for the CI axiom sweep (scripts/axiom_audit.py).
+# Format: <module> <fully-qualified declaration>
+# Every declaration must report axioms within {propext, Classical.choice, Quot.sound}.
+ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves ProximityGap.correlatedAgreement_affine_curves
+ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.Main ProximityGap.RS_correlatedAgreement_affineLines
+ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeCollapse ProximityGap.not_listDecodingPrize
+ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeCollapse ProximityGap.grandMCAChallenge_iff_epsMCA_one
+ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice ProximityGap.GrandChallengesLattice.mcaThreshold_spec
+ArkLib.ToMathlib.SubspacePolyLinearized BKR06.bkr06_tight_family_hfamily_unconditional
