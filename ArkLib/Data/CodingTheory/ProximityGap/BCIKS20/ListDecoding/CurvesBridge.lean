@@ -1325,10 +1325,10 @@ theorem correlatedAgreement_affine_lines_of_strict_gsInterpolant_johnson_complem
 /-- Strict square-root-radius degree-one correlated-agreement capstone routed
 through the non-cyclic closed assembly wrapper.
 
-This is the same §5 affine-line input package as
-`correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_counting_canonical_coeff_strict`,
-but it consumes the public `Curves.Assembly` front door rather than the lower-level
-curve theorem directly. -/
+This is the same §5 affine-line input package as the sibling theorem
+`correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_counting_canonical_coeff`
+with the `_strict` suffix, but it consumes the public `Curves.Assembly` front door rather than the
+lower-level curve theorem directly. -/
 theorem correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_counting_canonical_coeff_assembled
     {m k : ℕ} (hk : 0 < k) {ωs : Fin n ↪ F}
     [DecidableEq (RatFunc F)]
@@ -1377,8 +1377,9 @@ theorem correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_cou
   · intro _hk _u _hprob _hJ hnot
     exact False.elim (hnot hδ)
 
-/-- Public affine-line version of
-`correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_counting_canonical_coeff_assembled`.
+/-- Public affine-line version of the theorem
+`correlatedAgreement_affine_lines_of_strict_exists_natCeil_complement_counting_canonical_coeff`
+with the `_assembled` suffix.
 
 This is the top-level strict square-root-radius §5-to-§6 bridge in the native
 affine-line predicate: the concrete Claim-5.11 complement-counting package

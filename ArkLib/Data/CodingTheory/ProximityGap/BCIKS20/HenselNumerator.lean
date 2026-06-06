@@ -59,13 +59,13 @@ genuine `β` recursion of BCIKS20 (A.1) over the in-tree ring `𝒪 H`:
    (`coeff (t+1) (eval (βHenselAssembled) Q) = 0`).  PROVEN unconditionally:
    the base case `βHensel_lift_identity_zero` / `βHenselAssembled_constantCoeff` (`= α₀ = T/W`); the
    **order-`0` root vanishing** `coeff_zero_eval_βHenselAssembled` (`coeff 0 (eval … Q) = eval α₀ Q₀
-   = 0`); the whole-series assembly `assembledSeries_isRoot` (by `PowerSeries.ext` from the order-`0`
-   and order-`(t+1)` halves); the denominator nonvanishing `ζ_ne_zero` /
+   = 0`); the whole-series assembly `assembledSeries_isRoot` (by `PowerSeries.ext` from the
+   order-`0` and order-`(t+1)` halves); the denominator nonvanishing `ζ_ne_zero` /
    `embeddingOf𝒪Into𝕃_ξ_ne_zero` / `den_ne_zero`; and the uniqueness reduction
    `βHenselAssembled_eq_gammaGenuine` / `βHensel_lift_identity_of_assembledSeries_isRoot` (via
    `gammaGenuine_unique`).  The residual is the order-`≥1` Faà-di-Bruno bridge
-   `coeff_eval ↔ B_coeff·partitionProd` (equivalently the (A.1)-recursion ↔ Newton-correction match),
-   gated on the STATED-NOT-PROVEN combinatorial reconciliation `prefactor_eq_paper`.
+   `coeff_eval ↔ B_coeff·partitionProd` (equivalently the (A.1)-recursion ↔ Newton-correction
+   match), gated on the STATED-NOT-PROVEN combinatorial reconciliation `prefactor_eq_paper`.
 
 WAVE 3 SCOPE (§4c′ / 4d below).  The reusable **`Λ`-weight calculus over `𝒪 H`**, all PROVEN
 axiom-clean (`[propext, Classical.choice, Quot.sound]`, no `sorryAx`):
@@ -76,8 +76,8 @@ sub-additivity), `weight_Λ_nsmul_le`, `B_coeff_weight_le_hasse` (`B_coeff` → 
 `partitionProd_βHensel_weight_le`.  These reduce (P1) to one precise per-term WALL.
 
 WAVE 4 SCOPE (§4a′ + the (b) regime).  The iterated-Hasse **`Y`-degree drop** (axiom-clean
-`[propext, Classical.choice, Quot.sound]`): `hasseDerivX_natDegreeY_le` / `hasseDerivY_natDegreeY_le`
-/ `evalX_natDegreeY_le` compose to `hasseCoeffRepr𝒪_natDegreeY_le`
+`[propext, Classical.choice, Quot.sound]`): `hasseDerivX_natDegreeY_le` /
+`hasseDerivY_natDegreeY_le` / `evalX_natDegreeY_le` compose to `hasseCoeffRepr𝒪_natDegreeY_le`
 (`natDegreeY (evalX (C x₀) (Δ_X^{i1} Δ_Y^{Σλ} R)) ≤ natDegreeY R − Σλ`) — the `Y`-degree component
 of the `B_coeff` weight (the `−Σλ`).  And the (b) `ξ`-regime `2 ≤ natDegreeY R` is now a documented
 faithful hypothesis on (P1).  The residual is the per-term wall (c) — unprovable through the loose
@@ -85,19 +85,23 @@ IH; needs the structured `α_t`-weight invariant (see `…-wave4.md`).
 
 WAVE 5 SCOPE (§4c″).  The paper's **structured `α_t`-weight** route, in axiom-clean `ℕ`/`WithBot`
 arithmetic (all `[propext, Classical.choice, Quot.sound]`, no `sorryAx`): `sum_map_structured` (the
-`Σ_l λ_l·(1+(l+1)Λ(W)+e_l·Λ(ξ))` telescoping closed form, `e_l = 2l−1`), `structured_weight_collapse`
+`Σ_l λ_l·(1+(l+1)Λ(W)+e_l·Λ(ξ))` telescoping closed form, `e_l = 2l−1`),
+`structured_weight_collapse`
 (the final `1+(t+1)wW+e_t·xξ ≤ (2t+1)·d·D` collapse, numerically re-verified), `nsmul_withBot_le`
 (the `WithBot ℕ` power-bound descent), and `partitionProd_βHensel_weight_structured_le` (the product
 half GIVEN the structured IH).  WAVE 5 also PROVES the precise wall: the structured invariant is
 NOT derivable from the (A.1) recursion (sub-additivity forces constant `D`, not `1`); it requires
-`Λ(α_t)=1`, i.e. (P2)'s root identity.  So (P1) is gated on the structured IH, which is gated on (P2).
+`Λ(α_t)=1`, i.e. (P2)'s root identity.  So (P1) is gated on the structured IH, which is gated on
+(P2).
 
-WAVE 6 SCOPE (§4b′ — the (a-residual), CLOSED, axiom-clean `[propext, Classical.choice, Quot.sound]`,
+WAVE 6 SCOPE (§4b′ — the (a-residual), CLOSED, axiom-clean
+`[propext, Classical.choice, Quot.sound]`,
 P2-independent).  The `B_coeff` weight bound `B_coeff_weight_le` is now FULLY PROVEN:
 `weight_Λ_over_𝒪 hH (B_coeff … i1 λ) D ≤ (natDegreeY R − Σλ)·(D+1−natDegreeY H) + degreeX p`.  Its
 new ingredients: the `Y↦T` bridge `liftBivariate_eq_eval₂_functionFieldT`, the no-divisibility
 `W`-clearing sum `W_pow_mul_eval₂_div_eq_liftBivariate`, the `W`-clearing **embedding identity**
-`embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared` (`embedding ⟦cleared⟧ = W^{natDegreeY p}·hasseEvalAtRoot`,
+`embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared`
+(`embedding ⟦cleared⟧ = W^{natDegreeY p}·hasseEvalAtRoot`,
 the exact analogue of `RationalFunctions.embeddingOf𝒪Into𝕃_mk_ξ_pre`), and the `Y`/`X` weight split
 `weight_Λ_le_natDegreeY_mul_add_degreeX`.  The remaining `(P1)` residual is now EXACTLY the per-term
 wall (c) ⇐ structured IH ⇐ (P2); the (a-residual) no longer gates anything.  The only `B_coeff`
@@ -326,8 +330,8 @@ theorem mvBinom_pos {s k : σ →₀ ℕ} (hks : k ≤ s) : 0 < mvBinom s k := b
 
 /-- The monomial `mvHasseCoeff`, read at the shifted index `s - k`, returns *exactly* the
 genuine binomial multiple `mvBinom s k · a` (whose integer weight `mvBinom s k` is positive by
-`mvBinom_pos` when `k ≤ s`).  This is the load-bearing anti-placeholder witness that `mvHasseCoeff` is
-the genuine Hasse object, never a secretly-zero map.  (Stated over any `CommSemiring`; in
+`mvBinom_pos` when `k ≤ s`).  This is the load-bearing anti-placeholder witness that `mvHasseCoeff`
+is the genuine Hasse object, never a secretly-zero map.  (Stated over any `CommSemiring`; in
 positive characteristic the *cast* of the weight may collapse, so the honest non-vacuity is the
 ℕ-level `mvBinom_pos`, not a field-level `≠ 0` — which would be false over `Fₚ`.) -/
 theorem mvHasseCoeff_monomial_coeff_eq (k s : σ →₀ ℕ) (a : R) :
@@ -518,7 +522,8 @@ identity coupling the `X`-degree to `Λ(W)`, which is NOT a degree fact and stay
 `hasseCoeffRepr𝒪_natDegreeY_le`'s docstring. -/
 
 /-- `Δ_X^{i1}` never raises the **`Y`-degree**: `natDegreeY (Δ_X^{i1} p) ≤ natDegreeY p`.  `Δ_X`
-acts coefficient-wise through the outer `Y` layer (`p.sum (fun n a => monomial n (hasseDeriv i1 a))`),
+acts coefficient-wise through the outer `Y` layer
+(`p.sum (fun n a => monomial n (hasseDeriv i1 a))`),
 re-monomialising each `Y`-coefficient at the *same* `Y`-degree `n ≤ natDegreeY p`. -/
 theorem hasseDerivX_natDegreeY_le (i1 : ℕ) (p : F[X][X][Y]) :
     Bivariate.natDegreeY (hasseDerivX i1 p) ≤ Bivariate.natDegreeY p := by
@@ -530,7 +535,8 @@ theorem hasseDerivX_natDegreeY_le (i1 : ℕ) (p : F[X][X][Y]) :
   refine (Polynomial.natDegree_monomial_le _).trans ?_
   exact Polynomial.le_natDegree_of_ne_zero (Polynomial.mem_support_iff.mp hn)
 
-/-- `Δ_Y^{m}` drops the **`Y`-degree** by (at least) `m`: `natDegreeY (Δ_Y^{m} p) ≤ natDegreeY p − m`.
+/-- `Δ_Y^{m}` drops the **`Y`-degree** by (at least) `m`:
+`natDegreeY (Δ_Y^{m} p) ≤ natDegreeY p − m`.
 This is mathlib's `Polynomial.natDegree_hasseDeriv_le` on the outer `Y` layer — the genuine source
 of the `−m` (`= −Σλ`) in BCIKS20's `B_coeff` weight bound. -/
 theorem hasseDerivY_natDegreeY_le (m : ℕ) (p : F[X][X][Y]) :
@@ -823,7 +829,8 @@ each cleared `Y`-power `n` into a `W^{(deg)−n}` factor.  This is the genuine, 
 `W`-clearing identity, P2-independent. -/
 
 set_option linter.unusedSectionVars false in
-/-- **Bridge:** the bivariate lift `liftBivariate` is the `Y↦T` evaluation `eval₂ liftToFunctionField T`.
+/-- **Bridge:** the bivariate lift `liftBivariate` is the `Y↦T` evaluation
+`eval₂ liftToFunctionField T`.
 Both are ring homs `F[X][Y] →+* 𝕃 H` agreeing on constants (`liftToFunctionField`) and on the
 variable (`functionFieldT`), so `Polynomial.ringHom_ext` identifies them.  This is the algebraic
 content behind `hasseCoeffRepr𝒪 = mk p` having embedding `eval₂ T p` (the un-cleared `Y↦T` form),
@@ -849,8 +856,9 @@ lemma liftBivariate_eq_eval₂_functionFieldT (p : F[X][Y]) :
 genuine `Y↦T`-polynomial image:
 `W^k · eval₂ (T/W) P = liftBivariate (∑_{i≤k} C(P.coeff i · W_poly^{k−i}) · X^i)`.
 This is the lower-sum portion of `W_pow_mul_eval₂_div_eq_sum` specialised to the `P.coeff(k+1) = 0`
-case; it needs no divisibility because every cleared power `i ≤ k` lands as a *non-negative* `W`-power
-`W^{k−i}` (no `1/W`).  Mirrors the `ξ_pre` clearing sum but for the un-divided Hasse representative. -/
+case; it needs no divisibility because every cleared power `i ≤ k` lands as a *non-negative*
+`W`-power `W^{k−i}` (no `1/W`).  Mirrors the `ξ_pre` clearing sum but for the un-divided Hasse
+representative. -/
 lemma W_pow_mul_eval₂_div_eq_liftBivariate {P : F[X][Y]} {k : ℕ} (hP : P.natDegree ≤ k) :
     liftToFunctionField (H := H) H.leadingCoeff ^ k *
       Polynomial.eval₂ liftToFunctionField
@@ -876,7 +884,8 @@ lemma W_pow_mul_eval₂_div_eq_liftBivariate {P : F[X][Y]} {k : ℕ} (hP : P.nat
   rw [hlower]
   -- RHS term: `liftBivariate (C(P.coeff i · lc^(k-i)) * X^i)`.
   rw [map_mul, liftBivariate_C, map_pow, liftBivariate_X, ← hT_def]
-  -- Split the lift of the product and pull the `W`-power out: `lift(a·lc^(k-i)) = lift a · W^(k-i)`.
+  -- Split the lift of the product and pull the `W`-power out:
+  -- `lift(a·lc^(k-i)) = lift a · W^(k-i)`.
   rw [map_mul, map_pow, ← hW_def]
   ring
 
@@ -906,7 +915,8 @@ lemma embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared (x₀ : F) (R : F[X][X]
   set p : F[X][Y] := Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R)) with hp_def
   rw [embeddingOf𝒪Into𝕃_mk, hasseCoeffRepr𝒪_cleared, ← hp_def,
       liftBivariate_eq_eval₂_functionFieldT]
-  -- The cleared sum's `Y↦T` lift equals `W^{natDegreeY p} · eval₂ (T/W) p` by the clearing identity.
+  -- The cleared sum's `Y↦T` lift equals `W^{natDegreeY p} · eval₂ (T/W) p` by the clearing
+  -- identity.
   rw [← liftBivariate_eq_eval₂_functionFieldT,
       ← W_pow_mul_eval₂_div_eq_liftBivariate H (P := p) (k := Bivariate.natDegreeY p) le_rfl]
   -- `hasseEvalAtRoot = eval₂ (T/W) p`.
@@ -974,7 +984,7 @@ lemma B_coeff_weight_le (x₀ : F) (R : F[X][X][Y]) (i1 : ℕ) {m : ℕ}
   exact_mod_cast Nat.add_le_add_right
     (Nat.mul_le_mul_right _ hY) (Bivariate.degreeX p)
 
-/-! ### 4b″. The `Z`-degree (`degreeX`) sharpening to the paper's literal `(D−Σλ)` (WAVE 1 ext, P2-independent)
+/-! ### 4b″. The `Z`-degree (`degreeX`) sharpening to the paper's literal `(D−Σλ)` (WAVE 1 ext)
 
 This block sharpens the `+ degreeX p` term of `B_coeff_weight_le` to the paper's *literal*
 `(D−Σλ)` constant (BCIKS20 lines 2110–2111 / 4345: "the coefficient `Q_{ji}(Z)` of `X^i Y^j` is

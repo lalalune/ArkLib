@@ -2720,10 +2720,12 @@ theorem append_run (stmt : Stmt₁) (wit : Wit₁)
   --       peel the seam round ONCE up front (via `continueFromTo_succ_of_ne` +
   --       `append_{send,receive}_seam` + `append_getChallenge_natAdd ⟨0,_⟩` +
   --       `concat_append_right`),
-  --       exposing the `P₁.output` bind, and only THEN `Fin.induction` over the interior `k : Fin n`
+  --       exposing the `P₁.output` bind, and only THEN `Fin.induction` over the interior
+  --       `k : Fin n`
   --       (whose succ steps DO have the uniform shape, closed by
   --       `append_{send,receive}Message_natAdd` / `append_getChallenge_natAdd`
-  --       + `concat_append_right`).  All round-local handles for this are now PROVEN (see above); the
+  --       + `concat_append_right`).  All round-local handles for this are now PROVEN (see above);
+  --       the
   --       residue is the multi-step HEq plumbing of this peel-then-induct, ~200 lines.
   --       PRECISE structural mismatch still to bridge: the appended partial transcript at right
   --       round `natAdd m k` has motive `(pSpec₁++pSpec₂).«Type» ∘ Fin.castLE` (over `Fin (m+k)`),
@@ -2741,8 +2743,8 @@ theorem append_run (stmt : Stmt₁) (wit : Wit₁)
   --       incl. `n = 0` degenerate seam where `P₁.output >>= P₂.input >>= P₂.output` collapses).
   --
   -- All round-local reductions AND the transcript-prefix family (T) are discharged; the residue is
-  -- the right-block run induction (R) wiring the per-round reductions + (T) prefix commutation, plus
-  -- the
+  -- the right-block run induction (R) wiring the per-round reductions + (T) prefix commutation,
+  -- plus the
   -- output assembly (O).  A `HEq` engineering task on the now-complete reduction+transcript layer,
   -- with NO remaining monadic-interleaving or transcript-prefix gap.
   exact hAppendRun

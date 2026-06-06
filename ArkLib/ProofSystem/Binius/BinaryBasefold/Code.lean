@@ -46,6 +46,11 @@ variable {𝓑 : Fin 2 ↪ L}
 Definitions specific to the Binary Basefold protocol based on the fundamentals document.
 -/
 
+/-- Evaluate a bounded-degree univariate polynomial on the Binary Basefold domain `S⁽ⁱ⁾`. -/
+def polyToOracleFunc (domainIdx : Fin r) (P : L⦃<2^(ℓ - domainIdx.val)⦄[X]) :
+    OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) domainIdx :=
+  fun x => P.val.eval x.val
+
 /-- The Reed-Solomon code C^(i) for round i in Binary Basefold.
 For each i ∈ {0, steps, ..., ℓ}, C(i) is the Reed-Solomon code
 RS_{L, S⁽ⁱ⁾}[2^{ℓ+R-i}, 2^{ℓ-i}]. -/
@@ -61,15 +66,13 @@ lemma exists_BBF_poly_of_codeword (i : Fin r)
   ∃ P : L⦃<2^(ℓ-i)⦄[X], polyToOracleFunc 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (domainIdx := i) (P := P) = u := by
   have h_u_mem := u.property
   unfold BBF_Code at h_u_mem
-  simp only [code, evalOnPoints, Embedding.coeFn_mk, LinearMap.coe_mk,
-    AddHom.coe_mk, Submodule.mem_map] at h_u_mem
-  -- We use the same logic you had, but we return the Subtype explicitly
-  obtain ⟨P_raw, hP_raw⟩ := h_u_mem
-  -- Construct the subtype element
-  let P : L⦃<2^(ℓ-i)⦄[X] := ⟨P_raw, hP_raw.1⟩
+  rw [ReedSolomon.mem_code_iff_exists_polynomial] at h_u_mem
+  obtain ⟨P_raw, hP_degree, hP_eval⟩ := h_u_mem
+  let P : L⦃<2^(ℓ-i)⦄[X] := ⟨P_raw, by
+    simpa [Polynomial.mem_degreeLT] using hP_degree⟩
   use P
-  -- Prove the evaluation part
-  exact hP_raw.2
+  ext x
+  simpa [polyToOracleFunc, ReedSolomon.evalOnPoints] using congrFun hP_eval.symm x
 
 def getBBF_Codeword_poly (i : Fin r)
     (u : (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)) : L⦃<2^(ℓ-i)⦄[X] :=
@@ -89,13 +92,10 @@ def getBBF_Codeword_of_poly (i : Fin r) (h_i : i ≤ ℓ) (P : L⦃< 2 ^ (ℓ - 
     polyToOracleFunc 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (domainIdx := i) (P := P)
   have h_g_mem : g ∈ BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i := by
     unfold BBF_Code
-    simp only [code, evalOnPoints, Embedding.coeFn_mk, LinearMap.coe_mk,
-      AddHom.coe_mk, Submodule.mem_map]
-    use P
-    constructor
-    · simp only [SetLike.coe_mem]
-    · funext y
-      exact rfl
+    rw [ReedSolomon.mem_code_iff_exists_polynomial]
+    exact ⟨P.val, by simpa [Polynomial.mem_degreeLT] using P.property, by
+      ext y
+      simp [g, polyToOracleFunc, ReedSolomon.evalOnPoints]⟩
   exact ⟨g, h_g_mem⟩
 
 /-- The (minimum) distance d_i of the code C^(i) : `dᵢ := 2^(ℓ + R - i) - 2^(ℓ - i) + 1` -/
@@ -108,20 +108,21 @@ lemma BBF_CodeDistance_eq (i : Fin r) (h_i : i ≤ ℓ) :
     BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i
     = 2^(ℓ + 𝓡 - i.val) - 2^(ℓ - i.val) + 1 := by
   unfold BBF_CodeDistance
+  haveI : NeZero (2 ^ (ℓ - i.val)) := ⟨pow_ne_zero _ (by norm_num)⟩
   -- Create the embedding from domain elements to L
   let domain : (sDomain 𝔽q β h_ℓ_add_R_rate) i ↪ L :=
     ⟨fun x => x.val, fun x y h => by exact Subtype.ext h⟩
   -- Create α : Fin m → L by composing with an equivalence
   let m := Fintype.card ((sDomain 𝔽q β h_ℓ_add_R_rate) i)
-  have h_dist_RS := ReedSolomonCode.dist_eq' (F := L) (ι := (sDomain 𝔽q β h_ℓ_add_R_rate)
+  have h_dist_RS := ReedSolomon.dist_eq' (F := L) (ι := (sDomain 𝔽q β h_ℓ_add_R_rate)
     (i := i)) (α := domain) (n := 2^(ℓ - i.val)) (h := by
-      rw [sDomain_card 𝔽q β h_ℓ_add_R_rate (i := i) (h_i := Sdomain_bound (by omega))]
+      rw [sDomain_card 𝔽q β h_ℓ_add_R_rate (i := i) (h_i := by omega)]
       rw [hF₂.out];
       apply Nat.pow_le_pow_right (hx := by omega); omega
     )
   unfold BBF_Code
   rw [h_dist_RS]
-  rw [sDomain_card 𝔽q β h_ℓ_add_R_rate (i := i) (h_i := Sdomain_bound (by omega)), hF₂.out]
+  rw [sDomain_card 𝔽q β h_ℓ_add_R_rate (i := i) (h_i := by omega), hF₂.out]
 
 /-- Disagreement set Δ : The set of points where two functions disagree.
 For functions f^(i) and g^(i), this is {y ∈ S^(i) | f^(i)(y) ≠ g^(i)(y)}. -/
@@ -191,7 +192,6 @@ def fiberwiseDistance (i : Fin r) {destIdx : Fin r} (steps : ℕ) (h_destIdx : d
 def fiberwiseClose (i : Fin r) {destIdx : Fin r} (steps : ℕ) [NeZero steps] (h_destIdx : destIdx = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
     (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       i) : Prop :=
-  let left := fiberwiseDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f)
   2 * (fiberwiseDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f)) <
       (BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := destIdx): ℕ∞)
 
@@ -256,10 +256,10 @@ lemma UDRClose_iff_within_UDR_radius (i : Fin r) (h_i : i ≤ ℓ)
       uniqueDecodingRadius (ι := (sDomain 𝔽q β h_ℓ_add_R_rate i))
         (F := L) (C := BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) := by
   unfold UDRClose
-  let card_Sᵢ := sDomain_card 𝔽q β h_ℓ_add_R_rate (i := i) (h_i := Sdomain_bound (by omega))
+  let card_Sᵢ := sDomain_card 𝔽q β h_ℓ_add_R_rate (i := i) (h_i := by omega)
   conv_rhs =>
     unfold BBF_Code;
-    rw [ReedSolomonCode.uniqueDecodingRadius_RS_eq' (h := by
+    rw [ReedSolomon.uniqueDecodingRadius_RS_eq' (h := by
       rw [card_Sᵢ, hF₂.out]; apply Nat.pow_le_pow_right (hx := by omega); omega
     )];
   simp_rw [card_Sᵢ, hF₂.out, BBF_CodeDistance_eq 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (h_i := by omega)]
