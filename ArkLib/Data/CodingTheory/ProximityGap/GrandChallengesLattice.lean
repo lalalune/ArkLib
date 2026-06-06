@@ -184,14 +184,12 @@ theorem mcaEventWitness_card_pred_le_j1
       (1 - mcaLatticePoint n
         (⟨1, by omega⟩ : Fin (n + 1))) * (n : ℝ≥0) =
         ((n - 1 : ℕ) : ℝ≥0) := by
+    have hn0 : (n : ℝ≥0) ≠ 0 := by exact_mod_cast hn.ne'
     unfold mcaLatticePoint
     simp only [Fin.val_mk, Nat.cast_one]
-    apply NNReal.coe_injective
-    rw [NNReal.coe_mul, NNReal.coe_sub hdiv_le, NNReal.coe_one,
-      NNReal.coe_div (by exact_mod_cast hn.ne'), NNReal.coe_one,
-      Nat.cast_sub (Nat.succ_le_of_lt hn), Nat.cast_one]
-    field_simp [show (n : ℝ) ≠ 0 by exact_mod_cast hn.ne']
-    ring
+    -- `(1 - 1/n) * n = 1*n - (1/n)*n = n - 1` in `ℝ≥0` (truncated sub, `n ≥ 1`).
+    rw [tsub_mul, one_mul, one_div, inv_mul_cancel₀ hn0]
+    simp only [Nat.cast_sub (Nat.one_le_iff_ne_zero.mpr hn.ne'), Nat.cast_one]
   have hnn : ((n - 1 : ℕ) : ℝ≥0) ≤ (S.card : ℝ≥0) := by
     rw [← hmul]
     simpa [n] using hS

@@ -29,8 +29,6 @@ open scoped NNReal
 open ReedSolomon Code BerlekampWelch
 open Finset AdditiveNTT Polynomial MvPolynomial Nat Matrix
 
-variable {L : Type} [CommRing L] (ℓ : ℕ) [NeZero ℓ]
-
 section OracleStatementIndex
 variable (ℓ : ℕ) (ϑ : ℕ) [NeZero ℓ] [NeZero ϑ] [hdiv : Fact (ϑ ∣ ℓ)]
 
@@ -633,35 +631,39 @@ lemma bIdx_succ_mul_ϑ_le_ℓ_succ (bIdx : Fin (ℓ / ϑ - 1)) : (↑bIdx + 1) *
   exact Nat.le_of_lt (bIdx_succ_mul_ϑ_lt_ℓ_succ bIdx)
 end IndexBounds
 
+omit [NeZero r] [Field L] [Fintype L] [DecidableEq L] [CharP L 2] [Field 𝔽q]
+  [Fintype 𝔽q] [DecidableEq 𝔽q] h_Fq_char_prime hF₂ [Algebra 𝔽q L] β
+  hβ_lin_indep h_β₀_eq_1 [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑
+  hdiv in
 /-- Oracle frontier index: captures valid oracle indices for a given statement index.
     In Binary Basefold, the oracle can be at most 1 index behind the statement index.
     - At statement index `i+1`, the oracle can be at `i` (after fold) or `i+1` (after commit)
 -/
-omit [NeZero r] [Field L] [Fintype L] [DecidableEq L] [CharP L 2] [Field 𝔽q]
-  [Fintype 𝔽q] [DecidableEq 𝔽q] h_Fq_char_prime hF₂ [Algebra 𝔽q L] β
-  hβ_lin_indep h_β₀_eq_1 [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑
-  hdiv in
-def OracleFrontierIndex {ℓ : ℕ} (stmtIdx : Fin (ℓ + 1)) :=
-  { val : Fin (ℓ + 1) // val.val ≤ stmtIdx.val ∧ stmtIdx.val ≤ val.val + 1 }
+def OracleFrontierIndex {m : ℕ} (stmtIdx : Fin (m + 1)) :=
+  { val : Fin (m + 1) // val.val ≤ stmtIdx.val ∧ stmtIdx.val ≤ val.val + 1 }
 
 namespace OracleFrontierIndex
 
-/-- Create oracle frontier index equal to statement index (synchronized case) -/
 omit [NeZero r] [Field L] [Fintype L] [DecidableEq L] [CharP L 2] [Field 𝔽q]
   [Fintype 𝔽q] [DecidableEq 𝔽q] h_Fq_char_prime hF₂ [Algebra 𝔽q L] β
   hβ_lin_indep h_β₀_eq_1 [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑
   hdiv in
-def mkFromStmtIdx {ℓ : ℕ} (stmtIdx : Fin (ℓ + 1)) :
+/-- Create oracle frontier index equal to statement index (synchronized case) -/
+def mkFromStmtIdx {m : ℕ} (stmtIdx : Fin (m + 1)) :
     OracleFrontierIndex stmtIdx :=
-  ⟨stmtIdx, by constructor <;> omega⟩
+  ⟨stmtIdx, by
+    constructor
+    · exact le_rfl
+    · exact Nat.le_succ stmtIdx.val
+  ⟩
 
+omit [NeZero r] [Field L] [Fintype L] [DecidableEq L] [CharP L 2] [Field 𝔽q]
+  [Fintype 𝔽q] [DecidableEq 𝔽q] h_Fq_char_prime hF₂ [Algebra 𝔽q L] β
+  hβ_lin_indep h_β₀_eq_1 [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑
+  hdiv in
 /-- Create oracle frontier index for statement i.succ with oracle at i (lagging case).
     Used after fold step where stmtIdx advances but oracle hasn't committed yet. -/
-omit [NeZero r] [Field L] [Fintype L] [DecidableEq L] [CharP L 2] [Field 𝔽q]
-  [Fintype 𝔽q] [DecidableEq 𝔽q] h_Fq_char_prime hF₂ [Algebra 𝔽q L] β
-  hβ_lin_indep h_β₀_eq_1 [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑
-  hdiv in
-def mkFromStmtIdxCastSuccOfSucc {ℓ : ℕ} (i : Fin ℓ) :
+def mkFromStmtIdxCastSuccOfSucc {m : ℕ} (i : Fin m) :
     OracleFrontierIndex i.succ :=
   ⟨i.castSucc, by
     constructor
@@ -674,23 +676,23 @@ omit [NeZero r] [Field L] [Fintype L] [DecidableEq L] [CharP L 2] [Field 𝔽q]
   [Fintype 𝔽q] [DecidableEq 𝔽q] h_Fq_char_prime hF₂ [Algebra 𝔽q L] β
   hβ_lin_indep h_β₀_eq_1 [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑
   hdiv in
-lemma val_mkFromStmtIdx {ℓ : ℕ} (stmtIdx : Fin (ℓ + 1)) :
-    (mkFromStmtIdx stmtIdx).val = stmtIdx := rfl
+lemma val_mkFromStmtIdx {m : ℕ} (stmtIdx : Fin (m + 1)) :
+    (mkFromStmtIdx (r := r) (ℓ := ℓ) (𝓡 := 𝓡) (m := m) stmtIdx).val = stmtIdx := rfl
 
 @[simp]
 omit [NeZero r] [Field L] [Fintype L] [DecidableEq L] [CharP L 2] [Field 𝔽q]
   [Fintype 𝔽q] [DecidableEq 𝔽q] h_Fq_char_prime hF₂ [Algebra 𝔽q L] β
   hβ_lin_indep h_β₀_eq_1 [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑
   hdiv in
-lemma val_mkFromStmtIdxCastSuccOfSucc {ℓ : ℕ} (i : Fin ℓ) :
-    (mkFromStmtIdxCastSuccOfSucc i).val = i.castSucc := rfl
+lemma val_mkFromStmtIdxCastSuccOfSucc {m : ℕ} (i : Fin m) :
+    (mkFromStmtIdxCastSuccOfSucc (m := m) i).val = i.castSucc := rfl
 
 @[simp]
 omit [NeZero r] [Field L] [Fintype L] [DecidableEq L] [CharP L 2] [Field 𝔽q]
   [Fintype 𝔽q] [DecidableEq 𝔽q] h_Fq_char_prime hF₂ [Algebra 𝔽q L] β
   hβ_lin_indep h_β₀_eq_1 [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑
   hdiv in
-lemma val_le_i {ℓ : ℕ} (i : Fin (ℓ + 1)) (oracleIdx : OracleFrontierIndex i) :
+lemma val_le_i {m : ℕ} (i : Fin (m + 1)) (oracleIdx : OracleFrontierIndex i) :
     oracleIdx.val ≤ i := by
   unfold OracleFrontierIndex at oracleIdx
   let h := oracleIdx.property
@@ -702,8 +704,9 @@ omit [NeZero r] [Field L] [Fintype L] [DecidableEq L] [CharP L 2] [Field 𝔽q]
   [Fintype 𝔽q] [DecidableEq 𝔽q] h_Fq_char_prime hF₂ [Algebra 𝔽q L] β
   hβ_lin_indep h_β₀_eq_1 [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] h_ℓ_add_R_rate 𝓑
   hdiv in
-lemma val_mkFromStmtIdxCastSuccOfSucc_eq_mkFromStmtIdx {ℓ : ℕ} (i : Fin ℓ) :
-    (mkFromStmtIdxCastSuccOfSucc i).val = (mkFromStmtIdx (ℓ := ℓ) i.castSucc).val := by rfl
+lemma val_mkFromStmtIdxCastSuccOfSucc_eq_mkFromStmtIdx {m : ℕ} (i : Fin m) :
+    (mkFromStmtIdxCastSuccOfSucc (m := m) i).val =
+      (mkFromStmtIdx (r := r) (ℓ := ℓ) (𝓡 := 𝓡) (m := m) i.castSucc).val := by rfl
 
 end OracleFrontierIndex
 
@@ -910,7 +913,16 @@ def snoc_oracle {i : Fin ℓ} {destIdx : Fin r}
           apply Fin.eq_of_val_eq
           rw [h_destIdx]
           exact h_commit_round.symm
-        exact fun y => newOracleFn (cast (by rw [← h_idx]) y)
+        have h_domain :
+            ↥(sDomain 𝔽q β h_ℓ_add_R_rate ⟨i.succ.val, by omega⟩) =
+              ↥(sDomain 𝔽q β h_ℓ_add_R_rate destIdx) := by
+          have h_fin : (⟨i.succ.val, by omega⟩ : Fin r) = destIdx := by
+            apply Fin.eq_of_val_eq
+            rw [h_destIdx]
+            simp only [Fin.val_mk]
+            omega
+          exact congrArg (fun idx => ↥(sDomain 𝔽q β h_ℓ_add_R_rate idx)) h_fin
+        exact fun y => newOracleFn (cast h_domain y)
     else by
       simp only [OracleStatement]
       have h := toOutCodewordsCount_succ_eq ℓ ϑ i
@@ -1511,7 +1523,7 @@ def roundRelation (i : Fin (ℓ + 1)) :
     Set ((Statement (L := L) Context i ×
       (∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i j)) ×
       Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) :=
-  { input | roundRelationProp (mp := mp) 𝔽q β i input}
+  { input | roundRelationProp (mp := mp) (𝓑 := 𝓑) 𝔽q β i input}
 
 /-- Relation for final sumcheck step -/
 def finalSumcheckRelOutProp

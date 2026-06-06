@@ -20,15 +20,51 @@ variable (h_l : ℓ = ℓ' + κ)
 variable (aOStmtIn : AbstractOStmtIn L ℓ')
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
 
+local instance : (([]ₒ : OracleSpec PEmpty).Inhabited) where
+  inhabited_B q := nomatch q
+
+local instance : (([]ₒ : OracleSpec PEmpty).Fintype) where
+  fintype_B q := nomatch q
+
+local instance : ∀ j, OracleInterface ((pSpecSumcheckRound L).Challenge j) :=
+  fun _ => OracleInterface.instDefault
+
+local instance : ([(pSpecSumcheckRound L).Challenge]ₒ).Inhabited := by
+  refine { inhabited_B := ?_ }
+  intro q
+  rcases q with ⟨⟨i, hi⟩, _⟩
+  have hi_one : i = 1 := by
+    fin_cases i
+    · simp [pSpecSumcheckRound, Sumcheck.Structured.pSpecSumcheckRound] at hi
+    · rfl
+  subst i
+  simp [ProtocolSpec.Challenge, pSpecSumcheckRound, Sumcheck.Structured.pSpecSumcheckRound]
+
+local instance : ([(pSpecSumcheckRound L).Challenge]ₒ).Fintype := by
+  refine { fintype_B := ?_ }
+  intro q
+  rcases q with ⟨⟨i, hi⟩, _⟩
+  have hi_one : i = 1 := by
+    fin_cases i
+    · simp [pSpecSumcheckRound, Sumcheck.Structured.pSpecSumcheckRound] at hi
+    · rfl
+  subst i
+  simp [ProtocolSpec.Challenge, pSpecSumcheckRound, Sumcheck.Structured.pSpecSumcheckRound]
+
 theorem iteratedSumcheckOracleReduction_perfectCompleteness_residual_holds
     (hInit : NeverFail init) :
     iteratedSumcheckOracleReduction_perfectCompleteness_residual
       (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
       (aOStmtIn := aOStmtIn) (init := init) (impl := impl) := by
   intro i
-  rw [OracleReduction.unroll_2_message_reduction_perfectCompleteness (hInit := hInit)
-    (hDir0 := by rfl) (hDir1 := by rfl)
-    (hImplSupp := by simp only [Set.fmap_eq_image, IsEmpty.forall_iff, implies_true])]
+  have key := OracleReduction.unroll_2_message_reduction_perfectCompleteness
+    (oSpec := []ₒ) (pSpec := pSpecSumcheckRound L)
+    (iteratedSumcheckOracleReduction κ L K P ℓ ℓ' aOStmtIn i)
+    (sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i.castSucc)
+    (sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i.succ)
+    init impl hInit (by rfl) (by rfl)
+    (by simp only [Set.fmap_eq_image, IsEmpty.forall_iff, implies_true])
+  rw [key]
   intro stmtIn oStmtIn witIn h_relIn
   simp_rw [probEvent_eq_one_iff]
   dsimp only [iteratedSumcheckOracleReduction, iteratedSumcheckOracleProver,
