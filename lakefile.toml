@@ -35,7 +35,7 @@ rev = "lean4.18.0"
 [[require]]
 name = "CompPoly"
 git = "https://github.com/lalalune/CompPoly"
-rev = "21db8143ed5f046f0038a6b3f20e4d0fcec65abf"
+rev = "66736d2ca379bf3833576c36f8609a09edc14aae"
 
 [[lean_lib]]
 name = "ArkLib"
