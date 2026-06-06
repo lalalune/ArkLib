@@ -92,7 +92,8 @@ theorem logupVerifier_eq_append :
       OracleVerifier.append (outerVerifier oSpec F n M params)
         (sumcheckVerifier oSpec F n M params) := rfl
 
-/-- The two sub-phase soundness obligations of the LogUp composition (the smallest named residual).
+/-- The two sub-phase soundness obligations of the LogUp composition, stated as a single named
+`Prop` residual (not proved here).
 
 * The outer phase (`outerVerifier`) is sound with intermediate language `midLanguage` and error
   `outerSoundnessError F n M params`.
@@ -103,27 +104,24 @@ here): no in-tree outer LogUp soundness theorem; no full plain `Sumcheck.Spec` s
 the lifted shape; and `OracleVerifier.append_soundness` itself reduces to the upstream
 `Verifier.append_soundness` sorry. See the module docstring.
 
-Hence this single residual `sorry`. -/
-theorem subPhaseSoundness (sumcheckSoundnessError : ℝ≥0) :
+This is therefore kept as an explicit named residual `Prop` (no `sorry`); the main theorem
+`logup_soundness_of_residual` consumes it. -/
+def SubPhaseSoundnessResidual (sumcheckSoundnessError : ℝ≥0) : Prop :=
     (outerVerifier oSpec F n M params).soundness init impl
         (inputRelation F n M).language (midLanguage F n M params)
         (outerSoundnessError F n M params) ∧
       (sumcheckVerifier oSpec F n M params).soundness init impl
-        (midLanguage F n M params) outputRelation.language sumcheckSoundnessError := by
-  sorry
+        (midLanguage F n M params) outputRelation.language sumcheckSoundnessError
 
 /-- Main ArkLib soundness theorem for LogUp Protocol 2, **reduced to the named residual**
-`subPhaseSoundness` through the genuine sequential-composition soundness lemma
+`SubPhaseSoundnessResidual` through the genuine sequential-composition soundness lemma
 `OracleVerifier.append_soundness` (itself upstream-blocked by `sorryAx`; see the module docstring).
 
 The soundness error `logupSoundnessError F n M params s = outerSoundnessError F n M params + s`
-is exactly the `soundnessError₁ + soundnessError₂` produced by `append_soundness`. -/
+is exactly the `soundnessError₁ + soundnessError₂` produced by `append_soundness`. This reduction's
+own body contains no `sorry`. -/
 theorem logup_soundness_of_residual (sumcheckSoundnessError : ℝ≥0)
-    (h : (outerVerifier oSpec F n M params).soundness init impl
-          (inputRelation F n M).language (midLanguage F n M params)
-          (outerSoundnessError F n M params) ∧
-        (sumcheckVerifier oSpec F n M params).soundness init impl
-          (midLanguage F n M params) outputRelation.language sumcheckSoundnessError) :
+    (h : SubPhaseSoundnessResidual oSpec F n M params init impl sumcheckSoundnessError) :
     (logupVerifier oSpec F n M params).soundness init impl
       (inputRelation F n M).language outputRelation.language
       (logupSoundnessError F n M params sumcheckSoundnessError) := by
@@ -133,17 +131,6 @@ theorem logup_soundness_of_residual (sumcheckSoundnessError : ℝ≥0)
   -- composed soundness fact unifies with the goal directly.
   exact OracleVerifier.append_soundness.{0, 0}
     (outerVerifier oSpec F n M params) (sumcheckVerifier oSpec F n M params) hOuter hSum
-
-/-- Main ArkLib soundness theorem for LogUp Protocol 2.
-
-Closed via the genuine composition skeleton (`logup_soundness_of_residual`), with the single
-residual `subPhaseSoundness`. -/
-theorem logup_soundness (sumcheckSoundnessError : ℝ≥0) :
-    (logupVerifier oSpec F n M params).soundness init impl
-      (inputRelation F n M).language outputRelation.language
-      (logupSoundnessError F n M params sumcheckSoundnessError) :=
-  logup_soundness_of_residual oSpec F n M params init impl sumcheckSoundnessError
-    (subPhaseSoundness oSpec F n M params init impl sumcheckSoundnessError)
 
 end Soundness
 

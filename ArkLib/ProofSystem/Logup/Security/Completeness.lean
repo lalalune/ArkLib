@@ -142,7 +142,8 @@ theorem logupOracleReduction_eq_append :
       OracleReduction.append (outerOracleReduction oSpec F n M params)
         (sumcheckOracleReduction oSpec F n M params) := rfl
 
-/-- The two sub-phase completeness obligations of the LogUp composition.
+/-- The two sub-phase completeness obligations of the LogUp composition, stated as a single named
+`Prop` residual (not proved here).
 
 * The outer phase (`outerOracleReduction`) is complete with error `logupCompletenessError F n`: its
   honest run is deterministic and correct except when the sampled `x` is one of the at most
@@ -164,35 +165,37 @@ here):
 * The top-level composition step uses `OracleReduction.append_completeness`, which still reduces to
   the upstream `Reduction.reduction_append_completeness` sorry.
 
-Hence this single residual `sorry`. -/
-theorem subPhaseCompleteness :
+This is therefore kept as an explicit named residual `Prop` (no `sorry`); the main theorem
+`logup_completeness_of_residual` consumes it. -/
+def SubPhaseCompletenessResidual : Prop :=
     (outerOracleReduction oSpec F n M params).completeness init impl
         (inputRelation F n M) (midRelation F n M params) (logupCompletenessError F n) ∧
       (sumcheckOracleReduction oSpec F n M params).completeness init impl
-        (midRelation F n M params) outputRelation 0 := by
-  sorry
+        (midRelation F n M params) outputRelation 0
 
-/-- Main ArkLib completeness theorem for LogUp Protocol 2.
-
-Reduced to `subPhaseCompleteness` through the genuine sequential-composition completeness lemma
+/-- Main ArkLib completeness theorem for LogUp Protocol 2, **reduced to the named residual**
+`SubPhaseCompletenessResidual` through the genuine sequential-composition completeness lemma
 `OracleReduction.append_completeness` (itself upstream-blocked by `sorryAx`; see the module
-docstring). The completeness error `logupCompletenessError F n = |Hypercube n| / |F|` is the sum
+docstring).
+
+The completeness error `logupCompletenessError F n = |Hypercube n| / |F|` is the sum
 `logupCompletenessError F n + 0` of the outer pole-rejection error and the (perfect) sumcheck
-error. -/
-theorem logup_completeness :
+error. This reduction's own body contains no `sorry`. -/
+theorem logup_completeness_of_residual
+    (h : SubPhaseCompletenessResidual oSpec F n M params init impl) :
     (logupOracleReduction oSpec F n M params).completeness init impl
       (inputRelation F n M) outputRelation (logupCompletenessError F n) := by
-  obtain ⟨hOuter, hSum⟩ := subPhaseCompleteness oSpec F n M params init impl
+  obtain ⟨hOuter, hSum⟩ := h
   -- `logupOracleReduction` is definitionally `append outerOracleReduction sumcheckOracleReduction`
   -- (`logupOracleReduction_eq_append`), so the composed completeness fact unifies with the goal up
   -- to `logupCompletenessError F n + 0 = logupCompletenessError F n`. We assemble the composed fact
   -- and close by `simpa`, avoiding a `rw` that would force `whnf` of the full reduction.
-  have h := OracleReduction.append_completeness.{0, 0}
+  have hc := OracleReduction.append_completeness.{0, 0}
     (rel₂ := midRelation F n M params)
     (outerOracleReduction oSpec F n M params)
     (sumcheckOracleReduction oSpec F n M params)
     hOuter hSum
-  simpa only [add_zero] using h
+  simpa only [add_zero] using hc
 
 end Completeness
 
