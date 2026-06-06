@@ -204,4 +204,43 @@ theorem listLatticeThreshold_eq_of_johnson_sq_and_elias_next
       (C := C) (m := m) (j := j + 1) hm (Nat.succ_pos j) hj_next hvol_next hne
   exact Nat.le_antisymm (Nat.lt_succ_iff.mp hhi) hlow
 
+/-- **Exact threshold from an abstract base-code `Λ` cap and Elias certificate.**
+If a capacity-style theorem certifies lattice index `j` as good by proving
+`Λ(C, j/n) ≤ ℓ`, and the Elias volume lower bound certifies `j + 1` as already bad,
+then the faithful list-decoding lattice threshold is exactly `j`.
+
+This is the same finite-search closing step as
+`listLatticeThreshold_eq_of_johnson_sq_and_elias_next`, with the Johnson-square
+machinery replaced by the exact residual theorem ordinary-RS capacity routes need. -/
+theorem listLatticeThreshold_eq_of_Lambda_le_and_elias_next
+    (C : Submodule F (ι → F)) {m j ℓ : ℕ}
+    (hm : m ≠ 0)
+    (hj_next : j + 1 < Fintype.card ι)
+    (hLambda :
+      Lambda (C : Set (ι → F))
+        (((j : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) ≤ (ℓ : ℕ∞))
+    {ε_star : ℝ≥0}
+    (hpow : ((ℓ : ENNReal)) ^ m ≤
+      (ε_star : ENNReal) * (Fintype.card F : ENNReal))
+    (hvol_next : (ε_star : ENNReal) * (Fintype.card F : ENNReal) <
+      ENNReal.ofReal
+        ((CodingTheory.hammingBallVolume (Fintype.card F)
+            ((((j + 1 : ℕ) : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)
+            (Fintype.card ι) : ℝ)
+          / (Fintype.card F : ℝ) ^
+              ((Fintype.card ι : ℝ) - Module.finrank F C)))
+    (hne : (GrandChallenges.listLatticeSet (C : Set (ι → F)) m ε_star).Nonempty) :
+    GrandChallenges.listLatticeThreshold (C : Set (ι → F)) m ε_star hne = j := by
+  have hjn : j ≤ Fintype.card ι := by omega
+  have hlow :
+      j ≤ GrandChallenges.listLatticeThreshold (C : Set (ι → F)) m ε_star hne :=
+    le_listLatticeThreshold_of_Lambda_le
+      (C := (C : Set (ι → F))) (m := m) (j := j) (ℓ := ℓ)
+      hjn hLambda hpow hne
+  have hhi :
+      GrandChallenges.listLatticeThreshold (C : Set (ι → F)) m ε_star hne < j + 1 :=
+    listLatticeThreshold_lt_of_elias_volume
+      (C := C) (m := m) (j := j + 1) hm (Nat.succ_pos j) hj_next hvol_next hne
+  exact Nat.le_antisymm (Nat.lt_succ_iff.mp hhi) hlow
+
 end ProximityGap

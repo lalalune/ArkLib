@@ -2100,6 +2100,55 @@ theorem listPrizeLatticeResolved_of_canonical_listLatticeThreshold_eq
   apply Fin.ext
   rw [listThreshold_val_eq_listLatticeThreshold C m epsStar hne' (hne r), heq r]
 
+/-- Per-rate adjacent base-code `Λ` caps and Elias certificates resolve the faithful
+four-rate list-decoding lattice prize directly.
+
+This is the capacity-residual analogue of
+`listPrizeLatticeResolved_of_johnson_sq_and_elias_next`: for each prize rate, it assumes the
+ordinary base Reed-Solomon list-size cap `Λ(RS_k, τ r / n) ≤ ℓ r`, the interleaving budget
+inequality, and an Elias-volume failure certificate at `(τ r).val + 1`. -/
+theorem listPrizeLatticeResolved_of_Lambda_le_and_elias_next
+    (domain : ι ↪ F) (m : ℕ)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1))
+    (ℓ : Fin 4 → ℕ)
+    (hm : m ≠ 0)
+    (hnext : ∀ r : Fin 4, (τ r).val + 1 < Fintype.card ι)
+    (hLambda : ∀ r : Fin 4,
+      Lambda
+        (ReedSolomon.code domain
+          ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (((((τ r).val : ℕ) : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) ≤
+          (ℓ r : ℕ∞))
+    (hpow : ∀ r : Fin 4,
+      ((ℓ r : ENNReal)) ^ m ≤
+        (epsStar : ENNReal) * (Fintype.card F : ENNReal))
+    (hvol_next : ∀ r : Fin 4,
+      (epsStar : ENNReal) * (Fintype.card F : ENNReal) <
+        ENNReal.ofReal
+          ((CodingTheory.hammingBallVolume (Fintype.card F)
+              (((((τ r).val + 1 : ℕ) : ℝ≥0) /
+                    (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)
+              (Fintype.card ι) : ℝ)
+            / (Fintype.card F : ℝ) ^
+                ((Fintype.card ι : ℝ) -
+                  Module.finrank F
+                    (ReedSolomon.code domain
+                      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊))))
+    (hne : ∀ r : Fin 4,
+      (GrandChallenges.listLatticeSet
+        (ReedSolomon.code domain
+          ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        m epsStar).Nonempty) :
+    listPrizeLatticeResolved domain m τ := by
+  refine listPrizeLatticeResolved_of_canonical_listLatticeThreshold_eq
+    domain m τ hne ?_
+  intro r
+  exact ProximityGap.listLatticeThreshold_eq_of_Lambda_le_and_elias_next
+    (C := ReedSolomon.code domain
+      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊)
+    (m := m) (j := (τ r).val) (ℓ := ℓ r)
+    hm (hnext r) (hLambda r) (hpow r) (hvol_next r) (hne r)
+
 /-- Per-rate adjacent Johnson-square/Elias certificates resolve the faithful four-rate
 list-decoding lattice prize directly.
 

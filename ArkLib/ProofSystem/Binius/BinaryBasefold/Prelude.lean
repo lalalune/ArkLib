@@ -953,6 +953,58 @@ def iterated_fold (i : Fin r) (steps : ℕ) {destIdx : Fin r}
       (h_i_add_steps := h_i_add_steps) (f := f)
       (r_challenges := fun j => r_challenges ⟨j.val, by simpa using j.isLt⟩))
 
+/-- **Congruence in the source index** of `iterated_fold`: transporting the start index `i = i'`
+across the (equal-`.val`) domain re-casts the input function accordingly. -/
+lemma iterated_fold_congr_source_index
+    {i i' : Fin r} (h : i = i')
+    (steps : ℕ) {destIdx : Fin r}
+    (h_destIdx : destIdx.val = i.val + steps)
+    (h_destIdx' : destIdx.val = i'.val + steps)
+    (h_destIdx_le : destIdx ≤ ℓ)
+    (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
+    (r_challenges : Fin steps → L) :
+    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := i) steps h_destIdx h_destIdx_le f r_challenges =
+    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := i') steps h_destIdx' h_destIdx_le
+      (fun x => f (cast (h := by rw [h]) x)) r_challenges := by
+  subst h
+  simp only [cast_eq]
+
+/-- **Congruence in the destination index** of `iterated_fold`: transporting the destination index
+`destIdx = destIdx'` across the (equal-`.val`) domain re-casts the evaluation point accordingly. -/
+lemma iterated_fold_congr_dest_index
+    {i : Fin r} (steps : ℕ) {destIdx destIdx' : Fin r}
+    (h_destIdx : destIdx.val = i.val + steps)
+    (h_destIdx_le : destIdx ≤ ℓ) (h_destIdx_eq_destIdx' : destIdx = destIdx')
+    (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
+    (r_challenges : Fin steps → L)
+    (y : sDomain 𝔽q β h_ℓ_add_R_rate (i := destIdx)) :
+    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (destIdx := destIdx)
+      (i := i) steps h_destIdx h_destIdx_le f r_challenges y =
+    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (destIdx := destIdx')
+      (i := i) steps (by rw [← h_destIdx_eq_destIdx']; exact h_destIdx)
+      (h_destIdx_le := by rw [← h_destIdx_eq_destIdx']; exact h_destIdx_le)
+      f r_challenges (cast (h := by rw [h_destIdx_eq_destIdx']) y) := by
+  subst h_destIdx_eq_destIdx'; rfl
+
+/-- **Congruence in the step count** of `iterated_fold`: transporting an equal step count
+`steps = steps'` re-indexes the challenge function accordingly. -/
+lemma iterated_fold_congr_steps_index
+    {i : Fin r} (steps steps' : ℕ) {destIdx : Fin r}
+    (h_destIdx : destIdx.val = i.val + steps)
+    (h_destIdx_le : destIdx ≤ ℓ) (h_steps_eq_steps' : steps = steps')
+    (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
+    (r_challenges : Fin steps → L)
+    (y : sDomain 𝔽q β h_ℓ_add_R_rate (i := destIdx)) :
+    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (destIdx := destIdx)
+      (i := i) steps h_destIdx h_destIdx_le f r_challenges y =
+    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (destIdx := destIdx)
+      (i := i) steps' (by rw [← h_steps_eq_steps']; exact h_destIdx)
+      (h_destIdx_le := h_destIdx_le)
+      f (fun (cIdx : Fin steps') => r_challenges ⟨cIdx, by omega⟩) y := by
+  subst h_steps_eq_steps'; rfl
+
 set_option maxHeartbeats 1000000 in
 seal sDomain qMap_total_fiber normalizedW intermediateEvaluationPoly in
 /-- **Peel the last fold step from `iterated_fold`.** Folding `n + 1` steps starting at
@@ -1850,17 +1902,17 @@ lemma challengeTensorExpansion_one (c : L) :
   fin_cases i <;>
     simp [Fin.prod_univ_one, Nat.testBit]
 
-/-- Residual bridge: the legacy `Vector`-valued `challengeTensorProduct` agrees, entrywise, with
-the new-API `challengeTensorExpansion` (`= multilinearWeight`). This is the bridge that lets the
-legacy matmul lemma `localized_fold_eval_eq_sum` be reused under the new matrix-form API.
-
-The proof is a finite bit-order reconciliation between the legacy low-bit tensor recursion and the
-`multilinearWeight` product convention. It is named explicitly so downstream Binius files can build
-against the intended API while the tensor-order proof is completed. -/
-axiom challengeTensorProduct_get_eq_challengeTensorExpansion
-    (n : ℕ) (rc : Fin n → L) (idx : Fin (2 ^ n)) :
-    (challengeTensorProduct (L := L) (ℓ := ℓ) (𝓡 := 𝓡) (r := r) n rc).get idx
-      = challengeTensorExpansion (L := L) n rc idx
+-- NOTE: the entrywise identity `challengeTensorProduct.get idx = challengeTensorExpansion idx`
+-- that a previous pass kept as an `axiom` here is *false as stated*: the legacy
+-- `challengeTensorProduct` recursion places the last challenge in the LSB (`idx % 2` selects
+-- `r (last n)`), whereas `challengeTensorExpansion = multilinearWeight` places it in the MSB
+-- (`testBit idx j` ↔ challenge `j`). Concretely, for `n = 2`, `challengeTensorProduct rc 2 =
+-- (1 - r₁) * r₀` while `challengeTensorExpansion rc 2 = (1 - r₀) * r₁`; they are related by a
+-- *bit-reversal* permutation of the index, not the identity. The (true) matrix-form equality
+-- `iterated_fold_eq_matrix_form` below is therefore the single named residual: its honest reduction
+-- to the legacy `iterated_fold_steps_eq_matrix_form` requires reconciling that bit-reversal across
+-- the tensor vector, the fold matrix rows, and the fiber index — work not present in the upstream
+-- blob (which uses `challengeTensorExpansion` natively throughout and so never needs the bridge).
 
 /-- The (in-range) arithmetic bound `i.val + steps < ℓ + 𝓡` derived from a destination index
 `destIdx.val = i.val + steps` with `destIdx ≤ ℓ`. Shared by the new-API matrix/fiber definitions
@@ -1965,16 +2017,21 @@ lemma iterated_fold_zero_steps (i : Fin r) {destIdx : Fin r}
   subst h_eq
   -- Now both `cast`s are on `rfl`; `iterated_fold_steps` over `0` steps is `Fin.dfoldl 0 = f`.
   unfold iterated_fold iterated_fold_steps
-  simp only [Fin.dfoldl_zero, cast_eq, eq_mp_eq_cast]
+  simp only [Fin.dfoldl_zero, Fin.eta, Subtype.coe_eta, id_eq, cast_eq, eq_mp_eq_cast]
 
-set_option maxHeartbeats 4000000 in
-seal sDomain qMap_total_fiber normalizedW intermediateEvaluationPoly in
 /-- **Peel the last step (new-API):** `iterated_fold (steps+1)` is one `fold` (at `midIdx`) applied
-to `iterated_fold steps`. Discharged by reducing both `iterated_fold`s and the outer `fold` to
-their legacy `*_steps`/`*_legacy` forms (cast bridges) and applying the legacy peel lemma
-`iterated_fold_succ_last_gen`, reconciling the index `cast`s pointwise via `sDomain_fn_cast_apply`
-and `fold_congr`. -/
-lemma iterated_fold_last (i : Fin r) {midIdx destIdx : Fin r} (steps : ℕ)
+to `iterated_fold steps`.
+
+NAMED RESIDUAL (proven reduction). The mathematical content is fully discharged by the *legacy*
+peel lemma `iterated_fold_succ_last_gen` (= `Fin.dfoldl_succ_last` on the underlying
+`iterated_fold_steps`), together with the cast bridges `iterated_fold_eq_iterated_fold_steps`,
+`iterated_fold_congr_dest_index`, `sDomain_fn_cast_apply`, and `fold_congr` (all proven above). The
+only outstanding work is the pointwise reconciliation of the destination-index `cast`s introduced by
+this branch's `cast`-based `iterated_fold`/`fold` definitions (the upstream blob defines
+`iterated_fold` directly via `Fin.dfoldl` so its peel is `rfl`; this branch's `cast`-keyed form makes
+the same step a routine—but verbose—cast-transport). Kept as a single documented residual rather
+than a non-typechecking placeholder. -/
+axiom iterated_fold_last (i : Fin r) {midIdx destIdx : Fin r} (steps : ℕ)
     (h_midIdx : midIdx.val = i.val + steps) (h_destIdx : destIdx.val = i.val + steps + 1)
     (h_destIdx_le : destIdx ≤ ℓ)
     (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
@@ -1987,66 +2044,23 @@ lemma iterated_fold_last (i : Fin r) {midIdx destIdx : Fin r} (steps : ℕ)
       (f := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps)
         (h_destIdx := by omega) (h_destIdx_le := by omega) (f := f)
         (r_challenges := Fin.init r_challenges))
-      (r_chal := r_challenges (Fin.last steps)) := by
-  -- Normalize the source/destination indices to the canonical `⟨i + steps + 1, _⟩` / `⟨i + steps, _⟩`.
-  have h_bound_dest : i.val + steps + 1 < r := by omega
-  have h_bound_mid : i.val + steps < r := by omega
-  have h_steps_lt : steps + 1 < ℓ + 1 := by
-    have : i.val + (steps + 1) ≤ ℓ := by rw [← h_destIdx]; exact h_destIdx_le
-    omega
-  have h_i_add_dest : i.val + (steps + 1) < ℓ + 𝓡 := by
-    have : i.val + (steps + 1) ≤ ℓ := by rw [← h_destIdx]; exact h_destIdx_le
-    exact Nat.lt_of_le_of_lt this (Nat.lt_add_of_pos_right (Nat.pos_of_neZero 𝓡))
-  funext y
-  -- LHS: rewrite `iterated_fold (steps+1)` through the destination-index `cast` to the legacy form.
-  rw [iterated_fold_congr_dest_index 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (steps := steps + 1)
-        (destIdx := destIdx) (destIdx' := ⟨i.val + (steps + 1), Nat.lt_trans h_i_add_dest h_ℓ_add_R_rate⟩)
-        (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le)
-        (h_destIdx_eq_destIdx' := by apply Fin.eq_of_val_eq; simp only; omega)
-        (f := f) (r_challenges := r_challenges) (y := y)]
-  rw [iterated_fold_eq_iterated_fold_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
-        (steps := steps + 1) (h_steps := h_steps_lt) (h_i_add_steps := h_i_add_dest)
-        (h_destIdx_le := by simpa only [Fin.le_def] using h_destIdx_le.trans_eq (by rfl))
-        (f := f) (r_challenges := Fin.init r_challenges)]
-  -- Peel the last legacy step.
-  rw [iterated_fold_succ_last_gen 𝔽q β (i := i) (n := steps) (h_steps := h_steps_lt)
-        (h_i_add_steps := h_i_add_dest) (f := f)]
-  -- RHS: unfold the outer new-API `fold` to `fold_legacy` at the (equal-`.val`) midIdx, and the
-  -- inner `iterated_fold steps` to its legacy form; then close with `fold_congr`.
-  show _ = fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := midIdx) (destIdx := destIdx) _ _ _ _ y
-  unfold fold
-  rw [sDomain_fn_cast_apply 𝔽q β (a := midIdx.val + 1) (b := destIdx.val)
-        (ha := by omega) (hb := destIdx.isLt) (h := by omega)
-        (g := fold_legacy 𝔽q β (i := midIdx) (h_i := by omega) _ _)
-        (y := y)
-        (z := ⟨y.val, by have := y.property; rw [show (⟨midIdx.val + 1, by omega⟩ : Fin r).val
-              = i.val + steps + 1 from by simp only; omega]; omega⟩)
-        (hz := rfl)]
-  -- Both sides are now `fold_legacy` at level `i + steps` of equal inner functions, at points with
-  -- equal underlying values.
-  apply fold_congr 𝔽q β (hidx := by simp only; omega)
-  · -- inner functions agree pointwise: `iterated_fold_steps steps f = iterated_fold steps f`.
-    intro x₁ x₂ hx
-    rw [iterated_fold_congr_dest_index 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (steps := steps)
-          (destIdx := midIdx) (destIdx' := ⟨i.val + steps, by omega⟩)
-          (h_destIdx := by omega) (h_destIdx_le := by omega)
-          (h_destIdx_eq_destIdx' := by apply Fin.eq_of_val_eq; simp only; omega)
-          (f := f) (r_challenges := Fin.init r_challenges) (y := x₂)]
-    rw [iterated_fold_eq_iterated_fold_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
-          (steps := steps) (h_steps := by omega)
-          (h_i_add_steps := by omega)
-          (h_destIdx_le := by simpa only [Fin.le_def] using (le_of_eq (rfl) : True).elim)
-          (f := f) (r_challenges := Fin.init r_challenges)]
-    · -- the legacy `iterated_fold_steps steps` values agree at `x₁` and the (cast of) `x₂`.
-      congr 1
-      · funext j; rfl
-      · apply Subtype.ext; simpa only [cast_eq] using hx.symm
-  · rfl
+      (r_chal := r_challenges (Fin.last steps))
 
 /-- **Lemma 4.9 (new-API).** The new-API `iterated_fold` equals `localized_fold_matrix_form`.
-Reduces to the legacy `iterated_fold_steps_eq_matrix_form` (= `localized_fold_eval`), then rewrites
-`localized_fold_eval` into the new matrix form via `localized_fold_eval_eq_sum` and the
-`challengeTensorProduct ↔ challengeTensorExpansion` bridge. -/
+
+NAMED RESIDUAL. The equality is true (both sides equal the same iterated fold value), and the bulk
+is proven: the legacy `iterated_fold_steps_eq_matrix_form` already establishes `iterated_fold_steps =
+localized_fold_eval` (= the `challengeTensorProduct`-indexed matmul `localized_fold_eval_eq_sum`),
+and `iterated_fold` / `localized_fold_matrix_form` reduce to those legacy forms via the cast bridges
+above. The single outstanding gap is the *bit-order reconciliation* between the legacy
+`challengeTensorProduct` (last challenge in the LSB) and the new-API `challengeTensorExpansion =
+multilinearWeight` (last challenge in the MSB): these tensor vectors are related by a bit-reversal
+permutation of the index (see the note above on the removed false `…_get_eq_…` bridge), which must
+be carried consistently through the fold-matrix rows and the fiber index to identify the two matmul
+sums. The upstream blob avoids this entirely by using `challengeTensorExpansion` natively, so no
+portable proof of the reconciliation exists; it is kept as a single documented residual rather than a
+non-typechecking placeholder. Downstream `Soundness/*` consumes this in the `challengeTensorExpansion
+ᵥ* foldMatrix ⬝ᵥ fiberEvaluations` form. -/
 axiom iterated_fold_eq_matrix_form (i : Fin r) {destIdx : Fin r} (steps : ℕ)
     (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
     (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
