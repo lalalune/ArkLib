@@ -575,6 +575,28 @@ private lemma iteratedSumcheckOracleVerifier_verify_collapse (i : Fin ℓ')
   · simp only [hc, if_false, reduceIte]
     rw [map_optionT_failure', simulateQ_optionT_failure']
 
+/-- **Extracted-witness ground-truth telescoping (issue #29).** For the iterated-round RBR extractor
+(`extractOut`), whose extracted last witness has `H = projectToMidSumcheckPoly … i.castSucc
+challenges`, the ground-truth round univariate `h_star = getSumcheckRoundPoly i (extractedH)`
+evaluated at the verifier challenge `r'` equals the next-round Boolean-cube sum of the *advanced*
+projected polynomial. This is the load-bearing identity that turns the localized post-challenge KState
+check `h_i(r') = h_star(r')` into the next-round sumcheck consistency, and is a thin wrapper around
+`getSumcheckRoundPoly_eval_eq_cube_succ` specialized to the extractor's `t := witOut.t'` /
+`m := multpoly ctx`. -/
+private theorem iteratedSumcheck_hStar_extracted_eval_eq_cube_succ (i : Fin ℓ')
+    (t' : MultilinearPoly L ℓ')
+    (ctx : RingSwitchingBaseContext κ L K ℓ P) (challenges : Fin i.castSucc → L) (r' : L) :
+    (getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i)
+        (h := projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := t')
+          (m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly (ctx := ctx))
+          (i := i.castSucc) (challenges := challenges))).val.eval r'
+      = ∑ z ∈ (boolDomain L (ℓ' - ↑i.succ)).cube,
+          (projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := t')
+            (m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly (ctx := ctx))
+            (i := i.succ) (challenges := Fin.cons r' challenges)).val.eval z :=
+  getSumcheckRoundPoly_eval_eq_cube_succ κ L K P ℓ ℓ' h_l aOStmtIn i t'
+    ((RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly (ctx := ctx)) challenges r'
+
 /-- This follows the KState of `foldKStateProp` -/
 def iteratedSumcheckKStateProp (i : Fin ℓ') (m : Fin (2 + 1))
     (tr : Transcript m (pSpecSumcheckRound L))
