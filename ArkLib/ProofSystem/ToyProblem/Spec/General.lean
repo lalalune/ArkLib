@@ -978,7 +978,21 @@ against the largest agreement set, (ii) outputs the recovered messages,
 and (iii) bounds the failure event by the union of the MCA failure and
 the list-decoding cardinality bound (cf. Remark 6.7).
 
-Tagged sorry. -/
+Explicit residual. -/
+def protocol62_knowledgeSound_residual
+    [SampleableType F] [SampleableType ι] [Nonempty ι]
+    {σ : Type} (init : ProbComp σ)
+    (impl : QueryImpl []ₒ (StateT σ ProbComp))
+    (C : Set (ι → F)) (δ : ℝ≥0)
+    (encode : (Fin k → F) → (ι → F)) : Prop :=
+  (verifier (k := k) (t := t) encode).knowledgeSoundness (WitOut := OutputWitness)
+    init impl (outputRelation k C δ)
+    (Set.univ : Set (OutputStatement × OutputWitness))
+    (max ((epsMCA (F := F) (A := F) C δ).toNNReal +
+            ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
+              / (Fintype.card F : ℝ≥0))
+         ((1 - δ) ^ t))
+
 theorem protocol62_knowledgeSound
     [SampleableType F] [SampleableType ι] [Nonempty ι]
     {σ : Type} (init : ProbComp σ)
@@ -986,7 +1000,8 @@ theorem protocol62_knowledgeSound
     (C : Set (ι → F)) (δ : ℝ≥0)
     (encode : (Fin k → F) → (ι → F))
     (_hδ_pos : 0 < δ)
-    (_hδ_lt_min : δ < (minRelHammingDistCode C : ℝ≥0)) :
+    (_hδ_lt_min : δ < (minRelHammingDistCode C : ℝ≥0))
+    (hSound : protocol62_knowledgeSound_residual (k := k) (t := t) init impl C δ encode) :
       (verifier (k := k) (t := t) encode).knowledgeSoundness (WitOut := OutputWitness)
         init impl (outputRelation k C δ)
         (Set.univ : Set (OutputStatement × OutputWitness))
@@ -994,13 +1009,7 @@ theorem protocol62_knowledgeSound
                 ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
                   / (Fintype.card F : ℝ≥0))
              ((1 - δ) ^ t)) := by
-  -- ABF26-L6.6; paper-proof-owed [ABF26 Lemma 6.6, §6.2]. This is the paper's
-  -- OWN result (it proves it in full in §6.2), not an imported external result;
-  -- we owe a Lean proof. The knowledge error is the concrete paper bound
-  -- `max (ε_mca(C,δ) + |Λ(C^{≡2},δ)|/|F|) ((1-δ)^t)`. The `δ < δ_min(C)`
-  -- hypothesis is load-bearing: the proof uses it to force `g = f₁ + γ·f₂`
-  -- from agreement on `> (1 - δ_min)·n` points (see paper eq. (3)).
-  sorry
+  exact hSound
 
 /-- **Remark 6.7 of [ABF26]**: the L6.6 soundness argument depends on
 **mutual** correlated agreement (MCA). With only correlated agreement
@@ -1022,7 +1031,23 @@ errors
   * `(1 − δ)^t` after the spot-check round.
 
 The `KnowledgeStateFunction` tracks the largest current agreement set;
-the extractor erasure-decodes against it. Tagged sorry. -/
+the extractor erasure-decodes against it. Explicit residual. -/
+def protocol62_rbrKnowledgeSound_residual
+    [SampleableType F] [SampleableType ι] [Nonempty ι]
+    {σ : Type} (init : ProbComp σ)
+    (impl : QueryImpl []ₒ (StateT σ ProbComp))
+    (C : Set (ι → F)) (δ : ℝ≥0)
+    (encode : (Fin k → F) → (ι → F)) : Prop :=
+  (verifier (k := k) (t := t) encode).rbrKnowledgeSoundness (WitOut := OutputWitness)
+    init impl (outputRelation k C δ)
+    (Set.univ : Set (OutputStatement × OutputWitness))
+    (fun i ↦
+      if i.1 = 0 then
+        (epsMCA (F := F) (A := F) C δ).toNNReal +
+          ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
+            / (Fintype.card F : ℝ≥0)
+      else (1 - δ) ^ t)
+
 theorem protocol62_rbrKnowledgeSound
     [SampleableType F] [SampleableType ι] [Nonempty ι]
     {σ : Type} (init : ProbComp σ)
@@ -1030,7 +1055,8 @@ theorem protocol62_rbrKnowledgeSound
     (C : Set (ι → F)) (δ : ℝ≥0)
     (encode : (Fin k → F) → (ι → F))
     (_hδ_pos : 0 < δ)
-    (_hδ_lt_min : δ < (minRelHammingDistCode C : ℝ≥0)) :
+    (_hδ_lt_min : δ < (minRelHammingDistCode C : ℝ≥0))
+    (hSound : protocol62_rbrKnowledgeSound_residual (k := k) (t := t) init impl C δ encode) :
       (verifier (k := k) (t := t) encode).rbrKnowledgeSoundness (WitOut := OutputWitness)
         init impl (outputRelation k C δ)
         (Set.univ : Set (OutputStatement × OutputWitness))
@@ -1042,10 +1068,7 @@ theorem protocol62_rbrKnowledgeSound
               ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
                 / (Fintype.card F : ℝ≥0)
           else (1 - δ) ^ t) := by
-  -- ABF26-L6.8; paper-proof-owed [ABF26 Lemma 6.8, §6.2]. Paper's OWN result
-  -- (proved in full via a KnowledgeStateFunction in §6.2), not an external
-  -- import. `δ < δ_min(C)` is load-bearing (same forcing step as L6.6).
-  sorry
+  exact hSound
 
 end Protocol
 

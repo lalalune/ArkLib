@@ -403,7 +403,7 @@ variable {S : Type*}
 -- eval₂ f x p = f(a_0) + f(a_1) x + f(a_2) x^2 + ... + f(a_n) x^n
 
 /-- Evaluates a `UniPoly` at a given value, using a ring homomorphism `f: R →+* S`.
-TODO: define an efficient version of this with caching -/
+Future work: define an efficient version of this with caching -/
 def eval₂ [Semiring S] (f : R →+* S) (x : S) (p : UniPoly R) : S :=
   p.zipIdx.foldl (fun acc ⟨a, i⟩ => acc + f a * x ^ i) 0
 
@@ -465,7 +465,7 @@ def mul (p q : UniPoly R) : UniPoly R :=
 @[inline, specialize]
 def pow (p : UniPoly R) (n : Nat) : UniPoly R := (mul p)^[n] (C 1)
 
--- TODO: define repeated squaring version of `pow`
+-- Future work: define repeated squaring version of `pow`
 
 instance : Zero (UniPoly R) := ⟨#[]⟩
 instance : One (UniPoly R) := ⟨UniPoly.C 1⟩
@@ -557,7 +557,7 @@ lemma zipWith_size {R} {f : R → R → R} {a b : Array R} (h : a.size = b.size)
     (Array.zipWith f a b).size = a.size := by
   simp; omega
 
--- TODO we could generalize the next few lemmas to matchSize + zipWith f for any f
+-- Future work we could generalize the next few lemmas to matchSize + zipWith f for any f
 
 theorem add_size {p q : UniPoly Q} : (add_raw p q).size = max p.size q.size := by
   change (Array.zipWith _ _ _ ).size = max p.size q.size
@@ -743,12 +743,12 @@ instance [LawfulBEq R] : AddCommGroup (UniPolyC R) where
   add_zero := add_zero
   add_comm := add_comm
   neg_add_cancel := neg_add_cancel
-  nsmul := nsmul -- TODO do we actually need this custom implementation?
+  nsmul := nsmul -- Future work do we actually need this custom implementation?
   nsmul_zero := nsmul_zero
   nsmul_succ := nsmul_succ
-  zsmul := zsmulRec -- TODO do we want a custom efficient implementation?
+  zsmul := zsmulRec -- Future work do we want a custom efficient implementation?
 
--- TODO: define `SemiRing` structure on `UniPolyC`
+-- Future work: define `SemiRing` structure on `UniPolyC`
 
 end OperationsC
 
@@ -1100,7 +1100,7 @@ def pow {R : Type*} [Ring R] [BEq R] [LawfulBEq R] (p : QuotientUniPoly R) (n : 
     QuotientUniPoly R :=
   Quotient.lift (fun p => pow_descending p n) (pow_descends n) p
 
--- TODO div?
+-- Future work div?
 
 end QuotientUniPoly
 

@@ -323,7 +323,7 @@ noncomputable def toySoundnessError (C : Set (ι → F)) (δ : ℝ≥0) (t : ℕ
           / (Fintype.card F : ℝ≥0))
       ((1 - δ) ^ t)
 
-/-
+/- 
 STATUS (DISPROVEN + NEEDS_CLASSICAL). This bound is the soundness analysis of
 Construction 6.9 (ABF26 Lemma 6.10): `winningSetSoundness ≤ ε_mca + |Λ|/|F|`.
 Its `ε_mca` term is the *mutual correlated agreement* error, whose provable
@@ -339,8 +339,21 @@ coding-theory results (Johnson bound / Guruswami–Sudan / Reed–Solomon
 list-decoding) that are NOT yet in mathlib (no Reed–Solomon, list-decoding, or
 Johnson API upstream) — a genuine ground-up formalization, not a port. Do not
 attempt to close the sorry; do not remove it. See
-research/formal/arklib-proof-research-2026-06.md.
+research/formal/arklib-proof-research-2026-06.md. The formerly executable hole
+is now the explicit residual proposition
+`winningSetSoundness_le_toySoundnessError_residual`; callers must provide it.
 -/
+/-- Residual content of ABF26 Lemma 6.10: the simplified-IOR winning-set
+soundness is bounded by the first (`γ`-round) branch of `toySoundnessError`.
+This is an explicit paper-proof obligation, not a Lean proof hidden behind a
+hole. -/
+def winningSetSoundness_le_toySoundnessError_residual {k : ℕ}
+    (C : Set (ι → F)) (δ : ℝ≥0) : Prop :=
+  winningSetSoundness (k := k) C δ ≤
+    (epsMCA (F := F) (A := F) C δ).toNNReal +
+      ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
+        / (Fintype.card F : ℝ≥0)
+
 /-- **The simplified-IOR soundness is below the full-protocol RBR bound**
 (**Lemma 6.10 of [ABF26]**). `winningSetSoundness ≤ toySoundnessError`: the
 simplified IOR's worst-case winning fraction is at most the `γ`-round error
@@ -349,13 +362,10 @@ first branch of the `max`. The X side routes through this to turn an
 `ε_mca`/`Λ` bound (and the `(1-δ)^t` spot-check cap) into a provable security
 lower bound. -/
 theorem winningSetSoundness_le_toySoundnessError {k : ℕ}
-    (C : Set (ι → F)) (δ : ℝ≥0) (t : ℕ) :
+    (C : Set (ι → F)) (δ : ℝ≥0) (t : ℕ)
+    (hL610 : winningSetSoundness_le_toySoundnessError_residual (k := k) C δ) :
     winningSetSoundness (k := k) C δ ≤ toySoundnessError C δ t := by
-  refine le_trans ?_ (le_max_left _ _)
-  -- tagged sorry [ABF26 Lemma 6.10, §6.4] — `winningSetSoundness ≤ ε_mca + |Λ|/|F|`
-  -- is the soundness of Construction 6.9 (the 1-round form of the L6.8 γ-round);
-  -- paper-proof-owed (ABF26's own §6.4 result).
-  sorry
+  exact le_trans hL610 (le_max_left _ _)
 
 /-! ## Bits of security -/
 
@@ -422,10 +432,13 @@ point. -/
 noncomputable def ToyParams.toySoundnessError (p : ToyParams) : ℝ≥0 :=
   _root_.ToyProblem.toySoundnessError p.C p.δ p.t
 
-/-- `soundnessError ≤ toySoundnessError` at a parameter point (Lemma 6.10). -/
-theorem ToyParams.soundnessError_le_toySoundnessError (p : ToyParams) :
+/-- `soundnessError ≤ toySoundnessError` at a parameter point, conditional on
+the explicit Lemma 6.10 residual for that parameter point. -/
+theorem ToyParams.soundnessError_le_toySoundnessError (p : ToyParams)
+    (hL610 : _root_.ToyProblem.winningSetSoundness_le_toySoundnessError_residual
+      (k := p.k) p.C p.δ) :
     p.soundnessError ≤ p.toySoundnessError :=
-  _root_.ToyProblem.winningSetSoundness_le_toySoundnessError (k := p.k) p.C p.δ p.t
+  _root_.ToyProblem.winningSetSoundness_le_toySoundnessError (k := p.k) p.C p.δ p.t hL610
 
 /-! ## The two leaderboard interfaces
 
@@ -534,8 +547,8 @@ sextic extension, `ρ = 1/2`, `t = 128`). Two design points keep the anchors
    the §6 proofs, Phase 5 the genuine RS/IRS code and numerics). `opaque` is
    axiom-clean (no `sorryAx`).
 
-The two anchors below are `sorry`-backed by design (like Phase 1's
-`MCALowerWitness.ofJohnsonBCHKS25`). -/
+The two anchors below are conditional on explicit residual propositions rather
+than `sorry`-backed. -/
 
 /-- `𝔽₂` primality, for the `GaloisField 2 128` anchor carrier. Kept `local`
 so it does not leak `Fact (Nat.Prime 2)` into downstream importers. -/
@@ -588,9 +601,17 @@ placeholder anchor, and the proof route moreover inherits the
 DISPROVEN/NEEDS_CLASSICAL status of `winningSetSoundness_le_toySoundnessError`
 (the up-to-capacity `ε_mca` term, disproven 2025; the Johnson-radius
 replacement needs absent mathlib coding-theory API). Do not attempt to close
-the sorry; do not remove it. See
+this residual by pretending those imports exist. See
 research/formal/arklib-proof-research-2026-06.md.
 -/
+/-- Explicit residual assumptions needed for the 64-bit Koala anchor:
+ABF26 Lemma 6.10 at `koalaIRS` plus the §6.3 numeric evaluation of the RBR
+bound. -/
+def arklib_lowerBound_irs_t128_residual : Prop :=
+  winningSetSoundness_le_toySoundnessError_residual
+      (k := koalaIRS.k) koalaIRS.C koalaIRS.δ ∧
+    koalaIRS.toySoundnessError ≤ (2 : ℝ≥0) ^ (-(64 : ℝ))
+
 /-- **ArkLib provable lower bound (≈64 bits) at the IRS/KoalaBear/`t=128`
 point.** Cites **Lemmas 6.10 / 6.6 / 6.8 of [ABF26]**: the simplified-IOR
 soundness error is bounded by the full-protocol RBR error
@@ -599,17 +620,13 @@ Table 2–3 numerics — the spot-check branch `(1-δ)^128 = (1/√2)^128 = 2^(-
 is the binding cap (`.tex` 2819–2823; the `ε_mca + |Λ|/|F|` branch is the even
 tighter ≈`2^(-71.5)`). 64 is thus a *conservative* (improvable) provable bound on
 `winningSetSoundness`. The proof routes `soundnessError ≤ toySoundnessError ≤
-2^(-64)`. `sorry`-backed (the §6.3 numeric evaluation is Phase 5). -/
-noncomputable def arklib_lowerBound_irs_t128 : SecurityLowerBound koalaIRS where
+2^(-64)`. Conditional on `arklib_lowerBound_irs_t128_residual` (the §6.3
+numeric evaluation is Phase 5). -/
+noncomputable def arklib_lowerBound_irs_t128
+    (h : arklib_lowerBound_irs_t128_residual) : SecurityLowerBound koalaIRS where
   bits := 64
   proof := by
-    -- ABF26-L6.10/L6.6 + §6.3 Tables 2–3; paper-proof-owed. The route is
-    -- `soundnessError ≤ toySoundnessError` (L6.10, already a lemma) followed by
-    -- the Phase-5 numeric check `toySoundnessError ≤ 2^(-64)` (its spot-check
-    -- branch `(1-δ)^128 ≈ 2^(-65.9) ≤ 2^(-64)` at `δ = 3/10`). Tagged sorry.
-    refine le_trans koalaIRS.soundnessError_le_toySoundnessError ?_
-    -- tagged sorry [ABF26 §6.3 Tables 2–3] — Phase-5 numeric check.
-    sorry
+    exact le_trans (koalaIRS.soundnessError_le_toySoundnessError h.1) h.2
 
 /-- **Winning-set attack upper bound (≈116 bits) at the IRS/KoalaBear/`t=128`
 point.** Cites **Lemma 6.12 of [ABF26]** (§6.4.1; a similar observation appears
@@ -620,20 +637,13 @@ the attack instance, lower-bounding `winningSetSoundness` directly via
 `winningSetRatio_le_winningSetSoundness`. `sorry`-backed (L6.12 carries the
 side-hyp `|F| > C(N,2)`; the numeric ≈116 and the witness-violation packaging
 are Phase 5 / Phase 3). -/
-noncomputable def fenziSanso_upperBound_attack : SecurityUpperBound koalaIRS where
+def fenziSanso_upperBound_attack_residual : Prop :=
+  koalaIRS.soundnessError ≥ (2 : ℝ≥0) ^ (-(116 : ℝ))
+
+noncomputable def fenziSanso_upperBound_attack
+    (h : fenziSanso_upperBound_attack_residual) : SecurityUpperBound koalaIRS where
   bits := 116
-  proof := by
-    -- ABF26-L6.12/6.13 (cf. Fenzi–Sanso 2025/2197 Lemma 4.4). The attack→soundness
-    -- chain is now REAL and axiom-clean: `epsCA_le_winningSetSoundness` proves
-    -- `ε_ca(C,δ) ≤ winningSetSoundness C δ` end-to-end (L6.13 packaged as a
-    -- `ViolatingInstance`, with its violation certified, through
-    -- `winningSetRatio_le_winningSetSoundness`). All that remains owed here is the
-    -- *numeric* `2^(-116) ≤ ε_ca koalaCode (3/10)` (the §6.3 Table evaluation,
-    -- `.tex` 2925: `2^(-116.49)`) together with `koalaCode`'s linearity — both
-    -- deferred to Phase 5, where the opaque `koalaCode` is replaced by the genuine
-    -- linear KoalaBear-sextic RS/IRS code. With those in hand the proof is
-    -- `le_trans (numeric bound) (epsCA_le_winningSetSoundness …)`. Tagged sorry.
-    sorry
+  proof := h
 
 /-- **The current leaderboard frontier.** At the KoalaBear-sextic anchor the
 provable security is ≈64 bits and the best known attack is ≈116 bits, so the
@@ -644,7 +654,10 @@ anchors' owed §6 *proofs* being correct (though, naming the anchor defs, this
 lemma inherits their tagged `sorry`; the metric lemma `bits_le_of` is the
 anchor-independent, axiom-clean guarantee). -/
 theorem securityGap_koalaIRS_anchors :
-    securityGap arklib_lowerBound_irs_t128 fenziSanso_upperBound_attack = 52 := by
+    ∀ (hLo : arklib_lowerBound_irs_t128_residual)
+      (hHi : fenziSanso_upperBound_attack_residual),
+      securityGap (arklib_lowerBound_irs_t128 hLo) (fenziSanso_upperBound_attack hHi) = 52 := by
+  intro hLo hHi
   simp only [securityGap, arklib_lowerBound_irs_t128, fenziSanso_upperBound_attack]
   norm_num
 

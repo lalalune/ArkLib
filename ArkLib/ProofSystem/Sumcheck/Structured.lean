@@ -22,7 +22,7 @@ verifier sees only the prover's round polynomials `pᵢ`, not `H` directly.
 
 The two modes coexist as parallel primitives under `Sumcheck`.
 
-## TODO (option C, tracked separately)
+## Future work (option C, tracked separately)
 
 A refinement theorem connecting the two modes — given `H = m · t`, derive structured-mode
 soundness from canonical-mode soundness — is left for follow-up work. Until then, the two

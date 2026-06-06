@@ -1086,8 +1086,6 @@ theorem liftContext_knowledgeSoundness [Inhabited InnerStmtOut] [Inhabited Inner
     (h : V.knowledgeSoundness init impl innerRelIn innerRelOut knowledgeError) :
       (V.liftContext stmtLens).knowledgeSoundness init impl outerRelIn outerRelOut
         knowledgeError := by
-  sorry
-/-
   unfold knowledgeSoundness at h ⊢
   obtain ⟨E, hE⟩ := h
   refine ⟨E.liftContext ⟨stmtLens, witLens⟩, ?_⟩
@@ -1567,7 +1565,6 @@ theorem liftContext_knowledgeSoundness [Inhabited InnerStmtOut] [Inhabited Inner
           __do_lift] ≤ ↑knowledgeError
   rw [hOuterExec]
   exact le_trans hCompare hInner
--/
 
 /-
   Lifting the reduction preserves round-by-round soundness, assuming the lens satisfies its

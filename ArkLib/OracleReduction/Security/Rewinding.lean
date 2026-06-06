@@ -121,7 +121,7 @@ def RewindingNARG (oSpec : OracleSpec ι) (Statement Witness Message : Type) :=
   (proveQueryLog : QueryLog oSpec) → -- accepting transcript/query logs
   (verifyQueryLog : QueryLog oSpec) →
   (prover : Prover.NARG oSpec Statement Message) →
-  OracleComp oSpec Witness -- TODO: should we make this OptionT to model extractor abort
+  OracleComp oSpec Witness -- Future work: should we make this OptionT to model extractor abort
 
 /-- Uniform expected-cost bound for a rewinding extractor over its explicit ArkLib input
 interface.
@@ -234,7 +234,7 @@ def rewindingKnowledgeSoundness
         -- `ℰ` runs in expected time `et_NARG(λ, t, n, δ_𝒫̃(λ, n), τ_𝒫̃(λ, n))`
         extractor.expectedCostBound prover costModel val
           (timeBound prover queryBound failureError)
-          -- TODO: double check this `extractor.expectedCostBound` separate bound, should we move it to param
+          -- Future work: double check this `extractor.expectedCostBound` separate bound, should we move it to param
 
 end NonInteractive
 

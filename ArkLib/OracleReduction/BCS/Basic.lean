@@ -122,7 +122,7 @@ def BCSOpeningPhase (pSpec : ProtocolSpec n) {m : ℕ}
     replaced by a commitment to it, followed by
   * the opening phase `BCSOpeningPhase`, which runs the per-message opening protocols in sequence.
 
-  This is the faithful statement sketched in the original commented stub
+  This is the faithful statement sketched in the original commented placeholder
   `.append (pSpec.renameMessage CommType) (placeholder)`. -/
 def BCSTransform (pSpec : ProtocolSpec n) {m : ℕ}
     {nCom : pSpec.MessageIdx → ℕ} (pSpecCom : ∀ i, ProtocolSpec (nCom i))

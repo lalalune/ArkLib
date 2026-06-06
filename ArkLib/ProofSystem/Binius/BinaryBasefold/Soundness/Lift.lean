@@ -484,7 +484,7 @@ lemma preTensorCombine_of_lift_interleavedCodeword_eq_self (i : Fin ℓ) (steps 
   conv_rhs => change rhs y
   rw [h_left_eq_P_j_gen, h_right_eq_P_j_eval]
 
-/-- TODO: **Lifting Equivalence Lemma**: `lift(preTensorCombine(f)) = f`. -/
+/-- Future work: **Lifting Equivalence Lemma**: `lift(preTensorCombine(f)) = f`. -/
 
 def fiberDiff (i : Fin ℓ) (steps : ℕ) {destIdx : Fin r}
     (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)

@@ -208,7 +208,22 @@ spot-check term because C6.9 has no spot-check round.
 
 The proof is the "1-round version" of L6.8's KnowledgeStateFunction
 construction; same extractor strategy (erasure-decode against the
-agreement set). Tagged sorry. -/
+agreement set). Explicit residual. -/
+def simplifiedIOR_knowledgeSound_residual
+    [SampleableType F] [Nonempty ι]
+    {σ : Type} (init : ProbComp σ)
+    (impl : QueryImpl []ₒ (StateT σ ProbComp))
+    (C : Set (ι → F)) (δ : ℝ≥0)
+    (encode : (Fin k → F) → (ι → F)) : Prop :=
+  (verifier (ι := ι) (F := F) (k := k)).knowledgeSoundness
+    (WitOut := OutputWitness (F := F) k)
+    init impl
+    (ToyProblem.Spec.outputRelation (ι := ι) (F := F) k C δ)
+    (outputRelationFor (ι := ι) (F := F) k encode δ)
+    ((epsMCA (F := F) (A := F) C δ).toNNReal +
+      ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
+        / (Fintype.card F : ℝ≥0))
+
 theorem simplifiedIOR_knowledgeSound
     [SampleableType F] [Nonempty ι]
     {σ : Type} (init : ProbComp σ)
@@ -216,7 +231,8 @@ theorem simplifiedIOR_knowledgeSound
     (C : Set (ι → F)) (δ : ℝ≥0)
     (encode : (Fin k → F) → (ι → F))
     (_hδ_pos : 0 < δ)
-    (_hδ_lt_min : δ < (minRelHammingDistCode C : ℝ≥0)) :
+    (_hδ_lt_min : δ < (minRelHammingDistCode C : ℝ≥0))
+    (hSound : simplifiedIOR_knowledgeSound_residual (k := k) init impl C δ encode) :
       (verifier (ι := ι) (F := F) (k := k)).knowledgeSoundness
         (WitOut := OutputWitness (F := F) k)
         init impl
@@ -225,11 +241,7 @@ theorem simplifiedIOR_knowledgeSound
         ((epsMCA (F := F) (A := F) C δ).toNNReal +
           ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
             / (Fintype.card F : ℝ≥0)) := by
-  -- ABF26-L6.10; paper-proof-owed [ABF26 Lemma 6.10, §6.4]. Paper's OWN result
-  -- (the "1-round version" of L6.8), not an external import. Knowledge error
-  -- `ε_mca(C,δ) + |Λ(C^{≡2},δ)|/|F|` (no `(1-δ)^t` term: C6.9 has no spot-check
-  -- round). `δ < δ_min(C)` load-bearing as in L6.8.
-  sorry
+  exact hSound
 
 end Protocol
 

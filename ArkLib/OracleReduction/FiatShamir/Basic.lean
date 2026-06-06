@@ -226,7 +226,7 @@ def fiatShamir_completeness_unroll
       Reduction.completenessFromRun init impl relIn relOut
         (R.fiatShamirHonestExecution) completenessError
 
--- TODO: discharge `fiatShamir_completeness_unroll`.
+-- Future work: discharge `fiatShamir_completeness_unroll`.
 -- `Reduction.run_of_prover_first` is now available, and `simulateQ_add_run_liftM_left` in
 -- `Execution.lean` collapses the unused outer challenge oracle on lifted `OptionT` runs. The
 -- remaining gap is the final file-local normalization between the elaborated run of
@@ -237,7 +237,7 @@ end Completeness
 
 end Reduction
 
--- TODO: state-restoration (knowledge) soundness implies (knowledge) soundness after Fiat-Shamir
+-- Future work: state-restoration (knowledge) soundness implies (knowledge) soundness after Fiat-Shamir
 
 end
 

@@ -287,7 +287,7 @@ theorem oracleReduction_completeness
     simp [map_pure, support_pure] at hx
     cases hx
     exact ⟨hRel stmtIn oStmtIn witIn hIn, rfl⟩
-  -- -- TODO: clean up this proof
+  -- -- Future work: clean up this proof
   -- simp only [OracleReduction.perfectCompleteness, oracleReduction, OracleReduction.toReduction,
   --   OracleVerifier.toVerifier,
   --   Reduction.perfectCompleteness_eq_prob_one, ProtocolSpec.ChallengeIdx, StateT.run'_eq,

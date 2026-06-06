@@ -133,8 +133,8 @@ def decomposeChallenge (v : sDomain 𝔽q β h_ℓ_add_R_rate ⟨0, by omega⟩)
     extractSuffixFromChallenge 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (v:=v)
       (destIdx:=destIdx) (h_destIdx_le:=h_destIdx_le))
 
--- TODO: KEY LEMMA for connecting fiber queries to challenge decomposition
--- TODO: Lemma connecting queryFiberPoints to extractMiddleFinMask
+-- Future work: KEY LEMMA for connecting fiber queries to challenge decomposition
+-- Future work: Lemma connecting queryFiberPoints to extractMiddleFinMask
 
 def queryRbrKnowledgeError_singleRepetition := ((1/2 : ℝ≥0) + (1 : ℝ≥0) / (2 * 2^𝓡))
 

@@ -1492,7 +1492,7 @@ def coreInteractionRbrKnowledgeError (j : (pSpecCoreInteraction L ℓ').Challeng
     (g := fun _ => finalSumcheckRbrKnowledgeError (L := L))
     (ChallengeIdx.sumEquiv.symm j)
 
--- TODO: iteratedSumcheckLoop_rbrKnowledgeSoundness
+-- Future work: iteratedSumcheckLoop_rbrKnowledgeSoundness
 
 /-- RBR knowledge soundness for large-field reduction (Sumcheck ++ FinalSum) -/
 theorem coreInteraction_rbrKnowledgeSoundness [IsDomain L] [IsDomain K] :

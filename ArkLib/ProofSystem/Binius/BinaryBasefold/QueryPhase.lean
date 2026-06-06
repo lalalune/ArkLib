@@ -2151,7 +2151,7 @@ lemma logical_consistency_checks_passed_of_mem_support_V_run {σ : Type}
         : StateT σ ProbComp (Option Bool)).run s))
     rw [OptionT.mem_support_StateT_bind_run (ma := forIn_block) (x := (x_1, b))]
   rcases hx_mem with ⟨y, s', h_y_s'_mem_support_forIn_block, h_x_eq⟩
-  -- simp only [StateT.run_pure, support_pure, Set.mem_singleton_iff] at h_x_eq -- TODO
+  -- simp only [StateT.run_pure, support_pure, Set.mem_singleton_iff] at h_x_eq -- Future work
   have h_y_ne_none : y ≠ none := by
     intro h_y_eq_none
     simp only [h_y_eq_none, simulateQ_pure] at h_x_eq

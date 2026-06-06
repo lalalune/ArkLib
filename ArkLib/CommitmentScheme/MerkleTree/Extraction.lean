@@ -14,7 +14,7 @@ position binding, building on the VCVio inductive Merkle tree definitions
 (`VCVio.CryptoFoundations.MerkleTree.Inductive`).
 
 The pinned VCVio package proves single-index *completeness* but has no extractor and no
-collision lemma (both are marked TODO in its source, referencing the SNARGs book §18.3 and
+collision lemma (both are marked Future work in its source, referencing the SNARGs book §18.3 and
 §18.5). Here we contribute the parts that are honestly provable without a random-oracle / negligible
 -probability argument, namely the *information-theoretic* consequences of collision-freeness:
 

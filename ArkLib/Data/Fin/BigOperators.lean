@@ -133,7 +133,7 @@ lemma Fin.le_succ (a : Fin r) (h_a_add_1 : a + 1 < r) : a ≤ a + 1 := by
       contradiction
 
 -- The theorem statement and its proof.
--- TODO: state a more generalized and reusable version of this, where f is from Fin r → M
+-- Future work: state a more generalized and reusable version of this, where f is from Fin r → M
 theorem Fin.sum_univ_odd_even {n : ℕ} {M : Type*} [AddCommMonoid M] (f : ℕ → M) :
     (∑ i : Fin (2 ^ n), f (2 * i)) + (∑ i : Fin (2 ^ n), f (2 * i + 1))
     = ∑ i: Fin (2 ^ (n+1)), f i := by

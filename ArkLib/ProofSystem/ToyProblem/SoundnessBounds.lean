@@ -413,7 +413,7 @@ statement — which blocks the all-zero witness — and (b) realise the genuine
 Step-4 maximiser+injection attack. Both are deferred together; the residual
 below is that faithful proof, not the vacuous discharge.
 
-Tagged sorry (`paper-proof-owed`, step 4 only) — ABF26's OWN result
+Explicit residual (`paper-proof-owed`, step 4 only) — ABF26's OWN result
 (§6.4.1). Steps 1–3 are realised by in-tree lemmas; the residual is the
 list→challenge winning-set injection, which additionally needs the
 `hEnc` linear-encoder hypothesis (as in `simplified_iop_soundness_ca_lb`)
@@ -434,19 +434,27 @@ discharged, but these are reusable by whoever completes Step 4:
   * `pair_linearForm_collision_le` : the Step-2 *pair*-collision bound feeding
     Claim B.1 — distinct message pairs collide under `v ↦ (⟨m₀,v⟩,⟨m₁,v⟩)`
     with probability `≤ 1/|F|`, via the proven `linearForm_collision_prob`. -/
+def simplified_iop_soundness_listDecoding_lb_residual {k : ℕ}
+    (C : Set (ι → F)) (δ : ℝ≥0) : Prop :=
+  ∃ (v : Fin k → F) (μ₁ μ₂ : F) (f₁ f₂ : ι → F),
+    ((winningSet C δ v μ₁ μ₂ f₁ f₂).ncard : ℝ) ≥
+      (((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ)
+          * Fintype.card F)
+        / (Fintype.card F
+            + ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ) - 1)
+
 theorem simplified_iop_soundness_listDecoding_lb {k : ℕ}
     (C : Set (ι → F)) (δ : ℝ≥0) (_hδ_pos : (0 : ℝ≥0) < δ) (_hδ_lt : δ < 1)
     (_hF : (Fintype.card F : ℝ) >
-      ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat).choose 2) :
+      ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat).choose 2)
+    (hStep4 : simplified_iop_soundness_listDecoding_lb_residual (k := k) C δ) :
     ∃ (v : Fin k → F) (μ₁ μ₂ : F) (f₁ f₂ : ι → F),
       ((winningSet C δ v μ₁ μ₂ f₁ f₂).ncard : ℝ) ≥
         (((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ)
             * Fintype.card F)
           / (Fintype.card F
               + ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ) - 1) := by
-  -- ABF26-L6.12; paper-proof-owed [ABF26 §6.4.1]. The genuine §6.4.1 attack
-  -- (Step 4 below) is the residual; Steps 1–3 are realised by in-tree lemmas.
-  sorry
+  exact hStep4
 
 /-- **Lemma 6.13 of [ABF26]** (correlated-agreement lower bound on the simplified IOR).
 

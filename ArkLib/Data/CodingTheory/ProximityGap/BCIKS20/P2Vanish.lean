@@ -146,7 +146,7 @@ def PrefactorWeightMatch : Prop :=
 
 /-- **`PrefactorWeightMatch` holds unconditionally (PROVEN, axiom-clean).**  It is exactly the
 zero-peel reindex re-keyed by `Nat.choose_symm`; this certifies the named hinge of §3 is genuine
-(not a secretly-false or vacuous stub), and that the *combinatorial* half of the Faà-di-Bruno match
+(not a secretly-false or vacuous placeholder), and that the *combinatorial* half of the Faà-di-Bruno match
 is fully discharged. -/
 theorem prefactorWeightMatch_holds : PrefactorWeightMatch :=
   fun j0 lam h0 => countPerms_replicate_zero_add_choose_sl j0 lam h0

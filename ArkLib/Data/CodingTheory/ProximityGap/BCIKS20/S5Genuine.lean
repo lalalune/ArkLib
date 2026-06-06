@@ -17,7 +17,7 @@ This file states and proves the **genuine-object** versions of [BCIKS20] (`2020-
 
 The in-tree Claims 5.8/5.8'/5.9 (`ListDecoding/Agreement.lean`, sorried) are phrased about
 `BCIKS20AppendixA.ClaimA2.α` / `ClaimA2.β` / `ClaimA2.γ` — the **vacuous** Hensel objects built
-on the `β = 0` stub (see the honesty notes at `RationalFunctions.β_regular` and
+on the `β = 0` placeholder (see the honesty notes at `RationalFunctions.β_regular` and
 `GammaSubstObstruction.lean`).  That `ClaimA2.γ` is degenerate for `x₀ ≠ 0` (its substitution
 fails `HasSubst`) and carries **no** functional relation to `R`.  As `Agreement.lean`'s own §5 GAP
 ANALYSIS records, "Claim 5.8 (`α' … t = 0`) is neither provable *nor* refutable from the [opaque
@@ -143,7 +143,7 @@ hypothesis on `βHensel … t` (the `(5.14)`-derived bound), the lift-identity b
 Route (paper lines 1672–1681): largeness ⟹ (`Lemma_A_1`, via
 `embedding_βHensel_eq_zero_of_SβLarge`) `embedding (βHensel … t) = 0`; the lift identity `hlift`
 rewrites this as `αGenuine t · (W^{t+1}·ξ^{2t−1}) = 0`; the denominator is nonzero (`den_ne_zero`),
-so `αGenuine t = 0`.  No fabricated largeness, no stub: this is the genuine `α_t = 0`
+so `αGenuine t = 0`.  No fabricated largeness, no placeholder: this is the genuine `α_t = 0`
 (`αGenuine t = coeff t (gammaGenuine …)`).
 
 AXIOM-CLEAN (no `sorryAx`): the lift identity enters only as the explicit hypothesis `hlift`. -/

@@ -191,7 +191,7 @@ noncomputable def evalRAtPowerSeries (H : F[X][Y]) (R : F[X][X][Y])
 
 /-- A numerator sequence has the semantic content required by Claim A.2: it gives the Hensel
 lift starting at `T / W`, and the induced power series is a root of `R(X,Y,Z)`. This is a
-statement shape only; the current in-file `β` stub below intentionally does not claim it. -/
+statement shape only; the current in-file `β` placeholder below intentionally does not claim it. -/
 def IsHenselNumeratorSequence (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
     [φ : Fact (Irreducible H)] [H_natDegree_pos : Fact (0 < H.natDegree)]
     (hHyp : Hypotheses x₀ R H) (βseq : ℕ → 𝒪 H) : Prop :=

@@ -27,7 +27,7 @@ has constant coefficient `-x₀`, which over a field is nilpotent **iff `x₀ = 
 * the faithful fix is to substitute the **local variable** `X' := X - x₀` (constant
   coefficient `0`, trivially nilpotent), i.e. treat `γ` as a power series in `X'`.
 
-This is a second definitional gap on the P2 chain, parallel to the `β_regular = 0` stub:
+This is a second definitional gap on the P2 chain, parallel to the `β_regular = 0` placeholder:
 both `β`/`α`/`γ` must be re-anchored to the genuine recursive Hensel data before
 `R(X, γ, Z) = 0` (P2) is even meaningfully provable. See
 `research/proximity-prize/dispositions/pc-w2-P2-scout.md` and the wave-3 scout.

@@ -169,7 +169,7 @@ theorem isUnit_eval_α₀_derivative_Q₀ {x₀ : F} {R : F[X][X][Y]} (hHyp : Hy
 /-- **The genuine Hensel-lifted root.** `gammaGenuine x₀ R H hHyp : (𝕃 H)⟦X⟧` is the power series
 in the local variable `X = X − x₀` obtained by Hensel-lifting the simple root `α₀` of the
 `X`-specialization `R(x₀, Y, Z)`. This is the genuine object of [BCIKS20] App. A.4, replacing the
-degenerate `ClaimA2.γ` built on the `β = 0` stub. -/
+degenerate `ClaimA2.γ` built on the `β = 0` placeholder. -/
 noncomputable def gammaGenuine (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
     [Fact (Irreducible H)] [Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H) : (𝕃 H)⟦X⟧ :=
   (ProximityPrize.HenselSeriesCoeff.exists_powerSeries_root_seriesCoeff

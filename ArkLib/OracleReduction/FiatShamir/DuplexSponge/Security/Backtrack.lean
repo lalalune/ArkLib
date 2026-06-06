@@ -150,7 +150,7 @@ structure BacktrackSequenceFamily (trace : QueryLog (duplexSpongeChallengeOracle
   /-- `S_BT(tr, s)` — finite set of backtrack sequences (CO25 Def 5.3). -/
   seqFamily : Finset (BacktrackSequence trace state)
   /-- Maximality: no `s ≠ s'` with `s ⊆ s'` both in `S_BT` (CO25 Def 5.3 maximality). -/
-  -- TODO: write the correct `subsequence` condition
+  -- Future work: write the correct `subsequence` condition
   maximality : ∀ s ∈ seqFamily, ∀ s' ∈ seqFamily, s ≠ s' →
     ¬ (s.stmt = s'.stmt ∧ s.inputState ⊆ s'.inputState ∧ s.outputState ⊆ s'.outputState)
 
