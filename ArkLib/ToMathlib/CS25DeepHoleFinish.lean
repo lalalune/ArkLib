@@ -174,7 +174,9 @@ theorem lambda_violation_polyFamily
     intro i j hij
     apply hcinj
     -- `c i = evalOnPoints domain (p i) = evalOnPoints domain (p j) = c j`.
-    rw [← hpeval i, ← hpeval j, hij]
+    calc c i = ReedSolomon.evalOnPoints domain (p i) := (hpeval i).symm
+      _ = ReedSolomon.evalOnPoints domain (p j) := by rw [hij]
+      _ = c j := hpeval j
   · -- δ-closeness transfers via `evalOnPoints domain (p j) = c j` and `c j ∈ closeCodewordsRel`.
     intro j
     have hball : c j ∈ relHammingBall u δ := (hcmem j).2
