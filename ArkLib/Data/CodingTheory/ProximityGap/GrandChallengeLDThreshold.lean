@@ -257,6 +257,8 @@ noncomputable def listLowerWitness_of_Lambda_le
   exact GrandChallenges.ListLowerWitness.ofLe (C := C) (m := m)
     (ε_star := ε_star) (δ := δ) hδ_le hmem.2
 
+#print axioms ProximityGap.listLowerWitness_of_Lambda_le
+
 end JohnsonSide
 
 section CapacitySide
