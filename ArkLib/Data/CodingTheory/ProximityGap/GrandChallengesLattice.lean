@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeCollapse
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLattice
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointLower
 import ArkLib.Data.CodingTheory.ProximityGap.MCASecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumErdosHeilbronn
@@ -1535,6 +1536,63 @@ theorem listPrizeLatticeResolved_of_adjacent_witnesses
   refine ⟨listThresholdExists_of_ListLowerWitness C m epsStar (wlo j), ?_⟩
   exact listThreshold_eq_latticeIndexOf_lowerWitness_of_adjacent
     C m epsStar (wlo j) (whi j) (hδhi j) (hadj j)
+
+/-- Exact values for the canonical `Finset ℕ` list threshold resolve the four-rate faithful
+list-decoding prize predicate in the `Fin (n+1)` lattice representation.
+
+This is pure representation glue: downstream files such as
+`GrandChallengeLDThresholdElias.lean` prove exact values for
+`GrandChallenges.listLatticeThreshold`, while the prize-facing predicate here is stated using
+`listThreshold`. -/
+theorem listPrizeLatticeResolved_of_canonical_listLatticeThreshold_eq
+    (domain : ι ↪ F) (m : ℕ)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1))
+    (hne : ∀ r : Fin 4,
+      (GrandChallenges.listLatticeSet
+        (ReedSolomon.code domain
+          ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        m epsStar).Nonempty)
+    (heq : ∀ r : Fin 4,
+      GrandChallenges.listLatticeThreshold
+        (ReedSolomon.code domain
+          ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        m epsStar (hne r) = (τ r).val) :
+    listPrizeLatticeResolved domain m τ := by
+  classical
+  intro r
+  let C : Set (ι → F) :=
+    ReedSolomon.code domain ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊
+  let t : ℕ := GrandChallenges.listLatticeThreshold C m epsStar (hne r)
+  have ht_mem : t ∈ GrandChallenges.listLatticeSet C m epsStar := by
+    simpa [t] using
+      (GrandChallenges.listLatticeSet C m epsStar).max'_mem (hne r)
+  have ht_range : t < Fintype.card ι + 1 := by
+    rw [GrandChallenges.listLatticeSet, Finset.mem_filter, Finset.mem_range] at ht_mem
+    exact ht_mem.1
+  have ht_bound :
+      (Lambda (C^⋈ (Fin m)) (((t : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) :
+          ENNReal) ≤ (epsStar : ENNReal) * (Fintype.card F : ENNReal) := by
+    rw [GrandChallenges.listLatticeSet, Finset.mem_filter, Finset.mem_range] at ht_mem
+    exact ht_mem.2
+  have hτval : t = (τ r).val := by
+    simpa [C, t] using heq r
+  have hsatτ : listSatisfies C m epsStar (τ r) := by
+    unfold listSatisfies mcaLatticePoint
+    simpa [hτval] using ht_bound
+  let hne' : listThresholdExists C m epsStar := ⟨τ r, hsatτ⟩
+  refine ⟨hne', ?_⟩
+  have hmax : ∀ i : Fin (Fintype.card ι + 1), listSatisfies C m epsStar i → i ≤ τ r := by
+    intro i hi
+    have hi_mem : i.val ∈ GrandChallenges.listLatticeSet C m epsStar := by
+      rw [GrandChallenges.listLatticeSet, Finset.mem_filter, Finset.mem_range]
+      refine ⟨i.isLt, ?_⟩
+      unfold listSatisfies mcaLatticePoint at hi
+      simpa using hi
+    have hi_le_t : i.val ≤ t :=
+      Finset.le_max' (GrandChallenges.listLatticeSet C m epsStar) i.val hi_mem
+    rw [Fin.le_iff_val_le_val]
+    exact le_trans hi_le_t (le_of_eq hτval)
+  exact (listThreshold_unique C m epsStar hne' (τ r) hsatτ hmax).symm
 
 end GrandChallengesLattice
 

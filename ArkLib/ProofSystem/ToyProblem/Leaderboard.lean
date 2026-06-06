@@ -459,6 +459,11 @@ theorem ToyParams.bitsOfSecurity_nonneg (p : ToyParams) (hpos : 0 < p.soundnessE
     0 ≤ bitsOfSecurity p.soundnessError :=
   _root_.ToyProblem.bitsOfSecurity_nonneg hpos p.soundnessError_le_one
 
+/-- A positive bundled soundness error has true bits-of-security in `[0, ∞)`. -/
+theorem ToyParams.bitsOfSecurity_mem_Ici (p : ToyParams) (hpos : 0 < p.soundnessError) :
+    bitsOfSecurity p.soundnessError ∈ Set.Ici 0 :=
+  p.bitsOfSecurity_nonneg hpos
+
 /-- The full-protocol RBR upper-bound vehicle (Lemmas 6.6 / 6.8) at a parameter
 point. -/
 noncomputable def ToyParams.toySoundnessError (p : ToyParams) : ℝ≥0 :=
