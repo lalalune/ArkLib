@@ -207,13 +207,13 @@ theorem correlatedAgreement_affine_curves_strongBeta_of_betaRecFin_lattice_resid
       0 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ').card →
       jointAgreement (C := ReedSolomon.code domain deg) (δ := δ') (W := u))
     (hLattice :
-      BoundaryCardResidual.BoundaryCardLatticeResidual
+      ArkLib.BoundaryCardResidual.BoundaryCardLatticeResidual
         (k := k) (deg := deg) (domain := domain) (δ := δ)) :
     δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
       (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
   correlatedAgreement_affine_curves_johnson_of_betaRecFin
     (k := k) (deg := deg) (domain := domain) (δ := δ) hδ hInput
-    (BoundaryCardResidual.boundaryCardResidual_of_lattice_residual
+    (ArkLib.BoundaryCardResidual.boundaryCardResidual_of_lattice_residual
       (k := k) (deg := deg) (domain := domain) (δ := δ) hLattice hStrictBoundary)
 
 end L13Milestone
