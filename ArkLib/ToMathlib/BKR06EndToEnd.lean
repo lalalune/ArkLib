@@ -276,4 +276,10 @@ theorem rs_close_codewords_card_ge_bkr06_exponent_form
     ring
   rwa [hexp]
 
+#print axioms BKR06.bkr06_param_ineq_extension
+#print axioms BKR06.agreement_count_ge_card
+#print axioms BKR06.mem_closeCodewordsRel_of_subspace
+#print axioms BKR06.bkr06_close_codewords_card_ge_tight
+#print axioms BKR06.rs_close_codewords_card_ge_bkr06_exponent_form
+
 end BKR06
