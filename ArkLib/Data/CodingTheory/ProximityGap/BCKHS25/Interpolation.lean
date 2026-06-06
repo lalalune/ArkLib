@@ -10,7 +10,10 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Guruswami
 import ArkLib.ToMathlib.Polynomial.EvalExt
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.Tactic
+import Mathlib.Tactic.Choose
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.NormCast
+import Mathlib.Tactic.Ring
 
 /-!
 # Interpolation ingredients for the [BCKHS25] route

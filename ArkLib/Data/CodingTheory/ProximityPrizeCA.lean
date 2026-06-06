@@ -7,7 +7,7 @@ Authors: ArkLib Contributors
 import Mathlib.Data.Finset.Card
 import Mathlib.InformationTheory.Hamming
 import Mathlib.LinearAlgebra.Span.Basic
-import Mathlib.Tactic
+import Mathlib.Tactic.Choose
 
 /-!
 # Correlated-agreement counting leaves

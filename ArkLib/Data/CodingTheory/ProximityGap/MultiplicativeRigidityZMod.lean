@@ -6,7 +6,6 @@ Authors: ArkLib Contributors
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.GroupTheory.Coset.Basic
 import Mathlib.Algebra.Group.Subgroup.Ker
-import Mathlib.Tactic
 
 /-! # Coset rigidity for the power map on a finite cyclic group
 

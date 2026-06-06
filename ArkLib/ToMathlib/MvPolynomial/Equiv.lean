@@ -5,7 +5,6 @@ Authors: ArkLib Contributors
 -/
 import Mathlib.Algebra.MvPolynomial.Equiv
 import Mathlib.Data.Finset.Image
-import Mathlib.Tactic
 import ArkLib.ToMathlib.Finsupp.Fin
 
 /-!

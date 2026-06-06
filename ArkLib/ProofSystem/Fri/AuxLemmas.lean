@@ -8,7 +8,6 @@ import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.Algebra.Polynomial.Degree.Definitions
 import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.Data.Finset.Insert
-import Mathlib.Tactic
 
 /-!
 # FRI Auxiliary Lemmas

@@ -8,7 +8,8 @@ import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Tactic
+import Mathlib.Tactic.Choose
+import Mathlib.Tactic.Ring
 
 /-!
 # Guruswami–Sudan multiplicity interpolation: EXISTENCE via dimension count

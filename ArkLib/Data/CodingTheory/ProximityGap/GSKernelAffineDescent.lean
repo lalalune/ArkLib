@@ -5,7 +5,7 @@ Authors: ArkLib Contributors
 -/
 import Mathlib.Algebra.Polynomial.Degree.SmallDegree
 import Mathlib.Algebra.Polynomial.Eval.Degree
-import Mathlib.Tactic
+import Mathlib.Tactic.Ring
 
 /-! # Affine-decomposition descent (GS-kernel mathematics)
 

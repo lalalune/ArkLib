@@ -6,7 +6,11 @@ Authors: ArkLib Contributors
 
 import Mathlib.InformationTheory.Hamming
 import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Tactic
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.NormCast
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Ring
 
 /-!
 # Geometry of codewords and the Johnson-bound Gram argument
