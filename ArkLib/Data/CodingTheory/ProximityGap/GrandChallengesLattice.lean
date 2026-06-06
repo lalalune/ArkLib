@@ -243,6 +243,36 @@ theorem mcaThreshold_spec_of_MCALowerWitness (C : Set (ι → F)) (ε_star : ℝ
     mcaSatisfies C ε_star (mcaThreshold C ε_star hne) :=
   mcaThreshold_spec C ε_star (mcaThresholdExists_of_MCALowerWitness C ε_star w)
 
+/-- A repaired line-decoding target that yields an MCA lower witness also makes the faithful
+MCA lattice threshold exist. -/
+theorem mcaThresholdExists_ofLineDecodingTarget
+    (C : ModuleCode ι F F) (δ a ε_star : ℝ≥0)
+    (hδ_le_one : δ ≤ 1)
+    (hLD : CodingTheory.LineDecodable (F := F) (A := F) (C : Set (ι → F)) δ a
+      ((Fintype.card ι : ℝ≥0) + 1))
+    (hTarget : CodingTheory.lineDecodable_imp_epsMCA_le_target (F := F) (A := F)
+      C δ a hLD)
+    (hle : (a : ENNReal) / (Fintype.card F : ENNReal) ≤ (ε_star : ENNReal)) :
+    mcaThresholdExists (C : Set (ι → F)) ε_star :=
+  mcaThresholdExists_of_MCALowerWitness (C : Set (ι → F)) ε_star
+    (MCALowerWitness.ofLineDecodingTarget C δ a ε_star hδ_le_one hLD hTarget hle)
+
+/-- The faithful MCA threshold created from a repaired line-decoding target satisfies the MCA
+bound. -/
+theorem mcaThreshold_spec_ofLineDecodingTarget
+    (C : ModuleCode ι F F) (δ a ε_star : ℝ≥0)
+    (hδ_le_one : δ ≤ 1)
+    (hLD : CodingTheory.LineDecodable (F := F) (A := F) (C : Set (ι → F)) δ a
+      ((Fintype.card ι : ℝ≥0) + 1))
+    (hTarget : CodingTheory.lineDecodable_imp_epsMCA_le_target (F := F) (A := F)
+      C δ a hLD)
+    (hle : (a : ENNReal) / (Fintype.card F : ENNReal) ≤ (ε_star : ENNReal)) :
+    let hne := mcaThresholdExists_ofLineDecodingTarget C δ a ε_star hδ_le_one hLD hTarget hle
+    mcaSatisfies (C : Set (ι → F)) ε_star
+      (mcaThreshold (C : Set (ι → F)) ε_star hne) :=
+  mcaThreshold_spec (C : Set (ι → F)) ε_star
+    (mcaThresholdExists_ofLineDecodingTarget C δ a ε_star hδ_le_one hLD hTarget hle)
+
 /-- **Upper bracket.** An `MCAUpperWitness` at a radius `δ ≤ 1` forces
 `mcaThreshold < ⌊δ·n⌋`: its lattice point already exceeds `ε*`, so the threshold is strictly
 below it. -/
