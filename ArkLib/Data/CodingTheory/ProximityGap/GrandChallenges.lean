@@ -362,6 +362,25 @@ theorem nonempty_mcaLowerWitness_of_mcaConjecture (h : mcaConjecture) :
   intro ιC _ _ _ FC _ _ _ domain k ε_star δ hk hδ hδ1 hle
   exact ⟨⟨δ, hδ1, le_trans (hbound domain k δ hk hδ) hle⟩⟩
 
+/-- Same positive-direction link as `nonempty_mcaLowerWitness_of_mcaConjecture`, but exposing
+the witness as an ordinary existential for easier downstream composition. -/
+theorem exists_mcaLowerWitness_of_mcaConjecture (h : mcaConjecture) :
+    ∃ c₁ c₂ c₃ : ℝ,
+      ∀ {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
+        {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC]
+        (domain : ιC ↪ FC) (k : ℕ) (ε_star δ : ℝ≥0),
+        0 < k →
+        (δ : ℝ) < 1 - (k : ℝ) / Fintype.card ιC → δ ≤ 1 →
+        ENNReal.ofReal
+            (mcaConjectureBound (Fintype.card ιC) (Fintype.card FC) k δ c₁ c₂ c₃) ≤
+          (ε_star : ENNReal) →
+        ∃ w : MCALowerWitness (ReedSolomon.code domain k : Set (ιC → FC)) ε_star,
+          w.δ = δ := by
+  obtain ⟨c₁, c₂, c₃, hbound⟩ := h
+  refine ⟨c₁, c₂, c₃, ?_⟩
+  intro ιC _ _ _ FC _ _ _ domain k ε_star δ hk hδ hδ1 hle
+  exact ⟨⟨δ, hδ1, le_trans (hbound domain k δ hk hδ) hle⟩, rfl⟩
+
 /-! ## Witness-carrying resolutions for the Grand List Decoding Challenge
 
 The list-decoding mirror of the MCA framework. The maximised list size `Λ(C^⋈m, δ)`
