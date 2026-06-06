@@ -86,7 +86,7 @@ variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 `RS_goodCoeffsCurve u δ` is `δᵣ(curve z, code) ≤ δ`, which by
 `Code.relDistFromCode_le_iff_distFromCode_le` is equivalent to `Δ₀(curve z, code) ≤ ⌊δ · n⌋`,
 two radii with equal floor `⌊δ · n⌋` produce the *same* good-coefficient set. -/
-@[nolint unusedArguments]
+omit [DecidableEq ι] in
 theorem goodCoeffsCurve_eq_of_floor_eq {k deg : ℕ} {domain : ι ↪ F} {δ δ' : ℝ≥0}
     (u : WordStack F (Fin (k + 1)) ι)
     (hfloor : Nat.floor (δ * Fintype.card ι) = Nat.floor (δ' * Fintype.card ι)) :

@@ -207,29 +207,27 @@ theorem mcaBad_card_le_listFactor_mul_card
   intro w hw
   exact mcaBadWitness_card_le_card_real MC δ u₀ u₁ w (hTsub w hw)
 
-/-- **`ε_mca` bound from the in-tree first-moment count + a per-stack list-size factor.** If every
-stack `u` admits a codeword carrier `T u` (containing exactly the codewords of `MC`) of size
-`≤ B_T`, then
+/-- **`ε_mca` bound from the in-tree first-moment count + a list-size factor.** Given a single
+codeword carrier `T` (containing exactly the codewords of `MC`) of size `≤ B_T`,
 
   `ε_mca(MC, δ) ≤ ENNReal.ofReal ((B_T · n) / |F|)`.
 
-This is the fully-in-tree (`sorry`-free, axiom-clean) per-stack `ε_mca` bound: the per-codeword
-first-moment count `b = n` is now *proven* (`mcaBadWitness_card_le_card`), so the only remaining
-external input is the list-size factor `B_T` (e.g. `B_T = L²`, GCXK25's `l ≤ L²`). It composes
-`mcaBad_card_le_listFactor_mul_card` with the in-tree supremum-to-count glue
-`ProximityGap.epsMCA_le_ofReal_of_forall_mcaBad_card_le`. -/
+This is the fully-in-tree (`sorry`-free, axiom-clean) `ε_mca` bound: the per-codeword first-moment
+count `b = n` is now *proven* (`mcaBadWitness_card_le_card`), so the only remaining external input
+is the list-size factor `B_T` bounding the carrier (e.g. `B_T = L²`, GCXK25's `l ≤ L²`). It
+composes `mcaBad_card_le_listFactor_mul_card` with the in-tree supremum-to-count glue
+`ProximityGap.epsMCA_le_ofReal_of_forall_mcaBad_card_le`. The carrier conditions are
+stack-independent, so a single `T` (e.g. `MC` itself, finite since `ι → F` is) serves every
+stack. -/
 theorem epsMCA_le_ofReal_of_listFactor
     (MC : Submodule F (ι → F)) (δ : ℝ≥0) {B_T : ℝ}
-    (hcount :
-      ∀ u : WordStack F (Fin 2) ι,
-        ∃ T : Finset (ι → F),
-          (∀ w ∈ (MC : Set (ι → F)), w ∈ T) ∧ (∀ w ∈ T, w ∈ (MC : Set (ι → F))) ∧
-            (T.card : ℝ) ≤ B_T) :
+    (T : Finset (ι → F))
+    (hT : ∀ w ∈ (MC : Set (ι → F)), w ∈ T) (hTsub : ∀ w ∈ T, w ∈ (MC : Set (ι → F)))
+    (hcard : (T.card : ℝ) ≤ B_T) :
     epsMCA (F := F) (A := F) (MC : Set (ι → F)) δ ≤
       ENNReal.ofReal ((B_T * (Fintype.card ι : ℝ)) / Fintype.card F) := by
   refine epsMCA_le_ofReal_of_forall_mcaBad_card_le (MC : Set (ι → F)) δ ?_
   intro u
-  obtain ⟨T, hT, hTsub, hcard⟩ := hcount u
   exact mcaBad_card_le_listFactor_mul_card MC δ (u 0) (u 1) T hT hTsub hcard
 
 /-- **The single named GKL24 first-moment residual.** This is the *one* genuinely-external
