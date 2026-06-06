@@ -230,6 +230,7 @@ roots arise as `g = C u · expand nn r = C u · (r.comp X^nn)` for normalized fa
 the honest `expand`-shape divisibility — the descended analogue of `pg_Rset`'s `dvd_of_mem_normalizedFactors`. -/
 
 omit [DecidableEq (RatFunc F)] [Finite F] in
+set_option maxHeartbeats 1000000 in
 /-- **`expand`-shape divisibility (indexed form).**  For each index `i` into the descended list, the
 `i`-th factor `(R.getD i 1).comp (X^(f.getD i 0))` divides `Q` (it appears, to a power `≥ 1`, in the
 factorization equation). -/
@@ -266,9 +267,8 @@ theorem pg_RsetDescended_comp_getD_dvd_Q
           ((L.getD i 1).comp ((Polynomial.X : F[Z][X][Y]) ^ f.getD i 0)) ^ e.getD i 0 :=
     Finset.prod_congr rfl (fun j _ => hbody j)
   have hprod_dvd_Q : (∏ j ∈ Finset.range L.length, body j) ∣ Q := by
-    refine ⟨Polynomial.C C₀, ?_⟩
-    rw [hprodeq, hfact]
-    ring
+    refine Dvd.intro_left (Polynomial.C C₀) ?_
+    rw [hprodeq]; exact hfact.symm
   -- the (e i)-th power of the comp divides body i, since e i ≥ 1
   have hlen_e : e.length = L.length := by rw [← hlen2, ← hlen1]
   have hie : i < e.length := by rw [hlen_e]; exact hi
@@ -593,6 +593,7 @@ omit [DecidableEq (RatFunc F)] [Finite F] in
 `Claim57Residuals` fields are discharged: `hx0`/`hsep` by transporting the descended fields along the
 set equality, the Johnson/largeness block verbatim, and `hfactor` by the definitionally-true
 `pg_RsetDescended_hfactor` rewritten through the coincidence. -/
+@[reducible]
 noncomputable def Claim57Residuals.ofDescended (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
     (hres : Claim57ResidualsDescended (F := F) (m := m) (n := n) (Q := Q) (ωs := ωs)

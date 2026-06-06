@@ -37,7 +37,7 @@ open scoped NNReal
 
 variable {r : ℕ} [NeZero r]
 variable {L : Type} [Field L] [Fintype L] [DecidableEq L] [CharP L 2]
-  [SelectableType L]
+  [SampleableType L]
 variable (𝔽q : Type) [Field 𝔽q] [Fintype 𝔽q] [DecidableEq 𝔽q]
   [h_Fq_char_prime : Fact (Nat.Prime (ringChar 𝔽q))] [hF₂ : Fact (Fintype.card 𝔽q = 2)]
 variable [Algebra 𝔽q L]
@@ -134,7 +134,7 @@ def ReductionLogicStep.IsStronglyComplete
 during verification (e.g., QueryPhase in Binary Basefold).
 
 Unlike `ReductionLogicStep` where `verifierCheck` is a pure `Prop`, here it returns
-`OracleComp (oSpec ++ₒ ([OracleIn]ₒ ++ₒ [pSpec.Message]ₒ)) StmtOut` to support oracle
+`OracleComp (oSpec + ([OracleIn]ₒ + [pSpec.Message]ₒ)) StmtOut` to support oracle
 queries during verification. This matches the signature of `OracleVerifier.verify`.
 
 All other components (embed, hEq, relations, proverOut, verifierOut) remain pure,
@@ -155,10 +155,10 @@ structure OracleAwareReductionLogicStep
 
   -- 2. The Verifier (Oracle-Aware)
   -- Key difference: verifierCheck is monadic, can query oracles
-  -- Uses the extended spec: oSpec ++ₒ ([OracleIn]ₒ ++ₒ [pSpec.Message]ₒ)
+  -- Uses the extended spec: oSpec + ([OracleIn]ₒ + [pSpec.Message]ₒ)
   -- Same signature as OracleVerifier.verify
   verifierCheck : StmtIn → FullTranscript pSpec →
-    OracleComp (oSpec ++ₒ ([OracleIn]ₒ ++ₒ [pSpec.Message]ₒ)) StmtOut
+    OracleComp (oSpec + ([OracleIn]ₒ + [pSpec.Message]ₒ)) StmtOut
   -- Output computation remains pure/deterministic
   verifierOut   : StmtIn → FullTranscript pSpec → StmtOut
 
@@ -188,7 +188,7 @@ structure OracleAwareReductionLogicStep
   checking oracle responses will fail. Under simulation with `simOracle2`, queries are
   answered by `oStmtIn`, making the guards pass.
 
-  **Type Constraint**: The step's `querySpec` must be `oSpec ++ₒ ([OracleIn]ₒ ++ₒ [pSpec.Message]ₒ)`
+  **Type Constraint**: The step's `querySpec` must be `oSpec + ([OracleIn]ₒ + [pSpec.Message]ₒ)`
   for the simulation to type-check. This is the natural structure where:
   - `oSpec` is the shared/base oracle (e.g., random oracle, hash function)
   - `[OracleIn]ₒ` are the oracle statements the verifier can query
@@ -203,7 +203,7 @@ def OracleAwareReductionLogicStep.IsStronglyCompleteUnderSimulation
     [Oₛᵢ : ∀ i, OracleInterface (OracleIn i)]
     [Oₘ : ∀ i, OracleInterface (pSpec.Message i)]
     -- The step uses oSpec as its base oracle; internally it accesses
-    -- oSpec ++ₒ ([OracleIn]ₒ ++ₒ [pSpec.Message]ₒ)
+    -- oSpec + ([OracleIn]ₒ + [pSpec.Message]ₒ)
     (step : OracleAwareReductionLogicStep oSpec
       StmtIn WitIn OracleIn OracleOut StmtOut WitOut pSpec) : Prop :=
   ∀ (stmtIn : StmtIn) (witIn : WitIn) (oStmtIn : ∀ i, OracleIn i) (challenges : pSpec.Challenges),
@@ -215,12 +215,12 @@ def OracleAwareReductionLogicStep.IsStronglyCompleteUnderSimulation
     let transcript := step.honestProverTranscript stmtIn witIn oStmtIn challenges
 
     -- 2. Define the honest oracle simulator
-    -- simOracle2 oSpec t₁ t₂ : SimOracle.Stateless (oSpec ++ₒ ([T₁]ₒ ++ₒ [T₂]ₒ)) oSpec
+    -- simOracle2 oSpec t₁ t₂ : SimOracle.Stateless (oSpec + ([T₁]ₒ + [T₂]ₒ)) oSpec
     -- This answers queries to OracleIn using oStmtIn and queries to Messages using transcript
     let so := OracleInterface.simOracle2 oSpec oStmtIn transcript.messages
 
     -- 3. The Verifier check under simulation MUST succeed with probability 1
-    [⊥ | simulateQ so (step.verifierCheck stmtIn transcript)] = 0 ∧
+    Pr[⊥ | simulateQ so (step.verifierCheck stmtIn transcript)] = 0 ∧
 
     -- 4. The output MUST be valid and consistent
     let verifierStmtOut := step.verifierOut stmtIn transcript
@@ -303,11 +303,11 @@ def foldStepLogic (i : Fin ℓ) :
     getFoldProverFinalOutput 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i
       (s, o, w, h_i, r_i')
 
-variable {R : Type} [CommSemiring R] [DecidableEq R] [SelectableType R]
+variable {R : Type} [CommSemiring R] [DecidableEq R] [SampleableType R]
   {n : ℕ} {deg : ℕ} {m : ℕ} {D : Fin m ↪ R}
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
 
-omit [SelectableType L] in
+omit [SampleableType L] in
 /-- The Main Lemma: Binary Folding satisfies Strong Completeness.
 
 This proves that for any valid input satisfying `roundRelation`, the honest prover-verifier
@@ -544,7 +544,7 @@ def commitStepLogic (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i) :
       -- oStmtIn transcript
     ((stmt, oStmtOut), wit)
 
-omit [CharP L 2] [SelectableType L] in
+omit [CharP L 2] [SampleableType L] in
 /-- Helper lemma: snoc_oracle matches mkVerifierOStmtOut for commit steps.
 
 This proves that when we add a new oracle via `snoc_oracle`, the result matches what the verifier
@@ -608,7 +608,7 @@ lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
       rw [toOutCodewordsCount_mul_ϑ_eq_i_succ ℓ ϑ i hCR]
     rw [h_idx_eq]
 
-omit [CharP L 2] [SelectableType L] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 [NeZero 𝓡] in
+omit [CharP L 2] [SampleableType L] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 [NeZero 𝓡] in
 /-- The first oracle is preserved when snocing a new oracle.
 
 Since `getFirstOracle` extracts index 0, and `snoc_oracle` at index 0 always falls into
@@ -660,7 +660,7 @@ lemma commitStep_j_is_last (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i)
   conv_rhs at hj => rw [h_count_succ]
   omega
 
-omit [CharP L 2] [SelectableType L] in
+omit [CharP L 2] [SampleableType L] in
 lemma strictOracleFoldingConsistency_commitStep
     (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i)
     (stmtIn : Statement (L := L) Context i.succ)
@@ -975,7 +975,7 @@ def finalSumcheckStepLogic :
   ⟩
   hEq := fun oracleIdx => by simp only [Fin.eta]
 
-omit [SelectableType L] in
+omit [SampleableType L] in
 /-- **Strict version**: When folding the last oracle to level `ℓ` (final sumcheck),
 the iterated fold of the last oracle equals the constant function.
 

@@ -522,6 +522,21 @@ def toVerifier : Verifier oSpec (StmtIn × ∀ i, OStmtIn i) (StmtOut × (∀ i,
       | Sum.inr j => (verifier.hEq i ▸ h ▸ transcript.messages j : OStmtOut i)
     return (stmtOut, oStmtOut)
 
+/-- Construct output oracle statements from input oracle statements and transcript messages by
+  routing according to an embedding function. This is the standalone form of the routing inlined
+  in `toVerifier`; consumed by the Binius step logic (`BinaryBasefold.ReductionLogic`,
+  `RingSwitching.BatchingPhase`). -/
+def mkVerifierOStmtOut
+    (embed : ιₛₒ ↪ ιₛᵢ ⊕ pSpec.MessageIdx)
+    (hEq : ∀ i, OStmtOut i = match embed i with
+      | Sum.inl j => OStmtIn j
+      | Sum.inr j => pSpec.Message j)
+    (oStmt : ∀ i, OStmtIn i) (transcript : FullTranscript pSpec) :
+    ∀ i, OStmtOut i :=
+  fun i => match h : embed i with
+    | Sum.inl j => (hEq i ▸ h ▸ oStmt j : OStmtOut i)
+    | Sum.inr j => (hEq i ▸ h ▸ transcript.messages j : OStmtOut i)
+
 /-- The number of queries made to the oracle statements and the prover's messages, for a given input
     statement and challenges.
 
