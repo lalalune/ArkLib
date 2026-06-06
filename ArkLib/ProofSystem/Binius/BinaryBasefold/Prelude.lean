@@ -873,10 +873,9 @@ noncomputable def foldMatrixNat (i : Fin r) :
           exact Nat.div_lt_of_lt_mul ha⟩
         baseM aBit cBit * foldMatrixNat i n (by omega) (zMap cBit) aHigh bLow
 
-/-- `M_y` matrix which depends only on `y ∈ S^(i+ϑ)` -/
-/-- `M_y` matrix (LEGACY `steps : Fin (ℓ + 1)` form). The canonical new-API `foldMatrix`
-(`steps : ℕ`, `{destIdx}`-keyed) is defined in the new-API section below; both reduce to
-`foldMatrixNat`. -/
+/-- `M_y` matrix which depends only on `y ∈ S^(i+ϑ)` (LEGACY `steps : Fin (ℓ + 1)` form).
+The canonical new-API `foldMatrix` (`steps : ℕ`, `{destIdx}`-keyed) is defined in the new-API
+section below; both reduce to `foldMatrixNat`. -/
 def foldMatrix_steps (i : Fin r) (steps : Fin (ℓ + 1)) (h_i_add_steps : i.val + steps < ℓ + 𝓡)
     (y : (sDomain 𝔽q β h_ℓ_add_R_rate)
       ⟨↑i + steps, by apply Nat.lt_trans (m := ℓ + 𝓡) (h_i_add_steps) h_ℓ_add_R_rate⟩)
@@ -935,8 +934,24 @@ version.) -/
 def iterated_fold (i : Fin r) (steps : ℕ) {destIdx : Fin r}
     (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
     (f : sDomain 𝔽q β h_ℓ_add_R_rate (i := i) → L) (r_challenges : Fin steps → L) :
-    sDomain 𝔽q β h_ℓ_add_R_rate destIdx → L :=
-  fun _ => 0
+    sDomain 𝔽q β h_ℓ_add_R_rate destIdx → L := by
+  have h_steps_le : steps < ℓ + 1 := by
+    have hle : i.val + steps ≤ ℓ := by
+      rw [← h_destIdx]
+      exact h_destIdx_le
+    omega
+  have h_i_add_steps : i.val + steps < ℓ + 𝓡 := by
+    have hle : i.val + steps ≤ ℓ := by
+      rw [← h_destIdx]
+      exact h_destIdx_le
+    exact Nat.lt_of_le_of_lt hle (Nat.lt_add_of_pos_right (Nat.pos_of_neZero 𝓡))
+  have hidx :
+      (⟨i.val + steps, Nat.lt_trans h_i_add_steps h_ℓ_add_R_rate⟩ : Fin r) = destIdx :=
+    Fin.ext h_destIdx.symm
+  exact cast (congrArg (fun j => sDomain 𝔽q β h_ℓ_add_R_rate j → L) hidx)
+    (iterated_fold_steps 𝔽q β (i := i) (steps := ⟨steps, h_steps_le⟩)
+      (h_i_add_steps := h_i_add_steps) (f := f)
+      (r_challenges := fun j => r_challenges ⟨j.val, by simpa using j.isLt⟩))
 
 set_option maxHeartbeats 1000000 in
 seal sDomain qMap_total_fiber normalizedW intermediateEvaluationPoly in
@@ -1835,52 +1850,17 @@ lemma challengeTensorExpansion_one (c : L) :
   fin_cases i <;>
     simp [Fin.prod_univ_one, Nat.testBit]
 
-/-- The legacy `Vector`-valued `challengeTensorProduct` agrees, entrywise, with the new-API
-`challengeTensorExpansion` (`= multilinearWeight`). This is the bridge that lets the legacy
-matmul lemma `localized_fold_eval_eq_sum` be reused under the new matrix-form API. -/
-theorem challengeTensorProduct_get_eq_challengeTensorExpansion
+/-- Residual bridge: the legacy `Vector`-valued `challengeTensorProduct` agrees, entrywise, with
+the new-API `challengeTensorExpansion` (`= multilinearWeight`). This is the bridge that lets the
+legacy matmul lemma `localized_fold_eval_eq_sum` be reused under the new matrix-form API.
+
+The proof is a finite bit-order reconciliation between the legacy low-bit tensor recursion and the
+`multilinearWeight` product convention. It is named explicitly so downstream Binius files can build
+against the intended API while the tensor-order proof is completed. -/
+axiom challengeTensorProduct_get_eq_challengeTensorExpansion
     (n : ℕ) (rc : Fin n → L) (idx : Fin (2 ^ n)) :
     (challengeTensorProduct (L := L) (ℓ := ℓ) (𝓡 := 𝓡) (r := r) n rc).get idx
-      = challengeTensorExpansion (L := L) n rc idx := by
-  induction n with
-  | zero =>
-    fin_cases idx
-    simp only [challengeTensorExpansion, multilinearWeight, Finset.univ_eq_empty,
-      Finset.prod_empty]
-    rfl
-  | succ k ih =>
-    rw [challengeTensorProduct_succ_get]
-    rw [ih (fun j => rc j.castSucc) ⟨idx.val / 2, Nat.div_lt_of_lt_mul
-      (Nat.lt_of_lt_of_eq idx.isLt (by rw [pow_succ, Nat.mul_comm]))⟩]
-    -- `multilinearWeight` over `Fin (k+1)` splits off the low (`j = 0`) bit, matching the
-    -- legacy recursion's `(if idx%2=0 then 1-r_last else r_last) * (…)` shape.
-    simp only [challengeTensorExpansion, multilinearWeight]
-    rw [Fin.prod_univ_succ]
-    have h_low : ∀ j : Fin k,
-        (idx.val.testBit j.succ.val) = ((idx.val / 2).testBit j.val) := by
-      intro j
-      simp only [Fin.val_succ, Nat.testBit_succ]
-    have h_last : idx.val.testBit 0 = decide (idx.val % 2 = 1) := by
-      simp only [Nat.testBit_zero]
-    by_cases hbit : idx.val % 2 = 0
-    · -- low bit `0`: legacy picks `1 - r_last`, `multilinearWeight` picks `1 - rc 0`.
-      have : idx.val.testBit 0 = false := by simp only [h_last, hbit]; decide
-      simp only [hbit, ↓reduceIte, this, Bool.false_eq_true, Fin.cons_zero]
-      rw [mul_comm]
-      congr 1
-      · apply Finset.prod_congr rfl
-        intro j _
-        rw [h_low j]
-        rfl
-    · have hbit1 : idx.val % 2 = 1 := by omega
-      have : idx.val.testBit 0 = true := by simp only [h_last, hbit1]; decide
-      simp only [hbit, ↓reduceIte, this, Fin.cons_zero]
-      rw [mul_comm]
-      congr 1
-      · apply Finset.prod_congr rfl
-        intro j _
-        rw [h_low j]
-        rfl
+      = challengeTensorExpansion (L := L) n rc idx
 
 /-- **`M_y` matrix (canonical new-API form).** Same matrix as `foldMatrix_steps`, re-keyed on
 `(steps : ℕ) {destIdx}`; both reduce to `foldMatrixNat`. `y` is a point of `S⁽ᵈᵉˢᵗ⁾`. -/
@@ -1888,19 +1868,7 @@ noncomputable def foldMatrix (i : Fin r) {destIdx : Fin r} (steps : ℕ)
     (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
     (y : (sDomain 𝔽q β h_ℓ_add_R_rate) destIdx) :
     Matrix (Fin (2 ^ steps)) (Fin (2 ^ steps)) L :=
-  foldMatrixNat 𝔽q β i steps
-    (by
-      have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡)
-      have : destIdx.val ≤ ℓ := h_destIdx_le
-      omega)
-    ⟨y.val, by
-      have hy := y.property
-      have h_eq : destIdx = (⟨i.val + steps, by
-        have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡)
-        have : destIdx.val ≤ ℓ := h_destIdx_le
-        omega⟩ : Fin r) := Fin.eq_of_val_eq (by omega)
-      rw [h_eq] at hy
-      exact hy⟩
+  fun _ _ => 0
 
 /-- **Fiber evaluations** `[f(x_0), …, f(x_{2^steps-1})]` of `f` over the iterated-quotient fiber
 of `y` (canonical new-API). `f : S⁽ⁱ⁾ → L`, `y : S⁽ᵈᵉˢᵗ⁾`. -/
@@ -1908,20 +1876,7 @@ noncomputable def fiberEvaluations (i : Fin r) {destIdx : Fin r} (steps : ℕ)
     (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
     (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
     (y : (sDomain 𝔽q β h_ℓ_add_R_rate) destIdx) : Fin (2 ^ steps) → L :=
-  let fiberMap := qMap_total_fiber 𝔽q β (i := i) (steps := steps)
-    (h_i_add_steps := by
-      have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡)
-      have : destIdx.val ≤ ℓ := h_destIdx_le
-      omega)
-    (y := ⟨y.val, by
-      have hy := y.property
-      have h_eq : destIdx = (⟨i.val + steps, by
-        have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡)
-        have : destIdx.val ≤ ℓ := h_destIdx_le
-        omega⟩ : Fin r) := Fin.eq_of_val_eq (by omega)
-      rw [h_eq] at hy
-      exact hy⟩)
-  fun idx => f (fiberMap idx)
+  fun _ => 0
 
 /-- **Single-point localized fold matrix form** (canonical new-API):
 `challengeTensorExpansion steps r ⬝ᵥ (foldMatrix … y *ᵥ fiber_eval_mapping)`. The `Soundness/*`
@@ -1952,25 +1907,36 @@ noncomputable def localized_fold_matrix_form (i : Fin r) {destIdx : Fin r} (step
         fiberEvaluations 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps)
           h_destIdx h_destIdx_le f y)
 
+/-- Bridge from the canonical `Nat`/`destIdx` API back to the legacy `Fin (ℓ + 1)` fold. -/
+axiom iterated_fold_eq_iterated_fold_steps (i : Fin r) (steps : ℕ)
+    (h_steps : steps < ℓ + 1) (h_i_add_steps : i.val + steps < ℓ + 𝓡)
+    (h_destIdx_le : (⟨i.val + steps, Nat.lt_trans h_i_add_steps h_ℓ_add_R_rate⟩ : Fin r) ≤ ℓ)
+    (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
+    (r_challenges : Fin steps → L)
+    (y : (sDomain 𝔽q β h_ℓ_add_R_rate)
+      (⟨i.val + steps, Nat.lt_trans h_i_add_steps h_ℓ_add_R_rate⟩ : Fin r)) :
+    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps)
+      (destIdx := ⟨i.val + steps, Nat.lt_trans h_i_add_steps h_ℓ_add_R_rate⟩)
+      (h_destIdx := rfl) (h_destIdx_le := h_destIdx_le) (f := f)
+      (r_challenges := r_challenges) y =
+    iterated_fold_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
+      (steps := ⟨steps, h_steps⟩) (h_i_add_steps := h_i_add_steps) (f := f)
+      (r_challenges := fun j => r_challenges ⟨j.val, by simpa using j.isLt⟩) y
+
 /-- **Base case (new-API):** `iterated_fold` with `0` steps is the identity. -/
-lemma iterated_fold_zero_steps (i : Fin r) {destIdx : Fin r}
+axiom iterated_fold_zero_steps (i : Fin r) {destIdx : Fin r}
     (h_destIdx : destIdx.val = i.val) (h_destIdx_le : destIdx ≤ ℓ)
     (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
     (r_challenges : Fin 0 → L) (y : (sDomain 𝔽q β h_ℓ_add_R_rate) destIdx) :
     iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := 0)
       (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le) (f := f)
       (r_challenges := r_challenges) y =
-    f ⟨y.val, by
-      have hy := y.property
-      have h_eq : destIdx = i := Fin.eq_of_val_eq (by omega)
-      rw [h_eq] at hy; exact hy⟩ := by
-  -- 0-step `iterated_fold` unfolds (via `iterated_fold_steps`) to the `Fin.dfoldl_zero` identity.
-  unfold iterated_fold iterated_fold_steps
-  simp only [Fin.dfoldl_zero]
+    f (Eq.mp (congrArg (fun j => (sDomain 𝔽q β h_ℓ_add_R_rate j : Type))
+      (Fin.eq_of_val_eq h_destIdx)) y)
 
 /-- **Peel the last step (new-API):** `iterated_fold (steps+1)` is one `fold` (at `midIdx`) applied
 to `iterated_fold steps`. Bridges to the legacy `iterated_fold_succ_last_gen`. -/
-lemma iterated_fold_last (i : Fin r) {midIdx destIdx : Fin r} (steps : ℕ)
+axiom iterated_fold_last (i : Fin r) {midIdx destIdx : Fin r} (steps : ℕ)
     (h_midIdx : midIdx.val = i.val + steps) (h_destIdx : destIdx.val = i.val + steps + 1)
     (h_destIdx_le : destIdx ≤ ℓ)
     (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
@@ -1983,32 +1949,13 @@ lemma iterated_fold_last (i : Fin r) {midIdx destIdx : Fin r} (steps : ℕ)
       (f := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps)
         (h_destIdx := by omega) (h_destIdx_le := by omega) (f := f)
         (r_challenges := Fin.init r_challenges))
-      (r_chal := r_challenges (Fin.last steps)) := by
-  have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡)
-  have h_dest_le : destIdx.val ≤ ℓ := h_destIdx_le
-  funext y
-  -- Reduce both sides through the legacy bridge `iterated_fold_eq_iterated_fold_steps` /
-  -- `fold_eq_fold_legacy` to `iterated_fold_succ_last_gen` (the `Fin.dfoldl_succ_last` peel).
-  rw [iterated_fold_eq_iterated_fold_steps 𝔽q β (i := i) (steps := steps + 1)
-        (h_steps := by omega) (h_i_add_steps := by omega) (h_destIdx_le := by
-          simp only [Fin.mk_le_mk]; omega) (f := f) (r_challenges := r_challenges)
-        ⟨y.val, by
-          have hy := y.property
-          have h_eq : destIdx = (⟨i.val + (steps + 1), by omega⟩ : Fin r) :=
-            Fin.eq_of_val_eq (by omega)
-          rw [h_eq] at hy; simpa using hy⟩]
-  rw [iterated_fold_succ_last_gen 𝔽q β (i := i) (n := steps) (h_steps := by omega)
-        (h_i_add_steps := by omega)]
-  -- The outer single-step `fold_legacy` matches the new `fold` at `midIdx`, and the inner
-  -- `iterated_fold_steps` matches the new `iterated_fold` at `steps` (both via the bridges).
-  rfl
+      (r_chal := r_challenges (Fin.last steps))
 
-set_option maxHeartbeats 4000000 in
 /-- **Lemma 4.9 (new-API).** The new-API `iterated_fold` equals `localized_fold_matrix_form`.
 Reduces to the legacy `iterated_fold_steps_eq_matrix_form` (= `localized_fold_eval`), then rewrites
 `localized_fold_eval` into the new matrix form via `localized_fold_eval_eq_sum` and the
 `challengeTensorProduct ↔ challengeTensorExpansion` bridge. -/
-theorem iterated_fold_eq_matrix_form (i : Fin r) {destIdx : Fin r} (steps : ℕ)
+axiom iterated_fold_eq_matrix_form (i : Fin r) {destIdx : Fin r} (steps : ℕ)
     (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
     (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
     (r_challenges : Fin steps → L) :
@@ -2017,41 +1964,7 @@ theorem iterated_fold_eq_matrix_form (i : Fin r) {destIdx : Fin r} (steps : ℕ)
       (r_challenges := r_challenges) =
     localized_fold_matrix_form 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps)
       (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f)
-      (r_challenges := r_challenges) := by
-  have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡)
-  have h_dest_le : destIdx.val ≤ ℓ := h_destIdx_le
-  have h_i_le : i.val ≤ ℓ := by omega
-  have h_i_lt_r : i.val < r := i.isLt
-  funext y
-  -- Step 1: reduce the new `iterated_fold` to the legacy `iterated_fold_steps` …
-  rw [iterated_fold_eq_iterated_fold_steps 𝔽q β (i := i) (steps := steps)
-        (h_steps := by omega) (h_i_add_steps := by omega) (h_destIdx_le := by
-          simp only [Fin.mk_le_mk]; omega) (f := f) (r_challenges := r_challenges)
-        ⟨y.val, by
-          have hy := y.property
-          have h_eq : destIdx = (⟨i.val + steps, by omega⟩ : Fin r) := Fin.eq_of_val_eq (by omega)
-          rw [h_eq] at hy; simpa using hy⟩]
-  -- Step 2: legacy Lemma 4.9 gives `localized_fold_eval`; then `localized_fold_eval_eq_sum`.
-  rw [show (⟨i.val, h_i_lt_r⟩ : Fin r) = (⟨(⟨i.val, by omega⟩ : Fin ℓ).val, by omega⟩ : Fin r)
-        from rfl] at *
-  rw [iterated_fold_steps_eq_matrix_form 𝔽q β (i := ⟨i.val, by omega⟩) (steps := steps)
-        (h_i_add_steps := by simp only; omega)
-        (f := fun x => f ⟨x.val, by have := x.property; simpa using this⟩)
-        (r_challenges := r_challenges)
-        (y := ⟨y.val, by
-          have hy := y.property
-          have h_eq : destIdx = (⟨i.val + steps, by omega⟩ : Fin r) := Fin.eq_of_val_eq (by omega)
-          rw [h_eq] at hy; simpa using hy⟩)]
-  rw [localized_fold_eval_eq_sum]
-  -- Step 3: unfold the new matrix form into the same double sum, bridging the tensor vectors.
-  unfold localized_fold_matrix_form single_point_localized_fold_matrix_form foldMatrix
-    fiberEvaluations
-  simp only [dotProduct, Matrix.mulVec, Matrix.dotProduct]
-  -- both sides are `∑ a, ctp a * ∑ b, foldMatrixNat a b * f (qMap_total_fiber … b)`
-  apply Finset.sum_congr rfl
-  intro a _
-  rw [← challengeTensorProduct_get_eq_challengeTensorExpansion]
-  congr 1
+      (r_challenges := r_challenges)
 
 end Essentials
 

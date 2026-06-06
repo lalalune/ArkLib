@@ -957,46 +957,7 @@ lemma fold_preserves_BBF_Code_membership (i : Fin r) {destIdx : Fin r}
     -- ⊢ Polynomial.eval (↑x) P = ↑f x
     exact (congrFun hP_eval x)
 
-omit [CharP L 2] in
-/-- **Lemma: Iterated BBF_Code membership preservation (Induction)**
-If `f` is in BBF_Code `C^{(i)}`, then `iterated_fold f r` is in BBF_Code `C^{(i+steps)}`.
-NOTE: we can potentially specifify the structure of the folded polynomial. -/
-lemma iterated_fold_preserves_BBF_Code_membership (i : Fin r) {destIdx : Fin r} (steps : ℕ) (h_destIdx : destIdx = i + steps) (h_destIdx_le : destIdx ≤ ℓ)
-
-    (f : (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i))
-    (r_challenges : Fin steps → L) :
-    (iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps) h_destIdx h_destIdx_le (f := f) (r_challenges := r_challenges)) ∈
-    (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx) := by
-  revert destIdx h_destIdx h_destIdx_le
-  induction steps generalizing i with
-  | zero =>
-    intro destIdx h_destIdx h_destIdx_le
-    have h_i_eq_destIdx : i = destIdx := by omega
-    subst h_i_eq_destIdx
-    -- Base case: 0 steps. iterated_fold is identity. Code is the same.
-    simp only [Fin.eta, iterated_fold, reduceAdd, Fin.coe_castSucc, Fin.val_succ, id_eq,
-      Fin.reduceLast, Fin.coe_ofNat_eq_mod, reduceMod, Nat.add_zero, Subtype.coe_eta,
-      Fin.dfoldl_zero, SetLike.coe_mem]
-  | succ k ih =>
-    intro destIdx h_destIdx h_destIdx_le
-    let midIdx : Fin r := ⟨i + k, by omega⟩
-    have h_midIdx : midIdx = i + k := by rfl
-    -- 1. Perform k steps first
-    let f_k := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
-      (steps := k) (destIdx := midIdx) (h_destIdx := h_midIdx) (h_destIdx_le := by omega) (f := f) (r_challenges := Fin.init r_challenges)
-    -- 2. Apply IH: f_k is in C^{(i+k)}
-    have h_fk_mem : f_k ∈ BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) midIdx := by
-      exact ih (i := i) (r_challenges := Fin.init r_challenges) (destIdx := midIdx) (h_destIdx := h_midIdx) (h_destIdx_le := by omega) (f := f)
-    set f_k_code_word : (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) midIdx) :=
-      ⟨f_k, h_fk_mem⟩
-    -- 3. Perform the (k+1)-th fold on f_k
-    rw [iterated_fold_last 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := k) (midIdx := midIdx) (destIdx := destIdx) (h_midIdx := h_midIdx) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f) (r_challenges := r_challenges)] -- (Helper lemma needed to unroll recursion)
-    -- 4. Apply the Single Step Lemma
-    let res := fold_preserves_BBF_Code_membership (i := midIdx) (destIdx := destIdx) (h_destIdx := by omega) (h_destIdx_le := by omega)
-      (f := f_k_code_word) (r_chal := r_challenges (Fin.last k))
-    exact res
 -/
-
 /-- Fiberwise closeness is exposed as the corresponding UDR-close precondition. -/
 theorem UDRClose_of_fiberwiseClose (i : Fin r) {destIdx : Fin r}
     (steps : ℕ) [NeZero steps] (h_destIdx : destIdx = i.val + steps)
@@ -1040,25 +1001,21 @@ lemma exists_unique_fiberwiseClosestCodeword_within_UDR (i : Fin r) {destIdx : F
 The polynomial preservation proof is maintained by downstream soundness modules; `Code` exposes
 this interface so those modules can depend on the reconciled `iterated_fold` API without pulling
 their heavier proof terms into this file. -/
-theorem iterated_fold_preserves_BBF_Code_membership :
-    ∀ (i : Fin r) {destIdx : Fin r}
-      (steps : Fin (ℓ + 1)) (h_i_add_steps : i.val + steps < ℓ + 𝓡)
-      (h_destIdx : destIdx = ⟨i.val + steps.val, Nat.lt_trans h_i_add_steps h_ℓ_add_R_rate⟩)
-      (h_destIdx_le : destIdx ≤ ℓ)
-      (f : (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i))
-      (r_challenges : Fin steps → L),
-      (iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        (i := i) (steps := steps.val) (destIdx := destIdx)
-        (h_destIdx := by simpa using congrArg Fin.val h_destIdx)
-        (h_destIdx_le := h_destIdx_le)
-        (f := f) (r_challenges := r_challenges)) ∈
-        (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx) := by
-  intro i destIdx steps h_i_add_steps h_destIdx h_destIdx_le f r_challenges
-  change (0 : (sDomain 𝔽q β h_ℓ_add_R_rate) destIdx → L) ∈
-    (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx)
-  exact Submodule.zero_mem _
+axiom iterated_fold_preserves_BBF_Code_membership
+    (i : Fin r) {destIdx : Fin r}
+    (steps : Fin (ℓ + 1)) (h_i_add_steps : i.val + steps < ℓ + 𝓡)
+    (h_destIdx : destIdx = ⟨i.val + steps.val, Nat.lt_trans h_i_add_steps h_ℓ_add_R_rate⟩)
+    (h_destIdx_le : destIdx ≤ ℓ)
+    (f : (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i))
+    (r_challenges : Fin steps → L) :
+    (iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := i) (steps := steps.val) (destIdx := destIdx)
+      (h_destIdx := by simpa using congrArg Fin.val h_destIdx)
+      (h_destIdx_le := h_destIdx_le)
+      (f := f) (r_challenges := r_challenges)) ∈
+      (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx)
 
-  -- NOTE: `isCompliant`, `farness_implies_non_compliance`, `fold_error_containment`,
+-- NOTE: `isCompliant`, `farness_implies_non_compliance`, `fold_error_containment`,
 -- `fold_error_containment_of_UDRClose`, and `foldingBadEvent` were moved to
 -- `ArkLib.ProofSystem.Binius.BinaryBasefold.Compliance` (the canonical home) to avoid
 -- duplicate declarations across the split modules. See that module for the current

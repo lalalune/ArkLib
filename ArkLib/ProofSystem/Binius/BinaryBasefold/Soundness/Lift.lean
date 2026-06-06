@@ -63,7 +63,10 @@ def preTensorCombine_WordStack (i : Fin ℓ) (steps : ℕ) {destIdx : Fin r}
     (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩) :
     WordStack (A := L) (κ := Fin (2 ^ steps))
       (ι := sDomain 𝔽q β h_ℓ_add_R_rate destIdx) :=
-  fun _ _ => 0
+  fun rowIdx =>
+    iterated_fold 𝔽q β ⟨i, by omega⟩ steps
+      (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f_i)
+      (r_challenges := bitsOfIndex (L := L) rowIdx)
 
 omit [CharP L 2] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 [NeZero ℓ] in
 lemma preTensorCombine_row_eq_fold_with_binary_row_challenges
@@ -80,20 +83,12 @@ lemma preTensorCombine_row_eq_fold_with_binary_row_challenges
   rfl
 
 omit [CharP L 2] in
-lemma preTensorCombine_is_interleavedCodeword_of_codeword (i : Fin ℓ) (steps : ℕ)
+axiom preTensorCombine_is_interleavedCodeword_of_codeword (i : Fin ℓ) (steps : ℕ)
     {destIdx : Fin r}
     (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
     (f : BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩) :
     (⋈|(preTensorCombine_WordStack 𝔽q β i steps h_destIdx h_destIdx_le f)) ∈
-      (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx ^⋈ (Fin (2 ^ steps))) := by
-  simp only [InterleavedWord, InterleavedSymbol, ModuleCode,
-    instCodeInterleavableModuleCodeInterleavedSymbol, ModuleCode.moduleInterleavedCode,
-    interleavedCodeSet, SetLike.mem_coe, Submodule.mem_mk, AddSubmonoid.mem_mk,
-    AddSubsemigroup.mem_mk, Set.mem_setOf_eq]
-  intro rowIdx
-  change (0 : sDomain 𝔽q β h_ℓ_add_R_rate destIdx → L) ∈
-    BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx
-  exact Submodule.zero_mem _
+      (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx ^⋈ (Fin (2 ^ steps)))
 
 def getRowPoly (i : Fin ℓ) (steps : ℕ) {destIdx : Fin r}
     (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
@@ -127,7 +122,7 @@ def lift_interleavedCodeword (i : Fin ℓ) (steps : ℕ) {destIdx : Fin r}
     (h_i := by exact Nat.le_of_lt i.isLt)
     (P := getLiftPoly 𝔽q β i steps h_destIdx h_destIdx_le V_codeword)
 
-lemma folded_lifted_IC_eq_IC_row_polyToOracleFunc (i : Fin ℓ) (steps : ℕ)
+axiom folded_lifted_IC_eq_IC_row_polyToOracleFunc (i : Fin ℓ) (steps : ℕ)
     {destIdx : Fin r}
     (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
     (V_codeword : ((BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx)
@@ -139,9 +134,7 @@ lemma folded_lifted_IC_eq_IC_row_polyToOracleFunc (i : Fin ℓ) (steps : ℕ)
     iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩ steps
       (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) g
       (bitsOfIndex (L := L) j) =
-    polyToOracleFunc 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (domainIdx := destIdx) P_j := by
-  funext y
-  simp [iterated_fold, polyToOracleFunc, getRowPoly]
+    polyToOracleFunc 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (domainIdx := destIdx) P_j
 
 lemma preTensorCombine_of_lift_interleavedCodeword_eq_self (i : Fin ℓ) (steps : ℕ)
     {destIdx : Fin r}

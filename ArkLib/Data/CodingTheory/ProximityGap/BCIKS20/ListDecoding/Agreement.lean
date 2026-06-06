@@ -1839,6 +1839,43 @@ lemma exists_factors_with_large_common_root_set (δ : ℚ) (x₀ : F)
       hres.hx0 hres.hsep hres.hS_nonempty hres.A hres.hA hres.hcount hres.hlarge
   exact ⟨R, H, hres.hfactor R hR, hHirr, hHdeg, hHdvd, hRsep, hcard, hlarge'⟩
 
+/-- Claim 5.7 front door from the proved graph-extraction side-condition package plus the
+remaining legacy factor-list bridge, without requiring callers to install an ambient
+`[Claim57Residuals]` instance.
+
+This is the local API reduction for the Claim-5.7 residual surface: `hx0`, `hsep`,
+`hS_nonempty`, `A`, `hA`, `hcount`, and `hlarge` are bundled in `GraphExtractionHypotheses`, so the
+only extra hypothesis here is the still-open bridge from the graph-extraction `pg_Rset` to the
+legacy factorization list. -/
+lemma exists_factors_with_large_common_root_set_of_graphExtraction
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hcond : GraphExtractionHypotheses (F := F) (m := m) (n := n) k δ x₀ h_gs)
+    (hfactor : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        R ∈ (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose) :
+  ∃ R H, R ∈ (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose ∧
+    Irreducible H ∧ 0 < H.natDegree ∧ H ∣ (Bivariate.evalX (Polynomial.C x₀) R) ∧
+    (Bivariate.evalX (Polynomial.C x₀) R).Separable ∧
+    #(@Set.toFinset _ { z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ |
+        letI Pz := Pz z.2
+        (Trivariate.eval_on_Z R z.1).eval Pz = 0 ∧
+        (Bivariate.evalX z.1 H).eval (Pz.eval x₀) = 0}
+        (@Fintype.ofFinite _ Subtype.finite))
+    ≥ #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q)
+    ∧ #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+      2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q := by
+  letI : Claim57Residuals (F := F) (m := m) (n := n) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) k δ x₀ h_gs :=
+    Claim57Residuals.ofGraphExtractionHypotheses
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) (δ := δ) (x₀ := x₀) (h_gs := h_gs)
+      hcond hfactor
+  exact exists_factors_with_large_common_root_set
+    (F := F) (m := m) (n := n) (k := k) (Q := Q)
+    (ωs := ωs) (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs
+
 /-- Claim 5.7 establishes existence of `R`; this extracts it. -/
 noncomputable def R (δ : ℚ) (x₀ : F) (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
     [Claim57Residuals (F := F) k δ x₀ h_gs] : F[Z][X][Y] :=
