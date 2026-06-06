@@ -235,6 +235,39 @@ def rs_epsCA_small_loss_r4_10
   -- δ_int/(δ_int-δ_fld). So R4.10 is blocked SOLELY on T4.9.2 — no independent external
   -- content. Re-attempt immediately after T4.9.2 lands.
 
+/-- **ABF26 Remark 4.10 — corrected reduction form.**
+
+This is the checked part of the small-proximity-loss simplification.  It takes the BCHKS25
+T4.9.2 bound at the genuine nearby internal radius `δ_fld + γ/n`, the exact R4.2
+floor-collapse side condition, and the remaining real RHS comparison as explicit hypotheses.
+Then it derives the in-tree R4.10 target at `δ_int = δ_fld`.
+
+This avoids the false shortcut documented by `r4_10_floor_collapse_hypotheses_insufficient`:
+`0 < γ < 1` alone does not imply the needed floor equality. -/
+theorem rs_epsCA_small_loss_r4_10_of_residuals
+    (domain : ι ↪ F) (k : ℕ) (δ_fld : ℝ≥0) (γ : ℝ≥0) :
+    let δ_int : ℝ≥0 := δ_fld + γ / (Fintype.card ι : ℝ≥0)
+    let n : ℝ := Fintype.card ι
+    let ρ : ℝ := k / n
+    let t492Bound : ℝ :=
+      max ((1 - ρ - δ_fld) / (δ_fld * (1 - ρ - 2 * δ_fld) * Fintype.card F))
+          ((δ_int : ℝ) / (((δ_int : ℝ) - (δ_fld : ℝ)) * Fintype.card F))
+    let smallBound : ℝ :=
+      max ((1 - ρ - δ_fld) / (δ_fld * (1 - ρ - 2 * δ_fld) * Fintype.card F))
+          ((n * δ_fld + γ) / (γ * Fintype.card F))
+    epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F))) δ_fld δ_int ≤
+        ENNReal.ofReal t492Bound →
+    Nat.floor (δ_fld * Fintype.card ι) = Nat.floor (δ_int * Fintype.card ι) →
+    t492Bound ≤ smallBound →
+    epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F))) δ_fld δ_fld ≤
+      ENNReal.ofReal smallBound := by
+  intro δ_int n ρ t492Bound smallBound hT492 hfloor hbound
+  have heq := epsCA_eq_of_floor_eq
+    (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F)))
+    δ_fld δ_fld δ_int hfloor
+  rw [heq]
+  exact le_trans hT492 (ENNReal.ofReal_le_ofReal hbound)
+
 /-- The currently stated `0 < γ < 1` hypotheses do not by themselves imply the
 floor-collapse side condition needed in `rs_epsCA_small_loss_r4_10`.
 
