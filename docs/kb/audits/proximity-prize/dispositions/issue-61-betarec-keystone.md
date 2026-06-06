@@ -73,6 +73,10 @@ gap is to wire the live Section 5 context into the genuine betaRec route:
   `gammaLocal` representative input expected by `curveCoeffPolys_of_betaRec_offcentre`;
 - the degree-X bound and decoded-family specialization bridge, stated against the truncated local
   representative in the off-centre route;
+- the child #91 `hPz` supplier: `HPzBridge` already provides the abstract
+  `HenselDatum -> hPz` and direct-identity landing pads, but the live Section 5 context still has to
+  construct the per-`z` `HenselDatum` or matching-unique witness and thread it through
+  `GSFactorData.toSection5StrictData` / `BetaCurveInput`;
 - the GS-factor divisibility input `Hlift H ∣ R`;
 - the L13 betaRec drop-in for the legacy `β_regular` path.
 

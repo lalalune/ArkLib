@@ -280,6 +280,7 @@ end HPzBridge
 end ArkLib
 
 /-! ## Axiom audit — must rest only on `[propext, Classical.choice, Quot.sound]`. -/
+#print axioms ArkLib.HPzBridge.HenselDatum
 #print axioms ArkLib.HPzBridge.decoded_eq_specialization_of_hensel
 #print axioms ArkLib.HPzBridge.decoded_eq_specialization_of_matchesGraph_unique
 #print axioms ArkLib.HPzBridge.eval_identity_of_henselDatum

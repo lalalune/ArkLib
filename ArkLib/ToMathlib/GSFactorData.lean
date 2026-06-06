@@ -200,3 +200,8 @@ def toSection5StrictData
 end GSFactorData
 
 end ArkLib
+
+/-! ## Axiom audit — GS-factor and `hPz` consumer surface for Section 5. -/
+#print axioms ArkLib.GSFactorData.Bundle
+#print axioms ArkLib.GSFactorData.of_section5Inputs
+#print axioms ArkLib.GSFactorData.toSection5StrictData

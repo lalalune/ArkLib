@@ -385,3 +385,12 @@ end KeystoneStrictResidual
 
 end ArkLib
 
+/-! ## Axiom audit — betaRec/`hPz` consumer front doors. -/
+#print axioms ArkLib.KeystoneStrictResidual.BetaCurveInput
+#print axioms ArkLib.KeystoneStrictResidual.BetaCurveInputFin
+#print axioms ArkLib.KeystoneStrictResidual.hcoeffPoly_of_betaRec
+#print axioms ArkLib.KeystoneStrictResidual.hcoeffPoly_of_betaRecFin
+#print axioms ArkLib.KeystoneStrictResidual.strictCoeffPolysResidual_of_betaRec
+#print axioms ArkLib.KeystoneStrictResidual.strictCoeffPolysResidual_of_betaRecFin
+#print axioms ArkLib.KeystoneStrictResidual.correlatedAgreement_affine_curves_johnson_of_betaRecFin
+#print axioms ArkLib.KeystoneStrictResidual.correlatedAgreement_affine_curves_johnson_of_section5DataFin_strict
