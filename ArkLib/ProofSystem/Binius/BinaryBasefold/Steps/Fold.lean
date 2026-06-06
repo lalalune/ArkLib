@@ -9,6 +9,15 @@ import ArkLib.ToVCVio.Simulation
 import ArkLib.OracleReduction.Completeness
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness
 
+/-!
+# Binary Basefold Fold Step
+
+The folding round of the Binary Basefold core interaction as an oracle reduction. Defines the
+prover (`foldOracleProver`), verifier (`foldOracleVerifier`), and reduction
+(`foldOracleReduction`), proves its perfect completeness, and provides the round-by-round
+knowledge extractor (`foldRbrExtractor`) and knowledge-state function (`foldKnowledgeStateFunction`).
+-/
+
 namespace Binius.BinaryBasefold.CoreInteraction
 noncomputable section
 open OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Polynomial MvPolynomial

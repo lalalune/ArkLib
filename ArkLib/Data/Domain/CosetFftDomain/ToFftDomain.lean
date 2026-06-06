@@ -16,6 +16,16 @@ import Mathlib.Tactic.Field
 import ArkLib.Data.Domain.CosetFftDomain.Mem
 import ArkLib.Data.Domain.FftDomain.Mem
 
+/-!
+# Converting a coset FFT domain to an FFT domain
+
+We define `toFftDomain`, normalizing a coset FFT domain `ω` into an `FftDomain` (coset generator
+set to one). The evaluation bridge `eval_toFftDomain` and the membership characterization
+`mem_toFftDomain_iff_mul_mem` relate the two domains, with `mul_mem` corollaries and the
+finset-image / cardinality lemmas (`toFinset_image_toFftDomain_eq_toFinset`,
+`card_toFinset_eq_card_toFftDomain_toFinset`) describing the image set.
+-/
+
 namespace Domain
 
 variable {ι : Type} [AddCommGroup ι]

@@ -7,15 +7,14 @@ Authors: Quang Dao
 import ArkLib.OracleReduction.ProtocolSpec.Basic
 
 /-!
-  # Casting for ProtocolSpec and related structures
+# Dependent Casting for Protocol Specifications
 
-  We define custom dependent casts (registered as `DCast` instances) for the following structures:
-  - `ProtocolSpec`
-  - `MessageIdx` and `ChallengeIdx`
-  - `(Full)Transcript`
-  - Related oracle interface instances
-
-  We also show basic properties about these casts.
+This module formalizes dependent casting functions and equivalence relations for `ProtocolSpec` and its
+associated components across round-count and specification equalities. In interactive oracle proofs,
+reductions are often defined over varying parameterizations of the protocol structure (e.g., varying
+round counts or message spaces). Dependent casting allows safe transport of message indices (`MessageIdx`),
+challenge indices (`ChallengeIdx`), and transcripts (`Transcript`, `FullTranscript`) between structurally
+isomorphic specifications.
 -/
 
 open OracleComp

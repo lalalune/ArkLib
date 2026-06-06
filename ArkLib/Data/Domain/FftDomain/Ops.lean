@@ -15,6 +15,15 @@ import Mathlib.Tactic.Field
 
 import ArkLib.Data.Domain.FftDomain.Mem
 
+/-!
+# Pointwise operations on FFT domains
+
+We record how an FFT domain map interacts with the group structure on indices: `apply_zero_eq_one`,
+`apply_add_eq_mul`, `apply_neg_eq_inv`, `domain_sub_eq_div_domain`, `apply_nsmul`, and
+`apply_eq_pow_of_generator`. We also prove closure under multiplication (`mul_mem_of_mem`),
+membership of `-1` (`neg_one_mem_domain`), and the extensionality lemma `eq_iff_generators_eq`.
+-/
+
 namespace Domain
 
 variable {ι : Type} [AddCommGroup ι]

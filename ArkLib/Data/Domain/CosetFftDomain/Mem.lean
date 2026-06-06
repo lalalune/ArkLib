@@ -15,6 +15,16 @@ import Mathlib.Tactic.Field
 import ArkLib.Data.Domain.CosetFftDomain.Defs
 import ArkLib.ToMathlib.Finset.ToListWithProof
 
+/-!
+# Membership for coset FFT domains
+
+We equip a coset FFT domain `D` with a `Membership F D` instance (`x ∈ φ ↔ ∃ i, φ i = x`) and
+prove the basic membership characterizations: `mem_def`, `mem_self`, the bridges
+`mem_toCosetFftDomain_iff_mem` / `mem_toFinset_iff_mem`, `not_zero_mem`, and
+`mem_iff_exists_mul`. `Inhabited` instances for the underlying domain and its `toFinset` are also
+provided.
+-/
+
 namespace Domain
 
 open Function

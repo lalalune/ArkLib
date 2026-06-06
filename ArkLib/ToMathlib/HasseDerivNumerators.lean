@@ -1,7 +1,12 @@
 /-
 Copyright (c) 2025 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
+import ArkLib.Data.Polynomial.RationalFunctionsCore
+import Mathlib
 
+/-!
 # Numerator structure of the App.-A.4 Hasse-derivative coefficients (brick **L2**)
 
 This file formalizes the *numerator* structure required by the BCIKS20 Appendix-A.4 recursion
@@ -43,9 +48,6 @@ What is proven (all kernel-clean, no `sorry`/`admit`/`axiom`/`native_decide`):
 This file does **not** edit the (0-sorry) `RationalFunctions.lean`.  All names live in
 `namespace ArkLib`; the in-tree objects are opened from `BCIKS20AppendixA`.
 -/
-
-import ArkLib.Data.Polynomial.RationalFunctionsCore
-import Mathlib
 
 set_option linter.style.longLine false
 

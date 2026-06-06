@@ -102,6 +102,14 @@ theorem mcaLatticePoint_le_one (n : ℕ) (j : Fin (n + 1)) :
   · rw [div_le_one (by exact_mod_cast hn)]
     exact_mod_cast Nat.lt_succ_iff.mp j.isLt
 
+@[simp] theorem mcaLatticePoint_top (ι : Type) [Fintype ι] [Nonempty ι] :
+    mcaLatticePoint (Fintype.card ι)
+      ⟨Fintype.card ι, Nat.lt_succ_self _⟩ = 1 := by
+  unfold mcaLatticePoint
+  have hn : (Fintype.card ι : ℝ≥0) ≠ 0 := by
+    exact_mod_cast Fintype.card_ne_zero
+  exact div_self hn
+
 /-- Lattice radii are monotone in the index. -/
 theorem mcaLatticePoint_mono (n : ℕ) {i j : Fin (n + 1)} (h : i ≤ j) :
     mcaLatticePoint n i ≤ mcaLatticePoint n j := by

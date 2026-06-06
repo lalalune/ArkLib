@@ -11,14 +11,6 @@ import ArkLib.Data.Probability.Notation
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Fintype.Vector
 
-set_option maxHeartbeats 2000000
-
-open Finset ListDecodable NNReal Polynomial ProbabilityTheory ReedSolomon
-namespace OutOfDomSmpl
-
-variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
-         {ι : Type} [Fintype ι] [DecidableEq ι]
-
 /-! Section 4.3 [ACFY24stir]
 
 ## References
@@ -26,6 +18,14 @@ variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 * [Arnon, G., Chiesa, A., Fenzi, G., and Yogev, E., *STIR: Reed-Solomon proximity testing with
     fewer queries*][ACFY24stir]
 -/
+
+set_option maxHeartbeats 2000000
+
+open Finset ListDecodable NNReal Polynomial ProbabilityTheory ReedSolomon
+namespace OutOfDomSmpl
+
+variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
+         {ι : Type} [Fintype ι] [DecidableEq ι]
 
 /-- Returns the domain complement `F \ φ(ι)` of an injective map `φ : ι ↪ F` -/
 def domainComplement (φ : ι ↪ F) : Finset F :=

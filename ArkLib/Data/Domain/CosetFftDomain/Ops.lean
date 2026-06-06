@@ -17,6 +17,16 @@ import ArkLib.Data.Domain.CosetFftDomain.Mem
 import ArkLib.Data.Domain.CosetFftDomain.ToFftDomain
 import ArkLib.Data.Domain.FftDomain.Ops
 
+/-!
+# Pointwise operations on coset FFT domains
+
+We compute how the coset FFT domain map interacts with the additive group structure on indices:
+`apply_zero`, `apply_add_eq_inv_mul_mul`, `apply_neg_eq_sq_mul_inv`, and `apply_sub_eq_mul_div`.
+
+We also relate negation of indices to domain membership (`neg_mem_domain_of_mem`,
+`neg_mem_domain_iff_mem`) and derive `domain_implies_char_ne_2`.
+-/
+
 namespace Domain
 
 variable {ι : Type} [Fintype ι] [AddCommGroup ι] [DecidableEq ι]

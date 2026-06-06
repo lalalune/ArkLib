@@ -8,10 +8,6 @@ import Mathlib.Algebra.Order.Chebyshev
 import Mathlib.Data.Finset.Card
 import Mathlib.Tactic
 
-set_option linter.unusedSectionVars false
-set_option linter.unusedDecidableInType false
-set_option linter.unusedFintypeInType false
-
 /-!
 # GCXK25 second-moment counting core (verified backbone of GCXK25 Lemma 3)
 
@@ -83,6 +79,10 @@ This file is the verified piece; those two are the genuinely external pieces.
 * [ABF26] Arnon, Boneh, Fenzi. *Open Problems in List Decoding and Correlated Agreement*.
   2026. Theorem 5.1.
 -/
+
+set_option linter.unusedSectionVars false
+set_option linter.unusedDecidableInType false
+set_option linter.unusedFintypeInType false
 
 namespace GCXK25SecondMoment
 

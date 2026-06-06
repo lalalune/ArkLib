@@ -8,6 +8,21 @@ import Mathlib.InformationTheory.Hamming
 import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Tactic
 
+/-!
+# Geometry of codewords and the Johnson-bound Gram argument
+
+This file develops the real-valued geometric embedding of words `ι → α` used to derive
+Johnson-type list-size bounds. The embedding `emb` and inner product `codeInner` translate
+agreement and Hamming distance into Euclidean data: `agree_add_hammingDist`,
+`codeInner_eq_agree_sub`, and `codeInner_eq_card_mul_sub_hammingDist` relate the inner product
+to agreement/distance, while `codeInner_self` computes the self inner product.
+
+The Gram-matrix lemmas (`sum_sum_codeInner_nonneg`, `sum_sum_shiftInner_nonneg`,
+`card_le_of_gram_bounds`) and their specializations (`shiftInner_diag_le`,
+`shiftInner_offdiag_le`, `johnson_quadratic_cap`) culminate in the list-size bounds
+`card_le_of_johnson_condition`, `card_le_of_johnson_sq`, and `card_le_of_johnson_sq_dist`.
+-/
+
 namespace CodeGeometry
 open Finset
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]

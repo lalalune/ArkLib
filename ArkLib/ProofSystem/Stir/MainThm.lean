@@ -9,7 +9,10 @@ import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.OracleReduction.VectorIOR
 import ArkLib.ProofSystem.Stir.ProximityBound
 
-/-!Section 5 ACFY24stir, Theorem 5.1 and Lemma 5.4
+/-!
+# STIR Main Theorem
+
+Section 5 of [ACFY24stir]: Theorem 5.1 and Lemma 5.4.
 
 ## References
 

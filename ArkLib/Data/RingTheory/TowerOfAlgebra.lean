@@ -6,10 +6,6 @@ Authors: Chung Thai Nguyen, Quang Dao
 
 import Mathlib
 
-set_option linter.all false
-set_option linter.deprecated false
-set_option linter.unusedSimpArgs false
-
 /-!
   # Tower of Algebras and Tower of Algebra Equivalences
 
@@ -23,6 +19,10 @@ set_option linter.unusedSimpArgs false
   * `TowerOfAlgebraEquiv` : an equivalence of towers of algebras
   * `AssocTowerOfAlgebraEquiv` : an equivalence of towers of associative algebras
 -/
+
+set_option linter.all false
+set_option linter.deprecated false
+set_option linter.unusedSimpArgs false
 
 class TowerOfAlgebra {ι : Type*} [Preorder ι] (TA : ι → Type*)
   [∀ i, CommSemiring (TA i)] where

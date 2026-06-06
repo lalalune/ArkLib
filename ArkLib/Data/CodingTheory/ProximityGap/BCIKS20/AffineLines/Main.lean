@@ -13,6 +13,17 @@ import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidual
 import ArkLib.ToMathlib.BoundaryDischarge
 import ArkLib.ToMathlib.KeystoneStrictResidual
 
+/-!
+# BCIKS20 Theorem 1.4 — correlated agreement of Reed-Solomon codes over affine lines
+
+This file assembles the main correlated-agreement theorem of [BCIKS20] over affine lines from
+the unique-decoding and curve ingredients. `RS_correlatedAgreement_affineLines` (and its strict /
+positive variants `RS_correlatedAgreement_affineLines_strict`,
+`RS_correlatedAgreement_affineLines_strict_pos`) cover the regime up to the relevant bound, while
+the `..._johnson_of_betaRec...` results extend the conclusion into the Johnson regime, conditional
+on the recursive `β`-construction and the documented lattice residual.
+-/
+
 namespace ProximityGap
 
 open NNReal Finset Function ProbabilityTheory Finset Code

@@ -19,6 +19,19 @@ import Mathlib.Tactic.Field
 import ArkLib.Data.Domain.CosetFftDomain.Ops
 import ArkLib.Data.Domain.FftDomain.Ops
 
+/-!
+# Subdomains of coset FFT domains
+
+For a coset FFT domain `ω` over `Fin (2 ^ n)` and a depth `i`, we construct the `i`-th subdomain
+of size `2 ^ (n - i)`. `subdomain_embed` is the index embedding (shown additive, zero-preserving
+and injective via `subdomain_embed_add` / `subdomain_embed_zero` / `subdomain_embed_injective`),
+and `subdomain` is the resulting smaller coset FFT domain.
+
+Membership lemmas (`mem_subdomain_of_eq_vals`, `mem_subdomain_0_iff_mem`,
+`mem_subdomain_n_iff_eq_pow_generator`) and generator-power computations relate the subdomain back
+to the ambient domain.
+-/
+
 namespace Domain
 
 variable {F : Type} [Field F] [DecidableEq F]

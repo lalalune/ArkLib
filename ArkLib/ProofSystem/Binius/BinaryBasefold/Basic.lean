@@ -8,6 +8,18 @@ import ArkLib.ProofSystem.Binius.BinaryBasefold.Compliance
 import ArkLib.ProofSystem.Sumcheck.Structured
 import ArkLib.Data.MvPolynomial.MultilinearComputational
 
+/-!
+# Binius binary Basefold: oracle bookkeeping
+
+We set up the round/oracle indexing arithmetic for the binary-field Basefold protocol over `ℓ`
+folding rounds committing every `ϑ` rounds. `toOutCodewordsCount` counts the codewords available
+as oracles at each round and `isCommitmentRound` marks the commitment rounds; the bulk of the file
+proves the arithmetic facts about these counts (e.g. `toOutCodewordsCount_succ_eq`,
+`toOutCodewordsCount_last`) and the index-range bounds (`oracle_index_le_ℓ`,
+`oracle_block_k_bound`, ...) used to address oracle positions and map them to domain indices via
+`oraclePositionToDomainIndex` and `mkLastOracleIndex`.
+-/
+
 noncomputable section
 namespace Binius.BinaryBasefold
 

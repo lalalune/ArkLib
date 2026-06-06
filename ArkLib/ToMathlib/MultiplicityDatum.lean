@@ -2,7 +2,11 @@
 Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
+-/
+import ArkLib.Data.Polynomial.RationalFunctions
+import ArkLib.ToMathlib.MatchingExtractor
 
+/-!
 # Discharging the last two genuine §5 math data: `HasOrderAt` (obligation 4) and `hdvd_C`
   (obligation 1) from the in-tree **proven** multiplicity / divisibility structure.
 
@@ -59,9 +63,6 @@ All results rest only on `[propext, Classical.choice, Quot.sound]`.
 * [BCIKS20] — Ben-Sasson, Carmon, Ishai, Kopparty, Saraf, *Proximity Gaps for Reed–Solomon Codes*,
   §5 (list-decoding agreement chain) and Appendix A.4 (the `W`-power-numerator recursion (A.1)).
 -/
-
-import ArkLib.Data.Polynomial.RationalFunctions
-import ArkLib.ToMathlib.MatchingExtractor
 
 open Polynomial Polynomial.Bivariate
 

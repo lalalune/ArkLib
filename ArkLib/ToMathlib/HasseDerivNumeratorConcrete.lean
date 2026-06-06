@@ -1,7 +1,13 @@
 /-
 Copyright (c) 2025 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
+import ArkLib.ToMathlib.HasseDerivNumerators
+import ArkLib.Data.Polynomial.RationalFunctions
+import Mathlib
 
+/-!
 # Concrete Hasse-derivative numerator coefficient (brick **L2b**)
 
 This file delivers the *concrete* trivariate Hasse-derivative coefficient that brick L2
@@ -58,10 +64,6 @@ What is proven (all kernel-clean, no `sorry`/`admit`/`axiom`/`native_decide`):
 * `genHasseCoeff_hasWPowerNumerator_of_clearing` — the residual-isolating generic clearing lemma.
 * `lineHasseCoeff_mem_regularElms_set_of_dvd` — the L7-facing `hA` composition.
 -/
-
-import ArkLib.ToMathlib.HasseDerivNumerators
-import ArkLib.Data.Polynomial.RationalFunctions
-import Mathlib
 
 open Polynomial Polynomial.Bivariate BCIKS20AppendixA BCIKS20AppendixA.ClaimA2
 

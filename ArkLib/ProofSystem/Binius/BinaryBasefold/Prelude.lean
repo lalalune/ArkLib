@@ -13,6 +13,15 @@ import CompPoly.Data.Vector.Basic
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRound
 import ArkLib.ProofSystem.Sumcheck.Structured.SingleRound
 
+/-!
+# Binary Basefold Preliminaries
+
+Supporting lemmas and definitions for the Binary Basefold formalization: Hamming-distance bounds
+under composition with injective maps, index-bound arithmetic over `Fin` (`fin_ℓ_lt_r` and
+friends), and the fiber-coefficient maps (`fiber_coeff`, `qMap_total_fiber`) relating evaluation
+points across folding levels.
+-/
+
 namespace Binius.BinaryBasefold
 
 open OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Polynomial MvPolynomial

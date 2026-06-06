@@ -61,6 +61,8 @@ Key lemmas:
 
 -/
 
+set_option linter.style.longFile 2700
+
 open OracleSpec OracleComp ProtocolSpec Sum  HasEvalPMF
 
 universe u v w

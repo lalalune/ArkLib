@@ -1,8 +1,11 @@
+/-
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
 import Mathlib
 import ArkLib.ToMathlib.PowerSeriesHenselianA
 import ArkLib.ToMathlib.PowerSeriesNewton
-
-set_option linter.style.longLine false
 
 /-!
 # Hensel / Newton root UNIQUENESS over `k⟦X⟧`
@@ -43,6 +46,8 @@ underneath the converse bridge `matching point ⟹ π_z(β R t) = 0` (L14).
 
 Everything is kernel-clean.
 -/
+
+set_option linter.style.longLine false
 
 open PowerSeries
 

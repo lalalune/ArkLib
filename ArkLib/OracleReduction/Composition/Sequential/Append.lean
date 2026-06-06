@@ -22,6 +22,8 @@ import ArkLib.OracleReduction.Security.RoundByRound
   of the reductions being composed (with extra conditions on the extractor).
 -/
 
+set_option linter.style.longFile 2600
+
 open OracleComp OracleSpec SubSpec
 
 universe u v
@@ -504,7 +506,7 @@ Proving them equal needs the two router-interchange facts:
     own `simOracle2` would, the intermediate `oStmt₂` being `V₁.toVerifier`'s derived output oracles.
 This is the structural sibling of `Prover.append_run` (a `simulateQ`/routing interchange rather than a
 `runToRound` interchange) and is the deep obstruction here; it is *not* probabilistic. It feeds the
-four `OracleVerifier.append_*` security theorems (their `convert … ; simp [append_toVerifier]` steps).
+four `OracleVerifier.append_*` security theorems (their `convert …; simp [append_toVerifier]` steps).
 -/
 theorem router₁_compose (oStmt : ∀ i, OStmt₁ i) (transcript : (pSpec₁ ++ₚ pSpec₂).FullTranscript) :
     ((OracleInterface.simOracle2 oSpec oStmt transcript.messages) ∘ₛ router₁ (pSpec₂ := pSpec₂)) =

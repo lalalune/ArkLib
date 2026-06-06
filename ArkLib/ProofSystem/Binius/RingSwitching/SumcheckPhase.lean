@@ -12,10 +12,6 @@ import ArkLib.OracleReduction.Security.RoundByRound
 import ArkLib.ProofSystem.Binius.BinaryBasefold.ReductionLogic
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness
 
-open OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Polynomial MvPolynomial
-  Module Binius.BinaryBasefold TensorProduct Nat Matrix ProbabilityTheory
-open scoped NNReal
-
 /-!
 # Ring-Switching Core Interaction Phase
 
@@ -44,6 +40,10 @@ source of RBR knowledge soundness error.
     decomposes `e =: Σ_{u ∈ {0,1}^κ} β_u ⊗ e_u`.
 9. `V` requires `s_{ℓ'} ?= (Σ_{u ∈ {0,1}^κ} eq̃(u_0, ..., u_{κ-1}, r''_0, ..., r''_{κ-1}) ⋅ e_u) ⋅ s'`.
 -/
+
+open OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Polynomial MvPolynomial
+  Module Binius.BinaryBasefold TensorProduct Nat Matrix ProbabilityTheory
+open scoped NNReal
 
 namespace Binius.RingSwitching.SumcheckPhase
 noncomputable section
@@ -1722,7 +1722,18 @@ def coreInteractionOracleReduction :=
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
 
 /-- Perfect completeness for large-field reduction (Sumcheck ++ FinalSum) -/
-theorem coreInteraction_perfectCompleteness (hInit : init.neverFails) :
+theorem coreInteraction_perfectCompleteness (hInit : init.neverFails)
+    (hSeqComposePerfectCompleteness :
+      (sumcheckLoopOracleReduction κ L K β ℓ ℓ' h_l (𝓑 := 𝓑) aOStmtIn).perfectCompleteness
+        init impl
+        (strictSumcheckRoundRelation κ L K β ℓ ℓ' h_l (𝓑 := 𝓑) aOStmtIn 0)
+        (strictSumcheckRoundRelation κ L K β ℓ ℓ' h_l (𝓑 := 𝓑) aOStmtIn
+          (Fin.last ℓ')))
+    (hAppendPerfectCompleteness :
+      (coreInteractionOracleReduction κ L K β ℓ ℓ' h_l (𝓑 := 𝓑) aOStmtIn).perfectCompleteness
+        init impl
+        (strictSumcheckRoundRelation κ L K β ℓ ℓ' h_l (𝓑 := 𝓑) aOStmtIn 0)
+        aOStmtIn.toStrictRelInput) :
   OracleReduction.perfectCompleteness
     (oracleReduction := coreInteractionOracleReduction κ L K β ℓ ℓ' h_l (𝓑 := 𝓑) aOStmtIn)
     (StmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ) 0)
@@ -1746,8 +1757,10 @@ theorem coreInteraction_perfectCompleteness (hInit : init.neverFails) :
           (β:=β) (ℓ:=ℓ) (ℓ':=ℓ') (h_l:=h_l) (𝓑:=𝓑) (aOStmtIn:=aOStmtIn)
           (init:=init) (impl:=impl) (hInit:=hInit) i
       )
+      (hSeqComposePerfectCompleteness := hSeqComposePerfectCompleteness)
   · exact finalSumcheckOracleReduction_perfectCompleteness (κ:=κ) (L:=L) (K:=K)
       (β:=β) (ℓ:=ℓ) (ℓ':=ℓ') (h_l:=h_l) (aOStmtIn:=aOStmtIn) (init:=init) (impl:=impl) hInit
+  · exact hAppendPerfectCompleteness
 
 /-- standard sumcheck error -/
 def coreInteractionRbrKnowledgeError (_ : (pSpecCoreInteraction L ℓ').ChallengeIdx) : ℝ≥0 :=
@@ -1755,7 +1768,17 @@ def coreInteractionRbrKnowledgeError (_ : (pSpecCoreInteraction L ℓ').Challeng
     -- steps, i.e. iteratedSumcheckRoundKnowledgeError
 
 /-- RBR knowledge soundness for the sumcheck loop (seqCompose over ℓ'). -/
-theorem sumcheckLoopOracleVerifier_rbrKnowledgeSoundness :
+theorem sumcheckLoopOracleVerifier_rbrKnowledgeSoundness
+    (hSeqComposeRbrKnowledgeSoundness :
+      (sumcheckLoopOracleVerifier κ (L := L) (K := K) (β := β) (ℓ := ℓ) (ℓ' := ℓ')
+        (h_l := h_l) (𝓑 := 𝓑) aOStmtIn).rbrKnowledgeSoundness
+          (init := init) (impl := impl)
+          (relIn := sumcheckRoundRelation κ L K β ℓ ℓ' h_l (𝓑 := 𝓑) aOStmtIn 0)
+          (relOut := sumcheckRoundRelation κ L K β ℓ ℓ' h_l (𝓑 := 𝓑) aOStmtIn
+            (Fin.last ℓ'))
+          (rbrKnowledgeError := fun combinedIdx =>
+            letI ij := seqComposeChallengeIdxToSigma combinedIdx
+            iteratedSumcheckRoundKnowledgeError L ℓ' ij.1 ij.2)) :
   (sumcheckLoopOracleVerifier κ (L := L) (K := K) (β := β) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l) (𝓑 := 𝓑) aOStmtIn).rbrKnowledgeSoundness
     (init := init) (impl := impl)
     (relIn := sumcheckRoundRelation κ L K β ℓ ℓ' h_l (𝓑 := 𝓑) aOStmtIn 0)
@@ -1770,9 +1793,28 @@ theorem sumcheckLoopOracleVerifier_rbrKnowledgeSoundness :
       iteratedSumcheckRoundKnowledgeError L ℓ' roundIdx)
     (h := fun i =>
       iteratedSumcheckOracleVerifier_rbrKnowledgeSoundness κ L K β ℓ ℓ' h_l (𝓑 := 𝓑) aOStmtIn i)
+    (hSeqComposeRbrKnowledgeSoundness := hSeqComposeRbrKnowledgeSoundness)
 
 /-- RBR knowledge soundness for large-field reduction (Sumcheck ++ FinalSum) -/
-theorem coreInteraction_rbrKnowledgeSoundness :
+theorem coreInteraction_rbrKnowledgeSoundness
+    (hSeqComposeRbrKnowledgeSoundness :
+      (sumcheckLoopOracleVerifier κ (L := L) (K := K) (β := β) (ℓ := ℓ) (ℓ' := ℓ')
+        (h_l := h_l) (𝓑 := 𝓑) aOStmtIn).rbrKnowledgeSoundness
+          (init := init) (impl := impl)
+          (relIn := sumcheckRoundRelation κ L K β ℓ ℓ' h_l (𝓑 := 𝓑) aOStmtIn 0)
+          (relOut := sumcheckRoundRelation κ L K β ℓ ℓ' h_l (𝓑 := 𝓑) aOStmtIn
+            (Fin.last ℓ'))
+          (rbrKnowledgeError := fun combinedIdx =>
+            letI ij := seqComposeChallengeIdxToSigma combinedIdx
+            iteratedSumcheckRoundKnowledgeError L ℓ' ij.1 ij.2))
+    (hAppendRbrKnowledgeSoundness :
+      (coreInteractionOracleVerifier κ L K β ℓ ℓ' h_l (𝓑 := 𝓑) aOStmtIn).rbrKnowledgeSoundness
+        (init := init) (impl := impl)
+        (relIn := sumcheckRoundRelation κ L K β ℓ ℓ' h_l (𝓑:=𝓑) aOStmtIn 0)
+        (relOut := aOStmtIn.toRelInput)
+        (rbrKnowledgeError :=
+          (Sum.elim (fun _ => (2 : ℝ≥0) / Fintype.card L)
+            (finalSumcheckKnowledgeError (L := L)) ∘ ChallengeIdx.sumEquiv.symm))) :
   OracleVerifier.rbrKnowledgeSoundness
     (verifier := coreInteractionOracleVerifier κ L K β ℓ ℓ' h_l (𝓑 := 𝓑) aOStmtIn)
     (StmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ) 0)
@@ -1798,13 +1840,15 @@ theorem coreInteraction_rbrKnowledgeSoundness :
     (h₁ := by
       simpa using (sumcheckLoopOracleVerifier_rbrKnowledgeSoundness
         (κ := κ) (L := L) (K := K) (β := β) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
-        (𝓑 := 𝓑) (aOStmtIn := aOStmtIn) (init := init) (impl := impl))
+        (𝓑 := 𝓑) (aOStmtIn := aOStmtIn) (init := init) (impl := impl)
+        hSeqComposeRbrKnowledgeSoundness)
     )
     (h₂ := by
       simpa using (finalSumcheckOracleVerifier_rbrKnowledgeSoundness
         (κ := κ) (L := L) (K := K) (β := β) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
         (𝓑 := 𝓑) (aOStmtIn := aOStmtIn) (init := init) (impl := impl))
     )
+    (hAppendRbrKnowledgeSoundness := hAppendRbrKnowledgeSoundness)
   exact OracleVerifier.rbrKnowledgeSoundness_of_eq_error
     (init := init) (impl := impl)
     (h_ε := by

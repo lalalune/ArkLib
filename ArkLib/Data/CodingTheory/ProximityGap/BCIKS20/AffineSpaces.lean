@@ -15,6 +15,18 @@ import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.Polynomial.Trivariate
 import ArkLib.Data.CodingTheory.Basic.DecodingRadius
 
+/-!
+# BCIKS20 §6 — from affine lines to affine/linear subspaces
+
+This file lifts the affine-line correlated-agreement results to higher-dimensional affine and
+linear subspaces. It records the probabilistic averaging tools (`exists_of_weighted_avg_gt`,
+`prob_uniform_congr_equiv`, `prob_uniform_shift_invariant`), the basepoint-selection lemmas
+(`exists_basepoint_with_large_line_prob_aux`, `exists_basepoint_with_large_line_prob`), and the
+joint-agreement-to-proximity steps (`jointAgreement_implies_second_proximity`,
+`jointAgreement_implies_linSpan_proximity`), culminating in
+`average_proximity_implies_proximity_of_linear_subspace`.
+-/
+
 namespace ProximityGap
 
 open NNReal Finset Function ProbabilityTheory ReedSolomon Code

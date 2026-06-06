@@ -7,9 +7,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
 import ArkLib.ToMathlib.CoeffExtract
 import ArkLib.ToMathlib.IngredientCBridge
 
-set_option linter.style.longLine false
-set_option linter.style.whitespace false
-
 /-!
 # Keystone capstone — the `hcoeffPoly` witness for the Johnson list-decoding branch
 
@@ -60,6 +57,9 @@ hypotheses are the §5 multiplicity datum (`δ ≤ δ₀` regime) + standard deg
 No part claimed proven contains `sorry`/`admit`/`native_decide`; every genuine gap is an explicit
 hypothesis.
 -/
+
+set_option linter.style.longLine false
+set_option linter.style.whitespace false
 
 namespace ArkLib
 

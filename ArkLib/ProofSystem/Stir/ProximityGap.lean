@@ -12,11 +12,13 @@ import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.Probability.Notation
 import ArkLib.ProofSystem.Stir.ProximityBound
 
-open NNReal ProbabilityTheory ReedSolomon
-
-namespace STIR
-
 /-!
+# STIR proximity gap for Reed-Solomon codes
+
+This file states the proximity-gap theorem for Reed-Solomon codes used by STIR (Theorem 4.1),
+relating the probability that a random linear combination of words is close to the code to the
+existence of a common large agreement set for the individual words.
+
 ## References
 
 * [Ben-Sasson, E., Carmon, D., Ishai, Y., Kopparty, S., and Saraf, S., *Proximity Gaps
@@ -24,6 +26,10 @@ namespace STIR
 * [Arnon, G., Chiesa, A., Fenzi, G., and Yogev, E., *STIR: Reed-Solomon proximity testing
     with fewer queries*][ACFY24stir]
 -/
+
+open NNReal ProbabilityTheory ReedSolomon
+
+namespace STIR
 
 /-- Theorem 4.1[BCIKS20] from [ACFY24stir]
   Let `C = RS[F, ι, degree]` be a ReedSolomon code with rate `degree / |ι|`

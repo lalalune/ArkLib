@@ -7,6 +7,16 @@ Authors: OpenAI
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
 import ArkLib.ToMathlib.CorrelatedAgreementListDecodingClosed
 
+/-!
+# BCIKS20 curves — assembly of the decoded family and good-coefficient cardinality bounds
+
+This file assembles the coefficientwise decoded family `P z = ∑ i, z^i A_i` from per-coefficient
+polynomials (`decoded_family_coefficients_of_coeff_polys`) and packages the cardinality bounds on
+the good-coefficient-curve set (`goodCoeffsCurve_card_bounds_of_ennreal_threshold` and its
+positive variant), along with reindexing helpers (`curve_sum_reindex_equiv`,
+`RS_goodCoeffsCurve_finCongr`) used by the curve correlated-agreement development.
+-/
+
 namespace ProximityGap
 
 open Polynomial

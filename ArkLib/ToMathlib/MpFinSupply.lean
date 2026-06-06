@@ -7,11 +7,6 @@ import ArkLib.ToMathlib.MpProducer
 import ArkLib.ToMathlib.HenselDatumProducer
 import ArkLib.ToMathlib.MatchingExtractor
 
--- Documentation-heavy file (BCIKS §5 / App-A.4 prose in the docstrings); the long-line style
--- linter is disabled locally, matching the sibling supply files.
-set_option linter.style.longLine false
-set_option linter.unusedSectionVars false
-
 /-!
 # Matching Geometry and Finite-Range Pointwise Supply
 
@@ -49,6 +44,11 @@ We show that:
 ## References
 * [BCIKS20] Ben-Sasson, Carmon, Ishai, Kopparty, Saraf. *Proximity Gaps for Reed–Solomon Codes*, eprint 2020.
 -/
+
+-- Documentation-heavy file (BCIKS §5 / App-A.4 prose in the docstrings); the long-line style
+-- linter is disabled locally, matching the sibling supply files.
+set_option linter.style.longLine false
+set_option linter.unusedSectionVars false
 
 open Polynomial Polynomial.Bivariate BCIKS20AppendixA BCIKS20AppendixA.ClaimA2 ToRatFunc Ideal
 open PowerSeries

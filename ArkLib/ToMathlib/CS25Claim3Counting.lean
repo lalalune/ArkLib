@@ -230,7 +230,7 @@ theorem cs25_claim4_exists_point {K : ℕ} (p : ι → F[X])
   -- Combine. Set d := numDistinct, P := pairCollisions.
   set d := numDistinct p a₀ with hddef
   set P := pairCollisions p a₀ with hPdef
-  -- hcs : L^2 ≤ d * P ;  hbig : |T| * P ≤ L*|T| + (L²-L)(K-1)
+  -- hcs : L^2 ≤ d * P;  hbig : |T| * P ≤ L*|T| + (L²-L)(K-1)
   -- Want: L*|T| ≤ d * (|T| + (L-1)(K-1)).
   -- From hbig: |T|*P ≤ L*|T| + (L²-L)(K-1) = L*(|T| + (L-1)(K-1)).
   have hfac : L * T.card + (L ^ 2 - L) * (K - 1) = L * (T.card + (L - 1) * (K - 1)) := by

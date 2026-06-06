@@ -1,7 +1,14 @@
 /-
 Copyright (c) 2025 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
+import ArkLib.ToMathlib.HasseDerivNumeratorConcrete
+import ArkLib.ToMathlib.HasseDerivNumerators
+import ArkLib.Data.Polynomial.RationalFunctions
+import Mathlib
 
+/-!
 # General mixed Hasse-derivative numerator coefficient (brick **L2b-general**)
 
 This file extends the *concrete* trivariate Hasse-derivative coefficient of brick L2b
@@ -68,11 +75,6 @@ hypothesis rather than a `sorry`.
 
 This file does **not** edit any existing file.  All names live in `namespace ArkLib`.
 -/
-
-import ArkLib.ToMathlib.HasseDerivNumeratorConcrete
-import ArkLib.ToMathlib.HasseDerivNumerators
-import ArkLib.Data.Polynomial.RationalFunctions
-import Mathlib
 
 open Polynomial Polynomial.Bivariate BCIKS20AppendixA BCIKS20AppendixA.ClaimA2
 

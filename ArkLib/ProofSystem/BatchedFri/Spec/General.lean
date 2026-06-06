@@ -11,6 +11,16 @@ import ArkLib.ProofSystem.BatchedFri.Spec.SingleRound
 import ArkLib.ProofSystem.Fri.Spec.General
 
 
+/-!
+# The general Batched FRI protocol
+
+We assemble the whole-protocol Batched FRI oracle reduction by composing the single-round batched
+FRI reduction with the general FRI reduction. We fix the protocol parameters (field `F`, evaluation
+domain of size `2 ^ n`, folding count `k`, per-round folding degrees `s`, final degree bound `d`,
+number of consistency checks `l`, and number of batched polynomials `m`) and define the
+whole-protocol input relation and its sequential composition.
+-/
+
 namespace BatchedFri
 
 namespace Spec

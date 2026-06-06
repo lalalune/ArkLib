@@ -17,6 +17,18 @@ import ArkLib.Data.Domain.CosetFftDomain.Subdomain
 import ArkLib.Data.Domain.FftDomain.Ops
 import ArkLib.Data.Domain.FftDomain.ToSubgroup
 
+/-!
+# Subdomains of FFT domains
+
+We define `subdomain ω i`, the `i`-th subdomain of an FFT domain as a smaller `SmoothFftDomain`,
+and relate it to the underlying coset subdomain via `mem_fft_subdomain_iff_mem_coset_subdomain`.
+
+The monotonicity lemmas (`mem_subdomain_of_mem_subdomain_of_le`,
+`subdomain_toFinset_subset_subdomain_toFinset_of_le`,
+`subdomain_toSubgroup_subset_subdomain_toSubgroup_of_le`) and the commutation lemma
+`subdomain_toFftDomain_comm` describe how subdomains nest and interact with `toFftDomain`.
+-/
+
 namespace Domain
 
 variable {F : Type} [Field F]

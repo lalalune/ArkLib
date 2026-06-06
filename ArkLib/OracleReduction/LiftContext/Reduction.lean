@@ -50,6 +50,8 @@ import ArkLib.ToVCVio.Simulation
   See `OracleReduction.lean` for the application to oracle reduction.
 -/
 
+set_option linter.style.longFile 2100
+
 open OracleSpec OracleComp ProtocolSpec
 
 open scoped NNReal

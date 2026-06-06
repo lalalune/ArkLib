@@ -14,6 +14,18 @@ import Mathlib.Tactic.Field
 
 import ArkLib.Data.Domain.CosetFftDomain.Defs
 
+/-!
+# FFT domains
+
+We define the `FftDomain` structure: a coset FFT domain whose coset generator is `1`. We provide
+its `FunLike` instance and the `CosetFftDomainClass` instance, plus the `FftDomainClass` typeclass
+abstracting FFT domains and its canonical instance on `FftDomain`.
+
+Evaluation bridges (`eval_fft_domain_eq_eval_domain`,
+`eval_fft_domain_eq_eval_coset_fft_domain`) and injectivity lemmas (`injective`, `injOn`) round
+out the file.
+-/
+
 namespace Domain
 
 variable {ι : Type} [Fintype ι] [AddCommGroup ι] [DecidableEq ι]

@@ -10,11 +10,6 @@ import ArkLib.OracleReduction.Composition.Sequential.General
 import ArkLib.OracleReduction.Composition.Sequential.Append
 import ArkLib.OracleReduction.Security.RoundByRound
 
-open OracleSpec OracleComp ProtocolSpec Finset Polynomial MvPolynomial
-  Module TensorProduct Nat Matrix
-open scoped NNReal
-open Sumcheck.Structured
-
 /-!
 # Ring-Switching Core Interaction Phase
 
@@ -43,6 +38,11 @@ source of RBR knowledge soundness error.
     decomposes `e =: Σ_{u ∈ {0,1}^κ} β_u ⊗ e_u`.
 9. `V` requires `s_{ℓ'} ?= (Σ_{u ∈ {0,1}^κ} eq̃(u_0, ..., u_{κ-1}, r''_0, ..., r''_{κ-1}) ⋅ e_u) ⋅ s'`.
 -/
+
+open OracleSpec OracleComp ProtocolSpec Finset Polynomial MvPolynomial
+  Module TensorProduct Nat Matrix
+open scoped NNReal
+open Sumcheck.Structured
 
 namespace RingSwitching.SumcheckPhase
 noncomputable section

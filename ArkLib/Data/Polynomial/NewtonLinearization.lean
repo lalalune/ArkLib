@@ -108,7 +108,7 @@ theorem coeff_pow_sub_at {γ₁ γ₂ : R⟦X⟧} {t : ℕ} (ht : 0 < t)
   | succ i ih =>
       have hA : ∀ j < t, coeff j (γ₁ ^ (i + 1)) = coeff j (γ₂ ^ (i + 1)) :=
         coeff_pow_sub_below h (i + 1)
-      -- γ^(i+2) = γ^(i+1) · γ ; expand both order-`t` coefficients and subtract termwise.
+      -- γ^(i+2) = γ^(i+1) · γ; expand both order-`t` coefficients and subtract termwise.
       rw [pow_succ (γ₁) (i + 1), pow_succ (γ₂) (i + 1), coeff_mul, coeff_mul,
         ← Finset.sum_sub_distrib]
       -- Split off the end terms (t, 0) and (0, t); all interior terms vanish.

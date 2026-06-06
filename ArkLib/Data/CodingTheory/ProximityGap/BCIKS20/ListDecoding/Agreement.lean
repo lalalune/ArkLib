@@ -9,9 +9,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.RootClearing
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.HenselNumerator
 import ArkLib.ToMathlib.Claim511
 
-set_option linter.style.longFile 7600
-set_option linter.unusedSectionVars false
-
 /-!
 # BCIKS20 list-decoding agreement compatibility module
 
@@ -21,6 +18,9 @@ public package surface, so this file intentionally preserves that import target
 while the active list-decoding definitions live in `Extraction` and
 `Guruswami`.
 -/
+
+set_option linter.style.longFile 7600
+set_option linter.unusedSectionVars false
 
 namespace ProximityGap
 

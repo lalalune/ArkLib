@@ -22,6 +22,8 @@ This file packages:
   Statement numbering follows the archived revision of [DP24].
 -/
 
+set_option linter.style.longFile 2000
+
 namespace Binius.BinaryBasefold
 
 set_option maxHeartbeats 400000

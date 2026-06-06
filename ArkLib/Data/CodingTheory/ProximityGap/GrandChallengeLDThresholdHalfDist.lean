@@ -7,8 +7,6 @@ Authors: ArkLib Contributors
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLDThreshold
 import ArkLib.Data.CodingTheory.ReedSolomon
 
-set_option linter.unusedSectionVars false
-
 /-!
 # Unconditional half-distance floor for the genuine list-decoding threshold
 
@@ -30,6 +28,8 @@ that all threshold statements carry.  The open prize content lives strictly insi
 factor-of-two gap (the Johnson floor and Elias ceiling narrow it further, each with one
 parameterized hypothesis).
 -/
+
+set_option linter.unusedSectionVars false
 
 namespace ProximityGap
 

@@ -10,6 +10,18 @@ import Mathlib.Data.Fintype.Defs
 import ArkLib.Data.Domain.CosetFftDomain.Mem
 import ArkLib.Data.Domain.FftDomain.Mem
 
+/-!
+# Discrete logarithm on coset FFT domains
+
+We define the discrete logarithm `log` for elements of a coset FFT domain `ω`, returning the
+index in `Fin (2 ^ n)` whose image under `ω` is the given element. `logAux` performs the bounded
+linear search and `log` runs it with full fuel `2 ^ n`.
+
+The lemmas `log_right_inverse'`, `log_right_inverse`, and `log_left_inverse` establish that `log`
+is a two-sided inverse to the domain map, and `log` abbreviations are provided for the smooth
+coset and smooth FFT domain wrappers.
+-/
+
 namespace Domain
 
 variable {n : ℕ}

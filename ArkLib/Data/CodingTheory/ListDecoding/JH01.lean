@@ -1,16 +1,22 @@
+/-
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
+
 import ArkLib.Data.CodingTheory.ListDecodability
 import ArkLib.Data.CodingTheory.ProximityPrizeLeaves2
 import ArkLib.Data.CodingTheory.ReedSolomon
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.Tactic
 
-set_option linter.unusedSectionVars false
-
 /-!
 # JH01 List-Decoding Separation Helpers
 
 Small Reed-Solomon facts used by the JH01 list-size separation route.
 -/
+
+set_option linter.unusedSectionVars false
 
 namespace CodingTheory
 namespace ReedSolomon

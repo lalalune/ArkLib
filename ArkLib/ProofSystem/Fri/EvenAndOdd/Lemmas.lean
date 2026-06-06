@@ -150,7 +150,7 @@ lemma deevenize_comp_x_squared {f : Polynomial F} (hEven : EvenPoly f):
       rw [Nat.even_iff] at hPar
       omega
     })]
-  · symm ; apply hEven
+  · symm; apply hEven
     rw [←Nat.not_even_iff_odd]
     exact hPar
 

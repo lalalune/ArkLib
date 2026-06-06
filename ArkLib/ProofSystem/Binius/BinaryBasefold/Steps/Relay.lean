@@ -5,6 +5,15 @@ Authors: Chung Thai Nguyen, Quang Dao
 -/
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Steps.Fold
 
+/-!
+# Binary Basefold Relay Step
+
+The relay round of the Binary Basefold core interaction (used in non-commitment rounds) as an
+oracle reduction. Defines the prover (`relayOracleProver`), verifier (`relayOracleVerifier`), and
+reduction (`relayOracleReduction`), proves its perfect completeness and round-relation
+preservation, and provides the round-by-round knowledge extractor (`relayRbrExtractor`).
+-/
+
 namespace Binius.BinaryBasefold.CoreInteraction
 noncomputable section
 open OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Polynomial MvPolynomial

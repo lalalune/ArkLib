@@ -107,7 +107,28 @@ section CanonicalB
 variable [h_B01 : Fact (𝓑 0 = 0 ∧ 𝓑 1 = 1)]
 
 omit [∀ i, SampleableType (mlIOPCS.pSpec.Challenge i)] in
-lemma batchingCore_perfectCompleteness (hInit : NeverFail init) :
+lemma batchingCore_perfectCompleteness (hInit : NeverFail init)
+    (hCoreSeqComposePerfectCompleteness :
+      (SumcheckPhase.sumcheckLoopOracleReduction κ L K β ℓ ℓ' h_l
+        (𝓑 := 𝓑) mlIOPCS.toAbstractOStmtIn).perfectCompleteness
+          init impl
+          (strictSumcheckRoundRelation κ L K β ℓ ℓ' h_l (𝓑 := 𝓑)
+            mlIOPCS.toAbstractOStmtIn 0)
+          (strictSumcheckRoundRelation κ L K β ℓ ℓ' h_l (𝓑 := 𝓑)
+            mlIOPCS.toAbstractOStmtIn (Fin.last ℓ')))
+    (hCoreAppendPerfectCompleteness :
+      (SumcheckPhase.coreInteractionOracleReduction κ L K β ℓ ℓ' h_l
+        (𝓑 := 𝓑) mlIOPCS.toAbstractOStmtIn).perfectCompleteness
+          init impl
+          (strictSumcheckRoundRelation κ L K β ℓ ℓ' h_l (𝓑 := 𝓑)
+            mlIOPCS.toAbstractOStmtIn 0)
+          mlIOPCS.toAbstractOStmtIn.toStrictRelInput)
+    (hBatchingCoreAppendPerfectCompleteness :
+      (batchingCoreReduction κ L K β ℓ ℓ' h_l (𝓑 := 𝓑) mlIOPCS).perfectCompleteness
+        init impl
+        (BatchingPhase.strictBatchingInputRelation κ L K β ℓ ℓ' h_l
+          mlIOPCS.toAbstractOStmtIn)
+        mlIOPCS.toStrictRelInput) :
   (batchingCoreReduction κ L K β ℓ ℓ' h_l (𝓑 := 𝓑) mlIOPCS).perfectCompleteness
   (pSpec := pSpecLargeFieldReduction κ L K ℓ')
   (relIn := BatchingPhase.strictBatchingInputRelation κ L K β ℓ ℓ' h_l
@@ -119,9 +140,38 @@ lemma batchingCore_perfectCompleteness (hInit : NeverFail init) :
       (𝓑 := 𝓑) mlIOPCS.toAbstractOStmtIn
   · exact SumcheckPhase.coreInteraction_perfectCompleteness
       (hInit:=hInit) κ L K β ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn (impl:=impl)
+      hCoreSeqComposePerfectCompleteness hCoreAppendPerfectCompleteness
+  · exact hBatchingCoreAppendPerfectCompleteness
 
 omit [∀ i, SampleableType (mlIOPCS.pSpec.Challenge i)] in
-theorem fullOracleReduction_perfectCompleteness (hInit : NeverFail init) :
+theorem fullOracleReduction_perfectCompleteness (hInit : NeverFail init)
+    (hCoreSeqComposePerfectCompleteness :
+      (SumcheckPhase.sumcheckLoopOracleReduction κ L K β ℓ ℓ' h_l
+        (𝓑 := 𝓑) mlIOPCS.toAbstractOStmtIn).perfectCompleteness
+          init impl
+          (strictSumcheckRoundRelation κ L K β ℓ ℓ' h_l (𝓑 := 𝓑)
+            mlIOPCS.toAbstractOStmtIn 0)
+          (strictSumcheckRoundRelation κ L K β ℓ ℓ' h_l (𝓑 := 𝓑)
+            mlIOPCS.toAbstractOStmtIn (Fin.last ℓ')))
+    (hCoreAppendPerfectCompleteness :
+      (SumcheckPhase.coreInteractionOracleReduction κ L K β ℓ ℓ' h_l
+        (𝓑 := 𝓑) mlIOPCS.toAbstractOStmtIn).perfectCompleteness
+          init impl
+          (strictSumcheckRoundRelation κ L K β ℓ ℓ' h_l (𝓑 := 𝓑)
+            mlIOPCS.toAbstractOStmtIn 0)
+          mlIOPCS.toAbstractOStmtIn.toStrictRelInput)
+    (hBatchingCoreAppendPerfectCompleteness :
+      (batchingCoreReduction κ L K β ℓ ℓ' h_l (𝓑 := 𝓑) mlIOPCS).perfectCompleteness
+        init impl
+        (BatchingPhase.strictBatchingInputRelation κ L K β ℓ ℓ' h_l
+          mlIOPCS.toAbstractOStmtIn)
+        mlIOPCS.toStrictRelInput)
+    (hFullAppendPerfectCompleteness :
+      (fullOracleReduction κ L K β ℓ ℓ' h_l (𝓑 := 𝓑) mlIOPCS).perfectCompleteness
+        init impl
+        (BatchingPhase.strictBatchingInputRelation κ L K β ℓ ℓ' h_l
+          mlIOPCS.toAbstractOStmtIn)
+        acceptRejectOracleRel) :
   (fullOracleReduction κ L K β ℓ ℓ' h_l (𝓑 := 𝓑) mlIOPCS).perfectCompleteness
     (relIn := BatchingPhase.strictBatchingInputRelation κ L K β ℓ ℓ' h_l
       mlIOPCS.toAbstractOStmtIn)
@@ -133,7 +183,10 @@ theorem fullOracleReduction_perfectCompleteness (hInit : NeverFail init) :
     exact fun _ ↦ OracleInterface.instDefault)
   · exact batchingCore_perfectCompleteness κ L K β ℓ ℓ' h_l
       (𝓑 := 𝓑) mlIOPCS init (hInit := hInit) (impl := impl)
+      hCoreSeqComposePerfectCompleteness hCoreAppendPerfectCompleteness
+      hBatchingCoreAppendPerfectCompleteness
   · exact mlIOPCS.strictPerfectCompleteness hInit
+  · exact hFullAppendPerfectCompleteness
 
 def batchingCoreRbrKnowledgeError
     (i : (pSpecBatching κ L K ++ₚ pSpecCoreInteraction L ℓ').ChallengeIdx) : ℝ≥0 :=
@@ -148,7 +201,46 @@ def fullRbrKnowledgeError (i : (fullPspec κ L K ℓ' mlIOPCS).ChallengeIdx) : �
 
 omit [∀ i, SampleableType (mlIOPCS.pSpec.Challenge i)] in
 /-- Round-by-round knowledge soundness for the full ring-switching oracle verifier -/
-theorem fullOracleVerifier_rbrKnowledgeSoundness :
+theorem fullOracleVerifier_rbrKnowledgeSoundness
+    (hCoreSeqComposeRbrKnowledgeSoundness :
+    (SumcheckPhase.sumcheckLoopOracleVerifier κ (L := L) (K := K) (β := β) (ℓ := ℓ)
+      (ℓ' := ℓ') (h_l := h_l) (𝓑 := 𝓑) mlIOPCS.toAbstractOStmtIn).rbrKnowledgeSoundness
+        (init := init) (impl := impl)
+        (relIn := sumcheckRoundRelation κ L K β ℓ ℓ' h_l (𝓑 := 𝓑)
+          mlIOPCS.toAbstractOStmtIn 0)
+        (relOut := sumcheckRoundRelation κ L K β ℓ ℓ' h_l (𝓑 := 𝓑)
+          mlIOPCS.toAbstractOStmtIn (Fin.last ℓ'))
+        (rbrKnowledgeError := fun combinedIdx =>
+          letI ij := seqComposeChallengeIdxToSigma combinedIdx
+          iteratedSumcheckRoundKnowledgeError L ℓ' ij.1 ij.2))
+    (hCoreAppendRbrKnowledgeSoundness :
+    (SumcheckPhase.coreInteractionOracleVerifier κ L K β ℓ ℓ' h_l
+      (𝓑 := 𝓑) mlIOPCS.toAbstractOStmtIn).rbrKnowledgeSoundness
+        (init := init) (impl := impl)
+        (relIn := sumcheckRoundRelation κ L K β ℓ ℓ' h_l (𝓑 := 𝓑)
+          mlIOPCS.toAbstractOStmtIn 0)
+        (relOut := mlIOPCS.toAbstractOStmtIn.toRelInput)
+        (rbrKnowledgeError :=
+          (Sum.elim (fun _ => (2 : ℝ≥0) / Fintype.card L)
+            (finalSumcheckKnowledgeError (L := L)) ∘ ChallengeIdx.sumEquiv.symm)))
+    (hBatchingCoreAppendRbrKnowledgeSoundness :
+    (batchingCoreVerifier κ L K β (𝓑 := 𝓑) ℓ ℓ' h_l mlIOPCS).rbrKnowledgeSoundness
+      (init := init) (impl := impl)
+      (relIn := BatchingPhase.batchingInputRelation κ L K β ℓ ℓ'
+        h_l mlIOPCS.toAbstractOStmtIn)
+      (relOut := mlIOPCS.toRelInput)
+      (rbrKnowledgeError :=
+        (Sum.elim (fun _ => BatchingPhase.batchingRBRKnowledgeError (κ:=κ) (L:=L))
+          (SumcheckPhase.coreInteractionRbrKnowledgeError L ℓ') ∘ ChallengeIdx.sumEquiv.symm)))
+    (hFullAppendRbrKnowledgeSoundness :
+    (fullOracleVerifier κ L K β ℓ ℓ' (𝓑 := 𝓑) h_l mlIOPCS).rbrKnowledgeSoundness
+      (init := init) (impl := impl)
+      (relIn := BatchingPhase.batchingInputRelation κ L K β ℓ ℓ'
+        h_l mlIOPCS.toAbstractOStmtIn)
+      (relOut := acceptRejectOracleRel)
+      (rbrKnowledgeError :=
+        (Sum.elim (batchingCoreRbrKnowledgeError κ L K ℓ') mlIOPCS.rbrKnowledgeError
+          ∘ ChallengeIdx.sumEquiv.symm))) :
   OracleVerifier.rbrKnowledgeSoundness
     (verifier := fullOracleVerifier κ L K β ℓ ℓ' (𝓑 := 𝓑) h_l mlIOPCS)
     (init := init)
@@ -171,7 +263,9 @@ theorem fullOracleVerifier_rbrKnowledgeSoundness :
     (h₁:=BatchingPhase.batchingOracleVerifier_rbrKnowledgeSoundness κ L K β ℓ
       ℓ' h_l mlIOPCS.toAbstractOStmtIn)
     (h₂:=SumcheckPhase.coreInteraction_rbrKnowledgeSoundness κ L K β ℓ ℓ' h_l
-      mlIOPCS.toAbstractOStmtIn)
+      mlIOPCS.toAbstractOStmtIn hCoreSeqComposeRbrKnowledgeSoundness
+      hCoreAppendRbrKnowledgeSoundness)
+    (hAppendRbrKnowledgeSoundness := hBatchingCoreAppendRbrKnowledgeSoundness)
   have res :=
     OracleVerifier.append_rbrKnowledgeSoundness (init:=init) (impl:=impl)
     (rel₁:=BatchingPhase.batchingInputRelation κ L K β ℓ ℓ'
@@ -185,6 +279,7 @@ theorem fullOracleVerifier_rbrKnowledgeSoundness :
     (rbrKnowledgeError₂:=mlIOPCS.rbrKnowledgeError)
     (h₁:=batchInteractionRBRKS)
     (h₂:= mlIOPCS.rbrKnowledgeSoundness)
+    (hAppendRbrKnowledgeSoundness := hFullAppendRbrKnowledgeSoundness)
   exact OracleVerifier.rbrKnowledgeSoundness_of_eq_error
     (init := init) (impl := impl)
     (h_ε := by intro i; rfl)
@@ -220,7 +315,46 @@ noncomputable def fullRingSwitchingConcreteKnowledgeError
 
 /-- Scalar KS with error `∑ᵢ εᵢ` (RBR sum); corresponds to the generic **RBR ⇒ KS** step under
 **Theorem 3.5** / **Theorem 4.17** before closing to a single closed form like **§5.2 (43)**. -/
-theorem fullOracleVerifier_knowledgeSoundness_sum :
+theorem fullOracleVerifier_knowledgeSoundness_sum
+    (hCoreSeqComposeRbrKnowledgeSoundness :
+      (SumcheckPhase.sumcheckLoopOracleVerifier κ (L := L) (K := K) (β := β) (ℓ := ℓ)
+        (ℓ' := ℓ') (h_l := h_l) (𝓑 := 𝓑) mlIOPCS.toAbstractOStmtIn).rbrKnowledgeSoundness
+          (init := init) (impl := impl)
+          (relIn := sumcheckRoundRelation κ L K β ℓ ℓ' h_l (𝓑 := 𝓑)
+            mlIOPCS.toAbstractOStmtIn 0)
+          (relOut := sumcheckRoundRelation κ L K β ℓ ℓ' h_l (𝓑 := 𝓑)
+            mlIOPCS.toAbstractOStmtIn (Fin.last ℓ'))
+          (rbrKnowledgeError := fun combinedIdx =>
+            letI ij := seqComposeChallengeIdxToSigma combinedIdx
+            iteratedSumcheckRoundKnowledgeError L ℓ' ij.1 ij.2))
+    (hCoreAppendRbrKnowledgeSoundness :
+      (SumcheckPhase.coreInteractionOracleVerifier κ L K β ℓ ℓ' h_l
+        (𝓑 := 𝓑) mlIOPCS.toAbstractOStmtIn).rbrKnowledgeSoundness
+          (init := init) (impl := impl)
+          (relIn := sumcheckRoundRelation κ L K β ℓ ℓ' h_l (𝓑 := 𝓑)
+            mlIOPCS.toAbstractOStmtIn 0)
+          (relOut := mlIOPCS.toAbstractOStmtIn.toRelInput)
+          (rbrKnowledgeError :=
+            (Sum.elim (fun _ => (2 : ℝ≥0) / Fintype.card L)
+              (finalSumcheckKnowledgeError (L := L)) ∘ ChallengeIdx.sumEquiv.symm)))
+    (hBatchingCoreAppendRbrKnowledgeSoundness :
+      (batchingCoreVerifier κ L K β (𝓑 := 𝓑) ℓ ℓ' h_l mlIOPCS).rbrKnowledgeSoundness
+        (init := init) (impl := impl)
+        (relIn := BatchingPhase.batchingInputRelation κ L K β ℓ ℓ'
+          h_l mlIOPCS.toAbstractOStmtIn)
+        (relOut := mlIOPCS.toRelInput)
+        (rbrKnowledgeError :=
+          (Sum.elim (fun _ => BatchingPhase.batchingRBRKnowledgeError (κ:=κ) (L:=L))
+            (SumcheckPhase.coreInteractionRbrKnowledgeError L ℓ') ∘ ChallengeIdx.sumEquiv.symm)))
+    (hFullAppendRbrKnowledgeSoundness :
+      (fullOracleVerifier κ L K β ℓ ℓ' (𝓑 := 𝓑) h_l mlIOPCS).rbrKnowledgeSoundness
+        (init := init) (impl := impl)
+        (relIn := BatchingPhase.batchingInputRelation κ L K β ℓ ℓ'
+          h_l mlIOPCS.toAbstractOStmtIn)
+        (relOut := acceptRejectOracleRel)
+        (rbrKnowledgeError :=
+          (Sum.elim (batchingCoreRbrKnowledgeError κ L K ℓ') mlIOPCS.rbrKnowledgeError
+            ∘ ChallengeIdx.sumEquiv.symm))) :
     (fullOracleVerifier κ L K β ℓ ℓ' (𝓑 := 𝓑) h_l mlIOPCS).toVerifier.knowledgeSoundness init impl
       (relIn := BatchingPhase.batchingInputRelation κ L K β ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn)
       (relOut := acceptRejectOracleRel)
@@ -235,6 +369,8 @@ theorem fullOracleVerifier_knowledgeSoundness_sum :
     exact fullOracleVerifier_rbrKnowledgeSoundness (κ := κ) (L := L) (K := K) (β := β)
       (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l) (𝓑 := 𝓑) (mlIOPCS := mlIOPCS)
       (init := init) (impl := impl)
+      hCoreSeqComposeRbrKnowledgeSoundness hCoreAppendRbrKnowledgeSoundness
+      hBatchingCoreAppendRbrKnowledgeSoundness hFullAppendRbrKnowledgeSoundness
   exact (Verifier.rbrKnowledgeSoundness_implies_knowledgeSoundness (init := init) (impl := impl)
     relIn0 acceptRejectOracleRel fullV.toVerifier ε) h_rbr
 

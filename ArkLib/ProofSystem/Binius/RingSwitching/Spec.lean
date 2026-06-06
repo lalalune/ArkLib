@@ -7,9 +7,6 @@ import ArkLib.ProofSystem.Binius.RingSwitching.Prelude
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Spec
 import ArkLib.ToVCVio.Oracle
 
-namespace Binius.RingSwitching
-open Binius.BinaryBasefold
-
 /-! ## Protocol Specs for Ring-Switching
 
 This module defines the protocol specs, and the following instance types:
@@ -32,6 +29,9 @@ This module defines the protocol specs, and the following instance types:
 **NOTE**: For `∀ i, OracleInterface ((pSpec ...).Challenge i)`, use
   `ProtocolSpec.challengeOracleInterface` to avoid conflict.
 -/
+
+namespace Binius.RingSwitching
+open Binius.BinaryBasefold
 
 section
 open OracleSpec OracleComp ProtocolSpec Finset Polynomial MvPolynomial

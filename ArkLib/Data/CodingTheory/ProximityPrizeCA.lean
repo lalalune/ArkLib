@@ -9,9 +9,6 @@ import Mathlib.InformationTheory.Hamming
 import Mathlib.LinearAlgebra.Span.Basic
 import Mathlib.Tactic
 
-set_option linter.unusedSectionVars false
-set_option linter.unusedDecidableInType false
-
 /-!
 # Correlated-agreement counting leaves
 
@@ -21,6 +18,9 @@ development (Apache-2.0): distinct bad line parameters can be solved as a
 two-by-two linear system, producing a joint codeword pair and contradicting the
 joint-distance premise.
 -/
+
+set_option linter.unusedSectionVars false
+set_option linter.unusedDecidableInType false
 
 namespace ProximityPrizeCA
 

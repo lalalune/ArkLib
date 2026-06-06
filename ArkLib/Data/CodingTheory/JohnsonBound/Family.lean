@@ -9,8 +9,6 @@ import ArkLib.Data.CodingTheory.ListDecodability
 import ArkLib.Data.CodingTheory.CodeGeometry
 import Mathlib.Algebra.Order.Chebyshev
 
-set_option linter.style.longFile 2000
-
 /-!
 # ABF26 §3.1 — Johnson family `J_{q,ℓ}, J_q, J` and Theorem 3.2 / Corollary 3.3
 
@@ -48,6 +46,7 @@ ArkLib's existing rate/distance bridge).
 - [Joh62] Johnson. (Original Johnson bound paper.)
 -/
 
+set_option linter.style.longFile 2000
 set_option linter.unusedFintypeInType false
 set_option linter.unusedDecidableInType false
 

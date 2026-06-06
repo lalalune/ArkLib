@@ -1,6 +1,13 @@
 /-
 Copyright (c) 2025 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
+import ArkLib.ToMathlib.HasseDerivNumeratorGeneral
+import ArkLib.ToMathlib.HasseDerivNumeratorConcrete
+import ArkLib.ToMathlib.HasseDerivNumerators
+import ArkLib.Data.Polynomial.RationalFunctions
+import Mathlib
 
 /-!
 # Divisibility of the Leading Coefficient in Hasse Derivatives
@@ -35,12 +42,6 @@ for all orders $i_1 \in \mathbb{N}$.
 ## References
 * [BCIKS20] Binswood, Crites, Iyer, Kamara, Stewart. *Solving Algebraic Equations over Power Series*, 2020.
 -/
-
-import ArkLib.ToMathlib.HasseDerivNumeratorGeneral
-import ArkLib.ToMathlib.HasseDerivNumeratorConcrete
-import ArkLib.ToMathlib.HasseDerivNumerators
-import ArkLib.Data.Polynomial.RationalFunctions
-import Mathlib
 
 open Polynomial Polynomial.Bivariate BCIKS20AppendixA BCIKS20AppendixA.ClaimA2
 

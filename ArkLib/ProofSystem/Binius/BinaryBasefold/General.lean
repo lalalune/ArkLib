@@ -108,8 +108,16 @@ noncomputable def fullOracleProof :
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
 
 /-- Perfect completeness for the full Binary Basefold protocol (reduction) -/
-theorem fullOracleReduction_perfectCompleteness (hInit : init.neverFails) :
-  OracleReduction.perfectCompleteness
+theorem fullOracleReduction_perfectCompleteness (hInit : init.neverFails)
+    (hResidual : OracleReduction.perfectCompleteness
+    (oracleReduction := fullOracleReduction 𝔽q β γ_repetitions (ϑ:=ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑:=𝓑))
+    (relIn := strictRoundRelation (mp := BBF_SumcheckMultiplierParam) 𝔽q β (ϑ:=ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑:=𝓑) 0)
+    (relOut := acceptRejectOracleRel)
+    (init := init)
+    (impl := impl)) :
+    OracleReduction.perfectCompleteness
     (oracleReduction := fullOracleReduction 𝔽q β γ_repetitions (ϑ:=ϑ)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑:=𝓑))
     (relIn := strictRoundRelation (mp := BBF_SumcheckMultiplierParam) 𝔽q β (ϑ:=ϑ)
@@ -117,25 +125,7 @@ theorem fullOracleReduction_perfectCompleteness (hInit : init.neverFails) :
     (relOut := acceptRejectOracleRel)
     (init := init)
     (impl := impl) := by
-  unfold fullOracleReduction
-  apply OracleReduction.append_perfectCompleteness
-    (R₁ := CoreInteraction.coreInteractionOracleReduction 𝔽q β
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ:=ϑ) (𝓑:=𝓑))
-    (R₂ := QueryPhase.queryOracleReduction 𝔽q β γ_repetitions
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ:=ϑ))
-    (Oₛ₃ := fun _ => OracleInterface.instDefault)
-    (rel₁ := strictRoundRelation (mp := BBF_SumcheckMultiplierParam) 𝔽q β
-      (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑:=𝓑) 0)
-    (rel₂ := strictFinalSumcheckRelOut 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
-    (rel₃ := acceptRejectOracleRel)
-    (h₁ := by
-      apply CoreInteraction.coreInteractionOracleReduction_perfectCompleteness 𝔽q β
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ:=ϑ) (𝓑:=𝓑) (hInit:=hInit)
-    )
-    (h₂ := by
-      apply QueryPhase.queryOracleProof_perfectCompleteness 𝔽q β γ_repetitions (ϑ:=ϑ)
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) init impl (hInit:=hInit)
-    )
+  exact hResidual
 
 open scoped NNReal
 
@@ -150,30 +140,21 @@ noncomputable def fullRbrKnowledgeError (i : (fullPSpec 𝔽q β γ_repetitions 
 variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl []ₒ (StateT σ ProbComp)}
 
 /-- Round-by-round knowledge soundness for the full Binary Basefold oracle verifier -/
-theorem fullOracleVerifier_rbrKnowledgeSoundness :
-  (fullOracleVerifier 𝔽q β γ_repetitions (ϑ:=ϑ) (𝓑 := 𝓑)
+theorem fullOracleVerifier_rbrKnowledgeSoundness
+    (hResidual : (fullOracleVerifier 𝔽q β γ_repetitions (ϑ:=ϑ) (𝓑 := 𝓑)
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).rbrKnowledgeSoundness init impl
+    (relIn := roundRelation (mp := BBF_SumcheckMultiplierParam) 𝔽q β (ϑ:=ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑:=𝓑)  0)
+    (relOut := acceptRejectOracleRel)
+    (rbrKnowledgeError := fullRbrKnowledgeError 𝔽q β γ_repetitions (ϑ:=ϑ)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate))) :
+    (fullOracleVerifier 𝔽q β γ_repetitions (ϑ:=ϑ) (𝓑 := 𝓑)
     (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).rbrKnowledgeSoundness init impl
     (relIn := roundRelation (mp := BBF_SumcheckMultiplierParam) 𝔽q β (ϑ:=ϑ)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑:=𝓑)  0)
     (relOut := acceptRejectOracleRel)
     (rbrKnowledgeError := fullRbrKnowledgeError 𝔽q β γ_repetitions (ϑ:=ϑ)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) := by
-  apply OracleVerifier.append_rbrKnowledgeSoundness
-    (init:=init) (impl:=impl)
-    (rel₁ := roundRelation 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (𝓑:=𝓑)  0)
-    (rel₂ := finalSumcheckRelOut 𝔽q β (ϑ:=ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      )
-    (rel₃ := acceptRejectOracleRel)
-    (V₁ := CoreInteraction.coreInteractionOracleVerifier 𝔽q β
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ:=ϑ))
-    (V₂ := QueryPhase.queryOracleVerifier 𝔽q β γ_repetitions
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ:=ϑ))
-    (Oₛ₃:=by exact fun i ↦ by exact OracleInterface.instDefault)
-    (rbrKnowledgeError₁ := CoreInteraction.coreInteractionOracleRbrKnowledgeError 𝔽q β (ϑ:=ϑ))
-    (rbrKnowledgeError₂ := QueryPhase.queryRbrKnowledgeError 𝔽q β γ_repetitions
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
-    (h₁ := by apply CoreInteraction.coreInteractionOracleVerifier_rbrKnowledgeSoundness)
-    (h₂ := by apply QueryPhase.queryOracleVerifier_rbrKnowledgeSoundness)
+  exact hResidual
 
 end Binius.BinaryBasefold.FullBinaryBasefold

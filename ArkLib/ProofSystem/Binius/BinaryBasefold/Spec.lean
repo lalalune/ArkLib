@@ -5,12 +5,12 @@ Authors: Chung Thai Nguyen, Quang Dao
 -/
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Basic
 
-namespace Binius.BinaryBasefold
-
 /-! ## Protocol Specs for Binary Basefold
 This module contains the protocol specs, oracle index bounds,
 instances of OracleInterface and SampleableType for the Binary Basefold protocol.
 -/
+
+namespace Binius.BinaryBasefold
 
 noncomputable section
 open OracleSpec OracleComp ProtocolSpec Finset Polynomial MvPolynomial AdditiveNTT

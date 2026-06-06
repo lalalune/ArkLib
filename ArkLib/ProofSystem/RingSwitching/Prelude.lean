@@ -28,6 +28,8 @@ between small field K and large field L, including embeddings `φ₀ : L → L �
 3. **Security Definitions**: Relations & Kstate for security analysis
 -/
 
+set_option linter.style.longFile 1900
+
 noncomputable section
 
 namespace RingSwitching

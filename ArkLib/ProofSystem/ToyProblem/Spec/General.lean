@@ -1012,7 +1012,7 @@ theorem oracleReduction_perfectCompleteness
     obtain ⟨rfl, rfl⟩ := Prod.mk.inj hxeq
     -- Reduce the verifier `match some tr with | some a => …` to its `some` branch.
     dsimp only at hs
-    -- Peel the prover-run body `g <$> (γ-sample ; honest-msg ; xs-sample)` to expose the
+    -- Peel the prover-run body `g <$> (γ-sample; honest-msg; xs-sample)` to expose the
     -- concrete `Fin.snoc`-built transcript.
     erw [simulateQ_map] at htr
     rw [StateT.run_map] at htr
