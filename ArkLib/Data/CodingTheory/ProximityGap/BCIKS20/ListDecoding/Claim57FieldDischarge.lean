@@ -455,6 +455,66 @@ noncomputable def Claim57Residuals.ofInTree
   claim57Residuals_of_gsInterpolant (F := F) (m := m) (n := n) (k := k)
     (Q := Q) (ωs := ωs) (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hx0 hsep hJohnson hlarge hfactor
 
+/-- **`Claim57Residuals` with the `x₀` produced internally — §5 surface shrunk (Finding F12).**
+
+Strengthens `ofInTree` by *discharging the `hx0` field outright* (no longer a hypothesis): the
+good specialization point `x₀` and the `hx0`/`hsep` field pair are produced by the X-shape avoidance
+argument `exists_good_x₀_X_shape`, so the caller no longer supplies `x₀`, `hx0`, or the raw `hsep`.
+What remains is exactly:
+
+* `z` / `hlead` / `hcard` — the honest X-specialization budget (per-factor `Z`-witness not killing the
+  leading coefficient, and the [BCIKS20] large-field bound on the total `X`-degree) that powers the
+  `hx0` discharge;
+* `hsepPt` — the honest §5 good-point separability residual (separability of the *non-collapsing*
+  `X`-specialized factors over the domain `F[Z]`; by `separable_evalX_of_resultant_isUnit` this is the
+  unit-derivative-resultant condition, genuinely *not* derivable from discriminant nonvanishing over
+  the non-field base — the honest residual matching the F8/F10 precedents);
+* `hJohnson` — the single Johnson budget (discharges `A`/`hA`/`hcount`/`hS_nonempty` upstream);
+* `hlarge` — the close-set largeness datum (also discharges `hS_nonempty`);
+* `hfactor` — the documented `pg_Rset ⟹ descended-Eq-5.12-list` bridge (not provable outright).
+
+So relative to `ofInTree` the surface shrinks: `hx0` becomes a *theorem*, and the residual §5 inputs
+are `{hsepPt, hlarge, hfactor}` (plus the explicit Johnson/budget data), as the issue requires. -/
+@[reducible]
+noncomputable def Claim57Residuals.ofInTree2
+    [NeZero n] [DecidableEq (Polynomial F)] [Fintype F] (δ : ℚ)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (z : F[Z][X][Y] → F)
+    (hlead : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        R.leadingCoeff.map (Polynomial.evalRingHom (z R)) ≠ 0)
+    (hcard :
+      (((pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs).toList).map
+        (fun R => (R.leadingCoeff.map (Polynomial.evalRingHom (z R))).natDegree)).sum
+        < Fintype.card F)
+    (hsepPt : ∀ x₀ : F,
+      (∀ R : F[Z][X][Y],
+        R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+            (u₀ := u₀) (u₁ := u₁) h_gs →
+          Bivariate.evalX (Polynomial.C x₀) R ≠ 0) →
+      ∀ R : F[Z][X][Y],
+        R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+            (u₀ := u₀) (u₁ := u₁) h_gs →
+          (Bivariate.evalX (Polynomial.C x₀) R).Separable)
+    (hJohnson : Bivariate.natWeightedDegree Q 1 k < m * (n - ⌈δ * (n : ℚ)⌉₊))
+    (hlarge :
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q)
+    (hfactor : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        R ∈ (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose) :
+    Σ' x₀ : F,
+      Claim57Residuals (F := F) (m := m) (n := n) (Q := Q) (ωs := ωs)
+        (u₀ := u₀) (u₁ := u₁) k δ x₀ h_gs :=
+  let good := exists_good_x₀_X_shape (k := k) h_gs z hlead hcard hsepPt
+  ⟨good.choose,
+    claim57Residuals_of_gsInterpolant (F := F) (m := m) (n := n) (k := k)
+      (Q := Q) (ωs := ωs) (u₀ := u₀) (u₁ := u₁) δ good.choose h_gs
+      good.choose_spec.1 good.choose_spec.2 hJohnson hlarge hfactor⟩
+
 end ProximityGap
 
 /-! ## Axiom audit — every declaration must rest only on

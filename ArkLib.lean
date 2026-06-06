@@ -147,6 +147,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GSFactorExtract
 import ArkLib.Data.CodingTheory.ProximityGap.GSKernelAffineDescent
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeDecision
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeInteriorJ1
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeJ1Cap
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLDAttainment
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLDFourRate
