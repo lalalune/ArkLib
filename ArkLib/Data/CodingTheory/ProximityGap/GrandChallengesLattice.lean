@@ -377,6 +377,81 @@ theorem cT_vanish_on_window_highCoeff_zero
   exact Polynomial.coeff_eq_zero_of_degree_lt
     (lt_of_lt_of_le hpdeg (by exact_mod_cast hkd))
 
+/-- Nonextendability on a window is detected by a nonzero coefficient at some degree `≥ k`
+of the window interpolant. -/
+theorem exists_highCoeff_ne_zero_of_nonExtendableOn
+    (domain : ι ↪ F) {k : ℕ} {S : Finset ι} {u : ι → F}
+    (hne : NonExtendableOn (ReedSolomon.code domain k : Set (ι → F)) S u) :
+    ∃ d : ℕ, k ≤ d ∧
+      (Lagrange.interpolate S (fun i => domain i) u).coeff d ≠ 0 := by
+  classical
+  by_contra hnone
+  have hall : ∀ d : ℕ, k ≤ d →
+      (Lagrange.interpolate S (fun i => domain i) u).coeff d = 0 := by
+    intro d hkd
+    by_contra hcoeff
+    exact hnone ⟨d, hkd, hcoeff⟩
+  let P := Lagrange.interpolate S (fun i => domain i) u
+  have hPdeg : P.degree < (k : WithBot ℕ) := by
+    dsimp [P]
+    exact (Polynomial.degree_lt_iff_coeff_zero _ k).mpr hall
+  have hinj : Set.InjOn (fun i => domain i) (↑S : Set ι) :=
+    fun _ _ _ _ h => domain.injective h
+  have hPeval : ∀ i ∈ S, P.eval (domain i) = u i := by
+    intro i hi
+    dsimp [P]
+    exact Lagrange.eval_interpolate_at_node u hinj hi
+  refine hne ⟨ReedSolomon.evalOnPoints domain P, ?_, ?_⟩
+  · rw [SetLike.mem_coe, ReedSolomon.mem_code_iff_exists_polynomial]
+    exact ⟨P, hPdeg, rfl⟩
+  · intro i hi
+    change P.eval (domain i) = u i
+    exact hPeval i hi
+
+/-- Strong coefficient-ratio form of a J1 ratio constraint.  Every constrained scalar is obtained
+from some omitted window and some nonzero high coefficient of the direction word. -/
+theorem j1RatioConstraint_exists_omitted_highCoeff_ratio
+    (domain : ι ↪ F) {k : ℕ} (hk : k + 3 ≤ Fintype.card ι)
+    {u₀ u₁ : ι → F} {γ : F}
+    (hγ : j1RatioConstraint domain k u₀ u₁ γ) :
+    ∃ i : ι, ∃ d : ℕ,
+      NonExtendableOn (ReedSolomon.code domain k : Set (ι → F))
+        (Finset.univ.erase i) u₁ ∧
+      k ≤ d ∧
+      (Lagrange.interpolate (Finset.univ.erase i) (fun a => domain a) u₁).coeff d ≠ 0 ∧
+      γ = - (Lagrange.interpolate (Finset.univ.erase i) (fun a => domain a) u₀).coeff d /
+        (Lagrange.interpolate (Finset.univ.erase i) (fun a => domain a) u₁).coeff d := by
+  classical
+  obtain ⟨i, hne, hvanish⟩ := j1RatioConstraint_to_omitted domain hk hγ
+  obtain ⟨d, hkd, hcoeff_ne⟩ := exists_highCoeff_ne_zero_of_nonExtendableOn domain hne
+  let W : Finset ι := Finset.univ.erase i
+  let Pγ := Lagrange.interpolate W (fun a => domain a) (u₀ + γ • u₁)
+  let P₀ := Lagrange.interpolate W (fun a => domain a) u₀
+  let P₁ := Lagrange.interpolate W (fun a => domain a) u₁
+  have hcoeff : Pγ.coeff d = P₀.coeff d + γ * P₁.coeff d := by
+    change ((Lagrange.interpolate W (fun a => domain a)) (u₀ + γ • u₁)).coeff d =
+      ((Lagrange.interpolate W (fun a => domain a)) u₀).coeff d +
+        γ * ((Lagrange.interpolate W (fun a => domain a)) u₁).coeff d
+    rw [map_add, map_smul, Polynomial.coeff_add, Polynomial.coeff_smul]
+    simp
+  have hkW : k ≤ W.card := by
+    dsimp [W]
+    rw [Finset.card_erase_of_mem (Finset.mem_univ i), Finset.card_univ]
+    omega
+  have hzero : Pγ.coeff d = 0 :=
+    cT_vanish_on_window_highCoeff_zero domain hkW hvanish hkd
+  have hlin : P₀.coeff d + γ * P₁.coeff d = 0 := by
+    rw [← hcoeff]
+    exact hzero
+  have hcoeff_ne' : P₁.coeff d ≠ 0 := by
+    simpa [P₁, W] using hcoeff_ne
+  have hγeq : γ = -P₀.coeff d / P₁.coeff d := by
+    field_simp
+    linear_combination hlin
+  refine ⟨i, d, hne, hkd, ?_, ?_⟩
+  · simpa [P₁, W] using hcoeff_ne'
+  · simpa [P₀, P₁, W] using hγeq
+
 /-- Omitted-window interpolation is obtained from the full interpolant by cancelling its top
 coefficient with the omitted-window nodal polynomial.  This is the division-free form of the
 J1 high-coefficient bridge. -/
