@@ -1288,6 +1288,9 @@ end SubspaceDesignFRS
 #print axioms CodingTheory.rs_epsCA_small_loss_r4_10
 #print axioms CodingTheory.rs_epsCA_small_loss_r4_10_of_item2_no_boundary_crossing_prop
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_subspaceDesign_prop
+#print axioms CodingTheory.rs_epsMCA_johnson_range_boundReal
+#print axioms CodingTheory.rs_epsMCA_johnson_range_condition
+#print axioms CodingTheory.rs_epsMCA_johnson_range_bchks25
 #print axioms CodingTheory.rs_epsMCA_johnson_range_bchks25_of_bound
 #print axioms CodingTheory.johnsonJumpRadius_eq_three_fourths
 #print axioms CodingTheory.johnsonJumpInternalRadius_eq_seven_eighths_add_inv
