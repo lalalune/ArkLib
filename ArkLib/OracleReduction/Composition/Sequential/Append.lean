@@ -2659,7 +2659,11 @@ def appendRunRightResidual (stmt : Stmt₁) (wit : Wit₁) : Prop :=
       let ⟨transcript, state⟩ ←
         (Prover.runToRound (⟨m, by omega⟩ : Fin (m + n + 1)) stmt wit (P₁.append P₂)
           >>= (P₁.append P₂).continueFromTo stmt wit ⟨m, by omega⟩ (Fin.last (m + n)))
-      let output ← liftM ((P₁.append P₂).output state)
+      let output ← @liftM (OracleComp oSpec)
+        (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ))
+        (instMonadLiftTOfMonadLift (OracleComp oSpec) (OracleComp oSpec)
+          (OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)))
+        (Stmt₃ × Wit₃) ((P₁.append P₂).output state)
       pure (transcript, output)) :
         OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
           (FullTranscript (pSpec₁ ++ₚ pSpec₂) × Stmt₃ × Wit₃)))
