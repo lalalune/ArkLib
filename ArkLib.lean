@@ -391,6 +391,7 @@ import ArkLib.ProofSystem.Logup.Common
 import ArkLib.ProofSystem.Logup.Protocol
 import ArkLib.ProofSystem.Logup.Security.Completeness
 import ArkLib.ProofSystem.Logup.Security.Soundness
+import ArkLib.ProofSystem.Logup.Security.SubPhaseSplit
 import ArkLib.ProofSystem.Logup.Sumcheck.SumcheckBridge
 import ArkLib.ProofSystem.Logup.Sumcheck.SumcheckPolynomial
 import ArkLib.ProofSystem.Plonk.Basic

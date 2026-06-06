@@ -123,13 +123,19 @@ theorem subPhaseCompletenessResidual_iff_split :
 
 /-- **LogUp completeness from the two independent halves.** Identical conclusion to
 `logup_completeness_of_residual`, but consuming the outer and sumcheck completeness
-obligations *separately*, so either can be discharged on its own. -/
+obligations *separately*, so either can be discharged on its own. The
+`hAppendCompleteness` sequential-composition residual is threaded unchanged (the current
+`OracleReduction.append_completeness` carries it as an explicit hypothesis). -/
 theorem logup_completeness_of_split
     (hOuter : OuterCompletenessResidual oSpec F n M params init impl)
-    (hSumcheck : SumcheckCompletenessResidual oSpec F n M params init impl) :
+    (hSumcheck : SumcheckCompletenessResidual oSpec F n M params init impl)
+    (hAppendCompleteness :
+      (logupOracleReduction oSpec F n M params).completeness init impl
+        (inputRelation F n M) outputRelation (logupCompletenessError F n)) :
     (logupOracleReduction oSpec F n M params).completeness init impl
       (inputRelation F n M) outputRelation (logupCompletenessError F n) :=
   logup_completeness_of_residual oSpec F n M params init impl ⟨hOuter, hSumcheck⟩
+    hAppendCompleteness
 
 end Split
 

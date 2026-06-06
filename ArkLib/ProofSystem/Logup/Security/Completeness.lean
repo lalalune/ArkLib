@@ -119,8 +119,10 @@ variable (params : ProtocolParams M)
 variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
 
 /-- `F` is inhabited (by `0`), needed to synthesize the outer-phase challenge `SampleableType`
-instances. -/
-local instance : Inhabited F := ⟨0⟩
+instances. Explicitly named (rather than anonymous) so it does not collide with the
+identically-typed anonymous `local instance` in `Security/Soundness.lean` when a downstream
+module imports both files. -/
+local instance instInhabitedFieldLogupCompleteness : Inhabited F := ⟨0⟩
 
 /-- Completeness error forced by the current rejection-based model of the `x` challenge.
 
