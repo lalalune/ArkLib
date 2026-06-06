@@ -1,0 +1,77 @@
+name: Verification
+
+# Issue #47: enforce the zero-live-hole, clean-axiom state on every push/PR.
+# Gates:
+#   1. lake build ArkLib must pass
+#   2. comment-stripped sorry census must report 0 live holes
+#   3. #print axioms over the pinned flagship list (scripts/flagship_axioms.txt)
+#      must stay within [propext, Classical.choice, Quot.sound]
+#   4. no native_decide / bv_decide / custom axiom in live source
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      # Fast source-level gates first — fail before any Lean setup.
+      - name: Forbidden-token precheck (no native_decide / bv_decide / custom axiom)
+        run: python3 scripts/forbidden_tokens.py
+
+      - name: Sorry census (0 live holes)
+        run: python3 scripts/sorry_census.py --fail-on-holes
+
+      - name: Restore Lean cache
+        uses: actions/cache/restore@v5
+        id: lake-cache
+        with:
+          path: ./.lake
+          key: ${{ runner.os }}-lean-verify-${{ hashFiles('lake-manifest.json') }}
+          restore-keys: |
+            ${{ runner.os }}-lean-verify-
+            ${{ runner.os }}-lean-ci-${{ hashFiles('lake-manifest.json') }}
+            ${{ runner.os }}-lean-ci-
+
+      - name: Set up Lean environment
+        uses: leanprover/lean-action@v1.5.0
+        with:
+          auto-config: false
+          build: false
+          test: false
+          lint: false
+          use-github-cache: false
+          use-mathlib-cache: false
+
+      - name: Fetch dependency cache
+        run: lake exe cache get
+
+      - name: Build ArkLib
+        run: lake build ArkLib
+
+      - name: Axiom audit (pinned flagship list)
+        run: python3 scripts/axiom_audit.py
+
+      - name: Save Lean cache
+        if: success() && steps.lake-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: ./.lake
+          key: ${{ runner.os }}-lean-verify-${{ hashFiles('lake-manifest.json') }}

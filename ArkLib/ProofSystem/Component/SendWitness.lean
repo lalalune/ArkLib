@@ -101,7 +101,47 @@ theorem reduction_completeness :
     refine ⟨?_, rfl⟩
     simpa [toRelOut] using hIn
 
-theorem reduction_rbr_knowledge_soundness : True := trivial
+/-- The `SendWitness` reduction satisfies perfect RBR knowledge soundness.
+
+  The protocol `pSpec Witness` is `ProverOnly` (single P_to_V round), so `ChallengeIdx` is empty
+  and the RBR knowledge-soundness condition is vacuously true. The extractor reads the witness
+  directly from the transcript (round 0), and the knowledge state function tracks membership in
+  `relIn`. -/
+theorem reduction_rbr_knowledge_soundness :
+    (reduction oSpec Statement Witness).verifier.rbrKnowledgeSoundness
+      init impl relIn (toRelOut relIn) 0 := by
+  -- Construct the round-by-round extractor: WitMid = fun _ => Witness
+  refine ⟨fun _ => Witness, {
+    eqIn := rfl
+    -- extractMid at round 0: read witness from the transcript (the only message)
+    extractMid := fun ⟨0, _⟩ _stmt tr _witMid => tr ⟨0, by omega⟩
+    -- extractOut: read witness from the full transcript
+    extractOut := fun _stmt tr _ => tr ⟨0, by omega⟩
+  }, {
+    -- Knowledge state function: tracks (stmt, wit) ∈ relIn
+    toFun := fun _ stmt _tr wit => (stmt, wit) ∈ relIn
+    toFun_empty := fun _ _ => by simp
+    -- toFun_next: for m with pSpec.dir m = .P_to_V, the KSF is preserved
+    toFun_next := fun ⟨0, _⟩ _ _stmt _tr _msg _witMid h => h
+    -- toFun_full: if verifier output is in toRelOut, then the extracted witness is in relIn
+    toFun_full := fun stmt tr witOut hpr => by
+      -- The verifier returns ⟨stmt, tr 0⟩, and toRelOut = Prod.fst ⁻¹' relIn,
+      -- so (⟨stmt, tr 0⟩, witOut) ∈ toRelOut relIn means (stmt, tr 0) ∈ relIn.
+      simp only [verifier, Verifier.run, toRelOut] at hpr
+      rw [gt_iff_lt, probEvent_pos_iff] at hpr
+      obtain ⟨x, hx, hrel⟩ := hpr
+      rw [OptionT.mem_support_iff] at hx
+      simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+      obtain ⟨s, _, hx⟩ := hx
+      simp only [simulateQ_pure, StateT.run_pure, support_pure, Set.mem_singleton_iff] at hx
+      cases (Option.some.inj (Prod.mk.inj hx).1)
+      exact hrel
+  }, ?_⟩
+  -- The final quantifier: ∀ i : ChallengeIdx (pSpec Witness), ... is vacuously true
+  -- because pSpec Witness has only P_to_V rounds, so ChallengeIdx is empty.
+  intro _stmtIn _witIn _prover ⟨⟨0, _⟩, hdir⟩
+  -- hdir : (pSpec Witness).dir ⟨0, _⟩ = .V_to_P, but the direction is .P_to_V
+  exact absurd hdir (by simp [pSpec])
 
 end Reduction
 
@@ -306,6 +346,44 @@ theorem oracleReduction_completeness (h : NeverFail init) :
         simp only [Embedding.sumMap, Function.Embedding.coeFn_mk, Sum.map_inr]
         rfl
 
-theorem oracleReduction_rbr_knowledge_soundness : True := trivial
+/-- The `SendSingleWitness` oracle reduction satisfies perfect RBR knowledge soundness.
+
+  The protocol `oraclePSpec Witness` is `ProverOnly` (single P_to_V round), so `ChallengeIdx` is
+  empty and the RBR knowledge-soundness condition is vacuously true. -/
+theorem oracleReduction_rbr_knowledge_soundness :
+    (oracleReduction oSpec Statement OStatement Witness).verifier.rbrKnowledgeSoundness
+      init impl oRelIn (toORelOut oRelIn) 0 := by
+  -- The oracle verifier's rbrKnowledgeSoundness reduces to the underlying Verifier's
+  simp only [OracleReduction.verifier, OracleVerifier.rbrKnowledgeSoundness]
+  -- Construct the round-by-round extractor: WitMid = fun _ => Witness
+  refine ⟨fun _ => Witness, {
+    eqIn := rfl
+    extractMid := fun ⟨0, _⟩ _stmt tr _witMid => tr ⟨0, by omega⟩
+    extractOut := fun _stmt tr _ => tr ⟨0, by omega⟩
+  }, {
+    toFun := fun _ stmt _tr wit =>
+      oRelIn ⟨⟨stmt.1, fun i => stmt.2 (Sum.inl i)⟩, wit⟩
+    toFun_empty := fun _ _ => by simp
+    toFun_next := fun ⟨0, _⟩ _ _stmt _tr _msg _witMid h => h
+    toFun_full := fun stmt tr witOut hpr => by
+      simp only [OracleVerifier.toVerifier, oracleVerifier, Verifier.run, toORelOut] at hpr
+      rw [gt_iff_lt, probEvent_pos_iff] at hpr
+      obtain ⟨x, hx, hrel⟩ := hpr
+      rw [OptionT.mem_support_iff] at hx
+      simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+      obtain ⟨s, _, hx⟩ := hx
+      erw [simulateQ_pure] at hx
+      simp only [StateT.run_pure, support_pure, Set.mem_singleton_iff] at hx
+      cases (Option.some.inj (Prod.mk.inj hx).1)
+      convert hrel using 2
+      congr 1
+      ext i
+      rcases i with j | j
+      · rfl
+      · fin_cases j; rfl
+  }, ?_⟩
+  -- ChallengeIdx is empty for oraclePSpec Witness (single P_to_V round)
+  intro _stmtIn _witIn _prover ⟨⟨0, _⟩, hdir⟩
+  exact absurd hdir (by simp [oraclePSpec])
 
 end SendSingleWitness

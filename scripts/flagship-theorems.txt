@@ -1,0 +1,39 @@
+# Flagship theorems for axiom audit — issue #47
+#
+# Format: FILE_PATH  FULLY_QUALIFIED_THEOREM_NAME
+#
+# These are the core verified results whose axiom hygiene must be maintained
+# in CI. Only propext, Classical.choice, and Quot.sound are permitted.
+#
+# To add a theorem: append a line with the .lean file path (relative to repo
+# root) and the fully-qualified theorem name, separated by whitespace.
+#
+# Sourced from: docs/kb/audits/proximity-prize/integration-2026-06-05/final_axiom_audit.lean,
+# per-file #print axioms blocks, and core protocol/scheme results.
+
+# ── Top-level proximity-prize / correlated-agreement results ───────────
+# These are the 5 key theorems from the consolidated axiom audit:
+ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ReedSolomonGap.lean  proximity_gap_RSCodes
+
+# ── KZG commitment scheme ──────────────────────────────────────────────
+ArkLib/CommitmentScheme/KZG/Correctness.lean  KZG.PolynomialCommitment.correctness
+ArkLib/CommitmentScheme/KZG/Binding.lean  KZG.map_binding_to_t_sdh_of_two_valid_openings
+
+# ── Merkle tree extraction ─────────────────────────────────────────────
+ArkLib/CommitmentScheme/MerkleTree/Extraction.lean  MerkleTree.opening_binding
+ArkLib/CommitmentScheme/MerkleTree/Extraction.lean  MerkleTree.extracted_leaf_unique
+
+# ── Berlekamp-Welch decoder ────────────────────────────────────────────
+ArkLib/Data/CodingTheory/BerlekampWelch/BerlekampWelch.lean  BerlekampWelch.decoder_eq_some
+
+# ── Johnson bound ──────────────────────────────────────────────────────
+ArkLib/Data/CodingTheory/JohnsonBound/Basic.lean  johnson_condition_weak_implies_strong
+
+# ── Hensel existence (flagship theorem) ────────────────────────────────
+ArkLib/Data/Polynomial/HenselExistence.lean  exists_powerSeries_root
+
+# ── Guruswami-Sudan list-size bound ────────────────────────────────────
+ArkLib/Data/CodingTheory/GuruswamiSudan/ListSizeBound.lean  listSizeBound
+
+# ── BKR06 subspace polynomial ──────────────────────────────────────────
+ArkLib/Data/CodingTheory/ListDecoding/BKR06SubspacePoly.lean  bkr06_subspacePoly_degree

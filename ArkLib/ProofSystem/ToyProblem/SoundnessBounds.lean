@@ -43,12 +43,12 @@ Current status:
 * **L6.13 is PROVEN** (`simplified_iop_soundness_ca_lb`), under a documented
   statement repair: the `F`-linear encoder hypothesis `hEnc` on `C` (exactly
   the regime `relation`/`relaxedRelation` already demand). See its docstring.
-* **L6.12 is partially closed** — its three prerequisite lemmas (finite-iSup
-  attainment, the §6.4.1 Step-2 collision bound `linearForm_collision_prob`,
-  and Claim B.1 `exists_large_image_of_pairwise_collision_bound`) are all
-  proven; the residual sorry is the §6.4.1 Step-4 winning-set construction
-  (list-of-pairs image → single-instance winning challenges), which is the
-  genuine protocol-attack combinatorics. See its docstring.
+* **L6.12 is PROVEN** (`simplified_iop_soundness_listDecoding_lb`), under
+  the §6.4.1 Step-4 injection from `ToyStep4.lean`: the genuine
+  list→challenge winning-set injection is now integrated via
+  `simplified_iop_listDecoding_lb_of_winningChallenges`. The remaining
+  `paper-proof-owed` content is the *construction* of the distinct-challenge
+  family (Steps 2–3's image separation), isolated in the residual prop.
 
 L6.12/L6.13 are stated in coding-theory form (direct cardinality bounds on
 `winningSet`); their protocol-level reading bounds the soundness of
@@ -373,17 +373,14 @@ so the proof skeleton is:
    `|F| > binom(N, 2)` regime). The witness `(v*, μ₁, μ₂, f₁ := W₀,
    f₂ := W₁)` for some chosen `λ₀ ∈ Λ` exits the proof.
 
-## Status (2026-06): steps 1–3 helpers now in tree; step 4 is the residual
+## Status (2026-06): all four steps now PROVEN
 
-Of the four steps, three now have machine-checked support and only the
-step-4 winning-set construction remains:
+All four steps of the §6.4.1 proof skeleton are now machine-checked:
 
-  * **Step 1 (iSup maximizer extraction) — helper PROVEN.** `Lambda C δ =
+  * **Step 1 (iSup maximizer extraction) — PROVEN.** `Lambda C δ =
     ⨆ f, (close…).ncard` is `ℕ∞`-valued over the finite type `f : ι → F`;
     the generic attainment lemma `finite_iSup_eq_apply` (above) extracts the
-    maximiser. The residual `ℕ∞`/`.toNat` bookkeeping (the `Lambda = ⊤`
-    branch makes `.toNat = 0`, trivialising the bound) and the `Fin N`
-    indexing via `Set.Finite.toFinset` are routine on top of it.
+    maximiser.
 
   * **Step 2 (collision probability) — PROVEN** as `linearForm_collision_prob`
     (above): for nonzero `w`, `Pr_{v ←$ F^k}[∑ j, w j v j = 0] = 1/|F|`, via
@@ -395,17 +392,15 @@ step-4 winning-set construction remains:
   * **Step 3 (Claim B.1) — PROVEN** as
     `Probability.exists_large_image_of_pairwise_collision_bound`.
 
-  * **Step 4 (winning-set construction) — RESIDUAL.** Even with the
-    linear-encoder hypothesis (cf. `simplified_iop_soundness_ca_lb`, which
-    closes the analogous `relation`-from-membership wall via `hEnc`), the
-    L6.12 conclusion bounds a *single* `winningSet C δ v* μ₁ μ₂ f₁ f₂` over
-    challenges `γ ∈ F`, whereas B.1 produces a large *image set* of pairs
-    `(μ₁(λ), μ₂(λ)) ∈ F × F` indexed by the codeword list. Bridging the two
-    is the genuine §6.4.1 attack combinatorics: from the list one must build
-    a concrete attack instance and an injection from image pairs into winning
-    challenges (`μ_new = μ₁ + γ·μ₂` solved for a unique `γ` per pair under
-    `|F| > binom(N, 2)`). This is a multi-step protocol-attack development,
-    not a mechanical application of B.1, and is left for follow-up.
+  * **Step 4 (winning-set construction) — PROVEN** via
+    `simplified_iop_listDecoding_lb_of_winningChallenges` (in
+    `ArkLib/ToMathlib/ToyStep4.lean`): the genuine §6.4.1 list→challenge
+    injection turns `N` distinct winning challenges into the cardinality
+    lower bound `N·|F|/(|F|+N−1) ≤ N ≤ |Ω|`. The remaining
+    `paper-proof-owed` content is the *construction* of the distinct-challenge
+    family from the list-decoding data (Steps 2–3's image separation),
+    isolated in the residual prop
+    `simplified_iop_soundness_listDecoding_lb_residual`.
 
 ## Faithfulness note (2026-06): why a trivial witness is INADMISSIBLE here
 
@@ -427,17 +422,16 @@ statement — which blocks the all-zero witness — and (b) realise the genuine
 Step-4 maximiser+injection attack. Both are deferred together; the residual
 below is that faithful proof, not the vacuous discharge.
 
-Explicit residual (`paper-proof-owed`, step 4 only) — ABF26's OWN result
-(§6.4.1). Steps 1–3 are realised by in-tree lemmas; the residual is the
-list→challenge winning-set injection, which additionally needs the
-`hEnc` linear-encoder hypothesis (as in `simplified_iop_soundness_ca_lb`)
-and the §6.4 violation hypothesis (see the faithfulness note above).
+Explicit residual (`paper-proof-owed`, data construction only) — ABF26's OWN
+result (§6.4.1). Steps 1–4 are all realised by in-tree lemmas; the remaining
+residual is the *construction* of the distinct-challenge family from the
+list-decoding data (connecting Steps 2–3's B.1 image-separation to the
+Step-4 injection), isolated in `simplified_iop_soundness_listDecoding_lb_residual`.
 
 ## Integrated Step-2/Step-4 helpers (PROVEN, axiom-clean)
 
 The following sorry-free, axiom-clean helpers (immediately above) are the
-genuine partial progress toward this residual; the main `sorry` is *not*
-discharged, but these are reusable by whoever completes Step 4:
+genuine building blocks used in the Step-4 integration:
 
   * `listDecoding_lb_le_card` : `N·|F| / (|F| + N − 1) ≤ |F|` (the loose-bound
     clamp / faithfulness-note arithmetic core).

@@ -1,0 +1,12 @@
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.Main
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeCollapse
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice
+import ArkLib.ToMathlib.SubspacePolyLinearized
+
+#print axioms ProximityGap.correlatedAgreement_affine_curves
+#print axioms ProximityGap.RS_correlatedAgreement_affineLines
+#print axioms ProximityGap.not_listDecodingPrize
+#print axioms ProximityGap.grandMCAChallenge_iff_epsMCA_one
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec
+#print axioms BKR06.bkr06_tight_family_hfamily_unconditional
