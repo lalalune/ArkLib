@@ -1027,6 +1027,30 @@ theorem exists_mcaPrizeLatticeResolved_of_lowerWitnesses
       (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
       epsStar (w j)
 
+/-- Per-rate lower and upper MCA witnesses bracket all four faithful MCA prize thresholds. -/
+theorem mcaPrizeLattice_bracketed_of_witnesses
+    (domain : ι ↪ F)
+    (wlo : ∀ j : Fin 4,
+      GrandChallenges.MCALowerWitness
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (whi : ∀ j : Fin 4,
+      GrandChallenges.MCAUpperWitness
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1) :
+    ∀ j : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+      let hne := mcaThresholdExists_of_MCALowerWitness C epsStar (wlo j)
+      latticeIndexOf (ι := ι) (wlo j).δ (wlo j).le_one ≤
+          mcaThreshold C epsStar hne ∧
+        mcaThreshold C epsStar hne <
+          latticeIndexOf (ι := ι) (whi j).δ (hδhi j) := fun j =>
+  mcaThresholdLattice_bracketed_of_witnesses
+    (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+    epsStar (wlo j) (whi j) (hδhi j)
+
 /-- A proposed solution of the list-decoding prize lattice problem at interleaving `m`: for
 every prize rate, the faithful list-decoding lattice threshold is the supplied index `τ j`. -/
 def listPrizeLatticeResolved (domain : ι ↪ F) (m : ℕ)
@@ -1104,6 +1128,31 @@ theorem exists_listPrizeLatticeResolved_of_lowerWitnesses
     listThresholdExists_of_ListLowerWitness
       (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
       m epsStar (w j)
+
+/-- Per-rate lower and upper list-decoding witnesses bracket all four faithful list prize
+thresholds for the chosen interleaving `m`. -/
+theorem listPrizeLattice_bracketed_of_witnesses
+    (domain : ι ↪ F) (m : ℕ)
+    (wlo : ∀ j : Fin 4,
+      GrandChallenges.ListLowerWitness
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        m epsStar)
+    (whi : ∀ j : Fin 4,
+      GrandChallenges.ListUpperWitness
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        m epsStar)
+    (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1) :
+    ∀ j : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+      let hne := listThresholdExists_of_ListLowerWitness C m epsStar (wlo j)
+      latticeIndexOf (ι := ι) (wlo j).δ (wlo j).le_one ≤
+          listThreshold C m epsStar hne ∧
+        listThreshold C m epsStar hne <
+          latticeIndexOf (ι := ι) (whi j).δ (hδhi j) := fun j =>
+  listThresholdLattice_bracketed_of_witnesses
+    (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+    m epsStar (wlo j) (whi j) (hδhi j)
 
 end GrandChallengesLattice
 
