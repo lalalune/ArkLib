@@ -521,14 +521,50 @@ theorem router₂_compose (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ 
         transcript.snd.messages := by
   sorry
 
+theorem oStmt_append_congr (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
+    [coh : AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
+    (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂)
+    (oStmt : ∀ i, OStmt₁ i) (transcript : (pSpec₁ ++ₚ pSpec₂).FullTranscript) (i : ιₛ₃) :
+    (match h : (OracleVerifier.append V₁ V₂).embed i with
+      | Sum.inl j => ((OracleVerifier.append V₁ V₂).hEq i ▸ h ▸ oStmt j : OStmt₃ i)
+      | Sum.inr j => ((OracleVerifier.append V₁ V₂).hEq i ▸ h ▸ transcript.messages j : OStmt₃ i))
+    =
+    (match h : V₂.embed i with
+      | Sum.inl j => (V₂.hEq i ▸ h ▸ match h' : V₁.embed j with
+          | Sum.inl k => (V₁.hEq j ▸ h' ▸ oStmt k : OStmt₂ j)
+          | Sum.inr k => (V₁.hEq j ▸ h' ▸ transcript.fst.messages k : OStmt₂ j) : OStmt₃ i)
+      | Sum.inr j => (V₂.hEq i ▸ h ▸ transcript.snd.messages j : OStmt₃ i)) := by
+  sorry
+
 @[simp]
 lemma OracleVerifier.append_toVerifier
     (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
-    [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
+    [coh : OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
     (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂) :
       (OracleVerifier.append V₁ V₂).toVerifier =
         Verifier.append V₁.toVerifier V₂.toVerifier := by
-  sorry
+  ext ⟨stmt, oStmt⟩ transcript
+  apply OptionT.ext
+  simp only [OracleVerifier.append, Verifier.append, OracleVerifier.toVerifier, OptionT.run_bind,
+    OracleVerifier.Append.verify]
+  dsimp only
+  rw [simulateQ_optionT_bind']
+  rw [QueryImpl.simulateQ_compose, QueryImpl.simulateQ_compose]
+  rw [router₁_compose, router₂_compose]
+  dsimp only
+  congr 1
+  refine bind_congr fun x => ?_
+  rcases x with _ | stmt₂
+  · rfl
+  · dsimp only
+    congr 1
+    refine bind_congr fun y => ?_
+    rcases y with _ | stmt₃
+    · rfl
+    · dsimp only
+      congr 1
+      funext i
+      exact oStmt_append_congr V₁ V₂ oStmt transcript i
 
 /-- Sequential composition of oracle reductions is just the sequential composition of the oracle
   provers and oracle verifiers. -/
