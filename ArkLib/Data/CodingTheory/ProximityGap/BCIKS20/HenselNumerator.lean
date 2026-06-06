@@ -409,7 +409,7 @@ as an explicit natural number: the binomial `C(i, i1)` times the multinomial ove
 WALL (deferred to a later wave): the *matching lemma* equating this with the exact
 paper combinatorial factor (reconciling the Hasse-derivative's intrinsic `C(j, Σλ)` weight
 against the paper's `multinomial(j0, λ)`) is `prefactor_eq_paper` below — STATED, not proven. -/
-def prefactor {m : ℕ} (i i1 : ℕ) (lam : Nat.Partition m) : ℕ :=
+def prefactor {m : ℕ} (_i _i1 : ℕ) (lam : Nat.Partition m) : ℕ :=
   -- **DEFINITIONAL REPAIR (2026-06-05, campaign bug #5, kernel-grounded — see P2Vanish.lean):**
   -- the previous form carried an extra explicit binomial `Nat.choose i i1`. The genuine
   -- BCIKS20 (A.1) weights are emitted INTRINSICALLY by the X-/Y-Hasse extractions
