@@ -279,6 +279,119 @@ structure BCSSecurityFrontier {StmtMid WitMid : Type}
   soundness_preservation_target : Prop
   knowledge_soundness_preservation_target : Prop
 
+/-- The explicit checklist that remains before `BCSCompiledPhases.toReduction` can be promoted
+from a compositional front door to a genuine BCS compiler theorem.
+
+This is still an interface, not a security proof: each conjunct names one proof brick that the
+full compiler must eventually produce from the source oracle reduction, the commitment schemes,
+and the query-log API. -/
+def BCSCompilerFrontierSatisfied {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    (phases : BCSCompiledPhases (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      CommitmentType e)
+    (frontier : BCSSecurityFrontier (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      phases) : Prop :=
+  phases.interaction_realizes_oracle_messages ∧
+  phases.opening_realizes_query_log ∧
+  frontier.commitment_correctness_available ∧
+  frontier.commitment_binding_or_extractability_available ∧
+  frontier.completeness_preservation_target ∧
+  frontier.soundness_preservation_target ∧
+  frontier.knowledge_soundness_preservation_target
+
+theorem BCSCompilerFrontierSatisfied.interaction_realizes_oracle_messages
+    {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    {phases : BCSCompiledPhases (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      CommitmentType e}
+    {frontier : BCSSecurityFrontier (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      phases}
+    (h : BCSCompilerFrontierSatisfied phases frontier) :
+    phases.interaction_realizes_oracle_messages :=
+  h.1
+
+theorem BCSCompilerFrontierSatisfied.opening_realizes_query_log
+    {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    {phases : BCSCompiledPhases (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      CommitmentType e}
+    {frontier : BCSSecurityFrontier (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      phases}
+    (h : BCSCompilerFrontierSatisfied phases frontier) :
+    phases.opening_realizes_query_log :=
+  h.2.1
+
+theorem BCSCompilerFrontierSatisfied.commitment_correctness_available
+    {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    {phases : BCSCompiledPhases (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      CommitmentType e}
+    {frontier : BCSSecurityFrontier (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      phases}
+    (h : BCSCompilerFrontierSatisfied phases frontier) :
+    frontier.commitment_correctness_available :=
+  h.2.2.1
+
+theorem BCSCompilerFrontierSatisfied.commitment_binding_or_extractability_available
+    {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    {phases : BCSCompiledPhases (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      CommitmentType e}
+    {frontier : BCSSecurityFrontier (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      phases}
+    (h : BCSCompilerFrontierSatisfied phases frontier) :
+    frontier.commitment_binding_or_extractability_available :=
+  h.2.2.2.1
+
+theorem BCSCompilerFrontierSatisfied.completeness_preservation_target
+    {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    {phases : BCSCompiledPhases (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      CommitmentType e}
+    {frontier : BCSSecurityFrontier (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      phases}
+    (h : BCSCompilerFrontierSatisfied phases frontier) :
+    frontier.completeness_preservation_target :=
+  h.2.2.2.2.1
+
+theorem BCSCompilerFrontierSatisfied.soundness_preservation_target
+    {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    {phases : BCSCompiledPhases (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      CommitmentType e}
+    {frontier : BCSSecurityFrontier (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      phases}
+    (h : BCSCompilerFrontierSatisfied phases frontier) :
+    frontier.soundness_preservation_target :=
+  h.2.2.2.2.2.1
+
+theorem BCSCompilerFrontierSatisfied.knowledge_soundness_preservation_target
+    {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    {phases : BCSCompiledPhases (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      CommitmentType e}
+    {frontier : BCSSecurityFrontier (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      phases}
+    (h : BCSCompilerFrontierSatisfied phases frontier) :
+    frontier.knowledge_soundness_preservation_target :=
+  h.2.2.2.2.2.2
+
 /-! #### Design note: the fully general transform
 
   In full generality (deferred to ArkLib#433), the transform should take
