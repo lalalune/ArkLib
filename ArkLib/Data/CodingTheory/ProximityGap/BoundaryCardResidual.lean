@@ -266,6 +266,30 @@ theorem boundaryCardResidual_of_lattice_residual {k deg : ℕ} {domain : ι ↪ 
       hk u hδeq hcardPos
   · exact hLattice hk u hδeq heq hcardPos
 
+omit [DecidableEq ι] in
+/-- The sharper boundary-probability residual used by the curve keystone follows from the
+isolated lattice residual plus the strict-interior producer.
+
+This composes `boundaryCardResidual_of_lattice_residual` with
+`ProximityGap.boundaryProbabilityResidual_of_boundaryCardResidual`, so downstream callers can target
+the exact `BoundaryProbabilityResidual` surface without manually passing through the older
+cardinality-only boundary residual. -/
+theorem boundaryProbabilityResidual_of_lattice_residual {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    [NeZero deg]
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hLattice : BoundaryCardLatticeResidual (k := k) (deg := deg) (domain := domain) (δ := δ))
+    (hStrict : ∀ (u : WordStack F (Fin (k + 1)) ι) (δ' : ℝ≥0),
+      δ' < δ →
+      Nat.floor (δ' * Fintype.card ι) = Nat.floor (δ * Fintype.card ι) →
+      0 < (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ').card →
+      jointAgreement (C := ReedSolomon.code domain deg) (δ := δ') (W := u)) :
+    ProximityGap.BoundaryProbabilityResidual
+      (k := k) (deg := deg) (domain := domain) (δ := δ) := by
+  exact ProximityGap.boundaryProbabilityResidual_of_boundaryCardResidual
+    (deg := deg) (domain := domain) (δ := δ) hδ
+    (boundaryCardResidual_of_lattice_residual
+      (deg := deg) (domain := domain) (δ := δ) hLattice hStrict)
+
 /-! ## Characterising the lattice case: the boundary is a `1/n`-point iff `√ρ · n ∈ ℕ` -/
 
 omit [Nonempty ι] [DecidableEq ι] [Fintype F] in
