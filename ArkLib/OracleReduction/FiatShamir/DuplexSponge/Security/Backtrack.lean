@@ -331,8 +331,10 @@ private noncomputable def prependPartialSequence
                   simp at hLen
               | cons a tail =>
                   have ha : a = seq_head := Option.some.inj hFirst
-                  have hc : (s_in :: a :: tail)[1] = seq_head := ha
-                  rw [hc]
+                  show (s_out :: outputState)[0].capacitySegment
+                    = (s_in :: a :: tail)[(0 : Nat) + 1].capacitySegment
+                  have hidx : (s_in :: a :: tail)[(0 : Nat) + 1] = a := rfl
+                  rw [hidx, ha]
                   exact hMatch
       | ⟨i' + 1, h⟩ =>
           have hi' : i' < seq.outputState.length := by

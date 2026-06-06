@@ -316,8 +316,8 @@ theorem subspacePoly_isQLinearized_span
         set W₀ : Submodule F K := Submodule.span F (s : Set K) with hW₀
         have hq : 2 ≤ Fintype.card F := Fintype.one_lt_card
         -- span (insert a s) = W₀ ⊔ 𝔽·a  (commute the sup to match the recursion shape)
-        have hcomm : (F ∙ a) ⊔ W₀ = (W₀ ⊔ Submodule.span F {a} : Submodule F K) := by
-          rw [sup_comm]; rfl
+        have hcomm : (F ∙ a) ⊔ W₀ = (W₀ ⊔ Submodule.span F {a} : Submodule F K) :=
+          sup_comm _ _
         rw [hcomm, subspacePoly_flag_recursion W₀ hq a hain]
         -- IsQLinearized (p^t) (L_{W₀}^{p^t} − C(...)·L_{W₀})  via pow_sub_C_mul
         have ihpt : IsQLinearized (p ^ t) (subspacePoly (subFinset W₀)) := by
