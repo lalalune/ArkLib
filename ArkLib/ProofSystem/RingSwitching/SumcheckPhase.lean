@@ -628,8 +628,8 @@ private theorem iteratedSumcheck_fullTranscript_challenge1_eq_equivMessagesChall
 /-- The intended post-challenge local KState payload for one iterated sumcheck round.
 
 This is the named target for issue #29's next proof step: consume the verifier-run transcript
-collapse and the two projection identities above to replace the current post-challenge `True`
-placeholder in `iteratedSumcheckKStateProp`. -/
+collapse and the two projection identities above to strengthen the post-challenge local checks in
+`iteratedSumcheckKStateProp`. -/
 def iteratedSumcheckPostChallengeLocalChecks (i : Fin ℓ')
     (tr : Transcript (Fin.last 2) (pSpecSumcheckRound L))
     (stmt : Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) i.castSucc)
@@ -742,12 +742,9 @@ def iteratedSumcheckKStateProp (i : Fin ℓ') (m : Fin (2 + 1))
     -- The transcript projection bridge is now named above:
     -- `iteratedSumcheck_fullTranscript_message0_eq_equivMessagesChallenges` and
     -- `iteratedSumcheck_fullTranscript_challenge1_eq_equivMessagesChallenges`. The remaining
-    -- post-challenge payload is now named as `iteratedSumcheckPostChallengeLocalChecks`. The
-    -- remaining mechanical step is consuming those identities in a nontrivial `toFun_full`,
-    -- replacing this placeholder post-challenge `True` state with that payload, then routing the
-    -- local probability bound through the RBR theorem. Until that lands the
-    -- post-challenge state stays `True` and the RBR theorem below uses the always-valid unit bound,
-    -- so the file remains sound and green.
+    -- mechanical step is consuming those identities in a nontrivial `toFun_full`, strengthening
+    -- `localChecks` to `iteratedSumcheckPostChallengeLocalChecks`, then routing the local
+    -- probability bound through the RBR theorem.
     RingSwitching.masterKStateProp κ L K P ℓ ℓ' h_l aOStmtIn
       (stmtIdx := i.castSucc)
       (stmt := stmt) (oStmt := oStmt) (wit := witMid)

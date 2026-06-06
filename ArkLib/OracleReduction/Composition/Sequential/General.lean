@@ -455,7 +455,10 @@ theorem seqCompose_perfectCompleteness_of_append {m : ℕ}
   induction m with
   | zero =>
     rw [seqCompose_zero]
-    exact Reduction.id_perfectCompleteness
+    have hlast : (Fin.last 0 : Fin 1) = 0 := by ext; rfl
+    rw [hlast]
+    simpa using
+      (Reduction.id_perfectCompleteness (init := init) (impl := impl) (rel := rel 0))
   | succ m ih =>
     rw [seqCompose_succ]
     exact hAppend (R 0) _ (h 0)
@@ -464,8 +467,9 @@ theorem seqCompose_perfectCompleteness_of_append {m : ℕ}
 
 /-- **Brick (issue #25): n-ary `seqCompose` completeness reduces to the binary `append` keystone.**
 Error-bearing analogue of `seqCompose_perfectCompleteness_of_append`: base case
-`Reduction.id_perfectCompleteness` (= completeness with error `0`) and `∑ (i : Fin 0) = 0`; step
-splits the error with `Fin.sum_univ_succ` into `completenessError 0 + ∑ tail` and applies `hAppend`. -/
+`Reduction.id_perfectCompleteness` (= completeness with error `0`) and `∑ (i : Fin 0) = 0`;
+step splits the error with `Fin.sum_univ_succ` into `completenessError 0 + ∑ tail` and applies
+`hAppend`. -/
 theorem seqCompose_completeness_of_append {m : ℕ}
     (Stmt : Fin (m + 1) → Type) (Wit : Fin (m + 1) → Type)
     {n : Fin m → ℕ} {pSpec : ∀ i, ProtocolSpec (n i)}
@@ -487,9 +491,16 @@ theorem seqCompose_completeness_of_append {m : ℕ}
   induction m with
   | zero =>
     rw [seqCompose_zero, Fin.sum_univ_zero]
-    exact Reduction.id_perfectCompleteness
+    have hlast : (Fin.last 0 : Fin 1) = 0 := by ext; rfl
+    rw [hlast]
+    simpa [Reduction.perfectCompleteness] using
+      (Reduction.id_perfectCompleteness (init := init) (impl := impl) (rel := rel 0))
   | succ m ih =>
-    rw [seqCompose_succ, Fin.sum_univ_succ]
+    rw [Fin.sum_univ_succ]
+    change ((R 0).append
+        (seqCompose (Stmt ∘ Fin.succ) (Wit ∘ Fin.succ) (fun i => R (Fin.succ i))))
+      |>.completeness init impl (rel 0) (rel (Fin.succ (Fin.last m)))
+        (completenessError 0 + ∑ i, completenessError (Fin.succ i))
     exact hAppend (R 0) _ (h 0)
       (ih (Stmt ∘ Fin.succ) (Wit ∘ Fin.succ) (fun i => R (Fin.succ i))
         (fun i => rel (Fin.succ i)) (fun i => completenessError (Fin.succ i))

@@ -135,6 +135,7 @@ numerator is tail-zero (the genuine `betaRec` output), it *is* such a finite pol
 The two facts below make that precise and show the affine-curve (linear) structure is preserved
 under recentering — exactly the `degreeX ≤ 1` payload the curve-coefficient extraction reads off. -/
 
+omit [Fact (Irreducible H)] [Fact (0 < H.natDegree)] in
 /-- The shift series is the recentering map `X ↦ X - x₀`, exhibited as the substitution-free
 power series `X - C (fieldTo𝕃 x₀)`. -/
 theorem shiftSeries_eq_X_sub_C (x₀ : F) :
@@ -156,9 +157,9 @@ theorem aeval_shiftSeries_linear (x₀ : F) (a b : 𝕃 H) :
         (Polynomial.C a + Polynomial.C b * Polynomial.X)
       = PowerSeries.C (a - b * fieldTo𝕃 x₀)
         + PowerSeries.C b * PowerSeries.X := by
-  rw [map_add, map_mul, Polynomial.aeval_C, Polynomial.aeval_C, Polynomial.aeval_X,
-    shiftSeries_eq_X_sub_C, map_sub]
-  ring
+  rw [shiftSeries_eq_X_sub_C]
+  simp [Polynomial.aeval_def]
+  ring_nf
 
 end SubstFieldCaveat
 
