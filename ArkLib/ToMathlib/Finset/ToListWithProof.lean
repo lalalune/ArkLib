@@ -8,6 +8,14 @@ import Mathlib.Data.Finset.Defs
 import Mathlib.Data.Finset.Empty
 import Mathlib.Data.Finset.Dedup
 
+/-!
+# Converting a `Finset` to a list of proof-carrying members
+
+This file provides `Finset.toListWithProof`, which turns a `Finset α` into a `List s` whose
+elements are the members of the finset bundled with proofs of membership, together with the
+basic lemmas `toListWithProof_empty` and `toListWithProof_mem` characterizing it.
+-/
+
 namespace Finset
 
 /-- A helper to convert a finset into
