@@ -44,8 +44,8 @@ the hPz branch's proven `HenselDatumProducer` chain.
 Every field is therefore discharged from a Hensel-datum input; nothing is genuinely new.  The unit
 derivative `hderiv` that `MatchingPoint` ultimately needs is *not* a `PlaceGeometry` field — it is
 produced from `hsep` by `MpFinSupply.PlaceGeometry.hderiv` (which calls
-`HenselDatumProducer.isUnit_derivative_of_separable_of_isRoot_of_congr`), exactly as the hPz branch's
-`HenselDatumProducer.henselDatum_of_sepInput` produces it.
+`HenselDatumProducer.isUnit_derivative_of_separable_of_isRoot_of_congr`), exactly as the hPz
+branch's `HenselDatumProducer.henselDatum_of_sepInput` produces it.
 
 The roots arrive either directly as `IsRoot` facts (`placeGeometry_of_henselDatum`) or, on the
 `MatchingExtractor` route, as the GS matching-factor divisibility `(Y − aP) ∣ f` converted by
@@ -61,14 +61,15 @@ inputs of the in-tree L12 coefficient-extraction brick `CoeffExtract` (the input
 
 | `BridgeData` field | L12 (`CoeffExtract`) input |
 | ------------------ | ---------------------------------------------------------------- |
-| `hαβ`              | the π_z-specialised `α_t`-identity reading (`coeff_extract_betaRec`'s `hαβ`) |
+| `hαβ`              | π_z-specialised `α_t`-identity reading (`coeff_extract_betaRec`'s `hαβ`) |
 | `hw`               | `w = π_z(W) ≠ 0` (`coeff_extract_betaRec`'s `hw`)              |
 | `hx`               | `x = π_z(ξ) ≠ 0` (`coeff_extract_betaRec`'s `hx`)             |
-| `haP_coeff`        | the proximate root reads zero at index `t` (`coeff_extract_betaRec`'s `haP`) |
+| `haP_coeff`        | proximate root reads zero at index `t` (`coeff_extract_betaRec`'s `haP`) |
 
 The L12 `α_t`-identity reading `hαβ` is the **genuine §5.2.6 / App-A.4 frontier** — there is no
-in-tree lemma that derives it (it carries `betaRec`'s defining relation `α_t = embedding(betaRec … t)
-/ (W^{t+1} ξ^{e_t})` threaded through `subst`/`coeff`, the L13 content).  So `bridgeData_of_L12` is
+in-tree lemma that derives it (it carries `betaRec`'s defining relation
+`α_t = embedding(betaRec … t) / (W^{t+1} ξ^{e_t})` threaded through `subst`/`coeff`, the L13
+content).  So `bridgeData_of_L12` is
 the honest packaging constructor: it records that `BridgeData` asks for *exactly* the four
 `CoeffExtract` inputs, no more.  The sanity check `bridgeData_of_L12_coeffExtract` confirms a
 `BridgeData` reproduces the L12 `coeffExtract` discharge verbatim.
@@ -157,8 +158,9 @@ def placeGeometry_of_henselDatum {z : F}
 As `placeGeometry_of_henselDatum`, but the proximate-root field arrives as the GS matching-factor
 divisibility `(X − C aP) ∣ f` (`Polynomial.X` is the outer variable `Y`), converted to `f.IsRoot aP`
 by `Polynomial.dvd_iff_isRoot`.  This records that `haP_root` is exactly the Gap-B keystone /
-`MatchingExtractor` output `(Y − P_z) ∣ Q_z`, transported to `F⟦X⟧` — the same shape the hPz branch's
-`HenselDatumProducer.henselDatum_of_matchingDvd_and_sep` consumes.  Delegates to the in-tree
+`MatchingExtractor` output `(Y − P_z) ∣ Q_z`, transported to `F⟦X⟧` — the same shape the hPz
+branch's `HenselDatumProducer.henselDatum_of_matchingDvd_and_sep` consumes.  Delegates to the
+in-tree
 `placeGeometry_of_matchingDvd`. -/
 def placeGeometry_of_henselDatum_dvd {z : F}
     (f : Polynomial (PowerSeries F)) (aβ aP a₀ : PowerSeries F)
@@ -206,8 +208,9 @@ def bridgeData_of_L12 {t : ℕ} {z : F} {root : rationalRoot (H_tilde' H) z}
   hx := hx
   haP_coeff := haP_coeff
 
-/-- **Sanity: a `BridgeData` reproduces the L12 `coeffExtract` discharge.**  The four readings carried
-by a `BridgeData` (built by `bridgeData_of_L12`) feed `BetaMatchingVanishes.coeff_extract_betaRec`
+/-- **Sanity: a `BridgeData` reproduces the L12 `coeffExtract` discharge.**  The four
+readings carried by a `BridgeData` (built by `bridgeData_of_L12`) feed
+`BetaMatchingVanishes.coeff_extract_betaRec`
 to discharge the residual `(X−x₀)^t` coefficient extraction `aβ = aP → π_z(betaRec … t) = 0` — the
 exact `coeffExtract` field of `MatchingPoint`.  This confirms `BridgeData`'s fields coincide
 field-for-field with the L12 brick's inputs. -/
@@ -278,8 +281,9 @@ def mpFin_of_henselData {k T : ℕ} {matchingSet : Finset F}
 `MatchingExtractor`/divisibility route.**
 
 As `mpFin_of_henselData`, but the proximate-root facts arrive as the GS matching-factor
-divisibilities `(X − C (aP z)) ∣ f z` (the Gap-B keystone / `MatchingExtractor` output), converted to
-roots by `Polynomial.dvd_iff_isRoot` inside `placeGeometry_of_henselDatum_dvd`.  Delegates to the
+divisibilities `(X − C (aP z)) ∣ f z` (the Gap-B keystone / `MatchingExtractor` output),
+converted to roots by `Polynomial.dvd_iff_isRoot` inside `placeGeometry_of_henselDatum_dvd`.
+Delegates to the
 in-tree `mpFin_of_graph_vanishing_dvd`. -/
 def mpFin_of_henselData_dvd {k T : ℕ} {matchingSet : Finset F}
     {root : (z : F) → rationalRoot (H_tilde' H) z}

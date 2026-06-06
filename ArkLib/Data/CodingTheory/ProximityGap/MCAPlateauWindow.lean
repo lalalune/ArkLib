@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeRadiusOne
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointUpper
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumRadiusOne
 import ArkLib.ToMathlib.RestrictedSumsetGeneral
@@ -333,5 +334,89 @@ noncomputable def MCALowerWitness.ofChooseLe (domain : ι ↪ F) (k : ℕ) {δ �
     (le_trans (epsMCA_le_choose_div domain k δ) hle)
 
 end WindowBound
+
+section LatticeBracket
+
+variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
+
+open GrandChallenges GrandChallengesLattice
+
+/-! ## Unconditional brackets on the faithful MCA lattice threshold
+
+The existing lattice brackets (`Hab25Core`, `GrandChallengesLattice`) all consume
+external admits ([BCHKS25]/[CS25]/[DG25]-shaped hypotheses). The two witnesses built in
+this file are **unconditional**, so feeding them through the step-function bridge gives
+the first hypothesis-free two-sided pinning of `mcaThreshold` — the faithful "largest
+lattice radius" object of the Grand MCA Challenge. -/
+
+/-- **Unconditional staircase floor + existence.** If the canonical-witness count clears
+the threshold at radius `δ`, the faithful MCA lattice threshold exists. -/
+theorem mcaThresholdExists_ofChooseLe (domain : ι ↪ F) (k : ℕ) {δ ε_star : ℝ≥0}
+    (hδ : δ ≤ 1)
+    (hle : ((Fintype.card ι).choose
+          (max (⌈((1 : ℝ≥0) - δ) * (Fintype.card ι : ℝ≥0)⌉₊) (k + 1)) : ENNReal) /
+        (Fintype.card F : ENNReal) ≤ (ε_star : ENNReal)) :
+    mcaThresholdExists (ReedSolomon.code domain k : Set (ι → F)) ε_star :=
+  mcaThresholdExists_of_MCALowerWitness _ _ (MCALowerWitness.ofChooseLe domain k hδ hle)
+
+/-- **Unconditional staircase floor.** `⌊δ·n⌋ ≤ mcaThreshold` whenever
+`C(n, max(⌈(1-δ)n⌉, k+1)) ≤ ε*·q`. -/
+theorem le_mcaThreshold_ofChooseLe (domain : ι ↪ F) (k : ℕ) {δ ε_star : ℝ≥0}
+    (hδ : δ ≤ 1)
+    (hle : ((Fintype.card ι).choose
+          (max (⌈((1 : ℝ≥0) - δ) * (Fintype.card ι : ℝ≥0)⌉₊) (k + 1)) : ENNReal) /
+        (Fintype.card F : ENNReal) ≤ (ε_star : ENNReal))
+    (hne : mcaThresholdExists (ReedSolomon.code domain k : Set (ι → F)) ε_star) :
+    latticeIndexOf (ι := ι) δ hδ ≤
+      mcaThreshold (ReedSolomon.code domain k : Set (ι → F)) ε_star hne :=
+  MCALowerWitness_le_mcaThreshold _ _ hne (MCALowerWitness.ofChooseLe domain k hδ hle)
+
+/-- **Unconditional capacity-side lattice ceiling.** For `q < 2¹²⁸·|Σ_{k+1}(L)|` the
+faithful MCA lattice threshold sits strictly below the lattice index of the
+capacity-adjacent radius `1 - (k+1)/n`. -/
+theorem mcaThreshold_lt_capacityPred_of_subsetSums (domain : ι ↪ F) {k : ℕ}
+    (hk : k + 1 ≤ Fintype.card ι)
+    (hsmall : Fintype.card F < 2 ^ (128 : ℕ) * (subsetSumsKplus1 domain k).card)
+    (hne : mcaThresholdExists (ReedSolomon.code domain k : Set (ι → F))
+      ProximityGap.epsStar) :
+    mcaThreshold (ReedSolomon.code domain k : Set (ι → F)) ProximityGap.epsStar hne <
+      latticeIndexOf (ι := ι)
+        (1 - ((k : ℝ≥0) + 1) / (Fintype.card ι : ℝ≥0)) tsub_le_self :=
+  mcaThreshold_lt_MCAUpperWitness _ _ hne
+    (MCAUpperWitness.ofSubsetSumsCapacityPred domain hk hsmall) tsub_le_self
+
+/-- **The first unconditional two-sided bracket of the faithful Grand-MCA lattice
+threshold.** Under the two numeric window conditions — the canonical-witness count clears
+`ε* = 2⁻¹²⁸` at radius `δ` (floor) while the field is below the subset-sum refutation
+band (ceiling) — the threshold exists and satisfies
+
+  `⌊δ·n⌋ ≤ mcaThreshold < ⌊(1 - (k+1)/n)·n⌋` (lattice indices),
+
+i.e. the answer to the (faithful, lattice-form) Grand MCA Challenge for this code lies
+in `[δ, 1 - (k+1)/n)` — strictly below capacity. Both hypotheses are simultaneously
+satisfiable (e.g. small `δ` with `C(n, max(⌈(1-δ)n⌉, k+1)) ≤ q/2¹²⁸ < |Σ_{k+1}(L)|`,
+available over prime-characteristic domains where `|Σ_{k+1}(L)|` is quadratic in `n`),
+and **no external-paper hypothesis is consumed**. -/
+theorem mcaThreshold_bracketed_unconditional (domain : ι ↪ F) {k : ℕ} {δ : ℝ≥0}
+    (hk : k + 1 ≤ Fintype.card ι) (hδ : δ ≤ 1)
+    (hlo : ((Fintype.card ι).choose
+          (max (⌈((1 : ℝ≥0) - δ) * (Fintype.card ι : ℝ≥0)⌉₊) (k + 1)) : ENNReal) /
+        (Fintype.card F : ENNReal) ≤ (ProximityGap.epsStar : ENNReal))
+    (hhi : Fintype.card F < 2 ^ (128 : ℕ) * (subsetSumsKplus1 domain k).card) :
+    ∃ hne : mcaThresholdExists (ReedSolomon.code domain k : Set (ι → F))
+        ProximityGap.epsStar,
+      latticeIndexOf (ι := ι) δ hδ ≤
+          mcaThreshold (ReedSolomon.code domain k : Set (ι → F))
+            ProximityGap.epsStar hne ∧
+        mcaThreshold (ReedSolomon.code domain k : Set (ι → F))
+            ProximityGap.epsStar hne <
+          latticeIndexOf (ι := ι)
+            (1 - ((k : ℝ≥0) + 1) / (Fintype.card ι : ℝ≥0)) tsub_le_self := by
+  refine ⟨mcaThresholdExists_ofChooseLe domain k hδ hlo, ?_, ?_⟩
+  · exact le_mcaThreshold_ofChooseLe domain k hδ hlo _
+  · exact mcaThreshold_lt_capacityPred_of_subsetSums domain hk hhi _
+
+end LatticeBracket
 
 end ProximityGap

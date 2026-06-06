@@ -27,26 +27,31 @@ $$|\Sigma_2(A)| \ge 2n - 3$$
 
 ## Proof Strategy (Alon–Nathanson–Ruzsa, $h = 2$)
 
-We proceed by contradiction. Suppose $|\Sigma_2(A)| \le 2(n - 2)$. Since $|\mathbb{F}| \ge p > 2(n - 2)$,
-we can pad $\Sigma_2(A)$ to a subset $C'$ of cardinality exactly $m := 2(n - 2)$.
+We proceed by contradiction. Suppose $|\Sigma_2(A)| \le 2(n - 2)$. Since
+$|\mathbb{F}| \ge p > 2(n - 2)$, we can pad $\Sigma_2(A)$ to a subset $C'$ of cardinality
+exactly $m := 2(n - 2)$.
 We then define the bivariate polynomial:
 $$Q(X_0, X_1) := (X_1 - X_0) \prod_{c \in C'} (X_0 + X_1 - c) \in \mathbb{F}[X_0, X_1]$$
 
 This polynomial $Q$ vanishes on the entire Cartesian product $A \times A$:
 - If $x_0 = x_1$, the factor $(X_1 - X_0)$ vanishes.
-- If $x_0 \neq x_1$, then $x_0 + x_1 \in \Sigma_2(A) \subseteq C'$, so one of the factors of the product vanishes.
+- If $x_0 \neq x_1$, then $x_0 + x_1 \in \Sigma_2(A) \subseteq C'$, so one of the factors of
+  the product vanishes.
 
 The total degree of $Q$ is $1 + m = 2n - 3$. We target the monomial $t = X_0^{n-1} X_1^{n-2}$,
-which has degree $2n - 3$. The coefficient of $t$ in $Q$ equals its coefficient in the leading homogeneous
-part of $Q$, which is $(X_1 - X_0)(X_0 + X_1)^m$. This coefficient is given by:
+which has degree $2n - 3$. The coefficient of $t$ in $Q$ equals its coefficient in the
+leading homogeneous part of $Q$, which is $(X_1 - X_0)(X_0 + X_1)^m$. This coefficient is
+given by:
 $$\binom{m}{n-1} - \binom{m}{n-2}$$
 
-By combinatorial and modular arithmetic arguments, this coefficient is shown to be nonzero modulo $p$
-under the condition $m < p$. By Alon's Combinatorial Nullstellensatz, there must exist some point
+By combinatorial and modular arithmetic arguments, this coefficient is shown to be nonzero
+modulo $p$ under the condition $m < p$. By Alon's Combinatorial Nullstellensatz, there must
+exist some point
 $(x_0, x_1) \in A \times A$ such that $Q(x_0, x_1) \neq 0$, yielding a contradiction.
 
-This formalization focuses on the $h=2$ case; for general $h$, the bound is given by the Dias da Silva–Hamidoune
-theorem, which requires analyzing ballot-number coefficient structures.
+This formalization focuses on the $h=2$ case; for general $h$, the bound is given by the
+Dias da Silva–Hamidoune theorem, which requires analyzing ballot-number coefficient
+structures.
 
 ## References
 

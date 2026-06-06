@@ -17,34 +17,43 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumRadiusOne
 # Polynomial Infrastructure for the General Erdős–Heilbronn / Dias da Silva–Hamidoune Bound
 
 This module generalizes the $h = 2$ Erdős–Heilbronn restricted sumset bound (formalized in
-`ArkLib.ToMathlib.RestrictedSumset`) to general subset size $h \ge 1$. This generalization is known as the
-**Dias da Silva–Hamidoune theorem**.
+`ArkLib.ToMathlib.RestrictedSumset`) to general subset size $h \ge 1$. This generalization
+is known as the **Dias da Silva–Hamidoune theorem**.
 
-For a field $\mathbb{F}$ of prime characteristic $p$, a finite subset $A \subseteq \mathbb{F}$ with $n := |A|$,
-and $1 \le h \le n$ with $h(n - h) < p$, the set of $h$-subset sums
+For a field $\mathbb{F}$ of prime characteristic $p$, a finite subset
+$A \subseteq \mathbb{F}$ with $n := |A|$, and $1 \le h \le n$ with $h(n - h) < p$, the set
+of $h$-subset sums
 $$\Sigma_h(A) := \left\{ \sum_{a \in S} a : S \subseteq A, |S| = h \right\}$$
 has cardinality at least $h(n - h) + 1$.
 
 ## Algebraic Strategy (Alon–Nathanson–Ruzsa)
 
-We proceed via Alon's Combinatorial Nullstellensatz. Suppose for contradiction that $|\Sigma_h(A)| \le h(n - h)$.
-We pad $\Sigma_h(A)$ to a set $C'$ of cardinality exactly $m := h(n - h)$ and define the $h$-variable polynomial:
-$$Q(X_0, \dots, X_{h-1}) := \left(\prod_{0 \le i < j < h} (X_j - X_i)\right) \prod_{c \in C'} \left(\left(\sum_{k=0}^{h-1} X_k\right) - c\right)$$
+We proceed via Alon's Combinatorial Nullstellensatz. Suppose for contradiction that
+$|\Sigma_h(A)| \le h(n - h)$. We pad $\Sigma_h(A)$ to a set $C'$ of cardinality exactly
+$m := h(n - h)$ and define the $h$-variable polynomial:
+$$Q(X_0, \dots, X_{h-1}) := \left(\prod_{0 \le i < j < h} (X_j - X_i)\right)
+  \prod_{c \in C'} \left(\left(\sum_{k=0}^{h-1} X_k\right) - c\right)$$
 which is the product of the Vandermonde determinant and the padded sumset linear factors.
 
 By construction, $Q$ vanishes identically on $A^h$:
 - If two coordinates are equal, the Vandermonde factor vanishes.
-- If all coordinates are distinct, the sum of the coordinates is in $\Sigma_h(A) \subseteq C'$, so one of the sumset factors vanishes.
+- If all coordinates are distinct, the sum of the coordinates is in
+  $\Sigma_h(A) \subseteq C'$, so one of the sumset factors vanishes.
 
-The total degree of $Q$ is $\binom{h}{2} + h(n - h)$. We target the monomial $t = \prod_{i=0}^{h-1} X_i^{n-1-i}$.
+The total degree of $Q$ is $\binom{h}{2} + h(n - h)$. We target the monomial
+$t = \prod_{i=0}^{h-1} X_i^{n-1-i}$.
 The coefficient of $t$ in $Q$ corresponds to its coefficient in the leading homogeneous part:
 $$V(X) \cdot \left(\sum_{k=0}^{h-1} X_k\right)^m$$
-Expanding this via the determinant representation of the Vandermonde polynomial yields the alternating sum:
-$$\text{coeff}_t = \sum_{\sigma \in \mathfrak{S}_h} \text{sign}(\sigma) \cdot \text{multinomial}(t - \text{permExp}(\sigma))$$
+Expanding this via the determinant representation of the Vandermonde polynomial yields the
+alternating sum:
+$$\text{coeff}_t = \sum_{\sigma \in \mathfrak{S}_h} \text{sign}(\sigma)
+  \cdot \text{multinomial}(t - \text{permExp}(\sigma))$$
 
 This is evaluated in closed form as:
-$$\prod_{k=0}^{h-1} (t_k)! \cdot \text{coeff}_t \left[ V(X) \cdot \left(\sum_k X_k\right)^M \right] = M! \cdot \det\left(\text{vandermonde}(t_0, \dots, t_{h-1})\right)$$
-Under the characteristic bounds, this expression is a $p$-adic unit, proving it is nonzero. The theorem then
+$$\prod_{k=0}^{h-1} (t_k)! \cdot \text{coeff}_t \left[ V(X) \cdot \left(\sum_k X_k\right)^M
+  \right] = M! \cdot \det\left(\text{vandermonde}(t_0, \dots, t_{h-1})\right)$$
+Under the characteristic bounds, this expression is a $p$-adic unit, proving it is nonzero.
+The theorem then
 follows from the Combinatorial Nullstellensatz.
 -/
 
@@ -629,8 +638,9 @@ end MvPolynomial
 ## Reed–Solomon MCA Corollary at General Degree $k$
 
 Combining the general Erdős–Heilbronn / Dias da Silva–Hamidoune bound ($h = k + 1$) with the
-unconditional subset-sum lower bound `ProximityGap.epsMCA_one_ge_card_subsetSums` yields a lower bound
-for the maximum correlation agreement $\varepsilon_{\text{mca}}(\text{RS}[\mathbb{F}, \text{domain}, k], 1)$
+unconditional subset-sum lower bound `ProximityGap.epsMCA_one_ge_card_subsetSums` yields a
+lower bound for the maximum correlation agreement
+$\varepsilon_{\text{mca}}(\text{RS}[\mathbb{F}, \text{domain}, k], 1)$
 with explicit additive content.
 -/
 

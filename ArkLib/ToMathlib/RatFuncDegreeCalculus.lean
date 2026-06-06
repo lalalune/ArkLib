@@ -11,8 +11,8 @@ import Mathlib
 This module establishes a *degree calculus* for the field of rational functions $\mathbb{F}(X)$
 (represented in Mathlib via `RatFunc 𝔽`). It tracks the propagation of algebraic complexity
 under field operations. This calculus is key for bounding coefficient degrees in iterative
-constructions, such as the Hensel lifting process in [BCIKS20] Appendix A.4, where rational functions
-are subjected to addition, multiplication, inversion, and power operations.
+constructions, such as the Hensel lifting process in [BCIKS20] Appendix A.4, where rational
+functions are subjected to addition, multiplication, inversion, and power operations.
 
 ## Definitions and Measures
 
@@ -20,7 +20,8 @@ We analyze two distinct notions of degree:
 
 1. **Additive Degree (`RatFunc.intDegree`)**:
    Defined as $\text{intDegree}(p/q) = \deg(p) - \deg(q)$. This measure behaves cleanly under
-   multiplicative operations ($\text{intDegree}(f \cdot g) = \text{intDegree}(f) + \text{intDegree}(g)$)
+   multiplicative operations
+   ($\text{intDegree}(f \cdot g) = \text{intDegree}(f) + \text{intDegree}(g)$)
    and satisfies subadditivity under addition.
 
 2. **Structural Size Measure (`zDeg`)**:

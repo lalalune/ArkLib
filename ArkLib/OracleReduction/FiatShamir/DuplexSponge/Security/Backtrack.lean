@@ -723,8 +723,8 @@ private def BacktrackSequence.assembleEncodedMessage
   return v
 
 /-- Validates the verifier squeeze window of length $L_V(i)$ starting at the specified index.
-Verifies that the rate segments of the output states match the input rate segments of the subsequent states,
-which is a necessary condition for honest verifier squeezing. -/
+Verifies that the rate segments of the output states match the input rate segments of the
+subsequent states, which is a necessary condition for honest verifier squeezing. -/
 private def BacktrackSequence.checkSqueezeWindow
     {trace : QueryLog (duplexSpongeChallengeOracle StmtIn U)}
     {state : CanonicalSpongeState U}
@@ -741,9 +741,9 @@ private def BacktrackSequence.checkSqueezeWindow
   return ok
 
 /-- Implements Step 3 of the BackTrack procedure (CO25, Section 5.2).
-Extracts the candidate salt of length $\delta$ from the concatenated rate segments of the input states.
-If $\delta > r$, it performs the non-overwritten rate suffix consistency check on the final absorbed block,
-ensuring the unused parts of the input and output rate segments match. -/
+Extracts the candidate salt of length $\delta$ from the concatenated rate segments of the input
+states. If $\delta > r$, it performs the non-overwritten rate suffix consistency check on the final
+absorbed block, ensuring the unused parts of the input and output rate segments match. -/
 private def BacktrackSequence.constructCandidateSalt
     {trace : QueryLog (duplexSpongeChallengeOracle StmtIn U)}
     {state : CanonicalSpongeState U}
@@ -775,8 +775,9 @@ private def BacktrackSequence.constructCandidateSalt
     else
       none
 
-/-- Parses the protocol rounds over a reconstructed backtracking sequence to extract and validate the
-entire sequence of prover messages and verify the consistency of the squeeze windows (CO25, Section 5.2, Step 4). -/
+/-- Parses the protocol rounds over a reconstructed backtracking sequence to extract and validate
+the entire sequence of prover messages and verify the consistency of the squeeze windows
+(CO25, Section 5.2, Step 4). -/
 private def BacktrackSequence.extractCandidate
     (state : CanonicalSpongeState U)
     (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
@@ -860,7 +861,8 @@ private def BacktrackSequence.extractCandidate
   -- Exhausted all rounds without hitting Step D — sequence is invalid.
   return none
 
-/-- Runs the optimized backtracking extraction procedure on a trace using the linear backward scan. -/
+/-- Runs the optimized backtracking extraction procedure on a trace using the linear backward
+scan. -/
 private noncomputable def linearBackTrack
     (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (trΔ : TraceNabla T_H T_P StmtIn U)
@@ -882,14 +884,15 @@ private noncomputable def linearBackTrack
           | some out => ExperimentOutput.some out
 
 open Classical in
-/-- The primary entry point for the backtracking extraction procedure $\mathsf{BackTrack}(\mathrm{tr}, s)$
+/-- The primary entry point for the backtracking extraction procedure
+$\mathsf{BackTrack}(\mathrm{tr}, s)$
 (CO25, Section 5.2).
 
 ### Returns
 - `ExperimentOutput.noResult`: If no valid backtracking sequence can be reconstructed.
 - `ExperimentOutput.err`: If multiple conflicting backtracking paths exist.
-- `ExperimentOutput.some out`: If a unique sequence is successfully extracted, returning the associated
-  statement, salt, and reconstructed messages. -/
+- `ExperimentOutput.some out`: If a unique sequence is successfully extracted, returning the
+  associated statement, salt, and reconstructed messages. -/
 def backTrack
     (trace : QueryLog (duplexSpongeChallengeOracle StmtIn U))
     (trΔ : TraceNabla T_H T_P StmtIn U)

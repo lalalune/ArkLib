@@ -148,8 +148,8 @@ theorem eq_coe_trunc_of_coeff_eq_zero {f : R⟦X⟧} {k : ℕ}
 
 /-- **Tail-vanishing ⟹ substitution of a polynomial.**  If `α t = 0` for all `t ≥ k`, then
 `γ = subst g f` equals `subst g (trunc k f)`, i.e. the substitution of an explicit polynomial of
-degree `< k`.  This is the power-series side of Claim 5.8' (the truncation) packaged so Claim 5.9 can
-read `degreeX P ≤ 1` off the polynomial `trunc k f`. -/
+degree `< k`.  This is the power-series side of Claim 5.8' (the truncation) packaged so
+Claim 5.9 can read `degreeX P ≤ 1` off the polynomial `trunc k f`. -/
 theorem subst_eq_subst_coe_trunc_of_coeff_eq_zero {g : S⟦X⟧} {f : R⟦X⟧} {k : ℕ}
     (hf : ∀ t, k ≤ t → coeff t f = 0) :
     f.subst g = ((trunc k f : Polynomial R) : R⟦X⟧).subst g := by

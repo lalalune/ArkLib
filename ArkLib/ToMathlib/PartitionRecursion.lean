@@ -154,7 +154,8 @@ least two parts (`Σλ = Multiset.card p.parts ≥ 2`). Used by L8 to show `2i�
 theorem two_le_card_parts_of_ne_indiscrete (ht : 0 < t) {p : Nat.Partition t}
     (h : p ≠ Nat.Partition.indiscrete t) :
     2 ≤ Multiset.card p.parts := by
-  -- card ≠ 0 (parts nonempty since sum = t > 0) and card ≠ 1 (else it is the single-part partition).
+  -- card ≠ 0 (parts nonempty since sum = t > 0) and card ≠ 1 (else it is the single-part
+  -- partition).
   rcases Nat.lt_or_ge (Multiset.card p.parts) 2 with hlt | hge
   · exfalso
     interval_cases hc : Multiset.card p.parts
@@ -179,8 +180,8 @@ theorem two_le_card_parts_of_ne_indiscrete (ht : 0 < t) {p : Nat.Partition t}
 
 In the `β_{t+1}` step the outer sum ranges over `(i₁, λ)` with `i₁ ≤ t+1`, `λ : Partition (t+1−i₁)`,
 excluding only the trivial pair `(0, λ^(t+1))`; the recursive calls are `β_l` for `l ∈ λ.parts`.
-This lemma certifies every such `l` satisfies `l < t + 1`, which is exactly the obligation discharged
-by `termination_by β_rec t => t` / `decreasing_by`.
+This lemma certifies every such `l` satisfies `l < t + 1`, which is exactly the obligation
+discharged by `termination_by β_rec t => t` / `decreasing_by`.
 
 The hypothesis `hexcl` excludes precisely the single forbidden term `(i₁ = 0, λ = λ^(t+1))`,
 expressed type-safely via the parts multiset (`λ^(t+1)` is the unique partition with

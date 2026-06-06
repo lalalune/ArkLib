@@ -30,7 +30,8 @@ We prove
   `a∞ - a₀ ∈ Ideal.span {X}`;
 * `powerSeries_newton_root`: the constructive analogue of `powerSeries_hensel_lift`.
 
-Everything is kernel-clean (reusing `ArkLib.powerSeries_isPrecomplete` from `PowerSeriesHenselianA.lean` for the limit).
+Everything is kernel-clean (reusing `ArkLib.powerSeries_isPrecomplete` from
+`PowerSeriesHenselianA.lean` for the limit).
 -/
 
 set_option linter.style.longLine false
@@ -277,7 +278,8 @@ theorem newtonSeq_limit (f : Polynomial (PowerSeries k)) (a₀ : PowerSeries k)
     have hfdiff : (X : PowerSeries k) ^ N ∣ (f.eval aInf - f.eval (newtonSeq f a₀ N)) := by
       have hbase : (X : PowerSeries k) ∣ (aInf - newtonSeq f a₀ N) :=
         dvd_trans (dvd_pow_self X (n := N) (by omega)) hdiff
-      -- Use Taylor: aInf = a_N + h, f(aInf) - f(a_N) = f'(a_N)·h + c·h².  Each term divisible by X^N.
+      -- Use Taylor: aInf = a_N + h, f(aInf) - f(a_N) = f'(a_N)·h + c·h².
+      -- Each term divisible by X^N.
       set aN := newtonSeq f a₀ N with haN
       obtain ⟨c, hc⟩ := f.binomExpansion aN (aInf - aN)
       have hrw : aN + (aInf - aN) = aInf := by ring

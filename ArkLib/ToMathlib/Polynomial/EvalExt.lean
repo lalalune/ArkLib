@@ -25,8 +25,9 @@ Let $p, q \in \mathbb{F}[X]$ be polynomials whose degrees are strictly bounded b
 If $p$ and $q$ agree on a subset $S \subseteq \mathbb{F}$ with cardinality at least $n$,
 then they are identical.
 
-**Proof intuition**: The difference polynomial $r = p - q$ has degree less than $n$. If $r \neq 0$, it can have at
-most $\deg(r) < n$ roots. However, $r$ vanishes on all elements of $S$, which has size at least $n$,
+**Proof intuition**: The difference polynomial $r = p - q$ has degree less than $n$. If
+$r \neq 0$, it can have at most $\deg(r) < n$ roots. However, $r$ vanishes on all elements
+of $S$, which has size at least $n$,
 contradicting the degree bound. Thus, $r = 0$, implying $p = q$.
 -/
 lemma eq_of_eval_eq_degree {p q : 𝔽[X]} {n : ℕ}
