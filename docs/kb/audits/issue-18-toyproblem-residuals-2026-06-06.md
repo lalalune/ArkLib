@@ -23,6 +23,13 @@ closures for these surfaces:
 - `simplified_iop_soundness_listDecoding_lb` derives the winning-set cardinality
   bound from that data through `ToyProblem.simplified_iop_listDecoding_lb_of_winningChallenges`.
   The cardinality inequality itself is no longer assumed as the residual.
+- The useful fixed-encoding repair from old branch `origin/feat/abf26-plan` is
+  already present on current `main`: `relationFor`, `relaxedRelationFor`,
+  `winningSetFor`, `relaxedRelationFor_imp`, and `winningSetFor_subset` in
+  `Definitions.lean`, together with witness-bearing fixed-encoding output
+  relations in the ToyProblem specs. Do not merge that stale branch wholesale;
+  its remaining ToyProblem hunks are superseded by current split files and
+  include old proof/doc scaffolding.
 - `protocol62_knowledgeSound_residual`, `protocol62_rbrKnowledgeSound_residual`,
   and `simplifiedIOR_knowledgeSound_residual` are all reducible aliases for the
   single straightline-from-rewinding bridge

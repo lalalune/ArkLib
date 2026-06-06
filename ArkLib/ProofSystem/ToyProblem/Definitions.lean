@@ -29,6 +29,10 @@ This file is the code-theoretic foundation:
   directly rather than a paper-shape wrapper).
 * `ToyProblem.winningSet` — Definition 6.11, the set of "winning"
   challenges `γ` for the simplified IOR attack of §6.4.
+* `ToyProblem.relationFor`, `ToyProblem.relaxedRelationFor`, and
+  `ToyProblem.winningSetFor` — fixed-encoding variants used when the
+  paper argument depends on the code's chosen encoder rather than only
+  its image.
 
 Protocol-level items (Construction 6.2, Lemmas 6.6 / 6.8, Construction
 6.9, Lemma 6.10) live in `ToyProblem/Spec/General.lean` and are stated
