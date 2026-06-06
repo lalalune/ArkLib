@@ -792,18 +792,23 @@ theorem j1RatioConstraint_eval_j1FullTopQuadratic_eq_zero
         γ * ((Lagrange.interpolate Finset.univ (fun a => domain a)) u₁).coeff d
     rw [map_add, map_smul, Polynomial.coeff_add, Polynomial.coeff_smul]
     simp
-  have hrel' :
-      (P₀.coeff (Fintype.card ι - 2) + γ * P₁.coeff (Fintype.card ι - 2)) *
-          (P₀.coeff (Fintype.card ι - 2) + γ * P₁.coeff (Fintype.card ι - 2)) -
-        N.coeff (Fintype.card ι - 1) *
-          (P₀.coeff (Fintype.card ι - 1) + γ * P₁.coeff (Fintype.card ι - 1)) *
-          (P₀.coeff (Fintype.card ι - 2) + γ * P₁.coeff (Fintype.card ι - 2)) +
-        N.coeff (Fintype.card ι - 2) *
-          (P₀.coeff (Fintype.card ι - 1) + γ * P₁.coeff (Fintype.card ι - 1)) *
-          (P₀.coeff (Fintype.card ι - 1) + γ * P₁.coeff (Fintype.card ι - 1)) -
-        (P₀.coeff (Fintype.card ι - 1) + γ * P₁.coeff (Fintype.card ι - 1)) *
-          (P₀.coeff (Fintype.card ι - 3) + γ * P₁.coeff (Fintype.card ι - 3)) = 0 := by
-    simpa [Pγ, N, hcoeff] using hrel
+  have hrelP :
+      Pγ.coeff (Fintype.card ι - 2) * Pγ.coeff (Fintype.card ι - 2) -
+          N.coeff (Fintype.card ι - 1) * Pγ.coeff (Fintype.card ι - 1) *
+            Pγ.coeff (Fintype.card ι - 2) +
+        N.coeff (Fintype.card ι - 2) * Pγ.coeff (Fintype.card ι - 1) *
+            Pγ.coeff (Fintype.card ι - 1) -
+        Pγ.coeff (Fintype.card ι - 1) * Pγ.coeff (Fintype.card ι - 3) = 0 := by
+    change
+      (let P := Lagrange.interpolate Finset.univ (fun a => domain a) (u₀ + γ • u₁)
+       let N := Lagrange.nodal Finset.univ (fun a => domain a)
+       P.coeff (Fintype.card ι - 2) * P.coeff (Fintype.card ι - 2) -
+           N.coeff (Fintype.card ι - 1) * P.coeff (Fintype.card ι - 1) *
+             P.coeff (Fintype.card ι - 2) +
+         N.coeff (Fintype.card ι - 2) * P.coeff (Fintype.card ι - 1) *
+             P.coeff (Fintype.card ι - 1) -
+         P.coeff (Fintype.card ι - 1) * P.coeff (Fintype.card ι - 3) = 0)
+    exact hrel
   have hpoly :
       (j1FullTopQuadratic domain u₀ u₁).eval γ =
       (P₀.coeff (Fintype.card ι - 2) + γ * P₁.coeff (Fintype.card ι - 2)) *
@@ -818,7 +823,9 @@ theorem j1RatioConstraint_eval_j1FullTopQuadratic_eq_zero
           (P₀.coeff (Fintype.card ι - 3) + γ * P₁.coeff (Fintype.card ι - 3)) := by
     simp [j1FullTopQuadratic, P₀, P₁, N]
   rw [hpoly]
-  exact hrel'
+  rw [← hcoeff (Fintype.card ι - 2), ← hcoeff (Fintype.card ι - 1),
+    ← hcoeff (Fintype.card ι - 3)]
+  exact hrelP
 
 open Classical in
 /-- The finite scalar set cut out by the J1 window ratio constraints.

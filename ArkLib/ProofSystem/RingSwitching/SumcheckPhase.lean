@@ -701,12 +701,6 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
     -- `iteratedSumcheckOracleVerifier_verify_collapse` lemma. Pin the transcript message `h_i` and
     -- challenge `r'`.
     intro hProb
-    -- `tr : Transcript (Fin.last 2)` is definitionally a `FullTranscript`; name that view so the
-    -- `verify_collapse` lemma (stated over `FullTranscript`) and the index `⟨0,rfl⟩`/`⟨1,rfl⟩`
-    -- extractions typecheck.
-    have tr' : FullTranscript (pSpecSumcheckRound L) := tr
-    set h_i : ↥L⦃≤ 2⦄[X] := FullTranscript.messages tr' ⟨0, rfl⟩ with h_i_def
-    set r' : L := FullTranscript.challenges tr' ⟨1, rfl⟩ with hr'_def
     rw [gt_iff_lt, probEvent_pos_iff] at hProb
     obtain ⟨⟨stmtOut, oStmtOut⟩, hx, hrel⟩ := hProb
     rw [OptionT.mem_support_iff] at hx
@@ -715,12 +709,20 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
     -- Unfold `Verifier.run` to `toVerifier.verify`, push the outer `simulateQ impl` through the
     -- `do`-bind (over the empty oracle spec `[]ₒ` the impl pass is transparent), then collapse the
     -- inner message-oracle simulation of `verify` to the closed `if` form via `verify_collapse`.
-    simp only [Verifier.run, OracleVerifier.toVerifier, bind_pure_comp] at hx
+    simp only [Verifier.run, OracleVerifier.toVerifier] at hx
     rw [simulateQ_optionT_bind] at hx
     rw [iteratedSumcheckOracleVerifier_verify_collapse (i := i) (stmt := stmtLast)
-      (oStmt := oStmtLast) (tr := tr')] at hx
+      (oStmt := oStmtLast) (tr := tr)] at hx
     simp only [simulateQ_optionT_pure', simulateQ_map, map_pure, bind_pure_comp,
       simulateQ_optionT_failure', simulateQ_ite, apply_ite, map_optionT_failure'] at hx
+    -- Name the transcript message `h_i` and challenge `r'` (in the `verify_collapse` output form).
+    -- `tr : Transcript (Fin.last 2)` is definitionally `FullTranscript (pSpecSumcheckRound L)`
+    -- (`Fin ↑(Fin.last 2) = Fin 2`); the explicit ascription pins `n = 2` so the `MessageIdx`
+    -- `⟨0,rfl⟩` / `ChallengeIdx` `⟨1,rfl⟩` numerals elaborate.
+    set h_i : ↥L⦃≤ 2⦄[X] :=
+      FullTranscript.messages (tr : FullTranscript (pSpecSumcheckRound L)) ⟨0, rfl⟩ with h_i_def
+    set r' : L :=
+      FullTranscript.challenges (tr : FullTranscript (pSpecSumcheckRound L)) ⟨1, rfl⟩ with hr'_def
     -- (B) Case split on the Boolean-sum check (the only verifier check).
     by_cases hcheck :
         (∑ b ∈ (boolDomain L ℓ').points i, h_i.val.eval b) = stmtLast.sumcheck_target
