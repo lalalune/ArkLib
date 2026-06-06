@@ -10,10 +10,15 @@ import Mathlib.Probability.ProbabilityMassFunction.Constructions
 import ToMathlib.Probability.ProbabilityMassFunction.TotalVariation
 
 /-!
-# DSFS Preliminaries
+# Mathematical Preliminaries for Duplex-Sponge Fiat-Shamir
 
-This file contains preliminaries for the duplex-sponge Fiat-Shamir formalization.
-Currently it provides CO25 Lemma 3.2 about uniform preimage sampling.
+This module establishes the core mathematical infrastructure required for the security analysis
+of the Duplex-Sponge Fiat-Shamir (DSFS) transformation. Specifically, we formalize:
+- The uniform preimage sampling lemma (Lemma 3.2 in Chiesa-Orrù [CO25]), which shows that resampling
+  from the fiber of a surjective map under the pushforward of a uniform distribution preserves
+  the uniform distribution.
+- The total variation (TV) distance conditioning bound (Claim 1.2.10 in [CY24]), enabling the
+  decomposition of TV distance bounds conditioned on equi-probable events.
 -/
 
 open ProbabilityTheory
@@ -25,24 +30,23 @@ section Lemma32
 
 variable {A B : Type*} [DecidableEq A] [Fintype B]
 
-/-- The fiber of `ψ` over `a`. -/
+/-- The fiber of the map `ψ` over the element `a`, defined as the subtype of elements $b \in B$ such that $\psi(b) = a$. -/
 abbrev Preimage (ψ : B → A) (a : A) := { b : B // ψ b = a }
 
-/-- Surjectivity provides a canonical nonempty witness for each fiber. -/
+/-- A proof that surjectivity of `ψ` implies the fiber over any element `a` is inhabited. -/
 noncomputable def preimageNonempty (ψ : B → A) (hψ : Function.Surjective ψ) (a : A) :
     Nonempty (Preimage ψ a) := by
   rcases hψ a with ⟨b, rfl⟩
   exact ⟨⟨b, rfl⟩⟩
 
-/-- Sample a uniformly random preimage of `a` under `ψ`. -/
+/-- The uniform preimage sampler for `ψ` over `a`. This probability mass function (PMF) maps a uniform distribution on the fiber $\{b \in B \mid \psi(b) = a\}$ back to the domain $B$. -/
 noncomputable def sampleUniformPreimage (ψ : B → A) (hψ : Function.Surjective ψ) (a : A) : PMF B :=
   by
     classical
     letI := preimageNonempty ψ hψ a
     exact (PMF.uniformOfFintype (Preimage ψ a)).map Subtype.val
 
-/-- Pointwise description of `sampleUniformPreimage`
-Probability of sampling `b` from the fiber of `a` = `1/|fiber_{a}|` or `0` -/
+/-- Pointwise evaluation of the uniform preimage sampler. The probability of sampling $b \in B$ given the target $a \in A$ is $(|{\psi^{-1}(a)}|)^{-1}$ if $\psi(b) = a$, and $0$ otherwise. -/
 theorem sampleUniformPreimage_apply (ψ : B → A) (hψ : Function.Surjective ψ) (a : A) (b : B) :
     sampleUniformPreimage ψ hψ a b =
       if ψ b = a then (Fintype.card (Preimage ψ a) : ENNReal)⁻¹ else 0 := by
@@ -69,24 +73,18 @@ theorem sampleUniformPreimage_apply (ψ : B → A) (hψ : Function.Surjective ψ
 
 variable [Nonempty B]
 
-/-- Paper notation `𝒰(X)` for the uniform distribution on a finite inhabited type `X`. -/
+/-- The uniform probability distribution on a finite, inhabited type $X$. -/
 noncomputable abbrev 𝒰 (X : Type*) [Fintype X] [Nonempty X] : PMF X := $ᵖ X
 
-/-- Distribution-level action of a deterministic map. This is the `ψ` in
-`ψ⁻¹ ∘ ψ ∘ 𝒰(B)`. -/
+/-- The pushforward operator on PMFs induced by a deterministic map `ψ`. -/
 noncomputable abbrev pushforward (ψ : B → A) : PMF B → PMF A := PMF.map ψ
 
-/-- Distribution-level action of the uniform preimage sampler. This is the `ψ⁻¹` in
-`ψ⁻¹ ∘ ψ ∘ 𝒰(B)`. -/
+/-- The distribution-level action of the uniform preimage sampler. Given a PMF on $A$, it binds each point to its uniform preimage distribution on $B$. -/
 noncomputable abbrev uniformPreimageSampler
     (ψ : B → A) (hψ : Function.Surjective ψ) : PMF A → PMF B :=
   fun D => D.bind (sampleUniformPreimage ψ hψ)
 
--- monadic computation
-
--- ψ⁻¹ ∘ ψ ∘ U(B)
-
-/-- CO25 Lemma 3.2 as an equality of PMFs. -/
+/-- [CO25, Lemma 3.2] represented as a direct equality of probability mass functions. -/
 theorem bind_sampleUniformPreimage_eq_uniform (ψ : B → A) (hψ : Function.Surjective ψ) :
     (do
       let b' ← $ᵖ B
@@ -161,10 +159,7 @@ theorem bind_sampleUniformPreimage_eq_uniform (ψ : B → A) (hψ : Function.Sur
   _ = ($ᵖ B : PMF B) b := by
           rw [PMF.uniformOfFintype_apply]
 
-/-- CO25 Lemma 3.2: resampling a uniformly random element via a uniformly random preimage preserves
-the uniform distribution.
-ψ⁻¹ ∘ ψ ∘ U(B) = U(B), where ψ⁻¹ is uniform sampling of fiber of a value in `A`
--/
+/-- [CO25, Lemma 3.2] showing that the statistical distance between the uniform distribution and the composition of pushforward with uniform preimage resampling is zero. -/
 theorem lemma_3_2 (ψ : B → A) (hψ : Function.Surjective ψ) :
     Dist.dist ($ᵖ B)
       (do
@@ -173,18 +168,13 @@ theorem lemma_3_2 (ψ : B → A) (hψ : Function.Surjective ψ) :
   rw [bind_sampleUniformPreimage_eq_uniform (ψ := ψ) hψ]
   simp [dist]
 
-/-- CO25 Lemma 3.2 as the paper's composition equation:
-`ψ⁻¹ ∘ ψ ∘ 𝒰(B) = 𝒰(B)`. -/
+/-- [CO25, Lemma 3.2] composition equation: $\psi^{-1} \circ \psi_*(\mathcal{U}(B)) = \mathcal{U}(B)$. -/
 theorem lemma_3_2_paperEquation (ψ : B → A) (hψ : Function.Surjective ψ) :
     ((uniformPreimageSampler ψ hψ) ∘ pushforward ψ) (𝒰 B) = 𝒰 B := by
   simpa [uniformPreimageSampler, pushforward, 𝒰, Functor.map] using
     (bind_sampleUniformPreimage_eq_uniform (ψ := ψ) hψ)
 
-/-- CO25 Lemma 3.2 in the paper's `Δ(...)=0` form:
-`Δ(𝒰(B), ψ⁻¹ ∘ ψ ∘ 𝒰(B)) = 0`.
-
-The helper definitions `𝒰`, `pushforward`, and `uniformPreimageSampler` make the Lean statement
-track the paper notation directly. -/
+/-- [CO25, Lemma 3.2] in the standard total variation distance format: $\delta( \mathcal{U}(B), \psi^{-1} \circ \psi_*(\mathcal{U}(B)) ) = 0$. -/
 theorem lemma_3_2_paperNotation (ψ : B → A) (hψ : Function.Surjective ψ) :
     Dist.dist (𝒰 B) (((uniformPreimageSampler ψ hψ) ∘ pushforward ψ) (𝒰 B)) = 0 := by
   rw [lemma_3_2_paperEquation (ψ := ψ) hψ]
@@ -196,14 +186,12 @@ section Claim1210
 
 variable {α : Type*}
 
--- TV distance conditioning bound via indicator decomposition (CY24 Claim 1.2.10)
-/-- CY24 Claim 1.2.10: conditioning on equi-probable events bounds TV distance.
-
-Let `p q : PMF α` be distributions and `s₁ s₂ : Set α` events with equal probability
-under `p` and `q` respectively (`Pr_p[s₁] = Pr_q[s₂]`). Then
-`Δ(p, q) ≤ Δ(p | s₁, q | s₂) + Pr_p[s₁ᶜ]`,
-where `p | s₁` is `p.filter s₁` (PMF `p` conditioned on `s₁`, see `PMF.filter`),
-and `Pr_p[s₁ᶜ] = 1 - Pr_p[s₁] = 1 - ∑' a ∈ s₁, p a`. -/
+/-- [CY24, Claim 1.2.10]
+The total variation distance between two distributions $p$ and $q$ is bounded by their conditional
+total variation distance given equi-probable events $s_1$ and $s_2$ plus the probability of the
+complement event $s_1^c$:
+$$\delta_{TV}(p, q) \leq \delta_{TV}(p \vert s_1, q \vert s_2) + \mathbb{P}_p[s_1^c]$$
+-/
 theorem claim_1_2_10
     (p q : PMF α) (s₁ s₂ : Set α)
     (hs₁ : ∃ a ∈ s₁, a ∈ p.support)
