@@ -549,6 +549,57 @@ theorem mcaThresholdLattice_bracketed_of_lowerWitness_and_SamplingDG25
       (mcaThresholdExists_of_MCALowerWitness (C : Set (ι → F)) ε_star wlo)
       hδhi hδ' hδ_pos hδ_lt hDG25 hgt⟩
 
+/-- The BCHKS25 Johnson-range MCA lower bound and the DG25 sampling lower bound bracket the
+faithful MCA lattice threshold directly for Reed-Solomon codes. -/
+theorem mcaThresholdLattice_bracketed_ofJohnsonBCHKS25_and_SamplingDG25
+    (domain : ι ↪ F) (k : ℕ) (η δ_lo δ_hi δ' ε_star : ℝ≥0)
+    (hη : 0 < η)
+    (hδ_johnson :
+        (δ_lo : ℝ) <
+          1 - (((k : ℝ) / Fintype.card ι + 1 / Fintype.card ι) ^ ((1 : ℝ) / 2)) -
+            (η : ℝ))
+    (hδlo_le_one : δ_lo ≤ 1)
+    (hBCHKS25 : CodingTheory.rs_epsMCA_johnson_range_bchks25 domain k η δ_lo
+      hη hδ_johnson)
+    (hle :
+        ENNReal.ofReal
+            (let n : ℝ := Fintype.card ι
+             let ρ_plus : ℝ := k / n + 1 / n
+             let m : ℝ := max ⌈(ρ_plus ^ ((1 : ℝ) / 2)) / (2 * η)⌉ 3
+             ((2 * (m + 1 / 2) ^ 5 + 3 * (m + 1 / 2) * δ_lo * ρ_plus) /
+                    (3 * ρ_plus ^ ((3 : ℝ) / 2)) *
+                  n +
+                (m + 1 / 2) / ρ_plus ^ ((1 : ℝ) / 2)) /
+               (Fintype.card F : ℝ)) ≤
+          (ε_star : ENNReal))
+    (hδhi : δ_hi ≤ 1)
+    (hδ' : (δ' : ENNReal) =
+      ⨆ u : ι → F, δᵣ(u, (ReedSolomon.code domain k : Set (ι → F))))
+    (hδ_pos : 0 < δ_hi) (hδ_lt : δ_hi < δ')
+    (hDG25 : CodingTheory.linear_epsCA_ge_sampling_dg25
+      (ReedSolomon.code domain k) δ_hi δ' hδ' hδ_pos hδ_lt)
+    (hgt :
+      ((Fintype.card F - 1 : ℝ≥0) / Fintype.card F : ENNReal)
+          * Pr_{
+              let u ← $ᵖ (ι → F)
+              }[δᵣ(u, (ReedSolomon.code domain k : Set (ι → F))) ≤ δ_hi] >
+        (ε_star : ENNReal)) :
+    let hne := mcaThresholdExists_ofJohnsonBCHKS25 domain k η δ_lo ε_star hη
+      hδ_johnson hδlo_le_one hBCHKS25 hle
+    latticeIndexOf (ι := ι) δ_lo hδlo_le_one ≤
+        mcaThreshold (ReedSolomon.code domain k : Set (ι → F)) ε_star hne ∧
+      mcaThreshold (ReedSolomon.code domain k : Set (ι → F)) ε_star hne <
+        latticeIndexOf (ι := ι) δ_hi hδhi :=
+  let wlo := MCALowerWitness.ofJohnsonBCHKS25 domain k η δ_lo ε_star hη hδ_johnson
+    hδlo_le_one hBCHKS25 hle
+  ⟨MCALowerWitness_le_mcaThreshold (ReedSolomon.code domain k : Set (ι → F)) ε_star
+      (mcaThresholdExists_ofJohnsonBCHKS25 domain k η δ_lo ε_star hη hδ_johnson
+        hδlo_le_one hBCHKS25 hle) wlo,
+    mcaThreshold_lt_ofSamplingDG25 (ReedSolomon.code domain k) δ_hi δ' ε_star
+      (mcaThresholdExists_ofJohnsonBCHKS25 domain k η δ_lo ε_star hη hδ_johnson
+        hδlo_le_one hBCHKS25 hle)
+      hδhi hδ' hδ_pos hδ_lt hDG25 hgt⟩
+
 /-- A lower MCA witness and a capacity-side `ε_ca` upper witness bracket the faithful lattice
 threshold directly. This is the lattice version of the common Johnson-lower/capacity-upper
 workflow for linear codes. -/
