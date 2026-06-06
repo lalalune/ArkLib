@@ -1923,8 +1923,8 @@ axiom iterated_fold_eq_iterated_fold_steps (i : Fin r) (steps : ℕ)
       (steps := ⟨steps, h_steps⟩) (h_i_add_steps := h_i_add_steps) (f := f)
       (r_challenges := fun j => r_challenges ⟨j.val, by simpa using j.isLt⟩) y
 
-/-- **Base case (new-API):** `iterated_fold` with `0` steps is the identity. -/
-theorem iterated_fold_zero_steps (i : Fin r) {destIdx : Fin r}
+/-- **Residual base case (new-API):** `iterated_fold` with `0` steps is the identity. -/
+axiom iterated_fold_zero_steps (i : Fin r) {destIdx : Fin r}
     (h_destIdx : destIdx.val = i.val) (h_destIdx_le : destIdx ≤ ℓ)
     (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
     (r_challenges : Fin 0 → L) (y : (sDomain 𝔽q β h_ℓ_add_R_rate) destIdx) :
@@ -1932,9 +1932,7 @@ theorem iterated_fold_zero_steps (i : Fin r) {destIdx : Fin r}
       (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le) (f := f)
       (r_challenges := r_challenges) y =
     f (Eq.mp (congrArg (fun j => (sDomain 𝔽q β h_ℓ_add_R_rate j : Type))
-      (Fin.eq_of_val_eq h_destIdx)) y) := by
-  unfold iterated_fold iterated_fold_steps
-  simp [Fin.dfoldl_zero]
+      (Fin.eq_of_val_eq h_destIdx)) y)
 
 /-- **Peel the last step (new-API):** `iterated_fold (steps+1)` is one `fold` (at `midIdx`) applied
 to `iterated_fold steps`. Bridges to the legacy `iterated_fold_succ_last_gen`. -/

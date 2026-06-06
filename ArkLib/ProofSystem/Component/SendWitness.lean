@@ -101,6 +101,19 @@ theorem reduction_completeness :
     refine ⟨?_, rfl⟩
     simpa [toRelOut] using hIn
 
+/-- Running the verifier under the query implementation deterministically yields the verifier's
+  output `⟨stmt, tr 0⟩`. Phrasing the transcript as a `FullTranscript` keeps `tr 0` well-typed
+  (index `Fin 1`), avoiding the `Fin ↑(Fin.last 1)` numeral-elaboration snag at the call site. -/
+theorem verifier_run_simulateQ {σ : Type} (impl : QueryImpl oSpec (StateT σ ProbComp)) (s : σ)
+    (stmt : Statement) (tr : (pSpec Witness).FullTranscript) :
+    (simulateQ impl ((verifier oSpec Statement Witness).run stmt tr)).run' s
+      = pure (some (stmt, tr 0)) := by
+  change (simulateQ impl
+    (pure (some (stmt, tr 0)) : OracleComp oSpec (Option (Statement × Witness)))).run' s = _
+  rw [simulateQ_pure]
+  change Prod.fst <$> (pure (some (stmt, tr 0)) : StateT σ ProbComp _).run s = _
+  rw [StateT.run_pure]; simp [map_pure]
+
 /-- The `SendWitness` reduction satisfies perfect RBR knowledge soundness.
 
   The protocol `pSpec Witness` is `ProverOnly` (single P_to_V round), so `ChallengeIdx` is empty
@@ -127,21 +140,12 @@ theorem reduction_rbr_knowledge_soundness :
     toFun_full := fun stmt tr witOut hpr => by
       -- The verifier returns ⟨stmt, tr 0⟩, and toRelOut = Prod.fst ⁻¹' relIn,
       -- so (⟨stmt, tr 0⟩, witOut) ∈ toRelOut relIn means (stmt, tr 0) ∈ relIn.
-      simp only [Verifier.run, verifier] at hpr
       rw [gt_iff_lt, probEvent_pos_iff] at hpr
       obtain ⟨x, hx, hrel⟩ := hpr
       rw [OptionT.mem_support_iff] at hx
       simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
       obtain ⟨s, _, hx⟩ := hx
-      have key : (simulateQ impl
-          (pure (stmt, tr 0) : OptionT (OracleComp oSpec) (Statement × Witness))).run' s
-          = pure (some (stmt, tr 0)) := by
-        change (simulateQ impl
-          (pure (some (stmt, tr 0)) : OracleComp oSpec (Option (Statement × Witness)))).run' s = _
-        rw [simulateQ_pure]
-        change Prod.fst <$> (pure (some (stmt, tr 0)) : StateT σ ProbComp _).run s = _
-        rw [StateT.run_pure]; simp [map_pure]
-      rw [key] at hx
+      rw [verifier_run_simulateQ] at hx
       simp only [support_pure, Set.mem_singleton_iff] at hx
       cases (Option.some.inj hx)
       exact hrel
@@ -310,6 +314,23 @@ theorem oracleVerifier_toVerifier_run {stmt : Statement} {oStmt : ∀ i, OStatem
     simp only [Embedding.sumMap, Function.Embedding.coeFn_mk, Sum.map_inr]
     rfl
 
+/-- Running the oracle verifier under the query implementation deterministically yields its output
+  `⟨stmt, Sum.rec oStmt (fun _ => tr 0)⟩`. As with `verifier_run_simulateQ`, taking `tr` as a
+  `FullTranscript` keeps `tr 0` well-typed at the call site. -/
+theorem oracleVerifier_run_simulateQ {σ : Type} (impl : QueryImpl oSpec (StateT σ ProbComp)) (s : σ)
+    {stmt : Statement} {oStmt : ∀ i, OStatement i} {tr : (oraclePSpec Witness).FullTranscript} :
+    (simulateQ impl
+        ((oracleVerifier oSpec Statement OStatement Witness).toVerifier.run ⟨stmt, oStmt⟩ tr)).run' s
+      = pure (some ⟨stmt, Sum.rec oStmt (fun i => match i with | 0 => tr 0)⟩) := by
+  rw [oracleVerifier_toVerifier_run]
+  change (simulateQ impl
+    (pure (some ⟨stmt, Sum.rec oStmt (fun i => match i with | 0 => tr 0)⟩)
+      : OracleComp oSpec (Option (Statement × (∀ j,
+          (Sum.elim OStatement fun _ : Fin 1 => Witness) j))))).run' s = _
+  rw [simulateQ_pure]
+  change Prod.fst <$> (pure (some _) : StateT σ ProbComp _).run s = _
+  rw [StateT.run_pure]; simp [map_pure]
+
 variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
   (oRelIn : Set ((Statement × (∀ i, OStatement i)) × Witness))
 
@@ -377,39 +398,22 @@ theorem oracleReduction_rbr_knowledge_soundness :
     toFun_empty := fun _ _ => by simp
     toFun_next := fun ⟨0, _⟩ _ _stmt _tr _msg _witMid h => h
     toFun_full := fun stmt tr witOut hpr => by
-      -- The oracle verifier deterministically returns `⟨stmt.1, Sum.rec stmt.2 (fun _ => tr 0)⟩`
-      -- (`oracleVerifier_toVerifier_run`); a positive-probability output that lies in `toORelOut`
-      -- therefore witnesses `oRelIn ⟨⟨stmt.1, stmt.2⟩, tr 0⟩`, which is the goal.
-      rw [oracleVerifier_toVerifier_run] at hpr
+      -- The oracle verifier deterministically returns `⟨stmt.1, Sum.rec stmt.2 (fun _ => tr 0)⟩`;
+      -- a positive-probability output lying in `toORelOut` therefore witnesses
+      -- `oRelIn ⟨⟨stmt.1, stmt.2⟩, tr 0⟩`, which is the goal.
+      obtain ⟨stmt, oStmt⟩ := stmt
       rw [gt_iff_lt, probEvent_pos_iff] at hpr
       obtain ⟨x, hx, hrel⟩ := hpr
       rw [OptionT.mem_support_iff] at hx
       simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
       obtain ⟨s, _, hx⟩ := hx
-      have key : (simulateQ impl
-          (pure ⟨stmt.1, Sum.rec stmt.2 (fun i => match i with | 0 => tr 0)⟩
-            : OptionT (OracleComp oSpec) (Statement × (∀ j,
-                (Sum.elim OStatement fun _ : Fin 1 => Witness) j)))).run' s
-          = pure (some ⟨stmt.1, Sum.rec stmt.2 (fun i => match i with | 0 => tr 0)⟩) := by
-        change (simulateQ impl
-          (pure (some ⟨stmt.1, Sum.rec stmt.2 (fun i => match i with | 0 => tr 0)⟩)
-            : OracleComp oSpec (Option (Statement × (∀ j,
-                (Sum.elim OStatement fun _ : Fin 1 => Witness) j))))).run' s = _
-        rw [simulateQ_pure]
-        change Prod.fst <$> (pure (some _) : StateT σ ProbComp _).run s = _
-        rw [StateT.run_pure]; simp [map_pure]
-      rw [key] at hx
+      rw [oracleVerifier_run_simulateQ] at hx
       simp only [support_pure, Set.mem_singleton_iff] at hx
       cases (Option.some.inj hx)
-      -- `hrel : (⟨stmt.1, Sum.rec stmt.2 (fun _ => tr 0)⟩, witOut) ∈ toORelOut oRelIn`,
-      -- which unfolds (projecting the `Sum.inl`/`Sum.inr` components) to the goal.
+      -- `hrel : (⟨stmt, Sum.rec oStmt (fun _ => tr 0)⟩, witOut) ∈ toORelOut oRelIn`, whose
+      -- `Sum.inl`/`Sum.inr` projections reduce definitionally to the goal `oRelIn ⟨⟨stmt, oStmt⟩, tr 0⟩`.
       simp only [toORelOut, Set.mem_setOf_eq] at hrel
-      convert hrel using 2
-      congr 1
-      ext i
-      rcases i with j | j
-      · rfl
-      · fin_cases j; rfl
+      exact hrel
   }, ?_⟩
   -- ChallengeIdx is empty for oraclePSpec Witness (single P_to_V round)
   intro _stmtIn _witIn _prover ⟨⟨0, _⟩, hdir⟩
