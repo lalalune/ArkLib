@@ -416,8 +416,9 @@ theorem correlatedAgreement_affine_curves_of_lattice_data
       jointAgreement (C := ReedSolomon.code domain deg) (δ := δ') (W := u))
     (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain) :
     δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
-      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
-  BoundaryCardResidual.correlatedAgreement_affine_curves_of_lattice_residual
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  classical
+  exact BoundaryCardResidual.correlatedAgreement_affine_curves_of_lattice_residual
     (deg := deg) (domain := domain) (δ := δ) hStrictCoeff hStrict
     (boundaryCardLatticeResidual_of_lattice_data
       (k := k) (deg := deg) (domain := domain) (δ := δ) hLatticeData)

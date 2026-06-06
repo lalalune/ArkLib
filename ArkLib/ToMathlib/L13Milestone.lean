@@ -223,8 +223,9 @@ theorem correlatedAgreement_affine_curves_strongBeta_of_betaRecFin_lattice_resid
       ArkLib.BoundaryCardResidual.BoundaryCardLatticeResidual
         (k := k) (deg := deg) (domain := domain) (δ := δ)) :
     δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
-      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
-  correlatedAgreement_affine_curves_johnson_of_betaRecFin
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  classical
+  exact correlatedAgreement_affine_curves_johnson_of_betaRecFin
     (k := k) (deg := deg) (domain := domain) (δ := δ) hδ hInput
     (ArkLib.BoundaryCardResidual.boundaryCardResidual_of_lattice_residual
       (k := k) (deg := deg) (domain := domain) (δ := δ) hLattice hStrictBoundary)
@@ -271,10 +272,12 @@ theorem correlatedAgreement_affine_curves_strongBeta_of_betaRecFin_boundaryData
                 ∀ j < deg, (P z).coeff j = (B j).eval z)) :
     δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
       (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
-  correlatedAgreement_affine_curves_strongBeta_of_betaRecFin_lattice_residual
-    (k := k) (deg := deg) (domain := domain) (δ := δ) hδ hInput hStrictBoundary
-    (ArkLib.BoundaryDischarge.boundaryCardLatticeResidual_of_boundary_cards_and_coeffPolys
-      (k := k) (deg := deg) (domain := domain) (δ := δ) hBoundaryData)
+  by
+    classical
+    exact correlatedAgreement_affine_curves_strongBeta_of_betaRecFin_lattice_residual
+      (k := k) (deg := deg) (domain := domain) (δ := δ) hδ hInput hStrictBoundary
+      (ArkLib.BoundaryDischarge.boundaryCardLatticeResidual_of_boundary_cards_and_coeffPolys
+        (k := k) (deg := deg) (domain := domain) (δ := δ) hBoundaryData)
 
 /-! ## Axiom audit
 

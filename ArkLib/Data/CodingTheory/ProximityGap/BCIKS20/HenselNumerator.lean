@@ -1684,11 +1684,11 @@ theorem βHenselSuccTermWeightResidual_of_structured
     (hStructured : βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k)
     (hterm : ∀ (i1 : ℕ) (hi1 : i1 ∈ Finset.range (k + 2))
       (lam : Nat.Partition (k + 1 - i1)) (hlam : (k + 1) ∉ lam.parts),
-        βHenselSuccTermStructuredWeightResidual H x₀ R hHyp hH hDH hdR2
+        βHenselSuccTermStructuredWeightResidual (H := H) x₀ R hHyp hH hDH hdR2
           k hStructured i1 hi1 lam hlam)
     (i1 : ℕ) (hi1 : i1 ∈ Finset.range (k + 2))
     (lam : Nat.Partition (k + 1 - i1)) (hlam : (k + 1) ∉ lam.parts) :
-    βHenselSuccTermWeightResidual H x₀ R hHyp hH hDH hdR2 k hIH i1 hi1 lam hlam := by
+    βHenselSuccTermWeightResidual (H := H) x₀ R hHyp hH hDH hdR2 k hIH i1 hi1 lam hlam := by
   exact hterm i1 hi1 lam hlam
 
 /-- **(P1) full weight bound.**  `weight_Λ_over_𝒪 hH (βHensel … t) D ≤ (2t+1)·natDegreeY R·D`.
@@ -1713,7 +1713,7 @@ theorem βHensel_weight_bound (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypoth
           ≤ WithBot.some ((2 * l + 1) * Bivariate.natDegreeY R * D))
       (i1 : ℕ) (hi1 : i1 ∈ Finset.range (k + 2))
       (lam : Nat.Partition (k + 1 - i1)) (hlam : (k + 1) ∉ lam.parts),
-        βHenselSuccTermWeightResidual H x₀ R hHyp hH _hDH hdR2 k hIH i1 hi1 lam hlam)
+        βHenselSuccTermWeightResidual (H := H) x₀ R hHyp hH _hDH hdR2 k hIH i1 hi1 lam hlam)
     (t : ℕ) :
     weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
       ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) := by
