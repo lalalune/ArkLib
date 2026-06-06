@@ -967,26 +967,53 @@ theorem UDRClose_of_fiberwiseClose (i : Fin r) {destIdx : Fin r}
     UDRClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i (h_i := by omega) f :=
   h_fw_dist_lt
 
+/-- **Explicit residual for single-step BBF code membership preservation**
+(the Lemma 4.13 consequence): folding a codeword of the `i`-th code produces a codeword of the
+`destIdx = i + 1`-st code.
+
+NAMED RESIDUAL (documented, #33). This replaces the former global `axiom` with a theorem-scope
+typeclass hypothesis, in the exact convention of the `IteratedFoldLastResidual` /
+`IteratedFoldMatrixFormResidual` residuals (commit `feat(#33): make fold-matrix residuals
+explicit`). Consumers that need single-step preservation now carry
+`[FoldPreservesBBFCodeMembershipResidual ...]`, so the remaining proof obligation is visible in
+theorem statements instead of living in global kernel state — `#print axioms` on the wrappers
+below reports no custom axiom.
+
+Why it is a residual rather than a proof: the full proof exists in the disabled legacy region
+above (the `fold_advances_evaluation_poly` route, the commented block ending just before
+`UDRClose_of_fiberwiseClose`), but it consumes the reconstruction lemma
+`intermediateEvaluationPoly_from_inovel_coeffs_eq_self` (polynomial ↦ iNovel coefficients ↦
+`intermediateEvaluationPoly` round-trip at a general level `i`). That lemma — together with its
+supporting infrastructure (`degree_intermediateNovelBasisX`, the intermediate change-of-basis
+matrix, its triangularity/invertibility, and the monomial↔novel conversions) — was dropped in
+the new-API migration and has no counterpart in the current
+`CompPoly.Fields.Binary.AdditiveNTT.Intermediate` surface, where `intermediate_poly_P_base` is
+the `i = 0` instance only. Restoring the proof = porting that general-`i` reconstruction stack.
+Consumed by `iterated_fold_preserves_BBF_Code_membership_nat` below. -/
+class FoldPreservesBBFCodeMembershipResidual : Prop where
+  holds : ∀ (i : Fin r) {destIdx : Fin r}
+    (h_destIdx : destIdx.val = i.val + 1) (h_destIdx_le : destIdx ≤ ℓ)
+    (f : (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)) (r_chal : L),
+    (fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (destIdx := destIdx)
+      h_destIdx h_destIdx_le (f := f) (r_chal := r_chal)) ∈
+      (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx)
+
+variable [FoldPreservesBBFCodeMembershipResidual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
+
 /-- **Single-step BBF code membership preservation** (the Lemma 4.13 consequence): folding a
 codeword of the `i`-th code produces a codeword of the `destIdx = i + 1`-st code.
 
-NAMED RESIDUAL (documented, #33). A full proof exists in the disabled legacy region above
-(the `fold_advances_evaluation_poly` route, see the commented block ending just before
-`UDRClose_of_fiberwiseClose`), but it consumes the reconstruction lemma
-`intermediateEvaluationPoly_from_inovel_coeffs_eq_self` (polynomial ↦ iNovel coefficients ↦
-`intermediateEvaluationPoly` round-trip at a general level `i`), which has no counterpart in
-the current `CompPoly.Fields.Binary.AdditiveNTT.Intermediate` surface —
-`intermediate_poly_P_base` is the `i = 0` instance only. Restoring the proof = porting that
-general-`i` reconstruction lemma; until then this is kept as a single documented residual
-rather than a non-typechecking placeholder (same convention as the former
-`iterated_fold_last`/`iterated_fold_eq_matrix_form` residuals). Consumed by
-`iterated_fold_preserves_BBF_Code_membership_nat` below. -/
-axiom fold_preserves_BBF_Code_membership (i : Fin r) {destIdx : Fin r}
+Proven by reduction to the explicit `FoldPreservesBBFCodeMembershipResidual` hypothesis (see that
+class for the full port-debt rationale). -/
+theorem fold_preserves_BBF_Code_membership
+    [h : FoldPreservesBBFCodeMembershipResidual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
+    (i : Fin r) {destIdx : Fin r}
     (h_destIdx : destIdx.val = i.val + 1) (h_destIdx_le : destIdx ≤ ℓ)
     (f : (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)) (r_chal : L) :
     (fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (destIdx := destIdx)
       h_destIdx h_destIdx_le (f := f) (r_chal := r_chal)) ∈
-      (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx)
+      (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx) :=
+  h.holds i h_destIdx h_destIdx_le f r_chal
 
 /-- The unique fiberwise closest codeword is represented by the UDR decoded codeword. -/
 lemma exists_unique_fiberwiseClosestCodeword_within_UDR (i : Fin r) {destIdx : Fin r}
