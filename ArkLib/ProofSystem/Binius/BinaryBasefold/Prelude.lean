@@ -836,8 +836,8 @@ def baseFoldMatrix (i : Fin r) (h_i : i + 1 < ℓ + 𝓡)
 
 /-- The fold matrix as a `Nat`-indexed structural recursion on `steps`.
 
-This is the explicit recursive construction pinned by `iterated_fold_eq_matrix_form`
-(Lemma 4.9). Peeling the **last** fold (`Fin.dfoldl_succ_last`) at level `i + steps`,
+This is the explicit recursive construction used by the raw single-point matrix form. Peeling the
+**last** fold (`Fin.dfoldl_succ_last`) at level `i + steps`,
 `iterated_fold (steps + 1)` is one extra single-step `fold` applied to `iterated_fold steps`.
 Translating that one step into matrix form yields the block/composition law:
 `M_{steps+1}(y)[a][b] = baseFoldMatrix(i+steps, y)[a % 2][b / 2^steps]`
@@ -1648,8 +1648,8 @@ theorem localized_fold_eval_zero (i : Fin ℓ) (h_i_add_steps : i.val + 0 ≤ �
 set_option maxHeartbeats 4000000 in
 seal sDomain qMap_total_fiber normalizedW intermediateEvaluationPoly in
 /-- **Lemma 4.9 (LEGACY form).** The legacy iterated fold equals the localized fold evaluation
-via matmul form. The new-API `iterated_fold_eq_matrix_form` (defined below) is stated against the
-new `iterated_fold`/`localized_fold_matrix_form` and reduces to this. -/
+via matmul form. This remains the proved matrix statement for the legacy `challengeTensorProduct`
+row order. -/
 theorem iterated_fold_steps_eq_matrix_form (i : Fin ℓ) (steps : ℕ) (h_i_add_steps : i + steps ≤ ℓ)
     (f : (sDomain 𝔽q β h_ℓ_add_R_rate) ⟨i, by omega⟩ → L)
     (r_challenges : Fin steps → L)

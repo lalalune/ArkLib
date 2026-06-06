@@ -280,6 +280,7 @@ import ArkLib.Data.Polynomial.Trivariate
 import ArkLib.Data.Probability.Combinatorial
 import ArkLib.Data.Probability.Instances
 import ArkLib.Data.Probability.Notation
+import ArkLib.Data.Probability.UniformSubset
 import ArkLib.Data.RingTheory.TowerOfAlgebra
 import ArkLib.Data.UniPoly.Basic
 import ArkLib.Interaction.Oracle.Core
