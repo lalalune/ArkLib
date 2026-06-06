@@ -327,14 +327,18 @@ lemma epsStar_lt_second_moment_value {M' q : ℕ} (hq : 0 < q)
   -- `(M' - M'²/Q) = (D : ℝ≥0∞)/Q`.
   have hMq : ((M' * q : ℕ) : ℝ≥0∞) / Q = (M' : ℝ≥0∞) := by
     rw [hQ]; push_cast; rw [mul_div_assoc, ENNReal.div_self hQne hQtop, mul_one]
-  have hDcast : (D : ℝ≥0∞) = (M' * q : ℕ) - (M' * M' : ℕ) := by
-    rw [hD, Nat.cast_sub hle]
+  have hDcast : (D : ℝ≥0∞) =
+      ((M' * q : ℕ) : ℝ≥0∞) - ((M' * M' : ℕ) : ℝ≥0∞) := by
+    simp [hD]
   have hval : (M' : ℝ≥0∞) - (M' * M' : ℝ≥0∞) / Q = (D : ℝ≥0∞) / Q := by
     rw [hDcast, ENNReal.sub_div (by intro _ _; exact hQne), hMq]
     push_cast
+    rfl
   rw [hval]
   -- `(D/Q)/Q = D/(Q*Q)`.
-  rw [div_div]
+  rw [div_eq_mul_inv, div_eq_mul_inv, mul_assoc,
+    ← ENNReal.mul_inv (a := Q) (b := Q) (Or.inl hQne) (Or.inl hQtop),
+    ← div_eq_mul_inv]
   set QQ : ℝ≥0∞ := Q * Q with hQQ
   have hQQne : QQ ≠ 0 := mul_ne_zero hQne hQne
   have hQQtop : QQ ≠ ⊤ := ENNReal.mul_ne_top hQtop hQtop
@@ -357,7 +361,9 @@ lemma epsStar_lt_second_moment_value {M' q : ℕ} (hq : 0 < q)
   have hinvtop : (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ ≠ ⊤ := ENNReal.inv_ne_top.mpr hpow_ne_zero
   calc (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ * QQ
       < (2 ^ (128 : ℕ) : ℝ≥0∞)⁻¹ * ((2 ^ (128 : ℕ) : ℝ≥0∞) * (D : ℝ≥0∞)) :=
-        ENNReal.mul_lt_mul_left hinvne hinvtop hcast
+        by
+          simpa [mul_comm, mul_left_comm, mul_assoc] using
+            ENNReal.mul_lt_mul_left hinvne hinvtop hcast
     _ = (D : ℝ≥0∞) := by
         rw [← mul_assoc, ENNReal.inv_mul_cancel hpow_ne_zero hpow_ne_top, one_mul]
 
