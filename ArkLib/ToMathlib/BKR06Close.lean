@@ -63,7 +63,7 @@ power (`2^(i+1)`), which is exactly what the bare statement's
 (`𝔽_{2^(i+1)}`) is a genuine BKR06 extension field.
 
 All declarations below compile `sorry`/`axiom`-free and are axiom-clean
-(`[propext, Classical.choice, Quot.sound]`); see the in-file `#print axioms`.
+(`[propext, Classical.choice, Quot.sound]`).
 -/
 
 -- Section `variable`-bundled instances are needed by the closeness machinery but not by

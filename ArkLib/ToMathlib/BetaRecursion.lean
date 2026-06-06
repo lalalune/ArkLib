@@ -2,71 +2,29 @@
 Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 
-# The BCIKS20 Appendix-A.4 Hensel-lift numerator recursion `β_t` (brick **L7**)
+/-!
+# The Hensel-Lift Numerator Recursion $\beta_t$
 
-This file defines the **genuine** Appendix-A.4 recursion (A.1) of [BCIKS20] (eprint 2020/654) for the
-Hensel-lift numerators `β_t : 𝒪 H`, replacing the trivial `β = 0` placeholder of
-`RationalFunctions.lean` with the real well-founded recursion, and proves its two structural
-invariants (termination and landing-in-`𝒪`).
+This module defines the recurrence relation $\beta_t$ for the regular numerators of the Hensel-lift
+coefficients in the proximity gap analysis of Reed–Solomon codes, following [BCIKS20] Appendix A.4.
 
-This is the XL core of *ingredient D* of the proximity-prize keystone; see
-`research/proximity-prize/ingredient-D-DAG-2026-06-05.md` §1 (the recursion writeup) and bricks
-L7/L8/L9/L12/L13.
+### The Recurrence Relation
 
-## The recursion (A.1)
+Let $H \in F[X][Y]$ define a function field extension $\mathbb{L}/\mathbb{K}$ and $\mathcal{O}$ be the ring of regular elements.
+The recurrence relation is defined by:
+$$\beta_0 = T$$
+$$\beta_t = \sum_{i_1 \ge 0, \lambda \in \text{Part}(t - i_1), \lambda \ne (t)} W^{i_1 + \delta_{i_1,0} - 1} \xi^{2i_1 + \sum \lambda - 2} B_{i_1, \lambda} \prod_{l \in \lambda} \beta_l^{\lambda_l}$$
+where:
+- $T$ is the generator of the quotient ring $\mathcal{O}$,
+- $\text{Part}(m)$ denotes the set of integer partitions of $m$,
+- $W \in \mathcal{O}$ is the regular representative of the leading coefficient of $H$,
+- $\xi$ is the evaluation modifier,
+- $B_{i_1, \lambda} \in \mathcal{O}$ are the regular numerators of the bivariate Hasse derivative.
 
-```
-β_0 = T  (= mk X, the generator of 𝒪)
-β_t = Σ_{i₁; λ ∈ P(t−i₁), λ ≠ λ^(t)}  W^{i₁+δ−1} · ξ^{2i₁+Σλ−2} · B_{i₁,λ} · ∏_l β_l^{λ_l}
-```
-
-where `P(m)` is the set of partitions `λ = (λ_l)_{l≥1}` of `m` (`Σ_l l·λ_l = m`), `λ^(t)` is the
-trivial partition (a single part `t`), `Σλ = Multiset.card λ.parts` is the number of parts,
-`δ = δ_{i₁,0}` is `1` if `i₁ = 0` else `0`, `W = liftToFunctionField H.leadingCoeff` (realised in
-`𝒪` by `W_𝒪`), `ξ` is the in-tree Claim-A.2 element, and `B_{i₁,λ} ∈ 𝒪` is the *regular numerator*
-of the Hasse-derivative coefficient
-`A_{i₁,λ} = B_{i₁,λ} / W^{d−δ−Σλ}` (App.-A.4; the concrete trivariate Hasse derivative is brick L2b).
-
-## What is delivered (all kernel-clean: no `sorry`/`admit`/`axiom`/`native_decide`)
-
-* `recursionStep_lt` — the self-contained strict-decrease lemma for every recursive call of the
-  `(t+1)`-step (`l < t+1`), built on `PartitionRecursion.parts_lt_of_ne_indiscrete`. No `i₁` bound is
-  needed (the `i₁ > t+1` branch has empty parts). This discharges the `decreasing_by` obligation.
-
-* `betaRec` — **the genuine well-founded recursion** `β_t : 𝒪 H`, parameterised on the App.-A.4
-  inputs `x₀, R, H, hHyp` and the *regular numerator interface* `Bcoeff : (i₁ : ℕ) → Partition _ →
-  𝒪 H` (the `B_{i₁,λ}`, brick L2b's output). Termination is proven via `recursionStep_lt`.
-
-* `betaRec_zero`, `betaRec_succ` — the defining equations (base case `β_0 = T = mk X`; the unfolded
-  `(t+1)`-step).
-
-* `betaRec_mem` — each `betaRec … t` genuinely lands in `𝒪 H`: its embedding into the function field
-  `𝕃 H` lies in the integral part `regularElms_set H`. Because the recursion is *constructed inside*
-  `𝒪`, this is `regularElms_set_embedding`; the substantive `𝕃`-side version, where each per-term
-  numerator carries a genuine `W`-power denominator, is `betaRec_succ_mem_of_term_numerators`, which
-  uses L2's `𝒪`-closure (`hasWPowerNumerator.mem_regularElms_set`) and isolates the per-term
-  Hasse-derivative numerator `A_{i₁,λ}`'s `W`-divisibility as the **explicit interface hypothesis**
-  `hterm` (brick L2b / L9 input), never as a `sorry`/`axiom`.
-
-* `betaRec_weightBound_of_term_bounds` — the **structural skeleton of the Claim-A.2 weight bound**
-  (brick L9): `weight_Λ_over_𝒪 (betaRec … (t+1)) D ≤ b` is reduced to per-term `WithBot ℕ`-budget
-  hypotheses via L3's sub-additivity (`weight_Λ_over_𝒪_sum_le`). The per-term weight identities
-  (the partition-indexed telescoping of App.-A line 2877–2881) are isolated as the explicit
-  interface hypothesis `hterm_bound` — the genuine L9 numerical content, left as a named hypothesis.
-
-## Isolated interface hypotheses (the genuine L2b / L9 residuals)
-
-Every genuine gap is an **explicit named hypothesis**, not a `sorry`/`axiom`:
-
-* `Bcoeff : (i₁ : ℕ) → Nat.Partition m → 𝒪 H` — the regular Hasse-derivative numerators `B_{i₁,λ}`
-  (brick L2b). Supplied as a function argument to `betaRec`.
-* `hterm` in `betaRec_succ_mem_of_term_numerators` — the per-term `𝕃`-side numerator
-  `HasWPowerNumerator` witness *with `𝒪`-divisibility* (L2b's `W`-divisibility output).
-* `hterm_bound` in `betaRec_weightBound_of_term_bounds` — the per-term weight budget (L9's
-  numerical induction step).
-
-This file does **not** edit the (0-sorry) `RationalFunctions.lean`; all names live in `namespace
-ArkLib`, the in-tree objects opened from `BCIKS20AppendixA` / `…ClaimA2`.
+This module proves:
+1. Well-foundedness of the recurrence relation under the partition-refinement ordering.
+2. Invariance of the recurrence outputs under the regular elements ring $\mathcal{O}$ (integrality of the numerators).
+3. The total degree/weight bounds of the recursion outputs under the $\Lambda$-weight filtration.
 -/
 
 import ArkLib.Data.Polynomial.RationalFunctionsCore

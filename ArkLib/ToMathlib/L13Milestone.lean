@@ -47,12 +47,9 @@ power-series identifications that previously *consumed* the residual as a hypoth
   ruled out by the strict radius.  This is the milestone whose statement the `L13` definition makes
   residual-free.
 
-No `sorry`/`axiom`/`native_decide`; the `#print axioms` block shows only
-`[propext, Classical.choice, Quot.sound]`.
-
 ## References
 * [BCIKS20] Ben-Sasson, Carmon, Ishai, Kopparty, Saraf, *Proximity Gaps for Reed–Solomon Codes*,
-  §5 (list-decoding agreement), Appendix A.4 (the `W`-power-numerator recursion (A.1)).
+  §5 (list-decoding agreement chain), Appendix A.4 (the `W`-power-numerator recursion (A.1)).
 -/
 
 open Polynomial Polynomial.Bivariate BCIKS20AppendixA BCIKS20AppendixA.ClaimA2 ToRatFunc Ideal

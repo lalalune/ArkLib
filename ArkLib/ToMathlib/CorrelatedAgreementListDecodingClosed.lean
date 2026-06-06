@@ -60,9 +60,6 @@ Neither residual is `≡` the front-door `hcoeffPoly`/the goal: `hStrictData` is
 extraction* (about `γ`, `betaRec`, the representative), from which the per-coefficient conclusion is
 *proven* here.
 
-`#print axioms correlatedAgreement_affine_curves_listDecoding_closed` is
-`[propext, Classical.choice, Quot.sound]`.
-
 ## References
 * [BCIKS20] Ben-Sasson, Carmon, Ishai, Kopparty, Saraf, *Proximity Gaps for Reed–Solomon Codes*,
   §5 (list-decoding agreement chain), §6.2 (Theorem 6.2), Appendix A.4 (recursion (A.1)).

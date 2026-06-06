@@ -9,54 +9,30 @@ import ArkLib.Data.CodingTheory.ListDecodability
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
-# GCXK25 union-bound-over-the-list brick (sharpening the T5.1 residual)
+# Gao-Cai-Xu-Kan (GCXK25) Union Bound Bridge
 
-This file isolates and proves, **kernel-clean**, the *union-bound-over-the-list* step of
-[GCXK25] *From List-Decodability to Proximity Gaps* (Gao, Cai, Xu, Kan; eprint 2025/870),
-Theorem 3 = ABF26 Theorem 5.1.
+This module formalizes the union-bound-over-the-list reduction step used in the proof of
+the proximity gap theorem for Reed-Solomon codes. Specifically, it relates the list-decodability
+parameters of a code to its correlated agreement (CA) / multi-correlated agreement (MCA) error,
+as detailed in Theorem 3 of [GCXK25] (corresponding to Theorem 5.1 of [ABF26]).
 
-The companion `Connections/ListDecodingAndCA.lean` reduces the `ε_mca` bound
+In the proximity gap reduction, we bound the MCA error:
+$$\varepsilon_{\mathrm{mca}}(C, 1 - \sqrt{1 - \delta + \eta}) \le \frac{L^2 \delta n + 1/\eta}{|F|}$$
+by analyzing the set of "bad" combining scalars $\gamma \in F$ for a given stack $u = (u_0, u_1)$.
+A combining scalar $\gamma$ is bad if there exists a large agreement witness set $S \subset \iota$
+on which the line $u_0 + \gamma u_1$ agrees with some codeword $w \in C$, but $u$ is not jointly
+close to $C$ on $S$.
 
-  `ε_mca(C, 1 − √(1 − δ + η)) ≤ (L²·δ·n + 1/η)/|F|`
-
-to a **per-stack bad-`γ` count** `|mcaBad u| ≤ L²·δ·n + 1/η`
-(`linear_listSize_to_epsMCA_gcxk25_of_bad_count`, whose residual is `hBadCount`). The
-supremum-to-count plumbing is proven in `Connections/EpsMCABadGlue.lean`. What was *not*
-in-tree was the connection between that per-stack count and the **list** of close codewords —
-GCXK25's actual structure is a union bound over that list.
-
-## What is proven here (structural, `sorry`-free, axiom-clean)
-
-* `mcaBadWitness` — for a fixed stack `(u₀, u₁)`, radius `δ`, and a *fixed* codeword `w ∈ C`,
-  the finset of scalars `γ` for which the `mcaEvent` is *witnessed by `w`* (i.e. `w` is the
-  large-agreement codeword on the witness set `S`, and no joint pair of codewords agrees
-  with `(u₀, u₁)` on `S`).
-* `mcaBad_subset_biUnion_mcaBadWitness` — **the union-bound containment**: every bad `γ` is
-  witnessed by *some* codeword `w ∈ C`, so `mcaBad ⊆ ⋃_{w ∈ C} mcaBadWitness w`. This is the
-  exact "every bad combining point is δ-close to a codeword in the list" step of GCXK25.
-* `mcaBad_card_le_sum_mcaBadWitness_card` — **the union bound**:
-  `|mcaBad| ≤ ∑_{w ∈ C} |mcaBadWitness w|`.
-* `mcaBad_card_le_of_per_codeword` — **the reduction to a per-codeword count**: if a finite
-  set `T` of codewords carries all witnesses, each contributing at most `b` bad scalars
-  (`|mcaBadWitness w| ≤ b`), then `|mcaBad u| ≤ |T| · b`. With `|T| ≤ L²` (the list-size
-  factor) and `b = δ·n + (1/η)/L²` this is exactly the `L²·δ·n + 1/η` shape of GCXK25
-  Theorem 3.
-
-## What this file does *not* close
-
-It does **not** supply the per-codeword count `|mcaBadWitness w| ≤ δ·n` (GCXK25's `|Bad¹|`
-first-moment / GKL24 agree-domain count) nor the list-size-factor count of contributing
-codewords. Those are GCXK25's genuine combinatorial content, not connected to ArkLib's
-agree-domain structure in-tree. This file is purely the union-bound-over-the-list plumbing,
-which sharpens the residual from a single per-stack count to a *per-codeword* count plus a
-list-size factor — strictly closer to GCXK25's `|Bad¹| ≤ pn` first-moment statement.
+Rather than treating this bad scalar count monolithically, this file implements the union bound
+decomposition:
+1. We define the set of bad combining scalars associated with a *fixed* codeword $w \in C$ (`mcaBadWitness`).
+2. We prove that any bad combining scalar in `mcaBad` must be associated with at least one codeword $w$
+   in the list of close codewords, establishing the containment `mcaBad ⊆ ⋃_{w ∈ C} mcaBadWitness w`.
+3. We deduce the corresponding union bound and the card-based scaling bounds.
 
 ## References
-
-* [ABF26] Arnon, Boneh, Fenzi. *Open Problems in List Decoding and Correlated Agreement*.
-  2026. Theorem 5.1.
-* [GCXK25] Gao, Cai, Xu, Kan. *From List-Decodability to Proximity Gaps*. eprint 2025/870.
-  Theorem 3, Corollary 2.
+* [ABF26] Arnon, Boneh, Fenzi. *Open Problems in List Decoding and Correlated Agreement*, 2026.
+* [GCXK25] Gao, Cai, Xu, Kan. *From List-Decodability to Proximity Gaps*, eprint 2025/870.
 -/
 
 set_option linter.unusedFintypeInType false
@@ -74,13 +50,10 @@ variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 variable {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
 
 open Classical in
-/-- For a fixed stack `(u₀, u₁)`, radius `δ`, and a *fixed* codeword `w`, the finset of
-scalars `γ ∈ F` for which the `mcaEvent` is witnessed by `w`: there is a witness set `S` of
-size `≥ (1-δ)·n` on which `w` agrees with the line `u₀ + γ • u₁`, yet no joint codeword pair
-of `C` agrees with `(u₀, u₁)` on `S`.
-
-This is the per-codeword slice of `mcaBad`. GCXK25's union bound is over the codewords `w` in
-the list `Λ(C, line, δ)`; grouping `mcaBad` by the witness codeword is exactly that union. -/
+/-- For a fixed stack $u = (u_0, u_1)$, agreement parameter $\delta$, and a specific codeword $w \in C$,
+`mcaBadWitness` is the set of combining scalars $\gamma \in F$ for which the multi-correlated agreement (MCA)
+event is witnessed by $w$. That is, there exists a subset $S \subset \iota$ of size at least $(1 - \delta)n$
+on which $w$ agrees with the line $u_0 + \gamma u_1$, yet no joint codeword pair of $C$ agrees with $u$ on $S$. -/
 noncomputable def mcaBadWitness (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A) (w : ι → A) :
     Finset F :=
   Finset.univ.filter (fun γ : F =>
@@ -89,12 +62,10 @@ noncomputable def mcaBadWitness (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ :
       ¬ pairJointAgreesOn C S u₀ u₁)
 
 open Classical in
-/-- **Union-bound containment (GCXK25 "every bad point is δ-close to a list codeword").**
-Every bad scalar `γ ∈ mcaBad` is witnessed by *some* codeword `w ∈ C`; hence `mcaBad` is
-contained in the union over `C` (as a finite set of codewords) of the per-codeword slices
-`mcaBadWitness w`.
-
-The witness codeword is the `w ∈ C` produced by the `mcaEvent`'s large-agreement clause. -/
+/-- Union bound containment for bad combining scalars.
+Every bad scalar $\gamma \in \mathrm{mcaBad}$ is witnessed by at least one codeword $w \in C$.
+Consequently, the set of all bad scalars is contained in the union of the per-codeword witness sets
+`mcaBadWitness w` as $w$ ranges over a finite set of codewords $T$ containing $C$. -/
 theorem mcaBad_subset_biUnion_mcaBadWitness
     (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A)
     (T : Finset (ι → A)) (hT : ∀ w ∈ C, w ∈ T) :
@@ -109,9 +80,9 @@ theorem mcaBad_subset_biUnion_mcaBadWitness
   exact ⟨Finset.mem_univ _, ⟨S, hScard, hwagree, hpair⟩⟩
 
 open Classical in
-/-- **Union bound (`|mcaBad| ≤ ∑_{w ∈ C} |mcaBadWitness w|`).** The cardinality form of
-`mcaBad_subset_biUnion_mcaBadWitness`, via `Finset.card_biUnion_le`. This is GCXK25's union
-bound over the list of close codewords. -/
+/-- Cardinality union bound for bad combining scalars.
+The size of `mcaBad` is bounded by the sum of the cardinalities of the per-codeword witness sets `mcaBadWitness w`
+for all $w$ in the finite set of codewords $T$. -/
 theorem mcaBad_card_le_sum_mcaBadWitness_card
     (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A)
     (T : Finset (ι → A)) (hT : ∀ w ∈ C, w ∈ T) :
@@ -124,14 +95,10 @@ theorem mcaBad_card_le_sum_mcaBadWitness_card
     _ ≤ ∑ w ∈ T, (mcaBadWitness (F := F) C δ u₀ u₁ w).card := Finset.card_biUnion_le
 
 open Classical in
-/-- **Reduction to a per-codeword count (real form).** If a finite set `T` of codewords
-carries all witnesses (`∀ w ∈ C, w ∈ T`) and each contributes at most `b ≥ 0` bad scalars
-(`|mcaBadWitness w| ≤ b`), then `|mcaBad u| ≤ |T| · b`.
-
-With `|T| ≤ L²` (the GCXK25 list-size factor) and the per-codeword agree-domain count
-`b = δ·n` (GCXK25's `|Bad¹| ≤ pn`), this is the `L²·δ·n` first-moment part of the
-`L²·δ·n + 1/η` shape; the `1/η` is the in-tree second-moment summand
-(`GCXK25SecondMoment.card_lt_one_div_of_second_moment_rs`). -/
+/-- Reduction of the bad combining scalar count to a per-codeword bound.
+Assuming the set of candidate witness codewords is bounded by a list size factor $|T|$, and each individual
+codeword $w \in T$ yields at most $b$ bad combining scalars, the total number of bad combining scalars
+is at most $|T| \cdot b$. -/
 theorem mcaBad_card_le_of_per_codeword
     (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A)
     (T : Finset (ι → A)) (hT : ∀ w ∈ C, w ∈ T)

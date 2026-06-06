@@ -39,7 +39,7 @@ What this file adds is:
 * `BKR06.subspacePoly_isQLinearized_card` — the exact `hlin` shape (`IsQLinearized (#𝔽)`).
 
 All declarations compile `sorry`/`axiom`-free and are axiom-clean
-(`[propext, Classical.choice, Quot.sound]`); see the in-file `#print axioms`.
+(`[propext, Classical.choice, Quot.sound]`).
 
 The setting requires `[Algebra 𝔽 K]` (a genuine subfield action `c • z = algebraMap c * z`,
 `Algebra.smul_def`), which holds in the BKR06 application `𝔽 = 𝔽_q ⊆ K = 𝔽_{q^m}`; the

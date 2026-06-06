@@ -37,9 +37,6 @@ The headline result `ArkLib.Prop55.exists_a_set_and_a_matching_polynomial` there
 `hcount` and the extraction predicate `extract` — with the existence engine fully
 discharged via `SiegelInterpolation`.
 
-`#print axioms` at the bottom confirms every result depends only on `propext`,
-`Classical.choice`, `Quot.sound`.
-
 ## References
 
 * [BCIKS20] — Ben-Sasson, Carmon, Ishai, Kopparty, Saraf, *Proximity Gaps for

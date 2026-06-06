@@ -60,13 +60,11 @@ a `sorry`): the goal is the divisibility, the hypothesis is the strictly-finer f
 the in-tree UFD API.  `dvd_evalX_of_Hlift_dvd` shows this hypothesis discharges the proven in-tree
 specialized fact, pinning down that it is the App-A lift and nothing more.
 
-All results rest only on `[propext, Classical.choice, Quot.sound]`; `#print axioms` at the bottom.
-
 ## References
 
 * [BCIKS20] — Ben-Sasson, Carmon, Ishai, Kopparty, Saraf, *Proximity Gaps for Reed–Solomon Codes*,
   §5 (`pg_Rset`, Eq. 5.12 factorization) and Appendix A.4 (Claim A.2, the `Hypotheses` structure
-  and the `W`-power numerator recursion).
+  and the `W`-power numerator recursion (A.1)).
 -/
 
 import ArkLib.Data.Polynomial.RationalFunctions

@@ -65,7 +65,7 @@ This is the only residual: the count and the pigeonhole themselves are proven,
 `sorry`-free and axiom-clean.
 
 All declarations compile `sorry`/`axiom`-free and are axiom-clean
-(`[propext, Classical.choice, Quot.sound]`); see the in-file `#print axioms`.
+(`[propext, Classical.choice, Quot.sound]`).
 -/
 
 set_option linter.unusedSectionVars false

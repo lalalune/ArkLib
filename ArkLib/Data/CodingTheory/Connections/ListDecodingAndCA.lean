@@ -202,6 +202,32 @@ theorem linear_listSize_to_epsMCA_gcxk25_firstMoment_of_gkl24_residual
     ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
     (by positivity) hres
 
+/-- **ABF26 Theorem 5.1 [GCXK25 Theorem 3] — unconditional in-tree first-moment
+relaxation.**  This is the same first-moment plumbing as
+`linear_listSize_to_epsMCA_gcxk25_firstMoment_of_gkl24_residual`, but with the genuinely proven
+per-codeword determinacy bound `|Bad_w| ≤ n` in place of the external GKL24 sharpening
+`|Bad_w| ≤ δ·n`.
+
+Thus a carrier `T` of codewords with `(T.card : ℝ) ≤ B_T` gives
+
+  `ε_mca(C, 1 − √(1 − δ + η)) ≤ ENNReal.ofReal ((B_T·n)/|F|)`.
+
+The proof contains no paper residual: it is exactly
+`ProximityGap.epsMCA_le_ofReal_of_listFactor`, whose per-codeword count is proved in
+`Connections/GKL24FirstMoment.lean`. -/
+theorem linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_card
+    (C : LinearCode ι F) (δ η : ℝ)
+    (T : Finset (ι → F)) {B_T : ℝ}
+    (hT : ∀ w ∈ (C : Set (ι → F)), w ∈ T)
+    (hTsub : ∀ w ∈ T, w ∈ (C : Set (ι → F)))
+    (hcard : (T.card : ℝ) ≤ B_T) :
+    epsMCA (F := F) (A := F) ((C : Set (ι → F)))
+        ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal) ≤
+      ENNReal.ofReal ((B_T * (Fintype.card ι : ℝ)) / Fintype.card F) :=
+  ProximityGap.epsMCA_le_ofReal_of_listFactor C
+    ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
+    T hT hTsub hcard
+
 /-- **ABF26 Theorem 5.1 [GCXK25 Theorem 3].** List decoding implies MCA.
 
 Let `C ⊆ F^n` be a linear code and let `δ, η ∈ (0, 1)`. If `|Λ(C, δ)| ≤ L`, then

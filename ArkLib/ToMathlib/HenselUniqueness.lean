@@ -41,8 +41,7 @@ This brick is **L15** of the proximity-prize ingredient-C/D bridge
 (`research/proximity-prize/ingredient-D-DAG-2026-06-05.md`): Hensel-lift uniqueness, the substrate
 underneath the converse bridge `matching point ⟹ π_z(β R t) = 0` (L14).
 
-Everything is kernel-clean (`#print axioms` at the bottom; only
-`propext / Classical.choice / Quot.sound`).
+Everything is kernel-clean.
 -/
 
 open PowerSeries

@@ -68,8 +68,7 @@ The weight side (`Λ·d` bound) is L9/L10/L13; the `P β` side is L14, whose fin
 `pi_z_eq_zero_of_specialization_eq` fed by `hensel_root_unique` once `β_rec` is in hand.  Both are
 purely about the real `β`; this file consumes them as the single hypothesis `P β` (no `sorry`).
 
-Everything here is kernel-clean (`#print axioms` at the bottom; only
-`propext / Classical.choice / Quot.sound`).
+Everything here is kernel-clean.
 -/
 
 open Polynomial Polynomial.Bivariate ToRatFunc Ideal BCIKS20AppendixA

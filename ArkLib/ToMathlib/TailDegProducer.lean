@@ -65,8 +65,7 @@ The deliverable's goal is **`αFromBeta`-vanishing**.  The acceptable hypotheses
 Prop-5.5 data (`hrep`/`hdegX`/`hγ`/`hsubst`); none of them is the goal.  The producer derives the
 `αFromBeta t = 0` conclusion from them — it is **proven**, never assumed.
 
-Everything is kernel-clean (no `sorry`/`admit`/`axiom`/`native_decide`); `#print axioms` shows only
-`[propext, Classical.choice, Quot.sound]`.
+Everything is kernel-clean (no `sorry`/`admit`/`axiom`/`native_decide`).
 
 ## References
 * [BCIKS20] Ben-Sasson, Carmon, Ishai, Kopparty, Saraf, *Proximity Gaps for Reed–Solomon Codes*,

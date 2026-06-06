@@ -52,7 +52,7 @@ side condition under which the in-tree producers (`gsQ_multiplicity`, `Q_vanishe
 *those* facts (their `h_dist`/`hcount` arguments), not to the conversions proven here.  The data
 exported here take the *already-established* multiplicity / factorization as input.
 
-All results rest only on `[propext, Classical.choice, Quot.sound]`; `#print axioms` at the bottom.
+All results rest only on `[propext, Classical.choice, Quot.sound]`.
 
 ## References
 

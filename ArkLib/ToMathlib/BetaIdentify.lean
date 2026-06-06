@@ -92,8 +92,7 @@ This is the residual that lives at the level where `α`/`αFromBeta` actually co
 
 The net effect: the §5 milestone is reached from the **strictly smaller, provably-equivalent**
 embedding-level residual, with the residual sitting at the level the consumer algebra uses.  No
-`sorry`/`axiom`/`native_decide`; the `#print axioms` block at the bottom shows only
-`[propext, Classical.choice, Quot.sound]`.
+No `sorry`/`axiom`/`native_decide`.
 
 ## References
 * [BCIKS20] Ben-Sasson, Carmon, Ishai, Kopparty, Saraf, *Proximity Gaps for Reed–Solomon Codes*,

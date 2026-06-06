@@ -142,8 +142,17 @@ lemma evalOnPoints_sub_injective_of_surjective
 
 end BKR06
 
-`w = evalOnPoints domain pivot` on the roots of `P_{𝓛 i}`, and is injective.  This
-is the genuine BKR06 roots→distinct-close-codewords step, fully in-tree. -/
+/-! ## Extension Parameter Variant of BKR06 Injection -/
+
+namespace BKR06
+
+variable {K : Type*} [Field K] [Fintype K] [DecidableEq K]
+variable {F : Type*} [Field F] [Module F K]
+
+/-- The geometric encoding mapping is injective and maps into the Reed–Solomon code.
+Under a surjective evaluation domain and a family of distinct subspace polynomials whose differences
+from the pivot have degree strictly less than $k$, the encoding map is injective and yields
+valid codewords. -/
 theorem bkr06_family_encoding_injective_into_code
     {ι : Type*} [Fintype ι]
     (domain : K ↪ K) (hsurj : Function.Surjective domain)

@@ -46,9 +46,6 @@ trivariate Guruswami–Sudan interpolant:
      `pts.card * derivs.card < box.card` there is a non-zero box-supported `Q`
      that vanishes (`vanishCon p d Q = 0`) at every `(p, d) ∈ pts ×ˢ derivs`.
 
-`#print axioms` at the bottom confirms that every result depends only on
-`propext`, `Classical.choice`, `Quot.sound`.
-
 ## References
 
 * [BCKHS25] — Guruswami–Sudan interpolant existence, §3.1 (improved count).

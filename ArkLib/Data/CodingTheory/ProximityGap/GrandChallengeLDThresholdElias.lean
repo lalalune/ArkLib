@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 
-import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLattice
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLDThresholdJohnsonSq
 import ArkLib.Data.CodingTheory.ListDecoding.Bounds
 
 /-!
@@ -157,5 +157,51 @@ theorem listLatticeThreshold_lt_of_elias_volume
           exact_mod_cast hdiag
       _ ≤ _ := by exact_mod_cast hmono
   exact absurd hile (not_le.mpr hchain)
+
+/-- **Exact threshold from adjacent Johnson-square and Elias certificates.**
+If the squared-form Johnson bound certifies lattice index `j` as good and the Elias
+volume lower bound certifies index `j + 1` as already bad, then the faithful
+list-decoding lattice threshold is exactly `j`.
+
+This is the local finite-search closing step for the current strongest LD machinery:
+all remaining difficulty is in discharging the numeric Johnson/Elias hypotheses at
+the target RS parameters. -/
+theorem listLatticeThreshold_eq_of_johnson_sq_and_elias_next
+    (C : Submodule F (ι → F)) {m j ℓ : ℕ}
+    (hm : m ≠ 0)
+    (hj_next : j + 1 < Fintype.card ι)
+    (hq1 : 1 < Fintype.card F)
+    (hP : (Fintype.card ι : ℝ) / (Fintype.card F : ℝ) ≤
+      ((Fintype.card ι - j : ℕ) : ℝ))
+    (hsq : ((ℓ : ℝ) + 1)
+        * ((((Fintype.card ι - j : ℕ) : ℝ)) -
+            (Fintype.card ι : ℝ) / (Fintype.card F : ℝ)) ^ 2
+      > ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card F : ℝ)))
+        * ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card F : ℝ))
+            + (ℓ : ℝ) * (((Fintype.card ι - Code.minDist (C : Set (ι → F)) : ℕ) : ℝ) -
+                (Fintype.card ι : ℝ) / (Fintype.card F : ℝ))))
+    {ε_star : ℝ≥0}
+    (hpow : ((ℓ : ENNReal)) ^ m ≤
+      (ε_star : ENNReal) * (Fintype.card F : ENNReal))
+    (hvol_next : (ε_star : ENNReal) * (Fintype.card F : ENNReal) <
+      ENNReal.ofReal
+        ((CodingTheory.hammingBallVolume (Fintype.card F)
+            ((((j + 1 : ℕ) : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)
+            (Fintype.card ι) : ℝ)
+          / (Fintype.card F : ℝ) ^
+              ((Fintype.card ι : ℝ) - Module.finrank F C)))
+    (hne : (GrandChallenges.listLatticeSet (C : Set (ι → F)) m ε_star).Nonempty) :
+    GrandChallenges.listLatticeThreshold (C : Set (ι → F)) m ε_star hne = j := by
+  have hjn : j ≤ Fintype.card ι := by omega
+  have hlow :
+      j ≤ GrandChallenges.listLatticeThreshold (C : Set (ι → F)) m ε_star hne :=
+    le_listLatticeThreshold_of_johnson_sq
+      (C := (C : Set (ι → F))) (m := m) (j := j) (ℓ := ℓ)
+      hjn hq1 hP hsq hpow hne
+  have hhi :
+      GrandChallenges.listLatticeThreshold (C : Set (ι → F)) m ε_star hne < j + 1 :=
+    listLatticeThreshold_lt_of_elias_volume
+      (C := C) (m := m) (j := j + 1) hm (Nat.succ_pos j) hj_next hvol_next hne
+  exact Nat.le_antisymm (Nat.lt_succ_iff.mp hhi) hlow
 
 end ProximityGap

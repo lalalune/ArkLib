@@ -201,7 +201,7 @@ lemma foldingBadEventAtBlock_snoc_castSucc_eq (i : Fin ℓ)
     simp only at h_guard_cast
     omega
 
-attribute [irreducible] foldingBadEventAtBlock
+-- `foldingBadEventAtBlock` (and its `[irreducible]` attribute) now live in `Basic.lean`.
 
 open Classical in
 def blockBadEventExistsProp

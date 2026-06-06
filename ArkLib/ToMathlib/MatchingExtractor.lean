@@ -41,9 +41,6 @@ reconstructed from Guruswami–Sudan *primitives* (`HasOrderAt`, `orderAt_eval_g
 the §5 keystone `Q_vanishes_on_close_codeword_graph` (Agreement.lean) — it is a standalone
 re-derivation of the same divisibility-from-multiplicity fact.
 
-`#print axioms` at the bottom confirms every result depends only on `propext`, `Classical.choice`,
-`Quot.sound`.
-
 ## References
 
 * [BCIKS20] — Ben-Sasson, Carmon, Ishai, Kopparty, Saraf, *Proximity Gaps for Reed–Solomon Codes*,
@@ -81,16 +78,17 @@ theorem eval_eq_zero_of_orderM_and_count
     (hcount : (Qz.eval Pz).natDegree < m * A.card) :
     Qz.eval Pz = 0 := by
   classical
-  -- Either `Qz.eval Pz` is already 0, or every `ωᵢ` (`i ∈ A`) is an `m`-fold root.
   by_cases h0 : Qz.eval Pz = 0
   · exact h0
-  · -- each graph point gives multiplicity `≥ m` of the univariate specialisation
+  · -- If the specialization does not vanish identically, every evaluation point ωᵢ for i ∈ A
+    -- is a root of multiplicity ≥ m for the univariate polynomial Qz.eval Pz.
     have hroots : ∀ i ∈ A, m ≤ Polynomial.rootMultiplicity (ωs i) (Qz.eval Pz) := by
       intro i hi
       rcases GuruswamiSudan.orderAt_eval_ge Qz Pz (ωs i) m (hord i hi) with hz | hm
       · exact absurd hz h0
       · exact hm
-    -- too many `m`-fold roots for the degree ⟹ the polynomial is 0 (contradiction)
+    -- Since the total root multiplicity m * |A| exceeds the degree of Qz.eval Pz,
+    -- the polynomial must vanish identically, yielding a contradiction.
     exact GuruswamiSudan.roots_le_degree_of_deg_lt_roots
       (ωs := ωs) (Qz.eval Pz) m A hroots hcount
 

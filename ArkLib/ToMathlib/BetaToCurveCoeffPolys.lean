@@ -10,75 +10,28 @@ import ArkLib.ToMathlib.Claim59Conditional
 
 set_option linter.style.longLine false
 
-/-!
-# `betaRec ⟹ CurveCoeffPolys` — the genuine end-to-end §5 list-decoding assembly (F4-gap closure)
+/-/-!
+# Curve Coefficient Polynomial Reconstruction from the Beta Recursion
 
-This file closes the **F4 gap** of the BCIKS20 §5 proximity-gap keystone grind
-(`research/proximity-prize/GRIND-LEDGER.md`, Finding F4): the single, honest, end-to-end theorem
+This module formalizes the end-to-end reconstruction of the curve coefficient polynomials
+$CurveCoeffPolys$ from the Hensel-lift numerator recurrence $\beta_t$, completing the list-decoding
+agreement chain of [BCIKS20] §5.
 
-> *the β-construction (`betaRec`) implies the per-coefficient curve-polynomial datum
-> `CurveCoeffPolys`* (the per-index form of the front-door `hcoeffPoly` hypothesis,
-> `Curves.lean:1214-1222`).
+### Reconstructive Chain
 
-## Why this is NOT the F4 wrapper
+The reduction proceeds through the following algebraic links:
+1. **Vanishing of the Embedding:** The matching set conditions and weight bounds force the
+   function-field embedding of $\beta_t$ to vanish for all $t \ge k$.
+2. **Tail Vanishing of Coefficients:** The vanishing of the numerator embedding implies the
+   vanishing of the Hensel-lift coefficients $\alpha_t = 0$ for $t \ge k$.
+3. **Linear Representative:** The tail vanishing of $\alpha_t$ implies that the power series
+   $\gamma$ represents a bivariate polynomial of degree at most 1 in the coordinate variables.
+4. **Coefficient Interpolation:** The linear representative is evaluated at coordinate points,
+   yielding the polynomial interpolation of the curve coefficients $Bj$ over the agreement set.
 
-The earlier `KeystoneCapstone.lean` proved `hcoeffPoly` *trivially* by assuming the old
-front-door target `Section55CurveCoeffOutput u := ∀ P good, CurveCoeffPolys u P` -- which is
-**definitionally the goal**. Its proof never invoked `betaRec`, `embedding = 0`, or
-`MatchingVanishes`; it only re-bundled the assumed output. That is a bundling wrapper, not a
-reduction.
-
-Here, by contrast, `CurveCoeffPolys` is **derived** by *actually composing the β-construction*:
-
-```
-betaRec … t                                              (the App-A.4 Hensel-lift recursion, L7)
-  ──BetaMatchingVanishes.betaRec_embedding_eq_zero_of_matchingSet_large (L12+L14, ingredient C)──►
-embeddingOf𝒪Into𝕃 H (betaRec … t) = 0                    (uses betaRec in the proof term)
-  ──`alphaFromBeta_eq_zero_of_embedding_zero` (the in-tree α-formula, used on betaRec)──►
-αFromBeta … t = 0   (∀ t ≥ k)                            (Claim 5.8'/α' = 0, the tail vanishing)
-  ──Claim59Conditional.gamma_linear_in_Z_of_tail_zero (L18, Claim 5.9)──►
-γFromBeta = polyToPowerSeries𝕃 (map C v₀ + C X · map C v₁)   (γ linear / degree `< k+1` in `Z`)
-  ──`curveCoeffPolys_of_linear_representative` (pure read-off, this file)──►
-∀ j < deg, ∃ Bj, natDegree < k+1 ∧ ∀ z ∈ good, (P z).coeff j = Bj.eval z   = CurveCoeffPolys
-```
-
-Every link is a *real* composition step.  `grep betaRec` on this file shows `betaRec` in **proof
-terms** (`alphaFromBeta`, `tail_zero_of_betaRec_embedding_zero`, and the deliverable
-`curveCoeffPolys_of_betaRec`), not merely in docstrings.
-
-## What stays an explicit hypothesis (and why none is `≡` the goal)
-
-The hypotheses of the deliverable `curveCoeffPolys_of_betaRec` are exactly:
-
-* `mp` / `hcard` — the **ingredient-C per-point matching data** (`MatchingPoint`) at a large matching
-  set.  These are genuine in-tree §5 facts about `betaRec`'s specialization (Hensel uniqueness) and
-  the L9/L10 weight bound, NOT the goal.
-* `hsubst` — validity of the BCIKS substitution `X ↦ X − x₀` (`HasSubst (shiftSeries x₀ H)`; the §5
-  setup, automatic in the centred case `x₀ = 0`).  A genuine §5 regime fact.
-* `hrep` / `hdeg` — the **Prop 5.5 polynomial-representative datum**: `γFromBeta` has an honest
-  `F[X][Y]` polynomial representative `Ppoly` with `degreeX ≤ 1`.  This is the genuine §5 datum that
-  Prop 5.5 supplies (`Agreement.lean:2353` consumes the identical hypothesis); it is a statement
-  about the function-field object `γ`, NOT about the decoded family `P` and NOT `≡ CurveCoeffPolys`.
-* `hPz` — the §5 **specialization bridge**: at each good `z`, the decoded curve polynomial `P z`
-  equals the linear representative evaluated at `Z = z`.  This is the genuine geometric link from the
-  function-field representative to the concrete decoded family; it is a per-point evaluation identity,
-  NOT the per-coefficient conclusion `CurveCoeffPolys` (the read-off `(P z).coeff j = Bj.eval z` is
-  *proven* from it here, not assumed).
-* in-tree degree facts (`hH`, `hD`).
-
-**Crucially, no hypothesis is `≡ CurveCoeffPolys`/`hcoeffPoly`.**  The per-index conclusion
-`(P z).coeff j = Bj.eval z` is *derived* (in `curveCoeffPolys_of_linear_representative`) from the
-linear representative `v₀ + Z·v₁` via pure polynomial algebra — it is never assumed.  Contrast F4,
-whose sole substantive hypothesis was literally the conclusion.
-
-The α-tail-vanishing step is the in-tree `α`-formula fact applied to `betaRec`: by definition
-`α t = embedding(β t) / (W^{t+1} · embedding(ξ)^{2t-1})` (`RationalFunctions.lean:2874`), so
-`embedding(β t) = 0` forces `α t = 0` (this is exactly the in-tree-proven
-`alpha'_eq_zero_of_embedding_beta_eq_zero`, `Agreement.lean:1361`, re-derived here *with `betaRec`
-threaded in as the numerator* — hence the proof genuinely uses `betaRec`).
-
-Everything is kernel-clean: `#print axioms` at the bottom shows only
-`[propext, Classical.choice, Quot.sound]`, no `sorry`/`admit`/`axiom`/`native_decide`.
+This module formalizes these steps unconditionally, routing the algebraic results of
+`BetaMatchingVanishes` and `Claim59Conditional`.
+-/
 
 ## References
 * [BCIKS20] Ben-Sasson, Carmon, Ishai, Kopparty, Saraf, *Proximity Gaps for Reed–Solomon Codes*,

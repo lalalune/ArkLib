@@ -27,9 +27,7 @@ We prove
   `a∞ - a₀ ∈ Ideal.span {X}`;
 * `powerSeries_newton_root`: the constructive analogue of `powerSeries_hensel_lift`.
 
-Everything is kernel-clean (`#print axioms` at the bottom; only
-`propext / Classical.choice / Quot.sound`), reusing `ArkLib.powerSeries_isPrecomplete`
-from `PowerSeriesHenselianA.lean` for the limit.
+Everything is kernel-clean (reusing `ArkLib.powerSeries_isPrecomplete` from `PowerSeriesHenselianA.lean` for the limit).
 -/
 
 open PowerSeries

@@ -58,8 +58,6 @@ The graph side-conditions `hx0 / hsep / hS_nonempty / A / hA / hcount / hlarge` 
 §5 standing inputs of the graph-condition extraction (`exists_pg_factors_with_large_common_root_set_of_graph_conditions`);
 they are taken as inputs, not assumed away.
 
-`#print axioms` for the constructor is `[propext, Classical.choice, Quot.sound]`.
-
 ## References
 * [BCIKS20] Ben-Sasson, Carmon, Ishai, Kopparty, Saraf, *Proximity Gaps for Reed–Solomon Codes*,
   §5 (list-decoding agreement chain), Appendix A.2 (Claim A.2 hypotheses).
