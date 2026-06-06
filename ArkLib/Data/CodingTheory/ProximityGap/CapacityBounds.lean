@@ -635,6 +635,17 @@ theorem rs_epsCA_breakdown_cs25_of_lower_bound
           (ReedSolomon.code domain k : Set (ι → F))) ≤ δ <;> simp [hγ])
       (PMF.tsum_coe (PMF.uniformOfFintype F)).le
 
+/-- The ABF26 T4.18 Johnson radius for the fixed relative distance `15/16`.  This is kept
+as a named expression so the existential construction and Grand-MCA adapters use the same
+radius literal. -/
+noncomputable def johnsonJumpRadius : ℝ≥0 :=
+  (((1 : ℝ) - (1 - ((15 : ℝ) / 16)) ^ ((1 : ℝ) / 2)).toNNReal)
+
+/-- The proximity-loss internal radius appearing in ABF26 T4.18 for a domain of size `n`. -/
+noncomputable def johnsonJumpInternalRadius (n : ℕ) : ℝ≥0 :=
+  (((1 : ℝ) - (1 - ((15 : ℝ) / 16)) ^ ((1 : ℝ) / 2)
+      + 1 / 8 + 1 / (n : ℝ)).toNNReal)
+
 /-- **ABF26 Theorem 4.18 [BCHKS25 Cor 1.7].** CA jump at the Johnson bound. Fix `ε > 0`,
 let `δ := 15/16`. Then for all `F` of characteristic 2 there exists a Reed-Solomon code
 `C := RS[F, L, k]` with `n ≈ |F|^{(1+ε)/2}` and `δ_min(C) = 15/16` such that:
@@ -662,9 +673,8 @@ def rs_epsCA_johnson_jump_bchks25
       (Code.minDist ((ReedSolomon.code domain k : Set (ιC → FC))) : ℝ)
           / Fintype.card ιC = (15 : ℝ) / 16 ∧
       epsCA (F := FC) (A := FC) ((ReedSolomon.code domain k : Set (ιC → FC)))
-          (((1 : ℝ) - (1 - ((15 : ℝ) / 16)) ^ ((1 : ℝ) / 2)).toNNReal)
-          (((1 : ℝ) - (1 - ((15 : ℝ) / 16)) ^ ((1 : ℝ) / 2)
-              + 1 / 8 + 1 / (Fintype.card ιC : ℝ)).toNNReal) ≥
+          johnsonJumpRadius
+          (johnsonJumpInternalRadius (Fintype.card ιC)) ≥
         ((Fintype.card ιC : ENNReal) ^ (2 * ((1 : ℝ) - ε)))
           / (Fintype.card FC : ENNReal)
   -- Missing ingredient: BCHKS25's char-2 CA-jump CONSTRUCTION at the Johnson bound. LOWER
@@ -673,6 +683,59 @@ def rs_epsCA_johnson_jump_bchks25
   -- exhibiting the sharp proximity-gap discontinuity at J(δ_min). Code-construction lower
   -- bound; trivial epsCA≤1 is the wrong direction; no in-tree witness generator. Genuinely
   -- external.
+
+/-- Named payload for the BCHKS25 Johnson-jump construction.
+
+The external theorem `rs_epsCA_johnson_jump_bchks25` is existential over the domain and
+message dimension.  This structure exposes the witness data at a fixed domain type, so
+downstream Grand-MCA code can consume the lower-bound construction without unpacking the
+whole theorem statement each time. -/
+structure RSJohnsonJumpWitness
+    {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC] [CharP FC 2]
+    (ε : ℝ≥0) (ιC : Type) [Fintype ιC] [Nonempty ιC] [DecidableEq ιC] where
+  domain : ιC ↪ FC
+  k : ℕ
+  card_lower :
+    ((Fintype.card FC : ℝ) ^ (((1 : ℝ) + ε) / 2) - 1
+        ≤ (Fintype.card ιC : ℝ))
+  card_upper :
+    ((Fintype.card ιC : ℝ)
+        ≤ (Fintype.card FC : ℝ) ^ (((1 : ℝ) + ε) / 2) + 1)
+  minDist_eq :
+    (Code.minDist ((ReedSolomon.code domain k : Set (ιC → FC))) : ℝ)
+        / Fintype.card ιC = (15 : ℝ) / 16
+  epsCA_lower :
+    ((Fintype.card ιC : ENNReal) ^ (2 * ((1 : ℝ) - ε)))
+        / (Fintype.card FC : ENNReal) ≤
+      epsCA (F := FC) (A := FC) ((ReedSolomon.code domain k : Set (ιC → FC)))
+        johnsonJumpRadius
+        (johnsonJumpInternalRadius (Fintype.card ιC))
+
+/-- A packaged Johnson-jump witness reassembles the external T4.18 statement. -/
+theorem rs_epsCA_johnson_jump_bchks25_of_witness
+    {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC] [CharP FC 2]
+    (ε : ℝ≥0) (hε : 0 < ε)
+    {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
+    (W : RSJohnsonJumpWitness (FC := FC) ε ιC) :
+    rs_epsCA_johnson_jump_bchks25 (FC := FC) ε hε := by
+  exact ⟨ιC, inferInstance, inferInstance, inferInstance, W.domain, W.k,
+    W.card_lower, W.card_upper, W.minDist_eq, W.epsCA_lower⟩
+
+/-- Conversely, the existential T4.18 statement yields a named witness package for one
+domain type. -/
+theorem exists_rsJohnsonJumpWitness_of_bchks25
+    {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC] [CharP FC 2]
+    (ε : ℝ≥0) (hε : 0 < ε)
+    (h : rs_epsCA_johnson_jump_bchks25 (FC := FC) ε hε) :
+    ∃ (ιC : Type) (_ : Fintype ιC) (_ : Nonempty ιC) (_ : DecidableEq ιC),
+      RSJohnsonJumpWitness (FC := FC) ε ιC := by
+  rcases h with ⟨ιC, hFintype, hNonempty, hDecEq, domain, k,
+    hcard_lower, hcard_upper, hminDist, heps⟩
+  letI := hFintype
+  letI := hNonempty
+  letI := hDecEq
+  exact ⟨ιC, hFintype, hNonempty, hDecEq,
+    ⟨domain, k, hcard_lower, hcard_upper, hminDist, heps⟩⟩
 
 end ReedSolomon
 

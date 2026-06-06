@@ -358,6 +358,34 @@ noncomputable def MCAUpperWitness.ofSamplingDG25
   MCAUpperWitness.ofEpsCAGt (MC := C) (ε_star := ε_star) (δ := δ)
     (lt_of_lt_of_le hgt hDG25)
 
+/-- **Bridge from ABF26 Theorem 4.18 [BCHKS25 Cor 1.7].** A packaged Johnson-jump
+witness gives an MCA upper witness once its explicit CA lower bound clears `ε*`.
+
+The theorem's CA lower bound is stated with a proximity-loss internal radius.  The adapter
+therefore asks for the radius comparison `johnsonJumpRadius ≤ johnsonJumpInternalRadius n`
+and uses `epsCA_antitone_δ_int` before applying the generic `epsCA ≤ epsMCA` connector. -/
+noncomputable def MCAUpperWitness.ofJohnsonJumpBCHKS25
+    {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC] [CharP FC 2]
+    {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
+    (ε ε_star : ℝ≥0)
+    (W : CodingTheory.RSJohnsonJumpWitness (FC := FC) ε ιC)
+    (hδ_int :
+      CodingTheory.johnsonJumpRadius ≤
+        CodingTheory.johnsonJumpInternalRadius (Fintype.card ιC))
+    (hgt :
+      (ε_star : ENNReal) <
+        ((Fintype.card ιC : ENNReal) ^ (2 * ((1 : ℝ) - ε)))
+          / (Fintype.card FC : ENNReal)) :
+    MCAUpperWitness (ι := ιC) (F := FC)
+      (ReedSolomon.code W.domain W.k : Set (ιC → FC)) ε_star :=
+  MCAUpperWitness.ofEpsCAGt (MC := ReedSolomon.code W.domain W.k)
+      (ε_star := ε_star) (δ := CodingTheory.johnsonJumpRadius) <| by
+    exact lt_of_lt_of_le hgt
+      (le_trans W.epsCA_lower
+        (epsCA_antitone_δ_int
+          (F := FC) (A := FC) (ReedSolomon.code W.domain W.k : Set (ιC → FC))
+          CodingTheory.johnsonJumpRadius hδ_int))
+
 /-! ## §4.5 conjecture and its positive-direction link to the prize
 
 ABF26 Conjecture `conj:mca-conjecture` posits a uniform polynomial upper bound on `ε_mca`
