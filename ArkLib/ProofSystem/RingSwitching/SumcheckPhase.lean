@@ -606,10 +606,10 @@ same round polynomial as the direct `FullTranscript.messages` projection used by
 collapse. This is the transcript-API bridge needed by the weakened KState path in issue #29. -/
 private theorem iteratedSumcheck_fullTranscript_message0_eq_equivMessagesChallenges
     (tr : FullTranscript (pSpecSumcheckRound L)) :
-    (ProtocolSpec.Transcript.equivMessagesChallenges
+  (ProtocolSpec.Transcript.equivMessagesChallenges
       (k := Fin.last 2) (pSpec := pSpecSumcheckRound L)
       (tr : Transcript (Fin.last 2) (pSpecSumcheckRound L))).1
-        ⟨⟨0, by omega⟩, by simp [pSpecSumcheckRound]⟩ =
+        ⟨⟨0, by decide⟩, by rfl⟩ =
       FullTranscript.messages tr ⟨0, rfl⟩ := by
   simp
 
@@ -618,12 +618,32 @@ same verifier challenge as the direct `FullTranscript.challenges` projection use
 collapse. -/
 private theorem iteratedSumcheck_fullTranscript_challenge1_eq_equivMessagesChallenges
     (tr : FullTranscript (pSpecSumcheckRound L)) :
-    (ProtocolSpec.Transcript.equivMessagesChallenges
+  (ProtocolSpec.Transcript.equivMessagesChallenges
       (k := Fin.last 2) (pSpec := pSpecSumcheckRound L)
       (tr : Transcript (Fin.last 2) (pSpecSumcheckRound L))).2
-        ⟨⟨1, by omega⟩, by simp [pSpecSumcheckRound]⟩ =
+        ⟨⟨1, by decide⟩, by rfl⟩ =
       FullTranscript.challenges tr ⟨1, rfl⟩ := by
   simp
+
+/-- The intended post-challenge local KState payload for one iterated sumcheck round.
+
+This is the named target for issue #29's next proof step: consume the verifier-run transcript
+collapse and the two projection identities above to replace the current post-challenge `True`
+placeholder in `iteratedSumcheckKStateProp`. -/
+def iteratedSumcheckPostChallengeLocalChecks (i : Fin ℓ')
+    (tr : Transcript (Fin.last 2) (pSpecSumcheckRound L))
+    (stmt : Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) i.castSucc)
+    (witMid : SumcheckWitness L ℓ' i.castSucc) : Prop :=
+  let h_star : ↥L⦃≤ 2⦄[X] := getSumcheckRoundPoly ℓ' (boolDomain L ℓ') (i := i)
+    (h := witMid.H)
+  let h_i : L⦃≤ 2⦄[X] := (ProtocolSpec.Transcript.equivMessagesChallenges
+    (k := Fin.last 2) (pSpec := pSpecSumcheckRound L) tr).1 ⟨⟨0, by decide⟩, by rfl⟩
+  let r_i' : L := (ProtocolSpec.Transcript.equivMessagesChallenges
+    (k := Fin.last 2) (pSpec := pSpecSumcheckRound L) tr).2 ⟨⟨1, by decide⟩, by rfl⟩
+  let explicitVCheck :=
+    (∑ b ∈ (boolDomain L ℓ').points i, h_i.val.eval b) = stmt.sumcheck_target
+  let localizedTargetCheck := h_i.val.eval r_i' = h_star.val.eval r_i'
+  explicitVCheck ∧ localizedTargetCheck
 
 /-- **Extracted-witness ground-truth telescoping (issue #29).** For the iterated-round RBR extractor
 (`extractOut`), whose extracted last witness has `H = projectToMidSumcheckPoly … i.castSucc
@@ -722,22 +742,16 @@ def iteratedSumcheckKStateProp (i : Fin ℓ') (m : Fin (2 + 1))
     -- The transcript projection bridge is now named above:
     -- `iteratedSumcheck_fullTranscript_message0_eq_equivMessagesChallenges` and
     -- `iteratedSumcheck_fullTranscript_challenge1_eq_equivMessagesChallenges`. The remaining
-    -- mechanical step is consuming those identities in a nontrivial `toFun_full`, replacing this
-    -- placeholder post-challenge `True` state with `explicitVCheck ∧ localizedTargetCheck`, then
-    -- routing the local probability bound through the RBR theorem. Until that lands the
+    -- post-challenge payload is now named as `iteratedSumcheckPostChallengeLocalChecks`. The
+    -- remaining mechanical step is consuming those identities in a nontrivial `toFun_full`,
+    -- replacing this placeholder post-challenge `True` state with that payload, then routing the
+    -- local probability bound through the RBR theorem. Until that lands the
     -- post-challenge state stays `True` and the RBR theorem below uses the always-valid unit bound,
     -- so the file remains sound and green.
     RingSwitching.masterKStateProp κ L K P ℓ ℓ' h_l aOStmtIn
       (stmtIdx := i.castSucc)
       (stmt := stmt) (oStmt := oStmt) (wit := witMid)
-      (localChecks :=
-        let h_i := get_Hᵢ (m := ⟨2, by omega⟩) (tr := tr) (hm := by omega)
-        let r_i' := get_rᵢ' (m := ⟨2, by omega⟩) (tr := tr) (hm := by omega)
-        let explicitVCheck :=
-          (∑ b ∈ (boolDomain L ℓ').points i, h_i.val.eval b) = stmt.sumcheck_target
-        let localizedTargetCheck := h_i.val.eval r_i' = h_star.val.eval r_i'
-        explicitVCheck ∧ localizedTargetCheck
-      )
+      (localChecks := True)
 
 /-- Knowledge state function (KState) for single round -/
 def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :

@@ -2621,7 +2621,6 @@ theorem correlatedAgreement_affine_curves {k : ℕ}
   exact correlatedAgreement_affine_curves_of_strict_coeff_polys_and_boundary
     (deg := deg) (domain := domain) (δ := δ) hδ hStrictCoeff hBoundary
 
-omit [DecidableEq ι] in
 /-- Compatibility wrapper for callers that still carry the older
 closed-boundary cardinality residual. -/
 theorem correlatedAgreement_affine_curves_of_boundaryCardResidual {k : ℕ}
@@ -2638,7 +2637,6 @@ theorem correlatedAgreement_affine_curves_of_boundaryCardResidual {k : ℕ}
       (deg := deg) (domain := domain) (δ := δ) hδ hBoundaryCard)
     hδ
 
-omit [DecidableEq ι] in
 /-- Canonical strict-branch compatibility wrapper for the sharpened final
 residual surface. -/
 theorem correlatedAgreement_affine_curves_of_strictCanonicalCoeffPolysResidual {k : ℕ}
@@ -2656,7 +2654,6 @@ theorem correlatedAgreement_affine_curves_of_strictCanonicalCoeffPolysResidual {
       (deg := deg) (domain := domain) (δ := δ) hStrictCanonical)
     hBoundary hδ
 
-omit [DecidableEq ι] in
 /-- Theorem 1.5 (Correlated agreement for low-degree parameterised curves) in [BCIKS20].
 
 Take a Reed-Solomon code of length `ι` and degree `deg`, a proximity-error parameter

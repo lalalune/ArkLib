@@ -251,7 +251,8 @@ open scoped NNReal ENNReal ProbabilityTheory
 variable {ι₀ : Type} [Fintype ι₀] [Nonempty ι₀] [DecidableEq ι₀]
 variable {F₀ : Type} [Field F₀] [Fintype F₀] [DecidableEq F₀]
 
-/-- **The Hab25 §3 DEEP residual bundle.**
+/-
+**The Hab25 §3 DEEP residual bundle.**
 
 Each field is one of the genuinely-deep algebraic nodes the in-tree substrate does *not* yet
 supply. The combinatorial steps S7–S10 are **not** fields here — they are proven and consumed
@@ -264,7 +265,8 @@ internally. Fields:
 * `hImprove` — the Hensel-uniqueness consequence: every exceptional scalar of a factor matches
   the fold at a coordinate of that factor's disagreement set  (S6 → S8 hypothesis);
 * `hNumeric` — the separately named integer→real numeric edge S11:
-  `JohnsonNumericBound`. -/
+  `JohnsonNumericBound`.
+-/
 
 /-- The final Hab25 numeric edge: the `ε_mca` value is bounded by the closed-form Johnson-range
 expression. This is separated from the algebraic factor/Hensel data so the remaining
@@ -639,7 +641,9 @@ theorem mcaPrizeLatticeResolved_of_residuals_and_upperWitness_adjacent
 
 end Reduction
 
-/-- Axiom audit for the opened Hab25 §3 residual split and MCA/lattice endgame wrappers. -/
+/-
+Axiom audit for the opened Hab25 §3 residual split and MCA/lattice endgame wrappers.
+-/
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.factorDisagree_card_le_n
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.factorImprove_card_le_n
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.theorem2_union_bound

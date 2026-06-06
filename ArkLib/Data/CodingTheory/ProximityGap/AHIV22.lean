@@ -1551,8 +1551,12 @@ theorem ahiv17_epsCA_bound_of_rowSpan_to_affineLine_dOverQ_residual
     (hAHIV : ahiv17_rowSpan_to_affineLine_dOverQ_residual deg α δ) :
     ProximityGap.epsCA (F := F) (A := F) (RScodeSet α deg) δ δ ≤
       (((‖RScodeSet α deg‖₀ : ℝ≥0) / (Fintype.card F : ℝ≥0)) : ENNReal) :=
-  ahiv17_epsCA_bound_of_affineLine_residual (deg := deg) (α := α) (δ := δ)
-    (ε := ((‖RScodeSet α deg‖₀ : ℝ≥0) / (Fintype.card F : ℝ≥0))) hAHIV
+  by
+    have hF_ne : (Fintype.card F : ℝ≥0) ≠ 0 := by
+      exact_mod_cast (Fintype.card_ne_zero : Fintype.card F ≠ 0)
+    simpa [ENNReal.coe_div hF_ne] using
+      (ahiv17_epsCA_bound_of_affineLine_residual (deg := deg) (α := α) (δ := δ)
+        (ε := ((‖RScodeSet α deg‖₀ : ℝ≥0) / (Fintype.card F : ℝ≥0))) hAHIV)
 
 /-! ### Unique-decoding-regime instantiation (fully proven, no residual)
 
