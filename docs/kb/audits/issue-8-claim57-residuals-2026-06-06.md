@@ -1,87 +1,127 @@
 # Issue #8: Claim 5.7 residual surface
 
-This note audits the current `Claim57Residuals` surface in
-`ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean`.
+This note audits the current `Claim57Residuals` surface in the BCIKS20
+list-decoding agreement stack. The legacy bundle lives in
+`ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Agreement.lean`;
+the newer discharge layers live in `ArkLib/ToMathlib/Claim57Supply.lean`,
+`ArkLib/ToMathlib/Section5ConcreteJohnson.lean`, and
+`ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/Claim57FieldDischarge.lean`.
 
-## Current front door
+## Legacy Front Door
 
-The residual bundle is still:
+The legacy class still packages eight fields:
 
 ```lean
 class Claim57Residuals (k : ℕ) (δ : ℚ) (x₀ : F)
-    (h_gs : IsGSSolution (F := F) (m := m) (n := n) (k := k) Q ωs δ x₀) where
-  hx0 : x₀ ∈ (Finset.univ : Finset F)
-  hsep : w ∈ₗ ReedSolomonCode F k evalDomain →
-    agreementFraction F evalDomain wᵥ w < 1 - δ
-  hS_nonempty : pg_Rset F k δ x₀ h_gs ≠ []
-  A : Finset F
-  hA : A = Finset.univ
-  hcount : pg_Rset_common_roots_count F k δ x₀ h_gs A
-      = Finset.card A * List.length (pg_Rset F k δ x₀ h_gs)
-  hlarge : pg_Rset_common_roots_count F k δ x₀ h_gs A >
-      k * List.length (pg_Rset F k δ x₀ h_gs)
-  hfactor : ∀ R ∈ pg_Rset F k δ x₀ h_gs,
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) where
+  hx0 : ∀ R ∈ pg_Rset h_gs, Bivariate.evalX (Polynomial.C x₀) R ≠ 0
+  hsep : ∀ R ∈ pg_Rset h_gs, (Bivariate.evalX (Polynomial.C x₀) R).Separable
+  hS_nonempty : (coeffs_of_close_proximity k ωs δ u₀ u₁).Nonempty
+  A : coeffs_of_close_proximity k ωs δ u₀ u₁ → Finset (Fin n)
+  hA : ∀ z i, i ∈ A z → (u₀ + z.1 • u₁) i = (Pz z.2).eval (ωs i)
+  hcount : ∀ z, natWeightedDegree (eval_on_Z Q z.1) 1 k < m * (A z).card
+  hlarge : #(coeffs_of_close_proximity k ωs δ u₀ u₁) / natDegreeY Q > ...
+  hfactor : ∀ R ∈ pg_Rset h_gs,
     R ∈ (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose
 ```
 
-This means the residual is no longer a monolithic Claim 5.7 placeholder, but it
-still packages eight facts. The hardest remaining bridge is `hfactor`: converting
-membership in `pg_Rset` into membership in
-`(irreducible_factorization_of_gs_solution h_gs).choose_spec.choose`.
+That class shape is still used by many downstream lemmas in `Agreement.lean`, but it is no longer
+the minimal mathematical frontier.
 
-## Partial reduction already present
+## Discharge Layers
 
-The current source has a useful constructor:
+`Agreement.lean` exposes the first API reduction:
 
 ```lean
+GraphExtractionHypotheses
 Claim57Residuals.ofGraphExtractionHypotheses
-```
-
-It discharges `hx0`, `hsep`, `hS_nonempty`, `A`, `hA`, `hcount`, and `hlarge`
-from `GraphExtractionHypotheses`. It still requires the factor-list bridge:
-
-```lean
-∀ R ∈ pg_Rset F k δ x₀ h_gs,
-  R ∈ (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose
-```
-
-The current source also exposes:
-
-```lean
 exists_factors_with_large_common_root_set_of_graphExtraction
 ```
 
-This is the right front-door theorem for callers that already have
-`GraphExtractionHypotheses`, because it avoids requiring an ambient
-`[Claim57Residuals]` instance.
+This moves `hx0`, `hsep`, `hS_nonempty`, `A`, `hA`, `hcount`, and `hlarge` into a proved
+graph-extraction side-condition package. The only extra hypothesis at that front door is the
+legacy factor-list bridge `hfactor`.
 
-## Remaining downstream surface
+`Claim57Supply.lean` then makes the graph package non-circular by using the canonical
+`matching_coords_for_z` agreement set:
 
-Most downstream Claim 5.7 and Claim 5.8 lemmas still carry:
+```lean
+graphExtractionHypotheses_of_johnson
+graphExtractionHypotheses_of_natCeil_johnson
+claim57Residuals_of_johnson
+claim57Residuals_of_natCeil_johnson
+```
+
+At this layer, `A`/`hA` are canonical, `hS_nonempty` follows from `hlarge`, and `hcount` is narrowed
+to the Johnson matching-coordinate or `⌈δ * n⌉` budget.
+
+`Section5ConcreteJohnson.lean` narrows the Johnson side further:
+
+```lean
+hcount_natCeil_of_johnson_budget
+claim57Residuals_of_gsInterpolant
+```
+
+It proves that `Z`-specialization does not raise the `(1, k)` weighted degree, so the per-`z`
+`hcount` follows from one `z`-independent budget:
+
+```lean
+Bivariate.natWeightedDegree Q 1 k < m * (n - ⌈δ * (n : ℚ)⌉₊)
+```
+
+`Claim57FieldDischarge.lean` is the latest field-level brick:
+
+```lean
+claim57_hfactor_irreducible_of_pg_Rset
+exists_good_x₀_evalX_discr_y_ne
+Claim57Residuals.ofInTree
+```
+
+It proves the honest irreducibility fragment of `hfactor`, proves the discriminant-avoidance
+substrate for the specialization point, and assembles the legacy bundle from the minimal current
+inputs.
+
+## Current Minimal Surface
+
+After the current discharge layers, the remaining Claim 5.7 proof surface is:
+
+| Field | Current status |
+| --- | --- |
+| `hx0` / `hsep` | Reduced to the discriminant-nonvanishing substrate over `pg_Rset`. The missing bridge is the specialization/discriminant commutation plus `discr ≠ 0 → Separable`, in the exact `evalX (Polynomial.C x₀)` field shape. |
+| `hJohnson` | The single Johnson weighted-degree budget feeding `hcount_natCeil_of_johnson_budget`; not a class field, but still an explicit input to `claim57Residuals_of_gsInterpolant` and `Claim57Residuals.ofInTree`. |
+| `hlarge` | The close-set largeness / field-size budget input. It also derives `hS_nonempty`. |
+| `hfactor` | Not provable as currently stated in full generality: `pg_Rset` is built from `normalizedFactors Q`, while the Eq. 5.12 list contains descended primitive separable factors. The proven fragment is `claim57_hfactor_irreducible_of_pg_Rset`. |
+
+The fields `A`, `hA`, `hcount`, and `hS_nonempty` are not the active residual surface anymore:
+they are discharged through `Claim57Supply.lean` and `Section5ConcreteJohnson.lean` once the
+minimal inputs above are provided.
+
+## Remaining Downstream Surface
+
+Most later Claim 5.7 / Claim 5.8 lemmas in `Agreement.lean` still carry:
 
 ```lean
 [Claim57Residuals (F := F) k δ x₀ h_gs]
 ```
 
-The long-term cleanup is to thread `GraphExtractionHypotheses` and the explicit
-factor-list bridge deeper through the file, replacing ambient residual-class
-dependencies at call sites that do not need the full bundled instance.
+The useful downstream cleanup is to thread `Claim57Residuals.ofInTree` or the explicit
+`hx0`/`hsep`/`hJohnson`/`hlarge`/`hfactor` inputs to later front doors, replacing ambient
+`[Claim57Residuals]` dependencies where the full legacy instance is only a transport device.
 
-In particular, the next useful target is to lift the later
-`solution_gamma_graph_*` lemmas onto the graph-extraction front door, or to split
-the factor-list bridge into a smaller named theorem that can be proved or
-imported independently.
-
-## Verification status
+## Verification Status
 
 This audit was checked against the current anchors:
 
 - `Claim57Residuals`
+- `GraphExtractionHypotheses`
 - `Claim57Residuals.ofGraphExtractionHypotheses`
 - `exists_factors_with_large_common_root_set_of_graphExtraction`
-- `GraphExtractionHypotheses`
-- `irreducible_factorization_of_gs_solution`
+- `graphExtractionHypotheses_of_johnson`
+- `claim57Residuals_of_gsInterpolant`
+- `hcount_natCeil_of_johnson_budget`
+- `claim57_hfactor_irreducible_of_pg_Rset`
+- `exists_good_x₀_evalX_discr_y_ne`
+- `Claim57Residuals.ofInTree`
 
-Full focused Lean verification of `Agreement.lean` is currently blocked before
-ArkLib targets by the manifest-pinned `CompPoly` dependency failures observed on
-the clean `fork/main` checkout.
+Full focused Lean verification of these modules is currently blocked before the BCIKS20 targets by
+the live manifest-pinned `CompPoly` dependency failures on `fork/main`.
