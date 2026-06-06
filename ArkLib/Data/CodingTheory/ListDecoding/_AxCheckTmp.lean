@@ -1,0 +1,4 @@
+import ArkLib.Data.CodingTheory.ListDecoding.CZ25SpanDimension
+#print axioms CodingTheory.cz25SpanBound_false_of_neg_radius
+#print axioms CodingTheory.cz25SpanBound'_of_dimensionCount
+#print axioms CodingTheory.subspaceDesign_list_decoding_cz25_of_spanBound'
