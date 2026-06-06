@@ -991,6 +991,28 @@ theorem mcaPrizeLatticeResolved_iff (domain : ι ↪ F)
       (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
       epsStar hne (τ j) hsat hmax).symm
 
+/-- Existentially resolving the faithful MCA lattice prize is equivalent to threshold
+nonemptiness at all four prize rates.  Once every rate has at least one satisfying lattice point,
+the finite threshold function itself supplies the four proposed indices. -/
+theorem exists_mcaPrizeLatticeResolved_iff (domain : ι ↪ F) :
+    (∃ τ : Fin 4 → Fin (Fintype.card ι + 1), mcaPrizeLatticeResolved domain τ) ↔
+      ∀ j : Fin 4,
+        mcaThresholdExists
+          (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ :
+            Set (ι → F))
+          epsStar := by
+  constructor
+  · rintro ⟨τ, hτ⟩ j
+    exact (hτ j).choose
+  · intro h
+    refine ⟨fun j =>
+      mcaThreshold
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ :
+          Set (ι → F))
+        epsStar (h j), ?_⟩
+    intro j
+    exact ⟨h j, rfl⟩
+
 /-- A proposed solution of the list-decoding prize lattice problem at interleaving `m`: for
 every prize rate, the faithful list-decoding lattice threshold is the supplied index `τ j`. -/
 def listPrizeLatticeResolved (domain : ι ↪ F) (m : ℕ)
@@ -1033,6 +1055,27 @@ theorem listPrizeLatticeResolved_iff (domain : ι ↪ F) (m : ℕ)
     exact (listThreshold_unique
       (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
       m epsStar hne (τ j) hsat hmax).symm
+
+/-- Existentially resolving the faithful list-decoding lattice prize is equivalent to threshold
+nonemptiness at all four prize rates for the chosen interleaving `m`. -/
+theorem exists_listPrizeLatticeResolved_iff (domain : ι ↪ F) (m : ℕ) :
+    (∃ τ : Fin 4 → Fin (Fintype.card ι + 1), listPrizeLatticeResolved domain m τ) ↔
+      ∀ j : Fin 4,
+        listThresholdExists
+          (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ :
+            Set (ι → F))
+          m epsStar := by
+  constructor
+  · rintro ⟨τ, hτ⟩ j
+    exact (hτ j).choose
+  · intro h
+    refine ⟨fun j =>
+      listThreshold
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ :
+          Set (ι → F))
+        m epsStar (h j), ?_⟩
+    intro j
+    exact ⟨h j, rfl⟩
 
 end GrandChallengesLattice
 
