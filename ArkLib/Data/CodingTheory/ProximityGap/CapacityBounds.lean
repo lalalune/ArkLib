@@ -1277,6 +1277,8 @@ def subspaceDesign_epsCA_curves_polynomial_generators_bcgm25
 
 end SubspaceDesignFRS
 
+#print axioms CodingTheory.linear_epsMCA_1_5_johnson_gkl24
+#print axioms CodingTheory.linear_epsCA_1_5_johnson_bgks20
 #print axioms CodingTheory.rs_epsCA_small_loss_r4_10_of_item2_no_boundary_crossing_prop
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_subspaceDesign_prop
 #print axioms CodingTheory.rs_epsMCA_johnson_range_bchks25_of_bound

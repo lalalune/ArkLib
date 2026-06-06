@@ -304,6 +304,8 @@ def MCALowerWitness.ofLinearOnePointFiveJohnsonGKL24
     MCALowerWitness (C : Set (ι → F)) ε_star :=
   MCALowerWitness.ofLe hδ_le_one (le_trans hGKL24 hle)
 
+#print axioms ProximityGap.GrandChallenges.MCALowerWitness.ofLinearOnePointFiveJohnsonGKL24
+
 /-- **Bridge from ABF26 Theorem 4.12 [BCHKS25 Thm 4.6].** When the Johnson-range MCA bound
 for `RS[F, domain, k]` lands within `ε*` at radius `δ`, it certifies an `MCALowerWitness`.
 The hypothesis `hle` is the Phase-5 numeric check that the explicit BCHKS25 RHS is `≤ ε*`. -/
