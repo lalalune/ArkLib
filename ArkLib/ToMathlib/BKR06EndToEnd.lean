@@ -228,4 +228,52 @@ theorem bkr06_close_codewords_card_ge_tight
       ≤ (Fintype.card ι : ℝ) := hbound
     _ ≤ _ := by exact_mod_cast hcount
 
+/-! ## ABF26 T3.12 exponent form
+
+`bkr06_close_codewords_card_ge_tight` restated in the bare T3.12 statement's
+`q^{(α−β²)·log q}` exponent shape (`CodingTheory.rs_lambda_superpoly_extension_bkr06` /
+its `_of_family` reduction in `ListDecoding/Bounds.lean`), at the explicit
+`α := β² + (m·u − v²)/log q` — the exact `α`/`β` bookkeeping BKR06 performs under
+`v ≈ β·m` and the `k = q^u` cutoff convention.  This is a **fully-proven, non-residual**
+instance of the T3.12 close-codeword count at the extension parameters where the BKR06
+construction actually lives.
+
+**Remaining gap to the bare T3.12 front door** (the documented PARAMETER DEFECT /
+base-parameter reconciliation, *not* claimed here):
+* the bare statement's window is `k = ⌊q^α⌋` while the construction's is `k = q^u + 1`
+  (needs close-codeword-count monotonicity in `k` along the nested RS codes, plus the
+  floor bookkeeping `q^u + 1 ≤ ⌊q^α⌋` in the `β² < α` regime);
+* the bare statement quantifies over abstract index types `ι` with `#ι = #F = q`
+  (needs transport of the count along an equivalence `ι ≃ K`);
+* the `α ≤ β²` regime of the bare statement (target `≤ q^0 = 1`) needs only a single
+  exhibited close codeword and is not routed through the tight family. -/
+
+/-- **ABF26 T3.12 [BKR06 Cor 2.2] — tight count in `q^{(α−β²)·log q}` exponent form,
+fully proven.**  At the explicit `α := β² + (m·u − v²)/log q`, the constructed pivot's
+close-codeword set in `RS[K, K, q^u + 1]` at radius `δ = 1 − (#K)^{β−1}` has at least
+`q^{(α−β²)·log q}` elements — the bare T3.12 statement's count shape, with **every**
+hypothesis of the chain discharged in-tree. -/
+theorem rs_close_codewords_card_ge_bkr06_exponent_form
+    (q : ℕ) (hq : 2 ≤ q) (hqcard : Fintype.card F = q)
+    (v u : ℕ) (hv : v ≤ Module.finrank F K) (huv : u ≤ v)
+    (hexp_nonneg : v ^ 2 ≤ Module.finrank F K * u) (hum : u < Module.finrank F K)
+    (β : ℝ) (hβv : β * (Module.finrank F K : ℝ) ≤ (v : ℝ)) :
+    ∃ pivot : K[X],
+      (q : ℝ) ^ (((β ^ 2 + ((Module.finrank F K : ℝ) * u - (v : ℝ) ^ 2) / Real.log q)
+          - β ^ 2) * Real.log q) ≤
+        ((ListDecodable.closeCodewordsRel
+            ((ReedSolomon.code (Function.Embedding.refl K) (q ^ u + 1) : Set (K → K)))
+            (ReedSolomon.evalOnPoints (Function.Embedding.refl K) pivot)
+            (1 - (Fintype.card K : ℝ) ^ (β - 1))).ncard : ℝ) := by
+  have hq1 : (1 : ℝ) < q := by exact_mod_cast Nat.lt_of_lt_of_le one_lt_two hq
+  have hlogq : Real.log q ≠ 0 := (Real.log_pos hq1).ne'
+  obtain ⟨pivot, hp⟩ :=
+    bkr06_close_codewords_card_ge_tight q hq hqcard v u hv huv hexp_nonneg hum β hβv
+  refine ⟨pivot, ?_⟩
+  have hexp : ((β ^ 2 + ((Module.finrank F K : ℝ) * u - (v : ℝ) ^ 2) / Real.log q)
+      - β ^ 2) * Real.log q = (Module.finrank F K : ℝ) * u - (v : ℝ) ^ 2 := by
+    field_simp
+    ring
+  rwa [hexp]
+
 end BKR06

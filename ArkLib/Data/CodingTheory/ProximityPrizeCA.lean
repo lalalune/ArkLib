@@ -8,6 +8,8 @@ import Mathlib.Data.Finset.Card
 import Mathlib.InformationTheory.Hamming
 import Mathlib.LinearAlgebra.Span.Basic
 import Mathlib.Tactic.Choose
+import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.FieldSimp
 
 /-!
 # Correlated-agreement counting leaves
