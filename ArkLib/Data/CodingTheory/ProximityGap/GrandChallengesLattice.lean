@@ -276,6 +276,64 @@ theorem mcaThreshold_spec_ofLineDecodingTarget
   mcaThreshold_spec (C : Set (ι → F)) ε_star
     (mcaThresholdExists_ofLineDecodingTarget C δ a ε_star hδ_le_one hLD hTarget hle)
 
+/-- The BCHKS25 Johnson-range MCA lower bound makes the faithful MCA lattice threshold exist
+whenever its explicit right-hand side is below the target `ε_star`. -/
+theorem mcaThresholdExists_ofJohnsonBCHKS25
+    (domain : ι ↪ F) (k : ℕ) (η δ ε_star : ℝ≥0)
+    (hη : 0 < η)
+    (hδ_johnson :
+        (δ : ℝ) <
+          1 - (((k : ℝ) / Fintype.card ι + 1 / Fintype.card ι) ^ ((1 : ℝ) / 2)) -
+            (η : ℝ))
+    (hδ_le_one : δ ≤ 1)
+    (hBCHKS25 : CodingTheory.rs_epsMCA_johnson_range_bchks25 domain k η δ hη hδ_johnson)
+    (hle :
+        ENNReal.ofReal
+            (let n : ℝ := Fintype.card ι
+             let ρ_plus : ℝ := k / n + 1 / n
+             let m : ℝ := max ⌈(ρ_plus ^ ((1 : ℝ) / 2)) / (2 * η)⌉ 3
+             ((2 * (m + 1 / 2) ^ 5 + 3 * (m + 1 / 2) * δ * ρ_plus) /
+                    (3 * ρ_plus ^ ((3 : ℝ) / 2)) *
+                  n +
+                (m + 1 / 2) / ρ_plus ^ ((1 : ℝ) / 2)) /
+               (Fintype.card F : ℝ)) ≤
+          (ε_star : ENNReal)) :
+    mcaThresholdExists (ReedSolomon.code domain k : Set (ι → F)) ε_star :=
+  mcaThresholdExists_of_MCALowerWitness (ReedSolomon.code domain k : Set (ι → F)) ε_star
+    (MCALowerWitness.ofJohnsonBCHKS25 domain k η δ ε_star hη hδ_johnson hδ_le_one
+      hBCHKS25 hle)
+
+/-- The faithful MCA threshold obtained from the BCHKS25 Johnson-range lower bound satisfies
+the MCA target. -/
+theorem mcaThreshold_spec_ofJohnsonBCHKS25
+    (domain : ι ↪ F) (k : ℕ) (η δ ε_star : ℝ≥0)
+    (hη : 0 < η)
+    (hδ_johnson :
+        (δ : ℝ) <
+          1 - (((k : ℝ) / Fintype.card ι + 1 / Fintype.card ι) ^ ((1 : ℝ) / 2)) -
+            (η : ℝ))
+    (hδ_le_one : δ ≤ 1)
+    (hBCHKS25 : CodingTheory.rs_epsMCA_johnson_range_bchks25 domain k η δ hη hδ_johnson)
+    (hle :
+        ENNReal.ofReal
+            (let n : ℝ := Fintype.card ι
+             let ρ_plus : ℝ := k / n + 1 / n
+             let m : ℝ := max ⌈(ρ_plus ^ ((1 : ℝ) / 2)) / (2 * η)⌉ 3
+             ((2 * (m + 1 / 2) ^ 5 + 3 * (m + 1 / 2) * δ * ρ_plus) /
+                    (3 * ρ_plus ^ ((3 : ℝ) / 2)) *
+                  n +
+                (m + 1 / 2) / ρ_plus ^ ((1 : ℝ) / 2)) /
+               (Fintype.card F : ℝ)) ≤
+          (ε_star : ENNReal)) :
+    let hne :=
+      mcaThresholdExists_ofJohnsonBCHKS25 domain k η δ ε_star hη hδ_johnson hδ_le_one
+        hBCHKS25 hle
+    mcaSatisfies (ReedSolomon.code domain k : Set (ι → F)) ε_star
+      (mcaThreshold (ReedSolomon.code domain k : Set (ι → F)) ε_star hne) :=
+  mcaThreshold_spec (ReedSolomon.code domain k : Set (ι → F)) ε_star
+    (mcaThresholdExists_ofJohnsonBCHKS25 domain k η δ ε_star hη hδ_johnson hδ_le_one
+      hBCHKS25 hle)
+
 /-- Under the §4.5 MCA conjecture, the conjectural lower-witness link also makes the faithful
 MCA lattice threshold exist. -/
 theorem mcaThresholdExists_of_mcaConjecture (h : mcaConjecture) :
