@@ -902,52 +902,43 @@ lemma getFoldingChallenges_init_succ_eq (i : Fin ℓ)
   ext cId
   simp only [Fin.init, Fin.coe_castSucc, Fin.castSucc_mk, Fin.val_succ]
 
-omit hdiv in
-/-- The base index k = j * ϑ is less than ℓ for valid oracle indices -/
-lemma oracle_block_k_bound (i : Fin (ℓ + 1)) (j : Fin (toOutCodewordsCount ℓ ϑ i)) :
-    j.val * ϑ < ℓ :=
-  toCodewordsCount_mul_ϑ_lt_ℓ ℓ ϑ i j
-
-/-- The next oracle index k + ϑ = (j+1) * ϑ is at most i -/
-lemma oracle_block_k_next_le (i : Fin (ℓ + 1)) (j : Fin (toOutCodewordsCount ℓ ϑ i))
-    (hj : j.val + 1 < toOutCodewordsCount ℓ ϑ i) : j.val * ϑ + ϑ ≤ i := by
-  have h := toCodewordsCount_mul_ϑ_le_i ℓ ϑ i (j + 1)
-  rw [Fin.val_add_one' (h_a_add_1:=hj), Nat.add_mul, Nat.one_mul] at h
-  by_cases hi : i < ℓ <;> simp only [hi, ↓reduceIte] at h <;> omega
-
 def getNextOracle (i : Fin (ℓ + 1))
     (oStmt : ∀ j, (OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i) j)
-    (j : Fin (toOutCodewordsCount ℓ ϑ i)) (hj : j.val + 1 < toOutCodewordsCount ℓ ϑ i) :
-    OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨j.val * ϑ + ϑ, by
-    apply Nat.lt_succ_of_le;
-    let h_k_next_le_i := oracle_block_k_next_le (ℓ := ℓ) (ϑ := ϑ) (i := i) (j := j) (hj := hj)
-    calc _ ≤ i.val := h_k_next_le_i
-      _ ≤ ℓ := Fin.is_le i
-  ⟩ := by
-    let res := oStmt ⟨j.val + 1, hj⟩
-    have h: j.val * ϑ + ϑ = (j.val + 1) * ϑ := by
-      rw [Nat.add_mul, one_mul]
-    rw! [h]
-    exact res
+    (j : Fin (toOutCodewordsCount ℓ ϑ i)) (hj : j.val + 1 < toOutCodewordsCount ℓ ϑ i)
+    {destDomainIdx : Fin r} (h_destDomainIdx : destDomainIdx = j.val * ϑ + ϑ) :
+    OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destDomainIdx :=
+  let res := oStmt ⟨j.val + 1, hj⟩
+  have h : j.val * ϑ + ϑ = (j.val + 1) * ϑ := by
+    rw [Nat.add_mul, one_mul]
+  have h_lt : (j.val + 1) * ϑ < r := by
+    omega
+  have h_eq : destDomainIdx = ⟨(j.val + 1) * ϑ, h_lt⟩ :=
+    Fin.eq_of_val_eq (by
+      simp only
+      omega)
+  fun y => res (cast (by rw [h_eq]) y)
 
-/-- Folding consistency for round i -/
+/-- Folding consistency for round i (where i is the oracleIdx) -/
 def oracleFoldingConsistencyProp (i : Fin (ℓ + 1)) (challenges : Fin i → L)
     (oStmt : ∀ j, (OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i) j) : Prop :=
-  ∀ (j : Fin (toOutCodewordsCount ℓ ϑ i)) (hj : j.val + 1 < toOutCodewordsCount ℓ ϑ i),
-    -- let k is j.val * ϑ
+  (∀ (j : Fin (toOutCodewordsCount ℓ ϑ i)) (hj : j.val + 1 < toOutCodewordsCount ℓ ϑ i),
     have h_k_bound := oracle_block_k_bound (ℓ := ℓ) (ϑ := ϑ) (i := i) (j := j)
-    have h_k_next_le_i := oracle_block_k_next_le (ℓ := ℓ) (ϑ := ϑ) (i := i) (j := j) (hj := hj)
-    -- Explicitly type the oracle functions
-    isCompliant (i := ⟨j.val * ϑ, by exact h_k_bound⟩) (steps := ϑ)
-      (h_i_add_steps := by
-        simp only;
-        calc _ ≤ i.val := h_k_next_le_i
-          _ ≤ ℓ := Fin.is_le i
-      )
-      (f_i := oStmt ⟨j.val, by exact j.isLt⟩)
-      (f_i_plus_steps := getNextOracle 𝔽q β i oStmt j hj)
+    have h_k_next_le_i := oracle_block_k_next_le_i (ℓ := ℓ) (ϑ := ϑ) (i := i) (j := j) (hj := hj)
+    let destIdx : Fin r := ⟨oraclePositionToDomainIndex (positionIdx := j) + ϑ, by
+      have h_le := oracle_index_add_steps_le_ℓ ℓ ϑ (i := i) (j := j)
+      dsimp only [oraclePositionToDomainIndex]
+      omega
+    ⟩
+    isCompliant 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := ⟨oraclePositionToDomainIndex (positionIdx := j), by omega⟩) (steps := ϑ)
+      (destIdx := destIdx) (by rfl) (by
+        dsimp only [destIdx]; simp only [oracle_index_add_steps_le_ℓ])
+      (f_i := by
+        simpa [OracleStatement, oraclePositionToDomainIndex] using oStmt j)
+      (f_i_plus_steps := getNextOracle 𝔽q β i oStmt j hj (destDomainIdx := destIdx)
+        (h_destDomainIdx := by rfl))
       (challenges := getFoldingChallenges (r := r) (𝓡 := 𝓡) i challenges (k := j.val * ϑ)
-        (h := h_k_next_le_i))
+        (h := h_k_next_le_i)))
 
 omit [CharP L 2] in
 lemma oracleFoldingConsistencyProp_relay_preserved (i : Fin ℓ)
