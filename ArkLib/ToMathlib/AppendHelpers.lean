@@ -34,9 +34,9 @@ theorem support_liftComp {τ : Type} {superSpec : OracleSpec τ} {α : Type}
   | query_bind t oa ih =>
       rw [OracleComp.liftComp_bind, OracleComp.liftComp_query]
       ext y
-      rw [show (query t : OracleComp oSpec _) >>= oa = (liftM (query t)) >>= oa from rfl]
-      simp only [support_bind, Set.mem_iUnion, OracleComp.support_liftM, Set.mem_range,
-        OracleQuery.cont_query, exists_exists_eq_and, ih]
+      simp only [support_bind, Set.mem_iUnion, support_map, Set.mem_image,
+        OracleComp.support_liftM, Set.mem_range, OracleQuery.cont_query, OracleQuery.input_query,
+        exists_exists_eq_and, ih]
 
 end OracleComp
 

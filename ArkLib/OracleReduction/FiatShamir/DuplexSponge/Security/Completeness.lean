@@ -273,7 +273,10 @@ theorem duplexSpongeFiatShamir_completeness_unroll_of_run_eq
     -- honest execution's `.run`, so the appended (never-queried) challenge oracle implementation
     -- collapses directly via `simulateQ_add_liftComp_left`.
     rw [OptionT.run_mk]
-    simp only [ProtocolSpec.Messages, QueryImpl.simulateQ_add_liftComp_left]
+    exact QueryImpl.simulateQ_add_liftComp_left impl
+      (QueryImpl.liftTarget (StateT σ ProbComp)
+        (challengeQueryImpl (pSpec := ⟨!v[Direction.P_to_V], !v[pSpec.Messages]⟩)))
+      (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn).run
   rw [hcollapse]
 
 /-- **Reduction of `duplexSpongeFiatShamirSalted_completeness_unroll` to the run-equality
