@@ -126,8 +126,8 @@ theorem mcaEvent_one_iff_mem_badRatios (domain : ι ↪ F) (k : ℕ) (u₀ u₁ 
     refine ⟨T, by simp, ?_, not_pairJoint_of_nonExtendable_right' hneT⟩
     -- the line functional vanishes at the ratio, so the line is extendable on `T`
     have hline0 : cT domain k T (u₀ + γ • u₁) = 0 := by
-      rw [map_add, map_smul, smul_eq_mul, ← hγ]
-      field_simp
+      rw [map_add, map_smul, smul_eq_mul, ← hγ, div_mul_cancel₀ _ hne0]
+      ring
     obtain ⟨w, hw, hwagree⟩ :=
       (extendable_iff_cT_eq_zero domain hTcard (u₀ + γ • u₁)).mpr hline0
     exact ⟨w, hw, fun i hi => hwagree i hi⟩
@@ -181,8 +181,8 @@ theorem ratioSupport_card_le_mul_badCount (domain : ι ↪ F) (k : ℕ) (u₀ u�
   rw [Finset.mem_filter]
   refine ⟨hTsupp'.1, ?_⟩
   -- the ratio equation makes the line functional vanish
-  rw [map_add, map_smul, smul_eq_mul, ← hTratio]
-  field_simp
+  rw [map_add, map_smul, smul_eq_mul, ← hTratio, div_mul_cancel₀ _ hTsupp'.2]
+  ring
 
 /-- The `C(n, k+1)` cap on the bad-scalar count, recovered from the ratio-image identity
 in one line (reconciles with `epsMCA_one_le_choose_div`). -/
