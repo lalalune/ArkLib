@@ -745,6 +745,81 @@ theorem j1RatioConstraint_exists_omitted_full_top_quadratic_relation
   exact ⟨i, hne, cT_vanish_on_j1_window_full_top_quadratic_relation domain hk hvanish⟩
 
 open Classical in
+/-- The affine polynomial in the line scalar whose value is `a + γ * b`. -/
+noncomputable def j1AffineCoeffPolynomial (a b : F) : Polynomial F :=
+  Polynomial.C a + Polynomial.C b * Polynomial.X
+
+@[simp] theorem j1AffineCoeffPolynomial_eval (a b γ : F) :
+    (j1AffineCoeffPolynomial a b).eval γ = a + γ * b := by
+  simp [j1AffineCoeffPolynomial]
+  ring
+
+open Classical in
+/-- The universal quadratic eliminant for J1 ratio constraints.
+
+Its coefficients are the top three full-interpolant coefficients of the base word `u₀`, the
+direction word `u₁`, and the top two coefficients of the full nodal polynomial. -/
+noncomputable def j1FullTopQuadratic
+    (domain : ι ↪ F) (u₀ u₁ : ι → F) : Polynomial F :=
+  let P₀ := Lagrange.interpolate Finset.univ (fun a => domain a) u₀
+  let P₁ := Lagrange.interpolate Finset.univ (fun a => domain a) u₁
+  let N := Lagrange.nodal Finset.univ (fun a => domain a)
+  let q := j1AffineCoeffPolynomial
+    (P₀.coeff (Fintype.card ι - 1)) (P₁.coeff (Fintype.card ι - 1))
+  let r := j1AffineCoeffPolynomial
+    (P₀.coeff (Fintype.card ι - 2)) (P₁.coeff (Fintype.card ι - 2))
+  let s := j1AffineCoeffPolynomial
+    (P₀.coeff (Fintype.card ι - 3)) (P₁.coeff (Fintype.card ι - 3))
+  r * r - Polynomial.C (N.coeff (Fintype.card ι - 1)) * q * r +
+    Polynomial.C (N.coeff (Fintype.card ι - 2)) * q * q - q * s
+
+/-- Every J1 ratio-constraint scalar is a root of the universal top-coefficient quadratic. -/
+theorem j1RatioConstraint_eval_j1FullTopQuadratic_eq_zero
+    (domain : ι ↪ F) {k : ℕ} (hk : k + 3 ≤ Fintype.card ι)
+    {u₀ u₁ : ι → F} {γ : F}
+    (hγ : j1RatioConstraint domain k u₀ u₁ γ) :
+    (j1FullTopQuadratic domain u₀ u₁).eval γ = 0 := by
+  classical
+  obtain ⟨_i, _hne, hrel⟩ :=
+    j1RatioConstraint_exists_omitted_full_top_quadratic_relation domain hk hγ
+  let Pγ := Lagrange.interpolate Finset.univ (fun a => domain a) (u₀ + γ • u₁)
+  let P₀ := Lagrange.interpolate Finset.univ (fun a => domain a) u₀
+  let P₁ := Lagrange.interpolate Finset.univ (fun a => domain a) u₁
+  let N := Lagrange.nodal Finset.univ (fun a => domain a)
+  have hcoeff (d : ℕ) : Pγ.coeff d = P₀.coeff d + γ * P₁.coeff d := by
+    dsimp [Pγ, P₀, P₁]
+    rw [map_add, map_smul, Polynomial.coeff_add, Polynomial.coeff_smul]
+    simp
+  have hrel' :
+      (P₀.coeff (Fintype.card ι - 2) + γ * P₁.coeff (Fintype.card ι - 2)) *
+          (P₀.coeff (Fintype.card ι - 2) + γ * P₁.coeff (Fintype.card ι - 2)) -
+        N.coeff (Fintype.card ι - 1) *
+          (P₀.coeff (Fintype.card ι - 1) + γ * P₁.coeff (Fintype.card ι - 1)) *
+          (P₀.coeff (Fintype.card ι - 2) + γ * P₁.coeff (Fintype.card ι - 2)) +
+        N.coeff (Fintype.card ι - 2) *
+          (P₀.coeff (Fintype.card ι - 1) + γ * P₁.coeff (Fintype.card ι - 1)) *
+          (P₀.coeff (Fintype.card ι - 1) + γ * P₁.coeff (Fintype.card ι - 1)) -
+        (P₀.coeff (Fintype.card ι - 1) + γ * P₁.coeff (Fintype.card ι - 1)) *
+          (P₀.coeff (Fintype.card ι - 3) + γ * P₁.coeff (Fintype.card ι - 3)) = 0 := by
+    simpa [Pγ, N, hcoeff] using hrel
+  have hpoly :
+      (j1FullTopQuadratic domain u₀ u₁).eval γ =
+      (P₀.coeff (Fintype.card ι - 2) + γ * P₁.coeff (Fintype.card ι - 2)) *
+          (P₀.coeff (Fintype.card ι - 2) + γ * P₁.coeff (Fintype.card ι - 2)) -
+        N.coeff (Fintype.card ι - 1) *
+          (P₀.coeff (Fintype.card ι - 1) + γ * P₁.coeff (Fintype.card ι - 1)) *
+          (P₀.coeff (Fintype.card ι - 2) + γ * P₁.coeff (Fintype.card ι - 2)) +
+        N.coeff (Fintype.card ι - 2) *
+          (P₀.coeff (Fintype.card ι - 1) + γ * P₁.coeff (Fintype.card ι - 1)) *
+          (P₀.coeff (Fintype.card ι - 1) + γ * P₁.coeff (Fintype.card ι - 1)) -
+        (P₀.coeff (Fintype.card ι - 1) + γ * P₁.coeff (Fintype.card ι - 1)) *
+          (P₀.coeff (Fintype.card ι - 3) + γ * P₁.coeff (Fintype.card ι - 3)) := by
+    simp [j1FullTopQuadratic, P₀, P₁, N]
+    ring
+  rw [hpoly]
+  exact hrel'
+
+open Classical in
 /-- The finite scalar set cut out by the J1 window ratio constraints.
 
 The remaining J1 algebraic core is to show this set has cardinality at most two for every

@@ -594,8 +594,9 @@ private theorem iteratedSumcheck_hStar_extracted_eval_eq_cube_succ (i : Fin ℓ'
           (projectToMidSumcheckPoly (L := L) (ℓ := ℓ') (t := t')
             (m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly (ctx := ctx))
             (i := i.succ) (challenges := Fin.cons r' challenges)).val.eval z :=
-  getSumcheckRoundPoly_eval_eq_cube_succ i t'
-    ((RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly (ctx := ctx)) challenges r'
+  getSumcheckRoundPoly_eval_eq_cube_succ (i := i) (t := t')
+    (m := (RingSwitching_SumcheckMultParam κ L K P ℓ ℓ' h_l).multpoly (ctx := ctx))
+    (challenges := challenges) (r' := r')
 
 /-- This follows the KState of `foldKStateProp` -/
 def iteratedSumcheckKStateProp (i : Fin ℓ') (m : Fin (2 + 1))
@@ -770,10 +771,11 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
       -- `some`, so the support hypothesis is contradictory.
       exfalso
       rw [if_neg hcheck] at hx
-      rw [show (failure : OptionT (OracleComp []ₒ) _)
-            = (pure none : OracleComp []ₒ _) from rfl] at hx
-      simp only [simulateQ_pure, StateT.run'_eq, StateT.run_pure, map_pure, support_pure,
-        Set.mem_singleton_iff] at hx
+      rw [simulateQ_optionT_failure'] at hx
+      simp only [StateT.run'_eq, OptionT.run_mk] at hx
+      rw [show (failure : OptionT (StateT s' ProbComp) _)
+            = (pure none : StateT s' ProbComp _) from rfl] at hx
+      simp only [StateT.run_pure, map_pure, support_pure, Set.mem_singleton_iff] at hx
 
 /-- RBR knowledge soundness for one sumcheck round under the current weak post-challenge state.
 The bound is intentionally `1` until the challenge-level root-count bridge is available. -/
