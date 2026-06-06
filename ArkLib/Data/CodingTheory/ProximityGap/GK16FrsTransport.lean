@@ -70,7 +70,6 @@ noncomputable def frsPullback (domain : ι ↪ F) (k s : ℕ) (ω : F)
   A.comap (frsEvalOnPoints domain s ω) ⊓ Polynomial.degreeLT F k
 
 variable {domain : ι ↪ F} {k s : ℕ} {ω : F}
-variable (hEinj : Function.Injective (frsEvalOnPoints domain s ω))
 
 /-- Every pullback polynomial has degree `< k`, hence `natDegree ≤ k - 1`. -/
 lemma natDegree_le_of_mem_frsPullback {A : Submodule F (ι → Fin s → F)}
@@ -101,11 +100,22 @@ lemma frsPullback_map_eq {A : Submodule F (ι → Fin s → F)}
 
 /-- **Pullback preserves dimension.** `finrank (frsPullback …) = finrank A`. -/
 lemma finrank_frsPullback_eq {A : Submodule F (ι → Fin s → F)}
+    (hEinj : Function.Injective (frsEvalOnPoints domain s ω))
     (hA : A ≤ frsCode domain k s ω) :
     Module.finrank F (frsPullback domain k s ω A) = Module.finrank F A := by
   have e := Submodule.equivMapOfInjective (frsEvalOnPoints domain s ω) hEinj
     (frsPullback domain k s ω A)
   rw [e.finrank_eq, frsPullback_map_eq hA]
+
+/-- The pullback inherits the `finrank ≤ s` range needed by the GK16 adapted
+recombination engine. -/
+lemma finrank_frsPullback_le {A : Submodule F (ι → Fin s → F)}
+    (hEinj : Function.Injective (frsEvalOnPoints domain s ω))
+    (hA : A ≤ frsCode domain k s ω)
+    (hAs : Module.finrank F A ≤ s) :
+    Module.finrank F (frsPullback domain k s ω A) ≤ s := by
+  rw [finrank_frsPullback_eq hEinj hA]
+  exact hAs
 
 /-- The **orbit-vanishing subspace** inside the pullback: pullback polynomials that vanish
 on the entire `s`-fold orbit of `domain i`. -/
@@ -122,22 +132,24 @@ lemma frsVanish_map_eq {A : Submodule F (ι → Fin s → F)}
   apply le_antisymm
   · -- image ⊆ A ⊓ ker(proj i)
     rintro _ ⟨p, ⟨hpU, hpV⟩, rfl⟩
-    refine ⟨hpU.1, ?_⟩
+    refine Submodule.mem_inf.mpr ⟨hpU.1, ?_⟩
     -- `E p ∈ ker(proj i)` since `evalAtCoord i p = 0`.
-    rw [LinearMap.mem_ker, LinearMap.proj_apply]
-    have : evalAtCoord domain s ω i p = 0 := (LinearMap.mem_ker).mp hpV
+    apply LinearMap.mem_ker.mpr
+    simp only [LinearMap.proj_apply]
+    have hz : evalAtCoord domain s ω i p = 0 := (LinearMap.mem_ker).mp hpV
     funext j
-    have := congrFun this j
+    have := congrFun hz j
     simpa [evalAtCoord_apply] using this
   · -- A ⊓ ker(proj i) ⊆ image
-    intro a ⟨ha, hker⟩
+    intro a ha_mem
+    obtain ⟨ha, hker⟩ := Submodule.mem_inf.mp ha_mem
     obtain ⟨p, hp_deg, rfl⟩ := hA ha
     refine ⟨p, ⟨⟨ha, hp_deg⟩, ?_⟩, rfl⟩
     -- `p ∈ ker(evalAtCoord i)` since `E p i = 0`.
-    rw [LinearMap.mem_ker]
+    apply LinearMap.mem_ker.mpr
     have hi : frsEvalOnPoints domain s ω p i = 0 := by
-      have := (LinearMap.mem_ker).mp hker
-      rwa [LinearMap.proj_apply] at this
+      have hk := (LinearMap.mem_ker).mp hker
+      rwa [LinearMap.proj_apply] at hk
     funext j
     have := congrFun hi j
     simpa [evalAtCoord_apply] using this
@@ -145,6 +157,7 @@ lemma frsVanish_map_eq {A : Submodule F (ι → Fin s → F)}
 /-- **Orbit-vanishing preserves dimension.**
 `finrank (frsVanish … i) = finrank (A ⊓ ker(proj i))`. -/
 lemma finrank_frsVanish_eq {A : Submodule F (ι → Fin s → F)}
+    (hEinj : Function.Injective (frsEvalOnPoints domain s ω))
     (hA : A ≤ frsCode domain k s ω) (i : ι) :
     Module.finrank F (frsVanish domain k s ω A i) =
       Module.finrank F (↥(A ⊓ LinearMap.ker
@@ -152,5 +165,16 @@ lemma finrank_frsVanish_eq {A : Submodule F (ι → Fin s → F)}
   have e := Submodule.equivMapOfInjective (frsEvalOnPoints domain s ω) hEinj
     (frsVanish domain k s ω A i)
   rw [e.finrank_eq, frsVanish_map_eq hA i]
+
+/-- The orbit-vanishing pullback lies in the `finrank ≤ s` range whenever the
+original FRS subspace does. -/
+lemma finrank_frsVanish_le {A : Submodule F (ι → Fin s → F)}
+    (hEinj : Function.Injective (frsEvalOnPoints domain s ω))
+    (hA : A ≤ frsCode domain k s ω)
+    (hAs : Module.finrank F A ≤ s) (i : ι) :
+    Module.finrank F (frsVanish domain k s ω A i) ≤ s := by
+  rw [finrank_frsVanish_eq hEinj hA i]
+  exact le_trans (Submodule.finrank_mono (inf_le_left :
+    A ⊓ LinearMap.ker (LinearMap.proj (R := F) (φ := fun _ : ι ↦ Fin s → F) i) ≤ A)) hAs
 
 end ReedSolomon.Folded

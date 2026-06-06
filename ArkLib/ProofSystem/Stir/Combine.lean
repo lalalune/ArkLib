@@ -550,7 +550,7 @@ open LinearCode Classical ProbabilityTheory ReedSolomon STIR in
 theorem combine_theorem
   {φ : ι ↪ F} {dstar m : ℕ} [NeZero dstar]
   (fs : Fin m → ι → F) (degs : Fin m → ℕ) (hdegs : ∀ i, degs i ≤ dstar)
-  (δ : ℝ≥0) (hδPos : δ > 0)
+  (δ : ℝ≥0) (_hδPos : δ > 0)
   (hStrictCoeff : ProximityGap.StrictCoeffPolysResidual
     (k := total_terms dstar degs - 1) (deg := dstar) (domain := φ) (δ := δ))
   (hδLt : δ < (min (1 - (ReedSolomon.sqrtRate dstar φ))

@@ -216,7 +216,23 @@ lemma constFunc_mem_BBFCode {i : Fin r} (h_i : i ≤ ℓ) (c : L) :
 
 lemma constFunc_UDRClose {i : Fin r} (h_i : i ≤ ℓ) (c : L) :
   UDRClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i (fun _ => c) := by
-  sorry
+  unfold UDRClose
+  have hmem : (fun _ => c) ∈
+      (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i : Set (_ → L)) :=
+    constFunc_mem_BBFCode 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) h_i c
+  have hdist_le : Δ₀((fun _ => c), ↑(BBF_Code 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)) ≤ 0 := by
+    simpa only [hammingDist_self] using
+      Code.distFromCode_le_dist_to_mem
+        (C := (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i : Set (_ → L)))
+        (u := fun _ => c) (v := fun _ => c) hmem
+  have hdist_zero : Δ₀((fun _ => c), ↑(BBF_Code 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)) = 0 :=
+    le_antisymm hdist_le (zero_le _)
+  rw [hdist_zero, mul_zero]
+  rw [BBF_CodeDistance_eq 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
+    (h_i := h_i)]
+  omega
 
 end ConstantFunctions
 omit [CharP L 2] [DecidableEq 𝔽q] h_β₀_eq_1 in
