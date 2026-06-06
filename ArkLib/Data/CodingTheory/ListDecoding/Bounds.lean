@@ -1870,6 +1870,31 @@ def frs_list_decoding_capacity_cz25
   -- T3.4 at the FRS τ(r)=sρ/(s-r+1) and simplifying with 1/η<s. Blocked on T3.4 (above) +
   -- T2.18 (external admit in SubspaceDesign.lean). No independent external content.
 
+/-- Prop-level wrapper for ABF26 C3.5.
+
+This closes the external statement `frs_list_decoding_capacity_cz25` directly from the checked
+residual bundle.  It is useful for downstream assembly code that targets the named `Prop`
+statement rather than its unfolded inequality body. -/
+theorem frs_list_decoding_capacity_cz25_of_residuals_prop
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (hs_pos : 0 < s)
+    (η : ℝ) (hη_pos : 0 < η) (hη_lt_s : 1 / η < s)
+    (hT218 : IsSubspaceDesign s
+        (fun r ↦ if r ∈ Finset.Icc 1 s then
+            (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - r + 1) else 1)
+        (ReedSolomon.Folded.frsCode domain k s ω))
+    (hT34 : ∀ (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F)),
+        IsSubspaceDesign s τ C → ∀ η' : ℝ, 0 < η' →
+        (Lambda ((C : Set (ι → Fin s → F)))
+            (1 - τ (Nat.floor (1 / η')) - η') : ENNReal) ≤
+          ENNReal.ofReal ((1 - τ (Nat.floor (1 / η'))) / η'))
+    (hηnat : (1 : ℝ) / η = (Nat.floor (1 / η) : ℕ)) :
+    frs_list_decoding_capacity_cz25 domain k s ω hs_pos η hη_pos hη_lt_s :=
+  frs_list_decoding_capacity_cz25_of_residuals
+    domain k s ω hs_pos η hη_pos hη_lt_s hT218 hT34 hηnat
+
 end SubspaceDesignUpperBounds
 
 -- Axiom audit on the corrected BKR06 extension/family reduction (and the bridges it chains).
