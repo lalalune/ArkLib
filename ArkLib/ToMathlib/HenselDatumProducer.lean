@@ -231,4 +231,18 @@ end HenselDatumProducer
 
 end ArkLib
 
+/-! ## Axiom audit — every declaration must rest only on
+`[propext, Classical.choice, Quot.sound]`, no `sorry`/`admit`/`axiom`/`native_decide`.
+
+These anchors cover the reduced #91 supplier surface:
+`SepHenselInput -> HPzBridge.HenselDatum -> hPz`, plus the
+matching-divisibility adapter. -/
+#print axioms ArkLib.HenselDatumProducer.SepHenselInput
+#print axioms ArkLib.HenselDatumProducer.eval_sub_mem_span_X_of_congr
+#print axioms ArkLib.HenselDatumProducer.approxRoot_of_isRoot_of_congr
+#print axioms ArkLib.HenselDatumProducer.isUnit_derivative_eval_of_separable
+#print axioms ArkLib.HenselDatumProducer.isUnit_derivative_of_separable_of_isRoot_of_congr
+#print axioms ArkLib.HenselDatumProducer.henselDatum_of_sepInput
+#print axioms ArkLib.hPz_of_sepHenselInput
+#print axioms ArkLib.HenselDatumProducer.henselDatum_of_matchingDvd_and_sep
 
