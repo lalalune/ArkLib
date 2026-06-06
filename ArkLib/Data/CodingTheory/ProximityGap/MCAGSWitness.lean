@@ -260,6 +260,18 @@ def MCALowerWitness.ofGSPivotFrontier (C : LinearCode ι F) (δ ε_star : ℝ≥
   MCALowerWitness.ofGSMassFrontier C δ ε_star hδ
     (GSPivotLowerWitnessFrontier.toGSMassLowerWitnessFrontier C δ ε_star frontier)
 
+/-! ## Source audit for the faithful GS mass and pivot-frontier layers -/
+
+#print axioms FaithfulGSFamily
+#print axioms epsMCA_le_of_faithful_mass
+#print axioms MCALowerWitness.ofGSMassBound
+#print axioms GSMassLowerWitnessFrontier
+#print axioms MCALowerWitness.ofGSMassFrontier
+#print axioms GSPivotLowerWitnessFrontier
+#print axioms GSPivotLowerWitnessFrontier.toGSMassLowerWitnessFrontier
+#print axioms epsMCA_le_of_pivot_frontier
+#print axioms MCALowerWitness.ofGSPivotFrontier
+
 end MCAGS
 
 end ProximityGap
