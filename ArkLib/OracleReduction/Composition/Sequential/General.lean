@@ -455,12 +455,12 @@ theorem seqCompose_perfectCompleteness_of_append {m : ℕ}
   induction m with
   | zero =>
     rw [seqCompose_zero]
-    have hlast : (Fin.last 0 : Fin 1) = 0 := by ext; rfl
-    rw [hlast]
     simpa using
       (Reduction.id_perfectCompleteness (init := init) (impl := impl) (rel := rel 0))
   | succ m ih =>
-    rw [seqCompose_succ]
+    change ((R 0).append
+        (seqCompose (Stmt ∘ Fin.succ) (Wit ∘ Fin.succ) (fun i => R (Fin.succ i))))
+      |>.perfectCompleteness init impl (rel 0) (rel (Fin.succ (Fin.last m)))
     exact hAppend (R 0) _ (h 0)
       (ih (Stmt ∘ Fin.succ) (Wit ∘ Fin.succ) (fun i => R (Fin.succ i))
         (fun i => rel (Fin.succ i)) (fun i => h (Fin.succ i)))
@@ -491,8 +491,6 @@ theorem seqCompose_completeness_of_append {m : ℕ}
   induction m with
   | zero =>
     rw [seqCompose_zero, Fin.sum_univ_zero]
-    have hlast : (Fin.last 0 : Fin 1) = 0 := by ext; rfl
-    rw [hlast]
     simpa [Reduction.perfectCompleteness] using
       (Reduction.id_perfectCompleteness (init := init) (impl := impl) (rel := rel 0))
   | succ m ih =>
