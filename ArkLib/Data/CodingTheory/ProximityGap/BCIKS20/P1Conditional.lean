@@ -461,3 +461,21 @@ theorem βHensel_weight_bound_unlocked_of_restrictedMatch_divWeight (x₀ : F) (
 end P1Conditional
 
 end BCIKS20.HenselNumerator
+
+-- Axiom audit: every proof-carrying declaration in this file depends on exactly the three standard
+-- axioms `[propext, Classical.choice, Quot.sound]` (no `sorry`/`admit`/`axiom`/`native_decide`).
+#print axioms BCIKS20.HenselNumerator.embeddingOf𝒪Into𝕃_W𝒪
+#print axioms BCIKS20.HenselNumerator.βHensel_eq_alpha_mul_of_lift
+#print axioms BCIKS20.HenselNumerator.alpha_eq_embedding_of_fact
+#print axioms BCIKS20.HenselNumerator.alphaWeight_iff_divWeight
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_structured
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_of_lift
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_of_divWeight
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_of_lift'
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_of_divWeight'
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_unlocked
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_unlocked_of_divWeight
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_unlocked_of_fullVanishes
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_unlocked_of_fullVanishes_divWeight
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_unlocked_of_restrictedMatch
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_unlocked_of_restrictedMatch_divWeight
