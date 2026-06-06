@@ -194,8 +194,7 @@ private lemma totalDegree_prod_sub_pow_le (s : Finset F) :
     rw [hdecomp]
     refine (totalDegree_sub _ _).trans ?_
     apply max_le
-    ·
-      rcases s.eq_empty_or_nonempty with rfl | hne
+    · rcases s.eq_empty_or_nonempty with rfl | hne
       · simp
       · refine (totalDegree_mul _ _).trans ?_
         have h1 : (ehY (F := F) - C a).totalDegree ≤ 1 := by
@@ -211,8 +210,7 @@ private lemma totalDegree_prod_sub_pow_le (s : Finset F) :
               + ((∏ c ∈ s, (ehY - C c)) - ehY ^ s.card).totalDegree
             ≤ 1 + (s.card - 1) := by gcongr
           _ = s.card := by omega
-    ·
-      refine (totalDegree_mul _ _).trans ?_
+    · refine (totalDegree_mul _ _).trans ?_
       rw [totalDegree_C, zero_add]
       exact totalDegree_ehY_pow_le _
 
@@ -298,12 +296,10 @@ private lemma eval_ehQ_eq_zero {Cset : Finset F} (s : Fin 2 → F)
     eval s (ehQ Cset) = 0 := by
   rw [ehQ, eval_mul]
   rcases h with heq | hmem
-  ·
-    have : eval s (X 1 - X 0 : MvPolynomial (Fin 2) F) = 0 := by
+  · have : eval s (X 1 - X 0 : MvPolynomial (Fin 2) F) = 0 := by
       simp [eval_sub, eval_X, heq]
     rw [this, zero_mul]
-  ·
-    have : eval s (∏ c ∈ Cset, (X 0 + X 1 - C c : MvPolynomial (Fin 2) F)) = 0 := by
+  · have : eval s (∏ c ∈ Cset, (X 0 + X 1 - C c : MvPolynomial (Fin 2) F)) = 0 := by
       rw [eval_prod]
       apply Finset.prod_eq_zero hmem
       simp [eval_sub, eval_add, eval_X, eval_C]

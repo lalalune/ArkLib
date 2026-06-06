@@ -24,7 +24,7 @@ two helper word-stack identities `wordStack_fin_two_eq_finMapTwoWords` and
 
 -- This bridge exposes paper-aligned theorem names that exceed the style line limit.
 set_option linter.style.longLine false
-set_option linter.style.longFile 1700
+set_option linter.style.longFile 1900
 
 namespace ProximityGap
 

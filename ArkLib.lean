@@ -50,6 +50,7 @@ import ArkLib.Data.CodingTheory.Connections.EpsMCABadGlue
 import ArkLib.Data.CodingTheory.Connections.GCXK25SecondMoment
 import ArkLib.Data.CodingTheory.Connections.GKL24FirstMoment
 import ArkLib.Data.CodingTheory.Connections.ListDecodingAndCA
+import ArkLib.Data.CodingTheory.Connections.SmoothDomainMCAWitness
 import ArkLib.Data.CodingTheory.DivergenceOfSets
 import ArkLib.Data.CodingTheory.Erasure
 import ArkLib.Data.CodingTheory.ExtensionCodes
@@ -168,6 +169,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCAGS
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGenerator
 import ArkLib.Data.CodingTheory.ProximityGap.MCAPlateauWindow
 import ArkLib.Data.CodingTheory.ProximityGap.MCASecondMoment
+import ArkLib.Data.CodingTheory.ProximityGap.MuTwoPowDerandRIMRank
 import ArkLib.Data.CodingTheory.ProximityGap.MuTwoPowDerandRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityFiber
 import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityZMod
@@ -420,6 +422,7 @@ import ArkLib.ProofSystem.Whir.BlockRelDistance
 import ArkLib.ProofSystem.Whir.Folding
 import ArkLib.ProofSystem.Whir.FoldingScratchDev
 import ArkLib.ProofSystem.Whir.MCAAffineLineGenerator
+import ArkLib.ProofSystem.Whir.MCAConjectureStatus
 import ArkLib.ProofSystem.Whir.MCAJohnsonCurveExtract
 import ArkLib.ProofSystem.Whir.MCAJohnsonCurveJoint
 import ArkLib.ProofSystem.Whir.MCAJohnsonEnvelope

@@ -265,8 +265,9 @@ theorem GKL24FirstMomentResidual_inTree_card
   intro u
   refine ⟨Finset.univ.filter (fun w : ι → F => w ∈ (MC : Set (ι → F))), ?_, ?_, ?_⟩
   · intro w hw
-    simp [hw]
-  · exact_mod_cast Finset.card_filter_le (fun w : ι → F => w ∈ (MC : Set (ι → F))) Finset.univ
+    rw [Finset.mem_filter]
+    exact ⟨Finset.mem_univ _, hw⟩
+  · exact_mod_cast Finset.card_filter_le Finset.univ (fun w : ι → F => w ∈ (MC : Set (ι → F)))
   · intro w hw
     rw [Finset.mem_filter] at hw
     exact mcaBadWitness_card_le_card_real MC δ (u 0) (u 1) w hw.2

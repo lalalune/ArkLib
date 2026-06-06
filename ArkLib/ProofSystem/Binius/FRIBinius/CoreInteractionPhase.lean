@@ -1542,8 +1542,7 @@ noncomputable def finalSumcheckKnowledgeStateFunction {σ : Type} (init : ProbCo
     set V_check := step.verifierCheck stmtIn
       (FullTranscript.mk1 (msg0 := _)) with h_V_check_def
     by_cases h_V_check : V_check
-    ·
-      simp only [Fin.isValue, h_V_check, ↓reduceIte, OptionT.run_pure, simulateQ_pure,
+    · simp only [Fin.isValue, h_V_check, ↓reduceIte, OptionT.run_pure, simulateQ_pure,
         Set.mem_iUnion, exists_prop, Prod.exists] at h_output_mem_V_run_support
       erw [simulateQ_bind] at h_output_mem_V_run_support
       simp only [simulateQ_pure, Fin.isValue, Function.comp_apply,
@@ -1573,8 +1572,7 @@ noncomputable def finalSumcheckKnowledgeStateFunction {σ : Type} (init : ProbCo
           -- ({ toStatement := stmtIn, final_constant := c }, oStmtIn)
         rw [h_oStmtOut_eq_oStmtIn] at h_relOut
         exact h_relOut
-    ·
-      simp only [Fin.isValue, h_V_check, ↓reduceIte, OptionT.run_failure, simulateQ_pure,
+    · simp only [Fin.isValue, h_V_check, ↓reduceIte, OptionT.run_failure, simulateQ_pure,
         Set.mem_iUnion, exists_prop, Prod.exists] at h_output_mem_V_run_support
       erw [simulateQ_bind] at h_output_mem_V_run_support
       simp only [simulateQ_pure, Fin.isValue, Function.comp_apply,
