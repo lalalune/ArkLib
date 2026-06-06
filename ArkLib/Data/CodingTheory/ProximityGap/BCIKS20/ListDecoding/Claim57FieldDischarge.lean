@@ -521,4 +521,10 @@ end ProximityGap
 `[propext, Classical.choice, Quot.sound]`, no `sorry`/`admit`/`axiom`/`native_decide`. -/
 #print axioms ProximityGap.claim57_hfactor_irreducible_of_pg_Rset
 #print axioms ProximityGap.exists_good_x₀_evalX_discr_y_ne
+#print axioms ProximityGap.c56_evalC_bad_set_card_le
+#print axioms ProximityGap.claim57_badXC_card_le
+#print axioms ProximityGap.exists_good_x₀_X_shape_ne
+#print axioms ProximityGap.separable_evalX_of_resultant_isUnit
+#print axioms ProximityGap.exists_good_x₀_X_shape
 #print axioms ProximityGap.Claim57Residuals.ofInTree
+#print axioms ProximityGap.Claim57Residuals.ofInTree2
