@@ -59,7 +59,30 @@ delete other agents' worktrees. A full Mathlib rebuild needs more headroom than 
 ## Net
 
 OracleReduction bricks cannot be build-verified until the VCVio v4.30 port completes; proximity-gap
-bricks until CompPoly settles. Three VCVio modules are ported (diffs above). The n-ary
-`seqCompose → binary append` reduction bricks for #25 are drafted in
+bricks until CompPoly settles. Three VCVio modules are ported (diffs above). The four n-ary
+`seqCompose → binary append` reduction bricks for #25 are on main in
 `ArkLib/OracleReduction/Composition/Sequential/General.lean`
-(`seqCompose_perfectCompleteness_of_append`), pending the port for CI verification.
+(`Reduction.seqCompose_{perfectCompleteness,completeness}_of_append`,
+`Verifier.seqCompose_{soundness,knowledgeSoundness}_of_append`), pending the port for CI verification.
+
+## Update (≈19:25Z): the dep ports are landing via manifest bump
+
+`lake-manifest.json` was bumped (autosync `f1ef56772`) to **newer** dependency revs — VCVio
+`576766ab24` (from `b87119d`) and CompPoly `0a52e09531` (from `fef2488`) — i.e. the upstream v4.30
+ports are being published and pinned. Current state:
+
+- **`lake build` is globally blocked** by a checkout race: lake wants to `git checkout` the new revs,
+  but the package working trees have local changes (`git checkout would overwrite local changes`).
+  VCVio is dirty only with the 3 fixes above (superseded by `576766ab24`; safe to discard). **CompPoly
+  is being actively edited (mtimes within the minute)** — its checkout cannot be reset without
+  destroying that in-flight work, so the race must clear on its own (agent commits + tree goes clean,
+  or autosync commits it). Until then *no* lake build of any ArkLib module can start.
+- **Disk still gates the eventual build.** Even once the race clears, the Mathlib `Pi/Basic` v4.30
+  patch (HEAD == manifest, so lake keeps it) invalidates the CategoryTheory cache; the resulting
+  rebuild exceeds the available headroom (`/` at ~4–8G free). Need either more disk or an upstreamed
+  + cached Mathlib rev that already carries the `Pi/Basic` fix.
+
+So the path to verifying the #25 bricks (and the env issues #34/#35/#36) is: (1) CompPoly checkout
+race clears → `lake build` reconciles to the new fixed dep revs; (2) enough disk for the Mathlib
+CategoryTheory rebuild. Both are environment-level; neither is safely forceable by one agent without
+disrupting the active CompPoly port or the shared filesystem.
