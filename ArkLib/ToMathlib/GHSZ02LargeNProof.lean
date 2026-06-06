@@ -83,8 +83,9 @@ theorem ghsz02LargeN_of_thresholds
   have hr_le : (r : ℝ) ≤ P - A * P ^ α := Nat.floor_le hPA_nonneg
   have hr_gt : P - A * P ^ α < (r : ℝ) + 1 := Nat.lt_floor_add_one _
   have hr_le_p : r ≤ p := by
-    have : (r : ℝ) ≤ P := le_trans hr_le (by nlinarith [mul_pos hA0 hPα0])
-    exact_mod_cast this
+    have h : (r : ℝ) ≤ P := le_trans hr_le (by nlinarith [mul_pos hA0 hPα0])
+    rw [hPdef] at h
+    exact_mod_cast h
   set a : ℕ := p - r with hadef
   have ha_cast : (a : ℝ) = P - (r : ℝ) := by
     rw [hadef]
@@ -116,9 +117,10 @@ theorem ghsz02LargeN_of_thresholds
     rw [← hchoose_symm]
     have h1 := GHSZ02Cor20.choose_real_ge_pow_div a p
     have h2 : (P / 2) ^ a / (a : ℝ) ^ a ≤ ((p + 1 - a : ℕ) : ℝ) ^ a / (a : ℝ) ^ a := by
-      gcongr
-      · linarith
-      · exact hbase_ge
+      gcongr <;> first
+        | exact hbase_ge
+        | linarith
+        | positivity
     have h3 : ((p + 1 - a : ℕ) : ℝ) ^ a / (a : ℝ) ^ a
         ≤ ((p + 1 - a : ℕ) : ℝ) ^ a / (Nat.factorial a : ℝ) :=
       div_le_div_of_nonneg_left (by positivity) hfac_pos hfac_le
@@ -168,10 +170,11 @@ theorem ghsz02LargeN_of_thresholds
     Real.log_mul (by positivity) (by positivity),
     Real.log_mul (by positivity) (by positivity),
     Real.log_div (by positivity) (by positivity),
-    Real.log_div (by positivity) (by positivity),
-    Real.log_div (ne_of_gt (Real.exp_pos _)) (by norm_num),
-    Real.log_pow, Real.log_pow, Real.log_pow, Real.log_pow,
-    Real.log_rpow hP0, Real.log_exp]
+    Real.log_div (by positivity) (by norm_num),
+    Real.log_pow, Real.log_pow, Real.log_pow, Real.log_pow, Real.log_pow,
+    Real.log_rpow hP0, Real.log_exp,
+    Real.log_div (by positivity) (by norm_num)]
+  have hLP : Real.log P = L := rfl
   -- ## The ledger
   -- `p = a + r` as a real coefficient identity
   have hParL : P * L = (a : ℝ) * L + (r : ℝ) * L := by
@@ -220,7 +223,7 @@ theorem ghsz02LargeN_of_thresholds
     field_simp
   have hαAsub : (α * A) * (P ^ α * L) = (1 - β) * (P ^ α * L) := by rw [hαA]
   -- close the ledger
-  nlinarith [hkL, haln, hsplit2a, hexpand, hαAsub, hParL, hT1, hT2, hL0,
+  nlinarith [hkL, haln, hsplit2a, hexpand, hαAsub, hParL, hT1, hT2, hL0, hLP,
     mul_pos hPα0 hL0]
 
 end GHSZ02LargeNProof
