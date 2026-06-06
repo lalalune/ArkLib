@@ -75,9 +75,10 @@ gap is to wire the live Section 5 context into the genuine betaRec route:
   representative in the off-centre route;
 - the child #91 `hPz` supplier: `HPzBridge` already provides the abstract
   `HenselDatum -> hPz` and direct-identity landing pads, and `HenselDatumProducer` reduces the
-  supplier surface to `SepHenselInput -> HenselDatum -> hPz` (with a matching-divisibility adapter);
-  the live Section 5 context still has to construct the per-`z` `SepHenselInput` or
-  matching-unique witness, prove the degree bounds, and thread those witnesses through
+  supplier surface to `SepHenselInput -> HenselDatum -> hPz`, with the matching-divisibility
+  route now packaged as `MatchingDvdInput -> HenselDatum -> hPz`; the live Section 5 context still
+  has to construct the per-`z` `SepHenselInput` or matching-divisibility witness, prove the degree
+  bounds, and thread those witnesses through
   `GSFactorData.toSection5StrictData` / `BetaCurveInput`;
 - the GS-factor divisibility input `Hlift H ∣ R`;
 - the L13 betaRec drop-in for the legacy `β_regular` path.
