@@ -121,7 +121,11 @@ The soundness error `logupSoundnessError F n M params s = outerSoundnessError F 
 is exactly the `soundnessError₁ + soundnessError₂` produced by `append_soundness`. This reduction's
 own body contains no `sorry`. -/
 theorem logup_soundness_of_residual (sumcheckSoundnessError : ℝ≥0)
-    (h : SubPhaseSoundnessResidual oSpec F n M params init impl sumcheckSoundnessError) :
+    (h : SubPhaseSoundnessResidual oSpec F n M params init impl sumcheckSoundnessError)
+    (hAppendSoundness :
+      (logupVerifier oSpec F n M params).soundness init impl
+        (inputRelation F n M).language outputRelation.language
+        (logupSoundnessError F n M params sumcheckSoundnessError)) :
     (logupVerifier oSpec F n M params).soundness init impl
       (inputRelation F n M).language outputRelation.language
       (logupSoundnessError F n M params sumcheckSoundnessError) := by
@@ -131,6 +135,7 @@ theorem logup_soundness_of_residual (sumcheckSoundnessError : ℝ≥0)
   -- composed soundness fact unifies with the goal directly.
   exact OracleVerifier.append_soundness.{0, 0}
     (outerVerifier oSpec F n M params) (sumcheckVerifier oSpec F n M params) hOuter hSum
+    hAppendSoundness
 
 end Soundness
 

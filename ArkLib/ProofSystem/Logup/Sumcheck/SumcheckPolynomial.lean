@@ -153,7 +153,7 @@ private theorem signedLinearFactor_degreeOf (a : F) (i j : Fin n) :
         _ ≤ 0 + 0 := by
           gcongr
           · exact (MvPolynomial.degreeOf_C (R := F) a i).le
-          · exact (MvPolynomial.degreeOf_X_of_ne (R := F) i j hij).le
+          · exact (MvPolynomial.degreeOf_X_of_ne (R := F) (i := i) (j := j) hij).le
         _ = 0 := by omega
     exact (MvPolynomial.degreeOf_add_le i _ _).trans (max_le hone hmul)
 

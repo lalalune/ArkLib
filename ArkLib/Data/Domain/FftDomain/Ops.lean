@@ -35,14 +35,14 @@ lemma apply_add_eq_mul :
 
 lemma mul_mem_of_mem
   {x₁ x₂ : F} (hx₁ : x₁ ∈ ω) (hx₂ : x₂ ∈ ω) :
-  x₁ * x₂ ∈ ω := by 
+  x₁ * x₂ ∈ ω := by
   rw [CosetFftDomainClass.mem_def] at *
   obtain ⟨⟨i₁, hi₁⟩, ⟨i₂, hi₂⟩⟩ := hx₁, hx₂
   exists (i₁ + i₂)
   aesop (add simp [apply_add_eq_mul])
 
 @[simp]
-lemma apply_neg_eq_inv : 
+lemma apply_neg_eq_inv :
   ω (-i) = (ω i)⁻¹ := by
   have h_def : ω (-i) * ω i = 1 := by
     rw [←apply_add_eq_mul]
@@ -101,7 +101,7 @@ lemma neg_one_mem_domain [nz : NeZero n] :
   generalize_proofs at *
   (exact ⟨k, Or.resolve_left (sq_eq_one_iff.mp h_order) h_ne_one⟩))
 
-private lemma val_eq_nsmul_one {n : ℕ} (i : Fin (2 ^ n)) : 
+private lemma val_eq_nsmul_one {n : ℕ} (i : Fin (2 ^ n)) :
   i = i.val • (1 : Fin (2 ^ n)) := by
   simp only [Fin.ext_iff]
   convert Nat.mod_eq_of_lt i.2 using 1
@@ -123,7 +123,7 @@ theorem eq_iff_generators_eq {ω₁ ω₂ : D} :
   aesop (add safe [(by rw [apply_eq_pow_of_generator i])])
 
 lemma domain_implies_char_ne_2 [NeZero n] (ω : D) :
-  ¬CharP F 2 := fun hchar ↦ by 
+  ¬CharP F 2 := fun hchar ↦ by
   have hn : n ≠ 0 := NeZero.ne _
   set k : Fin (2 ^ n) := ⟨2 ^ (n - 1), pow_lt_pow_right₀ (by decide) (by omega)⟩
   have hk_ne_zero : k ≠ 0 := by simp [Fin.ext_iff, k]
@@ -134,7 +134,7 @@ lemma domain_implies_char_ne_2 [NeZero n] (ω : D) :
     simp only [Fin.val_add, Fin.coe_ofNat_eq_mod, Nat.zero_mod, k]
     rcases n with _ | n <;> simp_all
     ring_nf
-    simp 
+    simp
   have h_sq : (ω k) ^ 2 = 1 := by
     rw [sq, ←apply_add_eq_mul, h_kk, apply_zero_eq_one]
   have h_eq : ω k = 1 ∨ ω k = -1 := sq_eq_one_iff.mp h_sq

@@ -94,7 +94,7 @@ theorem RS_correlatedAgreement_curves_k_zero {deg : ℕ} {domain : ι ↪ F} {δ
     have hz' := hz
     simp only [RS_goodCoeffsCurve] at hz'
     by_contra hp
-    simp [hp] at hz' 
+    simp [hp] at hz'
   -- unique-decode and collect the agreement set
   set e : ℕ := Nat.floor (δ * Fintype.card ι) with he
   have hdist : Δ₀(u 0, (ReedSolomon.code domain deg : Set (ι → F))) ≤ (e : ℕ∞) := by

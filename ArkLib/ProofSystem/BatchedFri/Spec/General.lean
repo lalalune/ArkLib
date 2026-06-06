@@ -88,7 +88,7 @@ def liftingLens :
             subst this
             simp only [finRangeTo.eq_1, List.take_zero, List.toFinset_nil, Finset.sum_empty,
               Nat.sub_zero, CosetFftDomainClass.mem_toFinset_iff_mem] at h'
-            rw [←CosetFftDomainClass.mem_subdomain_0_iff_mem] 
+            rw [←CosetFftDomainClass.mem_subdomain_0_iff_mem]
             exact h'
           }
           (ostmt 0) ⟨v.1, this⟩ + ∑ j, cs j * ostmt j.succ ⟨v.1, this⟩

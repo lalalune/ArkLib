@@ -328,7 +328,7 @@ noncomputable def toySoundnessError (C : Set (ι → F)) (δ : ℝ≥0) (t : ℕ
           / (Fintype.card F : ℝ≥0))
       ((1 - δ) ^ t)
 
-/- 
+/-
 STATUS (DISPROVEN + NEEDS_CLASSICAL). This bound is the soundness analysis of
 Construction 6.9 (ABF26 Lemma 6.10): `winningSetSoundness ≤ ε_mca + |Λ|/|F|`.
 Its `ε_mca` term is the *mutual correlated agreement* error, whose provable

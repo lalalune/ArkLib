@@ -124,18 +124,40 @@ lemma batchingCore_perfectCompleteness [IsDomain L] [IsDomain K]
       (aOStmtIn := mlIOPCS.toAbstractOStmtIn) (init := init) (impl := impl))
     (hRounds : SumcheckPhase.iteratedSumcheckOracleReduction_perfectCompleteness_residual
       (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
-      (aOStmtIn := mlIOPCS.toAbstractOStmtIn) (init := init) (impl := impl)) :
+      (aOStmtIn := mlIOPCS.toAbstractOStmtIn) (init := init) (impl := impl))
+    (hCoreInteractionAppendPerfectCompleteness :
+      (SumcheckPhase.coreInteractionOracleReduction κ L K P ℓ ℓ' h_l
+        mlIOPCS.toAbstractOStmtIn).perfectCompleteness
+        (StmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) 0)
+        (OStmtIn := mlIOPCS.toAbstractOStmtIn.OStmtIn)
+        (StmtOut := MLPEvalStatement L ℓ')
+        (OStmtOut := mlIOPCS.toAbstractOStmtIn.OStmtIn)
+        (WitIn := SumcheckWitness L ℓ' 0)
+        (WitOut := WitMLP L ℓ')
+        (relIn := sumcheckRoundRelation κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn 0)
+        (relOut := mlIOPCS.toAbstractOStmtIn.toRelInput)
+        (init := init)
+        (impl := impl))
+    (hBatchingCoreAppendPerfectCompleteness :
+      (batchingCoreReduction κ L K P ℓ ℓ' h_l mlIOPCS).perfectCompleteness
+        (pSpec := pSpecLargeFieldReduction κ L K P ℓ')
+        (relIn := BatchingPhase.batchingInputRelation κ L K P ℓ ℓ' h_l
+          mlIOPCS.toAbstractOStmtIn)
+        (relOut := mlIOPCS.toRelInput)
+        (init := init)
+        (impl := impl)) :
   (batchingCoreReduction κ L K P ℓ ℓ' h_l mlIOPCS).perfectCompleteness
   (pSpec := pSpecLargeFieldReduction κ L K P ℓ')
   (relIn := BatchingPhase.batchingInputRelation κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn)
   (relOut := mlIOPCS.toRelInput)
   (init:=init) (impl:=impl) := by
   apply OracleReduction.append_perfectCompleteness
+    (hAppendPerfectCompleteness := hBatchingCoreAppendPerfectCompleteness)
   · exact BatchingPhase.batchingReduction_perfectCompleteness κ L K P ℓ ℓ' h_l
        mlIOPCS.toAbstractOStmtIn hBatching
   · exact SumcheckPhase.coreInteraction_perfectCompleteness
       κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn
-      (init := init) (impl := impl) hRounds
+      (init := init) (impl := impl) hRounds hCoreInteractionAppendPerfectCompleteness
 
 omit [(i : mlIOPCS.pSpec.ChallengeIdx) → SampleableType (mlIOPCS.pSpec.Challenge i)] in
 theorem fullOracleReduction_perfectCompleteness [IsDomain L] [IsDomain K]
@@ -144,7 +166,35 @@ theorem fullOracleReduction_perfectCompleteness [IsDomain L] [IsDomain K]
       (aOStmtIn := mlIOPCS.toAbstractOStmtIn) (init := init) (impl := impl))
     (hRounds : SumcheckPhase.iteratedSumcheckOracleReduction_perfectCompleteness_residual
       (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
-      (aOStmtIn := mlIOPCS.toAbstractOStmtIn) (init := init) (impl := impl)) :
+      (aOStmtIn := mlIOPCS.toAbstractOStmtIn) (init := init) (impl := impl))
+    (hCoreInteractionAppendPerfectCompleteness :
+      (SumcheckPhase.coreInteractionOracleReduction κ L K P ℓ ℓ' h_l
+        mlIOPCS.toAbstractOStmtIn).perfectCompleteness
+        (StmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) 0)
+        (OStmtIn := mlIOPCS.toAbstractOStmtIn.OStmtIn)
+        (StmtOut := MLPEvalStatement L ℓ')
+        (OStmtOut := mlIOPCS.toAbstractOStmtIn.OStmtIn)
+        (WitIn := SumcheckWitness L ℓ' 0)
+        (WitOut := WitMLP L ℓ')
+        (relIn := sumcheckRoundRelation κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn 0)
+        (relOut := mlIOPCS.toAbstractOStmtIn.toRelInput)
+        (init := init)
+        (impl := impl))
+    (hBatchingCoreAppendPerfectCompleteness :
+      (batchingCoreReduction κ L K P ℓ ℓ' h_l mlIOPCS).perfectCompleteness
+        (pSpec := pSpecLargeFieldReduction κ L K P ℓ')
+        (relIn := BatchingPhase.batchingInputRelation κ L K P ℓ ℓ' h_l
+          mlIOPCS.toAbstractOStmtIn)
+        (relOut := mlIOPCS.toRelInput)
+        (init := init)
+        (impl := impl))
+    (hFullAppendPerfectCompleteness :
+      (fullOracleReduction κ L K P ℓ ℓ' h_l mlIOPCS).perfectCompleteness
+        (relIn := BatchingPhase.batchingInputRelation κ L K P ℓ ℓ' h_l
+          mlIOPCS.toAbstractOStmtIn)
+        (relOut := acceptRejectOracleRel)
+        (init := init)
+        (impl := impl)) :
   (fullOracleReduction κ L K P ℓ ℓ' h_l mlIOPCS).perfectCompleteness
     (relIn := BatchingPhase.batchingInputRelation κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn)
     (relOut := acceptRejectOracleRel)
@@ -153,7 +203,9 @@ theorem fullOracleReduction_perfectCompleteness [IsDomain L] [IsDomain K]
      := by
   apply OracleReduction.append_perfectCompleteness (Oₛ₃:=by
     exact fun _ ↦ OracleInterface.instDefault)
+    (hAppendPerfectCompleteness := hFullAppendPerfectCompleteness)
   · exact batchingCore_perfectCompleteness κ L K P ℓ ℓ' h_l mlIOPCS init hBatching hRounds
+      hCoreInteractionAppendPerfectCompleteness hBatchingCoreAppendPerfectCompleteness
   · exact mlIOPCS.perfectCompleteness
 
 def batchingCoreRbrKnowledgeError
@@ -174,7 +226,35 @@ omit [(i : mlIOPCS.pSpec.ChallengeIdx) → SampleableType (mlIOPCS.pSpec.Challen
 `IsDomain K` (with the existing `IsDomain L`) is inherited from the batching phase's knowledge
 soundness, where it backs the DP24 row-extraction capstone; it holds in every real instantiation
 (`binaryTowerProfile` builds from a field `K`). -/
-theorem fullOracleVerifier_rbrKnowledgeSoundness [IsDomain L] [IsDomain K] {𝓑 : Fin 2 ↪ L} :
+theorem fullOracleVerifier_rbrKnowledgeSoundness [IsDomain L] [IsDomain K] {𝓑 : Fin 2 ↪ L}
+    (hCoreInteractionAppendRbrKnowledgeSoundness :
+      (SumcheckPhase.coreInteractionOracleVerifier κ L K P ℓ ℓ' h_l
+        mlIOPCS.toAbstractOStmtIn).rbrKnowledgeSoundness
+        (StmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) 0)
+        (OStmtIn := mlIOPCS.toAbstractOStmtIn.OStmtIn)
+        (StmtOut := MLPEvalStatement L ℓ')
+        (OStmtOut := mlIOPCS.toAbstractOStmtIn.OStmtIn)
+        (WitIn := SumcheckWitness L ℓ' 0)
+        (WitOut := WitMLP L ℓ')
+        (init := init)
+        (impl := impl)
+        (relIn := sumcheckRoundRelation κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn 0)
+        (relOut := mlIOPCS.toAbstractOStmtIn.toRelInput)
+        (rbrKnowledgeError := SumcheckPhase.coreInteractionRbrKnowledgeError (L:=L) (ℓ':=ℓ')))
+    (hBatchingCoreAppendRbrKnowledgeSoundness :
+      (batchingCoreVerifier κ L K P ℓ ℓ' h_l mlIOPCS).rbrKnowledgeSoundness
+        (init := init)
+        (impl := impl)
+        (relIn := fullInputRelation κ L K P ℓ ℓ' h_l mlIOPCS)
+        (relOut := mlIOPCS.toRelInput)
+        (rbrKnowledgeError := batchingCoreRbrKnowledgeError κ L K P ℓ'))
+    (hFullAppendRbrKnowledgeSoundness :
+      (fullOracleVerifier κ L K P ℓ ℓ' h_l mlIOPCS).rbrKnowledgeSoundness
+        (init := init)
+        (impl := impl)
+        (relIn := fullInputRelation κ L K P ℓ ℓ' h_l mlIOPCS)
+        (relOut := fullOutputRelation)
+        (rbrKnowledgeError := fun i => fullRbrKnowledgeError κ L K P ℓ' mlIOPCS i)) :
   OracleVerifier.rbrKnowledgeSoundness
     (verifier := fullOracleVerifier κ L K P ℓ ℓ' h_l mlIOPCS)
     (init := init)
@@ -185,6 +265,7 @@ theorem fullOracleVerifier_rbrKnowledgeSoundness [IsDomain L] [IsDomain K] {𝓑
   unfold fullOracleVerifier fullRbrKnowledgeError
   have batchInteractionRBRKS :=
     OracleVerifier.append_rbrKnowledgeSoundness (init:=init) (impl:=impl)
+    (hAppendRbrKnowledgeSoundness := hBatchingCoreAppendRbrKnowledgeSoundness)
     (rel₁:=fullInputRelation κ L K P ℓ ℓ' h_l mlIOPCS)
     (rel₂:=sumcheckRoundRelation κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn 0)
     (rel₃:=mlIOPCS.toRelInput)
@@ -195,10 +276,11 @@ theorem fullOracleVerifier_rbrKnowledgeSoundness [IsDomain L] [IsDomain K] {𝓑
     (h₁:=BatchingPhase.batchingOracleVerifier_rbrKnowledgeSoundness κ L K P ℓ
       ℓ' h_l mlIOPCS.toAbstractOStmtIn)
     (h₂:=SumcheckPhase.coreInteraction_rbrKnowledgeSoundness κ L K P ℓ ℓ' h_l
-      mlIOPCS.toAbstractOStmtIn)
+      mlIOPCS.toAbstractOStmtIn hCoreInteractionAppendRbrKnowledgeSoundness)
 
   have res :=
     OracleVerifier.append_rbrKnowledgeSoundness (init:=init) (impl:=impl)
+    (hAppendRbrKnowledgeSoundness := hFullAppendRbrKnowledgeSoundness)
     (rel₁:=fullInputRelation κ L K P ℓ ℓ' h_l mlIOPCS)
     (rel₂:=mlIOPCS.toRelInput)
     (rel₃:=fullOutputRelation)

@@ -1088,8 +1088,8 @@ def queryVerifier (k_le_n : (∑ j', (s j').1) ≤ n) (l : ℕ) [DecidableEq F] 
                                 · trans
                                   · exact (Finset.sum_le_sum_of_subset (t := Finset.univ) (by simp))
                                   · exact k_le_n
-                              } 
-                            · obtain ⟨r, hr⟩ := r 
+                              }
+                            · obtain ⟨r, hr⟩ := r
                               simpa using hr
                             · obtain ⟨s₀, hs₀⟩ := s₀
                               simpa using hs₀

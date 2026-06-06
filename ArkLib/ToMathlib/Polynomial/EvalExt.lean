@@ -15,7 +15,7 @@ import Mathlib.LinearAlgebra.Lagrange
 
 namespace Polynomial
 
-variable {𝔽 : Type*} [Field 𝔽] 
+variable {𝔽 : Type*} [Field 𝔽]
 
 /--
 Let $p, q \in \mathbb{F}[X]$ be polynomials whose degrees are strictly bounded by $n$.

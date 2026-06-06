@@ -11,7 +11,7 @@ import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Field
- 
+
 import ArkLib.Data.Domain.CosetFftDomain.Defs
 import ArkLib.ToMathlib.Finset.ToListWithProof
 
@@ -50,9 +50,9 @@ omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
 @[simp]
 lemma mem_toCosetFftDomain_iff_mem :
   x ∈ toCosetFftDomain ω ↔ x ∈ ω := by
-  aesop (add simp 
-          [mkSubgroupUnit, 
-            mem_def, 
+  aesop (add simp
+          [mkSubgroupUnit,
+            mem_def,
             toCosetFftDomain,
             CosetFftDomain.eval_coset_fft_domain_eq_eval_generator_mul_domain])
 
@@ -88,19 +88,19 @@ namespace CosetFftDomain
 variable {ω : CosetFftDomain ι F} {x : F}
 
 omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
-lemma mem_iff_exists_mul : 
+lemma mem_iff_exists_mul :
   x ∈ ω ↔ ∃ i, x = ω.cosetGenerator * ω.subgroupDomain i := by
   aesop (add simp [Membership.mem])
 
 omit [DecidableEq ι] in
-lemma mem_toFinset_iff_exists_mul : 
+lemma mem_toFinset_iff_exists_mul :
   x ∈ ω.toFinset ↔ ∃ i, x = ω.cosetGenerator * ω.subgroupDomain i := by
   aesop (add simp [CosetFftDomainClass.toFinset])
 
 omit [DecidableEq ι] in
 @[simp]
 lemma mem_toFinset_iff_mem :
-  x ∈ ω.toFinset ↔ x ∈ ω := CosetFftDomainClass.mem_toFinset_iff_mem 
+  x ∈ ω.toFinset ↔ x ∈ ω := CosetFftDomainClass.mem_toFinset_iff_mem
 
 omit [DecidableEq ι] in
 @[simp high]

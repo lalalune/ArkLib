@@ -18,6 +18,11 @@ git = "https://github.com/lalalune/VCV-io"
 rev = "b87119da538df85375ab4893a5535ec76dcbcd41"
 
 [[require]]
+name = "PolyFun"
+git = "https://github.com/lalalune/PolyFun"
+rev = "5d3a160ed751b9227af90adb9da41d0eae2e0238"
+
+[[require]]
 name = "«doc-gen4»"
 git = "https://github.com/leanprover/doc-gen4"
 rev = "v4.29.0"

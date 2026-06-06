@@ -27,7 +27,7 @@ namespace CosetFftDomain
 variable {ω : CosetFftDomain ι F} {i j : ι}
 
 omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
-lemma apply_zero : ω 0 = ω.cosetGenerator := by 
+lemma apply_zero : ω 0 = ω.cosetGenerator := by
   have : (0 : ι) = (1 : Multiplicative ι) := by rfl
   aesop (add simp
      [eval_coset_fft_domain_eq_eval_generator_mul_domain])
@@ -38,16 +38,16 @@ lemma apply_add_eq_inv_mul_mul :
   | mk x ω =>
     have : i + j = Multiplicative.ofAdd i * Multiplicative.ofAdd j := by rfl
     aesop
-      (add simp 
+      (add simp
         [eval_coset_fft_domain_eq_eval_generator_mul_domain, ]) (add safe (by ring_nf))
 
 omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
 lemma apply_neg_eq_sq_mul_inv :
   ω (-i) = ω.cosetGenerator ^ 2 * (ω i)⁻¹ := by cases ω with
   | mk x ω =>
-  have : -i = (Multiplicative.ofAdd i)⁻¹ := by rfl 
-  aesop 
-    (add simp [eval_coset_fft_domain_eq_eval_generator_mul_domain]) 
+  have : -i = (Multiplicative.ofAdd i)⁻¹ := by rfl
+  aesop
+    (add simp [eval_coset_fft_domain_eq_eval_generator_mul_domain])
     (add safe (by field_simp))
 
 omit [Fintype ι] [DecidableEq ι] [DecidableEq F] in
@@ -55,8 +55,8 @@ lemma apply_sub_eq_mul_div :
   ω (i - j) = ω.cosetGenerator * ω i / ω j := by cases ω with
   | mk x ω =>
   have : (i - j) = Multiplicative.ofAdd i / Multiplicative.ofAdd j := by rfl
-  aesop 
-    (add simp [eval_coset_fft_domain_eq_eval_generator_mul_domain, Multiplicative.ofAdd]) 
+  aesop
+    (add simp [eval_coset_fft_domain_eq_eval_generator_mul_domain, Multiplicative.ofAdd])
     (add safe (by field_simp))
 
 end CosetFftDomain
@@ -80,14 +80,14 @@ omit [DecidableEq F] in
 lemma neg_mem_domain_iff_mem [nz : NeZero n] :
   -x ∈ ω ↔ x ∈ ω := by
   constructor <;> intro h
-  · rw [show x = -(-x) by simp] 
+  · rw [show x = -(-x) by simp]
     exact neg_mem_domain_of_mem h
   · exact neg_mem_domain_of_mem h
 
 omit [DecidableEq F] in
 lemma domain_implies_char_ne_2 [NeZero n] (ω : D) :
   ¬CharP F 2 := FftDomainClass.domain_implies_char_ne_2 (toFftDomain ω)
-  
+
 end Smooth
 
 end CosetFftDomainClass

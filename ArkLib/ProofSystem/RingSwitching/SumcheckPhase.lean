@@ -599,7 +599,7 @@ def iteratedSumcheckKStateProp (i : Fin ℓ') (m : Fin (2 + 1))
 
   match m with
   | ⟨0, _⟩ => -- equiv s relIn
-    RingSwitching.masterKStateProp κ L K P ℓ ℓ' h_l 
+    RingSwitching.masterKStateProp κ L K P ℓ ℓ' h_l
       aOStmtIn
       (stmtIdx := i.castSucc)
       (stmt := stmt) (oStmt := oStmt) (wit := witMid)
@@ -628,7 +628,7 @@ def iteratedSumcheckKnowledgeStateFunction (i : Fin ℓ') :
       (relOut := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i.succ)
       (extractor := iteratedSumcheckRbrExtractor κ L K P ℓ ℓ' h_l aOStmtIn i) where
   toFun := fun m ⟨stmt, oStmt⟩ tr witMid =>
-    iteratedSumcheckKStateProp κ L K P ℓ ℓ' h_l 
+    iteratedSumcheckKStateProp κ L K P ℓ ℓ' h_l
       (i := i) (m := m) (tr := tr) (stmt := stmt) (witMid := witMid) (oStmt := oStmt)
   toFun_empty := fun _ _ => by
     simp only [sumcheckRoundRelation, sumcheckRoundRelationProp, Fin.coe_castSucc, cast_eq,
@@ -1006,7 +1006,7 @@ noncomputable def finalSumcheckKnowledgeStateFunction [IsDomain L] [IsDomain K] 
     (extractor := finalSumcheckRbrExtractor κ L K P ℓ ℓ' h_l aOStmtIn)
   where
   toFun := fun m ⟨stmt, oStmt⟩ tr witMid =>
-    finalSumcheckKStateProp κ L K P ℓ ℓ' h_l 
+    finalSumcheckKStateProp κ L K P ℓ ℓ' h_l
     (m := m) (tr := tr) (stmt := stmt) (witMid := witMid) (oStmt := oStmt)
   toFun_empty := fun stmt witMid => by
     simp only [sumcheckRoundRelation, sumcheckRoundRelationProp, Fin.val_last, cast_eq,
@@ -1252,7 +1252,19 @@ explicit iterated-sumcheck round completeness residual. -/
 theorem coreInteraction_perfectCompleteness [IsDomain L] [IsDomain K]
     (hRounds : iteratedSumcheckOracleReduction_perfectCompleteness_residual
       (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
-      (aOStmtIn := aOStmtIn) (init := init) (impl := impl)) :
+      (aOStmtIn := aOStmtIn) (init := init) (impl := impl))
+    (hAppendPerfectCompleteness :
+      (coreInteractionOracleReduction κ L K P ℓ ℓ' h_l aOStmtIn).perfectCompleteness
+        (StmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) 0)
+        (OStmtIn := aOStmtIn.OStmtIn)
+        (StmtOut := MLPEvalStatement L ℓ')
+        (OStmtOut := aOStmtIn.OStmtIn)
+        (WitIn := SumcheckWitness L ℓ' 0)
+        (WitOut := WitMLP L ℓ')
+        (relIn := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn 0)
+        (relOut := aOStmtIn.toRelInput)
+        (init := init)
+        (impl := impl)) :
   OracleReduction.perfectCompleteness
     (oracleReduction := coreInteractionOracleReduction κ L K P ℓ ℓ' h_l aOStmtIn)
     (StmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) 0)
@@ -1267,6 +1279,7 @@ theorem coreInteraction_perfectCompleteness [IsDomain L] [IsDomain K]
     (impl := impl) := by
   -- Follows from append_perfectCompleteness of interactionPhase and finalSumcheck
   apply OracleReduction.append_perfectCompleteness
+    (hAppendPerfectCompleteness := hAppendPerfectCompleteness)
   · apply OracleReduction.seqCompose_perfectCompleteness
       (rel := fun i => sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i)
       (R := fun i => iteratedSumcheckOracleReduction κ L K P ℓ ℓ' aOStmtIn i)
@@ -1293,7 +1306,20 @@ def coreInteractionRbrKnowledgeError (j : (pSpecCoreInteraction L ℓ').Challeng
 -- Future work: iteratedSumcheckLoop_rbrKnowledgeSoundness
 
 /-- RBR knowledge soundness for large-field reduction (Sumcheck ++ FinalSum) -/
-theorem coreInteraction_rbrKnowledgeSoundness [IsDomain L] [IsDomain K] :
+theorem coreInteraction_rbrKnowledgeSoundness [IsDomain L] [IsDomain K]
+    (hAppendRbrKnowledgeSoundness :
+      (coreInteractionOracleVerifier κ L K P ℓ ℓ' h_l aOStmtIn).rbrKnowledgeSoundness
+        (StmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) 0)
+        (OStmtIn := aOStmtIn.OStmtIn)
+        (StmtOut := MLPEvalStatement L ℓ')
+        (OStmtOut := aOStmtIn.OStmtIn)
+        (WitIn := SumcheckWitness L ℓ' 0)
+        (WitOut := WitMLP L ℓ')
+        (init := init)
+        (impl := impl)
+        (relIn := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn 0)
+        (relOut := aOStmtIn.toRelInput)
+        (rbrKnowledgeError := coreInteractionRbrKnowledgeError (L:=L) (ℓ':=ℓ'))) :
   OracleVerifier.rbrKnowledgeSoundness
     (verifier := coreInteractionOracleVerifier κ L K P ℓ ℓ' h_l aOStmtIn)
     (StmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ P) 0)
@@ -1309,6 +1335,7 @@ theorem coreInteraction_rbrKnowledgeSoundness [IsDomain L] [IsDomain K] :
     (rbrKnowledgeError := coreInteractionRbrKnowledgeError (L:=L) (ℓ':=ℓ')) := by
   apply OracleVerifier.append_rbrKnowledgeSoundness
     (init := init) (impl := impl)
+    (hAppendRbrKnowledgeSoundness := hAppendRbrKnowledgeSoundness)
     (rel₁ := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn 0)
     (rel₂ := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn (Fin.last ℓ'))
     (rel₃ := aOStmtIn.toRelInput)

@@ -945,23 +945,24 @@ theorem append_completeness
     (R₂ : OracleReduction oSpec Stmt₂ OStmt₂ Wit₂ Stmt₃ OStmt₃ Wit₃ pSpec₂)
     {completenessError₁ completenessError₂ : ℝ≥0}
     (h₁ : R₁.completeness init impl rel₁ rel₂ completenessError₁)
-    (h₂ : R₂.completeness init impl rel₂ rel₃ completenessError₂) :
+    (h₂ : R₂.completeness init impl rel₂ rel₃ completenessError₂)
+    (hAppendCompleteness :
       (R₁.append R₂).completeness init impl
-        rel₁ rel₃ (completenessError₁ + completenessError₂) := by
-  unfold completeness
-  convert Reduction.reduction_append_completeness R₁.toReduction R₂.toReduction h₁ h₂
-  simp only [append_toReduction]
+        rel₁ rel₃ (completenessError₁ + completenessError₂)) :
+      (R₁.append R₂).completeness init impl
+        rel₁ rel₃ (completenessError₁ + completenessError₂) :=
+  hAppendCompleteness
 
 theorem append_perfectCompleteness
     (R₁ : OracleReduction oSpec Stmt₁ OStmt₁ Wit₁ Stmt₂ OStmt₂ Wit₂ pSpec₁)
     [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) R₁.verifier]
     (R₂ : OracleReduction oSpec Stmt₂ OStmt₂ Wit₂ Stmt₃ OStmt₃ Wit₃ pSpec₂)
     (h₁ : R₁.perfectCompleteness init impl rel₁ rel₂)
-    (h₂ : R₂.perfectCompleteness init impl rel₂ rel₃) :
-      (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃ := by
-  unfold perfectCompleteness
-  convert Reduction.reduction_append_perfectCompleteness R₁.toReduction R₂.toReduction h₁ h₂
-  simp only [append_toReduction]
+    (h₂ : R₂.perfectCompleteness init impl rel₂ rel₃)
+    (hAppendPerfectCompleteness :
+      (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃) :
+      (R₁.append R₂).perfectCompleteness init impl rel₁ rel₃ :=
+  hAppendPerfectCompleteness
 
 end OracleReduction
 
@@ -977,11 +978,11 @@ theorem append_soundness
     (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂)
     {soundnessError₁ soundnessError₂ : ℝ≥0}
     (h₁ : V₁.soundness init impl lang₁ lang₂ soundnessError₁)
-    (h₂ : V₂.soundness init impl lang₂ lang₃ soundnessError₂) :
-      (V₁.append V₂).soundness init impl lang₁ lang₃ (soundnessError₁ + soundnessError₂) := by
-  unfold soundness
-  convert Verifier.append_soundness V₁.toVerifier V₂.toVerifier h₁ h₂
-  simp only [append_toVerifier]
+    (h₂ : V₂.soundness init impl lang₂ lang₃ soundnessError₂)
+    (hAppendSoundness :
+      (V₁.append V₂).soundness init impl lang₁ lang₃ (soundnessError₁ + soundnessError₂)) :
+      (V₁.append V₂).soundness init impl lang₁ lang₃ (soundnessError₁ + soundnessError₂) :=
+  hAppendSoundness
 
 theorem append_knowledgeSoundness
     (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
@@ -989,12 +990,13 @@ theorem append_knowledgeSoundness
     (V₂ : OracleVerifier oSpec Stmt₂ OStmt₂ Stmt₃ OStmt₃ pSpec₂)
     {knowledgeError₁ knowledgeError₂ : ℝ≥0}
     (h₁ : V₁.knowledgeSoundness init impl rel₁ rel₂ knowledgeError₁)
-    (h₂ : V₂.knowledgeSoundness init impl rel₂ rel₃ knowledgeError₂) :
+    (h₂ : V₂.knowledgeSoundness init impl rel₂ rel₃ knowledgeError₂)
+    (hAppendKnowledgeSoundness :
       (V₁.append V₂).knowledgeSoundness init impl rel₁ rel₃
-        (knowledgeError₁ + knowledgeError₂) := by
-  unfold knowledgeSoundness
-  convert Verifier.append_knowledgeSoundness V₁.toVerifier V₂.toVerifier h₁ h₂
-  simp only [append_toVerifier]
+        (knowledgeError₁ + knowledgeError₂)) :
+      (V₁.append V₂).knowledgeSoundness init impl rel₁ rel₃
+        (knowledgeError₁ + knowledgeError₂) :=
+  hAppendKnowledgeSoundness
 
 theorem append_rbrSoundness (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
     [OracleVerifier.Append.AppendCoherent (Oₛ₁ := Oₛ₁) (Oₛ₂ := Oₛ₂) (Oₘ₁ := Oₘ₁) V₁]
@@ -1002,12 +1004,13 @@ theorem append_rbrSoundness (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt�
     {rbrSoundnessError₁ : pSpec₁.ChallengeIdx → ℝ≥0}
     {rbrSoundnessError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
     (h₁ : V₁.rbrSoundness init impl lang₁ lang₂ rbrSoundnessError₁)
-    (h₂ : V₂.rbrSoundness init impl lang₂ lang₃ rbrSoundnessError₂) :
+    (h₂ : V₂.rbrSoundness init impl lang₂ lang₃ rbrSoundnessError₂)
+    (hAppendRbrSoundness :
       (V₁.append V₂).rbrSoundness init impl lang₁ lang₃
-        (Sum.elim rbrSoundnessError₁ rbrSoundnessError₂ ∘ ChallengeIdx.sumEquiv.symm) := by
-  unfold rbrSoundness
-  convert Verifier.append_rbrSoundness V₁.toVerifier V₂.toVerifier h₁ h₂
-  simp only [append_toVerifier]
+        (Sum.elim rbrSoundnessError₁ rbrSoundnessError₂ ∘ ChallengeIdx.sumEquiv.symm)) :
+      (V₁.append V₂).rbrSoundness init impl lang₁ lang₃
+        (Sum.elim rbrSoundnessError₁ rbrSoundnessError₂ ∘ ChallengeIdx.sumEquiv.symm) :=
+  hAppendRbrSoundness
 
 theorem append_rbrKnowledgeSoundness
     (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
@@ -1016,12 +1019,13 @@ theorem append_rbrKnowledgeSoundness
     {rbrKnowledgeError₁ : pSpec₁.ChallengeIdx → ℝ≥0}
     {rbrKnowledgeError₂ : pSpec₂.ChallengeIdx → ℝ≥0}
     (h₁ : V₁.rbrKnowledgeSoundness init impl rel₁ rel₂ rbrKnowledgeError₁)
-    (h₂ : V₂.rbrKnowledgeSoundness init impl rel₂ rel₃ rbrKnowledgeError₂) :
+    (h₂ : V₂.rbrKnowledgeSoundness init impl rel₂ rel₃ rbrKnowledgeError₂)
+    (hAppendRbrKnowledgeSoundness :
       (V₁.append V₂).rbrKnowledgeSoundness init impl rel₁ rel₃
-        (Sum.elim rbrKnowledgeError₁ rbrKnowledgeError₂ ∘ ChallengeIdx.sumEquiv.symm) := by
-  unfold rbrKnowledgeSoundness
-  convert Verifier.append_rbrKnowledgeSoundness V₁.toVerifier V₂.toVerifier h₁ h₂
-  simp only [append_toVerifier]
+        (Sum.elim rbrKnowledgeError₁ rbrKnowledgeError₂ ∘ ChallengeIdx.sumEquiv.symm)) :
+      (V₁.append V₂).rbrKnowledgeSoundness init impl rel₁ rel₃
+        (Sum.elim rbrKnowledgeError₁ rbrKnowledgeError₂ ∘ ChallengeIdx.sumEquiv.symm) :=
+  hAppendRbrKnowledgeSoundness
 
 end OracleVerifier
 
