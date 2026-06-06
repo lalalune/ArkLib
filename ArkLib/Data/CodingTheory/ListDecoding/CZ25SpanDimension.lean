@@ -266,8 +266,8 @@ theorem subspaceDesign_list_decoding_cz25_of_spanBound
 degenerate edge but in a regime reachable by genuine FRS subspace designs. The per-word
 existential demands a natural number `m` with `(m : ℝ) · η ≤ 1 - τ(⌊1/η⌋) - η`. The left
 side is `≥ 0` (as `m : ℕ` and `η > 0`), so the clause is **unsatisfiable whenever the radix
-`δ := 1 - τ(⌊1/η⌋) - η` is negative**, regardless of the list. This is `cz25SpanBound_false_of_neg_radius`
-below.
+`δ := 1 - τ(⌊1/η⌋) - η` is negative**, regardless of the list. This is
+`cz25SpanBound_false_of_neg_radius` below.
 
 The `δ < 0` regime is reachable: for the FRS design profile
 `τ(r) = (k-1)/n` on `r ∈ [1,s]` and `τ(r) = 1` otherwise
@@ -301,7 +301,7 @@ elements). The only valid witness is the tautological `m = |L| - 1`, which makes
 inequality the full capacity theorem — confirming the residual has no shortcut over the
 design budget. -/
 theorem cz25SpanBound_false_of_neg_radius
-    (s : ℕ) (τ : ℕ → ℝ) (η : ℝ) (hη : 0 < η)
+    (_s : ℕ) (τ : ℕ → ℝ) (η : ℝ) (hη : 0 < η)
     (hδ : 1 - τ (Nat.floor (1 / η)) - η < 0)
     {m : ℕ} : ¬ ((m : ℝ) * η ≤ 1 - τ (Nat.floor (1 / η)) - η) := by
   intro hle
@@ -344,26 +344,24 @@ theorem cz25SpanBound'_of_dimensionCount
   set ℓ : ℕ := L.ncard with hℓ
   -- The witness `m := ℓ - 1` (`= 0` when the list is empty).
   refine ⟨ℓ - 1, ?_, ?_⟩
-  · -- `(ℓ : ℝ) ≤ (ℓ - 1 : ℕ) + 1`: holds for all `ℓ : ℕ` (equality if `ℓ ≥ 1`, slack if `ℓ = 0`).
+  · -- `(ℓ : ℝ) ≤ ((ℓ - 1 : ℕ) : ℝ) + 1`: from `(ℓ - 1 : ℕ) + 1 ≥ ℓ` over `ℕ`.
+    have hnat : ℓ ≤ (ℓ - 1) + 1 := Nat.le_succ_of_pred_le le_rfl
+    have : (ℓ : ℝ) ≤ (((ℓ - 1) + 1 : ℕ) : ℝ) := by exact_mod_cast hnat
+    push_cast at this ⊢
+    linarith
+  · -- `(ℓ - 1 : ℕ) · η ≤ δ`. Split on whether the list is empty.
     rcases Nat.eq_zero_or_pos ℓ with h0 | hpos
-    · simp [h0]
-    · have : (ℓ - 1 : ℕ) + 1 = ℓ := Nat.succ_pred_eq_of_pos hpos
-      rw [this]
-  · -- `(ℓ - 1 : ℕ) · η ≤ δ`. From `CZ25DimensionCount`: `ℓ ≤ (1 - τ(r₀))/η`.
-    have hdc : (ℓ : ℝ) ≤ (1 - τ (Nat.floor (1 / η))) / η := hDC f
-    rw [le_div_iff₀ hη] at hdc
-    have hcast : ((ℓ - 1 : ℕ) : ℝ) ≤ (ℓ : ℝ) - 1 + 1 := by
-      rcases Nat.eq_zero_or_pos ℓ with h0 | hpos
-      · simp [h0]; positivity
-      · have : ((ℓ - 1 : ℕ) : ℝ) = (ℓ : ℝ) - 1 := by
-          rw [Nat.cast_sub hpos]; simp
-        rw [this]; ring_nf
-    -- `(ℓ - 1)·η ≤ (ℓ·η) - η ≤ (1 - τ(r₀)) - η = δ`.
-    have hℓ1 : ((ℓ - 1 : ℕ) : ℝ) ≤ (ℓ : ℝ) - 1 := by
-      rcases Nat.eq_zero_or_pos ℓ with h0 | hpos
-      · simp [h0]
-      · rw [Nat.cast_sub hpos]; simp
-    nlinarith [hℓ1, hdc, le_of_lt hη, Nat.cast_nonneg (ℓ - 1)]
+    · -- Empty list: LHS `= 0 ≤ δ` is exactly the guard `_hδ`.
+      simp only [h0, Nat.zero_sub, Nat.cast_zero, zero_mul]
+      exact _hδ
+    · -- Nonempty: `((ℓ - 1 : ℕ) : ℝ) = (ℓ : ℝ) - 1`, and use `CZ25DimensionCount`.
+      have hcast : ((ℓ - 1 : ℕ) : ℝ) = (ℓ : ℝ) - 1 := by
+        rw [Nat.cast_sub hpos]; simp
+      have hdc : (ℓ : ℝ) ≤ (1 - τ (Nat.floor (1 / η))) / η := hDC f
+      rw [le_div_iff₀ hη] at hdc
+      rw [hcast]
+      -- `(ℓ - 1)·η = ℓ·η - η ≤ (1 - τ(r₀)) - η = δ`.
+      nlinarith [hdc, le_of_lt hη]
 
 /-- **In-tree T3.4 [CZ25 Thm B.5] from the corrected agreement residual.** The exact in-tree
 `Λ`-bound follows from `CZ25SpanBound'` directly. The `δ < 0` regime — where the original
