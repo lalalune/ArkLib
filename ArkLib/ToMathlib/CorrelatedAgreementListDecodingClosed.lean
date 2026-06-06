@@ -7,8 +7,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
 import ArkLib.ToMathlib.BetaToCurveCoeffPolys
 import ArkLib.ToMathlib.KeystoneCapstone
 
-set_option linter.style.longLine false
-
 /-!
 # The closed list-decoding keystone — `correlatedAgreement_affine_curves_listDecoding_closed`
 
@@ -64,6 +62,9 @@ extraction* (about `γ`, `betaRec`, the representative), from which the per-coef
 * [BCIKS20] Ben-Sasson, Carmon, Ishai, Kopparty, Saraf, *Proximity Gaps for Reed–Solomon Codes*,
   §5 (list-decoding agreement chain), §6.2 (Theorem 6.2), Appendix A.4 (recursion (A.1)).
 -/
+
+set_option linter.style.longLine false
+
 
 open Polynomial Polynomial.Bivariate BCIKS20AppendixA BCIKS20AppendixA.ClaimA2 ToRatFunc Ideal
 open ProximityGap Code NNReal Finset Function ProbabilityTheory

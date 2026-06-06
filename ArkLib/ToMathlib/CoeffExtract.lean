@@ -6,8 +6,6 @@ Authors: ArkLib Contributors
 
 import ArkLib.ToMathlib.BetaMatchingVanishes
 
-set_option linter.style.longLine false
-
 /-!
 # Coefficient Extraction for Power Series Solutions
 
@@ -36,6 +34,9 @@ $$\pi_z(\text{betaRec}(t)) = 0$$
 * `MatchingPoint.mk_coeffExtract`: A constructor wrapper for matching point verification in the
   proximity gap argument.
 -/
+
+set_option linter.style.longLine false
+
 
 open Polynomial Polynomial.Bivariate BCIKS20AppendixA BCIKS20AppendixA.ClaimA2 PowerSeries
 

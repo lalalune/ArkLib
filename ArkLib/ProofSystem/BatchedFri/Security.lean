@@ -1,11 +1,12 @@
-/- Copyright (c) 2024-2025 ArkLib Contributors. All rights reserved.
-  Released under Apache 2.0 license as described in the file LICENSE.
-  Authors: František Silváši, Julian Sutherland, Ilia Vlasov
+/-
+Copyright (c) 2024-2025 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: František Silváši, Julian Sutherland, Ilia Vlasov
 
-  [BCIKS20] refers to the paper "Proximity Gaps for Reed-Solomon Codes" by Eli Ben-Sasson,
-  Dan Carmon, Yuval Ishai, Swastik Kopparty, and Shubhangi Saraf.
+[BCIKS20] refers to the paper "Proximity Gaps for Reed-Solomon Codes" by Eli Ben-Sasson,
+Dan Carmon, Yuval Ishai, Swastik Kopparty, and Shubhangi Saraf.
 
-  Using {https://eprint.iacr.org/2020/654}, version 20210703:203025.
+Using {https://eprint.iacr.org/2020/654}, version 20210703:203025.
 -/
 
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
@@ -28,6 +29,15 @@ import ToMathlib.Control.OptionT
 import ArkLib.ToMathlib.List.Basic
 import ArkLib.ToMathlib.Finset.Basic
 import Mathlib.Algebra.Ring.NonZeroDivisors
+
+/-!
+# Security of the Batched FRI protocol
+
+We develop the security analysis of the Batched FRI oracle reduction following [BCIKS20]. The file
+sets up the coset-evaluation machinery (`cosetEnum`, `cosetG`, `VDM` and its inverse `VDMInv`, the
+`fin_equiv_coset` reindexing) used to reason about proximity over the smooth coset FFT evaluation
+domains, towards completeness and soundness statements for the batched protocol.
+-/
 
 namespace Fri
 section Fri

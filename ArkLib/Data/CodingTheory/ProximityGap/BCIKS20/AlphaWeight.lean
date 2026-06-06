@@ -1,11 +1,9 @@
 /-
 Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.HenselNumerator
-
-set_option linter.style.longLine false
-set_option linter.unusedSectionVars false
 
 /-!
 # (P1, A.4) `AlphaGenuineRegularWeightLe` — analysis, equivalence, structured closure, obstruction
@@ -75,6 +73,9 @@ only the proven `βHensel_lift_identity_zero` + injectivity); we do not fake the
 
 NO `axiom`/`admit`/`native_decide`/`bv_decide`/`sorry`.  Audited in-file via `#print axioms`.
 -/
+
+set_option linter.style.longLine false
+set_option linter.unusedSectionVars false
 
 namespace BCIKS20.HenselNumerator
 

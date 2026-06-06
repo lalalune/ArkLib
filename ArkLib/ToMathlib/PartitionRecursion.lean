@@ -1,10 +1,9 @@
 /-
 Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
 -/
 import Mathlib
-
-set_option linter.style.longLine false
 
 /-!
 # Partition substrate for the BCIKS20 Appendix A.4 β-recursion (brick L1)
@@ -67,6 +66,8 @@ appearing in the `(t+1)`-step of (A.1) satisfies `l < t+1`, which is exactly the
 * `recursionWF` — a `WellFoundedRelation ℕ` (`<` on `ℕ`) witnessing termination, plus
   `recursionStep_rel` restating the strict decrease in that relation.
 -/
+
+set_option linter.style.longLine false
 
 namespace ArkLib
 

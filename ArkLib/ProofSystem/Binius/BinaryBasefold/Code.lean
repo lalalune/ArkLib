@@ -993,3 +993,4 @@ lemma iterated_fold_preserves_BBF_Code_membership (i : Fin r) {destIdx : Fin r} 
 -- definitions; this file only provides the code/fiber primitives they build on.
 
 end SoundnessTools
+end Binius.BinaryBasefold

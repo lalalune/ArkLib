@@ -8,8 +8,6 @@ import ArkLib.ToMathlib.BetaMatchingVanishes
 import ArkLib.ToMathlib.IngredientCBridge
 import ArkLib.ToMathlib.Claim59Conditional
 
-set_option linter.style.longLine false
-
 /-!
 # Curve Coefficient Polynomial Reconstruction from the Beta Recursion
 
@@ -36,6 +34,9 @@ This module formalizes these steps unconditionally, routing the algebraic result
 * [BCIKS20] Ben-Sasson, Carmon, Ishai, Kopparty, Saraf, *Proximity Gaps for Reed–Solomon Codes*,
   §5 (list-decoding agreement chain), Appendix A.4 (the `W`-power-numerator recursion (A.1)).
 -/
+
+set_option linter.style.longLine false
+
 
 open Polynomial Polynomial.Bivariate BCIKS20AppendixA BCIKS20AppendixA.ClaimA2 ToRatFunc Ideal
 

@@ -1,13 +1,12 @@
 /-
 Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
 -/
 import Mathlib
 import ArkLib.Data.Polynomial.RationalFunctions
 import ArkLib.ToMathlib.PowerSeriesSubstCoeff
 import ArkLib.ToMathlib.FiniteSeriesToPoly
-
-set_option linter.style.longLine false
 
 /-!
 # Conditional Claim 5.9: Linearity of γ in Z under Tail Vanishing
@@ -33,6 +32,9 @@ the power series ring.
 ## References
 * [BCIKS20] Binswood, Crites, Iyer, Kamara, Stewart. *Solving Algebraic Equations over Power Series*, 2020.
 -/
+
+set_option linter.style.longLine false
+
 
 open Polynomial
 open scoped Polynomial.Bivariate

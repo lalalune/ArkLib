@@ -1,7 +1,10 @@
+/-
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
 import Mathlib
 import ArkLib.ToMathlib.PowerSeriesHenselianA
-
-set_option linter.style.longLine false
 
 /-!
 # Constructive Newton / Hensel iteration over `k⟦X⟧`
@@ -29,6 +32,8 @@ We prove
 
 Everything is kernel-clean (reusing `ArkLib.powerSeries_isPrecomplete` from `PowerSeriesHenselianA.lean` for the limit).
 -/
+
+set_option linter.style.longLine false
 
 open PowerSeries
 

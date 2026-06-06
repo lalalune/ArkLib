@@ -13,13 +13,6 @@ import ArkLib.ToMathlib.BetaWeightCollapse
 import ArkLib.ToMathlib.IngredientCBridge
 import ArkLib.ToMathlib.SubstFieldCaveat
 
--- Documentation-heavy file (BCIKS §5 / App-A.4 prose in the docstrings); the long-line style
--- linter is disabled locally, matching the sibling `KeystoneStrictResidual.lean`.
-set_option linter.style.longLine false
--- The wrapper carries `[DecidableEq ι]`/`[Nonempty ι]` because the downstream keystone *proof*
--- needs them; the unused-binder linter only inspects types, so disable it.
-set_option linter.unusedDecidableInType false
-
 /-!
 # Instantiation lemmas for the §5 input bundle `BetaCurveInput`
 
@@ -65,6 +58,14 @@ No `sorry`/`axiom`/`native_decide`; `#print axioms` at the bottom shows only
 * [BCIKS20] Ben-Sasson, Carmon, Ishai, Kopparty, Saraf, *Proximity Gaps for Reed–Solomon Codes*,
   §5 (list-decoding agreement), Appendix A.4 (the `W`-power-numerator recursion (A.1)).
 -/
+
+-- Documentation-heavy file (BCIKS §5 / App-A.4 prose in the docstrings); the long-line style
+-- linter is disabled locally, matching the sibling `KeystoneStrictResidual.lean`.
+set_option linter.style.longLine false
+-- The wrapper carries `[DecidableEq ι]`/`[Nonempty ι]` because the downstream keystone *proof*
+-- needs them; the unused-binder linter only inspects types, so disable it.
+set_option linter.unusedDecidableInType false
+
 
 open Polynomial Polynomial.Bivariate BCIKS20AppendixA BCIKS20AppendixA.ClaimA2
 

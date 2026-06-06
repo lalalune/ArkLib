@@ -1219,6 +1219,70 @@ theorem mcaPrizeLatticeResolved_iff (domain : ι ↪ F)
       (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
       epsStar hne (τ j) hsat hmax).symm
 
+/-- If radius one already satisfies the MCA budget, then the faithful MCA lattice threshold is
+the top lattice point.  This is the positive endpoint counterpart to the radius-one
+obstruction lemmas: when the top point is good, maximality forces it to be the threshold. -/
+theorem mcaThreshold_eq_top_of_epsMCA_one_le
+    (C : Set (ι → F)) (ε_star : ℝ≥0)
+    (hone : epsMCA (F := F) (A := F) C 1 ≤ (ε_star : ENNReal)) :
+    let top : Fin (Fintype.card ι + 1) := ⟨Fintype.card ι, Nat.lt_succ_self _⟩
+    let hne : mcaThresholdExists C ε_star := ⟨top, by
+      unfold mcaSatisfies
+      simpa using hone⟩
+    mcaThreshold C ε_star hne = top := by
+  classical
+  let top : Fin (Fintype.card ι + 1) := ⟨Fintype.card ι, Nat.lt_succ_self _⟩
+  let hne : mcaThresholdExists C ε_star := ⟨top, by
+    unfold mcaSatisfies
+    simpa [top] using hone⟩
+  have hsat : mcaSatisfies C ε_star top := by
+    unfold mcaSatisfies
+    simpa [top] using hone
+  have hmax : ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C ε_star i → i ≤ top := by
+    intro i _hi
+    rw [Fin.le_iff_val_le_val]
+    exact Nat.lt_succ_iff.mp i.isLt
+  exact (mcaThreshold_unique C ε_star hne top hsat hmax).symm
+
+/-- Endpoint upper bounds resolve the faithful MCA lattice prize with threshold `1` at every
+prize rate. -/
+theorem mcaPrizeLatticeResolved_top_of_radiusOne_bounds
+    (domain : ι ↪ F)
+    (hbound : ∀ j : Fin 4,
+      epsMCA (F := F) (A := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)) 1
+        ≤ (epsStar : ENNReal)) :
+    mcaPrizeLatticeResolved domain
+      (fun _ => ⟨Fintype.card ι, Nat.lt_succ_self _⟩) := by
+  intro j
+  let C : Set (ι → F) :=
+    ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+  let top : Fin (Fintype.card ι + 1) := ⟨Fintype.card ι, Nat.lt_succ_self _⟩
+  let hne : mcaThresholdExists C epsStar := ⟨top, by
+    unfold mcaSatisfies
+    simpa [C, top] using hbound j⟩
+  refine ⟨hne, ?_⟩
+  simpa [C, top, hne] using
+    mcaThreshold_eq_top_of_epsMCA_one_le (C := C) (ε_star := epsStar) (hbound j)
+
+/-- The radius-one counting upper bound gives exact top faithful MCA thresholds whenever
+`C(n,k_j+1)/q ≤ epsStar` at every prize rate. -/
+theorem mcaPrizeLatticeResolved_top_of_choose_bounds
+    (domain : ι ↪ F)
+    (hbound : ∀ j : Fin 4,
+      (Nat.choose (Fintype.card ι)
+          (⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ + 1) : ENNReal)
+        / (Fintype.card F : ENNReal) ≤ (epsStar : ENNReal)) :
+    mcaPrizeLatticeResolved domain
+      (fun _ => ⟨Fintype.card ι, Nat.lt_succ_self _⟩) := by
+  apply mcaPrizeLatticeResolved_top_of_radiusOne_bounds
+  intro j
+  exact le_trans
+    (epsMCA_one_le_choose_div domain
+      ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊)
+    (hbound j)
+
 /-- Existentially resolving the faithful MCA lattice prize is equivalent to threshold
 nonemptiness at all four prize rates.  Once every rate has at least one satisfying lattice point,
 the finite threshold function itself supplies the four proposed indices. -/

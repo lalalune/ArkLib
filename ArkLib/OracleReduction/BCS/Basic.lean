@@ -8,28 +8,24 @@ import ArkLib.CommitmentScheme.Basic
 import ArkLib.OracleReduction.Composition.Sequential.General
 
 /-!
-  # The BCS Transformation
+# The Generalized Ben-Sasson–Chiesa–Spooner (BCS) Compiler
 
-  This file defines the (generalized) BCS transformation. This transformation was first described by
-  Ben-Sasson - Chiesa - Spooner in TCC'16 for IOPs with vector queries + Merkle trees. Our
-  generalized version transforms any Interactive Oracle Reduction (IOR) into an Interactive
-  Reduction (IR) using commitment schemes for the respective oracle messages of the protocol. This
-  captures both the original BCS transformation as well as the Polynomial IOP + Polynomial
-  Commitments transform (described in Plonk, Marlin, etc.).
+This module formalizes the generalized Ben-Sasson–Chiesa–Spooner (BCS) compilation technique (TCC 2016)
+at the protocol specification and reduction levels. The BCS transform compiles an Interactive Oracle
+Reduction (IOR) into a standard Interactive Reduction (IR) (or interactive proof system) by replacing
+oracle messages with cryptographic commitments. 
 
-  More precisely, the transformation works as follows:
+In the compiled protocol, the prover sends commitments to each oracle message, and the verifier interacts
+with the prover to receive challenges. Finally, in the opening phase, the prover shows that the verifier's
+oracle queries are consistent with the sent commitments using interactive opening arguments. This compiles
+oracle-dependent protocols into concrete protocols, capturing both the classical Merkle-tree compilation
+of IOPs and modern polynomial commitment compilers (e.g., Marlin, Plonk) for polynomial IOPs.
 
-  1. We take in an IOR `R`.
-
-  2. We replace every oracle statement and every prover's message with a commitment (using the
-     specified corresponding commitment scheme).
-
-  3. We look at the oracle verifier's list of queries to the prover's messages. For each query, we
-     run the opening argument for the query (which is itself an interactive proof).
-
-  After defining the transformation, our goal is to show that the transformed protocol inherits the
-  security properties of its building blocks (i.e. completeness, all notions of soundness, HVZK,
-  etc.)
+The transformation establishes a composition where:
+1. Every oracle message type is replaced with a commitment type (via `renameMessage`).
+2. An opening phase consisting of the sequential composition of the per-message commitment-opening protocol
+   specifications is appended.
+-/
 
   ## What this file states (ArkLib#2: "initial attempt to state the BCS transform")
 

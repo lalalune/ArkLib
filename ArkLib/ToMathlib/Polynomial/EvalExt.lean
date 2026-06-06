@@ -1,17 +1,20 @@
-/-!
-# Uniqueness of Polynomial Interpolation
-
-This module establishes the uniqueness of polynomial interpolation over a field. Specifically, it
-formalizes the classical result that if two polynomials $p, q \in \mathbb{F}[X]$ of degree strictly less than $n$
-agree on at least $n$ distinct points (i.e., a subset $S \subseteq \mathbb{F}$ with $|S| \ge n$), then $p = q$.
-
-In the context of algebraic complexity theory, PCPs, and interactive proofs (e.g., Reed–Solomon proximity
-testing or KZG polynomial commitments), this property is central to establishing the soundness of
-evaluation-based query protocols, where polynomials of bounded degree are uniquely determined by their
-evaluations on a sufficiently large set of challenges.
+/-
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
 -/
-
 import Mathlib.LinearAlgebra.Lagrange
+
+/-!
+# Polynomial equality from agreement on enough evaluation points
+
+Identity lemmas for polynomials over a field: two polynomials whose degree is bounded and that
+agree on sufficiently many points are equal.
+
+* `eq_of_eval_eq_degree`: if `p.degree < n`, `q.degree < n`, and `p` and `q` agree on a finite
+  set `s` with `n ≤ s.card`, then `p = q`.
+* `eq_of_eval_eq_natDegree`: the `natDegree` variant of the same statement.
+-/
 
 namespace Polynomial
 

@@ -1,9 +1,24 @@
+/-
+Copyright (c) 2025 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
 import Mathlib.GroupTheory.Coset.Basic
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 import CompPoly.Fields.Basic
 import ArkLib.Data.GroupTheory.Smooth
+
+/-!
+# FRI Evaluation Domains
+
+Constructs the evaluation domains used in the FRI protocol as the cyclic subgroups
+`evalDomain D i = ⟨g ^ (2 ^ i)⟩` of `Fˣ`, where `g` generates a smooth power-of-two-order
+subgroup. Provides their enumeration (`domain`), embeddings (`domainEnum`, `domainEmb`),
+injectivity and surjectivity, structural facts about successive domains, and roots of unity, along
+with a `CosetDomain` variant based at an element `x`.
+-/
 
 variable {F : Type} [NonBinaryField F] [Finite F]
 variable (D : Subgroup Fˣ) {n : ℕ} [DIsCyclicC : IsCyclicWithGen D] [DSmooth : SmoothPowerOfTwo n D]

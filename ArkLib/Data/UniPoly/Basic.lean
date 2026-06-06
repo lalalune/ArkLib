@@ -142,7 +142,7 @@ theorem last_nonzero_induct [LawfulBEq R] {motive : UniPoly R → Prop}
 := by
   by_cases h : ∀ i, (hi : i < p.size) → p[i] = 0
   · exact case1 p (last_nonzero_none h) h
-  · push_neg at h; rcases h with ⟨ i, hi, h ⟩
+  · push Not at h; rcases h with ⟨ i, hi, h ⟩
     obtain ⟨ k, h_some ⟩ := last_nonzero_some hi h
     have ⟨ h_nonzero, h_max ⟩ := last_nonzero_spec h_some
     exact case2 p k h_some h_nonzero h_max
@@ -186,7 +186,7 @@ theorem size_eq_degree (p : UniPoly R) : p.trim.size = p.degree := by
   unfold trim degree
   match h : p.last_nonzero with
   | none => simp
-  | some i => simp [Fin.is_lt, Nat.succ_le_of_lt]
+  | some i => simp [Fin.is_lt]
 
 theorem size_le_size (p : UniPoly R) : p.trim.size ≤ p.size := by
   unfold trim
@@ -388,7 +388,7 @@ end Trim
 /-- canonical version of UniPoly -/
 def UniPolyC (R : Type*) [BEq R] [Ring R] := { p : UniPoly R // p.trim = p }
 
-@[ext] theorem UniPolyC.ext {p q : UniPolyC R} (h : p.val = q.val) : p = q := Subtype.eq h
+@[ext] theorem UniPolyC.ext {p q : UniPolyC R} (h : p.val = q.val) : p = q := Subtype.ext h
 
 instance : Coe (UniPolyC R) (UniPoly R) where coe := Subtype.val
 

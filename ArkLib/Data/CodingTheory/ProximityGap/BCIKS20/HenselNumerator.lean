@@ -1,6 +1,7 @@
 /-
 Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
 -/
 import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.Algebra.MvPolynomial.PDeriv
@@ -10,11 +11,6 @@ import Mathlib.Data.Nat.Choose.Multinomial
 import ArkLib.Data.Polynomial.RationalFunctions
 import ArkLib.Data.Polynomial.PowerSeriesComposition
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.GammaGenuine
-
-set_option linter.style.longFile 2600
--- This proof-note-heavy integration file contains many long paper-route doc lines.
-set_option linter.style.longLine false
-set_option linter.unusedVariables false
 
 /-!
 # BCIKS20 Appendix A.4 — Hensel-lift numerator `β` : WAVE 1 FOUNDATION
@@ -115,6 +111,11 @@ binomial-weighted shift (its weight is genuinely positive, see `mvBinom_pos` /
 `mvHasseCoeff_monomial_coeff_eq`), and `partitionProd` raises each distinct part to its
 genuine multiplicity.
 -/
+
+set_option linter.style.longFile 2600
+-- This proof-note-heavy integration file contains many long paper-route doc lines.
+set_option linter.style.longLine false
+set_option linter.unusedVariables false
 
 noncomputable section
 

@@ -8,6 +8,15 @@ Authors: Quang Dao, František Silváši, Julian Sutherland, Ilia Vlasov
 import ArkLib.OracleReduction.Composition.Sequential.General
 import ArkLib.ProofSystem.Fri.Spec.SingleRound
 
+/-!
+# FRI Protocol Specification (General)
+
+The general (multi-round) FRI protocol over a non-binary field, built by sequentially composing
+single folding rounds. Defines the input and output proximity relations (`inputRelation`,
+`outputRelation`), the folding protocol spec (`pSpecFold`), the per-round reduction
+(`reductionFold`), and the full composed `reduction`.
+-/
+
 namespace Fri
 
 open OracleSpec OracleComp ProtocolSpec NNReal Domain

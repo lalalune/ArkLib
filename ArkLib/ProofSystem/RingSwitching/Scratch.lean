@@ -1,5 +1,18 @@
+/-
+Copyright (c) 2025 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
 import ArkLib.ProofSystem.RingSwitching.Prelude
 import ArkLib.ProofSystem.Sumcheck.Structured.SingleRound
+
+/-!
+# Ring-Switching Scratch Lemmas
+
+Scratch namespace `ScratchRS` collecting auxiliary lemmas used while developing the ring-switching
+protocol: a value-form classification of `finSumFinEquiv.symm` (`finSumFinEquiv_symm_dite`) and
+multivariate-polynomial variable-fixing rewrites (`fixVars_eq_bind₁`, `fixVars_step`).
+-/
 
 open MvPolynomial Finset Sumcheck.Structured RingSwitching
 

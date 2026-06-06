@@ -1,16 +1,16 @@
-/-!
-# Degree Bounds on Sums of Polynomials
-
-This module provides a lemma bounding the natural degree of a sum of polynomials
-when each term's natural degree is strictly bounded by a positive integer $n$.
-
-In cryptographic and algebraic settings (such as polynomial identity testing or sharing schemes),
-we frequently combine polynomials by summing them (e.g. random linear combinations or Lagrange
-interpolation sums) and need to verify that the degree of the resulting polynomial remains strictly
-bounded.
+/-
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
 -/
-
 import Mathlib.Algebra.Polynomial.BigOperators
+
+/-!
+# Degree of a finite sum of polynomials
+
+* `Polynomial.natDegree_sum_lt_of_forall_lt`: if every summand `f i` (for `i ∈ s`) has
+  `natDegree < n` with `n ≠ 0`, then the finite sum `∑ i ∈ s, f i` also has `natDegree < n`.
+-/
 
 namespace Polynomial
 

@@ -8,8 +8,6 @@ import ArkLib.ToMathlib.BetaRecursion
 import ArkLib.ToMathlib.IngredientCBridge
 import ArkLib.ToMathlib.HenselUniqueness
 
-set_option linter.style.longLine false
-
 /-!
 # `betaRec` satisfies ingredient-C `MatchingVanishes` (brick **L12 → L14**)
 
@@ -70,6 +68,9 @@ hypotheses about `betaRec`'s specialization**, exactly the shape L13 (with the r
 Everything is kernel-clean (`#print axioms` at the bottom; only `propext / Classical.choice /
 Quot.sound`).
 -/
+
+set_option linter.style.longLine false
+
 
 open Polynomial Polynomial.Bivariate BCIKS20AppendixA BCIKS20AppendixA.ClaimA2 ToRatFunc Ideal
 

@@ -5,12 +5,6 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.Agreement
 
--- Documentation-heavy file (BCIKS §5 prose in the docstrings); the long-line style linter is
--- disabled locally.
-set_option linter.style.longLine false
-set_option linter.unusedSectionVars false
-set_option linter.unusedDecidableInType false
-
 /-!
 # Instantiation lemma for the Claim-5.7 residual bundle `Claim57Residuals`
 
@@ -49,6 +43,13 @@ No `sorry`/`axiom`/`native_decide`; `#print axioms` at the bottom shows only
 * [BCIKS20] Ben-Sasson, Carmon, Ishai, Kopparty, Saraf, *Proximity Gaps for Reed–Solomon Codes*,
   §5 (Claims 5.6–5.7, list-decoding agreement).
 -/
+
+-- Documentation-heavy file (BCIKS §5 prose in the docstrings); the long-line style linter is
+-- disabled locally.
+set_option linter.style.longLine false
+set_option linter.unusedSectionVars false
+set_option linter.unusedDecidableInType false
+
 
 namespace ProximityGap
 

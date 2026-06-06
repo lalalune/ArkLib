@@ -9,6 +9,17 @@ import ArkLib.Data.CodingTheory.ListDecodability
 import ArkLib.Data.MvPolynomial.Multilinear
 import ArkLib.Data.Probability.Notation
 
+/-!
+# Out-of-domain sampling (WHIR Lemma 4.24)
+
+This file formalizes the out-of-domain sampling equivalence underlying WHIR.
+
+* `OutOfDomSmpl.crs_equiv_rs_random_point_agreement` (Lemma 4.24) — for a word `f`, the existence
+  of two distinct codewords `δ`-close to `f` whose decoded multilinear polynomials agree at the
+  out-of-domain sample points `r₁, …, rₛ` is equivalent to the multi-constrained Reed-Solomon
+  list (with weights `wᵢ = Z · eqPolynomial rᵢ`) having more than one codeword.
+-/
+
 namespace OutOfDomSmpl
 
 open ListDecodable MvPolynomial NNReal ProbabilityTheory ReedSolomon

@@ -61,9 +61,9 @@ theorem prod_X_sub_C_eq_X_pow_card_sub_X (h_Fq_card_gt_1 : Fintype.card Fq > 1):
 
   have hP_splits : P.Splits := by
     -- ⊢ Splits (RingHom.id Fq) (∏ c ∈ Finset.univ, X - C c)
-    apply Polynomial.splits_prod
+    apply Polynomial.Splits.prod
     intro c _
-    apply Polynomial.splits_X_sub_C
+    apply Polynomial.Splits.X_sub_C
 
   have hQ_card_roots : Q.roots.card = Fintype.card Fq := by
     rw [h_roots_Q]

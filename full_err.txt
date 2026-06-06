@@ -1,0 +1,2 @@
+info: Version 4.2.2 of elan is available! Use `elan self update` to update.
+info: waiting for previous installation request to finish (/Users/shawwalters/.elan/toolchains/leanprover--lean4---v4.30.lock, held by PID 93210)
