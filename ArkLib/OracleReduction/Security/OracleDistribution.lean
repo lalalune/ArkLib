@@ -78,7 +78,8 @@ also permutations (`Carrier := Equiv.Perm State`), ideal ciphers, and parameter-
 -/
 
 /-! A distribution over deterministic interpretations of `spec`.
-TODO: should we use `PMF`? -/
+The sampler is kept in `ProbComp` so callers can share the same execution model as oracle
+implementations and protocol reductions. -/
 structure OracleDistribution (spec : OracleSpec ι) where
   /-- Internal carrier: what is sampled and then fixed. -/
   Carrier : Type

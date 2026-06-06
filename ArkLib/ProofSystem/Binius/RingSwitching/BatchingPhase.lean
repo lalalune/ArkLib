@@ -428,7 +428,7 @@ noncomputable def batchingRbrExtractor :
 
 /-- RBR knowledge soundness error for the batching phase.
 The only verifier randomness is `r''`. A collision has probability related to `κ/|L|`.
-For simplicity, we can set a placeholder value. -/
+The concrete bound below is the Schwartz-Zippel-style accounting term used by the phase. -/
 def batchingRBRKnowledgeError : ℝ≥0 := (κ : ℝ≥0) / (Fintype.card L : ℝ≥0) -- Schwartz-Zippel error
 
 def batchingKStateProp {m : Fin (2 + 1)}

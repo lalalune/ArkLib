@@ -70,6 +70,22 @@ theorem val_card (s : SizeSubset α n) :
     (s : Finset α).card = n :=
   Set.powersetCard.card_eq s
 
+variable {β : Type*}
+
+/-- Transport a size-`n` subset across an equivalence of ambient types. -/
+noncomputable def mapEquiv (e : α ≃ β) :
+    SizeSubset α n ≃ SizeSubset β n where
+  toFun := Set.powersetCard.map n e.toEmbedding
+  invFun := Set.powersetCard.map n e.symm.toEmbedding
+  left_inv s := by
+    apply Subtype.ext
+    ext x
+    simp [Set.powersetCard.map]
+  right_inv t := by
+    apply Subtype.ext
+    ext x
+    simp [Set.powersetCard.map]
+
 end SizeSubset
 
 /-- Uniform distribution on the size-`n` subsets of a finite type. -/
@@ -89,6 +105,20 @@ theorem uniformSizeSubset_apply {α : Type*} [Fintype α] {n : ℕ}
     uniformSizeSubset α n s = (Fintype.card (SizeSubset α n) : ENNReal)⁻¹ := by
   simp [uniformSizeSubset, PMF.uniformOfFintype_apply]
 
+/-- The uniform size-`n` subset distribution has full support. -/
+@[simp]
+theorem support_uniformSizeSubset {α : Type*} [Fintype α] {n : ℕ}
+    [Nonempty (SizeSubset α n)] :
+    (uniformSizeSubset α n).support = ⊤ := by
+  simp [uniformSizeSubset]
+
+/-- Every size-`n` subset lies in the support of the uniform size-`n` subset distribution. -/
+theorem mem_support_uniformSizeSubset {α : Type*} [Fintype α] {n : ℕ}
+    [Nonempty (SizeSubset α n)] (s : SizeSubset α n) :
+    s ∈ (uniformSizeSubset α n).support := by
+  rw [support_uniformSizeSubset]
+  trivial
+
 /-- Point mass of the uniform size-`n` subset distribution, with the denominator rewritten as
 `|α| choose n`. -/
 theorem uniformSizeSubset_apply_choose {α : Type*} [Fintype α] {n : ℕ}
@@ -102,6 +132,37 @@ theorem uniformSizeSubsetOfLe_apply {α : Type*} [Fintype α] {n : ℕ}
     uniformSizeSubsetOfLe α n h s = ((Fintype.card α).choose n : ENNReal)⁻¹ := by
   classical
   simp [uniformSizeSubsetOfLe, uniformSizeSubset_apply_choose]
+
+/-- The le-supplied uniform size-`n` subset distribution has full support. -/
+@[simp]
+theorem support_uniformSizeSubsetOfLe {α : Type*} [Fintype α] {n : ℕ}
+    (h : n ≤ Fintype.card α) :
+    (uniformSizeSubsetOfLe α n h).support = ⊤ := by
+  classical
+  simp [uniformSizeSubsetOfLe]
+
+/-- Every size-`n` subset lies in the support of the le-supplied uniform distribution. -/
+theorem mem_support_uniformSizeSubsetOfLe {α : Type*} [Fintype α] {n : ℕ}
+    (h : n ≤ Fintype.card α) (s : SizeSubset α n) :
+    s ∈ (uniformSizeSubsetOfLe α n h).support := by
+  rw [support_uniformSizeSubsetOfLe h]
+  trivial
+
+/-- Uniform fixed-size subset sampling is invariant under equivalence of ambient finite types. -/
+theorem uniformSizeSubset_apply_mapEquiv {α β : Type*} [Fintype α] [Fintype β] {n : ℕ}
+    [Nonempty (SizeSubset α n)] [Nonempty (SizeSubset β n)] (e : α ≃ β)
+    (s : SizeSubset α n) :
+    uniformSizeSubset β n (SizeSubset.mapEquiv e s) =
+      uniformSizeSubset α n s := by
+  simp [uniformSizeSubset_apply_choose, Fintype.card_congr e]
+
+/-- Le-supplied uniform fixed-size subset sampling is invariant under ambient equivalences. -/
+theorem uniformSizeSubsetOfLe_apply_mapEquiv {α β : Type*} [Fintype α] [Fintype β] {n : ℕ}
+    (e : α ≃ β) (hα : n ≤ Fintype.card α) (hβ : n ≤ Fintype.card β)
+    (s : SizeSubset α n) :
+    uniformSizeSubsetOfLe β n hβ (SizeSubset.mapEquiv e s) =
+      uniformSizeSubsetOfLe α n hα s := by
+  simp [uniformSizeSubsetOfLe_apply, Fintype.card_congr e]
 
 /-! ## Colliding-pair helpers (ABF26 Appendix B counting)
 

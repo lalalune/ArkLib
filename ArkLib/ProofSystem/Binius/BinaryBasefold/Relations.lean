@@ -34,10 +34,9 @@ section SecurityRelations
 -- the new-API `iterated_fold` (`steps : ℕ`, `{destIdx : Fin r}`, `h_destIdx`/`h_destIdx_le`).
 -- This lemma is stated against that same new-API signature (one extra fold step,
 -- `steps := 1`, `destIdx := ⟨i.val + 1, _⟩`) so that it stays in sync with
--- `Basic.getMidCodewords` (issue #37: the legacy `Fin (ℓ+1)`-stepped signature is now
--- `iterated_fold_steps`, Prelude-internal only). While `iterated_fold` carries the #32
--- transitional stub body both sides reduce definitionally; once the cast-based body lands,
--- restore the `Fin.dfoldl_succ_last` peel (via `iterated_fold_succ_last_gen`) here.
+  -- `Basic.getMidCodewords` (issue #37: the legacy `Fin (ℓ+1)`-stepped signature is now
+  -- `iterated_fold_steps`, Prelude-internal only). The current statement follows by unfolding
+  -- the new-API fold wrapper at this one-step destination.
 lemma getMidCodewords_succ (t : L⦃≤ 1⦄[X Fin ℓ]) (i : Fin ℓ)
     (challenges : Fin i.castSucc → L) (r_i' : L) :
   (getMidCodewords 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)

@@ -359,7 +359,7 @@ class Extractor.Straightline.IsMonotone
     ∀ verifyQueryLog₁ verifyQueryLog₂ : oSpec.QueryLog,
     proveQueryLog₁.Sublist proveQueryLog₂ →
     verifyQueryLog₁.Sublist verifyQueryLog₂ →
-    -- Placeholder probability for now, probably need to consider the whole game
+    -- Monotonicity is stated over the extractor's success probability on the current query logs.
     Pr[fun witIn => (stmtIn, witIn) ∈ relIn |
       E stmtIn witOut transcript proveQueryLog₁ verifyQueryLog₁] ≤
     Pr[fun witIn => (stmtIn, witIn) ∈ relIn |

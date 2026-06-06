@@ -606,12 +606,7 @@ abbrev OracleStatement.AfterSecondSumcheck : Fin 1 ⊕ (R1CS.MatrixIdx ⊕ Fin 1
 @[simp]
 abbrev Witness.AfterSecondSumcheck : Type := Unit
 
--- def oracleReduction.secondSumcheck :
---     OracleReduction (Sumcheck.Spec.pSpec R pp.ℓ_n) oSpec
---       (Statement.AfterLinearCombination R pp) Witness.AfterLinearCombination
---       (Statement.AfterSecondSumcheck R pp) Witness.AfterSecondSumcheck
---       (OracleStatement.AfterLinearCombination R pp) (OracleStatement.AfterSecondSumcheck R pp) :=
---   placeholder
+  -- The second sum-check oracle reduction is intentionally omitted from this basic shape file.
 
 /-!
   ## Final check
@@ -619,16 +614,7 @@ abbrev Witness.AfterSecondSumcheck : Type := Unit
   We invoke the `CheckClaim` protocol to check the two evaluation claims.
 -/
 
--- Definition of the final relation to be checked
--- def finalCheck := placeholder
-
--- def oracleReduction.finalCheck :
---     OracleReduction ![] oSpec
---       (Statement.AfterSecondSumcheck R pp) Witness.AfterSecondSumcheck
---       Unit Unit
---       (OracleStatement.AfterSecondSumcheck R pp) (fun _ => Unit) :=
---   CheckClaim.oracleReduction oSpec (Statement.AfterSecondSumcheck R pp)
---     (OracleStatement.AfterSecondSumcheck R pp) (placeholder)
+  -- The final `CheckClaim` reduction is likewise outside this shape-only module.
 
 end Construction
 

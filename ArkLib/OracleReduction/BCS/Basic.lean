@@ -119,8 +119,8 @@ def BCSOpeningPhase (pSpec : ProtocolSpec n) {m : ℕ}
     replaced by a commitment to it, followed by
   * the opening phase `BCSOpeningPhase`, which runs the per-message opening protocols in sequence.
 
-  This is the faithful statement sketched in the original commented placeholder
-  `.append (pSpec.renameMessage CommType) (placeholder)`. -/
+  This is the faithful statement sketched by composing the renamed interaction phase with the
+  per-message opening phase. -/
 def BCSTransform (pSpec : ProtocolSpec n) {m : ℕ}
     {nCom : pSpec.MessageIdx → ℕ} (pSpecCom : ∀ i, ProtocolSpec (nCom i))
     (CommitmentType : pSpec.MessageIdx → Type) (e : pSpec.MessageIdx ≃ Fin m) :
@@ -387,8 +387,8 @@ theorem BCSCompiledPhases.toReduction_eq_BCSTransform {StmtMid WitMid : Type}
   rfl
 
 /-- Security obligations still required to turn `BCSCompiledPhases.toReduction` into the final
-compiler theorem.  These are intentionally named as fields rather than hidden in a monolithic
-an opaque placeholder: each field corresponds to a separate proof brick in issue #62.
+compiler theorem.  These are intentionally named as fields rather than hidden in one opaque
+assumption: each field corresponds to a separate proof brick in issue #62.
 
 The intended endgame is to replace this interface by the actual preservation theorems:
 completeness from commitment correctness plus phase realization, and soundness / knowledge

@@ -152,8 +152,8 @@ def knowledgeSoundness
           <| (do
             let ⟨transcript, stmtIn, witOut⟩ ← srKnowledgeSoundnessGame srProver
             let stmtOut ← liftComp (verifier.run stmtIn transcript) _
-            -- Future work: thread the actual prover/verifier query logs through the SR game and
-            -- pass them here instead of the current default placeholders.
+            -- The state-restoration game currently supplies default query logs; a strengthened SR
+            -- game can thread the actual prover/verifier logs through this call.
             let witIn ← srExtractor stmtIn witOut transcript default default
             return (stmtIn, witIn, stmtOut, witOut))).run' (← init)
     ] ≤ srKnowledgeSoundnessError

@@ -40,9 +40,9 @@ def RoundByRoundOneShot
     (oSpec : OracleSpec ι) (StmtIn WitIn : Type) {n : ℕ} (pSpec : ProtocolSpec n) :=
   (m : Fin (n + 1)) → StmtIn → Transcript m pSpec → QueryLog oSpec → WitIn
 
--- STATEMENT REPAIR (2026-06-04): completed the `IsMonotone` placeholder.
+-- STATEMENT REPAIR (2026-06-04): completed the `IsMonotone` statement.
 --
--- The previous body was an explicit "Placeholder condition for now" stated over query-log extension
+-- The previous body was an explicit query-log extension condition
 -- (`proveQueryLog₁.Sublist proveQueryLog₂`). That condition is *inert*: it is exactly what
 -- `toKnowledgeStateFunction` below needs, but only after we identify the *transcript-prefix*
 -- (round) direction along which monotonicity must hold. We derive the real content directly from

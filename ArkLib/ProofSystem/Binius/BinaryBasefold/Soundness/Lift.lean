@@ -335,10 +335,11 @@ lemma preTensorCombine_of_lift_interleavedCodeword_eq_self (i : Fin ℓ) (steps 
       WordStack (A := L) (κ := Fin (2 ^ steps))
         (ι := sDomain 𝔽q β h_ℓ_add_R_rate destIdx))) := by
   ext y rowIdx
-  exact congrFun
-    (folded_lifted_IC_eq_IC_row_polyToOracleFunc 𝔽q β
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      i steps h_destIdx h_destIdx_le V_codeword rowIdx) y
+  simpa [preTensorCombine_WordStack, Code.interleaveWordStack] using
+    congrFun
+      (folded_lifted_IC_eq_IC_row_polyToOracleFunc 𝔽q β
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        i steps h_destIdx h_destIdx_le V_codeword rowIdx) y
 
 def fiberDiff (i : Fin ℓ) (steps : ℕ) {destIdx : Fin r}
     (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
