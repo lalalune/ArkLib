@@ -22,11 +22,11 @@ This file performs **items C/D/E** of the BCIKS20 §5 proximity-gap completion p
 `ProximityGap.correlatedAgreement_affine_curves` (`Curves.lean:2520`), so that the Johnson list-
 decoding branch consumes a **real `β`** via the end-to-end capsule
 `ArkLib.BetaToCurveCoeffPolys.curveCoeffPolys_of_betaRec` instead of the vacuous hypothesis plumbing
-of `KeystoneCapstone.Section55Output` (which the ledger's Finding F4 flagged as `≡` the goal).
+of `KeystoneCapstone.Section55CurveCoeffOutput` (which the ledger's Finding F4 flagged as `≡` the goal).
 
 ## Why this is NOT the F4 wrapper
 
-`KeystoneCapstone.Section55Output u` is *definitionally* the front-door `hcoeffPoly` goal
+`KeystoneCapstone.Section55CurveCoeffOutput u` is *definitionally* the front-door `hcoeffPoly` goal
 (`∀ P, good P → CurveCoeffPolys u P`), and the proof of `hcoeffPoly_of_johnson_regime` never invokes
 `betaRec`.  That is a re-bundling, not a reduction.
 
