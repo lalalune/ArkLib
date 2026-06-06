@@ -8,6 +8,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.CodingTheory.ListDecodability
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.MvPolynomial.SchwartzZippelCounting
+import ArkLib.Data.CodingTheory.Connections.EpsMCABadGlue
+import ArkLib.ToMathlib.Bridge2GCXK25
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
@@ -158,5 +160,65 @@ theorem cs25_qeps_lt_E
   linarith [key]
 
 end CS25Arithmetic
+
+section GCXK25UnionBound
+
+open ProximityGap Code
+open scoped BigOperators
+
+variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
+variable {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
+
+/-- **GCXK25 per-stack count from a per-codeword count + list-size factor.**
+
+For a fixed stack `(u₀, u₁)`, suppose a finite codeword carrier `T ⊇ C` is given with at most
+`B_T` codewords (`|T| ≤ B_T`), and every codeword `w ∈ T` witnesses at most `b` bad combining
+points (`|mcaBadWitness C δ u₀ u₁ w| ≤ b`). Then the per-stack bad count is at most `B_T · b`:
+
+  `|mcaBad C δ u₀ u₁| ≤ B_T · b`.
+
+This is the cardinality form of GCXK25's union bound over the close-codeword list. With
+`B_T = L²` (the list-size factor) and `b` the per-codeword agree-domain count `δ·n` (GCXK25's
+`|Bad¹| ≤ pn`, plus the `1/η` second-moment summand), it yields the `L²·δ·n + 1/η` shape. -/
+theorem mcaBad_card_le_listFactor_mul_perCodeword
+    (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A)
+    (T : Finset (ι → A)) (hT : ∀ w ∈ C, w ∈ T)
+    {b B_T : ℝ} (hb0 : 0 ≤ b) (hb_card : (T.card : ℝ) ≤ B_T)
+    (hper : ∀ w ∈ T, ((mcaBadWitness (F := F) C δ u₀ u₁ w).card : ℝ) ≤ b) :
+    ((mcaBad (F := F) C δ u₀ u₁).card : ℝ) ≤ B_T * b := by
+  have h1 : ((mcaBad (F := F) C δ u₀ u₁).card : ℝ) ≤ (T.card : ℝ) * b :=
+    mcaBad_card_le_of_per_codeword C δ u₀ u₁ T hT hb0 hper
+  calc ((mcaBad (F := F) C δ u₀ u₁).card : ℝ)
+      ≤ (T.card : ℝ) * b := h1
+    _ ≤ B_T * b := by exact mul_le_mul_of_nonneg_right hb_card hb0
+
+/-- **GCXK25 / ABF26 T5.1 — `ε_mca` bound from a uniform per-codeword bad count.**
+
+The full union-bound reduction: if for *every* stack `u` there is a finite codeword carrier
+`T u ⊇ C` of size `≤ B_T`, each codeword of which witnesses at most `b` bad combining points,
+then
+
+  `ε_mca(C, δ) ≤ ENNReal.ofReal ((B_T · b) / |F|)`.
+
+This composes the union-bound brick (`mcaBad_card_le_listFactor_mul_perCodeword`) with the
+in-tree supremum-to-count glue (`ProximityGap.epsMCA_le_ofReal_of_forall_mcaBad_card_le`). The
+two residual ingredients — `B_T = L²` (list-size factor) and `b = δ·n + (1/η)/L²` (per-codeword
+agree-domain count = GCXK25's `|Bad¹| ≤ pn` plus second-moment `1/η`) — are exactly GCXK25's two
+combinatorial parts, surfaced as named per-codeword data rather than a raw per-stack count. -/
+theorem epsMCA_le_ofReal_of_per_codeword_count
+    (C : Set (ι → A)) (δ : ℝ≥0)
+    {b B_T : ℝ} (hb0 : 0 ≤ b)
+    (hcount :
+      ∀ u : WordStack A (Fin 2) ι,
+        ∃ T : Finset (ι → A), (∀ w ∈ C, w ∈ T) ∧ (T.card : ℝ) ≤ B_T ∧
+          ∀ w ∈ T, ((mcaBadWitness (F := F) C δ (u 0) (u 1) w).card : ℝ) ≤ b) :
+    epsMCA (F := F) (A := A) C δ ≤ ENNReal.ofReal ((B_T * b) / Fintype.card F) := by
+  refine epsMCA_le_ofReal_of_forall_mcaBad_card_le C δ ?_
+  intro u
+  obtain ⟨T, hT, hcard, hper⟩ := hcount u
+  exact mcaBad_card_le_listFactor_mul_perCodeword C δ (u 0) (u 1) T hT hb0 hcard hper
+
+end GCXK25UnionBound
 
 end CodingTheory.Bridge

@@ -54,6 +54,34 @@ This converts the live `sorry` into a single, auditable named hypothesis.
 `lambda_le_ggr11` itself (in `InterleavedCode.lean`) already closes the
 infinite-list case `Λ(C, δ) = ⊤` completely (the RHS is then `⊤`).  Here we also
 record `lambda_le_ggr11_of_perWordBound`, the finite-regime reduction.
+
+## The closed-form combinatorics is now in-tree (NEW)
+
+GGR11 §3 splits into two parts:
+
+* **(Tree construction.)** Build `Tree(R)`, the Erase-Decode tree (Algorithm 1).
+  Its number of leaves bounds the per-word list size.  After contracting White
+  edges (Lemma 3.3: a White edge is the *only* edge out of its node), every node
+  has at most **one** Blue out-edge (Lemma 3.4) and at most `|Λ(C,δ)|` Red
+  out-edges; every root→leaf path has at most `b` Blue edges (Lemma 3.4) and at
+  most `r` Red edges (Lemma 3.5).  This is the list-recovery / erasure-decoding
+  content that has **no in-tree analogue**.
+
+* **(Leaf counting.)** A tree with those per-node and per-path budgets has at
+  most `(b+r choose r)·|Λ(C,δ)|^r` leaves (Theorem 3.6), via the recursion
+  `t(b,r) ≤ t(b-1,r) + L·t(b,r-1)`, base `t(b,0) = 1`.
+
+We now prove the **second** part fully (`ggr11_tree_count_le`, no `sorry`/`axiom`),
+and refactor the residual so that it names *only the first part* — the existence
+of a leaf-count function satisfying the GGR11 budget recursion that dominates the
+actual close set (`GGR11TreeStructure`).  The chain
+
+  `GGR11TreeStructure → GGR11PerWordBound → lambda_le_ggr11`
+
+is then fully proven (`perWordBound_of_treeStructure`,
+`lambda_le_ggr11_of_perWordBound`).  This shrinks the named external surface from
+"the whole §3 recursion incl. the closed-form `choose` bound" down to "the
+Erase-Decode tree exists with the stated Blue/Red budgets".
 -/
 
 open ListDecodable Code InterleavedCode
@@ -97,6 +125,140 @@ theorem lambda_le_ggr11_of_perWordBound
         Set.ncard_le_encard _
     _ ≤ ((b + r).choose r : ℕ∞) * (Lambda C δ) ^ r := h f
 
+/-! ### The GGR11 leaf-counting recursion (Theorem 3.6) — fully in-tree -/
+
+/-- **GGR11 Theorem 3.6, leaf-counting bound (no external input).**
+
+Let `L : ℕ∞` be a per-node Red branching bound (in the application,
+`L = Λ(C,δ)`).  Suppose `t b r : ℕ∞` is *any* upper bound on the number of leaves
+of a rooted tree in which
+
+* every root→leaf path has at most `b` Blue and `r` Red edges,
+* every node has at most one Blue out-edge and at most `L` Red out-edges,
+
+encoded by the three structural inequalities below (`hbase`: a tree with no Red
+budget has a single leaf; `hrec0`: the Red-only column branches by `≤ L`;
+`hrec`: Pascal's recursion `t(b,r) ≤ t(b-1,r) + L·t(b,r-1)`).  Then
+
+  `t b r ≤ (b+r choose r) · L^r`.
+
+This is the entire combinatorial content of GGR11 Theorem 3.6, proved here with
+**no `sorry` and no `axiom`** by the double induction the paper indicates
+("It is easy to check that `t(b, r) ≤ (b+r choose r)·ℓ^r`"). -/
+theorem ggr11_tree_count_le
+    (L : ℕ∞) (t : ℕ → ℕ → ℕ∞)
+    (hbase : ∀ b, t b 0 ≤ 1)
+    (hrec0 : ∀ r, t 0 (r + 1) ≤ L * t 0 r)
+    (hrec : ∀ b r, t (b + 1) (r + 1) ≤ t b (r + 1) + L * t (b + 1) r) :
+    ∀ b r, t b r ≤ ((b + r).choose r : ℕ∞) * L ^ r := by
+  intro b r
+  induction r generalizing b with
+  | zero => simpa using hbase b
+  | succ r ih =>
+    induction b with
+    | zero =>
+      calc t 0 (r + 1)
+          ≤ L * t 0 r := hrec0 r
+        _ ≤ L * (((0 + r).choose r : ℕ∞) * L ^ r) := by
+              exact mul_le_mul' (le_refl L) (ih 0)
+        _ = ((0 + r).choose r : ℕ∞) * L ^ (r + 1) := by ring
+        _ = ((0 + (r + 1)).choose (r + 1) : ℕ∞) * L ^ (r + 1) := by
+              simp [Nat.choose_self]
+    | succ b ihb =>
+      calc t (b + 1) (r + 1)
+          ≤ t b (r + 1) + L * t (b + 1) r := hrec b r
+        _ ≤ ((b + (r + 1)).choose (r + 1) : ℕ∞) * L ^ (r + 1)
+              + L * (((b + 1) + r).choose r * L ^ r) := by
+              refine add_le_add ihb ?_
+              exact mul_le_mul' (le_refl L) (ih (b + 1))
+        _ = (((b + (r + 1)).choose (r + 1) : ℕ∞)
+              + ((b + 1 + r).choose r : ℕ∞)) * L ^ (r + 1) := by ring
+        _ = (((b + 1) + (r + 1)).choose (r + 1) : ℕ∞) * L ^ (r + 1) := by
+              congr 1
+              have hsplit : (b + 1) + (r + 1) = (b + (r + 1)) + 1 := by ring
+              rw [hsplit, Nat.choose_succ_succ (b + (r + 1)) r]
+              push_cast
+              have e1 : b + (r + 1) = b + r + 1 := by ring
+              have e2 : b + 1 + r = b + r + 1 := by ring
+              rw [e1, e2]
+              ring
+
+/-! ### The refined residual: only the Erase-Decode tree existence -/
+
+/-- **The GGR11 residual, refined to tree existence only.**
+
+For a fixed received interleaved word `f`, there exists a leaf-count function
+`t : ℕ → ℕ → ℕ∞` such that the close-codeword set is dominated by `t b r`, and `t`
+obeys the GGR11 Erase-Decode budget recursion with Red branching factor
+`L = Λ(C,δ)` (cf. `ggr11_tree_count_le`).
+
+This is **strictly smaller** than `GGR11PerWordBound`: it names only the existence
+of the Erase-Decode tree with the Blue/Red budgets of GGR11 Lemmas 3.3–3.5 (the
+list-recovery / erasure-decoding content with no in-tree analogue), and **drops**
+the closed-form `(b+r choose r)·L^r` combinatorics, which is now the proved lemma
+`ggr11_tree_count_le`. -/
+def GGR11TreeStructure (C : Set (ι → F)) (δ : ℝ) (m b r : ℕ) : Prop :=
+  ∀ f : Matrix ι (Fin m) F,
+    ∃ t : ℕ → ℕ → ℕ∞,
+      (closeCodewordsRel (interleavedCodeSet (κ := Fin m) C) f δ).encard ≤ t b r ∧
+      (∀ b', t b' 0 ≤ 1) ∧
+      (∀ r', t 0 (r' + 1) ≤ (Lambda C δ) * t 0 r') ∧
+      (∀ b' r', t (b' + 1) (r' + 1) ≤ t b' (r' + 1) + (Lambda C δ) * t (b' + 1) r')
+
+/-- **The closed-form combinatorics discharges `GGR11PerWordBound` from
+`GGR11TreeStructure`.**
+
+Given the Erase-Decode tree (the refined residual), the per-word bound follows by
+the fully-proven leaf-counting lemma `ggr11_tree_count_le`.  No `sorry`/`axiom`. -/
+theorem perWordBound_of_treeStructure
+    {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ}
+    (h : GGR11TreeStructure C δ m b r) :
+    GGR11PerWordBound C δ m b r := by
+  intro f
+  obtain ⟨t, hdom, hbase, hrec0, hrec⟩ := h f
+  calc (closeCodewordsRel (interleavedCodeSet (κ := Fin m) C) f δ).encard
+      ≤ t b r := hdom
+    _ ≤ ((b + r).choose r : ℕ∞) * (Lambda C δ) ^ r :=
+        ggr11_tree_count_le (Lambda C δ) t hbase hrec0 hrec b r
+
+/-- **End-to-end:** the GGR11 interleaved list-size bound from the refined
+tree-existence residual. -/
+theorem lambda_le_ggr11_of_treeStructure
+    {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ}
+    (h : GGR11TreeStructure C δ m b r) :
+    Lambda (interleavedCodeSet (κ := Fin m) C) δ
+      ≤ ((b + r).choose r : ℕ∞) * (Lambda C δ) ^ r :=
+  lambda_le_ggr11_of_perWordBound (perWordBound_of_treeStructure h)
+
+set_option linter.unusedFintypeInType false in
+/-- **The refined residual is inhabited in the elementary regime.**
+
+When `m ≤ r` and `1 ≤ Λ(C,δ)`, the in-tree product bound
+`encard ≤ Λ(C,δ)^m` already supplies a GGR11 Erase-Decode tree: take the explicit
+leaf-count `t b' r' := Λ(C,δ)^{r'}` (a tree of pure Red depth, which trivially
+meets all the Blue/Red budgets), which dominates the close set because
+`Λ(C,δ)^m ≤ Λ(C,δ)^r = t b r`.  This shows `GGR11TreeStructure` is **not
+vacuous** and is consistent with the in-tree elementary product bound; it is the
+complementary `m > r` regime (where `t b' r' := Λ^{r'}` no longer dominates) that
+needs the genuine GGR11 erasure-decoding construction. -/
+theorem ggr11_treeStructure_of_le_exp [Fintype F] [Nonempty ι]
+    {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ}
+    (hmr : m ≤ r) (hL : 1 ≤ Lambda C δ) :
+    GGR11TreeStructure C δ m b r := by
+  intro f
+  refine ⟨fun _ r' => (Lambda C δ) ^ r', ?_, ?_, ?_, ?_⟩
+  · -- domination: encard ≤ Λ^m ≤ Λ^r = t b r
+    calc (closeCodewordsRel (interleavedCodeSet (κ := Fin m) C) f δ).encard
+        ≤ (Lambda C δ) ^ m :=
+          InterleavedCode.ListSize.encard_closeCodewordsRel_interleaved_le f
+      _ ≤ (Lambda C δ) ^ r := pow_le_pow_right₀ hL hmr
+  · -- base: Λ^0 = 1 ≤ 1
+    intro b'; simp
+  · -- Red column: Λ^(r'+1) ≤ Λ · Λ^(r')  (equality)
+    intro r'; rw [pow_succ]; rw [mul_comm]
+  · -- Pascal: Λ^(r'+1) ≤ Λ^(r'+1) + Λ · Λ^(r')
+    intro b' r'; exact le_add_right (le_refl _)
+
 set_option linter.unusedFintypeInType false in
 /-- Over a *finite* field the in-tree elementary product bound discharges the
 GGR11 residual whenever the GGR11 exponent `r` already dominates the interleaving
@@ -106,7 +268,8 @@ and `1 ≤ Λ(C,δ)`, then
 `|Λ(C^{≡m},δ)| ≤ |Λ(C,δ)|^m ≤ |Λ(C,δ)|^r ≤ (b+r choose r)·|Λ(C,δ)|^r`.
 
 This is **not** the GGR11 content (which is the complementary `m > r` regime); it
-is a sanity sub-case showing the reduction is consistent with the in-tree bound. -/
+is a sanity sub-case showing the reduction is consistent with the in-tree bound.
+It now factors through the refined residual via `ggr11_treeStructure_of_le_exp`. -/
 theorem ggr11_perWordBound_of_le_exp [Fintype F] [Nonempty ι]
     {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ}
     (hmr : m ≤ r) (hL : 1 ≤ Lambda C δ) :

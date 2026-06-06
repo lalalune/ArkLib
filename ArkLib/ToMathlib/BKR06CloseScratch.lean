@@ -31,9 +31,9 @@ example (w c : ι → F) (a : ℕ)
 example (w c : ι → F) (δ : ℝ)
     (hδ : (hammingDist w c : ℝ) / Fintype.card ι ≤ δ) :
     c ∈ relHammingBall w δ := by
-  classical
   simp only [relHammingBall, Set.mem_setOf_eq, Code.relHammingDist]
-  rw [NNReal.coe_div, NNReal.coe_natCast, NNReal.coe_natCast]
-  exact hδ
+  push_cast
+  convert hδ using 3
+  congr!
 
 end BKR06ScratchTest

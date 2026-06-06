@@ -155,9 +155,9 @@ theorem isQLinearized_X (q : ℕ) : IsQLinearized q (X : K[X]) := by
   rw [if_neg h] at hn
   exact hn rfl
 
-/-- A `q`-linearized polynomial stays `q`-linearized after raising to the `q = p^t`
-power: support exponents `q^i` become `q^i · q^t`... but we only state the canonical
-case `q = p^t`, where `f^q` has support `{ q^i · q : … } = { q^{i+1} : … }`. -/
+/-- A `q`-linearized polynomial (`q = p^t`) stays `q`-linearized after raising to the
+`q`-th power: a support exponent `q^i` of `f` maps to `q^i · q = q^{i+1}` in `f^q`
+(`support_pow_expChar_pow`), still a `q`-power. -/
 theorem IsQLinearized.pow {p t : ℕ} [ExpChar K p] {f : K[X]}
     (hf : IsQLinearized (p ^ t) f) :
     IsQLinearized (p ^ t) (f ^ p ^ t) := by

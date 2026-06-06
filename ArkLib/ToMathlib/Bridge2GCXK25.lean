@@ -135,7 +135,7 @@ With `|T| ≤ L²` (the GCXK25 list-size factor) and the per-codeword agree-doma
 theorem mcaBad_card_le_of_per_codeword
     (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A)
     (T : Finset (ι → A)) (hT : ∀ w ∈ C, w ∈ T)
-    {b : ℝ} (hb0 : 0 ≤ b)
+    {b : ℝ} (_hb0 : 0 ≤ b)
     (hper : ∀ w ∈ T, ((mcaBadWitness (F := F) C δ u₀ u₁ w).card : ℝ) ≤ b) :
     ((mcaBad (F := F) C δ u₀ u₁).card : ℝ) ≤ (T.card : ℝ) * b := by
   classical

@@ -168,8 +168,8 @@ function `resp : Challenge → Response`, and the verifier accepts iff a decidab
 `acc : Challenge → Prop` holds. The fork succeeds (produces two distinct accepting challenges) iff
 `acc` has **at least two** satisfying challenges.
 
-The classical 2-special-sound knowledge error is `1/|Challenge|`: that is the largest single-challenge
-success probability a prover with at most one accepting challenge can achieve.
+The classical 2-special-sound knowledge error is `1/|Challenge|`: that is the largest
+single-challenge success probability a prover with at most one accepting challenge can achieve.
 `prob_uniform_le_inv_of_card_le_one` proves exactly this; its **contrapositive** is the forking
 lemma. -/
 
@@ -186,12 +186,12 @@ This is the contrapositive of the classical 2-special-sound knowledge-error boun
 probability at most `1/|Challenge|`. -/
 theorem exists_two_accepting_of_gt_inv
     (acc : Challenge → Prop)
-    (h : (Fintype.card Challenge : ENNReal)⁻¹ < Pr_{ let r ←$ᵖ Challenge }[acc r]) :
+    (h : (Fintype.card Challenge : ENNReal)⁻¹ < Pr_{ let r ← $ᵖ Challenge}[acc r]) :
     ∃ r₁ r₂ : Challenge, acc r₁ ∧ acc r₂ ∧ r₁ ≠ r₂ := by
   classical
   -- Contrapositive: if `acc` had at most one accepting challenge, success ≤ 1/|Challenge|.
   by_contra hcon
-  push_neg at hcon
+  push Not at hcon
   -- `hcon : ∀ r₁ r₂, acc r₁ → acc r₂ → r₁ = r₂`, i.e. the accepting set has `card ≤ 1`.
   have hcard : (Finset.univ.filter acc).card ≤ 1 := by
     rw [Finset.card_le_one]
@@ -217,7 +217,7 @@ theorem twoSpecialSound_forkingLemma
     (hE : E.TwoSpecialSound relIn stmtOf accepts)
     (pre : Prefix) (resp : Challenge → Response)
     (h : (Fintype.card Challenge : ENNReal)⁻¹ <
-        Pr_{ let r ←$ᵖ Challenge }[accepts pre (r, resp r)]) :
+        Pr_{ let r ← $ᵖ Challenge}[accepts pre (r, resp r)]) :
     ∃ c₁ c₂ : Completion Challenge Response, (stmtOf pre, E pre c₁ c₂) ∈ relIn := by
   obtain ⟨r₁, r₂, ha₁, ha₂, hne⟩ := exists_two_accepting_of_gt_inv _ h
   exact forkingExtractor_succeeds E hE pre
@@ -260,7 +260,7 @@ content of [NOZ26] Lemma 4 / [FMN24] §7–8 still to be assembled, but resting 
 theorem exists_schedule_with_many_distinct_challenges
     (Φ : PMF (Schedule → Challenge)) (ε : ENNReal)
     (hΦ : ∀ x y : Schedule, x ≠ y →
-        Pr_{ let φ ← Φ }[ (decide (φ x = φ y) : Prop) ] ≤ ε) :
+        Pr_{ let φ ← Φ }[(decide (φ x = φ y) : Prop)] ≤ ε) :
     ∃ φ ∈ Φ.support, ((Finset.univ.image φ).card : ENNReal) ≥
       (Fintype.card Schedule : ENNReal) /
         (1 + (Fintype.card Schedule - 1) * ε) :=
@@ -313,7 +313,7 @@ theorem knowledgeSoundnessViaRewinding.extracts
     (h : knowledgeSoundnessViaRewinding relIn stmtOf accepts)
     (pre : Prefix) (resp : Challenge → Response)
     (hwin : (Fintype.card Challenge : ENNReal)⁻¹ <
-        Pr_{ let r ←$ᵖ Challenge }[accepts pre (r, resp r)]) :
+        Pr_{ let r ← $ᵖ Challenge}[accepts pre (r, resp r)]) :
     ∃ (E : RewindingExtractor Prefix Challenge Response WitIn)
       (c₁ c₂ : Completion Challenge Response), (stmtOf pre, E pre c₁ c₂) ∈ relIn := by
   obtain ⟨E, hE⟩ := h

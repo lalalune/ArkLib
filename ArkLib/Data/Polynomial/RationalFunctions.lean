@@ -45,7 +45,9 @@ additively** so it genuinely routes through `betaRec`:
 
 -/
 
-set_option linter.style.longFile 3200
+-- Documentation-heavy file (BCIKS §5 / App-A.4 prose in the docstrings); the long-line style
+-- linter is disabled locally, matching the sibling `RationalFunctionsCore.lean`.
+set_option linter.style.longLine false
 
 open Polynomial Polynomial.Bivariate ToRatFunc Ideal
 

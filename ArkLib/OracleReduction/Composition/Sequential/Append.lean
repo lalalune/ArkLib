@@ -486,6 +486,26 @@ instance AppendCoherent.append
 
 end OracleVerifier.Append
 
+/-- **NAMED RESIDUAL (deep, structural router/`simulateQ` interchange).** The plain verifier extracted
+from the composite oracle verifier equals the composition of the two extracted plain verifiers.
+
+The LHS `(OracleVerifier.append V₁ V₂).toVerifier` runs the router-composed `OracleVerifier.Append.verify`
+(`V₁` via `router₁`, then `V₂` via `router₂ V₁`) under a *single* `simulateQ (simOracle2 oSpec oStmt₁
+(messages over the appended spec))`. The RHS runs `V₁.toVerifier` (its own `simulateQ` over
+`OStmt₁`/`pSpec₁.Message`) then `V₂.toVerifier` (its own `simulateQ` over `OStmt₂`/`pSpec₂.Message`).
+Proving them equal needs the two router-interchange facts:
+  * `simulateQ (simOracle2 … appendedMsgs) ∘ simulateQ router₁` collapses to
+    `simulateQ (simOracle2 oSpec oStmt₁ pSpec₁.messages)` — i.e. `router₁` followed by the appended
+    message oracle answers `pSpec₁`-messages at `MessageIdx.inl` exactly as `V₁`'s own oracle would
+    (using `instAppend_inl_heq`/`Message_inl`);
+  * likewise `router₂ V₁` followed by the appended oracle answers `pSpec₂`-messages at `MessageIdx.inr`
+    (via `instAppend_inr_heq`) and `OStmt₂`-queries via `emitOStmt₂Query` — which, under the
+    `AppendCoherent` instance, route to `V₁`'s output oracle statements exactly as `V₂.toVerifier`'s
+    own `simOracle2` would, the intermediate `oStmt₂` being `V₁.toVerifier`'s derived output oracles.
+This is the structural sibling of `Prover.append_run` (a `simulateQ`/routing interchange rather than a
+`runToRound` interchange) and is the deep obstruction here; it is *not* probabilistic. It feeds the
+four `OracleVerifier.append_*` security theorems (their `convert … ; simp [append_toVerifier]` steps).
+-/
 @[simp]
 lemma OracleVerifier.append_toVerifier
     (V₁ : OracleVerifier oSpec Stmt₁ OStmt₁ Stmt₂ OStmt₂ pSpec₁)
@@ -672,6 +692,19 @@ variable {Stmt₁ Wit₁ Stmt₂ Wit₂ Stmt₃ Wit₃ : Type}
 
 namespace Reduction
 
+/-- **NAMED RESIDUAL — reduces to the single keystone `Prover.append_run`.** Unlike the soundness
+theorems (which quantify over arbitrary malicious provers), completeness uses the *honest* composite
+prover `(R₁.prover).append (R₂.prover)`, so the run factoring is exactly `Prover.append_run` (the deep
+keystone in this file, whose per-round seam/interior reductions are all proven; only the right-block
+run induction + output assembly remain). Once `Prover.append_run` is available, the proof is:
+1. rewrite `(R₁.append R₂).run` via `Prover.append_run` (prover side) + `Verifier.append_run` (proven,
+   `rfl`, verifier side) into the sequential `R₁.run >>= R₂.run` shape;
+2. push the success-probability through the bind: the phase-1 output `(stmt₂, wit₂) ∈ rel₂` holds
+   except w.p. `completenessError₁` (by `h₁`), and conditioned on it the phase-2 output is in `rel₃`
+   except w.p. `completenessError₂` (by `h₂`);
+3. union bound ⇒ total error `completenessError₁ + completenessError₂`.
+The genuinely-deep dependency is therefore *only* `Prover.append_run`; the probabilistic step is the
+standard two-stage success-probability union bound. -/
 theorem reduction_append_completeness
     (R₁ : Reduction oSpec Stmt₁ Wit₁ Stmt₂ Wit₂ pSpec₁)
     (R₂ : Reduction oSpec Stmt₂ Wit₂ Stmt₃ Wit₃ pSpec₂)
@@ -738,6 +771,27 @@ theorem append_knowledgeSoundness
         rel₁ rel₃ (knowledgeError₁ + knowledgeError₂) := by
   sorry
 
+/-- **NAMED RESIDUAL (deep) + DOCUMENTED STATEMENT GAP (missing side conditions).**
+Sequential composition preserves round-by-round soundness, with the per-round error obtained by
+routing through `ChallengeIdx.sumEquiv`.
+
+The composite state function is intended to be `Verifier.StateFunction.append` (proven, above), which
+witnesses the existential in the target `rbrSoundness`. *However*, `StateFunction.append` carries two
+side hypotheses that this theorem's statement does not currently provide, so as stated the theorem
+cannot be discharged via the intended route (a faithful proof must thread these in):
+  * `hVerify : V₁ = ⟨fun stmt tr => pure (verify stmt tr)⟩` — the first verifier must be
+    *deterministic & non-failing*. The crossing inversion of `S₁.toFun_full` into the pointwise
+    `verify … ∉ lang₂` (the mechanism that makes the composite `toFun_full` true, per the
+    `StateFunction.append` statement-repair note) requires `V₁` to be a `pure`-verifier.
+  * `hInit : ∃ s, s ∈ support init` — at least one reachable initial state, else the `Pr = 0`
+    inversion is vacuous.
+With those two hypotheses added (or a more general `StateFunction.append` that drops determinism), the
+remaining content is: instantiate the composite state function, then per challenge round `i` of the
+appended protocol case on whether `i` lies in phase 1 (defer to `h₁`'s round bound, the appended
+challenge index `ChallengeIdx.inl i` carrying error `rbrSoundnessError₁ i`) or phase 2 (defer to
+`h₂`, `ChallengeIdx.inr`), the partial transcript split by the proven `Transcript.fst`/`.snd`
+transports — a per-round probabilistic argument with no honest-prover seam (rbr soundness is
+single-round, so no `Prover.append_run` is needed here). -/
 theorem append_rbrSoundness {lang₁ : Set Stmt₁} {lang₂ : Set Stmt₂} {lang₃ : Set Stmt₃}
     (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁)
     (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
@@ -749,6 +803,21 @@ theorem append_rbrSoundness {lang₁ : Set Stmt₁} {lang₂ : Set Stmt₂} {lan
         (Sum.elim rbrSoundnessError₁ rbrSoundnessError₂ ∘ ChallengeIdx.sumEquiv.symm) := by
   sorry
 
+/-- **NAMED RESIDUAL (deep) + DOCUMENTED STATEMENT GAP (missing side conditions).**
+Sequential composition preserves round-by-round knowledge soundness.
+
+The composite knowledge state function / round-by-round extractor are intended to be the proven
+`Verifier.StateFunction.append` (for the state-function leg) and `Extractor.RoundByRound.append` (the
+round-by-round extractor, proven above, which threads the intermediate statement via a deterministic
+`verify : Stmt₁ → pSpec₁.FullTranscript → Stmt₂`). As with `append_rbrSoundness`, the statement is
+missing the two side hypotheses that the intended state-function construction requires:
+  * `hVerify` (V₁ deterministic & non-failing) — also supplies the very `verify` function that
+    `Extractor.RoundByRound.append` consumes; without it neither the state-function nor the extractor
+    leg can be instantiated;
+  * `hInit : ∃ s, s ∈ support init`.
+With those added, the residue is the per-round knowledge bound: case on phase-1 vs phase-2 of the
+appended challenge index, defer to `h₁`/`h₂`, and identify the composite `extractMid`/`extractOut`
+(per `Extractor.RoundByRound.append`'s construction) with the per-phase extractors across the seam. -/
 theorem append_rbrKnowledgeSoundness
     (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁)
     (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
