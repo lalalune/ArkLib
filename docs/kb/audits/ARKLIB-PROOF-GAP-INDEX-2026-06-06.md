@@ -58,6 +58,24 @@ rg -n --glob '*.lean' 'opaque\s+\w+|placeholder|stub|TODO|FIXME|named residual|e
 | Toolchain and Mathlib rebuild stabilization | #34 |
 | Axiom audits pending toolchain rebuild | #35 |
 | Final global verification report refresh | #36 |
+| BKR06 final arithmetic side conditions | #38 |
+| Grand MCA radius-one middle-band extremal count | #39 |
+| Upstream PRs to Verified-zkEVM/ArkLib | #44 |
+| ABF26 errata to Proximity Prize judges | #45 |
+| ABF26 §4 CapacityBounds external CA/MCA theorem family | #48 |
+| Johnson-family bounds: Joh62 Jqℓ + MDS Johnson corollary | #49 |
+| GGR11 interleaved list-size recursion + erase-decode tree | #50 |
+| Multiplicative rigidity: product-coset + in-band cluster bounds | #51 |
+| MCAGS beyond-UDR GS-list mass bound | #52 |
+| ABF26 §3 list-decoding theorem family | #54 |
+| Grand challenges MCA-attainment counterpart / stale reference | #55 |
+| Grand LD four-rate numeric Johnson/Elias certificates | #56 |
+| Grand MCA faithful lattice-threshold brackets at four rates | #57 |
+| Grand challenges singular/plural lattice encoding bridges | #58 |
+| Proximity-prize audit doc refresh (this index family) | #59 |
+
+Closed second-pass issues (#37, #40-#43, #46-#47, #53) are recorded in the refreshed
+proximity-prize index; see "Related indexes" below.
 
 ## Interpretation
 

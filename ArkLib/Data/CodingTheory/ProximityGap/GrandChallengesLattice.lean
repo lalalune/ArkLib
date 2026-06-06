@@ -67,10 +67,12 @@ duplicate** — both are kept and both are fully proven (axiom-clean):
   `GrandChallenges.listLatticeSet, Finset.mem_filter, Finset.mem_range` and therefore
   depend on that `Finset ℕ` representation.
 
-The two representations are structurally incompatible (`Finset ℕ` vs `Finset (Fin (n+1))`),
-so neither file can be replaced by a re-export of the other without rewriting the downstream
-proofs; both are retained intentionally. See the singular file's header for the full
-disposition note.
+This file also contains the canonical bridge API back to the singular `Finset ℕ`
+representation: `val_mem_*LatticeSet_iff_*Satisfies`, nonemptiness equivalences,
+`*_val_eq_*LatticeThreshold`, and the MCA/list
+`*PrizeLatticeResolved_of_canonical_*LatticeThreshold_eq` transport lemmas. These show that
+the two retained representations agree under `Fin.val` while allowing downstream proofs to
+keep whichever shape is most convenient.
 
 ## References
 
@@ -164,12 +166,36 @@ noncomputable def mcaSatSet (C : Set (ι → F)) (ε_star : ℝ≥0) :
     j ∈ mcaSatSet C ε_star ↔ mcaSatisfies C ε_star j := by
   simp [mcaSatSet]
 
+/-- Bridge from the `Fin (n+1)` MCA lattice encoding to the canonical `Finset ℕ`
+encoding in `GrandChallengeLattice.lean`. -/
+theorem val_mem_mcaLatticeSet_iff_mcaSatisfies
+    (C : Set (ι → F)) (ε_star : ℝ≥0) (j : Fin (Fintype.card ι + 1)) :
+    j.val ∈ GrandChallenges.mcaLatticeSet C ε_star ↔ mcaSatisfies C ε_star j := by
+  classical
+  rw [GrandChallenges.mcaLatticeSet, Finset.mem_filter, Finset.mem_range]
+  simp [mcaSatisfies, mcaLatticePoint, j.isLt]
+
 /-- **Existence (nonemptiness) hypothesis.** The paper's "assuming `|F|` sufficiently large
 so that such a `δ*_C` exists": some lattice radius keeps `ε_mca` within `ε*`. Equivalently,
 the satisfying set is nonempty. This is the *only* hypothesis the lattice encoding needs;
 once it holds, the threshold is a well-defined finite quantity. -/
 def mcaThresholdExists (C : Set (ι → F)) (ε_star : ℝ≥0) : Prop :=
   ∃ j : Fin (Fintype.card ι + 1), mcaSatisfies C ε_star j
+
+theorem mcaSatSet_nonempty_iff_mcaLatticeSet_nonempty
+    (C : Set (ι → F)) (ε_star : ℝ≥0) :
+    (mcaSatSet C ε_star).Nonempty ↔ (GrandChallenges.mcaLatticeSet C ε_star).Nonempty := by
+  classical
+  constructor
+  · rintro ⟨j, hj⟩
+    exact ⟨j.val, (val_mem_mcaLatticeSet_iff_mcaSatisfies C ε_star j).mpr
+      ((mem_mcaSatSet C ε_star).mp hj)⟩
+  · rintro ⟨j, hj⟩
+    have hj_range : j < Fintype.card ι + 1 := by
+      rw [GrandChallenges.mcaLatticeSet, Finset.mem_filter, Finset.mem_range] at hj
+      exact hj.1
+    exact ⟨⟨j, hj_range⟩, (mem_mcaSatSet C ε_star).mpr
+      ((val_mem_mcaLatticeSet_iff_mcaSatisfies C ε_star ⟨j, hj_range⟩).mp hj)⟩
 
 theorem mcaSatSet_nonempty_iff (C : Set (ι → F)) (ε_star : ℝ≥0) :
     (mcaSatSet C ε_star).Nonempty ↔ mcaThresholdExists C ε_star := by
@@ -199,6 +225,39 @@ theorem le_mcaThreshold (C : Set (ι → F)) (ε_star : ℝ≥0)
     (hj : mcaSatisfies C ε_star j) :
     j ≤ mcaThreshold C ε_star hne :=
   (mcaSatSet C ε_star).le_max' j ((mem_mcaSatSet C ε_star).mpr hj)
+
+/-- The `Fin (n+1)` MCA threshold and the canonical `Finset ℕ` MCA threshold have the
+same value under `Fin.val`. -/
+theorem mcaThreshold_val_eq_mcaLatticeThreshold
+    (C : Set (ι → F)) (ε_star : ℝ≥0)
+    (hne_fin : mcaThresholdExists C ε_star)
+    (hne_nat : (GrandChallenges.mcaLatticeSet C ε_star).Nonempty) :
+    (mcaThreshold C ε_star hne_fin).val =
+      GrandChallenges.mcaLatticeThreshold C ε_star hne_nat := by
+  classical
+  apply le_antisymm
+  · have hsat := mcaThreshold_spec C ε_star hne_fin
+    exact Finset.le_max' (GrandChallenges.mcaLatticeSet C ε_star)
+      (mcaThreshold C ε_star hne_fin).val
+      ((val_mem_mcaLatticeSet_iff_mcaSatisfies C ε_star
+        (mcaThreshold C ε_star hne_fin)).mpr hsat)
+  · have hmem :=
+      (GrandChallenges.mcaLatticeSet C ε_star).max'_mem hne_nat
+    have hmem_set :
+        GrandChallenges.mcaLatticeThreshold C ε_star hne_nat ∈
+          GrandChallenges.mcaLatticeSet C ε_star := by
+      simpa [GrandChallenges.mcaLatticeThreshold] using hmem
+    have hrange : GrandChallenges.mcaLatticeThreshold C ε_star hne_nat <
+        Fintype.card ι + 1 := by
+      have h := hmem_set
+      simp [GrandChallenges.mcaLatticeSet] at h
+      exact Nat.lt_succ_of_le h.1
+    have hsat :
+        mcaSatisfies C ε_star
+          ⟨GrandChallenges.mcaLatticeThreshold C ε_star hne_nat, hrange⟩ :=
+      (val_mem_mcaLatticeSet_iff_mcaSatisfies C ε_star
+        ⟨GrandChallenges.mcaLatticeThreshold C ε_star hne_nat, hrange⟩).mp hmem_set
+    exact Fin.le_iff_val_le_val.mp (le_mcaThreshold C ε_star hne_fin hsat)
 
 /-- **Strict failure above the threshold.** Any lattice point strictly above `mcaThreshold`
 fails the bound: `ε_mca(C, j/n) > ε*`. This is the lattice analogue of the (collapse-broken)
@@ -1145,9 +1204,35 @@ noncomputable def listSatSet (C : Set (ι → F)) (m : ℕ) (ε_star : ℝ≥0) 
     j ∈ listSatSet C m ε_star ↔ listSatisfies C m ε_star j := by
   simp [listSatSet]
 
+/-- Bridge from the `Fin (n+1)` list lattice encoding to the canonical `Finset ℕ`
+encoding in `GrandChallengeLattice.lean`. -/
+theorem val_mem_listLatticeSet_iff_listSatisfies
+    (C : Set (ι → F)) (m : ℕ) (ε_star : ℝ≥0)
+    (j : Fin (Fintype.card ι + 1)) :
+    j.val ∈ GrandChallenges.listLatticeSet C m ε_star ↔ listSatisfies C m ε_star j := by
+  classical
+  rw [GrandChallenges.listLatticeSet, Finset.mem_filter, Finset.mem_range]
+  simp [listSatisfies, mcaLatticePoint, j.isLt]
+
 /-- **Existence (nonemptiness) hypothesis** for the list-decoding lattice threshold. -/
 def listThresholdExists (C : Set (ι → F)) (m : ℕ) (ε_star : ℝ≥0) : Prop :=
   ∃ j : Fin (Fintype.card ι + 1), listSatisfies C m ε_star j
+
+theorem listSatSet_nonempty_iff_listLatticeSet_nonempty
+    (C : Set (ι → F)) (m : ℕ) (ε_star : ℝ≥0) :
+    (listSatSet C m ε_star).Nonempty ↔
+      (GrandChallenges.listLatticeSet C m ε_star).Nonempty := by
+  classical
+  constructor
+  · rintro ⟨j, hj⟩
+    exact ⟨j.val, (val_mem_listLatticeSet_iff_listSatisfies C m ε_star j).mpr
+      ((mem_listSatSet C m ε_star).mp hj)⟩
+  · rintro ⟨j, hj⟩
+    have hj_range : j < Fintype.card ι + 1 := by
+      rw [GrandChallenges.listLatticeSet, Finset.mem_filter, Finset.mem_range] at hj
+      exact hj.1
+    exact ⟨⟨j, hj_range⟩, (mem_listSatSet C m ε_star).mpr
+      ((val_mem_listLatticeSet_iff_listSatisfies C m ε_star ⟨j, hj_range⟩).mp hj)⟩
 
 theorem listSatSet_nonempty_iff (C : Set (ι → F)) (m : ℕ) (ε_star : ℝ≥0) :
     (listSatSet C m ε_star).Nonempty ↔ listThresholdExists C m ε_star := by
@@ -1175,6 +1260,39 @@ theorem le_listThreshold (C : Set (ι → F)) (m : ℕ) (ε_star : ℝ≥0)
     (hj : listSatisfies C m ε_star j) :
     j ≤ listThreshold C m ε_star hne :=
   (listSatSet C m ε_star).le_max' j ((mem_listSatSet C m ε_star).mpr hj)
+
+/-- The `Fin (n+1)` list threshold and the canonical `Finset ℕ` list threshold have the
+same value under `Fin.val`. -/
+theorem listThreshold_val_eq_listLatticeThreshold
+    (C : Set (ι → F)) (m : ℕ) (ε_star : ℝ≥0)
+    (hne_fin : listThresholdExists C m ε_star)
+    (hne_nat : (GrandChallenges.listLatticeSet C m ε_star).Nonempty) :
+    (listThreshold C m ε_star hne_fin).val =
+      GrandChallenges.listLatticeThreshold C m ε_star hne_nat := by
+  classical
+  apply le_antisymm
+  · have hsat := listThreshold_spec C m ε_star hne_fin
+    exact Finset.le_max' (GrandChallenges.listLatticeSet C m ε_star)
+      (listThreshold C m ε_star hne_fin).val
+      ((val_mem_listLatticeSet_iff_listSatisfies C m ε_star
+        (listThreshold C m ε_star hne_fin)).mpr hsat)
+  · have hmem :=
+      (GrandChallenges.listLatticeSet C m ε_star).max'_mem hne_nat
+    have hmem_set :
+        GrandChallenges.listLatticeThreshold C m ε_star hne_nat ∈
+          GrandChallenges.listLatticeSet C m ε_star := by
+      simpa [GrandChallenges.listLatticeThreshold] using hmem
+    have hrange : GrandChallenges.listLatticeThreshold C m ε_star hne_nat <
+        Fintype.card ι + 1 := by
+      have h := hmem_set
+      simp [GrandChallenges.listLatticeSet] at h
+      exact Nat.lt_succ_of_le h.1
+    have hsat :
+        listSatisfies C m ε_star
+          ⟨GrandChallenges.listLatticeThreshold C m ε_star hne_nat, hrange⟩ :=
+      (val_mem_listLatticeSet_iff_listSatisfies C m ε_star
+        ⟨GrandChallenges.listLatticeThreshold C m ε_star hne_nat, hrange⟩).mp hmem_set
+    exact Fin.le_iff_val_le_val.mp (le_listThreshold C m ε_star hne_fin hsat)
 
 /-- **Strict failure above the threshold.** -/
 theorem gt_listThreshold_exceeds (C : Set (ι → F)) (m : ℕ) (ε_star : ℝ≥0)
@@ -1576,6 +1694,32 @@ theorem mcaPrizeLatticeResolved_of_adjacent_witnesses
   exact mcaThreshold_eq_latticeIndexOf_lowerWitness_of_adjacent
     C epsStar (wlo j) (whi j) (hδhi j) (hadj j)
 
+/-- Exact values for the canonical `Finset ℕ` MCA threshold resolve the four-rate faithful
+MCA prize predicate in the `Fin (n+1)` lattice representation. -/
+theorem mcaPrizeLatticeResolved_of_canonical_mcaLatticeThreshold_eq
+    (domain : ι ↪ F)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1))
+    (hne : ∀ r : Fin 4,
+      (GrandChallenges.mcaLatticeSet
+        (ReedSolomon.code domain
+          ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar).Nonempty)
+    (heq : ∀ r : Fin 4,
+      GrandChallenges.mcaLatticeThreshold
+        (ReedSolomon.code domain
+          ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar (hne r) = (τ r).val) :
+    mcaPrizeLatticeResolved domain τ := by
+  intro r
+  let C : Set (ι → F) :=
+    ReedSolomon.code domain ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊
+  have hne' : mcaThresholdExists C epsStar :=
+    (mcaSatSet_nonempty_iff C epsStar).mp
+      ((mcaSatSet_nonempty_iff_mcaLatticeSet_nonempty C epsStar).mpr (hne r))
+  refine ⟨hne', ?_⟩
+  apply Fin.ext
+  rw [mcaThreshold_val_eq_mcaLatticeThreshold C epsStar hne' (hne r), heq r]
+
 /-- A proposed solution of the list-decoding prize lattice problem at interleaving `m`: for
 every prize rate, the faithful list-decoding lattice threshold is the supplied index `τ j`. -/
 def listPrizeLatticeResolved (domain : ι ↪ F) (m : ℕ)
@@ -1729,37 +1873,12 @@ theorem listPrizeLatticeResolved_of_canonical_listLatticeThreshold_eq
   intro r
   let C : Set (ι → F) :=
     ReedSolomon.code domain ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊
-  let t : ℕ := GrandChallenges.listLatticeThreshold C m epsStar (hne r)
-  have ht_mem : t ∈ GrandChallenges.listLatticeSet C m epsStar := by
-    simpa [t] using
-      (GrandChallenges.listLatticeSet C m epsStar).max'_mem (hne r)
-  have ht_range : t < Fintype.card ι + 1 := by
-    rw [GrandChallenges.listLatticeSet, Finset.mem_filter, Finset.mem_range] at ht_mem
-    exact ht_mem.1
-  have ht_bound :
-      (Lambda (C^⋈ (Fin m)) (((t : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) :
-          ENNReal) ≤ (epsStar : ENNReal) * (Fintype.card F : ENNReal) := by
-    rw [GrandChallenges.listLatticeSet, Finset.mem_filter, Finset.mem_range] at ht_mem
-    exact ht_mem.2
-  have hτval : t = (τ r).val := by
-    simpa [C, t] using heq r
-  have hsatτ : listSatisfies C m epsStar (τ r) := by
-    unfold listSatisfies mcaLatticePoint
-    simpa [hτval] using ht_bound
-  let hne' : listThresholdExists C m epsStar := ⟨τ r, hsatτ⟩
+  have hne' : listThresholdExists C m epsStar :=
+    (listSatSet_nonempty_iff C m epsStar).mp
+      ((listSatSet_nonempty_iff_listLatticeSet_nonempty C m epsStar).mpr (hne r))
   refine ⟨hne', ?_⟩
-  have hmax : ∀ i : Fin (Fintype.card ι + 1), listSatisfies C m epsStar i → i ≤ τ r := by
-    intro i hi
-    have hi_mem : i.val ∈ GrandChallenges.listLatticeSet C m epsStar := by
-      rw [GrandChallenges.listLatticeSet, Finset.mem_filter, Finset.mem_range]
-      refine ⟨i.isLt, ?_⟩
-      unfold listSatisfies mcaLatticePoint at hi
-      simpa using hi
-    have hi_le_t : i.val ≤ t :=
-      Finset.le_max' (GrandChallenges.listLatticeSet C m epsStar) i.val hi_mem
-    rw [Fin.le_iff_val_le_val]
-    exact le_trans hi_le_t (le_of_eq hτval)
-  exact (listThreshold_unique C m epsStar hne' (τ r) hsatτ hmax).symm
+  apply Fin.ext
+  rw [listThreshold_val_eq_listLatticeThreshold C m epsStar hne' (hne r), heq r]
 
 /-- Per-rate adjacent Johnson-square/Elias certificates resolve the faithful four-rate
 list-decoding lattice prize directly.

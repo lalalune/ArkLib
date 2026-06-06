@@ -2,7 +2,7 @@
 
 > Historical note (superseded as current inventory, 2026-06-06): this records one isolated
 > integration attempt. It is useful provenance, but current residual ownership lives in
-> `../CURRENT-RESIDUALIZED-TREE-2026-06-06.md` and issues #6-#23.
+> `../CURRENT-RESIDUALIZED-TREE-2026-06-06.md` (issue map now spans #6-#59).
 
 Isolated worktree: `/home/shaw/arklib-integrate` (detached HEAD `2db3e2da`, branch
 `proximity-tomathlib-artifacts`), own hardlinked `.lake`. Shared submodule checkout never touched.

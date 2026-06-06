@@ -50,7 +50,11 @@ orthogonal to the deep open question.  The faithful quantitative reformulation (
 bound) is the subject of `GrandChallengeLDThreshold.lean`.
 
 The analogous resolution for the Grand MCA Challenge (whose `ε_mca` is a step function
-of `δ` for the same reason) is in `GrandChallengeMCAAttainment.lean`.
+of `δ` for the same reason) is in `GrandChallengeCollapse.lean`
+(`grandMCAChallenge_iff_epsMCA_one`, `mcaPrize_iff_forall_epsMCA_one`); the resulting
+radius-one question is analyzed further in `GrandChallengeRadiusOne.lean`,
+`GrandChallengeRadiusOneExact.lean`, and `GrandChallengeDecision.lean`, with the
+faithful-witness framework in `GrandChallengeResolutionWitness.lean`.
 -/
 
 namespace ProximityGap

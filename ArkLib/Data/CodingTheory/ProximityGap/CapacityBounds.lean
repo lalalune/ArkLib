@@ -88,6 +88,62 @@ is either:
 These are tracked in `docs/kb/ABF26_PLAN.md` §7 and will be stated alongside the corresponding
 code-family definitions in Phase 3.
 
+## Disposition ledger (issue #48)
+
+Classification of every statement in this file.  *DIRECT PORT* = principal external paper
+result, admitted as a `Prop`-valued statement; *DERIVED COROLLARY* = blocked solely on other
+named statements, with the corollary content checked in-tree; *CONSTRUCTION* = existence of a
+witness code/family (lower-bound direction; not dischargeable by any in-tree upper-bound
+machinery); *SHADOW* = placeholder pending a canonical formalization elsewhere.
+
+| statement | class | blocked on / notes |
+|---|---|---|
+| `linear_epsMCA_1_5_johnson_gkl24` (T4.11.1) | DIRECT PORT | ∛-radius list count absent (#49 tracks the √-radius side) |
+| `linear_epsCA_1_5_johnson_bgks20` (T4.11.2) | DIRECT PORT | η-margin fold/interleave union bound absent |
+| `rs_epsCA_bchks25_item2` (T4.9.2) | DIRECT PORT | BCHKS25 RS interpolation count absent |
+| `rs_epsCA_small_loss_r4_10` (R4.10) | DERIVED COROLLARY | solely on T4.9.2; checked reduction `rs_epsCA_small_loss_r4_10_of_residuals` + repaired floor side condition in-tree |
+| `rs_epsMCA_johnson_range_bchks25` (T4.12) | DIRECT PORT | m-multiplicity RS interpolation absent (#10 tracks the Hab25 variant) |
+| `rs_epsCA_lower_capacity_bchks25_kk25` (T4.16) | CONSTRUCTION | capacity-regime bad-code witness (#39 tracks the exact middle-band count) |
+| `rs_epsCA_breakdown_cs25` (T4.17) | CONSTRUCTION | `≥ 1` half needs the qEntropy ↔ RS-ball-count bridge; `≤ 1` half trivial |
+| `rs_epsCA_johnson_jump_bchks25` (T4.18) | CONSTRUCTION | char-2 Johnson-jump witness family |
+| `linear_epsCA_ge_sampling_dg25` (L4.19) | DIRECT PORT | covering-radius sampling identity absent |
+| `subspaceDesign_epsMCA_gg25` (T4.13) | DIRECT PORT | GG25 line-stitching/list-decoding pipeline; list-decoding input tracked by #53 |
+| `frs_epsMCA_capacity_gg25` (T4.14) | DERIVED COROLLARY | solely on T4.13 + T2.18; checked reduction `frs_epsMCA_capacity_gg25_of_residuals` in-tree |
+| `subspaceDesign_epsCA_curves_polynomial_generators_bcgm25` | SHADOW | restate via `IsMCAGenerator` once PR #489 lands; do not prove as-is |
+
+**No statement in this file is disproven.**  The two repaired items are R4.10 (the naive
+`0 < γ < 1` floor-collapse shortcut is refuted in-tree by
+`r4_10_floor_collapse_hypotheses_insufficient`; the corrected reduction carries an explicit
+no-boundary-crossing hypothesis) and the BCGM25 entry (deliberately a curve-CA shadow of the
+real mutual-correlated-agreement statement; see its docstring).  Related *statement-level*
+breakdowns of capacity-reading conjectures (CS25/BCHKS25 "capacity false" results) are
+recorded here as the *constructions* T4.16–T4.18 — they are inputs that bound the Grand MCA
+threshold from above, not defects of these statements.
+
+## Feeders into the Grand MCA witnesses (priority per issue #48)
+
+The bridges `GrandChallenges.MCALowerWitness.ofLe` / `MCAUpperWitness.ofGt` consume these
+statements directly:
+
+- **Lower witnesses (`δ* ≥ δ`, via `MCALowerWitness.ofLe`)** — the `ε_mca` *upper* bounds:
+  T4.13 (`subspaceDesign_epsMCA_gg25`), T4.14 (`frs_epsMCA_capacity_gg25`) for the
+  subspace-design/FRS route up to capacity, and T4.12 (`rs_epsMCA_johnson_range_bchks25`)
+  for plain RS in the Johnson range; T4.11.1 for general linear codes at the 1.5-Johnson
+  radius.  These are the highest-priority ports: each one immediately moves the faithful
+  lattice-threshold bracket (`GrandChallengesLattice`, `MCAPlateauWindow`).
+- **Upper witnesses (`δ* ≤ δ`, via `MCAUpperWitness.ofGt` and `ε_ca ≤ ε_mca`)** — the
+  capacity-regime *lower* bounds: T4.16 (`rs_epsCA_lower_capacity_bchks25_kk25`),
+  T4.17 (`rs_epsCA_breakdown_cs25`), T4.18 (`rs_epsCA_johnson_jump_bchks25`),
+  L4.19 (`linear_epsCA_ge_sampling_dg25`).  In-tree, the unconditional upper-witness side
+  is already supplied by the subset-sum constructions (`MCAPlateauWindow`,
+  `MCAUpperWitness.ofSubsetSumsCapacityPred`), so these ports refine constants rather than
+  unblock the lattice.
+
+Issue cross-links: #48 (this ledger), #39 (radius-one extremal count), #52 (MCAGS
+beyond-UDR mass bound), #54 (§3 list-decoding family), #49 (Johnson family), #50 (GGR11
+interleaving), #10 (Hab25 bundle), #11 (L4.6 hard direction), #53 (GK16/CZ25
+subspace-design inputs).
+
 ## References
 
 - [ABF26] Arnon, Boneh, Fenzi. *Open Problems in List Decoding and Correlated Agreement*.

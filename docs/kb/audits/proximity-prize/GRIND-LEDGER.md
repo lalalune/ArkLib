@@ -2,7 +2,8 @@
 
 > Historical note (superseded as current inventory, 2026-06-06): this ledger preserves the June 5
 > campaign state. Line references such as `Curves.lean:1819` are old breadcrumbs; use
-> `CURRENT-RESIDUALIZED-TREE-2026-06-06.md` and issues #6-#23 for current residual ownership.
+> `CURRENT-RESIDUALIZED-TREE-2026-06-06.md` (issue map now spans #6-#59, including the
+> grand-challenge second pass) for current residual ownership.
 
 Goal: build the keystone (BCIKS20 §5 list-decoding / `correlatedAgreement_affine_curves`
 Curves.lean:1819) bottom-up, every brick kernel-clean (`#print axioms` =
