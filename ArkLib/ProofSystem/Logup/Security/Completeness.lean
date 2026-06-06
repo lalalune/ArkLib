@@ -188,19 +188,25 @@ The completeness error `logupCompletenessError F n = |Hypercube n| / |F|` is the
 `logupCompletenessError F n + 0` of the outer pole-rejection error and the (perfect) sumcheck
 error. This reduction's own body contains no `sorry`. -/
 theorem logup_completeness_of_residual
-    (h : SubPhaseCompletenessResidual oSpec F n M params init impl) :
+    (h : SubPhaseCompletenessResidual oSpec F n M params init impl)
+    (hAppendCompleteness :
+      (logupOracleReduction oSpec F n M params).completeness init impl
+        (inputRelation F n M) outputRelation (logupCompletenessError F n)) :
     (logupOracleReduction oSpec F n M params).completeness init impl
       (inputRelation F n M) outputRelation (logupCompletenessError F n) := by
   obtain ⟨hOuter, hSum⟩ := h
   -- `logupOracleReduction` is definitionally `append outerOracleReduction sumcheckOracleReduction`
   -- (`logupOracleReduction_eq_append`), so the composed completeness fact unifies with the goal up
-  -- to `logupCompletenessError F n + 0 = logupCompletenessError F n`. We assemble the composed fact
-  -- and close by `simpa`, avoiding a `rw` that would force `whnf` of the full reduction.
+  -- to `logupCompletenessError F n + 0 = logupCompletenessError F n`. `OracleReduction.append_completeness`
+  -- now carries the sequential-composition completeness fact as the explicit residual hypothesis
+  -- `hAppendCompleteness` (mirroring `append_soundness`'s `hAppendSoundness`), which we thread through
+  -- (bridging the `+ 0`); the body still contains no `sorry`.
   have hc := OracleReduction.append_completeness.{0, 0}
     (rel₂ := midRelation F n M params)
     (outerOracleReduction oSpec F n M params)
     (sumcheckOracleReduction oSpec F n M params)
     hOuter hSum
+    (by simpa only [add_zero] using hAppendCompleteness)
   simpa only [add_zero] using hc
 
 end Completeness

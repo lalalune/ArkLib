@@ -25,6 +25,18 @@ open OracleSpec OracleComp OracleQuery ProtocolSpec Function Equiv
 
 variable {ι : Type} (oSpec : OracleSpec ι) (Statement : Type)
 
+/-- Reducing the query-implementation run of an `OptionT`-pure verifier output: a deterministic
+`pure a` computation has `run'`-support exactly `{some a}`. Used to discharge the `toFun_full`
+obligations of the `SendWitness` round-by-round knowledge-soundness proofs, whose verifiers are
+deterministic. -/
+theorem simulateQ_optionT_pure_run' {α σ : Type}
+    (impl : QueryImpl oSpec (StateT σ ProbComp)) (s : σ) (a : α) :
+    (simulateQ impl (pure a : OptionT (OracleComp oSpec) α)).run' s = pure (some a) := by
+  change (simulateQ impl (pure (some a) : OracleComp oSpec (Option α))).run' s = _
+  rw [simulateQ_pure]
+  change Prod.fst <$> (pure (some a) : StateT σ ProbComp _).run s = _
+  rw [StateT.run_pure]; simp [map_pure]
+
 namespace SendWitness
 
 /-!
@@ -101,19 +113,6 @@ theorem reduction_completeness :
     refine ⟨?_, rfl⟩
     simpa [toRelOut] using hIn
 
-/-- Running the verifier under the query implementation deterministically yields the verifier's
-  output `⟨stmt, tr 0⟩`. Phrasing the transcript as a `FullTranscript` keeps `tr 0` well-typed
-  (index `Fin 1`), avoiding the `Fin ↑(Fin.last 1)` numeral-elaboration snag at the call site. -/
-theorem verifier_run_simulateQ {σ : Type} (impl : QueryImpl oSpec (StateT σ ProbComp)) (s : σ)
-    (stmt : Statement) (tr : (pSpec Witness).FullTranscript) :
-    (simulateQ impl ((verifier oSpec Statement Witness).run stmt tr)).run' s
-      = pure (some (stmt, tr 0)) := by
-  change (simulateQ impl
-    (pure (some (stmt, tr 0)) : OracleComp oSpec (Option (Statement × Witness)))).run' s = _
-  rw [simulateQ_pure]
-  change Prod.fst <$> (pure (some (stmt, tr 0)) : StateT σ ProbComp _).run s = _
-  rw [StateT.run_pure]; simp [map_pure]
-
 /-- The `SendWitness` reduction satisfies perfect RBR knowledge soundness.
 
   The protocol `pSpec Witness` is `ProverOnly` (single P_to_V round), so `ChallengeIdx` is empty
@@ -145,7 +144,8 @@ theorem reduction_rbr_knowledge_soundness :
       rw [OptionT.mem_support_iff] at hx
       simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
       obtain ⟨s, _, hx⟩ := hx
-      rw [verifier_run_simulateQ] at hx
+      simp only [reduction, verifier, Verifier.run] at hx
+      rw [simulateQ_optionT_pure_run'] at hx
       simp only [support_pure, Set.mem_singleton_iff] at hx
       cases (Option.some.inj hx)
       exact hrel
@@ -314,23 +314,6 @@ theorem oracleVerifier_toVerifier_run {stmt : Statement} {oStmt : ∀ i, OStatem
     simp only [Embedding.sumMap, Function.Embedding.coeFn_mk, Sum.map_inr]
     rfl
 
-/-- Running the oracle verifier under the query implementation deterministically yields its output
-  `⟨stmt, Sum.rec oStmt (fun _ => tr 0)⟩`. As with `verifier_run_simulateQ`, taking `tr` as a
-  `FullTranscript` keeps `tr 0` well-typed at the call site. -/
-theorem oracleVerifier_run_simulateQ {σ : Type} (impl : QueryImpl oSpec (StateT σ ProbComp)) (s : σ)
-    {stmt : Statement} {oStmt : ∀ i, OStatement i} {tr : (oraclePSpec Witness).FullTranscript} :
-    (simulateQ impl
-        ((oracleVerifier oSpec Statement OStatement Witness).toVerifier.run ⟨stmt, oStmt⟩ tr)).run' s
-      = pure (some ⟨stmt, Sum.rec oStmt (fun i => match i with | 0 => tr 0)⟩) := by
-  rw [oracleVerifier_toVerifier_run]
-  change (simulateQ impl
-    (pure (some ⟨stmt, Sum.rec oStmt (fun i => match i with | 0 => tr 0)⟩)
-      : OracleComp oSpec (Option (Statement × (∀ j,
-          (Sum.elim OStatement fun _ : Fin 1 => Witness) j))))).run' s = _
-  rw [simulateQ_pure]
-  change Prod.fst <$> (pure (some _) : StateT σ ProbComp _).run s = _
-  rw [StateT.run_pure]; simp [map_pure]
-
 variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
   (oRelIn : Set ((Statement × (∀ i, OStatement i)) × Witness))
 
@@ -392,9 +375,9 @@ theorem oracleReduction_rbr_knowledge_soundness :
     extractOut := fun _stmt tr _ => tr ⟨0, by omega⟩
   }, {
     -- The RBR-KSF input statement is the verifier's input statement `Statement × (∀ i, OStatement i)`
-    -- (the witness oracle is sent during the protocol, not part of the input), so `stmt.2` is
-    -- indexed by `ιₛ` directly — no `Sum.inl` projection.
-    toFun := fun _ stmt _tr wit => oRelIn ⟨⟨stmt.1, stmt.2⟩, wit⟩
+    -- (the witness oracle is sent during the protocol, not part of the input), so the KSF just
+    -- tracks membership of `(stmt, wit)` in `oRelIn`.
+    toFun := fun _ stmt _tr wit => (stmt, wit) ∈ oRelIn
     toFun_empty := fun _ _ => by simp
     toFun_next := fun ⟨0, _⟩ _ _stmt _tr _msg _witMid h => h
     toFun_full := fun stmt tr witOut hpr => by
@@ -407,7 +390,8 @@ theorem oracleReduction_rbr_knowledge_soundness :
       rw [OptionT.mem_support_iff] at hx
       simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
       obtain ⟨s, _, hx⟩ := hx
-      rw [oracleVerifier_run_simulateQ] at hx
+      simp only [oracleReduction] at hx
+      rw [oracleVerifier_toVerifier_run, simulateQ_optionT_pure_run'] at hx
       simp only [support_pure, Set.mem_singleton_iff] at hx
       cases (Option.some.inj hx)
       -- `hrel : (⟨stmt, Sum.rec oStmt (fun _ => tr 0)⟩, witOut) ∈ toORelOut oRelIn`, whose

@@ -2644,6 +2644,19 @@ theorem snoc_heq_hconcat {N : ℕ} {δ : Fin (N + 1) → Type u}
     exact (cast_heq _ _).symm
   · exact (cast_heq _ _).symm
 
+set_option linter.unusedVariables false in
+theorem append_run_probe (stmt : Stmt₁) (wit : Wit₁) :
+      (P₁.append P₂).run stmt wit = (do
+        let ⟨transcript₁, stmt₂, wit₂⟩ ← liftM (P₁.run stmt wit)
+        let ⟨transcript₂, stmt₃, wit₃⟩ ← liftM (P₂.run stmt₂ wit₂)
+        return ⟨transcript₁ ++ₜ transcript₂, stmt₃, wit₃⟩) := by
+  rw [run_eq_runToRound_last]
+  rw [runToRound_eq_bind_continueFromTo (P₁.append P₂) stmt wit
+        (⟨m, by omega⟩ : Fin (m + n + 1)) (Fin.last (m + n)) (by
+          simp only [Fin.le_def, Fin.val_last]; omega)]
+  extract_goal
+  sorry
+
 /--
 States that running an appended prover `P₁.append P₂` with an initial statement `stmt₁` and
 witness `wit₁` behaves as expected: it first runs `P₁` to obtain an intermediate statement
