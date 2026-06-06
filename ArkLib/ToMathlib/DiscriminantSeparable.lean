@@ -6,6 +6,10 @@ Authors: ArkLib Contributors
 import Mathlib.RingTheory.Polynomial.Resultant.Basic
 import Mathlib.FieldTheory.Separable
 
+-- Documentation-heavy file (BCIKS §5 / issue-#8 prose in the docstrings); the long-line style
+-- linter is disabled file-wide, matching the sibling `Claim57*` discharge files.
+set_option linter.style.longLine false
+
 /-!
 # Discriminant ↔ separability: specialization commutation and the separability converse
 

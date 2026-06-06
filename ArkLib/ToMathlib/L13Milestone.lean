@@ -47,6 +47,13 @@ power-series identifications that previously *consumed* the residual as a hypoth
   ruled out by the strict radius.  This is the milestone whose statement the `L13` definition makes
   residual-free.
 
+## Boundary with the legacy concrete assembly
+
+`Section5Concrete.lean` intentionally still exposes a legacy wrapper over the opaque in-tree `β`,
+so its statement names the old `hβ` residual.  This file is the residual-free strong-β surface:
+callers that can consume the `β_strong`/`betaRec` path should target the milestone theorems here
+rather than treating `Section5Concrete`'s legacy `hβ` argument as reopened L13 debt.
+
 ## References
 * [BCIKS20] Ben-Sasson, Carmon, Ishai, Kopparty, Saraf, *Proximity Gaps for Reed–Solomon Codes*,
   §5 (list-decoding agreement chain), Appendix A.4 (the `W`-power-numerator recursion (A.1)).
@@ -271,6 +278,20 @@ theorem correlatedAgreement_affine_curves_strongBeta_of_betaRecFin_boundaryData
     (k := k) (deg := deg) (domain := domain) (δ := δ) hδ hInput hStrictBoundary
     (ArkLib.BoundaryDischarge.boundaryCardLatticeResidual_of_boundary_cards_and_coeffPolys
       (k := k) (deg := deg) (domain := domain) (δ := δ) hBoundaryData)
+
+/-! ## Axiom audit
+
+These are the public #27 milestones.  The expected dependency set is the standard imported
+`[propext, Classical.choice, Quot.sound]` footprint from the polynomial/function-field stack; this
+block makes the residual-free strong-β surface explicit in the source audit trail. -/
+#print axioms alpha_strong_eq_alphaFromBeta
+#print axioms gamma_strong
+#print axioms gamma_strong_eq_γ'
+#print axioms gamma_strong_eq_subst_shiftSeries
+#print axioms betaEmbedEqStrong_holds
+#print axioms correlatedAgreement_affine_curves_strongBeta_of_betaRecFin
+#print axioms correlatedAgreement_affine_curves_strongBeta_of_betaRecFin_lattice_residual
+#print axioms correlatedAgreement_affine_curves_strongBeta_of_betaRecFin_boundaryData
 
 end L13Milestone
 

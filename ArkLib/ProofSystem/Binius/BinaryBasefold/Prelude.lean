@@ -2045,20 +2045,28 @@ this branch's `cast`-based `iterated_fold`/`fold` definitions (the upstream blob
 `iterated_fold` directly via `Fin.dfoldl` so its peel is `rfl`; this branch's `cast`-keyed form makes
 the same step a routine—but verbose—cast-transport). Kept as a single documented residual rather
 than a non-typechecking placeholder. -/
-axiom iterated_fold_last (i : Fin r) {midIdx destIdx : Fin r} (steps : ℕ)
-    (h_midIdx : midIdx.val = i.val + steps) (h_destIdx : destIdx.val = i.val + steps + 1)
-    (h_destIdx_le : destIdx ≤ ℓ)
-    (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
-    (r_challenges : Fin (steps + 1) → L) :
+	theorem iterated_fold_last (i : Fin r) {midIdx destIdx : Fin r} (steps : ℕ)
+	    (h_midIdx : midIdx.val = i.val + steps) (h_destIdx : destIdx.val = i.val + steps + 1)
+	    (h_destIdx_le : destIdx ≤ ℓ)
+	    (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i)
+	    (r_challenges : Fin (steps + 1) → L) :
     iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps + 1)
         (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le) (f := f)
         (r_challenges := r_challenges) =
     fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := midIdx) (destIdx := destIdx)
       (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le)
-      (f := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps)
-        (h_destIdx := by omega) (h_destIdx_le := by omega) (f := f)
-        (r_challenges := Fin.init r_challenges))
-      (r_chal := r_challenges (Fin.last steps))
+	      (f := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps)
+	        (h_destIdx := by omega) (h_destIdx_le := by omega) (f := f)
+	        (r_challenges := Fin.init r_challenges))
+	      (r_chal := r_challenges (Fin.last steps)) := by
+	  funext y
+	  rw [iterated_fold_eq_iterated_fold_steps]
+	  rw [iterated_fold_succ_last_gen]
+	  unfold fold
+	  simp only [cast_eq]
+	  congr 1
+	  funext z
+	  rw [iterated_fold_eq_iterated_fold_steps]
 
 /-- **Lemma 4.9 (new-API).** The new-API `iterated_fold` equals `localized_fold_matrix_form`.
 

@@ -1191,6 +1191,30 @@ theorem protocol62_knowledgeSound_residual_iff
     intro _hRewinding
     exact h
 
+/-- `protocol62_knowledgeSound_residual` is definitionally the bridge from the proven rewinding
+knowledge-soundness predicate to the public straightline knowledge-soundness target. -/
+theorem protocol62_knowledgeSound_residual_iff_bridge
+    [SampleableType F] [SampleableType ι] [Nonempty ι] [Nonempty F]
+    {σ : Type} (init : ProbComp σ)
+    (impl : QueryImpl []ₒ (StateT σ ProbComp))
+    (C : Set (ι → F)) (δ : ℝ≥0)
+    (encode : (Fin k → F) → (ι → F))
+    (decode : ToyPrefix ι F k → (Fin k → F) × (Fin k → F)) :
+    protocol62_knowledgeSound_residual (k := k) (t := t) init impl C δ encode decode ↔
+      Extractor.Bridge.StraightlineOfRewinding
+        (Extractor.knowledgeSoundnessViaRewinding
+          (outputRelation (ι := ι) (F := F) k C δ)
+          (toyStmtOf (ι := ι) (F := F) (k := k))
+          (toyAccepts (ι := ι) (F := F) (k := k) C δ decode))
+        ((verifier (k := k) (t := t) encode).knowledgeSoundness (WitOut := OutputWitness)
+          init impl (outputRelation k C δ)
+          (Set.univ : Set (OutputStatement × OutputWitness))
+          (max ((epsMCA (F := F) (A := F) C δ).toNNReal +
+                  ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
+                    / (Fintype.card F : ℝ≥0))
+               ((1 - δ) ^ t))) := by
+  rfl
+
 theorem protocol62_knowledgeSound
     [SampleableType F] [SampleableType ι] [Nonempty ι] [Nonempty F]
     {σ : Type} (init : ProbComp σ)
@@ -1294,6 +1318,32 @@ theorem protocol62_rbrKnowledgeSound_residual_iff
     dsimp [protocol62_rbrKnowledgeSound_residual, Bridge.StraightlineOfRewinding]
     intro _hRewinding
     exact h
+
+/-- `protocol62_rbrKnowledgeSound_residual` is definitionally the bridge from the proven
+rewinding predicate to the public round-by-round straightline knowledge-soundness target. -/
+theorem protocol62_rbrKnowledgeSound_residual_iff_bridge
+    [SampleableType F] [SampleableType ι] [Nonempty ι] [Nonempty F]
+    {σ : Type} (init : ProbComp σ)
+    (impl : QueryImpl []ₒ (StateT σ ProbComp))
+    (C : Set (ι → F)) (δ : ℝ≥0)
+    (encode : (Fin k → F) → (ι → F))
+    (decode : ToyPrefix ι F k → (Fin k → F) × (Fin k → F)) :
+    protocol62_rbrKnowledgeSound_residual (k := k) (t := t) init impl C δ encode decode ↔
+      Extractor.Bridge.StraightlineOfRewinding
+        (Extractor.knowledgeSoundnessViaRewinding
+          (outputRelation (ι := ι) (F := F) k C δ)
+          (toyStmtOf (ι := ι) (F := F) (k := k))
+          (toyAccepts (ι := ι) (F := F) (k := k) C δ decode))
+        ((verifier (k := k) (t := t) encode).rbrKnowledgeSoundness (WitOut := OutputWitness)
+          init impl (outputRelation k C δ)
+          (Set.univ : Set (OutputStatement × OutputWitness))
+          (fun i ↦
+            if i.1 = 0 then
+              (epsMCA (F := F) (A := F) C δ).toNNReal +
+                ((Lambda (interleavedCodeSet (κ := Fin 2) C) (δ : ℝ)).toNat : ℝ≥0)
+                  / (Fintype.card F : ℝ≥0)
+            else (1 - δ) ^ t)) := by
+  rfl
 
 theorem protocol62_rbrKnowledgeSound
     [SampleableType F] [SampleableType ι] [Nonempty ι] [Nonempty F]

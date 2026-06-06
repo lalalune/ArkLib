@@ -996,12 +996,74 @@ lemma exists_unique_fiberwiseClosestCodeword_within_UDR (i : Fin r) {destIdx : F
   · intro y hy
     exact hy.2.2
 
-/-- Residual interface: folding a BBF codeword across rounds preserves BBF-code membership.
+/-- Nat-indexed helper for `iterated_fold_preserves_BBF_Code_membership`.
 
-The polynomial preservation proof is maintained by downstream soundness modules; `Code` exposes
-this interface so those modules can depend on the reconciled `iterated_fold` API without pulling
-their heavier proof terms into this file. -/
-axiom iterated_fold_preserves_BBF_Code_membership
+The induction step peels the final fold using `iterated_fold_last` from `Prelude`, then applies the
+single-step polynomial preservation lemma above. -/
+private lemma iterated_fold_preserves_BBF_Code_membership_nat
+    (i : Fin r) {destIdx : Fin r} (steps : ℕ)
+    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    (f : (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i))
+    (r_challenges : Fin steps → L) :
+    (iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := i) (steps := steps) (destIdx := destIdx)
+      (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le)
+      (f := f) (r_challenges := r_challenges)) ∈
+      (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx) := by
+  induction steps generalizing destIdx with
+  | zero =>
+      have h_destIdx_eq_i : destIdx = i := Fin.eq_of_val_eq (by simpa using h_destIdx)
+      subst h_destIdx_eq_i
+      have h_fold_eq :
+          iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+            (i := i) (steps := 0) (destIdx := i)
+            (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le)
+            (f := f) (r_challenges := r_challenges) =
+          (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) := by
+        funext y
+        rw [iterated_fold_zero_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (i := i) (destIdx := i) (h_destIdx := by omega)
+          (h_destIdx_le := h_destIdx_le) (f := f) (r_challenges := r_challenges) y]
+        simp only [Fin.eq_of_val_eq_self, eq_mp_eq_cast, cast_eq]
+      rw [h_fold_eq]
+      exact f.property
+  | succ n ih =>
+      let midIdx : Fin r := ⟨i.val + n, by
+        have hle : i.val + (n + 1) ≤ ℓ := by
+          rw [← h_destIdx]
+          exact h_destIdx_le
+        exact Nat.lt_of_le_of_lt (by omega) (ℓ_lt_r (h_ℓ_add_R_rate := h_ℓ_add_R_rate))⟩
+      have h_midIdx : midIdx.val = i.val + n := by
+        simp only [midIdx]
+      have h_midIdx_le : midIdx ≤ ℓ := by
+        have hle : i.val + (n + 1) ≤ ℓ := by
+          rw [← h_destIdx]
+          exact h_destIdx_le
+        simp only [midIdx]
+        omega
+      have h_folded_n_mem :
+          (iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+            (i := i) (steps := n) (destIdx := midIdx)
+            (h_destIdx := by omega) (h_destIdx_le := h_midIdx_le)
+            (f := f) (r_challenges := Fin.init r_challenges)) ∈
+            (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) midIdx) := by
+        exact ih (destIdx := midIdx) (by omega) h_midIdx_le (Fin.init r_challenges)
+      let f_mid : (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) midIdx) :=
+        ⟨iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (i := i) (steps := n) (destIdx := midIdx)
+          (h_destIdx := by omega) (h_destIdx_le := h_midIdx_le)
+          (f := f) (r_challenges := Fin.init r_challenges), h_folded_n_mem⟩
+      rw [iterated_fold_last 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (i := i) (midIdx := midIdx) (destIdx := destIdx) (steps := n)
+        (h_midIdx := h_midIdx) (h_destIdx := by omega)
+        (h_destIdx_le := h_destIdx_le) (f := f) (r_challenges := r_challenges)]
+      exact fold_preserves_BBF_Code_membership 𝔽q β
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := midIdx) (destIdx := destIdx)
+        (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le)
+        (f := f_mid) (r_chal := r_challenges (Fin.last n))
+
+/-- Folding a BBF codeword across rounds preserves BBF-code membership. -/
+lemma iterated_fold_preserves_BBF_Code_membership
     (i : Fin r) {destIdx : Fin r}
     (steps : Fin (ℓ + 1)) (h_i_add_steps : i.val + steps < ℓ + 𝓡)
     (h_destIdx : destIdx = ⟨i.val + steps.val, Nat.lt_trans h_i_add_steps h_ℓ_add_R_rate⟩)
@@ -1013,7 +1075,12 @@ axiom iterated_fold_preserves_BBF_Code_membership
       (h_destIdx := by simpa using congrArg Fin.val h_destIdx)
       (h_destIdx_le := h_destIdx_le)
       (f := f) (r_challenges := r_challenges)) ∈
-      (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx)
+      (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx) := by
+  have h_mem := iterated_fold_preserves_BBF_Code_membership_nat 𝔽q β
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (destIdx := destIdx)
+    (steps := steps.val) (h_destIdx := by simpa using congrArg Fin.val h_destIdx)
+    (h_destIdx_le := h_destIdx_le) (f := f) (r_challenges := r_challenges)
+  simpa using h_mem
 
 -- NOTE: `isCompliant`, `farness_implies_non_compliance`, `fold_error_containment`,
 -- `fold_error_containment_of_UDRClose`, and `foldingBadEvent` were moved to
