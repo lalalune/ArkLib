@@ -995,11 +995,6 @@ lemma exists_unique_fiberwiseClosestCodeword_within_UDR (i : Fin r) {destIdx : F
   · intro y hy
     exact hy.2.2
 
-/- NAMED RESIDUAL (parked with the legacy block above): `iterated_fold_preserves_BBF_Code_membership`
-and its nat-indexed helper peel correctly via `iterated_fold_last`, but the single-step
-`fold_preserves_BBF_Code_membership` they discharge against lives in the parked legacy block
-(it references `getINovelCoeffs`, which does not exist in the current Prelude API). Re-enable
-both once the Lemma 4.13 single-step machinery is ported (issues #32/#33).
 /-- Nat-indexed helper for `iterated_fold_preserves_BBF_Code_membership`.
 
 The induction step peels the final fold using `iterated_fold_last` from `Prelude`, then applies the
@@ -1085,7 +1080,6 @@ lemma iterated_fold_preserves_BBF_Code_membership
     (steps := steps.val) (h_destIdx := by simpa using congrArg Fin.val h_destIdx)
     (h_destIdx_le := h_destIdx_le) (f := f) (r_challenges := r_challenges)
   simpa using h_mem
--/
 
 -- NOTE: `isCompliant`, `farness_implies_non_compliance`, `fold_error_containment`,
 -- `fold_error_containment_of_UDRClose`, and `foldingBadEvent` were moved to
