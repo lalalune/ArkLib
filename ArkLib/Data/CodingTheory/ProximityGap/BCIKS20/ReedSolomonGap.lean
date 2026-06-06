@@ -256,6 +256,38 @@ theorem proximity_gap_RSCodes {k t : ℕ} [NeZero k] [NeZero t] {deg : ℕ} {dom
           rw [Finset.mem_filter]
           exact ⟨Finset.mem_univ _, by rw [Pi.add_apply, hv'j, hv'0, sub_add_cancel]⟩
 
+/-- Theorem 1.2 front door with the affine-line Johnson residual supplied by the verified
+`betaRec` capsule at every radius `δ' ≤ δ` needed by the affine-space argument. -/
+theorem proximity_gap_RSCodes_johnson_of_betaRec {k t : ℕ} [NeZero k] [NeZero t]
+    {deg : ℕ} {domain : ι ↪ F}
+    (hdeg : 0 < deg)
+    (hRS : deg + 1 ≤ Fintype.card ι)
+    (C : Fin t → (Fin k → (ι → F))) {δ : ℝ≥0}
+    (hδ_pos : 0 < δ)
+    (hInput : ∀ δ' : ℝ≥0, δ' ≤ δ →
+      ∀ (_hk : 0 < 1) (u : WordStack F (Fin 2) ι),
+        Pr_{
+          let z ← $ᵖ F}[δᵣ(∑ t : Fin 2, (z ^ (t : ℕ)) • u t,
+            ReedSolomon.code domain deg) ≤ δ'] >
+            (((1 : ℕ) : ENNReal) * (errorBound δ' deg domain : ENNReal)) →
+        (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ' →
+        δ' < 1 - ReedSolomon.sqrtRate deg domain →
+        ArkLib.KeystoneStrictResidual.BetaCurveInput
+          (k := 1) (deg := deg) (domain := domain) (δ := δ') u)
+    (hδ : δ < 1 - ReedSolomon.sqrtRate deg domain)
+    (hε : errorBound δ deg domain < 1) :
+    δ_ε_proximityGap
+      (ReedSolomon.toFinset domain deg)
+      (Affine.AffSpanFinsetCollection C)
+      δ
+      (errorBound δ deg domain) :=
+  proximity_gap_RSCodes (ι := ι) (F := F) (k := k) (t := t) (deg := deg)
+    (domain := domain) hdeg hRS C hδ_pos
+    (fun δ' hδ'_le =>
+      ArkLib.KeystoneStrictResidual.strictCoeffPolysResidual_of_betaRec
+        (k := 1) (deg := deg) (domain := domain) (δ := δ') (hInput δ' hδ'_le))
+    hδ hε
+
 end CoreResults
 
 end ProximityGap
