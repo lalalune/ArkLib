@@ -1633,6 +1633,65 @@ def βHenselSuccTermWeightResidual (x₀ : F) (R : F[X][X][Y])
   --    the conditional files would only move the same residual and would make this proof circular.
 -/
 
+/-- The structured BCIKS20 Appendix-A Hensel numerator weight invariant for all recursive
+coefficients available at successor stage `k + 1`.
+
+This is the invariant the paper actually uses before collapsing to the loose
+`(2l+1)·d_R·D` Claim-A.2 bound: each recursive numerator has the closed-form weight
+`1 + (l+1)Λ(W) + (2l-1)Λ(ξ)`.  Keeping it as a separate `Prop` prevents the known-false
+upgrade from the loose IH from being smuggled into `βHenselSuccTermWeightResidual`. -/
+def βHenselStructuredWeightInvariant (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ} (k : ℕ) : Prop :=
+  ∀ l, l < k + 1 →
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp l) D
+      ≤ WithBot.some
+        (1 + (l + 1) * (H.leadingCoeff).natDegree
+          + (2 * l - 1)
+            * ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1)))
+
+/-- The narrowed `(P1)` successor-term residual, with the genuine structured invariant exposed
+directly instead of the insufficient loose IH.
+
+This is the honest remaining per-term obligation after the wave-5 arithmetic: prove the literal
+`(A.1)` summand is below the loose target using the structured `α_t`/`β_t` invariant supplied by
+`βHenselStructuredWeightInvariant`. -/
+def βHenselSuccTermStructuredWeightResidual (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D) (hdR2 : 2 ≤ Bivariate.natDegreeY R) (k : ℕ)
+    (hStructured : βHenselStructuredWeightInvariant H x₀ R hHyp hH k)
+    (i1 : ℕ) (_hi1 : i1 ∈ Finset.range (k + 2))
+    (lam : Nat.Partition (k + 1 - i1)) (_hlam : (k + 1) ∉ lam.parts) : Prop :=
+    weight_Λ_over_𝒪 hH
+        ((W𝒪 H) ^ (i1 + deltaSave i1 - 1)
+          * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * i1 + sigmaLambda lam - 2)
+          * B_coeff H x₀ R i1 lam
+          * partitionProd lam
+              (fun l => if _h : l < k + 1 then βHensel H x₀ R hHyp l else 0)) D
+      ≤ WithBot.some ((2 * (k + 1) + 1) * Bivariate.natDegreeY R * D)
+
+/-- Compatibility reduction from the old loose-IH residual surface to the narrowed structured one.
+
+The old residual took a loose IH argument even though the surrounding documentation proves that
+route is insufficient.  This theorem makes the reduction explicit: if the structured invariant is
+available and the structured per-term residual is proved, then the old residual follows without
+using the loose IH. -/
+theorem βHenselSuccTermWeightResidual_of_structured
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D) (hdR2 : 2 ≤ Bivariate.natDegreeY R) (k : ℕ)
+    (hIH : ∀ l, l < k + 1 →
+      weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp l) D
+        ≤ WithBot.some ((2 * l + 1) * Bivariate.natDegreeY R * D))
+    (hStructured : βHenselStructuredWeightInvariant H x₀ R hHyp hH k)
+    (hterm : ∀ (i1 : ℕ) (hi1 : i1 ∈ Finset.range (k + 2))
+      (lam : Nat.Partition (k + 1 - i1)) (hlam : (k + 1) ∉ lam.parts),
+        βHenselSuccTermStructuredWeightResidual H x₀ R hHyp hH hDH hdR2
+          k hStructured i1 hi1 lam hlam)
+    (i1 : ℕ) (hi1 : i1 ∈ Finset.range (k + 2))
+    (lam : Nat.Partition (k + 1 - i1)) (hlam : (k + 1) ∉ lam.parts) :
+    βHenselSuccTermWeightResidual H x₀ R hHyp hH hDH hdR2 k hIH i1 hi1 lam hlam := by
+  exact hterm i1 hi1 lam hlam
+
 /-- **(P1) full weight bound.**  `weight_Λ_over_𝒪 hH (βHensel … t) D ≤ (2t+1)·natDegreeY R·D`.
 
 The `t = 0` case is `βHensel_weight_bound_zero` (PROVEN).  The inductive step is FULLY ASSEMBLED
