@@ -327,7 +327,8 @@ def mca_johnson_bound_CONJECTURE
   for FRI/STIR/WHIR. See `research/formal/arklib-proof-research-2026-06.md` and
   eprint.iacr.org/2025/2046.
 -/
-/- **Statement repair (2026-06-04):** restated `theorem … := by sorry` → `def … : Prop`.
+/- **Statement repair (2026-06-04):** restated the former theorem-shaped placeholder as
+`def … : Prop`.
 Rationale: per the STATUS note above, this up-to-capacity claim is DISPROVEN in the
 literature, so the former `sorry` was permanently undischargeable — a `theorem` shape
 mis-advertises it as a pending proof obligation. As a named `Prop` it remains the

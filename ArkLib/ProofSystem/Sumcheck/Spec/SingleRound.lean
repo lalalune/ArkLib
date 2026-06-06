@@ -1053,7 +1053,9 @@ theorem oracleReduction_perfectCompleteness :
   simp only [liftM_pure, liftComp_pure, map_pure, pure_bind, bind_pure_comp,
     Functor.map_map, Function.comp_def, map_map, OptionT.run_pure, Option.getM,
     Transcript.concat, Fin.snoc_last, Fin.snoc_castSucc]
-  rw [ge_iff_le, one_le_probEvent_iff, probEvent_eq_one_iff]
+  rw [ge_iff_le]
+  simp only [ENNReal.coe_zero, tsub_zero]
+  rw [one_le_probEvent_iff, probEvent_eq_one_iff]
   refine ⟨?_, ?_⟩
   all_goals
     have hOC : ∀ {ι' : Type} {spec' : OracleSpec ι'} {α γ : Type} (g : α → γ)

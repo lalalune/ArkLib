@@ -204,25 +204,10 @@ theorem iteratedSumcheckOracleReduction_perfectCompleteness (i : Fin ℓ') :
   simp only [sumcheckRoundRelation, sumcheckRoundRelationProp, masterKStateProp,
     witnessStructuralInvariant, sumcheckConsistencyProp, Set.mem_setOf_eq, true_and] at h_relIn
   obtain ⟨hStruct, hConsist, hCompat⟩ := h_relIn
-  -- WIP (algebra UNBLOCKED by the defect-#20 machinery repair; remaining work is the run-shape peel).
-  -- After the coherent var-ordering repair in `Sumcheck.Structured.SingleRound`, the honest round is
-  -- now fully consistent and the OUTPUT relation is *provable* (no false residual remains):
-  --   • challenges accumulate via `Fin.cons r' stmtIn.challenges` in BOTH the prover
-  --     (`getRoundProverFinalOutput`) and the verifier (`roundOracleVerifier`), matching the cons-form
-  --     round transition `RingSwitching.fixFirstVariablesOfMQP_projectToMid_step`;
-  --   • `witnessStructuralInvariant i.succ` then holds: `witOut.H = fixFirstVariablesOfMQP … witIn.H
-  --     {r'}` and, from the relIn invariant `witIn.H = projectToMidSumcheckPoly … i.castSucc ch`, the
-  --     cons-step lemma gives `witOut.H = (rename finCongr) (projectToMidSumcheckPoly … i.succ
-  --     (Fin.cons r' ch))` — exactly what relOut demands (the old cons=snoc obstruction is GONE);
-  --   • `sumcheckConsistencyProp i.succ` holds: the repaired `getSumcheckRoundPoly` marginalises the
-  --     LAST variable, so `stmtOut.sumcheck_target = h_i.eval r' = ∑_{next cube} (fix-last witIn.H
-  --     {r'}) = ∑_{cube} witOut.H` via `getSumcheckRoundPoly_eval_eq_sum_snoc` + `fixFirstVariablesOfMQP_eval`;
-  --     the verifier's check `∑_{D.points i} h_i.eval b = sumcheck_target` discharges from the relIn
-  --     `sumcheckConsistencyProp i.castSucc` (`h_i` is the variable-`(last)` marginal of `witIn.H`);
-  --   • `initialCompatibility` carries over (`witOut.t' = witIn.t'`).
-  -- (PLUMBING) Peel the 2-message honest oracle-reduction run.  `OracleReduction.perfectCompleteness`
-  -- = `Reduction.perfectCompleteness … .toReduction`; unfold the reduction and the prover's
-  -- `runToRound` over `Fin.induction_two`, then resolve the two round-direction matches.
+  -- Residual: the algebraic round transition is now aligned with the repaired
+  -- `Sumcheck.Structured.SingleRound` variable order.  The remaining work is the run-shape peel for
+  -- this two-message, one-challenge oracle reduction, plus the final HEq bookkeeping between the
+  -- prover's internal `by omega` cast and the relOut `Fin` relabel.
   simp only [iteratedSumcheckOracleReduction, OracleReduction.toReduction,
     Sumcheck.Structured.roundOracleReduction, Reduction.run,
     Sumcheck.Structured.roundOracleProver, Sumcheck.Structured.roundOracleVerifier,
@@ -232,43 +217,10 @@ theorem iteratedSumcheckOracleReduction_perfectCompleteness (i : Fin ℓ') :
   -- round 1 = `V_to_P` (verifier samples `r'`); both direction matches collapse cleanly.
   simp only [Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons,
     Matrix.cons_val_fin_one, reduceCtorEq]
-  -- WIP — RUN IS NOW FULLY UNFOLDED + DIRECTION-RESOLVED (verified `trace_state`). The honest run is:
-  --   P→V `h_i := getSumcheckRoundPoly ℓ' (boolDomain L ℓ') i witIn.H`;
-  --   V samples `r' ← L` (the single probabilistic step);
-  --   prover output `getRoundProverFinalOutput … 2 i` (witOut.H = `fixFirstVariablesOfMQP (ℓ'-i) ⟨1⟩
-  --     witIn.H {r'}`, stmtOut.challenges = `Fin.cons r' stmtIn.challenges`, target = `h_i.eval r'`);
-  --   V reads the message via `simulateQ (simOracle2 …)`, runs `guard (∑ b ∈ (boolDomain L ℓ').points i,
-  --     h_i.eval b = stmtIn.sumcheck_target)`, outputs stmtOut.
-  -- Goal: `probEvent (…) = 1` over the uniform `r'` sample.
-  --
-  -- TWO REMAINING TASKS (both now mathematically UNBLOCKED; only mechanical):
-  -- (1) PROBABILITY ENDGAME. Collapse the `simulateQ (simOracle2 …)` message-query
-  --     (`simulateQ_simOracle2_query` + `answer_instDefault`), tie `proverResult.1.messages ⟨0⟩ = h_i`
-  --     and `proverResult.1.challenges ⟨1⟩ = r'` from the transcript binds, then close
-  --     `probEvent = 1` via `probEvent_eq_one_iff` over the uniform `r'`-sample (no-failure: the
-  --     `guard` ALWAYS passes by `getSumcheckRoundPoly_points_sum_eq_cube` + `hConsist`; every output
-  --     satisfies the predicate by task (2)). This is the single-challenge analog of the closed
-  --     `finalSumcheckOracleReduction_perfectCompleteness` accept-branch peel (which has no challenge).
-  -- (2) relOut DISCHARGE (the four master-KState conjuncts at index `i.succ`):
-  --   • `witnessStructuralInvariant i.succ`: `witOut.H = projectToMidSumcheckPoly t' m i.succ
-  --     (Fin.cons r' ch)`.  From `hStruct` (`witIn.H = projectToMid … i.castSucc ch`) and
-  --     `RingSwitching.fixFirstVariablesOfMQP_projectToMid_step`, the honest `witOut.H` equals
-  --     `rename (finCongr …) (projectToMid … i.succ (cons r' ch))`.  The residual `rename (finCongr)`
-  --     is the index relabel `Fin (ℓ'-i.succ) ≃ Fin (ℓ'-i.castSucc-1)`; it must be reconciled with
-  --     `getRoundProverFinalOutput`'s own internal `by omega` cast (HEq bookkeeping — same family as
-  --     `rename_finCongr_heq`).
-  --   • `sumcheckConsistencyProp i.succ`: `stmtOut.sumcheck_target (= h_i.eval r') = ∑_{cube(ℓ'-i.succ)}
-  --     witOut.H`.  This is the single-point (`r'`) specialisation of the proven
-  --     `getSumcheckRoundPoly_points_sum_eq_cube` chain: `h_i.eval r' = ∑_{survivors} eval (snoc · r')
-  --     curH = ∑_{cube} (fixFirstVariablesOfMQP witIn.H {r'})` (via `getSumcheckRoundPoly_eval_eq_sum_snoc`
-  --     + `fixFirstVariablesOfMQP_eval` + the `sum_cube_snoc` survivor reindex already used above).
-  --   • the verifier `guard` (`∑ b ∈ points i, h_i.eval b = sumcheck_target`) is `hConsist` rewritten
-  --     by `getSumcheckRoundPoly_points_sum_eq_cube` (PROVEN above).
-  --   • `initialCompatibility ⟨witOut.t', oStmt⟩ = ⟨witIn.t', oStmt⟩` is `hCompat` (`witOut.t' = witIn.t'`).
-  -- The verifier-check algebra (the genuinely #20-unblocked core) is DONE; what remains is the
-  -- `OptionT`/`StateT`/`simulateQ` run-shape plumbing for a 2-message+1-challenge oracle reduction
-  -- (no proven precedent in-repo — the only closed oracle-reduction completeness, final-sumcheck, has
-  -- ZERO challenges) plus the HEq cast reconciliation in (2). Preserved as WIP per honest-completion.
+  -- The verifier guard follows from `hConsist` and
+  -- `getSumcheckRoundPoly_points_sum_eq_cube`; the output relation follows from `hStruct`, `hCompat`,
+  -- `fixFirstVariablesOfMQP_projectToMid_step`, and the single-point form of
+  -- `getSumcheckRoundPoly_eval_eq_sum_snoc`.
   sorry
 
 open scoped NNReal
@@ -600,7 +552,8 @@ private lemma iteratedSumcheckOracleVerifier_verify_collapse (i : Fin ℓ')
   -- `iteratedSumcheckOracleVerifier = roundOracleVerifier` (a `@[reducible]` wrapper); unfold to
   -- the shared verify body and collapse the single message-oracle query.
   simp only [iteratedSumcheckOracleVerifier, Sumcheck.Structured.roundOracleVerifier]
-  rw [simulateQ_optionT_bind, simulateQ_simOracle2_query]
+  rw [simulateQ_optionT_bind]
+  erw [simulateQ_simOracle2_query]
   refine OptionT.ext ?_
   dsimp only [Sigma.fst, Sigma.snd]
   erw [OptionT.run_bind_lift]
@@ -1137,6 +1090,7 @@ theorem finalSumcheckOracleReduction_perfectCompleteness [IsDomain L] [IsDomain 
           stmtIn.ctx.r_batching * (MvPolynomial.eval stmtIn.challenges) witIn.t'.val :=
     finalSumcheck_check_of_relIn κ L K P ℓ ℓ' h_l stmtIn witIn hStruct hConsist
   -- (2) PLUMBING: resolve the deterministic run and the verifier's message-query collapse.
+  dsimp only
   rw [Reduction.run_of_prover_first]
   simp only [finalSumcheckOracleReduction, OracleReduction.toReduction, finalSumcheckProver,
     finalSumcheckVerifier, OracleVerifier.toVerifier, liftM, monadLift, MonadLiftT.monadLift,
@@ -1145,7 +1099,8 @@ theorem finalSumcheckOracleReduction_perfectCompleteness [IsDomain L] [IsDomain 
     bind_pure_comp, OptionT.run_lift, simulateQ_map, OptionT.run_bind, Option.elimM,
     map_pure, Option.elim_some, Option.elim_none, OptionT.run_pure]
   -- Collapse the inner verifier query (`s' = msgs ⟨0,_⟩ = eval challenges t'`).
-  rw [simulateQ_optionT_bind, simulateQ_simOracle2_query]
+  rw [simulateQ_optionT_bind]
+  erw [simulateQ_simOracle2_query]
   simp only [OptionT.lift_pure, pure_bind, FullTranscript.messages, apply_ite,
     simulateQ_optionT_lift, simulateQ_pure, OptionT.run_pure, OptionT.run_lift]
   erw [pure_bind]
@@ -1162,22 +1117,27 @@ theorem finalSumcheckOracleReduction_perfectCompleteness [IsDomain L] [IsDomain 
     OptionT.lift_pure, pure_bind, map_pure, simulateQ_pure, Option.elimM, bind_pure_comp,
     Option.elim_some, Option.elim_none, StateT.run'_eq, OptionT.run_pure, Option.getM, Option.elim,
     StateT.run_map, StateT.run_pure, Option.map_some, Functor.map_map, Function.comp]
-  rw [ge_iff_le, one_le_probEvent_iff, probEvent_eq_one_iff]
+  rw [ge_iff_le]
+  simp only [ENNReal.coe_zero, tsub_zero]
+  rw [one_le_probEvent_iff, probEvent_eq_one_iff]
   refine ⟨?_, ?_⟩
   · -- No failure: the deterministic computation always produces `some`.
     rw [OptionT.probFailure_eq, OptionT.run_mk]
     simp only [probFailure_map, probFailure_eq_zero, zero_add]
     apply probOutput_eq_zero_of_not_mem_support
-    simp only [support_map, Set.mem_image, not_exists, not_and]
-    intro a _ h
-    exact absurd h.symm (by simp)
+    simp only [support_bind, Set.mem_iUnion, not_exists]
+    intro s _ h
+    simp only [StateT.run'_eq, support_map, Set.mem_image] at h
+    obtain ⟨⟨some _, _⟩, _, hnone⟩ := h
+    cases hnone
   · -- Every output satisfies the event (relOut = toRelInput, and prvStmtOut = stmtOut).
     intro x hx
     rw [OptionT.mem_support_iff, OptionT.run_mk] at hx
-    simp only [support_map, Set.mem_image] at hx
-    obtain ⟨a, _, heq⟩ := hx
-    rw [Option.some_inj] at heq
-    subst heq
+    simp only [support_bind, Set.mem_iUnion] at hx
+    obtain ⟨s, _, hx⟩ := hx
+    simp only [StateT.run'_eq, support_map, Set.mem_image] at hx
+    obtain ⟨⟨some y, _⟩, _, hy⟩ := hx
+    cases hy
     refine ⟨?_, rfl⟩
     -- `(stmtOut, witOut) ∈ toRelInput`: MLPEvalRelation (`s' = t'(challenges)`) + initialCompatibility.
     simp only [AbstractOStmtIn.toRelInput, MLPEvalRelation, Set.mem_setOf_eq]
@@ -1286,7 +1246,8 @@ noncomputable def finalSumcheckKnowledgeStateFunction [IsDomain L] [IsDomain K] 
     -- form, mirroring the completeness chain (`simulateQ_simOracle2_query` + `answer_instDefault'`).
     simp only [finalSumcheckVerifier, OracleVerifier.toVerifier, Verifier.run,
       bind_pure_comp] at hx
-    rw [simulateQ_optionT_bind, simulateQ_simOracle2_query] at hx
+    rw [simulateQ_optionT_bind] at hx
+    erw [simulateQ_simOracle2_query] at hx
     simp only [OptionT.lift_pure, FullTranscript.messages,
       OptionT.run_pure, OptionT.run_lift,
       answer_instDefault', simulateQ_optionT_pure', simulateQ_map, map_pure] at hx

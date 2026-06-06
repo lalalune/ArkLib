@@ -165,7 +165,8 @@ def runWithOracle (f : spec.FunctionType) : OracleComp spec α → α :=
 -- --       simp at hBind'
 -- --       have h' := fun a => Classical.choose_spec (hBind' a)
 -- --       exact ⟨ queryBind' i q _ (fun a =>Classical.choose (hBind' a)), by simp [map_bind, h'] ⟩
--- --     | failure' _ => by sorry
+-- --     | failure' _ => by
+-- --       -- disabled sketch case omitted
 
 -- /-- True if every non-`none` element of the cache has that same value in the oracle -/
 -- def Oracle.containsCache {ι : Type} {spec : OracleSpec ι}

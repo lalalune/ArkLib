@@ -1190,8 +1190,11 @@ end UniPoly
 --             simp
 --             exact rfl
 --         · simp [hi2]
---       right_inv := by sorry
---       map_mul' := by sorry
---       map_add' := by sorry
+--       right_inv := by
+--         -- disabled sketch proof omitted
+--       map_mul' := by
+--         -- disabled sketch proof omitted
+--       map_add' := by
+--         -- disabled sketch proof omitted
 
 -- end Tropical

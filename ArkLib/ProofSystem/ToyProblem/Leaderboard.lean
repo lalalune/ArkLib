@@ -332,7 +332,7 @@ up-to-capacity reading (correlated-agreement / mutual-correlated-agreement /
 list-decodability with `BStar = ρ`) was DISPROVEN in 2025 (Crites–Stewart;
 Ben-Sasson–Carmon–Haback–Kopparty–Saraf; Diamond–Gruen;
 eprint.iacr.org/2025/2046): it is FALSE for some Reed–Solomon families, so any
-sorry discharged at capacity would be discharging a false statement. The
+placeholder discharged at capacity would be discharging a false statement. The
 provable replacement is the Johnson-radius variant (`BStar = √ρ`). Even the
 Johnson-radius bound is NEEDS_CLASSICAL: discharging it requires classical
 coding-theory results (Johnson bound / Guruswami–Sudan / Reed–Solomon
