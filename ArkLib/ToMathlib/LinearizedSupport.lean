@@ -596,7 +596,7 @@ theorem bkr06_tight_family_hfamily
       have hv2 : (v : ℝ) ^ 2 = ((v ^ 2 : ℕ) : ℝ) := by push_cast; ring
       rw [hv2, Nat.cast_sub hexp_nonneg]; push_cast; ring
     rw [hcast, Real.rpow_natCast, ← Nat.cast_pow, ← hNcount]
-    push_cast; ring
+    push_cast; rw [add_comm]
   have hN1 : (N : ℝ) + 1 ≤ (Fintype.card ι : ℝ) := by
     have : N + 1 ≤ Fintype.card ι := hcard
     exact_mod_cast this
