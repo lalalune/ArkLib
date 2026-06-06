@@ -173,6 +173,21 @@ A *faithful* GS family makes the GS-exposed error agree with the abstract `ε_mc
 singleton bridge supplies this in UDR; in general it is the open list-coverage statement). When
 faithfulness holds and the GS error clears `ε*`, the radius is a genuine `MCALowerWitness`. -/
 
+/-- **Faithful GS-list family.** The abstract Grand MCA bad-event probability is bounded by the
+GS-exposed bad-event probability for the supplied list family.  This is the named faithfulness
+surface that #66 still needs beyond UDR. -/
+def FaithfulGSFamily (C : Set (ι → F)) (δ : ℝ≥0)
+    (L : WordStack F (Fin 2) ι → Finset (ι → F)) : Prop :=
+  epsMCA (F := F) (A := F) C δ ≤ epsMCAgs (F := F) C δ L
+
+/-- A faithful GS family plus a GS mass bound bounds the actual Grand MCA error. -/
+theorem epsMCA_le_of_faithful_mass (C : Set (ι → F)) (δ : ℝ≥0)
+    (L : WordStack F (Fin 2) ι → Finset (ι → F)) {bound : ENNReal}
+    (hfaithful : FaithfulGSFamily (F := F) C δ L)
+    (hMass : epsMCAgsMassBound (F := F) C δ L bound) :
+    epsMCA (F := F) (A := F) C δ ≤ bound :=
+  le_trans hfaithful (epsMCAgs_le_of_massBound _ _ _ hMass)
+
 /-- **Lower witness from a faithful GS mass bound (Issue #52 ask 3).** If a GS family `L` is
 faithful at radius `δ` (`epsMCA ≤ epsMCAgs` — the abstract error is captured by the GS-exposed
 one) and the mass bound clears `ε*`, then `δ` is a verified `MCALowerWitness` for the actual
@@ -187,6 +202,23 @@ def MCALowerWitness.ofGSMassBound (C : LinearCode ι F) (δ ε_star : ℝ≥0)
     GrandChallenges.MCALowerWitness (C : Set (ι → F)) ε_star :=
   GrandChallenges.MCALowerWitness.ofLe hδ
     (le_trans hfaithful (epsMCAgs_le_of_massBound _ _ _ hMass))
+
+/-- Packaged #66 frontier for turning a faithful GS mass bound into a lower witness.
+
+The fields are exactly the remaining open inputs at this layer: a GS list family, its
+faithfulness comparison to the abstract MCA event, and its mass bound at `ε*`. -/
+structure GSMassLowerWitnessFrontier (C : LinearCode ι F) (δ ε_star : ℝ≥0) where
+  listFamily : WordStack F (Fin 2) ι → Finset (ι → F)
+  faithful : FaithfulGSFamily (F := F) (C : Set (ι → F)) δ listFamily
+  mass : epsMCAgsMassBound (F := F) (C : Set (ι → F)) δ listFamily (ε_star : ENNReal)
+
+/-- Reassemble a Grand MCA lower witness from the packaged GS mass frontier. -/
+def MCALowerWitness.ofGSMassFrontier (C : LinearCode ι F) (δ ε_star : ℝ≥0)
+    (hδ : δ ≤ 1)
+    (frontier : GSMassLowerWitnessFrontier (F := F) C δ ε_star) :
+    GrandChallenges.MCALowerWitness (C : Set (ι → F)) ε_star :=
+  MCALowerWitness.ofGSMassBound C δ ε_star hδ
+    frontier.listFamily frontier.faithful frontier.mass
 
 end MCAGS
 
