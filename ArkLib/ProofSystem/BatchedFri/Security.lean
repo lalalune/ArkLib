@@ -1,11 +1,12 @@
-/- Copyright (c) 2024-2025 ArkLib Contributors. All rights reserved.
-  Released under Apache 2.0 license as described in the file LICENSE.
-  Authors: František Silváši, Julian Sutherland, Ilia Vlasov
+/-
+Copyright (c) 2024-2025 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: František Silváši, Julian Sutherland, Ilia Vlasov
 
-  [BCIKS20] refers to the paper "Proximity Gaps for Reed-Solomon Codes" by Eli Ben-Sasson,
-  Dan Carmon, Yuval Ishai, Swastik Kopparty, and Shubhangi Saraf.
+[BCIKS20] refers to the paper "Proximity Gaps for Reed-Solomon Codes" by Eli Ben-Sasson,
+Dan Carmon, Yuval Ishai, Swastik Kopparty, and Shubhangi Saraf.
 
-  Using {https://eprint.iacr.org/2020/654}, version 20210703:203025.
+Using {https://eprint.iacr.org/2020/654}, version 20210703:203025.
 -/
 
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
