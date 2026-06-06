@@ -714,6 +714,27 @@ theorem frs_is_subspaceDesign_gk16
       _ = (Module.finrank F A : ℝ) * Fintype.card ι := by
           rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul, mul_comm]
 
+/-- **ABF26 Theorem 2.18 [GK16], FRS half — structural residual form.**
+This packages the current proof frontier into the single residual
+`GK16Claim16StructuralData`: the structural encoder-isomorphism/adapted-basis transport
+discharges `GK16DegreeBudget` by `gk16DegreeBudget_of_structuralData`, and the
+rate-arithmetic theorem `frs_is_subspaceDesign_gk16` then gives the repaired
+`τ(r) = (k-1)/n` profile on `[s]` (and `1` off `[s]`). -/
+theorem frs_is_subspaceDesign_gk16_of_structuralData
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (L : Finset F) (hL_dom : ∀ i : ι, domain i ∈ L)
+    (hω : ReedSolomon.Folded.Admissible L s ω)
+    (hdata : GK16Claim16StructuralData domain k s ω
+      (ReedSolomon.Folded.frsCode domain k s ω)) :
+    let τ : ℕ → ℝ := fun r ↦
+      if r ∈ Finset.Icc 1 s then (k - 1 : ℝ) / Fintype.card ι else 1
+    IsSubspaceDesign s τ (ReedSolomon.Folded.frsCode domain k s ω) :=
+  frs_is_subspaceDesign_gk16 domain k s ω L hL_dom hω
+    (gk16DegreeBudget_of_structuralData domain k s ω
+      (ReedSolomon.Folded.frsCode domain k s ω) hdata)
+
 /-- **ABF26 Theorem 2.18 [GK16], FRS half — residual `GK16DegreeBudget` discharged.**
 The folded RS code is τ-subspace-design for `τ(r) = (k-1)/n` on `[s]` (and `1` off `[s]`),
 *unconditionally on the degree-budget residual*, given only:
