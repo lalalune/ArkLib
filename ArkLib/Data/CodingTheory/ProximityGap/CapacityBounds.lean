@@ -96,20 +96,39 @@ named statements, with the corollary content checked in-tree; *CONSTRUCTION* = e
 witness code/family (lower-bound direction; not dischargeable by any in-tree upper-bound
 machinery); *SHADOW* = placeholder pending a canonical formalization elsewhere.
 
-| statement | class | blocked on / notes |
-|---|---|---|
-| `linear_epsMCA_1_5_johnson_gkl24` (T4.11.1) | DIRECT PORT | ∛-radius list count absent (#49 tracks the √-radius side) |
-| `linear_epsCA_1_5_johnson_bgks20` (T4.11.2) | DIRECT PORT | η-margin fold/interleave union bound absent |
-| `rs_epsCA_bchks25_item2` (T4.9.2) | DIRECT PORT | BCHKS25 RS interpolation count absent |
-| `rs_epsCA_small_loss_r4_10` (R4.10) | DERIVED COROLLARY | solely on T4.9.2; checked reduction `rs_epsCA_small_loss_r4_10_of_residuals` + repaired floor side condition in-tree |
-| `rs_epsMCA_johnson_range_bchks25` (T4.12) | DIRECT PORT | m-multiplicity RS interpolation absent (#10 tracks the Hab25 variant) |
-| `rs_epsCA_lower_capacity_bchks25_kk25` (T4.16) | CONSTRUCTION | capacity-regime bad-code witness (#39 tracks the exact middle-band count) |
-| `rs_epsCA_breakdown_cs25` (T4.17) | CONSTRUCTION | `≥ 1` half needs the qEntropy ↔ RS-ball-count bridge; `≤ 1` half trivial |
-| `rs_epsCA_johnson_jump_bchks25` (T4.18) | CONSTRUCTION | char-2 Johnson-jump witness family |
-| `linear_epsCA_ge_sampling_dg25` (L4.19) | DIRECT PORT | covering-radius sampling identity absent |
-| `subspaceDesign_epsMCA_gg25` (T4.13) | DIRECT PORT | GG25 line-stitching/list-decoding pipeline; list-decoding input tracked by #53 |
-| `frs_epsMCA_capacity_gg25` (T4.14) | DERIVED COROLLARY | solely on T4.13 + T2.18; checked reduction `frs_epsMCA_capacity_gg25_of_residuals` in-tree |
-| `subspaceDesign_epsCA_curves_polynomial_generators_bcgm25` | SHADOW | restate via `IsMCAGenerator` once PR #489 lands; do not prove as-is |
+*DIRECT PORTs* (principal external paper results, admitted as `Prop`-valued statements):
+
+- `linear_epsMCA_1_5_johnson_gkl24` (T4.11.1) — ∛-radius list count absent in-tree (#49
+  tracks the √-radius Johnson side).
+- `linear_epsCA_1_5_johnson_bgks20` (T4.11.2) — η-margin fold/interleave union bound absent.
+- `rs_epsCA_bchks25_item2` (T4.9.2) — BCHKS25 RS interpolation count absent.
+- `rs_epsMCA_johnson_range_bchks25` (T4.12) — m-multiplicity RS interpolation absent (#10
+  tracks the Hab25 variant).
+- `linear_epsCA_ge_sampling_dg25` (L4.19) — covering-radius sampling identity absent.
+- `subspaceDesign_epsMCA_gg25` (T4.13) — GG25 line-stitching/list-decoding pipeline; its
+  list-decoding input is tracked by #53.
+
+*DERIVED COROLLARIES* (blocked solely on other named statements; corollary content checked
+in-tree):
+
+- `rs_epsCA_small_loss_r4_10` (R4.10) — solely on T4.9.2; checked reduction
+  `rs_epsCA_small_loss_r4_10_of_residuals` + repaired floor side condition in-tree.
+- `frs_epsMCA_capacity_gg25` (T4.14) — solely on T4.13 + T2.18; checked reduction
+  `frs_epsMCA_capacity_gg25_of_residuals` in-tree.
+
+*CONSTRUCTIONS* (existence of a witness code/family; lower-bound direction, not
+dischargeable by any in-tree upper-bound machinery):
+
+- `rs_epsCA_lower_capacity_bchks25_kk25` (T4.16) — capacity-regime bad-code witness (#39
+  tracks the exact middle-band count).
+- `rs_epsCA_breakdown_cs25` (T4.17) — `≥ 1` half needs the qEntropy ↔ RS-ball-count bridge;
+  the `≤ 1` half is trivial.
+- `rs_epsCA_johnson_jump_bchks25` (T4.18) — char-2 Johnson-jump witness family.
+
+*SHADOW* (placeholder pending a canonical formalization elsewhere):
+
+- `subspaceDesign_epsCA_curves_polynomial_generators_bcgm25` — restate via `IsMCAGenerator`
+  once PR #489 lands; do not prove as-is.
 
 **No statement in this file is disproven.**  The two repaired items are R4.10 (the naive
 `0 < γ < 1` floor-collapse shortcut is refuted in-tree by
@@ -164,6 +183,12 @@ namespace CodingTheory
 
 open scoped NNReal
 open ProximityGap
+
+/-! ## General linear codes — ABF26 §4 1.5-Johnson family ([GKL24], [BGKS20])
+
+Disposition (issue #48): both DIRECT PORTs (∛-radius list count / η-margin union bound
+absent in-tree). Lower-witness feeders for the Grand MCA threshold via
+`MCALowerWitness.ofLe`. See the file-level disposition ledger. -/
 
 section General
 
@@ -227,6 +252,15 @@ def linear_epsCA_1_5_johnson_bgks20
   -- specialised to the ∛-radius regime, which is not present. Genuinely external.
 
 end General
+
+/-! ## Reed-Solomon codes — ABF26 §4 RS CA/MCA family ([BCHKS25], [KK25], [CS25])
+
+Disposition (issue #48): T4.9.2 / T4.12 are DIRECT PORTs (RS interpolation / multiplicity
+counts absent); R4.10 is a DERIVED COROLLARY of T4.9.2 (checked reduction +
+no-boundary-crossing floor lemma in-tree); T4.16 / T4.17 / T4.18 are CONSTRUCTIONs
+(capacity-regime / Johnson-jump bad-code witnesses), which are *upper*-witness feeders for
+the Grand MCA threshold (`MCAUpperWitness`). T4.12 is the priority RS lower-witness feeder.
+See the file-level disposition ledger and #39 (radius-one extremal count). -/
 
 section ReedSolomon
 
@@ -566,6 +600,12 @@ def rs_epsCA_johnson_jump_bchks25
 
 end ReedSolomon
 
+/-! ## Covering-radius sampling — ABF26 §4 ([DG25])
+
+Disposition (issue #48): DIRECT PORT (covering-radius sampling identity absent in-tree).
+An *upper*-witness feeder (`ε_ca` lower bound) for the Grand MCA threshold. See the
+file-level disposition ledger. -/
+
 section Sampling
 
 open scoped ProbabilityTheory
@@ -596,6 +636,15 @@ def linear_epsCA_ge_sampling_dg25
   -- covering-radius sampling identity), (ii) the nonzero-shift averaging. Genuinely external.
 
 end Sampling
+
+/-! ## Subspace-design / FRS MCA up to capacity — ABF26 §4.2.2 ([GG25], [BCGM25])
+
+Disposition (issue #48): T4.13 is a DIRECT PORT (GG25 line-stitching/list-decoding pipeline;
+its list-decoding input is tracked by #53); T4.14 is a DERIVED COROLLARY of T4.13 + T2.18
+(checked reduction `frs_epsMCA_capacity_gg25_of_residuals` in-tree); the BCGM25 entry is a
+SHADOW to be restated via `IsMCAGenerator` once PR #489 lands — do not prove as-is. T4.13 /
+T4.14 are the priority lower-witness feeders (`MCALowerWitness.ofLe`) realizing MCA up to
+capacity. See the file-level disposition ledger. -/
 
 section SubspaceDesignFRS
 
