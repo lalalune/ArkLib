@@ -11,6 +11,31 @@ Scope:
 - `ArkLib/ProofSystem/Stir/RoundProtocol.lean`
 - `ArkLib/ProofSystem/Stir/MainThm.lean`
 
+## Branch-harvest note
+
+The stale STIR/proximity branches are not merge candidates:
+
+- `origin/codingtheory-refactor`
+- `origin/Katy/ProximityRefactor`
+- `origin/Katy/ProximityWIP`
+- `origin/Katy/mathlibDefs`
+
+Raw branch scans show live `sorry` bodies and/or `opaque` placeholders across the old
+coding-theory, BCIKS20, polynomial, STIR folding, out-of-domain sampling, and combine files.
+Do not replay these branches wholesale.
+
+The useful content from `origin/codingtheory-refactor` is already represented on current `main`
+under the newer `ArkLib/ProofSystem/Stir/**` layout:
+
+- `ArkLib/ProofSystem/Stir/ProximityBound.lean` carries `Bstar` and `proximityError`.
+- `ArkLib/ProofSystem/Stir/Combine.lean` carries the STIR combine and degree-correction surface.
+- `ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean` carries the out-of-domain sampling surface.
+- `ArkLib/ProofSystem/Stir/RoundProtocol.lean` carries the real one-round STIR oracle reduction.
+
+The old `Data/CodingTheory/Folding/Stir.lean` and `Operations/Combine.lean` proof sketches should
+be treated as historical references only. Current work should target the live `ProofSystem/Stir`
+files and the residuals below.
+
 ## Current residual surfaces
 
 ### FRI soundness accounting
