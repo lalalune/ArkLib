@@ -2283,14 +2283,26 @@ lemma OptionT.simulateQ_vector_mapM_eq {ι ι' : Type} {spec : OracleSpec ι}
       OptionT (OracleComp superSpec) (Vector β n)) =
       Vector.mapM (m := OptionT (OracleComp superSpec)) (fun x ↦ simulateQ so (f x)) v := by
   apply (Vector.map_toArray_inj (m := OptionT (OracleComp superSpec))).mp
-  rw [show (Vector.toArray <$> simulateQ so (Vector.mapM (m := OptionT (OracleComp spec)) f v)) =
-      (simulateQ so
-        ((Vector.toArray <$> Vector.mapM (m := OptionT (OracleComp spec)) f v) :
-          OptionT (OracleComp spec) (Array β))) from
-    (OptionT.simulateQ_map (so := so) (f := Vector.toArray)
-      (mx := Vector.mapM (m := OptionT (OracleComp spec)) f v)).symm]
-  rw [Vector.toArray_mapM, Vector.toArray_mapM]
-  exact OptionT.simulateQ_array_mapM_eq (so := so) (f := f) v.toArray
+  calc
+    (Vector.toArray <$> (simulateQ so (Vector.mapM (m := OptionT (OracleComp spec)) f v) :
+      OptionT (OracleComp superSpec) (Vector β n))) =
+        (simulateQ so
+          ((Vector.toArray <$> Vector.mapM (m := OptionT (OracleComp spec)) f v) :
+            OptionT (OracleComp spec) (Array β)) :
+              OptionT (OracleComp superSpec) (Array β)) := by
+          exact (OptionT.simulateQ_map (so := so) (f := Vector.toArray)
+            (mx := Vector.mapM (m := OptionT (OracleComp spec)) f v)).symm
+    _ = (simulateQ so (Array.mapM (m := OptionT (OracleComp spec)) f v.toArray) :
+          OptionT (OracleComp superSpec) (Array β)) := by
+        rw [Vector.toArray_mapM]
+    _ = (Array.mapM (m := OptionT (OracleComp superSpec))
+          (fun x ↦ simulateQ so (f x)) v.toArray :
+            OptionT (OracleComp superSpec) (Array β)) := by
+        exact OptionT.simulateQ_array_mapM_eq (so := so) (f := f) v.toArray
+    _ = (Vector.toArray <$> Vector.mapM (m := OptionT (OracleComp superSpec))
+          (fun x ↦ simulateQ so (f x)) v :
+            OptionT (OracleComp superSpec) (Array β)) := by
+        rw [Vector.toArray_mapM]
 
 @[simp]
 lemma OptionT.simulateQ_vector_mapM {ι ι' : Type} {spec : OracleSpec ι} {superSpec : OracleSpec ι'}
