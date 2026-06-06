@@ -417,6 +417,53 @@ theorem mcaThreshold_bracketed_unconditional (domain : ι ↪ F) {k : ℕ} {δ :
   · exact le_mcaThreshold_ofChooseLe domain k hδ hlo _
   · exact mcaThreshold_lt_capacityPred_of_subsetSums domain hk hhi _
 
+/-- Per-rate canonical-window lower bounds and adjacent middle-radius spike certificates resolve
+the faithful MCA lattice prize directly.
+
+This is the arithmetic-facing form of
+`mcaPrizeLatticeResolved_of_lowerWitnesses_and_spike_adjacent`: the lower witnesses are
+instantiated from the unconditional canonical-witness window bound, so an ABF26 certificate file
+only has to provide, at each of the four prize rates, the lower binomial/count inequality, the
+spike admissibility inequalities, and the one-step lattice adjacency check. -/
+theorem mcaPrizeLatticeResolved_of_chooseBounds_and_spike_adjacent
+    (domain : ι ↪ F)
+    (δ_lo δ_hi : Fin 4 → ℝ≥0) (t : Fin 4 → ℕ)
+    (hδlo : ∀ j : Fin 4, δ_lo j ≤ 1)
+    (hlo : ∀ j : Fin 4,
+      ((Fintype.card ι).choose
+          (max
+            (⌈((1 : ℝ≥0) - δ_lo j) * (Fintype.card ι : ℝ≥0)⌉₊)
+            (⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ + 1)) : ENNReal) /
+        (Fintype.card F : ENNReal) ≤ (epsStar : ENNReal))
+    (hδhi : ∀ j : Fin 4, δ_hi j ≤ 1)
+    (ht_n : ∀ j : Fin 4,
+      t j + ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ ≤ Fintype.card ι)
+    (ht_q : ∀ j : Fin 4, t j ≤ Fintype.card F)
+    (hspike_radius : ∀ j : Fin 4,
+      ((1 - δ_hi j) * Fintype.card ι : ℝ≥0) ≤
+        (Fintype.card ι - t j + 1 : ℕ))
+    (hspike_gt : ∀ j : Fin 4,
+      (epsStar : ENNReal) < (t j : ENNReal) / (Fintype.card F : ENNReal))
+    (hadj : ∀ j : Fin 4,
+      (latticeIndexOf (ι := ι) (δ_hi j) (hδhi j)).val =
+        (latticeIndexOf (ι := ι) (δ_lo j) (hδlo j)).val + 1) :
+    mcaPrizeLatticeResolved domain
+      (fun j => latticeIndexOf (ι := ι) (δ_lo j) (hδlo j)) := by
+  let wlo : ∀ j : Fin 4,
+      GrandChallenges.MCALowerWitness
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar := fun j =>
+    MCALowerWitness.ofChooseLe domain
+      ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ (hδlo j) (hlo j)
+  have hadj' : ∀ j : Fin 4,
+      (latticeIndexOf (ι := ι) (δ_hi j) (hδhi j)).val =
+        (latticeIndexOf (ι := ι) (wlo j).δ (wlo j).le_one).val + 1 := by
+    intro j
+    simpa [wlo] using hadj j
+  simpa [wlo] using
+    (mcaPrizeLatticeResolved_of_lowerWitnesses_and_spike_adjacent
+      domain wlo t δ_hi hδhi ht_n ht_q hspike_radius hspike_gt hadj')
+
 end LatticeBracket
 
 end ProximityGap
