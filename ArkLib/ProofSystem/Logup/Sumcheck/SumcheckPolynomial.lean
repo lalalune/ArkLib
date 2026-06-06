@@ -75,7 +75,10 @@ private theorem signFactor_diff {a b : Fin 2} (hab : a ≠ b) :
     1 + bitToSign F a * bitToSign F b = (0 : F) := by
   fin_cases a <;> fin_cases b <;> simp [bitToSign] at hab ⊢
 
-private theorem lagrangeKernel_signPoint
+/-- The Lagrange kernel is a delta function on hypercube sign points: `L_H(v, signPoint u)`
+is `1` when `v = u` and `0` otherwise. Exported (non-`private`) for the outer-verifier
+run characterization in `Logup/Security/OuterRun.lean`. -/
+theorem lagrangeKernel_signPoint
     (hSigns : (-1 : F) ≠ 1) (u v : Hypercube n) :
     lagrangeKernel F v (signPoint F u) = if v = u then 1 else 0 := by
   classical
