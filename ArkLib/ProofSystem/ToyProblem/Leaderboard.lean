@@ -583,7 +583,7 @@ sextic extension, `ρ = 1/2`, `t = 128`) over the concrete rate-`1/2`
 Reed-Solomon code `KoalaBear.rsCodeSet`.
 
 The two anchors below are conditional on explicit residual propositions rather than
-`sorry`-backed. Their remaining obligations are code-theoretic: the §6.3 RBR upper-bound
+hidden proof holes. Their remaining obligations are code-theoretic: the §6.3 RBR upper-bound
 calculation for the provable side, and the Fenzi-Sanso winning-set construction for the attack
 side. The field and code are no longer opaque stand-ins. -/
 
@@ -651,9 +651,10 @@ in Fenzi–Sanso, eprint 2025/2197, Lemma 4.4): the winning challenge set is lar
 enough that, at KoalaBear-sextic `ρ=1/2, t=128`, the simplified-IOR soundness
 error is `≥ ≈2^(-116)` (ABF26 §6.3, `.tex` 2925: `2^(-116.49)`). The witness is
 the attack instance, lower-bounding `winningSetSoundness` directly via
-`winningSetRatio_le_winningSetSoundness`. `sorry`-backed (L6.12 carries the
-side-hyp `|F| > C(N,2)`; the numeric ≈116 and the witness-violation packaging
-are Phase 5 / Phase 3). -/
+`winningSetRatio_le_winningSetSoundness`. This backward-compatible anchor is
+conditional on the explicit proposition `fenziSanso_upperBound_attack_residual`;
+the concrete carrier below refines the owed content to a KoalaBear winning-set
+cardinality witness. -/
 def fenziSanso_upperBound_attack_residual : Prop :=
   koalaIRS.soundnessError ≥ (2 : ℝ≥0) ^ (-(116 : ℝ))
 
@@ -667,9 +668,9 @@ provable security is ≈64 bits and the best known attack is ≈116 bits, so the
 gap the prize asks contestants to close is `116 − 64 = 52` bits (see [ABF26]
 §6.3 Tables 2–5). The value is a
 pure arithmetic readoff of the two `bits` fields — it does not depend on the
-anchors' owed §6 *proofs* being correct (though, naming the anchor defs, this
-lemma inherits their tagged `sorry`; the metric lemma `bits_le_of` is the
-anchor-independent, axiom-clean guarantee). -/
+anchors' owed §6 *proofs* being correct beyond the explicit residual
+hypotheses; the metric lemma `bits_le_of` is the anchor-independent,
+axiom-clean guarantee. -/
 theorem securityGap_koalaIRS_anchors :
     ∀ (hLo : arklib_lowerBound_irs_t128_residual)
       (hHi : fenziSanso_upperBound_attack_residual),

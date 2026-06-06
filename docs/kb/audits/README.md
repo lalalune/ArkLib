@@ -21,3 +21,10 @@ Current audit pages:
   - Appendix A rational-function and Hensel-lifting status for `BCIKS20`.
 - [`open-problems-list-decoding-and-correlated-agreement.md`](open-problems-list-decoding-and-correlated-agreement.md)
   - theorem/status matrix for `paper.pdf`.
+- [`issue-18-toyproblem-residuals-2026-06-06.md`](issue-18-toyproblem-residuals-2026-06-06.md)
+  - live ToyProblem residual map for ABF26 Section 6 knowledge-soundness,
+    winning-set, and KoalaBear leaderboard anchors.
+- [`issue-24-fri-stir-residuals-2026-06-06.md`](issue-24-fri-stir-residuals-2026-06-06.md)
+  - FRI/STIR soundness and proximity-gap residual surfaces.
+- [`issue-25-oracle-reduction-residuals-2026-06-06.md`](issue-25-oracle-reduction-residuals-2026-06-06.md)
+  - OracleReduction sequential-composition and Fiat-Shamir residual surfaces.
