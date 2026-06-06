@@ -37,6 +37,9 @@ theorem support_liftComp {τ : Type} {superSpec : OracleSpec τ} {α : Type}
       simp only [support_bind, Set.mem_iUnion, support_map, Set.mem_image,
         OracleComp.support_query, Set.mem_univ, true_and, exists_eq, exists_const,
         OracleQuery.cont_query, OracleQuery.input_query, id_eq, ih]
+      constructor
+      · rintro ⟨i, -, hi⟩; exact ⟨i, hi⟩
+      · rintro ⟨i, hi⟩; exact ⟨i, ⟨i, rfl⟩, hi⟩
 
 end OracleComp
 
@@ -77,23 +80,21 @@ theorem verifier_output_mem_run_support
           | none => simp [Option.getM] at hx
           | some vOut =>
               simp only [Option.elim_some, Option.getM_some, OptionT.run_pure, pure_bind,
-                Option.elim_some, support_pure, Set.mem_singleton_iff, Option.some.injEq] at hx
+                support_pure, Set.mem_singleton_iff, Option.some.injEq] at hx
               have hx2 : x.2 = vOut := congrArg Prod.snd hx
               have hx11 : x.1.1 = proverResult.1 := congrArg (Prod.fst ∘ Prod.fst) hx
               rw [hx2, hx11]
               -- Transfer reachability of `some vOut` from the lifted verifier run to the original.
-              -- `hstmtOut : some (some vOut) ∈ support (liftM (V.run …).run).run`.  Unfolding the
-              -- `liftM` (`some <$> liftComp (V.run).run`) and removing the spec-lift via
-              -- `support_liftComp` turns this into `some vOut ∈ support (V.run …).run`, i.e. the
-              -- OptionT membership `compatStatement` needs.
+              -- `hstmtOut : some (some vOut) ∈ support (liftM (V.run …).run).run`.  The lift is
+              -- `OptionT.lift ∘ liftComp`, so `(liftM (V.run).run).run = some <$> liftComp (V.run).run`;
+              -- `support_liftComp` removes the spec-lift, giving `some vOut ∈ support (V.run …).run`.
               rw [OptionT.mem_support_iff]
               have hLift := hstmtOut
-              simp only [OptionT.run_monadLift, support_map, Set.mem_image] at hLift
-              rw [show (monadLift (reduction.verifier.run stmt proverResult.1).run :
-                    OracleComp (oSpec + [pSpec.Challenge]ₒ) (Option StmtOut))
-                  = OracleComp.liftComp (reduction.verifier.run stmt proverResult.1).run
-                      (oSpec + [pSpec.Challenge]ₒ) from rfl,
-                  OracleComp.support_liftComp] at hLift
+              rw [show ((liftM (reduction.verifier.run stmt proverResult.1).run :
+                      OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) (Option StmtOut)).run)
+                    = some <$> OracleComp.liftComp (reduction.verifier.run stmt proverResult.1).run
+                        (oSpec + [pSpec.Challenge]ₒ) from rfl] at hLift
+              rw [support_map, OracleComp.support_liftComp, Set.mem_image] at hLift
               obtain ⟨w, hw, hwEq⟩ := hLift
               rw [Option.some.injEq] at hwEq
               rwa [← hwEq]

@@ -209,8 +209,10 @@ def commitmentScheme (base : ZMod q) (βSq γ κ : Nat)
     pure { innerMatrix := A, outerMatrix := B }
   commit pp m :=
     let decomps := generateDecomps Φ decomp pp m
+    /-- In the honest execution of the scheme, the committer generates the weak opening
+        using the trivial challenge $c_i = 1$ for all blocks $i$. Under this trivial challenge,
+        weak verification (`verify_weak`) reduces to the standard verification check. -/
     pure (commitWithDecomps Φ pp decomps, { toDecomp := decomps, challenge := fun _ => 1 })
-    -- dummy challenge value c=1 here
   verify pp m c opening :=
     (List.finRange blocks).all (fun i =>
       decide (derivedMessage Φ base opening.toDecomp i = m i)) &&

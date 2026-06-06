@@ -163,19 +163,13 @@ def duplexSpongeFiatShamirSaltedHonestExecution {δ : Nat}
   let stmtOut ← OptionT.mk (pure stmtOut?)
   return ⟨⟨proof, prvStmtOut, witOut⟩, stmtOut⟩
 
-/-- The transformed unsalted DSFS run is the lifted explicit honest execution.
-
-The lift is the canonical one-step subspec lift `liftComp` of the honest execution's `.run` into the
-reduction's run oracle spec `oSpec + dsc + [FSspec.Challenge]ₒ`; pinning it (rather than relying on
-`MonadLiftT` synthesis, which may route through the associativity-reassociating path
-`oSpec + dsc → oSpec + (dsc + [c]) → oSpec + dsc + [c]`) keeps this named residual unambiguous. -/
+/-- The transformed unsalted DSFS run is the lifted explicit honest execution. -/
 def duplexSpongeFiatShamir_run_eq_honestExecution
     (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
     (stmtIn : StmtIn) (witIn : WitIn) :
     Prop :=
     (R.duplexSpongeFiatShamir (U := U)).run stmtIn witIn =
-      OptionT.mk (OracleComp.liftComp
-        (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn).run _)
+      liftM (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn)
 
 
 /-- The transformed salted DSFS run is the lifted explicit honest execution. -/
@@ -269,14 +263,20 @@ theorem duplexSpongeFiatShamir_completeness_unroll_of_run_eq
           (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn).run := by
     rw [hRun stmtIn witIn]
     rw [QueryImpl.addLift_def, QueryImpl.liftTarget_self]
-    -- The run-equality residual is stated with the canonical one-step subspec lift `liftComp` of the
-    -- honest execution's `.run`, so the appended (never-queried) challenge oracle implementation
-    -- collapses directly via `simulateQ_add_liftComp_left`.
-    rw [OptionT.run_mk]
-    exact QueryImpl.simulateQ_add_liftComp_left impl
-      (QueryImpl.liftTarget (StateT σ ProbComp)
-        (challengeQueryImpl (pSpec := ⟨!v[Direction.P_to_V], !v[pSpec.Messages]⟩)))
-      (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn).run
+    -- `OptionT.run (liftM honest)` is `simulateQ (handlers) honest.run`, where the handlers send each
+    -- base-spec query through the (possibly associativity-reassociating) `OptionT` lift. Fuse the
+    -- outer `simulateQ` with `simulateQ_compose`, then check that the composed implementation agrees
+    -- with `impl` on every base-spec query: the appended challenge oracle is never reached.
+    rw [show OptionT.run (liftM (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn)) =
+          simulateQ (fun t => liftM (OracleSpec.query t))
+            (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn).run from rfl,
+      ← QueryImpl.simulateQ_compose]
+    refine congrFun (congrArg (fun g => simulateQ g
+      (R.duplexSpongeFiatShamirHonestExecution (U := U) stmtIn witIn).run) ?_) ?_
+    · funext t
+      simp only [QueryImpl.apply_compose, simulateQ_query]
+      rcases t with t | t <;> rfl
+    · rfl
   rw [hcollapse]
 
 /-- **Reduction of `duplexSpongeFiatShamirSalted_completeness_unroll` to the run-equality

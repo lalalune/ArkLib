@@ -8,37 +8,28 @@ import VCVio.OracleComp.SimSemantics.SimulateQ
 import VCVio.OracleComp.SimSemantics.Append
 
 /-!
-# `simulateQ` over `forIn` and three-way `addLift` (staged for upstream to VCVio)
+# Query Simulation Functoriality and Routing in Nested Oracle Specifications
 
-Additions to VCVio's `simulateQ` simp set that ArkLib needs but that the
-currently-pinned VCVio commit predates. They are *staged* here so they can be
-deleted wholesale once the VCVio dependency is bumped — see
-`ArkLib/ToVCVio/README.md`.
+This module establishes key distributive and routing properties of query simulation
+(`simulateQ`) over monadic structures. Specifically:
 
-* `simulateQ_list_forIn` — a monad morphism commutes with `forIn` on a list
-  (the `forIn` sibling of VCVio's `simulateQ_list_mapM` / `simulateQ_list_forM`).
-  This is the lemma that lets a `simulateQ` in front of a verifier spot-check
-  loop `for j in List.finRange t do …` move inside the loop body. It is already
-  upstreamed to VCVio under the same name; this copy duplicates it verbatim only
-  because ArkLib pins an earlier VCVio commit.
+1. **Distributivity over Iteration**: `simulateQ_list_forIn` shows that query simulation,
+   acting as a monad morphism, distributes over the monadic loop construction `forIn`
+   on lists. This ensures that simulating a looped interactive protocol is definitionally
+   equivalent to looping the simulated round step.
 
-* `simulateQ_addLift_add_liftM_left` / `simulateQ_addLift_add_liftM_right` —
-  resolve a `simulateQ` over a *three-way* `addLift impl (impl₁ + impl₂)` applied
-  to a computation that was double-`liftM`'d from one of the two inner oracle
-  families. This is the shape produced by an `OracleVerifier`'s
-  `simOracle2`-routed query helpers (a query over `[OStmt]ₒ` or `[Message]ₒ`,
-  lifted into `[OStmt]ₒ + [Message]ₒ`, then into `oSpec + (…)`). The existing
-  `QueryImpl.simulateQ_add_liftComp_{left,right}` simp lemmas only peel a *single*
-  `addLift` layer; these compose two peels with `simulateQ_liftTarget` so the
-  query routes to the correct inner implementation in one step.
+2. **Multi-Stage Query Routing**: `simulateQ_addLift_add_liftM_left` and
+   `simulateQ_addLift_add_liftM_right` analyze the behavior of `simulateQ` under nested
+   direct-sum oracle specifications of the form `spec + (spec₁ + spec₂)`. They prove that
+   queries double-lifted from a component specification route directly to the corresponding
+   sub-implementation under the target monad `m`, bypassing intermediate lift layers.
 -/
 
 open OracleComp OracleSpec
 
-/-- `simulateQ` distributes over `forIn` on a list: a monad morphism commutes
-with `forIn`. Proved by list induction via `List.forIn_cons` + `simulateQ_bind`,
-casing on the `ForInStep` accumulator. (Verbatim copy of the upstream VCVio
-lemma; delete on the next VCVio bump.) -/
+/-- Query simulation distributes over `forIn` on a list. This establishes that the monad
+morphism `simulateQ impl` commutes with list iteration, mapping the loop step-by-step
+in the target monad. -/
 @[simp]
 lemma simulateQ_list_forIn {ι : Type*} {spec : OracleSpec ι} {n : Type → Type _}
     [Monad n] [LawfulMonad n] (impl : QueryImpl spec n) {α β : Type}
@@ -54,16 +45,10 @@ lemma simulateQ_list_forIn {ι : Type*} {spec : OracleSpec ι} {n : Type → Typ
     | done b => simp
     | yield b => exact ih b
 
-/-- Resolve a `simulateQ` over a three-way `addLift impl (impl₁ + impl₂)` applied to a
-computation `x : OracleComp spec₁ α` that has been double-`liftM`'d — first into the inner
-sum `spec₁ + spec₂`, then into the outer sum `spec + (spec₁ + spec₂)`. The query routes to
-the *left* inner implementation `impl₁`, leaving `liftM (simulateQ impl₁ x)`.
-
-This is the `left` half of the `simOracle2`-routing pair: it peels the outer `addLift`
-(`simulateQ_add_liftComp_right`), commutes the inner `simulateQ` past the target lift
-(`simulateQ_liftTarget`), then peels the inner sum (`simulateQ_add_liftComp_left`). Stated
-for the inner pair living in a possibly-different monad `n` lifted into the target `m`
-(as `simOracle2`'s `Id`-valued `simOracle0`s are). -/
+/-- Commute query simulation with double-lifting in a nested oracle sum:
+`spec + (spec₁ + spec₂)`. A computation originating in `spec₁` that is double-lifted
+routes directly to the left sub-implementation `impl₁` under the query implementation
+`QueryImpl.addLift impl (QueryImpl.add impl₁ impl₂)`. -/
 lemma simulateQ_addLift_add_liftM_left
     {ι ι₁ ι₂ : Type} {spec : OracleSpec ι} {spec₁ : OracleSpec ι₁} {spec₂ : OracleSpec ι₂}
     {m : Type → Type} [Monad m] [LawfulMonad m]
@@ -79,13 +64,10 @@ lemma simulateQ_addLift_add_liftM_left
     QueryImpl.addLift_def, QueryImpl.simulateQ_add_liftComp_right,
     simulateQ_liftTarget, QueryImpl.simulateQ_add_liftComp_left]
 
-/-- Resolve a `simulateQ` over a three-way `addLift impl (impl₁ + impl₂)` applied to a
-computation `x : OracleComp spec₂ α` that has been double-`liftM`'d — first into the inner
-sum `spec₁ + spec₂`, then into the outer sum `spec + (spec₁ + spec₂)`. The query routes to
-the *right* inner implementation `impl₂`, leaving `liftM (simulateQ impl₂ x)`.
-
-The `right` companion of `simulateQ_addLift_add_liftM_left`; see that lemma for the
-`simOracle2` motivation. -/
+/-- Commute query simulation with double-lifting in a nested oracle sum:
+`spec + (spec₁ + spec₂)`. A computation originating in `spec₂` that is double-lifted
+routes directly to the right sub-implementation `impl₂` under the query implementation
+`QueryImpl.addLift impl (QueryImpl.add impl₁ impl₂)`. -/
 lemma simulateQ_addLift_add_liftM_right
     {ι ι₁ ι₂ : Type} {spec : OracleSpec ι} {spec₁ : OracleSpec ι₁} {spec₂ : OracleSpec ι₂}
     {m : Type → Type} [Monad m] [LawfulMonad m]

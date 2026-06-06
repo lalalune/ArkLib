@@ -933,11 +933,26 @@ theorem Reduction.verifier_output_mem_run_support
               subst x
               have hLift :
                   some vOut ∈ support
-                    (OracleComp.liftComp (reduction.verifier.run stmt proverResult.1).run
-                      (oSpec + [pSpec.Challenge]ₒ)) := by
+                    (simulateQ
+                      (fun t ↦ (liftM (query (spec := oSpec) t) :
+                        OracleComp (oSpec + [pSpec.Challenge]ₒ) _))
+                      (reduction.verifier.run stmt proverResult.1).run) := by
                 simpa [liftM_OptionT_eq] using hstmtOut
-              exact (OptionT.mem_support_iff _ _).2
-                (OracleComp.mem_support_of_mem_support_liftComp _ _ hLift)
+              have hSupp :
+                  support
+                    (simulateQ
+                      (fun t ↦ (liftM (query (spec := oSpec) t) :
+                        OracleComp (oSpec + [pSpec.Challenge]ₒ) _))
+                      (reduction.verifier.run stmt proverResult.1).run) =
+                    support (reduction.verifier.run stmt proverResult.1).run := by
+                apply support_simulateQ_eq_OracleComp_of_superSpec
+                  (spec := oSpec + [pSpec.Challenge]ₒ)
+                  (superSpec := oSpec)
+                intro β q
+                rw [QueryImpl.mapQuery]
+                rfl
+              rw [hSupp] at hLift
+              exact (OptionT.mem_support_iff _ _).2 hLift
 
 namespace Verifier
 
@@ -969,7 +984,7 @@ theorem liftContext_soundness [Inhabited InnerStmtOut]
   intro WitIn WitOut witIn outerP outerStmtIn hOuterStmtIn
   let innerPLens : Context.Lens InnerStmtIn InnerStmtOut OuterStmtIn OuterStmtOut
       WitIn WitOut WitIn WitOut := {
-    stmt := (fun _ => outerStmtIn) ⇆ (fun _ _ => (default : InnerStmtOut))
+	    stmt := (fun _ => outerStmtIn) ⇆ (fun _ innerStmtOut => lens.lift outerStmtIn innerStmtOut)
     wit := Prod.snd ⇆ (fun _ => Prod.snd)
   }
   let innerP : Prover oSpec InnerStmtIn WitIn InnerStmtOut WitOut pSpec :=
@@ -989,7 +1004,7 @@ theorem liftContext_soundness [Inhabited InnerStmtOut]
     simp only [Reduction.run, Verifier.liftContext, Verifier.run, innerP,
       Prover.liftContext_run, innerPLens, Function.uncurry, f,
       OptionT.run_bind, OptionT.run_map, OptionT.run_mk,
-      Functor.map_map, Function.comp, liftM_map, map_bind, bind_map_left, bind_pure_comp]
+      Functor.map_map, Function.comp, map_bind, bind_map_left, bind_pure_comp]
   -- Push `f` through the stateful simulation, then `probEvent_map`.
   have hExecMap :
       OptionT.mk (do

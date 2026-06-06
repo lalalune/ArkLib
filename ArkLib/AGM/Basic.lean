@@ -8,10 +8,15 @@ import VCVio
 import ArkLib.Data.GroupTheory.PrimeOrder
 import ArkLib.Data.Classes.Serde
 
-/-! # The Algebraic Group Model (With Oblivious Sampling)
+/-! # The Algebraic Group Model (with Oblivious Sampling)
 
-We attempt to define the algebraic group model. Our mechanization follows recent papers of Jaeger &
- Mohan [JM24] and Lipmaa, Parisella, and Siim [LPS24].
+This module formalizes the Algebraic Group Model (AGM) equipped with oblivious sampling, drawing on
+the foundations laid by Jaeger and Mohan [JM24] as well as Lipmaa, Parisella, and Siim [LPS24]. In the
+AGM, adversaries are modeled as algebraic: any group element output by the adversary must be
+accompanied by an explicit representation (a vector of exponents) expressing it as a linear
+combination of previously received group elements. This formalization supports group operations,
+exponentiation, equality testing, and serialized encoding/decoding, tracking the adversary's state
+as a dynamic valuation table.
 
 ## References
 
@@ -33,12 +38,10 @@ structure GroupRepresentation {G : Type*} [Group G] {p : ℕ} (prev : List G) (t
 local instance {α : Type*} : Zero (Option α) where
   zero := none
 
-/-- A table of group elements, indexed by `ι`. We allow the table to be partially defined, i.e.
-  some indices may not have a group element yet. We also mandate that the table must be finitely
-  supported, e.g. via `Finsupp` or `DFinsupp`.
-
-  Note that we use `DFinsupp` for now since it's computable, unlike `Finsupp`. This is just a
-  historical incident of mathlib, and we can switch to `Finsupp` if needed. -/
+/-- A partially defined table of group elements, indexed by `ι`. The table represents the adversary's
+  knowledge state, mapping currently accessible group elements to their algebraic values.
+  Finiteness of the support is enforced via `DFinsupp` (which provides a computable representation
+  of finitely supported functions). -/
 @[reducible]
 def GroupValTable (ι : Type*) (G : Type*) := Π₀ _ : ι, Option G
 
@@ -183,13 +186,5 @@ def run (adversary : Adversary ι G p bitLength α) (table : GroupValTable ι G)
   pure (outputs, result)
 
 end Adversary
-
--- How to make the adversary truly independent of the group description? It could have had `G`
--- hardwired.
-
--- Perhaps we need to enforce parametricity, i.e. it should be of type `∀ G, Group G →
--- AGMAdversary G bitLength α`?
-
--- Note: talk about AGM in the pairing setting
 
 end AGM

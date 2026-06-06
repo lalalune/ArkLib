@@ -30,8 +30,8 @@ exactly the `BetaIdentify.BetaEmbedEq` residual, which every §5 consumer thread
 * `β_regular_strong` — the existence statement whose *defining property pins the embedding*:
   `∃ b, embeddingOf𝒪Into𝕃 H b = embeddingOf𝒪Into𝕃 H (betaRec … t)`.  The witness is `betaRec … t`
   itself, so the property holds by `rfl` and (by injectivity of the embedding) determines `b`.
-* `β_strong` — the honest in-tree numerator, `Exists.choose` of `β_regular_strong`, genuinely routing
-  through `betaRec`.
+* `β_strong` — the honest in-tree numerator, `Exists.choose` of `β_regular_strong`,
+  genuinely routing through `betaRec`.
 * `beta_strong_embedEq` — `choose_spec`: `embeddingOf𝒪Into𝕃 H (β_strong …) = embeddingOf𝒪Into𝕃 H
   (betaRec … t)` **with no hypothesis**.  This is the numerator-identification residual *supplied by
   the definition* — the `BetaEmbedEq` of `BetaIdentify`, now a theorem rather than a hypothesis.
@@ -110,7 +110,8 @@ noncomputable def α_strong (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
     (Bcoeff : (i₁ : ℕ) → {m : ℕ} → Nat.Partition m → 𝒪 H) (t : ℕ) : 𝕃 H :=
   let W : 𝕃 H := liftToFunctionField (H.leadingCoeff)
   embeddingOf𝒪Into𝕃 _ (β_strong x₀ R H hHyp Bcoeff t) /
-    (W ^ (t + 1) * (embeddingOf𝒪Into𝕃 _ (ξ x₀ R H hHyp)) ^ (2 * t - 1))
+    (W ^ (t + 1) *
+      (embeddingOf𝒪Into𝕃 _ (ξ x₀ R H hHyp)) ^ henselDenominatorExponent t)
 
 end ClaimA2
 end

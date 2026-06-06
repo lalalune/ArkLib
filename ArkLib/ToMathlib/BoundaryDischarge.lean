@@ -292,6 +292,15 @@ theorem boundaryCardResidual_of_boundary_cards_and_coeffPolys
   exact boundary_jointAgreement_of_cards_and_coeffPolys
     (deg := deg) (domain := domain) (δ := δ) hk u hcardLt hcardGe hcoeffPoly
 
+omit [DecidableEq ι] in
+/-- The closed-boundary residual is vacuous for `k = 0`, since its first argument is
+`0 < k`. This removes an unnecessary residual hypothesis from degenerate callers. -/
+theorem boundaryCardResidual_zero
+    {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} :
+    ProximityGap.BoundaryCardResidual (k := 0) (deg := deg) (domain := domain) (δ := δ) := by
+  intro hk
+  omega
+
 end BoundaryDischarge
 
 end ArkLib
@@ -304,3 +313,4 @@ end ArkLib
 #print axioms ArkLib.BoundaryDischarge.boundary_jointAgreement_of_cards_and_coeffPolys
 #print axioms ArkLib.BoundaryDischarge.hBoundary_of_boundary_cards_and_coeffPolys
 #print axioms ArkLib.BoundaryDischarge.boundaryCardResidual_of_boundary_cards_and_coeffPolys
+#print axioms ArkLib.BoundaryDischarge.boundaryCardResidual_zero

@@ -170,6 +170,53 @@ noncomputable def gsFactorBundle_of_gsInterpolant
   ArkLib.GSFactorData.of_section5Inputs (F := F) (n := n) (m := m) k x₀
     h_gs hx0 hsep hS_nonempty A hA hcount hlarge
 
+/-! ## Paired §5 heads from one GS interpolant
+
+The Johnson branch (`Claim57Residuals`) and keystone branch (`GSFactorData.Bundle`) are produced from
+the same GS interpolant and specialization side conditions.  This paired wrapper keeps the two heads
+together for later top-level §5 assemblers. -/
+
+/-- **Both concrete §5 heads from the same GS interpolant.**
+
+Returns the Johnson graph-extraction residual bundle and the keystone `R/H` factorization bundle
+from one `ModifiedGuruswami` witness.  The Johnson head uses the single `hJohnson` budget; the
+keystone head keeps the explicit matching-set data required by `GSFactorData.of_section5Inputs`. -/
+noncomputable def section5JohnsonHeads_of_gsInterpolant
+    [NeZero n] [DecidableEq (RatFunc F)] [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hx0 : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        Bivariate.evalX (Polynomial.C x₀) R ≠ 0)
+    (hsep : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        (Bivariate.evalX (Polynomial.C x₀) R).Separable)
+    (hJohnson : Bivariate.natWeightedDegree Q 1 k < m * (n - ⌈δ * (n : ℚ)⌉₊))
+    (hS_nonempty : (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).Nonempty)
+    (A : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ → Finset (Fin n))
+    (hA : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      ∀ i ∈ A z, (u₀ + z.1 • u₁) i =
+        (Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2).eval (ωs i))
+    (hcount : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z.1) 1 k < m * (A z).card)
+    (hlarge :
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q)
+    (hfactor : ∀ R : F[Z][X][Y],
+      R ∈ pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        R ∈ (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose) :
+    Claim57Residuals (F := F) (m := m) (n := n) (Q := Q) (ωs := ωs)
+        (u₀ := u₀) (u₁ := u₁) k δ x₀ h_gs ×
+      ArkLib.GSFactorData.Bundle (F := F) x₀ :=
+  ⟨claim57Residuals_of_gsInterpolant (F := F) (m := m) (n := n) (k := k)
+      (Q := Q) (ωs := ωs) (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hx0 hsep hJohnson
+      hlarge hfactor,
+    gsFactorBundle_of_gsInterpolant (F := F) (m := m) (n := n) (k := k)
+      (Q := Q) (ωs := ωs) (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hx0 hsep hS_nonempty A
+      hA hcount hlarge⟩
+
 end ProximityGap
 
 /-! ## Axiom audit — every declaration must rest only on
@@ -177,3 +224,4 @@ end ProximityGap
 #print axioms ProximityGap.hcount_natCeil_of_johnson_budget
 #print axioms ProximityGap.claim57Residuals_of_gsInterpolant
 #print axioms ProximityGap.gsFactorBundle_of_gsInterpolant
+#print axioms ProximityGap.section5JohnsonHeads_of_gsInterpolant

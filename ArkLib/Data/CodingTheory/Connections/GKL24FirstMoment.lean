@@ -117,7 +117,7 @@ theorem mcaBadWitness_subset_image_combiningPoint
   -- `u₁` is nonzero somewhere on `S` (else `(w, 0)` is a joint pair, contradicting `hpair`).
   have hexists : ∃ i ∈ S, u₁ i ≠ 0 := by
     by_contra hcon
-    push_neg at hcon
+    push Not at hcon
     -- `hcon : ∀ i ∈ S, u₁ i = 0`. Build the joint codeword pair `(w, 0)`.
     apply hpair
     refine ⟨w, hw, 0, MC.zero_mem, ?_⟩
@@ -206,3 +206,70 @@ theorem mcaBad_card_le_listFactor_mul_card
     (by positivity) hb_card ?_
   intro w hw
   exact mcaBadWitness_card_le_card_real MC δ u₀ u₁ w (hTsub w hw)
+
+/-- **`ε_mca` bound from the in-tree first-moment count + a per-stack list-size factor.** If every
+stack `u` admits a codeword carrier `T u` (containing exactly the codewords of `MC`) of size
+`≤ B_T`, then
+
+  `ε_mca(MC, δ) ≤ ENNReal.ofReal ((B_T · n) / |F|)`.
+
+This is the fully-in-tree (`sorry`-free, axiom-clean) per-stack `ε_mca` bound: the per-codeword
+first-moment count `b = n` is now *proven* (`mcaBadWitness_card_le_card`), so the only remaining
+external input is the list-size factor `B_T` (e.g. `B_T = L²`, GCXK25's `l ≤ L²`). It composes
+`mcaBad_card_le_listFactor_mul_card` with the in-tree supremum-to-count glue
+`ProximityGap.epsMCA_le_ofReal_of_forall_mcaBad_card_le`. -/
+theorem epsMCA_le_ofReal_of_listFactor
+    (MC : Submodule F (ι → F)) (δ : ℝ≥0) {B_T : ℝ}
+    (hcount :
+      ∀ u : WordStack F (Fin 2) ι,
+        ∃ T : Finset (ι → F),
+          (∀ w ∈ (MC : Set (ι → F)), w ∈ T) ∧ (∀ w ∈ T, w ∈ (MC : Set (ι → F))) ∧
+            (T.card : ℝ) ≤ B_T) :
+    epsMCA (F := F) (A := F) (MC : Set (ι → F)) δ ≤
+      ENNReal.ofReal ((B_T * (Fintype.card ι : ℝ)) / Fintype.card F) := by
+  refine epsMCA_le_ofReal_of_forall_mcaBad_card_le (MC : Set (ι → F)) δ ?_
+  intro u
+  obtain ⟨T, hT, hTsub, hcard⟩ := hcount u
+  exact mcaBad_card_le_listFactor_mul_card MC δ (u 0) (u 1) T hT hTsub hcard
+
+/-- **The single named GKL24 first-moment residual.** This is the *one* genuinely-external
+ingredient that the in-tree substrate cannot supply: the sharpening of the per-codeword count from
+`|support u₁| ≤ n` (proven above) to GCXK25's agree-domain count `δ·n`, *uniformly* over the
+relevant close-codeword carrier `T u`. Concretely: there is a list-size factor `B_T` such that
+every stack `u` admits a carrier `T u` of codewords of size `≤ B_T`, each codeword `w ∈ T u`
+witnessing at most `δ·n` bad combining points.
+
+This isolates exactly [GKL24]'s maximal-correlated-agree-domain intersection content (GCXK25's
+`|Bad¹| ≤ p·n`, p = δ): a *global* charging argument over the line family `{u₀ + γ·u₁}` that a
+single fixed codeword `w` in isolation does not determine. With `B_T = L²` it is GCXK25's exact
+first-moment statement. -/
+def GKL24FirstMomentResidual (MC : Submodule F (ι → F)) (δ : ℝ≥0) (B_T n : ℝ) : Prop :=
+  ∀ u : WordStack F (Fin 2) ι,
+    ∃ T : Finset (ι → F), (∀ w ∈ (MC : Set (ι → F)), w ∈ T) ∧ (T.card : ℝ) ≤ B_T ∧
+      ∀ w ∈ T, ((mcaBadWitness (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) w).card : ℝ) ≤ δ * n
+
+open CodingTheory.Bridge in
+/-- **Conditional strengthening: the exact `L²·δ·n` first-moment shape from the GKL24 residual.**
+Given the single named residual `GKL24FirstMomentResidual MC δ B_T n` (with `n = |ι|`), the
+`ε_mca` first-moment bound takes GCXK25's published shape
+
+  `ε_mca(MC, δ) ≤ ENNReal.ofReal ((B_T · δ · n) / |F|)`.
+
+With `B_T = L²` this is the `L²·δ·n` summand of ABF26 T5.1; adding the in-tree second-moment
+`1/η` summand (`GCXK25SecondMoment.card_lt_one_div_of_second_moment_rs`) recovers the full
+`(L²·δ·n + 1/η)/|F|` bound. The proof is the in-tree union-bound + supremum-to-count glue; the
+*only* unproven input is the named residual. -/
+theorem epsMCA_le_ofReal_of_gkl24_residual
+    (MC : Submodule F (ι → F)) (δ : ℝ≥0) {B_T : ℝ} (hδ0 : (0 : ℝ) ≤ δ)
+    (hres : GKL24FirstMomentResidual MC δ B_T (Fintype.card ι : ℝ)) :
+    epsMCA (F := F) (A := F) (MC : Set (ι → F)) δ ≤
+      ENNReal.ofReal ((B_T * (δ * Fintype.card ι)) / Fintype.card F) := by
+  refine epsMCA_le_ofReal_of_forall_mcaBad_card_le (MC : Set (ι → F)) δ ?_
+  intro u
+  obtain ⟨T, hT, hcard, hper⟩ := hres u
+  exact mcaBad_card_le_listFactor_mul_perCodeword (MC : Set (ι → F)) δ (u 0) (u 1) T hT
+    (by positivity) hcard hper
+
+end Compose
+
+end ProximityGap

@@ -46,6 +46,30 @@ Nothing here resolves the prize: it makes the prize *quantity* `mcaThreshold` / 
 a real Lean object that the witnesses can be proved to bracket, replacing the collapse-broken
 existence predicate.
 
+## Relationship to `GrandChallengeLattice.lean` (singular)
+
+There are two lattice encodings in this directory, and they are **complementary, not
+duplicate** — both are kept and both are fully proven (axiom-clean):
+
+* This file (`GrandChallengesLattice`, plural, namespace `ProximityGap.GrandChallengesLattice`)
+  indexes the lattice by `Finset (Fin (n+1))` (`Finset.univ.filter …`) and supplies the
+  step-function bridge to the real-valued witness framework
+  (`MCALowerWitness`/`MCAUpperWitness`, `ListLowerWitness`/`ListUpperWitness`):
+  `latticeIndexOf`, the `*_bracketed` lemmas, the `*_unique` lemmas, and the
+  per-rate prize-resolution predicates. `Hab25Core.lean` consumes these objects.
+* `GrandChallengeLattice.lean` (singular, namespace `ProximityGap.GrandChallenges`)
+  indexes the lattice by `Finset ℕ` (`Finset.range (n+1) |>.filter …`). Its
+  `listLatticeSet` / `listLatticeThreshold` are the canonical objects the downstream
+  Grand-Challenge LD-threshold bracket files consume
+  (`GrandChallengeLDThreshold{,Elias,JohnsonSq,HalfDist}.lean`), which rewrite by
+  `GrandChallenges.listLatticeSet, Finset.mem_filter, Finset.mem_range` and therefore
+  depend on that `Finset ℕ` representation.
+
+The two representations are structurally incompatible (`Finset ℕ` vs `Finset (Fin (n+1))`),
+so neither file can be replaced by a re-export of the other without rewriting the downstream
+proofs; both are retained intentionally. See the singular file's header for the full
+disposition note.
+
 ## References
 
 - [ABF26] Arnon, Boneh, Fenzi. *Open Problems in List Decoding and Correlated Agreement*.
