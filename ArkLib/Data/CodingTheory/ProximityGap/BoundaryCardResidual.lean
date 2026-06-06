@@ -478,11 +478,17 @@ with no `sorry`/`admit`/`axiom`/`native_decide`. -/
 #print axioms ArkLib.BoundaryCardResidual.goodCoeffsCurve_eq_of_floor_eq
 #print axioms ArkLib.BoundaryCardResidual.jointAgreement_iff_of_floor_eq
 #print axioms ArkLib.BoundaryCardResidual.exists_lt_floor_eq_of_floor_lt
+#print axioms ArkLib.BoundaryCardResidual.BoundaryCardStrictInteriorResidual
 #print axioms ArkLib.BoundaryCardResidual.boundaryCardResidual_of_not_lattice
+#print axioms ArkLib.BoundaryCardResidual.BoundaryCardLatticeResidual
 #print axioms ArkLib.BoundaryCardResidual.BoundaryCardLatticeData
 #print axioms ArkLib.BoundaryCardResidual.boundaryCardLatticeResidual_zero
+#print axioms ArkLib.BoundaryCardResidual.BoundaryCardQuantizationResiduals
+#print axioms ArkLib.BoundaryCardResidual.BoundaryCardQuantizationResiduals.strictInterior
+#print axioms ArkLib.BoundaryCardResidual.BoundaryCardQuantizationResiduals.lattice
 #print axioms ArkLib.BoundaryCardResidual.BoundaryCardQuantizationResiduals.toBoundaryCardResidual
 #print axioms ArkLib.BoundaryCardResidual.boundaryCardResidual_of_lattice_residual
+#print axioms ArkLib.BoundaryCardResidual.boundaryProbabilityResidual_of_lattice_residual
 #print axioms ArkLib.BoundaryCardResidual.BoundaryCardQuantizationResiduals.toBoundaryProbabilityResidual
 #print axioms ArkLib.BoundaryCardResidual.boundary_lattice_iff_sqrtRate_mul_card_mem
 #print axioms ArkLib.BoundaryCardResidual.correlatedAgreement_affine_curves_of_lattice_residual
