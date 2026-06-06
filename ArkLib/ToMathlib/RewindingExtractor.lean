@@ -425,3 +425,17 @@ theorem rewindingKS_of_extractor
   ⟨E, hE⟩
 
 end Bridge
+
+-- AXIOM AUDIT (temporary)
+#print axioms Extractor.forkingExtractor_succeeds
+#print axioms Extractor.exists_two_accepting_of_gt_inv
+#print axioms Extractor.twoSpecialSound_forkingLemma
+#print axioms Extractor.exists_schedule_with_many_distinct_challenges
+#print axioms Extractor.knowledgeSoundnessViaRewinding.extracts
+#print axioms Bridge.knowledgeSound_of_rewinding
+#print axioms Bridge.rewindingKS_of_extractor
+#print axioms Extractor.twoSpecialSoundKnowledgeError
+#print axioms Extractor.knowledgeSoundnessViaRewinding
+#print axioms Extractor.RewindingExtractor.TwoSpecialSound
+#print axioms Extractor.RewindingExtractor
+#print axioms Bridge.StraightlineOfRewinding
