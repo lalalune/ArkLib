@@ -2631,6 +2631,7 @@ theorem correlatedAgreement_affine_curves_of_boundaryCardResidual {k : ℕ}
     (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain) :
     δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
       (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  classical
   exact correlatedAgreement_affine_curves
     (deg := deg) (domain := domain) (δ := δ) hStrictCoeff
     (boundaryProbabilityResidual_of_boundaryCardResidual
@@ -2648,6 +2649,7 @@ theorem correlatedAgreement_affine_curves_of_strictCanonicalCoeffPolysResidual {
     (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain) :
     δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
       (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  classical
   exact correlatedAgreement_affine_curves
     (deg := deg) (domain := domain) (δ := δ)
     (strictCoeffPolysResidual_of_strictCanonicalCoeffPolysResidual
