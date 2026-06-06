@@ -849,6 +849,22 @@ noncomputable def fenziSanso_upperBound_attack_concrete
     show koalaIRSConcrete.soundnessError ≥ (2 : ℝ≥0) ^ (-(116 : ℝ))
     exact winningSetSoundness_concrete_ge_of_card x hx
 
+/-- If the concrete Fenzi–Sanso winning-set residual holds, then the true
+bits-of-security of the concrete KoalaBear-sextic anchor is at most `116`. -/
+theorem koalaIRSConcrete_bitsOfSecurity_le_116
+    (h : fenziSanso_upperBound_attack_concrete_residual)
+    (hpos : 0 < koalaIRSConcrete.soundnessError) :
+    bitsOfSecurity koalaIRSConcrete.soundnessError ≤ 116 := by
+  simpa [fenziSanso_upperBound_attack_concrete] using
+    (fenziSanso_upperBound_attack_concrete h).bitsOfSecurity_le hpos
+
+/-- Interval-membership form of `koalaIRSConcrete_bitsOfSecurity_le_116`. -/
+theorem koalaIRSConcrete_bitsOfSecurity_mem_Iic_116
+    (h : fenziSanso_upperBound_attack_concrete_residual)
+    (hpos : 0 < koalaIRSConcrete.soundnessError) :
+    bitsOfSecurity koalaIRSConcrete.soundnessError ∈ Set.Iic (116 : ℝ) :=
+  koalaIRSConcrete_bitsOfSecurity_le_116 h hpos
+
 /-! ### Provable-side numeric reduction (`arklib_lowerBound` ⇒ explicit power)
 
 The provable side routes through the full-protocol RBR vehicle

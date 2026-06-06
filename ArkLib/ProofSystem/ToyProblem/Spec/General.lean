@@ -377,11 +377,13 @@ theorem toyRewindingExtractor_twoSpecialSound (C : Set (ι → F)) (δ : ℝ≥0
       (toyStmtOf (ι := ι) (F := F) (k := k))
       (toyAccepts (ι := ι) (F := F) (k := k) C δ decode) := by
   rintro pre ⟨γ₁, g₁⟩ ⟨γ₂, g₂⟩ ⟨hmem, hg₁⟩ ⟨_, hg₂⟩ hγ
-  simp only [toyStmtOf, id_eq, toyRewindingExtractor]
-  simp only at hg₁ hg₂
-  subst hg₁
-  subst hg₂
-  rw [toySolve_combine hγ (decode pre).1 (decode pre).2]
+  -- `hg₁ : g₁ = toyCombine γ₁ (decode pre).1 (decode pre).2`, likewise `hg₂`; `hγ : γ₁ ≠ γ₂`.
+  -- The extractor returns `toySolve γ₁ γ₂ g₁ g₂`; substitute the combinations and invert.
+  have hg₁' : g₁ = toyCombine γ₁ (decode pre).1 (decode pre).2 := hg₁
+  have hg₂' : g₂ = toyCombine γ₂ (decode pre).1 (decode pre).2 := hg₂
+  have hγ' : γ₁ ≠ γ₂ := hγ
+  show (pre, toySolve γ₁ γ₂ g₁ g₂) ∈ outputRelation (ι := ι) (F := F) k C δ
+  rw [hg₁', hg₂', toySolve_combine hγ' (decode pre).1 (decode pre).2]
   exact hmem
 
 /-- **Knowledge soundness via rewinding for Construction 6.2 (proven).** The toy protocol admits a
@@ -1126,6 +1128,7 @@ interface translation, the smallest missing piece.
 The residual is `Extractor.Bridge.StraightlineOfRewinding` from the *proven* rewinding witness to
 the straightline conclusion, so the theorem `protocol62_knowledgeSound` discharges the conclusion by
 feeding the proven witness through the residual (no `sorry`, no `axiom`). -/
+@[reducible]
 def protocol62_knowledgeSound_residual
     [SampleableType F] [SampleableType ι] [Nonempty ι] [Nonempty F]
     {σ : Type} (init : ProbComp σ)
@@ -1198,6 +1201,7 @@ the extractor erasure-decodes against it.
 against it. We reduce to the **named bridge residual** below from the *proven* rewinding witness
 `protocol62_knowledgeSoundnessViaRewinding` (same 2-special-sound rewinding extractor; the rbr
 accounting splits its failure across the `γ` and spot-check rounds). No `sorry`, no `axiom`. -/
+@[reducible]
 def protocol62_rbrKnowledgeSound_residual
     [SampleableType F] [SampleableType ι] [Nonempty ι] [Nonempty F]
     {σ : Type} (init : ProbComp σ)

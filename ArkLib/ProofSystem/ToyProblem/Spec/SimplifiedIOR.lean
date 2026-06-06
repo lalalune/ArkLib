@@ -218,6 +218,7 @@ a single-run `Extractor.Straightline` with no re-invocation handle, so the 2-spe
 relation `ToyProblem.Spec.outputRelation` — exactly this lemma's `relIn`), so we reuse the proven
 `ToyProblem.Spec.protocol62_knowledgeSoundnessViaRewinding` and reduce the straightline statement to
 the **named bridge residual** below. No `sorry`, no `axiom`. -/
+@[reducible]
 def simplifiedIOR_knowledgeSound_residual
     [SampleableType F] [Nonempty ι] [Nonempty F]
     {σ : Type} (init : ProbComp σ)

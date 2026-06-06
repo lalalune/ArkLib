@@ -251,6 +251,19 @@ lemma one_le_listDecoding_lb (N : ℕ) (M : ℝ) (hM : (1 : ℝ) ≤ M) (hN : 1 
   rw [le_div_iff₀ hden_pos, one_mul]
   nlinarith [mul_nonneg (by linarith : (0:ℝ) ≤ (N:ℝ) - 1) (by linarith : (0:ℝ) ≤ M - 1)]
 
+/-- **L6.12 Step-4 arithmetic helper (B.1 bound is nonnegative).** The
+list-decoding lower-bound expression is always nonnegative in the field-size
+regime `1 ≤ M`; this packages the denominator branch split for Step 4. PROVEN,
+axiom-clean. -/
+lemma listDecoding_lb_nonneg (N : ℕ) (M : ℝ) (hM : (1 : ℝ) ≤ M) :
+    0 ≤ ((N : ℝ) * M) / (M + (N : ℝ) - 1) := by
+  rcases Nat.eq_zero_or_pos N with hN | hN
+  · subst hN
+    simp
+  · have hNR : (1 : ℝ) ≤ (N : ℝ) := by exact_mod_cast hN
+    exact div_nonneg (mul_nonneg (by positivity) (by linarith))
+      (by linarith : 0 ≤ M + (N : ℝ) - 1)
+
 /-- **L6.12 Step-4 reduction helper (empty-list branch).** When the maximised
 list size is `0`, the list-decoding lower bound `N·|F| / (|F| + N − 1)` collapses
 to `0`, so *any* attack instance discharges the bound (cardinalities are
@@ -429,6 +442,8 @@ discharged, but these are reusable by whoever completes Step 4:
     clamp / faithfulness-note arithmetic core).
   * `one_le_listDecoding_lb` : `1 ≤ N·|F| / (|F| + N − 1)` for `N, |F| ≥ 1`
     (a faithful attack must exhibit ≥ 1 winning challenge).
+  * `listDecoding_lb_nonneg` : `0 ≤ N·|F| / (|F| + N − 1)` for `|F| ≥ 1`
+    (the Step-4 target cardinality lower bound is always well-oriented).
   * `listDecoding_lb_zero_of_card_zero` : `N = 0 ⇒ N·|F| / (|F| + N − 1) ≤ 0`
     (honest empty-list branch — vacuous *bound*, never a vacuous *witness*).
   * `pair_linearForm_collision_le` : the Step-2 *pair*-collision bound feeding

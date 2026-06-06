@@ -387,6 +387,119 @@ theorem mcaThreshold_spec_of_residuals
     (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star
     (mcaThresholdExists_of_residuals domain k η δ ε_star hη hδ hδ_le_one R hle)
 
+/-- **Refined Hab25 lower witness + capacity-side `ε_ca` lower bound brackets the faithful
+MCA lattice threshold.**
+
+This is the opened-up Hab25 analogue of
+`Hab25Core.Hab25Johnson.mcaThresholdLattice_bracketed_ofHab25Johnson_and_epsCAGt`, but it uses
+the refined `Hab25JohnsonResiduals` bundle as the Johnson-side lower witness. -/
+theorem mcaThresholdLattice_bracketed_of_residuals_and_epsCAGt
+    (domain : ι₀ ↪ F₀) (k : ℕ) (η δ_lo δ_hi ε_star : ℝ≥0)
+    (hη : 0 < η) (hδ : InJohnsonRange domain k η δ_lo) (hδlo_le_one : δ_lo ≤ 1)
+    (R : Hab25JohnsonResiduals domain k η δ_lo hη hδ)
+    (hle : ENNReal.ofReal (johnsonBoundReal domain k η δ_lo) ≤ (ε_star : ENNReal))
+    (hhi :
+      epsCA (F := F₀) (A := F₀) (ReedSolomon.code domain k : Set (ι₀ → F₀))
+          δ_hi δ_hi > (ε_star : ENNReal))
+    (hδhi : δ_hi ≤ 1) :
+    let hne := mcaThresholdExists_of_residuals domain k η δ_lo ε_star
+      hη hδ hδlo_le_one R hle
+    GrandChallengesLattice.latticeIndexOf (ι := ι₀) δ_lo hδlo_le_one ≤
+        GrandChallengesLattice.mcaThreshold
+          (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star hne ∧
+      GrandChallengesLattice.mcaThreshold
+          (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star hne <
+        GrandChallengesLattice.latticeIndexOf (ι := ι₀) δ_hi hδhi := by
+  let wlo := mcaLowerWitness_of_residuals domain k η δ_lo ε_star
+    hη hδ hδlo_le_one R hle
+  simpa [wlo, mcaThresholdExists_of_residuals] using
+    (GrandChallengesLattice.mcaThresholdLattice_bracketed_of_lowerWitness_and_epsCAGt
+      (MC := ReedSolomon.code domain k) (ε_star := ε_star) (δ_hi := δ_hi)
+      wlo hhi hδhi)
+
+/-- **Refined Hab25 lower witness + arbitrary MCA upper witness brackets the faithful
+MCA lattice threshold.**
+
+This is the witness-native form of
+`mcaThresholdLattice_bracketed_of_residuals_and_epsCAGt`: callers that have already packaged the
+upper side as an `MCAUpperWitness` no longer need to unpack it to an `ε_ca` inequality. -/
+theorem mcaThresholdLattice_bracketed_of_residuals_and_upperWitness
+    (domain : ι₀ ↪ F₀) (k : ℕ) (η δ_lo ε_star : ℝ≥0)
+    (hη : 0 < η) (hδ : InJohnsonRange domain k η δ_lo) (hδlo_le_one : δ_lo ≤ 1)
+    (R : Hab25JohnsonResiduals domain k η δ_lo hη hδ)
+    (hle : ENNReal.ofReal (johnsonBoundReal domain k η δ_lo) ≤ (ε_star : ENNReal))
+    (whi : MCAUpperWitness (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star)
+    (hδhi : whi.δ ≤ 1) :
+    let hne := mcaThresholdExists_of_residuals domain k η δ_lo ε_star
+      hη hδ hδlo_le_one R hle
+    GrandChallengesLattice.latticeIndexOf (ι := ι₀) δ_lo hδlo_le_one ≤
+        GrandChallengesLattice.mcaThreshold
+          (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star hne ∧
+      GrandChallengesLattice.mcaThreshold
+          (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star hne <
+        GrandChallengesLattice.latticeIndexOf (ι := ι₀) whi.δ hδhi := by
+  let wlo := mcaLowerWitness_of_residuals domain k η δ_lo ε_star
+    hη hδ hδlo_le_one R hle
+  simpa [wlo, mcaThresholdExists_of_residuals] using
+    (GrandChallengesLattice.mcaThresholdLattice_bracketed_of_witnesses
+      (C := ReedSolomon.code domain k : Set (ι₀ → F₀)) (ε_star := ε_star)
+      wlo whi hδhi)
+
+/-- **Adjacent upper witness closes the refined Hab25 lower bound to an exact lattice
+threshold.** If a capacity-side upper witness lands on the lattice point immediately above the
+refined Hab25 lower witness, the faithful MCA threshold is exactly the Hab25 lower lattice point. -/
+theorem mcaThreshold_eq_latticeIndexOf_residuals_and_upperWitness_adjacent
+    (domain : ι₀ ↪ F₀) (k : ℕ) (η δ_lo ε_star : ℝ≥0)
+    (hη : 0 < η) (hδ : InJohnsonRange domain k η δ_lo) (hδlo_le_one : δ_lo ≤ 1)
+    (R : Hab25JohnsonResiduals domain k η δ_lo hη hδ)
+    (hle : ENNReal.ofReal (johnsonBoundReal domain k η δ_lo) ≤ (ε_star : ENNReal))
+    (whi : MCAUpperWitness (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star)
+    (hδhi : whi.δ ≤ 1)
+    (hadj :
+      (GrandChallengesLattice.latticeIndexOf (ι := ι₀) whi.δ hδhi).val =
+        (GrandChallengesLattice.latticeIndexOf (ι := ι₀) δ_lo hδlo_le_one).val + 1) :
+    let hne := mcaThresholdExists_of_residuals domain k η δ_lo ε_star
+      hη hδ hδlo_le_one R hle
+    GrandChallengesLattice.mcaThreshold
+        (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star hne =
+      GrandChallengesLattice.latticeIndexOf (ι := ι₀) δ_lo hδlo_le_one := by
+  let wlo := mcaLowerWitness_of_residuals domain k η δ_lo ε_star
+    hη hδ hδlo_le_one R hle
+  simpa [wlo, mcaThresholdExists_of_residuals] using
+    (GrandChallengesLattice.mcaThreshold_eq_latticeIndexOf_lowerWitness_of_adjacent
+      (C := ReedSolomon.code domain k : Set (ι₀ → F₀)) (ε_star := ε_star)
+      wlo whi hδhi hadj)
+
+/-- **Adjacent `ε_ca` upper witness closes the refined Hab25 lower bound to an exact lattice
+threshold.**
+
+This is the direct capacity-side form of
+`mcaThreshold_eq_latticeIndexOf_residuals_and_upperWitness_adjacent`, packaging the upper side by
+`MCAUpperWitness.ofEpsCAGt`. -/
+theorem mcaThreshold_eq_latticeIndexOf_residuals_and_epsCAGt_adjacent
+    (domain : ι₀ ↪ F₀) (k : ℕ) (η δ_lo δ_hi ε_star : ℝ≥0)
+    (hη : 0 < η) (hδ : InJohnsonRange domain k η δ_lo) (hδlo_le_one : δ_lo ≤ 1)
+    (R : Hab25JohnsonResiduals domain k η δ_lo hη hδ)
+    (hle : ENNReal.ofReal (johnsonBoundReal domain k η δ_lo) ≤ (ε_star : ENNReal))
+    (hhi :
+      epsCA (F := F₀) (A := F₀) (ReedSolomon.code domain k : Set (ι₀ → F₀))
+          δ_hi δ_hi > (ε_star : ENNReal))
+    (hδhi : δ_hi ≤ 1)
+    (hadj :
+      (GrandChallengesLattice.latticeIndexOf (ι := ι₀) δ_hi hδhi).val =
+        (GrandChallengesLattice.latticeIndexOf (ι := ι₀) δ_lo hδlo_le_one).val + 1) :
+    let hne := mcaThresholdExists_of_residuals domain k η δ_lo ε_star
+      hη hδ hδlo_le_one R hle
+    GrandChallengesLattice.mcaThreshold
+        (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star hne =
+      GrandChallengesLattice.latticeIndexOf (ι := ι₀) δ_lo hδlo_le_one := by
+  let whi : MCAUpperWitness (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star :=
+    MCAUpperWitness.ofEpsCAGt
+      (MC := ReedSolomon.code domain k) (ε_star := ε_star) (δ := δ_hi) hhi
+  simpa [whi] using
+    (mcaThreshold_eq_latticeIndexOf_residuals_and_upperWitness_adjacent
+      domain k η δ_lo ε_star hη hδ hδlo_le_one R hle whi hδhi hadj)
+
 end Reduction
 
 end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
