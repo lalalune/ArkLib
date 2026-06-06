@@ -396,21 +396,21 @@ noncomputable def MCAUpperWitness.ofSamplingDG25Mass
   MCAUpperWitness.ofEpsCAGt (MC := C) (ε_star := ε_star) (δ := δ)
     (lt_of_lt_of_le hgt hDG25)
 
-/-- Compatibility wrapper for the DG25 bridge, preserving the original inline sampling-mass
-comparison shape used by existing callers. -/
+#print axioms ProximityGap.GrandChallenges.MCAUpperWitness.ofSamplingDG25Mass
+
+/-- Compatibility wrapper for the DG25 bridge, preserving the original public adapter name while
+using the named sampling-mass comparison. -/
 noncomputable def MCAUpperWitness.ofSamplingDG25
     (C : LinearCode ι F) (δ δ' ε_star : ℝ≥0)
     (hδ' : (δ' : ENNReal) = ⨆ u : ι → F, δᵣ(u, (C : Set (ι → F))))
     (hδ_pos : 0 < δ) (hδ_lt : δ < δ')
     (hDG25 : CodingTheory.linear_epsCA_ge_sampling_dg25 C δ δ' hδ' hδ_pos hδ_lt)
     (hgt :
-      ((Fintype.card F - 1 : ℝ≥0) / Fintype.card F : ENNReal)
-          * Pr_{
-              let u ← $ᵖ (ι → F)
-              }[δᵣ(u, (C : Set (ι → F))) ≤ δ] >
-        (ε_star : ENNReal)) :
+      CodingTheory.linear_epsCA_sampling_dg25_mass C δ > (ε_star : ENNReal)) :
     MCAUpperWitness (C : Set (ι → F)) ε_star :=
   MCAUpperWitness.ofSamplingDG25Mass C δ δ' ε_star hδ' hδ_pos hδ_lt hDG25 hgt
+
+#print axioms ProximityGap.GrandChallenges.MCAUpperWitness.ofSamplingDG25
 
 /-- **Bridge from ABF26 Theorem 4.18 [BCHKS25 Cor 1.7].** A packaged Johnson-jump
 witness gives an MCA upper witness once its explicit CA lower bound clears `ε*`.
