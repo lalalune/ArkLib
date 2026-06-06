@@ -176,9 +176,14 @@ The proof is the pure quantization reduction: pick a strict `δ' < δ` with the 
 (`goodCoeffsCurve_eq_of_floor_eq`); obtain `jointAgreement` at `δ'` from `hStrict`; transport it
 back up to the boundary (`jointAgreement_iff_of_floor_eq`).
 
-`hStrict` is the *same* strict-interior datum the §5 extraction already discharges; it is a
-hypothesis here, never the goal.  Nothing about the genuine Johnson-boundary combinatorics is
-assumed — only the strict interior, which is the regime `StrictCoeffPolysResidual` covers. -/
+`hStrict` is the **strict-interior analogue** of the boundary obligation: positive good-set
+cardinality ⟹ `jointAgreement`, but at a radius `δ' < 1 − √ρ` rather than at the exact boundary.
+It is a hypothesis here, never the goal.  Its value is that, unlike the exact boundary where
+`errorBound = 0` collapses the §5 quantitative probability threshold to vacuous positivity
+(see `ArkLib/ToMathlib/BoundaryDischarge.lean`), at the strict interior `errorBound > 0` and the
+§5 list-decoding machinery (`StrictCoeffPolysResidual` and the front-door cardinality bounds it
+enables) is genuinely applicable.  This lemma performs no boundary combinatorics; it only moves the
+obligation off the measure-zero boundary into the open interior. -/
 theorem boundaryCardResidual_of_not_lattice {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     (hNotLattice :
       (Nat.floor (δ * Fintype.card ι) : ℝ≥0) < δ * Fintype.card ι)
