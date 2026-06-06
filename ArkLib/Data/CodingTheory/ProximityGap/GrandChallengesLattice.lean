@@ -311,7 +311,7 @@ theorem j1RatioConstraint_to_omitted
   classical
   rcases hγ with ⟨S, hshape, hneS, hconstraints⟩
   rcases hshape with rfl | ⟨i, rfl⟩
-  · obtain ⟨T₀, hT₀sub, hT₀card, hneT₀⟩ :=
+  · obtain ⟨T₀, _hT₀sub, hT₀card, hneT₀⟩ :=
       exists_card_eq_subset_nonExtendable domain hneS
     have hT₀lt : T₀.card < (Finset.univ : Finset ι).card := by
       rw [hT₀card, Finset.card_univ]
@@ -325,7 +325,7 @@ theorem j1RatioConstraint_to_omitted
     refine ⟨i, ?_, ?_⟩
     · rintro ⟨v, hvC, hvagree⟩
       exact hneT₀ ⟨v, hvC, fun x hx => hvagree x (hT₀_erase hx)⟩
-    · intro T hTsub hTcard
+    · intro T _hTsub hTcard
       exact hconstraints T (Finset.subset_univ T) hTcard
   · exact ⟨i, hneS, hconstraints⟩
 
@@ -376,6 +376,43 @@ theorem cT_vanish_on_window_highCoeff_zero
   rw [hinterp]
   exact Polynomial.coeff_eq_zero_of_degree_lt
     (lt_of_lt_of_le hpdeg (by exact_mod_cast hkd))
+
+/-- J1 omitted-window high-coefficient bridge in the exact two-top-coefficient form needed for
+the quadratic eliminant. -/
+theorem cT_vanish_on_j1_window_two_top_coeffs
+    (domain : ι ↪ F) {k : ℕ} {i : ι} {u : ι → F}
+    (hk : k + 3 ≤ Fintype.card ι)
+    (hvanish : ∀ T : Finset ι, T ⊆ Finset.univ.erase i → T.card = k + 1 →
+      cT domain k T u = 0) :
+    (Lagrange.interpolate (Finset.univ.erase i) (fun a => domain a) u).coeff
+        (Fintype.card ι - 2) = 0 ∧
+    (Lagrange.interpolate (Finset.univ.erase i) (fun a => domain a) u).coeff
+        (Fintype.card ι - 3) = 0 := by
+  classical
+  have hkS : k ≤ (Finset.univ.erase i : Finset ι).card := by
+    rw [Finset.card_erase_of_mem (Finset.mem_univ i), Finset.card_univ]
+    omega
+  constructor
+  · exact cT_vanish_on_window_highCoeff_zero domain hkS hvanish (by omega)
+  · exact cT_vanish_on_window_highCoeff_zero domain hkS hvanish (by omega)
+
+/-- Direct coefficient form of a J1 ratio constraint: every constrained scalar has an omitted
+window where `u₁` is non-extendable and the line word has the two top omitted-window coefficients
+equal to zero. -/
+theorem j1RatioConstraint_exists_omitted_two_top_coeffs
+    (domain : ι ↪ F) {k : ℕ} (hk : k + 3 ≤ Fintype.card ι)
+    {u₀ u₁ : ι → F} {γ : F}
+    (hγ : j1RatioConstraint domain k u₀ u₁ γ) :
+    ∃ i : ι,
+      NonExtendableOn (ReedSolomon.code domain k : Set (ι → F))
+        (Finset.univ.erase i) u₁ ∧
+      (Lagrange.interpolate (Finset.univ.erase i) (fun a => domain a)
+          (u₀ + γ • u₁)).coeff (Fintype.card ι - 2) = 0 ∧
+      (Lagrange.interpolate (Finset.univ.erase i) (fun a => domain a)
+          (u₀ + γ • u₁)).coeff (Fintype.card ι - 3) = 0 := by
+  classical
+  obtain ⟨i, hne, hvanish⟩ := j1RatioConstraint_to_omitted domain hk hγ
+  exact ⟨i, hne, cT_vanish_on_j1_window_two_top_coeffs domain hk hvanish⟩
 
 open Classical in
 /-- The finite scalar set cut out by the J1 window ratio constraints.

@@ -56,34 +56,39 @@ lemma getMidCodewords_succ (t : L⦃≤ 1⦄[X Fin ℓ]) (i : Fin ℓ)
       (i := i.castSucc) (t := t) (challenges := challenges))
     (r_challenges := fun _ => r_i'))
   := by
-  -- Peel the last of the `i.val + 1` left-hand steps (defeq to `↑(i.succ)`).
+  -- Peel the last of the left-hand steps.  The step count is instantiated as
+  -- `↑(i.castSucc) + 1` (defeq to `↑(i.succ)`) so that the produced `Fin.init`/`Fin.last`
+  -- terms sit at index `↑(i.castSucc)` — syntactically matching the `Fin.snoc` of the
+  -- statement, which lets `init_snoc`/`snoc_last` fire without any `Fin.val` reduction.
   refine Eq.trans
     (iterated_fold_last 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := 0)
-      (midIdx := ⟨i.val, by omega⟩) (destIdx := ⟨i.val + 1, by omega⟩) (steps := i.val)
+      (midIdx := ⟨(i.castSucc : Fin (ℓ + 1)).val, by omega⟩)
+      (destIdx := ⟨i.val + 1, by omega⟩) (steps := (i.castSucc : Fin (ℓ + 1)).val)
       (h_midIdx := by simp) (h_destIdx := by simp)
       (h_destIdx_le := by simp only [Fin.mk_le_mk]; omega)
       (f := _) (r_challenges := _)) ?_
   -- Peel the single right-hand step (`steps = 0 + 1`).
   refine Eq.trans ?_
     (iterated_fold_last 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i.val, by omega⟩)
-      (midIdx := ⟨i.val, by omega⟩) (destIdx := ⟨i.val + 1, by omega⟩) (steps := 0)
+      (midIdx := ⟨(i.castSucc : Fin (ℓ + 1)).val, by omega⟩)
+      (destIdx := ⟨i.val + 1, by omega⟩) (steps := 0)
       (h_midIdx := by simp) (h_destIdx := by simp)
       (h_destIdx_le := by simp only [Fin.mk_le_mk]; omega)
       (f := _) (r_challenges := _)).symm
-  -- Both sides are now a single `fold` at the same indices; reconcile the folded
-  -- function (`init_snoc` + the definitional zero-step transport) and the challenge.
-  refine congrArg₂ (fun f c =>
-    fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i.val, by omega⟩)
+  -- Both sides are now a single `fold` at the same (defeq) indices.  Collapse the
+  -- challenge bookkeeping: `init (snoc …) = …`, `snoc … (last _) = r_i'`, and the
+  -- right-hand `(fun _ => r_i') (last 0)` beta-reduces.
+  simp only [Fin.init_snoc, Fin.snoc_last]
+  -- Reconcile the folded functions: the right-hand inner zero-step fold is the
+  -- definitional transport of `getMidCodewords i.castSucc challenges`.
+  refine congrArg (fun f =>
+    fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := ⟨(i.castSucc : Fin (ℓ + 1)).val, by omega⟩)
       (destIdx := ⟨i.val + 1, by omega⟩) (h_destIdx := by simp)
-      (h_destIdx_le := by simp only [Fin.mk_le_mk]; omega) (f := f) (r_chal := c)) ?_ ?_
-  · -- folded function: `i.val`-step fold of `f₀` over `init (snoc challenges r_i')`
-    -- equals the zero-step fold of `getMidCodewords i.castSucc challenges`.
-    funext z
-    rw [iterated_fold_zero_steps]
-    simp only [Fin.init_snoc]
-    rfl
-  · -- challenge: `snoc challenges r_i' (last i.val) = r_i'`.
-    simpa using Fin.snoc_last (α := fun _ => L) r_i' challenges
+      (h_destIdx_le := by simp only [Fin.mk_le_mk]; omega) (f := f) (r_chal := r_i')) ?_
+  funext z
+  rw [iterated_fold_zero_steps]
+  rfl
 
 section FoldStepLogic
 variable {Context : Type} {mp : SumcheckMultiplierParam L ℓ Context}
