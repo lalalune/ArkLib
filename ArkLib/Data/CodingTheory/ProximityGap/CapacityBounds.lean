@@ -905,6 +905,13 @@ open scoped ProbabilityTheory
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
+/-- The DG25 L4.19 sampling lower-bound mass:
+`((|F|-1)/|F|) · Pr_u[Δ(u,C) ≤ δ]`. -/
+noncomputable def linear_epsCA_sampling_dg25_mass (C : LinearCode ι F) (δ : ℝ≥0) :
+    ENNReal :=
+  ((Fintype.card F - 1 : ℝ≥0) / Fintype.card F : ENNReal)
+      * Pr_{let u ← $ᵖ (ι → F)}[δᵣ(u, (C : Set (ι → F))) ≤ δ]
+
 /-- **ABF26 Lemma 4.19 [DG25 Thm 2.5].** Let `C ⊆ F^n` be a linear code and let
 `δ' := max_{u ∈ F^n} Δ(u, C)` be the (relative) covering radius. For every
 `δ ∈ (0, δ')`:
@@ -917,8 +924,7 @@ def linear_epsCA_ge_sampling_dg25
     (C : LinearCode ι F) (δ δ' : ℝ≥0)
     (_h_δ' : (δ' : ENNReal) = ⨆ u : ι → F, δᵣ(u, (C : Set (ι → F))))
     (_hδ_pos : 0 < δ) (_hδ_lt : δ < δ') : Prop :=
-    ((Fintype.card F - 1 : ℝ≥0) / Fintype.card F : ENNReal)
-        * Pr_{let u ← $ᵖ (ι → F)}[δᵣ(u, (C : Set (ι → F))) ≤ δ] ≤
+    linear_epsCA_sampling_dg25_mass C δ ≤
       epsCA (F := F) (A := F) ((C : Set (ι → F))) δ δ
   -- Missing ingredient: DG25's covering-radius sampling LOWER bound. Shows
   -- ε_ca(C,δ) ≥ ((q-1)/q)·Pr_u[Δ(u,C)≤δ] by averaging the line-proximity event over a
@@ -926,6 +932,17 @@ def linear_epsCA_ge_sampling_dg25
   -- the shift is nonzero. Needs: (i) wiring the uniform-word covering probability Pr_u[…]
   -- into the epsCA sup (the DG25/ files prove a different BCIKS-style gap, not this
   -- covering-radius sampling identity), (ii) the nonzero-shift averaging. Genuinely external.
+
+/-- Wrapper from the named DG25 sampling mass bound to the external L4.19 Prop shape. -/
+theorem linear_epsCA_ge_sampling_dg25_of_mass_bound
+    (C : LinearCode ι F) (δ δ' : ℝ≥0)
+    (hδ' : (δ' : ENNReal) = ⨆ u : ι → F, δᵣ(u, (C : Set (ι → F))))
+    (hδ_pos : 0 < δ) (hδ_lt : δ < δ')
+    (h :
+      linear_epsCA_sampling_dg25_mass C δ ≤
+        epsCA (F := F) (A := F) ((C : Set (ι → F))) δ δ) :
+    linear_epsCA_ge_sampling_dg25 C δ δ' hδ' hδ_pos hδ_lt :=
+  h
 
 end Sampling
 
