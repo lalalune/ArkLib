@@ -671,6 +671,14 @@ noncomputable def johnsonJumpInternalRadius (n : ℕ) : ℝ≥0 :=
   (((1 : ℝ) - (1 - ((15 : ℝ) / 16)) ^ ((1 : ℝ) / 2)
       + 1 / 8 + 1 / (n : ℝ)).toNNReal)
 
+/-- The no-loss Johnson-jump radius is always below the proximity-loss internal radius. -/
+theorem johnsonJumpRadius_le_internalRadius (n : ℕ) :
+    johnsonJumpRadius ≤ johnsonJumpInternalRadius n := by
+  dsimp [johnsonJumpRadius, johnsonJumpInternalRadius]
+  apply Real.toNNReal_mono
+  nlinarith [show (0 : ℝ) ≤ 1 / 8 by norm_num,
+    show (0 : ℝ) ≤ 1 / (n : ℝ) by positivity]
+
 /-- **ABF26 Theorem 4.18 [BCHKS25 Cor 1.7].** CA jump at the Johnson bound. Fix `ε > 0`,
 let `δ := 15/16`. Then for all `F` of characteristic 2 there exists a Reed-Solomon code
 `C := RS[F, L, k]` with `n ≈ |F|^{(1+ε)/2}` and `δ_min(C) = 15/16` such that:
@@ -1135,5 +1143,6 @@ end SubspaceDesignFRS
 #print axioms CodingTheory.rs_epsCA_small_loss_r4_10_of_item2_no_boundary_crossing_prop
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_subspaceDesign_prop
 #print axioms CodingTheory.rs_epsMCA_johnson_range_bchks25_of_bound
+#print axioms CodingTheory.johnsonJumpRadius_le_internalRadius
 
 end CodingTheory

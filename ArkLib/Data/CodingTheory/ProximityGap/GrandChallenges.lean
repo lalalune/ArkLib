@@ -411,6 +411,28 @@ noncomputable def MCAUpperWitness.ofJohnsonJumpBCHKS25
           (F := FC) (A := FC) (ReedSolomon.code W.domain W.k : Set (ιC → FC))
           CodingTheory.johnsonJumpRadius hδ_int))
 
+/-- **Radius-discharge bridge for ABF26 Theorem 4.18 [BCHKS25 Cor 1.7].**
+
+The T4.18 internal radius is definitionally the Johnson radius plus `1/8 + 1/n`, so the
+radius comparison needed by `MCAUpperWitness.ofJohnsonJumpBCHKS25` can be discharged
+uniformly.  Callers still provide the packaged BCHKS25 witness and the explicit threshold
+comparison against `ε*`. -/
+noncomputable def MCAUpperWitness.ofJohnsonJumpBCHKS25AutoRadius
+    {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC] [CharP FC 2]
+    {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
+    (ε ε_star : ℝ≥0)
+    (W : CodingTheory.RSJohnsonJumpWitness (FC := FC) ε ιC)
+    (hgt :
+      (ε_star : ENNReal) <
+        ((Fintype.card ιC : ENNReal) ^ (2 * ((1 : ℝ) - ε)))
+          / (Fintype.card FC : ENNReal)) :
+    MCAUpperWitness (ι := ιC) (F := FC)
+      (ReedSolomon.code W.domain W.k : Set (ιC → FC)) ε_star :=
+  MCAUpperWitness.ofJohnsonJumpBCHKS25 (FC := FC) (ιC := ιC)
+    ε ε_star W (CodingTheory.johnsonJumpRadius_le_internalRadius (Fintype.card ιC)) hgt
+
+#print axioms ProximityGap.GrandChallenges.MCAUpperWitness.ofJohnsonJumpBCHKS25AutoRadius
+
 /-! ## §4.5 conjecture and its positive-direction link to the prize
 
 ABF26 Conjecture `conj:mca-conjecture` posits a uniform polynomial upper bound on `ε_mca`
