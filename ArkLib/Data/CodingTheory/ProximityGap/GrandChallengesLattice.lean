@@ -1900,7 +1900,7 @@ theorem mcaPrizeLatticeResolved_ofJohnsonBCHKS25_and_RSBreakdownCS25_adjacent
       CodingTheory.rs_epsCA_breakdown_cs25 domain
         ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ (δ_hi j)
         (hq_ge j) (hδ_cs_lo j) (hδ_cs_hi j))
-    (hε : ∀ j : Fin 4, (epsStar : ENNReal) < 1)
+    (hε : ∀ _ : Fin 4, (epsStar : ENNReal) < 1)
     (hadj : ∀ j : Fin 4,
       (latticeIndexOf (ι := ι) (δ_hi j) (hδhi j)).val =
         (latticeIndexOf (ι := ι) (δ_lo j) (hδlo_le_one j)).val + 1) :
