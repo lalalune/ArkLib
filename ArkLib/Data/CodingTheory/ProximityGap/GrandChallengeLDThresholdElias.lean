@@ -244,6 +244,45 @@ theorem listLatticeThreshold_eq_of_Lambda_le_and_elias_next
       (C := C) (m := m) (j := j + 1) hm (Nat.succ_pos j) hj_next hvol_next hne
   exact Nat.le_antisymm (Nat.lt_succ_iff.mp hhi) hlow
 
+/-- **Reusable finite-search frontier for an exact faithful LD threshold.**
+
+This packages the currently strongest post-refutation closing surface: a base-code `Λ` cap at
+index `j`, the budget inequality that lifts it through interleaving, and an Elias-volume
+certificate that index `j + 1` is already above the prize budget.  Proving this package for a
+specific smooth-domain RS family determines the faithful lattice threshold at `j` without reviving
+the refuted RIM derandomization route. -/
+structure ListLatticeThresholdLambdaEliasFrontier
+    (C : Submodule F (ι → F)) (m j ℓ : ℕ) (ε_star : ℝ≥0) : Prop where
+  /-- Nonzero interleaving arity, required for the diagonal embedding into `C^⋈m`. -/
+  hm : m ≠ 0
+  /-- The Elias certificate is checked at the adjacent lattice index `j + 1`. -/
+  hj_next : j + 1 < Fintype.card ι
+  /-- The lower-side base-code list-size cap at lattice index `j`. -/
+  hLambda :
+    Lambda (C : Set (ι → F))
+      (((j : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) ≤ (ℓ : ℕ∞)
+  /-- The `m`-fold interleaving budget clears the prize threshold. -/
+  hpow : ((ℓ : ENNReal)) ^ m ≤
+    (ε_star : ENNReal) * (Fintype.card F : ENNReal)
+  /-- The Elias-volume lower bound at `j + 1` already exceeds the prize threshold. -/
+  hvol_next : (ε_star : ENNReal) * (Fintype.card F : ENNReal) <
+    ENNReal.ofReal
+      ((CodingTheory.hammingBallVolume (Fintype.card F)
+          ((((j + 1 : ℕ) : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)
+          (Fintype.card ι) : ℝ)
+        / (Fintype.card F : ℝ) ^
+            ((Fintype.card ι : ℝ) - Module.finrank F C))
+
+/-- A packaged base-`Λ`/Elias frontier determines the faithful list lattice threshold exactly. -/
+theorem listLatticeThreshold_eq_of_lambda_elias_frontier
+    (C : Submodule F (ι → F)) {m j ℓ : ℕ} {ε_star : ℝ≥0}
+    (H : ListLatticeThresholdLambdaEliasFrontier C m j ℓ ε_star)
+    (hne : (GrandChallenges.listLatticeSet (C : Set (ι → F)) m ε_star).Nonempty) :
+    GrandChallenges.listLatticeThreshold (C : Set (ι → F)) m ε_star hne = j :=
+  listLatticeThreshold_eq_of_Lambda_le_and_elias_next
+    (C := C) (m := m) (j := j) (ℓ := ℓ)
+    H.hm H.hj_next H.hLambda H.hpow H.hvol_next hne
+
 /-- **Elias-volume upper witness for the faithful list-prize API.**
 If the Elias volume lower bound already exceeds the prize budget at lattice radius `j/n`,
 then that radius is a public `ListUpperWitness`, not only an upper bound on the canonical

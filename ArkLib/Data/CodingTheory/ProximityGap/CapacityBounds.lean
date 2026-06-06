@@ -5,6 +5,7 @@ Authors: Alexander Hicks
 -/
 
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
+import ArkLib.Data.CodingTheory.ProximityGap.ProximityGenerators
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.CodingTheory.Basic.Entropy
 import ArkLib.Data.CodingTheory.HammingBallVolume
@@ -129,16 +130,19 @@ dischargeable by any in-tree upper-bound machinery):
   the `≤ 1` half is trivial.
 - `rs_epsCA_johnson_jump_bchks25` (T4.18) — char-2 Johnson-jump witness family.
 
-*SHADOW* (placeholder pending a canonical formalization elsewhere):
+*BCGM25 polynomial-generator MCA* (generator-native API plus compatibility shadow):
 
-- `subspaceDesign_epsCA_curves_polynomial_generators_bcgm25` — restate via `IsMCAGenerator`
-  once PR #489 lands; do not prove as-is.
+- `polynomialGenerator_isMCAGenerator_bcgm25` — canonical BCGM25 statement surface using
+  `CoreDefinitions.IsPolynomialGenerator` and `CoreDefinitions.IsMCAGenerator`.
+- `subspaceDesign_epsCA_curves_polynomial_generators_bcgm25` — retained only as the old
+  ABF26 survey-ledger `epsCA_curves` compatibility shadow; do not prove as-is.
 
 **No statement in this file is disproven.**  The two repaired items are R4.10 (the naive
 `0 < γ < 1` floor-collapse shortcut is refuted in-tree by
 `r4_10_floor_collapse_hypotheses_insufficient`; the corrected reduction carries an explicit
-no-boundary-crossing hypothesis) and the BCGM25 entry (deliberately a curve-CA shadow of the
-real mutual-correlated-agreement statement; see its docstring).  Related *statement-level*
+no-boundary-crossing hypothesis) and the BCGM25 compatibility entry (deliberately a curve-CA
+shadow beside the real mutual-correlated-agreement statement; see its docstring).  Related
+*statement-level*
 breakdowns of capacity-reading conjectures (CS25/BCHKS25 "capacity false" results) are
 recorded here as the *constructions* T4.16–T4.18 — they are inputs that bound the Grand MCA
 threshold from above, not defects of these statements.
@@ -186,7 +190,7 @@ set_option linter.unusedSectionVars false
 namespace CodingTheory
 
 open scoped NNReal ProbabilityTheory
-open ProximityGap
+open ProximityGap unitInterval
 
 /-! ## General linear codes — ABF26 §4 1.5-Johnson family ([GKL24], [BGKS20])
 
@@ -625,6 +629,24 @@ def rs_epsCA_breakdown_cs25
   -- RS-ball-count bridge (absent; qEntropy is defined but unconnected to hammingBallVolume /
   -- RS code counts). Genuinely external.
 
+/-- The hard lower-bound half of CS25 complete CA breakdown.
+
+This is the current epsCA-facing target for the missing qEntropy/RS-ball-count argument:
+under the CS25 entropy-band hypotheses, enough RS codewords in a Hamming ball should force
+`ε_ca(RS, δ, δ) = 1`'s nontrivial `≥ 1` direction.  The routine `≤ 1` half is already
+checked by `rs_epsCA_breakdown_cs25_of_lower_bound`. -/
+def rs_epsCA_breakdown_cs25_entropyBallLowerWitness
+    (domain : ι ↪ F) (k : ℕ) (δ : ℝ≥0)
+    (_hq_ge : 10 ≤ Fintype.card F)
+    (_hδ_lo :
+        1 - qEntropy (Fintype.card F) (δ : ℝ) + 2 / (Fintype.card ι : ℝ)
+            + ((qEntropy (Fintype.card F) (δ : ℝ) - (δ : ℝ))
+                / (Fintype.card ι : ℝ)) ^ ((1 : ℝ) / 2)
+          ≤ (k : ℝ) / Fintype.card ι)
+    (_hδ_hi : (k : ℝ) / Fintype.card ι ≤ 1 - (δ : ℝ) - 2 / (Fintype.card ι : ℝ)) :
+    Prop :=
+  1 ≤ epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F))) δ δ
+
 /-- Checked bridge for the CS25 breakdown statement.
 
 Since `epsCA` is always at most `1`, the complete-breakdown equality is reduced to the
@@ -656,6 +678,21 @@ theorem rs_epsCA_breakdown_cs25_of_lower_bound
           (ReedSolomon.code domain k : Set (ι → F))) ≤ δ <;> simp [hγ])
       (PMF.tsum_coe (PMF.uniformOfFintype F)).le
 
+/-- CS25 breakdown from the named entropy/RS-ball-count lower-bound witness. -/
+theorem rs_epsCA_breakdown_cs25_of_entropyBallLowerWitness
+    (domain : ι ↪ F) (k : ℕ) (δ : ℝ≥0)
+    (hq_ge : 10 ≤ Fintype.card F)
+    (hδ_lo :
+        1 - qEntropy (Fintype.card F) (δ : ℝ) + 2 / (Fintype.card ι : ℝ)
+            + ((qEntropy (Fintype.card F) (δ : ℝ) - (δ : ℝ))
+                / (Fintype.card ι : ℝ)) ^ ((1 : ℝ) / 2)
+          ≤ (k : ℝ) / Fintype.card ι)
+    (hδ_hi : (k : ℝ) / Fintype.card ι ≤ 1 - (δ : ℝ) - 2 / (Fintype.card ι : ℝ))
+    (hlower :
+      rs_epsCA_breakdown_cs25_entropyBallLowerWitness domain k δ hq_ge hδ_lo hδ_hi) :
+    rs_epsCA_breakdown_cs25 domain k δ hq_ge hδ_lo hδ_hi :=
+  rs_epsCA_breakdown_cs25_of_lower_bound domain k δ hq_ge hδ_lo hδ_hi hlower
+
 /-- The ABF26 T4.18 Johnson radius for the fixed relative distance `15/16`.  This is kept
 as a named expression so the existential construction and Grand-MCA adapters use the same
 radius literal. -/
@@ -666,6 +703,44 @@ noncomputable def johnsonJumpRadius : ℝ≥0 :=
 noncomputable def johnsonJumpInternalRadius (n : ℕ) : ℝ≥0 :=
   (((1 : ℝ) - (1 - ((15 : ℝ) / 16)) ^ ((1 : ℝ) / 2)
       + 1 / 8 + 1 / (n : ℝ)).toNNReal)
+
+/-- The fixed ABF26 T4.18 Johnson radius is `J(15/16) = 3/4`. -/
+theorem johnsonJumpRadius_eq_three_fourths :
+    johnsonJumpRadius = (3 / 4 : ℝ≥0) := by
+  rw [johnsonJumpRadius]
+  have hsqrt :
+      ((1 : ℝ) - ((15 : ℝ) / 16)) ^ ((1 : ℝ) / 2) = (1 / 4 : ℝ) := by
+    rw [← Real.sqrt_eq_rpow]
+    have hbase : (1 - (15 : ℝ) / 16) = (1 / 4 : ℝ) ^ 2 := by norm_num
+    rw [hbase, Real.sqrt_sq_eq_abs]
+    norm_num
+  rw [hsqrt]
+  apply NNReal.coe_injective
+  change (((1 : ℝ) - 1 / 4).toNNReal : ℝ) = (3 / 4 : ℝ)
+  rw [Real.coe_toNNReal ((1 : ℝ) - 1 / 4) (by norm_num)]
+  norm_num
+
+/-- The ABF26 T4.18 internal radius is `7/8 + 1/n` after simplifying `J(15/16)`. -/
+theorem johnsonJumpInternalRadius_eq_seven_eighths_add_inv (n : ℕ) :
+    johnsonJumpInternalRadius n = (((7 : ℝ) / 8 + 1 / (n : ℝ)).toNNReal) := by
+  rw [johnsonJumpInternalRadius]
+  have hsqrt :
+      ((1 : ℝ) - ((15 : ℝ) / 16)) ^ ((1 : ℝ) / 2) = (1 / 4 : ℝ) := by
+    rw [← Real.sqrt_eq_rpow]
+    have hbase : (1 - (15 : ℝ) / 16) = (1 / 4 : ℝ) ^ 2 := by norm_num
+    rw [hbase, Real.sqrt_sq_eq_abs]
+    norm_num
+  rw [hsqrt]
+  congr
+  ring
+
+/-- The no-loss Johnson-jump radius is always below the proximity-loss internal radius. -/
+theorem johnsonJumpRadius_le_internalRadius (n : ℕ) :
+    johnsonJumpRadius ≤ johnsonJumpInternalRadius n := by
+  dsimp [johnsonJumpRadius, johnsonJumpInternalRadius]
+  apply Real.toNNReal_mono
+  nlinarith [show (0 : ℝ) ≤ 1 / 8 by norm_num,
+    show (0 : ℝ) ≤ 1 / (n : ℝ) by positivity]
 
 /-- **ABF26 Theorem 4.18 [BCHKS25 Cor 1.7].** CA jump at the Johnson bound. Fix `ε > 0`,
 let `δ := 15/16`. Then for all `F` of characteristic 2 there exists a Reed-Solomon code
@@ -799,10 +874,13 @@ end Sampling
 
 /-! ## Subspace-design / FRS MCA up to capacity — ABF26 §4.2.2 ([GG25], [BCGM25])
 
-Disposition (issue #48): T4.13 is a DIRECT PORT (GG25 line-stitching/list-decoding pipeline;
-its list-decoding input is tracked by #53); T4.14 is a DERIVED COROLLARY of T4.13 + T2.18
-(checked reduction `frs_epsMCA_capacity_gg25_of_residuals` in-tree); the BCGM25 entry is a
-SHADOW to be restated via `IsMCAGenerator` once PR #489 lands — do not prove as-is. T4.13 /
+Disposition (issue #48, refined by #76): T4.13 is a DIRECT PORT (GG25
+line-stitching/list-decoding pipeline; its list-decoding input is tracked by #53); T4.14 is a
+DERIVED COROLLARY of T4.13 + T2.18 (checked reduction
+`frs_epsMCA_capacity_gg25_of_residuals` in-tree). The BCGM25 polynomial-generator item is now
+split between the canonical generator-native surface
+`polynomialGenerator_isMCAGenerator_bcgm25` and the old `epsCA_curves` survey-ledger
+compatibility shadow `subspaceDesign_epsCA_curves_polynomial_generators_bcgm25`. T4.13 /
 T4.14 are the priority lower-witness feeders (`MCALowerWitness.ofLe`) realizing MCA up to
 capacity. See the file-level disposition ledger. -/
 
@@ -1057,8 +1135,34 @@ noncomputable def random_rs_mca
   -- over `n`-element domains is now formalized; the line-stitching/list-decoding/probability
   -- argument that supplies the concrete `bound` and `failure` values remains external.
 
-/-- **ABF26 BCGM25 extension to T4.13 / T4.14 (polynomial generators preserve
-correlated agreement).**
+/-- **BCGM25 polynomial-generator MCA — canonical generator-native statement surface.**
+
+This is the public API that supersedes the old `epsCA_curves` survey shadow below. It keeps
+BCGM25 in the vocabulary introduced by `ProximityGenerators.lean`: a
+`CoreDefinitions.Generator` is first identified as a polynomial generator, and the paper's MCA
+conclusion is stated as `CoreDefinitions.IsMCAGenerator`.
+
+The concrete BCGM25/BSGM25 constants are represented by the explicit error profile
+`ε_mca`. This declaration is still an external theorem front door; it does not prove the
+polynomial-generator construction. -/
+def polynomialGenerator_isMCAGenerator_bcgm25
+    {ι : Type} [Fintype ι]
+    {F : Type} [Field F]
+    {ℓ : Type} [Fintype ℓ]
+    {seedDim : ℕ}
+    (S : Fin seedDim → Set F)
+    [Nonempty (∀ i, S i)] [Fintype (∀ i, S i)]
+    (G : CoreDefinitions.Generator (∀ i, S i) ℓ F)
+    (ε_mca : I → I)
+    (LC : LinearCode ι F)
+    (_hPoly : CoreDefinitions.IsPolynomialGenerator S G) : Prop :=
+  CoreDefinitions.IsMCAGenerator G ε_mca LC
+  -- Missing ingredient: BCGM25/BSGM25's theorem that the relevant polynomial-generator
+  -- families satisfy MCA for the target linear code with the paper's explicit error profile.
+  -- The framework declarations (`Generator`, `IsPolynomialGenerator`, `IsMCAGenerator`) are
+  -- in-tree; the paper theorem itself remains external.
+
+/-- **ABF26 BCGM25 extension to T4.13 / T4.14 — compatibility `epsCA_curves` shadow.**
 
 [BCGM25] shows that the correlated/mutual agreement of subspace-design codes is
 preserved not only under affine line combinations `u₀ + γ · u₁` but under arbitrary
@@ -1067,23 +1171,20 @@ of functions called "polynomial generators". Stated in ABF26 §4.2.2 (subsection
 "subspace-design codes") and footnote 2 of the introduction; not separately numbered
 as `T4.x`, but materially extends the reach of T4.13 / T4.14.
 
-**Canonical formalization lives elsewhere — this is the survey-ledger shadow.** The
-genuine polynomial-generator MCA framework (the `Generator` / `IsMCAGenerator` / `IsMCA`
-abstraction, formalizing [BSGM25] Lemmas 4.1, 4.2 and Definition 4.3) is being built in
-`ProximityGap/MCAGenerator.lean` and `ProximityGap/ProximityGenerators.lean` by PR #489
-(`Katy/MCAgens`). Once that lands on `main` and merges into this branch, **this entry
-should be restated in terms of `IsMCAGenerator` (or removed in favour of it)** rather than
-the affine-style `epsCA`/`epsMCA` errors here. Do not grow a parallel polynomial-generator
-notion under `CapacityBounds`.
+**Canonical formalization is `polynomialGenerator_isMCAGenerator_bcgm25`.** This declaration is
+kept only for compatibility with the ABF26 survey ledger, which historically recorded the
+polynomial-generator item as a power-curve correlated-agreement error. Do not grow a parallel
+polynomial-generator notion under `CapacityBounds`.
 
 **What this placeholder captures meanwhile.** Unlike T4.13 (`subspaceDesign_epsMCA_gg25`),
 the left-hand side is the **power-curve** correlated-agreement error `epsCA_curves … k`
 (combinations `∑ i : Fin (k+1), γ^i · uᵢ`) — the genuine polynomial-generator family, so
 this is not a copy of T4.13. Two honesty caveats: (i) [BSGM25] proves *mutual* correlated
-agreement; this shadow uses the *correlated-agreement* curve error because the ABF26 branch
-has no curve-MCA notion yet (PR #489 supplies the real one); (ii) the RHS reuses the GG25
-affine bound shape `(t·n + 4t²)/|F|`, with the precise polynomial-generator constants as
-in [BSGM25]. Admitted as an external result. -/
+agreement through `IsMCAGenerator`; this compatibility shadow uses the *correlated-agreement*
+curve error because the ABF26 ledger has no curve-MCA bridge from the scalar-code generator API
+to vector-alphabet `epsCA_curves`; (ii) the RHS reuses the GG25 affine bound shape
+`(t·n + 4t²)/|F|`, with the precise polynomial-generator constants left to the canonical
+generator-native theorem. Admitted as an external result. -/
 def subspaceDesign_epsCA_curves_polynomial_generators_bcgm25
     {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
     {F : Type} [Field F] [Fintype F] [DecidableEq F]
@@ -1096,15 +1197,19 @@ def subspaceDesign_epsCA_curves_polynomial_generators_bcgm25
       ENNReal.ofReal (((t : ℝ) * Fintype.card ι + 4 * t ^ 2) / Fintype.card F)
   -- Missing ingredient: BCGM25's polynomial-generator MCA preservation for subspace-design
   -- codes. This bounds the CURVE error epsCA_curves (∑ γ^i·uᵢ), not the affine epsCA of
-  -- T4.13, so it is NOT a copy. The genuine framework (IsMCAGenerator) is being built in
-  -- ProximityGap/MCAGenerator.lean + ProximityGenerators.lean by PR #489; per the docstring
-  -- this admit should be RESTATED in terms of IsMCAGenerator once #489 lands (do not prove the
-  -- shadow). Blocked on #489 + T4.13. Genuinely external.
+  -- T4.13, so it is NOT a copy. The generator-native front door above is the canonical API;
+  -- this compatibility shadow stays external until there is a checked bridge from
+  -- IsMCAGenerator to this vector-alphabet curve-error formulation. Genuinely external.
 
 end SubspaceDesignFRS
 
 #print axioms CodingTheory.rs_epsCA_small_loss_r4_10_of_item2_no_boundary_crossing_prop
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_subspaceDesign_prop
 #print axioms CodingTheory.rs_epsMCA_johnson_range_bchks25_of_bound
+#print axioms CodingTheory.johnsonJumpRadius_eq_three_fourths
+#print axioms CodingTheory.johnsonJumpInternalRadius_eq_seven_eighths_add_inv
+#print axioms CodingTheory.johnsonJumpRadius_le_internalRadius
+#print axioms CodingTheory.rs_epsCA_johnson_jump_bchks25_of_witness
+#print axioms CodingTheory.exists_rsJohnsonJumpWitness_of_bchks25
 
 end CodingTheory
