@@ -6,6 +6,7 @@ Authors: Katerina Hristova, František Silváši, Chung Thai Nguyen, Elias Judin
 -/
 
 import ArkLib.Data.CodingTheory.ProximityGap.AHIV22Support
+import ArkLib.Data.CodingTheory.ProximityGap.Errors
 
 /-!
 ## Main Definitions
@@ -1469,5 +1470,30 @@ lemma prob_of_bad_pts
           (c := (Fintype.card Q : ENNReal)) hQ_ne_zero hQ_ne_top)
     _ = (d : ENNReal) / Fintype.card F := by rw [hcardV]
     _ = (‖RS‖₀ : ENNReal) / Fintype.card F := by rfl
+
+/-! ## ABF26-facing `epsCA` wrapper for AHIV17/AHIV22 -/
+
+/-- **ABF26 Theorem 4.8 / AHIV17 unique-decoding bound — `epsCA` interface wrapper.**
+
+The current AHIV22 development proves the unique-decoding row-span probability theorem
+`prob_of_bad_pts` above.  The ABF26 Section 4 survey consumes the affine-line
+correlated-agreement statement through the numeric `epsCA` API.  This wrapper records the
+checked final interface step: once the AHIV17/AHIV22 affine-line correlated-agreement predicate
+is available for the Reed-Solomon code, the corresponding `epsCA` inequality follows by the
+generic bridge in `Errors.lean`.
+
+The remaining theorem-port work, if any, is therefore the source-level specialization from the
+row-span AHIV22 lemma to `δ_ε_correlatedAgreementAffineLines`; this declaration does not
+pretend that step is already hidden in `prob_of_bad_pts`. -/
+theorem ahiv17_epsCA_bound
+    [Nonempty ι] [DecidableEq ι]
+    {deg : ℕ} {α : ι ↪ F} {δ ε : ℝ≥0}
+    (hAHIV : ProximityGap.δ_ε_correlatedAgreementAffineLines
+      (F := F) (A := F) (C := RScodeSet α deg) δ ε) :
+    ProximityGap.epsCA (F := F) (A := F) (RScodeSet α deg) δ δ ≤ (ε : ENNReal) :=
+  (ProximityGap.δ_ε_correlatedAgreementAffineLines_iff_epsCA_le
+    (F := F) (A := F) (C := RScodeSet α deg) δ ε).mp hAHIV
+
+#print axioms ProximityToRS.ahiv17_epsCA_bound
 end ProximityToRS
 end
