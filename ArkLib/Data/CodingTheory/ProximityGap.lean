@@ -41,6 +41,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointUpper
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGS
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGenerator
 import ArkLib.Data.CodingTheory.ProximityGap.MCASecondMoment
+import ArkLib.Data.CodingTheory.ProximityGap.PermanentlyBlocked
 import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityFiber
 import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityZMod
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGapP
