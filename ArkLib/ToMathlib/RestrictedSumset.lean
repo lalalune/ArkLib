@@ -42,9 +42,11 @@ part `(X₁ - X₀)(X₀ + X₁)^m`, namely
   `C(m, n-1) - C(m, n-2)`,
 
 which is nonzero mod `p` because `(n-1)·(C(m,n-2) - C(m,n-1)) = C(m,n-2)` and `p` is coprime to
-`C(m, n-2)` (as `m < p`). The final Nullstellensatz packaging is deliberately not claimed
-here; this file supplies the coefficient, nonvanishing, total-degree, and vanishing lemmas that
-isolate the algebraic core.
+`C(m, n-2)` (as `m < p`). The Nullstellensatz packaging IS carried out here:
+`erdos_heilbronn_two` is the full `h = 2` theorem, derived from the coefficient,
+nonvanishing, total-degree, and vanishing lemmas via
+`combinatorial_nullstellensatz_exists_eval_nonzero` and a padding step. The general-`h`
+Dias da Silva–Hamidoune statement (Schur/ballot-number coefficient) remains future work.
 
 ## References
 

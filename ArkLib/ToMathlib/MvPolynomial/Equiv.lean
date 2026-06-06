@@ -77,7 +77,7 @@ theorem finSuccEquivNth_coeff_coeff (m : Fin n →₀ ℕ) (f : MvPolynomial (Fi
     · simp only [hjmi, if_false]
       obtain hij | rfl := ne_or_eq i (u p)
       · simp only [hij, if_false, coeff_zero]
-      simp only [eq_self_iff_true, if_true]
+      simp only [if_true]
       have hmj : m ≠ u.removeNth p := by
         rintro rfl
         rw [insertNth_self_removeNth] at hjmi
@@ -136,16 +136,18 @@ variable. -/
 theorem support_finSuccEquivNth (f : MvPolynomial (Fin (n + 1)) R) :
     (finSuccEquivNth R p f).support = Finset.image (fun m : Fin (n + 1) →₀ ℕ => m p) f.support := by
   ext i
-  rw [Polynomial.mem_support_iff, Finset.mem_image, Finsupp.ne_iff]
+  rw [Polynomial.mem_support_iff, Finset.mem_image]
   constructor
-  · rintro ⟨m, hm⟩
+  · intro hi
+    obtain ⟨m, hm⟩ := Finsupp.support_nonempty_iff.mpr hi
     refine ⟨m.insertNth p i, ?_, insertNth_apply_same _ _ _⟩
     rw [← support_coeff_finSuccEquivNth]
     simpa using hm
   · rintro ⟨m, h, rfl⟩
+    apply Finsupp.support_nonempty_iff.mp
     refine ⟨m.removeNth p, ?_⟩
-    rwa [← coeff, zero_apply, ← mem_support_iff, support_coeff_finSuccEquivNth,
-      insertNth_self_removeNth]
+    exact (support_coeff_finSuccEquivNth (p := p) (i := m p) (m := m.removeNth p)).2
+      (by rwa [insertNth_self_removeNth])
 
 theorem mem_support_finSuccEquivNth {f : MvPolynomial (Fin (n + 1)) R} {x} :
     x ∈ (finSuccEquivNth R p f).support ↔ x ∈ (fun m : Fin (n + 1) →₀ _ ↦ m p) '' f.support := by

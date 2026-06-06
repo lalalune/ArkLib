@@ -1,5 +1,8 @@
 import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.Finsupp.Basic
+import Mathlib.Data.Finset.Image
+import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Tactic
 
 namespace Finsupp
 
@@ -30,26 +33,28 @@ theorem removeNth_apply (p : Fin (n + 1)) (m : Fin (n + 1) →₀ ℕ) (j : Fin 
   simp [removeNth, Fin.removeNth_apply]
 
 @[simp]
-theorem insertNth_removeNth (p : Fin (n + 1)) (i : ℕ) (m : Fin (n + 1) →₀ ℕ) :
+theorem insertNth_update_removeNth (p : Fin (n + 1)) (i : ℕ) (m : Fin (n + 1) →₀ ℕ) :
     insertNth p i (removeNth p m) = Function.update m p i := by
   ext j
-  by_cases hj : j = p
-  · subst j
-    simp
-  · rw [← p.succAbove_predAbove hj]
+  refine Fin.succAboveCases p ?_ ?_ j
+  · simp
+  · intro k
     simp
 
 @[simp]
-theorem insertNth_self_removeNth (p : Fin (n + 1)) (m : Fin (n + 1) →₀ ℕ) :
+theorem insertNth_removeNth (p : Fin (n + 1)) (m : Fin (n + 1) →₀ ℕ) :
     insertNth p (m p) (removeNth p m) = m := by
   ext j
-  by_cases hj : j = p
-  · subst j
-    simp
-  · rw [← p.succAbove_predAbove hj]
+  refine Fin.succAboveCases p ?_ ?_ j
+  · simp
+  · intro k
     simp
 
-theorem insertNth_right_injective (p : Fin (n + 1)) (i : ℕ) :
+theorem insertNth_self_removeNth (p : Fin (n + 1)) (m : Fin (n + 1) →₀ ℕ) :
+    insertNth p (m p) (removeNth p m) = m :=
+  insertNth_removeNth p m
+
+theorem insertNth_right_injective (p : Fin (n + 1)) {i : ℕ} :
     Function.Injective (insertNth p i : (Fin n →₀ ℕ) → Fin (n + 1) →₀ ℕ) := by
   intro m₁ m₂ h
   ext j

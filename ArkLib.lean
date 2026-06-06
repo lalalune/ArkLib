@@ -150,6 +150,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.ProximityGapP
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGenerators
 import ArkLib.Data.CodingTheory.ProximityGap.RSDistinctness
 import ArkLib.Data.CodingTheory.ProximityGap.RSListSize
+import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumErdosHeilbronn
+import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumRadiusOne
 import ArkLib.Data.CodingTheory.ProximityGap.VandermondeMCAExtract
 import ArkLib.Data.CodingTheory.ProximityPrizeCA
 import ArkLib.Data.CodingTheory.ProximityPrizeLeaves
@@ -464,6 +466,7 @@ import ArkLib.ToMathlib.PowerSeriesNewton
 import ArkLib.ToMathlib.PowerSeriesSubstCoeff
 import ArkLib.ToMathlib.Prop55
 import ArkLib.ToMathlib.RatFuncDegreeCalculus
+import ArkLib.ToMathlib.RestrictedSumset
 import ArkLib.ToMathlib.SbetaPackaging
 import ArkLib.ToMathlib.SiegelInterpolation
 import ArkLib.ToMathlib.SubstFieldCaveat
