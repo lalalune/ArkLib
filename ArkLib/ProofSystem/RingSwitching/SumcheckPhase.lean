@@ -1353,3 +1353,9 @@ theorem coreInteraction_rbrKnowledgeSoundness [IsDomain L] [IsDomain K]
 end LargeFieldReduction
 end
 end RingSwitching.SumcheckPhase
+
+/-! ### Axiom audit (issue #19 iterated-sumcheck completeness frontier) -/
+
+#print axioms RingSwitching.SumcheckPhase.iteratedSumcheckOracleReduction_perfectCompleteness_residual
+#print axioms RingSwitching.SumcheckPhase.iteratedSumcheckOracleReduction_perfectCompleteness
+#print axioms RingSwitching.SumcheckPhase.coreInteraction_perfectCompleteness

@@ -46,3 +46,7 @@ abbrev iteratedSumcheckOracleReduction_perfectCompleteness_residual_frontier : P
 
 end
 end RingSwitching.SumcheckPhase
+
+/-! ### Axiom audit (issue #19 scratch/audit alias) -/
+
+#print axioms RingSwitching.SumcheckPhase.iteratedSumcheckOracleReduction_perfectCompleteness_residual_frontier
