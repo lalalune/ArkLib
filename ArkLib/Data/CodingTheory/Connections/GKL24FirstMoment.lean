@@ -258,7 +258,7 @@ With `B_T = L²` this is the `L²·δ·n` summand of ABF26 T5.1; adding the in-t
 `(L²·δ·n + 1/η)/|F|` bound. The proof is the in-tree union-bound + supremum-to-count glue; the
 *only* unproven input is the named residual. -/
 theorem epsMCA_le_ofReal_of_gkl24_residual
-    (MC : Submodule F (ι → F)) (δ : ℝ≥0) {B_T : ℝ} (hδ0 : (0 : ℝ) ≤ δ)
+    (MC : Submodule F (ι → F)) (δ : ℝ≥0) {B_T : ℝ}
     (hres : GKL24FirstMomentResidual MC δ B_T (Fintype.card ι : ℝ)) :
     epsMCA (F := F) (A := F) (MC : Set (ι → F)) δ ≤
       ENNReal.ofReal ((B_T * (δ * Fintype.card ι)) / Fintype.card F) := by

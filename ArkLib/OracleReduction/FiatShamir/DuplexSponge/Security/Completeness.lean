@@ -306,14 +306,18 @@ theorem duplexSpongeFiatShamirSalted_completeness_unroll_of_run_eq {δ : Nat}
         simulateQ impl
           (R.duplexSpongeFiatShamirSaltedHonestExecution (U := U)
             sampleSalt stmtIn witIn).run := by
-    rw [hRun stmtIn witIn, QueryImpl.addLift_def, QueryImpl.liftTarget_self]
-    convert simulateQ_add_run_liftM_left impl
-      (QueryImpl.liftTarget (StateT σ ProbComp)
-        (challengeQueryImpl
-          (pSpec := ⟨!v[Direction.P_to_V],
-            !v[ProtocolSpec.Messages.SaltedProof (pSpec := pSpec) (U := U) δ]⟩)))
-      (R.duplexSpongeFiatShamirSaltedHonestExecution (U := U) sampleSalt stmtIn witIn) using 3
-    rfl
+    rw [hRun stmtIn witIn]
+    rw [QueryImpl.addLift_def, QueryImpl.liftTarget_self]
+    rw [show OptionT.run (liftM (R.duplexSpongeFiatShamirSaltedHonestExecution (U := U) sampleSalt stmtIn witIn)) =
+          simulateQ (fun t => liftM (OracleSpec.query t))
+            (R.duplexSpongeFiatShamirSaltedHonestExecution (U := U) sampleSalt stmtIn witIn).run from rfl,
+      ← QueryImpl.simulateQ_compose]
+    refine congrFun (congrArg (fun g => simulateQ g
+      (R.duplexSpongeFiatShamirSaltedHonestExecution (U := U) sampleSalt stmtIn witIn).run) ?_) ?_
+    · funext t
+      simp only [QueryImpl.apply_compose, simulateQ_query]
+      rcases t with t | t <;> rfl
+    · rfl
   rw [hcollapse]
 
 end Completeness

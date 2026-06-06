@@ -103,6 +103,7 @@ theorem goodCoeffsCurve_eq_of_floor_eq {k deg : ℕ} {domain : ι ↪ F} {δ δ'
 `S.card ≥ (1 − δ)·n` is equivalent, by `Code.relDist_floor_bound_iff_complement_bound`, to
 `n − ⌊δ · n⌋ ≤ S.card`, which depends on `δ` only through `⌊δ · n⌋`.  Hence two radii with equal
 floor give equivalent `jointAgreement` statements. -/
+omit [DecidableEq ι] in
 theorem jointAgreement_iff_of_floor_eq {κ : Type*} {deg : ℕ} {domain : ι ↪ F} {δ δ' : ℝ≥0}
     (u : κ → ι → F)
     (hfloor : Nat.floor (δ * Fintype.card ι) = Nat.floor (δ' * Fintype.card ι)) :
@@ -243,7 +244,7 @@ theorem boundaryCardResidual_of_lattice_residual {k deg : ℕ} {domain : ι ↪ 
   rcases lt_or_eq_of_le hle with hlt | heq
   · exact boundaryCardResidual_of_not_lattice (deg := deg) (domain := domain) hlt hStrict
       hk u hδeq hcardPos
-  · exact hLattice hk u hδeq heq.symm hcardPos
+  · exact hLattice hk u hδeq heq hcardPos
 
 end BoundaryCardResidual
 
