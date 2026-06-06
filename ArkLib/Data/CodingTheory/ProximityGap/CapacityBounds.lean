@@ -1286,6 +1286,11 @@ end SubspaceDesignFRS
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_subspaceDesign_bound
 #print axioms CodingTheory.rs_epsCA_bchks25_item2
 #print axioms CodingTheory.rs_epsCA_small_loss_r4_10
+#print axioms CodingTheory.rs_epsCA_small_loss_r4_10_of_residuals
+#print axioms CodingTheory.rs_epsCA_small_loss_r4_10_of_residuals_prop
+#print axioms CodingTheory.r4_10_floor_collapse_of_no_boundary_crossing
+#print axioms CodingTheory.rs_epsCA_small_loss_r4_10_of_no_boundary_crossing_prop
+#print axioms CodingTheory.r4_10_delta_lt_nearby
 #print axioms CodingTheory.rs_epsCA_small_loss_r4_10_of_item2_no_boundary_crossing_prop
 #print axioms CodingTheory.rs_epsCA_breakdown_cs25
 #print axioms CodingTheory.rs_epsCA_breakdown_cs25_entropyBallLowerWitness

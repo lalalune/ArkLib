@@ -719,15 +719,14 @@ def iteratedSumcheckKStateProp (i : Fin ℓ') (m : Fin (2 + 1))
     -- `probEvent_badSumcheckEventProp_degree_two_le` bounds it by `2/|L|` — the sharp per-round
     -- knowledge error (vs. the current `roundKnowledgeError = 1`).
     --
-    -- The only mechanical step separating this file from emitting the weakened strong state is a
-    -- pure transcript-API identity in `toFun_full` (bridging `FullTranscript.messages tr ⟨0,rfl⟩`
-    -- and the `Transcript.equivMessagesChallenges`-form `get_Hᵢ` the KState reads — both denote the
-    -- same round message `h_i`, but at the `Transcript (Fin.last 2)` index type the numeral `0`
-    -- does not elaborate against `Fin ↑(Fin.last 2)` without an explicit `Fin.val_last` reduction).
-    -- That bridge is the sole residual; the algebraic content (cube-telescoping, consistency,
-    -- structural invariant) is fully proven above, and the probability bound is now local to this
-    -- file. Until the bridge lands the post-challenge state stays `True` and the RBR theorem below
-    -- uses the always-valid unit bound, so the file remains sound and green.
+    -- The transcript projection bridge is now named above:
+    -- `iteratedSumcheck_fullTranscript_message0_eq_equivMessagesChallenges` and
+    -- `iteratedSumcheck_fullTranscript_challenge1_eq_equivMessagesChallenges`. The remaining
+    -- mechanical step is consuming those identities in a nontrivial `toFun_full`, replacing this
+    -- placeholder post-challenge `True` state with `explicitVCheck ∧ localizedTargetCheck`, then
+    -- routing the local probability bound through the RBR theorem. Until that lands the
+    -- post-challenge state stays `True` and the RBR theorem below uses the always-valid unit bound,
+    -- so the file remains sound and green.
     True
 
 /-- Knowledge state function (KState) for single round -/

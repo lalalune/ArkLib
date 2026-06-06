@@ -307,6 +307,8 @@ end BCIKS20.HenselNumerator
 
 -- Axiom audit: every closed declaration in this file depends on exactly the three standard axioms
 -- `[propext, Classical.choice, Quot.sound]` (no `sorry`/`admit`/`axiom`/`native_decide`).
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.embeddingOf𝒪Into𝕃_W𝒪
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_eq_alpha_mul_of_lift
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.alpha_eq_embedding_of_fact
