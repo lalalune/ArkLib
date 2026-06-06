@@ -34,6 +34,7 @@ variable {A B : Type*} [DecidableEq A] [Fintype B]
 abbrev Preimage (ψ : B → A) (a : A) := { b : B // ψ b = a }
 
 /-- A proof that surjectivity of `ψ` implies the fiber over any element `a` is inhabited. -/
+@[reducible]
 noncomputable def preimageNonempty (ψ : B → A) (hψ : Function.Surjective ψ) (a : A) :
     Nonempty (Preimage ψ a) := by
   rcases hψ a with ⟨b, rfl⟩

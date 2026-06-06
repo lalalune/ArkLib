@@ -186,7 +186,7 @@ theorem size_eq_degree (p : UniPoly R) : p.trim.size = p.degree := by
   unfold trim degree
   match h : p.last_nonzero with
   | none => simp
-  | some i => simp [Fin.is_lt, Nat.succ_le_of_lt]
+  | some i => simp [Fin.is_lt]
 
 theorem size_le_size (p : UniPoly R) : p.trim.size ≤ p.size := by
   unfold trim
@@ -388,7 +388,7 @@ end Trim
 /-- canonical version of UniPoly -/
 def UniPolyC (R : Type*) [BEq R] [Ring R] := { p : UniPoly R // p.trim = p }
 
-@[ext] theorem UniPolyC.ext {p q : UniPolyC R} (h : p.val = q.val) : p = q := Subtype.eq h
+@[ext] theorem UniPolyC.ext {p q : UniPolyC R} (h : p.val = q.val) : p = q := Subtype.ext h
 
 instance : Coe (UniPolyC R) (UniPoly R) where coe := Subtype.val
 
