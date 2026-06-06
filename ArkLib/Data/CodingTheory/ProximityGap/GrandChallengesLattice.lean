@@ -5,7 +5,9 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeCollapse
+import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointLower
 import ArkLib.Data.CodingTheory.ProximityGap.MCASecondMoment
+import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumErdosHeilbronn
 
 /-!
 # Faithful lattice encodings of the §1 Grand Challenges (after Finding F6)
@@ -483,6 +485,46 @@ theorem mcaThreshold_lt_one_of_secondMoment
   exact mcaThreshold_lt_MCAUpperWitness
     (ReedSolomon.code domain k : Set (ι → F)) epsStar hne
     ⟨1, hsecond⟩ le_rfl
+
+/-- The spike endpoint floor gives a direct upper bracket on the faithful MCA lattice
+threshold in the small-field regime where `q < 2^128 · (n-k)`. -/
+theorem mcaThreshold_lt_one_of_fieldSmall
+    (domain : ι ↪ F) (k : ℕ)
+    (hne : mcaThresholdExists (ReedSolomon.code domain k : Set (ι → F)) epsStar)
+    (hk : 1 ≤ k) (hn : k + 1 ≤ Fintype.card ι)
+    (hsmall : Fintype.card F < 2 ^ (128 : ℕ) * (Fintype.card ι - k)) :
+    mcaThreshold (ReedSolomon.code domain k : Set (ι → F)) epsStar hne <
+      latticeIndexOf (ι := ι) (1 : ℝ≥0) le_rfl :=
+  mcaThreshold_lt_MCAUpperWitness
+    (ReedSolomon.code domain k : Set (ι → F)) epsStar hne
+    ⟨1, epsStar_lt_epsMCA_one_of_field_small domain k hk hn hsmall⟩ le_rfl
+
+/-- The unconditional subset-sum endpoint floor gives a direct upper bracket on the faithful
+MCA lattice threshold when the subset-sum set is numerically large enough. -/
+theorem mcaThreshold_lt_one_of_subsetSums
+    (domain : ι ↪ F) (k : ℕ)
+    (hne : mcaThresholdExists (ReedSolomon.code domain k : Set (ι → F)) epsStar)
+    (hk : k + 1 ≤ Fintype.card ι)
+    (hsmall : Fintype.card F < 2 ^ (128 : ℕ) * (subsetSumsKplus1 domain k).card) :
+    mcaThreshold (ReedSolomon.code domain k : Set (ι → F)) epsStar hne <
+      latticeIndexOf (ι := ι) (1 : ℝ≥0) le_rfl :=
+  mcaThreshold_lt_MCAUpperWitness
+    (ReedSolomon.code domain k : Set (ι → F)) epsStar hne
+    ⟨1, epsStar_lt_epsMCA_one_of_subsetSums domain hk hsmall⟩ le_rfl
+
+/-- The Erdős-Heilbronn endpoint floor for `k = 1` gives a direct upper bracket on the
+faithful MCA lattice threshold in the prime-characteristic numeric regime. -/
+theorem mcaThreshold_lt_one_of_erdosHeilbronn
+    (domain : ι ↪ F) {p : ℕ} (hp : p.Prime)
+    (hne : mcaThresholdExists (ReedSolomon.code domain 1 : Set (ι → F)) epsStar)
+    (hchar : ringChar F = p) (hn : 2 ≤ Fintype.card ι)
+    (hsmall : 2 * (Fintype.card ι - 2) < p)
+    (hq : Fintype.card F < 2 ^ (128 : ℕ) * (2 * (Fintype.card ι - 2) + 1)) :
+    mcaThreshold (ReedSolomon.code domain 1 : Set (ι → F)) epsStar hne <
+      latticeIndexOf (ι := ι) (1 : ℝ≥0) le_rfl :=
+  mcaThreshold_lt_MCAUpperWitness
+    (ReedSolomon.code domain 1 : Set (ι → F)) epsStar hne
+    ⟨1, epsStar_lt_epsMCA_one_of_erdos_heilbronn domain hp hchar hn hsmall hq⟩ le_rfl
 
 /-- **Lattice bracketing of the MCA threshold (faithful `mca_threshold_bracketed`).** A
 lower witness and an upper witness (at a radius `≤ 1`) bracket the lattice threshold:
