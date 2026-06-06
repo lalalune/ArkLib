@@ -94,6 +94,36 @@ open Code
 
 namespace GrandChallengesLattice
 
+/-! ## Small finite-set inventory lemmas -/
+
+/-- A subset of a finite type with at most one missing point is either the whole type or the
+complement of a single point.
+
+This is the purely combinatorial first step in the radius-`1/n` MCA/J1 analysis: once an
+`mcaEvent` witness set is known to have cardinality at least `n - 1`, its shape is rigid. -/
+theorem exists_eq_univ_or_eq_univ_erase_of_card_pred_le
+    {α : Type} [Fintype α] [DecidableEq α] (S : Finset α)
+    (hS : Fintype.card α - 1 ≤ S.card) :
+    S = Finset.univ ∨ ∃ i : α, S = Finset.univ.erase i := by
+  by_cases hfull : S = Finset.univ
+  · exact Or.inl hfull
+  · right
+    have hmissing : ∃ i : α, i ∉ S := by
+      by_contra hmissing
+      apply hfull
+      ext i
+      simp only [Finset.mem_univ, iff_true]
+      by_contra hi
+      exact hmissing ⟨i, hi⟩
+    rcases hmissing with ⟨i, hiS⟩
+    refine ⟨i, ?_⟩
+    have hsubset : S ⊆ Finset.univ.erase i := by
+      intro x hx
+      simp only [Finset.mem_erase, Finset.mem_univ, and_true]
+      exact fun hxi => hiS (hxi ▸ hx)
+    refine Finset.eq_of_subset_of_card_le hsubset ?_
+    simpa using hS
+
 /-! ## Lattice radii -/
 
 /-- The lattice radius `j/n : ℝ≥0` for `j : Fin (n+1)`. Relative Hamming distances take
@@ -134,6 +164,39 @@ theorem floor_mcaLatticePoint (n : ℕ) (hn : 0 < n) (j : Fin (n + 1)) :
   rw [div_mul_cancel₀ _ hnne]
   exact Nat.floor_natCast _
 
+/-- At the first nonzero MCA lattice radius `1/n`, the `mcaEvent` size lower bound forces
+the witness set to contain at least `n - 1` coordinates. -/
+theorem mcaEventWitness_card_pred_le_j1
+    {ι : Type} [Fintype ι] [Nonempty ι] (S : Finset ι)
+    (hS : (S.card : ℝ≥0) ≥
+      (1 - mcaLatticePoint (Fintype.card ι)
+        (⟨1, by
+          have hn : 0 < Fintype.card ι := Fintype.card_pos
+          omega⟩ : Fin (Fintype.card ι + 1))) *
+        (Fintype.card ι : ℝ≥0)) :
+    Fintype.card ι - 1 ≤ S.card := by
+  let n := Fintype.card ι
+  have hn : 0 < n := by simpa [n] using Fintype.card_pos (α := ι)
+  have hdiv_le : (1 : ℝ≥0) / (n : ℝ≥0) ≤ 1 := by
+    rw [div_le_one (by exact_mod_cast hn)]
+    exact_mod_cast Nat.succ_le_of_lt hn
+  have hmul :
+      (1 - mcaLatticePoint n
+        (⟨1, by omega⟩ : Fin (n + 1))) * (n : ℝ≥0) =
+        ((n - 1 : ℕ) : ℝ≥0) := by
+    unfold mcaLatticePoint
+    simp only [Fin.val_mk, Nat.cast_one]
+    apply NNReal.coe_injective
+    rw [NNReal.coe_mul, NNReal.coe_sub hdiv_le, NNReal.coe_one,
+      NNReal.coe_div (by exact_mod_cast hn.ne'), NNReal.coe_one,
+      Nat.cast_sub (Nat.succ_le_of_lt hn), Nat.cast_one]
+    field_simp [show (n : ℝ) ≠ 0 by exact_mod_cast hn.ne']
+    ring
+  have hnn : ((n - 1 : ℕ) : ℝ≥0) ≤ (S.card : ℝ≥0) := by
+    rw [← hmul]
+    simpa [n] using hS
+  exact_mod_cast hnn
+
 /-! ## The MCA lattice threshold
 
 `mcaSatisfies C ε* j` says the lattice radius `j/n` keeps `ε_mca` within `ε*`. By
@@ -143,6 +206,37 @@ lattice threshold the paper asks to determine. -/
 
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
+
+/-- At radius `1/n`, any witness set satisfying the MCA size clause is full or omits exactly
+one coordinate. -/
+theorem mcaEventWitness_j1_shape (S : Finset ι)
+    (hS : (S.card : ℝ≥0) ≥
+      (1 - mcaLatticePoint (Fintype.card ι)
+        (⟨1, by
+          have hn : 0 < Fintype.card ι := Fintype.card_pos
+          omega⟩ : Fin (Fintype.card ι + 1))) *
+        (Fintype.card ι : ℝ≥0)) :
+    S = Finset.univ ∨ ∃ i : ι, S = Finset.univ.erase i :=
+  exists_eq_univ_or_eq_univ_erase_of_card_pred_le S
+    (mcaEventWitness_card_pred_le_j1 S hS)
+
+/-- Event-level radius-`1/n` inventory for the MCA/J1 proof: every bad event has a witness
+window that is either all coordinates or all but one coordinate. -/
+theorem mcaEvent_j1_witness_inventory
+    {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
+    (C : Set (ι → A)) (u₀ u₁ : ι → A) (γ : F)
+    (h : mcaEvent (F := F) C
+      (mcaLatticePoint (Fintype.card ι)
+        (⟨1, by
+          have hn : 0 < Fintype.card ι := Fintype.card_pos
+          omega⟩ : Fin (Fintype.card ι + 1)))
+      u₀ u₁ γ) :
+    ∃ S : Finset ι,
+      (S = Finset.univ ∨ ∃ i : ι, S = Finset.univ.erase i) ∧
+      (∃ w ∈ C, ∀ i ∈ S, w i = u₀ i + γ • u₁ i) ∧
+      ¬ pairJointAgreesOn C S u₀ u₁ := by
+  rcases h with ⟨S, hS, hline, hno⟩
+  exact ⟨S, mcaEventWitness_j1_shape S hS, hline, hno⟩
 
 /-- `ε_mca(C, j/n) ≤ ε*` at the lattice radius `j/n`. Decidable so the satisfying set is a
 `Finset`. -/

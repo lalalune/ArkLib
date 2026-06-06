@@ -66,6 +66,8 @@ open Code InterleavedCode ListDecodable
 open scoped NNReal ENNReal
 
 set_option linter.unusedSectionVars false
+set_option linter.unusedDecidableInType false
+set_option linter.unusedFintypeInType false
 
 variable {ι F : Type} [Fintype ι] [Field F] [Fintype F] [DecidableEq F]
 

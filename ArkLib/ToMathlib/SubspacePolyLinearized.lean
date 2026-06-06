@@ -463,12 +463,12 @@ lemma bkr06CutoffIndex_le (m v : ℕ) (hm : 0 < m) (hvm : v ≤ m) :
 /-- The extension degree is positive: `K` is a nontrivial finite `F`-module, so
 `#K = q^m ≥ 2` forces `m ≥ 1`. -/
 lemma finrank_pos : 0 < Module.finrank F K := by
-  by_contra h
-  push_neg at h
-  have h0 : Module.finrank F K = 0 := by omega
-  have hcard := Module.card_eq_pow_finrank (K := F) (V := K)
-  rw [h0, pow_zero] at hcard
-  exact absurd hcard Fintype.one_lt_card.ne'
+  rcases Nat.eq_zero_or_pos (Module.finrank F K) with h0 | h
+  · exfalso
+    have hcard := Module.card_eq_pow_finrank (K := F) (V := K)
+    rw [h0, pow_zero] at hcard
+    exact absurd hcard Fintype.one_lt_card.ne'
+  · exact h
 
 /-- **Tight family, parameter-free form (`hparam` eliminated).**  Identical family
 conclusion to `bkr06_tight_family_hfamily_unconditional`, with the size bound stated

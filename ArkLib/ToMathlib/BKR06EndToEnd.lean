@@ -47,6 +47,8 @@ All declarations compile `sorry`/`axiom`-free and are axiom-clean
 -/
 
 set_option linter.unusedSectionVars false
+set_option linter.unusedDecidableInType false
+set_option linter.unusedFintypeInType false
 
 noncomputable section
 
@@ -205,7 +207,8 @@ theorem bkr06_close_codewords_card_ge_tight
     intro i
     by_cases h0 : pivot - subspacePoly (subFinset (𝓛 i)) = 0
     · rw [h0]
-      simpa using Nat.lt_of_lt_of_le (Nat.succ_pos _) hk_le
+      simp only [Polynomial.natDegree_zero]
+      exact Nat.lt_of_lt_of_le (Nat.succ_pos _) hk_le
     · have hdeg_lt : (pivot - subspacePoly (subFinset (𝓛 i))).degree < (k : ℕ) :=
         Polynomial.mem_degreeLT.mp (hdeg i)
       exact Nat.lt_of_lt_of_le
