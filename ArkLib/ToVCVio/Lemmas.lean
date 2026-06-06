@@ -1,4 +1,21 @@
+/-
+Copyright (c) 2025 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
 import VCVio
+
+/-!
+# Auxiliary lemmas for VCV-io oracle computations
+
+This file collects simp and support lemmas for `OracleComp` computations evaluated through the
+`HasEvalSPMF` / `HasEvalSet` semantics, with a focus on the `none`/failure branch.
+
+It provides facts relating `support`, `probOutput`, `probFailure`, and `probEvent` for `mk`/`run`
+of subprobability computations (e.g. `not_mem_support_none_of_probOutput_none_eq_zero`,
+`support_mk`, `support_run`, `mem_support_run_iff`), and support computations for `OptionT`
+combinators (`support_OptionT_pure`, `mem_support_OptionT_pure_run_some_iff`).
+-/
 
 open OracleComp OracleSpec
 

@@ -6,7 +6,7 @@ Authors: Eliza
 import ArkLib.Data.CodingTheory.ProximityGap.GSFactorExtract
 import ArkLib.Data.CodingTheory.GuruswamiSudan.Basic
 import ArkLib.Data.CodingTheory.GuruswamiSudan.MultiplicityInterpolation
-import Mathlib.Tactic
+import Mathlib.Tactic.Positivity
 
 /-! # The Guruswami–Sudan list-size theorem (the composition)
 

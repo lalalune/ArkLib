@@ -426,7 +426,7 @@ theorem probEvent_simulateQ_run'_optionBind_trailing_le {α β : Type}
               exact ⟨o, ho, rfl⟩
             rw [o'] at hb_supp
             have hb_raw : some b ∈ support (cont a) :=
-              support_simulateQ_run'_subset so (cont a) s' hb_supp
+              _root_.support_simulateQ_run'_subset so (cont a) s' hb_supp
             exact hpha (hcont a (some b) hb_raw b rfl hpb)
 
 /-- **Failure-monotone trailing `Option.elimM` drop, transported across `simulateQ … |>.run'`.**
@@ -683,19 +683,35 @@ def KnowledgeStateFunctionOneShot.toKnowledgeStateFunction
       · exact Or.inl (by by_contra hc; exact (stF_next hc) hstF)
       · exact Or.inr (hmono hrel)
   toFun_full := fun stmtIn tr witOut h => by
-    have := stF.toFun_full stmtIn tr
-    contrapose! this
-    simp_all
-    by_cases hn : n = 0
-    · subst hn
-      simp_all
-      have hpSpec : pSpec = !p[] := by ext i <;> exact Fin.elim0 i
-      subst hpSpec
-      have hTr : tr = default := by ext i; exact Fin.elim0 i
-      subst hTr
-      have := stF.toFun_empty stmtIn
-      grind
-    · grind
+    let oa : OptionT ProbComp StmtOut := OptionT.mk do
+      (simulateQ impl (verifier.run stmtIn tr)).run' (← init)
+    have hLangPos : Pr[(· ∈ relOut.language) | oa] > 0 := by
+      exact lt_of_lt_of_le h
+        (probEvent_mono (mx := oa)
+          (p := fun stmtOut => (stmtOut, witOut) ∈ relOut)
+          (q := fun stmtOut => stmtOut ∈ relOut.language)
+          (fun _ _ hRel => ⟨witOut, hRel⟩))
+    have hstF : stF.toFun (.last n) stmtIn tr := by
+      by_contra hnot
+      have hzero := stF.toFun_full stmtIn tr hnot
+      rw [hzero] at hLangPos
+      exact (lt_irrefl 0) hLangPos
+    simp only [Extractor.RoundByRoundOneShot.toRoundByRound]
+    by_cases hlast0 : (.last n : Fin (n + 1)) = 0
+    · rw [if_pos hlast0]
+      exfalso
+      have hnot : ¬ stF.toFun (.last n) stmtIn tr := by
+        have key : ∀ (k : Fin (n + 1)), k = 0 → ∀ (t : Transcript k pSpec),
+            ¬ stF.toFun k stmtIn t := by
+          intro k hk t
+          subst hk
+          have ht : t = default := Subsingleton.elim _ _
+          rw [ht]
+          exact stF.toFun_empty stmtIn
+        exact key (.last n) hlast0 tr
+      exact hnot hstF
+    · rw [if_neg hlast0]
+      exact Or.inl hstF
 
 /-- Coercion to the underlying function of a state function -/
 instance {langIn : Set StmtIn} {langOut : Set StmtOut}
