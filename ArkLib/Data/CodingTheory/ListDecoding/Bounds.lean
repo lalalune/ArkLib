@@ -2168,11 +2168,17 @@ theorem frs_list_decoding_capacity_cz25_of_residuals_prop
 
 end SubspaceDesignUpperBounds
 
--- Axiom audit on the narrowed ABF26 §3 residual bridges.  These are the source-level regression
--- anchors for #74 and #79: BKR06 and GHSZ02 isolate their geometric/asymptotic cores, CZ25/FRS
--- expose the design-dimension and FRS-subspace-design residuals, and GLMRSW22 now exposes the
--- random-generator-matrix probability surface without turning the external paper statements into
--- fake theorems.
+-- Axiom audit on the ABF26 §3 headline front doors and narrowed residual bridges.  These are the
+-- source-level regression anchors for #74 and #79: BKR06 and GHSZ02 isolate their
+-- geometric/asymptotic cores, CZ25/FRS expose the design-dimension and FRS-subspace-design
+-- residuals, and GLMRSW22 now exposes the random-generator-matrix probability surface without
+-- turning the external paper statements into fake theorems.
+#print axioms CodingTheory.large_alphabet_barrier_bdg24_agl23
+#print axioms CodingTheory.random_linear_lambda_lower_glmrsw22
+#print axioms CodingTheory.rs_lambda_superpoly_extension_bkr06
+#print axioms CodingTheory.rs_lambda_large_prime_ghsz02
+#print axioms CodingTheory.subspaceDesign_list_decoding_cz25
+#print axioms CodingTheory.frs_list_decoding_capacity_cz25
 #print axioms CodingTheory.random_linear_lambda_lower_glmrsw22_of_random_generator_matrix
 #print axioms CodingTheory.rs_lambda_superpoly_extension_bkr06_of_family
 #print axioms CodingTheory.rs_lambda_superpoly_extension_bkr06_of_residuals

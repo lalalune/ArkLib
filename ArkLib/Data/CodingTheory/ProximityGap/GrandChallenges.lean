@@ -346,6 +346,24 @@ def MCALowerWitness.ofLineDecodingTarget
     MCALowerWitness (C : Set (ι → F)) ε_star :=
   MCALowerWitness.ofLe hδ_le_one (le_trans hTarget hle)
 
+/-- **Bridge from ABF26 Theorem 4.16 [BCHKS25, KK25].** A packaged near-capacity
+`ε_ca` lower-bound witness gives an MCA upper witness once its explicit lower bound clears
+`ε*`, via the generic `ε_ca ≤ ε_mca` connector. -/
+noncomputable def MCAUpperWitness.ofLowerCapacityBCHKS25KK25
+    {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
+    {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC]
+    (c ρ ε_star : ℝ≥0)
+    (W : CodingTheory.RSLowerCapacityWitness c ρ ιC FC)
+    (hgt :
+      (ε_star : ENNReal) <
+        ((Fintype.card ιC : ENNReal) ^ (c : ℝ)) / (Fintype.card FC : ENNReal)) :
+    MCAUpperWitness (ι := ιC) (F := FC)
+      (ReedSolomon.code W.domain W.k : Set (ιC → FC)) ε_star :=
+  MCAUpperWitness.ofEpsCAGt (MC := ReedSolomon.code W.domain W.k)
+    (ε_star := ε_star) (δ := 1 - ρ - W.slack) (lt_of_lt_of_le hgt W.epsCA_lower)
+
+#print axioms ProximityGap.GrandChallenges.MCAUpperWitness.ofLowerCapacityBCHKS25KK25
+
 /-- **Bridge from ABF26 Theorem 4.17 [CS25 Cor 1].** In the complete CA-breakdown regime
 `ε_ca(RS, δ, δ) = 1`; any threshold `ε* < 1` therefore gives an MCA upper witness at `δ`.
 This is the direct witness-form connector from the CS25 capacity-side lower bound. -/
@@ -366,8 +384,20 @@ noncomputable def MCAUpperWitness.ofRSBreakdownCS25
     exact hε
 
 /-- **Bridge from ABF26 Lemma 4.19 [DG25 Thm 2.5].** A sampling lower bound on `ε_ca`,
-combined with a numeric comparison showing that sampling lower bound exceeds `ε*`, gives an
-MCA upper witness through `ε_ca ≤ ε_mca`. -/
+combined with a named sampling-mass comparison showing that the lower bound exceeds `ε*`,
+gives an MCA upper witness through `ε_ca ≤ ε_mca`. -/
+noncomputable def MCAUpperWitness.ofSamplingDG25Mass
+    (C : LinearCode ι F) (δ δ' ε_star : ℝ≥0)
+    (hδ' : (δ' : ENNReal) = ⨆ u : ι → F, δᵣ(u, (C : Set (ι → F))))
+    (hδ_pos : 0 < δ) (hδ_lt : δ < δ')
+    (hDG25 : CodingTheory.linear_epsCA_ge_sampling_dg25 C δ δ' hδ' hδ_pos hδ_lt)
+    (hgt : CodingTheory.linear_epsCA_sampling_dg25_mass C δ > (ε_star : ENNReal)) :
+    MCAUpperWitness (C : Set (ι → F)) ε_star :=
+  MCAUpperWitness.ofEpsCAGt (MC := C) (ε_star := ε_star) (δ := δ)
+    (lt_of_lt_of_le hgt hDG25)
+
+/-- Compatibility wrapper for the DG25 bridge, preserving the original inline sampling-mass
+comparison shape used by existing callers. -/
 noncomputable def MCAUpperWitness.ofSamplingDG25
     (C : LinearCode ι F) (δ δ' ε_star : ℝ≥0)
     (hδ' : (δ' : ENNReal) = ⨆ u : ι → F, δᵣ(u, (C : Set (ι → F))))
@@ -380,8 +410,7 @@ noncomputable def MCAUpperWitness.ofSamplingDG25
               }[δᵣ(u, (C : Set (ι → F))) ≤ δ] >
         (ε_star : ENNReal)) :
     MCAUpperWitness (C : Set (ι → F)) ε_star :=
-  MCAUpperWitness.ofEpsCAGt (MC := C) (ε_star := ε_star) (δ := δ)
-    (lt_of_lt_of_le hgt hDG25)
+  MCAUpperWitness.ofSamplingDG25Mass C δ δ' ε_star hδ' hδ_pos hδ_lt hDG25 hgt
 
 /-- **Bridge from ABF26 Theorem 4.18 [BCHKS25 Cor 1.7].** A packaged Johnson-jump
 witness gives an MCA upper witness once its explicit CA lower bound clears `ε*`.
