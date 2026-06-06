@@ -146,11 +146,3 @@ theorem batchingConsistency_of_residual {k : ℕ} (A : (Fin k → Fin 2) → R)
   exact hres
 
 end ArkLib.RingSwitching.Phases
-
-section AxiomAudit
-open ArkLib.RingSwitching.Phases
-#print axioms sum_cube_MLE_mul_MLE
-#print axioms sum_cube_MLE_mul
-#print axioms batchingConsistency_of_residual
-#print axioms boolDomain_cube_eq_image
-end AxiomAudit

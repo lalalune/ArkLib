@@ -200,6 +200,3 @@ theorem subspaceDesign_list_decoding_cz25_of_dimensionCount
 end CZ25DesignToLambda
 
 end CodingTheory
-
--- TEMP AUDIT
-#print axioms CodingTheory.subspaceDesign_list_decoding_cz25_of_dimensionCount
