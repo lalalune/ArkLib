@@ -279,6 +279,31 @@ One representative of each direction, consuming an actual external-admit bound. 
 numeric hypotheses (`hle` / `h_gt`) — that the explicit symbolic right-hand side compares
 to `ε*` as required — are the Phase-5 computations; here we wire the symbolic edge. -/
 
+/-- **Bridge from ABF26 Theorem 4.11 item 1 [GKL24 Thm 3].** When the 1.5-Johnson
+linear-code MCA bound lands within `ε*` at radius `δ`, it certifies an `MCALowerWitness`.
+
+This is the field-valued Grand-MCA-facing specialization of the more general
+`linear_epsMCA_1_5_johnson_gkl24` statement in `CapacityBounds.lean`.  The hypothesis
+`hle` is the numeric comparison between GKL24's explicit RHS and the challenge budget. -/
+def MCALowerWitness.ofLinearOnePointFiveJohnsonGKL24
+    (C : ModuleCode ι F F) (δ_min η δ ε_star : ℝ≥0)
+    (h_δ_min : (δ_min : ℝ) = (Code.minDist (C : Set (ι → F)) : ℝ) / Fintype.card ι)
+    (hη : 0 < η) (hη_lt_δ_min : η < δ_min)
+    (hδ_johnson :
+      (δ : ℝ) ≤ 1 - ((1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 3)))
+    (hδ_le_one : δ ≤ 1)
+    (hGKL24 : CodingTheory.linear_epsMCA_1_5_johnson_gkl24 C δ_min η δ
+      h_δ_min hη hη_lt_δ_min hδ_johnson)
+    (hle :
+      ENNReal.ofReal
+        ((((Fintype.card ι : ℝ) + 6) / η
+          + 2 / ((η : ℝ) *
+              ((1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 3)
+                - (1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 2)))
+         ) / (Fintype.card F : ℝ)) ≤ (ε_star : ENNReal)) :
+    MCALowerWitness (C : Set (ι → F)) ε_star :=
+  MCALowerWitness.ofLe hδ_le_one (le_trans hGKL24 hle)
+
 /-- **Bridge from ABF26 Theorem 4.12 [BCHKS25 Thm 4.6].** When the Johnson-range MCA bound
 for `RS[F, domain, k]` lands within `ε*` at radius `δ`, it certifies an `MCALowerWitness`.
 The hypothesis `hle` is the Phase-5 numeric check that the explicit BCHKS25 RHS is `≤ ε*`. -/
@@ -658,6 +683,19 @@ theorem mca_threshold_bracketed
     (wlo : MCALowerWitness (ReedSolomon.code domain k : Set (ι → F)) ε_star)
     (whi : MCAUpperWitness (ReedSolomon.code domain k : Set (ι → F)) ε_star)
     (R : GrandMCAResolution (ReedSolomon.code domain k : Set (ι → F)) ε_star) :
+    wlo.δ ≤ R.δStar ∧ R.δStar ≤ whi.δ :=
+  ⟨wlo.le_δStar R, whi.δStar_le R⟩
+
+/-- **Symbolic interval for Grand List Decoding resolutions.** For an RS code with
+`m`-fold interleaving at threshold `ε*`, a lower list witness and an upper list witness
+bracket the maximal threshold of any `GrandListResolution`: `δ_lo ≤ δ* ≤ δ_hi`.
+This is the real-threshold-resolution analogue of the faithful lattice brackets in
+`GrandChallengesLattice`. -/
+theorem list_threshold_bracketed
+    (domain : ι ↪ F) (k m : ℕ) (ε_star : ℝ≥0)
+    (wlo : ListLowerWitness (ReedSolomon.code domain k : Set (ι → F)) m ε_star)
+    (whi : ListUpperWitness (ReedSolomon.code domain k : Set (ι → F)) m ε_star)
+    (R : GrandListResolution (ReedSolomon.code domain k : Set (ι → F)) m ε_star) :
     wlo.δ ≤ R.δStar ∧ R.δStar ≤ whi.δ :=
   ⟨wlo.le_δStar R, whi.δStar_le R⟩
 

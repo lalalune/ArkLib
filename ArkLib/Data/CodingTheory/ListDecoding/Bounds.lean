@@ -1397,13 +1397,21 @@ first-moment lower-bound estimate remains the external ingredient. -/
 /-- Uniform sampling of `k × |ι|` generator matrices over a finite alphabet. -/
 noncomputable def uniformRandomLinearGeneratorMatrix
     (F : Type) [Fintype F] [Nonempty F] (k : ℕ) (ι : Type) [Fintype ι] :
-    PMF (Matrix (Fin k) ι F) :=
-  PMF.uniformOfFintype (Matrix (Fin k) ι F)
+    PMF (Matrix (Fin k) ι F) := by
+  classical
+  letI : Fintype (Matrix (Fin k) ι F) := by
+    change Fintype (Fin k → ι → F)
+    infer_instance
+  letI : Nonempty (Matrix (Fin k) ι F) := by
+    change Nonempty (Fin k → ι → F)
+    infer_instance
+  exact PMF.uniformOfFintype (Matrix (Fin k) ι F)
 
 @[simp]
 theorem support_uniformRandomLinearGeneratorMatrix
     {F : Type} [Fintype F] [Nonempty F] {k : ℕ} {ι : Type} [Fintype ι] :
     (uniformRandomLinearGeneratorMatrix F k ι).support = ⊤ := by
+  classical
   simp [uniformRandomLinearGeneratorMatrix]
 
 /-- Every generator matrix lies in the support of the uniform generator-matrix distribution. -/
@@ -1455,9 +1463,25 @@ theorem exists_randomLinearLambdaLowerEvent_of_probability_pos
       randomLinearLambdaLowerEvent (F := F) (ι := ι) q k δ ε ρ G := by
   classical
   by_contra hnone
-  push_neg at hnone
+  push Not at hnone
+  have hEventFalse :
+      (fun G : Matrix (Fin k) ι F =>
+        randomLinearLambdaLowerEvent (F := F) (ι := ι) q k δ ε ρ G) =
+        fun _ => False := by
+    funext G
+    exact propext (iff_false_intro (hnone G))
   have hzero : randomLinearLambdaLowerProbability F ι q k δ ε ρ = 0 := by
-    simp [randomLinearLambdaLowerProbability, hnone]
+    unfold randomLinearLambdaLowerProbability
+    change
+      (PMF.map
+          (fun G : Matrix (Fin k) ι F =>
+            randomLinearLambdaLowerEvent (F := F) (ι := ι) q k δ ε ρ G)
+          (uniformRandomLinearGeneratorMatrix F k ι)) True = 0
+    rw [hEventFalse]
+    change (PMF.map (Function.const (Matrix (Fin k) ι F) False)
+        (uniformRandomLinearGeneratorMatrix F k ι)) True = 0
+    rw [PMF.map_const]
+    simp [PMF.pure_apply]
   rw [hzero] at hprob
   exact (lt_irrefl (0 : ENNReal)) hprob
 
