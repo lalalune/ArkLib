@@ -275,6 +275,19 @@ def JohnsonNumericBound
   epsMCA (F := F₀) (A := F₀) ((ReedSolomon.code domain k : Set (ι₀ → F₀))) δ ≤
     ENNReal.ofReal (johnsonBoundReal domain k η δ)
 
+/-- A Hab25 numeric edge discharges the public CapacityBounds T4.12 front door.
+
+`johnsonBoundReal` is a definitional alias for
+`CodingTheory.rs_epsMCA_johnson_range_boundReal`, so the separated Hab25 numeric residual is
+exactly the inequality consumed by `rs_epsMCA_johnson_range_bchks25_of_bound`. -/
+theorem rs_epsMCA_johnson_range_bchks25_of_johnsonNumericBound
+    (domain : ι₀ ↪ F₀) (k : ℕ) (η δ : ℝ≥0) (hη : 0 < η)
+    (hδ : CodingTheory.rs_epsMCA_johnson_range_condition domain k η δ)
+    (hN : JohnsonNumericBound domain k η δ) :
+    CodingTheory.rs_epsMCA_johnson_range_bchks25 domain k η δ hη hδ :=
+  CodingTheory.rs_epsMCA_johnson_range_bchks25_of_bound domain k η δ hη hδ
+    (by simpa [JohnsonNumericBound, johnsonBoundReal] using hN)
+
 /-- The Hab25 §3 algebraic/factorisation data before the final numeric `ε_mca` edge.
 
 This packages the GS-over-`F(Z)` factor index set, the `D_Y < ℓ` bound, the Hensel-produced
@@ -625,5 +638,7 @@ theorem mcaPrizeLatticeResolved_of_residuals_and_upperWitness_adjacent
       domain wlo whi hδhi hadj')
 
 end Reduction
+
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.rs_epsMCA_johnson_range_bchks25_of_johnsonNumericBound
 
 end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
