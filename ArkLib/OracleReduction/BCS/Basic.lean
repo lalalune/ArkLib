@@ -250,6 +250,34 @@ structure BCSCompiledPhases {StmtMid WitMid : Type}
   interaction_realizes_oracle_messages : Prop
   opening_realizes_query_log : Prop
 
+/-- One verifier query to a committed oracle message, together with the commitment and response
+that the BCS opening phase must justify. -/
+structure BCSOpeningRequest (CommitmentType : pSpec.MessageIdx → Type) where
+  messageIdx : pSpec.MessageIdx
+  commitment : CommitmentType messageIdx
+  query : (Oₘ messageIdx).Query
+  response : (Oₘ messageIdx).Response query
+
+/-- The concrete query/opening schedule consumed by the BCS opening phase.
+
+For a non-adaptive oracle verifier this schedule should be obtained from
+`OracleVerifier.NonAdaptive.queryMsg` after the interaction phase has retained the corresponding
+commitments and oracle responses.  In the fully adaptive case, the future query-log API should
+produce the same shape from the realized verifier execution. -/
+abbrev BCSOpeningSchedule (CommitmentType : pSpec.MessageIdx → Type) :=
+  List (BCSOpeningRequest (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType)
+
+/-- The typed opening-log boundary for the not-yet-generic BCS compiler.
+
+The current `BCSCompiledPhases` interface still accepts an abstract opening phase.  This structure
+records the concrete schedule that such an opening phase is meant to discharge, plus the two proof
+obligations that connect the schedule back to the source oracle verifier and to retained
+opening witnesses. -/
+structure BCSOpeningLogFrontier (CommitmentType : pSpec.MessageIdx → Type) where
+  schedule : BCSOpeningSchedule (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType
+  schedule_realizes_query_log : Prop
+  schedule_has_retained_witnesses : Prop
+
 /-- Interpret a packaged BCS compiler-frontier object as the currently available transformed
 reduction.  This is definitionally the `Reduction.append` composition used by `BCSTransform`. -/
 def BCSCompiledPhases.toReduction {StmtMid WitMid : Type}
