@@ -147,9 +147,9 @@ theorem shiftSeries_eq_X_sub_C (x₀ : F) :
   | 1 => simp
   | (n + 2) => simp
 
-omit [Fact (Irreducible H)] [Fact (0 < H.natDegree)] in
 set_option synthInstance.maxHeartbeats 400000 in
 -- The `aeval`/power-series instances are expensive to synthesize in the linear recentering proof.
+omit [Fact (Irreducible H)] [Fact (0 < H.natDegree)] in
 /-- **Recentering preserves the affine-curve (linear) structure.**  Applying the off-center
 shift `aeval (shiftSeries x₀ H) ·` to a linear numerator `C a + b·X` returns the linear series
 `C (a − b·x₀) + b·X`: the `X`-coefficient `b` is unchanged and only the constant term is shifted.

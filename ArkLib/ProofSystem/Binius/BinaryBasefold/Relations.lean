@@ -130,7 +130,7 @@ def foldPrvState (i : Fin ℓ) : Fin (2 + 1) → Type := fun
       (↥L⦃≤ 2⦄[X]) × L
 
 @[reducible]
-def getFoldProverFinalOutput (i : Fin ℓ)
+noncomputable def getFoldProverFinalOutput (i : Fin ℓ)
     (finalPrvState : foldPrvState 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       i 2 (Context := Context)) :
   ((Statement (L := L) Context i.succ × ((j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc)) →
@@ -165,7 +165,9 @@ def getFoldProverFinalOutput (i : Fin ℓ)
 def foldProverComputeMsg (i : Fin ℓ)
     (witIn : Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.castSucc) :
     ↥L⦃≤ 2⦄[X] :=
-  getSumcheckRoundPoly (L := L) (ℓ := ℓ) (𝓑 := 𝓑) (i := i) witIn.H
+  -- The structured round-poly API is keyed on a `SumcheckDomain`; the Binius boolean cube
+  -- is the uniform domain over the `𝓑` embedding.
+  getSumcheckRoundPoly (L := L) ℓ (SumcheckDomain.uniform 𝓑 ℓ) (i := i) witIn.H
 
 @[reducible]
 def foldVerifierCheck (i : Fin ℓ)

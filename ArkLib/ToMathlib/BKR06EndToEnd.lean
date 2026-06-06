@@ -577,6 +577,35 @@ theorem rs_closeCodewords_ncard_transport
     have := congrFun h (e.symm x)
     simpa using this
 
+/-! ## Prime-power base-field glue
+
+The bare T3.12 statement hands us an abstract finite field `F'` with
+`#F' = 2^{i+1}` (the witness sequence).  To run the tight chain we must view `F'` as a
+genuine extension of a base field: `charP_of_card_eq_prime_pow` recovers `CharP F' 2`
+from the cardinality alone, after which `ZMod.algebra` equips `F'` with its
+`ZMod 2`-algebra structure, and `finrank_eq_of_card_eq_pow` pins the extension degree. -/
+
+/-- A finite field whose cardinality is a prime power `p^n` has characteristic `p`.
+(The characteristic is some prime `p'` with `#F' = p'^k`; unique factorization forces
+`p' = p`.) -/
+lemma charP_of_card_eq_prime_pow {F' : Type*} [Field F'] [Fintype F']
+    {p n : ℕ} (hp : p.Prime) (hcard : Fintype.card F' = p ^ n) : CharP F' p := by
+  obtain ⟨p', hchar, k, hp', hcardp⟩ := FiniteField.card' F'
+  have hpk : p' ^ (k : ℕ) = p ^ n := by rw [← hcardp, hcard]
+  have hdvd : p' ∣ p ^ n := hpk ▸ dvd_pow_self p' (by exact_mod_cast k.pos.ne')
+  have hp'p : p' = p := (Nat.prime_dvd_prime_iff_eq hp' hp).mp (hp'.dvd_of_dvd_pow hdvd)
+  exact hp'p ▸ hchar
+
+/-- If `#F' = q` and `#K' = q^n` for an `F'`-algebra `K'` (`2 ≤ q`), the extension
+degree is exactly `n`. -/
+lemma finrank_eq_of_card_eq_pow {K' F' : Type*} [Field K'] [Fintype K']
+    [Field F'] [Fintype F'] [Algebra F' K'] {q n : ℕ} (hq : 2 ≤ q)
+    (hF : Fintype.card F' = q) (hK : Fintype.card K' = q ^ n) :
+    Module.finrank F' K' = n := by
+  have h := Module.card_eq_pow_finrank (K := F') (V := K')
+  rw [hF, hK] at h
+  exact Nat.pow_right_injective hq h.symm
+
 #print axioms BKR06.bkr06_param_ineq_extension
 #print axioms BKR06.agreement_count_ge_card
 #print axioms BKR06.mem_closeCodewordsRel_of_subspace
@@ -590,5 +619,7 @@ theorem rs_closeCodewords_ncard_transport
 #print axioms BKR06.hammingDist_comp_equiv
 #print axioms BKR06.relHammingDist_comp_equiv
 #print axioms BKR06.rs_closeCodewords_ncard_transport
+#print axioms BKR06.charP_of_card_eq_prime_pow
+#print axioms BKR06.finrank_eq_of_card_eq_pow
 
 end BKR06

@@ -3068,6 +3068,45 @@ theorem ordinaryRSCapacityAtPrizeRates_iff_pointwise
   · exact ordinaryRSCapacityPointwiseAtPrizeRates_of_capacity domain τ ℓ
   · exact ordinaryRSCapacityAtPrizeRates_of_pointwise domain τ ℓ
 
+/-- Any lower bound on one prize-rate `Λ` value that exceeds the proposed ordinary-RS cap
+refutes `OrdinaryRSCapacityAtPrizeRates`.
+
+This packages the obstruction side of the LD residual: Elias/GHSZ/ST20-style lower bounds can
+be plugged into `hgt` to rule out an over-aggressive proposed predecessor lattice radius/list
+size pair. -/
+theorem not_ordinaryRSCapacityAtPrizeRates_of_Lambda_gt
+    (domain : ι ↪ F)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1))
+    (ℓ : Fin 4 → ℕ) (r : Fin 4)
+    (hgt :
+      (ℓ r : ℕ∞) <
+        Lambda
+          (ReedSolomon.code domain
+            ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+          (((((τ r).val : ℕ) : ℝ≥0) /
+            (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)) :
+    ¬ OrdinaryRSCapacityAtPrizeRates domain τ ℓ := by
+  intro hCapacity
+  exact (not_le_of_gt hgt) (hCapacity r)
+
+/-- Pointwise finite-list version of
+`not_ordinaryRSCapacityAtPrizeRates_of_Lambda_gt`. -/
+theorem not_ordinaryRSCapacityPointwiseAtPrizeRates_of_Lambda_gt
+    (domain : ι ↪ F)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1))
+    (ℓ : Fin 4 → ℕ) (r : Fin 4)
+    (hgt :
+      (ℓ r : ℕ∞) <
+        Lambda
+          (ReedSolomon.code domain
+            ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+          (((((τ r).val : ℕ) : ℝ≥0) /
+            (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)) :
+    ¬ OrdinaryRSCapacityPointwiseAtPrizeRates domain τ ℓ := by
+  intro hPointwise
+  exact not_ordinaryRSCapacityAtPrizeRates_of_Lambda_gt domain τ ℓ r hgt
+    (ordinaryRSCapacityAtPrizeRates_of_pointwise domain τ ℓ hPointwise)
+
 /-- Per-rate adjacent base-code `Λ` caps and Elias certificates resolve the faithful
 four-rate list-decoding lattice prize directly.
 
