@@ -324,8 +324,7 @@ lemma pair_linearForm_collision_le {k : ℕ}
     · have := linearForm_collision_prob (m1 - m1') hd
       simpa using le_of_eq this
 
-omit [DecidableEq F] in
-/-- **Lemma 6.12 of [ABF26]** (list-decoding lower bound on the simplified IOR).
+/-! **Lemma 6.12 of [ABF26]** (list-decoding lower bound on the simplified IOR).
 
 Coding-theory form: if `|F| > binomial(|Λ(C^{≡2}, δ)|, 2)`, then there
 exist witnesses `(v, μ_1, μ_2, f_1, f_2)` with `(f_1, f_2)` lying outside

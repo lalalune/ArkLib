@@ -387,6 +387,30 @@ theorem epsMCAgs_restricted_le_epsCA
   · rw [if_neg hjp, if_neg hjp]
     exact mcaEventGSrow_probability_le_line_close (L u) C δ u
 
+open Classical in
+/-- **Assembly lemma: a uniform per-stack mass bound lifts to the global GS-exposed error.**
+
+`epsMCAgs C δ L` is, by definition, the supremum over stacks `u` of the per-stack bad-`γ`
+probability `Pr_γ[mcaEventGSrow (L u) C δ (u 0) (u 1) γ]`. Hence any bound `B` that holds for
+*every* stack's bad-`γ` probability bounds `epsMCAgs` itself (`iSup_le`).
+
+This is the **mechanical half** of the GS-exposed prize reduction
+(`epsMCAgs_prizeBound_conjecture_of_stack_mass`): it isolates the genuine open content as the
+*per-stack* GS-row mass bound `Pr_γ[mcaEventGSrow (L u) …] ≤ B`. That per-stack quantity is
+exactly what the per-`γ` GS root count of this file controls: by `gsList_bad_gamma_bound`, the
+bad `γ` (each pinned by a *distinct* list codeword at a `u₁`-active coordinate) number
+`≤ |L u| ≤ gsListBound ℓ`, so over the uniform `γ` the mass is `≤ |L u| / q`. The remaining gap
+to a fully proven per-stack bound is precisely (i) the common-`u₁`-active-coordinate bridge that
+feeds `gsList_bad_gamma_bound`'s fixed-`x` hypothesis and (ii) the GS list-size estimate
+`|L u| ≤ poly(2^m, 1/ρ)` at the prize rates (the beyond-UDR Johnson/GS list-decoding bound). -/
+theorem epsMCAgs_le_of_forall_stack_mass
+    (C : Set (ι → A)) (δ : ℝ≥0) (L : WordStack A (Fin 2) ι → Finset (ι → A)) (B : ENNReal)
+    (h : ∀ u : WordStack A (Fin 2) ι,
+      Pr_{let γ ← $ᵖ F}[mcaEventGSrow (L u) C δ (u 0) (u 1) γ] ≤ B) :
+    epsMCAgs (F := F) C δ L ≤ B := by
+  unfold epsMCAgs
+  exact iSup_le h
+
 end
 
 /-! ## Step 3 — the per-`γ` counting the double-coverage refutation said must exist
@@ -531,11 +555,19 @@ to the Johnson/capacity bound `1 - ρ - η`), which is exactly the external priz
 
 This is a named `Prop`, not a theorem: carrying it as a theorem with `sorry` would launder the
 open prize into `sorryAx`. Downstream formal developments should take this proposition as an
-explicit hypothesis until the beyond-UDR GS mass bound is actually proved. -/
+explicit hypothesis until the beyond-UDR GS mass bound is actually proved.
+
+**Reduction.** `epsMCAgs_prizeBound_conjecture_of_stack_mass` (below) discharges this conjecture
+from a strictly smaller, precisely named ingredient — the *per-stack* GS-row mass bound
+`Pr_γ[mcaEventGSrow (L u) …] ≤ epsMCAgsPrizeBound …`, uniform over stacks `u`. That per-stack
+bound is exactly the quantity the proven per-`γ` GS root count `gsList_bad_gamma_bound` feeds
+(distinct list codewords pin distinct bad `γ`), so the remaining open content is pinned to (i) the
+common-`u₁`-active-coordinate bridge and (ii) the prize-rate GS list-size estimate
+`|L u| ≤ poly(2^m, 1/ρ)`, rather than the monolithic `epsMCAgs ≤ poly/q`. -/
 def epsMCAgs_prizeBound_conjecture
-    (domain : ι ↪ F) (j : Fin 4) (m : ℕ) (η δ : ℝ≥0) (hη : 0 < η)
+    (domain : ι ↪ F) (j : Fin 4) (m : ℕ) (η δ : ℝ≥0) (_hη : 0 < η)
     (L : WordStack F (Fin 2) ι → Finset (ι → F))
-    (hδ : (δ : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η : ℝ)) : Prop :=
+    (_hδ : (δ : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η : ℝ)) : Prop :=
     ∃ c₁ c₂ c₃ : ℝ,
       epsMCAgs (F := F)
         ((ReedSolomon.code (domain := domain)
@@ -543,6 +575,37 @@ def epsMCAgs_prizeBound_conjecture
         δ L
       ≤ ENNReal.ofReal
           (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j) η c₁ c₂ c₃)
+
+/-- **Reduction of GS-exposed Grand Challenge 1 to the per-stack GS-row mass bound.**
+
+The GS-exposed prize bound `epsMCAgs_prizeBound_conjecture` follows from the *per-stack* GS-row
+mass bound: if, for some universal constants `c₁ c₂ c₃` and **every** stack `u`, the bad-`γ`
+probability `Pr_γ[mcaEventGSrow (L u) C δ (u 0) (u 1) γ]` is at most
+`epsMCAgsPrizeBound q m ρ η c₁ c₂ c₃`, then the conjecture holds. The proof is the mechanical
+`iSup` assembly (`epsMCAgs_le_of_forall_stack_mass`): `epsMCAgs` is the supremum of those
+per-stack probabilities.
+
+This is the precise, non-vacuous narrowing requested by the issue: it reduces the prize to the
+per-stack/per-`γ` GS root-mass content — the very thing `gsList_bad_gamma_bound` controls (bad
+`γ` are pinned by distinct list codewords, hence number `≤ |L u|`) — leaving open exactly the
+common-active-coordinate bridge and the prize-rate GS list-size estimate. Note the per-stack
+hypothesis is **not** the (vacuous) bare line-close mass bound: jointly-close stacks whose
+difference row `u₁` is itself list-close make `mcaEventGSrow` false for every `γ` (its no-pair
+clause fails), so the per-stack mass there is `0`, not `1`. -/
+theorem epsMCAgs_prizeBound_conjecture_of_stack_mass
+    (domain : ι ↪ F) (j : Fin 4) (m : ℕ) (η δ : ℝ≥0) (_hη : 0 < η)
+    (L : WordStack F (Fin 2) ι → Finset (ι → F))
+    (_hδ : (δ : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η : ℝ))
+    (c₁ c₂ c₃ : ℝ)
+    (h : ∀ u : WordStack F (Fin 2) ι,
+      Pr_{let γ ← $ᵖ F}[mcaEventGSrow (L u)
+        ((ReedSolomon.code (domain := domain)
+          ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)))
+        δ (u 0) (u 1) γ]
+      ≤ ENNReal.ofReal
+          (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j) η c₁ c₂ c₃)) :
+    epsMCAgs_prizeBound_conjecture (F := F) domain j m η δ _hη L _hδ :=
+  ⟨c₁, c₂, c₃, epsMCAgs_le_of_forall_stack_mass _ _ _ _ h⟩
 
 end Prize
 

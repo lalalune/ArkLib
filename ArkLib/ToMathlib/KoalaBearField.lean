@@ -55,7 +55,7 @@ noncomputable instance : Fintype Sextic := Fintype.ofFinite _
 noncomputable instance : DecidableEq Sextic := Classical.decEq _
 
 /-- The genuine KoalaBear-sextic field has the standard finite-field structure. -/
-example : Field Sextic := inferInstance
+noncomputable instance : _root_.Field Sextic := inferInstance
 
 /-- The KoalaBear-sextic field has exactly `p^6` elements (`p = 2^31 - 2^24 + 1`),
 i.e. `(2^31 - 2^24 + 1)^6 ≈ 2^186`. This is the `|F|` of every leaderboard
