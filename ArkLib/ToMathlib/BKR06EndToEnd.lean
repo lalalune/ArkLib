@@ -526,18 +526,7 @@ lemma hammingDist_comp_equiv {ι κ F' : Type*} [Fintype ι] [Fintype κ] [Decid
     hammingDist (w ∘ e) (c ∘ e) = hammingDist w c := by
   classical
   simp only [hammingDist]
-  apply Finset.card_nbij' (fun i => e i) (fun x => e.symm x)
-  · intro i hi
-    simp only [Finset.mem_filter, Finset.mem_univ, true_and, Function.comp_apply] at hi ⊢
-    exact hi
-  · intro x hx
-    simp only [Finset.mem_filter, Finset.mem_univ, true_and, Function.comp_apply,
-      Equiv.apply_symm_apply] at hx ⊢
-    exact hx
-  · intro i _
-    simp
-  · intro x _
-    simp
+  exact Finset.card_equiv e (by simp)
 
 /-- Index relabeling preserves the relative Hamming distance (the index cardinalities
 agree via the equivalence). -/
@@ -571,9 +560,18 @@ theorem rs_closeCodewords_ncard_transport
         Function.Embedding.refl_apply] at h2
       simpa [ReedSolomon.evalOnPoints, LinearMap.coe_mk, AddHom.coe_mk,
         Equiv.coe_toEmbedding] using h2
-    · -- ball membership transports through the distance equality
+    · -- ball membership transports through the distance equality.  The `δᵣ` terms in
+      -- the goal carry `relHammingBall`'s baked-in instances, which differ from the
+      -- ambient ones (subsingleton mismatch) — bridge each side with `convert`/`congr!`.
       simp only [ListDecodable.relHammingBall, Set.mem_setOf_eq] at hball ⊢
-      rwa [relHammingDist_comp_equiv e w c]
+      have hd : Code.relHammingDist (w ∘ ⇑e) (c ∘ ⇑e) = Code.relHammingDist w c :=
+        relHammingDist_comp_equiv e w c
+      have hgoal : ((Code.relHammingDist (w ∘ ⇑e) (c ∘ ⇑e) : ℚ≥0) : ℝ) ≤ δ := by
+        rw [hd]
+        convert hball using 2
+        congr!
+      convert hgoal using 2
+      congr!
   · intro c₁ _ c₂ _ h
     funext x
     have := congrFun h (e.symm x)
