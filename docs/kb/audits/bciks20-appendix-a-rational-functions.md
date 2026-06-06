@@ -8,6 +8,8 @@ Reed-Solomon proximity-gap formalization.
 
 The relevant Lean surface is
 [`ArkLib/Data/Polynomial/RationalFunctions.lean`](../../../ArkLib/Data/Polynomial/RationalFunctions.lean).
+The current Hensel-lift numerator work is in
+[`ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean`](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/HenselNumerator.lean).
 Downstream users include the BCIKS20 list-decoding agreement files under
 [`ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding/`](../../../ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ListDecoding).
 
@@ -34,11 +36,22 @@ Downstream users include the BCIKS20 list-decoding agreement files under
 | Claim A.2 bound for `ξ` | present-but-incomplete | `ClaimA2.weight_ξ_bound` | Depends on stronger `Λ`-weight calculus. |
 | Claim A.2 regular numerator elements `β` | present-but-incomplete | `ClaimA2.β_regular` | Depends on the Hensel-lift and weight-bound layer. |
 | Hensel-lift coefficients `α`, `γ` | present | `ClaimA2.α`, `ClaimA2.α'`, `ClaimA2.γ`, `ClaimA2.γ'` | The definitions exist and are consumed by the list-decoding agreement file. |
+| Genuine Hensel numerator recursion | present | `BCIKS20.HenselNumerator.βHensel`, `βHensel_zero`, `βHensel_succ` | The paper's `(A.1)` recursion is now represented directly, separate from the older `ClaimA2.β` placeholder path. |
+| Hensel numerator weight bound `(P1)` | present-but-incomplete | `βHenselSuccTermWeightResidual`, `βHenselStructuredWeightInvariant`, `βHenselSuccTermStructuredWeightResidual`, `βHenselSuccTermWeightResidual_of_structured` | The old loose-IH per-term wall is now narrowed to the structured `α_t`/`β_t` weight-invariant route. The structured product/telescoping arithmetic is present; the structured invariant itself remains tied to the `(P2)` root identity. |
+| Hensel lift identity `(P2)` / Faà-di-Bruno root bridge | present-but-incomplete | `coeff_succ_eval_βHenselAssembled`, `βHensel_lift_identity`, `βHenselAssembled_eq_gammaGenuine` | Base case and uniqueness reduction are in-tree. The remaining bridge is the order-`≥1` Faà-di-Bruno/root-vanishing statement for the assembled numerator series. |
 
 ## Near-Term Work
 
-The next useful proof work is not to restate all of Appendix A at once. It is to add small reusable
-facts around regular elements, canonical representatives, and `Λ`-weights:
+The next useful proof work is not to restate all of Appendix A at once. It is to close the two
+named Hensel tracks without reintroducing broad placeholders:
+
+- prove the structured `α_t`/`β_t` weight invariant feeding
+  `βHenselSuccTermStructuredWeightResidual`;
+- prove the Faà-di-Bruno/root bridge behind `coeff_succ_eval_βHenselAssembled`;
+- keep the loose-IH wall documented as intentionally insufficient, not as a theorem search target.
+
+The supporting reusable work remains useful around regular elements, canonical representatives, and
+`Λ`-weights:
 
 - denominator-clearing lemmas for evaluating polynomials at `functionFieldT / W`;
 - weight bounds for constants and monomials;
