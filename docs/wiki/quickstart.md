@@ -105,6 +105,15 @@ python3 -m pip install leanblueprint
   runs the timing-enabled main build on PRs and pushes to `main`, measures a
   clean build, a warm rebuild, and the `./scripts/validate.sh` path, then
   uploads timing artifacts and posts a comparison report on same-repo PRs.
+  It also enforces the issue #47 verification gates: a fast precheck rejecting
+  `native_decide`/`bv_decide`/custom `axiom` declarations in live source
+  (`scripts/forbidden_tokens.py`), a comment-stripped sorry census requiring
+  zero live holes (`scripts/sorry_census.py --fail-on-holes`), and a
+  `#print axioms` sweep over the pinned flagship list
+  (`scripts/axiom_audit.py` reading `scripts/flagship_axioms.txt`) that must
+  stay within `propext`, `Classical.choice`, `Quot.sound`. Renaming or
+  deleting a pinned flagship theorem without updating the list is a hard CI
+  failure.
 - [`../../.github/workflows/check-imports.yml`](../../.github/workflows/check-imports.yml)
   checks that `ArkLib.lean` matches the tracked source tree.
 - [`../../.github/workflows/docs-integrity.yml`](../../.github/workflows/docs-integrity.yml)
