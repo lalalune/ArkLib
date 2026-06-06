@@ -165,7 +165,6 @@ open scoped BigOperators ENNReal ProbabilityTheory LinearCode
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
-omit [DecidableEq ι] in
 /-- **The §5 keystone, β-identification-residual-free (L13 milestone).**
 
 The BCIKS20 keystone goal `δ_ε_correlatedAgreementCurves` holds in the strict square-root Johnson

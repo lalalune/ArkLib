@@ -458,6 +458,7 @@ import ArkLib.ProofSystem.ZkVMBoundary
 import ArkLib.ToCompPoly.Univariate.Basic
 import ArkLib.ToCompPoly.Univariate.Lagrange
 import ArkLib.ToMathlib.AppendHelpers
+import ArkLib.ToMathlib.BKR06BareT312
 import ArkLib.ToMathlib.BKR06Close
 import ArkLib.ToMathlib.BKR06EndToEnd
 import ArkLib.ToMathlib.BKR06FiberCount

@@ -543,3 +543,8 @@ end ProximityGap
 #print axioms ProximityGap.exists_good_x₀_X_shape
 #print axioms ProximityGap.Claim57Residuals.ofInTree
 #print axioms ProximityGap.Claim57Residuals.ofInTree2
+
+-- TEMP AUDIT
+#print axioms ProximityGap.claim57_hfactor_irreducible_of_pg_Rset
+#print axioms ProximityGap.exists_good_x₀_evalX_discr_y_ne
+#print axioms ProximityGap.Claim57Residuals.ofInTree

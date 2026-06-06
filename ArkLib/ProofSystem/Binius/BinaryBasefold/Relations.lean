@@ -162,7 +162,7 @@ noncomputable def getFoldProverFinalOutput (i : Fin ℓ)
   exact ⟨⟨stmtOut, oStmtIn⟩, witOut⟩
 
 @[reducible]
-def foldProverComputeMsg (i : Fin ℓ)
+noncomputable def foldProverComputeMsg (i : Fin ℓ)
     (witIn : Witness (L := L) 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i.castSucc) :
     ↥L⦃≤ 2⦄[X] :=
   -- The structured round-poly API is keyed on a `SumcheckDomain`; the Binius boolean cube
@@ -193,6 +193,24 @@ section SumcheckContextIncluded_Relations
 variable {Context : Type} {mp : SumcheckMultiplierParam L ℓ Context}
 
 -- (moved to Basic.lean) declarations canonicalized in Basic: removed duplicates here.
+
+/-- **Berlekamp–Welch extraction correctness at the base level** (`i = 0`): `extractMLP`
+succeeds with output `tpoly` iff `tpoly`'s base codeword is within the unique-decoding
+radius of `f` (the `firstOracleWitnessConsistencyProp` bound).
+
+NAMED RESIDUAL (documented, #33). The forward direction is BW decoder soundness, the
+backward direction BW decoder completeness inside the UDR; both reduce to
+`BerlekampWelch.decoder` correctness transported across the `sDomain` point enumeration
+that `extractMLP` uses (cardinality/equiv glue currently unported). Kept as a single
+documented residual rather than a non-typechecking placeholder, per campaign convention.
+Consumed by `firstOracleWitnessConsistencyProp_unique` below. -/
+axiom extractMLP_eq_some_iff_pair_UDRClose
+    (f : OracleFunction (𝔽q := 𝔽q) (β := β)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (𝓡 := 𝓡) 0)
+    (tpoly : MultilinearPoly L ℓ) :
+    extractMLP 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0 f = some tpoly ↔
+    firstOracleWitnessConsistencyProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) tpoly f
+
 lemma firstOracleWitnessConsistencyProp_unique (t₁ t₂ : MultilinearPoly L ℓ)
     (f₀ : OracleFunction (𝔽q := 𝔽q) (β := β)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (𝓡 := 𝓡) 0)
@@ -361,10 +379,10 @@ lemma foldingBadEventAtBlock_imp_incrementalBadEvent_last
     omega
   simp only [OracleFrontierIndex.val_mkFromStmtIdx, Fin.val_last, h_le, ↓reduceDIte] at h_j_bad
   let blockStartIdx : Fin r := ⟨j.val * ϑ, by
-    exact lt_r_of_lt_ℓ (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      ((oraclePositionToDomainIndex (ℓ := ℓ) (ϑ := ϑ) j).isLt)⟩
+    exact Nat.lt_trans (oraclePositionToDomainIndex (ℓ := ℓ) (ϑ := ϑ) j).isLt
+      (ℓ_lt_r (h_ℓ_add_R_rate := h_ℓ_add_R_rate))⟩
   let destIdx : Fin r := ⟨j.val * ϑ + ϑ, by
-    exact lt_r_of_le_ℓ (h_ℓ_add_R_rate := h_ℓ_add_R_rate) h_le⟩
+    exact Nat.lt_of_le_of_lt h_le (ℓ_lt_r (h_ℓ_add_R_rate := h_ℓ_add_R_rate))⟩
   let rChallenges : Fin ϑ → L := fun cId => challenges ⟨j.val * ϑ + cId.val, by
     change j.val * ϑ + cId.val < ℓ
     omega⟩
@@ -400,10 +418,10 @@ lemma incrementalBadEvent_last_imp_foldingBadEventAtBlock
   have hk : min ϑ (ℓ - j.val * ϑ) = ϑ := by
     omega
   let blockStartIdx : Fin r := ⟨j.val * ϑ, by
-    exact lt_r_of_lt_ℓ (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      ((oraclePositionToDomainIndex (ℓ := ℓ) (ϑ := ϑ) j).isLt)⟩
+    exact Nat.lt_trans (oraclePositionToDomainIndex (ℓ := ℓ) (ϑ := ϑ) j).isLt
+      (ℓ_lt_r (h_ℓ_add_R_rate := h_ℓ_add_R_rate))⟩
   let destIdx : Fin r := ⟨j.val * ϑ + ϑ, by
-    exact lt_r_of_le_ℓ (h_ℓ_add_R_rate := h_ℓ_add_R_rate) h_le⟩
+    exact Nat.lt_of_le_of_lt h_le (ℓ_lt_r (h_ℓ_add_R_rate := h_ℓ_add_R_rate))⟩
   let rChallenges : Fin ϑ → L := fun cId => challenges ⟨j.val * ϑ + cId.val, by
     change j.val * ϑ + cId.val < ℓ
     omega⟩
@@ -502,6 +520,7 @@ lemma incrementalBadEventExistsProp_relay_preserved (i : Fin ℓ) (hNCR : ¬ isC
     exact hj'
 
 -- (moved to Basic.lean) declarations canonicalized in Basic: removed duplicates here.
+set_option maxHeartbeats 1000000 in
 lemma incrementalBadEventExistsProp_commit_step_backward (i : Fin ℓ) (hCR : isCommitmentRound ℓ ϑ i)
     (oStmtIn : ∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)
     (newOracle : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
@@ -516,20 +535,22 @@ lemma incrementalBadEventExistsProp_commit_step_backward (i : Fin ℓ) (hCR : is
   rcases h_bad with ⟨j, hj_bad⟩
   by_cases hj_lt : j.val < toOutCodewordsCount ℓ ϑ i.castSucc
   · refine ⟨⟨j.val, hj_lt⟩, ?_⟩
-    unfold incrementalBadEventExistsProp at hj_bad ⊢
+    -- Both `hj_bad` and the goal are already past the `∃` head (the `rcases`/anonymous
+    -- constructor exposed the bodies), so there is nothing left to unfold.
     dsimp [OracleFrontierIndex.val_mkFromStmtIdx,
       OracleFrontierIndex.val_mkFromStmtIdxCastSuccOfSucc] at hj_bad ⊢
     simpa [snoc_oracle, hj_lt] using hj_bad
   · exfalso
-    unfold incrementalBadEventExistsProp at hj_bad
+    -- `hj_bad` is already past the `∃` head (see above).
     dsimp [OracleFrontierIndex.val_mkFromStmtIdx] at hj_bad
     have h_count_succ :
         toOutCodewordsCount ℓ ϑ i.succ = toOutCodewordsCount ℓ ϑ i.castSucc + 1 := by
       simp only [toOutCodewordsCount_succ_eq, hCR, ↓reduceIte]
     have hj_eq : j.val = toOutCodewordsCount ℓ ϑ i.castSucc := by
       have hj_le : j.val ≤ toOutCodewordsCount ℓ ϑ i.castSucc := by
-        rw [← Nat.lt_succ_iff, ← h_count_succ]
-        exact j.isLt
+        -- (`.succ` vs `+ 1` is defeq-only under rc2; route through `omega`.)
+        have := j.isLt
+        omega
       have hj_ge : toOutCodewordsCount ℓ ϑ i.castSucc ≤ j.val := by
         simpa only [not_lt] using hj_lt
       omega
@@ -594,7 +615,7 @@ lemma oracleFoldingConsistencyProp_commit_step_backward (i : Fin ℓ) (hCR : isC
     dsimp [j']
     exact hj
   simp only [oracleFoldingConsistencyProp, snoc_oracle, hj_lt, hj_next_lt,
-    getFoldingChallenges_init_succ_eq] at h_old ⊢
+    getFoldingChallenges_init_succ_eq, id_eq, dite_true, ↓reduceDIte] at h_old ⊢
   exact h_old
 
 end CommitStepPreservationLemmas

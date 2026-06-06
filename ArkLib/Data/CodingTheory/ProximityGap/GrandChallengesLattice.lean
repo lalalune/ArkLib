@@ -3107,6 +3107,64 @@ theorem not_ordinaryRSCapacityPointwiseAtPrizeRates_of_Lambda_gt
   exact not_ordinaryRSCapacityAtPrizeRates_of_Lambda_gt domain τ ℓ r hgt
     (ordinaryRSCapacityAtPrizeRates_of_pointwise domain τ ℓ hPointwise)
 
+/-- `ENNReal`-coercion form of the ordinary-RS capacity obstruction.  This is the natural
+shape of Elias/GHSZ lower bounds in the list-decoding files. -/
+theorem not_ordinaryRSCapacityAtPrizeRates_of_Lambda_toENNReal_gt
+    (domain : ι ↪ F)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1))
+    (ℓ : Fin 4 → ℕ) (r : Fin 4)
+    (hgt :
+      (ℓ r : ENNReal) <
+        (Lambda
+          (ReedSolomon.code domain
+            ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+          (((((τ r).val : ℕ) : ℝ≥0) /
+            (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) : ENNReal)) :
+    ¬ OrdinaryRSCapacityAtPrizeRates domain τ ℓ := by
+  intro hCapacity
+  have hle :
+      (Lambda
+          (ReedSolomon.code domain
+            ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+          (((((τ r).val : ℕ) : ℝ≥0) /
+            (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) : ENNReal) ≤
+        (ℓ r : ENNReal) := by
+    exact_mod_cast hCapacity r
+  exact (not_le_of_gt hgt) hle
+
+/-- Elias-volume lower bounds refute any proposed ordinary-RS cap that is smaller than the
+Elias term at the proposed predecessor lattice radius. -/
+theorem not_ordinaryRSCapacityAtPrizeRates_of_elias_volume_gt
+    (domain : ι ↪ F)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1))
+    (ℓ : Fin 4 → ℕ) (r : Fin 4)
+    (hδpos :
+      0 < (((((τ r).val : ℕ) : ℝ≥0) /
+        (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ))
+    (hδlt :
+      (((((τ r).val : ℕ) : ℝ≥0) /
+        (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) < 1)
+    (hvol :
+      (ℓ r : ENNReal) <
+        ENNReal.ofReal
+          ((CodingTheory.hammingBallVolume (Fintype.card F)
+              (((((τ r).val : ℕ) : ℝ≥0) /
+                (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)
+              (Fintype.card ι) : ℝ)
+            / (Fintype.card F : ℝ) ^
+                ((Fintype.card ι : ℝ) -
+                  Module.finrank F
+                    (ReedSolomon.code domain
+                      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊)))) :
+    ¬ OrdinaryRSCapacityAtPrizeRates domain τ ℓ := by
+  let C : Submodule F (ι → F) :=
+    ReedSolomon.code domain ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊
+  let δ : ℝ := (((((τ r).val : ℕ) : ℝ≥0) /
+    (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)
+  have helias := CodingTheory.linear_lambda_ge_elias_volume_eli57 C δ hδpos hδlt
+  refine not_ordinaryRSCapacityAtPrizeRates_of_Lambda_toENNReal_gt domain τ ℓ r ?_
+  exact lt_of_lt_of_le hvol (by simpa [C, δ] using helias)
+
 /-- Per-rate adjacent base-code `Λ` caps and Elias certificates resolve the faithful
 four-rate list-decoding lattice prize directly.
 
