@@ -616,8 +616,11 @@ def sumcheckFoldKnowledgeError := fun j : (pSpecSumcheckFold 𝔽q β (ϑ:=ϑ)
           have hlast : (Fin.vsum fun _x : Fin ϑ => 2) = ϑ * 2 := by
             simp only [Fin.vsum_eq_univ_sum, Finset.sum_const, Finset.card_univ,
               Fintype.card_fin, smul_eq_mul]
-          rw [hblocks, hlast] at hlt
-          unfold NBlockMessages at hlt ⊢
+          have hlt' :
+              j.1.val < (ℓ / ϑ - 1) * ((ϑ - 1) * 2 + 3) + ϑ * 2 := by
+            simpa [hblocks, hlast] using hlt
+          have hdiv_eq : (ℓ / ϑ) * ϑ = ℓ := Nat.div_mul_cancel hdiv.out
+          unfold NBlockMessages at hlt' ⊢
           omega⟩ ⟨1, rfl⟩
     else 0 -- this case never happens
 
