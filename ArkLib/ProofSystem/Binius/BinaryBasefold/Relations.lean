@@ -30,28 +30,30 @@ variable [hdiv : Fact (ϑ ∣ ℓ)]
 
 section SecurityRelations
 -- (moved to Basic.lean) declarations canonicalized in Basic: removed duplicates here.
--- NOTE: `getMidCodewords` (in `Basic.lean`) folds `from level 0` over `steps := i` using the
--- (current, `Fin (ℓ+1)`-indexed) `iterated_fold`. This lemma is stated and proved against that
--- same `iterated_fold` signature (one extra fold step, `steps := ⟨1, _⟩`) so that it stays in
--- sync with `Basic.getMidCodewords`. (The previously committed statement used a `Fin r` /
--- `destIdx` `iterated_fold` signature that does not exist in the current module split, so it
--- did not type-check; this restores the in-tree signature.)
+-- NOTE: `getMidCodewords` (in `Basic.lean`) folds from level 0 over `steps := i.val` using
+-- the new-API `iterated_fold` (`steps : ℕ`, `{destIdx : Fin r}`, `h_destIdx`/`h_destIdx_le`).
+-- This lemma is stated against that same new-API signature (one extra fold step,
+-- `steps := 1`, `destIdx := ⟨i.val + 1, _⟩`) so that it stays in sync with
+-- `Basic.getMidCodewords` (issue #37: the legacy `Fin (ℓ+1)`-stepped signature is now
+-- `iterated_fold_steps`, Prelude-internal only). While `iterated_fold` carries the #32
+-- transitional stub body both sides reduce definitionally; once the cast-based body lands,
+-- restore the `Fin.dfoldl_succ_last` peel (via `iterated_fold_succ_last_gen`) here.
 lemma getMidCodewords_succ (t : L⦃≤ 1⦄[X Fin ℓ]) (i : Fin ℓ)
     (challenges : Fin i.castSucc → L) (r_i' : L) :
   (getMidCodewords 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
     (i := i.succ) (t := t) (challenges := Fin.snoc challenges r_i')) =
   (iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
     (i := ⟨i, by omega⟩)
-    (steps := ⟨1, by omega⟩)
-    (h_i_add_steps := by
-      simp only; have h𝓡 : 0 < 𝓡 := Nat.pos_of_ne_zero (NeZero.ne 𝓡); omega)
+    (steps := 1)
+    (destIdx := ⟨i.val + 1, by omega⟩)
+    (h_destIdx := rfl)
+    (h_destIdx_le := by simp only [Fin.mk_le_mk]; omega)
     (f := getMidCodewords 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (i := i.castSucc) (t := t) (challenges := challenges))
     (r_challenges := fun _ => r_i'))
   := by
   ext y
   unfold getMidCodewords iterated_fold
-  rw [Fin.dfoldl_succ_last]
   rfl
 
 section FoldStepLogic
