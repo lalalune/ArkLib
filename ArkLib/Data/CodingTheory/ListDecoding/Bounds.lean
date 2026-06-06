@@ -184,7 +184,7 @@ The theorem's quantitative choices for `listBound` and `failure` are intentional
 parameters here: this definition records the faithful probability space and RS-family target,
 while the AGL24 first-moment/probabilistic proof remains external. -/
 noncomputable def random_rs_list_decoding
-    (F : Type*) [Field F] [Fintype F] [DecidableEq F]
+    (F : Type) [Field F] [Fintype F] [DecidableEq F]
     (n k listBound : ℕ) (η : ℝ) (failure : ENNReal)
     (_hn_pos : 0 < n) (hn : n ≤ Fintype.card F) : Prop := by
   classical
