@@ -60,6 +60,8 @@ rg -n --glob '*.lean' 'opaque\s+\w+|placeholder|stub|TODO|FIXME|named residual|e
 | WHIR Vector IOPP construction, perfect completeness, and RBR soundness assembly | #113 |
 | External list-decoding, Johnson, interleaving, and subspace-design APIs | #21 |
 | CS25/BCHKS/BGKS bridges and deep-hole probability inputs | #22 |
+| BCHKS25 field-sized close-RS list `BadLineWitness` construction | #103 |
+| BGKS20 char-2 `NearCertainBadLine` separation witness | #104 |
 | Historical proximity-prize docs and inventories | #23 |
 | FRI/STIR soundness accounting and proximity-gap residuals | #24 |
 | Composed FRI folding reduction perfect completeness | #117 |
@@ -71,6 +73,7 @@ rg -n --glob '*.lean' 'opaque\s+\w+|placeholder|stub|TODO|FIXME|named residual|e
 | RingSwitching KState weakening | #29 |
 | KoalaBear numeric anchors | #30 |
 | L6.12 ToyStep4/SoundnessBounds integration | #31 |
+| Leaderboard Fenzi-Sanso KoalaBear winning-set cardinality residual | #106 |
 | Binius new-API Prelude and Basic call sites | #32 |
 | Binius step residuals after Prelude port | #33 |
 | Toolchain and Mathlib rebuild stabilization | #34 |
@@ -86,8 +89,15 @@ rg -n --glob '*.lean' 'opaque\s+\w+|placeholder|stub|TODO|FIXME|named residual|e
 | Multiplicative rigidity: product-coset + in-band cluster bounds | #51 |
 | MCAGS beyond-UDR GS-list mass bound | #52 |
 | ABF26 §3 list-decoding theorem family | #54 |
+| ABF26 T2.18 UM subspace-design half | #92 |
+| CZ25 guarded dimension-count residual `CZ25SpanBound'` | #93 |
+| CZ25 folded-RS capacity from T3.4/T2.18 inputs | #94 |
+| AGL24 random Reed-Solomon near-capacity list decoding | #95 |
+| AGL23/BDG24 counting-extraction barrier residual | #96 |
 | Grand challenges MCA-attainment counterpart / stale reference | #55 |
 | Grand LD four-rate numeric Johnson/Elias certificates | #56 |
+| Grand LD OrdinaryRSCapacityAtPrizeRates Lambda-Elias frontier | #101 |
+| Grand LD four-rate Elias-volume adjacent certificates | #102 |
 | Grand MCA faithful lattice-threshold brackets at four rates | #57 |
 | Grand challenges singular/plural lattice encoding bridges | #58 |
 | Proximity Prize apex four-rate `mcaPrize` / `listDecodingPrize` deliverable | #120 |
@@ -122,6 +132,8 @@ rg -n --glob '*.lean' 'opaque\s+\w+|placeholder|stub|TODO|FIXME|named residual|e
 | GG25 T4.13/T4.14 subspace-design and folded-RS MCA up to capacity | #86 |
 | BCHKS25 T4.9.2/R4.10 RS `epsCA` item-2 and small-loss corollary | #87 |
 | AHIV17/AHIV22 T4.8 row-span to affine-line specialization | #88 |
+| GG25 random-RS MCA over `SizeSubset` domains | #99 |
+| BCGM25/BSGM25 polynomial-generator MCA preservation in the native API | #100 |
 
 Closed second-pass issues (#37, #40-#43, #46-#47, #53) are recorded in the refreshed
 proximity-prize index; see "Related indexes" below.
