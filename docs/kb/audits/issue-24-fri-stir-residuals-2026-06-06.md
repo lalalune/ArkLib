@@ -19,6 +19,7 @@ The stale STIR/proximity branches are not merge candidates:
 - `origin/Katy/ProximityRefactor`
 - `origin/Katy/ProximityWIP`
 - `origin/Katy/mathlibDefs`
+- `origin/quangvdao/Julek/ElijahVlasov/fri-implementation-rebase`
 
 Raw branch scans show live `sorry` bodies and/or `opaque` placeholders across the old
 coding-theory, BCIKS20, polynomial, STIR folding, out-of-domain sampling, and combine files.
@@ -35,6 +36,13 @@ under the newer `ArkLib/ProofSystem/Stir/**` layout:
 The old `Data/CodingTheory/Folding/Stir.lean` and `Operations/Combine.lean` proof sketches should
 be treated as historical references only. Current work should target the live `ProofSystem/Stir`
 files and the residuals below.
+
+The old FRI implementation rebase is also reference-only. Its FRI files were useful during the
+initial coset-domain / even-odd / single-round protocol design, but current `main` now has the
+newer `ArkLib/ProofSystem/Fri/**`, `ArkLib/ProofSystem/BatchedFri/**`, and
+`ArkLib/ProofSystem/Stir/RoundProtocol.lean` surfaces. A direct merge of the old branch would
+delete the current Batched FRI security modules and the current STIR round protocol file while
+replacing them with a smaller pre-current FRI model.
 
 ## Current residual surfaces
 
