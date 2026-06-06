@@ -442,6 +442,20 @@ def ListLowerWitness.ofLe {C : Set (ι → F)} {m : ℕ} {ε_star δ : ℝ≥0}
     ListLowerWitness C m ε_star :=
   ⟨δ, hδ, h⟩
 
+/-- **Bridge from real-radius list bounds.** Many list-decoding theorems state their radius as
+a real expression.  Once that expression is identified with a nonnegative radius `δnn ≤ 1`,
+the real-radius bound gives a `ListLowerWitness`. -/
+def ListLowerWitness.ofRealLe {C : Set (ι → F)} {m : ℕ} {ε_star : ℝ≥0}
+    {δ : ℝ} (δnn : ℝ≥0) (hδ_eq : (δnn : ℝ) = δ) (hδ : δnn ≤ 1)
+    (h : (ListDecodable.Lambda (C^⋈ (Fin m)) δ : ENNReal) ≤
+      ((ε_star : ENNReal) * (Fintype.card F : ENNReal))) :
+    ListLowerWitness C m ε_star :=
+  let h' : (ListDecodable.Lambda (C^⋈ (Fin m)) (δnn : ℝ) : ENNReal) ≤
+      ((ε_star : ENNReal) * (Fintype.card F : ENNReal)) := by
+    rw [hδ_eq]
+    exact h
+  ListLowerWitness.ofLe hδ h'
+
 /-- **Bridge (list-size lower bound ⇒ list upper witness).** Any radius where the
 maximised list size already exceeds `ε*·|F|` is a `ListUpperWitness`. -/
 def ListUpperWitness.ofGt {C : Set (ι → F)} {m : ℕ} {ε_star δ : ℝ≥0}
@@ -449,6 +463,19 @@ def ListUpperWitness.ofGt {C : Set (ι → F)} {m : ℕ} {ε_star δ : ℝ≥0}
       ((ε_star : ENNReal) * (Fintype.card F : ENNReal))) :
     ListUpperWitness C m ε_star :=
   ⟨δ, h⟩
+
+/-- **Bridge from real-radius lower bounds.** A real-radius strict lower bound becomes a
+`ListUpperWitness` once the real radius is identified with a nonnegative radius. -/
+def ListUpperWitness.ofRealGt {C : Set (ι → F)} {m : ℕ} {ε_star : ℝ≥0}
+    {δ : ℝ} (δnn : ℝ≥0) (hδ_eq : (δnn : ℝ) = δ)
+    (h : (ListDecodable.Lambda (C^⋈ (Fin m)) δ : ENNReal) >
+      ((ε_star : ENNReal) * (Fintype.card F : ENNReal))) :
+    ListUpperWitness C m ε_star :=
+  let h' : (ListDecodable.Lambda (C^⋈ (Fin m)) (δnn : ℝ) : ENNReal) >
+      ((ε_star : ENNReal) * (Fintype.card F : ENNReal)) := by
+    rw [hδ_eq]
+    exact h
+  ListUpperWitness.ofGt h'
 
 /-- A list lower witness remains valid when the list-size threshold is relaxed. -/
 def ListLowerWitness.monoThreshold {C : Set (ι → F)} {m : ℕ} {ε_star ε_star' : ℝ≥0}
