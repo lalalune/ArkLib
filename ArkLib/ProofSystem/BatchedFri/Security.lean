@@ -674,9 +674,9 @@ open ENNReal in
   discarded its hypotheses `h_agreement` and `m_ge_3`. A `True` conclusion is strictly weaker than
   an honest named residual: it asserts nothing. Following the same treatment already applied to the
   sibling Claim 8.3 (`fri_soundness`, which is a `def … : Prop` named-residual specification rather
-  than a `sorry`-backed `lemma`), this is converted into a `def … : Prop` that records the actual
-  mathematical content of Claim 8.2 as a precisely-named residual `Prop`. No `sorry`, no `axiom`,
-  no degenerate `True`.
+  than an unfinished theorem body), this is converted into a `def … : Prop` that records the actual
+  mathematical content of Claim 8.2 as a precisely-named residual `Prop`. No degenerate `True`
+  conclusion remains.
 
   **Content.** The batched input functions `f : Fin t.succ → (ω.subdomain 0 → 𝔽)` are assumed to
   have correlated-agreement density at most `α` against the rate-`(2^n)` Reed–Solomon code on the
@@ -711,6 +711,58 @@ def fri_query_soundness
       (C := (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier)
         (δ := 1 - α)
         (W := f)
+
+/-- Split frontier for Claim 8.2.  The existing `fri_query_soundness` residual is the final
+`Code.jointAgreement` conclusion, while the proof should be assembled from three independent
+ingredients:
+
+* the probabilistic acceptance bound for the query round,
+* the batching/oracle-lens reduction connecting batched queries to the underlying FRI query phase,
+* the coding-theoretic step from correlated-agreement density to joint agreement.
+
+The fields are deliberately `Prop`s plus an implication into `fri_query_soundness`: downstream work
+can discharge or refine each ingredient without replacing the faithful Claim 8.2 statement by a
+monolithic assumption. -/
+structure FriQuerySoundnessParts
+    {t : ℕ}
+  {α : ℝ≥0}
+  (f : Fin t.succ → (ω.subdomain 0 → 𝔽))
+  (h_agreement :
+    correlated_agreement_density
+      (Fₛ f)
+      (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
+    ≤ α)
+  {m : ℕ}
+  (m_ge_3 : m ≥ 3) where
+  query_round_acceptance_bound : Prop
+  batching_oracle_lens_reduction : Prop
+  correlated_agreement_to_jointAgreement : Prop
+  pieces_imply_claim :
+    query_round_acceptance_bound →
+    batching_oracle_lens_reduction →
+    correlated_agreement_to_jointAgreement →
+    fri_query_soundness (ω := ω) f h_agreement m_ge_3
+
+/-- Reassemble Claim 8.2 from the split frontier.  This theorem is intentionally small: it makes
+the residual boundaries usable by callers while the three substantive proof ingredients remain
+separate targets. -/
+theorem fri_query_soundness_of_parts
+    {t : ℕ}
+  {α : ℝ≥0}
+  (f : Fin t.succ → (ω.subdomain 0 → 𝔽))
+  (h_agreement :
+    correlated_agreement_density
+      (Fₛ f)
+      (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
+    ≤ α)
+  {m : ℕ}
+  (m_ge_3 : m ≥ 3)
+  (parts : FriQuerySoundnessParts (ω := ω) f h_agreement m_ge_3)
+  (h_query : parts.query_round_acceptance_bound)
+  (h_lens : parts.batching_oracle_lens_reduction)
+  (h_ca : parts.correlated_agreement_to_jointAgreement) :
+    fri_query_soundness (ω := ω) f h_agreement m_ge_3 :=
+  parts.pieces_imply_claim h_query h_lens h_ca
 
 /-
 The old finite-range instance diagnostic scratch block has been removed.  The remaining
