@@ -157,7 +157,7 @@ theorem lambda_violation_polyFamily
     ∃ (u : ι → F) (p : Fin (L0 + 1) → F[X]),
       Function.Injective p ∧
       (∀ j, p j ∈ Polynomial.degreeLT F (k + 1)) ∧
-      (∀ j, Code.relHammingDist u (ReedSolomon.evalOnPoints domain (p j)) ≤ δ) := by
+      (∀ j, ReedSolomon.evalOnPoints domain (p j) ∈ relHammingBall u δ) := by
   classical
   obtain ⟨u, c, hcinj, hcmem⟩ := lambda_violation_inj _ δ L0 hviol
   -- Each `c j` is an RS[k+1] codeword: pick its polynomial via choice.
@@ -178,8 +178,7 @@ theorem lambda_violation_polyFamily
   · -- δ-closeness transfers via `evalOnPoints domain (p j) = c j` and `c j ∈ closeCodewordsRel`.
     intro j
     have hball : c j ∈ relHammingBall u δ := (hcmem j).2
-    have : Code.relHammingDist u (c j) ≤ δ := hball
     rw [hpeval j]
-    exact this
+    exact hball
 
 end CodingTheory.CS25.DeepHole

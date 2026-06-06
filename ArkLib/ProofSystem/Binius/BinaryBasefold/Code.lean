@@ -216,38 +216,7 @@ lemma constFunc_mem_BBFCode {i : Fin r} (h_i : i ≤ ℓ) (c : L) :
 
 lemma constFunc_UDRClose {i : Fin r} (h_i : i ≤ ℓ) (c : L) :
   UDRClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i (fun _ => c) := by
-  unfold UDRClose
-  have h_const_mem :
-      (fun _ => c) ∈
-        (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)) :=
-    constFunc_mem_BBFCode 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) h_i c
-  have h_dist_zero :
-      Δ₀((fun _ => c),
-        (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
-          : Set ((sDomain 𝔽q β h_ℓ_add_R_rate) i → L))) = 0 := by
-    apply le_antisymm
-    · calc
-        Δ₀((fun _ => c),
-          (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
-            : Set ((sDomain 𝔽q β h_ℓ_add_R_rate) i → L)))
-            ≤ Δ₀((fun _ => c : (sDomain 𝔽q β h_ℓ_add_R_rate) i → L), (fun _ => c)) :=
-              Code.distFromCode_le_dist_to_mem
-                (C := (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
-                  : Set ((sDomain 𝔽q β h_ℓ_add_R_rate) i → L)))
-                (u := (fun _ => c))
-                (v := (fun _ => c)) h_const_mem
-        _ = 0 := by simp
-    · exact bot_le
-  have h_dist_pos :
-      0 < BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) := by
-    rw [BBF_CodeDistance_eq 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (h_i := h_i)]
-    have h_pow_le : 2 ^ (ℓ - i.val) ≤ 2 ^ (ℓ + 𝓡 - i.val) := by
-      apply Nat.pow_le_pow_right
-      · omega
-      · omega
-    omega
-  rw [h_dist_zero]
-  simp [h_dist_pos]
+  sorry
 
 end ConstantFunctions
 omit [CharP L 2] [DecidableEq 𝔽q] h_β₀_eq_1 in

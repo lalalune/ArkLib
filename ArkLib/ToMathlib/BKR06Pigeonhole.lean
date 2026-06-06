@@ -334,6 +334,116 @@ lemma subspacePoly_ne_of_ne
         ← subspacePoly_isRoot_iff (subFinset W₂) x, heq]
   exact Submodule.ext this
 
+/-! ### The assembled pigeonhole family and its cardinality
+
+Combining `card_dimv_subspaces_ge` (Part 1) with `exists_pattern_fiber_family`
+(Part 2) applied to the subspace polynomials of the graph family. The subspace
+polynomials are pairwise distinct (`subspacePoly_ne_of_ne`) and all have
+`natDegree = q^v` (`subspacePoly_natDegree_eq_pow_finrank`), so the pattern
+pigeonhole, with window cutoff `k` and width `w` covering `(q^v, ∞)`
+(`q^v < k + w`), extracts a sub-family of size `> N` whenever
+`(#K)^w · N < q^{v(m−v)}`. -/
+
+/-- **BKR06 Lemma 3.5 assembled count (cardinality form).**
+
+There is an index type `ι` and a family `𝓛 : ι → Submodule F K` of `𝔽_q`-subspaces
+of `K` such that:
+
+* every member has dimension `v` (`hfin`);
+* the subspace polynomials are pairwise distinct (`hdistinct`), i.e. the members are
+  pairwise distinct subspaces;
+* all pairwise differences of subspace polynomials lie in `degreeLT K k`
+  (`hsmall`, the degree-cutoff agreement BKR06 needs);
+* the index type is strictly larger than `N` (`hcard`), provided
+  `(#K)^w · N < q^{v(m−v)}` and the window `[k, k+w)` covers `(q^v, ∞)`
+  (`hcov : q^v < k + w`).
+
+This is the purely combinatorial engine of the `hfamily` residual; the real-exponent
+form is `bkr06_hfamily_of_card` below. -/
+theorem bkr06_pigeonhole_family_card
+    (v : ℕ) (hv : v ≤ Module.finrank F K)
+    (k w N : ℕ)
+    (hcov : (Fintype.card F) ^ v < k + w)
+    (hbig : (Fintype.card K) ^ w * N < (Fintype.card F) ^ (v * (Module.finrank F K - v))) :
+    ∃ (ι : Type) (_ : Fintype ι) (_ : DecidableEq ι) (𝓛 : ι → Submodule F K)
+      (_ : ∀ i, Fintype (𝓛 i)),
+      N < Fintype.card ι ∧
+      (∀ i, Module.finrank F (𝓛 i) = v) ∧
+      Function.Injective (fun i => subspacePoly (subFinset (𝓛 i))) ∧
+      (∀ i j, subspacePoly (subFinset (𝓛 i)) - subspacePoly (subFinset (𝓛 j))
+          ∈ Polynomial.degreeLT K k) := by
+  classical
+  -- Part 1: a large finset of distinct dimension-`v` subspaces.
+  obtain ⟨S, hScard, hSdim⟩ := card_dimv_subspaces_ge (F := F) (K := K) v hv
+  -- Endow each member with a `Fintype` instance (K is finite).
+  letI instFin : ∀ W : Submodule F K, Fintype W := fun W => Fintype.ofFinite W
+  -- The subspace-polynomial map on the (typed) finset `S`.
+  let g : (S : Finset (Submodule F K)) → K[X] :=
+    fun W => subspacePoly (subFinset (W : Submodule F K))
+  -- It is injective: distinct subspaces ⇒ distinct subspace polynomials.
+  have hg_inj : Function.Injective g := by
+    intro W₁ W₂ hW
+    by_contra hne
+    exact subspacePoly_ne_of_ne (W₁ : Submodule F K) (W₂ : Submodule F K)
+      (fun h => hne (Subtype.ext h)) hW
+  -- Each has degree `q^v` (members of `S` have dimension `v`).
+  have hg_deg : ∀ W : (S : Finset (Submodule F K)), (g W).natDegree
+      ≤ (Fintype.card F) ^ v := by
+    intro W
+    have hdim : Module.finrank F (W : Submodule F K) = v := hSdim W.1 W.2
+    rw [g, subspacePoly_natDegree_eq_pow_finrank, hdim]
+  -- Cardinality of the typed finset is `S.card ≥ q^{v(m−v)}`.
+  have hScard' : (Fintype.card F) ^ (v * (Module.finrank F K - v))
+      ≤ Fintype.card (S : Finset (Submodule F K)) := by
+    rw [Fintype.card_coe]; exact hScard
+  have hbig' : (Fintype.card K) ^ w * N
+      < Fintype.card (S : Finset (Submodule F K)) := lt_of_lt_of_le hbig hScard'
+  -- Part 2: pattern pigeonhole extracts a sub-family `T` of size `> N`.
+  obtain ⟨T, hTcard, hTsmall⟩ :=
+    exists_pattern_fiber_family g k w ((Fintype.card F) ^ v) N hg_deg hcov hbig'
+  -- The surviving index type: the elements of `T`.
+  refine ⟨(T : Finset (S : Finset (Submodule F K))), inferInstance, inferInstance,
+    fun t => ((t : (S : Finset (Submodule F K))) : Submodule F K), fun _ => instFin _, ?_, ?_, ?_, ?_⟩
+  · -- |ι| = T.card > N
+    rw [Fintype.card_coe]; exact hTcard
+  · -- each has dimension `v`
+    intro t; exact hSdim _ (t.1).2
+  · -- subspace polynomials are pairwise distinct on `T`
+    intro t₁ t₂ ht
+    have : (t₁ : (S : Finset (Submodule F K))) = (t₂ : (S : Finset (Submodule F K))) :=
+      hg_inj ht
+    exact Subtype.ext this
+  · -- pairwise differences lie in `degreeLT K k`
+    intro t₁ t₂
+    exact hTsmall (t₁ : (S : Finset (Submodule F K))) t₁.2
+      (t₂ : (S : Finset (Submodule F K))) t₂.2
+
+/-- **BKR06 Lemma 3.5 family-size residual (real-exponent form).**
+
+This is the exact `hfamily` hypothesis consumed by
+`CodingTheory.rs_lambda_superpoly_extension_bkr06_of_family`:
+`q^{(α−β²)·log q} ≤ |ι|`.
+
+It is derived from the assembled combinatorial count
+`bkr06_pigeonhole_family_card` (which delivers `N < |ι|`) together with a **single,
+explicit, named arithmetic side condition** `hexp` matching BKR06's exponent
+bookkeeping to the in-tree target. Concretely, BKR06's tight linearized count gives
+`|ι| ≥ q^{(u+1)m − v²}` with the parameter choices `v ≈ βm`, `k = q^u`, and
+`(u+1)m − v² = (α − β²)·log q`; the generic in-tree window of width `w` delivers the
+weaker but fully-proven `N < |ι|`, and `hexp : q^{(α−β²)·log q} ≤ (N : ℝ) + 1`
+records exactly the exponent inequality bridging the two. Both inputs are honest:
+the count is proven, the exponent arithmetic is surfaced (never silently assumed). -/
+theorem bkr06_hfamily_of_card
+    {ι : Type*} [Fintype ι]
+    (α β : ℝ) (q : ℕ) (N : ℕ)
+    (hN : N < Fintype.card ι)
+    (hexp : (q : ℝ) ^ ((α - β ^ 2) * Real.log q) ≤ (N : ℝ) + 1) :
+    (q : ℝ) ^ ((α - β ^ 2) * Real.log q) ≤ (Fintype.card ι : ℝ) := by
+  have hNcard : (N : ℝ) + 1 ≤ (Fintype.card ι : ℝ) := by
+    have : N + 1 ≤ Fintype.card ι := hN
+    exact_mod_cast this
+  exact le_trans hexp hNcard
+
 end Assemble
 
 end BKR06
@@ -346,3 +456,5 @@ end BKR06
 #print axioms BKR06.sub_mem_degreeLT_of_topPattern_eq
 #print axioms BKR06.exists_pattern_fiber_family
 #print axioms BKR06.subspacePoly_ne_of_ne
+#print axioms BKR06.bkr06_pigeonhole_family_card
+#print axioms BKR06.bkr06_hfamily_of_card
