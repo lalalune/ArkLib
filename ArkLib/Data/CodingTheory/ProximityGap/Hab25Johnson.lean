@@ -354,6 +354,39 @@ def mcaLowerWitness_of_residuals
   MCALowerWitness.ofLe hδ_le_one
     (le_trans (mca_johnson_of_residuals domain k η δ hη hδ R) hle)
 
+/-- **Refined Hab25 residual bundle ⟹ faithful MCA lattice threshold exists.**
+
+This is the lattice-threshold analogue of `mcaLowerWitness_of_residuals`: once the opened-up
+Hab25 §3 residual bundle supplies the Johnson-radius `MCALowerWitness`, the generic
+`GrandChallengesLattice` machinery rounds it to a Hamming-lattice point and constructs the
+faithful threshold. -/
+theorem mcaThresholdExists_of_residuals
+    (domain : ι₀ ↪ F₀) (k : ℕ) (η δ ε_star : ℝ≥0)
+    (hη : 0 < η) (hδ : InJohnsonRange domain k η δ) (hδ_le_one : δ ≤ 1)
+    (R : Hab25JohnsonResiduals domain k η δ hη hδ)
+    (hle : ENNReal.ofReal (johnsonBoundReal domain k η δ) ≤ (ε_star : ENNReal)) :
+    GrandChallengesLattice.mcaThresholdExists
+      (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star :=
+  GrandChallengesLattice.mcaThresholdExists_of_MCALowerWitness
+    (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star
+    (mcaLowerWitness_of_residuals domain k η δ ε_star hη hδ hδ_le_one R hle)
+
+/-- The faithful MCA threshold created from the refined Hab25 residual bundle satisfies the
+`ε_mca ≤ ε*` lattice predicate. -/
+theorem mcaThreshold_spec_of_residuals
+    (domain : ι₀ ↪ F₀) (k : ℕ) (η δ ε_star : ℝ≥0)
+    (hη : 0 < η) (hδ : InJohnsonRange domain k η δ) (hδ_le_one : δ ≤ 1)
+    (R : Hab25JohnsonResiduals domain k η δ hη hδ)
+    (hle : ENNReal.ofReal (johnsonBoundReal domain k η δ) ≤ (ε_star : ENNReal)) :
+    let hne := mcaThresholdExists_of_residuals domain k η δ ε_star hη hδ hδ_le_one R hle
+    GrandChallengesLattice.mcaSatisfies
+      (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star
+      (GrandChallengesLattice.mcaThreshold
+        (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star hne) :=
+  GrandChallengesLattice.mcaThreshold_spec
+    (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star
+    (mcaThresholdExists_of_residuals domain k η δ ε_star hη hδ hδ_le_one R hle)
+
 end Reduction
 
 end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame

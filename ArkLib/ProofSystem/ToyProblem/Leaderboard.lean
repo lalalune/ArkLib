@@ -872,4 +872,11 @@ theorem spotCheck_le_two_pow_neg_64 :
     div_le_one (by positivity)]
   norm_num
 
+/-- Concrete-anchor form of the spot-check cap: `koalaIRSConcrete` has
+`δ = 3/10` and `t = 128`, so its spot-check branch is below `2^(-64)`. -/
+theorem koalaIRSConcrete_spotCheck_le_two_pow_neg_64 :
+    ((1 : ℝ≥0) - koalaIRSConcrete.δ) ^ koalaIRSConcrete.t ≤
+      (2 : ℝ≥0) ^ (-(64 : ℝ)) := by
+  simpa [koalaIRSConcrete] using spotCheck_le_two_pow_neg_64
+
 end ToyProblem
