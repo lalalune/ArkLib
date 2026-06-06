@@ -416,7 +416,6 @@ hypothesis to consume. The `protocol62` follow-up supplies the linear-algebra ex
 the bridge sketch above as the `E`/`hE` here. -/
 theorem rewindingKS_of_extractor
     {Prefix Challenge Response WitIn StmtIn : Type}
-    [Fintype Challenge] [Nonempty Challenge]
     {relIn : Set (StmtIn × WitIn)}
     {stmtOf : Prefix → StmtIn}
     {accepts : Prefix → Accepts Challenge Response}

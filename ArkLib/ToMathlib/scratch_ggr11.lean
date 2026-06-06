@@ -29,7 +29,7 @@ theorem tree_count_le
         _ ≤ ((b + (r + 1)).choose (r + 1) : ℕ∞) * L ^ (r + 1)
               + L * (((b + 1) + r).choose r * L ^ r) := by
               refine add_le_add ihb ?_
-              exact mul_le_mul_left' (ih (b + 1)) L
+              exact mul_le_mul_right L (ih (b + 1))
         _ = (((b + (r + 1)).choose (r + 1) : ℕ∞) + ((b + 1 + r).choose r : ℕ∞)) * L ^ (r + 1) := by
               ring
         _ = (((b + 1) + (r + 1)).choose (r + 1) : ℕ∞) * L ^ (r + 1) := by

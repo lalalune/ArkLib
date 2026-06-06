@@ -185,6 +185,9 @@ theorem scratch_run_eq
   simp only [Reduction.duplexSpongeFiatShamir, Prover.duplexSpongeFiatShamir,
     Reduction.duplexSpongeFiatShamirHonestExecution,
     Reduction.duplexSpongeFiatShamirHonestRun, Verifier.run]
+  rw [OptionT.ext_iff]
+  simp only [OptionT.run_bind, OptionT.run_pure, OptionT.run_monadLift, OptionT.run_mk,
+    liftM_eq_monadLift, bind_assoc, map_bind, pure_bind, bind_pure_comp]
   trace_state
   sorry
 

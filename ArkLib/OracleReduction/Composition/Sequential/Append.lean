@@ -718,6 +718,16 @@ theorem append_soundness {lang₁ : Set Stmt₁} {lang₂ : Set Stmt₂} {lang�
       (V₁.append V₂).soundness init impl lang₁ lang₃ (soundnessError₁ + soundnessError₂) := by
   sorry
 
+/-- **NAMED RESIDUAL (deep, arbitrary-prover seam decomposition + extractor composition).**
+Sequential composition preserves straightline knowledge soundness with additive error.
+
+The composite straightline extractor is `Extractor.Straightline.append` (proven, above): it runs `V₁`
+to derive the intermediate statement, then `E₂` then `E₁`. The remaining obstruction mirrors
+`append_soundness`: the malicious prover `P` over `pSpec₁ ++ₚ pSpec₂` must be seam-decomposed into
+phase-1 / phase-2 malicious provers so that `h₁`/`h₂` (the per-phase extractor guarantees) apply, and
+the bad knowledge event `(stmtIn, witIn') ∉ relIn ∧ (stmtOut, witOut) ∈ relOut` must be union-bounded
+through the intermediate `(stmt₂, wit₂)` pair. The extractor query-log routing across the seam
+(`proveQueryLog.fst` / `verifyQueryLog`) is the additional new content over `append_soundness`. -/
 theorem append_knowledgeSoundness
     (V₁ : Verifier oSpec Stmt₁ Stmt₂ pSpec₁)
     (V₂ : Verifier oSpec Stmt₂ Stmt₃ pSpec₂)
