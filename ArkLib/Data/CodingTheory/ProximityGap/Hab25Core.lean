@@ -317,7 +317,7 @@ follows mechanically*. -/
 namespace Hab25Johnson
 
 open _root_.ProximityGap _root_.ProximityGap.GrandChallenges
-open scoped NNReal ENNReal
+open scoped NNReal ENNReal ProbabilityTheory
 
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
@@ -604,6 +604,92 @@ theorem mcaThresholdLattice_bracketed_ofHab25Johnson_and_epsCAGt
         GrandChallengesLattice.latticeIndexOf (ι := ι) δ_hi hδhi :=
   GrandChallengesLattice.mcaThresholdLattice_bracketed_ofJohnsonBCHKS25_and_epsCAGt
     domain k η δ_lo δ_hi ε_star hη hδ_johnson hδlo_le_one hGS hle hhi hδhi
+
+/-- The Hab25 Step-2 residual and the CS25 complete-CA-breakdown lower bound bracket the
+faithful MCA lattice threshold directly. -/
+theorem mcaThresholdLattice_bracketed_ofHab25Johnson_and_RSBreakdownCS25
+    (domain : ι ↪ F) (k : ℕ) (η δ_lo δ_hi ε_star : ℝ≥0)
+    (hη : 0 < η)
+    (hδ_johnson :
+        (δ_lo : ℝ) <
+          1 - (((k : ℝ) / Fintype.card ι + 1 / Fintype.card ι) ^ ((1 : ℝ) / 2)) -
+            (η : ℝ))
+    (hδlo_le_one : δ_lo ≤ 1)
+    (hGS : Hab25GSInterpolation domain k η δ_lo hη hδ_johnson)
+    (hle :
+        ENNReal.ofReal
+          (let n : ℝ := Fintype.card ι
+           let ρ_plus : ℝ := k / n + 1 / n
+           let m : ℝ := max ⌈(ρ_plus ^ ((1 : ℝ) / 2)) / (2 * η)⌉ 3
+           ((2 * (m + 1/2) ^ 5 + 3 * (m + 1/2) * δ_lo * ρ_plus)
+              / (3 * ρ_plus ^ ((3 : ℝ) / 2)) * n
+            + (m + 1/2) / ρ_plus ^ ((1 : ℝ) / 2))
+             / (Fintype.card F : ℝ)) ≤ (ε_star : ENNReal))
+    (hδhi : δ_hi ≤ 1)
+    (hq_ge : 10 ≤ Fintype.card F)
+    (hδ_cs_lo :
+        1 - CodingTheory.qEntropy (Fintype.card F) (δ_hi : ℝ) + 2 / (Fintype.card ι : ℝ)
+            + ((CodingTheory.qEntropy (Fintype.card F) (δ_hi : ℝ) - (δ_hi : ℝ))
+                / (Fintype.card ι : ℝ)) ^ ((1 : ℝ) / 2)
+          ≤ (k : ℝ) / Fintype.card ι)
+    (hδ_cs_hi : (k : ℝ) / Fintype.card ι ≤ 1 - (δ_hi : ℝ) - 2 / (Fintype.card ι : ℝ))
+    (hCS25 : CodingTheory.rs_epsCA_breakdown_cs25 domain k δ_hi hq_ge hδ_cs_lo hδ_cs_hi)
+    (hε : (ε_star : ENNReal) < 1) :
+    let hne := GrandChallengesLattice.mcaThresholdExists_ofJohnsonBCHKS25
+      domain k η δ_lo ε_star hη hδ_johnson hδlo_le_one hGS hle
+    GrandChallengesLattice.latticeIndexOf (ι := ι) δ_lo hδlo_le_one ≤
+        GrandChallengesLattice.mcaThreshold
+          (ReedSolomon.code domain k : Set (ι → F)) ε_star hne ∧
+      GrandChallengesLattice.mcaThreshold
+          (ReedSolomon.code domain k : Set (ι → F)) ε_star hne <
+        GrandChallengesLattice.latticeIndexOf (ι := ι) δ_hi hδhi :=
+  GrandChallengesLattice.mcaThresholdLattice_bracketed_ofJohnsonBCHKS25_and_RSBreakdownCS25
+    domain k η δ_lo δ_hi ε_star hη hδ_johnson hδlo_le_one hGS hle hδhi hq_ge
+    hδ_cs_lo hδ_cs_hi hCS25 hε
+
+/-- The Hab25 Step-2 residual and the DG25 sampling lower bound bracket the faithful MCA
+lattice threshold directly for Reed-Solomon codes. -/
+theorem mcaThresholdLattice_bracketed_ofHab25Johnson_and_SamplingDG25
+    (domain : ι ↪ F) (k : ℕ) (η δ_lo δ_hi δ' ε_star : ℝ≥0)
+    (hη : 0 < η)
+    (hδ_johnson :
+        (δ_lo : ℝ) <
+          1 - (((k : ℝ) / Fintype.card ι + 1 / Fintype.card ι) ^ ((1 : ℝ) / 2)) -
+            (η : ℝ))
+    (hδlo_le_one : δ_lo ≤ 1)
+    (hGS : Hab25GSInterpolation domain k η δ_lo hη hδ_johnson)
+    (hle :
+        ENNReal.ofReal
+          (let n : ℝ := Fintype.card ι
+           let ρ_plus : ℝ := k / n + 1 / n
+           let m : ℝ := max ⌈(ρ_plus ^ ((1 : ℝ) / 2)) / (2 * η)⌉ 3
+           ((2 * (m + 1/2) ^ 5 + 3 * (m + 1/2) * δ_lo * ρ_plus)
+              / (3 * ρ_plus ^ ((3 : ℝ) / 2)) * n
+            + (m + 1/2) / ρ_plus ^ ((1 : ℝ) / 2))
+             / (Fintype.card F : ℝ)) ≤ (ε_star : ENNReal))
+    (hδhi : δ_hi ≤ 1)
+    (hδ' : (δ' : ENNReal) =
+      ⨆ u : ι → F, δᵣ(u, (ReedSolomon.code domain k : Set (ι → F))))
+    (hδ_pos : 0 < δ_hi) (hδ_lt : δ_hi < δ')
+    (hDG25 : CodingTheory.linear_epsCA_ge_sampling_dg25
+      (ReedSolomon.code domain k) δ_hi δ' hδ' hδ_pos hδ_lt)
+    (hgt :
+      ((Fintype.card F - 1 : ℝ≥0) / Fintype.card F : ENNReal)
+          * Pr_{
+              let u ← $ᵖ (ι → F)
+              }[δᵣ(u, (ReedSolomon.code domain k : Set (ι → F))) ≤ δ_hi] >
+        (ε_star : ENNReal)) :
+    let hne := GrandChallengesLattice.mcaThresholdExists_ofJohnsonBCHKS25
+      domain k η δ_lo ε_star hη hδ_johnson hδlo_le_one hGS hle
+    GrandChallengesLattice.latticeIndexOf (ι := ι) δ_lo hδlo_le_one ≤
+        GrandChallengesLattice.mcaThreshold
+          (ReedSolomon.code domain k : Set (ι → F)) ε_star hne ∧
+      GrandChallengesLattice.mcaThreshold
+          (ReedSolomon.code domain k : Set (ι → F)) ε_star hne <
+        GrandChallengesLattice.latticeIndexOf (ι := ι) δ_hi hδhi :=
+  GrandChallengesLattice.mcaThresholdLattice_bracketed_ofJohnsonBCHKS25_and_SamplingDG25
+    domain k η δ_lo δ_hi δ' ε_star hη hδ_johnson hδlo_le_one hGS hle hδhi hδ'
+    hδ_pos hδ_lt hDG25 hgt
 
 end Hab25Johnson
 
