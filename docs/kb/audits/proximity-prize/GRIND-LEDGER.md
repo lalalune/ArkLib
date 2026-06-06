@@ -1,5 +1,9 @@
 # Proximity Prize — bottom-up grind ledger (started 2026-06-05)
 
+> Historical note (superseded as current inventory, 2026-06-06): this ledger preserves the June 5
+> campaign state. Line references such as `Curves.lean:1819` are old breadcrumbs; use
+> `CURRENT-RESIDUALIZED-TREE-2026-06-06.md` and issues #6-#23 for current residual ownership.
+
 Goal: build the keystone (BCIKS20 §5 list-decoding / `correlatedAgreement_affine_curves`
 Curves.lean:1819) bottom-up, every brick kernel-clean (`#print axioms` =
 `[propext, Classical.choice, Quot.sound]`, no sorry/axiom/native_decide). Months-scale.
