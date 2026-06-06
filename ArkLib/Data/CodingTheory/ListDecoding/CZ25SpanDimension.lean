@@ -243,11 +243,146 @@ theorem subspaceDesign_list_decoding_cz25_of_spanBound
   subspaceDesign_list_decoding_cz25_of_dimensionCount s τ C h η hη
     (cz25DimensionCount_of_spanBound s τ C h η hη hSB)
 
+/-! ### Kernel refutation of `CZ25SpanBound` as stated, and the corrected residual
+
+**Finding (2026-06-06).** `CZ25SpanBound` as literally stated is **false** — and not at a
+degenerate edge but in a regime reachable by genuine FRS subspace designs. The per-word
+existential demands a natural number `m` with `(m : ℝ) · η ≤ 1 - τ(⌊1/η⌋) - η`. The left
+side is `≥ 0` (as `m : ℕ` and `η > 0`), so the clause is **unsatisfiable whenever the radix
+`δ := 1 - τ(⌊1/η⌋) - η` is negative**, regardless of the list. This is `cz25SpanBound_false_of_neg_radius`
+below.
+
+The `δ < 0` regime is reachable: for the FRS design profile
+`τ(r) = (k-1)/n` on `r ∈ [1,s]` and `τ(r) = 1` otherwise
+(`frs_is_subspaceDesign_gk16_of_admissible`), taking `η < 1/s` forces `r₀ = ⌊1/η⌋ > s`,
+hence `τ(r₀) = 1` and `δ = -η < 0`. There the *true* theorem `CZ25DimensionCount` holds
+vacuously (the list is empty by `closeCodewordsRel_eq_empty_of_neg`, so
+`|L| = 0 ≤ (1-τ(r₀))/η`), yet `CZ25SpanBound` asserts the impossible. So `CZ25SpanBound`
+does **not** follow from the genuine CZ25 content; it was over-stated by reverse-engineering
+the witness clause without the consumer's `δ ≥ 0` guard.
+
+**Correction.** The faithful residual is `CZ25SpanBound'`: the affine-span witness clause
+guarded by the non-degenerate hypothesis `0 ≤ δ`, exactly mirroring the `δ`-sign split that
+the *consumer* `subspaceDesign_list_decoding_cz25_of_dimensionCount` already performs (it
+routes `δ < 0` through `closeCodewordsRel_eq_empty_of_neg`, never through the residual). With
+the guard, the witness clause is satisfiable and the reduction to T3.4 goes through directly
+(`subspaceDesign_list_decoding_cz25_of_spanBound'`). The corrected residual is moreover
+**equivalent** to `CZ25DimensionCount` on the non-degenerate regime
+(`cz25SpanBound'_of_dimensionCount`, via the only valid witness `m = |L| - 1`), so it carries
+exactly the genuine Guruswami–Wang content — no more, no less — without the spurious
+unprovable `δ < 0` obligation.
+
+**On the missing proof.** Neither residual is *discharged* here: the genuine
+agreement-budget bound `|L| ≤ (1-τ(r₀))/η` from `IsSubspaceDesign` is the irreducible
+Guruswami–Wang / Johnson content, and a numerical audit (toy RS / full codes over small
+fields) confirms the naive double-counting charge `#{c ∈ L : c_i = f_i} - 1 ≤ dim(A ⊓ ker eval_i)`
+that would bridge `sum_card_vanishing_le_design` to the list bound is **false**: agreeing-at-`i`
+list elements fill an affine flat of direction `A ⊓ ker eval_i`, so their count is `q^{dim}`
+(exponential), not `dim + 1` (linear), past the Johnson radius. The `m = dim(span{c - c₀})`
+witness likewise fails `|L| ≤ m + 1` (a span of dimension `m` carries up to `q^m` list
+elements). The only valid witness is the tautological `m = |L| - 1`, which makes the second
+inequality the full capacity theorem — confirming the residual has no shortcut over the
+design budget. -/
+theorem cz25SpanBound_false_of_neg_radius
+    (s : ℕ) (τ : ℕ → ℝ) (η : ℝ) (hη : 0 < η)
+    (hδ : 1 - τ (Nat.floor (1 / η)) - η < 0)
+    {m : ℕ} : ¬ ((m : ℝ) * η ≤ 1 - τ (Nat.floor (1 / η)) - η) := by
+  intro hle
+  have hnonneg : (0 : ℝ) ≤ (m : ℝ) * η := mul_nonneg (Nat.cast_nonneg m) (le_of_lt hη)
+  linarith
+
+/-- **Corrected residual (CZ25 agreement half, faithful form).** Identical to
+`CZ25SpanBound` but with the per-word existential **guarded** by the non-degenerate radix
+hypothesis `0 ≤ 1 - τ(⌊1/η⌋) - η`. This guard is exactly the one the consumer already
+imposes (`δ < 0 ⟹ L = ∅`, handled by `closeCodewordsRel_eq_empty_of_neg`), and it removes
+the spurious — provably unsatisfiable — obligation that `CZ25SpanBound` carried in the
+`δ < 0` regime (see `cz25SpanBound_false_of_neg_radius`). On the non-degenerate regime this
+is equivalent to `CZ25DimensionCount` (`cz25SpanBound'_of_dimensionCount`), so it isolates
+exactly the genuine Guruswami–Wang iterative charge. -/
+def CZ25SpanBound'
+    (s : ℕ) (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
+    (_h : IsSubspaceDesign s τ C) (η : ℝ) (_hη : 0 < η) : Prop :=
+  ∀ f : ι → Fin s → F,
+    0 ≤ 1 - τ (Nat.floor (1 / η)) - η →
+    ∃ m : ℕ,
+      ((closeCodewordsRel ((C : Set (ι → Fin s → F))) f
+          (1 - τ (Nat.floor (1 / η)) - η)).ncard : ℝ) ≤ (m : ℝ) + 1 ∧
+      (m : ℝ) * η ≤ 1 - τ (Nat.floor (1 / η)) - η
+
+/-- **The corrected residual is faithful: `CZ25DimensionCount ⟹ CZ25SpanBound'`.** On the
+non-degenerate regime `δ ≥ 0`, the only valid affine-span witness is the tautological
+`m := |L| - 1` (a recentred *span* of dimension `m` may carry up to `q^m` list elements, so
+`m = dim(span)` does **not** give `|L| ≤ m + 1`). With `m = |L| - 1`, the link `|L| ≤ m + 1`
+is definitional and the agreement bound `m · η ≤ δ` unfolds to exactly `CZ25DimensionCount`'s
+`|L| ≤ (1 - τ(r₀))/η`. This shows the corrected residual carries precisely the genuine CZ25
+content. No `sorry`, no new axioms. -/
+theorem cz25SpanBound'_of_dimensionCount
+    (s : ℕ) (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
+    (h : IsSubspaceDesign s τ C) (η : ℝ) (hη : 0 < η)
+    (hDC : CZ25DimensionCount s τ C h η hη) :
+    CZ25SpanBound' s τ C h η hη := by
+  intro f _hδ
+  set L : Set (ι → Fin s → F) :=
+    closeCodewordsRel ((C : Set (ι → Fin s → F))) f (1 - τ (Nat.floor (1 / η)) - η) with hL
+  set ℓ : ℕ := L.ncard with hℓ
+  -- The witness `m := ℓ - 1` (`= 0` when the list is empty).
+  refine ⟨ℓ - 1, ?_, ?_⟩
+  · -- `(ℓ : ℝ) ≤ (ℓ - 1 : ℕ) + 1`: holds for all `ℓ : ℕ` (equality if `ℓ ≥ 1`, slack if `ℓ = 0`).
+    rcases Nat.eq_zero_or_pos ℓ with h0 | hpos
+    · simp [h0]
+    · have : (ℓ - 1 : ℕ) + 1 = ℓ := Nat.succ_pred_eq_of_pos hpos
+      rw [this]
+  · -- `(ℓ - 1 : ℕ) · η ≤ δ`. From `CZ25DimensionCount`: `ℓ ≤ (1 - τ(r₀))/η`.
+    have hdc : (ℓ : ℝ) ≤ (1 - τ (Nat.floor (1 / η))) / η := hDC f
+    rw [le_div_iff₀ hη] at hdc
+    have hcast : ((ℓ - 1 : ℕ) : ℝ) ≤ (ℓ : ℝ) - 1 + 1 := by
+      rcases Nat.eq_zero_or_pos ℓ with h0 | hpos
+      · simp [h0]; positivity
+      · have : ((ℓ - 1 : ℕ) : ℝ) = (ℓ : ℝ) - 1 := by
+          rw [Nat.cast_sub hpos]; simp
+        rw [this]; ring_nf
+    -- `(ℓ - 1)·η ≤ (ℓ·η) - η ≤ (1 - τ(r₀)) - η = δ`.
+    have hℓ1 : ((ℓ - 1 : ℕ) : ℝ) ≤ (ℓ : ℝ) - 1 := by
+      rcases Nat.eq_zero_or_pos ℓ with h0 | hpos
+      · simp [h0]
+      · rw [Nat.cast_sub hpos]; simp
+    nlinarith [hℓ1, hdc, le_of_lt hη, Nat.cast_nonneg (ℓ - 1)]
+
+/-- **In-tree T3.4 [CZ25 Thm B.5] from the corrected agreement residual.** The exact in-tree
+`Λ`-bound follows from `CZ25SpanBound'` directly. The `δ < 0` regime — where the original
+`CZ25SpanBound` was provably false (`cz25SpanBound_false_of_neg_radius`) — is discharged here
+through the empty list (`closeCodewordsRel_eq_empty_of_neg`), exactly where it belongs; the
+residual is only consulted on the non-degenerate regime `δ ≥ 0` it can actually satisfy. No
+`sorry`, no new axioms. -/
+theorem subspaceDesign_list_decoding_cz25_of_spanBound'
+    (s : ℕ) (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
+    (h : IsSubspaceDesign s τ C) (η : ℝ) (hη : 0 < η)
+    (hSB : CZ25SpanBound' s τ C h η hη) :
+    (Lambda ((C : Set (ι → Fin s → F)))
+        (1 - τ (Nat.floor (1 / η)) - η) : ENNReal) ≤
+      ENNReal.ofReal ((1 - τ (Nat.floor (1 / η))) / η) := by
+  set r₀ : ℕ := Nat.floor (1 / η) with hr₀
+  set δ : ℝ := 1 - τ r₀ - η with hδ
+  set bound : ℝ := (1 - τ r₀) / η with hbound
+  simp only [Lambda, ENat.toENNReal_iSup]
+  refine iSup_le (fun f => ?_)
+  set m : ℕ := (closeCodewordsRel ((C : Set (ι → Fin s → F))) f δ).ncard with hm
+  have hcast : ENat.toENNReal ((m : ℕ) : ℕ∞) = ENNReal.ofReal (m : ℝ) := by
+    rw [ENNReal.ofReal_natCast]; simp
+  rw [hcast]
+  rcases lt_or_ge δ 0 with hδneg | hδnonneg
+  · -- Negative radius: list empty, `ofReal 0 = 0 ≤ ofReal bound`.
+    have hm0 : m = 0 := by rw [hm]; exact ncard_closeCodewordsRel_eq_zero_of_neg _ _ hδneg
+    rw [hm0]; simp
+  · -- Non-degenerate radius: consult the (corrected) residual.
+    obtain ⟨w, hℓ, hw⟩ := hSB f hδnonneg
+    have hreal : (m : ℝ) ≤ bound := by
+      refine le_trans hℓ ?_
+      rw [hbound, le_div_iff₀ hη]
+      nlinarith [hw]
+    exact ENNReal.ofReal_le_ofReal hreal
+
 end AgreementResidual
 
 end CodingTheory
 
-
--- TEMP AUDIT
-#print axioms CodingTheory.sum_card_vanishing_le_design
-#print axioms CodingTheory.subspaceDesign_list_decoding_cz25_of_spanBound

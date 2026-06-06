@@ -147,9 +147,9 @@ theorem isQLinearized_X (q : ℕ) : IsQLinearized q (X : K[X]) := by
   intro n hn
   rw [mem_support_iff, coeff_X] at hn
   refine ⟨0, ?_⟩
+  simp only [pow_zero]
   by_contra h
-  simp only [pow_zero] at h
-  rw [if_neg (fun he => h he.symm)] at hn
+  rw [if_neg h] at hn
   exact hn rfl
 
 /-- A `q`-linearized polynomial stays `q`-linearized after raising to the `q = p^t`
@@ -205,5 +205,153 @@ theorem IsQLinearized.pow_sub_C_mul {p t : ℕ} [ExpChar K p] {f : K[X]}
     IsQLinearized (p ^ t) (f ^ p ^ t - C c * f) := by
   rw [sub_eq_add_neg]
   exact (hf.pow).add ((hf.C_mul c).neg)
+
+/-! ## Support range and the tight top-coefficient count
+
+A `q`-linearized polynomial of `natDegree ≤ q^v` (with `q ≥ 2`) has all its support
+exponents in `{q^0, …, q^v}`, indexed by `{0, …, v}`.  Above a cutoff `q^u` the only
+possibly-nonzero coefficients sit at `q^{u+1}, …, q^v` — that is `v − u` slots, *not*
+the generic window width.  This is the source of BKR06's tight pattern count. -/
+
+/-- For `q ≥ 2`, a `q`-linearized `f` with `natDegree ≤ q^v` has every support exponent
+of the form `q^i` with `i ≤ v`. -/
+theorem IsQLinearized.exp_le_of_natDegree_le {q v : ℕ} (hq : 2 ≤ q) {f : K[X]}
+    (hf : IsQLinearized q f) (hdeg : f.natDegree ≤ q ^ v) {n : ℕ} (hn : n ∈ f.support) :
+    ∃ i ≤ v, q ^ i = n := by
+  obtain ⟨i, hi⟩ := hf n hn
+  refine ⟨i, ?_, hi⟩
+  -- q^i = n ≤ natDegree ≤ q^v, and q ≥ 2 gives i ≤ v
+  have hle : q ^ i ≤ q ^ v := by
+    rw [hi]; exact le_trans (le_natDegree_of_mem_supp n hn) hdeg
+  exact (Nat.pow_le_pow_iff_right hq).mp hle
+
+/-- **Tight top pattern.**  For a `q`-linearized polynomial of degree `≤ q^v`, the
+coefficients strictly above the cutoff `q^u` are captured by the `v − u` values at the
+`q`-power exponents `q^{u+1}, …, q^v`. -/
+def tightTopPattern (q u v : ℕ) (f : K[X]) : Fin (v - u) → K :=
+  fun j => f.coeff (q ^ (u + 1 + (j : ℕ)))
+
+/-- If two `q`-linearized polynomials of degree `≤ q^v` (with `q ≥ 2`, `u ≤ v`) share
+their tight top pattern above `q^u`, then their difference lies in `degreeLT K (q^u + 1)`
+— i.e. they agree on every coefficient of index `> q^u`.
+
+Above `q^u`, all support exponents of either polynomial are `q`-powers `q^i` with
+`u < i ≤ v` (degree bound + linearizedness), and those coefficients agree by the shared
+tight pattern; non-`q`-power exponents above `q^u` carry zero coefficients in both. -/
+theorem sub_mem_degreeLT_of_tightTopPattern_eq {q u v : ℕ} (hq : 2 ≤ q) (huv : u ≤ v)
+    {f g : K[X]}
+    (hf : IsQLinearized q f) (hg : IsQLinearized q g)
+    (hfdeg : f.natDegree ≤ q ^ v) (hgdeg : g.natDegree ≤ q ^ v)
+    (hpat : tightTopPattern q u v f = tightTopPattern q u v g) :
+    f - g ∈ Polynomial.degreeLT K (q ^ u + 1) := by
+  classical
+  rw [Polynomial.mem_degreeLT, Polynomial.degree_lt_iff_coeff_zero]
+  intro n hn
+  -- hn : (q^u + 1 : ℕ) ≤ n, i.e. q^u < n
+  have hnlt : q ^ u < n := by exact_mod_cast Nat.lt_of_add_one_le (by exact_mod_cast hn)
+  rw [Polynomial.coeff_sub]
+  -- show f.coeff n = g.coeff n
+  -- both are zero unless n is a q-power; if n = q^i then it's in the tight pattern.
+  by_cases hfn : f.coeff n = 0 <;> by_cases hgn : g.coeff n = 0
+  · rw [hfn, hgn, sub_zero]
+  · -- g.coeff n ≠ 0: n is a q-power q^i with u < i ≤ v, contradiction-free; use pattern
+    exfalso
+    have hgmem : n ∈ g.support := by rw [mem_support_iff]; exact hgn
+    obtain ⟨i, hile, hin⟩ := hg.exp_le_of_natDegree_le hq hgdeg hgmem
+    -- u < i since q^u < n = q^i
+    have hui : u < i := by
+      have : q ^ u < q ^ i := by rw [hin]; exact hnlt
+      exact (Nat.pow_lt_pow_iff_right hq).mp this
+    -- so f.coeff n = g.coeff n via the pattern, contradicting hfn = 0, hgn ≠ 0 mismatch
+    have hpatval := congrFun hpat ⟨i - (u + 1), by omega⟩
+    simp only [tightTopPattern] at hpatval
+    have hidx : u + 1 + (i - (u + 1)) = i := by omega
+    rw [hidx, hin] at hpatval
+    rw [hpatval] at hfn
+    exact hgn hfn
+  · -- f.coeff n ≠ 0 (symmetric)
+    exfalso
+    have hfmem : n ∈ f.support := by rw [mem_support_iff]; exact hfn
+    obtain ⟨i, hile, hin⟩ := hf.exp_le_of_natDegree_le hq hfdeg hfmem
+    have hui : u < i := by
+      have : q ^ u < q ^ i := by rw [hin]; exact hnlt
+      exact (Nat.pow_lt_pow_iff_right hq).mp this
+    have hpatval := congrFun hpat ⟨i - (u + 1), by omega⟩
+    simp only [tightTopPattern] at hpatval
+    have hidx : u + 1 + (i - (u + 1)) = i := by omega
+    rw [hidx, hin] at hpatval
+    rw [hpatval] at hfn
+    exact hfn hgn
+  · -- both nonzero: use the pattern
+    have hfmem : n ∈ f.support := by rw [mem_support_iff]; exact hfn
+    obtain ⟨i, hile, hin⟩ := hf.exp_le_of_natDegree_le hq hfdeg hfmem
+    have hui : u < i := by
+      have : q ^ u < q ^ i := by rw [hin]; exact hnlt
+      exact (Nat.pow_lt_pow_iff_right hq).mp this
+    have hpatval := congrFun hpat ⟨i - (u + 1), by omega⟩
+    simp only [tightTopPattern] at hpatval
+    have hidx : u + 1 + (i - (u + 1)) = i := by omega
+    rw [hidx, hin] at hpatval
+    rw [hpatval]; ring
+
+end Polynomial
+
+/-! ## Tight pattern pigeonhole
+
+The tight analogue of `BKR06.exists_pattern_fiber_family`: instead of partitioning by
+the *generic* window of `w` slots `[k, k+w)`, we partition `q`-linearized polynomials of
+degree `≤ q^v` by their **tight** pattern `Fin (v − u) → K`.  There are only
+`(#K)^{v−u}` tight patterns, so a family of more than `(#K)^{v−u} · N` such polynomials
+has a tight-pattern fiber of size `> N`, all pairwise differing only below `q^u`. -/
+
+namespace Polynomial
+
+variable {K : Type*} [Field K] [Fintype K] [DecidableEq K]
+
+/-- **Tight pattern pigeonhole.**  Let `g : ι → K[X]` be a family of `q`-linearized
+polynomials (`q ≥ 2`, `u ≤ v`), each of `natDegree ≤ q^v`.  If `(#K)^{v−u} · N < |ι|`,
+then there is a sub-family of size `> N` (a finset `T`) on which all `g i` share the same
+tight top pattern above `q^u` — hence all pairwise differences `g i − g j` lie in
+`degreeLT K (q^u + 1)`.
+
+This is the *tight* count: the number of free coefficient slots above the cutoff `q^u`
+is `v − u`, not the generic window width. -/
+theorem exists_tight_pattern_fiber_family
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (g : ι → K[X]) (q u v N : ℕ) (hq : 2 ≤ q) (huv : u ≤ v)
+    (hlin : ∀ i, IsQLinearized q (g i))
+    (hdeg : ∀ i, (g i).natDegree ≤ q ^ v)
+    (hbig : (Fintype.card K) ^ (v - u) * N < Fintype.card ι) :
+    ∃ T : Finset ι, N < T.card ∧
+      (∀ i ∈ T, ∀ j ∈ T,
+        g i - g j ∈ Polynomial.degreeLT K (q ^ u + 1)) := by
+  classical
+  -- pigeonhole on the tight pattern map ι → (Fin (v - u) → K)
+  have hpat_card : Fintype.card (Fin (v - u) → K) = (Fintype.card K) ^ (v - u) :=
+    Fintype.card_pi_const K (v - u)
+  let fiber : (Fin (v - u) → K) → Finset ι :=
+    fun y => Finset.univ.filter (fun i => tightTopPattern q u v (g i) = y)
+  have key : ∃ y : (Fin (v - u) → K), N < (fiber y).card := by
+    by_contra hcon
+    push Not at hcon
+    have hsum : (Fintype.card ι) ≤ (Fintype.card (Fin (v - u) → K)) * N := by
+      have hpart : ∑ y : (Fin (v - u) → K), (fiber y).card = Fintype.card ι := by
+        rw [← Finset.card_univ (α := ι)]
+        exact (Finset.card_eq_sum_card_fiberwise
+          (f := fun i => tightTopPattern q u v (g i)) (s := Finset.univ) (t := Finset.univ)
+          (fun i _ => Finset.mem_univ _)).symm
+      calc Fintype.card ι
+          = ∑ y : (Fin (v - u) → K), (fiber y).card := hpart.symm
+        _ ≤ ∑ _y : (Fin (v - u) → K), N := Finset.sum_le_sum (fun y _ => hcon y)
+        _ = (Fintype.card (Fin (v - u) → K)) * N := by
+            rw [Finset.sum_const, Finset.card_univ, smul_eq_mul]
+    rw [hpat_card] at hsum
+    omega
+  obtain ⟨y, hy⟩ := key
+  refine ⟨fiber y, hy, ?_⟩
+  intro i hi j hj
+  simp only [fiber, Finset.mem_filter, Finset.mem_univ, true_and] at hi hj
+  have hpat : tightTopPattern q u v (g i) = tightTopPattern q u v (g j) := by rw [hi, hj]
+  exact sub_mem_degreeLT_of_tightTopPattern_eq hq huv (hlin i) (hlin j) (hdeg i) (hdeg j) hpat
 
 end Polynomial

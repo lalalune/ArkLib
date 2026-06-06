@@ -24,12 +24,13 @@ The core pieces are:
 * `exists_recombination_of_bases` — two `Fin n`-bases of a submodule `A'` of `F[X]` are
   related by an *invertible* `F`-linear recombination of polynomials (`bQ l = ∑ c l m • bP m`,
   `det c ≠ 0`).
-* `gk16_realizing_family` — the encoder-isomorphism transport: for `A ≤ frsCode` and the
-  encoder injective, a basis of the polynomial pre-image subspace `A' ≤ degreeLT F k` gives
-  an independent realizing family `P : Fin (dim A) → F[X]` of degrees `< k`.
-* `gk16Claim16StructuralData_at` — assembles the per-coordinate adapted recombination with
-  its `dim A_i`-element orbit-vanishing index set (under `dim A ≤ s`), i.e. the body of
-  `GK16Claim16StructuralData` for a single `A`.
+* `preimageSubspace` and friends — the encoder-isomorphism transport: for `A ≤ frsCode` and
+  the encoder injective, the polynomial pre-image subspace `A' := comap encoder A ⊓ degreeLT F k`
+  satisfies `A'.map encoder = A` and `finrank A' = finrank A`, so a basis of `A'` is an
+  independent realizing family `P : Fin (dim A) → F[X]` of degrees `< k`.
+* `gk16Claim16StructuralData_at` — assembles the realizing family with, per coordinate, the
+  adapted recombination and its `dim A_i`-element orbit-vanishing index set (under
+  `dim A ≤ s`), i.e. the full existential body of `GK16Claim16StructuralData` for a single `A`.
 
 The two side conditions are exactly the ones documented on `frs_is_subspaceDesign_gk16`:
 encoder injectivity (`h_encoder_inj`, the `dim_frsCode` hypothesis) and the design-range

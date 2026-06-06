@@ -344,6 +344,96 @@ noncomputable def betaCurveInput_of_section5 {k deg : ℕ} {domain : ι ↪ F} {
     intro P v₀ v₁ hlin
     exact hPz_of_henselDatum (hHensel P) (hdegPz P) v₀ v₁ hlin
 
+/-! ## The satisfiable assembly: `betaCurveInputFin_of_section5`
+
+The F5-corrected counterpart of `betaCurveInput_of_section5`: builds the *satisfiable*
+`KeystoneStrictResidual.BetaCurveInputFin u` from centered concrete finite-range §5 data.  The
+over-strong infinite-range `hcard`/`mp` of `betaCurveInput_of_section5` are replaced by the
+truncation index `T`, the finite-range concrete cardinality bound `hcardConcreteFin` (converted to
+`hcardFin` via `hcardFin_of_concrete`), the finite-range matching producer `mpFin`, and the explicit
+algebraic-degree datum `htailDeg` (the bounded-`Z`-degree truncation of `γ`, Prop 5.5).  Because the
+cardinality budget is required only on `[k, T]`, the bundle is satisfiable in principle (no
+remaining `∀-t` blowup — see `KeystoneStrictResidual.betaCurveInputFin_hcardFin_satisfiable`). -/
+
+/-- **The F5-corrected §5 input-bundle instantiation lemma (satisfiable).**
+
+Builds `KeystoneStrictResidual.BetaCurveInputFin (k := k) (deg := deg) (domain := domain) (δ := δ) u`
+from the reduced, per-field primitive data, with the finite-range counting interface that makes the
+weight budget satisfiable.  Differs from `betaCurveInput_of_section5` only in:
+* a truncation index `T` with finite-range `mpFin`/`hcardConcreteFin` (vs. infinite-range `mp`/`hcardConcrete`);
+* the explicit algebraic-degree datum `htailDeg` covering `t > T`. -/
+noncomputable def betaCurveInputFin_of_section5 {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    {u : WordStack F (Fin (k + 1)) ι}
+    -- §5 function-field setup (carried through):
+    (R : F[X][X][Y]) (H : F[X][Y])
+    (hIrr : Fact (Irreducible H)) (hPos : Fact (0 < H.natDegree))
+    (hHyp : Hypotheses (0 : F) R H)
+    (Bcoeff : (i₁ : ℕ) → {m : ℕ} → Nat.Partition m → 𝒪 H)
+    (hH : 0 < H.natDegree) (D : ℕ) (hD : D ≥ Bivariate.totalDegree H)
+    (matchingSet : Finset F) (root : (z : F) → rationalRoot (H_tilde' H) z)
+    -- the Lemma-A.1 truncation index:
+    (T : ℕ)
+    -- Prop-5.5 representative (carried through):
+    (Ppoly : F[X][Y]) (hrep : polyToPowerSeries𝕃 H Ppoly = γ (0 : F) R H hHyp)
+    (hdegX : Polynomial.Bivariate.degreeX Ppoly ≤ 1)
+    -- the single honest §5 / App-A.4 numerator-identification residual (replaces `hγ`):
+    (hβ : ∀ t, β (H := H) R t = betaRec (0 : F) R H hHyp Bcoeff t)
+    -- ingredient-C per-point matching over the **finite** range `k ≤ t ≤ T`:
+    (mpFin : ∀ t, k ≤ t → t ≤ T → ∀ z ∈ matchingSet,
+      BetaMatchingVanishes.MatchingPoint (0 : F) R H hHyp Bcoeff t z (root z))
+    -- the concrete L9/L10 weight-collapse data (`d = R.natDegree`):
+    (hd1 : 1 ≤ R.natDegree) (hdH_le : H.natDegree ≤ R.natDegree) (hdH_D : H.natDegree ≤ D)
+    (hbB : ∀ (i₁ : ℕ) {m : ℕ} (p : Nat.Partition m),
+        weight_Λ_over_𝒪 hH (Bcoeff i₁ p) D
+          ≤ (WithBot.some ((D - Multiset.card p.parts)
+              + (R.natDegree - betaδ i₁ - Multiset.card p.parts) * (D - H.natDegree)) : WithBot ℕ))
+    (hBzero : ∀ (i₁ : ℕ) {m : ℕ} (p : Nat.Partition m),
+        R.natDegree - betaδ i₁ < Multiset.card p.parts → Bcoeff i₁ p = 0)
+    (hbξ : weight_Λ_over_𝒪 hH (ξ (0 : F) R H hHyp) D
+        ≤ (WithBot.some ((R.natDegree - 1) * (D - H.natDegree + 1)) : WithBot ℕ))
+    -- the **finite-range** concrete cardinality bound (satisfiable for a fixed large `matchingSet`):
+    (hcardConcreteFin : ∀ t, k ≤ t → t ≤ T → (↑matchingSet.card : WithBot ℕ)
+        > (((2 * t + 1) * R.natDegree * D * H.natDegree : ℕ) : WithBot ℕ))
+    -- the algebraic-degree datum: beyond `T` the Hensel coefficients vanish (bounded `Z`-degree):
+    (htailDeg : ∀ t, T < t → BetaToCurveCoeffPolys.αFromBeta (0 : F) R H hHyp Bcoeff t = 0)
+    -- the §5 specialisation bridge, reduced to the per-`z` Hensel root datum (uniform in `P`):
+    (hHensel : ∀ (P : F → Polynomial F) (v₀ v₁ : F[X]),
+      γ (0 : F) R H hHyp = polyToPowerSeries𝕃 H
+        ((Polynomial.map Polynomial.C v₀)
+          + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)) →
+      HenselDatum (k := k) (deg := deg) (domain := domain) (δ := δ) u P v₀ v₁)
+    (hdegPz : ∀ (_P : F → Polynomial F) (v₀ v₁ : F[X]),
+      γ (0 : F) R H hHyp = polyToPowerSeries𝕃 H
+        ((Polynomial.map Polynomial.C v₀)
+          + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)) →
+      v₀.natDegree < k + 1 ∧ v₁.natDegree < k + 1) :
+    BetaCurveInputFin (k := k) (deg := deg) (domain := domain) (δ := δ) u where
+  x₀ := (0 : F)
+  R := R
+  H := H
+  hHirr := hIrr
+  hHpos := hPos
+  hHyp := hHyp
+  Bcoeff := Bcoeff
+  hH := hH
+  D := D
+  hD := hD
+  matchingSet := matchingSet
+  root := root
+  T := T
+  hsubst := hsubst_field_of_centre
+  hγ := GammaFromBeta.hγ_field_of_betaEq (0 : F) R H hHyp Bcoeff hβ
+  Ppoly := Ppoly
+  hrep := hrep
+  hdegX := hdegX
+  mpFin := mpFin
+  hcardFin := hcardFin_of_concrete (0 : F) R H hHyp Bcoeff hD hH hd1 hdH_le hdH_D
+    hbB hBzero hbξ hcardConcreteFin
+  htailDeg := htailDeg
+  hPz := by
+    intro P v₀ v₁ hlin
+    exact hPz_of_henselDatum (hHensel P) (hdegPz P) v₀ v₁ hlin
+
 end BetaInputSupply
 
 end ArkLib
@@ -355,3 +445,4 @@ end ArkLib
 #print axioms ArkLib.BetaInputSupply.hcardFin_of_concrete
 #print axioms ArkLib.BetaInputSupply.section5DataFin_of_centered_concrete
 #print axioms ArkLib.BetaInputSupply.betaCurveInput_of_section5
+#print axioms ArkLib.BetaInputSupply.betaCurveInputFin_of_section5

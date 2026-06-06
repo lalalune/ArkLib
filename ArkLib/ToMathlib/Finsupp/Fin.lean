@@ -5,7 +5,9 @@ Authors: ArkLib Contributors
 -/
 
 import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.Finsupp.Basic
+import Mathlib.Data.Finset.Image
 
 /-!
 # Fin-indexed `Finsupp` insertion/removal helpers
@@ -16,19 +18,17 @@ domain is finite.
 
 namespace Finsupp
 
-open Finset
-
 variable {n : ℕ}
 
-/-- Insert a coordinate into a finitely supported function on `Fin n`. -/
+/-- Insert one coordinate into a finitely supported tuple indexed by `Fin`. -/
 noncomputable def insertNth (p : Fin (n + 1)) (i : ℕ) (m : Fin n →₀ ℕ) :
     Fin (n + 1) →₀ ℕ :=
-  Finsupp.onFinset Finset.univ (Fin.insertNth p i (fun j => m j)) (by intro a _; simp)
+  onFinset Finset.univ (Fin.insertNth p i m) (fun _ _ => Finset.mem_univ _)
 
-/-- Remove a coordinate from a finitely supported function on `Fin (n+1)`. -/
+/-- Remove one coordinate from a finitely supported tuple indexed by `Fin`. -/
 noncomputable def removeNth (p : Fin (n + 1)) (m : Fin (n + 1) →₀ ℕ) :
     Fin n →₀ ℕ :=
-  Finsupp.onFinset Finset.univ (fun j => m (p.succAbove j)) (by intro a _; simp)
+  onFinset Finset.univ (p.removeNth m) (fun _ _ => Finset.mem_univ _)
 
 @[simp]
 theorem insertNth_apply_same (p : Fin (n + 1)) (i : ℕ) (m : Fin n →₀ ℕ) :
@@ -43,36 +43,44 @@ theorem insertNth_apply_succAbove (p : Fin (n + 1)) (i : ℕ) (m : Fin n →₀ 
 @[simp]
 theorem removeNth_apply (p : Fin (n + 1)) (m : Fin (n + 1) →₀ ℕ) (j : Fin n) :
     removeNth p m j = m (p.succAbove j) := by
-  simp [removeNth]
+  simp [removeNth, Fin.removeNth_apply]
 
-theorem insertNth_self_removeNth (p : Fin (n + 1)) (m : Fin (n + 1) →₀ ℕ) :
+@[simp]
+theorem insertNth_update_removeNth (p : Fin (n + 1)) (i : ℕ) (m : Fin (n + 1) →₀ ℕ) :
+    insertNth p i (removeNth p m) = Function.update m p i := by
+  ext j
+  refine Fin.succAboveCases p ?_ ?_ j
+  · simp
+  · intro k
+    simp
+
+@[simp]
+theorem insertNth_removeNth (p : Fin (n + 1)) (m : Fin (n + 1) →₀ ℕ) :
     insertNth p (m p) (removeNth p m) = m := by
   ext j
   refine Fin.succAboveCases p ?_ ?_ j
-  · simp [insertNth]
+  · simp
   · intro k
-    simp [insertNth, removeNth]
+    simp
 
-theorem insertNth_removeNth (p : Fin (n + 1)) {m : Fin (n + 1) →₀ ℕ} {i : ℕ}
-    (h : m p = i) :
-    insertNth p i (removeNth p m) = m := by
-  rw [← h]
-  exact insertNth_self_removeNth p m
+theorem insertNth_self_removeNth (p : Fin (n + 1)) (m : Fin (n + 1) →₀ ℕ) :
+    insertNth p (m p) (removeNth p m) = m :=
+  insertNth_removeNth p m
 
 theorem insertNth_right_injective (p : Fin (n + 1)) {i : ℕ} :
     Function.Injective (insertNth p i : (Fin n →₀ ℕ) → Fin (n + 1) →₀ ℕ) := by
-  intro m m' h
+  intro m₁ m₂ h
   ext j
-  have := congrFun (show (insertNth p i m : Fin (n + 1) → ℕ) = insertNth p i m' from
-    congrArg DFunLike.coe h) (p.succAbove j)
-  simpa using this
+  simpa using congrFun (congrArg DFunLike.coe h) (p.succAbove j)
 
 theorem sum_insertNth (m : Fin n →₀ ℕ) (i : ℕ) (p : Fin (n + 1)) :
     (insertNth p i m).sum (fun _ e => e) = m.sum (fun _ e => e) + i := by
-  classical
-  rw [Finsupp.sum_fintype, Finsupp.sum_fintype]
-  · simp [insertNth, add_comm, Fin.sum_insertNth p i (fun j : Fin n => m j)]
-  · exact fun _ => rfl
-  · exact fun _ => rfl
+  rw [sum_fintype, sum_fintype]
+  · rw [Fin.sum_univ_succAbove _ p]
+    simp [add_comm]
+  · simp
+  · simp
 
 end Finsupp
+
+export Finsupp (sum_insertNth)
