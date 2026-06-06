@@ -121,22 +121,27 @@ evaluates this). Both anchors are `sorry`-tagged by design — the soundness
   and `ToyProblem.epsCA_le_winningSetSoundness` proves `ε_ca(C,δ) ≤ winningSetSoundness C δ`
   end-to-end (the attack witness's winning fraction genuinely lower-bounds the
   worst-case soundness, violation certified). So the `fenziSanso_upperBound_attack`
-  ceiling is no longer a bare assertion: its *route* is a real theorem; only the
-  Phase-5 *numeric* `2^(-116) ≤ ε_ca koalaCode` (plus `koalaCode` linearity, which
-  the opaque stand-in cannot yet supply) remains owed. Lemma 6.12's *statement* was
-  also corrected this session (final bound `N/(|F|+2N)`); its proof is Phase 4.
+  ceiling is no longer a bare assertion: its *route* is a real theorem. The
+  Phase-5 carrier is now concrete (`KoalaBear.Sextic` with `KoalaBear.rsCodeSet`,
+  whose linearity is `KoalaBear.rsCode_isLinear`); the remaining attack-side
+  obligation is the pure code-theory winning-set cardinality residual
+  `fenziSanso_upperBound_attack_concrete_residual`. Lemma 6.12's *statement*
+  was also corrected this session (final bound `N/(|F|+2N)`); its proof is
+  Phase 4.
 
 - The **64** is the *full-protocol* (C6.2) provable ceiling — at `t = 128`,
   `δ ≈ 1-1/√2`, the spot-check term `(1/√2)^128 = 2^(-64)` dominates the RBR
   bound `max(2^(-71.5), 2^(-64))` (ABF26 §6.3). As a bound on the simplified-IOR
   `winningSetSoundness` it is *conservative* (the `ε_mca + |Λ|/|F|` branch is the
   tighter ≈`2^(-71.5)`), hence an improvable leaderboard entry.
-- The anchor carrier is `GaloisField 2 128` (size `2^128`), a same-*order*
-  stand-in for the `≈2^186`-element KoalaBear-sextic field, with an **opaque**
-  placeholder code. The large field is required for the `[2^(-116), 2^(-64)]`
-  window to be representable, and opacity keeps `winningSetSoundness` irreducible
-  so neither anchor is provably true or false. Phase 5 substitutes the genuine
-  RS/IRS KoalaBear-sextic field and code.
+- The anchor carrier is the genuine KoalaBear-sextic field
+  `KoalaBear.Sextic = GF((2^31 - 2^24 + 1)^6)`, and the code is the explicit
+  rate-`1/2` Reed-Solomon code `KoalaBear.rsCodeSet`. The large field makes the
+  `[2^(-116), 2^(-64)]` window representable. The current residuals no longer
+  hide field arithmetic or code linearity: `winningSetSoundness_concrete_ge_of_card`
+  reduces the 116-bit attack anchor to a winning-set cardinality bound, and
+  `spotCheck_le_two_pow_neg_64` discharges the explicit 64-bit spot-check
+  arithmetic.
 
 ## Connection to the grand challenges (Phase 1)
 

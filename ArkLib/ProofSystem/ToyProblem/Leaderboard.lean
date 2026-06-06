@@ -392,9 +392,9 @@ theorem bitsOfSecurity_nonneg {e : ℝ≥0} (hpos : 0 < e) (hle : e ≤ 1) :
 `ToyParams` bundles the ambient field/index and interpreted code (the
 universe-pinned bridge — `epsMCA`/`Λ` need their code at `Type 0`) together
 with the plain-data numeric regime (KoalaBear field size `q`, sextic
-extension, rate `ρ`, and `s, n, k, t, δ, η`). Full numeric population — and
-swapping the placeholder code for the genuine KoalaBear-sextic RS/IRS code —
-is Phase 5. -/
+extension, rate `ρ`, and `s, n, k, t, δ, η`). The leaderboard anchor now uses
+the genuine KoalaBear-sextic carrier and RS code; the remaining Phase-5
+obligations are the code-theoretic cardinality/RBR inequalities recorded below. -/
 
 /-- The KoalaBear-sextic parameter regime plus its code interpretation. The
 operational fields `(F, ι, C, δ, t, k)` feed `soundnessError`; the documentary
