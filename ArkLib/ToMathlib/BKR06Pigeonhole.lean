@@ -191,13 +191,11 @@ theorem card_dimv_subspaces_ge
     Submodule.finrank_add_eq_of_isCompl hcompl
   have hfinW₀ : Module.finrank F W₀ = Module.finrank F K - v := by omega
   -- the image of `graphSubspace` over all linear maps `V₀ →ₗ[F] W₀`
-    letI : Fintype V₀ := Fintype.ofFinite V₀
-    letI : Fintype W₀ := Fintype.ofFinite W₀
-    letI : Fintype (V₀ →ₗ[F] W₀) :=
-      Fintype.ofInjective (fun L : V₀ →ₗ[F] W₀ => fun x => L x) (by
-        intro L L' hLL
-        ext x
-        exact congrFun hLL x)
+  letI : Fintype V₀ := Fintype.ofFinite V₀
+  letI : Fintype W₀ := Fintype.ofFinite W₀
+  letI : Fintype (V₀ →ₗ[F] W₀) :=
+      Fintype.ofInjective (fun L : V₀ →ₗ[F] W₀ => (L : V₀ → W₀))
+        (fun L L' hLL => DFunLike.coe_injective hLL)
   refine ⟨Finset.image (graphSubspace V₀ W₀) (Finset.univ : Finset (V₀ →ₗ[F] W₀)), ?_, ?_⟩
   · -- cardinality: injective image, #(V₀ →ₗ W₀) = q^{v(m-v)}
     rw [Finset.card_image_of_injective _ (graphSubspace_injective V₀ W₀ hcompl)]
