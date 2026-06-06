@@ -293,6 +293,61 @@ theorem exists_listPrizeLattice_bracketed_between_halfDist_and_capacity_of_card_
   exact listLatticeThreshold_rs_between_halfDist_and_capacity
     (domain := domain) (deg := k) (m := m) hpos.ne' hle hm hbudget hε
 
+/-- **Johnson/Elias exact four-rate resolver with prize-degree side conditions discharged.**
+
+The numerics-facing exact resolver in `GrandChallengesLattice` needs only the standard
+Reed-Solomon degree side conditions.  For the four ABF26 prize rates, `16 ≤ |ι|` proves those
+side conditions automatically, so the remaining hypotheses are the genuine Johnson/Elias
+arithmetic certificates and the usual interleaving/budget witnesses. -/
+theorem listPrizeLatticeResolved_of_card_ge_sixteen_johnson_sq_elias_next
+    (domain : ι ↪ F) (m : ℕ)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1))
+    (ℓ : Fin 4 → ℕ)
+    (hn : 16 ≤ Fintype.card ι)
+    (hm : m ≠ 0)
+    (hnext : ∀ r : Fin 4, (τ r).val + 1 < Fintype.card ι)
+    (hq1 : 1 < Fintype.card F)
+    (hP : ∀ r : Fin 4,
+      (Fintype.card ι : ℝ) / (Fintype.card F : ℝ) ≤
+        ((Fintype.card ι - (τ r).val : ℕ) : ℝ))
+    (hsq : ∀ r : Fin 4,
+      ((ℓ r : ℝ) + 1)
+          * ((((Fintype.card ι - (τ r).val : ℕ) : ℝ)) -
+              (Fintype.card ι : ℝ) / (Fintype.card F : ℝ)) ^ 2
+        > ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card F : ℝ)))
+          * ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card F : ℝ))
+              + (ℓ r : ℝ)
+                * (((Fintype.card ι -
+                    (Fintype.card ι -
+                      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ + 1) : ℕ) : ℝ) -
+                    (Fintype.card ι : ℝ) / (Fintype.card F : ℝ))))
+    (hpow : ∀ r : Fin 4,
+      ((ℓ r : ENNReal)) ^ m ≤
+        (epsStar : ENNReal) * (Fintype.card F : ENNReal))
+    (hvol_next : ∀ r : Fin 4,
+      (epsStar : ENNReal) * (Fintype.card F : ENNReal) <
+        ENNReal.ofReal
+          ((CodingTheory.hammingBallVolume (Fintype.card F)
+              (((((τ r).val + 1 : ℕ) : ℝ≥0) /
+                    (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)
+              (Fintype.card ι) : ℝ)
+            / (Fintype.card F : ℝ) ^
+                ((Fintype.card ι : ℝ) -
+                  ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊)))
+    (hne : ∀ r : Fin 4,
+      (GrandChallenges.listLatticeSet
+        (ReedSolomon.code domain
+          ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        m epsStar).Nonempty) :
+    GrandChallengesLattice.listPrizeLatticeResolved domain m τ := by
+  refine
+    GrandChallengesLattice.listPrizeLatticeResolved_of_johnson_sq_rsDegreeLe_and_elias_next
+      domain m τ ℓ hm ?_ ?_ hnext hq1 hP hsq hpow hvol_next hne
+  · intro r
+    exact prizeRate_floor_pos_of_card_ge_sixteen r hn
+  · intro r
+    exact prizeRate_floor_le_card_of_two_le r (by omega)
+
 /-! ## Post-RIM frontier surface
 
 The theorem above is the current faithful-LD value interface after the smooth-domain
@@ -438,11 +493,16 @@ theorem demo_elias_volume_n4_q3 :
   rw [CodingTheory.hammingBallVolume, hfloor]
   norm_num [Finset.sum_range_succ, Nat.choose]
 
+/-! ## Axiom audit -/
+
+set_option linter.style.longLine false
+
 #print axioms ProximityGap.ListJohnsonSqLowerCore
 #print axioms ProximityGap.ListEliasVolumeUpperCore
 #print axioms ProximityGap.PostRIMListThresholdFrontier
 #print axioms ProximityGap.listPrizeLattice_bracketed_between_halfDist_and_capacity
 #print axioms ProximityGap.exists_listPrizeLattice_bracketed_between_halfDist_and_capacity_of_card_ge_sixteen
+#print axioms ProximityGap.listPrizeLatticeResolved_of_card_ge_sixteen_johnson_sq_elias_next
 #print axioms ProximityGap.listLatticeThreshold_bracketed_of_johnson_sq_and_elias_core
 #print axioms ProximityGap.listPrizeLattice_bracketed_of_postRIM_frontier
 
