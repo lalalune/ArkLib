@@ -201,15 +201,26 @@ radius of `f` (the `firstOracleWitnessConsistencyProp` bound).
 NAMED RESIDUAL (documented, #33). The forward direction is BW decoder soundness, the
 backward direction BW decoder completeness inside the UDR; both reduce to
 `BerlekampWelch.decoder` correctness transported across the `sDomain` point enumeration
-that `extractMLP` uses (cardinality/equiv glue currently unported). Kept as a single
-documented residual rather than a non-typechecking placeholder, per campaign convention.
+that `extractMLP` uses (cardinality/equiv glue currently unported). Kept as an explicit
+theorem-scope residual rather than a global kernel axiom, per campaign convention.
 Consumed by `firstOracleWitnessConsistencyProp_unique` below. -/
-axiom extractMLP_eq_some_iff_pair_UDRClose
+class ExtractMLPCorrectnessResidual : Prop where
+  holds :
+    ∀ (f : OracleFunction (𝔽q := 𝔽q) (β := β)
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (𝓡 := 𝓡) 0)
+      (tpoly : MultilinearPoly L ℓ),
+      extractMLP 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0 f = some tpoly ↔
+      firstOracleWitnessConsistencyProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) tpoly f
+
+variable [ExtractMLPCorrectnessResidual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
+
+theorem extractMLP_eq_some_iff_pair_UDRClose
     (f : OracleFunction (𝔽q := 𝔽q) (β := β)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (𝓡 := 𝓡) 0)
     (tpoly : MultilinearPoly L ℓ) :
     extractMLP 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) 0 f = some tpoly ↔
-    firstOracleWitnessConsistencyProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) tpoly f
+    firstOracleWitnessConsistencyProp 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) tpoly f :=
+  ExtractMLPCorrectnessResidual.holds f tpoly
 
 lemma firstOracleWitnessConsistencyProp_unique (t₁ t₂ : MultilinearPoly L ℓ)
     (f₀ : OracleFunction (𝔽q := 𝔽q) (β := β)
