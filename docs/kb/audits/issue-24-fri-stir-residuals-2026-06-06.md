@@ -5,8 +5,10 @@ Date: 2026-06-06
 Scope:
 
 - `ArkLib/ProofSystem/Fri/Spec/Soundness.lean`
+- `ArkLib/ProofSystem/BatchedFri/Security.lean`
 - `ArkLib/ProofSystem/Stir/ProximityGap.lean`
 - `ArkLib/ProofSystem/Stir/Combine.lean`
+- `ArkLib/ProofSystem/Stir/RoundProtocol.lean`
 - `ArkLib/ProofSystem/Stir/MainThm.lean`
 
 ## Current residual surfaces
@@ -26,6 +28,12 @@ pending sequential-composition infrastructure. There is no local proof hole to
 discharge in this file; the missing work is a soundness theorem tying the
 per-round BCIKS20 proximity-gap and query-consistency quantities to the actual
 FRI verifier failure probability.
+
+The Batched FRI query surface in
+`ArkLib/ProofSystem/BatchedFri/Security.lean` is tracked separately in #14. The
+old finite-range diagnostic scratch block after `fri_query_soundness` has been
+removed; the declaration itself remains the faithful non-`True` Claim 8.2
+residual, namely the query-round route to `Code.jointAgreement`.
 
 ### STIR proximity gap
 
@@ -56,17 +64,26 @@ spaces / curves correlated-agreement proof chain.
 
 ### STIR main theorem and RBR soundness
 
-`ArkLib/ProofSystem/Stir/MainThm.lean` has two documented residual surfaces:
+`ArkLib/ProofSystem/Stir/RoundProtocol.lean` now defines a real single STIR
+fold-round oracle reduction, `StirIOP.stirRoundReduction`, using the genuine
+`Combine.combine` operation. That removes the older "no protocol object exists"
+obstruction for the one-round fold-and-combine object. The proof obligations on
+that object are still open: `stirRoundReduction_completeness` is a named
+statement whose proof is owed.
+
+`ArkLib/ProofSystem/Stir/MainThm.lean` still has two documented residual
+surfaces:
 
 - `stir_main`, the full STIR IOPP construction theorem.
 - `stir_rbr_soundness`, the round-by-round soundness theorem.
 
-Both require constructing an actual `VectorIOP` protocol object and proving the
-round-by-round security bounds. The directory currently contains algebraic
-building blocks, but not the protocol construction and sequential soundness
-assembly needed by these theorem statements. Their proximity-gap inputs also
-flow through `Combine.combine_theorem`, so they remain gated on the BCIKS20
-list-decoding-regime correlated-agreement work.
+Both require assembling the full `VectorIOP` protocol object from the round
+building blocks and proving the round-by-round security bounds. The directory
+now contains a genuine single-round object, but not the full multi-round
+construction and sequential soundness assembly needed by these theorem
+statements. Their proximity-gap inputs also flow through `Combine.combine_theorem`,
+so they remain gated on the BCIKS20 list-decoding-regime correlated-agreement
+work.
 
 ## Audit command
 
@@ -83,6 +100,9 @@ ArkLib/ProofSystem/Stir/MainThm.lean:150:  -- full chain). Honest residual: this
 ArkLib/ProofSystem/Stir/MainThm.lean:242:  -- construction scaffolding exists yet. Honest residual: gated on AffineLines/Main.lean:40
 ArkLib/ProofSystem/Stir/ProximityGap.lean:41:  STATUS (audit 2026-06-04, branch arklib-sorry-fixes). Open proof. Two independent,
 ArkLib/ProofSystem/Stir/ProximityGap.lean:68:  Honest residual: close `AffineLines/Main.lean:40` (Thm 5.1, list-decoding regime), which
+ArkLib/ProofSystem/Stir/RoundProtocol.lean:132: The STIR fold-round oracle reduction
+ArkLib/ProofSystem/Stir/RoundProtocol.lean:187: Completeness of the real STIR fold-round object
+ArkLib/ProofSystem/BatchedFri/Security.lean:695:def fri_query_soundness
 ```
 
 ## Remaining proof tracks
@@ -94,9 +114,9 @@ ArkLib/ProofSystem/Stir/ProximityGap.lean:68:  Honest residual: close `AffineLin
    curves to the repaired monomial proximity-gap statement.
 3. STIR combine: discharge `StrictCoeffPolysResidual` and reconnect
    `combine_theorem` to the repaired proximity gap.
-4. STIR main theorem: build the concrete `VectorIOP` object and prove the
-   round-by-round security assembly using the closed combine/proximity-gap
-   inputs.
+4. STIR main theorem: lift the existing single-round object into the full
+   concrete `VectorIOP` object and prove the round-by-round security assembly
+   using the closed combine/proximity-gap inputs.
 
 This audit does not close the mathematical residuals. It makes the remaining
 surfaces explicit and separates the work into dependency tracks so the issue is
