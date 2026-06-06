@@ -1813,6 +1813,11 @@ theorem probEvent_badAgreement_degree_two_le {L : Type} [CommRing L] [IsDomain L
       (2 : ENNReal) / (Fintype.card L) := by
   exact probEvent_badAgreement_le p q 2 hp hq
 
+#print axioms RingSwitching.SchwartzZippelRootBound.probEvent_eval_eq_degree_two_le
+#print axioms RingSwitching.SchwartzZippelRootBound.probEvent_badAgreement_of_sub_degree_le
+#print axioms RingSwitching.SchwartzZippelRootBound.probEvent_badAgreement_le
+#print axioms RingSwitching.SchwartzZippelRootBound.probEvent_badAgreement_degree_two_le
+
 end SchwartzZippelRootBound
 
 end RingSwitching
