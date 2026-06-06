@@ -28,7 +28,8 @@ The headline result `weighted_list_agreement_on_curves_implies_correlated_agreem
 these into correlated agreement on curves.
 -/
 
-set_option linter.style.longFile 2900
+-- Slightly above the global cap while the §6 curve machinery remains a cohesive proof module.
+set_option linter.style.longFile 3000
 
 namespace ProximityGap
 

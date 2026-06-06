@@ -9,7 +9,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.AHIV22Support
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.UniqueDecoding
 
-set_option linter.style.longFile 1600
+-- Slightly above the global cap because this paper module remains a single statement/proof ledger.
+set_option linter.style.longFile 1700
 
 /-!
 ## Main Definitions
