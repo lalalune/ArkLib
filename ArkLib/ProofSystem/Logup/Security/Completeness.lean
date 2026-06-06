@@ -12,7 +12,7 @@ import ArkLib.ProofSystem.Logup.Protocol
 
 Main completeness statement for Protocol 2 of `paper.txt`.
 
-## Proof architecture and the upstream `sorryAx` wall
+## Proof architecture and the named residual wall
 
 `logupOracleReduction` is *definitionally* the sequential composition
 `outerOracleReduction.append sumcheckOracleReduction` (see `logupOracleReduction_eq_append`).
@@ -29,9 +29,9 @@ Both sub-facts, and the composition lemma `OracleReduction.append_completeness` 
 by missing upstream security lemmas introduced *outside* `ArkLib/ProofSystem/Logup/**`, which this
 development is not permitted to modify:
 
-* `Reduction.reduction_append_completeness`
-  (`ArkLib/OracleReduction/Composition/Sequential/Append.lean:675`) is a `sorry`; the oracle-level
-  `OracleReduction.append_completeness` reduces to it.
+* `OracleReduction.append_completeness` currently exposes the sequential-composition completeness
+  obligation as an explicit `hAppendCompleteness` hypothesis. This is an honest named residual
+  interface, not a hidden `sorryAx`.
 * No full generic `Sumcheck.Spec.oracleReduction` completeness theorem exists in-tree. The generic
   single-round sumcheck reduction has `oracleReduction_perfectCompleteness`, but
   `Sumcheck.Spec.oracleReduction` is the `seqCompose` of those rounds and no seq-compose
@@ -41,8 +41,8 @@ development is not permitted to modify:
   `OracleReduction.liftContext_completeness`.
 
 Consequently `logup_completeness` is closed via the genuine composition skeleton, with a single
-residual `sorry` (`subPhaseCompleteness`) standing for the two upstream-blocked sub-completeness
-facts. The pole-probability lemmas it relies on are fully proven (no `sorryAx`).
+named residual `Prop` (`SubPhaseCompletenessResidual`) standing for the upstream-blocked
+sub-completeness facts. The pole-probability lemmas it relies on are fully proven.
 -/
 
 open scoped NNReal ENNReal
@@ -167,8 +167,9 @@ here):
   `Sumcheck.Spec.oracleReduction`. No full `Sumcheck.Spec` completeness theorem exists in-tree, and
   the lift also needs the corresponding `OracleContext.Lens.IsComplete` instance for
   `logupSumcheckContextLens`.
-* The top-level composition step uses `OracleReduction.append_completeness`, which still reduces to
-  the upstream `Reduction.reduction_append_completeness` sorry.
+* The top-level composition step uses `OracleReduction.append_completeness`, whose current API
+  carries the append-completeness theorem as an explicit hypothesis instead of hiding it behind an
+  incomplete proof.
 
 This is therefore kept as an explicit named residual `Prop` (no `sorry`); the main theorem
 `logup_completeness_of_residual` consumes it. -/
@@ -179,9 +180,9 @@ def SubPhaseCompletenessResidual : Prop :=
         (midRelation F n M params) outputRelation 0
 
 /-- Main ArkLib completeness theorem for LogUp Protocol 2, **reduced to the named residual**
-`SubPhaseCompletenessResidual` through the genuine sequential-composition completeness lemma
-`OracleReduction.append_completeness` (itself upstream-blocked by `sorryAx`; see the module
-docstring).
+`SubPhaseCompletenessResidual` through the genuine sequential-composition completeness interface
+`OracleReduction.append_completeness` (whose append theorem is an explicit residual hypothesis; see
+the module docstring).
 
 The completeness error `logupCompletenessError F n = |Hypercube n| / |F|` is the sum
 `logupCompletenessError F n + 0` of the outer pole-rejection error and the (perfect) sumcheck

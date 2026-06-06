@@ -9,7 +9,6 @@ import ArkLib.ToMathlib.ToyProblemViolation
 import ArkLib.ToMathlib.KoalaBearCode
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import Mathlib.Analysis.SpecialFunctions.Log.Base
-import Mathlib.FieldTheory.Finite.GaloisField
 
 /-!
 # Proximity-Prize "bits of security" leaderboard (ABF26 §6)
@@ -184,9 +183,9 @@ immediately. **CLOSED (2026-06), axiom-clean** (`#print axioms` = `[propext,
 Classical.choice, Quot.sound]`, no `sorryAx`): the §6.4.1 winning-set construction
 is proved end-to-end here (the violation certificate is supplied per word-stack by the
 in-tree bridge `relaxedRelation_two_zero_imp_jointProximity`). Only the *numeric*
-`ε_ca ≥ 2^(-b)` at the genuine KoalaBear code remains owed downstream (Phase 5,
-`fenziSanso_upperBound_attack`), which is a separate obligation against the opaque
-`koalaCode`, not part of this lemma. -/
+`ε_ca ≥ 2^(-b)` at the genuine KoalaBear code remains owed downstream
+(`fenziSanso_upperBound_attack`), which is a separate coding-theory obligation, not part of this
+lemma. -/
 theorem epsCA_le_winningSetSoundness {k : ℕ} [Nonempty ι] (C : Set (ι → F)) (δ : ℝ≥0)
     (hδpos : (0 : ℝ≥0) < δ) (hδlt : δ < 1)
     (hClin : ∃ enc : (Fin k → F) →ₗ[F] (ι → F), Set.range enc = C) :
@@ -579,64 +578,34 @@ theorem bitsOfSecurity_mem_Icc_of_bounds {p : ToyParams}
 
 /-! ## Anchor parameter point and the two current entries
 
-`koalaIRS` fixes the KoalaBear-sextic regime numerics (`q = 2^31 - 2^24 + 1`,
-sextic extension, `ρ = 1/2`, `t = 128`). Two design points keep the anchors
-*honest* (no `sorry` hiding a provably-false goal):
+`koalaIRS` fixes the genuine KoalaBear-sextic regime (`q = 2^31 - 2^24 + 1`,
+sextic extension, `ρ = 1/2`, `t = 128`) over the concrete rate-`1/2`
+Reed-Solomon code `KoalaBear.rsCodeSet`.
 
-1. **The carrier field is large.** The soundness error is a fraction `|Ω|/|F|`,
-   so to even *represent* a value in the target window `[2^(-116), 2^(-64)]` the
-   field must satisfy `|F| ≥ 2^116`. We use `GaloisField 2 128` (size `2^128`) —
-   a stand-in of the right *order* for the genuine KoalaBear-sextic field (size
-   `≈2^186`), which Phase 5 substitutes. (Over a tiny field like `𝔽₂`, `|Ω|/|F|`
-   lives in `{0, 1/2, 1}` and the two anchors would be *jointly* unsatisfiable.)
-2. **The code is opaque.** `koalaCode`'s fine structure is hidden, so
-   `winningSetSoundness koalaIRS` is irreducible — neither anchor's inequality is
-   provably true *or* false; they are genuine owed obligations (Phase 3 supplies
-   the §6 proofs, Phase 5 the genuine RS/IRS code and numerics). `opaque` is
-   axiom-clean (no `sorryAx`).
+The two anchors below are conditional on explicit residual propositions rather than
+`sorry`-backed. Their remaining obligations are code-theoretic: the §6.3 RBR upper-bound
+calculation for the provable side, and the Fenzi-Sanso winning-set construction for the attack
+side. The field and code are no longer opaque stand-ins. -/
 
-The two anchors below are conditional on explicit residual propositions rather
-than `sorry`-backed. -/
-
-/-- `𝔽₂` primality, for the `GaloisField 2 128` anchor carrier. Kept `local`
-so it does not leak `Fact (Nat.Prime 2)` into downstream importers. -/
-local instance : Fact (Nat.Prime 2) := ⟨Nat.prime_two⟩
-
-/-- Opaque placeholder code over the KoalaBear-sextic-sized field `GF(2^128)`;
-its fine structure is deferred to Phase 5 (the genuine RS/IRS code). Keeping it
-`opaque` makes `winningSetSoundness koalaIRS` irreducible, so the anchor
-inequalities are genuine owed obligations rather than computable (and hence
-provably true/false) at this stand-in. -/
-opaque koalaCode : Set (Fin 3 → GaloisField 2 128)
-
-/-- The Proximity-Prize anchor parameter point: the KoalaBear-sextic regime
-(`q = 2^31 - 2^24 + 1`, sextic extension, `ρ = 1/2`, `t = 128`). The proximity
-radius is set near capacity, `δ = 3/10` (just above `1 - 1/√2 ≈ 0.293`), so the
-full-protocol spot-check term `(1-δ)^128 ≈ 2^(-65.9) ≤ 2^(-64)` is consistent
-with the headline 64-bit provable ceiling (cf. ABF26 §6.3, `.tex` 2819–2823).
-The carrier is the `2^128`-element field `GaloisField 2 128` (a same-order
-stand-in for the `≈2^186`-element KoalaBear sextic; Phase 5 substitutes the
-real field and code). The documentary numeric fields `(q, ext, ρ, s, n, η)`
-state the *intended* KoalaBear-sextic regime (rate `ρ = k/n = 2/4 = 1/2`); the
-operational stand-in `(F = GF(2^128), ι = Fin 3, k = 2, opaque C)` does not yet
-realise it (it is not literally a rate-`1/2` RS code over the sextic field) —
-Phase 5 reconciles the two. -/
-noncomputable def koalaIRS : ToyParams := by
-  haveI : Fintype (GaloisField 2 128) := Fintype.ofFinite _
-  classical
-  exact
-    { F := GaloisField 2 128
-      ι := Fin 3
-      C := koalaCode
-      δ := 3 / 10
-      t := 128
-      k := 2
-      q := 2 ^ 31 - 2 ^ 24 + 1
-      ext := 6
-      ρ := 1 / 2
-      s := 1
-      n := 4
-      η := 1 / 16 }
+/-- The Proximity-Prize anchor parameter point: the genuine KoalaBear-sextic regime
+(`q = 2^31 - 2^24 + 1`, sextic extension, `ρ = 1/2`, `t = 128`) over the real field
+`F_{p^6}` and the genuine rate-`1/2` Reed-Solomon code. The proximity radius is set near capacity,
+`δ = 3/10` (just above `1 - 1/√2 ≈ 0.293`), so the full-protocol spot-check term
+`(1-δ)^128 ≈ 2^(-65.9) ≤ 2^(-64)` is consistent with the headline 64-bit provable ceiling
+(cf. ABF26 §6.3, `.tex` 2819–2823). -/
+noncomputable def koalaIRS : ToyParams where
+  F := KoalaBear.Sextic
+  ι := Fin 4
+  C := KoalaBear.rsCodeSet
+  δ := 3 / 10
+  t := 128
+  k := 2
+  q := 2 ^ 31 - 2 ^ 24 + 1
+  ext := 6
+  ρ := 1 / 2
+  s := 1
+  n := 4
+  η := 1 / 16
 
 /-
 STATUS (OPEN_PRIZE). This anchor is the *provable-security* (X) side of the
@@ -718,19 +687,12 @@ theorem securityGap_koalaIRS_anchors_nonneg
     0 ≤ securityGap (arklib_lowerBound_irs_t128 hLo) (fenziSanso_upperBound_attack hHi) := by
   exact securityGap_nonneg (arklib_lowerBound_irs_t128 hLo) (fenziSanso_upperBound_attack hHi)
 
-/-! ## Concrete KoalaBear-sextic carrier (Phase 5 instantiation)
+/-! ## Concrete KoalaBear-sextic carrier
 
-The anchor point `koalaIRS` above runs over a same-*order* stand-in field
-`GaloisField 2 128` with an `opaque` code (kept so its two anchor inequalities
-remain genuine owed obligations rather than computable-and-hence-true/false).
-That opacity is **load-bearing** and is left untouched, so existing consumers of
-`koalaCode` / `koalaIRS` are unaffected.
-
-Here we add the *genuine* KoalaBear-sextic carrier as a **parallel** anchor
-point `koalaIRSConcrete`, over the real field `F_{p^6}`
-(`KoalaBear.Sextic`, `p = 2^31 - 2^24 + 1`) and the genuine rate-`1/2`
-Reed–Solomon code (`KoalaBear.rsCodeSet`, the range of an explicit `F`-linear
-evaluation encoder). Two things are now *concrete*, not owed:
+The anchor point `koalaIRS` is the genuine KoalaBear-sextic carrier over the real field
+`F_{p^6}` (`KoalaBear.Sextic`, `p = 2^31 - 2^24 + 1`) and the genuine rate-`1/2` Reed-Solomon
+code (`KoalaBear.rsCodeSet`, the range of an explicit `F`-linear evaluation encoder). Two things
+are concrete, not owed:
 
 * **the field size** — `|F| = p^6 ≈ 2^186` (`KoalaBear.card_sextic`), so the
   prize window `[2^(-116), 2^(-64)]` is genuinely representable; and
@@ -746,23 +708,8 @@ reductions below discharge the **explicit-power arithmetic** end-to-end (sorry-
 free, `norm_num` only), turning each owed obligation into a pure coding-theory
 fact about a *winning-set cardinality*. -/
 
-/-- The genuine KoalaBear-sextic anchor parameter point: identical regime to
-`koalaIRS` (`δ = 3/10`, `t = 128`, `k = 2`), but over the **real** field
-`F_{p^6}` and the **genuine** rate-`1/2` RS code. Phase-5 realisation of the
-intended `(q, ext, ρ, n)` documentary regime. -/
-noncomputable def koalaIRSConcrete : ToyParams where
-  F := KoalaBear.Sextic
-  ι := Fin 4
-  C := KoalaBear.rsCodeSet
-  δ := 3 / 10
-  t := 128
-  k := 2
-  q := 2 ^ 31 - 2 ^ 24 + 1
-  ext := 6
-  ρ := 1 / 2
-  s := 1
-  n := 4
-  η := 1 / 16
+/-- Backward-compatible name for the genuine KoalaBear-sextic anchor. -/
+abbrev koalaIRSConcrete : ToyParams := koalaIRS
 
 /-- The genuine carrier's field is the KoalaBear-sextic field, of size
 `p^6 ≈ 2^186`. -/

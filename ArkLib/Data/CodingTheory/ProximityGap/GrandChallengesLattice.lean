@@ -681,6 +681,44 @@ theorem mcaThresholdLattice_bracketed_of_lowerWitness_and_Spike
         (ReedSolomon.code domain k : Set (ι → F)) ε_star wlo)
       hδhi ht_n ht_q hδ hgt⟩
 
+/-- Adjacent per-rate MCA lower witnesses and middle-radius spike certificates resolve the
+faithful MCA lattice prize with the lower witness indices as the exact thresholds.
+
+This is a non-endpoint finite-search closing rule: a Johnson/GS-style lower witness can certify
+the candidate lattice point, while the explicit spike family rules out the next one. -/
+theorem mcaPrizeLatticeResolved_of_lowerWitnesses_and_spike_adjacent
+    (domain : ι ↪ F)
+    (wlo : ∀ j : Fin 4,
+      GrandChallenges.MCALowerWitness
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (t : Fin 4 → ℕ) (δ_hi : Fin 4 → ℝ≥0)
+    (hδhi : ∀ j : Fin 4, δ_hi j ≤ 1)
+    (ht_n : ∀ j : Fin 4,
+      t j + ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ ≤ Fintype.card ι)
+    (ht_q : ∀ j : Fin 4, t j ≤ Fintype.card F)
+    (hδ : ∀ j : Fin 4,
+      ((1 - δ_hi j) * Fintype.card ι : ℝ≥0) ≤
+        (Fintype.card ι - t j + 1 : ℕ))
+    (hgt : ∀ j : Fin 4,
+      (epsStar : ENNReal) < (t j : ENNReal) / (Fintype.card F : ENNReal))
+    (hadj : ∀ j : Fin 4,
+      (latticeIndexOf (ι := ι) (δ_hi j) (hδhi j)).val =
+        (latticeIndexOf (ι := ι) (wlo j).δ (wlo j).le_one).val + 1) :
+    mcaPrizeLatticeResolved domain
+      (fun j => latticeIndexOf (ι := ι) (wlo j).δ (wlo j).le_one) := by
+  refine mcaPrizeLatticeResolved_of_adjacent_witnesses domain wlo ?_ ?_ ?_
+  · intro j
+    exact MCAUpperWitness.ofGt
+      (lt_of_lt_of_le (hgt j)
+        (epsMCA_ge_spike domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ (t j) (δ_hi j)
+          (ht_n j) (ht_q j) (hδ j)))
+  · intro j
+    simpa using hδhi j
+  · intro j
+    simpa using hadj j
+
 /-- A lower MCA witness and a capacity-side `ε_ca` upper witness bracket the faithful lattice
 threshold directly. This is the lattice version of the common Johnson-lower/capacity-upper
 workflow for linear codes. -/
