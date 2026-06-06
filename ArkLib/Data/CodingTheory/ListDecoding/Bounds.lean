@@ -90,6 +90,58 @@ codes, and "sufficiently large `n`". We capture these uniformly as follows:
 - ABF26 T3.15 [CW07] — algorithmic hardness barrier (discrete-log reduction). Out of
   scope per `docs/kb/ABF26_PLAN.md` §7 D2 (we formalise combinatorial statements only).
 
+## Disposition ledger (issue #54)
+
+Per-paper status of the §3 list-decoding family carried by this file.  This is the §3
+list-bounds workstream, distinct from Johnson (#49), GGR11 interleaving (#50), and GK16/CZ25
+subspace-design (#53); the CZ25 §3.1 upper bounds below are tracked under **#53**, not here.
+
+*PROVEN in-tree* (`theorem`, `sorry`-free, axiom-clean):
+
+- `linear_lambda_ge_elias_volume_eli57` (L3.7 [Eli57]) — Elias volume list-size lower bound.
+- `linear_lambda_ge_entropy_volume` (C3.8) — entropy-volume lower bound (MS77 Hamming-ball
+  volume via Robbins–Stirling, all in-tree).
+- `linear_C_le_generalized_singleton_st20` (T3.9 [ST20 Thm 1.2]) — the generalized Singleton
+  bound.  **The ST20 puncturing/coset pigeonhole core that issue #54 flags as the optional
+  in-tree target is complete**: `exists_representative_center_sum_hammingDist_le` (plurality
+  averaging) + helpers `st20_kernel_extract` / `st20_dist_bound` / `st20_nat_ineq` /
+  `st20_ncard_eq` assemble the full proof under the faithful lattice (`hlat`) and
+  range (`ha_le`) hypotheses documented at the theorem.
+- `rs_lambda_high_rate_jh01` (T3.14 [JH01 Thm 2]) — high-rate RS list-size separation
+  (interpolation construction in `ListDecoding.JH01`).
+
+*EXTERNAL ADMIT, NEEDS_CLASSICAL* (`def … : Prop`; no in-tree route — genuine paper content):
+
+- `large_alphabet_barrier_bdg24_agl23` (T3.10 [BDG24, AGL23]) — alphabet-size lower bound
+  absent in-tree.
+- `random_linear_lambda_lower_glmrsw22` (T3.11 [GLMRSW22 Thm 4.1]) — first-moment count over
+  random generator matrices absent in-tree.
+
+*EXTERNAL ADMIT, COUNTING DISCHARGED — narrowed to an irreducible geometric/asymptotic core*
+(`def … : Prop` + proven `_of_residuals` reduction; the arithmetic side conditions issue #54
+asks to close where feasible are **already closed in-tree**):
+
+- `rs_lambda_superpoly_extension_bkr06` (T3.12 [BKR06 Cor 2.2]) — the roots→`q^d` cardinality
+  arithmetic is discharged by `rs_lambda_superpoly_extension_bkr06_of_residuals` (via the
+  proven `BKR06.subspacePoly_natDegree_ge_target` bridge) and the fiber-count form
+  `_of_family`; residual = the BKR06 Lemma 3.5 roots→distinct-close-codewords *encoding* at
+  the genuine extension parameters (a `W ≤ F` form is parameter-degenerate, see the in-file
+  PARAMETER DEFECT note — use `_of_family`).
+- `rs_lambda_large_prime_ghsz02` (T3.13 [GHSZ02 Cor 20]) — reduction proven in
+  `rs_lambda_large_prime_ghsz02_of_residuals`; residual = the `GHSZ02LargeN` asymptotic input
+  (`ToMathlib/GHSZ02Cor20.lean`).
+
+*TRACKED UNDER #53 (GK16/CZ25), recorded here for completeness*:
+
+- `subspaceDesign_list_decoding_cz25` (T3.4 [CZ25 Thm B.5]) — admit; design→Λ dimension count.
+- `frs_list_decoding_capacity_cz25` (C3.5 [CZ25 Cor 2.21]) — admit + proven
+  `frs_list_decoding_capacity_cz25_of_residuals_prop`; corollary of T3.4 via T2.18.
+
+**No statement in this file is disproven, and the file is `sorry`-free** (every "sorry"
+token is inside a docstring describing the *missing external proof*, never a proof term):
+the external results are recorded as `def … : Prop` admit-statements with explicit
+"Missing ingredient" notes, and each reducible one carries a proven `_of_residuals` bridge.
+
 ## References
 
 - [ABF26] Arnon, Boneh, Fenzi. *Open Problems in List Decoding and Correlated Agreement*.
