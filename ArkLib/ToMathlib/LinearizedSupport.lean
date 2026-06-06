@@ -605,19 +605,3 @@ theorem bkr06_tight_family_hfamily
   exact le_trans hexp_le_N1 hN1
 
 end BKR06
-
--- Axiom audit on the freshly elaborated declarations.
-#print axioms Polynomial.coeff_pow_expChar_pow
-#print axioms Polynomial.support_pow_expChar_pow
-#print axioms Polynomial.mem_support_pow_expChar_pow
-#print axioms Polynomial.isQLinearized_X
-#print axioms Polynomial.IsQLinearized.pow
-#print axioms Polynomial.IsQLinearized.pow_sub_C_mul
-#print axioms Polynomial.IsQLinearized.exp_le_of_natDegree_le
-#print axioms Polynomial.sub_mem_degreeLT_of_tightTopPattern_eq
-#print axioms Polynomial.exists_tight_pattern_fiber_family
-#print axioms BKR06.bkr06_tight_pigeonhole_family_card
-#print axioms BKR06.bkr06_tight_hexp
-#print axioms BKR06.bkr06_tight_hexp_of_count
-#print axioms BKR06.bkr06_tight_N_realizes
-#print axioms BKR06.bkr06_tight_family_hfamily

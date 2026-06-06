@@ -154,9 +154,3 @@ theorem powerSeries_newton_root_unique (f : Polynomial (PowerSeries k)) (a₀ : 
   exact hensel_root_unique f hb_root ha_root hb_sub ha_sub h₂
 
 end ArkLib
-
-#print axioms ArkLib.X_dvd_sub_of_sub_mem_span
-#print axioms ArkLib.hensel_root_unique
-#print axioms ArkLib.powerSeries_hensel_lift_unique
-#print axioms ArkLib.newton_root_eq_of_isRoot
-#print axioms ArkLib.powerSeries_newton_root_unique

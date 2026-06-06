@@ -894,6 +894,25 @@ theorem liftContext_perfectCompleteness
 
 end Reduction
 
+/-- `OracleComp.liftComp` preserves the support: a value is reachable after lifting to a larger
+oracle spec iff it is reachable in the original computation.  Support-level shadow of
+`evalDist_liftComp`. -/
+private theorem OracleComp.support_liftComp_aux {τ : Type} {superSpec : OracleSpec τ} {α : Type}
+    [MonadLift (OracleQuery oSpec) (OracleQuery superSpec)]
+    (mx : OracleComp oSpec α) :
+    support (OracleComp.liftComp mx superSpec) = support mx := by
+  induction mx using OracleComp.inductionOn with
+  | pure x => simp
+  | query_bind t oa ih =>
+      rw [OracleComp.liftComp_bind, OracleComp.liftComp_query]
+      ext y
+      simp only [support_bind, Set.mem_iUnion, support_map, Set.mem_image,
+        OracleComp.support_query, Set.mem_univ, true_and, exists_eq, exists_const,
+        OracleQuery.cont_query, OracleQuery.input_query, id_eq, ih]
+      constructor
+      · rintro ⟨i, -, hi⟩; exact ⟨i, hi⟩
+      · rintro ⟨i, hi⟩; exact ⟨i, ⟨i, by simp, rfl⟩, hi⟩
+
 /-- Brick for `Verifier.liftContext_soundness`: the verifier's output statement of any complete
 result in the support of `Reduction.run` is itself a reachable output of the verifier on the input
 statement and the produced full transcript.
@@ -901,7 +920,7 @@ statement and the produced full transcript.
 The transcript witness for `Verifier.compatStatement` is exactly the `proverResult.1` component of
 the run result.  The verifier sub-computation appears in `Reduction.run` as
 `liftM (verifier.run stmt td).run`; since `OracleComp.liftComp` preserves the support
-(`evalDist_liftComp`), reachability transfers back to the un-lifted `verifier.run`. -/
+(`OracleComp.support_liftComp_aux`), reachability transfers back to the un-lifted `verifier.run`. -/
 theorem Reduction.verifier_output_mem_run_support
     {StmtIn WitIn StmtOut WitOut : Type}
     {n : ℕ} {pSpec : ProtocolSpec n}
@@ -912,7 +931,7 @@ theorem Reduction.verifier_output_mem_run_support
     x.2 ∈ support (reduction.verifier.run stmt x.1.1) := by
   -- Unfold `Reduction.run` and peel the two binds (`prover.run`, then the lifted `verifier.run`).
   rw [Reduction.run] at hx
-  simp only [OptionT.run_bind, Option.elimM, OptionT.run_mk, bind_pure_comp] at hx
+  simp only [OptionT.run_bind, Option.elimM] at hx
   rw [mem_support_bind_iff] at hx
   obtain ⟨proverResultOpt, _hprover, hx⟩ := hx
   cases proverResultOpt with
@@ -921,29 +940,30 @@ theorem Reduction.verifier_output_mem_run_support
       simp only [Option.elim_some, OptionT.run_bind, Option.elimM] at hx
       rw [mem_support_bind_iff] at hx
       obtain ⟨stmtOutOpt, hstmtOut, hx⟩ := hx
+      -- `stmtOutOpt : Option (Option StmtOut)`: outer `Option` from the monadic bind value, inner
+      -- from the verifier's optional output.  Both must be `some` for `x` to be reachable.
       cases stmtOutOpt with
-      | none =>
-          simp only [Option.elim_none, OptionT.run_pure, support_pure,
-            Set.mem_singleton_iff] at hx
-      | some vOut =>
-          simp only [Option.elim_some, Option.getM_some, OptionT.run_pure, support_pure,
-            Set.mem_singleton_iff] at hx
-          subst hx
-          have hLift :
-              some vOut ∈ support
-                (OracleComp.liftComp (reduction.verifier.run stmt proverResult.1).run
-                  (oSpec + [pSpec.Challenge]ₒ)) := by
-            simpa [liftComp_eq_liftM] using hstmtOut
-          have hSupp :
-              support
-                (OracleComp.liftComp (reduction.verifier.run stmt proverResult.1).run
-                  (oSpec + [pSpec.Challenge]ₒ))
-                = support (reduction.verifier.run stmt proverResult.1).run := by
-            apply Set.eq_of_subset_of_subset <;> intro y hy <;>
-              simpa [OracleComp.mem_support_iff_probOutput_ne_zero,
-                probOutput_liftComp] using hy
-          rw [hSupp] at hLift
-          exact (OptionT.mem_support_iff _ _).2 hLift
+      | none => simp at hx
+      | some vOutOpt =>
+          cases vOutOpt with
+          | none => simp [Option.getM] at hx
+          | some vOut =>
+              simp only [Option.elim_some, Option.getM_some, OptionT.run_pure, pure_bind,
+                support_pure, Set.mem_singleton_iff, Option.some.injEq] at hx
+              have hx2 : x.2 = vOut := congrArg Prod.snd hx
+              have hx11 : x.1.1 = proverResult.1 := congrArg (Prod.fst ∘ Prod.fst) hx
+              rw [hx2, hx11]
+              rw [OptionT.mem_support_iff]
+              have hLift := hstmtOut
+              have hrun : (liftM (reduction.verifier.run stmt proverResult.1).run :
+                    OptionT (OracleComp (oSpec + [pSpec.Challenge]ₒ)) (Option StmtOut)).run
+                  = some <$> OracleComp.liftComp (reduction.verifier.run stmt proverResult.1).run
+                      (oSpec + [pSpec.Challenge]ₒ) := by
+                rw [liftComp_eq_liftM]; rfl
+              rw [hrun, support_map, OracleComp.support_liftComp_aux, Set.mem_image] at hLift
+              obtain ⟨w, hw, hwEq⟩ := hLift
+              rw [Option.some.injEq] at hwEq
+              rwa [← hwEq]
 
 namespace Verifier
 

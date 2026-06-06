@@ -179,14 +179,3 @@ theorem hdvd_C_of_factorMembership {R : F[X][X][Y]} {H : F[X][Y]}
 end HliftDvd
 
 end ArkLib
-
-/-! ## Axiom audit — every datum must rest only on `[propext, Classical.choice, Quot.sound]`. -/
-
-#print axioms ArkLib.HliftDvd.evalRingHom_comp_C
-#print axioms ArkLib.HliftDvd.evalX_Hlift
-#print axioms ArkLib.HliftDvd.Hlift_dvd_of_mem_normalizedFactors
-#print axioms ArkLib.HliftDvd.Hlift_dvd_of_associated_mem_normalizedFactors
-#print axioms ArkLib.HliftDvd.Hlift_dvd_of_cofactor
-#print axioms ArkLib.HliftDvd.dvd_evalX_of_Hlift_dvd
-#print axioms ArkLib.HliftDvd.dvd_evalX_of_mem_normalizedFactors
-#print axioms ArkLib.HliftDvd.hdvd_C_of_factorMembership

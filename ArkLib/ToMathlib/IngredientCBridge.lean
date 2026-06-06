@@ -191,9 +191,3 @@ lemma specialization_eq_proximate_root_of_hensel {k : Type*} [Field k]
 end IngredientC
 
 end ArkLib
-
-#print axioms ArkLib.IngredientC.mem_S_β_of_pi_z_eq_zero
-#print axioms ArkLib.IngredientC.matchingSet_subset_S_β_of_P
-#print axioms ArkLib.IngredientC.embedding_eq_zero_of_matchingSet_large
-#print axioms ArkLib.IngredientC.pi_z_eq_zero_of_eq_zero
-#print axioms ArkLib.IngredientC.specialization_eq_proximate_root_of_hensel

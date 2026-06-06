@@ -178,9 +178,3 @@ theorem exists_a_matching_interpolant {K : Type*} [Field K]
 end Prop55
 
 end ArkLib
-
-/-! ## Axiom audit -/
-
-#print axioms ArkLib.Prop55.exists_interpolant
-#print axioms ArkLib.Prop55.exists_a_matching_interpolant
-#print axioms ArkLib.Prop55.exists_a_set_and_a_matching_polynomial

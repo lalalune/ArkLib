@@ -323,14 +323,3 @@ theorem rs_epsCA_implies_lambda_extended_cs25_final
   exact hDeepHole_of_probResidual domain k δ ε L0 s hkn hs_pos rfl hres hviol
 
 end CodingTheory.CS25.DeepHole
-
-section AxiomAudit
-#print axioms CodingTheory.CS25.DeepHole.lambda_violation_inj
-#print axioms CodingTheory.CS25.DeepHole.lambda_violation_polyFamily
-#print axioms CodingTheory.CS25.DeepHole.sampleSet_card
-#print axioms CodingTheory.CS25.DeepHole.sampleSet_card_real
-#print axioms CodingTheory.CS25.DeepHole.sampleSet_nonempty
-#print axioms CodingTheory.CS25.DeepHole.mem_sampleSet_imp_off_domain
-#print axioms CodingTheory.CS25.DeepHole.hDeepHole_of_probResidual
-#print axioms CodingTheory.CS25.DeepHole.rs_epsCA_implies_lambda_extended_cs25_final
-end AxiomAudit

@@ -120,8 +120,3 @@ instance ratFunc_powerSeries_henselianLocalRing {F : Type*} [Field F] :
   powerSeries_henselianLocalRing
 
 end ArkLib
-
-#print axioms ArkLib.powerSeries_isPrecomplete
-#print axioms ArkLib.powerSeries_henselianLocalRing
-#print axioms ArkLib.powerSeries_hensel_lift
-#print axioms ArkLib.ratFunc_powerSeries_henselianLocalRing

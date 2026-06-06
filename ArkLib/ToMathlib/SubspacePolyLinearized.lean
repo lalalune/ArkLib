@@ -407,16 +407,3 @@ theorem bkr06_tight_family_hfamily_unconditional
     hparam
 
 end BKR06
-
--- Axiom audit on the freshly elaborated declarations.
-#print axioms BKR06.subspacePoly_eval_smul
-#print axioms BKR06.subspacePoly_recursion_monic
-#print axioms BKR06.subspacePoly_recursion_natDegree
-#print axioms BKR06.subFinset_sup_span_singleton_card
-#print axioms BKR06.subspacePoly_recursion_isRoot
-#print axioms BKR06.subspacePoly_flag_recursion
-#print axioms BKR06.subspacePoly_subFinset_bot
-#print axioms BKR06.subspacePoly_isQLinearized_span
-#print axioms BKR06.subspacePoly_isQLinearized
-#print axioms BKR06.subspacePoly_isQLinearized_of_finrank
-#print axioms BKR06.bkr06_tight_family_hfamily_unconditional

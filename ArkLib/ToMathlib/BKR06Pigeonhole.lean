@@ -455,14 +455,3 @@ theorem bkr06_hfamily_of_card
 end Assemble
 
 end BKR06
-
--- Axiom audit on the freshly elaborated declarations.
-#print axioms BKR06.graphEmbedding_injective
-#print axioms BKR06.graphSubspace_injective
-#print axioms BKR06.finrank_graphSubspace
-#print axioms BKR06.card_dimv_subspaces_ge
-#print axioms BKR06.sub_mem_degreeLT_of_topPattern_eq
-#print axioms BKR06.exists_pattern_fiber_family
-#print axioms BKR06.subspacePoly_ne_of_ne
-#print axioms BKR06.bkr06_pigeonhole_family_card
-#print axioms BKR06.bkr06_hfamily_of_card

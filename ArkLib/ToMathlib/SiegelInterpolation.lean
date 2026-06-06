@@ -237,11 +237,3 @@ theorem exists_gs_interpolant {K : Type*} [Field K]
 end GS
 
 end ArkLib
-
-/-! ## Axiom audit -/
-
--- The Siegel lemma and the two corollaries used by Guruswami–Sudan.
-#print axioms ArkLib.siegel_exists_nonzero
-#print axioms ArkLib.exists_nonzero_constraint_solution
-#print axioms ArkLib.GS.exists_nonzero_box_poly
-#print axioms ArkLib.GS.exists_gs_interpolant

@@ -228,6 +228,16 @@ def BoundaryCardLatticeResidual {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
     jointAgreement (C := ReedSolomon.code domain deg) (δ := δ) (W := u)
 
 omit [DecidableEq ι] in
+/-- The isolated lattice-boundary residual is vacuous for `k = 0`, since its first hypothesis is
+`0 < k`. This mirrors `BoundaryDischarge.boundaryCardResidual_zero` for the sharper residual
+surface introduced in this file. -/
+theorem boundaryCardLatticeResidual_zero
+    {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} :
+    BoundaryCardLatticeResidual (k := 0) (deg := deg) (domain := domain) (δ := δ) := by
+  intro hk
+  omega
+
+omit [DecidableEq ι] in
 /-- **`BoundaryCardResidual` from the non-lattice reduction plus the isolated lattice residual.**
 
 The boundary `δ · n` is either an integer (lattice case, handled by `hLattice`) or not (non-lattice
@@ -342,6 +352,7 @@ with no `sorry`/`admit`/`axiom`/`native_decide`. -/
 #print axioms ArkLib.BoundaryCardResidual.jointAgreement_iff_of_floor_eq
 #print axioms ArkLib.BoundaryCardResidual.exists_lt_floor_eq_of_floor_lt
 #print axioms ArkLib.BoundaryCardResidual.boundaryCardResidual_of_not_lattice
+#print axioms ArkLib.BoundaryCardResidual.boundaryCardLatticeResidual_zero
 #print axioms ArkLib.BoundaryCardResidual.boundaryCardResidual_of_lattice_residual
 #print axioms ArkLib.BoundaryCardResidual.boundary_lattice_iff_sqrtRate_mul_card_mem
 #print axioms ArkLib.BoundaryCardResidual.correlatedAgreement_affine_curves_of_lattice_residual

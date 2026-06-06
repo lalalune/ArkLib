@@ -452,17 +452,3 @@ end Section5Concrete
 end Wrappers
 
 end ArkLib
-
-/-! ## Axiom audit — every declaration must rest only on
-`[propext, Classical.choice, Quot.sound]`, no `sorry`/`admit`/`axiom`/`native_decide`. -/
-#print axioms ArkLib.BetaIdentify.β_weight_le
-#print axioms ArkLib.BetaIdentify.betaEmbedEq_iff_betaEq
-#print axioms ArkLib.BetaIdentify.betaEmbedEq_of_betaEq
-#print axioms ArkLib.BetaIdentify.alpha_eq_alphaFromBeta_of_betaEmbedEq
-#print axioms ArkLib.BetaIdentify.intree_gamma_eq_γ'_of_betaEmbedEq
-#print axioms ArkLib.BetaIdentify.hγ_field_of_betaEmbedEq
-#print axioms ArkLib.BetaIdentify.hγ_field_betaEmbedEq_eq_betaEq
-#print axioms ArkLib.BetaIdentify.section5StrictData_of_betaEmbedEq
-#print axioms ArkLib.BetaInputSupply.betaCurveInput_of_section5_betaEmb
-#print axioms ArkLib.BetaInputSupply.betaCurveInputFin_of_section5_betaEmb
-#print axioms ArkLib.Section5Concrete.correlatedAgreement_affine_curves_johnson_concrete_betaEmb

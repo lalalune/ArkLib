@@ -218,10 +218,3 @@ noncomputable def section5JohnsonHeads_of_gsInterpolant
       hA hcount hlarge⟩
 
 end ProximityGap
-
-/-! ## Axiom audit — every declaration must rest only on
-`[propext, Classical.choice, Quot.sound]`, no `sorry`/`admit`/`axiom`/`native_decide`. -/
-#print axioms ProximityGap.hcount_natCeil_of_johnson_budget
-#print axioms ProximityGap.claim57Residuals_of_gsInterpolant
-#print axioms ProximityGap.gsFactorBundle_of_gsInterpolant
-#print axioms ProximityGap.section5JohnsonHeads_of_gsInterpolant

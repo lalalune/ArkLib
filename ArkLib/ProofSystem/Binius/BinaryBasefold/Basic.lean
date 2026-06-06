@@ -547,6 +547,7 @@ variable (β : Fin r → L) [hβ_lin_indep : Fact (LinearIndependent 𝔽q β)]
   [h_β₀_eq_1 : Fact (β 0 = 1)]
 variable {ℓ 𝓡 ϑ : ℕ} (γ_repetitions : ℕ) [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ] -- Should we allow ℓ = 0?
 variable {h_ℓ_add_R_rate : ℓ + 𝓡 < r} -- ℓ ∈ {1, ..., r-1}
+variable {𝓑 : Fin 2 ↪ L}
 variable [hdiv : Fact (ϑ ∣ ℓ)]
 
 section IndexBounds
@@ -619,6 +620,52 @@ lemma bIdx_succ_mul_ϑ_lt_ℓ_succ (bIdx : Fin (ℓ / ϑ - 1)) :
 lemma bIdx_succ_mul_ϑ_le_ℓ_succ (bIdx : Fin (ℓ / ϑ - 1)) : (↑bIdx + 1) * ϑ ≤ ℓ + 1 := by
   exact Nat.le_of_lt (bIdx_succ_mul_ϑ_lt_ℓ_succ bIdx)
 end IndexBounds
+
+/-- Oracle frontier index: captures valid oracle indices for a given statement index.
+    In Binary Basefold, the oracle can be at most 1 index behind the statement index.
+    - At statement index `i+1`, the oracle can be at `i` (after fold) or `i+1` (after commit)
+-/
+def OracleFrontierIndex {ℓ : ℕ} (stmtIdx : Fin (ℓ + 1)) :=
+  { val : Fin (ℓ + 1) // val.val ≤ stmtIdx.val ∧ stmtIdx.val ≤ val.val + 1 }
+
+namespace OracleFrontierIndex
+
+/-- Create oracle frontier index equal to statement index (synchronized case) -/
+def mkFromStmtIdx {ℓ : ℕ} (stmtIdx : Fin (ℓ + 1)) :
+    OracleFrontierIndex stmtIdx :=
+  ⟨stmtIdx, by constructor <;> omega⟩
+
+/-- Create oracle frontier index for statement i.succ with oracle at i (lagging case).
+    Used after fold step where stmtIdx advances but oracle hasn't committed yet. -/
+def mkFromStmtIdxCastSuccOfSucc {ℓ : ℕ} (i : Fin ℓ) :
+    OracleFrontierIndex i.succ :=
+  ⟨i.castSucc, by
+    constructor
+    · exact Nat.le_of_lt (by exact Nat.lt_add_one (i.castSucc).val)
+    · simp only [Fin.val_succ, Fin.val_castSucc, le_refl]
+  ⟩
+
+@[simp]
+lemma val_mkFromStmtIdx {ℓ : ℕ} (stmtIdx : Fin (ℓ + 1)) :
+    (mkFromStmtIdx stmtIdx).val = stmtIdx := rfl
+
+@[simp]
+lemma val_mkFromStmtIdxCastSuccOfSucc {ℓ : ℕ} (i : Fin ℓ) :
+    (mkFromStmtIdxCastSuccOfSucc i).val = i.castSucc := rfl
+
+@[simp]
+lemma val_le_i {ℓ : ℕ} (i : Fin (ℓ + 1)) (oracleIdx : OracleFrontierIndex i) :
+    oracleIdx.val ≤ i := by
+  unfold OracleFrontierIndex at oracleIdx
+  let h := oracleIdx.property
+  cases h
+  · exact h.left
+
+@[simp]
+lemma val_mkFromStmtIdxCastSuccOfSucc_eq_mkFromStmtIdx {ℓ : ℕ} (i : Fin ℓ) :
+    (mkFromStmtIdxCastSuccOfSucc i).val = (mkFromStmtIdx i.castSucc).val := by rfl
+
+end OracleFrontierIndex
 
 section OracleReductionComponents
 -- In this section, we use notation `ϑ` for the folding steps, along with `(hdiv : ϑ ∣ ℓ)`
@@ -882,6 +929,20 @@ def getFirstOracle {i : Fin (ℓ + 1)}
   ⟩
   simp only [OracleStatement, zero_mul, Fin.mk_zero'] at rawf₀
   exact rawf₀
+
+/-- Extract the last (most recently committed) oracle `f^(getLastOracleDomainIndex)` from the
+oracle statements at frontier index `oracleFrontierIdx`, reindexed to the requested `destIdx`. -/
+def getLastOracle {oracleFrontierIdx : Fin (ℓ + 1)} {destIdx : Fin r}
+    (h_destIdx : destIdx.val = getLastOracleDomainIndex ℓ ϑ oracleFrontierIdx)
+    (oStmt : (∀ j, OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ
+      (i := oracleFrontierIdx) j)) :
+    OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx :=
+  let res := oStmt ⟨getLastOraclePositionIndex ℓ ϑ oracleFrontierIdx, by omega⟩
+  have h_lt : getLastOracleDomainIndex ℓ ϑ oracleFrontierIdx < r := by omega
+  have h_eq : destIdx = ⟨getLastOracleDomainIndex ℓ ϑ oracleFrontierIdx, h_lt⟩
+    := Fin.eq_of_val_eq (by omega)
+  fun y => res (cast (by rw [h_eq]) y)
+
 section SecurityRelations
 
 /-- Helper to get the k-th challenge slice for folding -/
@@ -1010,9 +1071,11 @@ def witnessStructuralInvariant {i : Fin (ℓ + 1)} (stmt : Statement (L := L) Co
   wit.H = projectToMidSumcheckPoly ℓ wit.t (m:=mp.multpoly stmt.ctx) i stmt.challenges ∧
   wit.f = getMidCodewords 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) wit.t stmt.challenges
 
--- `sumcheckConsistencyProp` now lives in `ArkLib.ProofSystem.Sumcheck.Structured`.
--- Re-exported so existing references — qualified or unqualified — continue to resolve.
-export Sumcheck.Structured (sumcheckConsistencyProp)
+/-- Sumcheck consistency: the claimed sumcheck target equals the sum of `H` over the boolean
+hypercube of dimension `k` (embedded via `𝓑`). This is the protocol-level `(𝓑)` form consumed
+throughout BinaryBasefold (Relations, ReductionLogic, Steps/*). -/
+def sumcheckConsistencyProp {k : ℕ} (sumcheckTarget : L) (H : MultiquadraticPoly L k) : Prop :=
+  sumcheckTarget = ∑ x ∈ (univ.map 𝓑) ^ᶠ k, (MultiquadraticPoly.val H).eval x
 
 /-- First oracle witness consistency: the witness polynomial t, when projected to level 0 and
     evaluated on the initial domain S^(0), must be close within unique decoding radius to f^(0) -/
@@ -1137,7 +1200,7 @@ def oracleWitnessConsistency
   ϑ (i := oracleIdx) j)) : Prop :=
   let witnessStructuralInvariant: Prop := witnessStructuralInvariant (mp := mp) (i:=stmtIdx) 𝔽q β
     (h_ℓ_add_R_rate := h_ℓ_add_R_rate) stmt wit
-  let sumCheckConsistency: Prop := sumcheckConsistencyProp (boolDomain L _)
+  let sumCheckConsistency: Prop := sumcheckConsistencyProp (𝓑 := 𝓑)
     stmt.sumcheck_target wit.H
   let firstOracleConsistency: Prop := firstOracleWitnessConsistencyProp 𝔽q β
     wit.t (getFirstOracle 𝔽q β oStmt)

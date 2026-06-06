@@ -334,11 +334,3 @@ theorem powerSeries_newton_root (f : Polynomial (PowerSeries k)) (a₀ : PowerSe
   exact newtonSeq_limit f a₀ h₁' h₂
 
 end ArkLib
-
-#print axioms ArkLib.newtonStep_sq_dvd
-#print axioms ArkLib.newtonSeq_quadratic
-#print axioms ArkLib.newtonSeq_deriv_isUnit
-#print axioms ArkLib.newtonSeq_step_dvd
-#print axioms ArkLib.newtonSeq_isCoherent
-#print axioms ArkLib.newtonSeq_limit
-#print axioms ArkLib.powerSeries_newton_root

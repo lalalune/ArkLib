@@ -199,7 +199,3 @@ def toSection5StrictData
 end GSFactorData
 
 end ArkLib
-
-/-! ## Axiom audit — must rest only on `[propext, Classical.choice, Quot.sound]`. -/
-#print axioms ArkLib.GSFactorData.of_section5Inputs
-#print axioms ArkLib.GSFactorData.toSection5StrictData

@@ -257,17 +257,3 @@ theorem hdvd_C_of_Hlift_dvd_implies_value {x₀ : F} {R : F[X][X][Y]} {H : F[X][
 end MultiplicityDatum
 
 end ArkLib
-
-/-! ## Axiom audit — every datum must rest only on `[propext, Classical.choice, Quot.sound]`. -/
-
-#print axioms ArkLib.MultiplicityDatum.hasOrderAt_of_rootMultiplicity_ge
-#print axioms ArkLib.MultiplicityDatum.hord_of_rootMultiplicity_ge
-#print axioms ArkLib.MultiplicityDatum.matchingFactor_dvd_of_rootMultiplicity_and_count
-#print axioms ArkLib.MultiplicityDatum.matchingFactor_dvd_of_rootMultiplicity_and_weightedDegree
-#print axioms ArkLib.MultiplicityDatum.list_size_le_of_rootMultiplicity_and_count
-#print axioms ArkLib.MultiplicityDatum.list_size_le_of_rootMultiplicity_and_weightedDegree
-#print axioms ArkLib.MultiplicityDatum.leadingCoeff_Hlift
-#print axioms ArkLib.MultiplicityDatum.leadingCoeff_dvd_of_dvd
-#print axioms ArkLib.MultiplicityDatum.hdvd_C_of_Hlift_dvd
-#print axioms ArkLib.MultiplicityDatum.hdvd_C_value_of_hypotheses
-#print axioms ArkLib.MultiplicityDatum.hdvd_C_of_Hlift_dvd_implies_value

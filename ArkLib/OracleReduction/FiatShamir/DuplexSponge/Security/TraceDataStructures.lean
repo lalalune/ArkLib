@@ -7,38 +7,27 @@ Authors: Chung Thai Nguyen
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Defs
 
 /-!
-# CO25 Definition 5.2 — Trace data structures
+# Trace Data Structures for Duplex-Sponge Simulation (CO25 Definition 5.2)
 
-Generic trace-table interface for the duplex-sponge simulator's `tr_∇` (CO25 Definition 5.2),
-together with a list-backed default instantiation and refinement-model laws via `Multiset`.
+This module implements the generic trace-table interface for the duplex-sponge simulator's query trace
+index $\text{tr}_{\nabla}$ (corresponding to Chiesa-Orrù [CO25, Definition 5.2]). We provide a polymorphic
+interface that formalizes both the hash-query table ($\text{tr}_{\nabla}.h$) and the bidirectional
+permutation table ($\text{tr}_{\nabla}.p$).
 
-## Design: polymorphism via refinement model
+## Refinement-Model and Lawfulness
 
-We define a **single** operations class `TraceTableOps T K V` covering both the hash-query table
-(`tr_∇.h`) and the bidirectional permutation table (`tr_∇.p`). Both have the same four-operation
-shape: `empty`, `add`, `inlu` (forward lookup), `outlu` (backward lookup).
+Rather than hard-coding a specific database implementation, we define a polymorphic typeclass `TraceTableOps T K V`
+specifying the core operational API: `empty`, `add`, `inlu` (forward lookup), and `outlu` (backward lookup).
+We specify correctness invariants via `LawfulTraceTable T K V`, which defines lookups using a refinement model
+backed by a `Multiset (K × V)`:
+- `inlu t k = some v` if and only if the key-value pair $(k, v)$ occurs exactly once in the multiset, and no other
+  value $v'$ exists in the table associated with $k$.
+- `outlu t v = some k` if and only if $(k, v)$ occurs exactly once in the multiset, and no other key $k'$ is associated
+  with $v$.
 
-The lawful class `LawfulTraceTable` uses a `Multiset (K × V)` model:
-
-- `inlu t k = some v` iff `(k, v)` occurs exactly once in the multiset and no conflicting
-  value `v'` exists.
-- `outlu t v = some k` iff `(k, v)` occurs exactly once in the multiset and no conflicting
-  key `k'` exists.
-
-Duplicate entries, even identical duplicate `(k, v)` entries, are treated as multiple matches and
-therefore lookup failure, matching CO25 Definition 5.2's sorted-list lookup semantics.
-
-By parameterizing algorithms (`BackTrack`, `LookAhead`) over `TraceTableOps`, we can swap in an
-`O(log N)` or `O(1)` implementation later without touching algorithms or security proofs.
-
-## Structures
-
-- `DuplexSpongeTrace` — type alias for the paper's `(h, p, p⁻¹)`-trace (CO25 Definition 5.2).
-- `TraceTableOps T K V` — generic operations typeclass.
-- `LawfulTraceTable T K V` — extends `TraceTableOps` with `Multiset`-based laws.
-- `TraceNabla` — paper's `tr_∇ = (h, p)`, parameterized over any `LawfulTraceTable` instances.
-- `ListBacked.ListTraceTable K V` — concrete list implementation; `add` is pure `O(1)` cons;
-  however lookup takes `O(N)`
+This ensures that lookups match the deterministic, sorted-list lookup semantics specified in [CO25].
+We also provide a concrete, executable list-backed implementation (`ListBacked.ListTraceTable K V`) and prove its
+lawfulness under the multiset-based refinement interface.
 -/
 
 open OracleComp OracleSpec
@@ -792,8 +781,8 @@ instance instLawfulTraceNablaImplListBased [SpongeUnit U] [SpongeSize]
       StmtIn U :=
   ⟨instLawfulListBasedTraceTable, instLawfulListBasedTraceTable⟩
 
-/-- The default (list-backed) `tr_∇`. In fact we want to use a more optimized data structure
-for efficient storage and query complexity. -/
+/-- The canonical (list-backed) instantiation of `tr_∇`. While lookup is linear-time in the size of the trace,
+this default implementation provides a computable reference for correctness proofs and refinement models. -/
 abbrev DefaultTraceDelta (StmtIn U : Type) [SpongeUnit U] [SpongeSize]
   [DecidableEq StmtIn] [DecidableEq U] :=
   TraceNabla

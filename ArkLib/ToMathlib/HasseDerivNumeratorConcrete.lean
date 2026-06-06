@@ -217,12 +217,3 @@ lemma lineHasseCoeff_mem_regularElms_set {x₀ : F} {R : F[X][X][Y]} {H : F[X][Y
   exact hasWPowerNumerator.mem_regularElms_set_of_dvd hB (hdvd B hB)
 
 end ArkLib
-
--- Axiom audit: every claimed-done lemma must rest only on `[propext, Classical.choice, Quot.sound]`.
-#print axioms ArkLib.hasseDerivYNumerPoly_natDegree_le
-#print axioms ArkLib.hasseDerivYNumerPoly_coeff
-#print axioms ArkLib.leadingCoeff_dvd_hasseDerivYNumerPoly_coeff
-#print axioms ArkLib.genHasseCoeff_hasWPowerNumerator_of_clearing
-#print axioms ArkLib.lineHasseCoeff_hasWPowerNumerator
-#print axioms ArkLib.lineHasseCoeff_mem_regularElms_set_of_dvd
-#print axioms ArkLib.lineHasseCoeff_mem_regularElms_set

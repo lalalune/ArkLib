@@ -206,13 +206,3 @@ theorem list_size_le_of_orderM_and_weightedDegree
 end MatchingExtractor
 
 end ArkLib
-
-/-! ## Axiom audit -/
-
-#print axioms ArkLib.MatchingExtractor.eval_eq_zero_of_orderM_and_count
-#print axioms ArkLib.MatchingExtractor.matchingFactor_dvd_of_orderM_and_count
-#print axioms ArkLib.MatchingExtractor.matchesGraph_iff_dvd
-#print axioms ArkLib.MatchingExtractor.matchingPolynomial_extracts
-#print axioms ArkLib.MatchingExtractor.matchingFactor_dvd_of_weightedDegree
-#print axioms ArkLib.MatchingExtractor.list_size_le_of_orderM_and_count
-#print axioms ArkLib.MatchingExtractor.list_size_le_of_orderM_and_weightedDegree

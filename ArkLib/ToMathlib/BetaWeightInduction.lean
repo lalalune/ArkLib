@@ -261,10 +261,3 @@ theorem betaRec_weight_le (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
           exact bot_le
 
 end ArkLib
-
--- Axiom audit: every claimed-done declaration must rest only on
--- `[propext, Classical.choice, Quot.sound]`.
-#print axioms ArkLib.weight_Λ_over_𝒪_prod_le_of_le
-#print axioms ArkLib.betaProd_weight_le
-#print axioms ArkLib.betaTerm_weight_le
-#print axioms ArkLib.betaRec_weight_le

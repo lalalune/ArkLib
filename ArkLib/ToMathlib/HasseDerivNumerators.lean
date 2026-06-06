@@ -267,24 +267,3 @@ the *specific* A.4 coefficients requires naming the Hasse-derivative numerator a
 a false unconditional lemma). -/
 
 end ArkLib
-
--- Axiom audit: every claimed-done lemma must rest only on `[propext, Classical.choice, Quot.sound]`.
-#print axioms ArkLib.embeddingOf𝒪Into𝕃_W_𝒪
-#print axioms ArkLib.W_𝒪_pow_mul_pow
-#print axioms ArkLib.W_𝒪_pow_dvd_pow_add
-#print axioms ArkLib.W_𝕃_pow_mul_pow
-#print axioms ArkLib.embeddingOf𝒪Into𝕃_W_𝒪_pow
-#print axioms ArkLib.W_𝕃_mem_regularElms_set
-#print axioms ArkLib.W_𝕃_pow_mem_regularElms_set
-#print axioms ArkLib.regularElms_set_W_𝕃_pow_mul
-#print axioms ArkLib.regularElms_set_embedding
-#print axioms ArkLib.regularElms_set_embedding_mul
-#print axioms ArkLib.regularElms_set_C_div_W_pow_of_dvd
-#print axioms ArkLib.hasWPowerNumerator_zero_iff
-#print axioms ArkLib.hasWPowerNumerator_of_regular
-#print axioms ArkLib.hasWPowerNumerator_embedding
-#print axioms ArkLib.hasWPowerNumerator_W_𝕃_pow
-#print axioms ArkLib.hasWPowerNumerator_mul
-#print axioms ArkLib.hasWPowerNumerator_W_𝕃_pow_mul
-#print axioms ArkLib.hasWPowerNumerator.mem_regularElms_set_of_dvd
-#print axioms ArkLib.hasWPowerNumerator.mem_regularElms_set
