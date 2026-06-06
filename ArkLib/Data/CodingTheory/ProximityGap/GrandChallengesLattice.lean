@@ -2557,6 +2557,10 @@ theorem mcaPrizeLatticeResolved_of_adjacent_frontier
   mcaPrizeLatticeResolved_of_adjacent_witnesses domain
     frontier.lower frontier.upper frontier.upper_le_one frontier.adjacent
 
+#print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_of_adjacent_witnesses
+#print axioms ProximityGap.GrandChallengesLattice.MCAPrizeAdjacentWitnessFrontier
+#print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_of_adjacent_frontier
+
 /-- Exact values for the canonical `Finset ℕ` MCA threshold resolve the four-rate faithful
 MCA prize predicate in the `Fin (n+1)` lattice representation. -/
 theorem mcaPrizeLatticeResolved_of_canonical_mcaLatticeThreshold_eq

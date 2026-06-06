@@ -374,4 +374,12 @@ theorem ggr11_perWordBound_of_le_exp [Fintype F] [Nonempty ι]
     _ ≤ ((b + r).choose r : ℕ∞) * (Lambda C δ) ^ r := by
           gcongr
 
+-- Axiom audit: generic frontier/reassembly surfaces for the GGR11 tree residual.
+#print axioms treeStructure_of_frontier
+#print axioms frontier_of_treeStructure
+#print axioms perWordBound_of_treeStructure
+#print axioms perWordBound_of_treeFrontier
+#print axioms lambda_le_ggr11_of_treeStructure
+#print axioms lambda_le_ggr11_of_treeFrontier
+
 end InterleavedCode.GGR11

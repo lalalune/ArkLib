@@ -1299,6 +1299,7 @@ end SubspaceDesignFRS
 #print axioms CodingTheory.johnsonJumpRadius_eq_three_fourths
 #print axioms CodingTheory.johnsonJumpInternalRadius_eq_seven_eighths_add_inv
 #print axioms CodingTheory.johnsonJumpRadius_le_internalRadius
+#print axioms CodingTheory.rs_epsCA_johnson_jump_bchks25
 #print axioms CodingTheory.rs_epsCA_johnson_jump_bchks25_of_witness
 #print axioms CodingTheory.exists_rsJohnsonJumpWitness_of_bchks25
 #print axioms CodingTheory.rs_epsCA_lower_capacity_bchks25_kk25_of_witness
