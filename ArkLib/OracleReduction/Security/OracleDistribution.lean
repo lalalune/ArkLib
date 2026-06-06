@@ -48,6 +48,16 @@ abbrev OracleFamily (spec : OracleSpec ι) : Type _ := (q : spec.Domain) → spe
 def tableQueryImpl {spec : OracleSpec ι} (g : OracleFamily spec) :
     QueryImpl spec ProbComp := fun q => pure (g q)
 
+/-- Noncomputable bridge from `VCVCompatible` to `FinEnum`.
+
+This is intentionally a local named bridge rather than a global instance, avoiding overlap with
+existing `FinEnum` instances while still letting local sampling witnesses opt into the route. -/
+@[reducible]
+noncomputable def VCVCompatible.toFinEnum_aux {α : Type} [VCVCompatible α] : FinEnum α where
+  card := Fintype.card α
+  equiv := Fintype.equivFin α
+  decEq := inferInstance
+
 /-- `VCVCompatible` on both domain and range implies `SampleableType (α → β)`.
 
 `OracleFamily (α →ₒ β)` is definitionally `α → β`, so this instance also fires for
@@ -55,8 +65,8 @@ def tableQueryImpl {spec : OracleSpec ι} (g : OracleFamily spec) :
 noncomputable instance instSampleableTypePiVCV
     {α β : Type} [VCVCompatible α] [VCVCompatible β] :
     SampleableType (α → β) := by
-  letI : FinEnum α := VCVCompatible.instFinEnum
-  letI : FinEnum β := VCVCompatible.instFinEnum
+  letI : FinEnum α := VCVCompatible.toFinEnum_aux
+  letI : FinEnum β := VCVCompatible.toFinEnum_aux
   letI : Nonempty (α → β) := ⟨fun _ => default⟩
   infer_instance
 
@@ -317,35 +327,17 @@ The Fiat-Shamir challenge oracle (`fsChallengeOracle` / `srChallengeOracle`) is 
 DSFS Hyb3 / Hyb4 (salted) instantiate `D_IP` with the *salted* statement type
 `Statement := StmtIn × Vector U δ`, i.e. `D_IP (StmtIn × Vector U δ) pSpec`. -/
 
-/-- Bridge instance: granular `VCVCompatible` hypotheses on statement, message, and challenge
-types suffice to derive `SampleableType (OracleFamily (fsChallengeOracle Statement pSpec))`.
-
-The oracle family is a finite function table `(q : Domain) → pSpec.Challenge q.1` where the
-domain is a dependent sigma type over the challenge index and the message-prefix history.
-Finiteness follows from `VCVCompatible` on each component via `FinEnum.sigma` + `Pi.finEnum`.
-
-Note: The connection `pSpec.MessageUpTo k pSpec i = pSpec.Message i_orig` requires unfolding
-`ProtocolSpec.take` which is not `@[reducible]`. The proof is deferred (see `sorry`). -/
-noncomputable instance instSampleableTypeFSChallengeOracle
-    {n : ℕ} {pSpec : ProtocolSpec n} {Statement : Type}
-    [VCVCompatible Statement]
-    [∀ i, VCVCompatible (pSpec.Message i)]
-    [∀ i, VCVCompatible (pSpec.Challenge i)] :
-    SampleableType (OracleFamily (ProtocolSpec.fsChallengeOracle Statement pSpec)) := by
-  -- `OracleFamily spec = (q : Domain) → spec.Range q` (dependent Pi over the domain sigma type).
-  -- Domain = Σ i : ChallengeIdx, (Statement × MessagesUpTo i.1.castSucc).
-  -- Range q = pSpec.Challenge q.1.
-  -- Each component is VCVCompatible; the full table is finite via FinEnum.sigma + Pi.finEnum.
-  -- The MessagesUpTo component needs pSpec.MessageUpTo k i = pSpec.Message i_orig; deferred.
-  sorry
-
 /-- `D_IP` over `fsChallengeOracle Statement pSpec`: uniform random function from prover-prefix
-queries to challenges. DSFS Hyb3 / Hyb4 use this with `Statement := StmtIn × Vector U δ`. -/
+queries to challenges. DSFS Hyb3 / Hyb4 use this with `Statement := StmtIn × Vector U δ`.
+
+The generic derivation of
+`SampleableType (OracleFamily (ProtocolSpec.fsChallengeOracle Statement pSpec))` from granular
+`VCVCompatible` assumptions is intentionally not installed as a global instance here: it requires a
+nontrivial bridge through `ProtocolSpec.take` / `MessageUpTo`. Callers must therefore provide the
+actual table-sampling instance until that bridge is proved. -/
 @[reducible]
 noncomputable def D_IP {n : ℕ} (Statement : Type) (pSpec : ProtocolSpec n)
-    [VCVCompatible Statement]
-    [∀ i, VCVCompatible (pSpec.Message i)]
-    [∀ i, VCVCompatible (pSpec.Challenge i)] :
+    [SampleableType (OracleFamily (ProtocolSpec.fsChallengeOracle Statement pSpec))] :
     OracleDistribution (ProtocolSpec.fsChallengeOracle Statement pSpec) :=
   D_ROM (spec := ProtocolSpec.fsChallengeOracle Statement pSpec)
 
@@ -386,12 +378,8 @@ for typeclass synthesis to find `SampleableType (OracleFamily spec)` via
 
 section BridgeProbes
 
-noncomputable def VCVCompatible.toFinEnum_aux {α : Type} [VCVCompatible α] : FinEnum α where
-  card := Fintype.card α
-  equiv := Fintype.equivFin α
-  decEq := inferInstance
-
 -- rootVectorEquivFin : Vector α n ≃ (Fin n → α), direction: from Vector to Pi
+@[reducible]
 noncomputable def Vector.toFinEnum_aux {α : Type} {n : ℕ} [FinEnum α] : FinEnum (Vector α n) :=
   FinEnum.ofEquiv _ Equiv.rootVectorEquivFin
 

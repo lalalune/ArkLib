@@ -230,6 +230,33 @@ theorem le_listLatticeThreshold_of_Lambda_le
     j ≤ GrandChallenges.listLatticeThreshold C m ε_star hne :=
   Finset.le_max' _ _ (mem_listLatticeSet_of_Lambda_le C hjn hLambda hpow)
 
+/-- **Generic lower witness from a base `Λ` cap.**  This is the witness-valued version of
+`mem_listLatticeSet_of_Lambda_le`: once a base-code list-size bound
+`Λ(C, j/n) ≤ ℓ` clears the interleaved prize budget, it produces the public
+`ListLowerWitness` consumed by the faithful list-prize lattice API. -/
+noncomputable def listLowerWitness_of_Lambda_le
+    (C : Set (ι → F)) {m j ℓ : ℕ} (hjn : j ≤ Fintype.card ι)
+    (hLambda :
+      Lambda C (((j : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) ≤ (ℓ : ℕ∞))
+    {ε_star : ℝ≥0}
+    (hpow : ((ℓ : ENNReal)) ^ m ≤ (ε_star : ENNReal) * (Fintype.card F : ENNReal)) :
+    GrandChallenges.ListLowerWitness C m ε_star := by
+  classical
+  let δ : ℝ≥0 := (j : ℝ≥0) / (Fintype.card ι : ℝ≥0)
+  have hδ_le : δ ≤ 1 := by
+    have hn0 : (Fintype.card ι : ℝ≥0) ≠ 0 := by
+      exact_mod_cast (Fintype.card_ne_zero (α := ι))
+    calc
+      δ = (j : ℝ≥0) / (Fintype.card ι : ℝ≥0) := rfl
+      _ ≤ (Fintype.card ι : ℝ≥0) / (Fintype.card ι : ℝ≥0) := by
+        exact div_le_div_of_nonneg_right (by exact_mod_cast hjn) (by positivity)
+      _ = 1 := div_self hn0
+  have hmem := mem_listLatticeSet_of_Lambda_le
+    (C := C) (m := m) (j := j) (ℓ := ℓ) hjn hLambda hpow
+  rw [GrandChallenges.listLatticeSet, Finset.mem_filter, Finset.mem_range] at hmem
+  exact GrandChallenges.ListLowerWitness.ofLe (C := C) (m := m)
+    (ε_star := ε_star) (δ := δ) hδ_le hmem.2
+
 end JohnsonSide
 
 section CapacitySide
