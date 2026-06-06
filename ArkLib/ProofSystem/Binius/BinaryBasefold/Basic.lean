@@ -1057,19 +1057,23 @@ def BBF_SumcheckMultiplierParam : SumcheckMultiplierParam L ℓ (SumcheckBaseCon
     degCombinator := 1
     combinator_natDegree_le := by intro _; exact Polynomial.natDegree_X_le }
 
-/-- This condition ensures that the folding witness `f` is properly generated from `t` -/
+/-- This condition ensures that the folding witness `f` is properly generated from `t`.
+
+API migration: now uses the new-API `iterated_fold` (`steps : ℕ`, `{destIdx : Fin r}`,
+`h_destIdx`/`h_destIdx_le`) — `steps := i.val`, `destIdx := ⟨i, _⟩` — instead of the legacy
+`Fin (ℓ + 1)`-stepped `iterated_fold`. The result already lands at `OracleFunction ⟨i, _⟩`. -/
 def getMidCodewords {i : Fin (ℓ + 1)} (t : L⦃≤ 1⦄[X Fin ℓ]) -- original polynomial t
     (challenges : Fin i → L) : (sDomain 𝔽q β h_ℓ_add_R_rate (i := ⟨i, by omega⟩) → L) :=
   let P₀ : L⦃< 2^ℓ⦄[X] := polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega) (fun ω => t.val.eval ω)
   let f₀ : (sDomain 𝔽q β h_ℓ_add_R_rate 0) → L := fun x => P₀.val.eval x.val
-  let fᵢ := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+  iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
     (i := 0)
-    (steps := i)
-    (h_i_add_steps := by apply Nat.lt_add_of_pos_right_of_le; simp only [Fin.coe_ofNat_eq_mod,
-      zero_mod, zero_add]; omega)
+    (steps := i.val)
+    (destIdx := ⟨i, by omega⟩)
+    (h_destIdx := by simp only [Fin.val_zero, Nat.zero_add])
+    (h_destIdx_le := by simp only [Fin.mk_le_mk]; omega)
     (f := f₀)
     (r_challenges := challenges)
-  fun x => fᵢ ⟨x, by convert x.property; simp only [Fin.coe_ofNat_eq_mod, zero_mod, zero_add]⟩
 
 /-! `SumcheckContextIncluded_Relations`: Sumcheck context is passed as a
 parameters in the following relations --/
@@ -1095,7 +1099,10 @@ def firstOracleWitnessConsistencyProp (t : MultilinearPoly L ℓ)
     (f₀ : sDomain 𝔽q β h_ℓ_add_R_rate 0 → L) : Prop :=
   let P₀ : L⦃< 2 ^ ℓ⦄[X] := polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega) (fun ω => t.val.eval ω)
   -- The constraint: P_0 evaluated on S^(0) is close within unique decoding radius to f^(0)
-  2 * hammingDist (fun x => P₀.val.eval x.val) f₀ < BBF_CodeDistance ℓ 𝓡 ⟨0, by omega⟩
+  -- API migration: `BBF_CodeDistance` now lives in `Code.lean` keyed on `𝔽q β (h_ℓ_add_R_rate)`
+  -- and a `Fin r` index (no explicit `ℓ 𝓡`).
+  2 * hammingDist (fun x => P₀.val.eval x.val) f₀ <
+    BBF_CodeDistance 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨0, by omega⟩
 
 /-- The bad folding event of `fᵢ` exists RIGHT AFTER the V's challenge of sumcheck round `i+ϑ-1`,
 this is the last point that `fᵢ` is the last oracle being sent so far and both

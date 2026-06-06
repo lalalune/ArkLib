@@ -94,7 +94,7 @@ set_option linter.unusedSectionVars false
 -- This file's L4.6 quantitative-residual block (the `jointlyProximate*_udr` count bounds toward
 -- ABF26 Lemma 4.6) pushes it past the default 1500-line cap; matching the precedent of other
 -- large ProximityGap files (e.g. `BCIKS20/AffineSpaces.lean`).
-set_option linter.style.longFile 1800
+set_option linter.style.longFile 1900
 
 namespace ProximityGap
 
@@ -1489,6 +1489,58 @@ def diffStackMCAResidualBelowUDR (C : Submodule F (ι → A)) (δ : ℝ≥0) : P
     jointProximity (C := (C : Set (ι → A))) (u := u) δ →
     Pr_{let γ ← $ᵖ F}[mcaEvent (C : Set (ι → A)) δ (u 0 - p₀) (u 1 - p₁) γ] ≤
       epsCA (F := F) (A := A) (C : Set (ι → A)) δ δ
+
+/-- **The residual `diffStackMCAResidualBelowUDR` from the GS floor-count `ε_ca` lower bound
+(PROVEN, pure chaining).**
+
+Under UDR `2·δ·n < δ_min(C)` with the faithful instance `[NoZeroSMulDivisors F A]` (automatic for
+`Σ = Fˢ`), the single numeric dominance
+
+  (★)  `⌊δ·n⌋ / |F| ≤ ε_ca(C, δ, δ)`
+
+implies the full per-stack difference-stack residual `diffStackMCAResidualBelowUDR C δ`. This is the
+honest *chaining* deliverable for ABF26 Lemma 4.6's hard direction: it isolates the one genuinely
+external input ((★), the [BCIKS20]/[ACFY25]/[Hab25] Guruswami–Sudan exceptional-`γ` rearrangement,
+delivered in-tree by the GS-witness lower bound `L46GS.floorCount_le_epsCA_of_gsWitness`) and derives
+the residual by a case split on the difference stack `d := (u 0 − p₀, u 1 − p₁)`:
+
+* if `d` **is** jointly `δ`-close, its `mcaEvent` mass is `≤ ⌊δ·n⌋/|F|` by the kernel-checked
+  in-tree count `jointlyProximate_mcaEvent_Pr_le_card_div_udr`, which (★) dominates by `ε_ca`;
+* if `d` is **not** jointly close, its `mcaEvent` mass is `≤ ε_ca` directly by
+  `mcaEvent_probability_le_epsCA_of_not_jointProximity`.
+
+**Why the abstract-code form of (★) is false.** For a bare `Submodule`/`Set` code, `ε_ca` admits no
+matching in-tree lower bound: a code with no non-jointly-close near-codewords has `ε_ca = 0` while
+the count `⌊δ·n⌋/|F|` can be positive, so (★) cannot hold from the count alone (the per-coordinate
+double-coverage target is kernel-refuted by
+`ProximityGap.LineDecodingCounting.double_coverage_counterexample`). Hence (★) is supplied here as a
+hypothesis, *not* proven for abstract `C`. The faithful statement that *does* prove (★) is the
+explicit BCIKS20-style witness existence `L46GS.GSWitnessLowerBound C δ ⌊δ·n⌋`, which holds for Reed–
+Solomon codes (`L46DiffStackRS`). -/
+theorem diffStackMCAResidualBelowUDR_of_epsCA_ge [NoZeroSMulDivisors F A]
+    (C : Submodule F (ι → A)) (δ : ℝ≥0)
+    (h_udr : 2 * δ * (Fintype.card ι : ℝ≥0) < (Code.dist ((C : Set (ι → A))) : ℝ≥0))
+    (h_floor :
+      ((Nat.floor (δ * (Fintype.card ι : ℝ≥0)) : ENNReal) / (Fintype.card F : ENNReal)) ≤
+        epsCA (F := F) (A := A) (C : Set (ι → A)) δ δ) :
+    diffStackMCAResidualBelowUDR (F := F) (A := A) C δ := by
+  intro u p₀ p₁ _hp₀ _hp₁ _hjp
+  -- Work on the difference stack `d := (u 0 − p₀, u 1 − p₁)`, packaged as a `WordStack` so the
+  -- per-stack lemmas (which read rows via `v 0`, `v 1`) apply; `finMapTwoWords` is `@[simp]`,
+  -- so `(finMapTwoWords a b) 0 = a` and `(finMapTwoWords a b) 1 = b` reduce definitionally.
+  by_cases hd_jp :
+      jointProximity (C := (C : Set (ι → A))) (u := finMapTwoWords (u 0 - p₀) (u 1 - p₁)) δ
+  · -- Jointly-close difference stack: count bound `≤ ⌊δ·n⌋/|F|`, then (★) dominates by `ε_ca`.
+    have hbound :=
+      jointlyProximate_mcaEvent_Pr_le_card_div_udr (F := F) C δ
+        (finMapTwoWords (u 0 - p₀) (u 1 - p₁)) h_udr hd_jp
+    simp only [finMapTwoWords] at hbound
+    exact le_trans hbound h_floor
+  · -- Non-jointly-close difference stack: bounded by `ε_ca` directly.
+    have hbound :=
+      mcaEvent_probability_le_epsCA_of_not_jointProximity (F := F) (C := (C : Set (ι → A)))
+        δ δ (finMapTwoWords (u 0 - p₀) (u 1 - p₁)) hd_jp
+    simpa only [finMapTwoWords] using hbound
 
 /-- **ABF26 Lemma 4.6, conditional on its named GS/list-decoding residual.**
 In the unique-decoding regime `δ < δ_min(C)/2`, `ε_mca` and `ε_ca` coincide once the
