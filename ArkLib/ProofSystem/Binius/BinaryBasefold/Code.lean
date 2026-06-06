@@ -1135,5 +1135,9 @@ lemma iterated_fold_preserves_BBF_Code_membership
 -- duplicate declarations across the split modules. See that module for the current
 -- definitions; this file only provides the code/fiber primitives they build on.
 
+#print axioms fold_preserves_BBF_Code_membership
+#print axioms iterated_fold_preserves_BBF_Code_membership_nat
+#print axioms iterated_fold_preserves_BBF_Code_membership
+
 end SoundnessTools
 end Binius.BinaryBasefold
