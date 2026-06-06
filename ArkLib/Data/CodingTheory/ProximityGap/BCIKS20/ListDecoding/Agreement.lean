@@ -2626,7 +2626,10 @@ lemma approximate_solution_is_exact_solution_coeffs_graph_clear_of_beta_embeddin
       (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)) := by
   letI : Claim57Residuals (F := F) (m := m) (n := n) (Q := Q) (ωs := ωs)
       (u₀ := u₀) (u₁ := u₁) k δ x₀ h_gs :=
-    Claim57Residuals.ofGraphExtractionHypotheses hcond hfactor
+    Claim57Residuals.ofGraphExtractionHypotheses
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) (δ := δ) (x₀ := x₀) (h_gs := h_gs)
+      hcond hfactor
   exact approximate_solution_is_exact_solution_coeffs_graph_clear_of_beta_embedding_zero
     (F := F) (m := m) (n := n) (k := k) (Q := Q) δ x₀ h_gs hcond hemb
 
@@ -2671,7 +2674,10 @@ lemma approximate_solution_is_exact_solution_coeffs_graph_clear_of_Sβ_large_of_
       (H_graph_clear (F := F) (m := m) (n := n) k δ x₀ h_gs hcond)) := by
   letI : Claim57Residuals (F := F) (m := m) (n := n) (Q := Q) (ωs := ωs)
       (u₀ := u₀) (u₁ := u₁) k δ x₀ h_gs :=
-    Claim57Residuals.ofGraphExtractionHypotheses hcond hfactor
+    Claim57Residuals.ofGraphExtractionHypotheses
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) (δ := δ) (x₀ := x₀) (h_gs := h_gs)
+      hcond hfactor
   exact approximate_solution_is_exact_solution_coeffs_graph_clear_of_Sβ_large
     (F := F) (m := m) (n := n) (k := k) (Q := Q) δ x₀ h_gs hcond hlarge
 

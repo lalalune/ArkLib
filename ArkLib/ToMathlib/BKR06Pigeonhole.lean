@@ -317,7 +317,9 @@ property in the exact shape `_of_family` consumes. -/
 
 section Assemble
 
-variable {K : Type*} [Field K] [Fintype K] [DecidableEq K]
+universe u
+
+variable {K : Type u} [Field K] [Fintype K] [DecidableEq K]
 variable {F : Type*} [Field F] [Fintype F] [Module F K]
 
 /-- A submodule of a finite vector space is finite: a local `Fintype` instance used to
@@ -370,19 +372,19 @@ theorem bkr06_pigeonhole_family_card
     (k w N : ℕ)
     (hcov : (Fintype.card F) ^ v < k + w)
     (hbig : (Fintype.card K) ^ w * N < (Fintype.card F) ^ (v * (Module.finrank F K - v))) :
-    ∃ (ι : Type*) (_ : Fintype ι) (_ : DecidableEq ι) (𝓛 : ι → Submodule F K)
+    ∃ (ι : Type u) (_ : Fintype ι) (_ : DecidableEq ι) (𝓛 : ι → Submodule F K)
       (_ : ∀ i, Fintype (𝓛 i)),
       N < Fintype.card ι ∧
       (∀ i, Module.finrank F (𝓛 i) = v) ∧
       Function.Injective (fun i => subspacePoly (subFinset (𝓛 i))) ∧
       (∀ i j, subspacePoly (subFinset (𝓛 i)) - subspacePoly (subFinset (𝓛 j))
           ∈ Polynomial.degreeLT K k) := by
-  classical
-  -- Part 1: a large finset of distinct dimension-`v` subspaces.
-  obtain ⟨S, hScard, hSdim⟩ := card_dimv_subspaces_ge (F := F) (K := K) v hv
-  -- The subspace-polynomial map on the (typed) finset `S`.
-  let g : ↥S → K[X] :=
-    fun W =>
+    classical
+    -- Part 1: a large finset of distinct dimension-`v` subspaces.
+    have hcard_data := card_dimv_subspaces_ge (F := F) (K := K) v hv
+    rcases hcard_data with ⟨S, hScard, hSdim⟩
+    -- The subspace-polynomial map on the (typed) finset `S`.
+    have g : ↥S → K[X] := fun W =>
       letI : Fintype ((W : Submodule F K)) := Fintype.ofFinite _
       subspacePoly (subFinset (W : Submodule F K))
   -- It is injective: distinct subspaces ⇒ distinct subspace polynomials.
@@ -407,21 +409,23 @@ theorem bkr06_pigeonhole_family_card
   -- Part 2: pattern pigeonhole extracts a sub-family `T` of size `> N`.
   obtain ⟨T, hTcard, hTsmall⟩ :=
     exists_pattern_fiber_family g k w ((Fintype.card F) ^ v) N hg_deg hcov hbig'
-  -- The surviving index type: the elements of `T`.
-  refine ⟨↥T, inferInstance, inferInstance,
-    (fun t => ((t : ↥S) : Submodule F K)),
-    (fun t => Fintype.ofFinite (((t : ↥S) : Submodule F K))), ?_, ?_, ?_, ?_⟩
+  -- The surviving index type, reindexed through `Fin` to stay in the small universe.
+  let e : Fin (Fintype.card ↥T) ≃ ↥T := (Fintype.equivFin ↥T).symm
+  refine ⟨Fin (Fintype.card ↥T), inferInstance, inferInstance,
+    (fun i => ((e i : ↥S) : Submodule F K)),
+    (fun i => Fintype.ofFinite (((e i : ↥S) : Submodule F K))), ?_, ?_, ?_, ?_⟩
   · -- |ι| = T.card > N
-    rw [Fintype.card_coe]; exact hTcard
+    simpa using hTcard
   · -- each has dimension `v`
-    intro t; exact hSdim _ (t.1).2
+    intro i
+    exact hSdim _ (e i).1.2
   · -- subspace polynomials are pairwise distinct on `T`
-    intro t₁ t₂ ht
-    have hSeq : (t₁ : ↥S) = (t₂ : ↥S) := hg_inj ht
-    exact Subtype.ext hSeq
+    intro i j hij
+    have hSeq : (e i : ↥S) = (e j : ↥S) := hg_inj hij
+    exact e.injective (Subtype.ext hSeq)
   · -- pairwise differences lie in `degreeLT K k`
-    intro t₁ t₂
-    exact hTsmall (t₁ : ↥S) t₁.2 (t₂ : ↥S) t₂.2
+    intro i j
+    exact hTsmall (e i : ↥S) (e i).2 (e j : ↥S) (e j).2
 
 /-- **BKR06 Lemma 3.5 family-size residual (real-exponent form).**
 

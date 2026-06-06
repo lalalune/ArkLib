@@ -204,7 +204,7 @@ theorem sampleSet_card (domain : ι ↪ F) :
     (sampleSet domain).card = Fintype.card F - Fintype.card ι := by
   classical
   unfold sampleSet
-  rw [Finset.card_sdiff (Finset.subset_univ _)]
+  rw [Finset.card_sdiff_of_subset (Finset.subset_univ _)]
   rw [Finset.card_univ, Finset.card_image_of_injective _ domain.injective, Finset.card_univ]
 
 /-- The real cardinality identity used by the `hDeepHole` shape. -/
@@ -314,14 +314,19 @@ theorem rs_epsCA_implies_lambda_extended_cs25_final
   apply rs_epsCA_implies_lambda_extended_cs25_proved
     domain k δ η hk_pos hη_lo hη_lt hs_pos hε_ca
   -- Discharge `hDeepHole` (the `let ε; let L0; let s; (¬… → ∃…)` goal) via the assembly.
-  intro hviol
-  refine hDeepHole_of_probResidual domain k δ
-    ((epsCA (F := F) (A := F)
-        ((ReedSolomon.code domain k : Set (ι → F))) δ.toNNReal δ.toNNReal).toReal)
-    (Nat.ceil ((Fintype.card F : ℝ) / (1 - η)
-        * (epsCA (F := F) (A := F)
-            ((ReedSolomon.code domain k : Set (ι → F))) δ.toNNReal δ.toNNReal).toReal))
-    ((Fintype.card F : ℝ) - (Fintype.card ι : ℝ))
-    hkn hs_pos rfl hres hviol
+  -- Introduce the three `let`-bindings (`ε`, `L0`, `s`) and the negated-list hypothesis.
+  intro ε L0 s hviol
+  exact hDeepHole_of_probResidual domain k δ ε L0 s hkn hs_pos rfl hres hviol
 
 end CodingTheory.CS25.DeepHole
+
+section AxiomAudit
+#print axioms CodingTheory.CS25.DeepHole.lambda_violation_inj
+#print axioms CodingTheory.CS25.DeepHole.lambda_violation_polyFamily
+#print axioms CodingTheory.CS25.DeepHole.sampleSet_card
+#print axioms CodingTheory.CS25.DeepHole.sampleSet_card_real
+#print axioms CodingTheory.CS25.DeepHole.sampleSet_nonempty
+#print axioms CodingTheory.CS25.DeepHole.mem_sampleSet_imp_off_domain
+#print axioms CodingTheory.CS25.DeepHole.hDeepHole_of_probResidual
+#print axioms CodingTheory.CS25.DeepHole.rs_epsCA_implies_lambda_extended_cs25_final
+end AxiomAudit
