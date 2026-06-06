@@ -10,6 +10,14 @@ import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.Data.Finset.Insert
 import Mathlib.Tactic
 
+/-!
+# FRI Auxiliary Lemmas
+
+Small supporting polynomial lemmas used in the FRI development, collected in the `Aux` namespace.
+Currently provides `Aux.eq_poly_deg_one`: two degree-one polynomials agreeing at two distinct
+points are equal.
+-/
+
 namespace Aux
 
 variable {F: Type} [Field F]

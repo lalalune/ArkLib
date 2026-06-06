@@ -1,8 +1,25 @@
-
+/-
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
 import Mathlib.Algebra.MvPolynomial.Equiv
 import Mathlib.Data.Finset.Image
 import Mathlib.Tactic
 import ArkLib.ToMathlib.Finsupp.Fin
+
+/-!
+# The `finSuccEquivNth` equivalence for multivariate polynomials
+
+This file develops the algebra equivalence `finSuccEquivNth`, which splits off the `p`-th variable
+of `MvPolynomial (Fin (n + 1)) R`, presenting it as `Polynomial (MvPolynomial (Fin n) R)`.
+
+It records the basic computation rules (`finSuccEquivNth_eq`, `finSuccEquivNth_apply`,
+`finSuccEquivNth_comp_C_eq_C`, `finSuccEquivNth_X_same`/`_X_above`/`_X_below`), the coefficient
+formula `finSuccEquivNth_coeff_coeff`, the evaluation factorization
+`eval_eq_eval_mv_eval_finSuccEquivNth`, and support/total-degree lemmas
+(`support_finSuccEquivNth`, `totalDegree_coeff_finSuccEquivNth_add_le`, and their corollaries).
+-/
 
 namespace MvPolynomial
 

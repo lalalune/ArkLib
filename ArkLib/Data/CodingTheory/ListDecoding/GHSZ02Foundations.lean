@@ -1,5 +1,16 @@
 /-
-GHSZ02 foundations (standalone, land-ready).
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
+
+import ArkLib.Data.CodingTheory.ListDecodability
+import ArkLib.Data.CodingTheory.HammingBallVolume
+import ArkLib.Data.CodingTheory.ReedSolomon
+import Mathlib
+
+/-!
+# GHSZ02 foundations (standalone, land-ready)
 
 Two layers:
   * `GHSZ02Core` — the analytic `1/e` factor `(1 - 1/q)^{q-1} ≥ 1/e`, Mathlib-only.
@@ -13,10 +24,6 @@ ABF26 Theorem 3.13 [GHSZ02 Cor 20]. They are additive lemmas: they do *not*
 discharge the in-tree `rs_lambda_large_prime_ghsz02` target (see the blocker
 note returned alongside this file).
 -/
-import ArkLib.Data.CodingTheory.ListDecodability
-import ArkLib.Data.CodingTheory.HammingBallVolume
-import ArkLib.Data.CodingTheory.ReedSolomon
-import Mathlib
 
 set_option linter.unusedSectionVars false
 set_option linter.unusedDecidableInType false

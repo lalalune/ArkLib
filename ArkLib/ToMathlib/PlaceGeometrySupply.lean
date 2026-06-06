@@ -5,11 +5,6 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.ToMathlib.MpFinSupply
 
--- Documentation-heavy file (BCIKS §5 / App-A.4 prose in the docstrings); the long-line style
--- linter is disabled locally, matching the sibling supply files.
-set_option linter.style.longLine false
-set_option linter.unusedSectionVars false
-
 /-!
 # Supplying the two `mpFin` residuals — `PlaceGeometry` and `BridgeData`
 
@@ -102,6 +97,11 @@ Everything is kernel-clean (`#print axioms` at the bottom; only
   §5 (list-decoding agreement chain), Appendix A.2 / A.4 (the `W`-power numerator recursion (A.1),
   §5.2.6 matching geometry, Hensel uniqueness `π_z(γ) = P_z`, separable simple root).
 -/
+
+-- Documentation-heavy file (BCIKS §5 / App-A.4 prose in the docstrings); the long-line style
+-- linter is disabled locally, matching the sibling supply files.
+set_option linter.style.longLine false
+set_option linter.unusedSectionVars false
 
 open Polynomial Polynomial.Bivariate BCIKS20AppendixA BCIKS20AppendixA.ClaimA2 ToRatFunc Ideal
 open PowerSeries

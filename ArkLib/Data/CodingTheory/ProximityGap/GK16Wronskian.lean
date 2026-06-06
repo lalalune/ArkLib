@@ -1,4 +1,19 @@
 /-
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
+import ArkLib.Data.CodingTheory.ProximityPrizeLeaves
+import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
+import Mathlib.Algebra.Polynomial.Eval.Defs
+import Mathlib.Algebra.Polynomial.Eval.SMul
+import Mathlib.Algebra.Polynomial.Coeff
+import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
+
+/-!
+# GK16 Lemma 12: the provable direction of the folded-Wronskian criterion
+
 GK16 Lemma 12, next layer: the *provable* direction of the folded-Wronskian
 linear-independence criterion.
 
@@ -17,13 +32,6 @@ matrix kills a nonzero `F[X]`-vector and `det M = 0`.
 This extends the folded-Wronskian primitives from `ProximityPrizeLeaves.lean`.
 Axiom-clean, no `sorry`.
 -/
-import ArkLib.Data.CodingTheory.ProximityPrizeLeaves
-import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
-import Mathlib.Algebra.Polynomial.Eval.Defs
-import Mathlib.Algebra.Polynomial.Eval.SMul
-import Mathlib.Algebra.Polynomial.Coeff
-import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 
 open Polynomial Matrix
 

@@ -1,6 +1,19 @@
+/-
+Copyright (c) 2025 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
 import Init.Data.Nat.Dvd
 import Mathlib.Algebra.Polynomial.Eval.Defs
 import Mathlib.Algebra.Polynomial.Coeff
+
+/-!
+# FRI Polynomial Splitting and Folding
+
+Defines `split f n`, which decomposes a univariate polynomial `f` into its `n` residue-class
+components by exponent mod `n`, and `foldα`, the FRI folding of `f` by a challenge `α` obtained as
+the corresponding linear combination of those components.
+-/
 
 open Polynomial
 

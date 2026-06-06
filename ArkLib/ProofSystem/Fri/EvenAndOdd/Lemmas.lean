@@ -6,6 +6,15 @@ Authors: František Silváši, Julian Sutherland, Ilia Vlasov
 import ArkLib.ProofSystem.Fri.EvenAndOdd.Def
 import CompPoly.Fields.Basic
 
+/-!
+# FRI Even/Odd Decomposition Lemmas
+
+Lemmas about the even/odd decomposition of univariate polynomials over a non-binary field used in
+FRI folding. Establishes that `fₑ` and `fₒ` extract the even and odd coefficients, that
+`f = fₑ + X · fₒ`, that the even/odd parts are even polynomials, and the `evenize`/`deevenize`
+correspondence with composition by `X²`.
+-/
+
 variable {F: Type} [NonBinaryField F]
 
 private noncomputable def fₑ' (f : Polynomial F) : Polynomial F :=
