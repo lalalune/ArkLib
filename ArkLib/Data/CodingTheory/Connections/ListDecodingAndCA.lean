@@ -8,6 +8,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.CodingTheory.ListDecodability
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.ToMathlib.BridgeListDecodingCA
+import ArkLib.ToMathlib.Bridge2BCHKS25
+import ArkLib.ToMathlib.Bridge2BGKS20
 import ArkLib.Data.CodingTheory.Connections.EpsMCABadGlue
 import ArkLib.Data.CodingTheory.Connections.GKL24FirstMoment
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
@@ -427,6 +429,59 @@ theorem rs_epsCA_small_implies_lambda_lt_F_bchks25_of_residuals_prop
   rs_epsCA_small_implies_lambda_lt_F_bchks25_of_residuals
     domain k δ hδ_pos hδ_lt hε_ca hBadLine
 
+/-- **BCHKS25 named-witness connector.**  This is the exact ABF26 T5.2 reduction with the
+opaque `hBadLine` hypothesis replaced by the strictly smaller `BadLineWitness` producer from
+`ArkLib.ToMathlib.Bridge2BCHKS25`.
+
+The remaining obligation is the genuine BCHKS25 construction: from the negated list-size bound,
+produce the bad combining line.  Once supplied, the in-tree bridge arithmetic converts it to the
+`hBadLine` shape consumed by `rs_epsCA_small_implies_lambda_lt_F_bchks25_of_residuals`. -/
+theorem rs_epsCA_small_implies_lambda_lt_F_bchks25_of_badLineWitness
+    (domain : ι ↪ F) (k : ℕ) (δ : ℝ)
+    (hδ_pos : 0 < δ)
+    (hδ_lt : (δ : ℝ) < 1 - (k : ℝ) / Fintype.card ι)
+    (hε_ca :
+        epsCA (F := F) (A := F)
+            ((ReedSolomon.code domain k : Set (ι → F)))
+            ((δ + 2 / Fintype.card ι).toNNReal)
+            ((1 - (k : ℝ) / Fintype.card ι - 1 / Fintype.card ι).toNNReal) <
+          ENNReal.ofReal (1 / (2 * Fintype.card ι)))
+    (provBadLine :
+        ¬ (Lambda ((ReedSolomon.code domain k : Set (ι → F))) δ < (Fintype.card F : ℕ∞)) →
+          Bridge.BadLineWitness (F := F)
+            ((ReedSolomon.code domain k : Set (ι → F)))
+            ((δ + 2 / Fintype.card ι).toNNReal)
+            ((1 - (k : ℝ) / Fintype.card ι - 1 / Fintype.card ι).toNNReal)) :
+    Lambda ((ReedSolomon.code domain k : Set (ι → F))) δ < (Fintype.card F : ℕ∞) :=
+  rs_epsCA_small_implies_lambda_lt_F_bchks25_of_residuals
+    domain k δ hδ_pos hδ_lt hε_ca
+    (Bridge.hBadLine_of_provBadLine
+      ((ReedSolomon.code domain k : Set (ι → F)))
+      ((δ + 2 / Fintype.card ι).toNNReal)
+      ((1 - (k : ℝ) / Fintype.card ι - 1 / Fintype.card ι).toNNReal)
+      provBadLine)
+
+/-- Prop-level wrapper for T5.2 from a `BadLineWitness` producer. -/
+theorem rs_epsCA_small_implies_lambda_lt_F_bchks25_of_badLineWitness_prop
+    (domain : ι ↪ F) (k : ℕ) (δ : ℝ)
+    (hδ_pos : 0 < δ)
+    (hδ_lt : (δ : ℝ) < 1 - (k : ℝ) / Fintype.card ι)
+    (hε_ca :
+        epsCA (F := F) (A := F)
+            ((ReedSolomon.code domain k : Set (ι → F)))
+            ((δ + 2 / Fintype.card ι).toNNReal)
+            ((1 - (k : ℝ) / Fintype.card ι - 1 / Fintype.card ι).toNNReal) <
+          ENNReal.ofReal (1 / (2 * Fintype.card ι)))
+    (provBadLine :
+        ¬ (Lambda ((ReedSolomon.code domain k : Set (ι → F))) δ < (Fintype.card F : ℕ∞)) →
+          Bridge.BadLineWitness (F := F)
+            ((ReedSolomon.code domain k : Set (ι → F)))
+            ((δ + 2 / Fintype.card ι).toNNReal)
+            ((1 - (k : ℝ) / Fintype.card ι - 1 / Fintype.card ι).toNNReal)) :
+    rs_epsCA_small_implies_lambda_lt_F_bchks25 domain k δ hδ_pos hδ_lt hε_ca :=
+  rs_epsCA_small_implies_lambda_lt_F_bchks25_of_badLineWitness
+    domain k δ hδ_pos hδ_lt hε_ca provBadLine
+
 /-- **ABF26 Theorem 5.3 [CS25 Theorem 2] — honest reduction form.**
 
 The fully-proven, `sorry`-free, axiom-clean *contradiction core* of CS25 Theorem 2, with the
@@ -763,6 +818,45 @@ theorem rs_epsCA_separation_bgks20_of_residuals_prop
           ENNReal.ofReal (1 - 1 / Fintype.card F)) :
     rs_epsCA_separation_bgks20 hF_eq_ι hF_ge domain :=
   rs_epsCA_separation_bgks20_of_residuals hF_eq_ι hF_ge domain hMain hLoss
+
+/-- **BGKS20 named-witness connector.**  This packages ABF26 T5.4 from the geometric
+`NearCertainBadLine` residuals isolated in `ArkLib.ToMathlib.Bridge2BGKS20`.
+
+The two remaining inputs are exactly the BGKS20 characteristic-2 constructions: one bad stack at
+the main radius and one at the proximity-loss radius.  The bridge file proves the conversion from
+each witness to the corresponding `ε_ca ≥ 1 - 1/|F|` lower bound. -/
+theorem rs_epsCA_separation_bgks20_of_nearCertainBadLines
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F] [CharP F 2]
+    (hF_eq_ι : Fintype.card F = Fintype.card ι)
+    (hF_ge : 8 ≤ Fintype.card F)
+    (domain : ι ↪ F)
+    (hMainWitness :
+        let k : ℕ := Fintype.card F / 8
+        let ρ : ℝ := 1 / 8
+        let C := ReedSolomon.code domain k
+        Bridge.NearCertainBadLine (F := F) ((C : Set (ι → F)))
+          ((1 - ρ ^ ((1 : ℝ) / 3)).toNNReal)
+          ((1 - ρ ^ ((1 : ℝ) / 3)).toNNReal))
+    (hLossWitness :
+        let k : ℕ := Fintype.card F / 8
+        let ρ : ℝ := 1 / 8
+        let C := ReedSolomon.code domain k
+        Bridge.NearCertainBadLine (F := F) ((C : Set (ι → F)))
+          ((1 - ρ ^ ((1 : ℝ) / 3)).toNNReal)
+          ((1 - ρ ^ ((2 : ℝ) / 3)).toNNReal)) :
+    rs_epsCA_separation_bgks20 hF_eq_ι hF_ge domain :=
+  rs_epsCA_separation_bgks20_of_residuals hF_eq_ι hF_ge domain
+    (Bridge.epsCA_separation_bridge_of_residual
+      (F := F) ((ReedSolomon.code domain (Fintype.card F / 8) : Set (ι → F)))
+      ((1 - ((1 : ℝ) / 8) ^ ((1 : ℝ) / 3)).toNNReal)
+      ((1 - ((1 : ℝ) / 8) ^ ((1 : ℝ) / 3)).toNNReal)
+      hMainWitness)
+    (Bridge.epsCA_separation_bridge_of_residual
+      (F := F) ((ReedSolomon.code domain (Fintype.card F / 8) : Set (ι → F)))
+      ((1 - ((1 : ℝ) / 8) ^ ((1 : ℝ) / 3)).toNNReal)
+      ((1 - ((1 : ℝ) / 8) ^ ((2 : ℝ) / 3)).toNNReal)
+      hLossWitness)
 
 end ListVsCAseparation
 

@@ -223,6 +223,62 @@ def BCSTransform {StmtMid WitMid : Type} {CommitmentType : pSpec.MessageIdx → 
       (pSpec.BCSTransform pSpecCom CommitmentType e) :=
   Reduction.append interaction opening
 
+/-! #### Current compiler-frontier interface
+
+The definition above is the already-buildable reduction-level composition once the two phases are
+available.  The compiler work that remains is to construct those phases from an input
+`OracleReduction` and commitment schemes.  The structures below make that boundary explicit without
+turning it into prose-only debt: callers can pass the phases today, while the future compiler must
+replace the two realization fields by proofs produced from the oracle verifier/query-log machinery.
+-/
+
+/-- The two concrete phases of a BCS-compiled protocol, plus the two realization obligations that
+are not yet constructible by the generic compiler.
+
+`interaction_realizes_oracle_messages` should say that the interaction phase faithfully simulates
+the source oracle reduction while replacing each oracle message by a commitment.
+`opening_realizes_query_log` should say that the opening phase opens exactly the oracle queries made
+by the verifier with the retained `(message, decommitment)` witnesses.  Both are left as `Prop`
+fields because their
+eventual statement depends on the query-log API being stabilized. -/
+structure BCSCompiledPhases {StmtMid WitMid : Type}
+    (CommitmentType : pSpec.MessageIdx → Type) (e : pSpec.MessageIdx ≃ Fin m) where
+  interaction :
+    Reduction oSpec StmtIn WitIn StmtMid WitMid (pSpec.renameMessage CommitmentType)
+  opening :
+    Reduction oSpec StmtMid WitMid StmtOut WitOut (pSpec.BCSOpeningPhase pSpecCom e)
+  interaction_realizes_oracle_messages : Prop
+  opening_realizes_query_log : Prop
+
+/-- Interpret a packaged BCS compiler-frontier object as the currently available transformed
+reduction.  This is definitionally the `Reduction.append` composition used by `BCSTransform`. -/
+def BCSCompiledPhases.toReduction {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    (phases : BCSCompiledPhases (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      CommitmentType e) :
+    Reduction oSpec StmtIn WitIn StmtOut WitOut
+      (pSpec.BCSTransform pSpecCom CommitmentType e) :=
+  BCSTransform e phases.interaction phases.opening
+
+/-- Security obligations still required to turn `BCSCompiledPhases.toReduction` into the final
+compiler theorem.  These are intentionally named as fields rather than hidden in a monolithic
+an opaque placeholder: each field corresponds to a separate proof brick in issue #62.
+
+The intended endgame is to replace this interface by the actual preservation theorems:
+completeness from commitment correctness plus phase realization, and soundness / knowledge
+soundness from commitment binding or extractability plus the oracle-reduction security theorem. -/
+structure BCSSecurityFrontier {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    (_phases : BCSCompiledPhases (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      CommitmentType e) where
+  commitment_correctness_available : Prop
+  commitment_binding_or_extractability_available : Prop
+  completeness_preservation_target : Prop
+  soundness_preservation_target : Prop
+  knowledge_soundness_preservation_target : Prop
+
 /-! #### Design note: the fully general transform
 
   In full generality (deferred to ArkLib#433), the transform should take
