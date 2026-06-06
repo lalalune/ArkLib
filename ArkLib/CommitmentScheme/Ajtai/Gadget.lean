@@ -23,7 +23,7 @@ each coefficient is placed in the `bᵉ`-slot of its block. This is captured abs
 `DigitDecomposition` (a per-coefficient digit map satisfying the base-`b` reconstruction
 law) and realized concretely over `ZMod q` by `zmodDigitDecomposition`. The associated
 `gadgetDecompose` is then lawful (`gadgetDecompose_lawful`), replacing the earlier
-units-place placeholder.
+units-place sketch with the actual digit-decomposition API.
 
 ## References
 
