@@ -272,7 +272,47 @@ theorem GKL24FirstMomentResidual_inTree_card
     rw [Finset.mem_filter] at hw
     exact mcaBadWitness_card_le_card_real MC δ (u 0) (u 1) w hw.2
 
-open CodingTheory.Bridge in
+/-- **Per-stack bad-`γ` count from the GKL24 first-moment residual.**
+Given `GKL24FirstMomentResidual MC δ B_T b`, every concrete stack `u` has at most `B_T · b`
+bad combining scalars:
+
+  `|mcaBad MC δ (u 0) (u 1)| ≤ B_T · b`.
+
+This is the count-level bridge immediately below the final `ε_mca` supremum. It keeps the
+remaining GKL24/GCXK25 content at the exact `mcaBad` layer, before division by `|F|` and before
+taking the supremum over stacks. -/
+theorem mcaBad_card_le_of_gkl24_residual
+    (MC : Submodule F (ι → F)) (δ : ℝ≥0) {B_T b : ℝ} (hb0 : 0 ≤ b)
+    (hres : GKL24FirstMomentResidual MC δ B_T b) (u : WordStack F (Fin 2) ι) :
+    ((mcaBad (F := F) (MC : Set (ι → F)) δ (u 0) (u 1)).card : ℝ) ≤ B_T * b := by
+  obtain ⟨T, hT, hcard, hper⟩ := hres u
+  exact mcaBad_card_le_listFactor_mul_perCodeword (MC : Set (ι → F)) δ (u 0) (u 1) T hT
+    hb0 hcard hper
+
+/-- **Per-stack probability bound from the GKL24 first-moment residual.**
+This is the probability-level companion to `mcaBad_card_le_of_gkl24_residual`, obtained by
+dividing the per-stack bad-`γ` count by the uniform choice space `F`. -/
+theorem mcaEvent_prob_le_ofReal_of_gkl24_residual
+    (MC : Submodule F (ι → F)) (δ : ℝ≥0) {B_T b : ℝ} (hb0 : 0 ≤ b)
+    (hres : GKL24FirstMomentResidual MC δ B_T b) (u : WordStack F (Fin 2) ι) :
+    Pr_{let γ ← $ᵖ F}[mcaEvent (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) γ] ≤
+      ENNReal.ofReal ((B_T * b) / Fintype.card F) :=
+  mcaEvent_prob_le_of_mcaBad_card_le (MC : Set (ι → F)) δ (u 0) (u 1)
+    (mcaBad_card_le_of_gkl24_residual MC δ hb0 hres u)
+
+/-- **Alias for the per-stack bad-`γ` bound in the canonical ABF26 T5.1 parameter shape.** This
+is the same theorem as `mcaBad_card_le_of_gkl24_residual`, but with the target bound written as
+`L² · δ_list · n` by the caller through `B_T` and `b`.
+
+The theorem is intentionally conditional: supplying the residual at
+`B_T := L^2`, `b := δ_list · n` is exactly the still-open GKL24/GCXK25 first-moment theorem. -/
+theorem mcaBad_card_le_t51_firstMoment_of_gkl24_residual
+    (MC : Submodule F (ι → F)) (δ : ℝ≥0) {Lsq δn : ℝ} (hδn0 : 0 ≤ δn)
+    (hres : GKL24FirstMomentResidual MC δ Lsq δn)
+    (u : WordStack F (Fin 2) ι) :
+    ((mcaBad (F := F) (MC : Set (ι → F)) δ (u 0) (u 1)).card : ℝ) ≤ Lsq * δn :=
+  mcaBad_card_le_of_gkl24_residual MC δ hδn0 hres u
+
 /-- **Conditional strengthening: the `B_T · b` first-moment shape from the GKL24 residual.**
 Given the single named residual `GKL24FirstMomentResidual MC δ B_T b` with `b ≥ 0`,
 
@@ -290,9 +330,7 @@ theorem epsMCA_le_ofReal_of_gkl24_residual
       ENNReal.ofReal ((B_T * b) / Fintype.card F) := by
   refine epsMCA_le_ofReal_of_forall_mcaBad_card_le (MC : Set (ι → F)) δ ?_
   intro u
-  obtain ⟨T, hT, hcard, hper⟩ := hres u
-  exact mcaBad_card_le_listFactor_mul_perCodeword (MC : Set (ι → F)) δ (u 0) (u 1) T hT
-    hb0 hcard hper
+  exact mcaBad_card_le_of_gkl24_residual MC δ hb0 hres u
 
 /-- **Fully in-tree `ε_mca` first-moment relaxation.** This is the residual corollary obtained from
 `GKL24FirstMomentResidual_inTree_card`: without any GKL24/GCXK25 hypothesis,
