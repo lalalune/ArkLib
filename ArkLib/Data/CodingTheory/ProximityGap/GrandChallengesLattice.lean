@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeCollapse
+import ArkLib.Data.CodingTheory.ProximityGap.MCASecondMoment
 
 /-!
 # Faithful lattice encodings of the §1 Grand Challenges (after Finding F6)
@@ -456,6 +457,32 @@ theorem mcaThresholdLattice_bracketed_of_lowerWitness_and_epsCAGt
       (mcaThresholdExists_of_MCALowerWitness (MC : Set (ι → F)) ε_star wlo) wlo,
     mcaThreshold_lt_ofEpsCAGt
       (mcaThresholdExists_of_MCALowerWitness (MC : Set (ι → F)) ε_star wlo) hhi hδhi⟩
+
+/-- The second-moment radius-one lower bound gives a direct upper bracket on the faithful
+MCA lattice threshold: in the explicit numeric regime where `epsStar < (M' - M'^2/q)/q`,
+the top radius `1` already exceeds `epsStar`, so the threshold lies strictly below the
+top lattice point. -/
+theorem mcaThreshold_lt_one_of_secondMoment
+    (domain : ι ↪ F) (k M' : ℕ)
+    (hne : mcaThresholdExists (ReedSolomon.code domain k : Set (ι → F)) epsStar)
+    (hk : k + 1 ≤ Fintype.card ι)
+    (hM' : M' ≤ Nat.choose (Fintype.card ι) (k + 1))
+    (hle : M' * M' ≤ M' * Fintype.card F)
+    (hnum :
+      Fintype.card F * Fintype.card F <
+        2 ^ (128 : ℕ) * (M' * Fintype.card F - M' * M')) :
+    mcaThreshold (ReedSolomon.code domain k : Set (ι → F)) epsStar hne <
+      latticeIndexOf (ι := ι) (1 : ℝ≥0) le_rfl := by
+  have hsecond :
+      (epsStar : ENNReal) <
+        epsMCA (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F)) 1 := by
+    exact lt_of_lt_of_le
+      (epsStar_lt_second_moment_value
+        (M' := M') (q := Fintype.card F) Fintype.card_pos hle hnum)
+      (epsMCA_one_ge_second_moment domain hk hM')
+  exact mcaThreshold_lt_MCAUpperWitness
+    (ReedSolomon.code domain k : Set (ι → F)) epsStar hne
+    ⟨1, hsecond⟩ le_rfl
 
 /-- **Lattice bracketing of the MCA threshold (faithful `mca_threshold_bracketed`).** A
 lower witness and an upper witness (at a radius `≤ 1`) bracket the lattice threshold:
