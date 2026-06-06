@@ -787,7 +787,9 @@ theorem j1RatioConstraint_eval_j1FullTopQuadratic_eq_zero
   let P₁ := Lagrange.interpolate Finset.univ (fun a => domain a) u₁
   let N := Lagrange.nodal Finset.univ (fun a => domain a)
   have hcoeff (d : ℕ) : Pγ.coeff d = P₀.coeff d + γ * P₁.coeff d := by
-    dsimp [Pγ, P₀, P₁]
+    change ((Lagrange.interpolate Finset.univ (fun a => domain a)) (u₀ + γ • u₁)).coeff d =
+      ((Lagrange.interpolate Finset.univ (fun a => domain a)) u₀).coeff d +
+        γ * ((Lagrange.interpolate Finset.univ (fun a => domain a)) u₁).coeff d
     rw [map_add, map_smul, Polynomial.coeff_add, Polynomial.coeff_smul]
     simp
   have hrel' :
@@ -815,7 +817,6 @@ theorem j1RatioConstraint_eval_j1FullTopQuadratic_eq_zero
         (P₀.coeff (Fintype.card ι - 1) + γ * P₁.coeff (Fintype.card ι - 1)) *
           (P₀.coeff (Fintype.card ι - 3) + γ * P₁.coeff (Fintype.card ι - 3)) := by
     simp [j1FullTopQuadratic, P₀, P₁, N]
-    ring
   rw [hpoly]
   exact hrel'
 
