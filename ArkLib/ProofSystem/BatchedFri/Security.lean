@@ -1459,6 +1459,79 @@ theorem fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndC
             (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier)
         (δ := 1 - α) (ε := ε) (u := f) h_ca h_prob)
 
+/-- Density-route Claim 8.2 polynomial-curve front door specialized to the BCIKS20 Reed-Solomon
+curve correlated-agreement theorem on the Batched FRI subdomain. -/
+theorem fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndRSCurve
+    {t : ℕ}
+    {α : ℝ≥0}
+    (f : Fin t.succ → (ω.subdomain 0 → 𝔽))
+    (h_agreement :
+      correlated_agreement_density
+        (Fₛ f)
+        (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
+      ≤ α)
+    {m : ℕ}
+    (m_ge_3 : m ≥ 3)
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    (G : Finset ι) (δ : ℝ≥0) (queries l : ℕ)
+    (domain_size_cond : (2 ^ (∑ i, (s i : ℕ))) * d ≤ 2 ^ n)
+    (hStrictCoeff :
+      ProximityGap.StrictCoeffPolysResidual
+        (F := 𝔽) (ι := ω.subdomain 0) (k := t) (deg := 2 ^ n)
+        (domain := (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽)) (δ := 1 - α))
+    (hBoundary :
+      ProximityGap.BoundaryProbabilityResidual
+        (F := 𝔽) (ι := ω.subdomain 0) (k := t) (deg := 2 ^ n)
+        (domain := (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽)) (δ := 1 - α))
+    (hδ :
+      1 - α ≤
+        1 - ReedSolomon.sqrtRate
+          (2 ^ n) (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽))
+    (h_prob :
+      Pr_{let r ← $ᵖ 𝔽}[
+        δᵣ(∑ i : Fin (t + 1), (r ^ (i : ℕ)) • f i,
+          (ReedSolomon.code
+            (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier)
+          ≤ 1 - α] >
+        t *
+          ProximityGap.errorBound
+            (1 - α) (2 ^ n) (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽)) :
+    fri_query_soundness (n := n) (ω := ω) (f := f)
+      (h_agreement := h_agreement) (m_ge_3 := m_ge_3) := by
+  classical
+  let rsDomain : ω.subdomain 0 ↪ 𝔽 := ⟨fun x => x, by simp⟩
+  haveI : NeZero (2 ^ n) := ⟨pow_ne_zero n (by norm_num)⟩
+  have hStrictCoeff' :
+      ProximityGap.StrictCoeffPolysResidual
+        (F := 𝔽) (ι := ω.subdomain 0) (k := t) (deg := 2 ^ n)
+        (domain := rsDomain) (δ := 1 - α) := by
+    simpa [rsDomain] using hStrictCoeff
+  have hBoundary' :
+      ProximityGap.BoundaryProbabilityResidual
+        (F := 𝔽) (ι := ω.subdomain 0) (k := t) (deg := 2 ^ n)
+        (domain := rsDomain) (δ := 1 - α) := by
+    simpa [rsDomain] using hBoundary
+  have hδ' :
+      1 - α ≤ 1 - ReedSolomon.sqrtRate (2 ^ n) rsDomain := by
+    simpa [rsDomain] using hδ
+  have hprob' :
+      Pr_{let r ← $ᵖ 𝔽}[
+        δᵣ(∑ i : Fin (t + 1), (r ^ (i : ℕ)) • f i,
+          (ReedSolomon.code rsDomain (2 ^ n)).carrier)
+          ≤ 1 - α] >
+        t * ProximityGap.errorBound (1 - α) (2 ^ n) rsDomain := by
+    simpa [rsDomain] using h_prob
+  exact
+    fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndCurveCA
+      (n := n) (s := s) (d := d) (ω := ω)
+      (f := f) h_agreement m_ge_3 G δ queries l domain_size_cond
+      (ε := ProximityGap.errorBound (1 - α) (2 ^ n) rsDomain)
+      (ProximityGap.correlatedAgreement_affine_curves
+        (ι := ω.subdomain 0) (F := 𝔽) (k := t) (deg := 2 ^ n)
+        (domain := rsDomain) (δ := 1 - α)
+        hStrictCoeff' hBoundary' hδ')
+      hprob'
+
 #print axioms Fri.FriQuerySoundnessParts
 #print axioms Fri.QueryRound.queryRound_acceptance_le_of_density
 #print axioms Fri.queryRoundAcceptanceBound_of_density
@@ -1485,6 +1558,8 @@ set_option linter.style.longLine false in
 #print axioms Fri.fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndRSAffineLine
 set_option linter.style.longLine false in
 #print axioms Fri.fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndCurveCA
+set_option linter.style.longLine false in
+#print axioms Fri.fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndRSCurve
 
 /-
 The old finite-range instance diagnostic scratch block has been removed.  The remaining
