@@ -1586,6 +1586,22 @@ def polynomialGenerator_isMCAGenerator_bcgm25
   -- The framework declarations (`Generator`, `IsPolynomialGenerator`, `IsMCAGenerator`) are
   -- in-tree; the paper theorem itself remains external.
 
+/-- Public BCGM25 canonical wrapper from the generator-native MCA conclusion. -/
+theorem polynomialGenerator_isMCAGenerator_bcgm25_of_mca
+    {ι : Type} [Fintype ι]
+    {F : Type} [Field F]
+    {ℓ : Type} [Fintype ℓ]
+    {seedDim : ℕ}
+    (S : Fin seedDim → Set F)
+    [Nonempty (∀ i, S i)] [Fintype (∀ i, S i)]
+    (G : CoreDefinitions.Generator (∀ i, S i) ℓ F)
+    (ε_mca : I → I)
+    (LC : LinearCode ι F)
+    (hPoly : CoreDefinitions.IsPolynomialGenerator S G)
+    (hMCA : CoreDefinitions.IsMCAGenerator G ε_mca LC) :
+    polynomialGenerator_isMCAGenerator_bcgm25 S G ε_mca LC hPoly := by
+  simpa [polynomialGenerator_isMCAGenerator_bcgm25] using hMCA
+
 /-- **ABF26 BCGM25 extension to T4.13 / T4.14 — compatibility `epsCA_curves` shadow.**
 
 [BCGM25] shows that the correlated/mutual agreement of subspace-design codes is
@@ -1670,6 +1686,7 @@ end SubspaceDesignFRS
 #print axioms CodingTheory.rs_epsCA_breakdown_cs25_entropyBallLowerWitness_of_counts
 #print axioms CodingTheory.rs_epsCA_breakdown_cs25_of_counts
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_subspaceDesign_prop
+#print axioms CodingTheory.polynomialGenerator_isMCAGenerator_bcgm25_of_mca
 #print axioms CodingTheory.subspaceDesign_epsCA_curves_polynomial_generators_bcgm25_of_bound
 #print axioms CodingTheory.rs_epsMCA_johnson_range_boundReal
 #print axioms CodingTheory.rs_epsMCA_johnson_range_condition
