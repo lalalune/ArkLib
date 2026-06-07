@@ -20,6 +20,27 @@ variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ Pro
 
 local instance : Inhabited F := ⟨0⟩
 
+-- OptionT-level collapse (no outer .run): applies directly inside Reduction.run's bind.
+example {ι : Type} {oSpec : OracleSpec ι} {α β γ : Type} (pr : α) (sv : β) (e : γ) (P : Prop) [Decidable P] :
+    (do
+      let stmtOut ← (liftM (((fun a => (a, e)) <$> (if P then pure sv else (failure : OptionT (OracleComp oSpec) β))).run)
+          : OptionT (OracleComp oSpec) (Option (β × γ)))
+      Prod.mk pr <$> stmtOut.getM)
+      = (if P then pure (pr, (sv, e)) else failure) := by
+  by_cases h : P
+  · rw [if_pos h, if_pos h]; rfl
+  · rw [if_neg h, if_neg h]; rfl
+
+lemma OptionT_collapse_lemma {ι : Type} {oSpec : OracleSpec ι} {α β γ : Type} (pr : α) (sv : β) (e : γ) (P : Prop) [Decidable P] :
+    (do
+      let stmtOut ← (liftM (((fun a => (a, e)) <$> (if P then pure sv else (failure : OptionT (OracleComp oSpec) β))).run)
+          : OptionT (OracleComp oSpec) (Option (β × γ)))
+      Prod.mk pr <$> stmtOut.getM)
+      = (if P then pure (pr, (sv, e)) else failure) := by
+  by_cases h : P
+  · rw [if_pos h, if_pos h]; rfl
+  · rw [if_neg h, if_neg h]; rfl
+
 theorem outer_completeness (hInit : NeverFail init) :
     (outerOracleReduction oSpec F n M params).completeness init impl
       (inputRelation F n M) (midRelation F n M params) (logupCompletenessError F n) := by
@@ -104,7 +125,15 @@ theorem outer_completeness (hInit : NeverFail init) :
         --   `simProver` index `M` transcribed for `tsum_congr` + per-term `by_cases`, then the marginal
         --   `∑ₓ (if pole then Pr[=x|M] else 0) = probEvent ($ᵗ F) pole` via `probEvent_eq_tsum_ite` +
         --   the prover `chal1 = $ᵗ F` peel.  Needs interactive proof-state tooling; not new math.
-        sorry
+        refine ENNReal.tsum_congr (fun x => ?_)
+        cases x with
+        | none =>
+          simp only [Option.elim, probEvent_pure_none, mul_one]
+          -- Here we need to show Pr[=none | prover.run'] = 0 because prover is neverFail
+          sorry
+        | some a =>
+          simp only [Option.elim_some]
+          sorry
       · -- ∑ₛ P(s)·ε = (∑ₛ P(s))·ε ≤ 1·ε = ε  (init never fails)
         rw [ENNReal.tsum_mul_right]
         calc (∑' s, Pr[= s | init]) * ↑(logupCompletenessError F n)
