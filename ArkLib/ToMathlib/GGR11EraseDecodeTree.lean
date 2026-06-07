@@ -64,111 +64,186 @@ inductive EraseDecodeTree where
 
 namespace EraseDecodeTree
 
-/-- Number of leaves of an Erase-Decode tree (as `ℕ∞`, so it composes with the
-`Lambda`-valued budgets).  A leaf contributes `1`; an internal node sums its Blue
-subtree (if present) and all its Red subtrees. -/
-def leafCount : EraseDecodeTree → ℕ∞
-  | leaf => 1
-  | node b rs => (b.elim 0 fun t => t.leafCount) + (rs.attach.map fun t => t.1.leafCount).sum
-decreasing_by
-  · cases b with
-    | none => simp at *
-    | some t => simp_all; omega
-  · exact Nat.lt_of_lt_of_le (List.sizeOf_lt_of_mem t.2) (by simp; omega)
+mutual
+  /-- Number of leaves of an Erase-Decode tree (as `ℕ∞`, so it composes with the
+  `Lambda`-valued budgets).  A leaf contributes `1`; an internal node sums its Blue
+  subtree (if present) and all its Red subtrees. -/
+  def leafCount : EraseDecodeTree → ℕ∞
+    | leaf => 1
+    | node b rs => leafCountOption b + leafCountList rs
 
-/-- Maximum number of Blue edges on any root→leaf path. -/
-def blueDepth : EraseDecodeTree → ℕ
-  | leaf => 0
-  | node b rs =>
-      max (b.elim 0 fun t => t.blueDepth + 1)
-        ((rs.attach.map fun t => t.1.blueDepth).foldr max 0)
-decreasing_by
-  · cases b with
-    | none => simp at *
-    | some t => simp_all; omega
-  · exact Nat.lt_of_lt_of_le (List.sizeOf_lt_of_mem t.2) (by simp; omega)
+  def leafCountOption : Option EraseDecodeTree → ℕ∞
+    | none => 0
+    | some t => leafCount t
 
-/-- Maximum number of Red edges on any root→leaf path. -/
-def redDepth : EraseDecodeTree → ℕ
-  | leaf => 0
-  | node b rs =>
-      max (b.elim 0 fun t => t.redDepth)
-        ((rs.attach.map fun t => t.1.redDepth + 1).foldr max 0)
-decreasing_by
-  · cases b with
-    | none => simp at *
-    | some t => simp_all; omega
-  · exact Nat.lt_of_lt_of_le (List.sizeOf_lt_of_mem t.2) (by simp; omega)
+  def leafCountList : List EraseDecodeTree → ℕ∞
+    | [] => 0
+    | t :: ts => leafCount t + leafCountList ts
+end
 
-/-- `redBranchingLe L t`: every node of `t` has at most `L` Red children. -/
-def redBranchingLe (L : ℕ∞) : EraseDecodeTree → Prop
-  | leaf => True
-  | node b rs =>
-      (b.elim True fun t => redBranchingLe L t) ∧
-      (rs.length : ℕ∞) ≤ L ∧
-      (∀ t ∈ rs.attach, redBranchingLe L t.1)
-decreasing_by
-  · cases b with
-    | none => simp at *
-    | some t => simp_all; omega
-  · exact Nat.lt_of_lt_of_le (List.sizeOf_lt_of_mem t.2) (by simp; omega)
+mutual
+  /-- Maximum number of Blue edges on any root→leaf path. -/
+  def blueDepth : EraseDecodeTree → ℕ
+    | leaf => 0
+    | node b rs => max (blueDepthOption b) (blueDepthList rs)
 
-@[simp] theorem leafCount_leaf : leafCount leaf = 1 := rfl
+  def blueDepthOption : Option EraseDecodeTree → ℕ
+    | none => 0
+    | some t => blueDepth t + 1
 
-@[simp] theorem blueDepth_leaf : blueDepth leaf = 0 := rfl
+  def blueDepthList : List EraseDecodeTree → ℕ
+    | [] => 0
+    | t :: ts => max (blueDepth t) (blueDepthList ts)
+end
 
-@[simp] theorem redDepth_leaf : redDepth leaf = 0 := rfl
+mutual
+  /-- Maximum number of Red edges on any root→leaf path. -/
+  def redDepth : EraseDecodeTree → ℕ
+    | leaf => 0
+    | node b rs => max (redDepthOption b) (redDepthList rs)
+
+  def redDepthOption : Option EraseDecodeTree → ℕ
+    | none => 0
+    | some t => redDepth t
+
+  def redDepthList : List EraseDecodeTree → ℕ
+    | [] => 0
+    | t :: ts => max (redDepth t + 1) (redDepthList ts)
+end
+
+mutual
+  /-- `redBranchingLe L t`: every node of `t` has at most `L` Red children. -/
+  def redBranchingLe (L : ℕ∞) : EraseDecodeTree → Prop
+    | leaf => True
+    | node b rs =>
+        redBranchingLeOption L b ∧
+        (rs.length : ℕ∞) ≤ L ∧
+        redBranchingLeList L rs
+
+  def redBranchingLeOption (L : ℕ∞) : Option EraseDecodeTree → Prop
+    | none => True
+    | some t => redBranchingLe L t
+
+  def redBranchingLeList (L : ℕ∞) : List EraseDecodeTree → Prop
+    | [] => True
+    | t :: ts => redBranchingLe L t ∧ redBranchingLeList L ts
+end
+
+@[simp] theorem leafCount_leaf : leafCount leaf = 1 := by rw [leafCount]
+
+@[simp] theorem blueDepth_leaf : blueDepth leaf = 0 := by rw [blueDepth]
+
+@[simp] theorem redDepth_leaf : redDepth leaf = 0 := by rw [redDepth]
+
+@[simp] theorem redBranchingLe_leaf (L : ℕ∞) : redBranchingLe L leaf := trivial
+
+@[simp] theorem leafCountOption_none : leafCountOption none = 0 := by rw [leafCountOption]
+
+@[simp] theorem leafCountOption_some (t : EraseDecodeTree) :
+    leafCountOption (some t) = leafCount t := by
+  rw [leafCountOption]
+
+@[simp] theorem leafCountList_nil : leafCountList [] = 0 := by rw [leafCountList]
+
+@[simp] theorem leafCountList_cons (t : EraseDecodeTree) (ts : List EraseDecodeTree) :
+    leafCountList (t :: ts) = leafCount t + leafCountList ts := by
+  rw [leafCountList]
+
+@[simp] theorem blueDepthOption_none : blueDepthOption none = 0 := by rw [blueDepthOption]
+
+@[simp] theorem blueDepthOption_some (t : EraseDecodeTree) :
+    blueDepthOption (some t) = blueDepth t + 1 := by
+  rw [blueDepthOption]
+
+@[simp] theorem blueDepthList_nil : blueDepthList [] = 0 := by rw [blueDepthList]
+
+@[simp] theorem blueDepthList_cons (t : EraseDecodeTree) (ts : List EraseDecodeTree) :
+    blueDepthList (t :: ts) = max (blueDepth t) (blueDepthList ts) := by
+  rw [blueDepthList]
+
+@[simp] theorem redDepthOption_none : redDepthOption none = 0 := by rw [redDepthOption]
+
+@[simp] theorem redDepthOption_some (t : EraseDecodeTree) :
+    redDepthOption (some t) = redDepth t := by
+  rw [redDepthOption]
+
+@[simp] theorem redDepthList_nil : redDepthList [] = 0 := by rw [redDepthList]
+
+@[simp] theorem redDepthList_cons (t : EraseDecodeTree) (ts : List EraseDecodeTree) :
+    redDepthList (t :: ts) = max (redDepth t + 1) (redDepthList ts) := by
+  rw [redDepthList]
+
+@[simp] theorem redBranchingLeOption_none (L : ℕ∞) : redBranchingLeOption L none :=
+  trivial
+
+@[simp] theorem redBranchingLeOption_some (L : ℕ∞) (t : EraseDecodeTree) :
+    redBranchingLeOption L (some t) ↔ redBranchingLe L t := by
+  rw [redBranchingLeOption]
+
+@[simp] theorem redBranchingLeList_nil (L : ℕ∞) : redBranchingLeList L [] :=
+  trivial
+
+@[simp] theorem redBranchingLeList_cons (L : ℕ∞) (t : EraseDecodeTree)
+    (ts : List EraseDecodeTree) :
+    redBranchingLeList L (t :: ts) ↔ redBranchingLe L t ∧ redBranchingLeList L ts := by
+  rw [redBranchingLeList]
 
 theorem leafCount_node (b : Option EraseDecodeTree) (rs : List EraseDecodeTree) :
     leafCount (node b rs)
-      = (b.elim 0 fun t => t.leafCount) + (rs.attach.map fun t => t.1.leafCount).sum := by
+      = leafCountOption b + leafCountList rs := by
   rw [leafCount]
 
 theorem blueDepth_node (b : Option EraseDecodeTree) (rs : List EraseDecodeTree) :
     blueDepth (node b rs)
-      = max (b.elim 0 fun t => t.blueDepth + 1)
-          ((rs.attach.map fun t => t.1.blueDepth).foldr max 0) := by
+      = max (blueDepthOption b) (blueDepthList rs) := by
   rw [blueDepth]
 
 theorem redDepth_node (b : Option EraseDecodeTree) (rs : List EraseDecodeTree) :
     redDepth (node b rs)
-      = max (b.elim 0 fun t => t.redDepth)
-          ((rs.attach.map fun t => t.1.redDepth + 1).foldr max 0) := by
+      = max (redDepthOption b) (redDepthList rs) := by
   rw [redDepth]
 
 theorem redBranchingLe_node (L : ℕ∞) (b : Option EraseDecodeTree)
     (rs : List EraseDecodeTree) :
     redBranchingLe L (node b rs)
-      ↔ (b.elim True fun t => redBranchingLe L t) ∧
+      ↔ redBranchingLeOption L b ∧
           (rs.length : ℕ∞) ≤ L ∧
-          (∀ t ∈ rs.attach, redBranchingLe L t.1) := by
+          redBranchingLeList L rs := by
   rw [redBranchingLe]
 
 end EraseDecodeTree
-
-/-! ### A `foldr max` helper -/
-
-/-- A member of a `List ℕ` is `≤` its `foldr max 0`. -/
-theorem le_foldr_max : ∀ (l : List ℕ) (n : ℕ), n ∈ l → n ≤ l.foldr max 0 := by
-  intro l
-  induction l with
-  | nil => intro n hn; simp at hn
-  | cons a t ih =>
-      intro n hn
-      simp only [List.foldr_cons]
-      rcases List.mem_cons.1 hn with h | h
-      · subst h; exact le_max_left _ _
-      · exact le_trans (ih n h) (le_max_right _ _)
 
 /-! ### Leaf-count budget theorem (GGR11 Theorem 3.6 for a real tree) -/
 
 open EraseDecodeTree
 
-/-- Monotonicity of the closed-form GGR11 bound in the Blue budget `b`. -/
-private theorem ggr11Bound_mono_blue (L : ℕ∞) {b b' r : ℕ} (h : b ≤ b') :
-    ((b + r).choose r : ℕ∞) * L ^ r ≤ ((b' + r).choose r : ℕ∞) * L ^ r := by
-  gcongr
-  exact_mod_cast Nat.choose_le_choose r (by omega)
+private theorem one_le_pow_enat {L : ℕ∞} (hL : 1 ≤ L) : ∀ r : ℕ, (1 : ℕ∞) ≤ L ^ r
+  | 0 => by simp
+  | r + 1 => by
+      rw [pow_succ]
+      simpa [one_mul] using mul_le_mul' (one_le_pow_enat hL r) hL
+
+private theorem leafCountList_eq_zero_of_redDepthList_le_zero {rs : List EraseDecodeTree}
+    (h : redDepthList rs ≤ 0) : leafCountList rs = 0 := by
+  cases rs with
+  | nil => simp
+  | cons t ts =>
+      have hpos : 1 ≤ redDepthList (t :: ts) := by
+        rw [redDepthList_cons]
+        exact le_trans (by omega : 1 ≤ redDepth t + 1) (le_max_left _ _)
+      have : (1 : ℕ) ≤ 0 := le_trans hpos h
+      omega
+
+private theorem leafCountOption_eq_zero_of_blueDepthOption_le_zero
+    {bopt : Option EraseDecodeTree} (h : blueDepthOption bopt ≤ 0) :
+    leafCountOption bopt = 0 := by
+  cases bopt with
+  | none => simp
+  | some t =>
+      have hpos : 1 ≤ blueDepthOption (some t) := by
+        simp [blueDepthOption]
+      have : (1 : ℕ) ≤ 0 := le_trans hpos h
+      omega
 
 /-- **GGR11 Theorem 3.6, for the concrete Erase-Decode tree.**
 
@@ -182,115 +257,123 @@ Pascal recursion `t(b,r) ≤ t(b-1,r) + L·t(b,r-1)` an *upper* bound. -/
 theorem EraseDecodeTree.leafCount_le (L : ℕ∞) (hL : 1 ≤ L) :
     ∀ (t : EraseDecodeTree) (b r : ℕ),
       blueDepth t ≤ b → redDepth t ≤ r → redBranchingLe L t →
-      leafCount t ≤ ((b + r).choose r : ℕ∞) * L ^ r
-  | leaf, b, r, _, _, _ => by
-      simp only [leafCount_leaf]
-      have h1 : (1 : ℕ∞) ≤ ((b + r).choose r : ℕ∞) := by
-        have : 1 ≤ (b + r).choose r := Nat.choose_pos (Nat.le_add_left r b)
-        exact_mod_cast this
-      have h2 : (1 : ℕ∞) ≤ L ^ r := one_le_pow_of_le' hL r
-      calc (1 : ℕ∞) = 1 * 1 := (one_mul 1).symm
-        _ ≤ ((b + r).choose r : ℕ∞) * L ^ r := mul_le_mul' h1 h2
-  | node bopt rs, b, r, hbd, hrd, hbr => by
-      rw [redBranchingLe_node] at hbr
-      obtain ⟨hbr_blue, hrs_len, hrs_red⟩ := hbr
-      rw [blueDepth_node] at hbd
-      rw [redDepth_node] at hrd
-      -- Blue subtree bound.
-      have hblue :
-          (bopt.elim 0 fun t => t.leafCount) ≤ ((b + r).choose r : ℕ∞) * L ^ r := by
-        cases bopt with
-        | none => simp
-        | some t =>
-            simp only [Option.elim] at hbd hrd hbr_blue ⊢
-            have hb_t : t.blueDepth + 1 ≤ b := le_trans (le_max_left _ _) hbd
-            have hr_t : t.redDepth ≤ r := le_trans (le_max_left _ _) hrd
-            obtain ⟨b'', rfl⟩ : ∃ b'', b = b'' + 1 := ⟨b - 1, by omega⟩
-            have hbd_t : t.blueDepth ≤ b'' := by omega
-            have hsub := EraseDecodeTree.leafCount_le L hL t b'' r hbd_t hr_t hbr_blue
-            calc t.leafCount ≤ ((b'' + r).choose r : ℕ∞) * L ^ r := hsub
-              _ ≤ (((b'' + 1) + r).choose r : ℕ∞) * L ^ r :=
-                  ggr11Bound_mono_blue L (by omega)
-      -- Now case on the Red budget.
-      rw [leafCount_node]
-      cases r with
-      | zero =>
-          -- No Red budget ⇒ no Red children.
-          have hrs_nil : rs = [] := by
-            by_contra hne
-            obtain ⟨t, htmem⟩ := List.exists_mem_of_ne_nil rs hne
-            have hpos : 1 ≤ (rs.attach.map fun s => s.1.redDepth + 1).foldr max 0 := by
-              refine le_trans (by omega : 1 ≤ t.redDepth + 1) ?_
-              refine le_foldr_max _ _ ?_
-              exact List.mem_map.2 ⟨⟨t, htmem⟩, List.mem_attach _ _, rfl⟩
-            have := le_trans hpos (le_trans (le_max_right _ _) hrd)
-            omega
-          subst hrs_nil
-          simp only [List.attach_nil, List.map_nil, List.sum_nil, add_zero,
-            Nat.add_zero, Nat.choose_self, Nat.cast_one, pow_zero, mul_one]
-          simpa using hblue
-      | succ r =>
-          -- Each red subtree: blueDepth ≤ b, redDepth ≤ r.
-          have hred_each : ∀ t ∈ rs.attach,
-              t.1.leafCount ≤ ((b + r).choose r : ℕ∞) * L ^ r := by
-            intro t htmem
-            have htmem' : t.1 ∈ rs := t.2
-            have hbd_t : t.1.blueDepth ≤ b := by
-              refine le_trans ?_ (le_trans (le_max_right _ _) hbd)
-              exact le_foldr_max _ _ (List.mem_map.2 ⟨t, List.mem_attach _ _, rfl⟩)
-            have hrd_t : t.1.redDepth ≤ r := by
-              have hmem : t.1.redDepth + 1 ∈
-                  rs.attach.map fun s => s.1.redDepth + 1 :=
-                List.mem_map.2 ⟨t, List.mem_attach _ _, rfl⟩
-              have := le_trans (le_foldr_max _ _ hmem)
-                (le_trans (le_max_right _ _) hrd)
-              omega
-            exact EraseDecodeTree.leafCount_le L hL t.1 b r hbd_t hrd_t
-              (hrs_red t htmem)
-          -- Sum of red leaf counts ≤ L · (b+r choose r)·L^r.
-          have hsum :
-              (rs.attach.map fun t => t.1.leafCount).sum ≤
-                (rs.length : ℕ∞) * (((b + r).choose r : ℕ∞) * L ^ r) := by
-            calc (rs.attach.map fun t => t.1.leafCount).sum
-                ≤ (rs.attach.map fun _ => ((b + r).choose r : ℕ∞) * L ^ r).sum := by
-                  apply List.sum_le_sum_of_mem_le
-                  intro x hx
-                  simp only [List.mem_map] at hx
-                  obtain ⟨t, htmem, rfl⟩ := hx
-                  exact hred_each t htmem
-              _ = (rs.length : ℕ∞) * (((b + r).choose r : ℕ∞) * L ^ r) := by
-                  rw [List.map_const', List.sum_replicate, List.length_attach,
-                    nsmul_eq_mul]
-          have hsum' :
-              (rs.attach.map fun t => t.1.leafCount).sum
-                ≤ L * (((b + r).choose r : ℕ∞) * L ^ r) :=
-            le_trans hsum (mul_le_mul' hrs_len (le_refl _))
-          calc (bopt.elim 0 fun t => t.leafCount)
-                + (rs.attach.map fun t => t.1.leafCount).sum
-              ≤ ((b + (r + 1)).choose (r + 1) : ℕ∞) * L ^ (r + 1)
-                  + L * (((b + r).choose r : ℕ∞) * L ^ r) := add_le_add hblue hsum'
-            _ = ((b + (r + 1)).choose (r + 1) : ℕ∞) * L ^ (r + 1)
-                  + ((b + r).choose r : ℕ∞) * L ^ (r + 1) := by ring
-            _ ≤ (((b + 1) + (r + 1)).choose (r + 1) : ℕ∞) * L ^ (r + 1) := by
-                rw [← add_mul]
-                refine mul_le_mul' ?_ (le_refl _)
-                have hkey :
-                    (b + (r + 1)).choose (r + 1) + (b + r).choose r
-                      = ((b + 1) + (r + 1)).choose (r + 1) := by
+      leafCount t ≤ ((b + r).choose r : ℕ∞) * L ^ r := by
+  refine EraseDecodeTree.rec
+    (motive_1 := fun t =>
+      ∀ (b r : ℕ), blueDepth t ≤ b → redDepth t ≤ r → redBranchingLe L t →
+        leafCount t ≤ ((b + r).choose r : ℕ∞) * L ^ r)
+    (motive_2 := fun bopt =>
+      ∀ (b r : ℕ), blueDepthOption bopt ≤ b + 1 → redDepthOption bopt ≤ r →
+        redBranchingLeOption L bopt →
+        leafCountOption bopt ≤ ((b + r).choose r : ℕ∞) * L ^ r)
+    (motive_3 := fun rs =>
+      ∀ (b r : ℕ), blueDepthList rs ≤ b → redDepthList rs ≤ r + 1 →
+        redBranchingLeList L rs →
+        leafCountList rs ≤ (rs.length : ℕ∞) * (((b + r).choose r : ℕ∞) * L ^ r))
+    ?leaf ?node ?none ?some ?nil ?cons
+  · intro b r _ _ _
+    simp only [leafCount_leaf]
+    have h1 : (1 : ℕ∞) ≤ ((b + r).choose r : ℕ∞) := by
+      have : 1 ≤ (b + r).choose r := Nat.choose_pos (Nat.le_add_left r b)
+      exact_mod_cast this
+    have h2 : (1 : ℕ∞) ≤ L ^ r := one_le_pow_enat hL r
+    calc (1 : ℕ∞) = 1 * 1 := (one_mul 1).symm
+      _ ≤ ((b + r).choose r : ℕ∞) * L ^ r := mul_le_mul' h1 h2
+  · intro bopt rs ihb ihrs b r hbd hrd hbr
+    rw [redBranchingLe_node] at hbr
+    obtain ⟨hbr_blue, hrs_len, hrs_red⟩ := hbr
+    rw [blueDepth_node] at hbd
+    rw [redDepth_node] at hrd
+    rw [leafCount_node]
+    cases r with
+    | zero =>
+        have hred0 : redDepthList rs ≤ 0 := le_trans (le_max_right _ _) hrd
+        have hlist0 : leafCountList rs = 0 := leafCountList_eq_zero_of_redDepthList_le_zero hred0
+        rw [hlist0, add_zero]
+        cases b with
+        | zero =>
+            have hblue0 : blueDepthOption bopt ≤ 0 := le_trans (le_max_left _ _) hbd
+            rw [leafCountOption_eq_zero_of_blueDepthOption_le_zero hblue0]
+            simp
+        | succ b =>
+            have hblue : leafCountOption bopt ≤ ((b + 0).choose 0 : ℕ∞) * L ^ 0 := by
+              exact ihb b 0 (le_trans (le_max_left _ _) hbd)
+                (le_trans (le_max_left _ _) hrd) hbr_blue
+            simpa using hblue
+    | succ r =>
+        have hsum :
+            leafCountList rs ≤ (rs.length : ℕ∞) * (((b + r).choose r : ℕ∞) * L ^ r) :=
+          ihrs b r (le_trans (le_max_right _ _) hbd) (le_trans (le_max_right _ _) hrd)
+            hrs_red
+        have hsum' : leafCountList rs ≤ L * (((b + r).choose r : ℕ∞) * L ^ r) :=
+          le_trans hsum (mul_le_mul' hrs_len (le_refl _))
+        cases b with
+        | zero =>
+            have hblue0 : blueDepthOption bopt ≤ 0 := le_trans (le_max_left _ _) hbd
+            rw [leafCountOption_eq_zero_of_blueDepthOption_le_zero hblue0, zero_add]
+            calc leafCountList rs
+                ≤ L * (((0 + r).choose r : ℕ∞) * L ^ r) := hsum'
+              _ = ((0 + (r + 1)).choose (r + 1) : ℕ∞) * L ^ (r + 1) := by
+                  simp [Nat.choose_self, pow_succ]
+                  ring
+        | succ b =>
+            have hblue :
+                leafCountOption bopt
+                  ≤ ((b + (r + 1)).choose (r + 1) : ℕ∞) * L ^ (r + 1) := by
+              exact ihb b (r + 1) (le_trans (le_max_left _ _) hbd)
+                (le_trans (le_max_left _ _) hrd) hbr_blue
+            calc leafCountOption bopt + leafCountList rs
+                ≤ ((b + (r + 1)).choose (r + 1) : ℕ∞) * L ^ (r + 1)
+                    + L * ((((b + 1) + r).choose r : ℕ∞) * L ^ r) :=
+                  add_le_add hblue hsum'
+              _ = (((b + (r + 1)).choose (r + 1) : ℕ∞)
+                    + (((b + 1) + r).choose r : ℕ∞)) * L ^ (r + 1) := by
+                  ring
+              _ = (((b + 1) + (r + 1)).choose (r + 1) : ℕ∞) * L ^ (r + 1) := by
+                  congr 1
                   have hsplit : (b + 1) + (r + 1) = (b + (r + 1)) + 1 := by ring
                   rw [hsplit, Nat.choose_succ_succ (b + (r + 1)) r]
-                  have e : (b + r).choose r = (b + (r + 1)).choose r := by
-                    congr 1 <;> omega
-                  rw [e]; ring
-                exact_mod_cast hkey.le
-  termination_by t _ _ _ _ _ => sizeOf t
-  decreasing_by
-    · simp_wf; omega
-    · simp_wf
-      have := List.sizeOf_lt_of_mem t.2
-      omega
+                  push_cast
+                  have e1 : b + (r + 1) = b + r + 1 := by ring
+                  have e2 : b + 1 + r = b + r + 1 := by ring
+                  rw [e1, e2]
+                  ring
+  · intro b r _ _ _
+    simp
+  · intro t iht b r hbd hrd hbr
+    rw [blueDepthOption_some] at hbd
+    rw [redDepthOption_some] at hrd
+    rw [redBranchingLeOption_some] at hbr
+    rw [leafCountOption_some]
+    exact iht b r (by omega) hrd hbr
+  · intro b r _ _ _
+    simp
+  · intro t ts iht ihts b r hbd hrd hbr
+    rw [redBranchingLeList_cons] at hbr
+    obtain ⟨hbr_t, hbr_ts⟩ := hbr
+    rw [blueDepthList_cons] at hbd
+    rw [redDepthList_cons] at hrd
+    rw [leafCountList_cons]
+    have ht : leafCount t ≤ ((b + r).choose r : ℕ∞) * L ^ r := by
+      have hrd_t : redDepth t ≤ r := by
+        have : redDepth t + 1 ≤ r + 1 := le_trans (le_max_left _ _) hrd
+        omega
+      exact iht b r (le_trans (le_max_left _ _) hbd) hrd_t hbr_t
+    have hts :
+        leafCountList ts
+          ≤ (ts.length : ℕ∞) * (((b + r).choose r : ℕ∞) * L ^ r) := by
+      exact ihts b r (le_trans (le_max_right _ _) hbd) (le_trans (le_max_right _ _) hrd)
+        hbr_ts
+    calc leafCount t + leafCountList ts
+        ≤ ((b + r).choose r : ℕ∞) * L ^ r
+            + (ts.length : ℕ∞) * (((b + r).choose r : ℕ∞) * L ^ r) :=
+          add_le_add ht hts
+      _ = ((t :: ts).length : ℕ∞) * (((b + r).choose r : ℕ∞) * L ^ r) := by
+          simp [Nat.cast_add, add_mul, one_mul, add_comm]
 
 /-! ### Bridge to the abstract residual -/
+
+open Code ListDecodable
 
 variable {ι F : Type} [Fintype ι]
 
@@ -308,14 +391,14 @@ theorem treeStructure_of_eraseDecodeTree
     {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ} (hL : 1 ≤ Lambda C δ)
     (H : ∀ f : Matrix ι (Fin m) F,
       ∃ t : EraseDecodeTree,
-        (closeCodewordsRel (interleavedCodeSet (κ := Fin m) C) f δ).encard
+        (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard
             ≤ t.leafCount ∧
         t.blueDepth ≤ b ∧ t.redDepth ≤ r ∧ t.redBranchingLe (Lambda C δ)) :
     GGR11TreeStructure C δ m b r := by
   intro f
   obtain ⟨tree, hdom, hbd, hrd, hbr⟩ := H f
   refine ⟨fun b' r' => ((b' + r').choose r' : ℕ∞) * (Lambda C δ) ^ r', ?_, ?_, ?_, ?_⟩
-  · calc (closeCodewordsRel (interleavedCodeSet (κ := Fin m) C) f δ).encard
+  · calc (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard
           ≤ tree.leafCount := hdom
         _ ≤ ((b + r).choose r : ℕ∞) * (Lambda C δ) ^ r :=
             EraseDecodeTree.leafCount_le (Lambda C δ) hL tree b r hbd hrd hbr
