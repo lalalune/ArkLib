@@ -98,6 +98,46 @@ theorem exists_mcaPrizeLatticeSpec_of_lowerWitnesses
     ⟨τ, _hτ, hspec⟩
   exact ⟨τ, hspec⟩
 
+omit [DecidableEq ι] [DecidableEq F] in
+/-- Per-rate lower MCA witnesses expose the selected-threshold specification and lower lattice
+brackets for the faithful MCA prize lattice. -/
+theorem exists_mcaPrizeLatticeSpec_and_lower_brackets_of_lowerWitnesses
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (w : ∀ j : Fin 4,
+      MCALowerWitness
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (hwδ : ∀ j : Fin 4, (w j).δ = δ j) :
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      (∀ j : Fin 4,
+        let C : Set (ι → F) :=
+          ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+        ∃ _ : mcaThresholdExists C epsStar,
+          mcaSatisfies C epsStar (τ j) ∧
+            ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j) ∧
+        ∀ j : Fin 4,
+          latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j := by
+  classical
+  rcases exists_mcaPrizeLatticeResolved_with_spec_of_lowerWitnesses domain w with
+    ⟨τ, _hτ, hspec⟩
+  refine ⟨τ, hspec, ?_⟩
+  intro j
+  let C : Set (ι → F) :=
+    ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+  rcases hspec j with ⟨hne, _hsat, hmax⟩
+  have hle_lower :
+      latticeIndexOf (ι := ι) (w j).δ (w j).le_one ≤ mcaThreshold C epsStar hne := by
+    exact MCALowerWitness_le_mcaThreshold C epsStar hne (w j)
+  have hle_threshold : mcaThreshold C epsStar hne ≤ τ j := by
+    exact hmax _ (mcaThreshold_spec C epsStar hne)
+  have hidx :
+      latticeIndexOf (ι := ι) (w j).δ (w j).le_one =
+        latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) := by
+    apply Fin.ext
+    simp [latticeIndexOf_val, hwδ j]
+  exact hidx ▸ le_trans hle_lower hle_threshold
+
 /-- Pointwise prize-rate consequences of the ignored-source MCA conjecture expose only the
 selected-threshold satisfy/maximality specification. The conjecture remains an explicit
 hypothesis, and all numeric side conditions are supplied separately for each prize rate. -/
@@ -132,6 +172,55 @@ theorem exists_mcaPrizeLatticeSpec_of_ignoredSource_mcaConjecture
   rcases hSpec domain δ hk hδ hδ1 hbound with ⟨τ, _hτ, hspec⟩
   exact ⟨τ, hspec⟩
 
+/-- Pointwise prize-rate consequences of the ignored-source MCA conjecture expose the
+selected-threshold specification together with lower lattice brackets. The conjecture remains an
+explicit hypothesis, and all numeric side conditions are supplied separately for each prize rate. -/
+theorem exists_mcaPrizeLatticeSpec_and_lower_brackets_of_ignoredSource_mcaConjecture
+    (h : mcaConjecture) :
+    ∃ c₁ c₂ c₃ : ℝ,
+      ∀ {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
+        {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC]
+        (domain : ιC ↪ FC) (δ : Fin 4 → ℝ≥0),
+        (∀ j : Fin 4, 0 < ⌊prizeRates j * (Fintype.card ιC : ℝ≥0)⌋₊) →
+        (∀ j : Fin 4, (δ j : ℝ) <
+          1 - (⌊prizeRates j * (Fintype.card ιC : ℝ≥0)⌋₊ : ℝ) / Fintype.card ιC) →
+        (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1) →
+        (∀ j : Fin 4,
+          ENNReal.ofReal
+              (mcaConjectureBound (Fintype.card ιC) (Fintype.card FC)
+                ⌊prizeRates j * (Fintype.card ιC : ℝ≥0)⌋₊ (δ j) c₁ c₂ c₃) ≤
+            (epsStar : ENNReal)) →
+        ∃ τ : Fin 4 → Fin (Fintype.card ιC + 1),
+          (∀ j : Fin 4,
+            let C : Set (ιC → FC) :=
+              ReedSolomon.code domain
+                ⌊prizeRates j * (Fintype.card ιC : ℝ≥0)⌋₊
+            ∃ _ : mcaThresholdExists C epsStar,
+              mcaSatisfies C epsStar (τ j) ∧
+                ∀ i : Fin (Fintype.card ιC + 1),
+                  mcaSatisfies C epsStar i → i ≤ τ j) ∧
+            ∀ j : Fin 4,
+              latticeIndexOf (ι := ιC) (δ j) (hδ_le_one j) ≤ τ j := by
+  obtain ⟨c₁, c₂, c₃, hLower⟩ :=
+    GrandChallenges.exists_prize_mcaLowerWitnesses_allRates_of_ignored_mcaConjecture h
+  refine ⟨c₁, c₂, c₃, ?_⟩
+  intro ιC _ _ _ FC _ _ _ domain δ hk hδ hδ_le_one hbound
+  have hw : ∀ j : Fin 4,
+      ∃ w : MCALowerWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ιC : ℝ≥0)⌋₊ : Set (ιC → FC))
+        epsStar,
+        w.δ = δ j :=
+    hLower domain δ hk hδ hδ_le_one hbound
+  let w : ∀ j : Fin 4,
+      MCALowerWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ιC : ℝ≥0)⌋₊ : Set (ιC → FC))
+        epsStar :=
+    fun j => Classical.choose (hw j)
+  exact exists_mcaPrizeLatticeSpec_and_lower_brackets_of_lowerWitnesses
+    domain δ hδ_le_one w fun j => Classical.choose_spec (hw j)
+
 end PrizeSpec
 
 set_option linter.style.longLine false in
@@ -145,7 +234,11 @@ set_option linter.style.longLine false in
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeSpec_of_lowerWitnesses
 set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeSpec_and_lower_brackets_of_lowerWitnesses
+set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeSpec_of_ignoredSource_mcaConjecture
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeSpec_and_lower_brackets_of_ignoredSource_mcaConjecture
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_spec_of_ignoredSource_mcaConjecture
 
