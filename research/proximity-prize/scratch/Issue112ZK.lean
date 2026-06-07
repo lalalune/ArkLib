@@ -69,7 +69,7 @@ theorem echoReduction_run (stmt : Statement) (wit : Witness) :
     (echoReduction : Reduction oSpec Statement Witness _ _ _).run stmt wit =
       pure ⟨⟨echoTranscript stmt, stmt, wit⟩, stmt⟩ := by
   rw [Reduction.run_of_prover_first]
-  simp only [echoReduction, echoProver, echoVerifier, echoTranscript]
+  simp only [echoReduction, echoProver, echoVerifier]
   rfl
 
 end Issue112ZK
