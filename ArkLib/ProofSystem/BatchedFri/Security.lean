@@ -388,7 +388,6 @@ theorem queryRound_acceptance_le
     singleQuery_acceptance_le G δ hN h_density
   exact pow_le_pow_left₀ (by positivity) hbase t
 
-omit [DecidableEq ι] in
 /-- **Query-round acceptance bound (density-ratio form).**  This is the same combinatorial
 query-round bound as `queryRound_acceptance_le`, but with the natural density hypothesis
 `|G| / N ≤ 1 - δ` exposed directly. -/
