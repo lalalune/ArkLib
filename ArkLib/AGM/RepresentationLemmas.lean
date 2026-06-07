@@ -95,6 +95,22 @@ theorem singleton_target_mem_zpowers (g : G) (a : ZMod p) :
     g ^ a.val ∈ Subgroup.zpowers g :=
   pow_mem (Subgroup.mem_zpowers g) a.val
 
+/-- **Representation completeness.** Every exponent vector over a basis yields a representation —
+of the product it encodes. The existence converse to `target_eq_of_exponents_eq` (determinism):
+together they show a representation over `prev` is *exactly* an exponent vector, with the target
+determined by it. -/
+def ofExponents (prev : List G) (exps : List (ZMod p)) :
+    GroupRepresentation (p := p) prev ((prev.zipWith (fun g a => g ^ a.val) exps).prod) where
+  exponents := exps
+  hEq := rfl
+
+/-- The empty exponent vector represents the identity over *any* basis (since `zipWith` truncates
+to the empty list). Generalises `target_eq_one_of_nil`, which fixes the basis to `[]`. -/
+theorem target_eq_one_of_exponents_nil {prev : List G} {target : G}
+    (repr : GroupRepresentation (p := p) prev target) (h : repr.exponents = []) :
+    target = 1 := by
+  rw [← repr.hEq, h]; simp
+
 end AGM.GroupRepresentation
 
 /-! ### Axiom audit (issue #118 representation companion lemmas) -/
@@ -106,3 +122,5 @@ end AGM.GroupRepresentation
 #print axioms AGM.GroupRepresentation.map_target_mem_closure
 #print axioms AGM.GroupRepresentation.map_exponents
 #print axioms AGM.GroupRepresentation.singleton_target_mem_zpowers
+#print axioms AGM.GroupRepresentation.ofExponents
+#print axioms AGM.GroupRepresentation.target_eq_one_of_exponents_nil
