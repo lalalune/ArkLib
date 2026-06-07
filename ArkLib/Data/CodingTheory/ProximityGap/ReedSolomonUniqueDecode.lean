@@ -85,4 +85,44 @@ theorem evalOnPoints_injOn_degreeLT [Fintype F] {α : ι ↪ F} {k : ℕ} [NeZer
   have hcard := Polynomial.card_agree_le_of_ne (hdeg hp) (hdeg hq) hne
   omega
 
+open Polynomial in
+/-- **Berlekamp–Welch key-equation existence.**  If a received word `y` is within `e` Hamming
+errors of the Reed–Solomon codeword `eval f` (`f` of degree `< k`), then the Berlekamp–Welch key
+equation `E(αᵢ)·yᵢ = N(αᵢ)` has a solution with `E ≠ 0`, `deg E ≤ e`, `deg N < k + e`.  Witnessed
+by the **error-locator** `E := ∏_{error i}(X − αᵢ)` (which vanishes exactly at the error positions)
+and `N := E · f`.  This is the algebraic heart of unique decoding and the entry point to the
+bivariate proximity-gap argument. -/
+theorem berlekamp_welch_exists {α : ι ↪ F} {k e : ℕ} [NeZero k]
+    {y : ι → F} {f : F[X]} (hf : f ∈ Polynomial.degreeLT F k)
+    (herr : (Finset.univ.filter (fun i => y i ≠ f.eval (α i))).card ≤ e) :
+    ∃ E N : F[X], E ≠ 0 ∧ E.natDegree ≤ e ∧ N.natDegree < k + e ∧
+      ∀ i, E.eval (α i) * y i = N.eval (α i) := by
+  classical
+  set errs := Finset.univ.filter (fun i => y i ≠ f.eval (α i)) with hes
+  set E : F[X] := ∏ i ∈ errs, (X - C (α i)) with hE
+  have hEne : E ≠ 0 := Finset.prod_ne_zero_iff.mpr fun i _ => X_sub_C_ne_zero (α i)
+  -- `deg E = |errs| ≤ e`
+  have hEdeg : E.natDegree ≤ e := by
+    rw [hE, natDegree_prod _ _ fun i _ => X_sub_C_ne_zero (α i)]
+    simp only [natDegree_X_sub_C, Finset.sum_const, smul_eq_mul, mul_one]
+    exact herr
+  refine ⟨E, E * f, hEne, hEdeg, ?_, ?_⟩
+  · -- `deg (E·f) < k + e`
+    have hkpos : 0 < k := Nat.pos_of_ne_zero (NeZero.ne k)
+    rcases eq_or_ne f 0 with rfl | hf0
+    · rw [mul_zero, natDegree_zero]; omega
+    · have hfdeg : f.natDegree < k := (natDegree_lt_iff_degree_lt hf0).mpr (mem_degreeLT.mp hf)
+      rw [natDegree_mul hEne hf0]
+      omega
+  · -- key equation
+    intro i
+    by_cases hi : i ∈ errs
+    · have hEz : E.eval (α i) = 0 := by
+        rw [hE, eval_prod]
+        exact Finset.prod_eq_zero hi (by simp)
+      simp [hEz, eval_mul]
+    · have hyc : y i = f.eval (α i) := by
+        by_contra h; exact hi (Finset.mem_filter.mpr ⟨Finset.mem_univ _, h⟩)
+      rw [eval_mul, hyc]
+
 end ReedSolomon
