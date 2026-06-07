@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 import Mathlib.Data.ENNReal.Inv
 import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Algebra.Module.Pi
@@ -85,5 +86,20 @@ theorem sum_uniform_line_indicator_eq (P : (ι → F) → Prop) [DecidablePred P
             (if P u₀ then (1 : ℝ≥0∞) else 0)) := by ring
     _ = (Fintype.card (ι → F) : ℝ≥0∞)⁻¹ * (if P u₀ then (1 : ℝ≥0∞) else 0) := by
           rw [ENNReal.mul_inv_cancel hcard htop, one_mul]
+
+/-- **A uniform weighted average is at most the supremum.** Over a finite nonempty index, the
+uniform average `∑_a |α|⁻¹ · f a` is bounded above by `⨆_a f a`.  Used to pass from the `ε_ca`
+supremum over word-pairs to the `u₀`-average of the line event. -/
+theorem sum_uniform_mul_le_iSup {α : Type*} [Fintype α] [Nonempty α] (f : α → ℝ≥0∞) :
+    (∑ a : α, (Fintype.card α : ℝ≥0∞)⁻¹ * f a) ≤ ⨆ a, f a := by
+  classical
+  have hcard : (Fintype.card α : ℝ≥0∞) ≠ 0 := by exact_mod_cast Fintype.card_ne_zero
+  have htop : (Fintype.card α : ℝ≥0∞) ≠ ⊤ := ENNReal.natCast_ne_top _
+  calc (∑ a : α, (Fintype.card α : ℝ≥0∞)⁻¹ * f a)
+      ≤ ∑ _a : α, (Fintype.card α : ℝ≥0∞)⁻¹ * (⨆ b, f b) :=
+        Finset.sum_le_sum (fun a _ => mul_le_mul' le_rfl (le_iSup f a))
+    _ = ⨆ b, f b := by
+        rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul, ← mul_assoc,
+          ENNReal.mul_inv_cancel hcard htop, one_mul]
 
 end ArkLib

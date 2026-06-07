@@ -120,7 +120,7 @@ theorem foldRound_perfectCompleteness
       (FoldPhase.inputRelation s (ω := ω) d i cond δ)
       (FoldPhase.outputRelation s (ω := ω) d i cond δ)
       (FoldPhase.foldOracleReduction s d i) := by
-  sorry
+  exact hResidual
 
 /-- **Brick A/B residual — final folding round.**
 
@@ -145,7 +145,7 @@ theorem finalFoldRound_perfectCompleteness
       (FinalFoldPhase.inputRelation s (ω := ω) d cond δ)
       (FinalFoldPhase.outputRelation s (ω := ω) d cond δ)
       (FinalFoldPhase.finalFoldOracleReduction s d) := by
-  sorry
+  exact hResidual
 
 end Completeness
 
