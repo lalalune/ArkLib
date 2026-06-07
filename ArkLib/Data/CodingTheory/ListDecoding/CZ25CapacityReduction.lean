@@ -70,6 +70,79 @@ theorem one_div_eta_eq_natFloor_of_eta_eq_one_div_nat
   rw [hdiv]
   norm_num
 
+/-- **FRS floor-to-real C3.5 algebra from an instantiated T3.4-style bound.**
+
+This is the shared arithmetic core of the C3.5 reduction: once the folded-RS τ-profile is
+already known to satisfy the floor-faithful `Λ` bound at `Nat.floor (1 / η)`, the result is
+the real-parameter C3.5 statement, provided `1 / η` is integral.  No T3.4/T2.18 content is
+used here; this helper only performs the τ-substitution, bound algebra, and floor/real
+reconciliation. -/
+theorem frs_list_decoding_capacity_cz25_of_T34_instance
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (_hs_pos : 0 < s)
+    (η : ℝ) (hη_pos : 0 < η) (hη_lt_s : 1 / η < s)
+    (hInst :
+      (Lambda ((ReedSolomon.Folded.frsCode domain k s ω : Set (ι → Fin s → F)))
+          (1 - (fun r ↦ if r ∈ Finset.Icc 1 s then
+              (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - r + 1) else 1)
+            (Nat.floor (1 / η)) - η) : ENNReal) ≤
+        ENNReal.ofReal
+          ((1 - (fun r ↦ if r ∈ Finset.Icc 1 s then
+              (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - r + 1) else 1)
+            (Nat.floor (1 / η))) / η))
+    (hηnat : (1 : ℝ) / η = (Nat.floor (1 / η) : ℕ)) :
+    let n : ℝ := Fintype.card ι
+    let ρ : ℝ := k / n
+    let δ : ℝ := 1 - ρ * s / (s - 1 / η + 1) - η
+    let bound : ℝ := (s * (1 - ρ) + 1 - 1 / η) / (η * (s + 1 - 1 / η))
+    (Lambda ((ReedSolomon.Folded.frsCode domain k s ω : Set (ι → Fin s → F))) δ :
+        ENNReal) ≤
+      ENNReal.ofReal bound := by
+  intro n ρ δ bound
+  set t : ℕ := Nat.floor (1 / η) with ht_def
+  have hη_ne : η ≠ 0 := ne_of_gt hη_pos
+  have ht_le_s : t ≤ s := by
+    have : (t : ℝ) ≤ 1 / η := Nat.floor_le (by positivity)
+    have hts : (t : ℝ) < s := lt_of_le_of_lt this hη_lt_s
+    exact_mod_cast (le_of_lt hts)
+  have hηt : (1 : ℝ) / η = (t : ℝ) := by rw [ht_def]; exact hηnat
+  set τt : ℝ := (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - t + 1) with hτt_def
+  have hρ : ρ = (k : ℝ) / n := rfl
+  have hn : n = (Fintype.card ι : ℝ) := rfl
+  have hδ_eq : δ = 1 - τt - η := by
+    change 1 - ρ * s / (s - 1 / η + 1) - η = 1 - τt - η
+    rw [hηt, hρ, hn, hτt_def]
+    have : (k : ℝ) / (Fintype.card ι : ℝ) * (s : ℝ)
+        = (s : ℝ) * (k : ℝ) / (Fintype.card ι : ℝ) := by ring
+    rw [this]
+  have hbound_eq : bound = (1 - τt) / η := by
+    change (s * (1 - ρ) + 1 - 1 / η) / (η * (s + 1 - 1 / η)) = (1 - τt) / η
+    rw [hηt]
+    rw [hτt_def, hρ, hn]
+    have hbridge := frs_bound_simplify s t ((k : ℝ) / (Fintype.card ι : ℝ)) η hη_ne ht_le_s
+    have halign : (s : ℝ) * ((k : ℝ) / (Fintype.card ι : ℝ)) / ((s : ℝ) - t + 1)
+        = (s : ℝ) * (k : ℝ) / (Fintype.card ι : ℝ) / ((s : ℝ) - t + 1) := by ring
+    rw [halign] at hbridge
+    rw [← hbridge]
+  by_cases ht1 : 1 ≤ t
+  · have htmem : t ∈ Finset.Icc 1 s := Finset.mem_Icc.mpr ⟨ht1, ht_le_s⟩
+    have hτeval : (fun r ↦ if r ∈ Finset.Icc 1 s then
+        (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - r + 1) else 1)
+        (Nat.floor (1 / η)) = τt := by
+      rw [← ht_def]
+      simp only [htmem, if_true]
+      rfl
+    rw [hτeval] at hInst
+    rw [hδ_eq, hbound_eq]
+    exact hInst
+  · exfalso
+    have ht0 : t = 0 := Nat.lt_one_iff.mp (Nat.not_le.mp ht1)
+    have : (1 : ℝ) / η = 0 := by rw [hηt, ht0]; norm_num
+    rw [one_div, inv_eq_zero] at this
+    exact hη_ne this
+
 /-- **ABF26 Corollary 3.5 [CZ25 Cor 2.21] — reduction form.**
 
 Given the two genuine external ingredients (T3.4 and T2.18) **as hypotheses**, folded RS
@@ -169,6 +242,48 @@ theorem frs_list_decoding_capacity_cz25_of_T34_T218
     have : (1 : ℝ) / η = 0 := by rw [hηt, ht0]; norm_num
     rw [one_div, inv_eq_zero] at this
     exact hη_ne this
+
+/-- **ABF26 Corollary 3.5 [CZ25 Cor 2.21] — unique-list/T2.18 easy slice.**
+
+If the folded-RS close list at the floor-faithful capacity radius has at most one codeword for
+every received word, then the guarded span residual is discharged by
+`cz25SpanBound'_of_le_one`; combined with the supplied T2.18 subspace-design instance and the
+floor/real reconciliation, this yields the C3.5 bound.  This is useful for sub-Johnson or
+unique-decoding regimes and does not use the deep coordinate-fiber cap residual. -/
+theorem frs_list_decoding_capacity_cz25_of_T218_le_one
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (hs_pos : 0 < s)
+    (η : ℝ) (hη_pos : 0 < η) (hη_lt_s : 1 / η < s)
+    (hT218 : IsSubspaceDesign s
+        (fun r ↦ if r ∈ Finset.Icc 1 s then
+            (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - r + 1) else 1)
+        (ReedSolomon.Folded.frsCode domain k s ω))
+    (hle : ∀ f : ι → Fin s → F,
+      (closeCodewordsRel
+          ((ReedSolomon.Folded.frsCode domain k s ω : Set (ι → Fin s → F))) f
+          (1 - (fun r ↦ if r ∈ Finset.Icc 1 s then
+              (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - r + 1) else 1)
+            (Nat.floor (1 / η)) - η)).ncard ≤ 1)
+    (hηnat : (1 : ℝ) / η = (Nat.floor (1 / η) : ℕ)) :
+    let n : ℝ := Fintype.card ι
+    let ρ : ℝ := k / n
+    let δ : ℝ := 1 - ρ * s / (s - 1 / η + 1) - η
+    let bound : ℝ := (s * (1 - ρ) + 1 - 1 / η) / (η * (s + 1 - 1 / η))
+    (Lambda ((ReedSolomon.Folded.frsCode domain k s ω : Set (ι → Fin s → F))) δ :
+        ENNReal) ≤
+      ENNReal.ofReal bound := by
+  refine frs_list_decoding_capacity_cz25_of_T34_instance
+    domain k s ω hs_pos η hη_pos hη_lt_s ?_ hηnat
+  exact subspaceDesign_list_decoding_cz25_of_spanBound' s
+    (fun r ↦ if r ∈ Finset.Icc 1 s then
+        (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - r + 1) else 1)
+    (ReedSolomon.Folded.frsCode domain k s ω) hT218 η hη_pos
+    (cz25SpanBound'_of_le_one s
+      (fun r ↦ if r ∈ Finset.Icc 1 s then
+          (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - r + 1) else 1)
+      (ReedSolomon.Folded.frsCode domain k s ω) hT218 η hη_pos hle)
 
 /-- **ABF26 Corollary 3.5 [CZ25 Cor 2.21] — from coordinate-fiber cap.**
 The folded RS code is list-decodable up to capacity, reduced to the single named residual
@@ -292,6 +407,44 @@ theorem frs_list_decoding_capacity_cz25_of_coordFiberCap_T218_eta_eq_one_div_nat
     exact_mod_cast hms
   exact frs_list_decoding_capacity_cz25_of_coordFiberCap_T218
     domain k s ω hs_pos (1 / (m : ℝ)) hη_pos hη_lt_s hT218 hCap
+    (one_div_eta_eq_natFloor_of_eta_eq_one_div_nat hm rfl)
+
+/-- Unique-list/T2.18 route with the documented reciprocal-natural slack convention
+`η = 1 / m`.  This discharges the floor side condition at the call site. -/
+theorem frs_list_decoding_capacity_cz25_of_T218_le_one_eta_eq_one_div_nat
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (hs_pos : 0 < s)
+    (η : ℝ) {m : ℕ} (hm : 0 < m) (hη : η = 1 / (m : ℝ)) (hms : m < s)
+    (hT218 : IsSubspaceDesign s
+        (fun r ↦ if r ∈ Finset.Icc 1 s then
+            (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - r + 1) else 1)
+        (ReedSolomon.Folded.frsCode domain k s ω))
+    (hle : ∀ f : ι → Fin s → F,
+      (closeCodewordsRel
+          ((ReedSolomon.Folded.frsCode domain k s ω : Set (ι → Fin s → F))) f
+          (1 - (fun r ↦ if r ∈ Finset.Icc 1 s then
+              (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - r + 1) else 1)
+            (Nat.floor (1 / η)) - η)).ncard ≤ 1) :
+    let n : ℝ := Fintype.card ι
+    let ρ : ℝ := k / n
+    let δ : ℝ := 1 - ρ * s / (s - 1 / η + 1) - η
+    let bound : ℝ := (s * (1 - ρ) + 1 - 1 / η) / (η * (s + 1 - 1 / η))
+    (Lambda ((ReedSolomon.Folded.frsCode domain k s ω : Set (ι → Fin s → F))) δ :
+        ENNReal) ≤
+      ENNReal.ofReal bound := by
+  subst η
+  have hm_ne : (m : ℝ) ≠ 0 := by exact_mod_cast (ne_of_gt hm)
+  have hη_pos : 0 < (1 : ℝ) / (m : ℝ) :=
+    one_div_pos.mpr (by exact_mod_cast hm)
+  have hη_lt_s : (1 : ℝ) / (1 / (m : ℝ)) < (s : ℝ) := by
+    have hdiv : (1 : ℝ) / (1 / (m : ℝ)) = (m : ℝ) := by
+      field_simp [hm_ne]
+    rw [hdiv]
+    exact_mod_cast hms
+  exact frs_list_decoding_capacity_cz25_of_T218_le_one
+    domain k s ω hs_pos (1 / (m : ℝ)) hη_pos hη_lt_s hT218 hle
     (one_div_eta_eq_natFloor_of_eta_eq_one_div_nat hm rfl)
 
 /-- Injective-GK16 route with the documented reciprocal-natural slack convention
@@ -467,6 +620,9 @@ theorem frs_list_decoding_capacity_cz25_of_coordFiberCap_orderOf_ge_of_cosetSep_
 #print axioms frs_list_decoding_capacity_cz25_of_coordFiberCap_injective
 #print axioms frs_list_decoding_capacity_cz25_of_coordFiberCap_admissible
 #print axioms one_div_eta_eq_natFloor_of_eta_eq_one_div_nat
+#print axioms frs_list_decoding_capacity_cz25_of_T34_instance
+#print axioms frs_list_decoding_capacity_cz25_of_T218_le_one
+#print axioms frs_list_decoding_capacity_cz25_of_T218_le_one_eta_eq_one_div_nat
 #print axioms frs_list_decoding_capacity_cz25_of_coordFiberCap_T218_eta_eq_one_div_nat
 #print axioms frs_list_decoding_capacity_cz25_of_coordFiberCap_injective_eta_eq_one_div_nat
 #print axioms frs_list_decoding_capacity_cz25_of_coordFiberCap_admissible_eta_eq_one_div_nat
