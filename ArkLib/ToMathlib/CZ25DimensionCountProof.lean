@@ -691,6 +691,53 @@ lemma list_card_le_rank_budget_div_gap_of_filter_linearIndependent
 
 end RecentredSpan
 
+section FiberRecentre
+
+variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+variable {F : Type} [Field F] [DecidableEq F]
+
+/-- **Agreement fiber = recentred vanishing fiber, when the base agrees at `i`.** Fix a
+coordinate `i` and a base word `c₀` that agrees with `f` at `i` (`c₀ i = f i`). Then for any
+finite list `L`, the agreement fiber `{c ∈ L : c i = f i}` is *equal as a Finset* to the
+recentred vanishing fiber `{c ∈ L : c i - c₀ i = 0}`:
+
+  `L.filter (fun c => c i = f i) = L.filter (fun c => c i - c₀ i = 0)`.
+
+Indeed, since `c₀ i = f i`, the predicate `c i = f i` is equivalent to `c i = c₀ i`, i.e. to
+`c i - c₀ i = 0` (`sub_eq_zero`). This is the coordinate-recentring step of the CZ25 / GW
+dimension count: it rewrites each per-coordinate term of the agreement table `coordAgreeSum`
+(the LHS of `CZ25CoordFiberCap`) into the recentred vanishing-fiber form that the design half
+acts on, so the already-landed span/kernel bricks
+(`span_filter_diffs_le_code_inf_ker_of_subset_closeCodewordsRel`) and the design budget
+(`sum_card_vanishing_le_design`) apply directly. It does **not** prove any cardinality cap —
+in particular not the affine-flat `CZ25CoordFiberCap` (the `q^{dim}` vs `dim+1` GW charge
+documented in `CZ25SpanDimension.lean:292-302`); it is purely the recentring identity. -/
+lemma filter_agree_eq_filter_vanish_of_base
+    (s : ℕ) (f c₀ : ι → Fin s → F) (i : ι) (L : Finset (ι → Fin s → F))
+    (hbase : c₀ i = f i) :
+    L.filter (fun c => c i = f i) = L.filter (fun c => c i - c₀ i = 0) := by
+  apply Finset.filter_congr
+  intro c _hc
+  rw [sub_eq_zero, hbase]
+
+/-- **Cardinality form of the agreement↔recentred-vanishing fiber identity.** Immediate
+corollary of `filter_agree_eq_filter_vanish_of_base`: when the base `c₀` agrees with `f` at
+coordinate `i`, the agreement-fiber count equals the recentred vanishing-fiber count,
+
+  `#{c ∈ L : c i = f i} = #{c ∈ L : c i - c₀ i = 0}`.
+
+This is the table-entry rewrite used to pass from the coordinate agreement table
+`coordAgreeSum` (lower-bounded by `sum_agree_ge_of_subset_closeCodewordsRel`) to the recentred
+vanishing table the design budget caps. -/
+lemma card_filter_agree_eq_card_filter_vanish_of_base
+    (s : ℕ) (f c₀ : ι → Fin s → F) (i : ι) (L : Finset (ι → Fin s → F))
+    (hbase : c₀ i = f i) :
+    (L.filter (fun c => c i = f i)).card
+      = (L.filter (fun c => c i - c₀ i = 0)).card := by
+  rw [filter_agree_eq_filter_vanish_of_base s f c₀ i L hbase]
+
+end FiberRecentre
+
 /-! ### `#print axioms` verification anchors -/
 
 section AxiomCheck
@@ -741,3 +788,5 @@ end CodingTheory
 #print axioms CodingTheory.list_card_mul_one_sub_two_delta_le_design_of_filter_linearIndependent
 #print axioms CodingTheory.list_card_le_design_div_gap_of_filter_linearIndependent
 #print axioms CodingTheory.list_card_le_rank_budget_div_gap_of_filter_linearIndependent
+#print axioms CodingTheory.filter_agree_eq_filter_vanish_of_base
+#print axioms CodingTheory.card_filter_agree_eq_card_filter_vanish_of_base
