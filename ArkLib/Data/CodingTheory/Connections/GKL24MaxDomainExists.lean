@@ -218,7 +218,7 @@ the common set whenever it is large), this is the complete formalized GKL24 firs
 theorem mcaBadWitness_card_first_moment {MC : Submodule F (ι → F)} {δ : ℝ≥0} {u₀ u₁ w : ι → F}
     {D : Finset ι}
     (hcommon : Finset.univ.filter (fun i => u₁ i = 0 ∧ w i = u₀ i) ⊆ D) :
-    (mcaBadWitness (MC : Set (ι → F)) δ u₀ u₁ w).card
+    (mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w).card
         * (⌊((1 - δ) * Fintype.card ι : ℝ≥0)⌋₊ - D.card)
       ≤ Fintype.card ι - D.card := by
   refine badCombiner_count hcommon (fun γ hγ => ?_)
