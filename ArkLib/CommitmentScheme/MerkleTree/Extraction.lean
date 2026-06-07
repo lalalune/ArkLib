@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import VCVio
+import VCVio.CryptoFoundations.MerkleTree.Inductive.Extractability
 
 /-!
 # Position binding / collision core for inductive Merkle trees (towards extractability)
@@ -13,10 +14,9 @@ This file develops the *deterministic, collision-free core* of Merkle-tree extra
 position binding, building on the VCVio inductive Merkle tree definitions
 (`VCVio.CryptoFoundations.MerkleTree.Inductive`).
 
-The pinned VCVio package proves single-index *completeness* but has no extractor and no
-collision lemma (both are marked Future work in its source, referencing the SNARGs book §18.3 and
-§18.5). Here we contribute the parts that are honestly provable without a random-oracle / negligible
--probability argument, namely the *information-theoretic* consequences of collision-freeness:
+The VCVio package proves single-index *completeness* and now also exposes the random-oracle
+extractability theorem from SNARGs §18.5. This file keeps ArkLib's deterministic,
+function-facing API and adds an ArkLib-facing bridge to the upstream probabilistic theorem:
 
 * `getPutativeRootWithHash_injective_of_hash_injective` — the **collision lemma** (SNARGs §18.3):
   if the compression function is injective, the leaf value is uniquely determined by an opening
@@ -29,14 +29,12 @@ collision lemma (both are marked Future work in its source, referencing the SNAR
   the data tree, with the consistency lemma that it agrees with the leaf carried by an honest
   opening.
 
-## What remains genuinely open (research-grade)
+## Random-oracle bridge
 
-Full extractability (SNARGs §18.5) for the random-oracle model requires reconstructing the leaves
-from the *query transcript* of a possibly-adversarial prover and bounding the probability of a hash
-collision over the random oracle — a negligible-probability argument that is out of scope for a
-purely functional/deterministic development. The lemmas here isolate exactly the deterministic
-implication ("no collision ⇒ binding/extraction"); the probabilistic step ("collision is
-negligible over the RO") is the missing piece.
+The theorem `randomOracle_extractability_bound` below re-exports the upstream VCVio
+query-log extractor and birthday-bound result in ArkLib's Merkle namespace. For any bounded
+two-phase adversary, the probability of accepting an opening that disagrees with the extractor is
+at most `((qb + s.depth)^2)/(2 |α|) + 1/|α|`.
 -/
 
 namespace InductiveMerkleTree
@@ -125,6 +123,30 @@ theorem multi_instance_extracted_leaves_unique {s : Skeleton}
   intro o ho
   exact extracted_leaf_unique leaf_data_tree o.1 hashFn hinj o.2 (hver o ho)
 
+section RandomOracleBinding
+
+/-- **Random-oracle Merkle extractability / probabilistic binding bound.**
+
+This is the ArkLib-facing form of VCVio's SNARGs §18.5 theorem. A two-phase adversary first
+commits to a claimed root, then opens one position. If the combined adversary has total query bound
+`qb`, the probability that verification accepts while the query-log extractor disagrees with the
+opened `(leaf, proof)` pair is bounded by the birthday collision term plus the one-shot
+unqueried-root guessing term:
+
+`((qb + s.depth)^2) / (2 * |α|) + 1 / |α|`.
+
+Thus the deterministic no-collision binding lemmas in this file now have the probabilistic
+random-oracle step required by issue #119. -/
+theorem randomOracle_extractability_bound [DecidableEq α] [Fintype α] [Inhabited α]
+    {s : Skeleton} (𝒜 : Adversary α s) (qb : ℕ)
+    (h_IsQueryBound_qb : 𝒜.IsTwoPhaseTotalQueryBound qb) :
+    Pr[AdversaryWinsExtractabilityGame | extractabilityGame 𝒜] ≤
+      ((qb + s.depth) ^ 2 : ENNReal) / (2 * Fintype.card α)
+      + 1 / (Fintype.card α) :=
+  extractability 𝒜 qb h_IsQueryBound_qb
+
+end RandomOracleBinding
+
 end InductiveMerkleTree
 
 /-! ### Axiom audit (issue #119 deterministic Merkle binding/extraction core) -/
@@ -134,3 +156,4 @@ end InductiveMerkleTree
 #print axioms InductiveMerkleTree.extractLeaf_eq_opened
 #print axioms InductiveMerkleTree.extracted_leaf_unique
 #print axioms InductiveMerkleTree.multi_instance_extracted_leaves_unique
+#print axioms InductiveMerkleTree.randomOracle_extractability_bound
