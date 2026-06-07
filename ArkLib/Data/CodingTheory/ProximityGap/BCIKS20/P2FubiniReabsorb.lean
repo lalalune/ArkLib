@@ -58,7 +58,41 @@ theorem inner_Ydegree_sum_eq_countPerms_hasseEvalAtRoot
   refine Finset.sum_congr rfl (fun i _ => ?_)
   ring
 
+/-- **Per-`ab` Fubini assembly (PROVEN).**  Combining the two cores: for a fixed `ab` (with X-Taylor
+order `i₁` and Y-composition order `c`), the LHS partition-form block
+
+  `∑_{i} lift((Δ_X^{i₁}R)|_{x₀}).coeff i · ∑_{λ⊢c, |λ|≤i, T∉λ} (C(i,|λ|)·countPerms λ)•(α₀^{i-|λ|}·Pλ)`
+
+equals `∑_{λ⊢c, T∉λ} countPerms λ • (hasseEvalAtRoot i₁ |λ| · Pλ)`.  Route: drop the `|λ|≤i` filter
+(`partitionSum_drop_card_filter`), distribute the lift factor (`Finset.mul_sum`), swap the `i`/`λ`
+sums (`Finset.sum_comm`), and reabsorb each partition's Y-degree sum
+(`inner_Ydegree_sum_eq_countPerms_hasseEvalAtRoot`).  This is the full LHS reabsorption of one
+antidiagonal block of `RestrictedFaaDiBrunoMatch`. -/
+theorem restrictedInner_eq_countPerms_hasseEvalAtRoot_sum
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) (i1 c T : ℕ) :
+    (∑ i ∈ Finset.range ((Q x₀ R H).natDegree + 1),
+        liftToFunctionField (H := H)
+            ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 R)).coeff i)
+          * (∑ lam ∈ (Finset.univ : Finset (Nat.Partition c)).filter
+                      (fun lam => lam.parts.card ≤ i ∧ T ∉ lam.parts),
+              ((i.choose lam.parts.card) * lam.parts.countPerms)
+                • ((PowerSeries.coeff 0 (βHenselAssembled H x₀ R hHyp)) ^ (i - lam.parts.card)
+                    * (lam.parts.map
+                        (fun j => PowerSeries.coeff j (βHenselAssembled H x₀ R hHyp))).prod)))
+      = ∑ lam ∈ (Finset.univ : Finset (Nat.Partition c)).filter (fun lam => T ∉ lam.parts),
+          lam.parts.countPerms
+            • (hasseEvalAtRoot H x₀ R i1 lam.parts.card
+                * (lam.parts.map
+                    (fun j => PowerSeries.coeff j (βHenselAssembled H x₀ R hHyp))).prod) := by
+  simp only [partitionSum_drop_card_filter]
+  simp_rw [Finset.mul_sum]
+  rw [Finset.sum_comm]
+  refine Finset.sum_congr rfl (fun lam _ => ?_)
+  exact inner_Ydegree_sum_eq_countPerms_hasseEvalAtRoot H x₀ R hHyp i1
+      lam.parts.card lam.parts.countPerms _
+
 end BCIKS20.HenselNumerator
 
 -- Axiom audit.
 #print axioms BCIKS20.HenselNumerator.inner_Ydegree_sum_eq_countPerms_hasseEvalAtRoot
+#print axioms BCIKS20.HenselNumerator.restrictedInner_eq_countPerms_hasseEvalAtRoot_sum
