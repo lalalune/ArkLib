@@ -59,6 +59,11 @@ Current source exposes both sides of that frontier as named parts:
 - `Fri.friBatchPhaseErrorBound` and `Fri.friTailPhaseErrorBound` name those two
   per-phase error-bound targets directly; `Fri.friSoundnessTotalErrorAccounting_of_named_phase_bounds`
   packages them into the existing total-error accounting field.
+- `Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequentialCompositionAndPhaseErrorBounds`
+  and
+  `Fri.fri_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndSequentialCompositionAndPhaseErrorBounds`
+  are the density/probability Claim 8.3 front doors that consume those named
+  phase-bound targets directly.
 - `Fri.fri_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndSequentialCompositionAndTotalError`
   gives the same Claim 8.3 reassembly along the probability-space query-round
   route, with query lift, concrete sequential composition, and arithmetic
@@ -175,7 +180,8 @@ ArkLib/Data/CodingTheory/InterleavedCode.lean:738:theorem jointAgreement_iff_joi
    `Fri.friSoundnessTotalErrorAccounting` and supplied from per-phase error
    bounds by `Fri.friSoundnessTotalErrorAccounting_of_phase_bounds`.  The
    remaining per-phase targets are now named as
-   `Fri.friBatchPhaseErrorBound` and `Fri.friTailPhaseErrorBound`.  The
+   `Fri.friBatchPhaseErrorBound` and `Fri.friTailPhaseErrorBound`, with
+   density/probability wrappers that consume those names directly.  The
    probability-route wrapper
    `Fri.fri_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndSequentialCompositionAndTotalError`
    combines the proved query-round probability front door with these Claim 8.3

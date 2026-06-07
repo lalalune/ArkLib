@@ -110,6 +110,11 @@ Current source also exposes the #14 split frontier:
   remaining per-phase error-bound targets, and
   `Fri.friSoundnessTotalErrorAccounting_of_named_phase_bounds` feeds them into
   total-error accounting.
+- `Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequentialCompositionAndPhaseErrorBounds`
+  and
+  `Fri.fri_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndSequentialCompositionAndPhaseErrorBounds`
+  are the density/probability Claim 8.3 front doors that consume those named
+  phase-bound targets directly.
 - `Fri.fri_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndSequentialCompositionAndTotalError`
   routes the proved probability-space query-round front door through the
   concrete sequential-composition and total-accounting fields.

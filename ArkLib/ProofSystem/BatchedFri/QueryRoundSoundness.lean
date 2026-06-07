@@ -408,6 +408,87 @@ theorem
       (friSoundnessTotalErrorAccounting_of_phase_bounds
         (n := n) (s := s) (ω := ω) (l := l) m_ge_3 h_batch_error h_fri_error)
 
+open ENNReal in
+omit [Nontrivial 𝔽] in
+/-- Probability-route Claim 8.3 reassembly from named phase error-bound targets. -/
+theorem
+    fri_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndSequentialCompositionAndPhaseErrorBounds
+    {t l m : ℕ}
+    (f : Fin t.succ → (ω → 𝔽))
+    (m_ge_3 : m ≥ 3)
+    {ι : Type} [Fintype ι] [Nonempty ι]
+    (G : Finset ι) (δ : ℝ≥0∞) (queries : ℕ)
+    (h_agreement :
+      correlated_agreement_density
+        (Fₛ (fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x)))
+        (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
+      ≤
+      (let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+       ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))))
+    {σ : Type} (init : ProbComp σ) (impl : QueryImpl []ₒ (StateT σ ProbComp))
+    [∀ i, SampleableType ((BatchedFri.Spec.BatchingRound.batchSpec 𝔽 t).Challenge i)]
+    [∀ i, SampleableType ((Spec.pSpecFold (ω := ω) k s ++ₚ Spec.FinalFoldPhase.pSpec 𝔽 ++ₚ
+      Spec.QueryRound.pSpec (ω := ω) l).Challenge i)]
+    (lang₁ : Set (Unit × (∀ i, BatchedFri.Spec.OracleStatement t ω i)))
+    (lang₂ : Set (((Fin t → 𝔽) × Spec.Statement 𝔽 (0 : Fin (k + 1))) ×
+      (∀ i, BatchedFri.Spec.OracleStatement t ω i)))
+    (lang₃ : Set (Spec.FinalStatement 𝔽 k × (∀ i, Spec.FinalOracleStatement s (ω := ω) i)))
+    {batchError friError : ℝ≥0}
+    (h_batch_soundness : OracleVerifier.soundness
+      (init := init) (impl := impl)
+      lang₁ lang₂
+      (BatchedFri.Spec.BatchingRound.batchOracleReduction
+        (F := 𝔽) (n := n) (ω := ω) s d t).verifier
+      batchError)
+    (h_fri_soundness : OracleVerifier.soundness
+      (init := init) (impl := impl)
+      lang₂ lang₃
+      (BatchedFri.Spec.liftedFRI
+        (F := 𝔽) (n := n) (ω := ω) k s d domain_size_cond l t).verifier
+      friError)
+    (h_residual : OracleVerifier.appendSoundnessResidual
+      (init := init) (impl := impl)
+      (BatchedFri.Spec.BatchingRound.batchOracleReduction
+        (F := 𝔽) (n := n) (ω := ω) s d t).verifier
+      (BatchedFri.Spec.liftedFRI
+        (F := 𝔽) (n := n) (ω := ω) k s d domain_size_cond l t).verifier
+      h_batch_soundness h_fri_soundness)
+    (h_batch_error :
+      friBatchPhaseErrorBound (𝔽 := 𝔽) n (s := s) (ω := ω) m_ge_3 batchError)
+    (h_fri_error :
+      friTailPhaseErrorBound (𝔽 := 𝔽) n (ω := ω) (l := l) m_ge_3 friError)
+    {agreementBridge : Prop}
+    (query_pieces_imply_claim :
+      QueryRound.probabilityAcceptanceBound G δ queries →
+      batchedFRIOracleLensReduction
+        (n := n) (s := s) (d := d) (ω := ω)
+        (domain_size_cond := domain_size_cond) l t →
+      agreementBridge →
+      fri_query_soundness (n := n) (ω := ω)
+        (f := fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x))
+        (h_agreement := h_agreement) (m_ge_3 := m_ge_3))
+    (soundness_pieces_imply_claim :
+      friSoundnessQueryLift (n := n) (ω := ω) f m_ge_3 →
+      friSoundnessSequentialComposition
+        (n := n) (s := s) (d := d) (ω := ω) (l := l)
+        (domain_size_cond := domain_size_cond)
+        init impl lang₁ lang₃ batchError friError →
+      friSoundnessTotalErrorAccounting
+        (n := n) (s := s) (ω := ω) (l := l) m_ge_3 batchError friError →
+      fri_soundness (n := n) (s := s) (d := d) (ω := ω) (l := l)
+        (domain_size_cond := domain_size_cond) f m_ge_3)
+    (h_agreementBridge : agreementBridge) :
+    fri_soundness (n := n) (s := s) (d := d) (ω := ω) (l := l)
+      (domain_size_cond := domain_size_cond) f m_ge_3 :=
+  fri_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndSequentialCompositionAndTotalError
+    (n := n) (s := s) (d := d) (ω := ω) (domain_size_cond := domain_size_cond)
+    f m_ge_3 G δ queries h_agreement init impl lang₁ lang₂ lang₃
+    h_batch_soundness h_fri_soundness h_residual h_batch_error h_fri_error
+    query_pieces_imply_claim soundness_pieces_imply_claim h_agreementBridge
+
 set_option linter.style.longLine false in
 #print axioms Fri.friSoundnessQueryLift_of_queryRoundProbabilityBoundAndBatchedFRIOracleLens
 set_option linter.style.longLine false in
@@ -420,6 +501,9 @@ set_option linter.style.longLine false in
 set_option linter.style.longLine false in
 #print axioms
   Fri.fri_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndSequentialCompositionAndTotalError
+set_option linter.style.longLine false in
+#print axioms
+  Fri.fri_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndSequentialCompositionAndPhaseErrorBounds
 
 end ProbabilitySoundnessAdapter
 end Fri
