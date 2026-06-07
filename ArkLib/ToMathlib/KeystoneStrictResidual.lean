@@ -200,6 +200,65 @@ theorem hcoeffPoly_of_betaRec_offcentre
       mp hcard hrep hdegX hPz
   exact hcoeffPoly_witness_of_betaRecCurveCoeffPolys hCurve
 
+/-! ### Off-Centre Input Configuration -/
+
+/-- BCIKS Section 5 input configuration for the off-centre local-variable route.
+
+This packages the inputs of `hcoeffPoly_of_betaRec_offcentre` in the same style as
+`BetaCurveInput`, but replaces the centred-only `hsubst`/`hγ` fields with the
+`gammaLocal` representative and truncated-local specialization bridge. -/
+structure BetaCurveInputOffcentre {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    (u : WordStack F (Fin (k + 1)) ι) : Type 1 where
+  x₀ : F
+  R : F[X][X][Y]
+  H : F[X][Y]
+  [hHirr : Fact (Irreducible H)]
+  [hHpos : Fact (0 < H.natDegree)]
+  hHyp : Hypotheses x₀ R H
+  Bcoeff : (i₁ : ℕ) → {m : ℕ} → Nat.Partition m → 𝒪 H
+  hH : 0 < H.natDegree
+  D : ℕ
+  hD : D ≥ Bivariate.totalDegree H
+  matchingSet : Finset F
+  root : (z : F) → rationalRoot (H_tilde' H) z
+  Ppoly : F[X][Y]
+  hrep : polyToPowerSeries𝕃 H Ppoly = BetaToCurveCoeffPolys.gammaLocal x₀ R H hHyp Bcoeff
+  hdegX : Polynomial.Bivariate.degreeX Ppoly ≤ 1
+  mp : ∀ t, k ≤ t → ∀ z ∈ matchingSet,
+    BetaMatchingVanishes.MatchingPoint x₀ R H hHyp Bcoeff t z (root z)
+  hcard : ∀ t, k ≤ t → (↑matchingSet.card : WithBot ℕ)
+    > weight_Λ_over_𝒪 hH (betaRec x₀ R H hHyp Bcoeff t) D * H.natDegree
+  hPz : ∀ (P : F → Polynomial F) (v₀ v₁ : F[X]),
+    polyToPowerSeries𝕃 H
+        ((Polynomial.map Polynomial.C v₀)
+          + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁))
+      = ((PowerSeries.trunc k (BetaToCurveCoeffPolys.gammaLocal x₀ R H hHyp Bcoeff) :
+          Polynomial (𝕃 H)) : PowerSeries (𝕃 H)) →
+    (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ, P z =
+      ((Polynomial.map Polynomial.C (Polynomial.taylor (-x₀) v₀))
+          + (Polynomial.C Polynomial.X)
+            * (Polynomial.map Polynomial.C (Polynomial.taylor (-x₀) v₁))).eval
+          (Polynomial.C z))
+      ∧ v₀.natDegree < k + 1 ∧ v₁.natDegree < k + 1
+
+attribute [instance] BetaCurveInputOffcentre.hHirr BetaCurveInputOffcentre.hHpos
+
+omit [Nonempty ι] [DecidableEq ι] in
+/-- Proves the coefficient-polynomial witness from the packaged off-centre input configuration. -/
+theorem hcoeffPoly_of_betaRecOffcentre
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    {u : WordStack F (Fin (k + 1)) ι}
+    (inp : BetaCurveInputOffcentre (k := k) (deg := deg) (domain := domain) (δ := δ) u)
+    (P : F → Polynomial F) :
+    ∃ B : ℕ → Polynomial F,
+      (∀ j < deg, (B j).natDegree < k + 1) ∧
+        ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+          ∀ j < deg, (P z).coeff j = (B j).eval z := by
+  exact hcoeffPoly_of_betaRec_offcentre
+    (k := k) (deg := deg) (domain := domain) (δ := δ) (u := u)
+    inp.x₀ inp.R inp.H inp.hHyp inp.Bcoeff inp.hH inp.D inp.hD
+    inp.matchingSet inp.root inp.mp inp.hcard inp.hrep inp.hdegX P (inp.hPz P)
+
 /-! ### Finite-Range Input Configuration -/
 
 /-- BCIKS Section 5 finite-range input configuration. -/
@@ -298,6 +357,23 @@ theorem strictCoeffPolysResidual_of_betaRec
   exact hcoeffPoly_of_betaRec (hInput hk u hprob hJ hsqrt) P
 
 omit [Nonempty ι] [DecidableEq ι] in
+/-- Discharges the strict coefficient polynomial residual using the off-centre local-variable
+input configuration. -/
+theorem strictCoeffPolysResidual_of_betaRec_offcentre
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    (hInput : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      δ < 1 - ReedSolomon.sqrtRate deg domain →
+      BetaCurveInputOffcentre (k := k) (deg := deg) (domain := domain) (δ := δ) u) :
+    StrictCoeffPolysResidual (k := k) (deg := deg) (domain := domain) (δ := δ) := by
+  intro hk u hprob hJ hsqrt P hP
+  exact hcoeffPoly_of_betaRecOffcentre (hInput hk u hprob hJ hsqrt) P
+
+omit [Nonempty ι] [DecidableEq ι] in
 /-- Discharges the strict coefficient polynomial residual using the finite-range input
 configuration. -/
 theorem strictCoeffPolysResidual_of_betaRecFin
@@ -344,6 +420,26 @@ theorem correlatedAgreement_affine_curves_johnson_of_betaRec
     (k := k) (deg := deg) (domain := domain) (δ := δ)
     (strictCoeffPolysResidual_of_betaRec hInput) hBoundaryCard hδ
 
+/-- Proves the correlated agreement curves bound from the off-centre local-variable input
+configuration and boundary conditions. -/
+theorem correlatedAgreement_affine_curves_johnson_of_betaRec_offcentre
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hInput : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      δ < 1 - ReedSolomon.sqrtRate deg domain →
+      BetaCurveInputOffcentre (k := k) (deg := deg) (domain := domain) (δ := δ) u)
+    (hBoundaryCard : BoundaryCardResidual (k := k) (deg := deg) (domain := domain) (δ := δ)) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
+  correlatedAgreement_affine_curves_of_boundaryCardResidual
+    (k := k) (deg := deg) (domain := domain) (δ := δ)
+    (strictCoeffPolysResidual_of_betaRec_offcentre hInput) hBoundaryCard hδ
+
 omit [DecidableEq ι] in
 /-- Proves the correlated agreement curves bound under strict Johnson radius limits. -/
 theorem correlatedAgreement_affine_curves_johnson_of_betaRec_strict
@@ -363,6 +459,27 @@ theorem correlatedAgreement_affine_curves_johnson_of_betaRec_strict
     (k := k) (deg := deg) (domain := domain) (δ := δ) hδ
     (fun hk u hprob hJ P hP =>
       strictCoeffPolysResidual_of_betaRec hInput hk u hprob hJ hδ P hP)
+
+omit [DecidableEq ι] in
+/-- Proves the strict correlated agreement curves bound from the off-centre local-variable input
+configuration. -/
+theorem correlatedAgreement_affine_curves_johnson_of_betaRec_offcentre_strict
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hδ : δ < 1 - ReedSolomon.sqrtRate deg domain)
+    (hInput : ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          ((k : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      δ < 1 - ReedSolomon.sqrtRate deg domain →
+      BetaCurveInputOffcentre (k := k) (deg := deg) (domain := domain) (δ := δ) u) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
+  correlatedAgreement_affine_curves_of_strict_coeff_polys
+    (k := k) (deg := deg) (domain := domain) (δ := δ) hδ
+    (fun hk u hprob hJ P hP =>
+      strictCoeffPolysResidual_of_betaRec_offcentre hInput hk u hprob hJ hδ P hP)
 
 /-- Proves the correlated agreement curves bound using the finite-range input configuration. -/
 theorem correlatedAgreement_affine_curves_johnson_of_betaRecFin
@@ -437,11 +554,16 @@ end ArkLib
 
 /-! ## Axiom audit — betaRec/`hPz` consumer front doors. -/
 #print axioms ArkLib.KeystoneStrictResidual.BetaCurveInput
+#print axioms ArkLib.KeystoneStrictResidual.BetaCurveInputOffcentre
 #print axioms ArkLib.KeystoneStrictResidual.BetaCurveInputFin
 #print axioms ArkLib.KeystoneStrictResidual.hcoeffPoly_of_betaRec
 #print axioms ArkLib.KeystoneStrictResidual.hcoeffPoly_of_betaRec_offcentre
+#print axioms ArkLib.KeystoneStrictResidual.hcoeffPoly_of_betaRecOffcentre
 #print axioms ArkLib.KeystoneStrictResidual.hcoeffPoly_of_betaRecFin
 #print axioms ArkLib.KeystoneStrictResidual.strictCoeffPolysResidual_of_betaRec
+#print axioms ArkLib.KeystoneStrictResidual.strictCoeffPolysResidual_of_betaRec_offcentre
 #print axioms ArkLib.KeystoneStrictResidual.strictCoeffPolysResidual_of_betaRecFin
+#print axioms ArkLib.KeystoneStrictResidual.correlatedAgreement_affine_curves_johnson_of_betaRec_offcentre
+#print axioms ArkLib.KeystoneStrictResidual.correlatedAgreement_affine_curves_johnson_of_betaRec_offcentre_strict
 #print axioms ArkLib.KeystoneStrictResidual.correlatedAgreement_affine_curves_johnson_of_betaRecFin
 #print axioms ArkLib.KeystoneStrictResidual.correlatedAgreement_affine_curves_johnson_of_section5DataFin_strict
