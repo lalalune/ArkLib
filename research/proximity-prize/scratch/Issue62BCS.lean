@@ -225,8 +225,9 @@ theorem bcs_union_bound {m : ℕ} (μ : UnionBoundPr E)
         ≤ μ.pr badInteraction + μ.pr (μ.unionFin badOpen) := μ.pr_union_le _ _
     _ ≤ εInteraction + ∑ i, μ.pr (badOpen i) :=
           add_le_add hInteraction (μ.pr_unionFin_le badOpen)
-    _ ≤ εInteraction + ∑ i, εOpen i :=
-          add_le_add_left (Finset.sum_le_sum fun i _ => hOpen i) _
+    _ ≤ εInteraction + ∑ i, εOpen i := by
+          gcongr with i
+          exact hOpen i
     _ = bcsTotalError εInteraction εOpen := rfl
 
 /-! ## 3. Specialization to the two-phase `append` shape
