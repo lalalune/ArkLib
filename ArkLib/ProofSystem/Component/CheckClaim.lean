@@ -5,7 +5,7 @@ Authors: Quang Dao
 -/
 
 import ArkLib.OracleReduction.Security.RoundByRound
-import ArkLib.OracleReduction.Security.ZeroKnowledge
+import ArkLib.OracleReduction.Security.OracleZeroKnowledge
 
 /-!
   # Simple (Oracle) Reduction: Check if a predicate / claim on a statement is satisfied
@@ -259,6 +259,106 @@ def oracleReduction : OracleReduction oSpec
     Statement OStatement Unit Statement OStatement Unit !p[] where
   prover := oracleProver oSpec Statement OStatement
   verifier := oracleVerifier oSpec Statement OStatement pred
+
+variable {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+  (relIn : Set ((Statement × (∀ i, OStatement i)) × Unit))
+
+/-- The `CheckClaim` oracle reduction is perfectly HVZK for any input relation: it has no prover
+messages or private witness, so the public-input honest-rerun simulator matches every honest
+transcript distribution. -/
+theorem oracleReduction_perfectHVZK :
+    OracleReduction.perfectHVZK init impl relIn
+      (oracleReduction.{0, 0} oSpec Statement OStatement pred)
+      (fun stmtIn =>
+        Reduction.honestTranscriptDist init impl
+          (oracleReduction.{0, 0} oSpec Statement OStatement pred).toReduction stmtIn ()) := by
+  intro stmtIn () _
+  rfl
+
+/-- Perfect HVZK implies statistical HVZK for the `CheckClaim` oracle reduction at every error
+budget. -/
+theorem oracleReduction_statisticalHVZK (ε : NNReal) :
+    OracleReduction.statisticalHVZK init impl relIn
+      (oracleReduction.{0, 0} oSpec Statement OStatement pred)
+      (fun stmtIn =>
+        Reduction.honestTranscriptDist init impl
+          (oracleReduction.{0, 0} oSpec Statement OStatement pred).toReduction stmtIn ()) ε :=
+  (oracleReduction_perfectHVZK (oSpec := oSpec) (Statement := Statement)
+    (OStatement := OStatement) (pred := pred) (init := init) (impl := impl)
+    relIn).statisticalHVZK ε
+
+/-- The `CheckClaim` oracle reduction has an explicit perfect-HVZK simulator for any input
+relation. -/
+theorem oracleReduction_isHVZK :
+    OracleReduction.isHVZK init impl relIn
+      (oracleReduction.{0, 0} oSpec Statement OStatement pred) :=
+  ⟨fun stmtIn =>
+      Reduction.honestTranscriptDist init impl
+        (oracleReduction.{0, 0} oSpec Statement OStatement pred).toReduction stmtIn (),
+    oracleReduction_perfectHVZK (oSpec := oSpec) (Statement := Statement)
+      (OStatement := OStatement) (pred := pred) (init := init) (impl := impl) relIn⟩
+
+/-- The `CheckClaim` oracle reduction has statistical HVZK for any input relation and error
+budget. -/
+theorem oracleReduction_isStatHVZK (ε : NNReal) :
+    OracleReduction.isStatHVZK init impl relIn
+      (oracleReduction.{0, 0} oSpec Statement OStatement pred) ε :=
+  (oracleReduction_isHVZK (oSpec := oSpec) (Statement := Statement)
+    (OStatement := OStatement) (pred := pred) (init := init) (impl := impl)
+    relIn).isStatHVZK ε
+
+/-- The underlying non-oracle reduction of `CheckClaim.oracleReduction` is perfectly HVZK for any
+input relation. -/
+theorem oracleReduction_toReduction_perfectHVZK :
+    Reduction.perfectHVZK init impl relIn
+      (oracleReduction.{0, 0} oSpec Statement OStatement pred).toReduction
+      (fun stmtIn =>
+        Reduction.honestTranscriptDist init impl
+          (oracleReduction.{0, 0} oSpec Statement OStatement pred).toReduction stmtIn ()) :=
+  oracleReduction_perfectHVZK (oSpec := oSpec) (Statement := Statement)
+    (OStatement := OStatement) (pred := pred) (init := init) (impl := impl) relIn
+
+/-- The underlying non-oracle reduction of `CheckClaim.oracleReduction` is statistically HVZK for
+any input relation and error budget. -/
+theorem oracleReduction_toReduction_statisticalHVZK (ε : NNReal) :
+    Reduction.statisticalHVZK init impl relIn
+      (oracleReduction.{0, 0} oSpec Statement OStatement pred).toReduction
+      (fun stmtIn =>
+        Reduction.honestTranscriptDist init impl
+          (oracleReduction.{0, 0} oSpec Statement OStatement pred).toReduction stmtIn ()) ε :=
+  oracleReduction_statisticalHVZK (oSpec := oSpec) (Statement := Statement)
+    (OStatement := OStatement) (pred := pred) (init := init) (impl := impl) relIn ε
+
+/-- The underlying non-oracle reduction of `CheckClaim.oracleReduction` has an explicit
+perfect-HVZK simulator for any input relation. -/
+theorem oracleReduction_toReduction_isHVZK :
+    Reduction.isHVZK init impl relIn
+      (oracleReduction.{0, 0} oSpec Statement OStatement pred).toReduction :=
+  ⟨fun stmtIn =>
+      Reduction.honestTranscriptDist init impl
+        (oracleReduction.{0, 0} oSpec Statement OStatement pred).toReduction stmtIn (),
+    oracleReduction_toReduction_perfectHVZK (oSpec := oSpec) (Statement := Statement)
+      (OStatement := OStatement) (pred := pred) (init := init) (impl := impl) relIn⟩
+
+/-- The underlying non-oracle reduction of `CheckClaim.oracleReduction` has statistical HVZK for
+any input relation and error budget. -/
+theorem oracleReduction_toReduction_isStatHVZK (ε : NNReal) :
+    Reduction.isStatHVZK init impl relIn
+      (oracleReduction.{0, 0} oSpec Statement OStatement pred).toReduction ε :=
+  ⟨fun stmtIn =>
+      Reduction.honestTranscriptDist init impl
+        (oracleReduction.{0, 0} oSpec Statement OStatement pred).toReduction stmtIn (),
+    oracleReduction_toReduction_statisticalHVZK (oSpec := oSpec) (Statement := Statement)
+      (OStatement := OStatement) (pred := pred) (init := init) (impl := impl) relIn ε⟩
+
+#print axioms CheckClaim.oracleReduction_perfectHVZK
+#print axioms CheckClaim.oracleReduction_statisticalHVZK
+#print axioms CheckClaim.oracleReduction_isHVZK
+#print axioms CheckClaim.oracleReduction_isStatHVZK
+#print axioms CheckClaim.oracleReduction_toReduction_perfectHVZK
+#print axioms CheckClaim.oracleReduction_toReduction_statisticalHVZK
+#print axioms CheckClaim.oracleReduction_toReduction_isHVZK
+#print axioms CheckClaim.oracleReduction_toReduction_isStatHVZK
 
 variable {Statement} {OStatement}
 
