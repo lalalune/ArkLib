@@ -398,6 +398,58 @@ theorem bcs_opening_union_bound_append_mono_error {m n : ℕ}
       (Finset.sum_le_sum fun i _ => hLeft_mono i)
       (Finset.sum_le_sum fun i _ => hRight_mono i))
 
+/-- Left-empty opening-phase split. Appending no left opening failures leaves the ordinary
+opening-union bound target unchanged. -/
+theorem bcs_opening_union_bound_append_zero_left {n : ℕ}
+    (μ : UnionBoundPr E) (badOpen : Fin n → E) (εOpen : Fin n → ℝ≥0)
+    (hOpen : ∀ i, μ.pr (badOpen i) ≤ εOpen i) :
+    μ.pr (μ.unionFin (Fin.append (Fin.elim0 : Fin 0 → E) badOpen))
+      ≤ ∑ i, εOpen i := by
+  have h := bcs_opening_union_bound_append (m := 0) (n := n) μ
+    (Fin.elim0 : Fin 0 → E) badOpen (Fin.elim0 : Fin 0 → ℝ≥0) εOpen
+    (fun i => Fin.elim0 i) hOpen
+  simpa using h
+
+/-- Right-empty opening-phase split. Appending no right opening failures leaves the ordinary
+opening-union bound target unchanged. -/
+theorem bcs_opening_union_bound_append_zero_right {m : ℕ}
+    (μ : UnionBoundPr E) (badOpen : Fin m → E) (εOpen : Fin m → ℝ≥0)
+    (hOpen : ∀ i, μ.pr (badOpen i) ≤ εOpen i) :
+    μ.pr (μ.unionFin (Fin.append badOpen (Fin.elim0 : Fin 0 → E)))
+      ≤ ∑ i, εOpen i := by
+  have h := bcs_opening_union_bound_append (m := m) (n := 0) μ
+    badOpen (Fin.elim0 : Fin 0 → E) εOpen (Fin.elim0 : Fin 0 → ℝ≥0)
+    hOpen (fun i => Fin.elim0 i)
+  simpa using h
+
+/-- Relax the opening budget for the left-empty opening-phase split. -/
+theorem bcs_opening_union_bound_append_zero_left_mono_error {n : ℕ}
+    (μ : UnionBoundPr E) (badOpen : Fin n → E)
+    (εOpen₁ εOpen₂ : Fin n → ℝ≥0)
+    (hOpen : ∀ i, μ.pr (badOpen i) ≤ εOpen₁ i)
+    (hOpen_mono : ∀ i, εOpen₁ i ≤ εOpen₂ i) :
+    μ.pr (μ.unionFin (Fin.append (Fin.elim0 : Fin 0 → E) badOpen))
+      ≤ ∑ i, εOpen₂ i := by
+  have h := bcs_opening_union_bound_append_mono_error (m := 0) (n := n) μ
+    (Fin.elim0 : Fin 0 → E) badOpen
+    (Fin.elim0 : Fin 0 → ℝ≥0) (Fin.elim0 : Fin 0 → ℝ≥0) εOpen₁ εOpen₂
+    (fun i => Fin.elim0 i) hOpen (fun i => Fin.elim0 i) hOpen_mono
+  simpa using h
+
+/-- Relax the opening budget for the right-empty opening-phase split. -/
+theorem bcs_opening_union_bound_append_zero_right_mono_error {m : ℕ}
+    (μ : UnionBoundPr E) (badOpen : Fin m → E)
+    (εOpen₁ εOpen₂ : Fin m → ℝ≥0)
+    (hOpen : ∀ i, μ.pr (badOpen i) ≤ εOpen₁ i)
+    (hOpen_mono : ∀ i, εOpen₁ i ≤ εOpen₂ i) :
+    μ.pr (μ.unionFin (Fin.append badOpen (Fin.elim0 : Fin 0 → E)))
+      ≤ ∑ i, εOpen₂ i := by
+  have h := bcs_opening_union_bound_append_mono_error (m := m) (n := 0) μ
+    badOpen (Fin.elim0 : Fin 0 → E)
+    εOpen₁ εOpen₂ (Fin.elim0 : Fin 0 → ℝ≥0) (Fin.elim0 : Fin 0 → ℝ≥0)
+    hOpen (fun i => Fin.elim0 i) hOpen_mono (fun i => Fin.elim0 i)
+  simpa using h
+
 /-- Relax the per-message opening budgets after proving the composite opening-union bound. -/
 theorem bcs_opening_union_bound_mono_error {m : ℕ} (μ : UnionBoundPr E)
     (badOpen : Fin m → E) (εOpen₁ εOpen₂ : Fin m → ℝ≥0)
@@ -673,6 +725,10 @@ example (εInteraction : ℝ≥0) (εOpen : Fin 3 → ℝ≥0) :
 #print axioms bcs_opening_union_bound_succ
 #print axioms bcs_opening_union_bound_append
 #print axioms bcs_opening_union_bound_append_mono_error
+#print axioms bcs_opening_union_bound_append_zero_left
+#print axioms bcs_opening_union_bound_append_zero_right
+#print axioms bcs_opening_union_bound_append_zero_left_mono_error
+#print axioms bcs_opening_union_bound_append_zero_right_mono_error
 #print axioms bcs_opening_union_bound_mono_error
 #print axioms bcs_append_accounting_of_opening_bound
 #print axioms bcs_append_accounting_of_opening_bound_mono_error
