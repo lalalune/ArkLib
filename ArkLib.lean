@@ -63,6 +63,7 @@ import ArkLib.Data.CodingTheory.EntropyBallNcard
 import ArkLib.Data.CodingTheory.EntropyCapacityValue
 import ArkLib.Data.CodingTheory.EntropyConcave
 import ArkLib.Data.CodingTheory.EntropyGVBound
+import ArkLib.Data.CodingTheory.EntropyGVBoundDiv
 import ArkLib.Data.CodingTheory.EntropyHammingBound
 import ArkLib.Data.CodingTheory.EntropyVolumeBound
 import ArkLib.Data.CodingTheory.EntropyVolumeListSize
