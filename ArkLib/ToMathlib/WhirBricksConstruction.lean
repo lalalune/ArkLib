@@ -8,6 +8,7 @@ import ArkLib.OracleReduction.Basic
 import ArkLib.OracleReduction.VectorIOR
 import ArkLib.OracleReduction.Security.Basic
 import ArkLib.OracleReduction.Security.RoundByRound
+import ArkLib.Data.Polynomial.Interface
 import ArkLib.ProofSystem.Whir.Folding
 import ArkLib.ProofSystem.Whir.RBRSoundness
 
@@ -685,6 +686,43 @@ theorem paperTranscriptSlotPayload_mainOutOfDomainReply_of_extension {M : ℕ}
         ((ext.extensionPolynomial i).eval (T.mainOutOfDomainChallenge i)) := by
   rw [paperTranscriptSlotPayload_mainOutOfDomainReply, ext.reply_eq_eval i]
 
+omit [Fintype F] [SampleableType F] in
+/-- Interpret the final coefficient vector from the paper transcript as a univariate polynomial. -/
+noncomputable def paperFinalPolynomialAsPolynomial {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d) : Polynomial F :=
+  polynomialOfCoeffs T.finalPolynomial
+
+omit [Fintype F] [SampleableType F] in
+@[simp] theorem paperFinalPolynomialAsPolynomial_coeff {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d)
+    (k : Fin (2 ^ P.varCount (Fin.last M))) :
+    (paperFinalPolynomialAsPolynomial P d T).coeff k = T.finalPolynomial k := by
+  simpa [paperFinalPolynomialAsPolynomial, Fin.liftF'] using
+    congrFun (coeff_polynomialOfCoeffs_eq_coeffs (coeffs := T.finalPolynomial)) k
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
+@[simp] theorem paperTranscriptSlotPayload_finalPolynomial {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d) :
+    paperTranscriptSlotPayload P d T .finalPolynomial =
+      Vector.ofFn T.finalPolynomial :=
+  rfl
+
+omit [Fintype F] [SampleableType F] in
+/-- The named final-polynomial payload is the coefficient vector of the polynomial interpretation
+of the transcript's final polynomial message. -/
+theorem paperTranscriptSlotPayload_finalPolynomial_of_coefficients {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d) :
+    paperTranscriptSlotPayload P d T .finalPolynomial =
+      Vector.ofFn fun k : Fin (2 ^ P.varCount (Fin.last M)) =>
+        (paperFinalPolynomialAsPolynomial P d T).coeff k := by
+  rw [paperTranscriptSlotPayload_finalPolynomial]
+  ext k
+  simp [paperFinalPolynomialAsPolynomial, Fin.liftF, Fin.liftF']
+
 /-! ### Semantic WHIR per-round transcript slots
 
 Construction 5.1 has real prover-message slots: a folded-function oracle / sumcheck message and an
@@ -1243,6 +1281,10 @@ end RBRSoundnessAssembly
 #print axioms PaperOutOfDomainExtension
 #print axioms paperOutOfDomainExtension_reply
 #print axioms paperTranscriptSlotPayload_mainOutOfDomainReply_of_extension
+#print axioms paperFinalPolynomialAsPolynomial
+#print axioms paperFinalPolynomialAsPolynomial_coeff
+#print axioms paperTranscriptSlotPayload_finalPolynomial
+#print axioms paperTranscriptSlotPayload_finalPolynomial_of_coefficients
 #print axioms whirVectorSpec_challengeIdxEquivFin
 #print axioms whirVectorSpec_challengeIdxEquivFin_apply
 #print axioms whirVectorSpec_challengeIdxEquivFin_symm_apply
