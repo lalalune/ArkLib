@@ -29,7 +29,7 @@ def alphaGenuineRegularWeightLe_residual {F : Type} [Field F] {H : F[X][Y]} [Fac
     [Fact (0 < H.natDegree)]
     (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ) :
     Prop :=
-  BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe H x₀ R hHyp hH D
+  BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe_clearedBaseCases H x₀ R hHyp hH D
 
 /-- **OPEN residual — NOT asserted.** The unconstrained black-box T4.21 form, formally REFUTED in
 `LineDecodingRefutation.lean`. Tracking #141; never assert it. -/
