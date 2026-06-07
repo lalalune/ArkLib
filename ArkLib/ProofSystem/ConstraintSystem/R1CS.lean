@@ -25,6 +25,37 @@ variable (R : Type*) [CommSemiring R]
 
 inductive MatrixIdx where | A | B | C deriving Inhabited, DecidableEq
 
+namespace MatrixIdx
+
+/-- The three R1CS matrix coordinates `(A,B,C)` are equivalent to `Fin 3`. -/
+def equivFin3 : MatrixIdx ≃ Fin 3 where
+  toFun
+  | .A => 0
+  | .B => 1
+  | .C => 2
+  invFun i :=
+    match i with
+    | 0 => .A
+    | 1 => .B
+    | 2 => .C
+  left_inv := by
+    intro idx
+    cases idx <;> rfl
+  right_inv := by
+    intro i
+    fin_cases i <;> rfl
+
+instance : Fintype MatrixIdx := Fintype.ofEquiv (Fin 3) equivFin3.symm
+
+@[simp]
+theorem card_eq : Fintype.card MatrixIdx = 3 := by
+  simpa using Fintype.card_congr equivFin3
+
+#print axioms R1CS.MatrixIdx.equivFin3
+#print axioms R1CS.MatrixIdx.card_eq
+
+end MatrixIdx
+
 structure Size where
   m : ℕ -- number of columns
   n : ℕ -- number of rows
