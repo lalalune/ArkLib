@@ -93,6 +93,14 @@ def isHVZK
     (reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec) : Prop :=
   ∃ sim : TranscriptSimulator oSpec StmtIn pSpec, perfectHVZK init impl rel reduction sim
 
+/-- A reduction is *statistically* honest-verifier zero-knowledge with error `ε` if some
+  simulator achieves statistical HVZK within error `ε`. The statistical analogue of `isHVZK`. -/
+def isStatHVZK
+    (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (rel : Set (StmtIn × WitIn))
+    (reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec) (ε : ℝ≥0) : Prop :=
+  ∃ sim : TranscriptSimulator oSpec StmtIn pSpec, statisticalHVZK init impl rel reduction sim ε
+
 end Definitions
 
 section BasicLemmas
@@ -186,6 +194,36 @@ theorem statisticalHVZK.mono_error
     statisticalHVZK init impl rel reduction sim ε₂ :=
   fun stmtIn witIn hMem => le_trans (h stmtIn witIn hMem) (by exact_mod_cast hle)
 
+/-- **Perfect HVZK implies statistical HVZK existence** at any error. -/
+theorem isHVZK.isStatHVZK
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set (StmtIn × WitIn)}
+    {reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec}
+    (h : isHVZK init impl rel reduction) (ε : ℝ≥0) :
+    isStatHVZK init impl rel reduction ε :=
+  let ⟨sim, hsim⟩ := h
+  ⟨sim, hsim.statisticalHVZK ε⟩
+
+/-- **`isStatHVZK` is antitone in the relation.** -/
+theorem isStatHVZK.mono_relation
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel rel' : Set (StmtIn × WitIn)}
+    {reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec} {ε : ℝ≥0}
+    (h : isStatHVZK init impl rel reduction ε) (hsub : rel' ⊆ rel) :
+    isStatHVZK init impl rel' reduction ε :=
+  let ⟨sim, hsim⟩ := h
+  ⟨sim, hsim.mono_relation hsub⟩
+
+/-- **`isStatHVZK` is monotone in the error.** -/
+theorem isStatHVZK.mono_error
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set (StmtIn × WitIn)}
+    {reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec} {ε₁ ε₂ : ℝ≥0}
+    (h : isStatHVZK init impl rel reduction ε₁) (hle : ε₁ ≤ ε₂) :
+    isStatHVZK init impl rel reduction ε₂ :=
+  let ⟨sim, hsim⟩ := h
+  ⟨sim, hsim.mono_error hle⟩
+
 end BasicLemmas
 
 section Identity
@@ -248,5 +286,8 @@ end Identity
 #print axioms isHVZK.mono_relation
 #print axioms statisticalHVZK.mono_relation
 #print axioms statisticalHVZK.mono_error
+#print axioms isHVZK.isStatHVZK
+#print axioms isStatHVZK.mono_relation
+#print axioms isStatHVZK.mono_error
 
 end Reduction

@@ -653,9 +653,141 @@ lemma exists_factors_with_large_common_root_set_of_descended (δ : ℚ) (x₀ : 
     (F := F) (m := m) (n := n) (k := k) (Q := Q)
     (ωs := ωs) (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs
 
+/-- The `R` polynomial extracted from Claim 5.7 through the descended residual bundle. -/
+noncomputable def R_descended (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hres : Claim57ResidualsDescended (F := F) (m := m) (n := n) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) k δ x₀ h_gs)
+    (hcoincide : pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs
+      = pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs) : F[Z][X][Y] :=
+  (exists_factors_with_large_common_root_set_of_descended
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+    (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide).choose
+
+/-- The `H` polynomial extracted from Claim 5.7 through the descended residual bundle. -/
+noncomputable def H_descended (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hres : Claim57ResidualsDescended (F := F) (m := m) (n := n) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) k δ x₀ h_gs)
+    (hcoincide : pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs
+      = pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs) : F[Z][X] :=
+  (exists_factors_with_large_common_root_set_of_descended
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+    (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide).choose_spec.choose
+
+/-- The descended-bundle `R` lies in the Eq. 5.12 factorization list. -/
+lemma R_descended_mem_factorization (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hres : Claim57ResidualsDescended (F := F) (m := m) (n := n) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) k δ x₀ h_gs)
+    (hcoincide : pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs
+      = pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs) :
+    R_descended (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+        (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide
+      ∈ (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose :=
+  (exists_factors_with_large_common_root_set_of_descended
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+    (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide).choose_spec.choose_spec.1
+
+/-- The descended-bundle `H` extracted from Claim 5.7 is irreducible. -/
+lemma irreducible_H_descended (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hres : Claim57ResidualsDescended (F := F) (m := m) (n := n) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) k δ x₀ h_gs)
+    (hcoincide : pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs
+      = pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs) :
+    Irreducible
+      (H_descended (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+        (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide) :=
+  (exists_factors_with_large_common_root_set_of_descended
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+    (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide).choose_spec.choose_spec.2.1
+
+/-- The descended-bundle `H` extracted from Claim 5.7 has positive `Y`-degree. -/
+lemma natDegree_H_descended_pos (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hres : Claim57ResidualsDescended (F := F) (m := m) (n := n) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) k δ x₀ h_gs)
+    (hcoincide : pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs
+      = pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs) :
+    0 < (H_descended (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide).natDegree :=
+  (exists_factors_with_large_common_root_set_of_descended
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+    (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide).choose_spec.choose_spec.2.2.1
+
+/-- The descended-bundle `H` divides the `x₀`-specialization of the descended-bundle `R`. -/
+lemma H_descended_dvd_evalX_R_descended (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hres : Claim57ResidualsDescended (F := F) (m := m) (n := n) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) k δ x₀ h_gs)
+    (hcoincide : pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs
+      = pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs) :
+    H_descended (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+        (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide ∣
+      Bivariate.evalX (Polynomial.C x₀)
+        (R_descended (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+          (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide) :=
+  (exists_factors_with_large_common_root_set_of_descended
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+    (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide).choose_spec.choose_spec.2.2.2.1
+
+/-- The `x₀`-specialization of the descended-bundle `R` is separable. -/
+lemma evalX_R_descended_separable (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hres : Claim57ResidualsDescended (F := F) (m := m) (n := n) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) k δ x₀ h_gs)
+    (hcoincide : pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs
+      = pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs) :
+    (Bivariate.evalX (Polynomial.C x₀)
+      (R_descended (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+        (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide)).Separable :=
+  (exists_factors_with_large_common_root_set_of_descended
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+    (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide).choose_spec.choose_spec.2.2.2.2.1
+
+open BCIKS20AppendixA.ClaimA2 in
+/-- Claim A.2 hypotheses for the factors extracted through the descended residual bundle. -/
+lemma claimA2_hypotheses_descended (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hres : Claim57ResidualsDescended (F := F) (m := m) (n := n) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) k δ x₀ h_gs)
+    (hcoincide : pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs
+      = pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs) :
+    Hypotheses x₀
+      (R_descended (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+        (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide)
+      (H_descended (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+        (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide) :=
+  ⟨H_descended_dvd_evalX_R_descended
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide,
+    evalX_R_descended_separable
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide⟩
+
 /-! ### Axiom audit (issue #8 descended Claim 5.7 adoption surface) -/
 
 #print axioms ProximityGap.Claim57Residuals.ofDescended
 #print axioms ProximityGap.exists_factors_with_large_common_root_set_of_descended
+#print axioms ProximityGap.R_descended
+#print axioms ProximityGap.H_descended
+#print axioms ProximityGap.claimA2_hypotheses_descended
 
 end ProximityGap

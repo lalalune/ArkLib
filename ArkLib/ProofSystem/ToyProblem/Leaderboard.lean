@@ -877,6 +877,25 @@ theorem koalaIRSConcrete_bitsOfSecurity_mem_Iic_116
     bitsOfSecurity koalaIRSConcrete.soundnessError ∈ Set.Iic (116 : ℝ) :=
   koalaIRSConcrete_bitsOfSecurity_le_116 hpos
 
+/-- If the explicit 64-bit lower-bound residual holds at the concrete
+KoalaBear-sextic anchor, then the true bits-of-security are at least `64`. -/
+theorem koalaIRSConcrete_64_le_bitsOfSecurity
+    (hLower : arklib_lowerBound_irs_t128_residual)
+    (hpos : 0 < koalaIRSConcrete.soundnessError) :
+    (64 : ℝ) ≤ bitsOfSecurity koalaIRSConcrete.soundnessError := by
+  simpa [koalaIRSConcrete, arklib_lowerBound_irs_t128] using
+    (arklib_lowerBound_irs_t128 hLower).le_bitsOfSecurity hpos
+
+/-- Current concrete leaderboard window for the true KoalaBear-sextic
+bits-of-security: the explicit 64-bit lower residual and concrete Fenzi-Sanso
+attack residual place it in `[64, 116]`. -/
+theorem koalaIRSConcrete_bitsOfSecurity_mem_Icc_64_116
+    (hLower : arklib_lowerBound_irs_t128_residual)
+    (hpos : 0 < koalaIRSConcrete.soundnessError) :
+    bitsOfSecurity koalaIRSConcrete.soundnessError ∈ Set.Icc (64 : ℝ) 116 :=
+  ⟨koalaIRSConcrete_64_le_bitsOfSecurity hLower hpos,
+    koalaIRSConcrete_bitsOfSecurity_le_116 hpos⟩
+
 /-! ### Provable-side numeric reduction (`arklib_lowerBound` ⇒ explicit power)
 
 The provable side routes through the full-protocol RBR vehicle
@@ -934,5 +953,7 @@ end ToyProblem
 #print axioms ToyProblem.fenziSanso_upperBound_attack_residual_of_concrete
 #print axioms ToyProblem.koalaIRSConcrete_bitsOfSecurity_le_116
 #print axioms ToyProblem.koalaIRSConcrete_bitsOfSecurity_mem_Iic_116
+#print axioms ToyProblem.koalaIRSConcrete_64_le_bitsOfSecurity
+#print axioms ToyProblem.koalaIRSConcrete_bitsOfSecurity_mem_Icc_64_116
 #print axioms ToyProblem.spotCheck_le_two_pow_neg_64
 #print axioms ToyProblem.koalaIRSConcrete_spotCheck_le_two_pow_neg_64
