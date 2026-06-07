@@ -147,6 +147,34 @@ def BadLineWitness (C : Set (ι → A)) (δ_fld δ_int : ℝ≥0) : Prop :=
     ∃ Γ : Finset F, (∀ γ ∈ Γ, δᵣ(u 0 + γ • u 1, C) ≤ δ_fld) ∧
       (Fintype.card F : ℝ) ≤ (2 * Fintype.card ι) * Γ.card
 
+/-- **All-but-one producer for the BCHKS25 `BadLineWitness` residual.**
+If every scalar except one distinguished bad scalar makes the combining line close to `C`, then
+`Finset.univ.erase γ_bad` supplies enough good combiners for the BCHKS `1/(2n)` bridge. -/
+theorem badLineWitness_of_allButOne
+    (C : Set (ι → A)) (δ_fld δ_int : ℝ≥0) (u : WordStack A (Fin 2) ι)
+    (γ_bad : F)
+    (hjp : ¬ jointProximity (C := C) (u := u) δ_int)
+    (hgood : ∀ γ : F, γ ≠ γ_bad → δᵣ(u 0 + γ • u 1, C) ≤ δ_fld) :
+    BadLineWitness (F := F) C δ_fld δ_int := by
+  classical
+  refine ⟨u, hjp, Finset.univ.erase γ_bad, ?_, ?_⟩
+  · intro γ hγ
+    exact hgood γ (Finset.ne_of_mem_erase hγ)
+  · have hcard :
+        (Finset.univ.erase γ_bad).card = Fintype.card F - 1 := by
+      rw [Finset.card_erase_of_mem (Finset.mem_univ γ_bad), Finset.card_univ]
+    rw [hcard]
+    have hFtwo : 2 ≤ Fintype.card F := Fintype.one_lt_card
+    have hi : 1 ≤ Fintype.card ι := Fintype.card_pos
+    have hnat :
+        Fintype.card F ≤ (2 * Fintype.card ι) * (Fintype.card F - 1) := by
+      have hq : Fintype.card F ≤ 2 * (Fintype.card F - 1) := by
+        omega
+      have h2i : 2 ≤ 2 * Fintype.card ι := by
+        simpa using Nat.mul_le_mul_left 2 hi
+      exact hq.trans (Nat.mul_le_mul_right (Fintype.card F - 1) h2i)
+    exact_mod_cast hnat
+
 /-- **BCHKS25 `_of_residual` reduction.** A `BadLineWitness` discharges the `hBadLine`
 conclusion `ε_ca ≥ 1/(2n)`. Composing this with the contrapositive packaging already in
 `rs_epsCA_small_implies_lambda_lt_F_bchks25_of_residuals` closes ABF26 Theorem 5.2 once the
@@ -157,6 +185,17 @@ theorem epsCA_badLine_bridge_of_residual
     ENNReal.ofReal (1 / (2 * Fintype.card ι)) ≤ epsCA (F := F) C δ_fld δ_int := by
   obtain ⟨u, hjp, Γ, hΓ, hcard⟩ := h
   exact epsCA_ge_half_inv_n_of_badLineWitness C δ_fld δ_int u hjp Γ hΓ hcard
+
+/-- **BCHKS25 endpoint from an all-but-one bad line.**
+This is the direct `1/(2n)` lower-bound wrapper for the all-but-one scalar shape. -/
+theorem epsCA_ge_half_inv_n_of_allButOne
+    (C : Set (ι → A)) (δ_fld δ_int : ℝ≥0) (u : WordStack A (Fin 2) ι)
+    (γ_bad : F)
+    (hjp : ¬ jointProximity (C := C) (u := u) δ_int)
+    (hgood : ∀ γ : F, γ ≠ γ_bad → δᵣ(u 0 + γ • u 1, C) ≤ δ_fld) :
+    ENNReal.ofReal (1 / (2 * Fintype.card ι)) ≤ epsCA (F := F) C δ_fld δ_int :=
+  epsCA_badLine_bridge_of_residual C δ_fld δ_int
+    (badLineWitness_of_allButOne C δ_fld δ_int u γ_bad hjp hgood)
 
 /-- **Exact-shape connector to the read-only `hBadLine` residual of ABF26 Theorem 5.2.**
 
@@ -181,5 +220,7 @@ end CodingTheory.Bridge
 #print axioms CodingTheory.Bridge.epsCA_ge_inv_of_badLineWitness
 #print axioms CodingTheory.Bridge.epsCA_ge_half_inv_n_of_badLineWitness
 #print axioms CodingTheory.Bridge.BadLineWitness
+#print axioms CodingTheory.Bridge.badLineWitness_of_allButOne
 #print axioms CodingTheory.Bridge.epsCA_badLine_bridge_of_residual
+#print axioms CodingTheory.Bridge.epsCA_ge_half_inv_n_of_allButOne
 #print axioms CodingTheory.Bridge.hBadLine_of_provBadLine
