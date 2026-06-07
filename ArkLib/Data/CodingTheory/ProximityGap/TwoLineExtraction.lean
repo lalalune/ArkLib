@@ -223,4 +223,67 @@ theorem sum_card_le_doubleHit (Z : Finset F) (S : F → Finset ι) :
 
 end DoubleCounting
 
+section UniqueDecoding
+
+variable [Fintype ι] [DecidableEq F]
+
+/-- **Codewords agreeing past the minimum distance coincide.**  If a linear code `C` has minimum
+distance `≥ D` (every nonzero codeword has support `≥ D`), then two codewords agreeing on a set of
+size `> n − D` are equal — their difference is a codeword vanishing on more than `n − D`
+coordinates, hence of support `< D`, hence zero.  This is the unique-decoding keystone behind
+BCIKS20's affine-line *curve* property: it forces the close codeword of each line word to be unique
+and, combined with the two-line extraction, affine-linear in the combining scalar. -/
+theorem codeword_eq_of_agree
+    (C : Submodule F (ι → F)) {D : ℕ}
+    (hmin : ∀ a ∈ C, a ≠ 0 → D ≤ (Finset.univ.filter (fun i => a i ≠ 0)).card)
+    {c c' : ι → F} (hc : c ∈ C) (hc' : c' ∈ C) {S : Finset ι}
+    (hagree : ∀ i ∈ S, c i = c' i) (hScard : Fintype.card ι - D < S.card) :
+    c = c' := by
+  classical
+  by_contra hne
+  have hdiff : c - c' ∈ C := C.sub_mem hc hc'
+  have hdne : c - c' ≠ 0 := sub_ne_zero.mpr hne
+  have hsupp := hmin _ hdiff hdne
+  -- the support of `c - c'` avoids the agreement set `S`
+  have hsub : (Finset.univ.filter (fun i => (c - c') i ≠ 0)) ⊆ Sᶜ := by
+    intro i hi
+    simp only [Finset.mem_filter, Pi.sub_apply] at hi
+    rw [Finset.mem_compl]
+    intro hiS
+    exact hi.2 (sub_eq_zero.mpr (hagree i hiS))
+  have hcard : (Finset.univ.filter (fun i => (c - c') i ≠ 0)).card ≤ Sᶜ.card :=
+    Finset.card_le_card hsub
+  rw [Finset.card_compl] at hcard
+  -- `D ≤ |support| ≤ n − |S| < D`
+  have key : D ≤ Fintype.card ι - S.card := le_trans hsupp hcard
+  have hSle : S.card ≤ Fintype.card ι := Finset.card_le_univ S
+  omega
+
+/-- **Affine-linearity of the close codeword (BCIKS20 curve).**  In the unique-decoding regime
+`3·m < D` (minimum distance `D`, agreement deficit `m := ⌊δ·n⌋`): if `v₀, v₁ ∈ C` agree with `u₀,
+u₁` on a set `S₀` of size `> n − 2·(n−|S₀|)`… more simply, if a codeword `w` agrees with the line
+`u₀ + z • u₁` on `S_w` and the fixed codewords `v₀, v₁` agree with `u₀, u₁` on `S₀`, with the joint
+overlap exceeding `n − D`, then `w = v₀ + z • v₁`.  Hence every close codeword lies on the affine
+line `{v₀ + z • v₁}`, supplying the fixed-line hypothesis the per-coordinate / double-counting
+argument consumes. -/
+theorem close_codeword_eq_line
+    (C : Submodule F (ι → F)) {D : ℕ}
+    (hmin : ∀ a ∈ C, a ≠ 0 → D ≤ (Finset.univ.filter (fun i => a i ≠ 0)).card)
+    {u₀ u₁ v₀ v₁ : ι → F} (hv₀ : v₀ ∈ C) (hv₁ : v₁ ∈ C) {z : F}
+    {w : ι → F} (hw : w ∈ C) {Sw S₀ : Finset ι}
+    (hwS : ∀ i ∈ Sw, w i = u₀ i + z • u₁ i)
+    (h₀S : ∀ i ∈ S₀, u₀ i = v₀ i ∧ u₁ i = v₁ i)
+    (hcard : Fintype.card ι - D < (Sw ∩ S₀).card) :
+    w = v₀ + z • v₁ := by
+  classical
+  refine codeword_eq_of_agree C hmin hw (C.add_mem hv₀ (C.smul_mem z hv₁)) ?_ hcard
+  intro i hi
+  rw [Finset.mem_inter] at hi
+  obtain ⟨hu₀, hu₁⟩ := h₀S i hi.2
+  -- on the overlap: `w i = u₀ i + z·u₁ i = v₀ i + z·v₁ i = (v₀ + z•v₁) i`
+  rw [hwS i hi.1, hu₀, hu₁]
+  simp [Pi.add_apply, Pi.smul_apply]
+
+end UniqueDecoding
+
 end ProximityGap
