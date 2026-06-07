@@ -146,15 +146,17 @@ The arithmetic engine is the proven `GuruswamiSudan.sufficient_multiplicity_boun
 /-- **The Johnson count is a consequence of the Johnson radius.**
 
 Given the close codeword is within the GS radius (`dist/n < proximity_gap_johnson k n m`,
-`1 ≤ m`, `k + 1 ≤ n`), the interpolant degree budget `deg (Qz.eval P) ≤ degree_bound`, and the
-agreement set has the expected size `#A = n − dist`, the Johnson count
-`deg (Qz.eval P) < m · #A` holds.
+`1 ≤ m`, `k + 1 ≤ n`), the interpolant degree budget `deg (Qz.eval P) ≤ degree_bound`, the
+agreement distance `dist ≤ n` (a relative Hamming distance is at most `n`), and the agreement set
+has the expected size `#A = n − dist`, the Johnson count `deg (Qz.eval P) < m · #A` holds.
 
 This closes the "count" gap the BCIKS20 keystone previously carried as a free side condition:
-the count is *derived* from the genuine analytic premise (`dist/n < δ₀`), not assumed. -/
+the count is *derived* from the genuine analytic premise (`dist/n < δ₀`), not assumed.  The
+hypothesis `dist ≤ n` is the trivially-true combinatorial fact `hammingDist ≤ n`, not an analytic
+input. -/
 theorem johnsonCount_of_radius
-    {ωs : Fin n ↪ F} {Qz : F[X][Y]} {P : F[X]} {m k : ℕ} {A : Finset (Fin n)} {dist : ℕ}
-    (hk : k + 1 ≤ n) (hm : 1 ≤ m)
+    {Qz : F[X][Y]} {P : F[X]} {m k : ℕ} {A : Finset (Fin n)} {dist : ℕ}
+    (hk : k + 1 ≤ n) (hm : 1 ≤ m) (hdist : dist ≤ n)
     (hradius : (dist : ℝ) / n < proximity_gap_johnson k n m)
     (hdeg : (Qz.eval P).natDegree ≤ proximity_gap_degree_bound k n m)
     (hcard : A.card = n - dist) :
@@ -163,14 +165,10 @@ theorem johnsonCount_of_radius
   have hsuff : (proximity_gap_degree_bound k n m : ℝ) < m * (n - dist) :=
     GuruswamiSudan.sufficient_multiplicity_bound (k := k) (n := n) (m := m)
       (dist := dist) hk hm hradius
-  -- The agreement set is genuinely an index subset, so `dist ≤ n` and `#A = n − dist`.
-  have hdist_le : dist ≤ n := by
-    have : A.card ≤ n := le_trans (Finset.card_le_univ A) (by simp)
-    omega
   -- Cast `m · (n − dist)` from ℕ to ℝ, using `dist ≤ n`.
   have hcastA : ((m * A.card : ℕ) : ℝ) = m * (n - dist) := by
     rw [hcard]
-    push_cast [Nat.cast_sub hdist_le]
+    push_cast [Nat.cast_sub hdist]
     ring
   -- `deg ≤ degree_bound < m·(n−dist) = m·#A`, all in ℝ, then pull back to ℕ.
   have hdegR : ((Qz.eval P).natDegree : ℝ) ≤ (proximity_gap_degree_bound k n m : ℝ) :=
@@ -186,26 +184,26 @@ genuine Johnson-radius datum, the full unified core `GSMultiplicityVanishing` ho
 discharged by `johnsonCount_of_radius`. -/
 theorem core_of_radius
     {ωs : Fin n ↪ F} {Qz : F[X][Y]} {P : F[X]} {m k : ℕ} {A : Finset (Fin n)} {dist : ℕ}
-    (hk : k + 1 ≤ n) (hm : 1 ≤ m)
+    (hk : k + 1 ≤ n) (hm : 1 ≤ m) (hdist : dist ≤ n)
     (horder : ∀ i ∈ A, GuruswamiSudan.HasOrderAt Qz (ωs i) (P.eval (ωs i)) m)
     (hradius : (dist : ℝ) / n < proximity_gap_johnson k n m)
     (hdeg : (Qz.eval P).natDegree ≤ proximity_gap_degree_bound k n m)
     (hcard : A.card = n - dist) :
     GSMultiplicityVanishing ωs Qz P m A :=
-  ⟨horder, johnsonCount_of_radius hk hm hradius hdeg hcard⟩
+  ⟨horder, johnsonCount_of_radius hk hm hdist hradius hdeg hcard⟩
 
 /-- **END-TO-END (matching-factor form).**  The maximal honest reduction on the field side: from the
 order-`m` agreement (proven) plus the genuine Johnson-radius datum (the irreducible premise), the
 matching factor `Y − P` divides the interpolant `Qz`.  The Johnson count is fully discharged. -/
 theorem matchingFactor_of_radius
     {ωs : Fin n ↪ F} {Qz : F[X][Y]} {P : F[X]} {m k : ℕ} {A : Finset (Fin n)} {dist : ℕ}
-    (hk : k + 1 ≤ n) (hm : 1 ≤ m)
+    (hk : k + 1 ≤ n) (hm : 1 ≤ m) (hdist : dist ≤ n)
     (horder : ∀ i ∈ A, GuruswamiSudan.HasOrderAt Qz (ωs i) (P.eval (ωs i)) m)
     (hradius : (dist : ℝ) / n < proximity_gap_johnson k n m)
     (hdeg : (Qz.eval P).natDegree ≤ proximity_gap_degree_bound k n m)
     (hcard : A.card = n - dist) :
     (Polynomial.X - Polynomial.C P) ∣ Qz :=
-  matchingFactor_of_core (core_of_radius hk hm horder hradius hdeg hcard)
+  matchingFactor_of_core (core_of_radius hk hm hdist horder hradius hdeg hcard)
 
 end Core3GSMultiplicity
 
@@ -241,8 +239,8 @@ variable {n : ℕ}
 the count holds.  Hence the keystone's only nontrivial side condition is a *consequence* of the
 radius datum. -/
 theorem keystone_count_of_radius
-    {ωs : Fin n ↪ F} {Qz : F[X][Y]} {m k : ℕ} {A : Finset (Fin n)} {dist : ℕ}
-    (hk : k + 1 ≤ n) (hm : 1 ≤ m)
+    {Qz : F[X][Y]} {m k : ℕ} {A : Finset (Fin n)} {dist : ℕ}
+    (hk : k + 1 ≤ n) (hm : 1 ≤ m) (hdist : dist ≤ n)
     (hradius : (dist : ℝ) / n < proximity_gap_johnson k n m)
     (hwdeg : Bivariate.natWeightedDegree Qz 1 k ≤ proximity_gap_degree_bound k n m)
     (hcard : A.card = n - dist) :
@@ -250,11 +248,8 @@ theorem keystone_count_of_radius
   have hsuff : (proximity_gap_degree_bound k n m : ℝ) < m * (n - dist) :=
     GuruswamiSudan.sufficient_multiplicity_bound (k := k) (n := n) (m := m)
       (dist := dist) hk hm hradius
-  have hdist_le : dist ≤ n := by
-    have : A.card ≤ n := le_trans (Finset.card_le_univ A) (by simp)
-    omega
   have hcastA : ((m * A.card : ℕ) : ℝ) = m * (n - dist) := by
-    rw [hcard]; push_cast [Nat.cast_sub hdist_le]; ring
+    rw [hcard]; push_cast [Nat.cast_sub hdist]; ring
   have hwdegR :
       (Bivariate.natWeightedDegree Qz 1 k : ℝ) ≤
         (proximity_gap_degree_bound k n m : ℝ) := by exact_mod_cast hwdeg

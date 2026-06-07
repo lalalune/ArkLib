@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.Data.CodingTheory.Connections.GKL24FirstMoment
+import ArkLib.Data.CodingTheory.Connections.GCXK25SecondMoment
 
 set_option autoImplicit false
 
