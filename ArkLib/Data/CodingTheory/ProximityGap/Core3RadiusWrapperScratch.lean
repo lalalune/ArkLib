@@ -10,7 +10,6 @@ open ProximityGap Trivariate RatFunc
 variable {F : Type} [Field F] [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F]
 variable {n : ℕ}
 
-omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
 theorem keystone_count_of_radius
     {Qz : F[X][Y]} {m k : ℕ} {A : Finset (Fin n)} {dist : ℕ}
     (hk : k + 1 ≤ n) (hm : 1 ≤ m) (hdist : dist ≤ n)

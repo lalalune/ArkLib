@@ -8,7 +8,7 @@ import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Tactic.Linarith
 
 /-!
-# FPRUNE good-coordinate existence (Goyal–Guruswami 2025 / arXiv 2512.08017, Lemma 3.4 existence half)
+# FPRUNE good-coordinate existence (Chen–Zhang 2025 / arXiv 2512.08017, Lemma 3.4 existence half)
 
 The polynomial list-decoding bound for subspace-design codes is proven via the `FPRUNE`
 algorithm, which recursively samples a **good** coordinate `i` — one that strictly drops the
@@ -21,7 +21,7 @@ The combinatorial heart that the in-tree FPRUNE potential bricks consume — `fp
 `ListDecoding/FPRUNEPotential.lean`) — currently **take the nonempty good-coordinate set
 `J.Nonempty` as a hypothesis**. This file discharges that existence obligation directly from
 the subspace-design coordinate-dimension budget (`IsSubspaceDesign`, ABF26 Definition 2.16 /
-GG25 Definition 6):
+CZ25 Definition 6):
 
 * `good_filter_nonempty_of_weight_budget` — the abstract averaging principle: a finite family
   of reals with average below a threshold has a member below the threshold.
@@ -30,6 +30,8 @@ GG25 Definition 6):
 * `good_coord_exists_of_design` — the FPRUNE good set `{i | dim ℋ_i + η ≤ (1-η')(r+η)}` is
   nonempty, because the design budget forces `∑_i (dim ℋ_i + η) ≤ (r·τ(r) + η)·n`, which lies
   below `(1-η')(r+η)·n` exactly when `r·τ(r) + η < (1-η')(r+η)` (the capacity regime).
+* `card_good_coord_ge_of_design` — the quantitative design-code count: `≥ n·(1 - (r·τ(r)+η)/θ)`
+  good coordinates, the FPRUNE sampling mass (positive in the capacity regime).
 * `exists_good_coord_dim_lt_of_design` — packages a good coordinate together with the **strict
   dimension drop** `dim ℋ_i < r` (using `0 < η'`), the well-foundedness datum the FPRUNE
   recursion needs to make progress.
@@ -40,7 +42,7 @@ Quot.sound]`).
 
 ## References
 
-- [GG25] Goyal–Guruswami. Lemmas 3.4–3.5 (subspace-design pruning route to list recovery),
+- [CZ25] Chen–Zhang. Thm B.5 / Lemmas 3.4–3.5 (subspace-design route to capacity list decoding),
   arXiv 2512.08017.
 - [ABF26] Arnon-Boneh-Fenzi. *Open Problems in List Decoding and Correlated Agreement*, §2.5.
 -/
@@ -109,7 +111,7 @@ theorem card_good_ge_of_weight_budget {ι : Type*} [Fintype ι]
 variable {ι : Type} [Fintype ι] [Nonempty ι]
 variable {F : Type} [Field F]
 
-/-- **FPRUNE good-coordinate existence from the subspace-design budget (GG25 Lemma 3.4,
+/-- **FPRUNE good-coordinate existence from the subspace-design budget (CZ25 Lemma 3.4,
 existence half).** Let `C` be a `τ`-subspace-design code, and `ℋ ≤ C` a subspace of dimension
 `r`. Write `ℋ_i := ℋ ⊓ ker(eval_i)` and `wt_η(X) := dim X + η`. If the capacity condition
 `r·τ(r) + η < (1-η')·(r+η)` holds, then there is a coordinate `i` that is **good** for FPRUNE,
@@ -138,6 +140,43 @@ theorem good_coord_exists_of_design
         Submodule F (ι → Fin s → F))) : ℝ) + η)
     ((1 - η') * ((r : ℝ) + η)) ((r : ℝ) * τ r + η) ?_ hcap
   -- budget: `∑_i (dim ℋ_i + η) ≤ n·(r·τ(r) + η)`
+  have hdesign := h r ℋ hℋ hr.le
+  rw [hr] at hdesign
+  have hn : (0 : ℝ) < (Fintype.card ι : ℝ) := by exact_mod_cast Fintype.card_pos
+  rw [div_le_iff₀ hn] at hdesign
+  rw [Finset.sum_add_distrib, Finset.sum_const, Finset.card_univ, nsmul_eq_mul]
+  have hexp : (Fintype.card ι : ℝ) * ((r : ℝ) * τ r + η)
+      = (r : ℝ) * τ r * (Fintype.card ι : ℝ) + (Fintype.card ι : ℝ) * η := by ring
+  rw [hexp]
+  linarith [hdesign]
+
+/-- **Quantitative FPRUNE good-coordinate count for a subspace-design code.** Under the same
+setup as `good_coord_exists_of_design` (with `0 < η` and `0 < (1-η')(r+η)`), at least
+`n - n·(r·τ(r)+η)/((1-η')(r+η))` coordinates are FPRUNE-good. This is the design-code count
+form of `card_good_ge_of_weight_budget`: it gives the *mass* of good coordinates the FPRUNE
+sampling step distributes over (positive precisely in the capacity regime
+`r·τ(r)+η < (1-η')(r+η)`). -/
+theorem card_good_coord_ge_of_design
+    (s : ℕ) (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F)) (h : IsSubspaceDesign s τ C)
+    (η η' : ℝ) (hη : 0 < η) (ℋ : Submodule F (ι → Fin s → F)) (hℋ : ℋ ≤ C)
+    (r : ℕ) (hr : Module.finrank F ℋ = r)
+    (hθ : 0 < (1 - η') * ((r : ℝ) + η)) :
+    (Fintype.card ι : ℝ)
+        - (Fintype.card ι : ℝ) * ((r : ℝ) * τ r + η) / ((1 - η') * ((r : ℝ) + η))
+      ≤ ((univ.filter (fun i =>
+          (Module.finrank F (↥(ℋ ⊓
+              (LinearMap.ker
+                (LinearMap.proj (R := F) (φ := fun _ : ι ↦ Fin s → F) i)) :
+              Submodule F (ι → Fin s → F))) : ℝ) + η
+            ≤ (1 - η') * ((r : ℝ) + η))).card : ℝ) := by
+  refine card_good_ge_of_weight_budget
+    (fun i => (Module.finrank F (↥(ℋ ⊓
+        (LinearMap.ker
+          (LinearMap.proj (R := F) (φ := fun _ : ι ↦ Fin s → F) i)) :
+        Submodule F (ι → Fin s → F))) : ℝ) + η)
+    (fun i => add_nonneg (Nat.cast_nonneg _) hη.le)
+    ((1 - η') * ((r : ℝ) + η)) ((r : ℝ) * τ r + η) hθ ?_
+  -- budget: `∑_i (dim ℋ_i + η) ≤ n·(r·τ(r) + η)`  (same design budget as `good_coord_exists`)
   have hdesign := h r ℋ hℋ hr.le
   rw [hr] at hdesign
   have hn : (0 : ℝ) < (Fintype.card ι : ℝ) := by exact_mod_cast Fintype.card_pos
@@ -187,4 +226,5 @@ end CodingTheory.ListDecoding
 #print axioms CodingTheory.ListDecoding.good_filter_nonempty_of_weight_budget
 #print axioms CodingTheory.ListDecoding.card_good_ge_of_weight_budget
 #print axioms CodingTheory.ListDecoding.good_coord_exists_of_design
+#print axioms CodingTheory.ListDecoding.card_good_coord_ge_of_design
 #print axioms CodingTheory.ListDecoding.exists_good_coord_dim_lt_of_design

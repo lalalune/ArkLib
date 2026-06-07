@@ -112,17 +112,20 @@ def zk_concrete_simulator_residual
 
 /-- **OPEN residual — NOT asserted.** Issue #62: BCS Compiler preservation (completeness, soundness, KS). -/
 def bcs_compiler_preservation_residual
-  {ι : Type} {oSpec : OracleSpec ι}
-  {n : ℕ} {pSpec : ProtocolSpec n}
-  [∀ i, OracleInterface (pSpec.Message i)]
-  [∀ i, SampleableType (pSpec.Challenge i)]
-  {StmtIn : Type} {ιₛᵢ : Type} {OStmtIn : ιₛᵢ → Type} {WitIn : Type}
-  {StmtOut : Type} {ιₛₒ : Type} {OStmtOut : ιₛₒ → Type} {WitOut : Type}
-  (frontier : OracleReduction.BCSCompilerFrontier oSpec pSpec
-    StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut) : Prop :=
-  frontier.completeness_preservation_target ∧
-  frontier.soundness_preservation_target ∧
-  frontier.knowledge_soundness_preservation_target
+    {n : ℕ} {pSpec : ProtocolSpec n} {ι : Type} {oSpec : OracleSpec ι}
+    [∀ i, OracleInterface (pSpec.Message i)]
+    {m : ℕ} {nCom : pSpec.MessageIdx → ℕ} {pSpecCom : ∀ i, ProtocolSpec (nCom i)}
+    {StmtIn StmtOut WitIn WitOut StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    (phases : OracleReduction.BCSCompiledPhases (oSpec := oSpec) (pSpec := pSpec)
+      (pSpecCom := pSpecCom) (StmtIn := StmtIn) (WitIn := WitIn)
+      (StmtOut := StmtOut) (WitOut := WitOut) (StmtMid := StmtMid)
+      (WitMid := WitMid) CommitmentType e)
+    (frontier : OracleReduction.BCSSecurityFrontier (oSpec := oSpec) (pSpec := pSpec)
+      (pSpecCom := pSpecCom) (StmtIn := StmtIn) (WitIn := WitIn)
+      (StmtOut := StmtOut) (WitOut := WitOut) (StmtMid := StmtMid)
+      (WitMid := WitMid) phases) : Prop :=
+  OracleReduction.BCSCompilerFrontierReady phases frontier
 
 /-- **OPEN residual — NOT asserted.** Issue #29: Ring-switching KState. -/
 def ring_switching_kstate_residual {F : Type} [Field F] {p q : F[X]}
