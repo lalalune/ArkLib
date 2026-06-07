@@ -559,6 +559,68 @@ def toVerifier : Verifier oSpec (StmtIn × ∀ i, OStmtIn i) (StmtOut × (∀ i,
       | Sum.inr j => (verifier.hEq i ▸ h ▸ transcript.messages j : OStmtOut i)
     return (stmtOut, oStmtOut)
 
+/-- Construct output oracle statements from input oracle statements and transcript messages by
+  routing according to an embedding function. This is the standalone form of the routing inlined
+  in `toVerifier`; consumed by the Binius step logic (`BinaryBasefold.ReductionLogic`,
+  `RingSwitching.BatchingPhase`).
+
+  Restored after PR 537 (sequential-composition cherry-pick) dropped it while its Binius consumers
+  still reference it; it is exactly the `toVerifier` `oStmtOut` routing factored out, taking the
+  embedding/typing data as explicit arguments instead of reading them off a `verifier`. -/
+def mkVerifierOStmtOut
+    (embed : ιₛₒ ↪ ιₛᵢ ⊕ pSpec.MessageIdx)
+    (hEq : ∀ i, OStmtOut i = match embed i with
+      | Sum.inl j => OStmtIn j
+      | Sum.inr j => pSpec.Message j)
+    (oStmt : ∀ i, OStmtIn i) (transcript : FullTranscript pSpec) :
+    ∀ i, OStmtOut i :=
+  fun i => match h : embed i with
+    | Sum.inl j => (hEq i ▸ h ▸ oStmt j : OStmtOut i)
+    | Sum.inr j => (hEq i ▸ h ▸ transcript.messages j : OStmtOut i)
+
+omit Oₛᵢ Oₘ in
+@[simp]
+lemma mkVerifierOStmtOut_inl
+    (embed : ιₛₒ ↪ ιₛᵢ ⊕ pSpec.MessageIdx)
+    (hEq : ∀ i, OStmtOut i = match embed i with
+      | Sum.inl j => OStmtIn j
+      | Sum.inr j => pSpec.Message j)
+    (oStmt : ∀ i, OStmtIn i) (transcript : FullTranscript pSpec)
+    (i : ιₛₒ) (j : ιₛᵢ) (h : embed i = Sum.inl j) :
+    mkVerifierOStmtOut embed hEq oStmt transcript i = (hEq i ▸ h ▸ oStmt j : OStmtOut i) := by
+  simp only [mkVerifierOStmtOut, MessageIdx, Message]
+  split
+  · rename_i heq
+    rw [h] at heq
+    simp only [MessageIdx, Sum.inl.injEq] at heq
+    subst heq
+    rfl
+  · rename_i heq
+    rw [h] at heq
+    simp only [MessageIdx, reduceCtorEq] at heq
+
+omit Oₛᵢ Oₘ in
+@[simp]
+lemma mkVerifierOStmtOut_inr
+    (embed : ιₛₒ ↪ ιₛᵢ ⊕ pSpec.MessageIdx)
+    (hEq : ∀ i, OStmtOut i = match embed i with
+      | Sum.inl j => OStmtIn j
+      | Sum.inr j => pSpec.Message j)
+    (oStmt : ∀ i, OStmtIn i) (transcript : FullTranscript pSpec)
+    (i : ιₛₒ) (j : pSpec.MessageIdx) (h : embed i = Sum.inr j) :
+    mkVerifierOStmtOut embed hEq oStmt transcript i =
+      (hEq i ▸ h ▸ transcript.messages j : OStmtOut i) := by
+  simp only [mkVerifierOStmtOut, MessageIdx, Message]
+  split
+  · rename_i heq
+    rw [h] at heq
+    simp only [MessageIdx, reduceCtorEq] at heq
+  · rename_i heq
+    rw [h] at heq
+    simp only [MessageIdx, Sum.inr.injEq] at heq
+    subst heq
+    rfl
+
 /-- The number of queries made to the oracle statements and the prover's messages, for a given input
     statement and challenges.
 
