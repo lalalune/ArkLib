@@ -495,6 +495,7 @@ theorem openedLeafData_eq_of_agree {s : Skeleton} (filler : α)
     openedLeafData filler opened leaves₁ = openedLeafData filler opened leaves₂ := by
   apply (LeafData.equivIndexFun s).injective
   funext idx
+  change (openedLeafData filler opened leaves₁).get idx = (openedLeafData filler opened leaves₂).get idx
   by_cases hidx : opened idx
   · rw [openedLeafData_get, openedLeafData_get]
     simp only [hidx, if_true]

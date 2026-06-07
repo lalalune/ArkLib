@@ -331,6 +331,7 @@ consistency sub-case, by routing `ggr11_treeStructure_of_le_exp` through `fronti
 
 As with `ggr11_treeStructure_of_le_exp`, this is the consistency sub-case `m ≤ r`; the genuine
 GGR11 content is the complementary finite `m > r` Erase-Decode construction, which remains external. -/
+set_option linter.unusedFintypeInType false in
 theorem ggr11_treeFrontier_of_le_exp [Fintype F] [Nonempty ι]
     {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ}
     (hmr : m ≤ r) (hL : 1 ≤ Lambda C δ) :
