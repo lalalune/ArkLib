@@ -27,6 +27,8 @@ that the greedy chain (step 1 of the issue-#93 proof architecture) consumes:
 * **recentred-difference vanishing count** — if two close codewords `c` and `c₀` both agree
   with `f` on large coordinate sets, then their difference `c - c₀` vanishes on the
   intersection of those agreement sets, giving at least `(1 - 2δ)·n` vanishing coordinates.
+  The list-level aggregate and coordinate-first swap put this in the table form consumed by
+  the design budget.
 
 All results are stated for the block alphabet `Fin s → F` (so `α = Fin s → F`, not a field),
 matching the subspace-design coordinate structure, and are `sorry`-free / axiom-clean
@@ -239,6 +241,70 @@ lemma card_diff_vanish_ge_of_mem_closeCodewordsRel
     exact_mod_cast Finset.card_le_card hsub
   exact le_trans hInterLower hcard
 
+/-- **Double-counting / Fubini swap for recentred vanishing.** For a finite list `L`, the
+total number of coordinates where each recentred difference `c - c₀` vanishes can be summed
+element-first or coordinate-first:
+
+  `∑_{c ∈ L} #{i : c i - c₀ i = 0} = ∑_i #{c ∈ L : c i - c₀ i = 0}`.
+
+The coordinate-first side is the table shape that the subspace-design vanishing budget acts
+on after the list is recentred around `c₀`. -/
+lemma sum_diff_vanish_swap
+    (s : ℕ) (c₀ : ι → Fin s → F) (L : Finset (ι → Fin s → F)) :
+    (∑ c ∈ L, (Finset.univ.filter (fun i => c i - c₀ i = 0)).card) =
+      ∑ i : ι, (L.filter (fun c => c i - c₀ i = 0)).card := by
+  classical
+  simp only [Finset.card_filter]
+  rw [Finset.sum_comm]
+
+/-- **Aggregate recentred-vanishing lower bound.** If `c₀` is close to `f` and every
+`c ∈ L` is close to `f` at the same radius `δ`, summing
+`card_diff_vanish_ge_of_mem_closeCodewordsRel` over `L` gives
+
+  `|L| · (1 - 2δ) · n ≤ ∑_{c ∈ L} #{i : c i - c₀ i = 0}`.
+
+This is the list-level form of the recentred-difference step. -/
+lemma sum_diff_vanish_ge_of_subset_closeCodewordsRel
+    (s : ℕ) (C : Set (ι → Fin s → F)) (f c₀ : ι → Fin s → F) {δ : ℝ}
+    (L : Finset (ι → Fin s → F))
+    (hc₀ : c₀ ∈ closeCodewordsRel C f δ)
+    (hL : ∀ c ∈ L, c ∈ closeCodewordsRel C f δ) :
+    (L.card : ℝ) * ((1 - 2 * δ) * Fintype.card ι) ≤
+      ∑ c ∈ L, ((Finset.univ.filter (fun i => c i - c₀ i = 0)).card : ℝ) := by
+  classical
+  have hper : ∀ c ∈ L, (1 - 2 * δ) * Fintype.card ι ≤
+      ((Finset.univ.filter (fun i => c i - c₀ i = 0)).card : ℝ) := by
+    intro c hc
+    exact card_diff_vanish_ge_of_mem_closeCodewordsRel s C f c c₀ (hL c hc) hc₀
+  calc (L.card : ℝ) * ((1 - 2 * δ) * Fintype.card ι)
+      = ∑ _c ∈ L, ((1 - 2 * δ) * Fintype.card ι) := by
+        rw [Finset.sum_const, nsmul_eq_mul]
+    _ ≤ ∑ c ∈ L, ((Finset.univ.filter (fun i => c i - c₀ i = 0)).card : ℝ) :=
+        Finset.sum_le_sum hper
+
+/-- **Coordinate-first aggregate recentred-vanishing lower bound.** Combining the aggregate
+recentred-vanishing lower bound with `sum_diff_vanish_swap`, the lower bound is exposed in
+the coordinate-first table form:
+
+  `|L| · (1 - 2δ) · n ≤ ∑_i #{c ∈ L : c i - c₀ i = 0}`.
+
+This is the exact finite-table shape needed before translating vanishing fibers into the
+recentred span and applying the subspace-design budget. -/
+lemma sum_coord_diff_vanish_ge_of_subset_closeCodewordsRel
+    (s : ℕ) (C : Set (ι → Fin s → F)) (f c₀ : ι → Fin s → F) {δ : ℝ}
+    (L : Finset (ι → Fin s → F))
+    (hc₀ : c₀ ∈ closeCodewordsRel C f δ)
+    (hL : ∀ c ∈ L, c ∈ closeCodewordsRel C f δ) :
+    (L.card : ℝ) * ((1 - 2 * δ) * Fintype.card ι) ≤
+      ∑ i : ι, ((L.filter (fun c => c i - c₀ i = 0)).card : ℝ) := by
+  classical
+  have hsum := sum_diff_vanish_ge_of_subset_closeCodewordsRel s C f c₀ L hc₀ hL
+  have hswap : (∑ c ∈ L,
+      ((Finset.univ.filter (fun i => c i - c₀ i = 0)).card : ℝ)) =
+      ∑ i : ι, ((L.filter (fun c => c i - c₀ i = 0)).card : ℝ) := by
+    exact_mod_cast sum_diff_vanish_swap s c₀ L
+  simpa [hswap] using hsum
+
 end DifferenceVanish
 
 /-! ### `#print axioms` verification anchors -/
@@ -274,3 +340,6 @@ end CodingTheory
 #print axioms CodingTheory.sum_agree_swap
 #print axioms CodingTheory.sum_agree_ge_of_subset_closeCodewordsRel
 #print axioms CodingTheory.card_diff_vanish_ge_of_mem_closeCodewordsRel
+#print axioms CodingTheory.sum_diff_vanish_swap
+#print axioms CodingTheory.sum_diff_vanish_ge_of_subset_closeCodewordsRel
+#print axioms CodingTheory.sum_coord_diff_vanish_ge_of_subset_closeCodewordsRel
