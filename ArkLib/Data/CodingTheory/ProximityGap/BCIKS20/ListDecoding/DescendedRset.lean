@@ -682,6 +682,69 @@ lemma exists_factors_with_large_common_root_set_of_descended (δ : ℚ) (x₀ : 
     (F := F) (m := m) (n := n) (k := k) (Q := Q)
     (ωs := ωs) (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs
 
+/-- Claim 5.7 front door from the explicit descended in-tree inputs.
+
+This packages `Claim57ResidualsDescended.ofInTree` with
+`exists_factors_with_large_common_root_set_of_descended`, so callers can keep the genuine descended
+residual inputs explicit and consume the produced `x₀` plus Claim-5.7 factor pair directly.  The
+remaining inputs are still exactly the honest residuals: the descended `hsepPt`, `hlarge`/count
+data, and the explicit legacy coincidence hypothesis. -/
+noncomputable def exists_factors_with_large_common_root_set_of_descended_inTree [Fintype F] (δ : ℚ)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (z : F[Z][X][Y] → F)
+    (hlead : ∀ R : F[Z][X][Y],
+      R ∈ pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        R.leadingCoeff.map (Polynomial.evalRingHom (z R)) ≠ 0)
+    (hcard :
+      (((pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs).toList).map
+        (fun R => (R.leadingCoeff.map (Polynomial.evalRingHom (z R))).natDegree)).sum
+        < Fintype.card F)
+    (hsepPt : ∀ x₀ : F,
+      (∀ R : F[Z][X][Y],
+        R ∈ pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+            (u₀ := u₀) (u₁ := u₁) h_gs →
+          Bivariate.evalX (Polynomial.C x₀) R ≠ 0) →
+      ∀ R : F[Z][X][Y],
+        R ∈ pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+            (u₀ := u₀) (u₁ := u₁) h_gs →
+          (Bivariate.evalX (Polynomial.C x₀) R).Separable)
+    (hS_nonempty : (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).Nonempty)
+    (A : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ → Finset (Fin n))
+    (hA : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      ∀ i ∈ A z, (u₀ + z.1 • u₁) i =
+        (Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2).eval (ωs i))
+    (hcount : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z.1) 1 k < m * (A z).card)
+    (hlarge :
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q)
+    (hcoincide : pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs
+      = pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs) :
+    Σ' x₀ : F,
+      ∃ R H, R ∈ (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose ∧
+        Irreducible H ∧ 0 < H.natDegree ∧ H ∣ (Bivariate.evalX (Polynomial.C x₀) R) ∧
+        (Bivariate.evalX (Polynomial.C x₀) R).Separable ∧
+        #(@Set.toFinset _ { z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ |
+            letI Pz := Pz z.2
+            (Trivariate.eval_on_Z R z.1).eval Pz = 0 ∧
+            (Bivariate.evalX z.1 H).eval (Pz.eval x₀) = 0}
+            (@Fintype.ofFinite _ Subtype.finite))
+        ≥ #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q)
+        ∧ #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+          2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q :=
+  let hpack := Claim57ResidualsDescended.ofInTree
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+    (u₀ := u₀) (u₁ := u₁) δ h_gs z hlead hcard hsepPt
+    hS_nonempty A hA hcount hlarge
+  ⟨hpack.1,
+    exists_factors_with_large_common_root_set_of_descended
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) δ hpack.1 h_gs hpack.2 hcoincide⟩
+
 /-- The `R` polynomial extracted from Claim 5.7 through the descended residual bundle. -/
 noncomputable def R_descended (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
@@ -887,6 +950,7 @@ lemma claimA2_hypotheses_descended (δ : ℚ) (x₀ : F)
 #print axioms ProximityGap.GraphExtractionHypotheses.ofDescended
 #print axioms ProximityGap.Claim57Residuals.ofDescended
 #print axioms ProximityGap.exists_factors_with_large_common_root_set_of_descended
+#print axioms ProximityGap.exists_factors_with_large_common_root_set_of_descended_inTree
 #print axioms ProximityGap.R_descended
 #print axioms ProximityGap.H_descended
 #print axioms ProximityGap.fact_irreducible_H_descended
