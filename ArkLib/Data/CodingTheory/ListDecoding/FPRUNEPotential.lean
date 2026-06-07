@@ -5,7 +5,12 @@ Authors: ArkLib Contributors
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Data.Real.Basic
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Positivity
 
 /-!
 # The FPRUNE potential induction (Chen–Zhang 2025 / arXiv 2512.08017, Lemma 3.5 from 3.4)
@@ -108,12 +113,13 @@ theorem fprune_one_step
     η / ((r : ℕ) + η) ≤
       ∑ j ∈ J, ((((d j : ℝ) + η) * (1 - η')) / (∑ k ∈ J, ((d k : ℝ) + η)))
                   * (η / ((d j : ℕ) + η)) := by
-  set W : ℝ := ∑ k ∈ J, ((d k : ℝ) + η) with hW
   have hposTerm : ∀ j, (0 : ℝ) < (d j : ℝ) + η := fun j =>
     add_pos_of_nonneg_of_pos (Nat.cast_nonneg _) hη
+  set W : ℝ := ∑ k ∈ J, ((d k : ℝ) + η) with hW
   have hWpos : 0 < W := by
-    rw [hW]
-    exact Finset.sum_pos (fun j _ => hposTerm j) hJ
+    rw [hW]; exact Finset.sum_pos (fun j _ => hposTerm j) hJ
+  have hWne : W ≠ 0 := ne_of_gt hWpos
+  have hrη : (0 : ℝ) < (r : ℝ) + η := add_pos_of_nonneg_of_pos (Nat.cast_nonneg _) hη
   -- Each summand collapses to `(1-η')·η / W`.
   have hterm : ∀ j ∈ J,
       ((((d j : ℝ) + η) * (1 - η')) / W) * (η / ((d j : ℕ) + η))
@@ -131,10 +137,13 @@ theorem fprune_one_step
       _ = (J.card : ℝ) * ((1 - η') * ((r : ℝ) + η)) := by
           rw [Finset.sum_const, nsmul_eq_mul]
   -- Conclude `η/(r+η) ≤ |J|·(1-η')η / W`.
-  have hrη : (0 : ℝ) < (r : ℝ) + η := add_pos_of_nonneg_of_pos (Nat.cast_nonneg _) hη
-  rw [show (J.card : ℝ) * ((1 - η') * η / W) = ((J.card : ℝ) * (1 - η') * η) / W from by ring,
-      div_le_div_iff hrη hWpos]
-  -- goal: `η · W ≤ (|J|·(1-η')·η) · (r+η)`, i.e. `η` times `hWle`.
-  nlinarith [mul_le_mul_of_nonneg_left hWle (le_of_lt hη), hη, hWpos, hrη]
+  have key : η / ((r : ℝ) + η) ≤ ((J.card : ℝ) * (1 - η') * η) / W := by
+    rw [div_le_div_iff hrη hWpos]
+    -- `η · W ≤ (|J|·(1-η')·η) · (r+η)`, i.e. `η · hWle`.
+    nlinarith [mul_le_mul_of_nonneg_left hWle (le_of_lt hη), hη, hWpos, hrη]
+  calc η / ((r : ℕ) + η)
+      = η / ((r : ℝ) + η) := by push_cast; ring_nf
+    _ ≤ ((J.card : ℝ) * (1 - η') * η) / W := key
+    _ = (J.card : ℝ) * ((1 - η') * η / W) := by ring
 
 end CodingTheory.ListDecoding

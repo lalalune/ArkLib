@@ -1432,7 +1432,7 @@ theorem whirRbrBudgetValue_isLUB {M : ℕ} {ιs : Fin (M + 1) → Type}
       ε_fin ≤ c → whirRbrBudgetValue P ε_fold ε_out ε_shift ε_fin ≤ c) :=
   Issue113WHIR.epsRbr_isLUB (fp := P.foldingParam) ε_fold ε_out ε_shift ε_fin
 
-omit [Fintype ι] [DecidableEq ι] [Nonempty ι] in
+omit [Fintype ι] [Nonempty ι] in
 /-- Using the named WHIR RBR budget in `IsSecureWithGap` is definitionally the same as using the
 inline `ε_rbr` expression from `whir_rbr_soundness`. -/
 theorem whirSecureWithGap_namedBudget_iff_inline {M : ℕ}
@@ -1446,7 +1446,7 @@ theorem whirSecureWithGap_namedBudget_iff_inline {M : ℕ}
       (whirRelation m_0 (P.φ 0) δ)
       (fun _ : vPSpec.ChallengeIdx => whirRbrBudgetValue P ε_fold ε_out ε_shift ε_fin) π ↔
     (let max_ε_folds : (i : Fin (M + 1)) → ℝ≥0 :=
-        fun i => (univ : Finset (Fin (P.foldingParam i))).sup (ε_fold i)
+        fun i => (Finset.univ : Finset (Fin (P.foldingParam i))).sup (ε_fold i)
       let ε_rbr : vPSpec.ChallengeIdx → ℝ≥0 :=
         fun _ => ((Finset.univ : Finset (Fin (M + 1))).image max_ε_folds ∪ {ε_fin} ∪
           (Finset.univ : Finset (Fin (M + 1))).image ε_out ∪
