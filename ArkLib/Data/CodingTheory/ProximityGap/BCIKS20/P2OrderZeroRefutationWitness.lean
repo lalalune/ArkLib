@@ -135,6 +135,38 @@ theorem orderZero_match_false :
     (le_of_eq myR_natDegree.symm) (1 : ℚ[X]) p_eq
     (by rw [map_one]; exact one_ne_zero) myW
 
+/-- The all-orders carved P2 core is false on the same concrete witness. -/
+theorem full_match_false :
+    ¬ RestrictedFaaDiBrunoMatch myH (0 : ℚ) myR myHyp := by
+  intro hmatch
+  exact orderZero_match_false
+    (RestrictedFaaDiBrunoMatch.at myH (0 : ℚ) myR myHyp hmatch 0)
+
+/-- The all-order `RestrictedFaaDiBrunoMatchAt` family is false on the concrete witness. -/
+theorem forall_matchAt_false :
+    ¬ (∀ t : ℕ, RestrictedFaaDiBrunoMatchAt myH (0 : ℚ) myR myHyp t) := by
+  intro hat
+  exact full_match_false
+    (RestrictedFaaDiBrunoMatch.of_forallAt myH (0 : ℚ) myR myHyp hat)
+
+/-- The normalized partition P2 core is false on the same concrete witness. -/
+theorem partition_match_false :
+    ¬ RestrictedFaaDiBrunoPartitionMatch myH (0 : ℚ) myR myHyp := by
+  intro hpart
+  exact full_match_false
+    (RestrictedFaaDiBrunoMatch.of_partitionMatch myH (0 : ℚ) myR myHyp hpart)
+
+/-- The all-order normalized partition residual family is false on the concrete witness. -/
+theorem forall_partitionMatchAt_false :
+    ¬ (∀ t : ℕ, RestrictedFaaDiBrunoPartitionMatchAt myH (0 : ℚ) myR myHyp t) := by
+  intro hat
+  exact full_match_false
+    (RestrictedFaaDiBrunoMatch.of_forall_partitionMatchAt myH (0 : ℚ) myR myHyp hat)
+
 end BCIKS20.HenselNumerator.Witness
 
 #print axioms BCIKS20.HenselNumerator.Witness.orderZero_match_false
+#print axioms BCIKS20.HenselNumerator.Witness.full_match_false
+#print axioms BCIKS20.HenselNumerator.Witness.forall_matchAt_false
+#print axioms BCIKS20.HenselNumerator.Witness.partition_match_false
+#print axioms BCIKS20.HenselNumerator.Witness.forall_partitionMatchAt_false
