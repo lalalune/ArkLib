@@ -295,8 +295,11 @@ If the MCA bad event `mcaEvent C δ (u 0) (u 1) γ` holds for *every* `γ`, then
 `1 ≤ ε_mca(C, δ)`.  The `ε_mca`-supremum term at `u` is `Pr_γ[mcaEvent C δ (u 0) (u 1) γ]`,
 which is the full mass `∑' γ, ($ᵖ F) γ = 1` because the indicator is constantly `1`.  This
 isolates an MCA complete-breakdown to a single stack whose every random combination triggers the
-bad event — the reusable reduction for the MCA-side breakdown issues (#66/#85/#99), separated
-from the supremum mechanics. -/
+bad event, separated from the supremum mechanics.  This is the exact MCA dual of
+`one_le_epsCA_of_line_covered`; it is foundational infrastructure for a future MCA
+complete-breakdown (the MCA analogue of the CS25 CA breakdown).  Note the current MCA-side issues
+(#66/#85/#99) instead concern epsMCA/epsMCAgs *upper* bounds (faithfulness, mass), so they do not
+consume this lemma directly. -/
 theorem one_le_epsMCA_of_mcaEvent_forall (C : Set (ι → A)) (δ : ℝ≥0)
     (u : WordStack A (Fin 2) ι)
     (h : ∀ γ : F, mcaEvent C δ (u 0) (u 1) γ) :
