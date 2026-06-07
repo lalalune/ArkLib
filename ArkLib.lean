@@ -825,3 +825,7 @@ import ArkLib.ToVCVio.Simulation
 import ArkLib.ToVCVio.SimulationInfrastructure
 import ArkLib.ToVCVio.ToMathlib.Control.StateT
 import ArkLib.ToVCVio.ToMathlib.Data.Vector.Basic
+import ArkLib.ProofSystem.Logup.Security.OuterCompleteness
+import ArkLib.ToMathlib.FaaDiBrunoMatchProof
+import ArkLib.ToMathlib.AlphaWeightProof
+import ArkLib.ToMathlib.LineDecodingCoverageProof
