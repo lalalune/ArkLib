@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Quang Dao
 -/
 import ArkLib.OracleReduction.LiftContext.OracleReduction
+import ArkLib.OracleReduction.Security.OracleZeroKnowledge
 
 /-!
 # Simple Oracle Reduction: Random Query
@@ -21,6 +22,7 @@ of the same type. The relation is `a = b`.
 -/
 
 open OracleSpec OracleComp OracleQuery OracleInterface ProtocolSpec
+open scoped NNReal
 
 variable {ι : Type} (oSpec : OracleSpec ι) (OStatement : Type) [O : OracleInterface OStatement]
   [inst : SampleableType (Query OStatement)]
@@ -51,6 +53,9 @@ def relOut : Set ((StmtOut OStatement × ∀ i, OStmtOut OStatement i) × WitOut
 
 @[reducible]
 def pSpec : ProtocolSpec 1 := ⟨!v[.V_to_P], !v[Query OStatement]⟩
+
+instance : ∀ i, SampleableType ((pSpec OStatement).Challenge i)
+  | ⟨0, _⟩ => inst
 
 /--
 The prover is trivial: it has no messages to send.  It only receives the verifier's challenge `q`,
@@ -181,6 +186,66 @@ theorem oracleReduction_completeness :
       Set.mem_singleton_iff, Prod.mk.injEq]
     rintro ⟨⟨rfl, rfl⟩, rfl⟩
     refine ⟨?_, rfl, ?_⟩ <;> congr 1
+
+/-- The simulator for `RandomQuery`: the protocol is witness-free, so the simulator can rerun
+the honest transcript distribution using the public oracle input and the unique `Unit` witness. -/
+def transcriptSimulator :
+    @OracleReduction.TranscriptSimulator ι oSpec Unit (Fin 2) (OStmtIn OStatement) 1
+      (pSpec OStatement) :=
+  fun stmtIn =>
+    Reduction.honestTranscriptDist init impl
+      (oracleReduction.{0} oSpec OStatement).toReduction stmtIn ()
+
+/-- The honest transcript distribution for `RandomQuery` is definitionally the simulator
+distribution. -/
+theorem honestTranscriptDist_oracleReduction_evalDist
+    (stmtIn : StmtIn × (∀ i, OStmtIn OStatement i)) :
+    evalDist (Reduction.honestTranscriptDist init impl
+        (oracleReduction.{0} oSpec OStatement).toReduction stmtIn ()) =
+      evalDist (transcriptSimulator (oSpec := oSpec) (OStatement := OStatement)
+        (init := init) (impl := impl) stmtIn) := rfl
+
+/-- `RandomQuery` is perfectly HVZK as an oracle reduction: it has no private witness, and the
+single verifier challenge is sampled by the same honest challenge implementation in the simulator. -/
+theorem oracleReduction_perfectHVZK :
+    OracleReduction.perfectHVZK init impl (relIn OStatement)
+      (oracleReduction.{0} oSpec OStatement)
+      (transcriptSimulator (oSpec := oSpec) (OStatement := OStatement)
+        (init := init) (impl := impl)) := by
+  intro stmtIn () _
+  exact (honestTranscriptDist_oracleReduction_evalDist (oSpec := oSpec)
+    (OStatement := OStatement) (init := init) (impl := impl) stmtIn).symm
+
+/-- Perfect HVZK implies statistical HVZK for `RandomQuery` at every error budget. -/
+theorem oracleReduction_statisticalHVZK (ε : NNReal) :
+    OracleReduction.statisticalHVZK init impl (relIn OStatement)
+      (oracleReduction.{0} oSpec OStatement)
+      (transcriptSimulator (oSpec := oSpec) (OStatement := OStatement)
+        (init := init) (impl := impl)) ε :=
+  (oracleReduction_perfectHVZK (oSpec := oSpec) (OStatement := OStatement)
+    (init := init) (impl := impl)).statisticalHVZK ε
+
+/-- `RandomQuery` has an explicit perfect-HVZK simulator as an oracle reduction. -/
+theorem oracleReduction_isHVZK :
+    OracleReduction.isHVZK init impl (relIn OStatement) (oracleReduction.{0} oSpec OStatement) :=
+  ⟨transcriptSimulator (oSpec := oSpec) (OStatement := OStatement)
+      (init := init) (impl := impl),
+    oracleReduction_perfectHVZK (oSpec := oSpec) (OStatement := OStatement)
+      (init := init) (impl := impl)⟩
+
+/-- `RandomQuery` has statistical HVZK at every error budget as an oracle reduction. -/
+theorem oracleReduction_isStatHVZK (ε : NNReal) :
+    OracleReduction.isStatHVZK init impl (relIn OStatement)
+      (oracleReduction.{0} oSpec OStatement) ε :=
+  (oracleReduction_isHVZK (oSpec := oSpec) (OStatement := OStatement)
+    (init := init) (impl := impl)).isStatHVZK ε
+
+#print axioms RandomQuery.transcriptSimulator
+#print axioms RandomQuery.honestTranscriptDist_oracleReduction_evalDist
+#print axioms RandomQuery.oracleReduction_perfectHVZK
+#print axioms RandomQuery.oracleReduction_statisticalHVZK
+#print axioms RandomQuery.oracleReduction_isHVZK
+#print axioms RandomQuery.oracleReduction_isStatHVZK
 
 -- def langIn : Set (Unit × (∀ _ : Fin 2, OStatement)) := setOf fun ⟨(), oracles⟩ =>
 --   oracles 0 = oracles 1
