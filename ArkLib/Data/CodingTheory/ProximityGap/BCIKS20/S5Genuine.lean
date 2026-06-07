@@ -125,6 +125,27 @@ def LiftIdentityAt (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R
         * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
         * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1)
 
+/-- The downstream `LiftIdentityAt` predicate supplied by the restricted P2 match. -/
+theorem LiftIdentityAt.of_restrictedMatch {x₀ : F} {R : F[X][X][Y]}
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp) (t : ℕ) :
+    LiftIdentityAt H x₀ R hHyp t :=
+  (P2_closed_of_restrictedMatch H x₀ R hHyp hmatch).2 t
+
+/-- The downstream `LiftIdentityAt` predicate supplied by the full P2 vanishing identity. -/
+theorem LiftIdentityAt.of_fullVanishes {x₀ : F} {R : F[X][X][Y]}
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hvan : FaaDiBrunoFullSumVanishes H x₀ R hHyp) (t : ℕ) :
+    LiftIdentityAt H x₀ R hHyp t :=
+  (P2_closed_of_fullVanishes H x₀ R hHyp hvan).2 t
+
+/-- The downstream `LiftIdentityAt` predicate supplied by the legacy successor residual. -/
+theorem LiftIdentityAt.of_faaDiBruno_succ_sum_eq_zero {x₀ : F} {R : F[X][X][Y]}
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hzero : FaaDiBrunoSuccSumZeroResidual H x₀ R hHyp) (t : ℕ) :
+    LiftIdentityAt H x₀ R hHyp t :=
+  βHensel_lift_identity H x₀ R hHyp hzero t
+
 /-! ## Claim 5.8 (genuine): `α_t = 0` for `t ≥ k` under the §5 largeness hypothesis -/
 
 /-- **The numerator vanishes.**  Under the documented per-`t` largeness hypothesis on
@@ -177,7 +198,7 @@ theorem claim58_genuine_via_intree {x₀ : F} {R : F[X][X][Y]}
     (hzero : FaaDiBrunoSuccSumZeroResidual H x₀ R hHyp)
     {t : ℕ} (hlarge : SβLargeAt H x₀ R hHyp t) :
     αGenuine H x₀ R hHyp t = 0 :=
-  claim58_genuine H hHyp hlarge (βHensel_lift_identity H x₀ R hHyp hzero t)
+  claim58_genuine H hHyp hlarge (LiftIdentityAt.of_faaDiBruno_succ_sum_eq_zero H hHyp hzero t)
 
 /-- **Claim 5.8 (genuine), using the full P2 vanishing identity.**
 This wrapper consumes the sharper `FaaDiBrunoFullSumVanishes` P2 endpoint from `P2Match`,
@@ -187,7 +208,7 @@ theorem claim58_genuine_via_fullVanishes {x₀ : F} {R : F[X][X][Y]}
     (hvan : FaaDiBrunoFullSumVanishes H x₀ R hHyp)
     {t : ℕ} (hlarge : SβLargeAt H x₀ R hHyp t) :
     αGenuine H x₀ R hHyp t = 0 :=
-  claim58_genuine H hHyp hlarge ((P2_closed_of_fullVanishes H x₀ R hHyp hvan).2 t)
+  claim58_genuine H hHyp hlarge (LiftIdentityAt.of_fullVanishes H hHyp hvan t)
 
 /-- **Claim 5.8 (genuine), using the restricted P2 match.**
 This is the smallest currently-carved P2 bridge: `RestrictedFaaDiBrunoMatch` discharges the
@@ -197,7 +218,7 @@ theorem claim58_genuine_via_restrictedMatch {x₀ : F} {R : F[X][X][Y]}
     (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp)
     {t : ℕ} (hlarge : SβLargeAt H x₀ R hHyp t) :
     αGenuine H x₀ R hHyp t = 0 :=
-  claim58_genuine H hHyp hlarge ((P2_closed_of_restrictedMatch H x₀ R hHyp hmatch).2 t)
+  claim58_genuine H hHyp hlarge (LiftIdentityAt.of_restrictedMatch H hHyp hmatch t)
 
 /-! ## Claim 5.8' (genuine): `γ` is a polynomial of X-degree `< k`
 
@@ -255,7 +276,8 @@ theorem claim58prime_genuine_via_intree {x₀ : F} {R : F[X][X][Y]}
     (hlarge : ∀ t ≥ k, SβLargeAt H x₀ R hHyp t) :
     gammaGenuine x₀ R H hHyp
       = (↑(PowerSeries.trunc k (gammaGenuine x₀ R H hHyp)) : (𝕃 H)⟦X⟧) :=
-  claim58prime_genuine H hHyp hlarge (fun t _ => βHensel_lift_identity H x₀ R hHyp hzero t)
+  claim58prime_genuine H hHyp hlarge
+    (fun t _ => LiftIdentityAt.of_faaDiBruno_succ_sum_eq_zero H hHyp hzero t)
 
 /-- **Claim 5.8' (genuine), using the full P2 vanishing identity.** -/
 theorem claim58prime_genuine_via_fullVanishes {x₀ : F} {R : F[X][X][Y]}
@@ -265,7 +287,7 @@ theorem claim58prime_genuine_via_fullVanishes {x₀ : F} {R : F[X][X][Y]}
     gammaGenuine x₀ R H hHyp
       = (↑(PowerSeries.trunc k (gammaGenuine x₀ R H hHyp)) : (𝕃 H)⟦X⟧) :=
   claim58prime_genuine H hHyp hlarge
-    (fun t _ => (P2_closed_of_fullVanishes H x₀ R hHyp hvan).2 t)
+    (fun t _ => LiftIdentityAt.of_fullVanishes H hHyp hvan t)
 
 /-- **Claim 5.8' (genuine), using the restricted P2 match.** -/
 theorem claim58prime_genuine_via_restrictedMatch {x₀ : F} {R : F[X][X][Y]}
@@ -275,7 +297,7 @@ theorem claim58prime_genuine_via_restrictedMatch {x₀ : F} {R : F[X][X][Y]}
     gammaGenuine x₀ R H hHyp
       = (↑(PowerSeries.trunc k (gammaGenuine x₀ R H hHyp)) : (𝕃 H)⟦X⟧) :=
   claim58prime_genuine H hHyp hlarge
-    (fun t _ => (P2_closed_of_restrictedMatch H x₀ R hHyp hmatch).2 t)
+    (fun t _ => LiftIdentityAt.of_restrictedMatch H hHyp hmatch t)
 
 /-- **Claim 5.8' (genuine, X-degree bound on the truncation).**  Companion to
 `claim58prime_genuine`: the degree-`< k` witness polynomial `PowerSeries.trunc k γ` has
@@ -373,6 +395,9 @@ These `#print axioms` lines are checked at compile time. -/
 #print axioms gammaGenuine_Z_linear_of_coeffs_Z_linear
 
 -- Conditional wrappers using βHensel_lift_identity and its explicit residual:
+#print axioms LiftIdentityAt.of_faaDiBruno_succ_sum_eq_zero
+#print axioms LiftIdentityAt.of_fullVanishes
+#print axioms LiftIdentityAt.of_restrictedMatch
 #print axioms claim58_genuine_via_intree
 #print axioms claim58prime_genuine_via_intree
 #print axioms claim58_genuine_via_fullVanishes
