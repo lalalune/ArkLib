@@ -108,7 +108,7 @@ attribute [local instance] Reduction.fiatShamirChallengeOracleInterface
 
 /-- The basic Fiat-Shamir protocol spec has no challenge rounds (it is prover-only), so its challenge
 oracle is empty; this provides the (vacuous) sampleability instance. -/
-local instance fiatShamirSampleable :
+local instance (priority := 10) fiatShamirSampleable :
     ∀ i : (FiatShamirProtocolSpec (pSpec := pSpec)).ChallengeIdx,
       SampleableType ((FiatShamirProtocolSpec (pSpec := pSpec)).Challenge i) := by
   intro i
@@ -171,8 +171,65 @@ theorem fiatShamir_completeness_unroll_discharged
   Reduction.fiatShamir_completeness_unroll_of_runCollapse init impl relIn relOut completenessError R
     (fun stmtIn witIn => fiatShamir_runCollapse impl R stmtIn witIn)
 
+/-- Basic Fiat-Shamir completeness follows from completeness of the explicit honest execution,
+without requiring callers to pass the already-proved run-collapse residual. -/
+theorem fiatShamir_completeness_of_honestExecution_discharged
+    {σ : Type} (init : ProbComp σ)
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut × WitOut))
+    (completenessError : ℝ≥0)
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hHonest : Reduction.completenessFromRun init impl relIn relOut
+      R.fiatShamirHonestExecution completenessError) :
+    R.fiatShamir.completeness init impl relIn relOut completenessError :=
+  (fiatShamir_completeness_unroll_discharged init impl relIn relOut completenessError R).2
+    hHonest
+
+/-- Perfect completeness of the basic Fiat-Shamir transform is unconditionally equivalent to perfect
+completeness of its explicit honest execution. -/
+theorem fiatShamir_perfectCompleteness_unroll_discharged
+    {σ : Type} (init : ProbComp σ)
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut × WitOut))
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec) :
+    Reduction.fiatShamir_perfectCompleteness_unroll init impl relIn relOut R :=
+  Reduction.fiatShamir_perfectCompleteness_unroll_of_runCollapse init impl relIn relOut R
+    (fun stmtIn witIn => fiatShamir_runCollapse impl R stmtIn witIn)
+
+/-- Basic Fiat-Shamir perfect completeness follows from perfect completeness of the explicit honest
+execution, using the discharged run-collapse theorem. -/
+theorem fiatShamir_perfectCompleteness_of_honestExecution_discharged
+    {σ : Type} (init : ProbComp σ)
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut × WitOut))
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hHonest : Reduction.perfectCompletenessFromRun init impl relIn relOut
+      R.fiatShamirHonestExecution) :
+    R.fiatShamir.perfectCompleteness init impl relIn relOut :=
+  (fiatShamir_perfectCompleteness_unroll_discharged init impl relIn relOut R).2 hHonest
+
+/-- Basic Fiat-Shamir completeness at any target error follows from perfect completeness of the
+explicit honest execution, using the discharged run-collapse theorem. -/
+theorem fiatShamir_completeness_of_perfect_honestExecution_discharged
+    {σ : Type} (init : ProbComp σ)
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut × WitOut))
+    (completenessError : ℝ≥0)
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hHonest : Reduction.perfectCompletenessFromRun init impl relIn relOut
+      R.fiatShamirHonestExecution) :
+    R.fiatShamir.completeness init impl relIn relOut completenessError := by
+  unfold Reduction.perfectCompletenessFromRun at hHonest
+  exact Reduction.completeness_error_mono init impl (zero_le completenessError)
+    (fiatShamir_completeness_of_honestExecution_discharged init impl relIn relOut
+      0 R hHonest)
+
 #print axioms fiatShamir_runCollapse
 #print axioms fiatShamir_completeness_unroll_discharged
+#print axioms fiatShamir_completeness_of_honestExecution_discharged
+#print axioms fiatShamir_perfectCompleteness_unroll_discharged
+#print axioms fiatShamir_perfectCompleteness_of_honestExecution_discharged
+#print axioms fiatShamir_completeness_of_perfect_honestExecution_discharged
 
 end Reduction
 
