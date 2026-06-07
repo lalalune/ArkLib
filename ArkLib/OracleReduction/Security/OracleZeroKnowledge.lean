@@ -206,6 +206,45 @@ theorem isStatHVZK.mono_error
   let ⟨sim, hsim⟩ := h
   ⟨sim, hsim.mono_error hle⟩
 
+/-- Statistical HVZK for oracle reductions transports across both relation restriction and error
+  relaxation. -/
+theorem statisticalHVZK.mono_relation_error
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel rel' : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn)}
+    {oracleReduction :
+      OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut pSpec}
+    {sim : TranscriptSimulator oSpec StmtIn OStmtIn pSpec} {ε₁ ε₂ : ℝ≥0}
+    (h : statisticalHVZK init impl rel oracleReduction sim ε₁)
+    (hsub : rel' ⊆ rel) (hle : ε₁ ≤ ε₂) :
+    statisticalHVZK init impl rel' oracleReduction sim ε₂ :=
+  Reduction.statisticalHVZK.mono_relation_error h hsub hle
+
+/-- Existential statistical HVZK for oracle reductions transports across both relation restriction
+  and error relaxation. -/
+theorem isStatHVZK.mono_relation_error
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel rel' : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn)}
+    {oracleReduction :
+      OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut pSpec}
+    {ε₁ ε₂ : ℝ≥0}
+    (h : isStatHVZK init impl rel oracleReduction ε₁)
+    (hsub : rel' ⊆ rel) (hle : ε₁ ≤ ε₂) :
+    isStatHVZK init impl rel' oracleReduction ε₂ :=
+  let ⟨sim, hsim⟩ := h
+  ⟨sim, hsim.mono_relation_error hsub hle⟩
+
+/-- Perfect HVZK existence for oracle reductions transports to statistical HVZK on a restricted
+  relation at any relaxed error. -/
+theorem isHVZK.isStatHVZK_mono_relation_error
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel rel' : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn)}
+    {oracleReduction :
+      OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut pSpec}
+    {ε : ℝ≥0}
+    (h : isHVZK init impl rel oracleReduction) (hsub : rel' ⊆ rel) :
+    OracleReduction.isStatHVZK init impl rel' oracleReduction ε :=
+  (h.mono_relation hsub).isStatHVZK ε
+
 end BasicLemmas
 
 section Identity
@@ -279,6 +318,9 @@ end Identity
 #print axioms isHVZK_iff_isStatHVZK_zero
 #print axioms isStatHVZK.mono_relation
 #print axioms isStatHVZK.mono_error
+#print axioms statisticalHVZK.mono_relation_error
+#print axioms isStatHVZK.mono_relation_error
+#print axioms isHVZK.isStatHVZK_mono_relation_error
 #print axioms id_perfectHVZK
 #print axioms id_statisticalHVZK
 #print axioms id_isHVZK
