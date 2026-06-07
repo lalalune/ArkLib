@@ -612,26 +612,6 @@ lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
       rw [toOutCodewordsCount_mul_ϑ_eq_i_succ ℓ ϑ i hCR]
     rw [h_idx_eq]
 
-omit [CharP L 2] [SampleableType L] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 [NeZero 𝓡] in
-/-- The first oracle is preserved when snocing a new oracle.
-
-Since `getFirstOracle` extracts index 0, and `snoc_oracle` at index 0 always falls into
-the "old oracle" branch (0 < toOutCodewordsCount), the first oracle is unchanged.
--/
-lemma getFirstOracle_snoc_oracle
-    (i : Fin ℓ) {destIdx : Fin r} (h_destIdx : destIdx = ⟨i.val + 1, by omega⟩)
-    (oStmtIn : ∀ j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc),
-      OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)
-    (newOracleFn : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (domainIdx := destIdx)) :
-    getFirstOracle 𝔽q β (snoc_oracle 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      h_destIdx oStmtIn newOracleFn) = getFirstOracle 𝔽q β oStmtIn := by
-  unfold getFirstOracle snoc_oracle
-  have h_lt : 0 < toOutCodewordsCount ℓ ϑ i.castSucc := by
-    have h := (instNeZeroNatToOutCodewordsCount ℓ ϑ i.castSucc).out
-    omega
-  simp only [Fin.mk_zero', h_lt, ↓reduceDIte]
-  rfl
-
 /-- Oracle folding consistency is preserved when adding a new oracle in a commit step.
 
 This lemma shows that if `oStmtIn` satisfies `oracleFoldingConsistencyProp` at round `i.castSucc`,
