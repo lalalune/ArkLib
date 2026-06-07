@@ -69,4 +69,57 @@ theorem exists_joint_codewords_of_two_lines
     ring
   exact ⟨hv₀i, hv₁i⟩
 
+section JointAgreement
+
+variable [Fintype ι]
+
+/-- **Two-line radius-`2δ` correlated agreement (complete proof chain).**  If two distinct scalars
+`z ≠ z'` each make the affine-line word agree with a codeword on a set of size `≥ (1-δ)·n`, then the
+pair `(u₀, u₁)` is jointly `2δ`-close to the linear code `C`: there are codewords matching `u₀` and
+`u₁` on the common set, of size `≥ (1-2δ)·n`.  Combines the linear extraction with the
+inclusion–exclusion overlap bound. -/
+theorem jointAgreement_two_delta_of_two_lines
+    (C : Submodule F (ι → F)) (δ : ℝ≥0) {u₀ u₁ : ι → F} {z z' : F} (hzz' : z ≠ z')
+    {w w' : ι → F} (hw : w ∈ C) (hw' : w' ∈ C) {S S' : Finset ι}
+    (hwS : ∀ i ∈ S, w i = u₀ i + z • u₁ i)
+    (hw'S : ∀ i ∈ S', w' i = u₀ i + z' • u₁ i)
+    (hScard : ((1 : ℝ) - δ) * Fintype.card ι ≤ (S.card : ℝ))
+    (hS'card : ((1 : ℝ) - δ) * Fintype.card ι ≤ (S'.card : ℝ)) :
+    jointAgreement (F := F) (C := (C : Set (ι → F))) (δ := 2 * δ) (W := ![u₀, u₁]) := by
+  classical
+  obtain ⟨v₀, hv₀C, v₁, hv₁C, hagree⟩ :=
+    exists_joint_codewords_of_two_lines C hzz' hw hw' hwS hw'S
+  refine ⟨S ∩ S', ?_, ![v₀, v₁], ?_⟩
+  · -- |S ∩ S'| ≥ (1 - 2δ)·n  from inclusion–exclusion and |S∪S'| ≤ n
+    have hie : (S ∩ S').card + (S ∪ S').card = S.card + S'.card :=
+      Finset.card_inter_add_card_union S S'
+    have hunion : (S ∪ S').card ≤ Fintype.card ι := Finset.card_le_univ _
+    have hieR : ((S ∩ S').card : ℝ) + (S ∪ S').card = S.card + S'.card := by exact_mod_cast hie
+    have hunionR : ((S ∪ S').card : ℝ) ≤ Fintype.card ι := by exact_mod_cast hunion
+    -- real lower bound `(1 - 2δ)·n ≤ |S ∩ S'|`
+    have hreal : ((1 : ℝ) - 2 * δ) * Fintype.card ι ≤ ((S ∩ S').card : ℝ) := by nlinarith
+    -- cast the `jointAgreement` NNReal goal `(1 - 2δ)·n ≤ |S ∩ S'|` through ℝ
+    have hgoal : ((1 - 2 * δ : ℝ≥0) : ℝ) * Fintype.card ι ≤ ((S ∩ S').card : ℝ) := by
+      rcases le_or_lt (2 * δ) 1 with hle | hlt
+      · have : ((1 - 2 * δ : ℝ≥0) : ℝ) = 1 - 2 * (δ : ℝ) := by
+          rw [NNReal.coe_sub hle]; push_cast; ring
+        rw [this]; exact hreal
+      · have : ((1 - 2 * δ : ℝ≥0) : ℝ) = 0 := by
+          rw [NNReal.coe_eq_zero]; exact tsub_eq_zero_of_le hlt.le
+        rw [this]; positivity
+    have : ((1 - 2 * δ : ℝ≥0) * Fintype.card ι : ℝ≥0) ≤ ((S ∩ S').card : ℝ≥0) := by
+      rw [← NNReal.coe_le_coe]; push_cast; exact hgoal
+    exact_mod_cast this
+  · -- the two codewords match `u₀`, `u₁` on `S ∩ S'`
+    intro k
+    fin_cases k
+    · refine ⟨hv₀C, ?_⟩
+      intro j hj
+      simpa using (hagree j hj).1
+    · refine ⟨hv₁C, ?_⟩
+      intro j hj
+      simpa using (hagree j hj).2
+
+end JointAgreement
+
 end ProximityGap
