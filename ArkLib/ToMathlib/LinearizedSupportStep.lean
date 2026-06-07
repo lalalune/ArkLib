@@ -62,8 +62,45 @@ theorem support_pow_card (f : K[X]) :
     support_map_of_injective _ (iterateFrobenius K (ringChar F) (n : ℕ)).injective,
     support_expand_eq hpos f]
 
+/-- A polynomial over `K` is **q-power-supported** (`q = |F|`) when every exponent in its support
+is a power of `q` — the q-linearized-polynomial support condition.  `∑ a_i X^{q^i}`. -/
+def IsQPowSupported (f : K[X]) : Prop := ∀ m ∈ f.support, ∃ i : ℕ, m = Fintype.card F ^ i
+
+/-- Base case: `X` is q-power-supported (support `{1} = {q^0}`). -/
+theorem isQPowSupported_X : IsQPowSupported (F := F) (X : K[X]) := by
+  intro m hm
+  rw [mem_support_iff, coeff_X] at hm
+  split_ifs at hm with h
+  · exact ⟨0, by rw [pow_zero]; omega⟩
+  · exact absurd rfl hm
+
+/-- **Linearized recursion preserves q-power support.** If `P` is q-power-supported then so is
+`P^q - C b · P` for any `b`: `support(P^q) = q·support P` lands on the next q-power layer
+(`support_pow_card`), and `support(C b · P) ⊆ support P`.  This is the inductive step of the
+q-linearized-support theorem; with the recursion identity it gives that subspace polynomials are
+q-power-supported. -/
+theorem isQPowSupported_kernel {P : K[X]} (b : K) (hP : IsQPowSupported (F := F) P) :
+    IsQPowSupported (F := F) (P ^ Fintype.card F - C b * P) := by
+  intro m hm
+  have hm' : (P ^ Fintype.card F).coeff m ≠ 0 ∨ (C b * P).coeff m ≠ 0 := by
+    rw [mem_support_iff, coeff_sub] at hm
+    by_contra hcon
+    push_neg at hcon
+    exact hm (by rw [hcon.1, hcon.2, sub_zero])
+  rcases hm' with h | h
+  · have hmem : m ∈ (P ^ Fintype.card F).support := mem_support_iff.mpr h
+    rw [support_pow_card] at hmem
+    obtain ⟨k, hk, rfl⟩ := Finset.mem_image.mp hmem
+    obtain ⟨i, rfl⟩ := hP k hk
+    exact ⟨i + 1, (pow_succ _ _).symm⟩
+  · refine hP m (mem_support_iff.mpr ?_)
+    rw [coeff_C_mul] at h
+    exact fun hc => h (by rw [hc, mul_zero])
+
 end ArkLib.LinearizedKernel
 
 -- Axiom audit.
 #print axioms ArkLib.LinearizedKernel.support_expand_eq
 #print axioms ArkLib.LinearizedKernel.support_pow_card
+#print axioms ArkLib.LinearizedKernel.isQPowSupported_X
+#print axioms ArkLib.LinearizedKernel.isQPowSupported_kernel
