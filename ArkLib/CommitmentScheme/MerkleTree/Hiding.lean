@@ -267,6 +267,35 @@ theorem openTranscriptPayloads_openTranscript_mem_iff {s : Skeleton} (hashFn : �
   rw [openTranscriptPayloads_openTranscript_eq]
   simp
 
+/-- Every requested index contributes its honest salt and leaf to the honest payload projection. -/
+theorem openTranscriptPayloads_openTranscript_mem {s : Skeleton} (hashFn : α → α → α)
+    (salts leaves : LeafData α s) (idxs : List (SkeletonLeafIndex s))
+    (i : SkeletonLeafIndex s) (hi : i ∈ idxs) :
+    (i, salts.get i, leaves.get i) ∈
+      openTranscriptPayloads (openTranscript hashFn salts leaves idxs) := by
+  rw [openTranscriptPayloads_openTranscript_mem_iff]
+  exact ⟨i, hi, rfl⟩
+
+/-- Universal quantification over honest payloads is the same as quantification over requested
+indices with their honest salt and leaf values. -/
+theorem openTranscriptPayloads_openTranscript_forall {s : Skeleton} (hashFn : α → α → α)
+    (salts leaves : LeafData α s) (idxs : List (SkeletonLeafIndex s))
+    (P : SkeletonLeafIndex s × α × α → Prop) :
+    (∀ payload ∈ openTranscriptPayloads (openTranscript hashFn salts leaves idxs), P payload) ↔
+      ∀ i ∈ idxs, P (i, salts.get i, leaves.get i) := by
+  rw [openTranscriptPayloads_openTranscript_eq]
+  simp
+
+/-- Existential quantification over honest payloads is the same as existence of a requested index
+with its honest salt and leaf values. -/
+theorem openTranscriptPayloads_openTranscript_exists {s : Skeleton} (hashFn : α → α → α)
+    (salts leaves : LeafData α s) (idxs : List (SkeletonLeafIndex s))
+    (P : SkeletonLeafIndex s × α × α → Prop) :
+    (∃ payload ∈ openTranscriptPayloads (openTranscript hashFn salts leaves idxs), P payload) ↔
+      ∃ i ∈ idxs, P (i, salts.get i, leaves.get i) := by
+  rw [openTranscriptPayloads_openTranscript_eq]
+  simp
+
 /-- Duplicate-free requested indices give duplicate-free honest transcript payloads. -/
 theorem openTranscriptPayloads_openTranscript_nodup {s : Skeleton} (hashFn : α → α → α)
     (salts leaves : LeafData α s) (idxs : List (SkeletonLeafIndex s))
@@ -616,6 +645,9 @@ end InductiveMerkleTree
 #print axioms InductiveMerkleTree.openTranscriptPayloads_openTranscript_indices
 #print axioms InductiveMerkleTree.openTranscriptPayloads_openTranscript_getElem
 #print axioms InductiveMerkleTree.openTranscriptPayloads_openTranscript_mem_iff
+#print axioms InductiveMerkleTree.openTranscriptPayloads_openTranscript_mem
+#print axioms InductiveMerkleTree.openTranscriptPayloads_openTranscript_forall
+#print axioms InductiveMerkleTree.openTranscriptPayloads_openTranscript_exists
 #print axioms InductiveMerkleTree.openTranscriptPayloads_openTranscript_nodup
 #print axioms InductiveMerkleTree.openTranscript_entries_payload_eq_of_agree
 #print axioms InductiveMerkleTree.openTranscriptPayloads_eq_of_agree
