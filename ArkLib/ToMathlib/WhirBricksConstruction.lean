@@ -78,12 +78,16 @@ abbrev semanticChallengeIdx (M : ℕ) := Fin (M + 1) × RoundChallengeKind
 /-- Construction 5.1 contributes exactly `2 * M + 2` semantic verifier challenges. -/
 theorem semanticChallengeIdx_card (M : ℕ) :
     Fintype.card (semanticChallengeIdx M) = 2 * M + 2 := by
-  simp [semanticChallengeIdx, RoundChallengeKind, Nat.mul_add, Nat.add_assoc]
+  have hKind : Fintype.card RoundChallengeKind = 2 := by decide
+  simp [semanticChallengeIdx, hKind]
+  omega
 
 /-- The semantic WHIR skeleton has the same number of prover-message slots as verifier challenges. -/
 theorem semanticMessageIdx_card (M : ℕ) :
     Fintype.card (semanticMessageIdx M) = 2 * M + 2 := by
-  simp [semanticMessageIdx, RoundMessageKind, Nat.mul_add, Nat.add_assoc]
+  have hKind : Fintype.card RoundMessageKind = 2 := by decide
+  simp [semanticMessageIdx, hKind]
+  omega
 
 /-! ### The WHIR protocol-spec direction vector
 
@@ -108,6 +112,30 @@ theorem whirVectorSpec_card_challengeIdx (M : ℕ) :
   change Fintype.card {i : Fin (2 * M + 2) // Direction.V_to_P = Direction.V_to_P} =
     2 * M + 2
   simp
+
+/-- Challenge slots in the all-challenge WHIR scratch `VectorSpec` are exactly
+`Fin (2 * M + 2)`. -/
+def whirVectorSpec_challengeIdxEquivFin (M : ℕ) :
+    (whirVectorSpec M).ChallengeIdx ≃ Fin (2 * M + 2) where
+  toFun i := i.1
+  invFun i := ⟨i, rfl⟩
+  left_inv := by
+    intro i
+    cases i
+    rfl
+  right_inv := by
+    intro i
+    rfl
+
+@[simp] theorem whirVectorSpec_challengeIdxEquivFin_apply (M : ℕ)
+    (i : (whirVectorSpec M).ChallengeIdx) :
+    whirVectorSpec_challengeIdxEquivFin M i = i.1 :=
+  rfl
+
+@[simp] theorem whirVectorSpec_challengeIdxEquivFin_symm_apply (M : ℕ)
+    (i : Fin (2 * M + 2)) :
+    (whirVectorSpec_challengeIdxEquivFin M).symm i = ⟨i, rfl⟩ :=
+  rfl
 
 omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
 /-- There are **no** prover messages in `whirVectorSpec`: every slot is a challenge. -/
@@ -315,6 +343,9 @@ theorem whir_rbr_soundness_of_whirVectorSpec_secure_gap
 end RBRSoundnessAssembly
 
 #print axioms whirVectorSpec_card_challengeIdx
+#print axioms whirVectorSpec_challengeIdxEquivFin
+#print axioms whirVectorSpec_challengeIdxEquivFin_apply
+#print axioms whirVectorSpec_challengeIdxEquivFin_symm_apply
 #print axioms whirVectorSpec_messageIdx_isEmpty
 #print axioms whirVectorSpec_card_messageIdx
 #print axioms whirVectorSpec_toProtocolSpec_card_challengeIdx
