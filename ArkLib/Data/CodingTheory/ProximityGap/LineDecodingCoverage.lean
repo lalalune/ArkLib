@@ -286,6 +286,33 @@ theorem MCAForallDoubleCover_iff_badScalarDoubleCover
   · exact MCAForallDoubleCover.to_badScalarDoubleCover C δ
   · exact MCAForallDoubleCover.of_badScalarDoubleCover C δ
 
+/-- A global repaired double-cover frontier rules out every bad scalar event directly. -/
+theorem MCAForallDoubleCover.not_mcaEvent
+    (C : Set (ι → A)) (δ : ℝ≥0)
+    (hcov : MCAForallDoubleCover (F := F) (A := A) C δ) :
+    ∀ (u : WordStack A (Fin 2) ι) (γ : F), ¬ mcaEvent C δ (u 0) (u 1) γ := by
+  intro u γ
+  exact (MCABadScalarDoubleCover_iff_not_mcaEvent C δ (u 0) (u 1) γ).mp
+    ((MCAForallDoubleCover.to_badScalarDoubleCover C δ hcov) u γ)
+
+/-- Repack a direct no-bad-event frontier as the global repaired double-cover surface. -/
+theorem MCAForallDoubleCover.of_forall_not_mcaEvent
+    (C : Set (ι → A)) (δ : ℝ≥0)
+    (hno : ∀ (u : WordStack A (Fin 2) ι) (γ : F), ¬ mcaEvent C δ (u 0) (u 1) γ) :
+    MCAForallDoubleCover (F := F) (A := A) C δ :=
+  MCAForallDoubleCover.of_badScalarDoubleCover C δ fun u γ =>
+    (MCABadScalarDoubleCover_iff_not_mcaEvent C δ (u 0) (u 1) γ).mpr (hno u γ)
+
+/-- The global repaired double-cover surface is exact: it is equivalent to ruling out every
+bad scalar event. -/
+theorem MCAForallDoubleCover_iff_forall_not_mcaEvent
+    (C : Set (ι → A)) (δ : ℝ≥0) :
+    MCAForallDoubleCover (F := F) (A := A) C δ ↔
+      ∀ (u : WordStack A (Fin 2) ι) (γ : F), ¬ mcaEvent C δ (u 0) (u 1) γ := by
+  constructor
+  · exact MCAForallDoubleCover.not_mcaEvent C δ
+  · exact MCAForallDoubleCover.of_forall_not_mcaEvent C δ
+
 open Classical in
 /-- **Repaired Theorem 4.21, per-stack form.** If for the stack `(u₀, u₁)` every bad scalar's
 witness set is doubly covered by a (scalar-dependent) line-decoder pair in `C`, then no bad
@@ -365,6 +392,9 @@ theorem epsMCA_eq_zero_of_badScalarDoubleCover (C : Set (ι → A)) (δ : ℝ≥
 #print axioms MCABadScalarDoubleCover_iff_not_mcaEvent
 #print axioms MCAForallDoubleCover
 #print axioms MCAForallDoubleCover_iff_badScalarDoubleCover
+#print axioms MCAForallDoubleCover.not_mcaEvent
+#print axioms MCAForallDoubleCover.of_forall_not_mcaEvent
+#print axioms MCAForallDoubleCover_iff_forall_not_mcaEvent
 #print axioms mcaBadCount_eq_zero_of_badScalarDoubleCover
 #print axioms epsMCA_eq_zero_of_badScalarDoubleCover
 
