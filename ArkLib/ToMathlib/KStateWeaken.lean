@@ -89,15 +89,16 @@ theorem card_filter_eval_eq_le_natDegree [DecidableEq F] {p q : F[X]} (hpq : p �
     _ ≤ Multiset.card (p - q).roots := (p - q).roots.toFinset_card_le
     _ ≤ (p - q).natDegree := Polynomial.card_roots' (p - q)
 
-/-- **Schwartz–Zippel probability bound (general degree).**
-For any common degree bound `D` (`natDegree p ≤ D`, `natDegree q ≤ D`) and a uniform challenge `r`,
-the weakened-KState bad event holds with probability at most `D / |F|`. -/
-theorem prob_badPolyAgreement_le {p q : F[X]} {D : ℕ}
-    (hp : p.natDegree ≤ D) (hq : q.natDegree ≤ D) :
+/-- **Schwartz-Zippel probability bound from the degree of the difference.**
+This is the most direct form for weakened-KState consumers: once the verifier-run plumbing has
+identified a nonzero difference polynomial `p - q` and bounded its degree by `D`, the bad
+agreement event has probability at most `D / |F|`. -/
+theorem prob_badPolyAgreement_le_of_sub_natDegree {p q : F[X]} {D : ℕ}
+    (hdeg : (p - q).natDegree ≤ D) :
     Pr_{ let r ←$ᵖ F }[ badPolyAgreement r p q ] ≤ (D : ℝ≥0) / (Fintype.card F : ℝ≥0) := by
   classical
   by_cases hpq : p = q
-  · -- Equal polynomials: the event `p ≠ q ∧ …` is unsatisfiable, so the probability is `0`.
+  · -- Equal polynomials: the event `p ≠ q ∧ ...` is unsatisfiable.
     have hzero : Pr_{ let r ←$ᵖ F }[ badPolyAgreement r p q ] = 0 := by
       rw [prob_uniform_eq_card_filter_div_card]
       have hempty : (Finset.univ.filter (fun r : F => badPolyAgreement r p q)) = ∅ := by
@@ -106,11 +107,10 @@ theorem prob_badPolyAgreement_le {p q : F[X]} {D : ℕ}
         exact fun hbad => hbad.1 hpq
       rw [hempty, Finset.card_empty]
       simp
-    rw [hzero]; exact zero_le _
-  · -- Distinct polynomials: bound the agreement-set cardinality by the degree budget `D`.
+    rw [hzero]
+    exact zero_le _
+  · -- Distinct polynomials: root-count the agreement set and divide by the field size.
     rw [prob_uniform_eq_card_filter_div_card]
-    -- Reduce the `badPolyAgreement` filter to the bare agreement filter (the `p ≠ q` conjunct is
-    -- globally true since `p ≠ q`).
     have hfilter :
         (Finset.univ.filter (fun r : F => badPolyAgreement r p q))
           = Finset.univ.filter (fun r : F => p.eval r = q.eval r) := by
@@ -119,14 +119,20 @@ theorem prob_badPolyAgreement_le {p q : F[X]} {D : ℕ}
       simp only [badPolyAgreement, and_iff_right_iff_imp]
       exact fun _ => hpq
     rw [hfilter]
-    -- Now apply root counting and the degree budget, then divide.
     have hcard := card_filter_eval_eq_le_natDegree (F := F) hpq
-    have hdeg : (p - q).natDegree ≤ D :=
-      le_trans (Polynomial.natDegree_sub_le p q) (max_le hp hq)
     have hnum :
         ((Finset.univ.filter (fun r : F => p.eval r = q.eval r)).card : ℝ≥0) ≤ (D : ℝ≥0) := by
       exact_mod_cast le_trans hcard hdeg
     gcongr
+
+/-- **Schwartz–Zippel probability bound (general degree).**
+For any common degree bound `D` (`natDegree p ≤ D`, `natDegree q ≤ D`) and a uniform challenge `r`,
+the weakened-KState bad event holds with probability at most `D / |F|`. -/
+theorem prob_badPolyAgreement_le {p q : F[X]} {D : ℕ}
+    (hp : p.natDegree ≤ D) (hq : q.natDegree ≤ D) :
+    Pr_{ let r ←$ᵖ F }[ badPolyAgreement r p q ] ≤ (D : ℝ≥0) / (Fintype.card F : ℝ≥0) := by
+  exact prob_badPolyAgreement_le_of_sub_natDegree
+    (le_trans (Polynomial.natDegree_sub_le p q) (max_le hp hq))
 
 /-- **Degree-2 specialization (ring-switching round polynomial).**
 The ring-switching / Binius round polynomial is degree `≤ 2` (carrier `↥F⦃≤ 2⦄[X]`), giving the
