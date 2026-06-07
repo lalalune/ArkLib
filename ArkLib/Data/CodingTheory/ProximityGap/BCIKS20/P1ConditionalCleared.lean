@@ -399,6 +399,97 @@ theorem alphaWeight_of_normalized_divWeight_cases_of_restrictedMatch
   (alphaWeight_iff_normalized_divWeight_cases_of_restrictedMatch
     H x₀ R hHyp hH D hmatch).2 ⟨h0, hsucc⟩
 
+/-- Full P2 vanishing routes normalized divisibility base/successor targets to the structured
+`βHensel` weight invariant. -/
+theorem βHenselStructuredWeightInvariant_unlocked_of_normalized_divWeight_cases_of_fullVanishes
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hvan : FaaDiBrunoFullSumVanishes H x₀ R hHyp)
+    (h0 : ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1)
+    (hsucc : ∀ t : ℕ, ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp (t + 1)
+        = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1)
+    (k : ℕ) :
+    βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k :=
+  AlphaWeight.βHenselStructuredWeightInvariant_of_alphaWeight_succLift'
+    H x₀ R hHyp hH hDH hDRx0 hdR2
+    (fun t => (P2_closed_of_fullVanishes H x₀ R hHyp hvan).2 (t + 1))
+    (alphaWeight_of_normalized_divWeight_cases_of_fullVanishes
+      H x₀ R hHyp hH D hvan h0 hsucc)
+    k
+
+/-- Restricted P2 matching routes normalized divisibility base/successor targets to the structured
+`βHensel` weight invariant. -/
+theorem βHenselStructuredWeightInvariant_unlocked_of_normalized_divWeight_cases_of_restrictedMatch
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp)
+    (h0 : ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1)
+    (hsucc : ∀ t : ℕ, ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp (t + 1)
+        = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1)
+    (k : ℕ) :
+    βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k :=
+  AlphaWeight.βHenselStructuredWeightInvariant_of_alphaWeight_succLift'
+    H x₀ R hHyp hH hDH hDRx0 hdR2
+    (fun t => (P2_closed_of_restrictedMatch H x₀ R hHyp hmatch).2 (t + 1))
+    (alphaWeight_of_normalized_divWeight_cases_of_restrictedMatch
+      H x₀ R hHyp hH D hmatch h0 hsucc)
+    k
+
+/-- All-prefix structured invariants from full P2 vanishing and normalized divisibility cases. -/
+theorem βHenselStructuredWeightInvariant_all_unlocked_of_normalized_divWeight_cases_of_fullVanishes
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hvan : FaaDiBrunoFullSumVanishes H x₀ R hHyp)
+    (h0 : ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1)
+    (hsucc : ∀ t : ℕ, ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp (t + 1)
+        = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1) :
+    ∀ k, βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k :=
+  fun k =>
+    βHenselStructuredWeightInvariant_unlocked_of_normalized_divWeight_cases_of_fullVanishes
+      H x₀ R hHyp hH hDH hDRx0 hdR2 hvan h0 hsucc k
+
+/-- All-prefix structured invariants from restricted P2 matching and normalized divisibility
+cases. -/
+theorem βHenselStructuredWeightInvariant_all_unlocked_of_normalized_divWeight_cases_of_restrictedMatch
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp)
+    (h0 : ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1)
+    (hsucc : ∀ t : ℕ, ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp (t + 1)
+        = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1) :
+    ∀ k, βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k :=
+  fun k =>
+    βHenselStructuredWeightInvariant_unlocked_of_normalized_divWeight_cases_of_restrictedMatch
+      H x₀ R hHyp hH hDH hDRx0 hdR2 hmatch h0 hsucc k
+
 /-- Full P2 vanishing routes normalized divisibility base/successor targets directly to the P1
 `βHensel` weight-bound endpoint. -/
 theorem βHensel_weight_bound_unlocked_of_normalized_divWeight_cases_of_fullVanishes
@@ -882,6 +973,10 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.alphaWeight_of_normalized_divWeight_cases_of_fullVanishes
 #print axioms BCIKS20.HenselNumerator.alphaWeight_iff_normalized_divWeight_cases_of_restrictedMatch
 #print axioms BCIKS20.HenselNumerator.alphaWeight_of_normalized_divWeight_cases_of_restrictedMatch
+#print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_unlocked_of_normalized_divWeight_cases_of_fullVanishes
+#print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_unlocked_of_normalized_divWeight_cases_of_restrictedMatch
+#print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_all_unlocked_of_normalized_divWeight_cases_of_fullVanishes
+#print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_all_unlocked_of_normalized_divWeight_cases_of_restrictedMatch
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_unlocked_of_normalized_divWeight_cases_of_fullVanishes
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_unlocked_of_normalized_divWeight_cases_of_restrictedMatch
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_unlocked_of_normalized_divWeight_cases_of_fullVanishes
