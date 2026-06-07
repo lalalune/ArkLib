@@ -76,6 +76,29 @@ theorem epsMCAgs_le_of_massBound (C : Set (ι → F)) (δ : ℝ≥0)
   unfold epsMCAgs
   exact iSup_le h
 
+/-- The supremum-form GS error bound supplies the uniform per-stack mass-bound hypothesis. -/
+theorem epsMCAgsMassBound_of_epsMCAgs_le (C : Set (ι → F)) (δ : ℝ≥0)
+    (L : WordStack F (Fin 2) ι → Finset (ι → F)) {bound : ENNReal}
+    (h : epsMCAgs (F := F) C δ L ≤ bound) :
+    epsMCAgsMassBound (F := F) C δ L bound := by
+  intro u
+  unfold epsMCAgs at h
+  exact le_trans
+    (le_iSup (f := fun u : WordStack F (Fin 2) ι =>
+      Pr_{let γ ← $ᵖ F}[mcaEventGSrow (L u) C δ (u 0) (u 1) γ]) u) h
+
+/-- Uniform per-stack GS-row mass bounds are exactly the supremum-form `epsMCAgs` bound. -/
+theorem epsMCAgsMassBound_iff_epsMCAgs_le (C : Set (ι → F)) (δ : ℝ≥0)
+    (L : WordStack F (Fin 2) ι → Finset (ι → F)) {bound : ENNReal} :
+    epsMCAgsMassBound (F := F) C δ L bound ↔ epsMCAgs (F := F) C δ L ≤ bound :=
+  ⟨epsMCAgs_le_of_massBound C δ L, epsMCAgsMassBound_of_epsMCAgs_le C δ L⟩
+
+/-- Per-stack GS-row mass bounds are monotone in the target bound. -/
+theorem epsMCAgsMassBound.mono {C : Set (ι → F)} {δ : ℝ≥0}
+    {L : WordStack F (Fin 2) ι → Finset (ι → F)} {bound₁ bound₂ : ENNReal}
+    (h : epsMCAgsMassBound (F := F) C δ L bound₁) (hle : bound₁ ≤ bound₂) :
+    epsMCAgsMassBound (F := F) C δ L bound₂ := fun u => le_trans (h u) hle
+
 /-- **Reduction of the GS-exposed prize conjecture to the named mass bound (Issue #52 ask 2).**
 Given constants `c₁, c₂, c₃` for which the per-stack GS-row mass bound holds at the prize RHS,
 the conjecture `epsMCAgs_prizeBound_conjecture` follows. The open beyond-UDR content is now the
@@ -94,6 +117,24 @@ theorem epsMCAgs_prizeBound_of_massBound
     epsMCAgs_prizeBound_conjecture domain j m η δ hη L hδ := by
   refine ⟨c₁, c₂, c₃, ?_⟩
   exact epsMCAgs_le_of_massBound _ _ _ hMass
+
+/-- A GS-exposed prize-conjecture hypothesis unpacks to constants and a per-stack mass bound at
+the prize RHS. The conjecture remains an explicit input; this only converts its supremum-shaped
+conclusion into the lower-witness API's uniform mass-bound shape. -/
+theorem exists_epsMCAgsMassBound_of_prizeBound_conjecture
+    (domain : ι ↪ F) (j : Fin 4) (m : ℕ) (η δ : ℝ≥0) (hη : 0 < η)
+    (L : WordStack F (Fin 2) ι → Finset (ι → F))
+    (hδ : (δ : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η : ℝ))
+    (hPrize : epsMCAgs_prizeBound_conjecture domain j m η δ hη L hδ) :
+    ∃ c₁ c₂ c₃ : ℝ,
+      epsMCAgsMassBound (F := F)
+        ((ReedSolomon.code (domain := domain)
+          ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)))
+        δ L
+        (ENNReal.ofReal
+          (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j) η c₁ c₂ c₃)) := by
+  rcases hPrize with ⟨c₁, c₂, c₃, hBound⟩
+  exact ⟨c₁, c₂, c₃, epsMCAgsMassBound_of_epsMCAgs_le _ _ _ hBound⟩
 
 /-! ## Step 2: the Step-3 count, wired into an `epsMCAgs` bound
 
@@ -293,6 +334,11 @@ def MCALowerWitness.ofGSPivotFrontier (C : LinearCode ι F) (δ ε_star : ℝ≥
 #print axioms FaithfulGSFamily
 #print axioms GSRowFaithfulnessTarget
 #print axioms FaithfulGSFamily.of_rowFaithfulnessTarget
+#print axioms epsMCAgsMassBound_of_epsMCAgs_le
+#print axioms epsMCAgsMassBound_iff_epsMCAgs_le
+#print axioms epsMCAgsMassBound.mono
+set_option linter.style.longLine false in
+#print axioms exists_epsMCAgsMassBound_of_prizeBound_conjecture
 #print axioms epsMCA_le_of_faithful_mass
 #print axioms MCALowerWitness.ofGSMassBound
 #print axioms GSMassLowerWitnessFrontier
