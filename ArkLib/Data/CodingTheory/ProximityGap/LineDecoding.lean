@@ -74,7 +74,7 @@ def LineDecodable (C : Set (ι → A)) (δ : ℝ≥0) (a b : ℝ≥0) : Prop :=
       (b : ENNReal) / (Fintype.card F : ENNReal)
           ≤ Pr_{let γ ← $ᵖ F}[U γ = u₁ + γ • u₂]
 
-/-- **ABF26 Theorem 4.21 [GG25 Thm 3.5].** If `C` is `(δ, a, n+1)`-line-decodable, then its
+/- **ABF26 Theorem 4.21 [GG25 Thm 3.5].** If `C` is `(δ, a, n+1)`-line-decodable, then its
 mutual correlated agreement error is bounded by `a / |F|`:
 
   `LineDecodable (F := F) C δ a (n+1) → ε_mca(C, δ) ≤ a / |F|`

@@ -6,7 +6,7 @@ Authors: Alexander Hicks
 
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBounds
-import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingCoverage
+
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.CodingTheory.ListDecodability
 
