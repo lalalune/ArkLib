@@ -311,6 +311,18 @@ class IsSound (langIn : Set StmtIn) (langOut : Set StmtOut)
   soundnessError : ℝ≥0
   is_sound : soundness init impl langIn langOut verifier soundnessError
 
+/-- Verifier soundness is monotone in the allowed soundness error. -/
+theorem soundness.mono_error
+    {langIn : Set StmtIn} {langOut : Set StmtOut}
+    {verifier : Verifier oSpec StmtIn StmtOut pSpec}
+    {soundnessError₁ soundnessError₂ : ℝ≥0}
+    (hSound : soundness init impl langIn langOut verifier soundnessError₁)
+    (hle : soundnessError₁ ≤ soundnessError₂) :
+    soundness init impl langIn langOut verifier soundnessError₂ := by
+  intro WitIn WitOut witIn prover stmtIn hstmtIn
+  exact le_trans (hSound WitIn WitOut witIn prover stmtIn hstmtIn)
+    (ENNReal.coe_le_coe.mpr hle)
+
 -- How would one define a rewinding extractor? It should have oracle access to the prover's
 -- functions (receive challenges and send messages), and be able to observe & simulate the prover's
 -- oracle queries
@@ -347,6 +359,18 @@ class IsKnowledgeSound (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut ×
     (verifier : Verifier oSpec StmtIn StmtOut pSpec) where
   knowledgeError : ℝ≥0
   is_knowledge_sound : knowledgeSoundness init impl relIn relOut verifier knowledgeError
+
+/-- Straightline knowledge soundness is monotone in the allowed knowledge error. -/
+theorem knowledgeSoundness.mono_error
+    {relIn : Set (StmtIn × WitIn)} {relOut : Set (StmtOut × WitOut)}
+    {verifier : Verifier oSpec StmtIn StmtOut pSpec}
+    {knowledgeError₁ knowledgeError₂ : ℝ≥0}
+    (hSound : knowledgeSoundness init impl relIn relOut verifier knowledgeError₁)
+    (hle : knowledgeError₁ ≤ knowledgeError₂) :
+    knowledgeSoundness init impl relIn relOut verifier knowledgeError₂ := by
+  obtain ⟨extractor, hSound⟩ := hSound
+  exact ⟨extractor, fun stmtIn witIn prover =>
+    le_trans (hSound stmtIn witIn prover) (ENNReal.coe_le_coe.mpr hle)⟩
 
 /-- An extractor is **monotone** if its success probability on a given query log is the same as
   the success probability on any extension of that query log. -/
