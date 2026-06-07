@@ -6,7 +6,7 @@ Authors: ArkLib Contributors
 
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.NNReal.Basic
-import ArkLib.Data.CodingTheory.Basic
+import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.CodingTheory.ListDecodability
 
 /-!
