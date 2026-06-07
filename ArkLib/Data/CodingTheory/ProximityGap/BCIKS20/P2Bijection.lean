@@ -33,7 +33,24 @@ theorem prod_map_eq_zero_pow_mul_positivePart {M : Type*} [CommMonoid M]
   conv_lhs => rw [← replicate_zero_add_positivePart m]
   rw [Multiset.map_add, Multiset.prod_add, Multiset.map_replicate, Multiset.prod_replicate]
 
+/-- **Per-term split.**  A single weighted value-multiset term `countPerms m • ∏ b` rewrites, via
+the zero/positive split, into the binomial-placement factor times the positive-part partition term:
+
+  `countPerms m • (∏_{j∈m} b j)
+     = (C(z+|λ|, z) · countPerms λ) • ((b 0)^z · ∏_{j∈λ} b j)`,  with `λ = positivePart m`, `z = zeroCount m`.
+
+Combines `countPerms_eq_choose_zeroCount_mul_positivePart` (scalar) with
+`prod_map_eq_zero_pow_mul_positivePart` (product). -/
+theorem countPerms_smul_prod_split {M : Type*} [CommSemiring M]
+    (m : Multiset ℕ) (b : ℕ → M) :
+    (m.countPerms) • ((m.map b).prod)
+      = ((zeroCount m + (positivePart m).card).choose (zeroCount m) * (positivePart m).countPerms)
+          • ((b 0) ^ (zeroCount m) * ((positivePart m).map b).prod) := by
+  rw [countPerms_eq_choose_zeroCount_mul_positivePart m,
+    prod_map_eq_zero_pow_mul_positivePart m b]
+
 end BCIKS20.HenselNumerator
 
 -- Axiom audit.
 #print axioms BCIKS20.HenselNumerator.prod_map_eq_zero_pow_mul_positivePart
+#print axioms BCIKS20.HenselNumerator.countPerms_smul_prod_split

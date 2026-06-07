@@ -620,4 +620,42 @@ noncomputable def Claim57Residuals.ofDescended (δ : ℚ) (x₀ : F)
     intro R hR
     exact pg_RsetDescended_hfactor (k := k) h_gs R (hcoincide.symm ▸ hR)
 
+/-- Claim 5.7 front door from the descended residual bundle.
+
+This is the incremental-adoption form of `exists_factors_with_large_common_root_set`: callers may
+work with the hfactor-free `Claim57ResidualsDescended` bundle, then provide only the explicit
+coincidence hypothesis needed to satisfy legacy consumers over `pg_Rset`. -/
+lemma exists_factors_with_large_common_root_set_of_descended (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hres : Claim57ResidualsDescended (F := F) (m := m) (n := n) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) k δ x₀ h_gs)
+    (hcoincide : pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs
+      = pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs) :
+    ∃ R H, R ∈ (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose ∧
+      Irreducible H ∧ 0 < H.natDegree ∧ H ∣ (Bivariate.evalX (Polynomial.C x₀) R) ∧
+      (Bivariate.evalX (Polynomial.C x₀) R).Separable ∧
+      #(@Set.toFinset _ { z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ |
+          letI Pz := Pz z.2
+          (Trivariate.eval_on_Z R z.1).eval Pz = 0 ∧
+          (Bivariate.evalX z.1 H).eval (Pz.eval x₀) = 0}
+          (@Fintype.ofFinite _ Subtype.finite))
+      ≥ #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q)
+      ∧ #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q := by
+  letI : Claim57Residuals (F := F) (m := m) (n := n) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) k δ x₀ h_gs :=
+    Claim57Residuals.ofDescended
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide
+  exact exists_factors_with_large_common_root_set
+    (F := F) (m := m) (n := n) (k := k) (Q := Q)
+    (ωs := ωs) (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs
+
+/-! ### Axiom audit (issue #8 descended Claim 5.7 adoption surface) -/
+
+#print axioms ProximityGap.Claim57Residuals.ofDescended
+#print axioms ProximityGap.exists_factors_with_large_common_root_set_of_descended
+
 end ProximityGap

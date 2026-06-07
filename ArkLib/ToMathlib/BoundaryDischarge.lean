@@ -353,6 +353,83 @@ theorem boundaryCardLatticeResidual_of_lattice_data
     (deg := deg) (domain := domain) (δ := δ) hk u hcardLt hcardGe hcoeffPoly
 
 omit [DecidableEq ι] in
+/-- Concrete quantization data for the closed boundary: the strict-subradius producer for the
+non-lattice branch, plus the smaller cardinality/coefficient-polynomial data for the square
+lattice branch.  This is the data-facing counterpart of
+`BoundaryCardResidual.BoundaryCardQuantizationResiduals`, whose lattice component is already the
+wider `BoundaryCardLatticeResidual`. -/
+def BoundaryCardQuantizationData {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} : Prop :=
+  BoundaryCardResidual.BoundaryCardStrictInteriorResidual
+      (k := k) (deg := deg) (domain := domain) (δ := δ) ∧
+    BoundaryCardResidual.BoundaryCardLatticeData
+      (k := k) (deg := deg) (domain := domain) (δ := δ)
+
+omit [DecidableEq ι] in
+/-- Projection of the strict-interior side of `BoundaryCardQuantizationData`. -/
+theorem BoundaryCardQuantizationData.strictInterior {k deg : ℕ} {domain : ι ↪ F}
+    {δ : ℝ≥0}
+    (h : BoundaryCardQuantizationData (k := k) (deg := deg) (domain := domain) (δ := δ)) :
+    BoundaryCardResidual.BoundaryCardStrictInteriorResidual
+      (k := k) (deg := deg) (domain := domain) (δ := δ) :=
+  h.1
+
+omit [DecidableEq ι] in
+/-- Projection of the concrete square-lattice side of `BoundaryCardQuantizationData`. -/
+theorem BoundaryCardQuantizationData.latticeData {k deg : ℕ} {domain : ι ↪ F}
+    {δ : ℝ≥0}
+    (h : BoundaryCardQuantizationData (k := k) (deg := deg) (domain := domain) (δ := δ)) :
+    BoundaryCardResidual.BoundaryCardLatticeData
+      (k := k) (deg := deg) (domain := domain) (δ := δ) :=
+  h.2
+
+omit [DecidableEq ι] in
+/-- Convert concrete quantization data into the existing residual package by assembling the
+square-lattice data into `BoundaryCardLatticeResidual`. -/
+theorem BoundaryCardQuantizationData.toQuantizationResiduals {k deg : ℕ} {domain : ι ↪ F}
+    {δ : ℝ≥0} [NeZero deg]
+    (h : BoundaryCardQuantizationData (k := k) (deg := deg) (domain := domain) (δ := δ)) :
+    BoundaryCardResidual.BoundaryCardQuantizationResiduals
+      (k := k) (deg := deg) (domain := domain) (δ := δ) :=
+  ⟨h.strictInterior,
+    boundaryCardLatticeResidual_of_lattice_data
+      (k := k) (deg := deg) (domain := domain) (δ := δ) h.latticeData⟩
+
+omit [DecidableEq ι] in
+/-- Concrete quantization data reconstructs the closed-boundary cardinality residual. -/
+theorem BoundaryCardQuantizationData.toBoundaryCardResidual {k deg : ℕ} {domain : ι ↪ F}
+    {δ : ℝ≥0} [NeZero deg]
+    (h : BoundaryCardQuantizationData (k := k) (deg := deg) (domain := domain) (δ := δ)) :
+    ProximityGap.BoundaryCardResidual (k := k) (deg := deg) (domain := domain) (δ := δ) :=
+  h.toQuantizationResiduals.toBoundaryCardResidual
+
+omit [DecidableEq ι] in
+/-- Concrete quantization data reconstructs the sharper boundary-probability residual consumed
+by the curve keystone. -/
+theorem BoundaryCardQuantizationData.toBoundaryProbabilityResidual {k deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (h : BoundaryCardQuantizationData (k := k) (deg := deg) (domain := domain) (δ := δ))
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain) :
+    ProximityGap.BoundaryProbabilityResidual
+      (k := k) (deg := deg) (domain := domain) (δ := δ) :=
+  h.toQuantizationResiduals.toBoundaryProbabilityResidual hδ
+
+/-- The affine-curves keystone can consume the complete boundary quantization package through
+the concrete `BoundaryCardLatticeData` square-branch surface. -/
+theorem correlatedAgreement_affine_curves_of_quantization_data
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg] [DecidableEq ι]
+    (hStrictCoeff :
+      ProximityGap.StrictCoeffPolysResidual (k := k) (deg := deg) (domain := domain) (δ := δ))
+    (hBoundary :
+      BoundaryCardQuantizationData (k := k) (deg := deg) (domain := domain) (δ := δ))
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  classical
+  exact BoundaryCardResidual.correlatedAgreement_affine_curves_of_quantization_residuals
+    (deg := deg) (domain := domain) (δ := δ) hStrictCoeff
+    hBoundary.toQuantizationResiduals hδ
+
+omit [DecidableEq ι] in
 /-- The full closed-boundary cardinality residual follows from the quantization split when the
 exact lattice branch is supplied as `BoundaryCardLatticeData`.  The non-lattice part still comes
 from the strict-subradius producer; this does not widen the residual back to the old
@@ -508,6 +585,13 @@ end ArkLib
 #print axioms ArkLib.BoundaryDischarge.boundaryCardResidual_of_boundary_cards_and_coeffPolys
 #print axioms ArkLib.BoundaryDischarge.boundaryCardLatticeResidual_of_boundary_cards_and_coeffPolys
 #print axioms ArkLib.BoundaryDischarge.boundaryCardLatticeResidual_of_lattice_data
+#print axioms ArkLib.BoundaryDischarge.BoundaryCardQuantizationData
+#print axioms ArkLib.BoundaryDischarge.BoundaryCardQuantizationData.strictInterior
+#print axioms ArkLib.BoundaryDischarge.BoundaryCardQuantizationData.latticeData
+#print axioms ArkLib.BoundaryDischarge.BoundaryCardQuantizationData.toQuantizationResiduals
+#print axioms ArkLib.BoundaryDischarge.BoundaryCardQuantizationData.toBoundaryCardResidual
+#print axioms ArkLib.BoundaryDischarge.BoundaryCardQuantizationData.toBoundaryProbabilityResidual
+#print axioms ArkLib.BoundaryDischarge.correlatedAgreement_affine_curves_of_quantization_data
 #print axioms ArkLib.BoundaryDischarge.boundaryCardResidual_of_lattice_data
 #print axioms ArkLib.BoundaryDischarge.boundaryProbabilityResidual_of_lattice_data
 #print axioms ArkLib.BoundaryDischarge.correlatedAgreement_affine_curves_of_lattice_data
