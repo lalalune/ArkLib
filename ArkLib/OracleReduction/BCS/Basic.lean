@@ -974,6 +974,47 @@ theorem BCSCompilerFrontierSatisfied.knowledge_soundness_preservation_target
   h.2.2.2.2.2.2
 
 omit Oₘ in
+/-- Package the full satisfied BCS compiler frontier directly from its named fields. -/
+theorem BCSCompilerFrontierSatisfied.intro {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    {phases : BCSCompiledPhases (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) CommitmentType e}
+    {frontier : BCSSecurityFrontier (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) phases}
+    (hInteraction : phases.interaction_realizes_oracle_messages)
+    (hOpening : phases.opening_realizes_query_log)
+    (hCorrect : frontier.commitment_correctness_available)
+    (hBindingOrExtract : frontier.commitment_binding_or_extractability_available)
+    (hComplete : frontier.completeness_preservation_target)
+    (hSound : frontier.soundness_preservation_target)
+    (hKS : frontier.knowledge_soundness_preservation_target) :
+    BCSCompilerFrontierSatisfied phases frontier :=
+  ⟨hInteraction, hOpening, hCorrect, hBindingOrExtract, hComplete, hSound, hKS⟩
+
+omit Oₘ in
+/-- Build a satisfied BCS compiler frontier from raw phase-realization and security fields. -/
+theorem BCSCompilerFrontierSatisfied.ofPhaseFields {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    {phases : BCSCompiledPhases (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) CommitmentType e}
+    {frontier : BCSSecurityFrontier (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) phases}
+    (hInteraction : phases.interaction_realizes_oracle_messages)
+    (hOpening : phases.opening_realizes_query_log)
+    (hCorrect : frontier.commitment_correctness_available)
+    (hBindingOrExtract : frontier.commitment_binding_or_extractability_available)
+    (hComplete : frontier.completeness_preservation_target)
+    (hSound : frontier.soundness_preservation_target)
+    (hKS : frontier.knowledge_soundness_preservation_target) :
+    BCSCompilerFrontierSatisfied phases frontier :=
+  BCSCompilerFrontierSatisfied.intro
+    hInteraction hOpening hCorrect hBindingOrExtract hComplete hSound hKS
+
+omit Oₘ in
 /-- Project the phase-realization obligations from a satisfied BCS compiler frontier. -/
 theorem BCSCompilerFrontierSatisfied.phase {StmtMid WitMid : Type}
     {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
@@ -1035,6 +1076,30 @@ theorem BCSCompilerFrontierSatisfied.iff_phase_and_security {StmtMid WitMid : Ty
     exact ⟨BCSCompilerFrontierSatisfied.phase h, BCSCompilerFrontierSatisfied.security h⟩
   · intro h
     exact BCSCompilerFrontierSatisfied.ofPhaseAndSecurity h.1 h.2
+
+/-- Build a satisfied BCS compiler frontier from a discharged typed opening log plus the
+remaining security-frontier fields. This is the direct adapter for consumers that name the
+underlying satisfied predicate rather than the compatibility `Ready` abbrev. -/
+theorem BCSCompilerFrontierSatisfied.ofOpeningLogBridge {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    {phases : BCSCompiledPhases (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) CommitmentType e}
+    {frontier : BCSSecurityFrontier (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) phases}
+    {log : BCSOpeningLogFrontier (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType}
+    (hInteraction : phases.interaction_realizes_oracle_messages)
+    (hLog : BCSOpeningLogFrontierSatisfied log)
+    (hBridge : BCSOpeningLogBridge phases log)
+    (hCorrect : frontier.commitment_correctness_available)
+    (hBindingOrExtract : frontier.commitment_binding_or_extractability_available)
+    (hComplete : frontier.completeness_preservation_target)
+    (hSound : frontier.soundness_preservation_target)
+    (hKS : frontier.knowledge_soundness_preservation_target) :
+    BCSCompilerFrontierSatisfied phases frontier :=
+  BCSCompilerFrontierSatisfied.intro
+    hInteraction (hBridge hLog) hCorrect hBindingOrExtract hComplete hSound hKS
 
 /-- Compatibility name for the full BCS compiler-frontier checklist. -/
 abbrev BCSCompilerFrontierReady {StmtMid WitMid : Type}
@@ -1277,10 +1342,13 @@ generic compiler construction or the completeness/soundness preservation theorem
 #print axioms OracleReduction.BCSCompilerFrontierSatisfied.completeness_preservation_target
 #print axioms OracleReduction.BCSCompilerFrontierSatisfied.soundness_preservation_target
 #print axioms OracleReduction.BCSCompilerFrontierSatisfied.knowledge_soundness_preservation_target
+#print axioms OracleReduction.BCSCompilerFrontierSatisfied.intro
+#print axioms OracleReduction.BCSCompilerFrontierSatisfied.ofPhaseFields
 #print axioms OracleReduction.BCSCompilerFrontierSatisfied.phase
 #print axioms OracleReduction.BCSCompilerFrontierSatisfied.security
 #print axioms OracleReduction.BCSCompilerFrontierSatisfied.ofPhaseAndSecurity
 #print axioms OracleReduction.BCSCompilerFrontierSatisfied.iff_phase_and_security
+#print axioms OracleReduction.BCSCompilerFrontierSatisfied.ofOpeningLogBridge
 #print axioms OracleReduction.BCSCompilerFrontierReady
 #print axioms OracleReduction.BCSCompilerFrontierReady.intro
 #print axioms OracleReduction.BCSCompilerFrontierReady.ofPhaseFields
