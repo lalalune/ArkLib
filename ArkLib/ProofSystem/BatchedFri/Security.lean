@@ -861,11 +861,12 @@ open ENNReal in
   consequence underlying the end-to-end Claim 8.3, phrased over the same `Code.jointAgreement`
   predicate used by `fri_soundness`.
 
-  This is kept as a `Prop` (a named residual) rather than a proved theorem because the full
-  probabilistic query-round analysis (the FRI query-round reduction's acceptance bound feeding into
-  the proximity-gap / correlated-agreement machinery) is not yet available in-tree; the sibling
-  Claim 8.3 residual `fri_soundness` is in the same state. Discharging it requires the query-round
-  `OracleReduction.run` acceptance bound, exactly as for `fri_soundness`. -/
+  This is kept as a `Prop` (a named residual) rather than a closed theorem because the in-tree
+  query-round acceptance bounds still have to be connected to the protocol-specific
+  correlated-agreement/proximity trigger and the `OracleReduction.run` plumbing.  The proved
+  query-round counting and density bounds feed the split frontier below; what remains is deriving
+  the required `Code.jointAgreement` witness from the Batched FRI transcript semantics, then lifting
+  it through the sibling Claim 8.3 residual `fri_soundness`. -/
 def fri_query_soundness
     {t : ℕ}
   {α : ℝ≥0}

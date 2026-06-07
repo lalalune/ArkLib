@@ -275,6 +275,20 @@ theorem mcaBadWitness_card_le_compl_common {MC : Submodule F (ι → F)} {δ : �
   obtain ⟨i, hiS, hiC⟩ := Finset.not_subset.mp hSnotsub
   exact ⟨i, by rw [linePetal, Finset.mem_sdiff, mem_lineAgreeSet_iff]; exact ⟨hSagree i hiS, hiC⟩⟩
 
+/-- **Inclusion–exclusion for two line-agreement sets.**  For `γ ≠ γ'`,
+`|lineAgreeSet γ| + |lineAgreeSet γ'| ≤ |common| + n`: the two sets overlap exactly in the common
+zero-agreement set (`lineAgreeSet_inter_eq`), and their union fits in `univ`.  When both agreements
+are large (`≥ (1−δ)n`, as for bad combiners), this forces `|common| ≥ (1−2δ)n` — the structural
+reason `|mcaBadWitness w| ≤ 2δn` once two bad combiners exist. -/
+theorem lineAgreeSet_card_add_le (u₀ u₁ w : ι → F) {γ γ' : F} (hγ : γ ≠ γ') :
+    (lineAgreeSet u₀ u₁ w γ).card + (lineAgreeSet u₀ u₁ w γ').card
+      ≤ (Finset.univ.filter (fun i => u₁ i = 0 ∧ w i = u₀ i)).card + Fintype.card ι := by
+  have h := Finset.card_union_add_card_inter (lineAgreeSet u₀ u₁ w γ) (lineAgreeSet u₀ u₁ w γ')
+  rw [lineAgreeSet_inter_eq u₀ u₁ w hγ] at h
+  have hunion : (lineAgreeSet u₀ u₁ w γ ∪ lineAgreeSet u₀ u₁ w γ').card ≤ Fintype.card ι := by
+    rw [← Finset.card_univ]; exact Finset.card_le_card (Finset.subset_univ _)
+  omega
+
 /-- **GKL24 sharp first-moment bound `|Bad¹| ≤ p·n`.**  If a correlated-agreement domain `D` at rate
 `p` (so `(1−p)·n ≤ |D|`) absorbs the common zero-agreement set, and the bad-witness radius is smaller
 (`|D| < ⌊(1−δ)·n⌋`, i.e. `δ < p`), then `|mcaBadWitness w| ≤ p·n`.  This is GKL24's sharp
@@ -321,5 +335,40 @@ theorem mcaBadWitness_card_le_pn_of_common {MC : Submodule F (ι → F)} {δ p :
       < ⌊((1 - δ) * Fintype.card ι : ℝ≥0)⌋₊) :
     ((mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w).card : ℝ≥0) ≤ p * Fintype.card ι :=
   mcaBadWitness_card_le_pn hp (Finset.Subset.refl _) hlb hub
+
+/-- **Per-stack bad count from the witness cover.**  The per-stack bad-combiner set `mcaBad` is
+covered by the per-codeword witness sets over any carrier `T ⊇ C` (`mcaBad_subset_biUnion_…`), so
+`|mcaBad| ≤ ∑_{w ∈ T} |mcaBadWitness w|`.  Combined with the per-codeword first-moment bounds
+(`mcaBadWitness_card_le_compl_common` etc.), this lifts the GKL24 first moment from individual
+codewords to the per-stack count that the GCXK25 list-decoding→MCA reduction consumes. -/
+theorem mcaBad_card_le_sum_mcaBadWitness {MC : Submodule F (ι → F)} {δ : ℝ≥0} {u₀ u₁ : ι → F}
+    (T : Finset (ι → F)) (hT : ∀ w ∈ (MC : Set (ι → F)), w ∈ T) :
+    (mcaBad (F := F) (MC : Set (ι → F)) δ u₀ u₁).card
+      ≤ ∑ w ∈ T, (mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w).card :=
+  le_trans (Finset.card_le_card (mcaBad_subset_biUnion_mcaBadWitness _ δ u₀ u₁ T hT))
+    Finset.card_biUnion_le
+
+/-- **Per-stack first-moment bound `|mcaBad| ≤ |T|·max(1, 2δn)`.**  Combining the witness cover
+(`mcaBad_card_le_sum_mcaBadWitness`) with the per-codeword bound
+(`mcaBadWitness_card_le_two_delta_mul_card`) over a codeword carrier `T`: the per-stack bad set has
+size at most `|T|` times the per-codeword radius `max(1, 2δn)`.  With `|T|` the list size `L`, this is
+the per-stack first-moment input of the GCXK25 list-decoding→MCA reduction (here at the in-tree `2δn`
+radius). -/
+theorem mcaBad_card_le_carrier_two_delta {MC : Submodule F (ι → F)} {δ : ℝ≥0} {u₀ u₁ : ι → F}
+    (T : Finset (ι → F)) (hT : ∀ w ∈ (MC : Set (ι → F)), w ∈ T)
+    (hTsub : ∀ w ∈ T, w ∈ (MC : Set (ι → F))) :
+    ((mcaBad (F := F) (MC : Set (ι → F)) δ u₀ u₁).card : ℝ)
+      ≤ T.card * max 1 (2 * (δ : ℝ) * Fintype.card ι) := by
+  have h1 : ((mcaBad (F := F) (MC : Set (ι → F)) δ u₀ u₁).card : ℝ)
+      ≤ ∑ w ∈ T, ((mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w).card : ℝ) := by
+    have h := mcaBad_card_le_sum_mcaBadWitness (MC := MC) (δ := δ) (u₀ := u₀) (u₁ := u₁) T hT
+    rw [← Nat.cast_sum]; exact_mod_cast h
+  refine le_trans h1 ?_
+  calc ∑ w ∈ T, ((mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w).card : ℝ)
+      ≤ ∑ _w ∈ T, max 1 (2 * (δ : ℝ) * Fintype.card ι) :=
+        Finset.sum_le_sum fun w hw =>
+          mcaBadWitness_card_le_two_delta_mul_card MC δ u₀ u₁ w (hTsub w hw)
+    _ = T.card * max 1 (2 * (δ : ℝ) * Fintype.card ι) := by
+        rw [Finset.sum_const, nsmul_eq_mul]
 
 end ProximityGap

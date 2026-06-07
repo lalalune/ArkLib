@@ -56,10 +56,13 @@ The radius `1/n` is the first nonzero MCA lattice point, `mcaLatticePoint n 1`.
 * `epsMCA_interiorJ1_le` — `ε_mca(C, 1/n) ≤ 2/q` (upper bound; SILVER).
 * `epsMCA_interiorJ1_ge` — `2/q ≤ ε_mca(C, 1/n)` (lower bound; spike plant).
 * `epsMCA_interiorJ1_eq` — `ε_mca(C, 1/n) = 2/q` (GOLD).
-* `mcaSatisfies_interiorJ1_iff_two_div_card_le`, `one_le_mcaThreshold_of_interiorJ1`,
-  `mcaThreshold_lt_one_of_interiorJ1_gt`, `mcaPrizeLattice_one_le_of_interiorJ1`,
-  `mcaPrizeLattice_lt_one_of_interiorJ1_gt` — faithful lattice-threshold consequences of the
-  exact J1 value.
+* `mcaSatisfies_interiorJ1_iff_two_div_card_le`,
+  `mcaSatisfies_interiorJ1_of_two_div_card_le`,
+  `not_mcaSatisfies_interiorJ1_of_interiorJ1_gt`, `one_le_mcaThreshold_of_interiorJ1`,
+  `mcaThreshold_lt_one_of_interiorJ1_gt`, `mcaPrizeLattice_satisfies_one_of_interiorJ1`,
+  `not_mcaPrizeLattice_satisfies_one_of_interiorJ1_gt`,
+  `mcaPrizeLattice_one_le_of_interiorJ1`, `mcaPrizeLattice_lt_one_of_interiorJ1_gt` —
+  faithful lattice-threshold consequences of the exact J1 value.
 * `mcaThreshold_eq_j1_of_interiorJ1_and_spikeJ2`,
   `mcaPrizeLatticeResolved_j1_of_interiorJ1_and_spikeJ2` — exact J1 threshold resolution in
   the adjacent band `2/q ≤ ε* < 3/q`, using the exact J1 value and the `3`-spike obstruction at
@@ -308,6 +311,39 @@ theorem mcaSatisfies_interiorJ1_iff_two_div_card_le
         (2 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ≤ (ε_star : ℝ≥0∞) from by
           rw [epsMCA_interiorJ1_eq domain hk hq])
 
+/-- **J1 satisfaction projection.**  If `2 / |F| ≤ ε*`, then the faithful MCA predicate holds
+at the first nonzero MCA lattice point.  This is the threshold-existence-free positive half of
+the exact J1 satisfaction criterion. -/
+theorem mcaSatisfies_interiorJ1_of_two_div_card_le
+    (domain : ι ↪ F) {k : ℕ} (hk : k + 3 ≤ Fintype.card ι) (hq : 2 ≤ Fintype.card F)
+    {ε_star : ℝ≥0}
+    (hgood : (2 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ≤ (ε_star : ℝ≥0∞)) :
+    let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+      have hn : 0 < Fintype.card ι := Fintype.card_pos
+      omega⟩
+    mcaSatisfies (ReedSolomon.code domain k : Set (ι → F)) ε_star j1 :=
+  (mcaSatisfies_interiorJ1_iff_two_div_card_le domain hk hq ε_star).mpr hgood
+
+/-- **J1 satisfaction obstruction.**  If `ε* < 2 / |F|`, then the faithful MCA predicate
+cannot hold at the first nonzero MCA lattice point.  This is the threshold-existence-free
+obstruction companion to `mcaThreshold_lt_one_of_interiorJ1_gt`. -/
+theorem not_mcaSatisfies_interiorJ1_of_interiorJ1_gt
+    (domain : ι ↪ F) {k : ℕ} (hk : k + 3 ≤ Fintype.card ι) (hq : 2 ≤ Fintype.card F)
+    {ε_star : ℝ≥0}
+    (hbad : (ε_star : ℝ≥0∞) < (2 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞)) :
+    let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+      have hn : 0 < Fintype.card ι := Fintype.card_pos
+      omega⟩
+    ¬ mcaSatisfies (ReedSolomon.code domain k : Set (ι → F)) ε_star j1 := by
+  let C : Set (ι → F) := ReedSolomon.code domain k
+  let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+    have hn : 0 < Fintype.card ι := Fintype.card_pos
+    omega⟩
+  change ¬ mcaSatisfies C ε_star j1
+  intro hsat
+  exact (not_le_of_gt hbad)
+    ((mcaSatisfies_interiorJ1_iff_two_div_card_le domain hk hq ε_star).mp hsat)
+
 /-- If `2 / |F| ≤ ε*`, the faithful MCA lattice threshold is at least the J1 index. -/
 theorem one_le_mcaThreshold_of_interiorJ1
     (domain : ι ↪ F) {k : ℕ} (hk : k + 3 ≤ Fintype.card ι) (hq : 2 ≤ Fintype.card F)
@@ -397,6 +433,45 @@ theorem mcaPrizeLattice_lt_one_of_interiorJ1_gt
       mcaThreshold C epsStar (hne r) < j1 := by
   intro r
   exact mcaThreshold_lt_one_of_interiorJ1_gt domain (hk r) hq hbad (hne r)
+
+/-- Four-rate J1 satisfaction projection from the exact J1 value.  When `2 / |F| ≤ ε*` and
+each prize-rate degree has a genuine J1 window, every prize-rate code satisfies the faithful MCA
+predicate at the J1 lattice point. -/
+theorem mcaPrizeLattice_satisfies_one_of_interiorJ1
+    (domain : ι ↪ F)
+    (hk : ∀ r : Fin 4,
+      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ + 3 ≤ Fintype.card ι)
+    (hq : 2 ≤ Fintype.card F)
+    (hgood : (2 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ≤ (epsStar : ℝ≥0∞)) :
+    ∀ r : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊
+      let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+        have hn : 0 < Fintype.card ι := Fintype.card_pos
+        omega⟩
+      mcaSatisfies C epsStar j1 := by
+  intro r
+  exact mcaSatisfies_interiorJ1_of_two_div_card_le domain (hk r) hq hgood
+
+/-- Four-rate J1 satisfaction obstruction.  If `ε* < 2 / |F|`, then none of the four
+prize-rate codes satisfies the faithful MCA predicate at the J1 lattice point. -/
+theorem not_mcaPrizeLattice_satisfies_one_of_interiorJ1_gt
+    (domain : ι ↪ F)
+    (hk : ∀ r : Fin 4,
+      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ + 3 ≤ Fintype.card ι)
+    (hq : 2 ≤ Fintype.card F)
+    (hbad : (epsStar : ℝ≥0∞) < (2 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞)) :
+    ∀ r : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊
+      let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+        have hn : 0 < Fintype.card ι := Fintype.card_pos
+        omega⟩
+      ¬ mcaSatisfies C epsStar j1 := by
+  intro r
+  exact not_mcaSatisfies_interiorJ1_of_interiorJ1_gt
+    (F := F) (ε_star := epsStar) domain
+    (k := ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊) (hk r) hq hbad
 
 /-! ## Exact adjacent J1/J2 threshold band -/
 
@@ -587,6 +662,42 @@ lemma prizeRate_floor_add_three_le_of_card_ge_six (r : Fin 4)
           norm_num
   exact_mod_cast hcast
 
+/-- **Formal-prize J1 satisfaction projection.**  If every prize-rate RS code has a genuine J1
+window and `2·2¹²⁸ ≤ |F|`, then the formal threshold `ε* = 2⁻¹²⁸` is large enough for all four
+prize-rate codes to satisfy the faithful MCA predicate at J1. -/
+theorem mcaPrizeLattice_satisfies_one_of_interiorJ1_and_card_ge_two_mul_two_pow
+    (domain : ι ↪ F)
+    (hk : ∀ r : Fin 4,
+      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ + 3 ≤ Fintype.card ι)
+    (hcard_lo : (2 : ℕ) * 2 ^ (128 : ℕ) ≤ Fintype.card F) :
+    ∀ r : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊
+      let j1 : Fin (Fintype.card ι + 1) := ⟨1, by
+        have hn : 0 < Fintype.card ι := Fintype.card_pos
+        omega⟩
+      mcaSatisfies C epsStar j1 := by
+  have hq : 2 ≤ Fintype.card F :=
+    le_trans (by norm_num : 2 ≤ (2 : ℕ) * 2 ^ (128 : ℕ)) hcard_lo
+  exact mcaPrizeLattice_satisfies_one_of_interiorJ1 domain hk hq
+    (two_div_card_le_epsStar_of_card_ge_two_mul_two_pow (F := F) hcard_lo)
+
+/-- **Formal-prize J1 satisfaction projection, with prize-degree windows automatic.**
+For domains with at least six evaluation points, `2·2¹²⁸ ≤ |F|` alone supplies the formal
+large-field-side J1 satisfaction projection at all four ABF26 prize rates. -/
+theorem mcaPrizeLattice_satisfies_one_of_card_ge_six_and_card_ge_two_mul_two_pow
+    (domain : ι ↪ F)
+    (hn : 6 ≤ Fintype.card ι)
+    (hcard_lo : (2 : ℕ) * 2 ^ (128 : ℕ) ≤ Fintype.card F) :
+    ∀ r : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊
+      let j1 : Fin (Fintype.card ι + 1) := ⟨1, by omega⟩
+      mcaSatisfies C epsStar j1 :=
+  mcaPrizeLattice_satisfies_one_of_interiorJ1_and_card_ge_two_mul_two_pow domain
+    (fun r => prizeRate_floor_add_three_le_of_card_ge_six r hn)
+    hcard_lo
+
 /-- **Formal-prize adjacent J1/J2 field-size band.**
 
 If every prize-rate RS code has a genuine J1 window and
@@ -627,3 +738,15 @@ theorem mcaPrizeLatticeResolved_j1_of_card_ge_six_and_card_between
 end GrandChallengesLattice
 
 end ProximityGap
+
+/-! ## Axiom audit — every declaration must rest only on
+`[propext, Classical.choice, Quot.sound]`, no `sorry`/`admit`/`axiom`/`native_decide`. -/
+section AxiomAudit
+open ProximityGap.GrandChallengesLattice
+#print axioms mcaSatisfies_interiorJ1_of_two_div_card_le
+#print axioms not_mcaSatisfies_interiorJ1_of_interiorJ1_gt
+#print axioms mcaPrizeLattice_satisfies_one_of_interiorJ1
+#print axioms not_mcaPrizeLattice_satisfies_one_of_interiorJ1_gt
+#print axioms mcaPrizeLattice_satisfies_one_of_interiorJ1_and_card_ge_two_mul_two_pow
+#print axioms mcaPrizeLattice_satisfies_one_of_card_ge_six_and_card_ge_two_mul_two_pow
+end AxiomAudit

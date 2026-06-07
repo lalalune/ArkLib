@@ -780,6 +780,35 @@ theorem
         domain δ hδ_le_one hno
 
 set_option linter.style.longLine false in
+/-- Direct vanishing `ε_mca` frontiers resolve the faithful prize lattice at the concrete
+`mcaThreshold` indices and preserve threshold facts plus lower lattice brackets. -/
+theorem
+    mcaPrizeLatticeResolved_with_threshold_spec_and_lower_brackets_prize_allRates_of_epsMCA_eq_zero
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (heps : ∀ j : Fin 4,
+      epsMCA (F := F) (A := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) = 0) :
+    let C : Fin 4 → Set (ι → F) := fun j =>
+      ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      mcaPrizeLatticeResolved domain τ ∧
+        ∀ j : Fin 4,
+          ∃ hne : mcaThresholdExists (C j) epsStar,
+            τ j = mcaThreshold (C j) epsStar hne ∧
+              mcaSatisfies (C j) epsStar (τ j) ∧
+                latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j :=
+  mcaPrizeLatticeResolved_with_threshold_spec_and_lower_brackets_prize_allRates_ofDoubleCover
+    domain δ hδ_le_one
+    (indexed_MCAForallDoubleCover_of_epsMCA_eq_zero
+      (fun j : Fin 4 =>
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)))
+      δ heps)
+
+set_option linter.style.longLine false in
 /-- Repaired double-cover data resolves the faithful prize lattice at the concrete
 `mcaThreshold` indices and preserves only the threshold equality and satisfy facts. -/
 theorem mcaPrizeLatticeResolved_with_threshold_spec_prize_allRates_ofDoubleCover
@@ -886,6 +915,34 @@ theorem mcaPrizeLatticeResolved_with_threshold_spec_prize_allRates_of_forall_not
   exact ⟨hne, heq, hsat⟩
 
 set_option linter.style.longLine false in
+/-- Direct vanishing `ε_mca` frontiers resolve the faithful prize lattice at concrete
+`mcaThreshold` indices and preserve only the threshold equality and satisfy facts. -/
+theorem mcaPrizeLatticeResolved_with_threshold_spec_prize_allRates_of_epsMCA_eq_zero
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (heps : ∀ j : Fin 4,
+      epsMCA (F := F) (A := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) = 0) :
+    let C : Fin 4 → Set (ι → F) := fun j =>
+      ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      mcaPrizeLatticeResolved domain τ ∧
+        ∀ j : Fin 4,
+          ∃ hne : mcaThresholdExists (C j) epsStar,
+            τ j = mcaThreshold (C j) epsStar hne ∧
+              mcaSatisfies (C j) epsStar (τ j) := by
+  rcases
+      mcaPrizeLatticeResolved_with_threshold_spec_and_lower_brackets_prize_allRates_of_epsMCA_eq_zero
+        domain δ hδ_le_one heps with
+    ⟨τ, hτ, hspec⟩
+  refine ⟨τ, hτ, ?_⟩
+  intro j
+  rcases hspec j with ⟨hne, heq, hsat, _hlower⟩
+  exact ⟨hne, heq, hsat⟩
+
+set_option linter.style.longLine false in
 /-- Repaired double-cover data resolves the faithful prize lattice at the concrete
 `mcaThreshold` indices and preserves only the threshold equality witnesses. -/
 theorem mcaPrizeLatticeResolved_with_threshold_prize_allRates_ofDoubleCover
@@ -976,6 +1033,31 @@ theorem mcaPrizeLatticeResolved_with_threshold_prize_allRates_of_forall_not_mcaE
             τ j = mcaThreshold (C j) epsStar hne := by
   rcases mcaPrizeLatticeResolved_with_threshold_spec_prize_allRates_of_forall_not_mcaEvent
       domain δ hδ_le_one hno with ⟨τ, hτ, hspec⟩
+  refine ⟨τ, hτ, ?_⟩
+  intro j
+  rcases hspec j with ⟨hne, heq, _hsat⟩
+  exact ⟨hne, heq⟩
+
+set_option linter.style.longLine false in
+/-- Direct vanishing `ε_mca` frontiers resolve the faithful prize lattice at concrete
+`mcaThreshold` indices and preserve only the threshold equality witnesses. -/
+theorem mcaPrizeLatticeResolved_with_threshold_prize_allRates_of_epsMCA_eq_zero
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (heps : ∀ j : Fin 4,
+      epsMCA (F := F) (A := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) = 0) :
+    let C : Fin 4 → Set (ι → F) := fun j =>
+      ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      mcaPrizeLatticeResolved domain τ ∧
+        ∀ j : Fin 4,
+          ∃ hne : mcaThresholdExists (C j) epsStar,
+            τ j = mcaThreshold (C j) epsStar hne := by
+  rcases mcaPrizeLatticeResolved_with_threshold_spec_prize_allRates_of_epsMCA_eq_zero
+      domain δ hδ_le_one heps with ⟨τ, hτ, hspec⟩
   refine ⟨τ, hτ, ?_⟩
   intro j
   rcases hspec j with ⟨hne, heq, _hsat⟩
@@ -1081,6 +1163,34 @@ theorem mcaPrizeLatticeResolved_with_threshold_lower_brackets_prize_allRates_of_
   rcases
       mcaPrizeLatticeResolved_with_threshold_spec_and_lower_brackets_prize_allRates_of_forall_not_mcaEvent
         domain δ hδ_le_one hno with
+    ⟨τ, hτ, hspec⟩
+  refine ⟨τ, hτ, ?_⟩
+  intro j
+  rcases hspec j with ⟨hne, heq, _hsat, hlower⟩
+  exact ⟨hne, heq, hlower⟩
+
+set_option linter.style.longLine false in
+/-- Direct vanishing `ε_mca` frontiers resolve the faithful prize lattice at concrete
+`mcaThreshold` indices and preserve threshold equalities plus lower lattice brackets. -/
+theorem mcaPrizeLatticeResolved_with_threshold_lower_brackets_prize_allRates_of_epsMCA_eq_zero
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (heps : ∀ j : Fin 4,
+      epsMCA (F := F) (A := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) = 0) :
+    let C : Fin 4 → Set (ι → F) := fun j =>
+      ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      mcaPrizeLatticeResolved domain τ ∧
+        ∀ j : Fin 4,
+          ∃ hne : mcaThresholdExists (C j) epsStar,
+            τ j = mcaThreshold (C j) epsStar hne ∧
+              latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j := by
+  rcases
+      mcaPrizeLatticeResolved_with_threshold_spec_and_lower_brackets_prize_allRates_of_epsMCA_eq_zero
+        domain δ hδ_le_one heps with
     ⟨τ, hτ, hspec⟩
   refine ⟨τ, hτ, ?_⟩
   intro j
@@ -1210,6 +1320,43 @@ theorem mcaPrizeLatticeResolved_with_threshold_spec_and_brackets_prize_allRates_
     domain δ hδ_le_one whi hδhi <|
       mcaThreshold_spec_and_bracket_prize_allRates_of_forall_not_mcaEvent
         domain δ hδ_le_one hno whi hδhi
+
+set_option linter.style.longLine false in
+/-- Direct vanishing `ε_mca` frontiers and explicit upper witnesses resolve the faithful prize
+lattice at concrete `mcaThreshold` indices and preserve threshold facts plus both brackets. -/
+theorem
+    mcaPrizeLatticeResolved_with_threshold_spec_and_brackets_prize_allRates_of_epsMCA_eq_zero
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (heps : ∀ j : Fin 4,
+      epsMCA (F := F) (A := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) = 0)
+    (whi : ∀ j : Fin 4,
+      GrandChallenges.MCAUpperWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1) :
+    let C : Fin 4 → Set (ι → F) := fun j =>
+      ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      mcaPrizeLatticeResolved domain τ ∧
+        ∀ j : Fin 4,
+          ∃ hne : mcaThresholdExists (C j) epsStar,
+            τ j = mcaThreshold (C j) epsStar hne ∧
+              mcaSatisfies (C j) epsStar (τ j) ∧
+                latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j ∧
+                  τ j < latticeIndexOf (ι := ι) (whi j).δ (hδhi j) :=
+  mcaPrizeLatticeResolved_with_threshold_spec_and_brackets_prize_allRates_ofDoubleCover
+    domain δ hδ_le_one
+    (indexed_MCAForallDoubleCover_of_epsMCA_eq_zero
+      (fun j : Fin 4 =>
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)))
+      δ heps)
+    whi hδhi
 
 set_option linter.style.longLine false in
 /-- Repaired double-cover data and explicit upper witnesses resolve the faithful prize lattice at
@@ -1345,6 +1492,39 @@ theorem mcaPrizeLatticeResolved_with_threshold_brackets_prize_allRates_of_forall
   rcases hspec j with ⟨hne, heq, _hsat, hlower, hupper⟩
   exact ⟨hne, heq, hlower, hupper⟩
 
+set_option linter.style.longLine false in
+/-- Direct vanishing `ε_mca` frontiers and explicit upper witnesses resolve the faithful prize
+lattice at concrete `mcaThreshold` indices and preserve equality plus both lattice brackets. -/
+theorem mcaPrizeLatticeResolved_with_threshold_brackets_prize_allRates_of_epsMCA_eq_zero
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (heps : ∀ j : Fin 4,
+      epsMCA (F := F) (A := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) = 0)
+    (whi : ∀ j : Fin 4,
+      GrandChallenges.MCAUpperWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1) :
+    let C : Fin 4 → Set (ι → F) := fun j =>
+      ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      mcaPrizeLatticeResolved domain τ ∧
+        ∀ j : Fin 4,
+          ∃ hne : mcaThresholdExists (C j) epsStar,
+            τ j = mcaThreshold (C j) epsStar hne ∧
+              latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j ∧
+                τ j < latticeIndexOf (ι := ι) (whi j).δ (hδhi j) := by
+  rcases mcaPrizeLatticeResolved_with_threshold_spec_and_brackets_prize_allRates_of_epsMCA_eq_zero
+      domain δ hδ_le_one heps whi hδhi with ⟨τ, hτ, hspec⟩
+  refine ⟨τ, hτ, ?_⟩
+  intro j
+  rcases hspec j with ⟨hne, heq, _hsat, hlower, hupper⟩
+  exact ⟨hne, heq, hlower, hupper⟩
+
 end LineDecodingResolvedPrizeSpec
 
 set_option linter.style.longLine false in
@@ -1396,6 +1576,8 @@ set_option linter.style.longLine false in
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_threshold_spec_and_lower_brackets_prize_allRates_of_forall_not_mcaEvent
 set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_threshold_spec_and_lower_brackets_prize_allRates_of_epsMCA_eq_zero
+set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_threshold_spec_prize_allRates_ofDoubleCover
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_threshold_spec_prize_allRates_ofBadScalarDoubleCover
@@ -1403,6 +1585,8 @@ set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_threshold_spec_prize_allRates_of_mcaBadCount_zero
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_threshold_spec_prize_allRates_of_forall_not_mcaEvent
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_threshold_spec_prize_allRates_of_epsMCA_eq_zero
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_threshold_prize_allRates_ofDoubleCover
 set_option linter.style.longLine false in
@@ -1412,6 +1596,8 @@ set_option linter.style.longLine false in
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_threshold_prize_allRates_of_forall_not_mcaEvent
 set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_threshold_prize_allRates_of_epsMCA_eq_zero
+set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_threshold_lower_brackets_prize_allRates_ofDoubleCover
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_threshold_lower_brackets_prize_allRates_ofBadScalarDoubleCover
@@ -1419,6 +1605,8 @@ set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_threshold_lower_brackets_prize_allRates_of_mcaBadCount_zero
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_threshold_lower_brackets_prize_allRates_of_forall_not_mcaEvent
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_threshold_lower_brackets_prize_allRates_of_epsMCA_eq_zero
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_threshold_spec_and_brackets_prize_allRates_ofDoubleCover
 set_option linter.style.longLine false in
@@ -1428,6 +1616,8 @@ set_option linter.style.longLine false in
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_threshold_spec_and_brackets_prize_allRates_of_forall_not_mcaEvent
 set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_threshold_spec_and_brackets_prize_allRates_of_epsMCA_eq_zero
+set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_threshold_brackets_prize_allRates_ofDoubleCover
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_threshold_brackets_prize_allRates_ofBadScalarDoubleCover
@@ -1435,6 +1625,8 @@ set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_threshold_brackets_prize_allRates_of_mcaBadCount_zero
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_threshold_brackets_prize_allRates_of_forall_not_mcaEvent
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_threshold_brackets_prize_allRates_of_epsMCA_eq_zero
 
 end GrandChallengesLattice
 

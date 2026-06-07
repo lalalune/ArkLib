@@ -147,13 +147,13 @@ theorem two_le_two_mul_i1_add_sigmaLambda {t i1 : ℕ}
   rcases Nat.eq_zero_or_pos i1 with hi0 | hi0
   · -- i1 = 0: partition of `t+1`; must have at least two parts, else it is `[t+1]` (filtered out).
     subst hi0
-    simp only [Nat.zero_sub, Nat.sub_zero, Nat.mul_zero, Nat.zero_add] at *
+    simp only [Nat.sub_zero, Nat.mul_zero, Nat.zero_add] at *
     -- here `t + 1 - 0 = t + 1`
     by_contra hlt
-    push_neg at hlt
     -- `sigmaLambda lam < 2`, i.e. `lam.parts.card ≤ 1`.
     have hcard : lam.parts.card ≤ 1 := by
-      rw [sigmaLambda] at hlt; omega
+      have := Nat.lt_of_not_le hlt
+      rw [sigmaLambda] at this; omega
     -- card 0 is impossible (sum would be 0 ≠ t+1); card 1 forces the part to be `t+1`.
     have hsum : lam.parts.sum = t + 1 := lam.parts_sum
     interval_cases h : lam.parts.card
@@ -230,7 +230,9 @@ theorem restrictedMatchRecursionPartitionForm_eq_ξfree_of_leadingCoeff_one
   rw [restrictedMatchRecursionPartitionForm_eq_Wfree_of_leadingCoeff_one H x₀ R hHyp t hlc,
     mul_assoc]
   -- Reduce to the inner double-sum identity `recSum / ξ^G = ξ⁻¹ · S`.
-  rw [Finset.sum_div, Finset.mul_sum]
+  rw [Finset.sum_div]
+  refine congrArg (fun z : 𝕃 H => ClaimA2.ζ R x₀ H * z) ?_
+  rw [Finset.mul_sum]
   refine Finset.sum_congr rfl (fun i1 hi1mem => ?_)
   rw [Finset.sum_div, Finset.mul_sum]
   refine Finset.sum_congr rfl (fun lam hlam => ?_)
@@ -245,6 +247,21 @@ theorem restrictedMatchRecursionPartitionForm_eq_ξfree_of_leadingCoeff_one
   set dl := 2 * (t + 1 - i1) - sigmaLambda lam with hdldef
   -- LHS term: `(ξ^g / ξ^dl) * B * P / ξ^G` ; RHS term: `ξ⁻¹ * (B * P / ξ^dl)`,
   -- where `g = 2(t+1)-2`, `G = 2(t+1)-1`, and `ξ^g/ξ^G = ξ⁻¹` by `hglob`.
-  rw [div_eq_iff (pow_ne_zero _ hξ), ← hglob]
-  field_simp
-  ring
+  rw [← hξdef]
+  calc
+    ξ ^ (2 * (t + 1) - 2) / ξ ^ dl * B * P / ξ ^ (2 * (t + 1) - 1)
+        = (ξ ^ (2 * (t + 1) - 2) / ξ ^ (2 * (t + 1) - 1)) * (B * P / ξ ^ dl) := by
+            field_simp [hξ]
+    _ = ξ⁻¹ * (B * P / ξ ^ dl) := by
+            rw [hglob]
+
+end BCIKS20.HenselNumerator
+
+-- Axiom audit: every landed `ξ`-bookkeeping lemma is axiom-clean
+-- (`[propext, Classical.choice, Quot.sound]`, no `sorryAx`).
+#print axioms BCIKS20.HenselNumerator.sigmaLambda_le
+#print axioms BCIKS20.HenselNumerator.sum_map_two_mul_sub_one
+#print axioms BCIKS20.HenselNumerator.xiExp_recNum_add_lhsDen
+#print axioms BCIKS20.HenselNumerator.two_le_two_mul_i1_add_sigmaLambda
+#print axioms BCIKS20.HenselNumerator.xi_pow_recNum_eq_global_div_lhsDen
+#print axioms BCIKS20.HenselNumerator.restrictedMatchRecursionPartitionForm_eq_ξfree_of_leadingCoeff_one

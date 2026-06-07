@@ -25,7 +25,7 @@ This file defines n-way splitting and folding operations on polynomials.
 
 When `n = 2`, this recovers the even/odd splitting: `splitNth f 2 0` gives the even
 coefficients and `splitNth f 2 1` gives the odd coefficients (after appropriate
-reindexing). 
+reindexing).
 
 -/
 
@@ -33,7 +33,7 @@ open Polynomial
 
 namespace Polynomial
 
-variable {𝔽 : Type} [CommSemiring 𝔽] [NoZeroDivisors 𝔽]
+variable {𝔽 : Type*} [CommSemiring 𝔽] [NoZeroDivisors 𝔽]
 
 /--
 Splits a polynomial into `n` component polynomials based on coefficient indices modulo `n`.
@@ -85,6 +85,20 @@ def splitNth (f : 𝔽[X]) (n : ℕ) [inst : NeZero n] : Fin n → 𝔽[X] :=
             simp [this]
       ⟩
 
+omit [NoZeroDivisors 𝔽] in
+/-- Coefficients of `splitNth` are the corresponding congruence-class coefficients of `f`. -/
+lemma coeff_splitNth (f : 𝔽[X]) (n : ℕ) [NeZero n] (i : Fin n) (e : ℕ) :
+    (splitNth f n i).coeff e = f.coeff (e * n + i.1) := by
+  unfold splitNth
+  simp [coeff_ofFinsupp, Finsupp.coe_mk]
+
+omit [NoZeroDivisors 𝔽] in
+/-- `splitNth` is additive in the polynomial being split. -/
+lemma splitNth_add (p q : 𝔽[X]) (n : ℕ) [NeZero n] (i : Fin n) :
+    splitNth (p + q) n i = splitNth p n i + splitNth q n i := by
+  ext e
+  simp [coeff_splitNth]
+
 /- Proof of key identity `splitNth` has to satisfy. -/
 omit [NoZeroDivisors 𝔽] in
 lemma splitNth_def (n : ℕ) (f : 𝔽[X]) [inst : NeZero n] :
@@ -127,14 +141,13 @@ lemma splitNth_def (n : ℕ) (f : 𝔽[X]) [inst : NeZero n] :
         split_ifs with h''
         · exact notMem_support_iff.mp h'
         · rfl
-    · have {α : Type} {a b : α} : ∀ m, (if e = n * m then a else b) = b := by aesop
-      conv =>
-        lhs
-        congr
-        · skip
-        ext m
-        rw [this m]
-      rw [Finset.sum_const_zero]
+    · apply Finset.sum_eq_zero
+      intro m _
+      have hne : e ≠ n * m := by
+        intro hm
+        apply h
+        rw [hm, Nat.mul_mod_right]
+      simp [hne]
   conv =>
     rhs
     congr
@@ -158,62 +171,12 @@ lemma splitNth_def (n : ℕ) (f : 𝔽[X]) [inst : NeZero n] :
     intros h₀ h₁ h₂
     exfalso
     apply h₀
-    have : e % n = b % n := by
-      have h₁' := h₁
-      rw [←Nat.div_add_mod' e n, ←Nat.div_add_mod' b n] at h₁ h₂
-      by_cases h' : e % n ≥ b % n
-      · have eq1 : e / n * n + e % n - (b / n * n + b % n) =
-                   e / n * n + e % n - b / n * n - b % n := by omega
-        rw [eq1] at h₁ h₂
-        have eq2 : e / n * n + e % n - b / n * n = ((e / n) - (b / n)) * n + e % n := by
-          have : e / n * n + e % n - b / n * n = (e / n * n - b / n * n) + e % n :=
-            Nat.sub_add_comm (Nat.mul_le_mul (Nat.div_le_div_right h₁') (by rfl))
-          rw [this, ←Nat.sub_mul]
-        rw [eq2] at h₂
-        have eq3 : ((e / n) - (b / n)) * n + e % n - b % n = ((e / n - b / n) * n) + (e % n - b % n) :=
-          Nat.add_sub_assoc h' ((e / n - b / n) * n)
-        rw [eq3] at h₂
-        rw [Nat.mul_add_mod_self_right] at h₂
-        rw [Nat.mod_eq_of_lt (Nat.sub_lt_of_lt (Nat.mod_lt _ (by linarith)))] at h₂
-        omega
-      · simp only [ge_iff_le, not_le] at h'
-        have eq1 : e / n * n + e % n - (b / n * n + b % n) =
-                   e / n * n + e % n - b / n * n - b % n := by omega
-        rw [eq1] at h₁ h₂
-        have eq2 : e / n * n + e % n - b / n * n = ((e / n) - (b / n)) * n + e % n := by
-          have : e / n * n + e % n - b / n * n = (e / n * n - b / n * n) + e % n :=
-            Nat.sub_add_comm (Nat.mul_le_mul (Nat.div_le_div_right h₁') (by rfl))
-          rw [this, ←Nat.sub_mul]
-        rw [eq2] at h₂
-        have step1 : e / n - b / n = (e / n - b / n - 1) + 1 := by
-          refine Eq.symm (Nat.sub_add_cancel ?_)
-          rw [Nat.one_le_iff_ne_zero]
-          intros hz
-          have : e / n ≤ b / n := Nat.le_of_sub_eq_zero hz
-          nlinarith
-        rw (occs := .pos [1]) [step1] at eq2
-        rw [right_distrib, one_mul, add_assoc] at eq2
-        have : ((e / n - b / n - 1) + 1) * n = (e / n - b / n - 1) * n + n := by ring
-        rw [this] at eq2
-        have step2 : (e / n - b / n - 1) * n + n + e % n - b % n =
-                     ((e / n - b / n - 1) * n) + (n - (b % n - e % n)) := by
-          have : n + e % n = e % n + n := by ring
-          have : n + e % n - b % n = (n - (b % n - e % n)) + e % n := by
-            have bmod_le : b % n ≤ n := Nat.mod_lt b (by linarith)
-            omega
-          omega
-        rw [step2] at h₂
-        rw [Nat.mul_add_mod_self_right] at h₂
-        have {a : ℕ} : (n - a) % n = 0 ∧ a < n → a = 0 := by
-          intros ⟨hmod, hlt⟩
-          rcases exists_eq_mul_left_of_dvd (Nat.dvd_of_mod_eq_zero hmod) with ⟨c, hc⟩
-          have : a = (1 - c)*n := by omega
-          have : (1 - c) * n < n := this ▸ hlt
-          omega
-        exact this ⟨h₂, by apply Nat.sub_lt_of_lt; apply Nat.mod_lt; linarith⟩
-    rw [this]
-    exact Eq.symm (Nat.mod_eq_of_lt h)
-  · intros h
+    symm
+    calc
+      e % n = ((e - b) + b) % n := by rw [Nat.sub_add_cancel h₁]
+      _ = (((e - b) % n) + b % n) % n := by rw [Nat.add_mod]
+      _ = b := by simp [h₂, Nat.mod_eq_of_lt h]
+  · intro h
     simp at h
 
 /- Lemma bounding degree of each `n`-split polynomial. -/
@@ -235,10 +198,10 @@ lemma splitNth_degree_le {n : ℕ} {f : 𝔽[X]} [inst : NeZero n] :
 /-- `foldingPolynomial` in terms of `splitNth`
     when `q = X ^ n`. -/
 @[simp]
-lemma folding_polynomial_eq_sum_splitNth {𝔽 : Type} [Field 𝔽]
+lemma folding_polynomial_eq_sum_splitNth {𝔽 : Type*} [Field 𝔽]
   {f : Polynomial 𝔽} {n : ℕ}
   [inst : NeZero n] :
-  FoldingPolynomial.foldingPolynomial (X ^ n) f = 
+  FoldingPolynomial.foldingPolynomial (X ^ n) f =
     ∑ i, C (splitNth f n i) * (X ^ i.val) := by
   symm
   apply FoldingPolynomial.folding_polynomial_is_unique'
@@ -247,8 +210,8 @@ lemma folding_polynomial_eq_sum_splitNth {𝔽 : Type} [Field 𝔽]
       rw [splitNth_def (f := f) (inst := inst)]
     rw [
       Polynomial.map_sum,
-      Polynomial.eval_finset_sum] 
-    simp only [Polynomial.map_mul, map_C, coe_compRingHom, Polynomial.map_pow, map_X, 
+      Polynomial.eval_finset_sum]
+    simp only [Polynomial.map_mul, map_C, coe_compRingHom, Polynomial.map_pow, map_X,
     eval_mul, eval_C, eval_pow, eval_X]
     simp only [comp]
     conv =>
@@ -276,20 +239,20 @@ lemma folding_polynomial_eq_sum_splitNth {𝔽 : Type} [Field 𝔽]
     apply Polynomial.natDegree_sum_le_of_forall_le
     intro i _
     apply Nat.le_trans Polynomial.natDegree_mul_le
-    rcases i with ⟨i, hi⟩ 
+    rcases i with ⟨i, hi⟩
     simp
     omega
 
 /-- `polyFold` in terms of `splitNth`. -/
 @[simp]
-lemma polyFold_eq_sum_of_splitNth {𝔽 : Type} [Field 𝔽]
+lemma polyFold_eq_sum_of_splitNth {𝔽 : Type*} [Field 𝔽]
   {f : 𝔽[X]} {n : ℕ} {r : 𝔽}
   [inst : NeZero n] :
-  FoldingPolynomial.polyFold f n r = 
+  FoldingPolynomial.polyFold f n r =
     ∑ i, C (r ^ i.val) * splitNth f n i := by
   simp only [FoldingPolynomial.polyFold, folding_polynomial_eq_sum_splitNth, map_pow]
   rw [Polynomial.eval_finset_sum]
-  simp only [eval_mul, eval_C, eval_pow, eval_X] 
+  simp only [eval_mul, eval_C, eval_pow, eval_X]
   conv =>
     lhs
     rhs
@@ -332,26 +295,59 @@ variable {𝔽 : Type*} [Field 𝔽]
 
 /-- Helper lemma: `splitNth` of monomial at even position -/
 lemma splitNth_monomial_even (a : 𝔽) (k : ℕ) :
-    splitNth (monomial (2 * k) a) 2 0 = monomial k a := by
-  ext j; simp [splitNth_def, coeff_monomial]; omega
+    splitNth (monomial (k + k) a) 2 0 = monomial k a := by
+  ext j
+  by_cases hdeg : k + k = j * 2
+  · have hj : j = k := by omega
+    subst hj
+    rw [coeff_splitNth, coeff_monomial, coeff_monomial]
+    rw [if_pos (by omega), if_pos rfl]
+  · have hkj : k ≠ j := by omega
+    rw [coeff_splitNth, coeff_monomial, coeff_monomial]
+    rw [if_neg (by omega), if_neg hkj]
+
+/-- Helper lemma: the odd split of an even monomial vanishes. -/
+lemma splitNth_monomial_even_odd_zero (a : 𝔽) (k : ℕ) :
+    splitNth (monomial (k + k) a) 2 1 = 0 := by
+  ext j
+  by_cases hdeg : k + k = j * 2 + 1
+  · omega
+  · simp [coeff_splitNth, coeff_monomial, hdeg]
 
 /-- Helper lemma: `splitNth` of monomial at odd position -/
 lemma splitNth_monomial_odd (a : 𝔽) (k : ℕ) :
     splitNth (monomial (2 * k + 1) a) 2 1 = monomial k a := by
-  ext j; simp [splitNth_def, coeff_monomial]; omega
+  ext j
+  by_cases hdeg : 2 * k = j * 2
+  · have hj : j = k := by omega
+    subst hj
+    rw [coeff_splitNth, coeff_monomial, coeff_monomial]
+    rw [if_pos (by omega), if_pos rfl]
+  · have hkj : k ≠ j := by omega
+    rw [coeff_splitNth, coeff_monomial, coeff_monomial]
+    rw [if_neg (by omega), if_neg hkj]
+
+/-- Helper lemma: the even split of an odd monomial vanishes. -/
+lemma splitNth_monomial_odd_even_zero (a : 𝔽) (k : ℕ) :
+    splitNth (monomial (2 * k + 1) a) 2 0 = 0 := by
+  ext j
+  by_cases hdeg : 2 * k + 1 = j * 2
+  · omega
+  · simp [coeff_splitNth, coeff_monomial, hdeg]
 
 /-- Definition: `foldNth n f β` is the linear combination of the n-way splits.
 
-For a polynomial `f` split into `n` component polynomials `splitNth f n 0, ..., splitNth f n (n-1)`,
+For a polynomial `f` split into `n` component polynomials
+`splitNth f n 0, ..., splitNth f n (n-1)`,
 this recombines them using powers of `β`:
-`foldNth n f β = ∑ i : Fin n, β ^ i * splitNth f n i`
+`foldNth n f β = ∑ i : Fin n, C (β ^ i) * splitNth f n i`
 
 This is the core operation in FRI-style polynomial commitment schemes. -/
-def foldNth (n : ℕ) (f : 𝔽[X]) (β : 𝔽) [NeZero n] : 𝔽[X] :=
-  ∑ i : Fin n, β ^ i.val * splitNth f n i
+noncomputable def foldNth (n : ℕ) (f : 𝔽[X]) (β : 𝔽) [NeZero n] : 𝔽[X] :=
+  ∑ i : Fin n, C (β ^ i.val) * splitNth f n i
 
 lemma foldNth_eq_sum_splitNth {n : ℕ} [NeZero n] (f : 𝔽[X]) (β : 𝔽) :
-    foldNth n f β = ∑ i : Fin n, β ^ i.val * splitNth f n i := rfl
+    foldNth n f β = ∑ i : Fin n, C (β ^ i.val) * splitNth f n i := rfl
 
 /-- Lemma 2: Even evaluation identity
 
@@ -363,23 +359,22 @@ coefficients of `f` at even-degree positions. -/
 lemma splitNth_two_eval_add (f : 𝔽[X]) (x : 𝔽) :
     f.eval x + f.eval (-x) = 2 * (splitNth f 2 0).eval (x ^ 2) := by
   induction f using Polynomial.induction_on' with
-  | h_add p q hp hq =>
-    simp [eval_add, hp, hq]
+  | add p q hp hq =>
+    rw [splitNth_add]
+    simp only [eval_add, Fin.isValue]
+    rw [mul_add, ← hp, ← hq]
     ring
-  | h_monomial n a =>
+  | monomial n a =>
     rcases Nat.even_or_odd n with ⟨k, hk⟩ | ⟨k, hk⟩
     · -- even case: n = 2k
       subst hk
-      simp [splitNth_monomial_even, eval_monomial]
-      ring_nf
-      simp [neg_pow, even_two_mul]
+      rw [splitNth_monomial_even]
+      simp [eval_monomial]
       ring
     · -- odd case: n = 2k + 1
       subst hk
-      simp [splitNth_monomial_odd, eval_monomial]
-      ring_nf
-      simp [neg_pow, Nat.odd_add, odd_two_mul_add_one]
-      ring
+      rw [splitNth_monomial_odd_even_zero]
+      simp [eval_monomial, pow_succ, pow_mul]
 
 /-- Lemma 3: Odd evaluation identity
 
@@ -390,22 +385,21 @@ where the "odd part" is `splitNth f 2 1` — collecting coefficients at odd posi
 lemma splitNth_two_eval_sub (f : 𝔽[X]) (x : 𝔽) :
     f.eval x - f.eval (-x) = 2 * x * (splitNth f 2 1).eval (x ^ 2) := by
   induction f using Polynomial.induction_on' with
-  | h_add p q hp hq =>
-    simp [eval_add, hp, hq]
+  | add p q hp hq =>
+    rw [splitNth_add]
+    simp only [eval_add, Fin.isValue]
+    rw [mul_add, ← hp, ← hq]
     ring
-  | h_monomial n a =>
+  | monomial n a =>
     rcases Nat.even_or_odd n with ⟨k, hk⟩ | ⟨k, hk⟩
     · -- even case: contributes 0 to the odd part
       subst hk
-      simp [splitNth_monomial_even, eval_monomial]
-      ring_nf
-      simp [neg_pow, even_two_mul]
-      ring
+      rw [splitNth_monomial_even_odd_zero]
+      simp [eval_monomial]
     · -- odd case: n = 2k+1
       subst hk
-      simp [splitNth_monomial_odd, eval_monomial]
-      ring_nf
-      simp [neg_pow, odd_two_mul_add_one]
+      rw [splitNth_monomial_odd]
+      simp [eval_monomial, pow_succ]
       ring
 
 /-- Lemma 4: FRI folding evaluation
@@ -418,9 +412,9 @@ lemma foldNth_two_eval (f : 𝔽[X]) (x β : 𝔽)
     (f.eval x + f.eval (-x) +
       β * (f.eval x - f.eval (-x)) * x⁻¹) * (2 : 𝔽)⁻¹ := by
   rw [foldNth_eq_sum_splitNth]
-  simp only [Fin.sum_univ_two, eval_add, eval_mul, eval_pow, eval_X]
-  rw [← splitNth_two_eval_add, ← splitNth_two_eval_sub]
-  field_simp
-  ring
+  simp only [Fin.sum_univ_two, eval_add, eval_mul, eval_C]
+  norm_num
+  rw [splitNth_two_eval_add f x, splitNth_two_eval_sub f x]
+  field_simp [hx, h2]
 
 end Polynomial

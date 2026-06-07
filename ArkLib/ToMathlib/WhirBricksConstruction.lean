@@ -541,6 +541,40 @@ noncomputable def paperTranscriptVectorIOP {M : ℕ} {ιs : Fin (M + 1) → Type
   prover := paperTranscriptOracleProver P d makeTranscript
   verifier := paperTranscriptOracleVerifier P d verify
 
+omit [Field F] [DecidableEq F] [Fintype ι] [DecidableEq ι] [Nonempty ι] in
+/-- Package the two semantic proof obligations for the paper-transcript adapter into the
+`VectorIOP.IsSecureWithGap` class consumed by the WHIR RBR assembly wrappers.
+
+This is pure assembly around the concrete `paperTranscriptVectorIOP`: callers still have to prove
+perfect completeness for the supplied transcript generator and RBR knowledge soundness for the
+supplied verifier logic. -/
+theorem paperTranscriptVectorIOP_isSecureWithGap_of_complete_and_rbr {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ)
+    (makeTranscript :
+      (Unit × (∀ u : Unit, OracleStatement (ιs 0) F u)) × Unit → PaperTranscriptData P d)
+    (verify :
+      Unit → ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Challenges →
+        OptionT
+          (OracleComp
+            ([]ₒ +
+              ([OracleStatement (ιs 0) F]ₒ +
+                [((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Message]ₒ)))
+          Bool)
+    {completeRelation soundRelation :
+      Set ((Unit × ∀ i, OracleStatement (ιs 0) F i) × Unit)}
+    {ε_rbr : (whirPaperTranscriptVectorSpec P d).ChallengeIdx → ℝ≥0}
+    (hComplete :
+      (paperTranscriptVectorIOP P d makeTranscript verify).perfectCompleteness
+        (pure ()) isEmptyElim completeRelation)
+    (hRbr :
+      OracleProof.rbrKnowledgeSoundness (pure ()) isEmptyElim soundRelation
+        (paperTranscriptOracleVerifier P d verify) ε_rbr) :
+    VectorIOP.IsSecureWithGap completeRelation soundRelation ε_rbr
+      (paperTranscriptVectorIOP P d makeTranscript verify) where
+  is_complete := hComplete
+  is_rbr_knowledge_sound := hRbr
+
 omit [Fintype F] [DecidableEq F] [SampleableType F] in
 /-- Folding challenges for each WHIR transition, read from the paper-order transcript schedule.
 
@@ -1432,7 +1466,7 @@ theorem whirRbrBudgetValue_isLUB {M : ℕ} {ιs : Fin (M + 1) → Type}
       ε_fin ≤ c → whirRbrBudgetValue P ε_fold ε_out ε_shift ε_fin ≤ c) :=
   Issue113WHIR.epsRbr_isLUB (fp := P.foldingParam) ε_fold ε_out ε_shift ε_fin
 
-omit [Fintype ι] [DecidableEq ι] [Nonempty ι] in
+omit [Fintype ι] [Nonempty ι] in
 /-- Using the named WHIR RBR budget in `IsSecureWithGap` is definitionally the same as using the
 inline `ε_rbr` expression from `whir_rbr_soundness`. -/
 theorem whirSecureWithGap_namedBudget_iff_inline {M : ℕ}
@@ -1446,7 +1480,7 @@ theorem whirSecureWithGap_namedBudget_iff_inline {M : ℕ}
       (whirRelation m_0 (P.φ 0) δ)
       (fun _ : vPSpec.ChallengeIdx => whirRbrBudgetValue P ε_fold ε_out ε_shift ε_fin) π ↔
     (let max_ε_folds : (i : Fin (M + 1)) → ℝ≥0 :=
-        fun i => (univ : Finset (Fin (P.foldingParam i))).sup (ε_fold i)
+        fun i => (Finset.univ : Finset (Fin (P.foldingParam i))).sup (ε_fold i)
       let ε_rbr : vPSpec.ChallengeIdx → ℝ≥0 :=
         fun _ => ((Finset.univ : Finset (Fin (M + 1))).image max_ε_folds ∪ {ε_fin} ∪
           (Finset.univ : Finset (Fin (M + 1))).image ε_out ∪
@@ -1673,6 +1707,7 @@ end RBRSoundnessAssembly
 #print axioms paperTranscriptOracleProver
 #print axioms paperTranscriptOracleVerifier
 #print axioms paperTranscriptVectorIOP
+#print axioms paperTranscriptVectorIOP_isSecureWithGap_of_complete_and_rbr
 #print axioms paperTranscriptFoldingChallenge
 #print axioms paperTranscriptFoldingChallenge_zero
 #print axioms paperTranscriptFoldingChallenge_succ

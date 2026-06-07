@@ -399,6 +399,136 @@ theorem alphaWeight_of_normalized_divWeight_cases_of_restrictedMatch
   (alphaWeight_iff_normalized_divWeight_cases_of_restrictedMatch
     H x₀ R hHyp hH D hmatch).2 ⟨h0, hsucc⟩
 
+theorem alphaWeight_iff_divWeight_of_fullVanishes
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hvan : FaaDiBrunoFullSumVanishes H x₀ R hHyp) :
+    AlphaGenuineRegularWeightLe H x₀ R hHyp hH D ↔
+      DivWeightLe H x₀ R hHyp hH D :=
+  AlphaWeight.alphaWeight_iff_divWeight_of_succLift H x₀ R hHyp hH D
+    (fun t => (P2_closed_of_fullVanishes H x₀ R hHyp hvan).2 (t + 1))
+
+theorem divWeight_of_alphaWeight_of_fullVanishes
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hvan : FaaDiBrunoFullSumVanishes H x₀ R hHyp)
+    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D) :
+    DivWeightLe H x₀ R hHyp hH D :=
+  (alphaWeight_iff_divWeight_of_fullVanishes
+    H x₀ R hHyp hH D hvan).1 hα
+
+theorem alphaWeight_of_divWeight_of_fullVanishes
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hvan : FaaDiBrunoFullSumVanishes H x₀ R hHyp)
+    (hdiv : DivWeightLe H x₀ R hHyp hH D) :
+    AlphaGenuineRegularWeightLe H x₀ R hHyp hH D :=
+  (alphaWeight_iff_divWeight_of_fullVanishes
+    H x₀ R hHyp hH D hvan).2 hdiv
+
+theorem normalized_divWeight_cases_of_alphaWeight_of_fullVanishes
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hvan : FaaDiBrunoFullSumVanishes H x₀ R hHyp)
+    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D) :
+      (∃ a : 𝒪 H,
+        βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+          weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1) ∧
+        ∀ t : ℕ, ∃ a : 𝒪 H,
+          βHensel H x₀ R hHyp (t + 1)
+            = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+            weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1 :=
+  (alphaWeight_iff_normalized_divWeight_cases_of_fullVanishes
+    H x₀ R hHyp hH D hvan).1 hα
+
+theorem normalized_divWeight_zero_of_alphaWeight_of_fullVanishes
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hvan : FaaDiBrunoFullSumVanishes H x₀ R hHyp)
+    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D) :
+    ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1 :=
+  (normalized_divWeight_cases_of_alphaWeight_of_fullVanishes
+    H x₀ R hHyp hH D hvan hα).1
+
+theorem normalized_divWeight_succ_of_alphaWeight_of_fullVanishes
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D t : ℕ)
+    (hvan : FaaDiBrunoFullSumVanishes H x₀ R hHyp)
+    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D) :
+    ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp (t + 1)
+        = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1 :=
+  (normalized_divWeight_cases_of_alphaWeight_of_fullVanishes
+    H x₀ R hHyp hH D hvan hα).2 t
+
+theorem alphaWeight_iff_divWeight_of_restrictedMatch
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp) :
+    AlphaGenuineRegularWeightLe H x₀ R hHyp hH D ↔
+      DivWeightLe H x₀ R hHyp hH D :=
+  AlphaWeight.alphaWeight_iff_divWeight_of_succLift H x₀ R hHyp hH D
+    (fun t => (P2_closed_of_restrictedMatch H x₀ R hHyp hmatch).2 (t + 1))
+
+theorem divWeight_of_alphaWeight_of_restrictedMatch
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp)
+    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D) :
+    DivWeightLe H x₀ R hHyp hH D :=
+  (alphaWeight_iff_divWeight_of_restrictedMatch
+    H x₀ R hHyp hH D hmatch).1 hα
+
+theorem alphaWeight_of_divWeight_of_restrictedMatch
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp)
+    (hdiv : DivWeightLe H x₀ R hHyp hH D) :
+    AlphaGenuineRegularWeightLe H x₀ R hHyp hH D :=
+  (alphaWeight_iff_divWeight_of_restrictedMatch
+    H x₀ R hHyp hH D hmatch).2 hdiv
+
+theorem normalized_divWeight_cases_of_alphaWeight_of_restrictedMatch
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp)
+    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D) :
+      (∃ a : 𝒪 H,
+        βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+          weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1) ∧
+        ∀ t : ℕ, ∃ a : 𝒪 H,
+          βHensel H x₀ R hHyp (t + 1)
+            = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+            weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1 :=
+  (alphaWeight_iff_normalized_divWeight_cases_of_restrictedMatch
+    H x₀ R hHyp hH D hmatch).1 hα
+
+theorem normalized_divWeight_zero_of_alphaWeight_of_restrictedMatch
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp)
+    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D) :
+    ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1 :=
+  (normalized_divWeight_cases_of_alphaWeight_of_restrictedMatch
+    H x₀ R hHyp hH D hmatch hα).1
+
+theorem normalized_divWeight_succ_of_alphaWeight_of_restrictedMatch
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D t : ℕ)
+    (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp)
+    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D) :
+    ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp (t + 1)
+        = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1 :=
+  (normalized_divWeight_cases_of_alphaWeight_of_restrictedMatch
+    H x₀ R hHyp hH D hmatch hα).2 t
+
 /-- Full P2 vanishing routes normalized divisibility base/successor targets to the structured
 `βHensel` weight invariant. -/
 theorem βHenselStructuredWeightInvariant_unlocked_of_normalized_divWeight_cases_of_fullVanishes
@@ -973,6 +1103,18 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.alphaWeight_of_normalized_divWeight_cases_of_fullVanishes
 #print axioms BCIKS20.HenselNumerator.alphaWeight_iff_normalized_divWeight_cases_of_restrictedMatch
 #print axioms BCIKS20.HenselNumerator.alphaWeight_of_normalized_divWeight_cases_of_restrictedMatch
+#print axioms BCIKS20.HenselNumerator.alphaWeight_iff_divWeight_of_fullVanishes
+#print axioms BCIKS20.HenselNumerator.divWeight_of_alphaWeight_of_fullVanishes
+#print axioms BCIKS20.HenselNumerator.alphaWeight_of_divWeight_of_fullVanishes
+#print axioms BCIKS20.HenselNumerator.normalized_divWeight_cases_of_alphaWeight_of_fullVanishes
+#print axioms BCIKS20.HenselNumerator.normalized_divWeight_zero_of_alphaWeight_of_fullVanishes
+#print axioms BCIKS20.HenselNumerator.normalized_divWeight_succ_of_alphaWeight_of_fullVanishes
+#print axioms BCIKS20.HenselNumerator.alphaWeight_iff_divWeight_of_restrictedMatch
+#print axioms BCIKS20.HenselNumerator.divWeight_of_alphaWeight_of_restrictedMatch
+#print axioms BCIKS20.HenselNumerator.alphaWeight_of_divWeight_of_restrictedMatch
+#print axioms BCIKS20.HenselNumerator.normalized_divWeight_cases_of_alphaWeight_of_restrictedMatch
+#print axioms BCIKS20.HenselNumerator.normalized_divWeight_zero_of_alphaWeight_of_restrictedMatch
+#print axioms BCIKS20.HenselNumerator.normalized_divWeight_succ_of_alphaWeight_of_restrictedMatch
 #print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_unlocked_of_normalized_divWeight_cases_of_fullVanishes
 #print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_unlocked_of_normalized_divWeight_cases_of_restrictedMatch
 #print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_all_unlocked_of_normalized_divWeight_cases_of_fullVanishes

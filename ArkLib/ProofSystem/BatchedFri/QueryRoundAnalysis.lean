@@ -11,7 +11,9 @@ import Mathlib
 
 The per-round query-soundness probability accounting: queryAcceptProb_eq (= |G|^t/N^t exact),
 queryAcceptProb_le (<= (1-d)^t), queryAcceptProb_add_detect (partition), queryDetectProb_ge,
-and the claim assembly. The batched-RLC reduction to per-function-far is the remaining input.
+and the claim assembly. The source tree now has the corresponding PMF route in
+`ArkLib.ToMathlib.FriQueryRoundProb` / `QueryRoundProbability.lean`; the remaining input is the
+protocol-specific correlated-agreement/proximity trigger and OracleReduction plumbing.
 -/
 
 open scoped NNReal ENNReal
@@ -263,8 +265,8 @@ acceptance analysis measures, and add the complementary detection bound the in-t
 code never stated.
 
 GENUINELY OPEN (named, isolated, NOT faked):
-  R1 — correlated-agreement → jointAgreement (deep BCIKS20 coding substrate)
-  R2 — virtual-oracle-lens / sequential-composition / total-error wiring (sibling plumbing)
+  R1 — protocol transcript → CA/proximity trigger → jointAgreement
+  R2 — virtual-oracle-lens / sequential-composition / total-error wiring
 -/
 
 end Issue14Scratch
