@@ -341,6 +341,44 @@ projection of the original typed schedule. -/
   | cons request schedule ih =>
       simp [BCSOpeningSchedule.toOpeningStatements, ih]
 
+/-- Membership in the indexed opening-statement view is exactly membership in the original typed
+schedule, transported through `BCSOpeningRequest.toOpeningStatement`. -/
+@[simp] theorem BCSOpeningSchedule.mem_toOpeningStatements_iff
+    {CommitmentType : pSpec.MessageIdx → Type}
+    (schedule : BCSOpeningSchedule (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType)
+    (statement : (i : pSpec.MessageIdx) ×
+      BCSOpeningStatementAt (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType i) :
+    statement ∈ schedule.toOpeningStatements ↔
+      ∃ request ∈ schedule, statement = ⟨request.messageIdx, request.toOpeningStatement⟩ := by
+  constructor
+  · intro h
+    rw [BCSOpeningSchedule.toOpeningStatements] at h
+    rcases List.mem_map.mp h with ⟨request, hmem, hstatement⟩
+    exact ⟨request, hmem, hstatement.symm⟩
+  · rintro ⟨request, hmem, hstatement⟩
+    rw [BCSOpeningSchedule.toOpeningStatements]
+    exact List.mem_map.mpr ⟨request, hmem, hstatement.symm⟩
+
+/-- Every request in a typed opening schedule contributes its indexed opening statement. -/
+theorem BCSOpeningSchedule.mem_toOpeningStatements_of_mem
+    {CommitmentType : pSpec.MessageIdx → Type}
+    {schedule : BCSOpeningSchedule (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType}
+    {request : BCSOpeningRequest (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType}
+    (hrequest : request ∈ schedule) :
+    ⟨request.messageIdx, request.toOpeningStatement⟩ ∈ schedule.toOpeningStatements :=
+  (BCSOpeningSchedule.mem_toOpeningStatements_iff schedule _).2 ⟨request, hrequest, rfl⟩
+
+/-- A statement in the indexed opening-statement view comes from a typed request in the original
+schedule. -/
+theorem BCSOpeningSchedule.exists_request_of_mem_toOpeningStatements
+    {CommitmentType : pSpec.MessageIdx → Type}
+    {schedule : BCSOpeningSchedule (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType}
+    {statement : (i : pSpec.MessageIdx) ×
+      BCSOpeningStatementAt (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType i}
+    (hstatement : statement ∈ schedule.toOpeningStatements) :
+    ∃ request ∈ schedule, statement = ⟨request.messageIdx, request.toOpeningStatement⟩ :=
+  (BCSOpeningSchedule.mem_toOpeningStatements_iff schedule statement).1 hstatement
+
 /-- The typed opening-log boundary for the not-yet-generic BCS compiler.
 
 The current `BCSCompiledPhases` interface still accepts an abstract opening phase.  This structure
@@ -707,6 +745,9 @@ generic compiler construction or the completeness/soundness preservation theorem
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_cons
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_length
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_map_messageIdx
+#print axioms OracleReduction.BCSOpeningSchedule.mem_toOpeningStatements_iff
+#print axioms OracleReduction.BCSOpeningSchedule.mem_toOpeningStatements_of_mem
+#print axioms OracleReduction.BCSOpeningSchedule.exists_request_of_mem_toOpeningStatements
 #print axioms OracleReduction.BCSOpeningLogFrontier
 #print axioms OracleReduction.BCSOpeningLogFrontierSatisfied
 #print axioms OracleReduction.BCSOpeningLogFrontierSatisfied.intro
