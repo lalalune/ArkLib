@@ -370,6 +370,19 @@ theorem reedSolomon_listDecodable [Fintype F] [Nonempty ι] {k dX dZ : ℕ} [NeZ
       ((ReedSolomon.code α k : Set (ι → F))) y δ).ncard ≤ dZ := by exact_mod_cast hy
   exact_mod_cast hnat
 
+/-- **Reed–Solomon unique-decodability (list-decoding form).**  The `dZ = 1` case: under the
+unique-decoding-rate Sudan conditions, `RS[k]` is uniquely decodable at radius `δ` (ArkLib's
+`uniqueDecodable` predicate, i.e. `(δ, 1)`-list-decodable). -/
+theorem reedSolomon_uniqueDecodable [Fintype F] [Nonempty ι] {k dX : ℕ} [NeZero k] {α : ι ↪ F}
+    {δ : ℝ} (hδ0 : 0 ≤ δ)
+    (hbig : Fintype.card ι < (dX + 1) * 2)
+    (he : ⌊δ * Fintype.card ι⌋₊ < Fintype.card ι)
+    (hdeg : dX + (k - 1) < Fintype.card ι - ⌊δ * Fintype.card ι⌋₊) :
+    ListDecodable.uniqueDecodable ((ReedSolomon.code α k : Set (ι → F))) δ := by
+  have h := reedSolomon_listDecodable (α := α) (k := k) (dX := dX) (dZ := 1) hδ0
+    (by simpa using hbig) he (by simpa using hdeg)
+  simpa [ListDecodable.uniqueDecodable] using h
+
 open Polynomial in
 /-- **Berlekamp–Welch key-equation existence.**  If a received word `y` is within `e` Hamming
 errors of the Reed–Solomon codeword `eval f` (`f` of degree `< k`), then the Berlekamp–Welch key
