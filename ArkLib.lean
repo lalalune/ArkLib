@@ -216,6 +216,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Hab25JohnsonNumericBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Multiplicity
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25MultiplicityBridge
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecoding
+import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingBadScalarCount
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingCounting
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingCoverage
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingGrandChallenges

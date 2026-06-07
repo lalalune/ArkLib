@@ -50,6 +50,28 @@ radius `δ`. -/
 noncomputable def mcaBadCount (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A) : ℕ :=
   (Finset.univ.filter (fun γ : F => mcaEvent C δ u₀ u₁ γ)).card
 
+/-- If no scalar realizes the MCA bad event, the finite bad-scalar count is zero. -/
+theorem mcaBadCount_eq_zero_of_forall_not_mcaEvent
+    (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A)
+    (h : ∀ γ : F, ¬ mcaEvent C δ u₀ u₁ γ) :
+    mcaBadCount (F := F) C δ u₀ u₁ = 0 := by
+  classical
+  rw [mcaBadCount, Finset.card_eq_zero, Finset.filter_eq_empty_iff]
+  intro γ _ hγ
+  exact h γ hγ
+
+/-- The finite bad-scalar count vanishes exactly when no scalar realizes the MCA bad event. -/
+theorem mcaBadCount_eq_zero_iff_forall_not_mcaEvent
+    (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A) :
+    mcaBadCount (F := F) C δ u₀ u₁ = 0 ↔
+      ∀ γ : F, ¬ mcaEvent C δ u₀ u₁ γ := by
+  classical
+  constructor
+  · intro hzero γ hγ
+    rw [mcaBadCount, Finset.card_eq_zero, Finset.filter_eq_empty_iff] at hzero
+    exact hzero (Finset.mem_univ γ) hγ
+  · exact mcaBadCount_eq_zero_of_forall_not_mcaEvent C δ u₀ u₁
+
 /-- The probability of the MCA event is exactly the normalised bad-scalar count. -/
 theorem pr_mcaEvent_eq_mcaBadCount_div (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A) :
     Pr_{ let γ ←$ᵖ F }[ mcaEvent C δ u₀ u₁ γ ] =
@@ -71,6 +93,29 @@ theorem epsMCA_eq_iSup_mcaBadCount (C : Set (ι → A)) (δ : ℝ≥0) :
   rw [ENNReal.iSup_div]
   exact iSup_congr fun u => pr_mcaEvent_eq_mcaBadCount_div C δ (u 0) (u 1)
 
+/-- If every stack has zero bad scalars, then the MCA error vanishes. -/
+theorem epsMCA_eq_zero_of_forall_mcaBadCount_eq_zero (C : Set (ι → A)) (δ : ℝ≥0)
+    (h : ∀ u : WordStack A (Fin 2) ι,
+      mcaBadCount (F := F) C δ (u 0) (u 1) = 0) :
+    epsMCA (F := F) C δ = 0 := by
+  classical
+  rw [epsMCA_eq_iSup_mcaBadCount]
+  have hzero : ∀ u : WordStack A (Fin 2) ι,
+      (mcaBadCount (F := F) C δ (u 0) (u 1) : ℝ≥0∞) = 0 := by
+    intro u
+    rw [h u]
+    simp
+  rw [iSup_congr hzero]
+  simp
+
+/-- If no stack/scalar pair realizes the MCA bad event, then the MCA error vanishes. -/
+theorem epsMCA_eq_zero_of_forall_not_mcaEvent (C : Set (ι → A)) (δ : ℝ≥0)
+    (h : ∀ (u : WordStack A (Fin 2) ι) (γ : F),
+      ¬ mcaEvent C δ (u 0) (u 1) γ) :
+    epsMCA (F := F) C δ = 0 :=
+  epsMCA_eq_zero_of_forall_mcaBadCount_eq_zero C δ fun u =>
+    mcaBadCount_eq_zero_of_forall_not_mcaEvent C δ (u 0) (u 1) (h u)
+
 /-- **The formalized Grand MCA Challenge is a finite extremal-count statement.** For a
 linear code `C` and threshold `ε*`, the challenge predicate holds iff *every* line word
 has at most `ε*·q` bad scalars at radius one. -/
@@ -85,5 +130,10 @@ theorem grandMCAChallenge_iff_forall_badCount_le (C : LinearCode ι F) (ε_star 
     exact Fintype.card_ne_zero
   have hqt : (Fintype.card F : ℝ≥0∞) ≠ ⊤ := ENNReal.natCast_ne_top _
   rw [ENNReal.div_le_iff hq0 hqt, iSup_le_iff]
+
+#print axioms ProximityGap.mcaBadCount_eq_zero_of_forall_not_mcaEvent
+#print axioms ProximityGap.mcaBadCount_eq_zero_iff_forall_not_mcaEvent
+#print axioms ProximityGap.epsMCA_eq_zero_of_forall_mcaBadCount_eq_zero
+#print axioms ProximityGap.epsMCA_eq_zero_of_forall_not_mcaEvent
 
 end ProximityGap
