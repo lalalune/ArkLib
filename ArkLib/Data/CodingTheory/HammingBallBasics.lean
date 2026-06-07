@@ -61,6 +61,14 @@ theorem listDecodable_of_Lambda_le {F : Type*} [Fintype F] [DecidableEq F]
   have hnat : (closeCodewordsRel C y δ).ncard ≤ ℓ := by exact_mod_cast hy
   exact_mod_cast hnat
 
+/-- **`Lambda` is monotone in the code**: a subcode has a smaller maximised list size, since each
+point list `closeCodewordsRel` grows with the code. -/
+theorem Lambda_mono_code {F : Type*} [Finite F] {C C' : Code ι F} (h : C ⊆ C') (δ : ℝ) :
+    Lambda C δ ≤ Lambda C' δ := by
+  refine iSup_mono fun f => ?_
+  have hsub : closeCodewordsRel C f δ ⊆ closeCodewordsRel C' f δ := fun c hc => ⟨h hc.1, hc.2⟩
+  exact_mod_cast Set.ncard_le_ncard hsub (Set.toFinite _)
+
 end ListDecodable
 
 #print axioms ListDecodable.self_mem_hammingBall
@@ -69,3 +77,4 @@ end ListDecodable
 #print axioms ListDecodable.hammingBall_zero
 #print axioms ListDecodable.listDecodable_of_radius_le
 #print axioms ListDecodable.listDecodable_of_Lambda_le
+#print axioms ListDecodable.Lambda_mono_code
