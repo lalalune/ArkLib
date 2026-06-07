@@ -363,6 +363,36 @@ theorem finalCheckWithClaimValueRelResidual_holds :
   intro target stmt oStmt hTarget
   exact finalCheckWithClaimValueRelIn_of_secondSumcheckEval R pp target stmt oStmt hTarget
 
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- The algebraic second-sum-check endpoint residual implies the pure final-check value relation
+residual. This is the named dependency direction for terminal composition. -/
+theorem finalCheckWithClaimValueRelResidual_of_secondSumcheckTerminalEndpointResidual
+    (hEndpoint : secondSumcheckTerminalEndpointResidual R pp) :
+    finalCheckWithClaimValueRelResidual R pp := by
+  intro target stmt oStmt hTarget
+  exact finalCheckWithClaimValueRelIn_of_finalExpectedClaimValue R pp target stmt oStmt (by
+    rw [hTarget, hEndpoint stmt oStmt])
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- The pure final-check value relation residual recovers the algebraic second-sum-check endpoint
+residual by instantiating the carried target with the second-sum-check endpoint. -/
+theorem secondSumcheckTerminalEndpointResidual_of_finalCheckWithClaimValueRelResidual
+    (hRel : finalCheckWithClaimValueRelResidual R pp) :
+    secondSumcheckTerminalEndpointResidual R pp := by
+  intro stmt oStmt
+  exact finalExpectedClaimValue_eq_of_finalCheckWithClaimValueRelIn R pp
+    (MvPolynomial.eval stmt.1 (secondSumCheckVirtualPolynomial R pp stmt.2 oStmt)) stmt oStmt
+    (hRel (MvPolynomial.eval stmt.1 (secondSumCheckVirtualPolynomial R pp stmt.2 oStmt))
+      stmt oStmt rfl)
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- The terminal target-relation residual and the algebraic second-sum-check endpoint residual are
+equivalent. Later Spartan composition work can choose either residual surface. -/
+theorem finalCheckWithClaimValueRelResidual_iff_secondSumcheckTerminalEndpointResidual :
+    finalCheckWithClaimValueRelResidual R pp ↔ secondSumcheckTerminalEndpointResidual R pp :=
+  ⟨secondSumcheckTerminalEndpointResidual_of_finalCheckWithClaimValueRelResidual R pp,
+    finalCheckWithClaimValueRelResidual_of_secondSumcheckTerminalEndpointResidual R pp⟩
+
 /-- The terminal-check input relation: the random-linear-combination of the bundled evaluation
 claims, taken in the clear at the prover's view, is well-formed. (The value-level relation; the
 oracle reduction's verifier checks `finalPredicate`.) -/
@@ -641,6 +671,9 @@ def composedRbrKnowledgeSoundnessWithClaimResidual
 #print axioms finalCheckWithClaimValueRelIn_of_secondSumcheckEval
 #print axioms finalCheckWithClaimValueRelResidual
 #print axioms finalCheckWithClaimValueRelResidual_holds
+#print axioms finalCheckWithClaimValueRelResidual_of_secondSumcheckTerminalEndpointResidual
+#print axioms secondSumcheckTerminalEndpointResidual_of_finalCheckWithClaimValueRelResidual
+#print axioms finalCheckWithClaimValueRelResidual_iff_secondSumcheckTerminalEndpointResidual
 #print axioms finalCheckRelIn
 #print axioms finalCheckRelOut
 #print axioms firstSumcheckResidual
