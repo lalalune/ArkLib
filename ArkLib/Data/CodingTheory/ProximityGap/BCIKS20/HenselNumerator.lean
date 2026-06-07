@@ -953,9 +953,15 @@ lemma weight_Λ_le_natDegreeY_mul_add_degreeX (f : F[X][Y]) (D : ℕ) :
       ≤ Bivariate.natDegreeY f * (D + 1 - Bivariate.natDegreeY H) + Bivariate.degreeX f :=
         Nat.add_le_add (Nat.mul_le_mul_right _ hn_le) hcoeff_le
 
-/-- **(STEP a, the full `B_coeff` weight bound) — PROVEN, axiom-clean, P2-INDEPENDENT.**
+/-- **(STEP a, the full `B_coeff` weight bound) — PROVEN as a `theorem`, kernel-clean, P2-INDEPENDENT.**
 `weight_Λ_over_𝒪 hH (B_coeff … i1 λ) D ≤ (natDegreeY R − Σλ)·(D+1−natDegreeY H) + degreeX p`, where
 `p = evalX (C x₀) (Δ_X^{i1} Δ_Y^{Σλ} R)` is the iterated-Hasse representative polynomial.
+
+Discharged from the named in-tree ingredients via the degree-decomposition route (#138/#139):
+`B_coeff_weight_le_hasse` (prefactor + `mk`-representative) ▸ `weight_Λ_over_𝒪_le_of_mk_eq`
+(descend `𝒪`-weight to the polynomial weight of `p`) ▸ `weight_Λ_le_natDegreeY_mul_add_degreeX`
+(split into `natDegreeY p · c + degreeX p`) ▸ `hasseCoeffRepr𝒪_natDegreeY_le` (the `Y`-degree drop
+`natDegreeY p ≤ natDegreeY R − Σλ`).  `#print axioms` ⊆ {propext, Classical.choice, Quot.sound}.
 
 This is the genuine `B_coeff` weight bound assembled from the two P2-independent components:
 * the **`Y`-degree drop** `natDegreeY p ≤ natDegreeY R − Σλ` (`hasseCoeffRepr𝒪_natDegreeY_le`,
@@ -969,7 +975,7 @@ The integer `prefactor` scalar is absorbed by `B_coeff_weight_le_hasse`; the `mk
 weight is bounded by the polynomial weight via `weight_Λ_over_𝒪_le_of_mk_eq`; the polynomial weight
 splits into the `Y`/`X` components via `weight_Λ_le_natDegreeY_mul_add_degreeX`.  No `sorry`, no
 hypothesis beyond `totalDegree H ≤ D` (the standard `weight_Λ` premise). -/
-axiom B_coeff_weight_le (x₀ : F) (R : F[X][X][Y]) (i1 : ℕ) {m : ℕ}
+theorem B_coeff_weight_le (x₀ : F) (R : F[X][X][Y]) (i1 : ℕ) {m : ℕ}
     (lam : Nat.Partition m) (hH : 0 < H.natDegree) {D : ℕ}
     (hDH : Bivariate.totalDegree H ≤ D) :
     weight_Λ_over_𝒪 hH (B_coeff H x₀ R i1 lam) D
@@ -977,7 +983,16 @@ axiom B_coeff_weight_le (x₀ : F) (R : F[X][X][Y]) (i1 : ℕ) {m : ℕ}
           ((Bivariate.natDegreeY R - sigmaLambda lam) * (D + 1 - Bivariate.natDegreeY H)
             + Bivariate.degreeX
                 (Bivariate.evalX (Polynomial.C x₀)
-                  (hasseDerivX i1 (hasseDerivY (sigmaLambda lam) R))))
+                  (hasseDerivX i1 (hasseDerivY (sigmaLambda lam) R)))) := by
+  refine (B_coeff_weight_le_hasse H x₀ R i1 lam hH hDH).trans ?_
+  refine (weight_Λ_over_𝒪_le_of_mk_eq hDH hH
+      (r := Bivariate.evalX (Polynomial.C x₀)
+        (hasseDerivX i1 (hasseDerivY (sigmaLambda lam) R))) rfl).trans ?_
+  refine (weight_Λ_le_natDegreeY_mul_add_degreeX H _ D).trans ?_
+  refine WithBot.coe_le_coe.mpr ?_
+  exact Nat.add_le_add
+    (Nat.mul_le_mul_right _
+      (hasseCoeffRepr𝒪_natDegreeY_le x₀ R i1 (sigmaLambda lam))) (le_refl _)
 
 /-! ### 4b″. The `Z`-degree (`degreeX`) sharpening to the paper's literal `(D−Σλ)` (WAVE 1 ext)
 
