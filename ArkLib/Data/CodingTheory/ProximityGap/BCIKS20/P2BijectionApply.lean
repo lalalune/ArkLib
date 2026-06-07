@@ -95,9 +95,30 @@ theorem embed_βHensel_succ (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypothes
   rw [partitionProd_guard_eq H x₀ R hHyp t i1 lam (Finset.mem_filter.mp hlam).2]
   simp only [map_mul, map_pow]
 
+/-- **`coeff (t+1) βHenselAssembled` in `(i₁,λ)` partition form.**  Combines the definitional
+`coeff_mk` unfolding of `βHenselAssembled` with `embed_βHensel_succ`: the order-`(t+1)` coefficient
+is the embedded `(A.1)` recursion sum over `W^{t+2}·ξ^{2t+1}`.  Dual to
+`restrictedFaaDiBrunoSum_eq_partitionForm`; together both sides of `RestrictedFaaDiBrunoMatch` are
+now explicit partition sums, reducing the residual to a per-`(i₁,λ)` algebraic identity. -/
+theorem coeff_succ_βHenselAssembled_partitionForm (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) :
+    PowerSeries.coeff (t + 1) (βHenselAssembled H x₀ R hHyp)
+      = (- ∑ i1 ∈ Finset.range (t + 2),
+            ∑ lam ∈ (Finset.univ : Finset (Nat.Partition (t + 1 - i1))).filter
+                      (fun lam => (t + 1) ∉ lam.parts),
+              embeddingOf𝒪Into𝕃 H (W𝒪 H) ^ (i1 + deltaSave i1 - 1)
+                * embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp) ^ (2 * i1 + sigmaLambda lam - 2)
+                * embeddingOf𝒪Into𝕃 H (B_coeff H x₀ R i1 lam)
+                * embeddingOf𝒪Into𝕃 H (partitionProd lam (βHensel H x₀ R hHyp)))
+        / ((liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1 + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * (t + 1) - 1)) := by
+  unfold βHenselAssembled
+  rw [PowerSeries.coeff_mk, embed_βHensel_succ]
+
 end BCIKS20.HenselNumerator
 
 -- Axiom audit.
 #print axioms BCIKS20.HenselNumerator.restrictedFaaDiBrunoSum_eq_partitionForm
 #print axioms BCIKS20.HenselNumerator.partitionProd_guard_eq
 #print axioms BCIKS20.HenselNumerator.embed_βHensel_succ
+#print axioms BCIKS20.HenselNumerator.coeff_succ_βHenselAssembled_partitionForm

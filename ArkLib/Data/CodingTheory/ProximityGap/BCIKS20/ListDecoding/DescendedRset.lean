@@ -589,6 +589,35 @@ issue-#8 owner adopt the descended bundle while still satisfying existing `Claim
 consumers, with no disruption. -/
 
 omit [DecidableEq (RatFunc F)] [Finite F] in
+/-- **Graph-extraction bridge from the descended bundle.**  A `Claim57ResidualsDescended` instance
+produces the smaller `GraphExtractionHypotheses` package under the same coincidence
+`pg_RsetDescended = pg_Rset`.  This exposes the hfactor-free graph/count data directly, for callers
+that want the graph-extraction API rather than the legacy `Claim57Residuals` class. -/
+@[reducible]
+def GraphExtractionHypotheses.ofDescended
+    [DecidableEq (Polynomial F)] (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hres : Claim57ResidualsDescended (F := F) (m := m) (n := n) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) k δ x₀ h_gs)
+    (hcoincide : pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs
+      = pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs) :
+    GraphExtractionHypotheses (F := F) (m := m) (n := n) (k := k) (Q := Q)
+      (ωs := ωs) (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs where
+  hx0 := by
+    intro R hR
+    exact hres.hx0 R (hcoincide.symm ▸ hR)
+  hsep := by
+    intro R hR
+    exact hres.hsep R (hcoincide.symm ▸ hR)
+  hS_nonempty := hres.hS_nonempty
+  A := hres.A
+  hA := hres.hA
+  hcount := hres.hcount
+  hlarge := hres.hlarge
+
+omit [DecidableEq (RatFunc F)] [Finite F] in
 /-- **Incremental-adoption bridge.**  A `Claim57ResidualsDescended` instance produces a full
 `Claim57Residuals` instance under the coincidence `pg_RsetDescended = pg_Rset`.  All eight
 `Claim57Residuals` fields are discharged: `hx0`/`hsep` by transporting the descended fields along the
@@ -815,6 +844,7 @@ lemma claimA2_hypotheses_descended (δ : ℚ) (x₀ : F)
 
 /-! ### Axiom audit (issue #8 descended Claim 5.7 adoption surface) -/
 
+#print axioms ProximityGap.GraphExtractionHypotheses.ofDescended
 #print axioms ProximityGap.Claim57Residuals.ofDescended
 #print axioms ProximityGap.exists_factors_with_large_common_root_set_of_descended
 #print axioms ProximityGap.R_descended

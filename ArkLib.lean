@@ -642,6 +642,7 @@ import ArkLib.ToMathlib.StraightlineRewindingBridge
 import ArkLib.ToMathlib.SubspacePolyLinearized
 import ArkLib.ToMathlib.SubstFieldCaveat
 import ArkLib.ToMathlib.SumSubMeanSq
+import ArkLib.ToMathlib.SupportSqBound
 import ArkLib.ToMathlib.TailDegProducer
 import ArkLib.ToMathlib.ToyProblemRewinding
 import ArkLib.ToMathlib.ToyProblemViolation
