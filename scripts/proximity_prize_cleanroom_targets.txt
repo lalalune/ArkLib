@@ -17,5 +17,5 @@ active ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges ProximityGap.GrandC
 active ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges ProximityGap.GrandChallenges.grandListDecodingChallenge_of_resolution grandListDecodingChallenge
 
 # Future #120 prize-apex producers. These become active once the theorem names land.
-pending ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges ProximityGap.GrandChallenges.mcaPrize_of_four_rate_witnesses mcaPrize
-pending ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges ProximityGap.GrandChallenges.listDecodingPrize_of_four_rate_witnesses listDecodingPrize
+active ArkLib.Data.CodingTheory.ProximityGap.GrandChallengePrizeResolution ProximityGap.prizeResolution_mca_M521 mcaPrize
+active ArkLib.Data.CodingTheory.ProximityGap.GrandChallengePrizeResolution ProximityGap.prizeResolution_ld listDecodingPrize
