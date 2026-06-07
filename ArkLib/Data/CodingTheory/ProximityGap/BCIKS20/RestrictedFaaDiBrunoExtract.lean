@@ -24,6 +24,8 @@ exactly as the in-tree P2 consequence theorems do — none assumes the STEP-8 co
 * `neg_ζ_mul_coeff_one_βHenselAssembled_eq_unclearedHasseCoeff_div_W_natDegree` /
   `coeff_one_βHenselAssembled_eq_unclearedHasseCoeff_div_W_natDegree_div_ζ` — the order-zero
   recursion side alone gives a closed form for the first successor coefficient.
+* `RestrictedMatchAtZeroTaylorWDivTarget` — the fixed order-zero core as the exact equality of the
+  root-side Taylor sum and the un-cleared Taylor sum divided by `W ^ R.natDegree`.
 * `embeddingCleared_eq_Wpow_mul_uncleared_of_target` — makes the cleared/un-cleared `eval₂` mismatch
   *quantitative*: under the STEP-8 target, the two `𝒪`-reps differ by exactly `W^{natDegreeY p}`.
 -/
@@ -177,6 +179,55 @@ theorem coeff_one_βHenselAssembled_eq_unclearedHasseCoeff_div_W_natDegree_div_�
   rw [← hneg]
   field_simp [hζ]
 
+/-- **Order-zero Taylor/W-divisor target.** The fixed order-zero P2 obstruction after all proven
+normalizations: the root-side shifted Hasse-Taylor sum with powers `(T/W)^i` equals the un-cleared
+shifted Hasse-Taylor sum with powers `T^i`, divided by the global factor `W ^ R.natDegree`. -/
+def RestrictedMatchAtZeroTaylorWDivTarget (x₀ : F) (R : F[X][X][Y]) : Prop :=
+  (∑ i ∈ Finset.range ((Bivariate.evalX (Polynomial.C x₀)
+          (hasseDerivX 1 (hasseDerivY 0 R))).natDegree + 1),
+      (i + 0).choose 0
+        • (liftToFunctionField (H := H)
+              ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 R)).coeff (i + 0))
+            * (functionFieldT (H := H)
+                / liftToFunctionField (H := H) H.leadingCoeff) ^ i))
+    =
+    (∑ i ∈ Finset.range ((Bivariate.evalX (Polynomial.C x₀)
+          (hasseDerivX 1 (hasseDerivY 0 R))).natDegree + 1),
+      (i + 0).choose 0
+        • (liftToFunctionField (H := H)
+              ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 R)).coeff (i + 0))
+            * (functionFieldT (H := H)) ^ i))
+      / (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree
+
+/-- The carved order-zero P2 core is exactly the named Taylor/W-divisor target under the same
+degree hypothesis as the order-zero RHS cancellation. -/
+theorem restrictedMatchAt_zero_iff_taylorWDivTarget
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) :
+    RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0 ↔
+      RestrictedMatchAtZeroTaylorWDivTarget H x₀ R := by
+  unfold RestrictedMatchAtZeroTaylorWDivTarget
+  rw [restrictedMatchAt_zero_iff_unclearedHasseCoeff_div_W_natDegree
+    H x₀ R hHyp hd (ζ_ne_zero H x₀ R hHyp)]
+  rw [hasseEvalAtRoot_eq_taylorSum,
+    embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_uncleared_eq_taylorSum]
+
+/-- Project the Taylor/W-divisor target from the carved order-zero P2 core. -/
+theorem RestrictedMatchAtZeroTaylorWDivTarget.of_restrictedMatchAt_zero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree)
+    (hmatch : RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0) :
+    RestrictedMatchAtZeroTaylorWDivTarget H x₀ R :=
+  (restrictedMatchAt_zero_iff_taylorWDivTarget H x₀ R hHyp hd).1 hmatch
+
+/-- Build the carved order-zero P2 core from the Taylor/W-divisor target. -/
+theorem RestrictedFaaDiBrunoMatchAt.zero_of_taylorWDivTarget
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree)
+    (htarget : RestrictedMatchAtZeroTaylorWDivTarget H x₀ R) :
+    RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0 :=
+  (restrictedMatchAt_zero_iff_taylorWDivTarget H x₀ R hHyp hd).2 htarget
+
 /-- **The cleared `𝒪`-rep embedding is `W^{natDegreeY p}` times the un-cleared rep embedding, GIVEN
 the STEP-8 target (axiom-clean).** Makes the cleared/un-cleared `eval₂` mismatch *quantitative*:
 under the carved STEP-8 match `HasseCoeffRepr𝒪UnclearedEval₂Target`, the two `𝒪`-reps are related by
@@ -204,4 +255,10 @@ set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.neg_ζ_mul_coeff_one_βHenselAssembled_eq_unclearedHasseCoeff_div_W_natDegree
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.coeff_one_βHenselAssembled_eq_unclearedHasseCoeff_div_W_natDegree_div_ζ
+#print axioms BCIKS20.HenselNumerator.RestrictedMatchAtZeroTaylorWDivTarget
+#print axioms BCIKS20.HenselNumerator.restrictedMatchAt_zero_iff_taylorWDivTarget
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.RestrictedMatchAtZeroTaylorWDivTarget.of_restrictedMatchAt_zero
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.RestrictedFaaDiBrunoMatchAt.zero_of_taylorWDivTarget
 #print axioms BCIKS20.HenselNumerator.embeddingCleared_eq_Wpow_mul_uncleared_of_target

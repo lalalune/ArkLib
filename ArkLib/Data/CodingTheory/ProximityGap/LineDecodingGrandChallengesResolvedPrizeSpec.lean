@@ -376,6 +376,58 @@ theorem exists_mcaPrizeLatticeResolved_with_spec_and_brackets_of_forall_not_mcaE
       exists_mcaPrizeLatticeSpec_and_brackets_of_forall_not_mcaEvent
         domain δ hδ_le_one hno whi hδhi
 
+/-- Project a selected-threshold resolved package with exact threshold specifications and lower
+lattice brackets to the lower-bracket-only package. -/
+theorem exists_mcaPrizeLatticeResolved_with_lower_brackets_of_spec_and_lower_brackets
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (h : ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      mcaPrizeLatticeResolved domain τ ∧
+        (∀ j : Fin 4,
+          let C : Set (ι → F) :=
+            ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+          ∃ _ : mcaThresholdExists C epsStar,
+            mcaSatisfies C epsStar (τ j) ∧
+              ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j) ∧
+          ∀ j : Fin 4,
+            latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j) :
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      mcaPrizeLatticeResolved domain τ ∧
+        ∀ j : Fin 4,
+          latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j := by
+  rcases h with ⟨τ, hτ, _hspec, hlower⟩
+  exact ⟨τ, hτ, hlower⟩
+
+/-- Project a selected-threshold resolved package with exact threshold specifications and two-sided
+lattice brackets to the bracket-only package. -/
+theorem exists_mcaPrizeLatticeResolved_with_brackets_of_spec_and_brackets
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (whi : ∀ j : Fin 4,
+      GrandChallenges.MCAUpperWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1)
+    (h : ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      mcaPrizeLatticeResolved domain τ ∧
+        (∀ j : Fin 4,
+          let C : Set (ι → F) :=
+            ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+          ∃ _ : mcaThresholdExists C epsStar,
+            mcaSatisfies C epsStar (τ j) ∧
+              ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j) ∧
+          (∀ j : Fin 4,
+            latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j) ∧
+            ∀ j : Fin 4, τ j < latticeIndexOf (ι := ι) (whi j).δ (hδhi j)) :
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      mcaPrizeLatticeResolved domain τ ∧
+        (∀ j : Fin 4,
+          latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j) ∧
+          ∀ j : Fin 4, τ j < latticeIndexOf (ι := ι) (whi j).δ (hδhi j) := by
+  rcases h with ⟨τ, hτ, _hspec, hlower, hupper⟩
+  exact ⟨τ, hτ, hlower, hupper⟩
+
 set_option linter.style.longLine false in
 /-- Repaired double-cover data supplies a selected-threshold lattice resolution and lower lattice
 brackets, dropping the threshold-specification payload. -/
@@ -389,10 +441,10 @@ theorem exists_mcaPrizeLatticeResolved_with_lower_brackets_ofDoubleCover
       mcaPrizeLatticeResolved domain τ ∧
         ∀ j : Fin 4,
           latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j := by
-  rcases exists_mcaPrizeLatticeResolved_with_spec_and_lower_brackets_ofDoubleCover
-      domain δ hδ_le_one hcov with
-    ⟨τ, hτ, _hspec, hlower⟩
-  exact ⟨τ, hτ, hlower⟩
+  exact exists_mcaPrizeLatticeResolved_with_lower_brackets_of_spec_and_lower_brackets
+    domain δ hδ_le_one <|
+      exists_mcaPrizeLatticeResolved_with_spec_and_lower_brackets_ofDoubleCover
+        domain δ hδ_le_one hcov
 
 set_option linter.style.longLine false in
 /-- Named bad-scalar double-cover obligations supply a selected-threshold lattice resolution and
@@ -408,10 +460,10 @@ theorem exists_mcaPrizeLatticeResolved_with_lower_brackets_ofBadScalarDoubleCove
       mcaPrizeLatticeResolved domain τ ∧
         ∀ j : Fin 4,
           latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j := by
-  rcases exists_mcaPrizeLatticeResolved_with_spec_and_lower_brackets_ofBadScalarDoubleCover
-      domain δ hδ_le_one hcov with
-    ⟨τ, hτ, _hspec, hlower⟩
-  exact ⟨τ, hτ, hlower⟩
+  exact exists_mcaPrizeLatticeResolved_with_lower_brackets_of_spec_and_lower_brackets
+    domain δ hδ_le_one <|
+      exists_mcaPrizeLatticeResolved_with_spec_and_lower_brackets_ofBadScalarDoubleCover
+        domain δ hδ_le_one hcov
 
 set_option linter.style.longLine false in
 /-- Zero bad-scalar counts supply a selected-threshold lattice resolution and lower lattice
@@ -427,10 +479,10 @@ theorem exists_mcaPrizeLatticeResolved_with_lower_brackets_of_mcaBadCount_zero
       mcaPrizeLatticeResolved domain τ ∧
         ∀ j : Fin 4,
           latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j := by
-  rcases exists_mcaPrizeLatticeResolved_with_spec_and_lower_brackets_of_mcaBadCount_zero
-      domain δ hδ_le_one hzero with
-    ⟨τ, hτ, _hspec, hlower⟩
-  exact ⟨τ, hτ, hlower⟩
+  exact exists_mcaPrizeLatticeResolved_with_lower_brackets_of_spec_and_lower_brackets
+    domain δ hδ_le_one <|
+      exists_mcaPrizeLatticeResolved_with_spec_and_lower_brackets_of_mcaBadCount_zero
+        domain δ hδ_le_one hzero
 
 set_option linter.style.longLine false in
 /-- Direct no-bad-event frontiers supply a selected-threshold lattice resolution and lower
@@ -447,10 +499,10 @@ theorem exists_mcaPrizeLatticeResolved_with_lower_brackets_of_forall_not_mcaEven
       mcaPrizeLatticeResolved domain τ ∧
         ∀ j : Fin 4,
           latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j := by
-  rcases exists_mcaPrizeLatticeResolved_with_spec_and_lower_brackets_of_forall_not_mcaEvent
-      domain δ hδ_le_one hno with
-    ⟨τ, hτ, _hspec, hlower⟩
-  exact ⟨τ, hτ, hlower⟩
+  exact exists_mcaPrizeLatticeResolved_with_lower_brackets_of_spec_and_lower_brackets
+    domain δ hδ_le_one <|
+      exists_mcaPrizeLatticeResolved_with_spec_and_lower_brackets_of_forall_not_mcaEvent
+        domain δ hδ_le_one hno
 
 set_option linter.style.longLine false in
 /-- Repaired double-cover data and explicit upper witnesses supply a selected-threshold lattice
@@ -472,10 +524,10 @@ theorem exists_mcaPrizeLatticeResolved_with_brackets_ofDoubleCover
         (∀ j : Fin 4,
           latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j) ∧
           ∀ j : Fin 4, τ j < latticeIndexOf (ι := ι) (whi j).δ (hδhi j) := by
-  rcases exists_mcaPrizeLatticeResolved_with_spec_and_brackets_ofDoubleCover
-      domain δ hδ_le_one hcov whi hδhi with
-    ⟨τ, hτ, _hspec, hlower, hupper⟩
-  exact ⟨τ, hτ, hlower, hupper⟩
+  exact exists_mcaPrizeLatticeResolved_with_brackets_of_spec_and_brackets
+    domain δ hδ_le_one whi hδhi <|
+      exists_mcaPrizeLatticeResolved_with_spec_and_brackets_ofDoubleCover
+        domain δ hδ_le_one hcov whi hδhi
 
 set_option linter.style.longLine false in
 /-- Named bad-scalar double-cover data and explicit upper witnesses supply a selected-threshold
@@ -498,10 +550,10 @@ theorem exists_mcaPrizeLatticeResolved_with_brackets_ofBadScalarDoubleCover
         (∀ j : Fin 4,
           latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j) ∧
           ∀ j : Fin 4, τ j < latticeIndexOf (ι := ι) (whi j).δ (hδhi j) := by
-  rcases exists_mcaPrizeLatticeResolved_with_spec_and_brackets_ofBadScalarDoubleCover
-      domain δ hδ_le_one hcov whi hδhi with
-    ⟨τ, hτ, _hspec, hlower, hupper⟩
-  exact ⟨τ, hτ, hlower, hupper⟩
+  exact exists_mcaPrizeLatticeResolved_with_brackets_of_spec_and_brackets
+    domain δ hδ_le_one whi hδhi <|
+      exists_mcaPrizeLatticeResolved_with_spec_and_brackets_ofBadScalarDoubleCover
+        domain δ hδ_le_one hcov whi hδhi
 
 set_option linter.style.longLine false in
 /-- Zero bad-scalar counts and explicit upper witnesses supply a selected-threshold lattice
@@ -524,10 +576,10 @@ theorem exists_mcaPrizeLatticeResolved_with_brackets_of_mcaBadCount_zero
         (∀ j : Fin 4,
           latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j) ∧
           ∀ j : Fin 4, τ j < latticeIndexOf (ι := ι) (whi j).δ (hδhi j) := by
-  rcases exists_mcaPrizeLatticeResolved_with_spec_and_brackets_of_mcaBadCount_zero
-      domain δ hδ_le_one hzero whi hδhi with
-    ⟨τ, hτ, _hspec, hlower, hupper⟩
-  exact ⟨τ, hτ, hlower, hupper⟩
+  exact exists_mcaPrizeLatticeResolved_with_brackets_of_spec_and_brackets
+    domain δ hδ_le_one whi hδhi <|
+      exists_mcaPrizeLatticeResolved_with_spec_and_brackets_of_mcaBadCount_zero
+        domain δ hδ_le_one hzero whi hδhi
 
 set_option linter.style.longLine false in
 /-- Direct no-bad-event frontiers and explicit upper witnesses supply a selected-threshold
@@ -551,10 +603,10 @@ theorem exists_mcaPrizeLatticeResolved_with_brackets_of_forall_not_mcaEvent
         (∀ j : Fin 4,
           latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j) ∧
           ∀ j : Fin 4, τ j < latticeIndexOf (ι := ι) (whi j).δ (hδhi j) := by
-  rcases exists_mcaPrizeLatticeResolved_with_spec_and_brackets_of_forall_not_mcaEvent
-      domain δ hδ_le_one hno whi hδhi with
-    ⟨τ, hτ, _hspec, hlower, hupper⟩
-  exact ⟨τ, hτ, hlower, hupper⟩
+  exact exists_mcaPrizeLatticeResolved_with_brackets_of_spec_and_brackets
+    domain δ hδ_le_one whi hδhi <|
+      exists_mcaPrizeLatticeResolved_with_spec_and_brackets_of_forall_not_mcaEvent
+        domain δ hδ_le_one hno whi hδhi
 
 set_option linter.style.longLine false in
 /-- Repaired double-cover data resolves the faithful prize lattice at the concrete
@@ -1237,6 +1289,10 @@ set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_spec_and_brackets_of_mcaBadCount_zero
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_spec_and_brackets_of_forall_not_mcaEvent
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_lower_brackets_of_spec_and_lower_brackets
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_brackets_of_spec_and_brackets
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_lower_brackets_ofDoubleCover
 set_option linter.style.longLine false in

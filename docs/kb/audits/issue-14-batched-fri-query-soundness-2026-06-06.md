@@ -40,9 +40,11 @@ Current source exposes both sides of that frontier as named parts:
   reassembles Claim 8.2 from those two proved pieces plus the still-open
   correlated-agreement bridge.
 - `Fri.fri_query_soundness_of_jointProximity` exposes that bridge through the
-  existing `Code.jointAgreement_iff_jointProximity` theorem, and
+  existing `Code.jointAgreement_iff_jointProximity` theorem.  The density-route
+  `Fri.fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndJointProximity`
+  and probability-route
   `Fri.fri_query_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndJointProximity`
-  reassembles the probability-space query-round/lens route with a concrete
+  adapters reassemble the query-round/lens route with a concrete
   `Code.jointProximity` witness rather than an arbitrary `agreementBridge :
   Prop`.
 - `FriSoundnessParts` splits Claim 8.3 into the Claim 8.2 lift, the
@@ -174,7 +176,8 @@ ArkLib/Data/CodingTheory/InterleavedCode.lean:738:theorem jointAgreement_iff_joi
    conclusion for the batched input stack from the BCIKS20
    correlated-agreement/proximity-gap analysis.  The conversion from
    `Code.jointProximity` to the `fri_query_soundness` residual is now proved by
-   `Fri.fri_query_soundness_of_jointProximity`, and the
+   `Fri.fri_query_soundness_of_jointProximity`; both density and probability
+   query-round/lens front doors now consume that concrete proximity witness. The
    all-rows-already-codewords extreme is proved by
    `Fri.fri_query_soundness_of_forall_mem` and
    `Fri.fri_soundness_of_forall_mem`, but the real proximity-gap bridge remains
