@@ -225,7 +225,6 @@ theorem exists_large_agree_zero_of_small_weight
   · -- |suppᶜ| = n - |supp| ≥ n - δn = (1-δ)n
     have hcompl : ((supp₁ u₁)ᶜ.card : ℝ) = (Fintype.card ι : ℝ) - (supp₁ u₁).card := by
       rw [Finset.card_compl, Nat.cast_sub (Finset.card_le_univ _)]
-      simp [Finset.card_univ]
     rw [hcompl]
     nlinarith [hwt]
   · intro i hi
