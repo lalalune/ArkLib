@@ -773,47 +773,64 @@ already realises the `2^(-116)` attack floor (`2^70 / 2^186 = 2^(-116)`). This
 turns the §6.4 attack obligation into a *single cardinality bound* — the genuine
 code-theoretic content — with all field arithmetic discharged here. -/
 
+/-- **Field-general attack floor from a winning-set cardinality bound.** A
+violating instance whose winning set has at least `2^(N-b)` challenges, over a
+field of size `≤ 2^N`, forces `winningSetSoundness ≥ 2^(-b)` (the `b`-bit attack
+floor). Pure NNReal explicit-power arithmetic over the proven backbone
+`winningSetRatio_le_winningSetSoundness` (`|Ω|/|F| ≥ 2^(N-b)/2^N = 2^(-b)`). This
+is the parameter-general core of the concrete anchor below: it consumes a
+winning-set *cardinality* hypothesis (the §6.4 construction's output), it does
+not produce one, so it is reusable at any leaderboard parameter point. -/
+theorem winningSetSoundness_ge_of_card_le {k : ℕ} {C : Set (ι → F)} {δ : ℝ≥0}
+    {b N : ℕ} (x : ViolatingInstance C δ k)
+    (hF : (Fintype.card F : ℝ≥0) ≤ (2 : ℝ≥0) ^ N) (hb : b ≤ N)
+    (hx : (2 : ℕ) ^ (N - b) ≤
+      (winningSet C δ x.v x.μ₁ x.μ₂ x.f₁ x.f₂).ncard) :
+    (2 : ℝ≥0) ^ (-(b : ℝ)) ≤ winningSetSoundness (k := k) C δ := by
+  -- `winningSetRatio x ≤ winningSetSoundness`; bound `2^(-b) ≤ winningSetRatio x`.
+  refine le_trans ?_ (winningSetRatio_le_winningSetSoundness x)
+  rw [winningSetRatio]
+  rw [show (2 : ℝ≥0) ^ (-(b : ℝ)) = ((2 : ℝ≥0) ^ b)⁻¹ from two_rpow_neg_natCast b]
+  -- Abbreviate the winning-set cardinality.
+  set Ncard : ℕ :=
+    (winningSet C δ x.v x.μ₁ x.μ₂ x.f₁ x.f₂).ncard with hN
+  have hFpos : (0 : ℝ≥0) < (Fintype.card F : ℝ≥0) := by exact_mod_cast Fintype.card_pos
+  have hNge : (2 : ℝ≥0) ^ (N - b) ≤ (Ncard : ℝ≥0) := by
+    calc (2 : ℝ≥0) ^ (N - b) = (((2 : ℕ) ^ (N - b) : ℕ) : ℝ≥0) := by push_cast; ring
+      _ ≤ (Ncard : ℝ≥0) := by exact_mod_cast hx
+  -- `(2^b)⁻¹ ≤ Ncard / |F|`.
+  rw [le_div_iff₀ hFpos]
+  -- `(2^b)⁻¹ * |F| ≤ 2^(N-b) ≤ Ncard`, using `|F| ≤ 2^N = 2^b · 2^(N-b)`.
+  calc ((2 : ℝ≥0) ^ b)⁻¹ * (Fintype.card F : ℝ≥0)
+      ≤ ((2 : ℝ≥0) ^ b)⁻¹ * (2 : ℝ≥0) ^ N := by gcongr
+    _ = (2 : ℝ≥0) ^ (N - b) := by
+        have hsplit : (2 : ℝ≥0) ^ N = (2 : ℝ≥0) ^ b * (2 : ℝ≥0) ^ (N - b) := by
+          rw [← pow_add, Nat.add_sub_cancel' hb]
+        rw [hsplit, ← mul_assoc, inv_mul_cancel₀ (by positivity), one_mul]
+    _ ≤ (Ncard : ℝ≥0) := hNge
+
 /-- **Attack-side numeric anchor (concrete carrier), sorry-free.** A single
 violating instance over the genuine KoalaBear-sextic RS code whose winning set
 has at least `2^70` challenges forces `winningSetSoundness ≥ 2^(-116)` — the
 attack floor. (`|F| = p^6 ≤ 2^186`, so `|Ω|/|F| ≥ 2^70/2^186 = 2^(-116)`.) The
-hypothesis is exactly the §6.4 winning-set construction's *cardinality output*;
-the explicit-power arithmetic is closed by `norm_num`. -/
+hypothesis is exactly the §6.4 winning-set construction's *cardinality output*.
+This is the `N = 186`, `b = 116` specialization of the field-general
+`winningSetSoundness_ge_of_card_le`, with the concrete `|F| = p^6 ≤ 2^186`
+bound supplied by `KoalaBear.card_sextic_le_186`. -/
 theorem winningSetSoundness_concrete_ge_of_card
     (x : ViolatingInstance KoalaBear.rsCodeSet (3 / 10) 2)
     (hx : (2 : ℕ) ^ 70 ≤
       (winningSet KoalaBear.rsCodeSet (3 / 10) x.v x.μ₁ x.μ₂ x.f₁ x.f₂).ncard) :
     (2 : ℝ≥0) ^ (-(116 : ℝ)) ≤
       winningSetSoundness (k := 2) KoalaBear.rsCodeSet (3 / 10) := by
-  -- `winningSetRatio x ≤ winningSetSoundness`; bound `2^(-116) ≤ winningSetRatio x`.
-  refine le_trans ?_ (winningSetRatio_le_winningSetSoundness x)
-  -- `winningSetRatio x = |Ω| / |F|` with `|F| = card Sextic`.
-  rw [winningSetRatio]
-  rw [show (2 : ℝ≥0) ^ (-(116 : ℝ)) = ((2 : ℝ≥0) ^ 116)⁻¹ by
-    exact two_rpow_neg_natCast 116]
-  -- Abbreviate the winning-set cardinality.
-  set Ncard : ℕ :=
-    (winningSet KoalaBear.rsCodeSet (3 / 10) x.v x.μ₁ x.μ₂ x.f₁ x.f₂).ncard with hN
   have hFle : (Fintype.card KoalaBear.Sextic : ℝ≥0) ≤ (2 : ℝ≥0) ^ 186 := by
     have hc := KoalaBear.card_sextic_le_186
     calc (Fintype.card KoalaBear.Sextic : ℝ≥0)
         ≤ (((2 : ℕ) ^ 186 : ℕ) : ℝ≥0) := by exact_mod_cast hc
       _ = (2 : ℝ≥0) ^ 186 := by push_cast; ring
-  have hFpos : (0 : ℝ≥0) < (Fintype.card KoalaBear.Sextic : ℝ≥0) := by
-    exact_mod_cast Fintype.card_pos
-  have hNge : (2 : ℝ≥0) ^ 70 ≤ (Ncard : ℝ≥0) := by
-    calc (2 : ℝ≥0) ^ 70 = (((2 : ℕ) ^ 70 : ℕ) : ℝ≥0) := by push_cast; ring
-      _ ≤ (Ncard : ℝ≥0) := by exact_mod_cast hx
-  -- `(2^116)⁻¹ ≤ Ncard / |F|`.
-  rw [le_div_iff₀ hFpos]
-  -- `(2^116)⁻¹ * |F| ≤ 2^70 ≤ Ncard`, using `|F| ≤ 2^186 = 2^70 · 2^116`.
-  calc ((2 : ℝ≥0) ^ 116)⁻¹ * (Fintype.card KoalaBear.Sextic : ℝ≥0)
-      ≤ ((2 : ℝ≥0) ^ 116)⁻¹ * (2 : ℝ≥0) ^ 186 := by gcongr
-    _ = (2 : ℝ≥0) ^ 70 := by
-        rw [show (186 : ℕ) = 70 + 116 by norm_num, pow_add,
-          mul_comm ((2 : ℝ≥0) ^ 70) ((2 : ℝ≥0) ^ 116), ← mul_assoc,
-          inv_mul_cancel₀ (by positivity), one_mul]
-    _ ≤ (Ncard : ℝ≥0) := hNge
+  have := winningSetSoundness_ge_of_card_le (b := 116) (N := 186) x hFle (by norm_num)
+    (by simpa using hx)
+  simpa using this
 
 /-- **The proven attack chain applies to the genuine code** (linearity supplied
 by construction). `ε_ca(C, δ) ≤ winningSetSoundness C δ` at the concrete
@@ -946,6 +963,7 @@ end ToyProblem
 #print axioms ToyProblem.fenziSanso_upperBound_attack
 #print axioms ToyProblem.securityGap_koalaIRS_anchors
 #print axioms ToyProblem.securityGap_koalaIRS_anchors_nonneg
+#print axioms ToyProblem.winningSetSoundness_ge_of_card_le
 #print axioms ToyProblem.winningSetSoundness_concrete_ge_of_card
 #print axioms ToyProblem.epsCA_le_winningSetSoundness_concrete
 #print axioms ToyProblem.fenziSanso_upperBound_attack_concrete_residual
