@@ -7,6 +7,7 @@ Authors: ArkLib Contributors
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingCoverage
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingBadScalarCount
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLatticePrizeSpec
 
 /-!
 # Grand Challenge adapters for the repaired line-decoding coverage theorem
@@ -942,6 +943,151 @@ theorem exists_mcaPrizeLatticeResolved_of_epsMCA_eq_zero
           ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)))
       δ heps)
 
+/-- Per-rate repaired double-cover frontiers expose the selected-threshold specification and
+lower lattice brackets for the faithful MCA prize lattice. -/
+theorem exists_mcaPrizeLatticeSpec_and_lower_brackets_ofDoubleCover
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hcov : ∀ j : Fin 4, MCAForallDoubleCover (F := F) (A := F)
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      (δ j)) :
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      (∀ j : Fin 4,
+        let C : Set (ι → F) :=
+          ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+        ∃ _ : mcaThresholdExists C epsStar,
+          mcaSatisfies C epsStar (τ j) ∧
+            ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j) ∧
+        ∀ j : Fin 4,
+          latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j :=
+  exists_mcaPrizeLatticeSpec_and_lower_brackets_of_lowerWitnesses domain δ hδ_le_one
+    (fun j =>
+      GrandChallenges.MCALowerWitness.ofDoubleCover
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) epsStar (hδ_le_one j) (hcov j))
+    (fun _ => rfl)
+
+/-- Per-rate repaired double-cover frontiers resolve the faithful MCA prize and expose the
+selected-threshold specification together with lower lattice brackets. -/
+theorem exists_mcaPrizeLatticeResolved_with_spec_and_lower_brackets_ofDoubleCover
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hcov : ∀ j : Fin 4, MCAForallDoubleCover (F := F) (A := F)
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      (δ j)) :
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      mcaPrizeLatticeResolved domain τ ∧
+        (∀ j : Fin 4,
+          let C : Set (ι → F) :=
+            ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+          ∃ _ : mcaThresholdExists C epsStar,
+            mcaSatisfies C epsStar (τ j) ∧
+              ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j) ∧
+          ∀ j : Fin 4,
+            latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j :=
+  exists_mcaPrizeLatticeResolved_with_spec_and_lower_brackets_of_lowerWitnesses
+    domain δ hδ_le_one
+    (fun j =>
+      GrandChallenges.MCALowerWitness.ofDoubleCover
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) epsStar (hδ_le_one j) (hcov j))
+    (fun _ => rfl)
+
+/-- Per-rate repaired double-cover frontiers resolve the faithful MCA prize and expose only lower
+lattice brackets for the selected thresholds. -/
+theorem exists_mcaPrizeLatticeResolved_with_lower_brackets_ofDoubleCover
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hcov : ∀ j : Fin 4, MCAForallDoubleCover (F := F) (A := F)
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      (δ j)) :
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      mcaPrizeLatticeResolved domain τ ∧
+        ∀ j : Fin 4,
+          latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j :=
+  exists_mcaPrizeLatticeResolved_with_lower_brackets_of_lowerWitnesses
+    domain δ hδ_le_one
+    (fun j =>
+      GrandChallenges.MCALowerWitness.ofDoubleCover
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) epsStar (hδ_le_one j) (hcov j))
+    (fun _ => rfl)
+
+/-- Per-rate direct vanishing `ε_mca` frontiers expose the selected-threshold specification and
+lower lattice brackets for the faithful MCA prize lattice. -/
+theorem exists_mcaPrizeLatticeSpec_and_lower_brackets_of_epsMCA_eq_zero
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (heps : ∀ j : Fin 4,
+      epsMCA (F := F) (A := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) = 0) :
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      (∀ j : Fin 4,
+        let C : Set (ι → F) :=
+          ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+        ∃ _ : mcaThresholdExists C epsStar,
+          mcaSatisfies C epsStar (τ j) ∧
+            ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j) ∧
+        ∀ j : Fin 4,
+          latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j :=
+  exists_mcaPrizeLatticeSpec_and_lower_brackets_ofDoubleCover domain δ hδ_le_one
+    (indexed_MCAForallDoubleCover_of_epsMCA_eq_zero
+      (fun j : Fin 4 =>
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)))
+      δ heps)
+
+/-- Per-rate direct vanishing `ε_mca` frontiers resolve the faithful MCA prize and expose the
+selected-threshold specification together with lower lattice brackets. -/
+theorem exists_mcaPrizeLatticeResolved_with_spec_and_lower_brackets_of_epsMCA_eq_zero
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (heps : ∀ j : Fin 4,
+      epsMCA (F := F) (A := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) = 0) :
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      mcaPrizeLatticeResolved domain τ ∧
+        (∀ j : Fin 4,
+          let C : Set (ι → F) :=
+            ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+          ∃ _ : mcaThresholdExists C epsStar,
+            mcaSatisfies C epsStar (τ j) ∧
+              ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j) ∧
+          ∀ j : Fin 4,
+            latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j :=
+  exists_mcaPrizeLatticeResolved_with_spec_and_lower_brackets_ofDoubleCover
+    domain δ hδ_le_one
+    (indexed_MCAForallDoubleCover_of_epsMCA_eq_zero
+      (fun j : Fin 4 =>
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)))
+      δ heps)
+
+/-- Per-rate direct vanishing `ε_mca` frontiers resolve the faithful MCA prize and expose only
+lower lattice brackets for the selected thresholds. -/
+theorem exists_mcaPrizeLatticeResolved_with_lower_brackets_of_epsMCA_eq_zero
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (heps : ∀ j : Fin 4,
+      epsMCA (F := F) (A := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) = 0) :
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      mcaPrizeLatticeResolved domain τ ∧
+        ∀ j : Fin 4,
+          latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j :=
+  exists_mcaPrizeLatticeResolved_with_lower_brackets_ofDoubleCover domain δ hδ_le_one
+    (indexed_MCAForallDoubleCover_of_epsMCA_eq_zero
+      (fun j : Fin 4 =>
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)))
+      δ heps)
+
 /-- Repaired double-cover frontiers and explicit upper witnesses bracket all four faithful MCA
 prize thresholds. -/
 def mcaPrizeLattice_bracketed_ofDoubleCover_and_upperWitnesses
@@ -1306,6 +1452,18 @@ set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_of_forall_not_mcaEvent
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_of_epsMCA_eq_zero
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeSpec_and_lower_brackets_ofDoubleCover
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_spec_and_lower_brackets_ofDoubleCover
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_lower_brackets_ofDoubleCover
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeSpec_and_lower_brackets_of_epsMCA_eq_zero
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_spec_and_lower_brackets_of_epsMCA_eq_zero
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_lower_brackets_of_epsMCA_eq_zero
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLattice_bracketed_ofDoubleCover_and_upperWitnesses
 set_option linter.style.longLine false in
