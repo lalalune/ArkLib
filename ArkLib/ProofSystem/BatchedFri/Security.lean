@@ -1197,6 +1197,95 @@ def fri_soundness
           (δ := 1 - α)
           (W := f)
 
+/-- The round-zero Batched FRI subdomain is equivalent to the original evaluation domain. -/
+noncomputable def subdomainZeroEquiv : ω.subdomain 0 ≃ ω where
+  toFun x :=
+    ⟨x.1,
+      (CosetFftDomainClass.mem_toFinset_iff_mem).2
+        ((CosetFftDomainClass.mem_subdomain_0_iff_mem).1
+          ((CosetFftDomainClass.mem_toFinset_iff_mem).1 x.2))⟩
+  invFun y :=
+    ⟨y.1,
+      (CosetFftDomainClass.mem_toFinset_iff_mem).2
+        ((CosetFftDomainClass.mem_subdomain_0_iff_mem).2
+          ((CosetFftDomainClass.mem_toFinset_iff_mem).1 y.2))⟩
+  left_inv x := by ext; rfl
+  right_inv y := by ext; rfl
+
+omit [Fintype 𝔽] [Nontrivial 𝔽] in
+/-- Reed-Solomon codewords transport from `ω.subdomain 0` to `ω` along
+`subdomainZeroEquiv`. -/
+theorem reedSolomon_code_subdomainZero_transport
+    (deg : ℕ)
+    (v : ω.subdomain 0 → 𝔽)
+    (hv :
+      v ∈
+        (ReedSolomon.code
+          (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) deg : Set (ω.subdomain 0 → 𝔽))) :
+      (fun y : ω => v ((subdomainZeroEquiv (n := n) (ω := ω)).symm y)) ∈
+        (ReedSolomon.code
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽) deg : Set (ω → 𝔽)) := by
+  rcases (ReedSolomon.mem_code_iff_exists_polynomial.mp hv) with ⟨p, hpdeg, rfl⟩
+  exact ReedSolomon.mem_code_of_polynomial_of_degree_lt_of_eval p hpdeg (by
+    intro y
+    simp [ReedSolomon.evalOnPoints, subdomainZeroEquiv])
+
+omit [Fintype 𝔽] [Nontrivial 𝔽] in
+/-- Lift joint agreement from the query-round subdomain to the full Batched FRI domain. -/
+theorem jointAgreement_subdomainZero_to_domain
+    {κ : Type} (δ : ℝ≥0) (W : κ → ω → 𝔽) :
+    Code.jointAgreement
+      (F := 𝔽) (κ := κ) (ι := ω.subdomain 0)
+      (C := (ReedSolomon.code
+        (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier)
+      (δ := δ)
+      (W := fun k x => W k ((subdomainZeroEquiv (n := n) (ω := ω)) x)) →
+    Code.jointAgreement
+      (F := 𝔽) (κ := κ) (ι := ω)
+      (C := (ReedSolomon.code
+        (⟨fun x => x, by simp⟩ : ω ↪ 𝔽) (2 ^ n)).carrier)
+      (δ := δ)
+      (W := W) := by
+  intro h
+  exact Code.jointAgreement_equiv_of_codeword_transport
+    (e := subdomainZeroEquiv (n := n) (ω := ω))
+    (C₁ := (ReedSolomon.code
+      (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier)
+    (C₂ := (ReedSolomon.code
+      (⟨fun x => x, by simp⟩ : ω ↪ 𝔽) (2 ^ n)).carrier)
+    (δ := δ) (W₂ := W)
+    (by
+      intro v hv
+      exact reedSolomon_code_subdomainZero_transport (n := n) (ω := ω) (2 ^ n) v hv)
+    h
+
+omit [Nontrivial 𝔽] in
+/-- Claim 8.3 query-lift front door: a Claim 8.2 `fri_query_soundness` conclusion on
+`ω.subdomain 0` gives the full-domain `Code.jointAgreement` conclusion. -/
+theorem fri_query_soundness_lift_subdomainZero_to_domain
+    {t m : ℕ}
+    {α : ℝ≥0}
+    (f : Fin t.succ → (ω → 𝔽))
+    (h_agreement :
+      correlated_agreement_density
+        (Fₛ (fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x)))
+        (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
+      ≤ α)
+    (m_ge_3 : m ≥ 3)
+    (h_query :
+      fri_query_soundness (n := n) (ω := ω)
+        (f := fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x))
+        (h_agreement := h_agreement) (m_ge_3 := m_ge_3)) :
+    Code.jointAgreement
+      (F := 𝔽)
+      (κ := Fin t.succ)
+      (ι := ω)
+      (C := (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω ↪ 𝔽) (2 ^ n)).carrier)
+      (δ := 1 - α)
+      (W := f) :=
+  jointAgreement_subdomainZero_to_domain
+    (n := n) (ω := ω) (δ := 1 - α) (W := f) h_query
+
 /-- Split frontier for Claim 8.3.  The `fri_soundness` residual is the end-to-end
 verifier-failure statement for batched FRI, while the remaining proof should be assembled from
 separate ingredients:
@@ -1238,6 +1327,10 @@ theorem fri_soundness_of_parts
   parts.pieces_imply_claim h_query h_seq h_total
 
 #print axioms Fri.FriSoundnessParts
+#print axioms Fri.subdomainZeroEquiv
+#print axioms Fri.reedSolomon_code_subdomainZero_transport
+#print axioms Fri.jointAgreement_subdomainZero_to_domain
+#print axioms Fri.fri_query_soundness_lift_subdomainZero_to_domain
 #print axioms Fri.fri_soundness_of_parts
 
 end Soundness
@@ -1263,5 +1356,9 @@ end Fri
 #print axioms Fri.FriQuerySoundnessParts.of_queryRoundDensityBoundAndBatchedFRIOracleLens
 #print axioms Fri.fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLens
 #print axioms Fri.fri_soundness
+#print axioms Fri.subdomainZeroEquiv
+#print axioms Fri.reedSolomon_code_subdomainZero_transport
+#print axioms Fri.jointAgreement_subdomainZero_to_domain
+#print axioms Fri.fri_query_soundness_lift_subdomainZero_to_domain
 #print axioms Fri.FriSoundnessParts
 #print axioms Fri.fri_soundness_of_parts
