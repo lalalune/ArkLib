@@ -1150,6 +1150,27 @@ theorem BCSCompilerFrontierSatisfied.ofOpeningLogBridge {StmtMid WitMid : Type}
   BCSCompilerFrontierSatisfied.intro
     hInteraction (hBridge hLog) hCorrect hBindingOrExtract hComplete hSound hKS
 
+/-- Build a satisfied BCS compiler frontier from a discharged typed opening log and a packaged
+security frontier. This keeps downstream code from unpacking the five security fields when they
+have already been assembled as `BCSSecurityFrontierSatisfied`. -/
+theorem BCSCompilerFrontierSatisfied.ofOpeningLogBridgeAndSecurity {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    {phases : BCSCompiledPhases (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) CommitmentType e}
+    {frontier : BCSSecurityFrontier (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) phases}
+    {log : BCSOpeningLogFrontier (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType}
+    (hInteraction : phases.interaction_realizes_oracle_messages)
+    (hLog : BCSOpeningLogFrontierSatisfied log)
+    (hBridge : BCSOpeningLogBridge phases log)
+    (hSecurity : BCSSecurityFrontierSatisfied frontier) :
+    BCSCompilerFrontierSatisfied phases frontier :=
+  BCSCompilerFrontierSatisfied.ofPhaseAndSecurity
+    (BCSPhaseRealizationFrontier.ofOpeningLogBridge hInteraction hLog hBridge)
+    hSecurity
+
 /-- Compatibility name for the full BCS compiler-frontier checklist. -/
 abbrev BCSCompilerFrontierReady {StmtMid WitMid : Type}
     {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
@@ -1312,6 +1333,27 @@ theorem BCSCompilerFrontierReady.ofOpeningLogBridge {StmtMid WitMid : Type}
   BCSCompilerFrontierReady.intro
     (BCSPhaseRealizationFrontier.ofOpeningLogBridge hInteraction hLog hBridge)
     hCorrect hBindingOrExtract hComplete hSound hKS
+
+/-- Build the ready checklist from a discharged typed opening log and a packaged security frontier.
+This is the compatibility-`Ready` spelling of
+`BCSCompilerFrontierSatisfied.ofOpeningLogBridgeAndSecurity`. -/
+theorem BCSCompilerFrontierReady.ofOpeningLogBridgeAndSecurity {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    {phases : BCSCompiledPhases (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) CommitmentType e}
+    {frontier : BCSSecurityFrontier (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) phases}
+    {log : BCSOpeningLogFrontier (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType}
+    (hInteraction : phases.interaction_realizes_oracle_messages)
+    (hLog : BCSOpeningLogFrontierSatisfied log)
+    (hBridge : BCSOpeningLogBridge phases log)
+    (hSecurity : BCSSecurityFrontierSatisfied frontier) :
+    BCSCompilerFrontierReady phases frontier :=
+  BCSCompilerFrontierReady.ofPhaseAndSecurity
+    (BCSPhaseRealizationFrontier.ofOpeningLogBridge hInteraction hLog hBridge)
+    hSecurity
 /-! #### Design note: the fully general transform
 
   In full generality (deferred to ArkLib#433), the transform should take
@@ -1421,6 +1463,7 @@ generic compiler construction or the completeness/soundness preservation theorem
 #print axioms OracleReduction.BCSCompilerFrontierSatisfied.ofPhaseAndSecurity
 #print axioms OracleReduction.BCSCompilerFrontierSatisfied.iff_phase_and_security
 #print axioms OracleReduction.BCSCompilerFrontierSatisfied.ofOpeningLogBridge
+#print axioms OracleReduction.BCSCompilerFrontierSatisfied.ofOpeningLogBridgeAndSecurity
 #print axioms OracleReduction.BCSCompilerFrontierReady
 #print axioms OracleReduction.BCSCompilerFrontierReady.intro
 #print axioms OracleReduction.BCSCompilerFrontierReady.ofPhaseFields
@@ -1430,3 +1473,4 @@ generic compiler construction or the completeness/soundness preservation theorem
 #print axioms OracleReduction.BCSCompilerFrontierReady.ofPhaseAndSecurity
 #print axioms OracleReduction.BCSCompilerFrontierReady.iff_phase_and_security
 #print axioms OracleReduction.BCSCompilerFrontierReady.ofOpeningLogBridge
+#print axioms OracleReduction.BCSCompilerFrontierReady.ofOpeningLogBridgeAndSecurity
