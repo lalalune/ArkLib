@@ -364,6 +364,17 @@ def BoundaryCardQuantizationData {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0
     BoundaryCardResidual.BoundaryCardLatticeData
       (k := k) (deg := deg) (domain := domain) (δ := δ)
 
+omit [Nonempty ι] [DecidableEq ι] in
+/-- At `k = 0`, the concrete square-lattice data side is vacuous.  A strict-interior producer
+therefore assembles the full concrete quantization data package. -/
+theorem BoundaryCardQuantizationData.ofStrictInterior_zero {deg : ℕ} {domain : ι ↪ F}
+    {δ : ℝ≥0}
+    (hStrict :
+      BoundaryCardResidual.BoundaryCardStrictInteriorResidual
+        (k := 0) (deg := deg) (domain := domain) (δ := δ)) :
+    BoundaryCardQuantizationData (k := 0) (deg := deg) (domain := domain) (δ := δ) :=
+  ⟨hStrict, BoundaryCardResidual.boundaryCardLatticeData_zero⟩
+
 omit [DecidableEq ι] in
 /-- Projection of the strict-interior side of `BoundaryCardQuantizationData`. -/
 theorem BoundaryCardQuantizationData.strictInterior {k deg : ℕ} {domain : ι ↪ F}
@@ -613,6 +624,7 @@ end ArkLib
 #print axioms ArkLib.BoundaryDischarge.boundaryCardLatticeResidual_of_boundary_cards_and_coeffPolys
 #print axioms ArkLib.BoundaryDischarge.boundaryCardLatticeResidual_of_lattice_data
 #print axioms ArkLib.BoundaryDischarge.BoundaryCardQuantizationData
+#print axioms ArkLib.BoundaryDischarge.BoundaryCardQuantizationData.ofStrictInterior_zero
 #print axioms ArkLib.BoundaryDischarge.BoundaryCardQuantizationData.strictInterior
 #print axioms ArkLib.BoundaryDischarge.BoundaryCardQuantizationData.latticeData
 #print axioms ArkLib.BoundaryDischarge.BoundaryCardQuantizationData.toQuantizationResiduals

@@ -204,6 +204,28 @@ theorem isHVZK.isStatHVZK
   let ⟨sim, hsim⟩ := h
   ⟨sim, hsim.statisticalHVZK ε⟩
 
+/-- **Zero-error statistical HVZK existence is perfect HVZK existence.** -/
+theorem isStatHVZK_zero.isHVZK
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set (StmtIn × WitIn)}
+    {reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec}
+    (h : isStatHVZK init impl rel reduction 0) :
+    isHVZK init impl rel reduction :=
+  let ⟨sim, hsim⟩ := h
+  ⟨sim, (perfectHVZK_iff_statisticalHVZK_zero init impl rel reduction sim).2 hsim⟩
+
+/-- **Perfect HVZK existence is equivalent to zero-error statistical HVZK existence.** -/
+theorem isHVZK_iff_isStatHVZK_zero
+    (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (rel : Set (StmtIn × WitIn))
+    (reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec) :
+    isHVZK init impl rel reduction ↔ isStatHVZK init impl rel reduction 0 := by
+  constructor
+  · intro h
+    exact h.isStatHVZK 0
+  · intro h
+    exact isStatHVZK_zero.isHVZK h
+
 /-- **`isStatHVZK` is antitone in the relation.** -/
 theorem isStatHVZK.mono_relation
     {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
@@ -308,6 +330,8 @@ end Identity
 #print axioms statisticalHVZK.mono_relation
 #print axioms statisticalHVZK.mono_error
 #print axioms isHVZK.isStatHVZK
+#print axioms isStatHVZK_zero.isHVZK
+#print axioms isHVZK_iff_isStatHVZK_zero
 #print axioms isStatHVZK.mono_relation
 #print axioms isStatHVZK.mono_error
 

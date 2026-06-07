@@ -188,6 +188,13 @@ def openTranscript {s : Skeleton} (hashFn : α → α → α)
   (tree.getRootValue,
     idxs.map (fun i => ⟨i, salts.get i, leaves.get i, generateProof tree i⟩))
 
+/-- Project a salted opening transcript to the public opened payloads: index, salt, and leaf value.
+The transcript root and authentication paths are intentionally discarded. -/
+def openTranscriptPayloads {s : Skeleton}
+    (transcript : α × List ((i : SkeletonLeafIndex s) × α × α × List.Vector α i.depth)) :
+    List (SkeletonLeafIndex s × α × α) :=
+  transcript.2.map (fun o => (o.1, o.2.1, o.2.2.1))
+
 /-- The honest salted transcript root is the root of the salted Merkle tree. -/
 theorem openTranscript_root_eq {s : Skeleton} (hashFn : α → α → α)
     (salts leaves : LeafData α s) (idxs : List (SkeletonLeafIndex s)) :
@@ -206,6 +213,14 @@ theorem openTranscript_entries_eq {s : Skeleton} (hashFn : α → α → α)
             generateProof (buildSaltedTree hashFn salts leaves) i⟩) := by
   simp [openTranscript]
 
+/-- The payload projection of an honest salted transcript is exactly the requested indices mapped
+to their honest salt and leaf value. -/
+theorem openTranscriptPayloads_openTranscript_eq {s : Skeleton} (hashFn : α → α → α)
+    (salts leaves : LeafData α s) (idxs : List (SkeletonLeafIndex s)) :
+    openTranscriptPayloads (openTranscript hashFn salts leaves idxs) =
+      idxs.map (fun i => (i, salts.get i, leaves.get i)) := by
+  simp [openTranscriptPayloads, openTranscript]
+
 /-- If two leaf assignments agree on the requested opened indices under the same salts, then the
 honest transcripts reveal the same opened payloads `(index, salt, value)`. This is the
 deterministic payload projection used by hiding simulators; roots and authentication paths still
@@ -219,6 +234,15 @@ theorem openTranscript_entries_payload_eq_of_agree {s : Skeleton} (hashFn : α �
         (fun o => (o.1, o.2.1, o.2.2.1))) := by
   simp [openTranscript, Function.comp_def]
   exact hagree
+
+/-- Named-payload form of `openTranscript_entries_payload_eq_of_agree`. -/
+theorem openTranscriptPayloads_eq_of_agree {s : Skeleton} (hashFn : α → α → α)
+    (salts leaves₁ leaves₂ : LeafData α s) (idxs : List (SkeletonLeafIndex s))
+    (hagree : ∀ i ∈ idxs, leaves₁.get i = leaves₂.get i) :
+    openTranscriptPayloads (openTranscript hashFn salts leaves₁ idxs) =
+      openTranscriptPayloads (openTranscript hashFn salts leaves₂ idxs) := by
+  simpa [openTranscriptPayloads] using
+    openTranscript_entries_payload_eq_of_agree hashFn salts leaves₁ leaves₂ idxs hagree
 
 /-- If two salt assignments and two leaf assignments agree on the requested opened indices, then
 the honest transcripts reveal the same opened payloads `(index, salt, value)`. Roots and
@@ -236,6 +260,18 @@ theorem openTranscript_entries_payload_eq_of_agree_on_opened {s : Skeleton}
   simp [openTranscript, Function.comp_def]
   intro i hi
   exact ⟨hsalts i hi, hleaves i hi⟩
+
+/-- Named-payload form of `openTranscript_entries_payload_eq_of_agree_on_opened`. -/
+theorem openTranscriptPayloads_eq_of_agree_on_opened {s : Skeleton}
+    (hashFn : α → α → α)
+    (salts₁ salts₂ leaves₁ leaves₂ : LeafData α s) (idxs : List (SkeletonLeafIndex s))
+    (hsalts : ∀ i ∈ idxs, salts₁.get i = salts₂.get i)
+    (hleaves : ∀ i ∈ idxs, leaves₁.get i = leaves₂.get i) :
+    openTranscriptPayloads (openTranscript hashFn salts₁ leaves₁ idxs) =
+      openTranscriptPayloads (openTranscript hashFn salts₂ leaves₂ idxs) := by
+  simpa [openTranscriptPayloads] using
+    openTranscript_entries_payload_eq_of_agree_on_opened hashFn salts₁ salts₂ leaves₁ leaves₂
+      idxs hsalts hleaves
 
 /-- The honest salted transcript emits exactly one opening entry for each requested index. -/
 theorem openTranscript_entries_length {s : Skeleton} (hashFn : α → α → α)
@@ -405,10 +441,14 @@ end InductiveMerkleTree
 #print axioms InductiveMerkleTree.salted_opening_unique_against_honest_tree
 #print axioms InductiveMerkleTree.multi_salted_openings_unique_against_honest_tree
 #print axioms InductiveMerkleTree.openTranscript
+#print axioms InductiveMerkleTree.openTranscriptPayloads
 #print axioms InductiveMerkleTree.openTranscript_root_eq
 #print axioms InductiveMerkleTree.openTranscript_entries_eq
+#print axioms InductiveMerkleTree.openTranscriptPayloads_openTranscript_eq
 #print axioms InductiveMerkleTree.openTranscript_entries_payload_eq_of_agree
+#print axioms InductiveMerkleTree.openTranscriptPayloads_eq_of_agree
 #print axioms InductiveMerkleTree.openTranscript_entries_payload_eq_of_agree_on_opened
+#print axioms InductiveMerkleTree.openTranscriptPayloads_eq_of_agree_on_opened
 #print axioms InductiveMerkleTree.openTranscript_entries_length
 #print axioms InductiveMerkleTree.openTranscript_entries_indices
 #print axioms InductiveMerkleTree.openTranscript_entries_nodup

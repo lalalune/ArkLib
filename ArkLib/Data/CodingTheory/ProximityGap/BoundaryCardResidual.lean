@@ -292,6 +292,16 @@ def BoundaryCardQuantizationResiduals {k deg : ℕ} {domain : ι ↪ F} {δ : �
   BoundaryCardStrictInteriorResidual (k := k) (deg := deg) (domain := domain) (δ := δ) ∧
   BoundaryCardLatticeResidual (k := k) (deg := deg) (domain := domain) (δ := δ)
 
+omit [Nonempty ι] [DecidableEq ι] in
+/-- At `k = 0`, the lattice half of the boundary quantization package is vacuous.  Thus a
+strict-interior producer alone assembles the full quantization residual package. -/
+theorem BoundaryCardQuantizationResiduals.ofStrictInterior_zero
+    {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    (hStrict :
+      BoundaryCardStrictInteriorResidual (k := 0) (deg := deg) (domain := domain) (δ := δ)) :
+    BoundaryCardQuantizationResiduals (k := 0) (deg := deg) (domain := domain) (δ := δ) :=
+  ⟨hStrict, boundaryCardLatticeResidual_zero⟩
+
 omit [DecidableEq ι] in
 /-- Projection of the strict-interior, non-lattice side of the boundary quantization package. -/
 theorem BoundaryCardQuantizationResiduals.strictInterior {k deg : ℕ} {domain : ι ↪ F}
@@ -757,6 +767,7 @@ with no `sorry`/`admit`/`axiom`/`native_decide`. -/
 #print axioms ArkLib.BoundaryCardResidual.boundaryCardLatticeResidual_zero
 #print axioms ArkLib.BoundaryCardResidual.boundaryCardLatticeData_zero
 #print axioms ArkLib.BoundaryCardResidual.BoundaryCardQuantizationResiduals
+#print axioms ArkLib.BoundaryCardResidual.BoundaryCardQuantizationResiduals.ofStrictInterior_zero
 #print axioms ArkLib.BoundaryCardResidual.BoundaryCardQuantizationResiduals.strictInterior
 #print axioms ArkLib.BoundaryCardResidual.BoundaryCardQuantizationResiduals.lattice
 #print axioms ArkLib.BoundaryCardResidual.BoundaryCardQuantizationResiduals.toBoundaryCardResidual
