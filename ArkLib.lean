@@ -56,6 +56,7 @@ import ArkLib.Data.CodingTheory.Connections.ListDecodingAndCA
 import ArkLib.Data.CodingTheory.Connections.SmoothDomainMCAWitness
 import ArkLib.Data.CodingTheory.DivergenceOfSets
 import ArkLib.Data.CodingTheory.EntropyCapacityValue
+import ArkLib.Data.CodingTheory.EntropyGVBound
 import ArkLib.Data.CodingTheory.EntropyHammingBound
 import ArkLib.Data.CodingTheory.EntropyVolumeBound
 import ArkLib.Data.CodingTheory.EntropyVolumeListSize
