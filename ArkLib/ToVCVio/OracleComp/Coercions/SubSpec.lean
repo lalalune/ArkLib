@@ -12,6 +12,8 @@ import VCVio.OracleComp.Coercions.Add
 
 namespace OracleComp
 
+universe u v w
+
 lemma mem_support_of_mem_support_liftComp
     {ι τ α : Type} {spec : OracleSpec ι} {superSpec : OracleSpec τ}
     [MonadLiftT (OracleQuery spec) (OracleQuery superSpec)]

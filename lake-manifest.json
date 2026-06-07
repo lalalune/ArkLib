@@ -7,10 +7,10 @@
       "type": "git",
       "subDir": null,
       "scope": "",
-      "rev": "bb0959d50751995ec32e6c4597f9446ecd42f970",
+      "rev": "dd240dd32efb33ce3e2c804e1469bc8fde98fcf0",
       "name": "CompPoly",
       "manifestFile": "lake-manifest.json",
-      "inputRev": "bb0959d50751995ec32e6c4597f9446ecd42f970",
+      "inputRev": "dd240dd32efb33ce3e2c804e1469bc8fde98fcf0",
       "inherited": false,
       "configFile": "lakefile.lean"
     },

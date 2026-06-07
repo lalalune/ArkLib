@@ -44,44 +44,4 @@ set_option linter.unusedFintypeInType false
 set_option linter.unusedDecidableInType false
 set_option linter.unusedSectionVars false
 
-namespace CodingTheory
-
-open scoped NNReal
-open ListDecodable
-
-/-- **ABF26 Corollary 3.5 [CZ25 Cor 2.21] — named-`Prop` endpoint from the
-coordinate-fiber cap.**
-
-Concludes the named external statement `frs_list_decoding_capacity_cz25` from the
-FRS subspace-design instance `hT218` and the single named residual
-`CZ25CoordFiberCap` (quantified over every `τ`-subspace-design code), plus the
-floor/real reconciliation `hηnat`.
-
-This threads `CZ25CoordFiberCap` to the named C3.5 `Prop` by composing the #93
-bridge `subspaceDesign_list_decoding_cz25_of_coordFiberCap` (which discharges the
-general `hT34` `Λ`-bound) with `frs_list_decoding_capacity_cz25_of_residuals_prop`
-(which discharges the corollary's own τ-substitution + bound algebra). -/
-theorem frs_list_decoding_capacity_cz25_of_coordFiberCap_T218_prop
-    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
-    {F : Type} [Field F] [Fintype F] [DecidableEq F]
-    (domain : ι ↪ F) (k s : ℕ) (ω : F)
-    (hs_pos : 0 < s)
-    (η : ℝ) (hη_pos : 0 < η) (hη_lt_s : 1 / η < s)
-    (hT218 : IsSubspaceDesign s
-        (fun r ↦ if r ∈ Finset.Icc 1 s then
-            (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - r + 1) else 1)
-        (ReedSolomon.Folded.frsCode domain k s ω))
-    (hCap : ∀ (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
-        (h : IsSubspaceDesign s τ C) (η' : ℝ) (hη' : 0 < η'),
-        CZ25CoordFiberCap s τ C h η' hη')
-    (hηnat : (1 : ℝ) / η = (Nat.floor (1 / η) : ℕ)) :
-    frs_list_decoding_capacity_cz25 domain k s ω hs_pos η hη_pos hη_lt_s := by
-  refine frs_list_decoding_capacity_cz25_of_residuals_prop
-    domain k s ω hs_pos η hη_pos hη_lt_s hT218 ?_ hηnat
-  intro τ' C' h' η' hη'_pos
-  exact subspaceDesign_list_decoding_cz25_of_coordFiberCap s τ' C' h' η' hη'_pos
-    (hCap τ' C' h' η' hη'_pos)
-
-end CodingTheory
-
 #print axioms CodingTheory.frs_list_decoding_capacity_cz25_of_coordFiberCap_T218_prop
