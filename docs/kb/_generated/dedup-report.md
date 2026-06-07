@@ -4,9 +4,9 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 683 files, 12653 declarations
+- `ArkLib` — 688 files, 12777 declarations
 
-## Same short-name across multiple files (419 groups)
+## Same short-name across multiple files (430 groups)
 
 Each group lists declarations sharing a short name across ≥2 files. Most are legitimate (overloaded interface, paper-shape vs general form), but the list is the right anchor to look for duplicates.
 
@@ -16,9 +16,9 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def CheckClaim.oracleVerifier` [ArkLib/ProofSystem/Component/CheckClaim.lean:250](../../../ArkLib/ProofSystem/Component/CheckClaim.lean#L250) — The oracle verifier for the `CheckClaim` oracle reduction.
 - `def DoNothing.oracleVerifier` [ArkLib/ProofSystem/Component/DoNothing.lean:72](../../../ArkLib/ProofSystem/Component/DoNothing.lean#L72) — The oracle verifier for the `DoNothing` oracle reduction.
 - `def RandomQuery.oracleVerifier` [ArkLib/ProofSystem/Component/RandomQuery.lean:82](../../../ArkLib/ProofSystem/Component/RandomQuery.lean#L82) — The oracle verifier simply returns the challenge, and performs no checks.
-- `def ReduceClaim.oracleVerifier` [ArkLib/ProofSystem/Component/ReduceClaim.lean:201](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L201) — The oracle verifier for the `ReduceClaim` oracle reduction.
+- `def ReduceClaim.oracleVerifier` [ArkLib/ProofSystem/Component/ReduceClaim.lean:260](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L260) — The oracle verifier for the `ReduceClaim` oracle reduction.
 - `def SendClaim.oracleVerifier` [ArkLib/ProofSystem/Component/SendClaim.lean:63](../../../ArkLib/ProofSystem/Component/SendClaim.lean#L63) — The verifier checks that the relationship `rel oldStmt newStmt` holds. It has access to the original
-- `def SendSingleWitness.oracleVerifier` [ArkLib/ProofSystem/Component/SendWitness.lean:270](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L270) — The oracle verifier for the `SendSingleWitness` oracle reduction. The verifier receives the input st
+- `def SendSingleWitness.oracleVerifier` [ArkLib/ProofSystem/Component/SendWitness.lean:351](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L351) — The oracle verifier for the `SendSingleWitness` oracle reduction. The verifier receives the input st
 - `def RingSwitching.BatchingPhase.oracleVerifier` [ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean:176](../../../ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean#L176) — (no docstring)
 - `def Sumcheck.Spec.oracleVerifier` [ArkLib/ProofSystem/Sumcheck/Spec/General.lean:158](../../../ArkLib/ProofSystem/Sumcheck/Spec/General.lean#L158) — The oracle verifier for the (full) sum-check protocol
 - `def Sumcheck.Spec.SingleRound.Simple.oracleVerifier` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:702](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L702) — (no docstring)
@@ -31,8 +31,8 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def CheckClaim.reduction` [ArkLib/ProofSystem/Component/CheckClaim.lean:56](../../../ArkLib/ProofSystem/Component/CheckClaim.lean#L56) — The reduction for the `CheckClaim` reduction.
 - `def DoNothing.reduction` [ArkLib/ProofSystem/Component/DoNothing.lean:43](../../../ArkLib/ProofSystem/Component/DoNothing.lean#L43) — The reduction for the `DoNothing` reduction. - Prover simply returns the statement and witness. - Ve
 - `def NoInteraction.reduction` [ArkLib/ProofSystem/Component/NoInteraction.lean:62](../../../ArkLib/ProofSystem/Component/NoInteraction.lean#L62) — The no-interaction reduction can be specified by a tuple of functions: - `mapStmt : StmtIn → OracleC
-- `def ReduceClaim.reduction` [ArkLib/ProofSystem/Component/ReduceClaim.lean:56](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L56) — The reduction for the `ReduceClaim` reduction.
-- `def SendWitness.reduction` [ArkLib/ProofSystem/Component/SendWitness.lean:73](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L73) — (no docstring)
+- `def ReduceClaim.reduction` [ArkLib/ProofSystem/Component/ReduceClaim.lean:59](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L59) — The reduction for the `ReduceClaim` reduction.
+- `def SendWitness.reduction` [ArkLib/ProofSystem/Component/SendWitness.lean:76](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L76) — (no docstring)
 - `def Fri.Spec.reduction` [ArkLib/ProofSystem/Fri/Spec/General.lean:107](../../../ArkLib/ProofSystem/Fri/Spec/General.lean#L107) — (no docstring)
 - `def Sumcheck.Spec.reduction` [ArkLib/ProofSystem/Sumcheck/Spec/General.lean:168](../../../ArkLib/ProofSystem/Sumcheck/Spec/General.lean#L168) — The sum-check protocol as a reduction
 - `def Sumcheck.Spec.SingleRound.Simple.reduction` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:642](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L642) — The reduction for the simple description of a single round of sum-check
@@ -44,7 +44,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `def RandomQuery.pSpec` [ArkLib/ProofSystem/Component/RandomQuery.lean:53](../../../ArkLib/ProofSystem/Component/RandomQuery.lean#L53) — (no docstring)
 - `def SendClaim.pSpec` [ArkLib/ProofSystem/Component/SendClaim.lean:31](../../../ArkLib/ProofSystem/Component/SendClaim.lean#L31) — (no docstring)
-- `def SendWitness.pSpec` [ArkLib/ProofSystem/Component/SendWitness.lean:51](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L51) — (no docstring)
+- `def SendWitness.pSpec` [ArkLib/ProofSystem/Component/SendWitness.lean:52](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L52) — (no docstring)
 - `def Fri.Spec.FoldPhase.pSpec` [ArkLib/ProofSystem/Fri/Spec/SingleRound.lean:340](../../../ArkLib/ProofSystem/Fri/Spec/SingleRound.lean#L340) — Each round of the FRI protocol begins with the verifier sending a random field element as the challe
 - `def Fri.Spec.FinalFoldPhase.pSpec` [ArkLib/ProofSystem/Fri/Spec/SingleRound.lean:645](../../../ArkLib/ProofSystem/Fri/Spec/SingleRound.lean#L645) — The final folding round of the FRI protocol begins with the verifier sending a random field element
 - `def Fri.Spec.QueryRound.pSpec` [ArkLib/ProofSystem/Fri/Spec/SingleRound.lean:956](../../../ArkLib/ProofSystem/Fri/Spec/SingleRound.lean#L956) — (no docstring)
@@ -73,9 +73,9 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def CheckClaim.oracleReduction` [ArkLib/ProofSystem/Component/CheckClaim.lean:258](../../../ArkLib/ProofSystem/Component/CheckClaim.lean#L258) — The oracle reduction for the `CheckClaim` oracle reduction.
 - `def DoNothing.oracleReduction` [ArkLib/ProofSystem/Component/DoNothing.lean:82](../../../ArkLib/ProofSystem/Component/DoNothing.lean#L82) — The oracle reduction for the `DoNothing` oracle reduction. - Prover simply returns the (non-oracle a
 - `def RandomQuery.oracleReduction` [ArkLib/ProofSystem/Component/RandomQuery.lean:100](../../../ArkLib/ProofSystem/Component/RandomQuery.lean#L100) — Combine the trivial prover and this verifier to form the `RandomQuery` oracle reduction: the input o
-- `def ReduceClaim.oracleReduction` [ArkLib/ProofSystem/Component/ReduceClaim.lean:218](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L218) — The oracle reduction for the `ReduceClaim` oracle reduction.
+- `def ReduceClaim.oracleReduction` [ArkLib/ProofSystem/Component/ReduceClaim.lean:277](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L277) — The oracle reduction for the `ReduceClaim` oracle reduction.
 - `def SendClaim.oracleReduction` [ArkLib/ProofSystem/Component/SendClaim.lean:92](../../../ArkLib/ProofSystem/Component/SendClaim.lean#L92) — Combine the prover and verifier into an oracle reduction. The input has no statement or witness, but
-- `def SendSingleWitness.oracleReduction` [ArkLib/ProofSystem/Component/SendWitness.lean:283](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L283) — (no docstring)
+- `def SendSingleWitness.oracleReduction` [ArkLib/ProofSystem/Component/SendWitness.lean:364](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L364) — (no docstring)
 - `def Sumcheck.Spec.oracleReduction` [ArkLib/ProofSystem/Sumcheck/Spec/General.lean:180](../../../ArkLib/ProofSystem/Sumcheck/Spec/General.lean#L180) — The sum-check protocol as an oracle reduction
 - `def Sumcheck.Spec.SingleRound.Simpler.oracleReduction` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:566](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L566) — (no docstring)
 - `def Sumcheck.Spec.SingleRound.Simple.oracleReduction` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:721](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L721) — (no docstring)
@@ -87,8 +87,8 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def CheckClaim.verifier` [ArkLib/ProofSystem/Component/CheckClaim.lean:51](../../../ArkLib/ProofSystem/Component/CheckClaim.lean#L51) — The verifier for the `CheckClaim` reduction.
 - `def DoNothing.verifier` [ArkLib/ProofSystem/Component/DoNothing.lean:34](../../../ArkLib/ProofSystem/Component/DoNothing.lean#L34) — The verifier for the `DoNothing` reduction.
 - `def NoInteraction.verifier` [ArkLib/ProofSystem/Component/NoInteraction.lean:53](../../../ArkLib/ProofSystem/Component/NoInteraction.lean#L53) — The verifier in a no-interaction reduction takes an empty transcript, and hence reduce to a function
-- `def ReduceClaim.verifier` [ArkLib/ProofSystem/Component/ReduceClaim.lean:52](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L52) — The verifier for the `ReduceClaim` reduction.
-- `def SendWitness.verifier` [ArkLib/ProofSystem/Component/SendWitness.lean:69](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L69) — (no docstring)
+- `def ReduceClaim.verifier` [ArkLib/ProofSystem/Component/ReduceClaim.lean:55](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L55) — The verifier for the `ReduceClaim` reduction.
+- `def SendWitness.verifier` [ArkLib/ProofSystem/Component/SendWitness.lean:72](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L72) — (no docstring)
 - `def Sumcheck.Spec.verifier` [ArkLib/ProofSystem/Sumcheck/Spec/General.lean:149](../../../ArkLib/ProofSystem/Sumcheck/Spec/General.lean#L149) — The verifier for the (full) sum-check protocol
 - `def Sumcheck.Spec.SingleRound.Simple.verifier` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:633](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L633) — The verifier for the simple description of a single round of sum-check
 - `def Sumcheck.Spec.SingleRound.verifier` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:1343](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L1343) — The verifier for the `i`-th round of the sum-check protocol
@@ -102,10 +102,10 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def CheckClaim.oracleProver` [ArkLib/ProofSystem/Component/CheckClaim.lean:237](../../../ArkLib/ProofSystem/Component/CheckClaim.lean#L237) — The oracle prover for the `CheckClaim` oracle reduction.
 - `def DoNothing.oracleProver` [ArkLib/ProofSystem/Component/DoNothing.lean:67](../../../ArkLib/ProofSystem/Component/DoNothing.lean#L67) — The oracle prover for the `DoNothing` oracle reduction.
 - `def RandomQuery.oracleProver` [ArkLib/ProofSystem/Component/RandomQuery.lean:62](../../../ArkLib/ProofSystem/Component/RandomQuery.lean#L62) — The prover is trivial: it has no messages to send.  It only receives the verifier's challenge `q`, a
-- `def ReduceClaim.oracleProver` [ArkLib/ProofSystem/Component/ReduceClaim.lean:191](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L191) — The oracle prover for the `ReduceClaim` oracle reduction.
+- `def ReduceClaim.oracleProver` [ArkLib/ProofSystem/Component/ReduceClaim.lean:250](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L250) — The oracle prover for the `ReduceClaim` oracle reduction.
 - `def SendClaim.oracleProver` [ArkLib/ProofSystem/Component/SendClaim.lean:36](../../../ArkLib/ProofSystem/Component/SendClaim.lean#L36) — The prover takes in the old oracle statement as input, and sends it as the protocol message.
-- `def SendWitness.oracleProver` [ArkLib/ProofSystem/Component/SendWitness.lean:186](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L186) — The oracle prover for the `SendWitness` oracle reduction. For each round `i : Fin (FinEnum.card ιw)`
-- `def SendSingleWitness.oracleProver` [ArkLib/ProofSystem/Component/SendWitness.lean:254](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L254) — The oracle prover for the `SendSingleWitness` oracle reduction. The prover sends the witness `wit` t
+- `def SendWitness.oracleProver` [ArkLib/ProofSystem/Component/SendWitness.lean:267](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L267) — The oracle prover for the `SendWitness` oracle reduction. For each round `i : Fin (FinEnum.card ιw)`
+- `def SendSingleWitness.oracleProver` [ArkLib/ProofSystem/Component/SendWitness.lean:335](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L335) — The oracle prover for the `SendSingleWitness` oracle reduction. The prover sends the witness `wit` t
 - `def RingSwitching.BatchingPhase.oracleProver` [ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean:128](../../../ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean#L128) — (no docstring)
 - `def ToyProblem.Spec.oracleProver` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:528](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L528) — Same as `prover` but exposed at the `OracleProver` signature. The underlying `Prover` is identical (
 
@@ -114,8 +114,8 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def CheckClaim.prover` [ArkLib/ProofSystem/Component/CheckClaim.lean:40](../../../ArkLib/ProofSystem/Component/CheckClaim.lean#L40) — The prover for the `CheckClaim` reduction.
 - `def DoNothing.prover` [ArkLib/ProofSystem/Component/DoNothing.lean:30](../../../ArkLib/ProofSystem/Component/DoNothing.lean#L30) — The prover for the `DoNothing` reduction.
 - `def NoInteraction.prover` [ArkLib/ProofSystem/Component/NoInteraction.lean:43](../../../ArkLib/ProofSystem/Component/NoInteraction.lean#L43) — The prover in a no-interaction reduction can be specified by a tuple of functions: - `mapStmt : Stmt
-- `def ReduceClaim.prover` [ArkLib/ProofSystem/Component/ReduceClaim.lean:44](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L44) — The prover for the `ReduceClaim` reduction.
-- `def SendWitness.prover` [ArkLib/ProofSystem/Component/SendWitness.lean:59](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L59) — (no docstring)
+- `def ReduceClaim.prover` [ArkLib/ProofSystem/Component/ReduceClaim.lean:47](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L47) — The prover for the `ReduceClaim` reduction.
+- `def SendWitness.prover` [ArkLib/ProofSystem/Component/SendWitness.lean:62](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L62) — (no docstring)
 - `def Sumcheck.Spec.SingleRound.Simple.prover` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:611](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L611) — The prover in the simple description of a single round of sum-check. Takes in input `target : R` and
 - `def Sumcheck.Spec.SingleRound.Unfolded.prover` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:1881](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L1881) — The overall prover for the `i`-th round of the sum-check protocol, where `i < n`. This is only well-
 - `def ToyProblem.Spec.prover` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:441](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L441) — Honest prover for Construction 6.2. After receiving the combination randomness `γ`, the prover sends
@@ -308,15 +308,15 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem DoNothing.oracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Component/DoNothing.lean:98](../../../ArkLib/ProofSystem/Component/DoNothing.lean#L98) — The `DoNothing` oracle verifier is perfectly round-by-round knowledge sound.
 - `theorem RandomQuery.oracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Component/RandomQuery.lean:275](../../../ArkLib/ProofSystem/Component/RandomQuery.lean#L275) — The `RandomQuery` oracle reduction is round-by-round knowledge sound. The key fact governing the sou
-- `theorem ReduceClaim.oracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Component/ReduceClaim.lean:351](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L351) — The `ReduceClaim` oracle reduction satisfies perfect round-by-round knowledge soundness. Note that s
+- `theorem ReduceClaim.oracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Component/ReduceClaim.lean:410](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L410) — The `ReduceClaim` oracle reduction satisfies perfect round-by-round knowledge soundness. Note that s
 - `theorem Sumcheck.Spec.SingleRound.Simple.oracleVerifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:1216](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L1216) — Round-by-round knowledge soundness for the oracle verifier
 
 ### `reduction_completeness` (4 declarations, 4 files)
 
 - `theorem CheckClaim.reduction_completeness` [ArkLib/ProofSystem/Component/CheckClaim.lean:71](../../../ArkLib/ProofSystem/Component/CheckClaim.lean#L71) — The `CheckClaim` reduction satisfies perfect completeness with respect to the predicate as the input
 - `theorem NoInteraction.reduction_completeness` [ArkLib/ProofSystem/Component/NoInteraction.lean:93](../../../ArkLib/ProofSystem/Component/NoInteraction.lean#L93) — Completeness of a no-interaction reduction. **Faithfulness of the hypothesis `hRel`.** `Reduction.ru
-- `theorem ReduceClaim.reduction_completeness` [ArkLib/ProofSystem/Component/ReduceClaim.lean:66](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L66) — The `ReduceClaim` reduction satisfies perfect completeness for any relation.
-- `theorem SendWitness.reduction_completeness` [ArkLib/ProofSystem/Component/SendWitness.lean:98](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L98) — The `SendWitness` reduction satisfies perfect completeness.
+- `theorem ReduceClaim.reduction_completeness` [ArkLib/ProofSystem/Component/ReduceClaim.lean:69](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L69) — The `ReduceClaim` reduction satisfies perfect completeness for any relation.
+- `theorem SendWitness.reduction_completeness` [ArkLib/ProofSystem/Component/SendWitness.lean:172](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L172) — The `SendWitness` reduction satisfies perfect completeness.
 
 ### `simulateQ_simOracle2_messageQuery` (4 declarations, 4 files)
 
@@ -336,18 +336,18 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `abbrev DuplexSpongeFS.NARG.completeness` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Basic.lean:59](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Basic.lean#L59) — Paper-facing alias for CO25 Section 3.4 completeness.
 - `def Reduction.completeness` [ArkLib/OracleReduction/Security/Basic.lean:117](../../../ArkLib/OracleReduction/Security/Basic.lean#L117) — A reduction satisfies **completeness** with regards to: - an initialization function `init : ProbCom
-- `def OracleReduction.completeness` [ArkLib/OracleReduction/Security/Basic.lean:428](../../../ArkLib/OracleReduction/Security/Basic.lean#L428) — Completeness of an oracle reduction is the same as for non-oracle reductions.
-- `def Proof.completeness` [ArkLib/OracleReduction/Security/Basic.lean:482](../../../ArkLib/OracleReduction/Security/Basic.lean#L482) — (no docstring)
-- `def OracleProof.completeness` [ArkLib/OracleReduction/Security/Basic.lean:511](../../../ArkLib/OracleReduction/Security/Basic.lean#L511) — Completeness of an oracle reduction is the same as for non-oracle reductions.
+- `def OracleReduction.completeness` [ArkLib/OracleReduction/Security/Basic.lean:463](../../../ArkLib/OracleReduction/Security/Basic.lean#L463) — Completeness of an oracle reduction is the same as for non-oracle reductions.
+- `def Proof.completeness` [ArkLib/OracleReduction/Security/Basic.lean:517](../../../ArkLib/OracleReduction/Security/Basic.lean#L517) — (no docstring)
+- `def OracleProof.completeness` [ArkLib/OracleReduction/Security/Basic.lean:546](../../../ArkLib/OracleReduction/Security/Basic.lean#L546) — Completeness of an oracle reduction is the same as for non-oracle reductions.
 - `theorem SendClaim.completeness` [ArkLib/ProofSystem/Component/SendClaim.lean:110](../../../ArkLib/ProofSystem/Component/SendClaim.lean#L110) — (no docstring)
 
 ### `soundness` (6 declarations, 3 files)
 
 - `abbrev DuplexSpongeFS.NARG.soundness` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Basic.lean:72](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Basic.lean#L72) — Paper-facing alias for CO25 Section 3.4 soundness.
 - `def Verifier.soundness` [ArkLib/OracleReduction/Security/Basic.lean:295](../../../ArkLib/OracleReduction/Security/Basic.lean#L295) — A reduction satisfies **soundness** with error `soundnessError ≥ 0` and with respect to input langua
-- `def OracleVerifier.soundness` [ArkLib/OracleReduction/Security/Basic.lean:449](../../../ArkLib/OracleReduction/Security/Basic.lean#L449) — Soundness of an oracle reduction is the same as for non-oracle reductions.
-- `def Proof.soundness` [ArkLib/OracleReduction/Security/Basic.lean:492](../../../ArkLib/OracleReduction/Security/Basic.lean#L492) — (no docstring)
-- `def OracleProof.soundness` [ArkLib/OracleReduction/Security/Basic.lean:528](../../../ArkLib/OracleReduction/Security/Basic.lean#L528) — Soundness of an oracle reduction is the same as for non-oracle reductions.
+- `def OracleVerifier.soundness` [ArkLib/OracleReduction/Security/Basic.lean:484](../../../ArkLib/OracleReduction/Security/Basic.lean#L484) — Soundness of an oracle reduction is the same as for non-oracle reductions.
+- `def Proof.soundness` [ArkLib/OracleReduction/Security/Basic.lean:527](../../../ArkLib/OracleReduction/Security/Basic.lean#L527) — (no docstring)
+- `def OracleProof.soundness` [ArkLib/OracleReduction/Security/Basic.lean:563](../../../ArkLib/OracleReduction/Security/Basic.lean#L563) — Soundness of an oracle reduction is the same as for non-oracle reductions.
 - `def Verifier.StateRestoration.soundness` [ArkLib/OracleReduction/Security/StateRestoration.lean:127](../../../ArkLib/OracleReduction/Security/StateRestoration.lean#L127) — State-restoration soundness
 
 ### `subdomain` (6 declarations, 3 files)
@@ -355,7 +355,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def ReedSolomon.FftDomain.subdomain` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:806](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L806) — Given a smooth FFT domain `ω` of log-order `n` this function returns its subdomain of log-order `i`.
 - `def ReedSolomon.CosetFftDomain.subdomain` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:1371](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L1371) — Given a smooth coset FFT domain `ω` of log-order `n` returns a subdomain of log-order `i`.
 - `def Domain.CosetFftDomainClass.subdomain` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:88](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L88) — Given a smooth coset FFT domain `ω` of log-order `n` this function returns its subdomain of log-orde
-- `abbrev Domain.CosetFftDomain.subdomain` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:427](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L427) — (no docstring)
+- `abbrev Domain.CosetFftDomain.subdomain` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:449](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L449) — (no docstring)
 - `def Domain.FftDomainClass.subdomain` [ArkLib/Data/Domain/FftDomain/Subdomain.lean:44](../../../ArkLib/Data/Domain/FftDomain/Subdomain.lean#L44) — (no docstring)
 - `abbrev Domain.FftDomain.subdomain` [ArkLib/Data/Domain/FftDomain/Subdomain.lean:134](../../../ArkLib/Data/Domain/FftDomain/Subdomain.lean#L134) — (no docstring)
 
@@ -598,11 +598,17 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def Binius.RingSwitching.fullPspec` [ArkLib/ProofSystem/Binius/RingSwitching/Spec.lean:73](../../../ArkLib/ProofSystem/Binius/RingSwitching/Spec.lean#L73) — (no docstring)
 - `def RingSwitching.fullPspec` [ArkLib/ProofSystem/RingSwitching/Spec.lean:57](../../../ArkLib/ProofSystem/RingSwitching/Spec.lean#L57) — (no docstring)
 
+### `honestTranscriptDist_reduction_evalDist` (3 declarations, 3 files)
+
+- `theorem CheckClaim.honestTranscriptDist_reduction_evalDist` [ArkLib/ProofSystem/Component/CheckClaim.lean:121](../../../ArkLib/ProofSystem/Component/CheckClaim.lean#L121) — The honest transcript distribution for a valid `CheckClaim` statement is the deterministic empty tra
+- `theorem ReduceClaim.honestTranscriptDist_reduction_evalDist` [ArkLib/ProofSystem/Component/ReduceClaim.lean:116](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L116) — The honest transcript distribution for `ReduceClaim` is the deterministic empty transcript. The mapp
+- `theorem SendWitness.honestTranscriptDist_reduction_evalDist` [ArkLib/ProofSystem/Component/SendWitness.lean:107](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L107) — The honest transcript distribution for `SendWitness` is the deterministic one-message transcript con
+
 ### `knowledgeStateFunction` (3 declarations, 3 files)
 
 - `def CheckClaim.knowledgeStateFunction` [ArkLib/ProofSystem/Component/CheckClaim.lean:174](../../../ArkLib/ProofSystem/Component/CheckClaim.lean#L174) — The knowledge state function for the `CheckClaim` reduction. Since there is no challenge round, the
 - `def RandomQuery.knowledgeStateFunction` [ArkLib/ProofSystem/Component/RandomQuery.lean:230](../../../ArkLib/ProofSystem/Component/RandomQuery.lean#L230) — The knowledge state function for the `RandomQuery` oracle reduction.
-- `def ReduceClaim.knowledgeStateFunction` [ArkLib/ProofSystem/Component/ReduceClaim.lean:139](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L139) — The knowledge state function for the `ReduceClaim` reduction.
+- `def ReduceClaim.knowledgeStateFunction` [ArkLib/ProofSystem/Component/ReduceClaim.lean:192](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L192) — The knowledge state function for the `ReduceClaim` reduction.
 
 ### `masterKStateProp` (3 declarations, 3 files)
 
@@ -613,8 +619,8 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `oracleReduction_completeness` (3 declarations, 3 files)
 
 - `theorem RandomQuery.oracleReduction_completeness` [ArkLib/ProofSystem/Component/RandomQuery.lean:114](../../../ArkLib/ProofSystem/Component/RandomQuery.lean#L114) — The `RandomQuery` oracle reduction is perfectly complete.
-- `theorem ReduceClaim.oracleReduction_completeness` [ArkLib/ProofSystem/Component/ReduceClaim.lean:234](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L234) — The `ReduceClaim` oracle reduction satisfies perfect completeness for any relation. Proof strategy m
-- `theorem SendSingleWitness.oracleReduction_completeness` [ArkLib/ProofSystem/Component/SendWitness.lean:328](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L328) — The `SendSingleWitness` oracle reduction satisfies perfect completeness.
+- `theorem ReduceClaim.oracleReduction_completeness` [ArkLib/ProofSystem/Component/ReduceClaim.lean:293](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L293) — The `ReduceClaim` oracle reduction satisfies perfect completeness for any relation. Proof strategy m
+- `theorem SendSingleWitness.oracleReduction_completeness` [ArkLib/ProofSystem/Component/SendWitness.lean:409](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L409) — The `SendSingleWitness` oracle reduction satisfies perfect completeness.
 
 ### `oracleReduction_perfectCompleteness` (3 declarations, 3 files)
 
@@ -639,6 +645,12 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def CheckClaim.relOut` [ArkLib/ProofSystem/Component/CheckClaim.lean:64](../../../ArkLib/ProofSystem/Component/CheckClaim.lean#L64) — (no docstring)
 - `def RandomQuery.relOut` [ArkLib/ProofSystem/Component/RandomQuery.lean:49](../../../ArkLib/ProofSystem/Component/RandomQuery.lean#L49) — The output relation states that if the verifier's single query was `q`, then `a` and `b` agree on th
 - `def SendClaim.relOut` [ArkLib/ProofSystem/Component/SendClaim.lean:98](../../../ArkLib/ProofSystem/Component/SendClaim.lean#L98) — (no docstring)
+
+### `rename_finCongr_heq` (3 declarations, 3 files)
+
+- `lemma RingSwitching.SumcheckPhase.rename_finCongr_heq` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:294](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L294) — Renaming a polynomial along the canonical index `finCongr` of a (propositional) dimension equality `
+- `lemma Sumcheck.Structured.rename_finCongr_heq` [ArkLib/ProofSystem/Sumcheck/Structured/SingleRound.lean:140](../../../ArkLib/ProofSystem/Sumcheck/Structured/SingleRound.lean#L140) — Renaming a polynomial along the canonical index `finCongr` of a dimension equality is heterogeneousl
+- `theorem MvPolynomial.rename_finCongr_heq` [ArkLib/ToMathlib/ExtractedIssueBricks.lean:46](../../../ArkLib/ToMathlib/ExtractedIssueBricks.lean#L46) — Renaming along the canonical `finCongr` of a dimension equality is heterogeneously equal to the orig
 
 ### `simulateQ_simOracle2_query` (3 declarations, 3 files)
 
@@ -755,10 +767,10 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `knowledgeSoundness` (5 declarations, 2 files)
 
-- `def Verifier.knowledgeSoundness` [ArkLib/OracleReduction/Security/Basic.lean:340](../../../ArkLib/OracleReduction/Security/Basic.lean#L340) — A reduction satisfies **(straightline) knowledge soundness** with error `knowledgeError ≥ 0` and wit
-- `def OracleVerifier.knowledgeSoundness` [ArkLib/OracleReduction/Security/Basic.lean:457](../../../ArkLib/OracleReduction/Security/Basic.lean#L457) — Knowledge soundness of an oracle reduction is the same as for non-oracle reductions.
-- `def Proof.knowledgeSoundness` [ArkLib/OracleReduction/Security/Basic.lean:498](../../../ArkLib/OracleReduction/Security/Basic.lean#L498) — (no docstring)
-- `def OracleProof.knowledgeSoundness` [ArkLib/OracleReduction/Security/Basic.lean:536](../../../ArkLib/OracleReduction/Security/Basic.lean#L536) — Knowledge soundness of an oracle reduction is the same as for non-oracle reductions.
+- `def Verifier.knowledgeSoundness` [ArkLib/OracleReduction/Security/Basic.lean:357](../../../ArkLib/OracleReduction/Security/Basic.lean#L357) — A reduction satisfies **(straightline) knowledge soundness** with error `knowledgeError ≥ 0` and wit
+- `def OracleVerifier.knowledgeSoundness` [ArkLib/OracleReduction/Security/Basic.lean:492](../../../ArkLib/OracleReduction/Security/Basic.lean#L492) — Knowledge soundness of an oracle reduction is the same as for non-oracle reductions.
+- `def Proof.knowledgeSoundness` [ArkLib/OracleReduction/Security/Basic.lean:533](../../../ArkLib/OracleReduction/Security/Basic.lean#L533) — (no docstring)
+- `def OracleProof.knowledgeSoundness` [ArkLib/OracleReduction/Security/Basic.lean:571](../../../ArkLib/OracleReduction/Security/Basic.lean#L571) — Knowledge soundness of an oracle reduction is the same as for non-oracle reductions.
 - `def Verifier.StateRestoration.knowledgeSoundness` [ArkLib/OracleReduction/Security/StateRestoration.lean:141](../../../ArkLib/OracleReduction/Security/StateRestoration.lean#L141) — State-restoration knowledge soundness (w/ straightline extractor).
 
 ### `log` (5 declarations, 2 files)
@@ -781,9 +793,9 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `abbrev DuplexSpongeFS.NARG.perfectCompleteness` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/Basic.lean:66](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/Basic.lean#L66) — Paper-facing alias for CO25 Section 3.4 perfect completeness.
 - `def Reduction.perfectCompleteness` [ArkLib/OracleReduction/Security/Basic.lean:126](../../../ArkLib/OracleReduction/Security/Basic.lean#L126) — A reduction satisfies **perfect completeness** if it satisfies completeness with error `0`.
-- `def OracleReduction.perfectCompleteness` [ArkLib/OracleReduction/Security/Basic.lean:437](../../../ArkLib/OracleReduction/Security/Basic.lean#L437) — Perfect completeness of an oracle reduction is the same as for non-oracle reductions.
-- `def Proof.perfectCompleteness` [ArkLib/OracleReduction/Security/Basic.lean:487](../../../ArkLib/OracleReduction/Security/Basic.lean#L487) — (no docstring)
-- `def OracleProof.perfectCompleteness` [ArkLib/OracleReduction/Security/Basic.lean:520](../../../ArkLib/OracleReduction/Security/Basic.lean#L520) — Perfect completeness of an oracle reduction is the same as for non-oracle reductions.
+- `def OracleReduction.perfectCompleteness` [ArkLib/OracleReduction/Security/Basic.lean:472](../../../ArkLib/OracleReduction/Security/Basic.lean#L472) — Perfect completeness of an oracle reduction is the same as for non-oracle reductions.
+- `def Proof.perfectCompleteness` [ArkLib/OracleReduction/Security/Basic.lean:522](../../../ArkLib/OracleReduction/Security/Basic.lean#L522) — (no docstring)
+- `def OracleProof.perfectCompleteness` [ArkLib/OracleReduction/Security/Basic.lean:555](../../../ArkLib/OracleReduction/Security/Basic.lean#L555) — Perfect completeness of an oracle reduction is the same as for non-oracle reductions.
 
 ### `cast_eq_dcast₂` (4 declarations, 2 files)
 
@@ -899,25 +911,25 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `def ReedSolomon.FftDomain.twoNthRoot` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:1258](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L1258) — Finds a `2 ^ n`th root of `x`.
 - `def ReedSolomon.CosetFftDomain.twoNthRoot` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:1909](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L1909) — Finds a `2 ^ n`th root of `x`.
-- `def Domain.CosetFftDomain.twoNthRoot` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:442](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L442) — Finds a `2 ^ n`th root of `x`.
+- `def Domain.CosetFftDomain.twoNthRoot` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:464](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L464) — Finds a `2 ^ n`th root of `x`.
 
 ### `twoNthRootAux` (3 declarations, 2 files)
 
 - `def ReedSolomon.FftDomain.twoNthRootAux` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:1246](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L1246) — (no docstring)
 - `def ReedSolomon.CosetFftDomain.twoNthRootAux` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:1897](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L1897) — (no docstring)
-- `def Domain.CosetFftDomain.twoNthRootAux` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:430](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L430) — (no docstring)
+- `def Domain.CosetFftDomain.twoNthRootAux` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:452](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L452) — (no docstring)
 
 ### `twoNthRootAux_correct` (3 declarations, 2 files)
 
 - `lemma ReedSolomon.FftDomain.twoNthRootAux_correct` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:1262](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L1262) — (no docstring)
 - `lemma ReedSolomon.CosetFftDomain.twoNthRootAux_correct` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:1913](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L1913) — (no docstring)
-- `lemma Domain.CosetFftDomain.twoNthRootAux_correct` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:446](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L446) — (no docstring)
+- `lemma Domain.CosetFftDomain.twoNthRootAux_correct` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:468](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L468) — (no docstring)
 
 ### `twoNthRoot_correct` (3 declarations, 2 files)
 
 - `lemma ReedSolomon.FftDomain.twoNthRoot_correct` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:1274](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L1274) — (no docstring)
 - `lemma ReedSolomon.CosetFftDomain.twoNthRoot_correct` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:1925](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L1925) — (no docstring)
-- `lemma Domain.CosetFftDomain.twoNthRoot_correct` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:460](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L460) — (no docstring)
+- `lemma Domain.CosetFftDomain.twoNthRoot_correct` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:482](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L482) — (no docstring)
 
 ### `AbstractOStmtIn` (2 declarations, 2 files)
 
@@ -1170,6 +1182,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma RingSwitching.BatchingPhase.answer_instDefault` [ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean:54](../../../ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean#L54) — The default oracle interface (`OracleInterface.instDefault`, used by the ring-switching message orac
 - `lemma ToyProblem.Spec.answer_instDefault` [ArkLib/ProofSystem/ToyProblem/Spec/General.lean:628](../../../ArkLib/ProofSystem/ToyProblem/Spec/General.lean#L628) — `answer` of the default oracle interface is the identity (the message itself).
 
+### `appendRight` (2 declarations, 2 files)
+
+- `def Interaction.OracleDecoration.QueryHandle.appendRight` [ArkLib/Interaction/Oracle/Core.lean:202](../../../ArkLib/Interaction/Oracle/Core.lean#L202) — (no docstring)
+- `def Transcript.appendRight` [ArkLib/OracleReduction/ProtocolSpec/TranscriptRecompose.lean:43](../../../ArkLib/OracleReduction/ProtocolSpec/TranscriptRecompose.lean#L43) — Append a full `pSpec₁` transcript and a *partial* `pSpec₂` transcript into a partial transcript for
+
 ### `append_left_injective` (2 declarations, 2 files)
 
 - `theorem Fin.append_left_injective` [ArkLib/Data/Fin/Basic.lean:262](../../../ArkLib/Data/Fin/Basic.lean#L262) — (no docstring)
@@ -1279,6 +1296,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem Probability.SizeSubset.card` [ArkLib/Data/Probability/Combinatorial.lean:47](../../../ArkLib/Data/Probability/Combinatorial.lean#L47) — The number of size-`n` subsets of a finite type is `\|α\| choose n`.
 - `theorem Probability.SizedSubset.card` [ArkLib/Data/Probability/UniformSubset.lean:43](../../../ArkLib/Data/Probability/UniformSubset.lean#L43) — (no docstring)
+
+### `card_filter_eval_zero_le` (2 declarations, 2 files)
+
+- `theorem RingSwitching.card_filter_eval_zero_le` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:1723](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L1723) — **Root-set cardinality bound.** Over an integral domain `L`, the number of field elements at which a
+- `theorem Polynomial.card_filter_eval_zero_le` [ArkLib/ToMathlib/ExtractedIssueBricks.lean:57](../../../ArkLib/ToMathlib/ExtractedIssueBricks.lean#L57) — **Root-set cardinality bound.** Over a finite integral domain `L`, a nonzero `p : L[X]` vanishes at
 
 ### `check_rows_sum_eq_aeval` (2 declarations, 2 files)
 
@@ -1409,6 +1431,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem ArkLib.BoundaryCardResidual.correlatedAgreement_affine_curves_of_lattice_data` [ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidual.lean:805](../../../ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidual.lean#L805) — [BCIKS20] Theorem 1.5 consuming concrete square-lattice data. This is the data-level counterpart of
 - `theorem ArkLib.BoundaryDischarge.correlatedAgreement_affine_curves_of_lattice_data` [ArkLib/ToMathlib/BoundaryDischarge.lean:542](../../../ArkLib/ToMathlib/BoundaryDischarge.lean#L542) — The affine-curves keystone can consume the exact lattice branch through the smaller `BoundaryCardLat
+
+### `correlatedAgreement_affine_curves_of_lattice_data_isSquare` (2 declarations, 2 files)
+
+- `theorem ArkLib.BoundaryCardResidual.correlatedAgreement_affine_curves_of_lattice_data_isSquare` [ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidual.lean:921](../../../ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidual.lean#L921) — Curve-facing square-endpoint adapter from concrete lattice data. This is the data-level counterpart
+- `theorem ArkLib.BoundaryDischarge.correlatedAgreement_affine_curves_of_lattice_data_isSquare` [ArkLib/ToMathlib/BoundaryDischarge.lean:605](../../../ArkLib/ToMathlib/BoundaryDischarge.lean#L605) — Curve-facing square-endpoint adapter from `BoundaryCardLatticeData`.  This is the lattice-data count
 
 ### `decoder` (2 declarations, 2 files)
 
@@ -1543,7 +1570,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `extractor` (2 declarations, 2 files)
 
 - `def CheckClaim.extractor` [ArkLib/ProofSystem/Component/CheckClaim.lean:167](../../../ArkLib/ProofSystem/Component/CheckClaim.lean#L167) — The round-by-round extractor for the `CheckClaim` reduction. Trivial since the witness is `Unit`.
-- `def ReduceClaim.extractor` [ArkLib/ProofSystem/Component/ReduceClaim.lean:113](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L113) — The round-by-round extractor for the `ReduceClaim` (oracle) reduction. Requires a mapping `mapWitInv
+- `def ReduceClaim.extractor` [ArkLib/ProofSystem/Component/ReduceClaim.lean:166](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L166) — The round-by-round extractor for the `ReduceClaim` (oracle) reduction. Requires a mapping `mapWitInv
 
 ### `failureProbability` (2 declarations, 2 files)
 
@@ -1722,7 +1749,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `interpolate` (2 declarations, 2 files)
 
-- `def ReedSolomon.interpolate` [ArkLib/Data/CodingTheory/ReedSolomon.lean:586](../../../ArkLib/Data/CodingTheory/ReedSolomon.lean#L586) — The linear map that maps a codeword `f : ι → F` to a degree < \|ι\| polynomial p, such that `p(x) = f(
+- `def ReedSolomon.interpolate` [ArkLib/Data/CodingTheory/ReedSolomon.lean:606](../../../ArkLib/Data/CodingTheory/ReedSolomon.lean#L606) — The linear map that maps a codeword `f : ι → F` to a degree < \|ι\| polynomial p, such that `p(x) = f(
 - `def UniPoly.Lagrange.interpolate` [ArkLib/Data/UniPoly/Basic.lean:1120](../../../ArkLib/Data/UniPoly/Basic.lean#L1120) — This function produces the polynomial which is of degree n and is equal to r i at ω^i for i = 0, 1,
 
 ### `isHVZK.isStatHVZK` (2 declarations, 2 files)
@@ -1915,6 +1942,16 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `theorem JohnsonBound.FamilyRefutation.minDist_C` [ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutation.lean:54](../../../ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutation.lean#L54) — Every distinct pair of codewords has Hamming distance `≥ 1`, and the pair `(c0, c1)` attains `1`. He
 - `theorem JohnsonBound.JqlRefutation.minDist_C` [ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutationComplete.lean:97](../../../ArkLib/Data/CodingTheory/JohnsonBound/FamilyRefutationComplete.lean#L97) — **`Code.minDist C = 1`.**  The defining set of distinct-pair distances is `{1, 2}` (`d(c0,c1) = d(c0
 
+### `mk_eq_trunc_of_tail_zero` (2 declarations, 2 files)
+
+- `theorem ArkLib.BetaToCurveCoeffPolys.mk_eq_trunc_of_tail_zero` [ArkLib/ToMathlib/BetaToCurveCoeffPolysOffcentre.lean:86](../../../ArkLib/ToMathlib/BetaToCurveCoeffPolysOffcentre.lean#L86) — A power series whose coefficients vanish from index `k` on **is** (the coercion of) its `k`-truncati
+- `theorem PowerSeries.mk_eq_trunc_of_tail_zero` [ArkLib/ToMathlib/ExtractedIssueBricks.lean:77](../../../ArkLib/ToMathlib/ExtractedIssueBricks.lean#L77) — A power series whose coefficients vanish from index `k` on equals the coercion of its `k`-truncation
+
+### `natDegree_taylor_lt` (2 declarations, 2 files)
+
+- `theorem ArkLib.BetaToCurveCoeffPolys.natDegree_taylor_lt` [ArkLib/ToMathlib/BetaToCurveCoeffPolysOffcentre.lean:141](../../../ArkLib/ToMathlib/BetaToCurveCoeffPolysOffcentre.lean#L141) — Taylor shift preserves the strict degree bound of a coefficient profile.
+- `theorem Polynomial.natDegree_taylor_lt` [ArkLib/ToMathlib/ExtractedIssueBricks.lean:67](../../../ArkLib/ToMathlib/ExtractedIssueBricks.lean#L67) — A strict degree bound transports through a Taylor shift.
+
 ### `neg_one_mem_domain` (2 declarations, 2 files)
 
 - `lemma ReedSolomon.FftDomain.neg_one_mem_domain` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:419](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L419) — (no docstring)
@@ -1922,8 +1959,8 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `oracleVerifier_toVerifier_run` (2 declarations, 2 files)
 
-- `theorem ReduceClaim.oracleVerifier_toVerifier_run` [ArkLib/ProofSystem/Component/ReduceClaim.lean:208](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L208) — Running the (oracle) verifier of the `ReduceClaim` oracle reduction deterministically returns the ma
-- `theorem SendSingleWitness.oracleVerifier_toVerifier_run` [ArkLib/ProofSystem/Component/SendWitness.lean:301](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L301) — (no docstring)
+- `theorem ReduceClaim.oracleVerifier_toVerifier_run` [ArkLib/ProofSystem/Component/ReduceClaim.lean:267](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L267) — Running the (oracle) verifier of the `ReduceClaim` oracle reduction deterministically returns the ma
+- `theorem SendSingleWitness.oracleVerifier_toVerifier_run` [ArkLib/ProofSystem/Component/SendWitness.lean:382](../../../ArkLib/ProofSystem/Component/SendWitness.lean#L382) — (no docstring)
 
 ### `pSpecBatching` (2 declarations, 2 files)
 
@@ -2025,6 +2062,26 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def Binius.BinaryBasefold.QueryPhase.queryOracleReduction` [ArkLib/ProofSystem/Binius/BinaryBasefold/QueryPhase.lean:174](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/QueryPhase.lean#L174) — The oracle reduction for the final query phase.
 - `def Fri.Spec.QueryRound.queryOracleReduction` [ArkLib/ProofSystem/Fri/Spec/SingleRound.lean:1137](../../../ArkLib/ProofSystem/Fri/Spec/SingleRound.lean#L1137) — (no docstring)
 
+### `reduction_isHVZK` (2 declarations, 2 files)
+
+- `theorem CheckClaim.reduction_isHVZK` [ArkLib/ProofSystem/Component/CheckClaim.lean:156](../../../ArkLib/ProofSystem/Component/CheckClaim.lean#L156) — `CheckClaim` has an explicit perfect-HVZK simulator.
+- `theorem ReduceClaim.reduction_isHVZK` [ArkLib/ProofSystem/Component/ReduceClaim.lean:153](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L153) — `ReduceClaim` has an explicit perfect-HVZK simulator for any input relation.
+
+### `reduction_isStatHVZK` (2 declarations, 2 files)
+
+- `theorem CheckClaim.reduction_isStatHVZK` [ArkLib/ProofSystem/Component/CheckClaim.lean:161](../../../ArkLib/ProofSystem/Component/CheckClaim.lean#L161) — `CheckClaim` has statistical HVZK at every error budget.
+- `theorem ReduceClaim.reduction_isStatHVZK` [ArkLib/ProofSystem/Component/ReduceClaim.lean:159](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L159) — `ReduceClaim` has statistical HVZK for any input relation and error budget.
+
+### `reduction_perfectHVZK` (2 declarations, 2 files)
+
+- `theorem CheckClaim.reduction_perfectHVZK` [ArkLib/ProofSystem/Component/CheckClaim.lean:142](../../../ArkLib/ProofSystem/Component/CheckClaim.lean#L142) — `CheckClaim` is perfectly HVZK for the predicate relation. The simulator is the identity transcript
+- `theorem ReduceClaim.reduction_perfectHVZK` [ArkLib/ProofSystem/Component/ReduceClaim.lean:138](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L138) — `ReduceClaim` is perfectly HVZK for any input relation: it has no messages or challenges, so the ide
+
+### `reduction_statisticalHVZK` (2 declarations, 2 files)
+
+- `theorem CheckClaim.reduction_statisticalHVZK` [ArkLib/ProofSystem/Component/CheckClaim.lean:150](../../../ArkLib/ProofSystem/Component/CheckClaim.lean#L150) — Perfect HVZK implies statistical HVZK at every error budget.
+- `theorem ReduceClaim.reduction_statisticalHVZK` [ArkLib/ProofSystem/Component/ReduceClaim.lean:146](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L146) — Perfect HVZK implies statistical HVZK for `ReduceClaim` at every error budget.
+
 ### `reduction_verifier_eq_verifier` (2 declarations, 2 files)
 
 - `lemma Sumcheck.Spec.reduction_verifier_eq_verifier` [ArkLib/ProofSystem/Sumcheck/Spec/General.lean:193](../../../ArkLib/ProofSystem/Sumcheck/Spec/General.lean#L193) — (no docstring)
@@ -2034,11 +2091,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `def CheckClaim.relIn` [ArkLib/ProofSystem/Component/CheckClaim.lean:61](../../../ArkLib/ProofSystem/Component/CheckClaim.lean#L61) — (no docstring)
 - `def RandomQuery.relIn` [ArkLib/ProofSystem/Component/RandomQuery.lean:41](../../../ArkLib/ProofSystem/Component/RandomQuery.lean#L41) — The input relation is that the two oracles are equal.
-
-### `rename_finCongr_heq` (2 declarations, 2 files)
-
-- `lemma RingSwitching.SumcheckPhase.rename_finCongr_heq` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:294](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L294) — Renaming a polynomial along the canonical index `finCongr` of a (propositional) dimension equality `
-- `lemma Sumcheck.Structured.rename_finCongr_heq` [ArkLib/ProofSystem/Sumcheck/Structured/SingleRound.lean:140](../../../ArkLib/ProofSystem/Sumcheck/Structured/SingleRound.lean#L140) — Renaming a polynomial along the canonical index `finCongr` of a dimension equality is heterogeneousl
 
 ### `rewindingKnowledgeSoundness` (2 declarations, 2 files)
 
@@ -2098,12 +2150,12 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `size_of_smooth_coset_domain_eq_pow_of_2` (2 declarations, 2 files)
 
 - `lemma ReedSolomon.CosetFftDomain.size_of_smooth_coset_domain_eq_pow_of_2` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:1317](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L1317) — (no docstring)
-- `lemma Domain.size_of_smooth_coset_domain_eq_pow_of_2` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:493](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L493) — Compatibility form of the smooth-coset domain size: the `toFinset` of a `SmoothCosetFftDomain n F` h
+- `lemma Domain.size_of_smooth_coset_domain_eq_pow_of_2` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:515](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L515) — Compatibility form of the smooth-coset domain size: the `toFinset` of a `SmoothCosetFftDomain n F` h
 
 ### `sq_root_mem_subdomain` (2 declarations, 2 files)
 
 - `lemma ReedSolomon.CosetFftDomain.sq_root_mem_subdomain` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:1586](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L1586) — (no docstring)
-- `lemma Domain.CosetFftDomainClass.sq_root_mem_subdomain` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:394](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L394) — (no docstring)
+- `lemma Domain.CosetFftDomainClass.sq_root_mem_subdomain` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:416](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L416) — (no docstring)
 
 ### `sq_sum_le_card_support_mul_sum_sq` (2 declarations, 2 files)
 
@@ -2119,6 +2171,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem OracleReduction.statisticalHVZK.mono_relation` [ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean:129](../../../ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean#L129) — Statistical HVZK for oracle reductions is antitone in the relation.
 - `theorem Reduction.statisticalHVZK.mono_relation` [ArkLib/OracleReduction/Security/ZeroKnowledge.lean:177](../../../ArkLib/OracleReduction/Security/ZeroKnowledge.lean#L177) — **Statistical HVZK is antitone in the relation.**
+
+### `subdomainZeroEquiv` (2 declarations, 2 files)
+
+- `def Domain.CosetFftDomainClass.subdomainZeroEquiv` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:133](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L133) — The zeroth subdomain has the same finite set of field points as the ambient domain.
+- `def Fri.subdomainZeroEquiv` [ArkLib/ProofSystem/BatchedFri/Security.lean:1201](../../../ArkLib/ProofSystem/BatchedFri/Security.lean#L1201) — The round-zero Batched FRI subdomain is equivalent to the original evaluation domain.
 
 ### `subdomain_embed` (2 declarations, 2 files)
 
@@ -2138,7 +2195,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `subdomain_embed_of_le` (2 declarations, 2 files)
 
 - `lemma ReedSolomon.FftDomain.subdomain_embed_of_le` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:873](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L873) — (no docstring)
-- `lemma Domain.CosetFftDomainClass.subdomain_embed_of_le` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:254](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L254) — (no docstring)
+- `lemma Domain.CosetFftDomainClass.subdomain_embed_of_le` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:276](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L276) — (no docstring)
 
 ### `subdomain_embed_zero` (2 declarations, 2 files)
 
@@ -2207,7 +2264,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `support_mk` (2 declarations, 2 files)
 
-- `lemma ReduceClaim.support_mk` [ArkLib/ProofSystem/Component/ReduceClaim.lean:128](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L128) — (no docstring)
+- `lemma ReduceClaim.support_mk` [ArkLib/ProofSystem/Component/ReduceClaim.lean:181](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L181) — (no docstring)
 - `lemma OptionT.support_mk` [ArkLib/ToVCVio/Lemmas.lean:106](../../../ArkLib/ToVCVio/Lemmas.lean#L106) — (no docstring)
 
 ### `toListWithProof.` (2 declarations, 2 files)
@@ -2243,7 +2300,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `twoNthRoot_correct_one` (2 declarations, 2 files)
 
 - `lemma ReedSolomon.CosetFftDomain.twoNthRoot_correct_one` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:1940](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L1940) — (no docstring)
-- `lemma Domain.CosetFftDomain.twoNthRoot_correct_one` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:475](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L475) — (no docstring)
+- `lemma Domain.CosetFftDomain.twoNthRoot_correct_one` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:497](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L497) — (no docstring)
 
 ### `umCode` (2 declarations, 2 files)
 
@@ -2278,7 +2335,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `verifier_rbrKnowledgeSoundness` (2 declarations, 2 files)
 
 - `theorem DoNothing.verifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Component/DoNothing.lean:57](../../../ArkLib/ProofSystem/Component/DoNothing.lean#L57) — The `DoNothing` verifier is perfectly round-by-round knowledge sound.
-- `theorem ReduceClaim.verifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Component/ReduceClaim.lean:172](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L172) — The `ReduceClaim` oracle reduction satisfies perfect round-by-round knowledge soundness. Note that s
+- `theorem ReduceClaim.verifier_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Component/ReduceClaim.lean:225](../../../ArkLib/ProofSystem/Component/ReduceClaim.lean#L225) — The `ReduceClaim` oracle reduction satisfies perfect round-by-round knowledge soundness. Note that s
 
 ### `verifyOpening` (2 declarations, 2 files)
 
@@ -2396,7 +2453,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `instance with` [ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeLDAttainment.lean:32](../../../ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeLDAttainment.lean#L32) — (no docstring)
 - `theorem with` [ArkLib/Data/CodingTheory/ProximityGap/PermanentlyBlocked.lean:55](../../../ArkLib/Data/CodingTheory/ProximityGap/PermanentlyBlocked.lean#L55) — (no docstring)
 
-## Near-duplicate docstrings (Jaccard ≥ 0.85, 125 cross-file pairs)
+## Near-duplicate docstrings (Jaccard ≥ 0.85, 129 cross-file pairs)
 
 Each pair has docstrings sharing a high fraction of (4+-letter) words, in different files. Most are unrelated coincidences in boilerplate; look for pairs where the *concept* matches.
 

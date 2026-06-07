@@ -209,6 +209,37 @@ theorem lineAgreeSet_inter_card_ge_of_card_ge
     Finset.card_add_card_le_card_univ_add_card_inter A B
   nlinarith
 
+/-- If two line-agreement domains each have size at least `(1-p)n`, their intersection has size
+at least `(1-2p)n`. This is the standard GCXK/GKL inclusion-exclusion threshold form. -/
+theorem lineAgreeSet_inter_card_ge_one_sub_two_mul_of_card_ge
+    (u₀ u₁ wγ wγ' : ι → F) (γ γ' : F) {p : ℝ}
+    (hγ : (1 - p) * (Fintype.card ι : ℝ) ≤
+      ((lineAgreeSet u₀ u₁ wγ γ).card : ℝ))
+    (hγ' : (1 - p) * (Fintype.card ι : ℝ) ≤
+      ((lineAgreeSet u₀ u₁ wγ' γ').card : ℝ)) :
+    (1 - 2 * p) * (Fintype.card ι : ℝ) ≤
+      (((lineAgreeSet u₀ u₁ wγ γ ∩ lineAgreeSet u₀ u₁ wγ' γ').card : ℕ) : ℝ) := by
+  have hbonf :=
+    lineAgreeSet_inter_card_ge_of_card_ge u₀ u₁ wγ wγ' γ γ'
+      (a := (1 - p) * (Fintype.card ι : ℝ))
+      (b := (1 - p) * (Fintype.card ι : ℝ)) hγ hγ'
+  nlinarith
+
+/-- Half-radius version of the line-agreement intersection threshold: two domains of size at
+least `(1-p/2)n` intersect in at least `(1-p)n`. -/
+theorem lineAgreeSet_inter_card_ge_one_sub_of_card_ge_one_sub_half
+    (u₀ u₁ wγ wγ' : ι → F) (γ γ' : F) {p : ℝ}
+    (hγ : (1 - p / 2) * (Fintype.card ι : ℝ) ≤
+      ((lineAgreeSet u₀ u₁ wγ γ).card : ℝ))
+    (hγ' : (1 - p / 2) * (Fintype.card ι : ℝ) ≤
+      ((lineAgreeSet u₀ u₁ wγ' γ').card : ℝ)) :
+    (1 - p) * (Fintype.card ι : ℝ) ≤
+      (((lineAgreeSet u₀ u₁ wγ γ ∩ lineAgreeSet u₀ u₁ wγ' γ').card : ℕ) : ℝ) := by
+  have h :=
+    lineAgreeSet_inter_card_ge_one_sub_two_mul_of_card_ge u₀ u₁ wγ wγ' γ γ'
+      (p := p / 2) hγ hγ'
+  nlinarith
+
 /-- **Large line-agreement intersections from two bad witnesses.** If two line-agreement domains
 come from bad-witness memberships at MCA radius `δ`, and `2 * δ ≤ p`, then Bonferroni gives the
 large-intersection hypothesis required by the maximal correlated-agreement-domain residual.
@@ -1390,6 +1421,8 @@ kernel-clean apart from the standard Lean foundations (`propext`, `Classical.cho
 #print axioms ProximityGap.linePetal_disjoint_of_inter_lineAgreeSet_eq
 #print axioms ProximityGap.lineAgreeSet_inter_card_ge_of_card_ge
 #print axioms ProximityGap.lineAgreeSet_inter_card_ge_of_mem_mcaBadWitness
+#print axioms ProximityGap.lineAgreeSet_inter_card_ge_one_sub_two_mul_of_card_ge
+#print axioms ProximityGap.lineAgreeSet_inter_card_ge_one_sub_of_card_ge_one_sub_half
 #print axioms ProximityGap.pairJointAgreesOn_inter_lineAgreeSet_of_ne
 #print axioms ProximityGap.maxCorrAgreeDomain.eq_of_subset
 #print axioms ProximityGap.inter_lineAgreeSet_eq_of_maxCorrAgreeDomain
