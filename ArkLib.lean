@@ -77,6 +77,7 @@ import ArkLib.Data.CodingTheory.GVCounting
 import ArkLib.Data.CodingTheory.GilbertVarshamov
 import ArkLib.Data.CodingTheory.GuruswamiSudan
 import ArkLib.Data.CodingTheory.GuruswamiSudan.Basic
+import ArkLib.Data.CodingTheory.GuruswamiSudan.FeasibilityArith
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GuruswamiSudan
 import ArkLib.Data.CodingTheory.GuruswamiSudan.ListSizeBound
 import ArkLib.Data.CodingTheory.GuruswamiSudan.MonomialCount
