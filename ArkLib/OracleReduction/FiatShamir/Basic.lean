@@ -6,6 +6,7 @@ Authors: Quang Dao
 
 import ArkLib.OracleReduction.Security.StateRestoration
 import ArkLib.OracleReduction.Security.ZeroKnowledge
+import ArkLib.ToVCVio.OracleComp.Coercions.SubSpec
 
 /-!
   # The Basic Fiat-Shamir Transformation
