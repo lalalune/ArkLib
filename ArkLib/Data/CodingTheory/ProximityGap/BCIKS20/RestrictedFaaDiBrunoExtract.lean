@@ -21,6 +21,9 @@ exactly as the in-tree P2 consequence theorems do — none assumes the STEP-8 co
   the normalized-quotient coefficient equation `coeff (t+1) βHenselAssembled = −rFdBSum t / ζ`.
 * `coeff_succ_βHenselAssembled_eq_of_restrictedMatch` — the all-orders consumer.
 * `restrictedFaaDiBrunoSum_zero_eq_powerSum` — the `t = 0` base case of the raw STEP-1 defect sum.
+* `neg_ζ_mul_coeff_one_βHenselAssembled_eq_unclearedHasseCoeff_div_W_natDegree` /
+  `coeff_one_βHenselAssembled_eq_unclearedHasseCoeff_div_W_natDegree_div_ζ` — the order-zero
+  recursion side alone gives a closed form for the first successor coefficient.
 * `embeddingCleared_eq_Wpow_mul_uncleared_of_target` — makes the cleared/un-cleared `eval₂` mismatch
   *quantitative*: under the STEP-8 target, the two `𝒪`-reps differ by exactly `W^{natDegreeY p}`.
 -/
@@ -135,6 +138,45 @@ theorem restrictedMatchAt_zero_iff_coeff_one_βHenselAssembled_eq
   ⟨coeff_one_βHenselAssembled_eq_of_restrictedMatchAt_zero H x₀ R hHyp,
     restrictedMatchAt_zero_of_coeff_one_βHenselAssembled_eq H x₀ R hHyp⟩
 
+/-- **Order-zero recursion-side closed form, unsolved coefficient form.**  The `βHensel`
+recursion itself makes the normalized RHS `-ζ * coeff 1 βHenselAssembled` equal to the un-cleared
+Hasse numerator divided by `W ^ R.natDegree`, under the same degree hypothesis used by the
+order-zero RHS cancellation. This is recursion-side normalization only; it does not compare with
+the LHS `hasseEvalAtRoot`. -/
+theorem neg_ζ_mul_coeff_one_βHenselAssembled_eq_unclearedHasseCoeff_div_W_natDegree
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) :
+    - (ClaimA2.ζ R x₀ H * PowerSeries.coeff 1 (βHenselAssembled H x₀ R hHyp))
+      = embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
+          / (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree := by
+  calc
+    - (ClaimA2.ζ R x₀ H * PowerSeries.coeff 1 (βHenselAssembled H x₀ R hHyp))
+        = restrictedMatchRecursionPartitionForm H x₀ R hHyp 0 := by
+      simpa using restrictedMatch_rhs_eq_restrictedRecursionPartitionForm H x₀ R hHyp 0
+    _ = restrictedMatchRecursionPartitionFormZeroSingleBCoeff H x₀ R hHyp := by
+      exact restrictedMatchRecursionPartitionForm_zero_eq_single_B_coeff H x₀ R hHyp
+    _ = embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
+          / (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree := by
+      exact
+        restrictedMatchRecursionPartitionFormZeroSingleBCoeff_eq_unclearedHasseCoeff_div_W_natDegree
+          H x₀ R hHyp hd (ζ_ne_zero H x₀ R hHyp)
+
+/-- **Order-zero recursion-side closed form, solved coefficient form.**  Dividing the previous
+closed form by the nonzero separability factor `ζ` gives the first successor coefficient of
+`βHenselAssembled` explicitly in terms of the un-cleared Hasse numerator. -/
+theorem coeff_one_βHenselAssembled_eq_unclearedHasseCoeff_div_W_natDegree_div_ζ
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) :
+    PowerSeries.coeff 1 (βHenselAssembled H x₀ R hHyp)
+      = - (embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
+          / (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree)
+          / ClaimA2.ζ R x₀ H := by
+  have hneg :=
+    neg_ζ_mul_coeff_one_βHenselAssembled_eq_unclearedHasseCoeff_div_W_natDegree H x₀ R hHyp hd
+  have hζ : ClaimA2.ζ R x₀ H ≠ 0 := ζ_ne_zero H x₀ R hHyp
+  rw [← hneg]
+  field_simp [hζ]
+
 /-- **The cleared `𝒪`-rep embedding is `W^{natDegreeY p}` times the un-cleared rep embedding, GIVEN
 the STEP-8 target (axiom-clean).** Makes the cleared/un-cleared `eval₂` mismatch *quantitative*:
 under the carved STEP-8 match `HasseCoeffRepr𝒪UnclearedEval₂Target`, the two `𝒪`-reps are related by
@@ -158,4 +200,8 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.restrictedFaaDiBrunoSum_zero_eq_hasseEvalAtRoot
 #print axioms BCIKS20.HenselNumerator.coeff_one_βHenselAssembled_eq_of_restrictedMatchAt_zero
 #print axioms BCIKS20.HenselNumerator.restrictedMatchAt_zero_iff_coeff_one_βHenselAssembled_eq
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.neg_ζ_mul_coeff_one_βHenselAssembled_eq_unclearedHasseCoeff_div_W_natDegree
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.coeff_one_βHenselAssembled_eq_unclearedHasseCoeff_div_W_natDegree_div_ζ
 #print axioms BCIKS20.HenselNumerator.embeddingCleared_eq_Wpow_mul_uncleared_of_target

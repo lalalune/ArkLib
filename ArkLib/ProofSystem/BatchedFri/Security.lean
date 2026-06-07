@@ -1207,6 +1207,49 @@ theorem fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLens
       (domain_size_cond := domain_size_cond) l t)
     h_agreementBridge
 
+omit [Nontrivial 𝔽] in
+/-- Reassemble Claim 8.2 from the normalized-density query-round theorem, the structural Batched
+FRI oracle lens, and a concrete `Code.jointProximity` witness.
+
+This is the density-route analogue of the probability adapter's concrete proximity front door: the
+remaining coding-theoretic obligation is the proved-equivalent proximity predicate rather than an
+arbitrary `agreementBridge : Prop`. -/
+theorem fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndJointProximity
+    {t : ℕ}
+    {α : ℝ≥0}
+    (f : Fin t.succ → (ω.subdomain 0 → 𝔽))
+    (h_agreement :
+      correlated_agreement_density
+        (Fₛ f)
+        (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
+      ≤ α)
+    {m : ℕ}
+    (m_ge_3 : m ≥ 3)
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    (G : Finset ι) (δ : ℝ≥0) (queries l : ℕ)
+    (domain_size_cond : (2 ^ (∑ i, (s i : ℕ))) * d ≤ 2 ^ n)
+    (h_proximity :
+      Code.jointProximity
+        (C := (ReedSolomon.code
+          (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier)
+        (u := f) (δ := 1 - α)) :
+    fri_query_soundness (n := n) (ω := ω) (f := f)
+      (h_agreement := h_agreement) (m_ge_3 := m_ge_3) := by
+  exact
+    fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLens
+      (n := n) (s := s) (d := d) (ω := ω)
+      (domain_size_cond := domain_size_cond)
+      f h_agreement m_ge_3 G δ queries l
+      (agreementBridge :=
+        Code.jointProximity
+          (C := (ReedSolomon.code
+            (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier)
+          (u := f) (δ := 1 - α))
+      (fun _h_query _h_lens h_joint =>
+        fri_query_soundness_of_jointProximity
+          (n := n) (ω := ω) f h_agreement m_ge_3 h_joint)
+      h_proximity
+
 #print axioms Fri.FriQuerySoundnessParts
 #print axioms Fri.QueryRound.queryRound_acceptance_le_of_density
 #print axioms Fri.queryRoundAcceptanceBound_of_density
@@ -1223,6 +1266,8 @@ theorem fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLens
 #print axioms Fri.fri_query_soundness_of_queryRoundDensityBound
 #print axioms Fri.FriQuerySoundnessParts.of_queryRoundDensityBoundAndBatchedFRIOracleLens
 #print axioms Fri.fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLens
+set_option linter.style.longLine false in
+#print axioms Fri.fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndJointProximity
 
 /-
 The old finite-range instance diagnostic scratch block has been removed.  The remaining

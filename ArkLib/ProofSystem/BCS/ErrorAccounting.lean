@@ -56,7 +56,7 @@ opening` with a single per-message opening, i.e. `Verifier.append_soundness`'s
 additive error `soundnessError₁ + soundnessError₂`. -/
 theorem bcsTotalError_one (εInteraction : ℝ≥0) (εOpen : Fin 1 → ℝ≥0) :
     bcsTotalError εInteraction εOpen = εInteraction + εOpen 0 := by
-  simp [bcsTotalError, Fin.sum_univ_one]
+  simp [bcsTotalError]
 
 /-- The BCS total error is monotone in the interaction error. -/
 theorem bcsTotalError_mono_interaction {m : ℕ} {ε₁ ε₂ : ℝ≥0} (εOpen : Fin m → ℝ≥0)
@@ -231,5 +231,22 @@ example (εInteraction : ℝ≥0) (εOpen : Fin 3 → ℝ≥0) :
       ≤ bcsTotalError εInteraction εOpen :=
   bcs_union_bound maxUnionBoundPr εInteraction εOpen εInteraction εOpen
     le_rfl (fun _ => le_rfl)
+
+/-! ## Source audit -/
+
+#print axioms bcsTotalError
+#print axioms bcsTotalError_zero
+#print axioms bcsTotalError_succ
+#print axioms bcsTotalError_one
+#print axioms bcsTotalError_mono_interaction
+#print axioms bcsTotalError_mono_open
+#print axioms bcsTotalError_mono
+#print axioms UnionBoundPr
+#print axioms UnionBoundPr.unionFin
+#print axioms UnionBoundPr.pr_unionFin_le
+#print axioms bcs_union_bound
+#print axioms bcs_append_accounting
+#print axioms bcs_two_phase_total_eq
+#print axioms maxUnionBoundPr
 
 end ArkLibScratch.Issue62

@@ -181,11 +181,87 @@ theorem fiatShamir_knowledgeSoundness_of_stateRestoration_pre_mono_relations_err
     (Verifier.StateRestoration.knowledgeSoundness.mono_relations_error srInit srImpl hSR hIn hOut
       (ENNReal.coe_le_coe.mpr hle))
 
+/-- Basic Fiat-Shamir soundness with both SR-side pretransport and FS-side posttransport around the
+explicit state-restoration transfer residual. -/
+theorem fiatShamir_soundness_of_stateRestoration_prepost_mono_languages_error
+    (srInit : ProbComp (QueryImpl (fsChallengeOracle StmtIn pSpec) Id))
+    (srImpl : QueryImpl oSpec
+      (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp))
+    (fsInit : ProbComp σ)
+    (fsImpl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    {langInSR langInTransfer langInFS : Set StmtIn}
+    {langOutSR langOutTransfer langOutFS : Set StmtOut}
+    {soundnessErrorSR soundnessErrorTransfer soundnessErrorFS : ℝ≥0}
+    (V : Verifier oSpec StmtIn StmtOut pSpec)
+    (hTransfer :
+      fiatShamir_soundnessTransferResidual srInit srImpl fsInit fsImpl
+        langInTransfer langOutTransfer soundnessErrorTransfer V)
+    (hSR : Verifier.StateRestoration.soundness srInit srImpl
+      langInSR langOutSR V soundnessErrorSR)
+    (hInPre : langInSR ⊆ langInTransfer)
+    (hOutPre : langOutTransfer ⊆ langOutSR)
+    (hlePre : soundnessErrorSR ≤ soundnessErrorTransfer)
+    (hInPost : langInTransfer ⊆ langInFS)
+    (hOutPost : langOutFS ⊆ langOutTransfer)
+    (hlePost : soundnessErrorTransfer ≤ soundnessErrorFS) :
+    Verifier.soundness fsInit fsImpl langInFS langOutFS V.fiatShamir
+      soundnessErrorFS := by
+  classical
+  have hMid :
+      Verifier.soundness fsInit fsImpl langInTransfer langOutTransfer V.fiatShamir
+        soundnessErrorTransfer :=
+    fiatShamir_soundness_of_stateRestoration_pre_mono_languages_error
+      srInit srImpl fsInit fsImpl V hTransfer hSR hInPre hOutPre hlePre
+  have hLang :
+      Verifier.soundness fsInit fsImpl langInFS langOutFS V.fiatShamir
+        soundnessErrorTransfer :=
+    Verifier.soundness.mono_languages fsInit fsImpl hMid hInPost hOutPost
+  exact Verifier.soundness.mono_error fsInit fsImpl hLang hlePost
+
+/-- Basic Fiat-Shamir knowledge soundness with both SR-side pretransport and FS-side posttransport
+around the explicit state-restoration transfer residual. -/
+theorem fiatShamir_knowledgeSoundness_of_stateRestoration_prepost_mono_relations_error
+    (srInit : ProbComp (QueryImpl (fsChallengeOracle StmtIn pSpec) Id))
+    (srImpl : QueryImpl oSpec
+      (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp))
+    (fsInit : ProbComp σ)
+    (fsImpl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    {relInSR relInTransfer relInFS : Set (StmtIn × WitIn)}
+    {relOutSR relOutTransfer relOutFS : Set (StmtOut × WitOut)}
+    {knowledgeErrorSR knowledgeErrorTransfer knowledgeErrorFS : ℝ≥0}
+    (V : Verifier oSpec StmtIn StmtOut pSpec)
+    (hTransfer :
+      fiatShamir_knowledgeSoundnessTransferResidual srInit srImpl fsInit fsImpl
+        relInTransfer relOutTransfer knowledgeErrorTransfer V)
+    (hSR : Verifier.StateRestoration.knowledgeSoundness srInit srImpl
+      relInSR relOutSR V knowledgeErrorSR)
+    (hInPre : relInSR ⊆ relInTransfer)
+    (hOutPre : relOutTransfer ⊆ relOutSR)
+    (hlePre : knowledgeErrorSR ≤ knowledgeErrorTransfer)
+    (hInPost : relInTransfer ⊆ relInFS)
+    (hOutPost : relOutFS ⊆ relOutTransfer)
+    (hlePost : knowledgeErrorTransfer ≤ knowledgeErrorFS) :
+    Verifier.knowledgeSoundness fsInit fsImpl relInFS relOutFS V.fiatShamir
+      knowledgeErrorFS := by
+  classical
+  have hMid :
+      Verifier.knowledgeSoundness fsInit fsImpl relInTransfer relOutTransfer V.fiatShamir
+        knowledgeErrorTransfer :=
+    fiatShamir_knowledgeSoundness_of_stateRestoration_pre_mono_relations_error
+      srInit srImpl fsInit fsImpl V hTransfer hSR hInPre hOutPre hlePre
+  have hRel :
+      Verifier.knowledgeSoundness fsInit fsImpl relInFS relOutFS V.fiatShamir
+        knowledgeErrorTransfer :=
+    Verifier.knowledgeSoundness.mono_relations fsInit fsImpl hMid hInPost hOutPost
+  exact Verifier.knowledgeSoundness.mono_error fsInit fsImpl hRel hlePost
+
 #print axioms fiatShamir_soundness_of_stateRestoration_pre_mono_error
 #print axioms fiatShamir_soundness_of_stateRestoration_pre_mono_languages
 #print axioms fiatShamir_soundness_of_stateRestoration_pre_mono_languages_error
 #print axioms fiatShamir_knowledgeSoundness_of_stateRestoration_pre_mono_error
 #print axioms fiatShamir_knowledgeSoundness_of_stateRestoration_pre_mono_relations
 #print axioms fiatShamir_knowledgeSoundness_of_stateRestoration_pre_mono_relations_error
+#print axioms fiatShamir_soundness_of_stateRestoration_prepost_mono_languages_error
+#print axioms fiatShamir_knowledgeSoundness_of_stateRestoration_prepost_mono_relations_error
 
 end Reduction
