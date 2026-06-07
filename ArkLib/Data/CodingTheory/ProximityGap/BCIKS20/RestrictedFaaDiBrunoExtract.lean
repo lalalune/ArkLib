@@ -39,6 +39,9 @@ exactly as the in-tree P2 consequence theorems do — none assumes the STEP-8 co
 * `RestrictedMatchAtZero{Taylor,Eval₂}WDivTarget.of_…` / `RestrictedFaaDiBrunoPartitionMatchAt`
   target constructors — endpoint adapters between the order-zero targets and the full carved /
   normalized partition residual surfaces.
+* `embeddingCleared_mul_Wpow_eq_Wpow_mul_uncleared_of_wDivTarget` — converts a generalized
+  W-divisor target into the exact cleared-vs-un-cleared representative scaling relation, with
+  order-zero carved / partition specializations.
 * `embeddingCleared_eq_Wpow_mul_uncleared_of_target` — makes the cleared/un-cleared `eval₂` mismatch
   *quantitative*: under the STEP-8 target, the two `𝒪`-reps differ by exactly `W^{natDegreeY p}`.
 -/
@@ -572,8 +575,8 @@ def zeroClearingPolyFull (x₀ : F) (R : F[X][X][Y]) : F[X][Y] :=
         * H.leadingCoeff ^ (R.natDegree - i)) * Polynomial.X ^ i
 
 /-- **Order-zero STEP-8 `eval₂`/W-divisor target ⟺ the full-clearing polynomial lifts to the
-un-cleared one (axiom-clean, NO hypotheses).**  `RestrictedMatchAtZeroEval₂WDivTarget` is exactly the
-polynomial-lift identity `liftBivariate (zeroClearingPolyFull) = liftBivariate p`, with
+un-cleared one (axiom-clean, NO hypotheses).**  `RestrictedMatchAtZeroEval₂WDivTarget` is
+exactly the polynomial-lift identity `liftBivariate (zeroClearingPolyFull) = liftBivariate p`, with
 `p = evalX (C x₀) (Δ_X^1 R)`.  No degree or `ζ`-nonvanishing hypothesis is needed: it follows purely
 from the always-true `W`-clearing identity `W_pow_mul_eval₂_div_eq_liftBivariate` at the full
 exponent `R.natDegree ≥ natDegreeY p` together with `W ≠ 0`. -/
@@ -626,6 +629,92 @@ theorem restrictedMatchAt_zero_iff_zeroClearingPolyFull_lift
             (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))) :=
   (restrictedMatchAt_zero_iff_eval₂WDivTarget H x₀ R hHyp hd).trans
     (restrictedMatchAtZeroEval₂WDivTarget_iff_zeroClearingPolyFull_lift H x₀ R)
+
+/-- **W-divisor target to cleared/un-cleared scaling (axiom-clean).**  A general
+`HasseCoeffRepr𝒪UnclearedWDivTarget ... e` says the root evaluation equals the un-cleared
+representative divided by `W^e`; combining it with the proven cleared embedding identity gives the
+exact multiplicative relation
+`embedding(cleared) * W^e = W^(natDegreeY p) * embedding(uncleared)`. -/
+theorem embeddingCleared_mul_Wpow_eq_Wpow_mul_uncleared_of_wDivTarget
+    (x₀ : F) (R : F[X][X][Y]) (i1 m e : ℕ)
+    (htarget : HasseCoeffRepr𝒪UnclearedWDivTarget H x₀ R i1 m e) :
+    embeddingOf𝒪Into𝕃 H
+        (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
+          (hasseCoeffRepr𝒪_cleared H x₀ R i1 m) : 𝒪 H)
+      * liftToFunctionField (H := H) H.leadingCoeff ^ e
+      =
+      liftToFunctionField (H := H) H.leadingCoeff
+          ^ Bivariate.natDegreeY
+              (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R)))
+        * embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R i1 m) := by
+  rw [embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared, htarget]
+  rw [mul_assoc,
+    div_mul_cancel₀ _ (pow_ne_zero _ (liftToFunctionField_leadingCoeff_ne_zero (H := H)))]
+
+/-- Exact-degree corollary of the W-divisor target: when the divisor exponent is precisely the
+clearing degree of the specialized Hasse coefficient, the cleared and un-cleared `𝒪` representative
+embeddings coincide. -/
+theorem embeddingCleared_eq_uncleared_of_wDivTarget_exactDegree
+    (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ)
+    (htarget : HasseCoeffRepr𝒪UnclearedWDivTarget H x₀ R i1 m
+      (Bivariate.natDegreeY
+        (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R))))) :
+    embeddingOf𝒪Into𝕃 H
+        (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
+          (hasseCoeffRepr𝒪_cleared H x₀ R i1 m) : 𝒪 H)
+      =
+      embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R i1 m) := by
+  have hscale :=
+    embeddingCleared_mul_Wpow_eq_Wpow_mul_uncleared_of_wDivTarget
+      H x₀ R i1 m
+      (Bivariate.natDegreeY
+        (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R))))
+      htarget
+  rw [mul_comm
+    (liftToFunctionField (H := H) H.leadingCoeff
+      ^ Bivariate.natDegreeY
+          (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R))))
+    (embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R i1 m))] at hscale
+  exact mul_right_cancel₀
+    (pow_ne_zero _ (liftToFunctionField_leadingCoeff_ne_zero (H := H))) hscale
+
+/-- Order-zero carved-core specialization of the W-divisor-to-cleared scaling bridge. -/
+theorem embeddingCleared_mul_Wpow_eq_Wpow_mul_uncleared_of_restrictedMatchAt_zero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree)
+    (hmatch : RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0) :
+    embeddingOf𝒪Into𝕃 H
+        (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
+          (hasseCoeffRepr𝒪_cleared H x₀ R 1 0) : 𝒪 H)
+      * liftToFunctionField (H := H) H.leadingCoeff ^ R.natDegree
+      =
+      liftToFunctionField (H := H) H.leadingCoeff
+          ^ Bivariate.natDegreeY
+              (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R)))
+        * embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0) := by
+  exact embeddingCleared_mul_Wpow_eq_Wpow_mul_uncleared_of_wDivTarget
+    H x₀ R 1 0 R.natDegree
+    (HasseCoeffRepr𝒪UnclearedWDivTarget.of_restrictedMatchAt_zero
+      H x₀ R hHyp hd hmatch)
+
+/-- Order-zero partition-residual specialization of the W-divisor-to-cleared scaling bridge. -/
+theorem embeddingCleared_mul_Wpow_eq_Wpow_mul_uncleared_of_partitionMatchAt_zero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree)
+    (hpart : RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0) :
+    embeddingOf𝒪Into𝕃 H
+        (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
+          (hasseCoeffRepr𝒪_cleared H x₀ R 1 0) : 𝒪 H)
+      * liftToFunctionField (H := H) H.leadingCoeff ^ R.natDegree
+      =
+      liftToFunctionField (H := H) H.leadingCoeff
+          ^ Bivariate.natDegreeY
+              (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R)))
+        * embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0) := by
+  exact embeddingCleared_mul_Wpow_eq_Wpow_mul_uncleared_of_wDivTarget
+    H x₀ R 1 0 R.natDegree
+    (HasseCoeffRepr𝒪UnclearedWDivTarget.of_partitionMatchAt_zero
+      H x₀ R hHyp hd hpart)
 
 /-- **The cleared `𝒪`-rep embedding is `W^{natDegreeY p}` times the un-cleared rep embedding, GIVEN
 the STEP-8 target (axiom-clean).** Makes the cleared/un-cleared `eval₂` mismatch *quantitative*:
@@ -724,6 +813,14 @@ set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.RestrictedMatchAtZeroTaylorWDivTarget.of_partitionMatch
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.RestrictedMatchAtZeroEval₂WDivTarget.of_partitionMatch
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.embeddingCleared_mul_Wpow_eq_Wpow_mul_uncleared_of_wDivTarget
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.embeddingCleared_eq_uncleared_of_wDivTarget_exactDegree
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.embeddingCleared_mul_Wpow_eq_Wpow_mul_uncleared_of_restrictedMatchAt_zero
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.embeddingCleared_mul_Wpow_eq_Wpow_mul_uncleared_of_partitionMatchAt_zero
 #print axioms BCIKS20.HenselNumerator.embeddingCleared_eq_Wpow_mul_uncleared_of_target
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.restrictedMatchAtZeroEval₂WDivTarget_iff_zeroClearingPolyFull_lift
