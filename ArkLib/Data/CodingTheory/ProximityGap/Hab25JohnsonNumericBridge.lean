@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Johnson
+import ArkLib.Data.CodingTheory.ProximityGap.Hab25AlgebraicBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25MultiplicityBridge
 
 /-!
@@ -52,6 +53,30 @@ theorem JohnsonNumericBound.of_card_le
     _root_.ProximityGap.epsMCA_rs_le_johnsonBoundReal_of_card_le
       domain k η δ N B hB hNB hBdiv hN
 
+/-- **Constructor for the Hab25 numeric residual from algebraic covers.** If every stack's
+actual bad-scalar set is covered by the `Edis` field of Hab25 algebraic data, and the proven
+integer endgame bound `ell * n` is uniformly bounded by `N`, then the S11 scaling bridge gives
+the exact `JohnsonNumericBound`.
+
+The hard theorem remains producing the per-stack GS-over-`F(Z)` algebraic covers and the
+closed-form numerator comparison. -/
+theorem JohnsonNumericBound.of_algebraic_cover
+    (domain : ι₀ ↪ F₀) (k : ℕ) (η δ : ℝ≥0) (N : ℕ) (B : ℝ)
+    (hη : 0 < η)
+    (hδ : CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.InJohnsonRange domain k η δ)
+    (hB : 0 ≤ B) (hNB : (N : ℝ) ≤ B)
+    (hBdiv : B / (Fintype.card F₀ : ℝ) ≤
+      CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.johnsonBoundReal domain k η δ)
+    (hAlg : ∀ u : WordStack F₀ (Fin 2) ι₀,
+      ∃ A : Hab25JohnsonAlgebraicData domain k η δ hη hδ,
+        _root_.ProximityGap.hab25McaBadScalars domain k δ u ⊆ A.Edis ∧
+          A.ℓ * Fintype.card ι₀ ≤ N) :
+    JohnsonNumericBound domain k η δ := by
+  simpa [JohnsonNumericBound] using
+    _root_.ProximityGap.epsMCA_rs_le_johnsonBoundReal_of_algebraic_cover
+      domain k η δ N B hη hδ hB hNB hBdiv hAlg
+
 end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.JohnsonNumericBound.of_card_le
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.JohnsonNumericBound.of_algebraic_cover
