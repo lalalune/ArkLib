@@ -306,6 +306,27 @@ theorem bcs_union_bound_mono_error {m : ℕ} (μ : UnionBoundPr E)
     (bcs_union_bound μ badInteraction badOpen εInteraction₁ εOpen₁ hInteraction hOpen)
     (bcsTotalError_mono hInteraction_mono hOpen_mono)
 
+/-- Relax the interaction and opening budgets for the one-more-opening generic union-bound
+recurrence. -/
+theorem bcs_union_bound_succ_mono_error {m : ℕ} (μ : UnionBoundPr E)
+    (badInteraction : E) (badOpen : Fin (m + 1) → E)
+    (εInteraction₁ εInteraction₂ : ℝ≥0)
+    (εOpen₁ εOpen₂ : Fin (m + 1) → ℝ≥0)
+    (hInteraction : μ.pr badInteraction ≤ εInteraction₁)
+    (hOpen : ∀ i, μ.pr (badOpen i) ≤ εOpen₁ i)
+    (hInteraction_mono : εInteraction₁ ≤ εInteraction₂)
+    (hOpen_mono : ∀ i, εOpen₁ i ≤ εOpen₂ i) :
+    μ.pr (μ.union badInteraction (μ.unionFin badOpen))
+      ≤ εOpen₂ 0 + bcsTotalError εInteraction₂ (fun i : Fin m => εOpen₂ i.succ) := by
+  calc
+    μ.pr (μ.union badInteraction (μ.unionFin badOpen))
+        ≤ bcsTotalError εInteraction₂ εOpen₂ :=
+      bcs_union_bound_mono_error μ badInteraction badOpen
+        εInteraction₁ εInteraction₂ εOpen₁ εOpen₂
+        hInteraction hOpen hInteraction_mono hOpen_mono
+    _ = εOpen₂ 0 + bcsTotalError εInteraction₂ (fun i : Fin m => εOpen₂ i.succ) :=
+        bcsTotalError_succ εInteraction₂ εOpen₂
+
 /-- Relax the interaction and both opening-batch budgets after applying the batched BCS union
 bound. -/
 theorem bcs_union_bound_append_mono_error {m n : ℕ} (μ : UnionBoundPr E)
@@ -326,6 +347,44 @@ theorem bcs_union_bound_append_mono_error {m n : ℕ} (μ : UnionBoundPr E)
   exact add_le_add
     (bcsTotalError_mono hInteraction_mono hLeft_mono)
     (Finset.sum_le_sum fun i _ => hRight_mono i)
+
+/-- Relax the interaction and opening budgets for the left-empty generic append split. -/
+theorem bcs_union_bound_append_zero_left_mono_error {n : ℕ}
+    (μ : UnionBoundPr E) (badInteraction : E) (badOpen : Fin n → E)
+    (εInteraction₁ εInteraction₂ : ℝ≥0)
+    (εOpen₁ εOpen₂ : Fin n → ℝ≥0)
+    (hInteraction : μ.pr badInteraction ≤ εInteraction₁)
+    (hOpen : ∀ i, μ.pr (badOpen i) ≤ εOpen₁ i)
+    (hInteraction_mono : εInteraction₁ ≤ εInteraction₂)
+    (hOpen_mono : ∀ i, εOpen₁ i ≤ εOpen₂ i) :
+    μ.pr (μ.union badInteraction
+        (μ.unionFin (Fin.append (Fin.elim0 : Fin 0 → E) badOpen)))
+      ≤ bcsTotalError εInteraction₂ εOpen₂ := by
+  have h := bcs_union_bound_append_mono_error (m := 0) (n := n) μ badInteraction
+    (Fin.elim0 : Fin 0 → E) badOpen
+    εInteraction₁ εInteraction₂ (Fin.elim0 : Fin 0 → ℝ≥0)
+    (Fin.elim0 : Fin 0 → ℝ≥0) εOpen₁ εOpen₂ hInteraction
+    (fun i => Fin.elim0 i) hOpen hInteraction_mono (fun i => Fin.elim0 i) hOpen_mono
+  simpa [bcsTotalError] using h
+
+/-- Relax the interaction and opening budgets for the right-empty generic append split. -/
+theorem bcs_union_bound_append_zero_right_mono_error {m : ℕ}
+    (μ : UnionBoundPr E) (badInteraction : E) (badOpen : Fin m → E)
+    (εInteraction₁ εInteraction₂ : ℝ≥0)
+    (εOpen₁ εOpen₂ : Fin m → ℝ≥0)
+    (hInteraction : μ.pr badInteraction ≤ εInteraction₁)
+    (hOpen : ∀ i, μ.pr (badOpen i) ≤ εOpen₁ i)
+    (hInteraction_mono : εInteraction₁ ≤ εInteraction₂)
+    (hOpen_mono : ∀ i, εOpen₁ i ≤ εOpen₂ i) :
+    μ.pr (μ.union badInteraction
+        (μ.unionFin (Fin.append badOpen (Fin.elim0 : Fin 0 → E))))
+      ≤ bcsTotalError εInteraction₂ εOpen₂ := by
+  have h := bcs_union_bound_append_mono_error (m := m) (n := 0) μ badInteraction
+    badOpen (Fin.elim0 : Fin 0 → E)
+    εInteraction₁ εInteraction₂ εOpen₁ εOpen₂
+    (Fin.elim0 : Fin 0 → ℝ≥0) (Fin.elim0 : Fin 0 → ℝ≥0) hInteraction
+    hOpen (fun i => Fin.elim0 i) hInteraction_mono hOpen_mono (fun i => Fin.elim0 i)
+  simpa [bcsTotalError] using h
 
 /-- Opening-phase union bound. If each per-message opening failure is bounded by its local
 opening error, then the composite opening-failure event is bounded by the sum of those local
@@ -785,7 +844,10 @@ example (εInteraction : ℝ≥0) (εOpen : Fin 3 → ℝ≥0) :
 #print axioms bcs_union_bound_append_zero_left
 #print axioms bcs_union_bound_append_zero_right
 #print axioms bcs_union_bound_mono_error
+#print axioms bcs_union_bound_succ_mono_error
 #print axioms bcs_union_bound_append_mono_error
+#print axioms bcs_union_bound_append_zero_left_mono_error
+#print axioms bcs_union_bound_append_zero_right_mono_error
 #print axioms bcs_opening_union_bound
 #print axioms bcs_opening_union_bound_zero
 #print axioms bcs_opening_union_bound_succ
