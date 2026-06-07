@@ -1066,6 +1066,30 @@ theorem BCSCompilerFrontierReady.ofPhaseAndSecurity {StmtMid WitMid : Type}
   ⟨hPhase.1, hPhase.2, hSecurity.1, hSecurity.2.1, hSecurity.2.2.1,
     hSecurity.2.2.2.1, hSecurity.2.2.2.2⟩
 
+omit Oₘ in
+/-- The full ready checklist is exactly the conjunction of the separated phase-realization and
+security-preservation frontiers. -/
+theorem BCSCompilerFrontierReady.iff_phase_and_security {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    {phases : BCSCompiledPhases (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) CommitmentType e}
+    {frontier : BCSSecurityFrontier (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) phases} :
+    BCSCompilerFrontierReady phases frontier ↔
+      BCSPhaseRealizationFrontier phases ∧ BCSSecurityFrontierSatisfied frontier := by
+  constructor
+  · intro h
+    exact
+      ⟨⟨h.1, h.2.1⟩,
+        ⟨h.2.2.1, h.2.2.2.1, h.2.2.2.2.1, h.2.2.2.2.2.1,
+          h.2.2.2.2.2.2⟩⟩
+  · intro h
+    exact
+      ⟨h.1.1, h.1.2, h.2.1, h.2.2.1, h.2.2.2.1, h.2.2.2.2.1,
+        h.2.2.2.2.2⟩
+
 /-- Build the full ready checklist from a discharged typed opening log plus the remaining
 security-frontier fields. This is the direct adapter expected from the current BCS interface:
 `BCSPhaseRealizationFrontier.ofOpeningLogBridge` supplies the phase half, and
@@ -1196,4 +1220,5 @@ generic compiler construction or the completeness/soundness preservation theorem
 #print axioms OracleReduction.BCSCompilerFrontierReady.phase
 #print axioms OracleReduction.BCSCompilerFrontierReady.security
 #print axioms OracleReduction.BCSCompilerFrontierReady.ofPhaseAndSecurity
+#print axioms OracleReduction.BCSCompilerFrontierReady.iff_phase_and_security
 #print axioms OracleReduction.BCSCompilerFrontierReady.ofOpeningLogBridge
