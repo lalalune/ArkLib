@@ -132,6 +132,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineSpaces
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeight
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightAll
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightCleared
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightClearedObstruction
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightDivisibility
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ClearingProduct
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
@@ -164,6 +165,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2BijectionApply
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2ClearedGap
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2ClearedGapIdeal
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Close
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2FilterDrop
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2KeystoneReindex
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Match
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MatchRoot
