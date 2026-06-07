@@ -86,9 +86,26 @@ theorem prod_X_sub_C_smul_eq (a : K) (ha : a ≠ 0) :
     rw [mul_assoc, mul_inv_cancel₀ ha, mul_one]
   rw [mul_sub, ← mul_assoc, ← mul_assoc, ← C_mul, ← C_mul, e1, e2, C_1, one_mul]
 
+/-- **Polynomial-generalized linearized kernel (recursion engine).** For any polynomial `P : K[X]`
+and `a ≠ 0`, `∏_{c ∈ F} (P - C (a · ι c)) = P^q - C (a^{q-1}) · P`.
+
+This is `prod_X_sub_C_smul_eq` composed with `P` (substitute `X ↦ P`); it is the exact step of the
+q-linearized subspace-polynomial recursion, with `P = s_{V'}` and `a = s_{V'}(u)`:
+`s_{V'⊕F·u} = ∏_{c∈F} (s_{V'} - c · s_{V'}(u)) = s_{V'}^q - s_{V'}(u)^{q-1} · s_{V'}`. -/
+theorem prod_sub_C_smul_eq (P : K[X]) (a : K) (ha : a ≠ 0) :
+    (∏ c : F, (P - C (a * algebraMap F K c)))
+      = P ^ (Fintype.card F) - C (a ^ (Fintype.card F - 1)) * P := by
+  have hstep : (∏ c : F, (P - C (a * algebraMap F K c)))
+      = (∏ c : F, (X - C (a * algebraMap F K c))).comp P := by
+    rw [Polynomial.prod_comp]
+    refine Finset.prod_congr rfl (fun c _ => ?_)
+    rw [sub_comp, X_comp, C_comp]
+  rw [hstep, prod_X_sub_C_smul_eq a ha, sub_comp, pow_comp, X_comp, mul_comp, C_comp, X_comp]
+
 end ArkLib.LinearizedKernel
 
 -- Axiom audit: each result must rest only on `[propext, Classical.choice, Quot.sound]`.
 #print axioms ArkLib.LinearizedKernel.prod_X_sub_C_univ_eq_pow_card_sub
 #print axioms ArkLib.LinearizedKernel.prod_X_sub_C_algebraMap_eq_pow_card_sub
 #print axioms ArkLib.LinearizedKernel.prod_X_sub_C_smul_eq
+#print axioms ArkLib.LinearizedKernel.prod_sub_C_smul_eq
