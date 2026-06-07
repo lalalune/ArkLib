@@ -343,6 +343,13 @@ def BCSOpeningSchedule.toOpeningStatements {CommitmentType : pSpec.MessageIdx �
     schedule.toOpeningStatements.length = schedule.length :=
   List.length_map _
 
+@[simp] theorem BCSOpeningSchedule.toOpeningStatements_append
+    {CommitmentType : pSpec.MessageIdx → Type}
+    (schedule₁ schedule₂ : BCSOpeningSchedule (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType) :
+    (schedule₁ ++ schedule₂).toOpeningStatements =
+      schedule₁.toOpeningStatements ++ schedule₂.toOpeningStatements := by
+  simp [BCSOpeningSchedule.toOpeningStatements]
+
 /-- Projecting the indexed opening statements back to message indices recovers the message-index
 projection of the original typed schedule. -/
 @[simp] theorem BCSOpeningSchedule.toOpeningStatements_map_messageIdx
@@ -888,6 +895,7 @@ generic compiler construction or the completeness/soundness preservation theorem
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_nil
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_cons
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_length
+#print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_append
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_map_messageIdx
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_map_commitment
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_map_query
