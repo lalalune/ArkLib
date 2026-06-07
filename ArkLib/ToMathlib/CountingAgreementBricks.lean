@@ -10,9 +10,13 @@ import Mathlib
 
 * `card_filter_forall_pi` — the count of length-`s` tuples whose every coordinate satisfies a
   predicate `Q` is `(#Q)^s` (WHIR out-of-domain / FS union-bound counting, #113/#116).
+* `card_filter_exists_not_pi` — the complementary exact count of tuples with at least one bad
+  coordinate, `|β|^s - (#Q)^s`.
 * `Polynomial.card_eval_agreement_le_of_natDegree_lt` — two distinct polynomials of degree `< N`
   agree on at most `N-1` field points (the counting/Schwartz–Zippel dual used in collision-count
   arguments, #113/#116).
+* `Polynomial.card_eval_disagreement_ge_of_natDegree_lt` — the complementary lower bound on
+  disagreement points.
 * `Finset.sum_boolCube_prod_factor_eq_prod_sum` — the boolean-hypercube identity
   `∑_{x∈{0,1}^σ} ∏ᵢ (xᵢ=0 ? aᵢ : bᵢ) = ∏ᵢ (aᵢ + bᵢ)` underlying multilinear-extension sumcheck
   folding (#13/#114).
@@ -29,6 +33,28 @@ theorem card_filter_forall_pi {β : Type*} [Fintype β] [DecidableEq β] (s : �
       = Fintype.piFinset (fun _ : Fin s => Finset.univ.filter Q) := by
     ext r; simp [Fintype.mem_piFinset]
   rw [h, Fintype.card_piFinset]; simp
+
+/-- Count of length-`s` tuples with at least one coordinate outside `Q`. -/
+theorem card_filter_exists_not_pi {β : Type*} [Fintype β] [DecidableEq β] (s : ℕ)
+    (Q : β → Prop) [DecidablePred Q] :
+    (Finset.univ.filter (fun r : Fin s → β => ∃ i, ¬ Q (r i))).card
+      = Fintype.card β ^ s - (Finset.univ.filter Q).card ^ s := by
+  have hgood := card_filter_forall_pi (β := β) s Q
+  have hsplit :=
+    Finset.card_filter_add_card_filter_not
+      (s := (Finset.univ : Finset (Fin s → β))) (p := fun r => ∀ i, Q (r i))
+  have hbad_filter :
+      (Finset.univ.filter (fun r : Fin s → β => ¬ ∀ i, Q (r i)))
+        = Finset.univ.filter (fun r : Fin s → β => ∃ i, ¬ Q (r i)) := by
+    ext r
+    simp
+  have hcard_fun : Fintype.card (Fin s → β) = Fintype.card β ^ s := by
+    simp
+  have hcard_univ : (Finset.univ : Finset (Fin s → β)).card = Fintype.card β ^ s := by
+    rw [Finset.card_univ, hcard_fun]
+  rw [hbad_filter] at hsplit
+  rw [hgood, hcard_univ] at hsplit
+  omega
 
 namespace Polynomial
 
@@ -50,6 +76,28 @@ theorem card_eval_agreement_le_of_natDegree_lt {F : Type*} [Field F] [Fintype F]
     _ ≤ (p - q).natDegree := Polynomial.card_roots' _
     _ ≤ N - 1 := by omega
 
+/-- Two distinct polynomials of degree `< N` disagree on at least `|F| - (N-1)` field points. -/
+theorem card_eval_disagreement_ge_of_natDegree_lt {F : Type*} [Field F] [Fintype F]
+    [DecidableEq F] {N : ℕ} {p q : F[X]} (hpq : p ≠ q) (hp : p.natDegree < N)
+    (hq : q.natDegree < N) :
+    Fintype.card F - (N - 1) ≤
+      (Finset.univ.filter (fun x : F => p.eval x ≠ q.eval x)).card := by
+  have hagree :=
+    Polynomial.card_eval_agreement_le_of_natDegree_lt (F := F) (N := N) (p := p) (q := q)
+      hpq hp hq
+  have hsplit :=
+    Finset.card_filter_add_card_filter_not
+      (s := (Finset.univ : Finset F)) (p := fun x : F => p.eval x = q.eval x)
+  have hdisagree_filter :
+      (Finset.univ.filter (fun x : F => ¬ p.eval x = q.eval x))
+        = Finset.univ.filter (fun x : F => p.eval x ≠ q.eval x) := by
+    ext x
+    simp
+  have hcard : (Finset.univ : Finset F).card = Fintype.card F := by
+    simp
+  rw [hdisagree_filter, hcard] at hsplit
+  omega
+
 end Polynomial
 
 namespace Finset
@@ -68,5 +116,7 @@ theorem sum_boolCube_prod_factor_eq_prod_sum {σ R : Type*} [Fintype σ] [Decida
 end Finset
 
 #print axioms card_filter_forall_pi
+#print axioms card_filter_exists_not_pi
 #print axioms Polynomial.card_eval_agreement_le_of_natDegree_lt
+#print axioms Polynomial.card_eval_disagreement_ge_of_natDegree_lt
 #print axioms Finset.sum_boolCube_prod_factor_eq_prod_sum
