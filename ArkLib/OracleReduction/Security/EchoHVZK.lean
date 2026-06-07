@@ -130,4 +130,10 @@ theorem echo_isStatHVZK
       (echoReduction : Reduction oSpec Statement Witness _ _ _) ε :=
   (echo_isHVZK init impl rel).isStatHVZK ε
 
+#print axioms honestTranscriptDist_echo_evalDist
+#print axioms echo_perfectHVZK
+#print axioms echo_statisticalHVZK
+#print axioms echo_isHVZK
+#print axioms echo_isStatHVZK
+
 end Issue112ZK
