@@ -2754,6 +2754,34 @@ theorem exists_mcaPrizeLatticeResolved_of_lowerWitnesses
       (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
       epsStar (w j)
 
+/-- Pointwise prize-rate consequences of the ignored-source MCA conjecture resolve the faithful
+MCA lattice prize existentially.  The conjecture remains an explicit hypothesis, and all numeric
+side conditions are supplied separately for each prize rate. -/
+theorem exists_mcaPrizeLatticeResolved_of_ignoredSource_mcaConjecture (h : mcaConjecture) :
+    ∃ c₁ c₂ c₃ : ℝ,
+      ∀ {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
+        {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC]
+        (domain : ιC ↪ FC) (δ : Fin 4 → ℝ≥0),
+        (∀ j : Fin 4, 0 < ⌊prizeRates j * (Fintype.card ιC : ℝ≥0)⌋₊) →
+        (∀ j : Fin 4, (δ j : ℝ) <
+          1 - (⌊prizeRates j * (Fintype.card ιC : ℝ≥0)⌋₊ : ℝ) / Fintype.card ιC) →
+        (∀ j : Fin 4, δ j ≤ 1) →
+        (∀ j : Fin 4,
+          ENNReal.ofReal
+              (mcaConjectureBound (Fintype.card ιC) (Fintype.card FC)
+                ⌊prizeRates j * (Fintype.card ιC : ℝ≥0)⌋₊ (δ j) c₁ c₂ c₃) ≤
+            (epsStar : ENNReal)) →
+        ∃ τ : Fin 4 → Fin (Fintype.card ιC + 1), mcaPrizeLatticeResolved domain τ := by
+  obtain ⟨c₁, c₂, c₃, hExists⟩ :=
+    mcaThresholdExists_prize_of_ignoredSource_mcaConjecture h
+  refine ⟨c₁, c₂, c₃, ?_⟩
+  intro ιC _ _ _ FC _ _ _ domain δ hk hδ hδ1 hbound
+  exact (exists_mcaPrizeLatticeResolved_iff domain).mpr fun j =>
+    hExists (domain := domain) (j := j) (δ := δ j)
+      (hk j) (hδ j) (hδ1 j) (hbound j)
+
+#print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_of_ignoredSource_mcaConjecture
+
 /-- Per-rate lower and upper MCA witnesses bracket all four faithful MCA prize thresholds. -/
 theorem mcaPrizeLattice_bracketed_of_witnesses
     (domain : ι ↪ F)
