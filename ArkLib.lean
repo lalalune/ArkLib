@@ -122,12 +122,7 @@ import ArkLib.Data.CodingTheory.ListDecoding.FPRUNERealStep
 import ArkLib.Data.CodingTheory.ListDecoding.FirstMomentListBound
 import ArkLib.Data.CodingTheory.ListDecoding.GHSZ02Foundations
 import ArkLib.Data.CodingTheory.ListDecoding.JH01
-<<<<<<< HEAD
-=======
-import ArkLib.Data.CodingTheory.ListDecoding.ScratchJH02
-import ArkLib.Data.CodingTheory.ListDecoding.ScratchSeq
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyAdditive
->>>>>>> 694af52d9bc9a27677d7097261bd4b4cf4ee9dc1
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyLineSupport
 import ArkLib.Data.CodingTheory.ListDecoding.SubspacePolyLinearized
 import ArkLib.Data.CodingTheory.ListSizeVolumeBound
@@ -268,7 +263,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.DG25.MainResults
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.ReedSolomon
 import ArkLib.Data.CodingTheory.ProximityGap.DG25Sampling
 import ArkLib.Data.CodingTheory.ProximityGap.EpsCAMono
-import ArkLib.Data.CodingTheory.ProximityGap.EpsMCAgsPrizeUniformConjecture
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.CodingTheory.ProximityGap.ExternalDebt
 import ArkLib.Data.CodingTheory.ProximityGap.Folding
@@ -293,6 +287,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeKernels
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeMath
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeMathLowOutput
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeReduction
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141Progress
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141UniformResolved
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeDecision
@@ -371,7 +366,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.PermanentlyBlocked
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGapP
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGenerators
 import ArkLib.Data.CodingTheory.ProximityGap.RSDistinctness
-import ArkLib.Data.CodingTheory.ProximityGap.RSListDecodingBeyondJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.RSListSize
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonListDecodingBound
 import ArkLib.Data.CodingTheory.ProximityGap.ReedSolomonStirOutOfDom
