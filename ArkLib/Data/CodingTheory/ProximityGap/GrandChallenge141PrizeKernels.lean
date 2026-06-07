@@ -30,10 +30,6 @@ kernel:
   MCA error satisfies `epsMCAgs ≤ ((m·a-1)/(k-1)) / q` — the `poly/q` prize shape with the hard
   list-size factor proved, not assumed.
 
-* `epsMCAgs_prizeBound_of_gsWindow` — packages the GS-window bound through the explicit-constant
-  prize reduction, realising the per-input prize conjecture with the list size **proved**, the
-  open content reduced to: the GS data exists per stack (interpolation feasibility), pivot
-  covering holds, the radius is in the GS window, and the numeric clearance.
 
 Nothing here proves the open prize (the *uniform* beyond-Johnson bound). It pushes the frontier
 to exactly the boundary of what Guruswami–Sudan supplies, with the list-size kernel proved.
@@ -112,48 +108,10 @@ theorem epsMCAgs_le_gsWindow_div
       (gsWindow_msg_card_le hm ha hk xs (Q u) (P u) S (hQ u) (hwd u) (hpdeg u)
         (hvan u) (hxinj u) (hcard u)))
 
-set_option maxHeartbeats 800000 in
-/-- **Per-input prize from the proved GS window list size.** Composing the Johnson-window kernel
-with the explicit-constant prize reduction: if additionally the proved list-size mass clears the
-prize right-hand side for some constants, the per-input GS prize conjecture holds — with the
-list-size factor **proved** by Guruswami–Sudan, the open content reduced to the GS data,
-covering, in-window radius, and the numeric clearance. Tracking: Issue #141. -/
-theorem epsMCAgs_prizeBound_of_gsWindow
-    (domain : ι ↪ F) (j : Fin 4) (mPrize : ℕ) (η δ : ℝ≥0) (hη : 0 < η)
-    (L : WordStack F (Fin 2) ι → Finset (ι → F))
-    (hδ : (δ : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η : ℝ))
-    {k m a : ℕ} (hm : 0 < m) (ha : 0 < a) (hk : 0 < k - 1)
-    (xs : ι → F)
-    (Q : WordStack F (Fin 2) ι → (F[X])[X])
-    (P : WordStack F (Fin 2) ι → Finset F[X])
-    (S : F[X] → Finset ι)
-    (hQ : ∀ u, Q u ≠ 0)
-    (hwd : ∀ u, Polynomial.Bivariate.natWeightedDegree (Q u) 1 (k - 1) ≤ m * a - 1)
-    (hpdeg : ∀ u, ∀ p ∈ P u, p.natDegree ≤ k - 1)
-    (hvan : ∀ u, ∀ p ∈ P u, ∀ i ∈ S p,
-      ArkLib.GS.vanishesToOrder m (Q u) (xs i) (p.eval (xs i)))
-    (hxinj : ∀ u, ∀ p ∈ P u, ∀ i ∈ S p, ∀ j ∈ S p, xs i = xs j → i = j)
-    (hcard : ∀ u, ∀ p ∈ P u, a ≤ (S p).card)
-    (hbridge : ∀ u, (L u).card ≤ (P u).card)
-    (hcov : ∀ u, PivotCovering (F := F)
-      ((ReedSolomon.code (domain := domain)
-        ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))) δ L u)
-    (c₁ c₂ c₃ : ℝ)
-    (hclear : ((((m * a - 1) / (k - 1) : ℕ) : ENNReal) / (Fintype.card F : ENNReal)) ≤
-      ENNReal.ofReal
-        (epsMCAgsPrizeBound (Fintype.card F) mPrize (ProximityGap.prizeRates j) η c₁ c₂ c₃)) :
-    epsMCAgs_prizeBound_conjecture domain j mPrize η δ hη L hδ :=
-  ⟨c₁, c₂, c₃,
-    le_trans
-      (epsMCAgs_le_gsWindow_div (F := F) _ δ L hm ha hk xs Q P S hQ hwd hpdeg hvan hxinj hcard
-        hbridge hcov)
-      hclear⟩
-
 /-! ## Source audit -/
 
 #print axioms gsWindow_msg_card_le
 #print axioms epsMCAgs_le_gsWindow_div
-#print axioms epsMCAgs_prizeBound_of_gsWindow
 
 end MCAGS
 
