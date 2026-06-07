@@ -413,6 +413,22 @@ theorem βHenselStructuredWeightInvariant_unlocked_of_divWeight
   exact βHenselStructuredWeightInvariant_unlocked H x₀ R hHyp hH hDH hDRx0 hdR2 hzero
     ((alphaWeight_iff_divWeight H x₀ R hHyp hH D hlift).2 hdiv) k
 
+/-- Structured-prefix invariant unlocked by the Faà-di-Bruno successor residual, from separated
+carved-alpha base/successor cases. -/
+theorem βHenselStructuredWeightInvariant_unlocked_of_alphaWeight_cases
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hzero : FaaDiBrunoSuccSumZeroResidual H x₀ R hHyp)
+    (h0 : AlphaGenuineRegularWeightLe_zero H x₀ R hHyp hH D)
+    (hsucc : ∀ t, AlphaGenuineRegularWeightLe_succ H x₀ R hHyp hH D t)
+    (k : ℕ) :
+    βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k :=
+  βHenselStructuredWeightInvariant_unlocked H x₀ R hHyp hH hDH hDRx0 hdR2 hzero
+    (AlphaGenuineRegularWeightLe.of_cases H x₀ R hHyp hH D h0 hsucc) k
+
 /-- Structured-prefix invariant unlocked by full P2 vanishing. -/
 theorem βHenselStructuredWeightInvariant_unlocked_of_fullVanishes
     (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
@@ -794,6 +810,26 @@ theorem βHensel_weight_bound_unlocked_of_divWeight (x₀ : F) (R : F[X][X][Y])
     (fun t => βHensel_lift_identity_of_faaDiBruno_succ_sum_eq_zero H x₀ R hHyp hzero t)
     hdiv t
 
+/-- **AUTO-UNLOCK witness from separated carved-alpha cases.**  The Faà-di-Bruno successor
+residual supplies the lift identity; the A.4 regularity input is provided as separate base and
+successor cases. -/
+theorem βHensel_weight_bound_unlocked_of_alphaWeight_cases
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hzero : FaaDiBrunoSuccSumZeroResidual H x₀ R hHyp)
+    (h0 : AlphaGenuineRegularWeightLe_zero H x₀ R hHyp hH D)
+    (hsucc : ∀ t, AlphaGenuineRegularWeightLe_succ H x₀ R hHyp hH D t)
+    (t : ℕ) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  βHensel_weight_bound_unlocked H x₀ R hHyp hH hDH hDRx0 hdR2 hdHR hW hzero
+    (AlphaGenuineRegularWeightLe.of_cases H x₀ R hHyp hH D h0 hsucc) t
+
 /-- **P1 weight bound unlocked by full P2 vanishing.**
 This consumes the sharper `FaaDiBrunoFullSumVanishes` endpoint, whose P2 capstone already provides
 the lift identity needed by `βHensel_weight_bound_of_lift'`. -/
@@ -886,6 +922,7 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_of_alphaWeight_cases_succLift'
 #print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_unlocked
 #print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_unlocked_of_divWeight
+#print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_unlocked_of_alphaWeight_cases
 #print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_unlocked_of_fullVanishes
 #print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_unlocked_of_fullVanishes_divWeight
 #print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_unlocked_of_restrictedMatch
@@ -907,6 +944,7 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_unlocked_of_normalized_divWeight_cases
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_unlocked
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_unlocked_of_divWeight
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_unlocked_of_alphaWeight_cases
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_unlocked_of_fullVanishes
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_unlocked_of_fullVanishes_divWeight
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_unlocked_of_restrictedMatch
