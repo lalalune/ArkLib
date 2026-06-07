@@ -100,6 +100,7 @@ import ArkLib.Data.CodingTheory.ListDecoding.CZ25CapacityReduction
 import ArkLib.Data.CodingTheory.ListDecoding.CZ25DesignToLambda
 import ArkLib.Data.CodingTheory.ListDecoding.CZ25GeomCapacity
 import ArkLib.Data.CodingTheory.ListDecoding.CZ25SpanBoundBridge
+import ArkLib.Data.CodingTheory.ListDecoding.CZ25UniqueDecodingSlice
 import ArkLib.Data.CodingTheory.ListDecoding.CZ25SpanDimension
 import ArkLib.Data.CodingTheory.ListDecoding.GHSZ02Foundations
 import ArkLib.Data.CodingTheory.ListDecoding.JH01
