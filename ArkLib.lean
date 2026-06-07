@@ -202,7 +202,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveredFractionEntropyDiv
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveredFractionEntropyGen
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveringCount
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveringExistence
-<<<<<<< HEAD
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveringWitness
 import ArkLib.Data.CodingTheory.ProximityGap.CS25JointProxBound
 import ArkLib.Data.CodingTheory.ProximityGap.CS25NonDegeneratePigeonhole
