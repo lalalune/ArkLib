@@ -8,7 +8,7 @@ import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Fintype.Card
 import Mathlib.Algebra.Order.Chebyshev
-import Mathlib.Algebra.BigOperators.Ring.Basic
+import Mathlib.Algebra.BigOperators.Ring.Finset
 
 /-!
 # Coverage pigeonhole for multi-γ line decoding
