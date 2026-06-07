@@ -58,16 +58,30 @@ that the eventual `VectorIOP` constructor must refine into ArkLib's `ProtocolSpe
 -/
 
 /-- The two prover-message roles in each WHIR round of the Construction 5.1 skeleton. -/
-inductive RoundMessageKind where
-  | foldedOracle
-  | outOfDomainReply
-  deriving DecidableEq, Fintype
+abbrev RoundMessageKind := Fin 2
+
+namespace RoundMessageKind
+
+/-- The folded-function oracle / sumcheck-message role. -/
+def foldedOracle : RoundMessageKind := 0
+
+/-- The out-of-domain answer role. -/
+def outOfDomainReply : RoundMessageKind := 1
+
+end RoundMessageKind
 
 /-- The two verifier-challenge roles in each WHIR round of the Construction 5.1 skeleton. -/
-inductive RoundChallengeKind where
-  | folding
-  | outOfDomainOrShift
-  deriving DecidableEq, Fintype
+abbrev RoundChallengeKind := Fin 2
+
+namespace RoundChallengeKind
+
+/-- The folding challenge role. -/
+def folding : RoundChallengeKind := 0
+
+/-- The out-of-domain or shift challenge role. -/
+def outOfDomainOrShift : RoundChallengeKind := 1
+
+end RoundChallengeKind
 
 /-- Semantic WHIR prover-message indices: two prover-originated slots per round. -/
 abbrev semanticMessageIdx (M : ℕ) := Fin (M + 1) × RoundMessageKind
@@ -78,9 +92,8 @@ abbrev semanticChallengeIdx (M : ℕ) := Fin (M + 1) × RoundChallengeKind
 /-- Construction 5.1 contributes exactly `2 * M + 2` semantic verifier challenges. -/
 theorem semanticChallengeIdx_card (M : ℕ) :
     Fintype.card (semanticChallengeIdx M) = 2 * M + 2 := by
-  have hKind : Fintype.card RoundChallengeKind = 2 := by decide
-  simp [semanticChallengeIdx, hKind]
-  omega
+  simp [semanticChallengeIdx, RoundChallengeKind]
+  rw [Nat.add_mul, Nat.one_mul, Nat.mul_comm M 2]
 
 /-- A concrete finite indexing for semantic WHIR verifier-challenge roles. -/
 noncomputable def semanticChallengeIdxEquivFin (M : ℕ) :
@@ -90,14 +103,87 @@ noncomputable def semanticChallengeIdxEquivFin (M : ℕ) :
 /-- The semantic WHIR skeleton has the same number of prover-message slots as verifier challenges. -/
 theorem semanticMessageIdx_card (M : ℕ) :
     Fintype.card (semanticMessageIdx M) = 2 * M + 2 := by
-  have hKind : Fintype.card RoundMessageKind = 2 := by decide
-  simp [semanticMessageIdx, hKind]
-  omega
+  simp [semanticMessageIdx, RoundMessageKind]
+  rw [Nat.add_mul, Nat.one_mul, Nat.mul_comm M 2]
 
 /-- A concrete finite indexing for semantic WHIR prover-message roles. -/
 noncomputable def semanticMessageIdxEquivFin (M : ℕ) :
     semanticMessageIdx M ≃ Fin (2 * M + 2) :=
   Fintype.equivFinOfCardEq (semanticMessageIdx_card M)
+
+/-! ### A WHIR `VectorSpec` with real prover-message slots
+
+The all-challenge `whirVectorSpec` below is the exact shape currently consumed by
+`whir_rbr_soundness`.  The next construction layer is a bona fide ArkLib `VectorSpec` with both
+prover-message and verifier-challenge indices.  We keep the prover-message block first and the
+challenge block second; interleaving those slots into the exact paper transcript order is a later
+transport/equivalence brick.
+-/
+
+/-- A block-ordered WHIR vector protocol shape with `2*M+2` prover messages followed by
+`2*M+2` verifier challenges.  Every payload is represented as one field element for this skeleton;
+the eventual Construction 5.1 `VectorIOP` will refine the message payload meanings. -/
+@[reducible]
+def whirBlockVectorSpec (M : ℕ) :
+    ProtocolSpec.VectorSpec ((2 * M + 2) + (2 * M + 2)) where
+  dir := fun i => if i.1 < 2 * M + 2 then Direction.P_to_V else Direction.V_to_P
+  length := fun _ => 1
+
+/-- Challenge indices of the block-ordered WHIR skeleton are the second block. -/
+def whirBlockVectorSpec_challengeIdxEquivFin (M : ℕ) :
+    (whirBlockVectorSpec M).ChallengeIdx ≃ Fin (2 * M + 2) where
+  toFun i := ⟨i.1.1 - (2 * M + 2), by
+    have hiUpper : i.1.1 < (2 * M + 2) + (2 * M + 2) := i.1.2
+    have hnot : ¬ i.1.1 < 2 * M + 2 := by
+      intro hlt
+      have hv := i.2
+      simp [whirBlockVectorSpec, hlt] at hv
+    omega⟩
+  invFun j := ⟨⟨(2 * M + 2) + j.1, by omega⟩, by
+    have hnot : ¬ (2 * M + 2) + j.1 < 2 * M + 2 := by omega
+    simp [hnot]⟩
+  left_inv i := by
+    ext
+    have hiUpper : i.1.1 < (2 * M + 2) + (2 * M + 2) := i.1.2
+    have hnot : ¬ i.1.1 < 2 * M + 2 := by
+      intro hlt
+      have hv := i.2
+      simp [whirBlockVectorSpec, hlt] at hv
+    simp
+    omega
+  right_inv j := by
+    ext
+    simp
+
+/-- Prover-message indices of the block-ordered WHIR skeleton are the first block. -/
+def whirBlockVectorSpec_messageIdxEquivFin (M : ℕ) :
+    (whirBlockVectorSpec M).MessageIdx ≃ Fin (2 * M + 2) where
+  toFun i := ⟨i.1.1, by
+    by_cases hlt : i.1.1 < 2 * M + 2
+    · exact hlt
+    · have hv := i.2
+      simp [whirBlockVectorSpec, hlt] at hv⟩
+  invFun j := ⟨⟨j.1, by omega⟩, by
+    have hlt : j.1 < 2 * M + 2 := j.2
+    simp [hlt]⟩
+  left_inv i := by
+    ext
+    simp
+  right_inv j := by
+    ext
+    simp
+
+/-- The block-ordered WHIR skeleton has the expected challenge budget. -/
+theorem whirBlockVectorSpec_card_challengeIdx (M : ℕ) :
+    Fintype.card (whirBlockVectorSpec M).ChallengeIdx = 2 * M + 2 := by
+  rw [Fintype.card_congr (whirBlockVectorSpec_challengeIdxEquivFin M)]
+  simp
+
+/-- The block-ordered WHIR skeleton has the expected prover-message budget. -/
+theorem whirBlockVectorSpec_card_messageIdx (M : ℕ) :
+    Fintype.card (whirBlockVectorSpec M).MessageIdx = 2 * M + 2 := by
+  rw [Fintype.card_congr (whirBlockVectorSpec_messageIdxEquivFin M)]
+  simp
 
 /-! ### The WHIR protocol-spec direction vector
 
@@ -243,6 +329,7 @@ section RBRSoundnessAssembly
 variable {M : ℕ}
 variable {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
 
+omit [Fintype ι] [Nonempty ι] in
 /-- Assemble `whir_rbr_soundness` from a concrete WHIR `VectorIOP`, its `IsSecureWithGap` proof,
 and the named per-round bounds from Theorem 5.2.
 
@@ -280,7 +367,7 @@ theorem whir_rbr_soundness_of_secure_gap
         Fintype (BlockRelDistance.indexPowT (S 0) (P.φ 0) j) := h.inst1 0
       let _ : ∀ j : Fin ((P.foldingParam 0) + 1),
         Nonempty (BlockRelDistance.indexPowT (S 0) (P.φ 0) j) := h.inst2 0
-      ∀ j : Fin ((P.foldingParam 0) + 1),
+      ∀ _j : Fin ((P.foldingParam 0) + 1),
         let errStar_0 j := h.errStar 0 j (h.C 0 j) (h.Gen_α 0 j).parℓ (h.δ 0)
         ∀ j : Fin (P.foldingParam 0),
           ε_fold 0 j ≤
@@ -298,7 +385,7 @@ theorem whir_rbr_soundness_of_secure_gap
         Fintype (BlockRelDistance.indexPowT (S i) (P.φ i) j) := h.inst1
       let _ : ∀ i : Fin (M + 1), ∀ j : Fin ((P.foldingParam i) + 1),
         Nonempty (BlockRelDistance.indexPowT (S i) (P.φ i) j) := h.inst2
-      ∀ i : Fin (M + 1), ∀ j : Fin ((P.foldingParam i) + 1),
+      ∀ i : Fin (M + 1), ∀ _j : Fin ((P.foldingParam i) + 1),
         let errStar i j := h.errStar i j (h.C i j) (h.Gen_α i j).parℓ (h.δ i)
         ∀ i : Fin (M + 1), ∀ j : Fin (P.foldingParam i),
           ε_fold i j ≤ d * (h.dist i j.castSucc) / Fintype.card F + errStar i j.succ
@@ -346,7 +433,7 @@ theorem whir_rbr_soundness_of_whirVectorSpec_secure_gap
         Fintype (BlockRelDistance.indexPowT (S 0) (P.φ 0) j) := h.inst1 0
       let _ : ∀ j : Fin ((P.foldingParam 0) + 1),
         Nonempty (BlockRelDistance.indexPowT (S 0) (P.φ 0) j) := h.inst2 0
-      ∀ j : Fin ((P.foldingParam 0) + 1),
+      ∀ _j : Fin ((P.foldingParam 0) + 1),
         let errStar_0 j := h.errStar 0 j (h.C 0 j) (h.Gen_α 0 j).parℓ (h.δ 0)
         ∀ j : Fin (P.foldingParam 0),
           ε_fold 0 j ≤
@@ -364,7 +451,7 @@ theorem whir_rbr_soundness_of_whirVectorSpec_secure_gap
         Fintype (BlockRelDistance.indexPowT (S i) (P.φ i) j) := h.inst1
       let _ : ∀ i : Fin (M + 1), ∀ j : Fin ((P.foldingParam i) + 1),
         Nonempty (BlockRelDistance.indexPowT (S i) (P.φ i) j) := h.inst2
-      ∀ i : Fin (M + 1), ∀ j : Fin ((P.foldingParam i) + 1),
+      ∀ i : Fin (M + 1), ∀ _j : Fin ((P.foldingParam i) + 1),
         let errStar i j := h.errStar i j (h.C i j) (h.Gen_α i j).parℓ (h.δ i)
         ∀ i : Fin (M + 1), ∀ j : Fin (P.foldingParam i),
           ε_fold i j ≤ d * (h.dist i j.castSucc) / Fintype.card F + errStar i j.succ
@@ -398,6 +485,10 @@ end RBRSoundnessAssembly
 #print axioms semanticChallengeIdxEquivFin
 #print axioms semanticMessageIdx_card
 #print axioms semanticMessageIdxEquivFin
+#print axioms whirBlockVectorSpec_challengeIdxEquivFin
+#print axioms whirBlockVectorSpec_messageIdxEquivFin
+#print axioms whirBlockVectorSpec_card_challengeIdx
+#print axioms whirBlockVectorSpec_card_messageIdx
 #print axioms whir_rbr_soundness_of_whirVectorSpec_secure_gap
 
 end Construction
