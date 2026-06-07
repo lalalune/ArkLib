@@ -153,8 +153,3 @@ end CZ25CoordFiberCapUniqueDecoding
 
 end CodingTheory
 
-
--- TEMP AUDIT
-#print axioms CodingTheory.cz25CoordFiberCap_of_ncard_le_one
-#print axioms CodingTheory.coordAgreeSum_le_card_mul_card_ι
-#print axioms CodingTheory.subspaceDesign_list_decoding_cz25_of_ncard_le_one
