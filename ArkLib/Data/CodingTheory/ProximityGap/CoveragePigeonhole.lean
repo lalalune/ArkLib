@@ -137,12 +137,13 @@ theorem exists_pair_inter_gt {κ ι : Type*} [Fintype κ] [Fintype ι] [Decidabl
     rw [Finset.sum_ite]
     simp only [Finset.sum_const, smul_eq_mul]
     have h1 : (Finset.univ.filter (fun j => i = j)).card = 1 := by
-      rw [Finset.filter_eq']; simp
+      rw [Finset.card_eq_one]
+      exact ⟨i, by ext j; simp [eq_comm]⟩
     have h2 : (Finset.univ.filter (fun j => ¬ i = j)).card ≤ Fintype.card κ := by
-      apply le_trans (Finset.card_filter_le _ _)
+      refine le_trans (Finset.card_filter_le _ _) ?_
       rw [Finset.card_univ]
     rw [h1, one_mul]
-    exact add_le_add_left (Nat.mul_le_mul_right t h2) _
+    exact add_le_add_left (Nat.mul_le_mul h2 (le_refl t)) _
   have hbound : (∑ i, ∑ j, (S i ∩ S j).card)
       ≤ ∑ i, ((S i).card + Fintype.card κ * t) := by
     apply Finset.sum_le_sum
