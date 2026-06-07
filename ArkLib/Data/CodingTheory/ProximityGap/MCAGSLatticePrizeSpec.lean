@@ -276,6 +276,76 @@ theorem mcaPrizeLatticeResolved_of_GSPivotFrontiers_and_adjacent_upperWitnesses
   intro j
   exact hadj j
 
+/-- Adjacent GS mass frontiers resolve the four-rate MCA prize at the lower-frontier lattice
+indices and expose the satisfy/maximality specification for those concrete thresholds. -/
+theorem mcaPrizeLatticeResolved_with_spec_of_GSMassFrontiers_and_adjacent_upperWitnesses
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (frontier : ∀ j : Fin 4,
+      MCAGS.GSMassLowerWitnessFrontier (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊)
+        (δ j) epsStar)
+    (whi : ∀ j : Fin 4,
+      GrandChallenges.MCAUpperWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1)
+    (hadj : ∀ j : Fin 4,
+      (latticeIndexOf (ι := ι) (whi j).δ (hδhi j)).val =
+        (latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)).val + 1) :
+    let τ : Fin 4 → Fin (Fintype.card ι + 1) :=
+      fun j => latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)
+    mcaPrizeLatticeResolved domain τ ∧
+      ∀ j : Fin 4,
+        let C : Set (ι → F) :=
+          ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+        ∃ _ : mcaThresholdExists C epsStar,
+          mcaSatisfies C epsStar (τ j) ∧
+            ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j := by
+  let τ : Fin 4 → Fin (Fintype.card ι + 1) :=
+    fun j => latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)
+  have hτ : mcaPrizeLatticeResolved domain τ :=
+    mcaPrizeLatticeResolved_of_GSMassFrontiers_and_adjacent_upperWitnesses
+      domain δ hδ_le_one frontier whi hδhi hadj
+  exact ⟨hτ, (mcaPrizeLatticeResolved_iff domain τ).mp hτ⟩
+
+/-- Adjacent GS pivot/list-size frontiers resolve the four-rate MCA prize at the lower-frontier
+lattice indices and expose the satisfy/maximality specification for those concrete thresholds. -/
+theorem mcaPrizeLatticeResolved_with_spec_of_GSPivotFrontiers_and_adjacent_upperWitnesses
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (frontier : ∀ j : Fin 4,
+      MCAGS.GSPivotLowerWitnessFrontier (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊)
+        (δ j) epsStar)
+    (whi : ∀ j : Fin 4,
+      GrandChallenges.MCAUpperWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1)
+    (hadj : ∀ j : Fin 4,
+      (latticeIndexOf (ι := ι) (whi j).δ (hδhi j)).val =
+        (latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)).val + 1) :
+    let τ : Fin 4 → Fin (Fintype.card ι + 1) :=
+      fun j => latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)
+    mcaPrizeLatticeResolved domain τ ∧
+      ∀ j : Fin 4,
+        let C : Set (ι → F) :=
+          ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+        ∃ _ : mcaThresholdExists C epsStar,
+          mcaSatisfies C epsStar (τ j) ∧
+            ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j := by
+  let τ : Fin 4 → Fin (Fintype.card ι + 1) :=
+    fun j => latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)
+  have hτ : mcaPrizeLatticeResolved domain τ :=
+    mcaPrizeLatticeResolved_of_GSPivotFrontiers_and_adjacent_upperWitnesses
+      domain δ hδ_le_one frontier whi hδhi hadj
+  exact ⟨hτ, (mcaPrizeLatticeResolved_iff domain τ).mp hτ⟩
+
 end GSThresholdSpec
 
 set_option linter.style.longLine false in
@@ -306,6 +376,10 @@ set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLattice_bracketed_of_GSPivotFrontiers_and_upperWitnesses
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_of_GSPivotFrontiers_and_adjacent_upperWitnesses
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_spec_of_GSMassFrontiers_and_adjacent_upperWitnesses
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_spec_of_GSPivotFrontiers_and_adjacent_upperWitnesses
 
 end GrandChallengesLattice
 
