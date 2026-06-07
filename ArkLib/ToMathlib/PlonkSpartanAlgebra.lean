@@ -14,6 +14,9 @@ import Mathlib
   characterization (#114/#115): `eval a Z_H = 0 ↔ a ∈ H` over an integral domain.
 * `MvPolynomial.eval_eqIndicator_prod_boolean` — the multilinear **eq-indicator** is a Kronecker delta
   on the boolean cube (#114 Spartan): `eval x (∏ᵢ ((1-Xᵢ)(1-yᵢ)+Xᵢ yᵢ)) = if x = y then 1 else 0`.
+* `MvPolynomial.sum_eval_eqIndicator_prod_boolean` /
+  `MvPolynomial.sum_weighted_eval_eqIndicator_prod_boolean` — summing that eq-indicator over the
+  boolean cube gives `1`, and a weighted sum selects the target value `f y`.
 * `Finset.prod_fin_add_dite_split` — a product over `Fin (ℓ+κ)` that is `Fp` on the `κ`-prefix and
   `Fs` on the `ℓ`-suffix factors as `(∏ Fp)·(∏ Fs)` (#19/#29/#33/#62, dedups RingSwitching/Binius).
 -/
@@ -84,9 +87,51 @@ theorem eval_eqIndicator_prod_boolean {σ R : Type*} [Fintype σ] [DecidableEq �
     have hy : y j = 0 ∨ y j = 1 := by omega
     rcases hx with hx | hx <;> rcases hy with hy | hy <;> rw [hx, hy] <;> simp_all
 
+/-- The eq-indicator has total mass `1` over the boolean cube. -/
+theorem sum_eval_eqIndicator_prod_boolean {σ R : Type*} [Fintype σ] [DecidableEq σ]
+    [CommRing R] (y : σ → Fin 2) :
+    (∑ x : σ → Fin 2,
+      MvPolynomial.eval (fun i => (x i : R))
+        (∏ i : σ, ((1 - MvPolynomial.X i) * (1 - MvPolynomial.C ((y i : R)))
+          + MvPolynomial.X i * MvPolynomial.C ((y i : R))))) = 1 := by
+  classical
+  calc
+    (∑ x : σ → Fin 2,
+      MvPolynomial.eval (fun i => (x i : R))
+        (∏ i : σ, ((1 - MvPolynomial.X i) * (1 - MvPolynomial.C ((y i : R)))
+          + MvPolynomial.X i * MvPolynomial.C ((y i : R)))))
+        = ∑ x : σ → Fin 2, (if x = y then (1 : R) else 0) := by
+            refine Finset.sum_congr rfl ?_
+            intro x _
+            exact MvPolynomial.eval_eqIndicator_prod_boolean x y
+    _ = 1 := by
+        simp
+
+/-- A weighted sum against the eq-indicator selects the target boolean-cube value. -/
+theorem sum_weighted_eval_eqIndicator_prod_boolean {σ R : Type*} [Fintype σ]
+    [DecidableEq σ] [CommRing R] (f : (σ → Fin 2) → R) (y : σ → Fin 2) :
+    (∑ x : σ → Fin 2,
+      f x * MvPolynomial.eval (fun i => (x i : R))
+        (∏ i : σ, ((1 - MvPolynomial.X i) * (1 - MvPolynomial.C ((y i : R)))
+          + MvPolynomial.X i * MvPolynomial.C ((y i : R))))) = f y := by
+  classical
+  calc
+    (∑ x : σ → Fin 2,
+      f x * MvPolynomial.eval (fun i => (x i : R))
+        (∏ i : σ, ((1 - MvPolynomial.X i) * (1 - MvPolynomial.C ((y i : R)))
+          + MvPolynomial.X i * MvPolynomial.C ((y i : R)))))
+        = ∑ x : σ → Fin 2, f x * (if x = y then (1 : R) else 0) := by
+            refine Finset.sum_congr rfl ?_
+            intro x _
+            rw [MvPolynomial.eval_eqIndicator_prod_boolean x y]
+    _ = f y := by
+        simp [mul_ite]
+
 end MvPolynomial
 
 #print axioms Finset.prod_div_perm_eq_one_of_eq_comp
 #print axioms Finset.prod_fin_add_dite_split
 #print axioms Polynomial.eval_prod_X_sub_C_eq_zero_iff_mem
 #print axioms MvPolynomial.eval_eqIndicator_prod_boolean
+#print axioms MvPolynomial.sum_eval_eqIndicator_prod_boolean
+#print axioms MvPolynomial.sum_weighted_eval_eqIndicator_prod_boolean

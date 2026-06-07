@@ -224,12 +224,101 @@ theorem fiatShamir_completeness_of_perfect_honestExecution_discharged
     (fiatShamir_completeness_of_honestExecution_discharged init impl relIn relOut
       0 R hHonest)
 
+/-- Discharged error-monotone completeness consumer for basic Fiat-Shamir. -/
+theorem fiatShamir_completeness_of_honestExecution_mono_error_discharged
+    {σ : Type} (init : ProbComp σ)
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut × WitOut))
+    {completenessError₁ completenessError₂ : ℝ≥0}
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hHonest : Reduction.completenessFromRun init impl relIn relOut
+      R.fiatShamirHonestExecution completenessError₁)
+    (hle : completenessError₁ ≤ completenessError₂) :
+    R.fiatShamir.completeness init impl relIn relOut completenessError₂ :=
+  Reduction.completeness_error_mono init impl hle
+    (fiatShamir_completeness_of_honestExecution_discharged init impl relIn relOut
+      completenessError₁ R hHonest)
+
+/-- Discharged relation-transport completeness consumer for basic Fiat-Shamir. -/
+theorem fiatShamir_completeness_of_honestExecution_mono_relations_discharged
+    {σ : Type} (init : ProbComp σ)
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    {relIn relIn' : Set (StmtIn × WitIn)}
+    {relOut relOut' : Set (StmtOut × WitOut)}
+    (completenessError : ℝ≥0)
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hHonest : Reduction.completenessFromRun init impl relIn relOut
+      R.fiatShamirHonestExecution completenessError)
+    (hIn : relIn' ⊆ relIn) (hOut : relOut ⊆ relOut') :
+    R.fiatShamir.completeness init impl relIn' relOut' completenessError :=
+  Reduction.completeness_relOut_mono init impl hOut <|
+    Reduction.completeness_relIn_mono init impl hIn <|
+      fiatShamir_completeness_of_honestExecution_discharged init impl relIn relOut
+        completenessError R hHonest
+
+/-- Discharged relation-and-error transport completeness consumer for basic Fiat-Shamir. -/
+theorem fiatShamir_completeness_of_honestExecution_mono_relations_error_discharged
+    {σ : Type} (init : ProbComp σ)
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    {relIn relIn' : Set (StmtIn × WitIn)}
+    {relOut relOut' : Set (StmtOut × WitOut)}
+    {completenessError₁ completenessError₂ : ℝ≥0}
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hHonest : Reduction.completenessFromRun init impl relIn relOut
+      R.fiatShamirHonestExecution completenessError₁)
+    (hIn : relIn' ⊆ relIn) (hOut : relOut ⊆ relOut')
+    (hle : completenessError₁ ≤ completenessError₂) :
+    R.fiatShamir.completeness init impl relIn' relOut' completenessError₂ :=
+  Reduction.completeness_error_mono init impl hle
+    (fiatShamir_completeness_of_honestExecution_mono_relations_discharged init impl
+      (relIn := relIn) (relIn' := relIn') (relOut := relOut) (relOut' := relOut')
+      completenessError₁ R hHonest hIn hOut)
+
+/-- Discharged relation-transport perfect-completeness consumer for basic Fiat-Shamir. -/
+theorem fiatShamir_perfectCompleteness_of_honestExecution_mono_relations_discharged
+    {σ : Type} (init : ProbComp σ)
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    {relIn relIn' : Set (StmtIn × WitIn)}
+    {relOut relOut' : Set (StmtOut × WitOut)}
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hHonest : Reduction.perfectCompletenessFromRun init impl relIn relOut
+      R.fiatShamirHonestExecution)
+    (hIn : relIn' ⊆ relIn) (hOut : relOut ⊆ relOut') :
+    R.fiatShamir.perfectCompleteness init impl relIn' relOut' := by
+  unfold Reduction.perfectCompleteness Reduction.perfectCompletenessFromRun at *
+  exact fiatShamir_completeness_of_honestExecution_mono_relations_discharged init impl
+    (relIn := relIn) (relIn' := relIn') (relOut := relOut) (relOut' := relOut')
+    0 R hHonest hIn hOut
+
+/-- Discharged relation-and-error completeness consumer from perfect honest execution. -/
+theorem fiatShamir_completeness_of_perfect_honestExecution_mono_relations_error_discharged
+    {σ : Type} (init : ProbComp σ)
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    {relIn relIn' : Set (StmtIn × WitIn)}
+    {relOut relOut' : Set (StmtOut × WitOut)}
+    (completenessError : ℝ≥0)
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hHonest : Reduction.perfectCompletenessFromRun init impl relIn relOut
+      R.fiatShamirHonestExecution)
+    (hIn : relIn' ⊆ relIn) (hOut : relOut ⊆ relOut') :
+    R.fiatShamir.completeness init impl relIn' relOut' completenessError := by
+  unfold Reduction.perfectCompletenessFromRun at hHonest
+  exact fiatShamir_completeness_of_honestExecution_mono_relations_error_discharged init impl
+    (relIn := relIn) (relIn' := relIn') (relOut := relOut) (relOut' := relOut')
+    (completenessError₁ := 0) (completenessError₂ := completenessError)
+    R hHonest hIn hOut (zero_le completenessError)
+
 #print axioms fiatShamir_runCollapse
 #print axioms fiatShamir_completeness_unroll_discharged
 #print axioms fiatShamir_completeness_of_honestExecution_discharged
 #print axioms fiatShamir_perfectCompleteness_unroll_discharged
 #print axioms fiatShamir_perfectCompleteness_of_honestExecution_discharged
 #print axioms fiatShamir_completeness_of_perfect_honestExecution_discharged
+#print axioms fiatShamir_completeness_of_honestExecution_mono_error_discharged
+#print axioms fiatShamir_completeness_of_honestExecution_mono_relations_discharged
+#print axioms fiatShamir_completeness_of_honestExecution_mono_relations_error_discharged
+#print axioms fiatShamir_perfectCompleteness_of_honestExecution_mono_relations_discharged
+#print axioms fiatShamir_completeness_of_perfect_honestExecution_mono_relations_error_discharged
 
 end Reduction
 
