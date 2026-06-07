@@ -425,6 +425,67 @@ theorem correlatedAgreement_affine_curves_of_lattice_data
     hδ
 
 omit [DecidableEq ι] in
+/-- At square Johnson endpoints, the closed-boundary residual can consume
+`BoundaryCardLatticeData` directly.  The strict-subradius producer is unnecessary because the
+perfect-square condition identifies the branch as the exact lattice endpoint. -/
+theorem boundaryCardResidual_of_lattice_data_isSquare
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hsqrt_le : ReedSolomon.sqrtRate deg domain ≤ 1)
+    (hdeg : deg ≤ Fintype.card ι)
+    (hSquare : IsSquare (deg * Fintype.card ι))
+    (hLatticeData :
+      BoundaryCardResidual.BoundaryCardLatticeData
+        (k := k) (deg := deg) (domain := domain) (δ := δ)) :
+    ProximityGap.BoundaryCardResidual (k := k) (deg := deg) (domain := domain) (δ := δ) :=
+  BoundaryCardResidual.boundaryCardResidual_of_isSquare_deg_mul_card
+    (deg := deg) (domain := domain) (δ := δ) hsqrt_le hdeg hSquare
+    (boundaryCardLatticeResidual_of_lattice_data
+      (k := k) (deg := deg) (domain := domain) (δ := δ) hLatticeData)
+
+omit [DecidableEq ι] in
+/-- Square-endpoint `BoundaryProbabilityResidual` front door from the concrete lattice-data
+surface, with no strict-subradius producer. -/
+theorem boundaryProbabilityResidual_of_lattice_data_isSquare
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hsqrt_le : ReedSolomon.sqrtRate deg domain ≤ 1)
+    (hdeg : deg ≤ Fintype.card ι)
+    (hSquare : IsSquare (deg * Fintype.card ι))
+    (hLatticeData :
+      BoundaryCardResidual.BoundaryCardLatticeData
+        (k := k) (deg := deg) (domain := domain) (δ := δ)) :
+    ProximityGap.BoundaryProbabilityResidual
+      (k := k) (deg := deg) (domain := domain) (δ := δ) :=
+  BoundaryCardResidual.boundaryProbabilityResidual_of_isSquare_deg_mul_card
+    (deg := deg) (domain := domain) (δ := δ) hδ hsqrt_le hdeg hSquare
+    (boundaryCardLatticeResidual_of_lattice_data
+      (k := k) (deg := deg) (domain := domain) (δ := δ) hLatticeData)
+
+omit [DecidableEq ι] in
+/-- Curve-facing square-endpoint adapter from `BoundaryCardLatticeData`.  This is the
+lattice-data counterpart of
+`BoundaryCardResidual.correlatedAgreement_affine_curves_of_isSquare_deg_mul_card`. -/
+theorem correlatedAgreement_affine_curves_of_lattice_data_isSquare
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hStrictCoeff :
+      ProximityGap.StrictCoeffPolysResidual (k := k) (deg := deg) (domain := domain) (δ := δ))
+    (hLatticeData :
+      BoundaryCardResidual.BoundaryCardLatticeData
+        (k := k) (deg := deg) (domain := domain) (δ := δ))
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hsqrt_le : ReedSolomon.sqrtRate deg domain ≤ 1)
+    (hdeg : deg ≤ Fintype.card ι)
+    (hSquare : IsSquare (deg * Fintype.card ι)) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  classical
+  exact BoundaryCardResidual.correlatedAgreement_affine_curves_of_isSquare_deg_mul_card
+    (deg := deg) (domain := domain) (δ := δ) hStrictCoeff
+    (boundaryCardLatticeResidual_of_lattice_data
+      (k := k) (deg := deg) (domain := domain) (δ := δ) hLatticeData)
+    hδ hsqrt_le hdeg hSquare
+
+omit [DecidableEq ι] in
 /-- The closed-boundary residual is vacuous for `k = 0`, since its first argument is
 `0 < k`. This removes an unnecessary residual hypothesis from degenerate callers. -/
 theorem boundaryCardResidual_zero
@@ -450,4 +511,7 @@ end ArkLib
 #print axioms ArkLib.BoundaryDischarge.boundaryCardResidual_of_lattice_data
 #print axioms ArkLib.BoundaryDischarge.boundaryProbabilityResidual_of_lattice_data
 #print axioms ArkLib.BoundaryDischarge.correlatedAgreement_affine_curves_of_lattice_data
+#print axioms ArkLib.BoundaryDischarge.boundaryCardResidual_of_lattice_data_isSquare
+#print axioms ArkLib.BoundaryDischarge.boundaryProbabilityResidual_of_lattice_data_isSquare
+#print axioms ArkLib.BoundaryDischarge.correlatedAgreement_affine_curves_of_lattice_data_isSquare
 #print axioms ArkLib.BoundaryDischarge.boundaryCardResidual_zero
