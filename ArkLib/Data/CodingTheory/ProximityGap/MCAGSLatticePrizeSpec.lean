@@ -877,6 +877,198 @@ theorem mcaPrizeLatticeResolved_with_spec_of_GSPivotAdjacentFrontier
       domain δ hδ_le_one frontier whi hδhi hadj
   exact ⟨hτ, (mcaPrizeLatticeResolved_iff domain τ).mp hτ⟩
 
+/-- Add the immediate lower and adjacent upper lattice brackets to a concrete adjacent
+`mcaPrizeLatticeResolved ∧ spec` witness. -/
+private theorem mcaPrizeLatticeResolved_with_spec_and_adjacent_brackets_of_with_spec
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (whi : ∀ j : Fin 4,
+      GrandChallenges.MCAUpperWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1)
+    (hadj : ∀ j : Fin 4,
+      (latticeIndexOf (ι := ι) (whi j).δ (hδhi j)).val =
+        (latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)).val + 1)
+    (hspec :
+      let τ : Fin 4 → Fin (Fintype.card ι + 1) :=
+        fun j => latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)
+      mcaPrizeLatticeResolved domain τ ∧
+        ∀ j : Fin 4,
+          let C : Set (ι → F) :=
+            ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+          ∃ _ : mcaThresholdExists C epsStar,
+            mcaSatisfies C epsStar (τ j) ∧
+              ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j) :
+    let τ : Fin 4 → Fin (Fintype.card ι + 1) :=
+      fun j => latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)
+    mcaPrizeLatticeResolved domain τ ∧
+      ∀ j : Fin 4,
+        let C : Set (ι → F) :=
+          ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+        ∃ _ : mcaThresholdExists C epsStar,
+          mcaSatisfies C epsStar (τ j) ∧
+            (∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j) ∧
+              latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j ∧
+                τ j < latticeIndexOf (ι := ι) (whi j).δ (hδhi j) := by
+  let τ : Fin 4 → Fin (Fintype.card ι + 1) :=
+    fun j => latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)
+  refine ⟨hspec.1, ?_⟩
+  intro j
+  rcases hspec.2 j with ⟨hne, hsat, hmax⟩
+  refine ⟨hne, hsat, hmax, le_rfl, ?_⟩
+  have hval :
+      (latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)).val <
+        (latticeIndexOf (ι := ι) (whi j).δ (hδhi j)).val := by
+    have h := hadj j
+    omega
+  simpa [τ] using (Fin.lt_def.mpr hval)
+
+/-- Adjacent GS mass frontiers expose the exact threshold specification together with both
+lattice brackets for the concrete lower-index threshold family. -/
+theorem mcaPrizeLatticeResolved_with_spec_and_brackets_of_GSMassAdjacentFrontier
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (frontier : ∀ j : Fin 4,
+      MCAGS.GSMassLowerWitnessFrontier (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊)
+        (δ j) epsStar)
+    (whi : ∀ j : Fin 4,
+      GrandChallenges.MCAUpperWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1)
+    (hadj : ∀ j : Fin 4,
+      (latticeIndexOf (ι := ι) (whi j).δ (hδhi j)).val =
+        (latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)).val + 1) :
+    let τ : Fin 4 → Fin (Fintype.card ι + 1) :=
+      fun j => latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)
+    mcaPrizeLatticeResolved domain τ ∧
+      ∀ j : Fin 4,
+        let C : Set (ι → F) :=
+          ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+        ∃ _ : mcaThresholdExists C epsStar,
+          mcaSatisfies C epsStar (τ j) ∧
+            (∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j) ∧
+              latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j ∧
+                τ j < latticeIndexOf (ι := ι) (whi j).δ (hδhi j) :=
+  mcaPrizeLatticeResolved_with_spec_and_adjacent_brackets_of_with_spec
+    domain δ hδ_le_one whi hδhi hadj
+    (mcaPrizeLatticeResolved_with_spec_of_GSMassAdjacentFrontier
+      domain δ hδ_le_one frontier whi hδhi hadj)
+
+/-- Adjacent GS mass frontiers expose only the faithful prize resolution and immediate two-sided
+lattice brackets. -/
+theorem mcaPrizeLatticeResolved_with_brackets_of_GSMassAdjacentFrontier
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (frontier : ∀ j : Fin 4,
+      MCAGS.GSMassLowerWitnessFrontier (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊)
+        (δ j) epsStar)
+    (whi : ∀ j : Fin 4,
+      GrandChallenges.MCAUpperWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1)
+    (hadj : ∀ j : Fin 4,
+      (latticeIndexOf (ι := ι) (whi j).δ (hδhi j)).val =
+        (latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)).val + 1) :
+    let τ : Fin 4 → Fin (Fintype.card ι + 1) :=
+      fun j => latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)
+    mcaPrizeLatticeResolved domain τ ∧
+      (∀ j : Fin 4, latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j) ∧
+        ∀ j : Fin 4, τ j < latticeIndexOf (ι := ι) (whi j).δ (hδhi j) := by
+  let τ : Fin 4 → Fin (Fintype.card ι + 1) :=
+    fun j => latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)
+  have h :=
+    mcaPrizeLatticeResolved_with_spec_and_brackets_of_GSMassAdjacentFrontier
+      domain δ hδ_le_one frontier whi hδhi hadj
+  refine ⟨h.1, ?_, ?_⟩
+  · intro j
+    rcases h.2 j with ⟨_hne, _hsat, _hmax, hlower, _hupper⟩
+    exact hlower
+  · intro j
+    rcases h.2 j with ⟨_hne, _hsat, _hmax, _hlower, hupper⟩
+    exact hupper
+
+/-- Adjacent GS pivot/list-size frontiers expose the exact threshold specification together with
+both lattice brackets for the concrete lower-index threshold family. -/
+theorem mcaPrizeLatticeResolved_with_spec_and_brackets_of_GSPivotAdjacentFrontier
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (frontier : ∀ j : Fin 4,
+      MCAGS.GSPivotLowerWitnessFrontier (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊)
+        (δ j) epsStar)
+    (whi : ∀ j : Fin 4,
+      GrandChallenges.MCAUpperWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1)
+    (hadj : ∀ j : Fin 4,
+      (latticeIndexOf (ι := ι) (whi j).δ (hδhi j)).val =
+        (latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)).val + 1) :
+    let τ : Fin 4 → Fin (Fintype.card ι + 1) :=
+      fun j => latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)
+    mcaPrizeLatticeResolved domain τ ∧
+      ∀ j : Fin 4,
+        let C : Set (ι → F) :=
+          ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+        ∃ _ : mcaThresholdExists C epsStar,
+          mcaSatisfies C epsStar (τ j) ∧
+            (∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j) ∧
+              latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j ∧
+                τ j < latticeIndexOf (ι := ι) (whi j).δ (hδhi j) :=
+  mcaPrizeLatticeResolved_with_spec_and_adjacent_brackets_of_with_spec
+    domain δ hδ_le_one whi hδhi hadj
+    (mcaPrizeLatticeResolved_with_spec_of_GSPivotAdjacentFrontier
+      domain δ hδ_le_one frontier whi hδhi hadj)
+
+/-- Adjacent GS pivot/list-size frontiers expose only the faithful prize resolution and immediate
+two-sided lattice brackets. -/
+theorem mcaPrizeLatticeResolved_with_brackets_of_GSPivotAdjacentFrontier
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (frontier : ∀ j : Fin 4,
+      MCAGS.GSPivotLowerWitnessFrontier (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊)
+        (δ j) epsStar)
+    (whi : ∀ j : Fin 4,
+      GrandChallenges.MCAUpperWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1)
+    (hadj : ∀ j : Fin 4,
+      (latticeIndexOf (ι := ι) (whi j).δ (hδhi j)).val =
+        (latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)).val + 1) :
+    let τ : Fin 4 → Fin (Fintype.card ι + 1) :=
+      fun j => latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)
+    mcaPrizeLatticeResolved domain τ ∧
+      (∀ j : Fin 4, latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j) ∧
+        ∀ j : Fin 4, τ j < latticeIndexOf (ι := ι) (whi j).δ (hδhi j) := by
+  let τ : Fin 4 → Fin (Fintype.card ι + 1) :=
+    fun j => latticeIndexOf (ι := ι) (δ j) (hδ_le_one j)
+  have h :=
+    mcaPrizeLatticeResolved_with_spec_and_brackets_of_GSPivotAdjacentFrontier
+      domain δ hδ_le_one frontier whi hδhi hadj
+  refine ⟨h.1, ?_, ?_⟩
+  · intro j
+    rcases h.2 j with ⟨_hne, _hsat, _hmax, hlower, _hupper⟩
+    exact hlower
+  · intro j
+    rcases h.2 j with ⟨_hne, _hsat, _hmax, _hlower, hupper⟩
+    exact hupper
+
 end GSThresholdSpec
 
 set_option linter.style.longLine false in
@@ -947,6 +1139,14 @@ set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_spec_of_GSMassAdjacentFrontier
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_spec_of_GSPivotAdjacentFrontier
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_spec_and_brackets_of_GSMassAdjacentFrontier
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_brackets_of_GSMassAdjacentFrontier
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_spec_and_brackets_of_GSPivotAdjacentFrontier
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_brackets_of_GSPivotAdjacentFrontier
 
 end GrandChallengesLattice
 
