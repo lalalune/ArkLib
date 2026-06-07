@@ -249,7 +249,24 @@ instance sumcheckFoldCtxLens_complete :
 
 omit [NeZero κ] [NeZero ℓ] in
 -- Perfect completeness for the lifted oracle reduction
-theorem sumcheckFoldOracleReduction_perfectCompleteness (hInit : NeverFail init) :
+theorem sumcheckFoldOracleReduction_perfectCompleteness (hInit : NeverFail init)
+    (hBinaryBasefoldSumcheckFoldPerfectCompleteness :
+      OracleReduction.perfectCompleteness
+        (pSpec := BinaryBasefold.pSpecSumcheckFold K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+        (relIn := BinaryBasefold.strictRoundRelation
+          (mp := RingSwitching_SumcheckMultParam κ L K
+            (β := booleanHypercubeBasis κ L K β) ℓ ℓ' h_l) K β (ϑ:=ϑ)
+          (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑:=𝓑) 0)
+        (relOut := BinaryBasefold.strictRoundRelation
+          (mp := RingSwitching_SumcheckMultParam κ L K
+            (β := booleanHypercubeBasis κ L K β) ℓ ℓ' h_l) K β (ϑ:=ϑ)
+          (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑:=𝓑) (Fin.last ℓ'))
+        (oracleReduction := BinaryBasefold.CoreInteraction.sumcheckFoldOracleReduction K β
+          (ϑ:=ϑ) (mp := RingSwitching_SumcheckMultParam κ L K
+            (β := booleanHypercubeBasis κ L K β) ℓ ℓ' h_l)
+          (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑:=𝓑))
+        (init := init)
+        (impl := impl)) :
     OracleReduction.perfectCompleteness
     (oSpec := []ₒ)
     (StmtIn := Statement (L := L) (ℓ := ℓ') (RingSwitchingBaseContext κ L K ℓ) 0)
@@ -312,7 +329,11 @@ theorem sumcheckFoldOracleReduction_perfectCompleteness (hInit : NeverFail init)
     (init := init)
     (impl := impl)
     (h := BinaryBasefold.CoreInteraction.sumcheckFoldOracleReduction_perfectCompleteness
-      (hInit:=hInit) K β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑))
+      (hInit:=hInit) K β (ϑ := ϑ)
+      (mp := RingSwitching_SumcheckMultParam κ L K
+        (β := booleanHypercubeBasis κ L K β) ℓ ℓ' h_l)
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (𝓑 := 𝓑)
+      (hSumcheckFoldPerfectCompleteness := hBinaryBasefoldSumcheckFoldPerfectCompleteness))
 
 /-- Knowledge soundness instance for the extractor lens. This one is compatStmt-agnostic -/
 instance sumcheckFoldExtractorLens_rbr_knowledge_soundness
