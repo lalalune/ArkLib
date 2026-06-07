@@ -251,4 +251,37 @@ theorem pow_succ_rpow_entropy_le {Q : ℝ} (hQ : 1 < Q) (k n : ℕ) (H : ℝ)
         rw [← Real.rpow_add hQ0, ← Real.rpow_add hQ0]
     _ ≤ Q ^ (n : ℝ) := Real.rpow_le_rpow_of_exponent_le hQ.le (by linarith)
 
+/-- **`#stacks = Q^n`** for the interleaved alphabet `Q = |κ→A|`, `n = |ι|`. -/
+theorem card_wordStack_eq :
+    Fintype.card (WordStack A κ ι) = (Fintype.card (κ → A)) ^ (Fintype.card ι) := by
+  show Fintype.card (κ → ι → A) = (Fintype.card (κ → A)) ^ Fintype.card ι
+  simp only [Fintype.card_fun]
+  rw [← pow_mul, ← pow_mul, Nat.mul_comm]
+
+open Classical in
+/-- **JointProx half of the band inequality, closed on the sub-band.** When the code's rate
+identity `|C|^|κ| = Q^k` holds (e.g. RS, `|C| = q^k`, `Q = q^|κ|`) and the sub-band rate condition
+`k + log_Q(n+1) + n·H_Q(δ) ≤ n` holds below capacity, the jointly-`δ`-close stacks number at most the
+total stack count: `#{jointProx} ≤ #stacks`. Combines `card_jointProximity_le_qEntropy` with the
+`rpow` core `pow_succ_rpow_entropy_le`. -/
+theorem card_jointProximity_le_card_stacks_of_subband [Nonempty ι] (C : Set (ι → A))
+    [AddCommGroup A] [Fintype ↥C] (δ : ℝ≥0) (k : ℕ)
+    (hq : 2 ≤ Fintype.card (κ → A))
+    (hδcap : (δ : ℝ) ≤ 1 - 1 / (Fintype.card (κ → A) : ℝ))
+    (hrate : (Fintype.card ↥C) ^ (Fintype.card κ) = (Fintype.card (κ → A)) ^ k)
+    (hsub : (k : ℝ) + Real.logb (Fintype.card (κ → A)) ((Fintype.card ι : ℝ) + 1)
+        + (Fintype.card ι : ℝ) * CodingTheory.qEntropy (Fintype.card (κ → A)) (δ : ℝ)
+          ≤ (Fintype.card ι : ℝ)) :
+    (Finset.univ.filter (fun u : WordStack A κ ι => jointProximity C (u := u) δ)).card
+      ≤ Fintype.card (WordStack A κ ι) := by
+  have hQ1 : (1 : ℝ) < (Fintype.card (κ → A) : ℝ) := by exact_mod_cast hq
+  rw [← Nat.cast_le (α := ℝ), card_wordStack_eq, Nat.cast_pow,
+    ← Real.rpow_natCast (Fintype.card (κ → A) : ℝ) (Fintype.card ι)]
+  refine (card_jointProximity_le_qEntropy (κ := κ) C δ hq hδcap).trans ?_
+  have hcard : (((Fintype.card ↥C) ^ (Fintype.card κ) : ℕ) : ℝ)
+      = (Fintype.card (κ → A) : ℝ) ^ (k : ℝ) := by
+    rw [hrate, Nat.cast_pow, Real.rpow_natCast]
+  rw [hcard]
+  exact pow_succ_rpow_entropy_le hQ1 k (Fintype.card ι) _ hsub
+
 end CS25
