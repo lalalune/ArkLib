@@ -263,6 +263,34 @@ def plonkCheckLangOut :
     Set (Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)) :=
   plonkCheckRel 𝓡 numWires numGates
 
+theorem plonkCheckVerifier_mem_support_relations
+    (cs : Plonk.ConstraintSystem 𝓡 numWires numGates)
+    (transcript : FullTranscript (plonkCheckPSpec 𝓡 numWires numGates))
+    (out : Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡))
+    (hout : some out ∈ support
+      ((plonkCheckVerifier (𝓡 := 𝓡) (numWires := numWires)
+        (numGates := numGates)).verify cs transcript).run) :
+    (cs, transcript.fst ⟨0, by simp⟩) ∈ plonkCheckRelIn 𝓡 numWires numGates ∧
+      (out, ()) ∈ plonkCheckRelOut 𝓡 numWires numGates ∧
+        out = (cs, transcript.fst ⟨0, by simp⟩) := by
+  rw [plonkCheckVerifier_mem_support_iff] at hout
+  let w : Fin numWires → 𝓡 := transcript.fst ⟨0, by simp⟩
+  let f : Fin (3 * numGates) → 𝓡 := transcript.snd ⟨0, by simp⟩
+  have hRel : (cs, w) ∈ plonkCheckRel 𝓡 numWires numGates := by
+    change cs.accepts w ∧
+      CopyConstraintsSatisfied
+        (extendWireAssignment (𝓡 := 𝓡) (numWires := numWires)
+          (numGates := numGates) cs w) cs.perm
+    refine ⟨hout.1, ?_⟩
+    intro i
+    rw [← hout.2.1 (cs.perm i), ← hout.2.1 i]
+    exact hout.2.2.1 i
+  refine ⟨?_, ?_, ?_⟩
+  · simpa [w]
+  · rw [hout.2.2.2]
+    simpa [plonkCheckRelOut, w] using hRel
+  · simpa [w] using hout.2.2.2
+
 variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl []ₒ (StateT σ ProbComp))
 
 /-- The post-gate permutation verifier has zero-error round-by-round soundness for the full
@@ -537,6 +565,7 @@ theorem plonkCheckVerifier_rbrKnowledgeSoundness :
 
 #print axioms Plonk.plonkCheckVerifier_verify_eq
 #print axioms Plonk.plonkCheckVerifier_mem_support_iff
+#print axioms Plonk.plonkCheckVerifier_mem_support_relations
 #print axioms Plonk.permCheckAfterGateVerifier_verify_eq
 #print axioms Plonk.permCheckAfterGateVerifier_mem_support_iff
 #print axioms Plonk.plonkCheckReduction_eq_append
