@@ -536,7 +536,7 @@ section QueryPhaseHelperLemmas
 
 open QueryPhase
 
-set_option maxHeartbeats 10000 in
+set_option maxHeartbeats 1000000 in
 lemma iteratedQuotientMap_eq_qMap_total_fiber_extractMiddleFinMask
     (i : Fin r) (steps : ℕ) {destIdx : Fin r}
     (h_destIdx : destIdx.val = i.val + steps)
@@ -915,7 +915,7 @@ lemma queryBlockSourceSuffix_maps_to_destSuffix
     rw [getFiberPoint_eq_qMap_total_fiber]
   exact h_generates.symm
 
-set_option maxHeartbeats 10000 in
+set_option maxHeartbeats 400000 in
 lemma UDRCodeword_eval_eq_of_fin_eq
     {i j : Fin r} (hij : i = j)
     {hi : i ≤ ℓ} {hj : j ≤ ℓ}
@@ -947,7 +947,7 @@ lemma UDRCodeword_eval_eq_of_fin_eq
           rfl HEq.rfl hf_close))
       y
 
-set_option maxHeartbeats 10000 in
+set_option maxHeartbeats 400000 in
 lemma successor_codeword_eval_eq
     (oStmtIn : ∀ j, OracleStatement 𝔽q β (ϑ := ϑ)
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (Fin.last ℓ) j)
