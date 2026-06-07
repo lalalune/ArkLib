@@ -209,6 +209,72 @@ theorem whir_rbr_soundness_of_secure_gap
   refine ⟨n, vPSpec, hChallengeCard, π, ?_⟩
   exact ⟨hSecure, hBudget⟩
 
+omit [Fintype ι] [Nonempty ι] in
+/-- Assemble `whir_rbr_soundness` using the checked scratch WHIR `VectorSpec`.
+
+This specializes `whir_rbr_soundness_of_secure_gap` to `whirVectorSpec M`, so callers of the
+scratch construction no longer have to pass the challenge-cardinality witness manually.  It remains
+purely downstream plumbing: callers still supply the concrete WHIR `VectorIOP`, its
+`IsSecureWithGap` proof, and the paper budget inequalities. -/
+theorem whir_rbr_soundness_of_whirVectorSpec_secure_gap
+    {d dstar : ℕ}
+    {P : Params ιs F} {S : ∀ i : Fin (M + 1), Finset (ιs i)}
+    {hParams : ParamConditions ιs P} {h : GenMutualCorrParams ιs P S}
+    {m_0 : ℕ} (hm_0 : m_0 = P.varCount 0) {σ₀ : F}
+    {wPoly₀ : MvPolynomial (Fin (m_0 + 1)) F} {δ : ℝ≥0}
+    [Smooth (P.φ 0)] [Nonempty (ιs 0)]
+    (ε_fold : (i : Fin (M + 1)) → Fin (P.foldingParam i) → ℝ≥0)
+    (ε_out : Fin (M + 1) → ℝ≥0)
+    (ε_shift : Fin M → ℝ≥0) (ε_fin : ℝ≥0)
+    (π : VectorIOP Unit (OracleStatement (ιs 0) F) Unit (whirVectorSpec M) F)
+    (hSecure :
+      let max_ε_folds : (i : Fin (M + 1)) → ℝ≥0 :=
+        fun i => (Finset.univ : Finset (Fin (P.foldingParam i))).sup (ε_fold i)
+      let ε_rbr : (whirVectorSpec M).ChallengeIdx → ℝ≥0 :=
+        fun _ => (Finset.univ.image max_ε_folds ∪ {ε_fin} ∪ Finset.univ.image ε_out ∪
+          Finset.univ.image ε_shift).max' (by simp)
+      VectorIOP.IsSecureWithGap (whirRelation m_0 (P.φ 0) 0)
+        (whirRelation m_0 (P.φ 0) (h.δ 0)) ε_rbr π)
+    (hBudget :
+      let maxDeg := (Finset.univ : Finset (Fin m_0)).sup
+        (fun i => wPoly₀.degreeOf (Fin.succ i))
+      let dstar := 1 + (wPoly₀.degreeOf 0) + maxDeg
+      let d := max dstar 3
+      let _ : ∀ j : Fin ((P.foldingParam 0) + 1),
+        Fintype (BlockRelDistance.indexPowT (S 0) (P.φ 0) j) := h.inst1 0
+      let _ : ∀ j : Fin ((P.foldingParam 0) + 1),
+        Nonempty (BlockRelDistance.indexPowT (S 0) (P.φ 0) j) := h.inst2 0
+      ∀ j : Fin ((P.foldingParam 0) + 1),
+        let errStar_0 j := h.errStar 0 j (h.C 0 j) (h.Gen_α 0 j).parℓ (h.δ 0)
+        ∀ j : Fin (P.foldingParam 0),
+          ε_fold 0 j ≤
+            ((dstar * (h.dist 0 j.castSucc)) / Fintype.card F) + (errStar_0 j.succ)
+      ∧
+      ∀ i : Fin (M + 1),
+        ε_out i ≤
+          2^(P.varCount i) * (h.dist i 0)^2 / (2 * Fintype.card F)
+      ∧
+      ∀ i : Fin M,
+        ε_shift i ≤ (1 - (h.δ i.castSucc))^(P.repeatParam i.castSucc)
+          + ((h.dist i.succ 0) * (P.repeatParam i.castSucc) + 1) / Fintype.card F
+      ∧
+      let _ : ∀ i : Fin (M + 1), ∀ j : Fin ((P.foldingParam i) + 1),
+        Fintype (BlockRelDistance.indexPowT (S i) (P.φ i) j) := h.inst1
+      let _ : ∀ i : Fin (M + 1), ∀ j : Fin ((P.foldingParam i) + 1),
+        Nonempty (BlockRelDistance.indexPowT (S i) (P.φ i) j) := h.inst2
+      ∀ i : Fin (M + 1), ∀ j : Fin ((P.foldingParam i) + 1),
+        let errStar i j := h.errStar i j (h.C i j) (h.Gen_α i j).parℓ (h.δ i)
+        ∀ i : Fin (M + 1), ∀ j : Fin (P.foldingParam i),
+          ε_fold i j ≤ d * (h.dist i j.castSucc) / Fintype.card F + errStar i j.succ
+      ∧
+      ε_fin ≤ (1 - h.δ (Fin.last M))^(P.repeatParam (Fin.last M)) ) :
+    whir_rbr_soundness (F := F) (M := M) ιs (d := d) (dstar := dstar)
+      (P := P) (S := S) (hParams := hParams) (h := h)
+      hm_0 (σ₀ := σ₀) (wPoly₀ := wPoly₀) (δ := δ)
+      ε_fold ε_out ε_shift ε_fin := by
+  refine ⟨2 * M + 2, whirVectorSpec M, whirVectorSpec_card_challengeIdx M, π, ?_⟩
+  exact ⟨hSecure, hBudget⟩
+
 end RBRSoundnessAssembly
 
 #print axioms whirVectorSpec_card_challengeIdx
@@ -220,6 +286,7 @@ end RBRSoundnessAssembly
 #print axioms whirVectorSpec_totalChallengeLength
 #print axioms whirVectorSpec_totalMessageLength
 #print axioms whir_rbr_soundness_of_secure_gap
+#print axioms whir_rbr_soundness_of_whirVectorSpec_secure_gap
 
 end Construction
 
