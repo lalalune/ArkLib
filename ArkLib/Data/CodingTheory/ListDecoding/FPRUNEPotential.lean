@@ -165,7 +165,7 @@ theorem fprune_expectation_lower_of_branch
         (∑ j ∈ J, ((((d j : ℝ) + η) * (1 - η')) / (∑ k ∈ J, ((d k : ℝ) + η))) * E (d j)
           ≤ E r)) :
     ∀ r, η / ((r : ℕ) + η) ≤ E r := by
-  refine fprune_expectation_lower E η hη base (fun r hr => ?_)
+  refine fprune_expectation_lower (ι := ι) E η hη base (fun r hr => ?_)
   obtain ⟨J, d, hJ, hgood, hfactor⟩ := branch r hr
   have hrη : (0 : ℝ) < (r : ℝ) + η := add_pos_of_nonneg_of_pos (Nat.cast_nonneg _) hη
   have hWpos : 0 < ∑ k ∈ J, ((d k : ℝ) + η) :=

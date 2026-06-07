@@ -56,10 +56,10 @@ Given (1)+(2), the matching factor `Y − P ∣ Qz` is delivered by the proven, 
   Johnson-radius datum.
 * `matchingFactor_of_radius` — the end-to-end reduction: order-`m` agreement + the Johnson-radius
   datum ⟹ `Y − P ∣ Qz`, with the count fully discharged.
-* `keystone_of_radius` — wiring the **trivariate** BCIKS20 keystone
-  `Agreement.Q_vanishes_on_close_codeword_graph` so its only side condition (the Johnson count) is
-  discharged from the genuine radius datum, leaving exactly `ModifiedGuruswami.Q_multiplicity`
-  (proven) and the radius datum.
+* `keystone_count_of_radius` — wiring the **trivariate** BCIKS20 keystone
+  `Agreement.Q_vanishes_on_close_codeword_graph` so its only side condition (the Johnson count, in
+  weighted-degree form) is discharged from the genuine radius datum, leaving exactly
+  `ModifiedGuruswami.Q_multiplicity` (proven) and the radius datum.
 
 ## Honest status of the irreducible datum
 
@@ -217,10 +217,9 @@ from the genuine Johnson-radius datum, so the keystone rests on exactly
 
 namespace Core3GSMultiplicity
 
-open scoped Classical
 open Polynomial Polynomial.Bivariate
 
-variable {F : Type} [Field F] [Finite F] [DecidableEq F] [DecidableEq (Polynomial F)]
+variable {F : Type} [Field F]
 variable {n : ℕ}
 
 /-- **The keystone's count side condition from the Johnson radius.**
