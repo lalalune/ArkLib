@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
 import ArkLib.ToMathlib.BetaToCurveCoeffPolys
+import ArkLib.ToMathlib.BetaToCurveCoeffPolysOffcentre
 import ArkLib.ToMathlib.HcardDischarge
 
 /-!
@@ -148,6 +149,55 @@ theorem hcoeffPoly_of_betaRec
       (inp.mp) (inp.hcard) inp.hsubst inp.hγ
       (Ppoly := inp.Ppoly) inp.hrep inp.hdegX
       (inp.hPz P)
+  exact hcoeffPoly_witness_of_betaRecCurveCoeffPolys hCurve
+
+omit [Nonempty ι] [DecidableEq ι] in
+/-- Off-centre `betaRec` route to the bundled coefficient-polynomial witness.
+
+This is the `gammaLocal`/Taylor-shift counterpart of `hcoeffPoly_of_betaRec`: it consumes the
+off-centre representative and specialization bridge required by
+`BetaToCurveCoeffPolys.curveCoeffPolys_of_betaRec_offcentre`, then reuses the same bundling lemma
+to expose the front-door `hcoeffPoly` existential. It does not assume an `hcoeffPoly`-shaped
+conclusion. -/
+theorem hcoeffPoly_of_betaRec_offcentre
+    {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    {u : WordStack F (Fin (k + 1)) ι}
+    (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
+    [Fact (Irreducible H)] [Fact (0 < H.natDegree)] (hHyp : Hypotheses x₀ R H)
+    (Bcoeff : (i₁ : ℕ) → {m : ℕ} → Nat.Partition m → 𝒪 H)
+    (hH : 0 < H.natDegree) (D : ℕ) (hD : D ≥ Bivariate.totalDegree H)
+    (matchingSet : Finset F) (root : (z : F) → rationalRoot (H_tilde' H) z)
+    (mp : ∀ t, k ≤ t → ∀ z ∈ matchingSet,
+      BetaMatchingVanishes.MatchingPoint x₀ R H hHyp Bcoeff t z (root z))
+    (hcard : ∀ t, k ≤ t → (↑matchingSet.card : WithBot ℕ)
+        > weight_Λ_over_𝒪 hH (betaRec x₀ R H hHyp Bcoeff t) D * H.natDegree)
+    {Ppoly : F[X][Y]}
+    (hrep : polyToPowerSeries𝕃 H Ppoly = BetaToCurveCoeffPolys.gammaLocal x₀ R H hHyp Bcoeff)
+    (hdegX : Polynomial.Bivariate.degreeX Ppoly ≤ 1)
+    (P : F → Polynomial F)
+    (hPz : ∀ v₀ v₁ : F[X],
+      polyToPowerSeries𝕃 H
+          ((Polynomial.map Polynomial.C v₀)
+            + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁))
+        = ((PowerSeries.trunc k (BetaToCurveCoeffPolys.gammaLocal x₀ R H hHyp Bcoeff) :
+            Polynomial (𝕃 H)) : PowerSeries (𝕃 H)) →
+      (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ, P z =
+        ((Polynomial.map Polynomial.C (Polynomial.taylor (-x₀) v₀))
+            + (Polynomial.C Polynomial.X)
+              * (Polynomial.map Polynomial.C (Polynomial.taylor (-x₀) v₁))).eval
+            (Polynomial.C z))
+        ∧ v₀.natDegree < k + 1 ∧ v₁.natDegree < k + 1) :
+    ∃ B : ℕ → Polynomial F,
+      (∀ j < deg, (B j).natDegree < k + 1) ∧
+        ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+          ∀ j < deg, (P z).coeff j = (B j).eval z := by
+  have hCurve :
+      BetaToCurveCoeffPolys.CurveCoeffPolys (F := F) k deg
+        (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ) P :=
+    BetaToCurveCoeffPolys.curveCoeffPolys_of_betaRec_offcentre
+      x₀ R H hHyp Bcoeff hH D hD
+      (matchingSet := matchingSet) (root := root)
+      mp hcard hrep hdegX hPz
   exact hcoeffPoly_witness_of_betaRecCurveCoeffPolys hCurve
 
 /-! ### Finite-Range Input Configuration -/
@@ -389,6 +439,7 @@ end ArkLib
 #print axioms ArkLib.KeystoneStrictResidual.BetaCurveInput
 #print axioms ArkLib.KeystoneStrictResidual.BetaCurveInputFin
 #print axioms ArkLib.KeystoneStrictResidual.hcoeffPoly_of_betaRec
+#print axioms ArkLib.KeystoneStrictResidual.hcoeffPoly_of_betaRec_offcentre
 #print axioms ArkLib.KeystoneStrictResidual.hcoeffPoly_of_betaRecFin
 #print axioms ArkLib.KeystoneStrictResidual.strictCoeffPolysResidual_of_betaRec
 #print axioms ArkLib.KeystoneStrictResidual.strictCoeffPolysResidual_of_betaRecFin
