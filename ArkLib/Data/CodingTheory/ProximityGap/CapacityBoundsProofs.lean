@@ -289,6 +289,80 @@ theorem frs_epsMCA_capacity_gg25_proven_of_t413_geomDomain
       hT218 t ht)
     hη htη
 
+/-- T4.13-backed `t ≤ 2 / η` frontier for the order/inter-orbit FRS route.
+
+This packages the same proof supply as `frs_epsMCA_capacity_gg25_proven_of_t413`, but returns the
+frontier object consumed by `frs_epsMCA_capacity_gg25_of_tle_frontier` instead of immediately
+closing the public Prop endpoint. -/
+noncomputable def frs_epsMCA_capacity_gg25_tleFrontier_proven_of_t413
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (η : ℝ) (hη_pos : 0 < η) (hη_lt : η < 1) (hs_gt : (s : ℝ) > 16 / η ^ 2)
+    (t : ℕ) (ht : 0 < t) (hts : t + 1 ≤ s)
+    (L : Finset F) (hL_dom : ∀ i : ι, domain i ∈ L)
+    (h0 : (0 : F) ∉ L) (hω0 : ω ≠ 0) (hs_order : s ≤ orderOf ω)
+    (hinter : ∀ α ∈ L, ∀ β ∈ L, α ≠ β → ∀ i : ℕ, i < s → α * ω ^ i ≠ β)
+    (hkLs : k ≤ s * Fintype.card ι) (hkord : k ≤ orderOf ω)
+    (hη : η = (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - (t : ℝ))
+        - (k : ℝ) / Fintype.card ι + 3 / (2 * t))
+    (htη : (t : ℝ) ≤ 2 / η) :
+    FRSEpsMCACapacityGG25TLeFrontier domain k s ω η := by
+  let hT218 := frs_is_subspaceDesign_cz25Profile_of_orderOf_ge_of_inter
+    domain k s ω L hL_dom h0 hω0 hs_order hinter hkLs hkord
+  exact frs_epsMCA_capacity_gg25_tleFrontier_of_orderOf_ge_of_inter_eta
+    domain k s ω η hη_pos hη_lt hs_gt L hL_dom h0 hω0 hs_order hinter hkLs hkord
+    t ht hts
+    (gg25_subspaceDesign_epsMCA s _
+      (ReedSolomon.Folded.frsCode domain k s ω) hT218 t ht)
+    hη htη
+
+/-- Coset-separation companion to
+`frs_epsMCA_capacity_gg25_tleFrontier_proven_of_t413`. -/
+noncomputable def frs_epsMCA_capacity_gg25_tleFrontier_proven_of_t413_cosetSep
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (η : ℝ) (hη_pos : 0 < η) (hη_lt : η < 1) (hs_gt : (s : ℝ) > 16 / η ^ 2)
+    (t : ℕ) (ht : 0 < t) (hts : t + 1 ≤ s)
+    (L : Finset F) (hL_dom : ∀ i : ι, domain i ∈ L)
+    (h0 : (0 : F) ∉ L) (hω0 : ω ≠ 0) (hs_order : s ≤ orderOf ω)
+    (hcoset : ∀ α ∈ L, ∀ β ∈ L, ∀ i : ℕ, α * ω ^ i = β → α = β)
+    (hkLs : k ≤ s * Fintype.card ι) (hkord : k ≤ orderOf ω)
+    (hη : η = (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - (t : ℝ))
+        - (k : ℝ) / Fintype.card ι + 3 / (2 * t))
+    (htη : (t : ℝ) ≤ 2 / η) :
+    FRSEpsMCACapacityGG25TLeFrontier domain k s ω η := by
+  let hT218 := frs_is_subspaceDesign_cz25Profile_of_orderOf_ge_of_cosetSep
+    domain k s ω L hL_dom h0 hω0 hs_order hcoset hkLs hkord
+  exact frs_epsMCA_capacity_gg25_tleFrontier_of_orderOf_ge_of_cosetSep_eta
+    domain k s ω η hη_pos hη_lt hs_gt L hL_dom h0 hω0 hs_order hcoset hkLs hkord
+    t ht hts
+    (gg25_subspaceDesign_epsMCA s _
+      (ReedSolomon.Folded.frsCode domain k s ω) hT218 t ht)
+    hη htη
+
+/-- Canonical geometric-domain T4.13-backed `t ≤ 2 / η` frontier. -/
+noncomputable def frs_epsMCA_capacity_gg25_tleFrontier_proven_of_t413_geomDomain
+    {n : ℕ} [NeZero n]
+    (γ : F) (k s : ℕ)
+    (hs : 0 < s) (hγ : γ ≠ 0) (hsn : s * n ≤ orderOf γ)
+    (hkLs : k ≤ s * n) (hkord : k ≤ orderOf γ)
+    (η : ℝ) (hη_pos : 0 < η) (hη_lt : η < 1) (hs_gt : (s : ℝ) > 16 / η ^ 2)
+    (t : ℕ) (ht : 0 < t) (hts : t + 1 ≤ s)
+    (hη : η = (s : ℝ) * (k : ℝ) / Fintype.card (Fin n) / ((s : ℝ) - (t : ℝ))
+        - (k : ℝ) / Fintype.card (Fin n) + 3 / (2 * t))
+    (htη : (t : ℝ) ≤ 2 / η) :
+    FRSEpsMCACapacityGG25TLeFrontier
+      (ReedSolomon.Folded.geomDomainEmb γ s n hs hsn) k s γ η := by
+  have hn : 0 < n := Nat.pos_of_ne_zero (NeZero.ne n)
+  let hT218 := ReedSolomon.Folded.frs_geomDomain_isSubspaceDesign_cz25Profile
+    γ k s n hs hn hγ hsn hkLs hkord
+  exact frs_epsMCA_capacity_gg25_tleFrontier_of_geomDomain_eta
+    (γ := γ) (k := k) (s := s) (n := n)
+    hs hγ hsn hkLs hkord η hη_pos hη_lt hs_gt t ht hts
+    (gg25_subspaceDesign_epsMCA s _
+      (ReedSolomon.Folded.frsCode
+        (ReedSolomon.Folded.geomDomainEmb γ s n hs hsn) k s γ)
+      hT218 t ht)
+    hη htη
+
 end SubspaceDesign
 
 #print axioms CodingTheory.linear_epsMCA_1_5_johnson_gkl24_proven
@@ -303,5 +377,8 @@ end SubspaceDesign
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_proven_of_t413
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_proven_of_t413_cosetSep
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_proven_of_t413_geomDomain
+#print axioms CodingTheory.frs_epsMCA_capacity_gg25_tleFrontier_proven_of_t413
+#print axioms CodingTheory.frs_epsMCA_capacity_gg25_tleFrontier_proven_of_t413_cosetSep
+#print axioms CodingTheory.frs_epsMCA_capacity_gg25_tleFrontier_proven_of_t413_geomDomain
 
 end CodingTheory
