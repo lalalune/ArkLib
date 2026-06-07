@@ -44,6 +44,8 @@ distance of the code is thus `≥ 3/4`, comfortably above the prize radius `δ =
 
 set_option maxHeartbeats 1600000
 
+open scoped NNReal
+
 namespace KoalaBear
 
 open Code
@@ -189,8 +191,12 @@ theorem koalaIRS_delta_lt_minRelHammingDist :
   -- `koalaIRS.δ = 3/10`, `koalaIRS.C = rsCodeSet` definitionally.
   show (3 / 10 : ℝ≥0) < (minRelHammingDistCode KoalaBear.rsCodeSet : ℝ≥0)
   have h_le_R : (3 / 4 : ℝ≥0) ≤ (minRelHammingDistCode KoalaBear.rsCodeSet : ℝ≥0) := by
-    have := KoalaBear.le_minRelHammingDistCode_rsCodeSet
-    exact_mod_cast this
+    have h_le_q := KoalaBear.le_minRelHammingDistCode_rsCodeSet
+    have h_le_real :
+        ((3 / 4 : ℚ≥0) : ℝ) ≤
+          ((minRelHammingDistCode KoalaBear.rsCodeSet : ℚ≥0) : ℝ) := by
+      exact_mod_cast h_le_q
+    exact NNReal.coe_le_coe.mp (by simpa using h_le_real)
   have h_lt : (3 / 10 : ℝ≥0) < (3 / 4 : ℝ≥0) := by norm_num
   exact lt_of_lt_of_le h_lt h_le_R
 
