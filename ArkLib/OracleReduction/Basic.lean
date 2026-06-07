@@ -586,6 +586,14 @@ theorem numQueries_eq_queryCostTrace (stmt : StmtIn) (challenges : ∀ i, pSpec.
         ((verifier.verify stmt challenges).run) :=
   rfl
 
+theorem numQueries_of_verify_pure (stmt : StmtIn) (challenges : ∀ i, pSpec.Challenge i)
+    (verifier : OracleVerifier oSpec StmtIn OStmtIn StmtOut OStmtOut pSpec)
+    {stmtOut : StmtOut} (hverify : verifier.verify stmt challenges = pure stmtOut) :
+    verifier.numQueries stmt challenges =
+      (pure 0 : OracleComp (oSpec + ([OStmtIn]ₒ + [pSpec.Message]ₒ)) ℕ) := by
+  rw [numQueries_eq_queryCostTrace, hverify]
+  rfl
+
 /-- A **non-adaptive** oracle verifier is an oracle verifier that makes a **fixed** list of queries
     to the input oracle statements and the prover's messages. These queries can depend on the input
     statement and the challenges, but later queries are not dependent on the responses of previous
@@ -1005,3 +1013,4 @@ end Classes
 #print axioms OracleComp.queryCostTrace_queryBind
 #print axioms OracleVerifier.numQueries
 #print axioms OracleVerifier.numQueries_eq_queryCostTrace
+#print axioms OracleVerifier.numQueries_of_verify_pure
