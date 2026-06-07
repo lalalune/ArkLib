@@ -64,20 +64,8 @@ theorem sum_closeCount_sq_eq_card_mul (𝒞 : Finset (ι → F)) (r : ℕ)
   rw [sum_closeCount_sq_eq_sum_ballInterCount,
     sum_pair_sub_eq_card_mul 𝒞 (ballInterCount r) hsub hadd]
 
-/-- **Two-ball intersection ≤ single-ball volume.**  `|B(0,r) ∩ B(v,r)| ≤ |B(0,r)|`, since the
-intersection requires the extra constraint `Δ₀(x,v) ≤ r`.  (`ballInterCount r 0 = |B(0,r)|` is the
-full ball.)  Hence the crude second-moment bound `E[N²] ≤ |𝒞|² · |B(0,r)|`. -/
-theorem ballInterCount_le (r : ℕ) (v : ι → F) :
-    ballInterCount r v ≤ ballInterCount r (0 : ι → F) := by
-  unfold ballInterCount
-  apply Finset.card_le_card
-  intro x hx
-  rw [Finset.mem_filter] at hx ⊢
-  exact ⟨hx.1, hx.2.1, hx.2.1⟩
-
 end ArkLib.CS25
 
 -- Axiom audit.
 #print axioms ArkLib.CS25.sum_pair_sub_eq_card_mul
 #print axioms ArkLib.CS25.sum_closeCount_sq_eq_card_mul
-#print axioms ArkLib.CS25.ballInterCount_le
