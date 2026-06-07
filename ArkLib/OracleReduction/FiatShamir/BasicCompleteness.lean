@@ -185,6 +185,19 @@ theorem fiatShamir_completeness_of_honestExecution_discharged
   (fiatShamir_completeness_unroll_discharged init impl relIn relOut completenessError R).2
     hHonest
 
+/-- Transformed basic Fiat-Shamir completeness projects back to completeness of the explicit honest
+execution, without requiring callers to pass the already-proved run-collapse residual. -/
+theorem fiatShamir_honestExecution_completeness_of_completeness_discharged
+    {σ : Type} (init : ProbComp σ)
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut × WitOut))
+    (completenessError : ℝ≥0)
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hFS : R.fiatShamir.completeness init impl relIn relOut completenessError) :
+    Reduction.completenessFromRun init impl relIn relOut
+      R.fiatShamirHonestExecution completenessError :=
+  (fiatShamir_completeness_unroll_discharged init impl relIn relOut completenessError R).1 hFS
+
 /-- Perfect completeness of the basic Fiat-Shamir transform is unconditionally equivalent to perfect
 completeness of its explicit honest execution. -/
 theorem fiatShamir_perfectCompleteness_unroll_discharged
@@ -207,6 +220,18 @@ theorem fiatShamir_perfectCompleteness_of_honestExecution_discharged
       R.fiatShamirHonestExecution) :
     R.fiatShamir.perfectCompleteness init impl relIn relOut :=
   (fiatShamir_perfectCompleteness_unroll_discharged init impl relIn relOut R).2 hHonest
+
+/-- Transformed basic Fiat-Shamir perfect completeness projects back to perfect completeness of the
+explicit honest execution, using the discharged run-collapse theorem. -/
+theorem fiatShamir_honestExecution_perfectCompleteness_of_perfectCompleteness_discharged
+    {σ : Type} (init : ProbComp σ)
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut × WitOut))
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hFS : R.fiatShamir.perfectCompleteness init impl relIn relOut) :
+    Reduction.perfectCompletenessFromRun init impl relIn relOut
+      R.fiatShamirHonestExecution :=
+  (fiatShamir_perfectCompleteness_unroll_discharged init impl relIn relOut R).1 hFS
 
 /-- Basic Fiat-Shamir completeness at any target error follows from perfect completeness of the
 explicit honest execution, using the discharged run-collapse theorem. -/
@@ -311,8 +336,10 @@ theorem fiatShamir_completeness_of_perfect_honestExecution_mono_relations_error_
 #print axioms fiatShamir_runCollapse
 #print axioms fiatShamir_completeness_unroll_discharged
 #print axioms fiatShamir_completeness_of_honestExecution_discharged
+#print axioms fiatShamir_honestExecution_completeness_of_completeness_discharged
 #print axioms fiatShamir_perfectCompleteness_unroll_discharged
 #print axioms fiatShamir_perfectCompleteness_of_honestExecution_discharged
+#print axioms fiatShamir_honestExecution_perfectCompleteness_of_perfectCompleteness_discharged
 #print axioms fiatShamir_completeness_of_perfect_honestExecution_discharged
 #print axioms fiatShamir_completeness_of_honestExecution_mono_error_discharged
 #print axioms fiatShamir_completeness_of_honestExecution_mono_relations_discharged
