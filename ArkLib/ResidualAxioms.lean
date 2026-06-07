@@ -15,7 +15,7 @@ import ArkLib.ToMathlib.KStateWeaken
 -- their GitHub issues, not by a fake `True` theorem.
 
 open Polynomial Polynomial.Bivariate BCIKS20AppendixA
-open scoped NNReal
+open scoped NNReal ProbabilityTheory
 
 -- The following three were previously fabricated `axiom`s that *asserted* open BCIKS20
 -- Appendix-A obligations as proven, laundering the proximity axiom audit with false "closed"
@@ -75,25 +75,29 @@ def fiat_shamir_semantic_run_collapse_residual
     {StmtOut : Type} {ιₛₒ : Type} {OStmtOut : ιₛₒ → Type} {WitOut : Type}
     {n : ℕ} {pSpec : ProtocolSpec n}
     [∀ i, OracleInterface (OStmtIn i)] [∀ i, OracleInterface (pSpec.Message i)]
-    [∀ i, SampleableType (pSpec.Challenge i)]
+    [∀ i, SampleableType (pSpec.Challenge i)] [∀ i, VCVCompatible (pSpec.Challenge i)]
     {σ : Type}
-    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (impl : QueryImpl (oSpec + ProtocolSpec.fsChallengeOracle StmtIn pSpec)
+      (StateT σ ProbComp))
     (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
     (stmtIn : StmtIn) (witIn : WitIn) : Prop :=
   Reduction.fiatShamir_runCollapseResidual impl R stmtIn witIn
 
 /-- **OPEN residual — NOT asserted.** Issue #114: Spartan composed round-by-round knowledge soundness. -/
 def spartan_rbr_knowledge_soundness_residual
-    {R : Type} [CommRing R] [IsDomain R] {pp : Spartan.PublicParams}
-    {oSpec : OracleSpec _}
+    {R : Type} [CommRing R] [IsDomain R] [Fintype R] [SampleableType R]
+    {pp : Spartan.PublicParams}
+    {ι : Type} {oSpec : OracleSpec ι}
     {N : ℕ} {pSpecC : ProtocolSpec N}
     [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
     (Rc : OracleReduction oSpec
-      (Spartan.Statement R pp) (Spartan.OracleStatement R pp) (Spartan.Witness R pp)
-      (Spartan.FinalStatement R pp) (Spartan.FinalOracleStatement R pp) Unit pSpecC)
+      (Spartan.Spec.Statement R pp) (Spartan.Spec.OracleStatement R pp) (Spartan.Spec.Witness R pp)
+      (Spartan.Spec.Bricks.FinalStatement R pp) (Spartan.Spec.Bricks.FinalOracleStatement R pp)
+      Unit pSpecC)
     {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
     (rbrKnowledgeError : pSpecC.ChallengeIdx → ℝ≥0) : Prop :=
-  Spartan.composedRbrKnowledgeSoundnessResidual R pp oSpec Rc init impl rbrKnowledgeError
+  Spartan.Spec.Bricks.composedRbrKnowledgeSoundnessResidual R pp oSpec Rc init impl
+    rbrKnowledgeError
 
 /-- **OPEN residual — NOT asserted.** Issue #112: Zero-Knowledge concrete simulator preservation. -/
 def zk_concrete_simulator_residual
@@ -110,7 +114,8 @@ def zk_concrete_simulator_residual
     (R : OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut pSpec) : Prop :=
   OracleReduction.isHVZK init impl rel R
 
-/-- **OPEN residual — NOT asserted.** Issue #62: BCS Compiler preservation (completeness, soundness, KS). -/
+/-- **OPEN residual — NOT asserted.** Issue #62: BCS Compiler preservation
+(completeness, soundness, KS). -/
 def bcs_compiler_preservation_residual
     {n : ℕ} {pSpec : ProtocolSpec n} {ι : Type} {oSpec : OracleSpec ι}
     [∀ i, OracleInterface (pSpec.Message i)]
@@ -127,10 +132,24 @@ def bcs_compiler_preservation_residual
       (WitMid := WitMid) phases) : Prop :=
   OracleReduction.BCSCompilerFrontierReady phases frontier
 
-/-- **OPEN residual — NOT asserted.** Issue #29: Ring-switching KState. -/
-def ring_switching_kstate_residual {F : Type} [Field F] {p q : F[X]}
+/-- **Issue #29 residual surface (Schwartz–Zippel core).** The per-round ring-switching KState
+weakening price: a uniform challenge collides on two distinct degree-`≤ 2` round polynomials with
+probability `≤ 2/|F|`. This particular surface is *discharged* below by
+`ring_switching_kstate_residual_holds` (it is a theorem, not an open gap); the full protocol-level
+#29 obligation — composing this per-round price into the end-to-end ring-switching knowledge
+soundness — remains the open item tracked by the issue. -/
+def ring_switching_kstate_residual {F : Type} [Field F] [Fintype F] {p q : F[X]}
     (hp : p.natDegree ≤ 2) (hq : q.natDegree ≤ 2) : Prop :=
   Pr_{ let r ←$ᵖ F }[ KStateWeaken.badPolyAgreement r p q ] ≤ (2 : ℝ≥0) / (Fintype.card F : ℝ≥0)
+
+/-- **#29 Schwartz–Zippel surface, discharged.** The per-round ring-switching KState weakening
+price `ring_switching_kstate_residual` is a genuine theorem: it is exactly the degree-2
+Schwartz–Zippel bound `KStateWeaken.prob_badPolyAgreement_degree_two_le`. (The full protocol-level
+#29 — composing this into end-to-end ring-switching knowledge soundness — remains open.) -/
+theorem ring_switching_kstate_residual_holds {F : Type} [Field F] [Fintype F] {p q : F[X]}
+    (hp : p.natDegree ≤ 2) (hq : q.natDegree ≤ 2) :
+    ring_switching_kstate_residual hp hq :=
+  KStateWeaken.prob_badPolyAgreement_degree_two_le hp hq
 
 /-- **OPEN residual — NOT asserted.** Issue #14: Batched FRI joint proximity. -/
 opaque batched_fri_joint_proximity_residual : Prop

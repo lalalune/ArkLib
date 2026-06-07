@@ -95,6 +95,42 @@ theorem DivWeightLe_of_monic_of_succDivWeight
     (AlphaGenuineRegularWeightLe_of_monic_of_succDivWeight
       H x₀ R hHyp hH hmonic hd hD hsucc)
 
+/-- Reverse direction: in the monic regime the normalized `DivWeightLe` successor cases collapse
+back to the named successor core because `W𝒪 = 1`. -/
+theorem SuccDivWeightLe_of_monic_of_divWeight
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (hmonic : H.Monic) (hdiv : DivWeightLe H x₀ R hHyp hH D) :
+    SuccDivWeightLe_of_monic H x₀ R hHyp hH D := by
+  intro t
+  rcases (DivWeightLe.normalized_cases H x₀ R hHyp hH D hdiv).2 t with ⟨a, ha, hwt⟩
+  refine ⟨a, ?_, hwt⟩
+  simpa [W𝒪_eq_one_of_monic H hmonic] using ha
+
+/-- In the monic/degree-budget regime, the named successor core is exactly the existing
+divisibility-with-weight endpoint. -/
+theorem succDivWeightLe_iff_divWeightLe_of_monic
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (hmonic : H.Monic) (hd : 2 ≤ H.natDegree) (hD : D ≤ H.natDegree) :
+    SuccDivWeightLe_of_monic H x₀ R hHyp hH D ↔
+      DivWeightLe H x₀ R hHyp hH D := by
+  exact ⟨DivWeightLe_of_monic_of_succDivWeight H x₀ R hHyp hH hmonic hd hD,
+    SuccDivWeightLe_of_monic_of_divWeight H x₀ R hHyp hH hmonic⟩
+
+/-- In the monic/degree-budget regime, carved alpha regularity is equivalent to the named
+successor divisibility-with-weight core. -/
+theorem alphaWeight_iff_succDivWeightLe_of_monic
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (hmonic : H.Monic) (hd : 2 ≤ H.natDegree) (hD : D ≤ H.natDegree) :
+    AlphaGenuineRegularWeightLe H x₀ R hHyp hH D ↔
+      SuccDivWeightLe_of_monic H x₀ R hHyp hH D := by
+  constructor
+  · intro hα
+    exact SuccDivWeightLe_of_monic_of_divWeight H x₀ R hHyp hH hmonic
+      ((alphaWeight_iff_divWeight_of_monic H x₀ R hHyp hH hmonic).1 hα)
+  · intro hsucc
+    exact AlphaGenuineRegularWeightLe_of_monic_of_succDivWeight
+      H x₀ R hHyp hH hmonic hd hD hsucc
+
 /-- Normalized P1 divisibility cases obtained from the monic successor core. -/
 theorem normalized_divWeight_cases_of_monic_of_succDivWeight
     (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
@@ -190,6 +226,12 @@ end BCIKS20.HenselNumerator.AlphaWeight
   BCIKS20.HenselNumerator.AlphaWeight.alphaWeight_iff_divWeight_of_monic
 #print axioms
   BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe_of_monic_of_succDivWeight
+#print axioms
+  BCIKS20.HenselNumerator.AlphaWeight.SuccDivWeightLe_of_monic_of_divWeight
+#print axioms
+  BCIKS20.HenselNumerator.AlphaWeight.succDivWeightLe_iff_divWeightLe_of_monic
+#print axioms
+  BCIKS20.HenselNumerator.AlphaWeight.alphaWeight_iff_succDivWeightLe_of_monic
 #print axioms
   BCIKS20.HenselNumerator.AlphaWeight.normalized_divWeight_cases_of_monic_of_succDivWeight
 #print axioms
