@@ -51,18 +51,36 @@ theorem qEntropy_le_qEntropy_of_le (hq : 2 ≤ q) {x y : ℝ}
     qEntropy q x ≤ qEntropy q y :=
   qEntropy_monotoneOn hq ⟨hx0, le_trans hxy hy⟩ ⟨le_trans hx0 hxy, hy⟩ hxy
 
+/-- The lattice radius `⌊δ * n⌋ / n` is nonnegative. -/
+theorem floor_mul_div_nonneg {n : ℕ} {δ : ℝ} (hn : 0 < n) :
+    0 ≤ (Nat.floor (δ * n) : ℝ) / n := by
+  have hnR : 0 < (n : ℝ) := by exact_mod_cast hn
+  positivity
+
+/-- The lattice radius `⌊δ * n⌋ / n` is bounded by the original radius `δ`. -/
+theorem floor_mul_div_le {n : ℕ} {δ : ℝ} (hn : 0 < n) (hδ0 : 0 ≤ δ) :
+    (Nat.floor (δ * n) : ℝ) / n ≤ δ := by
+  have hnR : 0 < (n : ℝ) := by exact_mod_cast hn
+  have hmul_nonneg : 0 ≤ δ * (n : ℝ) := mul_nonneg hδ0 hnR.le
+  have hfloor_le : (Nat.floor (δ * n) : ℝ) ≤ δ * n :=
+    Nat.floor_le hmul_nonneg
+  exact (div_le_iff₀ hnR).2 hfloor_le
+
+/-- Finite-domain specialization of `floor_mul_div_le`. -/
+theorem floor_mul_card_div_card_le {ι : Type} [Fintype ι] [Nonempty ι] {δ : ℝ}
+    (hδ0 : 0 ≤ δ) :
+    (Nat.floor (δ * Fintype.card ι) : ℝ) / Fintype.card ι ≤ δ :=
+  floor_mul_div_le Fintype.card_pos hδ0
+
 /-- **Floor-radius entropy comparison.**  Replacing a real radius `δ` by the lattice radius
 `⌊δ * n⌋ / n` cannot increase `qEntropy` below capacity. -/
 theorem qEntropy_floor_mul_div_le (hq : 2 ≤ q) {n : ℕ} {δ : ℝ}
     (hn : 0 < n) (hδ0 : 0 ≤ δ) (hδ : δ ≤ 1 - 1 / (q : ℝ)) :
     qEntropy q ((Nat.floor (δ * n) : ℝ) / n) ≤ qEntropy q δ := by
-  have hnR : 0 < (n : ℝ) := by exact_mod_cast hn
-  have hmul_nonneg : 0 ≤ δ * (n : ℝ) := mul_nonneg hδ0 hnR.le
-  have hfloor_le : (Nat.floor (δ * n) : ℝ) ≤ δ * n :=
-    Nat.floor_le hmul_nonneg
-  have hfloor_div_nonneg : 0 ≤ (Nat.floor (δ * n) : ℝ) / n := by positivity
-  have hfloor_div_le : (Nat.floor (δ * n) : ℝ) / n ≤ δ := by
-    exact (div_le_iff₀ hnR).2 hfloor_le
+  have hfloor_div_nonneg : 0 ≤ (Nat.floor (δ * n) : ℝ) / n :=
+    floor_mul_div_nonneg hn
+  have hfloor_div_le : (Nat.floor (δ * n) : ℝ) / n ≤ δ :=
+    floor_mul_div_le hn hδ0
   exact qEntropy_le_qEntropy_of_le hq hfloor_div_nonneg hfloor_div_le hδ
 
 /-- Finite-domain specialization of `qEntropy_floor_mul_div_le`. -/
@@ -117,6 +135,9 @@ end CodingTheory
 #print axioms CodingTheory.qEntropy_strictMonoOn
 #print axioms CodingTheory.qEntropy_monotoneOn
 #print axioms CodingTheory.qEntropy_le_qEntropy_of_le
+#print axioms CodingTheory.floor_mul_div_nonneg
+#print axioms CodingTheory.floor_mul_div_le
+#print axioms CodingTheory.floor_mul_card_div_card_le
 #print axioms CodingTheory.qEntropy_floor_mul_div_le
 #print axioms CodingTheory.qEntropy_floor_mul_card_div_card_le
 #print axioms CodingTheory.qEntropy_le_one
