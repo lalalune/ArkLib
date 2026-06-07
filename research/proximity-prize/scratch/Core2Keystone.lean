@@ -464,11 +464,3 @@ NON-VACUITY ASSESSMENT (honest):
 -/
 
 end Core2Keystone
-
-namespace Core2Keystone
-#print axioms keystone_curves_bound
-#print axioms keystone_epsPG_bound
-#print axioms perRoundProximityGap_of_correlatedAgreement
-#print axioms whirRbrKeystone_of_correlatedAgreement
-#print axioms roundProxGap_of_keystone_and_sumcheck
-end Core2Keystone
