@@ -26,6 +26,8 @@ exactly as the in-tree P2 consequence theorems do — none assumes the STEP-8 co
   recursion side alone gives a closed form for the first successor coefficient.
 * `RestrictedMatchAtZeroTaylorWDivTarget` — the fixed order-zero core as the exact equality of the
   root-side Taylor sum and the un-cleared Taylor sum divided by `W ^ R.natDegree`.
+* `RestrictedMatchAtZeroEval₂WDivTarget` — the same fixed order-zero target in compact `eval₂`
+  form, before expanding either side into Taylor sums.
 * `embeddingCleared_eq_Wpow_mul_uncleared_of_target` — makes the cleared/un-cleared `eval₂` mismatch
   *quantitative*: under the STEP-8 target, the two `𝒪`-reps differ by exactly `W^{natDegreeY p}`.
 -/
@@ -228,6 +230,48 @@ theorem RestrictedFaaDiBrunoMatchAt.zero_of_taylorWDivTarget
     RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0 :=
   (restrictedMatchAt_zero_iff_taylorWDivTarget H x₀ R hHyp hd).2 htarget
 
+/-- **Order-zero `eval₂`/W-divisor target.** The same fixed order-zero P2 obstruction as
+`RestrictedMatchAtZeroTaylorWDivTarget`, but before expanding the two sides into shifted Taylor
+sums: `Y ↦ T/W` equals `Y ↦ T` divided by `W ^ R.natDegree` on
+`(Δ_X Δ_Y^0 R)|x₀`. -/
+def RestrictedMatchAtZeroEval₂WDivTarget (x₀ : F) (R : F[X][X][Y]) : Prop :=
+  Polynomial.eval₂ (liftToFunctionField (H := H))
+      (functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff)
+      (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R)))
+    =
+    Polynomial.eval₂ (liftToFunctionField (H := H)) (functionFieldT (H := H))
+      (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R)))
+      / (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree
+
+/-- The carved order-zero P2 core is exactly the compact `eval₂`/W-divisor target under the
+same degree hypothesis as the order-zero RHS cancellation. -/
+theorem restrictedMatchAt_zero_iff_eval₂WDivTarget
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) :
+    RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0 ↔
+      RestrictedMatchAtZeroEval₂WDivTarget H x₀ R := by
+  unfold RestrictedMatchAtZeroEval₂WDivTarget
+  rw [restrictedMatchAt_zero_iff_unclearedHasseCoeff_div_W_natDegree
+    H x₀ R hHyp hd (ζ_ne_zero H x₀ R hHyp)]
+  unfold hasseEvalAtRoot
+  rw [embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_uncleared]
+
+/-- Project the compact `eval₂`/W-divisor target from the carved order-zero P2 core. -/
+theorem RestrictedMatchAtZeroEval₂WDivTarget.of_restrictedMatchAt_zero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree)
+    (hmatch : RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0) :
+    RestrictedMatchAtZeroEval₂WDivTarget H x₀ R :=
+  (restrictedMatchAt_zero_iff_eval₂WDivTarget H x₀ R hHyp hd).1 hmatch
+
+/-- Build the carved order-zero P2 core from the compact `eval₂`/W-divisor target. -/
+theorem RestrictedFaaDiBrunoMatchAt.zero_of_eval₂WDivTarget
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree)
+    (htarget : RestrictedMatchAtZeroEval₂WDivTarget H x₀ R) :
+    RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0 :=
+  (restrictedMatchAt_zero_iff_eval₂WDivTarget H x₀ R hHyp hd).2 htarget
+
 /-- **The cleared `𝒪`-rep embedding is `W^{natDegreeY p}` times the un-cleared rep embedding, GIVEN
 the STEP-8 target (axiom-clean).** Makes the cleared/un-cleared `eval₂` mismatch *quantitative*:
 under the carved STEP-8 match `HasseCoeffRepr𝒪UnclearedEval₂Target`, the two `𝒪`-reps are related by
@@ -261,4 +305,10 @@ set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.RestrictedMatchAtZeroTaylorWDivTarget.of_restrictedMatchAt_zero
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.RestrictedFaaDiBrunoMatchAt.zero_of_taylorWDivTarget
+#print axioms BCIKS20.HenselNumerator.RestrictedMatchAtZeroEval₂WDivTarget
+#print axioms BCIKS20.HenselNumerator.restrictedMatchAt_zero_iff_eval₂WDivTarget
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.RestrictedMatchAtZeroEval₂WDivTarget.of_restrictedMatchAt_zero
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.RestrictedFaaDiBrunoMatchAt.zero_of_eval₂WDivTarget
 #print axioms BCIKS20.HenselNumerator.embeddingCleared_eq_Wpow_mul_uncleared_of_target
