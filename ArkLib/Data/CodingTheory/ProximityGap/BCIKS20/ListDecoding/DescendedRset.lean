@@ -711,6 +711,22 @@ lemma irreducible_H_descended (δ : ℚ) (x₀ : F)
     (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
     (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide).choose_spec.choose_spec.2.1
 
+/-- Typeclass form of descended-bundle irreducibility for downstream Claim A.2 consumers. -/
+instance fact_irreducible_H_descended (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hres : Claim57ResidualsDescended (F := F) (m := m) (n := n) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) k δ x₀ h_gs)
+    (hcoincide : pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs
+      = pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs) :
+    Fact (Irreducible
+      (H_descended (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+        (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide)) :=
+  ⟨irreducible_H_descended
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+    (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide⟩
+
 /-- The descended-bundle `H` extracted from Claim 5.7 has positive `Y`-degree. -/
 lemma natDegree_H_descended_pos (δ : ℚ) (x₀ : F)
     (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
@@ -725,6 +741,21 @@ lemma natDegree_H_descended_pos (δ : ℚ) (x₀ : F)
   (exists_factors_with_large_common_root_set_of_descended
     (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
     (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide).choose_spec.choose_spec.2.2.1
+
+/-- Typeclass form of descended-bundle positive degree for downstream Claim A.2 consumers. -/
+instance fact_natDegree_H_descended_pos (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hres : Claim57ResidualsDescended (F := F) (m := m) (n := n) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) k δ x₀ h_gs)
+    (hcoincide : pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs
+      = pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs) :
+    Fact (0 < (H_descended (F := F) (m := m) (n := n) (k := k) (Q := Q)
+      (ωs := ωs) (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide).natDegree) :=
+  ⟨natDegree_H_descended_pos
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+    (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide⟩
 
 /-- The descended-bundle `H` divides the `x₀`-specialization of the descended-bundle `R`. -/
 lemma H_descended_dvd_evalX_R_descended (δ : ℚ) (x₀ : F)
@@ -788,6 +819,8 @@ lemma claimA2_hypotheses_descended (δ : ℚ) (x₀ : F)
 #print axioms ProximityGap.exists_factors_with_large_common_root_set_of_descended
 #print axioms ProximityGap.R_descended
 #print axioms ProximityGap.H_descended
+#print axioms ProximityGap.fact_irreducible_H_descended
+#print axioms ProximityGap.fact_natDegree_H_descended_pos
 #print axioms ProximityGap.claimA2_hypotheses_descended
 
 end ProximityGap

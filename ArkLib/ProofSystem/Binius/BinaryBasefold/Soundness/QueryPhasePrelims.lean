@@ -109,9 +109,11 @@ lemma extractSuffixFromChallenge_congr_destIdx
     (h_le' : destIdx' ≤ ℓ) :
     extractSuffixFromChallenge 𝔽q β v destIdx h_le =
     cast (by rw [h_idx_eq]) (extractSuffixFromChallenge 𝔽q β v destIdx' h_le') := by
-  subst h_idx_eq; rfl
+  subst h_idx_eq
+  rw [cast_eq]
+  exact congrArg (extractSuffixFromChallenge 𝔽q β v destIdx) (Subsingleton.elim h_le h_le')
 
-omit [CharP L 2] [SampleableType L] [DecidableEq 𝔽q] h_β₀_eq_1 in
+omit [SampleableType L] [DecidableEq 𝔽q] h_β₀_eq_1 in
 /-- **First Oracle Equals Polynomial Oracle Function**:
 When `strictOracleFoldingConsistencyProp` holds, the first oracle (`getFirstOracle`) equals
 the polynomial oracle function `f₀` derived from the multilinear polynomial `t`.
@@ -554,8 +556,11 @@ lemma iteratedQuotientMap_eq_qMap_total_fiber_extractMiddleFinMask
       (by
         have hR : 0 < 𝓡 := Nat.pos_of_neZero 𝓡
         omega)
-      (iteratedQuotientMap 𝔽q β h_ℓ_add_R_rate (i := ⟨0, Nat.pos_of_neZero ℓ⟩) (k := destIdx.val)
-        (h_bound := by simp only [Fin.val_mk, zero_add]; omega) v)
+      (cast (congrArg (fun m => ↥(sDomain 𝔽q β h_ℓ_add_R_rate ⟨m, by omega⟩))
+          (Nat.zero_add (i.val + steps)))
+        (iteratedQuotientMap 𝔽q β h_ℓ_add_R_rate (i := ⟨0, Nat.pos_of_neZero ℓ⟩)
+          (k := i.val + steps)
+          (h_bound := by simp only [Fin.val_mk, zero_add]; omega) v))
       (extractMiddleFinMask 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) v ⟨i.val, by omega⟩ steps) := by
   have h_R_pos : 0 < 𝓡 := NeZero.pos 𝓡
   have h_i_le : i.val ≤ ℓ := by omega
@@ -563,6 +568,9 @@ lemma iteratedQuotientMap_eq_qMap_total_fiber_extractMiddleFinMask
   have h_zero : (0 : Fin r).val < ℓ + 𝓡 := by
     change 0 < ℓ + 𝓡
     exact Nat.lt_of_lt_of_le (NeZero.pos ℓ) (Nat.le_add_right ℓ 𝓡)
+  -- Normalize `destIdx` to its canonical value `⟨i.val + steps, _⟩` to keep all the
+  -- dependent `sDomain` index unifications definitional (avoids an `isDefEq` blowup).
+  obtain rfl : destIdx = ⟨i.val + steps, by omega⟩ := Fin.eq_of_val_eq h_destIdx
   apply LinearEquiv.injective (sDomain_basis 𝔽q β h_ℓ_add_R_rate i h_i).repr
   ext j
   rw [getSDomainBasisCoeff_of_iteratedQuotientMap]
@@ -570,7 +578,7 @@ lemma iteratedQuotientMap_eq_qMap_total_fiber_extractMiddleFinMask
     iteratedQuotientMap 𝔽q β h_ℓ_add_R_rate (i := ⟨0, Nat.pos_of_neZero ℓ⟩) (k := destIdx.val)
       (h_bound := by simp only [Fin.val_mk, zero_add]; omega) v with h_y_def
   have h_repr_fiber := qMap_total_fiber_repr_coeff 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-    (i := ⟨i.val, by omega⟩) (steps := steps) (by simpa only [Fin.val_mk] using h_destIdx_le.trans_eq' (by omega))
+    (i := ⟨i.val, by omega⟩) (steps := steps) (by simp only [Fin.val_mk]; omega)
     (y := y)
     (k := extractMiddleFinMask 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) v ⟨i.val, by omega⟩ steps)
     (j := j)
@@ -621,8 +629,7 @@ lemma iteratedQuotientMap_eq_qMap_total_fiber_extractMiddleFinMask
         (⟨j.val + i.val, by omega⟩ : Fin (ℓ + 𝓡)) =
           ⟨j.val - steps + destIdx.val, by omega⟩ := by
       apply Fin.eq_of_val_eq
-      simp
-      rw [h_destIdx]
+      show j.val + i.val = j.val - steps + destIdx.val
       omega
     rw [h_idx]
     exact h_res.symm

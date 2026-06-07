@@ -92,7 +92,43 @@ theorem hammingBallVolume_le_qEntropy (hq : 2 ≤ q) (δ : ℝ) {n : ℕ}
         have hB0 : (0 : ℝ) ≤ B := le_trans zero_le_one hB_ge_one
         nlinarith [hrn, hB0]
 
+/-- **q-ary Hamming-ball volume UPPER bound with the real radius exponent.**  Below capacity,
+the floor-radius estimate may be relaxed to the cleaner exponent `H_q(δ)`. -/
+theorem hammingBallVolume_le_qEntropy_real_radius (hq : 2 ≤ q) (δ : ℝ) {n : ℕ}
+    (hn : 0 < n) (hδ0 : 0 ≤ δ) (hδ : δ ≤ 1 - 1 / (q : ℝ)) :
+    (hammingBallVolume q δ n : ℝ)
+      ≤ ((n : ℝ) + 1) * (q : ℝ) ^ ((n : ℝ) * qEntropy q δ) := by
+  have hnR : 0 < (n : ℝ) := by exact_mod_cast hn
+  have hq1 : (1 : ℝ) ≤ (q : ℝ) := by exact_mod_cast (show 1 ≤ q by omega)
+  have hmul_nonneg : 0 ≤ δ * (n : ℝ) := mul_nonneg hδ0 hnR.le
+  have hcap_lt_one : 1 - 1 / (q : ℝ) < 1 := by
+    have hpos : 0 < 1 / (q : ℝ) := by positivity
+    linarith
+  have hδ_lt_one : δ < 1 := lt_of_le_of_lt hδ hcap_lt_one
+  have hmul_lt : δ * (n : ℝ) < (n : ℝ) := by
+    simpa using mul_lt_mul_of_pos_right hδ_lt_one hnR
+  have hr : ⌊δ * (n : ℝ)⌋₊ < n :=
+    (Nat.floor_lt hmul_nonneg).mpr hmul_lt
+  have hfloor_le : (⌊δ * (n : ℝ)⌋₊ : ℝ) ≤ δ * (n : ℝ) :=
+    Nat.floor_le hmul_nonneg
+  have hfloor_div_le : (⌊δ * (n : ℝ)⌋₊ : ℝ) / (n : ℝ) ≤ δ :=
+    (div_le_iff₀ hnR).2 hfloor_le
+  have hfloor_cap :
+      (⌊δ * (n : ℝ)⌋₊ : ℝ) / (n : ℝ) ≤ 1 - 1 / (q : ℝ) :=
+    le_trans hfloor_div_le hδ
+  have hvol := hammingBallVolume_le_qEntropy hq δ hr hfloor_cap
+  have hH :
+      qEntropy q ((Nat.floor (δ * n) : ℝ) / n) ≤ qEntropy q δ :=
+    qEntropy_floor_mul_div_le hq hn hδ0 hδ
+  have hpow :
+      (q : ℝ) ^ ((n : ℝ) * qEntropy q ((⌊δ * (n : ℝ)⌋₊ : ℝ) / (n : ℝ)))
+        ≤ (q : ℝ) ^ ((n : ℝ) * qEntropy q δ) := by
+    refine Real.rpow_le_rpow_of_exponent_le hq1 ?_
+    exact mul_le_mul_of_nonneg_left hH hnR.le
+  exact le_trans hvol (mul_le_mul_of_nonneg_left hpow (by positivity))
+
 end CodingTheory
 
 -- Axiom audit: depends on exactly `[propext, Classical.choice, Quot.sound]`.
 #print axioms CodingTheory.hammingBallVolume_le_qEntropy
+#print axioms CodingTheory.hammingBallVolume_le_qEntropy_real_radius
