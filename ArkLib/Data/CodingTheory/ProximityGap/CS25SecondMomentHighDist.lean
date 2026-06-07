@@ -29,7 +29,7 @@ variable {ι : Type*} [Fintype ι] [DecidableEq ι]
 variable {F : Type*} [Fintype F] [DecidableEq F] [AddCommGroup F]
 
 /-- **Weight-enumerator sum collapse (high distance).**  If `0 ∈ 𝒞` and every nonzero codeword is
-`> 2r` from the origin, then `∑_{v∈𝒞} ballInterCount r v = ballInterCount r 0` (only `v = 0`
+`> 2r` from the origin, then `∑_{v∈𝒞} ballInterCount r v = ballInterCount r (0 : ι → F)` (only `v = 0`
 survives, by `ballInterCount_eq_zero_of_lt`). -/
 theorem sum_ballInterCount_eq_of_minDist (𝒞 : Finset (ι → F)) (r : ℕ)
     (h0 : (0 : ι → F) ∈ 𝒞)
