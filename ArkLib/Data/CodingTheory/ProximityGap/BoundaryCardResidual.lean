@@ -481,6 +481,57 @@ theorem sqrtRate_mul_card_mem_iff_isSquare_deg_mul_card {deg : ℕ} {domain : ι
   · exact isSquare_deg_mul_card_of_sqrtRate_mul_card_mem (domain := domain) hdeg
   · exact sqrtRate_mul_card_mem_of_isSquare_deg_mul_card (domain := domain) hdeg
 
+omit [Nonempty ι] [DecidableEq ι] [Fintype F] [DecidableEq F] in
+/-- **Complement-integrality is ordinary integrality for the boundary square-root scale.**  The
+floor-lattice theorem naturally records `sqrtRate · |ι|` as the complement of an integer in
+`|ι|`; this lemma converts that witness to the direct integrality surface used by the
+perfect-square characterization, and conversely. -/
+theorem sqrtRate_mul_card_complement_mem_iff_mem {deg : ℕ} {domain : ι ↪ F}
+    (hsqrt_le : ReedSolomon.sqrtRate deg domain ≤ 1) :
+    (∃ j : ℕ, ReedSolomon.sqrtRate deg domain * Fintype.card ι
+          = (Fintype.card ι : ℝ≥0) - (j : ℝ≥0) ∧
+        (j : ℝ≥0) ≤ Fintype.card ι)
+      ↔ ∃ m : ℕ, ReedSolomon.sqrtRate deg domain * Fintype.card ι = (m : ℝ≥0) := by
+  constructor
+  · rintro ⟨j, hj, hjle⟩
+    have hjle_nat : j ≤ Fintype.card ι := by exact_mod_cast hjle
+    refine ⟨Fintype.card ι - j, ?_⟩
+    rw [hj]
+    norm_num [Nat.cast_sub hjle_nat]
+  · rintro ⟨m, hm⟩
+    have hsqrt_card_le :
+        ReedSolomon.sqrtRate deg domain * Fintype.card ι ≤ (Fintype.card ι : ℝ≥0) := by
+      calc
+        ReedSolomon.sqrtRate deg domain * Fintype.card ι
+            ≤ 1 * (Fintype.card ι : ℝ≥0) := by gcongr
+        _ = (Fintype.card ι : ℝ≥0) := one_mul _
+    have hmle_nn : (m : ℝ≥0) ≤ Fintype.card ι := by
+      simpa [hm] using hsqrt_card_le
+    have hmle_nat : m ≤ Fintype.card ι := by exact_mod_cast hmle_nn
+    refine ⟨Fintype.card ι - m, ?_, ?_⟩
+    · rw [hm]
+      have hle : Fintype.card ι - m ≤ Fintype.card ι := Nat.sub_le _ _
+      have hcast :
+          (((Fintype.card ι - (Fintype.card ι - m) : ℕ) : ℝ≥0))
+            = (Fintype.card ι : ℝ≥0) - ((Fintype.card ι - m : ℕ) : ℝ≥0) := by
+        norm_num [Nat.cast_sub hle]
+      rw [← hcast, Nat.sub_sub_self hmle_nat]
+    · exact_mod_cast Nat.sub_le (Fintype.card ι) m
+
+omit [DecidableEq ι] [Fintype F] in
+/-- **Perfect-square characterization of the boundary floor-lattice condition.**  At the exact
+Johnson boundary `δ = 1 - sqrtRate`, in the Reed-Solomon range `deg ≤ |ι|`, the endpoint is a
+`1/|ι|` lattice point iff `deg · |ι|` is a Nat square. -/
+theorem boundary_lattice_iff_isSquare_deg_mul_card {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    (hδeq : δ = 1 - ReedSolomon.sqrtRate deg domain)
+    (hsqrt_le : ReedSolomon.sqrtRate deg domain ≤ 1)
+    (hdeg : deg ≤ Fintype.card ι) :
+    ((Nat.floor (δ * Fintype.card ι) : ℝ≥0) = δ * Fintype.card ι)
+      ↔ IsSquare (deg * Fintype.card ι) := by
+  rw [boundary_lattice_iff_sqrtRate_mul_card_mem (domain := domain) hδeq hsqrt_le,
+    sqrtRate_mul_card_complement_mem_iff_mem (domain := domain) hsqrt_le,
+    sqrtRate_mul_card_mem_iff_isSquare_deg_mul_card (domain := domain) hdeg]
+
 /-! ## The strengthened keystone corollary consuming the isolated lattice residual -/
 
 omit [DecidableEq ι] in
@@ -559,7 +610,11 @@ with no `sorry`/`admit`/`axiom`/`native_decide`. -/
 #print axioms ArkLib.BoundaryCardResidual.boundaryProbabilityResidual_of_lattice_residual
 #print axioms ArkLib.BoundaryCardResidual.BoundaryCardQuantizationResiduals.toBoundaryProbabilityResidual
 #print axioms ArkLib.BoundaryCardResidual.boundary_lattice_iff_sqrtRate_mul_card_mem
+#print axioms ArkLib.BoundaryCardResidual.sqrtRate_mul_card_sq_eq_deg_mul_card
 #print axioms ArkLib.BoundaryCardResidual.isSquare_deg_mul_card_of_sqrtRate_mul_card_mem
+#print axioms ArkLib.BoundaryCardResidual.sqrtRate_mul_card_mem_of_isSquare_deg_mul_card
 #print axioms ArkLib.BoundaryCardResidual.sqrtRate_mul_card_mem_iff_isSquare_deg_mul_card
+#print axioms ArkLib.BoundaryCardResidual.sqrtRate_mul_card_complement_mem_iff_mem
+#print axioms ArkLib.BoundaryCardResidual.boundary_lattice_iff_isSquare_deg_mul_card
 #print axioms ArkLib.BoundaryCardResidual.correlatedAgreement_affine_curves_of_lattice_residual
 #print axioms ArkLib.BoundaryCardResidual.correlatedAgreement_affine_curves_of_quantization_residuals

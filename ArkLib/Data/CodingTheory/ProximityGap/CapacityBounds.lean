@@ -196,6 +196,7 @@ subspace-design inputs).
 set_option linter.unusedFintypeInType false
 set_option linter.unusedDecidableInType false
 set_option linter.unusedSectionVars false
+set_option linter.style.longFile 1600
 
 namespace CodingTheory
 
@@ -246,6 +247,23 @@ def linear_epsMCA_1_5_johnson_gkl24
   -- Johnson list count is not in-tree (JohnsonBound/ proves only the √-radius / 2nd-moment
   -- form). Genuinely external.
 
+/-- Public T4.11.1 wrapper from the named 1.5-Johnson MCA bound. -/
+theorem linear_epsMCA_1_5_johnson_gkl24_of_bound
+    (C : ModuleCode ι F A) (δ_min η δ : ℝ≥0)
+    (h_δ_min : (δ_min : ℝ) = (Code.minDist (C : Set (ι → A)) : ℝ) / Fintype.card ι)
+    (hη : 0 < η) (hη_lt_δ_min : η < δ_min)
+    (hδ : (δ : ℝ) ≤ 1 - ((1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 3)))
+    (hbound :
+      epsMCA (F := F) (A := A) ((C : Set (ι → A))) δ ≤
+        ENNReal.ofReal
+          ((((Fintype.card ι : ℝ) + 6) / η
+            + 2 / ((η : ℝ) *
+                ((1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 3)
+                  - (1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 2)))) /
+            (Fintype.card F : ℝ))) :
+    linear_epsMCA_1_5_johnson_gkl24 C δ_min η δ h_δ_min hη hη_lt_δ_min hδ := by
+  simpa [linear_epsMCA_1_5_johnson_gkl24] using hbound
+
 /-- **ABF26 Theorem 4.11, Item 2 [BGKS20 Lem 3.2].** For any linear error-correcting code
 `C ⊆ F^n`, parameter `η > 0`, and `δ ≤ 1 - ∛(1 - δ_min(C) + η)`:
 
@@ -268,6 +286,18 @@ def linear_epsCA_1_5_johnson_bgks20
   -- 1.5-Johnson regime. The 1/η² shape comes from a two-step (fold then interleave) union
   -- bound over the η-margin; needs the in-tree epsCA-with-(δ,δ+η) proximity-loss decomposition
   -- specialised to the ∛-radius regime, which is not present. Genuinely external.
+
+/-- Public T4.11.2 wrapper from the named 1.5-Johnson CA-with-proximity-loss bound. -/
+theorem linear_epsCA_1_5_johnson_bgks20_of_bound
+    (C : ModuleCode ι F A) (δ_min η δ : ℝ≥0)
+    (h_δ_min : (δ_min : ℝ) = (Code.minDist (C : Set (ι → A)) : ℝ) / Fintype.card ι)
+    (hη : 0 < η) (hη_lt_δ_min : η < δ_min)
+    (hδ : (δ : ℝ) ≤ 1 - ((1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 3)))
+    (hbound :
+      epsCA (F := F) (A := A) ((C : Set (ι → A))) δ (δ + η) ≤
+        ((2 : ENNReal) / ((η : ENNReal) ^ 2 * (Fintype.card F : ENNReal)))) :
+    linear_epsCA_1_5_johnson_bgks20 C δ_min η δ h_δ_min hη hη_lt_δ_min hδ := by
+  simpa [linear_epsCA_1_5_johnson_bgks20] using hbound
 
 end General
 
@@ -1474,7 +1504,9 @@ def subspaceDesign_epsCA_curves_polynomial_generators_bcgm25
 end SubspaceDesignFRS
 
 #print axioms CodingTheory.linear_epsMCA_1_5_johnson_gkl24
+#print axioms CodingTheory.linear_epsMCA_1_5_johnson_gkl24_of_bound
 #print axioms CodingTheory.linear_epsCA_1_5_johnson_bgks20
+#print axioms CodingTheory.linear_epsCA_1_5_johnson_bgks20_of_bound
 #print axioms CodingTheory.subspaceDesign_epsMCA_gg25
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_residuals
