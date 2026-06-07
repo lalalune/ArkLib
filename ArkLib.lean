@@ -248,6 +248,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GSKernelAffineDescent
 import ArkLib.Data.CodingTheory.ProximityGap.GWAffinePinning
 import ArkLib.Data.CodingTheory.ProximityGap.GWInterpolation
 import ArkLib.Data.CodingTheory.ProximityGap.GWKernelReduction
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeKernels
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeMath
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeMathLowOutput
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeCollapse
@@ -275,6 +276,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice.ListThreshol
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice.Prize
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice.Witnesses
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLatticePrizeSpec
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLineDecoding
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25AlgebraicBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25Core
 import ArkLib.Data.CodingTheory.ProximityGap.Hab25DegreeBudget
@@ -646,6 +648,7 @@ import ArkLib.ProofSystem.Whir.ProximityGen
 import ArkLib.ProofSystem.Whir.RBRSoundness
 import ArkLib.ProofSystem.Whir.RbrBudgetAccounting
 import ArkLib.ProofSystem.ZkVMBoundary
+import ArkLib.ResidualAxioms
 import ArkLib.ToCompPoly.Univariate.Basic
 import ArkLib.ToCompPoly.Univariate.Lagrange
 import ArkLib.ToMathlib.AGL23CountingProof
@@ -821,5 +824,3 @@ import ArkLib.ToVCVio.Simulation
 import ArkLib.ToVCVio.SimulationInfrastructure
 import ArkLib.ToVCVio.ToMathlib.Control.StateT
 import ArkLib.ToVCVio.ToMathlib.Data.Vector.Basic
-import ArkLib.ResidualAxioms
-import ArkLib.OuterCompletenessScratch
