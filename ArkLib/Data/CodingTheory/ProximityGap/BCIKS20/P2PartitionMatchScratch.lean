@@ -20,6 +20,8 @@ theorem restrictedFaaDiBrunoPartitionMatchAt_proof (x₀ : F) (R : F[X][X][Y])
     RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp t := by
   unfold RestrictedFaaDiBrunoPartitionMatchAt
   unfold restrictedFaaDiBrunoPartitionForm restrictedMatchRecursionPartitionForm
+  rw [← restrictedFaaDiBrunoSum_eq_partitionForm H x₀ R hHyp t]
+  rw [← restrictedMatch_rhs_eq_recursionPartitionForm H x₀ R hHyp t]
   sorry
 
 end BCIKS20.HenselNumerator
