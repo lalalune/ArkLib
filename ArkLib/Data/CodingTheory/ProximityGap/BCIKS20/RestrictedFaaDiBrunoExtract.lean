@@ -1048,6 +1048,76 @@ theorem restrictedPartitionMatchAt_zero_of_leadingCoeff_one
   RestrictedFaaDiBrunoPartitionMatchAt.of_restrictedMatchAt H x₀ R hHyp 0
     (restrictedMatchAt_zero_of_leadingCoeff_one H x₀ R hHyp hd hlc)
 
+/-! ### The `W`-power weighting collapses for monic `H` at EVERY order — but is NOT the only
+obstruction (axiom-clean)
+
+The #139 obstruction analysis documents the surviving `W`-power weighting (`W = liftToFunctionField
+H.leadingCoeff`) as the order-zero obstruction. For **monic** `H` (`H.leadingCoeff = 1`) that
+weighting genuinely collapses at *every* order: `W = liftToFunctionField 1 = 1` and the `𝒪`-level
+unit `W𝒪 H = ⟦C 1⟧ = 1` embeds to `1`, so every `W^k`-factor in the recursion-side
+`restrictedMatchRecursionPartitionForm` is `1`. The lemmas below land that collapse unconditionally.
+
+HOWEVER, contrary to the conjecture that the `W`-weighting is the *only* all-orders obstruction,
+removing `W` does **not** trivialize `RestrictedFaaDiBrunoMatchAt t` for `t ≥ 1`. The recursion side
+`restrictedMatchRecursionPartitionForm` still carries, even after `W = 1`:
+
+  * the **`ξ`-telescope** — powers `ξ^{2 i₁ + σλ − 2}` inside `recSum`, the global `ξ^{2(t+1)−1}`
+    in `den`, and the dual `1 / ξ^{2t−1}` weighting *inside every* `βHenselAssembled` coefficient on
+    the LHS partition form. `ξ = ClaimA2.ξ` is the separability discriminant unit; it is a
+    DIFFERENT unit from `W` and does not collapse for monic `H`;
+  * the genuine **Faà-di-Bruno bijection** — the term-level identification of restricted
+    value-multisets `m` (LHS, `restrictedFaaDiBrunoPartitionForm`) against index pairs `(i₁, λ)`
+    (RHS, `recSum`), matching `countPerms`/binomial/`B_coeff`/`partitionProd` — which is exactly the
+    unformalized BCIKS20 A.4 content carried as the hypothesis `RestrictedFaaDiBrunoMatch`.
+
+At order zero both of these collapse to a *single* surviving term on each side
+(`restrictedFaaDiBrunoPartitionForm_zero_eq_powerSum` and
+`restrictedMatchRecursionPartitionForm_zero_eq_singleBcoeff`), so the `W`-mismatch was the only
+discrepancy left — which is why `restrictedMatchAt_zero_of_leadingCoeff_one` closes order zero
+unconditionally. For `t ≥ 1` neither side collapses, so the `W = 1` collapse, while genuine, is not
+sufficient: the all-orders monic core is NOT closeable from `W = 1` alone. -/
+
+omit [Fact (Irreducible H)] [Fact (0 < H.natDegree)] in
+/-- **`W = liftToFunctionField H.leadingCoeff = 1` for monic `H` (axiom-clean).** The
+function-field `W`-unit is the identity precisely when `H` is monic. -/
+theorem liftToFunctionField_leadingCoeff_eq_one_of_leadingCoeff_one
+    (hlc : H.leadingCoeff = 1) :
+    liftToFunctionField (H := H) H.leadingCoeff = 1 := by
+  rw [hlc, map_one]
+
+/-- **The `𝒪`-level `W`-unit `W𝒪 H` embeds to `1` for monic `H` (axiom-clean).** Since
+`W𝒪 H = ⟦C H.leadingCoeff⟧`, its embedding is `liftToFunctionField H.leadingCoeff`
+(`embed_W𝒪`), which is `1` when `H.leadingCoeff = 1`. Hence every `W`-power factor in the
+recursion-side partition form collapses for monic `H`. -/
+theorem embed_W𝒪_eq_one_of_leadingCoeff_one (hlc : H.leadingCoeff = 1) :
+    embeddingOf𝒪Into𝕃 H (W𝒪 H) = 1 := by
+  rw [embed_W𝒪, liftToFunctionField_leadingCoeff_eq_one_of_leadingCoeff_one H hlc]
+
+/-- **Monic-`H` recursion-side partition form: ALL `W`-powers collapse to `1` (axiom-clean).** For
+monic `H`, `restrictedMatchRecursionPartitionForm` at EVERY order `t` simplifies to the
+`W`-free recursion form: the `W^{i₁+δ−1}` factor in each `(i₁,λ)` summand becomes `1`, and the
+`lc^{t+2}` factor in the denominator becomes `1`. The remaining structure is the pure
+`ξ`-telescoped recursion `ζ · (∑_{i₁,λ} ξ^{2i₁+σλ−2}·⟦B_coeff⟧·⟦partitionProd λ βHensel⟧) /
+ξ^{2(t+1)−1}` — entirely `W`-independent. This makes the W-collapse fully explicit at all orders and
+exposes the surviving `ξ`-telescope + combinatorial `B_coeff`/`partitionProd` content that is the
+genuine remaining obstruction. -/
+theorem restrictedMatchRecursionPartitionForm_eq_Wfree_of_leadingCoeff_one
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ)
+    (hlc : H.leadingCoeff = 1) :
+    restrictedMatchRecursionPartitionForm H x₀ R hHyp t
+      = ClaimA2.ζ R x₀ H
+          * ((∑ i1 ∈ Finset.range (t + 2),
+                ∑ lam ∈ (Finset.univ : Finset (Nat.Partition (t + 1 - i1))).filter
+                          (fun lam => (t + 1) ∉ lam.parts),
+                  embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp) ^ (2 * i1 + sigmaLambda lam - 2)
+                    * embeddingOf𝒪Into𝕃 H (B_coeff H x₀ R i1 lam)
+                    * embeddingOf𝒪Into𝕃 H (partitionProd lam (βHensel H x₀ R hHyp)))
+              / ((embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * (t + 1) - 1))) := by
+  unfold restrictedMatchRecursionPartitionForm
+  simp only [embed_W𝒪_eq_one_of_leadingCoeff_one H hlc,
+    liftToFunctionField_leadingCoeff_eq_one_of_leadingCoeff_one H hlc,
+    one_pow, one_mul]
+
 end BCIKS20.HenselNumerator
 
 #print axioms BCIKS20.HenselNumerator.coeff_succ_βHenselAssembled_eq_of_restrictedMatchAt
@@ -1181,3 +1251,8 @@ set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.restrictedMatchAt_zero_of_leadingCoeff_one
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.restrictedPartitionMatchAt_zero_of_leadingCoeff_one
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.liftToFunctionField_leadingCoeff_eq_one_of_leadingCoeff_one
+#print axioms BCIKS20.HenselNumerator.embed_W𝒪_eq_one_of_leadingCoeff_one
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.restrictedMatchRecursionPartitionForm_eq_Wfree_of_leadingCoeff_one
