@@ -31,6 +31,7 @@ product norm inequality `‖fg‖ ≤ ‖f‖₁·‖g‖`.
 * [Nguyen, N. K., and Seiler, G., *Greyhound: Fast Polynomial Commitments from Lattices*][NS24]
 * [Nguyen, N. K., O'Rourke, G., and Zhang, J., *Hachi: Efficient Lattice-Based Multilinear
     Polynomial Commitments over Extension Fields*][NOZ26]
+-/
 
 open scoped BigOperators
 
@@ -125,6 +126,7 @@ theorem coeff_modByMonic_X_pow_add_one {S : Type*} [CommRing S] [Nontrivial S] {
     conv_lhs => rw [hfeq]
     rw [Polynomial.coeff_add, hgQ, Polynomial.coeff_add, hk2, hQk2, hrem, add_zero, add_zero]
   have hfk0 : f.coeff k = Q.coeff k + (f %ₘ g).coeff k := by
+    conv_lhs => rw [hfeq]
     rw [Polynomial.coeff_add, hgQ, Polynomial.coeff_add, hk1, zero_add]
   rw [hfk, hfk0]; ring
 
@@ -160,6 +162,8 @@ theorem sum_negIdx_eq {β : Type*} [AddCommMonoid β] {n k : ℕ} (hk : k < n) (
     ∑ i ∈ Finset.range n, F (negIdx n k i) = ∑ i ∈ Finset.range n, F i := by
   apply Finset.sum_nbij' (negIdx n k) (negIdx n k)
   · intro i hi; exact Finset.mem_range.mpr (negIdx_lt (by omega))
+  · intro i hi; exact Finset.mem_range.mpr (negIdx_lt (by omega))
+  · intro i hi; exact negIdx_negIdx hk (Finset.mem_range.mp hi)
   · intro i hi; exact negIdx_negIdx hk (Finset.mem_range.mp hi)
   · intro i hi; rfl
 
@@ -178,6 +182,8 @@ theorem sum_negIdx_eq_k {β : Type*} [AddCommMonoid β] {n i : ℕ} (hi : i < n)
     change ((n + k - i) % n + i) % n = k
     rw [Nat.add_mod ((n + k - i) % n) i n, Nat.mod_mod, ← Nat.add_mod]
     rw [show n + k - i + i = n + k from by omega, Nat.add_mod_left, Nat.mod_eq_of_lt hk']
+  · intro k hk
+    have hk' : k < n := Finset.mem_range.mp hk
     change negIdx n ((k + i) % n) i = k
     unfold negIdx
     set m := (k + i) % n with hm
