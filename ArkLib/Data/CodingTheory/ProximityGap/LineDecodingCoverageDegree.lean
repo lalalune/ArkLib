@@ -143,6 +143,82 @@ theorem MCABadScalarDegreeCover.not_mcaEvent
   MCABadScalarDoubleCover.not_mcaEvent C δ u₀ u₁ γ
     (MCABadScalarDoubleCover.of_degreeCover C δ u₀ u₁ γ hcov)
 
+omit [Nonempty ι] [DecidableEq F] [Fintype A] [DecidableEq A] in
+/-- A direct no-event certificate supplies the local scalar-degree cover obligation,
+vacuously. -/
+theorem MCABadScalarDegreeCover.of_not_mcaEvent
+    (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A) (γ : F)
+    (hno : ¬ mcaEvent C δ u₀ u₁ γ) :
+    MCABadScalarDegreeCover (F := F) (A := A) C δ u₀ u₁ γ := by
+  intro hγ
+  exact False.elim (hno hγ)
+
+/-- The local scalar-degree cover obligation is exact: it is equivalent to ruling out that
+scalar's `mcaEvent`. -/
+theorem MCABadScalarDegreeCover_iff_not_mcaEvent
+    (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A) (γ : F) :
+    MCABadScalarDegreeCover (F := F) (A := A) C δ u₀ u₁ γ ↔
+      ¬ mcaEvent C δ u₀ u₁ γ := by
+  constructor
+  · exact MCABadScalarDegreeCover.not_mcaEvent C δ u₀ u₁ γ
+  · exact MCABadScalarDegreeCover.of_not_mcaEvent C δ u₀ u₁ γ
+
+/-- Named all-stack/all-scalar scalar-degree cover frontier. This packages the family form used
+by the repaired T4.21 wrappers. -/
+def MCAForallDegreeCover (C : Set (ι → A)) (δ : ℝ≥0) : Prop :=
+  ∀ (u : WordStack A (Fin 2) ι) (γ : F),
+    MCABadScalarDegreeCover (F := F) (A := A) C δ (u 0) (u 1) γ
+
+/-- A global scalar-degree cover supplies the repaired double-cover frontier. -/
+theorem MCAForallDegreeCover.to_doubleCover
+    (C : Set (ι → A)) (δ : ℝ≥0)
+    (hcov : MCAForallDegreeCover (F := F) (A := A) C δ) :
+    MCAForallDoubleCover (F := F) (A := A) C δ :=
+  MCAForallDoubleCover.of_forall_degreeCover C δ hcov
+
+/-- A global scalar-degree cover rules out every MCA bad event. -/
+theorem MCAForallDegreeCover.not_mcaEvent
+    (C : Set (ι → A)) (δ : ℝ≥0)
+    (hcov : MCAForallDegreeCover (F := F) (A := A) C δ) :
+    ∀ (u : WordStack A (Fin 2) ι) (γ : F), ¬ mcaEvent C δ (u 0) (u 1) γ := by
+  intro u γ
+  exact (MCABadScalarDegreeCover_iff_not_mcaEvent C δ (u 0) (u 1) γ).mp (hcov u γ)
+
+/-- Repack direct no-bad-event data as the named global scalar-degree cover frontier. -/
+theorem MCAForallDegreeCover.of_forall_not_mcaEvent
+    (C : Set (ι → A)) (δ : ℝ≥0)
+    (hno : ∀ (u : WordStack A (Fin 2) ι) (γ : F), ¬ mcaEvent C δ (u 0) (u 1) γ) :
+    MCAForallDegreeCover (F := F) (A := A) C δ :=
+  fun u γ => (MCABadScalarDegreeCover_iff_not_mcaEvent C δ (u 0) (u 1) γ).mpr (hno u γ)
+
+/-- The global scalar-degree cover surface is exact: it is equivalent to ruling out every bad
+scalar event. -/
+theorem MCAForallDegreeCover_iff_forall_not_mcaEvent
+    (C : Set (ι → A)) (δ : ℝ≥0) :
+    MCAForallDegreeCover (F := F) (A := A) C δ ↔
+      ∀ (u : WordStack A (Fin 2) ι) (γ : F), ¬ mcaEvent C δ (u 0) (u 1) γ := by
+  constructor
+  · exact MCAForallDegreeCover.not_mcaEvent C δ
+  · exact MCAForallDegreeCover.of_forall_not_mcaEvent C δ
+
+/-- The repaired double-cover frontier supplies the named scalar-degree cover frontier,
+vacuously after ruling out every bad event. -/
+theorem MCAForallDegreeCover.of_doubleCover
+    (C : Set (ι → A)) (δ : ℝ≥0)
+    (hcov : MCAForallDoubleCover (F := F) (A := A) C δ) :
+    MCAForallDegreeCover (F := F) (A := A) C δ :=
+  MCAForallDegreeCover.of_forall_not_mcaEvent C δ
+    (MCAForallDoubleCover.not_mcaEvent C δ hcov)
+
+/-- The named scalar-degree and double-cover global frontiers are equivalent. -/
+theorem MCAForallDegreeCover_iff_doubleCover
+    (C : Set (ι → A)) (δ : ℝ≥0) :
+    MCAForallDegreeCover (F := F) (A := A) C δ ↔
+      MCAForallDoubleCover (F := F) (A := A) C δ := by
+  constructor
+  · exact MCAForallDegreeCover.to_doubleCover C δ
+  · exact MCAForallDegreeCover.of_doubleCover C δ
+
 /-- A per-stack/per-scalar scalar-degree cover family kills every repaired bad-count. -/
 theorem mcaBadCount_eq_zero_of_forall_degreeCover
     (C : Set (ι → A)) (δ : ℝ≥0)
@@ -160,6 +236,38 @@ theorem epsMCA_eq_zero_of_forall_degreeCover
     epsMCA (F := F) C δ = 0 :=
   epsMCA_eq_zero_of_MCAForallDoubleCover C δ
     (MCAForallDoubleCover.of_forall_degreeCover C δ hcov)
+
+/-- A named global scalar-degree cover kills every repaired bad-count. -/
+theorem mcaBadCount_eq_zero_of_MCAForallDegreeCover
+    (C : Set (ι → A)) (δ : ℝ≥0)
+    (hcov : MCAForallDegreeCover (F := F) (A := A) C δ) :
+    ∀ u : WordStack A (Fin 2) ι,
+      mcaBadCount (F := F) C δ (u 0) (u 1) = 0 :=
+  mcaBadCount_eq_zero_of_forall_degreeCover C δ hcov
+
+/-- A named global scalar-degree cover forces `ε_mca = 0`. -/
+theorem epsMCA_eq_zero_of_MCAForallDegreeCover
+    (C : Set (ι → A)) (δ : ℝ≥0)
+    (hcov : MCAForallDegreeCover (F := F) (A := A) C δ) :
+    epsMCA (F := F) C δ = 0 :=
+  epsMCA_eq_zero_of_forall_degreeCover C δ hcov
+
+/-- Vanishing MCA error repacks as the named global scalar-degree cover frontier. -/
+theorem MCAForallDegreeCover.of_epsMCA_eq_zero
+    (C : Set (ι → A)) (δ : ℝ≥0)
+    (heps : epsMCA (F := F) C δ = 0) :
+    MCAForallDegreeCover (F := F) (A := A) C δ :=
+  (MCAForallDegreeCover_iff_doubleCover C δ).mpr
+    ((epsMCA_eq_zero_iff_MCAForallDoubleCover C δ).mp heps)
+
+/-- The named global scalar-degree cover surface is exact at `ε_mca = 0`. -/
+theorem epsMCA_eq_zero_iff_MCAForallDegreeCover
+    (C : Set (ι → A)) (δ : ℝ≥0) :
+    epsMCA (F := F) C δ = 0 ↔
+      MCAForallDegreeCover (F := F) (A := A) C δ := by
+  constructor
+  · exact MCAForallDegreeCover.of_epsMCA_eq_zero C δ
+  · exact epsMCA_eq_zero_of_MCAForallDegreeCover C δ
 
 end
 
@@ -191,6 +299,14 @@ theorem lineDecodable_imp_epsMCA_le_target_of_forall_degreeCover
   exact lineDecodable_imp_epsMCA_le_target C δ a
     (MCAForallDoubleCover.of_forall_degreeCover (C : Set (ι → A)) δ hcov)
 
+/-- Repaired T4.21 front door from the named global scalar-degree cover frontier. -/
+theorem lineDecodable_imp_epsMCA_le_target_of_MCAForallDegreeCover
+    (C : ModuleCode ι F A) (δ a : ℝ≥0)
+    (hcov : MCAForallDegreeCover (F := F) (A := A) (C : Set (ι → A)) δ) :
+    epsMCA (F := F) (A := A) ((C : Set (ι → A))) δ
+        ≤ (a : ENNReal) / (Fintype.card F : ENNReal) := by
+  exact lineDecodable_imp_epsMCA_le_target_of_forall_degreeCover C δ a hcov
+
 end RepairedDegreeCoverTarget
 
 end CodingTheory
@@ -212,8 +328,36 @@ set_option linter.style.longLine false in
 set_option linter.style.longLine false in
 #print axioms ProximityGap.MCABadScalarDegreeCover.not_mcaEvent
 set_option linter.style.longLine false in
+#print axioms ProximityGap.MCABadScalarDegreeCover.of_not_mcaEvent
+set_option linter.style.longLine false in
+#print axioms ProximityGap.MCABadScalarDegreeCover_iff_not_mcaEvent
+set_option linter.style.longLine false in
+#print axioms ProximityGap.MCAForallDegreeCover
+set_option linter.style.longLine false in
+#print axioms ProximityGap.MCAForallDegreeCover.to_doubleCover
+set_option linter.style.longLine false in
+#print axioms ProximityGap.MCAForallDegreeCover.not_mcaEvent
+set_option linter.style.longLine false in
+#print axioms ProximityGap.MCAForallDegreeCover.of_forall_not_mcaEvent
+set_option linter.style.longLine false in
+#print axioms ProximityGap.MCAForallDegreeCover_iff_forall_not_mcaEvent
+set_option linter.style.longLine false in
+#print axioms ProximityGap.MCAForallDegreeCover.of_doubleCover
+set_option linter.style.longLine false in
+#print axioms ProximityGap.MCAForallDegreeCover_iff_doubleCover
+set_option linter.style.longLine false in
 #print axioms ProximityGap.mcaBadCount_eq_zero_of_forall_degreeCover
 set_option linter.style.longLine false in
 #print axioms ProximityGap.epsMCA_eq_zero_of_forall_degreeCover
 set_option linter.style.longLine false in
+#print axioms ProximityGap.mcaBadCount_eq_zero_of_MCAForallDegreeCover
+set_option linter.style.longLine false in
+#print axioms ProximityGap.epsMCA_eq_zero_of_MCAForallDegreeCover
+set_option linter.style.longLine false in
+#print axioms ProximityGap.MCAForallDegreeCover.of_epsMCA_eq_zero
+set_option linter.style.longLine false in
+#print axioms ProximityGap.epsMCA_eq_zero_iff_MCAForallDegreeCover
+set_option linter.style.longLine false in
 #print axioms CodingTheory.lineDecodable_imp_epsMCA_le_target_of_forall_degreeCover
+set_option linter.style.longLine false in
+#print axioms CodingTheory.lineDecodable_imp_epsMCA_le_target_of_MCAForallDegreeCover
