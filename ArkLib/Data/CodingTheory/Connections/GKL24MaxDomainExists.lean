@@ -275,6 +275,20 @@ theorem mcaBadWitness_card_le_compl_common {MC : Submodule F (ι → F)} {δ : �
   obtain ⟨i, hiS, hiC⟩ := Finset.not_subset.mp hSnotsub
   exact ⟨i, by rw [linePetal, Finset.mem_sdiff, mem_lineAgreeSet_iff]; exact ⟨hSagree i hiS, hiC⟩⟩
 
+/-- **Inclusion–exclusion for two line-agreement sets.**  For `γ ≠ γ'`,
+`|lineAgreeSet γ| + |lineAgreeSet γ'| ≤ |common| + n`: the two sets overlap exactly in the common
+zero-agreement set (`lineAgreeSet_inter_eq`), and their union fits in `univ`.  When both agreements
+are large (`≥ (1−δ)n`, as for bad combiners), this forces `|common| ≥ (1−2δ)n` — the structural
+reason `|mcaBadWitness w| ≤ 2δn` once two bad combiners exist. -/
+theorem lineAgreeSet_card_add_le (u₀ u₁ w : ι → F) {γ γ' : F} (hγ : γ ≠ γ') :
+    (lineAgreeSet u₀ u₁ w γ).card + (lineAgreeSet u₀ u₁ w γ').card
+      ≤ (Finset.univ.filter (fun i => u₁ i = 0 ∧ w i = u₀ i)).card + Fintype.card ι := by
+  have h := Finset.card_union_add_card_inter (lineAgreeSet u₀ u₁ w γ) (lineAgreeSet u₀ u₁ w γ')
+  rw [lineAgreeSet_inter_eq u₀ u₁ w hγ] at h
+  have hunion : (lineAgreeSet u₀ u₁ w γ ∪ lineAgreeSet u₀ u₁ w γ').card ≤ Fintype.card ι := by
+    rw [← Finset.card_univ]; exact Finset.card_le_card (Finset.subset_univ _)
+  omega
+
 /-- **GKL24 sharp first-moment bound `|Bad¹| ≤ p·n`.**  If a correlated-agreement domain `D` at rate
 `p` (so `(1−p)·n ≤ |D|`) absorbs the common zero-agreement set, and the bad-witness radius is smaller
 (`|D| < ⌊(1−δ)·n⌋`, i.e. `δ < p`), then `|mcaBadWitness w| ≤ p·n`.  This is GKL24's sharp
