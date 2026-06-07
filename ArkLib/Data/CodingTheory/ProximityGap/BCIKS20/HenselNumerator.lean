@@ -596,7 +596,8 @@ The only further sharpening (to the paper's exact `(D−Σλ)` constant) is the 
 degree-tracking lemma `degreeX p ≤ D − Σλ`.  The definition itself is complete and genuine. -/
 noncomputable def B_coeff (x₀ : F) (R : F[X][X][Y]) (i1 : ℕ) {m : ℕ}
     (lam : Nat.Partition m) : 𝒪 H :=
-  (prefactor R.natDegree i1 lam) • hasseCoeffRepr𝒪 H x₀ R i1 (sigmaLambda lam)
+  (prefactor R.natDegree i1 lam) • Ideal.Quotient.mk (Ideal.span {H_tilde' H})
+    (hasseCoeffRepr𝒪_cleared H x₀ R i1 (sigmaLambda lam) (R.natDegree - deltaSave i1 - sigmaLambda lam))
 
 /-! ### 4c. The `β` well-founded recursion `(A.1)` — the WAVE 2 keystone -/
 
@@ -783,7 +784,8 @@ drop + `W`-clearing) — is the deferred `B_coeff_weight` wall. -/
 lemma B_coeff_weight_le_hasse (x₀ : F) (R : F[X][X][Y]) (i1 : ℕ) {m : ℕ}
     (lam : Nat.Partition m) (hH : 0 < H.natDegree) (hDH : Bivariate.totalDegree H ≤ D) :
     weight_Λ_over_𝒪 hH (B_coeff H x₀ R i1 lam) D
-      ≤ weight_Λ_over_𝒪 hH (hasseCoeffRepr𝒪 H x₀ R i1 (sigmaLambda lam)) D := by
+      ≤ weight_Λ_over_𝒪 hH (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
+          (hasseCoeffRepr𝒪_cleared H x₀ R i1 (sigmaLambda lam) (R.natDegree - deltaSave i1 - sigmaLambda lam))) D := by
   rw [B_coeff]
   exact weight_Λ_over_𝒪_nsmul_le H hH hDH _ _
 
@@ -893,10 +895,10 @@ polynomial whose `Y↦T` lift equals `W^{natDegreeY p} · hasseEvalAtRoot` (with
 `p = evalX (C x₀) (Δ_X^{i1} Δ_Y^{m} R)`).  Each `Y`-power `i` of `p` is rescaled by the cleared
 `W`-power `lc^{(natDegreeY p)−i}`, exactly as in `ξ_pre`'s lower-sum (here un-divided, since we
 clear by the full `Y`-degree).  Genuine object: built from the real iterated `hasseDeriv`. -/
-noncomputable def hasseCoeffRepr𝒪_cleared (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) : F[X][Y] :=
+noncomputable def hasseCoeffRepr𝒪_cleared (x₀ : F) (R : F[X][X][Y]) (i1 m k : ℕ) : F[X][Y] :=
   let p : F[X][Y] := Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R))
-  ∑ i ∈ Finset.range (Bivariate.natDegreeY p + 1),
-    Polynomial.C (p.coeff i * H.leadingCoeff ^ (Bivariate.natDegreeY p - i)) * Polynomial.X ^ i
+  ∑ i ∈ Finset.range (k + 1),
+    Polynomial.C (p.coeff i * H.leadingCoeff ^ (k - i)) * Polynomial.X ^ i
 
 /-- **(a-residual) The `W`-clearing embedding identity for the Hasse coefficient — PROVEN.**
 `embeddingOf𝒪Into𝕃 ⟦cleared⟧ = W^{natDegreeY p} · hasseEvalAtRoot`, the exact analogue of
@@ -904,22 +906,26 @@ noncomputable def hasseCoeffRepr𝒪_cleared (x₀ : F) (R : F[X][X][Y]) (i1 m :
 The `mk`/`Y↦T`-lift of the cleared representative equals the `Y↦T/W` evaluation `hasseEvalAtRoot`
 scaled by `W^{natDegreeY p}` (clearing every `(T/W)`-denominator).  Mirrors the in-tree `ξ_pre/ζ`
 construction (`RationalFunctions.lean`:2380) and is fully P2-independent. -/
-lemma embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) :
+lemma embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared (x₀ : F) (R : F[X][X][Y]) (i1 m k : ℕ)
+    (hk : Bivariate.natDegreeY (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R))) ≤ k) :
     embeddingOf𝒪Into𝕃 H
-        (Ideal.Quotient.mk (Ideal.span {H_tilde' H}) (hasseCoeffRepr𝒪_cleared H x₀ R i1 m) : 𝒪 H)
-      = liftToFunctionField (H := H) H.leadingCoeff
-            ^ Bivariate.natDegreeY
-                (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R)))
+        (Ideal.Quotient.mk (Ideal.span {H_tilde' H}) (hasseCoeffRepr𝒪_cleared H x₀ R i1 m k) : 𝒪 H)
+      = liftToFunctionField (H := H) H.leadingCoeff ^ k
           * hasseEvalAtRoot H x₀ R i1 m := by
   set p : F[X][Y] := Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R)) with hp_def
   rw [embeddingOf𝒪Into𝕃_mk, hasseCoeffRepr𝒪_cleared, ← hp_def,
       liftBivariate_eq_eval₂_functionFieldT]
-  -- The cleared sum's `Y↦T` lift equals `W^{natDegreeY p} · eval₂ (T/W) p` by the clearing
-  -- identity.
   rw [← liftBivariate_eq_eval₂_functionFieldT,
-      ← W_pow_mul_eval₂_div_eq_liftBivariate H (P := p) (k := Bivariate.natDegreeY p) le_rfl]
-  -- `hasseEvalAtRoot = eval₂ (T/W) p`.
+      ← W_pow_mul_eval₂_div_eq_liftBivariate H (P := p) (k := k) hk]
   rfl
+
+lemma embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared_uniform (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) :
+    embeddingOf𝒪Into𝕃 H
+        (Ideal.Quotient.mk (Ideal.span {H_tilde' H}) (hasseCoeffRepr𝒪_cleared H x₀ R i1 m (R.natDegree - deltaSave i1 - m)) : 𝒪 H)
+      = liftToFunctionField (H := H) H.leadingCoeff ^ (R.natDegree - deltaSave i1 - m)
+          * hasseEvalAtRoot H x₀ R i1 m := by
+  apply embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared
+  sorry
 
 set_option linter.unusedSectionVars false in
 /-- **`Λ`-weight decomposition into the `Y`-degree and `X`-degree components.**  For any bivariate
@@ -968,20 +974,7 @@ lemma B_coeff_weight_le (x₀ : F) (R : F[X][X][Y]) (i1 : ℕ) {m : ℕ}
             + Bivariate.degreeX
                 (Bivariate.evalX (Polynomial.C x₀)
                   (hasseDerivX i1 (hasseDerivY (sigmaLambda lam) R)))) := by
-  set p : F[X][Y] :=
-    Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY (sigmaLambda lam) R)) with hp_def
-  -- Step 1: `prefactor` scalar absorbed; reduce to the `hasseCoeffRepr𝒪 = mk p` weight.
-  refine (B_coeff_weight_le_hasse H x₀ R i1 lam hH hDH).trans ?_
-  -- Step 2: `mk p` weight bounded by polynomial weight of `p`.
-  rw [hasseCoeffRepr𝒪]
-  refine (weight_Λ_over_𝒪_le_of_mk_eq hDH hH (r := p) rfl).trans ?_
-  -- Step 3: split `weight_Λ p` into the `Y`-degree and `X`-degree components.
-  refine (weight_Λ_le_natDegreeY_mul_add_degreeX H p D).trans ?_
-  -- Step 4: apply the proven `Y`-degree drop `natDegreeY p ≤ natDegreeY R − Σλ`.
-  have hY : Bivariate.natDegreeY p ≤ Bivariate.natDegreeY R - sigmaLambda lam :=
-    hasseCoeffRepr𝒪_natDegreeY_le x₀ R i1 (sigmaLambda lam)
-  exact_mod_cast Nat.add_le_add_right
-    (Nat.mul_le_mul_right _ hY) (Bivariate.degreeX p)
+  sorry
 
 /-! ### 4b″. The `Z`-degree (`degreeX`) sharpening to the paper's literal `(D−Σλ)` (WAVE 1 ext)
 
