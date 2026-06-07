@@ -846,13 +846,10 @@ lemma queryBlockSourceSuffix_maps_to_destSuffix
     (j : Fin (nBlocks (ℓ := ℓ) (ϑ := ϑ)))
     (v : sDomain 𝔽q β h_ℓ_add_R_rate 0) :
     iteratedQuotientMap 𝔽q β h_ℓ_add_R_rate
-      (i := queryBlockSourceIdx
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j)
-      (destIdx := queryBlockDestIdx
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j)
-      (k := ϑ) (h_destIdx := by rfl)
-      (h_destIdx_le := queryBlockDestIdx_le
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j)
+      (i := ⟨(queryBlockIdx (ℓ := ℓ) (ϑ := ϑ) j).val * ϑ,
+        k_mul_ϑ_lt_ℓ (k := queryBlockIdx (ℓ := ℓ) (ϑ := ϑ) j)⟩)
+      (k := ϑ)
+      (h_bound := k_succ_mul_ϑ_le_ℓ_₂ (k := queryBlockIdx (ℓ := ℓ) (ϑ := ϑ) j))
       (x := queryBlockSourceSuffix (𝔽q := 𝔽q) (β := β)
         (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j v) =
     queryBlockDestSuffix (𝔽q := 𝔽q) (β := β)
@@ -864,53 +861,50 @@ lemma queryBlockSourceSuffix_maps_to_destSuffix
         (queryBlockIdx (ℓ := ℓ) (ϑ := ϑ) j) v
         (extractMiddleFinMask 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
           (v := v)
-          (i := queryBlockSourceIdx
-            (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j)
-          (steps := ϑ)) := by
-    exact
-      previousSuffix_eq_getFiberPoint_extractMiddleFinMask
-        (𝔽q := 𝔽q) (β := β) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-        (j := queryBlockIdx (ℓ := ℓ) (ϑ := ϑ) j) (v := v)
+          (i := ⟨(queryBlockIdx (ℓ := ℓ) (ϑ := ϑ) j).val * ϑ,
+            k_mul_ϑ_lt_ℓ (k := queryBlockIdx (ℓ := ℓ) (ϑ := ϑ) j)⟩)
+          (steps := ϑ)) :=
+    previousSuffix_eq_getFiberPoint_extractMiddleFinMask
+      (𝔽q := 𝔽q) (β := β) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (j := queryBlockIdx (ℓ := ℓ) (ϑ := ϑ) j) (v := v)
+  -- `queryBlockDestSuffix j v` is definitionally the challenge suffix at the next block.
+  show _ = getChallengeSuffix 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        (k := queryBlockIdx (ℓ := ℓ) (ϑ := ϑ) j) (v := v)
   rw [h_source_suffix_eq]
   have h_generates :
       getChallengeSuffix 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
         (k := queryBlockIdx (ℓ := ℓ) (ϑ := ϑ) j) (v := v) =
       iteratedQuotientMap 𝔽q β h_ℓ_add_R_rate
-        (i := queryBlockSourceIdx
-          (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j)
-        (destIdx := queryBlockDestIdx
-          (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j)
-        (k := ϑ) (h_destIdx := by rfl)
-        (h_destIdx_le := queryBlockDestIdx_le
-          (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j)
+        (i := ⟨(queryBlockIdx (ℓ := ℓ) (ϑ := ϑ) j).val * ϑ,
+          k_mul_ϑ_lt_ℓ (k := queryBlockIdx (ℓ := ℓ) (ϑ := ϑ) j)⟩)
+        (k := ϑ)
+        (h_bound := k_succ_mul_ϑ_le_ℓ_₂ (k := queryBlockIdx (ℓ := ℓ) (ϑ := ϑ) j))
         (x := getFiberPoint 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
           (queryBlockIdx (ℓ := ℓ) (ϑ := ϑ) j) v
           (extractMiddleFinMask 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
             (v := v)
-            (i := queryBlockSourceIdx
-              (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j)
+            (i := ⟨(queryBlockIdx (ℓ := ℓ) (ϑ := ϑ) j).val * ϑ,
+              k_mul_ϑ_lt_ℓ (k := queryBlockIdx (ℓ := ℓ) (ϑ := ϑ) j)⟩)
             (steps := ϑ))) := by
     apply generates_quotient_point_if_is_fiber_of_y
       (𝔽q := 𝔽q) (β := β) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      (i := queryBlockSourceIdx
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j)
+      (i := ⟨(queryBlockIdx (ℓ := ℓ) (ϑ := ϑ) j).val * ϑ,
+        k_mul_ϑ_lt_ℓ (k := queryBlockIdx (ℓ := ℓ) (ϑ := ϑ) j)⟩)
       (steps := ϑ)
-      (h_destIdx := by rfl)
-      (h_destIdx_le := queryBlockDestIdx_le
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j)
+      (h_i_add_steps := k_succ_mul_ϑ_le_ℓ_₂ (k := queryBlockIdx (ℓ := ℓ) (ϑ := ϑ) j))
       (x := getFiberPoint 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
         (queryBlockIdx (ℓ := ℓ) (ϑ := ϑ) j) v
         (extractMiddleFinMask 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
           (v := v)
-          (i := queryBlockSourceIdx
-            (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j)
+          (i := ⟨(queryBlockIdx (ℓ := ℓ) (ϑ := ϑ) j).val * ϑ,
+            k_mul_ϑ_lt_ℓ (k := queryBlockIdx (ℓ := ℓ) (ϑ := ϑ) j)⟩)
           (steps := ϑ)))
       (y := getChallengeSuffix 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
         (k := queryBlockIdx (ℓ := ℓ) (ϑ := ϑ) j) (v := v))
     refine ⟨extractMiddleFinMask 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (v := v)
-      (i := queryBlockSourceIdx
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ℓ := ℓ) (ϑ := ϑ) j)
+      (i := ⟨(queryBlockIdx (ℓ := ℓ) (ϑ := ϑ) j).val * ϑ,
+        k_mul_ϑ_lt_ℓ (k := queryBlockIdx (ℓ := ℓ) (ϑ := ϑ) j)⟩)
       (steps := ϑ), ?_⟩
     rw [getFiberPoint_eq_qMap_total_fiber]
   exact h_generates.symm
