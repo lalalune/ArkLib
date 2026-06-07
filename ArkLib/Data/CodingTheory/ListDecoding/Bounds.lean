@@ -163,7 +163,7 @@ the external results are recorded as `def … : Prop` admit-statements with expl
 - [JH01] Theorem 2, source of T3.14.
 -/
 
-set_option linter.style.longFile 2300
+set_option linter.style.longFile 2400
 set_option linter.unusedFintypeInType false
 set_option linter.unusedDecidableInType false
 set_option linter.unusedSectionVars false
@@ -2229,6 +2229,89 @@ theorem frs_list_decoding_capacity_cz25_of_residuals_prop
   frs_list_decoding_capacity_cz25_of_residuals
     domain k s ω hs_pos η hη_pos hη_lt_s hT218 hT34 hηnat
 
+/-- Prop-level C3.5 endpoint from coordinate-fiber cap plus T2.18, using the documented
+reciprocal-natural slack convention `η = 1 / m` to discharge the floor side condition. -/
+theorem frs_list_decoding_capacity_cz25_of_coordFiberCap_T218_eta_eq_one_div_nat_prop
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (hs_pos : 0 < s)
+    (η : ℝ) (hη_pos : 0 < η) (hη_lt_s : 1 / η < s)
+    {m : ℕ} (hm : 0 < m) (hη : η = 1 / (m : ℝ))
+    (hT218 : IsSubspaceDesign s
+        (fun r ↦ if r ∈ Finset.Icc 1 s then
+            (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - r + 1) else 1)
+        (ReedSolomon.Folded.frsCode domain k s ω))
+    (hCap : ∀ (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
+        (h : IsSubspaceDesign s τ C) (η' : ℝ) (hη' : 0 < η'),
+        CZ25CoordFiberCap s τ C h η' hη') :
+    frs_list_decoding_capacity_cz25 domain k s ω hs_pos η hη_pos hη_lt_s := by
+  have hm_ne : (m : ℝ) ≠ 0 := by exact_mod_cast (ne_of_gt hm)
+  have h_one_div : (1 : ℝ) / η = (m : ℝ) := by
+    rw [hη]
+    field_simp [hm_ne]
+  have hms : m < s := by
+    have hmsR : (m : ℝ) < (s : ℝ) := by
+      rwa [h_one_div] at hη_lt_s
+    exact_mod_cast hmsR
+  exact frs_list_decoding_capacity_cz25_of_coordFiberCap_T218_eta_eq_one_div_nat
+    domain k s ω hs_pos η hm hη hms hT218 hCap
+
+/-- Prop-level C3.5 endpoint from coordinate-fiber cap plus the injective GK16 FRS bridge, using
+the reciprocal-natural slack convention `η = 1 / m` to discharge the floor side condition. -/
+theorem frs_list_decoding_capacity_cz25_of_coordFiberCap_injective_eta_eq_one_div_nat_prop
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (hs_pos : 0 < s)
+    (η : ℝ) (hη_pos : 0 < η) (hη_lt_s : 1 / η < s)
+    {m : ℕ} (hm : 0 < m) (hη : η = 1 / (m : ℝ))
+    (hEinj : Function.Injective (ReedSolomon.Folded.frsEvalOnPoints domain s ω))
+    (hω_sep : ∀ {n : ℕ} (Q : Fin n → Polynomial F), (∀ j, Q j ≠ 0) →
+        Function.Injective (fun j => (Q j).natDegree) →
+        Function.Injective (fun j => ω ^ (Q j).natDegree))
+    (hCap : ∀ (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
+        (h : IsSubspaceDesign s τ C) (η' : ℝ) (hη' : 0 < η'),
+        CZ25CoordFiberCap s τ C h η' hη') :
+    frs_list_decoding_capacity_cz25 domain k s ω hs_pos η hη_pos hη_lt_s := by
+  have hm_ne : (m : ℝ) ≠ 0 := by exact_mod_cast (ne_of_gt hm)
+  have h_one_div : (1 : ℝ) / η = (m : ℝ) := by
+    rw [hη]
+    field_simp [hm_ne]
+  have hms : m < s := by
+    have hmsR : (m : ℝ) < (s : ℝ) := by
+      rwa [h_one_div] at hη_lt_s
+    exact_mod_cast hmsR
+  exact frs_list_decoding_capacity_cz25_of_coordFiberCap_injective_eta_eq_one_div_nat
+    domain k s ω hs_pos η hm hη hms hEinj hω_sep hCap
+
+/-- Prop-level C3.5 endpoint from coordinate-fiber cap plus the admissible GK16 FRS bridge, using
+the reciprocal-natural slack convention `η = 1 / m` to discharge the floor side condition. -/
+theorem frs_list_decoding_capacity_cz25_of_coordFiberCap_admissible_eta_eq_one_div_nat_prop
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (hs_pos : 0 < s)
+    (η : ℝ) (hη_pos : 0 < η) (hη_lt_s : 1 / η < s)
+    {m : ℕ} (hm : 0 < m) (hη : η = 1 / (m : ℝ))
+    (L : Finset F) (hL_dom : ∀ i : ι, domain i ∈ L)
+    (hω0 : ω ≠ 0) (hadm : ReedSolomon.Folded.Admissible L s ω)
+    (hkLs : k ≤ s * Fintype.card ι) (hkord : k ≤ orderOf ω)
+    (hCap : ∀ (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
+        (h : IsSubspaceDesign s τ C) (η' : ℝ) (hη' : 0 < η'),
+        CZ25CoordFiberCap s τ C h η' hη') :
+    frs_list_decoding_capacity_cz25 domain k s ω hs_pos η hη_pos hη_lt_s := by
+  have hm_ne : (m : ℝ) ≠ 0 := by exact_mod_cast (ne_of_gt hm)
+  have h_one_div : (1 : ℝ) / η = (m : ℝ) := by
+    rw [hη]
+    field_simp [hm_ne]
+  have hms : m < s := by
+    have hmsR : (m : ℝ) < (s : ℝ) := by
+      rwa [h_one_div] at hη_lt_s
+    exact_mod_cast hmsR
+  exact frs_list_decoding_capacity_cz25_of_coordFiberCap_admissible_eta_eq_one_div_nat
+    domain k s ω hs_pos η hm hη hms L hL_dom hω0 hadm hkLs hkord hCap
+
 end SubspaceDesignUpperBounds
 
 -- Axiom audit on the ABF26 §3 headline front doors and narrowed residual bridges.  These are the
@@ -2266,5 +2349,8 @@ end SubspaceDesignUpperBounds
 #print axioms CodingTheory.rs_lambda_large_prime_ghsz02_of_injection
 #print axioms CodingTheory.frs_list_decoding_capacity_cz25_of_residuals
 #print axioms CodingTheory.frs_list_decoding_capacity_cz25_of_residuals_prop
+#print axioms CodingTheory.frs_list_decoding_capacity_cz25_of_coordFiberCap_T218_eta_eq_one_div_nat_prop
+#print axioms CodingTheory.frs_list_decoding_capacity_cz25_of_coordFiberCap_injective_eta_eq_one_div_nat_prop
+#print axioms CodingTheory.frs_list_decoding_capacity_cz25_of_coordFiberCap_admissible_eta_eq_one_div_nat_prop
 
 end CodingTheory
