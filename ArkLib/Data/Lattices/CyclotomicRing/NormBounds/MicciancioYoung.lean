@@ -255,6 +255,7 @@ theorem mul_coeff_valMinAbs_le (d w : Rq Φ) {k : ℕ} (hk : k < 2 ^ α) :
     have hnegSum : ∑ i ∈ Finset.filter (fun i => ¬ i ≤ k) (Finset.range n),
           ((Dz i : ZMod q) * (Wz (n + k - i) : ZMod q))
         = (d.1.toPoly * w.1.toPoly).coeff (n + k) := by
+      rw [Polynomial.coeff_mul, Finset.Nat.sum_antidiagonal_eq_sum_range_succ
         (fun i j => d.1.toPoly.coeff i * w.1.toPoly.coeff j) (n + k)]
       have hsub : Finset.filter (fun i => ¬ i ≤ k) (Finset.range n) ⊆ Finset.range (n + k + 1) := by
         intro i hi; simp only [Finset.mem_filter, Finset.mem_range] at hi ⊢; omega
@@ -270,7 +271,8 @@ theorem mul_coeff_valMinAbs_le (d w : Rq Φ) {k : ℕ} (hk : k < 2 ^ α) :
       · rw [coeff_toPoly_eq_zero_of_le (α := α) (a := w) (i := n + k - i) (by omega), mul_zero]
       · rw [coeff_toPoly_eq_zero_of_le (α := α) (a := d) (i := i)
           (le_of_not_gt (fun hcon => absurd (hni hcon) (by omega))), zero_mul]
-    rw [hposSum, hnegSum, sub_eq_add_neg]
+    rw [hposSum, hnegSum]
+    ring
   -- Minimality of the centered representative.
   have hmin : ((d * w).1.coeff k).valMinAbs.natAbs ≤ Mk.natAbs :=
     valMinAbs_natAbs_le Mk hMkcast
@@ -299,6 +301,7 @@ double-counted with the [Mic07] permutation `Σ_k |w_{σ(k,i)}|² = ‖w‖₂²
 theorem Rq.l2NormSq_mul_le (d w : Rq Φ) :
     Rq.l2NormSq Φ (d * w) ≤ (Rq.l1Norm Φ d) ^ 2 * Rq.l2NormSq Φ w := by
   -- Abbreviations for the centered absolute values, lifted to `ℤ`.
+  set n := 2 ^ α with hn
   set a : ℕ → ℤ := fun i => ((d.1.coeff i).valMinAbs.natAbs : ℤ) with ha
   set b : ℕ → ℤ := fun j => ((w.1.coeff j).valMinAbs.natAbs : ℤ) with hb
   -- It suffices to prove the inequality over `ℤ`.
@@ -318,6 +321,7 @@ theorem Rq.l2NormSq_mul_le (d w : Rq Φ) :
       (((d * w).1.coeff k).valMinAbs.natAbs : ℤ) ^ 2
         ≤ (∑ i ∈ Finset.range n, a i * b (negIdx n k i)) ^ 2 := by
     intro k hk
+    have hk' : k < 2 ^ α := by simpa [hn] using Finset.mem_range.mp hk
     have hbound := mul_coeff_valMinAbs_le (α := α) d w hk'
     have hbound' : (((d * w).1.coeff k).valMinAbs.natAbs : ℤ)
         ≤ ∑ i ∈ Finset.range n, a i * b (negIdx n k i) := by
@@ -347,11 +351,19 @@ theorem Rq.l2NormSq_mul_le (d w : Rq Φ) :
     _ = (∑ i ∈ Finset.range n, a i)
           * ∑ k ∈ Finset.range n, ∑ i ∈ Finset.range n, a i * b (negIdx n k i) ^ 2 := by
         rw [Finset.mul_sum]
-          * ∑ i ∈ Finset.range n, a i * ∑ k ∈ Finset.range n, b (negIdx n k i) ^ 2 := by
-        rw [Finset.sum_comm]
+    _ = (∑ i ∈ Finset.range n, a i)
+          * ∑ i ∈ Finset.range n, a i * ∑ k ∈ Finset.range n,
+              b (negIdx n k i) ^ 2 := by
         congr 1
+        rw [Finset.sum_comm]
+        refine Finset.sum_congr rfl (fun i _ => ?_)
+        rw [Finset.mul_sum]
+    _ = (∑ i ∈ Finset.range n, a i)
           * ∑ i ∈ Finset.range n, a i * ∑ k ∈ Finset.range n, b k ^ 2 := by
-        rw [sum_negIdx_eq_k (Finset.mem_range.mp hi) (fun j => b j ^ 2)]
+        congr 1
+        refine Finset.sum_congr rfl (fun i hi => ?_)
+        congr 1
+        exact sum_negIdx_eq_k (Finset.mem_range.mp hi) (fun j => b j ^ 2)
     _ = (∑ i ∈ Finset.range n, a i) ^ 2 * ∑ k ∈ Finset.range n, b k ^ 2 := by
         rw [← Finset.sum_mul, sq]; ring
 
