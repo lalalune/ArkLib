@@ -127,6 +127,90 @@ instance (M : ℕ) :
     ∀ j, OracleInterface (((whirVectorSpec M).toProtocolSpec F).Message j) :=
   fun j => (whirVectorSpec_messageIdx_isEmpty (F := F) M).elim j
 
+/-! ### `whir_rbr_soundness` existential assembly
+
+The top-level WHIR soundness statement in `RBRSoundness.lean` is an existential over a concrete
+`VectorIOP` plus the bundled `IsSecureWithGap` proof and the per-round numeric budget.  The theorem
+below proves the final packaging step: once a candidate protocol `π`, its security proof, and the
+paper's named fold/out/shift/final inequalities are supplied, the existential statement follows.
+
+This intentionally does **not** construct `π`; it isolates the remaining protocol/completeness/RBR
+knowledge-soundness obligation from the now-checked existential and budget assembly. -/
+section RBRSoundnessAssembly
+
+variable {M : ℕ}
+variable {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+
+/-- Assemble `whir_rbr_soundness` from a concrete WHIR `VectorIOP`, its `IsSecureWithGap` proof,
+and the named per-round bounds from Theorem 5.2.
+
+This is the exact downstream witness-introduction step for issue #113.  It keeps the hard residual
+honest: callers must still provide the actual Construction 5.1 protocol `π`, prove its perfect
+completeness/RBR knowledge soundness via `IsSecureWithGap`, and discharge the fold/OOD/shift/final
+numeric inequalities. -/
+theorem whir_rbr_soundness_of_secure_gap
+    [SampleableType F] {d dstar : ℕ}
+    {P : Params ιs F} {S : ∀ i : Fin (M + 1), Finset (ιs i)}
+    {hParams : ParamConditions ιs P} {h : GenMutualCorrParams ιs P S}
+    {m_0 : ℕ} (hm_0 : m_0 = P.varCount 0) {σ₀ : F}
+    {wPoly₀ : MvPolynomial (Fin (m_0 + 1)) F} {δ : ℝ≥0}
+    [Smooth (P.φ 0)] [Nonempty (ιs 0)]
+    (ε_fold : (i : Fin (M + 1)) → Fin (P.foldingParam i) → ℝ≥0)
+    (ε_out : Fin (M + 1) → ℝ≥0)
+    (ε_shift : Fin M → ℝ≥0) (ε_fin : ℝ≥0)
+    {n : ℕ} {vPSpec : ProtocolSpec.VectorSpec n}
+    (hChallengeCard : Fintype.card (vPSpec.ChallengeIdx) = 2 * M + 2)
+    (π : VectorIOP Unit (OracleStatement (ιs 0) F) Unit vPSpec F)
+    (hSecure :
+      let max_ε_folds : (i : Fin (M + 1)) → ℝ≥0 :=
+        fun i => (univ : Finset (Fin (P.foldingParam i))).sup (ε_fold i)
+      let ε_rbr : vPSpec.ChallengeIdx → ℝ≥0 :=
+        fun _ => (univ.image max_ε_folds ∪ {ε_fin} ∪ univ.image ε_out ∪
+          univ.image ε_shift).max' (by simp)
+      IsSecureWithGap (whirRelation m_0 (P.φ 0) 0)
+        (whirRelation m_0 (P.φ 0) (h.δ 0)) ε_rbr π)
+    (hBudget :
+      let maxDeg := (Finset.univ : Finset (Fin m_0)).sup
+        (fun i => wPoly₀.degreeOf (Fin.succ i))
+      let dstar := 1 + (wPoly₀.degreeOf 0) + maxDeg
+      let d := max dstar 3
+      let _ : ∀ j : Fin ((P.foldingParam 0) + 1),
+        Fintype (indexPowT (S 0) (P.φ 0) j) := h.inst1 0
+      let _ : ∀ j : Fin ((P.foldingParam 0) + 1),
+        Nonempty (indexPowT (S 0) (P.φ 0) j) := h.inst2 0
+      (∀ j : Fin ((P.foldingParam 0) + 1),
+        let errStar_0 j := h.errStar 0 j (h.C 0 j) (h.Gen_α 0 j).parℓ (h.δ 0)
+        ∀ j : Fin (P.foldingParam 0),
+          ε_fold 0 j ≤
+            ((dstar * (h.dist 0 j.castSucc)) / Fintype.card F) + (errStar_0 j.succ))
+      ∧
+      (∀ i : Fin (M + 1),
+        ε_out i ≤
+          2^(P.varCount i) * (h.dist i 0)^2 / (2 * Fintype.card F))
+      ∧
+      (∀ i : Fin M,
+        ε_shift i ≤ (1 - (h.δ i.castSucc))^(P.repeatParam i.castSucc)
+          + ((h.dist i.succ 0) * (P.repeatParam i.castSucc) + 1) / Fintype.card F)
+      ∧
+      (let _ : ∀ i : Fin (M + 1), ∀ j : Fin ((P.foldingParam i) + 1),
+        Fintype (indexPowT (S i) (P.φ i) j) := h.inst1
+      let _ : ∀ i : Fin (M + 1), ∀ j : Fin ((P.foldingParam i) + 1),
+        Nonempty (indexPowT (S i) (P.φ i) j) := h.inst2
+      (∀ i : Fin (M + 1), ∀ j : Fin ((P.foldingParam i) + 1),
+        let errStar i j := h.errStar i j (h.C i j) (h.Gen_α i j).parℓ (h.δ i)
+        ∀ i : Fin (M + 1), ∀ j : Fin (P.foldingParam i),
+          ε_fold i j ≤ d * (h.dist i j.castSucc) / Fintype.card F + errStar i j.succ)
+      ∧
+      ε_fin ≤ (1 - h.δ (Fin.last M))^(P.repeatParam (Fin.last M))) ) :
+    whir_rbr_soundness (F := F) (M := M) ιs (d := d) (dstar := dstar)
+      (P := P) (S := S) (hParams := hParams) (h := h)
+      hm_0 (σ₀ := σ₀) (wPoly₀ := wPoly₀) (δ := δ)
+      ε_fold ε_out ε_shift ε_fin := by
+  refine ⟨n, vPSpec, hChallengeCard, π, ?_⟩
+  exact ⟨hSecure, hBudget⟩
+
+end RBRSoundnessAssembly
+
 #print axioms whirVectorSpec_card_challengeIdx
 #print axioms whirVectorSpec_messageIdx_isEmpty
 #print axioms whirVectorSpec_card_messageIdx
@@ -135,6 +219,7 @@ instance (M : ℕ) :
 #print axioms whirVectorSpec_challenge_eq_vector_one
 #print axioms whirVectorSpec_totalChallengeLength
 #print axioms whirVectorSpec_totalMessageLength
+#print axioms whir_rbr_soundness_of_secure_gap
 
 end Construction
 
