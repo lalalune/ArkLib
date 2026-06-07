@@ -284,6 +284,27 @@ theorem close_codeword_eq_line
   rw [hwS i hi.1, hu₀, hu₁]
   simp [Pi.add_apply, Pi.smul_apply]
 
+/-- The minimum distance lower-bounds the support of every nonzero codeword of a linear code:
+`(a, 0)` is a distinct codeword pair at distance `|support a|`, so `minDist ≤ |support a|`. -/
+theorem minDist_le_support_of_mem (C : Submodule F (ι → F)) {a : ι → F}
+    (ha : a ∈ C) (ha0 : a ≠ 0) :
+    Code.minDist (C : Set (ι → F)) ≤ (Finset.univ.filter (fun i => a i ≠ 0)).card := by
+  have hsupp : (Finset.univ.filter (fun i => a i ≠ 0)).card = hammingDist a 0 := by
+    rw [hammingDist]; congr 1; ext i; simp
+  rw [hsupp]
+  exact Nat.sInf_le ⟨a, ha, 0, C.zero_mem, ha0, rfl⟩
+
+/-- **Unique decoding for any linear code — complete, no side hypotheses.**  Two codewords of a
+linear code `C` that agree on more than `n − minDist C` coordinates are equal.  This is the
+Reed–Solomon / MDS unique-decoding statement at the level of an abstract linear code: instantiated
+with `minDist (RS[n,k]) = n − k + 1` it says RS codewords agreeing on `≥ k` points coincide. -/
+theorem codeword_eq_of_agree_minDist (C : Submodule F (ι → F))
+    {c c' : ι → F} (hc : c ∈ C) (hc' : c' ∈ C) {S : Finset ι}
+    (hagree : ∀ i ∈ S, c i = c' i)
+    (hScard : Fintype.card ι - Code.minDist (C : Set (ι → F)) < S.card) :
+    c = c' :=
+  codeword_eq_of_agree C (fun a ha ha0 => minDist_le_support_of_mem C ha ha0) hc hc' hagree hScard
+
 end UniqueDecoding
 
 end ProximityGap
