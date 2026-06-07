@@ -1616,6 +1616,48 @@ theorem random_linear_lambda_lower_glmrsw22_of_random_generator_matrix
   exact exists_code_of_randomLinearLambdaLowerEvent
     (F := F) (ι := ι) (q := q) (k := k) (δ := δ) (ε := ε) (ρ := ρ) hG
 
+/-- A named first-moment residual family supplies the faithful random-generator-matrix
+GLMRSW22 surface.  The theorem only unfolds
+`randomLinearLambdaLowerFirstMomentResidual`; the actual first-moment estimate remains the
+explicit hypothesis. -/
+theorem random_linear_lambda_lower_glmrsw22_random_generator_matrix_of_first_moment_residual
+    (q : ℕ) (hq_pp : IsPrimePow q)
+    (δ : ℝ) (hδ_pos : 0 < δ) (hδ_lt : δ < 1 - 1 / q)
+    (ε : ℝ) (hε_pos : 0 < ε) (hε_lt : ε < 1)
+    (h :
+      ∃ γ : ℝ, 0 < γ ∧
+        ∀ ρ : ℝ, 1 - qEntropy q δ - γ < ρ → ρ < 1 - qEntropy q δ →
+          ∃ n₀ : ℕ,
+            ∀ {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+              {F : Type} [Field F] [Fintype F] [DecidableEq F],
+              Fintype.card F = q → n₀ ≤ Fintype.card ι →
+              ∃ k : ℕ,
+                randomLinearLambdaLowerFirstMomentResidual F ι q k δ ε ρ) :
+    random_linear_lambda_lower_glmrsw22_random_generator_matrix
+      q hq_pp δ hδ_pos hδ_lt ε hε_pos hε_lt := by
+  simpa [random_linear_lambda_lower_glmrsw22_random_generator_matrix,
+    randomLinearLambdaLowerFirstMomentResidual] using h
+
+/-- A named first-moment residual family supplies the legacy existential GLMRSW22 front door. -/
+theorem random_linear_lambda_lower_glmrsw22_of_first_moment_residual
+    (q : ℕ) (hq_pp : IsPrimePow q)
+    (δ : ℝ) (hδ_pos : 0 < δ) (hδ_lt : δ < 1 - 1 / q)
+    (ε : ℝ) (hε_pos : 0 < ε) (hε_lt : ε < 1)
+    (h :
+      ∃ γ : ℝ, 0 < γ ∧
+        ∀ ρ : ℝ, 1 - qEntropy q δ - γ < ρ → ρ < 1 - qEntropy q δ →
+          ∃ n₀ : ℕ,
+            ∀ {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+              {F : Type} [Field F] [Fintype F] [DecidableEq F],
+              Fintype.card F = q → n₀ ≤ Fintype.card ι →
+              ∃ k : ℕ,
+                randomLinearLambdaLowerFirstMomentResidual F ι q k δ ε ρ) :
+    random_linear_lambda_lower_glmrsw22 q hq_pp δ hδ_pos hδ_lt ε hε_pos hε_lt :=
+  random_linear_lambda_lower_glmrsw22_of_random_generator_matrix q hq_pp δ hδ_pos hδ_lt ε
+    hε_pos hε_lt
+    (random_linear_lambda_lower_glmrsw22_random_generator_matrix_of_first_moment_residual
+      q hq_pp δ hδ_pos hδ_lt ε hε_pos hε_lt h)
+
 end RandomLinear
 
 section ReedSolomonBounds
@@ -2182,6 +2224,8 @@ end SubspaceDesignUpperBounds
 #print axioms CodingTheory.subspaceDesign_list_decoding_cz25
 #print axioms CodingTheory.frs_list_decoding_capacity_cz25
 #print axioms CodingTheory.random_linear_lambda_lower_glmrsw22_of_random_generator_matrix
+#print axioms random_linear_lambda_lower_glmrsw22_random_generator_matrix_of_first_moment_residual
+#print axioms random_linear_lambda_lower_glmrsw22_of_first_moment_residual
 #print axioms CodingTheory.rs_lambda_superpoly_extension_bkr06_of_family
 #print axioms CodingTheory.rs_lambda_superpoly_extension_bkr06_of_residuals
 #print axioms CodingTheory.rs_lambda_superpoly_extension_bkr06_of_injection
