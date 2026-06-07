@@ -121,4 +121,36 @@ theorem coeff_βHenselAssembled_eq_αGenuine_iff_residual
     rw [h]
     simp only [αGenuine]
 
+/-- Directional consumer: the analytic root equation implies the carved P2 residual. -/
+theorem FaaDiBrunoSuccSumZeroResidual.of_eval_βHenselAssembled_eq_zero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hroot : Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H) = 0) :
+    FaaDiBrunoSuccSumZeroResidual H x₀ R hHyp :=
+  (eval_βHenselAssembled_eq_zero_iff_residual H x₀ R hHyp).1 hroot
+
+/-- Directional consumer: the carved P2 residual gives the analytic root equation. -/
+theorem eval_βHenselAssembled_eq_zero_of_residual
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hzero : FaaDiBrunoSuccSumZeroResidual H x₀ R hHyp) :
+    Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H) = 0 :=
+  (eval_βHenselAssembled_eq_zero_iff_residual H x₀ R hHyp).2 hzero
+
+/-- Lift-identity consumer from the analytic assembled-root form. -/
+theorem βHensel_lift_identity_of_eval_βHenselAssembled_eq_zero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hroot : Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H) = 0) (t : ℕ) :
+    embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+      = αGenuine H x₀ R hHyp t
+          * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+          * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1) :=
+  βHensel_lift_identity_of_assembledSeries_isRoot H x₀ R hHyp hroot t
+
 end BCIKS20.HenselNumerator
+
+#print axioms BCIKS20.HenselNumerator.faaDiBrunoSuccSumZeroResidual_iff_coeff_succ_eval
+#print axioms BCIKS20.HenselNumerator.eval_βHenselAssembled_eq_zero_iff_residual
+#print axioms BCIKS20.HenselNumerator.βHenselAssembled_eq_gammaGenuine_iff_residual
+#print axioms BCIKS20.HenselNumerator.coeff_βHenselAssembled_eq_αGenuine_iff_residual
+#print axioms BCIKS20.HenselNumerator.FaaDiBrunoSuccSumZeroResidual.of_eval_βHenselAssembled_eq_zero
+#print axioms BCIKS20.HenselNumerator.eval_βHenselAssembled_eq_zero_of_residual
+#print axioms BCIKS20.HenselNumerator.βHensel_lift_identity_of_eval_βHenselAssembled_eq_zero

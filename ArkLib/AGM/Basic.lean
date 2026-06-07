@@ -235,6 +235,76 @@ theorem appendBasis_eq_trimExponents_appendBasis {prev : List G} {target : G}
     repr.appendBasis extra = repr.trimExponents.appendBasis extra := by
   ext
   simp [appendBasis, trimExponents, List.take_take]
+private theorem zipWith_append_prod (xs ys : List G) (as bs : List (ZMod p))
+    (hlen : xs.length = as.length) :
+    ((xs ++ ys).zipWith (fun g a => g ^ a.val) (as ++ bs)).prod
+      = (xs.zipWith (fun g a => g ^ a.val) as).prod *
+        (ys.zipWith (fun g a => g ^ a.val) bs).prod := by
+  induction xs generalizing as with
+  | nil =>
+      cases as with
+      | nil => simp
+      | cons a as => simp at hlen
+  | cons x xs ih =>
+      cases as with
+      | nil => simp at hlen
+      | cons a as =>
+          simp only [List.cons_append, List.zipWith_cons_cons, List.prod_cons]
+          rw [ih as (by simpa using hlen), mul_assoc]
+
+/-- **Representation concatenation / composition.** Given representations of `t₁` over basis `prev₁`
+and `t₂` over basis `prev₂`, their concatenation represents the product `t₁ * t₂` over the
+concatenated basis `prev₁ ++ prev₂`. We require the first exponent vector to have exactly the length
+of its basis so the truncating `zipWith` does not consume the second block; this is precisely the
+length-discipline needed to glue two algebraic outputs into a representation of their product. -/
+def mul {prev₁ prev₂ : List G} {t₁ t₂ : G}
+    (r₁ : GroupRepresentation (p := p) prev₁ t₁) (r₂ : GroupRepresentation (p := p) prev₂ t₂)
+    (hlen : prev₁.length = r₁.exponents.length) :
+    GroupRepresentation (p := p) (prev₁ ++ prev₂) (t₁ * t₂) where
+  exponents := r₁.exponents ++ r₂.exponents
+  hEq := by
+    rw [zipWith_append_prod prev₁ prev₂ r₁.exponents r₂.exponents hlen, r₁.hEq, r₂.hEq]
+
+/-- The exponent vector produced by `mul` is the concatenation of the two component vectors. This is
+the bookkeeping fact that lets `mul` chain: the length-discipline hypothesis of an outer `mul`
+reduces to the component disciplines via `List.length_append`. -/
+@[simp] theorem mul_exponents {prev₁ prev₂ : List G} {t₁ t₂ : G}
+    (r₁ : GroupRepresentation (p := p) prev₁ t₁) (r₂ : GroupRepresentation (p := p) prev₂ t₂)
+    (hlen : prev₁.length = r₁.exponents.length) :
+    (r₁.mul r₂ hlen).exponents = r₁.exponents ++ r₂.exponents := rfl
+
+private theorem map_inv_zipWith_pow (prev : List G) (exps : List (ZMod p)) :
+    (prev.zipWith (fun g a => g ^ a.val) exps).map (·⁻¹)
+      = (prev.map (·⁻¹)).zipWith (fun g a => g ^ a.val) exps := by
+  induction prev generalizing exps with
+  | nil => simp
+  | cons g prev ih =>
+      cases exps with
+      | nil => simp
+      | cons a exps =>
+          simp only [List.map_cons, List.zipWith_cons_cons]
+          rw [ih exps, inv_pow]
+
+/-- **Inverse representation.** The inverse `target⁻¹` of a represented target is itself
+representable: over the reversed list of inverted basis generators `(prev.map (·⁻¹)).reverse`, using
+the reversed exponent vector. In a general (possibly non-abelian) group, inversion reverses the
+order of the product, hence the reversal of both basis and exponents; for an abelian group this
+collapses to negating the exponents in place. Requires the exponent vector to match the basis length
+so the two reversals line up. The group-inverse counterpart to `mul`. -/
+def inv {prev : List G} {target : G}
+    (repr : GroupRepresentation (p := p) prev target)
+    (hlen : prev.length = repr.exponents.length) :
+    GroupRepresentation (p := p) ((prev.map (·⁻¹)).reverse) target⁻¹ where
+  exponents := repr.exponents.reverse
+  hEq := by
+    have hlen' : (prev.map (·⁻¹)).length = repr.exponents.length := by simpa using hlen
+    rw [← List.reverse_zipWith hlen', ← map_inv_zipWith_pow, ← List.prod_inv_reverse, repr.hEq]
+
+/-- The exponent vector produced by `inv` is the reversed input exponent vector. -/
+@[simp] theorem inv_exponents {prev : List G} {target : G}
+    (repr : GroupRepresentation (p := p) prev target)
+    (hlen : prev.length = repr.exponents.length) :
+    (repr.inv hlen).exponents = repr.exponents.reverse := rfl
 
 #print axioms GroupRepresentation.zipWith_pow_prod_mem_closure
 #print axioms GroupRepresentation.target_mem_closure
@@ -252,6 +322,10 @@ theorem appendBasis_eq_trimExponents_appendBasis {prev : List G} {target : G}
 #print axioms GroupRepresentation.appendBasis_exponents_length_le
 #print axioms GroupRepresentation.appendBasis_trimExponents_eq_self
 #print axioms GroupRepresentation.appendBasis_eq_trimExponents_appendBasis
+#print axioms GroupRepresentation.mul
+#print axioms GroupRepresentation.mul_exponents
+#print axioms GroupRepresentation.inv
+#print axioms GroupRepresentation.inv_exponents
 
 end GroupRepresentation
 
@@ -264,6 +338,28 @@ local instance {α : Type*} : Zero (Option α) where
   representation of finitely supported functions). -/
 @[reducible]
 def GroupValTable (ι : Type*) (G : Type*) := Π₀ _ : ι, Option G
+
+namespace GroupValTable
+
+variable {ι : Type*} [DecidableEq ι] {G : Type*}
+
+/-- **Read-after-write at the written index.** Reading the index just written by `update` returns
+the written value. This is the table-level invariant underlying every successful oracle
+implementation (`implGroupOpOracle`, `implGroupExpOracle`, `implGroupDecodeOracle`): after a store
+at index `k`, a subsequent read at `k` observes the stored group element. -/
+@[simp] theorem update_self (t : GroupValTable ι G) (k : ι) (g : Option G) :
+    (t.update k g) k = g := by simp
+
+/-- **Read-after-write at a different index.** Writing index `k` leaves any other index `k' ≠ k`
+unchanged, so oracle stores are local: an `update` at one handle does not disturb the group elements
+recorded at other handles. -/
+@[simp] theorem update_ne (t : GroupValTable ι G) {k k' : ι} (g : Option G) (h : k' ≠ k) :
+    (t.update k g) k' = t k' := by simp [h]
+
+end GroupValTable
+
+#print axioms GroupValTable.update_self
+#print axioms GroupValTable.update_ne
 
 section OracleSpec
 

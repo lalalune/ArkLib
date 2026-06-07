@@ -56,6 +56,7 @@ import ArkLib.Data.CodingTheory.Connections.ListDecodingAndCA
 import ArkLib.Data.CodingTheory.Connections.SmoothDomainMCAWitness
 import ArkLib.Data.CodingTheory.DivergenceOfSets
 import ArkLib.Data.CodingTheory.EntropyCapacityValue
+import ArkLib.Data.CodingTheory.EntropyConcave
 import ArkLib.Data.CodingTheory.EntropyGVBound
 import ArkLib.Data.CodingTheory.EntropyHammingBound
 import ArkLib.Data.CodingTheory.EntropyVolumeBound
@@ -332,6 +333,7 @@ import ArkLib.Data.MvPolynomial.Interpolation
 import ArkLib.Data.MvPolynomial.LinearMvExtension
 import ArkLib.Data.MvPolynomial.Multilinear
 import ArkLib.Data.MvPolynomial.MultilinearComputational
+import ArkLib.Data.MvPolynomial.MultilinearSchwartzZippel
 import ArkLib.Data.MvPolynomial.RestrictDegree
 import ArkLib.Data.MvPolynomial.RestrictDegreeVar
 import ArkLib.Data.MvPolynomial.SchwartzZippelCounting

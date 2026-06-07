@@ -41,6 +41,27 @@ namespace BCIKS20.HenselNumerator
 variable {F : Type} [Field F]
 variable (H : F[X][Y]) [Fact (Irreducible H)] [Fact (0 < H.natDegree)]
 
+/-- **`hasseEvalAtRoot` in LHS partition shape (PROVEN).** Composing the proven
+`hasseEvalAtRoot_eq_taylorSum` (`∑_i C(i+m,m)·(lift((Δ_X^{i₁}R)|x₀).coeff(i+m))·(T/W)^i`) with the
+`+m` reindex `Polynomial.sum_choose_shift_reindex` gives `hasseEvalAtRoot` directly in the binomial,
+`α₀`-shifted shape that appears (per Y-degree `j`) on the LHS of the carved restricted match — the
+left-side identification feeding the per-`(i₁,λ)` term equality. -/
+theorem hasseEvalAtRoot_eq_partitionShape (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) :
+    hasseEvalAtRoot H x₀ R i1 m
+      = ∑ j ∈ Finset.range ((Bivariate.evalX (Polynomial.C x₀)
+              (hasseDerivX i1 (hasseDerivY m R))).natDegree + m + 1),
+          (j.choose m)
+            • ((liftToFunctionField (H := H)
+                  ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 R)).coeff j))
+                * (functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff)
+                    ^ (j - m)) := by
+  rw [hasseEvalAtRoot_eq_taylorSum]
+  exact Polynomial.sum_choose_shift_reindex
+    (fun j => liftToFunctionField (H := H)
+      ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 R)).coeff j))
+    (fun i => (functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff) ^ i)
+    m _
+
 /-- The already-reindexed left side of the carved restricted Faà-di-Bruno match. -/
 def restrictedFaaDiBrunoPartitionForm (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) : 𝕃 H :=
