@@ -159,6 +159,36 @@ theorem RS_correlatedAgreement_affineLines_johnson_of_betaRec_offcentre_strict
     hδ
 
 omit [DecidableEq ι] in
+/-- Closed-boundary affine-line capstone with the §5 Johnson branch supplied by the off-centre
+local-variable `betaRec` capsule and the boundary branch supplied as the already-packaged
+`BoundaryCardResidual`.
+
+This is the affine-line counterpart of
+`KeystoneStrictResidual.correlatedAgreement_affine_curves_johnson_of_betaRec_offcentre`, specialized
+to `k = 1`. -/
+theorem RS_correlatedAgreement_affineLines_johnson_of_betaRec_offcentre
+    {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hInput : ∀ (_hk : 0 < 1) (u : WordStack F (Fin 2) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin 2, (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          (((1 : ℕ) : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      δ < 1 - ReedSolomon.sqrtRate deg domain →
+      ArkLib.KeystoneStrictResidual.BetaCurveInputOffcentre
+        (k := 1) (deg := deg) (domain := domain) (δ := δ) u)
+    (hBoundaryCard :
+      BoundaryCardResidual (k := 1) (deg := deg) (domain := domain) (δ := δ)) :
+  δ_ε_correlatedAgreementAffineLines (A := F) (F := F) (ι := ι)
+    (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
+  RS_correlatedAgreement_affineLines (ι := ι) (F := F) (deg := deg)
+    (domain := domain) (δ := δ)
+    (ArkLib.KeystoneStrictResidual.strictCoeffPolysResidual_of_betaRec_offcentre
+      (k := 1) (deg := deg) (domain := domain) (δ := δ) hInput)
+    hBoundaryCard hδ
+
+omit [DecidableEq ι] in
 /-- Closed-boundary affine-line capstone with the strict Johnson branch supplied by the verified
 `betaRec` capsule and the square-root boundary branch supplied by explicit boundary cardinality
 and coefficient-polynomial data. -/
@@ -508,6 +538,31 @@ theorem RS_correlatedAgreement_affineLines_johnson_of_betaRec_offcentreFin_stric
     hδ
 
 omit [DecidableEq ι] in
+/-- Closed-boundary affine-line capstone with the finite off-centre `betaRec` capsule and the
+boundary branch supplied as the already-packaged `BoundaryCardResidual`. -/
+theorem RS_correlatedAgreement_affineLines_johnson_of_betaRec_offcentreFin
+    {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hInput : ∀ (_hk : 0 < 1) (u : WordStack F (Fin 2) ι),
+      Pr_{
+        let z ← $ᵖ F}[δᵣ(∑ t : Fin 2, (z ^ (t : ℕ)) • u t,
+          ReedSolomon.code domain deg) ≤ δ] >
+          (((1 : ℕ) : ENNReal) * (errorBound δ deg domain : ENNReal)) →
+      (1 - (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)) / 2 < δ →
+      δ < 1 - ReedSolomon.sqrtRate deg domain →
+      ArkLib.KeystoneStrictResidual.BetaCurveInputOffcentreFin
+        (k := 1) (deg := deg) (domain := domain) (δ := δ) u)
+    (hBoundaryCard :
+      BoundaryCardResidual (k := 1) (deg := deg) (domain := domain) (δ := δ)) :
+  δ_ε_correlatedAgreementAffineLines (A := F) (F := F) (ι := ι)
+    (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) :=
+  RS_correlatedAgreement_affineLines (ι := ι) (F := F) (deg := deg)
+    (domain := domain) (δ := δ)
+    (ArkLib.KeystoneStrictResidual.strictCoeffPolysResidual_of_betaRec_offcentreFin
+      (k := 1) (deg := deg) (domain := domain) (δ := δ) hInput)
+    hBoundaryCard hδ
+
+omit [DecidableEq ι] in
 /-- Closed-boundary affine-line capstone with the strict Johnson branch supplied by the
 finite-range `betaRec` capsule and the square-root boundary branch supplied by explicit boundary
 cardinality and coefficient-polynomial data. -/
@@ -806,6 +861,8 @@ end ProximityGap
 #print axioms
   ProximityGap.RS_correlatedAgreement_affineLines_johnson_of_betaRec_lattice_data_isSquare
 #print axioms
+  ProximityGap.RS_correlatedAgreement_affineLines_johnson_of_betaRec_offcentre
+#print axioms
   ProximityGap.RS_correlatedAgreement_affineLines_johnson_of_betaRec_offcentre_strict
 #print axioms
   ProximityGap.RS_correlatedAgreement_affineLines_johnson_of_betaRec_offcentre_boundaryCard
@@ -819,6 +876,8 @@ end ProximityGap
   ProximityGap.RS_correlatedAgreement_affineLines_johnson_of_betaRecFin_quantization_data
 #print axioms
   ProximityGap.RS_correlatedAgreement_affineLines_johnson_of_betaRecFin_lattice_data_isSquare
+#print axioms
+  ProximityGap.RS_correlatedAgreement_affineLines_johnson_of_betaRec_offcentreFin
 #print axioms
   ProximityGap.RS_correlatedAgreement_affineLines_johnson_of_betaRec_offcentreFin_strict
 #print axioms
