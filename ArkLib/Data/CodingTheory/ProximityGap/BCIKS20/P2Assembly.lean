@@ -100,6 +100,23 @@ def RestrictedFaaDiBrunoPartitionMatchAt (x₀ : F) (R : F[X][X][Y])
   restrictedFaaDiBrunoPartitionForm H x₀ R hHyp t
     = restrictedMatchRecursionPartitionForm H x₀ R hHyp t
 
+/-- **Order-zero LHS branch collapse.**  At `t = 0`, the `ab = (0,1)` branch is killed by
+the `1 ∉ λ.parts` filter on `Nat.Partition 1`, and the `ab = (1,0)` branch has only the empty
+partition.  The left side of the final P2 residual is therefore the single surviving Taylor
+power-sum indexed by the `Y`-degree of `Q`. -/
+theorem restrictedFaaDiBrunoPartitionForm_zero_eq_powerSum
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    restrictedFaaDiBrunoPartitionForm H x₀ R hHyp 0 =
+      ∑ i ∈ Finset.range ((Q x₀ R H).natDegree + 1),
+        (liftToFunctionField (H := H)
+            ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 R)).coeff i))
+        * (PowerSeries.coeff 0 (βHenselAssembled H x₀ R hHyp)) ^ i := by
+  unfold restrictedFaaDiBrunoPartitionForm
+  apply Finset.sum_congr rfl
+  intro i _
+  rw [Finset.Nat.sum_antidiagonal_succ]
+  simp
+
 /-- The final all-orders P2 partition-form residual.  This is packaged as a family of
 single-order residuals so the remaining term-level proof can be attacked order by order. -/
 def RestrictedFaaDiBrunoPartitionMatch (x₀ : F) (R : F[X][X][Y])
@@ -361,6 +378,7 @@ section AxiomAudit
 #print axioms restrictedFaaDiBrunoPartitionForm
 #print axioms restrictedMatchRecursionPartitionForm
 #print axioms RestrictedFaaDiBrunoPartitionMatchAt
+#print axioms restrictedFaaDiBrunoPartitionForm_zero_eq_powerSum
 #print axioms RestrictedFaaDiBrunoPartitionMatch
 #print axioms restrictedPartitionMatch_iff_forall_at
 #print axioms RestrictedFaaDiBrunoPartitionMatch.at
