@@ -19,6 +19,8 @@ transports a representation, preserving exponents).  This file adds the matching
   the exponent vector (the functional converse of soundness).
 * `target_mem_of_forall_mem` — **relative soundness**: if the basis lies in any subgroup `H`, the
   represented target lies in `H`.
+* `map_target_mem_of_forall_mem` — functorial relative soundness: if a homomorphic image of the
+  basis lies in a subgroup, then the image target lies there too.
 * `map_exponents` — functoriality acts only on the basis, leaving the exponent vector fixed.
 * `singleton_target_mem_zpowers` — the rank-1 target `g ^ a.val` lies in `Subgroup.zpowers g`.
 -/
@@ -47,6 +49,19 @@ theorem target_mem_of_forall_mem {prev : List G} {target : G}
     intro g hg
     exact hprev g hg)) repr.target_mem_closure
 
+/-- **Functorial subgroup-relative soundness.** If a homomorphic image of every basis element lies in
+a subgroup `K`, then the image of any represented target lies in `K`. This composes
+`GroupRepresentation.map` with `target_mem_of_forall_mem`, packaging the subgroup form needed by
+downstream AGM-to-GGM reductions. -/
+theorem map_target_mem_of_forall_mem {H : Type*} [Group H] (f : G →* H)
+    {prev : List G} {target : G} (repr : GroupRepresentation (p := p) prev target)
+    (K : Subgroup H) (hprev : ∀ g ∈ prev, f g ∈ K) : f target ∈ K := by
+  exact (repr.map f).target_mem_of_forall_mem K (by
+    intro h hh
+    rw [List.mem_map] at hh
+    obtain ⟨g, hg, rfl⟩ := hh
+    exact hprev g hg)
+
 /-- Functoriality acts only on the basis: transporting a representation along a group hom `f`
 (`GroupRepresentation.map`) leaves the exponent vector unchanged. -/
 @[simp] theorem map_exponents {H : Type*} [Group H] (f : G →* H) {prev : List G} {target : G}
@@ -64,5 +79,6 @@ end AGM.GroupRepresentation
 
 #print axioms AGM.GroupRepresentation.target_eq_of_exponents_eq
 #print axioms AGM.GroupRepresentation.target_mem_of_forall_mem
+#print axioms AGM.GroupRepresentation.map_target_mem_of_forall_mem
 #print axioms AGM.GroupRepresentation.map_exponents
 #print axioms AGM.GroupRepresentation.singleton_target_mem_zpowers
