@@ -907,9 +907,107 @@ def lambda_le_ggr11 {ι F : Type} [Fintype ι] [Field F] [DecidableEq F]
     Lambda (interleavedCodeSet (κ := Fin m) C) δ ≤
       ((b + r).choose r : ℕ∞) * (Lambda C δ) ^ r
 
+private lemma exists_transpose_ne_of_ne {A ι κ : Type*} {U V : Matrix ι κ A}
+    (hUV : U ≠ V) : ∃ k : κ, U.transpose k ≠ V.transpose k := by
+  by_contra h
+  apply hUV
+  funext i k
+  have hk : U.transpose k = V.transpose k := by
+    by_contra hk
+    exact (not_exists.mp h k) hk
+  simpa [Matrix.transpose] using congrFun hk i
+
+private lemma hammingDist_const_interleaved {A ι κ : Type*} [Fintype ι] [Fintype κ]
+    [Nonempty κ] [DecidableEq A] (u v : ι → A) :
+    hammingDist (fun i : ι => fun _ : κ => u i)
+      (fun i : ι => fun _ : κ => v i) = hammingDist u v := by
+  classical
+  rw [hammingDist_eq_disagreementCols_card, hammingDist_eq_disagreementCols_card]
+  apply congrArg Finset.card
+  ext i
+  simp only [mem_disagreementCols]
+  constructor
+  · intro hfun
+    by_contra hne
+    apply hfun
+    funext _k
+    exact hne
+  · intro hne hfun
+    obtain ⟨k⟩ := (inferInstance : Nonempty κ)
+    exact hne (congrFun hfun k)
+
+private lemma hammingDist_transpose_le {A ι κ : Type*} [Fintype ι] [Fintype κ]
+    [DecidableEq A] (U V : Matrix ι κ A) (k : κ) :
+    hammingDist (U.transpose k) (V.transpose k) ≤ hammingDist U V := by
+  classical
+  have := hammingDist_comp_le_hammingDist (γ := fun _ : ι => κ → A)
+    (β := fun _ : ι => A) (fun (_ : ι) (row : κ → A) => row k) (x := U) (y := V)
+  simpa [Matrix.transpose] using this
+
 lemma minDist_eq_minDist {F A ι κ : Type*} [Semiring F] [AddCommMonoid A] [Module F A]
     [Fintype ι] [Fintype κ] [Nonempty κ] [DecidableEq A] (C : Set (ι → A)) :
     Code.minDist (C^⋈κ) = Code.minDist C := by
-  sorry
+  classical
+  let Sbase : Set ℕ :=
+    {d | ∃ u ∈ C, ∃ v ∈ C, u ≠ v ∧ hammingDist u v = d}
+  let Sint : Set ℕ :=
+    {d | ∃ U ∈ (C ^⋈ κ), ∃ V ∈ (C ^⋈ κ), U ≠ V ∧ hammingDist U V = d}
+  have const_mem {u : ι → A} (hu : u ∈ C) :
+      (fun i : ι => fun _ : κ => u i) ∈ (C ^⋈ κ) := by
+    rw [interleavedCode_eq_interleavedCodeSet]
+    intro k
+    simpa [Matrix.transpose] using hu
+  have const_ne {u v : ι → A} (huv : u ≠ v) :
+      (fun i : ι => fun _ : κ => u i) ≠
+        (fun i : ι => fun _ : κ => v i) := by
+    intro h
+    apply huv
+    funext i
+    obtain ⟨k⟩ := (inferInstance : Nonempty κ)
+    exact congrFun (congrFun h i) k
+  have base_to_interleaved {d : ℕ} (hd : d ∈ Sbase) : d ∈ Sint := by
+    rcases hd with ⟨u, hu, v, hv, huv, hdist⟩
+    exact ⟨fun i : ι => fun _ : κ => u i, const_mem hu,
+      fun i : ι => fun _ : κ => v i, const_mem hv, const_ne huv, by
+        rw [hammingDist_const_interleaved]
+        exact hdist⟩
+  have row_mem_of_mem {U : Matrix ι κ A} (hU : U ∈ (C ^⋈ κ)) (k : κ) :
+      U.transpose k ∈ C := by
+    have hU' : ∀ k : κ, U.transpose k ∈ C := by
+      simpa [interleavedCode_eq_interleavedCodeSet, interleavedCodeSet] using hU
+    exact hU' k
+  unfold Code.minDist
+  change sInf Sint = sInf Sbase
+  by_cases hbase : Sbase.Nonempty
+  · have hSint : Sint.Nonempty := by
+      rcases hbase with ⟨d, hd⟩
+      exact ⟨d, base_to_interleaved hd⟩
+    apply le_antisymm
+    · exact Nat.sInf_le (base_to_interleaved (Nat.sInf_mem hbase))
+    · apply sInf.le_sInf_of_LB hSint
+      intro d hd
+      rcases hd with ⟨U, hU, V, hV, hUV, hdist⟩
+      rcases exists_transpose_ne_of_ne hUV with ⟨k, hk⟩
+      have hrowU : U.transpose k ∈ C := row_mem_of_mem hU k
+      have hrowV : V.transpose k ∈ C := row_mem_of_mem hV k
+      have hbase_row : hammingDist (U.transpose k) (V.transpose k) ∈ Sbase :=
+        ⟨U.transpose k, hrowU, V.transpose k, hrowV, hk, rfl⟩
+      have hmin_le_row : sInf Sbase ≤ hammingDist (U.transpose k) (V.transpose k) :=
+        Nat.sInf_le hbase_row
+      have hrow_le : hammingDist (U.transpose k) (V.transpose k) ≤ hammingDist U V :=
+        hammingDist_transpose_le U V k
+      exact le_trans hmin_le_row (by simpa [hdist] using hrow_le)
+  · have hSbase_empty : Sbase = ∅ := Set.not_nonempty_iff_eq_empty.mp hbase
+    have hSint_empty : Sint = ∅ := by
+      apply Set.eq_empty_iff_forall_notMem.mpr
+      intro d hd
+      rcases hd with ⟨U, hU, V, hV, hUV, _hdist⟩
+      rcases exists_transpose_ne_of_ne hUV with ⟨k, hk⟩
+      have hrowU : U.transpose k ∈ C := row_mem_of_mem hU k
+      have hrowV : V.transpose k ∈ C := row_mem_of_mem hV k
+      have hbase_row : hammingDist (U.transpose k) (V.transpose k) ∈ Sbase :=
+        ⟨U.transpose k, hrowU, V.transpose k, hrowV, hk, rfl⟩
+      simp [hSbase_empty] at hbase_row
+    simp [hSbase_empty, hSint_empty]
 
 end InterleavedCode
