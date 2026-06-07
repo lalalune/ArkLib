@@ -193,6 +193,40 @@ theorem mcaBad_card_le_listFactor_mul_perCodeword
       ≤ (T.card : ℝ) * b := h1
     _ ≤ B_T * b := by exact mul_le_mul_of_nonneg_right hb_card hb0
 
+/-- **Witness-cover form of the GCXK25 union bound.**
+
+This is the same cardinality argument as `mcaBad_card_le_listFactor_mul_perCodeword`, but with
+the carrier hypothesis weakened to the exact cover needed for the proof:
+
+  `mcaBad C δ u₀ u₁ ⊆ ⋃ w ∈ T, mcaBadWitness C δ u₀ u₁ w`.
+
+The older theorem obtains this cover from `T ⊇ C`. GCXK25/GKL-style list-decoding applications
+instead want `T` to be the finite close-codeword / witness carrier for this stack, whose size is
+bounded by `L²`, not the full code. This lemma exposes that lower-level interface directly. -/
+theorem mcaBad_card_le_listFactor_mul_perCodeword_cover
+    (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A)
+    (T : Finset (ι → A))
+    (hcover :
+      mcaBad (F := F) C δ u₀ u₁ ⊆
+        T.biUnion (fun w => mcaBadWitness (F := F) C δ u₀ u₁ w))
+    {b B_T : ℝ} (hb0 : 0 ≤ b) (hb_card : (T.card : ℝ) ≤ B_T)
+    (hper : ∀ w ∈ T, ((mcaBadWitness (F := F) C δ u₀ u₁ w).card : ℝ) ≤ b) :
+    ((mcaBad (F := F) C δ u₀ u₁).card : ℝ) ≤ B_T * b := by
+  classical
+  have hsum : ((mcaBad (F := F) C δ u₀ u₁).card : ℝ) ≤
+      ∑ w ∈ T, ((mcaBadWitness (F := F) C δ u₀ u₁ w).card : ℝ) := by
+    calc ((mcaBad (F := F) C δ u₀ u₁).card : ℝ)
+        ≤ ((T.biUnion (fun w => mcaBadWitness (F := F) C δ u₀ u₁ w)).card : ℝ) := by
+          exact_mod_cast Finset.card_le_card hcover
+      _ ≤ ((∑ w ∈ T, (mcaBadWitness (F := F) C δ u₀ u₁ w).card : ℕ) : ℝ) := by
+          exact_mod_cast Finset.card_biUnion_le
+      _ = ∑ w ∈ T, ((mcaBadWitness (F := F) C δ u₀ u₁ w).card : ℝ) := by push_cast; ring
+  calc ((mcaBad (F := F) C δ u₀ u₁).card : ℝ)
+      ≤ ∑ w ∈ T, ((mcaBadWitness (F := F) C δ u₀ u₁ w).card : ℝ) := hsum
+    _ ≤ ∑ _w ∈ T, b := Finset.sum_le_sum (fun w hw => hper w hw)
+    _ = (T.card : ℝ) * b := by rw [Finset.sum_const, nsmul_eq_mul]
+    _ ≤ B_T * b := by exact mul_le_mul_of_nonneg_right hb_card hb0
+
 /-- **GCXK25 / ABF26 T5.1 — `ε_mca` bound from a uniform per-codeword bad count.**
 
 The full union-bound reduction: if for *every* stack `u` there is a finite codeword carrier
@@ -241,6 +275,28 @@ theorem mcaEvent_prob_le_ofReal_of_per_codeword_count
   ProximityGap.mcaEvent_prob_le_of_mcaBad_card_le C δ (u 0) (u 1)
     (mcaBad_card_le_listFactor_mul_perCodeword C δ (u 0) (u 1) T hT hb0 hcard hper)
 
+/-- Probability-level companion to
+`mcaBad_card_le_listFactor_mul_perCodeword_cover`. It converts an explicit witness-cover
+carrier for one stack into the per-stack `mcaEvent` probability bound consumed by ABF26 T5.1
+front doors. -/
+theorem mcaEvent_prob_le_ofReal_of_per_codeword_cover
+    (C : Set (ι → A)) (δ : ℝ≥0) (u : WordStack A (Fin 2) ι)
+    {b B_T : ℝ} (hb0 : 0 ≤ b)
+    (T : Finset (ι → A))
+    (hcover :
+      mcaBad (F := F) C δ (u 0) (u 1) ⊆
+        T.biUnion (fun w => mcaBadWitness (F := F) C δ (u 0) (u 1) w))
+    (hcard : (T.card : ℝ) ≤ B_T)
+    (hper : ∀ w ∈ T, ((mcaBadWitness (F := F) C δ (u 0) (u 1) w).card : ℝ) ≤ b) :
+    Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ] ≤
+      ENNReal.ofReal ((B_T * b) / Fintype.card F) :=
+  ProximityGap.mcaEvent_prob_le_of_mcaBad_card_le C δ (u 0) (u 1)
+    (mcaBad_card_le_listFactor_mul_perCodeword_cover C δ (u 0) (u 1) T hcover hb0 hcard hper)
+
 end GCXK25UnionBound
 
 end CodingTheory.Bridge
+
+/- Axiom audit for the witness-cover union-bound surfaces. -/
+#print axioms CodingTheory.Bridge.mcaBad_card_le_listFactor_mul_perCodeword_cover
+#print axioms CodingTheory.Bridge.mcaEvent_prob_le_ofReal_of_per_codeword_cover

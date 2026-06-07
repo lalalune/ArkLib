@@ -529,6 +529,55 @@ theorem GKL24FirstMomentResidual_inTree_two_delta_card
     rw [Finset.mem_filter] at hw
     exact mcaBadWitness_card_le_two_delta_mul_card MC δ (u 0) (u 1) w hw.2
 
+/-- **Witness-cover form of the GKL24 first-moment residual.**
+
+This is the interface needed by the sharp GCXK25/GKL24 first-moment charging argument. For each
+stack `u`, the carrier `T u` need not contain every codeword of `MC`; it only has to be a finite
+set of codewords whose witness sets cover the actually bad combining points:
+
+  `mcaBad MC δ (u 0) (u 1) ⊆ ⋃ w ∈ T u, mcaBadWitness MC δ (u 0) (u 1) w`.
+
+That distinction matters for the intended `B_T = L²` application: `T u` is the close-codeword /
+witness carrier furnished by list decoding and maximal correlated-agreement domains, not the full
+code. The per-witness count `b` is still the genuine GKL24/GCXK25 content. -/
+def GKL24FirstMomentWitnessCoverResidual
+    (MC : Submodule F (ι → F)) (δ : ℝ≥0) (B_T b : ℝ) : Prop :=
+  ∀ u : WordStack F (Fin 2) ι,
+    ∃ T : Finset (ι → F),
+      (∀ w ∈ T, w ∈ (MC : Set (ι → F))) ∧
+        mcaBad (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) ⊆
+          T.biUnion (fun w =>
+            mcaBadWitness (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) w) ∧
+        (T.card : ℝ) ≤ B_T ∧
+          ∀ w ∈ T,
+            ((mcaBadWitness (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) w).card : ℝ) ≤ b
+
+/-- **In-tree witness-cover residual, with the pairwise two-delta count.** Taking `T` to be the
+finite set of all codewords recovers a witness cover from the existing GCXK25 union-bound
+containment. This theorem is deliberately an in-tree relaxation:
+
+  `B_T = |F|^n`, `b = max 1 (2·δ·n)`.
+
+Its purpose is regression coverage for the witness-cover interface, not a proof of the sharp
+`L² · δ · n` GCXK25/GKL24 first-moment theorem. -/
+theorem GKL24FirstMomentWitnessCoverResidual_inTree_two_delta_card
+    (MC : Submodule F (ι → F)) (δ : ℝ≥0) :
+    GKL24FirstMomentWitnessCoverResidual MC δ
+      (Fintype.card (ι → F) : ℝ)
+      (max 1 (2 * (δ : ℝ) * (Fintype.card ι : ℝ))) := by
+  classical
+  intro u
+  let T : Finset (ι → F) := Finset.univ.filter (fun w : ι → F => w ∈ (MC : Set (ι → F)))
+  refine ⟨T, ?_, ?_, ?_, ?_⟩
+  · intro w hw
+    simpa [T] using hw
+  · refine mcaBad_subset_biUnion_mcaBadWitness (MC : Set (ι → F)) δ (u 0) (u 1) T ?_
+    intro w hw
+    simpa [T, hw]
+  · exact_mod_cast Finset.card_filter_le Finset.univ (fun w : ι → F => w ∈ (MC : Set (ι → F)))
+  · intro w hw
+    exact mcaBadWitness_card_le_two_delta_mul_card MC δ (u 0) (u 1) w (by simpa [T] using hw)
+
 /-- **Per-stack bad-`γ` count from the GKL24 first-moment residual.**
 Given `GKL24FirstMomentResidual MC δ B_T b`, every concrete stack `u` has at most `B_T · b`
 bad combining scalars:
@@ -570,6 +619,40 @@ theorem mcaBad_card_le_t51_firstMoment_of_gkl24_residual
     ((mcaBad (F := F) (MC : Set (ι → F)) δ (u 0) (u 1)).card : ℝ) ≤ Lsq * δn :=
   mcaBad_card_le_of_gkl24_residual MC δ hδn0 hres u
 
+/-- **Per-stack bad-`γ` count from the witness-cover residual.**
+This is the corrected carrier interface for the first-moment side of GCXK25/GKL24: the finite
+carrier only has to cover the bad scalars for the current stack, rather than contain all codewords
+of `MC`. Supplying this residual at `B_T = L²`, `b = δ_list · n` is the sharp first-moment theorem
+still left open by #67. -/
+theorem mcaBad_card_le_of_gkl24_witnessCover_residual
+    (MC : Submodule F (ι → F)) (δ : ℝ≥0) {B_T b : ℝ} (hb0 : 0 ≤ b)
+    (hres : GKL24FirstMomentWitnessCoverResidual MC δ B_T b)
+    (u : WordStack F (Fin 2) ι) :
+    ((mcaBad (F := F) (MC : Set (ι → F)) δ (u 0) (u 1)).card : ℝ) ≤ B_T * b := by
+  obtain ⟨T, _hTsub, hcover, hcard, hper⟩ := hres u
+  exact mcaBad_card_le_listFactor_mul_perCodeword_cover
+    (MC : Set (ι → F)) δ (u 0) (u 1) T hcover hb0 hcard hper
+
+/-- Probability-level companion to `mcaBad_card_le_of_gkl24_witnessCover_residual`. -/
+theorem mcaEvent_prob_le_ofReal_of_gkl24_witnessCover_residual
+    (MC : Submodule F (ι → F)) (δ : ℝ≥0) {B_T b : ℝ} (hb0 : 0 ≤ b)
+    (hres : GKL24FirstMomentWitnessCoverResidual MC δ B_T b)
+    (u : WordStack F (Fin 2) ι) :
+    Pr_{let γ ← $ᵖ F}[mcaEvent (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) γ] ≤
+      ENNReal.ofReal ((B_T * b) / Fintype.card F) :=
+  mcaEvent_prob_le_of_mcaBad_card_le (MC : Set (ι → F)) δ (u 0) (u 1)
+    (mcaBad_card_le_of_gkl24_witnessCover_residual MC δ hb0 hres u)
+
+/-- **Alias for the witness-cover residual in the canonical ABF26 T5.1 parameter shape.**
+This is the future plug-in point for the GCXK25/GKL24 maximal-domain charging theorem at
+`B_T := L²`, `b := δ_list · n`. -/
+theorem mcaBad_card_le_t51_firstMoment_of_gkl24_witnessCover_residual
+    (MC : Submodule F (ι → F)) (δ : ℝ≥0) {Lsq δn : ℝ} (hδn0 : 0 ≤ δn)
+    (hres : GKL24FirstMomentWitnessCoverResidual MC δ Lsq δn)
+    (u : WordStack F (Fin 2) ι) :
+    ((mcaBad (F := F) (MC : Set (ι → F)) δ (u 0) (u 1)).card : ℝ) ≤ Lsq * δn :=
+  mcaBad_card_le_of_gkl24_witnessCover_residual MC δ hδn0 hres u
+
 /-- **Conditional strengthening: the `B_T · b` first-moment shape from the GKL24 residual.**
 Given the single named residual `GKL24FirstMomentResidual MC δ B_T b` with `b ≥ 0`,
 
@@ -589,6 +672,18 @@ theorem epsMCA_le_ofReal_of_gkl24_residual
   intro u
   exact mcaBad_card_le_of_gkl24_residual MC δ hb0 hres u
 
+/-- **Conditional strengthening from the witness-cover residual.**
+This is the `ε_mca` version of `mcaBad_card_le_of_gkl24_witnessCover_residual`, retaining the
+correct close-codeword carrier interface for the future sharp first-moment proof. -/
+theorem epsMCA_le_ofReal_of_gkl24_witnessCover_residual
+    (MC : Submodule F (ι → F)) (δ : ℝ≥0) {B_T b : ℝ} (hb0 : 0 ≤ b)
+    (hres : GKL24FirstMomentWitnessCoverResidual MC δ B_T b) :
+    epsMCA (F := F) (A := F) (MC : Set (ι → F)) δ ≤
+      ENNReal.ofReal ((B_T * b) / Fintype.card F) := by
+  refine epsMCA_le_ofReal_of_forall_mcaBad_card_le (MC : Set (ι → F)) δ ?_
+  intro u
+  exact mcaBad_card_le_of_gkl24_witnessCover_residual MC δ hb0 hres u
+
 /-- **Fully in-tree `ε_mca` first-moment relaxation.** This is the residual corollary obtained from
 `GKL24FirstMomentResidual_inTree_card`: without any GKL24/GCXK25 hypothesis,
 
@@ -604,6 +699,19 @@ theorem epsMCA_le_ofReal_inTree_firstMoment_card
   epsMCA_le_ofReal_of_gkl24_residual MC δ (by positivity)
     (GKL24FirstMomentResidual_inTree_card MC δ)
 
+/-- **Fully in-tree witness-cover `ε_mca` relaxation.** This checks that the corrected
+witness-cover residual interface composes all the way to `ε_mca`; the bound is the already-known
+two-delta no-carrier relaxation, routed through the new residual shape. -/
+theorem epsMCA_le_ofReal_inTree_firstMoment_witnessCover_two_delta_card
+    (MC : Submodule F (ι → F)) (δ : ℝ≥0) :
+    epsMCA (F := F) (A := F) (MC : Set (ι → F)) δ ≤
+      ENNReal.ofReal
+        (((Fintype.card (ι → F) : ℝ) *
+            max 1 (2 * (δ : ℝ) * (Fintype.card ι : ℝ))) / Fintype.card F) :=
+  epsMCA_le_ofReal_of_gkl24_witnessCover_residual MC δ
+    (le_trans zero_le_one (le_max_left _ _))
+    (GKL24FirstMomentWitnessCoverResidual_inTree_two_delta_card MC δ)
+
 end Compose
 
 end ProximityGap
@@ -613,11 +721,17 @@ kernel-clean apart from the standard Lean foundations (`propext`, `Classical.cho
 `Quot.sound`). -/
 #print axioms ProximityGap.GKL24FirstMomentResidual_inTree_card
 #print axioms ProximityGap.GKL24FirstMomentResidual_inTree_two_delta_card
+#print axioms ProximityGap.GKL24FirstMomentWitnessCoverResidual_inTree_two_delta_card
 #print axioms ProximityGap.mcaBad_card_le_of_gkl24_residual
 #print axioms ProximityGap.mcaEvent_prob_le_ofReal_of_gkl24_residual
 #print axioms ProximityGap.mcaBad_card_le_t51_firstMoment_of_gkl24_residual
 #print axioms ProximityGap.epsMCA_le_ofReal_of_gkl24_residual
+#print axioms ProximityGap.mcaBad_card_le_of_gkl24_witnessCover_residual
+#print axioms ProximityGap.mcaEvent_prob_le_ofReal_of_gkl24_witnessCover_residual
+#print axioms ProximityGap.mcaBad_card_le_t51_firstMoment_of_gkl24_witnessCover_residual
+#print axioms ProximityGap.epsMCA_le_ofReal_of_gkl24_witnessCover_residual
 #print axioms ProximityGap.epsMCA_le_ofReal_inTree_firstMoment_card
+#print axioms ProximityGap.epsMCA_le_ofReal_inTree_firstMoment_witnessCover_two_delta_card
 #print axioms ProximityGap.u1_zero_of_mem_both_witness
 #print axioms ProximityGap.secondSupport_card_le_two_delta_of_two_witnesses
 #print axioms ProximityGap.mcaBadWitness_card_le_two_delta_mul_card

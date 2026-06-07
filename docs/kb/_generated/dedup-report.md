@@ -4,9 +4,9 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 640 files, 11915 declarations
+- `ArkLib` — 676 files, 12471 declarations
 
-## Same short-name across multiple files (390 groups)
+## Same short-name across multiple files (417 groups)
 
 Each group lists declarations sharing a short name across ≥2 files. Most are legitimate (overloaded interface, paper-shape vs general form), but the list is the right anchor to look for duplicates.
 
@@ -371,7 +371,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `Adversary` (4 declarations, 3 files)
 
-- `def AGM.Adversary` [ArkLib/AGM/Basic.lean:326](../../../ArkLib/AGM/Basic.lean#L326) — An adversary in the Algebraic Group Model (AGM) is defined as follows: - It is given knowledge of th
+- `def AGM.Adversary` [ArkLib/AGM/Basic.lean:372](../../../ArkLib/AGM/Basic.lean#L372) — An adversary in the Algebraic Group Model (AGM) is defined as follows: - It is given knowledge of th
 - `abbrev ArkLib.Lattices.Ajtai.InnerOuter.WeakBinding.Adversary` [ArkLib/CommitmentScheme/Ajtai/InnerOuter/Security.lean:92](../../../ArkLib/CommitmentScheme/Ajtai/InnerOuter/Security.lean#L92) — A weak-binding adversary outputs two weak openings for the same commitment.
 - `abbrev ArkLib.Lattices.SIS.Adversary` [ArkLib/Data/Lattices/ModuleSIS.lean:53](../../../ArkLib/Data/Lattices/ModuleSIS.lean#L53) — A search adversary for a SIS-style problem.
 - `abbrev ArkLib.Lattices.ModuleSIS.Adversary` [ArkLib/Data/Lattices/ModuleSIS.lean:96](../../../ArkLib/Data/Lattices/ModuleSIS.lean#L96) — A Module-SIS adversary.
@@ -396,6 +396,13 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def Logup.StmtOut` [ArkLib/ProofSystem/Logup/Common.lean:280](../../../ArkLib/ProofSystem/Logup/Common.lean#L280) — The full LogUp protocol returns no additional public data on success.
 - `def Sumcheck.Spec.SingleRound.Simpler.StmtOut` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:364](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L364) — (no docstring)
 - `def Sumcheck.Spec.SingleRound.Simple.StmtOut` [ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean:588](../../../ArkLib/ProofSystem/Sumcheck/Spec/SingleRound.lean#L588) — (no docstring)
+
+### `append` (4 declarations, 3 files)
+
+- `def AGM.GroupRepresentation.append` [ArkLib/AGM/RepresentationLemmas.lean:156](../../../ArkLib/AGM/RepresentationLemmas.lean#L156) — **Representations compose multiplicatively.** Concatenating the bases and exponent vectors of two al
+- `def Interaction.Oracle.Spec.append` [ArkLib/Interaction/Oracle/Spec.lean:216](../../../ArkLib/Interaction/Oracle/Spec.lean#L216) — (no docstring)
+- `abbrev ProtocolSpec.append` [ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean:49](../../../ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean#L49) — Appending two `ProtocolSpec`s
+- `def ProtocolSpec.FullTranscript.append` [ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean:160](../../../ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean#L160) — Appending two transcripts for two `ProtocolSpec`s
 
 ### `correctness` (4 declarations, 3 files)
 
@@ -434,13 +441,13 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `Message` (3 declarations, 3 files)
 
-- `abbrev ArkLib.Lattices.Ajtai.InnerOuter.Message` [ArkLib/CommitmentScheme/Ajtai/InnerOuter/Scheme.lean:121](../../../ArkLib/CommitmentScheme/Ajtai/InnerOuter/Scheme.lean#L121) — Messages: block vectors over the message row space.
+- `abbrev ArkLib.Lattices.Ajtai.InnerOuter.Message` [ArkLib/CommitmentScheme/Ajtai/InnerOuter/Scheme.lean:122](../../../ArkLib/CommitmentScheme/Ajtai/InnerOuter/Scheme.lean#L122) — Messages: block vectors over the message row space.
 - `abbrev ArkLib.Lattices.Ajtai.Simple.Message` [ArkLib/CommitmentScheme/Ajtai/Simple/Scheme.lean:32](../../../ArkLib/CommitmentScheme/Ajtai/Simple/Scheme.lean#L32) — Messages: column vectors over `Rq Φ`.
 - `def ProtocolSpec.Message` [ArkLib/OracleReduction/ProtocolSpec/Basic.lean:78](../../../ArkLib/OracleReduction/ProtocolSpec/Basic.lean#L78) — The type of the `i`-th message in a protocol specification. This does not distinguish between messag
 
 ### `Opening` (3 declarations, 3 files)
 
-- `structure ArkLib.Lattices.Ajtai.InnerOuter.Opening` [ArkLib/CommitmentScheme/Ajtai/InnerOuter/Scheme.lean:97](../../../ArkLib/CommitmentScheme/Ajtai/InnerOuter/Scheme.lean#L97) — A Hachi/Greyhound *weak opening* `(sᵢ, t̂ᵢ, cᵢ)ᵢ`: the decomposition data `(sᵢ, t̂ᵢ)` (`Decomp`) ext
+- `structure ArkLib.Lattices.Ajtai.InnerOuter.Opening` [ArkLib/CommitmentScheme/Ajtai/InnerOuter/Scheme.lean:98](../../../ArkLib/CommitmentScheme/Ajtai/InnerOuter/Scheme.lean#L98) — A Hachi/Greyhound *weak opening* `(sᵢ, t̂ᵢ, cᵢ)ᵢ`: the decomposition data `(sᵢ, t̂ᵢ)` (`Decomp`) ext
 - `abbrev ArkLib.Lattices.Ajtai.Simple.Opening` [ArkLib/CommitmentScheme/Ajtai/Simple/Scheme.lean:43](../../../ArkLib/CommitmentScheme/Ajtai/Simple/Scheme.lean#L43) — The simple Ajtai commitment has no auxiliary opening data.
 - `structure Commitment.Opening` [ArkLib/CommitmentScheme/Basic.lean:59](../../../ArkLib/CommitmentScheme/Basic.lean#L59) — The opening protocol used to prove a claimed oracle response for committed data.
 
@@ -460,20 +467,21 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `abbrev Interaction.Oracle.Prover` [ArkLib/Interaction/Oracle/Core.lean:1140](../../../ArkLib/Interaction/Oracle/Core.lean#L1140) — (no docstring)
 - `abbrev Interaction.Prover` [ArkLib/Interaction/Reduction.lean:115](../../../ArkLib/Interaction/Reduction.lean#L115) — (no docstring)
-- `structure Prover` [ArkLib/OracleReduction/Basic.lean:168](../../../ArkLib/OracleReduction/Basic.lean#L168) — (no docstring)
-- `structure Prover` [ArkLib/OracleReduction/Basic.lean:413](../../../ArkLib/OracleReduction/Basic.lean#L413) — The type of honest provers for an interactive reduction with `n` messages. This consists of: - `PrvS
+- `structure Prover` [ArkLib/OracleReduction/Basic.lean:178](../../../ArkLib/OracleReduction/Basic.lean#L178) — (no docstring)
+- `structure Prover` [ArkLib/OracleReduction/Basic.lean:426](../../../ArkLib/OracleReduction/Basic.lean#L426) — The type of honest provers for an interactive reduction with `n` messages. This consists of: - `PrvS
 
 ### `PublicParams` (3 declarations, 3 files)
 
-- `structure ArkLib.Lattices.Ajtai.InnerOuter.PublicParams` [ArkLib/CommitmentScheme/Ajtai/InnerOuter/Scheme.lean:76](../../../ArkLib/CommitmentScheme/Ajtai/InnerOuter/Scheme.lean#L76) — Public parameters: inner Ajtai matrix `A` and outer Ajtai matrix `B`.
+- `structure ArkLib.Lattices.Ajtai.InnerOuter.PublicParams` [ArkLib/CommitmentScheme/Ajtai/InnerOuter/Scheme.lean:77](../../../ArkLib/CommitmentScheme/Ajtai/InnerOuter/Scheme.lean#L77) — Public parameters: inner Ajtai matrix `A` and outer Ajtai matrix `B`.
 - `abbrev ArkLib.Lattices.Ajtai.Simple.PublicParams` [ArkLib/CommitmentScheme/Ajtai/Simple/Scheme.lean:29](../../../ArkLib/CommitmentScheme/Ajtai/Simple/Scheme.lean#L29) — Public parameters: the Ajtai matrix `A`.
 - `structure Spartan.PublicParams` [ArkLib/ProofSystem/Spartan/Basic.lean:26](../../../ArkLib/ProofSystem/Spartan/Basic.lean#L26) — The public parameters of the (padded) Spartan protocol. Consists of the number of bits of the R1CS d
 
-### `Reduction` (3 declarations, 3 files)
+### `Reduction` (4 declarations, 3 files)
 
 - `structure Interaction.Oracle.Reduction` [ArkLib/Interaction/Oracle/Core.lean:1217](../../../ArkLib/Interaction/Oracle/Core.lean#L1217) — (no docstring)
 - `structure Interaction.Reduction` [ArkLib/Interaction/Reduction.lean:187](../../../ArkLib/Interaction/Reduction.lean#L187) — (no docstring)
-- `structure Reduction` [ArkLib/OracleReduction/Basic.lean:697](../../../ArkLib/OracleReduction/Basic.lean#L697) — An **interactive reduction** for a given protocol specification `pSpec`, and relative to oracles def
+- `structure Reduction` [ArkLib/OracleReduction/Basic.lean:196](../../../ArkLib/OracleReduction/Basic.lean#L196) — (no docstring)
+- `structure Reduction` [ArkLib/OracleReduction/Basic.lean:710](../../../ArkLib/OracleReduction/Basic.lean#L710) — An **interactive reduction** for a given protocol specification `pSpec`, and relative to oracles def
 
 ### `StraightlineExtractor` (3 declarations, 3 files)
 
@@ -491,7 +499,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `structure Interaction.Oracle.Verifier` [ArkLib/Interaction/Oracle/Core.lean:1180](../../../ArkLib/Interaction/Oracle/Core.lean#L1180) — (no docstring)
 - `abbrev Interaction.Verifier` [ArkLib/Interaction/Reduction.lean:130](../../../ArkLib/Interaction/Reduction.lean#L130) — (no docstring)
-- `structure Verifier` [ArkLib/OracleReduction/Basic.lean:438](../../../ArkLib/OracleReduction/Basic.lean#L438) — A verifier of an interactive protocol is a function that takes in the input statement and the transc
+- `structure Verifier` [ArkLib/OracleReduction/Basic.lean:451](../../../ArkLib/OracleReduction/Basic.lean#L451) — A verifier of an interactive protocol is a function that takes in the input statement and the transc
 
 ### `absorb` (3 declarations, 3 files)
 
@@ -543,7 +551,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `commitmentScheme` (3 declarations, 3 files)
 
-- `def ArkLib.Lattices.Ajtai.InnerOuter.commitmentScheme` [ArkLib/CommitmentScheme/Ajtai/InnerOuter/Scheme.lean:195](../../../ArkLib/CommitmentScheme/Ajtai/InnerOuter/Scheme.lean#L195) — The inner-outer Ajtai commitment as a `CommitmentScheme`, verified with the Hachi/Greyhound weak ver
+- `def ArkLib.Lattices.Ajtai.InnerOuter.commitmentScheme` [ArkLib/CommitmentScheme/Ajtai/InnerOuter/Scheme.lean:200](../../../ArkLib/CommitmentScheme/Ajtai/InnerOuter/Scheme.lean#L200) — The inner-outer Ajtai commitment as a `CommitmentScheme`, verified with the Hachi/Greyhound weak ver
 - `def ArkLib.Lattices.Ajtai.Simple.commitmentScheme` [ArkLib/CommitmentScheme/Ajtai/Simple/Scheme.lean:56](../../../ArkLib/CommitmentScheme/Ajtai/Simple/Scheme.lean#L56) — The simple Ajtai commitment as a `CommitmentScheme`. An opening is accepted only when the message sa
 - `def SimpleRO.commitmentScheme` [ArkLib/CommitmentScheme/SimpleRO.lean:83](../../../ArkLib/CommitmentScheme/SimpleRO.lean#L83) — (no docstring)
 
@@ -561,19 +569,19 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `finalSumcheckStepLogic` (3 declarations, 3 files)
 
-- `def Binius.BinaryBasefold.CoreInteraction.finalSumcheckStepLogic` [ArkLib/ProofSystem/Binius/BinaryBasefold/ReductionLogic.lean:917](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/ReductionLogic.lean#L917) — The Logic Instance for the final sumcheck step. This is a 1-message protocol where the prover sends
+- `def Binius.BinaryBasefold.CoreInteraction.finalSumcheckStepLogic` [ArkLib/ProofSystem/Binius/BinaryBasefold/ReductionLogic.lean:899](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/ReductionLogic.lean#L899) — The Logic Instance for the final sumcheck step. This is a 1-message protocol where the prover sends
 - `def Binius.FRIBinius.CoreInteractionPhase.finalSumcheckStepLogic` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:555](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L555) — The logic instance for the FRI final sumcheck step.
 - `def Binius.RingSwitching.SumcheckPhase.finalSumcheckStepLogic` [ArkLib/ProofSystem/Binius/RingSwitching/SumcheckPhase.lean:1000](../../../ArkLib/ProofSystem/Binius/RingSwitching/SumcheckPhase.lean#L1000) — The Logic Instance for the final sumcheck step. This is a 1-message protocol where the prover sends
 
 ### `finalSumcheckStep_is_logic_complete` (3 declarations, 3 files)
 
-- `lemma Binius.BinaryBasefold.CoreInteraction.finalSumcheckStep_is_logic_complete` [ArkLib/ProofSystem/Binius/BinaryBasefold/ReductionLogic.lean:1373](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/ReductionLogic.lean#L1373) — Final sumcheck step logic is strongly complete. **Key Proof Obligations:** 1. **Verifier Check**: Sh
+- `lemma Binius.BinaryBasefold.CoreInteraction.finalSumcheckStep_is_logic_complete` [ArkLib/ProofSystem/Binius/BinaryBasefold/ReductionLogic.lean:1355](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/ReductionLogic.lean#L1355) — Final sumcheck step logic is strongly complete. **Key Proof Obligations:** 1. **Verifier Check**: Sh
 - `lemma Binius.FRIBinius.CoreInteractionPhase.finalSumcheckStep_is_logic_complete` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1054](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1054) — Strong completeness of the FRI final sumcheck logic step.
 - `lemma Binius.RingSwitching.SumcheckPhase.finalSumcheckStep_is_logic_complete` [ArkLib/ProofSystem/Binius/RingSwitching/SumcheckPhase.lean:1155](../../../ArkLib/ProofSystem/Binius/RingSwitching/SumcheckPhase.lean#L1155) — Final sumcheck step logic is strongly complete. **Key Proof Obligations:** 1. **Verifier Check**: Sh
 
 ### `finalSumcheckStep_verifierCheck_passed` (3 declarations, 3 files)
 
-- `lemma Binius.BinaryBasefold.CoreInteraction.finalSumcheckStep_verifierCheck_passed` [ArkLib/ProofSystem/Binius/BinaryBasefold/ReductionLogic.lean:1230](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/ReductionLogic.lean#L1230) — The verifier check passes in the final sumcheck step. **Proof structure:** 1. From `sumcheckConsiste
+- `lemma Binius.BinaryBasefold.CoreInteraction.finalSumcheckStep_verifierCheck_passed` [ArkLib/ProofSystem/Binius/BinaryBasefold/ReductionLogic.lean:1212](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/ReductionLogic.lean#L1212) — The verifier check passes in the final sumcheck step. **Proof structure:** 1. From `sumcheckConsiste
 - `lemma Binius.FRIBinius.CoreInteractionPhase.finalSumcheckStep_verifierCheck_passed` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:969](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L969) — Verifier check passes in the FRI final sumcheck logic step.
 - `lemma Binius.RingSwitching.SumcheckPhase.finalSumcheckStep_verifierCheck_passed` [ArkLib/ProofSystem/Binius/RingSwitching/SumcheckPhase.lean:1093](../../../ArkLib/ProofSystem/Binius/RingSwitching/SumcheckPhase.lean#L1093) — **Main helper lemma**: The verifier check passes in the final sumcheck step. **Proof Structure** (fo
 
@@ -591,7 +599,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `masterKStateProp` (3 declarations, 3 files)
 
-- `def Binius.BinaryBasefold.masterKStateProp` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1380](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1380) — Before V's challenge of the `i-th` foldStep, we ignore the bad-folding-event of the `i-th` oracle if
+- `def Binius.BinaryBasefold.masterKStateProp` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1399](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1399) — Before V's challenge of the `i-th` foldStep, we ignore the bad-folding-event of the `i-th` oracle if
 - `def Binius.RingSwitching.masterKStateProp` [ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean:430](../../../ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean#L430) — (no docstring)
 - `def RingSwitching.masterKStateProp` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:445](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L445) — (no docstring)
 
@@ -641,7 +649,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `def Interaction.OracleDecoration.OracleReduction.toVerifier` [ArkLib/Interaction/Oracle/Core.lean:1096](../../../ArkLib/Interaction/Oracle/Core.lean#L1096) — (no docstring)
 - `def Interaction.PublicCoinVerifier.toVerifier` [ArkLib/Interaction/Reduction.lean:162](../../../ArkLib/Interaction/Reduction.lean#L162) — (no docstring)
-- `def OracleVerifier.toVerifier` [ArkLib/OracleReduction/Basic.lean:516](../../../ArkLib/OracleReduction/Basic.lean#L516) — An oracle verifier can be seen as a (non-oracle) verifier by providing the oracle interface using it
+- `def OracleVerifier.toVerifier` [ArkLib/OracleReduction/Basic.lean:529](../../../ArkLib/OracleReduction/Basic.lean#L529) — An oracle verifier can be seen as a (non-oracle) verifier by providing the oracle interface using it
 
 ### `verify` (3 declarations, 3 files)
 
@@ -651,9 +659,45 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `witnessStructuralInvariant` (3 declarations, 3 files)
 
-- `def Binius.BinaryBasefold.witnessStructuralInvariant` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1135](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1135) — This condition ensures that the witness polynomial `H` has the correct structure `eq(...) * t(...)`
+- `def Binius.BinaryBasefold.witnessStructuralInvariant` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1154](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1154) — This condition ensures that the witness polynomial `H` has the correct structure `eq(...) * t(...)`
 - `def Binius.RingSwitching.witnessStructuralInvariant` [ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean:423](../../../ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean#L423) — This condition ensures that the witness polynomial `H` has the correct structure `A(...) * t'(...)`
 - `def RingSwitching.witnessStructuralInvariant` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:438](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L438) — This condition ensures that the witness polynomial `H` has the correct structure `A(...) * t'(...)`
+
+### `TranscriptSimulator` (3 declarations, 3 files)
+
+- `abbrev OracleReduction.TranscriptSimulator` [ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean:38](../../../ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean#L38) — Transcript simulators for oracle reductions are simulators for the associated non-oracle reduction,
+- `def Reduction.TranscriptSimulator` [ArkLib/OracleReduction/Security/ZeroKnowledge.lean:62](../../../ArkLib/OracleReduction/Security/ZeroKnowledge.lean#L62) — A transcript simulator produces, from the input statement alone, a distribution over full transcript
+- `abbrev OracleReduction.TranscriptSimulator` [ArkLib/ToMathlib/ZKDefC.lean:46](../../../ArkLib/ToMathlib/ZKDefC.lean#L46) — A simulator for an oracle reduction receives the bundled public statement, but not the private witne
+
+### `id_isHVZK` (3 declarations, 3 files)
+
+- `theorem OracleReduction.id_isHVZK` [ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean:245](../../../ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean#L245) — The zero-round identity oracle reduction is HVZK for any oracle-input relation.
+- `theorem Reduction.id_isHVZK` [ArkLib/OracleReduction/Security/ZeroKnowledge.lean:301](../../../ArkLib/OracleReduction/Security/ZeroKnowledge.lean#L301) — The zero-round identity reduction is honest-verifier zero-knowledge for any relation.
+- `theorem OracleReduction.id_isHVZK` [ArkLib/ToMathlib/ZKDefC.lean:118](../../../ArkLib/ToMathlib/ZKDefC.lean#L118) — The zero-round identity oracle reduction is honest-verifier zero-knowledge for any relation over bun
+
+### `id_perfectHVZK` (3 declarations, 3 files)
+
+- `theorem OracleReduction.id_perfectHVZK` [ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean:217](../../../ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean#L217) — The zero-round identity oracle reduction is perfect HVZK for any oracle-input relation.
+- `theorem Reduction.id_perfectHVZK` [ArkLib/OracleReduction/Security/ZeroKnowledge.lean:281](../../../ArkLib/OracleReduction/Security/ZeroKnowledge.lean#L281) — The zero-round identity reduction satisfies perfect honest-verifier zero-knowledge for any input rel
+- `theorem OracleReduction.id_perfectHVZK` [ArkLib/ToMathlib/ZKDefC.lean:105](../../../ArkLib/ToMathlib/ZKDefC.lean#L105) — The zero-round identity oracle reduction satisfies perfect honest-verifier zero-knowledge for any re
+
+### `isHVZK` (3 declarations, 3 files)
+
+- `def OracleReduction.isHVZK` [ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean:62](../../../ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean#L62) — Existential perfect HVZK for an oracle reduction.
+- `def Reduction.isHVZK` [ArkLib/OracleReduction/Security/ZeroKnowledge.lean:90](../../../ArkLib/OracleReduction/Security/ZeroKnowledge.lean#L90) — A reduction is honest-verifier zero-knowledge for relation `rel` if some simulator achieves perfect
+- `def OracleReduction.isHVZK` [ArkLib/ToMathlib/ZKDefC.lean:73](../../../ArkLib/ToMathlib/ZKDefC.lean#L73) — An oracle reduction is honest-verifier zero-knowledge if some simulator achieves perfect transcript-
+
+### `perfectHVZK` (3 declarations, 3 files)
+
+- `def OracleReduction.perfectHVZK` [ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean:44](../../../ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean#L44) — Perfect HVZK for an oracle reduction, delegated through `OracleReduction.toReduction`.
+- `def Reduction.perfectHVZK` [ArkLib/OracleReduction/Security/ZeroKnowledge.lean:69](../../../ArkLib/OracleReduction/Security/ZeroKnowledge.lean#L69) — A reduction satisfies perfect honest-verifier zero-knowledge with respect to a simulator and relatio
+- `def OracleReduction.perfectHVZK` [ArkLib/ToMathlib/ZKDefC.lean:50](../../../ArkLib/ToMathlib/ZKDefC.lean#L50) — Perfect honest-verifier zero-knowledge for oracle reductions.
+
+### `statisticalHVZK` (3 declarations, 3 files)
+
+- `def OracleReduction.statisticalHVZK` [ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean:53](../../../ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean#L53) — Statistical HVZK for an oracle reduction, delegated through `OracleReduction.toReduction`.
+- `def Reduction.statisticalHVZK` [ArkLib/OracleReduction/Security/ZeroKnowledge.lean:80](../../../ArkLib/OracleReduction/Security/ZeroKnowledge.lean#L80) — A reduction satisfies statistical honest-verifier zero-knowledge with error `ε` if the simulator's t
+- `def OracleReduction.statisticalHVZK` [ArkLib/ToMathlib/ZKDefC.lean:61](../../../ArkLib/ToMathlib/ZKDefC.lean#L61) — Statistical honest-verifier zero-knowledge for oracle reductions with error `ε`.
 
 ### `prizeRate_floor_add_one_le` (3 declarations, 3 files)
 
@@ -765,12 +809,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def ArkLib.Lattices.Ajtai.InnerOuter.WeakBinding.advantage` [ArkLib/CommitmentScheme/Ajtai/InnerOuter/Security.lean:409](../../../ArkLib/CommitmentScheme/Ajtai/InnerOuter/Security.lean#L409) — Weak-binding advantage.
 - `def ArkLib.Lattices.SIS.advantage` [ArkLib/Data/Lattices/ModuleSIS.lean:62](../../../ArkLib/Data/Lattices/ModuleSIS.lean#L62) — Search advantage for a SIS-style problem.
 - `def ArkLib.Lattices.ModuleSIS.advantage` [ArkLib/Data/Lattices/ModuleSIS.lean:106](../../../ArkLib/Data/Lattices/ModuleSIS.lean#L106) — The Module-SIS advantage.
-
-### `append` (3 declarations, 2 files)
-
-- `def Interaction.Oracle.Spec.append` [ArkLib/Interaction/Oracle/Spec.lean:216](../../../ArkLib/Interaction/Oracle/Spec.lean#L216) — (no docstring)
-- `abbrev ProtocolSpec.append` [ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean:49](../../../ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean#L49) — Appending two `ProtocolSpec`s
-- `def ProtocolSpec.FullTranscript.append` [ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean:160](../../../ArkLib/OracleReduction/ProtocolSpec/SeqCompose.lean#L160) — Appending two transcripts for two `ProtocolSpec`s
 
 ### `experiment` (3 declarations, 2 files)
 
@@ -922,7 +960,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `Commitment` (2 declarations, 2 files)
 
-- `abbrev ArkLib.Lattices.Ajtai.InnerOuter.Commitment` [ArkLib/CommitmentScheme/Ajtai/InnerOuter/Scheme.lean:125](../../../ArkLib/CommitmentScheme/Ajtai/InnerOuter/Scheme.lean#L125) — Inner-outer commitments live in the outer row space.
+- `abbrev ArkLib.Lattices.Ajtai.InnerOuter.Commitment` [ArkLib/CommitmentScheme/Ajtai/InnerOuter/Scheme.lean:126](../../../ArkLib/CommitmentScheme/Ajtai/InnerOuter/Scheme.lean#L126) — Inner-outer commitments live in the outer row space.
 - `abbrev ArkLib.Lattices.Ajtai.Simple.Commitment` [ArkLib/CommitmentScheme/Ajtai/Simple/Scheme.lean:35](../../../ArkLib/CommitmentScheme/Ajtai/Simple/Scheme.lean#L35) — Commitments: row vectors over `Rq Φ`.
 
 ### `ConstraintSystem` (2 declarations, 2 files)
@@ -1003,23 +1041,23 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `OStmt` (2 declarations, 2 files)
 
 - `def StirIOP.Round.OStmt` [ArkLib/ProofSystem/Stir/RoundProtocol.lean:53](../../../ArkLib/ProofSystem/Stir/RoundProtocol.lean#L53) — The single-index oracle statement family for a STIR fold round: the prover holds one oracle function
-- `def WhirIOP.Construction.OStmt` [ArkLib/ToMathlib/WhirBricksConstruction.lean:53](../../../ArkLib/ToMathlib/WhirBricksConstruction.lean#L53) — The single-index oracle statement family for the WHIR Vector IOPP: the prover holds one oracle funct
+- `def WhirIOP.Construction.OStmt` [ArkLib/ToMathlib/WhirBricksConstruction.lean:47](../../../ArkLib/ToMathlib/WhirBricksConstruction.lean#L47) — The single-index oracle statement family for the WHIR Vector IOPP: the prover holds one oracle funct
 
 ### `OracleProver` (2 declarations, 2 files)
 
 - `abbrev Interaction.OracleDecoration.OracleProver` [ArkLib/Interaction/Oracle/Core.lean:898](../../../ArkLib/Interaction/Oracle/Core.lean#L898) — (no docstring)
-- `def OracleProver` [ArkLib/OracleReduction/Basic.lean:446](../../../ArkLib/OracleReduction/Basic.lean#L446) — An **(oracle) prover** in an interactive **oracle** reduction is a prover in the non-oracle reductio
+- `def OracleProver` [ArkLib/OracleReduction/Basic.lean:459](../../../ArkLib/OracleReduction/Basic.lean#L459) — An **(oracle) prover** in an interactive **oracle** reduction is a prover in the non-oracle reductio
 
 ### `OracleReduction` (2 declarations, 2 files)
 
 - `structure Interaction.OracleDecoration.OracleReduction` [ArkLib/Interaction/Oracle/Core.lean:928](../../../ArkLib/Interaction/Oracle/Core.lean#L928) — (no docstring)
-- `structure OracleReduction` [ArkLib/OracleReduction/Basic.lean:705](../../../ArkLib/OracleReduction/Basic.lean#L705) — An **interactive oracle reduction** for a given protocol specification `pSpec`, and relative to orac
+- `structure OracleReduction` [ArkLib/OracleReduction/Basic.lean:718](../../../ArkLib/OracleReduction/Basic.lean#L718) — An **interactive oracle reduction** for a given protocol specification `pSpec`, and relative to orac
 
 ### `OracleVerifier` (3 declarations, 2 files)
 
 - `structure Interaction.OracleVerifier` [ArkLib/Interaction/Oracle/Core.lean:1042](../../../ArkLib/Interaction/Oracle/Core.lean#L1042) — (no docstring)
-- `structure OracleVerifier` [ArkLib/OracleReduction/Basic.lean:175](../../../ArkLib/OracleReduction/Basic.lean#L175) — (no docstring)
-- `structure OracleVerifier` [ArkLib/OracleReduction/Basic.lean:466](../../../ArkLib/OracleReduction/Basic.lean#L466) — An **(oracle) verifier** of an interactive **oracle** reduction consists of: - an oracle computation
+- `structure OracleVerifier` [ArkLib/OracleReduction/Basic.lean:186](../../../ArkLib/OracleReduction/Basic.lean#L186) — (no docstring)
+- `structure OracleVerifier` [ArkLib/OracleReduction/Basic.lean:479](../../../ArkLib/OracleReduction/Basic.lean#L479) — An **(oracle) verifier** of an interactive **oracle** reduction consists of: - an oracle computation
 
 ### `OutputOracleStatement` (2 declarations, 2 files)
 
@@ -1039,7 +1077,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `Proof` (2 declarations, 2 files)
 
 - `abbrev Interaction.Proof` [ArkLib/Interaction/Reduction.lean:232](../../../ArkLib/Interaction/Reduction.lean#L232) — (no docstring)
-- `def Proof` [ArkLib/OracleReduction/Basic.lean:729](../../../ArkLib/OracleReduction/Basic.lean#L729) — An **interactive proof (IP)** is an interactive reduction where the output statement is a boolean, t
+- `def Proof` [ArkLib/OracleReduction/Basic.lean:742](../../../ArkLib/OracleReduction/Basic.lean#L742) — An **interactive proof (IP)** is an interactive reduction where the output statement is a boolean, t
 
 ### `PrvState` (2 declarations, 2 files)
 
@@ -1616,10 +1654,50 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def DomainSeparator.hint` [ArkLib/Data/Hash/DomainSep.lean:230](../../../ArkLib/Data/Hash/DomainSep.lean#L230) — Hint `count` native elements. Rust interface: ```rust pub fn hint(self, label: &str) -> Self ```
 - `def HashStateWithInstructions.hint` [ArkLib/OracleReduction/FiatShamir/DuplexSponge/State.lean:192](../../../ArkLib/OracleReduction/FiatShamir/DuplexSponge/State.lean#L192) — Process a hint operation. Rust interface: ```rust pub fn hint(&mut self) -> Result<(), DomainSeparat
 
+### `honestTranscriptDist` (2 declarations, 2 files)
+
+- `def Reduction.honestTranscriptDist` [ArkLib/OracleReduction/Security/ZeroKnowledge.lean:49](../../../ArkLib/OracleReduction/Security/ZeroKnowledge.lean#L49) — The honest transcript distribution of a reduction on input `(stmtIn, witIn)`: run the reduction with
+- `def OracleReduction.honestTranscriptDist` [ArkLib/ToMathlib/ZKDefC.lean:36](../../../ArkLib/ToMathlib/ZKDefC.lean#L36) — The honest transcript distribution of an oracle reduction, interpreted via `toReduction`.
+
 ### `hypercubeSplitEquiv` (2 declarations, 2 files)
 
 - `def Binius.RingSwitching.hypercubeSplitEquiv` [ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean:715](../../../ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean#L715) — The κ-then-ℓ' hypercube concatenation `concatBit v w i = v i` for `i < κ`, `= w (i - κ)` otherwise —
 - `def RingSwitching.hypercubeSplitEquiv` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:806](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L806) — The κ-then-ℓ' hypercube concatenation `concatBit v w i = v i` for `i < κ`, `= w (i - κ)` otherwise —
+
+### `idTranscriptSimulator` (2 declarations, 2 files)
+
+- `def Reduction.idTranscriptSimulator` [ArkLib/OracleReduction/Security/ZeroKnowledge.lean:257](../../../ArkLib/OracleReduction/Security/ZeroKnowledge.lean#L257) — The simulator for the zero-round identity reduction: ignore the statement and emit the unique empty
+- `abbrev OracleReduction.idTranscriptSimulator` [ArkLib/ToMathlib/ZKDefC.lean:98](../../../ArkLib/ToMathlib/ZKDefC.lean#L98) — The simulator for the zero-round identity oracle reduction.
+
+### `id_isStatHVZK` (2 declarations, 2 files)
+
+- `theorem OracleReduction.id_isStatHVZK` [ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean:255](../../../ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean#L255) — The zero-round identity oracle reduction is statistical HVZK for any oracle-input relation and any e
+- `theorem Reduction.id_isStatHVZK` [ArkLib/OracleReduction/Security/ZeroKnowledge.lean:310](../../../ArkLib/OracleReduction/Security/ZeroKnowledge.lean#L310) — The zero-round identity reduction is statistically honest-verifier zero-knowledge for any relation a
+
+### `id_statisticalHVZK` (2 declarations, 2 files)
+
+- `theorem OracleReduction.id_statisticalHVZK` [ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean:231](../../../ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean#L231) — The zero-round identity oracle reduction is statistical HVZK for any oracle-input relation and any e
+- `theorem Reduction.id_statisticalHVZK` [ArkLib/OracleReduction/Security/ZeroKnowledge.lean:292](../../../ArkLib/OracleReduction/Security/ZeroKnowledge.lean#L292) — The zero-round identity reduction satisfies statistical honest-verifier zero-knowledge for any relat
+
+### `instFintypeOracleSpecEmpty` (2 declarations, 2 files)
+
+- `instance Binius.RingSwitching.instFintypeOracleSpecEmpty` [ArkLib/ProofSystem/Binius/RingSwitching/Spec.lean:142](../../../ArkLib/ProofSystem/Binius/RingSwitching/Spec.lean#L142) — (no docstring)
+- `instance RingSwitching.instFintypeOracleSpecEmpty` [ArkLib/ProofSystem/RingSwitching/Spec.lean:129](../../../ArkLib/ProofSystem/RingSwitching/Spec.lean#L129) — (no docstring)
+
+### `instFintypePSpecSumcheckRoundChallenge` (2 declarations, 2 files)
+
+- `instance Binius.RingSwitching.instFintypePSpecSumcheckRoundChallenge` [ArkLib/ProofSystem/Binius/RingSwitching/Spec.lean:189](../../../ArkLib/ProofSystem/Binius/RingSwitching/Spec.lean#L189) — (no docstring)
+- `instance RingSwitching.instFintypePSpecSumcheckRoundChallenge` [ArkLib/ProofSystem/RingSwitching/Spec.lean:132](../../../ArkLib/ProofSystem/RingSwitching/Spec.lean#L132) — (no docstring)
+
+### `instInhabitedOracleSpecEmpty` (2 declarations, 2 files)
+
+- `instance Binius.RingSwitching.instInhabitedOracleSpecEmpty` [ArkLib/ProofSystem/Binius/RingSwitching/Spec.lean:139](../../../ArkLib/ProofSystem/Binius/RingSwitching/Spec.lean#L139) — (no docstring)
+- `instance RingSwitching.instInhabitedOracleSpecEmpty` [ArkLib/ProofSystem/RingSwitching/Spec.lean:126](../../../ArkLib/ProofSystem/RingSwitching/Spec.lean#L126) — (no docstring)
+
+### `instInhabitedPSpecSumcheckRoundChallenge` (2 declarations, 2 files)
+
+- `instance Binius.RingSwitching.instInhabitedPSpecSumcheckRoundChallenge` [ArkLib/ProofSystem/Binius/RingSwitching/Spec.lean:203](../../../ArkLib/ProofSystem/Binius/RingSwitching/Spec.lean#L203) — (no docstring)
+- `instance RingSwitching.instInhabitedPSpecSumcheckRoundChallenge` [ArkLib/ProofSystem/RingSwitching/Spec.lean:146](../../../ArkLib/ProofSystem/RingSwitching/Spec.lean#L146) — (no docstring)
 
 ### `instOracleVerifierAppendCoherent` (2 declarations, 2 files)
 
@@ -1636,10 +1714,40 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def ReedSolomon.interpolate` [ArkLib/Data/CodingTheory/ReedSolomon.lean:586](../../../ArkLib/Data/CodingTheory/ReedSolomon.lean#L586) — The linear map that maps a codeword `f : ι → F` to a degree < \|ι\| polynomial p, such that `p(x) = f(
 - `def UniPoly.Lagrange.interpolate` [ArkLib/Data/UniPoly/Basic.lean:1120](../../../ArkLib/Data/UniPoly/Basic.lean#L1120) — This function produces the polynomial which is of degree n and is equal to r i at ω^i for i = 0, 1,
 
-### `iteratedQuotientMap_eq_qMap_total_fiber_extractMiddleFinMask` (2 declarations, 2 files)
+### `isHVZK.isStatHVZK` (2 declarations, 2 files)
 
-- `lemma Binius.BinaryBasefold.QueryPhase.iteratedQuotientMap_eq_qMap_total_fiber_extractMiddleFinMask` [ArkLib/ProofSystem/Binius/BinaryBasefold/QueryPhase.lean:317](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/QueryPhase.lean#L317) — (no docstring)
-- `lemma Binius.BinaryBasefold.iteratedQuotientMap_eq_qMap_total_fiber_extractMiddleFinMask` [ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/QueryPhasePrelims.lean:516](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/QueryPhasePrelims.lean#L516) — (no docstring)
+- `theorem OracleReduction.isHVZK.isStatHVZK` [ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean:151](../../../ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean#L151) — Perfect HVZK existence for oracle reductions implies statistical HVZK existence.
+- `theorem Reduction.isHVZK.isStatHVZK` [ArkLib/OracleReduction/Security/ZeroKnowledge.lean:198](../../../ArkLib/OracleReduction/Security/ZeroKnowledge.lean#L198) — **Perfect HVZK implies statistical HVZK existence** at any error.
+
+### `isHVZK.mono_relation` (2 declarations, 2 files)
+
+- `theorem OracleReduction.isHVZK.mono_relation` [ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean:118](../../../ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean#L118) — `isHVZK` for oracle reductions is antitone in the relation.
+- `theorem Reduction.isHVZK.mono_relation` [ArkLib/OracleReduction/Security/ZeroKnowledge.lean:167](../../../ArkLib/OracleReduction/Security/ZeroKnowledge.lean#L167) — **`isHVZK` is antitone in the relation.** HVZK for `rel` implies HVZK for any `rel' ⊆ rel` (the same
+
+### `isHVZK_iff_isStatHVZK_zero` (2 declarations, 2 files)
+
+- `theorem OracleReduction.isHVZK_iff_isStatHVZK_zero` [ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean:174](../../../ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean#L174) — Perfect HVZK existence for oracle reductions is equivalent to zero-error statistical HVZK existence.
+- `theorem Reduction.isHVZK_iff_isStatHVZK_zero` [ArkLib/OracleReduction/Security/ZeroKnowledge.lean:218](../../../ArkLib/OracleReduction/Security/ZeroKnowledge.lean#L218) — **Perfect HVZK existence is equivalent to zero-error statistical HVZK existence.**
+
+### `isStatHVZK` (2 declarations, 2 files)
+
+- `def OracleReduction.isStatHVZK` [ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean:71](../../../ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean#L71) — Existential statistical HVZK for an oracle reduction.
+- `def Reduction.isStatHVZK` [ArkLib/OracleReduction/Security/ZeroKnowledge.lean:98](../../../ArkLib/OracleReduction/Security/ZeroKnowledge.lean#L98) — A reduction is *statistically* honest-verifier zero-knowledge with error `ε` if some simulator achie
+
+### `isStatHVZK.mono_error` (2 declarations, 2 files)
+
+- `theorem OracleReduction.isStatHVZK.mono_error` [ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean:198](../../../ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean#L198) — `isStatHVZK` for oracle reductions is monotone in the error bound.
+- `theorem Reduction.isStatHVZK.mono_error` [ArkLib/OracleReduction/Security/ZeroKnowledge.lean:240](../../../ArkLib/OracleReduction/Security/ZeroKnowledge.lean#L240) — **`isStatHVZK` is monotone in the error.**
+
+### `isStatHVZK.mono_relation` (2 declarations, 2 files)
+
+- `theorem OracleReduction.isStatHVZK.mono_relation` [ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean:187](../../../ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean#L187) — `isStatHVZK` for oracle reductions is antitone in the relation.
+- `theorem Reduction.isStatHVZK.mono_relation` [ArkLib/OracleReduction/Security/ZeroKnowledge.lean:230](../../../ArkLib/OracleReduction/Security/ZeroKnowledge.lean#L230) — **`isStatHVZK` is antitone in the relation.**
+
+### `isStatHVZK_zero.isHVZK` (2 declarations, 2 files)
+
+- `theorem OracleReduction.isStatHVZK_zero.isHVZK` [ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean:162](../../../ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean#L162) — Zero-error statistical HVZK existence for oracle reductions recovers perfect HVZK existence.
+- `theorem Reduction.isStatHVZK_zero.isHVZK` [ArkLib/OracleReduction/Security/ZeroKnowledge.lean:208](../../../ArkLib/OracleReduction/Security/ZeroKnowledge.lean#L208) — **Zero-error statistical HVZK existence is perfect HVZK existence.**
 
 ### `iteratedSumcheckKStateProp` (2 declarations, 2 files)
 
@@ -1693,17 +1801,17 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `iterated_fold_to_const_strict` (2 declarations, 2 files)
 
-- `lemma Binius.BinaryBasefold.CoreInteraction.iterated_fold_to_const_strict` [ArkLib/ProofSystem/Binius/BinaryBasefold/ReductionLogic.lean:987](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/ReductionLogic.lean#L987) — **Strict version**: When folding the last oracle to level `ℓ` (final sumcheck), the iterated fold of
+- `lemma Binius.BinaryBasefold.CoreInteraction.iterated_fold_to_const_strict` [ArkLib/ProofSystem/Binius/BinaryBasefold/ReductionLogic.lean:969](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/ReductionLogic.lean#L969) — **Strict version**: When folding the last oracle to level `ℓ` (final sumcheck), the iterated fold of
 - `lemma Binius.FRIBinius.CoreInteractionPhase.iterated_fold_to_const_strict` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:711](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L711) — Strict helper: folding the last oracle block in the final sumcheck step yields the constant function
 
 ### `lambda_le_ggr11_of_Lambda_top` (2 declarations, 2 files)
 
-- `theorem InterleavedCode.GGR11.lambda_le_ggr11_of_Lambda_top` [ArkLib/ToMathlib/GGR11Interleaved.lean:389](../../../ArkLib/ToMathlib/GGR11Interleaved.lean#L389) — Generic end-to-end infinite-list regime: if the base list size is infinite and the Red budget is pos
+- `theorem InterleavedCode.GGR11.lambda_le_ggr11_of_Lambda_top` [ArkLib/ToMathlib/GGR11Interleaved.lean:404](../../../ArkLib/ToMathlib/GGR11Interleaved.lean#L404) — Generic end-to-end infinite-list regime: if the base list size is infinite and the Red budget is pos
 - `theorem InterleavedCode.GGR11Reconnect.lambda_le_ggr11_of_Lambda_top` [ArkLib/ToMathlib/GGR11Reconnect.lean:134](../../../ArkLib/ToMathlib/GGR11Reconnect.lean#L134) — **Infinite-list regime, reconnected.** When the base list size is infinite and the GGR11 Red budget
 
 ### `lambda_le_ggr11_of_le_exp` (2 declarations, 2 files)
 
-- `theorem InterleavedCode.GGR11.lambda_le_ggr11_of_le_exp` [ArkLib/ToMathlib/GGR11Interleaved.lean:379](../../../ArkLib/ToMathlib/GGR11Interleaved.lean#L379) — Generic end-to-end elementary regime: if the Red budget already dominates the interleaving factor, t
+- `theorem InterleavedCode.GGR11.lambda_le_ggr11_of_le_exp` [ArkLib/ToMathlib/GGR11Interleaved.lean:394](../../../ArkLib/ToMathlib/GGR11Interleaved.lean#L394) — Generic end-to-end elementary regime: if the Red budget already dominates the interleaving factor, t
 - `theorem InterleavedCode.GGR11Reconnect.lambda_le_ggr11_of_le_exp` [ArkLib/ToMathlib/GGR11Reconnect.lean:122](../../../ArkLib/ToMathlib/GGR11Reconnect.lean#L122) — **Elementary regime, reconnected.** When the GGR11 Red budget already dominates the interleaving fac
 
 ### `lambda_le_ggr11_of_perWordBound` (2 declarations, 2 files)
@@ -1846,6 +1954,21 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def Commitment.perfectCorrectness` [ArkLib/CommitmentScheme/Basic.lean:109](../../../ArkLib/CommitmentScheme/Basic.lean#L109) — A commitment scheme satisfies **perfect correctness** if it satisfies correctness with no error.
 - `def CommitmentScheme.perfectCorrectness` [ArkLib/CommitmentScheme/CommitmentScheme.lean:74](../../../ArkLib/CommitmentScheme/CommitmentScheme.lean#L74) — A commitment scheme satisfies **perfect correctness** if it satisfies correctness with no error.
 
+### `perfectHVZK.mono_relation` (2 declarations, 2 files)
+
+- `theorem OracleReduction.perfectHVZK.mono_relation` [ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean:107](../../../ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean#L107) — Perfect HVZK for oracle reductions is antitone in the relation.
+- `theorem Reduction.perfectHVZK.mono_relation` [ArkLib/OracleReduction/Security/ZeroKnowledge.lean:156](../../../ArkLib/OracleReduction/Security/ZeroKnowledge.lean#L156) — **Perfect HVZK is antitone in the relation.** A simulator that matches the honest transcript distrib
+
+### `perfectHVZK.statisticalHVZK` (2 declarations, 2 files)
+
+- `theorem OracleReduction.perfectHVZK.statisticalHVZK` [ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean:96](../../../ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean#L96) — Perfect HVZK for oracle reductions implies statistical HVZK with any error bound.
+- `theorem Reduction.perfectHVZK.statisticalHVZK` [ArkLib/OracleReduction/Security/ZeroKnowledge.lean:137](../../../ArkLib/OracleReduction/Security/ZeroKnowledge.lean#L137) — Perfect HVZK implies statistical HVZK with any error `ε`.
+
+### `perfectHVZK_iff_statisticalHVZK_zero` (2 declarations, 2 files)
+
+- `theorem OracleReduction.perfectHVZK_iff_statisticalHVZK_zero` [ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean:85](../../../ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean#L85) — Perfect HVZK for oracle reductions is exactly statistical HVZK with error `0`.
+- `theorem Reduction.perfectHVZK_iff_statisticalHVZK_zero` [ArkLib/OracleReduction/Security/ZeroKnowledge.lean:109](../../../ArkLib/OracleReduction/Security/ZeroKnowledge.lean#L109) — Perfect HVZK is exactly statistical HVZK with error `0`.
+
 ### `perfectlyCorrect` (2 declarations, 2 files)
 
 - `theorem ArkLib.Lattices.Ajtai.InnerOuter.perfectlyCorrect` [ArkLib/CommitmentScheme/Ajtai/InnerOuter/Correctness.lean:198](../../../ArkLib/CommitmentScheme/Ajtai/InnerOuter/Correctness.lean#L198) — **Unconditional perfect correctness with the concrete binary decomposition.** Both message and inner
@@ -1883,7 +2006,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `queryCodeword` (2 declarations, 2 files)
 
-- `def Binius.BinaryBasefold.QueryPhase.queryCodeword` [ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/QueryPhasePrelims.lean:149](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/QueryPhasePrelims.lean#L149) — Oracle query helper: query a committed codeword at a given domain point. Restricted to codeword indi
+- `def Binius.BinaryBasefold.QueryPhase.queryCodeword` [ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/QueryPhasePrelims.lean:178](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Soundness/QueryPhasePrelims.lean#L178) — Oracle query helper: query a committed codeword at a given domain point. Restricted to codeword indi
 - `def Fri.Spec.QueryRound.queryCodeword` [ArkLib/ProofSystem/Fri/Spec/SingleRound.lean:1019](../../../ArkLib/ProofSystem/Fri/Spec/SingleRound.lean#L1019) — (no docstring)
 
 ### `queryOracleReduction` (2 declarations, 2 files)
@@ -1928,12 +2051,12 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `rs_lambda_high_rate_jh01` (2 declarations, 2 files)
 
-- `theorem CodingTheory.rs_lambda_high_rate_jh01` [ArkLib/Data/CodingTheory/ListDecoding/Bounds.lean:2010](../../../ArkLib/Data/CodingTheory/ListDecoding/Bounds.lean#L2010) — **ABF26 Theorem 3.14 [JH01 Thm 2], repaired list-size form.** Large-rate Reed-Solomon lower bound. F
+- `theorem CodingTheory.rs_lambda_high_rate_jh01` [ArkLib/Data/CodingTheory/ListDecoding/Bounds.lean:2083](../../../ArkLib/Data/CodingTheory/ListDecoding/Bounds.lean#L2083) — **ABF26 Theorem 3.14 [JH01 Thm 2], repaired list-size form.** Large-rate Reed-Solomon lower bound. F
 - `theorem CodingTheory.ReedSolomon.rs_lambda_high_rate_jh01` [ArkLib/Data/CodingTheory/ListDecoding/JH01.lean:214](../../../ArkLib/Data/CodingTheory/ListDecoding/JH01.lean#L214) — ABF26 Theorem 3.14 / JH01 Theorem 2, in a repaired list-size form.  For every `j ≥ 2`, infinitely ma
 
 ### `run` (2 declarations, 2 files)
 
-- `def AGM.Adversary.run` [ArkLib/AGM/Basic.lean:342](../../../ArkLib/AGM/Basic.lean#L342) — Running the adversary on a given table, returning the list of group elements it is supposed to outpu
+- `def AGM.Adversary.run` [ArkLib/AGM/Basic.lean:388](../../../ArkLib/AGM/Basic.lean#L388) — Running the adversary on a given table, returning the list of group elements it is supposed to outpu
 - `def Prover.run` [ArkLib/OracleReduction/Execution.lean:97](../../../ArkLib/OracleReduction/Execution.lean#L97) — Run the prover in an interactive reduction. Returns the output statement and witness, and the transc
 
 ### `shiftSeries` (2 declarations, 2 files)
@@ -1971,6 +2094,21 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `lemma ReedSolomon.CosetFftDomain.sq_root_mem_subdomain` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:1586](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L1586) — (no docstring)
 - `lemma Domain.CosetFftDomainClass.sq_root_mem_subdomain` [ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean:394](../../../ArkLib/Data/Domain/CosetFftDomain/Subdomain.lean#L394) — (no docstring)
 
+### `sq_sum_le_card_support_mul_sum_sq` (2 declarations, 2 files)
+
+- `theorem Finset.sq_sum_le_card_support_mul_sum_sq` [ArkLib/ToMathlib/SqSumCardSupport.lean:20](../../../ArkLib/ToMathlib/SqSumCardSupport.lean#L20) — (no docstring)
+- `theorem ArkLib.sq_sum_le_card_support_mul_sum_sq` [ArkLib/ToMathlib/SupportSqBound.lean:25](../../../ArkLib/ToMathlib/SupportSqBound.lean#L25) — **Cauchy-Schwarz support bound.** Over a finite type, `(∑ f)² ≤ \|support f\| · (∑ f²)`.
+
+### `statisticalHVZK.mono_error` (2 declarations, 2 files)
+
+- `theorem OracleReduction.statisticalHVZK.mono_error` [ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean:140](../../../ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean#L140) — Statistical HVZK for oracle reductions is monotone in the error bound.
+- `theorem Reduction.statisticalHVZK.mono_error` [ArkLib/OracleReduction/Security/ZeroKnowledge.lean:188](../../../ArkLib/OracleReduction/Security/ZeroKnowledge.lean#L188) — **Statistical HVZK is monotone in the error.** A simulator within total-variation distance `ε₁` is a
+
+### `statisticalHVZK.mono_relation` (2 declarations, 2 files)
+
+- `theorem OracleReduction.statisticalHVZK.mono_relation` [ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean:129](../../../ArkLib/OracleReduction/Security/OracleZeroKnowledge.lean#L129) — Statistical HVZK for oracle reductions is antitone in the relation.
+- `theorem Reduction.statisticalHVZK.mono_relation` [ArkLib/OracleReduction/Security/ZeroKnowledge.lean:177](../../../ArkLib/OracleReduction/Security/ZeroKnowledge.lean#L177) — **Statistical HVZK is antitone in the relation.**
+
 ### `subdomain_embed` (2 declarations, 2 files)
 
 - `def ReedSolomon.FftDomain.subdomain_embed` [ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean:774](../../../ArkLib/Data/CodingTheory/ReedSolomon/FftDomain.lean#L774) — (no docstring)
@@ -1998,7 +2136,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `sumcheckConsistencyProp` (2 declarations, 2 files)
 
-- `def Binius.BinaryBasefold.sumcheckConsistencyProp` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1143](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1143) — Sumcheck consistency: the claimed sumcheck target equals the sum of `H` over the boolean hypercube o
+- `def Binius.BinaryBasefold.sumcheckConsistencyProp` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1162](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1162) — Sumcheck consistency: the claimed sumcheck target equals the sum of `H` over the boolean hypercube o
 - `def Sumcheck.Structured.sumcheckConsistencyProp` [ArkLib/ProofSystem/Sumcheck/Structured.lean:212](../../../ArkLib/ProofSystem/Sumcheck/Structured.lean#L212) — Sumcheck consistency: the claimed sum equals the actual polynomial evaluation sum over the evaluatio
 
 ### `sumcheckConsistency_at_last_simplifies` (2 declarations, 2 files)
@@ -2099,7 +2237,7 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 ### `umCode` (2 declarations, 2 files)
 
 - `def ReedSolomon.Multiplicity.umCode` [ArkLib/Data/CodingTheory/ReedSolomon/Multiplicity.lean:97](../../../ArkLib/Data/CodingTheory/ReedSolomon/Multiplicity.lean#L97) — **ABF26 Definition A.7 [GW13, KSY14]** — the univariate multiplicity code `UM[F, L, k, s]`. Defined
-- `def CodingTheory.umCode` [ArkLib/Data/CodingTheory/SubspaceDesign.lean:995](../../../ArkLib/Data/CodingTheory/SubspaceDesign.lean#L995) — **ABF26 DA.7 (Univariate Multiplicity codes)**. The UM code `UM[F, L, k, s]`: `UM[F, L, k, s] := { f
+- `def CodingTheory.umCode` [ArkLib/Data/CodingTheory/SubspaceDesign.lean:1105](../../../ArkLib/Data/CodingTheory/SubspaceDesign.lean#L1105) — **ABF26 DA.7 (Univariate Multiplicity codes)**. The UM code `UM[F, L, k, s]`: `UM[F, L, k, s] := { f
 
 ### `uniform` (2 declarations, 2 files)
 
@@ -2163,8 +2301,8 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 ### `OracleInterface` (3 declarations, 2 files)
 
-- `structure OracleInterface` [ArkLib/OracleReduction/Basic.lean:88](../../../ArkLib/OracleReduction/Basic.lean#L88) — (no docstring)
-- `structure OracleInterface` [ArkLib/OracleReduction/Basic.lean:162](../../../ArkLib/OracleReduction/Basic.lean#L162) — (no docstring)
+- `structure OracleInterface` [ArkLib/OracleReduction/Basic.lean:94](../../../ArkLib/OracleReduction/Basic.lean#L94) — (no docstring)
+- `structure OracleInterface` [ArkLib/OracleReduction/Basic.lean:172](../../../ArkLib/OracleReduction/Basic.lean#L172) — (no docstring)
 - `class OracleInterface` [ArkLib/OracleReduction/OracleInterface.lean:52](../../../ArkLib/OracleReduction/OracleInterface.lean#L52) — `OracleInterface` is a type class that provides an oracle interface for a type `Message`. It consist
 
 ### `card_agreement_le` (2 declarations, 2 files)
@@ -2176,6 +2314,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `lemma OutOfDomSmpl.card_filter_forall_pi` [ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean:71](../../../ArkLib/ProofSystem/Stir/OutOfDomSmpl.lean#L71) — Counting a coordinatewise event: the tuples satisfying `Q` in every coordinate form the `piFinset` o
 - `lemma OutOfDomSmpl.card_filter_forall_pi` [ArkLib/ProofSystem/Whir/OutofDomainSmpl.lean:180](../../../ArkLib/ProofSystem/Whir/OutofDomainSmpl.lean#L180) — Tuples satisfying `Q` in every coordinate form the `piFinset` of the per-coordinate solution set, so
+
+### `choose_pow_le_qEntropy` (2 declarations, 2 files)
+
+- `theorem CodingTheory.choose_pow_le_qEntropy` [ArkLib/Data/CodingTheory/EntropyVolumeUpper.lean:55](../../../ArkLib/Data/CodingTheory/EntropyVolumeUpper.lean#L55) — **Single-term q-ary entropy UPPER bound.**  For `2 ≤ q`, `0 < k`, `k < n`: `C(n,k) · (q-1)^k ≤ q^{n·
+- `theorem CodingTheory.choose_pow_le_qEntropy` [ArkLib/Data/CodingTheory/EntropyVolumeUpperBound.lean:53](../../../ArkLib/Data/CodingTheory/EntropyVolumeUpperBound.lean#L53) — **Per-term `q`-ary entropy upper bound.** For `2 ≤ q`, `0 < k`, `k < n`, `C(n,k) · (q-1)^k ≤ q^{n ·
 
 ### `coeff_ehQ_eq_leading` (2 declarations, 2 files)
 
@@ -2242,11 +2385,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `instance with` [ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeLDAttainment.lean:32](../../../ArkLib/Data/CodingTheory/ProximityGap/GrandChallengeLDAttainment.lean#L32) — (no docstring)
 - `theorem with` [ArkLib/Data/CodingTheory/ProximityGap/PermanentlyBlocked.lean:55](../../../ArkLib/Data/CodingTheory/ProximityGap/PermanentlyBlocked.lean#L55) — (no docstring)
 
-## Near-duplicate docstrings (Jaccard ≥ 0.85, 122 cross-file pairs)
+## Near-duplicate docstrings (Jaccard ≥ 0.85, 124 cross-file pairs)
 
 Each pair has docstrings sharing a high fraction of (4+-letter) words, in different files. Most are unrelated coincidences in boilerplate; look for pairs where the *concept* matches.
 
-- **1.00** `Binius.BinaryBasefold.CoreInteraction.finalSumcheckStepLogic` [ArkLib/ProofSystem/Binius/BinaryBasefold/ReductionLogic.lean:917](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/ReductionLogic.lean#L917) vs `Binius.RingSwitching.SumcheckPhase.finalSumcheckStepLogic` [ArkLib/ProofSystem/Binius/RingSwitching/SumcheckPhase.lean:1000](../../../ArkLib/ProofSystem/Binius/RingSwitching/SumcheckPhase.lean#L1000)
+- **1.00** `Binius.BinaryBasefold.CoreInteraction.finalSumcheckStepLogic` [ArkLib/ProofSystem/Binius/BinaryBasefold/ReductionLogic.lean:899](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/ReductionLogic.lean#L899) vs `Binius.RingSwitching.SumcheckPhase.finalSumcheckStepLogic` [ArkLib/ProofSystem/Binius/RingSwitching/SumcheckPhase.lean:1000](../../../ArkLib/ProofSystem/Binius/RingSwitching/SumcheckPhase.lean#L1000)
     - a: The Logic Instance for the final sumcheck step. This is a 1-message protocol where the prover sends
     - b: The Logic Instance for the final sumcheck step. This is a 1-message protocol where the prover sends
 - **1.00** `Binius.BinaryBasefold.FullBinaryBasefold.fullOracleProof` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:102](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L102) vs `Binius.FRIBinius.FullFRIBinius.fullOracleProof` [ArkLib/ProofSystem/Binius/FRIBinius/General.lean:171](../../../ArkLib/ProofSystem/Binius/FRIBinius/General.lean#L171)
@@ -2279,10 +2422,10 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **1.00** `Binius.BinaryBasefold.FullBinaryBasefold.fullOracleVerifier` [ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean:51](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/General.lean#L51) vs `RingSwitching.FullRingSwitching.fullOracleVerifier` [ArkLib/ProofSystem/RingSwitching/General.lean:60](../../../ArkLib/ProofSystem/RingSwitching/General.lean#L60)
     - a: The oracle verifier for the full Binary Basefold protocol
     - b: The oracle verifier for the full Binary Basefold protocol
-- **1.00** `Binius.BinaryBasefold.witnessStructuralInvariant` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1135](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1135) vs `Binius.RingSwitching.witnessStructuralInvariant` [ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean:423](../../../ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean#L423)
+- **1.00** `Binius.BinaryBasefold.witnessStructuralInvariant` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1154](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1154) vs `Binius.RingSwitching.witnessStructuralInvariant` [ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean:423](../../../ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean#L423)
     - a: This condition ensures that the witness polynomial `H` has the correct structure `eq(...) * t(...)`
     - b: This condition ensures that the witness polynomial `H` has the correct structure `A(...) * t'(...)`
-- **1.00** `Binius.BinaryBasefold.witnessStructuralInvariant` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1135](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1135) vs `RingSwitching.witnessStructuralInvariant` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:438](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L438)
+- **1.00** `Binius.BinaryBasefold.witnessStructuralInvariant` [ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean:1154](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Basic.lean#L1154) vs `RingSwitching.witnessStructuralInvariant` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:438](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L438)
     - a: This condition ensures that the witness polynomial `H` has the correct structure `eq(...) * t(...)`
     - b: This condition ensures that the witness polynomial `H` has the correct structure `A(...) * t'(...)`
 - **1.00** `Binius.FRIBinius.CoreInteractionPhase.finalSumcheckKnowledgeError` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:1287](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L1287) vs `Binius.RingSwitching.SumcheckPhase.finalSumcheckKnowledgeError` [ArkLib/ProofSystem/Binius/RingSwitching/SumcheckPhase.lean:1463](../../../ArkLib/ProofSystem/Binius/RingSwitching/SumcheckPhase.lean#L1463)
