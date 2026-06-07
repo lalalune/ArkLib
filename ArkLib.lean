@@ -201,6 +201,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Basic
 import ArkLib.Data.CodingTheory.ProximityGap.BivariateVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardLatticeSlice
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidual
+import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidualAffineLineRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidualRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BCHKSBridges
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BallEntropy
@@ -246,8 +247,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.GK16Wronskian
 import ArkLib.Data.CodingTheory.ProximityGap.GSCounting
 import ArkLib.Data.CodingTheory.ProximityGap.GSFactorExtract
 import ArkLib.Data.CodingTheory.ProximityGap.GSKernelAffineDescent
-import ArkLib.Data.CodingTheory.ProximityGap.GWAffinePinning
 import ArkLib.Data.CodingTheory.ProximityGap.GSMultiplicityCore
+import ArkLib.Data.CodingTheory.ProximityGap.GWAffinePinning
 import ArkLib.Data.CodingTheory.ProximityGap.GWInterpolation
 import ArkLib.Data.CodingTheory.ProximityGap.GWKernelReduction
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeKernels
@@ -585,6 +586,7 @@ import ArkLib.ProofSystem.Logup.LogupGrandSumIdentity
 import ArkLib.ProofSystem.Logup.Protocol
 import ArkLib.ProofSystem.Logup.Security.Completeness
 import ArkLib.ProofSystem.Logup.Security.OuterAcceptance
+import ArkLib.ProofSystem.Logup.Security.OuterCompleteness
 import ArkLib.ProofSystem.Logup.Security.OuterRun
 import ArkLib.ProofSystem.Logup.Security.Soundness
 import ArkLib.ProofSystem.Logup.Security.SubPhaseSplit
@@ -656,6 +658,7 @@ import ArkLib.ToCompPoly.Univariate.Lagrange
 import ArkLib.ToMathlib.AGL23CountingProof
 import ArkLib.ToMathlib.AGL24RandomRSProof
 import ArkLib.ToMathlib.AHIVRowSpanBridge
+import ArkLib.ToMathlib.AlphaWeightProof
 import ArkLib.ToMathlib.AppendHelpers
 import ArkLib.ToMathlib.AveragingExistence
 import ArkLib.ToMathlib.AxiomSweep
@@ -755,6 +758,7 @@ import ArkLib.ToMathlib.KoalaIRSAccounting
 import ArkLib.ToMathlib.L13Milestone
 import ArkLib.ToMathlib.L46DiffStackRS
 import ArkLib.ToMathlib.L46GSLowerBound
+import ArkLib.ToMathlib.LineDecodingCoverageProof
 import ArkLib.ToMathlib.LinearizedSupport
 import ArkLib.ToMathlib.List.Basic
 import ArkLib.ToMathlib.MCAFirstMomentArithBricks
@@ -826,7 +830,3 @@ import ArkLib.ToVCVio.Simulation
 import ArkLib.ToVCVio.SimulationInfrastructure
 import ArkLib.ToVCVio.ToMathlib.Control.StateT
 import ArkLib.ToVCVio.ToMathlib.Data.Vector.Basic
-import ArkLib.ProofSystem.Logup.Security.OuterCompleteness
-import ArkLib.ToMathlib.FaaDiBrunoMatchProof
-import ArkLib.ToMathlib.AlphaWeightProof
-import ArkLib.ToMathlib.LineDecodingCoverageProof
