@@ -68,6 +68,7 @@ Given:
 
 the proven `OracleReduction.append_perfectCompleteness` yields perfect completeness of the composed
 reduction. -/
+omit [SampleableType F] in
 theorem reduction_perfectCompleteness_of_phases
     (dom_size_cond : (2 ^ (∑ i, (s i).1)) * d ≤ 2 ^ n) (l : ℕ) [NeZero l]
     [hFoldChallenge : ∀ i, SampleableType
@@ -85,6 +86,10 @@ theorem reduction_perfectCompleteness_of_phases
     (hResidual : OracleReduction.appendPerfectCompletenessResidual
       (reductionFold k s d (ω := ω))
       (QueryRound.queryOracleReduction (k := k) s d dom_size_cond l) hFold hQuery) :
+    letI : ∀ i, SampleableType
+        (((pSpecFold k s (ω := ω) ++ₚ FinalFoldPhase.pSpec F) ++ₚ
+          QueryRound.pSpec l (ω := ω)).Challenge i) :=
+      @ProtocolSpec.instSampleableTypeChallengeAppend _ _ _ _ hFoldChallenge hQueryChallenge
     OracleReduction.perfectCompleteness init impl relIn relOut
       ((reductionFold k s d (ω := ω)).append
         (QueryRound.queryOracleReduction (k := k) s d dom_size_cond l)) := by
