@@ -175,6 +175,30 @@ theorem epsMCA_le_of_badCount_le
   gcongr
   exact iSup_le fun u => by exact_mod_cast h u
 
+open Classical in
+/-- **Bad scalars are line-close scalars.** Every bad scalar (`mcaEvent`) makes the line `δ`-close
+to the code (`mcaEvent_imp_relCloseToCode`), so the bad-scalar count is at most the line-close
+count. -/
+theorem badCount_le_lineCloseCount (C : Set (ι → A)) (δ : ℝ≥0) (u : WordStack A (Fin 2) ι) :
+    (Finset.filter (fun γ : F => mcaEvent C δ (u 0) (u 1) γ) Finset.univ).card ≤
+      (Finset.filter (fun γ : F => δᵣ(u 0 + γ • u 1, C) ≤ δ) Finset.univ).card := by
+  apply Finset.card_le_card
+  intro γ hγ
+  rw [Finset.mem_filter] at hγ ⊢
+  exact ⟨hγ.1, mcaEvent_imp_relCloseToCode C δ (u 0) (u 1) γ hγ.2⟩
+
+open Classical in
+/-- **Prize reduction to the proximity-gap line-close count.** If for every word stack the number
+of scalars `γ` making the line `δ`-close to `C` is at most `ℓ`, then `epsMCA C δ ≤ ℓ/|F|`. This
+reduces ABF26 Grand Challenge 1 to bounding the *line-close count* — exactly the quantity the
+proximity-gap / list-decoding theorems control (proven in the Johnson window). -/
+theorem epsMCA_le_of_lineCloseCount_le
+    (C : Set (ι → A)) (δ : ℝ≥0) (ℓ : ℕ)
+    (h : ∀ u : WordStack A (Fin 2) ι,
+      (Finset.filter (fun γ : F => δᵣ(u 0 + γ • u 1, C) ≤ δ) Finset.univ).card ≤ ℓ) :
+    epsMCA (F := F) (A := A) C δ ≤ (ℓ : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) :=
+  epsMCA_le_of_badCount_le C δ ℓ (fun u => le_trans (badCount_le_lineCloseCount C δ u) (h u))
+
 end ProximityGap
 
 namespace ProximityGap.MCALowerExample
