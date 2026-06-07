@@ -76,7 +76,59 @@ theorem JohnsonNumericBound.of_algebraic_cover
     _root_.ProximityGap.epsMCA_rs_le_johnsonBoundReal_of_algebraic_cover
       domain k η δ N B hη hδ hB hNB hBdiv hAlg
 
+/-- **Full Hab25 residual bundle from algebraic data plus S11 count data.** If the
+GS-over-`F(Z)` algebraic datum has already been supplied, then a uniform bad-scalar count
+bound and the remaining real numerator comparison produce the complete
+`Hab25JohnsonResiduals` bundle.
+
+This is only residual packaging: it does not prove the GS algebraic datum, the per-stack
+cardinality theorem, or the closed-form numerator comparison. -/
+def Hab25JohnsonResiduals.ofAlgebraicData_card_le
+    {domain : ι₀ ↪ F₀} {k : ℕ} {η δ : ℝ≥0}
+    {hη : 0 < η}
+    {hδ : CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.InJohnsonRange domain k η δ}
+    (A : Hab25JohnsonAlgebraicData domain k η δ hη hδ)
+    (N : ℕ) (B : ℝ)
+    (hB : 0 ≤ B) (hNB : (N : ℝ) ≤ B)
+    (hBdiv : B / (Fintype.card F₀ : ℝ) ≤
+      CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.johnsonBoundReal domain k η δ)
+    (hN : ∀ u : WordStack F₀ (Fin 2) ι₀,
+      (Finset.filter
+        (fun γ : F₀ =>
+          mcaEvent ((ReedSolomon.code domain k : Set (ι₀ → F₀))) δ (u 0) (u 1) γ)
+        Finset.univ).card ≤ N) :
+    Hab25JohnsonResiduals domain k η δ hη hδ :=
+  Hab25JohnsonResiduals.ofAlgebraicData A
+    (JohnsonNumericBound.of_card_le domain k η δ N B hB hNB hBdiv hN)
+
+/-- **Full Hab25 residual bundle from algebraic data plus per-stack algebraic covers.** This
+combines an already-supplied GS-over-`F(Z)` datum with the algebraic-cover-to-S11 bridge:
+per-stack covers of the actual bad scalars, a uniform `ell * n ≤ N` bound, and the remaining
+real numerator comparison produce the complete `Hab25JohnsonResiduals` bundle.
+
+This is only the final packaging edge for future GS-cover proofs; it does not construct the
+covers or prove the closed-form numerator comparison. -/
+def Hab25JohnsonResiduals.ofAlgebraicData_algebraic_cover
+    {domain : ι₀ ↪ F₀} {k : ℕ} {η δ : ℝ≥0}
+    {hη : 0 < η}
+    {hδ : CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.InJohnsonRange domain k η δ}
+    (A : Hab25JohnsonAlgebraicData domain k η δ hη hδ)
+    (N : ℕ) (B : ℝ)
+    (hB : 0 ≤ B) (hNB : (N : ℝ) ≤ B)
+    (hBdiv : B / (Fintype.card F₀ : ℝ) ≤
+      CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.johnsonBoundReal domain k η δ)
+    (hAlg : ∀ u : WordStack F₀ (Fin 2) ι₀,
+      ∃ A' : Hab25JohnsonAlgebraicData domain k η δ hη hδ,
+        _root_.ProximityGap.hab25McaBadScalars domain k δ u ⊆ A'.Edis ∧
+          A'.ℓ * Fintype.card ι₀ ≤ N) :
+    Hab25JohnsonResiduals domain k η δ hη hδ :=
+  Hab25JohnsonResiduals.ofAlgebraicData A
+    (JohnsonNumericBound.of_algebraic_cover
+      domain k η δ N B hη hδ hB hNB hBdiv hAlg)
+
 end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.JohnsonNumericBound.of_card_le
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.JohnsonNumericBound.of_algebraic_cover
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.Hab25JohnsonResiduals.ofAlgebraicData_card_le
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.Hab25JohnsonResiduals.ofAlgebraicData_algebraic_cover
