@@ -48,6 +48,29 @@ def RSListDecodingCapacityConjecture
         ((ReedSolomon.code (domain := domain) ⌊ρ * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)))
         w (RSCapacityRadius ρ η)).ncard ≤ ℓ
 
+/-- **The per-code capacity conjecture is unconditionally true — and that is exactly why it is
+*not* the prize's genuine open core.**
+
+For a *fixed* Reed–Solomon code (`ι`, `F` finite) the close-list `closeCodewordsRel C w r` is a
+subset of the finite code `C`, so its `ncard` is bounded by `|C|` for *every* word `w`.  Taking
+`ℓ := (RS code).ncard` discharges the existential outright.
+
+The mathematically hard content of [ABF26]'s prize is therefore **not** this per-code statement
+(a finiteness triviality) but the *uniform polynomial* bound `epsMCAgs_prizeBound_conjecture` /
+`mcaConjectureBound`: a list size that is `poly(n)` with constants `c₁,c₂,c₃` shared across the
+whole family of RS codes, up to capacity.  This lemma records that the de-vacuified
+`RSListDecodingCapacityConjecture` is satisfiable for free, so any reduction *to it* (e.g.
+`epsMCAgsPrizeUniformConjecture`) transfers no real proof debt: the debt lives entirely in the
+uniform-constant bound. -/
+theorem RSListDecodingCapacityConjecture_holds
+    {ι F : Type} [Field F] [Fintype F] [Fintype ι]
+    (domain : ι ↪ F) (ρ η : ℝ≥0) :
+    RSListDecodingCapacityConjecture domain ρ η := by
+  classical
+  refine ⟨(ReedSolomon.code (domain := domain)
+      ⌊ρ * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)).ncard, fun w => ?_⟩
+  exact Set.ncard_le_ncard (fun c hc => hc.1) (Set.toFinite _)
+
 /-- A list-size bound kernel: if the capacity conjecture holds, we can extract the genuine
 list-size bound `ℓ` — every word has at most `ℓ` codewords of the rate-`ρ` RS code within the
 capacity radius.  (Previously concluded the vacuous `∃ ℓ, True`; now it exposes the real bound,

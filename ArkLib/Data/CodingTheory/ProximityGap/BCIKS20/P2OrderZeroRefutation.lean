@@ -159,6 +159,40 @@ theorem restrictedMatchAt_zero_false_of_constant_of_nonmonic_of_evalX_eq
   exact restrictedMatchAt_zero_false_of_constant_of_nonmonic H x₀ R
     (ClaimA2.Hypotheses.of_evalX_eq hR0 hdvd hsep) hd hlc c hp hc
 
+/-- Full-match form of the non-monic order-zero obstruction: since an all-orders
+`RestrictedFaaDiBrunoMatch` projects to its zero-th component, the constant-numerator
+order-zero refutation rules out the all-orders carved P2 core in the same regime. -/
+theorem restrictedFaaDiBrunoMatch_false_of_constant_of_nonmonic
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) (hlc : ¬ IsUnit H.leadingCoeff) (c : F[X])
+    (hp : Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))
+        = Polynomial.C c)
+    (hc : liftToFunctionField (H := H) c ≠ 0) :
+    ¬ RestrictedFaaDiBrunoMatch H x₀ R hHyp := by
+  intro hmatch
+  exact restrictedMatchAt_zero_false_of_constant_of_nonmonic H x₀ R hHyp hd hlc c hp hc
+    (RestrictedFaaDiBrunoMatch.at H x₀ R hHyp hmatch 0)
+
+/-- Specialization-family full-match form of the non-monic order-zero obstruction.  The
+zero-th specialization supplies the Claim A.2 hypotheses, but the all-orders carved P2 core is
+already impossible because its zero-th projection contradicts the independent constant numerator. -/
+theorem restrictedFaaDiBrunoMatch_false_of_constant_of_nonmonic_of_evalX_eq
+    (x₀ : F) (R : F[X][X][Y]) (g : F[X][Y])
+    (hR0 : Bivariate.evalX (Polynomial.C x₀) R = g)
+    (hdvd : H ∣ g)
+    (hsep : g.Separable)
+    (hd : 2 ≤ R.natDegree) (hlc : ¬ IsUnit H.leadingCoeff) (c : F[X])
+    (hp : Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))
+        = Polynomial.C c)
+    (hc : liftToFunctionField (H := H) c ≠ 0) :
+    ¬ RestrictedFaaDiBrunoMatch H x₀ R
+        (ClaimA2.Hypotheses.of_evalX_eq hR0 hdvd hsep) := by
+  intro hmatch
+  exact restrictedMatchAt_zero_false_of_constant_of_nonmonic_of_evalX_eq H x₀ R g hR0
+    hdvd hsep hd hlc c hp hc
+    (RestrictedFaaDiBrunoMatch.at H x₀ R
+      (ClaimA2.Hypotheses.of_evalX_eq hR0 hdvd hsep) hmatch 0)
+
 end BCIKS20.HenselNumerator
 
 #print axioms BCIKS20AppendixA.ClaimA2.Hypotheses.of_evalX_eq
@@ -169,3 +203,7 @@ set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.restrictedMatchAt_zero_false_of_constant_of_nonmonic
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.restrictedMatchAt_zero_false_of_constant_of_nonmonic_of_evalX_eq
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.restrictedFaaDiBrunoMatch_false_of_constant_of_nonmonic
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.restrictedFaaDiBrunoMatch_false_of_constant_of_nonmonic_of_evalX_eq
