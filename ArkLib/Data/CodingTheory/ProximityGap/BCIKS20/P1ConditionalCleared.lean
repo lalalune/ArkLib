@@ -305,6 +305,78 @@ theorem βHensel_weight_bound_all_unlocked_of_restrictedMatch_clearedBaseCases
     βHensel_weight_bound_unlocked_of_restrictedMatch_clearedBaseCases
       H x₀ R hHyp hH hDH hDRx0 hdR2 hdHR hW hmatch hα t
 
+/-! ## P2-closed alpha/div successor equivalence wrappers -/
+
+/-- Full P2 vanishing supplies the successor-order lift identities needed to convert the
+alpha-side and div-weight successor residual families. -/
+theorem alphaWeight_successors_iff_divWeight_successors_of_fullVanishes
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (D : ℕ)
+    (hvan : FaaDiBrunoFullSumVanishes H x₀ R hHyp) :
+    (∀ t, AlphaGenuineRegularWeightLe_succ H x₀ R hHyp hH D t) ↔
+      ∀ t, DivWeightLe_succ H x₀ R hHyp hH D t :=
+  alphaWeight_successors_iff_divWeight_successors_succLift H x₀ R hHyp hH D
+    (fun t => (P2_closed_of_fullVanishes H x₀ R hHyp hvan).2 (t + 1))
+
+/-- Restricted P2 matching supplies the successor-order lift identities needed to convert the
+alpha-side and div-weight successor residual families. -/
+theorem alphaWeight_successors_iff_divWeight_successors_of_restrictedMatch
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (D : ℕ)
+    (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp) :
+    (∀ t, AlphaGenuineRegularWeightLe_succ H x₀ R hHyp hH D t) ↔
+      ∀ t, DivWeightLe_succ H x₀ R hHyp hH D t :=
+  alphaWeight_successors_iff_divWeight_successors_succLift H x₀ R hHyp hH D
+    (fun t => (P2_closed_of_restrictedMatch H x₀ R hHyp hmatch).2 (t + 1))
+
+/-- With the corrected alpha-side base fixed, full P2 vanishing turns the repaired alpha case
+split into the div-weight successor family. -/
+theorem alphaWeight_clearedBaseCases_iff_divWeight_successors_of_fullVanishes_fixed
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (hd : 2 ≤ H.natDegree) {D : ℕ}
+    (hD : D ≤ H.natDegree) (hvan : FaaDiBrunoFullSumVanishes H x₀ R hHyp) :
+    AlphaGenuineRegularWeightLe_clearedBaseCases H x₀ R hHyp hH D ↔
+      ∀ t, DivWeightLe_succ H x₀ R hHyp hH D t :=
+  alphaWeight_clearedBaseCases_iff_divWeight_successors_of_fixed_succLift
+    H x₀ R hHyp hH hd hD
+    (fun t => (P2_closed_of_fullVanishes H x₀ R hHyp hvan).2 (t + 1))
+
+/-- With the corrected div-weight base fixed, full P2 vanishing turns the repaired div-weight case
+split into the alpha-side successor family. -/
+theorem divWeight_clearedBaseCases_iff_alphaWeight_successors_of_fullVanishes_fixed
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (hd : 2 ≤ H.natDegree) {D : ℕ}
+    (hD : D ≤ H.natDegree) (hvan : FaaDiBrunoFullSumVanishes H x₀ R hHyp) :
+    DivWeightLe_clearedBaseCases H x₀ R hHyp hH D ↔
+      ∀ t, AlphaGenuineRegularWeightLe_succ H x₀ R hHyp hH D t :=
+  divWeight_clearedBaseCases_iff_alphaWeight_successors_of_fixed_succLift
+    H x₀ R hHyp hH hd hD
+    (fun t => (P2_closed_of_fullVanishes H x₀ R hHyp hvan).2 (t + 1))
+
+/-- With the corrected alpha-side base fixed, restricted P2 matching turns the repaired alpha case
+split into the div-weight successor family. -/
+theorem alphaWeight_clearedBaseCases_iff_divWeight_successors_of_restrictedMatch_fixed
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (hd : 2 ≤ H.natDegree) {D : ℕ}
+    (hD : D ≤ H.natDegree) (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp) :
+    AlphaGenuineRegularWeightLe_clearedBaseCases H x₀ R hHyp hH D ↔
+      ∀ t, DivWeightLe_succ H x₀ R hHyp hH D t :=
+  alphaWeight_clearedBaseCases_iff_divWeight_successors_of_fixed_succLift
+    H x₀ R hHyp hH hd hD
+    (fun t => (P2_closed_of_restrictedMatch H x₀ R hHyp hmatch).2 (t + 1))
+
+/-- With the corrected div-weight base fixed, restricted P2 matching turns the repaired div-weight
+case split into the alpha-side successor family. -/
+theorem divWeight_clearedBaseCases_iff_alphaWeight_successors_of_restrictedMatch_fixed
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (hd : 2 ≤ H.natDegree) {D : ℕ}
+    (hD : D ≤ H.natDegree) (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp) :
+    DivWeightLe_clearedBaseCases H x₀ R hHyp hH D ↔
+      ∀ t, AlphaGenuineRegularWeightLe_succ H x₀ R hHyp hH D t :=
+  divWeight_clearedBaseCases_iff_alphaWeight_successors_of_fixed_succLift
+    H x₀ R hHyp hH hd hD
+    (fun t => (P2_closed_of_restrictedMatch H x₀ R hHyp hmatch).2 (t + 1))
+
 /-! ## Fixed-base successor direct P1 endpoint wrappers -/
 
 /-- With the corrected base case fixed, route div-weight successor cases through the direct
@@ -492,6 +564,12 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_unlocked_of_alphaWeight_clearedBaseCases_succLift
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_unlocked_of_fullVanishes_clearedBaseCases
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_unlocked_of_restrictedMatch_clearedBaseCases
+#print axioms BCIKS20.HenselNumerator.alphaWeight_successors_iff_divWeight_successors_of_fullVanishes
+#print axioms BCIKS20.HenselNumerator.alphaWeight_successors_iff_divWeight_successors_of_restrictedMatch
+#print axioms BCIKS20.HenselNumerator.alphaWeight_clearedBaseCases_iff_divWeight_successors_of_fullVanishes_fixed
+#print axioms BCIKS20.HenselNumerator.divWeight_clearedBaseCases_iff_alphaWeight_successors_of_fullVanishes_fixed
+#print axioms BCIKS20.HenselNumerator.alphaWeight_clearedBaseCases_iff_divWeight_successors_of_restrictedMatch_fixed
+#print axioms BCIKS20.HenselNumerator.divWeight_clearedBaseCases_iff_alphaWeight_successors_of_restrictedMatch_fixed
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_unlocked_of_divWeight_successors_fixed
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_unlocked_of_alphaWeight_successors_fixed_succLift
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_unlocked_of_fullVanishes_successors_fixed
