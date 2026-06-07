@@ -655,6 +655,40 @@ lemma list_card_le_design_div_gap_of_filter_linearIndependent
   exact list_card_mul_one_sub_two_delta_le_design_of_filter_linearIndependent
     s τ C h r₀ f c₀ L hc₀ hL hrank hlin
 
+/-- **Rank-budget list-cardinality bound from linear-independent fibers.** Combining the direct
+gap-division bound with the recentred-span rank cap gives the budget-only numerator
+`r₀ * τ r₀`, assuming the design budget factor is nonnegative:
+
+`|L| ≤ (r₀ * τ r₀) / (1 - 2δ)`.
+
+This is the algebraic endpoint of the current reusable CZ25 dimension-count chain. The hard
+content remains supplying the per-coordinate linear independence and CZ25 parameter choices. -/
+lemma list_card_le_rank_budget_div_gap_of_filter_linearIndependent
+    (s : ℕ) (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F)) (h : IsSubspaceDesign s τ C)
+    (r₀ : ℕ) (f c₀ : ι → Fin s → F) {δ : ℝ} (L : Finset (ι → Fin s → F))
+    (hgap : 0 < 1 - 2 * δ) (hτ : 0 ≤ τ r₀)
+    (hc₀ : c₀ ∈ closeCodewordsRel ((C : Set (ι → Fin s → F))) f δ)
+    (hL : ∀ c ∈ L, c ∈ closeCodewordsRel ((C : Set (ι → Fin s → F))) f δ)
+    (hrank :
+      Module.finrank F
+          (Submodule.span F ((fun c => c - c₀) '' (L : Set (ι → Fin s → F)))) ≤ r₀)
+    (hlin : ∀ i : ι, LinearIndependent F
+      (fun c : {c // c ∈ L.filter (fun c => c i - c₀ i = 0)} => c.1 - c₀)) :
+    (L.card : ℝ) ≤ ((r₀ : ℝ) * τ r₀) / (1 - 2 * δ) := by
+  have hcard := list_card_le_design_div_gap_of_filter_linearIndependent
+    s τ C h r₀ f c₀ L hgap hc₀ hL hrank hlin
+  have hfin :
+      (Module.finrank F
+          (Submodule.span F ((fun c => c - c₀) '' (L : Set (ι → Fin s → F)))) : ℝ) ≤
+        r₀ := by
+    exact_mod_cast hrank
+  have hnum :
+      ((Module.finrank F
+          (Submodule.span F ((fun c => c - c₀) '' (L : Set (ι → Fin s → F)))) : ℝ) *
+        τ r₀) ≤ (r₀ : ℝ) * τ r₀ :=
+    mul_le_mul_of_nonneg_right hfin hτ
+  exact le_trans hcard (div_le_div_of_nonneg_right hnum hgap.le)
+
 end RecentredSpan
 
 /-! ### `#print axioms` verification anchors -/
@@ -706,3 +740,4 @@ end CodingTheory
 #print axioms CodingTheory.list_vanish_mass_le_design_of_filter_linearIndependent
 #print axioms CodingTheory.list_card_mul_one_sub_two_delta_le_design_of_filter_linearIndependent
 #print axioms CodingTheory.list_card_le_design_div_gap_of_filter_linearIndependent
+#print axioms CodingTheory.list_card_le_rank_budget_div_gap_of_filter_linearIndependent
