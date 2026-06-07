@@ -401,6 +401,7 @@ import ArkLib.OracleReduction.Composition.Sequential.SeqComposeVerifierBricks
 import ArkLib.OracleReduction.Equiv
 import ArkLib.OracleReduction.Execution
 import ArkLib.OracleReduction.FiatShamir.Basic
+import ArkLib.OracleReduction.FiatShamir.BasicCompleteness
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Basic
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Defs
