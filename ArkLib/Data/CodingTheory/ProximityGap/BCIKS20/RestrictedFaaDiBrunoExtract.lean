@@ -28,6 +28,8 @@ exactly as the in-tree P2 consequence theorems do — none assumes the STEP-8 co
   root-side Taylor sum and the un-cleared Taylor sum divided by `W ^ R.natDegree`.
 * `RestrictedMatchAtZeroEval₂WDivTarget` — the same fixed order-zero target in compact `eval₂`
   form, before expanding either side into Taylor sums.
+* `restrictedMatchAtZeroEval₂WDivTarget_iff_taylorWDivTarget` — direct bridge between the compact
+  `eval₂` target and the expanded Taylor-sum target.
 * `embeddingCleared_eq_Wpow_mul_uncleared_of_target` — makes the cleared/un-cleared `eval₂` mismatch
   *quantitative*: under the STEP-8 target, the two `𝒪`-reps differ by exactly `W^{natDegreeY p}`.
 -/
@@ -272,6 +274,33 @@ theorem RestrictedFaaDiBrunoMatchAt.zero_of_eval₂WDivTarget
     RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0 :=
   (restrictedMatchAt_zero_iff_eval₂WDivTarget H x₀ R hHyp hd).2 htarget
 
+/-- The compact `eval₂`/W-divisor order-zero target is exactly the expanded shifted Taylor-sum
+order-zero target. This bridge has no `ClaimA2` or degree hypotheses; it only changes presentation
+of the same equality. -/
+theorem restrictedMatchAtZeroEval₂WDivTarget_iff_taylorWDivTarget
+    (x₀ : F) (R : F[X][X][Y]) :
+    RestrictedMatchAtZeroEval₂WDivTarget H x₀ R ↔
+      RestrictedMatchAtZeroTaylorWDivTarget H x₀ R := by
+  unfold RestrictedMatchAtZeroEval₂WDivTarget RestrictedMatchAtZeroTaylorWDivTarget
+  rw [← hasseEvalAtRoot_eq_taylorSum H x₀ R 1 0,
+    ← embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_uncleared_eq_taylorSum H x₀ R 1 0]
+  unfold hasseEvalAtRoot
+  rw [embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_uncleared]
+
+/-- Expand the compact `eval₂`/W-divisor target into the Taylor-sum target. -/
+theorem RestrictedMatchAtZeroTaylorWDivTarget.of_eval₂WDivTarget
+    (x₀ : F) (R : F[X][X][Y])
+    (htarget : RestrictedMatchAtZeroEval₂WDivTarget H x₀ R) :
+    RestrictedMatchAtZeroTaylorWDivTarget H x₀ R :=
+  (restrictedMatchAtZeroEval₂WDivTarget_iff_taylorWDivTarget H x₀ R).1 htarget
+
+/-- Compress the Taylor-sum target back into the compact `eval₂`/W-divisor target. -/
+theorem RestrictedMatchAtZeroEval₂WDivTarget.of_taylorWDivTarget
+    (x₀ : F) (R : F[X][X][Y])
+    (htarget : RestrictedMatchAtZeroTaylorWDivTarget H x₀ R) :
+    RestrictedMatchAtZeroEval₂WDivTarget H x₀ R :=
+  (restrictedMatchAtZeroEval₂WDivTarget_iff_taylorWDivTarget H x₀ R).2 htarget
+
 /-- **The cleared `𝒪`-rep embedding is `W^{natDegreeY p}` times the un-cleared rep embedding, GIVEN
 the STEP-8 target (axiom-clean).** Makes the cleared/un-cleared `eval₂` mismatch *quantitative*:
 under the carved STEP-8 match `HasseCoeffRepr𝒪UnclearedEval₂Target`, the two `𝒪`-reps are related by
@@ -311,4 +340,10 @@ set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.RestrictedMatchAtZeroEval₂WDivTarget.of_restrictedMatchAt_zero
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.RestrictedFaaDiBrunoMatchAt.zero_of_eval₂WDivTarget
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.restrictedMatchAtZeroEval₂WDivTarget_iff_taylorWDivTarget
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.RestrictedMatchAtZeroTaylorWDivTarget.of_eval₂WDivTarget
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.RestrictedMatchAtZeroEval₂WDivTarget.of_taylorWDivTarget
 #print axioms BCIKS20.HenselNumerator.embeddingCleared_eq_Wpow_mul_uncleared_of_target
