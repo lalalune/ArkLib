@@ -506,6 +506,36 @@ theorem latticeIndexOf_le_mcaThreshold_of_algebraicData_card_le
     (mcaLowerWitness_of_algebraicData_card_le
       hδ_le_one A N B hB hNB hBdiv hN hle)
 
+/-- Natural-numerator form of `latticeIndexOf_le_mcaThreshold_of_algebraicData_card_le`. -/
+theorem latticeIndexOf_le_mcaThreshold_of_algebraicData_card_le_nat
+    {domain : ι₀ ↪ F₀} {k : ℕ} {η δ ε_star : ℝ≥0}
+    {hη : 0 < η}
+    {hδ : CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.InJohnsonRange domain k η δ}
+    (hδ_le_one : δ ≤ 1)
+    (A : Hab25JohnsonAlgebraicData domain k η δ hη hδ)
+    (N : ℕ)
+    (hNdiv : (N : ℝ) / (Fintype.card F₀ : ℝ) ≤
+      CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.johnsonBoundReal domain k η δ)
+    (hN : ∀ u : WordStack F₀ (Fin 2) ι₀,
+      (Finset.filter
+        (fun γ : F₀ =>
+          mcaEvent ((ReedSolomon.code domain k : Set (ι₀ → F₀))) δ (u 0) (u 1) γ)
+        Finset.univ).card ≤ N)
+    (hle : ENNReal.ofReal
+      (CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.johnsonBoundReal domain k η δ)
+        ≤ (ε_star : ENNReal)) :
+    let hne := mcaThresholdExists_of_algebraicData_card_le_nat
+      hδ_le_one A N hNdiv hN hle
+    GrandChallengesLattice.latticeIndexOf (ι := ι₀) δ hδ_le_one ≤
+      GrandChallengesLattice.mcaThreshold
+        (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star hne := by
+  exact GrandChallengesLattice.MCALowerWitness_le_mcaThreshold
+    (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star
+    (mcaThresholdExists_of_algebraicData_card_le_nat
+      hδ_le_one A N hNdiv hN hle)
+    (mcaLowerWitness_of_algebraicData_card_le_nat
+      hδ_le_one A N hNdiv hN hle)
+
 /-- The Hab25 lower witness from per-stack algebraic covers gives a direct lower bracket on
 the faithful MCA lattice threshold at `⌊δ * n⌋`. -/
 theorem latticeIndexOf_le_mcaThreshold_of_algebraicData_algebraic_cover
@@ -576,6 +606,46 @@ theorem mcaThresholdLattice_bracketed_of_algebraicData_card_le_and_epsCAGt
       (MC := ReedSolomon.code domain k)
       (mcaThresholdExists_of_algebraicData_card_le
         hδlo_le_one A N B hB hNB hBdiv hN hle)
+      hhi hδhi
+
+/-- Natural-numerator form of
+`mcaThresholdLattice_bracketed_of_algebraicData_card_le_and_epsCAGt`. -/
+theorem mcaThresholdLattice_bracketed_of_algebraicData_card_le_nat_and_epsCAGt
+    {domain : ι₀ ↪ F₀} {k : ℕ} {η δ_lo δ_hi ε_star : ℝ≥0}
+    {hη : 0 < η}
+    {hδ : CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.InJohnsonRange domain k η δ_lo}
+    (hδlo_le_one : δ_lo ≤ 1)
+    (A : Hab25JohnsonAlgebraicData domain k η δ_lo hη hδ)
+    (N : ℕ)
+    (hNdiv : (N : ℝ) / (Fintype.card F₀ : ℝ) ≤
+      CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.johnsonBoundReal domain k η δ_lo)
+    (hN : ∀ u : WordStack F₀ (Fin 2) ι₀,
+      (Finset.filter
+        (fun γ : F₀ =>
+          mcaEvent ((ReedSolomon.code domain k : Set (ι₀ → F₀))) δ_lo (u 0) (u 1) γ)
+        Finset.univ).card ≤ N)
+    (hle : ENNReal.ofReal
+      (CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.johnsonBoundReal domain k η δ_lo)
+        ≤ (ε_star : ENNReal))
+    (hhi :
+      epsCA (F := F₀) (A := F₀) (ReedSolomon.code domain k : Set (ι₀ → F₀))
+        δ_hi δ_hi > (ε_star : ENNReal))
+    (hδhi : δ_hi ≤ 1) :
+    let hne := mcaThresholdExists_of_algebraicData_card_le_nat
+      hδlo_le_one A N hNdiv hN hle
+    GrandChallengesLattice.latticeIndexOf (ι := ι₀) δ_lo hδlo_le_one ≤
+        GrandChallengesLattice.mcaThreshold
+          (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star hne ∧
+      GrandChallengesLattice.mcaThreshold
+          (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star hne <
+        GrandChallengesLattice.latticeIndexOf (ι := ι₀) δ_hi hδhi := by
+  refine ⟨?_, ?_⟩
+  · exact latticeIndexOf_le_mcaThreshold_of_algebraicData_card_le_nat
+      hδlo_le_one A N hNdiv hN hle
+  · exact GrandChallengesLattice.mcaThreshold_lt_ofEpsCAGt
+      (MC := ReedSolomon.code domain k)
+      (mcaThresholdExists_of_algebraicData_card_le_nat
+        hδlo_le_one A N hNdiv hN hle)
       hhi hδhi
 
 /-- Hab25 per-stack algebraic covers and a capacity-side `ε_ca` upper witness bracket the
@@ -655,6 +725,44 @@ theorem mcaThresholdLattice_bracketed_of_algebraicData_card_le_and_upperWitness
       hδlo_le_one A N B hB hNB hBdiv hN hle)
     (mcaLowerWitness_of_algebraicData_card_le
       hδlo_le_one A N B hB hNB hBdiv hN hle)
+    whi hδhi
+
+/-- Natural-numerator form of
+`mcaThresholdLattice_bracketed_of_algebraicData_card_le_and_upperWitness`. -/
+theorem mcaThresholdLattice_bracketed_of_algebraicData_card_le_nat_and_upperWitness
+    {domain : ι₀ ↪ F₀} {k : ℕ} {η δ_lo ε_star : ℝ≥0}
+    {hη : 0 < η}
+    {hδ : CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.InJohnsonRange domain k η δ_lo}
+    (hδlo_le_one : δ_lo ≤ 1)
+    (A : Hab25JohnsonAlgebraicData domain k η δ_lo hη hδ)
+    (N : ℕ)
+    (hNdiv : (N : ℝ) / (Fintype.card F₀ : ℝ) ≤
+      CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.johnsonBoundReal domain k η δ_lo)
+    (hN : ∀ u : WordStack F₀ (Fin 2) ι₀,
+      (Finset.filter
+        (fun γ : F₀ =>
+          mcaEvent ((ReedSolomon.code domain k : Set (ι₀ → F₀))) δ_lo (u 0) (u 1) γ)
+        Finset.univ).card ≤ N)
+    (hle : ENNReal.ofReal
+      (CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.johnsonBoundReal domain k η δ_lo)
+        ≤ (ε_star : ENNReal))
+    (whi : GrandChallenges.MCAUpperWitness
+      (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star)
+    (hδhi : whi.δ ≤ 1) :
+    let hne := mcaThresholdExists_of_algebraicData_card_le_nat
+      hδlo_le_one A N hNdiv hN hle
+    GrandChallengesLattice.latticeIndexOf (ι := ι₀) δ_lo hδlo_le_one ≤
+        GrandChallengesLattice.mcaThreshold
+          (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star hne ∧
+      GrandChallengesLattice.mcaThreshold
+          (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star hne <
+        GrandChallengesLattice.latticeIndexOf (ι := ι₀) whi.δ hδhi :=
+  GrandChallengesLattice.mcaThresholdLattice_bracketed
+    (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star
+    (mcaThresholdExists_of_algebraicData_card_le_nat
+      hδlo_le_one A N hNdiv hN hle)
+    (mcaLowerWitness_of_algebraicData_card_le_nat
+      hδlo_le_one A N hNdiv hN hle)
     whi hδhi
 
 /-- Hab25 per-stack algebraic covers and any packaged upper witness bracket the faithful MCA
@@ -879,10 +987,13 @@ end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mcaThreshold_spec_of_algebraicData_card_le_nat
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mcaThreshold_spec_of_algebraicData_algebraic_cover
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.latticeIndexOf_le_mcaThreshold_of_algebraicData_card_le
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.latticeIndexOf_le_mcaThreshold_of_algebraicData_card_le_nat
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.latticeIndexOf_le_mcaThreshold_of_algebraicData_algebraic_cover
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mcaThresholdLattice_bracketed_of_algebraicData_card_le_and_epsCAGt
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mcaThresholdLattice_bracketed_of_algebraicData_card_le_nat_and_epsCAGt
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mcaThresholdLattice_bracketed_of_algebraicData_algebraic_cover_and_epsCAGt
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mcaThresholdLattice_bracketed_of_algebraicData_card_le_and_upperWitness
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mcaThresholdLattice_bracketed_of_algebraicData_card_le_nat_and_upperWitness
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mcaThresholdLattice_bracketed_of_algebraicData_algebraic_cover_and_upperWitness
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mcaThreshold_eq_latticeIndexOf_algebraicData_card_le_and_upperWitness_adjacent
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mcaThreshold_eq_latticeIndexOf_algebraicData_algebraic_cover_and_upperWitness_adjacent
