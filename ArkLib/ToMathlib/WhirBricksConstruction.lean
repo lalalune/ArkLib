@@ -48,6 +48,45 @@ def OStmt (ι F : Type) : Unit → Type := fun _ => ι → F
 
 instance : OracleInterface (OStmt ι F ()) := OracleInterface.instFunction
 
+/-! ### Semantic WHIR per-round transcript slots
+
+Construction 5.1 has real prover-message slots: a folded-function oracle / sumcheck message and an
+out-of-domain answer, paired with the folding and out-of-domain/shift verifier challenges.  The
+existing `whirVectorSpec` below is still the minimal all-challenge budget skeleton required by the
+current `whir_rbr_soundness` statement.  These semantic indices record the faithful per-round shape
+that the eventual `VectorIOP` constructor must refine into ArkLib's `ProtocolSpec.VectorSpec`.
+-/
+
+/-- The two prover-message roles in each WHIR round of the Construction 5.1 skeleton. -/
+inductive RoundMessageKind where
+  | foldedOracle
+  | outOfDomainReply
+  deriving DecidableEq, Fintype
+
+/-- The two verifier-challenge roles in each WHIR round of the Construction 5.1 skeleton. -/
+inductive RoundChallengeKind where
+  | folding
+  | outOfDomainOrShift
+  deriving DecidableEq, Fintype
+
+/-- Semantic WHIR prover-message indices: two prover-originated slots per round. -/
+abbrev semanticMessageIdx (M : ℕ) := Fin (M + 1) × RoundMessageKind
+
+/-- Semantic WHIR verifier-challenge indices: two verifier-originated slots per round. -/
+abbrev semanticChallengeIdx (M : ℕ) := Fin (M + 1) × RoundChallengeKind
+
+/-- Construction 5.1 contributes exactly `2 * M + 2` semantic verifier challenges. -/
+theorem semanticChallengeIdx_card (M : ℕ) :
+    Fintype.card (semanticChallengeIdx M) = 2 * M + 2 := by
+  simp [semanticChallengeIdx, RoundChallengeKind]
+  omega
+
+/-- The semantic WHIR skeleton has the same number of prover-message slots as verifier challenges. -/
+theorem semanticMessageIdx_card (M : ℕ) :
+    Fintype.card (semanticMessageIdx M) = 2 * M + 2 := by
+  simp [semanticMessageIdx, RoundMessageKind]
+  omega
+
 /-! ### The WHIR protocol-spec direction vector
 
 WHIR runs `M + 1` rounds; each round contributes **two** verifier challenges (the folding
@@ -220,6 +259,8 @@ end RBRSoundnessAssembly
 #print axioms whirVectorSpec_totalChallengeLength
 #print axioms whirVectorSpec_totalMessageLength
 #print axioms whir_rbr_soundness_of_secure_gap
+#print axioms semanticChallengeIdx_card
+#print axioms semanticMessageIdx_card
 
 end Construction
 
