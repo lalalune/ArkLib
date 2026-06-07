@@ -606,8 +606,7 @@ The only further sharpening (to the paper's exact `(D−Σλ)` constant) is the 
 degree-tracking lemma `degreeX p ≤ D − Σλ`.  The definition itself is complete and genuine. -/
 noncomputable def B_coeff (x₀ : F) (R : F[X][X][Y]) (i1 : ℕ) {m : ℕ}
     (lam : Nat.Partition m) : 𝒪 H :=
-  (prefactor R.natDegree i1 lam) • Ideal.Quotient.mk (Ideal.span {H_tilde' H})
-    (hasseCoeffRepr𝒪_cleared H x₀ R i1 (sigmaLambda lam) (R.natDegree - deltaSave i1 - sigmaLambda lam))
+  (prefactor R.natDegree i1 lam) • hasseCoeffRepr𝒪 H x₀ R i1 (sigmaLambda lam)
 
 /-! ### 4c. The `β` well-founded recursion `(A.1)` — the WAVE 2 keystone -/
 
@@ -794,8 +793,7 @@ drop + `W`-clearing) — is the deferred `B_coeff_weight` wall. -/
 lemma B_coeff_weight_le_hasse (x₀ : F) (R : F[X][X][Y]) (i1 : ℕ) {m : ℕ}
     (lam : Nat.Partition m) (hH : 0 < H.natDegree) (hDH : Bivariate.totalDegree H ≤ D) :
     weight_Λ_over_𝒪 hH (B_coeff H x₀ R i1 lam) D
-      ≤ weight_Λ_over_𝒪 hH (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
-          (hasseCoeffRepr𝒪_cleared H x₀ R i1 (sigmaLambda lam) (R.natDegree - deltaSave i1 - sigmaLambda lam))) D := by
+      ≤ weight_Λ_over_𝒪 hH (hasseCoeffRepr𝒪 H x₀ R i1 (sigmaLambda lam)) D := by
   rw [B_coeff]
   exact weight_Λ_over_𝒪_nsmul_le H hH hDH _ _
 
