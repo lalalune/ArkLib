@@ -329,6 +329,76 @@ theorem alphaWeight_successors_iff_divWeight_successors_of_restrictedMatch
   alphaWeight_successors_iff_divWeight_successors_succLift H x₀ R hHyp hH D
     (fun t => (P2_closed_of_restrictedMatch H x₀ R hHyp hmatch).2 (t + 1))
 
+/-- Full P2 vanishing supplies the successor-order lift identities needed to equate carved
+alpha-weight regularity with the normalized divisibility base/successor targets. -/
+theorem alphaWeight_iff_normalized_divWeight_cases_of_fullVanishes
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hvan : FaaDiBrunoFullSumVanishes H x₀ R hHyp) :
+    AlphaGenuineRegularWeightLe H x₀ R hHyp hH D ↔
+      (∃ a : 𝒪 H,
+        βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+          weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1) ∧
+        ∀ t : ℕ, ∃ a : 𝒪 H,
+          βHensel H x₀ R hHyp (t + 1)
+            = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+            weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1 :=
+  AlphaWeight.alphaWeight_iff_normalized_divWeight_cases_succLift
+    H x₀ R hHyp hH D
+    (fun t => (P2_closed_of_fullVanishes H x₀ R hHyp hvan).2 (t + 1))
+
+/-- Full P2 vanishing turns normalized divisibility base/successor targets into carved
+alpha-weight regularity. -/
+theorem alphaWeight_of_normalized_divWeight_cases_of_fullVanishes
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hvan : FaaDiBrunoFullSumVanishes H x₀ R hHyp)
+    (h0 : ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1)
+    (hsucc : ∀ t : ℕ, ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp (t + 1)
+        = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1) :
+    AlphaGenuineRegularWeightLe H x₀ R hHyp hH D :=
+  (alphaWeight_iff_normalized_divWeight_cases_of_fullVanishes
+    H x₀ R hHyp hH D hvan).2 ⟨h0, hsucc⟩
+
+/-- Restricted P2 matching supplies the successor-order lift identities needed to equate carved
+alpha-weight regularity with the normalized divisibility base/successor targets. -/
+theorem alphaWeight_iff_normalized_divWeight_cases_of_restrictedMatch
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp) :
+    AlphaGenuineRegularWeightLe H x₀ R hHyp hH D ↔
+      (∃ a : 𝒪 H,
+        βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+          weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1) ∧
+        ∀ t : ℕ, ∃ a : 𝒪 H,
+          βHensel H x₀ R hHyp (t + 1)
+            = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+            weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1 :=
+  AlphaWeight.alphaWeight_iff_normalized_divWeight_cases_succLift
+    H x₀ R hHyp hH D
+    (fun t => (P2_closed_of_restrictedMatch H x₀ R hHyp hmatch).2 (t + 1))
+
+/-- Restricted P2 matching turns normalized divisibility base/successor targets into carved
+alpha-weight regularity. -/
+theorem alphaWeight_of_normalized_divWeight_cases_of_restrictedMatch
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp)
+    (h0 : ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1)
+    (hsucc : ∀ t : ℕ, ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp (t + 1)
+        = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1) :
+    AlphaGenuineRegularWeightLe H x₀ R hHyp hH D :=
+  (alphaWeight_iff_normalized_divWeight_cases_of_restrictedMatch
+    H x₀ R hHyp hH D hmatch).2 ⟨h0, hsucc⟩
+
 /-- With the corrected alpha-side base fixed, full P2 vanishing turns the repaired alpha case
 split into the div-weight successor family. -/
 theorem alphaWeight_clearedBaseCases_iff_divWeight_successors_of_fullVanishes_fixed
@@ -566,6 +636,10 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_unlocked_of_restrictedMatch_clearedBaseCases
 #print axioms BCIKS20.HenselNumerator.alphaWeight_successors_iff_divWeight_successors_of_fullVanishes
 #print axioms BCIKS20.HenselNumerator.alphaWeight_successors_iff_divWeight_successors_of_restrictedMatch
+#print axioms BCIKS20.HenselNumerator.alphaWeight_iff_normalized_divWeight_cases_of_fullVanishes
+#print axioms BCIKS20.HenselNumerator.alphaWeight_of_normalized_divWeight_cases_of_fullVanishes
+#print axioms BCIKS20.HenselNumerator.alphaWeight_iff_normalized_divWeight_cases_of_restrictedMatch
+#print axioms BCIKS20.HenselNumerator.alphaWeight_of_normalized_divWeight_cases_of_restrictedMatch
 #print axioms BCIKS20.HenselNumerator.alphaWeight_clearedBaseCases_iff_divWeight_successors_of_fullVanishes_fixed
 #print axioms BCIKS20.HenselNumerator.divWeight_clearedBaseCases_iff_alphaWeight_successors_of_fullVanishes_fixed
 #print axioms BCIKS20.HenselNumerator.alphaWeight_clearedBaseCases_iff_divWeight_successors_of_restrictedMatch_fixed
