@@ -45,13 +45,9 @@ theorem restrictedMatch_iff_assembled_eq_gammaGenuine (x₀ : F) (R : F[X][X][Y]
     intro t
     rw [faaDiBrunoFullSum_eq_coeff, heq, gammaGenuine_root hHyp, map_zero]
 
+/-- **Axiom audit for the carved-core re-keying brick.** -/
+section AxiomAudit
+#print axioms restrictedMatch_iff_assembled_eq_gammaGenuine
+end AxiomAudit
+
 end BCIKS20.HenselNumerator
-
-
-/-- **THE P2 TERM-LEVEL RESIDUAL (issue #90).**
-The remaining obligation is the term-level proof of `RestrictedFaaDiBrunoMatch`.
--/
-theorem restrictedFaaDiBrunoMatch_holds (x₀ : F) (R : F[X][X][Y])
-    (hHyp : ClaimA2.Hypotheses x₀ R H) :
-    RestrictedFaaDiBrunoMatch H x₀ R hHyp := by
-  sorry

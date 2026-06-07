@@ -133,4 +133,47 @@ theorem rsEncoder_eq_of_two_points {m m' : Fin 2 → Sextic} {j₁ j₂ : Fin 4}
   · exact hm0
   · exact hm1
 
+/-- **The geometric heart of the `#106` obstruction (line-in-code).**
+
+Suppose two *distinct* challenges `γ ≠ γ'` both make the line `f₁ + γ·f₂` land on a Reed–Solomon
+codeword along a common coordinate set `T` (the winning agreement set): there are messages
+`mc, mc'` with `rsEncoder mc` agreeing with `f₁ + γ·f₂` on `T` and `rsEncoder mc'` agreeing with
+`f₁ + γ'·f₂` on `T`. Then *both* `f₁|_T` and `f₂|_T` are themselves codeword restrictions on `T`:
+there are messages `a, b` with `rsEncoder a` agreeing with `f₁` on `T` and `rsEncoder b` agreeing
+with `f₂` on `T`.
+
+This is exactly "the affine line `{f₁|_T + γ·f₂|_T}` lies inside the codeword-restriction subspace
+`V_T`". Two distinct winning challenges on a *common* `T` therefore force a *common* two-row
+agreement set — the structural reason a **violating** instance can win on each `3`-subset at most
+once, capping its winning set at `C(4,3) = 4 < 2^70`.
+
+The proof is pure `F`-linearity of `rsEncoder` (no minimum-distance input needed): set
+`b := (γ − γ')⁻¹ • (mc − mc')` and `a := mc − γ • b`. -/
+theorem two_winning_same_subset_imp_lineInCode
+    {f₁ f₂ : Fin 4 → Sextic} {γ γ' : Sextic} (hγ : γ ≠ γ') {T : Finset (Fin 4)}
+    {mc mc' : Fin 2 → Sextic}
+    (hc : ∀ j ∈ T, rsEncoder mc j = f₁ j + γ * f₂ j)
+    (hc' : ∀ j ∈ T, rsEncoder mc' j = f₁ j + γ' * f₂ j) :
+    ∃ a b : Fin 2 → Sextic,
+      (∀ j ∈ T, rsEncoder a j = f₁ j) ∧ (∀ j ∈ T, rsEncoder b j = f₂ j) := by
+  have hd : γ - γ' ≠ 0 := sub_ne_zero.mpr hγ
+  -- `b := (γ - γ')⁻¹ • (mc - mc')`, `a := mc - γ • b`.
+  refine ⟨mc - γ • ((γ - γ')⁻¹ • (mc - mc')), (γ - γ')⁻¹ • (mc - mc'), ?_, ?_⟩
+  · intro j hj
+    -- `rsEncoder a j = rsEncoder mc j - γ * rsEncoder b j = (f₁+γf₂) j - γ * f₂ j = f₁ j`.
+    have hb : rsEncoder ((γ - γ')⁻¹ • (mc - mc')) j = f₂ j := by
+      rw [map_smul, map_sub, Pi.smul_apply, Pi.sub_apply, hc j hj, hc' j hj]
+      simp only [smul_eq_mul]
+      field_simp
+      ring
+    rw [map_sub, map_smul, Pi.sub_apply, Pi.smul_apply, hc j hj, hb]
+    simp only [smul_eq_mul]
+    ring
+  · intro j hj
+    -- `rsEncoder b j = (γ-γ')⁻¹ * ((f₁+γf₂) - (f₁+γ'f₂)) j = (γ-γ')⁻¹ * (γ-γ') * f₂ j = f₂ j`.
+    rw [map_smul, map_sub, Pi.smul_apply, Pi.sub_apply, hc j hj, hc' j hj]
+    simp only [smul_eq_mul]
+    field_simp
+    ring
+
 end KoalaBear
