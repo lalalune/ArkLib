@@ -53,7 +53,30 @@ theorem rs_card_close_mul_near_ge (domain : ι ↪ F) (deg r : ℕ)
     rw [mem_rsCodeFinset] at ha hb ⊢
     exact Submodule.add_mem _ ha hb
 
+/-- **The RS code finset is the evaluation image of the degree-`<deg` polynomials.**
+`rsCodeFinset domain deg = image of (univ : Finset (degreeLT F deg)) under `p ↦ evalOnPoints domain p`.
+This is `ReedSolomon.code = (degreeLT).map evalOnPoints` at the `Finset` level — the bridge for
+counting RS codewords via their defining polynomials. -/
+theorem rsCodeFinset_eq_image (domain : ι ↪ F) (deg : ℕ)
+    [Fintype (Polynomial.degreeLT F deg)] :
+    rsCodeFinset domain deg
+      = (Finset.univ : Finset (Polynomial.degreeLT F deg)).image
+          (fun p => ReedSolomon.evalOnPoints domain (p : F[X])) := by
+  ext v
+  rw [mem_rsCodeFinset, Finset.mem_image]
+  constructor
+  · intro hv
+    have hmap : v ∈ (Polynomial.degreeLT F deg).map (ReedSolomon.evalOnPoints domain) := hv
+    rw [Submodule.mem_map] at hmap
+    obtain ⟨p, hp, hpv⟩ := hmap
+    exact ⟨⟨p, hp⟩, Finset.mem_univ _, hpv⟩
+  · rintro ⟨p, _, hpv⟩
+    show v ∈ (Polynomial.degreeLT F deg).map (ReedSolomon.evalOnPoints domain)
+    rw [Submodule.mem_map]
+    exact ⟨↑p, p.2, hpv⟩
+
 end ArkLib.CS25
 
 -- Axiom audit.
 #print axioms ArkLib.CS25.rs_card_close_mul_near_ge
+#print axioms ArkLib.CS25.rsCodeFinset_eq_image
