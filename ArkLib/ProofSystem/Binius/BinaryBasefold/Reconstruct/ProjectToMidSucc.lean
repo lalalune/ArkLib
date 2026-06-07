@@ -62,7 +62,7 @@ theorem projectToMidSumcheckPoly_succ (ℓ : ℕ) [NeZero ℓ] (t m : Multilinea
       = rename (finCongr (show ℓ - (i.succ : ℕ) = ℓ - i.castSucc - 1 by
           have := i.isLt; simp only [Fin.val_succ, Fin.val_castSucc]; omega))
           (projectToMidSumcheckPoly ℓ t m i.succ (Fin.cons r_i' challenges)).val := by
-  show fixFirstVariablesOfMQP (ℓ - i.castSucc)
+  change fixFirstVariablesOfMQP (ℓ - i.castSucc)
         ⟨1, by have := i.isLt; simp only [Fin.val_castSucc]; omega⟩
         (projectToMidSumcheckPoly ℓ t m i.castSucc challenges).val (fun _ => r_i')
     = rename (finCongr _) (projectToMidSumcheckPoly ℓ t m i.succ (Fin.cons r_i' challenges)).val
