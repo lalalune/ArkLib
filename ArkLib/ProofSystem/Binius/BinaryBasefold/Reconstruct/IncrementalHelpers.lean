@@ -61,52 +61,60 @@ theorem iterated_fold_first (i : Fin r) {midIdx destIdx : Fin r} (steps : ℕ)
         (h_destIdx := h_midIdx) (h_destIdx_le := by omega) (f := f)
         (r_chal := r_challenges 0))
       (r_challenges := fun j => r_challenges j.succ) := by
-  induction steps generalizing destIdx with
+  -- `midIdx` is determined by `i` (both have `.val = i.val + 1` once `steps = 0`); we keep it as a
+  -- parameter so the recursion lines up. Reduce to the canonical `⟨i+1,_⟩` index up front.
+  induction steps generalizing destIdx midIdx with
   | zero =>
-    -- `iterated_fold (i) 1 (cons r_new ![])` = `fold(iterated_fold(i) 0 (init …), last)` and the
-    -- inner `iterated_fold 0` is `f` transported; the RHS is `iterated_fold(midIdx) 0 (fold …)`.
+    -- `destIdx = midIdx` (both have val `i + 1`); substitute so both `fold`s share an index.
+    have h_dm : destIdx = midIdx := Fin.ext (by omega)
+    subst h_dm
+    -- `iterated_fold (i) 1 (cons r_new ![])` = `fold(iterated_fold(i) 0 (init …), last)`.
     rw [iterated_fold_last 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := 0)
       (midIdx := i) (destIdx := destIdx)
       (h_midIdx := by omega) (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le) f r_challenges]
-    -- RHS: `iterated_fold (midIdx) 0 (fold f r_challenges 0)` is the `0`-step identity = `fold f …`.
+    -- RHS: `iterated_fold (destIdx) 0 (fold f r_challenges 0)` is the `0`-step identity = `fold f …`.
     funext y
-    rw [iterated_fold_zero_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := midIdx)
+    rw [iterated_fold_zero_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := destIdx)
       (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le)]
     -- LHS: the inner `iterated_fold (i) 0 (init r_challenges)` is also the `0`-step identity = `f`.
-    show fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (destIdx := destIdx) _ h_destIdx_le
-        (iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := 0) _ _ f
-          (Fin.init r_challenges)) (r_challenges (Fin.last 0)) y = _
     rw [show (iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := 0)
         (destIdx := i) (by omega) (by omega) f (Fin.init r_challenges)) = f from by
       funext z
       rw [iterated_fold_zero_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i)
         (h_destIdx := rfl) (h_destIdx_le := by omega)]
       rfl]
+    -- both sides are `fold i (destIdx) f (r_challenges 0) y` (last 0 = 0, point transports trivially)
     simp only [Fin.last_zero]
-    congr 1
+    rfl
   | succ n ih =>
+    -- expose `.val` facts for `omega`
+    have hd : destIdx.val = i.val + (n + 1 + 1) := h_destIdx
+    have hm : midIdx.val = i.val + 1 := h_midIdx
     -- bounds for the intermediate `Fin r` indices appearing below
     have h_mid_bound : i.val + (n + 1) < r := by
       have : destIdx.val < r := destIdx.isLt; omega
     have h_midmid_bound : midIdx.val + n < r := by
       have : destIdx.val < r := destIdx.isLt; omega
-    -- Peel the last step on the LHS.
+    -- The two single-step `fold` start indices coincide (`⟨i+(n+1),_⟩` = `⟨midIdx+n,_⟩`).
+    have h_start : (⟨i.val + (n + 1), h_mid_bound⟩ : Fin r) = ⟨midIdx.val + n, h_midmid_bound⟩ :=
+      Fin.ext (by omega)
+    -- Peel the last step on the LHS, using the *shared* `midIdx := ⟨midIdx+n,_⟩` index.
     rw [iterated_fold_last 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := n + 1)
-      (midIdx := ⟨i.val + (n + 1), h_mid_bound⟩) (destIdx := destIdx)
-      (h_midIdx := rfl) (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le)
+      (midIdx := ⟨midIdx.val + n, h_midmid_bound⟩) (destIdx := destIdx)
+      (h_midIdx := show midIdx.val + n = i.val + (n + 1) by omega)
+      (h_destIdx := hd) (h_destIdx_le := h_destIdx_le)
       f r_challenges]
-    -- Peel the last step on the RHS.
+    -- Peel the last step on the RHS (same shared `midIdx` index).
     rw [iterated_fold_last 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := midIdx) (steps := n)
       (midIdx := ⟨midIdx.val + n, h_midmid_bound⟩) (destIdx := destIdx)
-      (h_midIdx := rfl) (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le)]
+      (h_midIdx := rfl) (h_destIdx := show destIdx.val = midIdx.val + n + 1 by omega)
+      (h_destIdx_le := h_destIdx_le)]
     -- The two inner `n`-step folds are related by the inductive hypothesis `ih`.
-    have h_ih := ih (midIdx := midIdx) (destIdx := ⟨i.val + (n + 1), h_mid_bound⟩)
-      (h_midIdx := h_midIdx) (h_destIdx := by omega) (h_destIdx_le := by omega)
-      (f := f) (r_challenges := fun j => r_challenges j.castSucc)
-    -- Reconcile the `fold` outer steps (same midpoints and last challenge).
+    have h_ih := ih (destIdx := ⟨i.val + (n + 1), h_mid_bound⟩) (midIdx := midIdx)
+      (h_midIdx := h_midIdx) (h_destIdx := rfl) (h_destIdx_le := by omega)
+      (r_challenges := fun j => r_challenges j.castSucc)
+    -- Now both outer `fold`s share the same start index; reconcile inner fn (IH) and last challenge.
     congr 1
-    · -- the two single-step `fold` start/dest indices coincide
-      apply Fin.ext; omega
     · -- inner functions equal by IH (after reconciling the truncated challenge reindexings)
       rw [h_ih]
     · -- last challenges agree: `r_challenges (last (n+1))` vs `(fun j => r_challenges j.succ) (last n)`

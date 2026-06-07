@@ -116,6 +116,7 @@ theorem fold_advances_evaluation_poly_step
   simp only
   rw [h_new_coeffs ⟨j, hj⟩]
 
+omit [Fintype L] [DecidableEq L] [CharP L 2] [NeZero ℓ] [NeZero 𝓡] in
 /-- **Low half of the multilinear weight tensor.** For `x : Fin (2^n)` (so the top bit `n` of
 `x` is `0`), the `(n+1)`-challenge weight at index `x` factors as the `n`-challenge weight at
 `x` (over `Fin.init r`) times `(1 - r (last n))`. -/
@@ -124,12 +125,18 @@ theorem multilinearWeight_castSucc_low {n : ℕ} (r : Fin (n + 1) → L) (x : Fi
       have := x.isLt; calc x.val < 2 ^ n := this
         _ ≤ 2 ^ (n + 1) := Nat.pow_le_pow_right (by omega) (by omega)⟩ =
       multilinearWeight (Fin.init r) x * (1 - r (Fin.last n)) := by
+  have h_getLastBit : Nat.getBit (Fin.last n) x.val = 0 := by
+    have h := Nat.getBit_of_lt_two_pow (a := x) (k := Fin.last n)
+    simp only [Fin.val_last, lt_self_iff_false, ↓reduceIte] at h
+    exact h
   dsimp only [multilinearWeight]
   rw [Fin.prod_univ_castSucc]
-  have h_top : ¬ x.val.testBit n := by
-    rw [Nat.testBit_eq_false_of_lt]; exact x.isLt
-  simp only [Fin.val_last, h_top, if_false, Fin.val_castSucc, Fin.init]
+  simp_rw [Nat.testBit_true_eq_getBit_eq_1]
+  simp_rw [h_getLastBit]
+  simp only [Fin.val_castSucc, Fin.init]
+  congr 1
 
+omit [Fintype L] [DecidableEq L] [CharP L 2] [NeZero ℓ] [NeZero 𝓡] in
 /-- **High half of the multilinear weight tensor.** For `x : Fin (2^n)`, the `(n+1)`-challenge
 weight at index `2^n + x` (top bit `n` set) factors as the `n`-challenge weight at `x`
 (over `Fin.init r`) times `r (last n)`. -/
@@ -137,17 +144,38 @@ theorem multilinearWeight_castSucc_high {n : ℕ} (r : Fin (n + 1) → L) (x : F
     multilinearWeight r ⟨2 ^ n + x.val, by
       have := x.isLt; rw [pow_succ]; omega⟩ =
       multilinearWeight (Fin.init r) x * (r (Fin.last n)) := by
+  have h_getLastBit : Nat.getBit (Fin.last n) x.val = 0 := by
+    have h := Nat.getBit_of_lt_two_pow (a := x) (k := Fin.last n)
+    simp only [Fin.val_last, lt_self_iff_false, ↓reduceIte] at h
+    exact h
+  have h_x_and_two_pow : x.val &&& (2 ^ n) = 0 := by
+    apply Nat.and_two_pow_eq_zero_of_getBit_0 (n := x.val) (i := n)
+    exact h_getLastBit
+  have h_x_add_two_pow := Nat.sum_of_and_eq_zero_is_xor
+    (n := x.val) (m := 2 ^ n) (h_n_AND_m := h_x_and_two_pow)
+  have h_x_add_two_pow_comm : 2 ^ n + x.val = x.val ^^^ 2 ^ n := by
+    rw [Nat.add_comm]
+    exact h_x_add_two_pow
+  have h_getLastBit_add_pow : Nat.getBit (Fin.last n) (2 ^ n + x.val) = 1 := by
+    rw [h_x_add_two_pow_comm]
+    rw [Nat.getBit_of_xor]
+    rw [h_getLastBit]
+    rw [Nat.getBit_two_pow]
+    simp only [Fin.val_last, BEq.rfl, ↓reduceIte, Nat.zero_xor]
   dsimp only [multilinearWeight]
   rw [Fin.prod_univ_castSucc]
-  have h_top : (2 ^ n + x.val).testBit n := by
-    rw [Nat.testBit_add_pow_two_eq_true_of_lt]; exact x.isLt
-  simp only [Fin.val_last, h_top, if_true, Fin.val_castSucc, Fin.init]
+  simp_rw [Nat.testBit_true_eq_getBit_eq_1]
+  simp_rw [h_getLastBit_add_pow]
+  simp only [Fin.val_last, Fin.val_castSucc, Fin.init, ↓reduceIte]
   congr 1
   apply Finset.prod_congr rfl
   intro k _
-  have hk : (k : ℕ) < n := k.isLt
-  congr 1
-  rw [Nat.testBit_add_pow_two_eq_of_lt hk]
+  rw [h_x_add_two_pow_comm]
+  simp_rw [Nat.getBit_of_xor, Nat.getBit_two_pow]
+  simp only [beq_iff_eq]
+  have h_k_ne_n : n ≠ k.val := by omega
+  simp only [h_k_ne_n, ↓reduceIte, Nat.xor_zero]
+  rfl
 
 end
 
