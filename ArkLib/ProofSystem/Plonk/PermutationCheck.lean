@@ -110,6 +110,29 @@ def permCheckVerifier :
     guard (CopyConstraintsSatisfied f cs.perm)
     return ⟨cs, f⟩
 
+omit [CommRing 𝓡] in
+theorem permCheckVerifier_verify_eq
+    (cs : Plonk.ConstraintSystem 𝓡 numWires numGates)
+    (transcript : FullTranscript (permCheckPSpec 𝓡 numGates)) :
+    (permCheckVerifier (𝓡 := 𝓡) (numWires := numWires) (numGates := numGates)).verify
+      cs transcript =
+      if CopyConstraintsSatisfied (transcript 0) cs.perm then pure (cs, transcript 0)
+      else failure := by
+  by_cases h : CopyConstraintsSatisfied (transcript 0) cs.perm <;>
+    simp [permCheckVerifier, guard_eq, h]
+
+omit [CommRing 𝓡] in
+theorem permCheckVerifier_mem_support_iff
+    (cs : Plonk.ConstraintSystem 𝓡 numWires numGates)
+    (transcript : FullTranscript (permCheckPSpec 𝓡 numGates))
+    (out : Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin (3 * numGates) → 𝓡)) :
+    some out ∈ support
+      ((permCheckVerifier (𝓡 := 𝓡) (numWires := numWires) (numGates := numGates)).verify
+        cs transcript).run ↔
+      CopyConstraintsSatisfied (transcript 0) cs.perm ∧ out = (cs, transcript 0) := by
+  rw [permCheckVerifier_verify_eq]
+  by_cases h : CopyConstraintsSatisfied (transcript 0) cs.perm <;> simp [h]
+
 @[inline, specialize]
 def permCheckReduction :
     Reduction []ₒ

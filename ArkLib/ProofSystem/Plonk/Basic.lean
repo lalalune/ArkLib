@@ -90,6 +90,26 @@ def gateCheckVerifier :
     guard (cs.accepts w)
     return ⟨cs, w⟩
 
+theorem gateCheckVerifier_verify_eq
+    (cs : Plonk.ConstraintSystem 𝓡 numWires numGates)
+    (transcript : FullTranscript (gateCheckPSpec 𝓡 numWires)) :
+    (gateCheckVerifier (𝓡 := 𝓡) (numWires := numWires) (numGates := numGates)).verify
+      cs transcript =
+      if cs.accepts (transcript 0) then pure (cs, transcript 0) else failure := by
+  by_cases h : cs.accepts (transcript 0) <;>
+    simp [gateCheckVerifier, guard_eq, h]
+
+theorem gateCheckVerifier_mem_support_iff
+    (cs : Plonk.ConstraintSystem 𝓡 numWires numGates)
+    (transcript : FullTranscript (gateCheckPSpec 𝓡 numWires))
+    (out : Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)) :
+    some out ∈ support
+      ((gateCheckVerifier (𝓡 := 𝓡) (numWires := numWires) (numGates := numGates)).verify
+        cs transcript).run ↔
+      cs.accepts (transcript 0) ∧ out = (cs, transcript 0) := by
+  rw [gateCheckVerifier_verify_eq]
+  by_cases h : cs.accepts (transcript 0) <;> simp [h]
+
 @[inline, specialize]
 def gateCheckReduction :
     Reduction []ₒ
