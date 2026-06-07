@@ -822,3 +822,4 @@ import ArkLib.ToVCVio.SimulationInfrastructure
 import ArkLib.ToVCVio.ToMathlib.Control.StateT
 import ArkLib.ToVCVio.ToMathlib.Data.Vector.Basic
 import ArkLib.ResidualAxioms
+import ArkLib.OuterCompletenessScratch
