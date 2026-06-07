@@ -350,6 +350,26 @@ theorem reedSolomon_Lambda_le [Fintype F] [Nonempty ι] {k dX dZ : ℕ} [NeZero 
     exact Nat.le_floor hrel
   exact_mod_cast hmono
 
+/-- **Reed–Solomon is `(δ, dZ)`-list-decodable.**  The named list-decodability predicate for
+Reed–Solomon under the Sudan conditions, obtained from the `Λ` bound.  This is the standard
+`(r, ℓ)`-list-decodable statement (`∀ y, |{c ∈ RS : δᵣ(y,c) ≤ δ}| ≤ ℓ`) the list-decoding papers
+quote, now proven for RS with `ℓ = dZ`. -/
+theorem reedSolomon_listDecodable [Fintype F] [Nonempty ι] {k dX dZ : ℕ} [NeZero k] {α : ι ↪ F}
+    {δ : ℝ} (hδ0 : 0 ≤ δ)
+    (hbig : Fintype.card ι < (dX + 1) * (dZ + 1))
+    (he : ⌊δ * Fintype.card ι⌋₊ < Fintype.card ι)
+    (hdeg : dX + dZ * (k - 1) < Fintype.card ι - ⌊δ * Fintype.card ι⌋₊) :
+    ListDecodable.listDecodable ((ReedSolomon.code α k : Set (ι → F))) δ (dZ : ℝ) := by
+  intro y
+  have hLam := reedSolomon_Lambda_le (α := α) (k := k) (dX := dX) (dZ := dZ) hδ0 hbig he hdeg
+  have hy : ((ListDecodable.closeCodewordsRel
+      ((ReedSolomon.code α k : Set (ι → F))) y δ).ncard : ℕ∞) ≤ (dZ : ℕ∞) :=
+    le_trans (le_iSup (fun f => ((ListDecodable.closeCodewordsRel
+      ((ReedSolomon.code α k : Set (ι → F))) f δ).ncard : ℕ∞)) y) hLam
+  have hnat : (ListDecodable.closeCodewordsRel
+      ((ReedSolomon.code α k : Set (ι → F))) y δ).ncard ≤ dZ := by exact_mod_cast hy
+  exact_mod_cast hnat
+
 open Polynomial in
 /-- **Berlekamp–Welch key-equation existence.**  If a received word `y` is within `e` Hamming
 errors of the Reed–Solomon codeword `eval f` (`f` of degree `< k`), then the Berlekamp–Welch key
