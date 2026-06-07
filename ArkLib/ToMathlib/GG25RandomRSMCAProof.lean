@@ -40,7 +40,7 @@ open scoped ENNReal NNReal ProbabilityTheory
 
 namespace CodingTheory
 
-open Probability
+open Probability ProximityGap
 open scoped Classical
 
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]

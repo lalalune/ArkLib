@@ -509,6 +509,7 @@ import ArkLib.ToMathlib.Finsupp.Fin
 import ArkLib.ToMathlib.FrobeniusFactorHelpers
 import ArkLib.ToMathlib.GGR11Interleaved
 import ArkLib.ToMathlib.GGR11Reconnect
+import ArkLib.ToMathlib.GG25RandomRSMCAProof
 import ArkLib.ToMathlib.GHSZ02Cor20
 import ArkLib.ToMathlib.GHSZ02LargeNProof
 import ArkLib.ToMathlib.GK16BudgetCoeff
