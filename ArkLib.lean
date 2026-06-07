@@ -491,6 +491,7 @@ import ArkLib.OracleReduction.Security.SpecialSoundness
 import ArkLib.OracleReduction.Security.StateRestoration
 import ArkLib.OracleReduction.Security.TranscriptTree
 import ArkLib.OracleReduction.Security.ZeroKnowledge
+import ArkLib.OracleReduction.Security.ZeroKnowledgeKernel
 import ArkLib.OracleReduction.SimulateQ
 import ArkLib.OracleReduction.VectorIOR
 import ArkLib.ProofSystem.BCS.ErrorAccounting
@@ -569,6 +570,7 @@ import ArkLib.ProofSystem.Logup.Common
 import ArkLib.ProofSystem.Logup.LogupGrandSumIdentity
 import ArkLib.ProofSystem.Logup.Protocol
 import ArkLib.ProofSystem.Logup.Security.Completeness
+import ArkLib.ProofSystem.Logup.Security.OuterAcceptance
 import ArkLib.ProofSystem.Logup.Security.OuterRun
 import ArkLib.ProofSystem.Logup.Security.Soundness
 import ArkLib.ProofSystem.Logup.Security.SubPhaseSplit
