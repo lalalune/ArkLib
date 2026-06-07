@@ -195,6 +195,18 @@ def openTranscriptPayloads {s : Skeleton}
     List (SkeletonLeafIndex s × α × α) :=
   transcript.2.map (fun o => (o.1, o.2.1, o.2.2.1))
 
+@[simp] theorem openTranscriptPayloads_length {s : Skeleton}
+    (transcript : α × List ((i : SkeletonLeafIndex s) × α × α × List.Vector α i.depth)) :
+    (openTranscriptPayloads transcript).length = transcript.2.length := by
+  simp [openTranscriptPayloads]
+
+/-- Projecting payloads back to their indices recovers the transcript-entry indices. -/
+@[simp] theorem openTranscriptPayloads_indices {s : Skeleton}
+    (transcript : α × List ((i : SkeletonLeafIndex s) × α × α × List.Vector α i.depth)) :
+    (openTranscriptPayloads transcript).map (fun payload => payload.1) =
+      transcript.2.map (fun entry => entry.1) := by
+  simp [openTranscriptPayloads, Function.comp_def]
+
 /-- The honest salted transcript root is the root of the salted Merkle tree. -/
 theorem openTranscript_root_eq {s : Skeleton} (hashFn : α → α → α)
     (salts leaves : LeafData α s) (idxs : List (SkeletonLeafIndex s)) :
@@ -220,6 +232,29 @@ theorem openTranscriptPayloads_openTranscript_eq {s : Skeleton} (hashFn : α →
     openTranscriptPayloads (openTranscript hashFn salts leaves idxs) =
       idxs.map (fun i => (i, salts.get i, leaves.get i)) := by
   simp [openTranscriptPayloads, openTranscript]
+
+/-- Honest transcript payloads have one payload per requested index. -/
+theorem openTranscriptPayloads_openTranscript_length {s : Skeleton} (hashFn : α → α → α)
+    (salts leaves : LeafData α s) (idxs : List (SkeletonLeafIndex s)) :
+    (openTranscriptPayloads (openTranscript hashFn salts leaves idxs)).length = idxs.length := by
+  simp [openTranscriptPayloads_openTranscript_eq]
+
+/-- Projecting honest transcript payloads to indices recovers the requested index list. -/
+theorem openTranscriptPayloads_openTranscript_indices {s : Skeleton} (hashFn : α → α → α)
+    (salts leaves : LeafData α s) (idxs : List (SkeletonLeafIndex s)) :
+    (openTranscriptPayloads (openTranscript hashFn salts leaves idxs)).map
+        (fun payload => payload.1) = idxs := by
+  simp [openTranscriptPayloads_openTranscript_eq, Function.comp_def]
+
+/-- Duplicate-free requested indices give duplicate-free honest transcript payloads. -/
+theorem openTranscriptPayloads_openTranscript_nodup {s : Skeleton} (hashFn : α → α → α)
+    (salts leaves : LeafData α s) (idxs : List (SkeletonLeafIndex s))
+    (hidxs : idxs.Nodup) :
+    (openTranscriptPayloads (openTranscript hashFn salts leaves idxs)).Nodup := by
+  rw [openTranscriptPayloads_openTranscript_eq]
+  exact hidxs.map (by
+    intro i j h
+    exact congrArg (fun payload => payload.1) h)
 
 /-- If two leaf assignments agree on the requested opened indices under the same salts, then the
 honest transcripts reveal the same opened payloads `(index, salt, value)`. This is the
@@ -442,9 +477,14 @@ end InductiveMerkleTree
 #print axioms InductiveMerkleTree.multi_salted_openings_unique_against_honest_tree
 #print axioms InductiveMerkleTree.openTranscript
 #print axioms InductiveMerkleTree.openTranscriptPayloads
+#print axioms InductiveMerkleTree.openTranscriptPayloads_length
+#print axioms InductiveMerkleTree.openTranscriptPayloads_indices
 #print axioms InductiveMerkleTree.openTranscript_root_eq
 #print axioms InductiveMerkleTree.openTranscript_entries_eq
 #print axioms InductiveMerkleTree.openTranscriptPayloads_openTranscript_eq
+#print axioms InductiveMerkleTree.openTranscriptPayloads_openTranscript_length
+#print axioms InductiveMerkleTree.openTranscriptPayloads_openTranscript_indices
+#print axioms InductiveMerkleTree.openTranscriptPayloads_openTranscript_nodup
 #print axioms InductiveMerkleTree.openTranscript_entries_payload_eq_of_agree
 #print axioms InductiveMerkleTree.openTranscriptPayloads_eq_of_agree
 #print axioms InductiveMerkleTree.openTranscript_entries_payload_eq_of_agree_on_opened
