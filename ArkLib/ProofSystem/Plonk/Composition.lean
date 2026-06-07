@@ -186,12 +186,75 @@ def plonkCheckLangOut :
     Set (Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)) :=
   plonkCheckRel 𝓡 numWires numGates
 
+variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl []ₒ (StateT σ ProbComp))
+
+/-- The post-gate permutation verifier has zero-error round-by-round soundness for the full
+gate-and-copy language on its `(cs, w)` statement. The verifier returns only the input statement,
+so any accepted output in `plonkCheckLangOut` immediately puts the input statement in the same
+language. -/
+theorem permCheckAfterGateVerifier_rbrSoundness :
+    (permCheckAfterGateVerifier (𝓡 := 𝓡) (numWires := numWires)
+      (numGates := numGates)).rbrSoundness init impl
+        (plonkCheckLangOut 𝓡 numWires numGates)
+        (plonkCheckLangOut 𝓡 numWires numGates) 0 := by
+  refine ⟨{
+    toFun := fun _ stmt _ => stmt ∈ plonkCheckLangOut 𝓡 numWires numGates
+    toFun_empty := fun _ => Iff.rfl
+    toFun_next := fun _ _ _ _ h _ => h
+    toFun_full := fun stmt tr hstmt => by
+      rcases stmt with ⟨cs, w⟩
+      exact ?_
+  }, ?_⟩
+  · rw [probEvent_eq_zero_iff]
+    intro out hout houtLang
+    rw [OptionT.mem_support_iff] at hout
+    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hout
+    obtain ⟨s, _, hout⟩ := hout
+    by_cases hAccept :
+        ExtendedWireAssignmentMatches 𝓡 numWires numGates cs w (tr 0) ∧
+          CopyConstraintsSatisfied (tr 0) cs.perm
+    · have hrun :
+          (simulateQ impl
+            ((permCheckAfterGateVerifier (𝓡 := 𝓡) (numWires := numWires)
+              (numGates := numGates)).run (cs, w) tr)).run' s =
+            pure (some (cs, w)) := by
+        simp only [Verifier.run]
+        rw [if_pos hAccept]
+        rw [simulateQ_pure]
+        change Prod.fst <$> (pure (some (cs, w)) : StateT σ ProbComp
+          (Option (Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)))).run s =
+          pure (some (cs, w))
+        rw [StateT.run_pure]
+        simp [map_pure]
+      rw [hrun] at hout
+      simp only [support_pure, Set.mem_singleton_iff, Option.some.injEq] at hout
+      subst out
+      exact hstmt houtLang
+    · have hrun :
+          (simulateQ impl
+            ((permCheckAfterGateVerifier (𝓡 := 𝓡) (numWires := numWires)
+              (numGates := numGates)).run (cs, w) tr)).run' s =
+            pure none := by
+        simp only [Verifier.run]
+        rw [if_neg hAccept]
+        rw [simulateQ_pure]
+        change Prod.fst <$> (pure none : StateT σ ProbComp
+          (Option (Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)))).run s =
+          pure none
+        rw [StateT.run_pure]
+        simp [map_pure]
+      rw [hrun] at hout
+      simp at hout
+  · intro _ _ _ _ _ _ ⟨⟨0, _⟩, hdir⟩
+    exact absurd hdir (by simp)
+
 #print axioms Plonk.permCheckAfterGateVerifier_verify_eq
 #print axioms Plonk.permCheckAfterGateVerifier_mem_support_iff
 #print axioms Plonk.plonkCheckReduction_eq_append
 #print axioms Plonk.plonkCheckRel
 #print axioms Plonk.plonkCheckLangIn
 #print axioms Plonk.plonkCheckLangOut
+#print axioms Plonk.permCheckAfterGateVerifier_rbrSoundness
 
 end Composition
 

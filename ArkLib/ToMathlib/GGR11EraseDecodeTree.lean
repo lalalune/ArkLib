@@ -550,6 +550,24 @@ theorem EraseDecodeTree.leafCount_le_self (L : ℕ∞) (hL : 1 ≤ L) (t : Erase
     t.leafCount ≤ ((t.blueDepth + t.redDepth).choose t.redDepth : ℕ∞) * L ^ t.redDepth :=
   EraseDecodeTree.leafCount_le L hL t t.blueDepth t.redDepth le_rfl le_rfl hbr
 
+/-- A concrete tree satisfies the GGR11 leaf-count bound at its own computed Red-branching
+budget.  This removes the recursive `redBranchingLe` predicate from the theorem input; future tree
+constructors only need the numeric fact that the computed budget is at least one. -/
+theorem EraseDecodeTree.leafCount_le_redBranching (t : EraseDecodeTree) (b r : ℕ)
+    (hL : 1 ≤ (t.redBranching : ℕ∞))
+    (hbd : t.blueDepth ≤ b) (hrd : t.redDepth ≤ r) :
+    t.leafCount ≤ ((b + r).choose r : ℕ∞) * (t.redBranching : ℕ∞) ^ r :=
+  EraseDecodeTree.leafCount_le (t.redBranching : ℕ∞) hL t b r hbd hrd
+    (EraseDecodeTree.redBranchingLe_redBranching t)
+
+/-- Exact-depth version of `leafCount_le_redBranching`, using the tree's own Blue/Red depths. -/
+theorem EraseDecodeTree.leafCount_le_self_redBranching (t : EraseDecodeTree)
+    (hL : 1 ≤ (t.redBranching : ℕ∞)) :
+    t.leafCount
+      ≤ ((t.blueDepth + t.redDepth).choose t.redDepth : ℕ∞) *
+        (t.redBranching : ℕ∞) ^ t.redDepth :=
+  EraseDecodeTree.leafCount_le_redBranching t t.blueDepth t.redDepth hL le_rfl le_rfl
+
 /-! ### Bridge to the abstract residual -/
 
 open Code ListDecodable
@@ -1012,6 +1030,8 @@ theorem lambda_le_ggr11_of_leaf_close_le_one
 -- Axiom audit.
 #print axioms EraseDecodeTree.leafCount_le
 #print axioms EraseDecodeTree.leafCount_le_self
+#print axioms EraseDecodeTree.leafCount_le_redBranching
+#print axioms EraseDecodeTree.leafCount_le_self_redBranching
 #print axioms EraseDecodeTree.redBranchingLe_mono
 #print axioms EraseDecodeTree.redBranchingLeOption_mono
 #print axioms EraseDecodeTree.redBranchingLeList_mono

@@ -1,4 +1,37 @@
+/-
+Copyright (c) 2025 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Code
+
+/-!
+# Iterated fold advances the intermediate evaluation polynomial (BCIKS-Binius Lemma 4.13)
+
+This file proves the general-level-`i` form of BCIKS-Binius Lemma 4.13: iterating the
+Binary-Basefold fold `steps` times advances the intermediate evaluation polynomial.
+
+The main result `iterated_fold_advances_evaluation_poly` shows that the `steps`-fold of the
+codeword `polyToOracleFunc i (intermediateEvaluationPoly ⟨i⟩ coeffs)` is the codeword
+`polyToOracleFunc destIdx (intermediateEvaluationPoly ⟨i+steps⟩ (foldedNovelCoeffs …))`, where
+the folded novel coefficients `foldedNovelCoeffs` are the `multilinearWeight`-tensor combination
+of the originals:
+`foldedNovelCoeffs i steps coeffs r j = ∑ x, multilinearWeight r x * coeffs ⟨j * 2^steps + x⟩`.
+
+## Proof outline
+
+* `foldedNovelCoeffs_succ` — the one-fold recurrence for the folded coefficients, matching the
+  proven legacy single-step `(1 - r)·c(2j) + r·c(2j+1)` form. Proved from a binary MSB-split of
+  `multilinearWeight` (`mlw_split`) and an MSB sum-split (`sum_split_two`).
+* `degree_intermediateEvaluationPoly_lt` — the general-`i` degree bound packaging
+  `intermediateEvaluationPoly` as a Reed-Solomon-domain codeword via `polyToOracleFunc`. Proved
+  bottom-up from `degree (qMap) ≤ 2` through `intermediateNormVpoly`/`intermediateNovelBasisX`.
+* `iterated_fold_advances_aux` — the induction (on `steps`), peeling the last fold via
+  `iterated_fold_last`, bridging new-API `fold` to `fold_legacy` (`fold_eq_fold_legacy`), then
+  applying the proven single-step `fold_advances_evaluation_poly_legacy` and `foldedNovelCoeffs_succ`.
+* `iterated_fold_advances_evaluation_poly` — the public `polyToOracleFunc`-wrapped restatement
+  consumed by `ReductionLogic`.
+-/
 
 namespace Binius.BinaryBasefold
 open AdditiveNTT Polynomial Finset Nat
