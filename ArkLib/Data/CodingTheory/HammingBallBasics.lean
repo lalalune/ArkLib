@@ -42,9 +42,19 @@ lemma hammingBall_zero (y : ι → F) : hammingBall y 0 = {y} := by
     Set.mem_singleton_iff]
   exact eq_comm
 
+/-- **List-decodability is antitone in the radius**: shrinking the decoding radius preserves
+`(r, ℓ)`-list-decodability (fewer codewords are close), via `closeCodewordsRel_subset_of_le`. -/
+theorem listDecodable_of_radius_le {F : Type*} [Fintype F] [DecidableEq F]
+    {C : Code ι F} {r' r ℓ : ℝ} (hr : r' ≤ r) (h : listDecodable C r ℓ) :
+    listDecodable C r' ℓ := by
+  intro y
+  refine le_trans ?_ (h y)
+  exact_mod_cast Set.ncard_le_ncard (closeCodewordsRel_subset_of_le hr y) (Set.toFinite _)
+
 end ListDecodable
 
 #print axioms ListDecodable.self_mem_hammingBall
 #print axioms ListDecodable.hammingBall_mono
 #print axioms ListDecodable.relHammingBall_mono
 #print axioms ListDecodable.hammingBall_zero
+#print axioms ListDecodable.listDecodable_of_radius_le

@@ -342,6 +342,30 @@ theorem fiatShamir_soundness_of_stateRestoration
     Verifier.soundness fsInit fsImpl langIn langOut V.fiatShamir soundnessError :=
   hTransfer hSR
 
+/-- Basic Fiat-Shamir soundness at a larger target error follows from a state-restoration transfer
+residual proved at a smaller error budget. -/
+theorem fiatShamir_soundness_of_stateRestoration_mono_error
+    (srInit : ProbComp (QueryImpl (fsChallengeOracle StmtIn pSpec) Id))
+    (srImpl : QueryImpl oSpec
+      (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp))
+    (fsInit : ProbComp σ)
+    (fsImpl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (langIn : Set StmtIn) (langOut : Set StmtOut)
+    {soundnessError₁ soundnessError₂ : ℝ≥0}
+    (V : Verifier oSpec StmtIn StmtOut pSpec)
+    (hTransfer :
+      fiatShamir_soundnessTransferResidual srInit srImpl fsInit fsImpl
+        langIn langOut soundnessError₁ V)
+    (hSR : Verifier.StateRestoration.soundness srInit srImpl
+      langIn langOut V soundnessError₁)
+    (hle : soundnessError₁ ≤ soundnessError₂) :
+    Verifier.soundness fsInit fsImpl langIn langOut V.fiatShamir soundnessError₂ := by
+  have hSound :
+      Verifier.soundness fsInit fsImpl langIn langOut V.fiatShamir soundnessError₁ :=
+    fiatShamir_soundness_of_stateRestoration srInit srImpl fsInit fsImpl langIn langOut
+      soundnessError₁ V hTransfer hSR
+  exact Verifier.soundness.mono_error fsInit fsImpl hSound hle
+
 /-- Residual statement for the basic Fiat-Shamir state-restoration knowledge-soundness transfer.
 
 As in `fiatShamir_soundnessTransferResidual`, this names only the semantic bridge from an
@@ -378,10 +402,36 @@ theorem fiatShamir_knowledgeSoundness_of_stateRestoration
     Verifier.knowledgeSoundness fsInit fsImpl relIn relOut V.fiatShamir knowledgeError :=
   hTransfer hSR
 
+/-- Basic Fiat-Shamir knowledge soundness at a larger target error follows from a
+state-restoration transfer residual proved at a smaller error budget. -/
+theorem fiatShamir_knowledgeSoundness_of_stateRestoration_mono_error
+    (srInit : ProbComp (QueryImpl (fsChallengeOracle StmtIn pSpec) Id))
+    (srImpl : QueryImpl oSpec
+      (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp))
+    (fsInit : ProbComp σ)
+    (fsImpl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut × WitOut))
+    {knowledgeError₁ knowledgeError₂ : ℝ≥0}
+    (V : Verifier oSpec StmtIn StmtOut pSpec)
+    (hTransfer :
+      fiatShamir_knowledgeSoundnessTransferResidual srInit srImpl fsInit fsImpl
+        relIn relOut knowledgeError₁ V)
+    (hSR : Verifier.StateRestoration.knowledgeSoundness srInit srImpl
+      relIn relOut V knowledgeError₁)
+    (hle : knowledgeError₁ ≤ knowledgeError₂) :
+    Verifier.knowledgeSoundness fsInit fsImpl relIn relOut V.fiatShamir knowledgeError₂ := by
+  have hSound :
+      Verifier.knowledgeSoundness fsInit fsImpl relIn relOut V.fiatShamir knowledgeError₁ :=
+    fiatShamir_knowledgeSoundness_of_stateRestoration srInit srImpl fsInit fsImpl relIn relOut
+      knowledgeError₁ V hTransfer hSR
+  exact Verifier.knowledgeSoundness.mono_error fsInit fsImpl hSound hle
+
 #print axioms Reduction.fiatShamir_soundnessTransferResidual
 #print axioms Reduction.fiatShamir_soundness_of_stateRestoration
+#print axioms Reduction.fiatShamir_soundness_of_stateRestoration_mono_error
 #print axioms Reduction.fiatShamir_knowledgeSoundnessTransferResidual
 #print axioms Reduction.fiatShamir_knowledgeSoundness_of_stateRestoration
+#print axioms Reduction.fiatShamir_knowledgeSoundness_of_stateRestoration_mono_error
 
 end StateRestorationSoundness
 
