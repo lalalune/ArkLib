@@ -62,26 +62,33 @@ provides the general-`i` building blocks (`intermediateEvaluationPoly`, `interme
 Predominantly CompPoly-layer work. Audited under `0c5a2b2df` /
 `docs/kb/audits/issue-33-binius-branch-harvest-2026-06-06.md`.
 
-## Cleanest decoupling lever (concrete next step for 3 of the 4 Steps)
+## Decoupling lever — executed, but the completeness layer is ALSO broken
 
 `Steps/Commit`, `Steps/Relay`, `Steps/FinalSumcheck` import only `ReductionLogic` (not the
-`Soundness` umbrella). `ReductionLogic` in turn imports the broken `Soundness.Lift` for **exactly
-one** symbol: the 2-line self-contained helper `bitsOfIndex` (`Soundness/Lift.lean:41`,
-`fun j => if Nat.getBit j.val k.val = 1 then 1 else 0`). Relocating `bitsOfIndex` into a stable
-low module (e.g. a new `BinaryBasefold/BitsOfIndex.lean`, or `Basic.lean`) that both `Lift` and
-`ReductionLogic` import — and dropping `import Soundness.Lift` from `ReductionLogic` — decouples the
-entire Steps **completeness** layer from the broken Soundness lift. That should let
-`Steps/{Commit,Relay,FinalSumcheck}` compile and machine-verify 3 of the 4 step residuals without
-any soundness-layer repair. (Note: it must MOVE the def, not duplicate it — `Steps/Fold` imports
-both `ReductionLogic` and the `Soundness` umbrella, so two `Binius.BinaryBasefold.bitsOfIndex`
-definitions would collide there.) `Steps/Fold` additionally needs `Soundness.Incremental` and the
-umbrella, so it stays gated on the soundness-layer port until that lands. Not executed here because
-the clean move edits the actively-refactored (API-drifting) `Soundness/Lift.lean`, which is unsafe
-to touch concurrently in the shared multi-agent tree.
+`Soundness` umbrella), and `ReductionLogic` imported the broken `Soundness.Lift` for **exactly
+one** symbol: the 2-line helper `bitsOfIndex`. That helper was extracted into a new stable module
+`ArkLib/ProofSystem/Binius/BinaryBasefold/BitsOfIndex.lean` (builds green standalone), and both
+`Soundness/Lift` and `ReductionLogic` now import it instead — dropping `ReductionLogic`'s
+dependency on the broken soundness lift. This is a valid coupling reduction and is non-regressing
+(both `Lift` and `ReductionLogic` were already uncompiled), but it is **not sufficient** to verify
+the Steps residuals, because:
+
+**`ReductionLogic.lean` (the Steps completeness substrate) is itself broken** with its own API
+drift, independent of the Soundness layer: `Unknown identifier getSumcheckRoundPoly_sum_eq`
+(`:348`), `unsolved goals` (`:350`), `rfl` failure (`:369`), `Unknown identifier
+projectToNextSumcheckPoly_sum_eq` (`:393`). Since every Steps file imports `ReductionLogic`, all
+four step residuals are blocked here too.
+
+So verifying the 9 Steps residuals green requires repairing BOTH (a) the Steps completeness
+substrate (`ReductionLogic` sumcheck-round-poly API drift) and (b) the never-compiled `Soundness/`
+subtree (Lift interleaved-code mismatch + QueryPhasePrelims signature drift/kernel/heartbeat +
+siblings, with `Steps/Fold` also needing `Soundness.Incremental`). Both are multi-module API-drift
+ports against the refactored Binius API — not Steps-residual defects.
 
 ## Recommendation
 
-Keep #33 open. The Steps proofs are written, but their green-build verification is gated on a
-separate effort to repair the never-compiled Binius `Soundness/` subtree (Lift + QueryPhasePrelims
-+ siblings) — which should likely be tracked as its own issue — and on the Lemma 4.13 reconstruction
-port. Neither is a Steps-residual defect.
+Keep #33 open. The Steps proofs are written (no `sorry`), but green-build verification is gated on a
+separate, multi-module repair of the broken Binius reduction+soundness layer (`ReductionLogic`
+sumcheck API drift; the `Soundness/` subtree) — which should be tracked as its own issue — plus the
+Lemma 4.13 reconstruction port behind `FoldPreservesBBFCodeMembershipResidual`. None of these is a
+Steps-residual defect.
