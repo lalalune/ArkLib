@@ -103,8 +103,9 @@ theorem entropy_rpow_eq (hq : 2 ≤ q) (n k : ℕ) (hk0 : 0 < k) (hkn : k < n) :
   have hnn : (n : ℝ) ^ k * (n : ℝ) ^ m = (n : ℝ) ^ n := by
     rw [← pow_add, hkmn]
   rw [← hnn]
-  field_simp
-  ring
+  -- `field_simp` fully discharges the cleared identity under some mathlib versions and
+  -- leaves a polynomial goal under others; `<;> ring` is robust to both (no-op on 0 goals).
+  field_simp <;> ring
 
 /-- **Per-term q-ary entropy bound (the core of ABF26 C3.8).**  For `2 ≤ q`, `0 < k`, `k < n`:
 

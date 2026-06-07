@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
 import Mathlib.Data.ENNReal.Inv
 import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
@@ -8,28 +13,45 @@ import Mathlib.Data.Fintype.Pi
 import Mathlib.Algebra.Group.Equiv.Basic
 
 /-!
-# Scratch: DG25 L4.19 covering-radius sampling — the generic averaging brick (algebra-only)
+# Uniform translation-averaging over a finite word space
 
-The mathematical heart of the covering-radius sampling lower bound (issue #77 / ABF26 L4.19 /
-DG25 Thm 2.5), stated in raw `Finset.sum` / `(card)⁻¹` ENNReal form so it needs only core algebra
-(no Probability/MeasureTheory/Analysis imports — robust to the shared-`.lake` olean churn).
+A self-contained averaging identity over a finite "word space" `ι → F`: averaging an event
+`P (u₀ + γ • w)` over a uniformly random base word `u₀` and a uniformly random slope `γ ∈ F`
+equals the uniform-word event `P u`.  Concretely, with `|ι → F|⁻¹` / `|F|⁻¹` the uniform weights,
 
-`∑_{u₀} |ι→F|⁻¹ · (∑_{γ} |F|⁻¹ · [P (u₀ + γ•w)])  =  ∑_{u} |ι→F|⁻¹ · [P u]`
+`∑_{u₀} |ι→F|⁻¹ · (∑_{γ} |F|⁻¹ · 𝟙[P (u₀ + γ•w)])  =  ∑_{u} |ι→F|⁻¹ · 𝟙[P u]`.
 
-Intuition: averaging the line-event `P(u₀+γ•w)` over a uniform base word `u₀` (and slope `γ`)
-re-uniformizes the sampled point. Integration (in `CapacityBounds.lean`) bridges the `Pr_{...}`
-notation to these sums via `Pr_eq_tsum_indicator` + `tsum_fintype` + `uniformOfFintype_apply`,
-then derives `epsCA ≥ ⨆_{u₀} body ≥ ∑ unif·body = Pr_u[…] ≥ ((q-1)/q)·Pr_u[…]`, choosing `w` beyond
-the covering radius so `¬ jointProximity` holds for every `u₀`.
+The proof distributes the outer weight into the slope sum, swaps the two finite sums, applies the
+translation bijection `u₀ ↦ u₀ + γ•w` (whose uniform weight is constant, hence invariant), and
+collapses the now slope-independent sum via `|F| · |F|⁻¹ = 1`.
+
+## Motivation (ABF26 Lemma 4.19 / DG25 Theorem 2.5, issue #77)
+
+This is the measure-theoretic heart of the **covering-radius sampling** lower bound for the
+correlated-agreement error `ε_ca`.  Once a word `w` is chosen beyond the covering radius (so the
+pair `(u₀, w)` is never jointly `δ`-close), the `ε_ca` supremum over word-pairs dominates the
+`u₀`-average of the line event, and this identity re-uniformizes that average into
+`Pr_{u}[δᵣ(u, C) ≤ δ]`:
+
+`ε_ca(C, δ) ≥ ⨆_{u₀} (line prob) ≥ ∑_{u₀} unif(u₀)·(line prob) = Pr_u[δᵣ(u,C) ≤ δ]`.
+
+It is stated in raw `Finset.sum` / `(card)⁻¹` `ENNReal` form (no `Probability`/`MeasureTheory`
+imports) so it is reusable and cheap to build; downstream the `Pr_{...}` notation is bridged to
+these sums via `ProbabilityTheory.Pr_eq_tsum_indicator` + `tsum_fintype` + `uniformOfFintype_apply`.
 -/
 
 open scoped NNReal ENNReal BigOperators
 
-variable {F : Type} [Field F] [Fintype F] [DecidableEq F] [Nonempty F]
+namespace ArkLib
+
+variable {F : Type} [Field F] [Fintype F] [Nonempty F]
 variable {ι : Type} [Fintype ι] [DecidableEq ι]
 
-/-- **Translation-averaging identity (the DG25 L4.19 heart), ENNReal Finset form.** -/
-lemma avg_line_indicator (P : (ι → F) → Prop) [DecidablePred P] (w : ι → F) :
+/-- **Uniform translation-averaging identity (the DG25 L4.19 sampling heart), `ENNReal` form.**
+
+Averaging the line event `P (u₀ + γ•w)` over a uniform base word `u₀` and uniform slope `γ`
+equals the uniform-word event `P u`. -/
+theorem sum_uniform_line_indicator_eq (P : (ι → F) → Prop) [DecidablePred P] (w : ι → F) :
     (∑ u₀ : ι → F, (Fintype.card (ι → F) : ℝ≥0∞)⁻¹ *
         ∑ γ : F, (Fintype.card F : ℝ≥0∞)⁻¹ * (if P (u₀ + γ • w) then (1 : ℝ≥0∞) else 0))
       = ∑ u : ι → F, (Fintype.card (ι → F) : ℝ≥0∞)⁻¹ * (if P u then (1 : ℝ≥0∞) else 0) := by
@@ -63,3 +85,5 @@ lemma avg_line_indicator (P : (ι → F) → Prop) [DecidablePred P] (w : ι →
             (if P u₀ then (1 : ℝ≥0∞) else 0)) := by ring
     _ = (Fintype.card (ι → F) : ℝ≥0∞)⁻¹ * (if P u₀ then (1 : ℝ≥0∞) else 0) := by
           rw [ENNReal.mul_inv_cancel hcard htop, one_mul]
+
+end ArkLib
