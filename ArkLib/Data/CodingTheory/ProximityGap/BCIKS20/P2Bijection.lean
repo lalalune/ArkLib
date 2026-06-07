@@ -76,17 +76,14 @@ theorem mem_image_valueMultiset_of_card_sum {i c : ℕ} (m : Multiset ℕ)
   have hlapp : ∀ j ∈ Finset.range i, l j = L.getD j 0 := fun j _ => Finsupp.onFinset_apply
   -- The core fact: mapping the index list through `L.getD · 0` reconstructs `m`.
   have hmap : (Finset.range i).val.map (fun j => L.getD j 0) = m := by
-    rw [Finset.range_val, ← hLlen]
-    show (Multiset.range L.length).map (fun j => L.getD j 0) = m
-    rw [Multiset.range_eq_coe, Multiset.map_coe, list_range_map_getD, hL, Multiset.coe_toList]
+    rw [Finset.range_val, ← hLlen, ← Multiset.coe_range, Multiset.map_coe, list_range_map_getD,
+      hL, Multiset.coe_toList]
   refine Finset.mem_image.mpr ⟨l, ?_, ?_⟩
   · rw [Finset.mem_finsuppAntidiag]
     refine ⟨?_, Finsupp.support_onFinset_subset⟩
-    calc ∑ j ∈ Finset.range i, l j
-        = ((Finset.range i).val.map (fun j => L.getD j 0)).sum := by
-          rw [Finset.sum]; exact Multiset.sum_congr rfl (fun j hj => hlapp j (Finset.mem_val.mp hj))
-      _ = m.sum := by rw [hmap]
-      _ = c := hsum
+    rw [Finset.sum_congr rfl hlapp]
+    show ((Finset.range i).val.map (fun j => L.getD j 0)).sum = c
+    rw [hmap, hsum]
   · show (Finset.range i).val.map (fun j => l j) = m
     rw [Multiset.map_congr rfl (fun j hj => hlapp j (Finset.mem_val.mp hj)), hmap]
 
@@ -95,3 +92,4 @@ end BCIKS20.HenselNumerator
 -- Axiom audit.
 #print axioms BCIKS20.HenselNumerator.prod_map_eq_zero_pow_mul_positivePart
 #print axioms BCIKS20.HenselNumerator.countPerms_smul_prod_split
+#print axioms BCIKS20.HenselNumerator.mem_image_valueMultiset_of_card_sum
