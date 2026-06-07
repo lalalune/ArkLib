@@ -164,6 +164,12 @@ theorem fiatShamir_verify_eq
 
 end Verifier
 
+#print axioms Prover.processRoundFS
+#print axioms Prover.runToRoundFS
+#print axioms Prover.fiatShamir
+#print axioms Verifier.fiatShamir
+#print axioms Verifier.fiatShamir_verify_eq
+#print axioms Reduction.fiatShamir
 
 
 end Execution
@@ -384,6 +390,11 @@ theorem fiatShamir_completeness_of_honestExecution_mono_relations_error
 -- coercion paths for the same lifted computation.
 
 #print axioms Reduction.fiatShamir_runCollapseResidual
+#print axioms Reduction.FiatShamirProtocolSpec
+#print axioms Reduction.FiatShamirProofTranscript
+#print axioms Reduction.fiatShamirHonestExecution
+#print axioms Reduction.fiatShamir_run_eq_honestExecution
+#print axioms Reduction.fiatShamir_completeness_unroll
 #print axioms Reduction.fiatShamir_completeness_unroll_of_runCollapse
 #print axioms Reduction.fiatShamir_completeness_of_honestExecution
 #print axioms Reduction.fiatShamir_honestExecution_completeness_of_completeness
