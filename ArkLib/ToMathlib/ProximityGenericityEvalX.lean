@@ -65,6 +65,17 @@ lemma evalX_ne_zero_of_leadingCoeff_eval_ne_zero {a : Polynomial F}
   apply h
   rw [← coeff_evalX a R R.natDegree, hzero, Polynomial.coeff_zero]
 
+/-- **`hsep` (#8), discharged — unconditional in `x₀`.** If `R` is separable (as a polynomial in
+the `Y`-variable over `F[Z][X]`), then `evalX a R` is separable for **every** `a`, because
+`evalX a R = R.map (evalRingHom a)` and separability is preserved by ring-hom maps
+(`Polynomial.Separable.map`). So `hsep` needs no genericity — only the structural fact that the
+GS factor `R` is `Y`-separable (`disc_Y R ≠ 0`). -/
+lemma evalX_separable_of_separable {a : Polynomial F}
+    {R : Polynomial (Polynomial (Polynomial F))} (h : R.Separable) :
+    (Polynomial.Bivariate.evalX a R).Separable := by
+  rw [Polynomial.Bivariate.evalX_eq_map]
+  exact h.map
+
 /-- **`hx0` existence (#8), discharged.** For a finite family `Rs` of nonzero trivariate
 polynomials whose leading-Y-coefficient X-degrees sum to `< |F|`, there is a single `x₀ : F` with
 `evalX (C x₀) R ≠ 0` for every `R ∈ Rs`. This discharges the field-size half of `hx0` in
