@@ -121,8 +121,13 @@ theorem common_le_agree (c c' w : ι → Sigma) : common c c' w ≤ (agree c c' 
   classical
   unfold common
   have hpt : ∀ i, ind c w i * ind c' w i ≤ ind c c' i := by
-    intro i; rw [ind_mul_ind]; unfold ind
-    split_ifs with h hcc <;> first | norm_num | (exfalso; apply hcc; rw [h.1, h.2])
+    intro i
+    rw [ind_mul_ind, ind]
+    split_ifs with hP hcc
+    · exact le_refl 1
+    · exact absurd (hP.1.trans hP.2.symm) hcc
+    · norm_num
+    · norm_num
   calc ∑ i, ind c w i * ind c' w i ≤ ∑ i, ind c c' i := Finset.sum_le_sum (fun i _ => hpt i)
     _ = (agree c c' : ℚ) := sum_ind_eq_agree c c'
 

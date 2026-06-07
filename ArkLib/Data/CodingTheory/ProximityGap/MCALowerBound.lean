@@ -161,6 +161,20 @@ theorem epsMCA_pos_iff (C : Set (ι → A)) (δ : ℝ≥0) :
   push_neg
   tauto
 
+open Classical in
+/-- **Bad-scalar-count bound ⇒ prize-shape MCA bound.** If every word stack has at most `ℓ` bad
+scalars, then `epsMCA C δ ≤ ℓ/|F|`. Via the closed form `epsMCA_eq_iSup_badCount_div`, this is the
+`poly/q` shape of ABF26 Grand Challenge 1: the prize reduces to *uniformly bounding the bad-scalar
+count* `ℓ` (which in the Johnson window is the proven Guruswami–Sudan list size). -/
+theorem epsMCA_le_of_badCount_le
+    (C : Set (ι → A)) (δ : ℝ≥0) (ℓ : ℕ)
+    (h : ∀ u : WordStack A (Fin 2) ι,
+      (Finset.filter (fun γ : F => mcaEvent C δ (u 0) (u 1) γ) Finset.univ).card ≤ ℓ) :
+    epsMCA (F := F) (A := A) C δ ≤ (ℓ : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) := by
+  rw [epsMCA_eq_iSup_badCount_div]
+  gcongr
+  exact iSup_le fun u => by exact_mod_cast h u
+
 end ProximityGap
 
 namespace ProximityGap.MCALowerExample
