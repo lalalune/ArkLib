@@ -288,6 +288,28 @@ theorem epsMCA_le_one (C : Set (ι → A)) (δ : ℝ≥0) :
   refine iSup_le fun u => ?_
   exact Pr_le_one ($ᵖ F) fun γ => mcaEvent C δ (u 0) (u 1) γ
 
+open Classical in
+/-- **MCA analogue of `one_le_epsCA_of_line_covered` (the `≥ 1` half).**
+
+If the MCA bad event `mcaEvent C δ (u 0) (u 1) γ` holds for *every* `γ`, then
+`1 ≤ ε_mca(C, δ)`.  The `ε_mca`-supremum term at `u` is `Pr_γ[mcaEvent C δ (u 0) (u 1) γ]`,
+which is the full mass `∑' γ, ($ᵖ F) γ = 1` because the indicator is constantly `1`.  This
+isolates an MCA complete-breakdown to a single stack whose every random combination triggers the
+bad event — the reusable reduction for the MCA-side breakdown issues (#66/#85/#99), separated
+from the supremum mechanics. -/
+theorem one_le_epsMCA_of_mcaEvent_forall (C : Set (ι → A)) (δ : ℝ≥0)
+    (u : WordStack A (Fin 2) ι)
+    (h : ∀ γ : F, mcaEvent C δ (u 0) (u 1) γ) :
+    1 ≤ epsMCA (F := F) C δ := by
+  unfold epsMCA
+  refine le_trans ?_ (le_iSup _ u)
+  rw [prob_tsum_form_singleton]
+  have heq : (∑' γ : F, ($ᵖ F) γ * (if mcaEvent C δ (u 0) (u 1) γ then (1 : ENNReal) else 0))
+      = ∑' γ : F, ($ᵖ F) γ :=
+    tsum_congr fun γ => by rw [if_pos (h γ), mul_one]
+  rw [heq]
+  exact ($ᵖ F).tsum_coe.ge
+
 /-! ## Monotonicity of `epsCA` (ABF26 Definition 4.1 sub-tasks 4–5)
 
 These two lemmas, together with `epsCA_eq_of_floor_eq`, characterize how `epsCA` varies
