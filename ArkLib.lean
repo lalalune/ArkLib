@@ -162,6 +162,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CS25BreakdownFarCount
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveredFraction
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveringCount
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveringExistence
+import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveringWitness
 import ArkLib.Data.CodingTheory.ProximityGap.CS25RSCoveredFraction
 import ArkLib.Data.CodingTheory.ProximityGap.CS25ReedSolomonHighDist
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentHighDist
