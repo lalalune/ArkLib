@@ -15,21 +15,31 @@ namespace BCIKS20.HenselNumerator
 variable {F : Type} [Field F]
 variable (H : F[X][Y]) [Fact (Irreducible H)] [Fact (0 < H.natDegree)]
 
-/-- Mathematical residual for the P2 restricted Faà-di-Bruno match.
-This is the single open step required to close the lift identity for P2.
-It states that the restricted Faà-di-Bruno sum matches the assembled series coefficient.
-See GitHub Issue #139 for the mathematical resolution of the cleared/uncleared gap. -/
-axiom restrictedFaaDiBrunoMatch_residual (x₀ : F) (R : F[X][X][Y])
-    (hHyp : ClaimA2.Hypotheses x₀ R H) : RestrictedFaaDiBrunoMatch H x₀ R hHyp
+/-- **Honest named residual for the P2 restricted Faà-di-Bruno match.**
 
-/-- Discharges the full P2 closed goal using the open mathematical residual. -/
+This was previously a fabricated `axiom restrictedFaaDiBrunoMatch_residual`, which silently
+asserted the genuine open BCIKS20 Appendix A.4 combinatorial core (`RestrictedFaaDiBrunoMatch`)
+and thereby tainted the whole proximity development's axiom audit with a false "closed" claim.
+It is now an honest `Prop`-valued *hypothesis* threaded through `P2_closed_of_residual`, matching
+the named-residual discipline used throughout `P2Close`/`P2Match`/`P2Assembly`.
+
+The genuine remaining content is the `t ≥ 1` ξ-telescoped Faà-di-Bruno bijection (order-0 is
+proven for monic `H` by `restrictedMatchAt_zero_of_leadingCoeff_one`; non-monic order-0 is
+provably *false* from `ClaimA2.Hypotheses` alone). No `axiom`/`sorry` is introduced here. -/
+def RestrictedFaaDiBrunoMatchResidual (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) : Prop :=
+  RestrictedFaaDiBrunoMatch H x₀ R hHyp
+
+/-- Discharges the full P2 closed goal from the honest match residual (no `axiom`, no `sorry`):
+the restricted Faà-di-Bruno match is taken as an explicit hypothesis rather than asserted. -/
 theorem P2_closed_of_residual (x₀ : F) (R : F[X][X][Y])
-    (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hmatch : RestrictedFaaDiBrunoMatchResidual H x₀ R hHyp) :
     (Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H) = 0)
     ∧ (∀ t : ℕ, embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
         = αGenuine H x₀ R hHyp t
             * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
             * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1)) :=
-  P2_closed H x₀ R hHyp (restrictedFaaDiBrunoMatch_residual H x₀ R hHyp)
+  P2_closed H x₀ R hHyp hmatch
 
 end BCIKS20.HenselNumerator
