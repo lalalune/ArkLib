@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLatticePrizeSpec
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGSWitness
 
 /-!
@@ -137,7 +138,9 @@ theorem epsMCAgs_prizeBound_conjecture_holds
   have hηlt1 : (η : ℝ) < 1 := eta_lt_one_of_prize j η δ hδ
   have hqpos : (0 : ℝ) < (Fintype.card F : ℝ) := by exact_mod_cast Fintype.card_pos
   -- pick `n` with `η^n < 1/q`
-  obtain ⟨n, hn⟩ := exists_pow_lt_of_lt_one (by positivity : (0 : ℝ) < 1 / (Fintype.card F : ℝ)) hηlt1
+  obtain ⟨n, hn⟩ :=
+    exists_pow_lt_of_lt_one
+      (by positivity : (0 : ℝ) < 1 / (Fintype.card F : ℝ)) hηlt1
   have hηpow_pos : (0 : ℝ) < (η : ℝ) ^ n := by
     have : (0 : ℝ) < (η : ℝ) := by exact_mod_cast hη
     positivity
@@ -355,6 +358,64 @@ theorem exists_prize_mcaLowerWitnesses_allRates_of_uniformConjecture
   exact hlower j (η j) (δ j) (hη j) (hδ j) (hδ_le_one j) (L j)
     (hfaithful j) (hclear j)
 
+/-- The honest uniform GS-exposed prize, plus explicit GS faithfulness and numeric clearance
+hypotheses at all four prize rates, supplies a faithful MCA prize-lattice resolution together with
+the satisfy/maximality specification for the selected thresholds.
+
+This is the lattice/spec aggregation of
+`exists_prize_mcaLowerWitnesses_allRates_of_uniformConjecture`: it chooses the all-rate lower
+witnesses and feeds them through the generic faithful lattice-prize spec API. The uniform GS prize,
+faithfulness, and numeric clearance remain explicit hypotheses. -/
+theorem exists_mcaPrizeLatticeResolved_with_spec_of_uniformConjecture
+    (domain : ι ↪ F) (m : ℕ)
+    (hUniform : epsMCAgsPrizeUniformConjecture domain m) :
+    ∃ c₁ c₂ c₃ : ℝ,
+      ∀ (η δ : Fin 4 → ℝ≥0),
+        (∀ j : Fin 4, 0 < η j) →
+        (∀ j : Fin 4,
+          (δ j : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η j : ℝ)) →
+        (∀ j : Fin 4, δ j ≤ 1) →
+        ∀ L : ∀ _ : Fin 4, WordStack F (Fin 2) ι → Finset (ι → F),
+          (∀ j : Fin 4,
+            FaithfulGSFamily (F := F)
+              ((ReedSolomon.code (domain := domain)
+                ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ :
+                  Set (ι → F))) (δ j) (L j)) →
+          (∀ j : Fin 4,
+            ENNReal.ofReal
+                (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j)
+                  (η j) c₁ c₂ c₃)
+              ≤ (epsStar : ENNReal)) →
+          ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+            GrandChallengesLattice.mcaPrizeLatticeResolved domain τ ∧
+              ∀ j : Fin 4,
+                let C : Set (ι → F) :=
+                  ReedSolomon.code domain
+                    ⌊ProximityGap.prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+                ∃ _ : GrandChallengesLattice.mcaThresholdExists C epsStar,
+                  GrandChallengesLattice.mcaSatisfies C epsStar (τ j) ∧
+                    ∀ i : Fin (Fintype.card ι + 1),
+                      GrandChallengesLattice.mcaSatisfies C epsStar i → i ≤ τ j := by
+  rcases exists_prize_mcaLowerWitnesses_allRates_of_uniformConjecture domain m hUniform with
+    ⟨c₁, c₂, c₃, hlower⟩
+  refine ⟨c₁, c₂, c₃, ?_⟩
+  intro η δ hη hδ hδ_le_one L hfaithful hclear
+  have hw : ∀ j : Fin 4,
+      ∃ w : GrandChallenges.MCALowerWitness
+        ((ReedSolomon.code (domain := domain)
+          ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ :
+            Set (ι → F))) epsStar,
+        w.δ = δ j :=
+    hlower η δ hη hδ hδ_le_one L hfaithful hclear
+  let w : ∀ j : Fin 4,
+      GrandChallenges.MCALowerWitness
+        ((ReedSolomon.code (domain := domain)
+          ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ :
+            Set (ι → F))) epsStar :=
+    fun j => Classical.choose (hw j)
+  exact GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_spec_of_lowerWitnesses
+    domain w
+
 end PerInput
 
 /-! ## 3. Explicit-constant conditional reduction (open content named, no laundering) -/
@@ -370,10 +431,11 @@ open scoped NNReal
 
 Under the (open, beyond-UDR) inputs — a uniform GS list size `ℓ`, per-stack pivot covering, and
 the single numeric clearance `ℓ/q ≤ epsMCAgsPrizeBound … c₁ c₂ c₃` for explicit constants — the
-per-input GS prize conjecture follows from the **proved** `epsMCAgs_le_listSize_div_of_pivotCovering`
-(`MCAGSWitness`). The genuinely open content is isolated into the named list-size/covering
-hypotheses; the assembly is sorry-free `le_trans`. No laundering: the conjecture's existential is
-discharged only relative to these explicit external inputs. Tracking: Issue #141. -/
+per-input GS prize conjecture follows from the **proved** GS list-size bound
+`epsMCAgs_le_listSize_div_of_pivotCovering` (`MCAGSWitness`). The genuinely open content is
+isolated into the named list-size/covering hypotheses; the assembly is sorry-free `le_trans`.
+No laundering: the conjecture's existential is discharged only relative to these explicit external
+inputs. Tracking: Issue #141. -/
 theorem epsMCAgs_prizeBound_of_listSize_clears
     (domain : ι ↪ F) (j : Fin 4) (m : ℕ) (η δ : ℝ≥0) (hη : 0 < η)
     (L : WordStack F (Fin 2) ι → Finset (ι → F))
@@ -406,6 +468,7 @@ end Reduction
 #print axioms epsMCAgsPrizeUniformConjecture_iff_uniform_epsMCAgsMassBound
 #print axioms exists_prize_mcaLowerWitness_of_uniformConjecture
 #print axioms exists_prize_mcaLowerWitnesses_allRates_of_uniformConjecture
+#print axioms exists_mcaPrizeLatticeResolved_with_spec_of_uniformConjecture
 #print axioms epsMCAgs_prizeBound_of_listSize_clears
 
 end MCAGS
