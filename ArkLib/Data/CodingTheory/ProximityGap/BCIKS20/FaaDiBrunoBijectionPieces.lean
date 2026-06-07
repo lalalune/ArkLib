@@ -67,36 +67,15 @@ bridge that collapses the LHS partition form's `i`-sum (Y-degree index `i`, part
 (`= countPerms λ • hasseCoeffRepr𝒪 i₁ (sigmaLambda λ)`).  Evaluated at `x = α₀ = T/W` (the root,
 `βHenselAssembled_constantCoeff`) it is precisely `hasseEvalAtRoot`.  General over any `CommRing`. -/
 theorem hasseDeriv_eval_eq_binom_zeroSlot_sum {R : Type*} [CommRing R]
-    (P : R[X]) (x : R) (k N : ℕ) (hN : P.natDegree < N) :
+    (P : R[X]) (x : R) (k : ℕ) :
     Polynomial.eval x (Polynomial.hasseDeriv k P)
-      = ∑ i ∈ Finset.range N, (i.choose k) • (x ^ (i - k) * P.coeff i) := by
+      = ∑ i ∈ Finset.range (P.natDegree + 1),
+          (i.choose k) • (x ^ (i - k) * P.coeff i) := by
   classical
-  rw [Polynomial.eval_eq_sum_range' (n := N)
-        (lt_of_le_of_lt (Polynomial.natDegree_hasseDeriv_le P k) hN)]
-  have hRHS : (∑ i ∈ Finset.range N, (i.choose k) • (x ^ (i - k) * P.coeff i))
-      = ∑ j ∈ Finset.range (N - k), ((j + k).choose k) • (x ^ j * P.coeff (j + k)) := by
-    rw [← Finset.sum_Ico_eq_sum_range]
-    refine (Finset.sum_subset (Finset.Ico_subset_range_iff.mpr (by omega)) ?_).symm
-    intro i _ hi
-    have : i < k := by
-      rw [Finset.mem_Ico] at hi; push_neg at hi
-      rcases Nat.lt_or_ge i k with h | h
-      · exact h
-      · exact absurd ⟨h, Finset.mem_range.mp ‹i ∈ Finset.range N›⟩ hi
-    rw [Nat.choose_eq_zero_of_lt this, zero_smul]
-  rw [hRHS]
-  have hLHS : (∑ j ∈ Finset.range N, (Polynomial.hasseDeriv k P).coeff j • x ^ j)
-      = ∑ j ∈ Finset.range (N - k), ((j + k).choose k) • (x ^ j * P.coeff (j + k)) := by
-    refine (Finset.sum_subset (Finset.range_subset.mpr (by omega)) ?_).symm.trans ?_
-    · intro j _ hj
-      have hjk : N - k ≤ j := by rw [Finset.mem_range] at hj; omega
-      rw [Polynomial.hasseDeriv_coeff]
-      have : P.coeff (j + k) = 0 := Polynomial.coeff_eq_zero_of_natDegree_lt (by omega)
-      rw [this, smul_zero, zero_smul]
-    · refine Finset.sum_congr rfl (fun j _ => ?_)
-      rw [Polynomial.hasseDeriv_coeff, smul_smul, mul_comm (x ^ j), ← smul_eq_mul, smul_assoc,
-        smul_eq_mul, smul_eq_mul, mul_comm]
-  rw [hLHS]
+  rw [Polynomial.hasseDeriv_eval_eq_sum]
+  refine Finset.sum_congr rfl (fun i _ => ?_)
+  rw [nsmul_eq_mul]
+  ring
 
 namespace BCIKS20.HenselNumerator
 
@@ -244,6 +223,7 @@ theorem restrictedFaaDiBruno_zero_partition_inner_eq (x₀ : F) (R : F[X][X][Y])
 end BCIKS20.HenselNumerator
 
 -- Axiom audit: every novel bijection piece rests only on [propext, Classical.choice, Quot.sound].
+#print axioms hasseDeriv_eval_eq_binom_zeroSlot_sum
 #print axioms BCIKS20.HenselNumerator.outerIndex_reindex
 #print axioms BCIKS20.HenselNumerator.restrictedFaaDiBrunoPartitionForm_eq_rangeForm
 #print axioms BCIKS20.HenselNumerator.countPerms_eq_factorial_of_nodup

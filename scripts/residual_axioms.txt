@@ -17,15 +17,17 @@
 # This is route (a) of #111. Routes (b) "discharge" and (c) "convert to
 # def : Prop / class" remain preferable long-term and are owned by each
 # residual's tracking issue below.
-
-fenziSanso_upperBound_attack_concrete_residual  # #106 Leaderboard L6.12 Fenzi-Sanso KoalaBear winning-set cardinality obligation
-gkl24_cubeRoot_mca_bound  # #84 GKL24 1.5-Johnson MCA external paper residual
-bgks20_etaMargin_ca_bound  # #84 BGKS20 eta-margin CA external paper residual
-bchks25_rs_epsCA_item2  # #87 BCHKS25 RS epsCA item 2 external paper residual
-bchks25_rs_epsMCA_johnson_range  # #85 BCHKS25 Johnson-range RS epsMCA external paper residual
-bchks25_kk25_rs_epsCA_lower_capacity  # #81 BCHKS25+KK25 near-capacity RS epsCA construction residual
-cs25_rs_epsCA_breakdown_lower  # #82 CS25 complete CA breakdown lower-bound residual
-bchks25_rs_epsCA_johnson_jump  # #83 BCHKS25 Johnson-jump witness external paper residual
-gg25_subspaceDesign_epsMCA  # #86 GG25 subspace-design MCA external paper residual
-gg25_frs_epsMCA_capacity  # #86 GG25 FRS capacity MCA external paper residual
-
+#
+gkl24_cubeRoot_mca_bound  # #84 external GKL24 cube-root / 1.5-Johnson MCA bound
+bgks20_etaMargin_ca_bound  # #84 external BGKS20 eta-margin CA bound
+bchks25_rs_epsCA_item2  # #87 external BCHKS25 RS epsCA item 2
+bchks25_rs_epsMCA_johnson_range  # #85 external BCHKS25 Johnson-range RS epsMCA
+bchks25_kk25_rs_epsCA_lower_capacity  # #81 external BCHKS25+KK25 capacity lower construction
+cs25_rs_epsCA_breakdown_lower  # #82 external CS25 lower-bound half of complete CA breakdown
+bchks25_rs_epsCA_johnson_jump  # #83 external BCHKS25 Johnson-jump witness family
+gg25_subspaceDesign_epsMCA  # #86 external GG25 subspace-design MCA bound
+gg25_frs_epsMCA_capacity  # #86 external GG25 folded-RS capacity MCA bound
+fiatShamir_soundness_of_stateRestoration_coupled  # #116 scratch coupled FS/SR soundness transfer
+fenziSanso_upperBound_attack_concrete_residual  # #106 concrete KoalaBear winning-set residual
+embeddingOf_hasseCoeffReprO_cleared_uniform_residual  # #138/#139 Hensel W-clearing uniform degree frontier
+B_coeff_weight_le  # #138/#139 BCIKS20 B_coeff weight bridge

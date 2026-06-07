@@ -34,6 +34,8 @@ absent Guruswami–Sudan interpolation core.
   - `mcaBadCount_zeroCode_le_one`, `mcaBadCount_zeroCode_lt_two` — the bad count is `≤ 1` for any
     field, so it lives in `{0, 1}`;
   - `epsMCA_zeroCode_le_inv_card` — the upper half `ε_mca(zeroCode, 0) ≤ 1/|K|` over any field.
+  - `epsMCA_zeroCode_eq_inv_card` — when the ambient module is nontrivial, this upper bound is
+    sharp: a nonzero constant second word gives one bad scalar, so `ε_mca(zeroCode, 0) = 1/|K|`.
 
 * **(D) Refutation-region facts.** `not_mcaEvent_zeroCode_of_deg` (a stack that vanishes at the
   coordinate is never bad — the refutation needs a genuinely nonzero stack) and
@@ -147,6 +149,17 @@ theorem mcaEvent_zeroCode_iff {u₀ u₁ : ι → A} {γ : K} :
   · exact mcaEvent_zeroCode_pos0
   · rintro ⟨hlin, hne⟩; exact mcaEvent_zeroCode_of_affine_zero hlin hne
 
+/-- **A concrete one-scalar bad event for any nonzero module element.** The zero first word and
+constant nonzero second word fire `mcaEvent` at `γ = 0` for the zero code. This supplies the
+field-generic lower half of the exact zero-code MCA value. -/
+theorem mcaEvent_zeroCode_zero_of_ne {a : A} (ha : a ≠ 0) :
+    mcaEvent (F := K) ((zeroCode (ι := ι) (K := K) (A := A) : Set (ι → A))) (0 : ℝ≥0)
+      (0 : ι → A) (fun _ => a) (0 : K) := by
+  refine mcaEvent_zeroCode_of_affine_zero (ι := ι) (K := K) (A := A) ?_ ?_
+  · simp
+  · right
+    simpa using ha
+
 /-- **The zero code's `mcaEvent` fires for at most one scalar — over ANY finite field.** This is
 the genuine field-generic generalization of the in-tree `not_mcaEvent_both` (which only excludes
 the two scalars `0, 1` of `ZMod 2` by a finite case split). The argument is purely algebraic: the
@@ -209,6 +222,57 @@ theorem epsMCA_zeroCode_le_inv_card :
   have hle : mcaBadCount (F := K) ((zeroCode (ι := ι) (K := K) (A := A) : Set (ι → A)))
       (0 : ℝ≥0) (u 0) (u 1) ≤ 1 := mcaBadCount_zeroCode_le_one
   exact_mod_cast hle
+
+/-- **`1/|K| ≤ ε_mca(zeroCode, 0)` for nontrivial ambient modules.** A nonzero constant second
+word gives a bad scalar at `γ = 0`, and `ε_mca` dominates that stack's bad-scalar probability. -/
+theorem epsMCA_zeroCode_ge_inv_card [Nontrivial A] :
+    (1 : ENNReal) / (Fintype.card K : ENNReal) ≤
+      epsMCA (F := K) ((zeroCode (ι := ι) (K := K) (A := A) : Set (ι → A))) (0 : ℝ≥0) := by
+  classical
+  obtain ⟨a, ha⟩ : ∃ a : A, a ≠ 0 := exists_ne (0 : A)
+  let u : WordStack A (Fin 2) ι := fun k => if k = 0 then (0 : ι → A) else fun _ => a
+  have hev : mcaEvent (F := K)
+      ((zeroCode (ι := ι) (K := K) (A := A) : Set (ι → A))) (0 : ℝ≥0)
+      (u 0) (u 1) (0 : K) := by
+    simpa [u] using mcaEvent_zeroCode_zero_of_ne (ι := ι) (K := K) (A := A) ha
+  have hpoint :
+      (1 : ENNReal) / (Fintype.card K : ENNReal) ≤
+        Pr_{let γ ← $ᵖ K}[
+          mcaEvent (F := K)
+            ((zeroCode (ι := ι) (K := K) (A := A) : Set (ι → A))) (0 : ℝ≥0)
+            (u 0) (u 1) γ] := by
+    rw [pr_mcaEvent_eq_mcaBadCount_div]
+    have hmem :
+        (0 : K) ∈ Finset.filter
+          (fun γ : K =>
+            mcaEvent (F := K)
+              ((zeroCode (ι := ι) (K := K) (A := A) : Set (ι → A))) (0 : ℝ≥0)
+              (u 0) (u 1) γ) Finset.univ := by
+      simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+      exact hev
+    have hcard1 : (1 : ℕ) ≤
+        (Finset.filter
+          (fun γ : K =>
+            mcaEvent (F := K)
+              ((zeroCode (ι := ι) (K := K) (A := A) : Set (ι → A))) (0 : ℝ≥0)
+              (u 0) (u 1) γ) Finset.univ).card :=
+      Finset.card_pos.mpr ⟨0, hmem⟩
+    gcongr
+    exact_mod_cast hcard1
+  refine le_trans hpoint ?_
+  unfold epsMCA
+  exact le_iSup (fun u : WordStack A (Fin 2) ι =>
+    Pr_{let γ ← $ᵖ K}[
+      mcaEvent (F := K) ((zeroCode (ι := ι) (K := K) (A := A) : Set (ι → A)))
+        (0 : ℝ≥0) (u 0) (u 1) γ]) u
+
+/-- **Exact value of the zero-code MCA error over one coordinate.** For any finite field and any
+nontrivial ambient module, `ε_mca(zeroCode, 0) = 1/|K|`. -/
+theorem epsMCA_zeroCode_eq_inv_card [Nontrivial A] :
+    epsMCA (F := K) ((zeroCode (ι := ι) (K := K) (A := A) : Set (ι → A))) (0 : ℝ≥0)
+      = (1 : ENNReal) / (Fintype.card K : ENNReal) :=
+  le_antisymm epsMCA_zeroCode_le_inv_card
+    (epsMCA_zeroCode_ge_inv_card (ι := ι) (K := K) (A := A))
 
 /-! ## (D) Refutation-region facts: which stacks the counterexample cannot touch -/
 
@@ -273,3 +337,7 @@ theorem epsMCA_Czero_eq_inv_card_via_general :
 end Bridge
 
 end CodingTheory.LineDecodingRepairExtra
+
+#print axioms CodingTheory.LineDecodingRepairExtra.mcaEvent_zeroCode_zero_of_ne
+#print axioms CodingTheory.LineDecodingRepairExtra.epsMCA_zeroCode_ge_inv_card
+#print axioms CodingTheory.LineDecodingRepairExtra.epsMCA_zeroCode_eq_inv_card

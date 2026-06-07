@@ -450,6 +450,47 @@ noncomputable def paperTranscriptChallenge {M : ℕ} {ιs : Fin (M + 1) → Type
     ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Challenge i :=
   (paperTranscriptFullTranscript P d T).challenges i
 
+omit [Field F] [SampleableType F] in
+/-- The full transcript shape seen by the verifier during honest execution of the paper adapter.
+
+The prover-message slots are emitted from the supplied `PaperTranscriptData`, while the verifier
+challenge slots are the actual runtime challenges sampled by ArkLib's execution semantics.  This is
+the transcript surface a future perfect-completeness proof for `paperTranscriptVectorIOP` must show
+the WHIR verifier accepts. -/
+noncomputable def paperTranscriptRuntimeFullTranscript {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d)
+    (challenges : ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Challenges) :
+    ProtocolSpec.FullTranscript ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F) :=
+  fun i =>
+    if h : (whirPaperTranscriptVectorSpec P d).dir i = Direction.P_to_V then
+      paperTranscriptMessage P d T ⟨i, h⟩
+    else
+      challenges ⟨i, Direction.not_V_to_P_eq_P_to_V h⟩
+
+omit [Field F] [SampleableType F] in
+@[simp] theorem paperTranscriptRuntimeFullTranscript_messages {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d)
+    (challenges : ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Challenges)
+    (i : ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).MessageIdx) :
+    (paperTranscriptRuntimeFullTranscript P d T challenges).messages i =
+      paperTranscriptMessage P d T i := by
+  cases i with
+  | mk i hi =>
+      simp [paperTranscriptRuntimeFullTranscript, hi]
+
+omit [Field F] [SampleableType F] in
+@[simp] theorem paperTranscriptRuntimeFullTranscript_challenges {M : ℕ}
+    {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
+    (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d)
+    (challenges : ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).Challenges)
+    (i : ((whirPaperTranscriptVectorSpec P d).toProtocolSpec F).ChallengeIdx) :
+    (paperTranscriptRuntimeFullTranscript P d T challenges).challenges i = challenges i := by
+  cases i with
+  | mk i hi =>
+      simp [paperTranscriptRuntimeFullTranscript, hi]
+
 omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
 @[simp] theorem paperTranscriptSlotPayload_mainFoldedOracle {M : ℕ}
     {ιs : Fin (M + 1) → Type} [∀ i : Fin (M + 1), Fintype (ιs i)]
@@ -1701,6 +1742,9 @@ end RBRSoundnessAssembly
 #print axioms paperTranscriptFullTranscript
 #print axioms paperTranscriptMessage
 #print axioms paperTranscriptChallenge
+#print axioms paperTranscriptRuntimeFullTranscript
+#print axioms paperTranscriptRuntimeFullTranscript_messages
+#print axioms paperTranscriptRuntimeFullTranscript_challenges
 #print axioms paperTranscriptSlotPayload_mainFoldedOracle
 #print axioms paperTranscriptSlotPayload_mainOutOfDomainReply
 #print axioms paperTranscriptSlotPayload_mainShiftChallenge

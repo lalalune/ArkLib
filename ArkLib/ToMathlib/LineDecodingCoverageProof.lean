@@ -3,20 +3,28 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
-import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingCoverage
-import ArkLib.ResidualAxioms
+import ArkLib.Data.CodingTheory.ProximityGap.MCAForallDoubleCoverRefutation
 
 /-!
-# LineDecoding: ABF26 T4.21 status (issue #141)
+# LineDecoding: repair the refuted black-box ABF26 T4.21 statement (issue #140)
 
-**De-fabricated.** This file previously contained
-`theorem mcaForallDoubleCover_holds … := mcaForallDoubleCover_residual …`, "closing" the global
-line-decoding hypothesis via a fabricated `axiom`. That was unsound: `MCAForallDoubleCover` is the
-unconstrained black-box ABF26 T4.21 form, which is **formally refuted** in
-`LineDecodingRefutation.lean` (it fails for codes with bad scalars). The laundering theorem and the
-asserting `axiom` are removed; `mcaForallDoubleCover_residual` is now a non-asserting
-`def : Prop` open residual (`ArkLib.ResidualAxioms`).
-
-The genuine repair is the constrained GS-interpolant form, not the refuted black-box statement.
-Open #141.
+The previous `mcaForallDoubleCover_holds`, backed by the unsound `axiom mcaForallDoubleCover_residual`
+(which asserted `MCAForallDoubleCover` for *all* codes/radii), has been removed: that universal claim
+is genuinely FALSE. The honest result — a `ZMod 2` counterexample — is
+`ProximityGap.mcaForallDoubleCover_not_universal` in
+`ArkLib/Data/CodingTheory/ProximityGap/MCAForallDoubleCoverRefutation.lean`, re-exported here. The
+per-instance double cover remains a genuine hypothesis supplied by the GS interpolation route.
 -/
+
+namespace CodingTheory
+
+/-- Re-export of the proven refutation: the universal T4.21 double-cover hypothesis is false. -/
+theorem mcaForallDoubleCover_not_universal :
+    ¬ (∀ {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+         {F : Type} [Field F] [Fintype F] [DecidableEq F]
+         {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
+         (C : Set (ι → A)) (δ : NNReal),
+         ProximityGap.MCAForallDoubleCover (F := F) (A := A) C δ) :=
+  ProximityGap.mcaForallDoubleCover_not_universal
+
+end CodingTheory

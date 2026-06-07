@@ -974,8 +974,8 @@ theorem alphaWeight_zero_cleared_fixed (x₀ : F) (R : F[X][X][Y])
     ∃ a : 𝒪 H,
       embeddingOf𝒪Into𝕃 H a =
           liftToFunctionField (H := H) H.leadingCoeff * αGenuine H x₀ R hHyp 0
-        ∧ weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1 := by
-  exact AlphaGenuineRegularWeightLe_zero_cleared.of_betaWeight H x₀ R hHyp hH
+        ∧ weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1 :=
+  AlphaGenuineRegularWeightLe_zero_cleared.of_betaWeight H x₀ R hHyp hH
     (βHensel_zero_weight_le_one H x₀ R hHyp hH hd hD)
 
 /-- Package the landed cleared base witness into the corrected cleared base predicate. -/

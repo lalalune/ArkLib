@@ -79,4 +79,27 @@ theorem exists_line_covered_stack_of_close_ge (C : Set (ι → A)) (δ : ℝ≥0
   rw [card_far_eq_card_sub_card_close]
   exact Nat.mul_le_mul_left _ (Nat.sub_le_sub_left hclose _)
 
+open Classical in
+/-- **CS25 count budget from coverage `B` and jointProx bound `J`.** Both ingredients of the CS25
+breakdown count, assembled: given coverage `#{close} ≥ B` (ingredient a, the entropy
+covered-fraction bound) and a jointly-close bound `#{jointProx} ≤ J` (ingredient b,
+`card_jointProximity_le…`), the count budget `hsum` of
+`rs_epsCA_breakdown_cs25_entropyBallLowerWitness_of_counts` follows from the single explicit numeric
+inequality `|F|·|ι→A|·(|ι→A| − B) + J < #stacks`. This reduces the remaining T4.17 open math to that
+one inequality (satisfiable on the sub-band `H_{q²}(δ) < 1−ρ`; see `CS25JointProxBound`). -/
+theorem sum_far_plus_jointProx_lt_of_close_ge (C : Set (ι → A)) (δ : ℝ≥0) (B J : ℕ)
+    (hclose : B ≤ (Finset.univ.filter (fun w : ι → A => δᵣ(w, C) ≤ δ)).card)
+    (hjp : (Finset.univ.filter (fun u : Matrix (Fin 2) ι A =>
+        Code.jointProximity (C := C) (u := u) δ)).card ≤ J)
+    (hbudget : Fintype.card F * Fintype.card (ι → A) * (Fintype.card (ι → A) - B) + J
+        < Fintype.card (Matrix (Fin 2) ι A)) :
+    (∑ u : Matrix (Fin 2) ι A,
+        (Finset.univ.filter (fun γ : F => ¬ δᵣ(u 0 + γ • u 1, C) ≤ δ)).card)
+      + (Finset.univ.filter (fun u : Matrix (Fin 2) ι A =>
+          Code.jointProximity (C := C) (u := u) δ)).card
+      < Fintype.card (Matrix (Fin 2) ι A) := by
+  rw [sum_far_card_eq, card_far_eq_card_sub_card_close]
+  refine lt_of_le_of_lt (Nat.add_le_add ?_ hjp) hbudget
+  exact mul_le_mul_left' (Nat.sub_le_sub_left hclose _) _
+
 end ProximityGap

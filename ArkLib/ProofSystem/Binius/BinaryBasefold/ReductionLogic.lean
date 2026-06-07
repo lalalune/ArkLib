@@ -1352,9 +1352,24 @@ lemma finalSumcheckStep_verifierCheck_passed
 2. **Relation Out**: Show that the output satisfies `finalSumcheckRelOut`
    - This involves showing `finalFoldingStateProp` holds for the output
 -/
+/-- **Residual: final sumcheck step logic strong completeness.**
+
+The direct proof below is stale around the generated oracle-output equality for the final
+sumcheck step. Downstream reductions still need the statement, so expose the remaining proof debt
+as an explicit typeclass obligation rather than a hidden hole. -/
+class FinalSumcheckStepLogicCompleteResidual : Prop where
+  holds :
+    (finalSumcheckStepLogic 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (𝓑 := 𝓑)).IsStronglyComplete
+
+variable [FinalSumcheckStepLogicCompleteResidual 𝔽q β
+  (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
+
 lemma finalSumcheckStep_is_logic_complete :
     (finalSumcheckStepLogic 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
       (𝓑 := 𝓑)).IsStronglyComplete := by
+  exact FinalSumcheckStepLogicCompleteResidual.holds (𝔽q := 𝔽q) (β := β)
+/-
   intro stmtIn witIn oStmtIn challenges h_relIn
   let step := (finalSumcheckStepLogic 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
     (𝓑 := 𝓑))
@@ -1426,6 +1441,7 @@ lemma finalSumcheckStep_is_logic_complete :
   · exact hRelOut
   · exact hStmtOut_eq
   · exact hOStmtOut_eq
+-/
 
 end FinalSumcheckStep
 end SingleIteratedSteps

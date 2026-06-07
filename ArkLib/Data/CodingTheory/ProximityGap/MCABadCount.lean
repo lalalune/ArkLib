@@ -60,6 +60,26 @@ theorem mcaBadCount_eq_zero_of_forall_not_mcaEvent
   intro γ _ hγ
   exact h γ hγ
 
+/-- The full code has no bad scalars in the finite MCA bad-count model. -/
+theorem mcaBadCount_univ_eq_zero
+    (δ : ℝ≥0) (u₀ u₁ : ι → A) :
+    mcaBadCount (F := F) (A := A) (Set.univ : Set (ι → A)) δ u₀ u₁ = 0 := by
+  refine mcaBadCount_eq_zero_of_forall_not_mcaEvent
+    (F := F) (A := A) (Set.univ : Set (ι → A)) δ u₀ u₁ ?_
+  intro γ
+  rintro ⟨S, hS, hw, hno⟩
+  exact hno ⟨u₀, Set.mem_univ _, u₁, Set.mem_univ _, fun i _ => ⟨rfl, rfl⟩⟩
+
+/-- The top/full linear code has no bad scalars in the finite MCA bad-count model. This is
+the linear-code form of `mcaBadCount_univ_eq_zero`, avoiding caller-side `Set.univ` rewrites. -/
+theorem mcaBadCount_top_eq_zero
+    (δ : ℝ≥0) (u₀ u₁ : ι → F) :
+    mcaBadCount (F := F) (((⊤ : LinearCode ι F) : Set (ι → F))) δ u₀ u₁ = 0 := by
+  rw [show (((⊤ : LinearCode ι F) : Set (ι → F)) = Set.univ) by
+    ext x
+    simp]
+  exact mcaBadCount_univ_eq_zero (F := F) (A := F) δ u₀ u₁
+
 /-- The finite bad-scalar count vanishes exactly when no scalar realizes the MCA bad event. -/
 theorem mcaBadCount_eq_zero_iff_forall_not_mcaEvent
     (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A) :
@@ -108,6 +128,13 @@ theorem epsMCA_eq_zero_of_forall_mcaBadCount_eq_zero (C : Set (ι → A)) (δ : 
   rw [iSup_congr hzero]
   simp
 
+/-- The top/full linear code has zero MCA error at every radius. -/
+theorem epsMCA_top_eq_zero (δ : ℝ≥0) :
+    epsMCA (F := F) (A := F) (((⊤ : LinearCode ι F) : Set (ι → F))) δ = 0 :=
+  epsMCA_eq_zero_of_forall_mcaBadCount_eq_zero
+    (((⊤ : LinearCode ι F) : Set (ι → F))) δ
+    (fun u => mcaBadCount_top_eq_zero δ (u 0) (u 1))
+
 /-- If the MCA error vanishes, every stack has zero bad scalars. -/
 theorem forall_mcaBadCount_eq_zero_of_epsMCA_eq_zero (C : Set (ι → A)) (δ : ℝ≥0)
     (heps : epsMCA (F := F) C δ = 0) :
@@ -144,6 +171,14 @@ theorem epsMCA_eq_zero_of_forall_not_mcaEvent (C : Set (ι → A)) (δ : ℝ≥0
   epsMCA_eq_zero_of_forall_mcaBadCount_eq_zero C δ fun u =>
     mcaBadCount_eq_zero_of_forall_not_mcaEvent C δ (u 0) (u 1) (h u)
 
+/-- The top/full linear code gives a one-sided Grand MCA lower witness at every radius
+`δ ≤ 1` and every target threshold. -/
+def GrandChallenges.MCALowerWitness.top (δ ε_star : ℝ≥0) (hδ : δ ≤ 1) :
+    GrandChallenges.MCALowerWitness (((⊤ : LinearCode ι F) : Set (ι → F))) ε_star :=
+  GrandChallenges.MCALowerWitness.ofLe hδ <| by
+    rw [epsMCA_top_eq_zero]
+    exact zero_le _
+
 /-- **The formalized Grand MCA Challenge is a finite extremal-count statement.** For a
 linear code `C` and threshold `ε*`, the challenge predicate holds iff *every* line word
 has at most `ε*·q` bad scalars at radius one. -/
@@ -159,11 +194,27 @@ theorem grandMCAChallenge_iff_forall_badCount_le (C : LinearCode ι F) (ε_star 
   have hqt : (Fintype.card F : ℝ≥0∞) ≠ ⊤ := ENNReal.natCast_ne_top _
   rw [ENNReal.div_le_iff hq0 hqt, iSup_le_iff]
 
+/-- The top/full linear code satisfies the formal Grand MCA Challenge at every threshold. This
+is the direct challenge-level endpoint form of `mcaBadCount_univ_eq_zero`: the top code has no
+bad scalars for any stack, so the radius-one finite-count criterion is immediate. -/
+theorem grandMCAChallenge_top (ε_star : ℝ≥0) :
+    grandMCAChallenge (F := F) (ι := ι) (⊤ : LinearCode ι F) ε_star := by
+  classical
+  rw [grandMCAChallenge_iff_forall_badCount_le]
+  intro u
+  rw [mcaBadCount_top_eq_zero]
+  simp
+
 #print axioms ProximityGap.mcaBadCount_eq_zero_of_forall_not_mcaEvent
+#print axioms ProximityGap.mcaBadCount_univ_eq_zero
+#print axioms ProximityGap.mcaBadCount_top_eq_zero
 #print axioms ProximityGap.mcaBadCount_eq_zero_iff_forall_not_mcaEvent
 #print axioms ProximityGap.epsMCA_eq_zero_of_forall_mcaBadCount_eq_zero
+#print axioms ProximityGap.epsMCA_top_eq_zero
 #print axioms ProximityGap.forall_mcaBadCount_eq_zero_of_epsMCA_eq_zero
 #print axioms ProximityGap.epsMCA_eq_zero_iff_forall_mcaBadCount_eq_zero
 #print axioms ProximityGap.epsMCA_eq_zero_of_forall_not_mcaEvent
+#print axioms ProximityGap.GrandChallenges.MCALowerWitness.top
+#print axioms ProximityGap.grandMCAChallenge_top
 
 end ProximityGap

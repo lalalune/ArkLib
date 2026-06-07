@@ -190,6 +190,36 @@ private lemma decodeLT_ne_of_val_ne {φ : ι ↪ F} [Smooth φ] {m : ℕ} (u u' 
     Lagrange.eval_interpolate_at_node u'.val (φ.injective.injOn) (Finset.mem_univ x)
   rw [← hu, ← hu', h]
 
+/-- Two distinct smooth codewords' decoded polynomials agree on at most `2^m - 1` field
+points: agreement points are roots of the nonzero difference of degree `< 2^m`. -/
+private lemma card_agreement_le [Fintype F] {φ : ι ↪ F} [Smooth φ] {m : ℕ}
+    (u u' : smoothCode φ m) (hne : u.val ≠ u'.val) :
+    (Finset.univ.filter (fun x : F =>
+      ((decodeLT u : Polynomial F)).eval x = ((decodeLT u' : Polynomial F)).eval x)).card
+      ≤ 2 ^ m - 1 := by
+  classical
+  set q : Polynomial F := (decodeLT u : Polynomial F) - (decodeLT u' : Polynomial F) with hq
+  have hq0 : q ≠ 0 := sub_ne_zero_of_ne (decodeLT_ne_of_val_ne u u' hne)
+  have hqdeg : q.natDegree < 2 ^ m := by
+    have hp := (decodeLT u).2
+    have hp' := (decodeLT u').2
+    rw [Polynomial.mem_degreeLT] at hp hp'
+    have hlt : q.degree < ((2 ^ m : ℕ) : WithBot ℕ) :=
+      lt_of_le_of_lt (Polynomial.degree_sub_le _ _) (max_lt hp hp')
+    exact (Polynomial.natDegree_lt_iff_degree_lt hq0).mpr hlt
+  have hsub : (Finset.univ.filter (fun x : F =>
+        ((decodeLT u : Polynomial F)).eval x = ((decodeLT u' : Polynomial F)).eval x))
+      ⊆ q.roots.toFinset := by
+    intro y hy
+    simp only [Finset.mem_filter] at hy
+    rw [Multiset.mem_toFinset, Polynomial.mem_roots hq0]
+    simp [hq, Polynomial.IsRoot, hy.2]
+  calc (Finset.univ.filter _).card
+      ≤ q.roots.toFinset.card := Finset.card_le_card hsub
+    _ ≤ Multiset.card q.roots := q.roots.toFinset_card_le
+    _ ≤ q.natDegree := Polynomial.card_roots' q
+    _ ≤ 2 ^ m - 1 := by omega
+
 /-- Evaluating the decoded multilinear polynomial at the power vector `(r^(2^j))_j` recovers
 the decoded univariate polynomial's value at `r` (the smooth-code power substitution
 round-trip). -/
@@ -260,17 +290,12 @@ lemma oodSampling_rs_le_bound
     simp only [hP, Finset.mem_filter, Finset.mem_offDiag] at hp
     obtain ⟨⟨h1, h2, hpne⟩, -⟩ := hp
     rw [hSf, Set.Finite.mem_toFinset] at h1 h2
-    let u : smoothCode φ m := ⟨p.1, h1.1⟩
-    let u' : smoothCode φ m := ⟨p.2, h2.1⟩
-    have hdeg : ((decodeLT u : Polynomial F)).natDegree < 2 ^ m :=
-      ReedSolomon.natDegree_lt_of_mem_degreeLT (deg := 2 ^ m) (decodeLT u).2
-    have hdeg' : ((decodeLT u' : Polynomial F)).natDegree < 2 ^ m :=
-      ReedSolomon.natDegree_lt_of_mem_degreeLT (deg := 2 ^ m) (decodeLT u').2
     simp only [hT]
-    exact Polynomial.card_filter_forall_eval_eq_le_of_natDegree_lt
-      (N := 2 ^ m) (s := s)
-      (p := (decodeLT u : Polynomial F)) (q := (decodeLT u' : Polynomial F))
-      (decodeLT_ne_of_val_ne u u' hpne) hdeg hdeg'
+    refine le_trans (le_of_eq (card_filter_forall_pi s (fun x : F =>
+      (Lagrange.interpolate Finset.univ ⇑φ p.1).eval x
+        = (Lagrange.interpolate Finset.univ ⇑φ p.2).eval x))) ?_
+    exact Nat.pow_le_pow_left
+      (card_agreement_le (⟨p.1, h1.1⟩ : smoothCode φ m) ⟨p.2, h2.1⟩ hpne) s
   have hPm : P.card ≤ M * (M - 1) / 2 := by
     rw [Nat.le_div_iff_mul_le (by norm_num : 0 < 2)]
     have hswap : P.card = (Sf.offDiag.filter (fun p => e p.2 < e p.1)).card := by

@@ -1,5 +1,6 @@
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Close
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MatchRoot
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MatchMonic
 
 noncomputable section
 
@@ -41,5 +42,21 @@ theorem P2_closed_of_residual (x₀ : F) (R : F[X][X][Y])
             * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
             * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1)) :=
   P2_closed H x₀ R hHyp hmatch
+
+/-- **P2 closed for monic `H` — fully proven, no residual hypothesis.**
+
+For monic `H` (`H.leadingCoeff = 1`, the WLOG case for the BCIKS20 minimal-polynomial reduction)
+the restricted Faà-di-Bruno match `RestrictedFaaDiBrunoMatch` is a *theorem*
+(`restrictedFaaDiBrunoMatch_of_monic`, axiom-clean), so the full P2 closed goal — assembled-series
+root + the order-by-order lift identity — holds unconditionally. This discharges the headline
+BCIKS20 Appendix A.4 obligation in the monic regime with no `axiom`, no `sorry`, no residual. -/
+theorem P2_closed_of_leadingCoeff_one (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hlc : H.leadingCoeff = 1) :
+    (Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H) = 0)
+    ∧ (∀ t : ℕ, embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+        = αGenuine H x₀ R hHyp t
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1)) :=
+  P2_closed H x₀ R hHyp (restrictedFaaDiBrunoMatch_of_monic H x₀ R hHyp hlc)
 
 end BCIKS20.HenselNumerator
