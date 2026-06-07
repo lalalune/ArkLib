@@ -74,6 +74,8 @@ universe u v w
 
 namespace Interaction
 
+open TwoParty
+
 /-! ## Protocol participants -/
 
 /-- Output produced by an honest prover: the next statement together with the

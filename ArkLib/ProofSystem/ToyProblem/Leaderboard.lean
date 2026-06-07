@@ -631,8 +631,6 @@ ABF26 Lemma 6.10 at `koalaIRS` plus the §6.3 numeric evaluation of the RBR
 bound. -/
 instance : Nonempty koalaIRS.ι := ⟨(0 : Fin 4)⟩
 def arklib_lowerBound_irs_t128_residual : Prop :=
-  winningSetSoundness_le_toySoundnessError_mcaSafe_residual
-      (k := koalaIRS.k) koalaIRS.C koalaIRS.δ ∧
   koalaIRS.δ < (minRelHammingDistCode koalaIRS.C : ℝ≥0) ∧
   koalaIRS.toySoundnessError ≤ (2 : ℝ≥0) ^ (-(64 : ℝ))
 

@@ -115,12 +115,12 @@ def foldRoundPerfectCompletenessResidual
 theorem foldRound_perfectCompleteness
     (hInit : NeverFail init) (i : Fin k)
     (cond : ∑ j, (s j).1 ≤ n) (δ : ℝ≥0)
-    (hResidual : foldRoundPerfectCompletenessResidual init impl hInit i cond δ) :
+    (hResidual : foldRoundPerfectCompletenessResidual (d := d) (ω := ω) init impl hInit i cond δ) :
     OracleReduction.perfectCompleteness init impl
       (FoldPhase.inputRelation s (ω := ω) d i cond δ)
       (FoldPhase.outputRelation s (ω := ω) d i cond δ)
-      (FoldPhase.foldOracleReduction s d i) := by
-  exact hResidual
+      (FoldPhase.foldOracleReduction s d i) :=
+  hResidual
 
 /-- **Brick A/B residual — final folding round.**
 
@@ -140,12 +140,13 @@ def finalFoldRoundPerfectCompletenessResidual
 theorem finalFoldRound_perfectCompleteness
     (hInit : NeverFail init)
     (cond : ∑ j, (s j).1 ≤ n) (δ : ℝ≥0)
-    (hResidual : finalFoldRoundPerfectCompletenessResidual init impl hInit cond δ) :
+    (hResidual :
+      finalFoldRoundPerfectCompletenessResidual (d := d) (ω := ω) init impl hInit cond δ) :
     OracleReduction.perfectCompleteness init impl
       (FinalFoldPhase.inputRelation s (ω := ω) d cond δ)
       (FinalFoldPhase.outputRelation s (ω := ω) d cond δ)
-      (FinalFoldPhase.finalFoldOracleReduction s d) := by
-  exact hResidual
+      (FinalFoldPhase.finalFoldOracleReduction s d) :=
+  hResidual
 
 end Completeness
 

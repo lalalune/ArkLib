@@ -107,4 +107,62 @@ lemma affineLine_close_count_eq_numberOfClosePts
     · apply Subtype.ext
       exact hγ.symm
 
+/-- **AHIV17 per-line `d/q` probability bound (issue #88 core).**
+
+Under the AHIV regime hypotheses (`e = ⌊δ·n⌋` with `e < ‖RS‖₀/3`, direction `u₁ ≠ 0`,
+`‖RS‖₀ < |F|`, and not all points on the line being `e`-close), the affine-line probability is
+at most `‖RScodeSet α deg‖₀ / |F|`.
+
+This is the genuine `d/q` content the AHIV17 affine-line correlated-agreement bound rests on:
+the count of close field elements is the per-line close-point count, bounded by `‖RS‖₀` through
+the mutual-exclusion corollary `e_le_dist_over_3`. -/
+lemma affineLine_prob_le_dOverQ
+    {deg : ℕ} {α : ι ↪ F} {δ : ℝ≥0} {u₀ u₁ : ι → F}
+    (he : ((Nat.floor (δ * Fintype.card ι) : ℕ) : ℚ≥0) < ‖(RScodeSet α deg)‖₀ / 3)
+    (hu₁ : u₁ ≠ 0)
+    (hFd : ‖(RScodeSet α deg)‖₀ < Fintype.card F)
+    (hNotAll : ¬ (∀ x ∈ Affine.affineLineAtOrigin (F := F) u₀ u₁,
+        Δ₀(x, ReedSolomon.code α deg) ≤ (Nat.floor (δ * Fintype.card ι) : ℕ))) :
+    Pr_{let γ ←$ᵖ F}[δᵣ(u₀ + γ • u₁, RScodeSet α deg) ≤ δ]
+      ≤ (((‖(RScodeSet α deg)‖₀ : ℝ≥0) / (Fintype.card F : ℝ≥0)) : ENNReal) := by
+  classical
+  set e : ℕ := Nat.floor (δ * Fintype.card ι) with he_def
+  -- Step 1: rewrite the probability as a count over `|F|`.
+  have hPr :
+      Pr_{let γ ←$ᵖ F}[δᵣ(u₀ + γ • u₁, RScodeSet α deg) ≤ δ]
+        = (((Finset.filter
+              (fun γ : F => δᵣ(u₀ + γ • u₁, RScodeSet α deg) ≤ δ) Finset.univ).card : ℝ≥0)
+            / (Fintype.card F : ℝ≥0) : ENNReal) :=
+    prob_uniform_eq_card_filter_div_card
+      (P := fun γ : F => δᵣ(u₀ + γ • u₁, RScodeSet α deg) ≤ δ)
+  rw [hPr]
+  -- Step 2+3: the `δᵣ ≤ δ` count equals the `Δ₀ ≤ e` count, which is `numberOfClosePts`.
+  have hcount :
+      (Finset.filter
+          (fun γ : F => δᵣ(u₀ + γ • u₁, RScodeSet α deg) ≤ δ) Finset.univ).card
+        = numberOfClosePts (F := F) (ι := ι) u₀ u₁ deg α e := by
+    rw [← affineLine_close_count_eq_numberOfClosePts (u₀ := u₀) (u₁ := u₁) (e := e) hu₁]
+    congr 1
+    apply Finset.filter_congr
+    intro γ _
+    rw [Code.relDistFromCode_le_iff_distFromCode_le (u := u₀ + γ • u₁) (δ := δ)]
+  rw [hcount]
+  -- Step 4: `numberOfClosePts ≤ ‖RS‖₀` from AHIV mutual exclusion.
+  have hxor :=
+    e_le_dist_over_3 (F := F) (ι := ι) (deg := deg) (α := α) (e := e)
+      (u := u₀) (v := u₁) (by simpa [he_def] using he) hu₁ hFd
+  have hfew : numberOfClosePts (F := F) (ι := ι) u₀ u₁ deg α e ≤ ‖(RScodeSet α deg)‖₀ := by
+    rcases hxor with ⟨hall, _⟩ | ⟨hfew, _⟩
+    · exact absurd hall hNotAll
+    · exact hfew
+  -- Step 5: conclude the division inequality (monotone in the numerator).
+  have hnum :
+      ((numberOfClosePts (F := F) (ι := ι) u₀ u₁ deg α e : ℝ≥0)
+          / (Fintype.card F : ℝ≥0))
+        ≤ ((‖(RScodeSet α deg)‖₀ : ℝ≥0) / (Fintype.card F : ℝ≥0)) := by
+    have : (numberOfClosePts (F := F) (ι := ι) u₀ u₁ deg α e : ℝ≥0)
+        ≤ (‖(RScodeSet α deg)‖₀ : ℝ≥0) := by exact_mod_cast hfew
+    gcongr
+  exact_mod_cast hnum
+
 end ProximityToRS

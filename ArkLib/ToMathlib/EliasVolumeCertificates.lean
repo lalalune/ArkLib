@@ -80,4 +80,84 @@ lemma eliasVolumeUpperCore_of_lt {F ι : Type} [Fintype F] [Fintype ι]
   rw [ENNReal.ofReal_lt_ofReal_iff_of_nonneg (by positivity)]
   exact hkey
 
+/-! ## Concrete four-rate certificate over `|F| = |ι| = 8`
+
+We instantiate the abstract `hvol_next` family at the smallest field/block-length pair that
+both admits an injective Reed-Solomon evaluation domain (`|ι| ≤ |F|`) and gives four *distinct*
+prize-rate floor indices.  Over `q = n = 8` the prize rates `{1/2, 1/4, 1/8, 1/16}` floor to
+`k = [4, 2, 1, 0]` and the adjacent Elias indices are `j = k + 1 = [5, 3, 2, 1]`.
+-/
+
+section Concrete
+
+variable {F ι : Type} [Field F] [Fintype F] [DecidableEq F]
+  [Fintype ι] [Nonempty ι] [DecidableEq ι]
+
+omit [Nonempty ι] [DecidableEq ι] in
+/-- The four prize-rate degrees at block length `8` are `⌊prizeRates r · 8⌋ = [4, 2, 1, 0]`. -/
+lemma prizeRate_floor_card8 (hn : Fintype.card ι = 8) (r : Fin 4) :
+    ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ = [4, 2, 1, 0].get r := by
+  rw [hn]
+  fin_cases r <;>
+    · simp only [prizeRates, List.get]
+      rw [show ((8 : ℕ) : ℝ≥0) = 8 by norm_num]
+      norm_num [Nat.floor_eq_iff]
+
+/-- `finrank` of the rate-`r` Reed-Solomon code at block length `8` equals its degree
+`⌊prizeRates r · 8⌋`, since every prize degree is `≤ 8 = |ι|`. -/
+lemma finrank_rs_prizeRate_card8 (domain : ι ↪ F) (hn : Fintype.card ι = 8) (r : Fin 4) :
+    Module.finrank F
+        (ReedSolomon.code domain ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊)
+      = ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ := by
+  have hle : ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ ≤ Fintype.card ι := by
+    rw [prizeRate_floor_card8 (ι := ι) hn r, hn]; fin_cases r <;> simp [List.get]
+  have := ReedSolomon.dim_eq_deg_of_le' (α := domain) hle
+  rwa [show Module.finrank F (ReedSolomon.code domain
+      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊)
+      = LinearCode.dim (ReedSolomon.code domain
+        ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊) from rfl]
+
+/-- **The concrete four-rate `hvol_next` Elias-volume certificates.**
+
+For any Reed-Solomon evaluation domain with `|F| = |ι| = 8`, the adjacent Elias-volume lower
+bound clears the prize budget `ε* · |F|` at every prize rate.  This is exactly the `hvol_next`
+family consumed by the four-rate exact resolvers
+(`listPrizeLatticeResolved_of_Lambda_le_and_elias_next`,
+`listPrizeLatticeResolved_of_johnson_sq_and_elias_next`, etc.); the four inequalities are
+discharged by `norm_num` evaluating the genuine `hammingBallVolume` definition. -/
+theorem fourRate_hvol_next_card8 (domain : ι ↪ F)
+    (hF : Fintype.card F = 8) (hn : Fintype.card ι = 8) :
+    ∀ r : Fin 4,
+      (epsStar : ℝ≥0∞) * (Fintype.card F : ℝ≥0∞) <
+        ENNReal.ofReal
+          ((CodingTheory.hammingBallVolume (Fintype.card F)
+              (((((⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : ℕ) + 1 : ℕ) : ℝ≥0) /
+                    (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)
+              (Fintype.card ι) : ℝ)
+            / (Fintype.card F : ℝ) ^
+                ((Fintype.card ι : ℝ) -
+                  Module.finrank F
+                    (ReedSolomon.code domain
+                      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊))) := by
+  intro r
+  have hfin := finrank_rs_prizeRate_card8 (ι := ι) domain hn r
+  have hk := prizeRate_floor_card8 (ι := ι) hn r
+  -- rewrite finrank to the concrete degree, then apply the reduction lemma
+  rw [hfin]
+  refine eliasVolumeUpperCore_of_lt
+    (j := (⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : ℕ) + 1) (ε_star := epsStar)
+    (den := (Fintype.card F : ℝ) ^
+        ((Fintype.card ι : ℝ) - (⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : ℝ))) ?_ ?_
+  · -- the certificate denominator uses exponent `n - k`, matching the rewritten finrank
+    push_cast
+    ring_nf
+  · -- the real-side numeric inequality, per rate, evaluating `hammingBallVolume`
+    rw [hF, hn, epsStar_real_eq, hk]
+    fin_cases r <;>
+      · simp only [List.get]
+        rw [CodingTheory.hammingBallVolume]
+        norm_num [Nat.floor_eq_iff, Finset.sum_range_succ, Nat.choose]
+
+end Concrete
+
 end ProximityGap

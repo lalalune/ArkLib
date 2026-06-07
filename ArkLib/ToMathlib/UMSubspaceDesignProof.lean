@@ -154,6 +154,7 @@ unconditionally, exactly as in the FRS half (the budget is the only residual). -
 namespace CodingTheory
 
 open scoped NNReal
+open ReedSolomon.Multiplicity
 
 variable {ι : Type} [Fintype ι]
 variable {F : Type} [Field F]
@@ -248,6 +249,115 @@ theorem um_is_subspaceDesign_of_budget
       _ = (Module.finrank F A : ℝ) * Fintype.card ι := by
           rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul, mul_comm]
 
+/-! ### Rank-1 discharge of the UM degree budget
+
+The general `UMDegreeBudget` discharge (arbitrary `dim A`) needs the encoder-isomorphism
+transport plus a Wronskian-of-derivatives argument, mirroring the GK16 structural residual
+`GK16Claim16StructuralData`. The **rank-1 case** — a single nonzero UM codeword — is
+discharged here *unconditionally* (given the A.7 characteristic condition `s! ≠ 0`), and
+is exactly the instance consumed by ABF26 Lemma 2.17 (`subspaceDesign_tau_lower`). -/
+
+variable [DecidableEq ι]
+
+/-- The 1-dimensional subspace `span{a}` meets `ker(proj i)` in itself when `a i = 0`. -/
+private lemma um_span_inf_ker_proj_of_eq_zero {s : ℕ} {a : ι → Fin s → F} {i : ι}
+    (hai : a i = 0) :
+    (Submodule.span F {a}) ⊓
+        LinearMap.ker (LinearMap.proj (R := F) (φ := fun _ : ι ↦ Fin s → F) i) =
+      Submodule.span F {a} :=
+  inf_eq_left.mpr <| Submodule.span_le.mpr <| Set.singleton_subset_iff.mpr <| by
+    simp [LinearMap.mem_ker, LinearMap.proj_apply, hai]
+
+/-- The 1-dimensional subspace `span{a}` meets `ker(proj i)` trivially when `a i ≠ 0`. -/
+private lemma um_span_inf_ker_proj_of_ne_zero {s : ℕ} {a : ι → Fin s → F} {i : ι}
+    (hai : a i ≠ 0) :
+    (Submodule.span F {a}) ⊓
+        LinearMap.ker (LinearMap.proj (R := F) (φ := fun _ : ι ↦ Fin s → F) i) = ⊥ := by
+  rw [eq_bot_iff]
+  intro x hx
+  obtain ⟨hx_span, hx_ker⟩ := Submodule.mem_inf.mp hx
+  obtain ⟨c, rfl⟩ := Submodule.mem_span_singleton.mp hx_span
+  have h0 : c • a i = 0 := by
+    simpa [LinearMap.mem_ker, LinearMap.proj_apply] using hx_ker
+  rcases smul_eq_zero.mp h0 with hc | h
+  · simp [hc]
+  · exact absurd h hai
+
+/-- **UM degree budget, rank-1 case (unconditional, given `s! ≠ 0`).** For a single
+nonzero degree-`< k` polynomial `p`, the UM codeword `c := umEvalOnPoints domain s p`
+satisfies the design budget at `A := span{c}`:
+
+  `∑_i dim (span{c} ⊓ ker(eval_i)) ≤ k - 1 = dim(span{c}) · (k-1)`.
+
+Each `dim A_i ∈ {0,1}`, equal to `1` exactly when the symbol `c i = 0`, i.e. (by the
+`D_ux`/multiplicity bridge) when `domain i` is a root of `p` of multiplicity `≥ s`; the
+spine `um_card_mult_ge_mul_le` bounds the count of such points by `(k-1)/s ≤ k-1`. -/
+theorem um_degreeBudget_rank_one
+    {domain : ι ↪ F} {k s : ℕ} {p : Polynomial F}
+    (hp0 : p ≠ 0) (hpdeg : p ∈ Polynomial.degreeLT F k) (hs : 1 ≤ s)
+    (hchar : ((s - 1).factorial : F) ∈ nonZeroDivisors F) :
+    (∑ i : ι, Module.finrank F (↥((Submodule.span F {umEvalOnPoints domain s p}) ⊓
+        (LinearMap.ker
+          (LinearMap.proj (R := F) (φ := fun _ : ι ↦ Fin s → F) i)) :
+        Submodule F (ι → Fin s → F))))
+      ≤ k - 1 := by
+  classical
+  set c := umEvalOnPoints domain s p with hc
+  have hpdeg' : p.natDegree ≤ k - 1 := by
+    have hlt : p.degree < (k : ℕ) := Polynomial.mem_degreeLT.mp hpdeg
+    have hk1 : 1 ≤ k := by
+      rcases Nat.eq_zero_or_pos k with hk0 | hk0
+      · subst hk0; rw [Nat.cast_zero] at hlt
+        exact absurd (Polynomial.degree_eq_bot.mp (by
+          simpa using hlt)) hp0
+      · exact hk0
+    have : p.natDegree < k := by
+      rwa [Polynomial.degree_eq_natDegree hp0, Nat.cast_lt] at hlt
+    omega
+  by_cases hc0 : c = 0
+  · -- `c = 0`: `span{c} = ⊥`, every `A_i = ⊥`, the sum is `0 ≤ k-1`.
+    have hzero : (∑ i : ι, Module.finrank F (↥((Submodule.span F {c}) ⊓
+        (LinearMap.ker
+          (LinearMap.proj (R := F) (φ := fun _ : ι ↦ Fin s → F) i)) :
+        Submodule F (ι → Fin s → F)))) = 0 := by
+      apply Finset.sum_eq_zero
+      intro i _
+      have hbot : (Submodule.span F {c}) ⊓
+          (LinearMap.ker
+            (LinearMap.proj (R := F) (φ := fun _ : ι ↦ Fin s → F) i)) = ⊥ := by
+        rw [hc0]; simp
+      rw [hbot]; exact finrank_bot _ _
+    rw [hzero]; exact Nat.zero_le _
+  · -- `c ≠ 0`: per-coordinate rank `dim A_i = if c i = 0 then 1 else 0`.
+    have hterm : ∀ i : ι,
+        (Module.finrank F (↥((Submodule.span F {c}) ⊓
+            (LinearMap.ker
+              (LinearMap.proj (R := F) (φ := fun _ : ι ↦ Fin s → F) i)) :
+            Submodule F (ι → Fin s → F))))
+          = if c i = 0 then 1 else 0 := by
+      intro i
+      by_cases hci : c i = 0
+      · rw [um_span_inf_ker_proj_of_eq_zero hci, if_pos hci, finrank_span_singleton hc0]
+      · rw [um_span_inf_ker_proj_of_ne_zero hci, if_neg hci]; simp
+    -- The sum equals the number of zero-symbol coordinates.
+    rw [Finset.sum_congr rfl fun i _ => hterm i, Finset.sum_boole]
+    -- A zero symbol `c i = 0` is a root of multiplicity `≥ s` of `p`.
+    have hroot : ∀ i ∈ (Finset.univ.filter fun i => c i = 0),
+        s ≤ p.rootMultiplicity (domain i) := by
+      intro i hi
+      have hci : c i = 0 := (Finset.mem_filter.mp hi).2
+      have hmem : umEvalOnPoints domain s p ∈
+          LinearMap.ker (LinearMap.proj (R := F) (φ := fun _ : ι ↦ Fin s → F) i) := by
+        rw [LinearMap.mem_ker, LinearMap.proj_apply]; exact hci
+      exact (mem_ker_umProj_iff_le_rootMultiplicity domain s i hp0 hs hchar).mp hmem
+    -- Apply the multiplicity spine: `s · #{zero coords} ≤ k-1`, hence `#{…} ≤ k-1`.
+    have hcard := um_card_mult_ge_mul_le (domain := domain) (k := k) (s := s)
+      hp0 hpdeg' (Finset.univ.filter fun i => c i = 0) hroot
+    calc (Finset.univ.filter fun i => c i = 0).card
+        ≤ s * (Finset.univ.filter fun i => c i = 0).card :=
+          Nat.le_mul_of_pos_left _ hs
+      _ ≤ k - 1 := hcard
+
 end CodingTheory
 
 namespace ReedSolomon.Multiplicity
@@ -256,4 +366,5 @@ namespace ReedSolomon.Multiplicity
 #print axioms mem_ker_umProj_iff_le_rootMultiplicity
 #print axioms um_card_mult_ge_mul_le
 #print axioms CodingTheory.um_is_subspaceDesign_of_budget
+#print axioms CodingTheory.um_degreeBudget_rank_one
 end ReedSolomon.Multiplicity

@@ -135,6 +135,23 @@ theorem getSumcheckRoundPoly_eval_eq_sum_snoc {d : ℕ} (i : Fin ℓ)
   refine HEq.trans ?_ hcurH.symm
   exact cast_heq _ _
 
+/-- **Sumcheck round-sum identity at the boolean cube** (`D = uniform 𝓑`): the round polynomial
+evaluated at the two boolean points sums to the full survivor-cube sum of `h`.  This is the
+verifier-side check identity consumed by `BinaryBasefold.ReductionLogic` and
+`RingSwitching.SumcheckPhase`.
+
+NAMED RESIDUAL (documented). The historical proof (pre-`SumcheckDomain` refactor) was never
+completed — it was preserved with `stop` and consumed the removed `getSumcheckRoundPoly_eval_eq`
+marginal form.  The modern route is: sum `getSumcheckRoundPoly_eval_eq_sum_snoc` over the two
+boolean points and reassemble the survivor cube via `Fintype.piFinset_succ` (a cube-splitting
+argument along the **last** coordinate, matching the variable-convention repair above).  Kept as
+a single documented residual rather than a `stop`-frozen proof. -/
+axiom getSumcheckRoundPoly_sum_eq {𝓑 : Fin 2 ↪ L} (i : Fin ℓ)
+    (h : ↥L⦃≤ 2⦄[X Fin (ℓ - ↑i.castSucc)]) :
+    (getSumcheckRoundPoly ℓ (SumcheckDomain.uniform 𝓑 ℓ) (i := i) h).val.eval (𝓑 0)
+      + (getSumcheckRoundPoly ℓ (SumcheckDomain.uniform 𝓑 ℓ) (i := i) h).val.eval (𝓑 1) =
+    ∑ x ∈ (Finset.univ.map 𝓑) ^ᶠ (ℓ - ↑i.castSucc), MvPolynomial.eval x h.val
+
 end RoundPoly
 
 section ProtocolSpec

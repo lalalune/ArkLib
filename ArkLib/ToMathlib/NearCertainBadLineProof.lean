@@ -70,13 +70,11 @@ theorem not_jointProximity_zero_of_row_not_mem
   rw [jointProximity, interleave_wordStack_eq] at hjp
   -- `hjp : δᵣ(u.transpose, interleavedCodeSet C) ≤ (0 : ℝ≥0)`
   rw [relDistFromCode_le_iff_distFromCode_le] at hjp
-  simp only [zero_mul, Nat.floor_zero, nonpos_iff_eq_zero] at hjp
+  simp only [zero_mul, Nat.floor_zero, Nat.cast_zero, nonpos_iff_eq_zero] at hjp
   rw [distFromCode_eq_zero_iff_mem] at hjp
   -- `hjp : u.transpose ∈ interleavedCodeSet C`, i.e. every row of `u` is in `C`.
-  rw [mem_interleavedCode_iff] at hjp
-  have := hjp k
-  simp only [InterleavedWord.getRowWord, Matrix.transpose_transpose] at this
-  exact hk this
+  simp only [interleavedCodeSet, Set.mem_setOf_eq, Matrix.transpose_transpose] at hjp
+  exact hk (hjp k)
 
 /-- **General `NearCertainBadLine` producer (BGKS20 line-code construction).**
 Given a stack `u` whose row `0` traces a complete affine line that is contained in `C` —
@@ -95,7 +93,7 @@ theorem nearCertainBadLine_of_line_code
   have hmem : u 0 + γ • u 1 ∈ C := hΓ γ hγ
   have h0 : δᵣ(u 0 + γ • u 1, C) ≤ (0 : ENNReal) := by
     refine le_trans (relDistFromCode_le_relDist_to_mem _ _ hmem) ?_
-    simp [relHammingDist]
+    simp [relHammingDist, hammingDist_self]
   exact le_trans h0 (by positivity)
 
 /-- **T5.4 endpoint from the line-code producer.**
