@@ -7,6 +7,8 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Fintype.Card
+import Mathlib.Algebra.Order.Chebyshev
+import Mathlib.Algebra.BigOperators.Ring.Basic
 
 /-!
 # Coverage pigeonhole for multi-γ line decoding
@@ -61,5 +63,39 @@ theorem exists_degree_gt {κ ι : Type*} [Fintype κ] [Fintype ι] [DecidableEq 
       _ = k * Fintype.card ι := by
           simp [Finset.sum_const, Finset.card_univ, mul_comm]
   omega
+
+/-- **Joint-pair mass bound** (Cauchy–Schwarz form of GG25 coverage).  The total ordered
+pairwise-intersection mass of the agreement sets is at least `(∑ |S i|)² / |ι|`:
+`(∑ i, |S i|)² ≤ |ι| · ∑ i, ∑ j, |S i ∩ S j|`.  Hence when the agreement sets are large their
+pairwise overlaps are forced to be large in aggregate — so some pair shares many coordinates,
+the joint-pair witness the repaired line-decoding argument extracts (issue #140). -/
+theorem sq_sum_card_le_card_mul_sum_inter {κ ι : Type*} [Fintype κ] [Fintype ι] [DecidableEq ι]
+    (S : κ → Finset ι) :
+    (∑ i, (S i).card) ^ 2 ≤ Fintype.card ι * ∑ i, ∑ j, (S i ∩ S j).card := by
+  classical
+  set deg : ι → ℕ := fun x => (Finset.univ.filter (fun i => x ∈ S i)).card with hdeg
+  have hf : ∀ x : ι, deg x = ∑ i, (if x ∈ S i then (1 : ℕ) else 0) := by
+    intro x; rw [hdeg]; rw [Finset.card_filter]
+  have hinter : ∀ i j : κ, (S i ∩ S j).card
+      = ∑ x : ι, (if x ∈ S i then (1 : ℕ) else 0) * (if x ∈ S j then 1 else 0) := by
+    intro i j
+    rw [← Finset.card_filter]
+    congr 1
+    ext x
+    by_cases hi : x ∈ S i <;> by_cases hj : x ∈ S j <;>
+      simp [hi, hj, Finset.mem_inter]
+  have hident : (∑ i, ∑ j, (S i ∩ S j).card) = ∑ x : ι, (deg x) ^ 2 := by
+    simp_rw [hinter]
+    rw [Finset.sum_comm]
+    refine Finset.sum_congr rfl ?_
+    intro x _
+    rw [← Finset.sum_mul_sum, ← hf x, sq]
+    refine Finset.sum_congr rfl ?_
+    intro i _
+    rw [Finset.sum_comm]
+  have hsum : (∑ i, (S i).card) = ∑ x : ι, deg x := sum_card_eq_sum_degree S
+  rw [hsum, hident]
+  have hcs := sq_sum_le_card_mul_sum_sq (s := (Finset.univ : Finset ι)) (f := deg)
+  rwa [Finset.card_univ] at hcs
 
 end ArkLib.Coverage
