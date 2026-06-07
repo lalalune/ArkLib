@@ -1155,7 +1155,7 @@ lemma fold_disagreementSet_subset
   (Supersedes the earlier wave3 "open" disposition: the two pieces it cited as missing — fold
   code-membership via the repaired single-step `foldf_step_mem_smoothCode`, and the block-distance
   contraction `fold_disagreementSet_subset` — are now both proven below, so this lemma is closed.)
-  -/
+-/
 lemma folding_preserves_listdecoding_bound
     {S : Finset ι} {k m : ℕ} (hm : 1 ≤ m) {φ : ι ↪ F} [Fintype ι] [DecidableEq ι] [Smooth φ]
   {δ : ℝ≥0} {f : (indexPowT S φ 0) → F}
