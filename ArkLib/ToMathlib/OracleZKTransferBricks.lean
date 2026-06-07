@@ -55,6 +55,33 @@ theorem statisticalHVZK.congr_honestDist
     statisticalHVZK init impl rel R₂ sim ε :=
   Reduction.statisticalHVZK.congr_honestDist h hdist
 
+/-- **OracleReduction perfect HVZK honest-distribution congruence with opposite-order equality.** -/
+theorem perfectHVZK.congr_honestDist_symm
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn)}
+    {R₁ R₂ : OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut pSpec}
+    {sim : TranscriptSimulator oSpec StmtIn OStmtIn pSpec}
+    (h : perfectHVZK init impl rel R₁ sim)
+    (hdist : ∀ stmtIn witIn, (stmtIn, witIn) ∈ rel →
+      evalDist (Reduction.honestTranscriptDist init impl R₂.toReduction stmtIn witIn) =
+        evalDist (Reduction.honestTranscriptDist init impl R₁.toReduction stmtIn witIn)) :
+    perfectHVZK init impl rel R₂ sim :=
+  Reduction.perfectHVZK.congr_honestDist_symm h hdist
+
+/-- **OracleReduction statistical HVZK honest-distribution congruence with opposite-order
+equality.** -/
+theorem statisticalHVZK.congr_honestDist_symm
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn)}
+    {R₁ R₂ : OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut pSpec}
+    {sim : TranscriptSimulator oSpec StmtIn OStmtIn pSpec} {ε : ℝ≥0}
+    (h : statisticalHVZK init impl rel R₁ sim ε)
+    (hdist : ∀ stmtIn witIn, (stmtIn, witIn) ∈ rel →
+      evalDist (Reduction.honestTranscriptDist init impl R₂.toReduction stmtIn witIn) =
+        evalDist (Reduction.honestTranscriptDist init impl R₁.toReduction stmtIn witIn)) :
+    statisticalHVZK init impl rel R₂ sim ε :=
+  Reduction.statisticalHVZK.congr_honestDist_symm h hdist
+
 /-- **OracleReduction perfect HVZK is preserved under an equal simulator distribution.** -/
 theorem perfectHVZK.simulator_congr
     {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
@@ -290,6 +317,32 @@ theorem statisticalHVZK_of_honestDist_eq_const
     statisticalHVZK init impl rel R (fun _ => d) ε :=
   Reduction.statisticalHVZK_of_honestDist_eq_const d hdist ε
 
+/-- **Symmetric-facing OracleReduction constant-simulator criterion for perfect HVZK.** -/
+theorem perfectHVZK_of_const_eq_honestDist
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn)}
+    {R : OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut pSpec}
+    (d : OptionT ProbComp (FullTranscript pSpec))
+    (hdist : ∀ stmtIn witIn, (stmtIn, witIn) ∈ rel →
+      evalDist d =
+        evalDist (Reduction.honestTranscriptDist init impl R.toReduction stmtIn witIn)) :
+    perfectHVZK init impl rel R (fun _ => d) := by
+  intro stmtIn witIn hMem
+  exact hdist stmtIn witIn hMem
+
+/-- **Symmetric-facing OracleReduction constant-simulator criterion for statistical HVZK.** -/
+theorem statisticalHVZK_of_const_eq_honestDist
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn)}
+    {R : OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut pSpec}
+    (d : OptionT ProbComp (FullTranscript pSpec))
+    (hdist : ∀ stmtIn witIn, (stmtIn, witIn) ∈ rel →
+      evalDist d =
+        evalDist (Reduction.honestTranscriptDist init impl R.toReduction stmtIn witIn))
+    (ε : ℝ≥0) :
+    statisticalHVZK init impl rel R (fun _ => d) ε :=
+  (perfectHVZK_of_const_eq_honestDist d hdist).statisticalHVZK ε
+
 /-- **OracleReduction `isHVZK` from the constant-simulator criterion.** -/
 theorem isHVZK_of_honestDist_eq_const
     {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
@@ -314,6 +367,31 @@ theorem isStatHVZK_of_honestDist_eq_const
     (ε : ℝ≥0) :
     isStatHVZK init impl rel R ε :=
   ⟨fun _ => d, statisticalHVZK_of_honestDist_eq_const d hdist ε⟩
+
+/-- **OracleReduction `isHVZK` from the symmetric-facing constant-simulator criterion.** -/
+theorem isHVZK_of_const_eq_honestDist
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn)}
+    {R : OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut pSpec}
+    (d : OptionT ProbComp (FullTranscript pSpec))
+    (hdist : ∀ stmtIn witIn, (stmtIn, witIn) ∈ rel →
+      evalDist d =
+        evalDist (Reduction.honestTranscriptDist init impl R.toReduction stmtIn witIn)) :
+    isHVZK init impl rel R :=
+  ⟨fun _ => d, perfectHVZK_of_const_eq_honestDist d hdist⟩
+
+/-- **OracleReduction `isStatHVZK` from the symmetric-facing constant-simulator criterion.** -/
+theorem isStatHVZK_of_const_eq_honestDist
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn)}
+    {R : OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut pSpec}
+    (d : OptionT ProbComp (FullTranscript pSpec))
+    (hdist : ∀ stmtIn witIn, (stmtIn, witIn) ∈ rel →
+      evalDist d =
+        evalDist (Reduction.honestTranscriptDist init impl R.toReduction stmtIn witIn))
+    (ε : ℝ≥0) :
+    isStatHVZK init impl rel R ε :=
+  ⟨fun _ => d, statisticalHVZK_of_const_eq_honestDist d hdist ε⟩
 
 /-- **OracleReduction `isHVZK` transfers along an equal honest distribution.** -/
 theorem isHVZK.congr_honestDist
@@ -341,6 +419,31 @@ theorem isStatHVZK.congr_honestDist
     isStatHVZK init impl rel R₂ ε :=
   let ⟨sim, hsim⟩ := h
   ⟨sim, hsim.congr_honestDist hdist⟩
+
+/-- **OracleReduction `isHVZK` honest-distribution congruence with opposite-order equality.** -/
+theorem isHVZK.congr_honestDist_symm
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn)}
+    {R₁ R₂ : OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut pSpec}
+    (h : isHVZK init impl rel R₁)
+    (hdist : ∀ stmtIn witIn, (stmtIn, witIn) ∈ rel →
+      evalDist (Reduction.honestTranscriptDist init impl R₂.toReduction stmtIn witIn) =
+        evalDist (Reduction.honestTranscriptDist init impl R₁.toReduction stmtIn witIn)) :
+    isHVZK init impl rel R₂ :=
+  h.congr_honestDist fun stmtIn witIn hMem => (hdist stmtIn witIn hMem).symm
+
+/-- **OracleReduction `isStatHVZK` honest-distribution congruence with opposite-order equality.** -/
+theorem isStatHVZK.congr_honestDist_symm
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn)}
+    {R₁ R₂ : OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut pSpec}
+    {ε : ℝ≥0}
+    (h : isStatHVZK init impl rel R₁ ε)
+    (hdist : ∀ stmtIn witIn, (stmtIn, witIn) ∈ rel →
+      evalDist (Reduction.honestTranscriptDist init impl R₂.toReduction stmtIn witIn) =
+        evalDist (Reduction.honestTranscriptDist init impl R₁.toReduction stmtIn witIn)) :
+    isStatHVZK init impl rel R₂ ε :=
+  h.congr_honestDist fun stmtIn witIn hMem => (hdist stmtIn witIn hMem).symm
 
 /-- **Existential approximate honest-distribution transfer at the OracleReduction API boundary.** -/
 theorem isStatHVZK.triangle_honestDist
@@ -431,6 +534,8 @@ theorem isHVZK.triangle_honestDist_symm_zero
 
 #print axioms perfectHVZK.congr_honestDist
 #print axioms statisticalHVZK.congr_honestDist
+#print axioms perfectHVZK.congr_honestDist_symm
+#print axioms statisticalHVZK.congr_honestDist_symm
 #print axioms perfectHVZK.simulator_congr
 #print axioms statisticalHVZK.simulator_congr
 #print axioms perfectHVZK.simulator_congr_symm
@@ -450,10 +555,16 @@ theorem isHVZK.triangle_honestDist_symm_zero
 #print axioms perfectHVZK.triangle_honestDist_symm_zero
 #print axioms perfectHVZK_of_honestDist_eq_const
 #print axioms statisticalHVZK_of_honestDist_eq_const
+#print axioms perfectHVZK_of_const_eq_honestDist
+#print axioms statisticalHVZK_of_const_eq_honestDist
 #print axioms isHVZK_of_honestDist_eq_const
 #print axioms isStatHVZK_of_honestDist_eq_const
+#print axioms isHVZK_of_const_eq_honestDist
+#print axioms isStatHVZK_of_const_eq_honestDist
 #print axioms isHVZK.congr_honestDist
 #print axioms isStatHVZK.congr_honestDist
+#print axioms isHVZK.congr_honestDist_symm
+#print axioms isStatHVZK.congr_honestDist_symm
 #print axioms isStatHVZK.triangle_honestDist
 #print axioms isStatHVZK.triangle_honestDist_symm
 #print axioms isStatHVZK.triangle_honestDist_zero

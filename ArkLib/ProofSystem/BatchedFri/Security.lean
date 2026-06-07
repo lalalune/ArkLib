@@ -1581,6 +1581,42 @@ def FriSoundnessParts.of_queryRoundDensityBoundAndBatchedFRIOracleLens
   total_error_accounting := totalErrorAccounting
   pieces_imply_claim := pieces_imply_claim
 
+/-- Instantiate the Claim 8.3 frontier with the proved query-density plus Batched FRI oracle-lens
+front door and the concrete sequential-composition proposition for the actual Batched FRI
+reduction.  The append residual can later discharge this sequential field via
+`friSoundnessSequentialComposition_of_append`; total-error accounting remains explicit. -/
+def FriSoundnessParts.of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequentialComposition
+    {t l m : ℕ}
+  (f : Fin t.succ → (ω → 𝔽))
+  (m_ge_3 : m ≥ 3)
+  {σ : Type} (init : ProbComp σ) (impl : QueryImpl []ₒ (StateT σ ProbComp))
+  [∀ i, SampleableType ((BatchedFri.Spec.BatchingRound.batchSpec 𝔽 t).Challenge i)]
+  [∀ i, SampleableType ((Spec.pSpecFold (ω := ω) k s ++ₚ Spec.FinalFoldPhase.pSpec 𝔽 ++ₚ
+    Spec.QueryRound.pSpec (ω := ω) l).Challenge i)]
+  (lang₁ : Set (Unit × (∀ i, BatchedFri.Spec.OracleStatement t ω i)))
+  (lang₃ : Set (Spec.FinalStatement 𝔽 k × (∀ i, Spec.FinalOracleStatement s (ω := ω) i)))
+  (batchError friError : ℝ≥0)
+  (totalErrorAccounting : Prop)
+  (pieces_imply_claim :
+    friSoundnessQueryLift (n := n) (ω := ω) f m_ge_3 →
+    friSoundnessSequentialComposition
+      (n := n) (s := s) (d := d) (ω := ω) (l := l)
+      (domain_size_cond := domain_size_cond)
+      init impl lang₁ lang₃ batchError friError →
+    totalErrorAccounting →
+    fri_soundness (n := n) (s := s) (d := d) (ω := ω) (l := l)
+      (domain_size_cond := domain_size_cond) f m_ge_3) :
+    FriSoundnessParts (n := n) (s := s) (d := d) (ω := ω) (l := l)
+      (domain_size_cond := domain_size_cond) f m_ge_3 where
+  query_soundness_lift := friSoundnessQueryLift (n := n) (ω := ω) f m_ge_3
+  sequential_composition_soundness :=
+    friSoundnessSequentialComposition
+      (n := n) (s := s) (d := d) (ω := ω) (l := l)
+      (domain_size_cond := domain_size_cond)
+      init impl lang₁ lang₃ batchError friError
+  total_error_accounting := totalErrorAccounting
+  pieces_imply_claim := pieces_imply_claim
+
 /-- Reassemble Claim 8.3 after discharging its query-lift field from the proved query-density and
 Batched FRI oracle-lens pieces.  The two remaining hypotheses are exactly the sequential-composition
 soundness and total-error-accounting frontier fields. -/
@@ -1727,6 +1763,8 @@ theorem fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequent
 #print axioms Fri.friSoundnessQueryLift
 #print axioms Fri.friSoundnessQueryLift_of_queryRoundDensityBoundAndBatchedFRIOracleLens
 #print axioms Fri.FriSoundnessParts.of_queryRoundDensityBoundAndBatchedFRIOracleLens
+set_option linter.style.longLine false in
+#print axioms Fri.FriSoundnessParts.of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequentialComposition
 #print axioms Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLens
 #print axioms Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequentialComposition
 #print axioms Fri.fri_soundness_of_parts
@@ -1765,5 +1803,7 @@ end Fri
 #print axioms Fri.friSoundnessQueryLift
 #print axioms Fri.friSoundnessQueryLift_of_queryRoundDensityBoundAndBatchedFRIOracleLens
 #print axioms Fri.FriSoundnessParts.of_queryRoundDensityBoundAndBatchedFRIOracleLens
+set_option linter.style.longLine false in
+#print axioms Fri.FriSoundnessParts.of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequentialComposition
 #print axioms Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLens
 #print axioms Fri.fri_soundness_of_parts

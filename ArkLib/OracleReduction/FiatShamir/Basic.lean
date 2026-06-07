@@ -1093,6 +1093,42 @@ theorem fiatShamir_isHVZK_of_HVZK_zero
   _root_.Reduction.isStatHVZK_zero.isHVZK
     (fiatShamir_isStatHVZK_of_HVZK init impl fsInit fsImpl rel 0 R hTransfer hHVZK)
 
+/-- A zero-error statistical Fiat-Shamir simulator transfer also preserves perfect HVZK after
+restricting to a sub-relation. -/
+theorem fiatShamir_isHVZK_of_HVZK_zero_mono_relation
+    {τ : Type}
+    (init : ProbComp σ)
+    (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (fsInit : ProbComp τ)
+    (fsImpl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT τ ProbComp))
+    {rel relSub : Set (StmtIn × WitIn)} (hsub : relSub ⊆ rel)
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hTransfer :
+      fiatShamir_statisticalHVZKTransferResidual init impl fsInit fsImpl rel 0 R)
+    (hHVZK : Reduction.isHVZK init impl rel R) :
+    Reduction.isHVZK fsInit fsImpl relSub R.fiatShamir :=
+  (fiatShamir_isHVZK_of_HVZK_zero init impl fsInit fsImpl rel R hTransfer hHVZK).mono_relation
+    hsub
+
+/-- A zero-error statistical Fiat-Shamir simulator transfer gives statistical HVZK at any target
+error after restricting to a sub-relation. -/
+theorem fiatShamir_isStatHVZK_of_HVZK_zero_mono_relation
+    {τ : Type}
+    (init : ProbComp σ)
+    (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (fsInit : ProbComp τ)
+    (fsImpl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT τ ProbComp))
+    {rel relSub : Set (StmtIn × WitIn)} (hsub : relSub ⊆ rel) (ε : ℝ≥0)
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hTransfer :
+      fiatShamir_statisticalHVZKTransferResidual init impl fsInit fsImpl rel 0 R)
+    (hHVZK : Reduction.isHVZK init impl rel R) :
+    Reduction.isStatHVZK fsInit fsImpl relSub R.fiatShamir ε :=
+  _root_.Reduction.isHVZK.isStatHVZK
+    (fiatShamir_isHVZK_of_HVZK_zero_mono_relation init impl fsInit fsImpl hsub R
+      hTransfer hHVZK)
+    ε
+
 #print axioms Reduction.fiatShamir_statisticalHVZKTransferResidual
 #print axioms Reduction.fiatShamir_statisticalHVZKTransferResidual.mono_error
 #print axioms Reduction.fiatShamir_isStatHVZK_of_HVZK
@@ -1109,6 +1145,8 @@ theorem fiatShamir_isHVZK_of_HVZK_zero
 #print axioms Reduction.fiatShamir_isStatHVZK_of_transfer_mono_relation
 #print axioms Reduction.fiatShamir_isStatHVZK_of_transfer_mono_relation_error
 #print axioms Reduction.fiatShamir_isHVZK_of_HVZK_zero
+#print axioms Reduction.fiatShamir_isHVZK_of_HVZK_zero_mono_relation
+#print axioms Reduction.fiatShamir_isStatHVZK_of_HVZK_zero_mono_relation
 
 end ZeroKnowledgeTransfer
 
