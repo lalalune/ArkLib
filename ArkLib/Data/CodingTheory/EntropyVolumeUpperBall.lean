@@ -92,6 +92,23 @@ theorem hammingBallVolume_le_qEntropy (hq : 2 ≤ q) (δ : ℝ) {n : ℕ}
         have hB0 : (0 : ℝ) ≤ B := le_trans zero_le_one hB_ge_one
         nlinarith [hrn, hB0]
 
+/-- Finite-domain specialization of `hammingBallVolume_le_qEntropy`, with alphabet size
+`q = |F|` and block length `n = |ι|`, preserving the exact floor-radius exponent. -/
+theorem hammingBallVolume_le_qEntropy_card
+    {ι F : Type} [Fintype ι] [Field F] [Fintype F]
+    (δ : ℝ)
+    (hr : ⌊δ * (Fintype.card ι : ℝ)⌋₊ < Fintype.card ι)
+    (hcap :
+      (⌊δ * (Fintype.card ι : ℝ)⌋₊ : ℝ) / (Fintype.card ι : ℝ)
+        ≤ 1 - 1 / (Fintype.card F : ℝ)) :
+    (hammingBallVolume (Fintype.card F) δ (Fintype.card ι) : ℝ)
+      ≤ ((Fintype.card ι : ℝ) + 1) *
+        (Fintype.card F : ℝ) ^ ((Fintype.card ι : ℝ) *
+          qEntropy (Fintype.card F)
+            ((⌊δ * (Fintype.card ι : ℝ)⌋₊ : ℝ) / (Fintype.card ι : ℝ))) :=
+  hammingBallVolume_le_qEntropy
+    (q := Fintype.card F) Fintype.one_lt_card δ hr hcap
+
 /-- **q-ary Hamming-ball volume UPPER bound with the real radius exponent.**  Below capacity,
 the floor-radius estimate may be relaxed to the cleaner exponent `H_q(δ)`. -/
 theorem hammingBallVolume_le_qEntropy_real_radius (hq : 2 ≤ q) (δ : ℝ) {n : ℕ}
@@ -145,5 +162,6 @@ end CodingTheory
 
 -- Axiom audit: depends on exactly `[propext, Classical.choice, Quot.sound]`.
 #print axioms CodingTheory.hammingBallVolume_le_qEntropy
+#print axioms CodingTheory.hammingBallVolume_le_qEntropy_card
 #print axioms CodingTheory.hammingBallVolume_le_qEntropy_real_radius
 #print axioms CodingTheory.hammingBallVolume_le_qEntropy_real_radius_card
