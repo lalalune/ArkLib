@@ -153,6 +153,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Basic
 import ArkLib.Data.CodingTheory.ProximityGap.BivariateVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidual
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveringExistence
+import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentLinear
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentPairCount
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentReduction
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBounds
@@ -672,6 +673,7 @@ import ArkLib.ToMathlib.WeightLambdaCalculus
 import ArkLib.ToMathlib.WhirBricksConstruction
 import ArkLib.ToMathlib.ZKDefA
 import ArkLib.ToMathlib.ZKDefC
+import ArkLib.ToMathlib.ZKTransferBricks
 import ArkLib.ToVCVio.EvalDist.Defs.Support
 import ArkLib.ToVCVio.EvalDist.Instances.OptionT
 import ArkLib.ToVCVio.Lemmas

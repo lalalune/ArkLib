@@ -20,6 +20,7 @@ import ArkLib.Data.CodingTheory.Prelims
 import ArkLib.Data.CodingTheory.ProximityGap.Basic
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.Domain.CosetFftDomain.Defs
+import ArkLib.Data.Domain.CosetFftDomain.Subdomain
 import ArkLib.Data.Probability.Notation
 import ArkLib.ProofSystem.BatchedFri.Spec.General
 import ArkLib.ProofSystem.Fri.Spec.General
@@ -1198,19 +1199,8 @@ def fri_soundness
           (W := f)
 
 /-- The round-zero Batched FRI subdomain is equivalent to the original evaluation domain. -/
-noncomputable def subdomainZeroEquiv : ω.subdomain 0 ≃ ω where
-  toFun x :=
-    ⟨x.1,
-      (CosetFftDomainClass.mem_toFinset_iff_mem).2
-        ((CosetFftDomainClass.mem_subdomain_0_iff_mem).1
-          ((CosetFftDomainClass.mem_toFinset_iff_mem).1 x.2))⟩
-  invFun y :=
-    ⟨y.1,
-      (CosetFftDomainClass.mem_toFinset_iff_mem).2
-        ((CosetFftDomainClass.mem_subdomain_0_iff_mem).2
-          ((CosetFftDomainClass.mem_toFinset_iff_mem).1 y.2))⟩
-  left_inv x := by ext; rfl
-  right_inv y := by ext; rfl
+noncomputable def subdomainZeroEquiv : ω.subdomain 0 ≃ ω :=
+  CosetFftDomainClass.subdomainZeroEquiv ω
 
 omit [Fintype 𝔽] [Nontrivial 𝔽] in
 /-- Reed-Solomon codewords transport from `ω.subdomain 0` to `ω` along
@@ -1225,10 +1215,13 @@ theorem reedSolomon_code_subdomainZero_transport
       (fun y : ω => v ((subdomainZeroEquiv (n := n) (ω := ω)).symm y)) ∈
         (ReedSolomon.code
           (⟨fun x => x, by simp⟩ : ω ↪ 𝔽) deg : Set (ω → 𝔽)) := by
-  rcases (ReedSolomon.mem_code_iff_exists_polynomial.mp hv) with ⟨p, hpdeg, rfl⟩
-  exact ReedSolomon.mem_code_of_polynomial_of_degree_lt_of_eval p hpdeg (by
-    intro y
-    simp [ReedSolomon.evalOnPoints, subdomainZeroEquiv])
+  exact ReedSolomon.codeword_equiv_of_eval_eq
+    (e := subdomainZeroEquiv (n := n) (ω := ω))
+    (α₁ := (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽))
+    (α₂ := (⟨fun x => x, by simp⟩ : ω ↪ 𝔽))
+    (fun x => by
+      change ((subdomainZeroEquiv (n := n) (ω := ω)) x).1 = x.1
+      rfl) hv
 
 omit [Fintype 𝔽] [Nontrivial 𝔽] in
 /-- Lift joint agreement from the query-round subdomain to the full Batched FRI domain. -/
