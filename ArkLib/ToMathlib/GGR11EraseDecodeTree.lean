@@ -211,6 +211,27 @@ theorem redBranchingLe_node (L : ℕ∞) (b : Option EraseDecodeTree)
           redBranchingLeList L rs := by
   rw [redBranchingLe]
 
+/-- Red-branching bounds are monotone in the allowed branching budget. -/
+theorem redBranchingLe_mono {L L' : ℕ∞} (hLL : L ≤ L') (t : EraseDecodeTree) :
+    redBranchingLe L t → redBranchingLe L' t := by
+  refine (EraseDecodeTree.rec
+    (motive_1 := fun t => redBranchingLe L t → redBranchingLe L' t)
+    (motive_2 := fun bopt => redBranchingLeOption L bopt → redBranchingLeOption L' bopt)
+    (motive_3 := fun rs => redBranchingLeList L rs → redBranchingLeList L' rs)
+    ?leaf ?node ?none ?some ?nil ?cons) t
+  · intro _; simp
+  · intro b rs ihb ihrs hbr
+    rw [redBranchingLe_node] at hbr ⊢
+    exact ⟨ihb hbr.1, le_trans hbr.2.1 hLL, ihrs hbr.2.2⟩
+  · intro _; simp
+  · intro t iht hbr
+    rw [redBranchingLeOption_some] at hbr ⊢
+    exact iht hbr
+  · intro _; simp
+  · intro t ts iht ihts hbr
+    rw [redBranchingLeList_cons] at hbr ⊢
+    exact ⟨iht hbr.1, ihts hbr.2⟩
+
 end EraseDecodeTree
 
 /-! ### Leaf-count budget theorem (GGR11 Theorem 3.6 for a real tree) -/
@@ -439,6 +460,21 @@ noncomputable def treeWitness_of_concreteEraseDecodeTree
             _ ≤ (Lambda C δ) * (((b' + 1 + r').choose r' : ℕ∞) * (Lambda C δ) ^ r') :=
                 mul_le_mul' (le_refl _) (mul_le_mul' hcast (le_refl _))
 
+/-- Constructor-facing witness adapter when the concrete tree's red branching is bounded by a
+smaller budget `L ≤ Λ(C,δ)`. Future Algorithm-1 builders can prove a sharper local branching bound
+and lift it to the ambient GGR11 budget here. -/
+noncomputable def treeWitness_of_concreteEraseDecodeTree_of_redBranchingLe_le
+    {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ} (hLambda : 1 ≤ Lambda C δ)
+    (f : Matrix ι (Fin m) F) (tree : EraseDecodeTree)
+    (hdom :
+      (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard
+          ≤ tree.leafCount)
+    (hbd : tree.blueDepth ≤ b) (hrd : tree.redDepth ≤ r)
+    {L : ℕ∞} (hL_le : L ≤ Lambda C δ) (hbr : tree.redBranchingLe L) :
+    GGR11TreeWitness C δ m b r f :=
+  treeWitness_of_concreteEraseDecodeTree hLambda f tree hdom hbd hrd
+    (EraseDecodeTree.redBranchingLe_mono hL_le tree hbr)
+
 /-- A single concrete Erase-Decode tree supplies a named GGR11 witness at its own exact Blue/Red
 depths. This is the constructor-facing form for future Algorithm-1 tree builders: they only need
 to provide leaf domination and Red-branching, and the depth indices are read from the tree. -/
@@ -608,7 +644,9 @@ theorem lambda_le_ggr11_of_leaf_close_le_one
 -- Axiom audit.
 #print axioms EraseDecodeTree.leafCount_le
 #print axioms EraseDecodeTree.leafCount_le_self
+#print axioms EraseDecodeTree.redBranchingLe_mono
 #print axioms treeWitness_of_concreteEraseDecodeTree
+#print axioms treeWitness_of_concreteEraseDecodeTree_of_redBranchingLe_le
 #print axioms treeWitness_of_concreteEraseDecodeTree_self
 #print axioms treeWitness_of_eraseDecodeTree_self
 #print axioms treeWitness_of_eraseDecodeTree
