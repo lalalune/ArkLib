@@ -891,6 +891,44 @@ theorem fiatShamir_statisticalHVZKTransferResidual.of_perfectTransfer
   intro hHVZK
   exact (hTransfer hHVZK).isStatHVZK ε
 
+omit [VCVCompatible StmtIn] in
+/-- A zero-error statistical Fiat-Shamir simulator-transfer residual is exactly strong enough to
+recover the perfect HVZK transfer residual. This is the residual-level counterpart of
+`fiatShamir_isHVZK_of_HVZK_zero`. -/
+theorem fiatShamir_hvzkTransferResidual.of_statistical_zero
+    {τ : Type}
+    (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (fsInit : ProbComp τ)
+    (fsImpl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT τ ProbComp))
+    (rel : Set (StmtIn × WitIn))
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hTransfer :
+      fiatShamir_statisticalHVZKTransferResidual init impl fsInit fsImpl rel 0 R) :
+    fiatShamir_hvzkTransferResidual init impl fsInit fsImpl rel R := by
+  intro hHVZK
+  exact _root_.Reduction.isStatHVZK_zero.isHVZK (hTransfer hHVZK)
+
+omit [VCVCompatible StmtIn] in
+/-- Perfect basic-Fiat-Shamir HVZK transfer is equivalent to statistical HVZK transfer at
+zero error. This is only an API equivalence between residual statements; the simulator
+construction remains the content of either residual. -/
+theorem fiatShamir_hvzkTransferResidual_iff_statistical_zero
+    {τ : Type}
+    (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (fsInit : ProbComp τ)
+    (fsImpl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT τ ProbComp))
+    (rel : Set (StmtIn × WitIn))
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec) :
+    fiatShamir_hvzkTransferResidual init impl fsInit fsImpl rel R ↔
+      fiatShamir_statisticalHVZKTransferResidual init impl fsInit fsImpl rel 0 R := by
+  constructor
+  · intro hTransfer
+    exact fiatShamir_statisticalHVZKTransferResidual.of_perfectTransfer init impl fsInit fsImpl
+      rel 0 R hTransfer
+  · intro hTransfer
+    exact fiatShamir_hvzkTransferResidual.of_statistical_zero init impl fsInit fsImpl
+      rel R hTransfer
+
 /-- Basic Fiat-Shamir perfect honest-verifier zero-knowledge follows immediately from a discharged
 transfer residual. This isolates the remaining proof obligation (simulator construction plus
 transcript distribution coupling) without claiming to solve it. -/
@@ -995,6 +1033,8 @@ theorem fiatShamir_isHVZK_of_HVZK_zero
 #print axioms Reduction.fiatShamir_isStatHVZK_of_HVZK_mono_relation_error
 #print axioms Reduction.fiatShamir_hvzkTransferResidual
 #print axioms Reduction.fiatShamir_statisticalHVZKTransferResidual.of_perfectTransfer
+#print axioms Reduction.fiatShamir_hvzkTransferResidual.of_statistical_zero
+#print axioms Reduction.fiatShamir_hvzkTransferResidual_iff_statistical_zero
 #print axioms Reduction.fiatShamir_isHVZK_of_transfer
 #print axioms Reduction.fiatShamir_isStatHVZK_of_transfer
 #print axioms Reduction.fiatShamir_isHVZK_of_transfer_mono_relation
