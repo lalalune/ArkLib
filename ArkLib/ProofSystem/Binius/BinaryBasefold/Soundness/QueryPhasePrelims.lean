@@ -50,6 +50,28 @@ open scoped NNReal ProbabilityTheory
 
 namespace QueryPhase
 
+omit [CharP L 2] [SampleableType L] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1
+  [NeZero r] [NeZero 𝓡] in
+/-- For a block index `k < ℓ / ϑ` (with `ϑ ∣ ℓ`), the block start `k·ϑ` is `< ℓ`. -/
+lemma k_mul_ϑ_lt_ℓ (k : Fin (ℓ / ϑ)) : k.val * ϑ < ℓ := by
+  have hϑ : 0 < ϑ := Nat.pos_of_neZero ϑ
+  have hk : k.val + 1 ≤ ℓ / ϑ := k.isLt
+  have h_div_mul : ℓ / ϑ * ϑ = ℓ := Nat.div_mul_cancel hdiv.out
+  calc k.val * ϑ < (k.val + 1) * ϑ := by
+        apply Nat.mul_lt_mul_right hϑ; omega
+    _ ≤ (ℓ / ϑ) * ϑ := by apply Nat.mul_le_mul_right; exact hk
+    _ = ℓ := h_div_mul
+
+omit [CharP L 2] [SampleableType L] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1
+  [NeZero r] [NeZero 𝓡] in
+/-- For a block index `k < ℓ / ϑ` (with `ϑ ∣ ℓ`), the block end `k·ϑ + ϑ` is `≤ ℓ`. -/
+lemma k_succ_mul_ϑ_le_ℓ_₂ (k : Fin (ℓ / ϑ)) : k.val * ϑ + ϑ ≤ ℓ := by
+  have hk : k.val + 1 ≤ ℓ / ϑ := k.isLt
+  have h_div_mul : ℓ / ϑ * ϑ = ℓ := Nat.div_mul_cancel hdiv.out
+  calc k.val * ϑ + ϑ = (k.val + 1) * ϑ := by ring
+    _ ≤ (ℓ / ϑ) * ϑ := by apply Nat.mul_le_mul_right; exact hk
+    _ = ℓ := h_div_mul
+
 /-!
 ## Common Proximity Check Helpers
 
