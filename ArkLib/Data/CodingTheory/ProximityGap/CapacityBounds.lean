@@ -196,7 +196,7 @@ subspace-design inputs).
 set_option linter.unusedFintypeInType false
 set_option linter.unusedDecidableInType false
 set_option linter.unusedSectionVars false
-set_option linter.style.longFile 1700
+set_option linter.style.longFile 1900
 
 namespace CodingTheory
 
