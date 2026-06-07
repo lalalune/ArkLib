@@ -106,6 +106,9 @@ Current source also exposes the #14 split frontier:
   arithmetic budget in the Claim 8.3 threshold, and
   `Fri.friSoundnessTotalErrorAccounting_of_phase_bounds` supplies it from
   separate batching and FRI-tail error bounds.
+- `Fri.fri_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndSequentialCompositionAndTotalError`
+  routes the proved probability-space query-round front door through the
+  concrete sequential-composition and total-accounting fields.
 - `fri_soundness_of_parts` reassembles the faithful `fri_soundness` residual
   from those three named ingredients.
 
