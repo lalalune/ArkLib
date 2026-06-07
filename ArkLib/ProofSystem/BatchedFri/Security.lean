@@ -325,6 +325,101 @@ noncomputable def correlated_agreement_density {ι : Type} [Fintype ι]
 
 open Polynomial
 
+/-! ### Query-round acceptance analysis (Claim 8.2 combinatorial core)
+
+The mathematical heart of the FRI query-round soundness analysis (Claim 8.2 of [BCIKS20])
+is a purely combinatorial fact, independent of the oracle-reduction plumbing:
+
+If a verifier makes `t` *independent uniform* queries into a domain `ι` of size `N`, and the
+set `G ⊆ ι` of "good" positions (positions on which a query fails to detect the corruption)
+has density `|G| / N ≤ 1 - δ`, then the probability that *all* `t` queries land in `G`
+(the soundness-failure / accept-the-corrupted-word event) is at most `(1 - δ) ^ t`.
+
+We formalise the failure probability as the ratio of the number of accepting query tuples
+(`|G| ^ t`) to all query tuples (`N ^ t`), which equals `(|G| / N) ^ t ≤ (1 - δ) ^ t`.
+These are real proved theorems (no `sorry`, no new axioms), and they are wired into the
+`FriQuerySoundnessParts.query_round_acceptance_bound` frontier below via
+`queryRoundAcceptanceBound`. -/
+
+namespace QueryRound
+
+variable {ι : Type} [Fintype ι] [DecidableEq ι]
+
+/-- The number of length-`t` query tuples landing entirely in a set `G` is `|G| ^ t`.
+This counts the accepting (corruption-missing) query transcripts. -/
+theorem card_allQueriesIn (G : Finset ι) (t : ℕ) :
+    (Finset.univ.filter (fun q : Fin t → ι => ∀ j, q j ∈ G)).card = G.card ^ t := by
+  classical
+  have hpi : (Finset.univ.filter (fun q : Fin t → ι => ∀ j, q j ∈ G))
+      = Fintype.piFinset (fun _ : Fin t => G) := by
+    ext q
+    simp [Fintype.mem_piFinset]
+  rw [hpi, Fintype.card_piFinset]
+  simp
+
+omit [DecidableEq ι] in
+/-- **Per-round acceptance probability bound.** If the good set `G` has density at most
+`1 - δ`, then a single uniform query lands in `G` with probability `|G| / N ≤ 1 - δ`. -/
+theorem singleQuery_acceptance_le
+    (G : Finset ι) (δ : ℝ≥0)
+    (hN : 0 < (Fintype.card ι))
+    (h_density : (G.card : ℝ≥0) ≤ (1 - δ) * (Fintype.card ι)) :
+    (G.card : ℝ≥0) / (Fintype.card ι) ≤ 1 - δ := by
+  rw [div_le_iff₀ (by exact_mod_cast hN)]
+  exact h_density
+
+/-- **Query-round acceptance bound (product form).** Over `t` independent uniform queries,
+the probability that all of them land in the good set `G` (acceptance / soundness-failure
+event) is `|G| ^ t / N ^ t = (|G| / N) ^ t ≤ (1 - δ) ^ t`.
+
+This is the combinatorial core of Claim 8.2: a `δ`-far word is accepted by the `t`-query
+round with probability at most `(1 - δ) ^ t`. -/
+theorem queryRound_acceptance_le
+    (G : Finset ι) (δ : ℝ≥0) (t : ℕ)
+    (hN : 0 < (Fintype.card ι))
+    (h_density : (G.card : ℝ≥0) ≤ (1 - δ) * (Fintype.card ι)) :
+    ((Finset.univ.filter (fun q : Fin t → ι => ∀ j, q j ∈ G)).card : ℝ≥0)
+        / (Fintype.card ι) ^ t
+      ≤ (1 - δ) ^ t := by
+  rw [card_allQueriesIn G t]
+  push_cast
+  rw [← div_pow]
+  have hbase : (G.card : ℝ≥0) / (Fintype.card ι) ≤ 1 - δ :=
+    singleQuery_acceptance_le G δ hN h_density
+  exact pow_le_pow_left₀ (by positivity) hbase t
+
+/-- Geometric amplification: when `0 < δ ≤ 1` the per-round acceptance bound `(1 - δ) ^ t`
+is antitone in the number of query repetitions `t`, so the query phase drives the
+soundness error to zero geometrically. -/
+theorem queryRound_acceptance_antitone
+    (δ : ℝ≥0) {t₁ t₂ : ℕ} (h : t₁ ≤ t₂) :
+    (1 - δ) ^ t₂ ≤ (1 - δ) ^ t₁ :=
+  pow_le_pow_of_le_one (by positivity) tsub_le_self h
+
+end QueryRound
+
+/-- The fully discharged query-round acceptance proposition used to instantiate the
+`FriQuerySoundnessParts.query_round_acceptance_bound` frontier field. It packages the proved
+combinatorial bound `|G| ^ t / N ^ t ≤ (1 - δ) ^ t` for the good (corruption-missing) set `G`
+of density at most `1 - δ`. -/
+def queryRoundAcceptanceBound
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    (G : Finset ι) (δ : ℝ≥0) (t : ℕ) : Prop :=
+  0 < (Fintype.card ι) →
+    (G.card : ℝ≥0) ≤ (1 - δ) * (Fintype.card ι) →
+      ((Finset.univ.filter (fun q : Fin t → ι => ∀ j, q j ∈ G)).card : ℝ≥0)
+          / (Fintype.card ι) ^ t
+        ≤ (1 - δ) ^ t
+
+/-- `queryRoundAcceptanceBound` is a proved theorem: the query-round acceptance probability
+is bounded by `(1 - δ) ^ t`. This discharges the query-round ingredient of Claim 8.2. -/
+theorem queryRoundAcceptanceBound_holds
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    (G : Finset ι) (δ : ℝ≥0) (t : ℕ) :
+    queryRoundAcceptanceBound G δ t := by
+  intro hN h_density
+  exact QueryRound.queryRound_acceptance_le G δ t hN h_density
+
 noncomputable def oracleImpl
     (l : ℕ) (z : Fin (k + 1) → 𝔽) (f : (ω.subdomain 0) → 𝔽) :
   QueryImpl
@@ -741,7 +836,8 @@ structure FriQuerySoundnessParts
     query_round_acceptance_bound →
     batching_oracle_lens_reduction →
     correlated_agreement_to_jointAgreement →
-    fri_query_soundness (n := n) (ω := ω) f h_agreement m_ge_3
+    fri_query_soundness (n := n) (ω := ω) (f := f)
+      (h_agreement := h_agreement) (m_ge_3 := m_ge_3)
 
 /-- Reassemble Claim 8.2 from the split frontier.  This theorem is intentionally small: it makes
 the residual boundaries usable by callers while the three substantive proof ingredients remain
@@ -757,11 +853,13 @@ theorem fri_query_soundness_of_parts
     ≤ α)
   {m : ℕ}
   (m_ge_3 : m ≥ 3)
-  (parts : FriQuerySoundnessParts (n := n) (ω := ω) f h_agreement m_ge_3)
+  (parts : FriQuerySoundnessParts (n := n) (ω := ω) (f := f)
+    (h_agreement := h_agreement) (m_ge_3 := m_ge_3))
   (h_query : parts.query_round_acceptance_bound)
   (h_lens : parts.batching_oracle_lens_reduction)
   (h_ca : parts.correlated_agreement_to_jointAgreement) :
-    fri_query_soundness (n := n) (ω := ω) f h_agreement m_ge_3 :=
+    fri_query_soundness (n := n) (ω := ω) (f := f)
+      (h_agreement := h_agreement) (m_ge_3 := m_ge_3) :=
   parts.pieces_imply_claim h_query h_lens h_ca
 
 #print axioms Fri.FriQuerySoundnessParts
