@@ -30,6 +30,9 @@ exactly as the in-tree P2 consequence theorems do — none assumes the STEP-8 co
   form, before expanding either side into Taylor sums.
 * `restrictedMatchAtZeroEval₂WDivTarget_iff_taylorWDivTarget` — direct bridge between the compact
   `eval₂` target and the expanded Taylor-sum target.
+* `RestrictedMatchAtZero{Taylor,Eval₂}WDivTarget.of_…` / `RestrictedFaaDiBrunoPartitionMatchAt`
+  target constructors — endpoint adapters between the order-zero targets and the full carved /
+  normalized partition residual surfaces.
 * `embeddingCleared_eq_Wpow_mul_uncleared_of_target` — makes the cleared/un-cleared `eval₂` mismatch
   *quantitative*: under the STEP-8 target, the two `𝒪`-reps differ by exactly `W^{natDegreeY p}`.
 -/
@@ -301,6 +304,76 @@ theorem RestrictedMatchAtZeroEval₂WDivTarget.of_taylorWDivTarget
     RestrictedMatchAtZeroEval₂WDivTarget H x₀ R :=
   (restrictedMatchAtZeroEval₂WDivTarget_iff_taylorWDivTarget H x₀ R).2 htarget
 
+/-- Project the expanded Taylor/W-divisor target from the full carved P2 core. -/
+theorem RestrictedMatchAtZeroTaylorWDivTarget.of_restrictedMatch
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree)
+    (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp) :
+    RestrictedMatchAtZeroTaylorWDivTarget H x₀ R :=
+  RestrictedMatchAtZeroTaylorWDivTarget.of_restrictedMatchAt_zero H x₀ R hHyp hd (hmatch 0)
+
+/-- Project the compact `eval₂`/W-divisor target from the full carved P2 core. -/
+theorem RestrictedMatchAtZeroEval₂WDivTarget.of_restrictedMatch
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree)
+    (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp) :
+    RestrictedMatchAtZeroEval₂WDivTarget H x₀ R :=
+  RestrictedMatchAtZeroEval₂WDivTarget.of_restrictedMatchAt_zero H x₀ R hHyp hd (hmatch 0)
+
+/-- Project the expanded Taylor/W-divisor target from the fixed order-zero partition residual. -/
+theorem RestrictedMatchAtZeroTaylorWDivTarget.of_partitionMatchAt_zero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree)
+    (hpart : RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0) :
+    RestrictedMatchAtZeroTaylorWDivTarget H x₀ R :=
+  RestrictedMatchAtZeroTaylorWDivTarget.of_restrictedMatchAt_zero H x₀ R hHyp hd
+    (RestrictedFaaDiBrunoMatchAt.of_partitionMatchAt H x₀ R hHyp 0 hpart)
+
+/-- Project the compact `eval₂`/W-divisor target from the fixed order-zero partition residual. -/
+theorem RestrictedMatchAtZeroEval₂WDivTarget.of_partitionMatchAt_zero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree)
+    (hpart : RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0) :
+    RestrictedMatchAtZeroEval₂WDivTarget H x₀ R :=
+  RestrictedMatchAtZeroEval₂WDivTarget.of_restrictedMatchAt_zero H x₀ R hHyp hd
+    (RestrictedFaaDiBrunoMatchAt.of_partitionMatchAt H x₀ R hHyp 0 hpart)
+
+/-- Build the fixed order-zero partition residual from the expanded Taylor/W-divisor target. -/
+theorem RestrictedFaaDiBrunoPartitionMatchAt.zero_of_taylorWDivTarget
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree)
+    (htarget : RestrictedMatchAtZeroTaylorWDivTarget H x₀ R) :
+    RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0 :=
+  RestrictedFaaDiBrunoPartitionMatchAt.of_restrictedMatchAt H x₀ R hHyp 0
+    (RestrictedFaaDiBrunoMatchAt.zero_of_taylorWDivTarget H x₀ R hHyp hd htarget)
+
+/-- Build the fixed order-zero partition residual from the compact `eval₂`/W-divisor target. -/
+theorem RestrictedFaaDiBrunoPartitionMatchAt.zero_of_eval₂WDivTarget
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree)
+    (htarget : RestrictedMatchAtZeroEval₂WDivTarget H x₀ R) :
+    RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0 :=
+  RestrictedFaaDiBrunoPartitionMatchAt.of_restrictedMatchAt H x₀ R hHyp 0
+    (RestrictedFaaDiBrunoMatchAt.zero_of_eval₂WDivTarget H x₀ R hHyp hd htarget)
+
+/-- Project the expanded Taylor/W-divisor target from the all-orders partition residual. -/
+theorem RestrictedMatchAtZeroTaylorWDivTarget.of_partitionMatch
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree)
+    (hpart : RestrictedFaaDiBrunoPartitionMatch H x₀ R hHyp) :
+    RestrictedMatchAtZeroTaylorWDivTarget H x₀ R :=
+  RestrictedMatchAtZeroTaylorWDivTarget.of_partitionMatchAt_zero H x₀ R hHyp hd
+    (RestrictedFaaDiBrunoPartitionMatch.at H x₀ R hHyp hpart 0)
+
+/-- Project the compact `eval₂`/W-divisor target from the all-orders partition residual. -/
+theorem RestrictedMatchAtZeroEval₂WDivTarget.of_partitionMatch
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree)
+    (hpart : RestrictedFaaDiBrunoPartitionMatch H x₀ R hHyp) :
+    RestrictedMatchAtZeroEval₂WDivTarget H x₀ R :=
+  RestrictedMatchAtZeroEval₂WDivTarget.of_partitionMatchAt_zero H x₀ R hHyp hd
+    (RestrictedFaaDiBrunoPartitionMatch.at H x₀ R hHyp hpart 0)
+
 /-- **The cleared `𝒪`-rep embedding is `W^{natDegreeY p}` times the un-cleared rep embedding, GIVEN
 the STEP-8 target (axiom-clean).** Makes the cleared/un-cleared `eval₂` mismatch *quantitative*:
 under the carved STEP-8 match `HasseCoeffRepr𝒪UnclearedEval₂Target`, the two `𝒪`-reps are related by
@@ -346,4 +419,20 @@ set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.RestrictedMatchAtZeroTaylorWDivTarget.of_eval₂WDivTarget
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.RestrictedMatchAtZeroEval₂WDivTarget.of_taylorWDivTarget
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.RestrictedMatchAtZeroTaylorWDivTarget.of_restrictedMatch
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.RestrictedMatchAtZeroEval₂WDivTarget.of_restrictedMatch
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.RestrictedMatchAtZeroTaylorWDivTarget.of_partitionMatchAt_zero
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.RestrictedMatchAtZeroEval₂WDivTarget.of_partitionMatchAt_zero
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.RestrictedFaaDiBrunoPartitionMatchAt.zero_of_taylorWDivTarget
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.RestrictedFaaDiBrunoPartitionMatchAt.zero_of_eval₂WDivTarget
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.RestrictedMatchAtZeroTaylorWDivTarget.of_partitionMatch
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.RestrictedMatchAtZeroEval₂WDivTarget.of_partitionMatch
 #print axioms BCIKS20.HenselNumerator.embeddingCleared_eq_Wpow_mul_uncleared_of_target
