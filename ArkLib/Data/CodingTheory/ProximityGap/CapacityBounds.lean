@@ -735,6 +735,33 @@ theorem rs_epsCA_breakdown_cs25_entropyBallLowerWitness_of_counts
   exact ProximityGap.one_le_epsCA_of_counts
     (F := F) (A := F) (ReedSolomon.code domain k : Set (ι → F)) δ hsum
 
+open Classical in
+/-- **CS25 complete-breakdown front door from the combined count budget.**
+
+This composes `rs_epsCA_breakdown_cs25_entropyBallLowerWitness_of_counts` with the checked
+lower-bound-to-breakdown bridge. The only remaining CS25-specific input is the same combined
+far-line plus jointly-close stack count inequality. -/
+theorem rs_epsCA_breakdown_cs25_of_counts
+    (domain : ι ↪ F) (k : ℕ) (δ : ℝ≥0)
+    (hq_ge : 10 ≤ Fintype.card F)
+    (hδ_lo :
+        1 - qEntropy (Fintype.card F) (δ : ℝ) + 2 / (Fintype.card ι : ℝ)
+            + ((qEntropy (Fintype.card F) (δ : ℝ) - (δ : ℝ))
+                / (Fintype.card ι : ℝ)) ^ ((1 : ℝ) / 2)
+          ≤ (k : ℝ) / Fintype.card ι)
+    (hδ_hi : (k : ℝ) / Fintype.card ι ≤ 1 - (δ : ℝ) - 2 / (Fintype.card ι : ℝ))
+    (hsum :
+      (∑ u : Code.WordStack F (Fin 2) ι,
+          (Finset.univ.filter (fun γ : F =>
+            ¬ δᵣ(u 0 + γ • u 1, (ReedSolomon.code domain k : Set (ι → F))) ≤ δ)).card)
+        + (Finset.univ.filter (fun u : Code.WordStack F (Fin 2) ι =>
+            Code.jointProximity (C := (ReedSolomon.code domain k : Set (ι → F))) (u := u) δ)).card
+      < Fintype.card (Code.WordStack F (Fin 2) ι)) :
+    rs_epsCA_breakdown_cs25 domain k δ hq_ge hδ_lo hδ_hi :=
+  rs_epsCA_breakdown_cs25_of_entropyBallLowerWitness domain k δ hq_ge hδ_lo hδ_hi
+    (rs_epsCA_breakdown_cs25_entropyBallLowerWitness_of_counts
+      domain k δ hq_ge hδ_lo hδ_hi hsum)
+
 /-- The ABF26 T4.18 Johnson radius for the fixed relative distance `15/16`.  This is kept
 as a named expression so the existential construction and Grand-MCA adapters use the same
 radius literal. -/
@@ -1441,6 +1468,7 @@ end SubspaceDesignFRS
 #print axioms CodingTheory.rs_epsCA_breakdown_cs25_of_lower_bound
 #print axioms CodingTheory.rs_epsCA_breakdown_cs25_of_entropyBallLowerWitness
 #print axioms CodingTheory.rs_epsCA_breakdown_cs25_entropyBallLowerWitness_of_counts
+#print axioms CodingTheory.rs_epsCA_breakdown_cs25_of_counts
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_subspaceDesign_prop
 #print axioms CodingTheory.rs_epsMCA_johnson_range_boundReal
 #print axioms CodingTheory.rs_epsMCA_johnson_range_condition
