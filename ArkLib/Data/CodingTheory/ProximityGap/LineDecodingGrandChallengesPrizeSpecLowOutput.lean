@@ -99,6 +99,83 @@ theorem nonempty_prize_mcaLowerWitness_of_forall_not_mcaEvent
   exact ⟨w⟩
 
 set_option linter.unusedDecidableInType false in
+/-- Repaired double-cover data supplies all four prize-rate `MCALowerWitness` nonemptiness
+facts, dropping the witness radius-equality payloads. -/
+theorem nonempty_prize_mcaLowerWitnesses_allRates_ofDoubleCover
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hcov : ∀ j : Fin 4, MCAForallDoubleCover (F := F) (A := F)
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      (δ j)) :
+    ∀ j : Fin 4,
+      Nonempty (GrandChallenges.MCALowerWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar) := by
+  intro j
+  exact nonempty_prize_mcaLowerWitness_ofDoubleCover
+    domain j (δ j) (hδ_le_one j) (hcov j)
+
+set_option linter.unusedDecidableInType false in
+/-- Named per-bad-scalar double-cover data supplies all four prize-rate `MCALowerWitness`
+nonemptiness facts, dropping the witness radius-equality payloads. -/
+theorem nonempty_prize_mcaLowerWitnesses_allRates_ofBadScalarDoubleCover
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hcov : ∀ j : Fin 4, ∀ (u : Code.WordStack F (Fin 2) ι) (γ : F),
+      MCABadScalarDoubleCover (F := F) (A := F)
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) (u 0) (u 1) γ) :
+    ∀ j : Fin 4,
+      Nonempty (GrandChallenges.MCALowerWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar) := by
+  intro j
+  exact nonempty_prize_mcaLowerWitness_ofBadScalarDoubleCover
+    domain j (δ j) (hδ_le_one j) (hcov j)
+
+set_option linter.unusedDecidableInType false in
+/-- Zero bad-scalar counts supply all four prize-rate `MCALowerWitness` nonemptiness facts,
+dropping the witness radius-equality payloads. -/
+theorem nonempty_prize_mcaLowerWitnesses_allRates_of_mcaBadCount_zero
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hzero : ∀ j : Fin 4, ∀ u : Code.WordStack F (Fin 2) ι,
+      mcaBadCount (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) (u 0) (u 1) = 0) :
+    ∀ j : Fin 4,
+      Nonempty (GrandChallenges.MCALowerWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar) := by
+  intro j
+  exact nonempty_prize_mcaLowerWitness_of_mcaBadCount_zero
+    domain j (δ j) (hδ_le_one j) (hzero j)
+
+set_option linter.unusedDecidableInType false in
+/-- Direct no-bad-event frontiers supply all four prize-rate `MCALowerWitness` nonemptiness
+facts, dropping the witness radius-equality payloads. -/
+theorem nonempty_prize_mcaLowerWitnesses_allRates_of_forall_not_mcaEvent
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hno : ∀ j : Fin 4, ∀ (u : Code.WordStack F (Fin 2) ι) (γ : F),
+      ¬ mcaEvent (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) (u 0) (u 1) γ) :
+    ∀ j : Fin 4,
+      Nonempty (GrandChallenges.MCALowerWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar) := by
+  intro j
+  exact nonempty_prize_mcaLowerWitness_of_forall_not_mcaEvent
+    domain j (δ j) (hδ_le_one j) (hno j)
+
+set_option linter.unusedDecidableInType false in
 /-- Repaired double-cover data makes all four concrete prize-rate `mcaThreshold`s exist,
 dropping all threshold-specification and bracket payload. -/
 theorem mcaThresholdExists_prize_allRates_ofDoubleCover
@@ -547,6 +624,10 @@ end LineDecodingPrizeSpec
 #print axioms ProximityGap.GrandChallengesLattice.nonempty_prize_mcaLowerWitness_ofBadScalarDoubleCover
 #print axioms ProximityGap.GrandChallengesLattice.nonempty_prize_mcaLowerWitness_of_mcaBadCount_zero
 #print axioms ProximityGap.GrandChallengesLattice.nonempty_prize_mcaLowerWitness_of_forall_not_mcaEvent
+#print axioms ProximityGap.GrandChallengesLattice.nonempty_prize_mcaLowerWitnesses_allRates_ofDoubleCover
+#print axioms ProximityGap.GrandChallengesLattice.nonempty_prize_mcaLowerWitnesses_allRates_ofBadScalarDoubleCover
+#print axioms ProximityGap.GrandChallengesLattice.nonempty_prize_mcaLowerWitnesses_allRates_of_mcaBadCount_zero
+#print axioms ProximityGap.GrandChallengesLattice.nonempty_prize_mcaLowerWitnesses_allRates_of_forall_not_mcaEvent
 #print axioms ProximityGap.GrandChallengesLattice.mcaThresholdExists_prize_allRates_ofDoubleCover
 #print axioms ProximityGap.GrandChallengesLattice.mcaThresholdExists_prize_allRates_ofBadScalarDoubleCover
 #print axioms ProximityGap.GrandChallengesLattice.mcaThresholdExists_prize_allRates_of_mcaBadCount_zero
