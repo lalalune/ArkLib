@@ -111,7 +111,7 @@ lemma extractSuffixFromChallenge_congr_destIdx
     cast (by rw [h_idx_eq]) (extractSuffixFromChallenge 𝔽q β v destIdx' h_le') := by
   subst h_idx_eq; rfl
 
-omit [CharP L 2] [SampleableType L] [DecidableEq 𝔽q] h_β₀_eq_1 in
+omit [SampleableType L] [DecidableEq 𝔽q] h_β₀_eq_1 in
 /-- **First Oracle Equals Polynomial Oracle Function**:
 When `strictOracleFoldingConsistencyProp` holds, the first oracle (`getFirstOracle`) equals
 the polynomial oracle function `f₀` derived from the multilinear polynomial `t`.
