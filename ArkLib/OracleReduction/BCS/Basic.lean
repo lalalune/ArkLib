@@ -428,6 +428,49 @@ theorem BCSOpeningSchedule.toOpeningStatements_filter_messageIdx_length
   exact BCSOpeningSchedule.toOpeningStatements_length
     (schedule.filter (fun request => request.messageIdx = i))
 
+/-- Summing per-message opening counts over all message indices recovers the total schedule
+length. This is the finite-index accounting form of the per-message query-log split. -/
+theorem BCSOpeningSchedule.sum_filter_messageIdx_length
+    {CommitmentType : pSpec.MessageIdx → Type} [Fintype pSpec.MessageIdx]
+    [DecidableEq pSpec.MessageIdx]
+    (schedule : BCSOpeningSchedule (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType) :
+    (∑ i : pSpec.MessageIdx,
+      (schedule.filter (fun request => request.messageIdx = i)).length) = schedule.length := by
+  induction schedule with
+  | nil => simp
+  | cons request schedule ih =>
+      calc
+        (∑ i : pSpec.MessageIdx,
+          ((request :: schedule).filter (fun request => request.messageIdx = i)).length)
+            = (∑ i : pSpec.MessageIdx,
+                ((if request.messageIdx = i then 1 else 0) +
+                  (schedule.filter (fun request => request.messageIdx = i)).length)) := by
+                refine Finset.sum_congr rfl ?_
+                intro i _
+                by_cases hidx : request.messageIdx = i
+                · simp [hidx, Nat.add_comm]
+                · simp [hidx]
+        _ = (∑ i : pSpec.MessageIdx, (if request.messageIdx = i then 1 else 0 : ℕ)) +
+              ∑ i : pSpec.MessageIdx,
+                (schedule.filter (fun request => request.messageIdx = i)).length := by
+            rw [Finset.sum_add_distrib]
+        _ = 1 + schedule.length := by
+            rw [ih, Fintype.sum_ite_eq]
+        _ = (request :: schedule).length := by simp [Nat.add_comm]
+
+/-- The indexed opening-statement view has the same finite-message total opening count as the
+typed schedule. -/
+theorem BCSOpeningSchedule.toOpeningStatements_sum_filter_messageIdx_length
+    {CommitmentType : pSpec.MessageIdx → Type} [Fintype pSpec.MessageIdx]
+    [DecidableEq pSpec.MessageIdx]
+    (schedule : BCSOpeningSchedule (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType) :
+    (∑ i : pSpec.MessageIdx,
+      (schedule.toOpeningStatements.filter (fun statement => statement.1 = i)).length)
+      = schedule.length := by
+  rw [← BCSOpeningSchedule.sum_filter_messageIdx_length (schedule := schedule)]
+  exact Finset.sum_congr rfl fun i _ =>
+    BCSOpeningSchedule.toOpeningStatements_filter_messageIdx_length schedule i
+
 /-- Projecting the indexed opening statements back to commitments recovers the indexed commitment
 projection of the original typed schedule. -/
 @[simp] theorem BCSOpeningSchedule.toOpeningStatements_map_commitment
@@ -1533,6 +1576,8 @@ generic compiler construction or the completeness/soundness preservation theorem
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_map_messageIdx
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_filter_messageIdx
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_filter_messageIdx_length
+#print axioms OracleReduction.BCSOpeningSchedule.sum_filter_messageIdx_length
+#print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_sum_filter_messageIdx_length
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_map_commitment
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_map_query
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_map_response
