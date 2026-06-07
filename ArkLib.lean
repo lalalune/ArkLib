@@ -299,6 +299,7 @@ import ArkLib.Data.Probability.Combinatorial
 import ArkLib.Data.Probability.Instances
 import ArkLib.Data.Probability.Notation
 import ArkLib.Data.Probability.RandomSubsetInclusion
+import ArkLib.Data.Probability.RandomSubsetInclusionExists
 import ArkLib.Data.Probability.UniformPushforward
 import ArkLib.Data.Probability.UniformSubset
 import ArkLib.Data.RingTheory.TowerOfAlgebra
