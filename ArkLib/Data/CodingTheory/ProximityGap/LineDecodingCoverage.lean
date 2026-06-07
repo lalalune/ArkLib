@@ -526,3 +526,18 @@ theorem lineDecodable_imp_epsMCA_le_target
 end RepairedTarget
 
 end CodingTheory
+
+/-- **Bridge from a repaired line-decoding target.** If a code satisfies the named
+line-decoding-to-MCA target at radius `δ`, and the resulting `a/|F|` bound is within
+`ε*`, then the target certifies an `MCALowerWitness`.
+
+This deliberately consumes the GS double-coverage interpolation data as an explicit hypothesis. -/
+def GrandChallenges.MCALowerWitness.ofLineDecodingTarget
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (C : ModuleCode ι F F) (δ a ε_star : ℝ≥0)
+    (hδ_le_one : δ ≤ 1)
+    (hcov : ProximityGap.MCAForallDoubleCover (F := F) (A := F) (C : Set (ι → F)) δ)
+    (hle : (a : ENNReal) / (Fintype.card F : ENNReal) ≤ (ε_star : ENNReal)) :
+    GrandChallenges.MCALowerWitness (C : Set (ι → F)) ε_star :=
+  GrandChallenges.MCALowerWitness.ofLe hδ_le_one (le_trans (CodingTheory.lineDecodable_imp_epsMCA_le_target C δ a hcov) hle)
