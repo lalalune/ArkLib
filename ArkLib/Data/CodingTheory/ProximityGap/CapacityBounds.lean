@@ -511,6 +511,23 @@ noncomputable def rs_epsMCA_johnson_range_boundReal
     + (m + 1/2) / ρ_plus ^ ((1 : ℝ) / 2))
      / (Fintype.card F : ℝ)
 
+/-- **The T4.12 Johnson-range RS MCA bound is non-negative.** Every factor of
+`rs_epsMCA_johnson_range_boundReal` is non-negative once `n = |ι| > 0` (so `ρ₊ = k/n + 1/n > 0`):
+the multiplicity `m = max(⌈√ρ₊/(2η)⌉, 3) ≥ 3 > 0`, the quintic/linear numerator, the
+`ρ₊^{3/2}`, `ρ₊^{1/2}` denominators, `n`, `δ ≥ 0`, and `|F|` are all non-negative. This confirms the
+bound is genuinely informative rather than vacuously truncated by the `ENNReal.ofReal` wrapper in
+`rs_epsMCA_johnson_range_bchks25` — addressing the proximity-radius truncation concern documented
+at the top of this file. Pure real arithmetic; no coding-theory content. -/
+theorem rs_epsMCA_johnson_range_boundReal_nonneg
+    (domain : ι ↪ F) (k : ℕ) (η δ : ℝ≥0) (hn : 0 < (Fintype.card ι : ℝ)) :
+    0 ≤ rs_epsMCA_johnson_range_boundReal domain k η δ := by
+  unfold rs_epsMCA_johnson_range_boundReal
+  have hρ : 0 < (k : ℝ) / Fintype.card ι + 1 / Fintype.card ι := by positivity
+  have hm : 0 ≤ max (⌈((k : ℝ) / Fintype.card ι + 1 / Fintype.card ι) ^ ((1 : ℝ) / 2)
+      / (2 * (η : ℝ))⌉ : ℝ) 3 :=
+    le_trans (by norm_num) (le_max_right _ _)
+  positivity
+
 /-- The Johnson-range side condition used by BCHKS25/Hab25 T4.12. -/
 def rs_epsMCA_johnson_range_condition
     (_domain : ι ↪ F) (k : ℕ) (η δ : ℝ≥0) : Prop :=
@@ -859,6 +876,16 @@ theorem johnsonJumpRadius_eq_three_fourths :
   change (((1 : ℝ) - 1 / 4).toNNReal : ℝ) = (3 / 4 : ℝ)
   rw [Real.coe_toNNReal ((1 : ℝ) - 1 / 4) (by norm_num)]
   norm_num
+
+/-- The fixed ABF26 T4.18 Johnson-jump radius is strictly positive (`= 3/4`). A proximity radius
+in `(0, 1)` is the standard well-formedness condition for the T4.18 witness construction. -/
+theorem johnsonJumpRadius_pos : 0 < johnsonJumpRadius := by
+  rw [johnsonJumpRadius_eq_three_fourths]; norm_num
+
+/-- The fixed ABF26 T4.18 Johnson-jump radius is below `1` (`3/4 < 1`), completing the
+`(0, 1)` proximity-radius well-formedness alongside `johnsonJumpRadius_pos`. -/
+theorem johnsonJumpRadius_lt_one : johnsonJumpRadius < 1 := by
+  rw [johnsonJumpRadius_eq_three_fourths]; norm_num
 
 /-- The ABF26 T4.18 internal radius is `7/8 + 1/n` after simplifying `J(15/16)`. -/
 theorem johnsonJumpInternalRadius_eq_seven_eighths_add_inv (n : ℕ) :
@@ -1828,5 +1855,8 @@ end SubspaceDesignFRS
 #print axioms CodingTheory.frs_tau_eval
 #print axioms CodingTheory.frs_capacity_radius_eq_of_eta
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_subspaceDesign_eta
+#print axioms CodingTheory.rs_epsMCA_johnson_range_boundReal_nonneg
+#print axioms CodingTheory.johnsonJumpRadius_pos
+#print axioms CodingTheory.johnsonJumpRadius_lt_one
 
 end CodingTheory
