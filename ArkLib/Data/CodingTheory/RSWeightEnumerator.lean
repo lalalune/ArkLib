@@ -94,6 +94,7 @@ vanish (the Hamming support of the corresponding RS codeword). -/
 noncomputable def evalSupport (α : ι ↪ F) {deg : ℕ} (p : Polynomial.degreeLT F deg) : Finset ι :=
   Finset.univ.filter (fun i => (p : F[X]).eval (α i) ≠ 0)
 
+omit [Fintype F] in
 /-- **Support ↔ vanishing.**  A degree-`<deg` polynomial lies in the vanishing subspace on `Tᶜ`
 exactly when its evaluation support is contained in `T` — both say `p` vanishes off `T`.  This
 identifies the support-`⊆ T` codewords with `ker (evalOnS α deg Tᶜ)`, bridging the support counts
@@ -113,6 +114,38 @@ theorem mem_ker_evalOnS_compl_iff (α : ι ↪ F) (deg : ℕ) (T : Finset ι)
       rw [evalSupport, Finset.mem_filter]; exact ⟨Finset.mem_univ _, hj⟩
     exact (Finset.mem_compl.mp j.2) (h hmem)
 
+/-- **MDS weight-enumerator upper bound `A_d ≤ C(n,d)·q^{d−(n−deg)}`.**  The number of degree-`<deg`
+polynomials whose evaluation has Hamming weight exactly `d` is at most the support-⊆ sum: every such
+polynomial is supported on (hence counted in) the term for its own `d`-element support set.  Combined
+with `supportSubsetSum_eq`, this is the classical MDS weight-distribution upper bound feeding the
+CS25 second moment (#82). -/
+theorem card_evalWeight_le (α : ι ↪ F) (deg : ℕ)
+    [Fintype (Polynomial.degreeLT F deg)] (d : ℕ) :
+    (Finset.univ.filter
+        (fun p : Polynomial.degreeLT F deg => (evalSupport α p).card = d)).card
+      ≤ (Fintype.card ι).choose d * (Fintype.card F) ^ (deg - (Fintype.card ι - d)) := by
+  classical
+  calc (Finset.univ.filter
+          (fun p : Polynomial.degreeLT F deg => (evalSupport α p).card = d)).card
+      ≤ ((Finset.univ : Finset ι).powersetCard d).biUnion
+          (fun T => Finset.univ.filter (fun p : Polynomial.degreeLT F deg =>
+            p ∈ LinearMap.ker (evalOnS α deg Tᶜ))) |>.card := by
+        refine Finset.card_le_card (fun p hp => ?_)
+        rw [Finset.mem_filter] at hp
+        refine Finset.mem_biUnion.mpr ⟨evalSupport α p, ?_, ?_⟩
+        · rw [Finset.mem_powersetCard]; exact ⟨Finset.subset_univ _, hp.2⟩
+        · rw [Finset.mem_filter, mem_ker_evalOnS_compl_iff]
+          exact ⟨Finset.mem_univ _, Finset.Subset.refl _⟩
+    _ ≤ ∑ T ∈ (Finset.univ : Finset ι).powersetCard d,
+          (Finset.univ.filter (fun p : Polynomial.degreeLT F deg =>
+            p ∈ LinearMap.ker (evalOnS α deg Tᶜ))).card := Finset.card_biUnion_le
+    _ = ∑ T ∈ (Finset.univ : Finset ι).powersetCard d,
+          Nat.card (LinearMap.ker (evalOnS α deg Tᶜ)) := by
+        refine Finset.sum_congr rfl (fun T _ => ?_)
+        rw [Nat.card_eq_fintype_card, Fintype.card_subtype]
+    _ = (Fintype.card ι).choose d * (Fintype.card F) ^ (deg - (Fintype.card ι - d)) :=
+        supportSubsetSum_eq α deg d
+
 end ArkLib.CS25
 
 -- Axiom audit.
@@ -120,3 +153,4 @@ end ArkLib.CS25
 #print axioms ArkLib.CS25.natCard_ker_evalOnS_general
 #print axioms ArkLib.CS25.supportSubsetSum_eq
 #print axioms ArkLib.CS25.mem_ker_evalOnS_compl_iff
+#print axioms ArkLib.CS25.card_evalWeight_le
