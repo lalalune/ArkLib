@@ -137,6 +137,50 @@ theorem not_grandMCAChallenge_bot_epsStar_of_lt_inv_card
     ¬ grandMCAChallenge (F := F) (ι := ι) (⊥ : LinearCode ι F) epsStar :=
   not_grandMCAChallenge_bot_of_lt_inv_card (ι := ι) (F := F) epsStar hε
 
+omit [DecidableEq F] in
+/-- Concrete `epsStar = 2^-128` specialization: if `|F| < 2^128`, then the formal threshold
+is below the exact zero-code MCA value `1 / |F|`. -/
+theorem epsStar_lt_inv_card_of_card_lt_two_pow
+    (hcard : Fintype.card F < 2 ^ (128 : ℕ)) :
+    (epsStar : ENNReal) < (1 : ENNReal) / (Fintype.card F : ENNReal) := by
+  set q := Fintype.card F with hq_def
+  have heps : (epsStar : ENNReal) = (2 ^ (128 : ℕ) : ENNReal)⁻¹ := by
+    rw [epsStar]
+    push_cast
+    rw [one_div]
+  rw [heps]
+  have hq0 : (q : ENNReal) ≠ 0 := by
+    simp only [ne_eq, Nat.cast_eq_zero]
+    rw [hq_def]
+    exact Fintype.card_ne_zero
+  have hqtop : (q : ENNReal) ≠ ⊤ := ENNReal.natCast_ne_top q
+  rw [ENNReal.lt_div_iff_mul_lt (Or.inl hq0) (Or.inl hqtop)]
+  have hpow_ne_zero : (2 ^ (128 : ℕ) : ENNReal) ≠ 0 := by positivity
+  have hpow_ne_top : (2 ^ (128 : ℕ) : ENNReal) ≠ ⊤ := by finiteness
+  rw [← ENNReal.div_eq_inv_mul]
+  rw [ENNReal.div_lt_iff (Or.inl hpow_ne_zero) (Or.inl hpow_ne_top)]
+  have hcast : (q : ENNReal) < ((2 ^ (128 : ℕ) : ℕ) : ENNReal) := by
+    exact_mod_cast (by simpa [hq_def] using hcard)
+  calc
+    (q : ENNReal) < ((2 ^ (128 : ℕ) : ℕ) : ENNReal) := hcast
+    _ = (2 ^ (128 : ℕ) : ENNReal) := by norm_num [Nat.cast_pow]
+    _ = (1 : ENNReal) * (2 ^ (128 : ℕ) : ENNReal) := by simp
+
+/-- Field-size specialization of the zero-code no-resolution guardrail at `epsStar`. -/
+theorem not_GrandMCAResolution_bot_epsStar_of_card_lt_two_pow
+    (hcard : Fintype.card F < 2 ^ (128 : ℕ)) :
+    ¬ Nonempty (GrandChallenges.GrandMCAResolution (F := F)
+      (Cbot (ι := ι) (F := F) : Set (ι → F)) epsStar) :=
+  not_GrandMCAResolution_bot_epsStar_of_lt_inv_card
+    (ι := ι) (F := F) (epsStar_lt_inv_card_of_card_lt_two_pow (F := F) hcard)
+
+/-- Field-size specialization of the bottom-code Grand MCA predicate refutation at `epsStar`. -/
+theorem not_grandMCAChallenge_bot_epsStar_of_card_lt_two_pow
+    (hcard : Fintype.card F < 2 ^ (128 : ℕ)) :
+    ¬ grandMCAChallenge (F := F) (ι := ι) (⊥ : LinearCode ι F) epsStar :=
+  not_grandMCAChallenge_bot_epsStar_of_lt_inv_card
+    (ι := ι) (F := F) (epsStar_lt_inv_card_of_card_lt_two_pow (F := F) hcard)
+
 end General
 
 /-! ## Source audit -/
@@ -151,5 +195,8 @@ end General
 #print axioms not_GrandMCAResolution_bot_epsStar_of_lt_inv_card
 #print axioms not_grandMCAChallenge_bot_of_lt_inv_card
 #print axioms not_grandMCAChallenge_bot_epsStar_of_lt_inv_card
+#print axioms epsStar_lt_inv_card_of_card_lt_two_pow
+#print axioms not_GrandMCAResolution_bot_epsStar_of_card_lt_two_pow
+#print axioms not_grandMCAChallenge_bot_epsStar_of_card_lt_two_pow
 
 end ProximityGap.MCAZeroCode
