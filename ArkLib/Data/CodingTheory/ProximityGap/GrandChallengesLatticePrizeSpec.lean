@@ -353,6 +353,108 @@ theorem mcaThreshold_lower_bracket_prize_allRates_of_lowerWitnesses
     ⟨hne, _hsat, hlower⟩
   exact ⟨hne, hlower⟩
 
+/-- A single explicit lower MCA witness and explicit upper MCA witness give the concrete faithful
+threshold, its satisfy fact, and two-sided lattice brackets at the witness radii. -/
+theorem mcaThreshold_spec_and_bracket_prize_of_lowerWitness
+    (domain : ι ↪ F) (j : Fin 4)
+    (w : MCALowerWitness
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      epsStar)
+    (whi : MCAUpperWitness
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      epsStar)
+    (hδhi : whi.δ ≤ 1) :
+    let C : Set (ι → F) :=
+      ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+    ∃ hne : mcaThresholdExists C epsStar,
+      mcaSatisfies C epsStar (mcaThreshold C epsStar hne) ∧
+        latticeIndexOf (ι := ι) w.δ w.le_one ≤ mcaThreshold C epsStar hne ∧
+          mcaThreshold C epsStar hne < latticeIndexOf (ι := ι) whi.δ hδhi := by
+  rcases mcaThreshold_spec_and_lower_bracket_prize_of_lowerWitness domain j w with
+    ⟨hne, hsat, hlower⟩
+  let C : Set (ι → F) :=
+    ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+  have hupper : mcaThreshold C epsStar hne < latticeIndexOf (ι := ι) whi.δ hδhi :=
+    mcaThreshold_lt_MCAUpperWitness C epsStar hne whi hδhi
+  exact ⟨hne, hsat, hlower, hupper⟩
+
+/-- Low-output projection of `mcaThreshold_spec_and_bracket_prize_of_lowerWitness`: it keeps only
+the concrete two-sided lattice bracket at the lower and upper witness radii. -/
+theorem mcaThreshold_bracket_prize_of_lowerWitness
+    (domain : ι ↪ F) (j : Fin 4)
+    (w : MCALowerWitness
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      epsStar)
+    (whi : MCAUpperWitness
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      epsStar)
+    (hδhi : whi.δ ≤ 1) :
+    let C : Set (ι → F) :=
+      ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+    ∃ hne : mcaThresholdExists C epsStar,
+      latticeIndexOf (ι := ι) w.δ w.le_one ≤ mcaThreshold C epsStar hne ∧
+        mcaThreshold C epsStar hne < latticeIndexOf (ι := ι) whi.δ hδhi := by
+  rcases mcaThreshold_spec_and_bracket_prize_of_lowerWitness domain j w whi hδhi with
+    ⟨hne, _hsat, hlower, hupper⟩
+  exact ⟨hne, hlower, hupper⟩
+
+/-- Explicit lower and upper MCA witnesses at all four prize rates give the concrete faithful
+thresholds, their satisfy facts, and two-sided lattice brackets at the witness radii. -/
+theorem mcaThreshold_spec_and_bracket_prize_allRates_of_lowerWitnesses
+    (domain : ι ↪ F)
+    (w : ∀ j : Fin 4,
+      MCALowerWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (whi : ∀ j : Fin 4,
+      MCAUpperWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1) :
+    ∀ j : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+      ∃ hne : mcaThresholdExists C epsStar,
+        mcaSatisfies C epsStar (mcaThreshold C epsStar hne) ∧
+          latticeIndexOf (ι := ι) (w j).δ (w j).le_one ≤
+            mcaThreshold C epsStar hne ∧
+            mcaThreshold C epsStar hne <
+              latticeIndexOf (ι := ι) (whi j).δ (hδhi j) := by
+  intro j
+  exact mcaThreshold_spec_and_bracket_prize_of_lowerWitness domain j (w j) (whi j)
+    (hδhi j)
+
+/-- Low-output projection of
+`mcaThreshold_spec_and_bracket_prize_allRates_of_lowerWitnesses`: it keeps only the concrete
+two-sided lattice bracket at each lower and upper witness radius. -/
+theorem mcaThreshold_bracket_prize_allRates_of_lowerWitnesses
+    (domain : ι ↪ F)
+    (w : ∀ j : Fin 4,
+      MCALowerWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (whi : ∀ j : Fin 4,
+      MCAUpperWitness
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar)
+    (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1) :
+    ∀ j : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+      ∃ hne : mcaThresholdExists C epsStar,
+        latticeIndexOf (ι := ι) (w j).δ (w j).le_one ≤ mcaThreshold C epsStar hne ∧
+          mcaThreshold C epsStar hne <
+            latticeIndexOf (ι := ι) (whi j).δ (hδhi j) := by
+  intro j
+  rcases mcaThreshold_spec_and_bracket_prize_allRates_of_lowerWitnesses
+      domain w whi hδhi j with
+    ⟨hne, _hsat, hlower, hupper⟩
+  exact ⟨hne, hlower, hupper⟩
+
 /-- Pointwise prize-rate consequences of the ignored-source MCA conjecture expose only the
 selected-threshold satisfy/maximality specification. The conjecture remains an explicit
 hypothesis, and all numeric side conditions are supplied separately for each prize rate. -/
@@ -962,6 +1064,14 @@ set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_and_lower_bracket_prize_allRates_of_lowerWitnesses
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_lower_bracket_prize_allRates_of_lowerWitnesses
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_and_bracket_prize_of_lowerWitness
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_bracket_prize_of_lowerWitness
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_and_bracket_prize_allRates_of_lowerWitnesses
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_bracket_prize_allRates_of_lowerWitnesses
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeSpec_of_ignoredSource_mcaConjecture
 set_option linter.style.longLine false in
