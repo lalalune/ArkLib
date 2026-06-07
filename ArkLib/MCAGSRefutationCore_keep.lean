@@ -166,7 +166,8 @@ theorem not_uniformEpsMCAgsPrizeBoundConjecture :
       rw [one_div, Real.inv_rpow (by norm_num)]
     have hp_pos : (0 : ℝ) < p := by positivity
     have hpow_pos : (0 : ℝ) < (2 : ℝ) ^ (c₂ + c₃) := Real.rpow_pos_of_pos (by norm_num) _
-    rw [e1, e2, e3, mul_one, div_inv_eq, div_mul_eq_mul_div, one_mul, div_lt_one hp_pos]
+    rw [e1, e2, mul_one, e3, div_eq_mul_inv, inv_inv, one_div, inv_mul_eq_div,
+        div_lt_one hp_pos]
     exact hpow_lt
   -- `key : 1 ≤ ofReal(RHS)` but `ofReal(RHS) < 1` (since `RHS < 1`): contradiction.
   have hlt1 : ENNReal.ofReal
