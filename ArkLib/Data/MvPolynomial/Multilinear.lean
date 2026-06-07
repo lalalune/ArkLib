@@ -235,6 +235,26 @@ theorem MLE_degreeOf (evals : (σ → Fin 2) → R) (i : σ) : degreeOf i (MLE e
   apply (mem_restrictDegree_iff_degreeOf_le _ _).mp
   exact MLE_mem_restrictDegree evals
 
+/-- **Total degree of a multilinear polynomial.**  A polynomial with `degreeOf i ≤ 1` in each of
+its `|σ|` variables has total degree at most `|σ|` — each monomial's exponents sum over the `≤ 1`
+per-variable degrees.  This is the degree fact underlying multilinear Schwartz–Zippel / sum-check
+round soundness (a nonzero multilinear polynomial has at most `|σ|/|F|` of its points as zeros). -/
+theorem totalDegree_le_card_of_mem_restrictDegree_one {p : MvPolynomial σ R}
+    (hp : p ∈ R⦃≤ 1⦄[X σ]) : p.totalDegree ≤ Fintype.card σ := by
+  rw [mem_restrictDegree_iff_degreeOf_le] at hp
+  apply Finset.sup_le
+  intro m hm
+  calc (m.sum fun _ e => e)
+      = ∑ i ∈ m.support, m i := rfl
+    _ ≤ ∑ i : σ, m i := Finset.sum_le_sum_of_subset (Finset.subset_univ _)
+    _ ≤ ∑ _i : σ, 1 :=
+        Finset.sum_le_sum fun i _ => le_trans (monomial_le_degreeOf i hm) (hp i)
+    _ = Fintype.card σ := by simp [Finset.card_univ]
+
+/-- The multilinear extension of any evaluation function has total degree at most `|σ|`. -/
+theorem MLE_totalDegree_le (evals : (σ → Fin 2) → R) : (MLE evals).totalDegree ≤ Fintype.card σ :=
+  totalDegree_le_card_of_mem_restrictDegree_one (MLE_mem_restrictDegree evals)
+
 end DegreeOf
 
 /-! ### Linearity of the multilinear extension in the evaluation function
