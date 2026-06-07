@@ -30,8 +30,8 @@ theorem sq_sum_le_card_support_mul_sum_sq (f : α → R) :
     refine (Finset.sum_subset hsub ?_).symm
     intro a _ ha
     simp only [mem_filter, mem_univ, true_and, not_not] at ha
-    rw [ha]; ring
+    simp [ha]
   rw [e1, e2]
-  exact Finset.sq_sum_le_card_mul_sum_sq
+  exact sq_sum_le_card_mul_sum_sq
 
 end Finset
