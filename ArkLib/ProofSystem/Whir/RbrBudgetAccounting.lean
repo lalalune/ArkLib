@@ -12,8 +12,9 @@ import Mathlib.Algebra.Order.BigOperators.Group.Finset
 /-!
 # WHIR rbr-soundness budget accounting (issue #113)
 
-The per-phase budget projections + epsRbr_isLUB + soundOk_epsRbr_of_keystone: the round-error
-accumulation LUB structure, reducing whir-rbr-soundness to the named MCA+folding keystone WhirRbrKeystone.
+The per-phase budget projections + epsRbr_isLUB + soundOk_epsRbr_of_keystone: the
+round-error accumulation LUB structure, reducing whir-rbr-soundness to the named
+MCA+folding keystone WhirRbrKeystone.
 -/
 
 noncomputable section
@@ -65,7 +66,7 @@ theorem rbrBudgetSet_nonempty
   refine ⟨ε_fin, ?_⟩
   -- `ε_fin ∈ … ∪ {ε_fin} ∪ … ∪ …`; in the middle `{ε_fin}` block.
   unfold rbrBudgetSet
-  simp [Finset.mem_union, Finset.mem_singleton]
+  simp [Finset.mem_union]
 
 /-- The WHIR per-challenge RBR error: the maximum over the budget set.
     Mirror of `whir_rbr_soundness`'s `ε_rbr` (which is constant in the challenge index,
@@ -92,7 +93,7 @@ theorem eps_fin_le_epsRbr
   unfold epsRbr
   refine Finset.le_max' _ ε_fin ?_
   unfold rbrBudgetSet
-  simp [Finset.mem_union, Finset.mem_singleton]
+  simp [Finset.mem_union]
 
 /-- **OOD-round domination.** `ε_out i ≤ ε_rbr` for every round `i`. PROVEN via
     `Finset.le_max'` from `ε_out i ∈ univ.image ε_out`. -/
@@ -398,5 +399,16 @@ NOT extractable math. (No declarations; pure prose, mirroring #24 §5's
   (2) completeness are pure protocol-construction plumbing with no soundly-extractable
   math, blocked on the missing WHIR `VectorIOP` term and the OracleReduction multi-round
   composition infrastructure. -/
+
+#print axioms rbrBudgetSet_nonempty
+#print axioms eps_fin_le_epsRbr
+#print axioms eps_out_le_epsRbr
+#print axioms eps_shift_le_epsRbr
+#print axioms eps_fold_le_epsRbr
+#print axioms epsRbr_le_of_forall_le
+#print axioms epsRbr_isLUB
+#print axioms soundOk_epsRbr_of_keystone
+#print axioms soundOk_of_keystone_of_forall_le
+#print axioms whirRbrShape_of_secure
 
 end Issue113WHIR
