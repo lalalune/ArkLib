@@ -3115,6 +3115,99 @@ theorem append_processRound_natAdd_challenge_threaded (k : Fin n) (hk : 0 < (k :
         (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (fun t => rfl)
         (P₂.receiveChallenge ⟨k, hDir₂⟩ a.2)
 
+/-- **Right-block interior run characterization (folded).**  The appended prover's `continueFromTo`
+over the *interior* right rounds (`k₀ .. k₀+j`, `k₀ ≥ 1`, no seam) is the `appendRight`-bridged image
+(under the seam/`pSpec₁` prefix `T₁`) of `P₂`'s own `continueFromTo`.  Proven by `Fin.induction` on
+`j`: base `continueFromTo_self`; step peels one round (`continueFromTo_succ_of_ne`), applies the IH,
+and folds via the threaded per-round lemmas (`append_processRound_natAdd_{message,challenge}_threaded`)
+matched to `P₂.continueFromTo_succ_of_ne`.  This is the bulk of the right-block run assembly. -/
+theorem append_continueFromTo_right_interior
+    (T₁ : FullTranscript pSpec₁) (k₀ : Fin n) (hk₀ : 0 < (k₀ : ℕ)) (j : ℕ) (hjn : (k₀ : ℕ) + j ≤ n)
+    (r₂ : pSpec₂.Transcript k₀.castSucc × P₂.PrvState k₀.castSucc) :
+    HEq ((P₁.append P₂).continueFromTo stmt wit (Fin.natAdd m k₀).castSucc
+          ⟨m + ((k₀ : ℕ) + j), by omega⟩
+          (Transcript.appendRight T₁ r₂.1,
+            cast (append_PrvState_natAdd_castSucc (P₁ := P₁) (P₂ := P₂) k₀ hk₀).symm r₂.2))
+      (liftComp (P₂.continueFromTo stmt₂ wit₂ k₀.castSucc ⟨(k₀ : ℕ) + j, by omega⟩ r₂)
+          (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) >>= fun p =>
+        pure (Transcript.appendRight T₁ p.1,
+          cast (by
+            have hK : 0 < (k₀ : ℕ) + j := by omega
+            rw [show (⟨(k₀ : ℕ) + j, by omega⟩ : Fin (n+1))
+                  = (⟨(k₀ : ℕ) + j - 1, by omega⟩ : Fin n).succ from by ext; simp; omega,
+              show (⟨m + ((k₀ : ℕ) + j), by omega⟩ : Fin (m+n+1))
+                  = (Fin.natAdd (m + 1) (⟨(k₀ : ℕ) + j - 1, by omega⟩ : Fin n)).cast (by omega) from by
+                ext; simp; omega]
+            exact (append_PrvState_natAdd_succ (⟨(k₀ : ℕ) + j - 1, by omega⟩ : Fin n)).symm
+            : P₂.PrvState ⟨(k₀ : ℕ) + j, by omega⟩
+            = (P₁.append P₂).PrvState ⟨m + ((k₀ : ℕ) + j), by omega⟩) p.2)) := by
+  induction j with
+  | zero =>
+    have hL : ((P₁.append P₂).continueFromTo stmt wit (Fin.natAdd m k₀).castSucc
+          ⟨m + ((k₀ : ℕ) + 0), by omega⟩
+          (Transcript.appendRight T₁ r₂.1,
+            cast (append_PrvState_natAdd_castSucc (P₁ := P₁) (P₂ := P₂) k₀ hk₀).symm r₂.2))
+        = pure (Transcript.appendRight T₁ r₂.1,
+            cast (append_PrvState_natAdd_castSucc (P₁ := P₁) (P₂ := P₂) k₀ hk₀).symm r₂.2) := by
+      exact Prover.continueFromTo_self _ _ _ _ _
+    have hR : (P₂.continueFromTo stmt₂ wit₂ k₀.castSucc ⟨(k₀ : ℕ) + 0, by omega⟩ r₂)
+        = pure r₂ := Prover.continueFromTo_self _ _ _ _ _
+    rw [hL, hR]
+    simp only [OracleComp.liftComp_pure, pure_bind]
+    apply heq_of_eq
+    congr 1
+  | succ i ih =>
+    have hki : 0 < (k₀ : ℕ) + i := by omega
+    have hround : (⟨m + ((k₀ : ℕ) + i), by omega⟩ : Fin (m + n))
+        = Fin.natAdd m (⟨(k₀ : ℕ) + i, by omega⟩ : Fin n) := by ext; simp
+    have hne : ((Fin.natAdd m k₀).castSucc : Fin (m + n + 1))
+        ≠ (⟨m + ((k₀ : ℕ) + i), by omega⟩ : Fin (m + n)).succ := by
+      intro h; have := congrArg Fin.val h; simp at this; omega
+    have hstep : (P₁.append P₂).continueFromTo stmt wit (Fin.natAdd m k₀).castSucc
+          ⟨m + ((k₀ : ℕ) + (i + 1)), by omega⟩
+          (Transcript.appendRight T₁ r₂.1,
+            cast (append_PrvState_natAdd_castSucc (P₁ := P₁) (P₂ := P₂) k₀ hk₀).symm r₂.2)
+        = (P₁.append P₂).processRound (⟨m + ((k₀ : ℕ) + i), by omega⟩ : Fin (m + n))
+            ((P₁.append P₂).continueFromTo stmt wit (Fin.natAdd m k₀).castSucc
+              (⟨m + ((k₀ : ℕ) + i), by omega⟩ : Fin (m + n + 1))
+              (Transcript.appendRight T₁ r₂.1,
+                cast (append_PrvState_natAdd_castSucc (P₁ := P₁) (P₂ := P₂) k₀ hk₀).symm r₂.2)) := by
+      have h := Prover.continueFromTo_succ_of_ne (P₁.append P₂) stmt wit (Fin.natAdd m k₀).castSucc
+        (⟨m + ((k₀ : ℕ) + i), by omega⟩ : Fin (m + n)) hne
+        (Transcript.appendRight T₁ r₂.1,
+          cast (append_PrvState_natAdd_castSucc (P₁ := P₁) (P₂ := P₂) k₀ hk₀).symm r₂.2)
+      convert h using 2 <;> (ext; simp; omega)
+    rw [hstep]
+    have ihi := ih (by omega)
+    rw [eq_of_heq ihi]
+    -- LHS arg is `liftComp cur₂ >>= pure∘bridge` = bridge <$> liftComp cur₂; convert to map form
+    rw [bind_pure_comp]
+    -- P₂.processRound (k₀+i) (P₂.cont to ⟨k₀+i⟩) = P₂.continueFromTo to ⟨k₀+(i+1)⟩
+    have hP2 : P₂.continueFromTo stmt₂ wit₂ k₀.castSucc ⟨(k₀:ℕ)+(i+1), by omega⟩ r₂
+        = P₂.processRound (⟨(k₀:ℕ)+i, by omega⟩ : Fin n)
+            (P₂.continueFromTo stmt₂ wit₂ k₀.castSucc (⟨(k₀:ℕ)+i, by omega⟩ : Fin n).castSucc r₂) := by
+      have hne2 : (k₀.castSucc : Fin (n+1)) ≠ (⟨(k₀:ℕ)+i, by omega⟩ : Fin n).succ := by
+        intro h; have := congrArg Fin.val h; simp at this; omega
+      have h := Prover.continueFromTo_succ_of_ne P₂ stmt₂ wit₂ k₀.castSucc
+        (⟨(k₀:ℕ)+i, by omega⟩ : Fin n) hne2 r₂
+      convert h using 2 <;> (ext; simp; omega)
+    rw [hP2, bind_pure_comp]
+    have hdir0 : (pSpec₁ ++ₚ pSpec₂).dir (Fin.natAdd m (⟨(k₀:ℕ)+i, by omega⟩ : Fin n))
+        = pSpec₂.dir (⟨(k₀:ℕ)+i, by omega⟩ : Fin n) := append_dir_natAdd _
+    rcases hd : pSpec₂.dir (⟨(k₀:ℕ)+i, by omega⟩ : Fin n) with _ | _
+    · -- P_to_V : message threaded lemma
+      have hD : (pSpec₁ ++ₚ pSpec₂).dir (Fin.natAdd m (⟨(k₀:ℕ)+i, by omega⟩ : Fin n)) = .P_to_V := by
+        rw [hdir0]; exact hd
+      exact append_processRound_natAdd_message_threaded (P₁ := P₁) (P₂ := P₂)
+        (⟨(k₀:ℕ)+i, by omega⟩ : Fin n) (by simp; omega) hD hd T₁
+        (P₂.continueFromTo stmt₂ wit₂ k₀.castSucc (⟨(k₀:ℕ)+i, by omega⟩ : Fin n).castSucc r₂)
+    · -- V_to_P : challenge threaded lemma
+      have hD : (pSpec₁ ++ₚ pSpec₂).dir (Fin.natAdd m (⟨(k₀:ℕ)+i, by omega⟩ : Fin n)) = .V_to_P := by
+        rw [hdir0]; exact hd
+      exact append_processRound_natAdd_challenge_threaded (P₁ := P₁) (P₂ := P₂)
+        (⟨(k₀:ℕ)+i, by omega⟩ : Fin n) (by simp; omega) hD hd T₁
+        (P₂.continueFromTo stmt₂ wit₂ k₀.castSucc (⟨(k₀:ℕ)+i, by omega⟩ : Fin n).castSucc r₂)
+
 /-- **Seam-peel of the right-block continuation (structural step).**  Continuing the appended
 prover's run from the seam-round state index `m` (`= (⟨m,_⟩ : Fin (m+n)).castSucc`, the state going
 INTO the seam round) to the next index `m+1` (`= (⟨m,_⟩ : Fin (m+n)).succ`) is exactly one

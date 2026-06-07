@@ -108,6 +108,30 @@ theorem eval₂WDivTarget_false_of_constant_of_W_pow_ne_one
   · exact hc h1
   · exact hW (sub_eq_zero.mp h2)
 
+omit [Fact (Irreducible H)] in
+/-- Coefficient-side source of the lifted `W`-power obstruction.  If the leading coefficient
+itself has no `R.natDegree`-th power equal to `1`, then its image `W` in the function field has the
+same nontrivial power. -/
+theorem liftW_pow_ne_one_of_leadingCoeff_pow_ne_one (n : ℕ)
+    (hpow : H.leadingCoeff ^ n ≠ 1) :
+    liftToFunctionField (H := H) H.leadingCoeff ^ n ≠ 1 := by
+  intro hW
+  rw [← map_pow] at hW
+  rw [show (1 : 𝕃 H) = liftToFunctionField (H := H) (1 : F[X]) by rw [map_one]] at hW
+  exact hpow (BCIKS20.WPow.liftToFunctionField_injective H hW)
+
+/-- Coefficient-side form of `eval₂WDivTarget_false_of_constant_of_W_pow_ne_one`.  This covers
+unit-but-not-root-of-unity leading coefficients, such as the concrete witness `H = 2·Y`. -/
+theorem eval₂WDivTarget_false_of_constant_of_leadingCoeff_pow_ne_one
+    (x₀ : F) (R : F[X][X][Y]) (c : F[X])
+    (hp : Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))
+        = Polynomial.C c)
+    (hc : liftToFunctionField (H := H) c ≠ 0)
+    (hpow : H.leadingCoeff ^ R.natDegree ≠ 1) :
+    ¬ RestrictedMatchAtZeroEval₂WDivTarget H x₀ R :=
+  eval₂WDivTarget_false_of_constant_of_W_pow_ne_one H x₀ R c hp hc
+    (liftW_pow_ne_one_of_leadingCoeff_pow_ne_one H R.natDegree hpow)
+
 /-- **The carved order-zero P2 core is false for a `Y`-constant order-1 numerator over non-monic
 `H`.** Composing the refutation of the `eval₂`/W-divisor target with the proven equivalence
 `restrictedMatchAt_zero_iff_eval₂WDivTarget` (which uses only `2 ≤ R.natDegree`, never
@@ -124,6 +148,18 @@ theorem restrictedMatchAt_zero_false_of_constant_of_W_pow_ne_one
     ¬ RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0 := by
   rw [restrictedMatchAt_zero_iff_eval₂WDivTarget H x₀ R hHyp hd]
   exact eval₂WDivTarget_false_of_constant_of_W_pow_ne_one H x₀ R c hp hc hW
+
+/-- Coefficient-side W-power obstruction for the order-zero carved P2 core. -/
+theorem restrictedMatchAt_zero_false_of_constant_of_leadingCoeff_pow_ne_one
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) (c : F[X])
+    (hp : Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))
+        = Polynomial.C c)
+    (hc : liftToFunctionField (H := H) c ≠ 0)
+    (hpow : H.leadingCoeff ^ R.natDegree ≠ 1) :
+    ¬ RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0 := by
+  rw [restrictedMatchAt_zero_iff_eval₂WDivTarget H x₀ R hHyp hd]
+  exact eval₂WDivTarget_false_of_constant_of_leadingCoeff_pow_ne_one H x₀ R c hp hc hpow
 
 /-- Non-monic corollary of the order-zero obstruction: `W_pow_eq_iff` turns
 `W ^ R.natDegree = 1 = W ^ 0` into `R.natDegree = 0`, contradicting `2 ≤ R.natDegree`. -/
@@ -173,6 +209,19 @@ theorem restrictedFaaDiBrunoMatch_false_of_constant_of_nonmonic
   intro hmatch
   exact restrictedMatchAt_zero_false_of_constant_of_nonmonic H x₀ R hHyp hd hlc c hp hc
     (RestrictedFaaDiBrunoMatch.at H x₀ R hHyp hmatch 0)
+
+/-- Full-match refutation from the coefficient-side `W`-power obstruction. -/
+theorem restrictedFaaDiBrunoMatch_false_of_constant_of_leadingCoeff_pow_ne_one
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) (c : F[X])
+    (hp : Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))
+        = Polynomial.C c)
+    (hc : liftToFunctionField (H := H) c ≠ 0)
+    (hpow : H.leadingCoeff ^ R.natDegree ≠ 1) :
+    ¬ RestrictedFaaDiBrunoMatch H x₀ R hHyp := by
+  intro hmatch
+  exact restrictedMatchAt_zero_false_of_constant_of_leadingCoeff_pow_ne_one H x₀ R hHyp
+    hd c hp hc hpow (RestrictedFaaDiBrunoMatch.at H x₀ R hHyp hmatch 0)
 
 /-- Specialization-family full-match form of the non-monic order-zero obstruction.  The
 zero-th specialization supplies the Claim A.2 hypotheses, but the all-orders carved P2 core is
@@ -268,6 +317,20 @@ theorem faaDiBrunoSuccSumZeroResidual_false_of_constant_of_nonmonic
   exact restrictedFaaDiBrunoMatch_false_of_constant_of_nonmonic H x₀ R hHyp hd hlc c hp hc
     ((restrictedFaaDiBrunoMatch_iff_faaDiBrunoSuccSumZero H x₀ R hHyp).2 hzero)
 
+/-- Legacy successor-residual refutation from the coefficient-side `W`-power obstruction. -/
+theorem faaDiBrunoSuccSumZeroResidual_false_of_constant_of_leadingCoeff_pow_ne_one
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) (c : F[X])
+    (hp : Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))
+        = Polynomial.C c)
+    (hc : liftToFunctionField (H := H) c ≠ 0)
+    (hpow : H.leadingCoeff ^ R.natDegree ≠ 1) :
+    ¬ FaaDiBrunoSuccSumZeroResidual H x₀ R hHyp := by
+  intro hzero
+  exact restrictedFaaDiBrunoMatch_false_of_constant_of_leadingCoeff_pow_ne_one
+    H x₀ R hHyp hd c hp hc hpow
+    ((restrictedFaaDiBrunoMatch_iff_faaDiBrunoSuccSumZero H x₀ R hHyp).2 hzero)
+
 /-- Specialization-family legacy successor-residual refutation. -/
 theorem faaDiBrunoSuccSumZeroResidual_false_of_constant_of_nonmonic_of_evalX_eq
     (x₀ : F) (R : F[X][X][Y]) (g : F[X][Y])
@@ -298,6 +361,20 @@ theorem eval_βHenselAssembled_eq_zero_false_of_constant_of_nonmonic
   exact restrictedFaaDiBrunoMatch_false_of_constant_of_nonmonic H x₀ R hHyp hd hlc c hp hc
     ((restrictedFaaDiBrunoMatch_iff_eval_eq_zero H x₀ R hHyp).2 hroot)
 
+/-- Analytic assembled-root refutation from the coefficient-side `W`-power obstruction. -/
+theorem eval_βHenselAssembled_eq_zero_false_of_constant_of_leadingCoeff_pow_ne_one
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) (c : F[X])
+    (hp : Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))
+        = Polynomial.C c)
+    (hc : liftToFunctionField (H := H) c ≠ 0)
+    (hpow : H.leadingCoeff ^ R.natDegree ≠ 1) :
+    ¬ (Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H) = 0) := by
+  intro hroot
+  exact restrictedFaaDiBrunoMatch_false_of_constant_of_leadingCoeff_pow_ne_one
+    H x₀ R hHyp hd c hp hc hpow
+    ((restrictedFaaDiBrunoMatch_iff_eval_eq_zero H x₀ R hHyp).2 hroot)
+
 /-- Specialization-family analytic assembled-root refutation. -/
 theorem eval_βHenselAssembled_eq_zero_false_of_constant_of_nonmonic_of_evalX_eq
     (x₀ : F) (R : F[X][X][Y]) (g : F[X][Y])
@@ -326,6 +403,20 @@ theorem βHenselAssembled_eq_gammaGenuine_false_of_constant_of_nonmonic
     ¬ βHenselAssembled H x₀ R hHyp = gammaGenuine x₀ R H hHyp := by
   intro h
   exact restrictedFaaDiBrunoMatch_false_of_constant_of_nonmonic H x₀ R hHyp hd hlc c hp hc
+    ((restrictedFaaDiBrunoMatch_iff_βHenselAssembled_eq_gammaGenuine H x₀ R hHyp).2 h)
+
+/-- Assembled-equals-genuine refutation from the coefficient-side `W`-power obstruction. -/
+theorem βHenselAssembled_eq_gammaGenuine_false_of_constant_of_leadingCoeff_pow_ne_one
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) (c : F[X])
+    (hp : Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))
+        = Polynomial.C c)
+    (hc : liftToFunctionField (H := H) c ≠ 0)
+    (hpow : H.leadingCoeff ^ R.natDegree ≠ 1) :
+    ¬ βHenselAssembled H x₀ R hHyp = gammaGenuine x₀ R H hHyp := by
+  intro h
+  exact restrictedFaaDiBrunoMatch_false_of_constant_of_leadingCoeff_pow_ne_one
+    H x₀ R hHyp hd c hp hc hpow
     ((restrictedFaaDiBrunoMatch_iff_βHenselAssembled_eq_gammaGenuine H x₀ R hHyp).2 h)
 
 /-- Specialization-family assembled-equals-genuine refutation. -/
@@ -359,6 +450,22 @@ theorem coeff_βHenselAssembled_eq_αGenuine_forall_false_of_constant_of_nonmoni
   exact restrictedFaaDiBrunoMatch_false_of_constant_of_nonmonic H x₀ R hHyp hd hlc c hp hc
     ((restrictedFaaDiBrunoMatch_iff_coeff_eq_αGenuine H x₀ R hHyp).2 h)
 
+/-- Coefficient-wise assembled/genuine refutation from the coefficient-side `W`-power
+obstruction. -/
+theorem coeff_βHenselAssembled_eq_αGenuine_forall_false_of_constant_of_leadingCoeff_pow_ne_one
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) (c : F[X])
+    (hp : Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))
+        = Polynomial.C c)
+    (hc : liftToFunctionField (H := H) c ≠ 0)
+    (hpow : H.leadingCoeff ^ R.natDegree ≠ 1) :
+    ¬ (∀ t : ℕ, PowerSeries.coeff t (βHenselAssembled H x₀ R hHyp)
+        = αGenuine H x₀ R hHyp t) := by
+  intro h
+  exact restrictedFaaDiBrunoMatch_false_of_constant_of_leadingCoeff_pow_ne_one
+    H x₀ R hHyp hd c hp hc hpow
+    ((restrictedFaaDiBrunoMatch_iff_coeff_eq_αGenuine H x₀ R hHyp).2 h)
+
 /-- Specialization-family coefficient-wise assembled/genuine refutation. -/
 theorem coeff_βHenselAssembled_eq_αGenuine_forall_false_of_constant_of_nonmonic_of_evalX_eq
     (x₀ : F) (R : F[X][X][Y]) (g : F[X][Y])
@@ -383,13 +490,21 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20AppendixA.ClaimA2.Hypotheses.of_evalX_eq
 #print axioms BCIKS20.HenselNumerator.eval₂WDivTarget_false_of_constant_of_W_pow_ne_one
 set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.liftW_pow_ne_one_of_leadingCoeff_pow_ne_one
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.eval₂WDivTarget_false_of_constant_of_leadingCoeff_pow_ne_one
+set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.restrictedMatchAt_zero_false_of_constant_of_W_pow_ne_one
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.restrictedMatchAt_zero_false_of_constant_of_leadingCoeff_pow_ne_one
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.restrictedMatchAt_zero_false_of_constant_of_nonmonic
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.restrictedMatchAt_zero_false_of_constant_of_nonmonic_of_evalX_eq
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.restrictedFaaDiBrunoMatch_false_of_constant_of_nonmonic
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.restrictedFaaDiBrunoMatch_false_of_constant_of_leadingCoeff_pow_ne_one
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.restrictedFaaDiBrunoMatch_false_of_constant_of_nonmonic_of_evalX_eq
 set_option linter.style.longLine false in
@@ -403,16 +518,24 @@ set_option linter.style.longLine false in
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.faaDiBrunoSuccSumZeroResidual_false_of_constant_of_nonmonic
 set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.faaDiBrunoSuccSumZeroResidual_false_of_constant_of_leadingCoeff_pow_ne_one
+set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.faaDiBrunoSuccSumZeroResidual_false_of_constant_of_nonmonic_of_evalX_eq
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.eval_βHenselAssembled_eq_zero_false_of_constant_of_nonmonic
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.eval_βHenselAssembled_eq_zero_false_of_constant_of_leadingCoeff_pow_ne_one
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.eval_βHenselAssembled_eq_zero_false_of_constant_of_nonmonic_of_evalX_eq
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.βHenselAssembled_eq_gammaGenuine_false_of_constant_of_nonmonic
 set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.βHenselAssembled_eq_gammaGenuine_false_of_constant_of_leadingCoeff_pow_ne_one
+set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.βHenselAssembled_eq_gammaGenuine_false_of_constant_of_nonmonic_of_evalX_eq
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.coeff_βHenselAssembled_eq_αGenuine_forall_false_of_constant_of_nonmonic
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.coeff_βHenselAssembled_eq_αGenuine_forall_false_of_constant_of_leadingCoeff_pow_ne_one
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.coeff_βHenselAssembled_eq_αGenuine_forall_false_of_constant_of_nonmonic_of_evalX_eq
