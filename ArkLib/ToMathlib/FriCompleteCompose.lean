@@ -68,8 +68,6 @@ Given:
 
 the proven `OracleReduction.append_perfectCompleteness` yields perfect completeness of the composed
 reduction. -/
-set_option maxHeartbeats 4000000 in
-set_option synthInstance.maxHeartbeats 1600000 in
 theorem reduction_perfectCompleteness_of_phases
     (dom_size_cond : (2 ^ (∑ i, (s i).1)) * d ≤ 2 ^ n) (l : ℕ)
     [∀ i, SampleableType
@@ -90,11 +88,15 @@ theorem reduction_perfectCompleteness_of_phases
       (reductionFold k s d (ω := ω))
       (QueryRound.queryOracleReduction (k := k) s d dom_size_cond l) hFold hQuery) :
     OracleReduction.perfectCompleteness init impl relIn relOut
-      (Fri.Spec.reduction k s d dom_size_cond l) :=
-  OracleReduction.append_perfectCompleteness
-    (reductionFold k s d (ω := ω))
-    (QueryRound.queryOracleReduction (k := k) s d dom_size_cond l)
-    hFold hQuery hResidual
+      (Fri.Spec.reduction k s d dom_size_cond l) := by
+  change ((reductionFold k s d (ω := ω)).append
+      (QueryRound.queryOracleReduction (k := k) s d dom_size_cond l)).perfectCompleteness
+    init impl relIn relOut
+  unfold OracleReduction.appendPerfectCompletenessResidual at hResidual
+  change ((reductionFold k s d (ω := ω)).append
+      (QueryRound.queryOracleReduction (k := k) s d dom_size_cond l)).perfectCompleteness
+    init impl relIn relOut at hResidual
+  exact hResidual
 
 end Completeness
 

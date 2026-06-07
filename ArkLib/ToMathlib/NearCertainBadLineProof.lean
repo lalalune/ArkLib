@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.ToMathlib.Bridge2BGKS20
+import Mathlib.Algebra.Field.ZMod
 
 /-!
 # BGKS20 T5.4 — Construction of a `NearCertainBadLine`
@@ -95,7 +96,8 @@ theorem nearCertainBadLine_of_line_code
     have hself : δᵣ(u 0 + γ • u 1, u 0 + γ • u 1) = (0 : ℚ≥0) := by
       rw [relHammingDist, hammingDist_self, Nat.cast_zero, zero_div]
     refine le_trans (relDistFromCode_le_relDist_to_mem _ _ hmem) ?_
-    rw [hself, NNRat.cast_zero, ENNReal.coe_zero]
+    rw [hself]
+    simp only [NNRat.cast_zero, ENNReal.coe_zero]
   exact le_trans h0 (by positivity)
 
 /-- **T5.4 endpoint from the line-code producer.**
@@ -127,6 +129,9 @@ the stack `u 0 = ![0,1]`, `u 1 = ![1,0]`, and the full good set `Γ = Finset.uni
 scalar is a good combiner (`|Γ| = 2 ≥ |F| - 1 = 1`), yet `u 1 = ![1,0] ∉ C`, so the stack is not
 jointly close. -/
 
+/-- `2` is prime, so `ZMod 2` is available as a field in this concrete section. -/
+instance : Fact (Nat.Prime 2) := ⟨Nat.prime_two⟩
+
 /-- The explicit char-2 code: the two line points `{![0,1], ![1,1]}` over `ZMod 2`. -/
 def char2Code : Set (Fin 2 → ZMod 2) := {![0, 1], ![1, 1]}
 
@@ -148,12 +153,11 @@ theorem char2_nearCertainBadLine (δ_fld : ℝ≥0) :
     fin_cases γ
     · -- γ = 0 : line point = u 0 = ![0,1] ∈ C
       left
-      simp only [char2Stack, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons]
-      ext i; fin_cases i <;> simp [char2Stack]
+      ext i <;> fin_cases i <;> rfl
     · -- γ = 1 : line point = u 0 + u 1 = ![1,1] ∈ C
       right
       ext i; fin_cases i <;>
-        simp [char2Stack, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons]
+        norm_num [char2Stack, Matrix.cons_val_zero, Matrix.cons_val_one] <;> rfl
   · -- `|Γ| = |F| = 2 ≥ |F| - 1`.
     simp only [Finset.card_univ, ZMod.card]
     norm_num
@@ -162,7 +166,7 @@ theorem char2_nearCertainBadLine (δ_fld : ℝ≥0) :
       Matrix.cons_val_one, Matrix.head_cons]
     rintro (h | h)
     · have := congrFun h 0; simp at this
-    · have := congrFun h 0; simp at this
+    · have := congrFun h 1; simp at this
 
 /-- **T5.4 endpoint, fully discharged for the concrete char-2 code.**
 The correlated-agreement error of `char2Code` satisfies
