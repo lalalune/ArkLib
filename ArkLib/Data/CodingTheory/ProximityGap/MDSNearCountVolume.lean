@@ -53,4 +53,25 @@ theorem sum_choose_mul_pow_le_qEntropy (q n R : ℕ) (hn : 0 < n) (hq : 2 ≤ q 
   rw [hcast]
   exact hammingBallVolume_le_qEntropy_real_radius hq ((R : ℝ) / (n : ℝ)) hn (by positivity) hcap
 
+/-- **Truncated-exponent ≤ clean-exponent bridge.** The exact near-codeword counting sum carried by
+`rs_covered_fraction_entropy`/`rs_near_codeword_count_le`, `∑_{d≤R} C(n,d)·q^{deg−(n−d)}`, is
+term-wise below the clean `∑_{d≤R} C(n,d)·q^d` whenever `deg ≤ n` (since `deg−(n−d) ≤ d`). -/
+theorem rs_near_count_le_sum_pow (q n deg R : ℕ) (hq : 1 ≤ q) (hdeg : deg ≤ n) :
+    ∑ d ∈ Finset.range (R + 1), n.choose d * q ^ (deg - (n - d))
+      ≤ ∑ d ∈ Finset.range (R + 1), n.choose d * q ^ d := by
+  refine Finset.sum_le_sum (fun d _ => ?_)
+  exact Nat.mul_le_mul (le_refl _) (Nat.pow_le_pow_right hq (by omega))
+
+/-- **RS near-codeword count qEntropy bound (exact form).** The MDS near-count sum in exactly the
+shape used by `rs_covered_fraction_entropy` is bounded by `(n+1)·(q+1)^{n·H_{q+1}(R/n)}`. This is the
+directly-pluggable far/coverage-half input: combined with the covered-fraction lower bound it gives
+`#{close} ≥ |RS|·q^{n·H_q(δ)} / ((n+1)²·(q+1)^{n·H_{q+1}(2δ)})`. -/
+theorem rs_near_count_le_qEntropy (q n deg R : ℕ) (hq1 : 1 ≤ q) (hdeg : deg ≤ n) (hn : 0 < n)
+    (hq2 : 2 ≤ q + 1) (hcap : (R : ℝ) / (n : ℝ) ≤ 1 - 1 / ((q + 1 : ℕ) : ℝ)) :
+    ((∑ d ∈ Finset.range (R + 1), n.choose d * q ^ (deg - (n - d)) : ℕ) : ℝ)
+      ≤ ((n : ℝ) + 1)
+        * ((q + 1 : ℕ) : ℝ) ^ ((n : ℝ) * qEntropy (q + 1) ((R : ℝ) / (n : ℝ))) := by
+  refine le_trans ?_ (sum_choose_mul_pow_le_qEntropy q n R hn hq2 hcap)
+  exact_mod_cast rs_near_count_le_sum_pow q n deg R hq1 hdeg
+
 end CodingTheory
