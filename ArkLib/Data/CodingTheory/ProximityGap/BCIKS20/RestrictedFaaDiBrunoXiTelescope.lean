@@ -252,6 +252,5 @@ theorem restrictedMatchRecursionPartitionForm_eq_ξfree_of_leadingCoeff_one
     ξ ^ (2 * (t + 1) - 2) / ξ ^ dl * B * P / ξ ^ (2 * (t + 1) - 1)
         = (ξ ^ (2 * (t + 1) - 2) / ξ ^ (2 * (t + 1) - 1)) * (B * P / ξ ^ dl) := by
             field_simp [hξ]
-            ring
     _ = ξ⁻¹ * (B * P / ξ ^ dl) := by
             rw [hglob]

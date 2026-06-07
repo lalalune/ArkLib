@@ -127,7 +127,7 @@ theorem fprune_one_step
     intro j _
     have hdj : (d j : ℝ) + η ≠ 0 := ne_of_gt (hposTerm j)
     field_simp
-    ring
+    ring_nf
   rw [Finset.sum_congr rfl hterm, Finset.sum_const, nsmul_eq_mul]
   -- `W ≤ |J|·(1-η')(r+η)` termwise from the good predicate.
   have hWle : W ≤ (J.card : ℝ) * ((1 - η') * ((r : ℝ) + η)) := by
