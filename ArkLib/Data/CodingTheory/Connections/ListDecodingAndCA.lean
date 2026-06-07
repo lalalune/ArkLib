@@ -259,10 +259,10 @@ theorem linear_listSize_to_epsMCA_gcxk25_of_gkl24_firstMoment_residual
         _ ≤ (L : ℝ) ^ 2 * δ * Fintype.card ι + 1 / η :=
           le_add_of_nonneg_right (by positivity))
 
-/-- **ABF26 T5.1 front door from the witness-cover GKL24 residual.** This is the
+/-- **ABF26 T5.1 front door from the witness-cover GKL24 first-moment residual.** This is the
 carrier-faithful companion to `linear_listSize_to_epsMCA_gcxk25_of_gkl24_firstMoment_residual`.
 The residual only asks that the chosen finite list cover the actual bad combining scalars through
-per-codeword witness sets; it does not require that list to contain every codeword of `C`.
+per-codeword witness sets; it does not require the list to contain every codeword of `C`.
 
 Once the GCXK/GKL first-moment proof supplies this residual at the Johnson-lifted MCA radius with
 `B_T = L²` and `b = δ·n`, the first-moment bad-count bound is padded by the nonnegative `1 / η`
