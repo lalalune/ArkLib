@@ -85,8 +85,38 @@ theorem lineDecodable_imp_epsMCA_le_target_of_badScalarDoubleCover_count
     (C : Set (ι → A)) δ hcov]
   exact zero_le _
 
+/-- Repaired discharge of the legacy target proposition from per-stack zero bad-scalar counts. -/
+theorem lineDecodable_imp_epsMCA_le_target_of_forall_mcaBadCount_eq_zero
+    (C : ModuleCode ι F A) (δ a : ℝ≥0)
+    (_hLD : LineDecodable (F := F) (A := A) (C : Set (ι → A)) δ a
+      ((Fintype.card ι : ℝ≥0) + 1))
+    (hzero : ∀ u : Code.WordStack A (Fin 2) ι,
+      mcaBadCount (F := F) (C : Set (ι → A)) δ (u 0) (u 1) = 0) :
+    lineDecodable_imp_epsMCA_le_target (F := F) (A := A) C δ a _hLD := by
+  dsimp [lineDecodable_imp_epsMCA_le_target]
+  rw [epsMCA_eq_zero_of_forall_mcaBadCount_eq_zero (F := F) (A := A)
+    (C : Set (ι → A)) δ hzero]
+  exact zero_le _
+
+/-- Repaired discharge of the legacy target proposition from a direct no-bad-event frontier. -/
+theorem lineDecodable_imp_epsMCA_le_target_of_forall_not_mcaEvent
+    (C : ModuleCode ι F A) (δ a : ℝ≥0)
+    (_hLD : LineDecodable (F := F) (A := A) (C : Set (ι → A)) δ a
+      ((Fintype.card ι : ℝ≥0) + 1))
+    (hno : ∀ (u : Code.WordStack A (Fin 2) ι) (γ : F),
+      ¬ mcaEvent (F := F) (C : Set (ι → A)) δ (u 0) (u 1) γ) :
+    lineDecodable_imp_epsMCA_le_target (F := F) (A := A) C δ a _hLD := by
+  dsimp [lineDecodable_imp_epsMCA_le_target]
+  rw [epsMCA_eq_zero_of_forall_not_mcaEvent (F := F) (A := A)
+    (C : Set (ι → A)) δ hno]
+  exact zero_le _
+
 set_option linter.style.longLine false in
 #print axioms CodingTheory.lineDecodable_imp_epsMCA_le_target_of_badScalarDoubleCover_count
+set_option linter.style.longLine false in
+#print axioms CodingTheory.lineDecodable_imp_epsMCA_le_target_of_forall_mcaBadCount_eq_zero
+set_option linter.style.longLine false in
+#print axioms CodingTheory.lineDecodable_imp_epsMCA_le_target_of_forall_not_mcaEvent
 
 end RepairedCountTarget
 
