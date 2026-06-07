@@ -14,6 +14,7 @@ WHIR #113, Fiat-Shamir #116, sumcheck #13/#114.
   predicate `Q` is `(#Q)^s` (WHIR out-of-domain / FS union-bound counting, #113/#116).
 * `card_filter_exists_not_pi` — the complementary exact count of tuples with at least one bad
   coordinate, `|β|^s - (#Q)^s`.
+* `uniform_event_mass` — the uniform finite event probability as `#E / #α`.
 * `Polynomial.card_eval_agreement_le_of_natDegree_lt` — two distinct polynomials of degree `< N`
   agree on at most `N-1` field points (the counting/Schwartz–Zippel dual used in collision-count
   arguments, #113/#116).
@@ -25,12 +26,16 @@ WHIR #113, Fiat-Shamir #116, sumcheck #13/#114.
   polynomials agree on every coordinate of at most `(N-1)^s` length-`s` tuples.
 * `Polynomial.card_filter_exists_eval_ne_ge_of_natDegree_lt` — the complementary lower bound on
   length-`s` tuples with at least one coordinate of disagreement.
+* `Polynomial.prob_filter_forall_eval_eq_le_of_natDegree_lt` /
+  `Polynomial.prob_filter_exists_eval_ne_ge_of_natDegree_lt` — uniform-tuple probability wrappers
+  for the agreement and disagreement counting bounds.
 * `Finset.sum_boolCube_prod_factor_eq_prod_sum` — the boolean-hypercube identity
   `∑_{x∈{0,1}^σ} ∏ᵢ (xᵢ=0 ? aᵢ : bᵢ) = ∏ᵢ (aᵢ + bᵢ)` underlying multilinear-extension sumcheck
   folding (#13/#114).
 -/
 
 open Finset Polynomial
+open scoped ENNReal
 
 /-- Count of length-`s` tuples whose every coordinate satisfies `Q` equals `(#Q)^s`. -/
 theorem card_filter_forall_pi {β : Type*} [Fintype β] [DecidableEq β] (s : ℕ)
@@ -63,6 +68,20 @@ theorem card_filter_exists_not_pi {β : Type*} [Fintype β] [DecidableEq β] (s 
   rw [hbad_filter] at hsplit
   rw [hgood, hcard_univ] at hsplit
   omega
+
+/-- The mass of a finite event under the uniform distribution is its cardinality divided by the
+sample-space cardinality. -/
+theorem uniform_event_mass {α : Type*} [Fintype α] [Nonempty α] (E : Finset α) :
+    (PMF.uniformOfFintype α).toOuterMeasure (E : Set α)
+      = (E.card : ℝ≥0∞) / Fintype.card α := by
+  classical
+  rw [PMF.toOuterMeasure_apply_finset]
+  have hval : ∀ a ∈ E, (PMF.uniformOfFintype α) a = (Fintype.card α : ℝ≥0∞)⁻¹ := by
+    intro a _
+    exact PMF.uniformOfFintype_apply a
+  rw [Finset.sum_congr rfl hval]
+  rw [Finset.sum_const, nsmul_eq_mul, ENNReal.div_eq_inv_mul]
+  ring
 
 namespace Polynomial
 
@@ -167,6 +186,55 @@ theorem card_filter_exists_eval_ne_ge_of_natDegree_lt {F : Type*} [Field F] [Fin
   rw [hbad_filter, hcard_univ] at hsplit
   omega
 
+/-- Uniform-tuple probability upper bound for all-coordinate agreement of two distinct
+degree-`< N` polynomials. -/
+theorem prob_filter_forall_eval_eq_le_of_natDegree_lt {F : Type*} [Field F] [Fintype F]
+    [Nonempty F] {N s : ℕ} {p q : F[X]} (hpq : p ≠ q)
+    (hp : p.natDegree < N) (hq : q.natDegree < N) :
+    (PMF.uniformOfFintype (Fin s → F)).toOuterMeasure
+        {r : Fin s → F | ∀ i, p.eval (r i) = q.eval (r i)}
+      ≤ (((N - 1) ^ s : ℕ) : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ^ s := by
+  classical
+  let E : Finset (Fin s → F) :=
+    Finset.univ.filter (fun r : Fin s → F => ∀ i, p.eval (r i) = q.eval (r i))
+  have hset :
+      {r : Fin s → F | ∀ i, p.eval (r i) = q.eval (r i)} = (E : Set (Fin s → F)) := by
+    ext r
+    simp [E]
+  have hcard_fun : Fintype.card (Fin s → F) = Fintype.card F ^ s := by
+    simp
+  have hcount : E.card ≤ (N - 1) ^ s :=
+    _root_.Polynomial.card_filter_forall_eval_eq_le_of_natDegree_lt
+      (F := F) (N := N) (s := s) (p := p) (q := q) hpq hp hq
+  rw [hset, _root_.uniform_event_mass, hcard_fun]
+  rw [Nat.cast_pow]
+  exact ENNReal.div_le_div_right (Nat.cast_le.mpr hcount) _
+
+/-- Uniform-tuple probability lower bound for seeing at least one disagreement between two
+distinct degree-`< N` polynomials. -/
+theorem prob_filter_exists_eval_ne_ge_of_natDegree_lt {F : Type*} [Field F] [Fintype F]
+    [Nonempty F] {N s : ℕ} {p q : F[X]} (hpq : p ≠ q)
+    (hp : p.natDegree < N) (hq : q.natDegree < N) :
+    (((Fintype.card F ^ s - (N - 1) ^ s : ℕ) : ℝ≥0∞)
+        / (Fintype.card F : ℝ≥0∞) ^ s)
+      ≤ (PMF.uniformOfFintype (Fin s → F)).toOuterMeasure
+          {r : Fin s → F | ∃ i, p.eval (r i) ≠ q.eval (r i)} := by
+  classical
+  let E : Finset (Fin s → F) :=
+    Finset.univ.filter (fun r : Fin s → F => ∃ i, p.eval (r i) ≠ q.eval (r i))
+  have hset :
+      {r : Fin s → F | ∃ i, p.eval (r i) ≠ q.eval (r i)} = (E : Set (Fin s → F)) := by
+    ext r
+    simp [E]
+  have hcard_fun : Fintype.card (Fin s → F) = Fintype.card F ^ s := by
+    simp
+  have hcount : Fintype.card F ^ s - (N - 1) ^ s ≤ E.card :=
+    _root_.Polynomial.card_filter_exists_eval_ne_ge_of_natDegree_lt
+      (F := F) (N := N) (s := s) (p := p) (q := q) hpq hp hq
+  rw [hset, _root_.uniform_event_mass, hcard_fun]
+  rw [Nat.cast_pow]
+  exact ENNReal.div_le_div_right (Nat.cast_le.mpr hcount) _
+
 end Polynomial
 
 namespace Finset
@@ -186,9 +254,14 @@ end Finset
 
 #print axioms card_filter_forall_pi
 #print axioms card_filter_exists_not_pi
+#print axioms uniform_event_mass
 #print axioms Polynomial.card_eval_agreement_le_of_natDegree_lt
 #print axioms Polynomial.card_eval_disagreement_ge_of_natDegree_lt
 #print axioms Polynomial.card_filter_forall_isRoot_le
 #print axioms Polynomial.card_filter_forall_eval_eq_le_of_natDegree_lt
 #print axioms Polynomial.card_filter_exists_eval_ne_ge_of_natDegree_lt
+set_option linter.style.longLine false in
+#print axioms Polynomial.prob_filter_forall_eval_eq_le_of_natDegree_lt
+set_option linter.style.longLine false in
+#print axioms Polynomial.prob_filter_exists_eval_ne_ge_of_natDegree_lt
 #print axioms Finset.sum_boolCube_prod_factor_eq_prod_sum
