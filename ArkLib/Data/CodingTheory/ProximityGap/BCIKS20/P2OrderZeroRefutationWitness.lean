@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2OrderZeroRefutation
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MatchRoot
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.WPowerInjective
 
 /-!
@@ -163,6 +164,36 @@ theorem forall_partitionMatchAt_false :
   exact full_match_false
     (RestrictedFaaDiBrunoMatch.of_forall_partitionMatchAt myH (0 : ℚ) myR myHyp hat)
 
+/-- The legacy successor-sum P2 residual is false on the concrete witness. -/
+theorem faaDiBrunoSuccSumZeroResidual_false :
+    ¬ FaaDiBrunoSuccSumZeroResidual myH (0 : ℚ) myR myHyp := by
+  intro hzero
+  exact full_match_false
+    ((restrictedFaaDiBrunoMatch_iff_faaDiBrunoSuccSumZero myH (0 : ℚ) myR myHyp).2 hzero)
+
+/-- The assembled-series root form is false on the concrete witness. -/
+theorem eval_βHenselAssembled_eq_zero_false :
+    ¬ (Polynomial.eval (βHenselAssembled myH (0 : ℚ) myR myHyp) (Q (0 : ℚ) myR myH) = 0) := by
+  intro hroot
+  exact full_match_false
+    ((restrictedFaaDiBrunoMatch_iff_eval_eq_zero myH (0 : ℚ) myR myHyp).2 hroot)
+
+/-- The assembled numerator is not the genuine Hensel lift on the concrete witness. -/
+theorem βHenselAssembled_eq_gammaGenuine_false :
+    ¬ βHenselAssembled myH (0 : ℚ) myR myHyp = gammaGenuine (0 : ℚ) myR myH myHyp := by
+  intro h
+  exact full_match_false
+    ((restrictedFaaDiBrunoMatch_iff_βHenselAssembled_eq_gammaGenuine
+      myH (0 : ℚ) myR myHyp).2 h)
+
+/-- The coefficient-wise assembled/genuine Hensel equality is false on the concrete witness. -/
+theorem coeff_βHenselAssembled_eq_αGenuine_forall_false :
+    ¬ (∀ t : ℕ, PowerSeries.coeff t (βHenselAssembled myH (0 : ℚ) myR myHyp)
+        = αGenuine myH (0 : ℚ) myR myHyp t) := by
+  intro h
+  exact full_match_false
+    ((restrictedFaaDiBrunoMatch_iff_coeff_eq_αGenuine myH (0 : ℚ) myR myHyp).2 h)
+
 end BCIKS20.HenselNumerator.Witness
 
 #print axioms BCIKS20.HenselNumerator.Witness.orderZero_match_false
@@ -170,3 +201,7 @@ end BCIKS20.HenselNumerator.Witness
 #print axioms BCIKS20.HenselNumerator.Witness.forall_matchAt_false
 #print axioms BCIKS20.HenselNumerator.Witness.partition_match_false
 #print axioms BCIKS20.HenselNumerator.Witness.forall_partitionMatchAt_false
+#print axioms BCIKS20.HenselNumerator.Witness.faaDiBrunoSuccSumZeroResidual_false
+#print axioms BCIKS20.HenselNumerator.Witness.eval_βHenselAssembled_eq_zero_false
+#print axioms BCIKS20.HenselNumerator.Witness.βHenselAssembled_eq_gammaGenuine_false
+#print axioms BCIKS20.HenselNumerator.Witness.coeff_βHenselAssembled_eq_αGenuine_forall_false
