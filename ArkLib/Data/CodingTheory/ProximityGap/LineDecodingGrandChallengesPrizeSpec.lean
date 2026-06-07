@@ -286,6 +286,143 @@ theorem mcaThreshold_spec_and_lower_bracket_prize_allRates_of_forall_not_mcaEven
   exact mcaThreshold_spec_and_lower_bracket_prize_of_forall_not_mcaEvent
     domain j (δ j) (hδ_le_one j) (hno j)
 
+private theorem exists_mcaPrizeLatticeSpec_and_lower_brackets_of_lowerWitnesses
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (w : ∀ j : Fin 4,
+      GrandChallenges.MCALowerWitness
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ :
+          Set (ι → F)) epsStar)
+    (hwδ : ∀ j : Fin 4, (w j).δ = δ j) :
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      (∀ j : Fin 4,
+        let C : Set (ι → F) :=
+          ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+        ∃ _ : mcaThresholdExists C epsStar,
+          mcaSatisfies C epsStar (τ j) ∧
+            ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j) ∧
+        ∀ j : Fin 4,
+          latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j := by
+  rcases exists_mcaPrizeLatticeResolved_with_spec_of_lowerWitnesses domain w with
+    ⟨τ, _hτ, hspec⟩
+  refine ⟨τ, hspec, ?_⟩
+  intro j
+  let C : Set (ι → F) :=
+    ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+  rcases hspec j with ⟨hne, _hsat, hmax⟩
+  have hle_lower :
+      latticeIndexOf (ι := ι) (w j).δ (w j).le_one ≤ mcaThreshold C epsStar hne := by
+    exact MCALowerWitness_le_mcaThreshold C epsStar hne (w j)
+  have hle_threshold : mcaThreshold C epsStar hne ≤ τ j := by
+    exact hmax _ (mcaThreshold_spec C epsStar hne)
+  have hidx :
+      latticeIndexOf (ι := ι) (w j).δ (w j).le_one =
+        latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) := by
+    apply Fin.ext
+    simp [latticeIndexOf_val, hwδ j]
+  exact hidx ▸ le_trans hle_lower hle_threshold
+
+/-- Project the per-rate threshold specification and lower lattice brackets from repaired
+double-cover data. -/
+theorem exists_mcaPrizeLatticeSpec_and_lower_brackets_ofDoubleCover
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hcov : ∀ j : Fin 4, MCAForallDoubleCover (F := F) (A := F)
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      (δ j)) :
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      (∀ j : Fin 4,
+        let C : Set (ι → F) :=
+          ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+        ∃ _ : mcaThresholdExists C epsStar,
+          mcaSatisfies C epsStar (τ j) ∧
+            ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j) ∧
+        ∀ j : Fin 4,
+          latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j :=
+  exists_mcaPrizeLatticeSpec_and_lower_brackets_of_lowerWitnesses
+    domain δ hδ_le_one
+    (fun j => MCALowerWitness.ofDoubleCover
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      (δ j) epsStar (hδ_le_one j) (hcov j))
+    (fun _ => rfl)
+
+/-- Project the per-rate threshold specification and lower lattice brackets from named
+bad-scalar double-cover data. -/
+theorem exists_mcaPrizeLatticeSpec_and_lower_brackets_ofBadScalarDoubleCover
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hcov : ∀ j : Fin 4, ∀ (u : Code.WordStack F (Fin 2) ι) (γ : F),
+      MCABadScalarDoubleCover (F := F) (A := F)
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) (u 0) (u 1) γ) :
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      (∀ j : Fin 4,
+        let C : Set (ι → F) :=
+          ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+        ∃ _ : mcaThresholdExists C epsStar,
+          mcaSatisfies C epsStar (τ j) ∧
+            ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j) ∧
+        ∀ j : Fin 4,
+          latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j :=
+  exists_mcaPrizeLatticeSpec_and_lower_brackets_of_lowerWitnesses
+    domain δ hδ_le_one
+    (fun j => MCALowerWitness.ofBadScalarDoubleCover
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      (δ j) epsStar (hδ_le_one j) (hcov j))
+    (fun _ => rfl)
+
+/-- Project the per-rate threshold specification and lower lattice brackets from zero
+bad-scalar counts. -/
+theorem exists_mcaPrizeLatticeSpec_and_lower_brackets_of_mcaBadCount_zero
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hzero : ∀ j : Fin 4, ∀ u : Code.WordStack F (Fin 2) ι,
+      mcaBadCount (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) (u 0) (u 1) = 0) :
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      (∀ j : Fin 4,
+        let C : Set (ι → F) :=
+          ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+        ∃ _ : mcaThresholdExists C epsStar,
+          mcaSatisfies C epsStar (τ j) ∧
+            ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j) ∧
+        ∀ j : Fin 4,
+          latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j :=
+  exists_mcaPrizeLatticeSpec_and_lower_brackets_of_lowerWitnesses
+    domain δ hδ_le_one
+    (fun j => MCALowerWitness.of_mcaBadCount_zero
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      (δ j) epsStar (hδ_le_one j) (hzero j))
+    (fun _ => rfl)
+
+/-- Project the per-rate threshold specification and lower lattice brackets from direct
+no-bad-event frontiers. -/
+theorem exists_mcaPrizeLatticeSpec_and_lower_brackets_of_forall_not_mcaEvent
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hno : ∀ j : Fin 4, ∀ (u : Code.WordStack F (Fin 2) ι) (γ : F),
+      ¬ mcaEvent (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) (u 0) (u 1) γ) :
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      (∀ j : Fin 4,
+        let C : Set (ι → F) :=
+          ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+        ∃ _ : mcaThresholdExists C epsStar,
+          mcaSatisfies C epsStar (τ j) ∧
+            ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j) ∧
+        ∀ j : Fin 4,
+          latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j :=
+  exists_mcaPrizeLatticeSpec_and_lower_brackets_of_lowerWitnesses
+    domain δ hδ_le_one
+    (fun j => MCALowerWitness.of_forall_not_mcaEvent
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      (δ j) epsStar (hδ_le_one j) (hno j))
+    (fun _ => rfl)
+
 /-- Package repaired double-cover frontiers and explicit adjacent upper witnesses into the generic
 four-rate adjacent-witness frontier. -/
 noncomputable def mcaPrizeAdjacentWitnessFrontier_ofDoubleCover_and_upperWitnesses
@@ -1043,6 +1180,14 @@ set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_and_lower_bracket_prize_allRates_of_mcaBadCount_zero
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_and_lower_bracket_prize_allRates_of_forall_not_mcaEvent
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeSpec_and_lower_brackets_ofDoubleCover
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeSpec_and_lower_brackets_ofBadScalarDoubleCover
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeSpec_and_lower_brackets_of_mcaBadCount_zero
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeSpec_and_lower_brackets_of_forall_not_mcaEvent
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeAdjacentWitnessFrontier_ofDoubleCover_and_upperWitnesses
 set_option linter.style.longLine false in
