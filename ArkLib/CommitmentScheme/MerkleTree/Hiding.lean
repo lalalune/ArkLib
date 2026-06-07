@@ -213,6 +213,18 @@ theorem openTranscript_entry_eq_honest_pair {s : Skeleton} (hashFn : α → α �
   obtain ⟨i, _hi, rfl⟩ := ho
   simp
 
+/-- Every opening emitted by the honest salted transcript carries the honest authentication path
+for its own index. This completes the transcript-shape invariants for index, salt/value, and path
+fields. -/
+theorem openTranscript_entry_path_eq_honest_proof {s : Skeleton} (hashFn : α → α → α)
+    (salts leaves : LeafData α s) (idxs : List (SkeletonLeafIndex s)) :
+    ∀ o ∈ (openTranscript hashFn salts leaves idxs).2,
+      o.2.2.2 = generateProof (buildSaltedTree hashFn salts leaves) o.1 := by
+  intro o ho
+  simp [openTranscript] at ho ⊢
+  obtain ⟨i, _hi, rfl⟩ := ho
+  simp
+
 /-- Every opening emitted by the honest salted transcript verifies against the transcript root. This
 is the list-level packaging of `salted_completeness` used by future simulator/hybrid arguments. -/
 theorem openTranscript_entry_verifies {s : Skeleton} (hashFn : α → α → α)
@@ -336,6 +348,7 @@ end InductiveMerkleTree
 #print axioms InductiveMerkleTree.openTranscript_entries_length
 #print axioms InductiveMerkleTree.openTranscript_entries_indices
 #print axioms InductiveMerkleTree.openTranscript_entry_eq_honest_pair
+#print axioms InductiveMerkleTree.openTranscript_entry_path_eq_honest_proof
 #print axioms InductiveMerkleTree.openTranscript_entry_verifies
 #print axioms InductiveMerkleTree.openTranscript_entry_unique_against_candidate
 #print axioms InductiveMerkleTree.openTranscript_candidate_unique_against_honest_tree
