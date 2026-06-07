@@ -33,6 +33,12 @@ Current source exposes both sides of that frontier as named parts:
 
 - `FriQuerySoundnessParts` splits Claim 8.2 into query-round acceptance,
   batching/oracle-lens, and correlated-agreement-to-joint-agreement ingredients.
+- `queryRoundDensityBound_holds` and `batchedFRIOracleLensReduction_holds`
+  discharge the local query-round counting and structural Batched FRI
+  oracle-lens pieces.  The adapter
+  `fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLens`
+  reassembles Claim 8.2 from those two proved pieces plus the still-open
+  correlated-agreement bridge.
 - `FriSoundnessParts` splits Claim 8.3 into the Claim 8.2 lift, the
   sequential-composition soundness step, and the `totalError` accounting step.
 - `fri_query_soundness_of_parts` and `fri_soundness_of_parts` are small
@@ -45,6 +51,9 @@ Current source exposes both sides of that frontier as named parts:
   coefficients.
 - `BatchedFri.Spec.batchedFRIOracleLens` defines the virtual oracle routing
   from the batched outer oracles to the inner FRI round-0 oracle.
+- `Fri.batchedFRIOracleLensReduction_holds` proves the structural fact that
+  the lifted Batched FRI reduction uses that oracle lens and the corresponding
+  value-level `liftingLens.stmt`.
 - `BatchedFri.Spec.batchedFRIreduction` composes the batching round with the
   FRI fold/final/query phases.
 - `Code.jointAgreement` and `jointAgreement_iff_jointProximity` are available
@@ -84,12 +93,11 @@ ArkLib/Data/CodingTheory/InterleavedCode.lean:707:theorem jointAgreement_iff_joi
 
 ## Remaining proof tasks
 
-1. Build a query-round acceptance-bound theorem for the FRI query phase.
-2. Prove the composed Batched FRI query event reduces to that theorem through
-   the batching oracle lens.
-3. Derive the Claim 8.2 `Code.jointAgreement` conclusion for the batched input
+1. Connect the structural Batched FRI oracle-lens package to the still
+   residualized virtual-oracle soundness-preservation theorem.
+2. Derive the Claim 8.2 `Code.jointAgreement` conclusion for the batched input
    stack.
-4. Connect the Claim 8.2 output to Claim 8.3 (`fri_soundness`) and the
+3. Connect the Claim 8.2 output to Claim 8.3 (`fri_soundness`) and the
    end-to-end Batched FRI soundness statement.
 
 This audit does not close the mathematical residual. It confirms that the

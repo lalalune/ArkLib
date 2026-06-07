@@ -466,6 +466,36 @@ theorem queryRoundDensityBound_holds
   intro h_density
   exact queryRoundAcceptanceBound_of_density G δ t h_density
 
+/-- Structural batching/oracle-lens package for the Batched FRI lift.
+
+This is the proved, local part of the `FriQuerySoundnessParts.batching_oracle_lens_reduction`
+frontier: the lifted FRI reduction uses `BatchedFri.Spec.batchedFRIOracleLens`, and that oracle
+lens reuses the value-level `BatchedFri.Spec.liftingLens.stmt` required by the reduction lift.
+The probabilistic soundness preservation theorem for virtual oracle lenses remains a separate
+library-level frontier. -/
+def batchedFRIOracleLensReduction (l batchSize : ℕ) : Prop :=
+  (BatchedFri.Spec.batchedFRIOracleLens
+      (F := 𝔽) (n := n) (ω := ω) k s d domain_size_cond l batchSize).toLens =
+    (BatchedFri.Spec.liftingLens
+      (F := 𝔽) (n := n) (ω := ω) k s d batchSize).stmt ∧
+  BatchedFri.Spec.liftedFRI
+      (F := 𝔽) (n := n) (ω := ω) k s d domain_size_cond l batchSize =
+    OracleReduction.liftContext
+      (BatchedFri.Spec.liftingLens
+        (F := 𝔽) (n := n) (ω := ω) k s d batchSize)
+      (BatchedFri.Spec.batchedFRIOracleLens
+        (F := 𝔽) (n := n) (ω := ω) k s d domain_size_cond l batchSize)
+      (Fri.Spec.reduction
+        (F := 𝔽) (n := n) (ω := ω) k s d domain_size_cond l)
+
+/-- The Batched FRI oracle-lens package is definitionally true from the construction of
+`BatchedFri.Spec.batchedFRIOracleLens` and `BatchedFri.Spec.liftedFRI`. -/
+theorem batchedFRIOracleLensReduction_holds (l batchSize : ℕ) :
+    batchedFRIOracleLensReduction
+      (n := n) (s := s) (d := d) (ω := ω)
+      (domain_size_cond := domain_size_cond) l batchSize := by
+  constructor <;> rfl
+
 noncomputable def oracleImpl
     (l : ℕ) (z : Fin (k + 1) → 𝔽) (f : (ω.subdomain 0) → 𝔽) :
   QueryImpl
@@ -1038,21 +1068,104 @@ theorem fri_query_soundness_of_queryRoundDensityBound
   exact fri_query_soundness_of_parts (n := n) (ω := ω) f h_agreement m_ge_3 parts
     (queryRoundDensityBound_holds G δ queries) h_lens h_agreementBridge
 
+/-- Instantiate the Claim 8.2 frontier with both proved local ingredients: the normalized-density
+query-round bound and the structural Batched FRI oracle-lens package.  The remaining explicit field
+is the coding-theoretic correlated-agreement-to-`Code.jointAgreement` bridge. -/
+def FriQuerySoundnessParts.of_queryRoundDensityBoundAndBatchedFRIOracleLens
+    {t : ℕ}
+  {α : ℝ≥0}
+  (f : Fin t.succ → (ω.subdomain 0 → 𝔽))
+  (h_agreement :
+    correlated_agreement_density
+      (Fₛ f)
+      (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
+    ≤ α)
+  {m : ℕ}
+  (m_ge_3 : m ≥ 3)
+  {ι : Type} [Fintype ι] [DecidableEq ι]
+  (G : Finset ι) (δ : ℝ≥0) (queries l : ℕ)
+  (agreementBridge : Prop)
+  (pieces_imply_claim :
+    queryRoundDensityBound G δ queries →
+    batchedFRIOracleLensReduction
+      (n := n) (s := s) (d := d) (ω := ω)
+      (domain_size_cond := domain_size_cond) l t →
+    agreementBridge →
+    fri_query_soundness (n := n) (ω := ω) (f := f)
+      (h_agreement := h_agreement) (m_ge_3 := m_ge_3)) :
+    FriQuerySoundnessParts (n := n) (ω := ω) (f := f)
+      (h_agreement := h_agreement) (m_ge_3 := m_ge_3) where
+  query_round_acceptance_bound := queryRoundDensityBound G δ queries
+  batching_oracle_lens_reduction :=
+    batchedFRIOracleLensReduction
+      (n := n) (s := s) (d := d) (ω := ω)
+      (domain_size_cond := domain_size_cond) l t
+  correlated_agreement_to_jointAgreement := agreementBridge
+  pieces_imply_claim := pieces_imply_claim
+
+/-- Reassemble Claim 8.2 after discharging the normalized-density query-round bound and the
+structural Batched FRI oracle-lens package.
+
+This narrows the remaining Claim 8.2 frontier to the correlated-agreement bridge plus the explicit
+map from those ingredients into the faithful `fri_query_soundness` statement. -/
+theorem fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLens
+    {t : ℕ}
+  {α : ℝ≥0}
+  (f : Fin t.succ → (ω.subdomain 0 → 𝔽))
+  (h_agreement :
+    correlated_agreement_density
+      (Fₛ f)
+      (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
+    ≤ α)
+  {m : ℕ}
+  (m_ge_3 : m ≥ 3)
+  {ι : Type} [Fintype ι] [DecidableEq ι]
+  (G : Finset ι) (δ : ℝ≥0) (queries l : ℕ)
+  {agreementBridge : Prop}
+  (pieces_imply_claim :
+    queryRoundDensityBound G δ queries →
+    batchedFRIOracleLensReduction
+      (n := n) (s := s) (d := d) (ω := ω)
+      (domain_size_cond := domain_size_cond) l t →
+    agreementBridge →
+    fri_query_soundness (n := n) (ω := ω) (f := f)
+      (h_agreement := h_agreement) (m_ge_3 := m_ge_3))
+  (h_agreementBridge : agreementBridge) :
+    fri_query_soundness (n := n) (ω := ω) (f := f)
+      (h_agreement := h_agreement) (m_ge_3 := m_ge_3) := by
+  let parts :=
+    FriQuerySoundnessParts.of_queryRoundDensityBoundAndBatchedFRIOracleLens
+      (n := n) (s := s) (d := d) (ω := ω)
+      (domain_size_cond := domain_size_cond)
+      (f := f) (h_agreement := h_agreement) (m_ge_3 := m_ge_3)
+      G δ queries l agreementBridge pieces_imply_claim
+  exact fri_query_soundness_of_parts (n := n) (ω := ω) f h_agreement m_ge_3 parts
+    (queryRoundDensityBound_holds G δ queries)
+    (batchedFRIOracleLensReduction_holds
+      (n := n) (s := s) (d := d) (ω := ω)
+      (domain_size_cond := domain_size_cond) l t)
+    h_agreementBridge
+
 #print axioms Fri.FriQuerySoundnessParts
 #print axioms Fri.QueryRound.queryRound_acceptance_le_of_density
 #print axioms Fri.queryRoundAcceptanceBound_of_density
 #print axioms Fri.queryRoundDensityBound
 #print axioms Fri.queryRoundDensityBound_holds
+#print axioms Fri.batchedFRIOracleLensReduction
+#print axioms Fri.batchedFRIOracleLensReduction_holds
 #print axioms Fri.fri_query_soundness_of_parts
 #print axioms Fri.FriQuerySoundnessParts.of_queryRoundAcceptanceBound
 #print axioms Fri.fri_query_soundness_of_queryRoundAcceptanceBound
 #print axioms Fri.FriQuerySoundnessParts.of_queryRoundDensityBound
 #print axioms Fri.fri_query_soundness_of_queryRoundDensityBound
+#print axioms Fri.FriQuerySoundnessParts.of_queryRoundDensityBoundAndBatchedFRIOracleLens
+#print axioms Fri.fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLens
 
 /-
 The old finite-range instance diagnostic scratch block has been removed.  The remaining
-Claim 8.2 work is the query-round acceptance analysis described in the docstring above
-and in `docs/kb/audits/issue-14-batched-fri-query-soundness-2026-06-06.md`.
+Claim 8.2 work is the correlated-agreement bridge and the surrounding probabilistic
+soundness-preservation infrastructure described in the docstring above and in
+`docs/kb/audits/issue-14-batched-fri-query-soundness-2026-06-06.md`.
 -/
 
 open ENNReal in
@@ -1141,10 +1254,14 @@ end Fri
 #print axioms Fri.queryRoundAcceptanceBound_of_density
 #print axioms Fri.queryRoundDensityBound
 #print axioms Fri.queryRoundDensityBound_holds
+#print axioms Fri.batchedFRIOracleLensReduction
+#print axioms Fri.batchedFRIOracleLensReduction_holds
 #print axioms Fri.FriQuerySoundnessParts.of_queryRoundAcceptanceBound
 #print axioms Fri.fri_query_soundness_of_queryRoundAcceptanceBound
 #print axioms Fri.FriQuerySoundnessParts.of_queryRoundDensityBound
 #print axioms Fri.fri_query_soundness_of_queryRoundDensityBound
+#print axioms Fri.FriQuerySoundnessParts.of_queryRoundDensityBoundAndBatchedFRIOracleLens
+#print axioms Fri.fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLens
 #print axioms Fri.fri_soundness
 #print axioms Fri.FriSoundnessParts
 #print axioms Fri.fri_soundness_of_parts
