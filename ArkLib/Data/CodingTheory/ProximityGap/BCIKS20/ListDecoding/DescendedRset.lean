@@ -617,6 +617,61 @@ def GraphExtractionHypotheses.ofDescended
   hcount := hres.hcount
   hlarge := hres.hlarge
 
+/-- **Graph-extraction bridge from explicit descended in-tree inputs.**
+
+This combines `Claim57ResidualsDescended.ofInTree` with
+`GraphExtractionHypotheses.ofDescended`, so callers that only need the graph/count data can keep the
+honest descended residual inputs explicit and receive the produced `x₀` together with the
+graph-extraction bundle. -/
+@[reducible]
+noncomputable def GraphExtractionHypotheses.ofDescendedInTree
+    [DecidableEq (Polynomial F)] [Fintype F] (δ : ℚ)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (z : F[Z][X][Y] → F)
+    (hlead : ∀ R : F[Z][X][Y],
+      R ∈ pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        R.leadingCoeff.map (Polynomial.evalRingHom (z R)) ≠ 0)
+    (hcard :
+      (((pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs).toList).map
+        (fun R => (R.leadingCoeff.map (Polynomial.evalRingHom (z R))).natDegree)).sum
+        < Fintype.card F)
+    (hsepPt : ∀ x₀ : F,
+      (∀ R : F[Z][X][Y],
+        R ∈ pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+            (u₀ := u₀) (u₁ := u₁) h_gs →
+          Bivariate.evalX (Polynomial.C x₀) R ≠ 0) →
+      ∀ R : F[Z][X][Y],
+        R ∈ pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+            (u₀ := u₀) (u₁ := u₁) h_gs →
+          (Bivariate.evalX (Polynomial.C x₀) R).Separable)
+    (hS_nonempty : (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).Nonempty)
+    (A : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ → Finset (Fin n))
+    (hA : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      ∀ i ∈ A z, (u₀ + z.1 • u₁) i =
+        (Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2).eval (ωs i))
+    (hcount : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z.1) 1 k < m * (A z).card)
+    (hlarge :
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q)
+    (hcoincide : pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs
+      = pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs) :
+    Σ' x₀ : F,
+      GraphExtractionHypotheses (F := F) (m := m) (n := n) (k := k) (Q := Q)
+        (ωs := ωs) (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs :=
+  let hpack := Claim57ResidualsDescended.ofInTree
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+    (u₀ := u₀) (u₁ := u₁) δ h_gs z hlead hcard hsepPt
+    hS_nonempty A hA hcount hlarge
+  ⟨hpack.1,
+    GraphExtractionHypotheses.ofDescended
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) δ hpack.1 h_gs hpack.2 hcoincide⟩
+
 omit [DecidableEq (RatFunc F)] [Finite F] in
 /-- **Incremental-adoption bridge.**  A `Claim57ResidualsDescended` instance produces a full
 `Claim57Residuals` instance under the coincidence `pg_RsetDescended = pg_Rset`.  All eight
@@ -648,6 +703,61 @@ noncomputable def Claim57Residuals.ofDescended (δ : ℚ) (x₀ : F)
   hfactor := by
     intro R hR
     exact pg_RsetDescended_hfactor (k := k) h_gs R (hcoincide.symm ▸ hR)
+
+/-- **Legacy `Claim57Residuals` bridge from explicit descended in-tree inputs.**
+
+This packages the descended in-tree constructor with `Claim57Residuals.ofDescended`, exposing the
+remaining legacy bundle directly for downstream consumers being rewired away from ambient
+instances.  The real residuals stay explicit: descended `hsepPt`, Johnson/count data, `hlarge`, and
+the legacy coincidence hypothesis. -/
+@[reducible]
+noncomputable def Claim57Residuals.ofDescendedInTree
+    [DecidableEq (Polynomial F)] [Fintype F] (δ : ℚ)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (z : F[Z][X][Y] → F)
+    (hlead : ∀ R : F[Z][X][Y],
+      R ∈ pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        R.leadingCoeff.map (Polynomial.evalRingHom (z R)) ≠ 0)
+    (hcard :
+      (((pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs).toList).map
+        (fun R => (R.leadingCoeff.map (Polynomial.evalRingHom (z R))).natDegree)).sum
+        < Fintype.card F)
+    (hsepPt : ∀ x₀ : F,
+      (∀ R : F[Z][X][Y],
+        R ∈ pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+            (u₀ := u₀) (u₁ := u₁) h_gs →
+          Bivariate.evalX (Polynomial.C x₀) R ≠ 0) →
+      ∀ R : F[Z][X][Y],
+        R ∈ pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+            (u₀ := u₀) (u₁ := u₁) h_gs →
+          (Bivariate.evalX (Polynomial.C x₀) R).Separable)
+    (hS_nonempty : (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).Nonempty)
+    (A : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ → Finset (Fin n))
+    (hA : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      ∀ i ∈ A z, (u₀ + z.1 • u₁) i =
+        (Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2).eval (ωs i))
+    (hcount : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z.1) 1 k < m * (A z).card)
+    (hlarge :
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q)
+    (hcoincide : pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs
+      = pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs) :
+    Σ' x₀ : F,
+      Claim57Residuals (F := F) (m := m) (n := n) (Q := Q) (ωs := ωs)
+        (u₀ := u₀) (u₁ := u₁) k δ x₀ h_gs :=
+  let hpack := Claim57ResidualsDescended.ofInTree
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+    (u₀ := u₀) (u₁ := u₁) δ h_gs z hlead hcard hsepPt
+    hS_nonempty A hA hcount hlarge
+  ⟨hpack.1,
+    Claim57Residuals.ofDescended
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) δ hpack.1 h_gs hpack.2 hcoincide⟩
 
 /-- Claim 5.7 front door from the descended residual bundle.
 
@@ -948,7 +1058,9 @@ lemma claimA2_hypotheses_descended (δ : ℚ) (x₀ : F)
 /-! ### Axiom audit (issue #8 descended Claim 5.7 adoption surface) -/
 
 #print axioms ProximityGap.GraphExtractionHypotheses.ofDescended
+#print axioms ProximityGap.GraphExtractionHypotheses.ofDescendedInTree
 #print axioms ProximityGap.Claim57Residuals.ofDescended
+#print axioms ProximityGap.Claim57Residuals.ofDescendedInTree
 #print axioms ProximityGap.exists_factors_with_large_common_root_set_of_descended
 #print axioms ProximityGap.exists_factors_with_large_common_root_set_of_descended_inTree
 #print axioms ProximityGap.R_descended
