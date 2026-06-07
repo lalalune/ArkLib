@@ -17,11 +17,11 @@ it collapses to `|RS| · ∑_{e ∈ RS} I(e)` with `I(e) = jointCoverCount δ 0 
 form of the CS25 second moment `E[N²]`.
 -/
 
-open scoped BigOperators ENNReal
+open scoped BigOperators ENNReal NNReal
 
 namespace ArkLib.CS25
 
-open CodingTheory
+open Code
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
 variable {F : Type*} [Fintype F] [DecidableEq F] [AddCommGroup F]
