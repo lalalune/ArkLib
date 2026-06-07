@@ -115,6 +115,28 @@ theorem not_GrandMCAResolution_bot_epsStar_of_lt_inv_card
       (Cbot (ι := ι) (F := F) : Set (ι → F)) epsStar) :=
   not_GrandMCAResolution_bot_of_lt_inv_card (ι := ι) (F := F) epsStar hε
 
+/-- If the target is below the exact zero-code value `1 / |F|`, then the bottom linear code
+does not satisfy the predicate-level Grand MCA challenge. -/
+theorem not_grandMCAChallenge_bot_of_lt_inv_card (ε_star : ℝ≥0)
+    (hε : (ε_star : ENNReal) < (1 : ENNReal) / (Fintype.card F : ENNReal)) :
+    ¬ grandMCAChallenge (F := F) (ι := ι) (⊥ : LinearCode ι F) ε_star := by
+  intro h
+  rcases h with ⟨δStar, hle_one, hbound, hmaximal⟩
+  let R : GrandChallenges.GrandMCAResolution (F := F)
+      (Cbot (ι := ι) (F := F) : Set (ι → F)) ε_star :=
+    { δStar := δStar
+      le_one := hle_one
+      bound := by simpa [Cbot] using hbound
+      maximal := by simpa [Cbot] using hmaximal }
+  exact not_GrandMCAResolution_bot_of_lt_inv_card (ι := ι) (F := F) ε_star hε ⟨R⟩
+
+/-- `epsStar` specialization: below the exact zero-code value `1 / |F|`, the bottom linear code
+does not satisfy the predicate-level Grand MCA challenge. -/
+theorem not_grandMCAChallenge_bot_epsStar_of_lt_inv_card
+    (hε : (epsStar : ENNReal) < (1 : ENNReal) / (Fintype.card F : ENNReal)) :
+    ¬ grandMCAChallenge (F := F) (ι := ι) (⊥ : LinearCode ι F) epsStar :=
+  not_grandMCAChallenge_bot_of_lt_inv_card (ι := ι) (F := F) epsStar hε
+
 end General
 
 /-! ## Source audit -/
@@ -127,5 +149,7 @@ end General
 #print axioms GrandMCAResolution_bot_deltaStar_eq_zero_of_epsStar_lt_inv_card
 #print axioms not_GrandMCAResolution_bot_of_lt_inv_card
 #print axioms not_GrandMCAResolution_bot_epsStar_of_lt_inv_card
+#print axioms not_grandMCAChallenge_bot_of_lt_inv_card
+#print axioms not_grandMCAChallenge_bot_epsStar_of_lt_inv_card
 
 end ProximityGap.MCAZeroCode
