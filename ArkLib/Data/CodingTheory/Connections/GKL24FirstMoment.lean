@@ -936,7 +936,7 @@ theorem mcaBadWitness_card_le_radius_mul_card_of_maxCorrAgreeDomain
   · intro γ _hγ
     exact linePetal_subset_compl D u₀ u₁ w γ
 
-/-- **Maximal-domain form of the GKL24/GCXK25 witness-cover residual.** This is the
+/-- **Maximal-domain form of the GKL24/GCXK25 witness-cover residual.**  This is the
 carrier-level version of `mcaBadWitness_card_le_radius_mul_card_of_maxCorrAgreeDomain`: every
 stack has a close-codeword carrier, and each carried codeword has a maximal
 correlated-agreement domain whose bad line-agreement domains strictly expand it while pairwise
@@ -953,16 +953,17 @@ def GKL24MaxCorrWitnessCoverResidual
           ∀ w ∈ T,
             ∃ D : Finset ι,
               maxCorrAgreeDomain MC p (u 0) (u 1) D ∧
-                (∀ γ ∈ mcaBadWitness (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) w,
+                (∀ γ ∈ mcaBadWitness
+                    (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) w,
                   D ⊂ lineAgreeSet (u 0) (u 1) w γ) ∧
-                  (∀ γ ∈ mcaBadWitness
+                (∀ γ ∈ mcaBadWitness
+                    (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) w,
+                  ∀ γ' ∈ mcaBadWitness
                       (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) w,
-                    ∀ γ' ∈ mcaBadWitness
-                        (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) w,
-                      γ ≠ γ' →
-                        ((1 - p) * Fintype.card ι : ℝ≥0) ≤
-                          (((lineAgreeSet (u 0) (u 1) w γ ∩
-                              lineAgreeSet (u 0) (u 1) w γ').card : ℕ) : ℝ≥0))
+                    γ ≠ γ' →
+                      ((1 - p) * Fintype.card ι : ℝ≥0) ≤
+                        (((lineAgreeSet (u 0) (u 1) w γ ∩
+                            lineAgreeSet (u 0) (u 1) w γ').card : ℕ) : ℝ≥0))
 
 /-- A maximal-domain witness-cover residual instantiates the corrected first-moment
 witness-cover residual with per-codeword count `p · n`. -/
@@ -1021,53 +1022,6 @@ theorem GKL24FirstMomentWitnessCoverResidual_of_petal_cover
   exact
     mcaBadWitness_card_le_radius_mul_card_of_large_domain_disjoint_petals
       MC δ (u 0) (u 1) w D petal hDlarge hdisj hsize hsub
-
-/-- **Maximal-domain form of the GKL24/GCXK25 witness-cover residual.**
-
-This is a paper-facing specialization of `GKL24PetalWitnessCoverResidual`: for every carried
-codeword it asks directly for a maximal correlated-agreement domain `D`, strict expansion of
-every relevant line-agreement domain beyond `D`, and large pairwise intersections. The in-tree
-lemma `mcaBadWitness_card_le_radius_mul_card_of_maxCorrAgreeDomain` then constructs the
-disjoint-petal count. -/
-def GKL24MaxCorrWitnessCoverResidual
-    (MC : Submodule F (ι → F)) (δ p : ℝ≥0) (B_T : ℝ) : Prop :=
-  ∀ u : WordStack F (Fin 2) ι,
-    ∃ T : Finset (ι → F),
-      (∀ w ∈ T, w ∈ (MC : Set (ι → F))) ∧
-        mcaBad (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) ⊆
-          T.biUnion (fun w =>
-            mcaBadWitness (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) w) ∧
-        (T.card : ℝ) ≤ B_T ∧
-          ∀ w ∈ T,
-            ∃ D : Finset ι,
-              maxCorrAgreeDomain MC p (u 0) (u 1) D ∧
-                (∀ γ ∈ mcaBadWitness
-                    (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) w,
-                  D ⊂ lineAgreeSet (u 0) (u 1) w γ) ∧
-                (∀ γ ∈ mcaBadWitness
-                    (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) w,
-                  ∀ γ' ∈ mcaBadWitness
-                      (F := F) (MC : Set (ι → F)) δ (u 0) (u 1) w,
-                    γ ≠ γ' →
-                      ((1 - p) * Fintype.card ι : ℝ≥0) ≤
-                        (((lineAgreeSet (u 0) (u 1) w γ ∩
-                            lineAgreeSet (u 0) (u 1) w γ').card : ℕ) : ℝ≥0))
-
-/-- A maximal-domain witness-cover residual instantiates the corrected first-moment residual with
-`b = p · n`. -/
-theorem GKL24FirstMomentWitnessCoverResidual_of_maxCorr_cover
-    (MC : Submodule F (ι → F)) (δ p : ℝ≥0) {B_T : ℝ}
-    (hmax : GKL24MaxCorrWitnessCoverResidual MC δ p B_T) :
-    GKL24FirstMomentWitnessCoverResidual MC δ B_T
-      ((p : ℝ) * (Fintype.card ι : ℝ)) := by
-  intro u
-  obtain ⟨T, hTsub, hcover, hcard, hmaxT⟩ := hmax u
-  refine ⟨T, hTsub, hcover, hcard, ?_⟩
-  intro w hw
-  obtain ⟨D, hD, hstrict, hIlarge⟩ := hmaxT w hw
-  exact
-    mcaBadWitness_card_le_radius_mul_card_of_maxCorrAgreeDomain
-      MC δ p (u 0) (u 1) w D (hTsub w hw) hD hstrict hIlarge
 
 /-- Count-level front door from the petal-certificate residual.  This is the exact
 `B_T · p · n` first-moment shape used by the GCXK25/GKL24 route once the disjoint-petal
