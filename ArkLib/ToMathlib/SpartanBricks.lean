@@ -614,6 +614,50 @@ def composedCompletenessWithClaimResidual
     {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp)) : Prop :=
   Rc.perfectCompleteness init impl (spartanRelIn R pp) (finalCheckWithClaimRelOut R pp)
 
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- The semantic target-carrying value relation is a strengthening of the broad terminal relation
+used by the current composed-with-claim residual surface. -/
+theorem finalCheckWithClaimValueRelIn_subset_finalCheckWithClaimRelOut :
+    finalCheckWithClaimValueRelIn R pp ⊆ finalCheckWithClaimRelOut R pp := by
+  intro x _hx
+  trivial
+
+/-- Stronger target-carrying composed completeness residual, where the composed Spartan reduction
+must output the semantic value relation tying the carried target to the algebraic final expected
+claim value. This is a compatibility target for future terminal `CheckClaim` completeness work. -/
+def composedCompletenessWithClaimValueRelResidual
+    {N : ℕ} {pSpecC : ProtocolSpec N}
+    [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
+    (Rc : OracleReduction oSpec
+      (Statement R pp) (OracleStatement R pp) (Witness R pp)
+      (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit pSpecC)
+    {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp)) : Prop :=
+  Rc.perfectCompleteness init impl (spartanRelIn R pp) (finalCheckWithClaimValueRelIn R pp)
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- Completeness into the semantic target-carrying value relation implies the existing broad
+target-carrying composed completeness residual by output-relation weakening. -/
+theorem composedCompletenessWithClaimResidual_of_valueRel
+    {N : ℕ} {pSpecC : ProtocolSpec N}
+    [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
+    (Rc : OracleReduction oSpec
+      (Statement R pp) (OracleStatement R pp) (Witness R pp)
+      (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit pSpecC)
+    {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (hValue : composedCompletenessWithClaimValueRelResidual R pp oSpec Rc init impl) :
+    composedCompletenessWithClaimResidual R pp oSpec Rc init impl := by
+  unfold composedCompletenessWithClaimValueRelResidual at hValue
+  unfold composedCompletenessWithClaimResidual
+  unfold OracleReduction.perfectCompleteness Reduction.perfectCompleteness at hValue ⊢
+  exact Reduction.completeness_relOut_mono
+    (init := init) (impl := impl)
+    (relIn := spartanRelIn R pp)
+    (relOut := finalCheckWithClaimValueRelIn R pp)
+    (relOut' := finalCheckWithClaimRelOut R pp)
+    (reduction := Rc.toReduction)
+    (finalCheckWithClaimValueRelIn_subset_finalCheckWithClaimRelOut R pp)
+    hValue
+
 /-- **NAMED RESIDUAL — composed Spartan PIOP round-by-round knowledge soundness.** Discharged, once
 the composed verifier is available, by iterated `OracleVerifier.append_rbrKnowledgeSoundness`: each
 leaf satisfies rbr knowledge soundness (`RandomQuery.oracleVerifier_rbrKnowledgeSoundness`, the two
@@ -684,6 +728,9 @@ def composedRbrKnowledgeSoundnessWithClaimResidual
 #print axioms composedRbrKnowledgeSoundnessResidual
 #print axioms composedPIOPWithClaimResidual
 #print axioms composedCompletenessWithClaimResidual
+#print axioms finalCheckWithClaimValueRelIn_subset_finalCheckWithClaimRelOut
+#print axioms composedCompletenessWithClaimValueRelResidual
+#print axioms composedCompletenessWithClaimResidual_of_valueRel
 #print axioms composedRbrKnowledgeSoundnessWithClaimResidual
 
 end Bricks
