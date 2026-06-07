@@ -52,7 +52,7 @@ variable {k : ℕ} {s : Fin (k + 1) → ℕ+} {d : ℕ+}
 variable {ω : SmoothCosetFftDomain n F}
 variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl []ₒ (StateT σ ProbComp))
 
-/-- **Brick C — binary append composition of the FRI phases.**
+/-! **Brick C — binary append composition of the FRI phases.**
 
 The composed FRI reduction `Fri.Spec.reduction` is `append reductionFold queryOracleReduction`.
 Given:
