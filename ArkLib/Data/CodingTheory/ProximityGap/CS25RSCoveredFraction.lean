@@ -61,7 +61,8 @@ theorem rsCodeFinset_eq_image (domain : ι ↪ F) (deg : ℕ)
     [Fintype (Polynomial.degreeLT F deg)] :
     rsCodeFinset domain deg
       = (Finset.univ : Finset (Polynomial.degreeLT F deg)).image
-          (fun p => ReedSolomon.evalOnPoints domain (p : F[X])) := by
+          (fun p : Polynomial.degreeLT F deg =>
+            ReedSolomon.evalOnPoints domain (p : Polynomial F)) := by
   ext v
   rw [mem_rsCodeFinset, Finset.mem_image]
   constructor
