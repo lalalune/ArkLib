@@ -550,6 +550,7 @@ import ArkLib.ToMathlib.FaaDiBrunoMatchProof
 import ArkLib.ToMathlib.FiniteSeriesToPoly
 import ArkLib.ToMathlib.Finset.Basic
 import ArkLib.ToMathlib.Finset.ToListWithProof
+import ArkLib.ToMathlib.FinsetMarkov
 import ArkLib.ToMathlib.Finsupp.Fin
 import ArkLib.ToMathlib.FirstMomentBadGamma
 import ArkLib.ToMathlib.FriComplete
