@@ -247,6 +247,72 @@ theorem permCheckVerifier_rbrSoundness :
     exact absurd hdir (by simp)
 
 omit [CommRing 𝓡] in
+/-- The permutation-check verifier has ordinary zero-error soundness. A successful malicious
+execution outside `permCheckLangIn` must pass the copy-constraint guard on the prover's single
+message, which directly gives the missing satisfying extended assignment. -/
+theorem permCheckVerifier_soundness :
+    (permCheckVerifier (𝓡 := 𝓡) (numWires := numWires)
+      (numGates := numGates)).soundness init impl
+        permCheckLangIn permCheckLangOut 0 := by
+  unfold Verifier.soundness
+  intro WitIn WitOut witIn prover cs hcs
+  simp only [ENNReal.coe_zero, nonpos_iff_eq_zero, probEvent_eq_zero_iff]
+  intro x hx hxLang
+  apply hcs
+  rw [OptionT.mem_support_iff] at hx
+  simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+  obtain ⟨s, _hs, hx⟩ := hx
+  rw [Reduction.run_of_prover_first] at hx
+  simp only [StateT.run'_eq, OptionT.run_bind, Option.elimM, support_map, Set.mem_image] at hx
+  obtain ⟨⟨runOpt, s'⟩, hx, hrunOpt⟩ := hx
+  simp only at hrunOpt
+  rw [simulateQ_bind] at hx
+  rw [StateT.run_bind] at hx
+  rw [mem_support_bind_iff] at hx
+  obtain ⟨⟨sendOpt, s1⟩, hsend, hx⟩ := hx
+  cases sendOpt with
+  | none =>
+      simp only [Option.elim_none] at hx
+      rw [simulateQ_pure, StateT.run_pure] at hx
+      simp only [support_pure, Set.mem_singleton_iff, Prod.mk.injEq] at hx
+      rw [hx.1] at hrunOpt
+      simp at hrunOpt
+  | some sendState =>
+      simp only [Option.elim_some] at hx
+      rw [simulateQ_bind] at hx
+      rw [StateT.run_bind] at hx
+      rw [mem_support_bind_iff] at hx
+      obtain ⟨⟨outOpt, s2⟩, hout, hx⟩ := hx
+      cases outOpt with
+      | none =>
+          simp only [Option.elim_none] at hx
+          rw [simulateQ_pure, StateT.run_pure] at hx
+          simp only [support_pure, Set.mem_singleton_iff, Prod.mk.injEq] at hx
+          rw [hx.1] at hrunOpt
+          simp at hrunOpt
+      | some outState =>
+          simp only [Option.elim_some] at hx
+          simp only [permCheckVerifier_verify_eq] at hx
+          by_cases hAccept : CopyConstraintsSatisfied sendState.1 cs.perm
+          · exact ⟨sendState.1, hAccept⟩
+          · rw [if_neg hAccept] at hx
+            let Result :=
+              Option (((permCheckPSpec 𝓡 numGates).FullTranscript ×
+                (Plonk.ConstraintSystem 𝓡 numWires numGates ×
+                  (Fin (3 * numGates) → 𝓡)) × WitOut) ×
+                Plonk.ConstraintSystem 𝓡 numWires numGates ×
+                  (Fin (3 * numGates) → 𝓡))
+            change (runOpt, s') ∈ support
+              (((simulateQ
+                (impl.addLift (challengeQueryImpl (pSpec := permCheckPSpec 𝓡 numGates)))
+                (pure none : OracleComp _ Result) :
+                  StateT σ ProbComp Result).run s2)) at hx
+            rw [simulateQ_pure, StateT.run_pure] at hx
+            simp only [support_pure, Set.mem_singleton_iff, Prod.mk.injEq] at hx
+            rw [hx.1] at hrunOpt
+            simp at hrunOpt
+
+omit [CommRing 𝓡] in
 /-- The permutation-check verifier has zero-error round-by-round knowledge soundness: the single
 prover message is the extended wire assignment, and the verifier guard ensures it satisfies the
 copy constraints whenever the verifier can output a related statement. -/
@@ -297,6 +363,7 @@ lemma permCheckVerifier_rbrKnowledgeSoundness :
 #print axioms Plonk.permCheckVerifier_mem_support_iff
 #print axioms Plonk.permCheck_perfectCompleteness
 #print axioms Plonk.permCheckVerifier_rbrSoundness
+#print axioms Plonk.permCheckVerifier_soundness
 #print axioms Plonk.permCheckVerifier_rbrKnowledgeSoundness
 
 end PermutationCheck
