@@ -65,12 +65,12 @@ theorem card_le_mul_image_card_of_fiber_card_le [DecidableEq F]
 restriction image: `|image| ≥ |S| / m` (with `m ≥ 1`). This is the form directly feeding the
 `Fam`-lower-bound used by `alphabet_barrier_reduction`. -/
 theorem image_card_ge_of_fiber_card_le [DecidableEq F]
-    (S : Finset (ι → F)) (I₀ : Finset ι) (m : ℕ) (hm : 1 ≤ m)
+    (S : Finset (ι → F)) (I₀ : Finset ι) (m : ℕ) (_hm : 1 ≤ m)
     (hfib : ∀ y : I₀ → F,
       (S.filter (fun w => restrict I₀ w = y)).card ≤ m) :
     S.card / m ≤ (S.image (restrict I₀)).card := by
   have hkey := card_le_mul_image_card_of_fiber_card_le S I₀ m hfib
-  exact Nat.div_le_of_le_mul (by rwa [Nat.mul_comm] at hkey)
+  exact Nat.div_le_of_le_mul hkey
 
 /-- **Real-valued image-size lower bound.** The `ℝ`-cast form `|S| / m ≤ |image|`, the precise
 shape consumed when chaining into the `2^(c·n)` family lower bound of
