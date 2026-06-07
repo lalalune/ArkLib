@@ -251,7 +251,7 @@ We existentially quantify the combined `pSpecC` (rather than spelling out the `F
 arithmetic) so the residual records exactly the protocol-level obligation without committing to a
 brittle size normal form. -/
 def composedPIOPResidual : Prop :=
-  ∃ (N : ℕ) (pSpecC : ProtocolSpec N) (_ : ∀ i, OracleInterface (pSpecC.Message i))
+  ∃ (N : ℕ) (pSpecC : ProtocolSpec N) (_ : ∀ i, OracleInterface.{0, 0} (pSpecC.Message i))
     (_ : ∀ i, SampleableType (pSpecC.Challenge i)),
     Nonempty (OracleReduction oSpec
       (Statement R pp) (OracleStatement R pp) (Witness R pp)
