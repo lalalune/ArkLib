@@ -38,6 +38,8 @@ variable {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
 /-- **Combined covering existence.** If the total number of "far" `γ` across all stacks plus the
 number of jointly-`δ`-close stacks is strictly below the stack count, then some stack is *both*
 line-covered and not jointly `δ`-close. -/
+open Classical in
+omit [Nonempty ι] [DecidableEq F] in
 theorem exists_covered_not_jointProx_stack_of_counts (C : Set (ι → A)) (δ : ℝ≥0)
     (hsum :
       (∑ u : WordStack A (Fin 2) ι,
@@ -52,27 +54,24 @@ theorem exists_covered_not_jointProx_stack_of_counts (C : Set (ι → A)) (δ : 
   -- `hcon : ∀ u, (∀ γ, δᵣ(u 0 + γ • u 1, C) ≤ δ) → jointProximity C u δ`
   set far : WordStack A (Fin 2) ι → ℕ :=
     fun u => (univ.filter (fun γ : F => ¬ δᵣ(u 0 + γ • u 1, C) ≤ δ)).card with hfar
-  -- split the stacks into those with ≥ 1 far γ and those with none (= fully covered)
+  -- partition the stacks into fully covered (`far = 0`) and the rest
   have hsplit :
       Fintype.card (WordStack A (Fin 2) ι)
-        = (univ.filter (fun u : WordStack A (Fin 2) ι => 0 < far u)).card
-          + (univ.filter (fun u : WordStack A (Fin 2) ι => far u = 0)).card := by
-    rw [← Finset.filter_card_add_filter_neg_card_eq_card
-          (s := (univ : Finset (WordStack A (Fin 2) ι))) (p := fun u => 0 < far u),
-        Finset.card_univ]
-    congr 1
-    apply Finset.filter_congr
-    intro u _
-    simp [Nat.pos_iff, Nat.le_zero]
-  -- #{≥ 1 far} ≤ ∑ far
+        = (univ.filter (fun u : WordStack A (Fin 2) ι => far u = 0)).card
+          + (univ.filter (fun u : WordStack A (Fin 2) ι => ¬ far u = 0)).card := by
+    have h :=
+      Finset.card_filter_add_card_filter_not
+        (s := (univ : Finset (WordStack A (Fin 2) ι))) (p := fun u => far u = 0)
+    simpa [Finset.card_univ] using h.symm
+  -- the non-covered stacks contribute at least `1` each to `∑ far`
   have hfar_le :
-      (univ.filter (fun u : WordStack A (Fin 2) ι => 0 < far u)).card
+      (univ.filter (fun u : WordStack A (Fin 2) ι => ¬ far u = 0)).card
         ≤ ∑ u : WordStack A (Fin 2) ι, far u := by
     rw [Finset.card_eq_sum_ones]
     refine le_trans (Finset.sum_le_sum (fun u hu => ?_))
       (Finset.sum_le_sum_of_subset (Finset.subset_univ _))
-    exact (Finset.mem_filter.mp hu).2
-  -- a fully-covered stack is jointly close (by `hcon`), so #{far = 0} ≤ #{jointProx}
+    exact Nat.one_le_iff_ne_zero.mpr (Finset.mem_filter.mp hu).2
+  -- a fully-covered stack is jointly close (by `hcon`)
   have hcov_le :
       (univ.filter (fun u : WordStack A (Fin 2) ι => far u = 0)).card
         ≤ (univ.filter (fun u : WordStack A (Fin 2) ι => jointProximity C u δ)).card := by
@@ -85,8 +84,14 @@ theorem exists_covered_not_jointProx_stack_of_counts (C : Set (ι → A)) (δ : 
     by_contra hγ
     exact (Finset.eq_empty_iff_forall_notMem.mp hempty γ)
       (Finset.mem_filter.mpr ⟨Finset.mem_univ γ, hγ⟩)
+  have hsum' :
+      (∑ u : WordStack A (Fin 2) ι, far u)
+        + (univ.filter (fun u : WordStack A (Fin 2) ι => jointProximity C u δ)).card
+      < Fintype.card (WordStack A (Fin 2) ι) := by
+    simpa [far] using hsum
   omega
 
+open Classical in
 /-- **`1 ≤ ε_ca` from the covering count budget (CS25 #82).** Wires the combined existence into
 `one_le_epsCA_of_line_covered`. -/
 theorem one_le_epsCA_of_counts (C : Set (ι → A)) (δ : ℝ≥0)
