@@ -79,6 +79,13 @@ lemma eliasVolumeUpperCore_of_lt {F ι : Type} [Fintype F] [Fintype ι]
   rw [ENNReal.ofReal_lt_ofReal_iff_of_nonneg (by positivity)]
   exact hkey
 
+/-- Real power with a `(n : ℝ) - (k : ℝ)` exponent (`Real.rpow`) collapses to the natural
+power `a ^ (n - k)` when `k ≤ n`.  Lets concrete certificates evaluate the `q^(n - finrank)`
+denominator by `norm_num`. -/
+lemma rpow_natCast_sub_eq {a : ℝ} {n k : ℕ} (h : k ≤ n) :
+    a ^ ((n : ℝ) - (k : ℝ)) = a ^ (n - k) := by
+  rw [← Nat.cast_sub h, Real.rpow_natCast]
+
 /-! ## Concrete four-rate certificate over `|F| = |ι| = 8`
 
 We instantiate the abstract `hvol_next` family at the smallest field/block-length pair that
@@ -149,24 +156,21 @@ theorem fourRate_hvol_next_card8 (domain : ι ↪ F)
   -- the real-side numeric inequality, per rate, evaluating `hammingBallVolume`
   rw [hF, hn, epsStar_real_eq, hk]
   fin_cases r
-  · -- r = 0: DIAGNOSTIC
+  · -- r = 0: k = 4, j = 5; denominator 8^(8-4)
     simp only [List.get]
-    trace_state
-    sorry
-  · -- r = 1: k = 2, j = 3, exponent 8 - 2 = 6
-    simp only [List.get]
-    rw [show ((8 : ℝ) - ((2 : ℕ) : ℝ)) = ((6 : ℕ) : ℝ) by norm_num, Real.rpow_natCast,
-      CodingTheory.hammingBallVolume]
+    rw [rpow_natCast_sub_eq (n := 8) (k := 4) (by norm_num), CodingTheory.hammingBallVolume]
     norm_num [Nat.floor_eq_iff, Finset.sum_range_succ, Nat.choose]
-  · -- r = 2: k = 1, j = 2, exponent 8 - 1 = 7
+  · -- r = 1: k = 2, j = 3; denominator 8^(8-2)
     simp only [List.get]
-    rw [show ((8 : ℝ) - ((1 : ℕ) : ℝ)) = ((7 : ℕ) : ℝ) by norm_num, Real.rpow_natCast,
-      CodingTheory.hammingBallVolume]
+    rw [rpow_natCast_sub_eq (n := 8) (k := 2) (by norm_num), CodingTheory.hammingBallVolume]
     norm_num [Nat.floor_eq_iff, Finset.sum_range_succ, Nat.choose]
-  · -- r = 3: k = 0, j = 1, exponent 8 - 0 = 8
+  · -- r = 2: k = 1, j = 2; denominator 8^(8-1)
     simp only [List.get]
-    rw [show ((8 : ℝ) - ((0 : ℕ) : ℝ)) = ((8 : ℕ) : ℝ) by norm_num, Real.rpow_natCast,
-      CodingTheory.hammingBallVolume]
+    rw [rpow_natCast_sub_eq (n := 8) (k := 1) (by norm_num), CodingTheory.hammingBallVolume]
+    norm_num [Nat.floor_eq_iff, Finset.sum_range_succ, Nat.choose]
+  · -- r = 3: k = 0, j = 1; denominator 8^(8-0)
+    simp only [List.get]
+    rw [rpow_natCast_sub_eq (n := 8) (k := 0) (by norm_num), CodingTheory.hammingBallVolume]
     norm_num [Nat.floor_eq_iff, Finset.sum_range_succ, Nat.choose]
 
 end Concrete
