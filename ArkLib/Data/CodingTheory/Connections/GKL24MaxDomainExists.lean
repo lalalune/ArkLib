@@ -246,15 +246,20 @@ theorem mcaBadWitness_card_le_pn {MC : Submodule F (ι → F)} {δ p : ℝ≥0} 
       ≤ Fintype.card ι - D.card := le_trans (Nat.le_mul_of_pos_right _ hk) hcount
   have hDle : D.card ≤ Fintype.card ι := by
     rw [← Finset.card_univ]; exact Finset.card_le_card (Finset.subset_univ _)
-  have hcast : ((mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w).card : ℝ≥0)
-      ≤ (Fintype.card ι : ℝ≥0) - (D.card : ℝ≥0) := by
-    rw [← Nat.cast_sub hDle]; exact_mod_cast hBnat
-  refine le_trans hcast ?_
-  rw [tsub_le_iff_left]
-  calc (Fintype.card ι : ℝ≥0)
-      = (p + (1 - p)) * Fintype.card ι := by rw [add_tsub_cancel_of_le hp]
-    _ = p * Fintype.card ι + (1 - p) * Fintype.card ι := by ring
-    _ ≤ p * Fintype.card ι + (D.card : ℝ≥0) := by gcongr
+  -- `n − |D| ≤ p·n` in `ℝ≥0` without group subtraction
+  have hsum : (↑(Fintype.card ι - D.card) : ℝ≥0) + ↑D.card = ↑(Fintype.card ι) := by
+    rw [← Nat.cast_add, Nat.sub_add_cancel hDle]
+  have hn : (↑(Fintype.card ι) : ℝ≥0) = p * Fintype.card ι + (1 - p) * Fintype.card ι := by
+    rw [← add_mul, add_tsub_cancel_of_le hp, one_mul]
+  have key : (↑(Fintype.card ι - D.card) : ℝ≥0) ≤ p * Fintype.card ι := by
+    have h1 : (↑(Fintype.card ι - D.card) : ℝ≥0) + (1 - p) * Fintype.card ι
+        ≤ p * Fintype.card ι + (1 - p) * Fintype.card ι := by
+      calc (↑(Fintype.card ι - D.card) : ℝ≥0) + (1 - p) * Fintype.card ι
+          ≤ (↑(Fintype.card ι - D.card) : ℝ≥0) + ↑D.card := add_le_add le_rfl hDcard
+        _ = ↑(Fintype.card ι) := hsum
+        _ = p * Fintype.card ι + (1 - p) * Fintype.card ι := hn
+    exact le_of_add_le_add_right h1
+  exact le_trans (by exact_mod_cast hBnat) key
 
 /-- **GKL24 sharp first-moment via the common set directly.**  Taking the absorbing domain to be the
 common zero-agreement set itself: if `(1−p)·n ≤ |{i : u₁ᵢ=0 ∧ wᵢ=u₀ᵢ}| < ⌊(1−δ)·n⌋`, then
