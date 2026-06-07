@@ -89,9 +89,35 @@ theorem supportSubsetSum_eq (α : ι ↪ F) (deg d : ℕ) :
   rw [Finset.sum_congr rfl hconst, Finset.sum_const, Finset.card_powersetCard, Finset.card_univ,
     smul_eq_mul]
 
+/-- The **evaluation support** of a degree-`<deg` polynomial: the coordinates where it does not
+vanish (the Hamming support of the corresponding RS codeword). -/
+noncomputable def evalSupport (α : ι ↪ F) {deg : ℕ} (p : Polynomial.degreeLT F deg) : Finset ι :=
+  Finset.univ.filter (fun i => (p : F[X]).eval (α i) ≠ 0)
+
+/-- **Support ↔ vanishing.**  A degree-`<deg` polynomial lies in the vanishing subspace on `Tᶜ`
+exactly when its evaluation support is contained in `T` — both say `p` vanishes off `T`.  This
+identifies the support-`⊆ T` codewords with `ker (evalOnS α deg Tᶜ)`, bridging the support counts to
+the actual weight distribution. -/
+omit [Fintype F] in
+theorem mem_ker_evalOnS_compl_iff (α : ι ↪ F) (deg : ℕ) (T : Finset ι)
+    (p : Polynomial.degreeLT F deg) :
+    p ∈ LinearMap.ker (evalOnS α deg Tᶜ) ↔ evalSupport α p ⊆ T := by
+  rw [LinearMap.mem_ker, funext_iff]
+  constructor
+  · intro h i hi
+    rw [evalSupport, Finset.mem_filter] at hi
+    by_contra hiT
+    exact hi.2 (h ⟨i, Finset.mem_compl.mpr hiT⟩)
+  · intro h j
+    by_contra hj
+    have hmem : (j : ι) ∈ evalSupport α p := by
+      rw [evalSupport, Finset.mem_filter]; exact ⟨Finset.mem_univ _, hj⟩
+    exact (Finset.mem_compl.mp j.2) (h hmem)
+
 end ArkLib.CS25
 
 -- Axiom audit.
 #print axioms ArkLib.CS25.natCard_ker_evalOnS
 #print axioms ArkLib.CS25.natCard_ker_evalOnS_general
 #print axioms ArkLib.CS25.supportSubsetSum_eq
+#print axioms ArkLib.CS25.mem_ker_evalOnS_compl_iff
