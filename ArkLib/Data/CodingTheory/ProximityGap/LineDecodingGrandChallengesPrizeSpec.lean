@@ -74,12 +74,69 @@ theorem exists_mcaPrizeLatticeResolved_with_spec_ofBadScalarDoubleCover
       (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
       (δ j) epsStar (hδ_le_one j) (hcov j)
 
+/-- Per-rate zero bad-scalar counts resolve the faithful MCA prize and expose the
+satisfy/maximality specification for the selected lattice thresholds. This is the prize-spec
+version of the #140 count-frontier route. -/
+theorem exists_mcaPrizeLatticeResolved_with_spec_of_mcaBadCount_zero
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hzero : ∀ j : Fin 4, ∀ u : Code.WordStack F (Fin 2) ι,
+      mcaBadCount (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) (u 0) (u 1) = 0) :
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      mcaPrizeLatticeResolved domain τ ∧
+        ∀ j : Fin 4,
+          let C : Set (ι → F) :=
+            ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+          ∃ _ : mcaThresholdExists C epsStar,
+            mcaSatisfies C epsStar (τ j) ∧
+              ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j :=
+  exists_mcaPrizeLatticeResolved_with_spec_of_lowerWitnesses domain fun j =>
+    MCALowerWitness.ofLe (hδ_le_one j) <| by
+      rw [epsMCA_eq_zero_of_forall_mcaBadCount_eq_zero (F := F) (A := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) (hzero j)]
+      simp
+
+/-- Per-rate direct no-bad-event frontiers resolve the faithful MCA prize and expose the
+satisfy/maximality specification for the selected lattice thresholds. -/
+theorem exists_mcaPrizeLatticeResolved_with_spec_of_forall_not_mcaEvent
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hno : ∀ j : Fin 4, ∀ (u : Code.WordStack F (Fin 2) ι) (γ : F),
+      ¬ mcaEvent (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) (u 0) (u 1) γ) :
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      mcaPrizeLatticeResolved domain τ ∧
+        ∀ j : Fin 4,
+          let C : Set (ι → F) :=
+            ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+          ∃ _ : mcaThresholdExists C epsStar,
+            mcaSatisfies C epsStar (τ j) ∧
+              ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j :=
+  exists_mcaPrizeLatticeResolved_with_spec_of_lowerWitnesses domain fun j =>
+    MCALowerWitness.ofLe (hδ_le_one j) <| by
+      rw [epsMCA_eq_zero_of_forall_not_mcaEvent (F := F) (A := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) (hno j)]
+      simp
+
 end LineDecodingPrizeSpec
 
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_spec_ofDoubleCover
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_spec_ofBadScalarDoubleCover
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_spec_of_mcaBadCount_zero
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_spec_of_forall_not_mcaEvent
 
 end GrandChallengesLattice
 
