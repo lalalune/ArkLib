@@ -150,42 +150,45 @@ theorem subPhaseCompletenessResidual_iff_split :
         SumcheckCompletenessResidual oSpec F n M params init impl :=
   Iff.rfl
 
+/-- The **append-composition** completeness brick still exposed by
+`OracleReduction.append_completeness`, indexed by the two subphase completeness proofs that the
+append theorem consumes. -/
+def AppendCompletenessResidual
+    (hOuter : OuterCompletenessResidual oSpec F n M params init impl)
+    (hSumcheck : SumcheckCompletenessResidual oSpec F n M params init impl) : Prop :=
+  (outerOracleReduction oSpec F n M params).appendCompletenessResidual
+    (sumcheckOracleReduction oSpec F n M params) hOuter hSumcheck
+
 /-- **LogUp completeness from the two independent halves.** Identical conclusion to
 `logup_completeness_of_residual`, but consuming the outer and sumcheck completeness
 obligations *separately*, so either can be discharged on its own. The
-`hAppendCompleteness` sequential-composition residual is threaded unchanged (the current
-`OracleReduction.append_completeness` carries it as an explicit hypothesis). -/
+`hAppendCompleteness` sequential-composition residual is threaded with the two subphase proofs
+it depends on. -/
 theorem logup_completeness_of_split
     (hOuter : OuterCompletenessResidual oSpec F n M params init impl)
     (hSumcheck : SumcheckCompletenessResidual oSpec F n M params init impl)
     (hAppendCompleteness :
-      (logupOracleReduction oSpec F n M params).completeness init impl
-        (inputRelation F n M) outputRelation (logupCompletenessError F n)) :
+      AppendCompletenessResidual oSpec F n M params init impl hOuter hSumcheck) :
     (logupOracleReduction oSpec F n M params).completeness init impl
       (inputRelation F n M) outputRelation (logupCompletenessError F n) :=
   logup_completeness_of_residual oSpec F n M params init impl ⟨hOuter, hSumcheck⟩
     hAppendCompleteness
 
-/-- The **append-composition** completeness brick still exposed by
-`OracleReduction.append_completeness`. -/
-def AppendCompletenessResidual : Prop :=
-  (logupOracleReduction oSpec F n M params).completeness init impl
-    (inputRelation F n M) outputRelation (logupCompletenessError F n)
-
 /-- The fully split completeness residual surface: outer LogUp completeness, lifted sumcheck
 completeness, and append-composition completeness. -/
 def LogupCompletenessBrickResidual : Prop :=
-  OuterCompletenessResidual oSpec F n M params init impl ∧
-    SumcheckCompletenessResidual oSpec F n M params init impl ∧
-      AppendCompletenessResidual oSpec F n M params init impl
+  ∃ hOuter : OuterCompletenessResidual oSpec F n M params init impl,
+    ∃ hSumcheck : SumcheckCompletenessResidual oSpec F n M params init impl,
+      AppendCompletenessResidual oSpec F n M params init impl hOuter hSumcheck
 
 /-- **LogUp completeness from all named bricks.** This consumes the three independently named
 remaining completeness obligations. -/
 theorem logup_completeness_of_bricks
     (h : LogupCompletenessBrickResidual oSpec F n M params init impl) :
     (logupOracleReduction oSpec F n M params).completeness init impl
-      (inputRelation F n M) outputRelation (logupCompletenessError F n) :=
-  logup_completeness_of_split oSpec F n M params init impl h.1 h.2.1 h.2.2
+      (inputRelation F n M) outputRelation (logupCompletenessError F n) := by
+  rcases h with ⟨hOuter, hSumcheck, hAppend⟩
+  exact logup_completeness_of_split oSpec F n M params init impl hOuter hSumcheck hAppend
 
 end Split
 
