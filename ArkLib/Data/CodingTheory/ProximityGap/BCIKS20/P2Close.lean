@@ -197,6 +197,19 @@ theorem trunc_defect_cancel_assembled (x₀ : F) (R : F[X][X][Y])
   rw [trunc_defect_eq_restrictedFaaDiBrunoSum H x₀ R hHyp t, hmatch t]
   ring
 
+/-- Fixed-order truncated-defect cancellation from the single-order carved core. -/
+theorem trunc_defect_cancel_assembled_at (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ)
+    (hmatch : RestrictedFaaDiBrunoMatchAt H x₀ R hHyp t) :
+    PowerSeries.coeff (t + 1)
+        (Polynomial.eval (βHenselTrunc H x₀ R hHyp t) (Q x₀ R H))
+      + ClaimA2.ζ R x₀ H * PowerSeries.coeff (t + 1) (βHenselAssembled H x₀ R hHyp)
+        = 0 := by
+  rw [trunc_defect_eq_restrictedFaaDiBrunoSum H x₀ R hHyp t]
+  unfold RestrictedFaaDiBrunoMatchAt at hmatch
+  rw [hmatch]
+  ring
+
 /-- **P2 root, conditional on the carved core (PROVEN reduction).** -/
 theorem assembledSeries_isRoot_of_match (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H) (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp) :
@@ -286,6 +299,7 @@ section AxiomAudit
 #print axioms restrictedFaaDiBrunoMatch_iff_faaDiBrunoSuccSumZero
 #print axioms trunc_defect_eq_restrictedFaaDiBrunoSum
 #print axioms trunc_defect_cancel_assembled
+#print axioms trunc_defect_cancel_assembled_at
 #print axioms assembledSeries_isRoot_of_match
 #print axioms βHensel_lift_identity_of_match
 #print axioms P2_closed
