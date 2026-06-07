@@ -192,6 +192,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MonicWfreeFullSumAt
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MonicWfreeGlobal
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MonicWfreeRange
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MonicWfreeRangeConsumers
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MonicWfreeS5
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2OrderZeroRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Reabsorb
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Reindex
