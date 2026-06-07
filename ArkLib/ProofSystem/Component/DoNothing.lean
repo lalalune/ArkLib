@@ -133,6 +133,49 @@ theorem oracleVerifier_rbrKnowledgeSoundness [DecidablePred (· ∈ rel)] :
     (oracleVerifier oSpec Statement OStatement).rbrKnowledgeSoundness init impl rel rel 0 :=
   OracleVerifier.id_rbrKnowledgeSoundness init impl
 
+/-- The `DoNothing` oracle reduction, viewed as a plain reduction, is perfectly HVZK for any
+relation. This avoids requiring the `OracleReduction`-specific ZK wrapper API at this import site. -/
+@[simp]
+theorem oracleReduction_toReduction_perfectHVZK :
+    Reduction.perfectHVZK init impl rel
+      (oracleReduction oSpec Statement OStatement Witness).toReduction
+      Reduction.idTranscriptSimulator :=
+  Reduction.id_perfectHVZK init impl rel
+
+/-- The `DoNothing` oracle reduction, viewed as a plain reduction, is statistically HVZK for any
+relation and error budget. -/
+@[simp]
+theorem oracleReduction_toReduction_statisticalHVZK (ε : NNReal) :
+    Reduction.statisticalHVZK init impl rel
+      (oracleReduction oSpec Statement OStatement Witness).toReduction
+      Reduction.idTranscriptSimulator ε :=
+  (oracleReduction_toReduction_perfectHVZK (oSpec := oSpec) (Statement := Statement)
+    (OStatement := OStatement) (Witness := Witness) (init := init) (impl := impl)
+    rel).statisticalHVZK ε
+
+/-- The `DoNothing` oracle reduction, viewed as a plain reduction, has an explicit perfect-HVZK
+simulator for any relation. -/
+@[simp]
+theorem oracleReduction_toReduction_isHVZK :
+    Reduction.isHVZK init impl rel
+      (oracleReduction oSpec Statement OStatement Witness).toReduction :=
+  Reduction.id_isHVZK init impl rel
+
+/-- The `DoNothing` oracle reduction, viewed as a plain reduction, has statistical HVZK for any
+relation and error budget. -/
+@[simp]
+theorem oracleReduction_toReduction_isStatHVZK (ε : NNReal) :
+    Reduction.isStatHVZK init impl rel
+      (oracleReduction oSpec Statement OStatement Witness).toReduction ε :=
+  (oracleReduction_toReduction_isHVZK (oSpec := oSpec) (Statement := Statement)
+    (OStatement := OStatement) (Witness := Witness) (init := init) (impl := impl)
+    rel).isStatHVZK ε
+
+#print axioms DoNothing.oracleReduction_toReduction_perfectHVZK
+#print axioms DoNothing.oracleReduction_toReduction_statisticalHVZK
+#print axioms DoNothing.oracleReduction_toReduction_isHVZK
+#print axioms DoNothing.oracleReduction_toReduction_isStatHVZK
+
 end OracleReduction
 
 end DoNothing
