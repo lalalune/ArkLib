@@ -116,6 +116,19 @@ def LogupSoundnessBrickResidual (sumcheckSoundnessError : ℝ≥0) : Prop :=
     SumcheckSoundnessResidual oSpec F n M params init impl sumcheckSoundnessError ∧
       AppendSoundnessResidual oSpec F n M params init impl sumcheckSoundnessError
 
+/-- The fully split soundness residual is exactly the original bundled subphase residual plus the
+named append-composition residual. -/
+theorem logupSoundnessBrickResidual_iff_subPhase_append
+    (sumcheckSoundnessError : ℝ≥0) :
+    LogupSoundnessBrickResidual oSpec F n M params init impl sumcheckSoundnessError ↔
+      SubPhaseSoundnessResidual oSpec F n M params init impl sumcheckSoundnessError ∧
+        AppendSoundnessResidual oSpec F n M params init impl sumcheckSoundnessError := by
+  constructor
+  · intro h
+    exact ⟨⟨h.1, h.2.1⟩, h.2.2⟩
+  · intro h
+    exact ⟨h.1.1, h.1.2, h.2⟩
+
 /-- **LogUp soundness from all named bricks.** This is a packaging theorem: it consumes the
 three independently named remaining soundness obligations instead of a bundled sub-phase residual
 plus an anonymous append-composition hypothesis. -/
@@ -126,6 +139,19 @@ theorem logup_soundness_of_bricks (sumcheckSoundnessError : ℝ≥0)
       (logupSoundnessError F n M params sumcheckSoundnessError) :=
   logup_soundness_of_split oSpec F n M params init impl sumcheckSoundnessError
     h.1 h.2.1 h.2.2
+
+/-- **LogUp soundness from the original bundled subphase residual and named append residual.**
+This is the direct consumer form for callers that have not split the subphase residual further. -/
+theorem logup_soundness_of_subPhase_append (sumcheckSoundnessError : ℝ≥0)
+    (hSub :
+      SubPhaseSoundnessResidual oSpec F n M params init impl sumcheckSoundnessError)
+    (hAppend :
+      AppendSoundnessResidual oSpec F n M params init impl sumcheckSoundnessError) :
+    (logupVerifier oSpec F n M params).soundness init impl
+      (inputRelation F n M).language outputRelation.language
+      (logupSoundnessError F n M params sumcheckSoundnessError) :=
+  logup_soundness_of_bricks oSpec F n M params init impl sumcheckSoundnessError
+    ⟨hSub.1, hSub.2, hAppend⟩
 
 /-! ### Completeness halves -/
 
@@ -181,6 +207,18 @@ def LogupCompletenessBrickResidual : Prop :=
     ∃ hSumcheck : SumcheckCompletenessResidual oSpec F n M params init impl,
       AppendCompletenessResidual oSpec F n M params init impl hOuter hSumcheck
 
+/-- The fully split completeness residual is exactly the original bundled subphase residual plus
+the dependent append-composition residual indexed by that bundled proof's two projections. -/
+theorem logupCompletenessBrickResidual_iff_subPhase_append :
+    LogupCompletenessBrickResidual oSpec F n M params init impl ↔
+      ∃ hSub : SubPhaseCompletenessResidual oSpec F n M params init impl,
+        AppendCompletenessResidual oSpec F n M params init impl hSub.1 hSub.2 := by
+  constructor
+  · rintro ⟨hOuter, hSumcheck, hAppend⟩
+    exact ⟨⟨hOuter, hSumcheck⟩, hAppend⟩
+  · rintro ⟨hSub, hAppend⟩
+    exact ⟨hSub.1, hSub.2, hAppend⟩
+
 /-- **LogUp completeness from all named bricks.** This consumes the three independently named
 remaining completeness obligations. -/
 theorem logup_completeness_of_bricks
@@ -189,6 +227,17 @@ theorem logup_completeness_of_bricks
       (inputRelation F n M) outputRelation (logupCompletenessError F n) := by
   rcases h with ⟨hOuter, hSumcheck, hAppend⟩
   exact logup_completeness_of_split oSpec F n M params init impl hOuter hSumcheck hAppend
+
+/-- **LogUp completeness from the original bundled subphase residual and named append residual.**
+This is the direct consumer form for callers that have not split the subphase residual further. -/
+theorem logup_completeness_of_subPhase_append
+    (hSub : SubPhaseCompletenessResidual oSpec F n M params init impl)
+    (hAppend :
+      AppendCompletenessResidual oSpec F n M params init impl hSub.1 hSub.2) :
+    (logupOracleReduction oSpec F n M params).completeness init impl
+      (inputRelation F n M) outputRelation (logupCompletenessError F n) :=
+  logup_completeness_of_bricks oSpec F n M params init impl
+    ⟨hSub.1, hSub.2, hAppend⟩
 
 end Split
 
@@ -203,7 +252,9 @@ end Logup
 #print axioms Logup.logup_soundness_of_split
 #print axioms Logup.AppendSoundnessResidual
 #print axioms Logup.LogupSoundnessBrickResidual
+#print axioms Logup.logupSoundnessBrickResidual_iff_subPhase_append
 #print axioms Logup.logup_soundness_of_bricks
+#print axioms Logup.logup_soundness_of_subPhase_append
 #print axioms Logup.SubPhaseCompletenessResidual
 #print axioms Logup.logup_completeness_of_residual
 #print axioms Logup.OuterCompletenessResidual
@@ -212,4 +263,6 @@ end Logup
 #print axioms Logup.logup_completeness_of_split
 #print axioms Logup.AppendCompletenessResidual
 #print axioms Logup.LogupCompletenessBrickResidual
+#print axioms Logup.logupCompletenessBrickResidual_iff_subPhase_append
 #print axioms Logup.logup_completeness_of_bricks
+#print axioms Logup.logup_completeness_of_subPhase_append
