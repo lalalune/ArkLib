@@ -1526,6 +1526,41 @@ theorem frs_epsMCA_capacity_gg25_of_subspaceDesign_prop_tle
   exact frs_capacity_realBound_of_t_le (Fintype.card ι : ℝ) η (t : ℝ) (Fintype.card F : ℝ)
     (Nat.cast_nonneg _) hη_pos hη_lt (by exact_mod_cast ht) hcF htη
 
+/-- **ABF26 T4.14 reduced to its genuine `{T2.18, T4.13}` inputs.**
+
+Instantiates `frs_epsMCA_capacity_gg25_of_subspaceDesign_prop_tle` at the folded-RS
+subspace-design margin `τ_FRS r = s·k/n/(s-r+1)` and discharges the radius residual via
+`frs_capacity_radius_eq_of_eta` (the bound residual is already discharged inside `_tle` via
+`frs_capacity_realBound_of_t_le`). The public folded-RS MCA-up-to-capacity statement then follows
+from exactly: the FRS subspace-design instance (T2.18), the public subspace-design MCA bound
+(T4.13) at that `τ_FRS` and `t`, the design active-range `t + 1 ≤ s`, and the two explicit honest
+parameter choices `η = τ_FRS(t+1) - ρ + 3/(2t)` and `t ≤ 2/η`. Both arithmetic residuals are now
+proved, so the remaining content is purely the two genuine GG25 mathematical inputs `hT218`,
+`hT413`. -/
+theorem frs_epsMCA_capacity_gg25_of_subspaceDesign_eta
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (η : ℝ) (hη_pos : 0 < η) (hη_lt : η < 1)
+    (hs_gt : (s : ℝ) > 16 / η ^ 2)
+    (t : ℕ) (ht : 0 < t) (hts : t + 1 ≤ s)
+    (hT218 : IsSubspaceDesign s
+        (fun r : ℕ ↦ if r ∈ Finset.Icc 1 s then
+            (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - (r : ℝ) + 1) else 1)
+        (ReedSolomon.Folded.frsCode domain k s ω))
+    (hT413 : subspaceDesign_epsMCA_gg25 s
+        (fun r : ℕ ↦ if r ∈ Finset.Icc 1 s then
+            (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - (r : ℝ) + 1) else 1)
+        (ReedSolomon.Folded.frsCode domain k s ω) hT218 t ht)
+    (hη : η = (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - (t : ℝ))
+        - (k : ℝ) / Fintype.card ι + 3 / (2 * t))
+    (htη : (t : ℝ) ≤ 2 / η) :
+    frs_epsMCA_capacity_gg25 domain k s ω η hη_pos hη_lt hs_gt := by
+  refine frs_epsMCA_capacity_gg25_of_subspaceDesign_prop_tle
+    (domain := domain) (k := k) (s := s) (ω := ω) (η := η)
+    hη_pos hη_lt hs_gt _ t ht hT218 hT413 ?_ htη
+  exact frs_capacity_radius_eq_of_eta s k (Fintype.card ι) η t hts hη
+
 /-- Packaged single-instance frontier for ABF26 T4.14 / GG25 Corollary 4.10.
 
 The fields are exactly the residual inputs consumed by
@@ -1792,5 +1827,6 @@ end SubspaceDesignFRS
 #print axioms CodingTheory.linear_epsCA_ge_sampling_dg25_of_mass_bound
 #print axioms CodingTheory.frs_tau_eval
 #print axioms CodingTheory.frs_capacity_radius_eq_of_eta
+#print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_subspaceDesign_eta
 
 end CodingTheory
