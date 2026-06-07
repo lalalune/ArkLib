@@ -284,4 +284,44 @@ theorem card_jointProximity_le_card_stacks_of_subband [Nonempty ι] (C : Set (ι
   rw [hcard]
   exact pow_succ_rpow_entropy_le hQ1 k (Fintype.card ι) _ hsub
 
+/-- **Generalized rpow core** with an explicit exponent target `m`: `Q^k·(n+1)·Q^{n·H} ≤ Q^m`
+whenever `k + log_Q(n+1) + n·H ≤ m`. (`pow_succ_rpow_entropy_le` is the `m = n` case.) -/
+theorem pow_succ_rpow_entropy_le' {Q : ℝ} (hQ : 1 < Q) (k n m : ℕ) (H : ℝ)
+    (h : (k : ℝ) + Real.logb Q ((n : ℝ) + 1) + (n : ℝ) * H ≤ (m : ℝ)) :
+    Q ^ (k : ℝ) * (((n : ℝ) + 1) * Q ^ ((n : ℝ) * H)) ≤ Q ^ (m : ℝ) := by
+  have hQ0 : (0 : ℝ) < Q := by linarith
+  have hn1 : (0 : ℝ) < (n : ℝ) + 1 := by positivity
+  have hlogb : ((n : ℝ) + 1) = Q ^ Real.logb Q ((n : ℝ) + 1) :=
+    (Real.rpow_logb hQ0 hQ.ne' hn1).symm
+  calc Q ^ (k : ℝ) * (((n : ℝ) + 1) * Q ^ ((n : ℝ) * H))
+      = Q ^ (k : ℝ) * (Q ^ Real.logb Q ((n : ℝ) + 1) * Q ^ ((n : ℝ) * H)) := by rw [← hlogb]
+    _ = Q ^ ((k : ℝ) + (Real.logb Q ((n : ℝ) + 1) + (n : ℝ) * H)) := by
+        rw [← Real.rpow_add hQ0, ← Real.rpow_add hQ0]
+    _ ≤ Q ^ (m : ℝ) := Real.rpow_le_rpow_of_exponent_le hQ.le (by linarith)
+
+open Classical in
+/-- **Tightened jointProx sub-band bound.** With the rate identity `|C|^|κ| = Q^k` and the
+sub-band condition `k + log_Q(n+1) + n·H_Q(δ) ≤ m`, the jointly-`δ`-close stacks number at most
+`Q^m`. For `m = n−1` (one below the stack exponent `n`), this gives `#{jointProx} ≤ Q^{n-1}`
+(`= q^{2n−2}` for the `Fin 2` stacks) — exactly the bound `count_budget_lt` consumes. -/
+theorem card_jointProximity_le_pow_of_subband [Nonempty ι] (C : Set (ι → A))
+    [AddCommGroup A] [Fintype ↥C] (δ : ℝ≥0) (k m : ℕ)
+    (hq : 2 ≤ Fintype.card (κ → A))
+    (hδcap : (δ : ℝ) ≤ 1 - 1 / (Fintype.card (κ → A) : ℝ))
+    (hrate : (Fintype.card ↥C) ^ (Fintype.card κ) = (Fintype.card (κ → A)) ^ k)
+    (hsub : (k : ℝ) + Real.logb (Fintype.card (κ → A)) ((Fintype.card ι : ℝ) + 1)
+        + (Fintype.card ι : ℝ) * CodingTheory.qEntropy (Fintype.card (κ → A)) (δ : ℝ)
+          ≤ (m : ℝ)) :
+    (Finset.univ.filter (fun u : WordStack A κ ι => jointProximity C (u := u) δ)).card
+      ≤ (Fintype.card (κ → A)) ^ m := by
+  have hQ1 : (1 : ℝ) < (Fintype.card (κ → A) : ℝ) := by exact_mod_cast hq
+  rw [← Nat.cast_le (α := ℝ), Nat.cast_pow,
+    ← Real.rpow_natCast (Fintype.card (κ → A) : ℝ) m]
+  refine (card_jointProximity_le_qEntropy (κ := κ) C δ hq hδcap).trans ?_
+  have hcard : (((Fintype.card ↥C) ^ (Fintype.card κ) : ℕ) : ℝ)
+      = (Fintype.card (κ → A) : ℝ) ^ (k : ℝ) := by
+    rw [hrate, Nat.cast_pow, Real.rpow_natCast]
+  rw [hcard]
+  exact pow_succ_rpow_entropy_le' hQ1 k (Fintype.card ι) m _ hsub
+
 end CS25
