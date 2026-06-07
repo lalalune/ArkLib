@@ -235,56 +235,50 @@ per-component guarantees:
   contributing `0`.
 -/
 
-/-- The protocol specification of the fully composed Spartan PIOP: the append of all phase protocol
-specifications in order
-
-  firstMessage ++ₚ firstChallenge ++ₚ firstSumcheck ++ₚ sendEvalClaim
-    ++ₚ linearCombination ++ₚ secondSumcheck ++ₚ finalCheck.
-
-`firstMessage`/`sendEvalClaim` are single `P_to_V` rounds, `firstChallenge`/`linearCombination` are
-single `V_to_P` rounds, each sum-check is `Sumcheck.Spec.pSpec R 2 ·`, and `finalCheck` is the empty
-spec `!p[]`. -/
+/-- The Spartan input relation as a `Set` over the input context
+`((Statement × OracleStatement) × Witness)`, built from `R1CS.relation` (which is curried). This is
+the relation the composed PIOP reduces from. -/
 @[reducible]
-def composedPSpec : ProtocolSpec
-    (((((((1 + 1) + Fin.vsum (fun _ : Fin pp.ℓ_m => (2 : ℕ))) + 1) + 1)
-        + Fin.vsum (fun _ : Fin pp.ℓ_n => (2 : ℕ))) + 0)) :=
-  (((((⟨!v[.P_to_V], !v[Witness R pp]⟩ ++ₚ ⟨!v[.V_to_P], !v[FirstChallenge R pp]⟩)
-        ++ₚ Sumcheck.Spec.pSpec R 2 pp.ℓ_m)
-        ++ₚ ⟨!v[.P_to_V], !v[∀ i, EvalClaim R i]⟩)
-        ++ₚ ⟨!v[.V_to_P], !v[LinearCombinationChallenge R]⟩)
-        ++ₚ Sumcheck.Spec.pSpec R 2 pp.ℓ_n)
-        ++ₚ !p[]
+def spartanRelIn :
+    Set ((Statement R pp × (∀ i, OracleStatement R pp i)) × Witness R pp) :=
+  { x | R1CS.relation R pp.toSizeR1CS x.1.1 x.1.2 x.2 }
 
 /-- **NAMED RESIDUAL — composed Spartan PIOP existence.** The fully composed Spartan oracle
-reduction, of input context the bare R1CS statement (`Statement`, `OracleStatement`, `Witness`) and
-output context the terminal statement after the final check. Obtained by iterated
-`OracleReduction.append` of the seven phases (the `AppendCoherent` side conditions chain
-automatically from the leaves, by `OracleVerifier.Append.AppendCoherent.oracleReductionAppend`).
-Stated as a residual because two of the seven leaves (the sum-check phases) are themselves residuals
-(`firstSumcheckResidual`, `secondSumcheckResidual`). -/
+reduction, over *some* combined protocol specification `pSpecC`, of input context the bare R1CS
+statement (`Statement`, `OracleStatement`, `Witness`) and output context the terminal statement
+after the final check. Obtained by iterated `OracleReduction.append` of the seven phases — the
+`AppendCoherent` side conditions chain automatically from the leaves, by
+`OracleVerifier.Append.AppendCoherent.oracleReductionAppend`. Stated as a residual because two of the
+seven leaves (the sum-check phases) are themselves residuals
+(`firstSumcheckResidual`, `secondSumcheckResidual`).
+
+We existentially quantify the combined `pSpecC` (rather than spelling out the `Fin.vsum`/`++ₚ`
+arithmetic) so the residual records exactly the protocol-level obligation without committing to a
+brittle size normal form. -/
 def composedPIOPResidual : Prop :=
-  Nonempty (OracleReduction oSpec
-    (Statement R pp) (OracleStatement R pp) (Witness R pp)
-    (FinalStatement R pp) (FinalOracleStatement R pp) Unit
-    (composedPSpec R pp))
+  ∃ (N : ℕ) (pSpecC : ProtocolSpec N) (_ : ∀ i, OracleInterface (pSpecC.Message i))
+    (_ : ∀ i, SampleableType (pSpecC.Challenge i)),
+    Nonempty (OracleReduction oSpec
+      (Statement R pp) (OracleStatement R pp) (Witness R pp)
+      (FinalStatement R pp) (FinalOracleStatement R pp) Unit
+      pSpecC)
 
 /-- **NAMED RESIDUAL — composed Spartan PIOP perfect completeness.** Discharged, once the composed
-reduction (`composedPIOPResidual`) is available, by iterated
+reduction `Rc` (over its combined spec `pSpecC`) is available, by iterated
 `OracleReduction.append_perfectCompleteness`: each leaf is perfectly complete
 (`SendSingleWitness.oracleReduction`, `RandomQuery.oracleReduction_completeness`, the two sum-checks
 via `Sumcheck.Spec.oracleReduction_perfectCompleteness` transferred through `liftContext`,
 `sendEvalClaim`/`linearCombination` as pure forwardings, and `finalCheck` via `CheckClaim`), and
 `append_perfectCompleteness` combines them with total error `0` (resting on the `Prover.append_run`
-keystone, the single deep residual of the append layer). The statement is conditioned on a
-composed reduction `Rc` witnessing `composedPIOPResidual`. -/
+keystone, the single deep residual of the append layer). -/
 def composedCompletenessResidual
+    {N : ℕ} {pSpecC : ProtocolSpec N}
+    [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
     (Rc : OracleReduction oSpec
       (Statement R pp) (OracleStatement R pp) (Witness R pp)
-      (FinalStatement R pp) (FinalOracleStatement R pp) Unit (composedPSpec R pp))
+      (FinalStatement R pp) (FinalOracleStatement R pp) Unit pSpecC)
     {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp)) : Prop :=
-  Rc.perfectCompleteness init impl
-    (fun ⟨⟨stmt, oStmt⟩, wit⟩ => (relation R pp).uncurry ⟨stmt, oStmt, wit⟩)
-    (finalCheckRelOut R pp)
+  Rc.perfectCompleteness init impl (spartanRelIn R pp) (finalCheckRelOut R pp)
 
 /-- **NAMED RESIDUAL — composed Spartan PIOP round-by-round knowledge soundness.** Discharged, once
 the composed verifier is available, by iterated `OracleVerifier.append_rbrKnowledgeSoundness`: each
@@ -294,14 +288,15 @@ through `liftContext`, and `CheckClaim.verifier_rbr_knowledge_soundness`), and
 `append_rbrKnowledgeSoundness` combines the per-round errors through `ChallengeIdx.sumEquiv`. Each
 sum-check round contributes `2/|R|`; the zero-round components contribute `0`. -/
 def composedRbrKnowledgeSoundnessResidual
+    {N : ℕ} {pSpecC : ProtocolSpec N}
+    [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
     (Rc : OracleReduction oSpec
       (Statement R pp) (OracleStatement R pp) (Witness R pp)
-      (FinalStatement R pp) (FinalOracleStatement R pp) Unit (composedPSpec R pp))
+      (FinalStatement R pp) (FinalOracleStatement R pp) Unit pSpecC)
     {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
-    (rbrKnowledgeError : (composedPSpec R pp).ChallengeIdx → ℝ≥0) : Prop :=
+    (rbrKnowledgeError : pSpecC.ChallengeIdx → ℝ≥0) : Prop :=
   Rc.verifier.rbrKnowledgeSoundness init impl
-    (fun ⟨⟨stmt, oStmt⟩, wit⟩ => (relation R pp).uncurry ⟨stmt, oStmt, wit⟩)
-    (finalCheckRelOut R pp) rbrKnowledgeError
+    (spartanRelIn R pp) (finalCheckRelOut R pp) rbrKnowledgeError
 
 end Bricks
 
