@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.ToMathlib.MatchingExtractor
+import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
 # Lifting GS matching factors from `F[X][Y]` to `(F⟦X⟧)[Y]` (the §5 coefficient-ring bridge)
