@@ -111,9 +111,8 @@ lemma extractSuffixFromChallenge_congr_destIdx
     cast (by rw [h_idx_eq]) (extractSuffixFromChallenge 𝔽q β v destIdx' h_le') := by
   subst h_idx_eq
   rw [cast_eq]
-  exact congrArg (extractSuffixFromChallenge 𝔽q β v destIdx) (Subsingleton.elim h_le h_le')
 
-omit [SampleableType L] [DecidableEq 𝔽q] h_β₀_eq_1 in
+omit [SampleableType L] h_β₀_eq_1 in
 /-- **First Oracle Equals Polynomial Oracle Function**:
 When `strictOracleFoldingConsistencyProp` holds, the first oracle (`getFirstOracle`) equals
 the polynomial oracle function `f₀` derived from the multilinear polynomial `t`.
@@ -568,7 +567,8 @@ class PreviousSuffixFiberAlignmentResidual : Prop where
           (i := ⟨j.val * ϑ, k_mul_ϑ_lt_ℓ (k := j)⟩)
           (steps := ϑ))
 
-variable [PreviousSuffixFiberAlignmentResidual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
+variable [PreviousSuffixFiberAlignmentResidual 𝔽q β
+  (ℓ := ℓ) (𝓡 := 𝓡) (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
 
 /-- The challenge suffix at block source `j·ϑ` equals the fiber point at the
 `extractMiddleFinMask` index, reduced to the explicit
