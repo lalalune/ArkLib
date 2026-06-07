@@ -156,6 +156,19 @@ theorem univ_eq_singleton_indiscrete_zero :
   · intro _
     exact Finset.mem_univ p
 
+/-- A partition of `0` contains no part. -/
+theorem notMem_parts_of_zero (p : Nat.Partition 0) (m : ℕ) : m ∉ p.parts := by
+  rw [parts_eq_zero_of_zero p]
+  simp
+
+/-- Filtering partitions of `0` by exclusion of any part leaves the singleton empty partition. -/
+theorem univ_filter_notMem_zero_eq_singleton_indiscrete (m : ℕ) :
+    ((Finset.univ : Finset (Nat.Partition 0)).filter (fun lam => m ∉ lam.parts)) =
+      {Nat.Partition.indiscrete 0} := by
+  classical
+  rw [univ_eq_singleton_indiscrete_zero]
+  simp
+
 /-! ### The one-total partition and the excluded singleton branch -/
 
 /-- Every partition of `1` contains the part `1`. -/
@@ -326,6 +339,8 @@ end ArkLib
 #print axioms ArkLib.Nat.Partition.parts_eq_zero_of_zero
 #print axioms ArkLib.Nat.Partition.eq_indiscrete_zero
 #print axioms ArkLib.Nat.Partition.univ_eq_singleton_indiscrete_zero
+#print axioms ArkLib.Nat.Partition.notMem_parts_of_zero
+#print axioms ArkLib.Nat.Partition.univ_filter_notMem_zero_eq_singleton_indiscrete
 #print axioms ArkLib.Nat.Partition.one_mem_parts_of_one
 #print axioms ArkLib.Nat.Partition.eq_indiscrete_one
 #print axioms ArkLib.Nat.Partition.univ_eq_singleton_indiscrete_one
