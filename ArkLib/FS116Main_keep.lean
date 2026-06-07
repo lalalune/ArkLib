@@ -70,6 +70,12 @@ theorem optionT_run_simulateQ_liftquery (X : OptionT (OracleComp spec₁) α) :
         OracleComp (spec₁ + spec₂) _)) X) =
       (monadLift X.run : OracleComp (spec₁ + spec₂) (Option α)) := rfl
 
+@[simp] theorem optionT_run_monadLift_oc
+    [MonadLiftT (OracleComp spec₁) (OracleComp (spec₁ + spec₂))]
+    (X : OracleComp spec₁ α) :
+    (monadLift X : OptionT (OracleComp (spec₁ + spec₂)) α).run
+      = OracleComp.liftComp (some <$> X) (spec₁ + spec₂) := rfl
+
 theorem leaf_collapse {sigma : Type}
     [MonadLiftT (OracleComp spec₁) (OracleComp (spec₁ + spec₂))]
     (impl : QueryImpl spec₁ (StateT sigma ProbComp))
@@ -136,10 +142,10 @@ theorem fs116_coupled_final
     Option.getM_map_run, Option.map_comp_lambda, optionT_monadLift_run, liftM_eq_monadLift,
     OptionT.run_bind, OptionT.run_monadLift, OptionT.run_mk, monadLift_bind, monadLift_pure,
     Option.elimM, bind_assoc, pure_bind, map_bind]
-  -- `leaf_collapse` is PROVEN (above) but does not `rw`/`simp` here: the goal's monadLift leaf
-  -- uses a SubSpec-derived instance whose term differs from the lemma's abstract MonadLiftT.
-  -- Finishing needs NoInteraction-style inline `conv`+`change` surgery per nested-elim leaf,
-  -- then a probEvent congruence vs the SR game (hstmtIn discharges stmtIn∉langIn).
+  -- leaf_collapse + optionT_run_monadLift_oc are PROVEN, but neither rw/simp applies here:
+  -- the goal's monadLift leaf is a SubSpec/liftM-coercion term, structurally different from the
+  -- lemmas' MonadLiftT-based monadLift (though defeq). Finishing needs per-leaf conv/change surgery
+  -- inside the nested-elim structure, then a probEvent congruence vs the SR game.
   sorry
 
 end Reduction
