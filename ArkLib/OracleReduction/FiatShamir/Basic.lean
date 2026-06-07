@@ -447,6 +447,71 @@ theorem fiatShamir_completeness_of_honestExecution_mono_relations_error
       completenessError₁ R hCollapse hHonest hIn hOut
   exact Reduction.completeness_error_mono init impl hle hComplete
 
+/-- Basic Fiat-Shamir completeness at a larger target error follows directly from the named
+run-equality residual and honest-execution completeness at a smaller error. -/
+theorem fiatShamir_completeness_of_runEq_mono_error
+    (init : ProbComp σ)
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (relIn : Set (StmtIn × WitIn))
+    (relOut : Set (StmtOut × WitOut))
+    {completenessError₁ completenessError₂ : ℝ≥0}
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hRun : ∀ stmtIn witIn,
+      fiatShamir_run_eq_honestExecution R stmtIn witIn)
+    (hHonest : Reduction.completenessFromRun init impl relIn relOut
+      (R.fiatShamirHonestExecution) completenessError₁)
+    (hle : completenessError₁ ≤ completenessError₂) :
+    R.fiatShamir.completeness init impl relIn relOut completenessError₂ :=
+  fiatShamir_completeness_of_honestExecution_mono_error init impl relIn relOut R
+    (fun stmtIn witIn =>
+      fiatShamir_runCollapseResidual_of_run_eq_honestExecution impl R stmtIn witIn
+        (hRun stmtIn witIn))
+    hHonest hle
+
+/-- Basic Fiat-Shamir completeness can be transported to a smaller input relation and a larger
+output relation after applying the named run-equality residual. -/
+theorem fiatShamir_completeness_of_runEq_mono_relations
+    (init : ProbComp σ)
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    {relIn relIn' : Set (StmtIn × WitIn)}
+    {relOut relOut' : Set (StmtOut × WitOut)}
+    (completenessError : ℝ≥0)
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hRun : ∀ stmtIn witIn,
+      fiatShamir_run_eq_honestExecution R stmtIn witIn)
+    (hHonest : Reduction.completenessFromRun init impl relIn relOut
+      (R.fiatShamirHonestExecution) completenessError)
+    (hIn : relIn' ⊆ relIn) (hOut : relOut ⊆ relOut') :
+    R.fiatShamir.completeness init impl relIn' relOut' completenessError :=
+  fiatShamir_completeness_of_honestExecution_mono_relations init impl
+    completenessError R
+    (fun stmtIn witIn =>
+      fiatShamir_runCollapseResidual_of_run_eq_honestExecution impl R stmtIn witIn
+        (hRun stmtIn witIn))
+    hHonest hIn hOut
+
+/-- Basic Fiat-Shamir completeness can simultaneously transport relations and increase the target
+completeness error after applying the named run-equality residual. -/
+theorem fiatShamir_completeness_of_runEq_mono_relations_error
+    (init : ProbComp σ)
+    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    {relIn relIn' : Set (StmtIn × WitIn)}
+    {relOut relOut' : Set (StmtOut × WitOut)}
+    {completenessError₁ completenessError₂ : ℝ≥0}
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hRun : ∀ stmtIn witIn,
+      fiatShamir_run_eq_honestExecution R stmtIn witIn)
+    (hHonest : Reduction.completenessFromRun init impl relIn relOut
+      (R.fiatShamirHonestExecution) completenessError₁)
+    (hIn : relIn' ⊆ relIn) (hOut : relOut ⊆ relOut')
+    (hle : completenessError₁ ≤ completenessError₂) :
+    R.fiatShamir.completeness init impl relIn' relOut' completenessError₂ :=
+  fiatShamir_completeness_of_honestExecution_mono_relations_error init impl R
+    (fun stmtIn witIn =>
+      fiatShamir_runCollapseResidual_of_run_eq_honestExecution impl R stmtIn witIn
+        (hRun stmtIn witIn))
+    hHonest hIn hOut hle
+
 -- Future work: discharge `fiatShamir_run_eq_honestExecution` itself.  The outer challenge-collapse
 -- residual is now a theorem once that run equality is supplied; the remaining content is the
 -- structural equality between `R.fiatShamir.run` and the explicit honest Fiat-Shamir execution.
@@ -466,6 +531,9 @@ theorem fiatShamir_completeness_of_honestExecution_mono_relations_error
 #print axioms Reduction.fiatShamir_completeness_of_honestExecution_mono_error
 #print axioms Reduction.fiatShamir_completeness_of_honestExecution_mono_relations
 #print axioms Reduction.fiatShamir_completeness_of_honestExecution_mono_relations_error
+#print axioms Reduction.fiatShamir_completeness_of_runEq_mono_error
+#print axioms Reduction.fiatShamir_completeness_of_runEq_mono_relations
+#print axioms Reduction.fiatShamir_completeness_of_runEq_mono_relations_error
 
 end Completeness
 
