@@ -87,7 +87,7 @@ namespace CodingTheory
 
 open scoped NNReal
 open scoped ProbabilityTheory BigOperators
-open ListDecodable ProximityGap
+open ListDecodable ProximityGap Code
 
 section ListImpliesMCA
 
