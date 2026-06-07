@@ -140,6 +140,18 @@ theorem not_mcaEventBody_of_double_cover (C : Set (ι → A)) (u₀ u₁ : ι �
     False :=
   hpair (pairJointAgreesOn_of_double_cover C S u₀ u₁ v₁ v₂ hv₁ hv₂ hcov)
 
+/-- **Exposed repaired T4.21 hypothesis.** Every stack and every bad scalar carries the
+per-coordinate double cover that the Guruswami--Sudan interpolation route must provide. This is
+the replacement data for the refuted black-box `lineDecodable_imp_epsMCA_le_target`. -/
+def MCAForallDoubleCover (C : Set (ι → A)) (δ : ℝ≥0) : Prop :=
+  ∀ (u : WordStack A (Fin 2) ι) (γ : F), mcaEvent C δ (u 0) (u 1) γ →
+    ∀ S : Finset ι, (S.card : ℝ≥0) ≥ (1 - δ) * Fintype.card ι →
+      (∃ w ∈ C, ∀ i ∈ S, w i = (u 0) i + γ • (u 1) i) →
+      ¬ pairJointAgreesOn C S (u 0) (u 1) →
+      ∃ v₁ ∈ C, ∃ v₂ ∈ C, ∀ i ∈ S, ∃ a a' : F, a ≠ a' ∧
+        v₁ i + a • v₂ i = (u 0) i + a • (u 1) i ∧
+        v₁ i + a' • v₂ i = (u 0) i + a' • (u 1) i
+
 open Classical in
 /-- **Repaired Theorem 4.21, per-stack form.** If for the stack `(u₀, u₁)` every bad scalar's
 witness set is doubly covered by a (scalar-dependent) line-decoder pair in `C`, then no bad
@@ -156,8 +168,7 @@ theorem mcaBadCount_eq_zero_of_double_cover (C : Set (ι → A)) (δ : ℝ≥0) 
     mcaBadCount (F := F) C δ u₀ u₁ = 0 := by
   classical
   rw [mcaBadCount, Finset.card_eq_zero, Finset.filter_eq_empty_iff]
-  intro γ _hγ
-  intro hev
+  intro γ _hγ hev
   obtain ⟨S, hsize, hwit, hpair⟩ := hev
   obtain ⟨v₁, hv₁, v₂, hv₂, hcover⟩ := hcov γ ⟨S, hsize, hwit, hpair⟩ S hsize hwit hpair
   exact not_mcaEventBody_of_double_cover C u₀ u₁ S hv₁ hv₂ hpair hcover
@@ -186,6 +197,8 @@ theorem epsMCA_eq_zero_of_forall_double_cover (C : Set (ι → A)) (δ : ℝ≥0
     simp
   rw [iSup_congr hzero]
   simp
+
+#print axioms MCAForallDoubleCover
 
 end
 

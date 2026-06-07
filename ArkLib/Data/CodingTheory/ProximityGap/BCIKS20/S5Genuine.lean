@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.HenselNumerator
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Vanish
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Assembly
 
 /-!
 # BCIKS20 §5.2.6–5.2.7 — the RE-ANCHORED Claims 5.8 / 5.8' / 5.9 (genuine objects)
@@ -132,6 +132,13 @@ theorem LiftIdentityAt.of_restrictedMatch {x₀ : F} {R : F[X][X][Y]}
     LiftIdentityAt H x₀ R hHyp t :=
   (P2_closed_of_restrictedMatch H x₀ R hHyp hmatch).2 t
 
+/-- The downstream `LiftIdentityAt` predicate supplied by the normalized P2 partition residual. -/
+theorem LiftIdentityAt.of_partitionMatch {x₀ : F} {R : F[X][X][Y]}
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hpart : RestrictedFaaDiBrunoPartitionMatch H x₀ R hHyp) (t : ℕ) :
+    LiftIdentityAt H x₀ R hHyp t :=
+  βHensel_lift_identity_of_partitionMatch H x₀ R hHyp hpart t
+
 /-- The downstream `LiftIdentityAt` predicate supplied by the full P2 vanishing identity. -/
 theorem LiftIdentityAt.of_fullVanishes {x₀ : F} {R : F[X][X][Y]}
     (hHyp : ClaimA2.Hypotheses x₀ R H)
@@ -220,6 +227,14 @@ theorem claim58_genuine_via_restrictedMatch {x₀ : F} {R : F[X][X][Y]}
     αGenuine H x₀ R hHyp t = 0 :=
   claim58_genuine H hHyp hlarge (LiftIdentityAt.of_restrictedMatch H hHyp hmatch t)
 
+/-- **Claim 5.8 (genuine), using the normalized restricted P2 partition residual.** -/
+theorem claim58_genuine_via_partitionMatch {x₀ : F} {R : F[X][X][Y]}
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hpart : RestrictedFaaDiBrunoPartitionMatch H x₀ R hHyp)
+    {t : ℕ} (hlarge : SβLargeAt H x₀ R hHyp t) :
+    αGenuine H x₀ R hHyp t = 0 :=
+  claim58_genuine H hHyp hlarge (LiftIdentityAt.of_partitionMatch H hHyp hpart t)
+
 /-! ## Claim 5.8' (genuine): `γ` is a polynomial of X-degree `< k`
 
 The tail vanishing `αGenuine t = 0` for all `t ≥ k` (from Claim 5.8, with the largeness supplied
@@ -298,6 +313,16 @@ theorem claim58prime_genuine_via_restrictedMatch {x₀ : F} {R : F[X][X][Y]}
       = (↑(PowerSeries.trunc k (gammaGenuine x₀ R H hHyp)) : (𝕃 H)⟦X⟧) :=
   claim58prime_genuine H hHyp hlarge
     (fun t _ => LiftIdentityAt.of_restrictedMatch H hHyp hmatch t)
+
+/-- **Claim 5.8' (genuine), using the normalized restricted P2 partition residual.** -/
+theorem claim58prime_genuine_via_partitionMatch {x₀ : F} {R : F[X][X][Y]}
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hpart : RestrictedFaaDiBrunoPartitionMatch H x₀ R hHyp) {k : ℕ}
+    (hlarge : ∀ t ≥ k, SβLargeAt H x₀ R hHyp t) :
+    gammaGenuine x₀ R H hHyp
+      = (↑(PowerSeries.trunc k (gammaGenuine x₀ R H hHyp)) : (𝕃 H)⟦X⟧) :=
+  claim58prime_genuine H hHyp hlarge
+    (fun t _ => LiftIdentityAt.of_partitionMatch H hHyp hpart t)
 
 /-- **Claim 5.8' (genuine, X-degree bound on the truncation).**  Companion to
 `claim58prime_genuine`: the degree-`< k` witness polynomial `PowerSeries.trunc k γ` has
@@ -398,11 +423,14 @@ These `#print axioms` lines are checked at compile time. -/
 #print axioms LiftIdentityAt.of_faaDiBruno_succ_sum_eq_zero
 #print axioms LiftIdentityAt.of_fullVanishes
 #print axioms LiftIdentityAt.of_restrictedMatch
+#print axioms LiftIdentityAt.of_partitionMatch
 #print axioms claim58_genuine_via_intree
 #print axioms claim58prime_genuine_via_intree
 #print axioms claim58_genuine_via_fullVanishes
 #print axioms claim58prime_genuine_via_fullVanishes
 #print axioms claim58_genuine_via_restrictedMatch
 #print axioms claim58prime_genuine_via_restrictedMatch
+#print axioms claim58_genuine_via_partitionMatch
+#print axioms claim58prime_genuine_via_partitionMatch
 
 end BCIKS20.HenselNumerator.S5Genuine

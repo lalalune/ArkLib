@@ -208,9 +208,50 @@ theorem P2_closed (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R 
   ⟨assembledSeries_isRoot_of_match H x₀ R hHyp hmatch,
     βHensel_lift_identity_of_match H x₀ R hHyp hmatch⟩
 
+/-! ## STEP 3 — equivalence with the successor-sum P2 residual
+
+The carved restricted form and the legacy `FaaDiBrunoSuccSumZeroResidual` carry identical
+mathematical content. Both reduce through the proven Newton-defect identity
+`coeff_succ_eval_defect_reduction` to the vanishing of
+`coeff (t+1) (eval (βHenselAssembled) Q)` for every `t`. -/
+
+/-- `FaaDiBrunoSuccSumZeroResidual` implies the carved restricted match. -/
+theorem restrictedFaaDiBrunoMatch_of_faaDiBrunoSuccSumZero (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hzero : FaaDiBrunoSuccSumZeroResidual H x₀ R hHyp) :
+    RestrictedFaaDiBrunoMatch H x₀ R hHyp := by
+  intro t
+  have hdefect := coeff_succ_eval_defect_reduction H x₀ R hHyp t
+  have hroot := coeff_succ_eval_βHenselAssembled H x₀ R hHyp hzero t
+  have htrunc := trunc_defect_eq_restrictedFaaDiBrunoSum H x₀ R hHyp t
+  rw [← htrunc]
+  linear_combination hroot - hdefect
+
+/-- The carved restricted match implies `FaaDiBrunoSuccSumZeroResidual`. -/
+theorem faaDiBrunoSuccSumZero_of_restrictedFaaDiBrunoMatch (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp) :
+    FaaDiBrunoSuccSumZeroResidual H x₀ R hHyp := by
+  intro t
+  have hcancel := trunc_defect_cancel_assembled H x₀ R hHyp hmatch t
+  have hroot := coeff_succ_eval_of_trunc_defect_cancel H x₀ R hHyp t hcancel
+  rw [← coeff_eval_Q_faaDiBruno H x₀ R (βHenselAssembled H x₀ R hHyp) (t + 1)]
+  exact hroot
+
+/-- The two named P2 residuals are equivalent. -/
+theorem restrictedFaaDiBrunoMatch_iff_faaDiBrunoSuccSumZero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    RestrictedFaaDiBrunoMatch H x₀ R hHyp ↔
+      FaaDiBrunoSuccSumZeroResidual H x₀ R hHyp :=
+  ⟨faaDiBrunoSuccSumZero_of_restrictedFaaDiBrunoMatch H x₀ R hHyp,
+    restrictedFaaDiBrunoMatch_of_faaDiBrunoSuccSumZero H x₀ R hHyp⟩
+
 -- In-file axiom audit for the carved P2 core and its conditional endpoint reductions.
 section AxiomAudit
 #print axioms RestrictedFaaDiBrunoMatch
+#print axioms restrictedFaaDiBrunoMatch_of_faaDiBrunoSuccSumZero
+#print axioms faaDiBrunoSuccSumZero_of_restrictedFaaDiBrunoMatch
+#print axioms restrictedFaaDiBrunoMatch_iff_faaDiBrunoSuccSumZero
 #print axioms trunc_defect_eq_restrictedFaaDiBrunoSum
 #print axioms trunc_defect_cancel_assembled
 #print axioms assembledSeries_isRoot_of_match
