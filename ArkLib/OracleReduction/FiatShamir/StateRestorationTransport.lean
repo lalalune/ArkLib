@@ -15,8 +15,12 @@ consumer shape: first transport the state-restoration hypothesis with
 `Verifier.StateRestoration.*.mono_*`, then apply a transfer residual that is already stated at the
 target parameters.
 
-These declarations are API plumbing over the existing residual surfaces. They do not discharge the
-semantic state-restoration-to-Fiat-Shamir transfer residuals.
+It also exposes the one-message Fiat-Shamir adversary payload as a state-restoration prover payload,
+so the eventual coupled `simulateQ` proof can compare both games over the same transcript
+derivation surface.
+
+These declarations are API plumbing over the existing residual/coupling surfaces. They do not
+discharge the semantic state-restoration-to-Fiat-Shamir transfer residuals.
 -/
 
 noncomputable section
@@ -126,6 +130,61 @@ end Verifier
 #print axioms Verifier.StateRestoration.srKnowledgeSoundnessGame_eq_deriveTranscriptFS
 
 end TranscriptAliases
+
+section FiatShamirAdversaryAdapter
+
+namespace Prover
+
+namespace StateRestoration
+
+variable {n : ℕ}
+variable {pSpec : ProtocolSpec n} {ι : Type} {oSpec : OracleSpec ι}
+variable {StmtIn WitIn StmtOut WitOut : Type}
+
+/-- View a fixed malicious one-message Fiat-Shamir prover execution as the corresponding
+state-restoration soundness prover payload.
+
+The adapter runs only the Fiat-Shamir prover's single prover-to-verifier message round, so it avoids
+the empty transformed challenge-oracle layer that appears in `runToRound`. -/
+def soundnessOfFiatShamirProver
+    (P : Prover (oSpec + fsChallengeOracle StmtIn pSpec) StmtIn WitIn StmtOut WitOut
+      (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)))
+    (stmtIn : StmtIn) (witIn : WitIn) :
+    Prover.StateRestoration.Soundness oSpec StmtIn pSpec := do
+  let state := P.input (stmtIn, witIn)
+  let ⟨proof, _state⟩ ←
+    P.sendMessage ⟨0, by simp⟩ state
+  let messages : pSpec.Messages := proof
+  return ⟨stmtIn, messages⟩
+
+/-- The state-restoration game for the Fiat-Shamir-prover adapter is exactly the single
+Fiat-Shamir proof-message computation followed by the shared state-restoration transcript
+derivation. Use `ProtocolSpec.Messages.deriveTranscriptFS_eq_deriveTranscriptSR` to rewrite the
+final line through the slow Fiat-Shamir alias. -/
+theorem srSoundnessGame_soundnessOfFiatShamirProver
+    (P : Prover (oSpec + fsChallengeOracle StmtIn pSpec) StmtIn WitIn StmtOut WitOut
+      (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)))
+    (stmtIn : StmtIn) (witIn : WitIn) :
+    srSoundnessGame
+        (soundnessOfFiatShamirProver (oSpec := oSpec) (pSpec := pSpec) P stmtIn witIn)
+      =
+      (do
+        let state := P.input (stmtIn, witIn)
+        let ⟨proof, _state⟩ ←
+          P.sendMessage ⟨0, by simp⟩ state
+        let messages : pSpec.Messages := proof
+        let transcript ← messages.deriveTranscriptSR (oSpec := oSpec) stmtIn
+        return ⟨transcript, stmtIn⟩) := by
+  simp [srSoundnessGame, soundnessOfFiatShamirProver]
+
+end StateRestoration
+
+end Prover
+
+#print axioms Prover.StateRestoration.soundnessOfFiatShamirProver
+#print axioms Prover.StateRestoration.srSoundnessGame_soundnessOfFiatShamirProver
+
+end FiatShamirAdversaryAdapter
 
 namespace Reduction
 

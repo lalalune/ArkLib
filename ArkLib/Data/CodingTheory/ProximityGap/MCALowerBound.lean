@@ -136,4 +136,55 @@ theorem epsMCA_C0_ge_half :
   have h := epsMCA_ge_inv_card_of_mcaEvent (F := ZMod 2) (A := ZMod 2) C0 0 u0 0 mcaEvent_C0
   simpa using h
 
+open Classical in
+/-- For the zero code over `ZMod 2` on one coordinate, each stack has at most one bad scalar. -/
+theorem badScalar_card_le_one (u : WordStack (ZMod 2) (Fin 2) (Fin 1)) :
+    (Finset.filter (fun γ : ZMod 2 => mcaEvent C0 0 (u 0) (u 1) γ) Finset.univ).card ≤ 1 := by
+  rw [Finset.card_le_one]
+  intro γ hγ γ' hγ'
+  rw [Finset.mem_filter] at hγ hγ'
+  obtain ⟨S, hS, ⟨w, hwmem, hweq⟩, hno⟩ := hγ.2
+  obtain ⟨S', hS', ⟨w', hwmem', hweq'⟩, _⟩ := hγ'.2
+  have hmemS : ∀ (T : Finset (Fin 1)), (1 : ℝ≥0) ≤ (T.card : ℝ≥0) → (0 : Fin 1) ∈ T := by
+    intro T hT
+    have h1 : 1 ≤ T.card := by exact_mod_cast hT
+    have hle : T.card ≤ 1 := by have := Finset.card_le_univ T; rwa [Fintype.card_fin] at this
+    have hTeq : T = Finset.univ := Finset.eq_univ_of_card T (by rw [Fintype.card_fin]; omega)
+    rw [hTeq]; exact Finset.mem_univ 0
+  have h0S : (0 : Fin 1) ∈ S := hmemS S (by simpa using hS)
+  have h0S' : (0 : Fin 1) ∈ S' := hmemS S' (by simpa using hS')
+  have hw0 : w = (fun _ => 0) := hwmem
+  have hw0' : w' = (fun _ => 0) := hwmem'
+  have he : (0 : ZMod 2) = (u 0) 0 + γ • (u 1) 0 := by
+    have := hweq 0 h0S; rw [hw0] at this; exact this
+  have he' : (0 : ZMod 2) = (u 0) 0 + γ' • (u 1) 0 := by
+    have := hweq' 0 h0S'; rw [hw0'] at this; exact this
+  have hu1 : (u 1) 0 ≠ 0 := by
+    intro h
+    apply hno
+    refine ⟨(fun _ => 0), rfl, (fun _ => 0), rfl, fun i hi => ?_⟩
+    have hi0 : i = 0 := Subsingleton.elim i 0
+    subst hi0
+    have hu0 : (u 0) 0 = 0 := by rw [h, smul_zero, add_zero] at he; exact he.symm
+    exact ⟨hu0.symm, h.symm⟩
+  have hmul : γ • (u 1) 0 = γ' • (u 1) 0 := by
+    have h1 : (u 0) 0 + γ • (u 1) 0 = (u 0) 0 + γ' • (u 1) 0 := by rw [← he, ← he']
+    exact add_left_cancel h1
+  rw [smul_eq_mul, smul_eq_mul] at hmul
+  exact mul_right_cancel₀ hu1 hmul
+
+open Classical in
+/-- **Exact value: `epsMCA(zero code over ZMod 2) = 1/2`.** -/
+theorem epsMCA_C0_eq_half :
+    epsMCA (F := ZMod 2) (A := ZMod 2) C0 0 = 1 / 2 := by
+  refine le_antisymm ?_ epsMCA_C0_ge_half
+  unfold epsMCA
+  refine iSup_le fun u => ?_
+  rw [prob_uniform_eq_card_filter_div_card]
+  have hc2 : Fintype.card (ZMod 2) = 2 := ZMod.card 2
+  rw [hc2]
+  simp only [ENNReal.coe_natCast, Nat.cast_ofNat, ENNReal.coe_ofNat]
+  gcongr
+  exact_mod_cast badScalar_card_le_one u
+
 end ProximityGap.MCALowerExample
