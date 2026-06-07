@@ -5,6 +5,7 @@ Authors: Quang Dao
 -/
 
 import ArkLib.OracleReduction.Security.RoundByRound
+import ArkLib.OracleReduction.Security.ZeroKnowledge
 
 /-!
   # Simple (Oracle) Reduction: Check if a predicate / claim on a statement is satisfied
@@ -115,6 +116,52 @@ theorem reduction_completeness [Nonempty σ] [DecidableEq Statement] :
     cases hx
     simp [relOut]
 
+/-- The honest transcript distribution for a valid `CheckClaim` statement is the deterministic
+empty transcript. This is the concrete zero-round core used by the HVZK wrappers below. -/
+theorem honestTranscriptDist_reduction_evalDist
+    (stmt : Statement) (hpred : pred stmt) :
+    evalDist (Reduction.honestTranscriptDist init impl
+        (reduction oSpec Statement pred) stmt ()) =
+      evalDist (pure default : OptionT ProbComp (FullTranscript !p[])) := by
+  apply evalDist_ext
+  intro transcript
+  classical
+  unfold Reduction.honestTranscriptDist
+  have hrun : (reduction oSpec Statement pred).run stmt () =
+      (pure ((default, stmt, ()), stmt) : OptionT (OracleComp _) _) := by
+    simp [reduction, Reduction.run, prover, verifier, Prover.run, Verifier.run,
+          Prover.runToRound, guard, if_pos hpred]
+    rfl
+  simp only [hrun, map_pure, OptionT.run_pure, simulateQ_pure, StateT.run'_eq,
+    StateT.run_pure, bind_pure_comp]
+  rw [OptionT.probOutput_eq, OptionT.probOutput_eq]
+  simp [probOutput_map_const, HasEvalPMF.probFailure_eq_zero]
+
+/-- `CheckClaim` is perfectly HVZK for the predicate relation. The simulator is the identity
+transcript simulator, since the real protocol has no messages or challenges. -/
+theorem reduction_perfectHVZK :
+    Reduction.perfectHVZK init impl (relIn Statement pred)
+      (reduction oSpec Statement pred) Reduction.idTranscriptSimulator := by
+  intro stmt wit hrel
+  cases wit
+  exact (honestTranscriptDist_reduction_evalDist oSpec Statement pred stmt hrel).symm
+
+/-- Perfect HVZK implies statistical HVZK at every error budget. -/
+theorem reduction_statisticalHVZK (ε : NNReal) :
+    Reduction.statisticalHVZK init impl (relIn Statement pred)
+      (reduction oSpec Statement pred) Reduction.idTranscriptSimulator ε :=
+  (reduction_perfectHVZK oSpec Statement pred).statisticalHVZK ε
+
+/-- `CheckClaim` has an explicit perfect-HVZK simulator. -/
+theorem reduction_isHVZK :
+    Reduction.isHVZK init impl (relIn Statement pred) (reduction oSpec Statement pred) :=
+  ⟨Reduction.idTranscriptSimulator, reduction_perfectHVZK oSpec Statement pred⟩
+
+/-- `CheckClaim` has statistical HVZK at every error budget. -/
+theorem reduction_isStatHVZK (ε : NNReal) :
+    Reduction.isStatHVZK init impl (relIn Statement pred) (reduction oSpec Statement pred) ε :=
+  (reduction_isHVZK oSpec Statement pred).isStatHVZK ε
+
 /-- The round-by-round extractor for the `CheckClaim` reduction. Trivial since the witness is
   `Unit`. -/
 def extractor : Extractor.RoundByRound oSpec Statement Unit Unit !p[] (fun _ => Unit) where
@@ -172,6 +219,12 @@ theorem verifier_rbr_knowledge_soundness :
   refine ⟨_, _, knowledgeStateFunction oSpec Statement pred, ?_⟩
   simp only [ProtocolSpec.ChallengeIdx]
   exact fun _ _ _ i => Fin.elim0 i.1
+
+#print axioms CheckClaim.honestTranscriptDist_reduction_evalDist
+#print axioms CheckClaim.reduction_perfectHVZK
+#print axioms CheckClaim.reduction_statisticalHVZK
+#print axioms CheckClaim.reduction_isHVZK
+#print axioms CheckClaim.reduction_isStatHVZK
 
 end Reduction
 
