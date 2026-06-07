@@ -159,6 +159,26 @@ theorem salted_opening_unique_against_honest_tree {s : Skeleton}
     (generateProof (buildSaltedTree hashFn salts leaves) idx) h
   simpa [saltedLeaves_get] using salted_completeness hashFn salts leaves idx
 
+/-- **Multi-opening deterministic uniqueness for honest salted trees.** Every accepting salted
+opening in a finite list, checked against the honest salted root with the honest path for its index,
+reveals the honest salt and leaf value at that index.
+
+This is the salted analogue of `multi_instance_extracted_leaves_unique`; it is still a deterministic
+no-collision statement, not the probabilistic random-oracle binding theorem. -/
+theorem multi_salted_openings_unique_against_honest_tree {s : Skeleton}
+    (hashFn : α → α → α)
+    (hinj : ∀ a b c d, hashFn a b = hashFn c d → a = c ∧ b = d)
+    (salts leaves : LeafData α s)
+    (openings : List ((_ : SkeletonLeafIndex s) × α × α))
+    (hver : ∀ o ∈ openings,
+      getPutativeRootWithHash o.1 (leafCommit hashFn o.2.1 o.2.2)
+        (generateProof (buildSaltedTree hashFn salts leaves) o.1) hashFn
+        = (buildSaltedTree hashFn salts leaves).getRootValue) :
+    ∀ o ∈ openings, o.2.1 = salts.get o.1 ∧ o.2.2 = leaves.get o.1 := by
+  intro o ho
+  exact salted_opening_unique_against_honest_tree hashFn hinj salts leaves o.1 o.2.1 o.2.2
+    (hver o ho)
+
 section HidingDefinition
 
 variable [DecidableEq α] [SampleableType α]
@@ -200,5 +220,6 @@ end InductiveMerkleTree
 #print axioms InductiveMerkleTree.salted_opening_binding_value
 #print axioms InductiveMerkleTree.salted_opening_binding_pair
 #print axioms InductiveMerkleTree.salted_opening_unique_against_honest_tree
+#print axioms InductiveMerkleTree.multi_salted_openings_unique_against_honest_tree
 #print axioms InductiveMerkleTree.openTranscript
 #print axioms InductiveMerkleTree.Hiding
