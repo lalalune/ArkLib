@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.HammingBallVolume
+import ArkLib.Data.CodingTheory.EntropyVolumeUpperBall
 
 /-!
 # MDS near-codeword count as a Hamming-ball volume (toward T4.17 far half, #82)
@@ -35,5 +36,21 @@ theorem sum_choose_mul_pow_eq_hammingBallVolume (q n R : ℕ) (hn : 0 < n) :
   have hfloor : ⌊(R : ℝ) / (n : ℝ) * (n : ℝ)⌋₊ = R := by rw [heq, Nat.floor_natCast]
   rw [hfloor]
   simp [Nat.add_sub_cancel]
+
+/-- **MDS near-count qEntropy bound.** Below the `(q+1)`-ary capacity (`R/n ≤ 1 − 1/(q+1)`), the
+near-codeword counting sum is bounded by the entropy exponential
+`(n+1)·(q+1)^{n·H_{q+1}(R/n)}` — the far/coverage-half analytic input for the CS25 breakdown band
+inequality. Composes `sum_choose_mul_pow_eq_hammingBallVolume` with
+`hammingBallVolume_le_qEntropy_real_radius`. -/
+theorem sum_choose_mul_pow_le_qEntropy (q n R : ℕ) (hn : 0 < n) (hq : 2 ≤ q + 1)
+    (hcap : (R : ℝ) / (n : ℝ) ≤ 1 - 1 / ((q + 1 : ℕ) : ℝ)) :
+    ((∑ d ∈ Finset.range (R + 1), n.choose d * q ^ d : ℕ) : ℝ)
+      ≤ ((n : ℝ) + 1)
+        * ((q + 1 : ℕ) : ℝ) ^ ((n : ℝ) * qEntropy (q + 1) ((R : ℝ) / (n : ℝ))) := by
+  have hcast : ((∑ d ∈ Finset.range (R + 1), n.choose d * q ^ d : ℕ) : ℝ)
+      = (hammingBallVolume (q + 1) ((R : ℝ) / (n : ℝ)) n : ℝ) :=
+    congrArg (Nat.cast : ℕ → ℝ) (sum_choose_mul_pow_eq_hammingBallVolume q n R hn)
+  rw [hcast]
+  exact hammingBallVolume_le_qEntropy_real_radius hq ((R : ℝ) / (n : ℝ)) hn (by positivity) hcap
 
 end CodingTheory
