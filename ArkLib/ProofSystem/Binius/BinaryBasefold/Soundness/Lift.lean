@@ -6,6 +6,7 @@ Authors: Chung Thai Nguyen, Quang Dao
 
 import ArkLib.Data.CodingTheory.InterleavedCode
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Code
+import ArkLib.ProofSystem.Binius.BinaryBasefold.BitsOfIndex
 
 /-!
 ## Binary Basefold Soundness Lift
@@ -36,10 +37,6 @@ variable (β : Fin r → L) [hβ_lin_indep : Fact (LinearIndependent 𝔽q β)]
 variable {ℓ 𝓡 ϑ : ℕ} [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ]
 variable {h_ℓ_add_R_rate : ℓ + 𝓡 < r}
 variable {𝓑 : Fin 2 ↪ L}
-
-/-- Binary expansion of an index as a challenge vector. -/
-def bitsOfIndex {n : ℕ} (k : Fin (2 ^ n)) : Fin n → L :=
-  fun j => if Nat.getBit j.val k.val = 1 then 1 else 0
 
 private lemma getBit_eq_testBit (n k : ℕ) :
     Nat.getBit k n = 1 ↔ n.testBit k = true := by
