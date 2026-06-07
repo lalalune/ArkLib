@@ -235,6 +235,46 @@ theorem inter_lineAgreeSet_eq_of_maxCorrAgreeDomain
     exact ⟨hIlarge, pairJointAgreesOn_inter_lineAgreeSet_of_ne MC u₀ u₁ wγ wγ' hne hwγ hwγ'⟩
   exact maxCorrAgreeDomain.eq_of_subset hD hsub hI
 
+/-- If two line-agreement domains intersect exactly in `D`, then their petals outside `D` are
+disjoint. -/
+theorem linePetal_disjoint_of_inter_eq
+    {D : Finset ι} {u₀ u₁ wγ wγ' : ι → F} {γ γ' : F}
+    (hinter : lineAgreeSet u₀ u₁ wγ γ ∩ lineAgreeSet u₀ u₁ wγ' γ' = D) :
+    Disjoint (linePetal D u₀ u₁ wγ γ) (linePetal D u₀ u₁ wγ' γ') := by
+  classical
+  rw [Finset.disjoint_left]
+  intro i hi hi'
+  rw [linePetal, Finset.mem_sdiff] at hi hi'
+  have hiD : i ∈ D := by
+    rw [← hinter]
+    exact Finset.mem_inter.mpr ⟨hi.1, hi'.1⟩
+  exact hi.2 hiD
+
+/-- **Pairwise disjoint line petals from a maximal correlated-agreement domain.**  If a maximal
+domain `D` is contained in every selected line-agreement domain, and every pairwise intersection
+is large enough to be a correlated-agreement domain, then maximality identifies those
+intersections with `D`; the petals outside `D` are therefore pairwise disjoint. -/
+theorem linePetal_pairwise_disjoint_of_maxCorrAgreeDomain
+    (MC : Submodule F (ι → F)) (p : ℝ≥0) (D : Finset ι)
+    (u₀ u₁ : ι → F) (wOf : F → ι → F) (Γ : Finset F)
+    (hD : maxCorrAgreeDomain MC p u₀ u₁ D)
+    (hDγ : ∀ γ ∈ Γ, D ⊆ lineAgreeSet u₀ u₁ (wOf γ) γ)
+    (hIlarge : ∀ γ ∈ Γ, ∀ γ' ∈ Γ, γ ≠ γ' →
+      ((1 - p) * Fintype.card ι : ℝ≥0) ≤
+        (((lineAgreeSet u₀ u₁ (wOf γ) γ ∩
+            lineAgreeSet u₀ u₁ (wOf γ') γ').card : ℕ) : ℝ≥0))
+    (hw : ∀ γ ∈ Γ, wOf γ ∈ (MC : Set (ι → F))) :
+    (Γ : Set F).Pairwise (fun γ γ' =>
+      Disjoint (linePetal D u₀ u₁ (wOf γ) γ)
+        (linePetal D u₀ u₁ (wOf γ') γ')) := by
+  classical
+  intro γ hγ γ' hγ' hne
+  exact
+    linePetal_disjoint_of_inter_eq
+      (inter_lineAgreeSet_eq_of_maxCorrAgreeDomain MC p D u₀ u₁ (wOf γ) (wOf γ')
+        hD (hDγ γ hγ) (hDγ γ' hγ') (hIlarge γ hγ γ' hγ' hne)
+        hne (hw γ hγ) (hw γ' hγ'))
+
 /-- **Single-codeword determinacy (the core in-tree fact).** For a `Submodule` code `MC` and a
 fixed codeword `w ∈ MC`, every bad combining point `γ ∈ mcaBadWitness w` equals
 `combiningPoint w u₀ u₁ i` at some coordinate `i ∈ secondSupport u₁`.
@@ -794,6 +834,60 @@ theorem mcaBadWitness_card_le_radius_mul_card_of_large_domain_disjoint_petals
     (mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w) D petal
     hDlarge hdisj hsize hsub
 
+/-- **Per-codeword first-moment count from a maximal-domain certificate.**  This packages the
+formal downstream half of the GKL/GCXK sunflower argument.  The remaining paper content is the
+construction of `D` and the proof that all relevant line-agreement domains strictly expand it
+while pairwise intersections remain large. -/
+theorem mcaBadWitness_card_le_radius_mul_card_of_maxCorrAgreeDomain
+    (MC : Submodule F (ι → F)) (δ p : ℝ≥0) (u₀ u₁ w : ι → F) (D : Finset ι)
+    (hw : w ∈ (MC : Set (ι → F)))
+    (hD : maxCorrAgreeDomain MC p u₀ u₁ D)
+    (hstrict : ∀ γ ∈ mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w,
+      D ⊂ lineAgreeSet u₀ u₁ w γ)
+    (hIlarge : ∀ γ ∈ mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w,
+      ∀ γ' ∈ mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w, γ ≠ γ' →
+        ((1 - p) * Fintype.card ι : ℝ≥0) ≤
+          (((lineAgreeSet u₀ u₁ w γ ∩ lineAgreeSet u₀ u₁ w γ').card : ℕ) : ℝ≥0)) :
+    ((mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w).card : ℝ) ≤
+      (p : ℝ) * (Fintype.card ι : ℝ) := by
+  classical
+  let Γ := mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w
+  have hDlargeNN :
+      ((1 - p) * Fintype.card ι : ℝ≥0) ≤ (D.card : ℝ≥0) := hD.1.1
+  have hDlargeTrunc :
+      (((1 - p : ℝ≥0) : ℝ) * (Fintype.card ι : ℝ)) ≤ (D.card : ℝ) := by
+    exact_mod_cast hDlargeNN
+  have hsub_le : 1 - (p : ℝ) ≤ ((1 - p : ℝ≥0) : ℝ) := by
+    rw [NNReal.coe_sub_def]
+    exact le_max_left _ _
+  have hDlarge : (1 - (p : ℝ)) * (Fintype.card ι : ℝ) ≤ (D.card : ℝ) := by
+    calc
+      (1 - (p : ℝ)) * (Fintype.card ι : ℝ)
+          ≤ ((1 - p : ℝ≥0) : ℝ) * (Fintype.card ι : ℝ) := by
+            exact mul_le_mul_of_nonneg_right hsub_le (by positivity)
+      _ ≤ (D.card : ℝ) := hDlargeTrunc
+  refine
+    mcaBadWitness_card_le_radius_mul_card_of_large_domain_disjoint_petals
+      MC δ u₀ u₁ w D (fun γ => linePetal D u₀ u₁ w γ) hDlarge ?_ ?_ ?_
+  · have hdisj :
+        (Γ : Set F).Pairwise (fun γ γ' =>
+          Disjoint (linePetal D u₀ u₁ w γ) (linePetal D u₀ u₁ w γ')) := by
+      refine linePetal_pairwise_disjoint_of_maxCorrAgreeDomain
+        MC p D u₀ u₁ (fun _ => w) Γ hD ?_ ?_ ?_
+      · intro γ hγ
+        exact (hstrict γ hγ).1
+      · intro γ hγ γ' hγ' hne
+        exact hIlarge γ hγ γ' hγ' hne
+      · intro γ _hγ
+        exact hw
+    simpa [Γ]
+  · intro γ hγ
+    exact Nat.succ_le_iff.mpr
+      (Finset.card_pos.mpr (linePetal_nonempty_of_ssubset_lineAgreeSet (hstrict γ hγ)))
+  · intro γ _hγ i hi
+    simp [linePetal] at hi ⊢
+    exact hi.2
+
 /-- **Petal-certificate form of the GKL24/GCXK25 witness-cover residual.**
 
 For every stack `u`, this asks for a close-codeword carrier `T` that covers the bad scalars and,
@@ -1015,9 +1109,12 @@ kernel-clean apart from the standard Lean foundations (`propext`, `Classical.cho
 #print axioms ProximityGap.pairJointAgreesOn_inter_lineAgreeSet_of_ne
 #print axioms ProximityGap.maxCorrAgreeDomain.eq_of_subset
 #print axioms ProximityGap.inter_lineAgreeSet_eq_of_maxCorrAgreeDomain
+#print axioms ProximityGap.linePetal_disjoint_of_inter_eq
+#print axioms ProximityGap.linePetal_pairwise_disjoint_of_maxCorrAgreeDomain
 #print axioms ProximityGap.badScalars_card_le_domain_compl_of_disjoint_petals
 #print axioms ProximityGap.badScalars_card_le_radius_mul_card_of_large_domain_disjoint_petals
 #print axioms ProximityGap.mcaBadWitness_card_le_radius_mul_card_of_large_domain_disjoint_petals
+#print axioms ProximityGap.mcaBadWitness_card_le_radius_mul_card_of_maxCorrAgreeDomain
 #print axioms ProximityGap.GKL24FirstMomentWitnessCoverResidual_of_petal_cover
 #print axioms ProximityGap.mcaBad_card_le_of_gkl24_petal_witnessCover_residual
 #print axioms ProximityGap.epsMCA_le_ofReal_of_gkl24_petal_witnessCover_residual
