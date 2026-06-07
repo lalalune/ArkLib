@@ -148,6 +148,25 @@ theorem listDecodable_qEntropy_real_radius_card
     (ι := ι) (F := F) δ hδ0 hδ
   exact le_trans (by exact_mod_cast hcount) hvol
 
+/-- **List-size lower bound `1 ≤ |Λ(C,δ)|` for a nonempty code and `δ ≥ 0`.** Any codeword is
+`0`-close to itself, so it lies in its own close-codeword list; with `Lambda_le_hammingBallVolume`
+this brackets `1 ≤ |Λ(C,δ)| ≤ Vol_q(δ,n)`. -/
+theorem one_le_Lambda_of_nonempty {ι : Type} [Fintype ι] {F : Type} [Fintype F] [DecidableEq F]
+    {C : Code ι F} (hC : C.Nonempty) {δ : ℝ} (hδ : 0 ≤ δ) : 1 ≤ Lambda C δ := by
+  obtain ⟨c, hc⟩ := hC
+  have hmem : c ∈ closeCodewordsRel C c δ := by
+    refine ⟨hc, ?_⟩
+    simp only [relHammingBall, Set.mem_setOf_eq, Code.relHammingDist, hammingDist_self,
+      Nat.cast_zero, zero_div, NNRat.cast_zero]
+    exact hδ
+  have h1 : 0 < (closeCodewordsRel C c δ).ncard := (Set.ncard_pos (Set.toFinite _)).mpr ⟨c, hmem⟩
+  calc (1 : ℕ∞) ≤ ((closeCodewordsRel C c δ).ncard : ℕ∞) := by
+        have h1' : 1 ≤ (closeCodewordsRel C c δ).ncard := h1
+        exact_mod_cast h1'
+    _ ≤ Lambda C δ := by
+        unfold Lambda
+        exact le_iSup (fun f => ((closeCodewordsRel C f δ).ncard : ℕ∞)) c
+
 end CodingTheory
 
 #print axioms CodingTheory.closeCodewordsRel_ncard_le_hammingBallVolume
@@ -157,3 +176,4 @@ end CodingTheory
 #print axioms CodingTheory.listDecodable_qEntropy_card
 #print axioms CodingTheory.Lambda_le_qEntropy_real_radius_card
 #print axioms CodingTheory.listDecodable_qEntropy_real_radius_card
+#print axioms CodingTheory.one_le_Lambda_of_nonempty

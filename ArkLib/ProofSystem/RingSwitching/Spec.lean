@@ -69,6 +69,10 @@ instance : ∀ j, OracleInterface ((pSpecBatching κ L K P).Message j)
 -- `ArkLib.ProofSystem.Sumcheck.Structured.SingleRound` along with the spec itself.
 -- Anonymous instances are looked up globally regardless of namespace, so no shim is needed.
 
+instance instOracleInterfaceChallengePSpecSumcheckRound :
+    ∀ j, OracleInterface ((pSpecSumcheckRound (L:=L)).Challenge j) :=
+  ProtocolSpec.challengeOracleInterface
+
 instance : ∀ j, OracleInterface ((pSpecSumcheckLoop (L:=L) ℓ').Message j)
   := instOracleInterfaceMessageSeqCompose
 
@@ -117,7 +121,51 @@ instance : ∀ i, SampleableType (mlIOPCS.pSpec.Challenge i) := mlIOPCS.O_challe
 instance : ∀ i, SampleableType ((fullPspec κ (L:=L) (K:=K) P (ℓ':=ℓ') mlIOPCS).Challenge i) :=
   instSampleableTypeChallengeAppend
 
+/-! ## OracleSpec `Inhabited`/`Fintype` instances for completeness unrolling -/
+
+instance instInhabitedOracleSpecEmpty : (([]ₒ : OracleSpec PEmpty).Inhabited) where
+  inhabited_B i := nomatch i
+
+instance instFintypeOracleSpecEmpty : (([]ₒ : OracleSpec PEmpty).Fintype) where
+  fintype_B i := nomatch i
+
+instance instFintypePSpecSumcheckRoundChallenge :
+    ([(pSpecSumcheckRound (L:=L)).Challenge]ₒ).Fintype := by
+  refine { fintype_B := ?_ }
+  intro x
+  rcases x with ⟨⟨i, hi⟩, q⟩
+  have h1 : i = 1 := by
+    fin_cases i
+    · simp [pSpecSumcheckRound] at hi
+    · rfl
+  subst h1
+  cases q
+  change Fintype L
+  infer_instance
+
+instance instInhabitedPSpecSumcheckRoundChallenge :
+    ([(pSpecSumcheckRound (L:=L)).Challenge]ₒ).Inhabited := by
+  refine { inhabited_B := ?_ }
+  intro x
+  rcases x with ⟨⟨i, hi⟩, q⟩
+  have h1 : i = 1 := by
+    fin_cases i
+    · simp [pSpecSumcheckRound] at hi
+    · rfl
+  subst h1
+  cases q
+  change Inhabited L
+  exact ⟨0⟩
+
 end Pspec
 
 end
 end RingSwitching
+
+/-! ### Axiom audit (issue #19 sumcheck unroll instance plumbing) -/
+
+#print axioms RingSwitching.instOracleInterfaceChallengePSpecSumcheckRound
+#print axioms RingSwitching.instInhabitedOracleSpecEmpty
+#print axioms RingSwitching.instFintypeOracleSpecEmpty
+#print axioms RingSwitching.instFintypePSpecSumcheckRoundChallenge
+#print axioms RingSwitching.instInhabitedPSpecSumcheckRoundChallenge

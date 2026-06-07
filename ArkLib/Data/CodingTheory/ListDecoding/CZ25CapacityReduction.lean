@@ -347,11 +347,72 @@ theorem frs_list_decoding_capacity_cz25_of_coordFiberCap_admissible_eta_eq_one_d
       domain k s ω L hL_dom hω0 hadm hkLs hkord)
     hCap
 
+/-- Coordinate-fiber-cap route from the discharged T2.18 order/inter front door.  This avoids
+requiring callers to manually assemble `ReedSolomon.Folded.Admissible L s ω`. -/
+theorem frs_list_decoding_capacity_cz25_of_coordFiberCap_orderOf_ge_of_inter
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (hs_pos : 0 < s)
+    (η : ℝ) (hη_pos : 0 < η) (hη_lt_s : 1 / η < s)
+    (L : Finset F) (hL_dom : ∀ i : ι, domain i ∈ L)
+    (hL_zero : (0 : F) ∉ L) (hω0 : ω ≠ 0) (hs_order : s ≤ orderOf ω)
+    (hinter : ∀ α ∈ L, ∀ β ∈ L, α ≠ β → ∀ i : ℕ, i < s → α * ω ^ i ≠ β)
+    (hkLs : k ≤ s * Fintype.card ι) (hkord : k ≤ orderOf ω)
+    (hCap : ∀ (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
+        (h : IsSubspaceDesign s τ C) (η' : ℝ) (hη' : 0 < η'),
+        CZ25CoordFiberCap s τ C h η' hη')
+    (hηnat : (1 : ℝ) / η = (Nat.floor (1 / η) : ℕ)) :
+    let n : ℝ := Fintype.card ι
+    let ρ : ℝ := k / n
+    let δ : ℝ := 1 - ρ * s / (s - 1 / η + 1) - η
+    let bound : ℝ := (s * (1 - ρ) + 1 - 1 / η) / (η * (s + 1 - 1 / η))
+    (Lambda ((ReedSolomon.Folded.frsCode domain k s ω : Set (ι → Fin s → F))) δ :
+        ENNReal) ≤
+      ENNReal.ofReal bound :=
+  frs_list_decoding_capacity_cz25_of_coordFiberCap_T218
+    domain k s ω hs_pos η hη_pos hη_lt_s
+    (frs_is_subspaceDesign_cz25Profile_of_gk16Profile domain k s ω
+      (frs_is_subspaceDesign_gk16_of_orderOf_ge_of_inter
+        domain k s ω L hL_dom hL_zero hω0 hs_order hinter hkLs hkord))
+    hCap hηnat
+
+/-- Reciprocal-natural version of
+`frs_list_decoding_capacity_cz25_of_coordFiberCap_orderOf_ge_of_inter`. -/
+theorem frs_list_decoding_capacity_cz25_of_coordFiberCap_orderOf_ge_of_inter_eta_eq_one_div_nat
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (hs_pos : 0 < s)
+    (η : ℝ) {m : ℕ} (hm : 0 < m) (hη : η = 1 / (m : ℝ)) (hms : m < s)
+    (L : Finset F) (hL_dom : ∀ i : ι, domain i ∈ L)
+    (hL_zero : (0 : F) ∉ L) (hω0 : ω ≠ 0) (hs_order : s ≤ orderOf ω)
+    (hinter : ∀ α ∈ L, ∀ β ∈ L, α ≠ β → ∀ i : ℕ, i < s → α * ω ^ i ≠ β)
+    (hkLs : k ≤ s * Fintype.card ι) (hkord : k ≤ orderOf ω)
+    (hCap : ∀ (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
+        (h : IsSubspaceDesign s τ C) (η' : ℝ) (hη' : 0 < η'),
+        CZ25CoordFiberCap s τ C h η' hη') :
+    let n : ℝ := Fintype.card ι
+    let ρ : ℝ := k / n
+    let δ : ℝ := 1 - ρ * s / (s - 1 / η + 1) - η
+    let bound : ℝ := (s * (1 - ρ) + 1 - 1 / η) / (η * (s + 1 - 1 / η))
+    (Lambda ((ReedSolomon.Folded.frsCode domain k s ω : Set (ι → Fin s → F))) δ :
+        ENNReal) ≤
+      ENNReal.ofReal bound := by
+  exact frs_list_decoding_capacity_cz25_of_coordFiberCap_T218_eta_eq_one_div_nat
+    domain k s ω hs_pos η hm hη hms
+    (frs_is_subspaceDesign_cz25Profile_of_gk16Profile domain k s ω
+      (frs_is_subspaceDesign_gk16_of_orderOf_ge_of_inter
+        domain k s ω L hL_dom hL_zero hω0 hs_order hinter hkLs hkord))
+    hCap
+
 #print axioms frs_list_decoding_capacity_cz25_of_coordFiberCap_injective
 #print axioms frs_list_decoding_capacity_cz25_of_coordFiberCap_admissible
 #print axioms one_div_eta_eq_natFloor_of_eta_eq_one_div_nat
 #print axioms frs_list_decoding_capacity_cz25_of_coordFiberCap_T218_eta_eq_one_div_nat
 #print axioms frs_list_decoding_capacity_cz25_of_coordFiberCap_injective_eta_eq_one_div_nat
 #print axioms frs_list_decoding_capacity_cz25_of_coordFiberCap_admissible_eta_eq_one_div_nat
+#print axioms frs_list_decoding_capacity_cz25_of_coordFiberCap_orderOf_ge_of_inter
+#print axioms frs_list_decoding_capacity_cz25_of_coordFiberCap_orderOf_ge_of_inter_eta_eq_one_div_nat
 
 end CodingTheory

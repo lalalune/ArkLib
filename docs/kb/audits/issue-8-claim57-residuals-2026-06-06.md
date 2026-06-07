@@ -104,6 +104,13 @@ Claim57Residuals.ofDescended
 exists_factors_with_large_common_root_set_of_descended
 R_descended
 H_descended
+R_descended_mem_factorization
+irreducible_H_descended
+natDegree_H_descended_pos
+fact_irreducible_H_descended
+fact_natDegree_H_descended_pos
+H_descended_dvd_evalX_R_descended
+evalX_R_descended_separable
 claimA2_hypotheses_descended
 ```
 
@@ -111,7 +118,9 @@ The descended bundle removes `hfactor` by construction: membership in `pg_RsetDe
 membership in the descended primitive-separable factor list. Legacy consumers can still recover
 `Claim57Residuals` through `Claim57Residuals.ofDescended`, but only under the explicit coincidence
 hypothesis `pg_RsetDescended = pg_Rset`. The new front door and projections then expose the
-Claim-5.7 factors and Claim-A.2 hypotheses from that descended bundle.
+Claim-5.7 factors and Claim-A.2 hypotheses from that descended bundle. The `Fact` helpers package
+`Irreducible H_descended` and `0 < H_descended.natDegree` for downstream Appendix-A / beta-rec
+consumers that expect typeclass facts around the extracted `H`.
 
 `DiscriminantSeparable.lean` supplies the mathlib-level payoff bridge for the `hx0` / `hsep`
 side condition:
@@ -152,8 +161,8 @@ Most later Claim 5.7 / Claim 5.8 lemmas in `Agreement.lean` still carry the lega
 ```
 
 The useful downstream cleanup is to route new consumers through
-`Claim57ResidualsDescended.ofInTree` and the descended projections, then use
-`Claim57Residuals.ofDescended` only at legacy boundaries that still need the old class under an
+`Claim57ResidualsDescended.ofInTree`, the descended projections, and the local `Fact` helpers, then
+use `Claim57Residuals.ofDescended` only at legacy boundaries that still need the old class under an
 explicit coincidence hypothesis.
 
 ## Verification Status
@@ -181,6 +190,13 @@ This audit was checked against the current anchors:
 - `exists_factors_with_large_common_root_set_of_descended`
 - `R_descended`
 - `H_descended`
+- `R_descended_mem_factorization`
+- `irreducible_H_descended`
+- `natDegree_H_descended_pos`
+- `fact_irreducible_H_descended`
+- `fact_natDegree_H_descended_pos`
+- `H_descended_dvd_evalX_R_descended`
+- `evalX_R_descended_separable`
 - `claimA2_hypotheses_descended`
 - `Polynomial.discr_map_of_natDegree_preserved`
 - `Polynomial.separable_of_discr_ne_zero`

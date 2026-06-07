@@ -63,6 +63,22 @@ ArkLib.CorrelatedAgreementListDecodingClosed.hcoeffPoly_witness_of_section5Data
 which turns the derived `CurveCoeffPolys` data into the `∃ B : ℕ -> Polynomial F` shape consumed by
 the curve front door.
 
+The off-centre route is also exposed at the `KeystoneStrictResidual` boundary:
+
+```lean
+ArkLib.KeystoneStrictResidual.hcoeffPoly_of_betaRec_offcentre
+ArkLib.KeystoneStrictResidual.BetaCurveInputOffcentre
+ArkLib.KeystoneStrictResidual.hcoeffPoly_of_betaRecOffcentre
+ArkLib.KeystoneStrictResidual.strictCoeffPolysResidual_of_betaRec_offcentre
+ArkLib.KeystoneStrictResidual.correlatedAgreement_affine_curves_johnson_of_betaRec_offcentre
+ArkLib.KeystoneStrictResidual.correlatedAgreement_affine_curves_johnson_of_betaRec_offcentre_strict
+```
+
+These declarations are API packaging over the same `gammaLocal` /
+`curveCoeffPolys_of_betaRec_offcentre` proof route. They make the off-centre data surface reusable
+at the coefficient-polynomial residual and correlated-agreement front doors, but they do not
+construct the primitive Section 5 inputs.
+
 ## Remaining gate
 
 The remaining work is not to prove another wrapper from an `hcoeffPoly`-shaped assumption. The live
@@ -79,7 +95,7 @@ gap is to wire the live Section 5 context into the genuine betaRec route:
   route now packaged as `MatchingDvdInput -> HenselDatum -> hPz`; the live Section 5 context still
   has to construct the per-`z` `SepHenselInput` or matching-divisibility witness, prove the degree
   bounds, and thread those witnesses through
-  `GSFactorData.toSection5StrictData` / `BetaCurveInput`;
+  `GSFactorData.toSection5StrictData` / `BetaCurveInput` / `BetaCurveInputOffcentre`;
 - the GS-factor divisibility input `Hlift H ∣ R`;
 - the L13 betaRec drop-in for the legacy `β_regular` path.
 
