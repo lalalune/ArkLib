@@ -1250,6 +1250,52 @@ theorem fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndJ
           (n := n) (ω := ω) f h_agreement m_ge_3 h_joint)
       h_proximity
 
+omit [Nontrivial 𝔽] in
+/-- Density-route Claim 8.2 front door from the affine-spaces correlated-agreement predicate.
+
+This composes the proved query-density/lens pieces with the BCIKS20 affine-spaces CA predicate
+adapter. The remaining coding-theoretic input is now the actual CA predicate plus its probability
+trigger, rather than a pre-built `Code.jointProximity` witness. -/
+theorem
+    fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndAffineSpacesCA
+    {t : ℕ}
+    {α : ℝ≥0}
+    (f : Fin t.succ → (ω.subdomain 0 → 𝔽))
+    (h_agreement :
+      correlated_agreement_density
+        (Fₛ f)
+        (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
+      ≤ α)
+    {m : ℕ}
+    (m_ge_3 : m ≥ 3)
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    (G : Finset ι) (δ : ℝ≥0) (queries l : ℕ)
+    (domain_size_cond : (2 ^ (∑ i, (s i : ℕ))) * d ≤ 2 ^ n)
+    {ε : ℝ≥0}
+    (h_ca :
+      ProximityGap.δ_ε_correlatedAgreementAffineSpaces
+        (F := 𝔽) (A := 𝔽) (ι := ω.subdomain 0) (k := t)
+        (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier
+        (1 - α) ε)
+    (h_prob :
+      Pr_{let y ← $ᵖ ↥(Affine.affineSubspaceAtOrigin (F := 𝔽) (f 0) (Fin.tail f))}[
+        δᵣ(y.1,
+          (ReedSolomon.code
+            (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier)
+          ≤ 1 - α] > ε) :
+    fri_query_soundness (n := n) (ω := ω) (f := f)
+      (h_agreement := h_agreement) (m_ge_3 := m_ge_3) := by
+  exact
+    fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndJointProximity
+      (n := n) (s := s) (d := d) (ω := ω)
+      (f := f) h_agreement m_ge_3 G δ queries l domain_size_cond
+      (ProximityGap.jointProximity_of_δ_ε_correlatedAgreementAffineSpaces
+        (F := 𝔽) (A := 𝔽) (ι := ω.subdomain 0) (k := t)
+        (C :=
+          (ReedSolomon.code
+            (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier)
+        (δ := 1 - α) (ε := ε) (u := f) h_ca h_prob)
+
 #print axioms Fri.FriQuerySoundnessParts
 #print axioms Fri.QueryRound.queryRound_acceptance_le_of_density
 #print axioms Fri.queryRoundAcceptanceBound_of_density
@@ -1268,6 +1314,8 @@ theorem fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndJ
 #print axioms Fri.fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLens
 set_option linter.style.longLine false in
 #print axioms Fri.fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndJointProximity
+set_option linter.style.longLine false in
+#print axioms Fri.fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndAffineSpacesCA
 
 /-
 The old finite-range instance diagnostic scratch block has been removed.  The remaining
