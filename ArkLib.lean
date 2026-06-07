@@ -431,6 +431,7 @@ import ArkLib.Interaction.Oracle.Core
 import ArkLib.Interaction.Oracle.Spec
 import ArkLib.Interaction.Reduction
 import ArkLib.OracleReduction.BCS.Basic
+import ArkLib.OracleReduction.BCS.FrontierBricks
 import ArkLib.OracleReduction.Basic
 import ArkLib.OracleReduction.Cast
 import ArkLib.OracleReduction.Completeness
@@ -733,6 +734,7 @@ import ArkLib.ToMathlib.L46DiffStackRS
 import ArkLib.ToMathlib.L46GSLowerBound
 import ArkLib.ToMathlib.LinearizedSupport
 import ArkLib.ToMathlib.List.Basic
+import ArkLib.ToMathlib.LogupFractionalSum
 import ArkLib.ToMathlib.MCAFirstMomentArithBricks
 import ArkLib.ToMathlib.MCAPrizeFourRateNumerics
 import ArkLib.ToMathlib.MatchingExtractor
