@@ -234,6 +234,30 @@ theorem frs_epsMCA_capacity_gg25_proven_of_t413
     (gg25_subspaceDesign_epsMCA s _ (ReedSolomon.Folded.frsCode domain k s ω) hT218 t ht)
     hη htη
 
+/-- Coset-separation companion to `frs_epsMCA_capacity_gg25_proven_of_t413`.
+
+This uses the fully packaged order/coset folded-RS T2.18 front door, so callers can instantiate
+the T4.14-from-T4.13 proof supply from `0 ∉ L`, `s ≤ orderOf ω`, and the coset-separation
+condition directly. -/
+theorem frs_epsMCA_capacity_gg25_proven_of_t413_cosetSep
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (η : ℝ) (hη_pos : 0 < η) (hη_lt : η < 1) (hs_gt : (s : ℝ) > 16 / η ^ 2)
+    (t : ℕ) (ht : 0 < t) (hts : t + 1 ≤ s)
+    (L : Finset F) (hL_dom : ∀ i : ι, domain i ∈ L)
+    (h0 : (0 : F) ∉ L) (hω0 : ω ≠ 0) (hs_order : s ≤ orderOf ω)
+    (hcoset : ∀ α ∈ L, ∀ β ∈ L, ∀ i : ℕ, α * ω ^ i = β → α = β)
+    (hkLs : k ≤ s * Fintype.card ι) (hkord : k ≤ orderOf ω)
+    (hη : η = (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - (t : ℝ))
+        - (k : ℝ) / Fintype.card ι + 3 / (2 * t))
+    (htη : (t : ℝ) ≤ 2 / η) :
+    frs_epsMCA_capacity_gg25 domain k s ω η hη_pos hη_lt hs_gt := by
+  have hT218 := frs_is_subspaceDesign_cz25Profile_of_orderOf_ge_of_cosetSep
+    domain k s ω L hL_dom h0 hω0 hs_order hcoset hkLs hkord
+  exact frs_epsMCA_capacity_gg25_of_subspaceDesign_eta
+    domain k s ω η hη_pos hη_lt hs_gt t ht hts hT218
+    (gg25_subspaceDesign_epsMCA s _ (ReedSolomon.Folded.frsCode domain k s ω) hT218 t ht)
+    hη htη
+
 end SubspaceDesign
 
 #print axioms CodingTheory.linear_epsMCA_1_5_johnson_gkl24_proven
@@ -246,5 +270,6 @@ end SubspaceDesign
 #print axioms CodingTheory.subspaceDesign_epsMCA_gg25_proven
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_proven
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_proven_of_t413
+#print axioms CodingTheory.frs_epsMCA_capacity_gg25_proven_of_t413_cosetSep
 
 end CodingTheory
