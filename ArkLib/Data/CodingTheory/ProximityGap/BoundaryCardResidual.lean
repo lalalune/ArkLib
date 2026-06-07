@@ -415,6 +415,43 @@ theorem boundary_lattice_iff_sqrtRate_mul_card_mem {deg : ℕ} {domain : ι ↪ 
       rw [hdistrib, hm, tsub_tsub_cancel_of_le hmle]
     rw [hval, Nat.floor_natCast]
 
+omit [DecidableEq ι] [Fintype F] [DecidableEq F] in
+/-- **Square identity behind the boundary lattice endpoint.**  In the usual `deg ≤ |ι|`
+Reed–Solomon range, the square-root scale appearing in the lattice branch satisfies
+`(sqrtRate · |ι|)^2 = deg · |ι|`.  Thus integrality of the square-root scale is exactly the
+arithmetic source of the perfect-square endpoint described in the boundary split. -/
+theorem sqrtRate_mul_card_sq_eq_deg_mul_card {deg : ℕ} {domain : ι ↪ F}
+    (hdeg : deg ≤ Fintype.card ι) :
+    (ReedSolomon.sqrtRate deg domain * Fintype.card ι) ^ 2
+      = ((deg * Fintype.card ι : ℕ) : ℝ≥0) := by
+  have hrate : (LinearCode.rate (ReedSolomon.code domain deg) : ℝ≥0)
+      = (deg : ℝ≥0) / (Fintype.card ι : ℝ≥0) := by
+    simpa [NNRat.cast_div, NNRat.cast_natCast] using
+      congrArg (fun x : ℚ≥0 => (x : ℝ≥0))
+        (ReedSolomon.rateOfLinearCode_eq_div' (F := F) (α := domain) hdeg)
+  rw [ReedSolomon.sqrtRate, hrate, mul_pow, NNReal.sq_sqrt]
+  have hn : (Fintype.card ι : ℝ≥0) ≠ 0 := by
+    exact_mod_cast (Fintype.card_ne_zero (α := ι))
+  field_simp [hn]
+  norm_num
+
+omit [DecidableEq ι] [Fintype F] [DecidableEq F] in
+/-- **Perfect-square witness for the lattice endpoint.**  If the boundary square-root scale
+`sqrtRate · |ι|` is an integer, then `deg · |ι|` is a Nat square. -/
+theorem isSquare_deg_mul_card_of_sqrtRate_mul_card_mem {deg : ℕ} {domain : ι ↪ F}
+    (hdeg : deg ≤ Fintype.card ι)
+    (hmem : ∃ m : ℕ, ReedSolomon.sqrtRate deg domain * Fintype.card ι = (m : ℝ≥0)) :
+    IsSquare (deg * Fintype.card ι) := by
+  rcases hmem with ⟨m, hm⟩
+  refine ⟨m, ?_⟩
+  apply Nat.cast_injective (R := ℝ≥0)
+  calc
+    ((deg * Fintype.card ι : ℕ) : ℝ≥0)
+        = (ReedSolomon.sqrtRate deg domain * Fintype.card ι) ^ 2 := by
+            rw [sqrtRate_mul_card_sq_eq_deg_mul_card (domain := domain) hdeg]
+    _ = (m : ℝ≥0) ^ 2 := by rw [hm]
+    _ = (m * m : ℕ) := by norm_num [pow_two]
+
 /-! ## The strengthened keystone corollary consuming the isolated lattice residual -/
 
 omit [DecidableEq ι] in
@@ -493,5 +530,6 @@ with no `sorry`/`admit`/`axiom`/`native_decide`. -/
 #print axioms ArkLib.BoundaryCardResidual.boundaryProbabilityResidual_of_lattice_residual
 #print axioms ArkLib.BoundaryCardResidual.BoundaryCardQuantizationResiduals.toBoundaryProbabilityResidual
 #print axioms ArkLib.BoundaryCardResidual.boundary_lattice_iff_sqrtRate_mul_card_mem
+#print axioms ArkLib.BoundaryCardResidual.isSquare_deg_mul_card_of_sqrtRate_mul_card_mem
 #print axioms ArkLib.BoundaryCardResidual.correlatedAgreement_affine_curves_of_lattice_residual
 #print axioms ArkLib.BoundaryCardResidual.correlatedAgreement_affine_curves_of_quantization_residuals
