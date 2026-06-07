@@ -457,6 +457,7 @@ import ArkLib.OracleReduction.Security.SpecialSoundness
 import ArkLib.OracleReduction.Security.StateRestoration
 import ArkLib.OracleReduction.Security.TranscriptTree
 import ArkLib.OracleReduction.Security.ZeroKnowledge
+import ArkLib.OracleReduction.Security.EchoHVZK
 import ArkLib.OracleReduction.SimulateQ
 import ArkLib.OracleReduction.VectorIOR
 import ArkLib.ProofSystem.BatchedFri.QueryRoundAnalysis

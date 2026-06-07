@@ -1,26 +1,20 @@
 /-
-Issue #112 — Zero-Knowledge: define HVZK/ZK and prove perfect HVZK for ≥1 protocol.  SCRATCH.
-
-Target file (already in tree): ArkLib/OracleReduction/Security/ZeroKnowledge.lean
-  defines `Reduction.perfectHVZK`, `Reduction.statisticalHVZK`, `Reduction.isHVZK`,
-  `Reduction.honestTranscriptDist`, `Reduction.TranscriptSimulator`, and proves the *trivial*
-  zero-round identity reduction is perfect HVZK (`Reduction.id_perfectHVZK`).
-
-THIS SCRATCH GOES BEYOND THE IDENTITY:
-  It instantiates the in-tree HVZK definition on a genuine *single-message* (non-interactive)
-  reduction — the prover sends one P_to_V message — and proves PERFECT HVZK (error 0) for it.
-
-  Concretely we take option (b) from the issue: the "statement echo" non-interactive reduction.
-  The prover's single message is its public input statement (no witness/secret dependence, no
-  oracle queries); the verifier accepts and returns the statement. The simulator replays the
-  public statement as the message. Honest and simulated transcript distributions are EQUAL, so
-  this is perfect (not approximate) HVZK, proved by `evalDist` (PMF) equality.
-
-  This is a substantive HVZK theorem: there is a real prover message in the transcript, unfolded
-  through `Reduction.run_of_prover_first` and the `honestTranscriptDist` `simulateQ` interpretation.
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
 -/
 
 import ArkLib.OracleReduction.Security.ZeroKnowledge
+
+/-!
+# Perfect HVZK for the statement-echo non-interactive reduction (issue #112)
+
+A substantive perfect zero-knowledge instance beyond the trivial identity reduction: the
+single-message "echo" reduction (prover replays the public statement) is perfect HVZK for any
+relation, with the explicit public-replay simulator and an exact transcript-distribution
+equality (error 0). `echo_perfectHVZK` + corollaries.
+-/
+
 
 noncomputable section
 
