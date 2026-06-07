@@ -250,10 +250,12 @@ import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentHighDist
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentIsolation
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentLinear
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentListSize
+import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentListSizeRS
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentPairCount
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentPairs
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentReduction
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentUpper
+import ArkLib.Data.CodingTheory.ProximityGap.CS25TailSupport
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBounds
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsAdmissible
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsProofs
@@ -774,7 +776,6 @@ import ArkLib.ToMathlib.GGR11Interleaved
 import ArkLib.ToMathlib.GGR11Reconnect
 import ArkLib.ToMathlib.GGR11TreeConstruction
 import ArkLib.ToMathlib.GHSZ02Cor20
-import ArkLib.ToMathlib.GHSZ02LargeNProof
 import ArkLib.ToMathlib.GK16BudgetCoeff
 import ArkLib.ToMathlib.GK16Claim16Core
 import ArkLib.ToMathlib.GK16Claim16Witness
