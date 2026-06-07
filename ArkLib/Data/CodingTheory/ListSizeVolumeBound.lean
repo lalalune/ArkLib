@@ -254,6 +254,15 @@ theorem Lambda_le_qpow {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
   have hq : 1 ≤ Fintype.card F := Fintype.card_pos
   exact_mod_cast hammingBallVolume_le_qpow (Fintype.card F) hq δ (Fintype.card ι)
 
+/-- **Two-sided nonempty list-size bracket with the whole ambient word-space bound.** -/
+theorem one_le_Lambda_and_Lambda_le_qpow
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Fintype F] [Nonempty F] [DecidableEq F]
+    (C : Code ι F) (hC : C.Nonempty) (δ : ℝ) (hδ : 0 ≤ δ) :
+    (1 : ℕ∞) ≤ Lambda C δ ∧
+      Lambda C δ ≤ ((Fintype.card F ^ Fintype.card ι : ℕ) : ℕ∞) := by
+  exact ⟨one_le_Lambda_of_nonempty (C := C) hC hδ, Lambda_le_qpow C δ⟩
+
 /-- **Per-word whole-space list-size bound.**  Every close-codeword list is contained in the
 ambient word space, so its size is at most `q^n`. -/
 theorem closeCodewordsRel_ncard_le_qpow {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
@@ -289,5 +298,6 @@ end CodingTheory
 #print axioms CodingTheory.one_le_Lambda_and_Lambda_le_qEntropy_real_radius_card
 #print axioms CodingTheory.uniqueDecodable_zero
 #print axioms CodingTheory.Lambda_le_qpow
+#print axioms CodingTheory.one_le_Lambda_and_Lambda_le_qpow
 #print axioms CodingTheory.closeCodewordsRel_ncard_le_qpow
 #print axioms CodingTheory.listDecodable_qpow
