@@ -73,11 +73,37 @@ def restrictedMatchRecursionPartitionForm (x₀ : F) (R : F[X][X][Y])
 
 /-- The final P2 partition-form residual: both sides of `RestrictedFaaDiBrunoMatch` after the
 proven Faà-di-Bruno and recursion-side partition normalizations. -/
+def RestrictedFaaDiBrunoPartitionMatchAt (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) : Prop :=
+  restrictedFaaDiBrunoPartitionForm H x₀ R hHyp t
+    = restrictedMatchRecursionPartitionForm H x₀ R hHyp t
+
+/-- The final all-orders P2 partition-form residual.  This is packaged as a family of
+single-order residuals so the remaining term-level proof can be attacked order by order. -/
 def RestrictedFaaDiBrunoPartitionMatch (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H) : Prop :=
-  ∀ t : ℕ,
-    restrictedFaaDiBrunoPartitionForm H x₀ R hHyp t
-      = restrictedMatchRecursionPartitionForm H x₀ R hHyp t
+  ∀ t : ℕ, RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp t
+
+/-- The all-orders partition residual is exactly the family of single-order residuals. -/
+theorem restrictedPartitionMatch_iff_forall_at (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    RestrictedFaaDiBrunoPartitionMatch H x₀ R hHyp ↔
+      ∀ t : ℕ, RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp t :=
+  Iff.rfl
+
+/-- Projection from the all-orders normalized residual to a fixed order. -/
+theorem RestrictedFaaDiBrunoPartitionMatch.at
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hpart : RestrictedFaaDiBrunoPartitionMatch H x₀ R hHyp) (t : ℕ) :
+    RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp t :=
+  hpart t
+
+/-- Assemble the all-orders normalized residual from its single-order family. -/
+theorem RestrictedFaaDiBrunoPartitionMatch.of_forallAt
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hat : ∀ t : ℕ, RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp t) :
+    RestrictedFaaDiBrunoPartitionMatch H x₀ R hHyp :=
+  hat
 
 /-- Restatement of the proven left-side partition normalization using the named form. -/
 theorem restrictedFaaDiBrunoSum_eq_restrictedPartitionForm (x₀ : F) (R : F[X][X][Y])
@@ -101,6 +127,7 @@ theorem restrictedMatch_iff_partitionMatch (x₀ : F) (R : F[X][X][Y])
       ↔ RestrictedFaaDiBrunoPartitionMatch H x₀ R hHyp := by
   constructor
   · intro hmatch t
+    unfold RestrictedFaaDiBrunoPartitionMatchAt
     rw [← restrictedFaaDiBrunoSum_eq_restrictedPartitionForm H x₀ R hHyp t,
       ← restrictedMatch_rhs_eq_restrictedRecursionPartitionForm H x₀ R hHyp t]
     exact hmatch t
@@ -172,7 +199,11 @@ theorem βHensel_lift_identity_of_partitionMatch (x₀ : F) (R : F[X][X][Y])
 section AxiomAudit
 #print axioms restrictedFaaDiBrunoPartitionForm
 #print axioms restrictedMatchRecursionPartitionForm
+#print axioms RestrictedFaaDiBrunoPartitionMatchAt
 #print axioms RestrictedFaaDiBrunoPartitionMatch
+#print axioms restrictedPartitionMatch_iff_forall_at
+#print axioms RestrictedFaaDiBrunoPartitionMatch.at
+#print axioms RestrictedFaaDiBrunoPartitionMatch.of_forallAt
 #print axioms restrictedFaaDiBrunoSum_eq_restrictedPartitionForm
 #print axioms restrictedMatch_rhs_eq_restrictedRecursionPartitionForm
 #print axioms restrictedMatch_iff_partitionMatch
