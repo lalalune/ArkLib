@@ -99,18 +99,16 @@ theorem rsEncoder_eq_of_two_points {m m' : Fin 2 → Sextic} {j₁ j₂ : Fin 4}
     have hlt₁ : j₁.val < 4 := j₁.isLt
     have hlt₂ : j₂.val < 4 := j₂.isLt
     apply Fin.ext
-    -- The characteristic of `Sextic = GaloisField fieldSize 6` is `fieldSize`.
-    haveI : CharP Sextic KoalaBear.fieldSize := by
-      simpa using (GaloisField.charP KoalaBear.fieldSize 6)
-    -- From `(j₁.val : Sextic) = (j₂.val : Sextic)` and both `< fieldSize`, deduce equality of nats.
+    -- The characteristic of `Sextic = GaloisField fieldSize 6` is `fieldSize` (derived instance).
     have hfs : (4 : ℕ) ≤ KoalaBear.fieldSize := by
       have : KoalaBear.fieldSize = 2130706433 := KoalaBear.fieldSize_eq
       omega
-    have hb₁ : j₁.val < KoalaBear.fieldSize := lt_of_lt_of_le hlt₁ hfs
-    have hb₂ : j₂.val < KoalaBear.fieldSize := lt_of_lt_of_le hlt₂ hfs
-    have := (CharP.natCast_eq_natCast_iff_of_lt (R := Sextic) (p := KoalaBear.fieldSize)
-      hb₁ hb₂).mp hcast
-    exact this
+    have hb₁ : j₁.val ∈ Set.Iio KoalaBear.fieldSize :=
+      Set.mem_Iio.mpr (lt_of_lt_of_le hlt₁ hfs)
+    have hb₂ : j₂.val ∈ Set.Iio KoalaBear.fieldSize :=
+      Set.mem_Iio.mpr (lt_of_lt_of_le hlt₂ hfs)
+    -- Small natural casts are injective below the characteristic.
+    exact CharP.natCast_injOn_Iio (R := Sextic) KoalaBear.fieldSize hb₁ hb₂ hcast
   -- From the two agreements, derive `m 1 = m' 1`, then `m 0 = m' 0`.
   -- `rsEncoder m j = m 0 + m 1 * rsPoint j`.
   have e₁ : m 0 + m 1 * rsPoint j₁ = m' 0 + m' 1 * rsPoint j₁ := by
