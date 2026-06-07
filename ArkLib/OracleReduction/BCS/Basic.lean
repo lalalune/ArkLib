@@ -751,6 +751,17 @@ theorem BCSPhaseRealizationFrontier.opening {StmtMid WitMid : Type}
     phases.opening_realizes_query_log :=
   h.2
 
+/-- A packaged phase-realization frontier supplies the opening-log bridge directly. -/
+theorem BCSOpeningLogBridge.ofPhaseRealizationFrontier {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    {phases : BCSCompiledPhases (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) CommitmentType e}
+    {log : BCSOpeningLogFrontier (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType}
+    (hPhase : BCSPhaseRealizationFrontier phases) :
+    BCSOpeningLogBridge phases log :=
+  fun _ => BCSPhaseRealizationFrontier.opening hPhase
+
 omit Oₘ in
 /-- Expand the phase-realization frontier into its two named phase obligations. -/
 theorem BCSPhaseRealizationFrontier.iff_fields {StmtMid WitMid : Type}
@@ -1477,6 +1488,7 @@ generic compiler construction or the completeness/soundness preservation theorem
 #print axioms OracleReduction.BCSPhaseRealizationFrontier.intro
 #print axioms OracleReduction.BCSPhaseRealizationFrontier.interaction
 #print axioms OracleReduction.BCSPhaseRealizationFrontier.opening
+#print axioms OracleReduction.BCSOpeningLogBridge.ofPhaseRealizationFrontier
 #print axioms OracleReduction.BCSPhaseRealizationFrontier.iff_fields
 #print axioms OracleReduction.BCSPhaseRealizationFrontier.ofOpeningLogBridge
 #print axioms OracleReduction.BCSCompiledPhases.toReduction_eq_BCSTransform

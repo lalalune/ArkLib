@@ -142,8 +142,18 @@ theorem appendRight_full (T₁ : FullTranscript pSpec₁) (T₂ : FullTranscript
       refine (cast_heq _ _).trans (HEq.trans ?_ (cast_heq _ _).symm)
       rw [show (⟨m + (j : ℕ) - m, by omega⟩ : Fin n) = j from by ext; simp]
 
+/-- Recompose a full appended transcript directly through `appendRight`: splitting into
+`FullTranscript.fst`/`snd` and then rebuilding with `appendRight` recovers the original transcript.
+This is the right-block transcript reconciliation corollary used by append-run proofs. -/
+theorem appendRight_fst_snd (T : FullTranscript (pSpec₁ ++ₚ pSpec₂)) :
+    appendRight (k := Fin.last n) T.fst T.snd = T := by
+  rw [appendRight_full]
+  exact FullTranscript.fst_append_snd T
+
 end ProtocolSpec.Transcript
 
 #check @ProtocolSpec.Transcript.appendRight
 #print axioms ProtocolSpec.Transcript.appendRight_concat
 #print axioms ProtocolSpec.Transcript.appendRight_empty
+#print axioms ProtocolSpec.Transcript.appendRight_full
+#print axioms ProtocolSpec.Transcript.appendRight_fst_snd
