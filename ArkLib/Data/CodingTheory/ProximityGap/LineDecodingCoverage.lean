@@ -379,6 +379,23 @@ theorem epsMCA_eq_zero_of_badScalarDoubleCover (C : Set (ι → A)) (δ : ℝ≥
     (fun u γ hγ S hsize hwit hpair => by
       simpa [MCADoubleCoverOn] using hcov u γ hγ S hsize hwit hpair)
 
+/-- Per-stack zero bad-scalar count from the global double-cover surface. -/
+theorem mcaBadCount_eq_zero_of_MCAForallDoubleCover
+    (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A)
+    (hcov : MCAForallDoubleCover (F := F) (A := A) C δ) :
+    mcaBadCount (F := F) C δ u₀ u₁ = 0 := by
+  exact mcaBadCount_eq_zero_of_badScalarDoubleCover C δ u₀ u₁
+    (fun γ => by
+      simpa using
+        (MCAForallDoubleCover.to_badScalarDoubleCover C δ hcov
+          (![u₀, u₁] : WordStack A (Fin 2) ι) γ))
+
+/-- Error-level zero result from the global double-cover surface. -/
+theorem epsMCA_eq_zero_of_MCAForallDoubleCover (C : Set (ι → A)) (δ : ℝ≥0)
+    (hcov : MCAForallDoubleCover (F := F) (A := A) C δ) :
+    epsMCA (F := F) C δ = 0 :=
+  epsMCA_eq_zero_of_forall_double_cover C δ hcov
+
 #print axioms MCADoubleCoverOn
 #print axioms MCABadScalarDoubleCover
 #print axioms pairJointAgreesOn_of_MCADoubleCoverOn
@@ -397,6 +414,8 @@ theorem epsMCA_eq_zero_of_badScalarDoubleCover (C : Set (ι → A)) (δ : ℝ≥
 #print axioms MCAForallDoubleCover_iff_forall_not_mcaEvent
 #print axioms mcaBadCount_eq_zero_of_badScalarDoubleCover
 #print axioms epsMCA_eq_zero_of_badScalarDoubleCover
+#print axioms mcaBadCount_eq_zero_of_MCAForallDoubleCover
+#print axioms epsMCA_eq_zero_of_MCAForallDoubleCover
 
 end
 
@@ -441,8 +460,18 @@ theorem lineDecodable_imp_epsMCA_le_target_of_badScalarDoubleCover
     (C : Set (ι → A)) δ hcov]
   exact zero_le _
 
+/-- Repaired target discharge under the named global double-cover surface. -/
+theorem lineDecodable_imp_epsMCA_le_target_of_MCAForallDoubleCover
+    (C : ModuleCode ι F A) (δ a : ℝ≥0)
+    (_hLD : LineDecodable (F := F) (A := A) (C : Set (ι → A)) δ a
+      ((Fintype.card ι : ℝ≥0) + 1))
+    (hcov : MCAForallDoubleCover (F := F) (A := A) (C : Set (ι → A)) δ) :
+    lineDecodable_imp_epsMCA_le_target (F := F) (A := A) C δ a _hLD :=
+  lineDecodable_imp_epsMCA_le_target_of_forall_double_cover C δ a _hLD hcov
+
 #print axioms CodingTheory.lineDecodable_imp_epsMCA_le_target_of_forall_double_cover
 #print axioms CodingTheory.lineDecodable_imp_epsMCA_le_target_of_badScalarDoubleCover
+#print axioms CodingTheory.lineDecodable_imp_epsMCA_le_target_of_MCAForallDoubleCover
 
 end RepairedTarget
 
