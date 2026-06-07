@@ -375,6 +375,43 @@ lemma span_filter_diffs_le_span_diffs_inf_ker
   rintro x ⟨c, hc, rfl⟩
   exact diff_mem_span_diffs_inf_ker_of_mem_filter s c₀ L i hc
 
+/-- **Linear-independent filtered fibers give the cardinality-to-dimension cap.** If the
+recentred differences from one coordinate-vanishing fiber are linearly independent, then the
+fiber cardinality is bounded by the dimension of its filtered-difference span.
+
+This is the direct `finrank_span_eq_card` specialization for the hypothesis `hfiber` in
+`list_vanish_mass_le_design_of_filter_card_le_finrank`. It does not prove the hard
+Guruswami-Wang / affine-fiber argument that supplies the independence. -/
+lemma filter_card_le_finrank_span_filter_diffs_of_linearIndependent
+    (s : ℕ) (c₀ : ι → Fin s → F) (L : Finset (ι → Fin s → F)) (i : ι)
+    (hlin : LinearIndependent F
+      (fun c : {c // c ∈ L.filter (fun c => c i - c₀ i = 0)} => c.1 - c₀)) :
+    ((L.filter (fun c => c i - c₀ i = 0)).card : ℝ) ≤
+      (Module.finrank F
+        (Submodule.span F
+          ((fun c => c - c₀) ''
+            ((L.filter (fun c => c i - c₀ i = 0)) : Set (ι → Fin s → F)))) : ℝ) := by
+  classical
+  have hrange :
+      Set.range (fun c : {c // c ∈ L.filter (fun c => c i - c₀ i = 0)} => c.1 - c₀) =
+        ((fun c => c - c₀) ''
+          ((L.filter (fun c => c i - c₀ i = 0)) : Set (ι → Fin s → F))) := by
+    ext x
+    constructor
+    · rintro ⟨c, rfl⟩
+      exact ⟨c.1, c.2, rfl⟩
+    · rintro ⟨c, hc, rfl⟩
+      exact ⟨⟨c, hc⟩, rfl⟩
+  have hfin :
+      Module.finrank F
+          (Submodule.span F
+            ((fun c => c - c₀) ''
+              ((L.filter (fun c => c i - c₀ i = 0)) : Set (ι → Fin s → F)))) =
+        (L.filter (fun c => c i - c₀ i = 0)).card := by
+    rw [← hrange, finrank_span_eq_card hlin]
+    simp
+  exact_mod_cast hfin.ge
+
 /-- **Recentred differences stay in the code submodule.** If `c` and `c₀` are both codewords
 in the close list around `f`, then the difference `c - c₀` lies in the submodule code `C`.
 This is the closure fact used when forming the recentred span
@@ -581,6 +618,7 @@ end CodingTheory
 #print axioms CodingTheory.diff_mem_ker_proj_of_vanish
 #print axioms CodingTheory.diff_mem_span_diffs_inf_ker_of_mem_filter
 #print axioms CodingTheory.span_filter_diffs_le_span_diffs_inf_ker
+#print axioms CodingTheory.filter_card_le_finrank_span_filter_diffs_of_linearIndependent
 #print axioms CodingTheory.diff_mem_of_mem_closeCodewordsRel
 #print axioms CodingTheory.span_diffs_le_of_subset_closeCodewordsRel
 #print axioms CodingTheory.span_filter_diffs_le_code_inf_ker_of_subset_closeCodewordsRel
