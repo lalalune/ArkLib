@@ -1852,8 +1852,6 @@ end SubspaceDesignFRS
 #print axioms CodingTheory.linear_epsCA_sampling_dg25_mass
 #print axioms CodingTheory.linear_epsCA_ge_sampling_dg25
 #print axioms CodingTheory.linear_epsCA_ge_sampling_dg25_of_mass_bound
-#print axioms CodingTheory.frs_tau_eval
-#print axioms CodingTheory.frs_capacity_radius_eq_of_eta
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_subspaceDesign_eta
 #print axioms CodingTheory.rs_epsMCA_johnson_range_boundReal_nonneg
 #print axioms CodingTheory.johnsonJumpRadius_pos
