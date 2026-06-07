@@ -1,8 +1,8 @@
 import Mathlib
 
-/-! Finite-field genericity counting for BCIKS20 §5 Claim 5.7 (`hx0`/`hsep` specialization). -/
-exists when the field is larger than the total degree. The formalizable core of the
-`hx0`/`hsep` genericity in `GraphExtractionHypotheses` (BCIKS20 §5 Claim 5.7). -/
+/-! Finite-field genericity counting for BCIKS20 §5 Claim 5.7 (the `hx0`/`hsep`
+specialization in `GraphExtractionHypotheses`): a good `x₀` avoiding finitely many nonzero
+obstruction polynomials exists when `|F|` exceeds their total degree. -/
 
 open Polynomial Finset
 
