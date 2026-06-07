@@ -91,8 +91,38 @@ theorem restrictedInner_eq_countPerms_hasseEvalAtRoot_sum
   exact inner_Ydegree_sum_eq_countPerms_hasseEvalAtRoot H x₀ R hHyp i1
       lam.parts.card lam.parts.countPerms _
 
+/-- **Full LHS reabsorption of `restrictedFaaDiBrunoSum` (PROVEN).**  Summing the per-`ab` block
+over the antidiagonal: the entire restricted Faà-di-Bruno defect sum equals
+
+  `∑_{ab ∈ antidiagonal (t+1)} ∑_{λ⊢ab.2, (t+1)∉λ} countPerms λ • (hasseEvalAtRoot ab.1 |λ| · Pλ)`.
+
+This is the complete entropy-free (LHS) half of `RestrictedFaaDiBrunoMatch`: every Y-degree sum has
+been reabsorbed into `hasseEvalAtRoot`.  Route: `restrictedFaaDiBrunoSum_eq_partitionForm`, swap the
+Y-degree and antidiagonal sums (`Finset.sum_comm`), then apply the per-`ab` reabsorption
+`restrictedInner_eq_countPerms_hasseEvalAtRoot_sum` block by block.
+
+What remains to close `RestrictedFaaDiBrunoMatch` is the reconciliation of this `hasseEvalAtRoot`
+double sum against the RHS recursion form (`coeff_succ_βHenselAssembled_partitionForm`): the
+`B_coeff = prefactor·hasseCoeffRepr𝒪` identity, `prefactor = countPerms`, the
+`partitionProd_coeff_assembled` `W`/`ξ` telescope, and the `ζ` denominator — i.e. the
+cleared-vs-uncleared root-relation core (the `t = 0` obstruction, generalized). -/
+theorem restrictedFaaDiBrunoSum_eq_hasseDoubleSum
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) :
+    restrictedFaaDiBrunoSum H x₀ R hHyp t
+      = ∑ ab ∈ Finset.antidiagonal (t + 1),
+          ∑ lam ∈ (Finset.univ : Finset (Nat.Partition ab.2)).filter
+                    (fun lam => (t + 1) ∉ lam.parts),
+            lam.parts.countPerms
+              • (hasseEvalAtRoot H x₀ R ab.1 lam.parts.card
+                  * (lam.parts.map
+                      (fun j => PowerSeries.coeff j (βHenselAssembled H x₀ R hHyp))).prod) := by
+  rw [restrictedFaaDiBrunoSum_eq_partitionForm, Finset.sum_comm]
+  refine Finset.sum_congr rfl (fun ab _ => ?_)
+  exact restrictedInner_eq_countPerms_hasseEvalAtRoot_sum H x₀ R hHyp ab.1 ab.2 (t + 1)
+
 end BCIKS20.HenselNumerator
 
 -- Axiom audit.
 #print axioms BCIKS20.HenselNumerator.inner_Ydegree_sum_eq_countPerms_hasseEvalAtRoot
 #print axioms BCIKS20.HenselNumerator.restrictedInner_eq_countPerms_hasseEvalAtRoot_sum
+#print axioms BCIKS20.HenselNumerator.restrictedFaaDiBrunoSum_eq_hasseDoubleSum
