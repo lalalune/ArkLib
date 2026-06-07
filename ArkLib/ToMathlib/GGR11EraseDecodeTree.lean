@@ -506,6 +506,29 @@ theorem lambda_le_ggr11_of_eraseDecodeTree
       ≤ ((b + r).choose r : ℕ∞) * (Lambda C δ) ^ r :=
   lambda_le_ggr11_of_treeFrontier (treeFrontier_of_eraseDecodeTree hL H)
 
+/-- The one-close-codeword regime supplies the exact concrete-tree existence hypothesis used by
+`treeStructure_of_eraseDecodeTree`: choose the leaf tree for every received word. -/
+theorem eraseDecodeTreeExists_of_leaf_close_le_one
+    {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ}
+    (H : ∀ f : Matrix ι (Fin m) F,
+      (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard ≤ 1) :
+    ∀ f : Matrix ι (Fin m) F,
+      ∃ t : EraseDecodeTree,
+        (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard
+            ≤ t.leafCount ∧
+        t.blueDepth ≤ b ∧ t.redDepth ≤ r ∧ t.redBranchingLe (Lambda C δ) := by
+  intro f
+  exact ⟨EraseDecodeTree.leaf, by simpa using H f, by simp, by simp, by simp⟩
+
+/-- One-close-codeword close sets discharge the abstract GGR11 tree-structure residual via the
+concrete leaf tree. -/
+theorem treeStructure_of_leaf_close_le_one
+    {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ} (hL : 1 ≤ Lambda C δ)
+    (H : ∀ f : Matrix ι (Fin m) F,
+      (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard ≤ 1) :
+    GGR11TreeStructure C δ m b r :=
+  treeStructure_of_eraseDecodeTree hL (eraseDecodeTreeExists_of_leaf_close_le_one H)
+
 /-- A one-close-codeword received word is witnessed by the concrete leaf tree. This packages the
 degenerate Erase-Decode construction target in the same named witness interface as the general
 Algorithm-1 residual. -/
@@ -554,6 +577,8 @@ theorem lambda_le_ggr11_of_leaf_close_le_one
 #print axioms treeFrontier_of_eraseDecodeTree
 #print axioms perWordBound_of_eraseDecodeTree
 #print axioms lambda_le_ggr11_of_eraseDecodeTree
+#print axioms eraseDecodeTreeExists_of_leaf_close_le_one
+#print axioms treeStructure_of_leaf_close_le_one
 #print axioms treeWitness_of_leaf_close_le_one
 #print axioms treeFrontier_of_leaf_close_le_one
 #print axioms perWordBound_of_leaf_close_le_one
