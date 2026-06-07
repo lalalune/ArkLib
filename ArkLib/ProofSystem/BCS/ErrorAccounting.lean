@@ -624,6 +624,72 @@ theorem bcs_append_accounting_of_opening_append_mono_error {m n : ℕ}
       (Finset.sum_le_sum fun i _ => hLeft_mono i)
       (Finset.sum_le_sum fun i _ => hRight_mono i))
 
+/-- Left-empty opening-batch split at the interaction-plus-opening append-accounting surface. -/
+theorem bcs_append_accounting_of_opening_append_zero_left {n : ℕ}
+    (μ : UnionBoundPr E) (badInteraction : E) (badOpen : Fin n → E)
+    (εInteraction : ℝ≥0) (εOpen : Fin n → ℝ≥0)
+    (hInteraction : μ.pr badInteraction ≤ εInteraction)
+    (hOpen : ∀ i, μ.pr (badOpen i) ≤ εOpen i) :
+    μ.pr (μ.union badInteraction
+        (μ.unionFin (Fin.append (Fin.elim0 : Fin 0 → E) badOpen)))
+      ≤ εInteraction + ∑ i, εOpen i := by
+  have h := bcs_append_accounting_of_opening_append (m := 0) (n := n) μ
+    badInteraction (Fin.elim0 : Fin 0 → E) badOpen εInteraction
+    (Fin.elim0 : Fin 0 → ℝ≥0) εOpen hInteraction (fun i => Fin.elim0 i) hOpen
+  simpa using h
+
+/-- Right-empty opening-batch split at the interaction-plus-opening append-accounting surface. -/
+theorem bcs_append_accounting_of_opening_append_zero_right {m : ℕ}
+    (μ : UnionBoundPr E) (badInteraction : E) (badOpen : Fin m → E)
+    (εInteraction : ℝ≥0) (εOpen : Fin m → ℝ≥0)
+    (hInteraction : μ.pr badInteraction ≤ εInteraction)
+    (hOpen : ∀ i, μ.pr (badOpen i) ≤ εOpen i) :
+    μ.pr (μ.union badInteraction
+        (μ.unionFin (Fin.append badOpen (Fin.elim0 : Fin 0 → E))))
+      ≤ εInteraction + ∑ i, εOpen i := by
+  have h := bcs_append_accounting_of_opening_append (m := m) (n := 0) μ
+    badInteraction badOpen (Fin.elim0 : Fin 0 → E) εInteraction
+    εOpen (Fin.elim0 : Fin 0 → ℝ≥0) hInteraction hOpen (fun i => Fin.elim0 i)
+  simpa using h
+
+/-- Relax the interaction and opening budgets for the left-empty append-accounting split. -/
+theorem bcs_append_accounting_of_opening_append_zero_left_mono_error {n : ℕ}
+    (μ : UnionBoundPr E) (badInteraction : E) (badOpen : Fin n → E)
+    (εInteraction₁ εInteraction₂ : ℝ≥0)
+    (εOpen₁ εOpen₂ : Fin n → ℝ≥0)
+    (hInteraction : μ.pr badInteraction ≤ εInteraction₁)
+    (hOpen : ∀ i, μ.pr (badOpen i) ≤ εOpen₁ i)
+    (hInteraction_mono : εInteraction₁ ≤ εInteraction₂)
+    (hOpen_mono : ∀ i, εOpen₁ i ≤ εOpen₂ i) :
+    μ.pr (μ.union badInteraction
+        (μ.unionFin (Fin.append (Fin.elim0 : Fin 0 → E) badOpen)))
+      ≤ εInteraction₂ + ∑ i, εOpen₂ i := by
+  have h := bcs_append_accounting_of_opening_append_mono_error (m := 0) (n := n) μ
+    badInteraction (Fin.elim0 : Fin 0 → E) badOpen
+    εInteraction₁ εInteraction₂ (Fin.elim0 : Fin 0 → ℝ≥0)
+    (Fin.elim0 : Fin 0 → ℝ≥0) εOpen₁ εOpen₂ hInteraction
+    (fun i => Fin.elim0 i) hOpen hInteraction_mono (fun i => Fin.elim0 i) hOpen_mono
+  simpa using h
+
+/-- Relax the interaction and opening budgets for the right-empty append-accounting split. -/
+theorem bcs_append_accounting_of_opening_append_zero_right_mono_error {m : ℕ}
+    (μ : UnionBoundPr E) (badInteraction : E) (badOpen : Fin m → E)
+    (εInteraction₁ εInteraction₂ : ℝ≥0)
+    (εOpen₁ εOpen₂ : Fin m → ℝ≥0)
+    (hInteraction : μ.pr badInteraction ≤ εInteraction₁)
+    (hOpen : ∀ i, μ.pr (badOpen i) ≤ εOpen₁ i)
+    (hInteraction_mono : εInteraction₁ ≤ εInteraction₂)
+    (hOpen_mono : ∀ i, εOpen₁ i ≤ εOpen₂ i) :
+    μ.pr (μ.union badInteraction
+        (μ.unionFin (Fin.append badOpen (Fin.elim0 : Fin 0 → E))))
+      ≤ εInteraction₂ + ∑ i, εOpen₂ i := by
+  have h := bcs_append_accounting_of_opening_append_mono_error (m := m) (n := 0) μ
+    badInteraction badOpen (Fin.elim0 : Fin 0 → E)
+    εInteraction₁ εInteraction₂ εOpen₁ εOpen₂
+    (Fin.elim0 : Fin 0 → ℝ≥0) (Fin.elim0 : Fin 0 → ℝ≥0) hInteraction
+    hOpen (fun i => Fin.elim0 i) hInteraction_mono hOpen_mono (fun i => Fin.elim0 i)
+  simpa using h
+
 /-! ## 3. Specialization to the two-phase `append` shape
 
 The reduction-level `OracleReduction.BCSTransform` is literally
@@ -740,6 +806,10 @@ example (εInteraction : ℝ≥0) (εOpen : Fin 3 → ℝ≥0) :
 #print axioms bcs_append_accounting_of_opening_zero_mono_error
 #print axioms bcs_append_accounting_of_opening_succ_mono_error
 #print axioms bcs_append_accounting_of_opening_append_mono_error
+#print axioms bcs_append_accounting_of_opening_append_zero_left
+#print axioms bcs_append_accounting_of_opening_append_zero_right
+#print axioms bcs_append_accounting_of_opening_append_zero_left_mono_error
+#print axioms bcs_append_accounting_of_opening_append_zero_right_mono_error
 #print axioms bcs_append_accounting
 #print axioms bcs_append_accounting_mono_error
 #print axioms bcs_two_phase_total_eq
