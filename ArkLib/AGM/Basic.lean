@@ -146,6 +146,19 @@ private theorem zipWith_replicate_zero_prod (xs : List G) (n : ℕ) :
           simp only [List.replicate_succ, List.zipWith_cons_cons, List.prod_cons]
           rw [show ((0 : ZMod p).val) = 0 from by simp, pow_zero, one_mul, ih n]
 
+private theorem zipWith_take_length_prod (prev : List G) (exponents : List (ZMod p)) :
+    (prev.zipWith (fun g a => g ^ a.val) (exponents.take prev.length)).prod
+      = (prev.zipWith (fun g a => g ^ a.val) exponents).prod := by
+  induction prev generalizing exponents with
+  | nil => simp
+  | cons g prev ih =>
+      cases exponents with
+      | nil => simp
+      | cons a exponents =>
+          simp only [List.length_cons, List.take_succ_cons, List.zipWith_cons_cons,
+            List.prod_cons]
+          rw [ih exponents]
+
 private theorem zipWith_append_replicate_zero_prod {prev extra : List G}
     (exponents : List (ZMod p)) :
     ((prev ++ extra).zipWith (fun g a => g ^ a.val)
@@ -162,6 +175,15 @@ private theorem zipWith_append_replicate_zero_prod {prev extra : List G}
           simp only [List.length_cons, List.take_succ_cons, List.cons_append,
             List.zipWith_cons_cons, List.prod_cons]
           rw [ih exponents]
+
+/-- **Exponent normalization.** A representation can discard any exponent-vector tail past the
+current basis length without changing its target, because `zipWith` never consumes those entries. -/
+def trimExponents {prev : List G} {target : G}
+    (repr : GroupRepresentation (p := p) prev target) :
+    GroupRepresentation (p := p) prev target where
+  exponents := repr.exponents.take prev.length
+  hEq := by
+    rw [zipWith_take_length_prod, repr.hEq]
 
 /-- **Right-side basis weakening.** An algebraically-represented target stays representable when
 the basis is extended on the right by extra generators. Because the representation format permits
@@ -182,6 +204,7 @@ def appendBasis {prev : List G} {target : G}
 #print axioms GroupRepresentation.map
 #print axioms GroupRepresentation.singleton
 #print axioms GroupRepresentation.prependBasis
+#print axioms GroupRepresentation.trimExponents
 #print axioms GroupRepresentation.appendBasis
 
 end GroupRepresentation
