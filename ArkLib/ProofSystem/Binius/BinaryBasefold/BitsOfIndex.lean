@@ -23,4 +23,35 @@ variable {L : Type} [Field L]
 def bitsOfIndex {n : ℕ} (k : Fin (2 ^ n)) : Fin n → L :=
   fun j => if Nat.getBit j.val k.val = 1 then 1 else 0
 
+/-- Coordinate form of `bitsOfIndex`. -/
+theorem bitsOfIndex_apply {n : ℕ} (k : Fin (2 ^ n)) (j : Fin n) :
+    bitsOfIndex (L := L) k j = if Nat.getBit j.val k.val = 1 then 1 else 0 :=
+  rfl
+
+/-- If the corresponding natural-number bit is `1`, then `bitsOfIndex` returns `1`. -/
+theorem bitsOfIndex_apply_of_getBit_eq_one {n : ℕ}
+    (k : Fin (2 ^ n)) (j : Fin n) (h : Nat.getBit j.val k.val = 1) :
+    bitsOfIndex (L := L) k j = 1 := by
+  simp [bitsOfIndex, h]
+
+/-- If the corresponding natural-number bit is not `1`, then `bitsOfIndex` returns `0`. -/
+theorem bitsOfIndex_apply_of_getBit_ne_one {n : ℕ}
+    (k : Fin (2 ^ n)) (j : Fin n) (h : Nat.getBit j.val k.val ≠ 1) :
+    bitsOfIndex (L := L) k j = 0 := by
+  simp [bitsOfIndex, h]
+
+/-- Every coordinate of `bitsOfIndex` is Boolean-valued. -/
+theorem bitsOfIndex_apply_eq_zero_or_one {n : ℕ}
+    (k : Fin (2 ^ n)) (j : Fin n) :
+    bitsOfIndex (L := L) k j = 0 ∨ bitsOfIndex (L := L) k j = 1 := by
+  by_cases h : Nat.getBit j.val k.val = 1
+  · exact Or.inr (bitsOfIndex_apply_of_getBit_eq_one (L := L) k j h)
+  · exact Or.inl (bitsOfIndex_apply_of_getBit_ne_one (L := L) k j h)
+
+#print axioms bitsOfIndex
+#print axioms bitsOfIndex_apply
+#print axioms bitsOfIndex_apply_of_getBit_eq_one
+#print axioms bitsOfIndex_apply_of_getBit_ne_one
+#print axioms bitsOfIndex_apply_eq_zero_or_one
+
 end Binius.BinaryBasefold
