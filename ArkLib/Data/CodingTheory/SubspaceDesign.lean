@@ -5,6 +5,7 @@ Authors: Alexander Hicks
 -/
 
 import ArkLib.Data.CodingTheory.ReedSolomon.Folded
+import ArkLib.Data.CodingTheory.ReedSolomon.AdmissibleDischarge
 import ArkLib.Data.CodingTheory.ProximityGap.GK16DegreeBudget
 import ArkLib.Data.CodingTheory.ProximityGap.GK16Lemma12
 import ArkLib.Data.CodingTheory.ProximityGap.GK16FrsTransport
@@ -984,6 +985,32 @@ theorem frs_is_subspaceDesign_gk16_of_admissible
       _ = (Module.finrank F A : ℝ) * Fintype.card ι := by
           rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul, mul_comm]
 
+/-- **ABF26 Theorem 2.18 [GK16], FRS half — from order bound + inter-orbit
+separation.** This caller-facing wrapper composes the discharged intra-orbit side of
+`ReedSolomon.Folded.Admissible` with the existing admissible T2.18 theorem. Thus T2.18
+call sites need only provide:
+
+* `0 ∉ L`, the nonzero-domain condition;
+* `s ≤ orderOf ω`, the order-theoretic no-repeat condition inside each fold;
+* the genuine inter-orbit/coset-separation clause for distinct domain points.
+
+The resulting subspace-design profile is the repaired GK16 profile
+`τ(r) = (k - 1)/n` on `[s]` and `1` off `[s]`. -/
+theorem frs_is_subspaceDesign_gk16_of_orderOf_ge_of_inter
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (L : Finset F) (hL_dom : ∀ i : ι, domain i ∈ L)
+    (hL_zero : (0 : F) ∉ L) (hω0 : ω ≠ 0) (hs_order : s ≤ orderOf ω)
+    (hinter : ∀ α ∈ L, ∀ β ∈ L, α ≠ β → ∀ i : ℕ, i < s → α * ω ^ i ≠ β)
+    (hkLs : k ≤ s * Fintype.card ι) (hkord : k ≤ orderOf ω) :
+    let τ : ℕ → ℝ := fun r ↦
+      if r ∈ Finset.Icc 1 s then (k - 1 : ℝ) / Fintype.card ι else 1
+    IsSubspaceDesign s τ (ReedSolomon.Folded.frsCode domain k s ω) :=
+  frs_is_subspaceDesign_gk16_of_admissible domain k s ω L hL_dom hω0
+    (ReedSolomon.Folded.admissible_of_orderOf_ge_of_inter L s ω hL_zero hs_order hinter)
+    hkLs hkord
+
 /-- **Profile bridge for C3.5.** The repaired GK16/FRS profile
 `τ(r) = (k - 1)/n` on `[s]` is pointwise no larger than the CZ25 capacity-reduction profile
 `τ(r) = s·k/(n·(s-r+1))` on `[s]` (and both profiles are `1` off `[s]`). Hence any FRS
@@ -1161,3 +1188,4 @@ only on `propext`, `Classical.choice`, and `Quot.sound`. -/
 #print axioms CodingTheory.frs_is_subspaceDesign_cz25Profile_of_gk16Profile
 #print axioms CodingTheory.frs_is_subspaceDesign_cz25Profile_of_injective
 #print axioms CodingTheory.frs_is_subspaceDesign_cz25Profile_of_admissible
+#print axioms CodingTheory.frs_is_subspaceDesign_gk16_of_orderOf_ge_of_inter
