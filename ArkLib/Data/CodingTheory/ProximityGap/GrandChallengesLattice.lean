@@ -1294,6 +1294,27 @@ theorem mcaThreshold_spec_ofLineDecodingTarget
   mcaThreshold_spec (C : Set (ι → F)) ε_star
     (mcaThresholdExists_ofLineDecodingTarget C δ a ε_star hδ_le_one hLD hTarget hle)
 
+/-- A repaired line-decoding target gives a direct lower bracket on the faithful MCA lattice
+threshold at `⌊δ·n⌋`. -/
+theorem latticeIndexOf_le_mcaThreshold_ofLineDecodingTarget
+    (C : ModuleCode ι F F) (δ a ε_star : ℝ≥0)
+    (hδ_le_one : δ ≤ 1)
+    (hLD : CodingTheory.LineDecodable (F := F) (A := F) (C : Set (ι → F)) δ a
+      ((Fintype.card ι : ℝ≥0) + 1))
+    (hTarget : CodingTheory.lineDecodable_imp_epsMCA_le_target (F := F) (A := F)
+      C δ a hLD)
+    (hle : (a : ENNReal) / (Fintype.card F : ENNReal) ≤ (ε_star : ENNReal)) :
+    latticeIndexOf (ι := ι) δ hδ_le_one ≤
+      mcaThreshold (C : Set (ι → F)) ε_star
+        (mcaThresholdExists_ofLineDecodingTarget C δ a ε_star hδ_le_one hLD hTarget hle) := by
+  simpa [mcaThresholdExists_ofLineDecodingTarget, MCALowerWitness.ofLineDecodingTarget]
+    using MCALowerWitness_le_mcaThreshold (C : Set (ι → F)) ε_star
+      (mcaThresholdExists_ofLineDecodingTarget C δ a ε_star hδ_le_one hLD hTarget hle)
+      (MCALowerWitness.ofLineDecodingTarget C δ a ε_star hδ_le_one hLD hTarget hle)
+
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.latticeIndexOf_le_mcaThreshold_ofLineDecodingTarget
+
 /-- The GKL24 1.5-Johnson MCA lower bound makes the faithful MCA lattice threshold exist
 whenever its explicit right-hand side is below the target `ε_star`. -/
 theorem mcaThresholdExists_ofLinearOnePointFiveJohnsonGKL24
