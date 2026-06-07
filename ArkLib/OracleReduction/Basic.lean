@@ -537,6 +537,49 @@ def mkVerifierOStmtOut
     | Sum.inl j => (hEq i ▸ h ▸ oStmt j : OStmtOut i)
     | Sum.inr j => (hEq i ▸ h ▸ transcript.messages j : OStmtOut i)
 
+omit Oₛᵢ Oₘ in
+@[simp]
+lemma mkVerifierOStmtOut_inl
+    (embed : ιₛₒ ↪ ιₛᵢ ⊕ pSpec.MessageIdx)
+    (hEq : ∀ i, OStmtOut i = match embed i with
+      | Sum.inl j => OStmtIn j
+      | Sum.inr j => pSpec.Message j)
+    (oStmt : ∀ i, OStmtIn i) (transcript : FullTranscript pSpec)
+    (i : ιₛₒ) (j : ιₛᵢ) (h : embed i = Sum.inl j) :
+    mkVerifierOStmtOut embed hEq oStmt transcript i = (hEq i ▸ h ▸ oStmt j : OStmtOut i) := by
+  simp only [mkVerifierOStmtOut, MessageIdx, Message]
+  split
+  · rename_i heq
+    rw [h] at heq
+    simp only [MessageIdx, Sum.inl.injEq] at heq
+    subst heq
+    rfl
+  · rename_i heq
+    rw [h] at heq
+    simp only [MessageIdx, reduceCtorEq] at heq
+
+omit Oₛᵢ Oₘ in
+@[simp]
+lemma mkVerifierOStmtOut_inr
+    (embed : ιₛₒ ↪ ιₛᵢ ⊕ pSpec.MessageIdx)
+    (hEq : ∀ i, OStmtOut i = match embed i with
+      | Sum.inl j => OStmtIn j
+      | Sum.inr j => pSpec.Message j)
+    (oStmt : ∀ i, OStmtIn i) (transcript : FullTranscript pSpec)
+    (i : ιₛₒ) (j : pSpec.MessageIdx) (h : embed i = Sum.inr j) :
+    mkVerifierOStmtOut embed hEq oStmt transcript i =
+      (hEq i ▸ h ▸ transcript.messages j : OStmtOut i) := by
+  simp only [mkVerifierOStmtOut, MessageIdx, Message]
+  split
+  · rename_i heq
+    rw [h] at heq
+    simp only [MessageIdx, reduceCtorEq] at heq
+  · rename_i heq
+    rw [h] at heq
+    simp only [MessageIdx, Sum.inr.injEq] at heq
+    subst heq
+    rfl
+
 /-- The number of queries made to the oracle statements and the prover's messages, for a given input
     statement and challenges.
 
