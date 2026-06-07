@@ -1661,6 +1661,35 @@ theorem fixFirstVariablesOfMQP_projectToMid_step (ℓ : ℕ) [NeZero ℓ] (t m :
   -- which are equal `Fin (ℓ+1)` values (`↑i.succ = ↑i + 1 = ↑i.castSucc + 1`), hence defeq.
   rfl
 
+/-- Renaming a polynomial along the canonical `finCongr` of a (propositional) dimension equality is
+heterogeneously equal to the original (after `subst`, `finCongr` is `Equiv.refl` and `rename id` is
+the identity). -/
+private lemma rename_finCongr_heq_projectToMid {a b : ℕ} (h : a = b) (p : MvPolynomial (Fin a) L) :
+    HEq (rename (finCongr h) p) p := by
+  subst h
+  rw [finCongr_refl, Equiv.coe_refl, rename_id_apply]
+
+/-- **Structural-invariant round transition (un-renamed cast-wall form, `#29` per-round
+completeness conjunct 2).** Fixing the round-`i` survivor variable to the verifier challenge `r'`
+advances the projected sumcheck polynomial from round `i.castSucc` to round `i.succ`, *as an honest
+equality of `MvPolynomial (Fin (ℓ - i.succ)) L`*: the index types `Fin (ℓ - i.succ)` and
+`Fin (ℓ - i.castSucc - 1)` are definitionally equal (`Nat.sub_succ`), so the canonical `finCongr`
+rename produced by `fixFirstVariablesOfMQP_projectToMid_step` collapses to the identity
+(`rename_finCongr_heq_projectToMid`). This is the missing conjunct-2 algebra for the structured
+per-round completeness output relation `witnessStructuralInvariant`; the matching conjunct-3
+(sum-consistency) transition is `SumcheckPhase.getSumcheckRoundPoly_eval_eq_cube_succ`. -/
+theorem fixFirstVariablesOfMQP_projectToMid_succ (ℓ : ℕ) [NeZero ℓ]
+    (t m : MultilinearPoly L ℓ) (i : Fin ℓ) (challenges : Fin i.castSucc → L) (r' : L) :
+    fixFirstVariablesOfMQP (ℓ - ↑i.castSucc)
+        ⟨1, by have := i.2; simp only [Fin.val_castSucc]; omega⟩
+        (projectToMidSumcheckPoly (L := L) (ℓ := ℓ) (t := t) (m := m)
+          (i := i.castSucc) (challenges := challenges)).val
+        (fun _ => r')
+      = (projectToMidSumcheckPoly (L := L) (ℓ := ℓ) (t := t) (m := m)
+          (i := i.succ) (challenges := Fin.cons r' challenges)).val := by
+  rw [fixFirstVariablesOfMQP_projectToMid_step (L := L) (ℓ := ℓ) t m i challenges r']
+  exact eq_of_heq (rename_finCongr_heq_projectToMid _ _)
+
 /-- **Round-polynomial marginal identity (core of target (b)).** Evaluating, at `r'`, the sum over a
 finite set `S` of the partial evaluations `Polynomial.map (eval (pt x)) (finSuccEquivNth L 0 H)`
 equals the sum over `S` of the full evaluations of `H` with variable `0` fixed to `r'` (the rest set
