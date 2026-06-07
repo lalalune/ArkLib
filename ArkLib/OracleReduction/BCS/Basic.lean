@@ -7,6 +7,8 @@ Authors: Quang Dao
 import ArkLib.CommitmentScheme.Basic
 import ArkLib.OracleReduction.Composition.Sequential.General
 
+set_option linter.style.longFile 1600
+
 /-!
 # The Generalized Ben-Sasson–Chiesa–Spooner (BCS) Compiler
 
@@ -393,6 +395,36 @@ projection of the original typed schedule. -/
   | nil => rfl
   | cons request schedule _ =>
       simp [BCSOpeningSchedule.toOpeningStatements]
+
+/-- Filtering a typed opening schedule by message index commutes with conversion to indexed
+opening statements. This is the per-message query-log accounting bridge: grouping the BCS opening
+requests for one committed oracle message gives the same indexed statements as filtering the
+converted opening-statement view. -/
+@[simp] theorem BCSOpeningSchedule.toOpeningStatements_filter_messageIdx
+    {CommitmentType : pSpec.MessageIdx → Type} [DecidableEq pSpec.MessageIdx]
+    (schedule : BCSOpeningSchedule (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType)
+    (i : pSpec.MessageIdx) :
+    BCSOpeningSchedule.toOpeningStatements
+        (schedule.filter (fun request => request.messageIdx = i)) =
+      schedule.toOpeningStatements.filter (fun statement => statement.1 = i) := by
+  induction schedule with
+  | nil => rfl
+  | cons request schedule ih =>
+      by_cases hidx : request.messageIdx = i
+      · simpa [BCSOpeningSchedule.toOpeningStatements, hidx] using ih
+      · simpa [BCSOpeningSchedule.toOpeningStatements, hidx] using ih
+
+/-- Converting a BCS opening schedule to indexed statements preserves the number of requests for
+each committed oracle message. -/
+theorem BCSOpeningSchedule.toOpeningStatements_filter_messageIdx_length
+    {CommitmentType : pSpec.MessageIdx → Type} [DecidableEq pSpec.MessageIdx]
+    (schedule : BCSOpeningSchedule (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType)
+    (i : pSpec.MessageIdx) :
+    (schedule.toOpeningStatements.filter (fun statement => statement.1 = i)).length =
+      (schedule.filter (fun request => request.messageIdx = i)).length := by
+  rw [← BCSOpeningSchedule.toOpeningStatements_filter_messageIdx (schedule := schedule) i]
+  exact BCSOpeningSchedule.toOpeningStatements_length
+    (schedule.filter (fun request => request.messageIdx = i))
 
 /-- Projecting the indexed opening statements back to commitments recovers the indexed commitment
 projection of the original typed schedule. -/
@@ -1416,6 +1448,8 @@ generic compiler construction or the completeness/soundness preservation theorem
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_reverse
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_concat
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_map_messageIdx
+#print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_filter_messageIdx
+#print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_filter_messageIdx_length
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_map_commitment
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_map_query
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_map_response
