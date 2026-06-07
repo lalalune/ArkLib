@@ -699,6 +699,37 @@ def jointAgreement {F κ ι : Type*} [Fintype ι] [DecidableEq F]
   ∃ S : Finset ι, S.card ≥ (1 - δ) * (Fintype.card ι) ∧
       ∃ v : κ → ι → F, ∀ i, v i ∈ C ∧ S ⊆ Finset.filter (fun j => v i j = W i j) Finset.univ
 
+/-- Transport joint agreement across an equivalence of coordinate domains.
+
+The code predicate itself is supplied by `hC`: every codeword for `C₁`, reindexed along
+`e.symm`, must be a codeword for `C₂`.  This isolates the finite-coordinate bookkeeping from
+domain-specific code transport lemmas such as Reed-Solomon invariance under equivalent
+evaluation domains. -/
+theorem jointAgreement_equiv_of_codeword_transport
+    {F κ ι₁ ι₂ : Type*}
+    [Fintype ι₁] [Fintype ι₂] [DecidableEq F]
+    (e : ι₁ ≃ ι₂)
+    (C₁ : Set (ι₁ → F)) (C₂ : Set (ι₂ → F))
+    (δ : NNReal) (W₂ : κ → ι₂ → F)
+    (hC : ∀ v, v ∈ C₁ → (fun y => v (e.symm y)) ∈ C₂)
+    (h :
+      jointAgreement
+        (C := C₁) (δ := δ) (W := fun k x => W₂ k (e x))) :
+      jointAgreement (C := C₂) (δ := δ) (W := W₂) := by
+  classical
+  rcases h with ⟨S, hS, v, hv⟩
+  refine ⟨S.map e.toEmbedding, ?_, fun k y => v k (e.symm y), ?_⟩
+  · have hcard : Fintype.card ι₂ = Fintype.card ι₁ := Fintype.card_congr e.symm
+    simpa [Finset.card_map, hcard] using hS
+  · intro k
+    constructor
+    · exact hC (v k) (hv k).1
+    · intro y hy
+      rcases Finset.mem_map.mp hy with ⟨x, hx, rfl⟩
+      have hx_filter := (hv k).2 hx
+      simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hx_filter ⊢
+      simpa using hx_filter
+
 open InterleavedCode in
 /-- Equivalence between the agreement-based definition `jointAgreement` and
 the distance/proximity-based definition `jointProximity` (the latter is represented in
