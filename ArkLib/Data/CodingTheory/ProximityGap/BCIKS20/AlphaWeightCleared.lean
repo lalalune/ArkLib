@@ -168,6 +168,51 @@ theorem alphaWeight_clearedBaseCases_iff_divWeight_clearedBaseCases_succLift
     AlphaGenuineRegularWeightLe_clearedBaseCases.of_divWeight_clearedBaseCases_succLift
       H x₀ R hHyp hH D hliftSucc⟩
 
+/-- Build the repaired alpha-side case split from the proved corrected base case and successor
+residuals. -/
+theorem AlphaGenuineRegularWeightLe_clearedBaseCases.of_fixed_successors
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (hd : 2 ≤ H.natDegree) {D : ℕ}
+    (hD : D ≤ H.natDegree)
+    (hsucc : ∀ t, AlphaGenuineRegularWeightLe_succ H x₀ R hHyp hH D t) :
+    AlphaGenuineRegularWeightLe_clearedBaseCases H x₀ R hHyp hH D :=
+  AlphaGenuineRegularWeightLe_clearedBaseCases.of_cases H x₀ R hHyp hH D
+    (AlphaGenuineRegularWeightLe_zero_cleared.of_fixed H x₀ R hHyp hH hd hD) hsucc
+
+/-- With the corrected base case fixed, the repaired alpha-side case split is exactly its
+successor family. -/
+theorem alphaWeight_clearedBaseCases_iff_successors_of_fixed
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (hd : 2 ≤ H.natDegree) {D : ℕ}
+    (hD : D ≤ H.natDegree) :
+    AlphaGenuineRegularWeightLe_clearedBaseCases H x₀ R hHyp hH D ↔
+      ∀ t, AlphaGenuineRegularWeightLe_succ H x₀ R hHyp hH D t :=
+  ⟨fun hα => hα.2,
+    AlphaGenuineRegularWeightLe_clearedBaseCases.of_fixed_successors
+      H x₀ R hHyp hH hd hD⟩
+
+/-- Build the repaired div-weight case split from the proved corrected base case and successor
+residuals. -/
+theorem DivWeightLe_clearedBaseCases.of_fixed_successors
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (hd : 2 ≤ H.natDegree) {D : ℕ}
+    (hD : D ≤ H.natDegree)
+    (hsucc : ∀ t, DivWeightLe_succ H x₀ R hHyp hH D t) :
+    DivWeightLe_clearedBaseCases H x₀ R hHyp hH D :=
+  DivWeightLe_clearedBaseCases.of_cases H x₀ R hHyp hH D
+    (DivWeightLe_zero_cleared.of_fixed H x₀ R hHyp hH hd hD) hsucc
+
+/-- With the corrected base case fixed, the repaired div-weight case split is exactly its
+successor family. -/
+theorem divWeight_clearedBaseCases_iff_successors_of_fixed
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (hd : 2 ≤ H.natDegree) {D : ℕ}
+    (hD : D ≤ H.natDegree) :
+    DivWeightLe_clearedBaseCases H x₀ R hHyp hH D ↔
+      ∀ t, DivWeightLe_succ H x₀ R hHyp hH D t :=
+  ⟨fun hdiv => hdiv.2,
+    DivWeightLe_clearedBaseCases.of_fixed_successors H x₀ R hHyp hH hd hD⟩
+
 end AlphaWeight
 end BCIKS20.HenselNumerator
 
@@ -187,5 +232,9 @@ namespace BCIKS20.HenselNumerator.AlphaWeight
 #print axioms DivWeightLe_clearedBaseCases.of_alphaWeight_clearedBaseCases_succLift
 #print axioms AlphaGenuineRegularWeightLe_clearedBaseCases.of_divWeight_clearedBaseCases_succLift
 #print axioms alphaWeight_clearedBaseCases_iff_divWeight_clearedBaseCases_succLift
+#print axioms AlphaGenuineRegularWeightLe_clearedBaseCases.of_fixed_successors
+#print axioms alphaWeight_clearedBaseCases_iff_successors_of_fixed
+#print axioms DivWeightLe_clearedBaseCases.of_fixed_successors
+#print axioms divWeight_clearedBaseCases_iff_successors_of_fixed
 
 end BCIKS20.HenselNumerator.AlphaWeight
