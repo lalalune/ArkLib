@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Reject axiom-laundering tokens in live ArkLib source.
 
-Scans every .lean file under ArkLib/ and fails if live (non-comment) code
-contains:
+By default, scans every .lean file under ArkLib/. If one or more paths are
+provided, scans only those Lean files/directories. Fails if live
+(non-comment) code contains:
   - `native_decide` / `bv_decide` (kernel-bypassing decision procedures), or
   - a custom `axiom` declaration whose name is not an allowlisted, documented
     residual (see scripts/residual_axioms.txt).
@@ -42,6 +43,40 @@ def load_allowlist(path: Path) -> set[str]:
     return names
 
 
+def scan_plan(args: list[str]) -> tuple[list[Path], bool, list[str]]:
+    """Return files to scan, whether this is a full-ArkLib scan, and path errors."""
+    if not args:
+        return sorted(Path("ArkLib").rglob("*.lean")), True, []
+
+    files: set[Path] = set()
+    full_arklib_scan = False
+    errors: list[str] = []
+    arklib_root = Path("ArkLib").resolve()
+
+    for raw in args:
+        path = Path(raw)
+        if not path.exists():
+            errors.append(f"{path}: path does not exist")
+            continue
+        if path.is_file():
+            if path.suffix == ".lean":
+                files.add(path)
+            else:
+                errors.append(f"{path}: expected a .lean file")
+            continue
+
+        nested_arklib = path / "ArkLib"
+        if nested_arklib.is_dir():
+            files.update(nested_arklib.rglob("*.lean"))
+            full_arklib_scan = True
+        else:
+            files.update(path.rglob("*.lean"))
+            if path.resolve() == arklib_root:
+                full_arklib_scan = True
+
+    return sorted(files), full_arklib_scan, errors
+
+
 def comment_mask(text: str) -> list[bool]:
     """Return per-char mask: True if the char is inside a comment/docstring."""
     mask = [False] * len(text)
@@ -70,12 +105,16 @@ def comment_mask(text: str) -> list[bool]:
 
 
 def main() -> int:
-    root = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(".")
+    files, full_arklib_scan, path_errors = scan_plan(sys.argv[1:])
+    if path_errors:
+        print("\n".join(path_errors), file=sys.stderr)
+        return 1
+
     allowlist = load_allowlist(ALLOWLIST_PATH)
     failures: list[str] = []
     allowed_hits: list[str] = []
     seen_allowed: set[str] = set()
-    for path in sorted((root / "ArkLib").rglob("*.lean")):
+    for path in files:
         text = path.read_text(encoding="utf-8", errors="replace")
         mask = comment_mask(text)
         for m in TOKEN_RE.finditer(text):
@@ -103,7 +142,7 @@ def main() -> int:
             pos += len(line)
 
     stale = sorted(allowlist - seen_allowed)
-    if stale:
+    if full_arklib_scan and stale:
         print(
             "WARNING: residual_axioms.txt entries match no live axiom (discharged? "
             "remove the line): " + ", ".join(stale),

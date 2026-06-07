@@ -123,6 +123,8 @@ python3 -m pip install leanblueprint
   of #111). Each allowlist entry names one residual axiom and the issue that owns its
   eventual discharge; an undocumented or newly added `axiom` still fails the gate, and a
   stale allowlist entry (matching no live axiom) prints a warning to prompt cleanup.
+  `scripts/forbidden_tokens.py` also accepts explicit Lean files or directories for
+  focused checks; stale allowlist warnings are only meaningful on the default full-tree scan.
 - [`../../.github/workflows/check-imports.yml`](../../.github/workflows/check-imports.yml)
   checks that `ArkLib.lean` matches the tracked source tree.
 - [`../../.github/workflows/docs-integrity.yml`](../../.github/workflows/docs-integrity.yml)
