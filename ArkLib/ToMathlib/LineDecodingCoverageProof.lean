@@ -7,7 +7,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingCoverage
 import ArkLib.ResidualAxioms
 
 /-!
-# LineDecoding: ABF26 T4.21 status (issue #141)
+# LineDecoding: ABF26 T4.21 status (issue #140)
 
 **De-fabricated.** This file previously contained
 `theorem mcaForallDoubleCover_holds … := mcaForallDoubleCover_residual …`, "closing" the global
@@ -18,5 +18,5 @@ asserting `axiom` are removed; `mcaForallDoubleCover_residual` is now a non-asse
 `def : Prop` open residual (`ArkLib.ResidualAxioms`).
 
 The genuine repair is the constrained GS-interpolant form, not the refuted black-box statement.
-Open #141.
+Open #140.
 -/

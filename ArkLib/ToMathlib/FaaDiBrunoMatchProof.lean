@@ -6,7 +6,7 @@ Authors: ArkLib Contributors
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MatchProof
 
 /-!
-# BCIKS20 A.4 P2 — `RestrictedFaaDiBrunoMatch` status (issue #139/#140)
+# BCIKS20 A.4 P2 — `RestrictedFaaDiBrunoMatch` status (issue #139)
 
 **De-fabricated.** This file previously declared an `axiom restrictedFaaDiBrunoMatch_residual`
 asserting `RestrictedFaaDiBrunoMatch`, plus a `restrictedFaaDiBrunoMatch_holds` theorem "closing"
