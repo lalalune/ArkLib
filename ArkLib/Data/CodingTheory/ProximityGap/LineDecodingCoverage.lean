@@ -390,6 +390,35 @@ theorem mcaBadCount_eq_zero_of_MCAForallDoubleCover
         (MCAForallDoubleCover.to_badScalarDoubleCover C δ hcov
           (![u₀, u₁] : WordStack A (Fin 2) ι) γ))
 
+/-- Global double-cover data gives zero bad-scalar counts for every stack. -/
+theorem MCAForallDoubleCover.forall_mcaBadCount_eq_zero
+    (C : Set (ι → A)) (δ : ℝ≥0)
+    (hcov : MCAForallDoubleCover (F := F) (A := A) C δ) :
+    ∀ u : WordStack A (Fin 2) ι,
+      mcaBadCount (F := F) C δ (u 0) (u 1) = 0 := by
+  intro u
+  exact mcaBadCount_eq_zero_of_MCAForallDoubleCover C δ (u 0) (u 1) hcov
+
+/-- Repack zero bad-scalar counts for every stack as the global double-cover surface. This is
+vacuous exactly because zero counts rule out every bad event. -/
+theorem MCAForallDoubleCover.of_forall_mcaBadCount_eq_zero
+    (C : Set (ι → A)) (δ : ℝ≥0)
+    (hzero : ∀ u : WordStack A (Fin 2) ι,
+      mcaBadCount (F := F) C δ (u 0) (u 1) = 0) :
+    MCAForallDoubleCover (F := F) (A := A) C δ :=
+  MCAForallDoubleCover.of_forall_not_mcaEvent C δ fun u =>
+    (mcaBadCount_eq_zero_iff_forall_not_mcaEvent C δ (u 0) (u 1)).mp (hzero u)
+
+/-- The global repaired double-cover surface is exact: it is equivalent to zero bad-scalar
+counts for every stack. -/
+theorem MCAForallDoubleCover_iff_forall_mcaBadCount_eq_zero
+    (C : Set (ι → A)) (δ : ℝ≥0) :
+    MCAForallDoubleCover (F := F) (A := A) C δ ↔
+      ∀ u : WordStack A (Fin 2) ι, mcaBadCount (F := F) C δ (u 0) (u 1) = 0 := by
+  constructor
+  · exact MCAForallDoubleCover.forall_mcaBadCount_eq_zero C δ
+  · exact MCAForallDoubleCover.of_forall_mcaBadCount_eq_zero C δ
+
 /-- Error-level zero result from the global double-cover surface. -/
 theorem epsMCA_eq_zero_of_MCAForallDoubleCover (C : Set (ι → A)) (δ : ℝ≥0)
     (hcov : MCAForallDoubleCover (F := F) (A := A) C δ) :
@@ -415,6 +444,9 @@ theorem epsMCA_eq_zero_of_MCAForallDoubleCover (C : Set (ι → A)) (δ : ℝ≥
 #print axioms mcaBadCount_eq_zero_of_badScalarDoubleCover
 #print axioms epsMCA_eq_zero_of_badScalarDoubleCover
 #print axioms mcaBadCount_eq_zero_of_MCAForallDoubleCover
+#print axioms MCAForallDoubleCover.forall_mcaBadCount_eq_zero
+#print axioms MCAForallDoubleCover.of_forall_mcaBadCount_eq_zero
+#print axioms MCAForallDoubleCover_iff_forall_mcaBadCount_eq_zero
 #print axioms epsMCA_eq_zero_of_MCAForallDoubleCover
 
 end
@@ -460,32 +492,6 @@ theorem lineDecodable_imp_epsMCA_le_target_of_badScalarDoubleCover
     (C : Set (ι → A)) δ hcov]
   exact zero_le _
 
-/-- Repaired target discharge from per-stack zero bad-scalar counts. -/
-theorem lineDecodable_imp_epsMCA_le_target_of_forall_mcaBadCount_eq_zero
-    (C : ModuleCode ι F A) (δ a : ℝ≥0)
-    (_hLD : LineDecodable (F := F) (A := A) (C : Set (ι → A)) δ a
-      ((Fintype.card ι : ℝ≥0) + 1))
-    (hzero : ∀ u : Code.WordStack A (Fin 2) ι,
-      mcaBadCount (F := F) (C : Set (ι → A)) δ (u 0) (u 1) = 0) :
-    lineDecodable_imp_epsMCA_le_target (F := F) (A := A) C δ a _hLD := by
-  dsimp [lineDecodable_imp_epsMCA_le_target]
-  rw [epsMCA_eq_zero_of_forall_mcaBadCount_eq_zero (F := F) (A := A)
-    (C : Set (ι → A)) δ hzero]
-  exact zero_le _
-
-/-- Repaired target discharge from a direct no-bad-event frontier. -/
-theorem lineDecodable_imp_epsMCA_le_target_of_forall_not_mcaEvent
-    (C : ModuleCode ι F A) (δ a : ℝ≥0)
-    (_hLD : LineDecodable (F := F) (A := A) (C : Set (ι → A)) δ a
-      ((Fintype.card ι : ℝ≥0) + 1))
-    (hno : ∀ (u : Code.WordStack A (Fin 2) ι) (γ : F),
-      ¬ mcaEvent (F := F) (C : Set (ι → A)) δ (u 0) (u 1) γ) :
-    lineDecodable_imp_epsMCA_le_target (F := F) (A := A) C δ a _hLD := by
-  dsimp [lineDecodable_imp_epsMCA_le_target]
-  rw [epsMCA_eq_zero_of_forall_not_mcaEvent (F := F) (A := A)
-    (C : Set (ι → A)) δ hno]
-  exact zero_le _
-
 /-- Repaired target discharge under the named global double-cover surface. -/
 theorem lineDecodable_imp_epsMCA_le_target_of_MCAForallDoubleCover
     (C : ModuleCode ι F A) (δ a : ℝ≥0)
@@ -497,8 +503,6 @@ theorem lineDecodable_imp_epsMCA_le_target_of_MCAForallDoubleCover
 
 #print axioms CodingTheory.lineDecodable_imp_epsMCA_le_target_of_forall_double_cover
 #print axioms CodingTheory.lineDecodable_imp_epsMCA_le_target_of_badScalarDoubleCover
-#print axioms CodingTheory.lineDecodable_imp_epsMCA_le_target_of_forall_mcaBadCount_eq_zero
-#print axioms CodingTheory.lineDecodable_imp_epsMCA_le_target_of_forall_not_mcaEvent
 #print axioms CodingTheory.lineDecodable_imp_epsMCA_le_target_of_MCAForallDoubleCover
 
 end RepairedTarget
