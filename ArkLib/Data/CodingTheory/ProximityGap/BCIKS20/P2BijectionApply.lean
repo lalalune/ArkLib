@@ -55,7 +55,28 @@ theorem restrictedFaaDiBrunoSum_eq_partitionForm (x₀ : F) (R : F[X][X][Y])
   rw [innerSum_reindex i ab.2 (t + 1) (Nat.succ_pos t)
     (fun j => PowerSeries.coeff j (βHenselAssembled H x₀ R hHyp))]
 
+/-- **The `βHensel_succ` guard is vacuous on valid `(i₁,λ)`.**  In the `(A.1)` recursion the
+partition product is `partitionProd λ (fun l => if l < t+1 then βHensel l else 0)`.  For `λ ⊢ (t+1−i₁)`
+with `(t+1) ∉ λ`, every part `l` satisfies `l ≤ t+1−i₁` and `l ≠ t+1`, hence `l < t+1`, so the guard
+is always taken and the product equals the plain `partitionProd λ (βHensel …)`. -/
+theorem partitionProd_guard_eq (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (t i1 : ℕ) (lam : Nat.Partition (t + 1 - i1)) (hT : (t + 1) ∉ lam.parts) :
+    partitionProd lam (fun l => if _h : l < t + 1 then βHensel H x₀ R hHyp l else 0)
+      = partitionProd lam (βHensel H x₀ R hHyp) := by
+  unfold partitionProd
+  congr 1
+  apply Multiset.map_congr rfl
+  intro l hl
+  obtain ⟨rest, hrest⟩ := Multiset.exists_cons_of_mem hl
+  have hle : l ≤ t + 1 - i1 := by
+    have hsum : lam.parts.sum = l + rest.sum := by rw [hrest, Multiset.sum_cons]
+    have : l ≤ lam.parts.sum := by rw [hsum]; exact Nat.le_add_right l rest.sum
+    rwa [lam.parts_sum] at this
+  have hne : l ≠ t + 1 := fun h => hT (h ▸ hl)
+  rw [dif_pos (show l < t + 1 by omega)]
+
 end BCIKS20.HenselNumerator
 
 -- Axiom audit.
 #print axioms BCIKS20.HenselNumerator.restrictedFaaDiBrunoSum_eq_partitionForm
+#print axioms BCIKS20.HenselNumerator.partitionProd_guard_eq
