@@ -449,6 +449,7 @@ import ArkLib.OracleReduction.ProtocolSpec.TranscriptRecompose
 import ArkLib.OracleReduction.Salt
 import ArkLib.OracleReduction.Security.Basic
 import ArkLib.OracleReduction.Security.CoordinateWiseSpecialSoundness
+import ArkLib.OracleReduction.Security.EchoHVZK
 import ArkLib.OracleReduction.Security.Implications
 import ArkLib.OracleReduction.Security.OracleDistribution
 import ArkLib.OracleReduction.Security.OracleZeroKnowledge
@@ -458,7 +459,6 @@ import ArkLib.OracleReduction.Security.SpecialSoundness
 import ArkLib.OracleReduction.Security.StateRestoration
 import ArkLib.OracleReduction.Security.TranscriptTree
 import ArkLib.OracleReduction.Security.ZeroKnowledge
-import ArkLib.OracleReduction.Security.EchoHVZK
 import ArkLib.OracleReduction.SimulateQ
 import ArkLib.OracleReduction.VectorIOR
 import ArkLib.ProofSystem.BatchedFri.QueryRoundAnalysis
