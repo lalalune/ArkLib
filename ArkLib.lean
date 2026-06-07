@@ -471,6 +471,7 @@ import ArkLib.ProofSystem.ZkVMBoundary
 import ArkLib.ToCompPoly.Univariate.Basic
 import ArkLib.ToCompPoly.Univariate.Lagrange
 import ArkLib.ToMathlib.AGL23CountingProof
+import ArkLib.ToMathlib.AGL24RandomRSProof
 import ArkLib.ToMathlib.AHIVRowSpanBridge
 import ArkLib.ToMathlib.AppendHelpers
 import ArkLib.ToMathlib.BKR06BareT312
@@ -514,7 +515,9 @@ import ArkLib.ToMathlib.FiniteSeriesToPoly
 import ArkLib.ToMathlib.Finset.Basic
 import ArkLib.ToMathlib.Finset.ToListWithProof
 import ArkLib.ToMathlib.Finsupp.Fin
+import ArkLib.ToMathlib.FirstMomentBadGamma
 import ArkLib.ToMathlib.FriComplete
+import ArkLib.ToMathlib.FriCompleteCompose
 import ArkLib.ToMathlib.FrobeniusFactorHelpers
 import ArkLib.ToMathlib.GG25RandomRSMCAProof
 import ArkLib.ToMathlib.GGR11Interleaved
@@ -544,6 +547,7 @@ import ArkLib.ToMathlib.KeystoneCapstone
 import ArkLib.ToMathlib.KeystoneStrictResidual
 import ArkLib.ToMathlib.KoalaBearCode
 import ArkLib.ToMathlib.KoalaBearField
+import ArkLib.ToMathlib.KoalaIRSAccounting
 import ArkLib.ToMathlib.L13Milestone
 import ArkLib.ToMathlib.L46DiffStackRS
 import ArkLib.ToMathlib.L46GSLowerBound
@@ -583,6 +587,8 @@ import ArkLib.ToMathlib.ToyStep4
 import ArkLib.ToMathlib.UMSubspaceDesignProof
 import ArkLib.ToMathlib.UniformTranslationAverage
 import ArkLib.ToMathlib.WeightLambdaCalculus
+import ArkLib.ToMathlib.ZKAxiomsA
+import ArkLib.ToMathlib.ZKDefA
 import ArkLib.ToVCVio.EvalDist.Defs.Support
 import ArkLib.ToVCVio.EvalDist.Instances.OptionT
 import ArkLib.ToVCVio.Lemmas
