@@ -23,6 +23,40 @@ Do not use bare `lake update` as a routine cache-repair command. It re-resolves
 Use `lake exe cache get` after syncing instead. Run `lake update` only when intentionally changing
 dependency pins, and commit the resulting manifest together with the matching `lean-toolchain`.
 
+### Recovering a corrupted or re-cloning `mathlib` package
+
+Symptoms (tree-wide build failures, OOM, or stalls that are not your change):
+
+- `.lake/packages/mathlib` is large on disk but has no checked-out source
+  (e.g. `Mathlib/Algebra/Field/Basic.lean` is missing) or `git -C .lake/packages/mathlib rev-parse HEAD` fails.
+- Many concurrent `git-remote-https ... mathlib4` clone processes are racing into that one
+  directory, so it never converges and every session's build fails on missing `mathlib` oleans.
+
+Root cause: a per-session package fetch checked out mathlib's default branch instead of the
+manifest-pinned revision, and parallel sessions racing the same directory prevent convergence.
+
+Non-destructive recovery (one actor at a time; do **not** `rm -rf` the shared package — the pinned
+revision is usually already fetched inside it):
+
+```bash
+# 1. Pause (do not kill) the racing clones so the directory stops being overwritten.
+pkill -STOP -f 'git-remote-https.*mathlib4'
+
+# 2. Check out the revision pinned in lake-manifest.json (NOT the default branch).
+#    Find the pin with: python3 -c "import json;print([p['rev'] for p in json.load(open('lake-manifest.json'))['packages'] if p['name']=='mathlib'][0])"
+git -C .lake/packages/mathlib checkout -f <manifest-pinned-rev>
+
+# 3. Decompress the matching precompiled oleans for that revision.
+lake exe cache get
+
+# 4. Verify a real build completes.
+lake build ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeCollapse
+```
+
+Prevention: never run `lake update` for cache repair (see above); let a single coordinator do
+package recovery; the only source of truth for the mathlib revision is the `mathlib` entry in
+`lake-manifest.json`.
+
 ## Validation By Change Type
 
 ### Existing Lean files only
