@@ -707,6 +707,30 @@ theorem rs_epsCA_breakdown_cs25_entropyBallLowerWitness_of_covered_stack
   exact ProximityGap.one_le_epsCA_of_line_covered
     (ReedSolomon.code domain k : Set (ι → F)) δ δ u hu hcover
 
+/-- **CS25 complete-breakdown front door from a covered bad-line stack.**
+
+This composes `rs_epsCA_breakdown_cs25_entropyBallLowerWitness_of_covered_stack` with the
+checked lower-bound-to-breakdown bridge. The remaining input is a concrete stack whose whole
+affine line is `δ`-close to the Reed-Solomon code while the stack itself is not jointly
+`δ`-close. -/
+theorem rs_epsCA_breakdown_cs25_of_covered_stack
+    (domain : ι ↪ F) (k : ℕ) (δ : ℝ≥0)
+    (hq_ge : 10 ≤ Fintype.card F)
+    (hδ_lo :
+        1 - qEntropy (Fintype.card F) (δ : ℝ) + 2 / (Fintype.card ι : ℝ)
+            + ((qEntropy (Fintype.card F) (δ : ℝ) - (δ : ℝ))
+                / (Fintype.card ι : ℝ)) ^ ((1 : ℝ) / 2)
+          ≤ (k : ℝ) / Fintype.card ι)
+    (hδ_hi : (k : ℝ) / Fintype.card ι ≤ 1 - (δ : ℝ) - 2 / (Fintype.card ι : ℝ))
+    (u : Fin 2 → ι → F)
+    (hu : ¬ Code.jointProximity (C := (ReedSolomon.code domain k : Set (ι → F))) (u := u) δ)
+    (hcover : ∀ γ : F,
+        δᵣ(u 0 + γ • u 1, (ReedSolomon.code domain k : Set (ι → F))) ≤ δ) :
+    rs_epsCA_breakdown_cs25 domain k δ hq_ge hδ_lo hδ_hi :=
+  rs_epsCA_breakdown_cs25_of_entropyBallLowerWitness domain k δ hq_ge hδ_lo hδ_hi
+    (rs_epsCA_breakdown_cs25_entropyBallLowerWitness_of_covered_stack
+      domain k δ hq_ge hδ_lo hδ_hi u hu hcover)
+
 open Classical in
 /-- **Reduction of the #82 entropy-ball lower witness to the combined CS25 count budget.**
 
@@ -1467,6 +1491,7 @@ end SubspaceDesignFRS
 #print axioms CodingTheory.rs_epsCA_breakdown_cs25_entropyBallLowerWitness
 #print axioms CodingTheory.rs_epsCA_breakdown_cs25_of_lower_bound
 #print axioms CodingTheory.rs_epsCA_breakdown_cs25_of_entropyBallLowerWitness
+#print axioms CodingTheory.rs_epsCA_breakdown_cs25_of_covered_stack
 #print axioms CodingTheory.rs_epsCA_breakdown_cs25_entropyBallLowerWitness_of_counts
 #print axioms CodingTheory.rs_epsCA_breakdown_cs25_of_counts
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_subspaceDesign_prop
