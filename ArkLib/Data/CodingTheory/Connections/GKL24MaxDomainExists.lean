@@ -175,4 +175,37 @@ theorem card_lineAgreeSet_ge_of_mem_mcaBadWitness
     rw [mem_lineAgreeSet_iff]; exact hSagree i hi
   exact le_trans hScard (by exact_mod_cast Finset.card_le_card hSsub)
 
+/-- **The common zero-agreement set jointly agrees (via `(w, 0)`).**  On `{i : u₁ᵢ = 0 ∧ wᵢ = u₀ᵢ}`
+the codeword pair `(w, 0)` witnesses joint agreement: `w = u₀` there and `0 = u₁` there.  Hence,
+once this set is large enough, it is a correlated-agreement domain. -/
+theorem pairJointAgreesOn_common {MC : Submodule F (ι → F)} {u₀ u₁ w : ι → F} (hw : w ∈ MC) :
+    pairJointAgreesOn (MC : Set (ι → F))
+      (Finset.univ.filter (fun i => u₁ i = 0 ∧ w i = u₀ i)) u₀ u₁ := by
+  refine ⟨w, hw, 0, MC.zero_mem, fun i hi => ?_⟩
+  rw [Finset.mem_filter] at hi
+  exact ⟨hi.2.2, by rw [Pi.zero_apply]; exact hi.2.1.symm⟩
+
+/-- **A maximal correlated-agreement domain containing a given one exists.**  Strengthening
+`exists_maxCorrAgreeDomain_of_nonempty`: from a correlated-agreement domain `D₀`, a *maximal* domain
+`D ⊇ D₀` exists.  Combined with `pairJointAgreesOn_common`, taking `D₀ = {i : u₁ᵢ=0 ∧ wᵢ=u₀ᵢ}` (when
+large) yields a maximal domain that **absorbs the common zero-agreement set** — the precise input
+`hcommon` that `badCombiner_count` and the petal disjointness require. -/
+theorem exists_maxCorrAgreeDomain_containing
+    (MC : Submodule F (ι → F)) (p : ℝ≥0) (u₀ u₁ : ι → F) (D₀ : Finset ι)
+    (hD₀ : corrAgreeDomain MC p u₀ u₁ D₀) :
+    ∃ D : Finset ι, D₀ ⊆ D ∧ maxCorrAgreeDomain MC p u₀ u₁ D := by
+  classical
+  set 𝒮 : Finset (Finset ι) :=
+    (Finset.univ : Finset ι).powerset.filter
+      (fun D => corrAgreeDomain MC p u₀ u₁ D ∧ D₀ ⊆ D) with h𝒮
+  have hD₀mem : D₀ ∈ 𝒮 :=
+    Finset.mem_filter.mpr ⟨Finset.mem_powerset.mpr (Finset.subset_univ _), hD₀, Finset.Subset.refl _⟩
+  obtain ⟨D, hDmem, hDmax⟩ := Finset.exists_max_image 𝒮 Finset.card ⟨D₀, hD₀mem⟩
+  obtain ⟨hDcorr, hD₀D⟩ := (Finset.mem_filter.mp hDmem).2
+  refine ⟨D, hD₀D, hDcorr, fun E hDE hE => ?_⟩
+  have hEmem : E ∈ 𝒮 :=
+    Finset.mem_filter.mpr
+      ⟨Finset.mem_powerset.mpr (Finset.subset_univ _), hE, le_trans hD₀D hDE⟩
+  exact (Finset.eq_of_subset_of_card_le hDE (hDmax E hEmem)).ge
+
 end ProximityGap
