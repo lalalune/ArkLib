@@ -267,6 +267,52 @@ def BoundaryCardLatticeData {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} : P
               ∀ j < deg, (P z).coeff j = (B j).eval z)
 
 omit [Nonempty ι] [DecidableEq ι] in
+/-- Projection of the first cardinality lower bound stored in `BoundaryCardLatticeData`. -/
+theorem BoundaryCardLatticeData.card_gt {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    (h : BoundaryCardLatticeData (k := k) (deg := deg) (domain := domain) (δ := δ))
+    (hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι)
+    (hδeq : δ = 1 - ReedSolomon.sqrtRate deg domain)
+    (hfloor : (Nat.floor (δ * Fintype.card ι) : ℝ≥0) = δ * Fintype.card ι)
+    (hcardPos : 0 < (RS_goodCoeffsCurve (k := k) (deg := deg)
+      (domain := domain) u δ).card) :
+    (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card > k :=
+  (h hk u hδeq hfloor hcardPos).1
+
+omit [Nonempty ι] [DecidableEq ι] in
+/-- Projection of the strong `(n + 1) * k` cardinality bound stored in
+`BoundaryCardLatticeData`. -/
+theorem BoundaryCardLatticeData.card_ge {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    (h : BoundaryCardLatticeData (k := k) (deg := deg) (domain := domain) (δ := δ))
+    (hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι)
+    (hδeq : δ = 1 - ReedSolomon.sqrtRate deg domain)
+    (hfloor : (Nat.floor (δ * Fintype.card ι) : ℝ≥0) = δ * Fintype.card ι)
+    (hcardPos : 0 < (RS_goodCoeffsCurve (k := k) (deg := deg)
+      (domain := domain) u δ).card) :
+    (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card ≥
+      (Fintype.card ι + 1) * k :=
+  (h hk u hδeq hfloor hcardPos).2.1
+
+omit [Nonempty ι] [DecidableEq ι] in
+/-- Projection of the coefficient-polynomial extractor stored in `BoundaryCardLatticeData`. -/
+theorem BoundaryCardLatticeData.coeff_polys {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0}
+    (h : BoundaryCardLatticeData (k := k) (deg := deg) (domain := domain) (δ := δ))
+    (hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι)
+    (hδeq : δ = 1 - ReedSolomon.sqrtRate deg domain)
+    (hfloor : (Nat.floor (δ * Fintype.card ι) : ℝ≥0) = δ * Fintype.card ι)
+    (hcardPos : 0 < (RS_goodCoeffsCurve (k := k) (deg := deg)
+      (domain := domain) u δ).card) :
+    ∀ P : F → Polynomial F,
+      (∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+        (P z).natDegree < deg ∧
+          δᵣ(∑ t : Fin (k + 1), (z ^ (t : ℕ)) • u t,
+            (P z).eval ∘ domain) ≤ δ) →
+        ∃ B : ℕ → Polynomial F,
+          (∀ j < deg, (B j).natDegree < k + 1) ∧
+            ∀ z ∈ RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ,
+              ∀ j < deg, (P z).coeff j = (B j).eval z :=
+  (h hk u hδeq hfloor hcardPos).2.2
+
+omit [Nonempty ι] [DecidableEq ι] in
 /-- The isolated lattice-boundary residual is vacuous for `k = 0`, since its first hypothesis is
 `0 < k`. This mirrors `BoundaryDischarge.boundaryCardResidual_zero` for the sharper residual
 surface introduced in this file. -/
@@ -764,6 +810,9 @@ with no `sorry`/`admit`/`axiom`/`native_decide`. -/
 #print axioms ArkLib.BoundaryCardResidual.boundaryCardResidual_of_not_lattice
 #print axioms ArkLib.BoundaryCardResidual.BoundaryCardLatticeResidual
 #print axioms ArkLib.BoundaryCardResidual.BoundaryCardLatticeData
+#print axioms ArkLib.BoundaryCardResidual.BoundaryCardLatticeData.card_gt
+#print axioms ArkLib.BoundaryCardResidual.BoundaryCardLatticeData.card_ge
+#print axioms ArkLib.BoundaryCardResidual.BoundaryCardLatticeData.coeff_polys
 #print axioms ArkLib.BoundaryCardResidual.boundaryCardLatticeResidual_zero
 #print axioms ArkLib.BoundaryCardResidual.boundaryCardLatticeData_zero
 #print axioms ArkLib.BoundaryCardResidual.BoundaryCardQuantizationResiduals
