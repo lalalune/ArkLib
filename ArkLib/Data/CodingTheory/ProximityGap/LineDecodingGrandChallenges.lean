@@ -38,6 +38,22 @@ def GrandChallenges.MCALowerWitness.ofDoubleCover (C : Set (ι → F)) (δ ε_st
     rw [epsMCA_eq_zero_of_forall_double_cover C δ hcov]
     simp
 
+/-- Prize-rate specialization of repaired double-cover data.  At any ABF26 prize rate, an
+explicit `MCAForallDoubleCover` hypothesis for the corresponding Reed-Solomon code gives a
+one-sided MCA lower witness at `epsStar`. -/
+theorem GrandChallenges.exists_prize_mcaLowerWitness_ofDoubleCover
+    (domain : ι ↪ F) (j : Fin 4) (δ : ℝ≥0)
+    (hδ_le_one : δ ≤ 1)
+    (hcov : MCAForallDoubleCover (F := F) (A := F)
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)) δ) :
+    ∃ w : GrandChallenges.MCALowerWitness
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar,
+      w.δ = δ := by
+  refine ⟨GrandChallenges.MCALowerWitness.ofDoubleCover
+    (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+    δ epsStar hδ_le_one hcov, rfl⟩
+
 end LowerWitness
 
 namespace GrandChallengesLattice
@@ -67,12 +83,29 @@ theorem mcaThreshold_spec_ofDoubleCover (C : Set (ι → F)) (δ ε_star : ℝ�
   mcaThreshold_spec C ε_star
     (mcaThresholdExists_ofDoubleCover C δ ε_star hδ_le_one hcov)
 
+/-- Per-rate repaired double-cover data resolves the faithful MCA lattice prize existentially.
+This is the prize-facing aggregation of the #140 repaired coverage theorem through the existing
+lower-witness lattice front door. -/
+theorem exists_mcaPrizeLatticeResolved_ofDoubleCover
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hcov : ∀ j : Fin 4, MCAForallDoubleCover (F := F) (A := F)
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      (δ j)) :
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1), mcaPrizeLatticeResolved domain τ :=
+  exists_mcaPrizeLatticeResolved_of_lowerWitnesses domain fun j =>
+    GrandChallenges.MCALowerWitness.ofDoubleCover
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      (δ j) epsStar (hδ_le_one j) (hcov j)
+
 end LatticeWitness
 
 end GrandChallengesLattice
 
 #print axioms ProximityGap.GrandChallenges.MCALowerWitness.ofDoubleCover
+#print axioms ProximityGap.GrandChallenges.exists_prize_mcaLowerWitness_ofDoubleCover
 #print axioms ProximityGap.GrandChallengesLattice.mcaThresholdExists_ofDoubleCover
 #print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_ofDoubleCover
+#print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_ofDoubleCover
 
 end ProximityGap

@@ -82,7 +82,8 @@ keep whichever shape is most convenient.
 - [ABF26] Arnon, Boneh, Fenzi. *Open Problems in List Decoding and Correlated Agreement*.
 -/
 
-set_option linter.style.longFile 3700
+-- Cohesive faithful MCA/list lattice threshold API plus prize-rate bridge adapters.
+set_option linter.style.longFile 3800
 
 set_option linter.unusedFintypeInType false
 set_option linter.unusedDecidableInType false
@@ -1551,8 +1552,56 @@ theorem mcaThreshold_spec_of_ignoredSource_mcaConjecture (h : mcaConjecture) :
             (mcaThreshold (ReedSolomon.code domain k : Set (ιC → FC)) ε_star hne) :=
   mcaThreshold_spec_of_mcaConjecture h
 
+/-- Prize-rate specialization of `mcaThresholdExists_of_ignoredSource_mcaConjecture`.
+The conjecture remains an explicit ignored-source hypothesis; this only fixes
+`ε* = epsStar` and the four ABF26 prize-rate dimensions. -/
+theorem mcaThresholdExists_prize_of_ignoredSource_mcaConjecture (h : mcaConjecture) :
+    ∃ c₁ c₂ c₃ : ℝ,
+      ∀ {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
+        {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC]
+        (domain : ιC ↪ FC) (j : Fin 4) (δ : ℝ≥0),
+        let k : ℕ := ⌊prizeRates j * (Fintype.card ιC : ℝ≥0)⌋₊
+        0 < k →
+        (δ : ℝ) < 1 - (k : ℝ) / Fintype.card ιC → δ ≤ 1 →
+        ENNReal.ofReal
+            (mcaConjectureBound (Fintype.card ιC) (Fintype.card FC) k δ c₁ c₂ c₃) ≤
+          (epsStar : ENNReal) →
+        mcaThresholdExists (ReedSolomon.code domain k : Set (ιC → FC)) epsStar := by
+  obtain ⟨c₁, c₂, c₃, hExists⟩ := mcaThresholdExists_of_ignoredSource_mcaConjecture h
+  refine ⟨c₁, c₂, c₃, ?_⟩
+  intro ιC _ _ _ FC _ _ _ domain j δ
+  dsimp only
+  exact hExists (domain := domain)
+    (k := ⌊prizeRates j * (Fintype.card ιC : ℝ≥0)⌋₊) (ε_star := epsStar) (δ := δ)
+
+/-- Prize-rate specialization of `mcaThreshold_spec_of_ignoredSource_mcaConjecture`.
+This gives the faithful lattice threshold and its specification for the ABF26 prize-rate family
+under the explicit ignored-source `mcaConjecture` hypothesis. -/
+theorem mcaThreshold_spec_prize_of_ignoredSource_mcaConjecture (h : mcaConjecture) :
+    ∃ c₁ c₂ c₃ : ℝ,
+      ∀ {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]
+        {FC : Type} [Field FC] [Fintype FC] [DecidableEq FC]
+        (domain : ιC ↪ FC) (j : Fin 4) (δ : ℝ≥0),
+        let k : ℕ := ⌊prizeRates j * (Fintype.card ιC : ℝ≥0)⌋₊
+        0 < k →
+        (δ : ℝ) < 1 - (k : ℝ) / Fintype.card ιC → δ ≤ 1 →
+        ENNReal.ofReal
+            (mcaConjectureBound (Fintype.card ιC) (Fintype.card FC) k δ c₁ c₂ c₃) ≤
+          (epsStar : ENNReal) →
+        ∃ hne : mcaThresholdExists (ReedSolomon.code domain k : Set (ιC → FC)) epsStar,
+          mcaSatisfies (ReedSolomon.code domain k : Set (ιC → FC)) epsStar
+            (mcaThreshold (ReedSolomon.code domain k : Set (ιC → FC)) epsStar hne) := by
+  obtain ⟨c₁, c₂, c₃, hSpec⟩ := mcaThreshold_spec_of_ignoredSource_mcaConjecture h
+  refine ⟨c₁, c₂, c₃, ?_⟩
+  intro ιC _ _ _ FC _ _ _ domain j δ
+  dsimp only
+  exact hSpec (domain := domain)
+    (k := ⌊prizeRates j * (Fintype.card ιC : ℝ≥0)⌋₊) (ε_star := epsStar) (δ := δ)
+
 #print axioms ProximityGap.GrandChallengesLattice.mcaThresholdExists_of_ignoredSource_mcaConjecture
 #print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_of_ignoredSource_mcaConjecture
+#print axioms ProximityGap.GrandChallengesLattice.mcaThresholdExists_prize_of_ignoredSource_mcaConjecture
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_prize_of_ignoredSource_mcaConjecture
 
 /-- **Upper bracket.** An `MCAUpperWitness` at a radius `δ ≤ 1` forces
 `mcaThreshold < ⌊δ·n⌋`: its lattice point already exceeds `ε*`, so the threshold is strictly

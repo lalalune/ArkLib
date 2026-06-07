@@ -207,5 +207,30 @@ theorem mcaBad_card_le_of_weight [NoZeroSMulDivisors F A]
   intro w _
   exact mcaBadWitness_card_le_of_weight C δ hδ u₀ u₁ w hwt
 
+/-! ### The complementary near-zero branch
+
+The first-moment bound above is vacuous when `u₁` is *sparse* (`wt(u₁) ≤ δ·n`).  That regime is
+exactly when `u₁` is itself `δ`-close to the zero codeword: on its zero set (size `≥ (1-δ)n`) it
+agrees with `0 ∈ C`.  This is the second half of the MCA dichotomy. -/
+
+/-- **Near-zero witness.**  A sparse `u₁` (`wt(u₁) ≤ δ·n`) agrees with the zero codeword on a set
+of size `≥ (1-δ)·n` — its complement of support.  (For a `Submodule` code `0 ∈ C`, so this exhibits
+`u₁` as `δ`-close to a codeword.) -/
+theorem exists_large_agree_zero_of_small_weight
+    (δ : ℝ≥0) (u₁ : ι → A)
+    (hwt : ((supp₁ u₁).card : ℝ) ≤ δ * Fintype.card ι) :
+    ∃ S : Finset ι, ((1 - δ) * Fintype.card ι : ℝ) ≤ (S.card : ℝ) ∧
+      ∀ i ∈ S, u₁ i = (0 : ι → A) i := by
+  refine ⟨(supp₁ u₁)ᶜ, ?_, ?_⟩
+  · -- |suppᶜ| = n - |supp| ≥ n - δn = (1-δ)n
+    have hcompl : ((supp₁ u₁)ᶜ.card : ℝ) = (Fintype.card ι : ℝ) - (supp₁ u₁).card := by
+      rw [Finset.card_compl, Nat.cast_sub (Finset.card_le_univ _)]
+    rw [hcompl]
+    nlinarith [hwt]
+  · intro i hi
+    simp only [Pi.zero_apply]
+    by_contra hne
+    exact (Finset.mem_compl.mp hi) (mem_supp₁.mpr hne)
+
 end ProximityGap
 
