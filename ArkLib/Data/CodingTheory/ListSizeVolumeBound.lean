@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 
 import ArkLib.Data.CodingTheory.HammingBallVolume
 import ArkLib.Data.CodingTheory.ListDecodability
+import ArkLib.Data.CodingTheory.EntropyVolumeUpperBall
 
 /-!
 # Elias list-size ≤ ball-volume bound
@@ -55,8 +56,104 @@ theorem listDecodable_hammingBallVolume
   intro y
   exact_mod_cast closeCodewordsRel_ncard_le_hammingBallVolume C y δ
 
+/-- **Maximised Elias entropy upper bound, finite-domain form.**  The exact floor-radius
+Hamming-ball entropy estimate gives a direct real-valued bound on `Λ(C,δ)`. -/
+theorem Lambda_le_qEntropy_card
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (C : Code ι F) (δ : ℝ)
+    (hr : ⌊δ * (Fintype.card ι : ℝ)⌋₊ < Fintype.card ι)
+    (hcap :
+      (⌊δ * (Fintype.card ι : ℝ)⌋₊ : ℝ) / (Fintype.card ι : ℝ)
+        ≤ 1 - 1 / (Fintype.card F : ℝ)) :
+    (Lambda C δ : ENNReal) ≤
+      ENNReal.ofReal (((Fintype.card ι : ℝ) + 1) *
+        (Fintype.card F : ℝ) ^ ((Fintype.card ι : ℝ) *
+          qEntropy (Fintype.card F)
+            ((⌊δ * (Fintype.card ι : ℝ)⌋₊ : ℝ) / (Fintype.card ι : ℝ)))) := by
+  have hΛ : (Lambda C δ : ENNReal) ≤
+      ((hammingBallVolume (Fintype.card F) δ (Fintype.card ι) : ℕ∞) : ENNReal) :=
+    ENat.toENNReal_mono (Lambda_le_hammingBallVolume C δ)
+  have hcast :
+      ((hammingBallVolume (Fintype.card F) δ (Fintype.card ι) : ℕ∞) : ENNReal) =
+        ENNReal.ofReal ((hammingBallVolume (Fintype.card F) δ (Fintype.card ι) : ℕ) : ℝ) := by
+    rw [ENNReal.ofReal_natCast]
+    simp
+  have hvol := hammingBallVolume_le_qEntropy_card (ι := ι) (F := F) δ hr hcap
+  rw [hcast] at hΛ
+  exact le_trans hΛ (ENNReal.ofReal_le_ofReal hvol)
+
+/-- **List-decodability from the finite-domain floor-radius entropy bound.** -/
+theorem listDecodable_qEntropy_card
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (C : Code ι F) (δ : ℝ)
+    (hr : ⌊δ * (Fintype.card ι : ℝ)⌋₊ < Fintype.card ι)
+    (hcap :
+      (⌊δ * (Fintype.card ι : ℝ)⌋₊ : ℝ) / (Fintype.card ι : ℝ)
+        ≤ 1 - 1 / (Fintype.card F : ℝ)) :
+    listDecodable C δ (((Fintype.card ι : ℝ) + 1) *
+      (Fintype.card F : ℝ) ^ ((Fintype.card ι : ℝ) *
+        qEntropy (Fintype.card F)
+          ((⌊δ * (Fintype.card ι : ℝ)⌋₊ : ℝ) / (Fintype.card ι : ℝ)))) := by
+  intro y
+  have hcount :
+      (closeCodewordsRel C y δ).ncard ≤
+        hammingBallVolume (Fintype.card F) δ (Fintype.card ι) :=
+    closeCodewordsRel_ncard_le_hammingBallVolume C y δ
+  have hvol := hammingBallVolume_le_qEntropy_card (ι := ι) (F := F) δ hr hcap
+  exact le_trans (by exact_mod_cast hcount) hvol
+
+/-- **Maximised Elias entropy upper bound with the real radius exponent.**  Below capacity, the
+finite-domain floor-radius bound can be relaxed to the cleaner exponent `H_q(δ)`. -/
+theorem Lambda_le_qEntropy_real_radius_card
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (C : Code ι F) (δ : ℝ)
+    (hδ0 : 0 ≤ δ)
+    (hδ : δ ≤ 1 - 1 / (Fintype.card F : ℝ)) :
+    (Lambda C δ : ENNReal) ≤
+      ENNReal.ofReal (((Fintype.card ι : ℝ) + 1) *
+        (Fintype.card F : ℝ) ^ ((Fintype.card ι : ℝ) *
+          qEntropy (Fintype.card F) δ)) := by
+  have hΛ : (Lambda C δ : ENNReal) ≤
+      ((hammingBallVolume (Fintype.card F) δ (Fintype.card ι) : ℕ∞) : ENNReal) :=
+    ENat.toENNReal_mono (Lambda_le_hammingBallVolume C δ)
+  have hcast :
+      ((hammingBallVolume (Fintype.card F) δ (Fintype.card ι) : ℕ∞) : ENNReal) =
+        ENNReal.ofReal ((hammingBallVolume (Fintype.card F) δ (Fintype.card ι) : ℕ) : ℝ) := by
+    rw [ENNReal.ofReal_natCast]
+    simp
+  have hvol := hammingBallVolume_le_qEntropy_real_radius_card
+    (ι := ι) (F := F) δ hδ0 hδ
+  rw [hcast] at hΛ
+  exact le_trans hΛ (ENNReal.ofReal_le_ofReal hvol)
+
+/-- **List-decodability from the finite-domain real-radius entropy bound.** -/
+theorem listDecodable_qEntropy_real_radius_card
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (C : Code ι F) (δ : ℝ)
+    (hδ0 : 0 ≤ δ)
+    (hδ : δ ≤ 1 - 1 / (Fintype.card F : ℝ)) :
+    listDecodable C δ (((Fintype.card ι : ℝ) + 1) *
+      (Fintype.card F : ℝ) ^ ((Fintype.card ι : ℝ) *
+        qEntropy (Fintype.card F) δ)) := by
+  intro y
+  have hcount :
+      (closeCodewordsRel C y δ).ncard ≤
+        hammingBallVolume (Fintype.card F) δ (Fintype.card ι) :=
+    closeCodewordsRel_ncard_le_hammingBallVolume C y δ
+  have hvol := hammingBallVolume_le_qEntropy_real_radius_card
+    (ι := ι) (F := F) δ hδ0 hδ
+  exact le_trans (by exact_mod_cast hcount) hvol
+
 end CodingTheory
 
 #print axioms CodingTheory.closeCodewordsRel_ncard_le_hammingBallVolume
 #print axioms CodingTheory.Lambda_le_hammingBallVolume
 #print axioms CodingTheory.listDecodable_hammingBallVolume
+#print axioms CodingTheory.Lambda_le_qEntropy_card
+#print axioms CodingTheory.listDecodable_qEntropy_card
+#print axioms CodingTheory.Lambda_le_qEntropy_real_radius_card
+#print axioms CodingTheory.listDecodable_qEntropy_real_radius_card
