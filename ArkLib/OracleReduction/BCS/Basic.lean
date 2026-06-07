@@ -7,7 +7,7 @@ Authors: Quang Dao
 import ArkLib.CommitmentScheme.Basic
 import ArkLib.OracleReduction.Composition.Sequential.General
 
-set_option linter.style.longFile 2000
+set_option linter.style.longFile 1900
 
 open scoped NNReal
 
@@ -572,45 +572,6 @@ theorem BCSOpeningSchedule.exists_request_of_mem_toOpeningStatements
     ∃ request ∈ schedule, statement = ⟨request.messageIdx, request.toOpeningStatement⟩ :=
   (BCSOpeningSchedule.mem_toOpeningStatements_iff schedule statement).1 hstatement
 
-/-- Membership in the per-message filtered indexed opening-statement view is exactly membership in
-the original typed schedule by a request for that message index. -/
-@[simp] theorem BCSOpeningSchedule.mem_toOpeningStatements_filter_messageIdx_iff
-    {CommitmentType : pSpec.MessageIdx → Type} [DecidableEq pSpec.MessageIdx]
-    (schedule : BCSOpeningSchedule (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType)
-    (i : pSpec.MessageIdx)
-    (statement : (j : pSpec.MessageIdx) ×
-      BCSOpeningStatementAt (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType j) :
-    statement ∈ schedule.toOpeningStatements.filter (fun statement => statement.1 = i) ↔
-      ∃ request ∈ schedule, request.messageIdx = i ∧
-        statement = ⟨request.messageIdx, request.toOpeningStatement⟩ := by
-  constructor
-  · intro hstatement
-    rw [List.mem_filter] at hstatement
-    obtain ⟨hmem, hidx⟩ := hstatement
-    obtain ⟨request, hrequest, hstatement_eq⟩ :=
-      BCSOpeningSchedule.exists_request_of_mem_toOpeningStatements hmem
-    refine ⟨request, hrequest, ?_, hstatement_eq⟩
-    simpa [hstatement_eq] using hidx
-  · rintro ⟨request, hrequest, hidx, rfl⟩
-    rw [List.mem_filter]
-    exact
-      ⟨BCSOpeningSchedule.mem_toOpeningStatements_of_mem hrequest, by
-        simpa using hidx⟩
-
-/-- A statement in the per-message filtered indexed opening-statement view comes from a typed
-request for that message index in the original schedule. -/
-theorem BCSOpeningSchedule.exists_request_of_mem_toOpeningStatements_filter_messageIdx
-    {CommitmentType : pSpec.MessageIdx → Type} [DecidableEq pSpec.MessageIdx]
-    {schedule : BCSOpeningSchedule (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType}
-    {i : pSpec.MessageIdx}
-    {statement : (j : pSpec.MessageIdx) ×
-      BCSOpeningStatementAt (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType j}
-    (hstatement : statement ∈ schedule.toOpeningStatements.filter (fun statement => statement.1 = i)) :
-    ∃ request ∈ schedule, request.messageIdx = i ∧
-      statement = ⟨request.messageIdx, request.toOpeningStatement⟩ :=
-  (BCSOpeningSchedule.mem_toOpeningStatements_filter_messageIdx_iff
-    schedule i statement).1 hstatement
-
 /-- Universal quantification over indexed opening statements is equivalent to quantification over
 the originating typed opening requests. -/
 theorem BCSOpeningSchedule.toOpeningStatements_forall
@@ -650,55 +611,6 @@ theorem BCSOpeningSchedule.toOpeningStatements_exists
     exact ⟨request, hrequest, by simpa [hstatement_eq] using hp⟩
   · rintro ⟨request, hrequest, hp⟩
     exact ⟨_, BCSOpeningSchedule.mem_toOpeningStatements_of_mem hrequest, hp⟩
-
-/-- Universal quantification over per-message filtered indexed opening statements is equivalent
-to quantification over the originating typed requests for that message index. -/
-theorem BCSOpeningSchedule.toOpeningStatements_filter_messageIdx_forall
-    {CommitmentType : pSpec.MessageIdx → Type} [DecidableEq pSpec.MessageIdx]
-    (schedule : BCSOpeningSchedule (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType)
-    (i : pSpec.MessageIdx)
-    (P : ((j : pSpec.MessageIdx) ×
-      BCSOpeningStatementAt (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType j) → Prop) :
-    (∀ statement ∈ schedule.toOpeningStatements.filter (fun statement => statement.1 = i),
-      P statement) ↔
-      ∀ request ∈ schedule, request.messageIdx = i →
-        P (⟨request.messageIdx, request.toOpeningStatement⟩ :
-          (j : pSpec.MessageIdx) ×
-            BCSOpeningStatementAt (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType j) := by
-  constructor
-  · intro h request hrequest hidx
-    exact h _ ((BCSOpeningSchedule.mem_toOpeningStatements_filter_messageIdx_iff
-      schedule i _).2 ⟨request, hrequest, hidx, rfl⟩)
-  · intro h statement hstatement
-    obtain ⟨request, hrequest, hidx, hstatement_eq⟩ :=
-      (BCSOpeningSchedule.mem_toOpeningStatements_filter_messageIdx_iff
-        schedule i statement).1 hstatement
-    simpa [hstatement_eq] using h request hrequest hidx
-
-/-- Existential quantification over per-message filtered indexed opening statements is equivalent
-to existence of an originating typed request for that message index. -/
-theorem BCSOpeningSchedule.toOpeningStatements_filter_messageIdx_exists
-    {CommitmentType : pSpec.MessageIdx → Type} [DecidableEq pSpec.MessageIdx]
-    (schedule : BCSOpeningSchedule (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType)
-    (i : pSpec.MessageIdx)
-    (P : ((j : pSpec.MessageIdx) ×
-      BCSOpeningStatementAt (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType j) → Prop) :
-    (∃ statement ∈ schedule.toOpeningStatements.filter (fun statement => statement.1 = i),
-      P statement) ↔
-      ∃ request ∈ schedule, request.messageIdx = i ∧
-        P (⟨request.messageIdx, request.toOpeningStatement⟩ :
-          (j : pSpec.MessageIdx) ×
-            BCSOpeningStatementAt (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType j) := by
-  constructor
-  · rintro ⟨statement, hstatement, hp⟩
-    obtain ⟨request, hrequest, hidx, hstatement_eq⟩ :=
-      (BCSOpeningSchedule.mem_toOpeningStatements_filter_messageIdx_iff
-        schedule i statement).1 hstatement
-    exact ⟨request, hrequest, hidx, by simpa [hstatement_eq] using hp⟩
-  · rintro ⟨request, hrequest, hidx, hp⟩
-    exact
-      ⟨_, (BCSOpeningSchedule.mem_toOpeningStatements_filter_messageIdx_iff
-        schedule i _).2 ⟨request, hrequest, hidx, rfl⟩, hp⟩
 
 /-- If one typed opening schedule is contained in another, then its indexed opening-statement view
 is contained in the other indexed view. -/
@@ -747,26 +659,6 @@ theorem BCSOpeningSchedule.toOpeningStatements_nodup
   exact List.nodup_map_iff
     (BCSOpeningRequest.indexed_toOpeningStatement_injective
       (pSpec := pSpec) (Oₘ := Oₘ) (CommitmentType := CommitmentType))
-
-/-- A duplicate-free typed opening schedule gives duplicate-free indexed opening statements after
-filtering to one committed oracle message. -/
-theorem BCSOpeningSchedule.toOpeningStatements_filter_messageIdx_nodup
-    {CommitmentType : pSpec.MessageIdx → Type} [DecidableEq pSpec.MessageIdx]
-    {schedule : BCSOpeningSchedule (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType}
-    (i : pSpec.MessageIdx) (hschedule : schedule.Nodup) :
-    (schedule.toOpeningStatements.filter (fun statement => statement.1 = i)).Nodup :=
-  (BCSOpeningSchedule.toOpeningStatements_nodup hschedule).filter _
-
-/-- Duplicate-freeness of the per-message indexed opening-statement view is equivalent to
-duplicate-freeness of the corresponding typed filtered schedule. -/
-@[simp] theorem BCSOpeningSchedule.toOpeningStatements_filter_messageIdx_nodup_iff
-    {CommitmentType : pSpec.MessageIdx → Type} [DecidableEq pSpec.MessageIdx]
-    (schedule : BCSOpeningSchedule (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType)
-    (i : pSpec.MessageIdx) :
-    (schedule.toOpeningStatements.filter (fun statement => statement.1 = i)).Nodup ↔
-      (schedule.filter (fun request => request.messageIdx = i)).Nodup := by
-  rw [← BCSOpeningSchedule.toOpeningStatements_filter_messageIdx (schedule := schedule) i]
-  exact BCSOpeningSchedule.toOpeningStatements_nodup_iff _
 
 /-- The typed opening-log boundary for the not-yet-generic BCS compiler.
 
@@ -1524,48 +1416,6 @@ abbrev BCSCompilerFrontierReady {StmtMid WitMid : Type}
       (StmtMid := StmtMid) (WitMid := WitMid) phases) : Prop :=
   BCSCompilerFrontierSatisfied phases frontier
 
-omit Oₘ in
-/-- The compatibility `Ready` spelling is definitionally the canonical satisfied frontier. -/
-theorem BCSCompilerFrontierReady.iff_satisfied {StmtMid WitMid : Type}
-    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
-    {phases : BCSCompiledPhases (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
-      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
-      (StmtMid := StmtMid) (WitMid := WitMid) CommitmentType e}
-    {frontier : BCSSecurityFrontier (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
-      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
-      (StmtMid := StmtMid) (WitMid := WitMid) phases} :
-    BCSCompilerFrontierReady phases frontier ↔
-      BCSCompilerFrontierSatisfied phases frontier :=
-  Iff.rfl
-
-omit Oₘ in
-/-- View a ready frontier through the canonical satisfied-frontier name. -/
-theorem BCSCompilerFrontierReady.toSatisfied {StmtMid WitMid : Type}
-    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
-    {phases : BCSCompiledPhases (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
-      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
-      (StmtMid := StmtMid) (WitMid := WitMid) CommitmentType e}
-    {frontier : BCSSecurityFrontier (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
-      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
-      (StmtMid := StmtMid) (WitMid := WitMid) phases}
-    (h : BCSCompilerFrontierReady phases frontier) :
-    BCSCompilerFrontierSatisfied phases frontier :=
-  h
-
-omit Oₘ in
-/-- View a satisfied frontier through the compatibility `Ready` spelling. -/
-theorem BCSCompilerFrontierSatisfied.toReady {StmtMid WitMid : Type}
-    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
-    {phases : BCSCompiledPhases (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
-      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
-      (StmtMid := StmtMid) (WitMid := WitMid) CommitmentType e}
-    {frontier : BCSSecurityFrontier (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
-      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
-      (StmtMid := StmtMid) (WitMid := WitMid) phases}
-    (h : BCSCompilerFrontierSatisfied phases frontier) :
-    BCSCompilerFrontierReady phases frontier :=
-  h
-
 /-- Package the named BCS compiler-frontier obligations from their independent proof bricks. -/
 theorem BCSCompilerFrontierReady.intro {StmtMid WitMid : Type}
     {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
@@ -1901,19 +1751,12 @@ generic compiler construction or the completeness/soundness preservation theorem
 #print axioms OracleReduction.BCSOpeningSchedule.mem_toOpeningStatements_iff
 #print axioms OracleReduction.BCSOpeningSchedule.mem_toOpeningStatements_of_mem
 #print axioms OracleReduction.BCSOpeningSchedule.exists_request_of_mem_toOpeningStatements
-#print axioms OracleReduction.BCSOpeningSchedule.mem_toOpeningStatements_filter_messageIdx_iff
-#print axioms
-  OracleReduction.BCSOpeningSchedule.exists_request_of_mem_toOpeningStatements_filter_messageIdx
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_forall
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_exists
-#print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_filter_messageIdx_forall
-#print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_filter_messageIdx_exists
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_subset
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_injective
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_nodup
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_nodup_iff
-#print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_filter_messageIdx_nodup
-#print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_filter_messageIdx_nodup_iff
 #print axioms OracleReduction.BCSOpeningLogFrontier
 #print axioms OracleReduction.BCSOpeningLogFrontierSatisfied
 #print axioms OracleReduction.BCSOpeningLogFrontierSatisfied.intro
@@ -1964,9 +1807,6 @@ generic compiler construction or the completeness/soundness preservation theorem
 #print axioms OracleReduction.BCSCompilerFrontierSatisfied.ofOpeningLogBridge
 #print axioms OracleReduction.BCSCompilerFrontierSatisfied.ofOpeningLogBridgeAndSecurity
 #print axioms OracleReduction.BCSCompilerFrontierReady
-#print axioms OracleReduction.BCSCompilerFrontierReady.iff_satisfied
-#print axioms OracleReduction.BCSCompilerFrontierReady.toSatisfied
-#print axioms OracleReduction.BCSCompilerFrontierSatisfied.toReady
 #print axioms OracleReduction.BCSCompilerFrontierReady.intro
 #print axioms OracleReduction.BCSCompilerFrontierReady.ofPhaseFields
 #print axioms OracleReduction.BCSCompilerFrontierReady.iff_fields

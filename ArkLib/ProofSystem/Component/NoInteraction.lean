@@ -5,7 +5,6 @@ Authors: Quang Dao
 -/
 
 import ArkLib.OracleReduction.Security.RoundByRound
-import ArkLib.OracleReduction.Security.ZeroKnowledge
 
 /-!
   # A classification of all (oracle) reductions with no interaction between the prover and verifier
@@ -75,111 +74,6 @@ private theorem optionT_mk_some_map_eq_lift {α : Type} (x : ProbComp α) :
     (OptionT.mk (some <$> x) : OptionT ProbComp α) = OptionT.lift x := by
   rw [OptionT.lift, bind_pure_comp]
 
-private lemma simulateQ_addLift_liftM_oracleComp_empty
-    {α : Type} (oa : OracleComp oSpec α) :
-    simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp)
-        (challengeQueryImpl (pSpec := (!p[] : ProtocolSpec 0))))
-      (liftM oa : OracleComp
-        (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ'challengeOracleInterface) α) =
-      (simulateQ impl oa : StateT σ ProbComp α) := by
-  rw [show (liftM oa : OracleComp
-        (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ'challengeOracleInterface) α) =
-      liftComp oa (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ'challengeOracleInterface) by
-        rw [liftComp_eq_liftM]]
-  rw [QueryImpl.simulateQ_add_liftComp_left]
-
-private lemma liftM_optionT_lift_eq_monadLift_liftM_empty
-    {α : Type} (mx : OracleComp oSpec α) :
-    (liftM (OptionT.lift mx : OptionT (OracleComp oSpec) α) :
-      OptionT (OracleComp
-        (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ'challengeOracleInterface)) α) =
-      (monadLift (liftM mx : OracleComp
-        (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ'challengeOracleInterface) α) :
-        OptionT (OracleComp
-          (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ'challengeOracleInterface)) α) := by
-  rw [liftM_OptionT_eq]
-  change
-    simulateQ (fun t => (liftM (OracleSpec.query t) :
-        OracleComp
-          (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ'challengeOracleInterface) _))
-      (OptionT.lift mx).run =
-    (monadLift (liftM mx : OracleComp
-        (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ'challengeOracleInterface) α) :
-      OptionT (OracleComp
-        (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ'challengeOracleInterface)) α).run
-  rw [show OptionT.lift mx = OptionT.mk (some <$> mx) by rfl]
-  rw [show (monadLift (liftM mx : OracleComp
-        (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ'challengeOracleInterface) α) :
-      OptionT (OracleComp
-        (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ'challengeOracleInterface)) α).run =
-      some <$> (monadLift (liftM mx : OracleComp
-        (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ'challengeOracleInterface) α) :
-        OracleComp
-          (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ'challengeOracleInterface) α) by
-        exact OptionT.run_monadLift
-          (m := OracleComp
-            (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ'challengeOracleInterface))
-          (n := OracleComp
-            (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ'challengeOracleInterface))
-          (liftM mx : OracleComp
-            (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ'challengeOracleInterface) α)]
-  rw [monadLift_eq_self]
-  change simulateQ (fun t => (liftM (OracleSpec.query t) :
-      OracleComp
-        (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ'challengeOracleInterface) _))
-    (some <$> mx) =
-      some <$> (liftM mx : OracleComp
-        (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ'challengeOracleInterface) α)
-  rw [simulateQ_map]
-  rw [show simulateQ (fun t => (liftM (OracleSpec.query t) :
-        OracleComp
-          (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ'challengeOracleInterface) _))
-      mx =
-      liftComp mx
-        (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ'challengeOracleInterface) by rfl]
-  rw [liftComp_eq_liftM]
-
-private lemma liftM_oracleComp_eq_monadLift_liftM_empty
-    {α : Type} (mx : OracleComp oSpec α) :
-    (liftM mx : OptionT (OracleComp
-      (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ'challengeOracleInterface)) α) =
-      (monadLift (liftM mx : OracleComp
-        (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ'challengeOracleInterface) α) :
-        OptionT (OracleComp
-          (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ'challengeOracleInterface)) α) := by
-  change (liftM ((mx : OptionT (OracleComp oSpec) α)) :
-      OptionT (OracleComp
-        (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ'challengeOracleInterface)) α) = _
-  rw [oracleComp_toOptionT_eq_lift]
-  exact liftM_optionT_lift_eq_monadLift_liftM_empty mx
-
-private lemma simulateQ_addLift_liftM_oracleComp_optionT_run_empty
-    {α : Type} (oa : OracleComp oSpec α) :
-    simulateQ (impl + QueryImpl.liftTarget (StateT σ ProbComp)
-        (challengeQueryImpl (pSpec := (!p[] : ProtocolSpec 0))))
-      (OptionT.run (liftM oa : OptionT (OracleComp
-        (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ'challengeOracleInterface)) α)) =
-      (some <$> simulateQ impl oa : StateT σ ProbComp (Option α)) := by
-  rw [liftM_oracleComp_eq_monadLift_liftM_empty oa]
-  rw [show (monadLift (liftM oa : OracleComp
-        (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ'challengeOracleInterface) α) :
-      OptionT (OracleComp
-        (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ'challengeOracleInterface)) α).run =
-      some <$> (monadLift (liftM oa : OracleComp
-        (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ'challengeOracleInterface) α) :
-        OracleComp
-          (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ'challengeOracleInterface) α) by
-        exact OptionT.run_monadLift
-          (m := OracleComp
-            (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ'challengeOracleInterface))
-          (n := OracleComp
-            (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ'challengeOracleInterface))
-          (liftM oa : OracleComp
-            (oSpec + [(!p[] : ProtocolSpec 0).Challenge]ₒ'challengeOracleInterface) α)]
-  rw [monadLift_eq_self]
-  rw [simulateQ_map]
-  rw [simulateQ_addLift_liftM_oracleComp_empty (impl := impl) oa]
-
 /-- Completeness of a no-interaction reduction.
 
   **Faithfulness of the hypothesis `hRel`.** `Reduction.run` (`Execution.lean`) runs the prover
@@ -199,7 +93,7 @@ private lemma simulateQ_addLift_liftM_oracleComp_optionT_run_empty
 theorem reduction_completeness {ε : ℝ≥0} [DecidablePred (· ∈ relOut)]
     [DecidableEq StmtOut]
     (hRel : ∀ stmtIn witIn, (stmtIn, witIn) ∈ relIn →
-      Pr[ fun ⟨⟨pStmtOut, witOut⟩, vStmtOut⟩ =>
+      Pr[fun ⟨⟨pStmtOut, witOut⟩, vStmtOut⟩ =>
           (vStmtOut, witOut) ∈ relOut ∧ pStmtOut = vStmtOut | do
         (simulateQ impl <| do
             let ctxOut ← combineMap mapStmt mapWit ⟨stmtIn, witIn⟩
@@ -249,85 +143,6 @@ theorem reduction_completeness {ε : ℝ≥0} [DecidablePred (· ∈ relOut)]
     rw [← map_bind]
   rw [optionT_mk_some_map_eq_lift, OptionT.probEvent_lift]
   simp only [probEvent_bind_eq_tsum, probEvent_map, Function.comp_def]
-
-/-- The honest transcript distribution for a no-interaction reduction is the deterministic empty
-transcript. The statement and witness maps may be randomized and oracle-dependent, but their outputs
-are not part of the zero-round transcript. -/
-theorem honestTranscriptDist_reduction_evalDist
-    (stmtIn : StmtIn) (witIn : WitIn) :
-    evalDist (Reduction.honestTranscriptDist init impl
-        (reduction mapStmt mapWit) stmtIn witIn) =
-      evalDist (pure default : OptionT ProbComp (FullTranscript !p[])) := by
-  apply evalDist_ext
-  intro transcript
-  classical
-  unfold Reduction.honestTranscriptDist
-  simp only [Reduction.run, Verifier.run, reduction, prover, Prover.run, verifier,
-    Prover.runToRound_zero_of_prover_first, Fin.last, Fin.zero_eta, id_eq,
-    QueryImpl.addLift_def, combineMap, OptionT.run_bind, OptionT.run_monadLift,
-    monadLift_eq_self, simulateQ_bind, simulateQ_map, ← liftComp_eq_liftM,
-    OracleComp.liftComp_bind, OracleComp.liftComp_map,
-    QueryImpl.simulateQ_add_liftComp_left, QueryImpl.liftTarget_self,
-    simulateQ_addLift_liftM_oracleComp_optionT_run_empty, Option.elimM, Option.elim,
-    Option.getM, StateT.run'_eq, StateT.run_bind, StateT.run_map, liftM_map,
-    OptionT.run_map, bind_pure_comp, map_bind, bind_assoc, map_pure, pure_bind,
-    bind_map_left, Functor.map_map]
-  rw [OptionT.probOutput_eq, OptionT.probOutput_eq]
-  by_cases htr : transcript = default
-  · subst transcript
-    rw [show
-      Pr[= some default | (pure default : OptionT ProbComp (FullTranscript !p[])).run] = 1 by
-        simp [OptionT.run_pure]]
-    apply probOutput_eq_one_of_support_subset_singleton
-    · exact HasEvalPMF.probFailure_eq_zero _
-    · intro y hy
-      simp only [OptionT.run_mk, Option.map_some, support_bind, Set.mem_iUnion, exists_prop,
-        support_map, Set.mem_image] at hy
-      aesop
-  · rw [show
-      Pr[= some transcript | (pure default : OptionT ProbComp (FullTranscript !p[])).run] = 0 by
-        simp [OptionT.run_pure, probOutput_pure, htr]]
-    apply probOutput_eq_zero_of_not_mem_support
-    intro hy
-    simp only [OptionT.run_mk, Option.map_some, support_bind, Set.mem_iUnion, exists_prop,
-      support_map, Set.mem_image] at hy
-    rcases hy with ⟨_, _, _, _, _, _, _, _, hEq⟩
-    exact htr (Option.some.inj hEq).symm
-
-/-- A no-interaction reduction is perfectly HVZK for any input relation: it has no messages or
-challenges, so the identity empty-transcript simulator matches every honest transcript
-distribution. -/
-theorem reduction_perfectHVZK (relIn : Set (StmtIn × WitIn)) :
-    Reduction.perfectHVZK init impl relIn
-      (reduction mapStmt mapWit) Reduction.idTranscriptSimulator := by
-  intro stmtIn witIn _
-  exact (honestTranscriptDist_reduction_evalDist (mapStmt := mapStmt)
-    (mapWit := mapWit) stmtIn witIn).symm
-
-/-- Perfect HVZK implies statistical HVZK for a no-interaction reduction at every error budget. -/
-theorem reduction_statisticalHVZK (relIn : Set (StmtIn × WitIn)) (ε : NNReal) :
-    Reduction.statisticalHVZK init impl relIn
-      (reduction mapStmt mapWit) Reduction.idTranscriptSimulator ε :=
-  (reduction_perfectHVZK (mapStmt := mapStmt) (mapWit := mapWit)
-    (init := init) (impl := impl) relIn).statisticalHVZK ε
-
-/-- A no-interaction reduction has an explicit perfect-HVZK simulator for any input relation. -/
-theorem reduction_isHVZK (relIn : Set (StmtIn × WitIn)) :
-    Reduction.isHVZK init impl relIn (reduction mapStmt mapWit) :=
-  ⟨Reduction.idTranscriptSimulator, reduction_perfectHVZK (mapStmt := mapStmt)
-    (mapWit := mapWit) (init := init) (impl := impl) relIn⟩
-
-/-- A no-interaction reduction has statistical HVZK for any input relation and error budget. -/
-theorem reduction_isStatHVZK (relIn : Set (StmtIn × WitIn)) (ε : NNReal) :
-    Reduction.isStatHVZK init impl relIn (reduction mapStmt mapWit) ε :=
-  (reduction_isHVZK (mapStmt := mapStmt) (mapWit := mapWit)
-    (init := init) (impl := impl) relIn).isStatHVZK ε
-
-#print axioms NoInteraction.honestTranscriptDist_reduction_evalDist
-#print axioms NoInteraction.reduction_perfectHVZK
-#print axioms NoInteraction.reduction_statisticalHVZK
-#print axioms NoInteraction.reduction_isHVZK
-#print axioms NoInteraction.reduction_isStatHVZK
 
 end Reduction
 

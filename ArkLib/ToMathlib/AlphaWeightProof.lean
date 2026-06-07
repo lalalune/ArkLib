@@ -8,7 +8,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightClearedObstructi
 import ArkLib.ResidualAxioms
 
 /-!
-# BCIKS20 App-A (P1) — `AlphaGenuineRegularWeightLe` status (issue #139)
+# BCIKS20 App-A (P1) — `AlphaGenuineRegularWeightLe` status (issue #138)
 
 **De-fabricated.** This file previously contained
 `theorem alphaGenuineRegularWeightLe_holds … := alphaGenuineRegularWeightLe_residual …`, which
@@ -21,5 +21,5 @@ proof of it exists. The laundering theorem and the asserting `axiom` are removed
 (`ArkLib.ResidualAxioms`). The genuine, *true* order-0 statement is the **cleared** invariant,
 already proven on `main`:
 `BCIKS20.HenselNumerator.AlphaWeight.alphaWeight_zero_cleared_fixed` (witness `βHensel 0`,
-weight `≤ 1`). Closing all orders is the open #139 P1 obligation.
+weight `≤ 1`). Closing all orders is the open #138 P1 obligation.
 -/

@@ -35,7 +35,7 @@ This is the low-output projection of `exists_prize_mcaLowerWitness_of_uniformCon
 the radius equality witness `w.δ = δ` while keeping every open hypothesis explicit. -/
 theorem nonempty_prize_mcaLowerWitness_of_uniformConjecture
     (domain : ι ↪ F) (m : ℕ)
-    (hUniform : epsMCAgsPrizeUniformConjecture domain m) :
+    (hUniform : epsMCAgs_prizeBound_conjecture domain m) :
     ∃ c₁ c₂ c₃ : ℝ,
       ∀ (j : Fin 4) (η δ : ℝ≥0),
         0 < η →
@@ -68,7 +68,7 @@ it drops the radius equality witnesses `w.δ = δ j` while retaining the shared 
 all explicit open hypotheses. -/
 theorem nonempty_prize_mcaLowerWitnesses_allRates_of_uniformConjecture
     (domain : ι ↪ F) (m : ℕ)
-    (hUniform : epsMCAgsPrizeUniformConjecture domain m) :
+    (hUniform : epsMCAgs_prizeBound_conjecture domain m) :
     ∃ c₁ c₂ c₃ : ℝ,
       ∀ (η δ : Fin 4 → ℝ≥0),
         (∀ j : Fin 4, 0 < η j) →
@@ -107,7 +107,7 @@ it drops the concrete `τ j = mcaThreshold ...` witnesses while retaining the re
 lower bounds. -/
 theorem mcaPrizeLatticeResolved_with_lower_brackets_prize_allRates_of_uniformConjecture
     (domain : ι ↪ F) (m : ℕ)
-    (hUniform : epsMCAgsPrizeUniformConjecture domain m) :
+    (hUniform : epsMCAgs_prizeBound_conjecture domain m) :
     ∃ c₁ c₂ c₃ : ℝ,
       ∀ (η δ : Fin 4 → ℝ≥0),
         (∀ j : Fin 4, 0 < η j) →
@@ -152,7 +152,7 @@ the concrete threshold-equality witnesses while retaining the resolved lattice a
 bracket data. -/
 theorem mcaPrizeLatticeResolved_with_brackets_prize_allRates_of_uniformConjecture
     (domain : ι ↪ F) (m : ℕ)
-    (hUniform : epsMCAgsPrizeUniformConjecture domain m) :
+    (hUniform : epsMCAgs_prizeBound_conjecture domain m) :
     ∃ c₁ c₂ c₃ : ℝ,
       ∀ (η δ : Fin 4 → ℝ≥0),
         (∀ j : Fin 4, 0 < η j) →
@@ -208,7 +208,7 @@ This is the low-output projection of
 selected-threshold satisfy/maximality spec while retaining the resolved lattice and lower bounds. -/
 theorem exists_mcaPrizeLatticeResolved_with_lower_brackets_of_uniformConjecture
     (domain : ι ↪ F) (m : ℕ)
-    (hUniform : epsMCAgsPrizeUniformConjecture domain m) :
+    (hUniform : epsMCAgs_prizeBound_conjecture domain m) :
     ∃ c₁ c₂ c₃ : ℝ,
       ∀ (η δ : Fin 4 → ℝ≥0),
         (∀ j : Fin 4, 0 < η j) →
@@ -248,7 +248,7 @@ selected-threshold satisfy/maximality spec while retaining the resolved lattice 
 bracket data. -/
 theorem exists_mcaPrizeLatticeResolved_with_brackets_of_uniformConjecture
     (domain : ι ↪ F) (m : ℕ)
-    (hUniform : epsMCAgsPrizeUniformConjecture domain m) :
+    (hUniform : epsMCAgs_prizeBound_conjecture domain m) :
     ∃ c₁ c₂ c₃ : ℝ,
       ∀ (η δ : Fin 4 → ℝ≥0),
         (∀ j : Fin 4, 0 < η j) →
@@ -296,7 +296,7 @@ This is the low-output projection of
 fact and exposes just the lower bracket for a single concrete `mcaThreshold`. -/
 theorem mcaThreshold_lower_bracket_prize_of_uniformConjecture
     (domain : ι ↪ F) (m : ℕ)
-    (hUniform : epsMCAgsPrizeUniformConjecture domain m) :
+    (hUniform : epsMCAgs_prizeBound_conjecture domain m) :
     ∃ c₁ c₂ c₃ : ℝ,
       ∀ (j : Fin 4) (η δ : ℝ≥0),
         0 < η →
@@ -333,7 +333,7 @@ This is the low-output projection of
 exposes the two-sided bracket for a single concrete `mcaThreshold`. -/
 theorem mcaThreshold_bracket_prize_of_uniformConjecture
     (domain : ι ↪ F) (m : ℕ)
-    (hUniform : epsMCAgsPrizeUniformConjecture domain m) :
+    (hUniform : epsMCAgs_prizeBound_conjecture domain m) :
     ∃ c₁ c₂ c₃ : ℝ,
       ∀ (j : Fin 4) (η δ : ℝ≥0),
         0 < η →
@@ -377,7 +377,7 @@ This is the low-output projection of
 satisfy facts and exposes just the lower bracket for each concrete `mcaThreshold`. -/
 theorem mcaThreshold_lower_bracket_prize_allRates_of_uniformConjecture
     (domain : ι ↪ F) (m : ℕ)
-    (hUniform : epsMCAgsPrizeUniformConjecture domain m) :
+    (hUniform : epsMCAgs_prizeBound_conjecture domain m) :
     ∃ c₁ c₂ c₃ : ℝ,
       ∀ (η δ : Fin 4 → ℝ≥0),
         (∀ j : Fin 4, 0 < η j) →
@@ -418,7 +418,7 @@ This is the low-output projection of
 facts and exposes the two-sided bracket for each concrete `mcaThreshold`. -/
 theorem mcaThreshold_bracket_prize_allRates_of_uniformConjecture
     (domain : ι ↪ F) (m : ℕ)
-    (hUniform : epsMCAgsPrizeUniformConjecture domain m) :
+    (hUniform : epsMCAgs_prizeBound_conjecture domain m) :
     ∃ c₁ c₂ c₃ : ℝ,
       ∀ (η δ : Fin 4 → ℝ≥0),
         (∀ j : Fin 4, 0 < η j) →

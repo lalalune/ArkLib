@@ -131,9 +131,10 @@ theorem multilinearWeight_even {ϑ : ℕ} (r : Fin (ϑ + 1) → F) (i : Fin (2 ^
   have h0 : (2 * i.val).testBit (0 : Fin (ϑ + 1)).val = false := by
     simpa using testBit_zero_two_mul i.val
   rw [h0]
-  -- Reindex the tail product. The rewrite closes the goal: both sides become
-  -- `(1 - r 0) * (shared tail product)`.
+  -- Reindex the tail product.
   rw [if_neg (by simp), tailProd_even r i]
+  -- Now both sides are `(1 - r 0) * (tail product)`; the RHS tail product matches.
+  ring
 
 /-- **`multilinearWeight` odd-row factorization.**
 `multilinearWeight r (2*i+1) = (r 0) * multilinearWeight (tail r) i`. -/
@@ -147,6 +148,7 @@ theorem multilinearWeight_odd {ϑ : ℕ} (r : Fin (ϑ + 1) → F) (i : Fin (2 ^ 
     simpa using testBit_zero_two_mul_add_one i.val
   rw [h0]
   rw [if_pos (by simp), tailProd_odd r i]
+  ring
 
 /-! ### Affine-line packaging (the fold-step kernel)
 
@@ -182,6 +184,6 @@ theorem multilinearWeight_one (c : F) :
   constructor <;>
   · unfold multilinearWeight
     rw [Fin.prod_univ_one]
-    simp [Nat.testBit]
+    decide +kernel <;> simp_all [Nat.testBit]
 
 end Issue33Binius

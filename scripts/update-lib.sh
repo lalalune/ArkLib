@@ -44,6 +44,10 @@ git ls-files -- 'ArkLib/*.lean' \
   | LC_ALL=C sort \
   | sed 's/\.lean//;s,/,.,g;s/^/import /' > "$tmp_file"
 
+if grep -q $'\r$' ArkLib.lean; then
+  perl -0pi -e 's/\n/\r\n/g' "$tmp_file"
+fi
+
 mv "$tmp_file" ArkLib.lean
 trap - EXIT
 

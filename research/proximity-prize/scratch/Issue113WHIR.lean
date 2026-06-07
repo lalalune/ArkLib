@@ -93,8 +93,7 @@ SCRATCH FILE for Issue #113 — WHIR Vector IOPP construction + perfect complete
 -/
 
 import Mathlib.Data.NNReal.Basic
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Data.Finset.Max
+import Mathlib.Order.Finset.Lattice.Fold
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 noncomputable section
@@ -184,9 +183,9 @@ theorem eps_out_le_epsRbr
   unfold epsRbr
   refine Finset.le_max' _ (ε_out i) ?_
   unfold rbrBudgetSet
-  -- `ε_out i ∈ univ.image ε_out`, which is in the `… ∪ univ.image ε_out ∪ …` block.
-  refine Finset.mem_union_left _ (Finset.mem_union_right _ ?_)
-  exact Finset.mem_image_of_mem ε_out (Finset.mem_univ i)
+  -- `ε_out i ∈ univ.image ε_out`, which is in the `… ∪ univ.image ε_out` block.
+  simp only [Finset.mem_union, Finset.mem_image, Finset.mem_univ]
+  exact Or.inr ⟨i, rfl⟩
 
 /-- **Shift-round domination.** `ε_shift i ≤ ε_rbr` for every round `i`. PROVEN via
     `Finset.le_max'` from `ε_shift i ∈ univ.image ε_shift` (the last union block). -/
@@ -198,8 +197,8 @@ theorem eps_shift_le_epsRbr
   refine Finset.le_max' _ (ε_shift i) ?_
   unfold rbrBudgetSet
   -- `ε_shift i ∈ univ.image ε_shift`, the outermost `… ∪ univ.image ε_shift` block.
-  refine Finset.mem_union_right _ ?_
-  exact Finset.mem_image_of_mem ε_shift (Finset.mem_univ i)
+  simp only [Finset.mem_union, Finset.mem_image, Finset.mem_univ]
+  exact Or.inr ⟨i, rfl⟩
 
 /-- **Inner-fold domination (single step).** Each individual fold-step error
     `ε_fold i j ≤ ε_rbr`. PROVEN: `ε_fold i j ≤ maxFolds ε_fold i` (`Finset.le_sup`),
@@ -220,8 +219,8 @@ theorem eps_fold_le_epsRbr
     refine Finset.le_max' _ (maxFolds ε_fold i) ?_
     unfold rbrBudgetSet
     -- `maxFolds ε_fold i ∈ univ.image (maxFolds ε_fold)`, the innermost block.
-    refine Finset.mem_union_left _ (Finset.mem_union_left _ (Finset.mem_union_left _ ?_))
-    exact Finset.mem_image_of_mem (maxFolds ε_fold) (Finset.mem_univ i)
+    simp only [Finset.mem_union, Finset.mem_image, Finset.mem_univ]
+    exact Or.inl (Or.inl (Or.inl ⟨i, rfl⟩))
   exact le_trans hstep1 hstep2
 
 /-- **Tightness / universal property: `ε_rbr` is the SMALLEST uniform per-challenge bound.**

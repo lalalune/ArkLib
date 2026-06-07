@@ -118,7 +118,7 @@ theorem bcsTotalError_one (εInteraction : ℝ≥0) (εOpen : Fin 1 → ℝ≥0)
 theorem bcsTotalError_mono_interaction {m : ℕ} {ε₁ ε₂ : ℝ≥0} (εOpen : Fin m → ℝ≥0)
     (h : ε₁ ≤ ε₂) : bcsTotalError ε₁ εOpen ≤ bcsTotalError ε₂ εOpen := by
   unfold bcsTotalError
-  gcongr
+  exact add_le_add_right h _
 
 /-- The BCS total error is monotone in the per-message opening errors (pointwise).
 Monotonicity is exactly what is needed to relax binding errors upward, mirroring
@@ -127,8 +127,7 @@ theorem bcsTotalError_mono_open {m : ℕ} (εInteraction : ℝ≥0)
     {εOpen₁ εOpen₂ : Fin m → ℝ≥0} (h : ∀ i, εOpen₁ i ≤ εOpen₂ i) :
     bcsTotalError εInteraction εOpen₁ ≤ bcsTotalError εInteraction εOpen₂ := by
   unfold bcsTotalError
-  gcongr with i
-  exact h i
+  exact add_le_add_left (Finset.sum_le_sum fun i _ => h i) _
 
 /-- Joint monotonicity in both the interaction error and the opening errors. -/
 theorem bcsTotalError_mono {m : ℕ} {εInt₁ εInt₂ : ℝ≥0}
@@ -194,12 +193,11 @@ theorem UnionBoundPr.pr_unionFin_le (μ : UnionBoundPr E) :
       intro f
       calc
         μ.pr (μ.unionFin f)
-            = μ.pr (μ.union (f 0) (μ.unionFin (fun i : Fin m => f i.succ))) := rfl
-        _ ≤ μ.pr (f 0) + μ.pr (μ.unionFin (fun i : Fin m => f i.succ)) :=
+            = μ.pr (μ.union (f 0) (μ.unionFin (fun i => f i.succ))) := rfl
+        _ ≤ μ.pr (f 0) + μ.pr (μ.unionFin (fun i => f i.succ)) :=
               μ.pr_union_le _ _
-        _ ≤ μ.pr (f 0) + ∑ i : Fin m, μ.pr (f i.succ) := by
-              gcongr
-              exact ih (fun i : Fin m => f i.succ)
+        _ ≤ μ.pr (f 0) + ∑ i, μ.pr (f i.succ) :=
+              add_le_add_left (ih (fun i => f i.succ)) _
         _ = ∑ i, μ.pr (f i) := by rw [Fin.sum_univ_succ]
 
 /-- **BCS soundness-error union bound (accounting form).**
@@ -225,9 +223,8 @@ theorem bcs_union_bound {m : ℕ} (μ : UnionBoundPr E)
         ≤ μ.pr badInteraction + μ.pr (μ.unionFin badOpen) := μ.pr_union_le _ _
     _ ≤ εInteraction + ∑ i, μ.pr (badOpen i) :=
           add_le_add hInteraction (μ.pr_unionFin_le badOpen)
-    _ ≤ εInteraction + ∑ i, εOpen i := by
-          gcongr with i
-          exact hOpen i
+    _ ≤ εInteraction + ∑ i, εOpen i :=
+          add_le_add_left (Finset.sum_le_sum fun i _ => hOpen i) _
     _ = bcsTotalError εInteraction εOpen := rfl
 
 /-! ## 3. Specialization to the two-phase `append` shape
@@ -276,8 +273,8 @@ def maxUnionBoundPr : UnionBoundPr ℝ≥0 where
   pr_union_le a b := by
     -- `max a b ≤ a + b` for nonnegative `a, b`.
     rcases le_total a b with h | h
-    · rw [max_eq_right h]; exact le_add_self
-    · rw [max_eq_left h]; exact le_add_right le_rfl
+    · simp [max_eq_right h]; exact le_add_self
+    · simp [max_eq_left h]; exact le_add_right le_rfl
 
 /-- Sanity: the union bound instantiates on the concrete model, so the abstract
 accounting is not vacuous. -/
