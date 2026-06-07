@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Quang Dao
 -/
 
-import ArkLib.OracleReduction.Security.Basic
+import ArkLib.OracleReduction.Security.StateRestoration
 
 /-!
   # The Basic Fiat-Shamir Transformation
@@ -288,6 +288,101 @@ theorem fiatShamir_completeness_unroll_of_runCollapse
 #print axioms Reduction.fiatShamir_completeness_unroll_of_runCollapse
 
 end Completeness
+
+section StateRestorationSoundness
+
+variable [DecidableEq StmtIn]
+  [∀ i, DecidableEq (pSpec.Message i)] [∀ i, DecidableEq (pSpec.Challenge i)]
+
+local instance fiatShamirNoChallengeSampleable :
+    ∀ i : (FiatShamirProtocolSpec (pSpec := pSpec)).ChallengeIdx,
+      SampleableType ((FiatShamirProtocolSpec (pSpec := pSpec)).Challenge i) := by
+  intro i
+  rcases i with ⟨i, hi⟩
+  exact False.elim (by
+    rcases i with ⟨k, hk⟩
+    have hk0 : k = 0 := by omega
+    subst k
+    simp at hi)
+
+/-- Residual statement for the basic Fiat-Shamir state-restoration soundness transfer.
+
+The state-restoration game samples an `fsChallengeOracle` table as its ambient state; the
+Fiat-Shamir target exposes that same challenge table as part of the transformed reduction's oracle
+spec. Discharging this residual is the remaining semantic coupling between those two views. -/
+def fiatShamir_soundnessTransferResidual
+    (srInit : ProbComp (QueryImpl (fsChallengeOracle StmtIn pSpec) Id))
+    (srImpl : QueryImpl oSpec
+      (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp))
+    (fsInit : ProbComp σ)
+    (fsImpl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (langIn : Set StmtIn) (langOut : Set StmtOut)
+    (soundnessError : ℝ≥0)
+    (V : Verifier oSpec StmtIn StmtOut pSpec) : Prop :=
+  Verifier.StateRestoration.soundness srInit srImpl langIn langOut V soundnessError →
+    Verifier.soundness fsInit fsImpl langIn langOut V.fiatShamir soundnessError
+
+/-- Basic Fiat-Shamir soundness follows immediately from a discharged state-restoration transfer
+residual. This theorem isolates the remaining proof obligation without claiming to solve it. -/
+theorem fiatShamir_soundness_of_stateRestoration
+    (srInit : ProbComp (QueryImpl (fsChallengeOracle StmtIn pSpec) Id))
+    (srImpl : QueryImpl oSpec
+      (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp))
+    (fsInit : ProbComp σ)
+    (fsImpl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (langIn : Set StmtIn) (langOut : Set StmtOut)
+    (soundnessError : ℝ≥0)
+    (V : Verifier oSpec StmtIn StmtOut pSpec)
+    (hTransfer :
+      fiatShamir_soundnessTransferResidual srInit srImpl fsInit fsImpl
+        langIn langOut soundnessError V)
+    (hSR : Verifier.StateRestoration.soundness srInit srImpl
+      langIn langOut V soundnessError) :
+    Verifier.soundness fsInit fsImpl langIn langOut V.fiatShamir soundnessError :=
+  hTransfer hSR
+
+/-- Residual statement for the basic Fiat-Shamir state-restoration knowledge-soundness transfer.
+
+As in `fiatShamir_soundnessTransferResidual`, this names only the semantic bridge from an
+interactive state-restoration adversary/extractor game to the one-message Fiat-Shamir verifier
+game. The extractor construction and query-log correspondence remain the open content. -/
+def fiatShamir_knowledgeSoundnessTransferResidual
+    (srInit : ProbComp (QueryImpl (fsChallengeOracle StmtIn pSpec) Id))
+    (srImpl : QueryImpl oSpec
+      (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp))
+    (fsInit : ProbComp σ)
+    (fsImpl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut × WitOut))
+    (knowledgeError : ℝ≥0)
+    (V : Verifier oSpec StmtIn StmtOut pSpec) : Prop :=
+  Verifier.StateRestoration.knowledgeSoundness srInit srImpl relIn relOut V knowledgeError →
+    Verifier.knowledgeSoundness fsInit fsImpl relIn relOut V.fiatShamir knowledgeError
+
+/-- Basic Fiat-Shamir knowledge soundness follows immediately from a discharged
+state-restoration knowledge-soundness transfer residual. -/
+theorem fiatShamir_knowledgeSoundness_of_stateRestoration
+    (srInit : ProbComp (QueryImpl (fsChallengeOracle StmtIn pSpec) Id))
+    (srImpl : QueryImpl oSpec
+      (StateT (QueryImpl (fsChallengeOracle StmtIn pSpec) Id) ProbComp))
+    (fsInit : ProbComp σ)
+    (fsImpl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
+    (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut × WitOut))
+    (knowledgeError : ℝ≥0)
+    (V : Verifier oSpec StmtIn StmtOut pSpec)
+    (hTransfer :
+      fiatShamir_knowledgeSoundnessTransferResidual srInit srImpl fsInit fsImpl
+        relIn relOut knowledgeError V)
+    (hSR : Verifier.StateRestoration.knowledgeSoundness srInit srImpl
+      relIn relOut V knowledgeError) :
+    Verifier.knowledgeSoundness fsInit fsImpl relIn relOut V.fiatShamir knowledgeError :=
+  hTransfer hSR
+
+#print axioms Reduction.fiatShamir_soundnessTransferResidual
+#print axioms Reduction.fiatShamir_soundness_of_stateRestoration
+#print axioms Reduction.fiatShamir_knowledgeSoundnessTransferResidual
+#print axioms Reduction.fiatShamir_knowledgeSoundness_of_stateRestoration
+
+end StateRestorationSoundness
 
 end Reduction
 
