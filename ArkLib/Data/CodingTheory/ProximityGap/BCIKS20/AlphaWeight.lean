@@ -81,6 +81,8 @@ NO `axiom`/`admit`/`native_decide`/`bv_decide`/`sorry`.  Audited in-file via `#p
 -/
 
 set_option linter.style.longLine false
+-- Cohesive #138 alpha/divisibility obstruction, structured-weight, and corrected-base APIs.
+set_option linter.style.longFile 1600
 set_option linter.unusedSectionVars false
 
 namespace BCIKS20.HenselNumerator
@@ -896,6 +898,154 @@ theorem W𝒪_dvd_βHensel_zero_of_alpha (x₀ : F) (R : F[X][X][Y]) (hHyp : Cla
   rw [βHensel_lift_identity_zero, map_mul, ha, embeddingOf𝒪Into𝕃_W𝒪]
   simp only [Nat.mul_zero, Nat.zero_sub, pow_zero, mul_one, zero_add, pow_one]
 
+/-- The corrected cleared base target: after multiplying the obstructed `αGenuine 0 = T/W` by
+the single `W` factor, the cleared coefficient is represented by an `𝒪`-element of weight `≤ 1`. -/
+def AlphaGenuineRegularWeightLe_zero_cleared (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ) : Prop :=
+  ∃ a : 𝒪 H,
+    embeddingOf𝒪Into𝕃 H a =
+        liftToFunctionField (H := H) H.leadingCoeff * αGenuine H x₀ R hHyp 0
+      ∧ weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1
+
+/-- The direct beta-side form of the corrected cleared base witness: `βHensel 0 = mk X` has
+`Λ_𝒪`-weight at most one whenever the truncation budget is at most `deg H`. -/
+theorem βHensel_zero_weight_le_one (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree)
+    (hd : 2 ≤ H.natDegree) {D : ℕ} (hD : D ≤ H.natDegree) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp 0) D ≤ WithBot.some 1 := by
+  rw [βHensel_zero]
+  have hdegX : (Polynomial.X : F[X][Y]).degree < (H_tilde' H).degree := by
+    rw [Polynomial.degree_X]
+    rw [Polynomial.degree_eq_natDegree (H_tilde'_monic H hH).ne_zero]
+    rw [natDegree_H_tilde' hH]
+    exact_mod_cast (by omega : 1 < H.natDegree)
+  rw [weight_Λ_over_𝒪_mk_eq_self_of_degree_lt hH hdegX]
+  refine (show weight_Λ (Polynomial.X : F[X][Y]) H D
+      ≤ WithBot.some (D + 1 - Bivariate.natDegreeY H) from by
+        simpa using (weight_Λ_X_pow_le H D 1)).trans ?_
+  have hle : D + 1 - Bivariate.natDegreeY H ≤ 1 := by
+    rw [show Bivariate.natDegreeY H = H.natDegree from rfl]
+    omega
+  exact_mod_cast hle
+
+/-- Build the corrected cleared base predicate from the direct beta-side weight bound. -/
+theorem AlphaGenuineRegularWeightLe_zero_cleared.of_betaWeight
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hwt : weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp 0) D ≤ WithBot.some 1) :
+    AlphaGenuineRegularWeightLe_zero_cleared H x₀ R hHyp hH D := by
+  refine ⟨βHensel H x₀ R hHyp 0, ?_, hwt⟩
+  have h := βHensel_lift_identity_zero H x₀ R hHyp
+  simpa [mul_comm, mul_left_comm, mul_assoc] using h
+
+/-- Project the direct beta-side weight bound from the corrected cleared base predicate. -/
+theorem AlphaGenuineRegularWeightLe_zero_cleared.betaWeight
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hcleared : AlphaGenuineRegularWeightLe_zero_cleared H x₀ R hHyp hH D) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp 0) D ≤ WithBot.some 1 := by
+  obtain ⟨a, ha, hwt⟩ := hcleared
+  have hβ : embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp 0)
+      = liftToFunctionField (H := H) H.leadingCoeff * αGenuine H x₀ R hHyp 0 := by
+    have h := βHensel_lift_identity_zero H x₀ R hHyp
+    simpa [mul_comm, mul_left_comm, mul_assoc] using h
+  have ha_eq : a = βHensel H x₀ R hHyp 0 := by
+    apply embeddingOf𝒪Into𝕃_injective hH
+    rw [ha, hβ]
+  simpa [ha_eq] using hwt
+
+/-- The corrected cleared base predicate is exactly the direct beta-side weight bound. -/
+theorem alphaWeight_zero_cleared_iff_betaWeight_zero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (D : ℕ) :
+    AlphaGenuineRegularWeightLe_zero_cleared H x₀ R hHyp hH D ↔
+      weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp 0) D ≤ WithBot.some 1 := by
+  constructor
+  · exact AlphaGenuineRegularWeightLe_zero_cleared.betaWeight H x₀ R hHyp hH
+  · exact AlphaGenuineRegularWeightLe_zero_cleared.of_betaWeight H x₀ R hHyp hH
+
+/-- **Corrected cleared `t = 0` base witness.**  The un-cleared target
+`AlphaGenuineRegularWeightLe_zero` asks for a regular preimage of `αGenuine 0 = T/W`; that is the
+obstructed statement above.  After clearing by the single `W` factor, `βHensel 0 = mk X` itself is a
+weight-`≤ 1` witness for `W * αGenuine 0 = T`. -/
+theorem alphaWeight_zero_cleared_fixed (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree)
+    (hd : 2 ≤ H.natDegree) {D : ℕ} (hD : D ≤ H.natDegree) :
+    ∃ a : 𝒪 H,
+      embeddingOf𝒪Into𝕃 H a =
+          liftToFunctionField (H := H) H.leadingCoeff * αGenuine H x₀ R hHyp 0
+        ∧ weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1 :=
+  AlphaGenuineRegularWeightLe_zero_cleared.of_betaWeight H x₀ R hHyp hH
+    (βHensel_zero_weight_le_one H x₀ R hHyp hH hd hD)
+
+/-- Package the landed cleared base witness into the corrected cleared base predicate. -/
+theorem AlphaGenuineRegularWeightLe_zero_cleared.of_fixed
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (hd : 2 ≤ H.natDegree) {D : ℕ} (hD : D ≤ H.natDegree) :
+    AlphaGenuineRegularWeightLe_zero_cleared H x₀ R hHyp hH D :=
+  alphaWeight_zero_cleared_fixed H x₀ R hHyp hH hd hD
+
+/-- The corrected beta-side base target: `βHensel 0` itself has a weight-`≤ 1` representative. -/
+def DivWeightLe_zero_cleared (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ) : Prop :=
+  ∃ a : 𝒪 H,
+    βHensel H x₀ R hHyp 0 = a ∧ weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1
+
+/-- Build the corrected cleared base div-weight predicate from the direct beta-side weight bound. -/
+theorem DivWeightLe_zero_cleared.of_betaWeight
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hwt : weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp 0) D ≤ WithBot.some 1) :
+    DivWeightLe_zero_cleared H x₀ R hHyp hH D :=
+  ⟨βHensel H x₀ R hHyp 0, rfl, hwt⟩
+
+/-- Project the direct beta-side weight bound from the corrected cleared base div-weight predicate. -/
+theorem DivWeightLe_zero_cleared.betaWeight
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hdiv0 : DivWeightLe_zero_cleared H x₀ R hHyp hH D) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp 0) D ≤ WithBot.some 1 := by
+  obtain ⟨a, hβ, hwt⟩ := hdiv0
+  simpa [hβ] using hwt
+
+/-- The corrected cleared base div-weight predicate is exactly the beta-side weight bound. -/
+theorem divWeight_zero_cleared_iff_betaWeight_zero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (D : ℕ) :
+    DivWeightLe_zero_cleared H x₀ R hHyp hH D ↔
+      weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp 0) D ≤ WithBot.some 1 := by
+  constructor
+  · exact DivWeightLe_zero_cleared.betaWeight H x₀ R hHyp hH
+  · exact DivWeightLe_zero_cleared.of_betaWeight H x₀ R hHyp hH
+
+/-- Transport the corrected cleared alpha base predicate to the corrected div-weight base target. -/
+theorem DivWeightLe_zero_cleared.of_alphaWeight_zero_cleared
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hα0 : AlphaGenuineRegularWeightLe_zero_cleared H x₀ R hHyp hH D) :
+    DivWeightLe_zero_cleared H x₀ R hHyp hH D :=
+  DivWeightLe_zero_cleared.of_betaWeight H x₀ R hHyp hH
+    (AlphaGenuineRegularWeightLe_zero_cleared.betaWeight H x₀ R hHyp hH hα0)
+
+/-- Transport the corrected cleared div-weight base target back to the corrected alpha base target. -/
+theorem AlphaGenuineRegularWeightLe_zero_cleared.of_divWeight_zero_cleared
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hdiv0 : DivWeightLe_zero_cleared H x₀ R hHyp hH D) :
+    AlphaGenuineRegularWeightLe_zero_cleared H x₀ R hHyp hH D :=
+  AlphaGenuineRegularWeightLe_zero_cleared.of_betaWeight H x₀ R hHyp hH
+    (DivWeightLe_zero_cleared.betaWeight H x₀ R hHyp hH hdiv0)
+
+/-- The corrected cleared alpha and div-weight base predicates are equivalent. -/
+theorem alphaWeight_zero_cleared_iff_divWeight_zero_cleared
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (D : ℕ) :
+    AlphaGenuineRegularWeightLe_zero_cleared H x₀ R hHyp hH D ↔
+      DivWeightLe_zero_cleared H x₀ R hHyp hH D := by
+  constructor
+  · exact DivWeightLe_zero_cleared.of_alphaWeight_zero_cleared H x₀ R hHyp hH
+  · exact AlphaGenuineRegularWeightLe_zero_cleared.of_divWeight_zero_cleared H x₀ R hHyp hH
+
 /-- **Corollary: `W𝒪 ∣ βHensel 0` is *necessary* for `AlphaGenuineRegularWeightLe`.**  If the carved
 link holds (at the `t = 0` instance), then `W𝒪` divides `βHensel 0` in `𝒪 H`.  This is the precise,
 machine-checked statement of the `α₀ = T/W` regularity obstruction: the carve forces a clearing
@@ -1408,6 +1558,20 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_bound_of_normalized_divWeight_cases'
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_bound_of_alphaWeight'
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.W𝒪_dvd_βHensel_zero_of_alpha
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe_zero_cleared
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_zero_weight_le_one
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe_zero_cleared.of_betaWeight
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe_zero_cleared.betaWeight
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.alphaWeight_zero_cleared_iff_betaWeight_zero
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.alphaWeight_zero_cleared_fixed
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe_zero_cleared.of_fixed
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe_zero_cleared
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe_zero_cleared.of_betaWeight
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe_zero_cleared.betaWeight
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.divWeight_zero_cleared_iff_betaWeight_zero
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe_zero_cleared.of_alphaWeight_zero_cleared
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe_zero_cleared.of_divWeight_zero_cleared
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.alphaWeight_zero_cleared_iff_divWeight_zero_cleared
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.W𝒪_dvd_βHensel_zero_of_alphaWeight
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe_zero.of_alphaWeight_zero
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe_zero.of_divWeight_zero
