@@ -85,12 +85,17 @@ abbrev nBlocks : ℕ := toOutCodewordsCount ℓ ϑ (Fin.last ℓ)
 def extractSuffixFromChallenge (v : sDomain 𝔽q β h_ℓ_add_R_rate ⟨0, by omega⟩)
     (destIdx : Fin r) (h_destIdx_le : destIdx ≤ ℓ) :
     sDomain 𝔽q β h_ℓ_add_R_rate destIdx :=
-  cast (by
-      apply congrArg (fun i => ↥(sDomain 𝔽q β h_ℓ_add_R_rate i))
-      apply Fin.eq_of_val_eq
-      simp only [zero_add])
+  have h_bound : (⟨0, Nat.pos_of_neZero ℓ⟩ : Fin ℓ).val + destIdx.val ≤ ℓ := by
+    show 0 + destIdx.val ≤ ℓ
+    rw [Nat.zero_add]; exact h_destIdx_le
+  have h_idx_eq :
+      (⟨(⟨0, Nat.pos_of_neZero ℓ⟩ : Fin ℓ).val + destIdx.val, by omega⟩ : Fin r) = destIdx := by
+    apply Fin.eq_of_val_eq
+    show 0 + destIdx.val = destIdx.val
+    rw [Nat.zero_add]
+  cast (congrArg (fun i => ↥(sDomain 𝔽q β h_ℓ_add_R_rate i)) h_idx_eq)
     (iteratedQuotientMap 𝔽q β h_ℓ_add_R_rate (i := ⟨0, Nat.pos_of_neZero ℓ⟩) (k := destIdx.val)
-      (h_bound := by simpa only [zero_add] using h_destIdx_le) (x := v))
+      (h_bound := h_bound) (x := v))
 
 omit [CharP L 2] [SampleableType L] [DecidableEq 𝔽q] hF₂ [NeZero 𝓡] in
 /-- **Congruence Lemma for Challenge Suffixes**:
