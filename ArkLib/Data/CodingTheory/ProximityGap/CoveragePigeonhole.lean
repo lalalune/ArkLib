@@ -98,10 +98,10 @@ theorem sq_sum_card_le_card_mul_sum_inter {κ ι : Type*} [Fintype κ] [Fintype 
     have step1 : (∑ i, ∑ j, ∑ x : ι, (if x ∈ S i then (1 : ℕ) else 0) * (if x ∈ S j then 1 else 0))
         = ∑ i, ∑ x : ι, ∑ j, (if x ∈ S i then (1 : ℕ) else 0) * (if x ∈ S j then 1 else 0) := by
       refine Finset.sum_congr rfl fun i _ => ?_
-      rw [Finset.sum_comm]
+      exact Finset.sum_comm
     have step2 : (∑ i, ∑ x : ι, ∑ j, (if x ∈ S i then (1 : ℕ) else 0) * (if x ∈ S j then 1 else 0))
         = ∑ x : ι, ∑ i, ∑ j, (if x ∈ S i then (1 : ℕ) else 0) * (if x ∈ S j then 1 else 0) := by
-      rw [Finset.sum_comm]
+      exact Finset.sum_comm
     simp_rw [hinter]
     rw [step1, step2]
     refine Finset.sum_congr rfl fun x _ => ?_
