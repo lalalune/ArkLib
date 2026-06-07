@@ -728,6 +728,83 @@ theorem rs_epsCA_small_implies_lambda_lt_F_bchks25_of_interpolation_prop
   rs_epsCA_small_implies_lambda_lt_F_bchks25_of_interpolation
     domain k δ hδ_pos hδ_lt hε_ca interp
 
+/-- **BCHKS25 all-but-one connector.**  This exposes the all-but-one bad-line producer shape at
+the ABF26 T5.2 front door: under the negated list-size conclusion, supply one stack and one
+exceptional scalar such that every other affine combiner is close to the RS code. The lower BCHKS
+bridge converts those data to `BadLineWitness`, and the existing named-witness connector closes
+the T5.2 contradiction.
+
+This theorem still leaves the paper-specific BCHKS construction visible: the conditional producer
+`provAllButOne` is exactly the affine-shift bad-line datum that must come from the external
+interpolation/counting argument. -/
+theorem rs_epsCA_small_implies_lambda_lt_F_bchks25_of_allButOne
+    (domain : ι ↪ F) (k : ℕ) (δ : ℝ)
+    (hδ_pos : 0 < δ)
+    (hδ_lt : (δ : ℝ) < 1 - (k : ℝ) / Fintype.card ι)
+    (hε_ca :
+        epsCA (F := F) (A := F)
+            ((ReedSolomon.code domain k : Set (ι → F)))
+            ((δ + 2 / Fintype.card ι).toNNReal)
+            ((1 - (k : ℝ) / Fintype.card ι - 1 / Fintype.card ι).toNNReal) <
+          ENNReal.ofReal (1 / (2 * Fintype.card ι)))
+    (provAllButOne :
+        ¬ (Lambda ((ReedSolomon.code domain k : Set (ι → F))) δ < (Fintype.card F : ℕ∞)) →
+          Σ' u : WordStack F (Fin 2) ι,
+            PLift
+              (¬ jointProximity
+                (C := ((ReedSolomon.code domain k : Set (ι → F)))) (u := u)
+                ((1 - (k : ℝ) / Fintype.card ι - 1 / Fintype.card ι).toNNReal)) ×'
+            Σ' γ_bad : F,
+              PLift
+                (∀ γ : F, γ ≠ γ_bad →
+                  δᵣ(u 0 + γ • u 1, ((ReedSolomon.code domain k : Set (ι → F)))) ≤
+                    ((δ + 2 / Fintype.card ι).toNNReal))) :
+    Lambda ((ReedSolomon.code domain k : Set (ι → F))) δ < (Fintype.card F : ℕ∞) :=
+  rs_epsCA_small_implies_lambda_lt_F_bchks25_of_badLineWitness
+    domain k δ hδ_pos hδ_lt hε_ca
+    (fun hnot => by
+      obtain ⟨u, ⟨hjp⟩, γ_bad, ⟨hgood⟩⟩ := provAllButOne hnot
+      exact Bridge.badLineWitness_of_allButOne
+        ((ReedSolomon.code domain k : Set (ι → F)))
+        ((δ + 2 / Fintype.card ι).toNNReal)
+        ((1 - (k : ℝ) / Fintype.card ι - 1 / Fintype.card ι).toNNReal)
+        u γ_bad hjp hgood)
+
+/-- **BCHKS25 existential all-but-one connector.**  Same top-level T5.2 surface as
+`rs_epsCA_small_implies_lambda_lt_F_bchks25_of_allButOne`, but matching paper statements that
+only assert the existence of one exceptional scalar for the produced bad stack. -/
+theorem rs_epsCA_small_implies_lambda_lt_F_bchks25_of_exists_allButOne
+    (domain : ι ↪ F) (k : ℕ) (δ : ℝ)
+    (hδ_pos : 0 < δ)
+    (hδ_lt : (δ : ℝ) < 1 - (k : ℝ) / Fintype.card ι)
+    (hε_ca :
+        epsCA (F := F) (A := F)
+            ((ReedSolomon.code domain k : Set (ι → F)))
+            ((δ + 2 / Fintype.card ι).toNNReal)
+            ((1 - (k : ℝ) / Fintype.card ι - 1 / Fintype.card ι).toNNReal) <
+          ENNReal.ofReal (1 / (2 * Fintype.card ι)))
+    (provExistsAllButOne :
+        ¬ (Lambda ((ReedSolomon.code domain k : Set (ι → F))) δ < (Fintype.card F : ℕ∞)) →
+          Σ' u : WordStack F (Fin 2) ι,
+            PLift
+              (¬ jointProximity
+                (C := ((ReedSolomon.code domain k : Set (ι → F)))) (u := u)
+                ((1 - (k : ℝ) / Fintype.card ι - 1 / Fintype.card ι).toNNReal)) ×'
+            PLift
+              (∃ γ_bad : F, ∀ γ : F, γ ≠ γ_bad →
+                δᵣ(u 0 + γ • u 1, ((ReedSolomon.code domain k : Set (ι → F)))) ≤
+                  ((δ + 2 / Fintype.card ι).toNNReal))) :
+    Lambda ((ReedSolomon.code domain k : Set (ι → F))) δ < (Fintype.card F : ℕ∞) :=
+  rs_epsCA_small_implies_lambda_lt_F_bchks25_of_badLineWitness
+    domain k δ hδ_pos hδ_lt hε_ca
+    (fun hnot => by
+      obtain ⟨u, ⟨hjp⟩, ⟨hgood⟩⟩ := provExistsAllButOne hnot
+      exact Bridge.badLineWitness_of_exists_allButOne
+        ((ReedSolomon.code domain k : Set (ι → F)))
+        ((δ + 2 / Fintype.card ι).toNNReal)
+        ((1 - (k : ℝ) / Fintype.card ι - 1 / Fintype.card ι).toNNReal)
+        u hjp hgood)
+
 /-- **ABF26 Theorem 5.3 [CS25 Theorem 2] — honest reduction form.**
 
 The fully-proven, `sorry`-free, axiom-clean *contradiction core* of CS25 Theorem 2, with the
@@ -1203,9 +1280,10 @@ end ListVsCAseparation
 
 end CodingTheory
 
-/- Axiom audit for the ABF26 T5.1 / GCXK25 and T5.4 / BGKS20 front-door wrappers.  These entries
-cover the checked plumbing from per-stack/probability residuals, GKL24 first-moment residuals, and
-BGKS20 all-but-one witnesses into the public propositions. -/
+/- Axiom audit for the ABF26 T5.1 / GCXK25, T5.2 / BCHKS25, and T5.4 / BGKS20 front-door
+wrappers.  These entries cover the checked plumbing from per-stack/probability residuals, GKL24
+first-moment residuals, BCHKS25 all-but-one witnesses, and BGKS20 all-but-one witnesses into the
+public propositions. -/
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_residuals
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_bad_count
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_of_gkl24_residual
@@ -1220,4 +1298,6 @@ BGKS20 all-but-one witnesses into the public propositions. -/
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_bad_count_prop
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_gkl24_firstMoment_residual_prop
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_gkl24_witnessCover_residual_prop
+#print axioms CodingTheory.rs_epsCA_small_implies_lambda_lt_F_bchks25_of_allButOne
+#print axioms CodingTheory.rs_epsCA_small_implies_lambda_lt_F_bchks25_of_exists_allButOne
 #print axioms CodingTheory.rs_epsCA_separation_bgks20_of_exists_allButOne
