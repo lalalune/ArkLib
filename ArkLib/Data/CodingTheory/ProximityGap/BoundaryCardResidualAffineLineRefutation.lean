@@ -121,58 +121,6 @@ theorem not_boundaryCardResidual_affineLine :
   intro h
   exact not_jointAgreement_affineLine (h (by norm_num) uBad₁ rfl good_nonempty_affineLine)
 
-/-! ## The affine-line *conclusion* fails at the boundary
-
-The result above shows the boundary *hypothesis* `BoundaryCardResidual (k := 1)` is unsatisfiable
-at the endpoint.  We now show the stronger fact that the affine-line correlated-agreement
-*conclusion* `δ_ε_correlatedAgreementAffineLines` itself is **false** at the exact square-root
-endpoint with `ε = errorBound`.  Hence `RS_correlatedAgreement_affineLines` adds no genuine content
-over its strict companion: at the endpoint its conclusion does not even hold. -/
-
-/-- For `k = 1` the affine line `u 0 + z • u 1` is exactly the curve `∑ t, z^t • u t`. -/
-theorem uBad₁_affine_eq_curve (z : F) :
-    uBad₁ 0 + z • uBad₁ 1 = ∑ t : Fin 2, (z ^ (t : ℕ)) • uBad₁ t := by
-  rw [Fin.sum_univ_two]
-  simp
-
-/-- The probability that the affine line through `uBad₁` is `δ`-close to the code is positive at
-the boundary: the parameter `z = 0` collapses the line to `uBad₁ 0 = 0`, the zero codeword.  Uses
-the proven `good_nonempty_affineLine` through the curve-probability cardinality identity. -/
-theorem affineLine_probability_pos :
-    Pr_{let z ← $ᵖ F}[δᵣ(uBad₁ 0 + z • uBad₁ 1, ReedSolomon.code domain 1)
-        ≤ 1 - ReedSolomon.sqrtRate 1 domain] > (0 : ENNReal) := by
-  classical
-  simp only [uBad₁_affine_eq_curve]
-  change
-    Pr_{let z ← $ᵖ F}[δᵣ(∑ t : Fin (1 + 1), (z ^ (t : ℕ)) • uBad₁ t,
-        ReedSolomon.code domain 1) ≤
-          ((1 - ReedSolomon.sqrtRate 1 domain : ℝ≥0) : ENNReal)] > (0 : ENNReal)
-  have hPr := prob_close_curve_eq_card_goodCoeffsCurve_div_card
-    (k := 1) (deg := 1) (domain := domain)
-    (δ := 1 - ReedSolomon.sqrtRate 1 domain) uBad₁
-  rw [hPr]
-  have hcard : (0 : ℝ≥0) <
-      ((RS_goodCoeffsCurve (k := 1) (deg := 1) (domain := domain) uBad₁
-        (1 - ReedSolomon.sqrtRate 1 domain)).card : ℝ≥0) := by
-    exact_mod_cast good_nonempty_affineLine
-  exact_mod_cast
-    (div_pos hcard (by norm_num [F] : (0 : ℝ≥0) < (Fintype.card F : ℝ≥0)))
-
-/-- **The affine-line correlated-agreement conclusion is false at the boundary.**
-At the exact square-root endpoint `δ = 1 - √ρ` with `ε = errorBound = 0`, the bad stack `uBad₁`
-meets the probability premise (`Pr > 0 = ε`) yet fails `jointAgreement`.  So the non-strict
-affine-line keystone `RS_correlatedAgreement_affineLines` is vacuous at the endpoint: its
-conclusion does not hold there, only its (unsatisfiable) boundary hypothesis would supply it. -/
-theorem not_delta_epsilon_correlatedAgreementAffineLines_boundary :
-    ¬ δ_ε_correlatedAgreementAffineLines (F := F) (A := F) (ι := I)
-      (C := ReedSolomon.code domain 1)
-      (δ := 1 - ReedSolomon.sqrtRate 1 domain)
-      (ε := errorBound (1 - ReedSolomon.sqrtRate 1 domain) 1 domain) := by
-  intro h
-  refine not_jointAgreement_affineLine (h uBad₁ ?_)
-  rw [boundary_errorBound_eq_zero]
-  simpa using affineLine_probability_pos
-
 end BoundaryCardResidualAffineLineRefutation
 
 end ArkLib
@@ -181,5 +129,3 @@ end ArkLib
 #print axioms ArkLib.BoundaryCardResidualAffineLineRefutation.good_nonempty_affineLine
 #print axioms ArkLib.BoundaryCardResidualAffineLineRefutation.not_jointAgreement_affineLine
 #print axioms ArkLib.BoundaryCardResidualAffineLineRefutation.not_boundaryCardResidual_affineLine
-#print axioms ArkLib.BoundaryCardResidualAffineLineRefutation.affineLine_probability_pos
-#print axioms ArkLib.BoundaryCardResidualAffineLineRefutation.not_delta_epsilon_correlatedAgreementAffineLines_boundary
