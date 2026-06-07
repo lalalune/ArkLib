@@ -20,7 +20,9 @@ clearing product must be a non-zero-divisor.
   the nonzero denominator (`den_ne_zero`), and `embeddingOf𝒪Into𝕃` sends `0 ↦ 0`.
 -/
 
-open Polynomial
+open Polynomial Polynomial.Bivariate
+open BCIKS20AppendixA
+open ProximityPrize.BCIKS20.GammaGenuine
 
 namespace BCIKS20.HenselNumerator.AlphaWeight
 

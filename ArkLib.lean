@@ -127,6 +127,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.UniqueDecoding
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineSpaces
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeight
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeightAll
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ClearingProduct
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.Assembly
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Curves.GoodCoeffs
@@ -170,14 +171,15 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.CollinearProximates
 import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.Interpolation
 import ArkLib.Data.CodingTheory.ProximityGap.Basic
 import ArkLib.Data.CodingTheory.ProximityGap.BivariateVanishing
-import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidual
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardLatticeSlice
+import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidual
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BCHKSBridges
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BallEntropy
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BallInterVanish
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BreakdownFarCount
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveredFraction
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveredFractionEntropy
+import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveredFractionEntropyDiv
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveringCount
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveringExistence
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveringWitness
