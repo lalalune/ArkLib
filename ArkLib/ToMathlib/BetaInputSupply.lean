@@ -251,6 +251,73 @@ noncomputable def section5DataFin_of_centered_concrete {k deg : ℕ}
     (fun v₀ v₁ hlin => HenselDatumProducer.henselDatum_of_sepInput (hSep v₀ v₁ hlin))
     hdeg
 
+/-! ## Matching-divisibility finite §5 bundle from centered concrete inputs
+
+The GS extractor naturally supplies matching-factor divisibility over the pushed-forward coefficient
+ring rather than an already-separated Hensel witness.  The wrapper below exposes that route directly
+for the finite strict supplier consumed by `KeystoneAssembly`, reusing
+`HenselDatumProducer.henselDatum_of_matchingDvdInput` for the final `hPz` field. -/
+
+/-- **Centered concrete finite §5 input supply from matching divisibility.**
+
+This is the `MatchingDvdInput` counterpart of `section5DataFin_of_centered_concrete`.  It keeps the
+same centered setup, finite cardinality bridge, numerator identification, and degree hypotheses, but
+accepts the GS-extractor-faithful matching-divisibility input for every linear representative. -/
+noncomputable def section5DataFin_of_centered_concrete_matchingDvd {k deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0}
+    {u : WordStack F (Fin (k + 1)) ι} {P : F → Polynomial F}
+    (b : GSFactorData.Bundle (F := F) (0 : F))
+    [_inst_hIrr : Fact (Irreducible b.H)] [_inst_hPos : Fact (0 < b.H.natDegree)]
+    (Bcoeff : (i₁ : ℕ) → {m : ℕ} → Nat.Partition m → 𝒪 b.H)
+    (matchingSet : Finset F)
+    (root : (z : F) → rationalRoot (H_tilde' b.H) z)
+    -- the Prop-5.5 linear representative of `γ` (fixes `T := Ppoly.natDegree`):
+    (Ppoly : F[X][Y])
+    (hrep : polyToPowerSeries𝕃 b.H Ppoly = γ (0 : F) b.R b.H b.hHyp)
+    (hdegX : Polynomial.Bivariate.degreeX Ppoly ≤ 1)
+    -- finite-range per-point matching producer:
+    (mpPoint : ∀ t, k ≤ t → t ≤ Ppoly.natDegree → ∀ z ∈ matchingSet,
+      BetaMatchingVanishes.MatchingPoint (0 : F) b.R b.H b.hHyp Bcoeff t z (root z))
+    -- concrete finite L9/L10 weight-collapse inputs (`d = b.R.natDegree`):
+    (hd1 : 1 ≤ b.R.natDegree) (hdH_le : b.H.natDegree ≤ b.R.natDegree)
+    (hdH_D : b.H.natDegree ≤ b.D)
+    (hbB : ∀ (i₁ : ℕ) {m : ℕ} (p : Nat.Partition m),
+        weight_Λ_over_𝒪 b.hH (Bcoeff i₁ p) b.D
+          ≤ (WithBot.some ((b.D - Multiset.card p.parts)
+              + (b.R.natDegree - betaδ i₁ - Multiset.card p.parts)
+                * (b.D - b.H.natDegree)) : WithBot ℕ))
+    (hBzero : ∀ (i₁ : ℕ) {m : ℕ} (p : Nat.Partition m),
+        b.R.natDegree - betaδ i₁ < Multiset.card p.parts → Bcoeff i₁ p = 0)
+    (hbξ : weight_Λ_over_𝒪 b.hH (ξ (0 : F) b.R b.H b.hHyp) b.D
+        ≤ (WithBot.some ((b.R.natDegree - 1) * (b.D - b.H.natDegree + 1)) : WithBot ℕ))
+    (hcardConcreteFin : ∀ t, k ≤ t → t ≤ Ppoly.natDegree →
+        (↑matchingSet.card : WithBot ℕ)
+          > (((2 * t + 1) * b.R.natDegree * b.D * b.H.natDegree : ℕ) : WithBot ℕ))
+    -- the numerator residual replacing `hγ`:
+    (hβ : ∀ t, β (H := b.H) b.R t = betaRec (0 : F) b.R b.H b.hHyp Bcoeff t)
+    -- per-`z` matching-divisibility input + degree bounds (yielding `hPz`):
+    (hMatchingDvd : ∀ v₀ v₁ : F[X],
+      γ (0 : F) b.R b.H b.hHyp = polyToPowerSeries𝕃 b.H
+        ((Polynomial.map Polynomial.C v₀)
+          + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)) →
+      HenselDatumProducer.MatchingDvdInput
+        (k := k) (deg := deg) (domain := domain) (δ := δ) u P v₀ v₁)
+    (hdeg : ∀ v₀ v₁ : F[X],
+      γ (0 : F) b.R b.H b.hHyp = polyToPowerSeries𝕃 b.H
+        ((Polynomial.map Polynomial.C v₀)
+          + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)) →
+      v₀.natDegree < k + 1 ∧ v₁.natDegree < k + 1) :
+    Section5StrictDataFin (k := k) (deg := deg) (domain := domain) (δ := δ) u P :=
+  KeystoneAssembly.section5DataFin_of_producers
+    (k := k) (deg := deg) (domain := domain) (δ := δ) (u := u) (P := P)
+    (x₀ := (0 : F)) b Bcoeff matchingSet root Ppoly hrep hdegX mpPoint
+    (hcardFin_of_concrete (0 : F) b.R b.H b.hHyp Bcoeff b.hD b.hH
+      hd1 hdH_le hdH_D hbB hBzero hbξ hcardConcreteFin)
+    hsubst_field_of_centre hβ
+    (fun v₀ v₁ hlin =>
+      HenselDatumProducer.henselDatum_of_matchingDvdInput (hMatchingDvd v₀ v₁ hlin))
+    hdeg
+
 /-! ## The assembly: `betaCurveInput_of_section5`
 
 We assemble `BetaCurveInput u` from the reduced, per-field primitive data.  The remaining named
@@ -451,5 +518,6 @@ end ArkLib
 #print axioms ArkLib.BetaInputSupply.hcard_of_concrete
 #print axioms ArkLib.BetaInputSupply.hcardFin_of_concrete
 #print axioms ArkLib.BetaInputSupply.section5DataFin_of_centered_concrete
+#print axioms ArkLib.BetaInputSupply.section5DataFin_of_centered_concrete_matchingDvd
 #print axioms ArkLib.BetaInputSupply.betaCurveInput_of_section5
 #print axioms ArkLib.BetaInputSupply.betaCurveInputFin_of_section5

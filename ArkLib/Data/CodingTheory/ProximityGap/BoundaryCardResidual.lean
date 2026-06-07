@@ -532,6 +532,63 @@ theorem boundary_lattice_iff_isSquare_deg_mul_card {deg : ℕ} {domain : ι ↪ 
     sqrtRate_mul_card_complement_mem_iff_mem (domain := domain) hsqrt_le,
     sqrtRate_mul_card_mem_iff_isSquare_deg_mul_card (domain := domain) hdeg]
 
+omit [DecidableEq ι] [Fintype F] in
+/-- **Non-square endpoint is genuinely non-lattice.**  At the exact Johnson boundary, if
+`deg · |ι|` is not a Nat square, then `δ · |ι|` cannot be an integer; equivalently the floor lies
+strictly below the real value. -/
+theorem boundary_not_lattice_of_not_isSquare_deg_mul_card {deg : ℕ} {domain : ι ↪ F}
+    {δ : ℝ≥0}
+    (hδeq : δ = 1 - ReedSolomon.sqrtRate deg domain)
+    (hsqrt_le : ReedSolomon.sqrtRate deg domain ≤ 1)
+    (hdeg : deg ≤ Fintype.card ι)
+    (hNotSquare : ¬ IsSquare (deg * Fintype.card ι)) :
+    (Nat.floor (δ * Fintype.card ι) : ℝ≥0) < δ * Fintype.card ι := by
+  have hiff := boundary_lattice_iff_isSquare_deg_mul_card
+    (domain := domain) hδeq hsqrt_le hdeg
+  have hne :
+      (Nat.floor (δ * Fintype.card ι) : ℝ≥0) ≠ δ * Fintype.card ι := by
+    intro hfloor
+    exact hNotSquare (hiff.mp hfloor)
+  exact lt_of_le_of_ne (Nat.floor_le (zero_le _)) hne
+
+omit [DecidableEq ι] in
+/-- **Closed boundary residual in the non-square case.**  If the exact Johnson endpoint is not a
+`1/|ι|` lattice point, expressed arithmetically as `¬ IsSquare (deg · |ι|)`, then the boundary
+residual follows from the strict-interior supply alone.  Thus the only extra boundary datum still
+needed by the quantization split is the genuine square-lattice case. -/
+theorem boundaryCardResidual_of_not_isSquare_deg_mul_card {k deg : ℕ} {domain : ι ↪ F}
+    {δ : ℝ≥0}
+    (hδeq : δ = 1 - ReedSolomon.sqrtRate deg domain)
+    (hsqrt_le : ReedSolomon.sqrtRate deg domain ≤ 1)
+    (hdeg : deg ≤ Fintype.card ι)
+    (hNotSquare : ¬ IsSquare (deg * Fintype.card ι))
+    (hStrict :
+      BoundaryCardStrictInteriorResidual (k := k) (deg := deg) (domain := domain) (δ := δ)) :
+    BoundaryCardResidual (k := k) (deg := deg) (domain := domain) (δ := δ) :=
+  boundaryCardResidual_of_not_lattice (deg := deg) (domain := domain)
+    (boundary_not_lattice_of_not_isSquare_deg_mul_card
+      (domain := domain) hδeq hsqrt_le hdeg hNotSquare)
+    hStrict
+
+omit [DecidableEq ι] in
+/-- The boundary-probability residual follows from the strict-interior supply at non-square
+Johnson endpoints. -/
+theorem boundaryProbabilityResidual_of_not_isSquare_deg_mul_card {k deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hδle : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hδeq : δ = 1 - ReedSolomon.sqrtRate deg domain)
+    (hsqrt_le : ReedSolomon.sqrtRate deg domain ≤ 1)
+    (hdeg : deg ≤ Fintype.card ι)
+    (hNotSquare : ¬ IsSquare (deg * Fintype.card ι))
+    (hStrict :
+      BoundaryCardStrictInteriorResidual (k := k) (deg := deg) (domain := domain) (δ := δ)) :
+    ProximityGap.BoundaryProbabilityResidual
+      (k := k) (deg := deg) (domain := domain) (δ := δ) := by
+  exact ProximityGap.boundaryProbabilityResidual_of_boundaryCardResidual
+    (deg := deg) (domain := domain) (δ := δ) hδle
+    (boundaryCardResidual_of_not_isSquare_deg_mul_card
+      (deg := deg) (domain := domain) hδeq hsqrt_le hdeg hNotSquare hStrict)
+
 /-! ## The strengthened keystone corollary consuming the isolated lattice residual -/
 
 omit [DecidableEq ι] in
@@ -588,6 +645,30 @@ theorem correlatedAgreement_affine_curves_of_quantization_residuals {k deg : ℕ
     (deg := deg) (domain := domain) (δ := δ)
     hStrictCoeff hBoundary.strictInterior hBoundary.lattice hδ
 
+omit [DecidableEq ι] in
+/-- [BCIKS20] Theorem 1.5 at non-square Johnson endpoints.  This is the direct curve-facing form
+of the quantization split away from the exact square-lattice branch: the closed boundary input is
+recovered from the strict-interior supply and `¬ IsSquare (deg · |ι|)`. -/
+theorem correlatedAgreement_affine_curves_of_not_isSquare_deg_mul_card {k deg : ℕ}
+    {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hStrictCoeff :
+      ProximityGap.StrictCoeffPolysResidual (k := k) (deg := deg) (domain := domain) (δ := δ))
+    (hStrict :
+      BoundaryCardStrictInteriorResidual (k := k) (deg := deg) (domain := domain) (δ := δ))
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain)
+    (hδeq : δ = 1 - ReedSolomon.sqrtRate deg domain)
+    (hsqrt_le : ReedSolomon.sqrtRate deg domain ≤ 1)
+    (hdeg : deg ≤ Fintype.card ι)
+    (hNotSquare : ¬ IsSquare (deg * Fintype.card ι)) :
+    δ_ε_correlatedAgreementCurves (k := k) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  classical
+  exact ProximityGap.correlatedAgreement_affine_curves_of_boundaryCardResidual
+    (deg := deg) (domain := domain) (δ := δ) hStrictCoeff
+    (boundaryCardResidual_of_not_isSquare_deg_mul_card
+      (deg := deg) (domain := domain) hδeq hsqrt_le hdeg hNotSquare hStrict)
+    hδ
+
 end BoundaryCardResidual
 
 end ArkLib
@@ -616,5 +697,10 @@ with no `sorry`/`admit`/`axiom`/`native_decide`. -/
 #print axioms ArkLib.BoundaryCardResidual.sqrtRate_mul_card_mem_iff_isSquare_deg_mul_card
 #print axioms ArkLib.BoundaryCardResidual.sqrtRate_mul_card_complement_mem_iff_mem
 #print axioms ArkLib.BoundaryCardResidual.boundary_lattice_iff_isSquare_deg_mul_card
+#print axioms ArkLib.BoundaryCardResidual.boundary_not_lattice_of_not_isSquare_deg_mul_card
+#print axioms ArkLib.BoundaryCardResidual.boundaryCardResidual_of_not_isSquare_deg_mul_card
+#print axioms ArkLib.BoundaryCardResidual.boundaryProbabilityResidual_of_not_isSquare_deg_mul_card
 #print axioms ArkLib.BoundaryCardResidual.correlatedAgreement_affine_curves_of_lattice_residual
 #print axioms ArkLib.BoundaryCardResidual.correlatedAgreement_affine_curves_of_quantization_residuals
+#print axioms
+  ArkLib.BoundaryCardResidual.correlatedAgreement_affine_curves_of_not_isSquare_deg_mul_card
