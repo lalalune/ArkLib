@@ -58,16 +58,30 @@ that the eventual `VectorIOP` constructor must refine into ArkLib's `ProtocolSpe
 -/
 
 /-- The two prover-message roles in each WHIR round of the Construction 5.1 skeleton. -/
-inductive RoundMessageKind where
-  | foldedOracle
-  | outOfDomainReply
-  deriving DecidableEq, Fintype
+abbrev RoundMessageKind := Fin 2
+
+namespace RoundMessageKind
+
+/-- The folded-function oracle / sumcheck-message role. -/
+def foldedOracle : RoundMessageKind := 0
+
+/-- The out-of-domain answer role. -/
+def outOfDomainReply : RoundMessageKind := 1
+
+end RoundMessageKind
 
 /-- The two verifier-challenge roles in each WHIR round of the Construction 5.1 skeleton. -/
-inductive RoundChallengeKind where
-  | folding
-  | outOfDomainOrShift
-  deriving DecidableEq, Fintype
+abbrev RoundChallengeKind := Fin 2
+
+namespace RoundChallengeKind
+
+/-- The folding challenge role. -/
+def folding : RoundChallengeKind := 0
+
+/-- The out-of-domain or shift challenge role. -/
+def outOfDomainOrShift : RoundChallengeKind := 1
+
+end RoundChallengeKind
 
 /-- Semantic WHIR prover-message indices: two prover-originated slots per round. -/
 abbrev semanticMessageIdx (M : ℕ) := Fin (M + 1) × RoundMessageKind
@@ -78,16 +92,14 @@ abbrev semanticChallengeIdx (M : ℕ) := Fin (M + 1) × RoundChallengeKind
 /-- Construction 5.1 contributes exactly `2 * M + 2` semantic verifier challenges. -/
 theorem semanticChallengeIdx_card (M : ℕ) :
     Fintype.card (semanticChallengeIdx M) = 2 * M + 2 := by
-  have hKind : Fintype.card RoundChallengeKind = 2 := by decide
-  simp [semanticChallengeIdx, hKind]
-  omega
+  simp [semanticChallengeIdx, RoundChallengeKind]
+  rw [Nat.add_mul, Nat.one_mul, Nat.mul_comm M 2]
 
 /-- The semantic WHIR skeleton has the same number of prover-message slots as verifier challenges. -/
 theorem semanticMessageIdx_card (M : ℕ) :
     Fintype.card (semanticMessageIdx M) = 2 * M + 2 := by
-  have hKind : Fintype.card RoundMessageKind = 2 := by decide
-  simp [semanticMessageIdx, hKind]
-  omega
+  simp [semanticMessageIdx, RoundMessageKind]
+  rw [Nat.add_mul, Nat.one_mul, Nat.mul_comm M 2]
 
 /-! ### The WHIR protocol-spec direction vector
 
