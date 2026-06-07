@@ -66,6 +66,17 @@ theorem perfectHVZK.simulator_congr
     perfectHVZK init impl rel R sim' :=
   Reduction.perfectHVZK.simulator_congr h hsim
 
+/-- **OracleReduction statistical HVZK is preserved under an equal simulator distribution.** -/
+theorem statisticalHVZK.simulator_congr
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn)}
+    {R : OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut pSpec}
+    {sim sim' : TranscriptSimulator oSpec StmtIn OStmtIn pSpec} {ε : ℝ≥0}
+    (h : statisticalHVZK init impl rel R sim ε)
+    (hsim : ∀ stmtIn, evalDist (sim stmtIn) = evalDist (sim' stmtIn)) :
+    statisticalHVZK init impl rel R sim' ε :=
+  Reduction.statisticalHVZK.simulator_congr h hsim
+
 /-- **Triangle composition of statistical HVZK at the OracleReduction API boundary.** -/
 theorem statisticalHVZK.simulator_triangle
     {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
@@ -134,6 +145,7 @@ theorem isStatHVZK.congr_honestDist
 #print axioms perfectHVZK.congr_honestDist
 #print axioms statisticalHVZK.congr_honestDist
 #print axioms perfectHVZK.simulator_congr
+#print axioms statisticalHVZK.simulator_congr
 #print axioms statisticalHVZK.simulator_triangle
 #print axioms perfectHVZK_of_honestDist_eq_const
 #print axioms isHVZK_of_honestDist_eq_const
