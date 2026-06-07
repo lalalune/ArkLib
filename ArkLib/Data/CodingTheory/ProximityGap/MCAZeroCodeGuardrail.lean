@@ -86,6 +86,35 @@ theorem GrandMCAResolution_bot_deltaStar_eq_zero_of_epsStar_lt_inv_card
     R.δStar = 0 :=
   GrandMCAResolution_bot_deltaStar_eq_zero_of_lt_inv_card (ι := ι) (F := F) epsStar hε R
 
+/-- Below `1 / |F|`, the zero code admits no MCA resolution: any resolution would first have
+threshold `0` by the upper witness, but then its bound contradicts the exact zero-code value. -/
+theorem not_GrandMCAResolution_bot_of_lt_inv_card (ε_star : ℝ≥0)
+    (hε : (ε_star : ENNReal) < (1 : ENNReal) / (Fintype.card F : ENNReal)) :
+    ¬ Nonempty (GrandChallenges.GrandMCAResolution (F := F)
+      (Cbot (ι := ι) (F := F) : Set (ι → F)) ε_star) := by
+  rintro ⟨R⟩
+  have hδ :
+      R.δStar = 0 :=
+    GrandMCAResolution_bot_deltaStar_eq_zero_of_lt_inv_card
+      (ι := ι) (F := F) ε_star hε R
+  have hbound :
+      epsMCA (F := F) (A := F) (Cbot (ι := ι) (F := F) : Set (ι → F)) 0 ≤
+        (ε_star : ENNReal) := by
+    simpa [hδ] using R.bound
+  have hexceeds :
+      (ε_star : ENNReal) <
+        epsMCA (F := F) (A := F) (Cbot (ι := ι) (F := F) : Set (ι → F)) 0 := by
+    rw [epsMCA_bot_eq_inv_card]
+    exact hε
+  exact (not_le_of_gt hexceeds) hbound
+
+/-- `epsStar` specialization of the zero-code no-resolution guardrail. -/
+theorem not_GrandMCAResolution_bot_epsStar_of_lt_inv_card
+    (hε : (epsStar : ENNReal) < (1 : ENNReal) / (Fintype.card F : ENNReal)) :
+    ¬ Nonempty (GrandChallenges.GrandMCAResolution (F := F)
+      (Cbot (ι := ι) (F := F) : Set (ι → F)) epsStar) :=
+  not_GrandMCAResolution_bot_of_lt_inv_card (ι := ι) (F := F) epsStar hε
+
 end General
 
 /-! ## Source audit -/
@@ -96,5 +125,7 @@ end General
 #print axioms exists_MCAUpperWitness_bot_epsStar_of_lt_inv_card
 #print axioms GrandMCAResolution_bot_deltaStar_eq_zero_of_lt_inv_card
 #print axioms GrandMCAResolution_bot_deltaStar_eq_zero_of_epsStar_lt_inv_card
+#print axioms not_GrandMCAResolution_bot_of_lt_inv_card
+#print axioms not_GrandMCAResolution_bot_epsStar_of_lt_inv_card
 
 end ProximityGap.MCAZeroCode
