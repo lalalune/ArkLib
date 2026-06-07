@@ -87,8 +87,7 @@ theorem entropy_rpow_eq (hq : 2 ≤ q) (n k : ℕ) (hk0 : 0 < k) (hkn : k < n) :
     set A := Real.logb (q : ℝ) ((q : ℝ) - 1)
     set B := Real.logb (q : ℝ) ((k : ℝ) / (n : ℝ))
     set C := Real.logb (q : ℝ) ((m : ℝ) / (n : ℝ))
-    field_simp
-    ring
+    field_simp <;> ring
   -- Expand `q ^ (n · H)` via the rpow split.
   rw [hexp, Real.rpow_sub hq0, Real.rpow_sub hq0,
       hpow ((q : ℝ) - 1) k hqsub0,

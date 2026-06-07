@@ -372,10 +372,10 @@ lower bound. -/
 theorem winningSetSoundness_le_toySoundnessError {k : ℕ} [Nonempty ι]
     (C : Set (ι → F)) (δ : ℝ≥0) (t : ℕ)
     (hEnc : ∃ encode : (Fin k → F) →ₗ[F] (ι → F), (∀ m, encode m ∈ C) ∧ ∀ c ∈ C, ∃ m, encode m = c)
+    (hResidual : winningSetSoundness_le_toySoundnessError_mcaSafe_residual (k := k) C δ hEnc)
     (hδ : δ < (minRelHammingDistCode C : ℝ≥0)) :
     winningSetSoundness (k := k) C δ ≤ toySoundnessError C δ t := by
-  have hL610 := winningSetSoundness_le_toySoundnessError_mcaSafe_residual C δ hEnc hδ
-  exact le_trans hL610 (le_max_left _ _)
+  exact le_trans (hResidual hδ) (le_max_left _ _)
 
 /-! ## Bits of security -/
 
@@ -478,9 +478,12 @@ noncomputable def ToyParams.toySoundnessError (p : ToyParams) : ℝ≥0 :=
 the explicit Lemma 6.10 residual for that parameter point. -/
 theorem ToyParams.soundnessError_le_toySoundnessError (p : ToyParams) [Nonempty p.ι]
     (hEnc : ∃ encode : (Fin p.k → p.F) →ₗ[p.F] (p.ι → p.F), (∀ m, encode m ∈ p.C) ∧ ∀ c ∈ p.C, ∃ m, encode m = c)
+    (hResidual :
+      winningSetSoundness_le_toySoundnessError_mcaSafe_residual (k := p.k) p.C p.δ hEnc)
     (hδ : p.δ < (minRelHammingDistCode p.C : ℝ≥0)) :
     p.soundnessError ≤ p.toySoundnessError :=
-  _root_.ToyProblem.winningSetSoundness_le_toySoundnessError (k := p.k) p.C p.δ p.t hEnc hδ
+  _root_.ToyProblem.winningSetSoundness_le_toySoundnessError (k := p.k) p.C p.δ p.t
+    hEnc hResidual hδ
 
 /-! ## The two leaderboard interfaces
 
@@ -630,7 +633,25 @@ research/formal/arklib-proof-research-2026-06.md.
 ABF26 Lemma 6.10 at `koalaIRS` plus the §6.3 numeric evaluation of the RBR
 bound. -/
 instance : Nonempty koalaIRS.ι := ⟨(0 : Fin 4)⟩
+
+/-- The genuine KoalaBear-sextic Reed–Solomon code is the range of a linear encoder. -/
+theorem koalaIRS_linear_encoder :
+    ∃ encode : (Fin koalaIRS.k → koalaIRS.F) →ₗ[koalaIRS.F] (koalaIRS.ι → koalaIRS.F),
+      (∀ m, encode m ∈ koalaIRS.C) ∧ ∀ c ∈ koalaIRS.C, ∃ m, encode m = c := by
+  rcases KoalaBear.rsCode_isLinear with ⟨enc, henc⟩
+  exact ⟨enc, by
+    intro m
+    change enc m ∈ KoalaBear.rsCodeSet
+    rw [← henc]
+    exact Set.mem_range_self m, by
+    intro c hc
+    change c ∈ KoalaBear.rsCodeSet at hc
+    rw [← henc] at hc
+    exact hc⟩
+
 def arklib_lowerBound_irs_t128_residual : Prop :=
+  winningSetSoundness_le_toySoundnessError_mcaSafe_residual
+      (k := koalaIRS.k) koalaIRS.C koalaIRS.δ koalaIRS_linear_encoder ∧
   koalaIRS.δ < (minRelHammingDistCode koalaIRS.C : ℝ≥0) ∧
   koalaIRS.toySoundnessError ≤ (2 : ℝ≥0) ^ (-(64 : ℝ))
 
@@ -649,11 +670,9 @@ noncomputable def arklib_lowerBound_irs_t128
   bits := 64
   proof := by
     haveI : Nonempty koalaIRS.ι := inferInstance
-    have hEnc : ∃ encode : (Fin koalaIRS.k → koalaIRS.F) →ₗ[koalaIRS.F] (koalaIRS.ι → koalaIRS.F),
-      (∀ m, encode m ∈ koalaIRS.C) ∧ ∀ c ∈ koalaIRS.C, ∃ m, encode m = c := by
-      rcases KoalaBear.rsCodeSet_linear_encoder with ⟨enc, henc⟩
-      exact ⟨enc, by rewrite [henc]; exact fun m => Set.mem_range_self m, by rewrite [henc]; exact fun c hc => hc⟩
-    exact le_trans (koalaIRS.soundnessError_le_toySoundnessError hEnc h.1) h.2
+    exact le_trans
+      (koalaIRS.soundnessError_le_toySoundnessError koalaIRS_linear_encoder h.1 h.2.1)
+      h.2.2
 
 /-- **Winning-set attack upper bound (≈116 bits) at the IRS/KoalaBear/`t=128`
 point.** Cites **Lemma 6.12 of [ABF26]** (§6.4.1; a similar observation appears
