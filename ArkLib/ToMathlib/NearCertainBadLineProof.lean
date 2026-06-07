@@ -112,6 +112,70 @@ theorem epsCA_ge_one_sub_inv_of_line_code
 
 end LineCode
 
+section Char2Instance
+
+/-! ## Concrete characteristic-2 instantiation
+
+We exhibit an *explicit* inhabitant of `NearCertainBadLine` over the characteristic-2 field
+`ZMod 2`, witnessing that the BGKS20 residual is genuinely satisfiable (not merely a conditional
+implication). We work in `ι = Fin 2`, take the two-point code
+
+`C = {![0,1], ![1,1]}`,
+
+the stack `u 0 = ![0,1]`, `u 1 = ![1,0]`, and the full good set `Γ = Finset.univ`. The affine line
+`u 0 + γ • u 1` ranges over exactly `{![0,1], ![1,1]} = C` as `γ` ranges over `ZMod 2`, so every
+scalar is a good combiner (`|Γ| = 2 ≥ |F| - 1 = 1`), yet `u 1 = ![1,0] ∉ C`, so the stack is not
+jointly close. -/
+
+/-- The explicit char-2 code: the two line points `{![0,1], ![1,1]}` over `ZMod 2`. -/
+def char2Code : Set (Fin 2 → ZMod 2) := {![0, 1], ![1, 1]}
+
+/-- The explicit char-2 stack `u = (![0,1], ![1,0])`. -/
+def char2Stack : WordStack (ZMod 2) (Fin 2) (Fin 2) := ![![0, 1], ![1, 0]]
+
+/-- **Characteristic-2 `NearCertainBadLine` inhabitant (BGKS20 rate-`1/8`-style separation).**
+The explicit code `char2Code` over the field `ZMod 2` of characteristic `2` admits a
+`NearCertainBadLine` (with `δ_int = 0` and any `δ_fld`). This is a concrete witness that the
+residual predicate is inhabited. -/
+theorem char2_nearCertainBadLine (δ_fld : ℝ≥0) :
+    NearCertainBadLine (F := ZMod 2) (A := ZMod 2) char2Code δ_fld 0 := by
+  classical
+  -- `CharP (ZMod 2) 2` confirms we are in the BGKS20 characteristic-2 regime.
+  have _hchar : CharP (ZMod 2) 2 := inferInstance
+  refine nearCertainBadLine_of_line_code char2Code δ_fld char2Stack Finset.univ ?_ ?_ ?_
+  · -- Every line point `u 0 + γ • u 1` lands in `C`.
+    intro γ _
+    fin_cases γ
+    · -- γ = 0 : line point = u 0 = ![0,1] ∈ C
+      left
+      simp only [char2Stack, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons]
+      ext i; fin_cases i <;> simp [char2Stack]
+    · -- γ = 1 : line point = u 0 + u 1 = ![1,1] ∈ C
+      right
+      ext i; fin_cases i <;>
+        simp [char2Stack, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons]
+  · -- `|Γ| = |F| = 2 ≥ |F| - 1`.
+    simp only [Finset.card_univ, ZMod.card]
+    norm_num
+  · -- `u 1 = ![1,0] ∉ C = {![0,1], ![1,1]}`.
+    simp only [char2Code, char2Stack, Set.mem_insert_iff, Set.mem_singleton_iff,
+      Matrix.cons_val_one, Matrix.head_cons]
+    rintro (h | h)
+    · have := congrFun h 0; simp at this
+    · have := congrFun h 0; simp at this
+
+/-- **T5.4 endpoint, fully discharged for the concrete char-2 code.**
+The correlated-agreement error of `char2Code` satisfies
+`epsCA ≥ 1 - 1/|ZMod 2| = 1 - 1/2 = 1/2` — the BGKS20 characteristic-2 separation, now unconditional
+in-tree. -/
+theorem char2_epsCA_separation (δ_fld : ℝ≥0) :
+    ENNReal.ofReal (1 - 1 / Fintype.card (ZMod 2)) ≤
+      epsCA (F := ZMod 2) (A := ZMod 2) char2Code δ_fld 0 :=
+  epsCA_separation_bridge_of_residual (F := ZMod 2) (A := ZMod 2) char2Code δ_fld 0
+    (char2_nearCertainBadLine δ_fld)
+
+end Char2Instance
+
 end CodingTheory.Bridge
 
 /-! ### Axiom audit (issue #104 producer surface) -/
@@ -119,3 +183,5 @@ end CodingTheory.Bridge
 #print axioms CodingTheory.Bridge.not_jointProximity_zero_of_row_not_mem
 #print axioms CodingTheory.Bridge.nearCertainBadLine_of_line_code
 #print axioms CodingTheory.Bridge.epsCA_ge_one_sub_inv_of_line_code
+#print axioms CodingTheory.Bridge.char2_nearCertainBadLine
+#print axioms CodingTheory.Bridge.char2_epsCA_separation

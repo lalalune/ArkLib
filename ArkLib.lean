@@ -559,6 +559,7 @@ import ArkLib.ToMathlib.KeystoneCapstone
 import ArkLib.ToMathlib.KeystoneStrictResidual
 import ArkLib.ToMathlib.KoalaBearCode
 import ArkLib.ToMathlib.KoalaBearField
+import ArkLib.ToMathlib.KoalaBearWinningSetProof
 import ArkLib.ToMathlib.KoalaIRSAccounting
 import ArkLib.ToMathlib.L13Milestone
 import ArkLib.ToMathlib.L46DiffStackRS
@@ -566,6 +567,7 @@ import ArkLib.ToMathlib.L46GSLowerBound
 import ArkLib.ToMathlib.LinearizedSupport
 import ArkLib.ToMathlib.List.Basic
 import ArkLib.ToMathlib.MatchingExtractor
+import ArkLib.ToMathlib.MatchingFactorLift
 import ArkLib.ToMathlib.MpFinSupply
 import ArkLib.ToMathlib.MpProducer
 import ArkLib.ToMathlib.MultiplicityDatum

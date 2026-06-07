@@ -174,3 +174,32 @@ theorem le_minRelHammingDistCode_rsCodeSet : (3/4 : ℚ≥0) ≤ minRelHammingDi
   linarith
 
 end KoalaBear
+
+namespace ToyProblem
+
+open Code
+
+/-- **The proximity-below-min-distance conjunct of `arklib_lowerBound_irs_t128_residual`.**
+At the genuine KoalaBear-sextic anchor `koalaIRS`, the prize radius `δ = 3/10` lies strictly below
+the code's minimum relative Hamming distance (`≥ 3/4`, via `KoalaBear.le_minRelHammingDistCode_rsCodeSet`).
+This is the second of the three conjuncts of `arklib_lowerBound_irs_t128_residual`, discharged
+unconditionally and independently of the DISPROVEN/NEEDS_CLASSICAL `ε_mca` conjunct. -/
+theorem koalaIRS_delta_lt_minRelHammingDist :
+    koalaIRS.δ < (minRelHammingDistCode koalaIRS.C : ℝ≥0) := by
+  -- `koalaIRS.δ = 3/10`, `koalaIRS.C = rsCodeSet` definitionally.
+  show (3 / 10 : ℝ≥0) < (minRelHammingDistCode KoalaBear.rsCodeSet : ℝ≥0)
+  have h_le_R : (3 / 4 : ℝ≥0) ≤ (minRelHammingDistCode KoalaBear.rsCodeSet : ℝ≥0) := by
+    have := KoalaBear.le_minRelHammingDistCode_rsCodeSet
+    exact_mod_cast this
+  have h_lt : (3 / 10 : ℝ≥0) < (3 / 4 : ℝ≥0) := by norm_num
+  exact lt_of_lt_of_le h_lt h_le_R
+
+end ToyProblem
+
+-- Focused axiom checks for issue #107: the discharged distance conjunct must be
+-- axiom-clean (`[propext, Classical.choice, Quot.sound]`, no `sorryAx`).
+#print axioms KoalaBear.rsPoint_injective
+#print axioms KoalaBear.rsEncoder_injective
+#print axioms KoalaBear.hammingDist_rsEncoder_ge_three
+#print axioms KoalaBear.le_minRelHammingDistCode_rsCodeSet
+#print axioms ToyProblem.koalaIRS_delta_lt_minRelHammingDist
