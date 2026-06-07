@@ -28,6 +28,7 @@ the module form used by Greyhound [NS24] and Hachi [NOZ26].
 * [Nguyen, N. K., and Seiler, G., *Greyhound: Fast Polynomial Commitments from Lattices*][NS24]
 * [Nguyen, N. K., O'Rourke, G., and Zhang, J., *Hachi: Efficient Lattice-Based Multilinear
     Polynomial Commitments over Extension Fields*][NOZ26]
+-/
 
 open OracleComp CompPoly ArkLib.Lattices
 open scoped ENNReal
@@ -70,7 +71,8 @@ namespace ModuleSIS
 
 open CyclotomicModulus
 
-variable {R : Type} [Field R] [BEq R] [LawfulBEq R] (Φ : CyclotomicModulus R) [IsCyclotomic Φ]
+variable {R : Type} [Field R] [BEq R] [LawfulBEq R] [DecidableEq R]
+  (Φ : CyclotomicModulus R) [IsCyclotomic Φ]
 
 /-- A Module-SIS solution for a matrix with `cols` columns over `Rq Φ`. -/
 abbrev Solution (cols : Nat) := PolyVec (Rq Φ) cols
