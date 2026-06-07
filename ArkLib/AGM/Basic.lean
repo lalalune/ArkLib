@@ -135,6 +135,45 @@ def prependBasis {prev : List G} {target : G}
         rw [show ((0 : ZMod p).val) = 0 from by simp, pow_zero, one_mul]
         exact ih
 
+private theorem zipWith_replicate_zero_prod (xs : List G) (n : ℕ) :
+    (xs.zipWith (fun g a => g ^ a.val) (List.replicate n (0 : ZMod p))).prod = 1 := by
+  induction xs generalizing n with
+  | nil => simp
+  | cons g xs ih =>
+      cases n with
+      | zero => simp
+      | succ n =>
+          simp only [List.replicate_succ, List.zipWith_cons_cons, List.prod_cons]
+          rw [show ((0 : ZMod p).val) = 0 from by simp, pow_zero, one_mul, ih n]
+
+private theorem zipWith_append_replicate_zero_prod {prev extra : List G}
+    (exponents : List (ZMod p)) :
+    ((prev ++ extra).zipWith (fun g a => g ^ a.val)
+        (exponents.take prev.length ++ List.replicate extra.length 0)).prod
+      = (prev.zipWith (fun g a => g ^ a.val) exponents).prod := by
+  induction prev generalizing exponents with
+  | nil =>
+      simpa using zipWith_replicate_zero_prod (p := p) extra extra.length
+  | cons g prev ih =>
+      cases exponents with
+      | nil =>
+          simpa using zipWith_replicate_zero_prod (p := p) (g :: (prev ++ extra)) extra.length
+      | cons a exponents =>
+          simp only [List.length_cons, List.take_succ_cons, List.cons_append,
+            List.zipWith_cons_cons, List.prod_cons]
+          rw [ih exponents]
+
+/-- **Right-side basis weakening.** An algebraically-represented target stays representable when
+the basis is extended on the right by extra generators. Because the representation format permits
+overlong exponent vectors and `zipWith` truncates, we first truncate to the original basis length,
+then pad by zeros for the appended generators. -/
+def appendBasis {prev : List G} {target : G}
+    (repr : GroupRepresentation (p := p) prev target) (extra : List G) :
+    GroupRepresentation (p := p) (prev ++ extra) target where
+  exponents := repr.exponents.take prev.length ++ List.replicate extra.length 0
+  hEq := by
+    rw [zipWith_append_replicate_zero_prod, repr.hEq]
+
 #print axioms GroupRepresentation.zipWith_pow_prod_mem_closure
 #print axioms GroupRepresentation.target_mem_closure
 #print axioms GroupRepresentation.one
@@ -143,6 +182,7 @@ def prependBasis {prev : List G} {target : G}
 #print axioms GroupRepresentation.map
 #print axioms GroupRepresentation.singleton
 #print axioms GroupRepresentation.prependBasis
+#print axioms GroupRepresentation.appendBasis
 
 end GroupRepresentation
 
