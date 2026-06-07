@@ -507,6 +507,23 @@ structure OracleVerifier {ι : Type} (oSpec : OracleSpec ι)
 --     (OStmtOut : ιₛₒ → Type) (embed : ιₛₒ ↪ ιₛᵢ ⊕ ιₘ) :
 --     ∀ i, OStmtOut i := fun i => by sorry
 
+namespace OracleComp
+
+/-- Replay an oracle computation and return the accumulated query cost.
+
+The result remains an oracle computation over the same specification, so adaptive computations
+choose later queries using the same responses they would have seen in the original run. -/
+def queryCostTrace {ι : Type} {spec : OracleSpec ι} {α : Type}
+    (cost : spec.Domain → ℕ) (oa : OracleComp spec α) : OracleComp spec ℕ :=
+  match oa with
+  | .pure _ => pure 0
+  | .queryBind t k => do
+      let u ← liftM (OracleSpec.query (spec := spec) t)
+      let n ← queryCostTrace cost (k u)
+      pure (cost t + n)
+
+end OracleComp
+
 namespace OracleVerifier
 
 variable {ι : Type} {oSpec : OracleSpec ι}
@@ -532,12 +549,17 @@ def toVerifier : Verifier oSpec (StmtIn × ∀ i, OStmtIn i) (StmtOut × (∀ i,
     statement and challenges.
 
   This is given as an oracle computation itself, since the oracle verifier may be adaptive and has
-  different number of queries depending on the prior responses.
-
-  TODO: define once `numQueries` is defined in `OracleComp` -/
+  different number of queries depending on the prior responses. Shared `oSpec` queries are replayed
+  and charged zero; queries to input oracle statements and prover messages are charged one. -/
 def numQueries (stmt : StmtIn) (challenges : ∀ i, pSpec.Challenge i)
     (verifier : OracleVerifier oSpec StmtIn OStmtIn StmtOut OStmtOut pSpec) :
-  OracleComp (oSpec + ([OStmtIn]ₒ + [pSpec.Message]ₒ)) ℕ := sorry
+    OracleComp (oSpec + ([OStmtIn]ₒ + [pSpec.Message]ₒ)) ℕ :=
+  OracleComp.queryCostTrace
+    (spec := oSpec + ([OStmtIn]ₒ + [pSpec.Message]ₒ))
+    (fun
+      | Sum.inl _ => 0
+      | Sum.inr _ => 1)
+    ((verifier.verify stmt challenges).run)
 
 /-- A **non-adaptive** oracle verifier is an oracle verifier that makes a **fixed** list of queries
     to the input oracle statements and the prover's messages. These queries can depend on the input
@@ -951,3 +973,7 @@ class Reduction.IsPure (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec) w
 end IsPure
 
 end Classes
+
+/-! ## Axiom audit — adaptive oracle-verifier query counting. -/
+#print axioms OracleComp.queryCostTrace
+#print axioms OracleVerifier.numQueries
