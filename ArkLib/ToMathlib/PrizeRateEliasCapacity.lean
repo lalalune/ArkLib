@@ -205,14 +205,17 @@ theorem ordinaryRSCapacityPointwiseAtPrizeRates_of_johnson_sq
     OrdinaryRSCapacityPointwiseAtPrizeRates domain τ ℓ := by
   intro r f
   classical
-  set C : Set (ι → F) :=
-    ReedSolomon.code domain ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ with hC
-  set δ : ℝ := (((((τ r).val : ℕ) : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) with hδdef
-  have hδ : (0 : ℝ) ≤ δ := NNReal.coe_nonneg _
-  have hfl : ⌊δ * (Fintype.card ι : ℝ)⌋₊ = (τ r).val := by
-    rw [hδdef]; exact floor_grid_mul (ι := ι) (τ r).val
+  have hδ : (0 : ℝ) ≤ (((((τ r).val : ℕ) : ℝ≥0) /
+      (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) := NNReal.coe_nonneg _
+  have hfl : ⌊(((((τ r).val : ℕ) : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ)
+      * (Fintype.card ι : ℝ)⌋₊ = (τ r).val :=
+    floor_grid_mul (ι := ι) (τ r).val
   exact JohnsonBound.closeCodewordsRelFinset_card_le_of_floor_minDist_johnson_sq_dist
-    (C := C) (f := f) (δ := δ) (ℓ := ℓ r) hδ hq1
+    (C := (ReedSolomon.code domain
+      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)))
+    (f := f)
+    (δ := (((((τ r).val : ℕ) : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ))
+    (ℓ := ℓ r) hδ hq1
     (by rw [hfl]; exact hP r) (by rw [hfl]; exact hsq r)
 
 /-- **Per-rate pointwise Johnson cap with the RS distance specialised.**
