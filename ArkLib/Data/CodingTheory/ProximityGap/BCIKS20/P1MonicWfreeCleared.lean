@@ -610,6 +610,146 @@ theorem βHensel_weight_bound_all_of_structured_invariant_unlocked_of_normalized
     βHensel_weight_bound_of_structured_invariant_unlocked_of_normalized_divWeight_cases_of_WfreeMatch
       H x₀ R hHyp hH hDH hdR2 hdHR hW hRgraded hDRx0 hlc hWfree h0 hsucc t
 
+theorem βHenselStructuredWeightInvariant_unlocked_of_normalized_divWeight_cases_of_rangeWfreeMatch
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hlc : H.leadingCoeff = 1)
+    (hrange : RestrictedFaaDiBrunoRangeWfreeMatch H x₀ R hHyp)
+    (h0 : ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1)
+    (hsucc : ∀ t : ℕ, ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp (t + 1)
+        = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1)
+    (k : ℕ) :
+    βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k :=
+  βHenselStructuredWeightInvariant_unlocked_of_normalized_divWeight_cases_of_WfreeMatch
+    H x₀ R hHyp hH hDH hDRx0 hdR2 hlc
+    (RestrictedFaaDiBrunoWfreeMatch.of_rangeWfreeMatch H x₀ R hHyp hrange)
+    h0 hsucc k
+
+theorem βHenselStructuredWeightInvariant_all_unlocked_of_normalized_divWeight_cases_of_rangeWfreeMatch
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hlc : H.leadingCoeff = 1)
+    (hrange : RestrictedFaaDiBrunoRangeWfreeMatch H x₀ R hHyp)
+    (h0 : ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1)
+    (hsucc : ∀ t : ℕ, ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp (t + 1)
+        = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1) :
+    ∀ k, βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k :=
+  fun k =>
+    βHenselStructuredWeightInvariant_unlocked_of_normalized_divWeight_cases_of_rangeWfreeMatch
+      H x₀ R hHyp hH hDH hDRx0 hdR2 hlc hrange h0 hsucc k
+
+theorem βHensel_weight_bound_unlocked_of_normalized_divWeight_cases_of_rangeWfreeMatch
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hlc : H.leadingCoeff = 1)
+    (hrange : RestrictedFaaDiBrunoRangeWfreeMatch H x₀ R hHyp)
+    (h0 : ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1)
+    (hsucc : ∀ t : ℕ, ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp (t + 1)
+        = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1)
+    (t : ℕ) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  βHensel_weight_bound_unlocked_of_normalized_divWeight_cases_of_WfreeMatch
+    H x₀ R hHyp hH hDH hDRx0 hdR2 hdHR hW hlc
+    (RestrictedFaaDiBrunoWfreeMatch.of_rangeWfreeMatch H x₀ R hHyp hrange)
+    h0 hsucc t
+
+theorem βHensel_weight_bound_all_unlocked_of_normalized_divWeight_cases_of_rangeWfreeMatch
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hlc : H.leadingCoeff = 1)
+    (hrange : RestrictedFaaDiBrunoRangeWfreeMatch H x₀ R hHyp)
+    (h0 : ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1)
+    (hsucc : ∀ t : ℕ, ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp (t + 1)
+        = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1) :
+    ∀ t, weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  fun t =>
+    βHensel_weight_bound_unlocked_of_normalized_divWeight_cases_of_rangeWfreeMatch
+      H x₀ R hHyp hH hDH hDRx0 hdR2 hdHR hW hlc hrange h0 hsucc t
+
+theorem βHensel_weight_bound_of_structured_invariant_unlocked_of_normalized_divWeight_cases_of_rangeWfreeMatch
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hRgraded : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hlc : H.leadingCoeff = 1)
+    (hrange : RestrictedFaaDiBrunoRangeWfreeMatch H x₀ R hHyp)
+    (h0 : ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1)
+    (hsucc : ∀ t : ℕ, ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp (t + 1)
+        = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1)
+    (t : ℕ) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  βHensel_weight_bound_of_structured_invariant_unlocked_of_normalized_divWeight_cases_of_WfreeMatch
+    H x₀ R hHyp hH hDH hdR2 hdHR hW hRgraded hDRx0 hlc
+    (RestrictedFaaDiBrunoWfreeMatch.of_rangeWfreeMatch H x₀ R hHyp hrange)
+    h0 hsucc t
+
+theorem βHensel_weight_bound_all_of_structured_invariant_unlocked_of_normalized_divWeight_cases_of_rangeWfreeMatch
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hRgraded : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hlc : H.leadingCoeff = 1)
+    (hrange : RestrictedFaaDiBrunoRangeWfreeMatch H x₀ R hHyp)
+    (h0 : ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1)
+    (hsucc : ∀ t : ℕ, ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp (t + 1)
+        = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1) :
+    ∀ t, weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  fun t =>
+    βHensel_weight_bound_of_structured_invariant_unlocked_of_normalized_divWeight_cases_of_rangeWfreeMatch
+      H x₀ R hHyp hH hDH hdR2 hdHR hW hRgraded hDRx0 hlc hrange h0 hsucc t
+
 theorem βHenselStructuredWeightInvariant_unlocked_of_WfreeMatch_successors_fixed
     (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
     (hH : 0 < H.natDegree) (hd : 2 ≤ H.natDegree) {D : ℕ}
@@ -863,6 +1003,12 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_unlocked_of_normalized_divWeight_cases_of_WfreeMatch
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_of_structured_invariant_unlocked_of_normalized_divWeight_cases_of_WfreeMatch
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_of_structured_invariant_unlocked_of_normalized_divWeight_cases_of_WfreeMatch
+#print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_unlocked_of_normalized_divWeight_cases_of_rangeWfreeMatch
+#print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_all_unlocked_of_normalized_divWeight_cases_of_rangeWfreeMatch
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_unlocked_of_normalized_divWeight_cases_of_rangeWfreeMatch
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_unlocked_of_normalized_divWeight_cases_of_rangeWfreeMatch
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_of_structured_invariant_unlocked_of_normalized_divWeight_cases_of_rangeWfreeMatch
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_of_structured_invariant_unlocked_of_normalized_divWeight_cases_of_rangeWfreeMatch
 #print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_unlocked_of_WfreeMatch_successors_fixed
 #print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_all_unlocked_of_WfreeMatch_successors_fixed
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_unlocked_of_WfreeMatch_successors_fixed
