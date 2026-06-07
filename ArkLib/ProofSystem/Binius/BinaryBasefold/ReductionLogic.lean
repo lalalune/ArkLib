@@ -37,6 +37,7 @@ set_option maxHeartbeats 400000
 namespace Binius.BinaryBasefold.CoreInteraction
 noncomputable section
 open OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Polynomial MvPolynomial
+open Sumcheck.Structured
 open Binius.BinaryBasefold
 open scoped NNReal
 
