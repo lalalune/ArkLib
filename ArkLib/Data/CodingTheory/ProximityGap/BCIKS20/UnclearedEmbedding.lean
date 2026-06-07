@@ -36,6 +36,51 @@ theorem embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_uncleared (x₀ : F) (R : F[X
           (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R))) := by
   rw [hasseCoeffRepr𝒪, embeddingOf𝒪Into𝕃_mk, liftBivariate_eq_eval₂_functionFieldT]
 
+/-- The per-term equality target asserting that the plain `hasseCoeffRepr𝒪` embedding already
+matches the cleared root evaluation.  This is intentionally a named target, not a theorem: #139's
+STEP-8 obstruction shows this equality is not available by a uniform per-term scaling argument. -/
+def HasseCoeffRepr𝒪UnclearedMatchesRoot (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) : Prop :=
+  embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R i1 m)
+    = hasseEvalAtRoot H x₀ R i1 m
+
+/-- The same per-term target in raw `eval₂` form: `Y ↦ T` equals `Y ↦ T/W` on the specialized
+iterated-Hasse coefficient.  This is the exact false-path/mismatch surface identified in #139. -/
+def HasseCoeffRepr𝒪UnclearedEval₂Target (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) : Prop :=
+  Polynomial.eval₂ (liftToFunctionField (H := H)) (functionFieldT (H := H))
+      (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R)))
+    =
+    Polynomial.eval₂ (liftToFunctionField (H := H))
+      (functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff)
+      (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R)))
+
+/-- The embedded-coefficient/root equality is exactly the raw `eval₂ T = eval₂ (T/W)` equality. -/
+theorem hasseCoeffRepr𝒪UnclearedMatchesRoot_iff_eval₂Target
+    (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) :
+    HasseCoeffRepr𝒪UnclearedMatchesRoot H x₀ R i1 m ↔
+      HasseCoeffRepr𝒪UnclearedEval₂Target H x₀ R i1 m := by
+  unfold HasseCoeffRepr𝒪UnclearedMatchesRoot HasseCoeffRepr𝒪UnclearedEval₂Target
+  unfold hasseEvalAtRoot
+  rw [embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_uncleared]
+
+/-- Build the embedded-coefficient/root target from the raw `eval₂` target. -/
+theorem HasseCoeffRepr𝒪UnclearedMatchesRoot.of_eval₂Target
+    (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ)
+    (htarget : HasseCoeffRepr𝒪UnclearedEval₂Target H x₀ R i1 m) :
+    HasseCoeffRepr𝒪UnclearedMatchesRoot H x₀ R i1 m :=
+  (hasseCoeffRepr𝒪UnclearedMatchesRoot_iff_eval₂Target H x₀ R i1 m).2 htarget
+
+/-- Project the raw `eval₂` target from the embedded-coefficient/root target. -/
+theorem HasseCoeffRepr𝒪UnclearedEval₂Target.of_matchesRoot
+    (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ)
+    (hmatch : HasseCoeffRepr𝒪UnclearedMatchesRoot H x₀ R i1 m) :
+    HasseCoeffRepr𝒪UnclearedEval₂Target H x₀ R i1 m :=
+  (hasseCoeffRepr𝒪UnclearedMatchesRoot_iff_eval₂Target H x₀ R i1 m).1 hmatch
+
 end BCIKS20.HenselNumerator
 
 #print axioms BCIKS20.HenselNumerator.embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_uncleared
+#print axioms BCIKS20.HenselNumerator.HasseCoeffRepr𝒪UnclearedMatchesRoot
+#print axioms BCIKS20.HenselNumerator.HasseCoeffRepr𝒪UnclearedEval₂Target
+#print axioms BCIKS20.HenselNumerator.hasseCoeffRepr𝒪UnclearedMatchesRoot_iff_eval₂Target
+#print axioms BCIKS20.HenselNumerator.HasseCoeffRepr𝒪UnclearedMatchesRoot.of_eval₂Target
+#print axioms BCIKS20.HenselNumerator.HasseCoeffRepr𝒪UnclearedEval₂Target.of_matchesRoot

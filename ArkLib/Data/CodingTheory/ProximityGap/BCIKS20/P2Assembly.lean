@@ -117,6 +117,49 @@ theorem restrictedFaaDiBrunoPartitionForm_zero_eq_powerSum
   rw [Finset.Nat.sum_antidiagonal_succ]
   simp
 
+/-- The explicit surviving `t = 0` LHS target after the partition branches collapse. -/
+def restrictedFaaDiBrunoPartitionZeroPowerSum
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) : 𝕃 H :=
+  ∑ i ∈ Finset.range ((Q x₀ R H).natDegree + 1),
+    (liftToFunctionField (H := H)
+        ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 R)).coeff i))
+    * (PowerSeries.coeff 0 (βHenselAssembled H x₀ R hHyp)) ^ i
+
+/-- The order-zero LHS collapse, phrased through the named surviving power-sum target. -/
+theorem restrictedFaaDiBrunoPartitionForm_zero_eq_zeroPowerSum
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    restrictedFaaDiBrunoPartitionForm H x₀ R hHyp 0 =
+      restrictedFaaDiBrunoPartitionZeroPowerSum H x₀ R hHyp := by
+  simpa [restrictedFaaDiBrunoPartitionZeroPowerSum] using
+    restrictedFaaDiBrunoPartitionForm_zero_eq_powerSum H x₀ R hHyp
+
+/-- At order zero, the normalized partition residual is exactly the surviving power-sum target
+against the recursion-side partition form. -/
+theorem restrictedPartitionMatchAt_zero_iff_zeroPowerSum_eq_recursion
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0 ↔
+      restrictedFaaDiBrunoPartitionZeroPowerSum H x₀ R hHyp =
+        restrictedMatchRecursionPartitionForm H x₀ R hHyp 0 := by
+  unfold RestrictedFaaDiBrunoPartitionMatchAt
+  rw [restrictedFaaDiBrunoPartitionForm_zero_eq_zeroPowerSum H x₀ R hHyp]
+
+/-- Build the fixed order-zero partition residual from the surviving power-sum equality. -/
+theorem RestrictedFaaDiBrunoPartitionMatchAt.zero_of_zeroPowerSum_eq_recursion
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hzero :
+      restrictedFaaDiBrunoPartitionZeroPowerSum H x₀ R hHyp =
+        restrictedMatchRecursionPartitionForm H x₀ R hHyp 0) :
+    RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0 :=
+  (restrictedPartitionMatchAt_zero_iff_zeroPowerSum_eq_recursion H x₀ R hHyp).2 hzero
+
+/-- Project the surviving power-sum equality from the fixed order-zero partition residual. -/
+theorem zeroPowerSum_eq_recursion_of_partitionMatchAt_zero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hpart : RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0) :
+    restrictedFaaDiBrunoPartitionZeroPowerSum H x₀ R hHyp =
+      restrictedMatchRecursionPartitionForm H x₀ R hHyp 0 :=
+  (restrictedPartitionMatchAt_zero_iff_zeroPowerSum_eq_recursion H x₀ R hHyp).1 hpart
+
 /-- The final all-orders P2 partition-form residual.  This is packaged as a family of
 single-order residuals so the remaining term-level proof can be attacked order by order. -/
 def RestrictedFaaDiBrunoPartitionMatch (x₀ : F) (R : F[X][X][Y])
@@ -191,6 +234,32 @@ theorem RestrictedFaaDiBrunoMatchAt.of_partitionMatchAt
     (hpart : RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp t) :
     RestrictedFaaDiBrunoMatchAt H x₀ R hHyp t :=
   (restrictedMatchAt_iff_partitionMatchAt H x₀ R hHyp t).2 hpart
+
+/-- The carved order-zero P2 core is equivalent to the surviving power-sum target. -/
+theorem restrictedMatchAt_zero_iff_zeroPowerSum_eq_recursion
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0 ↔
+      restrictedFaaDiBrunoPartitionZeroPowerSum H x₀ R hHyp =
+        restrictedMatchRecursionPartitionForm H x₀ R hHyp 0 :=
+  (restrictedMatchAt_iff_partitionMatchAt H x₀ R hHyp 0).trans
+    (restrictedPartitionMatchAt_zero_iff_zeroPowerSum_eq_recursion H x₀ R hHyp)
+
+/-- Build the carved order-zero P2 core from the surviving power-sum equality. -/
+theorem RestrictedFaaDiBrunoMatchAt.zero_of_zeroPowerSum_eq_recursion
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hzero :
+      restrictedFaaDiBrunoPartitionZeroPowerSum H x₀ R hHyp =
+        restrictedMatchRecursionPartitionForm H x₀ R hHyp 0) :
+    RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0 :=
+  (restrictedMatchAt_zero_iff_zeroPowerSum_eq_recursion H x₀ R hHyp).2 hzero
+
+/-- Project the surviving power-sum equality from the carved order-zero P2 core. -/
+theorem zeroPowerSum_eq_recursion_of_restrictedMatchAt_zero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hmatch : RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0) :
+    restrictedFaaDiBrunoPartitionZeroPowerSum H x₀ R hHyp =
+      restrictedMatchRecursionPartitionForm H x₀ R hHyp 0 :=
+  (restrictedMatchAt_zero_iff_zeroPowerSum_eq_recursion H x₀ R hHyp).1 hmatch
 
 /-- Fixed-order truncated-defect cancellation from the partition-form residual. -/
 theorem trunc_defect_cancel_assembled_of_partitionMatchAt
@@ -379,6 +448,14 @@ section AxiomAudit
 #print axioms restrictedMatchRecursionPartitionForm
 #print axioms RestrictedFaaDiBrunoPartitionMatchAt
 #print axioms restrictedFaaDiBrunoPartitionForm_zero_eq_powerSum
+#print axioms restrictedFaaDiBrunoPartitionZeroPowerSum
+#print axioms restrictedFaaDiBrunoPartitionForm_zero_eq_zeroPowerSum
+#print axioms restrictedPartitionMatchAt_zero_iff_zeroPowerSum_eq_recursion
+#print axioms RestrictedFaaDiBrunoPartitionMatchAt.zero_of_zeroPowerSum_eq_recursion
+#print axioms zeroPowerSum_eq_recursion_of_partitionMatchAt_zero
+#print axioms restrictedMatchAt_zero_iff_zeroPowerSum_eq_recursion
+#print axioms RestrictedFaaDiBrunoMatchAt.zero_of_zeroPowerSum_eq_recursion
+#print axioms zeroPowerSum_eq_recursion_of_restrictedMatchAt_zero
 #print axioms RestrictedFaaDiBrunoPartitionMatch
 #print axioms restrictedPartitionMatch_iff_forall_at
 #print axioms RestrictedFaaDiBrunoPartitionMatch.at

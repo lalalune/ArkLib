@@ -1229,6 +1229,30 @@ def fri_soundness
           (δ := 1 - α)
           (W := f)
 
+open ENNReal in
+omit [Nontrivial 𝔽] in
+/-- Complete-codeword extreme of the end-to-end Claim 8.3 residual.
+
+If every full-domain row is already a Reed-Solomon codeword, then the `Code.jointAgreement`
+conclusion of `fri_soundness` holds regardless of the verifier-success premise.  The general
+malicious-prover soundness argument remains open. -/
+theorem fri_soundness_of_forall_mem
+    {t l m : ℕ}
+    (f : Fin t.succ → (ω → 𝔽))
+    (_m_ge_3 : m ≥ 3)
+    (h_mem :
+      ∀ i, f i ∈
+        (ReedSolomon.code
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽) (2 ^ n)).carrier) :
+    fri_soundness (n := n) (s := s) (d := d) (ω := ω) (l := l)
+      (domain_size_cond := domain_size_cond) f _m_ge_3 := by
+  intro _h_accepts
+  exact Code.jointAgreement_of_forall_mem
+    (F := 𝔽) (κ := Fin t.succ) (ι := ω)
+    (C := (ReedSolomon.code
+      (⟨fun x => x, by simp⟩ : ω ↪ 𝔽) (2 ^ n)).carrier)
+    (W := f) h_mem
+
 /-- The round-zero Batched FRI subdomain is equivalent to the original evaluation domain. -/
 noncomputable def subdomainZeroEquiv : ω.subdomain 0 ≃ ω :=
   CosetFftDomainClass.subdomainZeroEquiv ω
@@ -1961,6 +1985,7 @@ set_option linter.style.longLine false in
 #print axioms Fri.friSoundnessTotalErrorAccounting
 #print axioms Fri.friSoundnessTotalErrorAccounting_of_phase_bounds
 #print axioms Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequentialCompositionAndTotalError
+#print axioms Fri.fri_soundness_of_forall_mem
 #print axioms Fri.fri_soundness_of_parts
 
 end Soundness
@@ -1987,6 +2012,7 @@ end Fri
 #print axioms Fri.FriQuerySoundnessParts.of_queryRoundDensityBoundAndBatchedFRIOracleLens
 #print axioms Fri.fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLens
 #print axioms Fri.fri_soundness
+#print axioms Fri.fri_soundness_of_forall_mem
 #print axioms Fri.subdomainZeroEquiv
 #print axioms Fri.reedSolomon_code_subdomainZero_transport
 #print axioms Fri.jointAgreement_subdomainZero_to_domain

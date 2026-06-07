@@ -7,7 +7,7 @@ Authors: Quang Dao
 import ArkLib.CommitmentScheme.Basic
 import ArkLib.OracleReduction.Composition.Sequential.General
 
-set_option linter.style.longFile 1700
+set_option linter.style.longFile 1800
 
 open scoped NNReal
 
@@ -913,6 +913,75 @@ theorem BCSCompiledPhases.toReduction_completeness_of_append {StmtMid WitMid : T
       (oSpec := oSpec) (init := init) (impl := impl)
       phases.interaction phases.opening hInteraction hOpening hAppend)
 
+omit Oₘ in
+/-- Soundness of packaged BCS phases composes through the concrete BCS verifier.
+
+This is the verifier-side analogue of `toReduction_completeness_of_append`: it packages the
+already-supplied committed-interaction and opening verifiers with the existing binary append
+soundness theorem, while preserving the append soundness residual as the remaining deep dependency.
+The conclusion uses the canonical challenge sampler for the appended spec, definitionally the
+BCS-transformed protocol specification. -/
+theorem BCSCompiledPhases.toReduction_soundness_of_append {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    [∀ i, SampleableType ((pSpec.renameMessage CommitmentType).Challenge i)]
+    [∀ i, SampleableType ((pSpec.BCSOpeningPhase pSpecCom e).Challenge i)]
+    (phases : BCSCompiledPhases (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) CommitmentType e)
+    {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {langIn : Set StmtIn} {langMid : Set StmtMid} {langOut : Set StmtOut}
+    {εInteraction εOpening : ℝ≥0}
+    (hInteraction :
+      phases.interaction.verifier.soundness init impl langIn langMid εInteraction)
+    (hOpening : phases.opening.verifier.soundness init impl langMid langOut εOpening)
+    (hAppend :
+      Verifier.appendSoundnessResidual
+        (oSpec := oSpec) (init := init) (impl := impl)
+        phases.interaction.verifier phases.opening.verifier hInteraction hOpening) :
+    @Verifier.soundness _ oSpec StmtIn StmtOut
+      (n + Fin.vsum (fun j => nCom (e.symm j)))
+      (pSpec.renameMessage CommitmentType ++ₚ pSpec.BCSOpeningPhase pSpecCom e)
+      (fun i => ProtocolSpec.instSampleableTypeChallengeAppend i)
+      σ init impl langIn langOut phases.toReduction.verifier (εInteraction + εOpening) := by
+  simpa [BCSCompiledPhases.toReduction, BCSTransform, ProtocolSpec.BCSTransform] using
+    (Verifier.append_soundness
+      (oSpec := oSpec) (init := init) (impl := impl)
+      phases.interaction.verifier phases.opening.verifier hInteraction hOpening hAppend)
+
+omit Oₘ in
+/-- Knowledge soundness of packaged BCS phases composes through the concrete BCS verifier.
+
+This bridge does not prove commitment extractability or the generic query-log compiler; it only
+exposes the standard append-composition theorem for the already-supplied BCS phases under the
+existing append knowledge-soundness residual. -/
+theorem BCSCompiledPhases.toReduction_knowledgeSoundness_of_append {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    [∀ i, SampleableType ((pSpec.renameMessage CommitmentType).Challenge i)]
+    [∀ i, SampleableType ((pSpec.BCSOpeningPhase pSpecCom e).Challenge i)]
+    (phases : BCSCompiledPhases (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) CommitmentType e)
+    {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {relIn : Set (StmtIn × WitIn)} {relMid : Set (StmtMid × WitMid)}
+    {relOut : Set (StmtOut × WitOut)} {εInteraction εOpening : ℝ≥0}
+    (hInteraction :
+      phases.interaction.verifier.knowledgeSoundness init impl relIn relMid εInteraction)
+    (hOpening :
+      phases.opening.verifier.knowledgeSoundness init impl relMid relOut εOpening)
+    (hAppend :
+      Verifier.appendKnowledgeSoundnessResidual
+        (oSpec := oSpec) (init := init) (impl := impl)
+        phases.interaction.verifier phases.opening.verifier hInteraction hOpening) :
+    @Verifier.knowledgeSoundness _ oSpec StmtIn WitIn StmtOut WitOut
+      (n + Fin.vsum (fun j => nCom (e.symm j)))
+      (pSpec.renameMessage CommitmentType ++ₚ pSpec.BCSOpeningPhase pSpecCom e)
+      (fun i => ProtocolSpec.instSampleableTypeChallengeAppend i)
+      σ init impl relIn relOut phases.toReduction.verifier (εInteraction + εOpening) := by
+  simpa [BCSCompiledPhases.toReduction, BCSTransform, ProtocolSpec.BCSTransform] using
+    (Verifier.append_knowledgeSoundness
+      (oSpec := oSpec) (init := init) (impl := impl)
+      phases.interaction.verifier phases.opening.verifier hInteraction hOpening hAppend)
+
 /-- Security obligations still required to turn `BCSCompiledPhases.toReduction` into the final
 compiler theorem.  These are intentionally named as fields rather than hidden in one opaque
 assumption: each field corresponds to a separate proof brick in issue #62.
@@ -1611,6 +1680,8 @@ generic compiler construction or the completeness/soundness preservation theorem
 #print axioms OracleReduction.BCSCompiledPhases.toReduction_eq_BCSTransform
 #print axioms OracleReduction.BCSCompiledPhases.toReduction_perfectCompleteness_of_append
 #print axioms OracleReduction.BCSCompiledPhases.toReduction_completeness_of_append
+#print axioms OracleReduction.BCSCompiledPhases.toReduction_soundness_of_append
+#print axioms OracleReduction.BCSCompiledPhases.toReduction_knowledgeSoundness_of_append
 #print axioms OracleReduction.BCSSecurityFrontier
 #print axioms OracleReduction.BCSSecurityFrontierSatisfied
 #print axioms OracleReduction.BCSSecurityFrontierSatisfied.intro
