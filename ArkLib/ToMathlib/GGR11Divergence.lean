@@ -65,8 +65,10 @@ theorem hammingDist_ge_minDist_of_mem_closeCodewordsRel_ne
   have hVcode : V ∈ interleavedCodeSet (κ := Fin m) C := hV.1
   have hV'code : V' ∈ interleavedCodeSet (κ := Fin m) C := hV'.1
   -- the interleaved code has the same minimum distance as the base code
-  have hmin : Code.minDist (interleavedCodeSet (κ := Fin m) C) = Code.minDist C :=
-    minDist_eq_minDist (F := F) (A := F) (ι := ι) (κ := Fin m) C
+  have hmin : Code.minDist (interleavedCodeSet (κ := Fin m) C) = Code.minDist C := by
+    have he : Code.minDist (C ^⋈ Fin m) = Code.minDist C :=
+      minDist_eq_minDist (F := F) C
+    simpa only [interleavedCode_eq_interleavedCodeSet] using he
   -- distinct codewords are ≥ minDist apart
   have h := JohnsonBound.minDist_le_hammingDist_of_mem_ne
     (C := interleavedCodeSet (κ := Fin m) C) hVcode hV'code hne
