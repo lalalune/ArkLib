@@ -545,6 +545,38 @@ theorem βHensel_weight_structured (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.H
   refine le_trans (add_le_add (add_le_add ha_wt hW_pow) hξ_pow) ?_
   rw [← WithBot.coe_add, ← WithBot.coe_add]
 
+/-- **Structured invariant directly from the concrete divisibility residual.**  Once
+`DivWeightLe` is supplied, the `𝒪`-level factorization is already available, so the structured
+weight bound no longer needs the field-level lift identity or the carved alpha regularity transport.
+-/
+theorem βHensel_weight_structured_of_divWeight (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hdiv : DivWeightLe H x₀ R hHyp hH D)
+    (hξ : weight_Λ_over_𝒪 hH (ClaimA2.ξ x₀ R H hHyp) D
+            ≤ WithBot.some ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1)))
+    (l : ℕ) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp l) D
+      ≤ WithBot.some
+          (1 + (l + 1) * (H.leadingCoeff).natDegree
+            + (2 * l - 1)
+              * ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1))) := by
+  obtain ⟨a, hfact, ha_wt⟩ := hdiv l
+  rw [hfact]
+  refine (weight_Λ_over_𝒪_mul_le H hH hDH _ _).trans ?_
+  refine le_trans (add_le_add (weight_Λ_over_𝒪_mul_le H hH hDH _ _) (le_refl _)) ?_
+  have hW_pow : weight_Λ_over_𝒪 hH ((W𝒪 H) ^ (l + 1)) D
+      ≤ WithBot.some ((l + 1) * (H.leadingCoeff).natDegree) := by
+    refine (weight_Λ_over_𝒪_pow_le H hH hDH (W𝒪 H) (l + 1)).trans ?_
+    exact nsmul_withBot_le (l + 1) _ (weight_Λ_over_𝒪_W H hH hDH)
+  have hξ_pow : weight_Λ_over_𝒪 hH ((ClaimA2.ξ x₀ R H hHyp) ^ (2 * l - 1)) D
+      ≤ WithBot.some
+          ((2 * l - 1) * ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1))) := by
+    refine (weight_Λ_over_𝒪_pow_le H hH hDH (ClaimA2.ξ x₀ R H hHyp) (2 * l - 1)).trans ?_
+    exact nsmul_withBot_le (2 * l - 1) _ hξ
+  refine le_trans (add_le_add (add_le_add ha_wt hW_pow) hξ_pow) ?_
+  rw [← WithBot.coe_add, ← WithBot.coe_add]
+
 /-! ### 4. (P1) the loose weight bound, PROVEN from the structured invariant -/
 
 /-- **(P1), the loose Claim-A.2 bound.**  From the structured invariant (under `hlift` + the carved
@@ -570,6 +602,47 @@ theorem βHensel_weight_bound_of_alphaWeight (x₀ : F) (R : F[X][X][Y])
       ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) := by
   have hstructured := βHensel_weight_structured H x₀ R hHyp hH hDH hlift hα hξ t
   exact βHensel_weight_bound_of_structured_weight H x₀ R hHyp hH hdR2 hdHR hW t hstructured
+
+/-- **(P1), directly from the concrete divisibility residual.**  This version avoids the lift/alpha
+equivalence route: `DivWeightLe` supplies the `𝒪`-factorization consumed by the structured-weight
+proof directly. -/
+theorem βHensel_weight_bound_of_divWeight (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hdiv : DivWeightLe H x₀ R hHyp hH D)
+    (hξ : weight_Λ_over_𝒪 hH (ClaimA2.ξ x₀ R H hHyp) D
+            ≤ WithBot.some ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1)))
+    (t : ℕ) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) := by
+  have hstructured := βHensel_weight_structured_of_divWeight H x₀ R hHyp hH hDH hdiv hξ t
+  exact βHensel_weight_bound_of_structured_weight H x₀ R hHyp hH hdR2 hdHR hW t hstructured
+
+/-- **(P1), directly from normalized base/successor divisibility targets.**  This is a consumer
+adapter for the current normalized #138 proof target. -/
+theorem βHensel_weight_bound_of_normalized_divWeight_cases (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (h0 : ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1)
+    (hsucc : ∀ t : ℕ, ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp (t + 1)
+        = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1)
+    (hξ : weight_Λ_over_𝒪 hH (ClaimA2.ξ x₀ R H hHyp) D
+            ≤ WithBot.some ((Bivariate.natDegreeY R - 1) * (D - Bivariate.natDegreeY H + 1)))
+    (t : ℕ) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  βHensel_weight_bound_of_divWeight H x₀ R hHyp hH hDH hdR2 hdHR hW
+    (DivWeightLe.of_normalized_cases H x₀ R hHyp hH D h0 hsucc) hξ t
 
 /-! ### 4′. Discharging `hξ` via the PROVEN `weight_ξ_bound` (SOLE residual: `hlift` + `hα`) -/
 
@@ -958,7 +1031,10 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.alphaWeight_iff_divWeight_cases
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe.of_divWeight_cases
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_structured
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_structured_of_divWeight
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_bound_of_alphaWeight
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_bound_of_divWeight
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_bound_of_normalized_divWeight_cases
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_bound_of_alphaWeight'
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.W𝒪_dvd_βHensel_zero_of_alpha
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.W𝒪_dvd_βHensel_zero_of_alphaWeight
