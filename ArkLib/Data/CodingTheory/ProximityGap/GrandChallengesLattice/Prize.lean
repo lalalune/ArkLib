@@ -116,6 +116,36 @@ theorem mcaThreshold_eq_top_of_epsMCA_one_le
     exact Nat.lt_succ_iff.mp i.isLt
   exact (mcaThreshold_unique C ε_star hne top hsat hmax).symm
 
+/-- The full/top linear code makes the faithful MCA lattice threshold exist for every target
+threshold.  This is the lattice endpoint form of `epsMCA_top_eq_zero`. -/
+theorem mcaThresholdExists_topCode (ε_star : ℝ≥0) :
+    mcaThresholdExists (((⊤ : LinearCode ι F) : Set (ι → F))) ε_star := by
+  let top : Fin (Fintype.card ι + 1) := ⟨Fintype.card ι, Nat.lt_succ_self _⟩
+  refine ⟨top, ?_⟩
+  unfold mcaSatisfies
+  rw [epsMCA_top_eq_zero]
+  exact zero_le _
+
+/-- The faithful MCA lattice threshold of the full/top linear code is the top lattice index. -/
+theorem mcaThreshold_topCode_eq_top (ε_star : ℝ≥0) :
+    mcaThreshold (((⊤ : LinearCode ι F) : Set (ι → F))) ε_star
+        (mcaThresholdExists_topCode (ι := ι) (F := F) ε_star) =
+      ⟨Fintype.card ι, Nat.lt_succ_self _⟩ := by
+  let top : Fin (Fintype.card ι + 1) := ⟨Fintype.card ι, Nat.lt_succ_self _⟩
+  change mcaThreshold (((⊤ : LinearCode ι F) : Set (ι → F))) ε_star
+        (mcaThresholdExists_topCode (ι := ι) (F := F) ε_star) = top
+  have hsat : mcaSatisfies (((⊤ : LinearCode ι F) : Set (ι → F))) ε_star top := by
+    unfold mcaSatisfies
+    rw [epsMCA_top_eq_zero]
+    exact zero_le _
+  have hmax : ∀ i : Fin (Fintype.card ι + 1),
+      mcaSatisfies (((⊤ : LinearCode ι F) : Set (ι → F))) ε_star i → i ≤ top := by
+    intro i _hi
+    rw [Fin.le_iff_val_le_val]
+    exact Nat.lt_succ_iff.mp i.isLt
+  exact (mcaThreshold_unique (((⊤ : LinearCode ι F) : Set (ι → F))) ε_star
+    (mcaThresholdExists_topCode (ι := ι) (F := F) ε_star) top hsat hmax).symm
+
 /-- Endpoint upper bounds resolve the faithful MCA lattice prize with threshold `1` at every
 prize rate. -/
 theorem mcaPrizeLatticeResolved_top_of_radiusOne_bounds
@@ -1208,3 +1238,5 @@ end ProximityGap
 
 #print axioms
   ProximityGap.GrandChallengesLattice.listPrizeLatticeResolved_of_ordinaryRSCapacityAtPrizeRates_and_elias_next
+#print axioms ProximityGap.GrandChallengesLattice.mcaThresholdExists_topCode
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_topCode_eq_top
