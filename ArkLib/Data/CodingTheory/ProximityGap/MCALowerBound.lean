@@ -66,6 +66,22 @@ theorem epsMCA_ge_inv_card_of_mcaEvent
   gcongr
   exact_mod_cast hcard1
 
+open Classical in
+/-- **The full code has zero MCA error.** For `C = univ`, every pair `(u₀, u₁)` is jointly
+matchable by codewords (themselves), so `pairJointAgreesOn` always holds and `mcaEvent` never
+fires. With `epsMCA_C0_ge_half` this brackets the MCA error across the structural extremes:
+`epsMCA univ δ = 0`, while the zero code reaches `≥ 1/2`. -/
+theorem epsMCA_univ_eq_zero (δ : ℝ≥0) :
+    epsMCA (F := F) (A := A) (Set.univ : Set (ι → A)) δ = 0 := by
+  unfold epsMCA
+  refine le_antisymm (iSup_le fun u => ?_) (zero_le _)
+  rw [prob_uniform_eq_card_filter_div_card]
+  have hfalse : ∀ γ : F, ¬ mcaEvent (Set.univ : Set (ι → A)) δ (u 0) (u 1) γ := by
+    rintro γ ⟨S, hS, hw, hno⟩
+    exact hno ⟨u 0, Set.mem_univ _, u 1, Set.mem_univ _, fun i _ => ⟨rfl, rfl⟩⟩
+  rw [Finset.filter_false_of_mem (fun γ _ => hfalse γ)]
+  simp
+
 end ProximityGap
 
 namespace ProximityGap.MCALowerExample
