@@ -725,3 +725,7 @@ set_option linter.style.longLine false in
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.RestrictedMatchAtZeroEval₂WDivTarget.of_partitionMatch
 #print axioms BCIKS20.HenselNumerator.embeddingCleared_eq_Wpow_mul_uncleared_of_target
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.restrictedMatchAtZeroEval₂WDivTarget_iff_zeroClearingPolyFull_lift
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.restrictedMatchAt_zero_iff_zeroClearingPolyFull_lift
