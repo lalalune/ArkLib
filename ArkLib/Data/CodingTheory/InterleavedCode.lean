@@ -789,47 +789,6 @@ theorem jointAgreement_reedSolomon_equiv
   intro v hv
   exact ReedSolomon.code_reindex_mem e hdom hv
 
-/-- **Perfect joint agreement base case.**  If every word `W i` in the stack is itself a
-codeword of `C`, then the stack jointly agrees with `C` for *any* proximity radius `δ`: the
-agreement set can be taken to be all of `ι`, on which each `W i` agrees with the codeword `W i`
-trivially.  This is the soundness-complete extreme of the correlated-agreement-to-joint-agreement
-bridge (the case where the input functions are already on the code), and it is the base supplied
-to the FRI/STIR query-soundness frontier when the proximity gap places the words inside the code.
--/
-theorem jointAgreement_of_forall_mem
-    {F κ ι : Type*} [Fintype ι] [DecidableEq F]
-    (C : Set (ι → F)) (δ : ℝ≥0) (W : κ → ι → F)
-    (hW : ∀ i, W i ∈ C) :
-    jointAgreement (C := C) (δ := δ) (W := W) := by
-  classical
-  refine ⟨Finset.univ, ?_, W, ?_⟩
-  · have hle : (1 - δ : ℝ≥0) ≤ 1 := tsub_le_self
-    calc (1 - δ : ℝ≥0) * (Fintype.card ι)
-        ≤ 1 * (Fintype.card ι) :=
-          mul_le_mul_of_nonneg_right hle (by positivity)
-      _ = (Fintype.card ι) := by ring
-      _ = (Finset.univ.card : ℝ≥0) := by rw [Finset.card_univ]
-  · intro i
-    refine ⟨hW i, ?_⟩
-    intro j _
-    simp
-
-/-- **Monotonicity of joint agreement in the proximity radius.**  Enlarging the proximity radius
-`δ₁ ≤ δ₂` weakens the joint-agreement conclusion: a witness for radius `δ₁` is also a witness for
-radius `δ₂`, since the required agreement-set size `(1 - δ) * |ι|` only decreases as `δ` grows.
-This lets the FRI/STIR query-soundness pipeline relax the proximity radius produced by the
-correlated-agreement analysis to the coarser radius the end-to-end statement is phrased with. -/
-theorem jointAgreement_mono
-    {F κ ι : Type*} [Fintype ι] [DecidableEq F]
-    (C : Set (ι → F)) {δ₁ δ₂ : ℝ≥0} (h : δ₁ ≤ δ₂) (W : κ → ι → F)
-    (hja : jointAgreement (C := C) (δ := δ₁) (W := W)) :
-    jointAgreement (C := C) (δ := δ₂) (W := W) := by
-  classical
-  rcases hja with ⟨S, hS, v, hv⟩
-  refine ⟨S, ?_, v, hv⟩
-  refine le_trans ?_ hS
-  exact mul_le_mul_of_nonneg_right (tsub_le_tsub_left h 1) (by positivity)
-
 open InterleavedCode in
 /-- Equivalence between the agreement-based definition `jointAgreement` and
 the distance/proximity-based definition `jointProximity` (the latter is represented in
