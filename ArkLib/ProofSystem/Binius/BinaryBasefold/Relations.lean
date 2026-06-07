@@ -141,7 +141,7 @@ noncomputable def getFoldProverFinalOutput (i : Fin ℓ)
   let stmtOut : Statement (L := L) Context i.succ := {
     ctx := stmtIn.ctx,
     sumcheck_target := h_i.val.eval r_i',
-    challenges := Fin.snoc stmtIn.challenges r_i'
+    challenges := Fin.cons r_i' stmtIn.challenges
   }
   -- The folded witness oracle: one extra `iterated_fold` step over `witIn.f`. Stated in the exact
   -- `(i := ⟨i, _⟩) (steps := 1) (destIdx := ⟨i.val + 1, _⟩)` shape of `getMidCodewords_succ`, so
@@ -184,7 +184,7 @@ def foldVerifierStmtOut (i : Fin ℓ)
   {
     ctx := stmtIn.ctx,
     sumcheck_target := msg0.val.eval chal1,
-    challenges := Fin.snoc stmtIn.challenges chal1
+    challenges := Fin.cons chal1 stmtIn.challenges
   }
 
 end FoldStepLogic
