@@ -99,4 +99,26 @@ theorem βHenselAssembled_eq_gammaGenuine_iff_residual
   · intro hroot
     exact βHenselAssembled_eq_gammaGenuine H x₀ R hHyp hroot
 
+/-- **Coefficient-level form: every assembled coefficient is the genuine Hensel coefficient
+iff the carved P2 residual holds.** `coeff t (βHenselAssembled …) = αGenuine t` for all `t`
+iff `FaaDiBrunoSuccSumZeroResidual`. This is the order-by-order shape downstream Appendix-A
+arguments consume; it follows from `βHenselAssembled_eq_gammaGenuine_iff_residual` by
+`PowerSeries.ext` (recall `αGenuine t = coeff t (gammaGenuine …)`). The forward direction
+(residual ⟹ coefficient match) was already available as
+`coeff_βHenselAssembled_eq_αGenuine_of_coeff_succ_eval`; this packages both directions. -/
+theorem coeff_βHenselAssembled_eq_αGenuine_iff_residual
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    (∀ t : ℕ, PowerSeries.coeff t (βHenselAssembled H x₀ R hHyp)
+        = αGenuine H x₀ R hHyp t) ↔
+      FaaDiBrunoSuccSumZeroResidual H x₀ R hHyp := by
+  rw [← βHenselAssembled_eq_gammaGenuine_iff_residual]
+  constructor
+  · intro h
+    ext t
+    rw [h t]
+    simp only [αGenuine]
+  · intro h t
+    rw [h]
+    simp only [αGenuine]
+
 end BCIKS20.HenselNumerator
