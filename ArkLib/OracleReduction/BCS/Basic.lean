@@ -748,6 +748,26 @@ theorem BCSOpeningSchedule.toOpeningStatements_nodup
     (BCSOpeningRequest.indexed_toOpeningStatement_injective
       (pSpec := pSpec) (Oₘ := Oₘ) (CommitmentType := CommitmentType))
 
+/-- A duplicate-free typed opening schedule gives duplicate-free indexed opening statements after
+filtering to one committed oracle message. -/
+theorem BCSOpeningSchedule.toOpeningStatements_filter_messageIdx_nodup
+    {CommitmentType : pSpec.MessageIdx → Type} [DecidableEq pSpec.MessageIdx]
+    {schedule : BCSOpeningSchedule (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType}
+    (i : pSpec.MessageIdx) (hschedule : schedule.Nodup) :
+    (schedule.toOpeningStatements.filter (fun statement => statement.1 = i)).Nodup :=
+  (BCSOpeningSchedule.toOpeningStatements_nodup hschedule).filter _
+
+/-- Duplicate-freeness of the per-message indexed opening-statement view is equivalent to
+duplicate-freeness of the corresponding typed filtered schedule. -/
+@[simp] theorem BCSOpeningSchedule.toOpeningStatements_filter_messageIdx_nodup_iff
+    {CommitmentType : pSpec.MessageIdx → Type} [DecidableEq pSpec.MessageIdx]
+    (schedule : BCSOpeningSchedule (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType)
+    (i : pSpec.MessageIdx) :
+    (schedule.toOpeningStatements.filter (fun statement => statement.1 = i)).Nodup ↔
+      (schedule.filter (fun request => request.messageIdx = i)).Nodup := by
+  rw [← BCSOpeningSchedule.toOpeningStatements_filter_messageIdx (schedule := schedule) i]
+  exact BCSOpeningSchedule.toOpeningStatements_nodup_iff _
+
 /-- The typed opening-log boundary for the not-yet-generic BCS compiler.
 
 The current `BCSCompiledPhases` interface still accepts an abstract opening phase.  This structure
@@ -1892,6 +1912,8 @@ generic compiler construction or the completeness/soundness preservation theorem
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_injective
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_nodup
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_nodup_iff
+#print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_filter_messageIdx_nodup
+#print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_filter_messageIdx_nodup_iff
 #print axioms OracleReduction.BCSOpeningLogFrontier
 #print axioms OracleReduction.BCSOpeningLogFrontierSatisfied
 #print axioms OracleReduction.BCSOpeningLogFrontierSatisfied.intro

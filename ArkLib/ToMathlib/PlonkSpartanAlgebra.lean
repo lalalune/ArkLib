@@ -20,9 +20,15 @@ import ArkLib.Data.MvPolynomial.Multilinear
 * `MvPolynomial.sum_eval_eqIndicator_prod_boolean` /
   `MvPolynomial.sum_weighted_eval_eqIndicator_prod_boolean` — summing that eq-indicator over the
   boolean cube gives `1`, and a weighted sum selects the target value `f y`.
+* `MvPolynomial.sum_eval_eqIndicator_prod_boolean_dual` /
+  `MvPolynomial.sum_weighted_eval_eqIndicator_prod_boolean_dual` — the dual fixed-evaluation
+  partition-of-unity forms, summing over selector centers.
 * `MvPolynomial.sum_eval_eqPolynomial_zeroOne` /
   `MvPolynomial.sum_weighted_eval_eqPolynomial_zeroOne` — the same selector interfaces for the
   in-tree `eqPolynomial` notation consumed by Spartan/MLE code.
+* `MvPolynomial.sum_eval_eqPolynomial_zeroOne_dual` /
+  `MvPolynomial.sum_weighted_eval_eqPolynomial_zeroOne_dual` — the corresponding dual
+  `eqPolynomial` selector forms.
 * `Finset.prod_fin_add_dite_split` — a product over `Fin (ℓ+κ)` that is `Fp` on the `κ`-prefix and
   `Fs` on the `ℓ`-suffix factors as `(∏ Fp)·(∏ Fs)` (#19/#29/#33/#62, dedups RingSwitching/Binius).
 -/
@@ -133,6 +139,46 @@ theorem sum_weighted_eval_eqIndicator_prod_boolean {σ R : Type*} [Fintype σ]
     _ = f y := by
         simp [mul_ite]
 
+/-- The eq-indicator has total mass `1` when summing over selector centers. -/
+theorem sum_eval_eqIndicator_prod_boolean_dual {σ R : Type*} [Fintype σ] [DecidableEq σ]
+    [CommRing R] (x : σ → Fin 2) :
+    (∑ y : σ → Fin 2,
+      MvPolynomial.eval (fun i => (x i : R))
+        (∏ i : σ, ((1 - MvPolynomial.X i) * (1 - MvPolynomial.C ((y i : R)))
+          + MvPolynomial.X i * MvPolynomial.C ((y i : R))))) = 1 := by
+  classical
+  calc
+    (∑ y : σ → Fin 2,
+      MvPolynomial.eval (fun i => (x i : R))
+        (∏ i : σ, ((1 - MvPolynomial.X i) * (1 - MvPolynomial.C ((y i : R)))
+          + MvPolynomial.X i * MvPolynomial.C ((y i : R)))))
+        = ∑ y : σ → Fin 2, (if x = y then (1 : R) else 0) := by
+            refine Finset.sum_congr rfl ?_
+            intro y _
+            exact MvPolynomial.eval_eqIndicator_prod_boolean x y
+    _ = 1 := by
+        simp
+
+/-- A weighted sum over eq-indicator selector centers selects the fixed evaluation point. -/
+theorem sum_weighted_eval_eqIndicator_prod_boolean_dual {σ R : Type*}
+    [Fintype σ] [DecidableEq σ] [CommRing R] (f : (σ → Fin 2) → R) (x : σ → Fin 2) :
+    (∑ y : σ → Fin 2,
+      f y * MvPolynomial.eval (fun i => (x i : R))
+        (∏ i : σ, ((1 - MvPolynomial.X i) * (1 - MvPolynomial.C ((y i : R)))
+          + MvPolynomial.X i * MvPolynomial.C ((y i : R))))) = f x := by
+  classical
+  calc
+    (∑ y : σ → Fin 2,
+      f y * MvPolynomial.eval (fun i => (x i : R))
+        (∏ i : σ, ((1 - MvPolynomial.X i) * (1 - MvPolynomial.C ((y i : R)))
+          + MvPolynomial.X i * MvPolynomial.C ((y i : R)))))
+        = ∑ y : σ → Fin 2, f y * (if x = y then (1 : R) else 0) := by
+            refine Finset.sum_congr rfl ?_
+            intro y _
+            rw [MvPolynomial.eval_eqIndicator_prod_boolean x y]
+    _ = f x := by
+        simp [mul_ite]
+
 /-- The in-tree `eqPolynomial` has total mass `1` over the boolean cube. -/
 theorem sum_eval_eqPolynomial_zeroOne {σ R : Type*} [Fintype σ] [DecidableEq σ]
     [CommRing R] (y : σ → Fin 2) :
@@ -165,6 +211,38 @@ theorem sum_weighted_eval_eqPolynomial_zeroOne {σ R : Type*} [Fintype σ]
     _ = f y := by
         simp [mul_ite]
 
+/-- The in-tree `eqPolynomial` has total mass `1` when summing over selector centers. -/
+theorem sum_eval_eqPolynomial_zeroOne_dual {σ R : Type*} [Fintype σ] [DecidableEq σ]
+    [CommRing R] (x : σ → Fin 2) :
+    (∑ y : σ → Fin 2,
+      eval (x : σ → R) (eqPolynomial y)) = 1 := by
+  classical
+  calc
+    (∑ y : σ → Fin 2,
+      eval (x : σ → R) (eqPolynomial y))
+        = ∑ y : σ → Fin 2, (if x = y then (1 : R) else 0) := by
+            refine Finset.sum_congr rfl ?_
+            intro y _
+            exact eqPolynomial_eval_zeroOne y x
+    _ = 1 := by
+        simp
+
+/-- A weighted sum over in-tree `eqPolynomial` selector centers selects the fixed point. -/
+theorem sum_weighted_eval_eqPolynomial_zeroOne_dual {σ R : Type*} [Fintype σ]
+    [DecidableEq σ] [CommRing R] (f : (σ → Fin 2) → R) (x : σ → Fin 2) :
+    (∑ y : σ → Fin 2,
+      f y * eval (x : σ → R) (eqPolynomial y)) = f x := by
+  classical
+  calc
+    (∑ y : σ → Fin 2,
+      f y * eval (x : σ → R) (eqPolynomial y))
+        = ∑ y : σ → Fin 2, f y * (if x = y then (1 : R) else 0) := by
+            refine Finset.sum_congr rfl ?_
+            intro y _
+            rw [eqPolynomial_eval_zeroOne y x]
+    _ = f x := by
+        simp [mul_ite]
+
 end MvPolynomial
 
 #print axioms Finset.prod_div_perm_eq_one_of_eq_comp
@@ -173,5 +251,9 @@ end MvPolynomial
 #print axioms MvPolynomial.eval_eqIndicator_prod_boolean
 #print axioms MvPolynomial.sum_eval_eqIndicator_prod_boolean
 #print axioms MvPolynomial.sum_weighted_eval_eqIndicator_prod_boolean
+#print axioms MvPolynomial.sum_eval_eqIndicator_prod_boolean_dual
+#print axioms MvPolynomial.sum_weighted_eval_eqIndicator_prod_boolean_dual
 #print axioms MvPolynomial.sum_eval_eqPolynomial_zeroOne
 #print axioms MvPolynomial.sum_weighted_eval_eqPolynomial_zeroOne
+#print axioms MvPolynomial.sum_eval_eqPolynomial_zeroOne_dual
+#print axioms MvPolynomial.sum_weighted_eval_eqPolynomial_zeroOne_dual
