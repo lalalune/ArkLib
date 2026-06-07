@@ -736,6 +736,26 @@ lemma card_filter_agree_eq_card_filter_vanish_of_base
       = (L.filter (fun c => c i - c₀ i = 0)).card := by
   rw [filter_agree_eq_filter_vanish_of_base s f c₀ i L hbase]
 
+/-- **Aggregate agreement↔vanishing rewrite on the base-agreement coordinates.** Summing over
+the coordinates where `c₀` agrees with `f`, the agreement-fiber table has the same real-valued
+mass as the recentred vanishing-fiber table:
+
+`∑_{i : c₀ i = f i} |{c ∈ L | c i = f i}|
+  = ∑_{i : c₀ i = f i} |{c ∈ L | c i - c₀ i = 0}|`.
+
+This is the finite-table form of `card_filter_agree_eq_card_filter_vanish_of_base` used when
+moving from agreement-count lower bounds to recentred-vanishing design-budget terms. -/
+lemma sum_card_filter_agree_eq_sum_card_filter_vanish_on_base_agreement
+    (s : ℕ) (f c₀ : ι → Fin s → F) (L : Finset (ι → Fin s → F)) :
+    (∑ i ∈ Finset.univ.filter (fun i => c₀ i = f i),
+        ((L.filter (fun c => c i = f i)).card : ℝ)) =
+      ∑ i ∈ Finset.univ.filter (fun i => c₀ i = f i),
+        ((L.filter (fun c => c i - c₀ i = 0)).card : ℝ) := by
+  refine Finset.sum_congr rfl ?_
+  intro i hi
+  exact_mod_cast card_filter_agree_eq_card_filter_vanish_of_base
+    s f c₀ i L (Finset.mem_filter.mp hi).2
+
 end FiberRecentre
 
 /-! ### `#print axioms` verification anchors -/
@@ -790,3 +810,4 @@ end CodingTheory
 #print axioms CodingTheory.list_card_le_rank_budget_div_gap_of_filter_linearIndependent
 #print axioms CodingTheory.filter_agree_eq_filter_vanish_of_base
 #print axioms CodingTheory.card_filter_agree_eq_card_filter_vanish_of_base
+#print axioms CodingTheory.sum_card_filter_agree_eq_sum_card_filter_vanish_on_base_agreement
