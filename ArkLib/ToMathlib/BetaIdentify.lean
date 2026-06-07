@@ -452,7 +452,7 @@ theorem correlatedAgreement_affine_curves_johnson_concrete_betaEmb
           γ (0 : F) b.R b.H b.hHyp = polyToPowerSeries𝕃 b.H
             ((Polynomial.map Polynomial.C v₀)
               + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)) →
-          HenselDatum (k := k) (deg := deg) (domain := domain) (δ := δ) u P v₀ v₁) ×'
+          HenselDatumProducer.MatchingDvdInput (k := k) (deg := deg) (domain := domain) (δ := δ) u P v₀ v₁) ×'
         (∀ (_P : F → Polynomial F) (v₀ v₁ : F[X]),
           γ (0 : F) b.R b.H b.hHyp = polyToPowerSeries𝕃 b.H
             ((Polynomial.map Polynomial.C v₀)
