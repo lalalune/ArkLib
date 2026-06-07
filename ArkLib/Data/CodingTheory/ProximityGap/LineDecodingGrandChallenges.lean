@@ -38,6 +38,19 @@ def GrandChallenges.MCALowerWitness.ofDoubleCover (C : Set (ι → F)) (δ ε_st
     rw [epsMCA_eq_zero_of_forall_double_cover C δ hcov]
     simp
 
+/-- Grand-MCA lower witness from the named per-bad-scalar double-cover obligations. This is the
+same repaired coverage path as `MCALowerWitness.ofDoubleCover`, but with the local GS extraction
+target exposed directly. -/
+def GrandChallenges.MCALowerWitness.ofBadScalarDoubleCover
+    (C : Set (ι → F)) (δ ε_star : ℝ≥0)
+    (hδ_le_one : δ ≤ 1)
+    (hcov : ∀ (u : Code.WordStack F (Fin 2) ι) (γ : F),
+      MCABadScalarDoubleCover (F := F) (A := F) C δ (u 0) (u 1) γ) :
+    GrandChallenges.MCALowerWitness C ε_star :=
+  GrandChallenges.MCALowerWitness.ofLe hδ_le_one <| by
+    rw [epsMCA_eq_zero_of_badScalarDoubleCover C δ hcov]
+    simp
+
 /-- Prize-rate specialization of repaired double-cover data.  At any ABF26 prize rate, an
 explicit `MCAForallDoubleCover` hypothesis for the corresponding Reed-Solomon code gives a
 one-sided MCA lower witness at `epsStar`. -/
@@ -51,6 +64,22 @@ theorem GrandChallenges.exists_prize_mcaLowerWitness_ofDoubleCover
         epsStar,
       w.δ = δ := by
   refine ⟨GrandChallenges.MCALowerWitness.ofDoubleCover
+    (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+    δ epsStar hδ_le_one hcov, rfl⟩
+
+/-- Prize-rate specialization of the named per-bad-scalar double-cover surface. -/
+theorem GrandChallenges.exists_prize_mcaLowerWitness_ofBadScalarDoubleCover
+    (domain : ι ↪ F) (j : Fin 4) (δ : ℝ≥0)
+    (hδ_le_one : δ ≤ 1)
+    (hcov : ∀ (u : Code.WordStack F (Fin 2) ι) (γ : F),
+      MCABadScalarDoubleCover (F := F) (A := F)
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        δ (u 0) (u 1) γ) :
+    ∃ w : GrandChallenges.MCALowerWitness
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar,
+      w.δ = δ := by
+  refine ⟨GrandChallenges.MCALowerWitness.ofBadScalarDoubleCover
     (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
     δ epsStar hδ_le_one hcov, rfl⟩
 
@@ -83,6 +112,26 @@ theorem mcaThreshold_spec_ofDoubleCover (C : Set (ι → F)) (δ ε_star : ℝ�
   mcaThreshold_spec C ε_star
     (mcaThresholdExists_ofDoubleCover C δ ε_star hδ_le_one hcov)
 
+/-- A named per-bad-scalar double-cover target makes the faithful MCA lattice threshold exist. -/
+theorem mcaThresholdExists_ofBadScalarDoubleCover (C : Set (ι → F)) (δ ε_star : ℝ≥0)
+    (hδ_le_one : δ ≤ 1)
+    (hcov : ∀ (u : Code.WordStack F (Fin 2) ι) (γ : F),
+      MCABadScalarDoubleCover (F := F) (A := F) C δ (u 0) (u 1) γ) :
+    mcaThresholdExists C ε_star :=
+  mcaThresholdExists_of_MCALowerWitness C ε_star
+    (MCALowerWitness.ofBadScalarDoubleCover C δ ε_star hδ_le_one hcov)
+
+/-- The faithful MCA threshold created from named per-bad-scalar double-cover data satisfies the
+MCA bound. -/
+theorem mcaThreshold_spec_ofBadScalarDoubleCover (C : Set (ι → F)) (δ ε_star : ℝ≥0)
+    (hδ_le_one : δ ≤ 1)
+    (hcov : ∀ (u : Code.WordStack F (Fin 2) ι) (γ : F),
+      MCABadScalarDoubleCover (F := F) (A := F) C δ (u 0) (u 1) γ) :
+    let hne := mcaThresholdExists_ofBadScalarDoubleCover C δ ε_star hδ_le_one hcov
+    mcaSatisfies C ε_star (mcaThreshold C ε_star hne) :=
+  mcaThreshold_spec C ε_star
+    (mcaThresholdExists_ofBadScalarDoubleCover C δ ε_star hδ_le_one hcov)
+
 /-- Per-rate repaired double-cover data resolves the faithful MCA lattice prize existentially.
 This is the prize-facing aggregation of the #140 repaired coverage theorem through the existing
 lower-witness lattice front door. -/
@@ -98,14 +147,34 @@ theorem exists_mcaPrizeLatticeResolved_ofDoubleCover
       (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
       (δ j) epsStar (hδ_le_one j) (hcov j)
 
+/-- Per-rate named per-bad-scalar double-cover obligations resolve the faithful MCA lattice prize
+existentially. -/
+theorem exists_mcaPrizeLatticeResolved_ofBadScalarDoubleCover
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hcov : ∀ j : Fin 4, ∀ (u : Code.WordStack F (Fin 2) ι) (γ : F),
+      MCABadScalarDoubleCover (F := F) (A := F)
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) (u 0) (u 1) γ) :
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1), mcaPrizeLatticeResolved domain τ :=
+  exists_mcaPrizeLatticeResolved_of_lowerWitnesses domain fun j =>
+    GrandChallenges.MCALowerWitness.ofBadScalarDoubleCover
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      (δ j) epsStar (hδ_le_one j) (hcov j)
+
 end LatticeWitness
 
 end GrandChallengesLattice
 
 #print axioms ProximityGap.GrandChallenges.MCALowerWitness.ofDoubleCover
+#print axioms ProximityGap.GrandChallenges.MCALowerWitness.ofBadScalarDoubleCover
 #print axioms ProximityGap.GrandChallenges.exists_prize_mcaLowerWitness_ofDoubleCover
+#print axioms ProximityGap.GrandChallenges.exists_prize_mcaLowerWitness_ofBadScalarDoubleCover
 #print axioms ProximityGap.GrandChallengesLattice.mcaThresholdExists_ofDoubleCover
 #print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_ofDoubleCover
+#print axioms ProximityGap.GrandChallengesLattice.mcaThresholdExists_ofBadScalarDoubleCover
+#print axioms ProximityGap.GrandChallengesLattice.mcaThreshold_spec_ofBadScalarDoubleCover
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_ofDoubleCover
+#print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_ofBadScalarDoubleCover
 
 end ProximityGap

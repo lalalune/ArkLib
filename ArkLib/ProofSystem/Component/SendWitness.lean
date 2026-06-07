@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Quang Dao
 -/
 import ArkLib.OracleReduction.Security.RoundByRound
+import ArkLib.OracleReduction.Security.OracleZeroKnowledge
 import ArkLib.OracleReduction.Security.ZeroKnowledge
 import Mathlib.Data.FinEnum
 
@@ -404,6 +405,89 @@ def toORelOut :
   setOf (fun ⟨⟨stmt, oStmtAndWit⟩, _⟩ =>
     oRelIn ⟨⟨stmt, fun i => oStmtAndWit (Sum.inl i)⟩, (oStmtAndWit (Sum.inr 0))⟩)
 
+/-- The simulator for `SendSingleWitness` when the sent witness is determined by the public
+statement and oracle statement. The transcript has one prover message, so the simulator emits that
+publicly determined witness. -/
+def oracleTranscriptSimulator (witOf : Statement × (∀ i, OStatement i) → Witness) :
+    OracleReduction.TranscriptSimulator oSpec Statement OStatement (oraclePSpec Witness) :=
+  fun stmtIn => pure (fun i => match i with | ⟨0, _⟩ => witOf stmtIn)
+
+/-- The honest transcript distribution for `SendSingleWitness` is the deterministic one-message
+transcript containing the sent witness. -/
+theorem honestTranscriptDist_oracleReduction_evalDist
+    (stmt : Statement) (oStmt : ∀ i, OStatement i) (wit : Witness) :
+    evalDist (Reduction.honestTranscriptDist init impl
+        (oracleReduction oSpec Statement OStatement Witness).toReduction (stmt, oStmt) wit) =
+      evalDist (pure (fun i => match i with | ⟨0, _⟩ => wit) :
+        OptionT ProbComp (FullTranscript (oraclePSpec Witness))) := by
+  apply evalDist_ext
+  intro transcript
+  classical
+  unfold Reduction.honestTranscriptDist
+  have _inst : ProverOnly (oraclePSpec Witness) := { prover_first' := by simp }
+  simp only [OracleReduction.toReduction, oracleReduction]
+  rw [Reduction.run_of_prover_first]
+  simp only [oracleProver, id_eq, liftM_pure, pure_bind, bind_pure_comp,
+    OracleVerifier.toVerifier, oracleVerifier]
+  erw [simulateQ_pure]
+  simp only [StateT.run'_eq, StateT.run_pure, map_pure, bind_pure_comp]
+  rw [OptionT.probOutput_eq, OptionT.probOutput_eq]
+  simp [probOutput_map_const, HasEvalPMF.probFailure_eq_zero]
+  rfl
+
+/-- `SendSingleWitness` is perfectly HVZK when the relation's witness is determined by the public
+statement and oracle statement. The hypothesis is necessary: the protocol transcript reveals the
+sent witness. -/
+theorem oracleReduction_perfectHVZK_of_witness_eq
+    (witOf : Statement × (∀ i, OStatement i) → Witness)
+    (hRel : ∀ stmtIn wit, (stmtIn, wit) ∈ oRelIn → wit = witOf stmtIn) :
+    OracleReduction.perfectHVZK init impl oRelIn
+      (oracleReduction oSpec Statement OStatement Witness)
+      (oracleTranscriptSimulator (oSpec := oSpec) (Statement := Statement)
+        (OStatement := OStatement) (Witness := Witness) witOf) := by
+  intro stmtIn wit hrel
+  unfold oracleTranscriptSimulator
+  rw [← hRel stmtIn wit hrel]
+  exact (honestTranscriptDist_oracleReduction_evalDist (oSpec := oSpec)
+    (Statement := Statement) (OStatement := OStatement) (Witness := Witness)
+    (init := init) (impl := impl) stmtIn.1 stmtIn.2 wit).symm
+
+/-- Perfect HVZK implies statistical HVZK for `SendSingleWitness` at every error budget. -/
+theorem oracleReduction_statisticalHVZK_of_witness_eq
+    (witOf : Statement × (∀ i, OStatement i) → Witness)
+    (hRel : ∀ stmtIn wit, (stmtIn, wit) ∈ oRelIn → wit = witOf stmtIn) (ε : NNReal) :
+    OracleReduction.statisticalHVZK init impl oRelIn
+      (oracleReduction oSpec Statement OStatement Witness)
+      (oracleTranscriptSimulator (oSpec := oSpec) (Statement := Statement)
+        (OStatement := OStatement) (Witness := Witness) witOf) ε :=
+  (oracleReduction_perfectHVZK_of_witness_eq (oSpec := oSpec) (Statement := Statement)
+    (OStatement := OStatement) (Witness := Witness) (init := init) (impl := impl)
+    (oRelIn := oRelIn) witOf hRel).statisticalHVZK ε
+
+/-- `SendSingleWitness` has an explicit perfect-HVZK simulator when the witness is determined by
+the public statement and oracle statement. -/
+theorem oracleReduction_isHVZK_of_witness_eq
+    (witOf : Statement × (∀ i, OStatement i) → Witness)
+    (hRel : ∀ stmtIn wit, (stmtIn, wit) ∈ oRelIn → wit = witOf stmtIn) :
+    OracleReduction.isHVZK init impl oRelIn
+      (oracleReduction oSpec Statement OStatement Witness) :=
+  ⟨oracleTranscriptSimulator (oSpec := oSpec) (Statement := Statement)
+      (OStatement := OStatement) (Witness := Witness) witOf,
+    oracleReduction_perfectHVZK_of_witness_eq (oSpec := oSpec) (Statement := Statement)
+      (OStatement := OStatement) (Witness := Witness) (init := init) (impl := impl)
+      (oRelIn := oRelIn) witOf hRel⟩
+
+/-- `SendSingleWitness` has statistical HVZK at every error budget when the witness is determined
+by the public statement and oracle statement. -/
+theorem oracleReduction_isStatHVZK_of_witness_eq
+    (witOf : Statement × (∀ i, OStatement i) → Witness)
+    (hRel : ∀ stmtIn wit, (stmtIn, wit) ∈ oRelIn → wit = witOf stmtIn) (ε : NNReal) :
+    OracleReduction.isStatHVZK init impl oRelIn
+      (oracleReduction oSpec Statement OStatement Witness) ε :=
+  (oracleReduction_isHVZK_of_witness_eq (oSpec := oSpec) (Statement := Statement)
+    (OStatement := OStatement) (Witness := Witness) (init := init) (impl := impl)
+    (oRelIn := oRelIn) witOf hRel).isStatHVZK ε
+
 /-- The `SendSingleWitness` oracle reduction satisfies perfect completeness. -/
 @[simp]
 theorem oracleReduction_completeness (h : NeverFail init) :
@@ -483,5 +567,12 @@ theorem oracleReduction_rbr_knowledge_soundness :
   -- ChallengeIdx is empty for oraclePSpec Witness (single P_to_V round)
   intro _stmtIn _witIn _prover ⟨⟨0, _⟩, hdir⟩
   exact absurd hdir (by simp [oraclePSpec])
+
+#print axioms SendSingleWitness.oracleTranscriptSimulator
+#print axioms SendSingleWitness.honestTranscriptDist_oracleReduction_evalDist
+#print axioms SendSingleWitness.oracleReduction_perfectHVZK_of_witness_eq
+#print axioms SendSingleWitness.oracleReduction_statisticalHVZK_of_witness_eq
+#print axioms SendSingleWitness.oracleReduction_isHVZK_of_witness_eq
+#print axioms SendSingleWitness.oracleReduction_isStatHVZK_of_witness_eq
 
 end SendSingleWitness

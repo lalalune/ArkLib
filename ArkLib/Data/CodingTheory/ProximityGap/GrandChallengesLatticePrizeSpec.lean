@@ -21,7 +21,29 @@ namespace GrandChallengesLattice
 
 open GrandChallenges
 
-section MCAConjecturePrizeSpec
+section PrizeSpec
+
+variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
+
+/-- Per-rate lower MCA witnesses resolve the faithful MCA prize and expose the
+satisfy/maximality specification for the selected lattice thresholds. -/
+theorem exists_mcaPrizeLatticeResolved_with_spec_of_lowerWitnesses
+    (domain : ι ↪ F)
+    (w : ∀ j : Fin 4,
+      MCALowerWitness
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        epsStar) :
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      mcaPrizeLatticeResolved domain τ ∧
+        ∀ j : Fin 4,
+          let C : Set (ι → F) :=
+            ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+          ∃ _ : mcaThresholdExists C epsStar,
+            mcaSatisfies C epsStar (τ j) ∧
+              ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j := by
+  rcases exists_mcaPrizeLatticeResolved_of_lowerWitnesses domain w with ⟨τ, hτ⟩
+  exact ⟨τ, hτ, (mcaPrizeLatticeResolved_iff domain τ).mp hτ⟩
 
 /-- The ignored-source MCA conjecture gives an existential faithful four-rate MCA prize
 resolution together with the satisfy/maximality specification for the selected lattice
@@ -59,8 +81,10 @@ theorem exists_mcaPrizeLatticeResolved_with_spec_of_ignoredSource_mcaConjecture
   rcases hResolve domain δ hk hδ hδ1 hbound with ⟨τ, hτ⟩
   exact ⟨τ, hτ, (mcaPrizeLatticeResolved_iff domain τ).mp hτ⟩
 
-end MCAConjecturePrizeSpec
+end PrizeSpec
 
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_spec_of_lowerWitnesses
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_spec_of_ignoredSource_mcaConjecture
 

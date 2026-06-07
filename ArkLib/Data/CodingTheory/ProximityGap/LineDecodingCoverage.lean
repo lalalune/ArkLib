@@ -164,6 +164,14 @@ theorem not_mcaEventBody_of_MCADoubleCoverOn (C : Set (ι → A)) (u₀ u₁ : �
     False :=
   hpair (pairJointAgreesOn_of_MCADoubleCoverOn C S u₀ u₁ hcov)
 
+/-- A double cover on a witness set restricts to every smaller witness set. -/
+theorem MCADoubleCoverOn.mono (C : Set (ι → A)) (u₀ u₁ : ι → A)
+    {S T : Finset ι} (hsub : T ⊆ S)
+    (hcov : MCADoubleCoverOn (F := F) C u₀ u₁ S) :
+    MCADoubleCoverOn (F := F) C u₀ u₁ T := by
+  obtain ⟨v₁, hv₁, v₂, hv₂, hcover⟩ := hcov
+  exact ⟨v₁, hv₁, v₂, hv₂, fun i hi => hcover i (hsub hi)⟩
+
 /-- **Per-bad-scalar double-cover obligation.** Once a scalar is bad, every exposed `mcaEvent`
 witness set must carry `MCADoubleCoverOn` data. This is the exact local target for the remaining
 GS interpolation / multi-γ overlap extraction. -/
@@ -174,6 +182,27 @@ def MCABadScalarDoubleCover (C : Set (ι → A)) (δ : ℝ≥0)
       (∃ w ∈ C, ∀ i ∈ S, w i = u₀ i + γ • u₁ i) →
       ¬ pairJointAgreesOn C S u₀ u₁ →
       MCADoubleCoverOn (F := F) C u₀ u₁ S
+
+/-- A named bad-scalar double-cover obligation contradicts any concrete bad-event body. -/
+theorem MCABadScalarDoubleCover.not_mcaEventBody
+    (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A) (γ : F)
+    (hcov : MCABadScalarDoubleCover (F := F) (A := A) C δ u₀ u₁ γ)
+    (hγ : mcaEvent C δ u₀ u₁ γ)
+    (S : Finset ι) (hsize : (S.card : ℝ≥0) ≥ (1 - δ) * Fintype.card ι)
+    (hwit : ∃ w ∈ C, ∀ i ∈ S, w i = u₀ i + γ • u₁ i)
+    (hpair : ¬ pairJointAgreesOn C S u₀ u₁) :
+    False :=
+  not_mcaEventBody_of_MCADoubleCoverOn C u₀ u₁ S hpair
+    (hcov hγ S hsize hwit hpair)
+
+/-- A named bad-scalar double-cover obligation rules out the scalar's MCA bad event. -/
+theorem MCABadScalarDoubleCover.not_mcaEvent
+    (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A) (γ : F)
+    (hcov : MCABadScalarDoubleCover (F := F) (A := A) C δ u₀ u₁ γ) :
+    ¬ mcaEvent C δ u₀ u₁ γ := by
+  rintro ⟨S, hsize, hwit, hpair⟩
+  exact MCABadScalarDoubleCover.not_mcaEventBody C δ u₀ u₁ γ hcov
+    ⟨S, hsize, hwit, hpair⟩ S hsize hwit hpair
 
 /-- **Exposed repaired T4.21 hypothesis.** Every stack and every bad scalar carries the
 per-coordinate double cover that the Guruswami--Sudan interpolation route must provide. This is
@@ -285,6 +314,9 @@ theorem epsMCA_eq_zero_of_badScalarDoubleCover (C : Set (ι → A)) (δ : ℝ≥
 #print axioms MCABadScalarDoubleCover
 #print axioms pairJointAgreesOn_of_MCADoubleCoverOn
 #print axioms not_mcaEventBody_of_MCADoubleCoverOn
+#print axioms MCADoubleCoverOn.mono
+#print axioms MCABadScalarDoubleCover.not_mcaEventBody
+#print axioms MCABadScalarDoubleCover.not_mcaEvent
 #print axioms MCAForallDoubleCover
 #print axioms MCAForallDoubleCover_iff_badScalarDoubleCover
 #print axioms mcaBadCount_eq_zero_of_badScalarDoubleCover
