@@ -208,4 +208,23 @@ theorem exists_maxCorrAgreeDomain_containing
       ⟨Finset.mem_powerset.mpr (Finset.subset_univ _), hE, Finset.Subset.trans hD₀D hDE⟩
   exact (Finset.eq_of_subset_of_card_le hDE (hDmax E hEmem)).ge
 
+/-- **GKL24 first-moment count for `mcaBadWitness` (full assembly).**  If the maximal domain `D`
+absorbs the common zero-agreement set, then the number of bad combiners witnessed by `w` obeys
+`|mcaBadWitness w| · (⌊(1−δ)·n⌋ − |D|) ≤ n − |D|`.  This is GKL24's `|Bad¹|` first-moment bound,
+assembled end-to-end: the agreement input `⌊(1−δ)n⌋` comes from
+`card_lineAgreeSet_ge_of_mem_mcaBadWitness` (via `Nat.floor`), fed into `badCombiner_count`.  Combined
+with `pairJointAgreesOn_common` + `exists_maxCorrAgreeDomain_containing` (which build a `D` absorbing
+the common set whenever it is large), this is the complete formalized GKL24 first-moment argument. -/
+theorem mcaBadWitness_card_first_moment {MC : Submodule F (ι → F)} {δ : ℝ≥0} {u₀ u₁ w : ι → F}
+    {D : Finset ι}
+    (hcommon : Finset.univ.filter (fun i => u₁ i = 0 ∧ w i = u₀ i) ⊆ D) :
+    (mcaBadWitness (MC : Set (ι → F)) δ u₀ u₁ w).card
+        * (⌊((1 - δ) * Fintype.card ι : ℝ≥0)⌋₊ - D.card)
+      ≤ Fintype.card ι - D.card := by
+  refine badCombiner_count hcommon (fun γ hγ => ?_)
+  calc ⌊((1 - δ) * Fintype.card ι : ℝ≥0)⌋₊
+      ≤ ⌊((lineAgreeSet u₀ u₁ w γ).card : ℝ≥0)⌋₊ :=
+        Nat.floor_mono (card_lineAgreeSet_ge_of_mem_mcaBadWitness (MC := MC) hγ)
+    _ = (lineAgreeSet u₀ u₁ w γ).card := Nat.floor_natCast _
+
 end ProximityGap
