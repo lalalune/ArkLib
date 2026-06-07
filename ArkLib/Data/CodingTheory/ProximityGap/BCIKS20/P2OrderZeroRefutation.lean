@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.RestrictedFaaDiBrunoExtract
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MatchRoot
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.WPowerInjective
 
 /-!
@@ -255,6 +256,128 @@ theorem forall_partitionMatchAt_false_of_constant_of_nonmonic_of_evalX_eq
     (RestrictedFaaDiBrunoMatch.of_forall_partitionMatchAt H x₀ R
       (ClaimA2.Hypotheses.of_evalX_eq hR0 hdvd hsep) hat)
 
+/-- Legacy successor-residual form of the non-monic order-zero obstruction. -/
+theorem faaDiBrunoSuccSumZeroResidual_false_of_constant_of_nonmonic
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) (hlc : ¬ IsUnit H.leadingCoeff) (c : F[X])
+    (hp : Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))
+        = Polynomial.C c)
+    (hc : liftToFunctionField (H := H) c ≠ 0) :
+    ¬ FaaDiBrunoSuccSumZeroResidual H x₀ R hHyp := by
+  intro hzero
+  exact restrictedFaaDiBrunoMatch_false_of_constant_of_nonmonic H x₀ R hHyp hd hlc c hp hc
+    ((restrictedFaaDiBrunoMatch_iff_faaDiBrunoSuccSumZero H x₀ R hHyp).2 hzero)
+
+/-- Specialization-family legacy successor-residual refutation. -/
+theorem faaDiBrunoSuccSumZeroResidual_false_of_constant_of_nonmonic_of_evalX_eq
+    (x₀ : F) (R : F[X][X][Y]) (g : F[X][Y])
+    (hR0 : Bivariate.evalX (Polynomial.C x₀) R = g)
+    (hdvd : H ∣ g)
+    (hsep : g.Separable)
+    (hd : 2 ≤ R.natDegree) (hlc : ¬ IsUnit H.leadingCoeff) (c : F[X])
+    (hp : Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))
+        = Polynomial.C c)
+    (hc : liftToFunctionField (H := H) c ≠ 0) :
+    ¬ FaaDiBrunoSuccSumZeroResidual H x₀ R
+        (ClaimA2.Hypotheses.of_evalX_eq hR0 hdvd hsep) := by
+  intro hzero
+  exact restrictedFaaDiBrunoMatch_false_of_constant_of_nonmonic_of_evalX_eq H x₀ R g
+    hR0 hdvd hsep hd hlc c hp hc
+    ((restrictedFaaDiBrunoMatch_iff_faaDiBrunoSuccSumZero H x₀ R
+      (ClaimA2.Hypotheses.of_evalX_eq hR0 hdvd hsep)).2 hzero)
+
+/-- Analytic assembled-root form of the non-monic order-zero obstruction. -/
+theorem eval_βHenselAssembled_eq_zero_false_of_constant_of_nonmonic
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) (hlc : ¬ IsUnit H.leadingCoeff) (c : F[X])
+    (hp : Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))
+        = Polynomial.C c)
+    (hc : liftToFunctionField (H := H) c ≠ 0) :
+    ¬ (Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H) = 0) := by
+  intro hroot
+  exact restrictedFaaDiBrunoMatch_false_of_constant_of_nonmonic H x₀ R hHyp hd hlc c hp hc
+    ((restrictedFaaDiBrunoMatch_iff_eval_eq_zero H x₀ R hHyp).2 hroot)
+
+/-- Specialization-family analytic assembled-root refutation. -/
+theorem eval_βHenselAssembled_eq_zero_false_of_constant_of_nonmonic_of_evalX_eq
+    (x₀ : F) (R : F[X][X][Y]) (g : F[X][Y])
+    (hR0 : Bivariate.evalX (Polynomial.C x₀) R = g)
+    (hdvd : H ∣ g)
+    (hsep : g.Separable)
+    (hd : 2 ≤ R.natDegree) (hlc : ¬ IsUnit H.leadingCoeff) (c : F[X])
+    (hp : Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))
+        = Polynomial.C c)
+    (hc : liftToFunctionField (H := H) c ≠ 0) :
+    ¬ (Polynomial.eval (βHenselAssembled H x₀ R
+        (ClaimA2.Hypotheses.of_evalX_eq hR0 hdvd hsep)) (Q x₀ R H) = 0) := by
+  intro hroot
+  exact restrictedFaaDiBrunoMatch_false_of_constant_of_nonmonic_of_evalX_eq H x₀ R g
+    hR0 hdvd hsep hd hlc c hp hc
+    ((restrictedFaaDiBrunoMatch_iff_eval_eq_zero H x₀ R
+      (ClaimA2.Hypotheses.of_evalX_eq hR0 hdvd hsep)).2 hroot)
+
+/-- Assembled-equals-genuine form of the non-monic order-zero obstruction. -/
+theorem βHenselAssembled_eq_gammaGenuine_false_of_constant_of_nonmonic
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) (hlc : ¬ IsUnit H.leadingCoeff) (c : F[X])
+    (hp : Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))
+        = Polynomial.C c)
+    (hc : liftToFunctionField (H := H) c ≠ 0) :
+    ¬ βHenselAssembled H x₀ R hHyp = gammaGenuine x₀ R H hHyp := by
+  intro h
+  exact restrictedFaaDiBrunoMatch_false_of_constant_of_nonmonic H x₀ R hHyp hd hlc c hp hc
+    ((restrictedFaaDiBrunoMatch_iff_βHenselAssembled_eq_gammaGenuine H x₀ R hHyp).2 h)
+
+/-- Specialization-family assembled-equals-genuine refutation. -/
+theorem βHenselAssembled_eq_gammaGenuine_false_of_constant_of_nonmonic_of_evalX_eq
+    (x₀ : F) (R : F[X][X][Y]) (g : F[X][Y])
+    (hR0 : Bivariate.evalX (Polynomial.C x₀) R = g)
+    (hdvd : H ∣ g)
+    (hsep : g.Separable)
+    (hd : 2 ≤ R.natDegree) (hlc : ¬ IsUnit H.leadingCoeff) (c : F[X])
+    (hp : Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))
+        = Polynomial.C c)
+    (hc : liftToFunctionField (H := H) c ≠ 0) :
+    ¬ βHenselAssembled H x₀ R (ClaimA2.Hypotheses.of_evalX_eq hR0 hdvd hsep)
+        = gammaGenuine x₀ R H (ClaimA2.Hypotheses.of_evalX_eq hR0 hdvd hsep) := by
+  intro h
+  exact restrictedFaaDiBrunoMatch_false_of_constant_of_nonmonic_of_evalX_eq H x₀ R g
+    hR0 hdvd hsep hd hlc c hp hc
+    ((restrictedFaaDiBrunoMatch_iff_βHenselAssembled_eq_gammaGenuine H x₀ R
+      (ClaimA2.Hypotheses.of_evalX_eq hR0 hdvd hsep)).2 h)
+
+/-- Coefficient-wise assembled/genuine form of the non-monic order-zero obstruction. -/
+theorem coeff_βHenselAssembled_eq_αGenuine_forall_false_of_constant_of_nonmonic
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) (hlc : ¬ IsUnit H.leadingCoeff) (c : F[X])
+    (hp : Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))
+        = Polynomial.C c)
+    (hc : liftToFunctionField (H := H) c ≠ 0) :
+    ¬ (∀ t : ℕ, PowerSeries.coeff t (βHenselAssembled H x₀ R hHyp)
+        = αGenuine H x₀ R hHyp t) := by
+  intro h
+  exact restrictedFaaDiBrunoMatch_false_of_constant_of_nonmonic H x₀ R hHyp hd hlc c hp hc
+    ((restrictedFaaDiBrunoMatch_iff_coeff_eq_αGenuine H x₀ R hHyp).2 h)
+
+/-- Specialization-family coefficient-wise assembled/genuine refutation. -/
+theorem coeff_βHenselAssembled_eq_αGenuine_forall_false_of_constant_of_nonmonic_of_evalX_eq
+    (x₀ : F) (R : F[X][X][Y]) (g : F[X][Y])
+    (hR0 : Bivariate.evalX (Polynomial.C x₀) R = g)
+    (hdvd : H ∣ g)
+    (hsep : g.Separable)
+    (hd : 2 ≤ R.natDegree) (hlc : ¬ IsUnit H.leadingCoeff) (c : F[X])
+    (hp : Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))
+        = Polynomial.C c)
+    (hc : liftToFunctionField (H := H) c ≠ 0) :
+    ¬ (∀ t : ℕ, PowerSeries.coeff t
+          (βHenselAssembled H x₀ R (ClaimA2.Hypotheses.of_evalX_eq hR0 hdvd hsep))
+        = αGenuine H x₀ R (ClaimA2.Hypotheses.of_evalX_eq hR0 hdvd hsep) t) := by
+  intro h
+  exact restrictedFaaDiBrunoMatch_false_of_constant_of_nonmonic_of_evalX_eq H x₀ R g
+    hR0 hdvd hsep hd hlc c hp hc
+    ((restrictedFaaDiBrunoMatch_iff_coeff_eq_αGenuine H x₀ R
+      (ClaimA2.Hypotheses.of_evalX_eq hR0 hdvd hsep)).2 h)
+
 end BCIKS20.HenselNumerator
 
 #print axioms BCIKS20AppendixA.ClaimA2.Hypotheses.of_evalX_eq
@@ -277,3 +400,19 @@ set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.forall_partitionMatchAt_false_of_constant_of_nonmonic
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.forall_partitionMatchAt_false_of_constant_of_nonmonic_of_evalX_eq
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.faaDiBrunoSuccSumZeroResidual_false_of_constant_of_nonmonic
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.faaDiBrunoSuccSumZeroResidual_false_of_constant_of_nonmonic_of_evalX_eq
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.eval_βHenselAssembled_eq_zero_false_of_constant_of_nonmonic
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.eval_βHenselAssembled_eq_zero_false_of_constant_of_nonmonic_of_evalX_eq
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.βHenselAssembled_eq_gammaGenuine_false_of_constant_of_nonmonic
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.βHenselAssembled_eq_gammaGenuine_false_of_constant_of_nonmonic_of_evalX_eq
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.coeff_βHenselAssembled_eq_αGenuine_forall_false_of_constant_of_nonmonic
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.coeff_βHenselAssembled_eq_αGenuine_forall_false_of_constant_of_nonmonic_of_evalX_eq

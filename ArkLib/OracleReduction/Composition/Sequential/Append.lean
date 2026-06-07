@@ -3027,6 +3027,46 @@ theorem append_processRound_natAdd_challenge_comp (k : Fin n) (hk : 0 < (k : ℕ
   obtain rfl := eq_of_heq hrr
   exact append_processRound_natAdd_challenge k hk hDir hDir₂ r
 
+/-- **Threaded right interior-round `processRound` (message branch).**  The keystone per-round brick
+for the right-block run characterization: the appended interior `processRound` applied to the
+`appendRight`-bridged image (under `T₁`, the seam/`pSpec₁` prefix) of a `P₂` partial run `cur₂`
+equals the `appendRight`-bridged image of `P₂`'s own `processRound`.  Crucially `cur₂` is kept under
+a SINGLE `liftComp` and the appended transcript is reconciled by `appendRight_concat`, so every lift
+is the canonical `oSpec → appended` one (collapsed via `liftComp_liftComp`) — there is no
+challenge-block (`pSpec₂.Challenge → appended`) coherence to discharge.  This is exactly the
+invariant the right-block `Fin.induction` folds. -/
+theorem append_processRound_natAdd_message_threaded (k : Fin n) (hk : 0 < (k : ℕ))
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (Fin.natAdd m k) = .P_to_V)
+    (hDir₂ : pSpec₂.dir k = .P_to_V)
+    (T₁ : FullTranscript pSpec₁)
+    (cur₂ : OracleComp (oSpec + [pSpec₂.Challenge]ₒ)
+      (pSpec₂.Transcript k.castSucc × P₂.PrvState k.castSucc)) :
+    HEq ((P₁.append P₂).processRound (Fin.natAdd m k)
+          ((fun p => (Transcript.appendRight T₁ p.1,
+              cast (append_PrvState_natAdd_castSucc (P₁ := P₁) (P₂ := P₂) k hk).symm p.2)) <$>
+            (liftComp cur₂ (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ))))
+      ((fun p => (Transcript.appendRight T₁ p.1,
+              cast (append_PrvState_natAdd_interior_succ (P₁ := P₁) (P₂ := P₂) k hk).symm p.2)) <$>
+            (liftComp (P₂.processRound k cur₂) (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ))) := by
+  refine HEq.trans (append_processRound_natAdd_message_comp k hk hDir hDir₂ _) ?_
+  rw [processRound_message P₂ k hDir₂ cur₂]
+  simp only [bind_map_left, Function.comp, map_bind, liftComp_bind, liftComp_pure, bind_assoc,
+    pure_bind, map_pure, bind_pure_comp]
+  refine bind_heq_congr rfl rfl HEq.rfl (fun a a' haa => ?_)
+  obtain rfl := eq_of_heq haa
+  simp only [liftComp_map, Functor.map_map, Function.comp, cast_cast, ← liftComp_eq_liftM]
+  rw [Prover.liftComp_liftComp (spec := oSpec) (midSpec := oSpec + [pSpec₂.Challenge]ₒ)
+    (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (fun t => rfl)]
+  apply heq_of_eq
+  simp only [cast_eq]
+  congr 1
+  · funext a_1
+    refine Prod.ext ?_ rfl
+    exact (eq_of_heq (ProtocolSpec.Transcript.appendRight_concat T₁ a_1.1 a.1)).symm
+  · exact Prover.liftComp_liftComp (spec := oSpec) (midSpec := oSpec + [pSpec₁.Challenge]ₒ)
+      (superSpec := oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (fun t => rfl)
+      (P₂.sendMessage ⟨k, hDir₂⟩ a.2)
+
 /-- **Seam-peel of the right-block continuation (structural step).**  Continuing the appended
 prover's run from the seam-round state index `m` (`= (⟨m,_⟩ : Fin (m+n)).castSucc`, the state going
 INTO the seam round) to the next index `m+1` (`= (⟨m,_⟩ : Fin (m+n)).succ`) is exactly one
