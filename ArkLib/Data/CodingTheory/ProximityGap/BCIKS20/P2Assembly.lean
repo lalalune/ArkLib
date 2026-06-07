@@ -123,6 +123,51 @@ theorem RestrictedFaaDiBrunoMatch.of_partitionMatch
     RestrictedFaaDiBrunoMatch H x₀ R hHyp :=
   (restrictedMatch_iff_partitionMatch H x₀ R hHyp).2 hpart
 
+/-- The normalized partition residual supplies the full P2 vanishing identity. -/
+theorem fullVanishes_of_partitionMatch (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hpart : RestrictedFaaDiBrunoPartitionMatch H x₀ R hHyp) :
+    FaaDiBrunoFullSumVanishes H x₀ R hHyp :=
+  fullVanishes_of_restrictedMatch H x₀ R hHyp
+    (RestrictedFaaDiBrunoMatch.of_partitionMatch H x₀ R hHyp hpart)
+
+/-- The normalized partition residual supplies the legacy successor-sum residual. -/
+theorem faaDiBrunoSuccSumZeroResidual_of_partitionMatch
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hpart : RestrictedFaaDiBrunoPartitionMatch H x₀ R hHyp) :
+    FaaDiBrunoSuccSumZeroResidual H x₀ R hHyp :=
+  faaDiBrunoSuccSumZeroResidual_of_restrictedMatch H x₀ R hHyp
+    (RestrictedFaaDiBrunoMatch.of_partitionMatch H x₀ R hHyp hpart)
+
+/-- The normalized partition residual closes the existing conditional P2 endpoint. -/
+theorem P2_closed_of_partitionMatch (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hpart : RestrictedFaaDiBrunoPartitionMatch H x₀ R hHyp) :
+    (Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H) = 0)
+    ∧ (∀ t : ℕ, embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+        = αGenuine H x₀ R hHyp t
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1)) :=
+  P2_closed_of_restrictedMatch H x₀ R hHyp
+    (RestrictedFaaDiBrunoMatch.of_partitionMatch H x₀ R hHyp hpart)
+
+/-- The assembled numerator series is a root of `Q` from the normalized partition residual. -/
+theorem assembledSeries_isRoot_of_partitionMatch (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hpart : RestrictedFaaDiBrunoPartitionMatch H x₀ R hHyp) :
+    Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H) = 0 :=
+  (P2_closed_of_partitionMatch H x₀ R hHyp hpart).1
+
+/-- The repaired P2 lift identity, exposed per order, from the normalized partition residual. -/
+theorem βHensel_lift_identity_of_partitionMatch (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hpart : RestrictedFaaDiBrunoPartitionMatch H x₀ R hHyp) (t : ℕ) :
+    embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+      = αGenuine H x₀ R hHyp t
+          * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+          * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1) :=
+  (P2_closed_of_partitionMatch H x₀ R hHyp hpart).2 t
+
 -- In-file axiom audit for the named P2 partition residual and its equivalence to the carved core.
 section AxiomAudit
 #print axioms restrictedFaaDiBrunoPartitionForm
@@ -133,6 +178,11 @@ section AxiomAudit
 #print axioms restrictedMatch_iff_partitionMatch
 #print axioms RestrictedFaaDiBrunoPartitionMatch.of_restrictedMatch
 #print axioms RestrictedFaaDiBrunoMatch.of_partitionMatch
+#print axioms fullVanishes_of_partitionMatch
+#print axioms faaDiBrunoSuccSumZeroResidual_of_partitionMatch
+#print axioms P2_closed_of_partitionMatch
+#print axioms assembledSeries_isRoot_of_partitionMatch
+#print axioms βHensel_lift_identity_of_partitionMatch
 end AxiomAudit
 
 end BCIKS20.HenselNumerator
