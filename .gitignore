@@ -32,6 +32,7 @@
 /.venv/
 /.vscode/
 __pycache__/
+*.pyc
 
 # Root-level agent scratch & one-off build artifacts — keep local, never commit to main
 # (issue #110/#60 build hygiene). Root-anchored so real modules under ArkLib/
