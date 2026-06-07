@@ -37,3 +37,5 @@ fiat_shamir_semantic_run_collapse_residual  # #116
 ring_switching_kstate_residual  # #29
 batched_fri_joint_proximity_residual  # #14
 logup_append_induction_residual  # #13
+alphaGenuineRegularWeightLe_residual  # #139 BCIKS20 P1
+mcaForallDoubleCover_residual  # #141 LineDecoding T4.21

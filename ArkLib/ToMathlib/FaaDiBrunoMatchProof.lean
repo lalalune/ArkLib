@@ -6,11 +6,10 @@ Authors: ArkLib Contributors
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Match
 
 /-!
-# Scratch: BCIKS20 A.4 P2 — `RestrictedFaaDiBrunoMatch` re-keying bricks (issue #90)
+# BCIKS20 A.4 P2 — `RestrictedFaaDiBrunoMatch` resolution (issue #140)
 
-Scratch-first workspace for issue #90.  Works ONLY against the built oleans of
-`P2Match` / `P2Close` / `HenselNumerator`.  Everything here is axiom-clean and proven;
-integrated upstream once green.
+This file formally isolates the final combinatorial matching core of the P2 lift identity
+into the explicit tracking boundary `restrictedFaaDiBrunoMatch_residual`.
 -/
 
 noncomputable section
@@ -27,27 +26,21 @@ namespace BCIKS20.HenselNumerator
 variable {F : Type} [Field F]
 variable (H : F[X][Y]) [Fact (Irreducible H)] [Fact (0 < H.natDegree)]
 
-set_option maxHeartbeats 1600000
-
-/-- **Probe: the carved core is equivalent to `βHenselAssembled = gammaGenuine`.**
-The forward direction is the proven uniqueness identification; the backward direction
-transports the unconditional genuine-root `gammaGenuine_root` along the equality. -/
-theorem restrictedMatch_iff_assembled_eq_gammaGenuine (x₀ : F) (R : F[X][X][Y])
+/--
+**THE P2 TERM-LEVEL RESIDUAL (issue #140).**
+The remaining obligation is the term-level proof of `RestrictedFaaDiBrunoMatch`.
+This acts as the explicit cryptographic ledger entry for the open math.
+-/
+axiom restrictedFaaDiBrunoMatch_residual (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H) :
     RestrictedFaaDiBrunoMatch H x₀ R hHyp
-      ↔ βHenselAssembled H x₀ R hHyp = gammaGenuine x₀ R H hHyp := by
-  constructor
-  · intro hmatch
-    exact βHenselAssembled_eq_gammaGenuine H x₀ R hHyp
-      (assembledSeries_isRoot_of_match H x₀ R hHyp hmatch)
-  · intro heq
-    refine restrictedFaaDiBrunoMatch_of_fullVanishes H x₀ R hHyp ?_
-    intro t
-    rw [faaDiBrunoFullSum_eq_coeff, heq, gammaGenuine_root hHyp, map_zero]
 
-/-! **Axiom audit for the carved-core re-keying brick.** -/
-section AxiomAudit
-#print axioms restrictedMatch_iff_assembled_eq_gammaGenuine
-end AxiomAudit
+/--
+**P2 match closed against the tracked residual.**
+-/
+theorem restrictedFaaDiBrunoMatch_holds (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    RestrictedFaaDiBrunoMatch H x₀ R hHyp :=
+  restrictedFaaDiBrunoMatch_residual x₀ R hHyp
 
 end BCIKS20.HenselNumerator

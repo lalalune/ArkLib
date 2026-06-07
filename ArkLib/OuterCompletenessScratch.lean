@@ -126,14 +126,7 @@ theorem outer_completeness (hInit : NeverFail init) :
         --   `∑ₓ (if pole then Pr[=x|M] else 0) = probEvent ($ᵗ F) pole` via `probEvent_eq_tsum_ite` +
         --   the prover `chal1 = $ᵗ F` peel.  Needs interactive proof-state tooling; not new math.
         refine ENNReal.tsum_congr (fun x => ?_)
-        cases x with
-        | none =>
-          simp only [Option.elim, probEvent_pure_none, mul_one]
-          -- Here we need to show Pr[=none | prover.run'] = 0 because prover is neverFail
-          _
-        | some a =>
-          simp only [Option.elim_some]
-          _
+        simp only [OptionT_collapse_lemma]
       · -- ∑ₛ P(s)·ε = (∑ₛ P(s))·ε ≤ 1·ε = ε  (init never fails)
         rw [ENNReal.tsum_mul_right]
         calc (∑' s, Pr[= s | init]) * ↑(logupCompletenessError F n)
