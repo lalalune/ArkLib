@@ -12,6 +12,8 @@ import VCVio.OracleComp.Coercions.Add
 
 namespace OracleComp
 
+universe u v w
+
 lemma mem_support_of_mem_support_liftComp
     {ι τ α : Type} {spec : OracleSpec ι} {superSpec : OracleSpec τ}
     [MonadLiftT (OracleQuery spec) (OracleQuery superSpec)]
@@ -81,9 +83,10 @@ lemma liftM_OptionT_add_assoc_right
     (oa : OptionT (OracleComp (spec₁ + spec₂)) α) :
     (liftM (liftM oa : OptionT (OracleComp (spec₁ + (spec₂ + spec₃))) α) :
       OptionT (OracleComp ((spec₁ + spec₂) + spec₃)) α) =
-    (liftM oa : OptionT (OracleComp ((spec₁ + spec₂) + spec₃)) α) := by
+    OptionT.mk (OracleComp.liftComp oa.run ((spec₁ + spec₂) + spec₃)) := by
   apply OptionT.ext
   dsimp only [liftM, MonadLiftT.monadLift, MonadLift.monadLift]
+  exact liftComp_add_assoc_right (oa := oa.run)
 
 #print axioms OracleComp.liftComp_add_assoc_right
 #print axioms OracleComp.liftM_OptionT_add_assoc_right
