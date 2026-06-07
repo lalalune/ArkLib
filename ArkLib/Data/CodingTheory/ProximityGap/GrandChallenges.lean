@@ -521,7 +521,18 @@ convention, collapse the right-hand side to `0` and assert `ε_mca ≤ 0` (a deg
 **Source status (verified 2026-06-03).** In the current `[ABF26]` `.tex` source this
 conjecture lives inside an `\ignore{…}` block (around line 2030), i.e. it is a *draft*
 statement not rendered in the compiled paper. The term-by-term content here is faithful to
-that draft; treat it as tracking a draft conjecture, not a stable rendered theorem. -/
+that draft; treat it as tracking a draft conjecture, not a stable rendered theorem.
+
+**Open-prize tracking (Issue #141).** This is one of the two open ABF26 Grand Challenge 1
+prize surfaces; the GS-exposed sibling is
+`ProximityGap.MCAGS.epsMCAgs_prizeBound_conjecture`. It is open *mathematics* (the beyond-UDR
+Guruswami–Sudan mass bound), not closeable formalization debt: keep it as a named hypothesis
+everywhere it is consumed, and do not launder it into a theorem by assuming an equivalent
+packaged form. The conditional reductions that consume it
+(`nonempty_mcaLowerWitness_of_mcaConjecture`, `exists_mcaLowerWitness_of_mcaConjecture`, the
+`ignoredSource`-named adapters, and the lattice-threshold links in `GrandChallengesLattice`)
+all take `mcaConjecture` as an explicit hypothesis `h`; that is the intended partial-progress
+shape and is tracked here. -/
 def mcaConjecture : Prop :=
   ∃ c₁ c₂ c₃ : ℝ,
     ∀ {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]

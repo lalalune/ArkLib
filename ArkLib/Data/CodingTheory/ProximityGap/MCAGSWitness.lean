@@ -79,7 +79,12 @@ theorem epsMCAgs_le_of_massBound (C : Set (ι → F)) (δ : ℝ≥0)
 /-- **Reduction of the GS-exposed prize conjecture to the named mass bound (Issue #52 ask 2).**
 Given constants `c₁, c₂, c₃` for which the per-stack GS-row mass bound holds at the prize RHS,
 the conjecture `epsMCAgs_prizeBound_conjecture` follows. The open beyond-UDR content is now the
-single explicit hypothesis `hMass`; the rest is the supremum plumbing. -/
+single explicit hypothesis `hMass`; the rest is the supremum plumbing.
+
+This is a *conditional reduction* of the open Grand Challenge 1 prize surface
+`epsMCAgs_prizeBound_conjecture` (tracked by Issue #141): it does not prove the conjecture, it
+isolates the genuinely open content into the explicit hypothesis `hMass`. The prize itself
+stays open. -/
 theorem epsMCAgs_prizeBound_of_massBound
     (domain : ι ↪ F) (j : Fin 4) (m : ℕ) (η δ : ℝ≥0) (hη : 0 < η)
     (L : WordStack F (Fin 2) ι → Finset (ι → F))

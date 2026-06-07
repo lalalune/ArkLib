@@ -1474,7 +1474,11 @@ theorem latticeIndexOf_le_mcaThreshold_ofJohnsonBCHKS25
 faithful MCA lattice threshold exist. The consumed `mcaConjecture` is faithful to an ignored ABF26
 `.tex` block rather than the rendered paper; use
 `mcaThresholdExists_of_ignoredSource_mcaConjecture` at exported API boundaries where that caveat
-should be visible in the declaration name. -/
+should be visible in the declaration name.
+
+These lattice-threshold links take the open Grand Challenge 1 prize surface `mcaConjecture`
+(tracked by Issue #141) as an explicit hypothesis `h`; they are conditional reductions, not a
+proof of the conjecture, and the prize itself stays open. -/
 theorem mcaThresholdExists_of_mcaConjecture (h : mcaConjecture) :
     ∃ c₁ c₂ c₃ : ℝ,
       ∀ {ιC : Type} [Fintype ιC] [Nonempty ιC] [DecidableEq ιC]

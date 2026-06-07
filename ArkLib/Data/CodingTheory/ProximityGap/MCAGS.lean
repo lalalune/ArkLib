@@ -531,7 +531,17 @@ to the Johnson/capacity bound `1 - ρ - η`), which is exactly the external priz
 
 This is a named `Prop`, not a theorem: carrying it as a theorem with `sorry` would launder the
 open prize into `sorryAx`. Downstream formal developments should take this proposition as an
-explicit hypothesis until the beyond-UDR GS mass bound is actually proved. -/
+explicit hypothesis until the beyond-UDR GS mass bound is actually proved.
+
+**Open-prize tracking (Issue #141).** This is one of the two open ABF26 Grand Challenge 1
+prize surfaces; the abstract `ε_mca` sibling is
+`ProximityGap.GrandChallenges.mcaConjecture`. It is open *mathematics* (the beyond-UDR
+Guruswami–Sudan list-decoder mass bound), not closeable formalization debt: keep it as a named
+hypothesis everywhere it is consumed, and do not launder it into a theorem by assuming an
+equivalent packaged form. The conditional reduction
+`MCAGS.epsMCAgs_prizeBound_of_massBound` (in `MCAGSWitness.lean`) derives this conjecture from
+the explicitly-named per-stack mass bound `epsMCAgsMassBound`; that is the intended
+partial-progress shape and is tracked here. -/
 def epsMCAgs_prizeBound_conjecture
     (domain : ι ↪ F) (j : Fin 4) (m : ℕ) (η δ : ℝ≥0) (hη : 0 < η)
     (L : WordStack F (Fin 2) ι → Finset (ι → F))
