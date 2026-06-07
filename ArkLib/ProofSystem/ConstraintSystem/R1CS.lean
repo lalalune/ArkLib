@@ -71,17 +71,59 @@ theorem forall_iff (P : MatrixIdx → Prop) :
     cases idx <;> assumption
 
 omit R [CommSemiring R] in
+/-- Functions out of `MatrixIdx` are equal when they agree on `(A,B,C)`. -/
+@[ext]
+theorem ext {α : Type*} {f g : MatrixIdx → α}
+    (hA : f .A = g .A) (hB : f .B = g .B) (hC : f .C = g .C) : f = g := by
+  funext idx
+  cases idx <;> assumption
+
+omit R [CommSemiring R] in
+/-- Equality of functions out of `MatrixIdx` is equality on the three concrete coordinates. -/
+theorem fun_eq_iff {α : Type*} (f g : MatrixIdx → α) :
+    f = g ↔ f .A = g .A ∧ f .B = g .B ∧ f .C = g .C := by
+  constructor
+  · intro h
+    subst g
+    exact ⟨rfl, rfl, rfl⟩
+  · rintro ⟨hA, hB, hC⟩
+    exact ext hA hB hC
+
+omit R [CommSemiring R] in
+/-- Existential quantification over R1CS matrix coordinates is the disjunction of the cases. -/
+theorem exists_iff (P : MatrixIdx → Prop) :
+    (∃ idx : MatrixIdx, P idx) ↔ P .A ∨ P .B ∨ P .C := by
+  constructor
+  · rintro ⟨idx, hidx⟩
+    cases idx <;> simp [hidx]
+  · rintro (hA | hB | hC)
+    · exact ⟨.A, hA⟩
+    · exact ⟨.B, hB⟩
+    · exact ⟨.C, hC⟩
+
+omit R [CommSemiring R] in
 /-- A finite sum over R1CS matrix coordinates splits into the `(A,B,C)` summands. -/
 theorem sum_eq {M : Type*} [AddCommMonoid M] (f : MatrixIdx → M) :
     (∑ idx : MatrixIdx, f idx) = f .A + f .B + f .C := by
   rw [univ_eq]
   simp [add_assoc]
 
+omit R [CommSemiring R] in
+/-- A finite product over R1CS matrix coordinates splits into the `(A,B,C)` factors. -/
+theorem prod_eq {M : Type*} [CommMonoid M] (f : MatrixIdx → M) :
+    (∏ idx : MatrixIdx, f idx) = f .A * f .B * f .C := by
+  rw [univ_eq]
+  simp [mul_assoc]
+
 #print axioms R1CS.MatrixIdx.equivFin3
 #print axioms R1CS.MatrixIdx.card_eq
 #print axioms R1CS.MatrixIdx.univ_eq
 #print axioms R1CS.MatrixIdx.forall_iff
+#print axioms R1CS.MatrixIdx.ext
+#print axioms R1CS.MatrixIdx.fun_eq_iff
+#print axioms R1CS.MatrixIdx.exists_iff
 #print axioms R1CS.MatrixIdx.sum_eq
+#print axioms R1CS.MatrixIdx.prod_eq
 
 end MatrixIdx
 
