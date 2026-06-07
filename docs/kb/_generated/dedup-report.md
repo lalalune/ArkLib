@@ -6,7 +6,7 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 - `ArkLib` — 688 files, 12777 declarations
 
-## Same short-name across multiple files (430 groups)
+## Same short-name across multiple files (427 groups)
 
 Each group lists declarations sharing a short name across ≥2 files. Most are legitimate (overloaded interface, paper-shape vs general form), but the list is the right anchor to look for duplicates.
 
@@ -1587,11 +1587,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 - `def Binius.RingSwitching.BatchingPhase.failureState` [ArkLib/ProofSystem/Binius/RingSwitching/BatchingPhase.lean:71](../../../ArkLib/ProofSystem/Binius/RingSwitching/BatchingPhase.lean#L71) — A dummy state returned by the verifier upon failure of Check 1.
 - `def RingSwitching.BatchingPhase.failureState` [ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean:106](../../../ArkLib/ProofSystem/RingSwitching/BatchingPhase.lean#L106) — A dummy state returned by the verifier upon failure of Check 1.
 
-### `finSumFinEquiv_symm_dite` (2 declarations, 2 files)
-
-- `theorem RingSwitching.finSumFinEquiv_symm_dite` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:1532](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L1532) — Value-form of `finSumFinEquiv.symm`: classify the index by whether its value is `< m`.
-- `theorem ScratchRS.finSumFinEquiv_symm_dite` [ArkLib/ProofSystem/RingSwitching/Scratch.lean:28](../../../ArkLib/ProofSystem/RingSwitching/Scratch.lean#L28) — (no docstring)
-
 ### `finalSumcheckProverComputeMsg` (2 declarations, 2 files)
 
 - `def Binius.FRIBinius.CoreInteractionPhase.finalSumcheckProverComputeMsg` [ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean:543](../../../ArkLib/ProofSystem/Binius/FRIBinius/CoreInteractionPhase.lean#L543) — Pure prover message computation for FRI final sumcheck step.
@@ -1616,16 +1611,6 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `lemma Binius.BinaryBasefold.CoreInteraction.firstOracleWitnessConsistency_unique` [ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/Fold.lean:762](../../../ArkLib/ProofSystem/Binius/BinaryBasefold/Steps/Fold.lean#L762) — (no docstring)
 - `lemma Binius.RingSwitching.BBFSmallFieldIOPCS.firstOracleWitnessConsistency_unique` [ArkLib/ProofSystem/Binius/RingSwitching/BBFSmallFieldIOPCS.lean:172](../../../ArkLib/ProofSystem/Binius/RingSwitching/BBFSmallFieldIOPCS.lean#L172) — Uniqueness of the polynomial witness from first-oracle UDR-compatibility.
-
-### `fixVars_eq_bind₁` (2 declarations, 2 files)
-
-- `theorem RingSwitching.fixVars_eq_bind₁` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:1546](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L1546) — Characterization of `fixFirstVariablesOfMQP` as a `bind₁` partial substitution: it sends the survivi
-- `theorem ScratchRS.fixVars_eq_bind₁` [ArkLib/ProofSystem/RingSwitching/Scratch.lean:35](../../../ArkLib/ProofSystem/RingSwitching/Scratch.lean#L35) — (no docstring)
-
-### `fixVars_step` (2 declarations, 2 files)
-
-- `theorem RingSwitching.fixVars_step` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:1586](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L1586) — **Round-transition for `fixFirstVariablesOfMQP` (cons form).** Fixing the last `v` variables of `pol
-- `theorem ScratchRS.fixVars_step` [ArkLib/ProofSystem/RingSwitching/Scratch.lean:47](../../../ArkLib/ProofSystem/RingSwitching/Scratch.lean#L47) — (no docstring)
 
 ### `foldOracleReduction` (2 declarations, 2 files)
 
@@ -2697,4 +2682,3 @@ Each pair has docstrings sharing a high fraction of (4+-letter) words, in differ
 - **1.00** `Binius.RingSwitching.unpackMLE` [ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean:144](../../../ArkLib/ProofSystem/Binius/RingSwitching/Prelude.lean#L144) vs `RingSwitching.unpackMLE` [ArkLib/ProofSystem/RingSwitching/Prelude.lean:143](../../../ArkLib/ProofSystem/RingSwitching/Prelude.lean#L143)
     - a: **Unpacking a Packed Multilinear Polynomial**. Reverses the packing defined in `packMLE`. It reconst
     - b: **Unpacking a Packed Multilinear Polynomial**. Reverses the packing defined in `packMLE`. It reconst
-
