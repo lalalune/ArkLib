@@ -401,6 +401,87 @@ theorem latticeIndexOf_le_mcaThreshold_of_algebraicData_algebraic_cover
     (mcaLowerWitness_of_algebraicData_algebraic_cover
       hδ_le_one A N B hB hNB hBdiv hAlg hle)
 
+/-- Hab25 algebraic data plus S11 count data and a capacity-side `ε_ca` upper witness bracket
+the faithful MCA lattice threshold directly. -/
+theorem mcaThresholdLattice_bracketed_of_algebraicData_card_le_and_epsCAGt
+    {domain : ι₀ ↪ F₀} {k : ℕ} {η δ_lo δ_hi ε_star : ℝ≥0}
+    {hη : 0 < η}
+    {hδ : CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.InJohnsonRange domain k η δ_lo}
+    (hδlo_le_one : δ_lo ≤ 1)
+    (A : Hab25JohnsonAlgebraicData domain k η δ_lo hη hδ)
+    (N : ℕ) (B : ℝ)
+    (hB : 0 ≤ B) (hNB : (N : ℝ) ≤ B)
+    (hBdiv : B / (Fintype.card F₀ : ℝ) ≤
+      CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.johnsonBoundReal domain k η δ_lo)
+    (hN : ∀ u : WordStack F₀ (Fin 2) ι₀,
+      (Finset.filter
+        (fun γ : F₀ =>
+          mcaEvent ((ReedSolomon.code domain k : Set (ι₀ → F₀))) δ_lo (u 0) (u 1) γ)
+        Finset.univ).card ≤ N)
+    (hle : ENNReal.ofReal
+      (CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.johnsonBoundReal domain k η δ_lo)
+        ≤ (ε_star : ENNReal))
+    (hhi :
+      epsCA (F := F₀) (A := F₀) (ReedSolomon.code domain k : Set (ι₀ → F₀))
+        δ_hi δ_hi > (ε_star : ENNReal))
+    (hδhi : δ_hi ≤ 1) :
+    let hne := mcaThresholdExists_of_algebraicData_card_le
+      hδlo_le_one A N B hB hNB hBdiv hN hle
+    GrandChallengesLattice.latticeIndexOf (ι := ι₀) δ_lo hδlo_le_one ≤
+        GrandChallengesLattice.mcaThreshold
+          (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star hne ∧
+      GrandChallengesLattice.mcaThreshold
+          (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star hne <
+        GrandChallengesLattice.latticeIndexOf (ι := ι₀) δ_hi hδhi := by
+  refine ⟨?_, ?_⟩
+  · exact latticeIndexOf_le_mcaThreshold_of_algebraicData_card_le
+      hδlo_le_one A N B hB hNB hBdiv hN hle
+  · exact GrandChallengesLattice.mcaThreshold_lt_ofEpsCAGt
+      (MC := ReedSolomon.code domain k)
+      (mcaThresholdExists_of_algebraicData_card_le
+        hδlo_le_one A N B hB hNB hBdiv hN hle)
+      hhi hδhi
+
+/-- Hab25 per-stack algebraic covers and a capacity-side `ε_ca` upper witness bracket the
+faithful MCA lattice threshold directly. -/
+theorem mcaThresholdLattice_bracketed_of_algebraicData_algebraic_cover_and_epsCAGt
+    {domain : ι₀ ↪ F₀} {k : ℕ} {η δ_lo δ_hi ε_star : ℝ≥0}
+    {hη : 0 < η}
+    {hδ : CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.InJohnsonRange domain k η δ_lo}
+    (hδlo_le_one : δ_lo ≤ 1)
+    (A : Hab25JohnsonAlgebraicData domain k η δ_lo hη hδ)
+    (N : ℕ) (B : ℝ)
+    (hB : 0 ≤ B) (hNB : (N : ℝ) ≤ B)
+    (hBdiv : B / (Fintype.card F₀ : ℝ) ≤
+      CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.johnsonBoundReal domain k η δ_lo)
+    (hAlg : ∀ u : WordStack F₀ (Fin 2) ι₀,
+      ∃ A' : Hab25JohnsonAlgebraicData domain k η δ_lo hη hδ,
+        _root_.ProximityGap.hab25McaBadScalars domain k δ_lo u ⊆ A'.Edis ∧
+          A'.ℓ * Fintype.card ι₀ ≤ N)
+    (hle : ENNReal.ofReal
+      (CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.johnsonBoundReal domain k η δ_lo)
+        ≤ (ε_star : ENNReal))
+    (hhi :
+      epsCA (F := F₀) (A := F₀) (ReedSolomon.code domain k : Set (ι₀ → F₀))
+        δ_hi δ_hi > (ε_star : ENNReal))
+    (hδhi : δ_hi ≤ 1) :
+    let hne := mcaThresholdExists_of_algebraicData_algebraic_cover
+      hδlo_le_one A N B hB hNB hBdiv hAlg hle
+    GrandChallengesLattice.latticeIndexOf (ι := ι₀) δ_lo hδlo_le_one ≤
+        GrandChallengesLattice.mcaThreshold
+          (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star hne ∧
+      GrandChallengesLattice.mcaThreshold
+          (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star hne <
+        GrandChallengesLattice.latticeIndexOf (ι := ι₀) δ_hi hδhi := by
+  refine ⟨?_, ?_⟩
+  · exact latticeIndexOf_le_mcaThreshold_of_algebraicData_algebraic_cover
+      hδlo_le_one A N B hB hNB hBdiv hAlg hle
+  · exact GrandChallengesLattice.mcaThreshold_lt_ofEpsCAGt
+      (MC := ReedSolomon.code domain k)
+      (mcaThresholdExists_of_algebraicData_algebraic_cover
+        hδlo_le_one A N B hB hNB hBdiv hAlg hle)
+      hhi hδhi
+
 end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.JohnsonNumericBound.of_card_le
@@ -417,3 +498,5 @@ end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mcaThreshold_spec_of_algebraicData_algebraic_cover
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.latticeIndexOf_le_mcaThreshold_of_algebraicData_card_le
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.latticeIndexOf_le_mcaThreshold_of_algebraicData_algebraic_cover
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mcaThresholdLattice_bracketed_of_algebraicData_card_le_and_epsCAGt
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mcaThresholdLattice_bracketed_of_algebraicData_algebraic_cover_and_epsCAGt
