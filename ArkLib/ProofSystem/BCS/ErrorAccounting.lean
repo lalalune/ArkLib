@@ -382,6 +382,22 @@ theorem bcs_opening_union_bound_append {m n : ℕ} (μ : UnionBoundPr E)
       rw [Fin.sum_univ_add]
       simp [Fin.append]
 
+/-- Relax both opening-batch budgets after proving the left/right opening-phase split. -/
+theorem bcs_opening_union_bound_append_mono_error {m n : ℕ}
+    (μ : UnionBoundPr E) (badLeft : Fin m → E) (badRight : Fin n → E)
+    (εLeft₁ εLeft₂ : Fin m → ℝ≥0) (εRight₁ εRight₂ : Fin n → ℝ≥0)
+    (hLeft : ∀ i, μ.pr (badLeft i) ≤ εLeft₁ i)
+    (hRight : ∀ i, μ.pr (badRight i) ≤ εRight₁ i)
+    (hLeft_mono : ∀ i, εLeft₁ i ≤ εLeft₂ i)
+    (hRight_mono : ∀ i, εRight₁ i ≤ εRight₂ i) :
+    μ.pr (μ.unionFin (Fin.append badLeft badRight))
+      ≤ (∑ i, εLeft₂ i) + ∑ i, εRight₂ i :=
+  le_trans
+    (bcs_opening_union_bound_append μ badLeft badRight εLeft₁ εRight₁ hLeft hRight)
+    (add_le_add
+      (Finset.sum_le_sum fun i _ => hLeft_mono i)
+      (Finset.sum_le_sum fun i _ => hRight_mono i))
+
 /-- Relax the per-message opening budgets after proving the composite opening-union bound. -/
 theorem bcs_opening_union_bound_mono_error {m : ℕ} (μ : UnionBoundPr E)
     (badOpen : Fin m → E) (εOpen₁ εOpen₂ : Fin m → ℝ≥0)
@@ -656,6 +672,7 @@ example (εInteraction : ℝ≥0) (εOpen : Fin 3 → ℝ≥0) :
 #print axioms bcs_opening_union_bound_zero
 #print axioms bcs_opening_union_bound_succ
 #print axioms bcs_opening_union_bound_append
+#print axioms bcs_opening_union_bound_append_mono_error
 #print axioms bcs_opening_union_bound_mono_error
 #print axioms bcs_append_accounting_of_opening_bound
 #print axioms bcs_append_accounting_of_opening_bound_mono_error
