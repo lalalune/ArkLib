@@ -12,8 +12,10 @@ import Mathlib
 The per-round query-soundness probability accounting: queryAcceptProb_eq (= |G|^t/N^t exact),
 queryAcceptProb_le (<= (1-d)^t), queryAcceptProb_add_detect (partition), queryDetectProb_ge,
 and the claim assembly. The source tree now has the corresponding PMF route in
-`ArkLib.ToMathlib.FriQueryRoundProb` / `QueryRoundProbability.lean`; the remaining input is the
-protocol-specific correlated-agreement/proximity trigger and OracleReduction plumbing.
+`ArkLib.ToMathlib.FriQueryRoundProb` / `QueryRoundProbability.lean`, including the bridge from the
+concrete FRI query-round challenge oracle to the uniform product PMF. The remaining input is the
+protocol-specific verifier-guard-to-correlated-agreement/proximity trigger and OracleReduction
+plumbing.
 -/
 
 open scoped NNReal ENNReal

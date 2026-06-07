@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 
 import ArkLib.ProofSystem.BatchedFri.Security
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.Main
+import ArkLib.OracleReduction.Completeness
 import ArkLib.ToMathlib.FriQueryRoundProb
 
 /-!
@@ -21,6 +22,41 @@ proved here.
 -/
 
 namespace Fri
+
+namespace Spec.QueryRound
+
+open Domain
+open scoped ProbabilityTheory
+
+variable {𝔽 : Type} [NonBinaryField 𝔽] [DecidableEq 𝔽]
+variable {n l : ℕ} {ω : SmoothCosetFftDomain n 𝔽}
+
+/-- The concrete query-round challenge oracle samples the verifier's whole length-`l` query tuple
+from the independent-uniform PMF on `Fin l → (ω.subdomain 0).toFinset`.
+
+This is the protocol-level distribution bridge consumed by the probability adapters below: the
+standalone PMF theorem is not merely about an abstract product space, but about the challenge type
+of `Fri.Spec.QueryRound.pSpec` under the default `challengeQueryImpl`. -/
+theorem getChallenge_probOutput_uniform_eq_Pr
+    [SampleableType (Fin l → (ω.subdomain 0).toFinset)]
+    [Nonempty (Fin l → (ω.subdomain 0).toFinset)]
+    [Inhabited (Fin l → (ω.subdomain 0).toFinset)]
+    (q : Fin l → (ω.subdomain 0).toFinset) :
+    Pr[= q |
+      simulateQ (ProtocolSpec.challengeQueryImpl (pSpec := pSpec (ω := ω) l))
+        ((pSpec (ω := ω) l).getChallenge ⟨0, by simp⟩)]
+      = Pr_{ let y ← PMF.uniformOfFintype (Fin l → (ω.subdomain 0).toFinset) }[y = q] := by
+  unfold ProtocolSpec.getChallenge
+  erw [simulateQ_query]
+  simp only [ProtocolSpec.challengeQueryImpl, OracleQuery.cont_query, OracleQuery.input_query]
+  change Pr[= q | id <$> ($ᵗ (Fin l → (ω.subdomain 0).toFinset))]
+      = Pr_{ let y ← PMF.uniformOfFintype (Fin l → (ω.subdomain 0).toFinset) }[y = q]
+  simp only [id_map]
+  rw [OracleReduction.probOutput_uniformOfFintype_eq_Pr
+    (L := Fin l → (ω.subdomain 0).toFinset) (x := q)]
+
+end Spec.QueryRound
+
 section ProbabilityAdapter
 
 open scoped ENNReal NNReal BigOperators
