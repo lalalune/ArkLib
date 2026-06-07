@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.NNReal.Basic
+import ArkLib.Data.CodingTheory.ListDecodability
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges
 
 /-!
@@ -30,17 +31,22 @@ def RSCapacityRadius (ρ η : ℝ≥0) : ℝ :=
   1 - (ρ : ℝ) - (η : ℝ)
 
 /-- The fundamental open conjecture for RS list decoding beyond the Johnson radius.
-    It states that for any evaluation domain and rate, there exists a list-size upper bound ℓ
-    (which depends on η) such that any word has at most ℓ close codewords up to capacity.
--/
+    It states that for any evaluation domain and rate, there exists a list-size upper bound `ℓ`
+    (which depends on `η`) such that any word `w` has at most `ℓ` codewords of the
+    rate-`ρ` Reed-Solomon code within relative Hamming distance `RSCapacityRadius ρ η = 1 - ρ - η`.
+
+    The list is `ListDecodable.closeCodewordsRel C w r` (the codewords of `C` in the relative
+    Hamming ball of radius `r` around `w`); its `Set.ncard` is the genuine list size.  Replacing
+    the former `True` placeholder, this is the real proximity-ball counting statement: it is the
+    irreducible open core (capacity-radius list-decodability of Reed-Solomon codes) to which the
+    GS prize bound reduces. -/
 def RSListDecodingCapacityConjecture
     {ι F : Type} [Field F] [Fintype F] [Fintype ι]
     (domain : ι ↪ F) (ρ η : ℝ≥0) : Prop :=
   ∃ (ℓ : ℕ), ∀ (w : ι → F),
-    -- The number of codewords at fractional distance ≤ 1 - ρ - η is bounded by ℓ
-    -- This is a placeholder for the exact proximity ball counting definition
-    -- which reduces to the uniform list-size bound.
-    True -- TODO: Replace with exact `listSize` property.
+    (ListDecodable.closeCodewordsRel
+        ((ReedSolomon.code (domain := domain) ⌊ρ * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)))
+        w (RSCapacityRadius ρ η)).ncard ≤ ℓ
 
 /-- A list-size bound kernel: if the capacity conjecture holds, we can extract the bound ℓ. -/
 theorem exists_listSize_bound_of_capacity_conjecture
