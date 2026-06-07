@@ -145,6 +145,45 @@ theorem linePetal_nonempty_of_ssubset_lineAgreeSet
   obtain ⟨i, hiA, hiD⟩ := hnot
   exact ⟨i, Finset.mem_sdiff.mpr ⟨hiA, hiD⟩⟩
 
+/-- **Two line-agreement domains intersect in a correlated-agreement domain.** If distinct
+scalars `γ ≠ γ'` make codewords `wγ,wγ' ∈ MC` agree with the same stack lines on their respective
+domains, then on the intersection one can solve the two equations for codewords `v₀,v₁ ∈ MC`
+agreeing with `u₀,u₁`. This is the algebraic core behind the GCXK/GKL maximal-domain
+intersection step. -/
+theorem pairJointAgreesOn_inter_lineAgreeSet_of_ne
+    (MC : Submodule F (ι → F)) (u₀ u₁ wγ wγ' : ι → F) {γ γ' : F}
+    (hne : γ ≠ γ') (hwγ : wγ ∈ (MC : Set (ι → F))) (hwγ' : wγ' ∈ (MC : Set (ι → F))) :
+    pairJointAgreesOn (MC : Set (ι → F))
+      (lineAgreeSet u₀ u₁ wγ γ ∩ lineAgreeSet u₀ u₁ wγ' γ') u₀ u₁ := by
+  classical
+  let v₁ : ι → F := (γ - γ')⁻¹ • (wγ - wγ')
+  let v₀ : ι → F := wγ - γ • v₁
+  have hsub_ne : γ - γ' ≠ 0 := sub_ne_zero.mpr hne
+  have hv₁_mem : v₁ ∈ (MC : Set (ι → F)) := by
+    exact MC.smul_mem _ (MC.sub_mem hwγ hwγ')
+  have hv₀_mem : v₀ ∈ (MC : Set (ι → F)) := by
+    exact MC.sub_mem hwγ (MC.smul_mem γ hv₁_mem)
+  refine ⟨v₀, hv₀_mem, v₁, hv₁_mem, ?_⟩
+  intro i hi
+  rw [Finset.mem_inter, mem_lineAgreeSet_iff, mem_lineAgreeSet_iff] at hi
+  have hdiff : wγ i - wγ' i = (γ - γ') * u₁ i := by
+    rw [hi.1, hi.2]
+    simp [smul_eq_mul]
+    ring
+  have hv₁_i : v₁ i = u₁ i := by
+    calc v₁ i = (γ - γ')⁻¹ * (wγ i - wγ' i) := by
+          simp [v₁, Pi.sub_apply, Pi.smul_apply, smul_eq_mul]
+      _ = (γ - γ')⁻¹ * ((γ - γ') * u₁ i) := by rw [hdiff]
+      _ = u₁ i := by rw [mul_assoc, inv_mul_cancel₀ hsub_ne, one_mul]
+  have hv₀_i : v₀ i = u₀ i := by
+    calc v₀ i = wγ i - γ * v₁ i := by
+          simp [v₀, Pi.sub_apply, Pi.smul_apply, smul_eq_mul]
+      _ = (u₀ i + γ * u₁ i) - γ * u₁ i := by
+          rw [hi.1, hv₁_i]
+          simp [smul_eq_mul]
+      _ = u₀ i := by ring
+  exact ⟨hv₀_i, hv₁_i⟩
+
 /-- **Single-codeword determinacy (the core in-tree fact).** For a `Submodule` code `MC` and a
 fixed codeword `w ∈ MC`, every bad combining point `γ ∈ mcaBadWitness w` equals
 `combiningPoint w u₀ u₁ i` at some coordinate `i ∈ secondSupport u₁`.
@@ -827,6 +866,7 @@ kernel-clean apart from the standard Lean foundations (`propext`, `Classical.cho
 #print axioms ProximityGap.GKL24FirstMomentWitnessCoverResidual_inTree_two_delta_card
 #print axioms ProximityGap.lineAgreeSet_card_ge_of_mem_mcaBadWitness
 #print axioms ProximityGap.linePetal_nonempty_of_ssubset_lineAgreeSet
+#print axioms ProximityGap.pairJointAgreesOn_inter_lineAgreeSet_of_ne
 #print axioms ProximityGap.badScalars_card_le_domain_compl_of_disjoint_petals
 #print axioms ProximityGap.badScalars_card_le_radius_mul_card_of_large_domain_disjoint_petals
 #print axioms ProximityGap.mcaBad_card_le_of_gkl24_residual
