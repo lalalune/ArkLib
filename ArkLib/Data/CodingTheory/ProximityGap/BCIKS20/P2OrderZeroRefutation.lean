@@ -193,6 +193,68 @@ theorem restrictedFaaDiBrunoMatch_false_of_constant_of_nonmonic_of_evalX_eq
     (RestrictedFaaDiBrunoMatch.at H x₀ R
       (ClaimA2.Hypotheses.of_evalX_eq hR0 hdvd hsep) hmatch 0)
 
+/-- Normalized-partition full-match form of the non-monic order-zero obstruction. Since the
+partition residual is equivalent to the carved `RestrictedFaaDiBrunoMatch`, the same constant
+order-1 numerator witness rules it out. -/
+theorem restrictedFaaDiBrunoPartitionMatch_false_of_constant_of_nonmonic
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) (hlc : ¬ IsUnit H.leadingCoeff) (c : F[X])
+    (hp : Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))
+        = Polynomial.C c)
+    (hc : liftToFunctionField (H := H) c ≠ 0) :
+    ¬ RestrictedFaaDiBrunoPartitionMatch H x₀ R hHyp := by
+  intro hpart
+  exact restrictedFaaDiBrunoMatch_false_of_constant_of_nonmonic H x₀ R hHyp hd hlc c hp hc
+    (RestrictedFaaDiBrunoMatch.of_partitionMatch H x₀ R hHyp hpart)
+
+/-- Specialization-family normalized-partition full-match refutation. -/
+theorem restrictedFaaDiBrunoPartitionMatch_false_of_constant_of_nonmonic_of_evalX_eq
+    (x₀ : F) (R : F[X][X][Y]) (g : F[X][Y])
+    (hR0 : Bivariate.evalX (Polynomial.C x₀) R = g)
+    (hdvd : H ∣ g)
+    (hsep : g.Separable)
+    (hd : 2 ≤ R.natDegree) (hlc : ¬ IsUnit H.leadingCoeff) (c : F[X])
+    (hp : Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))
+        = Polynomial.C c)
+    (hc : liftToFunctionField (H := H) c ≠ 0) :
+    ¬ RestrictedFaaDiBrunoPartitionMatch H x₀ R
+        (ClaimA2.Hypotheses.of_evalX_eq hR0 hdvd hsep) := by
+  intro hpart
+  exact restrictedFaaDiBrunoMatch_false_of_constant_of_nonmonic_of_evalX_eq H x₀ R g
+    hR0 hdvd hsep hd hlc c hp hc
+    (RestrictedFaaDiBrunoMatch.of_partitionMatch H x₀ R
+      (ClaimA2.Hypotheses.of_evalX_eq hR0 hdvd hsep) hpart)
+
+/-- Fixed-order-family partition residual form of the non-monic order-zero obstruction. -/
+theorem forall_partitionMatchAt_false_of_constant_of_nonmonic
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) (hlc : ¬ IsUnit H.leadingCoeff) (c : F[X])
+    (hp : Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))
+        = Polynomial.C c)
+    (hc : liftToFunctionField (H := H) c ≠ 0) :
+    ¬ (∀ t : ℕ, RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp t) := by
+  intro hat
+  exact restrictedFaaDiBrunoMatch_false_of_constant_of_nonmonic H x₀ R hHyp hd hlc c hp hc
+    (RestrictedFaaDiBrunoMatch.of_forall_partitionMatchAt H x₀ R hHyp hat)
+
+/-- Specialization-family fixed-order-family partition residual refutation. -/
+theorem forall_partitionMatchAt_false_of_constant_of_nonmonic_of_evalX_eq
+    (x₀ : F) (R : F[X][X][Y]) (g : F[X][Y])
+    (hR0 : Bivariate.evalX (Polynomial.C x₀) R = g)
+    (hdvd : H ∣ g)
+    (hsep : g.Separable)
+    (hd : 2 ≤ R.natDegree) (hlc : ¬ IsUnit H.leadingCoeff) (c : F[X])
+    (hp : Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))
+        = Polynomial.C c)
+    (hc : liftToFunctionField (H := H) c ≠ 0) :
+    ¬ (∀ t : ℕ, RestrictedFaaDiBrunoPartitionMatchAt H x₀ R
+        (ClaimA2.Hypotheses.of_evalX_eq hR0 hdvd hsep) t) := by
+  intro hat
+  exact restrictedFaaDiBrunoMatch_false_of_constant_of_nonmonic_of_evalX_eq H x₀ R g
+    hR0 hdvd hsep hd hlc c hp hc
+    (RestrictedFaaDiBrunoMatch.of_forall_partitionMatchAt H x₀ R
+      (ClaimA2.Hypotheses.of_evalX_eq hR0 hdvd hsep) hat)
+
 end BCIKS20.HenselNumerator
 
 #print axioms BCIKS20AppendixA.ClaimA2.Hypotheses.of_evalX_eq
@@ -207,3 +269,11 @@ set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.restrictedFaaDiBrunoMatch_false_of_constant_of_nonmonic
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.restrictedFaaDiBrunoMatch_false_of_constant_of_nonmonic_of_evalX_eq
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.restrictedFaaDiBrunoPartitionMatch_false_of_constant_of_nonmonic
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.restrictedFaaDiBrunoPartitionMatch_false_of_constant_of_nonmonic_of_evalX_eq
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.forall_partitionMatchAt_false_of_constant_of_nonmonic
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.forall_partitionMatchAt_false_of_constant_of_nonmonic_of_evalX_eq
