@@ -154,6 +154,40 @@ theorem inv_card_le_of_grandMCAChallenge_bot (ε_star : ℝ≥0)
   le_of_not_gt fun hε =>
     not_grandMCAChallenge_bot_of_lt_inv_card (ι := ι) (F := F) ε_star hε h
 
+/-- **Zero-code lower witness from the exact value.** If the target `ε_star` is at least
+`1 / |F|`, then the zero code satisfies the MCA bound at radius `0`. -/
+def MCALowerWitness_bot_of_inv_card_le (ε_star : ℝ≥0)
+    (hε : (1 : ENNReal) / (Fintype.card F : ENNReal) ≤ (ε_star : ENNReal)) :
+    GrandChallenges.MCALowerWitness (F := F)
+      (Cbot (ι := ι) (F := F) : Set (ι → F)) ε_star :=
+  GrandChallenges.MCALowerWitness.ofLe
+    (C := (Cbot (ι := ι) (F := F) : Set (ι → F))) (δ := 0) (by simp) <| by
+      rw [epsMCA_bot_eq_inv_card]
+      exact hε
+
+/-- Existential form of `MCALowerWitness_bot_of_inv_card_le`, preserving the certified radius. -/
+theorem exists_MCALowerWitness_bot_of_inv_card_le (ε_star : ℝ≥0)
+    (hε : (1 : ENNReal) / (Fintype.card F : ENNReal) ≤ (ε_star : ENNReal)) :
+    ∃ w : GrandChallenges.MCALowerWitness (F := F)
+        (Cbot (ι := ι) (F := F) : Set (ι → F)) ε_star,
+      w.δ = 0 :=
+  ⟨MCALowerWitness_bot_of_inv_card_le (ι := ι) (F := F) ε_star hε, rfl⟩
+
+/-- `epsStar` specialization of the zero-code lower witness. -/
+noncomputable def MCALowerWitness_bot_epsStar_of_inv_card_le
+    (hε : (1 : ENNReal) / (Fintype.card F : ENNReal) ≤ (epsStar : ENNReal)) :
+    GrandChallenges.MCALowerWitness (F := F)
+      (Cbot (ι := ι) (F := F) : Set (ι → F)) epsStar :=
+  MCALowerWitness_bot_of_inv_card_le (ι := ι) (F := F) epsStar hε
+
+/-- Existential `epsStar` specialization, preserving the certified radius `0`. -/
+theorem exists_MCALowerWitness_bot_epsStar_of_inv_card_le
+    (hε : (1 : ENNReal) / (Fintype.card F : ENNReal) ≤ (epsStar : ENNReal)) :
+    ∃ w : GrandChallenges.MCALowerWitness (F := F)
+        (Cbot (ι := ι) (F := F) : Set (ι → F)) epsStar,
+      w.δ = 0 :=
+  ⟨MCALowerWitness_bot_epsStar_of_inv_card_le (ι := ι) (F := F) hε, rfl⟩
+
 omit [DecidableEq F] in
 /-- Concrete `epsStar = 2^-128` specialization: if `|F| < 2^128`, then the formal threshold
 is below the exact zero-code MCA value `1 / |F|`. -/
@@ -183,6 +217,35 @@ theorem epsStar_lt_inv_card_of_card_lt_two_pow
     _ = (2 ^ (128 : ℕ) : ENNReal) := by norm_num [Nat.cast_pow]
     _ = (1 : ENNReal) * (2 ^ (128 : ℕ) : ENNReal) := by simp
 
+omit [DecidableEq F] in
+/-- Concrete `epsStar = 2^-128` lower-witness specialization: if `2^128 ≤ |F|`, then the exact
+zero-code MCA value is within the formal threshold. -/
+theorem inv_card_le_epsStar_of_two_pow_le_card
+    (hcard : 2 ^ (128 : ℕ) ≤ Fintype.card F) :
+    (1 : ENNReal) / (Fintype.card F : ENNReal) ≤ (epsStar : ENNReal) := by
+  set q := Fintype.card F with hq_def
+  have heps : (epsStar : ENNReal) = (2 ^ (128 : ℕ) : ENNReal)⁻¹ := by
+    rw [epsStar]
+    push_cast
+    rw [one_div]
+  rw [heps]
+  have hq0 : (q : ENNReal) ≠ 0 := by
+    simp only [ne_eq, Nat.cast_eq_zero]
+    rw [hq_def]
+    exact Fintype.card_ne_zero
+  have hqtop : (q : ENNReal) ≠ ⊤ := ENNReal.natCast_ne_top q
+  rw [ENNReal.div_le_iff hq0 hqtop]
+  have hpow_ne_zero : (2 ^ (128 : ℕ) : ENNReal) ≠ 0 := by positivity
+  have hpow_ne_top : (2 ^ (128 : ℕ) : ENNReal) ≠ ⊤ := by finiteness
+  rw [← ENNReal.div_eq_inv_mul]
+  rw [ENNReal.le_div_iff_mul_le (Or.inl hpow_ne_zero) (Or.inl hpow_ne_top)]
+  have hcast : ((2 ^ (128 : ℕ) : ℕ) : ENNReal) ≤ (q : ENNReal) := by
+    exact_mod_cast (by simpa [hq_def] using hcard)
+  calc
+    (1 : ENNReal) * (2 ^ (128 : ℕ) : ENNReal)
+        = ((2 ^ (128 : ℕ) : ℕ) : ENNReal) := by norm_num [Nat.cast_pow]
+    _ ≤ (q : ENNReal) := hcast
+
 /-- Field-size specialization of the zero-code upper witness at `epsStar`. -/
 noncomputable def MCAUpperWitness_bot_epsStar_of_card_lt_two_pow
     (hcard : Fintype.card F < 2 ^ (128 : ℕ)) :
@@ -198,6 +261,22 @@ theorem exists_MCAUpperWitness_bot_epsStar_of_card_lt_two_pow
         (Cbot (ι := ι) (F := F) : Set (ι → F)) epsStar,
       w.δ = 0 :=
   ⟨MCAUpperWitness_bot_epsStar_of_card_lt_two_pow (ι := ι) (F := F) hcard, rfl⟩
+
+/-- Field-size specialization of the zero-code lower witness at `epsStar`. -/
+noncomputable def MCALowerWitness_bot_epsStar_of_two_pow_le_card
+    (hcard : 2 ^ (128 : ℕ) ≤ Fintype.card F) :
+    GrandChallenges.MCALowerWitness (F := F)
+      (Cbot (ι := ι) (F := F) : Set (ι → F)) epsStar :=
+  MCALowerWitness_bot_epsStar_of_inv_card_le
+    (ι := ι) (F := F) (inv_card_le_epsStar_of_two_pow_le_card (F := F) hcard)
+
+/-- Existential field-size lower-witness specialization, preserving the certified radius `0`. -/
+theorem exists_MCALowerWitness_bot_epsStar_of_two_pow_le_card
+    (hcard : 2 ^ (128 : ℕ) ≤ Fintype.card F) :
+    ∃ w : GrandChallenges.MCALowerWitness (F := F)
+        (Cbot (ι := ι) (F := F) : Set (ι → F)) epsStar,
+      w.δ = 0 :=
+  ⟨MCALowerWitness_bot_epsStar_of_two_pow_le_card (ι := ι) (F := F) hcard, rfl⟩
 
 /-- Field-size specialization: any supplied zero-code MCA resolution at `epsStar` has threshold
 exactly `0`. -/
@@ -258,9 +337,16 @@ end General
 #print axioms not_grandMCAChallenge_bot_epsStar_of_lt_inv_card
 #print axioms inv_card_le_of_GrandMCAResolution_bot
 #print axioms inv_card_le_of_grandMCAChallenge_bot
+#print axioms MCALowerWitness_bot_of_inv_card_le
+#print axioms exists_MCALowerWitness_bot_of_inv_card_le
+#print axioms MCALowerWitness_bot_epsStar_of_inv_card_le
+#print axioms exists_MCALowerWitness_bot_epsStar_of_inv_card_le
 #print axioms epsStar_lt_inv_card_of_card_lt_two_pow
+#print axioms inv_card_le_epsStar_of_two_pow_le_card
 #print axioms MCAUpperWitness_bot_epsStar_of_card_lt_two_pow
 #print axioms exists_MCAUpperWitness_bot_epsStar_of_card_lt_two_pow
+#print axioms MCALowerWitness_bot_epsStar_of_two_pow_le_card
+#print axioms exists_MCALowerWitness_bot_epsStar_of_two_pow_le_card
 #print axioms GrandMCAResolution_bot_deltaStar_eq_zero_of_card_lt_two_pow
 #print axioms not_GrandMCAResolution_bot_epsStar_of_card_lt_two_pow
 #print axioms not_grandMCAChallenge_bot_epsStar_of_card_lt_two_pow
