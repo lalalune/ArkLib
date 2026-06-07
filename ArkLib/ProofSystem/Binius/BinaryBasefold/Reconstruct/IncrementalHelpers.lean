@@ -120,6 +120,18 @@ theorem iterated_fold_first (i : Fin r) {midIdx destIdx : Fin r} (steps : ℕ)
     congr 1
     all_goals first | exact h_ih | rfl
 
+/-- **`fiberwiseClose` coincides with `UDRClose`.** Both `fiberwiseClose i steps … f` and
+`UDRClose i … f` unfold to the same inequality `2 · Δ₀(f, BBF_Code i) < BBF_CodeDistance i`
+(neither the `steps`/`destIdx` data nor the `[NeZero steps]` instance enters the body), so the two
+predicates are definitionally the same proposition. -/
+lemma fiberwiseClose_steps_zero_iff_UDRClose
+    (i : Fin r) {destIdx : Fin r} (steps : ℕ) [NeZero steps]
+    (h_destIdx : destIdx = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ) (h_i : i ≤ ℓ)
+    (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i) :
+    fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i steps h_destIdx h_destIdx_le f ↔
+    UDRClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i h_i f :=
+  Iff.rfl
+
 end
 
 end Binius.BinaryBasefold
