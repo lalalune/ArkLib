@@ -582,6 +582,22 @@ theorem boundaryProbabilityResidual_zero
   intro hk
   omega
 
+omit [DecidableEq ι] in
+/-- At `k = 0`, the affine-curves keystone has no closed-boundary obligation beyond the usual
+strict coefficient-polynomial residual: the boundary-probability residual is vacuous because its
+first argument is `0 < k`. -/
+theorem correlatedAgreement_affine_curves_zero
+    {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} [NeZero deg]
+    (hStrictCoeff :
+      ProximityGap.StrictCoeffPolysResidual (k := 0) (deg := deg) (domain := domain) (δ := δ))
+    (hδ : δ ≤ 1 - ReedSolomon.sqrtRate deg domain) :
+    δ_ε_correlatedAgreementCurves (k := 0) (A := F) (F := F) (ι := ι)
+      (C := ReedSolomon.code domain deg) (δ := δ) (ε := errorBound δ deg domain) := by
+  classical
+  exact ProximityGap.correlatedAgreement_affine_curves
+    (deg := deg) (domain := domain) (δ := δ) hStrictCoeff
+    boundaryProbabilityResidual_zero hδ
+
 end BoundaryDischarge
 
 end ArkLib
@@ -611,3 +627,4 @@ end ArkLib
 #print axioms ArkLib.BoundaryDischarge.correlatedAgreement_affine_curves_of_lattice_data_isSquare
 #print axioms ArkLib.BoundaryDischarge.boundaryCardResidual_zero
 #print axioms ArkLib.BoundaryDischarge.boundaryProbabilityResidual_zero
+#print axioms ArkLib.BoundaryDischarge.correlatedAgreement_affine_curves_zero
