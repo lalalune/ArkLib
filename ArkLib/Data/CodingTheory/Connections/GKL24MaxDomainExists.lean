@@ -113,4 +113,51 @@ theorem linePetal_disjoint_of_common_subset (D : Finset ι) (u₀ u₁ w : ι �
     Disjoint (linePetal D u₀ u₁ w γ) (linePetal D u₀ u₁ w γ') :=
   linePetal_disjoint_of_inter_subset D u₀ u₁ w (by rw [lineAgreeSet_inter_eq u₀ u₁ w hγ]; exact h)
 
+/-- **Petal-counting: pairwise-disjoint large petals bound the number of combiners.**  If the petals
+`P γ` (`γ ∈ B`) are pairwise disjoint, each contained in `U`, and each of size `≥ L`, then
+`|B|·L ≤ |U|`.  Proof: the disjoint petals tile a subset of `U`, so `∑|P γ| = |⋃ P γ| ≤ |U|`, while
+`∑|P γ| ≥ |B|·L`.  This is the cardinality consumer for the GKL24 sunflower step. -/
+theorem card_mul_le_of_disjoint_petals {B : Finset F} {P : F → Finset ι} {U : Finset ι} {L : ℕ}
+    (hdisj : ∀ γ ∈ B, ∀ γ' ∈ B, γ ≠ γ' → Disjoint (P γ) (P γ'))
+    (hsub : ∀ γ ∈ B, P γ ⊆ U) (hL : ∀ γ ∈ B, L ≤ (P γ).card) :
+    B.card * L ≤ U.card :=
+  calc B.card * L = ∑ _γ ∈ B, L := by rw [Finset.sum_const, smul_eq_mul, mul_comm]
+    _ ≤ ∑ γ ∈ B, (P γ).card := Finset.sum_le_sum hL
+    _ = (B.biUnion P).card := (Finset.card_biUnion hdisj).symm
+    _ ≤ U.card := Finset.card_le_card (Finset.biUnion_subset.mpr hsub)
+
+/-- **Petal lower bound under domain containment.**  When the maximal domain `D` is contained in a
+bad witness's line-agreement set, the petal `lineAgreeSet γ \ D` has size `≥ |lineAgreeSet γ| − |D|`,
+hence `≥ (large agreement) − |D|`.  Combined with `card_mul_le_of_disjoint_petals` and the petal
+disjointness, this delivers the GKL24 first-moment count `|B| · (agreement − |D|) ≤ n − |D|`. -/
+theorem card_linePetal_ge (D : Finset ι) (u₀ u₁ w : ι → F) (γ : F) :
+    (lineAgreeSet u₀ u₁ w γ).card - D.card ≤ (linePetal D u₀ u₁ w γ).card := by
+  rw [linePetal]
+  have h := Finset.card_sdiff_add_card_inter (lineAgreeSet u₀ u₁ w γ) D
+  have hi : (lineAgreeSet u₀ u₁ w γ ∩ D).card ≤ D.card :=
+    Finset.card_le_card Finset.inter_subset_right
+  omega
+
+/-- **GKL24 first-moment count (sunflower assembly).**  Let `D` absorb the common zero-agreement set
+`{i : u₁ᵢ = 0 ∧ wᵢ = u₀ᵢ}`, and let every combiner `γ ∈ B` have line-agreement of size `≥ A`.  Then
+`|B| · (A − |D|) ≤ n − |D|`.  This assembles the whole sunflower argument — petal disjointness
+(`linePetal_disjoint_of_common_subset`), the petal lower bound (`card_linePetal_ge`), and the
+counting consumer (`card_mul_le_of_disjoint_petals`) — into the GKL24 first-moment bound on the
+number of bad combiners.  Instantiated with `A = (1−δ)·n` (the bad-witness agreement) this is GKL24's
+`|Bad¹|`-style count; the sole remaining input is that `D` absorbs the common set. -/
+theorem badCombiner_count {D : Finset ι} {u₀ u₁ w : ι → F} {B : Finset F} {A : ℕ}
+    (hcommon : Finset.univ.filter (fun i => u₁ i = 0 ∧ w i = u₀ i) ⊆ D)
+    (hA : ∀ γ ∈ B, A ≤ (lineAgreeSet u₀ u₁ w γ).card) :
+    B.card * (A - D.card) ≤ Fintype.card ι - D.card := by
+  have hU : (Finset.univ \ D).card = Fintype.card ι - D.card := by
+    have h := Finset.card_sdiff_add_card_inter (Finset.univ : Finset ι) D
+    rw [Finset.univ_inter, Finset.card_univ] at h
+    omega
+  rw [← hU]
+  refine card_mul_le_of_disjoint_petals (fun γ _ γ' _ hne =>
+    linePetal_disjoint_of_common_subset D u₀ u₁ w hne hcommon) (fun γ _ => ?_) (fun γ hγ => ?_)
+  · rw [linePetal]
+    exact Finset.sdiff_subset_sdiff (Finset.subset_univ _) (Finset.Subset.refl D)
+  · exact le_trans (Nat.sub_le_sub_right (hA γ hγ) D.card) (card_linePetal_ge D u₀ u₁ w γ)
+
 end ProximityGap
