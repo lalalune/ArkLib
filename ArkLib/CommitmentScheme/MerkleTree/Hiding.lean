@@ -206,6 +206,20 @@ theorem openTranscript_entries_eq {s : Skeleton} (hashFn : α → α → α)
             generateProof (buildSaltedTree hashFn salts leaves) i⟩) := by
   simp [openTranscript]
 
+/-- If two leaf assignments agree on the requested opened indices under the same salts, then the
+honest transcripts reveal the same opened payloads `(index, salt, value)`. This is the
+deterministic payload projection used by hiding simulators; roots and authentication paths still
+depend on the unopened leaves and are not compared here. -/
+theorem openTranscript_entries_payload_eq_of_agree {s : Skeleton} (hashFn : α → α → α)
+    (salts leaves₁ leaves₂ : LeafData α s) (idxs : List (SkeletonLeafIndex s))
+    (hagree : ∀ i ∈ idxs, leaves₁.get i = leaves₂.get i) :
+    ((openTranscript hashFn salts leaves₁ idxs).2.map
+        (fun o => (o.1, o.2.1, o.2.2.1))) =
+      ((openTranscript hashFn salts leaves₂ idxs).2.map
+        (fun o => (o.1, o.2.1, o.2.2.1))) := by
+  simp [openTranscript, Function.comp_def]
+  exact hagree
+
 /-- The honest salted transcript emits exactly one opening entry for each requested index. -/
 theorem openTranscript_entries_length {s : Skeleton} (hashFn : α → α → α)
     (salts leaves : LeafData α s) (idxs : List (SkeletonLeafIndex s)) :
@@ -376,6 +390,7 @@ end InductiveMerkleTree
 #print axioms InductiveMerkleTree.openTranscript
 #print axioms InductiveMerkleTree.openTranscript_root_eq
 #print axioms InductiveMerkleTree.openTranscript_entries_eq
+#print axioms InductiveMerkleTree.openTranscript_entries_payload_eq_of_agree
 #print axioms InductiveMerkleTree.openTranscript_entries_length
 #print axioms InductiveMerkleTree.openTranscript_entries_indices
 #print axioms InductiveMerkleTree.openTranscript_entries_nodup
