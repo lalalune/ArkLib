@@ -392,11 +392,9 @@ theorem epsMCA_le_ofReal_of_listFactor_two_delta_univ
   let T : Finset (ι → F) := Finset.univ.filter (fun w : ι → F => w ∈ (MC : Set (ι → F)))
   refine epsMCA_le_ofReal_of_listFactor_two_delta MC δ T ?_ ?_ ?_
   · intro w hw
-    rw [T, Finset.mem_filter]
-    exact ⟨Finset.mem_univ _, hw⟩
+    simpa [T, hw]
   · intro w hw
-    rw [T, Finset.mem_filter] at hw
-    exact hw.2
+    simpa [T] using hw
   · exact_mod_cast Finset.card_filter_le Finset.univ (fun w : ι → F => w ∈ (MC : Set (ι → F)))
 
 /-- **`ε_mca` bound from the in-tree first-moment count + a list-size factor.** Given a single

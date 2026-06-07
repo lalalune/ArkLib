@@ -310,6 +310,29 @@ theorem linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_two_delta_card
     ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
     T hT hTsub hcard
 
+/-- **ABF26 Theorem 5.1 [GCXK25 Theorem 3] — no-carrier sharpened in-tree
+first-moment relaxation.** This is the no-carrier companion to
+`linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_two_delta_card`. Taking the carrier to be all
+codewords gives
+
+  `ε_mca(C, 1 − √(1 − δ + η)) ≤
+    ENNReal.ofReal ((|F|^n · max 1 (2 · δ_mca · n)) / |F|)`,
+
+where `δ_mca = 1 − √(1 − δ + η)`. It remains a factor-of-two first-moment relaxation of the sharp
+GCXK25/GKL24 `δ·n` count, but requires no external residual or explicit carrier. -/
+theorem linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_two_delta_univ
+    (C : LinearCode ι F) (δ η : ℝ) :
+    epsMCA (F := F) (A := F) ((C : Set (ι → F)))
+        ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal) ≤
+      ENNReal.ofReal
+        (((Fintype.card (ι → F) : ℝ) *
+            max 1
+              (2 * (((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal : ℝ)) *
+                (Fintype.card ι : ℝ))) /
+          Fintype.card F) :=
+  ProximityGap.epsMCA_le_ofReal_of_listFactor_two_delta_univ C
+    ((1 - (1 - δ + η) ^ ((1 : ℝ) / 2)).toNNReal)
+
 /-- **ABF26 Theorem 5.1 [GCXK25 Theorem 3] — canonical in-tree first-moment relaxation.**
 This is the no-carrier version of `linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_card`.
 Taking the carrier to be all codewords and using the proven single-codeword determinacy count gives
@@ -966,6 +989,7 @@ the public T5.1 proposition. -/
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_gkl24_firstMoment_residual
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_card
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_two_delta_card
+#print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_two_delta_univ
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_firstMoment_inTree_univ
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25
 #print axioms CodingTheory.linear_listSize_to_epsMCA_gcxk25_of_residuals_prop

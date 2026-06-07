@@ -219,6 +219,17 @@ theorem openTranscript_entries_indices {s : Skeleton} (hashFn : α → α → α
     ((openTranscript hashFn salts leaves idxs).2.map (fun o => o.1)) = idxs := by
   simp [openTranscript, Function.comp_def]
 
+/-- If the requested opened indices are duplicate-free, then the honest salted transcript entries
+are duplicate-free too. This is transcript-shape bookkeeping for simulator/extractor arguments:
+each entry carries its requested index as the first field. -/
+theorem openTranscript_entries_nodup {s : Skeleton} (hashFn : α → α → α)
+    (salts leaves : LeafData α s) (idxs : List (SkeletonLeafIndex s))
+    (hidxs : idxs.Nodup) :
+    (openTranscript hashFn salts leaves idxs).2.Nodup := by
+  simpa [openTranscript] using hidxs.map (by
+    intro i j h
+    exact congrArg (fun o => o.1) h)
+
 /-- Every opening emitted by the honest salted transcript carries the honest salt and leaf value
 for its own index. This exposes the transcript data invariant used by deterministic extraction and
 future simulator/hybrid arguments. -/
@@ -367,6 +378,7 @@ end InductiveMerkleTree
 #print axioms InductiveMerkleTree.openTranscript_entries_eq
 #print axioms InductiveMerkleTree.openTranscript_entries_length
 #print axioms InductiveMerkleTree.openTranscript_entries_indices
+#print axioms InductiveMerkleTree.openTranscript_entries_nodup
 #print axioms InductiveMerkleTree.openTranscript_entry_eq_honest_pair
 #print axioms InductiveMerkleTree.openTranscript_entry_path_eq_honest_proof
 #print axioms InductiveMerkleTree.openTranscript_entry_verifies

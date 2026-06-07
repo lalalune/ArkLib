@@ -18,6 +18,11 @@ lake exe cache get
 ./scripts/validate.sh
 ```
 
+Do not use bare `lake update` as a routine cache-repair command. It re-resolves
+`lake-manifest.json` and may delete/re-clone package directories while other checks are running.
+Use `lake exe cache get` after syncing instead. Run `lake update` only when intentionally changing
+dependency pins, and commit the resulting manifest together with the matching `lean-toolchain`.
+
 ## Validation By Change Type
 
 ### Existing Lean files only

@@ -1531,6 +1531,20 @@ def subspaceDesign_epsCA_curves_polynomial_generators_bcgm25
   -- T4.13, so it is NOT a copy. The generator-native front door above is the canonical API;
   -- this compatibility shadow stays external until there is a checked bridge from
   -- IsMCAGenerator to this vector-alphabet curve-error formulation. Genuinely external.
+/-- Public BCGM25 compatibility wrapper from the named power-curve CA bound. -/
+theorem subspaceDesign_epsCA_curves_polynomial_generators_bcgm25_of_bound
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (s : ℕ) (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
+    (h : IsSubspaceDesign s τ C)
+    (t k : ℕ) (ht : 0 < t)
+    (hbound :
+      epsCA_curves (F := F) (A := Fin s → F) ((C : Set (ι → Fin s → F))) k
+          ((1 - τ (t + 1) - 3 / (2 * t)).toNNReal)
+          ((1 - τ (t + 1) - 3 / (2 * t)).toNNReal) ≤
+        ENNReal.ofReal (((t : ℝ) * Fintype.card ι + 4 * t ^ 2) / Fintype.card F)) :
+    subspaceDesign_epsCA_curves_polynomial_generators_bcgm25 s τ C h t k ht := by
+  simpa [subspaceDesign_epsCA_curves_polynomial_generators_bcgm25] using hbound
 
 end SubspaceDesignFRS
 
@@ -1560,6 +1574,7 @@ end SubspaceDesignFRS
 #print axioms CodingTheory.rs_epsCA_breakdown_cs25_entropyBallLowerWitness_of_counts
 #print axioms CodingTheory.rs_epsCA_breakdown_cs25_of_counts
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_subspaceDesign_prop
+#print axioms CodingTheory.subspaceDesign_epsCA_curves_polynomial_generators_bcgm25_of_bound
 #print axioms CodingTheory.rs_epsMCA_johnson_range_boundReal
 #print axioms CodingTheory.rs_epsMCA_johnson_range_condition
 #print axioms CodingTheory.rs_epsMCA_johnson_range_bchks25

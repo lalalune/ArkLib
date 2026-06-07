@@ -114,6 +114,25 @@ theorem random_rs_list_decoding_of_first_moment_residual
   rw [randomRSListDecodingFirstMomentResidual, randomRSBadDomainProbability_eq_front_door] at hres
   simpa [random_rs_list_decoding] using hres
 
+/-- Direct probability-bound wrapper for the AGL24 random-RS front door.
+
+This is the public `random_rs_list_decoding` analogue of the GG25 MCA
+`random_rs_mca_of_prob_bound` wrapper: the external paper estimate is supplied as the exact
+bad-domain probability bound over `uniformSizeSubsetOfLe`, while the front-door packaging is
+checked in-tree. -/
+theorem random_rs_list_decoding_of_prob_bound
+    (F : Type) [Field F] [Fintype F] [DecidableEq F]
+    (n k listBound : ℕ) (η : ℝ) (failure : ENNReal)
+    (hn_pos : 0 < n) (hn : n ≤ Fintype.card F)
+    (hprob :
+      Pr_{let L ← Probability.uniformSizeSubsetOfLe F n hn}[
+        randomRSBadDomainEvent (F := F) n k listBound η L] ≤ failure) :
+    random_rs_list_decoding F n k listBound η failure hn_pos hn := by
+  classical
+  exact random_rs_list_decoding_of_first_moment_residual F n k listBound η failure hn_pos hn
+    (by
+      simpa [randomRSListDecodingFirstMomentResidual, randomRSBadDomainProbability] using hprob)
+
 end RandomReedSolomonResidual
 
 /-! ## Axiom audit -/
@@ -124,6 +143,7 @@ end RandomReedSolomonResidual
 #print axioms randomRSListDecodingFirstMomentResidual
 #print axioms randomRSBadDomainProbability_eq_front_door
 #print axioms random_rs_list_decoding_of_first_moment_residual
+#print axioms random_rs_list_decoding_of_prob_bound
 #print axioms random_rs_list_decoding
 
 end CodingTheory
