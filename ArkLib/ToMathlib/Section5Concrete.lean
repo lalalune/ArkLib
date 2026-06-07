@@ -123,11 +123,11 @@ noncomputable def betaCurveInputFin_of_bundle {k deg : ℕ} {domain : ι ↪ F} 
     (hcardConcreteFin : ∀ t, k ≤ t → t ≤ T → (↑matchingSet.card : WithBot ℕ)
         > (((2 * t + 1) * b.R.natDegree * b.D * b.H.natDegree : ℕ) : WithBot ℕ))
     (htailDeg : ∀ t, T < t → BetaToCurveCoeffPolys.αFromBeta (0 : F) b.R b.H b.hHyp Bcoeff t = 0)
-    (hHensel : ∀ (P : F → Polynomial F) (v₀ v₁ : F[X]),
+    (hMatchingDvd : ∀ (P : F → Polynomial F) (v₀ v₁ : F[X]),
       γ (0 : F) b.R b.H b.hHyp = polyToPowerSeries𝕃 b.H
         ((Polynomial.map Polynomial.C v₀)
           + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)) →
-      HenselDatum (k := k) (deg := deg) (domain := domain) (δ := δ) u P v₀ v₁)
+      HenselDatumProducer.MatchingDvdInput (k := k) (deg := deg) (domain := domain) (δ := δ) u P v₀ v₁)
     (hdegPz : ∀ (_P : F → Polynomial F) (v₀ v₁ : F[X]),
       γ (0 : F) b.R b.H b.hHyp = polyToPowerSeries𝕃 b.H
         ((Polynomial.map Polynomial.C v₀)
@@ -137,7 +137,7 @@ noncomputable def betaCurveInputFin_of_bundle {k deg : ℕ} {domain : ι ↪ F} 
   betaCurveInputFin_of_section5 (k := k) (deg := deg) (domain := domain) (δ := δ) (u := u)
     b.R b.H b.hIrr b.hPos b.hHyp Bcoeff b.hH b.D b.hD matchingSet root T
     Ppoly hrep hdegX hβ mpFin hd1 hdH_le hdH_D hbB hBzero hbξ hcardConcreteFin htailDeg
-    hHensel hdegPz
+    hMatchingDvd hdegPz
 
 /-! ## The per-received-word supplier `section5Concrete_of_close_word`
 
@@ -195,7 +195,7 @@ noncomputable def section5Concrete_of_close_word {k deg : ℕ} {domain : ι ↪ 
           γ (0 : F) b.R b.H b.hHyp = polyToPowerSeries𝕃 b.H
             ((Polynomial.map Polynomial.C v₀)
               + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)) →
-          HenselDatum (k := k) (deg := deg) (domain := domain) (δ := δ) u P v₀ v₁) ×'
+          HenselDatumProducer.MatchingDvdInput (k := k) (deg := deg) (domain := domain) (δ := δ) u P v₀ v₁) ×'
         (∀ (_P : F → Polynomial F) (v₀ v₁ : F[X]),
           γ (0 : F) b.R b.H b.hHyp = polyToPowerSeries𝕃 b.H
             ((Polynomial.map Polynomial.C v₀)
@@ -204,10 +204,10 @@ noncomputable def section5Concrete_of_close_word {k deg : ℕ} {domain : ι ↪ 
     (u : WordStack F (Fin (k + 1)) ι) :
     BetaCurveInputFin (k := k) (deg := deg) (domain := domain) (δ := δ) u :=
   match perWord u with
-  | ⟨matchingSet, root, T, Ppoly, hrep, hdegX, mpFin, hcardConcreteFin, htailDeg, hHensel, hdegPz⟩ =>
+  | ⟨matchingSet, root, T, Ppoly, hrep, hdegX, mpFin, hcardConcreteFin, htailDeg, hMatchingDvd, hdegPz⟩ =>
     betaCurveInputFin_of_bundle (k := k) (deg := deg) (domain := domain) (δ := δ) (u := u)
       b Bcoeff matchingSet root T Ppoly hrep hdegX hβ mpFin
-      hd1 hdH_le hdH_D hbB hBzero hbξ hcardConcreteFin htailDeg hHensel hdegPz
+      hd1 hdH_le hdH_D hbB hBzero hbξ hcardConcreteFin htailDeg hMatchingDvd hdegPz
 
 /-! ## The milestone — the strict keystone consuming only genuine regime hypotheses
 
@@ -263,7 +263,7 @@ theorem correlatedAgreement_affine_curves_johnson_concrete {k deg : ℕ} {domain
           γ (0 : F) b.R b.H b.hHyp = polyToPowerSeries𝕃 b.H
             ((Polynomial.map Polynomial.C v₀)
               + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)) →
-          HenselDatum (k := k) (deg := deg) (domain := domain) (δ := δ) u P v₀ v₁) ×'
+          HenselDatumProducer.MatchingDvdInput (k := k) (deg := deg) (domain := domain) (δ := δ) u P v₀ v₁) ×'
         (∀ (_P : F → Polynomial F) (v₀ v₁ : F[X]),
           γ (0 : F) b.R b.H b.hHyp = polyToPowerSeries𝕃 b.H
             ((Polynomial.map Polynomial.C v₀)
