@@ -1113,6 +1113,74 @@ theorem mcaThreshold_spec_and_bracket_prize_allRates_of_uniformConjecture
 
 set_option linter.style.longLine false
 
+/-- The all-rate uniform GS threshold-spec package resolves the faithful prize lattice at the
+concrete `mcaThreshold` indices and preserves only the selected-threshold spec.
+
+This is the spec-only concrete-threshold companion to
+`mcaThreshold_spec_prize_allRates_of_uniformConjecture`: it exposes the chosen thresholds as a
+`τ` solving `mcaPrizeLatticeResolved`, without requiring or returning lower/upper bracket data. -/
+theorem mcaPrizeLatticeResolved_with_threshold_spec_prize_allRates_of_uniformConjecture
+    (domain : ι ↪ F) (m : ℕ)
+    (hUniform : epsMCAgsPrizeUniformConjecture domain m) :
+    ∃ c₁ c₂ c₃ : ℝ,
+      ∀ (η δ : Fin 4 → ℝ≥0),
+        (∀ j : Fin 4, 0 < η j) →
+        (∀ j : Fin 4,
+          (δ j : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η j : ℝ)) →
+        (∀ j : Fin 4, δ j ≤ 1) →
+        ∀ L : ∀ _ : Fin 4, WordStack F (Fin 2) ι → Finset (ι → F),
+          (∀ j : Fin 4,
+            FaithfulGSFamily (F := F)
+              ((ReedSolomon.code (domain := domain)
+                ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ :
+                  Set (ι → F))) (δ j) (L j)) →
+          (∀ j : Fin 4,
+            ENNReal.ofReal
+                (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j)
+                  (η j) c₁ c₂ c₃)
+              ≤ (epsStar : ENNReal)) →
+          let C : Fin 4 → Set (ι → F) := fun j =>
+            ReedSolomon.code domain
+              ⌊ProximityGap.prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+          ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+            GrandChallengesLattice.mcaPrizeLatticeResolved domain τ ∧
+              ∀ j : Fin 4,
+                ∃ hne : GrandChallengesLattice.mcaThresholdExists (C j) epsStar,
+                  τ j = GrandChallengesLattice.mcaThreshold (C j) epsStar hne ∧
+                    GrandChallengesLattice.mcaSatisfies (C j) epsStar (τ j) ∧
+                      ∀ i : Fin (Fintype.card ι + 1),
+                        GrandChallengesLattice.mcaSatisfies (C j) epsStar i → i ≤ τ j := by
+  rcases mcaThreshold_spec_prize_allRates_of_uniformConjecture
+      domain m hUniform with ⟨c₁, c₂, c₃, hall⟩
+  refine ⟨c₁, c₂, c₃, ?_⟩
+  intro η δ hη hδ hδ_le_one L hfaithful hclear
+  let C : Fin 4 → Set (ι → F) := fun j =>
+    (ReedSolomon.code (domain := domain)
+      ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+  have hdata :
+      ∀ j : Fin 4,
+        ∃ hne : GrandChallengesLattice.mcaThresholdExists (C j) epsStar,
+          GrandChallengesLattice.mcaSatisfies (C j) epsStar
+            (GrandChallengesLattice.mcaThreshold (C j) epsStar hne) := by
+    intro j
+    simpa [C] using hall η δ hη hδ hδ_le_one L hfaithful hclear j
+  choose hne hsat using hdata
+  let τ : Fin 4 → Fin (Fintype.card ι + 1) := fun j =>
+    GrandChallengesLattice.mcaThreshold (C j) epsStar (hne j)
+  refine ⟨τ, ?_, ?_⟩
+  · refine (GrandChallengesLattice.mcaPrizeLatticeResolved_iff domain τ).mpr ?_
+    intro j
+    refine ⟨hne j, ?_, ?_⟩
+    · simpa [τ, C] using hsat j
+    · intro i hi
+      simpa [τ, C] using GrandChallengesLattice.le_mcaThreshold (C j) epsStar (hne j) hi
+  · intro j
+    refine ⟨hne j, ?_, ?_, ?_⟩
+    · simp [τ, C]
+    · simpa [τ] using hsat j
+    · intro i hi
+      simpa [τ, C] using GrandChallengesLattice.le_mcaThreshold (C j) epsStar (hne j) hi
+
 /-- The all-rate uniform GS threshold package also resolves the faithful prize lattice at the
 concrete `mcaThreshold` indices and preserves the lower lattice brackets.
 
@@ -1330,6 +1398,8 @@ set_option linter.style.longLine false in
 #print axioms mcaThreshold_spec_and_lower_bracket_prize_allRates_of_uniformConjecture
 set_option linter.style.longLine false in
 #print axioms mcaThreshold_spec_and_bracket_prize_allRates_of_uniformConjecture
+set_option linter.style.longLine false in
+#print axioms mcaPrizeLatticeResolved_with_threshold_spec_prize_allRates_of_uniformConjecture
 set_option linter.style.longLine false in
 #print axioms mcaPrizeLatticeResolved_with_threshold_spec_and_lower_brackets_prize_allRates_of_uniformConjecture
 set_option linter.style.longLine false in

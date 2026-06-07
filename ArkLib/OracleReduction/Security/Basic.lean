@@ -98,6 +98,64 @@ def perfectCompletenessFromRun
       OptionT (OracleComp runSpec) ((Trace × StmtOut × WitOut) × StmtOut)) : Prop :=
   completenessFromRun runInit runImpl relIn relOut run 0
 
+/-- `completenessFromRun` is monotone in the target completeness error. -/
+theorem completenessFromRun_error_mono
+    {ιᵣ : Type} {runSpec : OracleSpec ιᵣ} {σᵣ : Type} {Trace : Type}
+    {runInit : ProbComp σᵣ}
+    {runImpl : QueryImpl runSpec (StateT σᵣ ProbComp)}
+    {relIn : Set (StmtIn × WitIn)} {relOut : Set (StmtOut × WitOut)}
+    {run : (stmtIn : StmtIn) → (witIn : WitIn) →
+      OptionT (OracleComp runSpec) ((Trace × StmtOut × WitOut) × StmtOut)}
+    {ε₁ ε₂ : ℝ≥0} (hε : ε₁ ≤ ε₂) :
+    completenessFromRun runInit runImpl relIn relOut run ε₁ →
+      completenessFromRun runInit runImpl relIn relOut run ε₂ := by
+  intro h stmtIn witIn hIn
+  exact ge_trans (h stmtIn witIn hIn) (tsub_le_tsub_left (by simp [hε]) 1)
+
+/-- `completenessFromRun` is monotone under restricting the input relation. -/
+theorem completenessFromRun_relIn_mono
+    {ιᵣ : Type} {runSpec : OracleSpec ιᵣ} {σᵣ : Type} {Trace : Type}
+    {runInit : ProbComp σᵣ}
+    {runImpl : QueryImpl runSpec (StateT σᵣ ProbComp)}
+    {relIn relIn' : Set (StmtIn × WitIn)} {relOut : Set (StmtOut × WitOut)}
+    {run : (stmtIn : StmtIn) → (witIn : WitIn) →
+      OptionT (OracleComp runSpec) ((Trace × StmtOut × WitOut) × StmtOut)}
+    {ε : ℝ≥0} (hrelIn : relIn' ⊆ relIn) :
+    completenessFromRun runInit runImpl relIn relOut run ε →
+      completenessFromRun runInit runImpl relIn' relOut run ε := by
+  intro h stmtIn witIn hIn
+  exact h stmtIn witIn (hrelIn hIn)
+
+/-- `completenessFromRun` is monotone under enlarging the output relation. -/
+theorem completenessFromRun_relOut_mono
+    {ιᵣ : Type} {runSpec : OracleSpec ιᵣ} {σᵣ : Type} {Trace : Type}
+    {runInit : ProbComp σᵣ}
+    {runImpl : QueryImpl runSpec (StateT σᵣ ProbComp)}
+    {relIn : Set (StmtIn × WitIn)} {relOut relOut' : Set (StmtOut × WitOut)}
+    {run : (stmtIn : StmtIn) → (witIn : WitIn) →
+      OptionT (OracleComp runSpec) ((Trace × StmtOut × WitOut) × StmtOut)}
+    {ε : ℝ≥0} (hrelOut : relOut ⊆ relOut') :
+    completenessFromRun runInit runImpl relIn relOut run ε →
+      completenessFromRun runInit runImpl relIn relOut' run ε := by
+  intro h stmtIn witIn hIn
+  exact ge_trans (probEvent_mono fun _ _ ⟨hOut, hEq⟩ => ⟨hrelOut hOut, hEq⟩)
+    (h stmtIn witIn hIn)
+
+/-- `perfectCompletenessFromRun` is monotone under restricting the input relation and enlarging the
+output relation. -/
+theorem perfectCompletenessFromRun_mono_relations
+    {ιᵣ : Type} {runSpec : OracleSpec ιᵣ} {σᵣ : Type} {Trace : Type}
+    {runInit : ProbComp σᵣ}
+    {runImpl : QueryImpl runSpec (StateT σᵣ ProbComp)}
+    {relIn relIn' : Set (StmtIn × WitIn)} {relOut relOut' : Set (StmtOut × WitOut)}
+    {run : (stmtIn : StmtIn) → (witIn : WitIn) →
+      OptionT (OracleComp runSpec) ((Trace × StmtOut × WitOut) × StmtOut)}
+    (hrelIn : relIn' ⊆ relIn) (hrelOut : relOut ⊆ relOut') :
+    perfectCompletenessFromRun runInit runImpl relIn relOut run →
+      perfectCompletenessFromRun runInit runImpl relIn' relOut' run := by
+  unfold perfectCompletenessFromRun
+  exact completenessFromRun_relOut_mono hrelOut ∘ completenessFromRun_relIn_mono hrelIn
+
 /-- A reduction satisfies **completeness** with regards to:
   - an initialization function `init : ProbComp σ` for some ambient state `σ`,
   - a stateful query implementation `impl` (in terms of `StateT σ ProbComp`)
