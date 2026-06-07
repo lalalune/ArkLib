@@ -58,6 +58,34 @@ theorem bcsTotalError_one (εInteraction : ℝ≥0) (εOpen : Fin 1 → ℝ≥0)
     bcsTotalError εInteraction εOpen = εInteraction + εOpen 0 := by
   simp [bcsTotalError]
 
+/-- Splitting a concatenated opening-error vector splits the BCS total error into the left
+batch's total plus the right batch's opening-error sum. This is the algebraic accounting rule for
+grouping opening proofs into two consecutive batches. -/
+theorem bcsTotalError_append {m n : ℕ}
+    (εInteraction : ℝ≥0) (εLeft : Fin m → ℝ≥0) (εRight : Fin n → ℝ≥0) :
+    bcsTotalError εInteraction (Fin.append εLeft εRight) =
+      bcsTotalError εInteraction εLeft + ∑ i, εRight i := by
+  unfold bcsTotalError
+  rw [Fin.sum_univ_add]
+  simp [Fin.append]
+  ring
+
+/-- Appending an empty left batch leaves the BCS total error unchanged. -/
+theorem bcsTotalError_append_zero_left {m : ℕ}
+    (εInteraction : ℝ≥0) (εOpen : Fin m → ℝ≥0) :
+    bcsTotalError εInteraction (Fin.append (Fin.elim0 : Fin 0 → ℝ≥0) εOpen) =
+      bcsTotalError εInteraction εOpen := by
+  rw [bcsTotalError_append]
+  simp [bcsTotalError]
+
+/-- Appending an empty right batch leaves the BCS total error unchanged. -/
+theorem bcsTotalError_append_zero_right {m : ℕ}
+    (εInteraction : ℝ≥0) (εOpen : Fin m → ℝ≥0) :
+    bcsTotalError εInteraction (Fin.append εOpen (Fin.elim0 : Fin 0 → ℝ≥0)) =
+      bcsTotalError εInteraction εOpen := by
+  rw [bcsTotalError_append]
+  simp [bcsTotalError]
+
 /-- The BCS total error is monotone in the interaction error. -/
 theorem bcsTotalError_mono_interaction {m : ℕ} {ε₁ ε₂ : ℝ≥0} (εOpen : Fin m → ℝ≥0)
     (h : ε₁ ≤ ε₂) : bcsTotalError ε₁ εOpen ≤ bcsTotalError ε₂ εOpen := by
@@ -238,6 +266,9 @@ example (εInteraction : ℝ≥0) (εOpen : Fin 3 → ℝ≥0) :
 #print axioms bcsTotalError_zero
 #print axioms bcsTotalError_succ
 #print axioms bcsTotalError_one
+#print axioms bcsTotalError_append
+#print axioms bcsTotalError_append_zero_left
+#print axioms bcsTotalError_append_zero_right
 #print axioms bcsTotalError_mono_interaction
 #print axioms bcsTotalError_mono_open
 #print axioms bcsTotalError_mono
