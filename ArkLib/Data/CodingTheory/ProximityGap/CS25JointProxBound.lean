@@ -233,4 +233,22 @@ theorem card_jointProximity_le_qEntropy [Nonempty ι] (C : Set (ι → A)) [AddC
   exact CodingTheory.hammingBallVolume_le_qEntropy_real_radius hq (δ : ℝ)
     Fintype.card_pos δ.coe_nonneg hδcap
 
+/-- **Real-analysis core of the sub-band jointProx inequality.** For `Q > 1`, the explicit qEntropy
+`#{jointProx}` bound `Q^k · (n+1) · Q^{n·H}` drops below `Q^n` exactly when the rate-plus-entropy
+budget `k + log_Q(n+1) + n·H ≤ n` holds — i.e. the sub-band condition `ρ + H_Q(δ) < 1` (with the
+`log_Q(n+1)/n` slack). Pure `rpow`/`logb` arithmetic; the `Fin 2` instance has `Q = q²`,
+`Q^k = q^{2k} = |C|^|κ|`, `Q^n = #stacks`. -/
+theorem pow_succ_rpow_entropy_le {Q : ℝ} (hQ : 1 < Q) (k n : ℕ) (H : ℝ)
+    (h : (k : ℝ) + Real.logb Q ((n : ℝ) + 1) + (n : ℝ) * H ≤ (n : ℝ)) :
+    Q ^ (k : ℝ) * (((n : ℝ) + 1) * Q ^ ((n : ℝ) * H)) ≤ Q ^ (n : ℝ) := by
+  have hQ0 : (0 : ℝ) < Q := by linarith
+  have hn1 : (0 : ℝ) < (n : ℝ) + 1 := by positivity
+  have hlogb : ((n : ℝ) + 1) = Q ^ Real.logb Q ((n : ℝ) + 1) :=
+    (Real.rpow_logb hQ0 hQ.ne' hn1).symm
+  calc Q ^ (k : ℝ) * (((n : ℝ) + 1) * Q ^ ((n : ℝ) * H))
+      = Q ^ (k : ℝ) * (Q ^ Real.logb Q ((n : ℝ) + 1) * Q ^ ((n : ℝ) * H)) := by rw [← hlogb]
+    _ = Q ^ ((k : ℝ) + (Real.logb Q ((n : ℝ) + 1) + (n : ℝ) * H)) := by
+        rw [← Real.rpow_add hQ0, ← Real.rpow_add hQ0]
+    _ ≤ Q ^ (n : ℝ) := Real.rpow_le_rpow_of_exponent_le hQ.le (by linarith)
+
 end CS25
