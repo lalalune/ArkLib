@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Quang Dao
 -/
 
-import ArkLib.OracleReduction.Security.Basic
+import ArkLib.OracleReduction.Security.RoundByRound
 import ArkLib.ProofSystem.ConstraintSystem.Plonk
 
 /-!
@@ -190,6 +190,53 @@ theorem permCheck_perfectCompleteness :
     simp only [map_pure, support_pure, Set.mem_singleton_iff] at hx
     cases hx
     exact ⟨hIn, rfl⟩
+
+omit [CommRing 𝓡] in
+/-- The permutation-check verifier has zero-error round-by-round knowledge soundness: the single
+prover message is the extended wire assignment, and the verifier guard ensures it satisfies the
+copy constraints whenever the verifier can output a related statement. -/
+lemma permCheckVerifier_rbrKnowledgeSoundness :
+    (permCheckVerifier (𝓡 := 𝓡) (numWires := numWires)
+      (numGates := numGates)).rbrKnowledgeSoundness init impl permCheckRelIn permCheckRelOut 0 := by
+  refine ⟨fun _ => Fin (3 * numGates) → 𝓡, {
+    eqIn := rfl
+    extractMid := fun ⟨0, _⟩ _stmt _tr witMid => witMid
+    extractOut := fun _stmt tr _ => tr ⟨0, by omega⟩
+  }, {
+    toFun := fun _ stmt _tr wit => (stmt, wit) ∈ permCheckRelIn
+    toFun_empty := fun _ _ => by simp
+    toFun_next := fun ⟨0, _⟩ _ _stmt _tr _msg _witMid h => h
+    toFun_full := fun stmt tr _witOut hpr => by
+      rw [gt_iff_lt, probEvent_pos_iff] at hpr
+      obtain ⟨_x, hx, _hrel⟩ := hpr
+      rw [OptionT.mem_support_iff] at hx
+      simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+      obtain ⟨s, _, hx⟩ := hx
+      by_cases hAccept : CopyConstraintsSatisfied (tr ⟨0, by simp⟩) stmt.perm
+      · simpa [permCheckRelIn] using hAccept
+      · exfalso
+        have hrun :
+            (simulateQ impl
+              ((permCheckVerifier (𝓡 := 𝓡) (numWires := numWires)
+                (numGates := numGates)).run stmt tr)).run' s =
+              pure none := by
+          simp only [Verifier.run, permCheckVerifier_verify_eq]
+          split_ifs with h
+          · exact False.elim (hAccept (by simpa using h))
+          change (simulateQ impl (pure none : OracleComp []ₒ
+            (Option (Plonk.ConstraintSystem 𝓡 numWires numGates ×
+              (Fin (3 * numGates) → 𝓡))))).run' s = pure none
+          rw [simulateQ_pure]
+          change Prod.fst <$> (pure none : StateT σ ProbComp
+            (Option (Plonk.ConstraintSystem 𝓡 numWires numGates ×
+              (Fin (3 * numGates) → 𝓡)))).run s = pure none
+          rw [StateT.run_pure]
+          simp [map_pure]
+        rw [hrun] at hx
+        simp at hx
+  }, ?_⟩
+  intro _stmtIn _witIn _prover ⟨⟨0, _⟩, hdir⟩
+  exact absurd hdir (by simp)
 
 end PermutationCheck
 

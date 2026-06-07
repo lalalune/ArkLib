@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Quang Dao
 -/
 
-import ArkLib.OracleReduction.Security.Basic
+import ArkLib.OracleReduction.Security.RoundByRound
 import ArkLib.ProofSystem.ConstraintSystem.Plonk
 
 /-!
@@ -167,6 +167,52 @@ theorem gateCheck_perfectCompleteness :
     simp only [map_pure, support_pure, Set.mem_singleton_iff] at hx
     cases hx
     exact ⟨hIn, rfl⟩
+
+/-- The gate-check verifier has zero-error round-by-round knowledge soundness: the single
+prover message is the wire assignment, and the verifier guard ensures it satisfies the gate
+constraints whenever the verifier can output a related statement. -/
+theorem gateCheckVerifier_rbrKnowledgeSoundness :
+    (gateCheckVerifier (𝓡 := 𝓡) (numWires := numWires)
+      (numGates := numGates)).rbrKnowledgeSoundness init impl gateCheckRelIn gateCheckRelOut 0 := by
+  refine ⟨fun _ => Fin numWires → 𝓡, {
+    eqIn := rfl
+    extractMid := fun ⟨0, _⟩ _stmt _tr witMid => witMid
+    extractOut := fun _stmt tr _ => tr ⟨0, by omega⟩
+  }, {
+    toFun := fun _ stmt _tr wit => (stmt, wit) ∈ gateCheckRelIn
+    toFun_empty := fun _ _ => by simp
+    toFun_next := fun ⟨0, _⟩ _ _stmt _tr _msg _witMid h => h
+    toFun_full := fun stmt tr _witOut hpr => by
+      rw [gt_iff_lt, probEvent_pos_iff] at hpr
+      obtain ⟨_x, hx, _hrel⟩ := hpr
+      rw [OptionT.mem_support_iff] at hx
+      simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+      obtain ⟨s, _, hx⟩ := hx
+      by_cases hAccept : stmt.accepts (tr ⟨0, by simp⟩)
+      · simpa [gateCheckRelIn] using hAccept
+      · exfalso
+        have hrun :
+            (simulateQ impl
+              ((gateCheckVerifier (𝓡 := 𝓡) (numWires := numWires)
+                (numGates := numGates)).run stmt tr)).run' s =
+              pure none := by
+          simp only [Verifier.run, gateCheckVerifier_verify_eq]
+          split_ifs with h
+          · exact False.elim (hAccept (by simpa using h))
+          change (simulateQ impl (pure none : OracleComp []ₒ
+            (Option (Plonk.ConstraintSystem 𝓡 numWires numGates ×
+              (Fin numWires → 𝓡))))).run' s = pure none
+          rw [simulateQ_pure]
+          change Prod.fst <$> (pure none : StateT σ ProbComp
+            (Option (Plonk.ConstraintSystem 𝓡 numWires numGates ×
+              (Fin numWires → 𝓡)))).run s = pure none
+          rw [StateT.run_pure]
+          simp [map_pure]
+        rw [hrun] at hx
+        simp at hx
+  }, ?_⟩
+  intro _stmtIn _witIn _prover ⟨⟨0, _⟩, hdir⟩
+  exact absurd hdir (by simp)
 
 end GateCheck
 
