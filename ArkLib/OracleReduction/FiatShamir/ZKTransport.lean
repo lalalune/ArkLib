@@ -331,6 +331,133 @@ theorem fiatShamir_isStatHVZK_of_transfer_zero_sourceStatHVZK_zero_prepost_mono_
   (fiatShamir_isHVZK_of_transfer_zero_sourceStatHVZK_zero_prepost_mono_relation
     init impl fsInit fsImpl hpre hpost R hTransfer hSource).isStatHVZK ε
 
+/-- Basic Fiat-Shamir statistical HVZK from a fixed-simulator zero-error statistical source proof.
+The source proof is first restricted to the transfer relation and converted back to perfect HVZK
+for the same simulator. -/
+theorem fiatShamir_isStatHVZK_of_sourceStatHVZK_zero_sim_pre_mono_relation
+    (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (fsInit : ProbComp τ)
+    (fsImpl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT τ ProbComp))
+    {relSource relTransfer : Set (StmtIn × WitIn)} (hsub : relTransfer ⊆ relSource)
+    {sim : Reduction.TranscriptSimulator oSpec StmtIn pSpec} (ε : ℝ≥0)
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hTransfer :
+      fiatShamir_statisticalHVZKTransferResidual init impl fsInit fsImpl relTransfer ε R)
+    (hSource : Reduction.statisticalHVZK init impl relSource R sim 0) :
+    Reduction.isStatHVZK fsInit fsImpl relTransfer R.fiatShamir ε :=
+  fiatShamir_isStatHVZK_of_HVZK init impl fsInit fsImpl relTransfer ε R hTransfer
+    ⟨sim, _root_.Reduction.statisticalHVZK_zero.perfectHVZK_mono_relation
+      (rel' := relTransfer) hSource hsub⟩
+
+/-- Fixed-simulator source zero-error statistical HVZK with source-side relation transport,
+followed by target-side relation restriction and error relaxation after the Fiat-Shamir
+statistical transfer residual. -/
+theorem fiatShamir_isStatHVZK_of_sourceStatHVZK_zero_sim_prepost_mono_relation_error
+    (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (fsInit : ProbComp τ)
+    (fsImpl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT τ ProbComp))
+    {relSource relTransfer relTarget : Set (StmtIn × WitIn)}
+    (hpre : relTransfer ⊆ relSource) (hpost : relTarget ⊆ relTransfer)
+    {sim : Reduction.TranscriptSimulator oSpec StmtIn pSpec} {ε₁ ε₂ : ℝ≥0}
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hTransfer :
+      fiatShamir_statisticalHVZKTransferResidual init impl fsInit fsImpl relTransfer ε₁ R)
+    (hle : ε₁ ≤ ε₂)
+    (hSource : Reduction.statisticalHVZK init impl relSource R sim 0) :
+    Reduction.isStatHVZK fsInit fsImpl relTarget R.fiatShamir ε₂ :=
+  (fiatShamir_isStatHVZK_of_HVZK init impl fsInit fsImpl relTransfer ε₁ R hTransfer
+    ⟨sim, _root_.Reduction.statisticalHVZK_zero.perfectHVZK_mono_relation
+      (rel' := relTransfer) hSource hpre⟩).mono_relation_error hpost hle
+
+/-- Basic Fiat-Shamir perfect HVZK from a perfect transfer residual and a fixed-simulator
+zero-error statistical source proof on a larger relation. -/
+theorem fiatShamir_isHVZK_of_transfer_sourceStatHVZK_zero_sim_pre_mono_relation
+    (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (fsInit : ProbComp τ)
+    (fsImpl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT τ ProbComp))
+    {relSource relTransfer : Set (StmtIn × WitIn)} (hsub : relTransfer ⊆ relSource)
+    {sim : Reduction.TranscriptSimulator oSpec StmtIn pSpec}
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hTransfer : fiatShamir_hvzkTransferResidual init impl fsInit fsImpl relTransfer R)
+    (hSource : Reduction.statisticalHVZK init impl relSource R sim 0) :
+    Reduction.isHVZK fsInit fsImpl relTransfer R.fiatShamir :=
+  fiatShamir_isHVZK_of_transfer init impl fsInit fsImpl relTransfer R hTransfer
+    ⟨sim, _root_.Reduction.statisticalHVZK_zero.perfectHVZK_mono_relation
+      (rel' := relTransfer) hSource hsub⟩
+
+/-- Basic Fiat-Shamir perfect HVZK from a perfect transfer residual, with fixed-simulator
+zero-error source conversion before transfer and target-side relation restriction after transfer.
+-/
+theorem fiatShamir_isHVZK_of_transfer_sourceStatHVZK_zero_sim_prepost_mono_relation
+    (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (fsInit : ProbComp τ)
+    (fsImpl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT τ ProbComp))
+    {relSource relTransfer relTarget : Set (StmtIn × WitIn)}
+    (hpre : relTransfer ⊆ relSource) (hpost : relTarget ⊆ relTransfer)
+    {sim : Reduction.TranscriptSimulator oSpec StmtIn pSpec}
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hTransfer : fiatShamir_hvzkTransferResidual init impl fsInit fsImpl relTransfer R)
+    (hSource : Reduction.statisticalHVZK init impl relSource R sim 0) :
+    Reduction.isHVZK fsInit fsImpl relTarget R.fiatShamir :=
+  (fiatShamir_isHVZK_of_transfer init impl fsInit fsImpl relTransfer R hTransfer
+    ⟨sim, _root_.Reduction.statisticalHVZK_zero.perfectHVZK_mono_relation
+      (rel' := relTransfer) hSource hpre⟩).mono_relation hpost
+
+/-- A zero-error statistical Fiat-Shamir transfer residual gives perfect HVZK from a
+fixed-simulator zero-error statistical source proof on a larger relation. -/
+theorem fiatShamir_isHVZK_of_transfer_zero_sourceStatHVZK_zero_sim_pre_mono_relation
+    (init : ProbComp σ)
+    (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (fsInit : ProbComp τ)
+    (fsImpl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT τ ProbComp))
+    {relSource relTransfer : Set (StmtIn × WitIn)} (hsub : relTransfer ⊆ relSource)
+    {sim : Reduction.TranscriptSimulator oSpec StmtIn pSpec}
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hTransfer :
+      fiatShamir_statisticalHVZKTransferResidual init impl fsInit fsImpl relTransfer 0 R)
+    (hSource : Reduction.statisticalHVZK init impl relSource R sim 0) :
+    Reduction.isHVZK fsInit fsImpl relTransfer R.fiatShamir :=
+  fiatShamir_isHVZK_of_HVZK_zero init impl fsInit fsImpl relTransfer R hTransfer
+    ⟨sim, _root_.Reduction.statisticalHVZK_zero.perfectHVZK_mono_relation
+      (rel' := relTransfer) hSource hsub⟩
+
+/-- A zero-error statistical Fiat-Shamir transfer residual gives perfect HVZK after fixed-simulator
+zero-error source conversion, source-side relation transport, and target-side restriction. -/
+theorem fiatShamir_isHVZK_of_transfer_zero_sourceStatHVZK_zero_sim_prepost_mono_relation
+    (init : ProbComp σ)
+    (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (fsInit : ProbComp τ)
+    (fsImpl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT τ ProbComp))
+    {relSource relTransfer relTarget : Set (StmtIn × WitIn)}
+    (hpre : relTransfer ⊆ relSource) (hpost : relTarget ⊆ relTransfer)
+    {sim : Reduction.TranscriptSimulator oSpec StmtIn pSpec}
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hTransfer :
+      fiatShamir_statisticalHVZKTransferResidual init impl fsInit fsImpl relTransfer 0 R)
+    (hSource : Reduction.statisticalHVZK init impl relSource R sim 0) :
+    Reduction.isHVZK fsInit fsImpl relTarget R.fiatShamir :=
+  (fiatShamir_isHVZK_of_HVZK_zero init impl fsInit fsImpl relTransfer R hTransfer
+    ⟨sim, _root_.Reduction.statisticalHVZK_zero.perfectHVZK_mono_relation
+      (rel' := relTransfer) hSource hpre⟩).mono_relation hpost
+
+/-- A zero-error statistical Fiat-Shamir transfer residual gives statistical HVZK at any target
+error after fixed-simulator zero-error source conversion and both relation transports. -/
+theorem fiatShamir_isStatHVZK_of_transfer_zero_sourceStatHVZK_zero_sim_prepost_mono_relation
+    (init : ProbComp σ)
+    (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (fsInit : ProbComp τ)
+    (fsImpl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT τ ProbComp))
+    {relSource relTransfer relTarget : Set (StmtIn × WitIn)}
+    (hpre : relTransfer ⊆ relSource) (hpost : relTarget ⊆ relTransfer)
+    {sim : Reduction.TranscriptSimulator oSpec StmtIn pSpec} (ε : ℝ≥0)
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hTransfer :
+      fiatShamir_statisticalHVZKTransferResidual init impl fsInit fsImpl relTransfer 0 R)
+    (hSource : Reduction.statisticalHVZK init impl relSource R sim 0) :
+    Reduction.isStatHVZK fsInit fsImpl relTarget R.fiatShamir ε :=
+  (fiatShamir_isHVZK_of_transfer_zero_sourceStatHVZK_zero_sim_prepost_mono_relation
+    init impl fsInit fsImpl hpre hpost R hTransfer hSource).isStatHVZK ε
+
 #print axioms fiatShamir_isStatHVZK_of_HVZK_pre_mono_relation
 #print axioms fiatShamir_isStatHVZK_of_HVZK_pre_mono_relation_error
 #print axioms fiatShamir_isHVZK_of_transfer_pre_mono_relation
@@ -349,5 +476,12 @@ theorem fiatShamir_isStatHVZK_of_transfer_zero_sourceStatHVZK_zero_prepost_mono_
 #print axioms fiatShamir_isHVZK_of_transfer_zero_sourceStatHVZK_zero_pre_mono_relation
 #print axioms fiatShamir_isHVZK_of_transfer_zero_sourceStatHVZK_zero_prepost_mono_relation
 #print axioms fiatShamir_isStatHVZK_of_transfer_zero_sourceStatHVZK_zero_prepost_mono_relation
+#print axioms fiatShamir_isStatHVZK_of_sourceStatHVZK_zero_sim_pre_mono_relation
+#print axioms fiatShamir_isStatHVZK_of_sourceStatHVZK_zero_sim_prepost_mono_relation_error
+#print axioms fiatShamir_isHVZK_of_transfer_sourceStatHVZK_zero_sim_pre_mono_relation
+#print axioms fiatShamir_isHVZK_of_transfer_sourceStatHVZK_zero_sim_prepost_mono_relation
+#print axioms fiatShamir_isHVZK_of_transfer_zero_sourceStatHVZK_zero_sim_pre_mono_relation
+#print axioms fiatShamir_isHVZK_of_transfer_zero_sourceStatHVZK_zero_sim_prepost_mono_relation
+#print axioms fiatShamir_isStatHVZK_of_transfer_zero_sourceStatHVZK_zero_sim_prepost_mono_relation
 
 end Reduction

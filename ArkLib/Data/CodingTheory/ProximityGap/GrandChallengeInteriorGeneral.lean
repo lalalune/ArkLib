@@ -224,6 +224,31 @@ theorem epsMCA_interiorJ2_ge
     (mcaLatticePoint n (⟨2, by omega⟩ : Fin (n + 1))) ht_n hq hδ
   simpa using hspike
 
+/-- **J2 satisfaction obstruction.**  If `ε* < 3 / |F|`, then the faithful MCA predicate
+cannot hold at the J2 lattice point, because the `3`-spike plant forces
+`ε_mca(C, 2/n) ≥ 3 / |F|`.  This is the threshold-existence-free form of
+`mcaThreshold_lt_two_of_interiorJ2_gt`. -/
+theorem not_mcaSatisfies_interiorJ2_of_interiorJ2_gt
+    (domain : ι ↪ F) {k : ℕ} (hk : k + 3 ≤ Fintype.card ι) (hq : 3 ≤ Fintype.card F)
+    {ε_star : ℝ≥0}
+    (hbad : (ε_star : ℝ≥0∞) < (3 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞)) :
+    let j2 : Fin (Fintype.card ι + 1) := ⟨2, by
+      have hn : 0 < Fintype.card ι := Fintype.card_pos
+      omega⟩
+    ¬ mcaSatisfies (ReedSolomon.code domain k : Set (ι → F)) ε_star j2 := by
+  let C : Set (ι → F) := ReedSolomon.code domain k
+  let j2 : Fin (Fintype.card ι + 1) := ⟨2, by
+    have hn : 0 < Fintype.card ι := Fintype.card_pos
+    omega⟩
+  change ¬ mcaSatisfies C ε_star j2
+  intro hsat
+  have hge : (3 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ≤
+      epsMCA (F := F) (A := F) C (mcaLatticePoint (Fintype.card ι) j2) :=
+    epsMCA_interiorJ2_ge domain hk hq
+  have hchain : (3 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) ≤ (ε_star : ℝ≥0∞) :=
+    le_trans hge hsat
+  exact (not_le_of_gt hbad) hchain
+
 set_option maxHeartbeats 800000 in
 -- The contradiction proof combines `Fin` threshold order, monotonicity, and ENNReal coercions.
 /-- **J2 lattice satisfaction lower bracket.**  At the interior radius `2/n`, if the faithful
@@ -284,6 +309,29 @@ theorem mcaPrizeLattice_lt_two_of_interiorJ2_gt
     (mcaThreshold_lt_two_of_interiorJ2_gt
       (F := F) domain (hk r) hq hbad (hne r))
 
+/-- **Four-rate J2 satisfaction obstruction.**  If each prize-rate Reed-Solomon code has room
+for the three-spike plant and `ε* < 3 / |F|`, then none of the four prize-rate codes satisfies
+the faithful MCA predicate at the J2 lattice point. -/
+theorem not_mcaPrizeLattice_satisfies_two_of_interiorJ2_gt
+    (domain : ι ↪ F)
+    (hk : ∀ r : Fin 4,
+      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ + 3 ≤ Fintype.card ι)
+    (hq : 3 ≤ Fintype.card F)
+    (hbad : (epsStar : ℝ≥0∞) < (3 : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞)) :
+    ∀ r : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊
+      let j2 : Fin (Fintype.card ι + 1) := ⟨2, by
+        have hn : 0 < Fintype.card ι := Fintype.card_pos
+        have hkr := hk r
+        omega⟩
+      ¬ mcaSatisfies C epsStar j2 := by
+  intro r
+  simpa using
+    (not_mcaSatisfies_interiorJ2_of_interiorJ2_gt
+      (F := F) (ε_star := epsStar) domain
+      (k := ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊) (hk r) hq hbad)
+
 /-- **Formal-prize J2 upper bracket in the large-domain, small-field-side band.**
 For domains with at least six evaluation points, all four prize-rate degrees satisfy the
 `k + 3 ≤ n` spike window. If additionally `3 ≤ |F|` and `|F| < 3 * 2^128`, then the formal
@@ -310,6 +358,25 @@ theorem mcaPrizeLattice_lt_two_of_card_ge_six_and_card_lt_three_mul_two_pow
     (epsStar_lt_three_div_card_of_card_lt_three_mul_two_pow (F := F) hcard_hi)
     hne
 
+/-- **Formal-prize J2 satisfaction obstruction in the large-domain, small-field-side band.**
+For domains with at least six evaluation points and `|F| < 3 * 2^128`, the formal prize
+threshold `ε* = 2^-128` is too small for the J2 spike lower bound, so no prize-rate code
+satisfies the faithful MCA predicate at J2. -/
+theorem not_mcaPrizeLattice_satisfies_two_of_card_ge_six_and_card_lt_three_mul_two_pow
+    (domain : ι ↪ F)
+    (hn : 6 ≤ Fintype.card ι)
+    (hq : 3 ≤ Fintype.card F)
+    (hcard_hi : Fintype.card F < (3 : ℕ) * 2 ^ (128 : ℕ)) :
+    ∀ r : Fin 4,
+      let C : Set (ι → F) :=
+        ReedSolomon.code domain ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊
+      let j2 : Fin (Fintype.card ι + 1) := ⟨2, by omega⟩
+      ¬ mcaSatisfies C epsStar j2 :=
+  not_mcaPrizeLattice_satisfies_two_of_interiorJ2_gt domain
+    (fun r => prizeRate_floor_add_three_le_of_card_ge_six r hn)
+    hq
+    (epsStar_lt_three_div_card_of_card_lt_three_mul_two_pow (F := F) hcard_hi)
+
 end GrandChallengesLattice
 
 end ProximityGap
@@ -325,7 +392,10 @@ open ProximityGap.GrandChallengesLattice
 #print axioms affineSystemBadScalars_card_le_three_via_3x3
 #print axioms affineSystemBadScalars_card_le_jp1_via_minor
 #print axioms epsMCA_interiorJ2_ge
+#print axioms not_mcaSatisfies_interiorJ2_of_interiorJ2_gt
 #print axioms mcaThreshold_lt_two_of_interiorJ2_gt
 #print axioms mcaPrizeLattice_lt_two_of_interiorJ2_gt
 #print axioms mcaPrizeLattice_lt_two_of_card_ge_six_and_card_lt_three_mul_two_pow
+#print axioms not_mcaPrizeLattice_satisfies_two_of_interiorJ2_gt
+#print axioms not_mcaPrizeLattice_satisfies_two_of_card_ge_six_and_card_lt_three_mul_two_pow
 end AxiomAudit
