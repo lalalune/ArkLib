@@ -23,6 +23,8 @@ import ArkLib.OracleReduction.Security.ZeroKnowledge
   - `perfectHVZK_of_honestDist_eq_const`: a constant simulator achieves perfect HVZK whenever the
     honest transcript distribution is `evalDist`-equal to a fixed distribution, generalizing the
     zero-round identity instance.
+  - `statisticalHVZK_of_honestDist_eq_const`: the statistical counterpart of that constant
+    simulator criterion, for any error budget.
 
   Everything is stated over the promoted `Reduction.perfectHVZK` / `statisticalHVZK` vocabulary in
   `ArkLib.OracleReduction.Security.ZeroKnowledge`.
@@ -143,6 +145,20 @@ theorem perfectHVZK_of_honestDist_eq_const
   intro stmtIn witIn hMem
   exact (hdist stmtIn witIn hMem).symm
 
+/-- **Statistical constant-simulator criterion.** If the honest transcript distribution is
+`evalDist`-equal to a fixed distribution `d` on every related pair, then the constant simulator
+returning `d` achieves statistical HVZK for any error budget. -/
+theorem statisticalHVZK_of_honestDist_eq_const
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set (StmtIn × WitIn)}
+    {R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec}
+    (d : OptionT ProbComp (FullTranscript pSpec))
+    (hdist : ∀ stmtIn witIn, (stmtIn, witIn) ∈ rel →
+      evalDist (honestTranscriptDist init impl R stmtIn witIn) = evalDist d)
+    (ε : ℝ≥0) :
+    statisticalHVZK init impl rel R (fun _ => d) ε :=
+  (perfectHVZK_of_honestDist_eq_const d hdist).statisticalHVZK ε
+
 /-- **`isHVZK` from the constant-simulator criterion.** -/
 theorem isHVZK_of_honestDist_eq_const
     {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
@@ -153,6 +169,18 @@ theorem isHVZK_of_honestDist_eq_const
       evalDist (honestTranscriptDist init impl R stmtIn witIn) = evalDist d) :
     isHVZK init impl rel R :=
   ⟨fun _ => d, perfectHVZK_of_honestDist_eq_const d hdist⟩
+
+/-- **`isStatHVZK` from the constant-simulator criterion.** -/
+theorem isStatHVZK_of_honestDist_eq_const
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set (StmtIn × WitIn)}
+    {R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec}
+    (d : OptionT ProbComp (FullTranscript pSpec))
+    (hdist : ∀ stmtIn witIn, (stmtIn, witIn) ∈ rel →
+      evalDist (honestTranscriptDist init impl R stmtIn witIn) = evalDist d)
+    (ε : ℝ≥0) :
+    isStatHVZK init impl rel R ε :=
+  ⟨fun _ => d, statisticalHVZK_of_honestDist_eq_const d hdist ε⟩
 
 /-- **`isHVZK` transfers along an `evalDist`-equal honest distribution.** -/
 theorem isHVZK.congr_honestDist
@@ -186,7 +214,9 @@ theorem isStatHVZK.congr_honestDist
 #print axioms statisticalHVZK.simulator_congr
 #print axioms statisticalHVZK.simulator_triangle
 #print axioms perfectHVZK_of_honestDist_eq_const
+#print axioms statisticalHVZK_of_honestDist_eq_const
 #print axioms isHVZK_of_honestDist_eq_const
+#print axioms isStatHVZK_of_honestDist_eq_const
 #print axioms isHVZK.congr_honestDist
 #print axioms isStatHVZK.congr_honestDist
 

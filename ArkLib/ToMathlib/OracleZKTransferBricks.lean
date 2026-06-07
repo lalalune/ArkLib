@@ -103,6 +103,19 @@ theorem perfectHVZK_of_honestDist_eq_const
     perfectHVZK init impl rel R (fun _ => d) :=
   Reduction.perfectHVZK_of_honestDist_eq_const d hdist
 
+/-- **OracleReduction constant-simulator criterion for statistical HVZK.** -/
+theorem statisticalHVZK_of_honestDist_eq_const
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn)}
+    {R : OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut pSpec}
+    (d : OptionT ProbComp (FullTranscript pSpec))
+    (hdist : ∀ stmtIn witIn, (stmtIn, witIn) ∈ rel →
+      evalDist (Reduction.honestTranscriptDist init impl R.toReduction stmtIn witIn) =
+        evalDist d)
+    (ε : ℝ≥0) :
+    statisticalHVZK init impl rel R (fun _ => d) ε :=
+  Reduction.statisticalHVZK_of_honestDist_eq_const d hdist ε
+
 /-- **OracleReduction `isHVZK` from the constant-simulator criterion.** -/
 theorem isHVZK_of_honestDist_eq_const
     {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
@@ -114,6 +127,19 @@ theorem isHVZK_of_honestDist_eq_const
         evalDist d) :
     isHVZK init impl rel R :=
   ⟨fun _ => d, perfectHVZK_of_honestDist_eq_const d hdist⟩
+
+/-- **OracleReduction `isStatHVZK` from the constant-simulator criterion.** -/
+theorem isStatHVZK_of_honestDist_eq_const
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn)}
+    {R : OracleReduction oSpec StmtIn OStmtIn WitIn StmtOut OStmtOut WitOut pSpec}
+    (d : OptionT ProbComp (FullTranscript pSpec))
+    (hdist : ∀ stmtIn witIn, (stmtIn, witIn) ∈ rel →
+      evalDist (Reduction.honestTranscriptDist init impl R.toReduction stmtIn witIn) =
+        evalDist d)
+    (ε : ℝ≥0) :
+    isStatHVZK init impl rel R ε :=
+  ⟨fun _ => d, statisticalHVZK_of_honestDist_eq_const d hdist ε⟩
 
 /-- **OracleReduction `isHVZK` transfers along an equal honest distribution.** -/
 theorem isHVZK.congr_honestDist
@@ -148,7 +174,9 @@ theorem isStatHVZK.congr_honestDist
 #print axioms statisticalHVZK.simulator_congr
 #print axioms statisticalHVZK.simulator_triangle
 #print axioms perfectHVZK_of_honestDist_eq_const
+#print axioms statisticalHVZK_of_honestDist_eq_const
 #print axioms isHVZK_of_honestDist_eq_const
+#print axioms isStatHVZK_of_honestDist_eq_const
 #print axioms isHVZK.congr_honestDist
 #print axioms isStatHVZK.congr_honestDist
 
