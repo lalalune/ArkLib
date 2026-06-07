@@ -51,6 +51,21 @@ theorem listDecodable_of_radius_le {F : Type*} [Fintype F] [DecidableEq F]
   refine le_trans ?_ (h y)
   exact_mod_cast Set.ncard_le_ncard (closeCodewordsRel_subset_of_le hr y) (Set.toFinite _)
 
+/-- **List-decodability is monotone in the list-size bound**: relaxing the allowed list size
+preserves list-decodability. -/
+theorem listDecodable_of_bound_le {F : Type*} [Fintype F] [DecidableEq F]
+    {C : Code ι F} {r ℓ ℓ' : ℝ} (hℓ : ℓ ≤ ℓ') (h : listDecodable C r ℓ) :
+    listDecodable C r ℓ' := by
+  intro y
+  exact le_trans (h y) hℓ
+
+/-- **Combined monotonicity for `listDecodable`**: shrink the radius and relax the list-size
+bound in one predicate-level wrapper. -/
+theorem listDecodable_mono {F : Type*} [Fintype F] [DecidableEq F]
+    {C : Code ι F} {r' r ℓ ℓ' : ℝ} (hr : r' ≤ r) (hℓ : ℓ ≤ ℓ')
+    (h : listDecodable C r ℓ) : listDecodable C r' ℓ' :=
+  listDecodable_of_bound_le hℓ (listDecodable_of_radius_le hr h)
+
 /-- **List-decodability is monotone under taking subcodes**: if every list for `C'` is bounded by
 `ℓ`, then every list for a subcode `C ⊆ C'` is bounded by the same `ℓ`. -/
 theorem listDecodable_mono_code {F : Type*} [Fintype F] [DecidableEq F]
@@ -87,6 +102,8 @@ end ListDecodable
 #print axioms ListDecodable.relHammingBall_mono
 #print axioms ListDecodable.hammingBall_zero
 #print axioms ListDecodable.listDecodable_of_radius_le
+#print axioms ListDecodable.listDecodable_of_bound_le
+#print axioms ListDecodable.listDecodable_mono
 #print axioms ListDecodable.listDecodable_mono_code
 #print axioms ListDecodable.listDecodable_of_Lambda_le
 #print axioms ListDecodable.Lambda_mono_code
