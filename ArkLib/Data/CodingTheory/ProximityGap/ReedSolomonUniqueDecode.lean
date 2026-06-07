@@ -326,7 +326,6 @@ theorem reedSolomon_Lambda_le [Fintype F] [Nonempty ι] {k dX dZ : ℕ} [NeZero 
     (he : ⌊δ * Fintype.card ι⌋₊ < Fintype.card ι)
     (hdeg : dX + dZ * (k - 1) < Fintype.card ι - ⌊δ * Fintype.card ι⌋₊) :
     ListDecodable.Lambda ((ReedSolomon.code α k : Set (ι → F))) δ ≤ (dZ : ℕ∞) := by
-  classical
   refine iSup_le fun f => ?_
   haveI : Fintype (ListDecodable.closeCodewordsRel
       ((ReedSolomon.code α k : Set (ι → F))) f δ) := (Set.toFinite _).fintype
@@ -334,17 +333,19 @@ theorem reedSolomon_Lambda_le [Fintype F] [Nonempty ι] {k dX dZ : ℕ} [NeZero 
   -- the close codewords form a Finset to which `reedSolomon_list_size` applies
   have hmono : ((ListDecodable.closeCodewordsRel
       ((ReedSolomon.code α k : Set (ι → F))) f δ).toFinset).card ≤ dZ := by
-    refine reedSolomon_list_size hbig he hdeg _ fun c hc => ?_
+    refine reedSolomon_list_size (α := α) (y := f) (e := ⌊δ * Fintype.card ι⌋₊)
+      hbig he hdeg _ fun c hc => ?_
     rw [Set.mem_toFinset] at hc
     obtain ⟨hcC, hcball⟩ := hc
     refine ⟨hcC, ?_⟩
     -- `δᵣ(f,c) ≤ δ` ⟹ `#{i : f i ≠ c i} ≤ ⌊δ·n⌋`
-    have hrel : (Code.relHammingDist f c : ℝ) ≤ δ := by exact_mod_cast hcball
+    have hrel : (Code.relHammingDist f c : ℝ) ≤ δ := by
+      simpa only [ListDecodable.relHammingBall, Set.mem_setOf_eq] using hcball
     have hn : (0 : ℝ) < Fintype.card ι := by exact_mod_cast Fintype.card_pos
     have hreleq : (Code.relHammingDist f c : ℝ) = (hammingDist f c : ℝ) / Fintype.card ι := by
       rw [Code.relHammingDist]; push_cast; ring
-    rw [hreleq, div_le_iff₀ hn, hammingDist_eq_card_filter_ne] at hrel
-    exact Nat.le_floor (by push_cast at hrel ⊢; linarith)
+    rw [hreleq, div_le_iff₀ hn] at hrel
+    exact Nat.le_floor hrel
   exact_mod_cast hmono
 
 open Polynomial in
