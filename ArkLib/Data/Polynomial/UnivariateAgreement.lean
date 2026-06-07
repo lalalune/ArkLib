@@ -52,8 +52,8 @@ theorem prob_agree_le_of_ne {p q : F[X]} {d : ℕ}
     (hp : p.natDegree ≤ d) (hq : q.natDegree ≤ d) (hpq : p ≠ q) :
     ((Finset.univ.filter (fun x : F => p.eval x = q.eval x)).card : ℝ) / Fintype.card F
       ≤ (d : ℝ) / Fintype.card F := by
-  have hcard : ((Finset.univ.filter (fun x : F => p.eval x = q.eval x)).card : ℝ) ≤ (d : ℝ) := by
-    exact_mod_cast card_agree_le_of_ne hp hq hpq
-  gcongr
+  have hcard : ((Finset.univ.filter (fun x : F => p.eval x = q.eval x)).card : ℝ) ≤ (d : ℝ) :=
+    Nat.cast_le.mpr (card_agree_le_of_ne hp hq hpq)
+  exact div_le_div_of_nonneg_right hcard (by positivity)
 
 end Polynomial
