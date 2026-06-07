@@ -851,6 +851,87 @@ theorem mcaThresholdExists_prize_allRates_of_uniformConjecture
     (hfaithful j) (hclear j)
 
 /-- The honest uniform GS-exposed prize, with explicit GS faithfulness and numeric clearance,
+packages only the single-rate selected threshold satisfy fact.
+
+This is the low-output threshold-spec projection between
+`mcaThresholdExists_prize_of_uniformConjecture` and the stronger lower/two-bracket wrappers:
+callers that only need to form `mcaThreshold` and use its satisfy fact do not have to unpack
+bracket data. -/
+theorem mcaThreshold_spec_prize_of_uniformConjecture
+    (domain : ι ↪ F) (m : ℕ)
+    (hUniform : epsMCAgsPrizeUniformConjecture domain m) :
+    ∃ c₁ c₂ c₃ : ℝ,
+      ∀ (j : Fin 4) (η δ : ℝ≥0),
+        0 < η →
+        (δ : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η : ℝ) →
+        δ ≤ 1 →
+        ∀ L : WordStack F (Fin 2) ι → Finset (ι → F),
+          FaithfulGSFamily (F := F)
+            ((ReedSolomon.code (domain := domain)
+              ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ :
+                Set (ι → F))) δ L →
+          ENNReal.ofReal
+              (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j)
+                η c₁ c₂ c₃)
+            ≤ (epsStar : ENNReal) →
+          let C : Set (ι → F) :=
+            ReedSolomon.code domain
+              ⌊ProximityGap.prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+          ∃ hne : GrandChallengesLattice.mcaThresholdExists C epsStar,
+            GrandChallengesLattice.mcaSatisfies C epsStar
+              (GrandChallengesLattice.mcaThreshold C epsStar hne) := by
+  rcases mcaThresholdExists_prize_of_uniformConjecture domain m hUniform with
+    ⟨c₁, c₂, c₃, hexists⟩
+  refine ⟨c₁, c₂, c₃, ?_⟩
+  intro j η δ hη hδ hδ_le_one L hfaithful hclear
+  let C : Set (ι → F) :=
+    (ReedSolomon.code (domain := domain)
+      ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+  let hne : GrandChallengesLattice.mcaThresholdExists C epsStar :=
+    hexists j η δ hη hδ hδ_le_one L hfaithful hclear
+  exact ⟨hne, GrandChallengesLattice.mcaThreshold_spec C epsStar hne⟩
+
+/-- The honest uniform GS-exposed prize, with explicit all-rate GS faithfulness and numeric
+clearance, packages only the selected threshold satisfy facts at all four ABF26 prize-rate codes.
+
+This is the all-rate threshold-spec projection of
+`mcaThreshold_spec_prize_of_uniformConjecture`: it is intentionally weaker than the lower-bracket,
+two-bracket, and resolved-`τ` APIs below. -/
+theorem mcaThreshold_spec_prize_allRates_of_uniformConjecture
+    (domain : ι ↪ F) (m : ℕ)
+    (hUniform : epsMCAgsPrizeUniformConjecture domain m) :
+    ∃ c₁ c₂ c₃ : ℝ,
+      ∀ (η δ : Fin 4 → ℝ≥0),
+        (∀ j : Fin 4, 0 < η j) →
+        (∀ j : Fin 4,
+          (δ j : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η j : ℝ)) →
+        (∀ j : Fin 4, δ j ≤ 1) →
+        ∀ L : ∀ _ : Fin 4, WordStack F (Fin 2) ι → Finset (ι → F),
+          (∀ j : Fin 4,
+            FaithfulGSFamily (F := F)
+              ((ReedSolomon.code (domain := domain)
+                ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ :
+                  Set (ι → F))) (δ j) (L j)) →
+          (∀ j : Fin 4,
+            ENNReal.ofReal
+                (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j)
+                  (η j) c₁ c₂ c₃)
+              ≤ (epsStar : ENNReal)) →
+          ∀ j : Fin 4,
+            let C : Set (ι → F) :=
+              ReedSolomon.code domain
+                ⌊ProximityGap.prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+            ∃ hne : GrandChallengesLattice.mcaThresholdExists C epsStar,
+              GrandChallengesLattice.mcaSatisfies C epsStar
+                (GrandChallengesLattice.mcaThreshold C epsStar hne) := by
+  rcases mcaThreshold_spec_prize_of_uniformConjecture domain m hUniform with
+    ⟨c₁, c₂, c₃, hsingle⟩
+  refine ⟨c₁, c₂, c₃, ?_⟩
+  intro η δ hη hδ hδ_le_one L hfaithful hclear j
+  exact hsingle j (η j) (δ j) (hη j) (hδ j) (hδ_le_one j) (L j)
+    (hfaithful j) (hclear j)
+
+/-- The honest uniform GS-exposed prize, with explicit GS faithfulness and numeric clearance,
 packages the single-rate threshold satisfy fact together with the lower lattice bracket
 `latticeIndexOf δ ≤ mcaThreshold`. -/
 theorem mcaThreshold_spec_and_lower_bracket_prize_of_uniformConjecture
@@ -1241,6 +1322,8 @@ end Reduction
 #print axioms exists_mcaPrizeLatticeResolved_with_spec_and_brackets_of_uniformConjecture
 #print axioms mcaThresholdExists_prize_of_uniformConjecture
 #print axioms mcaThresholdExists_prize_allRates_of_uniformConjecture
+#print axioms mcaThreshold_spec_prize_of_uniformConjecture
+#print axioms mcaThreshold_spec_prize_allRates_of_uniformConjecture
 #print axioms mcaThreshold_spec_and_lower_bracket_prize_of_uniformConjecture
 #print axioms mcaThreshold_spec_and_bracket_prize_of_uniformConjecture
 set_option linter.style.longLine false in
