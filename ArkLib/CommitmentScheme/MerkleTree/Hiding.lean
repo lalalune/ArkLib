@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 
+import ArkLib.CommitmentScheme.MerkleTree.Extraction
 import VCVio
 
 /-!
@@ -98,6 +99,25 @@ theorem salted_completeness {s : Skeleton} (hashFn : α → α → α)
   unfold buildSaltedTree
   exact functional_completeness idx (saltedLeaves hashFn salts leaves) hashFn
 
+/-- **Same-salt deterministic binding for salted openings.** If the compression function is
+collision-free, two openings at the same index with the same salt, sibling path, and root cannot
+reveal different underlying leaf values. This is still the deterministic core only: the
+random-oracle collision-probability step remains a separate probabilistic statement. -/
+theorem salted_opening_binding_value {s : Skeleton}
+    (idx : SkeletonLeafIndex s) (hashFn : α → α → α)
+    (hinj : ∀ a b c d, hashFn a b = hashFn c d → a = c ∧ b = d)
+    (salt value₁ value₂ rootValue : α) (proof : List.Vector α idx.depth)
+    (h₁ : getPutativeRootWithHash idx (leafCommit hashFn salt value₁) proof hashFn
+      = rootValue)
+    (h₂ : getPutativeRootWithHash idx (leafCommit hashFn salt value₂) proof hashFn
+      = rootValue) :
+    value₁ = value₂ := by
+  have hcommit :
+      leafCommit hashFn salt value₁ = leafCommit hashFn salt value₂ :=
+    opening_binding idx hashFn hinj
+      (leafCommit hashFn salt value₁) (leafCommit hashFn salt value₂) rootValue proof h₁ h₂
+  exact (hinj salt value₁ salt value₂ hcommit).2
+
 section HidingDefinition
 
 variable [DecidableEq α] [SampleableType α]
@@ -136,5 +156,6 @@ end InductiveMerkleTree
 
 #print axioms InductiveMerkleTree.saltedLeaves_get
 #print axioms InductiveMerkleTree.salted_completeness
+#print axioms InductiveMerkleTree.salted_opening_binding_value
 #print axioms InductiveMerkleTree.openTranscript
 #print axioms InductiveMerkleTree.Hiding
