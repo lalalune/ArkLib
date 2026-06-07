@@ -1086,6 +1086,8 @@ end RBRSoundnessAssembly
 #print axioms paperTranscriptSlotPayload_mainOutOfDomainReply
 #print axioms paperTranscriptSlotPayload_mainShiftChallenge
 #print axioms paperTranscriptOracleProver
+#print axioms paperTranscriptOracleVerifier
+#print axioms paperTranscriptVectorIOP
 #print axioms whirVectorSpec_challengeIdxEquivFin
 #print axioms whirVectorSpec_challengeIdxEquivFin_apply
 #print axioms whirVectorSpec_challengeIdxEquivFin_symm_apply

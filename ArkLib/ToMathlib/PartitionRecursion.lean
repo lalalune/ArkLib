@@ -326,6 +326,10 @@ end ArkLib
 #print axioms ArkLib.Nat.Partition.parts_eq_zero_of_zero
 #print axioms ArkLib.Nat.Partition.eq_indiscrete_zero
 #print axioms ArkLib.Nat.Partition.univ_eq_singleton_indiscrete_zero
+#print axioms ArkLib.Nat.Partition.one_mem_parts_of_one
+#print axioms ArkLib.Nat.Partition.eq_indiscrete_one
+#print axioms ArkLib.Nat.Partition.univ_eq_singleton_indiscrete_one
+#print axioms ArkLib.Nat.Partition.univ_filter_notMem_one_eq_empty
 #print axioms ArkLib.Nat.Partition.card_parts_indiscrete
 #print axioms ArkLib.Nat.Partition.recursionStep_rel
 #print axioms ArkLib.Nat.Partition.notMem_parts_of_lt
