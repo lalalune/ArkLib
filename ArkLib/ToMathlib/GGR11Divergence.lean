@@ -68,10 +68,11 @@ theorem hammingDist_ge_minDist_of_mem_closeCodewordsRel_ne
   -- the interleaved code has the same minimum distance as the base code (propositional bridge,
   -- avoiding the expensive `interleavedCodeSet`/`^⋈` defeq; the `DecidableEq (Fin m → F)`
   -- instance is left to canonical inference so both sides share `Fintype.decidablePiFintype`)
-  have hmin : Code.minDist (interleavedCodeSet (κ := Fin m) C) = Code.minDist C :=
-    (congrArg Code.minDist
-        (interleavedCode_eq_interleavedCodeSet (C := C) (κ := Fin m)).symm).trans
-      (minDist_eq_minDist (κ := Fin m) (F := F) C)
+  have hmin : Code.minDist (interleavedCodeSet (κ := Fin m) C) = Code.minDist C := by
+    -- `interleavedCodeSet C = C ^⋈ (Fin m)` is `rfl`; the only gap is the canonical
+    -- `DecidableEq (Fin m → F)` instance on `Code.minDist` (the `#73` haveI used to unify it),
+    -- which `convert` discharges as a subsingleton subgoal.
+    convert minDist_eq_minDist (κ := Fin m) (F := F) C using 2
   -- distinct codewords are ≥ minDist apart
   have h := JohnsonBound.minDist_le_hammingDist_of_mem_ne
     (C := interleavedCodeSet (κ := Fin m) C) hVcode hV'code hne
