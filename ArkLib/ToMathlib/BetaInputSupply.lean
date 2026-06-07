@@ -310,12 +310,12 @@ noncomputable def betaCurveInput_of_section5 {k deg : ℕ} {domain : ι ↪ F} {
         ≤ (WithBot.some ((R.natDegree - 1) * (D - H.natDegree + 1)) : WithBot ℕ))
     (hcardConcrete : ∀ t, k ≤ t → (↑matchingSet.card : WithBot ℕ)
         > (((2 * t + 1) * R.natDegree * D * H.natDegree : ℕ) : WithBot ℕ))
-    -- the §5 specialisation bridge, reduced to the per-`z` Hensel root datum (uniform in `P`):
-    (hHensel : ∀ (P : F → Polynomial F) (v₀ v₁ : F[X]),
+    -- the §5 specialisation bridge, reduced to the per-`z` matching-divisibility input:
+    (hMatchingDvd : ∀ (P : F → Polynomial F) (v₀ v₁ : F[X]),
       γ (0 : F) R H hHyp = polyToPowerSeries𝕃 H
         ((Polynomial.map Polynomial.C v₀)
           + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)) →
-      HenselDatum (k := k) (deg := deg) (domain := domain) (δ := δ) u P v₀ v₁)
+      HenselDatumProducer.MatchingDvdInput (k := k) (deg := deg) (domain := domain) (δ := δ) u P v₀ v₁)
     (hdegPz : ∀ (_P : F → Polynomial F) (v₀ v₁ : F[X]),
       γ (0 : F) R H hHyp = polyToPowerSeries𝕃 H
         ((Polynomial.map Polynomial.C v₀)
@@ -346,7 +346,7 @@ noncomputable def betaCurveInput_of_section5 {k deg : ℕ} {domain : ι ↪ F} {
       hbB hBzero hbξ (hcardConcrete t hkt)
   hPz := by
     intro P v₀ v₁ hlin
-    exact hPz_of_henselDatum (hHensel P) (hdegPz P) v₀ v₁ hlin
+    exact hPz_of_matchingDvdInput (fun v₀' v₁' hlin' => hMatchingDvd P v₀' v₁' hlin') (hdegPz P) v₀ v₁ hlin
 
 /-! ## The satisfiable assembly: `betaCurveInputFin_of_section5`
 
@@ -403,12 +403,12 @@ noncomputable def betaCurveInputFin_of_section5 {k deg : ℕ} {domain : ι ↪ F
         > (((2 * t + 1) * R.natDegree * D * H.natDegree : ℕ) : WithBot ℕ))
     -- the algebraic-degree datum: beyond `T` the Hensel coefficients vanish (bounded `Z`-degree):
     (htailDeg : ∀ t, T < t → BetaToCurveCoeffPolys.αFromBeta (0 : F) R H hHyp Bcoeff t = 0)
-    -- the §5 specialisation bridge, reduced to the per-`z` Hensel root datum (uniform in `P`):
-    (hHensel : ∀ (P : F → Polynomial F) (v₀ v₁ : F[X]),
+    -- the §5 specialisation bridge, reduced to the per-`z` matching-divisibility input:
+    (hMatchingDvd : ∀ (P : F → Polynomial F) (v₀ v₁ : F[X]),
       γ (0 : F) R H hHyp = polyToPowerSeries𝕃 H
         ((Polynomial.map Polynomial.C v₀)
           + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)) →
-      HenselDatum (k := k) (deg := deg) (domain := domain) (δ := δ) u P v₀ v₁)
+      HenselDatumProducer.MatchingDvdInput (k := k) (deg := deg) (domain := domain) (δ := δ) u P v₀ v₁)
     (hdegPz : ∀ (_P : F → Polynomial F) (v₀ v₁ : F[X]),
       γ (0 : F) R H hHyp = polyToPowerSeries𝕃 H
         ((Polynomial.map Polynomial.C v₀)
@@ -439,7 +439,7 @@ noncomputable def betaCurveInputFin_of_section5 {k deg : ℕ} {domain : ι ↪ F
   htailDeg := htailDeg
   hPz := by
     intro P v₀ v₁ hlin
-    exact hPz_of_henselDatum (hHensel P) (hdegPz P) v₀ v₁ hlin
+    exact hPz_of_matchingDvdInput (fun v₀' v₁' hlin' => hMatchingDvd P v₀' v₁' hlin') (hdegPz P) v₀ v₁ hlin
 
 end BetaInputSupply
 

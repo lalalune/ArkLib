@@ -339,11 +339,11 @@ noncomputable def betaCurveInput_of_section5_betaEmb {k deg : ℕ} {domain : ι 
         ≤ (WithBot.some ((R.natDegree - 1) * (D - H.natDegree + 1)) : WithBot ℕ))
     (hcardConcrete : ∀ t, k ≤ t → (↑matchingSet.card : WithBot ℕ)
         > (((2 * t + 1) * R.natDegree * D * H.natDegree : ℕ) : WithBot ℕ))
-    (hHensel : ∀ (P : F → Polynomial F) (v₀ v₁ : F[X]),
+    (hMatchingDvd : ∀ (P : F → Polynomial F) (v₀ v₁ : F[X]),
       γ (0 : F) R H hHyp = polyToPowerSeries𝕃 H
         ((Polynomial.map Polynomial.C v₀)
           + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)) →
-      HenselDatum (k := k) (deg := deg) (domain := domain) (δ := δ) u P v₀ v₁)
+      HenselDatumProducer.MatchingDvdInput (k := k) (deg := deg) (domain := domain) (δ := δ) u P v₀ v₁)
     (hdegPz : ∀ (_P : F → Polynomial F) (v₀ v₁ : F[X]),
       γ (0 : F) R H hHyp = polyToPowerSeries𝕃 H
         ((Polynomial.map Polynomial.C v₀)
@@ -354,7 +354,7 @@ noncomputable def betaCurveInput_of_section5_betaEmb {k deg : ℕ} {domain : ι 
     (k := k) (deg := deg) (domain := domain) (δ := δ) (u := u)
     R H hIrr hPos hHyp Bcoeff hH D hD matchingSet root Ppoly hrep hdegX
     ((betaEmbedEq_iff_betaEq (0 : F) R H hHyp Bcoeff hH).mp hβemb)
-    mp hd1 hdH_le hdH_D hbB hBzero hbξ hcardConcrete hHensel hdegPz
+    mp hd1 hdH_le hdH_D hbB hBzero hbξ hcardConcrete hMatchingDvd hdegPz
 
 /-- **`BetaCurveInputFin` from the embedding-level residual.**  The `…_betaEmb` analogue of
 `BetaInputSupply.betaCurveInputFin_of_section5`, with `BetaEmbedEq` in place of `hβ`. -/
@@ -384,11 +384,11 @@ noncomputable def betaCurveInputFin_of_section5_betaEmb {k deg : ℕ} {domain : 
     (hcardConcreteFin : ∀ t, k ≤ t → t ≤ T → (↑matchingSet.card : WithBot ℕ)
         > (((2 * t + 1) * R.natDegree * D * H.natDegree : ℕ) : WithBot ℕ))
     (htailDeg : ∀ t, T < t → BetaToCurveCoeffPolys.αFromBeta (0 : F) R H hHyp Bcoeff t = 0)
-    (hHensel : ∀ (P : F → Polynomial F) (v₀ v₁ : F[X]),
+    (hMatchingDvd : ∀ (P : F → Polynomial F) (v₀ v₁ : F[X]),
       γ (0 : F) R H hHyp = polyToPowerSeries𝕃 H
         ((Polynomial.map Polynomial.C v₀)
           + (Polynomial.C Polynomial.X) * (Polynomial.map Polynomial.C v₁)) →
-      HenselDatum (k := k) (deg := deg) (domain := domain) (δ := δ) u P v₀ v₁)
+      HenselDatumProducer.MatchingDvdInput (k := k) (deg := deg) (domain := domain) (δ := δ) u P v₀ v₁)
     (hdegPz : ∀ (_P : F → Polynomial F) (v₀ v₁ : F[X]),
       γ (0 : F) R H hHyp = polyToPowerSeries𝕃 H
         ((Polynomial.map Polynomial.C v₀)
@@ -399,7 +399,7 @@ noncomputable def betaCurveInputFin_of_section5_betaEmb {k deg : ℕ} {domain : 
     (k := k) (deg := deg) (domain := domain) (δ := δ) (u := u)
     R H hIrr hPos hHyp Bcoeff hH D hD matchingSet root T Ppoly hrep hdegX
     ((betaEmbedEq_iff_betaEq (0 : F) R H hHyp Bcoeff hH).mp hβemb)
-    mpFin hd1 hdH_le hdH_D hbB hBzero hbξ hcardConcreteFin htailDeg hHensel hdegPz
+    mpFin hd1 hdH_le hdH_D hbB hBzero hbξ hcardConcreteFin htailDeg hMatchingDvd hdegPz
 
 end BetaInputSupply
 

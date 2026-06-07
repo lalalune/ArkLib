@@ -7,6 +7,7 @@ Authors: ArkLib Contributors
 import ArkLib.Data.CodingTheory.SubspaceDesign
 import ArkLib.Data.CodingTheory.ListDecodability
 import ArkLib.Data.CodingTheory.ReedSolomon.Folded
+import ArkLib.Data.CodingTheory.ListDecoding.CZ25SpanBoundBridge
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
@@ -155,5 +156,36 @@ theorem frs_list_decoding_capacity_cz25_of_T34_T218
     have : (1 : ℝ) / η = 0 := by rw [hηt, ht0]; norm_num
     rw [one_div, inv_eq_zero] at this
     exact hη_ne this
+
+/-- **ABF26 Corollary 3.5 [CZ25 Cor 2.21] — from coordinate-fiber cap.**
+The folded RS code is list-decodable up to capacity, reduced to the single named residual
+`CZ25CoordFiberCap` (the Guruswami–Wang affine-flat coordinate-fiber cap) plus the FRS
+subspace-design theorem `hT218`. -/
+theorem frs_list_decoding_capacity_cz25_of_coordFiberCap_T218
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (hs_pos : 0 < s)
+    (η : ℝ) (hη_pos : 0 < η) (hη_lt_s : 1 / η < s)
+    (hT218 : IsSubspaceDesign s
+        (fun r ↦ if r ∈ Finset.Icc 1 s then
+            (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - r + 1) else 1)
+        (ReedSolomon.Folded.frsCode domain k s ω))
+    (hCap : ∀ (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
+        (h : IsSubspaceDesign s τ C) (η' : ℝ) (hη' : 0 < η'),
+        CZ25CoordFiberCap s τ C h η' hη')
+    (hηnat : (1 : ℝ) / η = (Nat.floor (1 / η) : ℕ)) :
+    let n : ℝ := Fintype.card ι
+    let ρ : ℝ := k / n
+    let δ : ℝ := 1 - ρ * s / (s - 1 / η + 1) - η
+    let bound : ℝ := (s * (1 - ρ) + 1 - 1 / η) / (η * (s + 1 - 1 / η))
+    (Lambda ((ReedSolomon.Folded.frsCode domain k s ω : Set (ι → Fin s → F))) δ :
+        ENNReal) ≤
+      ENNReal.ofReal bound := by
+  apply frs_list_decoding_capacity_cz25_of_T34_T218 domain k s ω hs_pos η hη_pos hη_lt_s hT218 _ hηnat
+  intro τ' C' h' η' hη'_pos
+  exact subspaceDesign_list_decoding_cz25_of_coordFiberCap s τ' C' h' η' hη'_pos (hCap τ' C' h' η' hη'_pos)
+
+#print axioms frs_list_decoding_capacity_cz25_of_coordFiberCap_T218
 
 end CodingTheory
