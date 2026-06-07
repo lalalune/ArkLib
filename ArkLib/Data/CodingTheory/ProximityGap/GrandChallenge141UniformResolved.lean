@@ -212,62 +212,12 @@ theorem epsMCAgsPrizeUniversalConjecture_of_UniversalGSListMassBound (m : ℕ)
   refine ⟨L, hfaithful, ?_⟩
   exact le_trans (epsMCAgs_le_listSize_div_of_pivotCovering _ δ L ℓ hcov hsize) hclear
 
-/-! ## Closing out the consumers: the proven conjecture discharges its downstream adapters -/
-
-section Consumers
-
-variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
-variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
-
-/-- **Unconditional prize lower-witness existence.** The `_of_uniformConjecture` adapters in
-`GrandChallenge141PrizeMath` take `epsMCAgs_prizeBound_conjecture domain m` as a hypothesis; since
-that surface is now the theorem `epsMCAgs_prizeBound_conjecture_holds`, the flagship consumer holds
-**unconditionally** in the conjecture: one constant triple such that, given only the still-explicit
-GS faithfulness and the numeric clearance `bound ≤ ε*`, every ABF26 prize rate admits an
-`MCALowerWitness` at radius `δ`. (Faithfulness and clearance remain genuine explicit inputs; only
-the conjecture hypothesis is discharged.) -/
-theorem exists_prize_mcaLowerWitness_unconditional (domain : ι ↪ F) (m : ℕ) :
-    ∃ c₁ c₂ c₃ : ℝ,
-      ∀ (j : Fin 4) (η δ : ℝ≥0),
-        0 < η →
-        (δ : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η : ℝ) →
-        δ ≤ 1 →
-        ∀ L : WordStack F (Fin 2) ι → Finset (ι → F),
-          FaithfulGSFamily (F := F)
-            ((ReedSolomon.code (domain := domain)
-              ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))) δ L →
-          ENNReal.ofReal
-              (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j) η c₁ c₂ c₃)
-            ≤ (epsStar : ENNReal) →
-          ∃ w : GrandChallenges.MCALowerWitness
-            ((ReedSolomon.code (domain := domain)
-              ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ :
-                Set (ι → F))) epsStar,
-            w.δ = δ := by
-  obtain ⟨c₁, c₂, c₃, hbound⟩ := epsMCAgs_prizeBound_conjecture_holds domain m
-  refine ⟨c₁, c₂, c₃, ?_⟩
-  intro j η δ hη hδ hδ_le_one L hfaithful hclear
-  let C : Set (ι → F) :=
-    (ReedSolomon.code (domain := domain)
-      ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
-  have hMass : epsMCAgsMassBound (F := F) C δ L
-      (ENNReal.ofReal
-        (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j) η c₁ c₂ c₃)) :=
-    epsMCAgsMassBound_of_epsMCAgs_le C δ L (hbound j η δ hη hδ L)
-  have hMassStar : epsMCAgsMassBound (F := F) C δ L (epsStar : ENNReal) :=
-    epsMCAgsMassBound.mono hMass hclear
-  exact ⟨GrandChallenges.MCALowerWitness.ofLe (C := C) (ε_star := epsStar) (δ := δ) hδ_le_one
-    (epsMCA_le_of_faithful_mass (F := F) C δ L hfaithful hMassStar), rfl⟩
-
-end Consumers
-
 /-! ## Source audit -/
 
 #print axioms epsMCAgs_prizeBound_conjecture_holds
 #print axioms epsMCAgsPrizeUniversalConjecture
 #print axioms epsMCA_le_of_universalGSConjecture
 #print axioms epsMCAgsPrizeUniversalConjecture_of_UniversalGSListMassBound
-#print axioms exists_prize_mcaLowerWitness_unconditional
 
 end MCAGS
 

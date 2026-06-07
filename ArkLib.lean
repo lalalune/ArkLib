@@ -111,6 +111,7 @@ import ArkLib.Data.CodingTheory.ListDecoding.CZ25UniqueDecodingSlice
 import ArkLib.Data.CodingTheory.ListDecoding.FPRUNEGoodCoord
 import ArkLib.Data.CodingTheory.ListDecoding.FPRUNEListBound
 import ArkLib.Data.CodingTheory.ListDecoding.FPRUNEPotential
+import ArkLib.Data.CodingTheory.ListDecoding.FPRUNERealStep
 import ArkLib.Data.CodingTheory.ListDecoding.FirstMomentListBound
 import ArkLib.Data.CodingTheory.ListDecoding.GHSZ02Foundations
 import ArkLib.Data.CodingTheory.ListDecoding.JH01
@@ -162,6 +163,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1Conditional
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1ConditionalAll
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1ConditionalAllCleared
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1ConditionalCleared
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1MonicReduction
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1MonicWfreeCleared
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Assembly
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Bijection
@@ -170,6 +172,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2ClearedGap
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2ClearedGapIdeal
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Close
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2FilterDrop
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2FubiniReabsorb
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2KeystoneReindex
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Match
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MatchMonic
@@ -183,7 +186,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MonicWfreeFullSumAt
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MonicWfreeGlobal
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MonicWfreeRange
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MonicWfreeRangeConsumers
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2PartitionMatchScratch
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2OrderZeroRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Reabsorb
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Reindex
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2RootBridge
@@ -194,6 +197,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ReedSolomonGap
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.RestrictedFaaDiBrunoExtract
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.RestrictedFaaDiBrunoXiTelescope
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.S5Genuine
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ScratchDvd138
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.UnclearedEmbedding
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.WPowerInjective
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.WeightedAgreement
@@ -236,6 +240,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DG25.Basic
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.MainResults
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.ReedSolomon
 import ArkLib.Data.CodingTheory.ProximityGap.DG25Sampling
+import ArkLib.Data.CodingTheory.ProximityGap.EpsCAMono
 import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.CodingTheory.ProximityGap.ExternalDebt
 import ArkLib.Data.CodingTheory.ProximityGap.Folding
@@ -257,6 +262,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GWKernelReduction
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeKernels
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeMath
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeMathLowOutput
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141UniformResolved
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeDecision
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeInteriorGeneral
@@ -313,6 +319,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCAGSLatticeResolvedSpec
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGSWitness
 import ArkLib.Data.CodingTheory.ProximityGap.MCAGenerator
 import ArkLib.Data.CodingTheory.ProximityGap.MCALatticeExact
+import ArkLib.Data.CodingTheory.ProximityGap.MCALowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.MCAMiddleBand
 import ArkLib.Data.CodingTheory.ProximityGap.MCAPlateauWindow
 import ArkLib.Data.CodingTheory.ProximityGap.MCASecondMoment
@@ -424,7 +431,6 @@ import ArkLib.Data.MvPolynomial.SchwartzZippelCounting
 import ArkLib.Data.Nat.Bitwise
 import ArkLib.Data.Polynomial.Bivariate
 import ArkLib.Data.Polynomial.ClearDenomY
-import ArkLib.Data.Polynomial.DegreeLTDimension
 import ArkLib.Data.Polynomial.FoldingPolynomial
 import ArkLib.Data.Polynomial.Frobenius
 import ArkLib.Data.Polynomial.GammaSubstObstruction
@@ -484,7 +490,6 @@ import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.TraceDataStructur
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.Security.TraceTransform
 import ArkLib.OracleReduction.FiatShamir.DuplexSponge.State
 import ArkLib.OracleReduction.FiatShamir.SingleSalt
-import ArkLib.OracleReduction.FiatShamir.StateRestorationTransport
 import ArkLib.OracleReduction.FiatShamir.ZKResidualBridge
 import ArkLib.OracleReduction.FiatShamir.ZKTransport
 import ArkLib.OracleReduction.LiftContext.Lens
@@ -598,9 +603,7 @@ import ArkLib.ProofSystem.Logup.Sumcheck.SumcheckBridge
 import ArkLib.ProofSystem.Logup.Sumcheck.SumcheckPolynomial
 import ArkLib.ProofSystem.Plonk.Basic
 import ArkLib.ProofSystem.Plonk.Composition
-import ArkLib.ProofSystem.Plonk.GateCheckAlgebra
 import ArkLib.ProofSystem.Plonk.PermutationCheck
-import ArkLib.ProofSystem.RingSwitching.BadPolyAgreementCount
 import ArkLib.ProofSystem.RingSwitching.BatchingPhase
 import ArkLib.ProofSystem.RingSwitching.General
 import ArkLib.ProofSystem.RingSwitching.Issue19Scratch
@@ -619,7 +622,6 @@ import ArkLib.ProofSystem.Stir.ProximityBound
 import ArkLib.ProofSystem.Stir.ProximityGap
 import ArkLib.ProofSystem.Stir.Quotienting
 import ArkLib.ProofSystem.Stir.RoundProtocol
-import ArkLib.ProofSystem.Stir.SoundnessAccumulation
 import ArkLib.ProofSystem.Sumcheck.Domain
 import ArkLib.ProofSystem.Sumcheck.Impl.Basic
 import ArkLib.ProofSystem.Sumcheck.Spec.General
