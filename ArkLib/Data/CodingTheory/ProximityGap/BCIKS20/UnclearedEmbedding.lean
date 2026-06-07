@@ -59,6 +59,28 @@ def HasseCoeffRepr𝒪UnclearedMatchesRoot (x₀ : F) (R : F[X][X][Y]) (i1 m : �
   embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R i1 m)
     = hasseEvalAtRoot H x₀ R i1 m
 
+/-- The named un-cleared/root per-term target is exactly equality of the two shifted
+Hasse-Taylor sums, with powers `T^i` on the un-cleared side and `(T/W)^i` on the root side. -/
+theorem hasseCoeffRepr𝒪UnclearedMatchesRoot_iff_taylorSums
+    (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) :
+    HasseCoeffRepr𝒪UnclearedMatchesRoot H x₀ R i1 m ↔
+      (∑ i ∈ Finset.range ((Bivariate.evalX (Polynomial.C x₀)
+              (hasseDerivX i1 (hasseDerivY m R))).natDegree + 1),
+          (i + m).choose m
+            • (liftToFunctionField (H := H)
+                  ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 R)).coeff (i + m))
+                * (functionFieldT (H := H)) ^ i))
+        =
+        ∑ i ∈ Finset.range ((Bivariate.evalX (Polynomial.C x₀)
+              (hasseDerivX i1 (hasseDerivY m R))).natDegree + 1),
+          (i + m).choose m
+            • (liftToFunctionField (H := H)
+                  ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 R)).coeff (i + m))
+                * (functionFieldT (H := H)
+                    / liftToFunctionField (H := H) H.leadingCoeff) ^ i) := by
+  unfold HasseCoeffRepr𝒪UnclearedMatchesRoot
+  rw [embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_uncleared_eq_taylorSum, hasseEvalAtRoot_eq_taylorSum]
+
 /-- The same per-term target in raw `eval₂` form: `Y ↦ T` equals `Y ↦ T/W` on the specialized
 iterated-Hasse coefficient.  This is the exact false-path/mismatch surface identified in #139. -/
 def HasseCoeffRepr𝒪UnclearedEval₂Target (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) : Prop :=
@@ -98,6 +120,8 @@ end BCIKS20.HenselNumerator
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_uncleared_eq_taylorSum
 #print axioms BCIKS20.HenselNumerator.HasseCoeffRepr𝒪UnclearedMatchesRoot
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.hasseCoeffRepr𝒪UnclearedMatchesRoot_iff_taylorSums
 #print axioms BCIKS20.HenselNumerator.HasseCoeffRepr𝒪UnclearedEval₂Target
 #print axioms BCIKS20.HenselNumerator.hasseCoeffRepr𝒪UnclearedMatchesRoot_iff_eval₂Target
 #print axioms BCIKS20.HenselNumerator.HasseCoeffRepr𝒪UnclearedMatchesRoot.of_eval₂Target
