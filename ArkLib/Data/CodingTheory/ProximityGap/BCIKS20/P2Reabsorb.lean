@@ -191,6 +191,30 @@ theorem restrictedMatchRecursionPartitionZeroSingleBcoeff_eq_unclearedHasseCoeff
   rw [restrictedMatchRecursionPartitionZeroSingleBcoeff_eq_unclearedHasseCoeff,
     ClaimA2.embeddingOf𝒪Into𝕃_ξ]
 
+/-- If `ζ` is nonzero and `R` has degree at least two, the surviving order-zero RHS target
+cancels to the un-cleared Hasse representative divided by `W ^ R.natDegree`. -/
+theorem restrictedMatchRecursionPartitionZeroSingleBcoeff_eq_unclearedHasseCoeff_div_W_natDegree
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) (hζ : ClaimA2.ζ R x₀ H ≠ 0) :
+    restrictedMatchRecursionPartitionZeroSingleBcoeff H x₀ R hHyp
+      = embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
+          / (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree := by
+  rw [restrictedMatchRecursionPartitionZeroSingleBcoeff_eq_unclearedHasseCoeff_div_ζ]
+  have hW : liftToFunctionField (H := H) H.leadingCoeff ≠ 0 :=
+    liftToFunctionField_leadingCoeff_ne_zero (H := H)
+  have hpow :
+      (liftToFunctionField (H := H) H.leadingCoeff) ^ 2
+        * ((liftToFunctionField (H := H) H.leadingCoeff) ^ (R.natDegree - 2)
+          * ClaimA2.ζ R x₀ H)
+        =
+      (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree
+        * ClaimA2.ζ R x₀ H := by
+    rw [← mul_assoc, ← pow_add]
+    have hnat : 2 + (R.natDegree - 2) = R.natDegree := by omega
+    rw [hnat]
+  rw [hpow]
+  field_simp [hζ, hW]
+
 /-- The canonical single-`B_coeff` RHS target with the empty-partition numerator unfolded. -/
 theorem restrictedMatchRecursionPartitionFormZeroSingleBCoeff_eq_unclearedHasseCoeff
     (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) :
@@ -214,6 +238,30 @@ theorem restrictedMatchRecursionPartitionFormZeroSingleBCoeff_eq_unclearedHasseC
                   * ClaimA2.ζ R x₀ H))) := by
   rw [restrictedMatchRecursionPartitionFormZeroSingleBCoeff_eq_unclearedHasseCoeff,
     ClaimA2.embeddingOf𝒪Into𝕃_ξ]
+
+/-- If `ζ` is nonzero and `R` has degree at least two, the canonical single-`B_coeff` RHS
+target cancels to the un-cleared Hasse representative divided by `W ^ R.natDegree`. -/
+theorem restrictedMatchRecursionPartitionFormZeroSingleBCoeff_eq_unclearedHasseCoeff_div_W_natDegree
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) (hζ : ClaimA2.ζ R x₀ H ≠ 0) :
+    restrictedMatchRecursionPartitionFormZeroSingleBCoeff H x₀ R hHyp
+      = embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
+          / (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree := by
+  rw [restrictedMatchRecursionPartitionFormZeroSingleBCoeff_eq_unclearedHasseCoeff_div_ζ]
+  have hW : liftToFunctionField (H := H) H.leadingCoeff ≠ 0 :=
+    liftToFunctionField_leadingCoeff_ne_zero (H := H)
+  have hpow :
+      (liftToFunctionField (H := H) H.leadingCoeff) ^ 2
+        * ((liftToFunctionField (H := H) H.leadingCoeff) ^ (R.natDegree - 2)
+          * ClaimA2.ζ R x₀ H)
+        =
+      (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree
+        * ClaimA2.ζ R x₀ H := by
+    rw [← mul_assoc, ← pow_add]
+    have hnat : 2 + (R.natDegree - 2) = R.natDegree := by omega
+    rw [hnat]
+  rw [hpow]
+  field_simp [hζ, hW]
 
 /-- At order zero, the normalized partition residual is equivalent to the reabsorbed LHS
 `hasseEvalAtRoot` equaling the canonical single surviving RHS `B_coeff` term. -/
@@ -285,11 +333,18 @@ set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.RestrictedFaaDiBrunoMatchAt.zero_of_hasseEvalAtRoot_eq_singleBcoeff
 #print axioms BCIKS20.HenselNumerator.hasseEvalAtRoot_eq_singleBcoeff_of_restrictedMatchAt_zero
 #print axioms BCIKS20.HenselNumerator.B_coeff_indiscrete_zero_eq_hasseCoeffRepr𝒪
+set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.restrictedMatchRecursionPartitionZeroSingleBcoeff_eq_unclearedHasseCoeff
+set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.restrictedMatchRecursionPartitionZeroSingleBcoeff_eq_unclearedHasseCoeff_div_ζ
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.restrictedMatchRecursionPartitionZeroSingleBcoeff_eq_unclearedHasseCoeff_div_W_natDegree
+set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.restrictedMatchRecursionPartitionFormZeroSingleBCoeff_eq_unclearedHasseCoeff
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.restrictedMatchRecursionPartitionFormZeroSingleBCoeff_eq_unclearedHasseCoeff_div_ζ
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.restrictedMatchRecursionPartitionFormZeroSingleBCoeff_eq_unclearedHasseCoeff_div_W_natDegree
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.restrictedPartitionMatchAt_zero_iff_hasseEvalAtRoot_eq_single_B_coeff
 set_option linter.style.longLine false in
