@@ -69,3 +69,5 @@ theorem projectToMidSumcheckPoly_succ (ℓ : ℕ) [NeZero ℓ] (t m : Multilinea
   rw [RingSwitching.fixFirstVariablesOfMQP_projectToMid_step ℓ t m i challenges r_i']
 
 end Sumcheck.Structured
+
+#print axioms Sumcheck.Structured.projectToMidSumcheckPoly_succ
