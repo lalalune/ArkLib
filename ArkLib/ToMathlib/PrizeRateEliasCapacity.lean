@@ -8,7 +8,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeLDThresholdJohnsonSq
 
 /-!
-# Johnson-capacity route for `OrdinaryRSCapacityAtPrizeRates` (scratch)
+# Johnson-capacity route for `OrdinaryRSCapacityAtPrizeRates`
 
 The lower-side hypothesis `OrdinaryRSCapacityAtPrizeRates domain τ ℓ` (defined in
 `GrandChallengesLattice.lean`) asks, for each ABF26 prize rate `r ∈ {1/2,1/4,1/8,1/16}`,
@@ -159,6 +159,161 @@ theorem ordinaryRSCapacityAtPrizeRates_of_johnson_sq_rsDegreeLe
   haveI : NeZero ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ := ⟨(hdeg_pos r).ne'⟩
   exact ReedSolomon.minDist_eq' (α := domain) (hdeg_le r)
 
+/-! ## Pointwise (native finite-list) route — the issue's preferred target
+
+The reductions above land on the maximised-`Λ` predicate `OrdinaryRSCapacityAtPrizeRates`.
+The issue body flags `OrdinaryRSCapacityPointwiseAtPrizeRates` — the *native finite
+combinatorial* statement that, for every received word `f`, the finite list
+`closeCodewordsRelFinset RS_{k_r} f ((τ r).val / n)` has cardinality `≤ ℓ r` — as the
+preferred route.  The lemmas below discharge that predicate directly from the same per-rate
+squared Johnson certificate, routing through the proven pointwise card bound
+`JohnsonBound.closeCodewordsRelFinset_card_le_of_floor_minDist_johnson_sq_dist` (which lands on
+`Finset.card`) rather than the maximised-`Λ` packaging.  At the grid radius `(τ r).val / n` the
+floor `⌊((τ r).val / n) · n⌋ = (τ r).val` is exact (`floor_grid_mul`), so the radius-side
+hypotheses are stated directly in the lattice index. -/
+
+/-- **Per-rate pointwise Johnson cap for the ordinary-RS prize capacity, abstract `minDist`
+form.**
+
+For each prize rate and *each received word* `f`, the proven optimal-`β` squared Johnson
+pointwise bound (`closeCodewordsRelFinset_card_le_of_floor_minDist_johnson_sq_dist`) gives the
+native finite close-list cap
+`(closeCodewordsRelFinset RS_{k_r} f ((τ r).val / n)).card ≤ ℓ r` directly from the squared
+Johnson polynomial inequality `hsq`.  This is exactly the issue's preferred
+`OrdinaryRSCapacityPointwiseAtPrizeRates`. -/
+theorem ordinaryRSCapacityPointwiseAtPrizeRates_of_johnson_sq
+    (domain : ι ↪ F)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1))
+    (ℓ : Fin 4 → ℕ)
+    (hq1 : 1 < Fintype.card F)
+    (hP : ∀ r : Fin 4,
+      (Fintype.card ι : ℝ) / (Fintype.card F : ℝ) ≤
+        ((Fintype.card ι - (τ r).val : ℕ) : ℝ))
+    (hsq : ∀ r : Fin 4,
+      ((ℓ r : ℝ) + 1)
+          * ((((Fintype.card ι - (τ r).val : ℕ) : ℝ)) -
+              (Fintype.card ι : ℝ) / (Fintype.card F : ℝ)) ^ 2
+        > ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card F : ℝ)))
+          * ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card F : ℝ))
+              + (ℓ r : ℝ)
+                * (((Fintype.card ι -
+                    Code.minDist
+                      (ReedSolomon.code domain
+                        ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ :
+                          Set (ι → F)) : ℕ) : ℝ) -
+                    (Fintype.card ι : ℝ) / (Fintype.card F : ℝ)))) :
+    OrdinaryRSCapacityPointwiseAtPrizeRates domain τ ℓ := by
+  intro r f
+  classical
+  set C : Set (ι → F) :=
+    ReedSolomon.code domain ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ with hC
+  set δ : ℝ := (((((τ r).val : ℕ) : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) with hδdef
+  have hδ : (0 : ℝ) ≤ δ := NNReal.coe_nonneg _
+  have hfl : ⌊δ * (Fintype.card ι : ℝ)⌋₊ = (τ r).val := by
+    rw [hδdef]; exact floor_grid_mul (ι := ι) (τ r).val
+  exact JohnsonBound.closeCodewordsRelFinset_card_le_of_floor_minDist_johnson_sq_dist
+    (C := C) (f := f) (δ := δ) (ℓ := ℓ r) hδ hq1
+    (by rw [hfl]; exact hP r) (by rw [hfl]; exact hsq r)
+
+/-- **Per-rate pointwise Johnson cap with the RS distance specialised.**
+
+Same as `ordinaryRSCapacityPointwiseAtPrizeRates_of_johnson_sq`, but the squared Johnson
+inequality is phrased with the closed-form Reed-Solomon minimum distance `n - k + 1` already
+substituted, supplied via the standard RS facts behind `hminDist`. -/
+theorem ordinaryRSCapacityPointwiseAtPrizeRates_of_johnson_sq_rsDistance
+    (domain : ι ↪ F)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1))
+    (ℓ : Fin 4 → ℕ)
+    (hq1 : 1 < Fintype.card F)
+    (hP : ∀ r : Fin 4,
+      (Fintype.card ι : ℝ) / (Fintype.card F : ℝ) ≤
+        ((Fintype.card ι - (τ r).val : ℕ) : ℝ))
+    (hminDist : ∀ r : Fin 4,
+      Code.minDist
+          (ReedSolomon.code domain
+            ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F)) =
+        Fintype.card ι - ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ + 1)
+    (hsq : ∀ r : Fin 4,
+      ((ℓ r : ℝ) + 1)
+          * ((((Fintype.card ι - (τ r).val : ℕ) : ℝ)) -
+              (Fintype.card ι : ℝ) / (Fintype.card F : ℝ)) ^ 2
+        > ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card F : ℝ)))
+          * ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card F : ℝ))
+              + (ℓ r : ℝ)
+                * (((Fintype.card ι -
+                    (Fintype.card ι -
+                      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ + 1) : ℕ) : ℝ) -
+                    (Fintype.card ι : ℝ) / (Fintype.card F : ℝ)))) :
+    OrdinaryRSCapacityPointwiseAtPrizeRates domain τ ℓ := by
+  refine ordinaryRSCapacityPointwiseAtPrizeRates_of_johnson_sq domain τ ℓ hq1 hP ?_
+  intro r
+  simpa [hminDist r] using hsq r
+
+/-- **Per-rate pointwise Johnson cap from RS degree side conditions.**
+
+The numerics-facing pointwise form: from `0 < k_r` and `k_r ≤ n`, the standard RS fact
+`minDist = n - k + 1` (`ReedSolomon.minDist_eq'`) is discharged automatically, leaving only the
+squared Johnson arithmetic certificate at the closed-form distance.  Pointwise sibling of
+`ordinaryRSCapacityAtPrizeRates_of_johnson_sq_rsDegreeLe`. -/
+theorem ordinaryRSCapacityPointwiseAtPrizeRates_of_johnson_sq_rsDegreeLe
+    (domain : ι ↪ F)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1))
+    (ℓ : Fin 4 → ℕ)
+    (hq1 : 1 < Fintype.card F)
+    (hdeg_pos : ∀ r : Fin 4,
+      0 < ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊)
+    (hdeg_le : ∀ r : Fin 4,
+      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ ≤ Fintype.card ι)
+    (hP : ∀ r : Fin 4,
+      (Fintype.card ι : ℝ) / (Fintype.card F : ℝ) ≤
+        ((Fintype.card ι - (τ r).val : ℕ) : ℝ))
+    (hsq : ∀ r : Fin 4,
+      ((ℓ r : ℝ) + 1)
+          * ((((Fintype.card ι - (τ r).val : ℕ) : ℝ)) -
+              (Fintype.card ι : ℝ) / (Fintype.card F : ℝ)) ^ 2
+        > ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card F : ℝ)))
+          * ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card F : ℝ))
+              + (ℓ r : ℝ)
+                * (((Fintype.card ι -
+                    (Fintype.card ι -
+                      ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ + 1) : ℕ) : ℝ) -
+                    (Fintype.card ι : ℝ) / (Fintype.card F : ℝ)))) :
+    OrdinaryRSCapacityPointwiseAtPrizeRates domain τ ℓ := by
+  refine ordinaryRSCapacityPointwiseAtPrizeRates_of_johnson_sq_rsDistance
+    domain τ ℓ hq1 hP ?_ hsq
+  intro r
+  haveI : NeZero ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ := ⟨(hdeg_pos r).ne'⟩
+  exact ReedSolomon.minDist_eq' (α := domain) (hdeg_le r)
+
+/-- The pointwise Johnson reduction agrees with the maximised-`Λ` one: feeding the same
+squared Johnson certificate through the pointwise route and then `Lambda_le_natCast` recovers
+exactly `OrdinaryRSCapacityAtPrizeRates`.  This certifies that the issue's preferred pointwise
+target and the maximised-`Λ` target are discharged from one and the same numeric payload. -/
+theorem ordinaryRSCapacityAtPrizeRates_of_pointwise_johnson_sq
+    (domain : ι ↪ F)
+    (τ : Fin 4 → Fin (Fintype.card ι + 1))
+    (ℓ : Fin 4 → ℕ)
+    (hq1 : 1 < Fintype.card F)
+    (hP : ∀ r : Fin 4,
+      (Fintype.card ι : ℝ) / (Fintype.card F : ℝ) ≤
+        ((Fintype.card ι - (τ r).val : ℕ) : ℝ))
+    (hsq : ∀ r : Fin 4,
+      ((ℓ r : ℝ) + 1)
+          * ((((Fintype.card ι - (τ r).val : ℕ) : ℝ)) -
+              (Fintype.card ι : ℝ) / (Fintype.card F : ℝ)) ^ 2
+        > ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card F : ℝ)))
+          * ((Fintype.card ι : ℝ) * (1 - 1 / (Fintype.card F : ℝ))
+              + (ℓ r : ℝ)
+                * (((Fintype.card ι -
+                    Code.minDist
+                      (ReedSolomon.code domain
+                        ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ :
+                          Set (ι → F)) : ℕ) : ℝ) -
+                    (Fintype.card ι : ℝ) / (Fintype.card F : ℝ)))) :
+    OrdinaryRSCapacityAtPrizeRates domain τ ℓ :=
+  GrandChallengesLattice.ordinaryRSCapacityAtPrizeRates_of_pointwise domain τ ℓ
+    (ordinaryRSCapacityPointwiseAtPrizeRates_of_johnson_sq domain τ ℓ hq1 hP hsq)
+
 /-! ## End-to-end: Johnson capacity ⊕ adjacent Elias certificate resolve the LD prize
 
 The capacity reductions above land on the named lower-side predicate
@@ -229,9 +384,7 @@ theorem listPrizeLatticeResolved_of_ordinaryRSCapacity_johnson_sq_and_elias_next
     hpow hvol_next hne
 
 end ProximityGap
-
--- AXIOM AUDIT (temporary)
-#print axioms ProximityGap.ordinaryRSCapacityAtPrizeRates_of_johnson_sq
-#print axioms ProximityGap.ordinaryRSCapacityAtPrizeRates_of_johnson_sq_rsDistance
-#print axioms ProximityGap.ordinaryRSCapacityAtPrizeRates_of_johnson_sq_rsDegreeLe
-#print axioms ProximityGap.listPrizeLatticeResolved_of_ordinaryRSCapacity_johnson_sq_and_elias_next
+#print axioms ProximityGap.ordinaryRSCapacityPointwiseAtPrizeRates_of_johnson_sq
+#print axioms ProximityGap.ordinaryRSCapacityPointwiseAtPrizeRates_of_johnson_sq_rsDistance
+#print axioms ProximityGap.ordinaryRSCapacityPointwiseAtPrizeRates_of_johnson_sq_rsDegreeLe
+#print axioms ProximityGap.ordinaryRSCapacityAtPrizeRates_of_pointwise_johnson_sq

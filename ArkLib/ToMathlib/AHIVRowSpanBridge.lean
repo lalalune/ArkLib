@@ -62,4 +62,49 @@ lemma affineLine_param_injective {u₀ u₁ : ι → F} (hu₁ : u₁ ≠ 0) :
   simp only [Pi.add_apply, Pi.smul_apply, smul_eq_mul, add_right_inj] at hval
   exact mul_right_cancel₀ hj hval
 
+/-- The number of field elements `γ` for which `u₀ + γ • u₁` is `e`-close to the Reed–Solomon
+code equals the number of close points on the affine line, when the direction `u₁ ≠ 0`.
+
+This is the bridge between the *parameter* count (over `γ ∈ F`, the form appearing in the
+affine-line probability) and the *point* count `numberOfClosePts` (over the line itself, the form
+bounded by AHIV's mutual-exclusion corollary). -/
+lemma affineLine_close_count_eq_numberOfClosePts
+    {deg : ℕ} {α : ι ↪ F} {e : ℕ} {u₀ u₁ : ι → F} (hu₁ : u₁ ≠ 0) :
+    (Finset.filter (fun γ : F => Δ₀(u₀ + γ • u₁, ReedSolomon.code α deg) ≤ e)
+        Finset.univ).card
+      = numberOfClosePts (F := F) (ι := ι) u₀ u₁ deg α e := by
+  classical
+  rw [number_of_close_pts_eq_nat_card]
+  -- `closePtsOnAffineLine` is finite; use `Nat.card` of the subtype.
+  letI : Fintype
+      (closePtsOnAffineLine (F := F) (u := u₀) (v := u₁) (deg := deg) (α := α) (e := e)) :=
+    Fintype.ofFinite _
+  rw [Nat.card_eq_fintype_card]
+  -- Build the bijection `γ ↦ ⟨u₀ + γ • u₁, ...⟩`.
+  apply Finset.card_bij
+    (i := fun γ (hγ : γ ∈ Finset.filter
+        (fun γ : F => Δ₀(u₀ + γ • u₁, ReedSolomon.code α deg) ≤ e) Finset.univ) =>
+      (⟨u₀ + γ • u₁, by
+        refine ⟨?_, ?_⟩
+        · exact (Affine.mem_affineLineAtOrigin_iff (F := F) (origin := u₀) (direction := u₁)
+            _).2 ⟨γ, rfl⟩
+        · exact (Finset.mem_filter.mp hγ).2⟩ :
+        closePtsOnAffineLine (F := F) (u := u₀) (v := u₁) (deg := deg) (α := α) (e := e)))
+  · -- maps into the target finset (`univ`)
+    intro γ hγ; exact Finset.mem_univ _
+  · -- injective
+    intro a ha b hb hab
+    have hval : u₀ + a • u₁ = u₀ + b • u₁ := by
+      simpa using congrArg (Subtype.val) hab
+    exact affineLine_param_injective (u₀ := u₀) hu₁ hval
+  · -- surjective
+    intro x hx
+    obtain ⟨γ, hγ⟩ := (Affine.mem_affineLineAtOrigin_iff (F := F) (origin := u₀)
+      (direction := u₁) (x : ι → F)).1 x.2.1
+    refine ⟨γ, ?_, ?_⟩
+    · refine Finset.mem_filter.mpr ⟨Finset.mem_univ _, ?_⟩
+      rw [← hγ]; exact x.2.2
+    · apply Subtype.ext
+      exact hγ.symm
+
 end ProximityToRS

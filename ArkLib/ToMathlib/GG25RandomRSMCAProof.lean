@@ -36,11 +36,12 @@ Main results:
 All declarations are axiom-clean (`#print axioms` below).
 -/
 
-open scoped ENNReal NNReal
+open scoped ENNReal NNReal ProbabilityTheory
 
 namespace CodingTheory
 
 open Probability
+open scoped Classical
 
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
@@ -85,10 +86,11 @@ theorem randomRSMCA_pr_eq_badCount_div
       uniformSizeSubsetOfLe F n hn L = ((Fintype.card F).choose n : ENNReal)⁻¹ :=
     fun L => uniformSizeSubsetOfLe_apply hn L
   simp_rw [hpt]
-  -- Factor the constant out, collapse the indicator sum to a count.
-  rw [← Finset.sum_mul_distrib_indicator]
+  -- Factor the constant point mass out of the indicator sum.
+  rw [← Finset.mul_sum]
+  -- Collapse the indicator sum to the cardinality of the bad-domain filter.
+  rw [Finset.sum_boole]
   rw [div_eq_mul_inv, mul_comm]
-  rfl
 
 /-- **Checked reduction: bad-domain count bound ⇒ front door.**
 

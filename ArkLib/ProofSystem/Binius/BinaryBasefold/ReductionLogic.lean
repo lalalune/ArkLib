@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chung Thai Nguyen, Quang Dao
 -/
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Spec
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Relations
 import ArkLib.ToVCVio.Oracle
 import ArkLib.ToVCVio.SimulationInfrastructure
 import ArkLib.OracleReduction.Completeness
@@ -195,7 +196,7 @@ structure OracleAwareReductionLogicStep
   - `[pSpec.Message]ₒ` are the prover messages the verifier can query -/
 @[reducible]
 def OracleAwareReductionLogicStep.IsStronglyCompleteUnderSimulation
-    {ι : Type} {oSpec : OracleSpec ι} [oSpec.FiniteRange]
+    {ι : Type} {oSpec : OracleSpec ι} [OracleSpec.Fintype oSpec] [OracleSpec.Inhabited oSpec]
     {StmtIn WitIn : Type}
     {ιₒᵢ ιₒₒ : Type} {OracleIn : ιₒᵢ → Type} {OracleOut : ιₒₒ → Type}
     {StmtOut WitOut : Type}
