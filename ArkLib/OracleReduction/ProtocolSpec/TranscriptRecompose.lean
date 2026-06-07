@@ -122,6 +122,26 @@ theorem appendRight_empty (T₁ : FullTranscript pSpec₁) :
     refine (cast_heq _ _).trans ?_
     rw [show (⟨i.val, by have := i.isLt; simp at this; omega⟩ : Fin m) = j from by ext; exact hv]
 
+/-- **`appendRight` of two FULL transcripts equals `FullTranscript.append` (`++ₜ`).**  The final
+transcript reconciliation for the right-block run characterization: when both halves are complete,
+`appendRight` coincides with the standard transcript append. -/
+theorem appendRight_full (T₁ : FullTranscript pSpec₁) (T₂ : FullTranscript pSpec₂) :
+    appendRight (k := Fin.last n) T₁ T₂ = T₁ ++ₜ T₂ := by
+  funext i
+  refine Fin.addCases (fun j => ?_) (fun j => ?_) i
+  · simp only [appendRight, FullTranscript.append, Fin.happend_left, Fin.coe_castAdd, Fin.val_last]
+    split
+    · apply eq_of_heq
+      refine (cast_heq _ _).trans (HEq.trans ?_ (cast_heq _ _).symm)
+      rw [show (⟨(j : ℕ), by omega⟩ : Fin m) = j from by ext; rfl]
+    · omega
+  · simp only [appendRight, FullTranscript.append, Fin.happend_right, Fin.val_natAdd, Fin.val_last]
+    split
+    · omega
+    · apply eq_of_heq
+      refine (cast_heq _ _).trans (HEq.trans ?_ (cast_heq _ _).symm)
+      rw [show (⟨m + (j : ℕ) - m, by omega⟩ : Fin n) = j from by ext; simp]
+
 end ProtocolSpec.Transcript
 
 #check @ProtocolSpec.Transcript.appendRight
