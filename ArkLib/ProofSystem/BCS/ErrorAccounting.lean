@@ -340,6 +340,48 @@ theorem bcs_opening_union_bound {m : ℕ} (μ : UnionBoundPr E)
     _ ≤ ∑ i, εOpen i := by
       exact Finset.sum_le_sum fun i _ => hOpen i
 
+/-- Empty opening-phase union bound. With no per-message openings, the composite opening failure
+is empty and has probability at most zero. -/
+theorem bcs_opening_union_bound_zero (μ : UnionBoundPr E) :
+    μ.pr (μ.unionFin (Fin.elim0 : Fin 0 → E)) ≤ 0 := by
+  simp [UnionBoundPr.unionFin, μ.pr_empty]
+
+/-- One-more-opening recurrence for the opening-phase union bound. Peeling the first opening
+failure contributes its local opening error, then recurses on the remaining opening schedule. -/
+theorem bcs_opening_union_bound_succ {m : ℕ} (μ : UnionBoundPr E)
+    (badOpen : Fin (m + 1) → E) (εOpen : Fin (m + 1) → ℝ≥0)
+    (hOpen : ∀ i, μ.pr (badOpen i) ≤ εOpen i) :
+    μ.pr (μ.unionFin badOpen) ≤ εOpen 0 + ∑ i : Fin m, εOpen i.succ := by
+  calc
+    μ.pr (μ.unionFin badOpen) ≤ ∑ i : Fin (m + 1), εOpen i :=
+      bcs_opening_union_bound μ badOpen εOpen hOpen
+    _ = εOpen 0 + ∑ i : Fin m, εOpen i.succ := by
+      rw [Fin.sum_univ_succ]
+
+/-- Left/right split for the opening-phase union bound. This isolates the composite opening
+failure when the query-log openings are grouped into two consecutive batches. -/
+theorem bcs_opening_union_bound_append {m n : ℕ} (μ : UnionBoundPr E)
+    (badLeft : Fin m → E) (badRight : Fin n → E)
+    (εLeft : Fin m → ℝ≥0) (εRight : Fin n → ℝ≥0)
+    (hLeft : ∀ i, μ.pr (badLeft i) ≤ εLeft i)
+    (hRight : ∀ i, μ.pr (badRight i) ≤ εRight i) :
+    μ.pr (μ.unionFin (Fin.append badLeft badRight))
+      ≤ (∑ i, εLeft i) + ∑ i, εRight i := by
+  have hOpen : ∀ i : Fin (m + n),
+      μ.pr ((Fin.append badLeft badRight) i) ≤ (Fin.append εLeft εRight) i := by
+    intro i
+    cases i using Fin.addCases with
+    | left i => simpa using hLeft i
+    | right i => simpa using hRight i
+  calc
+    μ.pr (μ.unionFin (Fin.append badLeft badRight))
+        ≤ ∑ i : Fin (m + n), (Fin.append εLeft εRight) i :=
+      bcs_opening_union_bound μ (Fin.append badLeft badRight)
+        (Fin.append εLeft εRight) hOpen
+    _ = (∑ i, εLeft i) + ∑ i, εRight i := by
+      rw [Fin.sum_univ_add]
+      simp [Fin.append]
+
 /-- Relax the per-message opening budgets after proving the composite opening-union bound. -/
 theorem bcs_opening_union_bound_mono_error {m : ℕ} (μ : UnionBoundPr E)
     (badOpen : Fin m → E) (εOpen₁ εOpen₂ : Fin m → ℝ≥0)
@@ -493,6 +535,9 @@ example (εInteraction : ℝ≥0) (εOpen : Fin 3 → ℝ≥0) :
 #print axioms bcs_union_bound_mono_error
 #print axioms bcs_union_bound_append_mono_error
 #print axioms bcs_opening_union_bound
+#print axioms bcs_opening_union_bound_zero
+#print axioms bcs_opening_union_bound_succ
+#print axioms bcs_opening_union_bound_append
 #print axioms bcs_opening_union_bound_mono_error
 #print axioms bcs_append_accounting_of_opening_bound
 #print axioms bcs_append_accounting_of_opening_batch
