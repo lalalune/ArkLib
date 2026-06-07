@@ -135,22 +135,112 @@ theorem getSumcheckRoundPoly_eval_eq_sum_snoc {d : ℕ} (i : Fin ℓ)
   refine HEq.trans ?_ hcurH.symm
   exact cast_heq _ _
 
+/-- Renaming a polynomial along the canonical index `finCongr` of a dimension equality is
+heterogeneously equal to the original polynomial. -/
+private lemma rename_finCongr_heq {a b : ℕ} (h : a = b) (p : MvPolynomial (Fin a) L) :
+    HEq (rename (finCongr h) p) p := by
+  subst h
+  rw [finCongr_refl, Equiv.coe_refl, rename_id_apply]
+
 /-- **Sumcheck round-sum identity at the boolean cube** (`D = uniform 𝓑`): the round polynomial
 evaluated at the two boolean points sums to the full survivor-cube sum of `h`.  This is the
 verifier-side check identity consumed by `BinaryBasefold.ReductionLogic` and
 `RingSwitching.SumcheckPhase`.
 
-NAMED RESIDUAL (documented). The historical proof (pre-`SumcheckDomain` refactor) was never
-completed — it was preserved with `stop` and consumed the removed `getSumcheckRoundPoly_eval_eq`
-marginal form.  The modern route is: sum `getSumcheckRoundPoly_eval_eq_sum_snoc` over the two
-boolean points and reassemble the survivor cube via `Fintype.piFinset_succ` (a cube-splitting
-argument along the **last** coordinate, matching the variable-convention repair above).  Kept as
-a single documented residual rather than a `stop`-frozen proof. -/
-axiom getSumcheckRoundPoly_sum_eq {𝓑 : Fin 2 ↪ L} (i : Fin ℓ)
+The proof sums `getSumcheckRoundPoly_eval_eq_sum_snoc` over the two boolean points and reassembles
+the survivor cube using the last-coordinate cube split `SumcheckDomain.sum_cube_snoc`, matching the
+variable-convention repair above. -/
+theorem getSumcheckRoundPoly_sum_eq {𝓑 : Fin 2 ↪ L} (i : Fin ℓ)
     (h : ↥L⦃≤ 2⦄[X Fin (ℓ - ↑i.castSucc)]) :
     (getSumcheckRoundPoly ℓ (SumcheckDomain.uniform 𝓑 ℓ) (i := i) h).val.eval (𝓑 0)
       + (getSumcheckRoundPoly ℓ (SumcheckDomain.uniform 𝓑 ℓ) (i := i) h).val.eval (𝓑 1) =
-    ∑ x ∈ (Finset.univ.map 𝓑) ^ᶠ (ℓ - ↑i.castSucc), MvPolynomial.eval x h.val
+    ∑ x ∈ (Finset.univ.map 𝓑) ^ᶠ (ℓ - ↑i.castSucc), MvPolynomial.eval x h.val := by
+  -- `ℓ - i.castSucc = (ℓ - i.castSucc - 1) + 1` from `i.isLt`.
+  have hn : ℓ - ↑i.castSucc = (ℓ - ↑i.castSucc - 1) + 1 := by
+    have := i.2
+    simp only [Fin.val_castSucc]
+    omega
+  -- Reindex `h` to the `(k + 1)` shape expected by `sum_cube_snoc`.
+  set curH : L[X Fin ((ℓ - ↑i.castSucc - 1) + 1)] := rename (finCongr hn) h.val with hcurH_def
+  have hHEq : HEq curH h.val := by
+    rw [hcurH_def]
+    exact rename_finCongr_heq (L := L) (h := hn) (p := h.val)
+  -- Rewrite the two evaluations as a sum over `Fin 2`, then use the survivor-cube marginal.
+  rw [show
+      (getSumcheckRoundPoly ℓ (SumcheckDomain.uniform 𝓑 ℓ) (i := i) h).val.eval (𝓑 0)
+        + (getSumcheckRoundPoly ℓ (SumcheckDomain.uniform 𝓑 ℓ) (i := i) h).val.eval (𝓑 1)
+        =
+      ∑ b : Fin 2, ∑ x ∈ ((SumcheckDomain.uniform 𝓑 ℓ).drop (↑i.castSucc + 1)).cube,
+        MvPolynomial.eval
+          (Fin.snoc (Fin.append x (fun j => j.elim0) ∘ Fin.cast (by omega)) (𝓑 b)) curH
+    from by
+      rw [Fin.sum_univ_two]
+      rw [getSumcheckRoundPoly_eval_eq_sum_snoc ℓ (SumcheckDomain.uniform 𝓑 ℓ)
+            i h (𝓑 0) curH hHEq]
+      rw [getSumcheckRoundPoly_eval_eq_sum_snoc ℓ (SumcheckDomain.uniform 𝓑 ℓ)
+            i h (𝓑 1) curH hHEq]]
+  -- Transport the full cube-sum of `h` to the reindexed `curH`, then split off the last coordinate.
+  have heval_curH : ∀ z : Fin ((ℓ - ↑i.castSucc - 1) + 1) → L,
+      curH.eval z = h.val.eval (z ∘ finCongr hn) := by
+    intro z
+    rw [hcurH_def, eval_rename]
+  rw [show (∑ x ∈ (Finset.univ.map 𝓑) ^ᶠ (ℓ - ↑i.castSucc), MvPolynomial.eval x h.val)
+      = ∑ z ∈ (SumcheckDomain.uniform 𝓑 ((ℓ - ↑i.castSucc - 1) + 1)).cube, curH.eval z
+    from by
+      rw [show (Finset.univ.map 𝓑) ^ᶠ (ℓ - ↑i.castSucc)
+          = (SumcheckDomain.uniform 𝓑 (ℓ - ↑i.castSucc)).cube from rfl]
+      apply Finset.sum_nbij' (fun z => z ∘ finCongr hn.symm) (fun z => z ∘ finCongr hn)
+      · intro z hz
+        simp only [SumcheckDomain.mem_cube] at hz ⊢
+        intro j
+        simpa using hz (Fin.cast hn.symm j)
+      · intro z hz
+        simp only [SumcheckDomain.mem_cube] at hz ⊢
+        intro j
+        simpa using hz (Fin.cast hn j)
+      · intro z _
+        funext j
+        simp only [Function.comp_apply, finCongr_apply, Fin.cast_cast, Fin.cast_eq_self]
+      · intro z _
+        funext j
+        simp only [Function.comp_apply, finCongr_apply, Fin.cast_cast, Fin.cast_eq_self]
+      · intro z _
+        rw [heval_curH]
+        refine congrArg (fun pt => MvPolynomial.eval pt h.val) ?_
+        funext j
+        simp only [Function.comp_apply, finCongr_apply, Fin.cast_cast, Fin.cast_eq_self]]
+  rw [SumcheckDomain.sum_cube_snoc (SumcheckDomain.uniform 𝓑 ((ℓ - ↑i.castSucc - 1) + 1))
+    (fun z => curH.eval z)]
+  -- Match the outer Boolean point-sum and reindex the two uniform survivor cubes.
+  simp only [SumcheckDomain.points_uniform, SumcheckDomain.init_uniform,
+    SumcheckDomain.drop_uniform]
+  rw [Finset.sum_map]
+  refine Finset.sum_congr rfl fun b _ => ?_
+  apply Finset.sum_nbij' (fun x => x ∘ Fin.cast (by omega)) (fun y => y ∘ Fin.cast (by omega))
+  · intro x hx
+    simp only [SumcheckDomain.mem_cube] at hx ⊢
+    intro j
+    simpa using hx (Fin.cast (by omega) j)
+  · intro y hy
+    simp only [SumcheckDomain.mem_cube] at hy ⊢
+    intro j
+    simpa using hy (Fin.cast (by omega) j)
+  · intro x _
+    funext j
+    simp
+  · intro y _
+    funext j
+    simp
+  · intro x _
+    refine congrArg (fun pt => MvPolynomial.eval pt curH) ?_
+    funext j
+    refine Fin.lastCases ?_ (fun j => ?_) j
+    · simp only [Fin.snoc_last]
+    · simp only [Fin.snoc_castSucc, Function.comp_apply]
+      rw [show (Fin.cast (by omega) j : Fin (ℓ - (↑i.castSucc + 1) + 0))
+            = Fin.castAdd 0 (Fin.cast (by omega) j) from Fin.ext rfl,
+          Fin.append_left]
+      exact congrArg x (Fin.ext rfl)
 
 end RoundPoly
 
