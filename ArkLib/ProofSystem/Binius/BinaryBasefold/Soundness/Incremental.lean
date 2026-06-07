@@ -100,7 +100,15 @@ lemma affineProximityGap_RS_interleaved_contrapositive
   let α := Embedding.subtype fun (x : L) ↦ x ∈ S_dest
   let C_dest := BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx
   let RS_dest := ReedSolomon.code α (2^(ℓ - destIdx.val))
-  letI : Nontrivial RS_dest := by infer_instance
+  haveI : NeZero (2 ^ (ℓ - destIdx.val)) := ⟨by positivity⟩
+  haveI : Nonempty S_dest := ⟨0⟩
+  letI : Nontrivial RS_dest := by
+    refine ⟨⟨ReedSolomon.constantCode (1 : L) S_dest, ReedSolomon.constantCode_mem_code⟩,
+      ⟨0, (RS_dest).zero_mem⟩, ?_⟩
+    intro h
+    have hc : ReedSolomon.constantCode (1 : L) S_dest = 0 := congrArg Subtype.val h
+    rw [ReedSolomon.constantCode_eq_ofNat_zero_iff] at hc
+    exact one_ne_zero hc
   let h_RS_affine := ReedSolomon_ProximityGapAffineLines_UniqueDecoding
     (A := L) (ι := S_dest) (α := α) (k := 2^(ℓ - destIdx.val))
     (hk := by
@@ -1214,6 +1222,7 @@ lemma prop_4_21_2_case_2_fiberwise_far_incremental
   let fold_k_f := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
     (i := block_start_idx) (steps := k) (h_destIdx := h_midIdx_i) (h_destIdx_le := by omega)
     (f := f_block_start) (r_challenges := r_prefix)
+  haveI : NeZero (ϑ - k) := ⟨by omega⟩
   let Ek_close := fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
     (i := midIdx_i) (steps := ϑ - k) (h_destIdx := by omega)
     (h_destIdx_le := h_destIdx_le) (f := fold_k_f)
@@ -1221,7 +1230,7 @@ lemma prop_4_21_2_case_2_fiberwise_far_incremental
   · apply le_trans (Pr_le_Pr_of_implies ($ᵖ L) _ _ (fun r_new h => h.1))
     have : Pr_{ let r_new ← $ᵖ L }[¬Ek_close] = 0 := by
       rw [prob_uniform_eq_card_filter_div_card]
-      simp only [not_not.mpr h_Ek_close, filter_False, card_empty, CharP.cast_eq_zero,
+      simp only [not_not.mpr h_Ek_close, Finset.filter_false, card_empty, CharP.cast_eq_zero,
         ENNReal.coe_zero, ENNReal.coe_natCast, ENNReal.zero_div]
     rw [this]; exact zero_le _
   · apply le_trans (Pr_le_Pr_of_implies ($ᵖ L) _ _ (fun r_new h => h.2))
