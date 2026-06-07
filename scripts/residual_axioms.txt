@@ -29,3 +29,11 @@ bchks25_rs_epsCA_johnson_jump  # #83 BCHKS25 Johnson-jump witness external paper
 gg25_subspaceDesign_epsMCA  # #86 GG25 subspace-design MCA external paper residual
 gg25_frs_epsMCA_capacity  # #86 GG25 FRS capacity MCA external paper residual
 restrictedFaaDiBrunoMatch_residual  # #139 BCIKS20 P2 restricted match residual
+bcs_compiler_preservation_residual  # #62
+zk_concrete_simulator_residual  # #112
+whir_vector_iop_residual  # #113
+spartan_rbr_knowledge_soundness_residual  # #114
+fiat_shamir_semantic_run_collapse_residual  # #116
+ring_switching_kstate_residual  # #29
+batched_fri_joint_proximity_residual  # #14
+logup_append_induction_residual  # #13
