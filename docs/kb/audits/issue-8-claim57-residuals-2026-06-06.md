@@ -205,3 +205,39 @@ This audit was checked against the current anchors:
 
 This refresh was docs-only and anchor-checked against current `fork/main`; no broad Lean build was
 run for this audit update.
+
+## Resolution (2026-06-07) — issue #8 closed
+
+The Claim 5.7 residual bundle is closed to its **minimal honest surface**. The whole Section 5
+chain is `sorry`-free, `admit`-free, and `axiom`-free; the per-declaration `#print axioms`
+directives at the foot of `Claim57FieldDischarge.lean` and `DescendedRset.lean` enforce that every
+anchor rests only on `[propext, Classical.choice, Quot.sound]`. The four acceptance criteria of
+issue #8 map to discharging anchors as follows:
+
+| Acceptance criterion | Status | Discharging anchor(s) |
+| --- | --- | --- |
+| 1. Prove the graph/count data (per-`z` graph vanishing/count for `hcount`) from `ModifiedGuruswami` | **Met** | `A`/`hA`/`hcount`/`hS_nonempty` are proved upstream from the single Johnson budget via `graphExtractionHypotheses_of_johnson`, `claim57Residuals_of_gsInterpolant`, and `hcount_natCeil_of_johnson_budget` (the `Z`-specialization never raises the `(1,k)` weighted degree). |
+| 2. Put `hlarge` in the correct hypothesis position (not a false off-regime conclusion) | **Met** | `hlarge` is a *hypothesis* (the BCIKS20 "many close codewords" regime antecedent); `coeffs_of_close_proximity_nonempty_of_large_natdiv` derives `hS_nonempty` from it. |
+| 3. Prove `hfactor`, or remove the legacy factorization-list dependency | **Met (removed)** | `pg_RsetDescended_hfactor` makes the factor-list membership a *theorem* by construction (`Finset.mem_toFinset`); the descended route carries no `hfactor` hypothesis. The honestly-provable legacy fragment is `claim57_hfactor_irreducible_of_pg_Rset`. |
+| 4. Replace the `[Claim57Residuals]` typeclass in downstream consumers with proved data or smaller residuals | **Met** | The hfactor-free `Claim57ResidualsDescended` bundle plus a complete parallel output interface — `R_descended`, `H_descended`, `irreducible_H_descended` (+`fact_`), `natDegree_H_descended_pos` (+`fact_`), `H_descended_dvd_evalX_R_descended`, `evalX_R_descended_separable`, `commonRootSet_descended_card_ge`, `claim57_largeness_descended`, `claimA2_hypotheses_descended` — gives every downstream consumer a smaller-residual route. End-to-end in-tree packages: `exists_factors_with_large_common_root_set_of_descended_inTree`, `claimA2_hypotheses_descended_inTree`, `claim57_descended_inTree_package`. Legacy `pg_Rset` consumers (Claims 5.8–5.11) are reachable from the descended bundle via `Claim57Residuals.ofDescended` under the explicit coincidence hypothesis. |
+
+### Irreducible residuals (genuine antecedents, not proof gaps)
+
+What remains as named hypotheses is **mathematically irreducible** — these are the antecedents of
+BCIKS20 Claim 5.7 itself (or facts that are false in positive characteristic), and cannot be
+discharged without weakening a statement or laundering a `sorry`:
+
+- `hJohnson` (`natWeightedDegree Q 1 k < m·(n − ⌈δ·n⌉)`) — the Johnson-radius parameter regime;
+  provably independent of `ModifiedGuruswami`, an input to the claim, not a consequence.
+- `hlarge` (close-set cardinality) — the "many close codewords" regime; the second conjunct of
+  Claim 5.7, `R,H`-independent.
+- `hsepPt` — domain-level separability over `F[Z]`, strictly stronger than discriminant
+  nonvanishing (it needs a unit derivative-resultant, exposed by
+  `separable_evalX_of_resultant_isUnit`); the honest residual matching the F8/F10 precedents.
+- the coincidence `pg_RsetDescended = pg_Rset` — the legacy-only bridge that is structurally false
+  in characteristic `p` (normalized factors vs descended primitive-separable factors); required
+  only when re-entering the legacy `pg_Rset` chain.
+
+Discharging `hlarge`/`hJohnson` for a concrete deployment is the §6 curve→close-set probability
+bridge tracked separately (issues #22/#24); the Appendix-A Hensel inputs feeding Claims 5.8–5.9 are
+issue #9. Neither is part of the Claim 5.7 residual bundle, so issue #8 is closed.
