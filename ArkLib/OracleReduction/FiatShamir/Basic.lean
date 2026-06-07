@@ -485,10 +485,29 @@ theorem fiatShamir_isHVZK_of_transfer
     Reduction.isHVZK fsInit fsImpl rel R.fiatShamir :=
   hTransfer hHVZK
 
+/-- If the Fiat-Shamir simulator-transfer residual is discharged at zero statistical error, then
+basic Fiat-Shamir preserves perfect HVZK. This is only the zero-error API wrapper: the simulator
+construction remains the content of `fiatShamir_statisticalHVZKTransferResidual`. -/
+theorem fiatShamir_isHVZK_of_HVZK_zero
+    {τ : Type}
+    (init : ProbComp σ)
+    (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (fsInit : ProbComp τ)
+    (fsImpl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT τ ProbComp))
+    (rel : Set (StmtIn × WitIn))
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hTransfer :
+      fiatShamir_statisticalHVZKTransferResidual init impl fsInit fsImpl rel 0 R)
+    (hHVZK : Reduction.isHVZK init impl rel R) :
+    Reduction.isHVZK fsInit fsImpl rel R.fiatShamir :=
+  _root_.Reduction.isStatHVZK_zero.isHVZK
+    (fiatShamir_isStatHVZK_of_HVZK init impl fsInit fsImpl rel 0 R hTransfer hHVZK)
+
 #print axioms Reduction.fiatShamir_statisticalHVZKTransferResidual
 #print axioms Reduction.fiatShamir_isStatHVZK_of_HVZK
 #print axioms Reduction.fiatShamir_hvzkTransferResidual
 #print axioms Reduction.fiatShamir_isHVZK_of_transfer
+#print axioms Reduction.fiatShamir_isHVZK_of_HVZK_zero
 
 end ZeroKnowledgeTransfer
 
