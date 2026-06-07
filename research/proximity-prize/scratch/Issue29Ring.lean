@@ -51,8 +51,6 @@ import Mathlib.LinearAlgebra.TensorProduct.Basic
 import Mathlib.RingTheory.TensorProduct.Basic
 
 open Polynomial Finset
-open scoped TensorProduct
-open scoped Classical
 
 namespace Issue29Ring
 
@@ -146,8 +144,8 @@ def φ₀ : L →+* (L ⊗[K] L) where
   toFun α := α ⊗ₜ[K] (1 : L)
   map_one' := rfl
   map_mul' α β := by simp only [Algebra.TensorProduct.tmul_mul_tmul, mul_one]
-  map_zero' := by simp only [TensorProduct.zero_tmul]
-  map_add' α β := by simp only [TensorProduct.add_tmul]
+  map_zero' := by simp only [zero_tmul]
+  map_add' α β := by simp only [add_tmul]
 
 /-- Row embedding `φ₁ : L → L ⊗[K] L`, `α ↦ 1 ⊗ α`, as a ring homomorphism.
 (`RingSwitching/Prelude.lean:80`.) -/
@@ -155,8 +153,8 @@ def φ₁ : L →+* (L ⊗[K] L) where
   toFun α := (1 : L) ⊗ₜ[K] α
   map_one' := rfl
   map_mul' α β := by simp only [Algebra.TensorProduct.tmul_mul_tmul, mul_one]
-  map_zero' := by simp only [TensorProduct.tmul_zero]
-  map_add' α β := by simp only [TensorProduct.tmul_add]
+  map_zero' := by simp only [tmul_zero]
+  map_add' α β := by simp only [tmul_add]
 
 variable {K L}
 
@@ -180,10 +178,10 @@ theorem φ₀_mul_φ₁_comm (α β : L) : (φ₀ K L α) * (φ₁ K L β) = (φ
 so K-coefficients pass through the embedding unchanged.  (Needed when the protocol pushes
 the small-field basis `β : Basis (Fin κ → Fin 2) K L` through `φ₀`.) -/
 theorem φ₀_smul (c : K) (α : L) : φ₀ K L (c • α) = c • (φ₀ K L α) := by
-  simp only [φ₀_apply, TensorProduct.smul_tmul']
+  simp only [φ₀_apply, TensorProduct.smul_tmul', smul_tmul]
 
 theorem φ₁_smul (c : K) (α : L) : φ₁ K L (c • α) = c • (φ₁ K L α) := by
-  simp only [φ₁_apply, TensorProduct.tmul_smul]
+  simp only [φ₁_apply, TensorProduct.smul_tmul]
 
 end TensorAlgebra
 

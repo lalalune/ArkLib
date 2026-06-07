@@ -204,48 +204,6 @@ theorem fri_query_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLens
       (domain_size_cond := domain_size_cond) l t)
     h_agreementBridge
 
-omit [Nontrivial 𝔽] in
-/-- Reassemble Claim 8.2 from the probability-space query-round theorem, the structural Batched
-FRI oracle lens, and a concrete `Code.jointProximity` witness.
-
-This removes the arbitrary `agreementBridge : Prop` from this front door: the remaining
-coding-theoretic obligation is exactly the proximity predicate equivalent to the
-`Code.jointAgreement` conclusion of `fri_query_soundness`. -/
-theorem fri_query_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndJointProximity
-    {t : ℕ}
-    {α : ℝ≥0}
-    (f : Fin t.succ → (ω.subdomain 0 → 𝔽))
-    (h_agreement :
-      correlated_agreement_density
-        (Fₛ f)
-        (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
-      ≤ α)
-    {m : ℕ}
-    (m_ge_3 : m ≥ 3)
-    {ι : Type} [Fintype ι] [Nonempty ι]
-    (G : Finset ι) (δ : ℝ≥0∞) (queries l : ℕ)
-    (domain_size_cond : (2 ^ (∑ i, (s i : ℕ))) * d ≤ 2 ^ n)
-    (h_proximity :
-      Code.jointProximity
-        (C := (ReedSolomon.code
-          (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier)
-        (u := f) (δ := 1 - α)) :
-    fri_query_soundness (n := n) (ω := ω) (f := f)
-      (h_agreement := h_agreement) (m_ge_3 := m_ge_3) := by
-  exact
-    fri_query_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLens
-      (n := n) (s := s) (d := d) (ω := ω)
-      f h_agreement m_ge_3 G δ queries l domain_size_cond
-      (agreementBridge :=
-        Code.jointProximity
-          (C := (ReedSolomon.code
-            (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier)
-          (u := f) (δ := 1 - α))
-      (fun _h_query _h_lens h_joint =>
-        fri_query_soundness_of_jointProximity
-          (n := n) (ω := ω) f h_agreement m_ge_3 h_joint)
-      h_proximity
-
 /-! ### Axiom audit (issue #14 probability adapter) -/
 
 #print axioms Fri.QueryRound.probabilityAcceptanceBound
@@ -256,8 +214,6 @@ theorem fri_query_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLens
 #print axioms Fri.fri_query_soundness_of_queryRoundProbabilityBound
 #print axioms Fri.FriQuerySoundnessParts.of_queryRoundProbabilityBoundAndBatchedFRIOracleLens
 #print axioms Fri.fri_query_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLens
-set_option linter.style.longLine false in
-#print axioms Fri.fri_query_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndJointProximity
 
 end ProbabilityAdapter
 end Fri

@@ -914,36 +914,6 @@ theorem fri_query_soundness_of_forall_mem
       (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier)
     (δ := 1 - α) (W := f) h_mem
 
-omit [Nontrivial 𝔽] in
-/-- Proximity-form bridge into the Claim 8.2 `Code.jointAgreement` residual.
-
-This exposes the coding-theoretic part of the correlated-agreement frontier as the existing
-`Code.jointProximity` predicate.  The bridge itself is the proved equivalence
-`Code.jointAgreement_iff_jointProximity`; the hard remaining work is deriving this proximity
-witness from the BCIKS20 correlated-agreement/proximity-gap analysis. -/
-theorem fri_query_soundness_of_jointProximity
-    {t : ℕ}
-    {α : ℝ≥0}
-    (f : Fin t.succ → (ω.subdomain 0 → 𝔽))
-    (h_agreement :
-      correlated_agreement_density
-        (Fₛ f)
-        (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
-      ≤ α)
-    {m : ℕ}
-    (m_ge_3 : m ≥ 3)
-    (h_proximity :
-      Code.jointProximity
-        (C := (ReedSolomon.code
-          (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier)
-        (u := f) (δ := 1 - α)) :
-    fri_query_soundness (n := n) (ω := ω) (f := f)
-      (h_agreement := h_agreement) (m_ge_3 := m_ge_3) :=
-  (Code.jointAgreement_iff_jointProximity
-    (C := (ReedSolomon.code
-      (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier)
-    (u := f) (δ := 1 - α)).mpr h_proximity
-
 /-- Split frontier for Claim 8.2.  The existing `fri_query_soundness` residual is the final
 `Code.jointAgreement` conclusion, while the proof should be assembled from three independent
 ingredients:
@@ -1207,49 +1177,6 @@ theorem fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLens
       (domain_size_cond := domain_size_cond) l t)
     h_agreementBridge
 
-omit [Nontrivial 𝔽] in
-/-- Reassemble Claim 8.2 from the normalized-density query-round theorem, the structural Batched
-FRI oracle lens, and a concrete `Code.jointProximity` witness.
-
-This is the density-route analogue of the probability adapter's concrete proximity front door: the
-remaining coding-theoretic obligation is the proved-equivalent proximity predicate rather than an
-arbitrary `agreementBridge : Prop`. -/
-theorem fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndJointProximity
-    {t : ℕ}
-    {α : ℝ≥0}
-    (f : Fin t.succ → (ω.subdomain 0 → 𝔽))
-    (h_agreement :
-      correlated_agreement_density
-        (Fₛ f)
-        (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
-      ≤ α)
-    {m : ℕ}
-    (m_ge_3 : m ≥ 3)
-    {ι : Type} [Fintype ι] [DecidableEq ι]
-    (G : Finset ι) (δ : ℝ≥0) (queries l : ℕ)
-    (domain_size_cond : (2 ^ (∑ i, (s i : ℕ))) * d ≤ 2 ^ n)
-    (h_proximity :
-      Code.jointProximity
-        (C := (ReedSolomon.code
-          (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier)
-        (u := f) (δ := 1 - α)) :
-    fri_query_soundness (n := n) (ω := ω) (f := f)
-      (h_agreement := h_agreement) (m_ge_3 := m_ge_3) := by
-  exact
-    fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLens
-      (n := n) (s := s) (d := d) (ω := ω)
-      (domain_size_cond := domain_size_cond)
-      f h_agreement m_ge_3 G δ queries l
-      (agreementBridge :=
-        Code.jointProximity
-          (C := (ReedSolomon.code
-            (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier)
-          (u := f) (δ := 1 - α))
-      (fun _h_query _h_lens h_joint =>
-        fri_query_soundness_of_jointProximity
-          (n := n) (ω := ω) f h_agreement m_ge_3 h_joint)
-      h_proximity
-
 #print axioms Fri.FriQuerySoundnessParts
 #print axioms Fri.QueryRound.queryRound_acceptance_le_of_density
 #print axioms Fri.queryRoundAcceptanceBound_of_density
@@ -1258,7 +1185,6 @@ theorem fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndJ
 #print axioms Fri.batchedFRIOracleLensReduction
 #print axioms Fri.batchedFRIOracleLensReduction_holds
 #print axioms Fri.fri_query_soundness_of_forall_mem
-#print axioms Fri.fri_query_soundness_of_jointProximity
 #print axioms Fri.fri_query_soundness_of_parts
 #print axioms Fri.FriQuerySoundnessParts.of_queryRoundAcceptanceBound
 #print axioms Fri.fri_query_soundness_of_queryRoundAcceptanceBound
@@ -1266,8 +1192,6 @@ theorem fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndJ
 #print axioms Fri.fri_query_soundness_of_queryRoundDensityBound
 #print axioms Fri.FriQuerySoundnessParts.of_queryRoundDensityBoundAndBatchedFRIOracleLens
 #print axioms Fri.fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLens
-set_option linter.style.longLine false in
-#print axioms Fri.fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndJointProximity
 
 /-
 The old finite-range instance diagnostic scratch block has been removed.  The remaining
@@ -2093,88 +2017,6 @@ theorem fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequent
       (friSoundnessTotalErrorAccounting_of_phase_bounds
         (n := n) (s := s) (ω := ω) (l := l) m_ge_3 h_batch_error h_fri_error)
 
-open ENNReal in
-omit [Nontrivial 𝔽] in
-/-- Density-route Claim 8.3 reassembly from named phase error-bound targets. -/
-theorem fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequentialCompositionAndPhaseErrorBounds
-    {t l m : ℕ}
-    (f : Fin t.succ → (ω → 𝔽))
-    (m_ge_3 : m ≥ 3)
-    {ι : Type} [Fintype ι] [DecidableEq ι]
-    (G : Finset ι) (δ : ℝ≥0) (queries : ℕ)
-    (h_agreement :
-      correlated_agreement_density
-        (Fₛ (fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x)))
-        (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
-      ≤
-      (let ρ_sqrt :=
-        ReedSolomon.sqrtRate
-          (2 ^ n)
-          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
-       ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))))
-    {σ : Type} (init : ProbComp σ) (impl : QueryImpl []ₒ (StateT σ ProbComp))
-    [∀ i, SampleableType ((BatchedFri.Spec.BatchingRound.batchSpec 𝔽 t).Challenge i)]
-    [∀ i, SampleableType ((Spec.pSpecFold (ω := ω) k s ++ₚ Spec.FinalFoldPhase.pSpec 𝔽 ++ₚ
-      Spec.QueryRound.pSpec (ω := ω) l).Challenge i)]
-    (lang₁ : Set (Unit × (∀ i, BatchedFri.Spec.OracleStatement t ω i)))
-    (lang₂ : Set (((Fin t → 𝔽) × Spec.Statement 𝔽 (0 : Fin (k + 1))) ×
-      (∀ i, BatchedFri.Spec.OracleStatement t ω i)))
-    (lang₃ : Set (Spec.FinalStatement 𝔽 k × (∀ i, Spec.FinalOracleStatement s (ω := ω) i)))
-    {batchError friError : ℝ≥0}
-    (h_batch_soundness : OracleVerifier.soundness
-      (init := init) (impl := impl)
-      lang₁ lang₂
-      (BatchedFri.Spec.BatchingRound.batchOracleReduction
-        (F := 𝔽) (n := n) (ω := ω) s d t).verifier
-      batchError)
-    (h_fri_soundness : OracleVerifier.soundness
-      (init := init) (impl := impl)
-      lang₂ lang₃
-      (BatchedFri.Spec.liftedFRI
-        (F := 𝔽) (n := n) (ω := ω) k s d domain_size_cond l t).verifier
-      friError)
-    (h_residual : OracleVerifier.appendSoundnessResidual
-      (init := init) (impl := impl)
-      (BatchedFri.Spec.BatchingRound.batchOracleReduction
-        (F := 𝔽) (n := n) (ω := ω) s d t).verifier
-      (BatchedFri.Spec.liftedFRI
-        (F := 𝔽) (n := n) (ω := ω) k s d domain_size_cond l t).verifier
-      h_batch_soundness h_fri_soundness)
-    (h_batch_error :
-      friBatchPhaseErrorBound
-        (n := n) (s := s) (ω := ω) m_ge_3 batchError)
-    (h_fri_error :
-      friTailPhaseErrorBound
-        (n := n) (ω := ω) (l := l) m_ge_3 friError)
-    {agreementBridge : Prop}
-    (query_pieces_imply_claim :
-      queryRoundDensityBound G δ queries →
-      batchedFRIOracleLensReduction
-        (n := n) (s := s) (d := d) (ω := ω)
-        (domain_size_cond := domain_size_cond) l t →
-      agreementBridge →
-      fri_query_soundness (n := n) (ω := ω)
-        (f := fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x))
-        (h_agreement := h_agreement) (m_ge_3 := m_ge_3))
-    (soundness_pieces_imply_claim :
-      friSoundnessQueryLift (n := n) (ω := ω) f m_ge_3 →
-      friSoundnessSequentialComposition
-        (n := n) (s := s) (d := d) (ω := ω) (l := l)
-        (domain_size_cond := domain_size_cond)
-        init impl lang₁ lang₃ batchError friError →
-      friSoundnessTotalErrorAccounting
-        (n := n) (s := s) (ω := ω) (l := l) m_ge_3 batchError friError →
-      fri_soundness (n := n) (s := s) (d := d) (ω := ω) (l := l)
-        (domain_size_cond := domain_size_cond) f m_ge_3)
-    (h_agreementBridge : agreementBridge) :
-    fri_soundness (n := n) (s := s) (d := d) (ω := ω) (l := l)
-      (domain_size_cond := domain_size_cond) f m_ge_3 :=
-  fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequentialCompositionAndTotalError
-    (n := n) (s := s) (d := d) (ω := ω) (domain_size_cond := domain_size_cond)
-    f m_ge_3 G δ queries h_agreement init impl lang₁ lang₂ lang₃
-    h_batch_soundness h_fri_soundness h_residual h_batch_error h_fri_error
-    query_pieces_imply_claim soundness_pieces_imply_claim h_agreementBridge
-
 #print axioms Fri.FriSoundnessParts
 #print axioms Fri.subdomainZeroEquiv
 #print axioms Fri.reedSolomon_code_subdomainZero_transport
@@ -2199,8 +2041,6 @@ set_option linter.style.longLine false in
 #print axioms Fri.friSoundnessTotalErrorAccounting_of_phase_bounds
 #print axioms Fri.friSoundnessTotalErrorAccounting_of_named_phase_bounds
 #print axioms Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequentialCompositionAndTotalError
-set_option linter.style.longLine false in
-#print axioms Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequentialCompositionAndPhaseErrorBounds
 #print axioms Fri.fri_soundness_of_forall_mem
 #print axioms Fri.fri_soundness_of_parts
 
@@ -2221,7 +2061,6 @@ end Fri
 #print axioms Fri.batchedFRIOracleLensReduction
 #print axioms Fri.batchedFRIOracleLensReduction_holds
 #print axioms Fri.fri_query_soundness_of_forall_mem
-#print axioms Fri.fri_query_soundness_of_jointProximity
 #print axioms Fri.FriQuerySoundnessParts.of_queryRoundAcceptanceBound
 #print axioms Fri.fri_query_soundness_of_queryRoundAcceptanceBound
 #print axioms Fri.FriQuerySoundnessParts.of_queryRoundDensityBound

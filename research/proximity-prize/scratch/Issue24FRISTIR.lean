@@ -68,9 +68,8 @@ SCRATCH FILE for Issue #24 — FRI/STIR soundness accounting + proximity-gap res
 
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.NNReal.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Field.GeomSum
+import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.GeomSum
 import Mathlib.Topology.Algebra.InfiniteSum.NatInt
 import Mathlib.Analysis.SpecificLimits.Basic
 

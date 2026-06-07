@@ -19,8 +19,6 @@ import Mathlib
   disagreement points.
 * `Polynomial.card_filter_forall_isRoot_le` — for a nonzero polynomial of degree `< N`, at most
   `(N-1)^s` length-`s` tuples are all roots.
-* `Polynomial.card_filter_forall_eval_eq_le_of_natDegree_lt` — two distinct degree-`< N`
-  polynomials agree on every coordinate of at most `(N-1)^s` length-`s` tuples.
 * `Finset.sum_boolCube_prod_factor_eq_prod_sum` — the boolean-hypercube identity
   `∑_{x∈{0,1}^σ} ∏ᵢ (xᵢ=0 ? aᵢ : bᵢ) = ∏ᵢ (aᵢ + bᵢ)` underlying multilinear-extension sumcheck
   folding (#13/#114).
@@ -124,19 +122,6 @@ theorem card_filter_forall_isRoot_le {F : Type*} [Field F] [Fintype F] [Decidabl
   rw [card_filter_forall_pi (β := F) s (fun x : F => p.IsRoot x)]
   exact Nat.pow_le_pow_left hroot_card s
 
-/-- Two distinct polynomials of degree `< N` agree on every coordinate of at most `(N-1)^s`
-length-`s` tuples. -/
-theorem card_filter_forall_eval_eq_le_of_natDegree_lt {F : Type*} [Field F] [Fintype F]
-    [DecidableEq F] {N s : ℕ} {p q : F[X]} (hpq : p ≠ q) (hp : p.natDegree < N)
-    (hq : q.natDegree < N) :
-    (Finset.univ.filter (fun r : Fin s → F => ∀ i, p.eval (r i) = q.eval (r i))).card ≤
-      (N - 1) ^ s := by
-  have hagree :=
-    Polynomial.card_eval_agreement_le_of_natDegree_lt (F := F) (N := N) (p := p) (q := q)
-      hpq hp hq
-  rw [card_filter_forall_pi (β := F) s (fun x : F => p.eval x = q.eval x)]
-  exact Nat.pow_le_pow_left hagree s
-
 end Polynomial
 
 namespace Finset
@@ -159,5 +144,4 @@ end Finset
 #print axioms Polynomial.card_eval_agreement_le_of_natDegree_lt
 #print axioms Polynomial.card_eval_disagreement_ge_of_natDegree_lt
 #print axioms Polynomial.card_filter_forall_isRoot_le
-#print axioms Polynomial.card_filter_forall_eval_eq_le_of_natDegree_lt
 #print axioms Finset.sum_boolCube_prod_factor_eq_prod_sum

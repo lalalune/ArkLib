@@ -51,7 +51,6 @@ None of this proves either tracked conjecture; it sharpens *which* statement is 
 set_option linter.unusedFintypeInType false
 set_option linter.unusedDecidableInType false
 set_option linter.unusedSectionVars false
-set_option linter.style.longFile 1600
 
 namespace ProximityGap
 
@@ -852,87 +851,6 @@ theorem mcaThresholdExists_prize_allRates_of_uniformConjecture
     (hfaithful j) (hclear j)
 
 /-- The honest uniform GS-exposed prize, with explicit GS faithfulness and numeric clearance,
-packages only the single-rate selected threshold satisfy fact.
-
-This is the low-output threshold-spec projection between
-`mcaThresholdExists_prize_of_uniformConjecture` and the stronger lower/two-bracket wrappers:
-callers that only need to form `mcaThreshold` and use its satisfy fact do not have to unpack
-bracket data. -/
-theorem mcaThreshold_spec_prize_of_uniformConjecture
-    (domain : ι ↪ F) (m : ℕ)
-    (hUniform : epsMCAgsPrizeUniformConjecture domain m) :
-    ∃ c₁ c₂ c₃ : ℝ,
-      ∀ (j : Fin 4) (η δ : ℝ≥0),
-        0 < η →
-        (δ : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η : ℝ) →
-        δ ≤ 1 →
-        ∀ L : WordStack F (Fin 2) ι → Finset (ι → F),
-          FaithfulGSFamily (F := F)
-            ((ReedSolomon.code (domain := domain)
-              ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ :
-                Set (ι → F))) δ L →
-          ENNReal.ofReal
-              (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j)
-                η c₁ c₂ c₃)
-            ≤ (epsStar : ENNReal) →
-          let C : Set (ι → F) :=
-            ReedSolomon.code domain
-              ⌊ProximityGap.prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
-          ∃ hne : GrandChallengesLattice.mcaThresholdExists C epsStar,
-            GrandChallengesLattice.mcaSatisfies C epsStar
-              (GrandChallengesLattice.mcaThreshold C epsStar hne) := by
-  rcases mcaThresholdExists_prize_of_uniformConjecture domain m hUniform with
-    ⟨c₁, c₂, c₃, hexists⟩
-  refine ⟨c₁, c₂, c₃, ?_⟩
-  intro j η δ hη hδ hδ_le_one L hfaithful hclear
-  let C : Set (ι → F) :=
-    (ReedSolomon.code (domain := domain)
-      ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
-  let hne : GrandChallengesLattice.mcaThresholdExists C epsStar :=
-    hexists j η δ hη hδ hδ_le_one L hfaithful hclear
-  exact ⟨hne, GrandChallengesLattice.mcaThreshold_spec C epsStar hne⟩
-
-/-- The honest uniform GS-exposed prize, with explicit all-rate GS faithfulness and numeric
-clearance, packages only the selected threshold satisfy facts at all four ABF26 prize-rate codes.
-
-This is the all-rate threshold-spec projection of
-`mcaThreshold_spec_prize_of_uniformConjecture`: it is intentionally weaker than the lower-bracket,
-two-bracket, and resolved-`τ` APIs below. -/
-theorem mcaThreshold_spec_prize_allRates_of_uniformConjecture
-    (domain : ι ↪ F) (m : ℕ)
-    (hUniform : epsMCAgsPrizeUniformConjecture domain m) :
-    ∃ c₁ c₂ c₃ : ℝ,
-      ∀ (η δ : Fin 4 → ℝ≥0),
-        (∀ j : Fin 4, 0 < η j) →
-        (∀ j : Fin 4,
-          (δ j : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η j : ℝ)) →
-        (∀ j : Fin 4, δ j ≤ 1) →
-        ∀ L : ∀ _ : Fin 4, WordStack F (Fin 2) ι → Finset (ι → F),
-          (∀ j : Fin 4,
-            FaithfulGSFamily (F := F)
-              ((ReedSolomon.code (domain := domain)
-                ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ :
-                  Set (ι → F))) (δ j) (L j)) →
-          (∀ j : Fin 4,
-            ENNReal.ofReal
-                (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j)
-                  (η j) c₁ c₂ c₃)
-              ≤ (epsStar : ENNReal)) →
-          ∀ j : Fin 4,
-            let C : Set (ι → F) :=
-              ReedSolomon.code domain
-                ⌊ProximityGap.prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
-            ∃ hne : GrandChallengesLattice.mcaThresholdExists C epsStar,
-              GrandChallengesLattice.mcaSatisfies C epsStar
-                (GrandChallengesLattice.mcaThreshold C epsStar hne) := by
-  rcases mcaThreshold_spec_prize_of_uniformConjecture domain m hUniform with
-    ⟨c₁, c₂, c₃, hsingle⟩
-  refine ⟨c₁, c₂, c₃, ?_⟩
-  intro η δ hη hδ hδ_le_one L hfaithful hclear j
-  exact hsingle j (η j) (δ j) (hη j) (hδ j) (hδ_le_one j) (L j)
-    (hfaithful j) (hclear j)
-
-/-- The honest uniform GS-exposed prize, with explicit GS faithfulness and numeric clearance,
 packages the single-rate threshold satisfy fact together with the lower lattice bracket
 `latticeIndexOf δ ≤ mcaThreshold`. -/
 theorem mcaThreshold_spec_and_lower_bracket_prize_of_uniformConjecture
@@ -1114,114 +1032,6 @@ theorem mcaThreshold_spec_and_bracket_prize_allRates_of_uniformConjecture
 
 set_option linter.style.longLine false
 
-/-- The all-rate uniform GS threshold-spec package resolves the faithful prize lattice at the
-concrete `mcaThreshold` indices and preserves only the selected-threshold spec.
-
-This is the spec-only concrete-threshold companion to
-`mcaThreshold_spec_prize_allRates_of_uniformConjecture`: it exposes the chosen thresholds as a
-`τ` solving `mcaPrizeLatticeResolved`, without requiring or returning lower/upper bracket data. -/
-theorem mcaPrizeLatticeResolved_with_threshold_spec_prize_allRates_of_uniformConjecture
-    (domain : ι ↪ F) (m : ℕ)
-    (hUniform : epsMCAgsPrizeUniformConjecture domain m) :
-    ∃ c₁ c₂ c₃ : ℝ,
-      ∀ (η δ : Fin 4 → ℝ≥0),
-        (∀ j : Fin 4, 0 < η j) →
-        (∀ j : Fin 4,
-          (δ j : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η j : ℝ)) →
-        (∀ j : Fin 4, δ j ≤ 1) →
-        ∀ L : ∀ _ : Fin 4, WordStack F (Fin 2) ι → Finset (ι → F),
-          (∀ j : Fin 4,
-            FaithfulGSFamily (F := F)
-              ((ReedSolomon.code (domain := domain)
-                ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ :
-                  Set (ι → F))) (δ j) (L j)) →
-          (∀ j : Fin 4,
-            ENNReal.ofReal
-                (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j)
-                  (η j) c₁ c₂ c₃)
-              ≤ (epsStar : ENNReal)) →
-          let C : Fin 4 → Set (ι → F) := fun j =>
-            ReedSolomon.code domain
-              ⌊ProximityGap.prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
-          ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
-            GrandChallengesLattice.mcaPrizeLatticeResolved domain τ ∧
-              ∀ j : Fin 4,
-                ∃ hne : GrandChallengesLattice.mcaThresholdExists (C j) epsStar,
-                  τ j = GrandChallengesLattice.mcaThreshold (C j) epsStar hne ∧
-                    GrandChallengesLattice.mcaSatisfies (C j) epsStar (τ j) ∧
-                      ∀ i : Fin (Fintype.card ι + 1),
-                        GrandChallengesLattice.mcaSatisfies (C j) epsStar i → i ≤ τ j := by
-  rcases mcaThreshold_spec_prize_allRates_of_uniformConjecture
-      domain m hUniform with ⟨c₁, c₂, c₃, hall⟩
-  refine ⟨c₁, c₂, c₃, ?_⟩
-  intro η δ hη hδ hδ_le_one L hfaithful hclear
-  let C : Fin 4 → Set (ι → F) := fun j =>
-    (ReedSolomon.code (domain := domain)
-      ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
-  have hdata :
-      ∀ j : Fin 4,
-        ∃ hne : GrandChallengesLattice.mcaThresholdExists (C j) epsStar,
-          GrandChallengesLattice.mcaSatisfies (C j) epsStar
-            (GrandChallengesLattice.mcaThreshold (C j) epsStar hne) := by
-    intro j
-    simpa [C] using hall η δ hη hδ hδ_le_one L hfaithful hclear j
-  choose hne hsat using hdata
-  let τ : Fin 4 → Fin (Fintype.card ι + 1) := fun j =>
-    GrandChallengesLattice.mcaThreshold (C j) epsStar (hne j)
-  refine ⟨τ, ?_, ?_⟩
-  · refine (GrandChallengesLattice.mcaPrizeLatticeResolved_iff domain τ).mpr ?_
-    intro j
-    refine ⟨hne j, ?_, ?_⟩
-    · simpa [τ, C] using hsat j
-    · intro i hi
-      simpa [τ, C] using GrandChallengesLattice.le_mcaThreshold (C j) epsStar (hne j) hi
-  · intro j
-    refine ⟨hne j, ?_, ?_, ?_⟩
-    · simp [τ, C]
-    · simpa [τ] using hsat j
-    · intro i hi
-      simpa [τ, C] using GrandChallengesLattice.le_mcaThreshold (C j) epsStar (hne j) hi
-
-/-- The all-rate uniform GS threshold-spec package resolves the faithful prize lattice at the
-concrete `mcaThreshold` indices and preserves only the threshold equality witnesses. -/
-theorem mcaPrizeLatticeResolved_with_threshold_prize_allRates_of_uniformConjecture
-    (domain : ι ↪ F) (m : ℕ)
-    (hUniform : epsMCAgsPrizeUniformConjecture domain m) :
-    ∃ c₁ c₂ c₃ : ℝ,
-      ∀ (η δ : Fin 4 → ℝ≥0),
-        (∀ j : Fin 4, 0 < η j) →
-        (∀ j : Fin 4,
-          (δ j : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η j : ℝ)) →
-        (∀ j : Fin 4, δ j ≤ 1) →
-        ∀ L : ∀ _ : Fin 4, WordStack F (Fin 2) ι → Finset (ι → F),
-          (∀ j : Fin 4,
-            FaithfulGSFamily (F := F)
-              ((ReedSolomon.code (domain := domain)
-                ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ :
-                  Set (ι → F))) (δ j) (L j)) →
-          (∀ j : Fin 4,
-            ENNReal.ofReal
-                (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j)
-                  (η j) c₁ c₂ c₃)
-              ≤ (epsStar : ENNReal)) →
-          let C : Fin 4 → Set (ι → F) := fun j =>
-            ReedSolomon.code domain
-              ⌊ProximityGap.prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
-          ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
-            GrandChallengesLattice.mcaPrizeLatticeResolved domain τ ∧
-              ∀ j : Fin 4,
-                ∃ hne : GrandChallengesLattice.mcaThresholdExists (C j) epsStar,
-                  τ j = GrandChallengesLattice.mcaThreshold (C j) epsStar hne := by
-  rcases mcaPrizeLatticeResolved_with_threshold_spec_prize_allRates_of_uniformConjecture
-      domain m hUniform with ⟨c₁, c₂, c₃, hresolved⟩
-  refine ⟨c₁, c₂, c₃, ?_⟩
-  intro η δ hη hδ hδ_le_one L hfaithful hclear
-  rcases hresolved η δ hη hδ hδ_le_one L hfaithful hclear with ⟨τ, hτ, hspec⟩
-  refine ⟨τ, hτ, ?_⟩
-  intro j
-  rcases hspec j with ⟨hne, hτeq, _hsat, _hmax⟩
-  exact ⟨hne, hτeq⟩
-
 /-- The all-rate uniform GS threshold package also resolves the faithful prize lattice at the
 concrete `mcaThreshold` indices and preserves the lower lattice brackets.
 
@@ -1368,105 +1178,6 @@ theorem mcaPrizeLatticeResolved_with_threshold_spec_and_brackets_prize_allRates_
     · simpa [τ] using (hspec j).2.1
     · simpa [τ] using (hspec j).2.2
 
-/-- The all-rate uniform GS lower-bracket threshold package resolves the faithful prize lattice
-at the concrete `mcaThreshold` indices and preserves only the threshold equality witnesses plus
-the lower lattice brackets. -/
-theorem mcaPrizeLatticeResolved_with_threshold_and_lower_brackets_prize_allRates_of_uniformConjecture
-    (domain : ι ↪ F) (m : ℕ)
-    (hUniform : epsMCAgsPrizeUniformConjecture domain m) :
-    ∃ c₁ c₂ c₃ : ℝ,
-      ∀ (η δ : Fin 4 → ℝ≥0),
-        (∀ j : Fin 4, 0 < η j) →
-        (∀ j : Fin 4,
-          (δ j : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η j : ℝ)) →
-        (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1) →
-        ∀ L : ∀ _ : Fin 4, WordStack F (Fin 2) ι → Finset (ι → F),
-          (∀ j : Fin 4,
-            FaithfulGSFamily (F := F)
-              ((ReedSolomon.code (domain := domain)
-                ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ :
-                  Set (ι → F))) (δ j) (L j)) →
-          (∀ j : Fin 4,
-            ENNReal.ofReal
-                (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j)
-                  (η j) c₁ c₂ c₃)
-              ≤ (epsStar : ENNReal)) →
-          let C : Fin 4 → Set (ι → F) := fun j =>
-            ReedSolomon.code domain
-              ⌊ProximityGap.prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
-          ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
-            GrandChallengesLattice.mcaPrizeLatticeResolved domain τ ∧
-              ∀ j : Fin 4,
-                ∃ hne : GrandChallengesLattice.mcaThresholdExists (C j) epsStar,
-                  τ j = GrandChallengesLattice.mcaThreshold (C j) epsStar hne ∧
-                    GrandChallengesLattice.latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤
-                      τ j := by
-  rcases
-      mcaPrizeLatticeResolved_with_threshold_spec_and_lower_brackets_prize_allRates_of_uniformConjecture
-        domain m hUniform with
-    ⟨c₁, c₂, c₃, hresolved⟩
-  refine ⟨c₁, c₂, c₃, ?_⟩
-  intro η δ hη hδ hδ_le_one L hfaithful hclear
-  rcases hresolved η δ hη hδ hδ_le_one L hfaithful hclear with ⟨τ, hτ, hspec⟩
-  refine ⟨τ, hτ, ?_⟩
-  intro j
-  rcases hspec j with ⟨hne, hτeq, _hsat, hlower⟩
-  exact ⟨hne, hτeq, hlower⟩
-
-/-- The all-rate uniform GS two-bracket threshold package resolves the faithful prize lattice at
-the concrete `mcaThreshold` indices and preserves only the threshold equality witnesses plus both
-lower and upper lattice brackets. -/
-theorem mcaPrizeLatticeResolved_with_threshold_and_brackets_prize_allRates_of_uniformConjecture
-    (domain : ι ↪ F) (m : ℕ)
-    (hUniform : epsMCAgsPrizeUniformConjecture domain m) :
-    ∃ c₁ c₂ c₃ : ℝ,
-      ∀ (η δ : Fin 4 → ℝ≥0),
-        (∀ j : Fin 4, 0 < η j) →
-        (∀ j : Fin 4,
-          (δ j : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η j : ℝ)) →
-        (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1) →
-        ∀ L : ∀ _ : Fin 4, WordStack F (Fin 2) ι → Finset (ι → F),
-          (∀ j : Fin 4,
-            FaithfulGSFamily (F := F)
-              ((ReedSolomon.code (domain := domain)
-                ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ :
-                  Set (ι → F))) (δ j) (L j)) →
-          (∀ j : Fin 4,
-            ENNReal.ofReal
-                (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j)
-                  (η j) c₁ c₂ c₃)
-              ≤ (epsStar : ENNReal)) →
-          (whi : ∀ j : Fin 4,
-            GrandChallenges.MCAUpperWitness
-              ((ReedSolomon.code (domain := domain)
-                ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ :
-                  Set (ι → F))) epsStar) →
-          (hδhi : ∀ j : Fin 4, (whi j).δ ≤ 1) →
-          let C : Fin 4 → Set (ι → F) := fun j =>
-            ReedSolomon.code domain
-              ⌊ProximityGap.prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
-          ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
-            GrandChallengesLattice.mcaPrizeLatticeResolved domain τ ∧
-              ∀ j : Fin 4,
-                ∃ hne : GrandChallengesLattice.mcaThresholdExists (C j) epsStar,
-                  τ j = GrandChallengesLattice.mcaThreshold (C j) epsStar hne ∧
-                    GrandChallengesLattice.latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤
-                      τ j ∧
-                      τ j <
-                        GrandChallengesLattice.latticeIndexOf (ι := ι) (whi j).δ (hδhi j) := by
-  rcases
-      mcaPrizeLatticeResolved_with_threshold_spec_and_brackets_prize_allRates_of_uniformConjecture
-        domain m hUniform with
-    ⟨c₁, c₂, c₃, hresolved⟩
-  refine ⟨c₁, c₂, c₃, ?_⟩
-  intro η δ hη hδ hδ_le_one L hfaithful hclear whi hδhi
-  rcases hresolved η δ hη hδ hδ_le_one L hfaithful hclear whi hδhi with
-    ⟨τ, hτ, hspec⟩
-  refine ⟨τ, hτ, ?_⟩
-  intro j
-  rcases hspec j with ⟨hne, hτeq, _hsat, hlower, hupper⟩
-  exact ⟨hne, hτeq, hlower, hupper⟩
-
 set_option linter.style.longLine true
 
 end PerInput
@@ -1530,22 +1241,12 @@ end Reduction
 #print axioms exists_mcaPrizeLatticeResolved_with_spec_and_brackets_of_uniformConjecture
 #print axioms mcaThresholdExists_prize_of_uniformConjecture
 #print axioms mcaThresholdExists_prize_allRates_of_uniformConjecture
-#print axioms mcaThreshold_spec_prize_of_uniformConjecture
-#print axioms mcaThreshold_spec_prize_allRates_of_uniformConjecture
 #print axioms mcaThreshold_spec_and_lower_bracket_prize_of_uniformConjecture
 #print axioms mcaThreshold_spec_and_bracket_prize_of_uniformConjecture
 set_option linter.style.longLine false in
 #print axioms mcaThreshold_spec_and_lower_bracket_prize_allRates_of_uniformConjecture
 set_option linter.style.longLine false in
 #print axioms mcaThreshold_spec_and_bracket_prize_allRates_of_uniformConjecture
-set_option linter.style.longLine false in
-#print axioms mcaPrizeLatticeResolved_with_threshold_spec_prize_allRates_of_uniformConjecture
-set_option linter.style.longLine false in
-#print axioms mcaPrizeLatticeResolved_with_threshold_prize_allRates_of_uniformConjecture
-set_option linter.style.longLine false in
-#print axioms mcaPrizeLatticeResolved_with_threshold_and_lower_brackets_prize_allRates_of_uniformConjecture
-set_option linter.style.longLine false in
-#print axioms mcaPrizeLatticeResolved_with_threshold_and_brackets_prize_allRates_of_uniformConjecture
 set_option linter.style.longLine false in
 #print axioms mcaPrizeLatticeResolved_with_threshold_spec_and_lower_brackets_prize_allRates_of_uniformConjecture
 set_option linter.style.longLine false in

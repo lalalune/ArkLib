@@ -299,57 +299,11 @@ theorem oracleReduction_isStatHVZK (ε : NNReal) :
     (OStatement := OStatement) (relIn := relIn) (relComp := relComp)
     (init := init) (impl := impl)).isStatHVZK ε
 
-/-- The underlying non-oracle reduction of `SendClaim` is perfectly HVZK. -/
-theorem oracleReduction_toReduction_perfectHVZK :
-    Reduction.perfectHVZK init impl relIn
-      (oracleReduction oSpec Statement OStatement relComp).toReduction
-      (transcriptSimulator (oSpec := oSpec) (Statement := Statement)
-        (OStatement := OStatement) (relComp := relComp) (init := init) (impl := impl)) :=
-  oracleReduction_perfectHVZK (oSpec := oSpec) (Statement := Statement)
-    (OStatement := OStatement) (relIn := relIn) (relComp := relComp)
-    (init := init) (impl := impl)
-
-/-- The underlying non-oracle reduction of `SendClaim` is statistically HVZK at every error
-budget. -/
-theorem oracleReduction_toReduction_statisticalHVZK (ε : NNReal) :
-    Reduction.statisticalHVZK init impl relIn
-      (oracleReduction oSpec Statement OStatement relComp).toReduction
-      (transcriptSimulator (oSpec := oSpec) (Statement := Statement)
-        (OStatement := OStatement) (relComp := relComp) (init := init) (impl := impl)) ε :=
-  oracleReduction_statisticalHVZK (oSpec := oSpec) (Statement := Statement)
-    (OStatement := OStatement) (relIn := relIn) (relComp := relComp)
-    (init := init) (impl := impl) ε
-
-/-- The underlying non-oracle reduction of `SendClaim` has an explicit perfect-HVZK simulator. -/
-theorem oracleReduction_toReduction_isHVZK :
-    Reduction.isHVZK init impl relIn
-      (oracleReduction oSpec Statement OStatement relComp).toReduction :=
-  ⟨transcriptSimulator (oSpec := oSpec) (Statement := Statement) (OStatement := OStatement)
-      (relComp := relComp) (init := init) (impl := impl),
-    oracleReduction_toReduction_perfectHVZK (oSpec := oSpec) (Statement := Statement)
-      (OStatement := OStatement) (relIn := relIn) (relComp := relComp)
-      (init := init) (impl := impl)⟩
-
-/-- The underlying non-oracle reduction of `SendClaim` has statistical HVZK at every error
-budget. -/
-theorem oracleReduction_toReduction_isStatHVZK (ε : NNReal) :
-    Reduction.isStatHVZK init impl relIn
-      (oracleReduction oSpec Statement OStatement relComp).toReduction ε :=
-  ⟨transcriptSimulator (oSpec := oSpec) (Statement := Statement) (OStatement := OStatement)
-      (relComp := relComp) (init := init) (impl := impl),
-    oracleReduction_toReduction_statisticalHVZK (oSpec := oSpec) (Statement := Statement)
-      (OStatement := OStatement) (relIn := relIn) (relComp := relComp)
-      (init := init) (impl := impl) ε⟩
-
 #print axioms SendClaim.transcriptSimulator
 #print axioms SendClaim.honestTranscriptDist_oracleReduction_evalDist
 #print axioms SendClaim.oracleReduction_perfectHVZK
 #print axioms SendClaim.oracleReduction_statisticalHVZK
 #print axioms SendClaim.oracleReduction_isHVZK
 #print axioms SendClaim.oracleReduction_isStatHVZK
-#print axioms SendClaim.oracleReduction_toReduction_perfectHVZK
-#print axioms SendClaim.oracleReduction_toReduction_statisticalHVZK
-#print axioms SendClaim.oracleReduction_toReduction_isHVZK
-#print axioms SendClaim.oracleReduction_toReduction_isStatHVZK
 
 end SendClaim

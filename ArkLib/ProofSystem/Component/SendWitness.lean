@@ -488,58 +488,6 @@ theorem oracleReduction_isStatHVZK_of_witness_eq
     (OStatement := OStatement) (Witness := Witness) (init := init) (impl := impl)
     (oRelIn := oRelIn) witOf hRel).isStatHVZK ε
 
-/-- The underlying non-oracle reduction of `SendSingleWitness` is perfectly HVZK when the
-witness is determined by the public statement and oracle statement. -/
-theorem oracleReduction_toReduction_perfectHVZK_of_witness_eq
-    (witOf : Statement × (∀ i, OStatement i) → Witness)
-    (hRel : ∀ stmtIn wit, (stmtIn, wit) ∈ oRelIn → wit = witOf stmtIn) :
-    Reduction.perfectHVZK init impl oRelIn
-      (oracleReduction oSpec Statement OStatement Witness).toReduction
-      (oracleTranscriptSimulator (oSpec := oSpec) (Statement := Statement)
-        (OStatement := OStatement) (Witness := Witness) witOf) :=
-  oracleReduction_perfectHVZK_of_witness_eq (oSpec := oSpec) (Statement := Statement)
-    (OStatement := OStatement) (Witness := Witness) (init := init) (impl := impl)
-    (oRelIn := oRelIn) witOf hRel
-
-/-- The underlying non-oracle reduction of `SendSingleWitness` is statistically HVZK at every
-error budget when the witness is determined by the public statement and oracle statement. -/
-theorem oracleReduction_toReduction_statisticalHVZK_of_witness_eq
-    (witOf : Statement × (∀ i, OStatement i) → Witness)
-    (hRel : ∀ stmtIn wit, (stmtIn, wit) ∈ oRelIn → wit = witOf stmtIn) (ε : NNReal) :
-    Reduction.statisticalHVZK init impl oRelIn
-      (oracleReduction oSpec Statement OStatement Witness).toReduction
-      (oracleTranscriptSimulator (oSpec := oSpec) (Statement := Statement)
-        (OStatement := OStatement) (Witness := Witness) witOf) ε :=
-  oracleReduction_statisticalHVZK_of_witness_eq (oSpec := oSpec) (Statement := Statement)
-    (OStatement := OStatement) (Witness := Witness) (init := init) (impl := impl)
-    (oRelIn := oRelIn) witOf hRel ε
-
-/-- The underlying non-oracle reduction of `SendSingleWitness` has an explicit perfect-HVZK
-simulator when the witness is determined by the public statement and oracle statement. -/
-theorem oracleReduction_toReduction_isHVZK_of_witness_eq
-    (witOf : Statement × (∀ i, OStatement i) → Witness)
-    (hRel : ∀ stmtIn wit, (stmtIn, wit) ∈ oRelIn → wit = witOf stmtIn) :
-    Reduction.isHVZK init impl oRelIn
-      (oracleReduction oSpec Statement OStatement Witness).toReduction :=
-  ⟨oracleTranscriptSimulator (oSpec := oSpec) (Statement := Statement)
-      (OStatement := OStatement) (Witness := Witness) witOf,
-    oracleReduction_toReduction_perfectHVZK_of_witness_eq (oSpec := oSpec)
-      (Statement := Statement) (OStatement := OStatement) (Witness := Witness)
-      (init := init) (impl := impl) (oRelIn := oRelIn) witOf hRel⟩
-
-/-- The underlying non-oracle reduction of `SendSingleWitness` has statistical HVZK at every error
-budget when the witness is determined by the public statement and oracle statement. -/
-theorem oracleReduction_toReduction_isStatHVZK_of_witness_eq
-    (witOf : Statement × (∀ i, OStatement i) → Witness)
-    (hRel : ∀ stmtIn wit, (stmtIn, wit) ∈ oRelIn → wit = witOf stmtIn) (ε : NNReal) :
-    Reduction.isStatHVZK init impl oRelIn
-      (oracleReduction oSpec Statement OStatement Witness).toReduction ε :=
-  ⟨oracleTranscriptSimulator (oSpec := oSpec) (Statement := Statement)
-      (OStatement := OStatement) (Witness := Witness) witOf,
-    oracleReduction_toReduction_statisticalHVZK_of_witness_eq (oSpec := oSpec)
-      (Statement := Statement) (OStatement := OStatement) (Witness := Witness)
-      (init := init) (impl := impl) (oRelIn := oRelIn) witOf hRel ε⟩
-
 /-- The `SendSingleWitness` oracle reduction satisfies perfect completeness. -/
 @[simp]
 theorem oracleReduction_completeness (h : NeverFail init) :
@@ -626,9 +574,5 @@ theorem oracleReduction_rbr_knowledge_soundness :
 #print axioms SendSingleWitness.oracleReduction_statisticalHVZK_of_witness_eq
 #print axioms SendSingleWitness.oracleReduction_isHVZK_of_witness_eq
 #print axioms SendSingleWitness.oracleReduction_isStatHVZK_of_witness_eq
-#print axioms SendSingleWitness.oracleReduction_toReduction_perfectHVZK_of_witness_eq
-#print axioms SendSingleWitness.oracleReduction_toReduction_statisticalHVZK_of_witness_eq
-#print axioms SendSingleWitness.oracleReduction_toReduction_isHVZK_of_witness_eq
-#print axioms SendSingleWitness.oracleReduction_toReduction_isStatHVZK_of_witness_eq
 
 end SendSingleWitness

@@ -81,7 +81,6 @@ import Mathlib.Algebra.Polynomial.Eval.Degree
 import Mathlib.Data.Finset.Card
 
 open Polynomial Finset
-open scoped Classical
 
 namespace Issue19Scratch
 

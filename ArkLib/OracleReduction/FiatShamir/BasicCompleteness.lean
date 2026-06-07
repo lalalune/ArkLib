@@ -171,19 +171,6 @@ theorem fiatShamir_completeness_unroll_discharged
   Reduction.fiatShamir_completeness_unroll_of_runCollapse init impl relIn relOut completenessError R
     (fun stmtIn witIn => fiatShamir_runCollapse impl R stmtIn witIn)
 
-/-- Direct discharged iff form of basic Fiat-Shamir completeness against the explicit honest
-execution. This is the theorem-facing name for `fiatShamir_completeness_unroll_discharged`. -/
-theorem fiatShamir_completeness_iff_honestExecution_discharged
-    {σ : Type} (init : ProbComp σ)
-    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
-    (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut × WitOut))
-    (completenessError : ℝ≥0)
-    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec) :
-    R.fiatShamir.completeness init impl relIn relOut completenessError ↔
-      Reduction.completenessFromRun init impl relIn relOut
-        R.fiatShamirHonestExecution completenessError :=
-  fiatShamir_completeness_unroll_discharged init impl relIn relOut completenessError R
-
 /-- Basic Fiat-Shamir completeness follows from completeness of the explicit honest execution,
 without requiring callers to pass the already-proved run-collapse residual. -/
 theorem fiatShamir_completeness_of_honestExecution_discharged
@@ -211,59 +198,6 @@ theorem fiatShamir_honestExecution_completeness_of_completeness_discharged
       R.fiatShamirHonestExecution completenessError :=
   (fiatShamir_completeness_unroll_discharged init impl relIn relOut completenessError R).1 hFS
 
-/-- Discharged reverse projection from transformed basic Fiat-Shamir completeness, allowing the
-honest-execution completeness error to be relaxed. -/
-theorem fiatShamir_honestExecution_completeness_of_completeness_mono_error_discharged
-    {σ : Type} (init : ProbComp σ)
-    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
-    (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut × WitOut))
-    {completenessError₁ completenessError₂ : ℝ≥0}
-    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
-    (hFS : R.fiatShamir.completeness init impl relIn relOut completenessError₁)
-    (hle : completenessError₁ ≤ completenessError₂) :
-    Reduction.completenessFromRun init impl relIn relOut
-      R.fiatShamirHonestExecution completenessError₂ :=
-  Reduction.completenessFromRun_error_mono hle
-    (fiatShamir_honestExecution_completeness_of_completeness_discharged init impl
-      relIn relOut completenessError₁ R hFS)
-
-/-- Discharged reverse projection from transformed basic Fiat-Shamir completeness, transported to a
-smaller honest-execution input relation and a larger output relation. -/
-theorem fiatShamir_honestExecution_completeness_mono_relations_discharged
-    {σ : Type} (init : ProbComp σ)
-    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
-    {relIn relIn' : Set (StmtIn × WitIn)}
-    {relOut relOut' : Set (StmtOut × WitOut)}
-    (completenessError : ℝ≥0)
-    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
-    (hFS : R.fiatShamir.completeness init impl relIn relOut completenessError)
-    (hIn : relIn' ⊆ relIn) (hOut : relOut ⊆ relOut') :
-    Reduction.completenessFromRun init impl relIn' relOut'
-      R.fiatShamirHonestExecution completenessError :=
-  Reduction.completenessFromRun_relOut_mono hOut <|
-    Reduction.completenessFromRun_relIn_mono hIn <|
-      fiatShamir_honestExecution_completeness_of_completeness_discharged init impl
-        relIn relOut completenessError R hFS
-
-/-- Discharged reverse projection from transformed basic Fiat-Shamir completeness, transported
-across both relations and the target completeness error. -/
-theorem fiatShamir_honestExecution_completeness_mono_relations_error_discharged
-    {σ : Type} (init : ProbComp σ)
-    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
-    {relIn relIn' : Set (StmtIn × WitIn)}
-    {relOut relOut' : Set (StmtOut × WitOut)}
-    {completenessError₁ completenessError₂ : ℝ≥0}
-    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
-    (hFS : R.fiatShamir.completeness init impl relIn relOut completenessError₁)
-    (hIn : relIn' ⊆ relIn) (hOut : relOut ⊆ relOut')
-    (hle : completenessError₁ ≤ completenessError₂) :
-    Reduction.completenessFromRun init impl relIn' relOut'
-      R.fiatShamirHonestExecution completenessError₂ :=
-  Reduction.completenessFromRun_error_mono hle
-    (fiatShamir_honestExecution_completeness_mono_relations_discharged
-      init impl (relIn := relIn) (relIn' := relIn') (relOut := relOut)
-      (relOut' := relOut') completenessError₁ R hFS hIn hOut)
-
 /-- Perfect completeness of the basic Fiat-Shamir transform is unconditionally equivalent to perfect
 completeness of its explicit honest execution. -/
 theorem fiatShamir_perfectCompleteness_unroll_discharged
@@ -274,19 +208,6 @@ theorem fiatShamir_perfectCompleteness_unroll_discharged
     Reduction.fiatShamir_perfectCompleteness_unroll init impl relIn relOut R :=
   Reduction.fiatShamir_perfectCompleteness_unroll_of_runCollapse init impl relIn relOut R
     (fun stmtIn witIn => fiatShamir_runCollapse impl R stmtIn witIn)
-
-/-- Direct discharged iff form of basic Fiat-Shamir perfect completeness against the explicit
-honest execution. This is the theorem-facing name for
-`fiatShamir_perfectCompleteness_unroll_discharged`. -/
-theorem fiatShamir_perfectCompleteness_iff_honestExecution_discharged
-    {σ : Type} (init : ProbComp σ)
-    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
-    (relIn : Set (StmtIn × WitIn)) (relOut : Set (StmtOut × WitOut))
-    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec) :
-    R.fiatShamir.perfectCompleteness init impl relIn relOut ↔
-      Reduction.perfectCompletenessFromRun init impl relIn relOut
-        R.fiatShamirHonestExecution :=
-  fiatShamir_perfectCompleteness_unroll_discharged init impl relIn relOut R
 
 /-- Basic Fiat-Shamir perfect completeness follows from perfect completeness of the explicit honest
 execution, using the discharged run-collapse theorem. -/
@@ -311,43 +232,6 @@ theorem fiatShamir_honestExecution_perfectCompleteness_of_perfectCompleteness_di
     Reduction.perfectCompletenessFromRun init impl relIn relOut
       R.fiatShamirHonestExecution :=
   (fiatShamir_perfectCompleteness_unroll_discharged init impl relIn relOut R).1 hFS
-
-/-- Discharged reverse projection from transformed basic Fiat-Shamir perfect completeness,
-transported to a smaller honest-execution input relation and a larger output relation. -/
-theorem fiatShamir_honestExecution_perfectCompleteness_mono_relations_discharged
-    {σ : Type} (init : ProbComp σ)
-    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
-    {relIn relIn' : Set (StmtIn × WitIn)}
-    {relOut relOut' : Set (StmtOut × WitOut)}
-    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
-    (hFS : R.fiatShamir.perfectCompleteness init impl relIn relOut)
-    (hIn : relIn' ⊆ relIn) (hOut : relOut ⊆ relOut') :
-    Reduction.perfectCompletenessFromRun init impl relIn' relOut'
-      R.fiatShamirHonestExecution :=
-  Reduction.perfectCompletenessFromRun_mono_relations hIn hOut
-    (fiatShamir_honestExecution_perfectCompleteness_of_perfectCompleteness_discharged
-      init impl relIn relOut R hFS)
-
-/-- Discharged reverse projection from transformed basic Fiat-Shamir perfect completeness to
-arbitrary-error honest-execution completeness after relation transport. -/
-theorem fiatShamir_honestExecution_completeness_of_perfect_mono_relations_error_discharged
-    {σ : Type} (init : ProbComp σ)
-    (impl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT σ ProbComp))
-    {relIn relIn' : Set (StmtIn × WitIn)}
-    {relOut relOut' : Set (StmtOut × WitOut)}
-    (completenessError : ℝ≥0)
-    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
-    (hFS : R.fiatShamir.perfectCompleteness init impl relIn relOut)
-    (hIn : relIn' ⊆ relIn) (hOut : relOut ⊆ relOut') :
-    Reduction.completenessFromRun init impl relIn' relOut'
-      R.fiatShamirHonestExecution completenessError := by
-  have hPerfect :
-      Reduction.perfectCompletenessFromRun init impl relIn' relOut'
-        R.fiatShamirHonestExecution :=
-    fiatShamir_honestExecution_perfectCompleteness_mono_relations_discharged
-      init impl R hFS hIn hOut
-  unfold Reduction.perfectCompletenessFromRun at hPerfect
-  exact Reduction.completenessFromRun_error_mono (zero_le completenessError) hPerfect
 
 /-- Basic Fiat-Shamir completeness at any target error follows from perfect completeness of the
 explicit honest execution, using the discharged run-collapse theorem. -/
@@ -451,18 +335,11 @@ theorem fiatShamir_completeness_of_perfect_honestExecution_mono_relations_error_
 
 #print axioms fiatShamir_runCollapse
 #print axioms fiatShamir_completeness_unroll_discharged
-#print axioms fiatShamir_completeness_iff_honestExecution_discharged
 #print axioms fiatShamir_completeness_of_honestExecution_discharged
 #print axioms fiatShamir_honestExecution_completeness_of_completeness_discharged
-#print axioms fiatShamir_honestExecution_completeness_of_completeness_mono_error_discharged
-#print axioms fiatShamir_honestExecution_completeness_mono_relations_discharged
-#print axioms fiatShamir_honestExecution_completeness_mono_relations_error_discharged
 #print axioms fiatShamir_perfectCompleteness_unroll_discharged
-#print axioms fiatShamir_perfectCompleteness_iff_honestExecution_discharged
 #print axioms fiatShamir_perfectCompleteness_of_honestExecution_discharged
 #print axioms fiatShamir_honestExecution_perfectCompleteness_of_perfectCompleteness_discharged
-#print axioms fiatShamir_honestExecution_perfectCompleteness_mono_relations_discharged
-#print axioms fiatShamir_honestExecution_completeness_of_perfect_mono_relations_error_discharged
 #print axioms fiatShamir_completeness_of_perfect_honestExecution_discharged
 #print axioms fiatShamir_completeness_of_honestExecution_mono_error_discharged
 #print axioms fiatShamir_completeness_of_honestExecution_mono_relations_discharged

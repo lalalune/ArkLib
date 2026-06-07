@@ -22,7 +22,7 @@ import ArkLib.OracleReduction.Security.RoundByRound
   of the reductions being composed (with extra conditions on the extractor).
 -/
 
-set_option linter.style.longFile 3200
+set_option linter.style.longFile 3000
 
 open OracleComp OracleSpec SubSpec
 
@@ -3076,38 +3076,8 @@ theorem append_run (stmt : Stmt₁) (wit : Wit₁)
           simp only [Fin.le_def, Fin.val_last]; omega)]
   simpa [appendRunRightResidual] using hRight
 
-/-- **Reverse exactness of the right-block residual.**  If the full appended-prover run equality is
-already available, then the named residual `appendRunRightResidual` follows by the same proven
-seam-split normalization used in `append_run`.  Together with `append_run`, this shows the residual
-is exactly the remaining right-block obligation rather than a stronger assumption. -/
-theorem appendRunRightResidual_of_append_run (stmt : Stmt₁) (wit : Wit₁)
-    (hRun :
-      (P₁.append P₂).run stmt wit = (do
-        let ⟨transcript₁, stmt₂, wit₂⟩ ← liftM (P₁.run stmt wit)
-        let ⟨transcript₂, stmt₃, wit₃⟩ ← liftM (P₂.run stmt₂ wit₂)
-        return ⟨transcript₁ ++ₜ transcript₂, stmt₃, wit₃⟩)) :
-    appendRunRightResidual (P₁ := P₁) (P₂ := P₂) stmt wit := by
-  rw [run_eq_runToRound_last,
-      runToRound_eq_bind_continueFromTo (P₁.append P₂) stmt wit
-        (⟨m, by omega⟩ : Fin (m + n + 1)) (Fin.last (m + n)) (by
-          simp only [Fin.le_def, Fin.val_last]; omega)] at hRun
-  simpa [appendRunRightResidual] using hRun
-
-/-- The named right-block residual is equivalent to the full appended-prover run equality.  The
-forward direction is `append_run`; the reverse direction is `appendRunRightResidual_of_append_run`.
-This pins the remaining #13 append-run work to precisely the residual's statement. -/
-theorem appendRunRightResidual_iff_append_run (stmt : Stmt₁) (wit : Wit₁) :
-    appendRunRightResidual (P₁ := P₁) (P₂ := P₂) stmt wit ↔
-      (P₁.append P₂).run stmt wit = (do
-        let ⟨transcript₁, stmt₂, wit₂⟩ ← liftM (P₁.run stmt wit)
-        let ⟨transcript₂, stmt₃, wit₃⟩ ← liftM (P₂.run stmt₂ wit₂)
-        return ⟨transcript₁ ++ₜ transcript₂, stmt₃, wit₃⟩) :=
-  ⟨append_run stmt wit, appendRunRightResidual_of_append_run stmt wit⟩
-
 #print axioms Prover.appendRunRightResidual
 #print axioms Prover.append_run
-#print axioms Prover.appendRunRightResidual_of_append_run
-#print axioms Prover.appendRunRightResidual_iff_append_run
 
 -- Future work: define a function that extracts a second prover from the combined prover.
 
