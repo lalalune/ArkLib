@@ -354,7 +354,8 @@ This is an explicit paper-proof obligation, not a Lean proof hidden behind a
 hole. -/
 def winningSetSoundness_le_toySoundnessError_mcaSafe_residual {k : ℕ} [Nonempty ι]
     (C : Set (ι → F)) (δ : ℝ≥0)
-    (hEnc : ∃ encode : (Fin k → F) →ₗ[F] (ι → F), (∀ m, encode m ∈ C) ∧ ∀ c ∈ C, ∃ m, encode m = c) :
+    (hEnc : ∃ encode : (Fin k → F) →ₗ[F] (ι → F),
+      (∀ m, encode m ∈ C) ∧ ∀ c ∈ C, ∃ m, encode m = c) :
     Prop :=
   δ < (minRelHammingDistCode C : ℝ≥0) →
   winningSetSoundness (k := k) C δ ≤
@@ -371,7 +372,8 @@ first branch of the `max`. The X side routes through this to turn an
 lower bound. -/
 theorem winningSetSoundness_le_toySoundnessError {k : ℕ} [Nonempty ι]
     (C : Set (ι → F)) (δ : ℝ≥0) (t : ℕ)
-    (hEnc : ∃ encode : (Fin k → F) →ₗ[F] (ι → F), (∀ m, encode m ∈ C) ∧ ∀ c ∈ C, ∃ m, encode m = c)
+    (hEnc : ∃ encode : (Fin k → F) →ₗ[F] (ι → F),
+      (∀ m, encode m ∈ C) ∧ ∀ c ∈ C, ∃ m, encode m = c)
     (hResidual : winningSetSoundness_le_toySoundnessError_mcaSafe_residual (k := k) C δ hEnc)
     (hδ : δ < (minRelHammingDistCode C : ℝ≥0)) :
     winningSetSoundness (k := k) C δ ≤ toySoundnessError C δ t := by
@@ -477,7 +479,8 @@ noncomputable def ToyParams.toySoundnessError (p : ToyParams) : ℝ≥0 :=
 /-- `soundnessError ≤ toySoundnessError` at a parameter point, conditional on
 the explicit Lemma 6.10 residual for that parameter point. -/
 theorem ToyParams.soundnessError_le_toySoundnessError (p : ToyParams) [Nonempty p.ι]
-    (hEnc : ∃ encode : (Fin p.k → p.F) →ₗ[p.F] (p.ι → p.F), (∀ m, encode m ∈ p.C) ∧ ∀ c ∈ p.C, ∃ m, encode m = c)
+    (hEnc : ∃ encode : (Fin p.k → p.F) →ₗ[p.F] (p.ι → p.F),
+      (∀ m, encode m ∈ p.C) ∧ ∀ c ∈ p.C, ∃ m, encode m = c)
     (hResidual :
       winningSetSoundness_le_toySoundnessError_mcaSafe_residual (k := p.k) p.C p.δ hEnc)
     (hδ : p.δ < (minRelHammingDistCode p.C : ℝ≥0)) :

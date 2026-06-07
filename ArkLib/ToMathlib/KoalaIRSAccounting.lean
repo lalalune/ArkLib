@@ -89,9 +89,11 @@ theorem rsEncoder_agree_two_points_imp_eq {m m' : Fin 2 → Sextic} {i j : Fin 4
   have hsub : (m 1 - m' 1) * rsPoint i = (m 1 - m' 1) * rsPoint j := by
     have e1 : m 0 - m' 0 = -(m 1 - m' 1) * rsPoint i := by ring_nf; linear_combination hi
     have e2 : m 0 - m' 0 = -(m 1 - m' 1) * rsPoint j := by ring_nf; linear_combination hj
-    have := e1.symm.trans e2
-    ring_nf at this ⊢
-    linear_combination this
+    have hneg := e1.symm.trans e2
+    calc
+      (m 1 - m' 1) * rsPoint i = - (-(m 1 - m' 1) * rsPoint i) := by ring
+      _ = - (-(m 1 - m' 1) * rsPoint j) := by rw [hneg]
+      _ = (m 1 - m' 1) * rsPoint j := by ring
   -- `rsPoint i ≠ rsPoint j` since the points are distinct.
   have hpt : rsPoint i ≠ rsPoint j := fun h => hij (rsPoint_injective h)
   -- Hence `m 1 = m' 1`.
@@ -130,12 +132,11 @@ theorem hammingDist_rsEncoder_ge_three {m m' : Fin 2 → Sextic}
     simp only [rsEncoder_apply, h0, h1]
   -- The disagreement set is the complement of `A`.
   have hcompl : (Finset.univ.filter (fun j => rsEncoder m j ≠ rsEncoder m' j)) = Aᶜ := by
-    ext j; simp [hA, Finset.mem_compl]
+    ext j; simp [hA]
   -- `hammingDist = |disagreement set| = |Aᶜ| = 4 - |A| ≥ 3`.
   have hcard : hammingDist (rsEncoder m) (rsEncoder m') = Aᶜ.card := by
     unfold hammingDist
     rw [← hcompl]
-    congr 1
   rw [hcard, Finset.card_compl, Fintype.card_fin]
   omega
 

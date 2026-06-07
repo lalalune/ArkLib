@@ -2659,6 +2659,9 @@ theorem structured_term_collapse (d dH D wW k i1 sl : ℕ)
     Nat.zero_le (k * c), Nat.zero_le (k * r), Nat.zero_le (c * r), Nat.zero_le (k * c * r),
     Nat.zero_le (c * e), Nat.zero_le (k * e), Nat.zero_le (k * c * e), Nat.zero_le (r * e)]
 
+variable {F : Type} [Field F]
+variable (H : F[X][Y]) [Fact (Irreducible H)] [Fact (0 < H.natDegree)]
+
 /-- **The per-term WALL, discharged.**  Given the structured IH (`hStructured`) and the genuine
 named degree premises, the literal `(A.1)` summand weight is below the loose `(2(k+1)+1)·d_R·D`
 target.  This closes `βHenselSuccTermStructuredWeightResidual`. -/
