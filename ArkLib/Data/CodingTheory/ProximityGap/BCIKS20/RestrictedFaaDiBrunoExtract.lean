@@ -30,6 +30,8 @@ exactly as the in-tree P2 consequence theorems do — none assumes the STEP-8 co
   form, before expanding either side into Taylor sums.
 * `restrictedMatchAtZeroEval₂WDivTarget_iff_taylorWDivTarget` — direct bridge between the compact
   `eval₂` target and the expanded Taylor-sum target.
+* `restrictedMatchAtZeroEval₂WDivTarget_iff_uncleared{Eval₂,}WDivTarget` — identifies the fixed
+  order-zero target with the general un-cleared/W-divisor target at `(i1,m,e)=(1,0,R.natDegree)`.
 * `RestrictedMatchAtZero{Taylor,Eval₂}WDivTarget.of_…` / `RestrictedFaaDiBrunoPartitionMatchAt`
   target constructors — endpoint adapters between the order-zero targets and the full carved /
   normalized partition residual surfaces.
@@ -304,6 +306,59 @@ theorem RestrictedMatchAtZeroEval₂WDivTarget.of_taylorWDivTarget
     RestrictedMatchAtZeroEval₂WDivTarget H x₀ R :=
   (restrictedMatchAtZeroEval₂WDivTarget_iff_taylorWDivTarget H x₀ R).2 htarget
 
+/-- The compact order-zero target is the `(i1,m,e) = (1,0,R.natDegree)` specialization of the
+general un-cleared/W-divisor `eval₂` target. -/
+theorem restrictedMatchAtZeroEval₂WDivTarget_iff_unclearedEval₂WDivTarget
+    (x₀ : F) (R : F[X][X][Y]) :
+    RestrictedMatchAtZeroEval₂WDivTarget H x₀ R ↔
+      HasseCoeffRepr𝒪UnclearedEval₂WDivTarget H x₀ R 1 0 R.natDegree := by
+  rfl
+
+/-- The compact order-zero target is the `(i1,m,e) = (1,0,R.natDegree)` specialization of the
+general embedded un-cleared/W-divisor target. -/
+theorem restrictedMatchAtZeroEval₂WDivTarget_iff_unclearedWDivTarget
+    (x₀ : F) (R : F[X][X][Y]) :
+    RestrictedMatchAtZeroEval₂WDivTarget H x₀ R ↔
+      HasseCoeffRepr𝒪UnclearedWDivTarget H x₀ R 1 0 R.natDegree :=
+  (restrictedMatchAtZeroEval₂WDivTarget_iff_unclearedEval₂WDivTarget H x₀ R).trans
+    (hasseCoeffRepr𝒪UnclearedWDivTarget_iff_eval₂WDivTarget H x₀ R 1 0 R.natDegree).symm
+
+/-- Project the general un-cleared/W-divisor `eval₂` target from the carved order-zero P2 core. -/
+theorem HasseCoeffRepr𝒪UnclearedEval₂WDivTarget.of_restrictedMatchAt_zero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree)
+    (hmatch : RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0) :
+    HasseCoeffRepr𝒪UnclearedEval₂WDivTarget H x₀ R 1 0 R.natDegree :=
+  (restrictedMatchAtZeroEval₂WDivTarget_iff_unclearedEval₂WDivTarget H x₀ R).1
+    (RestrictedMatchAtZeroEval₂WDivTarget.of_restrictedMatchAt_zero H x₀ R hHyp hd hmatch)
+
+/-- Project the general embedded un-cleared/W-divisor target from the carved order-zero P2 core. -/
+theorem HasseCoeffRepr𝒪UnclearedWDivTarget.of_restrictedMatchAt_zero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree)
+    (hmatch : RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0) :
+    HasseCoeffRepr𝒪UnclearedWDivTarget H x₀ R 1 0 R.natDegree :=
+  (restrictedMatchAtZeroEval₂WDivTarget_iff_unclearedWDivTarget H x₀ R).1
+    (RestrictedMatchAtZeroEval₂WDivTarget.of_restrictedMatchAt_zero H x₀ R hHyp hd hmatch)
+
+/-- Build the carved order-zero P2 core from the general un-cleared/W-divisor `eval₂` target. -/
+theorem RestrictedFaaDiBrunoMatchAt.zero_of_unclearedEval₂WDivTarget
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree)
+    (htarget : HasseCoeffRepr𝒪UnclearedEval₂WDivTarget H x₀ R 1 0 R.natDegree) :
+    RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0 :=
+  RestrictedFaaDiBrunoMatchAt.zero_of_eval₂WDivTarget H x₀ R hHyp hd
+    ((restrictedMatchAtZeroEval₂WDivTarget_iff_unclearedEval₂WDivTarget H x₀ R).2 htarget)
+
+/-- Build the carved order-zero P2 core from the general embedded un-cleared/W-divisor target. -/
+theorem RestrictedFaaDiBrunoMatchAt.zero_of_unclearedWDivTarget
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree)
+    (htarget : HasseCoeffRepr𝒪UnclearedWDivTarget H x₀ R 1 0 R.natDegree) :
+    RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0 :=
+  RestrictedFaaDiBrunoMatchAt.zero_of_eval₂WDivTarget H x₀ R hHyp hd
+    ((restrictedMatchAtZeroEval₂WDivTarget_iff_unclearedWDivTarget H x₀ R).2 htarget)
+
 /-- Project the expanded Taylor/W-divisor target from the full carved P2 core. -/
 theorem RestrictedMatchAtZeroTaylorWDivTarget.of_restrictedMatch
     (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
@@ -419,6 +474,18 @@ set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.RestrictedMatchAtZeroTaylorWDivTarget.of_eval₂WDivTarget
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.RestrictedMatchAtZeroEval₂WDivTarget.of_taylorWDivTarget
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.restrictedMatchAtZeroEval₂WDivTarget_iff_unclearedEval₂WDivTarget
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.restrictedMatchAtZeroEval₂WDivTarget_iff_unclearedWDivTarget
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.HasseCoeffRepr𝒪UnclearedEval₂WDivTarget.of_restrictedMatchAt_zero
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.HasseCoeffRepr𝒪UnclearedWDivTarget.of_restrictedMatchAt_zero
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.RestrictedFaaDiBrunoMatchAt.zero_of_unclearedEval₂WDivTarget
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.RestrictedFaaDiBrunoMatchAt.zero_of_unclearedWDivTarget
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.RestrictedMatchAtZeroTaylorWDivTarget.of_restrictedMatch
 set_option linter.style.longLine false in

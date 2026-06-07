@@ -16,8 +16,9 @@ Hasse sum with `T^i`, parallel to `hasseEvalAtRoot_eq_taylorSum` where the power
 
 Together they make the BCIKS20 Appendix-A.4 STEP-8 obstruction explicit at the `eval₂` level: the
 LHS partition form collapses onto `hasseEvalAtRoot` (cleared) while `B_coeff` on the RHS carries
-this un-cleared embedding, and the two differ by the `m = |λ|`-dependent `W^{natDegreeY p}` factor
-of `embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared`. See issue #139 for the obstruction analysis.
+this un-cleared embedding.  The `…WDivTarget` variants additionally name the stronger target where
+the cleared root evaluation is the un-cleared embedding divided by a prescribed power of `W`.  See
+issue #139 for the obstruction analysis.
 -/
 
 open Polynomial Polynomial.Bivariate
@@ -91,12 +92,42 @@ def HasseCoeffRepr𝒪UnclearedEval₂Target (x₀ : F) (R : F[X][X][Y]) (i1 m :
       (functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff)
       (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R)))
 
+/-- The un-cleared/W-divisor target in embedded-coefficient form.  For a supplied exponent `e`,
+it says the cleared root evaluation is the un-cleared `𝒪`-coefficient embedding divided by
+`W ^ e`.  The order-zero #139 target specializes this with `(i1, m, e) = (1, 0, R.natDegree)`. -/
+def HasseCoeffRepr𝒪UnclearedWDivTarget (x₀ : F) (R : F[X][X][Y])
+    (i1 m e : ℕ) : Prop :=
+  hasseEvalAtRoot H x₀ R i1 m
+    = embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R i1 m)
+      / (liftToFunctionField (H := H) H.leadingCoeff) ^ e
+
+/-- The same un-cleared/W-divisor target in raw `eval₂` form:
+`Y ↦ T/W` equals `Y ↦ T` divided by `W ^ e` on the specialized iterated-Hasse coefficient. -/
+def HasseCoeffRepr𝒪UnclearedEval₂WDivTarget (x₀ : F) (R : F[X][X][Y])
+    (i1 m e : ℕ) : Prop :=
+  Polynomial.eval₂ (liftToFunctionField (H := H))
+      (functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff)
+      (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R)))
+    =
+    Polynomial.eval₂ (liftToFunctionField (H := H)) (functionFieldT (H := H))
+      (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R)))
+      / (liftToFunctionField (H := H) H.leadingCoeff) ^ e
+
 /-- The embedded-coefficient/root equality is exactly the raw `eval₂ T = eval₂ (T/W)` equality. -/
 theorem hasseCoeffRepr𝒪UnclearedMatchesRoot_iff_eval₂Target
     (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) :
     HasseCoeffRepr𝒪UnclearedMatchesRoot H x₀ R i1 m ↔
       HasseCoeffRepr𝒪UnclearedEval₂Target H x₀ R i1 m := by
   unfold HasseCoeffRepr𝒪UnclearedMatchesRoot HasseCoeffRepr𝒪UnclearedEval₂Target
+  unfold hasseEvalAtRoot
+  rw [embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_uncleared]
+
+/-- The embedded un-cleared/W-divisor target is exactly its raw `eval₂` formulation. -/
+theorem hasseCoeffRepr𝒪UnclearedWDivTarget_iff_eval₂WDivTarget
+    (x₀ : F) (R : F[X][X][Y]) (i1 m e : ℕ) :
+    HasseCoeffRepr𝒪UnclearedWDivTarget H x₀ R i1 m e ↔
+      HasseCoeffRepr𝒪UnclearedEval₂WDivTarget H x₀ R i1 m e := by
+  unfold HasseCoeffRepr𝒪UnclearedWDivTarget HasseCoeffRepr𝒪UnclearedEval₂WDivTarget
   unfold hasseEvalAtRoot
   rw [embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_uncleared]
 
@@ -114,6 +145,20 @@ theorem HasseCoeffRepr𝒪UnclearedEval₂Target.of_matchesRoot
     HasseCoeffRepr𝒪UnclearedEval₂Target H x₀ R i1 m :=
   (hasseCoeffRepr𝒪UnclearedMatchesRoot_iff_eval₂Target H x₀ R i1 m).1 hmatch
 
+/-- Build the embedded un-cleared/W-divisor target from the raw `eval₂` W-divisor target. -/
+theorem HasseCoeffRepr𝒪UnclearedWDivTarget.of_eval₂WDivTarget
+    (x₀ : F) (R : F[X][X][Y]) (i1 m e : ℕ)
+    (htarget : HasseCoeffRepr𝒪UnclearedEval₂WDivTarget H x₀ R i1 m e) :
+    HasseCoeffRepr𝒪UnclearedWDivTarget H x₀ R i1 m e :=
+  (hasseCoeffRepr𝒪UnclearedWDivTarget_iff_eval₂WDivTarget H x₀ R i1 m e).2 htarget
+
+/-- Project the raw `eval₂` W-divisor target from the embedded un-cleared/W-divisor target. -/
+theorem HasseCoeffRepr𝒪UnclearedEval₂WDivTarget.of_wDivTarget
+    (x₀ : F) (R : F[X][X][Y]) (i1 m e : ℕ)
+    (hmatch : HasseCoeffRepr𝒪UnclearedWDivTarget H x₀ R i1 m e) :
+    HasseCoeffRepr𝒪UnclearedEval₂WDivTarget H x₀ R i1 m e :=
+  (hasseCoeffRepr𝒪UnclearedWDivTarget_iff_eval₂WDivTarget H x₀ R i1 m e).1 hmatch
+
 end BCIKS20.HenselNumerator
 
 #print axioms BCIKS20.HenselNumerator.embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_uncleared
@@ -123,6 +168,15 @@ set_option linter.style.longLine false in
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.hasseCoeffRepr𝒪UnclearedMatchesRoot_iff_taylorSums
 #print axioms BCIKS20.HenselNumerator.HasseCoeffRepr𝒪UnclearedEval₂Target
+#print axioms BCIKS20.HenselNumerator.HasseCoeffRepr𝒪UnclearedWDivTarget
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.HasseCoeffRepr𝒪UnclearedEval₂WDivTarget
 #print axioms BCIKS20.HenselNumerator.hasseCoeffRepr𝒪UnclearedMatchesRoot_iff_eval₂Target
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.hasseCoeffRepr𝒪UnclearedWDivTarget_iff_eval₂WDivTarget
 #print axioms BCIKS20.HenselNumerator.HasseCoeffRepr𝒪UnclearedMatchesRoot.of_eval₂Target
 #print axioms BCIKS20.HenselNumerator.HasseCoeffRepr𝒪UnclearedEval₂Target.of_matchesRoot
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.HasseCoeffRepr𝒪UnclearedWDivTarget.of_eval₂WDivTarget
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.HasseCoeffRepr𝒪UnclearedEval₂WDivTarget.of_wDivTarget
