@@ -456,6 +456,46 @@ theorem BCSOpeningSchedule.exists_request_of_mem_toOpeningStatements
     ∃ request ∈ schedule, statement = ⟨request.messageIdx, request.toOpeningStatement⟩ :=
   (BCSOpeningSchedule.mem_toOpeningStatements_iff schedule statement).1 hstatement
 
+/-- Universal quantification over indexed opening statements is equivalent to quantification over
+the originating typed opening requests. -/
+theorem BCSOpeningSchedule.toOpeningStatements_forall
+    {CommitmentType : pSpec.MessageIdx → Type}
+    (schedule : BCSOpeningSchedule (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType)
+    (P : ((i : pSpec.MessageIdx) ×
+      BCSOpeningStatementAt (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType i) → Prop) :
+    (∀ statement ∈ schedule.toOpeningStatements, P statement) ↔
+      ∀ request ∈ schedule,
+        P (⟨request.messageIdx, request.toOpeningStatement⟩ :
+          (i : pSpec.MessageIdx) ×
+            BCSOpeningStatementAt (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType i) := by
+  constructor
+  · intro h request hrequest
+    exact h _ (BCSOpeningSchedule.mem_toOpeningStatements_of_mem hrequest)
+  · intro h statement hstatement
+    obtain ⟨request, hrequest, hstatement_eq⟩ :=
+      BCSOpeningSchedule.exists_request_of_mem_toOpeningStatements hstatement
+    simpa [hstatement_eq] using h request hrequest
+
+/-- Existential quantification over indexed opening statements is equivalent to existence of an
+originating typed opening request. -/
+theorem BCSOpeningSchedule.toOpeningStatements_exists
+    {CommitmentType : pSpec.MessageIdx → Type}
+    (schedule : BCSOpeningSchedule (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType)
+    (P : ((i : pSpec.MessageIdx) ×
+      BCSOpeningStatementAt (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType i) → Prop) :
+    (∃ statement ∈ schedule.toOpeningStatements, P statement) ↔
+      ∃ request ∈ schedule,
+        P (⟨request.messageIdx, request.toOpeningStatement⟩ :
+          (i : pSpec.MessageIdx) ×
+            BCSOpeningStatementAt (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType i) := by
+  constructor
+  · rintro ⟨statement, hstatement, hp⟩
+    obtain ⟨request, hrequest, hstatement_eq⟩ :=
+      BCSOpeningSchedule.exists_request_of_mem_toOpeningStatements hstatement
+    exact ⟨request, hrequest, by simpa [hstatement_eq] using hp⟩
+  · rintro ⟨request, hrequest, hp⟩
+    exact ⟨_, BCSOpeningSchedule.mem_toOpeningStatements_of_mem hrequest, hp⟩
+
 /-- Duplicate-free typed opening schedules remain duplicate-free after conversion to indexed
 opening statements. -/
 theorem BCSOpeningSchedule.toOpeningStatements_nodup
@@ -842,6 +882,8 @@ generic compiler construction or the completeness/soundness preservation theorem
 #print axioms OracleReduction.BCSOpeningSchedule.mem_toOpeningStatements_iff
 #print axioms OracleReduction.BCSOpeningSchedule.mem_toOpeningStatements_of_mem
 #print axioms OracleReduction.BCSOpeningSchedule.exists_request_of_mem_toOpeningStatements
+#print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_forall
+#print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_exists
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_nodup
 #print axioms OracleReduction.BCSOpeningLogFrontier
 #print axioms OracleReduction.BCSOpeningLogFrontierSatisfied
