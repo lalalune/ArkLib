@@ -181,6 +181,24 @@ theorem not_grandMCAChallenge_bot_epsStar_of_card_lt_two_pow
   not_grandMCAChallenge_bot_epsStar_of_lt_inv_card
     (ι := ι) (F := F) (epsStar_lt_inv_card_of_card_lt_two_pow (F := F) hcard)
 
+/-- Any zero-code MCA resolution at `epsStar` forces the field to have at least `2^128`
+elements. This is the contrapositive form of the numeric zero-code no-resolution guardrail. -/
+theorem card_two_pow_le_of_GrandMCAResolution_bot_epsStar
+    (h : Nonempty (GrandChallenges.GrandMCAResolution (F := F)
+      (Cbot (ι := ι) (F := F) : Set (ι → F)) epsStar)) :
+    2 ^ (128 : ℕ) ≤ Fintype.card F :=
+  Nat.le_of_not_gt fun hcard =>
+    not_GrandMCAResolution_bot_epsStar_of_card_lt_two_pow (ι := ι) (F := F) hcard h
+
+/-- If the bottom linear code satisfies the Grand MCA predicate at `epsStar`, then the field must
+have at least `2^128` elements. This packages the numeric zero-code predicate refutation in the
+caller-facing lower-bound direction. -/
+theorem card_two_pow_le_of_grandMCAChallenge_bot_epsStar
+    (h : grandMCAChallenge (F := F) (ι := ι) (⊥ : LinearCode ι F) epsStar) :
+    2 ^ (128 : ℕ) ≤ Fintype.card F :=
+  Nat.le_of_not_gt fun hcard =>
+    not_grandMCAChallenge_bot_epsStar_of_card_lt_two_pow (ι := ι) (F := F) hcard h
+
 end General
 
 /-! ## Source audit -/
@@ -198,5 +216,7 @@ end General
 #print axioms epsStar_lt_inv_card_of_card_lt_two_pow
 #print axioms not_GrandMCAResolution_bot_epsStar_of_card_lt_two_pow
 #print axioms not_grandMCAChallenge_bot_epsStar_of_card_lt_two_pow
+#print axioms card_two_pow_le_of_GrandMCAResolution_bot_epsStar
+#print axioms card_two_pow_le_of_grandMCAChallenge_bot_epsStar
 
 end ProximityGap.MCAZeroCode
