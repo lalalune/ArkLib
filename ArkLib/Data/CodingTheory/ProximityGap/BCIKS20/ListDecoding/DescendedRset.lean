@@ -820,6 +820,46 @@ lemma evalX_R_descended_separable (δ : ℚ) (x₀ : F)
     (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
     (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide).choose_spec.choose_spec.2.2.2.2.1
 
+/-- The common-root set extracted through the descended residual bundle has the Claim 5.7
+cardinality lower bound. -/
+lemma commonRootSet_descended_card_ge (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hres : Claim57ResidualsDescended (F := F) (m := m) (n := n) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) k δ x₀ h_gs)
+    (hcoincide : pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs
+      = pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs) :
+    #(@Set.toFinset _ { z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ |
+        letI Pz := Pz z.2
+        (Trivariate.eval_on_Z
+            (R_descended (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+              (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide) z.1).eval Pz = 0 ∧
+        (Bivariate.evalX z.1
+            (H_descended (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+              (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide)).eval
+          (Pz.eval x₀) = 0}
+        (@Fintype.ofFinite _ Subtype.finite)) ≥
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) :=
+  (exists_factors_with_large_common_root_set_of_descended
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+    (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide).choose_spec.choose_spec.2.2.2.2.2.1
+
+/-- The descended Claim 5.7 extractor carries the original largeness inequality. -/
+lemma claim57_largeness_descended (δ : ℚ) (x₀ : F)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (hres : Claim57ResidualsDescended (F := F) (m := m) (n := n) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) k δ x₀ h_gs)
+    (hcoincide : pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs
+      = pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs) :
+    #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+      2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q :=
+  (exists_factors_with_large_common_root_set_of_descended
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+    (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide).choose_spec.choose_spec.2.2.2.2.2.2
+
 open BCIKS20AppendixA.ClaimA2 in
 /-- Claim A.2 hypotheses for the factors extracted through the descended residual bundle. -/
 lemma claimA2_hypotheses_descended (δ : ℚ) (x₀ : F)
@@ -851,6 +891,8 @@ lemma claimA2_hypotheses_descended (δ : ℚ) (x₀ : F)
 #print axioms ProximityGap.H_descended
 #print axioms ProximityGap.fact_irreducible_H_descended
 #print axioms ProximityGap.fact_natDegree_H_descended_pos
+#print axioms ProximityGap.commonRootSet_descended_card_ge
+#print axioms ProximityGap.claim57_largeness_descended
 #print axioms ProximityGap.claimA2_hypotheses_descended
 
 end ProximityGap
