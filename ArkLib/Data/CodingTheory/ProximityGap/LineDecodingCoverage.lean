@@ -127,6 +127,23 @@ variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 variable {A : Type} [Fintype A] [DecidableEq A] [AddCommGroup A] [Module F A]
 
+/-- **Per-set MCA double-cover data.** A witness set `S` is doubly covered when one
+line-decoder pair `(v₁, v₂) ∈ C × C` supplies two distinct aligned scalars at every coordinate
+of `S`. This names the exact per-set datum that the repaired GS extraction must construct. -/
+def MCADoubleCoverOn (C : Set (ι → A)) (u₀ u₁ : ι → A) (S : Finset ι) : Prop :=
+  ∃ v₁ ∈ C, ∃ v₂ ∈ C,
+    ∀ i ∈ S, ∃ a a' : F, a ≠ a' ∧
+      v₁ i + a • v₂ i = u₀ i + a • u₁ i ∧
+      v₁ i + a' • v₂ i = u₀ i + a' • u₁ i
+
+/-- Named form of `pairJointAgreesOn_of_double_cover` over `MCADoubleCoverOn`. -/
+theorem pairJointAgreesOn_of_MCADoubleCoverOn (C : Set (ι → A))
+    (S : Finset ι) (u₀ u₁ : ι → A)
+    (hcov : MCADoubleCoverOn (F := F) C u₀ u₁ S) :
+    pairJointAgreesOn C S u₀ u₁ := by
+  obtain ⟨v₁, hv₁, v₂, hv₂, hcover⟩ := hcov
+  exact pairJointAgreesOn_of_double_cover C S u₀ u₁ v₁ v₂ hv₁ hv₂ hcover
+
 /-- **`mcaEvent` with an S-pinned double cover is impossible.** Given a concrete witness set
 `S` realising the `mcaEvent` body (size + line-witness + `¬ pairJointAgreesOn S`), a
 line-decoder pair `(v₁, v₂) ∈ C` doubly covering `S` contradicts the `¬ pairJointAgreesOn S`
@@ -140,6 +157,24 @@ theorem not_mcaEventBody_of_double_cover (C : Set (ι → A)) (u₀ u₁ : ι �
     False :=
   hpair (pairJointAgreesOn_of_double_cover C S u₀ u₁ v₁ v₂ hv₁ hv₂ hcov)
 
+/-- S-pinned bad-event impossibility using the named `MCADoubleCoverOn` surface. -/
+theorem not_mcaEventBody_of_MCADoubleCoverOn (C : Set (ι → A)) (u₀ u₁ : ι → A)
+    (S : Finset ι) (hpair : ¬ pairJointAgreesOn C S u₀ u₁)
+    (hcov : MCADoubleCoverOn (F := F) C u₀ u₁ S) :
+    False :=
+  hpair (pairJointAgreesOn_of_MCADoubleCoverOn C S u₀ u₁ hcov)
+
+/-- **Per-bad-scalar double-cover obligation.** Once a scalar is bad, every exposed `mcaEvent`
+witness set must carry `MCADoubleCoverOn` data. This is the exact local target for the remaining
+GS interpolation / multi-γ overlap extraction. -/
+def MCABadScalarDoubleCover (C : Set (ι → A)) (δ : ℝ≥0)
+    (u₀ u₁ : ι → A) (γ : F) : Prop :=
+  mcaEvent C δ u₀ u₁ γ →
+    ∀ S : Finset ι, (S.card : ℝ≥0) ≥ (1 - δ) * Fintype.card ι →
+      (∃ w ∈ C, ∀ i ∈ S, w i = u₀ i + γ • u₁ i) →
+      ¬ pairJointAgreesOn C S u₀ u₁ →
+      MCADoubleCoverOn (F := F) C u₀ u₁ S
+
 /-- **Exposed repaired T4.21 hypothesis.** Every stack and every bad scalar carries the
 per-coordinate double cover that the Guruswami--Sudan interpolation route must provide. This is
 the replacement data for the refuted black-box `lineDecodable_imp_epsMCA_le_target`. -/
@@ -151,6 +186,34 @@ def MCAForallDoubleCover (C : Set (ι → A)) (δ : ℝ≥0) : Prop :=
       ∃ v₁ ∈ C, ∃ v₂ ∈ C, ∀ i ∈ S, ∃ a a' : F, a ≠ a' ∧
         v₁ i + a • v₂ i = (u 0) i + a • (u 1) i ∧
         v₁ i + a' • v₂ i = (u 0) i + a' • (u 1) i
+
+/-- Unpack the global repaired hypothesis into the named per-bad-scalar obligation. -/
+theorem MCAForallDoubleCover.to_badScalarDoubleCover
+    (C : Set (ι → A)) (δ : ℝ≥0)
+    (hcov : MCAForallDoubleCover (F := F) (A := A) C δ) :
+    ∀ (u : WordStack A (Fin 2) ι) (γ : F),
+      MCABadScalarDoubleCover (F := F) (A := A) C δ (u 0) (u 1) γ := by
+  intro u γ
+  simpa [MCABadScalarDoubleCover, MCADoubleCoverOn] using hcov u γ
+
+/-- Repack per-bad-scalar double-cover obligations as the existing global repaired hypothesis. -/
+theorem MCAForallDoubleCover.of_badScalarDoubleCover
+    (C : Set (ι → A)) (δ : ℝ≥0)
+    (hcov : ∀ (u : WordStack A (Fin 2) ι) (γ : F),
+      MCABadScalarDoubleCover (F := F) (A := A) C δ (u 0) (u 1) γ) :
+    MCAForallDoubleCover (F := F) (A := A) C δ := by
+  intro u γ
+  simpa [MCABadScalarDoubleCover, MCADoubleCoverOn] using hcov u γ
+
+/-- The repaired global T4.21 hypothesis is equivalent to the named local bad-scalar surface. -/
+theorem MCAForallDoubleCover_iff_badScalarDoubleCover
+    (C : Set (ι → A)) (δ : ℝ≥0) :
+    MCAForallDoubleCover (F := F) (A := A) C δ ↔
+      ∀ (u : WordStack A (Fin 2) ι) (γ : F),
+        MCABadScalarDoubleCover (F := F) (A := A) C δ (u 0) (u 1) γ := by
+  constructor
+  · exact MCAForallDoubleCover.to_badScalarDoubleCover C δ
+  · exact MCAForallDoubleCover.of_badScalarDoubleCover C δ
 
 open Classical in
 /-- **Repaired Theorem 4.21, per-stack form.** If for the stack `(u₀, u₁)` every bad scalar's
@@ -172,6 +235,17 @@ theorem mcaBadCount_eq_zero_of_double_cover (C : Set (ι → A)) (δ : ℝ≥0) 
   obtain ⟨S, hsize, hwit, hpair⟩ := hev
   obtain ⟨v₁, hv₁, v₂, hv₂, hcover⟩ := hcov γ ⟨S, hsize, hwit, hpair⟩ S hsize hwit hpair
   exact not_mcaEventBody_of_double_cover C u₀ u₁ S hv₁ hv₂ hpair hcover
+
+open Classical in
+/-- Per-stack repaired T4.21 wrapper through `MCABadScalarDoubleCover`. -/
+theorem mcaBadCount_eq_zero_of_badScalarDoubleCover
+    (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A)
+    (hcov : ∀ γ : F,
+      MCABadScalarDoubleCover (F := F) (A := A) C δ u₀ u₁ γ) :
+    mcaBadCount (F := F) C δ u₀ u₁ = 0 := by
+  exact mcaBadCount_eq_zero_of_double_cover C δ u₀ u₁
+    (fun γ hγ S hsize hwit hpair => by
+      simpa [MCADoubleCoverOn] using hcov γ hγ S hsize hwit hpair)
 
 open Classical in
 /-- **Repaired Theorem 4.21, error form.** If every stack's every bad scalar's witness set is
@@ -198,7 +272,23 @@ theorem epsMCA_eq_zero_of_forall_double_cover (C : Set (ι → A)) (δ : ℝ≥0
   rw [iSup_congr hzero]
   simp
 
+/-- Error-level repaired T4.21 wrapper through `MCABadScalarDoubleCover`. -/
+theorem epsMCA_eq_zero_of_badScalarDoubleCover (C : Set (ι → A)) (δ : ℝ≥0)
+    (hcov : ∀ (u : WordStack A (Fin 2) ι) (γ : F),
+      MCABadScalarDoubleCover (F := F) (A := A) C δ (u 0) (u 1) γ) :
+    epsMCA (F := F) C δ = 0 := by
+  exact epsMCA_eq_zero_of_forall_double_cover C δ
+    (fun u γ hγ S hsize hwit hpair => by
+      simpa [MCADoubleCoverOn] using hcov u γ hγ S hsize hwit hpair)
+
+#print axioms MCADoubleCoverOn
+#print axioms MCABadScalarDoubleCover
+#print axioms pairJointAgreesOn_of_MCADoubleCoverOn
+#print axioms not_mcaEventBody_of_MCADoubleCoverOn
 #print axioms MCAForallDoubleCover
+#print axioms MCAForallDoubleCover_iff_badScalarDoubleCover
+#print axioms mcaBadCount_eq_zero_of_badScalarDoubleCover
+#print axioms epsMCA_eq_zero_of_badScalarDoubleCover
 
 end
 
