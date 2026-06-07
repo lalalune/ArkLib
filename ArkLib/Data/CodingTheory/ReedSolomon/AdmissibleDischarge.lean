@@ -107,7 +107,10 @@ theorem geomDomain_cosetSep_lt (γ : F) (s n : ℕ) (hs : 0 < s) (hsn : s * n �
       _ ≤ s * n := Nat.mul_le_mul_left s (by omega)
       _ ≤ orderOf γ := hsn
   have hexp_b : s * b.val < orderOf γ :=
-    lt_of_lt_of_le (Nat.mul_lt_mul_of_lt_of_le (le_refl s) b.isLt hs) hsn
+    calc
+      s * b.val < s * (b.val + 1) := by rw [Nat.mul_succ]; omega
+      _ ≤ s * n := Nat.mul_le_mul_left s (Nat.succ_le_of_lt b.isLt)
+      _ ≤ orderOf γ := hsn
   have hnat : s * a.val + i = s * b.val :=
     pow_injOn_Iio_orderOf (Set.mem_Iio.mpr hexp_a) (Set.mem_Iio.mpr hexp_b) heq
   -- `s·a + i = s·b`, `i < s`, `s > 0` ⇒ `a = b`

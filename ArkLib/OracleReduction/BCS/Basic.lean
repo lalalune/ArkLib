@@ -496,6 +496,20 @@ theorem BCSOpeningSchedule.toOpeningStatements_exists
   · rintro ⟨request, hrequest, hp⟩
     exact ⟨_, BCSOpeningSchedule.mem_toOpeningStatements_of_mem hrequest, hp⟩
 
+/-- If one typed opening schedule is contained in another, then its indexed opening-statement view
+is contained in the other indexed view. -/
+theorem BCSOpeningSchedule.toOpeningStatements_subset
+    {CommitmentType : pSpec.MessageIdx → Type}
+    {schedule₁ schedule₂ : BCSOpeningSchedule (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType}
+    (hsubset : ∀ request, request ∈ schedule₁ → request ∈ schedule₂) :
+    ∀ statement, statement ∈ schedule₁.toOpeningStatements →
+      statement ∈ schedule₂.toOpeningStatements := by
+  intro statement hstatement
+  obtain ⟨request, hrequest, hstatement_eq⟩ :=
+    BCSOpeningSchedule.exists_request_of_mem_toOpeningStatements hstatement
+  exact (BCSOpeningSchedule.mem_toOpeningStatements_iff schedule₂ statement).2
+    ⟨request, hsubset request hrequest, hstatement_eq⟩
+
 /-- Duplicate-free typed opening schedules remain duplicate-free after conversion to indexed
 opening statements. -/
 theorem BCSOpeningSchedule.toOpeningStatements_nodup
@@ -884,6 +898,7 @@ generic compiler construction or the completeness/soundness preservation theorem
 #print axioms OracleReduction.BCSOpeningSchedule.exists_request_of_mem_toOpeningStatements
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_forall
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_exists
+#print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_subset
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_nodup
 #print axioms OracleReduction.BCSOpeningLogFrontier
 #print axioms OracleReduction.BCSOpeningLogFrontierSatisfied

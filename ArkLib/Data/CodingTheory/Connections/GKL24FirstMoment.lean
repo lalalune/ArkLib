@@ -340,6 +340,50 @@ theorem mcaBad_card_le_listFactor_mul_card
   intro w hw
   exact mcaBadWitness_card_le_card_real MC δ u₀ u₁ w (hTsub w hw)
 
+/-- **Cover-based per-stack first-moment count.**  This is the union-bound bridge with the
+future GCXK/GKL carrier shape: the carrier `T` only has to cover the actual bad scalars through
+the per-codeword witness sets, rather than contain every codeword of `MC`.
+
+If
+
+`mcaBad(MC, δ, u₀, u₁) ⊆ ⋃ w ∈ T, mcaBadWitness(MC, δ, u₀, u₁, w)`,
+
+`|T| ≤ B_T`, and every witness set in the carrier has size at most `b`, then
+`|mcaBad| ≤ B_T · b`.  This is the precise interface needed for a close-codeword / witness-list
+carrier, and avoids the older all-codewords-carrier strengthening. -/
+theorem mcaBad_card_le_listFactor_mul_perCodeword_of_cover
+    (MC : Submodule F (ι → F)) (δ : ℝ≥0) (u₀ u₁ : ι → F)
+    (T : Finset (ι → F))
+    (hcover :
+      mcaBad (F := F) (MC : Set (ι → F)) δ u₀ u₁ ⊆
+        T.biUnion (fun w => mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w))
+    {b B_T : ℝ} (hb0 : 0 ≤ b) (hb_card : (T.card : ℝ) ≤ B_T)
+    (hper : ∀ w ∈ T,
+      ((mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w).card : ℝ) ≤ b) :
+    ((mcaBad (F := F) (MC : Set (ι → F)) δ u₀ u₁).card : ℝ) ≤ B_T * b := by
+  classical
+  have hsum : ((mcaBad (F := F) (MC : Set (ι → F)) δ u₀ u₁).card : ℝ) ≤
+      ∑ w ∈ T, ((mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w).card : ℝ) := by
+    calc ((mcaBad (F := F) (MC : Set (ι → F)) δ u₀ u₁).card : ℝ)
+        ≤ ((T.biUnion
+            (fun w => mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w)).card : ℝ) := by
+          exact_mod_cast Finset.card_le_card hcover
+      _ ≤ ((∑ w ∈ T,
+            (mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w).card : ℕ) : ℝ) := by
+          exact_mod_cast (Finset.card_biUnion_le
+            (s := T)
+            (t := fun w => mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w))
+      _ = ∑ w ∈ T,
+            ((mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w).card : ℝ) := by
+          push_cast
+          ring
+  calc ((mcaBad (F := F) (MC : Set (ι → F)) δ u₀ u₁).card : ℝ)
+      ≤ ∑ w ∈ T,
+          ((mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w).card : ℝ) := hsum
+    _ ≤ ∑ _w ∈ T, b := Finset.sum_le_sum (fun w hw => hper w hw)
+    _ = (T.card : ℝ) * b := by rw [Finset.sum_const, nsmul_eq_mul]
+    _ ≤ B_T * b := by exact mul_le_mul_of_nonneg_right hb_card hb0
+
 /-- **Sharpened in-tree per-stack count `|mcaBad u| ≤ B_T · max 1 (2·δ·n)`.** This composes the
 pairwise sharpened per-codeword count (`mcaBadWitness_card_le_two_delta_mul_card`) with the
 union-bound brick, giving a per-stack bound a factor of `≈2` from GCXK25's `B_T · δ · n` — strictly
