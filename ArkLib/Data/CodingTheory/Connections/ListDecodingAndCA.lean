@@ -853,6 +853,33 @@ theorem rs_epsCA_small_implies_lambda_lt_F_bchks25_of_allButOne
         ((1 - (k : ℝ) / Fintype.card ι - 1 / Fintype.card ι).toNNReal)
         u γ_bad hjp hgood)
 
+/-- Prop-level wrapper for T5.2 from BCHKS25 all-but-one bad-line data. -/
+theorem rs_epsCA_small_implies_lambda_lt_F_bchks25_of_allButOne_prop
+    (domain : ι ↪ F) (k : ℕ) (δ : ℝ)
+    (hδ_pos : 0 < δ)
+    (hδ_lt : (δ : ℝ) < 1 - (k : ℝ) / Fintype.card ι)
+    (hε_ca :
+        epsCA (F := F) (A := F)
+            ((ReedSolomon.code domain k : Set (ι → F)))
+            ((δ + 2 / Fintype.card ι).toNNReal)
+            ((1 - (k : ℝ) / Fintype.card ι - 1 / Fintype.card ι).toNNReal) <
+          ENNReal.ofReal (1 / (2 * Fintype.card ι)))
+    (provAllButOne :
+        ¬ (Lambda ((ReedSolomon.code domain k : Set (ι → F))) δ < (Fintype.card F : ℕ∞)) →
+          Σ' u : WordStack F (Fin 2) ι,
+            PLift
+              (¬ jointProximity
+                (C := ((ReedSolomon.code domain k : Set (ι → F)))) (u := u)
+                ((1 - (k : ℝ) / Fintype.card ι - 1 / Fintype.card ι).toNNReal)) ×'
+            Σ' γ_bad : F,
+              PLift
+                (∀ γ : F, γ ≠ γ_bad →
+                  δᵣ(u 0 + γ • u 1, ((ReedSolomon.code domain k : Set (ι → F)))) ≤
+                    ((δ + 2 / Fintype.card ι).toNNReal))) :
+    rs_epsCA_small_implies_lambda_lt_F_bchks25 domain k δ hδ_pos hδ_lt hε_ca :=
+  rs_epsCA_small_implies_lambda_lt_F_bchks25_of_allButOne
+    domain k δ hδ_pos hδ_lt hε_ca provAllButOne
+
 /-- **BCHKS25 existential all-but-one connector.**  Same top-level T5.2 surface as
 `rs_epsCA_small_implies_lambda_lt_F_bchks25_of_allButOne`, but matching paper statements that
 only assert the existence of one exceptional scalar for the produced bad stack. -/
@@ -887,6 +914,32 @@ theorem rs_epsCA_small_implies_lambda_lt_F_bchks25_of_exists_allButOne
         ((δ + 2 / Fintype.card ι).toNNReal)
         ((1 - (k : ℝ) / Fintype.card ι - 1 / Fintype.card ι).toNNReal)
         u hjp hgood)
+
+/-- Prop-level wrapper for T5.2 from existential BCHKS25 all-but-one bad-line data. -/
+theorem rs_epsCA_small_implies_lambda_lt_F_bchks25_of_exists_allButOne_prop
+    (domain : ι ↪ F) (k : ℕ) (δ : ℝ)
+    (hδ_pos : 0 < δ)
+    (hδ_lt : (δ : ℝ) < 1 - (k : ℝ) / Fintype.card ι)
+    (hε_ca :
+        epsCA (F := F) (A := F)
+            ((ReedSolomon.code domain k : Set (ι → F)))
+            ((δ + 2 / Fintype.card ι).toNNReal)
+            ((1 - (k : ℝ) / Fintype.card ι - 1 / Fintype.card ι).toNNReal) <
+          ENNReal.ofReal (1 / (2 * Fintype.card ι)))
+    (provExistsAllButOne :
+        ¬ (Lambda ((ReedSolomon.code domain k : Set (ι → F))) δ < (Fintype.card F : ℕ∞)) →
+          Σ' u : WordStack F (Fin 2) ι,
+            PLift
+              (¬ jointProximity
+                (C := ((ReedSolomon.code domain k : Set (ι → F)))) (u := u)
+                ((1 - (k : ℝ) / Fintype.card ι - 1 / Fintype.card ι).toNNReal)) ×'
+            PLift
+              (∃ γ_bad : F, ∀ γ : F, γ ≠ γ_bad →
+                δᵣ(u 0 + γ • u 1, ((ReedSolomon.code domain k : Set (ι → F)))) ≤
+                  ((δ + 2 / Fintype.card ι).toNNReal))) :
+    rs_epsCA_small_implies_lambda_lt_F_bchks25 domain k δ hδ_pos hδ_lt hε_ca :=
+  rs_epsCA_small_implies_lambda_lt_F_bchks25_of_exists_allButOne
+    domain k δ hδ_pos hδ_lt hε_ca provExistsAllButOne
 
 /-- **ABF26 Theorem 5.3 [CS25 Theorem 2] — honest reduction form.**
 
@@ -1387,5 +1440,7 @@ namespace CodingTheory
 #print axioms linear_listSize_to_epsMCA_gcxk25_of_gkl24_maxCorr_witnessCover_residual_prop
 end CodingTheory
 #print axioms CodingTheory.rs_epsCA_small_implies_lambda_lt_F_bchks25_of_allButOne
+#print axioms CodingTheory.rs_epsCA_small_implies_lambda_lt_F_bchks25_of_allButOne_prop
 #print axioms CodingTheory.rs_epsCA_small_implies_lambda_lt_F_bchks25_of_exists_allButOne
+#print axioms CodingTheory.rs_epsCA_small_implies_lambda_lt_F_bchks25_of_exists_allButOne_prop
 #print axioms CodingTheory.rs_epsCA_separation_bgks20_of_exists_allButOne
