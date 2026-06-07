@@ -41,6 +41,9 @@ Current source exposes both sides of that frontier as named parts:
   correlated-agreement bridge.
 - `FriSoundnessParts` splits Claim 8.3 into the Claim 8.2 lift, the
   sequential-composition soundness step, and the `totalError` accounting step.
+- `Code.jointAgreement_equiv_of_codeword_transport` proves the finite-domain
+  transport part of that lift across an equivalence of coordinate domains, once
+  the corresponding codeword transport hypothesis is supplied.
 - `fri_query_soundness_of_parts` and `fri_soundness_of_parts` are small
   reassembly theorems. They do not prove the missing probabilistic bounds; they
   make the remaining obligations independently targetable.
@@ -58,6 +61,10 @@ Current source exposes both sides of that frontier as named parts:
   FRI fold/final/query phases.
 - `Code.jointAgreement` and `jointAgreement_iff_jointProximity` are available
   in `ArkLib/Data/CodingTheory/InterleavedCode.lean`.
+- `Code.jointAgreement_equiv_of_codeword_transport` transports a
+  `jointAgreement` witness along an equivalence of coordinate domains, isolating
+  the remaining Reed-Solomon-specific codeword transport needed for the
+  `ω.subdomain 0` to `ω` Claim 8.3 lift.
 - `Fri.Spec.Soundness.queryRoundError`, `queryError`, and `totalError` are
   accounting definitions, but the FRI soundness theorem consuming them is still
   deferred to sequential-composition/query-round infrastructure.
@@ -88,7 +95,8 @@ ArkLib/ProofSystem/BatchedFri/Spec/General.lean:128:def batchedFRIOracleLens
 ArkLib/ProofSystem/BatchedFri/Spec/General.lean:257:def batchedFRIreduction
 ArkLib/ProofSystem/Fri/Spec/Soundness.lean:54:noncomputable def queryRoundError
 ArkLib/Data/CodingTheory/InterleavedCode.lean:697:def jointAgreement
-ArkLib/Data/CodingTheory/InterleavedCode.lean:707:theorem jointAgreement_iff_jointProximity
+ArkLib/Data/CodingTheory/InterleavedCode.lean:708:theorem jointAgreement_equiv_of_codeword_transport
+ArkLib/Data/CodingTheory/InterleavedCode.lean:738:theorem jointAgreement_iff_jointProximity
 ```
 
 ## Remaining proof tasks
@@ -97,8 +105,9 @@ ArkLib/Data/CodingTheory/InterleavedCode.lean:707:theorem jointAgreement_iff_joi
    residualized virtual-oracle soundness-preservation theorem.
 2. Derive the Claim 8.2 `Code.jointAgreement` conclusion for the batched input
    stack.
-3. Connect the Claim 8.2 output to Claim 8.3 (`fri_soundness`) and the
-   end-to-end Batched FRI soundness statement.
+3. Prove the Reed-Solomon-specific codeword transport across the equivalence
+   between `ω.subdomain 0` and `ω`, then connect the Claim 8.2 output to Claim
+   8.3 (`fri_soundness`) and the end-to-end Batched FRI soundness statement.
 
 This audit does not close the mathematical residual. It confirms that the
 current source no longer hides Claim 8.2 behind a vacuous `True` theorem and

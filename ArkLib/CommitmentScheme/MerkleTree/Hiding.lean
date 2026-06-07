@@ -276,6 +276,29 @@ theorem openTranscriptPayloads_openTranscript_mem {s : Skeleton} (hashFn : α �
   rw [openTranscriptPayloads_openTranscript_mem_iff]
   exact ⟨i, hi, rfl⟩
 
+/-- Every honest payload carries an index from the requested opened-index list. -/
+theorem openTranscriptPayloads_openTranscript_index_mem {s : Skeleton} (hashFn : α → α → α)
+    (salts leaves : LeafData α s) (idxs : List (SkeletonLeafIndex s)) :
+    ∀ payload ∈ openTranscriptPayloads (openTranscript hashFn salts leaves idxs),
+      payload.1 ∈ idxs := by
+  intro payload hpayload
+  rw [openTranscriptPayloads_openTranscript_mem_iff] at hpayload
+  obtain ⟨i, hi, hpayload⟩ := hpayload
+  subst payload
+  exact hi
+
+/-- Every honest payload carries the honest salt and leaf value for its own index. -/
+theorem openTranscriptPayloads_openTranscript_eq_honest_pair {s : Skeleton}
+    (hashFn : α → α → α)
+    (salts leaves : LeafData α s) (idxs : List (SkeletonLeafIndex s)) :
+    ∀ payload ∈ openTranscriptPayloads (openTranscript hashFn salts leaves idxs),
+      payload.2.1 = salts.get payload.1 ∧ payload.2.2 = leaves.get payload.1 := by
+  intro payload hpayload
+  rw [openTranscriptPayloads_openTranscript_mem_iff] at hpayload
+  obtain ⟨i, _hi, hpayload⟩ := hpayload
+  subst payload
+  simp
+
 /-- Universal quantification over honest payloads is the same as quantification over requested
 indices with their honest salt and leaf values. -/
 theorem openTranscriptPayloads_openTranscript_forall {s : Skeleton} (hashFn : α → α → α)
@@ -647,6 +670,8 @@ end InductiveMerkleTree
 #print axioms InductiveMerkleTree.openTranscriptPayloads_openTranscript_getElem
 #print axioms InductiveMerkleTree.openTranscriptPayloads_openTranscript_mem_iff
 #print axioms InductiveMerkleTree.openTranscriptPayloads_openTranscript_mem
+#print axioms InductiveMerkleTree.openTranscriptPayloads_openTranscript_index_mem
+#print axioms InductiveMerkleTree.openTranscriptPayloads_openTranscript_eq_honest_pair
 #print axioms InductiveMerkleTree.openTranscriptPayloads_openTranscript_forall
 #print axioms InductiveMerkleTree.openTranscriptPayloads_openTranscript_exists
 #print axioms InductiveMerkleTree.openTranscriptPayloads_openTranscript_nodup

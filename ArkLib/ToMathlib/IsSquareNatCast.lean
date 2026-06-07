@@ -5,7 +5,7 @@ Authors: ArkLib Contributors
 -/
 import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.CharZero.Defs
-import Mathlib.Tactic.NormCast
+import Mathlib.Data.Nat.Cast.Basic
 
 /-!
 # `IsSquare` reflection through an injective `Nat.cast`
@@ -22,6 +22,8 @@ is in hand over `ℝ≥0`, this lemma concludes `IsSquare (deg · |ι|)` in `ℕ
 theorem isSquare_of_natCast_eq_sq_natCast {R : Type*} [Semiring R] [CharZero R]
     {a m : ℕ} (h : (a : R) = (m : R) ^ 2) : IsSquare a := by
   rw [isSquare_iff_exists_sq]
-  exact ⟨m, Nat.cast_injective (R := R) (by push_cast; exact h)⟩
+  refine ⟨m, Nat.cast_injective (R := R) ?_⟩
+  rw [Nat.cast_pow]
+  exact h
 
 #print axioms isSquare_of_natCast_eq_sq_natCast
