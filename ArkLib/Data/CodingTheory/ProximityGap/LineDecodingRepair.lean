@@ -56,6 +56,46 @@ def lineDecodable_imp_epsMCA_le_nondegenerate
     epsMCA (F := F) (A := A) ((C : Set (ι → A))) δ
         ≤ (a : ENNReal) / (Fintype.card F : ENNReal)
 
+/-- Once the line-decodability proof and nondegeneracy hypotheses are fixed, the repaired
+nondegenerate statement has exactly the legacy target conclusion. This is a statement-shape
+bridge: it does not supply the repaired hypotheses or prove the legacy target from
+line-decodability alone. -/
+theorem lineDecodable_imp_epsMCA_le_nondegenerate_iff_target
+    (C : ModuleCode ι F A) (δ a : ℝ≥0)
+    (hC : C ≠ ⊥) (ha : 0 < a)
+    (hLD : LineDecodable (F := F) (A := A) (C : Set (ι → A)) δ a
+      ((Fintype.card ι : ℝ≥0) + 1)) :
+    lineDecodable_imp_epsMCA_le_nondegenerate (F := F) (A := A) C δ a hC ha hLD ↔
+      _root_.CodingTheory.lineDecodable_imp_epsMCA_le_target
+        (F := F) (A := A) C δ a hLD := by
+  rfl
+
+/-- Project a proof of the repaired nondegenerate target to the legacy target conclusion with
+the same fixed line-decodability proof. -/
+theorem lineDecodable_imp_epsMCA_le_target_of_nondegenerate
+    (C : ModuleCode ι F A) (δ a : ℝ≥0)
+    (hC : C ≠ ⊥) (ha : 0 < a)
+    (hLD : LineDecodable (F := F) (A := A) (C : Set (ι → A)) δ a
+      ((Fintype.card ι : ℝ≥0) + 1))
+    (hrepair :
+      lineDecodable_imp_epsMCA_le_nondegenerate (F := F) (A := A) C δ a hC ha hLD) :
+    _root_.CodingTheory.lineDecodable_imp_epsMCA_le_target
+      (F := F) (A := A) C δ a hLD :=
+  (lineDecodable_imp_epsMCA_le_nondegenerate_iff_target C δ a hC ha hLD).mp hrepair
+
+/-- Repackage a legacy-target proof as the repaired nondegenerate target once the additional
+nondegeneracy hypotheses are fixed. -/
+theorem lineDecodable_imp_epsMCA_le_nondegenerate_of_target
+    (C : ModuleCode ι F A) (δ a : ℝ≥0)
+    (hC : C ≠ ⊥) (ha : 0 < a)
+    (hLD : LineDecodable (F := F) (A := A) (C : Set (ι → A)) δ a
+      ((Fintype.card ι : ℝ≥0) + 1))
+    (htarget :
+      _root_.CodingTheory.lineDecodable_imp_epsMCA_le_target
+        (F := F) (A := A) C δ a hLD) :
+    lineDecodable_imp_epsMCA_le_nondegenerate (F := F) (A := A) C δ a hC ha hLD :=
+  (lineDecodable_imp_epsMCA_le_nondegenerate_iff_target C δ a hC ha hLD).mpr htarget
+
 end Statement
 
 /-! ## (A') Discharging the strengthened target from explicit repaired frontiers -/
@@ -251,6 +291,12 @@ theorem epsMCA_Czero_eq_half :
 end CodingTheory.LineDecodingRepair
 
 #print axioms CodingTheory.LineDecodingRepair.refutation_tuple_excluded
+set_option linter.style.longLine false in
+#print axioms CodingTheory.LineDecodingRepair.lineDecodable_imp_epsMCA_le_nondegenerate_iff_target
+set_option linter.style.longLine false in
+#print axioms CodingTheory.LineDecodingRepair.lineDecodable_imp_epsMCA_le_target_of_nondegenerate
+set_option linter.style.longLine false in
+#print axioms CodingTheory.LineDecodingRepair.lineDecodable_imp_epsMCA_le_nondegenerate_of_target
 set_option linter.style.longLine false in
 #print axioms CodingTheory.LineDecodingRepair.lineDecodable_imp_epsMCA_le_nondegenerate_of_forall_double_cover
 set_option linter.style.longLine false in
