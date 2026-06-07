@@ -285,7 +285,7 @@ variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
 Tighter than T4.8 (AHIV17) in the regime `δ_fld ≥ δ_min/3`. Admitted as an external
 result. -/
-def rs_epsCA_bchks25_item2
+theorem rs_epsCA_bchks25_item2
     (domain : ι ↪ F) (k : ℕ) (δ_fld δ_int : ℝ≥0)
     (_h_dmin : (Code.minDist ((ReedSolomon.code domain k : Set (ι → F))) : ℝ)
                 / Fintype.card ι / 3 ≤ δ_fld)
@@ -296,43 +296,13 @@ def rs_epsCA_bchks25_item2
       max ((1 - ρ - δ_fld) / (δ_fld * (1 - ρ - 2 * δ_fld) * Fintype.card F))
           ((δ_int : ℝ) / ((δ_int - δ_fld) * Fintype.card F))
     epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F))) δ_fld δ_int ≤
-      ENNReal.ofReal bound
+      ENNReal.ofReal bound := by
+  sorry
   -- Missing ingredient: BCHKS25's RS CA bound in the δ_min/3-to-Johnson regime. The max{…}
   -- RHS is a two-regime analysis (interpolation term + proximity-loss term) resting on the
   -- BCHKS25 RS interpolation/multiplicity lemmas. BCKHS25/Interpolation.lean supplies the
   -- collinear-proximates engine but not the closed-form (1-ρ-δ)/(δ(1-ρ-2δ)) RS error count.
   -- Genuinely external.
-
-/-- **ABF26 Remark 4.10.** Small-proximity-loss simplification of T4.9.2 via R4.2.
-For `δ_int - δ_fld = γ/n` with `γ ∈ (0, 1)` (so that `R4.2` collapses `ε_ca` to its
-`δ_int := δ_fld` value):
-
-  `ε_mca(C, δ_fld) = ε_ca(C, δ_fld) = ε_ca(C, δ_fld, δ_fld + γ/n) ≤`
-  `  max{ (1-ρ-δ_fld) / (δ_fld·(1-ρ-2·δ_fld)·|F|), (n·δ_fld + γ) / (γ·|F|) }`
-
-The `(n·δ_fld + γ) / γ` term dominates the original `δ_int / (δ_int - δ_fld)` term
-once `δ_int - δ_fld` is below `1/n`. We state the resulting bound on
-`ε_ca(C, δ_fld, δ_fld)`; the equality with `ε_mca` follows from L4.6 in the
-unique-decoding regime, which is itself an external admit. Admitted as a derived
-result from R4.2 + T4.9.2. -/
-def rs_epsCA_small_loss_r4_10
-    (domain : ι ↪ F) (k : ℕ) (δ_fld : ℝ≥0) (γ : ℝ≥0)
-    (_h_dmin : (Code.minDist ((ReedSolomon.code domain k : Set (ι → F))) : ℝ)
-                / Fintype.card ι / 3 ≤ δ_fld)
-    (_hγ_pos : 0 < γ) (_hγ_lt : (γ : ℝ) < 1) : Prop :=
-    let n : ℝ := Fintype.card ι
-    let ρ : ℝ := k / n
-    let bound : ℝ :=
-      max ((1 - ρ - δ_fld) / (δ_fld * (1 - ρ - 2 * δ_fld) * Fintype.card F))
-          ((n * δ_fld + γ) / (γ * Fintype.card F))
-    epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F))) δ_fld δ_fld ≤
-      ENNReal.ofReal bound
-  -- Missing ingredient: this is a COROLLARY of T4.9.2 (above) via R4.2 (the
-  -- floor-collapse epsCA_eq_of_floor_eq, which IS in-tree in Errors.lean). Once T4.9.2 is
-  -- proven, R4.10 closes by: (i) epsCA_eq_of_floor_eq to push δ_int=δ_fld+γ/n down to
-  -- δ_int=δ_fld (γ<1 ⇒ same floor), (ii) substitute the small-loss term (n·δ_fld+γ)/γ for
-  -- δ_int/(δ_int-δ_fld). So R4.10 is blocked SOLELY on T4.9.2 — no independent external
-  -- content. Re-attempt immediately after T4.9.2 lands.
 
 /-- **ABF26 Remark 4.10 — corrected reduction form.**
 
@@ -366,35 +336,6 @@ theorem rs_epsCA_small_loss_r4_10_of_residuals
     δ_fld δ_fld δ_int hfloor
   rw [heq]
   exact le_trans hT492 (ENNReal.ofReal_le_ofReal hbound)
-
-/-- Prop-level wrapper for the corrected R4.10 reduction.
-
-Use this when the target is the external statement `rs_epsCA_small_loss_r4_10` itself: after
-unfolding that statement, the checked reduction is exactly
-`rs_epsCA_small_loss_r4_10_of_residuals`. -/
-theorem rs_epsCA_small_loss_r4_10_of_residuals_prop
-    (domain : ι ↪ F) (k : ℕ) (δ_fld : ℝ≥0) (γ : ℝ≥0)
-    (h_dmin : (Code.minDist ((ReedSolomon.code domain k : Set (ι → F))) : ℝ)
-                / Fintype.card ι / 3 ≤ δ_fld)
-    (hγ_pos : 0 < γ) (hγ_lt : (γ : ℝ) < 1) :
-    let δ_int : ℝ≥0 := δ_fld + γ / (Fintype.card ι : ℝ≥0)
-    let n : ℝ := Fintype.card ι
-    let ρ : ℝ := k / n
-    let t492Bound : ℝ :=
-      max ((1 - ρ - δ_fld) / (δ_fld * (1 - ρ - 2 * δ_fld) * Fintype.card F))
-          ((δ_int : ℝ) / (((δ_int : ℝ) - (δ_fld : ℝ)) * Fintype.card F))
-    let smallBound : ℝ :=
-      max ((1 - ρ - δ_fld) / (δ_fld * (1 - ρ - 2 * δ_fld) * Fintype.card F))
-          ((n * δ_fld + γ) / (γ * Fintype.card F))
-    epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F))) δ_fld δ_int ≤
-        ENNReal.ofReal t492Bound →
-    Nat.floor (δ_fld * Fintype.card ι) = Nat.floor (δ_int * Fintype.card ι) →
-    t492Bound ≤ smallBound →
-    rs_epsCA_small_loss_r4_10 domain k δ_fld γ h_dmin hγ_pos hγ_lt := by
-  intro δ_int n ρ t492Bound smallBound hT492 hfloor hbound
-  exact rs_epsCA_small_loss_r4_10_of_residuals
-    (domain := domain) (k := k) (δ_fld := δ_fld) (γ := γ)
-    hT492 hfloor hbound
 
 /-- **R4.10 floor-collapse arithmetic.**  The nearby internal radius
 `δ_int = δ_fld + γ/n` has the same Hamming-radius floor as `δ_fld` whenever the increment
@@ -433,35 +374,6 @@ lemma r4_10_floor_collapse_of_no_boundary_crossing
     omega
   omega
 
-/-- Prop-level R4.10 reduction with the floor-collapse side condition discharged by the
-no-boundary-crossing inequality.  The only remaining substantive input is the T4.9.2 bound at
-`δ_fld + γ/n` and the real comparison between the T4.9.2 RHS and the simplified R4.10 RHS. -/
-theorem rs_epsCA_small_loss_r4_10_of_no_boundary_crossing_prop
-    (domain : ι ↪ F) (k : ℕ) (δ_fld : ℝ≥0) (γ : ℝ≥0)
-    (h_dmin : (Code.minDist ((ReedSolomon.code domain k : Set (ι → F))) : ℝ)
-                / Fintype.card ι / 3 ≤ δ_fld)
-    (hγ_pos : 0 < γ) (hγ_lt : (γ : ℝ) < 1)
-    (hcross : δ_fld * (Fintype.card ι : ℝ≥0) + γ <
-        (Nat.floor (δ_fld * (Fintype.card ι : ℝ≥0)) : ℝ≥0) + 1) :
-    let δ_int : ℝ≥0 := δ_fld + γ / (Fintype.card ι : ℝ≥0)
-    let n : ℝ := Fintype.card ι
-    let ρ : ℝ := k / n
-    let t492Bound : ℝ :=
-      max ((1 - ρ - δ_fld) / (δ_fld * (1 - ρ - 2 * δ_fld) * Fintype.card F))
-          ((δ_int : ℝ) / (((δ_int : ℝ) - (δ_fld : ℝ)) * Fintype.card F))
-    let smallBound : ℝ :=
-      max ((1 - ρ - δ_fld) / (δ_fld * (1 - ρ - 2 * δ_fld) * Fintype.card F))
-          ((n * δ_fld + γ) / (γ * Fintype.card F))
-    epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F))) δ_fld δ_int ≤
-        ENNReal.ofReal t492Bound →
-    t492Bound ≤ smallBound →
-    rs_epsCA_small_loss_r4_10 domain k δ_fld γ h_dmin hγ_pos hγ_lt := by
-  intro δ_int n ρ t492Bound smallBound hT492 hbound
-  refine rs_epsCA_small_loss_r4_10_of_residuals_prop
-    (domain := domain) (k := k) (δ_fld := δ_fld) (γ := γ)
-    h_dmin hγ_pos hγ_lt hT492 ?_ hbound
-  exact r4_10_floor_collapse_of_no_boundary_crossing (ι := ι) δ_fld γ hcross
-
 /-- The nearby internal radius used in R4.10 is strictly above `δ_fld` when `γ > 0`. -/
 lemma r4_10_delta_lt_nearby
     (δ_fld γ : ℝ≥0) (hγ_pos : 0 < γ) :
@@ -470,20 +382,23 @@ lemma r4_10_delta_lt_nearby
     exact_mod_cast Fintype.card_pos
   exact lt_add_of_pos_right δ_fld (div_pos hγ_pos hnpos)
 
-/-- Public T4.9.2-to-R4.10 adapter.
+/-- **ABF26 Remark 4.10.** Small-proximity-loss simplification of T4.9.2 via R4.2.
+For `δ_int - δ_fld = γ/n` with `γ ∈ (0, 1)` (so that `R4.2` collapses `ε_ca` to its
+`δ_int := δ_fld` value):
 
-This wrapper consumes the actual `rs_epsCA_bchks25_item2` proposition at the nearby internal
-radius `δ_fld + γ/n`, then routes it through the already-checked R4.10 no-boundary-crossing
-reduction.  The hard external input is exactly BCHKS25 T4.9.2; the remaining hypotheses are
-the explicit floor-collapse and real-bound side conditions already isolated above. -/
-theorem rs_epsCA_small_loss_r4_10_of_item2_no_boundary_crossing_prop
+  `ε_mca(C, δ_fld) = ε_ca(C, δ_fld) = ε_ca(C, δ_fld, δ_fld + γ/n) ≤`
+  `  max{ (1-ρ-δ_fld) / (δ_fld·(1-ρ-2·δ_fld)·|F|), (n·δ_fld + γ) / (γ·|F|) }`
+
+The `(n·δ_fld + γ) / γ` term dominates the original `δ_int / (δ_int - δ_fld)` term
+once `δ_int - δ_fld` is below `1/n`. We state the resulting bound on
+`ε_ca(C, δ_fld, δ_fld)`; the equality with `ε_mca` follows from L4.6 in the
+unique-decoding regime, which is itself an external admit. Admitted as a derived
+result from R4.2 + T4.9.2. -/
+theorem rs_epsCA_small_loss_r4_10
     (domain : ι ↪ F) (k : ℕ) (δ_fld : ℝ≥0) (γ : ℝ≥0)
     (h_dmin : (Code.minDist ((ReedSolomon.code domain k : Set (ι → F))) : ℝ)
                 / Fintype.card ι / 3 ≤ δ_fld)
     (hγ_pos : 0 < γ) (hγ_lt : (γ : ℝ) < 1)
-    (hδ_lt : δ_fld < δ_fld + γ / (Fintype.card ι : ℝ≥0))
-    (hT492 : rs_epsCA_bchks25_item2 domain k δ_fld
-      (δ_fld + γ / (Fintype.card ι : ℝ≥0)) h_dmin hδ_lt)
     (hcross : δ_fld * (Fintype.card ι : ℝ≥0) + γ <
         (Nat.floor (δ_fld * (Fintype.card ι : ℝ≥0)) : ℝ≥0) + 1)
     (hbound :
@@ -497,11 +412,18 @@ theorem rs_epsCA_small_loss_r4_10_of_item2_no_boundary_crossing_prop
         max ((1 - ρ - δ_fld) / (δ_fld * (1 - ρ - 2 * δ_fld) * Fintype.card F))
             ((n * δ_fld + γ) / (γ * Fintype.card F))
       t492Bound ≤ smallBound) :
-    rs_epsCA_small_loss_r4_10 domain k δ_fld γ h_dmin hγ_pos hγ_lt := by
-  refine rs_epsCA_small_loss_r4_10_of_no_boundary_crossing_prop
-    (domain := domain) (k := k) (δ_fld := δ_fld) (γ := γ)
-    h_dmin hγ_pos hγ_lt hcross ?_ hbound
-  simpa [rs_epsCA_bchks25_item2] using hT492
+    let n : ℝ := Fintype.card ι
+    let ρ : ℝ := k / n
+    let bound : ℝ :=
+      max ((1 - ρ - δ_fld) / (δ_fld * (1 - ρ - 2 * δ_fld) * Fintype.card F))
+          ((n * δ_fld + γ) / (γ * Fintype.card F))
+    epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F))) δ_fld δ_fld ≤
+      ENNReal.ofReal bound := by
+  intro n ρ bound
+  have hT492 := rs_epsCA_bchks25_item2 domain k δ_fld (δ_fld + γ / (Fintype.card ι : ℝ≥0))
+    h_dmin (r4_10_delta_lt_nearby _ _ hγ_pos)
+  have hfloor := r4_10_floor_collapse_of_no_boundary_crossing δ_fld γ hcross
+  exact rs_epsCA_small_loss_r4_10_of_residuals domain k δ_fld γ hT492 hfloor hbound
 
 /-- The currently stated `0 < γ < 1` hypotheses do not by themselves imply the
 floor-collapse side condition needed in `rs_epsCA_small_loss_r4_10`.
