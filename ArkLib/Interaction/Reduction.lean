@@ -6,6 +6,9 @@ Authors: Quang Dao
 import PolyFun.Interaction.Basic.Spec
 import PolyFun.Interaction.Basic.Chain
 import PolyFun.Interaction.TwoParty.Compose
+import PolyFun.Interaction.TwoParty.Decoration
+import PolyFun.Interaction.TwoParty.Strategy
+import PolyFun.Interaction.TwoParty.Syntax
 
 /-!
 # Provers, Verifiers, and Reductions
