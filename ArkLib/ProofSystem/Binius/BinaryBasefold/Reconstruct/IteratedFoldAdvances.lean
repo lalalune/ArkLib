@@ -19,8 +19,6 @@ It is the iterated form of the single-step `fold_advances_evaluation_poly_legacy
 induction on `steps`.
 -/
 
-set_option maxHeartbeats 1000000
-
 namespace Binius.BinaryBasefold
 
 open OracleSpec OracleComp ProtocolSpec Finset AdditiveNTT Polynomial MvPolynomial
@@ -62,6 +60,7 @@ def iteratedRefineCoeffs {i destIdx : Fin r} (steps : ℕ)
         _ ≤ 2 ^ (ℓ - destIdx.val) * 2 ^ steps := by
             apply Nat.mul_le_mul_right; omega⟩
 
+omit [CharP L 2] [DecidableEq 𝔽q] [NeZero ℓ] in
 /-- Single-step new-API version of `fold_advances_evaluation_poly_legacy`: folding the raw-eval
 oracle function of `intermediateEvaluationPoly i coeffs` (via the `{destIdx}`-keyed `fold`)
 yields the raw-eval oracle function of `intermediateEvaluationPoly destIdx new_coeffs`, where
@@ -87,6 +86,14 @@ theorem fold_advances_evaluation_poly_step
           ⟨i.val, by omega⟩ coeffs).eval x.val) (r_chal := r_chal) =
       fun y => (intermediateEvaluationPoly 𝔽q β h_ℓ_add_R_rate
         ⟨destIdx.val, by omega⟩ new_coeffs).eval y.val := by
+  classical
+  -- Reduce `destIdx` to its canonical `⟨i+1, _⟩` form. The index bound is derived from
+  -- `h_i_lt`/`h_ℓ_add_R_rate` alone (independent of `h_destIdx`), so `subst` is unobstructed.
+  have ha_lt0 : i.val + 1 < r := by
+    have hR : 0 < 𝓡 := Nat.pos_of_neZero 𝓡
+    omega
+  have hdest : destIdx = (⟨i.val + 1, ha_lt0⟩ : Fin r) := Fin.eq_of_val_eq h_destIdx
+  subst hdest
   -- Invoke the legacy single-step advance lemma at `i' : Fin ℓ`.
   have h_i_succ_lt : i.val + 1 < ℓ + 𝓡 := by
     have hR : 0 < 𝓡 := Nat.pos_of_neZero 𝓡
@@ -96,35 +103,55 @@ theorem fold_advances_evaluation_poly_step
     (h_i_succ_lt := by simpa using h_i_succ_lt) (coeffs := coeffs) (r_chal := r_chal)
   simp only at h_legacy
   funext y
-  -- Unfold `fold` to `fold_legacy` (the cast is on an equal-`.val` index).
+  -- Unfold `fold`: at the canonical destination index `⟨i+1, _⟩` the cast collapses.
   unfold fold
-  -- The cast on the codomain index is over `⟨i+1,_⟩ = destIdx`; both have equal `.val`,
-  -- so pushing the cast onto the point gives `fold_legacy` at `⟨y.val, _⟩`.
-  have h_legacy_y := h_legacy ⟨y.val, by
-    have := y.property
-    have hidx : (⟨i.val + 1, by
-      have hle : i.val + 1 ≤ ℓ := by rw [← h_destIdx]; exact h_destIdx_le
-      omega⟩ : Fin r) = destIdx := Fin.eq_of_val_eq h_destIdx.symm
-    rw [hidx]; exact y.property⟩
-  -- After unfolding, the LHS is `cast … (fold_legacy …) y`; reduce the cast.
-  rw [cast_apply_eq_of_heq]
-  · rw [h_legacy_y]
-    -- Reconcile the legacy `new_coeffs` with our `new_coeffs`.
-    congr 1
-    unfold intermediateEvaluationPoly
-    apply Finset.sum_congr rfl
-    intro j _
-    rw [h_new_coeffs j]
-  · -- the cast point heq
-    apply cast_heq
+  simp only [cast_eq]
+  -- Apply the legacy advance at the point `y` (now at the canonical index).
+  rw [h_legacy ⟨y.val, y.property⟩]
+  -- Reconcile the legacy `new_coeffs` with our `new_coeffs` pointwise.
+  congr 1
+  unfold intermediateEvaluationPoly
+  apply Finset.sum_congr rfl
+  rintro ⟨j, hj⟩ _
+  simp only
+  rw [h_new_coeffs ⟨j, hj⟩]
 
-#check @fold_advances_evaluation_poly_legacy
-#check @iterated_fold_last
-#check @iterated_fold_zero_steps
-#check @polyToOracleFunc
-#check @multilinearWeight
-#check @intermediateEvaluationPoly
+/-- **Low half of the multilinear weight tensor.** For `x : Fin (2^n)` (so the top bit `n` of
+`x` is `0`), the `(n+1)`-challenge weight at index `x` factors as the `n`-challenge weight at
+`x` (over `Fin.init r`) times `(1 - r (last n))`. -/
+theorem multilinearWeight_castSucc_low {n : ℕ} (r : Fin (n + 1) → L) (x : Fin (2 ^ n)) :
+    multilinearWeight r ⟨x.val, by
+      have := x.isLt; calc x.val < 2 ^ n := this
+        _ ≤ 2 ^ (n + 1) := Nat.pow_le_pow_right (by omega) (by omega)⟩ =
+      multilinearWeight (Fin.init r) x * (1 - r (Fin.last n)) := by
+  dsimp only [multilinearWeight]
+  rw [Fin.prod_univ_castSucc]
+  have h_top : ¬ x.val.testBit n := by
+    rw [Nat.testBit_eq_false_of_lt]; exact x.isLt
+  simp only [Fin.val_last, h_top, if_false, Fin.val_castSucc, Fin.init]
+
+/-- **High half of the multilinear weight tensor.** For `x : Fin (2^n)`, the `(n+1)`-challenge
+weight at index `2^n + x` (top bit `n` set) factors as the `n`-challenge weight at `x`
+(over `Fin.init r`) times `r (last n)`. -/
+theorem multilinearWeight_castSucc_high {n : ℕ} (r : Fin (n + 1) → L) (x : Fin (2 ^ n)) :
+    multilinearWeight r ⟨2 ^ n + x.val, by
+      have := x.isLt; rw [pow_succ]; omega⟩ =
+      multilinearWeight (Fin.init r) x * (r (Fin.last n)) := by
+  dsimp only [multilinearWeight]
+  rw [Fin.prod_univ_castSucc]
+  have h_top : (2 ^ n + x.val).testBit n := by
+    rw [Nat.testBit_add_pow_two_eq_true_of_lt]; exact x.isLt
+  simp only [Fin.val_last, h_top, if_true, Fin.val_castSucc, Fin.init]
+  congr 1
+  apply Finset.prod_congr rfl
+  intro k _
+  have hk : (k : ℕ) < n := k.isLt
+  congr 1
+  rw [Nat.testBit_add_pow_two_eq_of_lt hk]
 
 end
 
 end Binius.BinaryBasefold
+
+-- Axiom audit.
+#print axioms Binius.BinaryBasefold.fold_advances_evaluation_poly_step

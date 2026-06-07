@@ -6,6 +6,7 @@ Authors: Chung Thai Nguyen, Quang Dao
 
 import ArkLib.Data.Misc.Basic
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Spec
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.UDRCongruence
 
 /-!
 ## Binary Basefold Soundness Query Phase Preliminaries
@@ -68,7 +69,7 @@ def extractSuffixFromChallenge (v : sDomain 𝔽q β h_ℓ_add_R_rate ⟨0, by o
       apply congrArg (fun i => ↥(sDomain 𝔽q β h_ℓ_add_R_rate i))
       apply Fin.eq_of_val_eq
       simp only [zero_add])
-    (iteratedQuotientMap 𝔽q β h_ℓ_add_R_rate (i := ⟨0, by omega⟩) (k := destIdx.val)
+    (iteratedQuotientMap 𝔽q β h_ℓ_add_R_rate (i := ⟨0, Nat.pos_of_neZero ℓ⟩) (k := destIdx.val)
       (h_bound := by
         have := h_destIdx_le
         simp only [zero_add]; omega) (x := v))
