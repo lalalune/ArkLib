@@ -33,6 +33,19 @@ end ProtocolSpec.FullTranscript
 
 #print axioms ProtocolSpec.FullTranscript.fst_append_snd
 
+namespace ProtocolSpec
+
+variable {m n : ℕ} {pSpec₁ : ProtocolSpec m} {pSpec₂ : ProtocolSpec n}
+
+/-- The appended protocol's round `Type` at a right interior round `natAdd m k` is exactly
+`pSpec₂`'s round `Type` at `k` (the `Type`-level analogue of `append_dir_natAdd`). -/
+theorem append_Type_natAdd (k : Fin n) :
+    (pSpec₁ ++ₚ pSpec₂).«Type» (Fin.natAdd m k) = pSpec₂.«Type» k := by
+  show Fin.vappend pSpec₁.«Type» pSpec₂.«Type» (Fin.natAdd m k) = pSpec₂.«Type» k
+  rw [Fin.vappend_eq_append, Fin.append_right]
+
+end ProtocolSpec
+
 namespace ProtocolSpec.Transcript
 
 variable {m n : ℕ} {pSpec₁ : ProtocolSpec m} {pSpec₂ : ProtocolSpec n}
@@ -51,6 +64,52 @@ def appendRight (T₁ : FullTranscript pSpec₁) {k : Fin (n + 1)} (T₂ : pSpec
       cast (Fin.vappend_right_of_not_lt pSpec₁.Type pSpec₂.Type ⟨i.val, by omega⟩ hi).symm
         (T₂ ⟨i.val - m, hi2⟩)
 
+/-- **`appendRight` commutes with a final `concat`** (right-block per-round growth): appending a
+`pSpec₂`-message-extended transcript equals extending the appended transcript by that message,
+recast at the appended round `natAdd m k`. The per-round transcript brick for the right-block run
+characterization of `Prover.append_run` (#13). -/
+theorem appendRight_concat (T₁ : FullTranscript pSpec₁) {k : Fin n} (msg : pSpec₂.«Type» k)
+    (T₂ : pSpec₂.Transcript k.castSucc) :
+    HEq (appendRight T₁ (Transcript.concat msg T₂))
+        (Transcript.concat (m := Fin.natAdd m k) (cast (append_Type_natAdd k).symm msg)
+          (appendRight T₁ T₂)) := by
+  refine Function.hfunext ?_ ?_
+  · congr 1
+  · intro i j hij
+    have hv : i.val = j.val := (Fin.heq_ext_iff (by simp [Fin.val_succ]; omega)).mp hij
+    simp only [appendRight, Transcript.concat, Fin.snoc]
+    have hisz : i.val < m + k.val + 1 := by have h := i.isLt; simp only [Fin.val_succ] at h; omega
+    rcases lt_or_ge i.val m with hlt | hge
+    · -- `↑i < m`: both pick the left transcript `T₁`
+      rw [dif_pos hlt]
+      have hj1 : (j : Fin _).val < (Fin.natAdd m k).val := by rw [Fin.val_natAdd]; omega
+      rw [dif_pos hj1]
+      simp only [Fin.coe_castLT]
+      rw [dif_pos (show (j : Fin _).val < m from hv ▸ hlt)]
+      refine (cast_heq _ _).trans (HEq.trans ?_ ((cast_heq _ _).trans (cast_heq _ _)).symm)
+      rw [show (⟨↑i, hlt⟩ : Fin m) = ⟨↑j, hv ▸ hlt⟩ from by ext; exact hv]
+    · rcases lt_or_ge (i.val - m) k.val with hlt2 | hge2
+      · -- `m ≤ ↑i < m + ↑k`: both pick a `T₂` round
+        rw [dif_neg (by omega), dif_pos hlt2]
+        have hj1 : (j : Fin _).val < (Fin.natAdd m k).val := by rw [Fin.val_natAdd]; omega
+        rw [dif_pos hj1]
+        simp only [Fin.coe_castLT]
+        rw [dif_neg (show ¬ (j : Fin _).val < m by omega)]
+        refine ((cast_heq _ _).trans (cast_heq _ _)).trans
+          (HEq.trans ?_ ((cast_heq _ _).trans (cast_heq _ _)).symm)
+        congr 1
+        ext
+        simp [Fin.coe_castLT]
+        omega
+      · -- `↑i = m + ↑k`: both pick the appended message `msg`
+        have hik : i.val - m = k.val := by omega
+        rw [dif_neg (by omega), dif_neg (by omega)]
+        have hj0 : ¬ (j : Fin _).val < (Fin.natAdd m k).val := by rw [Fin.val_natAdd]; omega
+        rw [dif_neg hj0]
+        exact ((cast_heq _ _).trans (cast_heq _ _)).trans
+          (((cast_heq _ _).trans (cast_heq _ _)).symm)
+
 end ProtocolSpec.Transcript
 
 #check @ProtocolSpec.Transcript.appendRight
+#print axioms ProtocolSpec.Transcript.appendRight_concat
