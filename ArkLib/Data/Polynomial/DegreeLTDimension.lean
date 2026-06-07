@@ -80,42 +80,4 @@ theorem exists_bivariate_interpolant {J : Type*} [Fintype J] (d₀ d₁ : ℕ) (
   · intro j
     exact congrFun (LinearMap.mem_ker.mp hABmem) j
 
-/-- **Berlekamp–Welch existence via the bivariate engine.**  At the unique-decoding rate
-`k + 2e + 1 > n` (`n := |ι|`), for any word `y` there is a Berlekamp–Welch pair `(E, N)` — `E ≠ 0`,
-`deg E < e + 1`, `deg N < k + e` — solving the key equation `E(αᵢ)·yᵢ = N(αᵢ)` on every coordinate.
-A second, dimension-count proof of the key-equation existence (the explicit error-locator proof is
-`ReedSolomon.berlekamp_welch_exists`), and the form that drives the bivariate proximity-gap lift. -/
-theorem exists_berlekamp_welch {ι : Type*} [Fintype ι] (k e : ℕ) (α : ι ↪ F) (y : ι → F)
-    (hn : Fintype.card ι < k + e + (e + 1)) :
-    ∃ E N : F[X], E ≠ 0 ∧ E ∈ degreeLT F (e + 1) ∧ N ∈ degreeLT F (k + e) ∧
-      ∀ i, E.eval (α i) * y i = N.eval (α i) := by
-  obtain ⟨A, B, hA, hB, hAB0, hkey⟩ :=
-    exists_bivariate_interpolant (k + e) (e + 1) (fun i => α i) y (by omega)
-  -- `E := B` is nonzero: `B = 0` would force `A` (degree `< k+e ≤ n`) to vanish at `n` points
-  have hB0 : B ≠ 0 := by
-    rintro rfl
-    rcases hAB0 with hA0 | hB0
-    · -- `A(αᵢ) = 0` for all `i`; `A` has degree `< k+e` but `n ≥ k+e` distinct roots ⇒ `A = 0`
-      apply hA0
-      by_contra hAne
-      have hroots : (Finset.univ.map α) ⊆ A.roots.toFinset := by
-        intro z hz
-        rw [Finset.mem_map] at hz; obtain ⟨i, _, rfl⟩ := hz
-        rw [Multiset.mem_toFinset, mem_roots hAne, IsRoot.def]
-        have := hkey i; simpa using this
-      have h1 : Fintype.card ι ≤ A.natDegree := by
-        calc Fintype.card ι = (Finset.univ.map α).card := by rw [Finset.card_map, Finset.card_univ]
-          _ ≤ A.roots.toFinset.card := Finset.card_le_card hroots
-          _ ≤ Multiset.card A.roots := Multiset.toFinset_card_le _
-          _ ≤ A.natDegree := card_roots' _
-      have h2 : A.natDegree < k + e := by
-        rcases eq_or_ne A 0 with rfl | h; · simp_all
-        exact (natDegree_lt_iff_degree_lt h).mpr (mem_degreeLT.mp hA)
-      omega
-    · exact hB0 rfl
-  refine ⟨B, -A, hB0, hB, Submodule.neg_mem _ hA, ?_⟩
-  intro i
-  have := hkey i
-  rw [eval_neg]; linear_combination -this
-
 end Polynomial
