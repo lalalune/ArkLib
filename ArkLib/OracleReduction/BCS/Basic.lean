@@ -355,6 +355,49 @@ projection of the original typed schedule. -/
   | cons request schedule ih =>
       simp [BCSOpeningSchedule.toOpeningStatements]
 
+/-- Projecting the indexed opening statements back to commitments recovers the indexed commitment
+projection of the original typed schedule. -/
+@[simp] theorem BCSOpeningSchedule.toOpeningStatements_map_commitment
+    {CommitmentType : pSpec.MessageIdx → Type}
+    (schedule : BCSOpeningSchedule (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType) :
+    schedule.toOpeningStatements.map (fun statement =>
+      (⟨statement.1, statement.2.1⟩ :
+        (i : pSpec.MessageIdx) × CommitmentType i)) =
+      schedule.map (fun request =>
+        (⟨request.messageIdx, request.commitment⟩ :
+          (i : pSpec.MessageIdx) × CommitmentType i)) := by
+  simp [BCSOpeningSchedule.toOpeningStatements]
+
+/-- Projecting the indexed opening statements back to queries recovers the indexed query
+projection of the original typed schedule. -/
+@[simp] theorem BCSOpeningSchedule.toOpeningStatements_map_query
+    {CommitmentType : pSpec.MessageIdx → Type}
+    (schedule : BCSOpeningSchedule (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType) :
+    schedule.toOpeningStatements.map (fun statement =>
+      (⟨statement.1, statement.2.2.1⟩ :
+        (i : pSpec.MessageIdx) × (Oₘ i).Query)) =
+      schedule.map (fun request =>
+        (⟨request.messageIdx, request.query⟩ :
+          (i : pSpec.MessageIdx) × (Oₘ i).Query)) := by
+  simp [BCSOpeningSchedule.toOpeningStatements]
+
+/-- Projecting the indexed opening statements back to query responses recovers the indexed response
+projection of the original typed schedule. -/
+@[simp] theorem BCSOpeningSchedule.toOpeningStatements_map_response
+    {CommitmentType : pSpec.MessageIdx → Type}
+    (schedule : BCSOpeningSchedule (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType) :
+    schedule.toOpeningStatements.map (fun statement =>
+      (⟨statement.1, statement.2.2⟩ :
+        (i : pSpec.MessageIdx) × (q : (Oₘ i).Query) × (Oₘ i).Response q)) =
+      schedule.map (fun request =>
+        (⟨request.messageIdx, ⟨request.query, request.response⟩⟩ :
+          (i : pSpec.MessageIdx) × (q : (Oₘ i).Query) × (Oₘ i).Response q)) := by
+  induction schedule with
+  | nil => rfl
+  | cons request schedule _ =>
+      cases request
+      simp [BCSOpeningSchedule.toOpeningStatements, BCSOpeningRequest.toOpeningStatement]
+
 /-- Membership in the indexed opening-statement view is exactly membership in the original typed
 schedule, transported through `BCSOpeningRequest.toOpeningStatement`. -/
 @[simp] theorem BCSOpeningSchedule.mem_toOpeningStatements_iff
@@ -772,6 +815,9 @@ generic compiler construction or the completeness/soundness preservation theorem
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_cons
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_length
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_map_messageIdx
+#print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_map_commitment
+#print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_map_query
+#print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_map_response
 #print axioms OracleReduction.BCSOpeningSchedule.mem_toOpeningStatements_iff
 #print axioms OracleReduction.BCSOpeningSchedule.mem_toOpeningStatements_of_mem
 #print axioms OracleReduction.BCSOpeningSchedule.exists_request_of_mem_toOpeningStatements
