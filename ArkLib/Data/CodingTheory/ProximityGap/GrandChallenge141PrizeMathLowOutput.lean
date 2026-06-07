@@ -29,6 +29,75 @@ variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
 open scoped NNReal
 
+/-- The uniform GS lower-witness package preserves only single-rate lower-witness existence.
+
+This is the low-output projection of `exists_prize_mcaLowerWitness_of_uniformConjecture`: it drops
+the radius equality witness `w.δ = δ` while keeping every open hypothesis explicit. -/
+theorem nonempty_prize_mcaLowerWitness_of_uniformConjecture
+    (domain : ι ↪ F) (m : ℕ)
+    (hUniform : epsMCAgsPrizeUniformConjecture domain m) :
+    ∃ c₁ c₂ c₃ : ℝ,
+      ∀ (j : Fin 4) (η δ : ℝ≥0),
+        0 < η →
+        (δ : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η : ℝ) →
+        δ ≤ 1 →
+        ∀ L : WordStack F (Fin 2) ι → Finset (ι → F),
+          FaithfulGSFamily (F := F)
+            ((ReedSolomon.code (domain := domain)
+              ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ :
+                Set (ι → F))) δ L →
+          ENNReal.ofReal
+              (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j)
+                η c₁ c₂ c₃)
+            ≤ (epsStar : ENNReal) →
+          Nonempty (GrandChallenges.MCALowerWitness
+            ((ReedSolomon.code (domain := domain)
+              ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ :
+                Set (ι → F))) epsStar) := by
+  rcases exists_prize_mcaLowerWitness_of_uniformConjecture domain m hUniform with
+    ⟨c₁, c₂, c₃, hlower⟩
+  refine ⟨c₁, c₂, c₃, ?_⟩
+  intro j η δ hη hδ hδ_le_one L hfaithful hclear
+  rcases hlower j η δ hη hδ hδ_le_one L hfaithful hclear with ⟨w, _hwδ⟩
+  exact ⟨w⟩
+
+/-- The uniform GS all-rate lower-witness package preserves only lower-witness existence.
+
+This is the low-output projection of `exists_prize_mcaLowerWitnesses_allRates_of_uniformConjecture`:
+it drops the radius equality witnesses `w.δ = δ j` while retaining the shared constant triple and
+all explicit open hypotheses. -/
+theorem nonempty_prize_mcaLowerWitnesses_allRates_of_uniformConjecture
+    (domain : ι ↪ F) (m : ℕ)
+    (hUniform : epsMCAgsPrizeUniformConjecture domain m) :
+    ∃ c₁ c₂ c₃ : ℝ,
+      ∀ (η δ : Fin 4 → ℝ≥0),
+        (∀ j : Fin 4, 0 < η j) →
+        (∀ j : Fin 4,
+          (δ j : ℝ) ≤ 1 - (ProximityGap.prizeRates j : ℝ) - (η j : ℝ)) →
+        (∀ j : Fin 4, δ j ≤ 1) →
+        ∀ L : ∀ _ : Fin 4, WordStack F (Fin 2) ι → Finset (ι → F),
+          (∀ j : Fin 4,
+            FaithfulGSFamily (F := F)
+              ((ReedSolomon.code (domain := domain)
+                ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ :
+                  Set (ι → F))) (δ j) (L j)) →
+          (∀ j : Fin 4,
+            ENNReal.ofReal
+                (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j)
+                  (η j) c₁ c₂ c₃)
+              ≤ (epsStar : ENNReal)) →
+          ∀ j : Fin 4,
+            Nonempty (GrandChallenges.MCALowerWitness
+              ((ReedSolomon.code (domain := domain)
+                ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ :
+                  Set (ι → F))) epsStar) := by
+  rcases exists_prize_mcaLowerWitnesses_allRates_of_uniformConjecture
+      domain m hUniform with ⟨c₁, c₂, c₃, hlower⟩
+  refine ⟨c₁, c₂, c₃, ?_⟩
+  intro η δ hη hδ hδ_le_one L hfaithful hclear j
+  rcases hlower η δ hη hδ hδ_le_one L hfaithful hclear j with ⟨w, _hwδ⟩
+  exact ⟨w⟩
+
 /-- The all-rate uniform GS threshold package resolves the faithful prize lattice and preserves
 only the lower lattice brackets.
 
@@ -394,6 +463,10 @@ end PerInput
 
 /-! ## Source audit -/
 
+set_option linter.style.longLine false in
+#print axioms nonempty_prize_mcaLowerWitness_of_uniformConjecture
+set_option linter.style.longLine false in
+#print axioms nonempty_prize_mcaLowerWitnesses_allRates_of_uniformConjecture
 set_option linter.style.longLine false in
 #print axioms mcaPrizeLatticeResolved_with_lower_brackets_prize_allRates_of_uniformConjecture
 set_option linter.style.longLine false in
