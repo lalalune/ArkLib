@@ -6,6 +6,7 @@ Authors: Chung Thai Nguyen, Quang Dao
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Spec
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Relations
 import ArkLib.ProofSystem.Binius.BinaryBasefold.BitsOfIndex
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.ProjectToMidLastEval
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.ProjectToMidSucc
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.ProjectToNextSumEq
 import ArkLib.ToVCVio.Oracle
@@ -347,7 +348,7 @@ lemma foldStep_is_logic_complete (i : Fin ℓ) :
     -- Fact 1: Verifier check passes (sumcheck condition)
     simp only [step, foldStepLogic, foldVerifierCheck, foldProverComputeMsg]
     rw [h_sumcheck_cons]
-    apply getSumcheckRoundPoly_sum_eq
+    apply Sumcheck.Structured.getSumcheckRoundPoly_sum_eq
 
   have hStmtOut_eq : proverStmtOut = verifierStmtOut := by
     -- Fact 3: Prover and verifier statements agree

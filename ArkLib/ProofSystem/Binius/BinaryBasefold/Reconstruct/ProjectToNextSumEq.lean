@@ -6,8 +6,6 @@ Authors: ArkLib Contributors
 import ArkLib.ProofSystem.Sumcheck.Structured.SingleRound
 import ArkLib.ProofSystem.RingSwitching.Prelude
 
-set_option maxHeartbeats 800000
-
 /-!
 # Round-poly marginal at the verifier challenge (`projectToNextSumcheckPoly_sum_eq`)
 
@@ -47,13 +45,14 @@ private lemma rename_finCongr_heq' {a b : ℕ} (h : a = b) (p : MvPolynomial (Fi
   subst h
   simp [finCongr_refl]
 
-set_option maxHeartbeats 800000 in
-/-- **Round-poly marginal at the challenge** (`D = uniform 𝓑`): evaluating the prover's round
+/- **Round-poly marginal at the challenge** (`D = uniform 𝓑`): evaluating the prover's round
 univariate `getSumcheckRoundPoly ℓ (uniform 𝓑 ℓ) i Hᵢ` at the verifier challenge `rᵢ`
 equals the sum,
 over the next round's Boolean cube `(univ.map 𝓑) ^ᶠ (ℓ - i.succ)`, of the projected next-round
 polynomial `projectToNextSumcheckPoly i Hᵢ rᵢ`. Consumed by `BinaryBasefold.ReductionLogic`,
 `BinaryBasefold.Steps.Fold`, and `RingSwitching.SumcheckPhase`. -/
+set_option maxHeartbeats 800000 in
+-- Needed for the dependent survivor-cube reindexing and `Fin.cast` normalization proof below.
 theorem projectToNextSumcheckPoly_sum_eq {𝓑 : Fin 2 ↪ L} (i : Fin ℓ)
     (Hᵢ : MultiquadraticPoly L (ℓ - i)) (rᵢ : L) :
     (getSumcheckRoundPoly ℓ (SumcheckDomain.uniform 𝓑 ℓ) (i := i) Hᵢ).val.eval rᵢ =

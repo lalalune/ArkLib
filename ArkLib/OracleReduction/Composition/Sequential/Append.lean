@@ -2856,6 +2856,67 @@ theorem append_continueFromTo_seam_peel (hn : 0 < n)
         (by intro h; exact absurd (congrArg Fin.val h) (by simp)) rSeam]
   rw [Prover.continueFromTo_self]
 
+/-- **Seam base of the right-block continuation induction (message round).**  Combines
+`append_continueFromTo_seam_peel` (continuing from the seam state index `m` for one round equals
+`processRound ⟨m,_⟩` on a `pure` input) with the proven seam reduction
+`append_processRound_seam_message`: at a `P_to_V` seam round, the one-round continuation surfaces
+`P₁.output >>= P₂.sendMessage (P₂.input ·)` — the `P₁.output >>= P₂.input` threading that happens
+*only* at the seam — concatenated onto the appended transcript `rSeam.1`.  This is the base case
+(`k = 0 → 1`) of the right-block continuation induction whose interior steps are
+`append_processRound_natAdd_{message,challenge}`. -/
+theorem append_continueFromTo_seam_step_message (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .P_to_V)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V)
+    (rSeam : (pSpec₁ ++ₚ pSpec₂).Transcript (⟨m, by omega⟩ : Fin (m + n)).castSucc
+      × (P₁.append P₂).PrvState (⟨m, by omega⟩ : Fin (m + n)).castSucc) :
+    HEq (Prover.continueFromTo (P₁.append P₂) stmt wit (⟨m, by omega⟩ : Fin (m + n)).castSucc
+          (⟨m, by omega⟩ : Fin (m + n)).succ rSeam)
+      (Bind.bind
+        (liftM (do
+            let ctxIn₂ ← P₁.output (cast (append_PrvState_seam_castSucc hn) rSeam.2)
+            P₂.sendMessage ⟨⟨0, hn⟩, hDir₂⟩ (P₂.input ctxIn₂) :
+            OracleComp oSpec (pSpec₂.Message ⟨⟨0, hn⟩, hDir₂⟩ × P₂.PrvState (⟨0, hn⟩ : Fin n).succ)) :
+          OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+            (pSpec₂.Message ⟨⟨0, hn⟩, hDir₂⟩ × P₂.PrvState (⟨0, hn⟩ : Fin n).succ))
+        (fun p => (pure (rSeam.1.concat (cast (append_Message_seam hn hDir hDir₂).symm p.1),
+            cast (append_PrvState_seam_succ hn).symm p.2) :
+            OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+              ((pSpec₁ ++ₚ pSpec₂).Transcript (⟨m, by omega⟩ : Fin (m + n)).succ
+                × (P₁.append P₂).PrvState (⟨m, by omega⟩ : Fin (m + n)).succ)))) := by
+  rw [append_continueFromTo_seam_peel hn rSeam]
+  exact append_processRound_seam_message hn hDir hDir₂ rSeam
+
+/-- **Seam base of the right-block continuation induction (challenge round).**  The `V_to_P`
+analogue of `append_continueFromTo_seam_step_message`, via `append_processRound_seam_challenge`. -/
+theorem append_continueFromTo_seam_step_challenge (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .V_to_P)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .V_to_P)
+    (rSeam : (pSpec₁ ++ₚ pSpec₂).Transcript (⟨m, by omega⟩ : Fin (m + n)).castSucc
+      × (P₁.append P₂).PrvState (⟨m, by omega⟩ : Fin (m + n)).castSucc) :
+    HEq (Prover.continueFromTo (P₁.append P₂) stmt wit (⟨m, by omega⟩ : Fin (m + n)).castSucc
+          (⟨m, by omega⟩ : Fin (m + n)).succ rSeam)
+      (Bind.bind
+        (liftM (pSpec₂.getChallenge ⟨⟨0, hn⟩, hDir₂⟩) :
+          OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (pSpec₂.Challenge ⟨⟨0, hn⟩, hDir₂⟩))
+        (fun challenge =>
+          Bind.bind
+            (liftM (do
+                let ctxIn₂ ← P₁.output (cast (append_PrvState_seam_castSucc hn) rSeam.2)
+                P₂.receiveChallenge ⟨⟨0, hn⟩, hDir₂⟩ (P₂.input ctxIn₂) :
+                OracleComp oSpec
+                  (pSpec₂.Challenge ⟨⟨0, hn⟩, hDir₂⟩ → P₂.PrvState (⟨0, hn⟩ : Fin n).succ)) :
+              OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+                (pSpec₂.Challenge ⟨⟨0, hn⟩, hDir₂⟩ → P₂.PrvState (⟨0, hn⟩ : Fin n).succ))
+            (fun f => (pure
+              (rSeam.1.concat (cast (append_Challenge_seam hn hDir hDir₂).symm challenge),
+                cast (append_PrvState_seam_succ hn).symm (f challenge)) :
+              OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+                ((pSpec₁ ++ₚ pSpec₂).Transcript (⟨m, by omega⟩ : Fin (m + n)).succ
+                  × (P₁.append P₂).PrvState (⟨m, by omega⟩ : Fin (m + n)).succ))))) := by
+  rw [append_continueFromTo_seam_peel hn rSeam]
+  exact append_processRound_seam_challenge hn hDir hDir₂ rSeam
+
+
 /-- **`Fin.snoc`/`Fin.hconcat` bridge (partial `(T)` family).**  A partial-transcript
 `Transcript.concat msg T` is `Fin.snoc T msg` over the transcript motive `δ`; the prefix/snoc
 commutation keystone `Fin.happend_hconcat_eq` is, by contrast, stated for `Fin.hconcat`.  This lemma
