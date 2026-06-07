@@ -582,6 +582,102 @@ theorem mcaPrizeLatticeResolved_with_threshold_spec_prize_allRates_of_forall_not
   exact ⟨hne, heq, hsat⟩
 
 set_option linter.style.longLine false in
+/-- Repaired double-cover data resolves the faithful prize lattice at the concrete
+`mcaThreshold` indices and preserves only the threshold equality witnesses. -/
+theorem mcaPrizeLatticeResolved_with_threshold_prize_allRates_ofDoubleCover
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hcov : ∀ j : Fin 4, MCAForallDoubleCover (F := F) (A := F)
+      (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+      (δ j)) :
+    let C : Fin 4 → Set (ι → F) := fun j =>
+      ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      mcaPrizeLatticeResolved domain τ ∧
+        ∀ j : Fin 4,
+          ∃ hne : mcaThresholdExists (C j) epsStar,
+            τ j = mcaThreshold (C j) epsStar hne := by
+  rcases mcaPrizeLatticeResolved_with_threshold_spec_prize_allRates_ofDoubleCover
+      domain δ hδ_le_one hcov with ⟨τ, hτ, hspec⟩
+  refine ⟨τ, hτ, ?_⟩
+  intro j
+  rcases hspec j with ⟨hne, heq, _hsat⟩
+  exact ⟨hne, heq⟩
+
+set_option linter.style.longLine false in
+/-- Named bad-scalar double-cover data resolves the faithful prize lattice at concrete
+`mcaThreshold` indices and preserves only the threshold equality witnesses. -/
+theorem mcaPrizeLatticeResolved_with_threshold_prize_allRates_ofBadScalarDoubleCover
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hcov : ∀ j : Fin 4, ∀ (u : Code.WordStack F (Fin 2) ι) (γ : F),
+      MCABadScalarDoubleCover (F := F) (A := F)
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) (u 0) (u 1) γ) :
+    let C : Fin 4 → Set (ι → F) := fun j =>
+      ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      mcaPrizeLatticeResolved domain τ ∧
+        ∀ j : Fin 4,
+          ∃ hne : mcaThresholdExists (C j) epsStar,
+            τ j = mcaThreshold (C j) epsStar hne := by
+  rcases mcaPrizeLatticeResolved_with_threshold_spec_prize_allRates_ofBadScalarDoubleCover
+      domain δ hδ_le_one hcov with ⟨τ, hτ, hspec⟩
+  refine ⟨τ, hτ, ?_⟩
+  intro j
+  rcases hspec j with ⟨hne, heq, _hsat⟩
+  exact ⟨hne, heq⟩
+
+set_option linter.style.longLine false in
+/-- Zero bad-scalar counts resolve the faithful prize lattice at concrete `mcaThreshold` indices
+and preserve only the threshold equality witnesses. -/
+theorem mcaPrizeLatticeResolved_with_threshold_prize_allRates_of_mcaBadCount_zero
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hzero : ∀ j : Fin 4, ∀ u : Code.WordStack F (Fin 2) ι,
+      mcaBadCount (F := F) (A := F)
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) (u 0) (u 1) = 0) :
+    let C : Fin 4 → Set (ι → F) := fun j =>
+      ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      mcaPrizeLatticeResolved domain τ ∧
+        ∀ j : Fin 4,
+          ∃ hne : mcaThresholdExists (C j) epsStar,
+            τ j = mcaThreshold (C j) epsStar hne := by
+  rcases mcaPrizeLatticeResolved_with_threshold_spec_prize_allRates_of_mcaBadCount_zero
+      domain δ hδ_le_one hzero with ⟨τ, hτ, hspec⟩
+  refine ⟨τ, hτ, ?_⟩
+  intro j
+  rcases hspec j with ⟨hne, heq, _hsat⟩
+  exact ⟨hne, heq⟩
+
+set_option linter.style.longLine false in
+/-- Direct no-bad-event frontiers resolve the faithful prize lattice at concrete `mcaThreshold`
+indices and preserve only the threshold equality witnesses. -/
+theorem mcaPrizeLatticeResolved_with_threshold_prize_allRates_of_forall_not_mcaEvent
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (hno : ∀ j : Fin 4, ∀ (u : Code.WordStack F (Fin 2) ι) (γ : F),
+      ¬ mcaEvent (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))
+        (δ j) (u 0) (u 1) γ) :
+    let C : Fin 4 → Set (ι → F) := fun j =>
+      ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      mcaPrizeLatticeResolved domain τ ∧
+        ∀ j : Fin 4,
+          ∃ hne : mcaThresholdExists (C j) epsStar,
+            τ j = mcaThreshold (C j) epsStar hne := by
+  rcases mcaPrizeLatticeResolved_with_threshold_spec_prize_allRates_of_forall_not_mcaEvent
+      domain δ hδ_le_one hno with ⟨τ, hτ, hspec⟩
+  refine ⟨τ, hτ, ?_⟩
+  intro j
+  rcases hspec j with ⟨hne, heq, _hsat⟩
+  exact ⟨hne, heq⟩
+
+set_option linter.style.longLine false in
 /-- Repaired double-cover data and explicit upper witnesses resolve the faithful prize lattice at
 the concrete `mcaThreshold` indices and preserve threshold facts plus both lattice brackets. -/
 theorem mcaPrizeLatticeResolved_with_threshold_spec_and_brackets_prize_allRates_ofDoubleCover
@@ -737,6 +833,14 @@ set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_threshold_spec_prize_allRates_of_mcaBadCount_zero
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_threshold_spec_prize_allRates_of_forall_not_mcaEvent
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_threshold_prize_allRates_ofDoubleCover
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_threshold_prize_allRates_ofBadScalarDoubleCover
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_threshold_prize_allRates_of_mcaBadCount_zero
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_threshold_prize_allRates_of_forall_not_mcaEvent
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLatticeResolved_with_threshold_spec_and_brackets_prize_allRates_ofDoubleCover
 set_option linter.style.longLine false in

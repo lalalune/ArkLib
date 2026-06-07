@@ -240,12 +240,55 @@ theorem oracleReduction_isStatHVZK (ε : NNReal) :
   (oracleReduction_isHVZK (oSpec := oSpec) (OStatement := OStatement)
     (init := init) (impl := impl)).isStatHVZK ε
 
+/-- The underlying non-oracle reduction of `RandomQuery` is perfectly HVZK. -/
+theorem oracleReduction_toReduction_perfectHVZK :
+    Reduction.perfectHVZK init impl (relIn OStatement)
+      (oracleReduction.{0} oSpec OStatement).toReduction
+      (transcriptSimulator (oSpec := oSpec) (OStatement := OStatement)
+        (init := init) (impl := impl)) :=
+  oracleReduction_perfectHVZK (oSpec := oSpec) (OStatement := OStatement)
+    (init := init) (impl := impl)
+
+/-- The underlying non-oracle reduction of `RandomQuery` is statistically HVZK at every error
+budget. -/
+theorem oracleReduction_toReduction_statisticalHVZK (ε : NNReal) :
+    Reduction.statisticalHVZK init impl (relIn OStatement)
+      (oracleReduction.{0} oSpec OStatement).toReduction
+      (transcriptSimulator (oSpec := oSpec) (OStatement := OStatement)
+        (init := init) (impl := impl)) ε :=
+  oracleReduction_statisticalHVZK (oSpec := oSpec) (OStatement := OStatement)
+    (init := init) (impl := impl) ε
+
+/-- The underlying non-oracle reduction of `RandomQuery` has an explicit perfect-HVZK
+simulator. -/
+theorem oracleReduction_toReduction_isHVZK :
+    Reduction.isHVZK init impl (relIn OStatement)
+      (oracleReduction.{0} oSpec OStatement).toReduction :=
+  ⟨transcriptSimulator (oSpec := oSpec) (OStatement := OStatement)
+      (init := init) (impl := impl),
+    oracleReduction_toReduction_perfectHVZK (oSpec := oSpec) (OStatement := OStatement)
+      (init := init) (impl := impl)⟩
+
+/-- The underlying non-oracle reduction of `RandomQuery` has statistical HVZK at every error
+budget. -/
+theorem oracleReduction_toReduction_isStatHVZK (ε : NNReal) :
+    Reduction.isStatHVZK init impl (relIn OStatement)
+      (oracleReduction.{0} oSpec OStatement).toReduction ε :=
+  ⟨transcriptSimulator (oSpec := oSpec) (OStatement := OStatement)
+      (init := init) (impl := impl),
+    oracleReduction_toReduction_statisticalHVZK (oSpec := oSpec)
+      (OStatement := OStatement) (init := init) (impl := impl) ε⟩
+
 #print axioms RandomQuery.transcriptSimulator
 #print axioms RandomQuery.honestTranscriptDist_oracleReduction_evalDist
 #print axioms RandomQuery.oracleReduction_perfectHVZK
 #print axioms RandomQuery.oracleReduction_statisticalHVZK
 #print axioms RandomQuery.oracleReduction_isHVZK
 #print axioms RandomQuery.oracleReduction_isStatHVZK
+#print axioms RandomQuery.oracleReduction_toReduction_perfectHVZK
+#print axioms RandomQuery.oracleReduction_toReduction_statisticalHVZK
+#print axioms RandomQuery.oracleReduction_toReduction_isHVZK
+#print axioms RandomQuery.oracleReduction_toReduction_isStatHVZK
 
 -- def langIn : Set (Unit × (∀ _ : Fin 2, OStatement)) := setOf fun ⟨(), oracles⟩ =>
 --   oracles 0 = oracles 1
