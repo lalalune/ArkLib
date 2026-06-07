@@ -7,6 +7,7 @@ import ArkLib.Data.CodingTheory.InterleavedCode
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentReduction
 import ArkLib.Data.CodingTheory.HammingBallVolume
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BallEntropy
+import ArkLib.Data.CodingTheory.EntropyVolumeUpperBall
 
 /-!
 # Counting jointly-close stacks (toward T4.17, #82)
@@ -176,5 +177,34 @@ theorem card_jointProximity_le_volume [Nonempty ι] (C : Set (ι → A)) [AddCom
         * CodingTheory.hammingBallVolume (Fintype.card (κ → A)) (δ : ℝ) (Fintype.card ι) := by
   refine le_trans (card_jointProximity_le C δ) (Nat.mul_le_mul_left _ ?_)
   exact le_of_eq (interleaved_ball_card_eq_volume δ)
+
+open Classical in
+/-- **Explicit qEntropy `#{jointProx}` bound.** Below the `q^|κ|`-ary capacity
+(`δ ≤ 1 − 1/q^|κ|`), the jointly-`δ`-close stack count obeys
+`#{jointProx} ≤ |C|^|κ| · (n+1) · (q^|κ|)^{n · H_{q^|κ|}(δ)}`. This is ingredient (b) of the CS25
+breakdown budget `hfar` in the exponential entropy form the final band inequality consumes (the
+`q^{2k}·(n+1)·q^{2n·H_{q²}(δ)}` term for the `Fin 2` stacks). -/
+theorem card_jointProximity_le_qEntropy [Nonempty ι] (C : Set (ι → A)) [AddCommGroup A]
+    [Fintype ↥C] (δ : ℝ≥0)
+    (hq : 2 ≤ Fintype.card (κ → A))
+    (hδcap : (δ : ℝ) ≤ 1 - 1 / (Fintype.card (κ → A) : ℝ)) :
+    ((Finset.univ.filter (fun u : WordStack A κ ι => jointProximity C (u := u) δ)).card : ℝ)
+      ≤ ((Fintype.card ↥C) ^ (Fintype.card κ) : ℝ)
+        * (((Fintype.card ι : ℝ) + 1)
+          * (Fintype.card (κ → A) : ℝ)
+              ^ ((Fintype.card ι : ℝ) * CodingTheory.qEntropy (Fintype.card (κ → A)) (δ : ℝ))) := by
+  have hvol : ((Finset.univ.filter (fun u : WordStack A κ ι => jointProximity C (u := u) δ)).card : ℝ)
+      ≤ ((Fintype.card ↥C) ^ (Fintype.card κ) : ℝ)
+        * (CodingTheory.hammingBallVolume (Fintype.card (κ → A)) (δ : ℝ) (Fintype.card ι) : ℝ) := by
+    have h := card_jointProximity_le_volume (κ := κ) C δ
+    calc ((Finset.univ.filter (fun u : WordStack A κ ι => jointProximity C (u := u) δ)).card : ℝ)
+        ≤ (((Fintype.card ↥C) ^ (Fintype.card κ)
+            * CodingTheory.hammingBallVolume (Fintype.card (κ → A)) (δ : ℝ) (Fintype.card ι) : ℕ) : ℝ) := by
+          exact_mod_cast h
+      _ = _ := by push_cast; ring
+  refine hvol.trans ?_
+  refine mul_le_mul_of_nonneg_left ?_ (by positivity)
+  exact CodingTheory.hammingBallVolume_le_qEntropy_real_radius hq (δ : ℝ)
+    Fintype.card_pos δ.coe_nonneg hδcap
 
 end CS25
