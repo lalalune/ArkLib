@@ -448,6 +448,25 @@ theorem queryRoundAcceptanceBound_of_density
       ≤ (1 - δ) ^ t :=
   QueryRound.queryRound_acceptance_le_of_density G δ t h_density
 
+/-- Normalized-density variant of the proved query-round acceptance proposition.  This packages
+the same count of accepting query tuples, but exposes the hypothesis in the normalized form that
+proximity arguments usually produce. -/
+def queryRoundDensityBound
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    (G : Finset ι) (δ : ℝ≥0) (t : ℕ) : Prop :=
+  (G.card : ℝ≥0) / (Fintype.card ι) ≤ 1 - δ →
+    ((Finset.univ.filter (fun q : Fin t → ι => ∀ j, q j ∈ G)).card : ℝ≥0)
+        / (Fintype.card ι) ^ t
+      ≤ (1 - δ) ^ t
+
+/-- `queryRoundDensityBound` is proved by the density-ratio query-round theorem. -/
+theorem queryRoundDensityBound_holds
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    (G : Finset ι) (δ : ℝ≥0) (t : ℕ) :
+    queryRoundDensityBound G δ t := by
+  intro h_density
+  exact queryRoundAcceptanceBound_of_density G δ t h_density
+
 noncomputable def oracleImpl
     (l : ℕ) (z : Fin (k + 1) → 𝔽) (f : (ω.subdomain 0) → 𝔽) :
   QueryImpl
@@ -959,12 +978,77 @@ theorem fri_query_soundness_of_queryRoundAcceptanceBound
   exact fri_query_soundness_of_parts (n := n) (ω := ω) f h_agreement m_ge_3 parts
     (queryRoundAcceptanceBound_holds G δ queries) h_lens h_agreementBridge
 
+/-- Instantiate the Claim 8.2 frontier with the normalized-density query-round proposition. -/
+def FriQuerySoundnessParts.of_queryRoundDensityBound
+    {t : ℕ}
+  {α : ℝ≥0}
+  (f : Fin t.succ → (ω.subdomain 0 → 𝔽))
+  (h_agreement :
+    correlated_agreement_density
+      (Fₛ f)
+      (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
+    ≤ α)
+  {m : ℕ}
+  (m_ge_3 : m ≥ 3)
+  {ι : Type} [Fintype ι] [DecidableEq ι]
+  (G : Finset ι) (δ : ℝ≥0) (queries : ℕ)
+  (lensReduction agreementBridge : Prop)
+  (pieces_imply_claim :
+    queryRoundDensityBound G δ queries →
+    lensReduction →
+    agreementBridge →
+    fri_query_soundness (n := n) (ω := ω) (f := f)
+      (h_agreement := h_agreement) (m_ge_3 := m_ge_3)) :
+    FriQuerySoundnessParts (n := n) (ω := ω) (f := f)
+      (h_agreement := h_agreement) (m_ge_3 := m_ge_3) where
+  query_round_acceptance_bound := queryRoundDensityBound G δ queries
+  batching_oracle_lens_reduction := lensReduction
+  correlated_agreement_to_jointAgreement := agreementBridge
+  pieces_imply_claim := pieces_imply_claim
+
+/-- Reassemble Claim 8.2 after discharging the query-round frontier with the normalized-density
+form of the proved query-round bound. -/
+theorem fri_query_soundness_of_queryRoundDensityBound
+    {t : ℕ}
+  {α : ℝ≥0}
+  (f : Fin t.succ → (ω.subdomain 0 → 𝔽))
+  (h_agreement :
+    correlated_agreement_density
+      (Fₛ f)
+      (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
+    ≤ α)
+  {m : ℕ}
+  (m_ge_3 : m ≥ 3)
+  {ι : Type} [Fintype ι] [DecidableEq ι]
+  (G : Finset ι) (δ : ℝ≥0) (queries : ℕ)
+  {lensReduction agreementBridge : Prop}
+  (pieces_imply_claim :
+    queryRoundDensityBound G δ queries →
+    lensReduction →
+    agreementBridge →
+    fri_query_soundness (n := n) (ω := ω) (f := f)
+      (h_agreement := h_agreement) (m_ge_3 := m_ge_3))
+  (h_lens : lensReduction)
+  (h_agreementBridge : agreementBridge) :
+    fri_query_soundness (n := n) (ω := ω) (f := f)
+      (h_agreement := h_agreement) (m_ge_3 := m_ge_3) := by
+  let parts :=
+    FriQuerySoundnessParts.of_queryRoundDensityBound
+      (n := n) (ω := ω) (f := f) (h_agreement := h_agreement)
+      (m_ge_3 := m_ge_3) G δ queries lensReduction agreementBridge pieces_imply_claim
+  exact fri_query_soundness_of_parts (n := n) (ω := ω) f h_agreement m_ge_3 parts
+    (queryRoundDensityBound_holds G δ queries) h_lens h_agreementBridge
+
 #print axioms Fri.FriQuerySoundnessParts
 #print axioms Fri.QueryRound.queryRound_acceptance_le_of_density
 #print axioms Fri.queryRoundAcceptanceBound_of_density
+#print axioms Fri.queryRoundDensityBound
+#print axioms Fri.queryRoundDensityBound_holds
 #print axioms Fri.fri_query_soundness_of_parts
 #print axioms Fri.FriQuerySoundnessParts.of_queryRoundAcceptanceBound
 #print axioms Fri.fri_query_soundness_of_queryRoundAcceptanceBound
+#print axioms Fri.FriQuerySoundnessParts.of_queryRoundDensityBound
+#print axioms Fri.fri_query_soundness_of_queryRoundDensityBound
 
 /-
 The old finite-range instance diagnostic scratch block has been removed.  The remaining
@@ -1056,8 +1140,12 @@ end Fri
 #print axioms Fri.fri_query_soundness_of_parts
 #print axioms Fri.QueryRound.queryRound_acceptance_le_of_density
 #print axioms Fri.queryRoundAcceptanceBound_of_density
+#print axioms Fri.queryRoundDensityBound
+#print axioms Fri.queryRoundDensityBound_holds
 #print axioms Fri.FriQuerySoundnessParts.of_queryRoundAcceptanceBound
 #print axioms Fri.fri_query_soundness_of_queryRoundAcceptanceBound
+#print axioms Fri.FriQuerySoundnessParts.of_queryRoundDensityBound
+#print axioms Fri.fri_query_soundness_of_queryRoundDensityBound
 #print axioms Fri.fri_soundness
 #print axioms Fri.FriSoundnessParts
 #print axioms Fri.fri_soundness_of_parts
