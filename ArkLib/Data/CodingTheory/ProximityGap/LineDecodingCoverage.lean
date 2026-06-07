@@ -144,6 +144,29 @@ theorem pairJointAgreesOn_of_MCADoubleCoverOn (C : Set (ι → A))
   obtain ⟨v₁, hv₁, v₂, hv₂, hcover⟩ := hcov
   exact pairJointAgreesOn_of_double_cover C S u₀ u₁ v₁ v₂ hv₁ hv₂ hcover
 
+/-- Joint agreement on `S` gives the named double-cover surface on the same set: use the
+jointly-agreeing codeword pair and the two fixed scalars `0` and `1`. -/
+theorem MCADoubleCoverOn.of_pairJointAgreesOn (C : Set (ι → A))
+    (S : Finset ι) (u₀ u₁ : ι → A)
+    (hpair : pairJointAgreesOn C S u₀ u₁) :
+    MCADoubleCoverOn (F := F) C u₀ u₁ S := by
+  obtain ⟨v₀, hv₀, v₁, hv₁, hagree⟩ := hpair
+  refine ⟨v₀, hv₀, v₁, hv₁, ?_⟩
+  intro i hi
+  rcases hagree i hi with ⟨h₀, h₁⟩
+  refine ⟨0, 1, zero_ne_one, ?_, ?_⟩
+  · simp [h₀]
+  · simp [h₀, h₁]
+
+/-- The local repaired double-cover surface is exactly the existing joint-agreement predicate
+over the same witness set. -/
+theorem MCADoubleCoverOn_iff_pairJointAgreesOn (C : Set (ι → A))
+    (S : Finset ι) (u₀ u₁ : ι → A) :
+    MCADoubleCoverOn (F := F) C u₀ u₁ S ↔ pairJointAgreesOn C S u₀ u₁ := by
+  constructor
+  · exact pairJointAgreesOn_of_MCADoubleCoverOn C S u₀ u₁
+  · exact MCADoubleCoverOn.of_pairJointAgreesOn C S u₀ u₁
+
 /-- **`mcaEvent` with an S-pinned double cover is impossible.** Given a concrete witness set
 `S` realising the `mcaEvent` body (size + line-witness + `¬ pairJointAgreesOn S`), a
 line-decoder pair `(v₁, v₂) ∈ C` doubly covering `S` contradicts the `¬ pairJointAgreesOn S`
@@ -203,6 +226,25 @@ theorem MCABadScalarDoubleCover.not_mcaEvent
   rintro ⟨S, hsize, hwit, hpair⟩
   exact MCABadScalarDoubleCover.not_mcaEventBody C δ u₀ u₁ γ hcov
     ⟨S, hsize, hwit, hpair⟩ S hsize hwit hpair
+
+/-- A direct no-event certificate supplies the local bad-scalar double-cover obligation,
+vacuously. -/
+theorem MCABadScalarDoubleCover.of_not_mcaEvent
+    (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A) (γ : F)
+    (hno : ¬ mcaEvent C δ u₀ u₁ γ) :
+    MCABadScalarDoubleCover (F := F) (A := A) C δ u₀ u₁ γ := by
+  intro hγ
+  exact False.elim (hno hγ)
+
+/-- The named local bad-scalar double-cover obligation is exact: it is equivalent to ruling out
+that scalar's `mcaEvent`. -/
+theorem MCABadScalarDoubleCover_iff_not_mcaEvent
+    (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A) (γ : F) :
+    MCABadScalarDoubleCover (F := F) (A := A) C δ u₀ u₁ γ ↔
+      ¬ mcaEvent C δ u₀ u₁ γ := by
+  constructor
+  · exact MCABadScalarDoubleCover.not_mcaEvent C δ u₀ u₁ γ
+  · exact MCABadScalarDoubleCover.of_not_mcaEvent C δ u₀ u₁ γ
 
 /-- **Exposed repaired T4.21 hypothesis.** Every stack and every bad scalar carries the
 per-coordinate double cover that the Guruswami--Sudan interpolation route must provide. This is
@@ -313,10 +355,14 @@ theorem epsMCA_eq_zero_of_badScalarDoubleCover (C : Set (ι → A)) (δ : ℝ≥
 #print axioms MCADoubleCoverOn
 #print axioms MCABadScalarDoubleCover
 #print axioms pairJointAgreesOn_of_MCADoubleCoverOn
+#print axioms MCADoubleCoverOn.of_pairJointAgreesOn
+#print axioms MCADoubleCoverOn_iff_pairJointAgreesOn
 #print axioms not_mcaEventBody_of_MCADoubleCoverOn
 #print axioms MCADoubleCoverOn.mono
 #print axioms MCABadScalarDoubleCover.not_mcaEventBody
 #print axioms MCABadScalarDoubleCover.not_mcaEvent
+#print axioms MCABadScalarDoubleCover.of_not_mcaEvent
+#print axioms MCABadScalarDoubleCover_iff_not_mcaEvent
 #print axioms MCAForallDoubleCover
 #print axioms MCAForallDoubleCover_iff_badScalarDoubleCover
 #print axioms mcaBadCount_eq_zero_of_badScalarDoubleCover
