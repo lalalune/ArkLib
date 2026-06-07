@@ -185,6 +185,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Basic
 import ArkLib.Data.CodingTheory.ProximityGap.BivariateVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardLatticeSlice
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidual
+import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidualRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BCHKSBridges
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BallEntropy
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BallInterVanish
@@ -482,6 +483,7 @@ import ArkLib.OracleReduction.VectorIOR
 import ArkLib.ProofSystem.BCS.ErrorAccounting
 import ArkLib.ProofSystem.BatchedFri.QueryRoundAnalysis
 import ArkLib.ProofSystem.BatchedFri.QueryRoundProbability
+import ArkLib.ProofSystem.BatchedFri.QueryRoundRSCurveSoundness
 import ArkLib.ProofSystem.BatchedFri.QueryRoundSoundness
 import ArkLib.ProofSystem.BatchedFri.Security
 import ArkLib.ProofSystem.BatchedFri.Spec.General

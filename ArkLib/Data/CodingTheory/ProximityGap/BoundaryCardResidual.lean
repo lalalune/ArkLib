@@ -51,9 +51,12 @@ So the boundary case splits cleanly:
   in the regime `errorBound > 0`, where the §5 quantitative probability threshold is available —
   unlike the exact boundary, where `errorBound = 0` makes it vacuous (cf. `BoundaryDischarge.lean`).
 * **Lattice case** (`δ·n ∈ ℕ`): the boundary *is* the left endpoint of its level set, the
-  reduction to a strict sub-radius is unavailable, and the genuine Johnson-boundary combinatorics
-  is required.  This case is **precisely isolated** as `BoundaryCardLatticeResidual` and is *not*
-  proved here.
+  reduction to a strict sub-radius is unavailable.  The bare nonempty-good-set residual is not just
+  unproved: `BoundaryCardResidualRefutation.not_boundaryCardResidual` gives a small `ZMod 5`
+  square-endpoint counterexample.  Thus this file keeps the historical residual interfaces only as
+  explicit hypotheses/adapters; honest boundary work must retain a genuinely stronger threshold,
+  cardinality, or coefficient-polynomial hypothesis.  The boundary probability premise alone also
+  collapses at `errorBound = 0`; see the refutation file for the corresponding counterexample.
 
 ## What is therefore proved here
 
@@ -163,6 +166,31 @@ theorem exists_lt_floor_eq_of_floor_lt (n : ℕ) {δ : ℝ≥0} (hn : 0 < n)
   have hfloor_ge : j ≤ Nat.floor (δ' * (n : ℝ≥0)) := (Nat.le_floor_iff (zero_le _)).mpr hlow
   omega
 
+/-- **At a lattice endpoint, every strict sub-radius has strictly smaller floor.**  This is the
+exact complement of `exists_lt_floor_eq_of_floor_lt`: if `δ · n` is already an integer, then `δ`
+is the left endpoint of its `1/n` floor cell, so moving strictly below it must leave the cell. -/
+theorem floor_lt_of_lt_of_lattice (n : ℕ) {δ δ' : ℝ≥0} (hn : 0 < n)
+    (hfloor : (Nat.floor (δ * n) : ℝ≥0) = δ * n)
+    (hδ'lt : δ' < δ) :
+    Nat.floor (δ' * n) < Nat.floor (δ * n) := by
+  have hnpos : (0 : ℝ≥0) < (n : ℝ≥0) := by exact_mod_cast hn
+  have hmul_lt : δ' * (n : ℝ≥0) < δ * (n : ℝ≥0) :=
+    mul_lt_mul_of_pos_right hδ'lt hnpos
+  have hmul_lt_floor :
+      δ' * (n : ℝ≥0) < (Nat.floor (δ * (n : ℝ≥0)) : ℝ≥0) := by
+    simpa [hfloor] using hmul_lt
+  exact (Nat.floor_lt (zero_le _)).mpr hmul_lt_floor
+
+/-- **No strict sub-radius has the same floor at a lattice endpoint.**  This records the precise
+failure mode of the quantization reduction on the square-root lattice branch. -/
+theorem not_exists_lt_floor_eq_of_lattice (n : ℕ) {δ : ℝ≥0} (hn : 0 < n)
+    (hfloor : (Nat.floor (δ * n) : ℝ≥0) = δ * n) :
+    ¬ ∃ δ' : ℝ≥0, δ' < δ ∧ Nat.floor (δ' * n) = Nat.floor (δ * n) := by
+  rintro ⟨δ', hδ'lt, hδ'floor⟩
+  have hlt := floor_lt_of_lt_of_lattice n hn hfloor hδ'lt
+  rw [hδ'floor] at hlt
+  exact (Nat.lt_irrefl (Nat.floor (δ * n))) hlt
+
 /-! ## The boundary residual on the non-lattice part of parameter space -/
 
 omit [DecidableEq ι] in
@@ -229,11 +257,13 @@ theorem boundaryCardResidual_of_not_lattice {k deg : ℕ} {domain : ι ↪ F} {�
 /-! ## The precisely isolated genuine lattice case -/
 
 omit [DecidableEq ι] in
-/-- **The isolated genuine residual: the boundary is a `1/n`-lattice point.**  When
+/-- **The isolated lattice hypothesis surface: the boundary is a `1/n`-lattice point.**  When
 `δ · n ∈ ℕ` (`δ = j/n` exactly), the boundary is the *left endpoint* of its level set and there
-is no strict sub-radius with the same floor: the quantization reduction is unavailable.  This is
-the genuine Johnson-boundary combinatorial case (`deg·n` a perfect square).  It is recorded here
-as an explicit named obligation — *not* proved — so the residual surface is exact. -/
+is no strict sub-radius with the same floor: the quantization reduction is unavailable.
+
+This bare nonempty-good-set obligation is false in general; see
+`BoundaryCardResidualRefutation.not_boundaryCardLatticeResidual`.  It remains useful only as an
+explicit assumption surface for older adapters. -/
 def BoundaryCardLatticeResidual {k deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} : Prop :=
   ∀ (_hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι),
     δ = 1 - ReedSolomon.sqrtRate deg domain →
@@ -291,6 +321,48 @@ theorem BoundaryCardLatticeData.card_ge {k deg : ℕ} {domain : ι ↪ F} {δ : 
     (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card ≥
       (Fintype.card ι + 1) * k :=
   (h hk u hδeq hfloor hcardPos).2.1
+
+omit [Nonempty ι] [DecidableEq ι] in
+/-- Any nonempty instance of `BoundaryCardLatticeData` forces the field to contain at least the
+stored `(n + 1) * k` good coefficients.  This is a necessary-size check for the exact lattice data
+package, obtained only from the package's cardinality projection and `card_le_univ`. -/
+theorem BoundaryCardLatticeData.field_card_ge_of_pos {k deg : ℕ} {domain : ι ↪ F}
+    {δ : ℝ≥0}
+    (h : BoundaryCardLatticeData (k := k) (deg := deg) (domain := domain) (δ := δ))
+    (hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι)
+    (hδeq : δ = 1 - ReedSolomon.sqrtRate deg domain)
+    (hfloor : (Nat.floor (δ * Fintype.card ι) : ℝ≥0) = δ * Fintype.card ι)
+    (hcardPos : 0 < (RS_goodCoeffsCurve (k := k) (deg := deg)
+      (domain := domain) u δ).card) :
+    (Fintype.card ι + 1) * k ≤ Fintype.card F := by
+  have hge :
+      (Fintype.card ι + 1) * k ≤
+        (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card :=
+    BoundaryCardLatticeData.card_ge h hk u hδeq hfloor hcardPos
+  have hle :
+      (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ).card ≤
+        Fintype.card F := by
+    simpa using Finset.card_le_univ
+      (RS_goodCoeffsCurve (k := k) (deg := deg) (domain := domain) u δ)
+  exact le_trans hge hle
+
+omit [Nonempty ι] [DecidableEq ι] in
+/-- If the field is too small to contain `(n + 1) * k` good coefficients, then a positive-good
+lattice instance cannot satisfy the current `BoundaryCardLatticeData` package.  This is the
+contrapositive form of `field_card_ge_of_pos` and makes explicit that the data package is a strong
+sufficient assumption, not a consequence of mere nonemptiness in small-field regimes. -/
+theorem BoundaryCardLatticeData.not_of_field_card_lt_of_pos {k deg : ℕ} {domain : ι ↪ F}
+    {δ : ℝ≥0}
+    (hfield : Fintype.card F < (Fintype.card ι + 1) * k)
+    (hk : 0 < k) (u : WordStack F (Fin (k + 1)) ι)
+    (hδeq : δ = 1 - ReedSolomon.sqrtRate deg domain)
+    (hfloor : (Nat.floor (δ * Fintype.card ι) : ℝ≥0) = δ * Fintype.card ι)
+    (hcardPos : 0 < (RS_goodCoeffsCurve (k := k) (deg := deg)
+      (domain := domain) u δ).card) :
+    ¬ BoundaryCardLatticeData (k := k) (deg := deg) (domain := domain) (δ := δ) := by
+  intro h
+  exact (not_lt_of_ge
+    (BoundaryCardLatticeData.field_card_ge_of_pos h hk u hδeq hfloor hcardPos)) hfield
 
 omit [Nonempty ι] [DecidableEq ι] in
 /-- Projection of the coefficient-polynomial extractor stored in `BoundaryCardLatticeData`. -/
@@ -987,12 +1059,16 @@ with no `sorry`/`admit`/`axiom`/`native_decide`. -/
 #print axioms ArkLib.BoundaryCardResidual.goodCoeffsCurve_eq_of_floor_eq
 #print axioms ArkLib.BoundaryCardResidual.jointAgreement_iff_of_floor_eq
 #print axioms ArkLib.BoundaryCardResidual.exists_lt_floor_eq_of_floor_lt
+#print axioms ArkLib.BoundaryCardResidual.floor_lt_of_lt_of_lattice
+#print axioms ArkLib.BoundaryCardResidual.not_exists_lt_floor_eq_of_lattice
 #print axioms ArkLib.BoundaryCardResidual.BoundaryCardStrictInteriorResidual
 #print axioms ArkLib.BoundaryCardResidual.boundaryCardResidual_of_not_lattice
 #print axioms ArkLib.BoundaryCardResidual.BoundaryCardLatticeResidual
 #print axioms ArkLib.BoundaryCardResidual.BoundaryCardLatticeData
 #print axioms ArkLib.BoundaryCardResidual.BoundaryCardLatticeData.card_gt
 #print axioms ArkLib.BoundaryCardResidual.BoundaryCardLatticeData.card_ge
+#print axioms ArkLib.BoundaryCardResidual.BoundaryCardLatticeData.field_card_ge_of_pos
+#print axioms ArkLib.BoundaryCardResidual.BoundaryCardLatticeData.not_of_field_card_lt_of_pos
 #print axioms ArkLib.BoundaryCardResidual.BoundaryCardLatticeData.coeff_polys
 #print axioms ArkLib.BoundaryCardResidual.boundaryCardLatticeResidual_zero
 #print axioms ArkLib.BoundaryCardResidual.boundaryCardLatticeData_zero
