@@ -439,11 +439,59 @@ theorem oracleReduction_isStatHVZK
     (mapWit := mapWit) (embedIdx := embedIdx) (hEq := hEq)
     (init := init) (impl := impl) relIn).isStatHVZK ε
 
+/-- The underlying non-oracle reduction of the plain `ReduceClaim` oracle reduction is perfectly
+HVZK for any input relation. -/
+theorem oracleReduction_toReduction_perfectHVZK
+    (relIn : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn)) :
+    Reduction.perfectHVZK init impl relIn
+      (oracleReduction oSpec mapStmt mapWit embedIdx hEq).toReduction
+      Reduction.idTranscriptSimulator :=
+  oracleReduction_perfectHVZK (oSpec := oSpec) (mapStmt := mapStmt)
+    (mapWit := mapWit) (embedIdx := embedIdx) (hEq := hEq)
+    (init := init) (impl := impl) relIn
+
+/-- The underlying non-oracle reduction of the plain `ReduceClaim` oracle reduction is
+statistically HVZK for any input relation and error budget. -/
+theorem oracleReduction_toReduction_statisticalHVZK
+    (relIn : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn)) (ε : NNReal) :
+    Reduction.statisticalHVZK init impl relIn
+      (oracleReduction oSpec mapStmt mapWit embedIdx hEq).toReduction
+      Reduction.idTranscriptSimulator ε :=
+  oracleReduction_statisticalHVZK (oSpec := oSpec) (mapStmt := mapStmt)
+    (mapWit := mapWit) (embedIdx := embedIdx) (hEq := hEq)
+    (init := init) (impl := impl) relIn ε
+
+/-- The underlying non-oracle reduction of the plain `ReduceClaim` oracle reduction has an
+explicit perfect-HVZK simulator for any input relation. -/
+theorem oracleReduction_toReduction_isHVZK
+    (relIn : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn)) :
+    Reduction.isHVZK init impl relIn
+      (oracleReduction oSpec mapStmt mapWit embedIdx hEq).toReduction :=
+  ⟨Reduction.idTranscriptSimulator,
+    oracleReduction_toReduction_perfectHVZK (oSpec := oSpec) (mapStmt := mapStmt)
+      (mapWit := mapWit) (embedIdx := embedIdx) (hEq := hEq)
+      (init := init) (impl := impl) relIn⟩
+
+/-- The underlying non-oracle reduction of the plain `ReduceClaim` oracle reduction has
+statistical HVZK for any input relation and error budget. -/
+theorem oracleReduction_toReduction_isStatHVZK
+    (relIn : Set ((StmtIn × (∀ i, OStmtIn i)) × WitIn)) (ε : NNReal) :
+    Reduction.isStatHVZK init impl relIn
+      (oracleReduction oSpec mapStmt mapWit embedIdx hEq).toReduction ε :=
+  ⟨Reduction.idTranscriptSimulator,
+    oracleReduction_toReduction_statisticalHVZK (oSpec := oSpec) (mapStmt := mapStmt)
+      (mapWit := mapWit) (embedIdx := embedIdx) (hEq := hEq)
+      (init := init) (impl := impl) relIn ε⟩
+
 #print axioms ReduceClaim.honestTranscriptDist_oracleReduction_evalDist
 #print axioms ReduceClaim.oracleReduction_perfectHVZK
 #print axioms ReduceClaim.oracleReduction_statisticalHVZK
 #print axioms ReduceClaim.oracleReduction_isHVZK
 #print axioms ReduceClaim.oracleReduction_isStatHVZK
+#print axioms ReduceClaim.oracleReduction_toReduction_perfectHVZK
+#print axioms ReduceClaim.oracleReduction_toReduction_statisticalHVZK
+#print axioms ReduceClaim.oracleReduction_toReduction_isHVZK
+#print axioms ReduceClaim.oracleReduction_toReduction_isStatHVZK
 
 variable {mapWitInv : (StmtIn × (∀ i, OStmtIn i)) → WitOut → WitIn}
 
