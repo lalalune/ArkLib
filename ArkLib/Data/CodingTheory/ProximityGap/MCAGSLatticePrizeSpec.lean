@@ -131,6 +131,82 @@ theorem exists_mcaPrizeLatticeResolved_with_spec_of_GSMassFrontiers
       (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊)
       (δ j) epsStar (hδ_le_one j) (frontier j)
 
+/-- Per-rate faithful GS mass frontiers expose the selected-threshold specification and lower
+lattice brackets for the faithful MCA prize lattice. -/
+theorem exists_mcaPrizeLatticeSpec_and_lower_brackets_of_GSMassFrontiers
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (frontier : ∀ j : Fin 4,
+      MCAGS.GSMassLowerWitnessFrontier (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊)
+        (δ j) epsStar) :
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      (∀ j : Fin 4,
+        let C : Set (ι → F) :=
+          ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+        ∃ _ : mcaThresholdExists C epsStar,
+          mcaSatisfies C epsStar (τ j) ∧
+            ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j) ∧
+        ∀ j : Fin 4,
+          latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j :=
+  exists_mcaPrizeLatticeSpec_and_lower_brackets_of_lowerWitnesses domain δ hδ_le_one
+    (fun j =>
+      MCAGS.MCALowerWitness.ofGSMassFrontier
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊)
+        (δ j) epsStar (hδ_le_one j) (frontier j))
+    (fun _ => rfl)
+
+/-- Per-rate faithful GS mass frontiers resolve the faithful MCA prize and expose the selected
+threshold specification together with lower lattice brackets. -/
+theorem exists_mcaPrizeLatticeResolved_with_spec_and_lower_brackets_of_GSMassFrontiers
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (frontier : ∀ j : Fin 4,
+      MCAGS.GSMassLowerWitnessFrontier (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊)
+        (δ j) epsStar) :
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      mcaPrizeLatticeResolved domain τ ∧
+        (∀ j : Fin 4,
+          let C : Set (ι → F) :=
+            ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+          ∃ _ : mcaThresholdExists C epsStar,
+            mcaSatisfies C epsStar (τ j) ∧
+              ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j) ∧
+          ∀ j : Fin 4,
+            latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j :=
+  exists_mcaPrizeLatticeResolved_with_spec_and_lower_brackets_of_lowerWitnesses
+    domain δ hδ_le_one
+    (fun j =>
+      MCAGS.MCALowerWitness.ofGSMassFrontier
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊)
+        (δ j) epsStar (hδ_le_one j) (frontier j))
+    (fun _ => rfl)
+
+/-- Per-rate faithful GS mass frontiers resolve the faithful MCA prize and expose lower lattice
+brackets for the selected thresholds. -/
+theorem exists_mcaPrizeLatticeResolved_with_lower_brackets_of_GSMassFrontiers
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (frontier : ∀ j : Fin 4,
+      MCAGS.GSMassLowerWitnessFrontier (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊)
+        (δ j) epsStar) :
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      mcaPrizeLatticeResolved domain τ ∧
+        ∀ j : Fin 4,
+          latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j :=
+  exists_mcaPrizeLatticeResolved_with_lower_brackets_of_lowerWitnesses
+    domain δ hδ_le_one
+    (fun j =>
+      MCAGS.MCALowerWitness.ofGSMassFrontier
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊)
+        (δ j) epsStar (hδ_le_one j) (frontier j))
+    (fun _ => rfl)
+
 /-- Per-rate faithful GS pivot/list-size frontiers resolve the faithful MCA lattice prize
 existentially. -/
 theorem exists_mcaPrizeLatticeResolved_of_GSPivotFrontiers
@@ -169,6 +245,82 @@ theorem exists_mcaPrizeLatticeResolved_with_spec_of_GSPivotFrontiers
     MCAGS.MCALowerWitness.ofGSPivotFrontier
       (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊)
       (δ j) epsStar (hδ_le_one j) (frontier j)
+
+/-- Per-rate faithful GS pivot/list-size frontiers expose the selected-threshold specification and
+lower lattice brackets for the faithful MCA prize lattice. -/
+theorem exists_mcaPrizeLatticeSpec_and_lower_brackets_of_GSPivotFrontiers
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (frontier : ∀ j : Fin 4,
+      MCAGS.GSPivotLowerWitnessFrontier (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊)
+        (δ j) epsStar) :
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      (∀ j : Fin 4,
+        let C : Set (ι → F) :=
+          ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+        ∃ _ : mcaThresholdExists C epsStar,
+          mcaSatisfies C epsStar (τ j) ∧
+            ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j) ∧
+        ∀ j : Fin 4,
+          latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j :=
+  exists_mcaPrizeLatticeSpec_and_lower_brackets_of_lowerWitnesses domain δ hδ_le_one
+    (fun j =>
+      MCAGS.MCALowerWitness.ofGSPivotFrontier
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊)
+        (δ j) epsStar (hδ_le_one j) (frontier j))
+    (fun _ => rfl)
+
+/-- Per-rate faithful GS pivot/list-size frontiers resolve the faithful MCA prize and expose the
+selected-threshold specification together with lower lattice brackets. -/
+theorem exists_mcaPrizeLatticeResolved_with_spec_and_lower_brackets_of_GSPivotFrontiers
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (frontier : ∀ j : Fin 4,
+      MCAGS.GSPivotLowerWitnessFrontier (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊)
+        (δ j) epsStar) :
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      mcaPrizeLatticeResolved domain τ ∧
+        (∀ j : Fin 4,
+          let C : Set (ι → F) :=
+            ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊
+          ∃ _ : mcaThresholdExists C epsStar,
+            mcaSatisfies C epsStar (τ j) ∧
+              ∀ i : Fin (Fintype.card ι + 1), mcaSatisfies C epsStar i → i ≤ τ j) ∧
+          ∀ j : Fin 4,
+            latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j :=
+  exists_mcaPrizeLatticeResolved_with_spec_and_lower_brackets_of_lowerWitnesses
+    domain δ hδ_le_one
+    (fun j =>
+      MCAGS.MCALowerWitness.ofGSPivotFrontier
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊)
+        (δ j) epsStar (hδ_le_one j) (frontier j))
+    (fun _ => rfl)
+
+/-- Per-rate faithful GS pivot/list-size frontiers resolve the faithful MCA prize and expose lower
+lattice brackets for the selected thresholds. -/
+theorem exists_mcaPrizeLatticeResolved_with_lower_brackets_of_GSPivotFrontiers
+    (domain : ι ↪ F) (δ : Fin 4 → ℝ≥0)
+    (hδ_le_one : ∀ j : Fin 4, δ j ≤ 1)
+    (frontier : ∀ j : Fin 4,
+      MCAGS.GSPivotLowerWitnessFrontier (F := F)
+        (ReedSolomon.code domain
+          ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊)
+        (δ j) epsStar) :
+    ∃ τ : Fin 4 → Fin (Fintype.card ι + 1),
+      mcaPrizeLatticeResolved domain τ ∧
+        ∀ j : Fin 4,
+          latticeIndexOf (ι := ι) (δ j) (hδ_le_one j) ≤ τ j :=
+  exists_mcaPrizeLatticeResolved_with_lower_brackets_of_lowerWitnesses
+    domain δ hδ_le_one
+    (fun j =>
+      MCAGS.MCALowerWitness.ofGSPivotFrontier
+        (ReedSolomon.code domain ⌊prizeRates j * (Fintype.card ι : ℝ≥0)⌋₊)
+        (δ j) epsStar (hδ_le_one j) (frontier j))
+    (fun _ => rfl)
 
 /-- Faithful GS mass lower frontiers and explicit upper witnesses bracket all four faithful MCA
 prize thresholds. -/
@@ -549,9 +701,21 @@ set_option linter.style.longLine false in
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_spec_of_GSMassFrontiers
 set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeSpec_and_lower_brackets_of_GSMassFrontiers
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_spec_and_lower_brackets_of_GSMassFrontiers
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_lower_brackets_of_GSMassFrontiers
+set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_of_GSPivotFrontiers
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_spec_of_GSPivotFrontiers
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeSpec_and_lower_brackets_of_GSPivotFrontiers
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_spec_and_lower_brackets_of_GSPivotFrontiers
+set_option linter.style.longLine false in
+#print axioms ProximityGap.GrandChallengesLattice.exists_mcaPrizeLatticeResolved_with_lower_brackets_of_GSPivotFrontiers
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.mcaPrizeLattice_bracketed_of_GSMassFrontiers_and_upperWitnesses
 set_option linter.style.longLine false in
