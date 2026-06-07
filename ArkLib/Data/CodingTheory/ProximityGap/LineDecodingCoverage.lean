@@ -345,6 +345,25 @@ theorem mcaBadCount_eq_zero_of_badScalarDoubleCover
     (fun γ hγ S hsize hwit hpair => by
       simpa [MCADoubleCoverOn] using hcov γ hγ S hsize hwit hpair)
 
+/-- Zero bad-scalar count repacks as the named per-scalar double-cover surface. This is vacuous
+because zero counts rule out every bad event. -/
+theorem badScalarDoubleCover_of_mcaBadCount_eq_zero
+    (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A)
+    (hzero : mcaBadCount (F := F) C δ u₀ u₁ = 0) :
+    ∀ γ : F, MCABadScalarDoubleCover (F := F) (A := A) C δ u₀ u₁ γ := by
+  intro γ
+  exact (MCABadScalarDoubleCover_iff_not_mcaEvent C δ u₀ u₁ γ).mpr
+    ((mcaBadCount_eq_zero_iff_forall_not_mcaEvent C δ u₀ u₁).mp hzero γ)
+
+/-- Per-stack count zero is exactly the named per-scalar double-cover surface. -/
+theorem mcaBadCount_eq_zero_iff_badScalarDoubleCover
+    (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A) :
+    mcaBadCount (F := F) C δ u₀ u₁ = 0 ↔
+      ∀ γ : F, MCABadScalarDoubleCover (F := F) (A := A) C δ u₀ u₁ γ := by
+  constructor
+  · exact badScalarDoubleCover_of_mcaBadCount_eq_zero C δ u₀ u₁
+  · exact mcaBadCount_eq_zero_of_badScalarDoubleCover C δ u₀ u₁
+
 open Classical in
 /-- **Repaired Theorem 4.21, error form.** If every stack's every bad scalar's witness set is
 doubly covered, then `ε_mca(C, δ) = 0`. This is the faithful replacement for the refuted
@@ -442,6 +461,8 @@ theorem epsMCA_eq_zero_of_MCAForallDoubleCover (C : Set (ι → A)) (δ : ℝ≥
 #print axioms MCAForallDoubleCover.of_forall_not_mcaEvent
 #print axioms MCAForallDoubleCover_iff_forall_not_mcaEvent
 #print axioms mcaBadCount_eq_zero_of_badScalarDoubleCover
+#print axioms badScalarDoubleCover_of_mcaBadCount_eq_zero
+#print axioms mcaBadCount_eq_zero_iff_badScalarDoubleCover
 #print axioms epsMCA_eq_zero_of_badScalarDoubleCover
 #print axioms mcaBadCount_eq_zero_of_MCAForallDoubleCover
 #print axioms MCAForallDoubleCover.forall_mcaBadCount_eq_zero

@@ -90,6 +90,10 @@ theorem fiatShamir_completeness_of_runEq
   (fiatShamir_completeness_unroll_of_runEq init impl relIn relOut completenessError R hRunEq).2
     hHonest
 
+#print axioms fiatShamir_runCollapse_of_runEq
+#print axioms fiatShamir_completeness_unroll_of_runEq
+#print axioms fiatShamir_completeness_of_runEq
+
 end
 
 end Issue116
