@@ -37,6 +37,7 @@ variable (β : Fin r → L) [hβ_lin_indep : Fact (LinearIndependent 𝔽q β)]
 variable {ℓ 𝓡 ϑ : ℕ} [NeZero ℓ] [NeZero 𝓡] [NeZero ϑ]
 variable {h_ℓ_add_R_rate : ℓ + 𝓡 < r}
 variable {𝓑 : Fin 2 ↪ L}
+variable [FoldPreservesBBFCodeMembershipResidual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
 
 private lemma getBit_eq_testBit (n k : ℕ) :
     Nat.getBit k n = 1 ↔ n.testBit k = true := by
@@ -191,7 +192,11 @@ theorem preTensorCombine_is_interleavedCodeword_of_codeword (i : Fin ℓ) (steps
     (⋈|(preTensorCombine_WordStack 𝔽q β i steps h_destIdx h_destIdx_le
       (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩))) ∈
       (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx ^⋈ (Fin (2 ^ steps))) := by
-  rw [Code.interleavedCode_eq_interleavedCodeSet_of_moduleCode]
+  change (⋈|preTensorCombine_WordStack 𝔽q β i steps h_destIdx h_destIdx_le
+      (f : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)) ∈
+    Code.interleavedCodeSet
+      (C := (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx :
+        Set (sDomain 𝔽q β h_ℓ_add_R_rate destIdx → L)))
   rw [Code.mem_interleavedCode_iff]
   intro rowIdx
   simpa [preTensorCombine_WordStack, Code.InterleavedWord.getRowWord,
@@ -206,10 +211,7 @@ def inputRowCodeword (i : Fin ℓ) (steps : ℕ) {destIdx : Fin r}
       ^⋈ (Fin (2 ^ steps)))) (rowIdx : Fin (2 ^ steps)) :
     BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx :=
   ⟨Code.InterleavedWord.getRowWord V_codeword.val rowIdx, by
-    have hV := V_codeword.property
-    rw [Code.interleavedCode_eq_interleavedCodeSet_of_moduleCode] at hV
-    rw [Code.mem_interleavedCode_iff] at hV
-    exact hV rowIdx⟩
+    exact V_codeword.property rowIdx⟩
 
 /-- Polynomial representative of an input interleaved row. -/
 def getInputRowPoly (i : Fin ℓ) (steps : ℕ) {destIdx : Fin r}
@@ -314,33 +316,47 @@ theorem folded_lifted_IC_eq_IC_row_polyToOracleFunc (i : Fin ℓ) (steps : ℕ)
       (bitsOfIndex (L := L) j) =
     polyToOracleFunc 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (domainIdx := destIdx) P_j := by
   dsimp only
-  simpa [getRowPoly, foldedLiftRowCodeword] using
-    getBBF_Codeword_poly_spec 𝔽q β
-      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx
-      (foldedLiftRowCodeword 𝔽q β i steps h_destIdx h_destIdx_le V_codeword j)
+  change
+    (foldedLiftRowCodeword 𝔽q β i steps h_destIdx h_destIdx_le V_codeword j :
+      OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx) =
+    polyToOracleFunc 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (domainIdx := destIdx)
+      (getBBF_Codeword_poly 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx
+        (foldedLiftRowCodeword 𝔽q β i steps h_destIdx h_destIdx_le V_codeword j))
+  exact getBBF_Codeword_poly_spec 𝔽q β
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx
+    (foldedLiftRowCodeword 𝔽q β i steps h_destIdx h_destIdx_le V_codeword j)
 
+set_option maxHeartbeats 400000 in
 lemma preTensorCombine_of_lift_interleavedCodeword_eq_self (i : Fin ℓ) (steps : ℕ)
     {destIdx : Fin r}
     (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
     (V_codeword : ((BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx)
       ^⋈ (Fin (2 ^ steps)))) :
-    (⋈|(preTensorCombine_WordStack 𝔽q β i steps h_destIdx h_destIdx_le
+    Code.interleaveWordStack (preTensorCombine_WordStack 𝔽q β i steps h_destIdx h_destIdx_le
       (lift_interleavedCodeword 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
         i steps h_destIdx h_destIdx_le V_codeword :
-        OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩))) =
-    (⋈|((fun rowIdx =>
+        OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)) =
+    Code.interleaveWordStack ((fun rowIdx =>
       polyToOracleFunc 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
         (domainIdx := destIdx)
         (getRowPoly 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
           i steps h_destIdx h_destIdx_le V_codeword rowIdx)) :
       WordStack (A := L) (κ := Fin (2 ^ steps))
-        (ι := sDomain 𝔽q β h_ℓ_add_R_rate destIdx))) := by
+        (ι := sDomain 𝔽q β h_ℓ_add_R_rate destIdx)) := by
   ext y rowIdx
-  simpa [preTensorCombine_WordStack, Code.interleaveWordStack] using
-    congrFun
-      (folded_lifted_IC_eq_IC_row_polyToOracleFunc 𝔽q β
-        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+  change
+    (preTensorCombine_WordStack 𝔽q β i steps h_destIdx h_destIdx_le
+      (lift_interleavedCodeword 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+        i steps h_destIdx h_destIdx_le V_codeword :
+        OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)) rowIdx y =
+    polyToOracleFunc 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (domainIdx := destIdx)
+      (getRowPoly 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
         i steps h_destIdx h_destIdx_le V_codeword rowIdx) y
+  exact congrFun
+    (folded_lifted_IC_eq_IC_row_polyToOracleFunc 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      i steps h_destIdx h_destIdx_le V_codeword rowIdx) y
 
 def fiberDiff (i : Fin ℓ) (steps : ℕ) {destIdx : Fin r}
     (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
@@ -359,6 +375,7 @@ lemma fiberwise_disagreement_isomorphism (i : Fin ℓ) (steps : ℕ) {destIdx : 
   intro y
   rfl
 
+set_option maxHeartbeats 400000 in
 lemma preTensorCombine_jointProximityNat_of_codeword (i : Fin ℓ) (steps : ℕ)
     {destIdx : Fin r} (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
     (f_i : BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
@@ -368,9 +385,12 @@ lemma preTensorCombine_jointProximityNat_of_codeword (i : Fin ℓ) (steps : ℕ)
         Set (sDomain 𝔽q β h_ℓ_add_R_rate destIdx → L)))
       (u := preTensorCombine_WordStack 𝔽q β i steps h_destIdx h_destIdx_le
         (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)) e := by
-  unfold jointProximityNat
   let U := preTensorCombine_WordStack 𝔽q β i steps h_destIdx h_destIdx_le
     (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
+  change Δ₀((⋈|U),
+      interleavedCodeSet
+        (C := (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx :
+          Set (sDomain 𝔽q β h_ℓ_add_R_rate destIdx → L)))) ≤ e
   have hU_mem :
       (⋈|U) ∈
         interleavedCodeSet
