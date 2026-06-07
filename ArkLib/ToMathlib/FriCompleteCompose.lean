@@ -69,7 +69,7 @@ Given:
 the proven `OracleReduction.append_perfectCompleteness` yields perfect completeness of the composed
 reduction. -/
 theorem reduction_perfectCompleteness_of_phases
-    (dom_size_cond : (2 ^ (∑ i, (s i).1)) * d ≤ 2 ^ n) (l : ℕ)
+    (dom_size_cond : (2 ^ (∑ i, (s i).1)) * d ≤ 2 ^ n) (l : ℕ) [NeZero l]
     [∀ i, SampleableType
       ((pSpecFold k s (ω := ω) ++ₚ FinalFoldPhase.pSpec F).Challenge i)]
     [∀ i, SampleableType
