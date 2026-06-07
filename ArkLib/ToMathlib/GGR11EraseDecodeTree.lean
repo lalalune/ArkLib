@@ -488,6 +488,20 @@ noncomputable def treeWitness_of_concreteEraseDecodeTree_self
     GGR11TreeWitness C δ m tree.blueDepth tree.redDepth f :=
   treeWitness_of_concreteEraseDecodeTree hL f tree hdom le_rfl le_rfl hbr
 
+/-- Exact-depth witness adapter when the concrete tree's Red branching is bounded by a smaller
+budget `L ≤ Λ(C,δ)`. This is the self-depth analogue of
+`treeWitness_of_concreteEraseDecodeTree_of_redBranchingLe_le`. -/
+noncomputable def treeWitness_of_concreteEraseDecodeTree_self_of_redBranchingLe_le
+    {C : Set (ι → F)} {δ : ℝ} {m : ℕ} (hLambda : 1 ≤ Lambda C δ)
+    (f : Matrix ι (Fin m) F) (tree : EraseDecodeTree)
+    (hdom :
+      (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard
+          ≤ tree.leafCount)
+    {L : ℕ∞} (hL_le : L ≤ Lambda C δ) (hbr : tree.redBranchingLe L) :
+    GGR11TreeWitness C δ m tree.blueDepth tree.redDepth f :=
+  treeWitness_of_concreteEraseDecodeTree_self hLambda f tree hdom
+    (EraseDecodeTree.redBranchingLe_mono hL_le tree hbr)
+
 /-- Concrete Erase-Decode tree existence, with no preselected depth budgets, supplies some exact
 GGR11 witness indexed by the tree's own Blue/Red depths. -/
 theorem treeWitness_of_eraseDecodeTree_self
@@ -502,6 +516,24 @@ theorem treeWitness_of_eraseDecodeTree_self
   exact
     ⟨tree.blueDepth, tree.redDepth,
       ⟨treeWitness_of_concreteEraseDecodeTree_self hL f tree hdom hbr⟩⟩
+
+/-- Concrete Erase-Decode tree existence with any smaller Red-branching budget `L ≤ Λ(C,δ)`
+supplies some exact-depth GGR11 witness. This packages the common constructor output shape where
+the local tree builder proves a sharper branching bound than the ambient GGR11 budget. -/
+theorem treeWitness_of_eraseDecodeTree_self_of_redBranchingLe_le
+    {C : Set (ι → F)} {δ : ℝ} {m : ℕ} (hLambda : 1 ≤ Lambda C δ)
+    {f : Matrix ι (Fin m) F}
+    (H : ∃ (L : ℕ∞) (t : EraseDecodeTree),
+      L ≤ Lambda C δ ∧
+      (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard
+          ≤ t.leafCount ∧
+      t.redBranchingLe L) :
+    ∃ b r : ℕ, Nonempty (GGR11TreeWitness C δ m b r f) := by
+  obtain ⟨L, tree, hL_le, hdom, hbr⟩ := H
+  exact
+    ⟨tree.blueDepth, tree.redDepth,
+      ⟨treeWitness_of_concreteEraseDecodeTree_self_of_redBranchingLe_le
+        hLambda f tree hdom hL_le hbr⟩⟩
 
 /-- Concrete Erase-Decode tree existence supplies the named per-word GGR11 witness.
 
@@ -648,7 +680,9 @@ theorem lambda_le_ggr11_of_leaf_close_le_one
 #print axioms treeWitness_of_concreteEraseDecodeTree
 #print axioms treeWitness_of_concreteEraseDecodeTree_of_redBranchingLe_le
 #print axioms treeWitness_of_concreteEraseDecodeTree_self
+#print axioms treeWitness_of_concreteEraseDecodeTree_self_of_redBranchingLe_le
 #print axioms treeWitness_of_eraseDecodeTree_self
+#print axioms treeWitness_of_eraseDecodeTree_self_of_redBranchingLe_le
 #print axioms treeWitness_of_eraseDecodeTree
 #print axioms treeStructure_of_eraseDecodeTree
 #print axioms treeFrontier_of_eraseDecodeTree
