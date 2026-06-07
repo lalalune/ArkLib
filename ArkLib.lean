@@ -692,6 +692,7 @@ import ArkLib.ToMathlib.RatFuncDegreeCalculus
 import ArkLib.ToMathlib.RestrictedSumset
 import ArkLib.ToMathlib.RestrictedSumsetGeneral
 import ArkLib.ToMathlib.RewindingExtractor
+import ArkLib.ToMathlib.STIRCombineDegree
 import ArkLib.ToMathlib.SbetaPackaging
 import ArkLib.ToMathlib.SecondMomentCountBricks
 import ArkLib.ToMathlib.SecondMomentProb
