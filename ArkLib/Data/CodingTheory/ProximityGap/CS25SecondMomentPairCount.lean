@@ -101,6 +101,45 @@ theorem sum_closeCount_sq_eq_sum_ballInterCount (𝒞 : Finset (ι → F)) (r : 
   refine Finset.sum_congr rfl (fun c' _ => ?_)
   exact pairCount_eq_ballInterCount c c' r
 
+/-- For a finite additive code closed under differences and translations by codewords, the centered
+pair sum collapses to `|𝒞|` times the sum over difference codewords. -/
+theorem sum_pair_ballInterCount_eq_card_mul_sum_of_add_sub_closed
+    (𝒞 : Finset (ι → F)) (r : ℕ)
+    (hsub : ∀ {c c' : ι → F}, c ∈ 𝒞 → c' ∈ 𝒞 → c' - c ∈ 𝒞)
+    (hadd : ∀ {c v : ι → F}, c ∈ 𝒞 → v ∈ 𝒞 → v + c ∈ 𝒞) :
+    (∑ c ∈ 𝒞, ∑ c' ∈ 𝒞, ballInterCount r (c' - c))
+      = 𝒞.card * (∑ v ∈ 𝒞, ballInterCount r v) := by
+  classical
+  have hinner : ∀ c ∈ 𝒞,
+      (∑ c' ∈ 𝒞, ballInterCount r (c' - c))
+        = ∑ v ∈ 𝒞, ballInterCount r v := by
+    intro c hc
+    refine Finset.sum_nbij' (s := 𝒞) (t := 𝒞)
+      (i := fun c' => c' - c) (j := fun v => v + c) ?_ ?_ ?_ ?_ ?_
+    · intro c' hc'
+      exact hsub hc hc'
+    · intro v hv
+      exact hadd hc hv
+    · intro c' _hc'
+      simp
+    · intro v _hv
+      simp
+    · intro c' _hc'
+      rfl
+  rw [Finset.sum_congr rfl hinner, Finset.sum_const, smul_eq_mul]
+
+/-- **Linear-code second-moment reduction.**  For a finite additive code, the second moment is
+`|𝒞|` times the centered ball-intersection sum over codeword differences.  The remaining CS25 input
+is now a weight-enumerator bound on this difference sum. -/
+theorem sum_closeCount_sq_eq_card_mul_sum_ballInterCount_of_add_sub_closed
+    (𝒞 : Finset (ι → F)) (r : ℕ)
+    (hsub : ∀ {c c' : ι → F}, c ∈ 𝒞 → c' ∈ 𝒞 → c' - c ∈ 𝒞)
+    (hadd : ∀ {c v : ι → F}, c ∈ 𝒞 → v ∈ 𝒞 → v + c ∈ 𝒞) :
+    (∑ w : ι → F, (closeCount 𝒞 r w) ^ 2)
+      = 𝒞.card * (∑ v ∈ 𝒞, ballInterCount r v) := by
+  rw [sum_closeCount_sq_eq_sum_ballInterCount,
+    sum_pair_ballInterCount_eq_card_mul_sum_of_add_sub_closed 𝒞 r hsub hadd]
+
 end ArkLib.CS25
 
 -- Axiom audit.
@@ -109,3 +148,5 @@ end ArkLib.CS25
 #print axioms ArkLib.CS25.pairCount_sub
 #print axioms ArkLib.CS25.pairCount_eq_ballInterCount
 #print axioms ArkLib.CS25.sum_closeCount_sq_eq_sum_ballInterCount
+#print axioms ArkLib.CS25.sum_pair_ballInterCount_eq_card_mul_sum_of_add_sub_closed
+#print axioms ArkLib.CS25.sum_closeCount_sq_eq_card_mul_sum_ballInterCount_of_add_sub_closed
