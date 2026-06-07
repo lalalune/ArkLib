@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBounds
 import ArkLib.Data.CodingTheory.ReedSolomon.AdmissibleSubspaceDesign
+import ArkLib.Data.CodingTheory.ReedSolomon.FRSGeomSubspaceDesign
 
 /-!
 # CapacityBounds wrappers from order-bounded FRS admissibility
@@ -91,6 +92,44 @@ theorem frs_epsMCA_capacity_gg25_of_orderOf_ge_of_cosetSep_eta
     (domain := domain) (k := k) (s := s) (ω := ω) (η := η)
     hη_pos hη_lt hs_gt t ht hts hT218 hT413 hη htη
 
+/-- T4.14 eta-route wrapper on the canonical GR08 geometric folded-RS domain.
+
+The T2.18/CZ25-profile input is discharged by
+`ReedSolomon.Folded.frs_geomDomain_isSubspaceDesign_cz25Profile`; callers supply only the
+T4.13 `subspaceDesign_epsMCA_gg25` instance at that profile and the usual paper choice of `t`
+and `η`. -/
+theorem frs_epsMCA_capacity_gg25_of_geomDomain_eta
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    {n : ℕ} [NeZero n]
+    (γ : F) (k s : ℕ)
+    (hs : 0 < s) (hγ : γ ≠ 0) (hsn : s * n ≤ orderOf γ)
+    (hkLs : k ≤ s * n) (hkord : k ≤ orderOf γ)
+    (η : ℝ) (hη_pos : 0 < η) (hη_lt : η < 1)
+    (hs_gt : (s : ℝ) > 16 / η ^ 2)
+    (t : ℕ) (ht : 0 < t) (hts : t + 1 ≤ s)
+    (hT413 : subspaceDesign_epsMCA_gg25 s
+        (fun r : ℕ ↦ if r ∈ Finset.Icc 1 s then
+            (s : ℝ) * (k : ℝ) / Fintype.card (Fin n) / ((s : ℝ) - (r : ℝ) + 1)
+          else 1)
+        (ReedSolomon.Folded.frsCode
+          (ReedSolomon.Folded.geomDomainEmb γ s n hs hsn) k s γ)
+        (ReedSolomon.Folded.frs_geomDomain_isSubspaceDesign_cz25Profile
+          γ k s n hs (Nat.pos_of_ne_zero (NeZero.ne n)) hγ hsn hkLs hkord)
+        t ht)
+    (hη : η = (s : ℝ) * (k : ℝ) / Fintype.card (Fin n) / ((s : ℝ) - (t : ℝ))
+        - (k : ℝ) / Fintype.card (Fin n) + 3 / (2 * t))
+    (htη : (t : ℝ) ≤ 2 / η) :
+    frs_epsMCA_capacity_gg25
+      (ReedSolomon.Folded.geomDomainEmb γ s n hs hsn) k s γ
+      η hη_pos hη_lt hs_gt := by
+  have hn : 0 < n := Nat.pos_of_ne_zero (NeZero.ne n)
+  let hT218 := ReedSolomon.Folded.frs_geomDomain_isSubspaceDesign_cz25Profile
+    γ k s n hs hn hγ hsn hkLs hkord
+  exact frs_epsMCA_capacity_gg25_of_subspaceDesign_eta
+    (domain := ReedSolomon.Folded.geomDomainEmb γ s n hs hsn)
+    (k := k) (s := s) (ω := γ) (η := η)
+    hη_pos hη_lt hs_gt t ht hts hT218 hT413 hη htη
+
 end SubspaceDesignFRSAdmissible
 
 end CodingTheory
@@ -99,3 +138,5 @@ end CodingTheory
   CodingTheory.frs_epsMCA_capacity_gg25_of_orderOf_ge_of_inter_eta
 #print axioms
   CodingTheory.frs_epsMCA_capacity_gg25_of_orderOf_ge_of_cosetSep_eta
+#print axioms
+  CodingTheory.frs_epsMCA_capacity_gg25_of_geomDomain_eta
