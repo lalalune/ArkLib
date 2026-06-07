@@ -33,7 +33,7 @@ end ProtocolSpec.FullTranscript
 
 #print axioms ProtocolSpec.FullTranscript.fst_append_snd
 
-namespace Transcript
+namespace ProtocolSpec.Transcript
 
 variable {m n : ℕ} {pSpec₁ : ProtocolSpec m} {pSpec₂ : ProtocolSpec n}
 
@@ -51,7 +51,6 @@ def appendRight (T₁ : FullTranscript pSpec₁) {k : Fin (n + 1)} (T₂ : pSpec
       cast (Fin.vappend_right_of_not_lt pSpec₁.Type pSpec₂.Type ⟨i.val, by omega⟩ hi).symm
         (T₂ ⟨i.val - m, hi2⟩)
 
-end Transcript
+end ProtocolSpec.Transcript
 
-end ProtocolSpec
 #check @ProtocolSpec.Transcript.appendRight
