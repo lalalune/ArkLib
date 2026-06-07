@@ -139,6 +139,87 @@ theorem indexed_forall_mcaBadCount_eq_zero_iff_MCAForallDoubleCover
   · exact indexed_MCAForallDoubleCover_of_forall_mcaBadCount_eq_zero C δ
   · exact indexed_forall_mcaBadCount_eq_zero_of_MCAForallDoubleCover C δ
 
+/-- Indexed vanishing MCA error gives zero bad-scalar counts at every index. -/
+theorem indexed_forall_mcaBadCount_eq_zero_of_epsMCA_eq_zero
+    {κ : Type} (C : κ → Set (ι → A)) (δ : κ → ℝ≥0)
+    (heps : ∀ j : κ, epsMCA (F := F) (C j) (δ j) = 0) :
+    ∀ j : κ, ∀ u : WordStack A (Fin 2) ι,
+      mcaBadCount (F := F) (C j) (δ j) (u 0) (u 1) = 0 := by
+  intro j
+  exact (epsMCA_eq_zero_iff_forall_mcaBadCount_eq_zero (C j) (δ j)).mp (heps j)
+
+/-- Indexed zero bad-scalar counts give vanishing MCA error at every index. -/
+theorem indexed_epsMCA_eq_zero_of_forall_mcaBadCount_eq_zero
+    {κ : Type} (C : κ → Set (ι → A)) (δ : κ → ℝ≥0)
+    (hzero : ∀ j : κ, ∀ u : WordStack A (Fin 2) ι,
+      mcaBadCount (F := F) (C j) (δ j) (u 0) (u 1) = 0) :
+    ∀ j : κ, epsMCA (F := F) (C j) (δ j) = 0 := by
+  intro j
+  exact (epsMCA_eq_zero_iff_forall_mcaBadCount_eq_zero (C j) (δ j)).mpr (hzero j)
+
+/-- Indexed vanishing MCA error is exact for indexed zero bad-scalar counts. -/
+theorem indexed_epsMCA_eq_zero_iff_forall_mcaBadCount_eq_zero
+    {κ : Type} (C : κ → Set (ι → A)) (δ : κ → ℝ≥0) :
+    (∀ j : κ, epsMCA (F := F) (C j) (δ j) = 0) ↔
+      ∀ j : κ, ∀ u : WordStack A (Fin 2) ι,
+        mcaBadCount (F := F) (C j) (δ j) (u 0) (u 1) = 0 := by
+  constructor
+  · exact indexed_forall_mcaBadCount_eq_zero_of_epsMCA_eq_zero C δ
+  · exact indexed_epsMCA_eq_zero_of_forall_mcaBadCount_eq_zero C δ
+
+/-- Indexed vanishing MCA error repacks as indexed `MCAForallDoubleCover` data. -/
+theorem indexed_MCAForallDoubleCover_of_epsMCA_eq_zero
+    {κ : Type} (C : κ → Set (ι → A)) (δ : κ → ℝ≥0)
+    (heps : ∀ j : κ, epsMCA (F := F) (C j) (δ j) = 0) :
+    ∀ j : κ, MCAForallDoubleCover (F := F) (A := A) (C j) (δ j) := by
+  intro j
+  exact (epsMCA_eq_zero_iff_MCAForallDoubleCover (C j) (δ j)).mp (heps j)
+
+/-- Indexed `MCAForallDoubleCover` data gives vanishing MCA error at every index. -/
+theorem indexed_epsMCA_eq_zero_of_MCAForallDoubleCover
+    {κ : Type} (C : κ → Set (ι → A)) (δ : κ → ℝ≥0)
+    (hcov : ∀ j : κ, MCAForallDoubleCover (F := F) (A := A) (C j) (δ j)) :
+    ∀ j : κ, epsMCA (F := F) (C j) (δ j) = 0 := by
+  intro j
+  exact (epsMCA_eq_zero_iff_MCAForallDoubleCover (C j) (δ j)).mpr (hcov j)
+
+/-- Indexed vanishing MCA error is exact for indexed `MCAForallDoubleCover` data. -/
+theorem indexed_epsMCA_eq_zero_iff_MCAForallDoubleCover
+    {κ : Type} (C : κ → Set (ι → A)) (δ : κ → ℝ≥0) :
+    (∀ j : κ, epsMCA (F := F) (C j) (δ j) = 0) ↔
+      ∀ j : κ, MCAForallDoubleCover (F := F) (A := A) (C j) (δ j) := by
+  constructor
+  · exact indexed_MCAForallDoubleCover_of_epsMCA_eq_zero C δ
+  · exact indexed_epsMCA_eq_zero_of_MCAForallDoubleCover C δ
+
+/-- Indexed vanishing MCA error repacks as indexed bad-scalar double-cover data. -/
+theorem indexed_badScalarDoubleCover_of_epsMCA_eq_zero
+    {κ : Type} (C : κ → Set (ι → A)) (δ : κ → ℝ≥0)
+    (heps : ∀ j : κ, epsMCA (F := F) (C j) (δ j) = 0) :
+    ∀ j : κ, ∀ (u : WordStack A (Fin 2) ι) (γ : F),
+      MCABadScalarDoubleCover (F := F) (A := A) (C j) (δ j) (u 0) (u 1) γ := by
+  intro j
+  exact (epsMCA_eq_zero_iff_badScalarDoubleCover (C j) (δ j)).mp (heps j)
+
+/-- Indexed bad-scalar double-cover data gives vanishing MCA error at every index. -/
+theorem indexed_epsMCA_eq_zero_of_badScalarDoubleCover
+    {κ : Type} (C : κ → Set (ι → A)) (δ : κ → ℝ≥0)
+    (hcov : ∀ j : κ, ∀ (u : WordStack A (Fin 2) ι) (γ : F),
+      MCABadScalarDoubleCover (F := F) (A := A) (C j) (δ j) (u 0) (u 1) γ) :
+    ∀ j : κ, epsMCA (F := F) (C j) (δ j) = 0 := by
+  intro j
+  exact (epsMCA_eq_zero_iff_badScalarDoubleCover (C j) (δ j)).mpr (hcov j)
+
+/-- Indexed vanishing MCA error is exact for indexed bad-scalar double-cover data. -/
+theorem indexed_epsMCA_eq_zero_iff_badScalarDoubleCover
+    {κ : Type} (C : κ → Set (ι → A)) (δ : κ → ℝ≥0) :
+    (∀ j : κ, epsMCA (F := F) (C j) (δ j) = 0) ↔
+      ∀ j : κ, ∀ (u : WordStack A (Fin 2) ι) (γ : F),
+        MCABadScalarDoubleCover (F := F) (A := A) (C j) (δ j) (u 0) (u 1) γ := by
+  constructor
+  · exact indexed_badScalarDoubleCover_of_epsMCA_eq_zero C δ
+  · exact indexed_epsMCA_eq_zero_of_badScalarDoubleCover C δ
+
 set_option linter.style.longLine false in
 #print axioms ProximityGap.mcaBadCount_eq_zero_of_badScalarDoubleCover_not_mcaEvent
 set_option linter.style.longLine false in
@@ -161,6 +242,24 @@ set_option linter.style.longLine false in
 #print axioms ProximityGap.indexed_MCAForallDoubleCover_of_forall_mcaBadCount_eq_zero
 set_option linter.style.longLine false in
 #print axioms ProximityGap.indexed_forall_mcaBadCount_eq_zero_iff_MCAForallDoubleCover
+set_option linter.style.longLine false in
+#print axioms ProximityGap.indexed_forall_mcaBadCount_eq_zero_of_epsMCA_eq_zero
+set_option linter.style.longLine false in
+#print axioms ProximityGap.indexed_epsMCA_eq_zero_of_forall_mcaBadCount_eq_zero
+set_option linter.style.longLine false in
+#print axioms ProximityGap.indexed_epsMCA_eq_zero_iff_forall_mcaBadCount_eq_zero
+set_option linter.style.longLine false in
+#print axioms ProximityGap.indexed_MCAForallDoubleCover_of_epsMCA_eq_zero
+set_option linter.style.longLine false in
+#print axioms ProximityGap.indexed_epsMCA_eq_zero_of_MCAForallDoubleCover
+set_option linter.style.longLine false in
+#print axioms ProximityGap.indexed_epsMCA_eq_zero_iff_MCAForallDoubleCover
+set_option linter.style.longLine false in
+#print axioms ProximityGap.indexed_badScalarDoubleCover_of_epsMCA_eq_zero
+set_option linter.style.longLine false in
+#print axioms ProximityGap.indexed_epsMCA_eq_zero_of_badScalarDoubleCover
+set_option linter.style.longLine false in
+#print axioms ProximityGap.indexed_epsMCA_eq_zero_iff_badScalarDoubleCover
 
 end
 
