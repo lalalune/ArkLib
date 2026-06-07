@@ -144,23 +144,27 @@ variable {StmtIn WitIn StmtOut WitOut : Type}
 /-- View a fixed malicious one-message Fiat-Shamir prover execution as the corresponding
 state-restoration soundness prover payload.
 
-The adapter runs only the Fiat-Shamir prover's single prover-to-verifier message round, so it avoids
-the empty transformed challenge-oracle layer that appears in `runToRound`. -/
+The adapter runs the Fiat-Shamir prover's single prover-to-verifier message round and then replays
+`P.output`, discarding the result. The replay is needed for the coupled soundness proof: the
+one-message Fiat-Shamir `Reduction.run` performs the prover output step before verifier queries,
+so the state-restoration adversary must make the same shared-oracle queries to keep the simulated
+oracle-table state aligned. -/
 def soundnessOfFiatShamirProver
     (P : Prover (oSpec + fsChallengeOracle StmtIn pSpec) StmtIn WitIn StmtOut WitOut
       (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)))
     (stmtIn : StmtIn) (witIn : WitIn) :
     Prover.StateRestoration.Soundness oSpec StmtIn pSpec := do
   let state := P.input (stmtIn, witIn)
-  let ⟨proof, _state⟩ ←
+  let ⟨proof, state⟩ ←
     P.sendMessage ⟨0, by simp⟩ state
+  let _ctxOut ← P.output state
   let messages : pSpec.Messages := proof
   return ⟨stmtIn, messages⟩
 
 /-- The state-restoration game for the Fiat-Shamir-prover adapter is exactly the single
-Fiat-Shamir proof-message computation followed by the shared state-restoration transcript
-derivation. Use `ProtocolSpec.Messages.deriveTranscriptFS_eq_deriveTranscriptSR` to rewrite the
-final line through the slow Fiat-Shamir alias. -/
+Fiat-Shamir proof-message computation, the prover output replay, and the shared state-restoration
+transcript derivation. Use `ProtocolSpec.Messages.deriveTranscriptFS_eq_deriveTranscriptSR` to
+rewrite the final line through the slow Fiat-Shamir alias. -/
 theorem srSoundnessGame_soundnessOfFiatShamirProver
     (P : Prover (oSpec + fsChallengeOracle StmtIn pSpec) StmtIn WitIn StmtOut WitOut
       (Reduction.FiatShamirProtocolSpec (pSpec := pSpec)))
@@ -170,8 +174,9 @@ theorem srSoundnessGame_soundnessOfFiatShamirProver
       =
       (do
         let state := P.input (stmtIn, witIn)
-        let ⟨proof, _state⟩ ←
+        let ⟨proof, state⟩ ←
           P.sendMessage ⟨0, by simp⟩ state
+        let _ctxOut ← P.output state
         let messages : pSpec.Messages := proof
         let transcript ← messages.deriveTranscriptSR (oSpec := oSpec) stmtIn
         return ⟨transcript, stmtIn⟩) := by

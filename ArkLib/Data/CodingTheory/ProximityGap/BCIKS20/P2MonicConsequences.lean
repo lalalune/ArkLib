@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MatchProof
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Vanish
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AlphaWeight
 
 /-!
 # BCIKS20 Appendix A.4 — monic consequences of the proven Faà-di-Bruno match
@@ -34,6 +35,8 @@ open Polynomial Polynomial.Bivariate
 open BCIKS20AppendixA ProximityPrize.BCIKS20.GammaGenuine
 
 namespace BCIKS20.HenselNumerator
+
+open AlphaWeight
 
 variable {F : Type} [Field F]
 variable (H : F[X][Y]) [Fact (Irreducible H)] [Fact (0 < H.natDegree)]
