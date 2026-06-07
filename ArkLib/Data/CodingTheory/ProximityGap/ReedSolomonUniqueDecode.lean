@@ -154,6 +154,68 @@ theorem interpolant_recovers {k dA dB e : ℕ} [NeZero k] {α : ι ↪ F} {y : �
   omega
 
 open Polynomial in
+/-- **Bivariate root extraction (Sudan / Guruswami–Sudan factorization).**  Let
+`Q(X,Y) = ∑ⱼ Qⱼ(X)·Yʲ` be a bidegree-`(≤ dX, ≤ dZ)` bivariate polynomial vanishing at every point
+`(αᵢ, yᵢ)`.  If a degree-`< k` polynomial `p` has `eval p` within `e` errors of `y`, and the agreement
+exceeds the curve degree (`dX + dZ·(k−1) < n − e`), then `∑ⱼ Qⱼ·pʲ = 0` — i.e. `Q(X, p(X)) = 0`, so
+`Y − p(X)` divides `Q(X, Y)` and `p` is a `Y`-root of `Q`.  This is the list-decoding recovery: every
+close codeword is a factor of the interpolant, so the list size is bounded by `deg_Y Q ≤ dZ`.  The
+factorization half of the Polishchuk–Spielman / BCIKS20 / Sudan bivariate argument. -/
+theorem bivariate_root_of_close {k dX dZ e : ℕ} [NeZero k] {α : ι ↪ F} {y : ι → F}
+    {Q : Fin (dZ + 1) → F[X]} {p : F[X]}
+    (hQ : ∀ j, Q j ∈ Polynomial.degreeLT F (dX + 1)) (hp : p ∈ Polynomial.degreeLT F k)
+    (hint : ∀ i, ∑ j : Fin (dZ + 1), (Q j).eval (α i) * (y i) ^ (j : ℕ) = 0)
+    (herr : (Finset.univ.filter (fun i => y i ≠ p.eval (α i))).card ≤ e)
+    (he : e < Fintype.card ι) (hdeg : dX + dZ * (k - 1) < Fintype.card ι - e) :
+    ∑ j : Fin (dZ + 1), Q j * p ^ (j : ℕ) = 0 := by
+  classical
+  set R := ∑ j : Fin (dZ + 1), Q j * p ^ (j : ℕ) with hR
+  by_contra hRne
+  have hkpos : 0 < k := Nat.pos_of_ne_zero (NeZero.ne k)
+  have hpd : p.natDegree ≤ k - 1 := by
+    rcases eq_or_ne p 0 with rfl | h; · simp
+    · have : p.natDegree < k := (natDegree_lt_iff_degree_lt h).mpr (mem_degreeLT.mp hp); omega
+  -- each term has degree `≤ dX + dZ·(k−1)`
+  have hterm : ∀ j : Fin (dZ + 1), (Q j * p ^ (j : ℕ)).natDegree ≤ dX + dZ * (k - 1) := by
+    intro j
+    have hQd : (Q j).natDegree ≤ dX := by
+      rcases eq_or_ne (Q j) 0 with h | h; · simp [h]
+      · have : (Q j).natDegree < dX + 1 := (natDegree_lt_iff_degree_lt h).mpr (mem_degreeLT.mp (hQ j))
+        omega
+    calc (Q j * p ^ (j : ℕ)).natDegree
+        ≤ (Q j).natDegree + (p ^ (j : ℕ)).natDegree := natDegree_mul_le
+      _ ≤ dX + (j : ℕ) * (k - 1) := by
+          have := natDegree_pow_le (p := p) (n := (j : ℕ)); nlinarith [hpd, hQd, this]
+      _ ≤ dX + dZ * (k - 1) := by
+          have : (j : ℕ) ≤ dZ := by omega
+          exact Nat.add_le_add_left (Nat.mul_le_mul_right _ this) _
+  have hRdeg : R.natDegree ≤ dX + dZ * (k - 1) :=
+    Polynomial.natDegree_sum_le_of_forall_le _ _ (fun j _ => hterm j)
+  -- `R` vanishes on the `≥ n − e` agreement coordinates
+  have hroot : ∀ i, y i = p.eval (α i) → R.eval (α i) = 0 := by
+    intro i hi
+    rw [hR, eval_finset_sum, ← hint i]
+    exact Finset.sum_congr rfl fun j _ => by rw [eval_mul, eval_pow, hi]
+  have hag_card : Fintype.card ι - e
+      ≤ (Finset.univ.filter (fun i => y i = p.eval (α i))).card := by
+    have hco : (Finset.univ.filter (fun i => y i = p.eval (α i)))
+        = (Finset.univ.filter (fun i => y i ≠ p.eval (α i)))ᶜ := by ext i; simp
+    rw [hco, Finset.card_compl]; omega
+  have hsub : (Finset.univ.filter (fun i => y i = p.eval (α i))).map α ⊆ R.roots.toFinset := by
+    intro w hw
+    rw [Finset.mem_map] at hw; obtain ⟨i, hi, rfl⟩ := hw
+    rw [Multiset.mem_toFinset, mem_roots hRne, IsRoot.def]
+    exact hroot i (Finset.mem_filter.mp hi).2
+  have hle : Fintype.card ι - e ≤ R.natDegree := by
+    calc Fintype.card ι - e
+        ≤ (Finset.univ.filter (fun i => y i = p.eval (α i))).card := hag_card
+      _ = ((Finset.univ.filter (fun i => y i = p.eval (α i))).map α).card := (Finset.card_map _).symm
+      _ ≤ R.roots.toFinset.card := Finset.card_le_card hsub
+      _ ≤ Multiset.card R.roots := Multiset.toFinset_card_le _
+      _ ≤ R.natDegree := card_roots' _
+  omega
+
+open Polynomial in
 /-- **Berlekamp–Welch key-equation existence.**  If a received word `y` is within `e` Hamming
 errors of the Reed–Solomon codeword `eval f` (`f` of degree `< k`), then the Berlekamp–Welch key
 equation `E(αᵢ)·yᵢ = N(αᵢ)` has a solution with `E ≠ 0`, `deg E ≤ e`, `deg N < k + e`.  Witnessed
