@@ -97,6 +97,11 @@ Current source also exposes the #14 split frontier:
   existing append soundness API to the concrete Batched FRI verifier seam,
   reducing the sequential-composition field to the per-phase soundness inputs
   plus the generic `OracleVerifier.appendSoundnessResidual`.
+- `Fri.friSoundnessSequentialComposition` names the resulting concrete
+  end-to-end verifier soundness proposition, and
+  `Fri.friSoundnessSequentialComposition_of_append` supplies it from the append
+  theorem whenever the per-phase soundness inputs and generic append residual
+  are available.
 - `fri_soundness_of_parts` reassembles the faithful `fri_soundness` residual
   from those three named ingredients.
 

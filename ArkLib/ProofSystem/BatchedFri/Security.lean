@@ -1397,6 +1397,74 @@ theorem batchedFRISequentialCompositionSoundness_of_append
       (F := 𝔽) (n := n) (ω := ω) k s d domain_size_cond l t).verifier
     h_batch h_fri h_residual
 
+/-- The concrete sequential-composition soundness proposition used by the Claim 8.3 frontier.
+
+This is the `FriSoundnessParts.sequential_composition_soundness` field specialized to the actual
+`BatchedFri.Spec.batchedFRIreduction` verifier and the additive error obtained by composing the
+batching round with the lifted FRI tail. -/
+def friSoundnessSequentialComposition
+    {σ : Type} (init : ProbComp σ) (impl : QueryImpl []ₒ (StateT σ ProbComp))
+    {t l : ℕ}
+    [∀ i, SampleableType ((BatchedFri.Spec.BatchingRound.batchSpec 𝔽 t).Challenge i)]
+    [∀ i, SampleableType ((Spec.pSpecFold (ω := ω) k s ++ₚ Spec.FinalFoldPhase.pSpec 𝔽 ++ₚ
+      Spec.QueryRound.pSpec (ω := ω) l).Challenge i)]
+    (lang₁ : Set (Unit × (∀ i, BatchedFri.Spec.OracleStatement t ω i)))
+    (lang₃ : Set (Spec.FinalStatement 𝔽 k × (∀ i, Spec.FinalOracleStatement s (ω := ω) i)))
+    (batchError friError : ℝ≥0) : Prop :=
+  letI : ∀ i, SampleableType
+    ((BatchedFri.Spec.BatchingRound.batchSpec 𝔽 t ++ₚ
+      (Spec.pSpecFold (ω := ω) k s ++ₚ Spec.FinalFoldPhase.pSpec 𝔽 ++ₚ
+        Spec.QueryRound.pSpec (ω := ω) l)).Challenge i) :=
+    ProtocolSpec.instSampleableTypeChallengeAppend
+  OracleVerifier.soundness
+    (init := init) (impl := impl)
+    lang₁ lang₃
+    (BatchedFri.Spec.batchedFRIreduction
+      (F := 𝔽) (n := n) (ω := ω) k s d domain_size_cond l t).verifier
+    (batchError + friError)
+
+omit [Nontrivial 𝔽] in
+/-- The generic append theorem supplies the concrete Batched FRI sequential-composition field. -/
+theorem friSoundnessSequentialComposition_of_append
+    {σ : Type} (init : ProbComp σ) (impl : QueryImpl []ₒ (StateT σ ProbComp))
+    {t l : ℕ}
+    [∀ i, SampleableType ((BatchedFri.Spec.BatchingRound.batchSpec 𝔽 t).Challenge i)]
+    [∀ i, SampleableType ((Spec.pSpecFold (ω := ω) k s ++ₚ Spec.FinalFoldPhase.pSpec 𝔽 ++ₚ
+      Spec.QueryRound.pSpec (ω := ω) l).Challenge i)]
+    (lang₁ : Set (Unit × (∀ i, BatchedFri.Spec.OracleStatement t ω i)))
+    (lang₂ : Set (((Fin t → 𝔽) × Spec.Statement 𝔽 (0 : Fin (k + 1))) ×
+      (∀ i, BatchedFri.Spec.OracleStatement t ω i)))
+    (lang₃ : Set (Spec.FinalStatement 𝔽 k × (∀ i, Spec.FinalOracleStatement s (ω := ω) i)))
+    {batchError friError : ℝ≥0}
+    (h_batch : OracleVerifier.soundness
+      (init := init) (impl := impl)
+      lang₁ lang₂
+      (BatchedFri.Spec.BatchingRound.batchOracleReduction
+        (F := 𝔽) (n := n) (ω := ω) s d t).verifier
+      batchError)
+    (h_fri : OracleVerifier.soundness
+      (init := init) (impl := impl)
+      lang₂ lang₃
+      (BatchedFri.Spec.liftedFRI
+        (F := 𝔽) (n := n) (ω := ω) k s d domain_size_cond l t).verifier
+      friError)
+    (h_residual : OracleVerifier.appendSoundnessResidual
+      (init := init) (impl := impl)
+      (BatchedFri.Spec.BatchingRound.batchOracleReduction
+        (F := 𝔽) (n := n) (ω := ω) s d t).verifier
+      (BatchedFri.Spec.liftedFRI
+        (F := 𝔽) (n := n) (ω := ω) k s d domain_size_cond l t).verifier
+      h_batch h_fri) :
+    friSoundnessSequentialComposition
+      (n := n) (s := s) (d := d) (ω := ω) (l := l)
+      (domain_size_cond := domain_size_cond)
+      init impl lang₁ lang₃ batchError friError := by
+  unfold friSoundnessSequentialComposition
+  simpa [batchedFRIreduction_verifier_eq_append] using
+    (batchedFRISequentialCompositionSoundness_of_append
+      (n := n) (s := s) (d := d) (ω := ω) (domain_size_cond := domain_size_cond)
+      init impl lang₁ lang₂ lang₃ h_batch h_fri h_residual)
+
 /-- Split frontier for Claim 8.3.  The `fri_soundness` residual is the end-to-end
 verifier-failure statement for batched FRI, while the remaining proof should be assembled from
 separate ingredients:
@@ -1565,6 +1633,87 @@ theorem fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLens
       f m_ge_3 G δ queries l h_agreement query_pieces_imply_claim h_agreementBridge)
     h_seq h_total
 
+omit [Nontrivial 𝔽] in
+/-- Reassemble Claim 8.3 after discharging both the query-lift field and the concrete Batched FRI
+sequential-composition field.  The append residual, correlated-agreement bridge, virtual-oracle
+preservation, and total-error accounting remain explicit inputs. -/
+theorem fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequentialComposition
+    {t l m : ℕ}
+    (f : Fin t.succ → (ω → 𝔽))
+    (m_ge_3 : m ≥ 3)
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    (G : Finset ι) (δ : ℝ≥0) (queries : ℕ)
+    (h_agreement :
+      correlated_agreement_density
+        (Fₛ (fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x)))
+        (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
+      ≤
+      (let ρ_sqrt :=
+        ReedSolomon.sqrtRate
+          (2 ^ n)
+          (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+       ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0)))))
+    {σ : Type} (init : ProbComp σ) (impl : QueryImpl []ₒ (StateT σ ProbComp))
+    [∀ i, SampleableType ((BatchedFri.Spec.BatchingRound.batchSpec 𝔽 t).Challenge i)]
+    [∀ i, SampleableType ((Spec.pSpecFold (ω := ω) k s ++ₚ Spec.FinalFoldPhase.pSpec 𝔽 ++ₚ
+      Spec.QueryRound.pSpec (ω := ω) l).Challenge i)]
+    (lang₁ : Set (Unit × (∀ i, BatchedFri.Spec.OracleStatement t ω i)))
+    (lang₂ : Set (((Fin t → 𝔽) × Spec.Statement 𝔽 (0 : Fin (k + 1))) ×
+      (∀ i, BatchedFri.Spec.OracleStatement t ω i)))
+    (lang₃ : Set (Spec.FinalStatement 𝔽 k × (∀ i, Spec.FinalOracleStatement s (ω := ω) i)))
+    {batchError friError : ℝ≥0}
+    (h_batch : OracleVerifier.soundness
+      (init := init) (impl := impl)
+      lang₁ lang₂
+      (BatchedFri.Spec.BatchingRound.batchOracleReduction
+        (F := 𝔽) (n := n) (ω := ω) s d t).verifier
+      batchError)
+    (h_fri : OracleVerifier.soundness
+      (init := init) (impl := impl)
+      lang₂ lang₃
+      (BatchedFri.Spec.liftedFRI
+        (F := 𝔽) (n := n) (ω := ω) k s d domain_size_cond l t).verifier
+      friError)
+    (h_residual : OracleVerifier.appendSoundnessResidual
+      (init := init) (impl := impl)
+      (BatchedFri.Spec.BatchingRound.batchOracleReduction
+        (F := 𝔽) (n := n) (ω := ω) s d t).verifier
+      (BatchedFri.Spec.liftedFRI
+        (F := 𝔽) (n := n) (ω := ω) k s d domain_size_cond l t).verifier
+      h_batch h_fri)
+    {agreementBridge totalErrorAccounting : Prop}
+    (query_pieces_imply_claim :
+      queryRoundDensityBound G δ queries →
+      batchedFRIOracleLensReduction
+        (n := n) (s := s) (d := d) (ω := ω)
+        (domain_size_cond := domain_size_cond) l t →
+      agreementBridge →
+      fri_query_soundness (n := n) (ω := ω)
+        (f := fun i x => f i ((subdomainZeroEquiv (n := n) (ω := ω)) x))
+        (h_agreement := h_agreement) (m_ge_3 := m_ge_3))
+    (soundness_pieces_imply_claim :
+      friSoundnessQueryLift (n := n) (ω := ω) f m_ge_3 →
+      friSoundnessSequentialComposition
+        (n := n) (s := s) (d := d) (ω := ω) (l := l)
+        (domain_size_cond := domain_size_cond)
+        init impl lang₁ lang₃ batchError friError →
+      totalErrorAccounting →
+      fri_soundness (n := n) (s := s) (d := d) (ω := ω) (l := l)
+        (domain_size_cond := domain_size_cond) f m_ge_3)
+    (h_agreementBridge : agreementBridge)
+    (h_total : totalErrorAccounting) :
+    fri_soundness (n := n) (s := s) (d := d) (ω := ω) (l := l)
+      (domain_size_cond := domain_size_cond) f m_ge_3 := by
+  exact fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLens
+    (n := n) (s := s) (d := d) (ω := ω) (domain_size_cond := domain_size_cond)
+    f m_ge_3 G δ queries h_agreement query_pieces_imply_claim
+    soundness_pieces_imply_claim h_agreementBridge
+    (friSoundnessSequentialComposition_of_append
+      (n := n) (s := s) (d := d) (ω := ω) (l := l)
+      (domain_size_cond := domain_size_cond)
+      init impl lang₁ lang₂ lang₃ h_batch h_fri h_residual)
+    h_total
+
 #print axioms Fri.FriSoundnessParts
 #print axioms Fri.subdomainZeroEquiv
 #print axioms Fri.reedSolomon_code_subdomainZero_transport
@@ -1573,10 +1722,13 @@ theorem fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLens
 #print axioms Fri.fri_jointAgreement_of_queryRoundDensityBoundAndBatchedFRIOracleLens
 #print axioms Fri.batchedFRIreduction_verifier_eq_append
 #print axioms Fri.batchedFRISequentialCompositionSoundness_of_append
+#print axioms Fri.friSoundnessSequentialComposition
+#print axioms Fri.friSoundnessSequentialComposition_of_append
 #print axioms Fri.friSoundnessQueryLift
 #print axioms Fri.friSoundnessQueryLift_of_queryRoundDensityBoundAndBatchedFRIOracleLens
 #print axioms Fri.FriSoundnessParts.of_queryRoundDensityBoundAndBatchedFRIOracleLens
 #print axioms Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLens
+#print axioms Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequentialComposition
 #print axioms Fri.fri_soundness_of_parts
 
 end Soundness

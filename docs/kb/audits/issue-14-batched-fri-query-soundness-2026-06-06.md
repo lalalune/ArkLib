@@ -46,6 +46,12 @@ Current source exposes both sides of that frontier as named parts:
   Batched FRI append seam: if the batching-round verifier, lifted-FRI verifier,
   and generic `OracleVerifier.appendSoundnessResidual` are available, the
   appended verifier has additive soundness error.
+- `Fri.friSoundnessSequentialComposition` names that additive soundness
+  proposition for the actual `BatchedFri.Spec.batchedFRIreduction` verifier, and
+  `fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequentialComposition`
+  reassembles Claim 8.3 with the query-lift and concrete sequential fields
+  supplied while leaving the append residual and `totalError` consumption
+  explicit.
 - `Code.jointAgreement_equiv_of_codeword_transport` proves the finite-domain
   transport part of that lift across an equivalence of coordinate domains, once
   the corresponding codeword transport hypothesis is supplied.
@@ -75,6 +81,9 @@ Current source exposes both sides of that frontier as named parts:
   `BatchedFri.Spec.liftedFRI.verifier`; the companion theorem
   `Fri.batchedFRISequentialCompositionSoundness_of_append` specializes the
   generic append soundness theorem to that concrete Batched FRI seam.
+- `Fri.friSoundnessSequentialComposition_of_append` packages that theorem as
+  the concrete `FriSoundnessParts.sequential_composition_soundness` field for
+  the actual Batched FRI reduction verifier.
 - `Code.jointAgreement` and `jointAgreement_iff_jointProximity` are available
   in `ArkLib/Data/CodingTheory/InterleavedCode.lean`.
 - `Code.jointAgreement_equiv_of_codeword_transport` transports a
@@ -139,7 +148,10 @@ ArkLib/Data/CodingTheory/InterleavedCode.lean:738:theorem jointAgreement_iff_joi
    `Fri.fri_query_soundness_lift_subdomainZero_to_domain`, then prove the
    remaining generic append residual / virtual-oracle soundness preservation
    and `totalError` accounting steps for Claim 8.3 (`fri_soundness`) /
-   end-to-end Batched FRI soundness.
+   end-to-end Batched FRI soundness.  The concrete sequential-composition field
+   itself is now named by `Fri.friSoundnessSequentialComposition` and supplied
+   by `Fri.friSoundnessSequentialComposition_of_append` once the generic append
+   residual is available.
 
 This audit does not close the mathematical residual. It confirms that the
 current source no longer hides Claim 8.2 behind a vacuous `True` theorem and
