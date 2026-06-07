@@ -234,4 +234,81 @@ theorem exists_large_agree_zero_of_small_weight
     by_contra hne
     exact (Finset.mem_compl.mp hi) (mem_supp₁.mpr hne)
 
+/-! ### The uniform bound `|mcaBadWitness| ≤ wt(u₁)`
+
+A bound that holds for **every** stack (no far-from-zero condition), as long as the candidate `w`
+and the zero word both lie in the code: each bad scalar's witness set must contain a
+`supp(u₁)` coordinate (otherwise the line word agrees with `(w, 0)`, a joint codeword pair on the
+whole witness set, contradicting non-joint-agreement), and that coordinate pins the scalar
+uniquely.  Hence the bad scalars inject into `supp(u₁)`. -/
+
+open Classical in
+/-- The chosen witness set of a bad scalar is non-jointly-agreeing. -/
+theorem badWitnessSet_not_joint {C : Set (ι → A)} {δ : ℝ≥0} {u₀ u₁ w : ι → A} {γ : F}
+    (hγ : γ ∈ mcaBadWitness (F := F) C δ u₀ u₁ w) :
+    ¬ pairJointAgreesOn C (badWitnessSet C δ u₀ u₁ w γ) u₀ u₁ := by
+  rw [mcaBadWitness, mem_filter] at hγ
+  have hex := hγ.2
+  unfold badWitnessSet
+  rw [dif_pos hex]
+  exact hex.choose_spec.2.2
+
+/-- For a bad scalar, the witness set contains a coordinate where `u₁` is nonzero — otherwise the
+line word `u₀ + γ • u₁ = u₀` agrees with the joint codeword pair `(w, 0)` on the whole witness set,
+contradicting `¬ pairJointAgreesOn`. -/
+theorem exists_supp_mem_badWitnessSet {C : Set (ι → A)} {δ : ℝ≥0} {u₀ u₁ w : ι → A}
+    (hwC : w ∈ C) (h0C : (0 : ι → A) ∈ C) {γ : F}
+    (hγ : γ ∈ mcaBadWitness (F := F) C δ u₀ u₁ w) :
+    ∃ i ∈ badWitnessSet C δ u₀ u₁ w γ, u₁ i ≠ 0 := by
+  by_contra hcon
+  push_neg at hcon
+  apply badWitnessSet_not_joint hγ
+  refine ⟨w, hwC, 0, h0C, ?_⟩
+  intro i hi
+  have hu0 : u₁ i = 0 := hcon i hi
+  have hwa := (badWitnessSet_spec hγ).2 i hi
+  refine ⟨?_, ?_⟩
+  · rw [hwa, hu0, smul_zero, add_zero]
+  · simp [hu0]
+
+open Classical in
+/-- **Uniform bad-witness bound.**  For a candidate `w` in the code (with `0` also in the code),
+the bad combining scalars inject into `supp(u₁)`, so `|mcaBadWitness| ≤ wt(u₁) ≤ n`.  Unlike
+`mcaBadWitness_card_mul_le`, this holds for *every* stack — no far-from-zero hypothesis — and is the
+uniform per-codeword bound that discharges the first-moment residual's `b` over all stacks. -/
+theorem mcaBadWitness_card_le_weight [NoZeroSMulDivisors F A]
+    {C : Set (ι → A)} (δ : ℝ≥0) {u₀ u₁ w : ι → A}
+    (hwC : w ∈ C) (h0C : (0 : ι → A) ∈ C) :
+    (mcaBadWitness (F := F) C δ u₀ u₁ w).card ≤ (supp₁ u₁).card := by
+  set bad := mcaBadWitness (F := F) C δ u₀ u₁ w with hbad
+  -- coordinate-choice function: bad γ ↦ a witnessing supp(u₁) coordinate
+  let f : F → ι := fun γ =>
+    if h : γ ∈ bad then (exists_supp_mem_badWitnessSet hwC h0C h).choose
+    else Classical.arbitrary ι
+  refine Finset.card_le_card_of_injOn f ?_ ?_
+  · -- f maps bad scalars into supp(u₁)
+    intro γ hγ
+    have hspec := (exists_supp_mem_badWitnessSet hwC h0C hγ).choose_spec
+    have hf : f γ = (exists_supp_mem_badWitnessSet hwC h0C hγ).choose := dif_pos hγ
+    rw [hf]
+    exact mem_supp₁.mpr hspec.2
+  · -- f is injective on bad scalars (the witnessing coordinate pins the scalar)
+    intro γ hγ γ' hγ' hfeq
+    simp only [Finset.coe_sort_coe, Finset.mem_coe] at hγ hγ'
+    have hspec := (exists_supp_mem_badWitnessSet hwC h0C hγ).choose_spec
+    have hspec' := (exists_supp_mem_badWitnessSet hwC h0C hγ').choose_spec
+    have hf : f γ = (exists_supp_mem_badWitnessSet hwC h0C hγ).choose := dif_pos hγ
+    have hf' : f γ' = (exists_supp_mem_badWitnessSet hwC h0C hγ').choose := dif_pos hγ'
+    set i := (exists_supp_mem_badWitnessSet hwC h0C hγ).choose with hi
+    set i' := (exists_supp_mem_badWitnessSet hwC h0C hγ').choose with hi'
+    have hii' : i = i' := by rw [← hf, ← hf']; exact hfeq
+    -- at the common coordinate i, w i = u₀ i + γ • u₁ i = u₀ i + γ' • u₁ i
+    have hwa : w i = u₀ i + γ • u₁ i := (badWitnessSet_spec hγ).2 i hspec.1
+    have hwa' : w i' = u₀ i' + γ' • u₁ i' := (badWitnessSet_spec hγ').2 i' hspec'.1
+    rw [← hii'] at hwa'
+    have hsmul : γ • u₁ i = γ' • u₁ i := by
+      have : u₀ i + γ • u₁ i = u₀ i + γ' • u₁ i := by rw [← hwa, hwa']
+      exact add_left_cancel this
+    exact scalar_unique_of_smul_eq hspec.2 hsmul
+
 end ProximityGap
