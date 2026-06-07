@@ -8,7 +8,6 @@ import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Fintype.Card
 import Mathlib.Algebra.Order.Chebyshev
-import Mathlib.Algebra.BigOperators.Ring.Finset
 
 /-!
 # Coverage pigeonhole for multi-γ line decoding
@@ -55,7 +54,7 @@ theorem exists_degree_gt {κ ι : Type*} [Fintype κ] [Fintype ι] [DecidableEq 
     ∃ x : ι, k < (Finset.univ.filter (fun i => x ∈ S i)).card := by
   classical
   by_contra h
-  push_neg at h
+  push Not at h
   have hsum : (∑ i, (S i).card) ≤ k * Fintype.card ι := by
     rw [sum_card_eq_sum_degree]
     calc (∑ x : ι, (Finset.univ.filter (fun i => x ∈ S i)).card)
@@ -75,15 +74,26 @@ theorem sq_sum_card_le_card_mul_sum_inter {κ ι : Type*} [Fintype κ] [Fintype 
   classical
   set deg : ι → ℕ := fun x => (Finset.univ.filter (fun i => x ∈ S i)).card with hdeg
   have hf : ∀ x : ι, deg x = ∑ i, (if x ∈ S i then (1 : ℕ) else 0) := by
-    intro x; rw [hdeg]; rw [Finset.card_filter]
+    intro x
+    change (Finset.univ.filter (fun i => x ∈ S i)).card
+      = ∑ i, (if x ∈ S i then (1 : ℕ) else 0)
+    rw [Finset.card_filter]
   have hinter : ∀ i j : κ, (S i ∩ S j).card
       = ∑ x : ι, (if x ∈ S i then (1 : ℕ) else 0) * (if x ∈ S j then 1 else 0) := by
     intro i j
-    rw [← Finset.card_filter]
-    congr 1
-    ext x
-    by_cases hi : x ∈ S i <;> by_cases hj : x ∈ S j <;>
-      simp [hi, hj, Finset.mem_inter]
+    calc
+      (S i ∩ S j).card
+          = (Finset.univ.filter (fun x : ι => x ∈ S i ∩ S j)).card := by
+              congr 1
+              ext x
+              simp
+      _ = ∑ x : ι, (if x ∈ S i ∩ S j then (1 : ℕ) else 0) := by
+              rw [Finset.card_filter]
+      _ = ∑ x : ι, (if x ∈ S i then (1 : ℕ) else 0) * (if x ∈ S j then 1 else 0) := by
+              refine Finset.sum_congr rfl ?_
+              intro x _
+              by_cases hi : x ∈ S i <;> by_cases hj : x ∈ S j <;>
+                simp [hi, hj, Finset.mem_inter]
   have hident : (∑ i, ∑ j, (S i ∩ S j).card) = ∑ x : ι, (deg x) ^ 2 := by
     have step1 : (∑ i, ∑ j, ∑ x : ι, (if x ∈ S i then (1 : ℕ) else 0) * (if x ∈ S j then 1 else 0))
         = ∑ i, ∑ x : ι, ∑ j, (if x ∈ S i then (1 : ℕ) else 0) * (if x ∈ S j then 1 else 0) := by

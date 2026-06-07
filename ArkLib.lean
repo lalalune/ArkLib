@@ -330,6 +330,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.LineDecoding
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingBadScalarCount
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingCounting
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingCoverage
+import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingCoverageDegree
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingGrandChallenges
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingGrandChallengesPrizeSpec
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingGrandChallengesPrizeSpecLowOutput
