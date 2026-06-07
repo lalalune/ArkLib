@@ -114,9 +114,11 @@ theorem iterated_fold_first (i : Fin r) {midIdx destIdx : Fin r} (steps : ℕ)
       (h_destIdx_le := show (⟨midIdx.val + n, h_midmid_bound⟩ : Fin r) ≤ ℓ by
         show midIdx.val + n ≤ ℓ; omega)
       (r_challenges := Fin.init r_challenges)
-    -- Both outer `fold`s now share the same start index and last challenge (`succ_last`);
-    -- reconcile the inner `n`-step fold by the IH.
-    rw [h_ih, Fin.succ_last]
+    -- Both outer `fold`s now share the same start index; the last challenges agree by `succ_last`,
+    -- and the inner `n`-step folds agree by the IH (via `congr`, which closes the residual by IH/defeq).
+    rw [Fin.succ_last]
+    congr 1
+    all_goals first | exact h_ih | rfl
 
 end
 

@@ -118,7 +118,7 @@ lemma polyToOracleFunc_eq_getFirstOracle
     (oStmt : ∀ j, OracleStatement 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) i j)
     (h_consistency : strictOracleFoldingConsistencyProp 𝔽q β (t := t) (i := i)
       (challenges := challenges) (oStmt := oStmt)) :
-    let P₀ : L[X]_(2 ^ ℓ) :=
+    let P₀ : Polynomial.degreeLT L (2 ^ ℓ) :=
       polynomialFromNovelCoeffsF₂ 𝔽q β ℓ (by omega) (fun ω => t.val.eval (bitsOfIndex ω))
     let f₀ := polyToOracleFunc 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (domainIdx := 0) (P := P₀)
     f₀ = getFirstOracle 𝔽q β oStmt := by
@@ -144,7 +144,7 @@ lemma polyToOracleFunc_eq_getFirstOracle
     This is the inverse of `Nat.joinBits` in some sense.
     Uses loose indexing with `Fin r`. -/
 def decomposeChallenge (v : sDomain 𝔽q β h_ℓ_add_R_rate ⟨0, by omega⟩)
-    (i : Fin r) {destIdx : Fin r} (steps : ℕ)
+    (i : Fin ℓ) {destIdx : Fin r} (steps : ℕ)
     (h_destIdx_le : destIdx ≤ ℓ) :
     Fin (2^steps) × sDomain 𝔽q β h_ℓ_add_R_rate destIdx :=
   (extractMiddleFinMask 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (v:=v) (i:=i) (steps:=steps),
@@ -201,7 +201,8 @@ noncomputable def getFiberPoint
     (k : Fin (ℓ / ϑ)) (v : sDomain 𝔽q β h_ℓ_add_R_rate ⟨0, by omega⟩) (u : Fin (2 ^ ϑ)) :
     (sDomain 𝔽q β h_ℓ_add_R_rate) (i := ⟨oraclePositionToDomainIndex ℓ ϑ (i := Fin.last ℓ)
       (positionIdx := ⟨k, by simp only [toOutCodewordsCount_last, Fin.is_lt]⟩),
-        lt_r_of_lt_ℓ (x := k.val * ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (h := k_mul_ϑ_lt_ℓ)⟩) :=
+        lt_r_of_lt_ℓ (x := k.val * ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+          (h := k_mul_ϑ_lt_ℓ (k := k))⟩) :=
   by
     exact
       qMap_total_fiber 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
@@ -209,9 +210,10 @@ noncomputable def getFiberPoint
           lt_r_of_lt_ℓ (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (x := k.val * ϑ)
             (h := k_mul_ϑ_lt_ℓ (k := k))⟩)
         (steps := ϑ)
-        (h_destIdx := by rfl)
-        (h_destIdx_le := by
-          exact k_succ_mul_ϑ_le_ℓ_₂ (k := k))
+        (h_i_add_steps := by
+          have h_le := k_succ_mul_ϑ_le_ℓ_₂ (k := k)
+          have hR : 0 < 𝓡 := Nat.pos_of_neZero 𝓡
+          simp only [Fin.val_mk]; omega)
         (y := getChallengeSuffix 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (k := k) (v := v))
         u
 

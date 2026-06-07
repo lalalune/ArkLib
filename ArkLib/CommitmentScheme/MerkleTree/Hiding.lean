@@ -188,6 +188,24 @@ def openTranscript {s : Skeleton} (hashFn : α → α → α)
   (tree.getRootValue,
     idxs.map (fun i => ⟨i, salts.get i, leaves.get i, generateProof tree i⟩))
 
+/-- The honest salted transcript root is the root of the salted Merkle tree. -/
+theorem openTranscript_root_eq {s : Skeleton} (hashFn : α → α → α)
+    (salts leaves : LeafData α s) (idxs : List (SkeletonLeafIndex s)) :
+    (openTranscript hashFn salts leaves idxs).1 =
+      (buildSaltedTree hashFn salts leaves).getRootValue := by
+  simp [openTranscript]
+
+/-- The honest salted transcript entries are exactly the requested indices mapped to their honest
+salt, leaf value, and authentication path. -/
+theorem openTranscript_entries_eq {s : Skeleton} (hashFn : α → α → α)
+    (salts leaves : LeafData α s) (idxs : List (SkeletonLeafIndex s)) :
+    (openTranscript hashFn salts leaves idxs).2 =
+      idxs.map
+        (fun i =>
+          ⟨i, salts.get i, leaves.get i,
+            generateProof (buildSaltedTree hashFn salts leaves) i⟩) := by
+  simp [openTranscript]
+
 /-- The honest salted transcript emits exactly one opening entry for each requested index. -/
 theorem openTranscript_entries_length {s : Skeleton} (hashFn : α → α → α)
     (salts leaves : LeafData α s) (idxs : List (SkeletonLeafIndex s)) :
@@ -345,6 +363,8 @@ end InductiveMerkleTree
 #print axioms InductiveMerkleTree.salted_opening_unique_against_honest_tree
 #print axioms InductiveMerkleTree.multi_salted_openings_unique_against_honest_tree
 #print axioms InductiveMerkleTree.openTranscript
+#print axioms InductiveMerkleTree.openTranscript_root_eq
+#print axioms InductiveMerkleTree.openTranscript_entries_eq
 #print axioms InductiveMerkleTree.openTranscript_entries_length
 #print axioms InductiveMerkleTree.openTranscript_entries_indices
 #print axioms InductiveMerkleTree.openTranscript_entry_eq_honest_pair
