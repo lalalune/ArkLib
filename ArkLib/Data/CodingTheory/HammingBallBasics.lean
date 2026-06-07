@@ -94,6 +94,25 @@ theorem listDecodable_of_Lambda_le {F : Type*} [Fintype F] [DecidableEq F]
   have hnat : (closeCodewordsRel C y δ).ncard ≤ ℓ := by exact_mod_cast hy
   exact_mod_cast hnat
 
+/-- **List-decodability ⇒ `Lambda` bound** at a natural list-size bound.  This is the
+predicate-to-maximised endpoint companion to `listDecodable_of_Lambda_le`. -/
+theorem Lambda_le_of_listDecodable_nat {F : Type*}
+    {C : Code ι F} {δ : ℝ} {ℓ : ℕ} (h : listDecodable C δ (ℓ : ℝ)) :
+    Lambda C δ ≤ (ℓ : ℕ∞) :=
+  Lambda_le_natCast_of_forall_ncard_le fun f => by
+    exact_mod_cast h f
+
+/-- **Predicate / maximised-list equivalence** for natural list-size bounds. -/
+theorem listDecodable_iff_Lambda_le_nat {F : Type*}
+    {C : Code ι F} {δ : ℝ} {ℓ : ℕ} :
+    listDecodable C δ (ℓ : ℝ) ↔ Lambda C δ ≤ (ℓ : ℕ∞) := by
+  refine ⟨Lambda_le_of_listDecodable_nat, ?_⟩
+  intro h y
+  have hy : ((closeCodewordsRel C y δ).ncard : ℕ∞) ≤ (ℓ : ℕ∞) :=
+    le_trans (le_iSup (fun f => ((closeCodewordsRel C f δ).ncard : ℕ∞)) y) h
+  have hnat : (closeCodewordsRel C y δ).ncard ≤ ℓ := by exact_mod_cast hy
+  exact_mod_cast hnat
+
 /-- **`Lambda` is monotone in the code**: a subcode has a smaller maximised list size, since each
 point list `closeCodewordsRel` grows with the code. -/
 theorem Lambda_mono_code {F : Type*} [Finite F] {C C' : Code ι F} (h : C ⊆ C') (δ : ℝ) :
@@ -120,5 +139,7 @@ end ListDecodable
 #print axioms ListDecodable.listDecodable_mono_code
 #print axioms ListDecodable.listDecodable_mono_code_radius_bound
 #print axioms ListDecodable.listDecodable_of_Lambda_le
+#print axioms ListDecodable.Lambda_le_of_listDecodable_nat
+#print axioms ListDecodable.listDecodable_iff_Lambda_le_nat
 #print axioms ListDecodable.Lambda_mono_code
 #print axioms ListDecodable.Lambda_mono_code_radius
