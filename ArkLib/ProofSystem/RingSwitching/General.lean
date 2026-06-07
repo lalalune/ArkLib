@@ -151,13 +151,16 @@ lemma batchingCore_perfectCompleteness [IsDomain L] [IsDomain K]
   (relIn := BatchingPhase.batchingInputRelation κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn)
   (relOut := mlIOPCS.toRelInput)
   (init:=init) (impl:=impl) := by
-  apply OracleReduction.append_perfectCompleteness
-    (hResidual := hBatchingCoreAppendPerfectCompleteness)
-  · exact BatchingPhase.batchingReduction_perfectCompleteness κ L K P ℓ ℓ' h_l
-       mlIOPCS.toAbstractOStmtIn hBatching
-  · exact SumcheckPhase.coreInteraction_perfectCompleteness
+  exact OracleReduction.append_perfectCompleteness
+    (R₁ := BatchingPhase.batchingOracleReduction κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn)
+    (R₂ := SumcheckPhase.coreInteractionOracleReduction κ L K P ℓ ℓ' h_l
+      mlIOPCS.toAbstractOStmtIn)
+    (h₁ := BatchingPhase.batchingReduction_perfectCompleteness κ L K P ℓ ℓ' h_l
+      mlIOPCS.toAbstractOStmtIn hBatching)
+    (h₂ := SumcheckPhase.coreInteraction_perfectCompleteness
       κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn
-      (init := init) (impl := impl) hRounds hCoreInteractionAppendPerfectCompleteness
+      (init := init) (impl := impl) hRounds hCoreInteractionAppendPerfectCompleteness)
+    (hResidual := hBatchingCoreAppendPerfectCompleteness)
 
 omit [(i : mlIOPCS.pSpec.ChallengeIdx) → SampleableType (mlIOPCS.pSpec.Challenge i)] in
 theorem fullOracleReduction_perfectCompleteness [IsDomain L] [IsDomain K]
@@ -201,12 +204,14 @@ theorem fullOracleReduction_perfectCompleteness [IsDomain L] [IsDomain K]
     (init := init)
     (impl := impl)
      := by
-  apply OracleReduction.append_perfectCompleteness (Oₛ₃:=by
-    exact fun _ ↦ OracleInterface.instDefault)
+  exact OracleReduction.append_perfectCompleteness
+    (R₁ := batchingCoreReduction κ L K P ℓ ℓ' h_l mlIOPCS)
+    (R₂ := mlIOPCS.oracleReduction)
+    (Oₛ₃ := by exact fun _ ↦ OracleInterface.instDefault)
+    (h₁ := batchingCore_perfectCompleteness κ L K P ℓ ℓ' h_l mlIOPCS init hBatching hRounds
+      hCoreInteractionAppendPerfectCompleteness hBatchingCoreAppendPerfectCompleteness)
+    (h₂ := mlIOPCS.perfectCompleteness)
     (hResidual := hFullAppendPerfectCompleteness)
-  · exact batchingCore_perfectCompleteness κ L K P ℓ ℓ' h_l mlIOPCS init hBatching hRounds
-      hCoreInteractionAppendPerfectCompleteness hBatchingCoreAppendPerfectCompleteness
-  · exact mlIOPCS.perfectCompleteness
 
 def batchingCoreRbrKnowledgeError
     (i : (pSpecBatching κ L K P ++ₚ pSpecCoreInteraction L ℓ').ChallengeIdx) : ℝ≥0 :=
