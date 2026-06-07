@@ -18,10 +18,11 @@ genuine *refutation* of its order-zero component for non-monic `H`.
 
 The in-tree reduction chain (all `hHyp.dvd_evalX`-free) proves, under only `2 ≤ R.natDegree`:
 
+via `restrictedMatchAt_zero_iff_eval₂WDivTarget` then the target definition:
 ```
 RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0
-  ↔ RestrictedMatchAtZeroEval₂WDivTarget H x₀ R                 -- restrictedMatchAt_zero_iff_eval₂WDivTarget
-  ↔ ( eval₂ lift (T/W) p  =  eval₂ lift T p / W ^ R.natDegree )  -- definition
+  ↔ RestrictedMatchAtZeroEval₂WDivTarget H x₀ R
+  ↔ ( eval₂ lift (T/W) p  =  eval₂ lift T p / W ^ R.natDegree )
 ```
 with `p = evalX (C x₀) (Δ_X¹ R)` the order-1 `X`-Taylor coefficient and
 `W = liftToFunctionField H.leadingCoeff`.
