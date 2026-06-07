@@ -35,6 +35,7 @@ F k ι` as `PMF.uniformOfFintype (Matrix (Fin k) ι F)` (definitionally), so the
 * `vecMul_uniform_apply` — pointwise: `Pr[m ᵥ* G = v] = (q^n)⁻¹`.
 * `vecMul_uniform_mem_prob` — set form: `Pr[m ᵥ* G ∈ S] = |S| / q^n` (the GLMRSW22 first-moment
   summand).
+* `card_vecMul_mem_mul` — division-free `ℕ` count: `|{G : m ᵥ* G ∈ S}| · q^n = |S| · |Matrix|`.
 
 ## What this does *not* close
 
@@ -202,6 +203,43 @@ theorem vecMul_uniform_mem_prob {m : Fin k → F} (hm : m ≠ 0)
       = Fintype.card S / Fintype.card (ι → F) := by
   rw [map_vecMul_uniformOfFintype hm, PMF.toOuterMeasure_uniformOfFintype_apply]
 
+/-- **The first-moment count (division-free `ℕ` form).** For a fixed nonzero message `m` and any
+finite set `S` of codewords, `|{G : m ᵥ* G ∈ S}| · |ι → F| = |S| · |Matrix|`: a fixed nonzero
+message hits `S` from exactly a `|S| / q^n` fraction of all generator matrices. Summed over the
+`q^k − 1` nonzero messages this is the GLMRSW22 first moment of the number of codewords in `S`. -/
+theorem card_vecMul_mem_mul (S : Finset (ι → F)) {m : Fin k → F} (hm : m ≠ 0) :
+    (Finset.univ.filter (fun G : Matrix (Fin k) ι F => m ᵥ* G ∈ S)).card
+        * Fintype.card (ι → F)
+      = S.card * Fintype.card (Matrix (Fin k) ι F) := by
+  -- each codeword `v` is hit from a fixed `|Matrix| / |ι → F|` slice of generator matrices
+  have hcell : ∀ v : ι → F,
+      (Finset.univ.filter (fun G : Matrix (Fin k) ι F => m ᵥ* G = v)).card
+          * Fintype.card (ι → F)
+        = Fintype.card (Matrix (Fin k) ι F) := by
+    intro v
+    have h := card_mat_eq hm v
+    rw [Fintype.card_subtype] at h
+    rw [mul_comm]; exact h.symm
+  -- partition `{G : m ᵥ* G ∈ S}` into the disjoint codeword fibers over `S`
+  have hbiUnion :
+      Finset.univ.filter (fun G : Matrix (Fin k) ι F => m ᵥ* G ∈ S)
+        = S.biUnion (fun v => Finset.univ.filter (fun G : Matrix (Fin k) ι F => m ᵥ* G = v)) := by
+    ext G
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_biUnion]
+    constructor
+    · intro h; exact ⟨m ᵥ* G, h, rfl⟩
+    · rintro ⟨v, hv, hG⟩; rw [hG]; exact hv
+  have hdisj : ∀ v₁ ∈ S, ∀ v₂ ∈ S, v₁ ≠ v₂ →
+      Disjoint (Finset.univ.filter (fun G : Matrix (Fin k) ι F => m ᵥ* G = v₁))
+        (Finset.univ.filter (fun G : Matrix (Fin k) ι F => m ᵥ* G = v₂)) := by
+    intro v₁ _ v₂ _ hne
+    apply Finset.disjoint_left.2
+    intro G hG₁ hG₂
+    rw [Finset.mem_filter] at hG₁ hG₂
+    exact hne (hG₁.2.symm.trans hG₂.2)
+  rw [hbiUnion, Finset.card_biUnion hdisj, Finset.sum_mul,
+    Finset.sum_congr rfl (fun v _ => hcell v), Finset.sum_const, smul_eq_mul]
+
 end ArkLib.RandomLinearCode
 
 -- Axiom audit: every public result must reduce to the standard kernel axioms only.
@@ -211,3 +249,4 @@ end ArkLib.RandomLinearCode
 #print axioms ArkLib.RandomLinearCode.map_vecMul_uniformOfFintype
 #print axioms ArkLib.RandomLinearCode.vecMul_uniform_apply
 #print axioms ArkLib.RandomLinearCode.vecMul_uniform_mem_prob
+#print axioms ArkLib.RandomLinearCode.card_vecMul_mem_mul
