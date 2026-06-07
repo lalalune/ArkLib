@@ -83,6 +83,18 @@ def IsSubspaceDesign {ι : Type} [Fintype ι]
         Fintype.card ι ≤
       Module.finrank F A * τ r
 
+/-- A τ-profile can be weakened pointwise: a τ-subspace-design is also a τ'-subspace-design
+whenever `τ r ≤ τ' r` for every `r`. -/
+theorem IsSubspaceDesign.mono_tau {ι : Type} [Fintype ι]
+    {F : Type} [Field F] {s : ℕ} {τ τ' : ℕ → ℝ}
+    {C : Submodule F (ι → Fin s → F)}
+    (h : IsSubspaceDesign s τ C) (hτ : ∀ r, τ r ≤ τ' r) :
+    IsSubspaceDesign s τ' C := by
+  intro r A hA hA_rank
+  have hrank_nonneg : 0 ≤ (Module.finrank F A : ℝ) := Nat.cast_nonneg _
+  exact le_trans (h r A hA hA_rank)
+    (mul_le_mul_of_nonneg_left (hτ r) hrank_nonneg)
+
 /-- **Bridge: kernel of the `i`-th projection equals the comprehension `{a | a i = 0}`.**
 
 The subspace `A_i := {a ∈ A : a_i = 0^s}` from the paper's `IsSubspaceDesign` definition
@@ -972,6 +984,77 @@ theorem frs_is_subspaceDesign_gk16_of_admissible
       _ = (Module.finrank F A : ℝ) * Fintype.card ι := by
           rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul, mul_comm]
 
+/-- **Profile bridge for C3.5.** The repaired GK16/FRS profile
+`τ(r) = (k - 1)/n` on `[s]` is pointwise no larger than the CZ25 capacity-reduction profile
+`τ(r) = s·k/(n·(s-r+1))` on `[s]` (and both profiles are `1` off `[s]`). Hence any FRS
+subspace-design theorem stated with the repaired GK16 profile can feed the existing C3.5
+reduction, which consumes the CZ25 profile. -/
+theorem frs_is_subspaceDesign_cz25Profile_of_gk16Profile
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (h : IsSubspaceDesign s
+      (fun r ↦ if r ∈ Finset.Icc 1 s then (k - 1 : ℝ) / Fintype.card ι else 1)
+      (ReedSolomon.Folded.frsCode domain k s ω)) :
+    IsSubspaceDesign s
+      (fun r ↦ if r ∈ Finset.Icc 1 s then
+          (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - r + 1) else 1)
+      (ReedSolomon.Folded.frsCode domain k s ω) := by
+  apply IsSubspaceDesign.mono_tau h
+  intro r
+  by_cases hr : r ∈ Finset.Icc 1 s
+  · simp only [hr, if_true]
+    obtain ⟨hr1, hrs⟩ := Finset.mem_Icc.mp hr
+    have hn_pos : (0 : ℝ) < Fintype.card ι := by exact_mod_cast Fintype.card_pos
+    have hden_pos : 0 < (s : ℝ) - r + 1 := by
+      have hrsR : (r : ℝ) ≤ s := by exact_mod_cast hrs
+      linarith
+    have hratio : 1 ≤ (s : ℝ) / ((s : ℝ) - r + 1) := by
+      rw [le_div_iff₀ hden_pos]
+      have hr1R : (1 : ℝ) ≤ r := by exact_mod_cast hr1
+      linarith
+    calc ((k : ℝ) - 1) / Fintype.card ι
+        ≤ (k : ℝ) / Fintype.card ι := by
+            exact div_le_div_of_nonneg_right (by linarith) (le_of_lt hn_pos)
+      _ ≤ ((k : ℝ) / Fintype.card ι) * ((s : ℝ) / ((s : ℝ) - r + 1)) := by
+            exact le_mul_of_one_le_right
+              (div_nonneg (Nat.cast_nonneg k) (le_of_lt hn_pos)) hratio
+      _ = (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - r + 1) := by
+            ring
+  · simp only [hr, if_false]
+    exact le_rfl
+
+/-- C3.5-compatible FRS subspace-design profile from the injective GK16 bridge. -/
+theorem frs_is_subspaceDesign_cz25Profile_of_injective
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (hEinj : Function.Injective (ReedSolomon.Folded.frsEvalOnPoints domain s ω))
+    (hω_sep : ∀ {n : ℕ} (Q : Fin n → Polynomial F), (∀ j, Q j ≠ 0) →
+        Function.Injective (fun j => (Q j).natDegree) →
+        Function.Injective (fun j => ω ^ (Q j).natDegree)) :
+    IsSubspaceDesign s
+      (fun r ↦ if r ∈ Finset.Icc 1 s then
+          (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - r + 1) else 1)
+      (ReedSolomon.Folded.frsCode domain k s ω) :=
+  frs_is_subspaceDesign_cz25Profile_of_gk16Profile domain k s ω
+    (frs_is_subspaceDesign_gk16_of_injective domain k s ω hEinj hω_sep)
+
+/-- C3.5-compatible FRS subspace-design profile from the admissible GK16 bridge. -/
+theorem frs_is_subspaceDesign_cz25Profile_of_admissible
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (L : Finset F) (hL_dom : ∀ i : ι, domain i ∈ L)
+    (hω0 : ω ≠ 0) (hadm : ReedSolomon.Folded.Admissible L s ω)
+    (hkLs : k ≤ s * Fintype.card ι) (hkord : k ≤ orderOf ω) :
+    IsSubspaceDesign s
+      (fun r ↦ if r ∈ Finset.Icc 1 s then
+          (s : ℝ) * (k : ℝ) / Fintype.card ι / ((s : ℝ) - r + 1) else 1)
+      (ReedSolomon.Folded.frsCode domain k s ω) :=
+  frs_is_subspaceDesign_cz25Profile_of_gk16Profile domain k s ω
+    (frs_is_subspaceDesign_gk16_of_admissible domain k s ω L hL_dom hω0 hadm hkLs hkord)
+
 
 /-! ## Univariate Multiplicity Codes (ABF26 DA.7) -/
 
@@ -1071,6 +1154,10 @@ theorem um_is_subspaceDesign_gk16
 end CodingTheory
 
 /- Axiom audit:
-`CodingTheory.um_is_subspaceDesign_gk16` depends only on
-`propext`, `Classical.choice`, and `Quot.sound`. -/
+`CodingTheory.um_is_subspaceDesign_gk16` and the C3.5-compatible FRS profile bridges depend
+only on `propext`, `Classical.choice`, and `Quot.sound`. -/
 #print axioms CodingTheory.um_is_subspaceDesign_gk16
+#print axioms CodingTheory.IsSubspaceDesign.mono_tau
+#print axioms CodingTheory.frs_is_subspaceDesign_cz25Profile_of_gk16Profile
+#print axioms CodingTheory.frs_is_subspaceDesign_cz25Profile_of_injective
+#print axioms CodingTheory.frs_is_subspaceDesign_cz25Profile_of_admissible
