@@ -19,10 +19,10 @@ codewords `V ≠ V'` have `hammingDist V V' ≥ minDist C`.**  This is the geome
 the Erase-Decode argument: because the interleaved code `C^{≡m}` has the *same* minimum
 distance as the base code `C` (`minDist_eq_minDist`), two distinct close codewords are at
 least `minDist C` apart, so their agreement sets (with the received word `f`) can overlap in
-at most `n − minDist C = (1 − δ_C)·n` coordinates
-(`agreement_inter_card_le`).  Concretely: on the shared agreement they both equal `f`, and
-any column where they differ exhibits two distinct base codewords agreeing there — which, by
-the base-code minimum distance, is impossible on more than `n − minDist C` positions.
+at most `n − minDist C = (1 − δ_C)·n` coordinates (`agreement_inter_card_le`).  Concretely: on
+the shared agreement they both equal `f`, and any column where they differ exhibits two
+distinct base codewords agreeing there — which, by the base-code minimum distance, is
+impossible on more than `n − minDist C` positions.
 
 ## 2. The tree-structure residual is *exactly* the per-word bound
 
@@ -62,12 +62,12 @@ theorem hammingDist_ge_minDist_of_mem_closeCodewordsRel_ne
     Code.minDist C ≤ hammingDist V V' := by
   classical
   haveI : Nonempty (Fin m) := ⟨⟨0, Nat.pos_of_ne_zero (NeZero.ne m)⟩⟩
-  haveI : DecidableEq (Fin m → F) := inferInstance
   -- both lie in the interleaved code
   have hVcode : V ∈ interleavedCodeSet (κ := Fin m) C := hV.1
   have hV'code : V' ∈ interleavedCodeSet (κ := Fin m) C := hV'.1
   -- the interleaved code has the same minimum distance as the base code (propositional bridge,
-  -- avoiding the expensive `interleavedCodeSet`/`^⋈` defeq)
+  -- avoiding the expensive `interleavedCodeSet`/`^⋈` defeq; the `DecidableEq (Fin m → F)`
+  -- instance is left to canonical inference so both sides share `Fintype.decidablePiFintype`)
   have hmin : Code.minDist (interleavedCodeSet (κ := Fin m) C) = Code.minDist C :=
     (congrArg Code.minDist
         (interleavedCode_eq_interleavedCodeSet (C := C) (κ := Fin m)).symm).trans

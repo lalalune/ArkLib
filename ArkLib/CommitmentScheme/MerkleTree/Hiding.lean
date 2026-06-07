@@ -467,8 +467,6 @@ end HidingDefinition
 
 section HidingSimulator
 
-variable [SampleableType α]
-
 /-- Replace every unopened leaf by a fixed filler value, preserving only the leaves selected by
 `opened`. This is the leaf assignment consumed by the hiding simulator: it depends on the real
 witness only through the public opened positions. The predicate form avoids requiring decidable
@@ -495,7 +493,8 @@ theorem openedLeafData_eq_of_agree {s : Skeleton} (filler : α)
     openedLeafData filler opened leaves₁ = openedLeafData filler opened leaves₂ := by
   apply (LeafData.equivIndexFun s).injective
   funext idx
-  change (openedLeafData filler opened leaves₁).get idx = (openedLeafData filler opened leaves₂).get idx
+  change (openedLeafData filler opened leaves₁).get idx =
+    (openedLeafData filler opened leaves₂).get idx
   by_cases hidx : opened idx
   · rw [openedLeafData_get, openedLeafData_get]
     simp only [hidx, if_true]
@@ -532,7 +531,8 @@ theorem simulatorTranscript_eq_of_agree {s : Skeleton} (hashFn : α → α → �
   unfold simulatorTranscript
   rw [openedLeafData_eq_of_agree filler opened leaves₁ leaves₂ hagree]
 
-/-- Real salted transcript experiment, factored out to keep the simulator/hybrid theorem readable. -/
+/-- Real salted transcript experiment, factored out to keep the simulator/hybrid theorem
+readable. -/
 def realTranscriptExperiment {s : Skeleton} (hashFn : α → α → α)
     (sampleSalts : OracleComp (spec α) (LeafData α s))
     (idxs : List (SkeletonLeafIndex s)) (leaves : LeafData α s) :
@@ -556,7 +556,7 @@ def SimulationBasedHiding {s : Skeleton} (hashFn : α → α → α)
 opened-leaf simulator for every witness, then the two real transcript distributions for any pair of
 witnesses that agree on opened positions are equal. This is the formal simulator + hybrid argument
 needed to connect the construction to the existing `Hiding` predicate. -/
-theorem simulationBasedHiding_implies_Hiding [DecidableEq α] {s : Skeleton}
+theorem simulationBasedHiding_implies_Hiding {s : Skeleton}
     (hashFn : α → α → α)
     (sampleSalts : OracleComp (spec α) (LeafData α s))
     (idxs : List (SkeletonLeafIndex s))
