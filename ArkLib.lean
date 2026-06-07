@@ -808,6 +808,7 @@ import ArkLib.ToMathlib.LineDecodingCoverageProof
 import ArkLib.ToMathlib.LinearizedHomogeneous
 import ArkLib.ToMathlib.LinearizedKernel
 import ArkLib.ToMathlib.LinearizedProductClosure
+import ArkLib.ToMathlib.LinearizedRecursionStep
 import ArkLib.ToMathlib.LinearizedSupport
 import ArkLib.ToMathlib.LinearizedSupportStep
 import ArkLib.ToMathlib.List.Basic
