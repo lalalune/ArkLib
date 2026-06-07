@@ -82,6 +82,12 @@ theorem whirVectorSpec_messageIdx_isEmpty (M : ℕ) :
   change Direction.V_to_P = Direction.P_to_V at hi
   cases hi
 
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- The protocol spec has no prover-message indices. -/
+theorem whirVectorSpec_card_messageIdx (M : ℕ) :
+    Fintype.card (((whirVectorSpec M).toProtocolSpec F).MessageIdx) = 0 := by
+  exact Fintype.card_eq_zero_iff.mpr (whirVectorSpec_messageIdx_isEmpty (F := F) M)
+
 /-- The total challenge payload length of the scratch WHIR vector spec is `2 * M + 2`. -/
 theorem whirVectorSpec_totalChallengeLength (M : ℕ) :
     (whirVectorSpec M).totalChallengeLength = 2 * M + 2 := by
@@ -102,6 +108,7 @@ instance (M : ℕ) :
 
 #print axioms whirVectorSpec_card_challengeIdx
 #print axioms whirVectorSpec_messageIdx_isEmpty
+#print axioms whirVectorSpec_card_messageIdx
 #print axioms whirVectorSpec_totalChallengeLength
 #print axioms whirVectorSpec_totalMessageLength
 
