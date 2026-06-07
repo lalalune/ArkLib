@@ -239,9 +239,14 @@ theorem geom_prefix_le_real {n : ℕ} (e : ℕ → ℝ) (e₀ q : ℝ)
   -- Step 3: closed form via `geom_sum_eq`.
   have hqne : q ≠ 1 := ne_of_lt hq1
   have step3 : (∑ i ∈ Finset.range n, q ^ i) = (q ^ n - 1) / (q - 1) := geom_sum_eq hqne n
-  -- Step 4: `(q^n - 1)/(q - 1) = (1 - q^n)/(1 - q)` via `neg_div_neg_eq` + `ring_nf`.
+  -- Step 4: `(q^n - 1)/(q - 1) = (1 - q^n)/(1 - q)`.
+  -- Negate numerator and denominator: `-(q^n - 1) = 1 - q^n`, `-(q - 1) = 1 - q`,
+  -- and `neg_div_neg_eq : -a / -b = a / b`.
+  -- `q - 1 < 0` and `1 - q > 0`, both nonzero; cross-multiply with `div_eq_div_iff`.
+  have hq1ne : q - 1 ≠ 0 := by intro h; apply ne_of_lt hq1; linarith
+  have h1qne : (1 : ℝ) - q ≠ 0 := ne_of_gt h1q
   have step4 : (q ^ n - 1) / (q - 1) = (1 - q ^ n) / (1 - q) := by
-    rw [← neg_div_neg_eq]; ring_nf
+    rw [div_eq_div_iff hq1ne h1qne]; ring
   -- Step 5: `(1 - q^n)/(1 - q) ≤ 1/(1 - q)` since `1 - q^n ≤ 1` and `0 ≤ 1 - q`.
   have hqn : (0 : ℝ) ≤ q ^ n := pow_nonneg hq0 n
   have step5 : (1 - q ^ n) / (1 - q) ≤ 1 / (1 - q) :=
@@ -266,20 +271,20 @@ theorem geom_prefix_le_real {n : ℕ} (e : ℕ → ℝ) (e₀ q : ℝ)
 theorem geom_prefix_le_nnreal {n : ℕ} (e : ℕ → ℝ≥0) (e₀ q : ℝ≥0)
     (hq1 : q < 1) (hbound : ∀ i, i < n → e i ≤ e₀ * q ^ i) :
     (∑ i ∈ Finset.range n, e i) ≤ e₀ / (1 - q) := by
-  -- Transport to `ℝ` via `NNReal.coe_le_coe`, coercing each piece by hand.
+  -- Transport to `ℝ` via `NNReal.coe_le_coe`.
   rw [← NNReal.coe_le_coe]
-  -- LHS coercion: `↑(∑ e i) = ∑ ↑(e i)`  (`NNReal.coe_sum`).
-  rw [NNReal.coe_sum]
-  -- RHS coercion: `↑(e₀ / (1 - q)) = ↑e₀ / ↑(1 - q) = ↑e₀ / (1 - ↑q)`
-  --   (`NNReal.coe_div`, then `NNReal.coe_sub hq1.le` since `q ≤ 1`; `NNReal.coe_one`).
-  rw [NNReal.coe_div, NNReal.coe_sub hq1.le, NNReal.coe_one]
-  -- Now a pure-`ℝ` goal: apply `geom_prefix_le_real`.
+  -- The only nonstandard cast is `↑(1 - q) = 1 - ↑q`, which needs `q ≤ 1`
+  -- (`NNReal.coe_sub hq1.le`); all other casts (`coe_sum`, `coe_div`, `coe_mul`, `coe_pow`,
+  -- `coe_one`) are handled by `push_cast`.
+  push_cast [NNReal.coe_sub hq1.le]
+  -- Now a pure-`ℝ` goal `∑ ↑(e i) ≤ ↑e₀ / (1 - ↑q)`: apply `geom_prefix_le_real`.
   refine geom_prefix_le_real (fun i => (e i : ℝ)) (e₀ : ℝ) (q : ℝ)
     q.coe_nonneg (by exact_mod_cast hq1) e₀.coe_nonneg (fun i hi => ?_)
-  -- per-round bound: coerce `e i ≤ e₀ * q^i` (`NNReal.coe_le_coe`, `NNReal.coe_mul/pow`).
+  -- per-round bound: coerce `e i ≤ e₀ * q^i` into `ℝ` (`exact_mod_cast` handles
+  -- `coe_mul`/`coe_pow`).
   have h := hbound i hi
-  have : ((e i : ℝ)) ≤ ((e₀ * q ^ i : ℝ≥0) : ℝ) := by exact_mod_cast h
-  simpa [NNReal.coe_mul, NNReal.coe_pow] using this
+  push_cast
+  exact_mod_cast h
 
 /-! ## §4. Keystone interface: the per-round proximity-gap residual (NAMED, NOT proven here)
 
