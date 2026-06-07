@@ -66,6 +66,7 @@ import ArkLib.Data.CodingTheory.GuruswamiSudan.Basic
 import ArkLib.Data.CodingTheory.GuruswamiSudan.GuruswamiSudan
 import ArkLib.Data.CodingTheory.GuruswamiSudan.ListSizeBound
 import ArkLib.Data.CodingTheory.GuruswamiSudan.MultiplicityInterpolation
+import ArkLib.Data.CodingTheory.HammingBallEntropyUpperBound
 import ArkLib.Data.CodingTheory.HammingBallVolume
 import ArkLib.Data.CodingTheory.InterleavedCode
 import ArkLib.Data.CodingTheory.InterleavedListSize
