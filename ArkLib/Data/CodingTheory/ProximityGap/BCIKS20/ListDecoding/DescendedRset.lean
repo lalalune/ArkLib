@@ -229,47 +229,28 @@ The bundle's factorization equation `Q = C C * ∏ i ∈ range L.length, ((Rᵢ.
 roots arise as `g = C u · expand nn r = C u · (r.comp X^nn)` for normalized factors `g ∣ Q`, this is
 the honest `expand`-shape divisibility — the descended analogue of `pg_Rset`'s `dvd_of_mem_normalizedFactors`. -/
 
-omit [DecidableEq (RatFunc F)] [Finite F] in
-set_option maxHeartbeats 1000000 in
-/-- **`expand`-shape divisibility (indexed form).**  For each index `i` into the descended list, the
-`i`-th factor `(R.getD i 1).comp (X^(f.getD i 0))` divides `Q` (it appears, to a power `≥ 1`, in the
-factorization equation). -/
-theorem pg_RsetDescended_comp_getD_dvd_Q
-    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) (i : ℕ)
-    (hi : i < (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose.length) :
-    (((irreducible_factorization_of_gs_solution h_gs).choose_spec.choose.getD i 1).comp
-        ((Polynomial.X : F[Z][X][Y]) ^
-          ((irreducible_factorization_of_gs_solution h_gs).choose_spec.choose_spec.choose.getD i 0)))
-      ∣ Q := by
+omit [DecidableEq F] [DecidableEq (RatFunc F)] [Finite F] in
+/-- **Abstract `expand`-shape divisibility.**  Pure list/product fact, stated over *abstract* data
+`C₀, L, f, e` so its proof never reduces the giant `irreducible_factorization_of_gs_solution` choice
+term (which would blow up `whnf`).  If `Q = C C₀ · ∏ⱼ ((L.getD j 1).comp X^(f.getD j 0))^(e.getD j 0)`
+with every exponent `≥ 1`, then for each index `i` the `i`-th factor divides `Q`. -/
+theorem comp_getD_dvd_of_factorization
+    (Q' : F[Z][X][Y]) (C₀ : F[Z][X]) (L : List F[Z][X][Y]) (f e : List ℕ)
+    (hlen1 : L.length = f.length) (hlen2 : f.length = e.length)
+    (he : ∀ eᵢ ∈ e, 1 ≤ eᵢ)
+    (hfact : Q' = Polynomial.C C₀ *
+      ∏ j ∈ Finset.range L.length,
+        ((L.getD j 1).comp ((Polynomial.X : F[Z][X][Y]) ^ f.getD j 0)) ^ e.getD j 0)
+    (i : ℕ) (hi : i < L.length) :
+    ((L.getD i 1).comp ((Polynomial.X : F[Z][X][Y]) ^ (f.getD i 0))) ∣ Q' := by
   classical
-  -- read off the length / multiplicity / factorization facts first, then abbreviate
-  obtain ⟨hlen1, hlen2, he, _hsep, _hirr, _hpos, hfact⟩ :=
-    (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose_spec.choose_spec.choose_spec
-  -- abbreviations for the chosen content and three chosen lists (fold into `hfact`)
-  set C₀ := (irreducible_factorization_of_gs_solution h_gs).choose with hC₀
-  set L := (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose with hLdef
-  set f := (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose_spec.choose with hfdef
-  set e := (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose_spec.choose_spec.choose
-    with hedef
-  -- the per-index factor body
-  let body : ℕ → F[Z][X][Y] := fun j =>
-    ((L.getD j 1).comp ((Polynomial.X : F[Z][X][Y]) ^ (f.getD j 0))) ^ (e.getD j 0)
-  have hbody : ∀ j, body j =
-      ((L.getD j 1).comp ((Polynomial.X : F[Z][X][Y]) ^ (f.getD j 0))) ^ (e.getD j 0) :=
-    fun _ => rfl
+  set body : ℕ → F[Z][X][Y] := fun j =>
+    ((L.getD j 1).comp ((Polynomial.X : F[Z][X][Y]) ^ (f.getD j 0))) ^ (e.getD j 0) with hbodydef
   have hmem : i ∈ Finset.range L.length := Finset.mem_range.mpr hi
-  -- the `i`-th body divides the full range product
   have hdvd_prod : body i ∣ ∏ j ∈ Finset.range L.length, body j :=
     Finset.dvd_prod_of_mem body hmem
-  -- the product divides Q (Q = C C₀ * product)
-  have hprodeq : (∏ j ∈ Finset.range L.length, body j)
-      = ∏ i ∈ Finset.range L.length,
-          ((L.getD i 1).comp ((Polynomial.X : F[Z][X][Y]) ^ f.getD i 0)) ^ e.getD i 0 :=
-    Finset.prod_congr rfl (fun j _ => hbody j)
-  have hprod_dvd_Q : (∏ j ∈ Finset.range L.length, body j) ∣ Q := by
-    refine Dvd.intro_left (Polynomial.C C₀) ?_
-    rw [hprodeq]; exact hfact.symm
-  -- the (e i)-th power of the comp divides body i, since e i ≥ 1
+  have hprod_dvd_Q : (∏ j ∈ Finset.range L.length, body j) ∣ Q' :=
+    Dvd.intro_left (Polynomial.C C₀) hfact.symm
   have hlen_e : e.length = L.length := by rw [← hlen2, ← hlen1]
   have hie : i < e.length := by rw [hlen_e]; exact hi
   have hei : 1 ≤ e.getD i 0 := by
@@ -278,10 +259,30 @@ theorem pg_RsetDescended_comp_getD_dvd_Q
       exact List.mem_iff_getElem.2 ⟨i, hie, rfl⟩
     exact he _ hmem_e
   have hcomp_dvd_body : ((L.getD i 1).comp ((Polynomial.X : F[Z][X][Y]) ^ (f.getD i 0)))
-      ∣ body i := by
-    rw [hbody i]
-    exact dvd_pow_self _ (by omega)
+      ∣ body i := dvd_pow_self _ (by omega)
   exact dvd_trans hcomp_dvd_body (dvd_trans hdvd_prod hprod_dvd_Q)
+
+omit [DecidableEq (RatFunc F)] [Finite F] in
+/-- **`expand`-shape divisibility (indexed form).**  For each index `i` into the descended list, the
+`i`-th factor `(R.getD i 1).comp (X^(f.getD i 0))` divides `Q` (it appears, to a power `≥ 1`, in the
+factorization equation).  Proved by instantiating the abstract `comp_getD_dvd_of_factorization` at the
+chosen data, so the giant choice term is only *substituted*, never reduced. -/
+theorem pg_RsetDescended_comp_getD_dvd_Q
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁) (i : ℕ)
+    (hi : i < (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose.length) :
+    (((irreducible_factorization_of_gs_solution h_gs).choose_spec.choose.getD i 1).comp
+        ((Polynomial.X : F[Z][X][Y]) ^
+          ((irreducible_factorization_of_gs_solution h_gs).choose_spec.choose_spec.choose.getD i 0)))
+      ∣ Q := by
+  classical
+  obtain ⟨hlen1, hlen2, he, _hsep, _hirr, _hpos, hfact⟩ :=
+    (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose_spec.choose_spec.choose_spec
+  exact comp_getD_dvd_of_factorization Q
+    (irreducible_factorization_of_gs_solution h_gs).choose
+    (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose
+    (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose_spec.choose
+    (irreducible_factorization_of_gs_solution h_gs).choose_spec.choose_spec.choose_spec.choose
+    hlen1 hlen2 he hfact i hi
 
 omit [DecidableEq (RatFunc F)] [Finite F] in
 /-- **`expand`-shape divisibility (member form).**  Every descended factor `R` admits an exponent

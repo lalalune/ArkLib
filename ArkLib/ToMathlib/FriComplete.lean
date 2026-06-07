@@ -70,7 +70,9 @@ safety + the algebraic round-consistency identity, whose core `polyFold`/Lagrang
 *proven* `RoundConsistency.generalised_round_consistency_completeness`). It is named as a residual
 `Prop` so the composition layer (bricks C, D) can be discharged unconditionally. -/
 def foldRoundPerfectCompletenessResidual
-    (hInit : NeverFail init) (i : Fin k) (cond : ∑ j, (s j).1 ≤ n) (δ : ℝ≥0) : Prop :=
+    (hInit : NeverFail init) (i : Fin k)
+    [∀ j, SampleableType ((FoldPhase.pSpec s (ω := ω) i).Challenge j)]
+    (cond : ∑ j, (s j).1 ≤ n) (δ : ℝ≥0) : Prop :=
   OracleReduction.perfectCompleteness init impl
     (FoldPhase.inputRelation s (ω := ω) d i cond δ)
     (FoldPhase.outputRelation s (ω := ω) d i cond δ)
@@ -78,7 +80,9 @@ def foldRoundPerfectCompletenessResidual
 
 /-- **Brick A/B — non-final folding round** (reduction to its named residual). -/
 theorem foldRound_perfectCompleteness
-    (hInit : NeverFail init) (i : Fin k) (cond : ∑ j, (s j).1 ≤ n) (δ : ℝ≥0)
+    (hInit : NeverFail init) (i : Fin k)
+    [∀ j, SampleableType ((FoldPhase.pSpec s (ω := ω) i).Challenge j)]
+    (cond : ∑ j, (s j).1 ≤ n) (δ : ℝ≥0)
     (hResidual : foldRoundPerfectCompletenessResidual init impl hInit i cond δ) :
     OracleReduction.perfectCompleteness init impl
       (FoldPhase.inputRelation s (ω := ω) d i cond δ)
@@ -93,7 +97,9 @@ w.r.t. the FRI final-round input/output relations, given `hInit : NeverFail init
 the non-final residual; here the prover sends the folded polynomial in the clear and the verifier
 runs a degree `guard`. -/
 def finalFoldRoundPerfectCompletenessResidual
-    (hInit : NeverFail init) (cond : ∑ j, (s j).1 ≤ n) (δ : ℝ≥0) : Prop :=
+    (hInit : NeverFail init)
+    [∀ j, SampleableType ((FinalFoldPhase.pSpec F).Challenge j)]
+    (cond : ∑ j, (s j).1 ≤ n) (δ : ℝ≥0) : Prop :=
   OracleReduction.perfectCompleteness init impl
     (FinalFoldPhase.inputRelation s (ω := ω) d cond δ)
     (FinalFoldPhase.outputRelation s (ω := ω) d cond δ)
@@ -101,7 +107,9 @@ def finalFoldRoundPerfectCompletenessResidual
 
 /-- **Brick A/B — final folding round** (reduction to its named residual). -/
 theorem finalFoldRound_perfectCompleteness
-    (hInit : NeverFail init) (cond : ∑ j, (s j).1 ≤ n) (δ : ℝ≥0)
+    (hInit : NeverFail init)
+    [∀ j, SampleableType ((FinalFoldPhase.pSpec F).Challenge j)]
+    (cond : ∑ j, (s j).1 ≤ n) (δ : ℝ≥0)
     (hResidual : finalFoldRoundPerfectCompletenessResidual init impl hInit cond δ) :
     OracleReduction.perfectCompleteness init impl
       (FinalFoldPhase.inputRelation s (ω := ω) d cond δ)
