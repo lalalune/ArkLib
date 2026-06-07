@@ -379,26 +379,25 @@ variable {ι F : Type} [Fintype ι]
 
 /-- A single concrete Erase-Decode tree supplies the named per-word GGR11 witness.
 
-This is the one-word construction target for the remaining Algorithm-1 work: produce a concrete
-tree whose leaves dominate the close codewords and whose Blue/Red depths and Red branching meet
-the GGR11 budgets. The closed-form witness data is then fully internal. -/
-theorem treeWitness_of_eraseDecodeTree
+This is the exact target shape for the future Algorithm-1 construction: once the
+algorithm produces a concrete tree whose leaves dominate the close-codeword set
+and whose Blue/Red depths and Red branching obey the GGR11 budgets, the closed
+Pascal-form leaf-count function satisfies the `GGR11TreeWitness` interface. -/
+noncomputable def treeWitness_of_concreteEraseDecodeTree
     {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ} (hL : 1 ≤ Lambda C δ)
-    {f : Matrix ι (Fin m) F}
-    (H : ∃ t : EraseDecodeTree,
+    (f : Matrix ι (Fin m) F) (tree : EraseDecodeTree)
+    (hdom :
       (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard
-          ≤ t.leafCount ∧
-      t.blueDepth ≤ b ∧ t.redDepth ≤ r ∧ t.redBranchingLe (Lambda C δ)) :
-    Nonempty (GGR11TreeWitness C δ m b r f) := by
-  obtain ⟨tree, hdom, hbd, hrd, hbr⟩ := H
+          ≤ tree.leafCount)
+    (hbd : tree.blueDepth ≤ b) (hrd : tree.redDepth ≤ r)
+    (hbr : tree.redBranchingLe (Lambda C δ)) :
+    GGR11TreeWitness C δ m b r f := by
   refine
-    ⟨
-      { leafCount := fun b' r' => ((b' + r').choose r' : ℕ∞) * (Lambda C δ) ^ r'
-        close_le_leafCount := ?_
-        no_red_budget := ?_
-        red_only_step := ?_
-        blue_red_step := ?_ }
-    ⟩
+    { leafCount := fun b' r' => ((b' + r').choose r' : ℕ∞) * (Lambda C δ) ^ r'
+      close_le_leafCount := ?_
+      no_red_budget := ?_
+      red_only_step := ?_
+      blue_red_step := ?_ }
   · calc (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard
           ≤ tree.leafCount := hdom
         _ ≤ ((b + r).choose r : ℕ∞) * (Lambda C δ) ^ r :=
@@ -431,6 +430,22 @@ theorem treeWitness_of_eraseDecodeTree
                 ring
             _ ≤ (Lambda C δ) * (((b' + 1 + r').choose r' : ℕ∞) * (Lambda C δ) ^ r') :=
                 mul_le_mul' (le_refl _) (mul_le_mul' hcast (le_refl _))
+
+/-- Concrete Erase-Decode tree existence supplies the named per-word GGR11 witness.
+
+This is the one-word construction target for the remaining Algorithm-1 work: produce a concrete
+tree whose leaves dominate the close codewords and whose Blue/Red depths and Red branching meet
+the GGR11 budgets. The closed-form witness data is then fully internal. -/
+theorem treeWitness_of_eraseDecodeTree
+    {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ} (hL : 1 ≤ Lambda C δ)
+    {f : Matrix ι (Fin m) F}
+    (H : ∃ t : EraseDecodeTree,
+      (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard
+          ≤ t.leafCount ∧
+      t.blueDepth ≤ b ∧ t.redDepth ≤ r ∧ t.redBranchingLe (Lambda C δ)) :
+    Nonempty (GGR11TreeWitness C δ m b r f) := by
+  obtain ⟨tree, hdom, hbd, hrd, hbr⟩ := H
+  exact ⟨treeWitness_of_concreteEraseDecodeTree hL f tree hdom hbd hrd hbr⟩
 
 /-- **Constructive witness for `GGR11TreeStructure`.**
 
@@ -493,6 +508,7 @@ theorem lambda_le_ggr11_of_eraseDecodeTree
 
 -- Axiom audit.
 #print axioms EraseDecodeTree.leafCount_le
+#print axioms treeWitness_of_concreteEraseDecodeTree
 #print axioms treeWitness_of_eraseDecodeTree
 #print axioms treeStructure_of_eraseDecodeTree
 #print axioms treeFrontier_of_eraseDecodeTree
