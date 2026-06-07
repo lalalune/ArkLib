@@ -201,6 +201,7 @@ import ArkLib.Data.CodingTheory.ProximityPrizeLeaves
 import ArkLib.Data.CodingTheory.ProximityPrizeLeaves2
 import ArkLib.Data.CodingTheory.RandomLinearCodeEquidistribution
 import ArkLib.Data.CodingTheory.RandomLinearCodeFirstMoment
+import ArkLib.Data.CodingTheory.RandomLinearCodeMatrixEquidist
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.CodingTheory.ReedSolomon.FftDomain
 import ArkLib.Data.CodingTheory.ReedSolomon.Folded
