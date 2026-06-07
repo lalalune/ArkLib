@@ -66,6 +66,7 @@ import ArkLib.Data.CodingTheory.GuruswamiSudan.MultiplicityInterpolation
 import ArkLib.Data.CodingTheory.HammingBallVolume
 import ArkLib.Data.CodingTheory.InterleavedCode
 import ArkLib.Data.CodingTheory.InterleavedListSize
+import ArkLib.Data.CodingTheory.InterleavedRowDistance
 import ArkLib.Data.CodingTheory.JohnsonBound.Basic
 import ArkLib.Data.CodingTheory.JohnsonBound.Choose2
 import ArkLib.Data.CodingTheory.JohnsonBound.Expectations
@@ -132,6 +133,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Basic
 import ArkLib.Data.CodingTheory.ProximityGap.BivariateVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.BoundaryCardResidual
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBounds
+import ArkLib.Data.CodingTheory.ProximityGap.CoveringExistence
 import ArkLib.Data.CodingTheory.ProximityGap.DG25
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.Basic
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.MainResults
