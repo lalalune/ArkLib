@@ -31,6 +31,7 @@ transports a representation, preserving exponents).  This file adds the matching
 * `mul_target_mem_closure` — **composition soundness**: the product of two represented targets lies
   in the closure of the union of their bases (the soundness complement to
   `GroupRepresentation.mul`).
+* `mul_target_mem_of_forall_mem` — subgroup-relative composition soundness against a fixed `H`.
 -/
 
 namespace AGM.GroupRepresentation
@@ -177,6 +178,16 @@ theorem mul_target_mem_closure {prev₁ prev₂ : List G} {t₁ t₂ : G}
     r₂.target_mem_of_forall_mem _ (fun g hg => Subgroup.subset_closure (by simp [hg]))
   exact Subgroup.mul_mem _ h₁ h₂
 
+/-- **Subgroup-relative composition soundness.** If every element of both bases lies in a subgroup
+`H`, then the product of the two represented targets lies in `H`. This is the concrete-subgroup
+form of `mul_target_mem_closure`, letting reductions discharge composition soundness against a
+fixed `H` (e.g. the image of a commitment key) without going through the generated closure. -/
+theorem mul_target_mem_of_forall_mem {prev₁ prev₂ : List G} {t₁ t₂ : G}
+    (r₁ : GroupRepresentation (p := p) prev₁ t₁) (r₂ : GroupRepresentation (p := p) prev₂ t₂)
+    (H : Subgroup G) (h₁ : ∀ g ∈ prev₁, g ∈ H) (h₂ : ∀ g ∈ prev₂, g ∈ H) :
+    t₁ * t₂ ∈ H :=
+  Subgroup.mul_mem _ (r₁.target_mem_of_forall_mem H h₁) (r₂.target_mem_of_forall_mem H h₂)
+
 end AGM.GroupRepresentation
 
 /-! ### Axiom audit (issue #118 representation companion lemmas) -/
@@ -195,3 +206,4 @@ end AGM.GroupRepresentation
 #print axioms AGM.GroupRepresentation.zipWith_pow_prod_append
 #print axioms AGM.GroupRepresentation.append
 #print axioms AGM.GroupRepresentation.mul_target_mem_closure
+#print axioms AGM.GroupRepresentation.mul_target_mem_of_forall_mem
