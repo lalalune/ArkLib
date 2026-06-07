@@ -179,10 +179,6 @@ theorem multi_salted_openings_unique_against_honest_tree {s : Skeleton}
   exact salted_opening_unique_against_honest_tree hashFn hinj salts leaves o.1 o.2.1 o.2.2
     (hver o ho)
 
-section HidingDefinition
-
-variable [DecidableEq α] [SampleableType α]
-
 /-- The transcript an honest committer publishes when opening a set of indices: the salted root
 together with, for each opened index, the salt, the underlying leaf, and the authentication path. -/
 def openTranscript {s : Skeleton} (hashFn : α → α → α)
@@ -191,6 +187,22 @@ def openTranscript {s : Skeleton} (hashFn : α → α → α)
   let tree := buildSaltedTree hashFn salts leaves
   (tree.getRootValue,
     idxs.map (fun i => ⟨i, salts.get i, leaves.get i, generateProof tree i⟩))
+
+/-- Every opening emitted by the honest salted transcript verifies against the transcript root. This
+is the list-level packaging of `salted_completeness` used by future simulator/hybrid arguments. -/
+theorem openTranscript_entry_verifies {s : Skeleton} (hashFn : α → α → α)
+    (salts leaves : LeafData α s) (idxs : List (SkeletonLeafIndex s)) :
+    ∀ o ∈ (openTranscript hashFn salts leaves idxs).2,
+      getPutativeRootWithHash o.1 (leafCommit hashFn o.2.1 o.2.2.1) o.2.2.2 hashFn
+        = (openTranscript hashFn salts leaves idxs).1 := by
+  intro o ho
+  simp [openTranscript] at ho ⊢
+  obtain ⟨i, _hi, rfl⟩ := ho
+  simpa [saltedLeaves_get] using salted_completeness hashFn salts leaves i
+
+section HidingDefinition
+
+variable [DecidableEq α] [SampleableType α]
 
 /-- **Hiding (indistinguishability definition, SNARGs book §18).** A salted Merkle commitment is
 hiding for a fixed opened index set `idxs` if, for *any* two leaf assignments `leaves₁`, `leaves₂`
@@ -222,4 +234,5 @@ end InductiveMerkleTree
 #print axioms InductiveMerkleTree.salted_opening_unique_against_honest_tree
 #print axioms InductiveMerkleTree.multi_salted_openings_unique_against_honest_tree
 #print axioms InductiveMerkleTree.openTranscript
+#print axioms InductiveMerkleTree.openTranscript_entry_verifies
 #print axioms InductiveMerkleTree.Hiding
