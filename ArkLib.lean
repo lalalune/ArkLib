@@ -152,6 +152,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2BijectionApply
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Close
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Match
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2MatchRoot
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2PartitionMatchScratch
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Reabsorb
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Reindex
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2RootBridge
@@ -174,6 +175,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveringCount
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveringExistence
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveringWitness
 import ArkLib.Data.CodingTheory.ProximityGap.CS25RSCoveredFraction
+import ArkLib.Data.CodingTheory.ProximityGap.CS25RSNearBound
 import ArkLib.Data.CodingTheory.ProximityGap.CS25ReedSolomonHighDist
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentHighDist
 import ArkLib.Data.CodingTheory.ProximityGap.CS25SecondMomentLinear
@@ -618,6 +620,7 @@ import ArkLib.ToMathlib.DiscriminantSeparable
 import ArkLib.ToMathlib.EliasVolumeCertificates
 import ArkLib.ToMathlib.ExtractedIssueBricks
 import ArkLib.ToMathlib.FaaDiBrunoMatchProof
+import ArkLib.ToMathlib.FinSumMvPolyBricks
 import ArkLib.ToMathlib.FiniteSeriesToPoly
 import ArkLib.ToMathlib.Finset.Basic
 import ArkLib.ToMathlib.Finset.ToListWithProof
