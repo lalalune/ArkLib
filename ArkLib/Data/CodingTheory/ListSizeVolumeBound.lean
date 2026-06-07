@@ -237,6 +237,13 @@ theorem one_le_Lambda_and_Lambda_le_qEntropy_real_radius_card
   refine ⟨?_, Lambda_le_qEntropy_real_radius_card C δ hδ0 hδ⟩
   simpa using ENat.toENNReal_mono (one_le_Lambda_of_nonempty (C := C) hC hδ0)
 
+/-- **Every code is uniquely decodable at radius 0** — the radius-0 list has at most
+`Vol_q(0,n) = 1` codeword (the Elias bound `listDecodable_hammingBallVolume` at `δ = 0`). -/
+theorem uniqueDecodable_zero {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Fintype F] [DecidableEq F] (C : Code ι F) : uniqueDecodable C 0 := by
+  have h := listDecodable_hammingBallVolume C (0 : ℝ)
+  rwa [hammingBallVolume_zero_radius, Nat.cast_one] at h
+
 end CodingTheory
 
 #print axioms CodingTheory.closeCodewordsRel_ncard_le_hammingBallVolume
@@ -252,3 +259,4 @@ end CodingTheory
 #print axioms CodingTheory.one_le_Lambda_and_Lambda_le_hammingBallVolume
 #print axioms CodingTheory.one_le_Lambda_and_Lambda_le_qEntropy_card
 #print axioms CodingTheory.one_le_Lambda_and_Lambda_le_qEntropy_real_radius_card
+#print axioms CodingTheory.uniqueDecodable_zero
