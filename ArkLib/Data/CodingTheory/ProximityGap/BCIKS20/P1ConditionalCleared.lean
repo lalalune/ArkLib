@@ -166,6 +166,143 @@ theorem βHensel_weight_bound_unlocked_of_restrictedMatch_clearedBaseCases
     H x₀ R hHyp hH hDH hDRx0 hdR2 hdHR hW
     (fun t => (P2_closed_of_restrictedMatch H x₀ R hHyp hmatch).2 (t + 1)) hα t
 
+/-- All-prefix structured invariant unlocked directly from repaired cleared-base div-weight
+cases. -/
+theorem βHenselStructuredWeightInvariant_all_unlocked_of_divWeight_clearedBaseCases
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdiv : DivWeightLe_clearedBaseCases H x₀ R hHyp hH D) :
+    ∀ k, βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k :=
+  fun k =>
+    βHenselStructuredWeightInvariant_unlocked_of_divWeight_clearedBaseCases
+      H x₀ R hHyp hH hDH hDRx0 hdR2 hdiv k
+
+/-- All-prefix structured invariant from repaired alpha-side cleared-base cases and successor
+lift identities. -/
+theorem βHenselStructuredWeightInvariant_all_unlocked_of_alphaWeight_clearedBaseCases_succLift
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hliftSucc : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp (t + 1))
+        = αGenuine H x₀ R hHyp (t + 1)
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1 + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * (t + 1) - 1))
+    (hα : AlphaGenuineRegularWeightLe_clearedBaseCases H x₀ R hHyp hH D) :
+    ∀ k, βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k :=
+  fun k =>
+    βHenselStructuredWeightInvariant_unlocked_of_alphaWeight_clearedBaseCases_succLift
+      H x₀ R hHyp hH hDH hDRx0 hdR2 hliftSucc hα k
+
+/-- All-prefix structured invariant unlocked by full P2 vanishing and repaired alpha-side
+cleared-base cases. -/
+theorem βHenselStructuredWeightInvariant_all_unlocked_of_fullVanishes_clearedBaseCases
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hvan : FaaDiBrunoFullSumVanishes H x₀ R hHyp)
+    (hα : AlphaGenuineRegularWeightLe_clearedBaseCases H x₀ R hHyp hH D) :
+    ∀ k, βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k :=
+  fun k =>
+    βHenselStructuredWeightInvariant_unlocked_of_fullVanishes_clearedBaseCases
+      H x₀ R hHyp hH hDH hDRx0 hdR2 hvan hα k
+
+/-- All-prefix structured invariant unlocked by the restricted P2 match and repaired alpha-side
+cleared-base cases. -/
+theorem βHenselStructuredWeightInvariant_all_unlocked_of_restrictedMatch_clearedBaseCases
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp)
+    (hα : AlphaGenuineRegularWeightLe_clearedBaseCases H x₀ R hHyp hH D) :
+    ∀ k, βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k :=
+  fun k =>
+    βHenselStructuredWeightInvariant_unlocked_of_restrictedMatch_clearedBaseCases
+      H x₀ R hHyp hH hDH hDRx0 hdR2 hmatch hα k
+
+/-- All-prefix P1 weight bound unlocked directly from repaired cleared-base div-weight cases. -/
+theorem βHensel_weight_bound_all_unlocked_of_divWeight_clearedBaseCases
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hdiv : DivWeightLe_clearedBaseCases H x₀ R hHyp hH D) :
+    ∀ t, weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  fun t =>
+    βHensel_weight_bound_unlocked_of_divWeight_clearedBaseCases
+      H x₀ R hHyp hH hDH hDRx0 hdR2 hdHR hW hdiv t
+
+/-- All-prefix P1 weight bound from repaired alpha-side cleared-base cases and successor lift
+identities. -/
+theorem βHensel_weight_bound_all_unlocked_of_alphaWeight_clearedBaseCases_succLift
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hliftSucc : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp (t + 1))
+        = αGenuine H x₀ R hHyp (t + 1)
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1 + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * (t + 1) - 1))
+    (hα : AlphaGenuineRegularWeightLe_clearedBaseCases H x₀ R hHyp hH D) :
+    ∀ t, weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  fun t =>
+    βHensel_weight_bound_unlocked_of_alphaWeight_clearedBaseCases_succLift
+      H x₀ R hHyp hH hDH hDRx0 hdR2 hdHR hW hliftSucc hα t
+
+/-- All-prefix P1 weight bound unlocked by full P2 vanishing and repaired alpha-side
+cleared-base cases. -/
+theorem βHensel_weight_bound_all_unlocked_of_fullVanishes_clearedBaseCases
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hvan : FaaDiBrunoFullSumVanishes H x₀ R hHyp)
+    (hα : AlphaGenuineRegularWeightLe_clearedBaseCases H x₀ R hHyp hH D) :
+    ∀ t, weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  fun t =>
+    βHensel_weight_bound_unlocked_of_fullVanishes_clearedBaseCases
+      H x₀ R hHyp hH hDH hDRx0 hdR2 hdHR hW hvan hα t
+
+/-- All-prefix P1 weight bound unlocked by the restricted P2 match and repaired alpha-side
+cleared-base cases. -/
+theorem βHensel_weight_bound_all_unlocked_of_restrictedMatch_clearedBaseCases
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp)
+    (hα : AlphaGenuineRegularWeightLe_clearedBaseCases H x₀ R hHyp hH D) :
+    ∀ t, weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  fun t =>
+    βHensel_weight_bound_unlocked_of_restrictedMatch_clearedBaseCases
+      H x₀ R hHyp hH hDH hDRx0 hdR2 hdHR hW hmatch hα t
+
 end P1ConditionalCleared
 
 end BCIKS20.HenselNumerator
@@ -179,3 +316,11 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_unlocked_of_alphaWeight_clearedBaseCases_succLift
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_unlocked_of_fullVanishes_clearedBaseCases
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_unlocked_of_restrictedMatch_clearedBaseCases
+#print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_all_unlocked_of_divWeight_clearedBaseCases
+#print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_all_unlocked_of_alphaWeight_clearedBaseCases_succLift
+#print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_all_unlocked_of_fullVanishes_clearedBaseCases
+#print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_all_unlocked_of_restrictedMatch_clearedBaseCases
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_unlocked_of_divWeight_clearedBaseCases
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_unlocked_of_alphaWeight_clearedBaseCases_succLift
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_unlocked_of_fullVanishes_clearedBaseCases
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_unlocked_of_restrictedMatch_clearedBaseCases
