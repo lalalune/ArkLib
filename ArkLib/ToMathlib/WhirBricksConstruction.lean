@@ -78,14 +78,12 @@ abbrev semanticChallengeIdx (M : ℕ) := Fin (M + 1) × RoundChallengeKind
 /-- Construction 5.1 contributes exactly `2 * M + 2` semantic verifier challenges. -/
 theorem semanticChallengeIdx_card (M : ℕ) :
     Fintype.card (semanticChallengeIdx M) = 2 * M + 2 := by
-  simp [semanticChallengeIdx, RoundChallengeKind]
-  omega
+  simp [semanticChallengeIdx, RoundChallengeKind, Nat.mul_add, Nat.add_assoc]
 
 /-- The semantic WHIR skeleton has the same number of prover-message slots as verifier challenges. -/
 theorem semanticMessageIdx_card (M : ℕ) :
     Fintype.card (semanticMessageIdx M) = 2 * M + 2 := by
-  simp [semanticMessageIdx, RoundMessageKind]
-  omega
+  simp [semanticMessageIdx, RoundMessageKind, Nat.mul_add, Nat.add_assoc]
 
 /-! ### The WHIR protocol-spec direction vector
 
