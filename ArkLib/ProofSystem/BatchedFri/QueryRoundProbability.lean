@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.ProofSystem.BatchedFri.Security
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.Main
 import ArkLib.ToMathlib.FriQueryRoundProb
 
 /-!
@@ -287,6 +288,83 @@ theorem fri_query_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLens
             (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier)
         (δ := 1 - α) (ε := ε) (u := f) h_ca h_prob)
 
+/-- Probability-route Claim 8.2 affine-line front door specialized to the BCIKS20
+Reed-Solomon affine-line correlated-agreement theorem on the Batched FRI subdomain.
+
+Compared with `...AndAffineLineCA`, callers no longer supply the packaged
+`δ_ε_correlatedAgreementAffineLines` predicate.  The remaining coding-theoretic hypotheses are
+the BCIKS20 affine-line theorem inputs: the strict coefficient-polynomial residual, the closed
+boundary residual, the square-root-radius side condition, and the affine-line probability trigger.
+-/
+theorem fri_query_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndRSAffineLine
+    {α : ℝ≥0}
+    (f : Fin 2 → (ω.subdomain 0 → 𝔽))
+    (h_agreement :
+      correlated_agreement_density
+        (Fₛ f)
+        (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
+      ≤ α)
+    {m : ℕ}
+    (m_ge_3 : m ≥ 3)
+    {ι : Type} [Fintype ι] [Nonempty ι]
+    (G : Finset ι) (δ : ℝ≥0∞) (queries l : ℕ)
+    (domain_size_cond : (2 ^ (∑ i, (s i : ℕ))) * d ≤ 2 ^ n)
+    (hStrictCoeff :
+      ProximityGap.StrictCoeffPolysResidual
+        (F := 𝔽) (ι := ω.subdomain 0) (k := 1) (deg := 2 ^ n)
+        (domain := (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽)) (δ := 1 - α))
+    (hBoundaryCard :
+      ProximityGap.BoundaryCardResidual
+        (F := 𝔽) (ι := ω.subdomain 0) (k := 1) (deg := 2 ^ n)
+        (domain := (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽)) (δ := 1 - α))
+    (hδ :
+      1 - α ≤
+        1 - ReedSolomon.sqrtRate
+          (2 ^ n) (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽))
+    (h_prob :
+      Pr_{let z ← $ᵖ 𝔽}[
+        δᵣ(f 0 + z • f 1,
+          (ReedSolomon.code
+            (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier)
+          ≤ 1 - α] >
+        ProximityGap.errorBound
+          (1 - α) (2 ^ n) (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽)) :
+    fri_query_soundness (n := n) (ω := ω) (f := f)
+      (h_agreement := h_agreement) (m_ge_3 := m_ge_3) := by
+  classical
+  let rsDomain : ω.subdomain 0 ↪ 𝔽 := ⟨fun x => x, by simp⟩
+  haveI : NeZero (2 ^ n) := ⟨pow_ne_zero n (by norm_num)⟩
+  have hStrictCoeff' :
+      ProximityGap.StrictCoeffPolysResidual
+        (F := 𝔽) (ι := ω.subdomain 0) (k := 1) (deg := 2 ^ n)
+        (domain := rsDomain) (δ := 1 - α) := by
+    simpa [rsDomain] using hStrictCoeff
+  have hBoundaryCard' :
+      ProximityGap.BoundaryCardResidual
+        (F := 𝔽) (ι := ω.subdomain 0) (k := 1) (deg := 2 ^ n)
+        (domain := rsDomain) (δ := 1 - α) := by
+    simpa [rsDomain] using hBoundaryCard
+  have hδ' :
+      1 - α ≤ 1 - ReedSolomon.sqrtRate (2 ^ n) rsDomain := by
+    simpa [rsDomain] using hδ
+  have hprob' :
+      Pr_{let z ← $ᵖ 𝔽}[
+        δᵣ(f 0 + z • f 1,
+          (ReedSolomon.code rsDomain (2 ^ n)).carrier)
+          ≤ 1 - α] >
+        ProximityGap.errorBound (1 - α) (2 ^ n) rsDomain := by
+    simpa [rsDomain] using h_prob
+  exact
+    fri_query_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndAffineLineCA
+      (n := n) (s := s) (d := d) (ω := ω)
+      (f := f) h_agreement m_ge_3 G δ queries l domain_size_cond
+      (ε := ProximityGap.errorBound (1 - α) (2 ^ n) rsDomain)
+      (ProximityGap.RS_correlatedAgreement_affineLines
+        (ι := ω.subdomain 0) (F := 𝔽) (deg := 2 ^ n)
+        (domain := rsDomain) (δ := 1 - α)
+        hStrictCoeff' hBoundaryCard' hδ')
+      hprob'
+
 omit [Nontrivial 𝔽] in
 /-- Probability-route Claim 8.2 front door from the affine-spaces correlated-agreement predicate.
 
@@ -386,6 +464,8 @@ set_option linter.style.longLine false in
 #print axioms Fri.fri_query_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndJointProximity
 set_option linter.style.longLine false in
 #print axioms Fri.fri_query_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndAffineLineCA
+set_option linter.style.longLine false in
+#print axioms Fri.fri_query_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndRSAffineLine
 set_option linter.style.longLine false in
 #print axioms Fri.fri_query_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndAffineSpacesCA
 set_option linter.style.longLine false in
