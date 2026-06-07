@@ -119,12 +119,6 @@ omit [(i : mlIOPCS.pSpec.ChallengeIdx) → SampleableType (mlIOPCS.pSpec.Challen
 -- which invokes the DP24 capstone `A_MLE_eval_eq_compute_final_eq_value` (an `IsDomain` algebra
 -- lemma). They hold in every real instantiation (`binaryTowerProfile` builds from fields `K`, `L`).
 lemma batchingCore_perfectCompleteness [IsDomain L] [IsDomain K]
-    (hBatching : BatchingPhase.batchingReduction_perfectCompleteness_residual
-      (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
-      (aOStmtIn := mlIOPCS.toAbstractOStmtIn) (init := init) (impl := impl))
-    (hRounds : SumcheckPhase.iteratedSumcheckOracleReduction_perfectCompleteness_residual
-      (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
-      (aOStmtIn := mlIOPCS.toAbstractOStmtIn) (init := init) (impl := impl))
     (hCoreInteractionAppendPerfectCompleteness :
       (SumcheckPhase.coreInteractionOracleReduction κ L K P ℓ ℓ' h_l
         mlIOPCS.toAbstractOStmtIn).perfectCompleteness
@@ -161,12 +155,6 @@ lemma batchingCore_perfectCompleteness [IsDomain L] [IsDomain K]
       κ L K P ℓ ℓ' h_l mlIOPCS.toAbstractOStmtIn
       (init := init) (impl := impl) hRounds hCoreInteractionAppendPerfectCompleteness)
     (hResidual := hBatchingCoreAppendPerfectCompleteness)
-
-omit [(i : mlIOPCS.pSpec.ChallengeIdx) → SampleableType (mlIOPCS.pSpec.Challenge i)] in
-theorem fullOracleReduction_perfectCompleteness [IsDomain L] [IsDomain K]
-    (hBatching : BatchingPhase.batchingReduction_perfectCompleteness_residual
-      (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
-      (aOStmtIn := mlIOPCS.toAbstractOStmtIn) (init := init) (impl := impl))
     (hRounds : SumcheckPhase.iteratedSumcheckOracleReduction_perfectCompleteness_residual
       (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
       (aOStmtIn := mlIOPCS.toAbstractOStmtIn) (init := init) (impl := impl))

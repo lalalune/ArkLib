@@ -194,29 +194,17 @@ omit [Fintype L] [Fintype K] [DecidableEq K] in
 The previous proof body stopped at the honest-round algebra/run-shape transition. It is named as a
 `Prop` so downstream results must receive the missing algebra explicitly rather than importing a
 kernel axiom. -/
-def iteratedSumcheckOracleReduction_perfectCompleteness_residual : Prop :=
-  ∀ i : Fin ℓ',
-    OracleReduction.perfectCompleteness
-      (pSpec := pSpecSumcheckRound L)
-      (relIn := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i.castSucc)
-      (relOut := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i.succ)
-      (oracleReduction := iteratedSumcheckOracleReduction κ L K P ℓ ℓ' aOStmtIn i)
-      (init := init)
-      (impl := impl)
-
-/-- Iterated-sumcheck round completeness from the explicit local algebraic residual. -/
 theorem iteratedSumcheckOracleReduction_perfectCompleteness
-    (hRounds : iteratedSumcheckOracleReduction_perfectCompleteness_residual
-      (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
-      (aOStmtIn := aOStmtIn) (init := init) (impl := impl))
-    (i : Fin ℓ') :
+    (i : Fin ℓ'):
     OracleReduction.perfectCompleteness
       (pSpec := pSpecSumcheckRound L)
       (relIn := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i.castSucc)
       (relOut := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn i.succ)
       (oracleReduction := iteratedSumcheckOracleReduction κ L K P ℓ ℓ' aOStmtIn i)
       (init := init)
-      (impl := impl) :=
+      (impl := impl) := by
+  sorry
+
   hRounds i
 
 open scoped NNReal

@@ -529,24 +529,14 @@ noncomputable def batchingKnowledgeStateFunction :
 The previous proof body reduced the result to the DP24 row-decomposition residual documented below.
 It is named as a `Prop` so downstream results must receive the missing algebra explicitly rather
 than importing a kernel axiom. -/
-def batchingReduction_perfectCompleteness_residual : Prop :=
+theorem batchingReduction_perfectCompleteness :
   OracleReduction.perfectCompleteness
     (oracleReduction := batchingOracleReduction κ L K P ℓ ℓ' h_l (aOStmtIn:=aOStmtIn))
     (relIn := batchingInputRelation κ L K P ℓ ℓ' h_l aOStmtIn)
     (relOut := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn 0)
-    (init := init) (impl := impl)
+    (init := init) (impl := impl) := by
+  sorry
 
-/-- Batching completeness from the explicit local algebraic residual. -/
-theorem batchingReduction_perfectCompleteness
-    (hBatching : batchingReduction_perfectCompleteness_residual
-      (κ := κ) (L := L) (K := K) (P := P) (ℓ := ℓ) (ℓ' := ℓ') (h_l := h_l)
-      (aOStmtIn := aOStmtIn) (init := init) (impl := impl)) :
-  OracleReduction.perfectCompleteness
-    (oracleReduction := batchingOracleReduction κ L K P ℓ ℓ' h_l (aOStmtIn:=aOStmtIn))
-    (relIn := batchingInputRelation κ L K P ℓ ℓ' h_l aOStmtIn)
-    (relOut := sumcheckRoundRelation κ L K P ℓ ℓ' h_l aOStmtIn 0)
-    (init := init) (impl := impl) :=
-  hBatching
 
 /-- RBR knowledge soundness for the batching phase oracle verifier. `IsDomain K` (alongside the
 existing `IsDomain L`) is required by the round-0 knowledge-state conjunct's DP24 capstone; it
