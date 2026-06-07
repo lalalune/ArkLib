@@ -210,6 +210,16 @@ theorem trunc_defect_cancel_assembled_at (x₀ : F) (R : F[X][X][Y])
   rw [hmatch]
   ring
 
+/-- Fixed-order assembled-series coefficient vanishing from the single-order carved core. -/
+theorem coeff_succ_eval_βHenselAssembled_of_restrictedMatchAt
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ)
+    (hmatch : RestrictedFaaDiBrunoMatchAt H x₀ R hHyp t) :
+    PowerSeries.coeff (t + 1)
+        (Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H)) = 0 :=
+  coeff_succ_eval_of_trunc_defect_cancel H x₀ R hHyp t
+    (trunc_defect_cancel_assembled_at H x₀ R hHyp t hmatch)
+
 /-- **P2 root, conditional on the carved core (PROVEN reduction).** -/
 theorem assembledSeries_isRoot_of_match (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H) (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp) :
@@ -300,6 +310,7 @@ section AxiomAudit
 #print axioms trunc_defect_eq_restrictedFaaDiBrunoSum
 #print axioms trunc_defect_cancel_assembled
 #print axioms trunc_defect_cancel_assembled_at
+#print axioms coeff_succ_eval_βHenselAssembled_of_restrictedMatchAt
 #print axioms assembledSeries_isRoot_of_match
 #print axioms βHensel_lift_identity_of_match
 #print axioms P2_closed

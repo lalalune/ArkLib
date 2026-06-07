@@ -173,6 +173,15 @@ theorem coeff_succ_eval_zero_of_partitionMatchAt
   coeff_succ_eval_of_trunc_defect_cancel H x₀ R hHyp t
     (trunc_defect_cancel_assembled_of_partitionMatchAt H x₀ R hHyp t hpart)
 
+/-- Fixed-order assembled-series coefficient vanishing from the normalized partition residual. -/
+theorem coeff_succ_eval_βHenselAssembled_of_partitionMatchAt
+    (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ)
+    (hpart : RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp t) :
+    PowerSeries.coeff (t + 1)
+        (Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H)) = 0 :=
+  coeff_succ_eval_zero_of_partitionMatchAt H x₀ R hHyp t hpart
+
 /-- The carved core is equivalent to the final partition-form residual. -/
 theorem restrictedMatch_iff_partitionMatch (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H) :
@@ -264,6 +273,7 @@ section AxiomAudit
 #print axioms RestrictedFaaDiBrunoMatchAt.of_partitionMatchAt
 #print axioms trunc_defect_cancel_assembled_of_partitionMatchAt
 #print axioms coeff_succ_eval_zero_of_partitionMatchAt
+#print axioms coeff_succ_eval_βHenselAssembled_of_partitionMatchAt
 #print axioms restrictedMatch_iff_partitionMatch
 #print axioms RestrictedFaaDiBrunoPartitionMatch.of_restrictedMatch
 #print axioms RestrictedFaaDiBrunoMatch.of_partitionMatch
