@@ -199,6 +199,20 @@ theorem epsMCA_le_of_lineCloseCount_le
     epsMCA (F := F) (A := A) C δ ≤ (ℓ : ℝ≥0∞) / (Fintype.card F : ℝ≥0∞) :=
   epsMCA_le_of_badCount_le C δ ℓ (fun u => le_trans (badCount_le_lineCloseCount C δ u) (h u))
 
+open Classical in
+/-- **Maximal MCA error.** If some word stack has *every* scalar bad (`mcaEvent` for all `γ`),
+the MCA error is maximal: `epsMCA C δ = 1`. Together with `epsMCA_eq_zero_iff` and `epsMCA_pos_iff`
+this rounds out the trichotomy. -/
+theorem epsMCA_eq_one_of_forall_mcaEvent
+    (C : Set (ι → A)) (δ : ℝ≥0) (u : WordStack A (Fin 2) ι)
+    (hu : ∀ γ : F, mcaEvent C δ (u 0) (u 1) γ) :
+    epsMCA (F := F) (A := A) C δ = 1 := by
+  refine le_antisymm (epsMCA_le_one C δ) ?_
+  refine le_trans ?_ (mcaEvent_prob_le_epsMCA C δ u)
+  rw [prob_uniform_eq_card_filter_div_card, Finset.filter_true_of_mem (fun γ _ => hu γ),
+      Finset.card_univ]
+  rw [ENNReal.div_self (by exact_mod_cast Fintype.card_ne_zero) (by simp)]
+
 end ProximityGap
 
 namespace ProximityGap.MCALowerExample
