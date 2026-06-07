@@ -255,6 +255,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingGrandChallenges
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingGrandChallengesPrizeSpec
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingGrandChallengesResolvedPrizeSpec
 import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingRefutation
+import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingRepair
 import ArkLib.Data.CodingTheory.ProximityGap.MCABadCount
 import ArkLib.Data.CodingTheory.ProximityGap.MCABadCountRatio
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointLower
