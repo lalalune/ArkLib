@@ -58,6 +58,22 @@ open Polynomial Polynomial.Bivariate
 open BCIKS20AppendixA
 open ProximityPrize.BCIKS20.GammaGenuine
 
+namespace BCIKS20AppendixA.ClaimA2
+
+variable {F : Type} [Field F]
+
+/-- Build the order-zero Claim A.2 hypotheses from an explicit specialized polynomial
+`g = R(x₀, -, -)`.  This keeps the constrained zero-th coefficient separate from the independent
+order-1 Hasse numerator used by the refutation below. -/
+theorem Hypotheses.of_evalX_eq {x₀ : F} {R : F[X][X][Y]} {H g : F[X][Y]}
+    (hR0 : Bivariate.evalX (Polynomial.C x₀) R = g)
+    (hdvd : H ∣ g)
+    (hsep : g.Separable) :
+    Hypotheses x₀ R H := by
+  exact ⟨by simpa [hR0] using hdvd, by simpa [hR0] using hsep⟩
+
+end BCIKS20AppendixA.ClaimA2
+
 namespace BCIKS20.HenselNumerator
 
 variable {F : Type} [Field F]
@@ -125,10 +141,31 @@ theorem restrictedMatchAt_zero_false_of_constant_of_nonmonic
   have hdeg0 := (BCIKS20.WPow.W_pow_eq_iff H hlc R.natDegree 0).1 hpow
   omega
 
+/-- Specialization-family form of `restrictedMatchAt_zero_false_of_constant_of_nonmonic`.
+The Claim A.2 data are supplied by an explicit zero-th specialization `R(x₀, -, -) = g`, while
+the obstruction still comes from the independent order-1 Hasse numerator being a nonzero
+`Y`-constant. -/
+theorem restrictedMatchAt_zero_false_of_constant_of_nonmonic_of_evalX_eq
+    (x₀ : F) (R : F[X][X][Y]) (g : F[X][Y])
+    (hR0 : Bivariate.evalX (Polynomial.C x₀) R = g)
+    (hdvd : H ∣ g)
+    (hsep : g.Separable)
+    (hd : 2 ≤ R.natDegree) (hlc : ¬ IsUnit H.leadingCoeff) (c : F[X])
+    (hp : Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 (hasseDerivY 0 R))
+        = Polynomial.C c)
+    (hc : liftToFunctionField (H := H) c ≠ 0) :
+    ¬ RestrictedFaaDiBrunoMatchAt H x₀ R
+        (ClaimA2.Hypotheses.of_evalX_eq hR0 hdvd hsep) 0 := by
+  exact restrictedMatchAt_zero_false_of_constant_of_nonmonic H x₀ R
+    (ClaimA2.Hypotheses.of_evalX_eq hR0 hdvd hsep) hd hlc c hp hc
+
 end BCIKS20.HenselNumerator
 
+#print axioms BCIKS20AppendixA.ClaimA2.Hypotheses.of_evalX_eq
 #print axioms BCIKS20.HenselNumerator.eval₂WDivTarget_false_of_constant_of_W_pow_ne_one
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.restrictedMatchAt_zero_false_of_constant_of_W_pow_ne_one
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.restrictedMatchAt_zero_false_of_constant_of_nonmonic
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.restrictedMatchAt_zero_false_of_constant_of_nonmonic_of_evalX_eq

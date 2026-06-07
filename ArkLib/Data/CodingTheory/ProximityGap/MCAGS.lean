@@ -544,7 +544,6 @@ def epsMCAgs_prizeBound_conjecture
             ⌊(ProximityGap.prizeRates j : ℝ≥0) * (Fintype.card ι : ℝ≥0)⌋₊ : Set (ι → F))) δ L
         ≤ ENNReal.ofReal
             (epsMCAgsPrizeBound (Fintype.card F) m (ProximityGap.prizeRates j) η c₁ c₂ c₃)
-
 /-- **The genuine uniform open prize form.** 
 The beyond-UDR Guruswami-Sudan mass bound, stated with universal constants 
 across all domains, rates, and parameters. -/

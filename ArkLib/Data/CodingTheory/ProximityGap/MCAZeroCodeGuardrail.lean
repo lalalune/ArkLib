@@ -183,6 +183,32 @@ theorem epsStar_lt_inv_card_of_card_lt_two_pow
     _ = (2 ^ (128 : ℕ) : ENNReal) := by norm_num [Nat.cast_pow]
     _ = (1 : ENNReal) * (2 ^ (128 : ℕ) : ENNReal) := by simp
 
+/-- Field-size specialization of the zero-code upper witness at `epsStar`. -/
+noncomputable def MCAUpperWitness_bot_epsStar_of_card_lt_two_pow
+    (hcard : Fintype.card F < 2 ^ (128 : ℕ)) :
+    GrandChallenges.MCAUpperWitness (F := F)
+      (Cbot (ι := ι) (F := F) : Set (ι → F)) epsStar :=
+  MCAUpperWitness_bot_epsStar_of_lt_inv_card
+    (ι := ι) (F := F) (epsStar_lt_inv_card_of_card_lt_two_pow (F := F) hcard)
+
+/-- Existential field-size specialization, preserving the certified radius `0`. -/
+theorem exists_MCAUpperWitness_bot_epsStar_of_card_lt_two_pow
+    (hcard : Fintype.card F < 2 ^ (128 : ℕ)) :
+    ∃ w : GrandChallenges.MCAUpperWitness (F := F)
+        (Cbot (ι := ι) (F := F) : Set (ι → F)) epsStar,
+      w.δ = 0 :=
+  ⟨MCAUpperWitness_bot_epsStar_of_card_lt_two_pow (ι := ι) (F := F) hcard, rfl⟩
+
+/-- Field-size specialization: any supplied zero-code MCA resolution at `epsStar` has threshold
+exactly `0`. -/
+theorem GrandMCAResolution_bot_deltaStar_eq_zero_of_card_lt_two_pow
+    (hcard : Fintype.card F < 2 ^ (128 : ℕ))
+    (R : GrandChallenges.GrandMCAResolution (F := F)
+      (Cbot (ι := ι) (F := F) : Set (ι → F)) epsStar) :
+    R.δStar = 0 :=
+  GrandMCAResolution_bot_deltaStar_eq_zero_of_epsStar_lt_inv_card
+    (ι := ι) (F := F) (epsStar_lt_inv_card_of_card_lt_two_pow (F := F) hcard) R
+
 /-- Field-size specialization of the zero-code no-resolution guardrail at `epsStar`. -/
 theorem not_GrandMCAResolution_bot_epsStar_of_card_lt_two_pow
     (hcard : Fintype.card F < 2 ^ (128 : ℕ)) :
@@ -233,6 +259,9 @@ end General
 #print axioms inv_card_le_of_GrandMCAResolution_bot
 #print axioms inv_card_le_of_grandMCAChallenge_bot
 #print axioms epsStar_lt_inv_card_of_card_lt_two_pow
+#print axioms MCAUpperWitness_bot_epsStar_of_card_lt_two_pow
+#print axioms exists_MCAUpperWitness_bot_epsStar_of_card_lt_two_pow
+#print axioms GrandMCAResolution_bot_deltaStar_eq_zero_of_card_lt_two_pow
 #print axioms not_GrandMCAResolution_bot_epsStar_of_card_lt_two_pow
 #print axioms not_grandMCAChallenge_bot_epsStar_of_card_lt_two_pow
 #print axioms card_two_pow_le_of_GrandMCAResolution_bot_epsStar

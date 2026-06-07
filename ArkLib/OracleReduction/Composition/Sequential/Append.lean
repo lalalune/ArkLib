@@ -2645,6 +2645,73 @@ theorem append_processRound_seam_challenge (hn : 0 < n)
         refine eq_of_heq (HEq.trans ?_ (cast_heq _ _).symm)
         exact heq_app hChalEq (by rw [hChalEq, append_PrvState_seam_succ hn]) hf hchal
 
+/-- Computation-input version of `append_processRound_seam_message`: the appended seam
+`processRound` on an arbitrary computation `curA` threads each seam result through
+`P₁.output >>= P₂.sendMessage (P₂.input ·)`. -/
+theorem append_processRound_seam_message_comp (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .P_to_V)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .P_to_V)
+    (curA : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+      ((pSpec₁ ++ₚ pSpec₂).Transcript (⟨m, by omega⟩ : Fin (m + n)).castSucc
+        × (P₁.append P₂).PrvState (⟨m, by omega⟩ : Fin (m + n)).castSucc)) :
+    HEq ((P₁.append P₂).processRound ⟨m, by omega⟩ curA)
+      (curA >>= fun rSeam =>
+        Bind.bind
+          (liftM (do
+              let ctxIn₂ ← P₁.output (cast (append_PrvState_seam_castSucc hn) rSeam.2)
+              P₂.sendMessage ⟨⟨0, hn⟩, hDir₂⟩ (P₂.input ctxIn₂) :
+              OracleComp oSpec (pSpec₂.Message ⟨⟨0, hn⟩, hDir₂⟩
+                × P₂.PrvState (⟨0, hn⟩ : Fin n).succ)) :
+            OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+              (pSpec₂.Message ⟨⟨0, hn⟩, hDir₂⟩ × P₂.PrvState (⟨0, hn⟩ : Fin n).succ))
+          (fun p => (pure
+            (rSeam.1.concat (cast (append_Message_seam hn hDir hDir₂).symm p.1),
+              cast (append_PrvState_seam_succ hn).symm p.2) :
+            OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+              ((pSpec₁ ++ₚ pSpec₂).Transcript (⟨m, by omega⟩ : Fin (m + n)).succ
+                × (P₁.append P₂).PrvState (⟨m, by omega⟩ : Fin (m + n)).succ)))) := by
+  rw [processRound_eq_bind]
+  refine bind_heq_congr rfl rfl HEq.rfl (fun r r' hrr => ?_)
+  obtain rfl := eq_of_heq hrr
+  exact append_processRound_seam_message hn hDir hDir₂ r
+
+/-- Computation-input version of `append_processRound_seam_challenge`: the appended seam
+`processRound` on an arbitrary computation `curA` threads each seam result through the right
+round-0 challenge draw and the `P₁.output >>= P₂.receiveChallenge (P₂.input ·)` boundary. -/
+theorem append_processRound_seam_challenge_comp (hn : 0 < n)
+    (hDir : (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = .V_to_P)
+    (hDir₂ : pSpec₂.dir (⟨0, hn⟩ : Fin n) = .V_to_P)
+    (curA : OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+      ((pSpec₁ ++ₚ pSpec₂).Transcript (⟨m, by omega⟩ : Fin (m + n)).castSucc
+        × (P₁.append P₂).PrvState (⟨m, by omega⟩ : Fin (m + n)).castSucc)) :
+    HEq ((P₁.append P₂).processRound ⟨m, by omega⟩ curA)
+      (curA >>= fun rSeam =>
+        Bind.bind
+          (liftM (pSpec₂.getChallenge ⟨⟨0, hn⟩, hDir₂⟩) :
+            OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+              (pSpec₂.Challenge ⟨⟨0, hn⟩, hDir₂⟩))
+          (fun challenge =>
+            Bind.bind
+              (liftM (do
+                  let ctxIn₂ ← P₁.output (cast (append_PrvState_seam_castSucc hn) rSeam.2)
+                  P₂.receiveChallenge ⟨⟨0, hn⟩, hDir₂⟩ (P₂.input ctxIn₂) :
+                  OracleComp oSpec
+                    (pSpec₂.Challenge ⟨⟨0, hn⟩, hDir₂⟩
+                      → P₂.PrvState (⟨0, hn⟩ : Fin n).succ)) :
+                OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+                  (pSpec₂.Challenge ⟨⟨0, hn⟩, hDir₂⟩
+                    → P₂.PrvState (⟨0, hn⟩ : Fin n).succ))
+              (fun f => (pure
+                (rSeam.1.concat (cast (append_Challenge_seam hn hDir hDir₂).symm challenge),
+                  cast (append_PrvState_seam_succ hn).symm (f challenge)) :
+                OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+                  ((pSpec₁ ++ₚ pSpec₂).Transcript (⟨m, by omega⟩ : Fin (m + n)).succ
+                    × (P₁.append P₂).PrvState (⟨m, by omega⟩ : Fin (m + n)).succ))))) := by
+  rw [processRound_eq_bind]
+  refine bind_heq_congr rfl rfl HEq.rfl (fun r r' hrr => ?_)
+  obtain rfl := eq_of_heq hrr
+  exact append_processRound_seam_challenge hn hDir hDir₂ r
+
 /-! ### Right interior-round reductions
 
 The right *interior* rounds `m+1 .. m+n-1` are the `i > m` branch of `Prover.append`: uniform `P₂`
@@ -3124,6 +3191,8 @@ theorem append_run (stmt : Stmt₁) (wit : Wit₁)
 #print axioms Prover.appendRunRightResidual
 #print axioms Prover.append_run
 #print axioms Prover.liftComp_bind_liftComp_comp
+#print axioms Prover.append_processRound_seam_message_comp
+#print axioms Prover.append_processRound_seam_challenge_comp
 
 -- Future work: define a function that extracts a second prover from the combined prover.
 

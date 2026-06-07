@@ -789,6 +789,18 @@ theorem bcs_append_accounting_of_opening_zero (μ : UnionBoundPr E)
     (bcs_opening_union_bound_zero μ)
   simpa using h
 
+/-- Append accounting with a single per-message opening failure. This is the
+interaction-plus-opening companion to `bcs_opening_union_bound_one`. -/
+theorem bcs_append_accounting_of_opening_one (μ : UnionBoundPr E)
+    (badInteraction badOpen : E) (εInteraction εOpen : ℝ≥0)
+    (hInteraction : μ.pr badInteraction ≤ εInteraction)
+    (hOpen : μ.pr badOpen ≤ εOpen) :
+    μ.pr (μ.union badInteraction (μ.unionFin (fun _ : Fin 1 => badOpen)))
+      ≤ εInteraction + εOpen :=
+  bcs_append_accounting_of_opening_bound μ badInteraction (fun _ : Fin 1 => badOpen)
+    εInteraction εOpen hInteraction
+    (bcs_opening_union_bound_one μ badOpen εOpen hOpen)
+
 /-- One-more-opening recurrence at the interaction-plus-opening append-accounting surface. Peeling
 the first opening failure contributes its local opening budget and recurses over the remaining
 opening schedule. -/
@@ -832,6 +844,21 @@ theorem bcs_append_accounting_of_opening_zero_mono_error (μ : UnionBoundPr E)
   le_trans
     (bcs_append_accounting_of_opening_zero μ badInteraction εInteraction₁ hInteraction)
     hInteraction_mono
+
+/-- Relax the interaction and opening budgets for the single-opening append-accounting surface. -/
+theorem bcs_append_accounting_of_opening_one_mono_error (μ : UnionBoundPr E)
+    (badInteraction badOpen : E)
+    (εInteraction₁ εInteraction₂ εOpen₁ εOpen₂ : ℝ≥0)
+    (hInteraction : μ.pr badInteraction ≤ εInteraction₁)
+    (hOpen : μ.pr badOpen ≤ εOpen₁)
+    (hInteraction_mono : εInteraction₁ ≤ εInteraction₂)
+    (hOpen_mono : εOpen₁ ≤ εOpen₂) :
+    μ.pr (μ.union badInteraction (μ.unionFin (fun _ : Fin 1 => badOpen)))
+      ≤ εInteraction₂ + εOpen₂ :=
+  le_trans
+    (bcs_append_accounting_of_opening_one μ badInteraction badOpen
+      εInteraction₁ εOpen₁ hInteraction hOpen)
+    (add_le_add hInteraction_mono hOpen_mono)
 
 /-- Relax the interaction and per-opening budgets for the one-more-opening append-accounting
 recurrence. -/
@@ -1072,9 +1099,11 @@ example (εInteraction : ℝ≥0) (εOpen : Fin 3 → ℝ≥0) :
 #print axioms bcs_append_accounting_of_opening_batch
 #print axioms bcs_append_accounting_of_opening_batch_mono_error
 #print axioms bcs_append_accounting_of_opening_zero
+#print axioms bcs_append_accounting_of_opening_one
 #print axioms bcs_append_accounting_of_opening_succ
 #print axioms bcs_append_accounting_of_opening_append
 #print axioms bcs_append_accounting_of_opening_zero_mono_error
+#print axioms bcs_append_accounting_of_opening_one_mono_error
 #print axioms bcs_append_accounting_of_opening_succ_mono_error
 #print axioms bcs_append_accounting_of_opening_append_mono_error
 #print axioms bcs_append_accounting_of_opening_append_zero_left
