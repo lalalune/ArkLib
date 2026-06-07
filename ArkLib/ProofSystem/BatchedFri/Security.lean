@@ -914,6 +914,36 @@ theorem fri_query_soundness_of_forall_mem
       (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier)
     (δ := 1 - α) (W := f) h_mem
 
+omit [Nontrivial 𝔽] in
+/-- Proximity-form bridge into the Claim 8.2 `Code.jointAgreement` residual.
+
+This exposes the coding-theoretic part of the correlated-agreement frontier as the existing
+`Code.jointProximity` predicate.  The bridge itself is the proved equivalence
+`Code.jointAgreement_iff_jointProximity`; the hard remaining work is deriving this proximity
+witness from the BCIKS20 correlated-agreement/proximity-gap analysis. -/
+theorem fri_query_soundness_of_jointProximity
+    {t : ℕ}
+    {α : ℝ≥0}
+    (f : Fin t.succ → (ω.subdomain 0 → 𝔽))
+    (h_agreement :
+      correlated_agreement_density
+        (Fₛ f)
+        (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
+      ≤ α)
+    {m : ℕ}
+    (m_ge_3 : m ≥ 3)
+    (h_proximity :
+      Code.jointProximity
+        (C := (ReedSolomon.code
+          (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier)
+        (u := f) (δ := 1 - α)) :
+    fri_query_soundness (n := n) (ω := ω) (f := f)
+      (h_agreement := h_agreement) (m_ge_3 := m_ge_3) :=
+  (Code.jointAgreement_iff_jointProximity
+    (C := (ReedSolomon.code
+      (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier)
+    (u := f) (δ := 1 - α)).mpr h_proximity
+
 /-- Split frontier for Claim 8.2.  The existing `fri_query_soundness` residual is the final
 `Code.jointAgreement` conclusion, while the proof should be assembled from three independent
 ingredients:
@@ -1185,6 +1215,7 @@ theorem fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLens
 #print axioms Fri.batchedFRIOracleLensReduction
 #print axioms Fri.batchedFRIOracleLensReduction_holds
 #print axioms Fri.fri_query_soundness_of_forall_mem
+#print axioms Fri.fri_query_soundness_of_jointProximity
 #print axioms Fri.fri_query_soundness_of_parts
 #print axioms Fri.FriQuerySoundnessParts.of_queryRoundAcceptanceBound
 #print axioms Fri.fri_query_soundness_of_queryRoundAcceptanceBound
@@ -2145,6 +2176,7 @@ end Fri
 #print axioms Fri.batchedFRIOracleLensReduction
 #print axioms Fri.batchedFRIOracleLensReduction_holds
 #print axioms Fri.fri_query_soundness_of_forall_mem
+#print axioms Fri.fri_query_soundness_of_jointProximity
 #print axioms Fri.FriQuerySoundnessParts.of_queryRoundAcceptanceBound
 #print axioms Fri.fri_query_soundness_of_queryRoundAcceptanceBound
 #print axioms Fri.FriQuerySoundnessParts.of_queryRoundDensityBound
