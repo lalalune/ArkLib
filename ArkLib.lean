@@ -148,8 +148,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ListDecoding.RootClearing
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1Conditional
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1ConditionalAll
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Assembly
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Assembly
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Assembly
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Bijection
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2BijectionApply
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Close
@@ -164,6 +162,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Vanish
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Prelude
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ReedSolomonGap
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.S5Genuine
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ScratchDvd138
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.UnclearedEmbedding
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.WeightedAgreement
 import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.AffineLineJointAgreement
@@ -178,6 +177,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CS25BallEntropy
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BallInterVanish
 import ArkLib.Data.CodingTheory.ProximityGap.CS25BreakdownFarCount
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveredFraction
+import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveredFractionEntropy
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveringCount
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveringExistence
 import ArkLib.Data.CodingTheory.ProximityGap.CS25CoveringWitness

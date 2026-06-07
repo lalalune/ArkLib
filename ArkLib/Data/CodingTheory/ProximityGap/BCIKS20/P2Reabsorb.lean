@@ -3,7 +3,7 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
-import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2BijectionApply
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2KeystoneReindex
 
 /-!
 # BCIKS20 Appendix A.4 — Y-degree reabsorption toward `RestrictedFaaDiBrunoMatch`
@@ -72,8 +72,28 @@ theorem hasseEvalAtRoot_eq_binomReindex (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ)
   refine Finset.sum_congr rfl (fun i _ => ?_)
   simp only [addRightEmbedding_apply, Nat.add_sub_cancel]
 
+/-- **Y-degree reabsorption over the `Q`-degree range (PROVEN).**
+This is the fixed-range version consumed by the partition-form P2 comparison: over the full
+`Q x₀ R H` Y-degree range, all out-of-window binomial terms vanish and the same
+`C(j,m) · coeff_j · α₀^(j-m)` sum collapses to `hasseEvalAtRoot`.
+
+It is a theorem-level wrapper around `P2KeystoneReindex.taylorCollapse`, exposed here alongside the
+other reabsorption bricks so the remaining cleared-vs-uncleared comparison can cite the exact
+`Q`-range form without importing the keystone module directly. -/
+theorem hasseEvalAtRoot_eq_QDegreeBinomReindex (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) :
+    hasseEvalAtRoot H x₀ R i1 m
+      = ∑ j ∈ Finset.range ((Q x₀ R H).natDegree + 1),
+          (j.choose m)
+            • (liftToFunctionField (H := H)
+                  ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 R)).coeff j)
+                * (functionFieldT (H := H) / liftToFunctionField (H := H) H.leadingCoeff)
+                    ^ (j - m)) := by
+  rw [← taylorCollapse (H := H) x₀ R i1 m]
+  simp [α₀]
+
 end BCIKS20.HenselNumerator
 
 -- Axiom audit.
 #print axioms BCIKS20.HenselNumerator.coeff_zero_βHenselAssembled
 #print axioms BCIKS20.HenselNumerator.hasseEvalAtRoot_eq_binomReindex
+#print axioms BCIKS20.HenselNumerator.hasseEvalAtRoot_eq_QDegreeBinomReindex
