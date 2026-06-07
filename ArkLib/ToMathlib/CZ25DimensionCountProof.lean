@@ -576,6 +576,31 @@ lemma list_vanish_mass_le_design_of_filter_card_le_finrank
       s τ C h r₀ f c₀ L hc₀ hL hrank
   exact le_trans hlower (le_trans hcard_to_dim hdesign)
 
+/-- **Mass-charge bridge from linear-independent fibers.** If each coordinate-vanishing
+recentred fiber has linearly independent recentred differences, then its cardinality is bounded
+by the dimension of its filtered-difference span, so the conditional mass-charge bridge applies.
+
+This packages the already-proved per-coordinate `finrank_span_eq_card` specialization into the
+design-budget theorem. It still keeps the hard Guruswami-Wang / affine-fiber argument as the
+explicit linear-independence hypothesis. -/
+lemma list_vanish_mass_le_design_of_filter_linearIndependent
+    (s : ℕ) (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F)) (h : IsSubspaceDesign s τ C)
+    (r₀ : ℕ) (f c₀ : ι → Fin s → F) {δ : ℝ} (L : Finset (ι → Fin s → F))
+    (hc₀ : c₀ ∈ closeCodewordsRel ((C : Set (ι → Fin s → F))) f δ)
+    (hL : ∀ c ∈ L, c ∈ closeCodewordsRel ((C : Set (ι → Fin s → F))) f δ)
+    (hrank :
+      Module.finrank F
+          (Submodule.span F ((fun c => c - c₀) '' (L : Set (ι → Fin s → F)))) ≤ r₀)
+    (hlin : ∀ i : ι, LinearIndependent F
+      (fun c : {c // c ∈ L.filter (fun c => c i - c₀ i = 0)} => c.1 - c₀)) :
+    (L.card : ℝ) * ((1 - 2 * δ) * Fintype.card ι) ≤
+      (Module.finrank F
+          (Submodule.span F ((fun c => c - c₀) '' (L : Set (ι → Fin s → F)))) : ℝ) *
+        τ r₀ * Fintype.card ι := by
+  exact list_vanish_mass_le_design_of_filter_card_le_finrank
+    s τ C h r₀ f c₀ L hc₀ hL hrank
+    (fun i => filter_card_le_finrank_span_filter_diffs_of_linearIndependent s c₀ L i (hlin i))
+
 end RecentredSpan
 
 /-! ### `#print axioms` verification anchors -/
@@ -624,3 +649,4 @@ end CodingTheory
 #print axioms CodingTheory.span_filter_diffs_le_code_inf_ker_of_subset_closeCodewordsRel
 #print axioms CodingTheory.sum_finrank_span_filter_diffs_le_design_of_subset_closeCodewordsRel
 #print axioms CodingTheory.list_vanish_mass_le_design_of_filter_card_le_finrank
+#print axioms CodingTheory.list_vanish_mass_le_design_of_filter_linearIndependent

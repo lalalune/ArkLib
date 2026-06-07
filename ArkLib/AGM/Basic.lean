@@ -216,6 +216,26 @@ def appendBasis {prev : List G} {target : G}
   hEq := by
     rw [zipWith_append_replicate_zero_prod, repr.hEq]
 
+/-- Right-side basis weakening produces an exponent vector no longer than the extended basis. -/
+theorem appendBasis_exponents_length_le {prev : List G} {target : G}
+    (repr : GroupRepresentation (p := p) prev target) (extra : List G) :
+    (repr.appendBasis extra).exponents.length ≤ (prev ++ extra).length := by
+  simp [appendBasis]
+
+/-- Right-side basis weakening is already normalized with respect to the extended basis. -/
+theorem appendBasis_trimExponents_eq_self {prev : List G} {target : G}
+    (repr : GroupRepresentation (p := p) prev target) (extra : List G) :
+    (repr.appendBasis extra).trimExponents = repr.appendBasis extra := by
+  exact trimExponents_eq_self_of_length_le (repr.appendBasis extra)
+    (appendBasis_exponents_length_le repr extra)
+
+/-- Right-side basis weakening ignores stale exponent tails in the input representation. -/
+theorem appendBasis_eq_trimExponents_appendBasis {prev : List G} {target : G}
+    (repr : GroupRepresentation (p := p) prev target) (extra : List G) :
+    repr.appendBasis extra = repr.trimExponents.appendBasis extra := by
+  ext
+  simp [appendBasis, trimExponents, List.take_take]
+
 #print axioms GroupRepresentation.zipWith_pow_prod_mem_closure
 #print axioms GroupRepresentation.target_mem_closure
 #print axioms GroupRepresentation.one
@@ -229,6 +249,9 @@ def appendBasis {prev : List G} {target : G}
 #print axioms GroupRepresentation.trimExponents_eq_self_of_length_le
 #print axioms GroupRepresentation.trimExponents_idem
 #print axioms GroupRepresentation.appendBasis
+#print axioms GroupRepresentation.appendBasis_exponents_length_le
+#print axioms GroupRepresentation.appendBasis_trimExponents_eq_self
+#print axioms GroupRepresentation.appendBasis_eq_trimExponents_appendBasis
 
 end GroupRepresentation
 

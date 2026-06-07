@@ -111,6 +111,40 @@ theorem target_eq_one_of_exponents_nil {prev : List G} {target : G}
     target = 1 := by
   rw [← repr.hEq, h]; simp
 
+/-- **Multiplicativity of the representation product over basis concatenation.** Splitting the
+`zipWith`-power product along a basis/exponent concatenation factors as the product of the two
+sub-products, provided the first basis is fully exponent-covered. The algebraic core of
+representation composition. -/
+theorem zipWith_pow_prod_append (prev₁ prev₂ : List G) (e₁ e₂ : List (ZMod p))
+    (h : prev₁.length = e₁.length) :
+    ((prev₁ ++ prev₂).zipWith (fun g a => g ^ a.val) (e₁ ++ e₂)).prod
+      = (prev₁.zipWith (fun g a => g ^ a.val) e₁).prod
+        * (prev₂.zipWith (fun g a => g ^ a.val) e₂).prod := by
+  induction prev₁ generalizing e₁ with
+  | nil =>
+    cases e₁ with
+    | nil => simp
+    | cons a e₁ => simp at h
+  | cons g prev₁ ih =>
+    cases e₁ with
+    | nil => simp at h
+    | cons a e₁ =>
+      simp only [List.cons_append, List.zipWith_cons_cons, List.prod_cons]
+      rw [ih e₁ (by simpa using h), mul_assoc]
+
+/-- **Representations compose multiplicatively.** Concatenating the bases and exponent vectors of
+two algebraic representations represents the product of their targets: the AGM analogue of "the
+product of two algebraically-represented elements is itself algebraically represented over the
+combined basis." Requires the first basis to be fully exponent-covered (always arrangeable by
+padding via `prependBasis`/`appendBasis`). -/
+def append {prev₁ prev₂ : List G} {t₁ t₂ : G}
+    (r₁ : GroupRepresentation (p := p) prev₁ t₁) (r₂ : GroupRepresentation (p := p) prev₂ t₂)
+    (h : prev₁.length = r₁.exponents.length) :
+    GroupRepresentation (p := p) (prev₁ ++ prev₂) (t₁ * t₂) where
+  exponents := r₁.exponents ++ r₂.exponents
+  hEq := by
+    rw [zipWith_pow_prod_append prev₁ prev₂ r₁.exponents r₂.exponents h, r₁.hEq, r₂.hEq]
+
 end AGM.GroupRepresentation
 
 /-! ### Axiom audit (issue #118 representation companion lemmas) -/
@@ -124,3 +158,5 @@ end AGM.GroupRepresentation
 #print axioms AGM.GroupRepresentation.singleton_target_mem_zpowers
 #print axioms AGM.GroupRepresentation.ofExponents
 #print axioms AGM.GroupRepresentation.target_eq_one_of_exponents_nil
+#print axioms AGM.GroupRepresentation.zipWith_pow_prod_append
+#print axioms AGM.GroupRepresentation.append
