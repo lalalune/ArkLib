@@ -904,8 +904,9 @@ theorem zeroClearingPolyFull_sub_eq (x₀ : F) (R : F[X][X][Y]) :
   exact Finset.sum_congr rfl (fun i _ => by
     rw [← sub_mul, ← Polynomial.C_sub, mul_sub, mul_one])
 
-/-- **Order-zero STEP-8 target ⟺ ideal membership of the explicit difference (axiom-clean, NO
-hypotheses).** The pure-lift form of `restrictedMatchAtZeroEval₂WDivTarget_iff_zeroClearingPolyFull_lift`:
+/-- **Order-zero STEP-8 target ⟺ ideal membership of the explicit difference
+(axiom-clean, NO hypotheses).** The pure-lift form of
+`restrictedMatchAtZeroEval₂WDivTarget_iff_zeroClearingPolyFull_lift`:
 the order-zero `eval₂`/W-divisor target is exactly
 `∑_{i ≤ R.natDegree} C (p.coeff i · (lc^{d−i} − 1)) · X^i ∈ ⟨H_tilde' H⟩`,
 the single difference of the full-clearing polynomial and the un-cleared Hasse coefficient lying in
@@ -946,6 +947,48 @@ theorem restrictedMatchAt_zero_iff_zeroClearingPolyFull_sub_mem
         ∈ Ideal.span {H_tilde' H} :=
   (restrictedMatchAt_zero_iff_eval₂WDivTarget H x₀ R hHyp hd).trans
     (restrictedMatchAtZeroEval₂WDivTarget_iff_zeroClearingPolyFull_sub_mem H x₀ R)
+
+/-- **The normalized partition order-zero residual ⟺ the explicit ideal membership.**  This is
+the partition-facing form of `restrictedMatchAt_zero_iff_zeroClearingPolyFull_sub_mem`, so callers
+using the normalized residual surface can target the single `⟨H_tilde' H⟩` membership directly. -/
+theorem restrictedPartitionMatchAt_zero_iff_zeroClearingPolyFull_sub_mem
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) :
+    RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0 ↔
+      (∑ i ∈ Finset.range (R.natDegree + 1),
+          Polynomial.C
+            ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 R)).coeff i
+              * (H.leadingCoeff ^ (R.natDegree - i) - 1)) * Polynomial.X ^ i)
+        ∈ Ideal.span {H_tilde' H} :=
+  (restrictedMatchAt_iff_partitionMatchAt H x₀ R hHyp 0).symm.trans
+    (restrictedMatchAt_zero_iff_zeroClearingPolyFull_sub_mem H x₀ R hHyp hd)
+
+/-- Build the normalized partition order-zero residual from the explicit ideal membership. -/
+theorem RestrictedFaaDiBrunoPartitionMatchAt.zero_of_zeroClearingPolyFull_sub_mem
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree)
+    (hmem :
+      (∑ i ∈ Finset.range (R.natDegree + 1),
+          Polynomial.C
+            ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 R)).coeff i
+              * (H.leadingCoeff ^ (R.natDegree - i) - 1)) * Polynomial.X ^ i)
+        ∈ Ideal.span {H_tilde' H}) :
+    RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0 :=
+  (restrictedPartitionMatchAt_zero_iff_zeroClearingPolyFull_sub_mem
+    H x₀ R hHyp hd).2 hmem
+
+/-- Project the explicit ideal membership from the normalized partition order-zero residual. -/
+theorem zeroClearingPolyFull_sub_mem_of_partitionMatchAt_zero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree)
+    (hpart : RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0) :
+      (∑ i ∈ Finset.range (R.natDegree + 1),
+          Polynomial.C
+            ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 R)).coeff i
+              * (H.leadingCoeff ^ (R.natDegree - i) - 1)) * Polynomial.X ^ i)
+        ∈ Ideal.span {H_tilde' H} :=
+  (restrictedPartitionMatchAt_zero_iff_zeroClearingPolyFull_sub_mem
+    H x₀ R hHyp hd).1 hpart
 
 /-! ### Order-zero STEP-8: monic specialization (closed) and the obstruction for non-monic `H`
 
@@ -1126,6 +1169,12 @@ set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.restrictedMatchAtZeroEval₂WDivTarget_iff_zeroClearingPolyFull_sub_mem
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.restrictedMatchAt_zero_iff_zeroClearingPolyFull_sub_mem
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.restrictedPartitionMatchAt_zero_iff_zeroClearingPolyFull_sub_mem
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.RestrictedFaaDiBrunoPartitionMatchAt.zero_of_zeroClearingPolyFull_sub_mem
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.zeroClearingPolyFull_sub_mem_of_partitionMatchAt_zero
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.zeroClearingPolyFull_sub_eq_zero_of_leadingCoeff_one
 set_option linter.style.longLine false in
