@@ -210,6 +210,7 @@ import ArkLib.Data.CodingTheory.RandomLinearCodeFirstMoment
 import ArkLib.Data.CodingTheory.RandomLinearCodeFirstMomentExists
 import ArkLib.Data.CodingTheory.RandomLinearCodeMatrixEquidist
 import ArkLib.Data.CodingTheory.RandomLinearCodePairwiseProb
+import ArkLib.Data.CodingTheory.RandomLinearCodeParallelProb
 import ArkLib.Data.CodingTheory.RandomLinearCodeRankEquidist
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.CodingTheory.ReedSolomon.FftDomain
