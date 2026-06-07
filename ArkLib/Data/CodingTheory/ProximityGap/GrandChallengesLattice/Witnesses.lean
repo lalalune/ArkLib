@@ -178,48 +178,39 @@ MCA lattice threshold exist. -/
 theorem mcaThresholdExists_ofLineDecodingTarget
     (C : ModuleCode ι F F) (δ a ε_star : ℝ≥0)
     (hδ_le_one : δ ≤ 1)
-    (hLD : CodingTheory.LineDecodable (F := F) (A := F) (C : Set (ι → F)) δ a
-      ((Fintype.card ι : ℝ≥0) + 1))
-    (hTarget : CodingTheory.lineDecodable_imp_epsMCA_le_target (F := F) (A := F)
-      C δ a hLD)
+    (hcov : ProximityGap.MCAForallDoubleCover (F := F) (A := F) (C : Set (ι → F)) δ)
     (hle : (a : ENNReal) / (Fintype.card F : ENNReal) ≤ (ε_star : ENNReal)) :
     mcaThresholdExists (C : Set (ι → F)) ε_star :=
   mcaThresholdExists_of_MCALowerWitness (C : Set (ι → F)) ε_star
-    (MCALowerWitness.ofLineDecodingTarget C δ a ε_star hδ_le_one hLD hTarget hle)
+    (MCALowerWitness.ofLineDecodingTarget C δ a ε_star hδ_le_one hcov hle)
 
 /-- The faithful MCA threshold created from a repaired line-decoding target satisfies the MCA
 bound. -/
 theorem mcaThreshold_spec_ofLineDecodingTarget
     (C : ModuleCode ι F F) (δ a ε_star : ℝ≥0)
     (hδ_le_one : δ ≤ 1)
-    (hLD : CodingTheory.LineDecodable (F := F) (A := F) (C : Set (ι → F)) δ a
-      ((Fintype.card ι : ℝ≥0) + 1))
-    (hTarget : CodingTheory.lineDecodable_imp_epsMCA_le_target (F := F) (A := F)
-      C δ a hLD)
+    (hcov : ProximityGap.MCAForallDoubleCover (F := F) (A := F) (C : Set (ι → F)) δ)
     (hle : (a : ENNReal) / (Fintype.card F : ENNReal) ≤ (ε_star : ENNReal)) :
-    let hne := mcaThresholdExists_ofLineDecodingTarget C δ a ε_star hδ_le_one hLD hTarget hle
+    let hne := mcaThresholdExists_ofLineDecodingTarget C δ a ε_star hδ_le_one hcov hle
     mcaSatisfies (C : Set (ι → F)) ε_star
       (mcaThreshold (C : Set (ι → F)) ε_star hne) :=
   mcaThreshold_spec (C : Set (ι → F)) ε_star
-    (mcaThresholdExists_ofLineDecodingTarget C δ a ε_star hδ_le_one hLD hTarget hle)
+    (mcaThresholdExists_ofLineDecodingTarget C δ a ε_star hδ_le_one hcov hle)
 
 /-- A repaired line-decoding target gives a direct lower bracket on the faithful MCA lattice
 threshold at `⌊δ·n⌋`. -/
 theorem latticeIndexOf_le_mcaThreshold_ofLineDecodingTarget
     (C : ModuleCode ι F F) (δ a ε_star : ℝ≥0)
     (hδ_le_one : δ ≤ 1)
-    (hLD : CodingTheory.LineDecodable (F := F) (A := F) (C : Set (ι → F)) δ a
-      ((Fintype.card ι : ℝ≥0) + 1))
-    (hTarget : CodingTheory.lineDecodable_imp_epsMCA_le_target (F := F) (A := F)
-      C δ a hLD)
+    (hcov : ProximityGap.MCAForallDoubleCover (F := F) (A := F) (C : Set (ι → F)) δ)
     (hle : (a : ENNReal) / (Fintype.card F : ENNReal) ≤ (ε_star : ENNReal)) :
     latticeIndexOf (ι := ι) δ hδ_le_one ≤
       mcaThreshold (C : Set (ι → F)) ε_star
-        (mcaThresholdExists_ofLineDecodingTarget C δ a ε_star hδ_le_one hLD hTarget hle) := by
+        (mcaThresholdExists_ofLineDecodingTarget C δ a ε_star hδ_le_one hcov hle) := by
   simpa [mcaThresholdExists_ofLineDecodingTarget, MCALowerWitness.ofLineDecodingTarget]
     using MCALowerWitness_le_mcaThreshold (C : Set (ι → F)) ε_star
-      (mcaThresholdExists_ofLineDecodingTarget C δ a ε_star hδ_le_one hLD hTarget hle)
-      (MCALowerWitness.ofLineDecodingTarget C δ a ε_star hδ_le_one hLD hTarget hle)
+      (mcaThresholdExists_ofLineDecodingTarget C δ a ε_star hδ_le_one hcov hle)
+      (MCALowerWitness.ofLineDecodingTarget C δ a ε_star hδ_le_one hcov hle)
 
 set_option linter.style.longLine false in
 #print axioms ProximityGap.GrandChallengesLattice.latticeIndexOf_le_mcaThreshold_ofLineDecodingTarget

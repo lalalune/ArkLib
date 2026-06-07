@@ -1,0 +1,943 @@
+ArkLib/OuterCompletenessScratch.lean:128:15: error(lean.unknownIdentifier): Unknown constant `ENNReal.tsum_congr`
+ArkLib/OuterCompletenessScratch.lean:129:8: error: No goals to be solved
+ArkLib/OuterCompletenessScratch.lean:83:17: warning: This simp argument is unused:
+  probFailure_map
+
+Hint: Omit it from the simp argument list.
+  simp only [̵p̵r̵o̵b̵F̵a̵i̵l̵u̵r̵e̵_̵m̵a̵p̵,̵ ̵p̵r̵o̵b̵F̵a̵i̵l̵u̵r̵e̵_̵e̵q̵_̵z̵e̵r̵o̵]̵[̲p̲r̲o̲b̲F̲a̲i̲l̲u̲r̲e̲_̲e̲q̲_̲z̲e̲r̲o̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:105:60: warning: This simp argument is unused:
+  OptionT.run_failure
+
+Hint: Omit it from the simp argument list.
+  simp only [OptionT.run_bind, OptionT.run_monadLift, OptionT.run_f̵a̵i̵l̵p̲ure, OptionT.run_m̲a̲pu̵r̵e̵,
+            OptionT̵.r̵u̵n̵_̵map,̵ ̵O̵p̵t̵i̵o̵n̵.̵m̵a̵p̵_some, Option.getM, bind_assoc, pure_bind, bind_pure_comp]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:105:81: warning: This simp argument is unused:
+  OptionT.run_pure
+
+Hint: Omit it from the simp argument list.
+  simp only [OptionT.run_bind, OptionT.run_monadLift, OptionT.run_failure, O̵p̵t̵i̵o̵n̵T̵.̵r̵u̵n̵_̵p̵u̵r̵e̵,̵OptionT.run_map,
+            Option.map_some, Option.getM, bind_assoc, pure_bind, bind_pure_comp]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:106:27: warning: This simp argument is unused:
+  Option.map_some
+
+Hint: Omit it from the simp argument list.
+  simp only [OptionT.run_bind, OptionT.run_monadLift, OptionT.run_failure, OptionT.run_pure,
+            OptionT.run_map, Option.m̵a̵p̵_̵s̵o̵m̵e̵,̵ ̵O̵p̵t̵i̵o̵n̵.̵getM, bind_assoc, pure_bind, bind_pure_comp]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:106:57: warning: This simp argument is unused:
+  bind_assoc
+
+Hint: Omit it from the simp argument list.
+  simp only [OptionT.run_bind, OptionT.run_monadLift, OptionT.run_failure, OptionT.run_pure,
+            OptionT.run_map, Option.map_some, Option.getM, b̵i̵n̵d̵_̵a̵s̵s̵o̵c̵,̵ ̵pure_bind, bind_pure_comp]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:106:69: warning: This simp argument is unused:
+  pure_bind
+
+Hint: Omit it from the simp argument list.
+  simp only [OptionT.run_bind, OptionT.run_monadLift, OptionT.run_failure, OptionT.run_pure,
+            OptionT.run_map, Option.map_some, Option.getM, bind_assoc, p̵u̵r̵e̵_̵bind,̵ ̵b̵i̵n̵d̵_pure_comp]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:106:80: warning: This simp argument is unused:
+  bind_pure_comp
+
+Hint: Omit it from the simp argument list.
+  simp only [OptionT.run_bind, OptionT.run_monadLift, OptionT.run_failure, OptionT.run_pure,
+            OptionT.run_map, Option.map_some, Option.getM, bind_assoc, pure_bind,̵ ̵b̵i̵n̵d̵_̵p̵u̵r̵e̵_̵c̵o̵m̵p̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:109:19: warning: This simp argument is unused:
+  Option.elim_some
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.elim_̵s̵o̵m̵e̵, Option.̵e̵l̵i̵m̵,̵ ̵O̵p̵t̵i̵o̵n̵T.run_map, OptionT.run_bind,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵OptionT.run_failure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲OptionT.run_pure, OptionT.run_monadLift, map_failure, _root_.map_pure,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵Option.map_some,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Option.getM, simulateQ_pure, simulateQ_map, StateT.run_pure, StateT.run_map,
+            StateT.run'_eq, probEvent_map, bind_assoc, pure_bind, bind_pure_comp,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵probEvent_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Option.map_eq_none_iff, Option.isNone_iff_eq_none, Function.comp_def]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:109:50: warning: This simp argument is unused:
+  OptionT.run_map
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.elim_some, Option.elim, OptionT.run_m̵a̵p̵,̵ ̵O̵p̵t̵i̵o̵n̵T̵.̵r̵u̵n̵_̵bind,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵OptionT.run_failure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲OptionT.run_pure, OptionT.run_monadLift, map_failure, _root_.map_pure,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵Option.map_some,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Option.getM, simulateQ_pure, simulateQ_map, StateT.run_pure, StateT.run_map,
+            StateT.run'_eq, probEvent_map, bind_assoc, pure_bind, bind_pure_comp,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵probEvent_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Option.map_eq_none_iff, Option.isNone_iff_eq_none, Function.comp_def]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:109:67: warning: This simp argument is unused:
+  OptionT.run_bind
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.elim_some, Option.elim, OptionT.run_map, OptionT.run_b̵i̵n̵d̵,̵
+  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵O̵p̵t̵i̵o̵n̵T̵.̵r̵u̵n̵_̵failure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲OptionT.run_pure, OptionT.run_monadLift, map_failure, _root_.map_pure,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵Option.map_some,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Option.getM, simulateQ_pure, simulateQ_map, StateT.run_pure, StateT.run_map,
+            StateT.run'_eq, probEvent_map, bind_assoc, pure_bind, bind_pure_comp,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵probEvent_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Option.map_eq_none_iff, Option.isNone_iff_eq_none, Function.comp_def]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:110:10: warning: This simp argument is unused:
+  OptionT.run_failure
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.elim_some, Option.elim, OptionT.run_map, OptionT.run_bind,
+            OptionT.run_f̵a̵i̵l̵u̵r̵e̵,̵ ̵O̵pt̵i̵o̵n̵T̵.̵r̵un̵_̵p̵u̵re, OptionT.run_monadLift, map_failure, _root_.map_pure,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵Option.map_some,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Option.getM, simulateQ_pure, simulateQ_map, StateT.run_pure, StateT.run_map,
+            StateT.run'_eq, probEvent_map, bind_assoc, pure_bind, bind_pure_comp,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵probEvent_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Option.map_eq_none_iff, Option.isNone_iff_eq_none, Function.comp_def]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:110:31: warning: This simp argument is unused:
+  OptionT.run_pure
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.elim_some, Option.elim, OptionT.run_map, OptionT.run_bind,
+            OptionT.run_failure, OptionT.run_p̵u̵r̵e̵,̵ ̵O̵p̵t̵i̵o̵n̵T̵.̵r̵u̵n̵_̵monadLift, map_failure, _root_.map_pure,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵Option.map_some,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Option.getM, simulateQ_pure, simulateQ_map, StateT.run_pure, StateT.run_map,
+            StateT.run'_eq, probEvent_map, bind_assoc, pure_bind, bind_pure_comp,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵probEvent_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Option.map_eq_none_iff, Option.isNone_iff_eq_none, Function.comp_def]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:110:49: warning: This simp argument is unused:
+  OptionT.run_monadLift
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.elim_some, Option.elim, OptionT.run_map, OptionT.run_bind,
+            OptionT.run_failure, OptionT.run_pure, O̵p̵t̵i̵o̵n̵T̵.̵r̵u̵n̵_̵m̵o̵n̵a̵d̵L̵i̵f̵t̵,̵ ̵map_failure, _root_.map_pure, Option.map_some,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Option.getM, simulateQ_pure, simulateQ_map, StateT.run_pure, StateT.run_map,
+            StateT.run'_eq, probEvent_map, bind_assoc, pure_bind, bind_pure_comp, probEvent_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Option.map_eq_none_iff, Option.isNone_iff_eq_none, Function.comp_def]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:110:72: warning: This simp argument is unused:
+  map_failure
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.elim_some, Option.elim, OptionT.run_map, OptionT.run_bind,
+            OptionT.run_failure, OptionT.run_pure, OptionT.run_monadLift, m̵a̵p̵_f̵a̵i̵l̵u̵re̵,̵ ̵_̵r̵oot_.map_pure,
+            Option.map_some, Option.getM, simulateQ_pure, simulateQ_map, StateT.run_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲StateT.run_map,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵StateT.run'_eq, probEvent_map, bind_assoc, pure_bind, bind_pure_comp,
+            probEvent_pure, Option.map_eq_none_iff, Option.isNone_iff_eq_none, Function.comp_def]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:110:85: warning: This simp argument is unused:
+  _root_.map_pure
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.elim_some, Option.elim, OptionT.run_map, OptionT.run_bind,
+            OptionT.run_failure, OptionT.run_pure, OptionT.run_monadLift, map_failure, ̵_̵r̵o̵o̵t̵_̵.̵m̵a̵p̵_̵p̵u̵r̵e̵,̵
+            Option.map_some, Option.getM, simulateQ_pure, simulateQ_map, StateT.run_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲StateT.run_map,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵StateT.run'_eq, probEvent_map, bind_assoc, pure_bind, bind_pure_comp,
+            probEvent_pure, Option.map_eq_none_iff, Option.isNone_iff_eq_none, Function.comp_def]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:111:10: warning: This simp argument is unused:
+  Option.map_some
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.elim_some, Option.elim, OptionT.run_map, OptionT.run_bind,
+            OptionT.run_failure, OptionT.run_pure, OptionT.run_monadLift, map_failure, ̵_̵r̵o̵o̵t̵_̵.̵m̵a̵p̵_̵p̵u̵r̵e̵,̵
+            O̵p̵_̲r̲o̲o̲ti̵o̵n̵_̲.map_s̵o̵m̵p̲u̲r̲e, Option.getM, simulateQ_pure, simulateQ_map, StateT.run_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲StateT.run_map,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵StateT.run'_eq, probEvent_map, bind_assoc, pure_bind, bind_pure_comp,
+            probEvent_pure, Option.map_eq_none_iff, Option.isNone_iff_eq_none, Function.comp_def]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:111:27: warning: This simp argument is unused:
+  Option.getM
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.elim_some, Option.elim, OptionT.run_map, OptionT.run_bind,
+            OptionT.run_failure, OptionT.run_pure, OptionT.run_monadLift, map_failure, ̵_̵r̵o̵o̵t̵_̵.̵m̵a̵p̵_̵p̵u̵r̵e̵,̵
+            O̵p̵_̲r̲o̲o̲ti̵o̵n̵_̲.map_s̵o̵m̵p̲u̲r̲e, Option.g̵m̲a̲p̲_̲s̲o̲m̲et̵M̵, simulateQ_pure, simulateQ_map, StateT.run_pure, ̵S̵t̵a̵t̵e̵T̵.̵r̵u̵n̵_̵m̵a̵p̵,̵
+            StateT.run_̲m̲a̲p̲,̲ ̲S̲t̲a̲t̲e̲T̲.̲r̲u̲n̲'_eq, probEvent_map, bind_assoc, pure_bind, bind_pure_comp,
+            probEvent_pure, Option.map_eq_none_iff, Option.isNone_iff_eq_none, Function.comp_def]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:111:40: warning: This simp argument is unused:
+  simulateQ_pure
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.elim_some, Option.elim, OptionT.run_map, OptionT.run_bind,
+            OptionT.run_failure, OptionT.run_pure, OptionT.run_monadLift, map_failure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲_root_.map_pure,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵Option.map_some, Option.getM, simulateQ_p̵u̵r̵e̵,̵ ̵s̵i̵mu̵l̵at̵e̵Q̵_̵m̵a̵p, StateT.run_pu̵r̵e̵u̲r̲e̲, ̵S̵t̵a̵t̵e̵T̵.̵r̵u̵n̵_̵m̵a̵p̵,̵
+            StateT.run_̲m̲a̲p̲,̲ ̲S̲t̲a̲t̲e̲T̲.̲r̲u̲n̲'_eq, probEvent_map, bind_assoc, pure_bind, bind_pure_comp,
+            probEvent_pure, Option.map_eq_none_iff, Option.isNone_iff_eq_none, Function.comp_def]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:111:56: warning: This simp argument is unused:
+  simulateQ_map
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.elim_some, Option.elim, OptionT.run_map, OptionT.run_bind,
+            OptionT.run_failure, OptionT.run_pure, OptionT.run_monadLift, map_failure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲_root_.map_pure,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵Option.map_some, Option.getM, simulateQ_pure, s̵i̵m̵u̵l̵a̵t̵e̵Q̵_̵m̵a̵p̵,̵ ̵StateT.run_pu̵r̵e̵u̲r̲e̲, ̵S̵t̵a̵t̵e̵T̵.̵r̵u̵n̵_̵m̵a̵p̵,̵
+            StateT.run_̲m̲a̲p̲,̲ ̲S̲t̲a̲t̲e̲T̲.̲r̲u̲n̲'_eq, probEvent_map, bind_assoc, pure_bind, bind_pure_comp,
+            probEvent_pure, Option.map_eq_none_iff, Option.isNone_iff_eq_none, Function.comp_def]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:111:71: warning: This simp argument is unused:
+  StateT.run_pure
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.elim_some, Option.elim, OptionT.run_map, OptionT.run_bind,
+            OptionT.run_failure, OptionT.run_pure, OptionT.run_monadLift, map_failure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲_root_.map_pure,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵Option.map_some, Option.getM, simulateQ_pure, simulateQ_map, ̵S̵t̵a̵t̵e̵T̵.̵r̵u̵n̵_̵p̵u̵r̵e̵,̵ ̵S̵t̵a̵t̵e̵T̵.̵r̵u̵n̵_̵m̵a̵p̵,̵
+            StateT.run_̲m̲a̲p̲,̲ ̲S̲t̲a̲t̲e̲T̲.̲r̲u̲n̲'_eq, probEvent_map, bind_assoc, pure_bind, bind_pure_comp,
+            probEvent_pure, Option.map_eq_none_iff, Option.isNone_iff_eq_none, Function.comp_def]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:111:88: warning: This simp argument is unused:
+  StateT.run_map
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.elim_some, Option.elim, OptionT.run_map, OptionT.run_bind,
+            OptionT.run_failure, OptionT.run_pure, OptionT.run_monadLift, map_failure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲_root_.map_pure,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵Option.map_some, Option.getM, simulateQ_pure, simulateQ_map, ̵S̵t̵a̵t̵e̵T̵.̵r̵u̵n̵_̵p̵u̵r̵e̵,̵ ̵S̵t̵a̵t̵e̵T̵.̵r̵u̵n̵_̵m̵a̵p̵,̵
+            StateT.run_̲p̲u̲r̲e̲,̲ ̲S̲t̲a̲t̲e̲T̲.̲r̲u̲n̲'_eq, probEvent_map, bind_assoc, pure_bind, bind_pure_comp,
+            probEvent_pure, Option.map_eq_none_iff, Option.isNone_iff_eq_none, Function.comp_def]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:112:10: warning: This simp argument is unused:
+  StateT.run'_eq
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.elim_some, Option.elim, OptionT.run_map, OptionT.run_bind,
+            OptionT.run_failure, OptionT.run_pure, OptionT.run_monadLift, map_failure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲_root_.map_pure,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵Option.map_some, Option.getM, simulateQ_pure, simulateQ_map, ̵S̵t̵a̵t̵e̵T̵.̵r̵u̵n̵_̵p̵u̵r̵e̵,̵ ̵S̵t̵a̵t̵e̵T̵.̵r̵u̵n̵_̵m̵a̵p̵,̵
+            StateT.run'̵_p̲u̲r̲eq̵, S̲t̲a̲t̲e̲T̲.̲r̲u̲n̲_̲m̲a̲p,̲ ̲p̲robEvent_map, bind_assoc, pure_bind, bind_pure_comp,
+            probEvent_pure, Option.map_eq_none_iff, Option.isNone_iff_eq_none, Function.comp_def]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:112:26: warning: This simp argument is unused:
+  probEvent_map
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.elim_some, Option.elim, OptionT.run_map, OptionT.run_bind,
+            OptionT.run_failure, OptionT.run_pure, OptionT.run_monadLift, map_failure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲_root_.map_pure, Option.map_some, Option.getM, simulateQ_pure, simulateQ_map,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲StateT.run_pure, StateT.run_map, StateT.run'_eq, p̵r̵o̵b̵E̵v̵e̵n̵t̵_̵m̵a̵p̵,̵ ̵bind_assoc, pure_bind, bind_pure_comp,
+            probEvent_pure, Option.map_eq_none_iff, Option.isNone_iff_eq_none, Function.comp_def]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:112:41: warning: This simp argument is unused:
+  bind_assoc
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.elim_some, Option.elim, OptionT.run_map, OptionT.run_bind,
+            OptionT.run_failure, OptionT.run_pure, OptionT.run_monadLift, map_failure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲_root_.map_pure, Option.map_some, Option.getM, simulateQ_pure, simulateQ_map,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲StateT.run_pure, StateT.run_map, StateT.run'_eq, probEvent_map, b̵i̵n̵d̵_̵a̵s̵s̵o̵c̵,̵ ̵pure_bind, bind_pure_comp,
+            probEvent_pure, Option.map_eq_none_iff, Option.isNone_iff_eq_none, Function.comp_def]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:112:53: warning: This simp argument is unused:
+  pure_bind
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.elim_some, Option.elim, OptionT.run_map, OptionT.run_bind,
+            OptionT.run_failure, OptionT.run_pure, OptionT.run_monadLift, map_failure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲_root_.map_pure, Option.map_some, Option.getM, simulateQ_pure, simulateQ_map,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲StateT.run_pure, StateT.run_map, StateT.run'_eq, probEvent_map, bind_assoc,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲p̵u̵r̵e̵_̵b̵i̵n̵d̵,̵ ̵bind_pure_comp, probEvent_pure, Option.map_eq_none_iff, Option.isNone_iff_eq_none,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Function.comp_def]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:112:64: warning: This simp argument is unused:
+  bind_pure_comp
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.elim_some, Option.elim, OptionT.run_map, OptionT.run_bind,
+            OptionT.run_failure, OptionT.run_pure, OptionT.run_monadLift, map_failure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲_root_.map_pure, Option.map_some, Option.getM, simulateQ_pure, simulateQ_map,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲StateT.run_pure, StateT.run_map, StateT.run'_eq, probEvent_map, bind_assoc, pure_bind,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲b̵i̵n̵d̵_̵p̵u̵r̵e̵_̵c̵o̵m̵p̵,̵probEvent_pure, Option.map_eq_none_iff, Option.isNone_iff_eq_none, Function.comp_def]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:113:10: warning: This simp argument is unused:
+  probEvent_pure
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.elim_some, Option.elim, OptionT.run_map, OptionT.run_bind,
+            OptionT.run_failure, OptionT.run_pure, OptionT.run_monadLift, map_failure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲_root_.map_pure, Option.map_some, Option.getM, simulateQ_pure, simulateQ_map,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲StateT.run_pure, StateT.run_map, StateT.run'_eq, probEvent_map, bind_assoc, pure_bind,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲bind_pure_comp, p̵r̵o̵b̵E̵v̵e̵n̵t̵_̵p̵u̵r̵e̵,̵ ̵Option.map_eq_none_iff, Option.isNone_iff_eq_none, Function.comp_def]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:113:26: warning: This simp argument is unused:
+  Option.map_eq_none_iff
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.elim_some, Option.elim, OptionT.run_map, OptionT.run_bind,
+            OptionT.run_failure, OptionT.run_pure, OptionT.run_monadLift, map_failure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲_root_.map_pure, Option.map_some, Option.getM, simulateQ_pure, simulateQ_map,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲StateT.run_pure, StateT.run_map, StateT.run'_eq, probEvent_map, bind_assoc, pure_bind,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲bind_pure_comp, probEvent_pure, O̵p̵t̵i̵o̵n̵.̵m̵a̵p̵_̵e̵q̵_̵n̵o̵n̵e̵_̵i̵f̵f̵,̵ ̵Option.isNone_iff_eq_none, Function.comp_def]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:113:50: warning: This simp argument is unused:
+  Option.isNone_iff_eq_none
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.elim_some, Option.elim, OptionT.run_map, OptionT.run_bind,
+            OptionT.run_failure, OptionT.run_pure, OptionT.run_monadLift, map_failure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲_root_.map_pure, Option.map_some, Option.getM, simulateQ_pure, simulateQ_map,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲StateT.run_pure, StateT.run_map, StateT.run'_eq, probEvent_map, bind_assoc, pure_bind,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲bind_pure_comp, probEvent_pure, Option.map_eq_none_iff, O̵p̵t̵i̵o̵n̵.̵i̵s̵N̵o̵n̵e̵_̵i̵f̵f̵_̵e̵q̵_̵n̵o̵n̵e̵,̵ ̵Function.comp_def]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:113:77: warning: This simp argument is unused:
+  Function.comp_def
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.elim_some, Option.elim, OptionT.run_map, OptionT.run_bind,
+            OptionT.run_failure, OptionT.run_pure, OptionT.run_monadLift, map_failure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲_root_.map_pure, Option.map_some, Option.getM, simulateQ_pure, simulateQ_map,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲StateT.run_pure, StateT.run_map, StateT.run'_eq, probEvent_map, bind_assoc, pure_bind,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲bind_pure_comp, probEvent_pure, Option.map_eq_none_iff, O̵p̵t̵i̵o̵n̵.̵i̵s̵N̵o̵n̵e̵_̵i̵f̵f̵_̵e̵q̵_̵n̵o̵n̵e̵,̵ ̵F̵u̵n̵c̵t̵i̵o̵n̵.̵c̵o̵m̵p̵_̵d̵e̵f̵]̵O̲p̲t̲i̲o̲n̲.̲i̲s̲N̲o̲n̲e̲_̲i̲f̲f̲_̲e̲q̲_̲n̲o̲n̲e̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:142:15: warning: This simp argument is unused:
+  simulateQ_bind
+
+Hint: Omit it from the simp argument list.
+  simp only [̵s̵i̵m̵u̵l̵a̵t̵e̵Q̵_̵b̵i̵n̵d̵,̵ ̵s̵i̵m̵u̵l̵a̵t̵e̵Q̵_̵m̵a̵p̵,̵[̲s̲i̲m̲u̲l̲a̲t̲e̲Q̲_̲m̲a̲p̲,̲ simulateQ_pure, simulateQ_optionT_lift, QueryImpl.addLift_def,
+  ̲  ̲ ̲ ̲ ̲ ̲QueryImpl.simulateQ_add_liftComp_right, QueryImpl.simulateQ_add_liftComp_left,
+  ̲  ̲ ̲ ̲ ̲ ̲simulateQ_query, ← OracleComp.liftComp_eq_liftM, OracleComp.liftComp_pure, pure_bind,
+  ̲  ̲ ̲ ̲ ̲ ̲bind_assoc, _root_.map_pure, monadLift_pure, monadLift_bind, StateT.run'_eq, StateT.run_bind,
+  ̲  ̲ ̲ ̲ ̲ ̲StateT.run_pure, StateT.run_map, support_bind, support_map, support_pure, Set.mem_iUnion,
+  ̲  ̲ ̲ ̲ ̲ ̲Set.mem_image, Set.mem_singleton_iff] at hx
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:142:31: warning: This simp argument is unused:
+  simulateQ_map
+
+Hint: Omit it from the simp argument list.
+  simp only [simulateQ_bind, s̵i̵m̵u̵l̵a̵t̵e̵Q̵_̵m̵a̵p̵,̵ ̵simulateQ_pure, simulateQ_optionT_lift, QueryImpl.addLift_def,
+  ̲  ̲ ̲ ̲ ̲ ̲QueryImpl.simulateQ_add_liftComp_right, QueryImpl.simulateQ_add_liftComp_left,
+  ̲  ̲ ̲ ̲ ̲ ̲simulateQ_query, ← OracleComp.liftComp_eq_liftM, OracleComp.liftComp_pure, pure_bind,
+  ̲  ̲ ̲ ̲ ̲ ̲bind_assoc, _root_.map_pure, monadLift_pure, monadLift_bind, StateT.run'_eq, StateT.run_bind,
+  ̲  ̲ ̲ ̲ ̲ ̲StateT.run_pure, StateT.run_map, support_bind, support_map, support_pure, Set.mem_iUnion,
+  ̲  ̲ ̲ ̲ ̲ ̲Set.mem_image, Set.mem_singleton_iff] at hx
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:142:46: warning: This simp argument is unused:
+  simulateQ_pure
+
+Hint: Omit it from the simp argument list.
+  simp only [simulateQ_bind, simulateQ_map, s̵i̵m̵u̵l̵a̵t̵e̵Q̵_̵p̵u̵r̵e̵,̵ ̵simulateQ_optionT_lift, QueryImpl.addLift_def,
+  ̲  ̲ ̲ ̲ ̲ ̲QueryImpl.simulateQ_add_liftComp_right, QueryImpl.simulateQ_add_liftComp_left,
+  ̲  ̲ ̲ ̲ ̲ ̲simulateQ_query, ← OracleComp.liftComp_eq_liftM, OracleComp.liftComp_pure, pure_bind,
+  ̲  ̲ ̲ ̲ ̲ ̲bind_assoc, _root_.map_pure, monadLift_pure, monadLift_bind, StateT.run'_eq, StateT.run_bind,
+  ̲  ̲ ̲ ̲ ̲ ̲StateT.run_pure, StateT.run_map, support_bind, support_map, support_pure, Set.mem_iUnion,
+  ̲  ̲ ̲ ̲ ̲ ̲Set.mem_image, Set.mem_singleton_iff] at hx
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:142:62: warning: This simp argument is unused:
+  simulateQ_optionT_lift
+
+Hint: Omit it from the simp argument list.
+  simp only [simulateQ_bind, simulateQ_map, simulateQ_pure, s̵i̵m̵u̵l̵a̵t̵e̵Q̵_̵o̵p̵t̵i̵o̵n̵T̵_̵l̵i̵f̵t̵,̵QueryImpl.addLift_def,
+        QueryImpl.simulateQ_add_liftComp_right, QueryImpl.simulateQ_add_liftComp_left,
+        simulateQ_query, ← OracleComp.liftComp_eq_liftM, OracleComp.liftComp_pure, pure_bind,
+        bind_assoc, _root_.map_pure, monadLift_pure, monadLift_bind, StateT.run'_eq, StateT.run_bind,
+  ̲  ̲ ̲ ̲ ̲ ̲StateT.run_pure, StateT.run_map, support_bind, support_map, support_pure, Set.mem_iUnion,
+  ̲  ̲ ̲ ̲ ̲ ̲Set.mem_image, Set.mem_singleton_iff] at hx
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:143:29: warning: This simp argument is unused:
+  QueryImpl.simulateQ_add_liftComp_right
+
+Hint: Omit it from the simp argument list.
+  simp only [simulateQ_bind, simulateQ_map, simulateQ_pure, simulateQ_optionT_lift,
+        QueryImpl.addLift_def, Q̵u̵e̵r̵y̵I̵m̵p̵l̵.̵s̵i̵m̵u̵l̵a̵t̵e̵Q̵_̵a̵d̵d̵_̵l̵i̵f̵t̵C̵o̵m̵p̵_̵r̵i̵g̵h̵t̵,̵QueryImpl.simulateQ_add_liftComp_left, simulateQ_query,
+  ̲  ̲ ̲ ̲ ̲ ̲← OracleComp.liftComp_eq_liftM, OracleComp.liftComp_pure, pure_bind, bind_assoc,
+  ̲  ̲ ̲ ̲ ̲ ̲_root_.map_pure, monadLift_pure, monadLift_bind, StateT.run'_eq, StateT.run_bind,
+  ̲  ̲ ̲ ̲ ̲ ̲StateT.run_pure, StateT.run_map, support_bind, support_map, support_pure, Set.mem_iUnion,
+  ̲  ̲ ̲ ̲ ̲ ̲Set.mem_image, Set.mem_singleton_iff] at hx
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:144:6: warning: This simp argument is unused:
+  QueryImpl.simulateQ_add_liftComp_left
+
+Hint: Omit it from the simp argument list.
+  simp only [simulateQ_bind, simulateQ_map, simulateQ_pure, simulateQ_optionT_lift,
+        QueryImpl.addLift_def, QueryImpl.simulateQ_add_liftComp_right, Q̵u̵e̵r̵y̵I̵m̵p̵l̵.̵s̵i̵m̵u̵l̵a̵t̵e̵Q̵_̵a̵d̵d̵_̵l̵i̵f̵t̵C̵o̵m̵p̵_̵l̵e̵f̵t̵,̵ ̵simulateQ_query,
+        ← OracleComp.liftComp_eq_liftM, OracleComp.liftComp_pure, pure_bind, bind_assoc,
+  ̲  ̲ ̲ ̲ ̲ ̲_root_.map_pure, monadLift_pure, monadLift_bind, StateT.run'_eq, StateT.run_bind,
+  ̲  ̲ ̲ ̲ ̲ ̲StateT.run_pure, StateT.run_map, support_bind, support_map, support_pure, Set.mem_iUnion,
+  ̲  ̲ ̲ ̲ ̲ ̲Set.mem_image, Set.mem_singleton_iff] at hx
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:144:45: warning: This simp argument is unused:
+  simulateQ_query
+
+Hint: Omit it from the simp argument list.
+  simp only [simulateQ_bind, simulateQ_map, simulateQ_pure, simulateQ_optionT_lift,
+        QueryImpl.addLift_def, QueryImpl.simulateQ_add_liftComp_right,
+        QueryImpl.simulateQ_add_liftComp_left, s̵i̵m̵u̵l̵a̵t̵e̵Q̵_̵q̵u̵e̵r̵y̵,̵
+  ̵ ̵ ̵ ̵ ̵ ̵ ̵← OracleComp.liftComp_eq_liftM,
+  ̲  ̲ ̲ ̲ ̲ ̲OracleComp.liftComp_pure,
+  ̵  ̵ ̵ ̵ ̵ ̵pure_bind, bind_assoc, _root_.map_pure, monadLift_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲monadLift_bind,
+  ̵  ̵ ̵ ̵ ̵ ̵StateT.run'_eq, StateT.run_bind, StateT.run_pure, StateT.run_map,
+        support_bind, support_map, support_pure, Set.mem_iUnion, Set.mem_image,
+        Set.mem_singleton_iff] at hx
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:147:22: warning: This simp argument is unused:
+  StateT.run_bind
+
+Hint: Omit it from the simp argument list.
+  simp only [simulateQ_bind, simulateQ_map, simulateQ_pure, simulateQ_optionT_lift,
+        QueryImpl.addLift_def, QueryImpl.simulateQ_add_liftComp_right,
+        QueryImpl.simulateQ_add_liftComp_left, simulateQ_query, ← OracleComp.liftComp_eq_liftM,
+  ̲  ̲ ̲ ̲ ̲ ̲OracleComp.liftComp_pure, pure_bind, bind_assoc, _root_.map_pure, monadLift_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲monadLift_bind, StateT.run'_eq, S̵t̵a̵t̵e̵T̵.̵r̵u̵n̵_̵b̵i̵n̵d̵,̵ ̵StateT.run_pure, StateT.run_map, support_bind, support_map,
+  ̲  ̲ ̲ ̲ ̲ ̲support_pure, Set.mem_iUnion, Set.mem_image, Set.mem_singleton_iff] at hx
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:147:39: warning: This simp argument is unused:
+  StateT.run_pure
+
+Hint: Omit it from the simp argument list.
+  simp only [simulateQ_bind, simulateQ_map, simulateQ_pure, simulateQ_optionT_lift,
+        QueryImpl.addLift_def, QueryImpl.simulateQ_add_liftComp_right,
+        QueryImpl.simulateQ_add_liftComp_left, simulateQ_query,
+  ̵  ̵ ̵ ̵ ̵ ̵← OracleComp.liftComp_eq_liftM,
+  ̲  ̲ ̲ ̲ ̲ ̲OracleComp.liftComp_pure,
+  ̵  ̵ ̵ ̵ ̵ ̵pure_bind, bind_assoc, _root_.map_pure, monadLift_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲monadLift_bind,
+  ̵  ̵ ̵ ̵ ̵ ̵StateT.run'_eq, StateT.run_bind, StateT.run_p̵u̵r̵e̵,̵ ̵S̵t̵a̵t̵e̵T̵.̵r̵u̵n̵_̵map,
+  ̵  ̵ ̵ ̵ ̵ ̵support_bind, support_map,
+  ̲  ̲ ̲ ̲ ̲ ̲support_pure, Set.mem_iUnion, Set.mem_image,
+  ̵  ̵ ̵ ̵ ̵ ̵Set.mem_singleton_iff] at hx
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:147:56: warning: This simp argument is unused:
+  StateT.run_map
+
+Hint: Omit it from the simp argument list.
+  simp only [simulateQ_bind, simulateQ_map, simulateQ_pure, simulateQ_optionT_lift,
+        QueryImpl.addLift_def, QueryImpl.simulateQ_add_liftComp_right,
+        QueryImpl.simulateQ_add_liftComp_left, simulateQ_query,
+  ̵  ̵ ̵ ̵ ̵ ̵← OracleComp.liftComp_eq_liftM,
+  ̲  ̲ ̲ ̲ ̲ ̲OracleComp.liftComp_pure,
+  ̵  ̵ ̵ ̵ ̵ ̵pure_bind, bind_assoc, _root_.map_pure, monadLift_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲monadLift_bind,
+  ̵  ̵ ̵ ̵ ̵ ̵StateT.run'_eq, StateT.run_bind, StateT.run_pure, S̵t̵a̵t̵e̵T̵.̵r̵u̵n̵_̵m̵a̵p̵,̵
+  ̵ ̵ ̵ ̵ ̵ ̵ ̵support_bind, support_map,
+  ̲  ̲ ̲ ̲ ̲ ̲support_pure, Set.mem_iUnion, Set.mem_image,
+  ̵  ̵ ̵ ̵ ̵ ̵Set.mem_singleton_iff] at hx
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:148:6: warning: This simp argument is unused:
+  support_bind
+
+Hint: Omit it from the simp argument list.
+  simp only [simulateQ_bind, simulateQ_map, simulateQ_pure, simulateQ_optionT_lift,
+        QueryImpl.addLift_def, QueryImpl.simulateQ_add_liftComp_right,
+        QueryImpl.simulateQ_add_liftComp_left, simulateQ_query,
+  ̵  ̵ ̵ ̵ ̵ ̵← OracleComp.liftComp_eq_liftM,
+  ̲  ̲ ̲ ̲ ̲ ̲OracleComp.liftComp_pure,
+  ̵  ̵ ̵ ̵ ̵ ̵pure_bind, bind_assoc, _root_.map_pure, monadLift_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲monadLift_bind,
+  ̵  ̵ ̵ ̵ ̵ ̵StateT.run'_eq, StateT.run_bind, StateT.run_pure, StateT.run_map,
+  ̵  ̵ ̵ ̵ ̵ ̵support_b̵i̵n̵d̵,̵ ̵s̵u̵p̵p̵o̵r̵t̵_̵map,
+  ̲  ̲ ̲ ̲ ̲ ̲support_pure, Set.mem_iUnion, Set.mem_image,
+  ̵  ̵ ̵ ̵ ̵ ̵Set.mem_singleton_iff] at hx
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:148:33: warning: This simp argument is unused:
+  support_pure
+
+Hint: Omit it from the simp argument list.
+  simp only [simulateQ_bind, simulateQ_map, simulateQ_pure, simulateQ_optionT_lift,
+        QueryImpl.addLift_def, QueryImpl.simulateQ_add_liftComp_right,
+        QueryImpl.simulateQ_add_liftComp_left, simulateQ_query,
+  ̵  ̵ ̵ ̵ ̵ ̵← OracleComp.liftComp_eq_liftM,
+  ̲  ̲ ̲ ̲ ̲ ̲OracleComp.liftComp_pure,
+  ̵  ̵ ̵ ̵ ̵ ̵pure_bind, bind_assoc, _root_.map_pure, monadLift_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲monadLift_bind,
+  ̵  ̵ ̵ ̵ ̵ ̵StateT.run'_eq, StateT.run_bind, StateT.run_pure, StateT.run_map,
+        support_bind, support_map, s̵u̵p̵p̵o̵r̵t̵_̵p̵u̵r̵e̵,̵ ̵Set.mem_iUnion, Set.mem_image,
+  ̵  ̵ ̵ ̵ ̵ ̵Set.mem_singleton_iff] at hx
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:148:47: warning: This simp argument is unused:
+  Set.mem_iUnion
+
+Hint: Omit it from the simp argument list.
+  simp only [simulateQ_bind, simulateQ_map, simulateQ_pure, simulateQ_optionT_lift,
+        QueryImpl.addLift_def, QueryImpl.simulateQ_add_liftComp_right,
+        QueryImpl.simulateQ_add_liftComp_left, simulateQ_query,
+  ̵  ̵ ̵ ̵ ̵ ̵← OracleComp.liftComp_eq_liftM,
+  ̲  ̲ ̲ ̲ ̲ ̲OracleComp.liftComp_pure,
+  ̵  ̵ ̵ ̵ ̵ ̵pure_bind, bind_assoc, _root_.map_pure, monadLift_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲monadLift_bind,
+  ̵  ̵ ̵ ̵ ̵ ̵StateT.run'_eq, StateT.run_bind, StateT.run_pure, StateT.run_map,
+        support_bind, support_map, support_pure, Set.mem_iU̵n̵i̵o̵n̵,̵ ̵S̵e̵t̵.̵me̵m̵_̵i̵m̵age,
+  ̵  ̵ ̵ ̵ ̵ ̵Set.mem_singleton_iff] at hx
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:149:6: warning: This simp argument is unused:
+  Set.mem_singleton_iff
+
+Hint: Omit it from the simp argument list.
+  simp only [simulateQ_bind, simulateQ_map, simulateQ_pure, simulateQ_optionT_lift,
+        QueryImpl.addLift_def, QueryImpl.simulateQ_add_liftComp_right,
+        QueryImpl.simulateQ_add_liftComp_left, simulateQ_query,
+  ̵  ̵ ̵ ̵ ̵ ̵← OracleComp.liftComp_eq_liftM,
+  ̲  ̲ ̲ ̲ ̲ ̲OracleComp.liftComp_pure,
+  ̵  ̵ ̵ ̵ ̵ ̵pure_bind, bind_assoc, _root_.map_pure, monadLift_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲monadLift_bind,
+  ̵  ̵ ̵ ̵ ̵ ̵StateT.run'_eq, StateT.run_bind, StateT.run_pure, StateT.run_map,
+        support_bind, support_map, support_pure, Set.mem_iUnion, Set.mem_image,̵
+  ̵ ̵ ̵ ̵ ̵ ̵ ̵S̵e̵t̵.̵m̵e̵m̵_̵s̵i̵n̵g̵l̵e̵t̵o̵n̵_̵i̵f̵f̵] at hx
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:170:42: warning: This simp argument is unused:
+  bind_assoc
+
+Hint: Omit it from the simp argument list.
+  simp only [map_eq_bind_pure_comp, b̵i̵n̵d̵_̵a̵s̵s̵o̵c̵,̵ ̵pure_bind] at hProverRun
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:170:54: warning: This simp argument is unused:
+  pure_bind
+
+Hint: Omit it from the simp argument list.
+  simp only [map_eq_bind_pure_comp, bind_assoc,̵ ̵p̵u̵r̵e̵_̵b̵i̵n̵d̵] at hProverRun
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:184:38: warning: This simp argument is unused:
+  bind_assoc
+
+Hint: Omit it from the simp argument list.
+  simp only [Function.comp_def, b̵i̵n̵d̵_̵a̵s̵s̵o̵c̵,̵ ̵pure_bind] at h0
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:184:50: warning: This simp argument is unused:
+  pure_bind
+
+Hint: Omit it from the simp argument list.
+  simp only [Function.comp_def, bind_assoc,̵ ̵p̵u̵r̵e̵_̵b̵i̵n̵d̵] at h0
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:209:19: warning: This simp argument is unused:
+  Prod.fst
+
+Hint: Omit it from the simp argument list.
+  simp only [̵P̵r̵o̵d̵.̵f̵s̵t̵,̵ ̵P̵r̵o̵d̵.̵s̵n̵d̵]̵[̲P̲r̲o̲d̲.̲s̲n̲d̲]̲ at ha1t ha2t
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:209:29: warning: This simp argument is unused:
+  Prod.snd
+
+Hint: Omit it from the simp argument list.
+  simp only [Prod.fst,̵ ̵P̵r̵o̵d̵.̵s̵n̵d̵] at ha1t ha2t
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:211:19: warning: This simp argument is unused:
+  simulateQ_bind
+
+Hint: Omit it from the simp argument list.
+  simp only [̵s̵i̵m̵u̵l̵a̵t̵e̵Q̵_̵b̵i̵n̵d̵,̵ ̵s̵i̵m̵u̵l̵a̵t̵e̵Q̵_̵m̵a̵p̵,̵[̲s̲i̲m̲u̲l̲a̲t̲e̲Q̲_̲m̲a̲p̲,̲ simulateQ_pure, ← OracleComp.liftComp_eq_liftM,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲OracleComp.liftComp_pure, pure_bind, bind_assoc, _root_.map_pure, monadLift_pure,
+            StateT.run_bind, StateT.run_pure, StateT.run_map, OptionT.run_mk, support_bind,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲support_map, support_pure, Set.mem_iUnion, Set.mem_image, Set.mem_singleton_iff] at hx_1
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:211:35: warning: This simp argument is unused:
+  simulateQ_map
+
+Hint: Omit it from the simp argument list.
+  simp only [simulateQ_bind, s̵i̵m̵u̵l̵a̵t̵e̵Q̵_̵m̵a̵p̵,̵ ̵simulateQ_pure, ← OracleComp.liftComp_eq_liftM,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲OracleComp.liftComp_pure, pure_bind, bind_assoc, _root_.map_pure, monadLift_pure,
+            StateT.run_bind, StateT.run_pure, StateT.run_map, OptionT.run_mk, support_bind,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲support_map, support_pure, Set.mem_iUnion, Set.mem_image, Set.mem_singleton_iff] at hx_1
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:211:50: warning: This simp argument is unused:
+  simulateQ_pure
+
+Hint: Omit it from the simp argument list.
+  simp only [simulateQ_bind, simulateQ_map, s̵i̵m̵u̵l̵a̵t̵e̵Q̵_̵p̵u̵r̵e̵,̵← OracleComp.liftComp_eq_liftM,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲OracleComp.liftComp_pure, pure_bind, bind_assoc, _root_.map_pure, monadLift_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲StateT.run_bind, StateT.run_pure, StateT.run_map, OptionT.run_mk, support_bind,
+            support_map, support_pure, Set.mem_iUnion, Set.mem_image, Set.mem_singleton_iff] at hx_1
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:212:10: warning: This simp argument is unused:
+  ← OracleComp.liftComp_eq_liftM
+
+Hint: Omit it from the simp argument list.
+  simp only [simulateQ_bind, simulateQ_map, simulateQ_pure, ←̵ ̵O̵r̵a̵c̵l̵e̵C̵o̵m̵p̵.̵l̵i̵f̵t̵C̵o̵m̵p̵_̵e̵q̵_̵l̵i̵f̵t̵M̵,̵ ̵OracleComp.liftComp_pure,
+            pure_bind, bind_assoc, _root_.map_pure, monadLift_pure, StateT.run_bind, StateT.run_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲StateT.run_map, OptionT.run_mk, support_bind, support_map, support_pure, Set.mem_iUnion,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Set.mem_image, Set.mem_singleton_iff] at hx_1
+
+Note: Simp arguments with `←` have the additional effect of removing the other direction from the simp set, even if the simp argument itself is unused. If the hint above does not work, try replacing `←` with `-` to only get that effect and silence this warning.
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:212:42: warning: This simp argument is unused:
+  OracleComp.liftComp_pure
+
+Hint: Omit it from the simp argument list.
+  simp only [simulateQ_bind, simulateQ_map, simulateQ_pure, ← OracleComp.liftComp_eq_liftM,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲O̵r̵a̵c̵l̵e̵C̵o̵m̵p̵.̵l̵i̵f̵t̵C̵o̵m̵p̵_̵p̵u̵r̵e̵,̵pure_bind, bind_assoc, _root_.map_pure, monadLift_pure, StateT.run_bind, StateT.run_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲StateT.run_map, OptionT.run_mk, support_bind, support_map, support_pure, Set.mem_iUnion,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Set.mem_image, Set.mem_singleton_iff] at hx_1
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:213:10: warning: This simp argument is unused:
+  pure_bind
+
+Hint: Omit it from the simp argument list.
+  simp only [simulateQ_bind, simulateQ_map, simulateQ_pure, ← OracleComp.liftComp_eq_liftM,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲OracleComp.liftComp_pure, p̵u̵r̵e̵_̵b̵i̵n̵d̵,̵ ̵bind_assoc, _root_.map_pure, monadLift_pure, StateT.run_bind,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲StateT.run_pure, StateT.run_map, OptionT.run_mk, support_bind, support_map, support_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Set.mem_iUnion, Set.mem_image, Set.mem_singleton_iff] at hx_1
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:213:21: warning: This simp argument is unused:
+  bind_assoc
+
+Hint: Omit it from the simp argument list.
+  simp only [simulateQ_bind, simulateQ_map, simulateQ_pure, ← OracleComp.liftComp_eq_liftM,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲OracleComp.liftComp_pure, pure_bind, b̵i̵n̵d̵_̵a̵s̵s̵o̵c̵,̵ ̵_root_.map_pure, monadLift_pure, StateT.run_bind,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲StateT.run_pure, StateT.run_map, OptionT.run_mk, support_bind, support_map, support_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Set.mem_iUnion, Set.mem_image, Set.mem_singleton_iff] at hx_1
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:213:33: warning: This simp argument is unused:
+  _root_.map_pure
+
+Hint: Omit it from the simp argument list.
+  simp only [simulateQ_bind, simulateQ_map, simulateQ_pure, ← OracleComp.liftComp_eq_liftM,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲OracleComp.liftComp_pure, pure_bind, bind_assoc, _̵r̵o̵o̵t̵_̵.̵m̵a̵p̵_̵p̵u̵r̵e̵,̵ ̵monadLift_pure, StateT.run_bind,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲StateT.run_pure, StateT.run_map, OptionT.run_mk, support_bind, support_map, support_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Set.mem_iUnion, Set.mem_image, Set.mem_singleton_iff] at hx_1
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:213:50: warning: This simp argument is unused:
+  monadLift_pure
+
+Hint: Omit it from the simp argument list.
+  simp only [simulateQ_bind, simulateQ_map, simulateQ_pure, ← OracleComp.liftComp_eq_liftM,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲OracleComp.liftComp_pure, pure_bind, bind_assoc, _root_.map_pure, m̵o̵n̵a̵d̵L̵i̵f̵t̵_̵p̵u̵r̵e̵,̵StateT.run_bind,
+            StateT.run_pure, StateT.run_map, OptionT.run_mk, support_bind, support_map, support_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Set.mem_iUnion, Set.mem_image, Set.mem_singleton_iff] at hx_1
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:214:10: warning: This simp argument is unused:
+  StateT.run_bind
+
+Hint: Omit it from the simp argument list.
+  simp only [simulateQ_bind, simulateQ_map, simulateQ_pure, ← OracleComp.liftComp_eq_liftM,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲OracleComp.liftComp_pure, pure_bind, bind_assoc, _root_.map_pure, monadLift_pure,
+            S̵t̵a̵t̵e̵T̵.̵r̵u̵n̵_̵b̵i̵n̵d̵,̵ ̵StateT.run_pure, StateT.run_map, OptionT.run_mk, support_bind, support_map, support_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Set.mem_iUnion, Set.mem_image, Set.mem_singleton_iff] at hx_1
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:214:27: warning: This simp argument is unused:
+  StateT.run_pure
+
+Hint: Omit it from the simp argument list.
+  simp only [simulateQ_bind, simulateQ_map, simulateQ_pure, ← OracleComp.liftComp_eq_liftM,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲OracleComp.liftComp_pure, pure_bind, bind_assoc, _root_.map_pure, monadLift_pure,
+            StateT.run_bind, S̵t̵a̵t̵e̵T̵.̵r̵u̵n̵_̵p̵u̵r̵e̵,̵ ̵StateT.run_map, OptionT.run_mk, support_bind, support_map, support_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Set.mem_iUnion, Set.mem_image, Set.mem_singleton_iff] at hx_1
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:214:44: warning: This simp argument is unused:
+  StateT.run_map
+
+Hint: Omit it from the simp argument list.
+  simp only [simulateQ_bind, simulateQ_map, simulateQ_pure, ← OracleComp.liftComp_eq_liftM,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲OracleComp.liftComp_pure, pure_bind, bind_assoc, _root_.map_pure, monadLift_pure,
+            StateT.run_bind, StateT.run_pure, S̵t̵a̵t̵e̵T̵.̵r̵u̵n̵_̵m̵a̵p̵,̵ ̵OptionT.run_mk, support_bind, support_map, support_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Set.mem_iUnion, Set.mem_image, Set.mem_singleton_iff] at hx_1
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:214:60: warning: This simp argument is unused:
+  OptionT.run_mk
+
+Hint: Omit it from the simp argument list.
+  simp only [simulateQ_bind, simulateQ_map, simulateQ_pure, ← OracleComp.liftComp_eq_liftM,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲OracleComp.liftComp_pure, pure_bind, bind_assoc, _root_.map_pure, monadLift_pure,
+            StateT.run_bind, StateT.run_pure, StateT.run_map, O̵p̵t̵i̵o̵n̵T̵.̵r̵u̵n̵_̵m̵k̵,̵support_bind, support_map, support_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Set.mem_iUnion, Set.mem_image, Set.mem_singleton_iff] at hx_1
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:215:10: warning: This simp argument is unused:
+  support_bind
+
+Hint: Omit it from the simp argument list.
+  simp only [simulateQ_bind, simulateQ_map, simulateQ_pure, ← OracleComp.liftComp_eq_liftM,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲OracleComp.liftComp_pure, pure_bind, bind_assoc, _root_.map_pure, monadLift_pure,
+            StateT.run_bind, StateT.run_pure, StateT.run_map, OptionT.run_mk, s̵u̵p̵p̵o̵r̵t̵_̵b̵i̵n̵d̵,̵ ̵support_map,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲support_pure, Set.mem_iUnion, Set.mem_image, Set.mem_singleton_iff] at hx_1
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:215:24: warning: This simp argument is unused:
+  support_map
+
+Hint: Omit it from the simp argument list.
+  simp only [simulateQ_bind, simulateQ_map, simulateQ_pure,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵← OracleComp.liftComp_eq_liftM,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲OracleComp.liftComp_pure,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵pure_bind, bind_assoc, _root_.map_pure, monadLift_pure,
+            StateT.run_bind, StateT.run_pure, StateT.run_map, OptionT.run_mk,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵support_bind,
+  ̲ s̵u̵p̵p̵o̵r̵t̵_̵m̵a̵p̵,̵  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲support_pure, Set.mem_iUnion, Set.mem_image,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵Set.mem_singleton_iff] at hx_1
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:215:37: warning: This simp argument is unused:
+  support_pure
+
+Hint: Omit it from the simp argument list.
+  simp only [simulateQ_bind, simulateQ_map, simulateQ_pure, ← OracleComp.liftComp_eq_liftM,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲OracleComp.liftComp_pure, pure_bind, bind_assoc, _root_.map_pure, monadLift_pure,
+            StateT.run_bind, StateT.run_pure, StateT.run_map, OptionT.run_mk, support_bind,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲support_map, s̵u̵p̵p̵o̵r̵t̵_̵p̵u̵r̵e̵,̵ ̵Set.mem_iUnion, Set.mem_image, Set.mem_singleton_iff] at hx_1
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:215:51: warning: This simp argument is unused:
+  Set.mem_iUnion
+
+Hint: Omit it from the simp argument list.
+  simp only [simulateQ_bind, simulateQ_map, simulateQ_pure, ← OracleComp.liftComp_eq_liftM,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲OracleComp.liftComp_pure, pure_bind, bind_assoc, _root_.map_pure, monadLift_pure,
+            StateT.run_bind, StateT.run_pure, StateT.run_map, OptionT.run_mk, support_bind,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲support_map, support_pure, S̵e̵t̵.̵m̵e̵m̵_̵i̵U̵n̵i̵o̵n̵,̵ ̵Set.mem_image, Set.mem_singleton_iff] at hx_1
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:215:67: warning: This simp argument is unused:
+  Set.mem_image
+
+Hint: Omit it from the simp argument list.
+  simp only [simulateQ_bind, simulateQ_map, simulateQ_pure, ← OracleComp.liftComp_eq_liftM,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲OracleComp.liftComp_pure, pure_bind, bind_assoc, _root_.map_pure, monadLift_pure,
+            StateT.run_bind, StateT.run_pure, StateT.run_map, OptionT.run_mk, support_bind,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲support_map, support_pure, Set.mem_iUnion, S̵e̵t̵.̵m̵e̵m̵_̵i̵m̵a̵g̵e̵,̵Set.mem_singleton_iff] at hx_1
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:216:10: warning: This simp argument is unused:
+  Set.mem_singleton_iff
+
+Hint: Omit it from the simp argument list.
+  simp only [simulateQ_bind, simulateQ_map, simulateQ_pure, ← OracleComp.liftComp_eq_liftM,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲OracleComp.liftComp_pure, pure_bind, bind_assoc, _root_.map_pure, monadLift_pure,
+            StateT.run_bind, StateT.run_pure, StateT.run_map, OptionT.run_mk, support_bind,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲support_map, support_pure, Set.mem_iUnion, S̵e̵t̵.̵m̵e̵m̵_̵i̵m̵a̵g̵e̵,̵
+  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵S̵e̵t̵.̵m̵e̵m̵_̵s̵i̵n̵g̵l̵e̵t̵o̵n̵_̵i̵f̵f̵]̵S̲e̲t̲.̲m̲e̲m̲_̲i̲m̲a̲g̲e̲]̲ at hx_1
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:218:38: warning: This simp argument is unused:
+  OptionT.run_mk
+
+Hint: Omit it from the simp argument list.
+  simp only [OptionT.run_map, O̵p̵t̵i̵o̵n̵T̵.̵r̵u̵n̵_̵m̵k̵,̵ ̵OptionT.run_pure, Option.map_some, _root_.map_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Option.getM, pure_bind, bind_pure_comp, liftM_pure, ← OracleComp.liftComp_eq_liftM,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲OracleComp.liftComp_pure, simulateQ_bind, simulateQ_map, simulateQ_pure, StateT.run_bind,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲StateT.run_pure, StateT.run_map, support_map, support_pure, Set.mem_image,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Set.mem_singleton_iff] at hx_1
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:219:53: warning: This simp argument is unused:
+  bind_pure_comp
+
+Hint: Omit it from the simp argument list.
+  simp only [OptionT.run_map, OptionT.run_mk, OptionT.run_pure, Option.map_some,
+            _root_.map_pure, Option.getM, pure_bind, b̵i̵n̵d̵_̵p̵u̵r̵e̵_̵c̵o̵m̵p̵,̵ ̵liftM_pure, ← OracleComp.liftComp_eq_liftM,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲OracleComp.liftComp_pure, simulateQ_bind, simulateQ_map, simulateQ_pure, StateT.run_bind,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲StateT.run_pure, StateT.run_map, support_map, support_pure, Set.mem_image,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Set.mem_singleton_iff] at hx_1
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:220:12: warning: This simp argument is unused:
+  ← OracleComp.liftComp_eq_liftM
+
+Hint: Omit it from the simp argument list.
+  simp only [OptionT.run_map, OptionT.run_mk, OptionT.run_pure, Option.map_some,
+            _root_.map_pure, Option.getM, pure_bind, bind_pure_comp, liftM_pure,
+            ←̵ ̵O̵r̵a̵c̵l̵e̵C̵o̵m̵p̵.̵l̵i̵f̵t̵C̵o̵m̵p̵_̵e̵q̵_̵l̵i̵f̵t̵M̵,̵ ̵OracleComp.liftComp_pure, simulateQ_bind, simulateQ_map, simulateQ_pure, StateT.run_bind,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲StateT.run_pure, StateT.run_map, support_map, support_pure, Set.mem_image,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Set.mem_singleton_iff] at hx_1
+
+Note: Simp arguments with `←` have the additional effect of removing the other direction from the simp set, even if the simp argument itself is unused. If the hint above does not work, try replacing `←` with `-` to only get that effect and silence this warning.
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:220:44: warning: This simp argument is unused:
+  OracleComp.liftComp_pure
+
+Hint: Omit it from the simp argument list.
+  simp only [OptionT.run_map, OptionT.run_mk, OptionT.run_pure, Option.map_some,
+             ̵ ̵_root_.map_pure, Option.getM, pure_bind, bind_pure_comp, liftM_pure,
+             ̵ ̵← OracleComp.liftComp_eq_liftM, O̵r̵a̵c̵l̵e̵C̵o̵m̵p̵.̵l̵i̵f̵t̵C̵o̵m̵p̵_̵p̵u̵r̵e̵,̵
+  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵simulateQ_bind, simulateQ_map, simulateQ_pure,
+             ̵ ̵StateT.run_bind, StateT.run_pure, StateT.run_map,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵support_map, support_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Set.mem_image, Set.mem_singleton_iff] at hx_1
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:221:12: warning: This simp argument is unused:
+  simulateQ_bind
+
+Hint: Omit it from the simp argument list.
+  simp only [OptionT.run_map, OptionT.run_mk, OptionT.run_pure, Option.map_some,
+             ̵ ̵_root_.map_pure, Option.getM, pure_bind, bind_pure_comp, liftM_pure,
+             ̵ ̵← OracleComp.liftComp_eq_liftM, OracleComp.liftComp_pure,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵simulateQ_b̵i̵n̵d̵,̵ ̵s̵i̵mu̵l̵at̵e̵Q̵_̵m̵a̵p, simulateQ_pure,
+             ̵ ̵StateT.run_bind, StateT.run_pure, StateT.run_map,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵support_map, support_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Set.mem_image, Set.mem_singleton_iff] at hx_1
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:221:28: warning: This simp argument is unused:
+  simulateQ_map
+
+Hint: Omit it from the simp argument list.
+  simp only [OptionT.run_map, OptionT.run_mk, OptionT.run_pure, Option.map_some,
+             ̵ ̵_root_.map_pure, Option.getM, pure_bind, bind_pure_comp, liftM_pure,
+             ̵ ̵← OracleComp.liftComp_eq_liftM, OracleComp.liftComp_pure,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵simulateQ_bind, simulateQ_m̵a̵p,̵ ̵s̵i̵m̵ul̵a̵t̵e̵Q̵_̵p̵u̵re,
+             ̵ ̵StateT.run_bind, StateT.run_pure, StateT.run_map,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵support_map, support_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Set.mem_image, Set.mem_singleton_iff] at hx_1
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:221:43: warning: This simp argument is unused:
+  simulateQ_pure
+
+Hint: Omit it from the simp argument list.
+  simp only [OptionT.run_map, OptionT.run_mk, OptionT.run_pure, Option.map_some,
+             ̵ ̵_root_.map_pure, Option.getM, pure_bind, bind_pure_comp, liftM_pure,
+             ̵ ̵← OracleComp.liftComp_eq_liftM, OracleComp.liftComp_pure,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵simulateQ_bind, simulateQ_map, ̵s̵i̵m̵u̵l̵a̵t̵e̵Q̵_̵p̵u̵r̵e̵,̵
+             ̵ ̵StateT.run_bind, StateT.run_pure, StateT.run_map,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵support_map, support_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Set.mem_image, Set.mem_singleton_iff] at hx_1
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:222:12: warning: This simp argument is unused:
+  StateT.run_bind
+
+Hint: Omit it from the simp argument list.
+  simp only [OptionT.run_map, OptionT.run_mk, OptionT.run_pure, Option.map_some,
+            _root_.map_pure, Option.getM, pure_bind, bind_pure_comp, liftM_pure,
+            ← OracleComp.liftComp_eq_liftM, OracleComp.liftComp_pure, simulateQ_bind, simulateQ_map,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲simulateQ_pure, S̵t̵a̵t̵e̵T̵.̵r̵u̵n̵_̵b̵i̵n̵d̵,̵ ̵StateT.run_pure, StateT.run_map, support_map, support_pure, Set.mem_image,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Set.mem_singleton_iff] at hx_1
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:222:29: warning: This simp argument is unused:
+  StateT.run_pure
+
+Hint: Omit it from the simp argument list.
+  simp only [OptionT.run_map, OptionT.run_mk, OptionT.run_pure, Option.map_some,
+             ̵ ̵_root_.map_pure, Option.getM, pure_bind, bind_pure_comp, liftM_pure,
+             ̵ ̵← OracleComp.liftComp_eq_liftM, OracleComp.liftComp_pure,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵simulateQ_bind, simulateQ_map,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲simulateQ_pure,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵StateT.run_bind, StateT.run_p̵u̵r̵e̵,̵ ̵S̵t̵a̵t̵e̵T̵.̵r̵u̵n̵_̵map,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵support_map, support_pure, Set.mem_image,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Set.mem_singleton_iff] at hx_1
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:222:46: warning: This simp argument is unused:
+  StateT.run_map
+
+Hint: Omit it from the simp argument list.
+  simp only [OptionT.run_map, OptionT.run_mk, OptionT.run_pure, Option.map_some,
+            _root_.map_pure, Option.getM, pure_bind, bind_pure_comp, liftM_pure,
+            ← OracleComp.liftComp_eq_liftM, OracleComp.liftComp_pure, simulateQ_bind, simulateQ_map,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲simulateQ_pure, StateT.run_bind, StateT.run_pure, S̵t̵a̵t̵e̵T̵.̵r̵u̵n̵_̵m̵a̵p̵,̵support_map, support_pure,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Set.mem_image, Set.mem_singleton_iff] at hx_1
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:223:12: warning: This simp argument is unused:
+  support_map
+
+Hint: Omit it from the simp argument list.
+  simp only [OptionT.run_map, OptionT.run_mk, OptionT.run_pure, Option.map_some,
+             ̵ ̵_root_.map_pure, Option.getM, pure_bind, bind_pure_comp, liftM_pure,
+             ̵ ̵← OracleComp.liftComp_eq_liftM, OracleComp.liftComp_pure,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵simulateQ_bind, simulateQ_map,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲simulateQ_pure,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵StateT.run_bind, StateT.run_pure, StateT.run_map,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵support_m̵a̵p,̵ ̵s̵up̵p̵o̵rt̵_̵p̵u̵r̵e,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Set.mem_image, Set.mem_singleton_iff] at hx_1
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:223:25: warning: This simp argument is unused:
+  support_pure
+
+Hint: Omit it from the simp argument list.
+  simp only [OptionT.run_map, OptionT.run_mk, OptionT.run_pure, Option.map_some,
+             ̵ ̵_root_.map_pure, Option.getM, pure_bind, bind_pure_comp, liftM_pure,
+             ̵ ̵← OracleComp.liftComp_eq_liftM, OracleComp.liftComp_pure,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵simulateQ_bind, simulateQ_map,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲simulateQ_pure,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵StateT.run_bind, StateT.run_pure, StateT.run_map,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵support_map,
+  ̲ s̵u̵p̵p̵o̵r̵t̵_̵p̵u̵r̵e̵,̵  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲Set.mem_image, Set.mem_singleton_iff] at hx_1
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:223:39: warning: This simp argument is unused:
+  Set.mem_image
+
+Hint: Omit it from the simp argument list.
+  simp only [OptionT.run_map, OptionT.run_mk, OptionT.run_pure, Option.map_some,
+            _root_.map_pure, Option.getM, pure_bind, bind_pure_comp, liftM_pure,
+            ← OracleComp.liftComp_eq_liftM, OracleComp.liftComp_pure, simulateQ_bind, simulateQ_map,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲simulateQ_pure, StateT.run_bind, StateT.run_pure, StateT.run_map, support_map,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲support_pure, S̵e̵t̵.̵m̵e̵m̵_̵i̵m̵a̵g̵e̵,̵ ̵Set.mem_singleton_iff] at hx_1
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ArkLib/OuterCompletenessScratch.lean:223:54: warning: This simp argument is unused:
+  Set.mem_singleton_iff
+
+Hint: Omit it from the simp argument list.
+  simp only [OptionT.run_map, OptionT.run_mk, OptionT.run_pure, Option.map_some,
+            _root_.map_pure, Option.getM, pure_bind, bind_pure_comp, liftM_pure,
+            ← OracleComp.liftComp_eq_liftM, OracleComp.liftComp_pure, simulateQ_bind, simulateQ_map,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲simulateQ_pure, StateT.run_bind, StateT.run_pure, StateT.run_map, support_map,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲support_pure, S̵e̵t̵.̵m̵e̵m̵_̵i̵m̵a̵g̵e̵,̵ ̵S̵e̵t̵.̵m̵e̵m̵_̵s̵i̵n̵g̵l̵e̵t̵o̵n̵_̵i̵f̵f̵]̵S̲e̲t̲.̲m̲e̲m̲_̲i̲m̲a̲g̲e̲]̲ at hx_1
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
