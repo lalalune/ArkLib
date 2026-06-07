@@ -342,6 +342,23 @@ def rs_epsCA_bchks25_item2
   -- collinear-proximates engine but not the closed-form (1-ρ-δ)/(δ(1-ρ-2δ)) RS error count.
   -- Genuinely external.
 
+/-- Public T4.9.2 wrapper from the named BCHKS25 item-2 bound. -/
+theorem rs_epsCA_bchks25_item2_of_bound
+    (domain : ι ↪ F) (k : ℕ) (δ_fld δ_int : ℝ≥0)
+    (h_dmin : (Code.minDist ((ReedSolomon.code domain k : Set (ι → F))) : ℝ)
+                / Fintype.card ι / 3 ≤ δ_fld)
+    (h_lt : δ_fld < δ_int)
+    (hbound :
+      let n : ℝ := Fintype.card ι
+      let ρ : ℝ := k / n
+      let bound : ℝ :=
+        max ((1 - ρ - δ_fld) / (δ_fld * (1 - ρ - 2 * δ_fld) * Fintype.card F))
+            ((δ_int : ℝ) / ((δ_int - δ_fld) * Fintype.card F))
+      epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F))) δ_fld δ_int ≤
+        ENNReal.ofReal bound) :
+    rs_epsCA_bchks25_item2 domain k δ_fld δ_int h_dmin h_lt := by
+  simpa [rs_epsCA_bchks25_item2] using hbound
+
 /-- **ABF26 Remark 4.10 — corrected reduction form.**
 
 This is the checked part of the small-proximity-loss simplification.  It takes the BCHKS25
@@ -1515,6 +1532,7 @@ end SubspaceDesignFRS
 #print axioms CodingTheory.FRSEpsMCACapacityGG25Frontier
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_frontier
 #print axioms CodingTheory.rs_epsCA_bchks25_item2
+#print axioms CodingTheory.rs_epsCA_bchks25_item2_of_bound
 #print axioms CodingTheory.rs_epsCA_small_loss_r4_10
 #print axioms CodingTheory.rs_epsCA_small_loss_r4_10_of_residuals
 #print axioms CodingTheory.r4_10_floor_collapse_of_no_boundary_crossing
