@@ -34,7 +34,8 @@ theorem card_far_stacks_fixed_gamma (C : Set (ι → F)) (δ : ℝ≥0) (γ : F)
           simp [Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons, add_sub_cancel_right]
       right_inv := fun p => by
         simp [Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons, sub_add_cancel] }
-    (fun u => by simp [mem_filter, mem_univ, mem_product, Equiv.coe_fn_mk])
+    (fun u => by constructor <;> intro h <;>
+      simpa [Equiv.coe_fn_mk, mem_filter, mem_univ, mem_product] using h)
 
 /-- Double-count: `∑_u #{far γ} = |F| · |ι → F| · |far|`. -/
 theorem sum_card_far_eq (C : Set (ι → F)) (δ : ℝ≥0) :
@@ -54,8 +55,8 @@ theorem sum_card_far_eq (C : Set (ι → F)) (δ : ℝ≥0) :
   rw [Finset.sum_const, card_univ, smul_eq_mul]
   ring
 
+set_option maxHeartbeats 1000000 in
 /-- **Covering existence from the far-count bound** (combine with the δ-neighbourhood bound). -/
-set_option maxHeartbeats 400000 in
 theorem exists_line_covered_stack_of_far_count_lt (C : Set (ι → F)) (δ : ℝ≥0)
     (hfew : Fintype.card F *
               (Fintype.card (ι → F) * (univ.filter (fun w : ι → F => ¬ δᵣ(w, C) ≤ δ)).card)
