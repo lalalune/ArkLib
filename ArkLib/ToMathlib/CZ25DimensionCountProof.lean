@@ -494,6 +494,51 @@ lemma sum_finrank_span_filter_diffs_le_design_of_subset_closeCodewordsRel
   refine le_trans hsum_le ?_
   simpa [hA, mul_assoc] using hdesign
 
+/-- **Conditional mass-charge bridge.** If, in addition to the design-budget hypotheses, every
+coordinate fiber has cardinality bounded by the dimension of its filtered recentred-difference
+span, then the total recentred-vanishing mass is bounded by the subspace-design budget for the
+full recentred span:
+
+`|L| * (1 - 2δ) * n ≤ dim span{c - c₀ | c ∈ L} * τ r₀ * n`.
+
+This theorem deliberately keeps the per-coordinate fiber/cardinality cap as an explicit
+hypothesis. That cap is the hard affine-fiber / Guruswami-Wang charge; this lemma only packages
+the already-proved lower vanishing count and design-budget upper bound around it. -/
+lemma list_vanish_mass_le_design_of_filter_card_le_finrank
+    (s : ℕ) (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F)) (h : IsSubspaceDesign s τ C)
+    (r₀ : ℕ) (f c₀ : ι → Fin s → F) {δ : ℝ} (L : Finset (ι → Fin s → F))
+    (hc₀ : c₀ ∈ closeCodewordsRel ((C : Set (ι → Fin s → F))) f δ)
+    (hL : ∀ c ∈ L, c ∈ closeCodewordsRel ((C : Set (ι → Fin s → F))) f δ)
+    (hrank :
+      Module.finrank F
+          (Submodule.span F ((fun c => c - c₀) '' (L : Set (ι → Fin s → F)))) ≤ r₀)
+    (hfiber : ∀ i : ι,
+      ((L.filter (fun c => c i - c₀ i = 0)).card : ℝ) ≤
+        (Module.finrank F
+          (Submodule.span F
+            ((fun c => c - c₀) ''
+              ((L.filter (fun c => c i - c₀ i = 0)) : Set (ι → Fin s → F)))) : ℝ)) :
+    (L.card : ℝ) * ((1 - 2 * δ) * Fintype.card ι) ≤
+      (Module.finrank F
+          (Submodule.span F ((fun c => c - c₀) '' (L : Set (ι → Fin s → F)))) : ℝ) *
+        τ r₀ * Fintype.card ι := by
+  classical
+  have hlower :=
+    sum_coord_diff_vanish_ge_of_subset_closeCodewordsRel s ((C : Set (ι → Fin s → F)))
+      f c₀ L hc₀ hL
+  have hcard_to_dim :
+      (∑ i : ι, ((L.filter (fun c => c i - c₀ i = 0)).card : ℝ)) ≤
+        ∑ i : ι,
+          (Module.finrank F
+            (Submodule.span F
+              ((fun c => c - c₀) ''
+                ((L.filter (fun c => c i - c₀ i = 0)) : Set (ι → Fin s → F)))) : ℝ) :=
+    Finset.sum_le_sum (fun i _ => hfiber i)
+  have hdesign :=
+    sum_finrank_span_filter_diffs_le_design_of_subset_closeCodewordsRel
+      s τ C h r₀ f c₀ L hc₀ hL hrank
+  exact le_trans hlower (le_trans hcard_to_dim hdesign)
+
 end RecentredSpan
 
 /-! ### `#print axioms` verification anchors -/
@@ -540,3 +585,4 @@ end CodingTheory
 #print axioms CodingTheory.span_diffs_le_of_subset_closeCodewordsRel
 #print axioms CodingTheory.span_filter_diffs_le_code_inf_ker_of_subset_closeCodewordsRel
 #print axioms CodingTheory.sum_finrank_span_filter_diffs_le_design_of_subset_closeCodewordsRel
+#print axioms CodingTheory.list_vanish_mass_le_design_of_filter_card_le_finrank
