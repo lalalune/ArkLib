@@ -252,6 +252,22 @@ lemma hasseEvalAtRoot_eq_embedding_cleared_div (x₀ : F) (R : F[X][X][Y]) (i1 m
       div_self (pow_ne_zero _ (liftToFunctionField_leadingCoeff_ne_zero (H := H))),
       mul_one]
 
+/-- **Cleared Hasse-eval bridge.**  Multiplying the divided bridge by the exact `W`-power
+recovers the embedded cleared representative.  This is the downstream form needed when the
+term-level P2 comparison wants to work on the cleared `𝒪` representative rather than the
+`Y ↦ T/W` field evaluation. -/
+theorem hasseEvalAtRoot_mul_W_pow_eq_embedding_cleared
+    (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) :
+    hasseEvalAtRoot H x₀ R i1 m
+        * liftToFunctionField (H := H) H.leadingCoeff ^
+          Bivariate.natDegreeY
+            (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R))) =
+      embeddingOf𝒪Into𝕃 H
+        (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
+          (hasseCoeffRepr𝒪_cleared H x₀ R i1 m) : 𝒪 H) := by
+  rw [hasseEvalAtRoot_eq_embedding_cleared_div]
+  rw [div_mul_cancel₀ _ (pow_ne_zero _ (liftToFunctionField_leadingCoeff_ne_zero (H := H)))]
+
 -- ===== depSwap =====
 omit [Fact (Irreducible H)] [Fact (0 < H.natDegree)] in
 theorem depSwap {c N : ℕ} (A : ℕ → 𝕃 H) (g : ℕ → Nat.Partition c → 𝕃 H)
@@ -273,4 +289,5 @@ end BCIKS20.HenselNumerator
 -- Axiom audit: the novel reindex bricks rest only on [propext, Classical.choice, Quot.sound].
 #print axioms BCIKS20.HenselNumerator.taylorCollapse
 #print axioms BCIKS20.HenselNumerator.partitionPowerClear
+#print axioms BCIKS20.HenselNumerator.hasseEvalAtRoot_mul_W_pow_eq_embedding_cleared
 #print axioms BCIKS20.HenselNumerator.depSwap
