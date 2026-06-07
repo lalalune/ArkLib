@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 
 import ArkLib.ToMathlib.BetaToCurveCoeffPolys
+import ArkLib.ToMathlib.ExtractedIssueBricks
 import ArkLib.ToMathlib.HcardDischarge
 
 /-!
@@ -84,13 +85,8 @@ theorem coeff_gammaLocal (x₀ : F) (R : F[X][X][Y]) (H : F[X][Y])
 `k`-truncation. -/
 theorem mk_eq_trunc_of_tail_zero {K : Type*} [CommSemiring K] (f : ℕ → K) (k : ℕ)
     (h : ∀ t, k ≤ t → f t = 0) :
-    PowerSeries.mk f = ((PowerSeries.trunc k (PowerSeries.mk f) : Polynomial K) : PowerSeries K) := by
-  ext n
-  rw [Polynomial.coeff_coe, PowerSeries.coeff_trunc, PowerSeries.coeff_mk]
-  by_cases hn : n < k
-  · simp [hn]
-  · simp only [hn, if_false]
-    exact h n (le_of_not_gt hn)
+    PowerSeries.mk f = ((PowerSeries.trunc k (PowerSeries.mk f) : Polynomial K) : PowerSeries K) :=
+  _root_.PowerSeries.mk_eq_trunc_of_tail_zero f k h
 
 /-! ## The genuine `betaRec` polynomiality content, off-centre included -/
 
@@ -143,8 +139,8 @@ theorem gammaLocal_eq_trunc_of_finite_betaRec (x₀ : F) (R : F[X][X][Y]) (H : F
 
 /-- Taylor shift preserves the strict degree bound of a coefficient profile. -/
 theorem natDegree_taylor_lt {v : F[X]} {k : ℕ} (x₀ : F) (h : v.natDegree < k + 1) :
-    (Polynomial.taylor (-x₀) v).natDegree < k + 1 := by
-  rwa [Polynomial.natDegree_taylor]
+    (Polynomial.taylor (-x₀) v).natDegree < k + 1 :=
+  _root_.Polynomial.natDegree_taylor_lt (-x₀) v h
 
 /-! ## The off-centre keystone -/
 
