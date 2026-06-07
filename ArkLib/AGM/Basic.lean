@@ -339,6 +339,28 @@ local instance {α : Type*} : Zero (Option α) where
 @[reducible]
 def GroupValTable (ι : Type*) (G : Type*) := Π₀ _ : ι, Option G
 
+namespace GroupValTable
+
+variable {ι : Type*} [DecidableEq ι] {G : Type*}
+
+/-- **Read-after-write at the written index.** Reading the index just written by `update` returns
+the written value. This is the table-level invariant underlying every successful oracle
+implementation (`implGroupOpOracle`, `implGroupExpOracle`, `implGroupDecodeOracle`): after a store
+at index `k`, a subsequent read at `k` observes the stored group element. -/
+@[simp] theorem update_self (t : GroupValTable ι G) (k : ι) (g : Option G) :
+    (t.update k g) k = g := by simp
+
+/-- **Read-after-write at a different index.** Writing index `k` leaves any other index `k' ≠ k`
+unchanged, so oracle stores are local: an `update` at one handle does not disturb the group elements
+recorded at other handles. -/
+@[simp] theorem update_ne (t : GroupValTable ι G) {k k' : ι} (g : Option G) (h : k' ≠ k) :
+    (t.update k g) k' = t k' := by simp [h]
+
+end GroupValTable
+
+#print axioms GroupValTable.update_self
+#print axioms GroupValTable.update_ne
+
 section OracleSpec
 
 variable (ι : Type) (p : ℕ)
