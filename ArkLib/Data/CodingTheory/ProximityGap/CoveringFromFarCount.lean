@@ -42,7 +42,7 @@ theorem card_far_stacks_fixed_gamma (C : Set (ι → F)) (δ : ℝ≥0) (γ : F)
         (fun u => if ¬ δᵣ(u 0 + γ • u 1, C) ≤ δ then (1 : ℕ) else 0)
         (fun p => if ¬ δᵣ(p.1, C) ≤ δ then (1 : ℕ) else 0) (fun u => rfl)]
   rw [Fintype.sum_prod_type]
-  simp only [Finset.sum_const, Finset.card_univ, smul_eq_mul]
+  simp only [Finset.sum_const, Finset.card_univ, nsmul_eq_mul, Nat.cast_id]
   rw [← Finset.mul_sum, ← card_filter, mul_comm]
 
 /-- Double-count: `∑_u #{far γ} = |F| · |ι → F| · |far|`. -/
@@ -60,7 +60,7 @@ theorem sum_card_far_eq (C : Set (ι → F)) (δ : ℝ≥0) :
     intro γ
     rw [← card_far_stacks_fixed_gamma C δ γ, card_filter]
   simp_rw [h]
-  rw [Finset.sum_const, card_univ, smul_eq_mul]
+  rw [Finset.sum_const, card_univ, nsmul_eq_mul, Nat.cast_id]
   ring
 
 end ProximityGap
