@@ -193,6 +193,14 @@ theorem DivWeightLe_of_cases (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypothe
   · exact h0
   · exact hsucc _
 
+/-- Namespace-style wrapper for assembling `DivWeightLe` from its base and successor cases. -/
+theorem DivWeightLe.of_cases (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (h0 : DivWeightLe_zero H x₀ R hHyp hH D)
+    (hsucc : ∀ t, DivWeightLe_succ H x₀ R hHyp hH D t) :
+    DivWeightLe H x₀ R hHyp hH D :=
+  DivWeightLe_of_cases H x₀ R hHyp hH D h0 hsucc
+
 /-- Project the base divisibility-with-weight case from `DivWeightLe`. -/
 theorem DivWeightLe.zero (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
@@ -538,6 +546,10 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe.zero
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe.succ
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe_zero
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe_succ
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe_of_cases
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe.of_cases
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe.zero
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe.succ
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.divWeight_iff_cases
