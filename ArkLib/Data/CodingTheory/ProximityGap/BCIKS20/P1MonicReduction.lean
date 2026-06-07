@@ -110,6 +110,38 @@ theorem normalized_divWeight_cases_of_monic_of_succDivWeight
   DivWeightLe.normalized_cases H x₀ R hHyp hH D
     (DivWeightLe_of_monic_of_succDivWeight H x₀ R hHyp hH hmonic hd hD hsucc)
 
+/-- The monic successor core packages into the existing structured prefix invariant endpoint. -/
+theorem βHenselStructuredWeightInvariant_of_monic_of_succDivWeight
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (hmonic : H.Monic) (hd : 2 ≤ H.natDegree) {D : ℕ}
+    (hD : D ≤ H.natDegree)
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hsucc : SuccDivWeightLe_of_monic H x₀ R hHyp hH D) (k : ℕ) :
+    βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k := by
+  have hlc : H.leadingCoeff = 1 := hmonic
+  exact βHenselStructuredWeightInvariant_of_alphaWeight_succLift' H x₀ R hHyp hH
+    hDH hDRx0 hdR2
+    (fun u => (BCIKS20.HenselNumerator.P2_closed_of_leadingCoeff_one H x₀ R hHyp hlc).2 (u + 1))
+    (AlphaGenuineRegularWeightLe_of_monic_of_succDivWeight
+      H x₀ R hHyp hH hmonic hd hD hsucc)
+    k
+
+/-- All-prefix structured invariant endpoint obtained from the monic successor core. -/
+theorem βHenselStructuredWeightInvariant_all_of_monic_of_succDivWeight
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (hmonic : H.Monic) (hd : 2 ≤ H.natDegree) {D : ℕ}
+    (hD : D ≤ H.natDegree)
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hsucc : SuccDivWeightLe_of_monic H x₀ R hHyp hH D) :
+    ∀ k, βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k :=
+  fun k =>
+    βHenselStructuredWeightInvariant_of_monic_of_succDivWeight
+      H x₀ R hHyp hH hmonic hd hD hDH hDRx0 hdR2 hsucc k
+
 /-- The monic successor core feeds the existing P1 beta-weight endpoint, with the `ξ` side
 condition discharged by `ClaimA2.weight_ξ_bound`. -/
 theorem βHensel_weight_bound_of_monic_of_succDivWeight
@@ -160,6 +192,10 @@ end BCIKS20.HenselNumerator.AlphaWeight
   BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe_of_monic_of_succDivWeight
 #print axioms
   BCIKS20.HenselNumerator.AlphaWeight.normalized_divWeight_cases_of_monic_of_succDivWeight
+#print axioms
+  BCIKS20.HenselNumerator.AlphaWeight.βHenselStructuredWeightInvariant_of_monic_of_succDivWeight
+#print axioms
+  BCIKS20.HenselNumerator.AlphaWeight.βHenselStructuredWeightInvariant_all_of_monic_of_succDivWeight
 #print axioms
   BCIKS20.HenselNumerator.AlphaWeight.βHensel_weight_bound_of_monic_of_succDivWeight
 #print axioms
