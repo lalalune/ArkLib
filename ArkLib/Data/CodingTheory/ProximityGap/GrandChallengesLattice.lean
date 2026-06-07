@@ -13,7 +13,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCABadCountRatio
 import ArkLib.Data.CodingTheory.ProximityGap.MCAEndpointLower
 import ArkLib.Data.CodingTheory.ProximityGap.MCASecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumErdosHeilbronn
-import ArkLib.Data.CodingTheory.ProximityGap.LineDecodingCoverage
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLineDecoding
 
 /-!
 # Faithful lattice encodings of the §1 Grand Challenges (after Finding F6)
