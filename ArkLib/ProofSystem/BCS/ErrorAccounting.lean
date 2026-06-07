@@ -110,6 +110,21 @@ theorem bcsTotalError_mono {m : ℕ} {εInt₁ εInt₂ : ℝ≥0}
   le_trans (bcsTotalError_mono_open εInt₁ hOpen)
     (bcsTotalError_mono_interaction εOpen₂ hInt)
 
+/-- Relax the interaction and per-opening budgets, then expose the successor recurrence for the
+relaxed BCS total error. -/
+theorem bcsTotalError_succ_mono_error {m : ℕ}
+    {εInteraction₁ εInteraction₂ : ℝ≥0}
+    {εOpen₁ εOpen₂ : Fin (m + 1) → ℝ≥0}
+    (hInteraction : εInteraction₁ ≤ εInteraction₂)
+    (hOpen : ∀ i, εOpen₁ i ≤ εOpen₂ i) :
+    bcsTotalError εInteraction₁ εOpen₁
+      ≤ εOpen₂ 0 + bcsTotalError εInteraction₂ (fun i : Fin m => εOpen₂ i.succ) := by
+  calc
+    bcsTotalError εInteraction₁ εOpen₁ ≤ bcsTotalError εInteraction₂ εOpen₂ :=
+      bcsTotalError_mono hInteraction hOpen
+    _ = εOpen₂ 0 + bcsTotalError εInteraction₂ (fun i : Fin m => εOpen₂ i.succ) :=
+      bcsTotalError_succ εInteraction₂ εOpen₂
+
 /-! ## 2. The abstract union-bound accounting
 
 We model "probability of a bad event" abstractly as an `ℝ≥0`-valued functional
@@ -848,6 +863,7 @@ example (εInteraction : ℝ≥0) (εOpen : Fin 3 → ℝ≥0) :
 #print axioms bcsTotalError_mono_interaction
 #print axioms bcsTotalError_mono_open
 #print axioms bcsTotalError_mono
+#print axioms bcsTotalError_succ_mono_error
 #print axioms UnionBoundPr
 #print axioms UnionBoundPr.unionFin
 #print axioms UnionBoundPr.pr_unionFin_le
