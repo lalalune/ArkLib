@@ -301,6 +301,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GSMultiplicityCore
 import ArkLib.Data.CodingTheory.ProximityGap.GWAffinePinning
 import ArkLib.Data.CodingTheory.ProximityGap.GWInterpolation
 import ArkLib.Data.CodingTheory.ProximityGap.GWKernelReduction
+import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141JohnsonCount
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeKernels
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeMath
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenge141PrizeMathLowOutput
