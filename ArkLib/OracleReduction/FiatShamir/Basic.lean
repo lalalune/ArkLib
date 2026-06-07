@@ -5,6 +5,7 @@ Authors: Quang Dao
 -/
 
 import ArkLib.OracleReduction.Security.StateRestoration
+import ArkLib.OracleReduction.Security.ZeroKnowledge
 
 /-!
   # The Basic Fiat-Shamir Transformation
@@ -384,10 +385,63 @@ theorem fiatShamir_knowledgeSoundness_of_stateRestoration
 
 end StateRestorationSoundness
 
+section ZeroKnowledgeTransfer
+
+local instance fiatShamirZKNoChallengeSampleable :
+    ∀ i : (FiatShamirProtocolSpec (pSpec := pSpec)).ChallengeIdx,
+      SampleableType ((FiatShamirProtocolSpec (pSpec := pSpec)).Challenge i) := by
+  intro i
+  rcases i with ⟨i, hi⟩
+  exact False.elim (by
+    rcases i with ⟨k, hk⟩
+    have hk0 : k = 0 := by omega
+    subst k
+    simp at hi)
+
+/-- Residual statement for the basic Fiat-Shamir HVZK-to-statistical-HVZK transfer.
+
+The underlying interactive reduction is measured by the transcript-level `Reduction.isHVZK`
+predicate. The transformed one-message Fiat-Shamir reduction is measured by `Reduction.isStatHVZK`
+over the enlarged oracle specification containing the Fiat-Shamir challenge oracle. Supplying this
+residual is exactly the semantic simulator-transfer theorem promised by the basic Fiat-Shamir
+interface; this wrapper keeps that construction explicit. -/
+def fiatShamir_statisticalHVZKTransferResidual
+    {τ : Type}
+    (init : ProbComp σ)
+    (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (fsInit : ProbComp τ)
+    (fsImpl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT τ ProbComp))
+    (rel : Set (StmtIn × WitIn)) (ε : ℝ≥0)
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec) : Prop :=
+  Reduction.isHVZK init impl rel R →
+    Reduction.isStatHVZK fsInit fsImpl rel R.fiatShamir ε
+
+/-- Basic Fiat-Shamir statistical HVZK follows immediately from a discharged simulator-transfer
+residual. This theorem names the target surface for the future malicious-verifier/Fiat-Shamir
+simulator argument without claiming to construct that simulator here. -/
+theorem fiatShamir_isStatHVZK_of_HVZK
+    {τ : Type}
+    (init : ProbComp σ)
+    (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (fsInit : ProbComp τ)
+    (fsImpl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT τ ProbComp))
+    (rel : Set (StmtIn × WitIn)) (ε : ℝ≥0)
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hTransfer :
+      fiatShamir_statisticalHVZKTransferResidual init impl fsInit fsImpl rel ε R)
+    (hHVZK : Reduction.isHVZK init impl rel R) :
+    Reduction.isStatHVZK fsInit fsImpl rel R.fiatShamir ε :=
+  hTransfer hHVZK
+
+#print axioms Reduction.fiatShamir_statisticalHVZKTransferResidual
+#print axioms Reduction.fiatShamir_isStatHVZK_of_HVZK
+
+end ZeroKnowledgeTransfer
+
 end Reduction
 
--- Future work: state-restoration (knowledge) soundness implies (knowledge) soundness after
--- Fiat-Shamir
+-- Future work: discharge the run-collapse, state-restoration transfer, and HVZK simulator-transfer
+-- residuals named above for the basic Fiat-Shamir transform.
 
 end
 

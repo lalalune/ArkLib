@@ -1,11 +1,28 @@
+/-
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
+
 import ArkLib.Data.CodingTheory.HammingBallVolume
 import ArkLib.Data.CodingTheory.ListDecodability
+
+/-!
+# Elias list-size ≤ ball-volume bound
+
+The number of `δ`-close codewords to a word is at most the q-ary Hamming-ball volume `Vol_q(δ,n)`,
+both per-word (`closeCodewordsRel_ncard_le_hammingBallVolume`) and in the maximised form
+`|Λ(C,δ)| ≤ Vol_q(δ,n)` (`Lambda_le_hammingBallVolume`).  This is the elementary Elias upper bound:
+the close-codeword set sits inside the radius-`⌊δn⌋` Hamming ball, whose cardinality is exactly the
+volume (`hammingBallVolume_eq_ncard_hammingBall`).
+-/
+
 open ListDecodable
+
 namespace CodingTheory
 
-/-- **Elias upper bound (list size ≤ ball volume).** The number of `δ`-close codewords of any
-code `C` to a word `f` is at most the q-ary Hamming-ball volume `Vol_q(δ, n)`: the close-codeword
-set sits inside the radius-`⌊δn⌋` Hamming ball, whose cardinality is exactly the volume. -/
+/-- **Elias upper bound (per-word).** The number of `δ`-close codewords of any code `C` to a word
+`f` is at most the q-ary Hamming-ball volume `Vol_q(δ, n)`. -/
 theorem closeCodewordsRel_ncard_le_hammingBallVolume
     {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι] {F : Type} [Fintype F] [DecidableEq F]
     (C : Code ι F) (f : ι → F) (δ : ℝ) :
@@ -20,5 +37,17 @@ theorem closeCodewordsRel_ncard_le_hammingBallVolume
   simp only [hammingBall, Set.mem_setOf_eq]
   exact Nat.le_floor hball
 
+/-- **Maximised Elias bound `|Λ(C,δ)| ≤ Vol_q(δ,n)`.** The maximised list size is bounded by the
+q-ary Hamming-ball volume, via the per-word bound. -/
+theorem Lambda_le_hammingBallVolume
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι] {F : Type} [Fintype F] [DecidableEq F]
+    (C : Code ι F) (δ : ℝ) :
+    Lambda C δ ≤ (hammingBallVolume (Fintype.card F) δ (Fintype.card ι) : ℕ∞) := by
+  apply Lambda_le_natCast_of_forall_ncard_le
+  intro f
+  exact closeCodewordsRel_ncard_le_hammingBallVolume C f δ
+
 end CodingTheory
+
 #print axioms CodingTheory.closeCodewordsRel_ncard_le_hammingBallVolume
+#print axioms CodingTheory.Lambda_le_hammingBallVolume
