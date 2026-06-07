@@ -257,7 +257,7 @@ theorem mcaBadWitness_card_le_compl_common {MC : Submodule F (ι → F)} {δ : �
     have h := Finset.card_sdiff_add_card_inter (Finset.univ : Finset ι) C₀
     rw [Finset.univ_inter, Finset.card_univ] at h; omega
   rw [← hU, ← mul_one (mcaBadWitness (F := F) (MC : Set (ι → F)) δ u₀ u₁ w).card]
-  refine card_mul_le_of_disjoint_petals (P := fun γ => linePetal C₀ u₀ u₁ w γ)
+  refine card_mul_le_of_disjoint_petals (P := linePetal C₀ u₀ u₁ w)
     (fun γ _ γ' _ hne => linePetal_disjoint_of_common_subset C₀ u₀ u₁ w hne (Finset.Subset.refl _))
     (fun γ _ => by
       rw [linePetal]
