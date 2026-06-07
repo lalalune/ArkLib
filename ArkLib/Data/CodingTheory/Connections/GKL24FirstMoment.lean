@@ -908,9 +908,8 @@ theorem mcaBadWitness_card_le_radius_mul_card_of_maxCorrAgreeDomain
   · intro γ hγ
     exact Nat.succ_le_iff.mpr
       (Finset.card_pos.mpr (linePetal_nonempty_of_ssubset_lineAgreeSet (hstrict γ hγ)))
-  · intro γ _hγ i hi
-    simp [linePetal] at hi ⊢
-    exact hi.2
+  · intro γ _hγ
+    exact linePetal_subset_compl D u₀ u₁ w γ
 
 /-- **Petal-certificate form of the GKL24/GCXK25 witness-cover residual.**
 
