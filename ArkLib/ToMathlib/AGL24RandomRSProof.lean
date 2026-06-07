@@ -122,5 +122,6 @@ end RandomReedSolomonResidual
 #print axioms randomRSListDecodingFirstMomentResidual
 #print axioms randomRSBadDomainProbability_eq_front_door
 #print axioms random_rs_list_decoding_of_first_moment_residual
+#print axioms random_rs_list_decoding
 
 end CodingTheory

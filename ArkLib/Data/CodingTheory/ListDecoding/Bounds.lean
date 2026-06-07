@@ -118,14 +118,15 @@ subspace-design (#53); the CZ25 §3.1 upper bounds below are tracked under **#53
   absent in-tree.
 - `random_linear_lambda_lower_glmrsw22` (T3.11 [GLMRSW22 Thm 4.1]) — the random generator
   matrix probability space is in-tree; the GLMRSW22 first-moment count over it is absent.
-- `random_rs_list_decoding` (T3.6 [AGL24 Thm 1.1]) — random-domain RS list-decoding
-  bound absent in-tree; the probability space is now the canonical
-  `Probability.uniformSizeSubsetOfLe`.
 
 *EXTERNAL ADMIT, COUNTING DISCHARGED — narrowed to an irreducible geometric/asymptotic core*
 (`def … : Prop` + proven `_of_residuals` reduction; the arithmetic side conditions issue #54
 asks to close where feasible are **already closed in-tree**):
 
+- `random_rs_list_decoding` (T3.6 [AGL24 Thm 1.1]) — random-domain RS list-decoding
+  bound absent in-tree; reduction proven in `random_rs_list_decoding_of_first_moment_residual`;
+  residual = the `randomRSListDecodingFirstMomentResidual` counting argument
+  (`ToMathlib/AGL24RandomRSProof.lean`).
 - `rs_lambda_superpoly_extension_bkr06` (T3.12 [BKR06 Cor 2.2]) — the roots→`q^d` cardinality
   arithmetic is discharged by `rs_lambda_superpoly_extension_bkr06_of_residuals` (via the
   proven `BKR06.subspacePoly_natDegree_ge_target` bridge) and the fiber-count form
@@ -193,10 +194,9 @@ noncomputable def random_rs_list_decoding
       ¬ (Lambda
           ((ReedSolomon.code (Probability.SizeSubset.toEmbedding L) k : Set (L → F)))
           (1 - (k : ℝ) / (n : ℝ) - η) ≤ (listBound : ℕ∞))] ≤ failure
-  -- Missing ingredient: AGL24's random-RS near-capacity list-decoding theorem.  The
-  -- probability space is now in-tree (`uniformSizeSubsetOfLe`), but the proof bounding the
-  -- bad-domain probability and instantiating the paper's concrete `listBound`/`failure`
-  -- parameters is still external.
+  -- Missing ingredient: AGL24's random-RS near-capacity list-decoding theorem. The
+  -- probability space is now in-tree (`uniformSizeSubsetOfLe`), and the external counting
+  -- argument has been strictly residualized to `randomRSListDecodingFirstMomentResidual`.
 
 end RandomReedSolomon
 
