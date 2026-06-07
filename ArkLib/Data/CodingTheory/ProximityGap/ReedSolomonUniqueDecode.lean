@@ -125,4 +125,54 @@ theorem berlekamp_welch_exists {α : ι ↪ F} {k e : ℕ} [NeZero k]
         by_contra h; exact hi (Finset.mem_filter.mpr ⟨Finset.mem_univ _, h⟩)
       rw [eval_mul, hyc]
 
+open Polynomial in
+/-- **Berlekamp–Welch recovery.**  In the unique-decoding regime `k + 2e < n`, any solution
+`(E, N)` of the key equation (with `E ≠ 0`, `deg E ≤ e`, `deg N < k + e`) for a word `y` that is
+`e`-close to the codeword `eval f` satisfies `N = E · f`.  Hence `f = N / E` is recovered.  Proof:
+`R := N − E·f` has degree `< k + e` yet vanishes at the `≥ n − e` agreement coordinates, so
+`n − e ≤ deg R < k + e` would give `n < k + 2e` — contradiction; thus `R = 0`. -/
+theorem berlekamp_welch_recovers {α : ι ↪ F} {k e : ℕ} [NeZero k]
+    {y : ι → F} {f E N : F[X]} (hf : f ∈ Polynomial.degreeLT F k) (hE0 : E ≠ 0)
+    (hEdeg : E.natDegree ≤ e) (hNdeg : N.natDegree < k + e)
+    (hkey : ∀ i, E.eval (α i) * y i = N.eval (α i))
+    (herr : (Finset.univ.filter (fun i => y i ≠ f.eval (α i))).card ≤ e)
+    (hn : k + 2 * e < Fintype.card ι) :
+    N = E * f := by
+  classical
+  by_contra hne
+  have hR0 : N - E * f ≠ 0 := sub_ne_zero.mpr hne
+  have hkpos : 0 < k := Nat.pos_of_ne_zero (NeZero.ne k)
+  have hfdeg : f.natDegree ≤ k - 1 := by
+    rcases eq_or_ne f 0 with rfl | hf0
+    · simp
+    · have : f.natDegree < k := (natDegree_lt_iff_degree_lt hf0).mpr (mem_degreeLT.mp hf); omega
+  -- `deg (N − E·f) < k + e`
+  have hRdeg : (N - E * f).natDegree < k + e := by
+    have h1 : (E * f).natDegree ≤ k + e - 1 := by
+      rcases eq_or_ne f 0 with rfl | hf0
+      · simp
+      · rw [natDegree_mul hE0 hf0]; omega
+    calc (N - E * f).natDegree ≤ max N.natDegree (E * f).natDegree := natDegree_sub_le _ _
+      _ < k + e := by omega
+  -- `R` vanishes on the agreement set
+  have hroot : ∀ i, y i = f.eval (α i) → (N - E * f).eval (α i) = 0 := by
+    intro i hi
+    rw [eval_sub, eval_mul, ← hkey i, hi]; ring
+  set agree := Finset.univ.filter (fun i => y i = f.eval (α i)) with hag
+  have hagree_card : Fintype.card ι - e ≤ agree.card := by
+    have hco : agree = (Finset.univ.filter (fun i => y i ≠ f.eval (α i)))ᶜ := by
+      ext i; simp [hag, not_not]
+    rw [hco, Finset.card_compl]; omega
+  have hsub : agree.map α ⊆ (N - E * f).roots.toFinset := by
+    intro x hx
+    rw [Finset.mem_map] at hx; obtain ⟨i, hi, rfl⟩ := hx
+    rw [Multiset.mem_toFinset, mem_roots hR0, IsRoot.def]
+    exact hroot i (Finset.mem_filter.mp hi).2
+  have hle : agree.card ≤ (N - E * f).natDegree := by
+    calc agree.card = (agree.map α).card := (Finset.card_map _).symm
+      _ ≤ (N - E * f).roots.toFinset.card := Finset.card_le_card hsub
+      _ ≤ Multiset.card (N - E * f).roots := Multiset.toFinset_card_le _
+      _ ≤ (N - E * f).natDegree := card_roots' _
+  omega
+
 end ReedSolomon
