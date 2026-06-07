@@ -1673,6 +1673,34 @@ theorem liftComp_liftComp {ι₁ ι₂ ι₃ : Type} {spec : OracleSpec ι₁} {
     rw [hquery t, OracleComp.liftComp_query]
     simp only [OracleQuery.cont_query, id_map, OracleQuery.input_query]
 
+/-- **Diamond collapse for nested `liftM` over `OracleComp`.**  Two composed lifts
+`spec → midSpec → superSpec` collapse to the single direct lift (expressed as `liftComp X
+superSpec`), given the per-query coherence `hco` (`fun _ => rfl` for the canonical `+`
+oracle-spec injections).  This discharges the "multiple coercion paths for the same lifted
+computation" obstruction: a goal term `liftM (liftM X)` — e.g. from unfolding `Prover.run`'s
+internal output lift, or a Fiat-Shamir empty-challenge-layer embedding — rewrites to the direct
+`liftComp X superSpec`, matching a single-lifted occurrence (which is `liftComp X superSpec` by
+`liftComp_eq_liftM`).  Proven by converting both `liftM`s to `liftComp` and applying
+`liftComp_liftComp`. -/
+theorem liftM_liftM_via_comp {ιs ιm ιp : Type} {spec : OracleSpec ιs} {midSpec : OracleSpec ιm}
+    {superSpec : OracleSpec ιp}
+    [MonadLift (OracleQuery spec) (OracleQuery midSpec)]
+    [MonadLift (OracleQuery midSpec) (OracleQuery superSpec)]
+    [MonadLift (OracleQuery spec) (OracleQuery superSpec)]
+    {α : Type} (X : OracleComp spec α)
+    (hco : ∀ t, OracleComp.liftComp
+        (liftM (spec.query t) : OracleComp midSpec (spec.Range t)) superSpec
+      = (liftM (spec.query t) : OracleComp superSpec (spec.Range t))) :
+    (liftM (liftM X : OracleComp midSpec α) : OracleComp superSpec α)
+      = OracleComp.liftComp X superSpec := by
+  rw [show (liftM X : OracleComp midSpec α) = OracleComp.liftComp X midSpec
+      from (liftComp_eq_liftM X).symm]
+  rw [show (liftM (OracleComp.liftComp X midSpec) : OracleComp superSpec α)
+      = OracleComp.liftComp (OracleComp.liftComp X midSpec) superSpec
+      from (liftComp_eq_liftM _).symm]
+  exact liftComp_liftComp hco X
+
+
 
 /-- `processRound` resolved at a message (`P_to_V`) round (mirror of the library's
 `processRound_challenge`). -/
@@ -2967,6 +2995,53 @@ def appendRunRightResidual (stmt : Stmt₁) (wit : Wit₁) : Prop :=
         let ⟨transcript₁, stmt₂, wit₂⟩ ← liftM (P₁.run stmt wit)
         let ⟨transcript₂, stmt₃, wit₃⟩ ← liftM (P₂.run stmt₂ wit₂)
         return ⟨transcript₁ ++ₜ transcript₂, stmt₃, wit₃⟩)
+
+/-- **Clean `Eq` reduction target for `append_run` (right-block run characterization).**  The
+appended prover's full run `runToRound (last (m+n))` equals `P₁`'s run, threaded through `P₁.output`
+into `P₂`'s run, with the two full transcripts `happend`-combined (`++ₜ`) and the final state
+transported by `append_PrvState_last`.  Both sides share the type `FullTranscript (pSpec₁ ++ₚ pSpec₂)
+× PrvState (last (m+n))`, so this is a genuine `Eq` (not `HEq`).  `appendRunRightResidual` reduces to
+this via `appendRunRightResidual_of_runToRoundFull`; proving this (the right-block continuation
+induction, whose per-round handles are all in this file) makes `append_run` unconditional. -/
+def appendRunToRoundFull (stmt : Stmt₁) (wit : Wit₁) (hn : 0 < n) : Prop :=
+    (Prover.runToRound (Fin.last (m + n)) stmt wit (P₁.append P₂)) =
+      (Bind.bind (liftM (P₁.runToRound (Fin.last m) stmt wit) :
+          OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+            (pSpec₁.FullTranscript × P₁.PrvState (Fin.last m)))
+        (fun x₁ => Bind.bind (liftM (P₁.output x₁.2) :
+            OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) (Stmt₂ × Wit₂))
+          (fun ctx => Bind.bind (liftM (P₂.runToRound (Fin.last n) ctx.1 ctx.2) :
+              OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ)
+                (pSpec₂.FullTranscript × P₂.PrvState (Fin.last n)))
+            (fun x₂ => pure (x₁.1 ++ₜ x₂.1, cast (append_PrvState_last hn).symm x₂.2)))))
+
+/-- **Assembly: `appendRunRightResidual` follows from `appendRunToRoundFull`.**  Un-splits the seam
+(`runToRound_eq_bind_continueFromTo`), rewrites by the clean run characterization, then collapses the
+`liftM (liftM ·)` output diamonds (from `run_eq_runToRound_last` unfolding `P₁.run`/`P₂.run`) to
+`liftComp` form via `liftM_liftM_via_comp`, normalizing the whole goal to `liftComp` (`← liftComp_eq_liftM`)
+so both sides match, with `append_output_last` reconciling the appended `output` to `P₂.output`. -/
+theorem appendRunRightResidual_of_runToRoundFull (stmt : Stmt₁) (wit : Wit₁) (hn : 0 < n)
+    (hfull : appendRunToRoundFull (P₁ := P₁) (P₂ := P₂) stmt wit hn) :
+    appendRunRightResidual (P₁ := P₁) (P₂ := P₂) stmt wit := by
+  unfold appendRunRightResidual appendRunToRoundFull at *
+  rw [← runToRound_eq_bind_continueFromTo (P₁.append P₂) stmt wit
+        (⟨m, by omega⟩ : Fin (m + n + 1)) (Fin.last (m + n)) (by
+          simp only [Fin.le_def, Fin.val_last]; omega)]
+  rw [hfull]
+  have hc1 : ∀ {β : Type} (Y : OracleComp oSpec β),
+      (liftM (liftM Y : OracleComp (oSpec + [pSpec₁.Challenge]ₒ) β) :
+        OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) β)
+      = OracleComp.liftComp Y (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) :=
+    fun Y => liftM_liftM_via_comp Y (fun t => rfl)
+  have hc2 : ∀ {β : Type} (Y : OracleComp oSpec β),
+      (liftM (liftM Y : OracleComp (oSpec + [pSpec₂.Challenge]ₒ) β) :
+        OracleComp (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) β)
+      = OracleComp.liftComp Y (oSpec + [(pSpec₁ ++ₚ pSpec₂).Challenge]ₒ) :=
+    fun Y => liftM_liftM_via_comp Y (fun t => rfl)
+  simp only [bind_assoc, run_eq_runToRound_last, pure_bind, liftM_bind, liftM_pure,
+    append_output_last hn, _root_.cast_cast, _root_.cast_eq, monadLift_self, hc1, hc2,
+    ← liftComp_eq_liftM]
+
 
 
 /--

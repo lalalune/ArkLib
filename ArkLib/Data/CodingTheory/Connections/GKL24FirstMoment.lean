@@ -375,6 +375,30 @@ theorem epsMCA_le_ofReal_of_listFactor_two_delta
   intro u
   exact mcaBad_card_le_listFactor_mul_two_delta_card MC δ (u 0) (u 1) T hT hTsub hcard
 
+/-- **No-carrier sharpened in-tree `ε_mca` relaxation.** Taking the carrier to be all codewords
+of `MC`, the pairwise-witness count gives
+
+  `ε_mca(MC, δ) ≤ ENNReal.ofReal ((|F|^n · max 1 (2·δ·n)) / |F|)`.
+
+This is the canonical no-carrier version of `epsMCA_le_ofReal_of_listFactor_two_delta`, useful for
+public consumers that do not want to thread an explicit finite carrier. -/
+theorem epsMCA_le_ofReal_of_listFactor_two_delta_univ
+    (MC : Submodule F (ι → F)) (δ : ℝ≥0) :
+    epsMCA (F := F) (A := F) (MC : Set (ι → F)) δ ≤
+      ENNReal.ofReal
+        (((Fintype.card (ι → F) : ℝ) *
+            max 1 (2 * (δ : ℝ) * (Fintype.card ι : ℝ))) / Fintype.card F) := by
+  classical
+  let T : Finset (ι → F) := Finset.univ.filter (fun w : ι → F => w ∈ (MC : Set (ι → F)))
+  refine epsMCA_le_ofReal_of_listFactor_two_delta MC δ T ?_ ?_ ?_
+  · intro w hw
+    rw [T, Finset.mem_filter]
+    exact ⟨Finset.mem_univ _, hw⟩
+  · intro w hw
+    rw [T, Finset.mem_filter] at hw
+    exact hw.2
+  · exact_mod_cast Finset.card_filter_le Finset.univ (fun w : ι → F => w ∈ (MC : Set (ι → F)))
+
 /-- **`ε_mca` bound from the in-tree first-moment count + a list-size factor.** Given a single
 codeword carrier `T` (containing exactly the codewords of `MC`) of size `≤ B_T`,
 
@@ -439,6 +463,29 @@ theorem GKL24FirstMomentResidual_inTree_card
   · intro w hw
     rw [Finset.mem_filter] at hw
     exact mcaBadWitness_card_le_card_real MC δ (u 0) (u 1) w hw.2
+
+/-- **Sharpened in-tree relaxed GKL24 first-moment residual.** Taking `T` to be the finite set of
+all codewords of `MC`, the pairwise-witness count gives the residual with carrier size `|F|^n` and
+per-codeword count `max 1 (2·δ·n)`.
+
+This keeps the first-moment estimate fully in tree and strictly sharper than
+`GKL24FirstMomentResidual_inTree_card`; it is still deliberately weaker than GCXK25's sharp
+`δ·n` charging theorem. -/
+theorem GKL24FirstMomentResidual_inTree_two_delta_card
+    (MC : Submodule F (ι → F)) (δ : ℝ≥0) :
+    GKL24FirstMomentResidual MC δ
+      (Fintype.card (ι → F) : ℝ)
+      (max 1 (2 * (δ : ℝ) * (Fintype.card ι : ℝ))) := by
+  classical
+  intro u
+  refine ⟨Finset.univ.filter (fun w : ι → F => w ∈ (MC : Set (ι → F))), ?_, ?_, ?_⟩
+  · intro w hw
+    rw [Finset.mem_filter]
+    exact ⟨Finset.mem_univ _, hw⟩
+  · exact_mod_cast Finset.card_filter_le Finset.univ (fun w : ι → F => w ∈ (MC : Set (ι → F)))
+  · intro w hw
+    rw [Finset.mem_filter] at hw
+    exact mcaBadWitness_card_le_two_delta_mul_card MC δ (u 0) (u 1) w hw.2
 
 /-- **Per-stack bad-`γ` count from the GKL24 first-moment residual.**
 Given `GKL24FirstMomentResidual MC δ B_T b`, every concrete stack `u` has at most `B_T · b`
@@ -523,6 +570,7 @@ end ProximityGap
 kernel-clean apart from the standard Lean foundations (`propext`, `Classical.choice`,
 `Quot.sound`). -/
 #print axioms ProximityGap.GKL24FirstMomentResidual_inTree_card
+#print axioms ProximityGap.GKL24FirstMomentResidual_inTree_two_delta_card
 #print axioms ProximityGap.mcaBad_card_le_of_gkl24_residual
 #print axioms ProximityGap.mcaEvent_prob_le_ofReal_of_gkl24_residual
 #print axioms ProximityGap.mcaBad_card_le_t51_firstMoment_of_gkl24_residual
@@ -533,3 +581,4 @@ kernel-clean apart from the standard Lean foundations (`propext`, `Classical.cho
 #print axioms ProximityGap.mcaBadWitness_card_le_two_delta_mul_card
 #print axioms ProximityGap.mcaBad_card_le_listFactor_mul_two_delta_card
 #print axioms ProximityGap.epsMCA_le_ofReal_of_listFactor_two_delta
+#print axioms ProximityGap.epsMCA_le_ofReal_of_listFactor_two_delta_univ

@@ -196,6 +196,7 @@ subspace-design inputs).
 set_option linter.unusedFintypeInType false
 set_option linter.unusedDecidableInType false
 set_option linter.unusedSectionVars false
+set_option linter.style.longFile 1600
 
 namespace CodingTheory
 
@@ -246,6 +247,23 @@ def linear_epsMCA_1_5_johnson_gkl24
   -- Johnson list count is not in-tree (JohnsonBound/ proves only the √-radius / 2nd-moment
   -- form). Genuinely external.
 
+/-- Public T4.11.1 wrapper from the named 1.5-Johnson MCA bound. -/
+theorem linear_epsMCA_1_5_johnson_gkl24_of_bound
+    (C : ModuleCode ι F A) (δ_min η δ : ℝ≥0)
+    (h_δ_min : (δ_min : ℝ) = (Code.minDist (C : Set (ι → A)) : ℝ) / Fintype.card ι)
+    (hη : 0 < η) (hη_lt_δ_min : η < δ_min)
+    (hδ : (δ : ℝ) ≤ 1 - ((1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 3)))
+    (hbound :
+      epsMCA (F := F) (A := A) ((C : Set (ι → A))) δ ≤
+        ENNReal.ofReal
+          ((((Fintype.card ι : ℝ) + 6) / η
+            + 2 / ((η : ℝ) *
+                ((1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 3)
+                  - (1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 2)))) /
+            (Fintype.card F : ℝ))) :
+    linear_epsMCA_1_5_johnson_gkl24 C δ_min η δ h_δ_min hη hη_lt_δ_min hδ := by
+  simpa [linear_epsMCA_1_5_johnson_gkl24] using hbound
+
 /-- **ABF26 Theorem 4.11, Item 2 [BGKS20 Lem 3.2].** For any linear error-correcting code
 `C ⊆ F^n`, parameter `η > 0`, and `δ ≤ 1 - ∛(1 - δ_min(C) + η)`:
 
@@ -268,6 +286,18 @@ def linear_epsCA_1_5_johnson_bgks20
   -- 1.5-Johnson regime. The 1/η² shape comes from a two-step (fold then interleave) union
   -- bound over the η-margin; needs the in-tree epsCA-with-(δ,δ+η) proximity-loss decomposition
   -- specialised to the ∛-radius regime, which is not present. Genuinely external.
+
+/-- Public T4.11.2 wrapper from the named 1.5-Johnson CA-with-proximity-loss bound. -/
+theorem linear_epsCA_1_5_johnson_bgks20_of_bound
+    (C : ModuleCode ι F A) (δ_min η δ : ℝ≥0)
+    (h_δ_min : (δ_min : ℝ) = (Code.minDist (C : Set (ι → A)) : ℝ) / Fintype.card ι)
+    (hη : 0 < η) (hη_lt_δ_min : η < δ_min)
+    (hδ : (δ : ℝ) ≤ 1 - ((1 - (δ_min : ℝ) + (η : ℝ)) ^ ((1 : ℝ) / 3)))
+    (hbound :
+      epsCA (F := F) (A := A) ((C : Set (ι → A))) δ (δ + η) ≤
+        ((2 : ENNReal) / ((η : ENNReal) ^ 2 * (Fintype.card F : ENNReal)))) :
+    linear_epsCA_1_5_johnson_bgks20 C δ_min η δ h_δ_min hη hη_lt_δ_min hδ := by
+  simpa [linear_epsCA_1_5_johnson_bgks20] using hbound
 
 end General
 
@@ -311,6 +341,23 @@ def rs_epsCA_bchks25_item2
   -- BCHKS25 RS interpolation/multiplicity lemmas. BCKHS25/Interpolation.lean supplies the
   -- collinear-proximates engine but not the closed-form (1-ρ-δ)/(δ(1-ρ-2δ)) RS error count.
   -- Genuinely external.
+
+/-- Public T4.9.2 wrapper from the named BCHKS25 item-2 bound. -/
+theorem rs_epsCA_bchks25_item2_of_bound
+    (domain : ι ↪ F) (k : ℕ) (δ_fld δ_int : ℝ≥0)
+    (h_dmin : (Code.minDist ((ReedSolomon.code domain k : Set (ι → F))) : ℝ)
+                / Fintype.card ι / 3 ≤ δ_fld)
+    (h_lt : δ_fld < δ_int)
+    (hbound :
+      let n : ℝ := Fintype.card ι
+      let ρ : ℝ := k / n
+      let bound : ℝ :=
+        max ((1 - ρ - δ_fld) / (δ_fld * (1 - ρ - 2 * δ_fld) * Fintype.card F))
+            ((δ_int : ℝ) / ((δ_int - δ_fld) * Fintype.card F))
+      epsCA (F := F) (A := F) ((ReedSolomon.code domain k : Set (ι → F))) δ_fld δ_int ≤
+        ENNReal.ofReal bound) :
+    rs_epsCA_bchks25_item2 domain k δ_fld δ_int h_dmin h_lt := by
+  simpa [rs_epsCA_bchks25_item2] using hbound
 
 /-- **ABF26 Remark 4.10 — corrected reduction form.**
 
@@ -1150,6 +1197,20 @@ def subspaceDesign_epsMCA_gg25
   -- (cf. epsMCA_Czero_pos / lineDecodable_imp_epsMCA_le_false), so the statement stays
   -- nonvacuous. Genuinely external (the GG25 line-stitching/list-decoder pipeline is unformalized).
 
+/-- Public T4.13 wrapper from the named GG25 subspace-design MCA bound. -/
+theorem subspaceDesign_epsMCA_gg25_of_bound
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (s : ℕ) (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
+    (h : IsSubspaceDesign s τ C)
+    (t : ℕ) (ht : 0 < t)
+    (hbound :
+      epsMCA (F := F) (A := Fin s → F) ((C : Set (ι → Fin s → F)))
+          ((1 - τ (t + 1) - 3 / (2 * t)).toNNReal) ≤
+        ENNReal.ofReal (((t : ℝ) * Fintype.card ι + 4 * t ^ 2) / Fintype.card F)) :
+    subspaceDesign_epsMCA_gg25 s τ C h t ht := by
+  simpa [subspaceDesign_epsMCA_gg25] using hbound
+
 /-- **ABF26 Theorem 4.14 [GG25 Corollary 4.10].** Folded Reed-Solomon codes have MCA
 up to capacity. Let `η ∈ (0, 1)` and `C := FRS[F, L, k, s, ω]` be a folded RS code
 with `s > 16/η²`. Then:
@@ -1474,8 +1535,11 @@ def subspaceDesign_epsCA_curves_polynomial_generators_bcgm25
 end SubspaceDesignFRS
 
 #print axioms CodingTheory.linear_epsMCA_1_5_johnson_gkl24
+#print axioms CodingTheory.linear_epsMCA_1_5_johnson_gkl24_of_bound
 #print axioms CodingTheory.linear_epsCA_1_5_johnson_bgks20
+#print axioms CodingTheory.linear_epsCA_1_5_johnson_bgks20_of_bound
 #print axioms CodingTheory.subspaceDesign_epsMCA_gg25
+#print axioms CodingTheory.subspaceDesign_epsMCA_gg25_of_bound
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_residuals
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_residuals_prop
@@ -1483,6 +1547,7 @@ end SubspaceDesignFRS
 #print axioms CodingTheory.FRSEpsMCACapacityGG25Frontier
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_frontier
 #print axioms CodingTheory.rs_epsCA_bchks25_item2
+#print axioms CodingTheory.rs_epsCA_bchks25_item2_of_bound
 #print axioms CodingTheory.rs_epsCA_small_loss_r4_10
 #print axioms CodingTheory.rs_epsCA_small_loss_r4_10_of_residuals
 #print axioms CodingTheory.r4_10_floor_collapse_of_no_boundary_crossing

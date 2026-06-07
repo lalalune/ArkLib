@@ -363,21 +363,9 @@ lemma foldStep_is_logic_complete (i : Fin ℓ) :
     simp only [step, foldStepLogic]
     -- Fact 4: Prover and verifier oracle statements agree
     funext j
-    have hj : j.val < toOutCodewordsCount ℓ ϑ i.castSucc := j.isLt
-    simp only [OracleVerifier.mkVerifierOStmtOut, Function.Embedding.coeFn_mk, Fin.eta]
-    split
-    · rename_i j' heq
-      -- heq : (if hj : ↑j < ... then Sum.inl j else ...) = Sum.inl j'
-      -- Since hj holds, we have Sum.inl j = Sum.inl j', so j = j'
-      simp only [hj, ↓reduceDIte] at heq
-      cases heq
-      simpa [eq_rec_constant, eq_mpr_eq_cast, eq_mp_eq_cast]
-    · rename_i heq
-      -- This case is impossible: the if-then-else evaluates to Sum.inl j when hj holds
-      -- So we have Sum.inl j = Sum.inr j✝, which is a contradiction
-      simp only [hj, ↓reduceDIte] at heq
-      -- heq : Sum.inl j = Sum.inr j✝ is a contradiction
-      cases heq
+    simp only [Prod.mk.eta, Fin.isValue, MessageIdx, Fin.is_lt, ↓reduceDIte,
+      Fin.eta, Fin.zero_eta, Fin.mk_one, Function.Embedding.coeFn_mk, Sum.inl.injEq,
+      OracleVerifier.mkVerifierOStmtOut_inl, cast_eq]
 
   -- Key fact: Oracle statements are unchanged in the fold step
   -- (all oracle indices map via Sum.inl in the embedding)
@@ -623,26 +611,6 @@ lemma snoc_oracle_eq_mkVerifierOStmtOut_commitStep
       simp only [h_j_eq]
       rw [toOutCodewordsCount_mul_ϑ_eq_i_succ ℓ ϑ i hCR]
     rw [h_idx_eq]
-
-omit [CharP L 2] [SampleableType L] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 [NeZero 𝓡] in
-/-- The first oracle is preserved when snocing a new oracle.
-
-Since `getFirstOracle` extracts index 0, and `snoc_oracle` at index 0 always falls into
-the "old oracle" branch (0 < toOutCodewordsCount), the first oracle is unchanged.
--/
-lemma getFirstOracle_snoc_oracle
-    (i : Fin ℓ) {destIdx : Fin r} (h_destIdx : destIdx = ⟨i.val + 1, by omega⟩)
-    (oStmtIn : ∀ j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc),
-      OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)
-    (newOracleFn : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (domainIdx := destIdx)) :
-    getFirstOracle 𝔽q β (snoc_oracle 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-      h_destIdx oStmtIn newOracleFn) = getFirstOracle 𝔽q β oStmtIn := by
-  unfold getFirstOracle snoc_oracle
-  have h_lt : 0 < toOutCodewordsCount ℓ ϑ i.castSucc := by
-    have h := (instNeZeroNatToOutCodewordsCount ℓ ϑ i.castSucc).out
-    omega
-  simp only [Fin.mk_zero', h_lt, ↓reduceDIte]
-  rfl
 
 /-- Oracle folding consistency is preserved when adding a new oracle in a commit step.
 

@@ -992,6 +992,25 @@ def getFirstOracle {i : Fin (ℓ + 1)}
   simp only [OracleStatement, zero_mul, Fin.mk_zero'] at rawf₀
   exact rawf₀
 
+omit [CharP L 2] [DecidableEq 𝔽q] hF₂ h_β₀_eq_1 [NeZero 𝓡] in
+/-- The first oracle is preserved when appending a new oracle.
+
+Since `getFirstOracle` extracts index 0, and `snoc_oracle` at index 0 always falls into
+the old-oracle branch, the first oracle is unchanged. -/
+lemma getFirstOracle_snoc_oracle
+    (i : Fin ℓ) {destIdx : Fin r} (h_destIdx : destIdx = ⟨i.val + 1, by omega⟩)
+    (oStmtIn : ∀ j : Fin (toOutCodewordsCount ℓ ϑ i.castSucc),
+      OracleStatement 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ i.castSucc j)
+    (newOracleFn : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx) :
+    getFirstOracle 𝔽q β (snoc_oracle 𝔽q β (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      h_destIdx oStmtIn newOracleFn) = getFirstOracle 𝔽q β oStmtIn := by
+  unfold getFirstOracle snoc_oracle
+  have h_lt : 0 < toOutCodewordsCount ℓ ϑ i.castSucc := by
+    have h := (instNeZeroNatToOutCodewordsCount ℓ ϑ i.castSucc).out
+    omega
+  simp only [Fin.mk_zero', h_lt, ↓reduceDIte]
+  rfl
+
 /-- Extract the last (most recently committed) oracle `f^(getLastOracleDomainIndex)` from the
 oracle statements at frontier index `oracleFrontierIdx`, reindexed to the requested `destIdx`. -/
 def getLastOracle {oracleFrontierIdx : Fin (ℓ + 1)} {destIdx : Fin r}

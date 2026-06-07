@@ -862,8 +862,79 @@ theorem fri_query_soundness_of_parts
       (h_agreement := h_agreement) (m_ge_3 := m_ge_3) :=
   parts.pieces_imply_claim h_query h_lens h_ca
 
+/-- Instantiate the Claim 8.2 frontier with the proved query-round acceptance proposition.
+
+This constructor only fills the query-round field with `queryRoundAcceptanceBound G δ queries`.
+The batching/oracle-lens reduction and the correlated-agreement bridge remain explicit frontier
+fields, and `pieces_imply_claim` records how those pieces would imply the faithful
+`fri_query_soundness` residual. -/
+def FriQuerySoundnessParts.of_queryRoundAcceptanceBound
+    {t : ℕ}
+  {α : ℝ≥0}
+  (f : Fin t.succ → (ω.subdomain 0 → 𝔽))
+  (h_agreement :
+    correlated_agreement_density
+      (Fₛ f)
+      (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
+    ≤ α)
+  {m : ℕ}
+  (m_ge_3 : m ≥ 3)
+  {ι : Type} [Fintype ι] [DecidableEq ι]
+  (G : Finset ι) (δ : ℝ≥0) (queries : ℕ)
+  (lensReduction agreementBridge : Prop)
+  (pieces_imply_claim :
+    queryRoundAcceptanceBound G δ queries →
+    lensReduction →
+    agreementBridge →
+    fri_query_soundness (n := n) (ω := ω) (f := f)
+      (h_agreement := h_agreement) (m_ge_3 := m_ge_3)) :
+    FriQuerySoundnessParts (n := n) (ω := ω) (f := f)
+      (h_agreement := h_agreement) (m_ge_3 := m_ge_3) where
+  query_round_acceptance_bound := queryRoundAcceptanceBound G δ queries
+  batching_oracle_lens_reduction := lensReduction
+  correlated_agreement_to_jointAgreement := agreementBridge
+  pieces_imply_claim := pieces_imply_claim
+
+/-- Reassemble Claim 8.2 after discharging the query-round frontier with
+`queryRoundAcceptanceBound_holds`.
+
+The remaining hypotheses are exactly the two still-open frontier fields: the batching/oracle-lens
+reduction and the correlated-agreement-to-joint-agreement bridge. -/
+theorem fri_query_soundness_of_queryRoundAcceptanceBound
+    {t : ℕ}
+  {α : ℝ≥0}
+  (f : Fin t.succ → (ω.subdomain 0 → 𝔽))
+  (h_agreement :
+    correlated_agreement_density
+      (Fₛ f)
+      (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
+    ≤ α)
+  {m : ℕ}
+  (m_ge_3 : m ≥ 3)
+  {ι : Type} [Fintype ι] [DecidableEq ι]
+  (G : Finset ι) (δ : ℝ≥0) (queries : ℕ)
+  {lensReduction agreementBridge : Prop}
+  (pieces_imply_claim :
+    queryRoundAcceptanceBound G δ queries →
+    lensReduction →
+    agreementBridge →
+    fri_query_soundness (n := n) (ω := ω) (f := f)
+      (h_agreement := h_agreement) (m_ge_3 := m_ge_3))
+  (h_lens : lensReduction)
+  (h_agreementBridge : agreementBridge) :
+    fri_query_soundness (n := n) (ω := ω) (f := f)
+      (h_agreement := h_agreement) (m_ge_3 := m_ge_3) := by
+  let parts :=
+    FriQuerySoundnessParts.of_queryRoundAcceptanceBound
+      (n := n) (ω := ω) (f := f) (h_agreement := h_agreement)
+      (m_ge_3 := m_ge_3) G δ queries lensReduction agreementBridge pieces_imply_claim
+  exact fri_query_soundness_of_parts (n := n) (ω := ω) f h_agreement m_ge_3 parts
+    (queryRoundAcceptanceBound_holds G δ queries) h_lens h_agreementBridge
+
 #print axioms Fri.FriQuerySoundnessParts
 #print axioms Fri.fri_query_soundness_of_parts
+#print axioms Fri.FriQuerySoundnessParts.of_queryRoundAcceptanceBound
+#print axioms Fri.fri_query_soundness_of_queryRoundAcceptanceBound
 
 /-
 The old finite-range instance diagnostic scratch block has been removed.  The remaining
@@ -953,6 +1024,8 @@ end Fri
 #print axioms Fri.fri_query_soundness
 #print axioms Fri.FriQuerySoundnessParts
 #print axioms Fri.fri_query_soundness_of_parts
+#print axioms Fri.FriQuerySoundnessParts.of_queryRoundAcceptanceBound
+#print axioms Fri.fri_query_soundness_of_queryRoundAcceptanceBound
 #print axioms Fri.fri_soundness
 #print axioms Fri.FriSoundnessParts
 #print axioms Fri.fri_soundness_of_parts

@@ -88,6 +88,27 @@ theorem whirVectorSpec_card_messageIdx (M : ℕ) :
     Fintype.card (((whirVectorSpec M).toProtocolSpec F).MessageIdx) = 0 := by
   exact Fintype.card_eq_zero_iff.mpr (whirVectorSpec_messageIdx_isEmpty (F := F) M)
 
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- The converted protocol spec has the same `2 * M + 2` verifier-challenge indices. -/
+theorem whirVectorSpec_toProtocolSpec_card_challengeIdx (M : ℕ) :
+    Fintype.card (((whirVectorSpec M).toProtocolSpec F).ChallengeIdx) = 2 * M + 2 := by
+  classical
+  change Fintype.card {i : Fin (2 * M + 2) // Direction.V_to_P = Direction.V_to_P} =
+    2 * M + 2
+  simp
+
+/-- Every verifier-challenge index has length one in the WHIR scratch vector spec. -/
+theorem whirVectorSpec_challengeLength (M : ℕ) (i : (whirVectorSpec M).ChallengeIdx) :
+    (whirVectorSpec M).challengeLength i = 1 := by
+  rfl
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- Every verifier challenge in the converted WHIR skeleton is a single field element. -/
+theorem whirVectorSpec_challenge_eq_vector_one (M : ℕ)
+    (i : ((whirVectorSpec M).toProtocolSpec F).ChallengeIdx) :
+    ((whirVectorSpec M).toProtocolSpec F).Challenge i = Vector F 1 := by
+  simp [ProtocolSpec.Challenge]
+
 /-- The total challenge payload length of the scratch WHIR vector spec is `2 * M + 2`. -/
 theorem whirVectorSpec_totalChallengeLength (M : ℕ) :
     (whirVectorSpec M).totalChallengeLength = 2 * M + 2 := by
@@ -109,6 +130,9 @@ instance (M : ℕ) :
 #print axioms whirVectorSpec_card_challengeIdx
 #print axioms whirVectorSpec_messageIdx_isEmpty
 #print axioms whirVectorSpec_card_messageIdx
+#print axioms whirVectorSpec_toProtocolSpec_card_challengeIdx
+#print axioms whirVectorSpec_challengeLength
+#print axioms whirVectorSpec_challenge_eq_vector_one
 #print axioms whirVectorSpec_totalChallengeLength
 #print axioms whirVectorSpec_totalMessageLength
 

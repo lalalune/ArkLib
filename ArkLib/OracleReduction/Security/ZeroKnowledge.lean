@@ -142,6 +142,50 @@ theorem perfectHVZK.statisticalHVZK
   rw [hzero]
   positivity
 
+/-- **Perfect HVZK is antitone in the relation.** A simulator that matches the honest transcript
+distribution on every pair of a relation `rel` also matches it on every pair of a sub-relation
+`rel' ⊆ rel`. (One proves ZK on the full language relation and restricts as needed.) -/
+theorem perfectHVZK.mono_relation
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel rel' : Set (StmtIn × WitIn)}
+    {reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec}
+    {sim : TranscriptSimulator oSpec StmtIn pSpec}
+    (h : perfectHVZK init impl rel reduction sim) (hsub : rel' ⊆ rel) :
+    perfectHVZK init impl rel' reduction sim :=
+  fun stmtIn witIn hMem => h stmtIn witIn (hsub hMem)
+
+/-- **`isHVZK` is antitone in the relation.** HVZK for `rel` implies HVZK for any `rel' ⊆ rel`
+(the same simulator works). -/
+theorem isHVZK.mono_relation
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel rel' : Set (StmtIn × WitIn)}
+    {reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec}
+    (h : isHVZK init impl rel reduction) (hsub : rel' ⊆ rel) :
+    isHVZK init impl rel' reduction :=
+  let ⟨sim, hsim⟩ := h
+  ⟨sim, hsim.mono_relation hsub⟩
+
+/-- **Statistical HVZK is antitone in the relation.** -/
+theorem statisticalHVZK.mono_relation
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel rel' : Set (StmtIn × WitIn)}
+    {reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec}
+    {sim : TranscriptSimulator oSpec StmtIn pSpec} {ε : ℝ≥0}
+    (h : statisticalHVZK init impl rel reduction sim ε) (hsub : rel' ⊆ rel) :
+    statisticalHVZK init impl rel' reduction sim ε :=
+  fun stmtIn witIn hMem => h stmtIn witIn (hsub hMem)
+
+/-- **Statistical HVZK is monotone in the error.** A simulator within total-variation distance
+`ε₁` is also within any larger error `ε₂ ≥ ε₁`. -/
+theorem statisticalHVZK.mono_error
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set (StmtIn × WitIn)}
+    {reduction : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec}
+    {sim : TranscriptSimulator oSpec StmtIn pSpec} {ε₁ ε₂ : ℝ≥0}
+    (h : statisticalHVZK init impl rel reduction sim ε₁) (hle : ε₁ ≤ ε₂) :
+    statisticalHVZK init impl rel reduction sim ε₂ :=
+  fun stmtIn witIn hMem => le_trans (h stmtIn witIn hMem) (by exact_mod_cast hle)
+
 end BasicLemmas
 
 section Identity
@@ -200,5 +244,9 @@ end Identity
 #print axioms honestTranscriptDist_id_evalDist
 #print axioms id_perfectHVZK
 #print axioms id_isHVZK
+#print axioms perfectHVZK.mono_relation
+#print axioms isHVZK.mono_relation
+#print axioms statisticalHVZK.mono_relation
+#print axioms statisticalHVZK.mono_error
 
 end Reduction

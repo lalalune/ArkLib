@@ -308,3 +308,27 @@ theorem prizeResolution_ld (domain : ι ↪ F) {m : ℕ} (hm : 0 < m)
 end ListSide
 
 end ProximityGap
+
+/-! ## Standing apex audit (Issue #121 recommendation — build-confirmed 2026-06-07)
+
+`#print axioms` regression guard for the apex prize theorems, plus the permanent non-vacuity
+record. Verified via `lake env lean` against the built oleans: each apex theorem depends on exactly
+`[propext, Classical.choice, Quot.sound]` — no `sorryAx`, no `native_decide` (`Lean.ofReduceBool`
+is absent, so the Mersenne-521 Lucas–Lehmer primality is genuinely in-kernel `decide`), no custom
+axiom.
+
+**NON-VACUITY RECORD (the F4/F6 distinction — do not misread as a genuine-threshold result):**
+
+* `prizeResolution_ld` (list side) is a *negative* deliverable —
+  `¬ listDecodingPrize ∧ … ∧ IsEmpty (GrandListResolution …)`. A conjunction of negations and an
+  `IsEmpty` cannot be vacuously inflated. Genuinely non-vacuous.
+
+* `prizeResolution_mca_M521` (MCA side) is honest and kernel-clean, but the `GrandMCAResolution`
+  it produces sets `δStar := 1`, so the structure's `maximal` clause
+  (`∀ δ, δStar < δ → δ ≤ 1 → ε_mca > ε*`) is **vacuously true** (`1 < δ ≤ 1` is empty). The only
+  genuine content is the radius-one bound `ε_mca(C, 1) = C(n, k+1)/|F| ≤ ε*`. This resolves the
+  *formal/collapsed* Grand-MCA encoding (the documented F6 collapse, `GrandChallengeCollapse.lean`),
+  NOT the genuine ABF26 MCA decoding threshold (the actual prize question). -/
+#print axioms ProximityGap.prizeResolution_mca_M521
+#print axioms ProximityGap.prizeResolution_ld
+#print axioms ProximityGap.mersenne521_prime

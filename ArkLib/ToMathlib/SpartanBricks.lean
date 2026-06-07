@@ -378,6 +378,15 @@ def composedRbrKnowledgeSoundnessResidual
   Rc.verifier.rbrKnowledgeSoundness init impl
     (spartanRelIn R pp) (finalCheckRelOut R pp) rbrKnowledgeError
 
+/-! ### Axiom audit for the target-carrying final-check frontier -/
+
+#print axioms FinalClaimStatement
+#print axioms finalMatrixEvalFromOracles
+#print axioms zEvalFromFinalOracles
+#print axioms finalExpectedClaimFromOracles
+#print axioms finalClaimPredicate
+#print axioms finalCheckWithClaim
+
 end Bricks
 
 end

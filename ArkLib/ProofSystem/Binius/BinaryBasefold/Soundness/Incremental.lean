@@ -6,6 +6,7 @@ Authors: Chung Thai Nguyen, Quang Dao
 
 import ArkLib.Data.CodingTheory.ProximityGap.DG25
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Compliance
+import ArkLib.ProofSystem.Binius.BinaryBasefold.Reconstruct.IncrementalHelpers
 import ArkLib.ProofSystem.Binius.BinaryBasefold.Soundness.Lift
 import CompPoly.Fields.Binary.Tower.Prelude
 
@@ -100,7 +101,15 @@ lemma affineProximityGap_RS_interleaved_contrapositive
   let α := Embedding.subtype fun (x : L) ↦ x ∈ S_dest
   let C_dest := BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx
   let RS_dest := ReedSolomon.code α (2^(ℓ - destIdx.val))
-  letI : Nontrivial RS_dest := by infer_instance
+  haveI : NeZero (2 ^ (ℓ - destIdx.val)) := ⟨by positivity⟩
+  haveI : Nonempty S_dest := ⟨0⟩
+  letI : Nontrivial RS_dest := by
+    refine ⟨⟨ReedSolomon.constantCode (1 : L) S_dest, ReedSolomon.constantCode_mem_code⟩,
+      ⟨0, (RS_dest).zero_mem⟩, ?_⟩
+    intro h
+    have hc : ReedSolomon.constantCode (1 : L) S_dest = 0 := congrArg Subtype.val h
+    rw [ReedSolomon.constantCode_eq_ofNat_zero_iff] at hc
+    exact one_ne_zero hc
   let h_RS_affine := ReedSolomon_ProximityGapAffineLines_UniqueDecoding
     (A := L) (ι := S_dest) (α := α) (k := 2^(ℓ - destIdx.val))
     (hk := by
@@ -747,6 +756,47 @@ lemma multilinearCombine_recursive_form_first {ϑ : ℕ}
 
 end EvenOddSplit
 
+/-- **Residual: `iterated_fold` is `multilinearCombine` of its preTensorCombine stack.**
+
+For any challenge vector `r_chal`, the `steps`-fold of `f_i` equals the multilinear combination
+(weights `multilinearWeight r_chal`) of the rows of `preTensorCombine_WordStack`, whose `rowIdx`-th
+row is `iterated_fold f_i (bitsOfIndex rowIdx)` — i.e. the multilinear tensor decomposition of
+`iterated_fold` over the binary challenge basis.
+
+The natural proof peels the first fold step (`iterated_fold_first`) and factors the first challenge
+out of `multilinearCombine` (`multilinearCombine_recursive_form_first`); the residual obligation is
+the *affine interpolation of `fold` in its challenge* that identifies the even/odd split of
+`preTensorCombine f` with `preTensorCombine (fold f (r 0))`. The matrix-form bridge that would close
+it is a port-debt gap shared with `Soundness/Proposition4_21` (its `h_fold_eq_combine` unfolds
+through the now-`iterated_fold`-delegating `localized_fold_matrix_form`, whose raw matrix evaluator
+`single_point_localized_fold_matrix_form` no longer reduces — see the Prelude note on the
+`challengeTensorProduct`/`challengeTensorExpansion` bit-reversal). Exposed here as an explicit
+typeclass hypothesis in the convention of `FoldPreservesBBFCodeMembershipResidual`. -/
+class PreTensorCombineMultilinearResidual : Prop where
+  holds : ∀ (i : Fin ℓ) (steps : ℕ) {destIdx : Fin r}
+    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
+    (r_chal : Fin steps → L),
+    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩ steps
+      (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f_i) (r_challenges := r_chal) =
+    multilinearCombine (F := L)
+      (preTensorCombine_WordStack 𝔽q β i steps h_destIdx h_destIdx_le f_i) r_chal
+
+variable [PreTensorCombineMultilinearResidual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
+
+/-- **`iterated_fold` is `multilinearCombine` of its preTensorCombine stack.**
+Reduction to the explicit `PreTensorCombineMultilinearResidual` hypothesis. -/
+lemma iterated_fold_eq_multilinearCombine_preTensorCombine
+    (i : Fin ℓ) (steps : ℕ) {destIdx : Fin r}
+    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
+    (r_chal : Fin steps → L) :
+    iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩ steps
+      (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f_i) (r_challenges := r_chal) =
+    multilinearCombine (F := L)
+      (preTensorCombine_WordStack 𝔽q β i steps h_destIdx h_destIdx_le f_i) r_chal :=
+  PreTensorCombineMultilinearResidual.holds i steps h_destIdx h_destIdx_le f_i r_chal
+
 /-- Even/odd split preserves non-closeness (bridge lemma for Binius first-step fold flow).
 If `U` is not close to `C^⋈(Fin (2^(s+1)))`, then the even/odd split pair is not
 jointly close to `C^⋈(Fin (2^s))`. -/
@@ -902,20 +952,21 @@ lemma fold_preTensorCombine_eq_affineLineEvaluation_split
       (iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩
         (steps := steps + 1) (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le)
         f_i r_chal) = multilinearCombine U r_chal := by
-    intro r_chal; ext y'
-    rw [iterated_fold_eq_matrix_form]
-    unfold localized_fold_matrix_form single_point_localized_fold_matrix_form multilinearCombine
-    simp only [dotProduct, smul_eq_mul]
-    exact Finset.sum_congr rfl fun _ _ => rfl
+    intro r_chal
+    exact iterated_fold_eq_multilinearCombine_preTensorCombine 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps + 1)
+      (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f_i := f_i) (r_chal := r_chal)
   have h_fold_eq_V : ∀ r_chal : Fin steps → L,
       (iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) midIdx
         (steps := steps) (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le)
         fold_1_f r_chal) = multilinearCombine V r_chal := by
-    intro r_chal; ext y'
-    rw [iterated_fold_eq_matrix_form]
-    unfold localized_fold_matrix_form single_point_localized_fold_matrix_form multilinearCombine
-    simp only [dotProduct, smul_eq_mul]
-    exact Finset.sum_congr rfl fun _ _ => rfl
+    intro r_chal
+    -- `midIdx_fin_ℓ` is the `Fin ℓ` lift of `midIdx`; the two folds coincide up to that lift.
+    have h := iterated_fold_eq_multilinearCombine_preTensorCombine 𝔽q β
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := midIdx_fin_ℓ) (steps := steps)
+      (destIdx := destIdx) (h_destIdx := by simp only [midIdx_fin_ℓ]; omega)
+      (h_destIdx_le := h_destIdx_le) (f_i := fold_1_f) (r_chal := r_chal)
+    simpa only [V, midIdx_fin_ℓ] using h
   have h_indicator : ∀ (W : WordStack L (Fin (2 ^ steps))
       (sDomain 𝔽q β h_ℓ_add_R_rate destIdx)) (j' : Fin (2 ^ steps))
       (y' : sDomain 𝔽q β h_ℓ_add_R_rate destIdx),
@@ -1022,29 +1073,32 @@ lemma fold_eq_multilinearCombine_preTensorCombine_step1
       (destIdx := destIdx) (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le) f_i r_new
     = multilinearCombine (F := L) U (fun (_ : Fin 1) => r_new) := by
   intro U
-  ext y
-  rw [fold_eval_single_matrix_mul_form 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
-    (i := ⟨i, by omega⟩) (destIdx := destIdx) (h_destIdx := by omega)
-    (h_destIdx_le := h_destIdx_le) (f := f_i) (r_challenge := r_new)]
-  unfold fold_single_matrix_mul_form multilinearCombine
-  dsimp [U]
-  have h_blk :
-      blockDiagMatrix (L := L) (r := r) (ℓ := ℓ) (𝓡 := 𝓡) (n := 0)
-        (Mz₀ := (1 : Matrix (Fin (2 ^ 0)) (Fin (2 ^ 0)) L))
-        (Mz₁ := (1 : Matrix (Fin (2 ^ 0)) (Fin (2 ^ 0)) L))
-      = (1 : Matrix (Fin (2 ^ 1)) (Fin (2 ^ 1)) L) := by
-    ext a b <;> fin_cases a <;> fin_cases b <;>
-      simp [blockDiagMatrix, reindexSquareMatrix, Matrix.from4Blocks]
-  simp [preTensorCombine_WordStack, foldMatrix, challengeTensorExpansion, h_blk]
-  have h_w0 :
-      vecHead (multilinearWeight (F := L) (r := fun _ : Fin 1 => r_new)) =
-        multilinearWeight (F := L) (r := fun _ : Fin 1 => r_new) 0 := by
+  -- The single fold is the `1`-step iterated fold with the constant challenge `r_new`.
+  have h_fold_eq_iter :
+      fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i, by omega⟩)
+        (destIdx := destIdx) (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le) f_i r_new
+      = iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩ 1
+          (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f_i)
+          (r_challenges := fun (_ : Fin 1) => r_new) := by
+    rw [iterated_fold_last 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i, by omega⟩) (steps := 0)
+      (midIdx := ⟨i, by omega⟩) (destIdx := destIdx)
+      (h_midIdx := by omega) (h_destIdx := by omega) (h_destIdx_le := h_destIdx_le)]
+    -- inner `iterated_fold 0` is `f_i`, and the last challenge is `r_new`.
+    funext y
+    rw [show (iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩ 0
+        (destIdx := ⟨i, by omega⟩) (by omega) (by omega) f_i
+        (Fin.init (fun (_ : Fin 1) => r_new))) = f_i from by
+      funext z
+      rw [iterated_fold_zero_steps 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := ⟨i, by omega⟩)
+        (h_destIdx := rfl) (h_destIdx_le := by omega)]
+      rfl]
+    simp only [Fin.last_zero]
     rfl
-  have h_w1 :
-      vecHead (vecTail (multilinearWeight (F := L) (r := fun _ : Fin 1 => r_new))) =
-        multilinearWeight (F := L) (r := fun _ : Fin 1 => r_new) 1 := by
-    rfl
-  rw [h_w0, h_w1]
+  rw [h_fold_eq_iter]
+  exact congrFun (iterated_fold_eq_multilinearCombine_preTensorCombine 𝔽q β
+    (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := 1)
+    (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f_i := f_i)
+    (r_chal := fun (_ : Fin 1) => r_new)) _
 
 /-- **Connecting fiberwiseClose of a folded function to affine line evaluation proximity.**
 Given `f_i : S^i → L` with preTensorCombine `U := preTensorCombine(i, s+1, destIdx, f_i)` of
@@ -1214,6 +1268,7 @@ lemma prop_4_21_2_case_2_fiberwise_far_incremental
   let fold_k_f := iterated_fold 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
     (i := block_start_idx) (steps := k) (h_destIdx := h_midIdx_i) (h_destIdx_le := by omega)
     (f := f_block_start) (r_challenges := r_prefix)
+  haveI : NeZero (ϑ - k) := ⟨by omega⟩
   let Ek_close := fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
     (i := midIdx_i) (steps := ϑ - k) (h_destIdx := by omega)
     (h_destIdx_le := h_destIdx_le) (f := fold_k_f)
@@ -1221,7 +1276,7 @@ lemma prop_4_21_2_case_2_fiberwise_far_incremental
   · apply le_trans (Pr_le_Pr_of_implies ($ᵖ L) _ _ (fun r_new h => h.1))
     have : Pr_{ let r_new ← $ᵖ L }[¬Ek_close] = 0 := by
       rw [prob_uniform_eq_card_filter_div_card]
-      simp only [not_not.mpr h_Ek_close, filter_False, card_empty, CharP.cast_eq_zero,
+      simp only [not_not.mpr h_Ek_close, Finset.filter_false, card_empty, CharP.cast_eq_zero,
         ENNReal.coe_zero, ENNReal.coe_natCast, ENNReal.zero_div]
     rw [this]; exact zero_le _
   · apply le_trans (Pr_le_Pr_of_implies ($ᵖ L) _ _ (fun r_new h => h.2))

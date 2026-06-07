@@ -238,7 +238,7 @@ theorem cz25DimensionCount_of_spanBound
     (h : IsSubspaceDesign s τ C) (η : ℝ) (hη : 0 < η)
     (hSB : CZ25SpanBound s τ C h η hη) :
     CZ25DimensionCount s τ C h η hη := by
-  intro f
+  intro f _hδ
   obtain ⟨m, hℓ, hm⟩ := hSB f
   -- `|L| ≤ m + 1 ≤ (1 - τ(r₀))/η`.
   refine le_trans hℓ ?_
@@ -326,6 +326,20 @@ def CZ25SpanBound'
           (1 - τ (Nat.floor (1 / η)) - η)).ncard : ℝ) ≤ (m : ℝ) + 1 ∧
       (m : ℝ) * η ≤ 1 - τ (Nat.floor (1 / η)) - η
 
+/-- **The guarded arithmetic collapse: `CZ25SpanBound' ⟹ CZ25DimensionCount`.** -/
+theorem cz25DimensionCount_of_spanBound'
+    (s : ℕ) (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F))
+    (h : IsSubspaceDesign s τ C) (η : ℝ) (hη : 0 < η)
+    (hSB : CZ25SpanBound' s τ C h η hη) :
+    CZ25DimensionCount s τ C h η hη := by
+  intro f hδ
+  obtain ⟨m, hℓ, hm⟩ := hSB f hδ
+  -- `|L| ≤ m + 1 ≤ (1 - τ(r₀))/η`.
+  refine le_trans hℓ ?_
+  rw [le_div_iff₀ hη]
+  -- `(m + 1) * η = m·η + η ≤ (1 - τ(r₀) - η) + η = 1 - τ(r₀)`.
+  nlinarith [hm]
+
 /-- **The corrected residual is faithful: `CZ25DimensionCount ⟹ CZ25SpanBound'`.** On the
 non-degenerate regime `δ ≥ 0`, the only valid affine-span witness is the tautological
 `m := |L| - 1` (a recentred *span* of dimension `m` may carry up to `q^m` list elements, so
@@ -357,7 +371,7 @@ theorem cz25SpanBound'_of_dimensionCount
     · -- Nonempty: `((ℓ - 1 : ℕ) : ℝ) = (ℓ : ℝ) - 1`, and use `CZ25DimensionCount`.
       have hcast : ((ℓ - 1 : ℕ) : ℝ) = (ℓ : ℝ) - 1 := by
         rw [Nat.cast_sub hpos]; simp
-      have hdc : (ℓ : ℝ) ≤ (1 - τ (Nat.floor (1 / η))) / η := hDC f
+      have hdc : (ℓ : ℝ) ≤ (1 - τ (Nat.floor (1 / η))) / η := hDC f _hδ
       rw [le_div_iff₀ hη] at hdc
       rw [hcast]
       -- `(ℓ - 1)·η = ℓ·η - η ≤ (1 - τ(r₀)) - η = δ`.
@@ -400,4 +414,3 @@ theorem subspaceDesign_list_decoding_cz25_of_spanBound'
 end AgreementResidual
 
 end CodingTheory
-
