@@ -848,6 +848,89 @@ def composedRbrKnowledgeSoundnessWithClaimResidual
   Rc.verifier.rbrKnowledgeSoundness init impl
     (spartanRelIn R pp) (finalCheckWithClaimRelOut R pp) rbrKnowledgeError
 
+/-- Stronger target-carrying RBR knowledge-soundness residual where extracted terminal witnesses
+land in the semantic final-check value relation. -/
+def composedRbrKnowledgeSoundnessWithClaimValueRelResidual
+    {N : ℕ} {pSpecC : ProtocolSpec N}
+    [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
+    (Rc : OracleReduction oSpec
+      (Statement R pp) (OracleStatement R pp) (Witness R pp)
+      (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit pSpecC)
+    {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (rbrKnowledgeError : pSpecC.ChallengeIdx → ℝ≥0) : Prop :=
+  Rc.verifier.rbrKnowledgeSoundness init impl
+    (spartanRelIn R pp) (finalCheckWithClaimValueRelIn R pp) rbrKnowledgeError
+
+/-- Target-carrying RBR knowledge-soundness residual whose terminal output relation is stated
+directly as equality with the second-sum-check endpoint. -/
+def composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual
+    {N : ℕ} {pSpecC : ProtocolSpec N}
+    [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
+    (Rc : OracleReduction oSpec
+      (Statement R pp) (OracleStatement R pp) (Witness R pp)
+      (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit pSpecC)
+    {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (rbrKnowledgeError : pSpecC.ChallengeIdx → ℝ≥0) : Prop :=
+  Rc.verifier.rbrKnowledgeSoundness init impl
+    (spartanRelIn R pp) (finalCheckWithClaimSecondSumcheckEvalRelOut R pp) rbrKnowledgeError
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- The second-sum-check endpoint RBR residual and the semantic value-relation RBR residual are
+the same target under the terminal endpoint bridge. -/
+theorem composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_iff_valueRel
+    {N : ℕ} {pSpecC : ProtocolSpec N}
+    [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
+    (Rc : OracleReduction oSpec
+      (Statement R pp) (OracleStatement R pp) (Witness R pp)
+      (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit pSpecC)
+    {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (rbrKnowledgeError : pSpecC.ChallengeIdx → ℝ≥0) :
+    composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual R pp oSpec Rc init impl
+        rbrKnowledgeError ↔
+      composedRbrKnowledgeSoundnessWithClaimValueRelResidual R pp oSpec Rc init impl
+        rbrKnowledgeError := by
+  unfold composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual
+  unfold composedRbrKnowledgeSoundnessWithClaimValueRelResidual
+  rw [finalCheckWithClaimSecondSumcheckEvalRelOut_eq_valueRelIn]
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- RBR knowledge soundness into the second-sum-check endpoint relation gives RBR knowledge
+soundness into the semantic value relation. -/
+theorem composedRbrKnowledgeSoundnessWithClaimValueRelResidual_of_secondSumcheckEval
+    {N : ℕ} {pSpecC : ProtocolSpec N}
+    [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
+    (Rc : OracleReduction oSpec
+      (Statement R pp) (OracleStatement R pp) (Witness R pp)
+      (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit pSpecC)
+    {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (rbrKnowledgeError : pSpecC.ChallengeIdx → ℝ≥0)
+    (hEndpoint :
+      composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual R pp oSpec Rc init impl
+        rbrKnowledgeError) :
+    composedRbrKnowledgeSoundnessWithClaimValueRelResidual R pp oSpec Rc init impl
+      rbrKnowledgeError :=
+  (composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_iff_valueRel
+    R pp oSpec Rc init impl rbrKnowledgeError).1 hEndpoint
+
+omit [IsDomain R] [Fintype R] [SampleableType R] in
+/-- RBR knowledge soundness into the semantic value relation gives RBR knowledge soundness into
+the direct second-sum-check endpoint relation. -/
+theorem composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_of_valueRel
+    {N : ℕ} {pSpecC : ProtocolSpec N}
+    [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
+    (Rc : OracleReduction oSpec
+      (Statement R pp) (OracleStatement R pp) (Witness R pp)
+      (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit pSpecC)
+    {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (rbrKnowledgeError : pSpecC.ChallengeIdx → ℝ≥0)
+    (hValue :
+      composedRbrKnowledgeSoundnessWithClaimValueRelResidual R pp oSpec Rc init impl
+        rbrKnowledgeError) :
+    composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual R pp oSpec Rc init impl
+      rbrKnowledgeError :=
+  (composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_iff_valueRel
+    R pp oSpec Rc init impl rbrKnowledgeError).2 hValue
+
 /-! ### Axiom audit for the target-carrying final-check frontier and encoding residual -/
 
 #print axioms evalClaimValue_eq_scaled_sum
@@ -904,6 +987,11 @@ def composedRbrKnowledgeSoundnessWithClaimResidual
 #print axioms composedCompletenessWithClaimResidual_of_valueRel
 #print axioms composedCompletenessWithClaimResidual_of_secondSumcheckEval
 #print axioms composedRbrKnowledgeSoundnessWithClaimResidual
+#print axioms composedRbrKnowledgeSoundnessWithClaimValueRelResidual
+#print axioms composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual
+#print axioms composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_iff_valueRel
+#print axioms composedRbrKnowledgeSoundnessWithClaimValueRelResidual_of_secondSumcheckEval
+#print axioms composedRbrKnowledgeSoundnessWithClaimSecondSumcheckEvalResidual_of_valueRel
 
 end Bricks
 

@@ -102,6 +102,10 @@ Current source also exposes the #14 split frontier:
   `Fri.friSoundnessSequentialComposition_of_append` supplies it from the append
   theorem whenever the per-phase soundness inputs and generic append residual
   are available.
+- `Fri.friSoundnessTotalErrorAccounting` names the concrete `εC + α^l`
+  arithmetic budget in the Claim 8.3 threshold, and
+  `Fri.friSoundnessTotalErrorAccounting_of_phase_bounds` supplies it from
+  separate batching and FRI-tail error bounds.
 - `fri_soundness_of_parts` reassembles the faithful `fri_soundness` residual
   from those three named ingredients.
 
@@ -109,7 +113,8 @@ The query-round acceptance field now has a proved combinatorial core and two
 adapters into the split frontier. This is still not a proof of Claims 8.2 or
 8.3: the batching/oracle-lens reduction, the coding-theoretic bridge into
 `Code.jointAgreement`, the generic append residual / virtual-oracle soundness
-preservation, and the `totalError` accounting step remain open proof work.
+  preservation, and the per-phase error bounds feeding the `totalError`
+  accounting step remain open proof work.
 
 ### STIR proximity gap
 

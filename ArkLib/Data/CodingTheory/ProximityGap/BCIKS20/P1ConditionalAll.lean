@@ -162,6 +162,25 @@ theorem βHenselStructuredWeightInvariant_all_of_normalized_divWeight_cases'
   AlphaWeight.βHenselStructuredWeightInvariant_all_of_normalized_divWeight_cases'
     H x₀ R hHyp hH hDH hDRx0 hdR2 h0 hsucc
 
+/-- All-prefix structured invariant from normalized divisibility targets, matching the single-`t`
+unlocked normalized P1 front door. -/
+theorem βHenselStructuredWeightInvariant_all_unlocked_of_normalized_divWeight_cases
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (h0 : ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1)
+    (hsucc : ∀ t : ℕ, ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp (t + 1)
+        = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1) :
+    ∀ k, βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k :=
+  βHenselStructuredWeightInvariant_all_of_normalized_divWeight_cases'
+    H x₀ R hHyp hH hDH hDRx0 hdR2 h0 hsucc
+
 /-- Package successor-order lift identities into an all-`k` structured invariant. -/
 theorem βHenselStructuredWeightInvariant_all_of_alphaWeight_succLift
     (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
@@ -849,6 +868,29 @@ theorem βHensel_weight_bound_all_of_structured_invariant_normalized_divWeight_c
       (βHenselStructuredWeightInvariant_all_of_normalized_divWeight_cases'
         H x₀ R hHyp hH hDH hDRx0 hdR2 h0 hsucc)
 
+/-- All-`t` P1 weight bound from normalized divisibility targets, using the same front-door shape as
+the single-`t` unlocked normalized endpoint. -/
+theorem βHensel_weight_bound_all_unlocked_of_normalized_divWeight_cases
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hRgraded : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (h0 : ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1)
+    (hsucc : ∀ t : ℕ, ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp (t + 1)
+        = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1) :
+    ∀ t, weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  βHensel_weight_bound_all_of_structured_invariant_normalized_divWeight_cases'
+    H x₀ R hHyp hH hDH hdR2 hdHR hW hRgraded hDRx0 h0 hsucc
+
 /-- All-`t` P1 weight bound from successor-lift carved alpha regularity. -/
 theorem βHensel_weight_bound_all_of_structured_invariant_alphaWeight_succLift
     (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
@@ -1023,6 +1065,7 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_all_of_divWeight'
 #print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_all_of_normalized_divWeight_cases
 #print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_all_of_normalized_divWeight_cases'
+#print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_all_unlocked_of_normalized_divWeight_cases
 #print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_all_of_alphaWeight_succLift
 #print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_all_of_alphaWeight_succLift'
 #print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_all_unlocked
@@ -1056,6 +1099,7 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_of_structured_invariant_divWeight'
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_of_structured_invariant_normalized_divWeight_cases
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_of_structured_invariant_normalized_divWeight_cases'
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_unlocked_of_normalized_divWeight_cases
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_of_structured_invariant_alphaWeight_succLift
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_of_structured_invariant_alphaWeight_succLift'
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_all_of_structured_invariant_unlocked
