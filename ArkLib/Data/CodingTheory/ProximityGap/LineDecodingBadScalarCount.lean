@@ -47,10 +47,48 @@ theorem epsMCA_eq_zero_of_badScalarDoubleCover_not_mcaEvent
   epsMCA_eq_zero_of_forall_not_mcaEvent C δ fun u γ =>
     MCABadScalarDoubleCover.not_mcaEvent C δ (u 0) (u 1) γ (hcov u γ)
 
+/-- All-stack bad-scalar double-cover data gives zero bad-scalar counts for every stack. -/
+theorem forall_mcaBadCount_eq_zero_of_badScalarDoubleCover
+    (C : Set (ι → A)) (δ : ℝ≥0)
+    (hcov : ∀ (u : WordStack A (Fin 2) ι) (γ : F),
+      MCABadScalarDoubleCover (F := F) (A := A) C δ (u 0) (u 1) γ) :
+    ∀ u : WordStack A (Fin 2) ι,
+      mcaBadCount (F := F) C δ (u 0) (u 1) = 0 := by
+  intro u
+  exact mcaBadCount_eq_zero_of_badScalarDoubleCover C δ (u 0) (u 1) (hcov u)
+
+/-- Per-stack zero bad-scalar counts repack as all-stack bad-scalar double-cover data. -/
+theorem badScalarDoubleCover_of_forall_mcaBadCount_eq_zero
+    (C : Set (ι → A)) (δ : ℝ≥0)
+    (hzero : ∀ u : WordStack A (Fin 2) ι,
+      mcaBadCount (F := F) C δ (u 0) (u 1) = 0) :
+    ∀ (u : WordStack A (Fin 2) ι) (γ : F),
+      MCABadScalarDoubleCover (F := F) (A := A) C δ (u 0) (u 1) γ := by
+  intro u
+  exact badScalarDoubleCover_of_mcaBadCount_eq_zero C δ (u 0) (u 1) (hzero u)
+
+/-- All-stack bad-scalar double-cover data is exact: it is equivalent to zero bad-scalar counts
+for every stack. -/
+theorem forall_mcaBadCount_eq_zero_iff_badScalarDoubleCover
+    (C : Set (ι → A)) (δ : ℝ≥0) :
+    (∀ u : WordStack A (Fin 2) ι,
+      mcaBadCount (F := F) C δ (u 0) (u 1) = 0) ↔
+      ∀ (u : WordStack A (Fin 2) ι) (γ : F),
+        MCABadScalarDoubleCover (F := F) (A := A) C δ (u 0) (u 1) γ := by
+  constructor
+  · exact badScalarDoubleCover_of_forall_mcaBadCount_eq_zero C δ
+  · exact forall_mcaBadCount_eq_zero_of_badScalarDoubleCover C δ
+
 set_option linter.style.longLine false in
 #print axioms ProximityGap.mcaBadCount_eq_zero_of_badScalarDoubleCover_not_mcaEvent
 set_option linter.style.longLine false in
 #print axioms ProximityGap.epsMCA_eq_zero_of_badScalarDoubleCover_not_mcaEvent
+set_option linter.style.longLine false in
+#print axioms ProximityGap.forall_mcaBadCount_eq_zero_of_badScalarDoubleCover
+set_option linter.style.longLine false in
+#print axioms ProximityGap.badScalarDoubleCover_of_forall_mcaBadCount_eq_zero
+set_option linter.style.longLine false in
+#print axioms ProximityGap.forall_mcaBadCount_eq_zero_iff_badScalarDoubleCover
 
 end
 

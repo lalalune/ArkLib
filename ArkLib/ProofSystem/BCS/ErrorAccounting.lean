@@ -226,6 +226,38 @@ theorem bcs_union_bound_append {m n : ℕ} (μ : UnionBoundPr E)
     hInteraction hOpen
   simpa [bcsTotalError_append] using h
 
+/-- Left-empty batched-opening union bound. This is the probabilistic corollary matching
+`bcsTotalError_append_zero_left`: appending no left opening failures leaves the ordinary BCS
+union-bound target unchanged. -/
+theorem bcs_union_bound_append_zero_left {n : ℕ} (μ : UnionBoundPr E)
+    (badInteraction : E) (badOpen : Fin n → E)
+    (εInteraction : ℝ≥0) (εOpen : Fin n → ℝ≥0)
+    (hInteraction : μ.pr badInteraction ≤ εInteraction)
+    (hOpen : ∀ i, μ.pr (badOpen i) ≤ εOpen i) :
+    μ.pr (μ.union badInteraction
+        (μ.unionFin (Fin.append (Fin.elim0 : Fin 0 → E) badOpen)))
+      ≤ bcsTotalError εInteraction εOpen := by
+  have h := bcs_union_bound_append (m := 0) (n := n) μ badInteraction
+    (Fin.elim0 : Fin 0 → E) badOpen εInteraction (Fin.elim0 : Fin 0 → ℝ≥0) εOpen
+    hInteraction (fun i => Fin.elim0 i) hOpen
+  simpa [bcsTotalError] using h
+
+/-- Right-empty batched-opening union bound. This is the probabilistic corollary matching
+`bcsTotalError_append_zero_right`: appending no right opening failures leaves the ordinary BCS
+union-bound target unchanged. -/
+theorem bcs_union_bound_append_zero_right {m : ℕ} (μ : UnionBoundPr E)
+    (badInteraction : E) (badOpen : Fin m → E)
+    (εInteraction : ℝ≥0) (εOpen : Fin m → ℝ≥0)
+    (hInteraction : μ.pr badInteraction ≤ εInteraction)
+    (hOpen : ∀ i, μ.pr (badOpen i) ≤ εOpen i) :
+    μ.pr (μ.union badInteraction
+        (μ.unionFin (Fin.append badOpen (Fin.elim0 : Fin 0 → E))))
+      ≤ bcsTotalError εInteraction εOpen := by
+  have h := bcs_union_bound_append (m := m) (n := 0) μ badInteraction
+    badOpen (Fin.elim0 : Fin 0 → E) εInteraction εOpen (Fin.elim0 : Fin 0 → ℝ≥0)
+    hInteraction hOpen (fun i => Fin.elim0 i)
+  simpa [bcsTotalError] using h
+
 /-! ## 3. Specialization to the two-phase `append` shape
 
 The reduction-level `OracleReduction.BCSTransform` is literally
@@ -301,6 +333,8 @@ example (εInteraction : ℝ≥0) (εOpen : Fin 3 → ℝ≥0) :
 #print axioms UnionBoundPr.pr_unionFin_le
 #print axioms bcs_union_bound
 #print axioms bcs_union_bound_append
+#print axioms bcs_union_bound_append_zero_left
+#print axioms bcs_union_bound_append_zero_right
 #print axioms bcs_append_accounting
 #print axioms bcs_two_phase_total_eq
 #print axioms maxUnionBoundPr

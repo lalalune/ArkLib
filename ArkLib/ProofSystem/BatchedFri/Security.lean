@@ -18,6 +18,7 @@ import ArkLib.Data.CodingTheory.Basic.RelativeDistance
 import ArkLib.Data.CodingTheory.InterleavedCode
 import ArkLib.Data.CodingTheory.Prelims
 import ArkLib.Data.CodingTheory.ProximityGap.Basic
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.Main
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.Domain.CosetFftDomain.Defs
 import ArkLib.Data.Domain.CosetFftDomain.Subdomain
@@ -1339,6 +1340,81 @@ theorem fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndA
             (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier)
         (δ := 1 - α) (ε := ε) (u := f) h_ca h_prob)
 
+/-- Density-route Claim 8.2 affine-line front door specialized to the BCIKS20 Reed-Solomon
+affine-line correlated-agreement theorem on the Batched FRI subdomain.
+
+This is the density-route twin of the probability adapter in `QueryRoundProbability.lean`: callers
+provide the BCIKS20 affine-line theorem inputs and the affine-line probability trigger, rather than
+a pre-packaged `δ_ε_correlatedAgreementAffineLines` predicate. -/
+theorem fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndRSAffineLine
+    {α : ℝ≥0}
+    (f : Fin 2 → (ω.subdomain 0 → 𝔽))
+    (h_agreement :
+      correlated_agreement_density
+        (Fₛ f)
+        (ReedSolomon.code (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n))
+      ≤ α)
+    {m : ℕ}
+    (m_ge_3 : m ≥ 3)
+    {ι : Type} [Fintype ι] [DecidableEq ι]
+    (G : Finset ι) (δ : ℝ≥0) (queries l : ℕ)
+    (domain_size_cond : (2 ^ (∑ i, (s i : ℕ))) * d ≤ 2 ^ n)
+    (hStrictCoeff :
+      ProximityGap.StrictCoeffPolysResidual
+        (F := 𝔽) (ι := ω.subdomain 0) (k := 1) (deg := 2 ^ n)
+        (domain := (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽)) (δ := 1 - α))
+    (hBoundaryCard :
+      ProximityGap.BoundaryCardResidual
+        (F := 𝔽) (ι := ω.subdomain 0) (k := 1) (deg := 2 ^ n)
+        (domain := (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽)) (δ := 1 - α))
+    (hδ :
+      1 - α ≤
+        1 - ReedSolomon.sqrtRate
+          (2 ^ n) (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽))
+    (h_prob :
+      Pr_{let z ← $ᵖ 𝔽}[
+        δᵣ(f 0 + z • f 1,
+          (ReedSolomon.code
+            (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽) (2 ^ n)).carrier)
+          ≤ 1 - α] >
+        ProximityGap.errorBound
+          (1 - α) (2 ^ n) (⟨fun x => x, by simp⟩ : ω.subdomain 0 ↪ 𝔽)) :
+    fri_query_soundness (n := n) (ω := ω) (f := f)
+      (h_agreement := h_agreement) (m_ge_3 := m_ge_3) := by
+  classical
+  let rsDomain : ω.subdomain 0 ↪ 𝔽 := ⟨fun x => x, by simp⟩
+  haveI : NeZero (2 ^ n) := ⟨pow_ne_zero n (by norm_num)⟩
+  have hStrictCoeff' :
+      ProximityGap.StrictCoeffPolysResidual
+        (F := 𝔽) (ι := ω.subdomain 0) (k := 1) (deg := 2 ^ n)
+        (domain := rsDomain) (δ := 1 - α) := by
+    simpa [rsDomain] using hStrictCoeff
+  have hBoundaryCard' :
+      ProximityGap.BoundaryCardResidual
+        (F := 𝔽) (ι := ω.subdomain 0) (k := 1) (deg := 2 ^ n)
+        (domain := rsDomain) (δ := 1 - α) := by
+    simpa [rsDomain] using hBoundaryCard
+  have hδ' :
+      1 - α ≤ 1 - ReedSolomon.sqrtRate (2 ^ n) rsDomain := by
+    simpa [rsDomain] using hδ
+  have hprob' :
+      Pr_{let z ← $ᵖ 𝔽}[
+        δᵣ(f 0 + z • f 1,
+          (ReedSolomon.code rsDomain (2 ^ n)).carrier)
+          ≤ 1 - α] >
+        ProximityGap.errorBound (1 - α) (2 ^ n) rsDomain := by
+    simpa [rsDomain] using h_prob
+  exact
+    fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndAffineLineCA
+      (n := n) (s := s) (d := d) (ω := ω)
+      (f := f) h_agreement m_ge_3 G δ queries l domain_size_cond
+      (ε := ProximityGap.errorBound (1 - α) (2 ^ n) rsDomain)
+      (ProximityGap.RS_correlatedAgreement_affineLines
+        (ι := ω.subdomain 0) (F := 𝔽) (deg := 2 ^ n)
+        (domain := rsDomain) (δ := 1 - α)
+        hStrictCoeff' hBoundaryCard' hδ')
+      hprob'
+
 /-- Density-route Claim 8.2 front door from the polynomial-curve correlated-agreement predicate.
 
 This is the query-level analogue of the full-domain curve CA adapter: callers supply the curve CA
@@ -1405,6 +1481,8 @@ set_option linter.style.longLine false in
 #print axioms Fri.fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndAffineSpacesCA
 set_option linter.style.longLine false in
 #print axioms Fri.fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndAffineLineCA
+set_option linter.style.longLine false in
+#print axioms Fri.fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndRSAffineLine
 set_option linter.style.longLine false in
 #print axioms Fri.fri_query_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndCurveCA
 
