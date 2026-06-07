@@ -127,8 +127,23 @@ theorem hammingBallVolume_le_qEntropy_real_radius (hq : 2 ≤ q) (δ : ℝ) {n :
     exact mul_le_mul_of_nonneg_left hH hnR.le
   exact le_trans hvol (mul_le_mul_of_nonneg_left hpow (by positivity))
 
+/-- Finite-domain specialization of `hammingBallVolume_le_qEntropy_real_radius`, with alphabet
+size `q = |F|` and block length `n = |ι|`. -/
+theorem hammingBallVolume_le_qEntropy_real_radius_card
+    {ι F : Type} [Fintype ι] [Nonempty ι] [Field F] [Fintype F]
+    (δ : ℝ)
+    (hδ0 : 0 ≤ δ)
+    (hδ : δ ≤ 1 - 1 / (Fintype.card F : ℝ)) :
+    (hammingBallVolume (Fintype.card F) δ (Fintype.card ι) : ℝ)
+      ≤ ((Fintype.card ι : ℝ) + 1) *
+        (Fintype.card F : ℝ) ^ ((Fintype.card ι : ℝ) *
+          qEntropy (Fintype.card F) δ) :=
+  hammingBallVolume_le_qEntropy_real_radius
+    (q := Fintype.card F) Fintype.one_lt_card δ Fintype.card_pos hδ0 hδ
+
 end CodingTheory
 
 -- Axiom audit: depends on exactly `[propext, Classical.choice, Quot.sound]`.
 #print axioms CodingTheory.hammingBallVolume_le_qEntropy
 #print axioms CodingTheory.hammingBallVolume_le_qEntropy_real_radius
+#print axioms CodingTheory.hammingBallVolume_le_qEntropy_real_radius_card
