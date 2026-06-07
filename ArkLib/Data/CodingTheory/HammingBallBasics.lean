@@ -51,6 +51,16 @@ theorem listDecodable_of_radius_le {F : Type*} [Fintype F] [DecidableEq F]
   refine le_trans ?_ (h y)
   exact_mod_cast Set.ncard_le_ncard (closeCodewordsRel_subset_of_le hr y) (Set.toFinite _)
 
+/-- **`Lambda` bound ⇒ list-decodability** (converse of `Lambda_le_natCast_of_forall_ncard_le`):
+if the maximised list size `|Λ(C,δ)|` is `≤ ℓ`, then `C` is `(δ, ℓ)`-list-decodable. -/
+theorem listDecodable_of_Lambda_le {F : Type*} [Fintype F] [DecidableEq F]
+    {C : Code ι F} {δ : ℝ} {ℓ : ℕ} (h : Lambda C δ ≤ (ℓ : ℕ∞)) : listDecodable C δ (ℓ : ℝ) := by
+  intro y
+  have hy : ((closeCodewordsRel C y δ).ncard : ℕ∞) ≤ (ℓ : ℕ∞) :=
+    le_trans (le_iSup (fun f => ((closeCodewordsRel C f δ).ncard : ℕ∞)) y) h
+  have hnat : (closeCodewordsRel C y δ).ncard ≤ ℓ := by exact_mod_cast hy
+  exact_mod_cast hnat
+
 end ListDecodable
 
 #print axioms ListDecodable.self_mem_hammingBall
@@ -58,3 +68,4 @@ end ListDecodable
 #print axioms ListDecodable.relHammingBall_mono
 #print axioms ListDecodable.hammingBall_zero
 #print axioms ListDecodable.listDecodable_of_radius_le
+#print axioms ListDecodable.listDecodable_of_Lambda_le
