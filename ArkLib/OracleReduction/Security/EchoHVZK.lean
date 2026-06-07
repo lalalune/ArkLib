@@ -131,3 +131,6 @@ theorem echo_isStatHVZK
   (echo_isHVZK init impl rel).isStatHVZK ε
 
 end Issue112ZK
+
+-- TEMP AUDIT
+#print axioms ArkLib.echo_perfectHVZK
