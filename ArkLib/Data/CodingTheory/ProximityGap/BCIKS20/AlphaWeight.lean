@@ -251,6 +251,45 @@ theorem divWeight_succ_iff_normalized_factor (x₀ : F) (R : F[X][X][Y])
   have hW : t + 1 + 1 = t + 2 := by omega
   simp [DivWeightLe_succ, hξ, hW]
 
+/-- The full divisibility-with-weight residual is equivalent to the normalized base target and
+all normalized successor targets. -/
+theorem divWeight_iff_normalized_cases (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ) :
+    DivWeightLe H x₀ R hHyp hH D ↔
+      (∃ a : 𝒪 H,
+        βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+          weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1) ∧
+        ∀ t : ℕ, ∃ a : 𝒪 H,
+          βHensel H x₀ R hHyp (t + 1)
+            = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+            weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1 := by
+  constructor
+  · intro hdiv
+    exact
+      ⟨(divWeight_zero_iff_W𝒪_factor H x₀ R hHyp hH D).1
+          (DivWeightLe.zero H x₀ R hHyp hH D hdiv),
+        fun t =>
+          (divWeight_succ_iff_normalized_factor H x₀ R hHyp hH D t).1
+            (DivWeightLe.succ H x₀ R hHyp hH D hdiv t)⟩
+  · intro hcases
+    exact DivWeightLe.of_cases H x₀ R hHyp hH D
+      ((divWeight_zero_iff_W𝒪_factor H x₀ R hHyp hH D).2 hcases.1)
+      (fun t =>
+        (divWeight_succ_iff_normalized_factor H x₀ R hHyp hH D t).2 (hcases.2 t))
+
+/-- Assemble `DivWeightLe` directly from the normalized base and successor factor targets. -/
+theorem DivWeightLe.of_normalized_cases (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ)
+    (h0 : ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1)
+    (hsucc : ∀ t : ℕ, ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp (t + 1)
+        = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1) :
+    DivWeightLe H x₀ R hHyp hH D :=
+  (divWeight_iff_normalized_cases H x₀ R hHyp hH D).2 ⟨h0, hsucc⟩
+
 /-! ### 1′. The two halves of the `𝕃 ↔ 𝒪` bridge
 
 -/
@@ -691,6 +730,27 @@ theorem AlphaGenuineRegularWeightLe.of_divWeight_succLift
     (DivWeightLe.zero H x₀ R hHyp hH D hdiv)
     (DivWeightLe.succ H x₀ R hHyp hH D hdiv)
 
+/-- Assemble carved alpha-weight regularity from the normalized divisibility base/successor
+targets under successor-order lift identities. -/
+theorem AlphaGenuineRegularWeightLe.of_normalized_divWeight_cases_succLift
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) (D : ℕ)
+    (hliftSucc : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp (t + 1))
+        = αGenuine H x₀ R hHyp (t + 1)
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1 + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * (t + 1) - 1))
+    (h0 : ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp 0 = a * W𝒪 H ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1)
+    (hsucc : ∀ t : ℕ, ∃ a : 𝒪 H,
+      βHensel H x₀ R hHyp (t + 1)
+        = a * (W𝒪 H) ^ (t + 2) * (ClaimA2.ξ x₀ R H hHyp) ^ (2 * t + 1) ∧
+        weight_Λ_over_𝒪 hH a D ≤ WithBot.some 1) :
+    AlphaGenuineRegularWeightLe H x₀ R hHyp hH D :=
+  AlphaGenuineRegularWeightLe.of_divWeight_succLift H x₀ R hHyp hH D hliftSucc
+    (DivWeightLe.of_normalized_cases H x₀ R hHyp hH D h0 hsucc)
+
 /-- The full carved alpha-weight residual is equivalent to the full divisibility-with-weight
 residual using only successor-order lift identities. -/
 theorem alphaWeight_iff_divWeight_of_succLift (x₀ : F) (R : F[X][X][Y])
@@ -774,6 +834,8 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.divWeight_iff_cases
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.divWeight_zero_iff_W𝒪_factor
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.divWeight_succ_iff_normalized_factor
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.divWeight_iff_normalized_cases
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe.of_normalized_cases
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.embeddingOf𝒪Into𝕃_W𝒪
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.βHensel_eq_alpha_mul_of_lift
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.alpha_eq_embedding_of_fact
@@ -797,6 +859,7 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe.of_divWeight_cases_succLift
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe.of_alphaWeight_succLift
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe.of_divWeight_succLift
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe.of_normalized_divWeight_cases_succLift
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.alphaWeight_iff_divWeight_of_succLift
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe_succ.of_alphaWeight_succ
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe_succ.of_divWeight_succ
