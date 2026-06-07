@@ -7,6 +7,7 @@ Authors: ArkLib Contributors
 import ArkLib.Data.CodingTheory.ProximityGap.TwoLineExtraction
 import ArkLib.Data.CodingTheory.ReedSolomon
 import ArkLib.Data.Polynomial.UnivariateAgreement
+import ArkLib.Data.Polynomial.DegreeLTDimension
 
 /-!
 # Reed–Solomon unique decoding (concrete instantiation)
@@ -214,6 +215,65 @@ theorem bivariate_root_of_close {k dX dZ e : ℕ} [NeZero k] {α : ι ↪ F} {y 
       _ ≤ Multiset.card R.roots := Multiset.toFinset_card_le _
       _ ≤ R.natDegree := card_roots' _
   omega
+
+open Polynomial in
+/-- **Sudan / Guruswami–Sudan list-size bound.**  Fix Reed–Solomon parameters with
+`n < (dX+1)(dZ+1)` and `dX + dZ·(k−1) < n − e`.  Then for any word `y`, the number of degree-`< k`
+message polynomials whose codeword is within `e` Hamming errors of `y` is at most `dZ`.  Proof: the
+`(X × Z)`-interpolant `Q` (existence: `exists_bivariate_interpolant_general`) has every close
+codeword as a `Y`-root (`bivariate_root_of_close`); viewing `Q ∈ (F[X])[Y]` as a degree-`≤ dZ`
+polynomial over the integral domain `F[X]`, it has at most `dZ` roots.  This is the list-decoding
+theorem — the list-size machinery underlying CZ25 / CS25. -/
+theorem sudan_list_size {k dX dZ e : ℕ} [NeZero k] {α : ι ↪ F} {y : ι → F}
+    (hbig : Fintype.card ι < (dX + 1) * (dZ + 1))
+    (he : e < Fintype.card ι) (hdeg : dX + dZ * (k - 1) < Fintype.card ι - e)
+    (L : Finset (F[X]))
+    (hL : ∀ p ∈ L, p ∈ Polynomial.degreeLT F k ∧
+      (Finset.univ.filter (fun i => y i ≠ p.eval (α i))).card ≤ e) :
+    L.card ≤ dZ := by
+  classical
+  obtain ⟨Q, hQmem, hQ0, hQint⟩ :=
+    exists_bivariate_interpolant_general (F := F) dX dZ (fun i => α i) y hbig
+  -- view `Q` as a polynomial in `Y` over `F[X]`
+  set Qbar : Polynomial (Polynomial F) :=
+    ∑ j : Fin (dZ + 1), Polynomial.C (Q j) * Polynomial.X ^ (j : ℕ) with hQbar
+  have hcoeff : ∀ j₀ : Fin (dZ + 1), Qbar.coeff (j₀ : ℕ) = Q j₀ := by
+    intro j₀
+    rw [hQbar, Polynomial.finset_sum_coeff, Finset.sum_eq_single j₀]
+    · rw [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, if_pos rfl, mul_one]
+    · intro j _ hjne
+      rw [Polynomial.coeff_C_mul, Polynomial.coeff_X_pow, if_neg, mul_zero]
+      intro h; exact hjne (Fin.val_injective h.symm)
+    · intro h; exact absurd (Finset.mem_univ j₀) h
+  have hQbar0 : Qbar ≠ 0 := by
+    obtain ⟨j, hj⟩ := hQ0
+    intro h
+    apply hj
+    have := hcoeff j
+    rw [h, Polynomial.coeff_zero] at this
+    exact this.symm
+  have hQbardeg : Qbar.natDegree ≤ dZ := by
+    refine Polynomial.natDegree_sum_le_of_forall_le _ _ fun j _ => ?_
+    calc (Polynomial.C (Q j) * Polynomial.X ^ (j : ℕ)).natDegree
+        ≤ (Polynomial.C (Q j)).natDegree + (Polynomial.X ^ (j : ℕ)).natDegree := natDegree_mul_le
+      _ ≤ dZ := by
+          rw [Polynomial.natDegree_C, Polynomial.natDegree_X_pow]
+          have : (j : ℕ) ≤ dZ := by omega
+          omega
+  have heval : ∀ p, Polynomial.eval p Qbar = ∑ j : Fin (dZ + 1), Q j * p ^ (j : ℕ) := by
+    intro p
+    rw [hQbar, Polynomial.eval_finset_sum]
+    exact Finset.sum_congr rfl fun j _ => by
+      rw [Polynomial.eval_mul, Polynomial.eval_C, Polynomial.eval_pow, Polynomial.eval_X]
+  -- every close codeword is a `Y`-root of `Qbar`
+  have hLsub : L ⊆ Qbar.roots.toFinset := by
+    intro p hpL
+    rw [Multiset.mem_toFinset, Polynomial.mem_roots hQbar0, Polynomial.IsRoot.def, heval]
+    exact bivariate_root_of_close hQmem (hL p hpL).1 hQint (hL p hpL).2 he hdeg
+  calc L.card ≤ Qbar.roots.toFinset.card := Finset.card_le_card hLsub
+    _ ≤ Multiset.card Qbar.roots := Multiset.toFinset_card_le _
+    _ ≤ Qbar.natDegree := card_roots' _
+    _ ≤ dZ := hQbardeg
 
 open Polynomial in
 /-- **Berlekamp–Welch key-equation existence.**  If a received word `y` is within `e` Hamming
