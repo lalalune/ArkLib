@@ -1673,6 +1673,27 @@ theorem liftComp_liftComp {ι₁ ι₂ ι₃ : Type} {spec : OracleSpec ι₁} {
     rw [hquery t, OracleComp.liftComp_query]
     simp only [OracleQuery.cont_query, id_map, OracleQuery.input_query]
 
+/-- **Collapse a doubly-lifted `spec` bind-then-`pure`.**  Lifting `x : OracleComp spec` to `midSpec`,
+binding into a `pure (k a)`, then lifting `midSpec → superSpec` equals lifting `x` to `superSpec`
+directly and binding the (now single-lifted) continuation.  The bind-carrying analogue of
+`liftComp_liftComp`, used to collapse the challenge-block-lifted right-block per-round computations
+(where the inner `sendMessage`/`output` block lives in `spec = oSpec` but is threaded through the
+intermediate `midSpec = oSpec + [pSpec₂.Challenge]ₒ`). -/
+theorem liftComp_bind_liftComp {ι₁ ι₂ ι₃ : Type} {spec : OracleSpec ι₁} {midSpec : OracleSpec ι₂}
+    {superSpec : OracleSpec ι₃}
+    [MonadLiftT (OracleQuery spec) (OracleQuery midSpec)]
+    [MonadLiftT (OracleQuery midSpec) (OracleQuery superSpec)]
+    [MonadLiftT (OracleQuery spec) (OracleQuery superSpec)]
+    (hquery : ∀ (t : spec.Domain),
+      OracleComp.liftComp (liftM (spec.query t) : OracleComp midSpec (spec.Range t)) superSpec
+        = (liftM (spec.query t) : OracleComp superSpec (spec.Range t)))
+    {α β : Type} (x : OracleComp spec α) (k : α → β) :
+    ((OracleComp.liftComp x midSpec >>= fun a => pure (k a)) : OracleComp midSpec β).liftComp superSpec
+      = (OracleComp.liftComp x superSpec >>= fun a => pure (k a)) := by
+  rw [OracleComp.liftComp_bind, liftComp_liftComp (spec := spec) (midSpec := midSpec)
+    (superSpec := superSpec) hquery]
+  simp only [OracleComp.liftComp_pure]
+
 /-- **Diamond collapse for nested `liftM` over `OracleComp`.**  Two composed lifts
 `spec → midSpec → superSpec` collapse to the single direct lift (expressed as `liftComp X
 superSpec`), given the per-query coherence `hco` (`fun _ => rfl` for the canonical `+`

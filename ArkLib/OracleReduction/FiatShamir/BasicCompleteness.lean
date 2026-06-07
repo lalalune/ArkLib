@@ -34,10 +34,10 @@ namespace ArkLib.FiatShamir.CompletenessAux
 
 variable {M : Type → Type} {α β : Type}
 
-private theorem liftM_eq_monadLift {m n : Type → Type} [MonadLiftT m n] (x : m α) :
+theorem liftM_eq_monadLift {m n : Type → Type} [MonadLiftT m n] (x : m α) :
     (liftM x : n α) = monadLift x := rfl
 
-private theorem optionT_lift_run_bind_getM [Monad M] [LawfulMonad M] (X : OptionT M α) :
+theorem optionT_lift_run_bind_getM [Monad M] [LawfulMonad M] (X : OptionT M α) :
     ((liftM X.run : OptionT M (Option α)) >>= fun o => (o.getM : OptionT M α)) = X := by
   apply OptionT.ext
   simp only [OptionT.run_bind, OptionT.run_monadLift, Option.elimM, bind_assoc,
@@ -49,7 +49,7 @@ private theorem optionT_lift_run_bind_getM [Monad M] [LawfulMonad M] (X : Option
 
 variable {ι₁ ι₂ : Type} {spec₁ : OracleSpec ι₁} {spec₂ : OracleSpec ι₂}
 
-private theorem monadLift_optionT_lift_run_getM (X : OptionT (OracleComp spec₁) α) :
+theorem monadLift_optionT_lift_run_getM (X : OptionT (OracleComp spec₁) α) :
     ((monadLift (liftM X.run : OptionT (OracleComp spec₁) (Option α)) :
           OptionT (OracleComp (spec₁ + spec₂)) (Option α)) >>=
         fun o => (o.getM : OptionT (OracleComp (spec₁ + spec₂)) α)) =
@@ -60,7 +60,7 @@ private theorem monadLift_optionT_lift_run_getM (X : OptionT (OracleComp spec₁
   funext o
   cases o <;> rfl
 
-private theorem monadLift_optionT_lift_run_map_getM (X : OptionT (OracleComp spec₁) β) (f : β → α) :
+theorem monadLift_optionT_lift_run_map_getM (X : OptionT (OracleComp spec₁) β) (f : β → α) :
     ((monadLift (liftM X.run : OptionT (OracleComp spec₁) (Option β)) :
           OptionT (OracleComp (spec₁ + spec₂)) (Option β)) >>=
         fun o => f <$> (o.getM : OptionT (OracleComp (spec₁ + spec₂)) β)) =
@@ -68,15 +68,15 @@ private theorem monadLift_optionT_lift_run_map_getM (X : OptionT (OracleComp spe
         OptionT (OracleComp (spec₁ + spec₂)) α) := by
   simp only [← bind_pure_comp, ← bind_assoc, monadLift_optionT_lift_run_getM]
 
-private theorem liftM_optionT_combined (m : OracleComp spec₁ α) :
+theorem liftM_optionT_combined (m : OracleComp spec₁ α) :
     (liftM m : OptionT (OracleComp (spec₁ + spec₂)) α) =
       (monadLift (liftM m : OptionT (OracleComp spec₁) α) :
         OptionT (OracleComp (spec₁ + spec₂)) α) := rfl
 
-@[simp] private theorem optionT_monadLift_run (x : OptionT (OracleComp spec₁) α) :
+@[simp] theorem optionT_monadLift_run (x : OptionT (OracleComp spec₁) α) :
     ((monadLift x : OptionT (OracleComp (spec₁ + spec₂)) α)).run = monadLift x.run := rfl
 
-private theorem simulateQ_map_monadLift_getM_run {σ' : Type}
+theorem simulateQ_map_monadLift_getM_run {σ' : Type}
     (impl : QueryImpl (spec₁ + spec₂) (StateT σ' ProbComp)) (o : Option α) (f : α → β) :
     simulateQ impl
       ((f <$> (monadLift (o.getM : OptionT (OracleComp spec₁) α) :
@@ -86,10 +86,19 @@ private theorem simulateQ_map_monadLift_getM_run {σ' : Type}
     cases o <;> rfl
   rw [h, simulateQ_pure]
 
-private theorem optionT_run_simulateQ_liftquery (X : OptionT (OracleComp spec₁) α) :
+theorem optionT_run_simulateQ_liftquery (X : OptionT (OracleComp spec₁) α) :
     OptionT.run (simulateQ (fun t => (monadLift (OracleSpec.query t) :
         OracleComp (spec₁ + spec₂) _)) X) =
       (monadLift X.run : OracleComp (spec₁ + spec₂) (Option α)) := rfl
+
+#print axioms liftM_eq_monadLift
+#print axioms optionT_lift_run_bind_getM
+#print axioms monadLift_optionT_lift_run_getM
+#print axioms monadLift_optionT_lift_run_map_getM
+#print axioms liftM_optionT_combined
+#print axioms optionT_monadLift_run
+#print axioms simulateQ_map_monadLift_getM_run
+#print axioms optionT_run_simulateQ_liftquery
 
 end ArkLib.FiatShamir.CompletenessAux
 
