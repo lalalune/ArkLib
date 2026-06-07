@@ -213,6 +213,34 @@ theorem epsMCA_eq_one_of_forall_mcaEvent
       Finset.card_univ]
   rw [ENNReal.div_self (by exact_mod_cast Fintype.card_ne_zero) (by simp)]
 
+open Classical in
+/-- **Maximal MCA error characterization.** `epsMCA C δ = 1` iff some word stack has every scalar
+bad. Completes the trichotomy with `epsMCA_eq_zero_iff` / `epsMCA_pos_iff`. -/
+theorem epsMCA_eq_one_iff (C : Set (ι → A)) (δ : ℝ≥0) :
+    epsMCA (F := F) (A := A) C δ = 1 ↔
+      ∃ u : WordStack A (Fin 2) ι, ∀ γ : F, mcaEvent C δ (u 0) (u 1) γ := by
+  constructor
+  · intro h
+    obtain ⟨u₀, hu₀⟩ := Finite.exists_max (fun u : WordStack A (Fin 2) ι =>
+      Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u 0) (u 1) γ])
+    have hpr : Pr_{let γ ← $ᵖ F}[mcaEvent C δ (u₀ 0) (u₀ 1) γ] = 1 := by
+      refine le_antisymm (Pr_le_one _ _) ?_
+      rw [← h]; unfold epsMCA; exact iSup_le hu₀
+    refine ⟨u₀, fun γ => ?_⟩
+    rw [prob_uniform_eq_card_filter_div_card] at hpr
+    have hcard : (Finset.filter (fun γ : F => mcaEvent C δ (u₀ 0) (u₀ 1) γ) Finset.univ).card
+        = Fintype.card F := by
+      have h2 := (ENNReal.div_eq_one_iff (by exact_mod_cast Fintype.card_ne_zero)
+        (by simp)).mp hpr
+      exact_mod_cast h2
+    have huniv : Finset.filter (fun γ : F => mcaEvent C δ (u₀ 0) (u₀ 1) γ) Finset.univ
+        = Finset.univ := Finset.eq_univ_of_card _ hcard
+    have hmem : γ ∈ Finset.filter (fun γ : F => mcaEvent C δ (u₀ 0) (u₀ 1) γ) Finset.univ := by
+      rw [huniv]; exact Finset.mem_univ γ
+    exact (Finset.mem_filter.mp hmem).2
+  · rintro ⟨u, hu⟩
+    exact epsMCA_eq_one_of_forall_mcaEvent C δ u hu
+
 end ProximityGap
 
 namespace ProximityGap.MCALowerExample
