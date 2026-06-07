@@ -94,6 +94,7 @@ import ArkLib.Data.CodingTheory.ListDecoding.AGL23Barrier
 import ArkLib.Data.CodingTheory.ListDecoding.BKR06SubspacePoly
 import ArkLib.Data.CodingTheory.ListDecoding.Bounds
 import ArkLib.Data.CodingTheory.ListDecoding.CZ25CapacityPropEndpoint
+import ArkLib.Data.CodingTheory.ListDecoding.CZ25CapacityAdmissible
 import ArkLib.Data.CodingTheory.ListDecoding.CZ25CapacityReduction
 import ArkLib.Data.CodingTheory.ListDecoding.CZ25DesignToLambda
 import ArkLib.Data.CodingTheory.ListDecoding.CZ25GeomCapacity

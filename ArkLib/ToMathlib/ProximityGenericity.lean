@@ -98,7 +98,9 @@ theorem exists_eval_ne_zero_over_domain
           apply Finset.sum_le_sum
           intro p _hp
           calc ((p.roots.toFinset).preimage φ (hφ.injOn)).card
-              ≤ (p.roots.toFinset).card := Finset.card_preimage_le_of_injective _ hφ.injOn
+              ≤ (p.roots.toFinset).card :=
+                Finset.card_le_card_of_injOn φ
+                  (fun a ha => Finset.mem_preimage.mp ha) (hφ.injOn)
             _ ≤ Multiset.card p.roots := Multiset.toFinset_card_le _
             _ ≤ p.natDegree := Polynomial.card_roots' p
       _ < Fintype.card F := hcard

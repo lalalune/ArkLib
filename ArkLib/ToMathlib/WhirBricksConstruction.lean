@@ -175,90 +175,95 @@ noncomputable def paperTranscriptSlotIndex {M : ℕ} {ιs : Fin (M + 1) → Type
     PaperTranscriptSlot P → Fin (Fintype.card (PaperTranscriptSlot P)) :=
   Fintype.equivFin (PaperTranscriptSlot P)
 
-omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
 @[simp] theorem paperTranscriptSlotIndex_symm_apply {M : ℕ} {ιs : Fin (M + 1) → Type}
     [∀ i : Fin (M + 1), Fintype (ιs i)] {P : Params ιs F}
     (slot : PaperTranscriptSlot P) :
     (Fintype.equivFin (PaperTranscriptSlot P)).symm (paperTranscriptSlotIndex slot) = slot := by
-  simp [paperTranscriptSlotIndex]
+  exact (Fintype.equivFin (PaperTranscriptSlot P)).symm_apply_apply slot
 
-omit [Field F] [DecidableEq F] [SampleableType F] in
+omit [Field F] [SampleableType F] in
 /-- Turn a paper prover-message slot into the corresponding `VectorSpec.MessageIdx`. -/
 noncomputable def paperMessageIdx {M : ℕ} {ιs : Fin (M + 1) → Type}
     [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ)
-    (slot : PaperTranscriptSlot P) (hslot : paperTranscriptSlotDirection slot = Direction.P_to_V) :
+  (slot : PaperTranscriptSlot P) (hslot : paperTranscriptSlotDirection slot = Direction.P_to_V) :
     (whirPaperTranscriptVectorSpec P d).MessageIdx :=
   ⟨paperTranscriptSlotIndex slot, by
-    simp [whirPaperTranscriptVectorSpec, hslot]⟩
+    change paperTranscriptSlotDirection
+        ((Fintype.equivFin (PaperTranscriptSlot P)).symm (paperTranscriptSlotIndex slot)) =
+      Direction.P_to_V
+    simpa [paperTranscriptSlotIndex] using hslot⟩
 
-omit [Field F] [DecidableEq F] [SampleableType F] in
+omit [Field F] [SampleableType F] in
 /-- Turn a paper verifier-challenge slot into the corresponding `VectorSpec.ChallengeIdx`. -/
 noncomputable def paperChallengeIdx {M : ℕ} {ιs : Fin (M + 1) → Type}
     [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ)
-    (slot : PaperTranscriptSlot P) (hslot : paperTranscriptSlotDirection slot = Direction.V_to_P) :
+  (slot : PaperTranscriptSlot P) (hslot : paperTranscriptSlotDirection slot = Direction.V_to_P) :
     (whirPaperTranscriptVectorSpec P d).ChallengeIdx :=
   ⟨paperTranscriptSlotIndex slot, by
-    simp [whirPaperTranscriptVectorSpec, hslot]⟩
+    change paperTranscriptSlotDirection
+        ((Fintype.equivFin (PaperTranscriptSlot P)).symm (paperTranscriptSlotIndex slot)) =
+      Direction.V_to_P
+    simpa [paperTranscriptSlotIndex] using hslot⟩
 
-omit [Field F] [DecidableEq F] [SampleableType F] in
+omit [Field F] [SampleableType F] in
 noncomputable def initialSumcheckMessageIdx {M : ℕ} {ιs : Fin (M + 1) → Type}
     [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ)
     (s : Fin (P.foldingParam 0)) :
     (whirPaperTranscriptVectorSpec P d).MessageIdx :=
   paperMessageIdx P d (.initialSumcheckMessage s) rfl
 
-omit [Field F] [DecidableEq F] [SampleableType F] in
+omit [Field F] [SampleableType F] in
 noncomputable def initialSumcheckChallengeIdx {M : ℕ} {ιs : Fin (M + 1) → Type}
     [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ)
     (s : Fin (P.foldingParam 0)) :
     (whirPaperTranscriptVectorSpec P d).ChallengeIdx :=
   paperChallengeIdx P d (.initialSumcheckChallenge s) rfl
 
-omit [Field F] [DecidableEq F] [SampleableType F] in
+omit [Field F] [SampleableType F] in
 noncomputable def mainFoldedOracleMessageIdx {M : ℕ} {ιs : Fin (M + 1) → Type}
     [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ) (i : Fin M) :
     (whirPaperTranscriptVectorSpec P d).MessageIdx :=
   paperMessageIdx P d (.mainFoldedOracle i) rfl
 
-omit [Field F] [DecidableEq F] [SampleableType F] in
+omit [Field F] [SampleableType F] in
 noncomputable def mainOutOfDomainChallengeIdx {M : ℕ} {ιs : Fin (M + 1) → Type}
     [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ) (i : Fin M) :
     (whirPaperTranscriptVectorSpec P d).ChallengeIdx :=
   paperChallengeIdx P d (.mainOutOfDomainChallenge i) rfl
 
-omit [Field F] [DecidableEq F] [SampleableType F] in
+omit [Field F] [SampleableType F] in
 noncomputable def mainOutOfDomainReplyMessageIdx {M : ℕ} {ιs : Fin (M + 1) → Type}
     [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ) (i : Fin M) :
     (whirPaperTranscriptVectorSpec P d).MessageIdx :=
   paperMessageIdx P d (.mainOutOfDomainReply i) rfl
 
-omit [Field F] [DecidableEq F] [SampleableType F] in
+omit [Field F] [SampleableType F] in
 noncomputable def mainShiftChallengeIdx {M : ℕ} {ιs : Fin (M + 1) → Type}
     [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ) (i : Fin M) :
     (whirPaperTranscriptVectorSpec P d).ChallengeIdx :=
   paperChallengeIdx P d (.mainShiftChallenge i) rfl
 
-omit [Field F] [DecidableEq F] [SampleableType F] in
+omit [Field F] [SampleableType F] in
 noncomputable def mainSumcheckMessageIdx {M : ℕ} {ιs : Fin (M + 1) → Type}
     [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ) (i : Fin M)
     (s : Fin (P.foldingParam i.succ)) :
     (whirPaperTranscriptVectorSpec P d).MessageIdx :=
   paperMessageIdx P d (.mainSumcheckMessage i s) rfl
 
-omit [Field F] [DecidableEq F] [SampleableType F] in
+omit [Field F] [SampleableType F] in
 noncomputable def mainSumcheckChallengeIdx {M : ℕ} {ιs : Fin (M + 1) → Type}
     [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ) (i : Fin M)
     (s : Fin (P.foldingParam i.succ)) :
     (whirPaperTranscriptVectorSpec P d).ChallengeIdx :=
   paperChallengeIdx P d (.mainSumcheckChallenge i s) rfl
 
-omit [Field F] [DecidableEq F] [SampleableType F] in
+omit [Field F] [SampleableType F] in
 noncomputable def finalPolynomialMessageIdx {M : ℕ} {ιs : Fin (M + 1) → Type}
     [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ) :
     (whirPaperTranscriptVectorSpec P d).MessageIdx :=
   paperMessageIdx P d .finalPolynomial rfl
 
-omit [Field F] [DecidableEq F] [SampleableType F] in
+omit [Field F] [SampleableType F] in
 noncomputable def finalRandomnessChallengeIdx {M : ℕ} {ιs : Fin (M + 1) → Type}
     [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ) :
     (whirPaperTranscriptVectorSpec P d).ChallengeIdx :=

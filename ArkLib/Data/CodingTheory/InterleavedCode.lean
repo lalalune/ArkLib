@@ -699,6 +699,42 @@ def jointAgreement {F κ ι : Type*} [Fintype ι] [DecidableEq F]
   ∃ S : Finset ι, S.card ≥ (1 - δ) * (Fintype.card ι) ∧
       ∃ v : κ → ι → F, ∀ i, v i ∈ C ∧ S ⊆ Finset.filter (fun j => v i j = W i j) Finset.univ
 
+/-- If every word in the stack is already a codeword, then the stack has joint agreement with
+the code on the full coordinate set.  This is the complete extreme of the
+correlated-agreement-to-`jointAgreement` bridge used by FRI/WHIR frontiers. -/
+theorem jointAgreement_of_forall_mem {F κ ι : Type*} [Fintype ι] [DecidableEq F]
+    {C : Set (ι → F)} {δ : ℝ≥0} {W : κ → ι → F} (hW : ∀ i, W i ∈ C) :
+    jointAgreement (F := F) (κ := κ) (ι := ι) (C := C) (δ := δ) (W := W) := by
+  classical
+  refine ⟨Finset.univ, ?_, W, ?_⟩
+  · simpa [mul_comm] using
+      mul_le_mul_left (tsub_le_self : 1 - δ ≤ (1 : ℝ≥0)) (Fintype.card ι : ℝ≥0)
+  · intro i
+    constructor
+    · exact hW i
+    · intro j hj
+      simp
+
+/-- Monotonicity of `jointAgreement` in the proximity radius: increasing `δ` weakens the common
+agreement-set size requirement. -/
+theorem jointAgreement_mono {F κ ι : Type*} [Fintype ι] [DecidableEq F]
+    {C : Set (ι → F)} {δ₁ δ₂ : ℝ≥0} {W : κ → ι → F} (hδ : δ₁ ≤ δ₂)
+    (h : jointAgreement (F := F) (κ := κ) (ι := ι) (C := C) (δ := δ₁) (W := W)) :
+    jointAgreement (F := F) (κ := κ) (ι := ι) (C := C) (δ := δ₂) (W := W) := by
+  classical
+  rcases h with ⟨S, hS, v, hv⟩
+  refine ⟨S, ?_, v, hv⟩
+  have hsub : 1 - δ₂ ≤ 1 - δ₁ := by
+    exact tsub_le_tsub_left hδ 1
+  have hmul :
+      (1 - δ₂) * (Fintype.card ι : ℝ≥0) ≤
+        (1 - δ₁) * (Fintype.card ι : ℝ≥0) := by
+    simpa [mul_comm] using mul_le_mul_left hsub (Fintype.card ι : ℝ≥0)
+  exact hmul.trans hS
+
+#print axioms jointAgreement_of_forall_mem
+#print axioms jointAgreement_mono
+
 /-- Transport joint agreement across an equivalence of coordinate domains.
 
 The code predicate itself is supplied by `hC`: every codeword for `C₁`, reindexed along
