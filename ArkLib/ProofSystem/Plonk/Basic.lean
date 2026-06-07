@@ -129,6 +129,16 @@ def gateCheckRelOut :
     Set ((Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)) × Unit) :=
   Prod.fst ⁻¹' gateCheckRelIn
 
+@[reducible, simp]
+def gateCheckLangIn :
+    Set (Plonk.ConstraintSystem 𝓡 numWires numGates) :=
+  { cs | ∃ w : Fin numWires → 𝓡, cs.accepts w }
+
+@[reducible, simp]
+def gateCheckLangOut :
+    Set (Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)) :=
+  { p | p.1.accepts p.2 }
+
 variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl []ₒ (StateT σ ProbComp))
 
 set_option maxHeartbeats 1600000 in
@@ -167,6 +177,50 @@ theorem gateCheck_perfectCompleteness :
     simp only [map_pure, support_pure, Set.mem_singleton_iff] at hx
     cases hx
     exact ⟨hIn, rfl⟩
+
+/-- The gate-check verifier has zero-error round-by-round soundness for the language of
+satisfiable gate systems. If the input constraint system has no accepting wire assignment, then a
+full transcript whose verifier output is in `gateCheckLangOut` would itself provide one. -/
+theorem gateCheckVerifier_rbrSoundness :
+    (gateCheckVerifier (𝓡 := 𝓡) (numWires := numWires)
+      (numGates := numGates)).rbrSoundness init impl
+        gateCheckLangIn gateCheckLangOut 0 := by
+  refine ⟨{
+    toFun := fun _ cs _ => cs ∈ gateCheckLangIn
+    toFun_empty := fun _ => Iff.rfl
+    toFun_next := fun _ _ _ _ h _ => h
+    toFun_full := fun cs tr hcs => ?_
+  }, ?_⟩
+  · rw [probEvent_eq_zero_iff]
+    intro out hout houtLang
+    rw [OptionT.mem_support_iff] at hout
+    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hout
+    obtain ⟨s, _, hout⟩ := hout
+    simp only [Verifier.run, gateCheckVerifier_verify_eq] at hout
+    by_cases hAccept : cs.accepts (tr ⟨0, by simp⟩)
+    · exact hcs ⟨tr ⟨0, by simp⟩, hAccept⟩
+    · have hrun :
+          (simulateQ impl
+            ((gateCheckVerifier (𝓡 := 𝓡) (numWires := numWires)
+              (numGates := numGates)).run cs tr)).run' s =
+            pure none := by
+        simp only [Verifier.run, gateCheckVerifier_verify_eq]
+        split_ifs with h
+        · exact False.elim (hAccept (by simpa using h))
+        change (simulateQ impl (pure none : OracleComp []ₒ
+          (Option (Plonk.ConstraintSystem 𝓡 numWires numGates ×
+            (Fin numWires → 𝓡))))).run' s = pure none
+        rw [simulateQ_pure]
+        change Prod.fst <$> (pure none : StateT σ ProbComp
+          (Option (Plonk.ConstraintSystem 𝓡 numWires numGates ×
+            (Fin numWires → 𝓡)))).run s = pure none
+        rw [StateT.run_pure]
+        simp [map_pure]
+      simp only [Verifier.run, gateCheckVerifier_verify_eq] at hrun
+      rw [hrun] at hout
+      simp at hout
+  · intro _ hNotIn _ _ _ _ ⟨⟨0, _⟩, hdir⟩
+    exact absurd hdir (by simp)
 
 /-- The gate-check verifier has zero-error round-by-round knowledge soundness: the single
 prover message is the wire assignment, and the verifier guard ensures it satisfies the gate

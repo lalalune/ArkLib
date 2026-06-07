@@ -152,6 +152,16 @@ def permCheckRelOut :
     Set ((Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin (3 * numGates) → 𝓡)) × Unit) :=
   Prod.fst ⁻¹' permCheckRelIn
 
+@[reducible, simp]
+def permCheckLangIn :
+    Set (Plonk.ConstraintSystem 𝓡 numWires numGates) :=
+  { cs | ∃ f : Fin (3 * numGates) → 𝓡, CopyConstraintsSatisfied f cs.perm }
+
+@[reducible, simp]
+def permCheckLangOut :
+    Set (Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin (3 * numGates) → 𝓡)) :=
+  { p | CopyConstraintsSatisfied p.2 p.1.perm }
+
 variable {σ : Type} (init : ProbComp σ) (impl : QueryImpl []ₒ (StateT σ ProbComp))
 
 set_option maxHeartbeats 1600000 in
@@ -190,6 +200,51 @@ theorem permCheck_perfectCompleteness :
     simp only [map_pure, support_pure, Set.mem_singleton_iff] at hx
     cases hx
     exact ⟨hIn, rfl⟩
+
+omit [CommRing 𝓡] in
+/-- The permutation-check verifier has zero-error round-by-round soundness for the language of
+constraint systems with a copy-constraint-satisfying extended assignment. If the input statement is
+outside this language, an accepting verifier output would itself provide the missing assignment. -/
+theorem permCheckVerifier_rbrSoundness :
+    (permCheckVerifier (𝓡 := 𝓡) (numWires := numWires)
+      (numGates := numGates)).rbrSoundness init impl
+        permCheckLangIn permCheckLangOut 0 := by
+  refine ⟨{
+    toFun := fun _ cs _ => cs ∈ permCheckLangIn
+    toFun_empty := fun _ => Iff.rfl
+    toFun_next := fun _ _ _ _ h _ => h
+    toFun_full := fun cs tr hcs => ?_
+  }, ?_⟩
+  · rw [probEvent_eq_zero_iff]
+    intro out hout houtLang
+    rw [OptionT.mem_support_iff] at hout
+    simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hout
+    obtain ⟨s, _, hout⟩ := hout
+    simp only [Verifier.run, permCheckVerifier_verify_eq] at hout
+    by_cases hAccept : CopyConstraintsSatisfied (tr ⟨0, by simp⟩) cs.perm
+    · exact hcs ⟨tr ⟨0, by simp⟩, hAccept⟩
+    · have hrun :
+          (simulateQ impl
+            ((permCheckVerifier (𝓡 := 𝓡) (numWires := numWires)
+              (numGates := numGates)).run cs tr)).run' s =
+            pure none := by
+        simp only [Verifier.run, permCheckVerifier_verify_eq]
+        split_ifs with h
+        · exact False.elim (hAccept (by simpa using h))
+        change (simulateQ impl (pure none : OracleComp []ₒ
+          (Option (Plonk.ConstraintSystem 𝓡 numWires numGates ×
+            (Fin (3 * numGates) → 𝓡))))).run' s = pure none
+        rw [simulateQ_pure]
+        change Prod.fst <$> (pure none : StateT σ ProbComp
+          (Option (Plonk.ConstraintSystem 𝓡 numWires numGates ×
+            (Fin (3 * numGates) → 𝓡)))).run s = pure none
+        rw [StateT.run_pure]
+        simp [map_pure]
+      simp only [Verifier.run, permCheckVerifier_verify_eq] at hrun
+      rw [hrun] at hout
+      simp at hout
+  · intro _ hNotIn _ _ _ _ ⟨⟨0, _⟩, hdir⟩
+    exact absurd hdir (by simp)
 
 omit [CommRing 𝓡] in
 /-- The permutation-check verifier has zero-error round-by-round knowledge soundness: the single
