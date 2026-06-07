@@ -136,6 +136,134 @@ omit [Field F] [DecidableEq F] [SampleableType F] in
       paperTranscriptSlotLength P d ((Fintype.equivFin (PaperTranscriptSlot P)).symm i) :=
   rfl
 
+/-! ### Payload packing for the paper-order scaffold
+
+The paper messages such as folded oracles and the final polynomial are functions over finite
+domains, while `VectorSpec.toProtocolSpec` represents every payload as a `Vector F n`.  These
+helpers provide the canonical finite-enumeration bridge needed by the honest prover and verifier.
+-/
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- Pack a finite-domain function into the corresponding vector payload using `Fintype.equivFin`. -/
+noncomputable def packFiniteFunction (α : Type) [Fintype α] (f : α → F) :
+    Vector F (Fintype.card α) :=
+  Vector.ofFn fun i => f ((Fintype.equivFin α).symm i)
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- Unpack a vector payload back into the finite-domain function it represents. -/
+noncomputable def unpackFiniteFunction (α : Type) [Fintype α]
+    (v : Vector F (Fintype.card α)) : α → F :=
+  fun x => v.get (Fintype.equivFin α x)
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
+@[simp] theorem unpack_packFiniteFunction (α : Type) [Fintype α] (f : α → F) :
+    unpackFiniteFunction α (packFiniteFunction α f) = f := by
+  funext x
+  simp [unpackFiniteFunction, packFiniteFunction]
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
+@[simp] theorem pack_unpackFiniteFunction (α : Type) [Fintype α]
+    (v : Vector F (Fintype.card α)) :
+    packFiniteFunction α (unpackFiniteFunction α v) = v := by
+  ext i
+  simp [unpackFiniteFunction, packFiniteFunction]
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- The canonical `Fin` index of a paper transcript slot inside `whirPaperTranscriptVectorSpec`. -/
+noncomputable def paperTranscriptSlotIndex {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] {P : Params ιs F} :
+    PaperTranscriptSlot P → Fin (Fintype.card (PaperTranscriptSlot P)) :=
+  Fintype.equivFin (PaperTranscriptSlot P)
+
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
+@[simp] theorem paperTranscriptSlotIndex_symm_apply {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] {P : Params ιs F}
+    (slot : PaperTranscriptSlot P) :
+    (Fintype.equivFin (PaperTranscriptSlot P)).symm (paperTranscriptSlotIndex slot) = slot := by
+  simp [paperTranscriptSlotIndex]
+
+omit [Field F] [DecidableEq F] [SampleableType F] in
+/-- Turn a paper prover-message slot into the corresponding `VectorSpec.MessageIdx`. -/
+noncomputable def paperMessageIdx {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ)
+    (slot : PaperTranscriptSlot P) (hslot : paperTranscriptSlotDirection slot = Direction.P_to_V) :
+    (whirPaperTranscriptVectorSpec P d).MessageIdx :=
+  ⟨paperTranscriptSlotIndex slot, by
+    simp [whirPaperTranscriptVectorSpec, hslot]⟩
+
+omit [Field F] [DecidableEq F] [SampleableType F] in
+/-- Turn a paper verifier-challenge slot into the corresponding `VectorSpec.ChallengeIdx`. -/
+noncomputable def paperChallengeIdx {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ)
+    (slot : PaperTranscriptSlot P) (hslot : paperTranscriptSlotDirection slot = Direction.V_to_P) :
+    (whirPaperTranscriptVectorSpec P d).ChallengeIdx :=
+  ⟨paperTranscriptSlotIndex slot, by
+    simp [whirPaperTranscriptVectorSpec, hslot]⟩
+
+omit [Field F] [DecidableEq F] [SampleableType F] in
+noncomputable def initialSumcheckMessageIdx {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ)
+    (s : Fin (P.foldingParam 0)) :
+    (whirPaperTranscriptVectorSpec P d).MessageIdx :=
+  paperMessageIdx P d (.initialSumcheckMessage s) rfl
+
+omit [Field F] [DecidableEq F] [SampleableType F] in
+noncomputable def initialSumcheckChallengeIdx {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ)
+    (s : Fin (P.foldingParam 0)) :
+    (whirPaperTranscriptVectorSpec P d).ChallengeIdx :=
+  paperChallengeIdx P d (.initialSumcheckChallenge s) rfl
+
+omit [Field F] [DecidableEq F] [SampleableType F] in
+noncomputable def mainFoldedOracleMessageIdx {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ) (i : Fin M) :
+    (whirPaperTranscriptVectorSpec P d).MessageIdx :=
+  paperMessageIdx P d (.mainFoldedOracle i) rfl
+
+omit [Field F] [DecidableEq F] [SampleableType F] in
+noncomputable def mainOutOfDomainChallengeIdx {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ) (i : Fin M) :
+    (whirPaperTranscriptVectorSpec P d).ChallengeIdx :=
+  paperChallengeIdx P d (.mainOutOfDomainChallenge i) rfl
+
+omit [Field F] [DecidableEq F] [SampleableType F] in
+noncomputable def mainOutOfDomainReplyMessageIdx {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ) (i : Fin M) :
+    (whirPaperTranscriptVectorSpec P d).MessageIdx :=
+  paperMessageIdx P d (.mainOutOfDomainReply i) rfl
+
+omit [Field F] [DecidableEq F] [SampleableType F] in
+noncomputable def mainShiftChallengeIdx {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ) (i : Fin M) :
+    (whirPaperTranscriptVectorSpec P d).ChallengeIdx :=
+  paperChallengeIdx P d (.mainShiftChallenge i) rfl
+
+omit [Field F] [DecidableEq F] [SampleableType F] in
+noncomputable def mainSumcheckMessageIdx {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ) (i : Fin M)
+    (s : Fin (P.foldingParam i.succ)) :
+    (whirPaperTranscriptVectorSpec P d).MessageIdx :=
+  paperMessageIdx P d (.mainSumcheckMessage i s) rfl
+
+omit [Field F] [DecidableEq F] [SampleableType F] in
+noncomputable def mainSumcheckChallengeIdx {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ) (i : Fin M)
+    (s : Fin (P.foldingParam i.succ)) :
+    (whirPaperTranscriptVectorSpec P d).ChallengeIdx :=
+  paperChallengeIdx P d (.mainSumcheckChallenge i s) rfl
+
+omit [Field F] [DecidableEq F] [SampleableType F] in
+noncomputable def finalPolynomialMessageIdx {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ) :
+    (whirPaperTranscriptVectorSpec P d).MessageIdx :=
+  paperMessageIdx P d .finalPolynomial rfl
+
+omit [Field F] [DecidableEq F] [SampleableType F] in
+noncomputable def finalRandomnessChallengeIdx {M : ℕ} {ιs : Fin (M + 1) → Type}
+    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ) :
+    (whirPaperTranscriptVectorSpec P d).ChallengeIdx :=
+  paperChallengeIdx P d .finalRandomness rfl
+
 /-! ### Semantic WHIR per-round transcript slots
 
 Construction 5.1 has real prover-message slots: a folded-function oracle / sumcheck message and an
@@ -654,6 +782,16 @@ end RBRSoundnessAssembly
 #print axioms whirPaperTranscriptVectorSpec
 #print axioms whirPaperTranscriptVectorSpec_dir
 #print axioms whirPaperTranscriptVectorSpec_length
+#print axioms packFiniteFunction
+#print axioms unpackFiniteFunction
+#print axioms unpack_packFiniteFunction
+#print axioms pack_unpackFiniteFunction
+#print axioms paperTranscriptSlotIndex
+#print axioms paperTranscriptSlotIndex_symm_apply
+#print axioms paperMessageIdx
+#print axioms paperChallengeIdx
+#print axioms mainFoldedOracleMessageIdx
+#print axioms finalPolynomialMessageIdx
 #print axioms whirVectorSpec_challengeIdxEquivFin
 #print axioms whirVectorSpec_challengeIdxEquivFin_apply
 #print axioms whirVectorSpec_challengeIdxEquivFin_symm_apply
