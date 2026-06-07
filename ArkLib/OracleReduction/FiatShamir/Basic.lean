@@ -387,6 +387,24 @@ end StateRestorationSoundness
 
 section ZeroKnowledgeTransfer
 
+/-!
+### Basic Fiat-Shamir zero-knowledge transfer
+
+The transformed reduction `R.fiatShamir` is *non-interactive*: its protocol spec
+`FiatShamirProtocolSpec` carries a single prover message and no verifier challenges. For a
+one-message reduction there is no challenge transcript for a zero-knowledge simulator to
+re-randomize beyond the honest transcript distribution, so the relevant zero-knowledge notion here
+is exactly honest-verifier zero-knowledge of the transformed reduction.
+
+A full simulator-based zero-knowledge predicate for arbitrary reductions is not yet defined in the
+core security layer: `Reduction.Simulator` is declared in `Security/Basic.lean`, but no
+`zeroKnowledge` predicate is built on it (see the zero-knowledge-definition issue). Pending that, we
+record the transfer at the HVZK level in both its statistical form (`Reduction.isStatHVZK`, with a
+free error `ε`) and its perfect form (`Reduction.isHVZK`, exact distributions), naming each
+obligation as a residual with its bridge theorem, mirroring the completeness and state-restoration
+soundness scaffolding above.
+-/
+
 local instance fiatShamirZKNoChallengeSampleable :
     ∀ i : (FiatShamirProtocolSpec (pSpec := pSpec)).ChallengeIdx,
       SampleableType ((FiatShamirProtocolSpec (pSpec := pSpec)).Challenge i) := by
@@ -433,15 +451,52 @@ theorem fiatShamir_isStatHVZK_of_HVZK
     Reduction.isStatHVZK fsInit fsImpl rel R.fiatShamir ε :=
   hTransfer hHVZK
 
+/-- Residual statement for the basic Fiat-Shamir *perfect* honest-verifier zero-knowledge transfer.
+
+The exact-distribution counterpart of `fiatShamir_statisticalHVZKTransferResidual` (the `ε = 0`
+case): `R.fiatShamir` is the one-message non-interactive reduction, whose only randomness is the
+prover message recomputed through the Fiat-Shamir challenge oracle. The open content of this
+residual is the construction of a transcript simulator for the transformed reduction out of a
+transcript simulator for the interactive source, together with the distribution-equality argument
+coupling the Fiat-Shamir honest transcript distribution to the source honest transcript
+distribution. -/
+def fiatShamir_hvzkTransferResidual
+    {τ : Type}
+    (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (fsInit : ProbComp τ)
+    (fsImpl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT τ ProbComp))
+    (rel : Set (StmtIn × WitIn))
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec) : Prop :=
+  Reduction.isHVZK init impl rel R →
+    Reduction.isHVZK fsInit fsImpl rel R.fiatShamir
+
+/-- Basic Fiat-Shamir perfect honest-verifier zero-knowledge follows immediately from a discharged
+transfer residual. This isolates the remaining proof obligation (simulator construction plus
+transcript distribution coupling) without claiming to solve it. -/
+theorem fiatShamir_isHVZK_of_transfer
+    {τ : Type}
+    (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (fsInit : ProbComp τ)
+    (fsImpl : QueryImpl (oSpec + fsChallengeOracle StmtIn pSpec) (StateT τ ProbComp))
+    (rel : Set (StmtIn × WitIn))
+    (R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec)
+    (hTransfer : fiatShamir_hvzkTransferResidual init impl fsInit fsImpl rel R)
+    (hHVZK : Reduction.isHVZK init impl rel R) :
+    Reduction.isHVZK fsInit fsImpl rel R.fiatShamir :=
+  hTransfer hHVZK
+
 #print axioms Reduction.fiatShamir_statisticalHVZKTransferResidual
 #print axioms Reduction.fiatShamir_isStatHVZK_of_HVZK
+#print axioms Reduction.fiatShamir_hvzkTransferResidual
+#print axioms Reduction.fiatShamir_isHVZK_of_transfer
 
 end ZeroKnowledgeTransfer
 
 end Reduction
 
 -- Future work: discharge the run-collapse, state-restoration transfer, and HVZK simulator-transfer
--- residuals named above for the basic Fiat-Shamir transform.
+-- residuals named above for the basic Fiat-Shamir transform (statistical and perfect forms); the
+-- HVZK legs are additionally gated on a core simulator-based zero-knowledge definition.
 
 end
 

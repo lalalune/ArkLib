@@ -75,8 +75,29 @@ theorem partitionProd_guard_eq (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypot
   have hne : l ≠ t + 1 := fun h => hT (h ▸ hl)
   rw [dif_pos (show l < t + 1 by omega)]
 
+/-- **Embedding of the `(A.1)` recursion `βHensel (t+1)` into `𝕃 H`.**  Pushes the ring
+homomorphism `embeddingOf𝒪Into𝕃` through `βHensel_succ` (sum, negation, products, powers) and
+discharges the guard via `partitionProd_guard_eq`, giving the `(i₁,λ)` sum with the partition
+product over the plain `βHensel`. -/
+theorem embed_βHensel_succ (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) (t : ℕ) :
+    embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp (t + 1))
+      = - ∑ i1 ∈ Finset.range (t + 2),
+          ∑ lam ∈ (Finset.univ : Finset (Nat.Partition (t + 1 - i1))).filter
+                    (fun lam => (t + 1) ∉ lam.parts),
+            embeddingOf𝒪Into𝕃 H (W𝒪 H) ^ (i1 + deltaSave i1 - 1)
+              * embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp) ^ (2 * i1 + sigmaLambda lam - 2)
+              * embeddingOf𝒪Into𝕃 H (B_coeff H x₀ R i1 lam)
+              * embeddingOf𝒪Into𝕃 H (partitionProd lam (βHensel H x₀ R hHyp)) := by
+  rw [βHensel_succ, map_neg, map_sum]
+  refine congrArg Neg.neg (Finset.sum_congr rfl (fun i1 _ => ?_))
+  rw [map_sum]
+  refine Finset.sum_congr rfl (fun lam hlam => ?_)
+  rw [partitionProd_guard_eq H x₀ R hHyp t i1 lam (Finset.mem_filter.mp hlam).2]
+  simp only [map_mul, map_pow]
+
 end BCIKS20.HenselNumerator
 
 -- Axiom audit.
 #print axioms BCIKS20.HenselNumerator.restrictedFaaDiBrunoSum_eq_partitionForm
 #print axioms BCIKS20.HenselNumerator.partitionProd_guard_eq
+#print axioms BCIKS20.HenselNumerator.embed_βHensel_succ

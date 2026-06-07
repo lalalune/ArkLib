@@ -1959,6 +1959,34 @@ noncomputable def foldMatrix (i : Fin r) {destIdx : Fin r} (steps : ℕ)
   foldMatrixNat 𝔽q β i steps (newAPI_i_add_steps_lt h_destIdx h_destIdx_le)
     (newAPI_liftPoint 𝔽q β h_destIdx h_destIdx_le y)
 
+/-- **Explicit residual for fold-matrix nonsingularity.**
+
+The soundness proof of Proposition 4.21 needs every new-API fold matrix `M_y` to be nonsingular.
+This should ultimately follow from the AdditiveNTT quotient-fiber basis change, but the current
+API only exposes the matrix evaluator. Naming the residual keeps the dependency visible instead of
+leaving downstream files to reference an undeclared constant. -/
+class FoldMatrixDetNeZeroResidual : Prop where
+  holds : ∀ (i : Fin r) {destIdx : Fin r} (steps : ℕ)
+    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    (y : (sDomain 𝔽q β h_ℓ_add_R_rate) destIdx),
+    (foldMatrix 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps)
+      (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) y).det ≠ 0
+
+/-- Fold matrices are nonsingular, reduced to the explicit `FoldMatrixDetNeZeroResidual`.
+
+This theorem preserves the public name expected by the Binius soundness layer while making the
+remaining AdditiveNTT matrix-invertibility obligation a theorem-scope typeclass hypothesis. -/
+theorem foldMatrix_det_ne_zero (i : Fin r) {destIdx : Fin r} (steps : ℕ)
+    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    [FoldMatrixDetNeZeroResidual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
+    (y : (sDomain 𝔽q β h_ℓ_add_R_rate) destIdx) :
+    (foldMatrix 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (i := i) (steps := steps)
+      (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) y).det ≠ 0 :=
+  FoldMatrixDetNeZeroResidual.holds i steps h_destIdx h_destIdx_le y
+
+#print axioms FoldMatrixDetNeZeroResidual
+#print axioms foldMatrix_det_ne_zero
+
 /-- **Fiber evaluations** `[f(x_0), …, f(x_{2^steps-1})]` of `f` over the iterated-quotient fiber
 of `y` (canonical new-API). `f : S⁽ⁱ⁾ → L`, `y : S⁽ᵈᵉˢᵗ⁾` (lifted to the legacy `⟨i + steps, _⟩`
 index by its underlying value). Equals `fiberEvaluationMapping` composed with the index lift. -/
