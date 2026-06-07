@@ -217,6 +217,20 @@ noncomputable def finalCheckWithClaim :
   CheckClaim.oracleReduction oSpec
     (FinalClaimStatement R pp) (FinalOracleStatement R pp) (finalClaimPredicate R pp)
 
+/-- Input relation front door for the target-carrying Spartan final check. The semantic terminal
+equation is enforced by `finalClaimPredicate` inside the zero-round oracle verifier; this relation
+keeps the composition endpoint type explicit for later `CheckClaim` completeness plumbing. -/
+@[reducible]
+def finalCheckWithClaimRelIn :
+    Set ((FinalClaimStatement R pp × (∀ i, FinalOracleStatement R pp i)) × Unit) :=
+  Set.univ
+
+/-- Output relation front door for the target-carrying Spartan final check. -/
+@[reducible]
+def finalCheckWithClaimRelOut :
+    Set ((FinalClaimStatement R pp × (∀ i, FinalOracleStatement R pp i)) × Unit) :=
+  Set.univ
+
 /-- The terminal-check input relation: the random-linear-combination of the bundled evaluation
 claims, taken in the clear at the prover's view, is well-formed. (The value-level relation; the
 oracle reduction's verifier checks `finalPredicate`.) -/
@@ -398,6 +412,18 @@ def composedPIOPResidual : Prop :=
       (FinalStatement R pp) (FinalOracleStatement R pp) Unit
       pSpecC)
 
+/-- **NAMED RESIDUAL — target-carrying composed Spartan PIOP existence.** This is the same
+composition obligation as `composedPIOPResidual`, but with the real terminal `CheckClaim` endpoint:
+the output statement carries the second-sum-check target value alongside the final Spartan context,
+so the final predicate can check `target = expected(r_x,r_y,A,B,C,Z)`. -/
+def composedPIOPWithClaimResidual : Prop :=
+  ∃ (N : ℕ) (pSpecC : ProtocolSpec N) (_ : ∀ i, OracleInterface.{0, 0} (pSpecC.Message i))
+    (_ : ∀ i, SampleableType (pSpecC.Challenge i)),
+    Nonempty (OracleReduction oSpec
+      (Statement R pp) (OracleStatement R pp) (Witness R pp)
+      (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit
+      pSpecC)
+
 /-- **NAMED RESIDUAL — composed Spartan PIOP perfect completeness.** Discharged, once the composed
 reduction `Rc` (over its combined spec `pSpecC`) is available, by iterated
 `OracleReduction.append_perfectCompleteness`: each leaf is perfectly complete
@@ -414,6 +440,17 @@ def composedCompletenessResidual
       (FinalStatement R pp) (FinalOracleStatement R pp) Unit pSpecC)
     {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp)) : Prop :=
   Rc.perfectCompleteness init impl (spartanRelIn R pp) (finalCheckRelOut R pp)
+
+/-- Target-carrying version of `composedCompletenessResidual`, for a composed Spartan reduction
+ending at `finalCheckWithClaim`. -/
+def composedCompletenessWithClaimResidual
+    {N : ℕ} {pSpecC : ProtocolSpec N}
+    [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
+    (Rc : OracleReduction oSpec
+      (Statement R pp) (OracleStatement R pp) (Witness R pp)
+      (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit pSpecC)
+    {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp)) : Prop :=
+  Rc.perfectCompleteness init impl (spartanRelIn R pp) (finalCheckWithClaimRelOut R pp)
 
 /-- **NAMED RESIDUAL — composed Spartan PIOP round-by-round knowledge soundness.** Discharged, once
 the composed verifier is available, by iterated `OracleVerifier.append_rbrKnowledgeSoundness`: each
@@ -433,6 +470,19 @@ def composedRbrKnowledgeSoundnessResidual
   Rc.verifier.rbrKnowledgeSoundness init impl
     (spartanRelIn R pp) (finalCheckRelOut R pp) rbrKnowledgeError
 
+/-- Target-carrying version of `composedRbrKnowledgeSoundnessResidual`, for composed Spartan
+verifiers ending at `finalCheckWithClaim`. -/
+def composedRbrKnowledgeSoundnessWithClaimResidual
+    {N : ℕ} {pSpecC : ProtocolSpec N}
+    [∀ i, OracleInterface (pSpecC.Message i)] [∀ i, SampleableType (pSpecC.Challenge i)]
+    (Rc : OracleReduction oSpec
+      (Statement R pp) (OracleStatement R pp) (Witness R pp)
+      (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit pSpecC)
+    {σ : Type} (init : ProbComp σ) (impl : QueryImpl oSpec (StateT σ ProbComp))
+    (rbrKnowledgeError : pSpecC.ChallengeIdx → ℝ≥0) : Prop :=
+  Rc.verifier.rbrKnowledgeSoundness init impl
+    (spartanRelIn R pp) (finalCheckWithClaimRelOut R pp) rbrKnowledgeError
+
 /-! ### Axiom audit for the target-carrying final-check frontier and encoding residual -/
 
 #print axioms evalClaimValue_eq_scaled_sum
@@ -444,6 +494,11 @@ def composedRbrKnowledgeSoundnessResidual
 #print axioms finalExpectedClaimFromOracles
 #print axioms finalClaimPredicate
 #print axioms finalCheckWithClaim
+#print axioms finalCheckWithClaimRelIn
+#print axioms finalCheckWithClaimRelOut
+#print axioms composedPIOPWithClaimResidual
+#print axioms composedCompletenessWithClaimResidual
+#print axioms composedRbrKnowledgeSoundnessWithClaimResidual
 
 end Bricks
 
