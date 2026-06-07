@@ -204,6 +204,7 @@ theorem isHVZK.isStatHVZK
   let ⟨sim, hsim⟩ := h
   ⟨sim, hsim.statisticalHVZK ε⟩
 
+<<<<<<< Updated upstream
 /-- **Zero-error statistical HVZK existence is perfect HVZK existence.** -/
 theorem isStatHVZK_zero.isHVZK
     {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
@@ -226,6 +227,8 @@ theorem isHVZK_iff_isStatHVZK_zero
   · intro h
     exact isStatHVZK_zero.isHVZK h
 
+=======
+>>>>>>> Stashed changes
 /-- **`isStatHVZK` is antitone in the relation.** -/
 theorem isStatHVZK.mono_relation
     {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
@@ -330,8 +333,11 @@ end Identity
 #print axioms statisticalHVZK.mono_relation
 #print axioms statisticalHVZK.mono_error
 #print axioms isHVZK.isStatHVZK
+<<<<<<< Updated upstream
 #print axioms isStatHVZK_zero.isHVZK
 #print axioms isHVZK_iff_isStatHVZK_zero
+=======
+>>>>>>> Stashed changes
 #print axioms isStatHVZK.mono_relation
 #print axioms isStatHVZK.mono_error
 

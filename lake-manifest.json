@@ -10,7 +10,11 @@
       "rev": "bb0959d50751995ec32e6c4597f9446ecd42f970",
       "name": "CompPoly",
       "manifestFile": "lake-manifest.json",
+<<<<<<< Updated upstream
       "inputRev": "bb0959d50751995ec32e6c4597f9446ecd42f970",
+=======
+      "inputRev": "0cfaaea9356dea1b292476fa5c25ac8a59b4b06a",
+>>>>>>> Stashed changes
       "inherited": false,
       "configFile": "lakefile.lean"
     },
