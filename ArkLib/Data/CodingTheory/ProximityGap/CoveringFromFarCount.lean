@@ -43,7 +43,7 @@ theorem card_far_stacks_fixed_gamma (C : Set (ι → F)) (δ : ℝ≥0) (γ : F)
         (fun p => if ¬ δᵣ(p.1, C) ≤ δ then (1 : ℕ) else 0) (fun u => rfl)]
   rw [Fintype.sum_prod_type]
   simp only [Finset.sum_const, Finset.card_univ]
-  simp [nsmul_eq_mul, Finset.mul_sum, ← Finset.card_filter, mul_comm]
+  simp [nsmul_eq_mul, Nat.cast_id, ← Finset.mul_sum, ← Finset.card_filter, mul_comm]
 
 /-- Double-count: `∑_u #{far γ} = |F| · |ι → F| · |far|`. -/
 theorem sum_card_far_eq (C : Set (ι → F)) (δ : ℝ≥0) :
