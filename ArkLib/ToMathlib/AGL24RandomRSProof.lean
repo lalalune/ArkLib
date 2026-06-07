@@ -88,6 +88,8 @@ theorem randomRSBadDomainProbability_eq_front_door
     (n k listBound : ℕ) (η : ℝ) (hn : n ≤ Fintype.card F) :
     randomRSBadDomainProbability F n k listBound η hn =
       Pr_{let L ← Probability.uniformSizeSubsetOfLe F n hn}[
+        letI : DecidablePred (Membership.mem L) := Classical.decPred _
+        letI : Fintype L := Subtype.fintype (Membership.mem L)
         ¬ (Lambda
             ((ReedSolomon.code (Probability.SizeSubset.toEmbedding L) k : Set (L → F)))
             (1 - (k : ℝ) / (n : ℝ) - η) ≤ (listBound : ℕ∞))] := by
@@ -110,7 +112,7 @@ theorem random_rs_list_decoding_of_first_moment_residual
   -- literal `Pr[¬ Lambda-bound] ≤ failure`; the residual is exactly that, repackaged through the
   -- bad-domain probability bridge.
   rw [randomRSListDecodingFirstMomentResidual, randomRSBadDomainProbability_eq_front_door] at hres
-  exact hres
+  simpa [random_rs_list_decoding] using hres
 
 end RandomReedSolomonResidual
 
