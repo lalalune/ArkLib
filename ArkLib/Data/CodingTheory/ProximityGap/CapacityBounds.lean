@@ -1417,6 +1417,76 @@ theorem frs_epsMCA_capacity_gg25_of_subspaceDesign_prop
     (τ := τ) (t := t) ?_ hRadius hBound
   simpa [subspaceDesign_epsMCA_gg25] using hT413
 
+/-- **Discharge of the T4.14 `hBound` arithmetic residual.**
+
+The paper's informal "choose `t ≈ 1/η`" is formalized as the honest side-condition `t ≤ 2/η`.
+Under it the explicit FRS capacity inequality holds with slack — `t·n ≤ 2n/η` (since `t ≤ 2/η`,
+`n ≥ 0`) and `4t² ≤ 16/η² ≤ 24/η³` (since `t ≤ 2/η` and `η < 1`) — so the `hBound` hypothesis of
+`frs_epsMCA_capacity_gg25_of_residuals` / `_of_subspaceDesign_prop` is no longer an external admit
+but a proved consequence of `t ≤ 2/η`. Pure real arithmetic; no coding-theory content. -/
+theorem frs_capacity_realBound_of_t_le (n η t cF : ℝ)
+    (hn : 0 ≤ n) (hη : 0 < η) (hη_lt : η < 1) (ht : 0 < t) (hcF : 0 < cF)
+    (htη : t ≤ 2 / η) :
+    (t * n + 4 * t ^ 2) / cF ≤ 2 * n / (η * cF) + 24 / (η ^ 3 * cF) := by
+  have hcore : t * n + 4 * t ^ 2 ≤ 2 * n / η + 24 / η ^ 3 := by
+    have hη2 : (0:ℝ) < η ^ 2 := by positivity
+    have hη3 : (0:ℝ) < η ^ 3 := by positivity
+    have hA : t * n ≤ 2 * n / η := by
+      have h := mul_le_mul_of_nonneg_right htη hn
+      calc t * n ≤ (2 / η) * n := h
+        _ = 2 * n / η := by ring
+    have ht2 : t ^ 2 ≤ (2 / η) ^ 2 := by
+      have h := mul_le_mul htη htη ht.le (by positivity : (0:ℝ) ≤ 2 / η)
+      calc t ^ 2 = t * t := by ring
+        _ ≤ (2 / η) * (2 / η) := h
+        _ = (2 / η) ^ 2 := by ring
+    have hB : 4 * t ^ 2 ≤ 24 / η ^ 3 := by
+      have h2 : 4 * (2 / η) ^ 2 = 16 / η ^ 2 := by field_simp; ring
+      have h3 : (16:ℝ) / η ^ 2 ≤ 24 / η ^ 3 := by
+        have heq : 24 / η ^ 3 - 16 / η ^ 2 = (24 - 16 * η) / η ^ 3 := by
+          field_simp; try ring
+        have hnn : (0:ℝ) ≤ (24 - 16 * η) / η ^ 3 := div_nonneg (by linarith) hη3.le
+        linarith [heq, hnn]
+      calc 4 * t ^ 2 ≤ 4 * (2 / η) ^ 2 := by linarith [ht2]
+        _ = 16 / η ^ 2 := h2
+        _ ≤ 24 / η ^ 3 := h3
+    linarith [hA, hB]
+  have hrw : 2 * n / (η * cF) + 24 / (η ^ 3 * cF) = (2 * n / η + 24 / η ^ 3) / cF := by
+    field_simp; try ring
+  rw [hrw]
+  gcongr
+
+/-- T4.14 Prop adapter using the honest `t ≤ 2/η` side-condition in place of the raw `hBound`
+inequality. This discharges the arithmetic residual via `frs_capacity_realBound_of_t_le`, so the
+remaining T4.14 inputs are exactly the FRS subspace-design instance (T2.18), the public T4.13
+instance, and the radius identification — the genuine mathematical content. -/
+theorem frs_epsMCA_capacity_gg25_of_subspaceDesign_prop_tle
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) (ω : F)
+    (η : ℝ) (hη_pos : 0 < η) (hη_lt : η < 1)
+    (hs_gt : (s : ℝ) > 16 / η ^ 2)
+    (τ : ℕ → ℝ) (t : ℕ) (ht : 0 < t)
+    (hT218 : IsSubspaceDesign s τ (ReedSolomon.Folded.frsCode domain k s ω))
+    (hT413 : subspaceDesign_epsMCA_gg25 s τ
+        (ReedSolomon.Folded.frsCode domain k s ω) hT218 t ht)
+    (hRadius :
+      let n : ℝ := Fintype.card ι
+      let ρ : ℝ := k / n
+      ((1 - ρ - η).toNNReal : ℝ≥0) =
+        (1 - τ (t + 1) - 3 / (2 * t)).toNNReal)
+    (htη : (t : ℝ) ≤ 2 / η) :
+    frs_epsMCA_capacity_gg25 domain k s ω η hη_pos hη_lt hs_gt := by
+  refine frs_epsMCA_capacity_gg25_of_subspaceDesign_prop
+    (domain := domain) (k := k) (s := s) (ω := ω) (η := η)
+    hη_pos hη_lt hs_gt τ t ht hT218 hT413 hRadius ?_
+  intro n
+  have hcF : (0:ℝ) < (Fintype.card F : ℝ) := by
+    haveI : Nonempty F := ⟨0⟩
+    exact_mod_cast Fintype.card_pos
+  exact frs_capacity_realBound_of_t_le (Fintype.card ι : ℝ) η (t : ℝ) (Fintype.card F : ℝ)
+    (Nat.cast_nonneg _) hη_pos hη_lt (by exact_mod_cast ht) hcF htη
+
 /-- Packaged single-instance frontier for ABF26 T4.14 / GG25 Corollary 4.10.
 
 The fields are exactly the residual inputs consumed by
@@ -1567,6 +1637,8 @@ end SubspaceDesignFRS
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_bound
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_residuals
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_residuals_prop
+#print axioms CodingTheory.frs_capacity_realBound_of_t_le
+#print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_subspaceDesign_prop_tle
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_subspaceDesign_bound
 #print axioms CodingTheory.FRSEpsMCACapacityGG25Frontier
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_of_frontier
