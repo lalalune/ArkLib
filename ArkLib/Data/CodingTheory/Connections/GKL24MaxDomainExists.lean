@@ -6,6 +6,8 @@ Authors: ArkLib Contributors
 
 import ArkLib.Data.CodingTheory.Connections.GKL24FirstMoment
 
+set_option autoImplicit false
+
 /-!
 # Existence of the maximal correlated-agreement domain (GKL24 building block)
 
@@ -19,6 +21,8 @@ Lemma 1 / Cor 1 content.
 -/
 
 namespace ProximityGap
+
+open scoped NNReal
 
 variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
   {F : Type} [Field F] [Fintype F] [DecidableEq F]
