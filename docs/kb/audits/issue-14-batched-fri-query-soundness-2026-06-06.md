@@ -56,6 +56,9 @@ Current source exposes both sides of that frontier as named parts:
   α ^ l` arithmetic budget used by `fri_soundness`, and
   `Fri.friSoundnessTotalErrorAccounting_of_phase_bounds` proves it from
   separate batching and FRI-tail error bounds.
+- `Fri.friBatchPhaseErrorBound` and `Fri.friTailPhaseErrorBound` name those two
+  per-phase error-bound targets directly; `Fri.friSoundnessTotalErrorAccounting_of_named_phase_bounds`
+  packages them into the existing total-error accounting field.
 - `Fri.fri_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndSequentialCompositionAndTotalError`
   gives the same Claim 8.3 reassembly along the probability-space query-round
   route, with query lift, concrete sequential composition, and arithmetic
@@ -171,6 +174,8 @@ ArkLib/Data/CodingTheory/InterleavedCode.lean:738:theorem jointAgreement_iff_joi
    residual is available; the arithmetic `εC + α^l` budget is named by
    `Fri.friSoundnessTotalErrorAccounting` and supplied from per-phase error
    bounds by `Fri.friSoundnessTotalErrorAccounting_of_phase_bounds`.  The
+   remaining per-phase targets are now named as
+   `Fri.friBatchPhaseErrorBound` and `Fri.friTailPhaseErrorBound`.  The
    probability-route wrapper
    `Fri.fri_soundness_of_queryRoundProbabilityBoundAndBatchedFRIOracleLensAndSequentialCompositionAndTotalError`
    combines the proved query-round probability front door with these Claim 8.3

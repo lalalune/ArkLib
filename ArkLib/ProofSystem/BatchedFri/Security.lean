@@ -1537,6 +1537,37 @@ def friSoundnessTotalErrorAccounting
   ((batchError + friError : ℝ≥0) : ℝ≥0∞) ≤ εC 𝔽 n s m ρ_sqrt + α ^ l
 
 open ENNReal in
+/-- Named batching-phase error-bound target for Claim 8.3.
+
+This is the exact `εC 𝔽 n s m ρ_sqrt` bound consumed by
+`friSoundnessTotalErrorAccounting_of_phase_bounds`. -/
+def friBatchPhaseErrorBound
+    {m : ℕ}
+    (_m_ge_3 : m ≥ 3)
+    (batchError : ℝ≥0) : Prop :=
+  let ρ_sqrt :=
+    ReedSolomon.sqrtRate
+      (2 ^ n)
+      (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+  (batchError : ℝ≥0∞) ≤ εC 𝔽 n s m ρ_sqrt
+
+open ENNReal in
+/-- Named FRI-tail phase error-bound target for Claim 8.3.
+
+This is the exact `α ^ l` bound consumed by
+`friSoundnessTotalErrorAccounting_of_phase_bounds`. -/
+def friTailPhaseErrorBound
+    {l m : ℕ}
+    (_m_ge_3 : m ≥ 3)
+    (friError : ℝ≥0) : Prop :=
+  let ρ_sqrt :=
+    ReedSolomon.sqrtRate
+      (2 ^ n)
+      (⟨fun x => x, by simp⟩ : ω ↪ 𝔽)
+  let α : ℝ≥0 := (ρ_sqrt * (1 + 1 / (2 * (m : ℝ≥0))))
+  (friError : ℝ≥0∞) ≤ α ^ l
+
+open ENNReal in
 omit [Nontrivial 𝔽] in
 /-- Per-phase error bounds imply the concrete Claim 8.3 total-error accounting field. -/
 theorem friSoundnessTotalErrorAccounting_of_phase_bounds
@@ -1561,6 +1592,28 @@ theorem friSoundnessTotalErrorAccounting_of_phase_bounds
   unfold friSoundnessTotalErrorAccounting
   rw [ENNReal.coe_add]
   exact add_le_add h_batch h_fri
+
+open ENNReal in
+omit [Nontrivial 𝔽] in
+/-- Named per-phase error-bound targets imply the concrete Claim 8.3 total-error accounting field.
+
+This theorem is definitionally the same accounting step as
+`friSoundnessTotalErrorAccounting_of_phase_bounds`, but exposes the two remaining phase-bound
+obligations as reusable named propositions. -/
+theorem friSoundnessTotalErrorAccounting_of_named_phase_bounds
+    {l m : ℕ}
+    (m_ge_3 : m ≥ 3)
+    {batchError friError : ℝ≥0}
+    (h_batch :
+      friBatchPhaseErrorBound
+        (n := n) (s := s) (ω := ω) m_ge_3 batchError)
+    (h_fri :
+      friTailPhaseErrorBound
+        (n := n) (ω := ω) (l := l) m_ge_3 friError) :
+    friSoundnessTotalErrorAccounting
+      (n := n) (s := s) (ω := ω) (l := l) m_ge_3 batchError friError := by
+  exact friSoundnessTotalErrorAccounting_of_phase_bounds
+    (n := n) (s := s) (ω := ω) (l := l) m_ge_3 h_batch h_fri
 
 /-- Split frontier for Claim 8.3.  The `fri_soundness` residual is the end-to-end
 verifier-failure statement for batched FRI, while the remaining proof should be assembled from
@@ -1983,7 +2036,10 @@ set_option linter.style.longLine false in
 #print axioms Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLens
 #print axioms Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequentialComposition
 #print axioms Fri.friSoundnessTotalErrorAccounting
+#print axioms Fri.friBatchPhaseErrorBound
+#print axioms Fri.friTailPhaseErrorBound
 #print axioms Fri.friSoundnessTotalErrorAccounting_of_phase_bounds
+#print axioms Fri.friSoundnessTotalErrorAccounting_of_named_phase_bounds
 #print axioms Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequentialCompositionAndTotalError
 #print axioms Fri.fri_soundness_of_forall_mem
 #print axioms Fri.fri_soundness_of_parts
@@ -2028,4 +2084,7 @@ end Fri
 set_option linter.style.longLine false in
 #print axioms Fri.FriSoundnessParts.of_queryRoundDensityBoundAndBatchedFRIOracleLensAndSequentialComposition
 #print axioms Fri.fri_soundness_of_queryRoundDensityBoundAndBatchedFRIOracleLens
+#print axioms Fri.friBatchPhaseErrorBound
+#print axioms Fri.friTailPhaseErrorBound
+#print axioms Fri.friSoundnessTotalErrorAccounting_of_named_phase_bounds
 #print axioms Fri.fri_soundness_of_parts
