@@ -1,3 +1,0 @@
-warning: manifest out of date: git url of dependency 'VCVio' changed; use `lake update VCVio` to update it
-warning: manifest out of date: git revision of dependency 'VCVio' changed; use `lake update VCVio` to update it
-warning: manifest out of date: source kind (git/path) of dependency 'CompPoly' changed; use `lake update CompPoly` to update it
