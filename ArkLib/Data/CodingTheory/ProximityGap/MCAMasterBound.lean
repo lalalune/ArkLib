@@ -7,6 +7,7 @@ import Mathlib.LinearAlgebra.Span.Basic
 import Mathlib.Data.Set.Card
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # Pencil–subspace incidence master bound for the MCA bad-scalar count
@@ -122,5 +123,33 @@ theorem ncard_badScalars_le_choose {K M ι : Type*} [Field K] [AddCommGroup M] [
     _ = (Fintype.card ι).choose e := by
         simp [Finset.card_powersetCard, Finset.card_univ]
 
+/-- **Degenerate (rank-≤1) pencil bound.**  If the syndromes are linearly dependent
+(`s₀ ∈ span {s₁}`, i.e. the pencil is not a genuine projective line) then there is at most
+one bad scalar.  This is the companion of `ncard_badScalars_le`: the syndrome-plane analysis
+splits into the rank-≤1 case handled here (`≤ 1`) and the rank-2 case bounded by the master
+bound — exactly the "WLOG the pencil is a genuine line" reduction of the UDR-ladder proof.
+
+Reason: `s₀ = c • s₁`, so `s₀ + γ • s₁ = (c + γ) • s₁`; if it lies in `V` with `s₁ ∉ V`
+then `c + γ = 0` (else dividing by the unit `c + γ` puts `s₁ ∈ V`), pinning `γ = -c`. -/
+theorem ncard_badScalars_le_one_of_dependent {K M : Type*} [Field K] [AddCommGroup M]
+    [Module K M] (s₀ s₁ : M) (𝒱 : Finset (Submodule K M))
+    (hdep : s₀ ∈ Submodule.span K {s₁}) :
+    {γ : K | ∃ V ∈ 𝒱, s₀ + γ • s₁ ∈ V ∧ s₁ ∉ V}.ncard ≤ 1 := by
+  classical
+  obtain ⟨c, hc⟩ := Submodule.mem_span_singleton.mp hdep
+  have hsub : {γ : K | ∃ V ∈ 𝒱, s₀ + γ • s₁ ∈ V ∧ s₁ ∉ V} ⊆ {(-c : K)} := by
+    intro γ hγ
+    obtain ⟨V, _hV, hmem, hnot⟩ := hγ
+    have hpenc : s₀ + γ • s₁ = (c + γ) • s₁ := by rw [← hc, add_smul]
+    rw [hpenc] at hmem
+    rw [Set.mem_singleton_iff]
+    by_contra hγne
+    have hcg : c + γ ≠ 0 := fun h => hγne (by linear_combination h)
+    apply hnot
+    have hs := V.smul_mem (c + γ)⁻¹ hmem
+    rwa [smul_smul, inv_mul_cancel₀ hcg, one_smul] at hs
+  calc {γ : K | ∃ V ∈ 𝒱, s₀ + γ • s₁ ∈ V ∧ s₁ ∉ V}.ncard
+      ≤ ({(-c : K)} : Set K).ncard := Set.ncard_le_ncard hsub (Set.finite_singleton _)
+    _ = 1 := Set.ncard_singleton _
 
 end ArkLib.MCAMasterBound

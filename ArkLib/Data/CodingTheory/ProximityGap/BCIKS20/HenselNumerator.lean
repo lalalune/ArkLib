@@ -917,19 +917,30 @@ lemma embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared (x₀ : F) (R : F[X][X]
       ← W_pow_mul_eval₂_div_eq_liftBivariate H (P := p) (k := k) hk]
   rfl
 
-axiom embeddingOf_hasseCoeffReprO_cleared_uniform_residual
-    (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) :
-    embeddingOf𝒪Into𝕃 H
-        (Ideal.Quotient.mk (Ideal.span {H_tilde' H}) (hasseCoeffRepr𝒪_cleared H x₀ R i1 m (R.natDegree - deltaSave i1 - m)) : 𝒪 H)
-      = liftToFunctionField (H := H) H.leadingCoeff ^ (R.natDegree - deltaSave i1 - m)
-          * hasseEvalAtRoot H x₀ R i1 m
+/-- **Uniform `W`-clearing embedding identity (DISCHARGED — was a residual axiom, #138/#139).**
+The natural ("uniform") clearing power for the iterated Hasse coefficient is its own `Y`-degree
+`natDegreeY p`, with `p = evalX (C x₀) (Δ_X^{i1} Δ_Y^{m} R)`: clearing every `(T/W)` denominator
+at that power gives `embedding ⟦cleared⟧ = W^{natDegreeY p} · hasseEvalAtRoot`, with NO hypothesis
+(the degree premise `natDegreeY p ≤ natDegreeY p` is reflexive).  Proven directly from the general
+conditional identity `embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared`.
 
+This replaces an earlier unconditional `R.natDegree − deltaSave i1 − m` residual axiom that was
+**unsound** on the `i1 = 0` (`deltaSave = 1`) branch: it demanded the strictly sharper
+`natDegreeY p ≤ R.natDegree − 1 − m`, which fails generically because the iterated-Hasse
+representative has `Y`-degree exactly `R.natDegree − m` (neither `evalX (C x₀)` nor `Δ_X^0` removes
+the extra power).  Only the conditional/at-`natDegreeY p` form is true; it is what an honest
+consumer needs (the clearing power is determined by the polynomial's own `Y`-degree). -/
 lemma embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared_uniform (x₀ : F) (R : F[X][X][Y]) (i1 m : ℕ) :
     embeddingOf𝒪Into𝕃 H
-        (Ideal.Quotient.mk (Ideal.span {H_tilde' H}) (hasseCoeffRepr𝒪_cleared H x₀ R i1 m (R.natDegree - deltaSave i1 - m)) : 𝒪 H)
-      = liftToFunctionField (H := H) H.leadingCoeff ^ (R.natDegree - deltaSave i1 - m)
+        (Ideal.Quotient.mk (Ideal.span {H_tilde' H})
+          (hasseCoeffRepr𝒪_cleared H x₀ R i1 m
+            (Bivariate.natDegreeY
+              (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R))))) : 𝒪 H)
+      = liftToFunctionField (H := H) H.leadingCoeff ^
+            (Bivariate.natDegreeY
+              (Bivariate.evalX (Polynomial.C x₀) (hasseDerivX i1 (hasseDerivY m R))))
           * hasseEvalAtRoot H x₀ R i1 m :=
-  embeddingOf_hasseCoeffReprO_cleared_uniform_residual H x₀ R i1 m
+  embeddingOf𝒪Into𝕃_hasseCoeffRepr𝒪_cleared H x₀ R i1 m _ (le_refl _)
 
 set_option linter.unusedSectionVars false in
 /-- **`Λ`-weight decomposition into the `Y`-degree and `X`-degree components.**  For any bivariate

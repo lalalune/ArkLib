@@ -29,4 +29,3 @@ gg25_subspaceDesign_epsMCA  # #86 external GG25 subspace-design MCA bound
 gg25_frs_epsMCA_capacity  # #86 external GG25 folded-RS capacity MCA bound
 fiatShamir_soundness_of_stateRestoration_coupled  # #116 scratch coupled FS/SR soundness transfer
 fenziSanso_upperBound_attack_concrete_residual  # #106 concrete KoalaBear winning-set residual
-embeddingOf_hasseCoeffReprO_cleared_uniform_residual  # #138/#139 Hensel W-clearing uniform degree frontier
