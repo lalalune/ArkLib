@@ -28,6 +28,9 @@ binomial and an `α₀^{i-|λ|}` factor) and the **RHS recursion form**
 * `B_coeff_indiscrete_zero_eq_hasseCoeffRepr𝒪` and the order-zero RHS normal forms — the surviving
   recursion numerator is the un-cleared `hasseCoeffRepr𝒪 H x₀ R 1 0`, and `ξ` can be expanded as
   `W^(R.natDegree - 2) * ζ` without cancelling any factors.
+* `restrictedMatchAt_zero_iff_unclearedHasseCoeff_div_W_natDegree` — after the legitimate
+  `ζ`/`W` cancellation hypotheses, the fixed order-zero core is exactly the cleared-vs-uncleared
+  `hasseEvalAtRoot = embedding(hasseCoeffRepr𝒪) / W^R.natDegree` obstruction.
 
 NO `axiom`/`admit`/`native_decide`/`sorry`. Audited in-file via `#print axioms`.
 -/
@@ -320,6 +323,57 @@ theorem hasseEvalAtRoot_eq_single_B_coeff_of_restrictedMatchAt_zero
       restrictedMatchRecursionPartitionFormZeroSingleBCoeff H x₀ R hHyp :=
   (restrictedMatchAt_zero_iff_hasseEvalAtRoot_eq_single_B_coeff H x₀ R hHyp).1 hmatch
 
+/-- Under the legitimate nonzero/degree hypotheses, any carved order-zero match exposes the
+cleared-vs-uncleared comparison as the only remaining target. -/
+theorem hasseEvalAtRoot_eq_unclearedHasseCoeff_div_W_natDegree_of_restrictedMatchAt_zero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) (hζ : ClaimA2.ζ R x₀ H ≠ 0)
+    (hmatch : RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0) :
+    hasseEvalAtRoot H x₀ R 1 0 =
+      embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
+        / (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree := by
+  calc
+    hasseEvalAtRoot H x₀ R 1 0
+        = restrictedMatchRecursionPartitionFormZeroSingleBCoeff H x₀ R hHyp :=
+      hasseEvalAtRoot_eq_single_B_coeff_of_restrictedMatchAt_zero H x₀ R hHyp hmatch
+    _ = embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
+          / (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree :=
+      restrictedMatchRecursionPartitionFormZeroSingleBCoeff_eq_unclearedHasseCoeff_div_W_natDegree
+        H x₀ R hHyp hd hζ
+
+/-- The cleared-vs-uncleared equality is enough to build the carved order-zero match once the
+canonical RHS has been cancelled under the explicit degree/nonzero hypotheses. -/
+theorem RestrictedFaaDiBrunoMatchAt.zero_of_unclearedHasseCoeff_div_W_natDegree
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) (hζ : ClaimA2.ζ R x₀ H ≠ 0)
+    (hzero :
+      hasseEvalAtRoot H x₀ R 1 0 =
+        embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
+          / (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree) :
+    RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0 := by
+  apply RestrictedFaaDiBrunoMatchAt.zero_of_hasseEvalAtRoot_eq_single_B_coeff
+  calc
+    hasseEvalAtRoot H x₀ R 1 0
+        = embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
+            / (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree := hzero
+    _ = restrictedMatchRecursionPartitionFormZeroSingleBCoeff H x₀ R hHyp :=
+      (restrictedMatchRecursionPartitionFormZeroSingleBCoeff_eq_unclearedHasseCoeff_div_W_natDegree
+        H x₀ R hHyp hd hζ).symm
+
+/-- Fixed order-zero P2 is exactly the isolated cleared-vs-uncleared equality under the explicit
+degree/nonzero cancellation hypotheses. -/
+theorem restrictedMatchAt_zero_iff_unclearedHasseCoeff_div_W_natDegree
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) (hζ : ClaimA2.ζ R x₀ H ≠ 0) :
+    RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0 ↔
+      hasseEvalAtRoot H x₀ R 1 0 =
+        embeddingOf𝒪Into𝕃 H (hasseCoeffRepr𝒪 H x₀ R 1 0)
+          / (liftToFunctionField (H := H) H.leadingCoeff) ^ R.natDegree :=
+  ⟨hasseEvalAtRoot_eq_unclearedHasseCoeff_div_W_natDegree_of_restrictedMatchAt_zero
+      H x₀ R hHyp hd hζ,
+    RestrictedFaaDiBrunoMatchAt.zero_of_unclearedHasseCoeff_div_W_natDegree
+      H x₀ R hHyp hd hζ⟩
+
 end BCIKS20.HenselNumerator
 
 -- Axiom audit.
@@ -361,3 +415,9 @@ set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.RestrictedFaaDiBrunoMatchAt.zero_of_hasseEvalAtRoot_eq_single_B_coeff
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.hasseEvalAtRoot_eq_single_B_coeff_of_restrictedMatchAt_zero
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.hasseEvalAtRoot_eq_unclearedHasseCoeff_div_W_natDegree_of_restrictedMatchAt_zero
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.RestrictedFaaDiBrunoMatchAt.zero_of_unclearedHasseCoeff_div_W_natDegree
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.restrictedMatchAt_zero_iff_unclearedHasseCoeff_div_W_natDegree
