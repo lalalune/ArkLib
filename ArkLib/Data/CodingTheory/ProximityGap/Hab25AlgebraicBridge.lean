@@ -44,6 +44,33 @@ noncomputable def hab25McaBadScalars (domain : ι ↪ F) (k : ℕ) (δ : ℝ≥0
     (fun γ : F =>
       mcaEvent ((ReedSolomon.code domain k : Set (ι → F))) δ (u 0) (u 1) γ)
 
+/-- One Hab25 algebraic-data cover bounds the actual bad scalars for a fixed word stack by
+the algebraic endgame budget `ell * n`. -/
+theorem hab25_badScalars_card_le_of_algebraic_data_cover
+    (domain : ι ↪ F) (k : ℕ) (η δ : ℝ≥0)
+    (hη : 0 < η) (hδ : InJohnsonRange domain k η δ)
+    (u : WordStack F (Fin 2) ι)
+    (A : Hab25JohnsonAlgebraicData domain k η δ hη hδ)
+    (hcover : hab25McaBadScalars domain k δ u ⊆ A.Edis) :
+    (hab25McaBadScalars domain k δ u).card ≤ A.ℓ * Fintype.card ι :=
+  le_trans (Finset.card_le_card hcover)
+    (Hab25JohnsonAlgebraicData.disagree_card_le A)
+
+/-- A one-stack Hab25 algebraic-data cover also gives any larger advertised cardinality
+budget `N`. -/
+theorem hab25_badScalars_card_le_of_algebraic_data_cover_le
+    (domain : ι ↪ F) (k : ℕ) (η δ : ℝ≥0)
+    (hη : 0 < η) (hδ : InJohnsonRange domain k η δ) (N : ℕ)
+    (u : WordStack F (Fin 2) ι)
+    (A : Hab25JohnsonAlgebraicData domain k η δ hη hδ)
+    (hcover : hab25McaBadScalars domain k δ u ⊆ A.Edis)
+    (hAN : A.ℓ * Fintype.card ι ≤ N) :
+    (hab25McaBadScalars domain k δ u).card ≤ N :=
+  le_trans
+    (hab25_badScalars_card_le_of_algebraic_data_cover
+      domain k η δ hη hδ u A hcover)
+    hAN
+
 /-- If every stack's actual bad-scalar set is covered by the `Edis` field of Hab25 algebraic
 data whose integer endgame bound is at most `N`, then the S11 per-stack cardinality hypothesis
 holds.
@@ -61,8 +88,8 @@ theorem hab25_badScalars_card_le_of_algebraic_cover
       (hab25McaBadScalars domain k δ u).card ≤ N := by
   intro u
   obtain ⟨A, hcover, hAN⟩ := hAlg u
-  exact le_trans (Finset.card_le_card hcover)
-    (le_trans (Hab25JohnsonAlgebraicData.disagree_card_le A) hAN)
+  exact hab25_badScalars_card_le_of_algebraic_data_cover_le
+    domain k η δ hη hδ N u A hcover hAN
 
 /-- Hab25 algebraic-data covers feed the proven S11 scaling theorem and therefore the exact
 Johnson numeric inequality. -/
@@ -104,6 +131,8 @@ theorem rs_epsMCA_johnson_range_bchks25_of_algebraic_cover
 
 end ProximityGap
 
+#print axioms ProximityGap.hab25_badScalars_card_le_of_algebraic_data_cover
+#print axioms ProximityGap.hab25_badScalars_card_le_of_algebraic_data_cover_le
 #print axioms ProximityGap.hab25_badScalars_card_le_of_algebraic_cover
 #print axioms ProximityGap.epsMCA_rs_le_johnsonBoundReal_of_algebraic_cover
 #print axioms ProximityGap.rs_epsMCA_johnson_range_bchks25_of_algebraic_cover
