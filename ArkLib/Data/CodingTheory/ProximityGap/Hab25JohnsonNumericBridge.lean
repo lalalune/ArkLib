@@ -126,9 +126,108 @@ def Hab25JohnsonResiduals.ofAlgebraicData_algebraic_cover
     (JohnsonNumericBound.of_algebraic_cover
       domain k η δ N B hη hδ hB hNB hBdiv hAlg)
 
+/-- **Hab25 Johnson bound from algebraic data plus S11 count data.** This is the direct
+consumer-facing form of `Hab25JohnsonResiduals.ofAlgebraicData_card_le`: once an algebraic datum,
+uniform bad-scalar cardinality bound, and numerator comparison are supplied, the Johnson-range
+`ε_mca` bound follows. -/
+theorem mca_johnson_of_algebraicData_card_le
+    {domain : ι₀ ↪ F₀} {k : ℕ} {η δ : ℝ≥0}
+    {hη : 0 < η}
+    {hδ : CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.InJohnsonRange domain k η δ}
+    (A : Hab25JohnsonAlgebraicData domain k η δ hη hδ)
+    (N : ℕ) (B : ℝ)
+    (hB : 0 ≤ B) (hNB : (N : ℝ) ≤ B)
+    (hBdiv : B / (Fintype.card F₀ : ℝ) ≤
+      CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.johnsonBoundReal domain k η δ)
+    (hN : ∀ u : WordStack F₀ (Fin 2) ι₀,
+      (Finset.filter
+        (fun γ : F₀ =>
+          mcaEvent ((ReedSolomon.code domain k : Set (ι₀ → F₀))) δ (u 0) (u 1) γ)
+        Finset.univ).card ≤ N) :
+    epsMCA (F := F₀) (A := F₀) ((ReedSolomon.code domain k : Set (ι₀ → F₀))) δ ≤
+      ENNReal.ofReal
+        (CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.johnsonBoundReal domain k η δ) :=
+  mca_johnson_of_residuals domain k η δ hη hδ
+    (Hab25JohnsonResiduals.ofAlgebraicData_card_le A N B hB hNB hBdiv hN)
+
+/-- **Hab25 Johnson bound from per-stack algebraic covers.** This composes the algebraic-cover
+residual constructor with `mca_johnson_of_residuals`, exposing the final `ε_mca` bound directly
+from the future GS-over-`F(Z)` cover target plus the remaining numerator comparison. -/
+theorem mca_johnson_of_algebraicData_algebraic_cover
+    {domain : ι₀ ↪ F₀} {k : ℕ} {η δ : ℝ≥0}
+    {hη : 0 < η}
+    {hδ : CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.InJohnsonRange domain k η δ}
+    (A : Hab25JohnsonAlgebraicData domain k η δ hη hδ)
+    (N : ℕ) (B : ℝ)
+    (hB : 0 ≤ B) (hNB : (N : ℝ) ≤ B)
+    (hBdiv : B / (Fintype.card F₀ : ℝ) ≤
+      CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.johnsonBoundReal domain k η δ)
+    (hAlg : ∀ u : WordStack F₀ (Fin 2) ι₀,
+      ∃ A' : Hab25JohnsonAlgebraicData domain k η δ hη hδ,
+        _root_.ProximityGap.hab25McaBadScalars domain k δ u ⊆ A'.Edis ∧
+          A'.ℓ * Fintype.card ι₀ ≤ N) :
+    epsMCA (F := F₀) (A := F₀) ((ReedSolomon.code domain k : Set (ι₀ → F₀))) δ ≤
+      ENNReal.ofReal
+        (CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.johnsonBoundReal domain k η δ) :=
+  mca_johnson_of_residuals domain k η δ hη hδ
+    (Hab25JohnsonResiduals.ofAlgebraicData_algebraic_cover A N B hB hNB hBdiv hAlg)
+
+/-- **Grand-MCA lower witness from algebraic data plus S11 count data.** This is the
+prize-facing consumer form of `Hab25JohnsonResiduals.ofAlgebraicData_card_le`: after the same
+count/numerator inputs prove the Hab25 Johnson bound, any enclosing `ε*` bound produces an
+`MCALowerWitness`. -/
+def mcaLowerWitness_of_algebraicData_card_le
+    {domain : ι₀ ↪ F₀} {k : ℕ} {η δ ε_star : ℝ≥0}
+    {hη : 0 < η}
+    {hδ : CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.InJohnsonRange domain k η δ}
+    (hδ_le_one : δ ≤ 1)
+    (A : Hab25JohnsonAlgebraicData domain k η δ hη hδ)
+    (N : ℕ) (B : ℝ)
+    (hB : 0 ≤ B) (hNB : (N : ℝ) ≤ B)
+    (hBdiv : B / (Fintype.card F₀ : ℝ) ≤
+      CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.johnsonBoundReal domain k η δ)
+    (hN : ∀ u : WordStack F₀ (Fin 2) ι₀,
+      (Finset.filter
+        (fun γ : F₀ =>
+          mcaEvent ((ReedSolomon.code domain k : Set (ι₀ → F₀))) δ (u 0) (u 1) γ)
+        Finset.univ).card ≤ N)
+    (hle : ENNReal.ofReal
+      (CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.johnsonBoundReal domain k η δ)
+        ≤ (ε_star : ENNReal)) :
+    GrandChallenges.MCALowerWitness (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star :=
+  mcaLowerWitness_of_residuals domain k η δ ε_star hη hδ hδ_le_one
+    (Hab25JohnsonResiduals.ofAlgebraicData_card_le A N B hB hNB hBdiv hN) hle
+
+/-- **Grand-MCA lower witness from per-stack algebraic covers.** This is the direct lower-witness
+consumer for the future GS-over-`F(Z)` cover target plus numerator comparison. -/
+def mcaLowerWitness_of_algebraicData_algebraic_cover
+    {domain : ι₀ ↪ F₀} {k : ℕ} {η δ ε_star : ℝ≥0}
+    {hη : 0 < η}
+    {hδ : CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.InJohnsonRange domain k η δ}
+    (hδ_le_one : δ ≤ 1)
+    (A : Hab25JohnsonAlgebraicData domain k η δ hη hδ)
+    (N : ℕ) (B : ℝ)
+    (hB : 0 ≤ B) (hNB : (N : ℝ) ≤ B)
+    (hBdiv : B / (Fintype.card F₀ : ℝ) ≤
+      CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.johnsonBoundReal domain k η δ)
+    (hAlg : ∀ u : WordStack F₀ (Fin 2) ι₀,
+      ∃ A' : Hab25JohnsonAlgebraicData domain k η δ hη hδ,
+        _root_.ProximityGap.hab25McaBadScalars domain k δ u ⊆ A'.Edis ∧
+          A'.ℓ * Fintype.card ι₀ ≤ N)
+    (hle : ENNReal.ofReal
+      (CodingTheory.ProximityGap.Hab25Core.Hab25Johnson.johnsonBoundReal domain k η δ)
+        ≤ (ε_star : ENNReal)) :
+    GrandChallenges.MCALowerWitness (ReedSolomon.code domain k : Set (ι₀ → F₀)) ε_star :=
+  mcaLowerWitness_of_residuals domain k η δ ε_star hη hδ hδ_le_one
+    (Hab25JohnsonResiduals.ofAlgebraicData_algebraic_cover A N B hB hNB hBdiv hAlg) hle
+
 end CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame
 
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.JohnsonNumericBound.of_card_le
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.JohnsonNumericBound.of_algebraic_cover
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.Hab25JohnsonResiduals.ofAlgebraicData_card_le
 #print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.Hab25JohnsonResiduals.ofAlgebraicData_algebraic_cover
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mca_johnson_of_algebraicData_card_le
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mca_johnson_of_algebraicData_algebraic_cover
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mcaLowerWitness_of_algebraicData_card_le
+#print axioms CodingTheory.ProximityGap.Hab25Core.Hab25JohnsonEndgame.mcaLowerWitness_of_algebraicData_algebraic_cover

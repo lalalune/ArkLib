@@ -132,6 +132,91 @@ def finalCheck :
   CheckClaim.oracleReduction oSpec
     (FinalStatement R pp) (FinalOracleStatement R pp) (finalPredicate R pp)
 
+/-- The target-carrying terminal statement needed for the real Spartan final check. The first
+component is the final target emitted by the second sum-check; the second component carries the
+Spartan verifier context `(r_y, r_A/r_B/r_C, r_x, τ, x)`. -/
+@[reducible]
+def FinalClaimStatement : Type := R × FinalStatement R pp
+
+/-- Query the matrix oracle `M_idx` at the final Spartan point `(r_x, r_y)`. -/
+def finalMatrixEvalFromOracles
+    (idx : R1CS.MatrixIdx) (stmt : FinalStatement R pp) :
+    OracleComp [FinalOracleStatement R pp]ₒ R :=
+  let r_x : Fin pp.ℓ_m → R := stmt.2.2.1
+  let r_y : Fin pp.ℓ_n → R := stmt.1
+  (OracleComp.lift <| OracleSpec.query
+    (spec := [FinalOracleStatement R pp]ₒ)
+    (show [FinalOracleStatement R pp]ₒ.Domain from ⟨.inr (.inl idx), (r_x, r_y)⟩) :
+    OracleComp [FinalOracleStatement R pp]ₒ R)
+
+/-- Reconstruct the full R1CS vector multilinear extension `Z(r_y)` from public input and the
+witness oracle. This is the verifier-side analogue of the reference Spartan implementation's
+`eval_Z_at_ry`: public coordinates are known from the statement, while witness coordinates are
+queried through the witness MLE oracle. -/
+noncomputable def zEvalFromFinalOracles
+    (stmt : FinalStatement R pp) :
+    OracleComp [FinalOracleStatement R pp]ₒ R :=
+  let r_y : Fin pp.ℓ_n → R := stmt.1
+  let x : Statement.AfterFirstMessage R pp := stmt.2.2.2.2
+  (Finset.univ : Finset (Fin (2 ^ pp.ℓ_n))).toList.foldlM
+    (fun (acc : R) (yEnum : Fin (2 ^ pp.ℓ_n)) => do
+      let yBits : Fin pp.ℓ_n → R := boolPoint R yEnum
+      let coeff : R := MvPolynomial.eval r_y (MvPolynomial.eqPolynomial yBits)
+      let zVal : R ←
+        if hy : (yEnum : ℕ) < pp.toSizeR1CS.n_x then
+          (pure (x ⟨(yEnum : ℕ), hy⟩) :
+            OracleComp [FinalOracleStatement R pp]ₒ R)
+        else
+          (OracleComp.lift <| OracleSpec.query
+            (spec := [FinalOracleStatement R pp]ₒ)
+            (show [FinalOracleStatement R pp]ₒ.Domain from
+              ⟨.inr (.inr 0),
+                boolPoint R
+                  (⟨(yEnum : ℕ) - pp.toSizeR1CS.n_x,
+                    by
+                      have hlt := yEnum.isLt
+                      have hnx : pp.toSizeR1CS.n_x = 2 ^ pp.ℓ_n - 2 ^ pp.ℓ_w := rfl
+                      have hle : 2 ^ pp.ℓ_w ≤ 2 ^ pp.ℓ_n :=
+                        Nat.pow_le_pow_of_le (by decide) pp.ℓ_w_le_ℓ_n
+                      omega⟩ : Fin (2 ^ pp.ℓ_w))⟩) :
+            OracleComp [FinalOracleStatement R pp]ₒ R)
+      pure (acc + coeff * zVal))
+    (0 : R)
+
+/-- The expected terminal value after the second Spartan sum-check:
+`(r_A A(r_x,r_y) + r_B B(r_x,r_y) + r_C C(r_x,r_y)) * Z(r_y)`. -/
+noncomputable def finalExpectedClaimFromOracles
+    (stmt : FinalStatement R pp) :
+    OracleComp [FinalOracleStatement R pp]ₒ R := do
+  let r : R1CS.MatrixIdx → R := stmt.2.1
+  let a ← finalMatrixEvalFromOracles R pp .A stmt
+  let b ← finalMatrixEvalFromOracles R pp .B stmt
+  let c ← finalMatrixEvalFromOracles R pp .C stmt
+  let z ← zEvalFromFinalOracles R pp stmt
+  pure ((r .A * a + r .B * b + r .C * c) * z)
+
+/-- The concrete target-carrying final Spartan predicate. Unlike the earlier frontier predicate,
+this records the real terminal equation from the Spartan reference implementation: the target
+emitted by the second sum-check must equal the matrix linear combination at `(r_x,r_y)` times
+`Z(r_y)`. -/
+noncomputable def finalClaimPredicate :
+    ReaderT (FinalClaimStatement R pp)
+      (OracleComp [FinalOracleStatement R pp]ₒ) Prop :=
+  fun stmt => do
+    let expected ← finalExpectedClaimFromOracles R pp stmt.2
+    pure (stmt.1 = expected)
+
+/-- A target-carrying final `CheckClaim` frontier for Spartan. This is the concrete terminal check
+that later composition should consume once the second sum-check output target is threaded into the
+Spartan statement. -/
+noncomputable def finalCheckWithClaim :
+    OracleReduction oSpec
+      (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit
+      (FinalClaimStatement R pp) (FinalOracleStatement R pp) Unit
+      !p[] :=
+  CheckClaim.oracleReduction oSpec
+    (FinalClaimStatement R pp) (FinalOracleStatement R pp) (finalClaimPredicate R pp)
+
 /-- The terminal-check input relation: the random-linear-combination of the bundled evaluation
 claims, taken in the clear at the prover's view, is well-formed. (The value-level relation; the
 oracle reduction's verifier checks `finalPredicate`.) -/
