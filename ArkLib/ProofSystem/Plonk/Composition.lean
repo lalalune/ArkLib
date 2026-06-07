@@ -180,37 +180,12 @@ theorem plonkCheckVerifier_verify_eq
         pure (cs, w)
       else
         failure := by
-  simp only [plonkCheckVerifier, Verifier.append, gateCheckVerifier_verify_eq]
-  let w : Fin numWires → 𝓡 := transcript.fst ⟨0, by simp⟩
-  let f : Fin (3 * numGates) → 𝓡 := transcript.snd ⟨0, by simp⟩
-  change
-    ((do
-      let mid ←
-        (if cs.accepts w then
-          pure (cs, w)
-        else
-          failure : OptionT (OracleComp []ₒ)
-            (Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)))
-      let out ←
-        (if ExtendedWireAssignmentMatches 𝓡 numWires numGates mid.1 mid.2 f ∧
-              CopyConstraintsSatisfied f mid.1.perm then
-            pure (mid.1, mid.2)
-          else
-            failure : OptionT (OracleComp []ₒ)
-              (Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)))
-      pure out) : OptionT (OracleComp []ₒ)
-        (Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡))) =
-      (if cs.accepts w ∧
-            ExtendedWireAssignmentMatches 𝓡 numWires numGates cs w f ∧
-              CopyConstraintsSatisfied f cs.perm then
-          pure (cs, w)
-        else
-          failure : OptionT (OracleComp []ₒ)
-            (Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)))
-  by_cases hGate : cs.accepts w
+  simp only [plonkCheckVerifier, Verifier.append, gateCheckVerifier, guard_eq]
+  by_cases hGate : cs.accepts (transcript.fst 0)
   · by_cases hPerm :
-        ExtendedWireAssignmentMatches 𝓡 numWires numGates cs w f ∧
-          CopyConstraintsSatisfied f cs.perm
+        ExtendedWireAssignmentMatches 𝓡 numWires numGates cs (transcript.fst 0)
+          (transcript.snd 0) ∧
+          CopyConstraintsSatisfied (transcript.snd 0) cs.perm
     · simp [hGate, hPerm]
     · simp [hGate, hPerm]
   · simp [hGate]
