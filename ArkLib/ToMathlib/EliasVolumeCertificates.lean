@@ -59,32 +59,26 @@ inequality follows from the single real inequality `(ε* : ℝ) · q < Vol_q(δ,
 This is the bridge that lets the concrete numeric certificates below be discharged purely by
 `norm_num` on the real side. -/
 lemma eliasVolumeUpperCore_of_lt {F ι : Type} [Fintype F] [Fintype ι]
-    {j : ℕ} {e : ℝ} {ε_star : ℝ≥0}
+    {j : ℕ} {ε_star : ℝ≥0} {den : ℝ}
+    (hden : den = (Fintype.card F : ℝ) ^
+        ((Fintype.card ι : ℝ) - (j : ℝ)))
     (hkey : ((ε_star : ℝ≥0) : ℝ) * (Fintype.card F : ℝ) <
       (CodingTheory.hammingBallVolume (Fintype.card F)
-          (((j : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) (Fintype.card ι) : ℝ)
-        / (Fintype.card F : ℝ) ^ e) :
+          (((j : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) (Fintype.card ι) : ℝ) / den) :
     (ε_star : ℝ≥0∞) * (Fintype.card F : ℝ≥0∞) <
       ENNReal.ofReal
         ((CodingTheory.hammingBallVolume (Fintype.card F)
             (((j : ℝ≥0) / (Fintype.card ι : ℝ≥0) : ℝ≥0) : ℝ) (Fintype.card ι) : ℝ)
-          / (Fintype.card F : ℝ) ^ e) := by
+          / (Fintype.card F : ℝ) ^ ((Fintype.card ι : ℝ) - (j : ℝ))) := by
   have heq : (ε_star : ℝ≥0∞) * (Fintype.card F : ℝ≥0∞)
       = ENNReal.ofReal (((ε_star : ℝ≥0) : ℝ) * (Fintype.card F : ℝ)) := by
     rw [ENNReal.ofReal_mul (by positivity)]
     congr 1
     · rw [← ENNReal.ofReal_coe_nnreal]
     · rw [ENNReal.ofReal_natCast]
-  rw [heq]
+  rw [heq, ← hden]
   rw [ENNReal.ofReal_lt_ofReal_iff_of_nonneg (by positivity)]
   exact hkey
-
-/-- Real power with a `(n : ℝ) - (k : ℝ)` exponent (`Real.rpow`) collapses to the natural
-power `a ^ (n - k)` when `k ≤ n`.  Lets concrete certificates evaluate the `q^(n - finrank)`
-denominator by `norm_num`. -/
-lemma rpow_natCast_sub_eq {a : ℝ} {n k : ℕ} (h : k ≤ n) :
-    a ^ ((n : ℝ) - (k : ℝ)) = a ^ (n - k) := by
-  rw [← Nat.cast_sub h, Real.rpow_natCast]
 
 /-! ## Concrete four-rate certificate over `|F| = |ι| = 8`
 
@@ -152,27 +146,55 @@ theorem fourRate_hvol_next_card8 (domain : ι ↪ F)
   rw [hfin]
   refine eliasVolumeUpperCore_of_lt
     (j := (⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : ℕ) + 1) (ε_star := epsStar)
-    (e := (Fintype.card ι : ℝ) - (⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : ℝ)) ?_
-  -- the real-side numeric inequality, per rate, evaluating `hammingBallVolume`
-  rw [hF, hn, epsStar_real_eq, hk]
-  fin_cases r
-  · -- r = 0: k = 4, j = 5; denominator 8^(8-4)
-    simp only [List.get]
-    rw [rpow_natCast_sub_eq (n := 8) (k := 4) (by norm_num), CodingTheory.hammingBallVolume]
-    norm_num [Nat.floor_eq_iff, Finset.sum_range_succ, Nat.choose]
-  · -- r = 1: k = 2, j = 3; denominator 8^(8-2)
-    simp only [List.get]
-    rw [rpow_natCast_sub_eq (n := 8) (k := 2) (by norm_num), CodingTheory.hammingBallVolume]
-    norm_num [Nat.floor_eq_iff, Finset.sum_range_succ, Nat.choose]
-  · -- r = 2: k = 1, j = 2; denominator 8^(8-1)
-    simp only [List.get]
-    rw [rpow_natCast_sub_eq (n := 8) (k := 1) (by norm_num), CodingTheory.hammingBallVolume]
-    norm_num [Nat.floor_eq_iff, Finset.sum_range_succ, Nat.choose]
-  · -- r = 3: k = 0, j = 1; denominator 8^(8-0)
-    simp only [List.get]
-    rw [rpow_natCast_sub_eq (n := 8) (k := 0) (by norm_num), CodingTheory.hammingBallVolume]
-    norm_num [Nat.floor_eq_iff, Finset.sum_range_succ, Nat.choose]
+    (den := (Fintype.card F : ℝ) ^
+        ((Fintype.card ι : ℝ) - (⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ : ℝ))) ?_ ?_
+  · -- the certificate denominator uses exponent `n - k`, matching the rewritten finrank
+    push_cast
+    ring_nf
+  · -- the real-side numeric inequality, per rate, evaluating `hammingBallVolume`
+    rw [hF, hn, epsStar_real_eq, hk]
+    fin_cases r <;>
+      · simp only [List.get]
+        rw [CodingTheory.hammingBallVolume]
+        norm_num [Nat.floor_eq_iff, Finset.sum_range_succ, Nat.choose]
+
+
+
+
+
+/-- The concrete four-rate Elias-volume adjacent certificates reassembled into the
+exact upper-core type consumed by the list-decoding frontier. -/
+theorem fourRate_eliasUpperCore_card8 (domain : ι ↪ F)
+    (hF : Fintype.card F = 8) (hn : Fintype.card ι = 8) :
+    ∀ r : Fin 4,
+      ListEliasVolumeUpperCore
+        (ReedSolomon.code domain ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊)
+        (⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊ + 1)
+        epsStar := by
+  intro r
+  exact fourRate_hvol_next_card8 domain hF hn r
+
+/-- Concrete four-rate adjacent-index side conditions for the lattice step `k + 1` at `n = 8`. -/
+theorem fourRate_adjacent_index_card8 (hn : Fintype.card ι = 8) :
+    ∀ r : Fin 4,
+      let τ_lo := ⌊prizeRates r * (Fintype.card ι : ℝ≥0)⌋₊
+      let τ_hi := τ_lo + 1
+      τ_lo ≤ Fintype.card ι ∧ 0 < τ_hi ∧ τ_hi < Fintype.card ι := by
+  intro r
+  have hk := prizeRate_floor_card8 hn r
+  fin_cases r <;>
+    · dsimp only
+      rw [hk, hn]
+      decide
+
+/-- Concrete budget condition for the genuine list-size target `ℓ = 1`, `m = 1`. -/
+theorem fourRate_budget_target {F : Type*} [Fintype F]
+    (hq : 2 ^ 128 ≤ Fintype.card F) :
+    ((1 : ENNReal)) ^ 1 ≤ (epsStar : ENNReal) * (Fintype.card F : ENNReal) := by
+  rw [epsStar_enn_eq, pow_one]
+  rw [← mul_one ((2 ^ 128 : ENNReal)⁻¹)]
+  gcongr
+  norm_cast
 
 end Concrete
-
 end ProximityGap
