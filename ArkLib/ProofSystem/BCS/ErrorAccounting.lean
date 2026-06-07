@@ -483,6 +483,63 @@ theorem bcs_append_accounting_of_opening_append {m n : ℕ} (μ : UnionBoundPr E
     hInteraction (bcs_opening_union_bound_append μ badLeft badRight
       εLeft εRight hLeft hRight)
 
+/-- Relax the interaction budget for the empty opening-batch append-accounting base case. -/
+theorem bcs_append_accounting_of_opening_zero_mono_error (μ : UnionBoundPr E)
+    (badInteraction : E) (εInteraction₁ εInteraction₂ : ℝ≥0)
+    (hInteraction : μ.pr badInteraction ≤ εInteraction₁)
+    (hInteraction_mono : εInteraction₁ ≤ εInteraction₂) :
+    μ.pr (μ.union badInteraction (μ.unionFin (Fin.elim0 : Fin 0 → E)))
+      ≤ εInteraction₂ :=
+  le_trans
+    (bcs_append_accounting_of_opening_zero μ badInteraction εInteraction₁ hInteraction)
+    hInteraction_mono
+
+/-- Relax the interaction and per-opening budgets for the one-more-opening append-accounting
+recurrence. -/
+theorem bcs_append_accounting_of_opening_succ_mono_error {m : ℕ}
+    (μ : UnionBoundPr E) (badInteraction : E) (badOpen : Fin (m + 1) → E)
+    (εInteraction₁ εInteraction₂ : ℝ≥0)
+    (εOpen₁ εOpen₂ : Fin (m + 1) → ℝ≥0)
+    (hInteraction : μ.pr badInteraction ≤ εInteraction₁)
+    (hOpen : ∀ i, μ.pr (badOpen i) ≤ εOpen₁ i)
+    (hInteraction_mono : εInteraction₁ ≤ εInteraction₂)
+    (hOpen_mono : ∀ i, εOpen₁ i ≤ εOpen₂ i) :
+    μ.pr (μ.union badInteraction (μ.unionFin badOpen))
+      ≤ εInteraction₂ + (εOpen₂ 0 + ∑ i : Fin m, εOpen₂ i.succ) := by
+  calc
+    μ.pr (μ.union badInteraction (μ.unionFin badOpen))
+        ≤ εInteraction₂ + ∑ i : Fin (m + 1), εOpen₂ i :=
+      bcs_append_accounting_of_opening_batch_mono_error μ badInteraction badOpen
+        εInteraction₁ εInteraction₂ εOpen₁ εOpen₂
+        hInteraction hOpen hInteraction_mono hOpen_mono
+    _ = εInteraction₂ + (εOpen₂ 0 + ∑ i : Fin m, εOpen₂ i.succ) := by
+      rw [Fin.sum_univ_succ]
+
+/-- Relax the interaction and both opening-batch budgets for the left/right opening split at the
+append-accounting surface. -/
+theorem bcs_append_accounting_of_opening_append_mono_error {m n : ℕ}
+    (μ : UnionBoundPr E) (badInteraction : E) (badLeft : Fin m → E)
+    (badRight : Fin n → E)
+    (εInteraction₁ εInteraction₂ : ℝ≥0)
+    (εLeft₁ εLeft₂ : Fin m → ℝ≥0) (εRight₁ εRight₂ : Fin n → ℝ≥0)
+    (hInteraction : μ.pr badInteraction ≤ εInteraction₁)
+    (hLeft : ∀ i, μ.pr (badLeft i) ≤ εLeft₁ i)
+    (hRight : ∀ i, μ.pr (badRight i) ≤ εRight₁ i)
+    (hInteraction_mono : εInteraction₁ ≤ εInteraction₂)
+    (hLeft_mono : ∀ i, εLeft₁ i ≤ εLeft₂ i)
+    (hRight_mono : ∀ i, εRight₁ i ≤ εRight₂ i) :
+    μ.pr (μ.union badInteraction (μ.unionFin (Fin.append badLeft badRight)))
+      ≤ εInteraction₂ + ((∑ i, εLeft₂ i) + ∑ i, εRight₂ i) := by
+  refine bcs_append_accounting_of_opening_bound μ badInteraction
+    (Fin.append badLeft badRight) εInteraction₂
+    ((∑ i, εLeft₂ i) + ∑ i, εRight₂ i)
+    (le_trans hInteraction hInteraction_mono) ?_
+  exact le_trans
+    (bcs_opening_union_bound_append μ badLeft badRight εLeft₁ εRight₁ hLeft hRight)
+    (add_le_add
+      (Finset.sum_le_sum fun i _ => hLeft_mono i)
+      (Finset.sum_le_sum fun i _ => hRight_mono i))
+
 /-! ## 3. Specialization to the two-phase `append` shape
 
 The reduction-level `OracleReduction.BCSTransform` is literally
@@ -590,6 +647,9 @@ example (εInteraction : ℝ≥0) (εOpen : Fin 3 → ℝ≥0) :
 #print axioms bcs_append_accounting_of_opening_zero
 #print axioms bcs_append_accounting_of_opening_succ
 #print axioms bcs_append_accounting_of_opening_append
+#print axioms bcs_append_accounting_of_opening_zero_mono_error
+#print axioms bcs_append_accounting_of_opening_succ_mono_error
+#print axioms bcs_append_accounting_of_opening_append_mono_error
 #print axioms bcs_append_accounting
 #print axioms bcs_append_accounting_mono_error
 #print axioms bcs_two_phase_total_eq

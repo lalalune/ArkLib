@@ -156,6 +156,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1Conditional
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1ConditionalAll
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1ConditionalAllCleared
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1ConditionalCleared
+import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P1MonicWfreeCleared
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Assembly
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2Bijection
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.P2BijectionApply
