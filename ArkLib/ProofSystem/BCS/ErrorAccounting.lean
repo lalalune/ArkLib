@@ -417,6 +417,20 @@ theorem bcs_opening_union_bound_succ {m : ℕ} (μ : UnionBoundPr E)
     _ = εOpen 0 + ∑ i : Fin m, εOpen i.succ := by
       rw [Fin.sum_univ_succ]
 
+/-- Relax the per-opening budgets for the one-more-opening recurrence at the opening-phase
+union-bound surface. -/
+theorem bcs_opening_union_bound_succ_mono_error {m : ℕ} (μ : UnionBoundPr E)
+    (badOpen : Fin (m + 1) → E)
+    (εOpen₁ εOpen₂ : Fin (m + 1) → ℝ≥0)
+    (hOpen : ∀ i, μ.pr (badOpen i) ≤ εOpen₁ i)
+    (hOpen_mono : ∀ i, εOpen₁ i ≤ εOpen₂ i) :
+    μ.pr (μ.unionFin badOpen) ≤ εOpen₂ 0 + ∑ i : Fin m, εOpen₂ i.succ := by
+  calc
+    μ.pr (μ.unionFin badOpen) ≤ εOpen₁ 0 + ∑ i : Fin m, εOpen₁ i.succ :=
+      bcs_opening_union_bound_succ μ badOpen εOpen₁ hOpen
+    _ ≤ εOpen₂ 0 + ∑ i : Fin m, εOpen₂ i.succ := by
+      exact add_le_add (hOpen_mono 0) (Finset.sum_le_sum fun i _ => hOpen_mono i.succ)
+
 /-- Left/right split for the opening-phase union bound. This isolates the composite opening
 failure when the query-log openings are grouped into two consecutive batches. -/
 theorem bcs_opening_union_bound_append {m n : ℕ} (μ : UnionBoundPr E)
@@ -851,6 +865,7 @@ example (εInteraction : ℝ≥0) (εOpen : Fin 3 → ℝ≥0) :
 #print axioms bcs_opening_union_bound
 #print axioms bcs_opening_union_bound_zero
 #print axioms bcs_opening_union_bound_succ
+#print axioms bcs_opening_union_bound_succ_mono_error
 #print axioms bcs_opening_union_bound_append
 #print axioms bcs_opening_union_bound_append_mono_error
 #print axioms bcs_opening_union_bound_append_zero_left
