@@ -250,6 +250,7 @@ import ArkLib.Data.CodingTheory.ProximityPrizeCA
 import ArkLib.Data.CodingTheory.ProximityPrizeLeaves
 import ArkLib.Data.CodingTheory.ProximityPrizeLeaves2
 import ArkLib.Data.CodingTheory.QEntropyMonotone
+import ArkLib.Data.CodingTheory.RSNearCount
 import ArkLib.Data.CodingTheory.RSVanishingDim
 import ArkLib.Data.CodingTheory.RSWeightEnumerator
 import ArkLib.Data.CodingTheory.RandomLinearCodeEquidistribution
@@ -612,6 +613,7 @@ import ArkLib.ToMathlib.GK16Claim16Witness
 import ArkLib.ToMathlib.GK16Finish
 import ArkLib.ToMathlib.GK16Structural
 import ArkLib.ToMathlib.GKL24BadWitnessCard
+import ArkLib.ToMathlib.GKL24FirstMomentProb
 import ArkLib.ToMathlib.GSFactorData
 import ArkLib.ToMathlib.GammaFromBeta
 import ArkLib.ToMathlib.GreedyDisjointCover
