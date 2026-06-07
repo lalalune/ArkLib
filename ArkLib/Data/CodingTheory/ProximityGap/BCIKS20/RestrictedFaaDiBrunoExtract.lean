@@ -947,6 +947,64 @@ theorem restrictedMatchAt_zero_iff_zeroClearingPolyFull_sub_mem
   (restrictedMatchAt_zero_iff_eval₂WDivTarget H x₀ R hHyp hd).trans
     (restrictedMatchAtZeroEval₂WDivTarget_iff_zeroClearingPolyFull_sub_mem H x₀ R)
 
+/-! ### Order-zero STEP-8: monic specialization (closed) and the obstruction for non-monic `H`
+
+The explicit order-zero membership above carries the per-`Y`-degree mismatch factor
+`lc^{R.natDegree − i} − 1` (`lc = H.leadingCoeff`). When `H` is **monic** (`lc = 1`) every such
+factor vanishes, the difference sum is identically `0`, and the carved order-zero core is closed
+*unconditionally* — no global resummation is needed. For **non-monic** `H` (`lc ≠ 1`) the
+membership is, by contrast, GENUINELY FALSE for generic `R` even under the full `ClaimA2.Hypotheses`
+(`dvd_evalX` AND `separable_evalX`): the two hypotheses constrain `evalX (C x₀) R`, but the
+order-zero numerator depends on `p = evalX (C x₀) (Δ_X^1 R)`, the transverse `X`-Hasse derivative,
+which is unconstrained by either field of `Hypotheses`. Concretely, with `F = ℚ`,
+`H = X·Y² + Y + X` (so `lc = X`, monic-fails), `evalX (C 0) R = H · (Y + X)` (separable, so both
+hypotheses hold) and a generic transverse part, the difference sum is NOT in `⟨H_tilde' H⟩` (verified
+by exact division by the monic generator `H_tilde' H`). Hence `RestrictedFaaDiBrunoMatchAt … 0` is
+NOT a theorem from `ClaimA2.Hypotheses` alone in the non-monic regime: the recursively-defined
+`βHenselAssembled` order-1 coefficient (the recursion RHS) does not, in general, agree with the
+genuine root quantity `hasseEvalAtRoot` (the LHS). The order-zero match is therefore part of the
+irreducible STEP-8 content, not a per-order consequence of the local divisibility datum. -/
+
+omit [Fact (Irreducible H)] [Fact (0 < H.natDegree)] in
+/-- **The order-zero full-clearing difference vanishes for monic `H` (axiom-clean, NO regime
+hypotheses).** When `H.leadingCoeff = 1`, every mismatch factor `lc^{R.natDegree − i} − 1 = 0`, so
+the explicit difference sum
+`∑_{i ≤ R.natDegree} C (p.coeff i · (lc^{R.natDegree − i} − 1)) · X^i` is identically `0`. -/
+theorem zeroClearingPolyFull_sub_eq_zero_of_leadingCoeff_one
+    (x₀ : F) (R : F[X][X][Y]) (hlc : H.leadingCoeff = 1) :
+    (∑ i ∈ Finset.range (R.natDegree + 1),
+        Polynomial.C
+          ((Bivariate.evalX (Polynomial.C x₀) (hasseDerivX 1 R)).coeff i
+            * (H.leadingCoeff ^ (R.natDegree - i) - 1)) * Polynomial.X ^ i)
+      = 0 := by
+  apply Finset.sum_eq_zero
+  intro i _
+  rw [hlc, one_pow, sub_self, mul_zero, map_zero, zero_mul]
+
+/-- **Order-zero STEP-8 core, unconditional for monic `H` (axiom-clean).** When `H` is monic, the
+mismatch factors `lc^{R.natDegree − i} − 1` all vanish, so the explicit order-zero difference sum is
+`0 ∈ ⟨H_tilde' H⟩`, and the carved order-zero core `RestrictedFaaDiBrunoMatchAt … 0` holds for
+EVERY `R` with `2 ≤ R.natDegree` satisfying `ClaimA2.Hypotheses`. This is the genuine monic
+specialization of the order-zero match: with no `W`-power weighting there is nothing to resum, so
+the global-resummation obstruction of #139's STEP-8 is vacuous at order zero. (For non-monic `H` the
+membership is generically false — see the section note.) -/
+theorem restrictedMatchAt_zero_of_leadingCoeff_one
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) (hlc : H.leadingCoeff = 1) :
+    RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0 := by
+  rw [restrictedMatchAt_zero_iff_zeroClearingPolyFull_sub_mem H x₀ R hHyp hd,
+    zeroClearingPolyFull_sub_eq_zero_of_leadingCoeff_one H x₀ R hlc]
+  exact Ideal.zero_mem _
+
+/-- **Monic `H` ⟹ the order-zero partition residual holds (axiom-clean).** The partition-residual
+endpoint of `restrictedMatchAt_zero_of_leadingCoeff_one`. -/
+theorem restrictedPartitionMatchAt_zero_of_leadingCoeff_one
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hd : 2 ≤ R.natDegree) (hlc : H.leadingCoeff = 1) :
+    RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0 :=
+  RestrictedFaaDiBrunoPartitionMatchAt.of_restrictedMatchAt H x₀ R hHyp 0
+    (restrictedMatchAt_zero_of_leadingCoeff_one H x₀ R hHyp hd hlc)
+
 end BCIKS20.HenselNumerator
 
 #print axioms BCIKS20.HenselNumerator.coeff_succ_βHenselAssembled_eq_of_restrictedMatchAt
@@ -1068,3 +1126,9 @@ set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.restrictedMatchAtZeroEval₂WDivTarget_iff_zeroClearingPolyFull_sub_mem
 set_option linter.style.longLine false in
 #print axioms BCIKS20.HenselNumerator.restrictedMatchAt_zero_iff_zeroClearingPolyFull_sub_mem
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.zeroClearingPolyFull_sub_eq_zero_of_leadingCoeff_one
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.restrictedMatchAt_zero_of_leadingCoeff_one
+set_option linter.style.longLine false in
+#print axioms BCIKS20.HenselNumerator.restrictedPartitionMatchAt_zero_of_leadingCoeff_one
