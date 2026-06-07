@@ -15,11 +15,6 @@ import CompPoly.Data.Vector.Basic
 import ArkLib.ProofSystem.Sumcheck.Spec.SingleRound
 import ArkLib.ProofSystem.Sumcheck.Structured.SingleRound
 
-theorem Fin.sum_univ_odd_even {n : ℕ} {M : Type*} [AddCommMonoid M] (f : ℕ → M) :
-    (∑ i : Fin (2 ^ n), f (2 * i)) + (∑ i : Fin (2 ^ n), f (2 * i + 1))
-    = ∑ i : Fin (2 ^ (n + 1)), f i :=
-  Fin.sum_univ_pow_two_even_add_odd f
-
 /-!
 # Binary Basefold Preliminaries
 
