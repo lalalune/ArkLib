@@ -1,4 +1,5 @@
 import ArkLib.Data.CodingTheory.ProximityGap.CapacityBounds
+import ArkLib.Data.CodingTheory.ProximityGap.CapacityBoundsAdmissible
 import ArkLib.Data.CodingTheory.ReedSolomon.AdmissibleSubspaceDesign
 
 /-!
@@ -258,6 +259,36 @@ theorem frs_epsMCA_capacity_gg25_proven_of_t413_cosetSep
     (gg25_subspaceDesign_epsMCA s _ (ReedSolomon.Folded.frsCode domain k s ω) hT218 t ht)
     hη htη
 
+/-- Canonical geometric-domain companion to `frs_epsMCA_capacity_gg25_proven_of_t413`.
+
+This routes the GR08 folded-RS domain `i ↦ γ^(s*i)` through the proved geometric-domain
+T2.18/CZ25-profile wrapper, then uses the GG25 T4.13 proof supply to derive the public
+T4.14 capacity statement without the standalone T4.14 axiom. -/
+theorem frs_epsMCA_capacity_gg25_proven_of_t413_geomDomain
+    {n : ℕ} [NeZero n]
+    (γ : F) (k s : ℕ)
+    (hs : 0 < s) (hγ : γ ≠ 0) (hsn : s * n ≤ orderOf γ)
+    (hkLs : k ≤ s * n) (hkord : k ≤ orderOf γ)
+    (η : ℝ) (hη_pos : 0 < η) (hη_lt : η < 1) (hs_gt : (s : ℝ) > 16 / η ^ 2)
+    (t : ℕ) (ht : 0 < t) (hts : t + 1 ≤ s)
+    (hη : η = (s : ℝ) * (k : ℝ) / Fintype.card (Fin n) / ((s : ℝ) - (t : ℝ))
+        - (k : ℝ) / Fintype.card (Fin n) + 3 / (2 * t))
+    (htη : (t : ℝ) ≤ 2 / η) :
+    frs_epsMCA_capacity_gg25
+      (ReedSolomon.Folded.geomDomainEmb γ s n hs hsn) k s γ
+      η hη_pos hη_lt hs_gt := by
+  have hn : 0 < n := Nat.pos_of_ne_zero (NeZero.ne n)
+  let hT218 := ReedSolomon.Folded.frs_geomDomain_isSubspaceDesign_cz25Profile
+    γ k s n hs hn hγ hsn hkLs hkord
+  exact frs_epsMCA_capacity_gg25_of_geomDomain_eta
+    (γ := γ) (k := k) (s := s) (n := n)
+    hs hγ hsn hkLs hkord η hη_pos hη_lt hs_gt t ht hts
+    (gg25_subspaceDesign_epsMCA s _
+      (ReedSolomon.Folded.frsCode
+        (ReedSolomon.Folded.geomDomainEmb γ s n hs hsn) k s γ)
+      hT218 t ht)
+    hη htη
+
 end SubspaceDesign
 
 #print axioms CodingTheory.linear_epsMCA_1_5_johnson_gkl24_proven
@@ -271,5 +302,6 @@ end SubspaceDesign
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_proven
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_proven_of_t413
 #print axioms CodingTheory.frs_epsMCA_capacity_gg25_proven_of_t413_cosetSep
+#print axioms CodingTheory.frs_epsMCA_capacity_gg25_proven_of_t413_geomDomain
 
 end CodingTheory
