@@ -329,6 +329,18 @@ def BCSOpeningSchedule.toOpeningStatements {CommitmentType : pSpec.MessageIdx �
     schedule.toOpeningStatements.length = schedule.length :=
   List.length_map _
 
+/-- Projecting the indexed opening statements back to message indices recovers the message-index
+projection of the original typed schedule. -/
+@[simp] theorem BCSOpeningSchedule.toOpeningStatements_map_messageIdx
+    {CommitmentType : pSpec.MessageIdx → Type}
+    (schedule : BCSOpeningSchedule (pSpec := pSpec) (Oₘ := Oₘ) CommitmentType) :
+    schedule.toOpeningStatements.map (fun statement => statement.1) =
+      schedule.map (fun request => request.messageIdx) := by
+  induction schedule with
+  | nil => rfl
+  | cons request schedule ih =>
+      simp [BCSOpeningSchedule.toOpeningStatements, ih]
+
 /-- The typed opening-log boundary for the not-yet-generic BCS compiler.
 
 The current `BCSCompiledPhases` interface still accepts an abstract opening phase.  This structure
@@ -694,6 +706,7 @@ generic compiler construction or the completeness/soundness preservation theorem
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_nil
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_cons
 #print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_length
+#print axioms OracleReduction.BCSOpeningSchedule.toOpeningStatements_map_messageIdx
 #print axioms OracleReduction.BCSOpeningLogFrontier
 #print axioms OracleReduction.BCSOpeningLogFrontierSatisfied
 #print axioms OracleReduction.BCSOpeningLogFrontierSatisfied.intro
