@@ -12,6 +12,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GK16Admissible
 import ArkLib.ToMathlib.GK16Claim16Witness
 import ArkLib.ToMathlib.GK16Structural
 import Mathlib.FieldTheory.Finiteness
+import Mathlib.Algebra.Polynomial.HasseDeriv
 
 /-!
 # Subspace-design codes (ABF26 §2.5)
@@ -41,11 +42,7 @@ Theorem 2.18 [GK16] (FRS half) is now **proven modulo a single named residual**
   is repaired to the paper-rate-consistent `τ(r) = (k-1)/n` on `[s]` — the pre-repair
   `s·k/(n·(s-r+1))` inherited the same `s`-factor inflation as the pre-repair L2.17. See
   the theorem docstring for the repair and the two residual gaps.
-
-## Deferred
-
-- Univariate multiplicity codes `UM[F, L, k, s]` are referenced in T2.18 but require a
-  separate `D_ux` (derivative-of-x) operation; tracked under ABF26-D2.19 / DA.7.
+- `CodingTheory.um_is_subspaceDesign_gk16` — ABF26 Theorem 2.18, UM half.
 
 ## References
 
@@ -975,4 +972,107 @@ theorem frs_is_subspaceDesign_gk16_of_admissible
       _ = (Module.finrank F A : ℝ) * Fintype.card ι := by
           rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul, mul_comm]
 
+
+/-! ## Univariate Multiplicity Codes (ABF26 DA.7) -/
+
+namespace CodingTheory
+
+/-- Univariate multiplicity evaluation function `D_ux` (derivative-of-x):
+Evaluates the Hasse derivatives up to order `s-1` of a polynomial at `x`.
+This is the derivative-coded operation for `UM[F, L, k, s]`. -/
+def D_ux {ι : Type} [Fintype ι]
+    {F : Type} [CommSemiring F]
+    (domain : ι ↪ F) (s : ℕ) : Polynomial F →ₗ[F] (ι → Fin s → F) where
+  toFun p := fun x j ↦ (Polynomial.hasseDeriv j.val p).eval (domain x)
+  map_add' p q := by ext; simp
+  map_smul' c p := by ext; simp
+
+/-- **ABF26 DA.7 (Univariate Multiplicity codes)**.
+The UM code `UM[F, L, k, s]`:
+
+  `UM[F, L, k, s] := { f : L → F^s | ∃ f̂ ∈ F^{<k}[X],`
+  `                          ∀ x ∈ L, f(x) = (f̂(x), f̂'(x), ..., f̂^{(s-1)}(x)) }`
+
+where derivatives are Hasse derivatives. -/
+noncomputable def umCode {ι : Type} [Fintype ι] [DecidableEq ι]
+    {F : Type} [Field F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ) : Submodule F (ι → Fin s → F) :=
+  (Polynomial.degreeLT F k).map (D_ux domain s)
+
+/-- **ABF26 Theorem 2.18, UM half — abstract residual form.**
+The Univariate Multiplicity code is τ-subspace-design for `τ(r) = (k-1)/n` on `[s]`,
+conditional on the UM degree-budget residual. This matches the FRS half exactly
+and connects the UM result to the repaired GK16/vector-space statements. -/
+theorem um_is_subspaceDesign_gk16
+    {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+    {F : Type} [Field F] [Fintype F] [DecidableEq F]
+    (domain : ι ↪ F) (k s : ℕ)
+    (h_residual : ArkLib.FRS.GK16.GK16DegreeBudget k s (umCode domain k s)) :
+    let τ : ℕ → ℝ := fun r ↦
+      if r ∈ Finset.Icc 1 s then (k - 1 : ℝ) / Fintype.card ι else 1
+    IsSubspaceDesign s τ (umCode domain k s) := by
+  intro τ r A hA_le _hA_rank
+  have hn_pos : 0 < Fintype.card ι := Fintype.card_pos
+  have hn_posR : (0 : ℝ) < Fintype.card ι := by exact_mod_cast hn_pos
+  haveI : FiniteDimensional F (ι → Fin s → F) := inferInstance
+  -- The per-coordinate vanishing subspaces `A_i := A ⊓ ker(eval_i)`.
+  set Ai : ι → Submodule F (ι → Fin s → F) := fun i =>
+    A ⊓ (LinearMap.ker
+      (LinearMap.proj (R := F) (φ := fun _ : ι ↦ Fin s → F) i)) with hAi
+  -- Each `A_i ≤ A`, so `dim A_i ≤ dim A` (the ambient space is finite-dimensional).
+  have hAi_rank_le : ∀ i, Module.finrank F (Ai i) ≤ Module.finrank F A := fun i =>
+    Submodule.finrank_mono (inf_le_left)
+  by_cases hr : r ∈ Finset.Icc 1 s
+  · -- Range `r ∈ [s]`: divide the degree budget `∑_i dim A_i ≤ (dim A)·(k-1)` by `n`.
+    simp only [τ, if_pos hr]
+    have hbudget : (∑ i : ι, Module.finrank F (Ai i)) ≤ Module.finrank F A * (k - 1) :=
+      h_residual A hA_le
+    have hbudgetR :
+        (∑ i : ι, (Module.finrank F (Ai i) : ℝ)) ≤
+          (Module.finrank F A : ℝ) * ((k : ℝ) - 1) := by
+      by_cases hk0 : k = 0
+      · -- `k = 0`: the code is `⊥`, so `A = ⊥` and every `dim A_i = 0`.
+        subst hk0
+        have hC0 : umCode domain 0 s = ⊥ := by
+          have hdLT : Polynomial.degreeLT F 0 = ⊥ := by
+            rw [eq_bot_iff]
+            intro p hp
+            rw [Polynomial.mem_degreeLT] at hp
+            rw [Submodule.mem_bot, ← Polynomial.degree_eq_bot]
+            exact Nat.WithBot.lt_zero_iff.mp (by simpa using hp)
+          unfold umCode
+          rw [hdLT, Submodule.map_bot]
+        have hAbot : A = ⊥ := le_bot_iff.mp (hA_le.trans hC0.le)
+        have hzero : ∀ i, Module.finrank F (Ai i) = 0 := by
+          intro i
+          have : Ai i = ⊥ := by rw [hAi, hAbot]; simp
+          rw [this]; simp
+        have hAr : Module.finrank F A = 0 := by rw [hAbot]; simp
+        simp [hzero, hAr]
+      · have hk1 : 1 ≤ k := Nat.one_le_iff_ne_zero.mpr hk0
+        calc (∑ i : ι, (Module.finrank F (Ai i) : ℝ))
+            = ((∑ i : ι, Module.finrank F (Ai i) : ℕ) : ℝ) := by push_cast; rfl
+          _ ≤ ((Module.finrank F A * (k - 1) : ℕ) : ℝ) := by exact_mod_cast hbudget
+          _ = (Module.finrank F A : ℝ) * ((k : ℝ) - 1) := by
+                push_cast [Nat.cast_sub hk1]; ring
+    rw [div_le_iff₀ hn_posR]
+    calc (∑ i : ι, (Module.finrank F (Ai i) : ℝ))
+        ≤ (Module.finrank F A : ℝ) * ((k : ℝ) - 1) := hbudgetR
+      _ = (Module.finrank F A : ℝ) * ((k - 1 : ℝ) / Fintype.card ι) * Fintype.card ι := by
+            field_simp
+  · -- Range `r ∉ [s]`: `τ(r) = 1`, proven unconditionally from `A_i ≤ A`.
+    simp only [τ, if_neg hr, mul_one]
+    rw [div_le_iff₀ hn_posR]
+    calc (∑ i : ι, (Module.finrank F (Ai i) : ℝ))
+        ≤ (∑ _i : ι, (Module.finrank F A : ℝ)) := by
+          refine Finset.sum_le_sum (fun i _ => ?_)
+          exact_mod_cast hAi_rank_le i
+      _ = (Module.finrank F A : ℝ) * Fintype.card ι := by
+          rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul, mul_comm]
+
 end CodingTheory
+
+/- Axiom audit:
+`CodingTheory.um_is_subspaceDesign_gk16` depends only on
+`propext`, `Classical.choice`, and `Quot.sound`. -/
+#print axioms CodingTheory.um_is_subspaceDesign_gk16
