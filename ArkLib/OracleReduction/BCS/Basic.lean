@@ -7,7 +7,9 @@ Authors: Quang Dao
 import ArkLib.CommitmentScheme.Basic
 import ArkLib.OracleReduction.Composition.Sequential.General
 
-set_option linter.style.longFile 1600
+set_option linter.style.longFile 1700
+
+open scoped NNReal
 
 /-!
 # The Generalized Ben-Sasson–Chiesa–Spooner (BCS) Compiler
@@ -798,6 +800,76 @@ theorem BCSCompiledPhases.toReduction_eq_BCSTransform {StmtMid WitMid : Type}
     phases.toReduction = BCSTransform e phases.interaction phases.opening :=
   rfl
 
+omit Oₘ in
+/-- Perfect completeness of packaged BCS phases composes through the concrete BCS reduction.
+
+This is the security-preservation statement available before the generic compiler constructs the
+phases themselves: once the committed-interaction phase and the opening phase are already supplied,
+perfect completeness of the appended `BCSTransform` follows from the existing binary append theorem.
+The conclusion is stated with the canonical challenge sampler for the appended spec
+`pSpec.renameMessage CommitmentType ++ₚ pSpec.BCSOpeningPhase pSpecCom e`, which is definitionally
+`ProtocolSpec.BCSTransform`. -/
+theorem BCSCompiledPhases.toReduction_perfectCompleteness_of_append {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    [∀ i, SampleableType ((pSpec.renameMessage CommitmentType).Challenge i)]
+    [∀ i, SampleableType ((pSpec.BCSOpeningPhase pSpecCom e).Challenge i)]
+    (phases : BCSCompiledPhases (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) CommitmentType e)
+    {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {relIn : Set (StmtIn × WitIn)} {relMid : Set (StmtMid × WitMid)}
+    {relOut : Set (StmtOut × WitOut)}
+    (hInteraction :
+      phases.interaction.perfectCompleteness init impl relIn relMid)
+    (hOpening : phases.opening.perfectCompleteness init impl relMid relOut)
+    (hAppend :
+      Reduction.reductionAppendPerfectCompletenessResidual
+        (oSpec := oSpec) (init := init) (impl := impl)
+        phases.interaction phases.opening hInteraction hOpening) :
+    @Reduction.perfectCompleteness _ oSpec StmtIn WitIn StmtOut WitOut
+      (n + Fin.vsum (fun j => nCom (e.symm j)))
+      (pSpec.renameMessage CommitmentType ++ₚ pSpec.BCSOpeningPhase pSpecCom e)
+      (fun i => ProtocolSpec.instSampleableTypeChallengeAppend i)
+      σ init impl relIn relOut phases.toReduction := by
+  simpa [BCSCompiledPhases.toReduction, BCSTransform, ProtocolSpec.BCSTransform] using
+    (Reduction.reduction_append_perfectCompleteness
+      (oSpec := oSpec) (init := init) (impl := impl)
+      phases.interaction phases.opening hInteraction hOpening hAppend)
+
+omit Oₘ in
+/-- Additive completeness of packaged BCS phases composes through the concrete BCS reduction.
+
+This exposes a real `Reduction.completeness` bridge for the already-supplied phases while preserving
+the known append-completeness residual as the remaining deep dependency. The conclusion uses the
+canonical challenge sampler for the appended spec, which is definitionally the BCS-transformed
+protocol specification. -/
+theorem BCSCompiledPhases.toReduction_completeness_of_append {StmtMid WitMid : Type}
+    {CommitmentType : pSpec.MessageIdx → Type} {e : pSpec.MessageIdx ≃ Fin m}
+    [∀ i, SampleableType ((pSpec.renameMessage CommitmentType).Challenge i)]
+    [∀ i, SampleableType ((pSpec.BCSOpeningPhase pSpecCom e).Challenge i)]
+    (phases : BCSCompiledPhases (oSpec := oSpec) (pSpec := pSpec) (pSpecCom := pSpecCom)
+      (StmtIn := StmtIn) (WitIn := WitIn) (StmtOut := StmtOut) (WitOut := WitOut)
+      (StmtMid := StmtMid) (WitMid := WitMid) CommitmentType e)
+    {σ : Type} {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {relIn : Set (StmtIn × WitIn)} {relMid : Set (StmtMid × WitMid)}
+    {relOut : Set (StmtOut × WitOut)} {εInteraction εOpening : ℝ≥0}
+    (hInteraction :
+      phases.interaction.completeness init impl relIn relMid εInteraction)
+    (hOpening : phases.opening.completeness init impl relMid relOut εOpening)
+    (hAppend :
+      Reduction.reductionAppendCompletenessResidual
+        (oSpec := oSpec) (init := init) (impl := impl)
+        phases.interaction phases.opening hInteraction hOpening) :
+    @Reduction.completeness _ oSpec StmtIn WitIn StmtOut WitOut
+      (n + Fin.vsum (fun j => nCom (e.symm j)))
+      (pSpec.renameMessage CommitmentType ++ₚ pSpec.BCSOpeningPhase pSpecCom e)
+      (fun i => ProtocolSpec.instSampleableTypeChallengeAppend i)
+      σ init impl relIn relOut phases.toReduction (εInteraction + εOpening) := by
+  simpa [BCSCompiledPhases.toReduction, BCSTransform, ProtocolSpec.BCSTransform] using
+    (Reduction.reduction_append_completeness
+      (oSpec := oSpec) (init := init) (impl := impl)
+      phases.interaction phases.opening hInteraction hOpening hAppend)
+
 /-- Security obligations still required to turn `BCSCompiledPhases.toReduction` into the final
 compiler theorem.  These are intentionally named as fields rather than hidden in one opaque
 assumption: each field corresponds to a separate proof brick in issue #62.
@@ -1492,6 +1564,8 @@ generic compiler construction or the completeness/soundness preservation theorem
 #print axioms OracleReduction.BCSPhaseRealizationFrontier.iff_fields
 #print axioms OracleReduction.BCSPhaseRealizationFrontier.ofOpeningLogBridge
 #print axioms OracleReduction.BCSCompiledPhases.toReduction_eq_BCSTransform
+#print axioms OracleReduction.BCSCompiledPhases.toReduction_perfectCompleteness_of_append
+#print axioms OracleReduction.BCSCompiledPhases.toReduction_completeness_of_append
 #print axioms OracleReduction.BCSSecurityFrontier
 #print axioms OracleReduction.BCSSecurityFrontierSatisfied
 #print axioms OracleReduction.BCSSecurityFrontierSatisfied.intro
