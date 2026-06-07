@@ -175,6 +175,20 @@ theorem jointProximity_of_δ_ε_correlatedAgreementAffineLines
   exact h_ca u h_prob
 
 omit [DecidableEq ι] in
+/-- Convert the multilinear correlated-agreement predicate into the concrete
+`Code.jointProximity` witness used by downstream soundness adapters. -/
+theorem jointProximity_of_δ_ε_multilinearCorrelatedAgreement
+    {A : Type 0} [AddCommMonoid A] [CommRing F] [Module F A] [Fintype A] [DecidableEq A]
+    {C : Set (ι → A)} {ϑ : ℕ} {δ ε : ℝ≥0}
+    {u : WordStack (A := A) (κ := Fin (2 ^ ϑ)) (ι := ι)}
+    (h_ca : δ_ε_multilinearCorrelatedAgreement (F := F) C ϑ δ ε)
+    (h_prob :
+      Pr_{let r ← $ᵖ (Fin ϑ → F)}[δᵣ(r |⨂| u, C) ≤ δ] > (ϑ : ℝ≥0) * ε) :
+    jointProximity (C := C) (u := u) δ := by
+  rw [← jointAgreement_iff_jointProximity]
+  exact h_ca u h_prob
+
+omit [DecidableEq ι] in
 /-- Convert the polynomial-curves correlated-agreement predicate into the concrete
 `Code.jointProximity` witness used by downstream soundness adapters. -/
 theorem jointProximity_of_δ_ε_correlatedAgreementCurves
