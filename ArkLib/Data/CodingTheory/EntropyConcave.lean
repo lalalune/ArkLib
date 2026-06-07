@@ -40,7 +40,18 @@ theorem qEntropy_concaveOn (hq : 2 ≤ q) :
   rw [qEntropy_eq_inv_log_smul_qaryEntropy hq]
   exact (Real.strictConcaveOn_qaryEntropy.concaveOn).smul (le_of_lt (inv_pos.mpr hlog))
 
+/-- **`qEntropy q` is continuous.**  Same base-change rescaling of the continuous
+`Real.qaryEntropy q`. -/
+theorem qEntropy_continuous (hq : 2 ≤ q) : Continuous (qEntropy q) := by
+  have hlog : Real.log q ≠ 0 := ne_of_gt (Real.log_pos (by exact_mod_cast (show 1 < q by omega)))
+  have hfun : qEntropy q = fun x => Real.qaryEntropy q x / Real.log q := by
+    funext x
+    rw [← qEntropy_mul_log_eq_qaryEntropy hq x, mul_div_assoc, div_self hlog, mul_one]
+  rw [hfun]
+  exact Real.qaryEntropy_continuous.div_const _
+
 end CodingTheory
 
 -- Axiom audit.
 #print axioms CodingTheory.qEntropy_concaveOn
+#print axioms CodingTheory.qEntropy_continuous
