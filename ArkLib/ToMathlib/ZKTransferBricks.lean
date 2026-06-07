@@ -55,6 +55,23 @@ theorem perfectHVZK.congr_honestDist
   rw [← hdist stmtIn witIn hMem]
   exact h stmtIn witIn hMem
 
+/-- **Statistical HVZK transfers along an `evalDist`-equal honest distribution.** The same
+simulator and error budget apply to any reduction with the same honest transcript distribution. -/
+theorem statisticalHVZK.congr_honestDist
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set (StmtIn × WitIn)}
+    {R₁ R₂ : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec}
+    {sim : TranscriptSimulator oSpec StmtIn pSpec} {ε : ℝ≥0}
+    (h : statisticalHVZK init impl rel R₁ sim ε)
+    (hdist : ∀ stmtIn witIn, (stmtIn, witIn) ∈ rel →
+      evalDist (honestTranscriptDist init impl R₁ stmtIn witIn) =
+        evalDist (honestTranscriptDist init impl R₂ stmtIn witIn)) :
+    statisticalHVZK init impl rel R₂ sim ε := by
+  intro stmtIn witIn hMem
+  unfold tvDist
+  rw [← hdist stmtIn witIn hMem]
+  exact h stmtIn witIn hMem
+
 /-- **Perfect HVZK is preserved under an `evalDist`-equal simulator.** Swapping in a simulator that
 produces the same transcript distribution everywhere preserves perfect HVZK. -/
 theorem perfectHVZK.simulator_congr
@@ -132,11 +149,26 @@ theorem isHVZK.congr_honestDist
   let ⟨sim, hsim⟩ := h
   ⟨sim, hsim.congr_honestDist hdist⟩
 
+/-- **`isStatHVZK` transfers along an `evalDist`-equal honest distribution.** -/
+theorem isStatHVZK.congr_honestDist
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set (StmtIn × WitIn)}
+    {R₁ R₂ : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec} {ε : ℝ≥0}
+    (h : isStatHVZK init impl rel R₁ ε)
+    (hdist : ∀ stmtIn witIn, (stmtIn, witIn) ∈ rel →
+      evalDist (honestTranscriptDist init impl R₁ stmtIn witIn) =
+        evalDist (honestTranscriptDist init impl R₂ stmtIn witIn)) :
+    isStatHVZK init impl rel R₂ ε :=
+  let ⟨sim, hsim⟩ := h
+  ⟨sim, hsim.congr_honestDist hdist⟩
+
 #print axioms perfectHVZK.congr_honestDist
+#print axioms statisticalHVZK.congr_honestDist
 #print axioms perfectHVZK.simulator_congr
 #print axioms statisticalHVZK.simulator_triangle
 #print axioms perfectHVZK_of_honestDist_eq_const
 #print axioms isHVZK_of_honestDist_eq_const
 #print axioms isHVZK.congr_honestDist
+#print axioms isStatHVZK.congr_honestDist
 
 end Reduction
