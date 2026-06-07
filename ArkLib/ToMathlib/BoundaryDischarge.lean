@@ -562,12 +562,23 @@ theorem correlatedAgreement_affine_curves_of_lattice_data_isSquare
       (k := k) (deg := deg) (domain := domain) (δ := δ) hLatticeData)
     hδ hsqrt_le hdeg hSquare
 
-omit [DecidableEq ι] in
+omit [Nonempty ι] [DecidableEq ι] in
 /-- The closed-boundary residual is vacuous for `k = 0`, since its first argument is
 `0 < k`. This removes an unnecessary residual hypothesis from degenerate callers. -/
 theorem boundaryCardResidual_zero
     {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} :
     ProximityGap.BoundaryCardResidual (k := 0) (deg := deg) (domain := domain) (δ := δ) := by
+  intro hk
+  omega
+
+omit [Nonempty ι] [DecidableEq ι] in
+/-- The sharper boundary-probability residual is also vacuous for `k = 0`, since its first
+argument is `0 < k`. This is the probability-branch companion to
+`boundaryCardResidual_zero`. -/
+theorem boundaryProbabilityResidual_zero
+    {deg : ℕ} {domain : ι ↪ F} {δ : ℝ≥0} :
+    ProximityGap.BoundaryProbabilityResidual
+      (k := 0) (deg := deg) (domain := domain) (δ := δ) := by
   intro hk
   omega
 
@@ -599,3 +610,4 @@ end ArkLib
 #print axioms ArkLib.BoundaryDischarge.boundaryProbabilityResidual_of_lattice_data_isSquare
 #print axioms ArkLib.BoundaryDischarge.correlatedAgreement_affine_curves_of_lattice_data_isSquare
 #print axioms ArkLib.BoundaryDischarge.boundaryCardResidual_zero
+#print axioms ArkLib.BoundaryDischarge.boundaryProbabilityResidual_zero
