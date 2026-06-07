@@ -377,27 +377,28 @@ open Code ListDecodable
 
 variable {ι F : Type} [Fintype ι]
 
-/-- **Constructive witness for `GGR11TreeStructure`.**
+/-- A single concrete Erase-Decode tree supplies the named per-word GGR11 witness.
 
-Suppose for every received word `f` there is an Erase-Decode tree (with red
-branching `≤ Λ(C,δ)`, blue depth `≤ b`, red depth `≤ r`) whose leaf count
-dominates the close-codeword set, and `1 ≤ Λ(C,δ)`.  Then the abstract residual
-`GGR11TreeStructure` holds.
-
-This exhibits the abstract leaf-count function `t` as the closed-form GGR11 bound
-applied to the *actual* tree, so the residual is no longer an unwitnessed `∃ t`;
-the only thing still external is producing the trees themselves. -/
-theorem treeStructure_of_eraseDecodeTree
+This is the one-word construction target for the remaining Algorithm-1 work: produce a concrete
+tree whose leaves dominate the close codewords and whose Blue/Red depths and Red branching meet
+the GGR11 budgets. The closed-form witness data is then fully internal. -/
+theorem treeWitness_of_eraseDecodeTree
     {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ} (hL : 1 ≤ Lambda C δ)
-    (H : ∀ f : Matrix ι (Fin m) F,
-      ∃ t : EraseDecodeTree,
-        (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard
-            ≤ t.leafCount ∧
-        t.blueDepth ≤ b ∧ t.redDepth ≤ r ∧ t.redBranchingLe (Lambda C δ)) :
-    GGR11TreeStructure C δ m b r := by
-  intro f
-  obtain ⟨tree, hdom, hbd, hrd, hbr⟩ := H f
-  refine ⟨fun b' r' => ((b' + r').choose r' : ℕ∞) * (Lambda C δ) ^ r', ?_, ?_, ?_, ?_⟩
+    {f : Matrix ι (Fin m) F}
+    (H : ∃ t : EraseDecodeTree,
+      (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard
+          ≤ t.leafCount ∧
+      t.blueDepth ≤ b ∧ t.redDepth ≤ r ∧ t.redBranchingLe (Lambda C δ)) :
+    Nonempty (GGR11TreeWitness C δ m b r f) := by
+  obtain ⟨tree, hdom, hbd, hrd, hbr⟩ := H
+  refine
+    ⟨
+      { leafCount := fun b' r' => ((b' + r').choose r' : ℕ∞) * (Lambda C δ) ^ r'
+        close_le_leafCount := ?_
+        no_red_budget := ?_
+        red_only_step := ?_
+        blue_red_step := ?_ }
+    ⟩
   · calc (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard
           ≤ tree.leafCount := hdom
         _ ≤ ((b + r).choose r : ℕ∞) * (Lambda C δ) ^ r :=
@@ -407,7 +408,6 @@ theorem treeStructure_of_eraseDecodeTree
     simp only [Nat.zero_add, Nat.choose_self, Nat.cast_one, one_mul]
     rw [pow_succ, mul_comm]
   · intro b' r'
-    simp only
     calc ((b' + 1 + (r' + 1)).choose (r' + 1) : ℕ∞) * (Lambda C δ) ^ (r' + 1)
         = (((b' + (r' + 1)).choose (r' + 1) : ℕ∞)
             + ((b' + (r' + 1)).choose r' : ℕ∞)) * (Lambda C δ) ^ (r' + 1) := by
@@ -432,6 +432,28 @@ theorem treeStructure_of_eraseDecodeTree
             _ ≤ (Lambda C δ) * (((b' + 1 + r').choose r' : ℕ∞) * (Lambda C δ) ^ r') :=
                 mul_le_mul' (le_refl _) (mul_le_mul' hcast (le_refl _))
 
+/-- **Constructive witness for `GGR11TreeStructure`.**
+
+Suppose for every received word `f` there is an Erase-Decode tree (with red
+branching `≤ Λ(C,δ)`, blue depth `≤ b`, red depth `≤ r`) whose leaf count
+dominates the close-codeword set, and `1 ≤ Λ(C,δ)`.  Then the abstract residual
+`GGR11TreeStructure` holds.
+
+This exhibits the abstract leaf-count function `t` as the closed-form GGR11 bound
+applied to the *actual* tree, so the residual is no longer an unwitnessed `∃ t`;
+the only thing still external is producing the trees themselves. -/
+theorem treeStructure_of_eraseDecodeTree
+    {C : Set (ι → F)} {δ : ℝ} {m b r : ℕ} (hL : 1 ≤ Lambda C δ)
+    (H : ∀ f : Matrix ι (Fin m) F,
+      ∃ t : EraseDecodeTree,
+        (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard
+            ≤ t.leafCount ∧
+        t.blueDepth ≤ b ∧ t.redDepth ≤ r ∧ t.redBranchingLe (Lambda C δ)) :
+    GGR11TreeStructure C δ m b r := by
+  intro f
+  obtain ⟨w⟩ := treeWitness_of_eraseDecodeTree hL (H f)
+  exact ⟨w.leafCount, w.close_le_leafCount, w.no_red_budget, w.red_only_step, w.blue_red_step⟩
+
 /-- Concrete Erase-Decode trees supply the named GGR11 tree frontier. This is the granular
 frontier form of `treeStructure_of_eraseDecodeTree`, useful for downstream code that wants the
 per-word witness interface rather than the older anonymous residual. -/
@@ -442,8 +464,9 @@ theorem treeFrontier_of_eraseDecodeTree
         (closeCodewordsRel (Code.interleavedCodeSet (κ := Fin m) C) f δ).encard
             ≤ t.leafCount ∧
         t.blueDepth ≤ b ∧ t.redDepth ≤ r ∧ t.redBranchingLe (Lambda C δ)) :
-    GGR11TreeFrontier C δ m b r :=
-  frontier_of_treeStructure (treeStructure_of_eraseDecodeTree hL H)
+    GGR11TreeFrontier C δ m b r := by
+  intro f
+  exact treeWitness_of_eraseDecodeTree hL (H f)
 
 /-- Concrete Erase-Decode trees discharge the per-word GGR11 list-size bound. -/
 theorem perWordBound_of_eraseDecodeTree
@@ -470,6 +493,7 @@ theorem lambda_le_ggr11_of_eraseDecodeTree
 
 -- Axiom audit.
 #print axioms EraseDecodeTree.leafCount_le
+#print axioms treeWitness_of_eraseDecodeTree
 #print axioms treeStructure_of_eraseDecodeTree
 #print axioms treeFrontier_of_eraseDecodeTree
 #print axioms perWordBound_of_eraseDecodeTree
