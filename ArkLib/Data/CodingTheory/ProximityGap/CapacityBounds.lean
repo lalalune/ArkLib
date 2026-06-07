@@ -1880,5 +1880,7 @@ end SubspaceDesignFRS
 #print axioms CodingTheory.rs_epsMCA_johnson_range_boundReal_nonneg
 #print axioms CodingTheory.johnsonJumpRadius_pos
 #print axioms CodingTheory.johnsonJumpRadius_lt_one
+#print axioms CodingTheory.frs_tau_eval
+#print axioms CodingTheory.frs_capacity_radius_eq_of_eta
 
 end CodingTheory
