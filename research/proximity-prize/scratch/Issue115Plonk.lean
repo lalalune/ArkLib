@@ -27,6 +27,9 @@ NO sorry / admit / axiom / native_decide is used.
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Ring.Basic
+import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.Ring
 
 open scoped BigOperators
 
@@ -104,19 +107,23 @@ the verifier accepting is *definitionally equivalent* to the gate identity holdi
 There is no Schwartz–Zippel probability gap here — the error is exactly `0`.
 
 We model "the system accepts" as "every gate polynomial vanishes" and show the
-trivial equivalence. This is the honest statement of what the upstream
-`gateCheckVerifier_soundness` proves. -/
+honest equivalence: the constant-selector gate `(1,0,0,0,G i)` evaluated at the
+all-zero wire triple has `gateEval = G i`, so the verifier accepting (gate vanishes)
+is *exactly* `G i = 0` — a definitional equivalence with zero error, no Schwartz–Zippel
+gap. This is the honest statement of what the upstream `gateCheckVerifier_soundness`
+proves. -/
 theorem gateCheck_accept_iff_allGatesVanish {n : ℕ}
     (G : Fin n → 𝓡) :
-    (∀ i, G i = 0) ↔ (∀ i, gateAccepts (1:𝓡) 0 0 0 (G i) 0 0 0 i.val' = G i ∨ True) := by
-  -- trivial direction-free restatement: the RHS is vacuously true; the genuine
-  -- content is just `(∀ i, G i = 0)`. We keep it as a sanity tautology marker.
+    (∀ i, G i = 0) ↔ (∀ i, gateAccepts (1:𝓡) 0 0 0 (G i) 0 0 0) := by
+  -- Pointwise, `gateAccepts 1 0 0 0 (G i) 0 0 0` unfolds to `G i = 0`.
   constructor
-  · intro _ i; right; trivial
-  · intro _ i; -- cannot recover; so we expose the honest fact instead, see remark below
-    -- This branch is NOT provable in general; we therefore do NOT claim it.
-    -- (left intentionally — replaced by the honest lemma `gateCheck_zero_error` below.)
-    exact?
+  · intro h i
+    unfold gateAccepts gateEval
+    simp [h i]
+  · intro h i
+    have := h i
+    unfold gateAccepts gateEval at this
+    simpa using this
 
 end Gate
 

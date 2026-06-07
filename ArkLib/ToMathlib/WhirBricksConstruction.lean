@@ -546,20 +546,17 @@ omit [Fintype F] [DecidableEq F] [SampleableType F] in
 The first transition uses the initial sumcheck challenges.  Transition `k+1` uses the main
 sumcheck challenges from the previous main-loop slot `k`, matching Construction 5.1's challenge
 flow from one folded oracle to the next. -/
-def paperTranscriptFoldingChallenge {M : ℕ} {ιs : Fin (M + 1) → Type}
-    [∀ i : Fin (M + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ)
-    (T : PaperTranscriptData P d) (i : Fin M) :
+def paperTranscriptFoldingChallenge {M : ℕ} {ιs : Fin ((M + 1) + 1) → Type}
+    [∀ i : Fin ((M + 1) + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ)
+    (T : PaperTranscriptData P d) (i : Fin (M + 1)) :
     Fin (P.foldingParam i.castSucc) → F :=
-  match M with
-  | 0 => nomatch i
-  | n + 1 =>
-      Fin.cases (motive := fun i : Fin (n + 1) =>
-          Fin (P.foldingParam i.castSucc) → F)
-        T.initialSumcheckChallenge
-        (fun k => T.mainSumcheckChallenge k.castSucc)
-        i
+  Fin.cases (motive := fun i : Fin (M + 1) =>
+      Fin (P.foldingParam i.castSucc) → F)
+    T.initialSumcheckChallenge
+    (fun k => T.mainSumcheckChallenge k.castSucc)
+    i
 
-omit [Fintype F] [DecidableEq F] [SampleableType F] in
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
 @[simp] theorem paperTranscriptFoldingChallenge_zero {M : ℕ}
     {ιs : Fin ((M + 1) + 1) → Type}
     [∀ i : Fin ((M + 1) + 1), Fintype (ιs i)]
@@ -568,12 +565,12 @@ omit [Fintype F] [DecidableEq F] [SampleableType F] in
     paperTranscriptFoldingChallenge P d T 0 j = T.initialSumcheckChallenge j := by
   rfl
 
-omit [Fintype F] [DecidableEq F] [SampleableType F] in
+omit [Field F] [Fintype F] [DecidableEq F] [SampleableType F] in
 @[simp] theorem paperTranscriptFoldingChallenge_succ {M : ℕ}
     {ιs : Fin ((M + 1) + 1) → Type}
     [∀ i : Fin ((M + 1) + 1), Fintype (ιs i)]
     (P : Params ιs F) (d : ℕ) (T : PaperTranscriptData P d)
-    (i : Fin M) (j : Fin (P.foldingParam i.succ)) :
+    (i : Fin M) (j : Fin (P.foldingParam i.succ.castSucc)) :
     paperTranscriptFoldingChallenge P d T i.succ j =
       T.mainSumcheckChallenge i.castSucc j := by
   rfl
@@ -688,6 +685,53 @@ theorem paperTranscriptSlotPayload_mainFoldedOracle_of_hasFoldedOracles {M : ℕ
         (paperFoldedOracleFrom P S bridge hNeg source foldChallenge hFoldLe i) := by
   rw [paperTranscriptSlotPayload_mainFoldedOracle]
   exact congrArg (packFiniteFunction (ιs i.succ)) (funext (hT i))
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- Folded-oracle consistency using the folding challenges read from the paper transcript itself.
+
+This is the challenge-schedule-specialized form needed by the honest Construction 5.1 transcript:
+the initial transition uses `T.initialSumcheckChallenge`, and every later transition uses the
+previous main-loop `T.mainSumcheckChallenge`. -/
+def paperTranscriptHasFoldedOraclesFromTranscript {M : ℕ}
+    {ιs : Fin ((M + 1) + 1) → Type}
+    [∀ i : Fin ((M + 1) + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ)
+    (S : ∀ i : Fin ((M + 1) + 1), Finset (ιs i))
+    (bridge : PaperFoldDomainBridge P S)
+    (hNeg :
+      ∀ i : Fin (M + 1), ∀ j : ℕ,
+        Neg (BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) j))
+    (source :
+      (i : Fin (M + 1)) →
+        BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) 0 → F)
+    (hFoldLe : ∀ i : Fin (M + 1), P.foldingParam i.castSucc ≤ P.varCount i.castSucc)
+    (T : PaperTranscriptData P d) : Prop :=
+  paperTranscriptHasFoldedOracles P d S bridge hNeg source
+    (paperTranscriptFoldingChallenge P d T) hFoldLe T
+
+omit [Fintype F] [DecidableEq F] [SampleableType F] in
+/-- The transcript-derived folding-challenge predicate gives the same folded-oracle payload
+equation, with no external folding-challenge schedule left to supply. -/
+theorem paperTranscriptSlotPayload_mainFoldedOracle_of_hasFoldedOraclesFromTranscript {M : ℕ}
+    {ιs : Fin ((M + 1) + 1) → Type}
+    [∀ i : Fin ((M + 1) + 1), Fintype (ιs i)] (P : Params ιs F) (d : ℕ)
+    (S : ∀ i : Fin ((M + 1) + 1), Finset (ιs i))
+    (bridge : PaperFoldDomainBridge P S)
+    (hNeg :
+      ∀ i : Fin (M + 1), ∀ j : ℕ,
+        Neg (BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) j))
+    (source :
+      (i : Fin (M + 1)) →
+        BlockRelDistance.indexPowT (S i.castSucc) (P.φ i.castSucc) 0 → F)
+    (hFoldLe : ∀ i : Fin (M + 1), P.foldingParam i.castSucc ≤ P.varCount i.castSucc)
+    (T : PaperTranscriptData P d)
+    (hT : paperTranscriptHasFoldedOraclesFromTranscript P d S bridge hNeg source hFoldLe T)
+    (i : Fin (M + 1)) :
+    paperTranscriptSlotPayload P d T (.mainFoldedOracle i) =
+      packFiniteFunction (ιs i.succ)
+        (paperFoldedOracleFrom P S bridge hNeg source
+          (paperTranscriptFoldingChallenge P d T) hFoldLe i) :=
+  paperTranscriptSlotPayload_mainFoldedOracle_of_hasFoldedOracles P d S bridge hNeg source
+    (paperTranscriptFoldingChallenge P d T) hFoldLe T hT i
 
 omit [SampleableType F] in
 /-- Polynomial-extension consistency for the main-loop out-of-domain replies. -/
@@ -1529,12 +1573,17 @@ end RBRSoundnessAssembly
 #print axioms paperTranscriptOracleProver
 #print axioms paperTranscriptOracleVerifier
 #print axioms paperTranscriptVectorIOP
+#print axioms paperTranscriptFoldingChallenge
+#print axioms paperTranscriptFoldingChallenge_zero
+#print axioms paperTranscriptFoldingChallenge_succ
 #print axioms PaperFoldDomainBridge
 #print axioms paperFoldDomainBridge_nextDomainEquiv_apply
 #print axioms paperFoldedOracleFrom
 #print axioms paperFoldedOracleFrom_apply
 #print axioms paperTranscriptHasFoldedOracles
 #print axioms paperTranscriptSlotPayload_mainFoldedOracle_of_hasFoldedOracles
+#print axioms paperTranscriptHasFoldedOraclesFromTranscript
+#print axioms paperTranscriptSlotPayload_mainFoldedOracle_of_hasFoldedOraclesFromTranscript
 #print axioms PaperOutOfDomainExtension
 #print axioms paperOutOfDomainExtension_reply
 #print axioms paperTranscriptSlotPayload_mainOutOfDomainReply_of_extension

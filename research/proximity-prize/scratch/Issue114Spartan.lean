@@ -10,7 +10,7 @@ import ArkLib.ProofSystem.ConstraintSystem.R1CS
 /-!
 # Issue #114 — Spartan: extractable algebraic math (scratch / hand-verified)
 
-This scratch module isolates the GENUINE, mathlib-/substrate-reducible algebraic content of
+This scratch module isolates the GENUINE, mathlib- and substrate-reducible algebraic content of
 issue #114 (the Spartan PIOP: first zero-check + first sum-check + send eval claims + linear
 combination + SECOND sum-check + final `CheckClaim`).
 
