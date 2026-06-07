@@ -24,6 +24,9 @@ that the greedy chain (step 1 of the issue-#93 proof architecture) consumes:
   block coordinates `i : ι` where `c i = f i` is at least `(1 - δ)·n`. Equivalently, the
   disagreement count is at most `δ·n`. This is the "agreement ≥ (τ(r₀)+η)·n" datum that
   the greedy chain's step-1 charge consumes.
+* **recentred-difference vanishing count** — if two close codewords `c` and `c₀` both agree
+  with `f` on large coordinate sets, then their difference `c - c₀` vanishes on the
+  intersection of those agreement sets, giving at least `(1 - 2δ)·n` vanishing coordinates.
 
 All results are stated for the block alphabet `Fin s → F` (so `α = Fin s → F`, not a field),
 matching the subspace-design coordinate structure, and are `sorry`-free / axiom-clean
@@ -180,6 +183,64 @@ lemma sum_agree_ge_of_subset_closeCodewordsRel
 
 end AgreementCount
 
+section DifferenceVanish
+
+variable {ι : Type} [Fintype ι] [Nonempty ι] [DecidableEq ι]
+variable {F : Type} [Field F] [DecidableEq F]
+
+/-- **Recentred-difference vanishing count (greedy-chain step-2 input).** If two codewords
+`c` and `c₀` both lie in the close list around `f` at radius `δ`, then their recentred
+difference vanishes on at least `(1 - 2δ)·n` block coordinates:
+
+  `(1 - 2δ) · n ≤ #{i : c i - c₀ i = 0}`.
+
+Indeed, `c` agrees with `f` on at least `(1 - δ)·n` coordinates and `c₀` agrees with `f` on
+at least `(1 - δ)·n` coordinates. The intersection of the two agreement sets has size at
+least `(1 - 2δ)·n`, and on that intersection `c i = f i = c₀ i`, so the recentred difference
+vanishes. This is the reusable input that feeds the recentred span
+`span {c - c₀ | c ∈ L}` into the subspace-design vanishing budget. -/
+lemma card_diff_vanish_ge_of_mem_closeCodewordsRel
+    (s : ℕ) (C : Set (ι → Fin s → F)) (f c c₀ : ι → Fin s → F) {δ : ℝ}
+    (hc : c ∈ closeCodewordsRel C f δ)
+    (hc₀ : c₀ ∈ closeCodewordsRel C f δ) :
+    (1 - 2 * δ) * Fintype.card ι ≤
+      ((Finset.univ.filter (fun i => c i - c₀ i = 0)).card : ℝ) := by
+  classical
+  let A : Finset ι := Finset.univ.filter (fun i => f i = c i)
+  let B : Finset ι := Finset.univ.filter (fun i => f i = c₀ i)
+  let V : Finset ι := Finset.univ.filter (fun i => c i - c₀ i = 0)
+  have hA : (1 - δ) * Fintype.card ι ≤ (A.card : ℝ) := by
+    simpa [A] using card_agree_ge_of_mem_closeCodewordsRel C f c hc
+  have hB : (1 - δ) * Fintype.card ι ≤ (B.card : ℝ) := by
+    simpa [B] using card_agree_ge_of_mem_closeCodewordsRel C f c₀ hc₀
+  have hUnion : (((A ∪ B).card : ℕ) : ℝ) ≤ Fintype.card ι := by
+    exact_mod_cast Finset.card_le_univ (A ∪ B)
+  have hInterEqNat : (A ∩ B).card = A.card + B.card - (A ∪ B).card := by
+    have h := Finset.card_union_add_card_inter A B
+    omega
+  have hUnionLe : (A ∪ B).card ≤ A.card + B.card := by
+    have h := Finset.card_union_add_card_inter A B
+    omega
+  have hInterEq : ((A ∩ B).card : ℝ) =
+      (A.card : ℝ) + (B.card : ℝ) - ((A ∪ B).card : ℝ) := by
+    rw [hInterEqNat, Nat.cast_sub hUnionLe]
+    push_cast
+    ring_nf
+  have hInterLower : (1 - 2 * δ) * Fintype.card ι ≤ ((A ∩ B).card : ℝ) := by
+    nlinarith [hA, hB, hUnion, hInterEq]
+  have hsub : A ∩ B ⊆ V := by
+    intro i hi
+    simp [A, B, V] at hi ⊢
+    rcases hi with ⟨hfi, hfi₀⟩
+    have hcc : c i = c₀ i := by
+      rw [← hfi, ← hfi₀]
+    simp [hcc]
+  have hcard : ((A ∩ B).card : ℝ) ≤ (V.card : ℝ) := by
+    exact_mod_cast Finset.card_le_card hsub
+  exact le_trans hInterLower hcard
+
+end DifferenceVanish
+
 /-! ### `#print axioms` verification anchors -/
 
 section AxiomCheck
@@ -212,3 +273,4 @@ end CodingTheory
 #print axioms CodingTheory.card_agree_ge_of_mem_closeCodewordsRel
 #print axioms CodingTheory.sum_agree_swap
 #print axioms CodingTheory.sum_agree_ge_of_subset_closeCodewordsRel
+#print axioms CodingTheory.card_diff_vanish_ge_of_mem_closeCodewordsRel
