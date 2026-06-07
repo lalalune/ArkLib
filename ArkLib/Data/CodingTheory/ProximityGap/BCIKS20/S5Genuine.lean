@@ -139,6 +139,14 @@ theorem LiftIdentityAt.of_partitionMatch {x₀ : F} {R : F[X][X][Y]}
     LiftIdentityAt H x₀ R hHyp t :=
   βHensel_lift_identity_of_partitionMatch H x₀ R hHyp hpart t
 
+/-- The downstream `LiftIdentityAt` predicate supplied by fixed-order normalized P2 partition
+residuals. -/
+theorem LiftIdentityAt.of_forall_partitionMatchAt {x₀ : F} {R : F[X][X][Y]}
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hat : ∀ t : ℕ, RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp t) (t : ℕ) :
+    LiftIdentityAt H x₀ R hHyp t :=
+  βHensel_lift_identity_of_forall_partitionMatchAt H x₀ R hHyp hat t
+
 /-- The downstream `LiftIdentityAt` predicate supplied by the full P2 vanishing identity. -/
 theorem LiftIdentityAt.of_fullVanishes {x₀ : F} {R : F[X][X][Y]}
     (hHyp : ClaimA2.Hypotheses x₀ R H)
@@ -235,6 +243,15 @@ theorem claim58_genuine_via_partitionMatch {x₀ : F} {R : F[X][X][Y]}
     αGenuine H x₀ R hHyp t = 0 :=
   claim58_genuine H hHyp hlarge (LiftIdentityAt.of_partitionMatch H hHyp hpart t)
 
+/-- **Claim 5.8 (genuine), using fixed-order normalized P2 partition residuals.** -/
+theorem claim58_genuine_via_forall_partitionMatchAt {x₀ : F} {R : F[X][X][Y]}
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hat : ∀ s : ℕ, RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp s)
+    {t : ℕ} (hlarge : SβLargeAt H x₀ R hHyp t) :
+    αGenuine H x₀ R hHyp t = 0 :=
+  claim58_genuine H hHyp hlarge
+    (LiftIdentityAt.of_forall_partitionMatchAt H hHyp hat t)
+
 /-! ## Claim 5.8' (genuine): `γ` is a polynomial of X-degree `< k`
 
 The tail vanishing `αGenuine t = 0` for all `t ≥ k` (from Claim 5.8, with the largeness supplied
@@ -252,6 +269,17 @@ theorem claim58prime_genuine_tail {x₀ : F} {R : F[X][X][Y]}
     (hlift : ∀ t ≥ k, LiftIdentityAt H x₀ R hHyp t) :
     ∀ t ≥ k, αGenuine H x₀ R hHyp t = 0 :=
   fun t ht => claim58_genuine H hHyp (hlarge t ht) (hlift t ht)
+
+/-- **Claim 5.8' tail vanishing (genuine), using fixed-order normalized P2 partition
+residuals.** -/
+theorem claim58prime_genuine_tail_via_forall_partitionMatchAt
+    {x₀ : F} {R : F[X][X][Y]}
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hat : ∀ s : ℕ, RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp s) {k : ℕ}
+    (hlarge : ∀ t ≥ k, SβLargeAt H x₀ R hHyp t) :
+    ∀ t ≥ k, αGenuine H x₀ R hHyp t = 0 :=
+  claim58prime_genuine_tail H hHyp hlarge
+    (fun t _ => LiftIdentityAt.of_forall_partitionMatchAt H hHyp hat t)
 
 /-- **Claim 5.8' (genuine, polynomial form).**  `γ = γ_k`: the genuine Hensel root `gammaGenuine`
 *equals the coercion of its degree-`< k` truncation polynomial*
@@ -323,6 +351,17 @@ theorem claim58prime_genuine_via_partitionMatch {x₀ : F} {R : F[X][X][Y]}
       = (↑(PowerSeries.trunc k (gammaGenuine x₀ R H hHyp)) : (𝕃 H)⟦X⟧) :=
   claim58prime_genuine H hHyp hlarge
     (fun t _ => LiftIdentityAt.of_partitionMatch H hHyp hpart t)
+
+/-- **Claim 5.8' (genuine), using fixed-order normalized P2 partition residuals.** -/
+theorem claim58prime_genuine_via_forall_partitionMatchAt
+    {x₀ : F} {R : F[X][X][Y]}
+    (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hat : ∀ s : ℕ, RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp s) {k : ℕ}
+    (hlarge : ∀ t ≥ k, SβLargeAt H x₀ R hHyp t) :
+    gammaGenuine x₀ R H hHyp
+      = (↑(PowerSeries.trunc k (gammaGenuine x₀ R H hHyp)) : (𝕃 H)⟦X⟧) :=
+  claim58prime_genuine H hHyp hlarge
+    (fun t _ => LiftIdentityAt.of_forall_partitionMatchAt H hHyp hat t)
 
 /-- **Claim 5.8' (genuine, X-degree bound on the truncation).**  Companion to
 `claim58prime_genuine`: the degree-`< k` witness polynomial `PowerSeries.trunc k γ` has
@@ -424,6 +463,7 @@ These `#print axioms` lines are checked at compile time. -/
 #print axioms LiftIdentityAt.of_fullVanishes
 #print axioms LiftIdentityAt.of_restrictedMatch
 #print axioms LiftIdentityAt.of_partitionMatch
+#print axioms LiftIdentityAt.of_forall_partitionMatchAt
 #print axioms claim58_genuine_via_intree
 #print axioms claim58prime_genuine_via_intree
 #print axioms claim58_genuine_via_fullVanishes
@@ -432,5 +472,8 @@ These `#print axioms` lines are checked at compile time. -/
 #print axioms claim58prime_genuine_via_restrictedMatch
 #print axioms claim58_genuine_via_partitionMatch
 #print axioms claim58prime_genuine_via_partitionMatch
+#print axioms claim58_genuine_via_forall_partitionMatchAt
+#print axioms claim58prime_genuine_tail_via_forall_partitionMatchAt
+#print axioms claim58prime_genuine_via_forall_partitionMatchAt
 
 end BCIKS20.HenselNumerator.S5Genuine

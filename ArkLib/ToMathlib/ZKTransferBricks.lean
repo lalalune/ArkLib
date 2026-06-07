@@ -15,6 +15,8 @@ import ArkLib.OracleReduction.Security.ZeroKnowledge
     transcript distribution (the simulator is reused unchanged).
   - `perfectHVZK.simulator_congr`: perfect HVZK is preserved when swapping in an
     `evalDist`-equal simulator.
+  - `statisticalHVZK.simulator_congr`: statistical HVZK is preserved under the same simulator
+    distribution congruence, with the error budget unchanged.
   - `statisticalHVZK.simulator_triangle`: two statistical-HVZK bounds compose by the triangle
     inequality, giving a combined error budget. This is the shape used when transferring a
     simulator across an `evalDist`-equal intermediate honest distribution.
@@ -83,6 +85,22 @@ theorem perfectHVZK.simulator_congr
     (hsim : ∀ stmtIn, evalDist (sim stmtIn) = evalDist (sim' stmtIn)) :
     perfectHVZK init impl rel R sim' := by
   intro stmtIn witIn hMem
+  rw [← hsim stmtIn]
+  exact h stmtIn witIn hMem
+
+/-- **Statistical HVZK is preserved under an `evalDist`-equal simulator.** Swapping in a
+simulator that produces the same transcript distribution everywhere preserves the same statistical
+error budget. -/
+theorem statisticalHVZK.simulator_congr
+    {init : ProbComp σ} {impl : QueryImpl oSpec (StateT σ ProbComp)}
+    {rel : Set (StmtIn × WitIn)}
+    {R : Reduction oSpec StmtIn WitIn StmtOut WitOut pSpec}
+    {sim sim' : TranscriptSimulator oSpec StmtIn pSpec} {ε : ℝ≥0}
+    (h : statisticalHVZK init impl rel R sim ε)
+    (hsim : ∀ stmtIn, evalDist (sim stmtIn) = evalDist (sim' stmtIn)) :
+    statisticalHVZK init impl rel R sim' ε := by
+  intro stmtIn witIn hMem
+  unfold tvDist
   rw [← hsim stmtIn]
   exact h stmtIn witIn hMem
 
@@ -165,6 +183,7 @@ theorem isStatHVZK.congr_honestDist
 #print axioms perfectHVZK.congr_honestDist
 #print axioms statisticalHVZK.congr_honestDist
 #print axioms perfectHVZK.simulator_congr
+#print axioms statisticalHVZK.simulator_congr
 #print axioms statisticalHVZK.simulator_triangle
 #print axioms perfectHVZK_of_honestDist_eq_const
 #print axioms isHVZK_of_honestDist_eq_const

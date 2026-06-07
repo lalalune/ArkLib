@@ -215,6 +215,15 @@ theorem restrictedMatch_iff_partitionMatch (x₀ : F) (R : F[X][X][Y])
       restrictedMatch_rhs_eq_restrictedRecursionPartitionForm H x₀ R hHyp t]
     exact hpart t
 
+/-- The carved P2 core is equivalent to proving the final partition-form residual at every fixed
+order. This is the direct per-order target surface for the remaining term-level proof. -/
+theorem restrictedMatch_iff_forall_partitionMatchAt (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    RestrictedFaaDiBrunoMatch H x₀ R hHyp ↔
+      ∀ t : ℕ, RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp t :=
+  (restrictedMatch_iff_partitionMatch H x₀ R hHyp).trans
+    (restrictedPartitionMatch_iff_forall_at H x₀ R hHyp)
+
 /-- Directional adapter from the carved restricted match to the normalized partition residual. -/
 theorem RestrictedFaaDiBrunoPartitionMatch.of_restrictedMatch
     (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
@@ -229,6 +238,20 @@ theorem RestrictedFaaDiBrunoMatch.of_partitionMatch
     RestrictedFaaDiBrunoMatch H x₀ R hHyp :=
   (restrictedMatch_iff_partitionMatch H x₀ R hHyp).2 hpart
 
+/-- Directional adapter from a fixed-order partition residual family to the carved core. -/
+theorem RestrictedFaaDiBrunoMatch.of_forall_partitionMatchAt
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hat : ∀ t : ℕ, RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp t) :
+    RestrictedFaaDiBrunoMatch H x₀ R hHyp :=
+  (restrictedMatch_iff_forall_partitionMatchAt H x₀ R hHyp).2 hat
+
+/-- Project fixed-order partition residuals from the carved core. -/
+theorem RestrictedFaaDiBrunoMatch.forall_partitionMatchAt
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hmatch : RestrictedFaaDiBrunoMatch H x₀ R hHyp) :
+    ∀ t : ℕ, RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp t :=
+  (restrictedMatch_iff_forall_partitionMatchAt H x₀ R hHyp).1 hmatch
+
 /-- The normalized partition residual supplies the full P2 vanishing identity. -/
 theorem fullVanishes_of_partitionMatch (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H)
@@ -236,6 +259,14 @@ theorem fullVanishes_of_partitionMatch (x₀ : F) (R : F[X][X][Y])
     FaaDiBrunoFullSumVanishes H x₀ R hHyp :=
   fullVanishes_of_restrictedMatch H x₀ R hHyp
     (RestrictedFaaDiBrunoMatch.of_partitionMatch H x₀ R hHyp hpart)
+
+/-- The fixed-order partition residual family supplies the full P2 vanishing identity. -/
+theorem fullVanishes_of_forall_partitionMatchAt
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hat : ∀ t : ℕ, RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp t) :
+    FaaDiBrunoFullSumVanishes H x₀ R hHyp :=
+  fullVanishes_of_partitionMatch H x₀ R hHyp
+    (RestrictedFaaDiBrunoPartitionMatch.of_forallAt H x₀ R hHyp hat)
 
 /-- The normalized partition residual supplies the legacy successor-sum residual. -/
 theorem faaDiBrunoSuccSumZeroResidual_of_partitionMatch
@@ -326,9 +357,13 @@ section AxiomAudit
 #print axioms assembledSeries_isRoot_of_forall_partitionMatchAt
 #print axioms βHensel_lift_identity_of_forall_partitionMatchAt
 #print axioms restrictedMatch_iff_partitionMatch
+#print axioms restrictedMatch_iff_forall_partitionMatchAt
 #print axioms RestrictedFaaDiBrunoPartitionMatch.of_restrictedMatch
 #print axioms RestrictedFaaDiBrunoMatch.of_partitionMatch
+#print axioms RestrictedFaaDiBrunoMatch.of_forall_partitionMatchAt
+#print axioms RestrictedFaaDiBrunoMatch.forall_partitionMatchAt
 #print axioms fullVanishes_of_partitionMatch
+#print axioms fullVanishes_of_forall_partitionMatchAt
 #print axioms faaDiBrunoSuccSumZeroResidual_of_partitionMatch
 #print axioms P2_closed_of_partitionMatch
 #print axioms assembledSeries_isRoot_of_partitionMatch
