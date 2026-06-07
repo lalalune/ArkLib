@@ -75,15 +75,29 @@ Current source also exposes the #14 split frontier:
   correlated-agreement-to-joint-agreement coding step.
 - `fri_query_soundness_of_parts` reassembles the faithful
   `fri_query_soundness` residual from those three named ingredients.
+- `queryRoundAcceptanceBound` / `queryRoundAcceptanceBound_holds` and
+  `queryRoundDensityBound` / `queryRoundDensityBound_holds` now prove the pure
+  independent-query counting core: if the good set has density at most
+  `1 - δ`, then `t` independent uniform queries all land in it with probability
+  at most `(1 - δ) ^ t`.
+- `FriQuerySoundnessParts.of_queryRoundAcceptanceBound` and
+  `fri_query_soundness_of_queryRoundAcceptanceBound` plug the proved card-form
+  query-round proposition into the Claim 8.2 frontier while leaving the
+  batching/oracle-lens and correlated-agreement bridge fields explicit.
+- `FriQuerySoundnessParts.of_queryRoundDensityBound` and
+  `fri_query_soundness_of_queryRoundDensityBound` provide the same adapter from
+  the normalized-density hypothesis that proximity arguments usually produce.
 - `FriSoundnessParts` separates the Claim 8.3 proof boundary into the
   Claim 8.2 lift to the full-domain statement, sequential-composition
   soundness, and the `totalError` accounting step.
 - `fri_soundness_of_parts` reassembles the faithful `fri_soundness` residual
   from those three named ingredients.
 
-This is an API narrowing, not a proof of Claims 8.2 or 8.3. The actual
-probabilistic query-round theorem, sequential-composition soundness theorem,
-and coding-theoretic bridge into `Code.jointAgreement` remain open proof work.
+The query-round acceptance field now has a proved combinatorial core and two
+adapters into the split frontier. This is still not a proof of Claims 8.2 or
+8.3: the batching/oracle-lens reduction, the coding-theoretic bridge into
+`Code.jointAgreement`, the sequential-composition soundness theorem, and the
+`totalError` accounting step remain open proof work.
 
 ### STIR proximity gap
 
@@ -157,21 +171,30 @@ ArkLib/ProofSystem/Stir/ProximityGap.lean:41:  STATUS (audit 2026-06-04, branch 
 ArkLib/ProofSystem/Stir/ProximityGap.lean:68:  Honest residual: close `AffineLines/Main.lean:40` (Thm 5.1, list-decoding regime), which
 ArkLib/ProofSystem/Stir/RoundProtocol.lean:132: The STIR fold-round oracle reduction
 ArkLib/ProofSystem/Stir/RoundProtocol.lean:187: Completeness of the real STIR fold-round object
-ArkLib/ProofSystem/BatchedFri/Security.lean:695:def fri_query_soundness
-ArkLib/ProofSystem/BatchedFri/Security.lean:726:structure FriQuerySoundnessParts
-ArkLib/ProofSystem/BatchedFri/Security.lean:749:theorem fri_query_soundness_of_parts
-ArkLib/ProofSystem/BatchedFri/Security.lean:775:def fri_soundness
-ArkLib/ProofSystem/BatchedFri/Security.lean:813:structure FriSoundnessParts
-ArkLib/ProofSystem/BatchedFri/Security.lean:829:theorem fri_soundness_of_parts
+ArkLib/ProofSystem/BatchedFri/Security.lean:420:def queryRoundAcceptanceBound
+ArkLib/ProofSystem/BatchedFri/Security.lean:431:theorem queryRoundAcceptanceBound_holds
+ArkLib/ProofSystem/BatchedFri/Security.lean:454:def queryRoundDensityBound
+ArkLib/ProofSystem/BatchedFri/Security.lean:463:theorem queryRoundDensityBound_holds
+ArkLib/ProofSystem/BatchedFri/Security.lean:837:def fri_query_soundness
+ArkLib/ProofSystem/BatchedFri/Security.lean:868:structure FriQuerySoundnessParts
+ArkLib/ProofSystem/BatchedFri/Security.lean:892:theorem fri_query_soundness_of_parts
+ArkLib/ProofSystem/BatchedFri/Security.lean:918:def FriQuerySoundnessParts.of_queryRoundAcceptanceBound
+ArkLib/ProofSystem/BatchedFri/Security.lean:950:theorem fri_query_soundness_of_queryRoundAcceptanceBound
+ArkLib/ProofSystem/BatchedFri/Security.lean:982:def FriQuerySoundnessParts.of_queryRoundDensityBound
+ArkLib/ProofSystem/BatchedFri/Security.lean:1011:theorem fri_query_soundness_of_queryRoundDensityBound
+ArkLib/ProofSystem/BatchedFri/Security.lean:1061:def fri_soundness
+ArkLib/ProofSystem/BatchedFri/Security.lean:1099:structure FriSoundnessParts
+ArkLib/ProofSystem/BatchedFri/Security.lean:1115:theorem fri_soundness_of_parts
 ```
 
 ## Remaining proof tracks
 
 1. FRI: add sequential-composition soundness infrastructure, prove the
-   query-round acceptance/lens/coding ingredients exposed by
-   `FriQuerySoundnessParts`, discharge the Claim 8.3 lift/composition/accounting
-   ingredients exposed by `FriSoundnessParts`, then prove that `totalError`
-   bounds the verifier failure probability.
+   batching/oracle-lens and coding ingredients still exposed by
+   `FriQuerySoundnessParts`, connect the proved query-round acceptance package
+   to the actual oracle-reduction run, discharge the Claim 8.3
+   lift/composition/accounting ingredients exposed by `FriSoundnessParts`, then
+   prove that `totalError` bounds the verifier failure probability.
 2. BCIKS20/STIR proximity gap: close the affine-lines correlated-agreement
    theorem in the list-decoding regime, then lift through affine spaces and
    curves to the repaired monomial proximity-gap statement.
