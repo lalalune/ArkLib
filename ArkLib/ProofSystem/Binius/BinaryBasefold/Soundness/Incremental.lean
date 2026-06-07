@@ -1100,6 +1100,54 @@ lemma fold_eq_multilinearCombine_preTensorCombine_step1
     (h_destIdx := h_destIdx) (h_destIdx_le := h_destIdx_le) (f_i := f_i)
     (r_chal := fun (_ : Fin 1) => r_new)) _
 
+/-- **Residual: fiberwise closeness lifts to interleaved-word proximity (Lemma 4.22).**
+
+If `f_i` is fiberwise close to `BBF_Code i` (`2 · Δ₀(f_i, C^{(i)}) < d_{i+steps}`, i.e. within the
+unique decoding radius), then its `preTensorCombine` interleaved word is within the unique decoding
+radius of the interleaved destination code. This is the close-branch dual of the far-branch
+`lemma_4_21_interleaved_word_UDR_far`.
+
+The natural proof decodes `f_i` to its UDR codeword `g ∈ C^{(i)}`, observes that
+`⋈|preTensorCombine g` is an interleaved codeword (`preTensorCombine_is_interleavedCodeword_of_codeword`),
+and bounds the interleaved Hamming distance `Δ₀(⋈|preTensorCombine f_i, ⋈|preTensorCombine g)` by
+`Δ₀(f_i, g) ≤ UDR` via the fiber-projection structure of the fold. The fiber-projection distance
+step is the remaining port-debt; exposed here as a typeclass hypothesis in the convention of
+`FoldPreservesBBFCodeMembershipResidual`. -/
+class PreTensorCombineJointProximityResidual : Prop where
+  holds : ∀ (i : Fin ℓ) (steps : ℕ) [NeZero steps] {destIdx : Fin r}
+    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
+    (_h_close : fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := ⟨i, by omega⟩) (steps := steps) (h_destIdx := by
+        apply Fin.ext; simpa using h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f_i)),
+    jointProximityNat
+      (C := (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx :
+        Set (sDomain 𝔽q β h_ℓ_add_R_rate destIdx → L)))
+      (u := preTensorCombine_WordStack 𝔽q β i steps h_destIdx h_destIdx_le f_i)
+      (Code.uniqueDecodingRadius (C := (BBF_Code 𝔽q β
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx :
+          Set (sDomain 𝔽q β h_ℓ_add_R_rate destIdx → L))))
+
+variable [PreTensorCombineJointProximityResidual 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)]
+
+/-- **Fiberwise closeness lifts to interleaved-word proximity (Lemma 4.22).**
+Reduction to the explicit `PreTensorCombineJointProximityResidual` hypothesis. -/
+lemma preTensorCombine_jointProximityNat_of_fiberwiseClose
+    (i : Fin ℓ) (steps : ℕ) [NeZero steps] {destIdx : Fin r}
+    (h_destIdx : destIdx.val = i.val + steps) (h_destIdx_le : destIdx ≤ ℓ)
+    (f_i : OracleFunction 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ⟨i, by omega⟩)
+    (h_close : fiberwiseClose 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate)
+      (i := ⟨i, by omega⟩) (steps := steps) (h_destIdx := by
+        apply Fin.ext; simpa using h_destIdx) (h_destIdx_le := h_destIdx_le) (f := f_i)) :
+    jointProximityNat
+      (C := (BBF_Code 𝔽q β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx :
+        Set (sDomain 𝔽q β h_ℓ_add_R_rate destIdx → L)))
+      (u := preTensorCombine_WordStack 𝔽q β i steps h_destIdx h_destIdx_le f_i)
+      (Code.uniqueDecodingRadius (C := (BBF_Code 𝔽q β
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) destIdx :
+          Set (sDomain 𝔽q β h_ℓ_add_R_rate destIdx → L)))) :=
+  PreTensorCombineJointProximityResidual.holds i steps h_destIdx h_destIdx_le f_i h_close
+
 /-- **Connecting fiberwiseClose of a folded function to affine line evaluation proximity.**
 Given `f_i : S^i → L` with preTensorCombine `U := preTensorCombine(i, s+1, destIdx, f_i)` of
 height `2^{s+1}`, and `r_new : L`, if
