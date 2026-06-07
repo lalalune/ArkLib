@@ -81,4 +81,22 @@ theorem eval_βHenselAssembled_eq_zero_iff_residual
   · intro h
     exact assembledSeries_isRoot_of_coeff_succ_eval H x₀ R hHyp h
 
+/-- **The assembled numerator series equals the genuine Hensel lift iff the carved P2
+residual holds.** The forward direction uses `gammaGenuine_root` (the genuine lift is a
+proven root of `Q`); the reverse is the proven uniqueness reduction
+`βHenselAssembled_eq_gammaGenuine`. This packages the whole point of (P2) — that the `(A.1)`
+recursion reproduces the genuine Hensel coefficients — as a clean biconditional with the
+single named residual. -/
+theorem βHenselAssembled_eq_gammaGenuine_iff_residual
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    βHenselAssembled H x₀ R hHyp = gammaGenuine x₀ R H hHyp ↔
+      FaaDiBrunoSuccSumZeroResidual H x₀ R hHyp := by
+  rw [← eval_βHenselAssembled_eq_zero_iff_residual]
+  constructor
+  · intro heq
+    rw [heq]
+    exact gammaGenuine_root hHyp
+  · intro hroot
+    exact βHenselAssembled_eq_gammaGenuine H x₀ R hHyp hroot
+
 end BCIKS20.HenselNumerator
