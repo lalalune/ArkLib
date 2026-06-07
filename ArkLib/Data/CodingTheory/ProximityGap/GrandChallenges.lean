@@ -79,7 +79,7 @@ set_option linter.unusedSectionVars false
 
 namespace ProximityGap
 
-open scoped NNReal ProbabilityTheory
+open scoped NNReal ProbabilityTheory BigOperators
 
 universe u
 
@@ -386,6 +386,34 @@ noncomputable def MCAUpperWitness.ofRSBreakdownCS25
     exact hε
 
 #print axioms ProximityGap.GrandChallenges.MCAUpperWitness.ofRSBreakdownCS25
+
+open Classical in
+/-- **CS25 count-budget bridge to a Grand MCA upper witness.** The combined far-line plus
+jointly-close-stack count inequality is the mechanical CS25 input exposed by
+`CodingTheory.rs_epsCA_breakdown_cs25_of_counts`; once it gives complete CA breakdown, any
+threshold `ε* < 1` yields the corresponding one-sided Grand MCA witness. -/
+noncomputable def MCAUpperWitness.ofRSBreakdownCS25Counts
+    (domain : ι ↪ F) (k : ℕ) (δ ε_star : ℝ≥0)
+    (hq_ge : 10 ≤ Fintype.card F)
+    (hδ_lo :
+        1 - CodingTheory.qEntropy (Fintype.card F) (δ : ℝ) + 2 / (Fintype.card ι : ℝ)
+            + ((CodingTheory.qEntropy (Fintype.card F) (δ : ℝ) - (δ : ℝ))
+                / (Fintype.card ι : ℝ)) ^ ((1 : ℝ) / 2)
+          ≤ (k : ℝ) / Fintype.card ι)
+    (hδ_hi : (k : ℝ) / Fintype.card ι ≤ 1 - (δ : ℝ) - 2 / (Fintype.card ι : ℝ))
+    (hsum :
+      (∑ u : Code.WordStack F (Fin 2) ι,
+          (Finset.univ.filter (fun γ : F =>
+            ¬ δᵣ(u 0 + γ • u 1, (ReedSolomon.code domain k : Set (ι → F))) ≤ δ)).card)
+        + (Finset.univ.filter (fun u : Code.WordStack F (Fin 2) ι =>
+            Code.jointProximity (C := (ReedSolomon.code domain k : Set (ι → F))) (u := u) δ)).card
+      < Fintype.card (Code.WordStack F (Fin 2) ι))
+    (hε : (ε_star : ENNReal) < 1) :
+    MCAUpperWitness (ReedSolomon.code domain k : Set (ι → F)) ε_star :=
+  MCAUpperWitness.ofRSBreakdownCS25 domain k δ ε_star hq_ge hδ_lo hδ_hi
+    (CodingTheory.rs_epsCA_breakdown_cs25_of_counts domain k δ hq_ge hδ_lo hδ_hi hsum) hε
+
+#print axioms ProximityGap.GrandChallenges.MCAUpperWitness.ofRSBreakdownCS25Counts
 
 /-- **Bridge from ABF26 Lemma 4.19 [DG25 Thm 2.5].** A sampling lower bound on `ε_ca`,
 combined with a named sampling-mass comparison showing that the lower bound exceeds `ε*`,
