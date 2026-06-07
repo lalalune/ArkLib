@@ -4,9 +4,9 @@ Generated from `docs/kb/_generated/declarations.json`. **Eyeball, do not auto-re
 
 ## Stats
 
-- `ArkLib` — 682 files, 12610 declarations
+- `ArkLib` — 683 files, 12653 declarations
 
-## Same short-name across multiple files (418 groups)
+## Same short-name across multiple files (419 groups)
 
 Each group lists declarations sharing a short name across ≥2 files. Most are legitimate (overloaded interface, paper-shape vs general form), but the list is the right anchor to look for duplicates.
 
@@ -1404,6 +1404,11 @@ Each group lists declarations sharing a short name across ≥2 files. Most are l
 
 - `theorem Binius.RingSwitching.SumcheckPhase.coreInteraction_rbrKnowledgeSoundness` [ArkLib/ProofSystem/Binius/RingSwitching/SumcheckPhase.lean:1809](../../../ArkLib/ProofSystem/Binius/RingSwitching/SumcheckPhase.lean#L1809) — RBR knowledge soundness for large-field reduction (Sumcheck ++ FinalSum)
 - `theorem RingSwitching.SumcheckPhase.coreInteraction_rbrKnowledgeSoundness` [ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean:1409](../../../ArkLib/ProofSystem/RingSwitching/SumcheckPhase.lean#L1409) — RBR knowledge soundness for large-field reduction (Sumcheck ++ FinalSum)
+
+### `correlatedAgreement_affine_curves_of_lattice_data` (2 declarations, 2 files)
+
+- `theorem ArkLib.BoundaryCardResidual.correlatedAgreement_affine_curves_of_lattice_data` [ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidual.lean:805](../../../ArkLib/Data/CodingTheory/ProximityGap/BoundaryCardResidual.lean#L805) — [BCIKS20] Theorem 1.5 consuming concrete square-lattice data. This is the data-level counterpart of
+- `theorem ArkLib.BoundaryDischarge.correlatedAgreement_affine_curves_of_lattice_data` [ArkLib/ToMathlib/BoundaryDischarge.lean:542](../../../ArkLib/ToMathlib/BoundaryDischarge.lean#L542) — The affine-curves keystone can consume the exact lattice branch through the smaller `BoundaryCardLat
 
 ### `decoder` (2 declarations, 2 files)
 

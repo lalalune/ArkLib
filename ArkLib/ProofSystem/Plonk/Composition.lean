@@ -180,37 +180,12 @@ theorem plonkCheckVerifier_verify_eq
         pure (cs, w)
       else
         failure := by
-  simp only [plonkCheckVerifier, Verifier.append, gateCheckVerifier_verify_eq]
-  let w : Fin numWires → 𝓡 := transcript.fst ⟨0, by simp⟩
-  let f : Fin (3 * numGates) → 𝓡 := transcript.snd ⟨0, by simp⟩
-  change
-    ((do
-      let mid ←
-        (if cs.accepts w then
-          pure (cs, w)
-        else
-          failure : OptionT (OracleComp []ₒ)
-            (Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)))
-      let out ←
-        (if ExtendedWireAssignmentMatches 𝓡 numWires numGates mid.1 mid.2 f ∧
-              CopyConstraintsSatisfied f mid.1.perm then
-            pure (mid.1, mid.2)
-          else
-            failure : OptionT (OracleComp []ₒ)
-              (Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)))
-      pure out) : OptionT (OracleComp []ₒ)
-        (Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡))) =
-      (if cs.accepts w ∧
-            ExtendedWireAssignmentMatches 𝓡 numWires numGates cs w f ∧
-              CopyConstraintsSatisfied f cs.perm then
-          pure (cs, w)
-        else
-          failure : OptionT (OracleComp []ₒ)
-            (Plonk.ConstraintSystem 𝓡 numWires numGates × (Fin numWires → 𝓡)))
-  by_cases hGate : cs.accepts w
+  simp only [plonkCheckVerifier, Verifier.append, gateCheckVerifier, guard_eq]
+  by_cases hGate : cs.accepts (transcript.fst 0)
   · by_cases hPerm :
-        ExtendedWireAssignmentMatches 𝓡 numWires numGates cs w f ∧
-          CopyConstraintsSatisfied f cs.perm
+        ExtendedWireAssignmentMatches 𝓡 numWires numGates cs (transcript.fst 0)
+          (transcript.snd 0) ∧
+          CopyConstraintsSatisfied (transcript.snd 0) cs.perm
     · simp [hGate, hPerm]
     · simp [hGate, hPerm]
   · simp [hGate]
@@ -429,6 +404,79 @@ theorem plonkCheckVerifier_rbrSoundness :
   · intro _ _ _ _ _ _ i
     exact False.elim (plonkCheckPSpec_challengeIdx_false 𝓡 numWires numGates i)
 
+/-- The composed two-message Plonk verifier has ordinary zero-error soundness. Any successful
+malicious execution outside `plonkCheckLangIn` must pass the composed verifier guard, and the
+first prover message then directly supplies the missing satisfying gate-and-copy witness. -/
+theorem plonkCheckVerifier_soundness :
+    (plonkCheckVerifier (𝓡 := 𝓡) (numWires := numWires)
+      (numGates := numGates)).soundness init impl
+        (plonkCheckLangIn 𝓡 numWires numGates)
+        (plonkCheckLangOut 𝓡 numWires numGates) 0 := by
+  unfold Verifier.soundness
+  intro WitIn WitOut witIn prover cs hcs
+  simp only [ENNReal.coe_zero, nonpos_iff_eq_zero, probEvent_eq_zero_iff]
+  intro x hx _hxLang
+  rcases x with ⟨⟨tr, _prvOut, _witOut⟩, out⟩
+  apply hcs
+  rw [OptionT.mem_support_iff] at hx
+  simp only [OptionT.run_mk, support_bind, Set.mem_iUnion] at hx
+  obtain ⟨s, _hs, hx⟩ := hx
+  unfold Reduction.run at hx
+  simp only [StateT.run'_eq, OptionT.run_bind, Option.elimM, support_map, Set.mem_image] at hx
+  obtain ⟨⟨runOpt, s'⟩, hx, hrunOpt⟩ := hx
+  simp only at hrunOpt
+  rw [simulateQ_bind] at hx
+  rw [StateT.run_bind] at hx
+  rw [mem_support_bind_iff] at hx
+  obtain ⟨⟨proverOpt, s1⟩, hprover, hx⟩ := hx
+  cases proverOpt with
+  | none =>
+      simp only [Option.elim_none] at hx
+      rw [simulateQ_pure, StateT.run_pure] at hx
+      simp only [support_pure, Set.mem_singleton_iff, Prod.mk.injEq] at hx
+      rw [hx.1] at hrunOpt
+      simp at hrunOpt
+  | some proverResult =>
+      simp only [Option.elim_some] at hx
+      rw [simulateQ_bind] at hx
+      rw [StateT.run_bind] at hx
+      rw [mem_support_bind_iff] at hx
+      obtain ⟨⟨verifierOpt, s2⟩, hverifier, hx⟩ := hx
+      cases verifierOpt with
+      | none =>
+          simp only [Option.elim_none] at hx
+          rw [simulateQ_pure, StateT.run_pure] at hx
+          simp only [support_pure, Set.mem_singleton_iff, Prod.mk.injEq] at hx
+          rw [hx.1] at hrunOpt
+          simp at hrunOpt
+      | some verifierResult =>
+          simp only [Option.elim_some] at hx
+          let w : Fin numWires → 𝓡 := proverResult.1.fst ⟨0, by simp⟩
+          let f : Fin (3 * numGates) → 𝓡 := proverResult.1.snd ⟨0, by simp⟩
+          by_cases hAccept :
+              cs.accepts w ∧ ExtendedWireAssignmentMatches 𝓡 numWires numGates cs w f ∧
+                CopyConstraintsSatisfied f cs.perm
+          · refine ⟨w, hAccept.1, ?_⟩
+            intro i
+            rw [← hAccept.2.1 (cs.perm i), ← hAccept.2.1 i]
+            exact hAccept.2.2 i
+          · simp only [Verifier.run, plonkCheckVerifier_verify_eq] at hverifier
+            rw [if_neg hAccept] at hverifier
+            rw [OptionT.run_failure] at hverifier
+            rw [liftM_pure] at hverifier
+            rw [OptionT.run_pure] at hverifier
+            rw [simulateQ_pure] at hverifier
+            rw [StateT.run_pure] at hverifier
+            simp only [support_pure, Set.mem_singleton_iff, Prod.mk.injEq, Option.some.injEq]
+              at hverifier
+            rw [hverifier.1] at hx
+            simp only [Option.getM_none, OptionT.run_failure] at hx
+            simp only [pure_bind, Option.elim_none] at hx
+            rw [simulateQ_pure, StateT.run_pure] at hx
+            simp only [support_pure, Set.mem_singleton_iff, Prod.mk.injEq] at hx
+            rw [hx.1] at hrunOpt
+            simp at hrunOpt
+
 /-- The composed two-message Plonk verifier has zero-error round-by-round knowledge soundness. The
 round-by-round extractor keeps the gate witness as the intermediate witness and reads the final
 input witness from the first prover message of the full transcript. -/
@@ -497,6 +545,7 @@ theorem plonkCheckVerifier_rbrKnowledgeSoundness :
 #print axioms Plonk.plonkCheckLangOut
 #print axioms Plonk.permCheckAfterGateVerifier_rbrSoundness
 #print axioms Plonk.plonkCheckVerifier_rbrSoundness
+#print axioms Plonk.plonkCheckVerifier_soundness
 #print axioms Plonk.plonkCheckVerifier_rbrKnowledgeSoundness
 
 end Composition

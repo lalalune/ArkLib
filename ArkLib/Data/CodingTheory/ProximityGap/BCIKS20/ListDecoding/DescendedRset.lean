@@ -1113,6 +1113,84 @@ noncomputable def claimA2_hypotheses_descended_inTree [Fintype F] (δ : ℚ)
       (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
       (u₀ := u₀) (u₁ := u₁) δ hpack.1 h_gs hpack.2 hcoincide⟩
 
+open BCIKS20AppendixA.ClaimA2 in
+/-- Claim 5.7 / Claim A.2 package from explicit descended in-tree inputs.
+
+This is the fuller downstream package over `claimA2_hypotheses_descended_inTree`: it returns the
+produced `x₀`, the exact descended residual bundle used to define `R_descended`/`H_descended`, the
+Claim A.2 `Hypotheses`, and the two Claim 5.7 numeric facts for those same extracted factors.
+The genuine residuals remain explicit in the input list. -/
+noncomputable def claim57_descended_inTree_package [Fintype F] (δ : ℚ)
+    (h_gs : ModifiedGuruswami m n k ωs Q u₀ u₁)
+    (z : F[Z][X][Y] → F)
+    (hlead : ∀ R : F[Z][X][Y],
+      R ∈ pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs →
+        R.leadingCoeff.map (Polynomial.evalRingHom (z R)) ≠ 0)
+    (hcard :
+      (((pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+          (u₀ := u₀) (u₁ := u₁) h_gs).toList).map
+        (fun R => (R.leadingCoeff.map (Polynomial.evalRingHom (z R))).natDegree)).sum
+        < Fintype.card F)
+    (hsepPt : ∀ x₀ : F,
+      (∀ R : F[Z][X][Y],
+        R ∈ pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+            (u₀ := u₀) (u₁ := u₁) h_gs →
+          Bivariate.evalX (Polynomial.C x₀) R ≠ 0) →
+      ∀ R : F[Z][X][Y],
+        R ∈ pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+            (u₀ := u₀) (u₁ := u₁) h_gs →
+          (Bivariate.evalX (Polynomial.C x₀) R).Separable)
+    (hS_nonempty : (coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁).Nonempty)
+    (A : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ → Finset (Fin n))
+    (hA : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      ∀ i ∈ A z, (u₀ + z.1 • u₁) i =
+        (Pz (n := n) (k := k) (ωs := ωs) (δ := δ) (u₀ := u₀) (u₁ := u₁) z.2).eval (ωs i))
+    (hcount : ∀ z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁,
+      Bivariate.natWeightedDegree (Trivariate.eval_on_Z Q z.1) 1 k < m * (A z).card)
+    (hlarge :
+      #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+        2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q)
+    (hcoincide : pg_RsetDescended (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs
+      = pg_Rset (m := m) (n := n) (k := k) (ωs := ωs) (Q := Q)
+        (u₀ := u₀) (u₁ := u₁) h_gs) :
+    Σ' x₀ : F,
+      Σ' hres : Claim57ResidualsDescended (F := F) (m := m) (n := n) (Q := Q)
+          (ωs := ωs) (u₀ := u₀) (u₁ := u₁) k δ x₀ h_gs,
+        Hypotheses x₀
+          (R_descended (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+            (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide)
+          (H_descended (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+            (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide) ∧
+        #(@Set.toFinset _ { z : coeffs_of_close_proximity (F := F) k ωs δ u₀ u₁ |
+            letI Pz := Pz z.2
+            (Trivariate.eval_on_Z
+                (R_descended (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+                  (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide) z.1).eval Pz = 0 ∧
+            (Bivariate.evalX z.1
+                (H_descended (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+                  (u₀ := u₀) (u₁ := u₁) δ x₀ h_gs hres hcoincide)).eval
+              (Pz.eval x₀) = 0}
+            (@Fintype.ofFinite _ Subtype.finite)) ≥
+          #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) ∧
+        #(coeffs_of_close_proximity k ωs δ u₀ u₁) / (Bivariate.natDegreeY Q) >
+          2 * D_Y Q ^ 2 * (D_X ((k + 1 : ℚ) / n) n m) * D_YZ Q :=
+  let hpack := Claim57ResidualsDescended.ofInTree
+    (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+    (u₀ := u₀) (u₁ := u₁) δ h_gs z hlead hcard hsepPt
+    hS_nonempty A hA hcount hlarge
+  ⟨hpack.1, hpack.2,
+    claimA2_hypotheses_descended
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) δ hpack.1 h_gs hpack.2 hcoincide,
+    commonRootSet_descended_card_ge
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) δ hpack.1 h_gs hpack.2 hcoincide,
+    claim57_largeness_descended
+      (F := F) (m := m) (n := n) (k := k) (Q := Q) (ωs := ωs)
+      (u₀ := u₀) (u₁ := u₁) δ hpack.1 h_gs hpack.2 hcoincide⟩
+
 /-! ### Axiom audit (issue #8 descended Claim 5.7 adoption surface) -/
 
 #print axioms ProximityGap.GraphExtractionHypotheses.ofDescended
@@ -1129,5 +1207,6 @@ noncomputable def claimA2_hypotheses_descended_inTree [Fintype F] (δ : ℚ)
 #print axioms ProximityGap.claim57_largeness_descended
 #print axioms ProximityGap.claimA2_hypotheses_descended
 #print axioms ProximityGap.claimA2_hypotheses_descended_inTree
+#print axioms ProximityGap.claim57_descended_inTree_package
 
 end ProximityGap

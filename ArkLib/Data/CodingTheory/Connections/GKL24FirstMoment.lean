@@ -7,6 +7,7 @@ Authors: ArkLib Contributors
 import ArkLib.ToMathlib.Bridge2GCXK25
 import ArkLib.ToMathlib.BridgeListDecodingCA
 import ArkLib.ToMathlib.GreedyDisjointCover
+import ArkLib.ToMathlib.MCAFirstMomentArithBricks
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
@@ -184,6 +185,29 @@ theorem linePetal_disjoint_of_inter_lineAgreeSet_eq
     rw [← hcore, Finset.mem_inter]
     exact ⟨hiγ.1, hiγ'.1⟩
   exact hiγ.2 hiD
+
+/-- **Bonferroni lower bound for line-agreement intersections.**  If two line-agreement domains
+have real cardinality lower bounds `a` and `b`, then their intersection has size at least
+`a + b - n`. This is the arithmetic bridge used to instantiate the large-intersection hypothesis
+in the GCXK/GKL maximal-domain step once the paper parameters fix the two individual domain
+thresholds. -/
+theorem lineAgreeSet_inter_card_ge_of_card_ge
+    (u₀ u₁ wγ wγ' : ι → F) (γ γ' : F) {a b : ℝ}
+    (hγ : a ≤ ((lineAgreeSet u₀ u₁ wγ γ).card : ℝ))
+    (hγ' : b ≤ ((lineAgreeSet u₀ u₁ wγ' γ').card : ℝ)) :
+    a + b - (Fintype.card ι : ℝ) ≤
+      (((lineAgreeSet u₀ u₁ wγ γ ∩ lineAgreeSet u₀ u₁ wγ' γ').card : ℕ) : ℝ) := by
+  classical
+  let A : Finset ι := lineAgreeSet u₀ u₁ wγ γ
+  let B : Finset ι := lineAgreeSet u₀ u₁ wγ' γ'
+  change a + b - (Fintype.card ι : ℝ) ≤ ((A ∩ B).card : ℝ)
+  have hA : a ≤ (A.card : ℝ) := by simpa [A] using hγ
+  have hB : b ≤ (B.card : ℝ) := by simpa [B] using hγ'
+  have hincl :
+      (A.card : ℝ) + (B.card : ℝ) ≤
+        (Fintype.card ι : ℝ) + ((A ∩ B).card : ℝ) :=
+    Finset.card_add_card_le_card_univ_add_card_inter A B
+  nlinarith
 
 /-- **Two line-agreement domains intersect in a correlated-agreement domain.** If distinct
 scalars `γ ≠ γ'` make codewords `wγ,wγ' ∈ MC` agree with the same stack lines on their respective
@@ -1267,6 +1291,7 @@ kernel-clean apart from the standard Lean foundations (`propext`, `Classical.cho
 #print axioms ProximityGap.linePetal_nonempty_of_ssubset_lineAgreeSet
 #print axioms ProximityGap.linePetal_subset_compl
 #print axioms ProximityGap.linePetal_disjoint_of_inter_lineAgreeSet_eq
+#print axioms ProximityGap.lineAgreeSet_inter_card_ge_of_card_ge
 #print axioms ProximityGap.pairJointAgreesOn_inter_lineAgreeSet_of_ne
 #print axioms ProximityGap.maxCorrAgreeDomain.eq_of_subset
 #print axioms ProximityGap.inter_lineAgreeSet_eq_of_maxCorrAgreeDomain

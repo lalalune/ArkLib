@@ -51,6 +51,21 @@ theorem listDecodable_of_radius_le {F : Type*} [Fintype F] [DecidableEq F]
   refine le_trans ?_ (h y)
   exact_mod_cast Set.ncard_le_ncard (closeCodewordsRel_subset_of_le hr y) (Set.toFinite _)
 
+/-- **List-decodability is monotone in the list-size bound**: relaxing the allowed list size
+preserves list-decodability. -/
+theorem listDecodable_of_bound_le {F : Type*} [Fintype F] [DecidableEq F]
+    {C : Code ι F} {r ℓ ℓ' : ℝ} (hℓ : ℓ ≤ ℓ') (h : listDecodable C r ℓ) :
+    listDecodable C r ℓ' := by
+  intro y
+  exact le_trans (h y) hℓ
+
+/-- **Combined monotonicity for `listDecodable`**: shrink the radius and relax the list-size
+bound in one predicate-level wrapper. -/
+theorem listDecodable_mono {F : Type*} [Fintype F] [DecidableEq F]
+    {C : Code ι F} {r' r ℓ ℓ' : ℝ} (hr : r' ≤ r) (hℓ : ℓ ≤ ℓ')
+    (h : listDecodable C r ℓ) : listDecodable C r' ℓ' :=
+  listDecodable_of_bound_le hℓ (listDecodable_of_radius_le hr h)
+
 /-- **List-decodability is monotone under taking subcodes**: if every list for `C'` is bounded by
 `ℓ`, then every list for a subcode `C ⊆ C'` is bounded by the same `ℓ`. -/
 theorem listDecodable_mono_code {F : Type*} [Fintype F] [DecidableEq F]
@@ -61,6 +76,13 @@ theorem listDecodable_mono_code {F : Type*} [Fintype F] [DecidableEq F]
   have hsub : closeCodewordsRel C y δ ⊆ closeCodewordsRel C' y δ :=
     fun c hc => ⟨hsubcode hc.1, hc.2⟩
   exact_mod_cast Set.ncard_le_ncard hsub (Set.toFinite _)
+
+/-- **Combined subcode/radius/bound monotonicity for `listDecodable`.**  A subcode remains
+list-decodable when the decoding radius is shrunk and the target list-size bound is relaxed. -/
+theorem listDecodable_mono_code_radius_bound {F : Type*} [Fintype F] [DecidableEq F]
+    {C C' : Code ι F} {r' r ℓ ℓ' : ℝ} (hsubcode : C ⊆ C') (hr : r' ≤ r)
+    (hℓ : ℓ ≤ ℓ') (h : listDecodable C' r ℓ) : listDecodable C r' ℓ' :=
+  listDecodable_mono hr hℓ (listDecodable_mono_code hsubcode h)
 
 /-- **`Lambda` bound ⇒ list-decodability** (converse of `Lambda_le_natCast_of_forall_ncard_le`):
 if the maximised list size `|Λ(C,δ)|` is `≤ ℓ`, then `C` is `(δ, ℓ)`-list-decodable. -/
@@ -80,6 +102,12 @@ theorem Lambda_mono_code {F : Type*} [Finite F] {C C' : Code ι F} (h : C ⊆ C'
   have hsub : closeCodewordsRel C f δ ⊆ closeCodewordsRel C' f δ := fun c hc => ⟨h hc.1, hc.2⟩
   exact_mod_cast Set.ncard_le_ncard hsub (Set.toFinite _)
 
+/-- **Combined code/radius monotonicity for `Lambda`.**  Passing to a subcode and shrinking the
+radius can only decrease the maximised list size. -/
+theorem Lambda_mono_code_radius {F : Type*} [Finite F] {C C' : Code ι F}
+    (hsubcode : C ⊆ C') {δ δ' : ℝ} (hδ : δ ≤ δ') : Lambda C δ ≤ Lambda C' δ' := by
+  exact le_trans (Lambda_mono (C := C) hδ) (Lambda_mono_code hsubcode δ')
+
 end ListDecodable
 
 #print axioms ListDecodable.self_mem_hammingBall
@@ -87,6 +115,10 @@ end ListDecodable
 #print axioms ListDecodable.relHammingBall_mono
 #print axioms ListDecodable.hammingBall_zero
 #print axioms ListDecodable.listDecodable_of_radius_le
+#print axioms ListDecodable.listDecodable_of_bound_le
+#print axioms ListDecodable.listDecodable_mono
 #print axioms ListDecodable.listDecodable_mono_code
+#print axioms ListDecodable.listDecodable_mono_code_radius_bound
 #print axioms ListDecodable.listDecodable_of_Lambda_le
 #print axioms ListDecodable.Lambda_mono_code
+#print axioms ListDecodable.Lambda_mono_code_radius
