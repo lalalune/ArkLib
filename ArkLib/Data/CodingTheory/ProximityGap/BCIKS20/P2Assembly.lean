@@ -182,6 +182,23 @@ theorem coeff_succ_eval_βHenselAssembled_of_partitionMatchAt
         (Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H)) = 0 :=
   coeff_succ_eval_zero_of_partitionMatchAt H x₀ R hHyp t hpart
 
+/-- Coefficient vanishing from an all-orders family of fixed-order partition residuals. -/
+theorem coeff_succ_eval_zero_of_forall_partitionMatchAt
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hat : ∀ t : ℕ, RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp t) (t : ℕ) :
+    PowerSeries.coeff (t + 1)
+      (Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H)) = 0 :=
+  coeff_succ_eval_zero_of_partitionMatchAt H x₀ R hHyp t (hat t)
+
+/-- The fixed-order partition residual family supplies the legacy successor-sum residual. -/
+theorem faaDiBrunoSuccSumZeroResidual_of_forall_partitionMatchAt
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hat : ∀ t : ℕ, RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp t) :
+    FaaDiBrunoSuccSumZeroResidual H x₀ R hHyp := by
+  intro t
+  rw [← coeff_eval_Q_faaDiBruno H x₀ R (βHenselAssembled H x₀ R hHyp) (t + 1)]
+  exact coeff_succ_eval_zero_of_forall_partitionMatchAt H x₀ R hHyp hat t
+
 /-- The carved core is equivalent to the final partition-form residual. -/
 theorem restrictedMatch_iff_partitionMatch (x₀ : F) (R : F[X][X][Y])
     (hHyp : ClaimA2.Hypotheses x₀ R H) :
@@ -257,6 +274,35 @@ theorem βHensel_lift_identity_of_partitionMatch (x₀ : F) (R : F[X][X][Y])
           * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1) :=
   (P2_closed_of_partitionMatch H x₀ R hHyp hpart).2 t
 
+/-- The fixed-order partition residual family closes the existing conditional P2 endpoint. -/
+theorem P2_closed_of_forall_partitionMatchAt
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hat : ∀ t : ℕ, RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp t) :
+    (Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H) = 0)
+    ∧ (∀ t : ℕ, embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+        = αGenuine H x₀ R hHyp t
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1)) :=
+  P2_closed_of_partitionMatch H x₀ R hHyp
+    (RestrictedFaaDiBrunoPartitionMatch.of_forallAt H x₀ R hHyp hat)
+
+/-- The assembled numerator series is a root from fixed-order partition residuals. -/
+theorem assembledSeries_isRoot_of_forall_partitionMatchAt
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hat : ∀ t : ℕ, RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp t) :
+    Polynomial.eval (βHenselAssembled H x₀ R hHyp) (Q x₀ R H) = 0 :=
+  (P2_closed_of_forall_partitionMatchAt H x₀ R hHyp hat).1
+
+/-- The repaired P2 lift identity from fixed-order partition residuals. -/
+theorem βHensel_lift_identity_of_forall_partitionMatchAt
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hat : ∀ t : ℕ, RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp t) (t : ℕ) :
+    embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+      = αGenuine H x₀ R hHyp t
+          * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+          * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1) :=
+  (P2_closed_of_forall_partitionMatchAt H x₀ R hHyp hat).2 t
+
 -- In-file axiom audit for the named P2 partition residual and its equivalence to the carved core.
 section AxiomAudit
 #print axioms restrictedFaaDiBrunoPartitionForm
@@ -274,6 +320,11 @@ section AxiomAudit
 #print axioms trunc_defect_cancel_assembled_of_partitionMatchAt
 #print axioms coeff_succ_eval_zero_of_partitionMatchAt
 #print axioms coeff_succ_eval_βHenselAssembled_of_partitionMatchAt
+#print axioms coeff_succ_eval_zero_of_forall_partitionMatchAt
+#print axioms faaDiBrunoSuccSumZeroResidual_of_forall_partitionMatchAt
+#print axioms P2_closed_of_forall_partitionMatchAt
+#print axioms assembledSeries_isRoot_of_forall_partitionMatchAt
+#print axioms βHensel_lift_identity_of_forall_partitionMatchAt
 #print axioms restrictedMatch_iff_partitionMatch
 #print axioms RestrictedFaaDiBrunoPartitionMatch.of_restrictedMatch
 #print axioms RestrictedFaaDiBrunoMatch.of_partitionMatch
