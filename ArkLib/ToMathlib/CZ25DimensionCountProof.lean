@@ -601,6 +601,33 @@ lemma list_vanish_mass_le_design_of_filter_linearIndependent
     s τ C h r₀ f c₀ L hc₀ hL hrank
     (fun i => filter_card_le_finrank_span_filter_diffs_of_linearIndependent s c₀ L i (hlin i))
 
+/-- **Coordinate-count-cancelled linear-independent mass charge.** The finite coordinate count is
+positive, so the linear-independent mass-charge inequality can be divided by the block length:
+
+`|L| * (1 - 2δ) ≤ dim span{c - c₀ | c ∈ L} * τ r₀`.
+
+This is only algebraic packaging around the design-budget bridge; the affine-fiber /
+Guruswami-Wang content remains the explicit per-coordinate linear-independence hypothesis. -/
+lemma list_card_mul_one_sub_two_delta_le_design_of_filter_linearIndependent
+    (s : ℕ) (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F)) (h : IsSubspaceDesign s τ C)
+    (r₀ : ℕ) (f c₀ : ι → Fin s → F) {δ : ℝ} (L : Finset (ι → Fin s → F))
+    (hc₀ : c₀ ∈ closeCodewordsRel ((C : Set (ι → Fin s → F))) f δ)
+    (hL : ∀ c ∈ L, c ∈ closeCodewordsRel ((C : Set (ι → Fin s → F))) f δ)
+    (hrank :
+      Module.finrank F
+          (Submodule.span F ((fun c => c - c₀) '' (L : Set (ι → Fin s → F)))) ≤ r₀)
+    (hlin : ∀ i : ι, LinearIndependent F
+      (fun c : {c // c ∈ L.filter (fun c => c i - c₀ i = 0)} => c.1 - c₀)) :
+    (L.card : ℝ) * (1 - 2 * δ) ≤
+      (Module.finrank F
+          (Submodule.span F ((fun c => c - c₀) '' (L : Set (ι → Fin s → F)))) : ℝ) *
+        τ r₀ := by
+  have hmass := list_vanish_mass_le_design_of_filter_linearIndependent
+    s τ C h r₀ f c₀ L hc₀ hL hrank hlin
+  have hn_pos : (0 : ℝ) < Fintype.card ι := by exact_mod_cast Fintype.card_pos
+  exact (mul_le_mul_iff_left₀ hn_pos).mp (by
+    simpa [mul_assoc, mul_left_comm, mul_comm] using hmass)
+
 end RecentredSpan
 
 /-! ### `#print axioms` verification anchors -/
@@ -650,3 +677,4 @@ end CodingTheory
 #print axioms CodingTheory.sum_finrank_span_filter_diffs_le_design_of_subset_closeCodewordsRel
 #print axioms CodingTheory.list_vanish_mass_le_design_of_filter_card_le_finrank
 #print axioms CodingTheory.list_vanish_mass_le_design_of_filter_linearIndependent
+#print axioms CodingTheory.list_card_mul_one_sub_two_delta_le_design_of_filter_linearIndependent

@@ -6,12 +6,14 @@ Authors: ArkLib Contributors
 import ArkLib.ProofSystem.Sumcheck.Structured.SingleRound
 import ArkLib.ProofSystem.RingSwitching.Prelude
 
+set_option maxHeartbeats 800000
+
 /-!
 # Round-poly marginal at the verifier challenge (`projectToNextSumcheckPoly_sum_eq`)
 
 This file supplies the single missing lemma `projectToNextSumcheckPoly_sum_eq` consumed by
-`Binius.BinaryBasefold.ReductionLogic` (the `foldStep_is_logic_complete` output-relation step) and by
-`Binius.RingSwitching.SumcheckPhase` / `Binius.BinaryBasefold.Steps.Fold`.
+`Binius.BinaryBasefold.ReductionLogic` (the `foldStep_is_logic_complete` output-relation step) and
+by `Binius.RingSwitching.SumcheckPhase` / `Binius.BinaryBasefold.Steps.Fold`.
 
 It is the *challenge-evaluation* analogue of the proven verifier-check identity
 `Sumcheck.Structured.getSumcheckRoundPoly_sum_eq`: instead of summing the round univariate over the
@@ -36,8 +38,6 @@ open OracleSpec OracleComp ProtocolSpec Finset Polynomial MvPolynomial
 
 noncomputable section
 
-set_option maxHeartbeats 800000
-
 variable {L : Type} [CommRing L] {ℓ : ℕ} [NeZero ℓ]
 
 /-- Renaming a polynomial along the canonical index `finCongr` of a dimension equality is
@@ -45,20 +45,21 @@ heterogeneously equal to the original polynomial. -/
 private lemma rename_finCongr_heq' {a b : ℕ} (h : a = b) (p : MvPolynomial (Fin a) L) :
     HEq (rename (finCongr h) p) p := by
   subst h
-  simpa [finCongr_refl] using (HEq.refl p)
+  simp [finCongr_refl]
 
+set_option maxHeartbeats 800000 in
 /-- **Round-poly marginal at the challenge** (`D = uniform 𝓑`): evaluating the prover's round
-univariate `getSumcheckRoundPoly ℓ (uniform 𝓑 ℓ) i Hᵢ` at the verifier challenge `rᵢ` equals the sum,
+univariate `getSumcheckRoundPoly ℓ (uniform 𝓑 ℓ) i Hᵢ` at the verifier challenge `rᵢ`
+equals the sum,
 over the next round's Boolean cube `(univ.map 𝓑) ^ᶠ (ℓ - i.succ)`, of the projected next-round
 polynomial `projectToNextSumcheckPoly i Hᵢ rᵢ`. Consumed by `BinaryBasefold.ReductionLogic`,
 `BinaryBasefold.Steps.Fold`, and `RingSwitching.SumcheckPhase`. -/
-set_option maxHeartbeats 800000 in
--- The proof normalizes two dependent `Fin` reindexings over the survivor cube.
 theorem projectToNextSumcheckPoly_sum_eq {𝓑 : Fin 2 ↪ L} (i : Fin ℓ)
     (Hᵢ : MultiquadraticPoly L (ℓ - i)) (rᵢ : L) :
-    (getSumcheckRoundPoly ℓ (SumcheckDomain.uniform 𝓑 ℓ) (i := i) Hᵢ).val.eval rᵢ
-      = ∑ x ∈ (Finset.univ.map 𝓑) ^ᶠ (ℓ - i.succ),
-          (projectToNextSumcheckPoly (L := L) (ℓ := ℓ) (i := i) (Hᵢ := Hᵢ) (rᵢ := rᵢ)).val.eval x := by
+    (getSumcheckRoundPoly ℓ (SumcheckDomain.uniform 𝓑 ℓ) (i := i) Hᵢ).val.eval rᵢ =
+      ∑ x ∈ (Finset.univ.map 𝓑) ^ᶠ (ℓ - i.succ),
+        (projectToNextSumcheckPoly (L := L) (ℓ := ℓ) (i := i) (Hᵢ := Hᵢ)
+          (rᵢ := rᵢ)).val.eval x := by
   have hn : ℓ - ↑i.castSucc = (ℓ - ↑i.castSucc - 1) + 1 := by
     have := i.2
     simp only [Fin.val_castSucc]
@@ -122,6 +123,8 @@ theorem projectToNextSumcheckPoly_sum_eq {𝓑 : Fin 2 ↪ L} (i : Fin ℓ)
             ⟨1, by have := i.2; simp only [Fin.val_castSucc]; omega⟩ Hᵢ.val
             (fun _ => rᵢ))
   simp only [SumcheckDomain.drop_uniform]
+  rw [show (Finset.univ.map 𝓑) ^ᶠ (ℓ - ↑i.succ)
+      = (SumcheckDomain.uniform 𝓑 (ℓ - ↑i.succ)).cube from rfl]
   symm
   have hdim : ℓ - (↑i.succ : ℕ) = ℓ - (↑i.castSucc + 1) := by
     have := i.2
@@ -129,13 +132,14 @@ theorem projectToNextSumcheckPoly_sum_eq {𝓑 : Fin 2 ↪ L} (i : Fin ℓ)
   apply Finset.sum_nbij' (fun z => z ∘ Fin.cast hdim) (fun y => y ∘ Fin.cast hdim.symm)
   · intro z hz
     apply SumcheckDomain.mem_cube.2
-    rw [Fintype.mem_piFinset] at hz
+    have hzmem := Fintype.mem_piFinset.mp hz
     intro j
-    exact by simpa using hz (Fin.cast hdim j)
+    simpa [Function.comp_apply, SumcheckDomain.points_uniform] using hzmem (Fin.cast hdim j)
   · intro y hy
-    rw [Fintype.mem_piFinset]
+    apply Fintype.mem_piFinset.mpr
     intro j
-    exact by simpa using SumcheckDomain.mem_cube.1 hy (Fin.cast hdim.symm j)
+    simpa [Function.comp_apply, SumcheckDomain.points_uniform] using
+      SumcheckDomain.mem_cube.1 hy (Fin.cast hdim.symm j)
   · intro z _
     funext j
     simp
@@ -149,12 +153,13 @@ theorem projectToNextSumcheckPoly_sum_eq {𝓑 : Fin 2 ↪ L} (i : Fin ℓ)
           ⟨1, by have := i.2; simp only [Fin.val_castSucc]; omega⟩ Hᵢ.val (fun _ => rᵢ))) ?_
     funext j
     simp only [Function.comp_apply]
-    rw [show (Fin.cast (show ℓ - (↑i.castSucc + 1) = ℓ - (↑i.succ : ℕ) + 0 by
-            have := i.2; simp only [Fin.val_succ, Fin.val_castSucc]; omega) j)
-          = Fin.castAdd 0 (Fin.cast hdim.symm j) from Fin.ext rfl,
-      Fin.append_left, Function.comp_apply]
-    exact congrArg z (Fin.ext (by simp only [Fin.val_cast]))
+    change z j =
+      Fin.append (z ∘ Fin.cast hdim) (fun j => j.elim0) (Fin.castAdd 0 (Fin.cast hdim.symm j))
+    rw [Fin.append_left, Function.comp_apply]
+    exact (congrArg z (Fin.ext (by simp only [Fin.val_cast]))).symm
 
 end
 
 end Sumcheck.Structured
+
+#print axioms Sumcheck.Structured.projectToNextSumcheckPoly_sum_eq
