@@ -276,6 +276,45 @@ theorem sudan_list_size {k dX dZ e : ℕ} [NeZero k] {α : ι ↪ F} {y : ι →
     _ ≤ dZ := hQbardeg
 
 open Polynomial in
+/-- **Reed–Solomon list decoding (concrete codewords).**  Under the Sudan conditions, the number of
+Reed–Solomon *codewords* (not just message polynomials) within `e` Hamming errors of any word `y` is
+at most `dZ`.  Obtained from `sudan_list_size` via the codeword↔polynomial bijection
+(`evalOnPoints`). -/
+theorem reedSolomon_list_size {k dX dZ e : ℕ} [NeZero k] {α : ι ↪ F} {y : ι → F}
+    (hbig : Fintype.card ι < (dX + 1) * (dZ + 1))
+    (he : e < Fintype.card ι) (hdeg : dX + dZ * (k - 1) < Fintype.card ι - e)
+    (L : Finset (ι → F))
+    (hL : ∀ c ∈ L, c ∈ ReedSolomon.code α k ∧
+      (Finset.univ.filter (fun i => y i ≠ c i)).card ≤ e) :
+    L.card ≤ dZ := by
+  classical
+  -- choose a degree-`< k` message polynomial for each codeword
+  let f : (ι → F) → F[X] := fun c =>
+    if h : ∃ p ∈ Polynomial.degreeLT F k, ReedSolomon.evalOnPoints α p = c then h.choose else 0
+  have hf : ∀ c ∈ L, f c ∈ Polynomial.degreeLT F k ∧ ReedSolomon.evalOnPoints α (f c) = c := by
+    intro c hc
+    have hmem : ∃ p ∈ Polynomial.degreeLT F k, ReedSolomon.evalOnPoints α p = c := by
+      have := (hL c hc).1; rwa [ReedSolomon.code, Submodule.mem_map] at this
+    simp only [f, dif_pos hmem]
+    exact ⟨hmem.choose_spec.1, hmem.choose_spec.2⟩
+  have hinj : Set.InjOn f L := by
+    intro c hc c' hc' heq
+    rw [← (hf c hc).2, ← (hf c' hc').2, heq]
+  have hL' : ∀ p ∈ L.image f, p ∈ Polynomial.degreeLT F k ∧
+      (Finset.univ.filter (fun i => y i ≠ p.eval (α i))).card ≤ e := by
+    intro p hp
+    rw [Finset.mem_image] at hp
+    obtain ⟨c, hcL, rfl⟩ := hp
+    refine ⟨(hf c hcL).1, ?_⟩
+    have hev : ∀ i, (f c).eval (α i) = c i := fun i => congrFun (hf c hcL).2 i
+    have hfilter : (Finset.univ.filter (fun i => y i ≠ (f c).eval (α i)))
+        = (Finset.univ.filter (fun i => y i ≠ c i)) :=
+      Finset.filter_congr fun i _ => by rw [hev i]
+    rw [hfilter]; exact (hL c hcL).2
+  calc L.card = (L.image f).card := (Finset.card_image_of_injOn hinj).symm
+    _ ≤ dZ := sudan_list_size hbig he hdeg (L.image f) hL'
+
+open Polynomial in
 /-- **Berlekamp–Welch key-equation existence.**  If a received word `y` is within `e` Hamming
 errors of the Reed–Solomon codeword `eval f` (`f` of degree `< k`), then the Berlekamp–Welch key
 equation `E(αᵢ)·yᵢ = N(αᵢ)` has a solution with `E ≠ 0`, `deg E ≤ e`, `deg N < k + e`.  Witnessed
