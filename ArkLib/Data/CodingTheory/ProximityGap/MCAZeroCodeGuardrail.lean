@@ -65,6 +65,27 @@ theorem exists_MCAUpperWitness_bot_epsStar_of_lt_inv_card
       w.δ = 0 :=
   ⟨MCAUpperWitness_bot_epsStar_of_lt_inv_card (ι := ι) (F := F) hε, rfl⟩
 
+/-- Any supplied zero-code MCA resolution below `1 / |F|` has threshold exactly `0`. -/
+theorem GrandMCAResolution_bot_deltaStar_eq_zero_of_lt_inv_card (ε_star : ℝ≥0)
+    (hε : (ε_star : ENNReal) < (1 : ENNReal) / (Fintype.card F : ENNReal))
+    (R : GrandChallenges.GrandMCAResolution (F := F)
+      (Cbot (ι := ι) (F := F) : Set (ι → F)) ε_star) :
+    R.δStar = 0 := by
+  let w := MCAUpperWitness_bot_of_lt_inv_card (ι := ι) (F := F) ε_star hε
+  have hle : R.δStar ≤ 0 := by
+    change R.δStar ≤ w.δ
+    exact w.δStar_le R
+  exact le_antisymm hle (zero_le _)
+
+/-- `epsStar` specialization: any supplied zero-code MCA resolution below `1 / |F|` has
+threshold exactly `0`. -/
+theorem GrandMCAResolution_bot_deltaStar_eq_zero_of_epsStar_lt_inv_card
+    (hε : (epsStar : ENNReal) < (1 : ENNReal) / (Fintype.card F : ENNReal))
+    (R : GrandChallenges.GrandMCAResolution (F := F)
+      (Cbot (ι := ι) (F := F) : Set (ι → F)) epsStar) :
+    R.δStar = 0 :=
+  GrandMCAResolution_bot_deltaStar_eq_zero_of_lt_inv_card (ι := ι) (F := F) epsStar hε R
+
 end General
 
 /-! ## Source audit -/
@@ -73,5 +94,7 @@ end General
 #print axioms exists_MCAUpperWitness_bot_of_lt_inv_card
 #print axioms MCAUpperWitness_bot_epsStar_of_lt_inv_card
 #print axioms exists_MCAUpperWitness_bot_epsStar_of_lt_inv_card
+#print axioms GrandMCAResolution_bot_deltaStar_eq_zero_of_lt_inv_card
+#print axioms GrandMCAResolution_bot_deltaStar_eq_zero_of_epsStar_lt_inv_card
 
 end ProximityGap.MCAZeroCode
