@@ -193,6 +193,25 @@ theorem zeroPowerSum_eq_recursion_of_partitionMatchAt_zero
       restrictedMatchRecursionPartitionForm H x₀ R hHyp 0 :=
   (restrictedPartitionMatchAt_zero_iff_zeroPowerSum_eq_recursion H x₀ R hHyp).1 hpart
 
+/-- Build the fixed order-zero partition residual from the canonical single-`B_coeff` RHS
+equality. -/
+theorem RestrictedFaaDiBrunoPartitionMatchAt.zero_of_zeroPowerSum_eq_singleBcoeff
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hzero :
+      restrictedFaaDiBrunoPartitionZeroPowerSum H x₀ R hHyp =
+        restrictedMatchRecursionPartitionZeroSingleBcoeff H x₀ R hHyp) :
+    RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0 :=
+  (restrictedPartitionMatchAt_zero_iff_zeroPowerSum_eq_singleBcoeff H x₀ R hHyp).2 hzero
+
+/-- Project the canonical single-`B_coeff` RHS equality from the fixed order-zero partition
+residual. -/
+theorem zeroPowerSum_eq_singleBcoeff_of_partitionMatchAt_zero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hpart : RestrictedFaaDiBrunoPartitionMatchAt H x₀ R hHyp 0) :
+    restrictedFaaDiBrunoPartitionZeroPowerSum H x₀ R hHyp =
+      restrictedMatchRecursionPartitionZeroSingleBcoeff H x₀ R hHyp :=
+  (restrictedPartitionMatchAt_zero_iff_zeroPowerSum_eq_singleBcoeff H x₀ R hHyp).1 hpart
+
 /-- The explicit surviving `t = 0` RHS target after the recursion partition branches collapse:
 only `i₁ = 1` and the unique partition of `0` remain. -/
 def restrictedMatchRecursionPartitionFormZeroSingleBCoeff
@@ -345,6 +364,33 @@ theorem zeroPowerSum_eq_recursion_of_restrictedMatchAt_zero
     restrictedFaaDiBrunoPartitionZeroPowerSum H x₀ R hHyp =
       restrictedMatchRecursionPartitionForm H x₀ R hHyp 0 :=
   (restrictedMatchAt_zero_iff_zeroPowerSum_eq_recursion H x₀ R hHyp).1 hmatch
+
+/-- The carved order-zero P2 core is equivalent to the surviving LHS power-sum equaling the
+canonical single surviving RHS `B_coeff` term. -/
+theorem restrictedMatchAt_zero_iff_zeroPowerSum_eq_singleBcoeff
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) :
+    RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0 ↔
+      restrictedFaaDiBrunoPartitionZeroPowerSum H x₀ R hHyp =
+        restrictedMatchRecursionPartitionZeroSingleBcoeff H x₀ R hHyp :=
+  (restrictedMatchAt_iff_partitionMatchAt H x₀ R hHyp 0).trans
+    (restrictedPartitionMatchAt_zero_iff_zeroPowerSum_eq_singleBcoeff H x₀ R hHyp)
+
+/-- Build the carved order-zero P2 core from the canonical single-`B_coeff` RHS equality. -/
+theorem RestrictedFaaDiBrunoMatchAt.zero_of_zeroPowerSum_eq_singleBcoeff
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hzero :
+      restrictedFaaDiBrunoPartitionZeroPowerSum H x₀ R hHyp =
+        restrictedMatchRecursionPartitionZeroSingleBcoeff H x₀ R hHyp) :
+    RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0 :=
+  (restrictedMatchAt_zero_iff_zeroPowerSum_eq_singleBcoeff H x₀ R hHyp).2 hzero
+
+/-- Project the canonical single-`B_coeff` RHS equality from the carved order-zero P2 core. -/
+theorem zeroPowerSum_eq_singleBcoeff_of_restrictedMatchAt_zero
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hmatch : RestrictedFaaDiBrunoMatchAt H x₀ R hHyp 0) :
+    restrictedFaaDiBrunoPartitionZeroPowerSum H x₀ R hHyp =
+      restrictedMatchRecursionPartitionZeroSingleBcoeff H x₀ R hHyp :=
+  (restrictedMatchAt_zero_iff_zeroPowerSum_eq_singleBcoeff H x₀ R hHyp).1 hmatch
 
 /-- The carved order-zero P2 core is equivalent to the surviving LHS power-sum equaling the single
 surviving RHS `B_coeff` term. -/
@@ -571,6 +617,11 @@ section AxiomAudit
 #print axioms restrictedMatchAt_zero_iff_zeroPowerSum_eq_recursion
 #print axioms RestrictedFaaDiBrunoMatchAt.zero_of_zeroPowerSum_eq_recursion
 #print axioms zeroPowerSum_eq_recursion_of_restrictedMatchAt_zero
+#print axioms RestrictedFaaDiBrunoPartitionMatchAt.zero_of_zeroPowerSum_eq_singleBcoeff
+#print axioms zeroPowerSum_eq_singleBcoeff_of_partitionMatchAt_zero
+#print axioms restrictedMatchAt_zero_iff_zeroPowerSum_eq_singleBcoeff
+#print axioms RestrictedFaaDiBrunoMatchAt.zero_of_zeroPowerSum_eq_singleBcoeff
+#print axioms zeroPowerSum_eq_singleBcoeff_of_restrictedMatchAt_zero
 #print axioms restrictedMatchRecursionPartitionFormZeroSingleBCoeff
 #print axioms restrictedMatchRecursionPartitionForm_zero_eq_single_B_coeff
 #print axioms restrictedPartitionMatchAt_zero_iff_zeroPowerSum_eq_single_B_coeff
