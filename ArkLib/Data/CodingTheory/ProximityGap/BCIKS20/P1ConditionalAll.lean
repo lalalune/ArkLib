@@ -66,6 +66,23 @@ theorem βHenselStructuredWeightInvariant_all_of_lift'
   βHenselStructuredWeightInvariant_all_of_lift H x₀ R hHyp hH hDH hlift hα
     (ClaimA2.weight_ξ_bound x₀ hH hHyp hdR2 hDH hDRx0)
 
+/-- Direct `P1Conditional` alias for the discharged-`ξ` carved-alpha all-prefix route. -/
+theorem βHenselStructuredWeightInvariant_all_of_alphaWeight'
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hlift : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+        = αGenuine H x₀ R hHyp t
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1))
+    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D) :
+    ∀ k, βHenselStructuredWeightInvariant (D := D) H x₀ R hHyp hH k :=
+  AlphaWeight.βHenselStructuredWeightInvariant_all_of_alphaWeight'
+    H x₀ R hHyp hH hDH hDRx0 hdR2 hlift hα
+
 /-- Package the `P1Conditional` `DivWeightLe` route into an all-`k` structured invariant. -/
 theorem βHenselStructuredWeightInvariant_all_of_divWeight
     (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
@@ -299,6 +316,27 @@ theorem βHensel_weight_bound_of_structured_invariant_lift'
     hdHR hW hRgraded hDRx0 hlift hα
       (ClaimA2.weight_ξ_bound x₀ hH hHyp hdR2 hDH hDRx0)
       t
+
+/-- Direct `P1Conditional` alias for the discharged-`ξ` carved-alpha structured endpoint. -/
+theorem βHensel_weight_bound_of_structured_invariant_alphaWeight'
+    (x₀ : F) (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H)
+    (hH : 0 < H.natDegree) {D : ℕ}
+    (hDH : Bivariate.totalDegree H ≤ D)
+    (hdR2 : 2 ≤ Bivariate.natDegreeY R)
+    (hdHR : Bivariate.natDegreeY H ≤ Bivariate.natDegreeY R)
+    (hW : (H.leadingCoeff).natDegree + Bivariate.natDegreeY H ≤ D)
+    (hRgraded : ∀ j, Bivariate.degreeX (R.coeff j) ≤ D - j)
+    (hDRx0 : D ≥ Bivariate.totalDegree (Bivariate.evalX (Polynomial.C x₀) R))
+    (hlift : ∀ t : ℕ,
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp t)
+        = αGenuine H x₀ R hHyp t
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * t - 1))
+    (hα : AlphaGenuineRegularWeightLe H x₀ R hHyp hH D) (t : ℕ) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp t) D
+      ≤ WithBot.some ((2 * t + 1) * Bivariate.natDegreeY R * D) :=
+  AlphaWeight.βHensel_weight_bound_of_structured_invariant_alphaWeight'
+    H x₀ R hHyp hH hDH hdR2 hdHR hW hRgraded hDRx0 hlift hα t
 
 /-- Route `DivWeightLe` through the all-prefix structured-invariant endpoint. -/
 theorem βHensel_weight_bound_of_structured_invariant_divWeight
@@ -574,6 +612,7 @@ end BCIKS20.HenselNumerator
 -- axiom dependencies beyond the imported standard surface.
 #print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_all_of_lift
 #print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_all_of_lift'
+#print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_all_of_alphaWeight'
 #print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_all_of_divWeight
 #print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_all_of_divWeight'
 #print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_all_of_normalized_divWeight_cases
@@ -588,6 +627,7 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.βHenselStructuredWeightInvariant_all_unlocked_of_restrictedMatch_divWeight
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_of_structured_invariant_lift
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_of_structured_invariant_lift'
+#print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_of_structured_invariant_alphaWeight'
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_of_structured_invariant_divWeight
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_of_structured_invariant_divWeight'
 #print axioms BCIKS20.HenselNumerator.βHensel_weight_bound_of_structured_invariant_normalized_divWeight_cases
