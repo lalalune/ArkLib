@@ -628,6 +628,33 @@ lemma list_card_mul_one_sub_two_delta_le_design_of_filter_linearIndependent
   exact (mul_le_mul_iff_left₀ hn_pos).mp (by
     simpa [mul_assoc, mul_left_comm, mul_comm] using hmass)
 
+/-- **Direct list-cardinality bound from linear-independent fibers.** If the CZ25 gap
+`1 - 2δ` is positive, the coordinate-count-cancelled mass-charge inequality gives the direct
+bound
+
+`|L| ≤ (dim span{c - c₀ | c ∈ L} * τ r₀) / (1 - 2δ)`.
+
+This is still algebraic packaging; the only non-bookkeeping hypothesis beyond the design setup is
+the per-coordinate linear independence of the recentred vanishing fibers. -/
+lemma list_card_le_design_div_gap_of_filter_linearIndependent
+    (s : ℕ) (τ : ℕ → ℝ) (C : Submodule F (ι → Fin s → F)) (h : IsSubspaceDesign s τ C)
+    (r₀ : ℕ) (f c₀ : ι → Fin s → F) {δ : ℝ} (L : Finset (ι → Fin s → F))
+    (hgap : 0 < 1 - 2 * δ)
+    (hc₀ : c₀ ∈ closeCodewordsRel ((C : Set (ι → Fin s → F))) f δ)
+    (hL : ∀ c ∈ L, c ∈ closeCodewordsRel ((C : Set (ι → Fin s → F))) f δ)
+    (hrank :
+      Module.finrank F
+          (Submodule.span F ((fun c => c - c₀) '' (L : Set (ι → Fin s → F)))) ≤ r₀)
+    (hlin : ∀ i : ι, LinearIndependent F
+      (fun c : {c // c ∈ L.filter (fun c => c i - c₀ i = 0)} => c.1 - c₀)) :
+    (L.card : ℝ) ≤
+      ((Module.finrank F
+          (Submodule.span F ((fun c => c - c₀) '' (L : Set (ι → Fin s → F)))) : ℝ) *
+        τ r₀) / (1 - 2 * δ) := by
+  rw [le_div_iff₀ hgap]
+  exact list_card_mul_one_sub_two_delta_le_design_of_filter_linearIndependent
+    s τ C h r₀ f c₀ L hc₀ hL hrank hlin
+
 end RecentredSpan
 
 /-! ### `#print axioms` verification anchors -/
@@ -678,3 +705,4 @@ end CodingTheory
 #print axioms CodingTheory.list_vanish_mass_le_design_of_filter_card_le_finrank
 #print axioms CodingTheory.list_vanish_mass_le_design_of_filter_linearIndependent
 #print axioms CodingTheory.list_card_mul_one_sub_two_delta_le_design_of_filter_linearIndependent
+#print axioms CodingTheory.list_card_le_design_div_gap_of_filter_linearIndependent
