@@ -53,4 +53,18 @@ theorem relDistFromCode_row_le_interleaved {κ ι A : Type*} [Fintype κ] [Finty
   simp only [ENNReal.coe_NNRat_coe_NNReal]
   exact ENNReal.coe_le_coe.mpr (by exact_mod_cast hrel)
 
+/-- **`jointProximity → second-row distance` (the DG25 covering-radius hypothesis).**
+If the pair `(u₀, w)` is jointly `δ`-close to the interleaved code, then the second row `w` is
+`δ`-close to the base code.  Contrapositive: a `w` beyond the covering radius (`δ < δᵣ(w,C)`) is never
+part of a jointly-`δ`-close pair, so the `ε_ca` body at `(u₀, w)` is never zeroed. -/
+theorem relDistFromCode_snd_le_of_jointProximity {ι A : Type*} [Fintype ι] [Nonempty ι]
+    [DecidableEq A] {C : Set (ι → A)} {u₀ w : ι → A} {δ : ℝ≥0}
+    (h : jointProximity C (finMapTwoWords u₀ w) δ) :
+    relDistFromCode w C ≤ (δ : ℝ≥0∞) := by
+  have hrow := relDistFromCode_row_le_interleaved C (finMapTwoWords u₀ w) 1
+  have hw : (finMapTwoWords u₀ w) (1 : Fin 2) = w := rfl
+  rw [hw] at hrow
+  exact le_trans hrow h
+
 end ArkLib
+
