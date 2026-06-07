@@ -118,6 +118,27 @@ theorem salted_opening_binding_value {s : Skeleton}
       (leafCommit hashFn salt value₁) (leafCommit hashFn salt value₂) rootValue proof h₁ h₂
   exact (hinj salt value₁ salt value₂ hcommit).2
 
+/-- **Pair-level deterministic binding for salted openings.** If the compression function is
+collision-free, two openings at the same index with the same sibling path and root determine the
+entire salted opening pair: both the salt and the underlying leaf value are equal.
+
+This is still only the deterministic no-collision implication. The random-oracle step that bounds
+the probability of violating the collision-free premise remains separate. -/
+theorem salted_opening_binding_pair {s : Skeleton}
+    (idx : SkeletonLeafIndex s) (hashFn : α → α → α)
+    (hinj : ∀ a b c d, hashFn a b = hashFn c d → a = c ∧ b = d)
+    (salt₁ salt₂ value₁ value₂ rootValue : α) (proof : List.Vector α idx.depth)
+    (h₁ : getPutativeRootWithHash idx (leafCommit hashFn salt₁ value₁) proof hashFn
+      = rootValue)
+    (h₂ : getPutativeRootWithHash idx (leafCommit hashFn salt₂ value₂) proof hashFn
+      = rootValue) :
+    salt₁ = salt₂ ∧ value₁ = value₂ := by
+  have hcommit :
+      leafCommit hashFn salt₁ value₁ = leafCommit hashFn salt₂ value₂ :=
+    opening_binding idx hashFn hinj
+      (leafCommit hashFn salt₁ value₁) (leafCommit hashFn salt₂ value₂) rootValue proof h₁ h₂
+  exact hinj salt₁ value₁ salt₂ value₂ hcommit
+
 section HidingDefinition
 
 variable [DecidableEq α] [SampleableType α]
@@ -157,5 +178,6 @@ end InductiveMerkleTree
 #print axioms InductiveMerkleTree.saltedLeaves_get
 #print axioms InductiveMerkleTree.salted_completeness
 #print axioms InductiveMerkleTree.salted_opening_binding_value
+#print axioms InductiveMerkleTree.salted_opening_binding_pair
 #print axioms InductiveMerkleTree.openTranscript
 #print axioms InductiveMerkleTree.Hiding
