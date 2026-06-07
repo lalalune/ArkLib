@@ -1046,6 +1046,93 @@ theorem alphaWeight_zero_cleared_iff_divWeight_zero_cleared
   · exact DivWeightLe_zero_cleared.of_alphaWeight_zero_cleared H x₀ R hHyp hH
   · exact AlphaGenuineRegularWeightLe_zero_cleared.of_divWeight_zero_cleared H x₀ R hHyp hH
 
+/-! ### 2c. The cleared *successor* target — the `t + 1` analogue of the cleared base witness
+
+The cleared base witness (`alphaWeight_zero_cleared_fixed`) sidesteps the `α₀ = T/W` regularity
+obstruction by multiplying through the single `W` factor: `βHensel 0` *itself* (not a quotient)
+is the witness, so no `W𝒪`-divisibility is required.  The same structural move works at every
+successor order: clearing the full `W^{t+2}·ξ^{2t+1}` denominator of `αGenuine (t+1)` turns the
+target into one whose witness is `βHensel (t+1)` itself, supplied directly by the lift identity.
+
+The genuine residual therefore separates cleanly: existence of the cleared 𝒪-preimage is
+*unconditional* given the lift identity (no `W`/`ξ`-divisibility obstruction survives clearing),
+and the *only* remaining content is the weight bound on `βHensel (t+1)` — the documented per-term
+WALL for `t ≥ 1`, and PROVEN unconditionally for `t = 0` (`βHensel_weight_bound_zero`). -/
+
+/-- The cleared successor target: after clearing the full `W^{t+2}·ξ^{2t+1}` denominator off
+`αGenuine (t+1)`, the cleared coefficient has an 𝒪-preimage of `Λ_𝒪`-weight `≤ B`. -/
+def AlphaGenuineRegularWeightLe_succ_cleared (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ) (t : ℕ) (B : ℕ) : Prop :=
+  ∃ a : 𝒪 H,
+    embeddingOf𝒪Into𝕃 H a =
+        αGenuine H x₀ R hHyp (t + 1)
+          * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1 + 1)
+          * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * (t + 1) - 1)
+      ∧ weight_Λ_over_𝒪 hH a D ≤ WithBot.some B
+
+/-- **Cleared successor witness from the lift identity.**  The successor analogue of
+`alphaWeight_zero_cleared_fixed`: `βHensel (t+1)` *itself* discharges the cleared successor target.
+The lift identity says its embedding is exactly the cleared coefficient, and any proven
+`Λ_𝒪`-bound `B` on `βHensel (t+1)` is the witness weight.  Unlike the un-cleared
+`AlphaGenuineRegularWeightLe`, no `W`-divisibility obstruction arises — clearing keeps the witness
+in `𝒪`.  The residual is *only* the weight bound `hB` (the per-term WALL for `t ≥ 1`). -/
+theorem AlphaGenuineRegularWeightLe_succ_cleared.of_lift (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ} (t : ℕ) {B : ℕ}
+    (hlift :
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp (t + 1))
+        = αGenuine H x₀ R hHyp (t + 1)
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1 + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * (t + 1) - 1))
+    (hB : weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp (t + 1)) D ≤ WithBot.some B) :
+    AlphaGenuineRegularWeightLe_succ_cleared H x₀ R hHyp hH D t B :=
+  ⟨βHensel H x₀ R hHyp (t + 1), hlift, hB⟩
+
+/-- The cleared successor beta-side target: `βHensel (t+1)` itself has a weight-`≤ B`
+representative.  This is the `t + 1` analogue of `DivWeightLe_zero_cleared`. -/
+def DivWeightLe_succ_cleared (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ) (t : ℕ) (B : ℕ) : Prop :=
+  ∃ a : 𝒪 H,
+    βHensel H x₀ R hHyp (t + 1) = a ∧ weight_Λ_over_𝒪 hH a D ≤ WithBot.some B
+
+/-- Build the cleared successor div-weight target from the direct beta-side weight bound. -/
+theorem DivWeightLe_succ_cleared.of_betaWeight (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ} (t : ℕ) {B : ℕ}
+    (hwt : weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp (t + 1)) D ≤ WithBot.some B) :
+    DivWeightLe_succ_cleared H x₀ R hHyp hH D t B :=
+  ⟨βHensel H x₀ R hHyp (t + 1), rfl, hwt⟩
+
+/-- Project the direct beta-side weight bound from the cleared successor div-weight target. -/
+theorem DivWeightLe_succ_cleared.betaWeight (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ} {t : ℕ} {B : ℕ}
+    (hdiv : DivWeightLe_succ_cleared H x₀ R hHyp hH D t B) :
+    weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp (t + 1)) D ≤ WithBot.some B := by
+  obtain ⟨a, hβ, hwt⟩ := hdiv
+  simpa [hβ] using hwt
+
+/-- The cleared successor div-weight target is exactly the beta-side weight bound. -/
+theorem divWeight_succ_cleared_iff_betaWeight_succ (x₀ : F) (R : F[X][X][Y])
+    (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) (D : ℕ) (t : ℕ) (B : ℕ) :
+    DivWeightLe_succ_cleared H x₀ R hHyp hH D t B ↔
+      weight_Λ_over_𝒪 hH (βHensel H x₀ R hHyp (t + 1)) D ≤ WithBot.some B := by
+  constructor
+  · exact DivWeightLe_succ_cleared.betaWeight H x₀ R hHyp hH
+  · exact DivWeightLe_succ_cleared.of_betaWeight H x₀ R hHyp hH t
+
+/-- Transport the cleared successor div-weight target to the cleared alpha successor target,
+given the lift identity at `t + 1`.  The cleared coefficient's 𝒪-preimage is `βHensel (t+1)`. -/
+theorem AlphaGenuineRegularWeightLe_succ_cleared.of_divWeight_succ_cleared (x₀ : F)
+    (R : F[X][X][Y]) (hHyp : ClaimA2.Hypotheses x₀ R H) (hH : 0 < H.natDegree) {D : ℕ} (t : ℕ)
+    {B : ℕ}
+    (hlift :
+      embeddingOf𝒪Into𝕃 H (βHensel H x₀ R hHyp (t + 1))
+        = αGenuine H x₀ R hHyp (t + 1)
+            * (liftToFunctionField (H := H) H.leadingCoeff) ^ (t + 1 + 1)
+            * (embeddingOf𝒪Into𝕃 H (ClaimA2.ξ x₀ R H hHyp)) ^ (2 * (t + 1) - 1))
+    (hdiv : DivWeightLe_succ_cleared H x₀ R hHyp hH D t B) :
+    AlphaGenuineRegularWeightLe_succ_cleared H x₀ R hHyp hH D t B :=
+  AlphaGenuineRegularWeightLe_succ_cleared.of_lift H x₀ R hHyp hH t hlift
+    (DivWeightLe_succ_cleared.betaWeight H x₀ R hHyp hH hdiv)
+
 /-- **Corollary: `W𝒪 ∣ βHensel 0` is *necessary* for `AlphaGenuineRegularWeightLe`.**  If the carved
 link holds (at the `t = 0` instance), then `W𝒪` divides `βHensel 0` in `𝒪 H`.  This is the precise,
 machine-checked statement of the `α₀ = T/W` regularity obstruction: the carve forces a clearing
@@ -1572,6 +1659,12 @@ end BCIKS20.HenselNumerator
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe_zero_cleared.of_alphaWeight_zero_cleared
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe_zero_cleared.of_divWeight_zero_cleared
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.alphaWeight_zero_cleared_iff_divWeight_zero_cleared
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe_succ_cleared
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe_succ_cleared.of_lift
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe_succ_cleared.of_betaWeight
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe_succ_cleared.betaWeight
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.divWeight_succ_cleared_iff_betaWeight_succ
+#print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe_succ_cleared.of_divWeight_succ_cleared
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.W𝒪_dvd_βHensel_zero_of_alphaWeight
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.DivWeightLe_zero.of_alphaWeight_zero
 #print axioms BCIKS20.HenselNumerator.AlphaWeight.AlphaGenuineRegularWeightLe_zero.of_divWeight_zero
