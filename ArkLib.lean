@@ -607,9 +607,9 @@ import ArkLib.ProofSystem.ToyProblem.SoundnessBounds
 import ArkLib.ProofSystem.ToyProblem.Spec.General
 import ArkLib.ProofSystem.ToyProblem.Spec.SimplifiedIOR
 import ArkLib.ProofSystem.Whir.BlockRelDistance
-import ArkLib.ProofSystem.Whir.KeystoneReduction
 import ArkLib.ProofSystem.Whir.Folding
 import ArkLib.ProofSystem.Whir.FoldingScratchDev
+import ArkLib.ProofSystem.Whir.KeystoneReduction
 import ArkLib.ProofSystem.Whir.MCAAffineLineGenerator
 import ArkLib.ProofSystem.Whir.MCAConjectureStatus
 import ArkLib.ProofSystem.Whir.MCAJohnsonCurveExtract

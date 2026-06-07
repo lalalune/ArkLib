@@ -58,4 +58,52 @@ theorem card_close_le_card_mul_vol {F : Type*} [Fintype F] [DecidableEq F] [AddC
     _ = 𝒞.card * (Finset.univ.filter (fun w : ι → F => hammingDist w 0 ≤ r)).card :=
         ArkLib.CS25.sum_closeCount_eq 𝒞 r
 
+open Classical in
+/-- **Jointly-`e`-close stack count bound.** A stack `u` is jointly `e`-close to `C` iff its
+interleaving `⋈|u = uᵀ` is within Hamming distance `e` of some interleaved codeword. By the union
+bound over the interleaved code `C^⋈κ` (`|C|^|κ|` codewords), the number of jointly-`e`-close stacks
+is at most `|C|^|κ| · V'`, where `V'` is the interleaved-ball volume. -/
+theorem card_jointProximityNat_le (C : Set (ι → A)) [AddCommGroup A] [Fintype ↥C] (e : ℕ) :
+    (Finset.univ.filter (fun u : WordStack A κ ι => jointProximityNat C (u := u) e)).card
+      ≤ (Fintype.card ↥C) ^ (Fintype.card κ)
+        * (Finset.univ.filter (fun w : InterleavedWord A κ ι => hammingDist w 0 ≤ e)).card := by
+  classical
+  -- the interleaved code, as the image Finset of its codeword subtype (avoids `Set.toFinset`)
+  set 𝒞 : Finset (InterleavedWord A κ ι) :=
+    Finset.univ.image (fun v : ↥(interleavedCodeSet (κ := κ) C) => v.val) with h𝒞
+  have hiff : ∀ u : WordStack A κ ι,
+      jointProximityNat C (u := u) e ↔ ArkLib.CS25.closeCount 𝒞 e u.transpose ≠ 0 := by
+    intro u
+    rw [jointProximityNat_iff_closeToInterleavedCodeword, ArkLib.CS25.closeCount,
+      Finset.card_ne_zero, Finset.filter_nonempty_iff]
+    constructor
+    · rintro ⟨v, hv⟩
+      exact ⟨v.val, Finset.mem_image_of_mem _ (Finset.mem_univ v), hv⟩
+    · rintro ⟨c, hcS, hc⟩
+      obtain ⟨v, -, rfl⟩ := Finset.mem_image.mp hcS
+      exact ⟨v, hc⟩
+  have hreindex :
+      (Finset.univ.filter (fun u : WordStack A κ ι => jointProximityNat C (u := u) e)).card
+        = (Finset.univ.filter (fun w : InterleavedWord A κ ι =>
+            ArkLib.CS25.closeCount 𝒞 e w ≠ 0)).card := by
+    refine Finset.card_nbij' (fun u => u.transpose) (fun w => w.transpose) ?_ ?_ ?_ ?_
+    · intro u hu
+      simp only [Finset.mem_coe, Finset.mem_filter, Finset.mem_univ, true_and] at hu ⊢
+      exact (hiff u).mp hu
+    · intro w hw
+      simp only [Finset.mem_coe, Finset.mem_filter, Finset.mem_univ, true_and] at hw ⊢
+      rw [hiff]; simpa [Matrix.transpose_transpose] using hw
+    · intro u _; simp [Matrix.transpose_transpose]
+    · intro w _; simp [Matrix.transpose_transpose]
+  rw [hreindex]
+  calc (Finset.univ.filter (fun w : InterleavedWord A κ ι =>
+            ArkLib.CS25.closeCount 𝒞 e w ≠ 0)).card
+      ≤ 𝒞.card
+          * (Finset.univ.filter (fun w : InterleavedWord A κ ι => hammingDist w 0 ≤ e)).card :=
+        card_close_le_card_mul_vol _ e
+    _ = (Fintype.card ↥C) ^ (Fintype.card κ)
+          * (Finset.univ.filter (fun w : InterleavedWord A κ ι => hammingDist w 0 ≤ e)).card := by
+        rw [h𝒞, Finset.card_image_of_injective _ Subtype.val_injective, Finset.card_univ,
+          interleavedCodeSet_card]
+
 end CS25
